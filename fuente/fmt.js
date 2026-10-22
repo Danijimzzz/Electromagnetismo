@@ -6,7 +6,8 @@ const Fmt = (() => {
   let kinds = {}; // símbolo -> tipo (q, lambda, sigma, rho, p)
   let unit = 'a';
   let mode = 'sym';
-  const setContext = (k, u, md) => { kinds = k; unit = u || 'a'; mode = md || 'sym'; };
+  let order = []; // orden opcional de los símbolos en los productos (p. ej. ['q0', 'p0'])
+  const setContext = (k, u, md, ord) => { kinds = k; unit = u || 'a'; mode = md || 'sym'; order = ord || []; };
   const siUnit = (qty) => QTY[qty]?.si || KINDS[qty]?.si || '';
   const siFactor = (qty) => (QTY[qty]?.eps ? 1 / EPS0 : 1);
 
@@ -25,7 +26,8 @@ const Fmt = (() => {
   function mono(key) {
     const cnt = {};
     for (const s of splitKey(key)) cnt[s] = (cnt[s] || 0) + 1;
-    return Object.keys(cnt).sort().map((s) => sym(s) + sup(cnt[s])).join('');
+    const rank = (s) => { const i = order.indexOf(s); return i < 0 ? order.length : i; };
+    return Object.keys(cnt).sort((x, y) => rank(x) - rank(y) || (x < y ? -1 : x > y ? 1 : 0)).map((s) => sym(s) + sup(cnt[s])).join('');
   }
   const frac = (n, d) => (d ? `<span class="fr"><span class="nu">${n || '1'}</span><span class="de">${d}</span></span>` : n || '1');
   const uv = (c) => `<span class="uv">u<sub>${c}</sub></span>`;
@@ -109,9 +111,17 @@ const Fmt = (() => {
     if (r.dec === undefined && !r.ls.length) {
       const a = r.a;
       if (a.mix) {
+        // (3 − 2√3) = −√3(2 − √3): si a = ±r se saca √r factor común
+        if (Math.abs(a.a) === a.r) {
+          const c = a.a / a.r, B = Math.abs(a.b), C = Math.abs(c);
+          const inner = `(${B} ${Math.sign(c) === Math.sign(a.b) ? '+' : MINUS} ${C !== 1 ? C : ''}√${a.r})`;
+          return { neg: a.b < 0, html: `${frac(piTop + syms + '√' + a.r, `${a.d !== 1 ? a.d : ''}${denTail}`)}·${inner}` };
+        }
         const t = mixTop(a);
         return { neg: t.neg, html: frac(t.s + piTop + syms, `${a.d !== 1 ? a.d : ''}${denTail}`) };
       }
+      // denominador puramente numérico y sin potencias de la unidad: −(9/2)q₀
+      if (!denTail && a.d !== 1 && syms && !piTop && n === 0) return { neg: a.s < 0, html: `${numFrac(Math.abs(a.s * a.n * Math.sqrt(a.r) / a.d))}${syms}` };
       const top = `${a.n !== 1 || (a.r === 1 && !syms && !piTop) ? a.n : ''}${a.r > 1 ? '√' + a.r : ''}${piTop}${syms}`;
       const den = `${a.d !== 1 ? a.d : ''}${denTail}`;
       return { neg: a.s < 0, html: frac(top, den) };
@@ -139,12 +149,98 @@ const Fmt = (() => {
     return ts.map((t, i) => (i === 0 ? (t.neg ? MINUS : '') : t.neg ? ` ${MINUS} ` : ' + ') + t.html).join('');
   }
   function poly(P, qty) {
-    return joinTerms(P.keys().sort().map((k) => term(P.coef(k), k, qty)));
+    return factorLog(P, qty) || joinTerms(P.keys().sort().map((k) => term(P.coef(k), k, qty)));
+  }
+
+  // ln β con la base más pequeña posible: ln 8 → 3·ln 2
+  function lnBase(al, be) {
+    if (be < 1) { al = -al; be = 1 / be; }
+    for (let k = 6; k >= 2; k--) {
+      const id = identify(be ** (1 / k), false);
+      if (id && id.r === 1 && id.d <= 20 && id.n <= 1000 && id.n !== id.d) return { al: al * k, be: id.n / id.d };
+    }
+    return { al, be };
+  }
+  // Un solo logaritmo y algún término algebraico: se saca factor común el coeficiente del
+  // logaritmo, como en los solucionarios: −(4σa/ε₀)(3/8 + ln 2), (1/2πε₀)(λ ln 2 − b/4a²)
+  function factorLog(P, qty) {
+    if (mode === 'si') return null;
+    const keys = P.keys(), alg = [], logs = [];
+    for (const k of keys) {
+      const ex = P.coef(k);
+      if (Math.abs(ex.a) > 1e-14) alg.push({ k, v: ex.a });
+      for (const t of ex.L) logs.push({ k, ...lnBase(t.al, t.be) });
+    }
+    if (logs.length !== 1 || !alg.length) return null;
+    const lg = logs[0], same = keys.length === 1, eps0 = hasEps(qty) ? 'ε<sub>0</sub>' : '';
+    for (const piDen of [true, false]) {
+      const al = identify(Math.abs(lg.al) * (piDen ? PI : 1), false);
+      if (!al || al.r !== 1 || al.d > 100) continue;
+      const be = identify(lg.be, false);
+      const items = alg.map((o) => ({ ...o, id: identify(o.v / lg.al, false) }));
+      if (!be || items.some((o) => !o.id || o.id.d > 1000)) continue;
+      const neg = lg.al < 0, n0 = aExpFor(lg.k, qty);
+      // factor de fuera: coeficiente del logaritmo (y símbolos si todos los términos los comparten)
+      const top = `${al.n !== 1 || !same ? al.n : ''}${same ? mono(lg.k) + (n0 > 0 ? unitPow(n0) : '') : ''}`;
+      const den = `${al.d !== 1 ? al.d : ''}${piDen ? 'π' : ''}${eps0}${same && n0 < 0 ? unitPow(-n0) : ''}`;
+      const inside = (k, body, isLn) => {
+        if (same) return body;
+        const n = aExpFor(k, qty), syms = mono(k) + (n > 0 ? unitPow(n) : '');
+        if (isLn) return `${syms}${syms ? ' ' : ''}${body}${n < 0 ? '/' + unitPow(-n) : ''}`;
+        return null;
+      };
+      const parts = items.map((o) => {
+        const id = o.id;
+        if (same) return { neg: id.s < 0, s: numFrac(Math.abs(o.v / lg.al)) };
+        const n = aExpFor(o.k, qty);
+        const t = `${id.n !== 1 || id.r === 1 ? id.n : ''}${id.r > 1 ? '√' + id.r : ''}`;
+        const syms = mono(o.k) + (n > 0 ? unitPow(n) : '');
+        return { neg: id.s < 0, s: frac((t === '1' && syms ? '' : t) + syms, `${id.d !== 1 ? id.d : ''}${n < 0 ? unitPow(-n) : ''}`) };
+      });
+      const lnS = { neg: false, s: inside(lg.k, `ln ${niceInline(be, false)}`, true), ln: true };
+      // primero los términos positivos; si todos lo son, los algebraicos delante del logaritmo
+      const all = [...parts, lnS];
+      if (all.every((p) => !p.neg)) all.sort((x, y) => (x.ln ? 1 : 0) - (y.ln ? 1 : 0));
+      else all.sort((x, y) => (x.neg ? 1 : 0) - (y.neg ? 1 : 0));
+      const inner = all.map((p, i) => (i === 0 ? (p.neg ? MINUS : '') : p.neg ? ` ${MINUS} ` : ' + ') + p.s).join('');
+      return `${neg ? MINUS : ''}${frac(top || '1', den)}·(${inner})`;
+    }
+    return null;
   }
 
   const gcd = (a, b) => (b ? gcd(b, a % b) : a);
+  // Suma de varios símbolos con el mismo denominador πε₀: se saca factor común el término
+  // con menor potencia de la unidad, como en los solucionarios: (1/2πε₀a)(λ − 2b/(3a²√3))
+  function factorSum(P, qty) {
+    if (mode === 'si') return null;
+    const keys = P.keys();
+    if (keys.length < 2 || keys.some((k) => P.coef(k).L.length || !k)) return null;
+    const ts = keys.map((k) => ({ k, v: P.coef(k).a, n: aExpFor(k, qty) }));
+    const lead = ts.reduce((b, t) => (t.n > b.n || (t.n === b.n && t.v > b.v) ? t : b));
+    const L = identify(Math.abs(lead.v) * PI, false);
+    if (!L || L.r !== 1 || L.d > 100) return null;
+    const inner = [];
+    for (const t of ts) {
+      const syms = mono(t.k), dn = t.n - lead.n, r = t.v / lead.v;
+      if (t === lead) { inner.unshift({ neg: false, s: syms, lead: true }); continue; }
+      const id = identify(Math.abs(r), false);
+      if (!id || id.d > 1000) return null;
+      // radical en el denominador cuando la fracción lo permite: 2√3/9 → 2/(3√3)
+      let top = `${id.n !== 1 || id.r === 1 ? id.n : ''}${id.r > 1 ? '√' + id.r : ''}`, den = `${id.d !== 1 ? id.d : ''}`;
+      if (id.r > 1 && id.d % id.r === 0) { top = `${id.n}`; den = `${id.d / id.r !== 1 ? id.d / id.r : ''}`; }
+      const radDen = id.r > 1 && id.d % id.r === 0 ? '√' + id.r : '';
+      const num = (top === '1' ? '' : top) + syms + (dn > 0 ? unitPow(dn) : '');
+      inner.push({ neg: r < 0, s: frac(num || '1', `${den}${dn < 0 ? unitPow(-dn) : ''}${radDen}`) });
+    }
+    inner.sort((x, y) => (x.neg ? 1 : 0) - (y.neg ? 1 : 0));
+    const den = `${L.d !== 1 ? L.d : ''}π${hasEps(qty) ? 'ε<sub>0</sub>' : ''}${lead.n < 0 ? unitPow(-lead.n) : ''}`;
+    const top = `${L.n}${lead.n > 0 ? unitPow(lead.n) : ''}`;
+    const body = inner.map((p, i) => (i === 0 ? (p.neg ? MINUS : '') : p.neg ? ` ${MINUS} ` : ' + ') + p.s).join('');
+    return { neg: lead.v < 0, html: `${frac(top, den)}·(${body})` };
+  }
   // vector de Poly, factorizando cuando hay un único monomio
-  function vec(vp, qty) {
+  // opts.unitForm: si los radicales de las componentes no coinciden, escribe |v|·(û)
+  function vec(vp, qty, opts = {}) {
     const keys = [...new Set(vp.flatMap((p) => p.keys()))];
     const comps = ['x', 'y', 'z'];
     if (!keys.length) return '0';
@@ -167,9 +263,20 @@ const Fmt = (() => {
           let g = ints.reduce((a, b) => gcd(a, b), 0);
           const neg = nz.every((o) => o.id.s < 0);
           const n = aExpFor(key, qty);
-          // si hay un solo componente, el radical sale fuera
+          // si hay un solo componente o todos llevan el mismo radical, el radical sale fuera
           const single = nz.length === 1;
-          const rad = single && nz[0].id.r > 1 ? '√' + nz[0].id.r : '';
+          const r0 = nz[0].id.r, sameRad = r0 > 1 && nz.every((o) => o.id.r === r0);
+          if (opts.unitForm && !sameRad && !single && nz.some((o) => o.id.r !== r0)) {
+            const m = Math.hypot(...exs.map((e) => e.a)), mid = identify(m * k, false);
+            const us = nz.map((o) => identify(exs[o.i].a / m, false));
+            if (mid && mid.r === 1 && us.every((u) => u && u.d <= 20)) {
+              const syms = mono(key) + (n > 0 ? unitPow(n) : '');
+              const den = `${mid.d !== 1 ? mid.d : ''}${piDen ? 'π' : ''}${hasEps(qty) ? 'ε<sub>0</sub>' : ''}${n < 0 ? unitPow(-n) : ''}`;
+              const inner = nz.map((o, j) => (j === 0 ? (us[j].s < 0 ? MINUS : '') : us[j].s < 0 ? ` ${MINUS} ` : ' + ') + numFrac(Math.abs(exs[o.i].a / m)) + ' ' + uv(comps[o.i])).join('');
+              return `${frac(`${mid.n !== 1 || !syms ? mid.n : ''}${syms}`, den)}·(${inner})`;
+            }
+          }
+          const rad = (single || sameRad) && r0 > 1 ? '√' + r0 : '';
           const syms = mono(key) + (n > 0 ? unitPow(n) : '');
           const top = `${g !== 1 || (!syms && !rad) ? g : ''}${rad}${syms}`;
           const den = `${L !== 1 ? L : ''}${piDen ? 'π' : ''}${hasEps(qty) ? 'ε<sub>0</sub>' : ''}${n < 0 ? unitPow(-n) : ''}`;
@@ -178,8 +285,9 @@ const Fmt = (() => {
           const inner = nz.map((o, j) => {
             const m = ints[j] / g;
             const sgn = (o.id.s < 0) !== neg;
-            const c = `${m !== 1 || o.id.r === 1 ? m : ''}${o.id.r > 1 ? '√' + o.id.r : ''}`;
-            const c2 = m === 1 && o.id.r === 1 ? '' : c;
+            const r = sameRad ? 1 : o.id.r;
+            const c = `${m !== 1 || r === 1 ? m : ''}${r > 1 ? '√' + r : ''}`;
+            const c2 = m === 1 && r === 1 ? '' : c;
             return (j === 0 ? (sgn ? MINUS : '') : sgn ? ` ${MINUS} ` : ' + ') + c2 + ' ' + uv(comps[o.i]);
           }).join('');
           return `${front}·(${inner})`;
@@ -190,6 +298,8 @@ const Fmt = (() => {
     return joinTerms(vp.map((p, i) => {
       if (p.isZero()) return null;
       if (p.keys().length === 1) { const t = term(p.coef(p.keys()[0]), p.keys()[0], qty); return { neg: t.neg, html: `${t.html} ${uv(comps[i])}` }; }
+      const fs = factorSum(p, qty);
+      if (fs) return { neg: fs.neg, html: `${fs.html} ${uv(comps[i])}` };
       return { neg: false, html: `(${poly(p, qty)}) ${uv(comps[i])}` };
     }).filter(Boolean));
   }

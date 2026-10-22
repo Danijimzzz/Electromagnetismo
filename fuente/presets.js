@@ -10,11 +10,11 @@ const Presets = (() => {
 
   const list = [
     {
-      key: 'e1', statement: "Tres partículas con la misma carga q están en los vértices de un triángulo equilátero de lado 2a: dos en (−a, 0, 0) y (a, 0, 0) y la tercera sobre el semieje Z positivo. Determinar: 1) la energía electrostática del sistema; 2) el campo eléctrico en cualquier punto del eje Z; 3) el momento de fuerzas sobre un dipolo p = b(u_x − 2u_y + 4u_z), que solo puede rotar, colocado en el origen.", title: '1 · Triángulo equilátero de cargas', note: 'Apartado 2 pide E en cualquier punto del eje Z: aquí se calcula en z = −√3·a (cambia P para otros puntos o arrástralo en la vista XZ).',
+      key: 'e1', statement: "Tres partículas con la misma carga q están en los vértices de un triángulo equilátero de lado 2a: dos en (−a, 0, 0) y (a, 0, 0) y la tercera sobre el semieje Z positivo. Determinar: 1) la energía electrostática del sistema; 2) el campo eléctrico en cualquier punto del eje Z; 3) el momento de fuerzas sobre un dipolo p = b(u_x − 2u_y + 4u_z), que solo puede rotar, colocado en el origen.", title: '1 · Triángulo equilátero de cargas', note: 'Apartado 2: el perfil da E en cualquier punto del eje Z, por tramos a cada lado de q3.',
       make: () => scen({
         view: { plane: 'xz', cut: '0' },
         sources: [S('point', 'q1', { pos: ['-1', '0', '0'] }, '1', 'q'), S('point', 'q2', { pos: ['1', '0', '0'] }, '1', 'q'), S('point', 'q3', { pos: ['0', '0', 'sqrt(3)'] }, '1', 'q')],
-        analyses: [A('energy', {}), A('E', { P: ['0', '0', '-sqrt(3)'] }), A('profile', { P0: ['0', '0', '0'], d: ['0', '0', '1'], var: 'z', t0: '-4', t1: '4', at: '' }), A('dipole', { P: ['0', '0', '0'], p: ['1', '-2', '4'], sym: 'b', rot: ['', '', ''] })],
+        analyses: [A('energy', {}), A('profile', { P0: ['0', '0', '0'], d: ['0', '0', '1'], var: 'z', t0: '-4', t1: '4', at: '' }), A('dipole', { P: ['0', '0', '0'], p: ['1', '-2', '4'], sym: 'b', rot: ['', '', ''] })],
       }),
     },
     {
@@ -29,6 +29,7 @@ const Presets = (() => {
       make: () => {
         const q2 = S('point', 'q2', { pos: ['-3', '0', '0'] }, '1', 'q0');
         return scen({
+          order: ['q0', 'p0'],
           sources: [S('point', 'q1', { pos: ['1', '-sqrt(3)', '0'] }, '-1', 'q0'), q2],
           unknown: { src: q2.id, cond: { type: 'Epar', P: ['0', '0', '0'], d: ['sqrt(3)/2', '1/2', '0'] } },
           analyses: [A('dipole', { P: ['0', '0', '0'], p: ['sqrt(3)/2', '1/2', '0'], sym: 'p0', rot: ['1', '0', '0'] })],
@@ -73,6 +74,7 @@ const Presets = (() => {
       make: () => {
         const Q = S('point', 'Q', { pos: ['-6', '0', '0'] }, '1', 'q');
         return scen({
+          order: ['p', 'lambda'],
           sources: [S('line', 'λ', { pos: ['24', '1', '0'], dir: 'z', mode: 'lambda', R: '1' }, '1', 'lambda'), Q],
           unknown: { src: Q.id, cond: { type: 'Epar', P: ['0', '8', '0'], d: ['0', '1', '0'] } },
           analyses: [A('dipole', { P: ['0', '8', '0'], p: ['0', '1', '0'], sym: 'p', rot: ['', '', ''] })],
@@ -92,21 +94,21 @@ const Presets = (() => {
       },
     },
     {
-      key: 'e9', statement: "Dos planos indefinidos con densidades σ y −σ y un hilo indefinido con densidad λ están situados como en la figura. Obtener: 1) el campo eléctrico en cualquier punto del plano XY; 2) la relación entre σ y λ para que V_B − V_A sea nula.", title: '9 · Dos planos y un hilo', note: 'La relación σ–λ se obtiene despejando λ en función de σ (es la misma relación).',
+      key: 'e9', statement: "Dos planos indefinidos con densidades σ y −σ y un hilo indefinido con densidad λ están situados como en la figura. Obtener: 1) el campo eléctrico en cualquier punto del plano XY; 2) la relación entre σ y λ para que V_B − V_A sea nula.", title: '9 · Dos planos y un hilo', note: 'Apartado 1: el perfil a lo largo de X usa λ como símbolo (no depende del apartado 2); en el plano XY el campo solo depende de x.',
       make: () => {
         const ln = S('line', 'λ', { pos: ['1', '0', '0'], dir: 'y', mode: 'lambda', R: '1' }, '1', 'lambda');
         return scen({
           unit: 'b',
           sources: [S('plane', 'σ1', { axis: 'x', at: '0' }, '1', 'sigma'), ln, S('plane', 'σ2', { axis: 'x', at: '2' }, '-1', 'sigma')],
           unknown: { src: ln.id, cond: { type: 'dV', A: ['4/3', '1', '0'], B: ['5/3', '1', '0'], val: { c: '0', sym: '' } } },
-          analyses: [A('E', { P: ['4/3', '1', '0'] })],
+          analyses: [A('profile', { P0: ['0', '0', '0'], d: ['1', '0', '0'], var: 'x', t0: '-1', t1: '3', at: '', unk: 'libre' })],
         });
       },
     },
     {
       key: 'e10', statement: "Un dipolo p = p0 u_x está en el origen, centro de una corona esférica de radios R y 3R cargada con densidad ρ = 3p0/(16πR⁴). Obtener el trabajo realizado en contra del campo para desplazar una carga q desde (R/2, 0, 0) hasta (2R, 0, 0).", title: '10 · Dipolo dentro de una corona esférica',
       make: () => scen({
-        unit: 'R', kinds: { p0: 'p' },
+        unit: 'R', kinds: { p0: 'p' }, order: ['q', 'p0'],
         sources: [S('dipole', 'p', { pos: ['0', '0', '0'], p: ['1', '0', '0'] }, '1', 'p0'), S('sphere', 'ρ', { pos: ['0', '0', '0'], R1: '1', R2: '3' }, '3/(16*pi)', 'p0')],
         analyses: [A('work', { A: ['1/2', '0', '0'], B: ['2', '0', '0'], Q: { c: '1', sym: 'q' } })],
       }),
@@ -118,7 +120,7 @@ const Presets = (() => {
         sources: [S('line', 'λ', { pos: ['0', '0', '0'], dir: 'y', mode: 'lambda', R: '1' }, '1', 'lambda'), S('dipole', 'p', { pos: ['1', 'sqrt(3)', '0'], p: ['4', '0', '0'] }, '1', 'b')],
         analyses: [
           A('findDipole', { P: ['1', 'sqrt(3)', '0'], sym: 'b', tau: ['0', '0', '-1/pi'], U: '-sqrt(3)/pi', plane: 'z' }),
-          A('E', { P: ['1', '0', '0'] }), A('dV', { A: ['1', '0', '0'], B: ['2', '0', '0'] }),
+          A('E', { P: ['1', '0', '0'] }), A('dV', { A: ['1', '0', '0'], B: ['2', '0', '0'], sense: 'AB' }),
         ],
       }),
     },

@@ -239,7 +239,7 @@
   const fieldRow = (label, ...ctrl) => h('label', { class: 'row' }, h('span', { class: 'lab' }, label), h('span', { class: 'ctl' }, ...ctrl));
   function buildField(f, base, obj) {
     const p = [...base, f.k];
-    if (f.show && !f.show(obj)) return null;
+    if (f.show && !f.show(obj, scen)) return null;
     switch (f.t) {
       case 'vec3':
       case 'vec3opt':
@@ -629,7 +629,7 @@
   function describe(def, obj) {
     const parts = [];
     for (const f of def.fields) {
-      if (f.show && !f.show(obj)) continue;
+      if (f.show && !f.show(obj, scen)) continue;
       const v = obj[f.k];
       if (v == null || v === '') continue;
       if (Array.isArray(v)) { if (v.every((x) => x === '')) continue; parts.push(`${f.label} = (${v.map((x) => x || '0').join(', ')})`); }

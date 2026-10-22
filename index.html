@@ -773,7 +773,8 @@ const Fmt = (() => {
   let kinds = {}; // símbolo -> tipo (q, lambda, sigma, rho, p)
   let unit = 'a';
   let mode = 'sym';
-  const setContext = (k, u, md) => { kinds = k; unit = u || 'a'; mode = md || 'sym'; };
+  let order = []; // orden opcional de los símbolos en los productos (p. ej. ['q0', 'p0'])
+  const setContext = (k, u, md, ord) => { kinds = k; unit = u || 'a'; mode = md || 'sym'; order = ord || []; };
   const siUnit = (qty) => QTY[qty]?.si || KINDS[qty]?.si || '';
   const siFactor = (qty) => (QTY[qty]?.eps ? 1 / EPS0 : 1);
 
@@ -792,7 +793,8 @@ const Fmt = (() => {
   function mono(key) {
     const cnt = {};
     for (const s of splitKey(key)) cnt[s] = (cnt[s] || 0) + 1;
-    return Object.keys(cnt).sort().map((s) => sym(s) + sup(cnt[s])).join('');
+    const rank = (s) => { const i = order.indexOf(s); return i < 0 ? order.length : i; };
+    return Object.keys(cnt).sort((x, y) => rank(x) - rank(y) || (x < y ? -1 : x > y ? 1 : 0)).map((s) => sym(s) + sup(cnt[s])).join('');
   }
   const frac = (n, d) => (d ? `<span class="fr"><span class="nu">${n || '1'}</span><span class="de">${d}</span></span>` : n || '1');
   const uv = (c) => `<span class="uv">u<sub>${c}</sub></span>`;
@@ -876,9 +878,17 @@ const Fmt = (() => {
     if (r.dec === undefined && !r.ls.length) {
       const a = r.a;
       if (a.mix) {
+        // (3 − 2√3) = −√3(2 − √3): si a = ±r se saca √r factor común
+        if (Math.abs(a.a) === a.r) {
+          const c = a.a / a.r, B = Math.abs(a.b), C = Math.abs(c);
+          const inner = `(${B} ${Math.sign(c) === Math.sign(a.b) ? '+' : MINUS} ${C !== 1 ? C : ''}√${a.r})`;
+          return { neg: a.b < 0, html: `${frac(piTop + syms + '√' + a.r, `${a.d !== 1 ? a.d : ''}${denTail}`)}·${inner}` };
+        }
         const t = mixTop(a);
         return { neg: t.neg, html: frac(t.s + piTop + syms, `${a.d !== 1 ? a.d : ''}${denTail}`) };
       }
+      // denominador puramente numérico y sin potencias de la unidad: −(9/2)q₀
+      if (!denTail && a.d !== 1 && syms && !piTop && n === 0) return { neg: a.s < 0, html: `${numFrac(Math.abs(a.s * a.n * Math.sqrt(a.r) / a.d))}${syms}` };
       const top = `${a.n !== 1 || (a.r === 1 && !syms && !piTop) ? a.n : ''}${a.r > 1 ? '√' + a.r : ''}${piTop}${syms}`;
       const den = `${a.d !== 1 ? a.d : ''}${denTail}`;
       return { neg: a.s < 0, html: frac(top, den) };
@@ -906,12 +916,98 @@ const Fmt = (() => {
     return ts.map((t, i) => (i === 0 ? (t.neg ? MINUS : '') : t.neg ? ` ${MINUS} ` : ' + ') + t.html).join('');
   }
   function poly(P, qty) {
-    return joinTerms(P.keys().sort().map((k) => term(P.coef(k), k, qty)));
+    return factorLog(P, qty) || joinTerms(P.keys().sort().map((k) => term(P.coef(k), k, qty)));
+  }
+
+  // ln β con la base más pequeña posible: ln 8 → 3·ln 2
+  function lnBase(al, be) {
+    if (be < 1) { al = -al; be = 1 / be; }
+    for (let k = 6; k >= 2; k--) {
+      const id = identify(be ** (1 / k), false);
+      if (id && id.r === 1 && id.d <= 20 && id.n <= 1000 && id.n !== id.d) return { al: al * k, be: id.n / id.d };
+    }
+    return { al, be };
+  }
+  // Un solo logaritmo y algún término algebraico: se saca factor común el coeficiente del
+  // logaritmo, como en los solucionarios: −(4σa/ε₀)(3/8 + ln 2), (1/2πε₀)(λ ln 2 − b/4a²)
+  function factorLog(P, qty) {
+    if (mode === 'si') return null;
+    const keys = P.keys(), alg = [], logs = [];
+    for (const k of keys) {
+      const ex = P.coef(k);
+      if (Math.abs(ex.a) > 1e-14) alg.push({ k, v: ex.a });
+      for (const t of ex.L) logs.push({ k, ...lnBase(t.al, t.be) });
+    }
+    if (logs.length !== 1 || !alg.length) return null;
+    const lg = logs[0], same = keys.length === 1, eps0 = hasEps(qty) ? 'ε<sub>0</sub>' : '';
+    for (const piDen of [true, false]) {
+      const al = identify(Math.abs(lg.al) * (piDen ? PI : 1), false);
+      if (!al || al.r !== 1 || al.d > 100) continue;
+      const be = identify(lg.be, false);
+      const items = alg.map((o) => ({ ...o, id: identify(o.v / lg.al, false) }));
+      if (!be || items.some((o) => !o.id || o.id.d > 1000)) continue;
+      const neg = lg.al < 0, n0 = aExpFor(lg.k, qty);
+      // factor de fuera: coeficiente del logaritmo (y símbolos si todos los términos los comparten)
+      const top = `${al.n !== 1 || !same ? al.n : ''}${same ? mono(lg.k) + (n0 > 0 ? unitPow(n0) : '') : ''}`;
+      const den = `${al.d !== 1 ? al.d : ''}${piDen ? 'π' : ''}${eps0}${same && n0 < 0 ? unitPow(-n0) : ''}`;
+      const inside = (k, body, isLn) => {
+        if (same) return body;
+        const n = aExpFor(k, qty), syms = mono(k) + (n > 0 ? unitPow(n) : '');
+        if (isLn) return `${syms}${syms ? ' ' : ''}${body}${n < 0 ? '/' + unitPow(-n) : ''}`;
+        return null;
+      };
+      const parts = items.map((o) => {
+        const id = o.id;
+        if (same) return { neg: id.s < 0, s: numFrac(Math.abs(o.v / lg.al)) };
+        const n = aExpFor(o.k, qty);
+        const t = `${id.n !== 1 || id.r === 1 ? id.n : ''}${id.r > 1 ? '√' + id.r : ''}`;
+        const syms = mono(o.k) + (n > 0 ? unitPow(n) : '');
+        return { neg: id.s < 0, s: frac((t === '1' && syms ? '' : t) + syms, `${id.d !== 1 ? id.d : ''}${n < 0 ? unitPow(-n) : ''}`) };
+      });
+      const lnS = { neg: false, s: inside(lg.k, `ln ${niceInline(be, false)}`, true), ln: true };
+      // primero los términos positivos; si todos lo son, los algebraicos delante del logaritmo
+      const all = [...parts, lnS];
+      if (all.every((p) => !p.neg)) all.sort((x, y) => (x.ln ? 1 : 0) - (y.ln ? 1 : 0));
+      else all.sort((x, y) => (x.neg ? 1 : 0) - (y.neg ? 1 : 0));
+      const inner = all.map((p, i) => (i === 0 ? (p.neg ? MINUS : '') : p.neg ? ` ${MINUS} ` : ' + ') + p.s).join('');
+      return `${neg ? MINUS : ''}${frac(top || '1', den)}·(${inner})`;
+    }
+    return null;
   }
 
   const gcd = (a, b) => (b ? gcd(b, a % b) : a);
+  // Suma de varios símbolos con el mismo denominador πε₀: se saca factor común el término
+  // con menor potencia de la unidad, como en los solucionarios: (1/2πε₀a)(λ − 2b/(3a²√3))
+  function factorSum(P, qty) {
+    if (mode === 'si') return null;
+    const keys = P.keys();
+    if (keys.length < 2 || keys.some((k) => P.coef(k).L.length || !k)) return null;
+    const ts = keys.map((k) => ({ k, v: P.coef(k).a, n: aExpFor(k, qty) }));
+    const lead = ts.reduce((b, t) => (t.n > b.n || (t.n === b.n && t.v > b.v) ? t : b));
+    const L = identify(Math.abs(lead.v) * PI, false);
+    if (!L || L.r !== 1 || L.d > 100) return null;
+    const inner = [];
+    for (const t of ts) {
+      const syms = mono(t.k), dn = t.n - lead.n, r = t.v / lead.v;
+      if (t === lead) { inner.unshift({ neg: false, s: syms, lead: true }); continue; }
+      const id = identify(Math.abs(r), false);
+      if (!id || id.d > 1000) return null;
+      // radical en el denominador cuando la fracción lo permite: 2√3/9 → 2/(3√3)
+      let top = `${id.n !== 1 || id.r === 1 ? id.n : ''}${id.r > 1 ? '√' + id.r : ''}`, den = `${id.d !== 1 ? id.d : ''}`;
+      if (id.r > 1 && id.d % id.r === 0) { top = `${id.n}`; den = `${id.d / id.r !== 1 ? id.d / id.r : ''}`; }
+      const radDen = id.r > 1 && id.d % id.r === 0 ? '√' + id.r : '';
+      const num = (top === '1' ? '' : top) + syms + (dn > 0 ? unitPow(dn) : '');
+      inner.push({ neg: r < 0, s: frac(num || '1', `${den}${dn < 0 ? unitPow(-dn) : ''}${radDen}`) });
+    }
+    inner.sort((x, y) => (x.neg ? 1 : 0) - (y.neg ? 1 : 0));
+    const den = `${L.d !== 1 ? L.d : ''}π${hasEps(qty) ? 'ε<sub>0</sub>' : ''}${lead.n < 0 ? unitPow(-lead.n) : ''}`;
+    const top = `${L.n}${lead.n > 0 ? unitPow(lead.n) : ''}`;
+    const body = inner.map((p, i) => (i === 0 ? (p.neg ? MINUS : '') : p.neg ? ` ${MINUS} ` : ' + ') + p.s).join('');
+    return { neg: lead.v < 0, html: `${frac(top, den)}·(${body})` };
+  }
   // vector de Poly, factorizando cuando hay un único monomio
-  function vec(vp, qty) {
+  // opts.unitForm: si los radicales de las componentes no coinciden, escribe |v|·(û)
+  function vec(vp, qty, opts = {}) {
     const keys = [...new Set(vp.flatMap((p) => p.keys()))];
     const comps = ['x', 'y', 'z'];
     if (!keys.length) return '0';
@@ -934,9 +1030,20 @@ const Fmt = (() => {
           let g = ints.reduce((a, b) => gcd(a, b), 0);
           const neg = nz.every((o) => o.id.s < 0);
           const n = aExpFor(key, qty);
-          // si hay un solo componente, el radical sale fuera
+          // si hay un solo componente o todos llevan el mismo radical, el radical sale fuera
           const single = nz.length === 1;
-          const rad = single && nz[0].id.r > 1 ? '√' + nz[0].id.r : '';
+          const r0 = nz[0].id.r, sameRad = r0 > 1 && nz.every((o) => o.id.r === r0);
+          if (opts.unitForm && !sameRad && !single && nz.some((o) => o.id.r !== r0)) {
+            const m = Math.hypot(...exs.map((e) => e.a)), mid = identify(m * k, false);
+            const us = nz.map((o) => identify(exs[o.i].a / m, false));
+            if (mid && mid.r === 1 && us.every((u) => u && u.d <= 20)) {
+              const syms = mono(key) + (n > 0 ? unitPow(n) : '');
+              const den = `${mid.d !== 1 ? mid.d : ''}${piDen ? 'π' : ''}${hasEps(qty) ? 'ε<sub>0</sub>' : ''}${n < 0 ? unitPow(-n) : ''}`;
+              const inner = nz.map((o, j) => (j === 0 ? (us[j].s < 0 ? MINUS : '') : us[j].s < 0 ? ` ${MINUS} ` : ' + ') + numFrac(Math.abs(exs[o.i].a / m)) + ' ' + uv(comps[o.i])).join('');
+              return `${frac(`${mid.n !== 1 || !syms ? mid.n : ''}${syms}`, den)}·(${inner})`;
+            }
+          }
+          const rad = (single || sameRad) && r0 > 1 ? '√' + r0 : '';
           const syms = mono(key) + (n > 0 ? unitPow(n) : '');
           const top = `${g !== 1 || (!syms && !rad) ? g : ''}${rad}${syms}`;
           const den = `${L !== 1 ? L : ''}${piDen ? 'π' : ''}${hasEps(qty) ? 'ε<sub>0</sub>' : ''}${n < 0 ? unitPow(-n) : ''}`;
@@ -945,8 +1052,9 @@ const Fmt = (() => {
           const inner = nz.map((o, j) => {
             const m = ints[j] / g;
             const sgn = (o.id.s < 0) !== neg;
-            const c = `${m !== 1 || o.id.r === 1 ? m : ''}${o.id.r > 1 ? '√' + o.id.r : ''}`;
-            const c2 = m === 1 && o.id.r === 1 ? '' : c;
+            const r = sameRad ? 1 : o.id.r;
+            const c = `${m !== 1 || r === 1 ? m : ''}${r > 1 ? '√' + r : ''}`;
+            const c2 = m === 1 && r === 1 ? '' : c;
             return (j === 0 ? (sgn ? MINUS : '') : sgn ? ` ${MINUS} ` : ' + ') + c2 + ' ' + uv(comps[o.i]);
           }).join('');
           return `${front}·(${inner})`;
@@ -957,6 +1065,8 @@ const Fmt = (() => {
     return joinTerms(vp.map((p, i) => {
       if (p.isZero()) return null;
       if (p.keys().length === 1) { const t = term(p.coef(p.keys()[0]), p.keys()[0], qty); return { neg: t.neg, html: `${t.html} ${uv(comps[i])}` }; }
+      const fs = factorSum(p, qty);
+      if (fs) return { neg: fs.neg, html: `${fs.html} ${uv(comps[i])}` };
       return { neg: false, html: `(${poly(p, qty)}) ${uv(comps[i])}` };
     }).filter(Boolean));
   }
@@ -1339,6 +1449,7 @@ const Physics = (() => {
     const P = (s) => parseExpr(s, unit);
     const errors = [];
     const kinds = {};
+    const anyFree = scen.analyses.some((an) => an.unk === 'libre');
     const sources = scen.sources.map((src) => {
       const def = SOURCES[src.type];
       const o = { id: src.id, src, def, name: src.name || def.prefix, kind: def.kindOf ? def.kindOf(src) : def.kind };
@@ -1347,7 +1458,11 @@ const Physics = (() => {
       if (!isUnknown) {
         try { o.S = Poly.sym(src.s.sym, P(src.s.c)); if (!(src.s.sym in kinds)) kinds[src.s.sym] = o.kind; }
         catch (e) { errors.push(`${o.name}: ${e.message}`); }
-      } else o.unknown = true;
+      } else {
+        o.unknown = true;
+        // valor como símbolo, para las preguntas que no usan la incógnita despejada
+        if (anyFree && src.s?.sym) { try { o.Sfree = Poly.sym(src.s.sym, P(src.s.c || '1')); if (!(src.s.sym in kinds)) kinds[src.s.sym] = o.kind; } catch (e) { /* sin valor simbólico */ } }
+      }
       return o;
     });
     for (const an of scen.analyses) {
@@ -1358,8 +1473,8 @@ const Physics = (() => {
     for (const k in scen.kinds || {}) if (k in kinds) kinds[k] = scen.kinds[k];
     for (const s of sources) if (s.unknown) kinds['§' + s.name] = s.kind;
     delete kinds[''];
-    const ctx = { unit, mode, P, sources, kinds, errors };
-    F.setContext(kinds, unit, mode);
+    const ctx = { unit, mode, P, sources, kinds, errors, order: scen.order || [] };
+    F.setContext(kinds, unit, mode, ctx.order);
     return ctx;
   }
   const nameHTML = (s) => F.sym(s.name);
@@ -1523,6 +1638,20 @@ const Physics = (() => {
         const xp = rhs[0].scale(1 / al);
         out[0] = xp.scale(1 / Math.log(be));
         xHTML = [F.frac(F.poly(xp, us[0].kind), 'ln ' + F.num(be))];
+        // relación entre símbolos, como la dan los solucionarios: σ/λ = −3 ln 2/(2πb)
+        const ks = xp.keys(), Y = ks.length === 1 && ks[0] && !ks[0].includes('*') ? ks[0] : null;
+        if (Y && ctx.kinds[Y]) {
+          const inv = 1 / xp.coef(Y).value(), n = KINDS[ctx.kinds[Y]].m - KINDS[us[0].kind].m;
+          for (const piDen of [true, false]) {
+            const id = Engine.identify(inv * (piDen ? PI : 1), false);
+            if (!id || id.r !== 1) continue;
+            const top = `${id.n !== 1 ? id.n + ' ' : ''}ln ${F.num(be)}`;
+            const den = `${id.d !== 1 ? id.d : ''}${piDen ? 'π' : ''}${n > 0 ? F.unitPow(n) : ''}`;
+            const ratio = `${F.sym(Y)}/${nameHTML(us[0])} = ${id.s < 0 ? F.MINUS : ''}${F.frac(top, den || '')}${n < 0 ? F.unitPow(-n) : ''}`;
+            xHTML[0] += ` &nbsp;⇔&nbsp; ${ratio}`;
+            break;
+          }
+        }
       }
     }
     if (!out[0]) {
@@ -1631,50 +1760,123 @@ const Physics = (() => {
     return phi;
   }
 
-  /* --------- Fórmula de E a lo largo de una recta (cargas e hilos) --------- */
+  /* --------- Fórmula de E a lo largo de una recta (cargas, hilos y planos) ---------
+     Si la recta atraviesa cargas, hilos o planos, el campo se da por tramos, como en
+     los solucionarios: E⃗(z<a√3) = (…) u_z, E⃗(z>a√3) = (…) u_z; los tramos con la
+     misma fórmula se juntan: E⃗(x<0) = … = E⃗(x>2b). */
   function profileFormula(ctx, P0, d, vname) {
     const v = F.sym(vname), u = (n) => F.unitPow(n);
+    const tiny = (c) => Math.abs(c) < 1e-12;
+    // |c|·a escrito como en los libros: a, 2b, a√3
+    const withUnit = (c) => { const b = F.num(Math.abs(c)); return b === '1' ? u(1) : b.includes('√') ? u(1) + b : b + u(1); };
     const coefTxt = (c, tail, first) => {
-      const id = Engine.identify(c);
-      if (!id || Math.abs(c) < 1e-12) return Math.abs(c) < 1e-12 ? '' : null;
+      if (tiny(c)) return '';
       const neg = c < 0, body = F.num(Math.abs(c));
-      const s = (body === '1' && tail ? '' : body) + tail;
+      const s = tail === null ? withUnit(c) : (body === '1' && tail ? '' : body) + tail;
       return (first ? (neg ? F.MINUS : '') : neg ? ` ${F.MINUS} ` : ' + ') + s;
     };
-    const lin = (c0, c1) => { const parts = []; const a = coefTxt(c1, v, true); if (a) parts.push(a); const b = coefTxt(c0, u(1) || '1', !parts.length); if (b) parts.push(b); return parts.join('') || '0'; };
+    // c1·v + c0 (el término positivo delante: a√3 − z)
+    const lin = (c0, c1) => {
+      const order = c1 < 0 && c0 > 0 ? [[c0, null], [c1, v]] : [[c1, v], [c0, null]];
+      const parts = [];
+      for (const [c, tl] of order) { const x = coefTxt(c, tl, !parts.length); if (x) parts.push(x); }
+      return parts.join('') || '0';
+    };
     const quad = (c0, c1, c2) => { const parts = []; for (const [c, tl] of [[c2, `${v}<sup>2</sup>`], [c1, `${u(1)}${v}`], [c0, u(2)]]) { const x = coefTxt(c, tl, !parts.length); if (x) parts.push(x); } return parts.join('') || '0'; };
-    const comps = [[], [], []];
-    let other = [];
+    const posTxt = (t) => (tiny(t) ? '0' : coefTxt(t, null, true));
+    const at = (t) => V3.add(P0, V3.sc(d, t));
+
+    // cada fuente se convierte en una función del tramo (t de muestra) → piezas por componente
+    const items = [], cuts = [], other = [];
     for (const s of ctx.sources) {
       if (!s.g || !s.S) continue;
       const t = s.src.type;
-      let r0, r1, den;
-      if (t === 'point') { r0 = V3.sub(P0, s.g.pos); r1 = d; den = (q, sq) => `4π${eps}${sq ? `|${q}|<sup>3</sup>` : `(${q})<sup>3/2</sup>`}`; }
+      if (t === 'plane') {
+        const i = s.g.i, c0 = P0[i] - s.g.c, c1 = d[i];
+        if (!tiny(c1)) cuts.push(-c0 / c1);
+        items.push((tm) => { const dn = c0 + c1 * tm; return tiny(dn) ? [] : [{ k: i, plane: s.S.scale(Math.sign(dn) / 2) }]; });
+        continue;
+      }
+      let r0, r1, kind;
+      if (t === 'point') { r0 = V3.sub(P0, s.g.pos); r1 = d; kind = 'point'; }
       else if (t === 'line' && s.g.mode === 'lambda') {
         const perp = (w) => V3.sub(w, V3.sc(s.g.u, V3.dot(w, s.g.u)));
-        r0 = perp(V3.sub(P0, s.g.pos)); r1 = perp(d); den = (q, sq) => `2π${eps}${sq ? `(${q})<sup>2</sup>` : `(${q})`}`;
+        r0 = perp(V3.sub(P0, s.g.pos)); r1 = perp(d); kind = 'line';
       } else { other.push(nameHTML(s)); continue; }
+      const S = s.S, n1 = V3.norm(r1);
+      if (n1 > 1e-12 && V3.norm(V3.cross(r0, r1)) < 1e-9 * (V3.norm(r0) * n1 + 1e-30)) {
+        // la recta pasa por la carga o corta al hilo: distancia con signo s(t) = s0 + n1·t
+        const e = V3.sc(r1, 1 / n1), s0 = V3.dot(r0, r1) / n1;
+        cuts.push(-s0 / n1);
+        items.push((tm) => {
+          const sg = Math.sign(s0 + n1 * tm), out = [];
+          for (let k = 0; k < 3; k++) {
+            if (tiny(e[k])) continue;
+            if (kind === 'point') out.push({ k, S, c: sg * e[k], num: '1', den: `4π${eps}(${lin(sg * s0, sg * n1)})<sup>2</sup>` });
+            else out.push({ k, S, c: e[k], num: '1', den: `2π${eps}(${lin(s0, n1)})` });
+          }
+          return out;
+        });
+        continue;
+      }
       const c0 = V3.dot(r0, r0), c1 = 2 * V3.dot(r0, r1), c2 = V3.dot(r1, r1);
       const sq = c2 > 1e-12 && Math.abs(c1 * c1 - 4 * c0 * c2) < 1e-9 * (c1 * c1 + c0 * c2 + 1e-30);
       const q = sq ? lin(c1 / (2 * Math.sqrt(c2)), Math.sqrt(c2)) : quad(c0, c1, c2);
-      for (let k = 0; k < 3; k++) {
-        if (Math.abs(r0[k]) < 1e-12 && Math.abs(r1[k]) < 1e-12) continue;
-        const S = F.poly(s.S, s.kind);
-        const sh = /[+−]/.test(S.replace(/^−/, '')) ? `(${S})` : S;
-        comps[k].push(`${sh}·${F.frac(lin(r0[k], r1[k]), den(q, sq))}`);
-      }
+      const den = kind === 'point' ? `4π${eps}${sq ? `|${q}|<sup>3</sup>` : `(${q})<sup>3/2</sup>`}` : `2π${eps}${sq ? `(${q})<sup>2</sup>` : `(${q})`}`;
+      const pieces = [];
+      for (let k = 0; k < 3; k++) if (!(tiny(r0[k]) && tiny(r1[k]))) pieces.push({ k, S, c: 1, num: lin(r0[k], r1[k]), den });
+      items.push(() => pieces);
     }
-    // descarta componentes que se anulan en toda la recta y agrupa términos iguales
-    const smp = [0.37, 1.13, 2.71].map((t) => fieldNum(ctx, V3.add(P0, V3.sc(d, t)))).filter(Boolean);
-    const big = Math.max(1e-30, ...smp.map((e) => V3.norm(e)));
-    const lines = comps.map((c, k) => {
-      if (!c.length || (smp.length && smp.every((e) => Math.abs(e[k]) < 1e-10 * big))) return '';
-      const cnt = new Map();
-      for (const t of c) cnt.set(t, (cnt.get(t) || 0) + 1);
-      const terms = [...cnt].map(([t, n]) => (n > 1 ? `${n}·${t}` : t));
-      return `<div>E<sub>${'xyz'[k]}</sub>(${v}) = ${terms.join(' + ')}</div>`;
-    }).join('');
-    if (!lines && !other.length) return '';
+    if (!items.length) return other.length ? `<div class="sub hint">Sin fórmula cerrada para ${other.join(', ')}: mira la gráfica.</div>` : '';
+
+    const bps = cuts.sort((x, y) => x - y).filter((c, i, arr) => !i || c - arr[i - 1] > 1e-9);
+    const ivs = [];
+    if (!bps.length) ivs.push({ t: [0.37, 1.13, 2.71], label: v });
+    else {
+      ivs.push({ t: [bps[0] - 1, bps[0] - 2.3, bps[0] - 0.4], label: `${v}&lt;${posTxt(bps[0])}` });
+      for (let i = 0; i + 1 < bps.length; i++) { const w = bps[i + 1] - bps[i]; ivs.push({ t: [0.5, 0.31, 0.77].map((f) => bps[i] + f * w), label: `${posTxt(bps[i])}&lt;${v}&lt;${posTxt(bps[i + 1])}` }); }
+      const L = bps[bps.length - 1];
+      ivs.push({ t: [L + 1, L + 2.3, L + 0.4], label: `${v}&gt;${posTxt(L)}` });
+    }
+    const piece = (p, first) => {
+      const Sh = F.poly(p.S, null), simple = !/class="fr"|[+−]/.test(Sh.replace(/^−/, ''));
+      const neg = (p.c < 0) !== (simple && Sh.startsWith(F.MINUS));
+      const m = Math.abs(p.c), mTxt = tiny(m - 1) ? '' : F.num(m);
+      const numer = p.num === '1' ? '' : /[+−]/.test(p.num.replace(/^−/, '')) ? `(${p.num})` : p.num;
+      let html;
+      if (simple) html = F.frac(`${mTxt}${Sh.replace(/^−/, '')}${numer}`, p.den);
+      else html = `${mTxt}${mTxt ? '·' : ''}(${Sh})·${F.frac(p.num, p.den)}`;
+      return { neg: simple ? neg : p.c < 0, html };
+    };
+    const seen = new Map();
+    for (const iv of ivs) {
+      const smp = iv.t.map((t) => fieldNum(ctx, at(t))).filter(Boolean);
+      const big = Math.max(1e-30, ...smp.map((e) => V3.norm(e)));
+      const out = [];
+      for (let k = 0; k < 3; k++) {
+        if (smp.length && smp.every((e) => Math.abs(e[k]) < 1e-10 * big)) continue;
+        const ps = [], keys = new Set();
+        let plane = Poly.zero();
+        for (const it of items) for (const p of it(iv.t[0])) {
+          if (p.k !== k) continue;
+          if (p.plane) { plane = plane.add(p.plane); continue; }
+          const prev = ps.find((x) => F.poly(x.S, null) === F.poly(p.S, null) && x.num === p.num && x.den === p.den);
+          if (prev) prev.c += p.c;
+          else ps.push({ ...p });
+        }
+        const terms = ps.filter((p) => !tiny(p.c)).map((p) => { p.S.keys().forEach((x) => keys.add(x)); return piece(p); });
+        if (!plane.isZero()) { plane.keys().forEach((x) => keys.add(x)); const h = F.poly(plane, 'E'); terms.push({ neg: h.startsWith(F.MINUS), html: h.replace(/^−/, '') }); }
+        if (!terms.length) continue;
+        const uk = F.uv('xyz'[k]);
+        if (terms.length === 1) out.push({ neg: terms[0].neg, html: `${terms[0].html} ${uk}` });
+        else if (keys.size === 1) out.push({ neg: false, html: `(${F.joinTerms(terms)}) ${uk}` });
+        else terms.forEach((t) => out.push({ neg: t.neg, html: `${t.html} ${uk}` }));
+      }
+      const html = F.joinTerms(out);
+      if (seen.has(html)) seen.get(html).push(iv.label); else seen.set(html, [iv.label]);
+    }
+    const E = (l) => `${vecE()}(${l})`;
+    const lines = [...seen].map(([html, ls]) => `<div>${E(ls[0])} = ${html}${ls.slice(1).map((l) => ` = ${E(l)}`).join('')}</div>`).join('');
     return lines + (other.length ? `<div class="sub hint">Sin fórmula cerrada para ${other.join(', ')}: mira la gráfica.</div>` : '');
   }
 
@@ -1707,10 +1909,12 @@ const Physics = (() => {
   }
 
   /* --------------------------- PREGUNTAS --------------------------- */
+  // con una incógnita despejada, cada pregunta puede usarla con su valor o como símbolo
+  const UNK = { k: 'unk', t: 'select', label: 'Incógnita', options: [['sust', 'con su valor despejado'], ['libre', 'como símbolo (apartado independiente)']], show: (a, sc) => !!sc?.unknown?.srcs?.length };
   const ANALYSES = {
     E: {
       label: 'Campo eléctrico en un punto', short: 'Campo E',
-      fields: [{ k: 'P', t: 'vec3', label: 'Punto P' }],
+      fields: [{ k: 'P', t: 'vec3', label: 'Punto P' }, UNK],
       defaults: () => ({ P: ['1', '1', '0'] }),
       run(an, ctx) {
         const X = an.P.map(ctx.P), F0 = field(ctx, X);
@@ -1741,16 +1945,18 @@ const Physics = (() => {
     },
     dV: {
       label: 'Diferencia de potencial V_B − V_A', short: 'V_B − V_A',
-      fields: [{ k: 'A', t: 'vec3', label: 'Punto A' }, { k: 'B', t: 'vec3', label: 'Punto B' }],
-      defaults: () => ({ A: ['1', '0', '0'], B: ['2', '0', '0'] }),
+      fields: [{ k: 'A', t: 'vec3', label: 'Punto A' }, { k: 'B', t: 'vec3', label: 'Punto B' }, { k: 'sense', t: 'select', label: 'Calcular', options: [['BA', 'V_B − V_A'], ['AB', 'V_A − V_B']] }, UNK],
+      defaults: () => ({ A: ['1', '0', '0'], B: ['2', '0', '0'], sense: 'BA' }),
       run(an, ctx) {
         const A = an.A.map(ctx.P), B = an.B.map(ctx.P), d = diffV(ctx, A, B);
+        const ab = an.sense === 'AB', sg = ab ? -1 : 1, D = d.dV.scale(sg);
+        const lab = ab ? 'V<sub>A</sub> − V<sub>B</sub>' : 'V<sub>B</sub> − V<sub>A</sub>';
         const rows = d.parts.map(({ s, dV }) => `<li><div class="st-h">${headHTML(s)}</div><div>${s.def.explainV(s.g, A, B)}</div><div class="st-r">ΔV<sub>${F.esc(s.name)}</sub> = ${F.poly(dV, 'V')}</div></li>`);
         return {
-          res: `V<sub>B</sub> − V<sub>A</sub> = ${F.poly(d.dV, 'V')}`,
-          steps: singularWarn(d.singular) + `<p>V<sub>B</sub> − V<sub>A</sub> = −∫<sub>A</sub><sup>B</sup> ${vecE()}·d<span class="vv">l</span>, sumando la contribución de cada fuente.</p><ol class="steps">${rows.join('')}</ol><div class="st-r">V<sub>B</sub> − V<sub>A</sub> = ${F.poly(d.dV, 'V')}</div>`,
+          res: `${lab} = ${F.poly(D, 'V')}`,
+          steps: singularWarn(d.singular) + `<p>V<sub>B</sub> − V<sub>A</sub> = −∫<sub>A</sub><sup>B</sup> ${vecE()}·d<span class="vv">l</span>, sumando la contribución de cada fuente.</p><ol class="steps">${rows.join('')}</ol><div class="st-r">V<sub>B</sub> − V<sub>A</sub> = ${F.poly(d.dV, 'V')}</div>${ab ? `<div class="st-r">${lab} = −(V<sub>B</sub> − V<sub>A</sub>) = ${F.poly(D, 'V')}</div>` : ''}`,
           marks: [{ key: 'A', at: A, label: 'A' }, { key: 'B', at: B, label: 'B' }],
-          answers: [{ label: 'V_B − V_A', qty: 'V', val: d.dV }],
+          answers: [{ label: ab ? 'V_A − V_B' : 'V_B − V_A', qty: 'V', val: D }],
         };
       },
     },
@@ -1880,7 +2086,7 @@ const Physics = (() => {
         const Eu = V3.unit(VP.value(F0.E));
         const pm = V3.norm(p);
         return {
-          res: `<div><span class="vv">p</span> = ${F.vec(pv, 'p')}</div><div class="sub">|<span class="vv">p</span>| = ${F.num(pm)}${F.sym(an.sym)}</div>${res > 1e-12 ? '<div class="warn">Los datos no son del todo compatibles; se muestra la mejor aproximación.</div>' : ''}`,
+          res: `<div><span class="vv">p</span> = ${F.vec(pv, 'p', { unitForm: true })}</div><div class="sub">|<span class="vv">p</span>| = ${F.num(pm)}${F.sym(an.sym)}</div>${res > 1e-12 ? '<div class="warn">Los datos no son del todo compatibles; se muestra la mejor aproximación.</div>' : ''}`,
           steps: fieldSteps(ctx, X, F0) + `<p>Incógnita <span class="vv">p</span> = (p<sub>x</sub>, p<sub>y</sub>, p<sub>z</sub>). Ecuaciones: <span class="vv">M</span> = <span class="vv">p</span> × ${vecE()} (3 ecuaciones), U = −<span class="vv">p</span>·${vecE()} y la restricción elegida. Resolviendo el sistema lineal:</p><div class="st-r"><span class="vv">p</span> = ${F.vec(pv, 'p')}</div>`,
           marks: [{ key: 'P', at: X, label: 'p', vec: VP.value(F0.E), dip: p }],
           answers: [{ label: 'p⃗', qty: 'p', vec: pv }],
@@ -1927,7 +2133,7 @@ const Physics = (() => {
       fields: [
         { k: 'P0', t: 'vec3', label: 'Punto de la recta' }, { k: 'd', t: 'vec3', label: 'Dirección' },
         { k: 'var', t: 'sym', label: 'Variable' }, { k: 't0', t: 'expr', label: 'Desde' }, { k: 't1', t: 'expr', label: 'Hasta' },
-        { k: 'at', t: 'expr', label: 'Valor exacto en', optional: true },
+        { k: 'at', t: 'expr', label: 'Valor exacto en', optional: true }, UNK,
       ],
       defaults: () => ({ P0: ['0', '0', '0'], d: ['0', '0', '1'], var: 'z', t0: '-3', t1: '3', at: '' }),
       run(an, ctx) {
@@ -1991,7 +2197,12 @@ const Physics = (() => {
     for (const s of ctx.sources) s.Snum = s.S ? s.S.value() : 0;
     const results = scen.analyses.map((an) => {
       const def = ANALYSES[an.type];
+      // «incógnita como símbolo»: la pregunta se calcula sin sustituir el valor despejado
+      const swap = an.unk === 'libre' ? ctx.sources.filter((s) => s.unknown && s.Sfree) : [];
+      const saved = swap.map((s) => [s.S, s.Snum]);
+      swap.forEach((s) => { s.S = s.Sfree; s.Snum = s.Sfree.value(); });
       try { return def.run(an, ctx); } catch (e) { return { error: e.message }; }
+      finally { swap.forEach((s, i) => { [s.S, s.Snum] = saved[i]; }); }
     });
     return { ctx, unknown, results };
   }
@@ -2011,11 +2222,11 @@ const Presets = (() => {
 
   const list = [
     {
-      key: 'e1', statement: "Tres partículas con la misma carga q están en los vértices de un triángulo equilátero de lado 2a: dos en (−a, 0, 0) y (a, 0, 0) y la tercera sobre el semieje Z positivo. Determinar: 1) la energía electrostática del sistema; 2) el campo eléctrico en cualquier punto del eje Z; 3) el momento de fuerzas sobre un dipolo p = b(u_x − 2u_y + 4u_z), que solo puede rotar, colocado en el origen.", title: '1 · Triángulo equilátero de cargas', note: 'Apartado 2 pide E en cualquier punto del eje Z: aquí se calcula en z = −√3·a (cambia P para otros puntos o arrástralo en la vista XZ).',
+      key: 'e1', statement: "Tres partículas con la misma carga q están en los vértices de un triángulo equilátero de lado 2a: dos en (−a, 0, 0) y (a, 0, 0) y la tercera sobre el semieje Z positivo. Determinar: 1) la energía electrostática del sistema; 2) el campo eléctrico en cualquier punto del eje Z; 3) el momento de fuerzas sobre un dipolo p = b(u_x − 2u_y + 4u_z), que solo puede rotar, colocado en el origen.", title: '1 · Triángulo equilátero de cargas', note: 'Apartado 2: el perfil da E en cualquier punto del eje Z, por tramos a cada lado de q3.',
       make: () => scen({
         view: { plane: 'xz', cut: '0' },
         sources: [S('point', 'q1', { pos: ['-1', '0', '0'] }, '1', 'q'), S('point', 'q2', { pos: ['1', '0', '0'] }, '1', 'q'), S('point', 'q3', { pos: ['0', '0', 'sqrt(3)'] }, '1', 'q')],
-        analyses: [A('energy', {}), A('E', { P: ['0', '0', '-sqrt(3)'] }), A('profile', { P0: ['0', '0', '0'], d: ['0', '0', '1'], var: 'z', t0: '-4', t1: '4', at: '' }), A('dipole', { P: ['0', '0', '0'], p: ['1', '-2', '4'], sym: 'b', rot: ['', '', ''] })],
+        analyses: [A('energy', {}), A('profile', { P0: ['0', '0', '0'], d: ['0', '0', '1'], var: 'z', t0: '-4', t1: '4', at: '' }), A('dipole', { P: ['0', '0', '0'], p: ['1', '-2', '4'], sym: 'b', rot: ['', '', ''] })],
       }),
     },
     {
@@ -2030,6 +2241,7 @@ const Presets = (() => {
       make: () => {
         const q2 = S('point', 'q2', { pos: ['-3', '0', '0'] }, '1', 'q0');
         return scen({
+          order: ['q0', 'p0'],
           sources: [S('point', 'q1', { pos: ['1', '-sqrt(3)', '0'] }, '-1', 'q0'), q2],
           unknown: { src: q2.id, cond: { type: 'Epar', P: ['0', '0', '0'], d: ['sqrt(3)/2', '1/2', '0'] } },
           analyses: [A('dipole', { P: ['0', '0', '0'], p: ['sqrt(3)/2', '1/2', '0'], sym: 'p0', rot: ['1', '0', '0'] })],
@@ -2074,6 +2286,7 @@ const Presets = (() => {
       make: () => {
         const Q = S('point', 'Q', { pos: ['-6', '0', '0'] }, '1', 'q');
         return scen({
+          order: ['p', 'lambda'],
           sources: [S('line', 'λ', { pos: ['24', '1', '0'], dir: 'z', mode: 'lambda', R: '1' }, '1', 'lambda'), Q],
           unknown: { src: Q.id, cond: { type: 'Epar', P: ['0', '8', '0'], d: ['0', '1', '0'] } },
           analyses: [A('dipole', { P: ['0', '8', '0'], p: ['0', '1', '0'], sym: 'p', rot: ['', '', ''] })],
@@ -2093,21 +2306,21 @@ const Presets = (() => {
       },
     },
     {
-      key: 'e9', statement: "Dos planos indefinidos con densidades σ y −σ y un hilo indefinido con densidad λ están situados como en la figura. Obtener: 1) el campo eléctrico en cualquier punto del plano XY; 2) la relación entre σ y λ para que V_B − V_A sea nula.", title: '9 · Dos planos y un hilo', note: 'La relación σ–λ se obtiene despejando λ en función de σ (es la misma relación).',
+      key: 'e9', statement: "Dos planos indefinidos con densidades σ y −σ y un hilo indefinido con densidad λ están situados como en la figura. Obtener: 1) el campo eléctrico en cualquier punto del plano XY; 2) la relación entre σ y λ para que V_B − V_A sea nula.", title: '9 · Dos planos y un hilo', note: 'Apartado 1: el perfil a lo largo de X usa λ como símbolo (no depende del apartado 2); en el plano XY el campo solo depende de x.',
       make: () => {
         const ln = S('line', 'λ', { pos: ['1', '0', '0'], dir: 'y', mode: 'lambda', R: '1' }, '1', 'lambda');
         return scen({
           unit: 'b',
           sources: [S('plane', 'σ1', { axis: 'x', at: '0' }, '1', 'sigma'), ln, S('plane', 'σ2', { axis: 'x', at: '2' }, '-1', 'sigma')],
           unknown: { src: ln.id, cond: { type: 'dV', A: ['4/3', '1', '0'], B: ['5/3', '1', '0'], val: { c: '0', sym: '' } } },
-          analyses: [A('E', { P: ['4/3', '1', '0'] })],
+          analyses: [A('profile', { P0: ['0', '0', '0'], d: ['1', '0', '0'], var: 'x', t0: '-1', t1: '3', at: '', unk: 'libre' })],
         });
       },
     },
     {
       key: 'e10', statement: "Un dipolo p = p0 u_x está en el origen, centro de una corona esférica de radios R y 3R cargada con densidad ρ = 3p0/(16πR⁴). Obtener el trabajo realizado en contra del campo para desplazar una carga q desde (R/2, 0, 0) hasta (2R, 0, 0).", title: '10 · Dipolo dentro de una corona esférica',
       make: () => scen({
-        unit: 'R', kinds: { p0: 'p' },
+        unit: 'R', kinds: { p0: 'p' }, order: ['q', 'p0'],
         sources: [S('dipole', 'p', { pos: ['0', '0', '0'], p: ['1', '0', '0'] }, '1', 'p0'), S('sphere', 'ρ', { pos: ['0', '0', '0'], R1: '1', R2: '3' }, '3/(16*pi)', 'p0')],
         analyses: [A('work', { A: ['1/2', '0', '0'], B: ['2', '0', '0'], Q: { c: '1', sym: 'q' } })],
       }),
@@ -2119,7 +2332,7 @@ const Presets = (() => {
         sources: [S('line', 'λ', { pos: ['0', '0', '0'], dir: 'y', mode: 'lambda', R: '1' }, '1', 'lambda'), S('dipole', 'p', { pos: ['1', 'sqrt(3)', '0'], p: ['4', '0', '0'] }, '1', 'b')],
         analyses: [
           A('findDipole', { P: ['1', 'sqrt(3)', '0'], sym: 'b', tau: ['0', '0', '-1/pi'], U: '-sqrt(3)/pi', plane: 'z' }),
-          A('E', { P: ['1', '0', '0'] }), A('dV', { A: ['1', '0', '0'], B: ['2', '0', '0'] }),
+          A('E', { P: ['1', '0', '0'] }), A('dV', { A: ['1', '0', '0'], B: ['2', '0', '0'], sense: 'AB' }),
         ],
       }),
     },
@@ -3111,7 +3324,7 @@ const Canvas = (() => {
   const fieldRow = (label, ...ctrl) => h('label', { class: 'row' }, h('span', { class: 'lab' }, label), h('span', { class: 'ctl' }, ...ctrl));
   function buildField(f, base, obj) {
     const p = [...base, f.k];
-    if (f.show && !f.show(obj)) return null;
+    if (f.show && !f.show(obj, scen)) return null;
     switch (f.t) {
       case 'vec3':
       case 'vec3opt':
@@ -3501,7 +3714,7 @@ const Canvas = (() => {
   function describe(def, obj) {
     const parts = [];
     for (const f of def.fields) {
-      if (f.show && !f.show(obj)) continue;
+      if (f.show && !f.show(obj, scen)) continue;
       const v = obj[f.k];
       if (v == null || v === '') continue;
       if (Array.isArray(v)) { if (v.every((x) => x === '')) continue; parts.push(`${f.label} = (${v.map((x) => x || '0').join(', ')})`); }
