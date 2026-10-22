@@ -2,7 +2,7 @@
 
 Simulador del Tema 3 (Electromagnetismo y Ondas). Es una página estática: `index.html`.
 
-- Código fuente: `fuente/` (engine, fmt, physics, presets, canvas, app y shell.html).
+- Código fuente: `fuente/` (engine, fmt, physics, presets, canvas, app y shell.html). Las capturas de la guía de uso están en `fuente/guia/` y `build.sh` las incrusta en la página.
 - Para regenerar `index.html` tras cambiar las fuentes: `sh fuente/build.sh`.
 - Vercel sirve `index.html` tal cual, sin paso de compilación.
 

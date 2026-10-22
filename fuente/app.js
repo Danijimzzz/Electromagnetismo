@@ -734,8 +734,20 @@ ${img ? `<img class="snap" alt="Esquema del problema" src="${img}">` : ''}
       else if (mod && k === 's') { e.preventDefault(); $('#save-cur').click(); }
       else if (mod && k === 'o') { e.preventDefault(); $('#file').click(); }
       else if (mod && k === 'k') { e.preventDefault(); if (isMobile()) setSide(true); else if (!ui.side) setSide(true); $('#search').focus(); }
+      else if ((e.key === 'F1' || (e.key === '?' && !typing(e.target) && !/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName))) && !$('#guide').open) { e.preventDefault(); openGuide(); }
       else if (e.key === 'Escape') { if (placing) cancelPlace(); closeMenu(); if (isMobile()) setSide(false); }
     });
+    $('#guide-open').addEventListener('click', () => openGuide());
+    $('#help').addEventListener('click', () => openGuide());
+    $('#guide-x').addEventListener('click', () => $('#guide').close());
+    $('#guide').addEventListener('click', (e) => { if (e.target === e.currentTarget) e.currentTarget.close(); });
+    $('#guide-nav').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) showGuide(b.dataset.g); });
+    $('#guide-c').addEventListener('scroll', () => {
+      const c = $('#guide-c'), top = c.getBoundingClientRect().top + 60;
+      let id = null;
+      for (const s of c.querySelectorAll('section')) if (s.getBoundingClientRect().top <= top) id = s.id;
+      markGuide(id || 'g-vista');
+    }, { passive: true });
     $('#new').addEventListener('click', () => { const it = addToLib({ title: 'Problema sin título', statement: '', scene: blankScene() }); openRef({ kind: 'lib', id: it.id }, { focus: '#title' }); });
     $('#open').addEventListener('click', () => $('#file').click());
     $('#file').addEventListener('change', (e) => { importFiles([...e.target.files]); e.target.value = ''; });
@@ -779,6 +791,21 @@ ${img ? `<img class="snap" alt="Esquema del problema" src="${img}">` : ''}
     window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => out && out.results.forEach((res, i) => res.chart && mountChart($('#res-' + i), res.chart, scen.analyses[i].id)), 150); });
     if (!ui.side) $('#app').classList.add('closed');
   }
+  // guía de uso: las capturas van incrustadas en GUIA_IMG (las añade build.sh) y se cargan al abrirla
+  function openGuide() {
+    if (isMobile()) setSide(false);
+    for (const img of document.querySelectorAll('#guide img[data-img]')) if (!img.src && window.GUIA_IMG?.[img.dataset.img]) img.src = GUIA_IMG[img.dataset.img];
+    $('#guide').showModal();
+    $('#guide-c').scrollTop = 0; markGuide('g-vista');
+  }
+  function markGuide(id) {
+    for (const b of document.querySelectorAll('#guide-nav button')) {
+      const on = b.dataset.g === id;
+      if (on && !b.classList.contains('on') && isMobile()) b.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+      b.classList.toggle('on', on);
+    }
+  }
+  function showGuide(id) { $('#guide-c').scrollTop = $('#' + id).offsetTop - 8; markGuide(id); }
   function flash(t) { const f = $('#flash'); f.textContent = t; f.hidden = false; clearTimeout(flash.t); flash.t = setTimeout(() => (f.hidden = true), 2600); }
 
   // al arrastrar en el lienzo

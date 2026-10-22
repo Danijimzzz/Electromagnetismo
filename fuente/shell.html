@@ -229,6 +229,49 @@ body.dropping .main { outline: 3px dashed var(--accent); outline-offset: -8px }
   .app:not(.closed) .main { padding-left: max(16px, env(safe-area-inset-left, 0px)) }
   .title-in { font-size: 20px }
 }
+
+/* Guía de uso */
+.guide { width: min(1080px, calc(100vw - 32px)); height: min(860px, calc(100dvh - 32px)); max-width: none; max-height: none; padding: 0; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); color: var(--ink); font-family: var(--f-ui); box-shadow: 0 24px 70px rgba(0,0,0,.28); overflow: hidden }
+.guide[open] { display: flex; flex-direction: column }
+.guide::backdrop { background: rgba(10,16,20,.45) }
+.g-h { display: flex; align-items: center; gap: 10px; padding: 12px 14px 12px 20px; border-bottom: 1px solid var(--line) }
+.g-h h2 { font: 600 19px var(--f-math); margin: 0; flex: 1 }
+.g-h h2 i { color: var(--accent) }
+.g-h .icon:hover { color: var(--ink) }
+.g-b { flex: 1; min-height: 0; display: grid; grid-template-columns: 210px minmax(0, 1fr) }
+.g-nav { border-right: 1px solid var(--line); background: var(--side); padding: 10px 8px; display: flex; flex-direction: column; gap: 2px; overflow-y: auto }
+.g-nav button { text-align: left; border: 0; background: none; color: var(--ink); font: 500 13.5px var(--f-ui); padding: 7px 10px; border-radius: 8px; cursor: pointer; display: flex; gap: 8px }
+.g-nav button span { color: var(--muted); font-variant-numeric: tabular-nums; width: 14px }
+.g-nav button:hover { background: var(--side-hover) }
+.g-nav button.on { background: var(--side-active) }
+.g-c { position: relative; overflow-y: auto; padding: 8px 28px 40px; scroll-behavior: smooth; line-height: 1.55; font-size: 14.5px }
+.g-c section { padding-top: 18px; max-width: 760px }
+.g-c section + section { border-top: 1px solid var(--line); margin-top: 22px }
+.g-c h3 { font: 600 21px var(--f-math); margin: 0 0 6px }
+.g-c h4 { font: 600 14px var(--f-ui); margin: 16px 0 4px }
+.g-c p { margin: 6px 0 }
+.g-c ul, .g-c ol { margin: 6px 0; padding-left: 22px }
+.g-c li { margin: 3px 0 }
+.g-c b { font-weight: 600 }
+.g-c code, .g-c kbd { font: 12.5px var(--f-mono); background: var(--bg); border: 1px solid var(--line); padding: 0 4px; border-radius: 4px }
+.g-c .lead { color: var(--muted) }
+.g-c figure { margin: 12px 0 6px }
+.g-c figure.narrow { max-width: 560px }
+.g-c figure img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 10px; background: #fbfcfa }
+.g-c figcaption { color: var(--muted); font-size: 12.5px; margin-top: 5px }
+.g-c .n { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: #c2412a; color: #fff; font: 600 12px var(--f-ui); margin-right: 4px; vertical-align: 1px }
+.g-c .tip { background: var(--accent-soft); border-radius: 8px; padding: 8px 12px; margin: 10px 0; font-size: 13.5px }
+.g-keys { border-collapse: collapse; font-size: 13.5px; margin-top: 6px }
+.g-keys td { padding: 5px 14px 5px 0; border-bottom: 1px solid var(--line); vertical-align: top }
+.g-keys td:first-child { white-space: nowrap }
+.g-help { font-weight: 600; min-width: 32px }
+@media (max-width: 760px) {
+  .guide { width: 100vw; height: 100dvh; border-radius: 0; border: 0 }
+  .g-b { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) }
+  .g-nav { flex-direction: row; overflow-x: auto; border-right: 0; border-bottom: 1px solid var(--line); padding: 6px 8px }
+  .g-nav button { white-space: nowrap; flex: 0 0 auto }
+  .g-c { padding: 4px 16px 32px }
+}
 </style>
 
 <div class="app" id="app">
@@ -237,6 +280,7 @@ body.dropping .main { outline: 3px dashed var(--accent); outline-offset: -8px }
     <div class="side-act">
       <button id="new" class="side-btn"><span class="ic">+</span>Nuevo problema</button>
       <button id="open" class="side-btn"><span class="ic">↥</span>Abrir archivo…</button>
+      <button id="guide-open" class="side-btn"><span class="ic">?</span>Guía de uso</button>
       <input type="file" id="file" accept=".json,.emsim,application/json" multiple hidden>
       <input type="search" id="search" class="search" placeholder="Buscar problemas, carpetas, #etiquetas…" aria-label="Buscar problemas" autocomplete="off">
     </div>
@@ -256,6 +300,7 @@ body.dropping .main { outline: 3px dashed var(--accent); outline-offset: -8px }
         <select id="mode" class="in" aria-label="Tipo de cálculo"><option value="sym">Simbólico</option><option value="si">Numérico SI</option></select>
         <span class="unitbox">Unidad <input id="unit" class="in" aria-label="Unidad de longitud"></span>
         <label class="toggle" title="Oculta las soluciones para que escribas tu respuesta y la compruebes"><input type="checkbox" id="practice"> Modo práctica</label>
+        <button id="help" class="btn g-help" title="Guía de uso (F1)" aria-label="Guía de uso">?</button>
         <span class="sep" aria-hidden="true"></span>
         <button id="undo" class="btn" title="Deshacer (Ctrl+Z)" aria-label="Deshacer">↶</button>
         <button id="redo" class="btn" title="Rehacer (Ctrl+Mayús+Z)" aria-label="Rehacer">↷</button>
@@ -314,3 +359,131 @@ body.dropping .main { outline: 3px dashed var(--accent); outline-offset: -8px }
   </main>
 </div>
 <div id="flash" hidden></div>
+<dialog id="guide" class="guide" aria-labelledby="guide-t">
+  <div class="g-h"><h2 id="guide-t">Guía de uso del <i>simulador</i></h2><button id="guide-x" class="icon" aria-label="Cerrar la guía" title="Cerrar (Esc)">×</button></div>
+  <div class="g-b">
+    <nav class="g-nav" id="guide-nav" aria-label="Apartados de la guía">
+      <button data-g="g-vista"><span>1</span>Visión general</button>
+      <button data-g="g-elegir"><span>2</span>Elegir un problema</button>
+      <button data-g="g-sol"><span>3</span>Ver la solución</button>
+      <button data-g="g-lienzo"><span>4</span>El dibujo del campo</button>
+      <button data-g="g-editar"><span>5</span>Crear y editar</button>
+      <button data-g="g-practica"><span>6</span>Modo práctica</button>
+      <button data-g="g-guardar"><span>7</span>Guardar y exportar</button>
+      <button data-g="g-atajos"><span>8</span>Atajos de teclado</button>
+    </nav>
+    <div class="g-c" id="guide-c">
+      <section id="g-vista">
+        <h3>1 · Visión general</h3>
+        <p class="lead">El simulador resuelve problemas de electrostática del Tema 3: montas las fuentes (cargas, hilos, planos, esferas…), añades las preguntas y obtienes el resultado exacto con su desarrollo y el dibujo del campo.</p>
+        <figure><img data-img="vista" alt="Pantalla completa del simulador con cinco zonas numeradas" width="1300" height="836"><figcaption>La pantalla tiene cinco zonas.</figcaption></figure>
+        <ol style="list-style:none;padding-left:0">
+          <li><span class="n">1</span><b>Barra lateral:</b> tus problemas, los importados y los 12 ejercicios del Tema 3.</li>
+          <li><span class="n">2</span><b>Barra superior:</b> título, modo simbólico o numérico, modo práctica, deshacer, exportar y guardar.</li>
+          <li><span class="n">3</span><b>Enunciado</b> del problema, que puedes escribir o pegar.</li>
+          <li><span class="n">4</span><b>Montaje:</b> fuentes, incógnitas y símbolos.</li>
+          <li><span class="n">5</span><b>Lienzo y preguntas:</b> el dibujo del campo y, debajo, cada pregunta con su resultado.</li>
+        </ol>
+        <p class="tip">Todo se recalcula al momento: cambia un valor, una posición o arrastra una carga en el lienzo y el resultado se actualiza solo.</p>
+      </section>
+
+      <section id="g-elegir">
+        <h3>2 · Elegir un problema</h3>
+        <figure style="max-width:320px"><img data-img="lateral" alt="Barra lateral con las secciones Mis problemas y Ejercicios del Tema 3" width="414" height="980"></figure>
+        <ul>
+          <li><b>Ejercicios del Tema 3</b> trae los 12 ejercicios del PDF ya montados y resueltos. Haz clic en uno para abrirlo.</li>
+          <li><b>Mis problemas</b> son los que creas o guardas tú. <b>Importados</b> son los que abres desde un archivo.</li>
+          <li>El <b>buscador</b> (<kbd>Ctrl</kbd>+<kbd>K</kbd>) busca en el título, el enunciado, la carpeta y las etiquetas. Escribe <code>#examen</code> para filtrar por etiqueta.</li>
+          <li>El botón <b>⋯</b> de cada problema abre sus opciones: renombrar, mover a una carpeta, duplicar, guardar en archivo o eliminar.</li>
+          <li>Las <b>carpetas</b> se pliegan y despliegan con un clic. El icono de arriba a la derecha oculta la barra para tener más espacio.</li>
+        </ul>
+        <p class="tip">Los ejercicios del Tema 3 son de ejemplo: puedes tocarlos, pero para conservar los cambios pulsa <b>Guardar en Mis problemas</b> en el aviso verde de arriba.</p>
+      </section>
+
+      <section id="g-sol">
+        <h3>3 · Ver la solución</h3>
+        <p>Cada pregunta muestra su resultado exacto en la forma del libro: un coeficiente por los símbolos, partido por <i>π ε₀ aⁿ</i>.</p>
+        <figure class="narrow"><img data-img="solucion" alt="Pregunta resuelta con el desarrollo paso a paso desplegado" width="1023" height="1092"><figcaption>Resultado de una pregunta con el desarrollo desplegado.</figcaption></figure>
+        <ul>
+          <li>Pulsa <b>Ver desarrollo paso a paso</b> para seguir cada paso: la contribución de cada fuente, la suma y la simplificación.</li>
+          <li>Si el problema tiene incógnitas (por ejemplo, una carga desconocida), el valor despejado aparece en el panel <b>Incógnita</b>, con su propio desarrollo.</li>
+          <li>Las preguntas de dipolo indican además si el equilibrio es <b>estable</b> o <b>inestable</b>, y el trabajo para girarlo.</li>
+          <li>Si falta un dato o algo no cuadra, sale un aviso en rojo debajo del enunciado que dice qué revisar.</li>
+        </ul>
+      </section>
+
+      <section id="g-lienzo">
+        <h3>4 · El dibujo del campo</h3>
+        <figure class="narrow"><img data-img="lienzo" alt="Lienzo con mapa de color del potencial y cargas de prueba" width="1038" height="1056"><figcaption>Mapa de color del potencial, líneas de campo y cargas de prueba moviéndose.</figcaption></figure>
+        <ul>
+          <li><b>Vista:</b> elige el plano XY, XZ o YZ y a qué altura se corta (<code>z =</code>), o la <b>vista 3D</b>, que se gira arrastrando.</li>
+          <li>Activa o quita las <b>líneas de campo</b>, las <b>equipotenciales</b>, los <b>vectores</b> y el <b>mapa de color</b> de <i>V</i> o de |<i>E</i>|.</li>
+          <li><b>Cargas de prueba:</b> pulsa <b>+q</b> o <b>−q</b> y haz clic en el lienzo; la carga se mueve siguiendo la fuerza del campo. <b>Quitar</b> las borra.</li>
+          <li><b>Arrastra</b> las cargas y los puntos para moverlos (con <kbd>Mayús</kbd> no se ajustan a la rejilla). Haz zoom con los botones <b>−</b>/<b>+</b> o con <kbd>Ctrl</kbd>+rueda, y <b>Encuadrar</b> vuelve a centrarlo todo.</li>
+        </ul>
+        <figure class="narrow"><img data-img="vista3d" alt="Vista 3D del montaje" width="1038" height="1047"><figcaption>La vista 3D, útil para fuentes que no están en el mismo plano.</figcaption></figure>
+        <p>La pregunta <b>E(z), V(z)</b> dibuja cómo cambian el campo y el potencial a lo largo de una recta. Pasa el ratón por la gráfica para leer los valores.</p>
+        <figure class="narrow"><img data-img="grafica" alt="Gráficas de E y V a lo largo de una recta" width="1023" height="873"></figure>
+      </section>
+
+      <section id="g-editar">
+        <h3>5 · Crear y editar un problema</h3>
+        <ol>
+          <li>Pulsa <b>Nuevo problema</b> en la barra lateral (o duplica un ejercicio desde su menú <b>⋯</b>).</li>
+          <li>Escribe el <b>título</b> arriba y pega el <b>enunciado</b> si quieres tenerlo a mano.</li>
+          <li>Añade las <b>fuentes</b> con los botones verdes (<b>+ Carga</b>, <b>+ Hilo</b>, <b>+ Plano</b>, <b>+ Anillo</b>, <b>+ Disco</b>, <b>+ Conductor</b>…). El botón queda marcado: haz clic en el lienzo para colocar la fuente donde quieras, o pulsa otra vez el botón para ponerla en su sitio por defecto.</li>
+          <li>Rellena cada tarjeta: el <b>valor</b> es un coeficiente por un símbolo (por ejemplo <code>-1</code> × <code>q0</code>) y las posiciones van en unidades de <code>a</code>. Se admiten <code>5/2</code>, <code>2*sqrt(3)</code>, <code>√7</code> y <code>pi</code>.</li>
+          <li>Añade las <b>preguntas</b> con los botones de su panel: campo E, potencial, V<sub>B</sub> − V<sub>A</sub>, fuerza, trabajo, dipolo, energía, flujo de Gauss o perfil E(z), V(z). También se colocan con un clic en el lienzo.</li>
+        </ol>
+        <figure><img data-img="editar" alt="Panel de fuentes con los botones para añadir y una tarjeta de carga" width="1100" height="667"><figcaption>Botones para añadir fuentes y la tarjeta de una carga puntual.</figcaption></figure>
+        <h4>Incógnitas</h4>
+        <p>Si el enunciado da una condición (equilibrio, campo nulo, un potencial conocido…), marca en <b>Incógnita</b> qué fuentes tienen valor desconocido y añade las condiciones. Hacen falta tantas ecuaciones como incógnitas; <i>E</i> = 0 cuenta como tres.</p>
+        <h4>Símbolos y unidades</h4>
+        <ul>
+          <li>En <b>Símbolos</b> indica qué es cada símbolo (carga, densidad lineal, superficial, de volumen o momento dipolar) para que las potencias de <code>a</code> salgan bien.</li>
+          <li>Con el selector <b>Simbólico / Numérico SI</b> eliges entre resultados con símbolos o con números: en modo SI escribe los valores en unidades SI y las longitudes en metros.</li>
+          <li><b>↶</b> y <b>↷</b> deshacen y rehacen cualquier cambio (<kbd>Ctrl</kbd>+<kbd>Z</kbd>, <kbd>Ctrl</kbd>+<kbd>Mayús</kbd>+<kbd>Z</kbd>).</li>
+        </ul>
+      </section>
+
+      <section id="g-practica">
+        <h3>6 · Modo práctica</h3>
+        <p>Marca <b>Modo práctica</b> en la barra superior para entrenar: las soluciones se ocultan y cada pregunta te pide tu respuesta.</p>
+        <figure><img data-img="practica" alt="Pregunta en modo práctica con una respuesta comprobada como correcta" width="1023" height="264"><figcaption>Una respuesta comprobada.</figcaption></figure>
+        <ol>
+          <li>Escribe el resultado con <code>q</code>, <code>lambda</code>, <code>sigma</code>, <code>rho</code>, <code>a</code>, <code>eps0</code>, <code>pi</code> y <code>sqrt(…)</code>, por ejemplo <code>q/(4*pi*eps0*a^2)</code>. El orden de los factores da igual. En modo SI escribe el número, como <code>8.99e9</code>.</li>
+          <li>Pulsa <b>Comprobar</b> (o <kbd>Intro</kbd>): verás ✓ si es correcto o ✗ si no, con un comentario.</li>
+          <li><b>Mostrar solución</b> enseña el resultado y el desarrollo de esa pregunta cuando quieras.</li>
+        </ol>
+      </section>
+
+      <section id="g-guardar">
+        <h3>7 · Guardar, compartir y exportar</h3>
+        <ul>
+          <li><b>Mis problemas se guardan solos</b> en este navegador. Debajo del título puedes ponerles <b>carpeta</b> y <b>etiquetas</b> para ordenarlos.</li>
+          <li><b>Guardar archivo</b> (<kbd>Ctrl</kbd>+<kbd>S</kbd>) descarga el problema abierto como <code>.emsim.json</code>; <b>Guardar todos mis problemas</b>, al pie de la barra lateral, los descarga todos en un solo archivo.</li>
+          <li>Para pasarlos a otro ordenador o compartirlos, abre ese archivo allí con <b>Abrir archivo…</b> (<kbd>Ctrl</kbd>+<kbd>O</kbd>) o arrástralo sobre la página. Aparecerán en <b>Importados</b>.</li>
+          <li><b>Exportar solución</b> genera la solución completa, con enunciado, resultados y desarrollo: como <b>página para imprimir</b> (.html; ábrela y usa Imprimir → Guardar como PDF) o como texto <b>Markdown</b> (.md).</li>
+        </ul>
+        <figure><img data-img="exportar" alt="Menú Exportar solución abierto con sus dos opciones" width="1100" height="186"><figcaption>El menú de exportación.</figcaption></figure>
+        <p class="tip">Lo que guarda el navegador solo está en ese navegador. Si borras los datos de navegación o cambias de dispositivo, usa los archivos <code>.emsim.json</code> como copia.</p>
+      </section>
+
+      <section id="g-atajos">
+        <h3>8 · Atajos de teclado</h3>
+        <table class="g-keys">
+          <tr><td><kbd>F1</kbd> o <kbd>?</kbd></td><td>Abrir esta guía</td></tr>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>Z</kbd></td><td>Deshacer</td></tr>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>Mayús</kbd>+<kbd>Z</kbd> o <kbd>Ctrl</kbd>+<kbd>Y</kbd></td><td>Rehacer</td></tr>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>S</kbd></td><td>Guardar el problema en un archivo</td></tr>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>O</kbd></td><td>Abrir un archivo</td></tr>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>K</kbd></td><td>Buscar problemas</td></tr>
+          <tr><td><kbd>Esc</kbd></td><td>Cancelar la colocación en el lienzo, cerrar menús o esta guía</td></tr>
+          <tr><td><kbd>Mayús</kbd> al arrastrar</td><td>Mover sin ajustar a la rejilla</td></tr>
+          <tr><td><kbd>Ctrl</kbd>+rueda</td><td>Zoom en el lienzo</td></tr>
+        </table>
+        <p class="lead" style="margin-top:12px">En Mac, usa <kbd>Cmd</kbd> en lugar de <kbd>Ctrl</kbd>.</p>
+      </section>
+    </div>
+  </div>
+</dialog>
