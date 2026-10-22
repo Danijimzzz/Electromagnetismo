@@ -739,6 +739,9 @@ ${img ? `<img class="snap" alt="Esquema del problema" src="${img}">` : ''}
     });
     $('#guide-open').addEventListener('click', () => openGuide());
     $('#help').addEventListener('click', () => openGuide());
+    $('#ver').addEventListener('click', () => openGuide('g-novedades'));
+    for (const el of document.querySelectorAll('.ver-n')) el.textContent = Version.current;
+    $('#ver-log').replaceChildren(...Version.log.map((r) => h('div', {}, h('h4', {}, `Versión ${r.v} · ${r.fecha.split('-').reverse().join('/')}`), h('ul', {}, r.cambios.map((c) => h('li', {}, c))))));
     $('#guide-x').addEventListener('click', () => $('#guide').close());
     $('#guide').addEventListener('click', (e) => { if (e.target === e.currentTarget) e.currentTarget.close(); });
     $('#guide-nav').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) showGuide(b.dataset.g); });
@@ -792,11 +795,11 @@ ${img ? `<img class="snap" alt="Esquema del problema" src="${img}">` : ''}
     if (!ui.side) $('#app').classList.add('closed');
   }
   // guía de uso: las capturas van incrustadas en GUIA_IMG (las añade build.sh) y se cargan al abrirla
-  function openGuide() {
+  function openGuide(id) {
     if (isMobile()) setSide(false);
     for (const img of document.querySelectorAll('#guide img[data-img]')) if (!img.src && window.GUIA_IMG?.[img.dataset.img]) img.src = GUIA_IMG[img.dataset.img];
     $('#guide').showModal();
-    $('#guide-c').scrollTop = 0; markGuide('g-vista');
+    if (id) showGuide(id); else { $('#guide-c').scrollTop = 0; markGuide('g-vista'); }
   }
   function markGuide(id) {
     for (const b of document.querySelectorAll('#guide-nav button')) {

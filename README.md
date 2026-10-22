@@ -7,3 +7,13 @@ Simulador del Tema 3 (Electromagnetismo y Ondas). Es una página estática: `ind
 - Vercel sirve `index.html` tal cual, sin paso de compilación.
 
 Los problemas guardados viven en el almacenamiento local de cada navegador. Para pasarlos de un dispositivo a otro, expórtalos como `.emsim.json` e impórtalos en el otro.
+
+## Versión
+
+El número de versión y las novedades están en `fuente/version.js`; la página los muestra en la barra lateral y en la guía. Súbelo con cada cambio publicado: el primer número si hay algo nuevo (7.0) y el segundo si es solo un arreglo (6.1).
+
+## Comprobación antes de fusionar
+
+`node pruebas/comprobar.js` regenera `index.html`, resuelve los 12 ejercicios y compara cada resultado con `pruebas/esperados.json` (la forma del solucionario, no solo el valor). Después abre la página en Chromium, abre cada ejercicio y la guía, y falla si hay errores en la consola. Necesita `playwright` (`npm install --no-save playwright`). La misma comprobación corre en GitHub Actions en cada pull request.
+
+Si un cambio de forma es intencionado, ejecuta `node pruebas/comprobar.js --actualizar` y revisa el diff de `esperados.json`.

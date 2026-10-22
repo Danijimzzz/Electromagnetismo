@@ -255,6 +255,11 @@ body.dropping .main { outline: 3px dashed var(--accent); outline-offset: -8px }
 .g-c b { font-weight: 600 }
 .g-c code, .g-c kbd { font: 12.5px var(--f-mono); background: var(--bg); border: 1px solid var(--line); padding: 0 4px; border-radius: 4px }
 .g-c .lead { color: var(--muted) }
+.g-c section:last-child { min-height: calc(100% - 30px) }
+.g-ver { color: var(--muted); font: 12.5px var(--f-ui); font-variant-numeric: tabular-nums }
+.side-f .ver { margin-top: 2px }
+.linkbtn { border: 0; background: none; padding: 0; font: inherit; color: inherit; cursor: pointer; text-decoration: underline dotted; text-underline-offset: 2px }
+.linkbtn:hover { color: var(--ink) }
 .g-c figure { margin: 12px 0 6px }
 .g-c figure.narrow { max-width: 560px }
 .g-c figure img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 10px; background: #fbfcfa }
@@ -288,6 +293,7 @@ body.dropping .main { outline: 3px dashed var(--accent); outline-offset: -8px }
     <div class="side-f">
       <button id="save-lib" class="side-btn"><span class="ic">↧</span>Guardar todos mis problemas</button>
       <p>Archivos <code>.emsim.json</code>. También puedes arrastrarlos a la página.</p>
+      <p class="ver"><button id="ver" class="linkbtn" title="Ver las novedades">Versión <span class="ver-n"></span></button></p>
     </div>
   </aside>
   <div class="scrim" id="scrim"></div>
@@ -360,7 +366,7 @@ body.dropping .main { outline: 3px dashed var(--accent); outline-offset: -8px }
 </div>
 <div id="flash" hidden></div>
 <dialog id="guide" class="guide" aria-labelledby="guide-t">
-  <div class="g-h"><h2 id="guide-t">Guía de uso del <i>simulador</i></h2><button id="guide-x" class="icon" aria-label="Cerrar la guía" title="Cerrar (Esc)">×</button></div>
+  <div class="g-h"><h2 id="guide-t">Guía de uso del <i>simulador</i></h2><span class="g-ver">versión <span class="ver-n"></span></span><button id="guide-x" class="icon" aria-label="Cerrar la guía" title="Cerrar (Esc)">×</button></div>
   <div class="g-b">
     <nav class="g-nav" id="guide-nav" aria-label="Apartados de la guía">
       <button data-g="g-vista"><span>1</span>Visión general</button>
@@ -371,6 +377,7 @@ body.dropping .main { outline: 3px dashed var(--accent); outline-offset: -8px }
       <button data-g="g-practica"><span>6</span>Modo práctica</button>
       <button data-g="g-guardar"><span>7</span>Guardar y exportar</button>
       <button data-g="g-atajos"><span>8</span>Atajos de teclado</button>
+      <button data-g="g-novedades"><span>9</span>Novedades</button>
     </nav>
     <div class="g-c" id="guide-c">
       <section id="g-vista">
@@ -483,6 +490,12 @@ body.dropping .main { outline: 3px dashed var(--accent); outline-offset: -8px }
           <tr><td><kbd>Ctrl</kbd>+rueda</td><td>Zoom en el lienzo</td></tr>
         </table>
         <p class="lead" style="margin-top:12px">En Mac, usa <kbd>Cmd</kbd> en lugar de <kbd>Ctrl</kbd>.</p>
+      </section>
+
+      <section id="g-novedades">
+        <h3>9 · Novedades</h3>
+        <p class="lead">Estás usando la versión <b class="ver-n"></b>. Cada cambio publicado sube el número: el primero cuando hay algo nuevo y el segundo cuando es solo un arreglo.</p>
+        <div id="ver-log"></div>
       </section>
     </div>
   </div>
