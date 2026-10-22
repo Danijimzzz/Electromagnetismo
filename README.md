@@ -5,6 +5,7 @@ Simulador del Tema 3 (Electromagnetismo y Ondas). Es una página estática: `ind
 - Código fuente: `fuente/` (engine, fmt, physics, presets, canvas, app y shell.html). Las capturas de la guía de uso están en `fuente/guia/` y `build.sh` las incrusta en la página.
 - Para regenerar `index.html` tras cambiar las fuentes: `sh fuente/build.sh`.
 - Vercel sirve `index.html` tal cual, sin paso de compilación.
+- Icono: `fuente/icono.svg` (se incrusta en la pestaña). `apple-touch-icon.png` (180×180) y `og.png` (1200×630, vista previa al compartir) están en la raíz; si cambias el icono, vuelve a generarlas a partir del SVG.
 
 Los problemas guardados viven en el almacenamiento local de cada navegador. Para pasarlos de un dispositivo a otro, expórtalos como `.emsim.json` e impórtalos en el otro.
 
