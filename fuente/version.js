@@ -4,6 +4,7 @@
    ===================================================================== */
 const Version = (() => {
   const log = [
+    { v: '6.5', fecha: '2026-10-22', cambios: ['Las novedades se agrupan por versión mayor (6, 5, 4…) y dentro de cada una se despliegan sus subversiones, como un índice con subíndices.'] },
     { v: '6.4', fecha: '2026-10-22', cambios: ['La web tiene icono propio: un dipolo con sus líneas de campo, en la pestaña del navegador, en la pantalla de inicio del móvil y en la vista previa al compartir el enlace.'] },
     { v: '6.3', fecha: '2026-10-22', cambios: ['Arreglo: las esferas de la vista 3D ya no tienen reflejo; el volumen lo dan la sombra del borde, el ecuador y los meridianos.'] },
     { v: '6.2', fecha: '2026-10-22', cambios: ['Arreglo: en la vista 3D las esferas, cascarones y conductores tienen volumen (sombreado, ecuador y meridianos) y ya no parecen círculos planos.', 'Las notas de cada versión se abren y cierran por separado; solo la actual aparece abierta.'] },
