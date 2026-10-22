@@ -511,6 +511,7 @@ body.dropping .main { outline: 3px dashed var(--accent); outline-offset: -8px }
    ===================================================================== */
 const Version = (() => {
   const log = [
+    { v: '6.1', fecha: '2026-10-22', cambios: ['Arreglo: en la vista 3D los cilindros cargados se dibujan con su radio real (antes eran una línea gruesa) y las superficies de Gauss, cilíndricas o esféricas, también aparecen.'] },
     { v: '6.0', fecha: '2026-10-22', cambios: ['Número de versión visible y este apartado de novedades.', 'Comprobación automática de los 12 ejercicios antes de publicar cada cambio.'] },
     { v: '5.0', fecha: '2026-10-22', cambios: ['Los resultados de los 12 ejercicios se escriben con la misma forma que el solucionario oficial.', 'Perfiles por tramos, factor común en logaritmos y radicales, y la pregunta V_A − V_B.'] },
     { v: '4.0', fecha: '2026-10-22', cambios: ['Guía de uso con capturas (botón ?, barra lateral o F1).'] },
@@ -2974,6 +2975,15 @@ const Canvas = (() => {
     const items = ctx.sources.filter((s) => s.g).map((s) => ({ s, d: proj(s.g.pos || s.g.A || c0)[2] }));
     items.sort((a, b) => a.d - b.d);
     for (const { s } of items) drawSource3D(s, C, L);
+    // superficies de Gauss, discontinuas como en 2D
+    g.strokeStyle = C.mark; g.lineWidth = 1.5; g.setLineDash([6, 4]);
+    for (const r of out.results) {
+      if (!r.surf) continue;
+      const S = r.surf;
+      if (S.shape === 'sphere') { const p = proj(S.C); g.beginPath(); g.arc(p[0], p[1], S.R * cam.s * p[3], 0, 7); g.stroke(); }
+      else cylinder3(S.C, S.n, S.R, S.h, 0, 1);
+    }
+    g.setLineDash([]);
     for (const r of out.results) for (const m of r.marks || []) {
       const p = proj(m.at);
       if (m.vec) arrow3(m.at, m.vec, 42, C.acc, 2.4);
@@ -3017,14 +3027,41 @@ const Canvas = (() => {
     for (let i = 0; i <= 48; i++) { const t = (2 * Math.PI * i) / 48; pts.push(proj(V3.add(c, V3.add(V3.sc(e1, R * Math.cos(t)), V3.sc(e2, R * Math.sin(t)))))); }
     g.beginPath(); pts.forEach((p, i) => (i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1])));
   }
+  // cilindro de eje u y radio R entre c − u·h/2 y c + u·h/2. Es convexo, así que su contorno
+  // en pantalla es la envolvente convexa de las dos tapas proyectadas (vale también en perspectiva).
+  function cylinder3(c, u, R, h, fill, rings) {
+    const e1 = Math.abs(u[0]) < 0.9 ? V3.unit(V3.cross(u, [1, 0, 0])) : V3.unit(V3.cross(u, [0, 1, 0])), e2 = V3.cross(u, e1);
+    const pts = [];
+    for (const k of [-0.5, 0.5]) for (let i = 0; i < 48; i++) {
+      const t = (2 * Math.PI * i) / 48;
+      pts.push(proj(V3.add(V3.add(c, V3.sc(u, h * k)), V3.add(V3.sc(e1, R * Math.cos(t)), V3.sc(e2, R * Math.sin(t))))).concat(k));
+    }
+    pts.sort((p, q) => p[0] - q[0] || p[1] - q[1]);
+    const crs = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]), lo = [], hi = [];
+    for (const p of pts) { while (lo.length > 1 && crs(lo[lo.length - 2], lo[lo.length - 1], p) <= 0) lo.pop(); lo.push(p); }
+    for (let i = pts.length - 1; i >= 0; i--) { const p = pts[i]; while (hi.length > 1 && crs(hi[hi.length - 2], hi[hi.length - 1], p) <= 0) hi.pop(); hi.push(p); }
+    const hull = lo.slice(0, -1).concat(hi.slice(0, -1));
+    g.beginPath(); hull.forEach((p, i) => (i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1]))); g.closePath();
+    if (fill) { g.globalAlpha = fill; g.fill(); g.globalAlpha = 1; }
+    // lados: solo las aristas que unen una tapa con la otra (el resto del contorno lo dibujan las tapas)
+    g.beginPath();
+    hull.forEach((p, i) => { const q = hull[(i + 1) % hull.length]; if (p[4] !== q[4]) { g.moveTo(p[0], p[1]); g.lineTo(q[0], q[1]); } });
+    g.stroke();
+    for (let k = 0; k <= rings; k++) { circle3(V3.add(c, V3.sc(u, h * (k / rings - 0.5))), u, R); g.stroke(); }
+  }
   function drawSource3D(s, C, L) {
     const G = s.g, t = s.src.type, col = colorOf(s, C), nm = prettyName(s.name);
     g.strokeStyle = col; g.fillStyle = col; g.lineWidth = 2;
     let lp = null;
     if (t === 'point') { const p = proj(G.pos); g.beginPath(); g.arc(p[0], p[1], 7 * p[3], 0, 7); g.fill(); lp = p; }
     else if (t === 'dipole') { arrow3(V3.sub(G.pos, V3.sc(V3.unit(G.p), 14 / cam.s)), G.p, 30, C.dip, 2.5); lp = proj(G.pos); }
-    else if (t === 'line') {
-      g.lineWidth = G.mode === 'rho' ? 6 : 3;
+    else if (t === 'line' && G.mode === 'rho') {
+      // cilindro macizo de radio R (centrado en la proyección de la cámara sobre su eje)
+      const c = V3.add(G.pos, V3.sc(G.u, V3.dot(V3.sub(cam.c, G.pos), G.u)));
+      g.lineWidth = 1.5; cylinder3(c, G.u, G.R, L * 2.4, 0.18, 4);
+      lp = proj(V3.add(V3.add(c, V3.sc(G.u, L)), V3.sc(Math.abs(G.u[2]) < 0.9 ? [0, 0, 1] : [1, 0, 0], G.R)));
+    } else if (t === 'line') {
+      g.lineWidth = 3;
       line3(V3.sub(G.pos, V3.sc(G.u, L * 1.2)), V3.add(G.pos, V3.sc(G.u, L * 1.2))); lp = proj(V3.add(G.pos, V3.sc(G.u, L)));
     } else if (t === 'plane' || t === 'slab') {
       const offs = t === 'slab' ? [-G.w / 2, G.w / 2] : [0];
