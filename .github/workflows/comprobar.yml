@@ -1,0 +1,19 @@
+name: Comprobar simulador
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  comprobar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-save playwright@1.56.1
+      - run: npx playwright install --with-deps chromium
+      - name: Build, 12 ejercicios y consola del navegador
+        run: node pruebas/comprobar.js
+      - name: index.html está al día con fuente/
+        run: git diff --exit-code index.html
