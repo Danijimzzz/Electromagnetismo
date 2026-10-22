@@ -363,6 +363,7 @@ const Physics = (() => {
     const P = (s) => parseExpr(s, unit);
     const errors = [];
     const kinds = {};
+    const anyFree = scen.analyses.some((an) => an.unk === 'libre');
     const sources = scen.sources.map((src) => {
       const def = SOURCES[src.type];
       const o = { id: src.id, src, def, name: src.name || def.prefix, kind: def.kindOf ? def.kindOf(src) : def.kind };
@@ -371,7 +372,11 @@ const Physics = (() => {
       if (!isUnknown) {
         try { o.S = Poly.sym(src.s.sym, P(src.s.c)); if (!(src.s.sym in kinds)) kinds[src.s.sym] = o.kind; }
         catch (e) { errors.push(`${o.name}: ${e.message}`); }
-      } else o.unknown = true;
+      } else {
+        o.unknown = true;
+        // valor como símbolo, para las preguntas que no usan la incógnita despejada
+        if (anyFree && src.s?.sym) { try { o.Sfree = Poly.sym(src.s.sym, P(src.s.c || '1')); if (!(src.s.sym in kinds)) kinds[src.s.sym] = o.kind; } catch (e) { /* sin valor simbólico */ } }
+      }
       return o;
     });
     for (const an of scen.analyses) {
@@ -382,8 +387,8 @@ const Physics = (() => {
     for (const k in scen.kinds || {}) if (k in kinds) kinds[k] = scen.kinds[k];
     for (const s of sources) if (s.unknown) kinds['§' + s.name] = s.kind;
     delete kinds[''];
-    const ctx = { unit, mode, P, sources, kinds, errors };
-    F.setContext(kinds, unit, mode);
+    const ctx = { unit, mode, P, sources, kinds, errors, order: scen.order || [] };
+    F.setContext(kinds, unit, mode, ctx.order);
     return ctx;
   }
   const nameHTML = (s) => F.sym(s.name);
@@ -547,6 +552,20 @@ const Physics = (() => {
         const xp = rhs[0].scale(1 / al);
         out[0] = xp.scale(1 / Math.log(be));
         xHTML = [F.frac(F.poly(xp, us[0].kind), 'ln ' + F.num(be))];
+        // relación entre símbolos, como la dan los solucionarios: σ/λ = −3 ln 2/(2πb)
+        const ks = xp.keys(), Y = ks.length === 1 && ks[0] && !ks[0].includes('*') ? ks[0] : null;
+        if (Y && ctx.kinds[Y]) {
+          const inv = 1 / xp.coef(Y).value(), n = KINDS[ctx.kinds[Y]].m - KINDS[us[0].kind].m;
+          for (const piDen of [true, false]) {
+            const id = Engine.identify(inv * (piDen ? PI : 1), false);
+            if (!id || id.r !== 1) continue;
+            const top = `${id.n !== 1 ? id.n + ' ' : ''}ln ${F.num(be)}`;
+            const den = `${id.d !== 1 ? id.d : ''}${piDen ? 'π' : ''}${n > 0 ? F.unitPow(n) : ''}`;
+            const ratio = `${F.sym(Y)}/${nameHTML(us[0])} = ${id.s < 0 ? F.MINUS : ''}${F.frac(top, den || '')}${n < 0 ? F.unitPow(-n) : ''}`;
+            xHTML[0] += ` &nbsp;⇔&nbsp; ${ratio}`;
+            break;
+          }
+        }
       }
     }
     if (!out[0]) {
@@ -655,50 +674,123 @@ const Physics = (() => {
     return phi;
   }
 
-  /* --------- Fórmula de E a lo largo de una recta (cargas e hilos) --------- */
+  /* --------- Fórmula de E a lo largo de una recta (cargas, hilos y planos) ---------
+     Si la recta atraviesa cargas, hilos o planos, el campo se da por tramos, como en
+     los solucionarios: E⃗(z<a√3) = (…) u_z, E⃗(z>a√3) = (…) u_z; los tramos con la
+     misma fórmula se juntan: E⃗(x<0) = … = E⃗(x>2b). */
   function profileFormula(ctx, P0, d, vname) {
     const v = F.sym(vname), u = (n) => F.unitPow(n);
+    const tiny = (c) => Math.abs(c) < 1e-12;
+    // |c|·a escrito como en los libros: a, 2b, a√3
+    const withUnit = (c) => { const b = F.num(Math.abs(c)); return b === '1' ? u(1) : b.includes('√') ? u(1) + b : b + u(1); };
     const coefTxt = (c, tail, first) => {
-      const id = Engine.identify(c);
-      if (!id || Math.abs(c) < 1e-12) return Math.abs(c) < 1e-12 ? '' : null;
+      if (tiny(c)) return '';
       const neg = c < 0, body = F.num(Math.abs(c));
-      const s = (body === '1' && tail ? '' : body) + tail;
+      const s = tail === null ? withUnit(c) : (body === '1' && tail ? '' : body) + tail;
       return (first ? (neg ? F.MINUS : '') : neg ? ` ${F.MINUS} ` : ' + ') + s;
     };
-    const lin = (c0, c1) => { const parts = []; const a = coefTxt(c1, v, true); if (a) parts.push(a); const b = coefTxt(c0, u(1) || '1', !parts.length); if (b) parts.push(b); return parts.join('') || '0'; };
+    // c1·v + c0 (el término positivo delante: a√3 − z)
+    const lin = (c0, c1) => {
+      const order = c1 < 0 && c0 > 0 ? [[c0, null], [c1, v]] : [[c1, v], [c0, null]];
+      const parts = [];
+      for (const [c, tl] of order) { const x = coefTxt(c, tl, !parts.length); if (x) parts.push(x); }
+      return parts.join('') || '0';
+    };
     const quad = (c0, c1, c2) => { const parts = []; for (const [c, tl] of [[c2, `${v}<sup>2</sup>`], [c1, `${u(1)}${v}`], [c0, u(2)]]) { const x = coefTxt(c, tl, !parts.length); if (x) parts.push(x); } return parts.join('') || '0'; };
-    const comps = [[], [], []];
-    let other = [];
+    const posTxt = (t) => (tiny(t) ? '0' : coefTxt(t, null, true));
+    const at = (t) => V3.add(P0, V3.sc(d, t));
+
+    // cada fuente se convierte en una función del tramo (t de muestra) → piezas por componente
+    const items = [], cuts = [], other = [];
     for (const s of ctx.sources) {
       if (!s.g || !s.S) continue;
       const t = s.src.type;
-      let r0, r1, den;
-      if (t === 'point') { r0 = V3.sub(P0, s.g.pos); r1 = d; den = (q, sq) => `4π${eps}${sq ? `|${q}|<sup>3</sup>` : `(${q})<sup>3/2</sup>`}`; }
+      if (t === 'plane') {
+        const i = s.g.i, c0 = P0[i] - s.g.c, c1 = d[i];
+        if (!tiny(c1)) cuts.push(-c0 / c1);
+        items.push((tm) => { const dn = c0 + c1 * tm; return tiny(dn) ? [] : [{ k: i, plane: s.S.scale(Math.sign(dn) / 2) }]; });
+        continue;
+      }
+      let r0, r1, kind;
+      if (t === 'point') { r0 = V3.sub(P0, s.g.pos); r1 = d; kind = 'point'; }
       else if (t === 'line' && s.g.mode === 'lambda') {
         const perp = (w) => V3.sub(w, V3.sc(s.g.u, V3.dot(w, s.g.u)));
-        r0 = perp(V3.sub(P0, s.g.pos)); r1 = perp(d); den = (q, sq) => `2π${eps}${sq ? `(${q})<sup>2</sup>` : `(${q})`}`;
+        r0 = perp(V3.sub(P0, s.g.pos)); r1 = perp(d); kind = 'line';
       } else { other.push(nameHTML(s)); continue; }
+      const S = s.S, n1 = V3.norm(r1);
+      if (n1 > 1e-12 && V3.norm(V3.cross(r0, r1)) < 1e-9 * (V3.norm(r0) * n1 + 1e-30)) {
+        // la recta pasa por la carga o corta al hilo: distancia con signo s(t) = s0 + n1·t
+        const e = V3.sc(r1, 1 / n1), s0 = V3.dot(r0, r1) / n1;
+        cuts.push(-s0 / n1);
+        items.push((tm) => {
+          const sg = Math.sign(s0 + n1 * tm), out = [];
+          for (let k = 0; k < 3; k++) {
+            if (tiny(e[k])) continue;
+            if (kind === 'point') out.push({ k, S, c: sg * e[k], num: '1', den: `4π${eps}(${lin(sg * s0, sg * n1)})<sup>2</sup>` });
+            else out.push({ k, S, c: e[k], num: '1', den: `2π${eps}(${lin(s0, n1)})` });
+          }
+          return out;
+        });
+        continue;
+      }
       const c0 = V3.dot(r0, r0), c1 = 2 * V3.dot(r0, r1), c2 = V3.dot(r1, r1);
       const sq = c2 > 1e-12 && Math.abs(c1 * c1 - 4 * c0 * c2) < 1e-9 * (c1 * c1 + c0 * c2 + 1e-30);
       const q = sq ? lin(c1 / (2 * Math.sqrt(c2)), Math.sqrt(c2)) : quad(c0, c1, c2);
-      for (let k = 0; k < 3; k++) {
-        if (Math.abs(r0[k]) < 1e-12 && Math.abs(r1[k]) < 1e-12) continue;
-        const S = F.poly(s.S, s.kind);
-        const sh = /[+−]/.test(S.replace(/^−/, '')) ? `(${S})` : S;
-        comps[k].push(`${sh}·${F.frac(lin(r0[k], r1[k]), den(q, sq))}`);
-      }
+      const den = kind === 'point' ? `4π${eps}${sq ? `|${q}|<sup>3</sup>` : `(${q})<sup>3/2</sup>`}` : `2π${eps}${sq ? `(${q})<sup>2</sup>` : `(${q})`}`;
+      const pieces = [];
+      for (let k = 0; k < 3; k++) if (!(tiny(r0[k]) && tiny(r1[k]))) pieces.push({ k, S, c: 1, num: lin(r0[k], r1[k]), den });
+      items.push(() => pieces);
     }
-    // descarta componentes que se anulan en toda la recta y agrupa términos iguales
-    const smp = [0.37, 1.13, 2.71].map((t) => fieldNum(ctx, V3.add(P0, V3.sc(d, t)))).filter(Boolean);
-    const big = Math.max(1e-30, ...smp.map((e) => V3.norm(e)));
-    const lines = comps.map((c, k) => {
-      if (!c.length || (smp.length && smp.every((e) => Math.abs(e[k]) < 1e-10 * big))) return '';
-      const cnt = new Map();
-      for (const t of c) cnt.set(t, (cnt.get(t) || 0) + 1);
-      const terms = [...cnt].map(([t, n]) => (n > 1 ? `${n}·${t}` : t));
-      return `<div>E<sub>${'xyz'[k]}</sub>(${v}) = ${terms.join(' + ')}</div>`;
-    }).join('');
-    if (!lines && !other.length) return '';
+    if (!items.length) return other.length ? `<div class="sub hint">Sin fórmula cerrada para ${other.join(', ')}: mira la gráfica.</div>` : '';
+
+    const bps = cuts.sort((x, y) => x - y).filter((c, i, arr) => !i || c - arr[i - 1] > 1e-9);
+    const ivs = [];
+    if (!bps.length) ivs.push({ t: [0.37, 1.13, 2.71], label: v });
+    else {
+      ivs.push({ t: [bps[0] - 1, bps[0] - 2.3, bps[0] - 0.4], label: `${v}&lt;${posTxt(bps[0])}` });
+      for (let i = 0; i + 1 < bps.length; i++) { const w = bps[i + 1] - bps[i]; ivs.push({ t: [0.5, 0.31, 0.77].map((f) => bps[i] + f * w), label: `${posTxt(bps[i])}&lt;${v}&lt;${posTxt(bps[i + 1])}` }); }
+      const L = bps[bps.length - 1];
+      ivs.push({ t: [L + 1, L + 2.3, L + 0.4], label: `${v}&gt;${posTxt(L)}` });
+    }
+    const piece = (p, first) => {
+      const Sh = F.poly(p.S, null), simple = !/class="fr"|[+−]/.test(Sh.replace(/^−/, ''));
+      const neg = (p.c < 0) !== (simple && Sh.startsWith(F.MINUS));
+      const m = Math.abs(p.c), mTxt = tiny(m - 1) ? '' : F.num(m);
+      const numer = p.num === '1' ? '' : /[+−]/.test(p.num.replace(/^−/, '')) ? `(${p.num})` : p.num;
+      let html;
+      if (simple) html = F.frac(`${mTxt}${Sh.replace(/^−/, '')}${numer}`, p.den);
+      else html = `${mTxt}${mTxt ? '·' : ''}(${Sh})·${F.frac(p.num, p.den)}`;
+      return { neg: simple ? neg : p.c < 0, html };
+    };
+    const seen = new Map();
+    for (const iv of ivs) {
+      const smp = iv.t.map((t) => fieldNum(ctx, at(t))).filter(Boolean);
+      const big = Math.max(1e-30, ...smp.map((e) => V3.norm(e)));
+      const out = [];
+      for (let k = 0; k < 3; k++) {
+        if (smp.length && smp.every((e) => Math.abs(e[k]) < 1e-10 * big)) continue;
+        const ps = [], keys = new Set();
+        let plane = Poly.zero();
+        for (const it of items) for (const p of it(iv.t[0])) {
+          if (p.k !== k) continue;
+          if (p.plane) { plane = plane.add(p.plane); continue; }
+          const prev = ps.find((x) => F.poly(x.S, null) === F.poly(p.S, null) && x.num === p.num && x.den === p.den);
+          if (prev) prev.c += p.c;
+          else ps.push({ ...p });
+        }
+        const terms = ps.filter((p) => !tiny(p.c)).map((p) => { p.S.keys().forEach((x) => keys.add(x)); return piece(p); });
+        if (!plane.isZero()) { plane.keys().forEach((x) => keys.add(x)); const h = F.poly(plane, 'E'); terms.push({ neg: h.startsWith(F.MINUS), html: h.replace(/^−/, '') }); }
+        if (!terms.length) continue;
+        const uk = F.uv('xyz'[k]);
+        if (terms.length === 1) out.push({ neg: terms[0].neg, html: `${terms[0].html} ${uk}` });
+        else if (keys.size === 1) out.push({ neg: false, html: `(${F.joinTerms(terms)}) ${uk}` });
+        else terms.forEach((t) => out.push({ neg: t.neg, html: `${t.html} ${uk}` }));
+      }
+      const html = F.joinTerms(out);
+      if (seen.has(html)) seen.get(html).push(iv.label); else seen.set(html, [iv.label]);
+    }
+    const E = (l) => `${vecE()}(${l})`;
+    const lines = [...seen].map(([html, ls]) => `<div>${E(ls[0])} = ${html}${ls.slice(1).map((l) => ` = ${E(l)}`).join('')}</div>`).join('');
     return lines + (other.length ? `<div class="sub hint">Sin fórmula cerrada para ${other.join(', ')}: mira la gráfica.</div>` : '');
   }
 
@@ -731,10 +823,12 @@ const Physics = (() => {
   }
 
   /* --------------------------- PREGUNTAS --------------------------- */
+  // con una incógnita despejada, cada pregunta puede usarla con su valor o como símbolo
+  const UNK = { k: 'unk', t: 'select', label: 'Incógnita', options: [['sust', 'con su valor despejado'], ['libre', 'como símbolo (apartado independiente)']], show: (a, sc) => !!sc?.unknown?.srcs?.length };
   const ANALYSES = {
     E: {
       label: 'Campo eléctrico en un punto', short: 'Campo E',
-      fields: [{ k: 'P', t: 'vec3', label: 'Punto P' }],
+      fields: [{ k: 'P', t: 'vec3', label: 'Punto P' }, UNK],
       defaults: () => ({ P: ['1', '1', '0'] }),
       run(an, ctx) {
         const X = an.P.map(ctx.P), F0 = field(ctx, X);
@@ -765,16 +859,18 @@ const Physics = (() => {
     },
     dV: {
       label: 'Diferencia de potencial V_B − V_A', short: 'V_B − V_A',
-      fields: [{ k: 'A', t: 'vec3', label: 'Punto A' }, { k: 'B', t: 'vec3', label: 'Punto B' }],
-      defaults: () => ({ A: ['1', '0', '0'], B: ['2', '0', '0'] }),
+      fields: [{ k: 'A', t: 'vec3', label: 'Punto A' }, { k: 'B', t: 'vec3', label: 'Punto B' }, { k: 'sense', t: 'select', label: 'Calcular', options: [['BA', 'V_B − V_A'], ['AB', 'V_A − V_B']] }, UNK],
+      defaults: () => ({ A: ['1', '0', '0'], B: ['2', '0', '0'], sense: 'BA' }),
       run(an, ctx) {
         const A = an.A.map(ctx.P), B = an.B.map(ctx.P), d = diffV(ctx, A, B);
+        const ab = an.sense === 'AB', sg = ab ? -1 : 1, D = d.dV.scale(sg);
+        const lab = ab ? 'V<sub>A</sub> − V<sub>B</sub>' : 'V<sub>B</sub> − V<sub>A</sub>';
         const rows = d.parts.map(({ s, dV }) => `<li><div class="st-h">${headHTML(s)}</div><div>${s.def.explainV(s.g, A, B)}</div><div class="st-r">ΔV<sub>${F.esc(s.name)}</sub> = ${F.poly(dV, 'V')}</div></li>`);
         return {
-          res: `V<sub>B</sub> − V<sub>A</sub> = ${F.poly(d.dV, 'V')}`,
-          steps: singularWarn(d.singular) + `<p>V<sub>B</sub> − V<sub>A</sub> = −∫<sub>A</sub><sup>B</sup> ${vecE()}·d<span class="vv">l</span>, sumando la contribución de cada fuente.</p><ol class="steps">${rows.join('')}</ol><div class="st-r">V<sub>B</sub> − V<sub>A</sub> = ${F.poly(d.dV, 'V')}</div>`,
+          res: `${lab} = ${F.poly(D, 'V')}`,
+          steps: singularWarn(d.singular) + `<p>V<sub>B</sub> − V<sub>A</sub> = −∫<sub>A</sub><sup>B</sup> ${vecE()}·d<span class="vv">l</span>, sumando la contribución de cada fuente.</p><ol class="steps">${rows.join('')}</ol><div class="st-r">V<sub>B</sub> − V<sub>A</sub> = ${F.poly(d.dV, 'V')}</div>${ab ? `<div class="st-r">${lab} = −(V<sub>B</sub> − V<sub>A</sub>) = ${F.poly(D, 'V')}</div>` : ''}`,
           marks: [{ key: 'A', at: A, label: 'A' }, { key: 'B', at: B, label: 'B' }],
-          answers: [{ label: 'V_B − V_A', qty: 'V', val: d.dV }],
+          answers: [{ label: ab ? 'V_A − V_B' : 'V_B − V_A', qty: 'V', val: D }],
         };
       },
     },
@@ -904,7 +1000,7 @@ const Physics = (() => {
         const Eu = V3.unit(VP.value(F0.E));
         const pm = V3.norm(p);
         return {
-          res: `<div><span class="vv">p</span> = ${F.vec(pv, 'p')}</div><div class="sub">|<span class="vv">p</span>| = ${F.num(pm)}${F.sym(an.sym)}</div>${res > 1e-12 ? '<div class="warn">Los datos no son del todo compatibles; se muestra la mejor aproximación.</div>' : ''}`,
+          res: `<div><span class="vv">p</span> = ${F.vec(pv, 'p', { unitForm: true })}</div><div class="sub">|<span class="vv">p</span>| = ${F.num(pm)}${F.sym(an.sym)}</div>${res > 1e-12 ? '<div class="warn">Los datos no son del todo compatibles; se muestra la mejor aproximación.</div>' : ''}`,
           steps: fieldSteps(ctx, X, F0) + `<p>Incógnita <span class="vv">p</span> = (p<sub>x</sub>, p<sub>y</sub>, p<sub>z</sub>). Ecuaciones: <span class="vv">M</span> = <span class="vv">p</span> × ${vecE()} (3 ecuaciones), U = −<span class="vv">p</span>·${vecE()} y la restricción elegida. Resolviendo el sistema lineal:</p><div class="st-r"><span class="vv">p</span> = ${F.vec(pv, 'p')}</div>`,
           marks: [{ key: 'P', at: X, label: 'p', vec: VP.value(F0.E), dip: p }],
           answers: [{ label: 'p⃗', qty: 'p', vec: pv }],
@@ -951,7 +1047,7 @@ const Physics = (() => {
       fields: [
         { k: 'P0', t: 'vec3', label: 'Punto de la recta' }, { k: 'd', t: 'vec3', label: 'Dirección' },
         { k: 'var', t: 'sym', label: 'Variable' }, { k: 't0', t: 'expr', label: 'Desde' }, { k: 't1', t: 'expr', label: 'Hasta' },
-        { k: 'at', t: 'expr', label: 'Valor exacto en', optional: true },
+        { k: 'at', t: 'expr', label: 'Valor exacto en', optional: true }, UNK,
       ],
       defaults: () => ({ P0: ['0', '0', '0'], d: ['0', '0', '1'], var: 'z', t0: '-3', t1: '3', at: '' }),
       run(an, ctx) {
@@ -1015,7 +1111,12 @@ const Physics = (() => {
     for (const s of ctx.sources) s.Snum = s.S ? s.S.value() : 0;
     const results = scen.analyses.map((an) => {
       const def = ANALYSES[an.type];
+      // «incógnita como símbolo»: la pregunta se calcula sin sustituir el valor despejado
+      const swap = an.unk === 'libre' ? ctx.sources.filter((s) => s.unknown && s.Sfree) : [];
+      const saved = swap.map((s) => [s.S, s.Snum]);
+      swap.forEach((s) => { s.S = s.Sfree; s.Snum = s.Sfree.value(); });
       try { return def.run(an, ctx); } catch (e) { return { error: e.message }; }
+      finally { swap.forEach((s, i) => { [s.S, s.Snum] = saved[i]; }); }
     });
     return { ctx, unknown, results };
   }
