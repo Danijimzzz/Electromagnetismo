@@ -1,0 +1,316 @@
+<title>Simulador de Electrostática</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap">
+<style>
+/* Mesa de laboratorio: montaje a la izquierda, lienzo + preguntas a la derecha */
+:root {
+  --bg: #eef1ee; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d5dbd5;
+  --accent: #0d6b66; --accent-soft: #e0efec; --pos: #c2412a; --neg: #2a5db5; --dipole: #b0700a; --mark: #6b3fa0;
+  --canvas: #fbfcfa; --grid: #e7ebe6; --fieldline: #7d8c86; --equi: #c49a52; --warn: #8a5a00; --warn-bg: #fff4dc; --ok: #1d7a3e; --bad: #b3261e;
+  --probe: #c0127a; --side: #e4e9e4; --side-hover: #d8dfd9; --side-active: #cdd8d2;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #94a0a8; --line: #2a343b;
+  --accent: #4dbcb0; --accent-soft: #173431; --pos: #ef7a62; --neg: #74a2f2; --dipole: #e6a640; --mark: #b892ec;
+  --canvas: #141b1f; --grid: #1e282d; --fieldline: #6e8380; --equi: #9b7a3d; --warn: #f0c060; --warn-bg: #2d2412; --ok: #5fcf8a; --bad: #f08a80; --probe: #f070c0; --side: #0c1013; --side-hover: #1a2227; --side-active: #22303a; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #94a0a8; --line: #2a343b;
+  --accent: #4dbcb0; --accent-soft: #173431; --pos: #ef7a62; --neg: #74a2f2; --dipole: #e6a640; --mark: #b892ec;
+  --canvas: #141b1f; --grid: #1e282d; --fieldline: #6e8380; --equi: #9b7a3d; --warn: #f0c060; --warn-bg: #2d2412; --ok: #5fcf8a; --bad: #f08a80; --probe: #f070c0; --side: #0c1013; --side-hover: #1a2227; --side-active: #22303a; color-scheme: dark }
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { background: var(--bg); color: var(--ink) }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center }
+.in { font: 13px var(--f-mono); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 7px; min-width: 0; width: 100% }
+select.in { font-family: var(--f-ui); padding-right: 4px }
+.in:focus-visible, .btn:focus-visible, summary:focus-visible, .icon:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 11px; cursor: pointer }
+.btn:hover { border-color: var(--accent) }
+.btn.ghost { background: var(--accent-soft); border-color: transparent; color: var(--accent) }
+.tools .in { width: auto }
+.layout { display: grid; grid-template-columns: minmax(300px, 380px) minmax(0, 1fr); gap: 16px; align-items: start }
+@container main (max-width: 860px) { .layout { grid-template-columns: minmax(0, 1fr) } .layout > .col:last-child { order: -1 } }
+.col { display: flex; flex-direction: column; gap: 14px; min-width: 0 }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 10px; min-width: 0 }
+.panel > header { display: flex; align-items: center; justify-content: space-between; gap: 8px }
+.panel h2 { font: 600 12px var(--f-ui); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 }
+.panel header .in { width: auto; max-width: 60% }
+.hint { color: var(--muted); font-size: 12.5px; margin: 0 }
+.hint code { font-family: var(--f-mono); font-size: 12px; background: var(--bg); padding: 0 3px; border-radius: 3px }
+.card { border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px; display: flex; flex-direction: column; gap: 6px; background: var(--panel) }
+.card.unk { border-color: var(--mark); border-style: dashed }
+.card-h { display: flex; align-items: center; gap: 8px }
+.card-h h3 { font: 600 13.5px var(--f-ui); margin: 0; flex: 1 }
+.card-h .name { width: 70px; flex: 0 0 auto; font-family: var(--f-math); font-style: italic; font-size: 14px }
+.badge { font-size: 11px; font-weight: 600; letter-spacing: .03em; padding: 2px 7px; border-radius: 99px; background: var(--accent-soft); color: var(--accent); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.icon { margin-left: auto; border: 0; background: none; color: var(--muted); font-size: 18px; line-height: 1; cursor: pointer; padding: 2px 6px; border-radius: 5px }
+.icon:hover { color: var(--bad); background: var(--bg) }
+.row { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 8px; align-items: center }
+.lab { color: var(--muted); font-size: 12.5px }
+.lab.math { font-size: 16px; color: var(--ink) }
+.ctl { min-width: 0; display: block }
+.vec { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px }
+.vc { display: flex; align-items: center; gap: 3px; min-width: 0 }
+.vc i { font: italic 13px var(--f-math); color: var(--muted) }
+.chg { display: flex; align-items: center; gap: 5px; min-width: 0 }
+.chg .num { flex: 1 1 60%; min-width: 0 }
+.chg .sym { flex: 0 1 70px; min-width: 0 }
+.chg .x { color: var(--muted); font-size: 12px; white-space: nowrap }
+.pill { display: inline-block; font: 600 11.5px var(--f-ui); padding: 2px 8px; border-radius: 99px; background: var(--bg); color: var(--muted); margin-right: 6px }
+.pill.ok { background: color-mix(in srgb, var(--ok) 16%, transparent); color: var(--ok) }
+.pill.bad { background: color-mix(in srgb, var(--bad) 16%, transparent); color: var(--bad) }
+.empty { color: var(--muted); font-style: italic; margin: 4px 0 }
+#errors, .warn { color: var(--warn); background: var(--warn-bg); border-radius: 6px; padding: 6px 9px; font: 13px var(--f-ui) }
+#note { background: var(--accent-soft); color: var(--ink); border-radius: 8px; padding: 8px 11px; font-size: 13px }
+.stage { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column }
+.stage-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 8px 10px; border-bottom: 1px solid var(--line); font-size: 12.5px; color: var(--muted) }
+.stage-bar label { display: inline-flex; align-items: center; gap: 5px; cursor: pointer }
+.stage-bar .in { width: auto }
+#cut { width: 56px }
+.zoom { margin-left: auto; display: flex; gap: 4px }
+.zoom .btn { padding: 3px 9px }
+.cvwrap { position: relative; height: min(62vh, 560px); min-height: 280px }
+#cv { display: block; touch-action: none; cursor: crosshair }
+#cv.dragging { cursor: grabbing }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; padding: 7px 10px; border-top: 1px solid var(--line); font-size: 12px; color: var(--muted) }
+.legend b { display: inline-block; width: 10px; height: 10px; border-radius: 50%; vertical-align: -1px; margin-right: 4px }
+.legend .ln { display: inline-block; width: 16px; height: 0; border-top: 2px solid; vertical-align: 3px; margin-right: 4px }
+.an-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr)); gap: 12px }
+.an .an-f { display: flex; flex-direction: column; gap: 6px }
+.result { font-family: var(--f-math); font-size: 17px; line-height: 2.1; overflow-x: auto; padding: 4px 2px; border-top: 1px dashed var(--line) }
+.result:empty { display: none }
+.result .sub { font-size: 15px; color: var(--ink) }
+.result .warn { line-height: 1.45 }
+.math, .math .big { font-family: var(--f-math) }
+.big { font-size: 18px }
+.act:empty { display: none }
+.steps-d summary { cursor: pointer; color: var(--accent); font: 500 13px var(--f-ui); padding: 2px 0 }
+.steps-b { font-size: 15px; line-height: 2; overflow-x: auto; padding-top: 4px }
+.steps-b p { margin: 4px 0; font-family: var(--f-ui); font-size: 13px; line-height: 1.5; color: var(--muted) }
+.steps-b ol.steps { margin: 4px 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px }
+.st-h { font-weight: 600 }
+.st-h .tag { font: 500 11px var(--f-ui); color: var(--muted); margin-left: 6px }
+.st-r { color: var(--accent) }
+.eq { overflow-x: auto }
+.fr { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; line-height: 1.15; margin: 0 .12em; font-size: .9em }
+.fr > .nu { border-bottom: 1px solid currentColor; padding: 0 .25em .05em }
+.fr > .de { padding: .05em .25em 0 }
+.uv, .vv { position: relative; font-style: italic; display: inline-block }
+.uv::before, .vv::before { content: "→"; position: absolute; top: -.58em; left: 0; right: 0; text-align: center; font-size: .62em; font-style: normal }
+.result sub, .steps-b sub { font-size: .7em }
+#flash { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--bg); padding: 7px 14px; border-radius: 8px; font-size: 13px; z-index: 20 }
+@container main (max-width: 520px) { .row { grid-template-columns: minmax(0, 1fr) } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important } }
+
+body { font: 14px/1.45 var(--f-ui); margin: 0 }
+.app { display: grid; grid-template-columns: 276px minmax(0, 1fr); min-height: 100vh; min-height: 100dvh }
+.app.closed { grid-template-columns: 0 minmax(0, 1fr) }
+.side { position: sticky; top: 0; height: 100vh; height: 100dvh; background: var(--side); border-right: 1px solid var(--line); display: flex; flex-direction: column; overflow: hidden; padding-left: env(safe-area-inset-left, 0px); min-width: 0 }
+.app.closed .side { visibility: hidden; border: 0 }
+.side-h { display: flex; align-items: center; gap: 8px; padding: 14px 10px 8px 16px }
+.logo { font: 600 18px/1.1 var(--f-math); margin-right: auto; white-space: nowrap }
+.logo i { color: var(--accent) }
+.iconbtn { border: 0; background: none; color: var(--muted); width: 32px; height: 32px; border-radius: 7px; display: inline-grid; place-items: center; cursor: pointer; flex: 0 0 auto }
+.iconbtn:hover { background: var(--side-hover); color: var(--ink) }
+.iconbtn svg { width: 18px; height: 18px }
+.side-act { display: flex; flex-direction: column; gap: 2px; padding: 4px 8px 6px }
+.side-btn { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; border: 0; background: none; color: var(--ink); font: 500 13.5px var(--f-ui); padding: 7px 9px; border-radius: 8px; cursor: pointer }
+.side-btn:hover { background: var(--side-hover) }
+.side-btn:disabled { opacity: .45; cursor: default; background: none }
+.side-btn .ic { width: 22px; height: 22px; border-radius: 6px; display: inline-grid; place-items: center; background: var(--panel); border: 1px solid var(--line); color: var(--accent); font-size: 14px; line-height: 1; flex: 0 0 auto }
+.side-list { flex: 1; overflow-y: auto; padding: 4px 8px 16px }
+.sec { margin-top: 10px }
+.sec-h { display: flex; justify-content: space-between; align-items: center; width: 100%; border: 0; background: none; font: 600 11.5px var(--f-ui); letter-spacing: .04em; color: var(--muted); padding: 5px 9px; text-align: left; border-radius: 6px }
+button.sec-h[aria-expanded] { cursor: pointer }
+button.sec-h[aria-expanded]:hover { color: var(--ink) }
+.sec-l { display: flex; flex-direction: column; gap: 1px }
+.item { position: relative; display: flex; align-items: center; border-radius: 8px }
+.item:hover { background: var(--side-hover) }
+.item.active { background: var(--side-active) }
+.item .it { flex: 1; min-width: 0; text-align: left; border: 0; background: none; color: var(--ink); font: 13.5px/1.3 var(--f-ui); padding: 6px 4px 6px 9px; cursor: pointer; display: flex; flex-direction: column }
+.it-t, .it-s { white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.it-s { font-size: 11px; color: var(--muted) }
+.item .more { border: 0; background: none; color: var(--muted); width: 28px; height: 28px; border-radius: 6px; cursor: pointer; opacity: 0; font-size: 16px; flex: 0 0 auto; margin-right: 2px }
+.item:hover .more, .item.active .more, .item .more:focus-visible { opacity: 1 }
+.item .more:hover { color: var(--ink); background: var(--side) }
+@media (hover: none) { .item .more { opacity: 1 } }
+.menu { position: absolute; right: 4px; top: calc(100% - 2px); z-index: 30; background: var(--panel); border: 1px solid var(--line); border-radius: 9px; box-shadow: 0 10px 28px rgba(0,0,0,.16); padding: 4px; min-width: 200px }
+.menu button { display: block; width: 100%; text-align: left; border: 0; background: none; color: var(--ink); padding: 7px 10px; border-radius: 6px; font: 13px var(--f-ui); cursor: pointer }
+.menu button:hover { background: var(--bg) }
+.menu .danger { color: var(--bad) }
+.side-empty { color: var(--muted); font-size: 12.5px; padding: 2px 9px; margin: 0 }
+.side-f { border-top: 1px solid var(--line); padding: 8px; padding-bottom: max(8px, env(safe-area-inset-bottom, 0px)) }
+.side-f p { font-size: 11.5px; color: var(--muted); margin: 4px 9px 2px }
+.scrim { display: none }
+.main { min-width: 0; container: main / inline-size; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 12px 40px }
+.app:not(.closed) .main { padding-left: 20px }
+.top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-bottom: 10px }
+#side-open { display: none }
+.app.closed #side-open { display: inline-grid }
+.title-in { font: 600 23px/1.2 var(--f-math); color: var(--ink); background: none; border: 1px solid transparent; border-radius: 7px; padding: 3px 7px; flex: 1 1 260px; min-width: 0 }
+.title-in:hover { border-color: var(--line) }
+.title-in:focus { background: var(--panel); border-color: var(--accent); outline: none }
+.origin { font: 600 11px var(--f-ui); letter-spacing: .04em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); border-radius: 99px; padding: 2px 8px }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center }
+.unitbox { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12.5px }
+#unit { width: 44px; text-align: center }
+.banner { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; background: var(--accent-soft); border-radius: 9px; padding: 8px 12px; margin-bottom: 10px; font-size: 13px }
+.banner span { flex: 1 1 280px }
+.stmt { margin-bottom: 14px }
+#statement { width: 100%; resize: vertical; font: 15px/1.5 var(--f-math); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 7px; padding: 8px 10px; min-height: 60px }
+#statement:focus { outline: 2px solid var(--accent); outline-offset: 0; border-color: transparent }
+#note, #errors { margin-bottom: 10px }
+.chips { display: flex; flex-wrap: wrap; gap: 6px }
+.chip { font: 500 12.5px var(--f-ui); color: var(--accent); background: var(--accent-soft); border: 1px solid transparent; border-radius: 99px; padding: 4px 10px; cursor: pointer }
+.chip:hover { border-color: var(--accent) }
+.chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.icon.del:hover { color: var(--bad) }
+.card-h .icon + .icon { margin-left: 0 }
+body.dropping .main { outline: 3px dashed var(--accent); outline-offset: -8px }
+
+.btn:disabled { opacity: .45; cursor: default; border-color: var(--line) }
+.unit { font: 500 .78em var(--f-ui); color: var(--muted); margin-left: .15em }
+.search { width: 100%; font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 6px 9px; margin-top: 4px }
+.search:focus-visible { outline: 2px solid var(--accent); outline-offset: 0 }
+.fold-h { display: flex; align-items: center; gap: 6px; width: 100%; border: 0; background: none; color: var(--ink); font: 500 13px var(--f-ui); padding: 5px 9px; border-radius: 7px; cursor: pointer; text-align: left }
+.fold-h:hover { background: var(--side-hover) }
+.fold-h .chev { color: var(--muted); width: 10px }
+.fold-n { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.count { font: 500 11px var(--f-ui); color: var(--muted) }
+.fold-l { display: flex; flex-direction: column; gap: 1px; padding-left: 12px; border-left: 1px solid var(--line); margin-left: 13px }
+.meta { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; margin: -4px 0 10px 7px; font-size: 12.5px; color: var(--muted) }
+.meta label { display: inline-flex; align-items: center; gap: 6px }
+.meta .in { width: 170px; font-family: var(--f-ui) }
+.top .tools { gap: 6px }
+.sep { width: 1px; height: 22px; background: var(--line); margin: 0 2px }
+.toggle { display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; color: var(--ink); cursor: pointer; padding: 5px 9px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel) }
+.toggle:has(input:checked) { border-color: var(--mark); color: var(--mark); background: color-mix(in srgb, var(--mark) 10%, var(--panel)) }
+.wrap-rel { position: relative }
+.wrap-rel .menu { top: calc(100% + 4px); right: 0 }
+.chip.on, .btn.on { background: var(--mark); color: var(--panel); border-color: var(--mark) }
+#cv.placing { cursor: copy }
+.nowrap { white-space: nowrap; display: inline-flex; align-items: center; gap: 4px }
+.probes { display: inline-flex; gap: 4px; align-items: center }
+.probes .btn { padding: 3px 8px; font-size: 12px }
+.unk-list { display: flex; flex-wrap: wrap; gap: 6px }
+.unk-o { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); border-radius: 99px; padding: 3px 10px 3px 7px; cursor: pointer; font-size: 13px }
+.unk-o:has(input:checked) { border-color: var(--mark); border-style: dashed; background: color-mix(in srgb, var(--mark) 8%, transparent) }
+.unk-o .math { font-size: 15px; font-style: italic }
+.card.cond { background: var(--bg) }
+.unk-card { border-color: var(--mark) }
+.chart { display: block; width: 100%; height: 200px; margin-top: 6px; touch-action: pan-y }
+.chart-l { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; font: 12px var(--f-ui); line-height: 1.4 }
+.ser { display: inline-flex; align-items: center; gap: 5px; border: 0; background: none; color: var(--ink); font: 13px var(--f-math); cursor: pointer; padding: 2px 4px; border-radius: 5px }
+.ser:hover { background: var(--bg) }
+.ser.off { opacity: .4 }
+.sw { display: inline-block; width: 16px; border-top: 2.5px solid }
+.sw.dash { border-top-style: dashed }
+.chart-l .hint { margin-left: auto; font-size: 11.5px }
+.prac:empty { display: none }
+.prac { display: flex; flex-direction: column; gap: 8px; border-top: 1px dashed var(--line); padding-top: 8px }
+.prac-r { display: grid; grid-template-columns: 70px minmax(0, 1fr); gap: 4px 8px; align-items: center }
+.prac-r .tools { grid-column: 2 }
+.prac-r .one { display: block }
+.prac .pill:empty { display: none }
+.app.practice .card.has-ans:not(.reveal) .result, .app.practice .card.has-ans:not(.reveal) .steps-d { display: none }
+.app.practice .unk-card:not(.reveal) .result, .app.practice .unk-card:not(.reveal) .steps-d { display: none }
+.app.practice .unk-card:not(.has-ans) .result { display: block }
+@media (max-width: 900px) {
+  .app, .app.closed { grid-template-columns: minmax(0, 1fr) }
+  .side, .app.closed .side { position: fixed; left: 0; top: 0; bottom: 0; height: auto; width: min(86vw, 300px); z-index: 40; transform: translateX(-100%); transition: transform .2s ease; visibility: visible; border-right: 1px solid var(--line); padding-top: env(safe-area-inset-top, 0px) }
+  .app.mobile-open .side { transform: none; box-shadow: 0 0 40px rgba(0,0,0,.3) }
+  .app.mobile-open .scrim { display: block; position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 35 }
+  #side-open, .app.closed #side-open { display: inline-grid }
+  .app:not(.closed) .main { padding-left: max(16px, env(safe-area-inset-left, 0px)) }
+  .title-in { font-size: 20px }
+}
+</style>
+
+<div class="app" id="app">
+  <aside class="side" id="side" aria-label="Problemas">
+    <div class="side-h"><span class="logo">Simulador de <i>Electrostática</i></span><button id="side-close" class="iconbtn" aria-label="Cerrar barra lateral" title="Cerrar barra lateral"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/></svg></button></div>
+    <div class="side-act">
+      <button id="new" class="side-btn"><span class="ic">+</span>Nuevo problema</button>
+      <button id="open" class="side-btn"><span class="ic">↥</span>Abrir archivo…</button>
+      <input type="file" id="file" accept=".json,.emsim,application/json" multiple hidden>
+      <input type="search" id="search" class="search" placeholder="Buscar problemas, carpetas, #etiquetas…" aria-label="Buscar problemas" autocomplete="off">
+    </div>
+    <div class="side-list" id="side-list"></div>
+    <div class="side-f">
+      <button id="save-lib" class="side-btn"><span class="ic">↧</span>Guardar todos mis problemas</button>
+      <p>Archivos <code>.emsim.json</code>. También puedes arrastrarlos a la página.</p>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+  <main class="main">
+    <div class="top">
+      <button id="side-open" class="iconbtn" aria-label="Abrir barra lateral" title="Abrir barra lateral"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/></svg></button>
+      <input id="title" class="title-in" aria-label="Título del problema" placeholder="Título del problema" autocomplete="off">
+      <span class="origin" id="origin"></span>
+      <div class="tools">
+        <select id="mode" class="in" aria-label="Tipo de cálculo"><option value="sym">Simbólico</option><option value="si">Numérico SI</option></select>
+        <span class="unitbox">Unidad <input id="unit" class="in" aria-label="Unidad de longitud"></span>
+        <label class="toggle" title="Oculta las soluciones para que escribas tu respuesta y la compruebes"><input type="checkbox" id="practice"> Modo práctica</label>
+        <span class="sep" aria-hidden="true"></span>
+        <button id="undo" class="btn" title="Deshacer (Ctrl+Z)" aria-label="Deshacer">↶</button>
+        <button id="redo" class="btn" title="Rehacer (Ctrl+Mayús+Z)" aria-label="Rehacer">↷</button>
+        <span class="wrap-rel" id="export-w"><button id="export" class="btn" title="Exportar la solución completa">Exportar solución</button></span>
+        <button id="save-cur" class="btn" title="Guardar archivo (Ctrl+S)">Guardar archivo</button>
+      </div>
+    </div>
+    <div class="meta" id="meta" hidden><label>Carpeta <input id="folder" class="in" list="folders-dl" placeholder="sin carpeta" autocomplete="off"></label><label>Etiquetas <input id="tags" class="in" placeholder="examen, dipolos" autocomplete="off"></label><datalist id="folders-dl"></datalist></div>
+    <div class="banner" id="banner" hidden><span>Es un ejercicio de ejemplo: puedes tocarlo, pero para conservar los cambios guárdalo como tuyo.</span><button id="keep" class="btn ghost">Guardar en Mis problemas</button></div>
+    <section class="panel stmt"><header><h2>Enunciado</h2></header><textarea id="statement" aria-label="Enunciado" placeholder="Escribe o pega aquí el enunciado del problema (opcional)."></textarea></section>
+    <div id="note" hidden></div>
+    <div id="errors" hidden></div>
+    <div class="layout">
+  <div class="col">
+    <section class="panel">
+      <header><h2>Fuentes</h2></header>
+      <div class="chips" id="chips-src" aria-label="Añadir fuente"></div>
+      <p class="hint" id="hint-src"></p>
+      <div id="sources" class="col" style="gap:8px"></div>
+    </section>
+    <section class="panel">
+      <header><h2>Incógnita</h2></header>
+      <p class="hint">Si el enunciado da condiciones (equilibrio, campo nulo, un potencial…), marca qué fuentes son desconocidas y se despejan todas a la vez.</p>
+      <div id="unknown" class="col" style="gap:6px"></div>
+    </section>
+    <section class="panel">
+      <header><h2>Símbolos</h2></header>
+      <p class="hint">Fija las dimensiones de cada símbolo para escribir bien las potencias de <code>a</code> en los resultados.</p>
+      <div id="symbols" class="col" style="gap:6px"></div>
+    </section>
+  </div>
+
+  <div class="col">
+    <div class="stage">
+      <div class="stage-bar">
+        <span>Vista <select id="plane" class="in" aria-label="Plano de la vista"><option value="xy">plano XY</option><option value="xz">plano XZ</option><option value="yz">plano YZ</option><option value="3d">vista 3D</option></select></span>
+        <span id="cut-w"><span id="cut-l">z =</span> <input id="cut" class="in" aria-label="Corte"></span>
+        <label><input type="checkbox" id="t-lines" checked> líneas de campo</label>
+        <label><input type="checkbox" id="t-equi" checked> equipotenciales</label>
+        <label><input type="checkbox" id="t-grid"> vectores</label>
+        <span class="nowrap"><label><input type="checkbox" id="t-cmap"> mapa de</label> <select id="cmap-q" class="in" aria-label="Magnitud del mapa de color"><option value="V">V</option><option value="E">|E|</option></select></span>
+        <span class="probes" aria-label="Cargas de prueba">Prueba <button id="probe-p" class="btn" data-place="probe:+" title="Suelta una carga de prueba positiva">+q</button><button id="probe-n" class="btn" data-place="probe:-" title="Suelta una carga de prueba negativa">−q</button><button id="probe-x" class="btn" title="Quitar las cargas de prueba">Quitar</button></span>
+        <span class="zoom"><button id="zout" class="btn" aria-label="Alejar">−</button><button id="zfit" class="btn">Encuadrar</button><button id="zin" class="btn" aria-label="Acercar">+</button></span>
+      </div>
+      <div class="cvwrap"><canvas id="cv"></canvas></div>
+      <div class="legend"><span><b style="background:var(--pos)"></b>carga positiva</span><span><b style="background:var(--neg)"></b>negativa</span><span><span class="ln" style="border-color:var(--fieldline)"></span>línea de campo</span><span><span class="ln" style="border-color:var(--equi);border-top-style:dashed"></span>equipotencial</span><span><span class="ln" style="border-color:var(--accent)"></span>campo E en el punto</span><span><span class="ln" style="border-color:var(--dipole)"></span>dipolo</span><span><span class="ln" style="border-color:var(--probe)"></span>carga de prueba</span><span>Arrastra cargas y puntos (Mayús = sin ajuste). Ctrl + rueda para zoom. En 3D, arrastra para girar.</span></div>
+    </div>
+    <section class="panel">
+      <header><h2>Preguntas</h2></header>
+      <div class="chips" id="chips-an" aria-label="Añadir pregunta"></div>
+      <p class="hint" id="hint-an"></p>
+      <div id="analyses" class="an-grid"></div>
+    </section>
+  </div>
+</div>
+  </main>
+</div>
+<div id="flash" hidden></div>
