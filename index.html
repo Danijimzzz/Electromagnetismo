@@ -511,6 +511,7 @@ body.dropping .main { outline: 3px dashed var(--accent); outline-offset: -8px }
    ===================================================================== */
 const Version = (() => {
   const log = [
+    { v: '6.2', fecha: '2026-10-22', cambios: ['Arreglo: en la vista 3D las esferas, cascarones y conductores tienen volumen (sombreado, ecuador y meridianos) y ya no parecen círculos planos.'] },
     { v: '6.1', fecha: '2026-10-22', cambios: ['Arreglo: en la vista 3D los cilindros cargados se dibujan con su radio real (antes eran una línea gruesa) y las superficies de Gauss, cilíndricas o esféricas, también aparecen.'] },
     { v: '6.0', fecha: '2026-10-22', cambios: ['Número de versión visible y este apartado de novedades.', 'Comprobación automática de los 12 ejercicios antes de publicar cada cambio.'] },
     { v: '5.0', fecha: '2026-10-22', cambios: ['Los resultados de los 12 ejercicios se escriben con la misma forma que el solucionario oficial.', 'Perfiles por tramos, factor común en logaritmos y radicales, y la pregunta V_A − V_B.'] },
@@ -2980,7 +2981,7 @@ const Canvas = (() => {
     for (const r of out.results) {
       if (!r.surf) continue;
       const S = r.surf;
-      if (S.shape === 'sphere') { const p = proj(S.C); g.beginPath(); g.arc(p[0], p[1], S.R * cam.s * p[3], 0, 7); g.stroke(); }
+      if (S.shape === 'sphere') { const p = proj(S.C); g.beginPath(); g.arc(p[0], p[1], S.R * cam.s * p[3], 0, 7); g.stroke(); ring3(S.C, [0, 0, 1], S.R, 1, 0.4); }
       else cylinder3(S.C, S.n, S.R, S.h, 0, 1);
     }
     g.setLineDash([]);
@@ -3049,6 +3050,39 @@ const Canvas = (() => {
     g.stroke();
     for (let k = 0; k <= rings; k++) { circle3(V3.add(c, V3.sc(u, h * (k / rings - 0.5))), u, R); g.stroke(); }
   }
+  // circunferencia de centro c, normal n y radio R: la mitad delantera más marcada que la trasera
+  function ring3(c, n, R, front, back) {
+    const e1 = Math.abs(n[0]) < 0.9 ? V3.unit(V3.cross(n, [1, 0, 0])) : V3.unit(V3.cross(n, [0, 1, 0])), e2 = V3.cross(n, e1), d0 = proj(c)[2];
+    const pts = [];
+    for (let i = 0; i <= 64; i++) { const t = (2 * Math.PI * i) / 64; pts.push(proj(V3.add(c, V3.add(V3.sc(e1, R * Math.cos(t)), V3.sc(e2, R * Math.sin(t)))))); }
+    for (const [side, a] of [[true, front], [false, back]]) {
+      g.globalAlpha = a; g.beginPath();
+      for (let i = 1; i < pts.length; i++) {
+        const p = pts[i - 1], q = pts[i];
+        if ((p[2] + q[2] > 2 * d0) !== side) continue;
+        if (i === 1 || (pts[i - 2][2] + p[2] > 2 * d0) !== side) g.moveTo(p[0], p[1]);
+        g.lineTo(q[0], q[1]);
+      }
+      g.stroke();
+    }
+    g.globalAlpha = 1;
+  }
+  // esfera con volumen: relleno, brillo arriba a la izquierda, sombra en el borde, ecuador y dos meridianos
+  function sphere3(c, R, col, fill) {
+    const p = proj(c), r = R * cam.s * p[3];
+    g.fillStyle = col; g.globalAlpha = fill; g.beginPath(); g.arc(p[0], p[1], r, 0, 7); g.fill();
+    const hx = p[0] - r * 0.35, hy = p[1] - r * 0.4;
+    let gr = g.createRadialGradient(hx, hy, 0, hx, hy, r * 1.1);
+    gr.addColorStop(0, 'rgba(255,255,255,0.75)'); gr.addColorStop(0.45, 'rgba(255,255,255,0.12)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+    g.globalAlpha = 1; g.fillStyle = gr; g.beginPath(); g.arc(p[0], p[1], r, 0, 7); g.fill();
+    gr = g.createRadialGradient(p[0], p[1], r * 0.55, p[0], p[1], r);
+    gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(0,0,0,0.22)');
+    g.fillStyle = gr; g.beginPath(); g.arc(p[0], p[1], r, 0, 7); g.fill();
+    g.fillStyle = col; g.strokeStyle = col; g.lineWidth = 1;
+    for (const n of [[0, 0, 1], [1, 0, 0], [0, 1, 0]]) ring3(c, n, R, 0.55, 0.15);
+    g.lineWidth = 2; g.beginPath(); g.arc(p[0], p[1], r, 0, 7); g.stroke();
+    return p;
+  }
   function drawSource3D(s, C, L) {
     const G = s.g, t = s.src.type, col = colorOf(s, C), nm = prettyName(s.name);
     g.strokeStyle = col; g.fillStyle = col; g.lineWidth = 2;
@@ -3073,9 +3107,7 @@ const Canvas = (() => {
         lp = q[2];
       }
     } else if (t === 'sphere' || t === 'shell' || t === 'conductor') {
-      const p = proj(G.pos), R = (t === 'sphere' ? G.R2 : G.R) * cam.s * p[3];
-      g.globalAlpha = t === 'shell' ? 0.08 : 0.2; g.fillStyle = t === 'conductor' ? C.axis : col; g.beginPath(); g.arc(p[0], p[1], R, 0, 7); g.fill();
-      g.globalAlpha = 1; g.beginPath(); g.arc(p[0], p[1], R, 0, 7); g.stroke();
+      const p = sphere3(G.pos, t === 'sphere' ? G.R2 : G.R, t === 'conductor' ? C.axis : col, t === 'shell' ? 0.1 : 0.24), R = (t === 'sphere' ? G.R2 : G.R) * cam.s * p[3];
       lp = [p[0] + R * 0.7, p[1] - R * 0.7];
     } else if (t === 'ring' || t === 'disk') {
       circle3(G.pos, G.n, G.R);
