@@ -741,7 +741,8 @@ ${img ? `<img class="snap" alt="Esquema del problema" src="${img}">` : ''}
     $('#help').addEventListener('click', () => openGuide());
     $('#ver').addEventListener('click', () => openGuide('g-novedades'));
     for (const el of document.querySelectorAll('.ver-n')) el.textContent = Version.current;
-    $('#ver-log').replaceChildren(...Version.log.map((r) => h('div', {}, h('h4', {}, `Versión ${r.v} · ${r.fecha.split('-').reverse().join('/')}`), h('ul', {}, r.cambios.map((c) => h('li', {}, c))))));
+    // cada versión es un desplegable; solo la actual empieza abierta
+    $('#ver-log').replaceChildren(...Version.log.map((r, i) => h('details', { open: i === 0 }, h('summary', {}, `Versión ${r.v} · ${r.fecha.split('-').reverse().join('/')}`), h('ul', {}, r.cambios.map((c) => h('li', {}, c))))));
     $('#guide-x').addEventListener('click', () => $('#guide').close());
     $('#guide').addEventListener('click', (e) => { if (e.target === e.currentTarget) e.currentTarget.close(); });
     $('#guide-nav').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) showGuide(b.dataset.g); });

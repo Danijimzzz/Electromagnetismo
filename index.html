@@ -253,6 +253,9 @@ body.dropping .main { outline: 3px dashed var(--accent); outline-offset: -8px }
 .g-c section + section { border-top: 1px solid var(--line); margin-top: 22px }
 .g-c h3 { font: 600 21px var(--f-math); margin: 0 0 6px }
 .g-c h4 { font: 600 14px var(--f-ui); margin: 16px 0 4px }
+#ver-log details { border-top: 1px solid var(--line); padding: 8px 0 }
+#ver-log summary { font: 600 14px var(--f-ui); cursor: pointer }
+#ver-log details ul { margin: 6px 0 0 }
 .g-c p { margin: 6px 0 }
 .g-c ul, .g-c ol { margin: 6px 0; padding-left: 22px }
 .g-c li { margin: 3px 0 }
@@ -511,7 +514,7 @@ body.dropping .main { outline: 3px dashed var(--accent); outline-offset: -8px }
    ===================================================================== */
 const Version = (() => {
   const log = [
-    { v: '6.2', fecha: '2026-10-22', cambios: ['Arreglo: en la vista 3D las esferas, cascarones y conductores tienen volumen (sombreado, ecuador y meridianos) y ya no parecen círculos planos.'] },
+    { v: '6.2', fecha: '2026-10-22', cambios: ['Arreglo: en la vista 3D las esferas, cascarones y conductores tienen volumen (sombreado, ecuador y meridianos) y ya no parecen círculos planos.', 'Las notas de cada versión se abren y cierran por separado; solo la actual aparece abierta.'] },
     { v: '6.1', fecha: '2026-10-22', cambios: ['Arreglo: en la vista 3D los cilindros cargados se dibujan con su radio real (antes eran una línea gruesa) y las superficies de Gauss, cilíndricas o esféricas, también aparecen.'] },
     { v: '6.0', fecha: '2026-10-22', cambios: ['Número de versión visible y este apartado de novedades.', 'Comprobación automática de los 12 ejercicios antes de publicar cada cambio.'] },
     { v: '5.0', fecha: '2026-10-22', cambios: ['Los resultados de los 12 ejercicios se escriben con la misma forma que el solucionario oficial.', 'Perfiles por tramos, factor común en logaritmos y radicales, y la pregunta V_A − V_B.'] },
@@ -3924,7 +3927,8 @@ ${img ? `<img class="snap" alt="Esquema del problema" src="${img}">` : ''}
     $('#help').addEventListener('click', () => openGuide());
     $('#ver').addEventListener('click', () => openGuide('g-novedades'));
     for (const el of document.querySelectorAll('.ver-n')) el.textContent = Version.current;
-    $('#ver-log').replaceChildren(...Version.log.map((r) => h('div', {}, h('h4', {}, `Versión ${r.v} · ${r.fecha.split('-').reverse().join('/')}`), h('ul', {}, r.cambios.map((c) => h('li', {}, c))))));
+    // cada versión es un desplegable; solo la actual empieza abierta
+    $('#ver-log').replaceChildren(...Version.log.map((r, i) => h('details', { open: i === 0 }, h('summary', {}, `Versión ${r.v} · ${r.fecha.split('-').reverse().join('/')}`), h('ul', {}, r.cambios.map((c) => h('li', {}, c))))));
     $('#guide-x').addEventListener('click', () => $('#guide').close());
     $('#guide').addEventListener('click', (e) => { if (e.target === e.currentTarget) e.currentTarget.close(); });
     $('#guide-nav').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) showGuide(b.dataset.g); });
