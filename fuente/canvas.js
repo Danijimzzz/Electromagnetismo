@@ -687,17 +687,13 @@ const Canvas = (() => {
     }
     g.globalAlpha = 1;
   }
-  // esfera con volumen: relleno, brillo arriba a la izquierda, sombra en el borde, ecuador y dos meridianos
+  // esfera con volumen: relleno, sombra suave en el borde (sin reflejo), ecuador y dos meridianos
   function sphere3(c, R, col, fill) {
     const p = proj(c), r = R * cam.s * p[3];
     g.fillStyle = col; g.globalAlpha = fill; g.beginPath(); g.arc(p[0], p[1], r, 0, 7); g.fill();
-    const hx = p[0] - r * 0.35, hy = p[1] - r * 0.4;
-    let gr = g.createRadialGradient(hx, hy, 0, hx, hy, r * 1.1);
-    gr.addColorStop(0, 'rgba(255,255,255,0.75)'); gr.addColorStop(0.45, 'rgba(255,255,255,0.12)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
-    g.globalAlpha = 1; g.fillStyle = gr; g.beginPath(); g.arc(p[0], p[1], r, 0, 7); g.fill();
-    gr = g.createRadialGradient(p[0], p[1], r * 0.55, p[0], p[1], r);
+    const gr = g.createRadialGradient(p[0], p[1], r * 0.55, p[0], p[1], r);
     gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(0,0,0,0.22)');
-    g.fillStyle = gr; g.beginPath(); g.arc(p[0], p[1], r, 0, 7); g.fill();
+    g.globalAlpha = 1; g.fillStyle = gr; g.beginPath(); g.arc(p[0], p[1], r, 0, 7); g.fill();
     g.fillStyle = col; g.strokeStyle = col; g.lineWidth = 1;
     for (const n of [[0, 0, 1], [1, 0, 0], [0, 1, 0]]) ring3(c, n, R, 0.55, 0.15);
     g.lineWidth = 2; g.beginPath(); g.arc(p[0], p[1], r, 0, 7); g.stroke();
