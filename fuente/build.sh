@@ -67,4 +67,6 @@ if [ "$1" != privado ]; then
     version.js induccion/fisica.js induccion/app.js
   herramienta matrices ../publico/matematicas/matrices/index.html "Matrices paso a paso" "Calculadora de matrices con fracciones exactas y complejos: determinante, inversa, rango, Gauss-Jordan y valores y vectores propios, paso a paso" \
     version.js matematicas/algebra.js matrices/calculo.js matrices/app.js
+  herramienta sistemas ../publico/matematicas/sistemas/index.html "Sistemas de ecuaciones lineales" "Calculadora de sistemas de ecuaciones paso a paso: Rouché-Frobenius, Gauss, Gauss-Jordan, Cramer y matriz inversa, en paramétricas y con números complejos" \
+    version.js matematicas/algebra.js sistemas/calculo.js sistemas/app.js
 fi
