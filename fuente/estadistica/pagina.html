@@ -1,0 +1,82 @@
+<title>Distribuciones de probabilidad: normal, binomial, Poisson, t y χ² · SimulaCiencia</title>
+<meta name="description" content="Calculadora de distribuciones de probabilidad en español con el área sombreada: normal con tipificación, t de Student, chi cuadrado, exponencial, binomial y Poisson; probabilidades, cuantiles y valores críticos paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root {
+  --bg: #eef0f4; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d6dbe3; --accent: #6b3fa0; --accent-soft: #efe6f8; --area: rgba(107,63,160,.28); --curva: #1a2128;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #b892ec; --accent-soft: #2b2140; --area: rgba(184,146,236,.32); --curva: #e3e8ee; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #b892ec; --accent-soft: #2b2140; --area: rgba(184,146,236,.32); --curva: #e3e8ee; color-scheme: dark }
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
+.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
+.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+.layout { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 16px; align-items: start }
+@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr) } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 15px var(--f-ui); margin: 0 0 10px }
+.campos { display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px } .campos label small { color: var(--muted) }
+.in { font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.in:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer }
+.btn:hover { border-color: var(--accent) }
+.error { color: #c0392b; font-size: 13px; margin: 10px 0 0 }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+.res { font: 26px var(--f-math); padding: 2px 0 } .res small { font: 14px var(--f-ui); color: var(--muted); margin-left: 10px }
+canvas { display: block; width: 100%; height: clamp(220px, 34vw, 300px); border-radius: 8px; background: var(--bg); margin-top: 10px }
+.pasos ol { margin: 0; padding-left: 22px } .pasos li { margin: 0 0 12px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Matemáticas</a> / Distribuciones de probabilidad</span></header>
+<div class="wrap">
+<h1>Distribuciones de probabilidad</h1>
+<p class="lead">Calcula probabilidades, cuantiles y valores críticos de la normal, la t de Student, la χ², la exponencial, la binomial y la Poisson, con el área sombreada en la gráfica y el desarrollo como en clase: tipificación, fórmula de la binomial y aproximación normal.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota">Puedes usar coma o punto decimal: 0,05 o 0.05.</p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card"><h2>Resultado</h2><div class="res" id="res"></div><canvas id="grafica" aria-label="Gráfica de la distribución con el área sombreada"></canvas></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>La normal y la tipificación</h2>
+  <p>Si X ~ N(μ, σ), la variable Z = (X − μ)/σ sigue la normal tipificada N(0, 1), cuya función de distribución Φ(z) es la que viene en las tablas. Así cualquier probabilidad de una normal se reduce a Φ: P(X ≤ a) = Φ((a − μ)/σ) y P(X ≥ a) = 1 − Φ((a − μ)/σ). Por la simetría, Φ(−z) = 1 − Φ(z).</p>
+  <p class="f">P(a ≤ X ≤ b) = Φ((b − μ)/σ) − Φ((a − μ)/σ)</p>
+  <h2>Binomial y Poisson</h2>
+  <p>La binomial B(n, p) cuenta los éxitos en n pruebas independientes con probabilidad p cada una: media np y varianza npq. La Poisson P(λ) cuenta sucesos raros en un intervalo, con media y varianza λ. En las discretas sí importa si la desigualdad es estricta: P(X &lt; k) = P(X ≤ k − 1).</p>
+  <p class="f">P(X = k) = C(n, k) p<sup>k</sup> q<sup>n−k</sup>, &nbsp; P(X = k) = e<sup>−λ</sup> λ<sup>k</sup> / k!</p>
+  <p>Si np ≥ 5 y nq ≥ 5, la binomial se aproxima por N(np, √(npq)), sumando o restando 0,5 a los extremos (corrección de continuidad).</p>
+  <h2>t de Student y χ²</h2>
+  <p>La t de Student con ν grados de libertad aparece al estimar una media con la desviación típica de la muestra: es simétrica como la normal pero con colas más gruesas, y se parece a ella cuando ν crece. La χ² con k grados de libertad es la suma de k normales tipificadas al cuadrado y se usa en las pruebas de bondad de ajuste, de independencia y para la varianza.</p>
+  <h2>Valores críticos</h2>
+  <p>Para un nivel de significación α, el valor crítico bilateral c deja α/2 en cada cola: P(−c ≤ Z ≤ c) = 1 − α. Con α = 0,05, z<sub>α/2</sub> = 1,96.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Estadística <span id="ver"></span> (beta)</footer>
+</body>
