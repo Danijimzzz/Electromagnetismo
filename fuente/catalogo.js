@@ -24,7 +24,7 @@ const Catalogo = {
       herramientas: [
         { clave: 'trabajo-y-energia', nombre: 'Trabajo y energía', icono: 'W', disponible: true, desc: 'Conservación de la energía en rampas y muelles, con barras de energía.', buscar: 'energía cinética potencial muelle rampa rozamiento' },
         { clave: 'tiro-parabolico', nombre: 'Tiro parabólico y cinemática', icono: 'v', disponible: true, desc: 'Trayectorias con y sin rozamiento del aire, alcance, altura máxima, MRU y MRUA con gráficas x(t), v(t), a(t).', buscar: 'tiro parabólico proyectil cinemática mru mrua caída libre' },
-        { clave: 'calorimetria', nombre: 'Calorimetría y cambios de fase', icono: 'Q', desc: 'Temperatura de equilibrio con cambios de estado.', buscar: 'calor específico latente equilibrio térmico' },
+        { clave: 'calorimetria', nombre: 'Calorimetría y cambios de fase', icono: 'Q', disponible: true, desc: 'Temperatura de equilibrio con hielo, vapor, metales y calorímetro, y cuánto cambia de fase.', buscar: 'calor específico latente equilibrio térmico' },
       ],
     },
     {
