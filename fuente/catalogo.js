@@ -41,7 +41,7 @@ const Catalogo = {
       clave: 'matematicas', nombre: 'Matemáticas', icono: '∑', color: '#6b3fa0', colorOscuro: '#b892ec',
       resumen: 'Álgebra y cálculo de la carrera, con cada paso explicado.',
       herramientas: [
-        { clave: 'matrices', nombre: 'Matrices paso a paso', icono: 'A', desc: 'Determinantes, inversas, Gauss y autovalores.', buscar: 'matriz determinante inversa gauss autovalores' },
+        { clave: 'matrices', nombre: 'Matrices paso a paso', icono: 'A', disponible: true, desc: 'Determinante, inversa, rango, Gauss-Jordan y valores propios, con fracciones exactas y complejos.', buscar: 'matriz determinante inversa gauss jordan rango autovalores valores propios diagonalizar sarrus laplace adjunta' },
         { clave: 'campos-vectoriales', nombre: 'Campos vectoriales', icono: '∇', desc: 'Gradiente, divergencia, rotacional y flujo.', buscar: 'gradiente divergencia rotacional flujo' },
       ],
     },

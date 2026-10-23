@@ -1,0 +1,106 @@
+<title>Matrices paso a paso: determinante, inversa, rango y valores propios · SimulaCiencia</title>
+<meta name="description" content="Calculadora de matrices paso a paso en español con fracciones exactas y números complejos: determinante por Gauss, Sarrus o Laplace, inversa por Gauss-Jordan o adjuntos, rango, escalonada reducida, valores y vectores propios y diagonalización.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root {
+  --bg: #eef0f4; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d6dbe3; --accent: #6b3fa0; --accent-soft: #efe6f8;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #b892ec; --accent-soft: #2b2140; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #b892ec; --accent-soft: #2b2140; color-scheme: dark }
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
+.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
+.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+.layout { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 16px; align-items: start }
+@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr) } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 15px var(--f-ui); margin: 0 0 10px }
+.campos { display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px } .campos label small { color: var(--muted) }
+.in { font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.in:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer }
+.btn:hover { border-color: var(--accent) }
+.error { color: #c0392b; font-size: 13px; margin: 10px 0 0 }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+.editor { margin-top: 12px }
+.editor-cab { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; font-size: 13.5px }
+.editor-cab b { font: italic 600 17px var(--f-math); margin-right: 4px }
+.editor-cab select { width: auto; padding: 3px 6px }
+.campos { grid-template-columns: auto minmax(0, 1fr) }
+.rejilla { display: inline-grid; max-width: 100%; gap: 4px; overflow-x: auto; padding: 2px 8px; border-left: 2px solid var(--ink); border-right: 2px solid var(--ink); border-radius: 6px }
+.rejilla input { font: 14px var(--f-math); text-align: center; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 5px; padding: 5px 2px; min-width: 0; width: 100% }
+.rejilla input:focus-visible { outline: 2px solid var(--accent); outline-offset: 0 }
+.res { font: 18px var(--f-math); overflow-x: auto; padding: 4px 0 }
+.res b { font-weight: 600 }
+.pasos ol { margin: 0; padding-left: 22px } .pasos li { margin: 0 0 14px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 4px }
+.mat { position: relative; display: inline-block; vertical-align: middle; padding: 0 7px; margin: 2px 2px }
+.mat::before, .mat::after { content: ""; position: absolute; top: 0; bottom: 0; width: 5px; border: 1.4px solid currentColor }
+.mat::before { left: 0; border-right: 0 } .mat::after { right: 0; border-left: 0 }
+.mat.det::before, .mat.det::after { width: 0; border-top: 0; border-bottom: 0 }
+.mat table { border-collapse: collapse } .mat td { padding: 2px 7px; text-align: center; white-space: nowrap; font-variant-numeric: tabular-nums }
+.mat td.barra { border-left: 1.2px solid currentColor }
+.mat td[data-piv] { color: var(--accent); font-weight: 600 }
+.fr { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; font-size: .82em; line-height: 1.1 }
+.fr > span:first-child { border-bottom: 1px solid currentColor; padding: 0 2px }
+.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Matemáticas</a> / Matrices paso a paso</span></header>
+<div class="wrap">
+<h1>Matrices paso a paso</h1>
+<p class="lead">Determinantes, inversas, rango, Gauss y Gauss-Jordan, valores y vectores propios, y operaciones con matrices. Los resultados salen con fracciones exactas y admiten números complejos, con cada operación entre filas explicada.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos">
+      <label for="op">Qué calcular</label><select id="op" class="in"></select>
+      <label for="metodo" id="metodo-l">Método</label><select id="metodo" class="in"></select>
+      <label for="k" id="k-l">Número k</label><input id="k" class="in" inputmode="text" autocomplete="off">
+      <label for="n" id="n-l">Exponente n</label><input id="n" class="in" inputmode="numeric" autocomplete="off">
+    </div>
+    <div class="editor" id="ed-A"></div>
+    <div class="editor" id="ed-B"></div>
+    <p class="nota">Escribe enteros, fracciones (3/4), decimales (0,25) o complejos (2−3i, (1+i)/2). Con Tab pasas a la casilla siguiente.</p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card"><h2>Resultado</h2><div class="res" id="res"></div></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Eliminación de Gauss</h2>
+  <p>Con tres operaciones entre filas se lleva cualquier matriz a forma escalonada: intercambiar dos filas, multiplicar una fila por un número distinto de cero y sumarle a una fila un múltiplo de otra. Cada fila empieza con más ceros que la anterior, y el primer elemento no nulo de cada fila es su pivote. Si además cada pivote vale 1 y es el único no nulo de su columna, la matriz está en forma escalonada reducida (Gauss-Jordan).</p>
+  <p>El rango es el número de filas no nulas que quedan al escalonar. Coincide con el número de columnas (o de filas) linealmente independientes.</p>
+  <h2>Determinante</h2>
+  <p>Sumar a una fila un múltiplo de otra no cambia el determinante, intercambiar dos filas le cambia el signo y multiplicar una fila por k lo multiplica por k. Por eso basta con dejar la matriz triangular y multiplicar la diagonal. Para 2×2 y 3×3 se usan la regla del producto cruzado y la de Sarrus, y para matrices mayores el desarrollo de Laplace por la fila o columna con más ceros.</p>
+  <p class="f">|A| = Σ<sub>j</sub> (−1)<sup>i+j</sup> a<sub>ij</sub> |A<sub>ij</sub>|</p>
+  <h2>Inversa</h2>
+  <p>Una matriz cuadrada tiene inversa si y solo si su determinante no es cero. Por Gauss-Jordan se reduce [A | I] hasta que a la izquierda quede la identidad, y entonces a la derecha queda A<sup>−1</sup>. Por adjuntos se usa la fórmula:</p>
+  <p class="f">A<sup>−1</sup> = (1 / |A|) · (Adj A)<sup>t</sup></p>
+  <h2>Valores y vectores propios</h2>
+  <p>λ es un valor propio de A si hay un vector v ≠ 0 con A v = λ v. Los valores propios son las raíces del polinomio característico |A − λI| = 0, y los vectores propios de cada λ son las soluciones no nulas de (A − λI) v = 0. La matriz es diagonalizable cuando cada valor propio tiene tantos vectores propios independientes como su multiplicidad. Entonces A = P D P<sup>−1</sup>, con los vectores propios en las columnas de P y los valores propios en la diagonal de D.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Matrices <span id="ver"></span> (beta)</footer>
+</body>
