@@ -1,9 +1,15 @@
-# Simulador de Electrostática
+# SimulaCiencia (nombre provisional)
 
-Simulador de electrostática (Electromagnetismo y Ondas). Es una página estática: `publico/index.html`.
+Simuladores y calculadoras por asignatura. Es una web estática en `publico/`:
+
+- `publico/index.html`: la portada, donde se elige asignatura y herramienta.
+- `publico/<asignatura>/index.html`: una página por asignatura (electromagnetismo, fisica, quimica, matematicas, laboratorio).
+- `publico/<asignatura>/<herramienta>/index.html`: cada herramienta. Por ahora solo existe el simulador de electrostática, en `electromagnetismo/electrostatica/`.
+
+La portada y las páginas de asignatura las genera `fuente/portal.js` a partir de `fuente/catalogo.js`. Para añadir una herramienta, ponla en el catálogo con `disponible: true`, genera su página en `publico/<asignatura>/<herramienta>/index.html` y añade sus pruebas a `pruebas/comprobar.js`.
 
 - Código fuente: `fuente/` (engine, fmt, physics, presets, canvas, app y shell.html). Las capturas de la guía de uso están en `fuente/guia/` y `build.sh` las incrusta en la página.
-- Para regenerar `publico/index.html` tras cambiar las fuentes: `sh fuente/build.sh`.
+- Para regenerar la web pública tras cambiar las fuentes: `sh fuente/build.sh` (simulador, portada y asignaturas).
 - **Solo se publica la carpeta `publico/`** (página, iconos y lo que se añada para la web). Vercel la sirve tal cual por `vercel.json`; en Cloudflare Pages el proyecto se configura con *Framework: None*, sin comando de compilación y *Output directory* `publico`. No pongas ahí nada más: la comprobación falla si aparece otro archivo.
 - Icono: `fuente/icono.svg` (se incrusta en la pestaña). `publico/apple-touch-icon.png` (180×180) y `publico/og.png` (1200×630, vista previa al compartir); si cambias el icono, vuelve a generarlas a partir del SVG.
 
