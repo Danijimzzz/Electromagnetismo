@@ -164,7 +164,8 @@ const Elementos = (() => {
     const e = {};
     let resto = Z;
     for (const [n, l] of ORB) { if (!resto) break; const k = Math.min(CAP[l], resto); e[`${n}${LETRA[l]}`] = k; resto -= k; }
-    if (!ion && EXCEPCIONES[Z]) Object.assign(e, EXCEPCIONES[Z]);
+    // los cationes salen de la configuración real del átomo neutro (Cu⁺: [Ar] 3d¹⁰, Cr³⁺: [Ar] 3d³)
+    if (ion >= 0 && EXCEPCIONES[Z]) Object.assign(e, EXCEPCIONES[Z]);
     // un catión pierde primero los electrones de mayor n (4s antes que 3d)
     for (let q = ion; q > 0; q--) {
       const k = Object.keys(e).filter((o) => e[o] > 0).sort((x, y) => +y[0] - +x[0] || LETRA.indexOf(y[1]) - LETRA.indexOf(x[1]))[0];

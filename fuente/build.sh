@@ -53,4 +53,6 @@ if [ "$1" != privado ]; then
     version.js trabajo-y-energia/fisica.js trabajo-y-energia/app.js
   herramienta masa-molar ../publico/quimica/masa-molar/index.html "Masa molar y estequiometría" "Masa molar y composición de cualquier fórmula, ajuste de reacciones, reactivo limitante y rendimiento, paso a paso" \
     version.js quimica/elementos.js quimica/formulas.js masa-molar/app.js
+  herramienta configuracion-electronica ../publico/quimica/configuracion-electronica/index.html "Configuración electrónica" "Configuración electrónica de elementos e iones con el diagrama de Moeller, la regla de Hund y los números cuánticos" \
+    version.js quimica/elementos.js quimica/configuracion.js configuracion-electronica/app.js
 fi
