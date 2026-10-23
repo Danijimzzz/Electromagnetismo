@@ -62,11 +62,11 @@
     cancelPlace();
     if (ref.kind === 'preset') {
       const p = Presets.list.find((x) => x.key === ref.id);
-      if (!p) return openRef({ kind: 'preset', id: 'e3' });
+      if (!p) return openRef({ kind: 'preset', id: Presets.list[0].key });
       cur = { ref, title: p.title, statement: p.statement || '', note: p.note || '', scene: validScene(p.make()) };
     } else {
       const it = lib.items.find((x) => x.id === ref.id);
-      if (!it) return openRef({ kind: 'preset', id: 'e3' });
+      if (!it) return openRef({ kind: 'preset', id: Presets.list[0].key });
       cur = { ref, title: it.title, statement: it.statement || '', folder: it.folder || '', tags: it.tags || [], note: '', scene: validScene(clone(it.scene)) };
     }
     scen = cur.scene;
@@ -135,7 +135,7 @@
       { label: 'Guardar en archivo', run: () => saveJSON(slug(it.title) + '.emsim.json', pack([it])) },
       { label: 'Eliminar', confirm: 'Pulsa otra vez para eliminar', danger: true, run: () => {
         lib.items = lib.items.filter((x) => x.id !== it.id); store.set(K_LIB, lib);
-        if (cur.ref.kind === 'lib' && cur.ref.id === it.id) openRef({ kind: 'preset', id: 'e1' }); else renderSidebar();
+        if (cur.ref.kind === 'lib' && cur.ref.id === it.id) openRef({ kind: 'preset', id: Presets.list[0].key }); else renderSidebar();
         flash('Problema eliminado');
       } },
     ];
@@ -172,7 +172,7 @@
     };
     if (!query || mine.length) section('Mis problemas', null, grouped(mine), query ? '' : 'Aún no tienes problemas propios. Crea uno nuevo o guarda un ejercicio de ejemplo.');
     if (imp.length) section('Importados', null, grouped(imp), '');
-    if (!query || pres.length) section('Ejercicios del Tema 3', 'presetsOpen', pres.map((p) => itemRow({ ref: { kind: 'preset', id: p.key }, title: p.title, actions: [
+    if (!query || pres.length) section(Presets.section, 'presetsOpen', pres.map((p) => itemRow({ ref: { kind: 'preset', id: p.key }, title: p.title, actions: [
       { label: 'Duplicar en Mis problemas', run: () => { const c = addToLib({ title: p.title, statement: p.statement, scene: p.make() }); openRef({ kind: 'lib', id: c.id }); } },
       { label: 'Guardar en archivo', run: () => saveJSON(slug(p.title) + '.emsim.json', pack([{ title: p.title, statement: p.statement, scene: p.make() }])) },
     ] })), '');
@@ -807,6 +807,7 @@ ${img ? `<img class="snap" alt="Esquema del problema" src="${img}">` : ''}
   // guía de uso: las capturas van incrustadas en GUIA_IMG (las añade build.sh) y se cargan al abrirla
   function openGuide(id) {
     if (isMobile()) setSide(false);
+    for (const el of document.querySelectorAll('#guide .sec-name')) el.textContent = Presets.section;
     for (const img of document.querySelectorAll('#guide img[data-img]')) if (!img.src && window.GUIA_IMG?.[img.dataset.img]) img.src = GUIA_IMG[img.dataset.img];
     $('#guide').showModal();
     if (id) showGuide(id); else { $('#guide-c').scrollTop = 0; markGuide('g-vista'); }
@@ -835,6 +836,6 @@ ${img ? `<img class="snap" alt="Esquema del problema" src="${img}">` : ''}
   const saved = store.get(K_CUR, null);
   if (saved?.scene && saved.ref) {
     try { cur = { ...saved, scene: validScene(saved.scene) }; scen = cur.scene; resetHistory(); Canvas.fit(); renderSidebar(); renderAll(); }
-    catch (e) { openRef({ kind: 'preset', id: 'e3' }); }
-  } else openRef({ kind: 'preset', id: 'e3' });
+    catch (e) { openRef({ kind: 'preset', id: Presets.list[0].key }); }
+  } else openRef({ kind: 'preset', id: Presets.list[0].key });
 })();
