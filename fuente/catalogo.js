@@ -13,7 +13,7 @@ const Catalogo = {
       resumen: 'Electrostática, magnetostática, inducción y dieléctricos, con el desarrollo completo de cada resultado.',
       herramientas: [
         { clave: 'electrostatica', nombre: 'Electrostática', icono: 'E', disponible: true, desc: 'Cargas, hilos, planos y esferas. Campo, potencial, energía y Gauss.', buscar: 'campo eléctrico potencial coulomb gauss carga hilo plano esfera dipolo' },
-        { clave: 'magnetostatica', nombre: 'Magnetostática (Biot-Savart)', icono: 'B', desc: 'B de hilos, espiras, arcos, solenoides y toroides.', buscar: 'campo magnético biot savart ampère espira solenoide toroide' },
+        { clave: 'magnetostatica', nombre: 'Magnetostática (Biot-Savart)', icono: 'B', disponible: true, desc: 'B de hilos, espiras, arcos, solenoides y toroides.', buscar: 'campo magnético biot savart ampère espira solenoide toroide' },
         { clave: 'condensadores', nombre: 'Dieléctricos y condensadores', icono: 'C', desc: 'Capacidad, asociaciones, D, P y cargas de polarización.', buscar: 'capacidad condensador dieléctrico polarización' },
         { clave: 'induccion', nombre: 'Autoinducción e inducción mutua', icono: 'L', desc: 'L de solenoides y toroides, M entre circuitos y energía magnética.', buscar: 'inductancia autoinducción inducción mutua faraday' },
       ],

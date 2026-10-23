@@ -27,3 +27,24 @@ if [ "$1" = privado ]; then presets=../privado/tema3-pdf.js; out=${2:?falta el a
   echo '</script>'
   if [ "$1" != privado ]; then printf '</html>\n'; fi
 } > "$out"
+
+# Herramientas nuevas: cada una es una página con su HTML y sus scripts concatenados.
+#   herramienta CARPETA SALIDA TÍTULO DESCRIPCIÓN scripts…
+herramienta() {
+  dir=$1; out=$2; tit=$3; des=$4; shift 4
+  mkdir -p "$(dirname "$out")"
+  {
+    printf '<!doctype html>\n<html lang="es">\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n'
+    printf '<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,'; base64 < icono.svg | tr -d '\n'; printf '">\n'
+    printf '<link rel="apple-touch-icon" href="../../apple-touch-icon.png">\n'
+    printf '<meta property="og:title" content="%s">\n<meta property="og:description" content="%s">\n' "$tit" "$des"
+    printf '<meta property="og:image" content="https://electromagnetismo-two.vercel.app/og.png">\n<meta name="twitter:card" content="summary_large_image">\n'
+    cat "$dir/pagina.html"; echo '<script>'
+    for src in "$@"; do grep -v "^if (typeof module" "$src"; echo; done
+    echo '</script>'; printf '</html>\n'
+  } > "$out"
+}
+if [ "$1" != privado ]; then
+  herramienta magnetostatica ../publico/electromagnetismo/magnetostatica/index.html "Calculadora de campo magnético (Biot-Savart)" "Campo magnético de hilos, espiras, solenoides y toroides, y fuerzas magnéticas, paso a paso" \
+    version.js engine.js magnetostatica/fisica.js magnetostatica/ejemplos.js magnetostatica/app.js
+fi

@@ -51,6 +51,8 @@ a.card:hover { border-color:var(--c) }
 .card .b { padding:12px 14px 14px; display:flex; flex-direction:column; gap:4px; flex:1 } .card h2 { margin:0; font:600 16px var(--f-ui) } .card p { margin:0; color:var(--muted); font-size:13.5px }
 .card .t { margin:8px 0 0; align-self:flex-start } .card.off { opacity:.65 }
 .otras { margin-top:32px; font-size:14px; color:var(--muted) } .otras a { color:var(--accent); margin-right:14px; white-space:nowrap } .otras a:hover { text-decoration:underline }
+.novedades { margin-top:28px; max-width:720px; font-size:14px; color:var(--muted) } .novedades summary { cursor:pointer; color:var(--accent); font-weight:500 }
+.novedades h3 { font:600 14px var(--f-ui); color:var(--ink); margin:12px 0 4px } .novedades ul { margin:0; padding-left:20px }
 footer { text-align:center; font-size:12.5px; color:var(--muted); padding:0 16px 24px } footer a { margin:0 6px; white-space:nowrap } footer a:hover { color:var(--accent); text-decoration:underline }
 `;
 
@@ -77,7 +79,7 @@ function pagina({ titulo, desc, raiz, actual, cuerpo, buscar, script }) {
 <nav aria-label="Asignaturas"><a href="${raiz}"${actual ? '' : ' aria-current="page"'}>Inicio</a>${nav}</nav>
 ${buscar ? '<input type="search" id="buscar" class="buscar" placeholder="Buscar: Biot-Savart, molaridad…" aria-label="Buscar herramientas" autocomplete="off">' : ''}</header>
 ${cuerpo}
-<footer><a href="${raiz}contacto.html">Contacto</a>·<a href="${raiz}aviso-legal.html">Aviso legal</a>·<a href="${raiz}privacidad.html">Privacidad</a>·<a href="${raiz}cookies.html">Cookies</a>· Versión ${esc(Version.current)} (beta)</footer>
+<footer><a href="${raiz}contacto.html">Contacto</a>·<a href="${raiz}aviso-legal.html">Aviso legal</a>·<a href="${raiz}privacidad.html">Privacidad</a>·<a href="${raiz}cookies.html">Cookies</a>· <a href="${raiz}#novedades">Versión ${esc(Version.de('web').current)} (beta)</a></footer>
 ${script ? `<script>${script}</script>\n` : ''}</body>
 </html>
 `;
@@ -101,6 +103,7 @@ ${filas}
 const BUSCAR = `(() => {
   const q = document.getElementById('buscar'), nada = document.getElementById('nada');
   const norm = (s) => s.normalize('NFD').replace(/[\\u0300-\\u036f]/g, '').toLowerCase();
+  if (location.hash === '#novedades') document.getElementById('novedades').open = true;
   q.addEventListener('input', () => {
     const t = norm(q.value).split(/\\s+/).filter(Boolean);
     let hay = 0;
@@ -123,6 +126,9 @@ const archivos = { 'index.html': pagina({
 ${tarjetas}
 </div>
 <p class="nada" id="nada" hidden>No hay ninguna herramienta con ese nombre todavía.</p>
+<details class="novedades" id="novedades"><summary>Novedades de la web</summary>
+${Version.de('web').log.map((r) => `<h3>${esc(r.v)} · ${r.fecha.split('-').reverse().join('/')}</h3><ul>${r.cambios.map((c) => `<li>${esc(c)}</li>`).join('')}</ul>`).join('\n')}
+</details>
 </main>`,
 }) };
 
