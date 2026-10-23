@@ -1,0 +1,122 @@
+<title>Masa molar y estequiometría: ajuste de reacciones y reactivo limitante · SimulaCiencia</title>
+<meta name="description" content="Calculadora de masa molar y estequiometría en español: masa molar y composición centesimal de cualquier fórmula, ajuste automático de reacciones (también iónicas), reactivo limitante, rendimiento y reactivo en exceso, paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root {
+  --bg: #eef1ee; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d5dbd5; --accent: #0d6b66; --accent-soft: #e0efec; --heat: #0d6b66; --on-heat: #ffffff;
+  --c-a: #f3c7b8; --c-t: #f5dcb0; --c-m: #f0e3c4; --c-l: #e3d5ef; --c-c: #f0d4e6; --c-p: #d4e2ea; --c-s: #d5e8d0; --c-n: #cfe8e1; --c-h: #fbe6a6; --c-g: #d8d9f2;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #94a0a8; --line: #2a343b; --accent: #4dbcb0; --accent-soft: #173431; --heat: #4dbcb0; --on-heat: #0b1215;
+  --c-a: #5a2f24; --c-t: #574120; --c-m: #4a4230; --c-l: #3f3352; --c-c: #4d2f42; --c-p: #2b3a44; --c-s: #2f4230; --c-n: #234039; --c-h: #50461c; --c-g: #34355a; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #94a0a8; --line: #2a343b; --accent: #4dbcb0; --accent-soft: #173431; --heat: #4dbcb0; --on-heat: #0b1215;
+  --c-a: #5a2f24; --c-t: #574120; --c-m: #4a4230; --c-l: #3f3352; --c-c: #4d2f42; --c-p: #2b3a44; --c-s: #2f4230; --c-n: #234039; --c-h: #50461c; --c-g: #34355a; color-scheme: dark }
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
+.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
+.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
+.wrap { max-width: 1400px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px }
+.tools label { color: var(--muted); font-size: 13px; display: inline-flex; gap: 6px; align-items: center }
+.in { font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px }
+.in:focus-visible, .el:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.modos { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-bottom: 14px }
+.modos button { font: 500 13.5px var(--f-ui); border: 0; background: var(--panel); color: var(--muted); padding: 7px 14px; cursor: pointer }
+.modos button[aria-selected=true] { background: var(--accent); color: var(--panel) }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 15px var(--f-ui); margin: 0 0 10px }
+.fila { display: flex; flex-wrap: wrap; gap: 8px; align-items: center }
+.fila .in.ancho { flex: 1; min-width: 200px; font: 15px var(--f-mono) }
+.error { color: #c0392b; font-size: 13.5px; margin: 10px 0 0 }
+.grande { font: 600 24px var(--f-math); margin: 12px 0 4px } .grande small { font: 14px var(--f-ui); color: var(--muted) }
+.formula { font-family: var(--f-math); font-size: 1.15em }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; font-variant-numeric: tabular-nums }
+th, td { text-align: right; padding: 6px 8px; border-bottom: 1px solid var(--line) } th:first-child, td:first-child { text-align: left }
+th { color: var(--muted); font-weight: 500 }
+.tabla-scroll { overflow-x: auto }
+.barra-comp { display: flex; height: 14px; border-radius: 4px; overflow: hidden; margin: 10px 0 0 } .barra-comp span { height: 100% }
+.leyenda { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12.5px; color: var(--muted); margin-top: 6px } .leyenda b { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px }
+.conv { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 8px }
+@media (max-width: 700px) { .conv { grid-template-columns: repeat(2, minmax(0, 1fr)) } }
+.conv label { font-size: 12.5px; color: var(--muted); display: flex; flex-direction: column; gap: 4px }
+.ajustada { font: 20px var(--f-math); margin: 4px 0 12px; overflow-wrap: anywhere }
+.cantidad { display: flex; gap: 6px; justify-content: flex-end } .cantidad .q { width: 110px } .cantidad .u { width: auto }
+.flecha { font-family: var(--f-ui); font-size: .9em; padding: 0 .15em }
+.lim { color: var(--accent); font-weight: 600 }
+.pasos ol { margin: 0; padding-left: 20px } .pasos li { margin: 0 0 10px; font-family: var(--f-math); font-size: 15.5px }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.nota { color: var(--muted); font-size: 12.5px; margin: 10px 0 0 }
+.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria li { margin: 4px 0 }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Química</a> / Masa molar y estequiometría</span></header>
+<div class="wrap">
+<h1>Masa molar y estequiometría</h1>
+<p class="lead">Escribe una fórmula para ver su masa molar y su composición, o una reacción para ajustarla y calcular el reactivo limitante, lo que se forma y lo que sobra.</p>
+<div class="modos" role="tablist"><button role="tab" id="tab-masa" aria-selected="true">Masa molar</button><button role="tab" id="tab-este" aria-selected="false">Estequiometría</button></div>
+<label class="nota" style="display:inline-flex;gap:6px;align-items:center;margin:0 0 12px 12px">Masas atómicas <select id="modo" class="in"><option value="iupac">IUPAC (H 1,008; O 15,999)</option><option value="redondeadas">De clase (H 1; O 16; Cl 35,5)</option></select></label>
+
+<section id="masa">
+  <div class="card">
+    <h2>Fórmula</h2>
+    <div class="fila"><input id="formula" class="in ancho" value="CuSO4·5H2O" placeholder="H2SO4, Ca(OH)2, CuSO4·5H2O…" aria-label="Fórmula" autocomplete="off" spellcheck="false"></div>
+    <p class="nota">Paréntesis y corchetes, hidratos con · (o * o .) y cargas con ^: SO4^2-, Fe^3+. Las mayúsculas importan: Co es cobalto y CO, monóxido de carbono.</p>
+    <p class="error" id="error-masa" hidden></p>
+    <div id="res-masa"></div>
+  </div>
+  <div class="card" id="conv-card">
+    <h2>Conversor de cantidades</h2>
+    <div class="conv">
+      <label>Masa (g)<input id="cv-g" class="in" inputmode="decimal"></label>
+      <label>Cantidad (mol)<input id="cv-mol" class="in" inputmode="decimal"></label>
+      <label>Partículas<input id="cv-n" class="in" inputmode="decimal"></label>
+      <label>Volumen de gas en CN (L)<input id="cv-L" class="in" inputmode="decimal"></label>
+    </div>
+    <p class="nota">N<sub>A</sub> = 6,022·10<sup>23</sup> mol<sup>−1</sup>. Volumen molar de un gas ideal en condiciones normales (0 °C, 1 atm): 22,4 L/mol.</p>
+  </div>
+</section>
+
+<section id="este" hidden>
+  <div class="card">
+    <h2>Reacción</h2>
+    <div class="fila"><select id="ejemplos" class="in" aria-label="Ejemplos"></select></div>
+    <div class="fila" style="margin-top:8px"><input id="ecuacion" class="in ancho" placeholder="C3H8 + O2 -> CO2 + H2O" aria-label="Reacción" autocomplete="off" spellcheck="false"></div>
+    <p class="nota">Separa las especies con « + » y los dos lados con -> o =. No hace falta poner coeficientes: se ajusta sola. Para iones: MnO4^- + Fe^2+ + H^+ -> …</p>
+    <p class="error" id="error-este" hidden></p>
+    <div id="ajustada" class="ajustada"></div>
+    <div class="tabla-scroll"><table id="tabla-este"></table></div>
+    <div class="fila" style="margin-top:10px"><label class="nota" style="margin:0;display:inline-flex;gap:6px;align-items:center">Rendimiento <input id="rendimiento" class="in" style="width:80px" value="100" inputmode="decimal"> %</label></div>
+  </div>
+  <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+</section>
+
+<section class="teoria">
+  <h2>Masa molar</h2>
+  <p>La masa molar <i>M</i> de una sustancia es la masa de un mol de sus partículas, en g/mol. Se obtiene sumando las masas atómicas de todos los átomos de la fórmula: para el agua, M(H<sub>2</sub>O) = 2 · 1,008 + 15,999 = 18,015 g/mol. La composición centesimal es el porcentaje de la masa que aporta cada elemento.</p>
+  <h2>Ajuste de reacciones</h2>
+  <p>Ajustar una reacción es buscar los coeficientes que conservan el número de átomos de cada elemento (y la carga, si hay iones). Cada elemento da una ecuación lineal; los coeficientes son la solución entera más pequeña.</p>
+  <h2>Reactivo limitante y rendimiento</h2>
+  <ul>
+    <li>Pasa cada cantidad a moles: n = m / M, o n = V / 22,4 para un gas en condiciones normales.</li>
+    <li>Divide los moles de cada reactivo entre su coeficiente. El menor cociente marca el <b>reactivo limitante</b>: se gasta entero y decide cuánto producto se forma.</li>
+    <li>Los moles de producto salen de la proporción de coeficientes con el limitante. Si el rendimiento no es del 100 %, se multiplica por él.</li>
+    <li>Del resto de reactivos <b>sobra</b> lo que no reacciona: el reactivo en exceso.</li>
+  </ul>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Masa molar <span id="ver"></span> (beta)</footer>
+</body>
