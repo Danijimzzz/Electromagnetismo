@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMwZDZiNjYiLz48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlNmE2NDAiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtZGFzaGFycmF5PSI0IDYuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48cGF0aCBkPSJNMjAgMzJINDQiLz48cGF0aCBkPSJNMjEgMjdDMjcgMTQgMzcgMTQgNDMgMjciLz48cGF0aCBkPSJNMjEgMzdDMjcgNTAgMzcgNTAgNDMgMzciLz48cGF0aCBkPSJNMTcgMjRDMjIgNCA0MiA0IDQ3IDI0Ii8+PHBhdGggZD0iTTE3IDQwQzIyIDYwIDQyIDYwIDQ3IDQwIi8+PC9nPjxjaXJjbGUgY3g9IjE3IiBjeT0iMzIiIHI9IjgiIGZpbGw9IiNlZjdhNjIiLz48Y2lyY2xlIGN4PSI0NyIgY3k9IjMyIiByPSI4IiBmaWxsPSIjNzRhMmYyIi8+PHBhdGggZD0iTTEzIDMyaDhNMTcgMjh2OE00MyAzMmg4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta property="og:title" content="Tabla periódica interactiva">
+<meta property="og:description" content="Ficha de cada elemento con masa, configuración electrónica, electronegatividad y radio, y tendencias coloreadas">
+<meta property="og:image" content="https://electromagnetismo-two.vercel.app/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<title>Tabla periódica interactiva · SimulaCiencia</title>
+<meta name="description" content="Tabla periódica interactiva en español: ficha de cada elemento con masa atómica, configuración electrónica, electronegatividad, energía de ionización y radio, y tendencias coloreadas.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root {
+  --bg: #eef1ee; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d5dbd5; --accent: #0d6b66; --accent-soft: #e0efec; --heat: #0d6b66; --on-heat: #ffffff;
+  --c-a: #f3c7b8; --c-t: #f5dcb0; --c-m: #f0e3c4; --c-l: #e3d5ef; --c-c: #f0d4e6; --c-p: #d4e2ea; --c-s: #d5e8d0; --c-n: #cfe8e1; --c-h: #fbe6a6; --c-g: #d8d9f2;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #94a0a8; --line: #2a343b; --accent: #4dbcb0; --accent-soft: #173431; --heat: #4dbcb0; --on-heat: #0b1215;
+  --c-a: #5a2f24; --c-t: #574120; --c-m: #4a4230; --c-l: #3f3352; --c-c: #4d2f42; --c-p: #2b3a44; --c-s: #2f4230; --c-n: #234039; --c-h: #50461c; --c-g: #34355a; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #94a0a8; --line: #2a343b; --accent: #4dbcb0; --accent-soft: #173431; --heat: #4dbcb0; --on-heat: #0b1215;
+  --c-a: #5a2f24; --c-t: #574120; --c-m: #4a4230; --c-l: #3f3352; --c-c: #4d2f42; --c-p: #2b3a44; --c-s: #2f4230; --c-n: #234039; --c-h: #50461c; --c-g: #34355a; color-scheme: dark }
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
+.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
+.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
+.wrap { max-width: 1400px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px }
+.tools label { color: var(--muted); font-size: 13px; display: inline-flex; gap: 6px; align-items: center }
+.in { font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px }
+.in:focus-visible, .el:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 16px; align-items: start }
+@media (max-width: 1100px) { .layout { grid-template-columns: minmax(0, 1fr) } }
+.tablawrap { overflow-x: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px }
+.tabla { display: grid; grid-template-columns: repeat(18, minmax(38px, 1fr)); grid-template-rows: auto repeat(7, auto) 10px auto auto; gap: 3px; min-width: 720px }
+.el { position: relative; border: 1px solid transparent; border-radius: 5px; padding: 3px 3px 2px; background: var(--cell, var(--bg)); color: var(--ink); text-align: left; cursor: pointer; font: inherit; min-height: 52px; display: flex; flex-direction: column; justify-content: space-between; aspect-ratio: 1 / 1.05 }
+.el:hover { border-color: var(--ink) }
+.el.sel { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent) }
+.el.apagado { opacity: .22 }
+.osc, .osc .z, .osc .v, .osc span { color: var(--on-heat) !important }
+.el .z { font: 500 9.5px var(--f-mono); color: var(--muted) }
+.el .s { font: 600 clamp(13px, 1.35vw, 18px)/1 var(--f-ui); text-align: center }
+.el .v { font: 9px var(--f-mono); color: var(--muted); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.el.hueco { background: transparent; border: 1px dashed var(--line); cursor: default; justify-content: center; align-items: center; color: var(--muted); font-size: 9.5px }
+.grupo-h { font: 500 10px var(--f-mono); color: var(--muted); text-align: center; align-self: end }
+.leyenda { display: flex; flex-wrap: wrap; gap: 6px 12px; margin-top: 10px; font-size: 12px; color: var(--muted); align-items: center }
+.leyenda button { display: inline-flex; align-items: center; gap: 5px; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; padding: 2px 4px; border-radius: 4px }
+.leyenda button:hover, .leyenda button.on { color: var(--ink); background: var(--bg) }
+.leyenda b { display: inline-block; width: 12px; height: 12px; border-radius: 3px }
+.escala { display: inline-block; width: 140px; height: 10px; border-radius: 3px; background: linear-gradient(90deg, color-mix(in srgb, var(--heat) 8%, var(--panel)), var(--heat)) }
+.ficha { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; position: sticky; top: 12px }
+.ficha .cab { display: flex; gap: 12px; align-items: center }
+.ficha .grande { width: 76px; height: 76px; border-radius: 10px; background: var(--cell, var(--bg)); display: flex; flex-direction: column; justify-content: center; align-items: center }
+.ficha .grande span { font: 500 11px var(--f-mono); color: var(--muted) } .ficha .grande b { font: 600 30px/1.1 var(--f-ui) }
+.ficha h2 { font: 600 20px var(--f-ui); margin: 0 } .ficha .cat { color: var(--muted); font-size: 13px }
+.ficha dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 12px; margin: 14px 0 0; font-size: 13.5px }
+.ficha dt { color: var(--muted) } .ficha dd { margin: 0; font-variant-numeric: tabular-nums } .ficha dd.conf { font-family: var(--f-math); font-size: 15px }
+.capas { display: flex; gap: 4px; flex-wrap: wrap } .capas span { font: 12px var(--f-mono); background: var(--bg); border-radius: 4px; padding: 1px 6px }
+.nota { color: var(--muted); font-size: 12px; margin: 10px 0 0 }
+.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria li { margin: 4px 0 }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Química</a> / Tabla periódica</span></header>
+<div class="wrap">
+<h1>Tabla periódica interactiva</h1>
+<p class="lead">Pulsa un elemento para ver su ficha: masa atómica, configuración electrónica, electronegatividad, energía de ionización y radio. Colorea la tabla por una propiedad para ver cómo varía a lo largo de grupos y periodos.</p>
+<div class="tools">
+  <label>Colorear por <select id="color" class="in">
+    <option value="cat">Categoría</option><option value="en">Electronegatividad</option><option value="ei">Energía de ionización</option>
+    <option value="radio">Radio atómico</option><option value="masa">Masa atómica</option><option value="bloque">Bloque (s, p, d, f)</option><option value="estado">Estado a 25 °C</option>
+  </select></label>
+  <input type="search" id="buscar" class="in" placeholder="Buscar: Fe, hierro, 26…" aria-label="Buscar elemento" autocomplete="off">
+</div>
+<div class="layout">
+  <div>
+    <div class="tablawrap"><div class="tabla" id="tabla" role="grid" aria-label="Tabla periódica"></div></div>
+    <div class="leyenda" id="leyenda"></div>
+  </div>
+  <aside class="ficha" id="ficha" aria-live="polite"></aside>
+</div>
+<section class="teoria">
+  <h2>Cómo se lee la tabla periódica</h2>
+  <p>Los elementos están ordenados por número atómico <i>Z</i>, el número de protones. Cada fila es un <b>periodo</b>: todos sus elementos tienen los electrones de valencia en la misma capa. Cada columna es un <b>grupo</b>: sus elementos tienen la misma configuración de la capa de valencia y por eso se parecen químicamente. Los lantánidos y actínidos se sacan en dos filas aparte para que la tabla no sea demasiado ancha.</p>
+  <h2>Tendencias periódicas</h2>
+  <ul>
+    <li><b>Radio atómico</b>: aumenta al bajar en un grupo, porque se añaden capas, y disminuye hacia la derecha en un periodo, porque crece la carga nuclear efectiva.</li>
+    <li><b>Energía de ionización</b>: la energía para arrancar el electrón más externo. Sigue la tendencia contraria al radio: crece hacia arriba y hacia la derecha, con el máximo en los gases nobles.</li>
+    <li><b>Electronegatividad</b>: la tendencia a atraer los electrones de un enlace. Crece hacia arriba y a la derecha; el flúor es el más electronegativo (3,98 en la escala de Pauling).</li>
+    <li><b>Carácter metálico</b>: crece hacia abajo y a la izquierda. Los metaloides forman la frontera entre metales y no metales.</li>
+  </ul>
+  <h2>Configuración electrónica</h2>
+  <p>La ficha muestra la configuración del estado fundamental según la regla de Madelung (orden de llenado por <i>n</i> + <i>l</i>), con las excepciones conocidas como el cromo ([Ar] 3d⁵ 4s¹) o el cobre ([Ar] 3d¹⁰ 4s¹), y el reparto de electrones por capas.</p>
+  <p class="nota">Masas atómicas: valores abreviados de la IUPAC; entre corchetes, el número másico del isótopo más estable. Radios: calculados por Clementi y Raimondi (1967). Los elementos más pesados no tienen propiedades medidas.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Tabla periódica <span id="ver"></span> (beta)</footer>
+</body>
+<script>
+/* =====================================================================
+   Versiones y novedades: la web (portada, asignaturas, buscador) tiene su número y cada
+   herramienta el suyo. Hasta el lanzamiento se numera 0.x (beta); la 1.0 de una herramienta
+   llega cuando se da por terminada y la 1.0 de la web será el lanzamiento. Sube el segundo
+   número si hay algo nuevo (0.6) y añade un tercero si es solo un arreglo (0.5.1).
+   En las novedades de la web se anuncia también cada herramienta nueva.
+   Las notas son para los usuarios: solo funciones nuevas, arreglos visibles y cambios
+   en la interfaz. Lo interno (pruebas, CI, build, despliegue, refactorizaciones) no se anota;
+   el historial completo para desarrolladores está en Notion.
+   ===================================================================== */
+const Version = (() => {
+  const registros = {
+    web: [
+      { v: '0.2', fecha: '2026-10-23', cambios: ['Nueva herramienta: Tabla periódica interactiva, en Química.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Portada para elegir asignatura y herramienta: Electromagnetismo, Física general, Química, Matemáticas y Laboratorio, con buscador. Las herramientas que vienen después aparecen como «Próximamente».', 'Nueva herramienta: Magnetostática, en Electromagnetismo.'] },
+    ],
+    electrostatica: [
+      { v: '0.5.1', fecha: '2026-10-23', cambios: ['El simulador tiene ahora su propia dirección, /electromagnetismo/electrostatica/. Tus problemas guardados siguen ahí. El botón «Todas las herramientas» de la barra lateral vuelve a la portada.'] },
+    { v: '0.5', fecha: '2026-10-23', cambios: ['Doce ejercicios de ejemplo con enunciados propios: los mismos tipos de pregunta que en clase, con otras figuras y otros números. La guía de uso tiene capturas nuevas hechas con ellos.', 'La web tiene icono propio: un dipolo con sus líneas de campo, en la pestaña del navegador, en la pantalla de inicio del móvil y en la vista previa al compartir el enlace.', 'Páginas de aviso legal, privacidad, cookies y contacto, enlazadas al pie de la barra lateral.'] },
+    { v: '0.4', fecha: '2026-10-22', cambios: ['Número de versión visible y este apartado de novedades.', 'Arreglo: en la vista 3D los cilindros se dibujan con su radio real, aparecen las superficies de Gauss, y las esferas, cascarones y conductores tienen volumen en lugar de parecer círculos planos.'] },
+    { v: '0.3', fecha: '2026-10-22', cambios: ['Guía de uso con capturas (botón ?, barra lateral o F1).', 'Los resultados se escriben con la misma forma que el solucionario oficial: perfiles por tramos, factor común en logaritmos y radicales, y la pregunta V_A − V_B.'] },
+    { v: '0.2', fecha: '2026-10-22', cambios: ['Anillos, discos, cortezas y conductores.', 'Varias incógnitas, modo numérico SI, flujo de Gauss y gráficas E(z) y V(z).', 'Modo práctica, exportar la solución, deshacer y rehacer, mapa de color y vista 3D.', 'Búsqueda, carpetas y etiquetas en la barra lateral.'] },
+    { v: '0.1', fecha: '2026-10-22', cambios: ['Primera versión: cargas, hilos, planos y esferas con el desarrollo paso a paso y 12 ejercicios resueltos.', 'Barra lateral con tus problemas, los importados y los ejercicios; título y enunciado editables; archivos .emsim.json.'] },
+    ],
+    magnetostatica: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: campo magnético de hilos, segmentos, hilos semiinfinitos, espiras, arcos, solenoides y toroides con Biot-Savart, y fuerza sobre cargas en movimiento y sobre conductores, con el desarrollo paso a paso en la forma μ₀I/(πa) o en unidades del SI.', 'Dibujo del campo B en el plano XY, XZ o YZ, con puntos que se pueden arrastrar y ocho ejemplos resueltos.'] },
+    ],
+    'tabla-periodica': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: cada elemento tiene su ficha con la masa atómica y molar, el grupo, el periodo, el bloque, la configuración electrónica (abreviada, completa y por capas), la electronegatividad, la energía de ionización, el radio y el estado.', 'La tabla se puede colorear por categoría, electronegatividad, energía de ionización, radio, masa, bloque o estado, y tiene un buscador por nombre, símbolo o número atómico.'] },
+    ],
+  };
+  const de = (h) => ({ current: registros[h][0].v, log: registros[h] });
+  // Version.current y Version.log son los del simulador de electrostática
+  return { registros, de, ...de('electrostatica') };
+})();
+
+/* =====================================================================
+   Datos de los 118 elementos, compartidos por las herramientas de química
+   (tabla periódica, masa molar, configuración electrónica).
+   Cada fila: Z | símbolo | nombre | masa atómica (u; entre corchetes, la del isótopo más estable)
+            | categoría | electronegatividad de Pauling | 1.ª energía de ionización (kJ/mol)
+            | radio atómico calculado (pm, Clementi y Raimondi, 1967)
+   Un campo vacío es un dato desconocido o no medido.
+   Categorías: a alcalino, t alcalinotérreo, m metal de transición, l lantánido, c actínido,
+   p otro metal (bloque p), s metaloide, n no metal, h halógeno, g gas noble.
+   ===================================================================== */
+const Elementos = (() => {
+  const FILAS = `1|H|Hidrógeno|1.008|n|2.20|1312|53
+2|He|Helio|4.0026|g||2372|31
+3|Li|Litio|6.94|a|0.98|520|167
+4|Be|Berilio|9.0122|t|1.57|900|112
+5|B|Boro|10.81|s|2.04|801|87
+6|C|Carbono|12.011|n|2.55|1086|67
+7|N|Nitrógeno|14.007|n|3.04|1402|56
+8|O|Oxígeno|15.999|n|3.44|1314|48
+9|F|Flúor|18.998|h|3.98|1681|42
+10|Ne|Neón|20.180|g||2081|38
+11|Na|Sodio|22.990|a|0.93|496|190
+12|Mg|Magnesio|24.305|t|1.31|738|145
+13|Al|Aluminio|26.982|p|1.61|578|118
+14|Si|Silicio|28.085|s|1.90|787|111
+15|P|Fósforo|30.974|n|2.19|1012|98
+16|S|Azufre|32.06|n|2.58|1000|88
+17|Cl|Cloro|35.45|h|3.16|1251|79
+18|Ar|Argón|39.95|g||1521|71
+19|K|Potasio|39.098|a|0.82|419|243
+20|Ca|Calcio|40.078|t|1.00|590|194
+21|Sc|Escandio|44.956|m|1.36|633|184
+22|Ti|Titanio|47.867|m|1.54|659|176
+23|V|Vanadio|50.942|m|1.63|651|171
+24|Cr|Cromo|51.996|m|1.66|653|166
+25|Mn|Manganeso|54.938|m|1.55|717|161
+26|Fe|Hierro|55.845|m|1.83|763|156
+27|Co|Cobalto|58.933|m|1.88|760|152
+28|Ni|Níquel|58.693|m|1.91|737|149
+29|Cu|Cobre|63.546|m|1.90|746|145
+30|Zn|Zinc|65.38|m|1.65|906|142
+31|Ga|Galio|69.723|p|1.81|579|136
+32|Ge|Germanio|72.630|s|2.01|762|125
+33|As|Arsénico|74.922|s|2.18|947|114
+34|Se|Selenio|78.971|n|2.55|941|103
+35|Br|Bromo|79.904|h|2.96|1140|94
+36|Kr|Kriptón|83.798|g|3.00|1351|88
+37|Rb|Rubidio|85.468|a|0.82|403|265
+38|Sr|Estroncio|87.62|t|0.95|550|219
+39|Y|Itrio|88.906|m|1.22|600|212
+40|Zr|Circonio|91.224|m|1.33|640|206
+41|Nb|Niobio|92.906|m|1.6|652|198
+42|Mo|Molibdeno|95.95|m|2.16|684|190
+43|Tc|Tecnecio|[98]|m|1.9|702|183
+44|Ru|Rutenio|101.07|m|2.2|710|178
+45|Rh|Rodio|102.91|m|2.28|720|173
+46|Pd|Paladio|106.42|m|2.20|804|169
+47|Ag|Plata|107.87|m|1.93|731|165
+48|Cd|Cadmio|112.41|m|1.69|868|161
+49|In|Indio|114.82|p|1.78|558|156
+50|Sn|Estaño|118.71|p|1.96|709|145
+51|Sb|Antimonio|121.76|s|2.05|834|133
+52|Te|Telurio|127.60|s|2.1|869|123
+53|I|Yodo|126.90|h|2.66|1008|115
+54|Xe|Xenón|131.29|g|2.6|1170|108
+55|Cs|Cesio|132.91|a|0.79|376|298
+56|Ba|Bario|137.33|t|0.89|503|253
+57|La|Lantano|138.91|l|1.10|538|
+58|Ce|Cerio|140.12|l|1.12|534|
+59|Pr|Praseodimio|140.91|l|1.13|527|
+60|Nd|Neodimio|144.24|l|1.14|533|
+61|Pm|Prometio|[145]|l||540|
+62|Sm|Samario|150.36|l|1.17|545|
+63|Eu|Europio|151.96|l||547|
+64|Gd|Gadolinio|157.25|l|1.20|593|
+65|Tb|Terbio|158.93|l||566|
+66|Dy|Disprosio|162.50|l|1.22|573|
+67|Ho|Holmio|164.93|l|1.23|581|
+68|Er|Erbio|167.26|l|1.24|589|
+69|Tm|Tulio|168.93|l|1.25|597|
+70|Yb|Iterbio|173.05|l||603|
+71|Lu|Lutecio|174.97|l|1.27|524|
+72|Hf|Hafnio|178.49|m|1.3|659|208
+73|Ta|Tantalio|180.95|m|1.5|761|200
+74|W|Wolframio|183.84|m|2.36|770|193
+75|Re|Renio|186.21|m|1.9|760|188
+76|Os|Osmio|190.23|m|2.2|840|185
+77|Ir|Iridio|192.22|m|2.20|880|180
+78|Pt|Platino|195.08|m|2.28|870|177
+79|Au|Oro|196.97|m|2.54|890|174
+80|Hg|Mercurio|200.59|m|2.00|1007|171
+81|Tl|Talio|204.38|p|1.62|589|156
+82|Pb|Plomo|207.2|p|2.33|716|154
+83|Bi|Bismuto|208.98|p|2.02|703|143
+84|Po|Polonio|[209]|p|2.0|812|135
+85|At|Astato|[210]|h|2.2||127
+86|Rn|Radón|[222]|g|2.2|1037|120
+87|Fr|Francio|[223]|a|0.7||
+88|Ra|Radio|[226]|t|0.9|509|
+89|Ac|Actinio|[227]|c|1.1|499|
+90|Th|Torio|232.04|c|1.3|587|
+91|Pa|Protactinio|231.04|c|1.5|568|
+92|U|Uranio|238.03|c|1.38|598|
+93|Np|Neptunio|[237]|c|1.36|605|
+94|Pu|Plutonio|[244]|c|1.28|585|
+95|Am|Americio|[243]|c|1.3|578|
+96|Cm|Curio|[247]|c|1.3|581|
+97|Bk|Berkelio|[247]|c|1.3|601|
+98|Cf|Californio|[251]|c|1.3|608|
+99|Es|Einstenio|[252]|c|1.3|619|
+100|Fm|Fermio|[257]|c|1.3|627|
+101|Md|Mendelevio|[258]|c|1.3|635|
+102|No|Nobelio|[259]|c|1.3|642|
+103|Lr|Laurencio|[266]|c|1.3||
+104|Rf|Rutherfordio|[267]|m|||
+105|Db|Dubnio|[268]|m|||
+106|Sg|Seaborgio|[269]|m|||
+107|Bh|Bohrio|[270]|m|||
+108|Hs|Hasio|[269]|m|||
+109|Mt|Meitnerio|[278]|m|||
+110|Ds|Darmstatio|[281]|m|||
+111|Rg|Roentgenio|[282]|m|||
+112|Cn|Copernicio|[285]|m|||
+113|Nh|Nihonio|[286]|p|||
+114|Fl|Flerovio|[289]|p|||
+115|Mc|Moscovio|[290]|p|||
+116|Lv|Livermorio|[293]|p|||
+117|Ts|Teneso|[294]|h|||
+118|Og|Oganesón|[294]|g|||`;
+
+  const CATEGORIAS = {
+    a: 'Metal alcalino', t: 'Metal alcalinotérreo', m: 'Metal de transición', l: 'Lantánido', c: 'Actínido',
+    p: 'Otro metal', s: 'Metaloide', n: 'No metal', h: 'Halógeno', g: 'Gas noble',
+  };
+  const GASES = new Set(['H', 'He', 'N', 'O', 'F', 'Ne', 'Cl', 'Ar', 'Kr', 'Xe', 'Rn']), LIQUIDOS = new Set(['Br', 'Hg']);
+  const num = (s) => (s === '' || s == null ? null : +s);
+
+  // grupo y periodo; los lantánidos y actínidos (57–71, 89–103) van en sus filas aparte
+  const LIMITES = [2, 10, 18, 36, 54, 86, 118];
+  function posicion(Z) {
+    const periodo = LIMITES.findIndex((l) => Z <= l) + 1, ini = periodo === 1 ? 1 : LIMITES[periodo - 2] + 1, k = Z - ini;
+    if ((Z >= 57 && Z <= 71) || (Z >= 89 && Z <= 103)) return { periodo, grupo: null, fila: periodo === 6 ? 9 : 10, col: 3 + (Z - (periodo === 6 ? 57 : 89)) };
+    let grupo;
+    if (periodo === 1) grupo = Z === 1 ? 1 : 18;
+    else if (periodo <= 3) grupo = k < 2 ? k + 1 : k + 11;
+    else if (periodo <= 5) grupo = k + 1;
+    else grupo = k < 2 ? k + 1 : k < 17 ? 3 : k - 13;
+    return { periodo, grupo, fila: periodo, col: grupo };
+  }
+
+  /* ---------- Configuración electrónica: Madelung (n + l) con las excepciones conocidas ---------- */
+  const ORB = []; // orden de llenado
+  for (let s = 1; s <= 8; s++) for (let l = Math.min(s - 1, 3); l >= 0; l--) { const n = s - l; if (n > l) ORB.push([n, l]); }
+  const LETRA = 'spdf', CAP = [2, 6, 10, 14];
+  const EXCEPCIONES = {
+    24: { '3d': 5, '4s': 1 }, 29: { '3d': 10, '4s': 1 }, 41: { '4d': 4, '5s': 1 }, 42: { '4d': 5, '5s': 1 },
+    44: { '4d': 7, '5s': 1 }, 45: { '4d': 8, '5s': 1 }, 46: { '4d': 10, '5s': 0 }, 47: { '4d': 10, '5s': 1 },
+    57: { '4f': 0, '5d': 1 }, 58: { '4f': 1, '5d': 1 }, 64: { '4f': 7, '5d': 1 }, 78: { '5d': 9, '6s': 1 }, 79: { '5d': 10, '6s': 1 },
+    89: { '5f': 0, '6d': 1 }, 90: { '5f': 0, '6d': 2 }, 91: { '5f': 2, '6d': 1 }, 92: { '5f': 3, '6d': 1 }, 93: { '5f': 4, '6d': 1 },
+    96: { '5f': 7, '6d': 1 }, 103: { '6d': 0, '7p': 1 },
+  };
+  // devuelve [{n, l, e, nombre}] en orden de n y l (forma habitual: 1s² 2s² 2p⁶ 3s² 3p⁶ 3d¹⁰ 4s²…)
+  function configuracion(Z, ion = 0) {
+    const e = {};
+    let resto = Z;
+    for (const [n, l] of ORB) { if (!resto) break; const k = Math.min(CAP[l], resto); e[`${n}${LETRA[l]}`] = k; resto -= k; }
+    if (!ion && EXCEPCIONES[Z]) Object.assign(e, EXCEPCIONES[Z]);
+    // un catión pierde primero los electrones de mayor n (4s antes que 3d)
+    for (let q = ion; q > 0; q--) {
+      const k = Object.keys(e).filter((o) => e[o] > 0).sort((x, y) => +y[0] - +x[0] || LETRA.indexOf(y[1]) - LETRA.indexOf(x[1]))[0];
+      if (k) e[k]--;
+    }
+    for (let q = ion; q < 0; q++) {
+      const libre = ORB.map(([n, l]) => `${n}${LETRA[l]}`).find((o) => (e[o] || 0) < CAP[LETRA.indexOf(o[1])]);
+      e[libre] = (e[libre] || 0) + 1;
+    }
+    return Object.entries(e).filter(([, k]) => k > 0).map(([o, k]) => ({ n: +o.slice(0, -1), l: LETRA.indexOf(o.slice(-1)), e: k, nombre: o }))
+      .sort((a, b) => a.n - b.n || a.l - b.l);
+  }
+  const SUP = (k) => String(k).replace(/\d/g, (d) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d]);
+  const NOBLES = [2, 10, 18, 36, 54, 86];
+  const texto = (conf) => conf.map((o) => o.nombre + SUP(o.e)).join(' ');
+  // forma abreviada con el gas noble anterior: [Ar] 3d⁶ 4s²
+  function abreviada(Z) {
+    const g = [...NOBLES].reverse().find((n) => n < Z);
+    if (!g) return texto(configuracion(Z));
+    const base = new Set(configuracion(g).map((o) => o.nombre));
+    const full = configuracion(Z).filter((o) => !base.has(o.nombre) || configuracion(g).find((b) => b.nombre === o.nombre).e !== o.e);
+    return `[${lista[g - 1].simbolo}] ${texto(full)}`;
+  }
+  const capas = (Z) => { const c = []; for (const o of configuracion(Z)) c[o.n - 1] = (c[o.n - 1] || 0) + o.e; return c.map((x) => x || 0); };
+  const bloque = (Z) => { const c = configuracion(Z); const ult = ORB.map(([n, l]) => `${n}${LETRA[l]}`).filter((o) => c.some((x) => x.nombre === o)).pop(); return ((Z >= 57 && Z <= 71) || (Z >= 89 && Z <= 103)) ? 'f' : Z === 2 ? 's' : ult ? ult.slice(-1) : 's'; };
+
+  const lista = FILAS.split('\n').map((f) => {
+    const [Z, simbolo, nombre, masa, cat, en, ei, radio] = f.split('|');
+    const z = +Z, estable = masa.startsWith('[');
+    return {
+      Z: z, simbolo, nombre, masa: +masa.replace(/[[\]]/g, ''), masaEstable: estable, cat, categoria: CATEGORIAS[cat],
+      en: num(en), ei: num(ei), radio: num(radio),
+      estado: z >= 100 ? null : GASES.has(simbolo) ? 'gas' : LIQUIDOS.has(simbolo) ? 'líquido' : 'sólido',
+      ...posicion(z),
+    };
+  });
+  const porSimbolo = Object.fromEntries(lista.map((e) => [e.simbolo, e]));
+  return { lista, porSimbolo, CATEGORIAS, configuracion, texto, abreviada, capas, bloque, NOBLES };
+})();
+
+/* =====================================================================
+   Tabla periódica interactiva: rejilla de 18 grupos, colores por categoría
+   o por propiedad, buscador y ficha del elemento elegido (#Fe en la dirección).
+   ===================================================================== */
+(() => {
+  const E = Elementos, $ = (s) => document.querySelector(s);
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const coma = (x, d) => (x == null ? '—' : (d == null ? String(x) : x.toFixed(d)).replace('.', ','));
+  const PROPS = {
+    en: { nombre: 'Electronegatividad', v: (e) => e.en, f: (x) => coma(x, 2), u: '' },
+    ei: { nombre: '1.ª energía de ionización', v: (e) => e.ei, f: (x) => coma(x), u: 'kJ/mol' },
+    radio: { nombre: 'Radio atómico', v: (e) => e.radio, f: (x) => coma(x), u: 'pm' },
+    masa: { nombre: 'Masa atómica', v: (e) => e.masa, f: (x) => coma(x), u: 'u' },
+  };
+  const BLOQUES = { s: '#e07a5f', p: '#3d8bbd', d: '#d9a441', f: '#8e6fc1' };
+  const ESTADOS = { gas: '#5aa9e6', 'líquido': '#2bb39a', 'sólido': '#9aa5ad' };
+  let modo = 'cat', sel = null, filtroCat = null;
+  try { modo = localStorage.getItem('tabla-color') || 'cat'; } catch (e) { /* sin almacenamiento */ }
+
+  const tabla = $('#tabla'), celdas = {};
+  // fila 1: números de grupo; filas 2–8: periodos; 9: separación; 10–11: lantánidos y actínidos
+  const filaRej = (f) => (f <= 7 ? f + 1 : f + 1);
+  for (let g = 1; g <= 18; g++) { const d = document.createElement('div'); d.className = 'grupo-h'; d.style.gridRow = 1; d.style.gridColumn = g; d.textContent = g; tabla.append(d); }
+  for (const e of E.lista) {
+    const b = document.createElement('button');
+    b.className = 'el'; b.type = 'button';
+    b.style.gridRow = filaRej(e.fila); b.style.gridColumn = e.col;
+    b.innerHTML = `<span class="z">${e.Z}</span><span class="s">${e.simbolo}</span><span class="v"></span>`;
+    b.title = `${e.nombre} (${e.Z})`; b.setAttribute('aria-label', `${e.nombre}, número atómico ${e.Z}`);
+    b.addEventListener('click', () => elige(e.Z));
+    tabla.append(b); celdas[e.Z] = b;
+  }
+  for (const [fila, txt] of [[6, '57–71'], [7, '89–103']]) {
+    const d = document.createElement('div'); d.className = 'el hueco'; d.style.gridRow = filaRej(fila); d.style.gridColumn = 3; d.textContent = txt; tabla.append(d);
+  }
+
+  function pinta() {
+    const p = PROPS[modo], vals = p ? E.lista.map(p.v).filter((x) => x != null) : [];
+    const lo = Math.min(...vals), hi = Math.max(...vals);
+    for (const e of E.lista) {
+      const c = celdas[e.Z], v = c.querySelector('.v');
+      let fondo, osc = false;
+      if (modo === 'cat') { fondo = `var(--c-${e.cat})`; v.textContent = e.nombre; }
+      else if (modo === 'bloque') { const b = E.bloque(e.Z); fondo = `color-mix(in srgb, ${BLOQUES[b]} 35%, var(--panel))`; v.textContent = b; }
+      else if (modo === 'estado') { fondo = e.estado ? `color-mix(in srgb, ${ESTADOS[e.estado]} 35%, var(--panel))` : 'var(--bg)'; v.textContent = e.estado || '?'; }
+      else {
+        const x = p.v(e);
+        const t = x == null ? 0 : (x - lo) / (hi - lo || 1);
+        fondo = x == null ? 'var(--bg)' : `color-mix(in srgb, var(--heat) ${Math.round(8 + 80 * t)}%, var(--panel))`;
+        osc = t > 0.55;
+        v.textContent = x == null ? '—' : p.f(x);
+      }
+      c.style.setProperty('--cell', fondo);
+      c.classList.toggle('osc', osc);
+      c.classList.toggle('apagado', !!filtroCat && e.cat !== filtroCat);
+    }
+    const ley = $('#leyenda');
+    if (modo === 'cat') ley.innerHTML = Object.entries(E.CATEGORIAS).map(([k, n]) => `<button data-cat="${k}" class="${filtroCat === k ? 'on' : ''}"><b style="background:var(--c-${k})"></b>${n}</button>`).join('');
+    else if (modo === 'bloque') ley.innerHTML = Object.entries(BLOQUES).map(([k, c]) => `<span><b style="background:color-mix(in srgb, ${c} 35%, var(--panel))"></b> bloque ${k}</span>`).join('');
+    else if (modo === 'estado') ley.innerHTML = Object.entries(ESTADOS).map(([k, c]) => `<span><b style="background:color-mix(in srgb, ${c} 35%, var(--panel))"></b> ${k}</span>`).join('') + '<span>? desconocido</span>';
+    else ley.innerHTML = `<span>${p.nombre}:</span><span>${p.f(lo)}</span><span class="escala"></span><span>${p.f(hi)} ${p.u}</span><span>· gris: sin datos</span>`;
+    ley.querySelectorAll('[data-cat]').forEach((b) => b.addEventListener('click', () => { filtroCat = filtroCat === b.dataset.cat ? null : b.dataset.cat; pinta(); }));
+  }
+
+  function ficha(e) {
+    const c = celdas[e.Z];
+    const masa = e.masaEstable ? `[${e.masa}]` : coma(e.masa);
+    $('#ficha').innerHTML = `
+      <div class="cab"><div class="grande${c.classList.contains('osc') ? ' osc' : ''}" style="--cell:${c.style.getPropertyValue('--cell')}"><span>${e.Z}</span><b>${e.simbolo}</b></div>
+      <div><h2>${esc(e.nombre)}</h2><div class="cat">${e.categoria}</div></div></div>
+      <dl>
+        <dt>Número atómico</dt><dd>${e.Z}</dd>
+        <dt>Masa atómica</dt><dd>${masa} u${e.masaEstable ? ' (isótopo más estable)' : ''}</dd>
+        <dt>Masa molar</dt><dd>${e.masaEstable ? '—' : coma(e.masa) + ' g/mol'}</dd>
+        <dt>Grupo</dt><dd>${e.grupo ?? (e.Z < 89 ? 'lantánidos' : 'actínidos')}</dd>
+        <dt>Periodo</dt><dd>${e.periodo}</dd>
+        <dt>Bloque</dt><dd>${E.bloque(e.Z)}</dd>
+        <dt>Configuración</dt><dd class="conf">${E.abreviada(e.Z)}</dd>
+        <dt>Completa</dt><dd class="conf">${E.texto(E.configuracion(e.Z))}</dd>
+        <dt>Electrones por capa</dt><dd class="capas">${E.capas(e.Z).map((k, i) => `<span>${'KLMNOPQ'[i]} ${k}</span>`).join('')}</dd>
+        <dt>Electronegatividad</dt><dd>${coma(e.en, e.en == null ? null : 2)}</dd>
+        <dt>1.ª ionización</dt><dd>${e.ei == null ? '—' : coma(e.ei) + ' kJ/mol'}</dd>
+        <dt>Radio atómico</dt><dd>${e.radio == null ? '—' : coma(e.radio) + ' pm'}</dd>
+        <dt>Estado a 25 °C</dt><dd>${e.estado || 'desconocido'}</dd>
+      </dl>
+      ${e.Z > 100 ? '<p class="nota">Elemento sintético de vida muy corta: la configuración es la prevista y casi no hay propiedades medidas.</p>' : ''}`;
+  }
+  function elige(Z, conHash = true) {
+    if (sel) celdas[sel].classList.remove('sel');
+    sel = Z; celdas[Z].classList.add('sel');
+    ficha(E.lista[Z - 1]);
+    if (conHash) try { history.replaceState(null, '', '#' + E.lista[Z - 1].simbolo); } catch (e) { /* file:// */ }
+  }
+
+  const norm = (s) => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+  $('#buscar').addEventListener('input', (ev) => {
+    const q = norm(ev.target.value);
+    let primero = null;
+    for (const e of E.lista) {
+      const ok = !q || String(e.Z) === q || norm(e.simbolo) === q || norm(e.nombre).startsWith(q) || (q.length > 2 && norm(e.nombre).includes(q));
+      celdas[e.Z].classList.toggle('apagado', !ok || (!!filtroCat && e.cat !== filtroCat));
+      if (ok && q && !primero) primero = e.Z;
+    }
+    if (primero) elige(primero);
+  });
+  const sc = $('#color');
+  sc.value = modo;
+  sc.addEventListener('change', () => { modo = sc.value; filtroCat = null; try { localStorage.setItem('tabla-color', modo); } catch (e) { /* sin almacenamiento */ } pinta(); if (sel) ficha(E.lista[sel - 1]); });
+  // flechas del teclado para moverse por la tabla
+  tabla.addEventListener('keydown', (ev) => {
+    const d = { ArrowLeft: [0, -1], ArrowRight: [0, 1], ArrowUp: [-1, 0], ArrowDown: [1, 0] }[ev.key];
+    if (!d || !sel) return;
+    const a = E.lista[sel - 1], dest = E.lista.find((e) => e.fila === a.fila + d[0] && e.col === a.col + d[1]);
+    if (dest) { ev.preventDefault(); elige(dest.Z); celdas[dest.Z].focus(); }
+  });
+  const ver = $('#ver'); if (ver) ver.textContent = Version.de('tabla-periodica').current;
+  pinta();
+  const h = decodeURIComponent(location.hash.slice(1));
+  elige((E.porSimbolo[h] || E.lista[25]).Z, false);
+  window.TablaApp = { elige, get modo() { return modo; }, colorea: (m) => { sc.value = m; sc.dispatchEvent(new Event('change')); } };
+})();
+
+</script>
+</html>
