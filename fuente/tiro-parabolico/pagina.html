@@ -1,0 +1,138 @@
+<title>Tiro parabólico y cinemática: alcance, altura máxima y gráficas · SimulaCiencia</title>
+<meta name="description" content="Simulador de tiro parabólico en español: trayectoria, alcance, altura máxima, tiempo de vuelo y velocidad al caer, con y sin rozamiento del aire, gráficas x(t), v(t), a(t) y MRU y MRUA, con el desarrollo paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root {
+  --bg: #eef0f4; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d6dbe3; --accent: #2a5db5; --accent-soft: #e3ebf8;
+  --c-x: #2a5db5; --c-y: #1d8a5b; --c-v: #b5562a; --c-a: #8a3fa0; --suelo: #c9cfd8; --bola: #f0b429; --blanco: #c0392b;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #74a2f2; --accent-soft: #1b2a42;
+  --c-x: #74a2f2; --c-y: #4cc48e; --c-v: #ec8a5c; --c-a: #c88ee0; --suelo: #3a4452; --bola: #e0a52a; --blanco: #ef6a5a; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #74a2f2; --accent-soft: #1b2a42;
+  --c-x: #74a2f2; --c-y: #4cc48e; --c-v: #ec8a5c; --c-a: #c88ee0; --suelo: #3a4452; --bola: #e0a52a; --blanco: #ef6a5a; color-scheme: dark }
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
+.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
+.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+.modos { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-bottom: 14px }
+.modos button { font: 500 13.5px var(--f-ui); border: 0; background: var(--panel); color: var(--muted); padding: 7px 14px; cursor: pointer }
+.modos button[aria-selected=true] { background: var(--accent); color: var(--panel) }
+.layout { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 16px; align-items: start }
+@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr) } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px }
+.card h2 { font: 600 15px var(--f-ui); margin: 0 0 10px }
+.campos { display: grid; grid-template-columns: minmax(0, 1fr) 104px; gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px } .campos label small { color: var(--muted) } .campos .ancho { grid-column: 1 / -1 } .campos select.ancho { margin-top: -3px }
+.in { font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.in:focus-visible, .btn:focus-visible, .modos button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-top: 6px }
+.nota { grid-column: 1 / -1; font-size: 12.5px; color: var(--muted); margin: -2px 0 0 }
+.error { color: #c0392b; font-size: 13px; margin: 10px 0 0 }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 12px; cursor: pointer }
+.btn:hover { border-color: var(--accent) } .btn.pri { background: var(--accent); border-color: var(--accent); color: var(--panel) }
+canvas { display: block; width: 100%; border-radius: 8px; background: var(--bg) }
+#lienzo { height: 300px } #grafica { height: 200px; margin-top: 10px }
+#pista { height: 90px } .g3 { height: 130px; margin-top: 8px }
+.controles { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 10px; font-size: 13px; color: var(--muted) }
+.controles input[type=range] { flex: 1; min-width: 140px; accent-color: var(--accent) }
+.lectura { font: 13px var(--f-mono); color: var(--ink) }
+.leyenda { display: flex; gap: 4px 14px; flex-wrap: wrap; font-size: 12.5px; color: var(--muted); margin-top: 6px } .leyenda i { display: inline-block; width: 14px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 5px }
+.pasos { margin-top: 16px } .pasos ol { margin: 0; padding-left: 20px } .pasos li { margin: 0 0 10px; font-family: var(--f-math); font-size: 15.5px; overflow-wrap: anywhere }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.resumen { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 0 0 12px; font-size: 14px }
+.resumen div span { color: var(--muted) } .resumen div b { font-family: var(--f-mono); font-weight: 500 }
+.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física general</a> / Tiro parabólico</span></header>
+<div class="wrap">
+<h1>Tiro parabólico y cinemática</h1>
+<p class="lead">Lanza un proyectil y obtén el tiempo de vuelo, la altura máxima, el alcance y la velocidad al caer, con o sin rozamiento del aire. En la otra pestaña tienes el movimiento rectilíneo (MRU y MRUA). Debajo de cada resultado está el desarrollo.</p>
+<div class="modos" role="tablist"><button role="tab" id="tab-tiro" aria-selected="true">Tiro parabólico</button><button role="tab" id="tab-recta" aria-selected="false">Movimiento rectilíneo</button></div>
+
+<div id="panel-tiro" role="tabpanel">
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card">
+      <canvas id="lienzo" aria-label="Trayectoria del proyectil"></canvas>
+      <div class="controles">
+        <button class="btn pri" id="play" type="button">▶ Lanzar</button>
+        <button class="btn" id="reinicio" type="button" aria-label="Volver al inicio">↺</button>
+        <input type="range" id="tiempo" min="0" max="1000" value="0" aria-label="Tiempo">
+        <label>Velocidad <select id="ritmo" class="in" style="width:auto"><option value="0.25">×¼</option><option value="0.5">×½</option><option value="1" selected>×1</option><option value="2">×2</option></select></label>
+      </div>
+      <div class="lectura" id="lectura" style="margin-top:6px"></div>
+      <div class="controles"><label>Gráfica <select id="que" class="in" style="width:auto">
+        <option value="pos">Posición x(t), y(t)</option><option value="vel" selected>Velocidad vx(t), vy(t), |v|</option><option value="acel">Aceleración ax(t), ay(t)</option>
+      </select></label></div>
+      <canvas id="grafica" aria-label="Gráfica frente al tiempo"></canvas>
+      <div class="leyenda" id="leyenda"></div>
+    </div>
+    <div class="card pasos"><h2>Resultados y desarrollo</h2><div class="resumen" id="resumen"></div><ol id="pasos"></ol></div>
+  </div>
+</div>
+</div>
+
+<div id="panel-recta" role="tabpanel" hidden>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos-r" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos-r"></div>
+    <p class="error" id="error-r" hidden></p>
+  </div>
+  <div>
+    <div class="card">
+      <canvas id="pista" aria-label="Posición del móvil"></canvas>
+      <div class="controles">
+        <button class="btn pri" id="play-r" type="button">▶ Reproducir</button>
+        <button class="btn" id="reinicio-r" type="button" aria-label="Volver al inicio">↺</button>
+        <input type="range" id="tiempo-r" min="0" max="1000" value="0" aria-label="Tiempo">
+        <span class="lectura" id="lectura-r"></span>
+      </div>
+      <canvas class="g3" id="g-x" aria-label="Posición frente al tiempo"></canvas>
+      <canvas class="g3" id="g-v" aria-label="Velocidad frente al tiempo"></canvas>
+      <canvas class="g3" id="g-a" aria-label="Aceleración frente al tiempo"></canvas>
+    </div>
+    <div class="card pasos"><h2>Resultados y desarrollo</h2><div class="resumen" id="resumen-r"></div><ol id="pasos-r"></ol></div>
+  </div>
+</div>
+</div>
+
+<section class="teoria">
+  <h2>Ecuaciones del tiro parabólico</h2>
+  <p>Sin rozamiento el movimiento se separa en dos: en horizontal es uniforme (MRU) y en vertical uniformemente acelerado con a = −g (MRUA).</p>
+  <p class="f">x = v<sub>0</sub> cos α · t &nbsp;&nbsp; y = y<sub>0</sub> + v<sub>0</sub> sen α · t − ½ g t<sup>2</sup></p>
+  <p>La altura máxima se alcanza cuando v<sub>y</sub> = 0, en t = v<sub>0</sub> sen α / g, y vale y<sub>0</sub> + v<sub>0</sub><sup>2</sup> sen<sup>2</sup> α / (2 g). Si sale y cae a la misma altura, el alcance es R = v<sub>0</sub><sup>2</sup> sen 2α / g, máximo a 45°. Eliminando t sale la ecuación de la trayectoria, una parábola:</p>
+  <p class="f">y = y<sub>0</sub> + x tg α − g x<sup>2</sup> / (2 v<sub>0</sub><sup>2</sup> cos<sup>2</sup> α)</p>
+  <h2>Con rozamiento del aire</h2>
+  <p>Con una fuerza de rozamiento proporcional a la velocidad, a = −g ĵ − (b/m) v, las ecuaciones siguen teniendo solución exacta con exponenciales y la velocidad de caída tiende a v<sub>L</sub> = m g / b. Con rozamiento cuadrático, a = −g ĵ − (c/m) |v| v, que es lo que pasa con una pelota real, hay que integrar numéricamente. En los dos casos la trayectoria deja de ser simétrica: baja más empinada de lo que sube.</p>
+  <h2>MRU y MRUA</h2>
+  <p class="f">x = x<sub>0</sub> + v<sub>0</sub> t + ½ a t<sup>2</sup> &nbsp;&nbsp; v = v<sub>0</sub> + a t &nbsp;&nbsp; v<sup>2</sup> = v<sub>0</sub><sup>2</sup> + 2 a (x − x<sub>0</sub>)</p>
+  <p>En la gráfica x(t) la pendiente es la velocidad, y en v(t) la pendiente es la aceleración y el área bajo la curva es el desplazamiento.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Tiro parabólico <span id="ver"></span> (beta)</footer>
+</body>
