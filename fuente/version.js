@@ -4,6 +4,7 @@
    ===================================================================== */
 const Version = (() => {
   const log = [
+    { v: '6.7', fecha: '2026-10-23', cambios: ['Páginas de aviso legal, privacidad, cookies y contacto, enlazadas al pie de la barra lateral.'] },
     { v: '6.6', fecha: '2026-10-23', cambios: ['Doce ejercicios de ejemplo nuevos, con enunciados propios, en lugar de los del PDF de la asignatura: los mismos tipos de pregunta con otras figuras y otros números.', 'La guía de uso tiene capturas nuevas hechas con esos ejercicios.', 'La web publica solo la página, sin el código fuente, y está preparada para Cloudflare Pages además de Vercel.'] },
     { v: '6.5', fecha: '2026-10-22', cambios: ['Las novedades se agrupan por versión mayor (6, 5, 4…) y dentro de cada una se despliegan sus subversiones, como un índice con subíndices.'] },
     { v: '6.4', fecha: '2026-10-22', cambios: ['La web tiene icono propio: un dipolo con sus líneas de campo, en la pestaña del navegador, en la pantalla de inicio del móvil y en la vista previa al compartir el enlace.'] },
