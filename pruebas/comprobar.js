@@ -18,7 +18,7 @@ let fallos = 0;
 const mal = (m) => { fallos++; console.log('  ✗ ' + m); };
 
 // lo único que puede haber en publico/ (lo que sirven Vercel y Cloudflare Pages)
-const PUBLICABLES = ['index.html', 'og.png', 'apple-touch-icon.png'];
+const PUBLICABLES = ['index.html', 'og.png', 'apple-touch-icon.png', 'legal.css', 'aviso-legal.html', 'privacidad.html', 'cookies.html', 'contacto.html'];
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'emsim-'));
 const juegos = [
   { nombre: 'Ejemplos', presets: path.join(fuente, 'presets.js'), esperados: path.join(__dirname, 'esperados-ejemplos.json'), pagina: path.join(publico, 'index.html') },
