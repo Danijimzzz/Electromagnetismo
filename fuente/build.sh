@@ -65,4 +65,6 @@ if [ "$1" != privado ]; then
     version.js calorimetria/fisica.js calorimetria/app.js
   herramienta induccion ../publico/electromagnetismo/induccion/index.html "Autoinducción e inducción mutua" "Coeficiente de autoinducción de solenoides, toroides y cables coaxiales, inducción mutua, energía magnética y circuito RL, paso a paso" \
     version.js induccion/fisica.js induccion/app.js
+  herramienta matrices ../publico/matematicas/matrices/index.html "Matrices paso a paso" "Calculadora de matrices con fracciones exactas y complejos: determinante, inversa, rango, Gauss-Jordan y valores y vectores propios, paso a paso" \
+    version.js matematicas/algebra.js matrices/calculo.js matrices/app.js
 fi

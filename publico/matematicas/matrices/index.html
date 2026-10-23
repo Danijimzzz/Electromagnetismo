@@ -1,0 +1,847 @@
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMwZDZiNjYiLz48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlNmE2NDAiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtZGFzaGFycmF5PSI0IDYuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48cGF0aCBkPSJNMjAgMzJINDQiLz48cGF0aCBkPSJNMjEgMjdDMjcgMTQgMzcgMTQgNDMgMjciLz48cGF0aCBkPSJNMjEgMzdDMjcgNTAgMzcgNTAgNDMgMzciLz48cGF0aCBkPSJNMTcgMjRDMjIgNCA0MiA0IDQ3IDI0Ii8+PHBhdGggZD0iTTE3IDQwQzIyIDYwIDQyIDYwIDQ3IDQwIi8+PC9nPjxjaXJjbGUgY3g9IjE3IiBjeT0iMzIiIHI9IjgiIGZpbGw9IiNlZjdhNjIiLz48Y2lyY2xlIGN4PSI0NyIgY3k9IjMyIiByPSI4IiBmaWxsPSIjNzRhMmYyIi8+PHBhdGggZD0iTTEzIDMyaDhNMTcgMjh2OE00MyAzMmg4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta property="og:title" content="Matrices paso a paso">
+<meta property="og:description" content="Calculadora de matrices con fracciones exactas y complejos: determinante, inversa, rango, Gauss-Jordan y valores y vectores propios, paso a paso">
+<meta property="og:image" content="https://electromagnetismo-two.vercel.app/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<title>Matrices paso a paso: determinante, inversa, rango y valores propios · SimulaCiencia</title>
+<meta name="description" content="Calculadora de matrices paso a paso en español con fracciones exactas y números complejos: determinante por Gauss, Sarrus o Laplace, inversa por Gauss-Jordan o adjuntos, rango, escalonada reducida, valores y vectores propios y diagonalización.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root {
+  --bg: #eef0f4; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d6dbe3; --accent: #6b3fa0; --accent-soft: #efe6f8;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #b892ec; --accent-soft: #2b2140; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #b892ec; --accent-soft: #2b2140; color-scheme: dark }
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
+.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
+.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+.layout { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 16px; align-items: start }
+@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr) } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 15px var(--f-ui); margin: 0 0 10px }
+.campos { display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px } .campos label small { color: var(--muted) }
+.in { font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.in:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer }
+.btn:hover { border-color: var(--accent) }
+.error { color: #c0392b; font-size: 13px; margin: 10px 0 0 }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+.editor { margin-top: 12px }
+.editor-cab { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; font-size: 13.5px }
+.editor-cab b { font: italic 600 17px var(--f-math); margin-right: 4px }
+.editor-cab select { width: auto; padding: 3px 6px }
+.campos { grid-template-columns: auto minmax(0, 1fr) }
+.rejilla { display: inline-grid; max-width: 100%; gap: 4px; overflow-x: auto; padding: 2px 8px; border-left: 2px solid var(--ink); border-right: 2px solid var(--ink); border-radius: 6px }
+.rejilla input { font: 14px var(--f-math); text-align: center; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 5px; padding: 5px 2px; min-width: 0; width: 100% }
+.rejilla input:focus-visible { outline: 2px solid var(--accent); outline-offset: 0 }
+.res { font: 18px var(--f-math); overflow-x: auto; padding: 4px 0 }
+.res b { font-weight: 600 }
+.pasos ol { margin: 0; padding-left: 22px } .pasos li { margin: 0 0 14px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 4px }
+.mat { position: relative; display: inline-block; vertical-align: middle; padding: 0 7px; margin: 2px 2px }
+.mat::before, .mat::after { content: ""; position: absolute; top: 0; bottom: 0; width: 5px; border: 1.4px solid currentColor }
+.mat::before { left: 0; border-right: 0 } .mat::after { right: 0; border-left: 0 }
+.mat.det::before, .mat.det::after { width: 0; border-top: 0; border-bottom: 0 }
+.mat table { border-collapse: collapse } .mat td { padding: 2px 7px; text-align: center; white-space: nowrap; font-variant-numeric: tabular-nums }
+.mat td.barra { border-left: 1.2px solid currentColor }
+.mat td[data-piv] { color: var(--accent); font-weight: 600 }
+.fr { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; font-size: .82em; line-height: 1.1 }
+.fr > span:first-child { border-bottom: 1px solid currentColor; padding: 0 2px }
+.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Matemáticas</a> / Matrices paso a paso</span></header>
+<div class="wrap">
+<h1>Matrices paso a paso</h1>
+<p class="lead">Determinantes, inversas, rango, Gauss y Gauss-Jordan, valores y vectores propios, y operaciones con matrices. Los resultados salen con fracciones exactas y admiten números complejos, con cada operación entre filas explicada.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos">
+      <label for="op">Qué calcular</label><select id="op" class="in"></select>
+      <label for="metodo" id="metodo-l">Método</label><select id="metodo" class="in"></select>
+      <label for="k" id="k-l">Número k</label><input id="k" class="in" inputmode="text" autocomplete="off">
+      <label for="n" id="n-l">Exponente n</label><input id="n" class="in" inputmode="numeric" autocomplete="off">
+    </div>
+    <div class="editor" id="ed-A"></div>
+    <div class="editor" id="ed-B"></div>
+    <p class="nota">Escribe enteros, fracciones (3/4), decimales (0,25) o complejos (2−3i, (1+i)/2). Con Tab pasas a la casilla siguiente.</p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card"><h2>Resultado</h2><div class="res" id="res"></div></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Eliminación de Gauss</h2>
+  <p>Con tres operaciones entre filas se lleva cualquier matriz a forma escalonada: intercambiar dos filas, multiplicar una fila por un número distinto de cero y sumarle a una fila un múltiplo de otra. Cada fila empieza con más ceros que la anterior, y el primer elemento no nulo de cada fila es su pivote. Si además cada pivote vale 1 y es el único no nulo de su columna, la matriz está en forma escalonada reducida (Gauss-Jordan).</p>
+  <p>El rango es el número de filas no nulas que quedan al escalonar. Coincide con el número de columnas (o de filas) linealmente independientes.</p>
+  <h2>Determinante</h2>
+  <p>Sumar a una fila un múltiplo de otra no cambia el determinante, intercambiar dos filas le cambia el signo y multiplicar una fila por k lo multiplica por k. Por eso basta con dejar la matriz triangular y multiplicar la diagonal. Para 2×2 y 3×3 se usan la regla del producto cruzado y la de Sarrus, y para matrices mayores el desarrollo de Laplace por la fila o columna con más ceros.</p>
+  <p class="f">|A| = Σ<sub>j</sub> (−1)<sup>i+j</sup> a<sub>ij</sub> |A<sub>ij</sub>|</p>
+  <h2>Inversa</h2>
+  <p>Una matriz cuadrada tiene inversa si y solo si su determinante no es cero. Por Gauss-Jordan se reduce [A | I] hasta que a la izquierda quede la identidad, y entonces a la derecha queda A<sup>−1</sup>. Por adjuntos se usa la fórmula:</p>
+  <p class="f">A<sup>−1</sup> = (1 / |A|) · (Adj A)<sup>t</sup></p>
+  <h2>Valores y vectores propios</h2>
+  <p>λ es un valor propio de A si hay un vector v ≠ 0 con A v = λ v. Los valores propios son las raíces del polinomio característico |A − λI| = 0, y los vectores propios de cada λ son las soluciones no nulas de (A − λI) v = 0. La matriz es diagonalizable cuando cada valor propio tiene tantos vectores propios independientes como su multiplicidad. Entonces A = P D P<sup>−1</sup>, con los vectores propios en las columnas de P y los valores propios en la diagonal de D.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Matrices <span id="ver"></span> (beta)</footer>
+</body>
+<script>
+/* =====================================================================
+   Versiones y novedades: la web (portada, asignaturas, buscador) tiene su número y cada
+   herramienta el suyo. Hasta el lanzamiento se numera 0.x (beta); la 1.0 de una herramienta
+   llega cuando se da por terminada y la 1.0 de la web será el lanzamiento. Sube el segundo
+   número si hay algo nuevo (0.6) y añade un tercero si es solo un arreglo (0.5.1).
+   En las novedades de la web se anuncia también cada herramienta nueva.
+   Las notas son para los usuarios: solo funciones nuevas, arreglos visibles y cambios
+   en la interfaz. Lo interno (pruebas, CI, build, despliegue, refactorizaciones) no se anota;
+   el historial completo para desarrolladores está en Notion.
+   ===================================================================== */
+const Version = (() => {
+  const registros = {
+    web: [
+      { v: '0.11', fecha: '2026-10-23', cambios: ['Nueva herramienta: Matrices paso a paso, en Matemáticas.'] },
+      { v: '0.10', fecha: '2026-10-23', cambios: ['Nueva herramienta: Autoinducción e inducción mutua, en Electromagnetismo.'] },
+      { v: '0.9', fecha: '2026-10-23', cambios: ['Nueva herramienta: Calorimetría y cambios de fase, en Física general.'] },
+      { v: '0.8', fecha: '2026-10-23', cambios: ['Nueva herramienta: Disoluciones y concentraciones, en Química.'] },
+      { v: '0.7', fecha: '2026-10-23', cambios: ['Nueva herramienta: Tiro parabólico y cinemática, en Física general.'] },
+      { v: '0.6', fecha: '2026-10-23', cambios: ['Nueva herramienta: Condensadores con dieléctricos, en Electromagnetismo.'] },
+      { v: '0.5', fecha: '2026-10-23', cambios: ['Nueva herramienta: Configuración electrónica, en Química.'] },
+      { v: '0.4', fecha: '2026-10-23', cambios: ['Nueva herramienta: Masa molar y estequiometría, en Química.'] },
+      { v: '0.3', fecha: '2026-10-23', cambios: ['Nueva herramienta: Trabajo y energía, en Física general.'] },
+      { v: '0.2', fecha: '2026-10-23', cambios: ['Nueva herramienta: Tabla periódica interactiva, en Química.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Portada para elegir asignatura y herramienta: Electromagnetismo, Física general, Química, Matemáticas y Laboratorio, con buscador. Las herramientas que vienen después aparecen como «Próximamente».', 'Nueva herramienta: Magnetostática, en Electromagnetismo.'] },
+    ],
+    electrostatica: [
+      { v: '0.5.1', fecha: '2026-10-23', cambios: ['El simulador tiene ahora su propia dirección, /electromagnetismo/electrostatica/. Tus problemas guardados siguen ahí. El botón «Todas las herramientas» de la barra lateral vuelve a la portada.'] },
+    { v: '0.5', fecha: '2026-10-23', cambios: ['Doce ejercicios de ejemplo con enunciados propios: los mismos tipos de pregunta que en clase, con otras figuras y otros números. La guía de uso tiene capturas nuevas hechas con ellos.', 'La web tiene icono propio: un dipolo con sus líneas de campo, en la pestaña del navegador, en la pantalla de inicio del móvil y en la vista previa al compartir el enlace.', 'Páginas de aviso legal, privacidad, cookies y contacto, enlazadas al pie de la barra lateral.'] },
+    { v: '0.4', fecha: '2026-10-22', cambios: ['Número de versión visible y este apartado de novedades.', 'Arreglo: en la vista 3D los cilindros se dibujan con su radio real, aparecen las superficies de Gauss, y las esferas, cascarones y conductores tienen volumen en lugar de parecer círculos planos.'] },
+    { v: '0.3', fecha: '2026-10-22', cambios: ['Guía de uso con capturas (botón ?, barra lateral o F1).', 'Los resultados se escriben con la misma forma que el solucionario oficial: perfiles por tramos, factor común en logaritmos y radicales, y la pregunta V_A − V_B.'] },
+    { v: '0.2', fecha: '2026-10-22', cambios: ['Anillos, discos, cortezas y conductores.', 'Varias incógnitas, modo numérico SI, flujo de Gauss y gráficas E(z) y V(z).', 'Modo práctica, exportar la solución, deshacer y rehacer, mapa de color y vista 3D.', 'Búsqueda, carpetas y etiquetas en la barra lateral.'] },
+    { v: '0.1', fecha: '2026-10-22', cambios: ['Primera versión: cargas, hilos, planos y esferas con el desarrollo paso a paso y 12 ejercicios resueltos.', 'Barra lateral con tus problemas, los importados y los ejercicios; título y enunciado editables; archivos .emsim.json.'] },
+    ],
+    magnetostatica: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: campo magnético de hilos, segmentos, hilos semiinfinitos, espiras, arcos, solenoides y toroides con Biot-Savart, y fuerza sobre cargas en movimiento y sobre conductores, con el desarrollo paso a paso en la forma μ₀I/(πa) o en unidades del SI.', 'Dibujo del campo B en el plano XY, XZ o YZ, con puntos que se pueden arrastrar y ocho ejemplos resueltos.'] },
+    ],
+    'tabla-periodica': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: cada elemento tiene su ficha con la masa atómica y molar, el grupo, el periodo, el bloque, la configuración electrónica (abreviada, completa y por capas), la electronegatividad, la energía de ionización, el radio y el estado.', 'La tabla se puede colorear por categoría, electronegatividad, energía de ionización, radio, masa, bloque o estado, y tiene un buscador por nombre, símbolo o número atómico.'] },
+    ],
+    'trabajo-y-energia': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: un bloque baja por una rampa con rozamiento, recorre un tramo horizontal y comprime un muelle. Animación con barras de energía cinética, gravitatoria, elástica y calor, gráfica de las energías en el tiempo y el desarrollo paso a paso con la velocidad al pie de la rampa, al llegar al muelle y la compresión máxima.', 'Seis ejemplos: sin rozamiento, se para antes del muelle, el rozamiento lo sujeta, con empujón inicial y muelle duro.'] },
+    ],
+    'masa-molar': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: masa molar y composición centesimal de cualquier fórmula, con paréntesis, hidratos e iones, y conversor entre gramos, moles, partículas y litros de gas.', 'Estequiometría: ajusta la reacción sola (también las iónicas), calcula el reactivo limitante, lo que se forma con el rendimiento que digas y lo que sobra, paso a paso.', 'Masas atómicas de la IUPAC o redondeadas como en clase.'] },
+    ],
+    'configuracion-electronica': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: configuración electrónica de cualquier elemento o ion por orden de llenado, abreviada y por capas, con el diagrama de Moeller, el diagrama de orbitales con la regla de Hund, los electrones desapareados y los números cuánticos del electrón diferenciador.', 'Avisa de las excepciones como el cromo o el cobre, y en los cationes quita primero los electrones de la capa más externa.'] },
+    ],
+    condensadores: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: condensadores planos, cilíndricos y esféricos con capas de dieléctrico en serie o, en el plano, ocupando parte del área. Capacidad, carga, tensión y energía; campos E, D y P en cada capa y cargas de polarización, con el desarrollo paso a paso.', 'Compara con el condensador vacío: qué pasa al meter el dieléctrico con la batería conectada o con el condensador aislado.', 'Dibujo del corte con las líneas de campo y gráfica de E a lo largo del condensador.'] },
+    ],
+    'tiro-parabolico': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: tiro parabólico desde cualquier altura hasta cualquier altura, con el tiempo de vuelo, la altura máxima, el alcance y la velocidad al caer, y el desarrollo paso a paso. Trayectoria animada con los vectores de velocidad y gráficas de posición, velocidad y aceleración frente al tiempo.', 'Rozamiento del aire lineal o cuadrático, comparado con la trayectoria sin rozamiento.', 'Blanco: dice si el proyectil pasa por un punto y con qué dos ángulos se acierta.', 'Movimiento rectilíneo (MRU y MRUA): posición y velocidad en un instante, cuándo pasa por un punto y cuándo se para, con las gráficas x(t), v(t) y a(t).'] },
+    ],
+    disoluciones: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: da la concentración de una disolución como molaridad, molalidad, fracción molar, % en masa, % masa/volumen, g/L o ppm y obtén todas las demás, con la densidad para pasar de masa a volumen y el desarrollo con su base de cálculo.', 'Preparar una disolución: los gramos de sólido (con su pureza) o los mililitros de reactivo comercial (con su riqueza y densidad) que hay que medir.', 'Diluciones con C₁V₁ = C₂V₂, despejando el dato que falte, y mezcla de dos disoluciones del mismo soluto.'] },
+    ],
+    calorimetria: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: temperatura de equilibrio al mezclar hasta cinco cuerpos de agua, hielo, vapor, metales, etanol, vidrio, un calorímetro o una sustancia con tus datos, con los cambios de fase que hagan falta.', 'Si la energía no llega para fundir todo el hielo o condensar todo el vapor, dice cuántos gramos quedan de cada fase.', 'Tabla con el calor de cada cuerpo, el desarrollo etapa por etapa (m c ΔT y m L) y la curva de calentamiento de cada uno.'] },
+    ],
+    induccion: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: coeficiente de autoinducción de solenoides (con núcleo), toroides de sección rectangular y circular, cables coaxiales y líneas bifilares, con el desarrollo desde la ley de Ampère.', 'Inducción mutua entre dos solenoides, dos espiras, un hilo y una espira, y una bobina sobre un toroide, o a partir de L₁, L₂ y k, con el coeficiente de acoplamiento.', 'Flujo, energía magnética y fem inducida si das la corriente o cómo cambia.', 'Circuito RL al cerrar el interruptor o al quitar la fuente: constante de tiempo, corriente y tensión en la bobina en cualquier instante y su gráfica.'] },
+    ],
+    matrices: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: determinante por Gauss, por Sarrus o por Laplace; inversa por Gauss-Jordan o por adjuntos; rango; forma escalonada y escalonada reducida, con cada operación entre filas y la matriz después de cada paso.', 'Valores y vectores propios con el polinomio característico, las raíces exactas (también con radicales o complejas) y si la matriz es diagonalizable, con P y D.', 'Suma, resta, producto (elemento a elemento), producto por un número, potencia y traspuesta.', 'Fracciones exactas y números complejos en cualquier casilla: 3/4, 0,25, 2−3i o (1+i)/2.'] },
+    ],
+  };
+  const de = (h) => ({ current: registros[h][0].v, log: registros[h] });
+  // Version.current y Version.log son los del simulador de electrostática
+  return { registros, de, ...de('electrostatica') };
+})();
+
+/* =====================================================================
+   Álgebra lineal exacta (sin DOM): números racionales con BigInt y
+   complejos de parte real e imaginaria racional, lectura de «3/4», «0,25»
+   o «2−3i», matrices, eliminación de Gauss y Gauss-Jordan con los pasos,
+   determinantes, inversas, rango, núcleo y polinomio característico.
+   La usan Matrices y Sistemas de ecuaciones.
+   ===================================================================== */
+const Algebra = (() => {
+  /* ---------- Racionales ---------- */
+  const babs = (a) => (a < 0n ? -a : a);
+  const mcd = (a, b) => { a = babs(a); b = babs(b); while (b) [a, b] = [b, a % b]; return a; };
+  const mcm = (a, b) => (a / mcd(a, b)) * b;
+  function Q(n, d = 1n) {
+    n = BigInt(n); d = BigInt(d);
+    if (d === 0n) throw new Error('División por cero');
+    if (d < 0n) { n = -n; d = -d; }
+    const g = mcd(n, d) || 1n;
+    return { n: n / g, d: d / g };
+  }
+  const q0 = Q(0), q1 = Q(1);
+  const qsum = (a, b) => Q(a.n * b.d + b.n * a.d, a.d * b.d), qres = (a, b) => Q(a.n * b.d - b.n * a.d, a.d * b.d);
+  const qmul = (a, b) => Q(a.n * b.n, a.d * b.d), qdiv = (a, b) => { if (b.n === 0n) throw new Error('División por cero'); return Q(a.n * b.d, a.d * b.n); };
+  const qneg = (a) => ({ n: -a.n, d: a.d }), qcero = (a) => a.n === 0n, qigual = (a, b) => a.n === b.n && a.d === b.d;
+  const qnum = (a) => Number(a.n) / Number(a.d);
+
+  /* ---------- Complejos de partes racionales ---------- */
+  const C = (re, im = q0) => ({ re, im });
+  const c0 = C(q0), c1 = C(q1), cI = C(q0, q1);
+  const ent = (k) => C(Q(k));
+  const suma = (a, b) => C(qsum(a.re, b.re), qsum(a.im, b.im));
+  const resta = (a, b) => C(qres(a.re, b.re), qres(a.im, b.im));
+  const mul = (a, b) => C(qres(qmul(a.re, b.re), qmul(a.im, b.im)), qsum(qmul(a.re, b.im), qmul(a.im, b.re)));
+  const neg = (a) => C(qneg(a.re), qneg(a.im));
+  const conj = (a) => C(a.re, qneg(a.im));
+  function div(a, b) {
+    const m = qsum(qmul(b.re, b.re), qmul(b.im, b.im));
+    if (qcero(m)) throw new Error('División por cero');
+    const p = mul(a, conj(b));
+    return C(qdiv(p.re, m), qdiv(p.im, m));
+  }
+  const esCero = (a) => qcero(a.re) && qcero(a.im), igual = (a, b) => qigual(a.re, b.re) && qigual(a.im, b.im);
+  const esReal = (a) => qcero(a.im), esUno = (a) => igual(a, c1), esMenosUno = (a) => igual(a, ent(-1));
+  const aFloat = (a) => ({ re: qnum(a.re), im: qnum(a.im) });
+  function potencia(b, e) {
+    let r = c1, x = b, k = BigInt(e);
+    if (k < 0n) { x = div(c1, b); k = -k; }
+    while (k > 0n) { if (k & 1n) r = mul(r, x); x = mul(x, x); k >>= 1n; }
+    return r;
+  }
+
+  /* ---------- Lectura ---------- */
+  // admite enteros, decimales con coma o punto, fracciones, i (o j), paréntesis, ^ entero y producto implícito: 2i, 3(1+i)
+  function leer(texto) {
+    const orig = String(texto ?? '').trim();
+    const s = orig.replace(/\s+/g, '').replace(/[−–]/g, '-').replace(/[·×]/g, '*').replace(/j/gi, 'i').replace(/I/g, 'i');
+    if (!s) throw new Error('Hay una casilla vacía');
+    let p = 0;
+    const mal = () => new Error(`«${orig}» no es un número: escribe por ejemplo 3, −1/2, 0,25 o 2−3i`);
+    const ve = () => s[p];
+    function expr() {
+      let v = termino();
+      while (ve() === '+' || ve() === '-') { const op = s[p++], t = termino(); v = op === '+' ? suma(v, t) : resta(v, t); }
+      return v;
+    }
+    function termino() {
+      let v = unario();
+      for (;;) {
+        const c = ve();
+        if (c === '*' || c === '/') { p++; const f = unario(); v = c === '*' ? mul(v, f) : div(v, f); }
+        else if (c === 'i' || c === '(') v = mul(v, pot());
+        else return v;
+      }
+    }
+    function unario() {
+      if (ve() === '-') { p++; return neg(unario()); }
+      if (ve() === '+') { p++; return unario(); }
+      return pot();
+    }
+    function pot() {
+      const b = atomo();
+      if (ve() !== '^') return b;
+      p++;
+      const m = /^-?\d+/.exec(s.slice(p));
+      if (!m) throw mal();
+      p += m[0].length;
+      return potencia(b, m[0]);
+    }
+    function atomo() {
+      const c = ve();
+      if (c === '(') { p++; const v = expr(); if (s[p++] !== ')') throw mal(); return v; }
+      if (c === 'i') { p++; return cI; }
+      const m = /^(\d+)(?:[.,](\d*))?|^[.,](\d+)/.exec(s.slice(p));
+      if (!m) throw mal();
+      p += m[0].length;
+      const e = m[1] ?? '0', d = m[2] ?? m[3] ?? '';
+      return C(Q(BigInt(e + d), 10n ** BigInt(d.length)));
+    }
+    let v;
+    try { v = expr(); } catch (e) { throw e.message === 'División por cero' ? new Error(`«${orig}» divide entre cero`) : mal(); }
+    if (p < s.length) throw mal();
+    return v;
+  }
+
+  /* ---------- Escritura ---------- */
+  const menos = (s) => s.replace(/-/g, '−');
+  const qTxt = (a) => menos(a.d === 1n ? `${a.n}` : `${a.n}/${a.d}`);
+  const qHtml = (a) => (a.d === 1n ? menos(`${a.n}`) : `${a.n < 0n ? '−' : ''}<span class="fr"><span>${babs(a.n)}</span><span>${a.d}</span></span>`);
+  // coeficiente de i: 1 → i, −1 → −i, 3/2 → 3/2 i
+  const imTxt = (q) => (qigual(q, q1) ? 'i' : qigual(q, qneg(q1)) ? '−i' : q.d === 1n ? `${qTxt(q)}i` : `${qTxt(q)}·i`);
+  const imHtml = (q) => (qigual(q, q1) ? 'i' : qigual(q, qneg(q1)) ? '−i' : `${qHtml(q)}i`);
+  function escribe(a, im, re) {
+    if (qcero(a.im)) return re(a.re);
+    if (qcero(a.re)) return im(a.im);
+    return `${re(a.re)} ${a.im.n < 0n ? '−' : '+'} ${im(qcero(a.im) ? a.im : { n: babs(a.im.n), d: a.im.d })}`;
+  }
+  const txt = (a) => escribe(a, imTxt, qTxt);
+  const html = (a) => escribe(a, imHtml, qHtml);
+  const compuesto = (a) => !qcero(a.re) && !qcero(a.im);
+  // entre paréntesis si tiene dos partes (para multiplicar)
+  const htmlP = (a) => (compuesto(a) ? `(${html(a)})` : html(a));
+  // como factor de un producto: también entre paréntesis si es negativo, «2·(−1)·5»
+  const htmlF = (a) => (compuesto(a) || (qcero(a.im) ? a.re.n < 0n : qcero(a.re) && a.im.n < 0n) ? `(${html(a)})` : html(a));
+  // signo para escribir «x + k·y»: devuelve [signo, valor positivo o entre paréntesis]
+  function signo(a) {
+    if (compuesto(a)) return ['+', `(${html(a)})`];
+    const negativo = qcero(a.im) ? a.re.n < 0n : a.im.n < 0n;
+    return negativo ? ['−', html(neg(a))] : ['+', html(a)];
+  }
+  const decimal = (x, d = 4) => {
+    if (!isFinite(x)) return '—';
+    if (Math.abs(x) < 1e-12) return '0';
+    return menos(String(+x.toPrecision(d))).replace('.', ',');
+  };
+  const decimalC = (z, d = 4) => {
+    const re = Math.abs(z.re) < 1e-10 ? 0 : z.re, im = Math.abs(z.im) < 1e-10 ? 0 : z.im;
+    if (!im) return decimal(re, d);
+    const ii = Math.abs(im) === 1 ? 'i' : `${decimal(Math.abs(im), d)}i`;
+    return re ? `${decimal(re, d)} ${im < 0 ? '−' : '+'} ${ii}` : `${im < 0 ? '−' : ''}${ii}`;
+  };
+
+  /* ---------- Matrices ---------- */
+  const copia = (M) => M.map((f) => f.slice());
+  const identidad = (n) => Array.from({ length: n }, (_, i) => Array.from({ length: n }, (_, j) => (i === j ? c1 : c0)));
+  const traspuesta = (M) => M[0].map((_, j) => M.map((f) => f[j]));
+  const sumaM = (A, B) => A.map((f, i) => f.map((x, j) => suma(x, B[i][j])));
+  const restaM = (A, B) => A.map((f, i) => f.map((x, j) => resta(x, B[i][j])));
+  const escalar = (k, A) => A.map((f) => f.map((x) => mul(k, x)));
+  const producto = (A, B) => A.map((f) => B[0].map((_, j) => f.reduce((s, x, k) => suma(s, mul(x, B[k][j])), c0)));
+  const iguales = (A, B) => A.length === B.length && A.every((f, i) => f.length === B[i].length && f.every((x, j) => igual(x, B[i][j])));
+  const traza = (A) => A.reduce((s, f, i) => suma(s, f[i]), c0);
+  const esRealM = (A) => A.every((f) => f.every(esReal));
+  const leerMatriz = (filas) => filas.map((f, i) => f.map((v, j) => { try { return leer(v); } catch (e) { throw new Error(`Fila ${i + 1}, columna ${j + 1}: ${e.message}`); } }));
+
+  // matriz en HTML; barra: columna antes de la que va la línea vertical; det: barras de determinante
+  function matHtml(M, { barra = null, det = false, marca = null } = {}) {
+    return `<span class="mat${det ? ' det' : ''}"><table>${M.map((f, i) => `<tr>${f.map((x, j) => `<td${j === barra ? ' class="barra"' : ''}${marca && marca[0] === i && marca[1] === j ? ' data-piv' : ''}>${html(x)}</td>`).join('')}</tr>`).join('')}</table></span>`;
+  }
+  const vecHtml = (v) => matHtml(v.map((x) => [x]));
+  const F = (i) => `F<sub>${i + 1}</sub>`;
+
+  // Eliminación de Gauss (escalonada) o de Gauss-Jordan (escalonada reducida).
+  // columnas: solo se buscan pivotes en las primeras columnas (para [A | I] o [A | b]).
+  function escalonar(M0, { reducida = false, columnas = M0[0].length, barra = null } = {}) {
+    const M = copia(M0), m = M.length, pasos = [], pivotes = [];
+    let r = 0, cambios = 0, escala = c1;
+    for (let c = 0; c < columnas && r < m; c++) {
+      let k = -1;
+      if (!esCero(M[r][c]) && (esUno(M[r][c]) || esMenosUno(M[r][c]))) k = r;
+      else {
+        for (let j = r + 1; j < m && k < 0; j++) if (esUno(M[j][c])) k = j;
+        if (k < 0 && !esCero(M[r][c])) k = r;
+        for (let j = r + 1; j < m && k < 0; j++) if (!esCero(M[j][c])) k = j;
+      }
+      if (k < 0) continue;
+      const ops = [];
+      if (k !== r) { [M[r], M[k]] = [M[k], M[r]]; cambios++; ops.push(`${F(r)} ↔ ${F(k)}`); }
+      if (reducida && !esUno(M[r][c])) {
+        const p = M[r][c];
+        escala = mul(escala, p);
+        M[r] = M[r].map((x) => div(x, p));
+        ops.push(esMenosUno(p) ? `${F(r)} → −${F(r)}` : `${F(r)} → ${F(r)} / ${htmlP(p)}`);
+      }
+      for (let j = reducida ? 0 : r + 1; j < m; j++) {
+        if (j === r || esCero(M[j][c])) continue;
+        const f = div(M[j][c], M[r][c]);
+        M[j] = M[j].map((x, l) => resta(x, mul(f, M[r][l])));
+        const [s, v] = signo(neg(f));
+        ops.push(`${F(j)} → ${F(j)} ${s} ${esUno(f) || esMenosUno(f) ? '' : v + '·'}${F(r)}`);
+      }
+      pivotes.push([r, c]);
+      if (ops.length) pasos.push({ ops, M: copia(M), barra, piv: [r, c] });
+      r++;
+    }
+    return { R: M, pasos, pivotes, rango: pivotes.length, cambios, escala };
+  }
+
+  function determinante(A) {
+    const n = A.length, e = escalonar(A);
+    if (e.rango < n) return c0;
+    let d = e.cambios % 2 ? ent(-1) : c1;
+    for (let i = 0; i < n; i++) d = mul(d, e.R[i][i]);
+    return d;
+  }
+  const menor = (A, i, j) => A.filter((_, r) => r !== i).map((f) => f.filter((_, c) => c !== j));
+  const cofactor = (A, i, j) => ((i + j) % 2 ? neg : (x) => x)(determinante(menor(A, i, j)));
+
+  // núcleo: base de las soluciones de A x = 0, con vectores sin denominadores
+  function nucleo(A) {
+    const n = A[0].length, e = escalonar(A, { reducida: true }), pc = e.pivotes.map(([, c]) => c);
+    const libres = [...Array(n).keys()].filter((c) => !pc.includes(c));
+    const base = libres.map((l) => {
+      const v = Array(n).fill(c0);
+      v[l] = c1;
+      e.pivotes.forEach(([r, c]) => { v[c] = neg(e.R[r][l]); });
+      return limpia(v);
+    });
+    return { R: e.R, pasos: e.pasos, pivotes: e.pivotes, libres, base };
+  }
+  // multiplica un vector por el mcm de los denominadores (y le quita el signo − del primer elemento no nulo si es real)
+  function limpia(v) {
+    let m = 1n;
+    for (const x of v) m = mcm(mcm(m, x.re.d), x.im.d);
+    let w = v.map((x) => mul(ent(m), x));
+    const ints = w.flatMap((x) => [x.re.n, x.im.n]).filter((x) => x !== 0n);
+    const g = ints.reduce((a, b) => mcd(a, b), 0n);
+    if (g > 1n) w = w.map((x) => div(x, ent(g)));
+    const p = w.find((x) => !esCero(x));
+    if (p && esReal(p) && p.re.n < 0n) w = w.map(neg);
+    return w;
+  }
+
+  /* ---------- Polinomio característico y raíces ---------- */
+  // coeficientes de det(λI − A) de mayor a menor grado (Faddeev-LeVerrier)
+  function caracteristico(A) {
+    const n = A.length, c = Array(n + 1).fill(c0);
+    c[0] = c1;
+    let Mk = identidad(n).map((f) => f.map(() => c0));
+    for (let k = 1; k <= n; k++) {
+      Mk = sumaM(producto(A, Mk), escalar(c[k - 1], identidad(n)));
+      c[k] = div(neg(traza(producto(A, Mk))), ent(k));
+    }
+    return c;
+  }
+  const evalua = (p, x) => p.reduce((s, a) => suma(mul(s, x), a), c0);
+  // divide p entre (λ − r) por Ruffini; devuelve [cociente, resto]
+  function ruffini(p, r) {
+    const q = [p[0]];
+    for (let i = 1; i < p.length; i++) q.push(suma(p[i], mul(q[i - 1], r)));
+    return [q.slice(0, -1), q[q.length - 1]];
+  }
+  // raíces aproximadas (Durand-Kerner) de un polinomio con coeficientes complejos en coma flotante
+  function raicesNum(p) {
+    const a = p.map(aFloat), n = a.length - 1;
+    if (n < 1) return [];
+    const lc = a[0], co = a.map((x) => { const m = lc.re * lc.re + lc.im * lc.im; return { re: (x.re * lc.re + x.im * lc.im) / m, im: (x.im * lc.re - x.re * lc.im) / m }; });
+    const cm = (x, y) => ({ re: x.re * y.re - x.im * y.im, im: x.re * y.im + x.im * y.re });
+    const cd = (x, y) => { const m = y.re * y.re + y.im * y.im; return { re: (x.re * y.re + x.im * y.im) / m, im: (x.im * y.re - x.re * y.im) / m }; };
+    const R = 1 + Math.max(...co.slice(1).map((x) => Math.hypot(x.re, x.im)));
+    let z = Array.from({ length: n }, (_, k) => ({ re: R * Math.cos((2 * Math.PI * k) / n + 0.4), im: R * Math.sin((2 * Math.PI * k) / n + 0.4) }));
+    for (let it = 0; it < 2000; it++) {
+      let delta = 0;
+      z = z.map((zi, i) => {
+        let num = { re: 1, im: 0 };
+        for (let k = 1; k <= n; k++) num = { re: num.re * zi.re - num.im * zi.im + co[k].re, im: num.re * zi.im + num.im * zi.re + co[k].im };
+        let den = { re: 1, im: 0 };
+        z.forEach((zj, j) => { if (j !== i) den = cm(den, { re: zi.re - zj.re, im: zi.im - zj.im }); });
+        const d = cd(num, den);
+        delta = Math.max(delta, Math.hypot(d.re, d.im));
+        return { re: zi.re - d.re, im: zi.im - d.im };
+      });
+      if (delta < 1e-14) break;
+    }
+    return z;
+  }
+  const aproxQ = (x) => {
+    for (let d = 1; d <= 60; d++) { const n = Math.round(x * d); if (Math.abs(x - n / d) < 1e-6 * Math.max(1, Math.abs(x))) return Q(n, d); }
+    return null;
+  };
+  // raíces exactas (racionales o complejas racionales) con su multiplicidad y el polinomio que queda sin ellas
+  function raices(p0) {
+    let p = p0.slice();
+    const exactas = [];
+    for (let vuelta = 0; vuelta < 30 && p.length > 1; vuelta++) {
+      let hallada = null;
+      for (const z of raicesNum(p)) {
+        const re = aproxQ(z.re), im = Math.abs(z.im) < 1e-7 ? q0 : aproxQ(z.im);
+        if (!re || !im) continue;
+        const r = C(re, im);
+        if (esCero(evalua(p, r))) { hallada = r; break; }
+      }
+      if (!hallada) break;
+      let m = 0;
+      for (;;) { const [q, resto] = ruffini(p, hallada); if (!esCero(resto)) break; p = q; m++; }
+      exactas.push({ valor: hallada, mult: m });
+    }
+    return { exactas, resto: p, aprox: raicesNum(p) };
+  }
+
+  // √ de un racional positivo simplificada: «2√3», «√6/2»; null si es exacta
+  function raizHtml(q) {
+    const N = q.n * q.d, D = q.d;
+    let fuera = 1n, dentro = N;
+    for (let k = 2n; k * k <= dentro; k++) while (dentro % (k * k) === 0n) { dentro /= k * k; fuera *= k; }
+    const g = mcd(fuera, D), a = fuera / g, b = D / g;
+    if (dentro === 1n) return null;
+    return { a, b, dentro };
+  }
+
+  // polinomio en λ como HTML a partir de los coeficientes de mayor a menor grado
+  function polHtml(p, x = 'λ') {
+    const n = p.length - 1;
+    let s = '';
+    p.forEach((a, i) => {
+      if (esCero(a)) return;
+      const g = n - i, var_ = g === 0 ? '' : g === 1 ? x : `${x}<sup>${g}</sup>`;
+      let [sg, v] = signo(a);
+      if (g > 0 && (esUno(a) || esMenosUno(a))) v = '';
+      if (!s) s = (sg === '−' ? '−' : '') + v + var_;
+      else s += ` ${sg} ${v}${var_}`;
+    });
+    return s || '0';
+  }
+
+  return {
+    Q, C, c0, c1, cI, ent, suma, resta, mul, div, neg, conj, potencia, esCero, igual, esReal, esUno, aFloat, qnum,
+    leer, leerMatriz, txt, html, htmlP, htmlF, signo, decimal, decimalC,
+    copia, identidad, traspuesta, sumaM, restaM, escalar, producto, iguales, traza, esRealM, matHtml, vecHtml, F,
+    escalonar, determinante, menor, cofactor, nucleo, limpia, caracteristico, evalua, ruffini, raicesNum, raices, raizHtml, polHtml,
+  };
+})();
+
+/* =====================================================================
+   Matrices paso a paso (sin DOM): determinante por Gauss, Sarrus o
+   Laplace, inversa por Gauss-Jordan o por adjuntos, rango, forma
+   escalonada y reducida, valores y vectores propios, y operaciones
+   (suma, producto, potencia, traspuesta). Todo con fracciones exactas y
+   números complejos, usando Algebra (matematicas/algebra.js).
+   ===================================================================== */
+const Matrices = (() => {
+  const A_ = Algebra, { html, htmlP, htmlF, matHtml } = A_;
+  const OPS = {
+    det: { nombre: 'Determinante', cuadrada: true, metodos: [['gauss', 'Por Gauss (triangular)'], ['directo', 'Sarrus o Laplace']] },
+    inversa: { nombre: 'Inversa', cuadrada: true, metodos: [['gauss', 'Por Gauss-Jordan'], ['adjuntos', 'Por adjuntos']] },
+    rango: { nombre: 'Rango' },
+    gauss: { nombre: 'Escalonar (Gauss)' },
+    reducida: { nombre: 'Escalonada reducida (Gauss-Jordan)' },
+    propios: { nombre: 'Valores y vectores propios', cuadrada: true },
+    traspuesta: { nombre: 'Traspuesta' },
+    suma: { nombre: 'A + B', B: true },
+    resta: { nombre: 'A − B', B: true },
+    producto: { nombre: 'A · B', B: true },
+    escalar: { nombre: 'k · A', k: true },
+    potencia: { nombre: 'Aⁿ', cuadrada: true, n: true },
+  };
+  const pasosGauss = (pasos, opts = {}) => pasos.map((p) => ({ t: p.ops.join(', &nbsp;'), html: matHtml(p.M, { barra: opts.barra ?? p.barra, marca: p.piv }) }));
+  const dims = (M) => `${M.length}×${M[0].length}`;
+
+  /* ---------- Determinante ---------- */
+  function detGauss(A) {
+    const n = A.length, e = A_.escalonar(A), pasos = [{ t: 'Matriz', html: matHtml(A, { det: true }) }, ...pasosGauss(e.pasos)];
+    if (e.rango < n) {
+      pasos.push({ t: 'Resultado', html: `Al escalonar queda una fila de ceros, así que |A| = <b>0</b> (la matriz no tiene inversa).` });
+      return { valor: A_.c0, pasos };
+    }
+    const d = A_.determinante(A), diag = e.R.map((f, i) => htmlF(f[i])).join('·');
+    pasos.push({ t: 'Resultado', html: `Sumar a una fila un múltiplo de otra no cambia el determinante${e.cambios ? `, y cada intercambio de filas le cambia el signo (${e.cambios} ${e.cambios === 1 ? 'intercambio' : 'intercambios'})` : ''}. El de una matriz triangular es el producto de la diagonal:<br>|A| = ${e.cambios % 2 ? '−' : ''}${diag} = <b>${html(d)}</b>` });
+    return { valor: d, pasos };
+  }
+  function detDirecto(A) {
+    const n = A.length, pasos = [];
+    const t = (i, j) => A[i][j];
+    const prod = (...xs) => xs.map(htmlF).join('·');
+    if (n === 1) return { valor: A[0][0], pasos: [{ t: 'Resultado', html: `|A| = <b>${html(A[0][0])}</b>` }] };
+    if (n === 2) {
+      const d = A_.determinante(A);
+      pasos.push({ t: 'Regla del 2×2', html: `${matHtml(A, { det: true })} = a<sub>11</sub>a<sub>22</sub> − a<sub>12</sub>a<sub>21</sub> = ${prod(t(0, 0), t(1, 1))} − ${prod(t(0, 1), t(1, 0))} = <b>${html(d)}</b>` });
+      return { valor: d, pasos };
+    }
+    if (n === 3) {
+      const mas = [[[0, 0], [1, 1], [2, 2]], [[0, 1], [1, 2], [2, 0]], [[0, 2], [1, 0], [2, 1]]], men = [[[0, 2], [1, 1], [2, 0]], [[0, 0], [1, 2], [2, 1]], [[0, 1], [1, 0], [2, 2]]];
+      const val = (g) => g.reduce((s, [i, j]) => A_.mul(s, t(i, j)), A_.c1);
+      const vm = mas.map(val), vn = men.map(val), d = A_.resta(vm.reduce(A_.suma), vn.reduce(A_.suma));
+      pasos.push({ t: 'Regla de Sarrus', html: `${matHtml(A, { det: true })} = ${mas.map((g) => prod(...g.map(([i, j]) => t(i, j)))).join(' + ')} − ${men.map((g) => prod(...g.map(([i, j]) => t(i, j)))).join(' − ')}` });
+      pasos.push({ t: 'Productos', html: `= (${vm.map(html).join(') + (')}) − (${vn.map(html).join(') − (')}) = <b>${html(d)}</b>` });
+      return { valor: d, pasos };
+    }
+    // Laplace por la fila o columna con más ceros
+    let mejor = { ceros: -1 };
+    for (let i = 0; i < n; i++) { const c = A[i].filter(A_.esCero).length; if (c > mejor.ceros) mejor = { ceros: c, fila: true, k: i }; }
+    for (let j = 0; j < n; j++) { const c = A.filter((f) => A_.esCero(f[j])).length; if (c > mejor.ceros) mejor = { ceros: c, fila: false, k: j }; }
+    const pos = [...Array(n).keys()].map((l) => (mejor.fila ? [mejor.k, l] : [l, mejor.k]));
+    const terminos = pos.filter(([i, j]) => !A_.esCero(t(i, j))).map(([i, j]) => ({ i, j, a: t(i, j), m: A_.menor(A, i, j), s: (i + j) % 2 ? '−' : '+' }));
+    pasos.push({ t: `Desarrollo de Laplace por la ${mejor.fila ? 'fila' : 'columna'} ${mejor.k + 1}${mejor.ceros ? ` (tiene ${mejor.ceros} ${mejor.ceros === 1 ? 'cero' : 'ceros'})` : ''}`, html: `|A| = Σ (−1)<sup>i+j</sup> a<sub>ij</sub> |A<sub>ij</sub>| = ${terminos.map((x, k) => `${k ? ` ${x.s} ` : x.s === '−' ? '−' : ''}${htmlF(x.a)}·${matHtml(x.m, { det: true })}`).join('') || '0'}` });
+    let d = A_.c0;
+    const vals = terminos.map((x) => { const dm = A_.determinante(x.m); const v = A_.mul(x.a, dm); d = x.s === '+' ? A_.suma(d, v) : A_.resta(d, v); return `${x.s === '−' ? '−' : '+'} ${htmlF(x.a)}·${htmlF(dm)}`; });
+    pasos.push({ t: `Cada menor de ${n - 1}×${n - 1}${n - 1 === 3 ? ' por Sarrus' : ''}`, html: `|A| = ${vals.join(' ').replace(/^\+ /, '').replace(/^− /, '−')} = <b>${html(d)}</b>` });
+    return { valor: d, pasos };
+  }
+
+  /* ---------- Inversa ---------- */
+  function invGauss(A) {
+    const n = A.length, aug = A.map((f, i) => [...f, ...A_.identidad(n)[i]]);
+    const e = A_.escalonar(aug, { reducida: true, columnas: n, barra: n });
+    const pasos = [{ t: 'Se escribe [A | I] y se reduce hasta que a la izquierda quede la identidad', html: matHtml(aug, { barra: n }) }, ...pasosGauss(e.pasos)];
+    if (e.rango < n) { pasos.push({ t: 'Resultado', html: `A la izquierda queda una fila de ceros: rang(A) = ${e.rango} < ${n}, así que |A| = 0 y <b>A no tiene inversa</b>.` }); return { valor: null, pasos }; }
+    const inv = e.R.map((f) => f.slice(n));
+    pasos.push({ t: 'Resultado: la parte derecha es la inversa', html: `A<sup>−1</sup> = ${matHtml(inv)}` });
+    return { valor: inv, pasos };
+  }
+  function invAdjuntos(A) {
+    const n = A.length, d = A_.determinante(A), pasos = [{ t: 'Determinante', html: `|A| = <b>${html(d)}</b>` }];
+    if (A_.esCero(d)) { pasos.push({ t: 'Resultado', html: '|A| = 0, así que <b>A no tiene inversa</b>.' }); return { valor: null, pasos }; }
+    if (n === 1) { const inv = [[A_.div(A_.c1, A[0][0])]]; pasos.push({ t: 'Resultado', html: `A<sup>−1</sup> = ${matHtml(inv)}` }); return { valor: inv, pasos }; }
+    const adj = A.map((f, i) => f.map((_, j) => A_.cofactor(A, i, j)));
+    pasos.push({ t: 'Matriz adjunta: cada elemento es su adjunto A<sub>ij</sub> = (−1)<sup>i+j</sup>·|menor|', html: `${n <= 3 ? `Por ejemplo, A<sub>11</sub> = +${matHtml(A_.menor(A, 0, 0), { det: true })} = ${html(adj[0][0])}${n > 1 ? `, A<sub>12</sub> = −${matHtml(A_.menor(A, 0, 1), { det: true })} = ${html(adj[0][1])}` : ''}.<br>` : ''}Adj(A) = ${matHtml(adj)}` });
+    const adjT = A_.traspuesta(adj);
+    pasos.push({ t: 'Se traspone', html: `(Adj A)<sup>t</sup> = ${matHtml(adjT)}` });
+    const inv = adjT.map((f) => f.map((x) => A_.div(x, d)));
+    pasos.push({ t: 'Resultado', html: `A<sup>−1</sup> = (1 / |A|)·(Adj A)<sup>t</sup> = (1 / ${htmlP(d)})·${matHtml(adjT)} = ${matHtml(inv)}` });
+    return { valor: inv, pasos };
+  }
+
+  /* ---------- Valores y vectores propios ---------- */
+  function propios(A) {
+    const n = A.length, p = A_.caracteristico(A), pasos = [];
+    // |A − λI| = (−1)^n det(λI − A)
+    const pc = n % 2 ? p.map(A_.neg) : p;
+    const AL = A.map((f, i) => f.map((x, j) => (i === j ? `${html(x) === '0' ? '' : html(x) + ' '}−&nbsp;λ` : html(x))));
+    pasos.push({ t: 'Polinomio característico', html: `|A − λI| = <span class="mat det"><table>${AL.map((f) => `<tr>${f.map((x) => `<td>${x}</td>`).join('')}</tr>`).join('')}</table></span> = <b>${A_.polHtml(pc)}</b>` });
+    const r = A_.raices(p), vals = [];
+    const fac = r.exactas.map(({ valor, mult }) => { const [s, v] = A_.signo(A_.neg(valor)); return `(λ ${s} ${v})${mult > 1 ? `<sup>${mult}</sup>` : ''}`; });
+    if (r.resto.length > 1) fac.push(`(${A_.polHtml(r.resto)})`);
+    if (r.exactas.length) pasos.push({ t: 'Raíces del polinomio', html: `|A − λI| = ${n % 2 ? '−' : ''}${fac.join('')} = 0` });
+    const orden = (a, b) => A_.qnum(a.valor.re) - A_.qnum(b.valor.re) || A_.qnum(b.valor.im) - A_.qnum(a.valor.im);
+    for (const { valor, mult } of r.exactas.slice().sort(orden)) vals.push({ valor, mult, exacto: true });
+    // resto de grado 2 con coeficientes reales: λ = (p ± q√r)/d
+    let radicales = null, aprox = r.aprox.slice();
+    if (r.resto.length === 3 && r.resto.every(A_.esReal)) {
+      const [a, b, c] = r.resto.map((x) => x.re), D = A_.Q(b.n * b.n * a.d * a.d * c.d - 4n * a.n * c.n * b.d * b.d * a.d, b.d * b.d * a.d * a.d * c.d);
+      const rq = A_.raizHtml(D.n < 0n ? { n: -D.n, d: D.d } : D);
+      if (rq) {
+        // −b/(2a) y (rq.a/rq.b)/(2a) con el mismo denominador
+        const m = A_.div(A_.C(A_.Q(-b.n, b.d)), A_.C(A_.Q(2n * a.n, a.d))).re, k = A_.div(A_.C(A_.Q(rq.a, rq.b)), A_.C(A_.Q(2n * a.n, a.d))).re;
+        const kp = k.n < 0n ? { n: -k.n, d: k.d } : k, L = (m.d * kp.d) / ((x, y) => { while (y) [x, y] = [y, x % y]; return x; })(m.d, kp.d);
+        const p0 = (m.n * L) / m.d, q = (kp.n * L) / kp.d, im = D.n < 0n ? ' i' : '';
+        const cuerpo = (sg) => `${p0 ? String(p0).replace('-', '−') + ` ${sg} ` : sg === '−' ? '−' : ''}${q === 1n ? '' : q}√${rq.dentro}${im}`;
+        const forma = (sg) => (L === 1n ? cuerpo(sg) : `(${cuerpo(sg)})/${L}`);
+        radicales = { mas: forma('+'), menos: forma('−'), ambos: L === 1n ? cuerpo('±') : `(${cuerpo('±')})/${L}` };
+        pasos.push({ t: 'El factor de segundo grado no tiene raíces racionales', html: `${A_.polHtml(r.resto)} = 0 ⇒ λ = (−b ± √(b<sup>2</sup> − 4ac)) / (2a) = <b>${radicales.ambos}</b>` });
+        // la raíz «+» es la de mayor parte real (o imaginaria si son complejas)
+        aprox.sort((x, y) => (D.n < 0n ? y.im - x.im : y.re - x.re));
+      }
+    }
+    aprox.forEach((z, i) => vals.push({ valor: z, mult: 1, exacto: false, etiqueta: radicales ? (i ? radicales.menos : radicales.mas) : null }));
+    if (r.resto.length > 1 && !radicales) pasos.push({ t: 'Raíces no racionales', html: `Las raíces de ${A_.polHtml(r.resto)} se calculan numéricamente: λ ≈ ${r.aprox.map((z) => A_.decimalC(z, 6)).join(', ')}` });
+    const multTxt = (m) => ({ 2: 'doble', 3: 'triple' }[m] || `multiplicidad ${m}`);
+    const etq = (v) => (v.exacto ? html(v.valor) : v.etiqueta ? `${v.etiqueta} ≈ ${A_.decimalC(v.valor, 5)}` : '≈ ' + A_.decimalC(v.valor, 6));
+    const lista = vals.map((v) => `${etq(v)}${v.mult > 1 ? ` (${multTxt(v.mult)})` : ''}`);
+    pasos.push({ t: 'Valores propios', html: `λ = <b>${lista.join(', &nbsp;')}</b>` });
+    // vectores propios de los valores exactos
+    const esp = [];
+    for (const v of vals.filter((x) => x.exacto)) {
+      const M = A_.restaM(A, A_.escalar(v.valor, A_.identidad(n))), N = A_.nucleo(M);
+      esp.push({ ...v, base: N.base });
+      const [s, vv] = A_.signo(A_.neg(v.valor));
+      pasos.push({ t: `Vectores propios de λ = ${html(v.valor)}`, html: `(A ${s === '+' ? '+' : '−'} ${vv.replace(/^\((.*)\)$/, '($1)')}I) x = 0: ${matHtml(M)} → ${matHtml(N.R)}<br>dim = ${N.base.length}${v.mult > 1 ? ` (multiplicidad algebraica ${v.mult})` : ''}; base: ${N.base.map((b) => A_.vecHtml(b)).join(' ')}` });
+    }
+    const todos = vals.every((x) => x.exacto);
+    let diag;
+    if (todos) {
+      diag = esp.every((x) => x.base.length === x.mult);
+      if (diag) {
+        const P = A_.traspuesta(esp.flatMap((x) => x.base)), D = esp.flatMap((x) => Array(x.mult).fill(x.valor)).map((x, i, arr) => arr.map((_, j) => (i === j ? x : A_.c0)));
+        pasos.push({ t: 'Es diagonalizable', html: `Cada valor propio tiene tantos vectores como su multiplicidad. Con los vectores en columnas, A = P D P<sup>−1</sup>:<br>P = ${matHtml(P)}, &nbsp; D = ${matHtml(D)}` });
+      } else pasos.push({ t: 'No es diagonalizable', html: `Algún valor propio tiene menos vectores propios independientes que su multiplicidad.` });
+    } else {
+      diag = vals.every((x) => x.mult === 1) ? true : null;
+      if (diag) pasos.push({ t: 'Es diagonalizable', html: `Los ${n} valores propios son distintos, así que es diagonalizable${A_.esRealM(A) && vals.some((x) => !x.exacto && Math.abs(x.valor.im) > 1e-9) ? ' (en los complejos)' : ''}. Los vectores propios de las raíces no racionales no se calculan de forma exacta aquí.` });
+    }
+    return { valor: vals, pasos, diag, polinomio: pc };
+  }
+
+  /* ---------- Resolución ---------- */
+  function resolver(sc) {
+    const op = OPS[sc.op] ? sc.op : 'det', O = OPS[op];
+    const A = A_.leerMatriz(sc.A);
+    if (!A.length || !A[0].length) throw new Error('La matriz está vacía');
+    if (O.cuadrada && A.length !== A[0].length) throw new Error(`${O.nombre}: la matriz tiene que ser cuadrada (es ${dims(A)})`);
+    let B = null;
+    if (O.B) B = (() => { try { return A_.leerMatriz(sc.B); } catch (e) { throw new Error('Matriz B · ' + e.message); } })();
+    const metodo = O.metodos ? (O.metodos.some(([k]) => k === sc.metodo) ? sc.metodo : O.metodos[0][0]) : null;
+    let r;
+    switch (op) {
+      case 'det': r = metodo === 'directo' ? detDirecto(A) : detGauss(A); r.res = `|A| = ${html(r.valor)}`; break;
+      case 'inversa': r = metodo === 'adjuntos' ? invAdjuntos(A) : invGauss(A); r.res = r.valor ? `A<sup>−1</sup> = ${matHtml(r.valor)}` : 'A no tiene inversa (|A| = 0)'; break;
+      case 'rango': case 'gauss': case 'reducida': {
+        const e = A_.escalonar(A, { reducida: op === 'reducida' });
+        r = { valor: op === 'rango' ? e.rango : e.R, pasos: [{ t: 'Matriz', html: matHtml(A) }, ...pasosGauss(e.pasos)] };
+        if (!e.pasos.length) r.pasos.push({ t: 'Ya está escalonada', html: 'No hace falta ninguna operación.' });
+        r.pasos.push({ t: 'Resultado', html: op === 'rango' ? `Quedan ${e.rango} ${e.rango === 1 ? 'fila no nula' : 'filas no nulas'} (los pivotes están en las columnas ${e.pivotes.map(([, c]) => c + 1).join(', ') || '—'}): rang(A) = <b>${e.rango}</b>` : `${matHtml(e.R)}, con rango ${e.rango}` });
+        r.res = op === 'rango' ? `rang(A) = ${e.rango}` : matHtml(e.R);
+        break;
+      }
+      case 'propios': r = propios(A); r.res = `λ = ${r.valor.map((v) => (v.exacto ? html(v.valor) : v.etiqueta || '≈ ' + A_.decimalC(v.valor, 5))).join(', &nbsp;')}`; break;
+      case 'traspuesta': { const T = A_.traspuesta(A); r = { valor: T, pasos: [{ t: 'Las filas pasan a ser columnas', html: `A<sup>t</sup> = ${matHtml(T)} (de ${dims(A)} a ${dims(T)})` }] }; r.res = matHtml(T); break; }
+      case 'suma': case 'resta': {
+        if (A.length !== B.length || A[0].length !== B[0].length) throw new Error(`Para ${op === 'suma' ? 'sumar' : 'restar'}, A y B deben tener el mismo tamaño (A es ${dims(A)} y B es ${dims(B)})`);
+        const S = op === 'suma' ? A_.sumaM(A, B) : A_.restaM(A, B);
+        r = { valor: S, pasos: [{ t: 'Elemento a elemento', html: `${matHtml(A)} ${op === 'suma' ? '+' : '−'} ${matHtml(B)} = ${matHtml(S)}` }] }; r.res = matHtml(S); break;
+      }
+      case 'producto': {
+        if (A[0].length !== B.length) throw new Error(`Para multiplicar A·B, las columnas de A (${A[0].length}) tienen que ser tantas como las filas de B (${B.length})`);
+        const P = A_.producto(A, B), pasos = [{ t: `Tamaño: (${dims(A)})·(${dims(B)}) = ${dims(P)}`, html: `Cada elemento c<sub>ij</sub> es la fila i de A por la columna j de B.` }];
+        if (P.length * P[0].length <= 16) pasos.push({ t: 'Elementos', html: P.map((f, i) => f.map((x, j) => `c<sub>${i + 1}${j + 1}</sub> = ${A[i].map((a, k) => `${htmlF(a)}·${htmlF(B[k][j])}`).join(' + ')} = ${html(x)}`).join('<br>')).join('<br>') });
+        pasos.push({ t: 'Resultado', html: `A·B = ${matHtml(P)}` });
+        r = { valor: P, pasos }; r.res = matHtml(P); break;
+      }
+      case 'escalar': {
+        let k; try { k = A_.leer(sc.k); } catch (e) { throw new Error('k · ' + e.message); }
+        const S = A_.escalar(k, A); r = { valor: S, pasos: [{ t: 'Se multiplica cada elemento por k', html: `${htmlP(k)}·${matHtml(A)} = ${matHtml(S)}` }] }; r.res = matHtml(S); break;
+      }
+      case 'potencia': {
+        const n = Number(String(sc.n).trim().replace('−', '-'));
+        if (!Number.isInteger(n) || Math.abs(n) > 50) throw new Error('El exponente n tiene que ser un número entero entre −50 y 50');
+        const pasos = [];
+        let base = A;
+        if (n < 0) { const inv = invGauss(A); if (!inv.valor) throw new Error('A no tiene inversa, así que no se puede elevar a un exponente negativo'); base = inv.valor; pasos.push({ t: 'Exponente negativo', html: `A<sup>${n}</sup> = (A<sup>−1</sup>)<sup>${-n}</sup>, con A<sup>−1</sup> = ${matHtml(base)}` }); }
+        let P = A_.identidad(A.length);
+        for (let k = 1; k <= Math.abs(n); k++) { P = A_.producto(P, base); if (Math.abs(n) <= 5 && k > 1) pasos.push({ t: `A<sup>${n < 0 ? -k : k}</sup> = A<sup>${n < 0 ? -(k - 1) : k - 1}</sup>·A${n < 0 ? '<sup>−1</sup>' : ''}`, html: matHtml(P) }); }
+        if (n === 0) pasos.push({ t: 'Exponente 0', html: `A<sup>0</sup> = I = ${matHtml(P)}` });
+        else pasos.push({ t: 'Resultado', html: `A<sup>${n}</sup> = ${matHtml(P)}` });
+        r = { valor: P, pasos }; r.res = matHtml(P); break;
+      }
+    }
+    return { op, metodo, A, B, ...r };
+  }
+
+  const M = (...filas) => filas.map((f) => f.split(' '));
+  const ejemplos = [
+    { clave: 'det3', nombre: 'Determinante 3×3 por Sarrus', sc: { op: 'det', metodo: 'directo', A: M('2 1 3', '0 -1 4', '1 2 5') } },
+    { clave: 'det4', nombre: 'Determinante 4×4 por Laplace', sc: { op: 'det', metodo: 'directo', A: M('1 0 2 -1', '3 0 0 5', '2 1 4 -3', '1 0 5 0') } },
+    { clave: 'det-gauss', nombre: 'Determinante por Gauss', sc: { op: 'det', metodo: 'gauss', A: M('2 4 -2', '1 3 1', '3 1 2') } },
+    { clave: 'inv3', nombre: 'Inversa 3×3 por Gauss-Jordan', sc: { op: 'inversa', metodo: 'gauss', A: M('1 2 3', '0 1 4', '5 6 0') } },
+    { clave: 'inv-adj', nombre: 'Inversa por adjuntos', sc: { op: 'inversa', metodo: 'adjuntos', A: M('2 0 1', '1 1 0', '0 1 3') } },
+    { clave: 'inv-complejos', nombre: 'Inversa de una matriz compleja', sc: { op: 'inversa', metodo: 'gauss', A: M('1 i', '-i 2') } },
+    { clave: 'rango', nombre: 'Rango de una matriz 3×4', sc: { op: 'rango', A: M('1 2 -1 3', '2 4 1 0', '3 6 0 3') } },
+    { clave: 'reducida', nombre: 'Escalonada reducida', sc: { op: 'reducida', A: M('2 4 6 8', '1 3 5 7', '1 1 1 2') } },
+    { clave: 'propios2', nombre: 'Valores y vectores propios 2×2', sc: { op: 'propios', A: M('4 1', '2 3') } },
+    { clave: 'diagonalizar', nombre: 'Diagonalizar una matriz 3×3', sc: { op: 'propios', A: M('2 0 0', '0 3 4', '0 4 -3') } },
+    { clave: 'rotacion', nombre: 'Valores propios complejos (giro)', sc: { op: 'propios', A: M('0 -1', '1 0') } },
+    { clave: 'producto', nombre: 'Producto de matrices', sc: { op: 'producto', A: M('1 2 0', '-1 3 2'), B: M('2 1', '0 -1', '4 3') } },
+    { clave: 'potencia', nombre: 'Potencia de una matriz', sc: { op: 'potencia', A: M('1 1', '0 1'), n: '5' } },
+  ];
+
+  return { OPS, resolver, ejemplos };
+})();
+
+/* =====================================================================
+   Matrices paso a paso: interfaz (operación, método, editores de A y B,
+   resultado y desarrollo). El cálculo está en matrices/calculo.js
+   (Matrices) y matematicas/algebra.js (Algebra).
+   ===================================================================== */
+(() => {
+  const $ = (q) => document.querySelector(q);
+  const X = Matrices, CLAVE = 'matrices-v1', MAX = 6;
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const copia = (o) => JSON.parse(JSON.stringify(o));
+  const vacia = (f, c) => Array.from({ length: f }, (_, i) => Array.from({ length: c }, (_, j) => (i === j ? '1' : '0')));
+
+  let sc = copia(X.ejemplos[0].sc);
+  try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && g.op && Array.isArray(g.A)) sc = g; } catch (e) {}
+  if (!sc.B) sc.B = vacia(2, 2);
+  if (sc.k === undefined) sc.k = '2';
+  if (sc.n === undefined) sc.n = '2';
+  const guarda = () => { try { localStorage.setItem(CLAVE, JSON.stringify(sc)); } catch (e) {} };
+
+  /* ---------- Controles ---------- */
+  const selOp = $('#op'), selMet = $('#metodo');
+  selOp.innerHTML = Object.entries(X.OPS).map(([k, o]) => `<option value="${k}">${o.nombre}</option>`).join('');
+  function controles() {
+    const O = X.OPS[sc.op] || X.OPS.det;
+    selOp.value = sc.op;
+    selMet.hidden = $('#metodo-l').hidden = !O.metodos;
+    if (O.metodos) { selMet.innerHTML = O.metodos.map(([k, t]) => `<option value="${k}">${t}</option>`).join(''); selMet.value = O.metodos.some(([k]) => k === sc.metodo) ? sc.metodo : O.metodos[0][0]; }
+    $('#k').hidden = $('#k-l').hidden = !O.k;
+    $('#n').hidden = $('#n-l').hidden = !O.n;
+    $('#k').value = sc.k; $('#n').value = sc.n;
+    // en las operaciones con matrices cuadradas, A se mantiene cuadrada
+    if (O.cuadrada && sc.A.length !== sc.A[0].length) redimensiona('A', Math.max(sc.A.length, sc.A[0].length), Math.max(sc.A.length, sc.A[0].length));
+    editor('A'); $('#ed-B').hidden = !O.B; if (O.B) editor('B');
+  }
+  selOp.addEventListener('change', () => { sc.op = selOp.value; $('#ejemplos').value = ''; controles(); calcula(); });
+  selMet.addEventListener('change', () => { sc.metodo = selMet.value; $('#ejemplos').value = ''; calcula(); });
+  $('#k').addEventListener('input', () => { sc.k = $('#k').value; calcula(); });
+  $('#n').addEventListener('input', () => { sc.n = $('#n').value; calcula(); });
+
+  /* ---------- Editores de matriz ---------- */
+  function redimensiona(m, f, c) {
+    const M = sc[m];
+    sc[m] = Array.from({ length: f }, (_, i) => Array.from({ length: c }, (_, j) => (M[i] && M[i][j] !== undefined ? M[i][j] : i === j ? '1' : '0')));
+  }
+  const opciones = (v) => Array.from({ length: MAX }, (_, i) => `<option${i + 1 === v ? ' selected' : ''}>${i + 1}</option>`).join('');
+  function editor(m) {
+    const M = sc[m], cuadrada = m === 'A' && (X.OPS[sc.op] || {}).cuadrada, f = M.length, c = M[0].length;
+    const cab = cuadrada
+      ? `<b>${m}</b><label>Tamaño <select data-m="${m}" data-d="n" class="in" aria-label="Tamaño de ${m}">${opciones(f)}</select></label>`
+      : `<b>${m}</b><label>Filas <select data-m="${m}" data-d="f" class="in" aria-label="Filas de ${m}">${opciones(f)}</select></label><label>Columnas <select data-m="${m}" data-d="c" class="in" aria-label="Columnas de ${m}">${opciones(c)}</select></label>`;
+    $('#ed-' + m).innerHTML = `<div class="editor-cab">${cab}<button class="btn" type="button" data-m="${m}" data-acc="id">Identidad</button><button class="btn" type="button" data-m="${m}" data-acc="ceros">Ceros</button></div>
+      <div class="rejilla" style="grid-template-columns:repeat(${c}, minmax(44px, 64px))">${M.map((fi, i) => fi.map((v, j) => `<input data-m="${m}" data-i="${i}" data-j="${j}" value="${esc(v)}" aria-label="${m} fila ${i + 1} columna ${j + 1}" autocomplete="off" spellcheck="false">`).join('')).join('')}</div>`;
+  }
+  for (const m of ['A', 'B']) {
+    const ed = $('#ed-' + m);
+    ed.addEventListener('input', (e) => { const t = e.target; if (t.dataset.i === undefined) return; sc[m][+t.dataset.i][+t.dataset.j] = t.value; $('#ejemplos').value = ''; calcula(); });
+    ed.addEventListener('change', (e) => {
+      const t = e.target;
+      if (t.tagName !== 'SELECT') return;
+      const v = +t.value, M = sc[m];
+      if (t.dataset.d === 'n') redimensiona(m, v, v);
+      else redimensiona(m, t.dataset.d === 'f' ? v : M.length, t.dataset.d === 'c' ? v : M[0].length);
+      $('#ejemplos').value = ''; editor(m); calcula();
+    });
+    ed.addEventListener('click', (e) => {
+      const a = e.target.dataset.acc;
+      if (!a) return;
+      const M = sc[m];
+      sc[m] = M.map((f, i) => f.map((_, j) => (a === 'id' && i === j ? '1' : '0')));
+      $('#ejemplos').value = ''; editor(m); calcula();
+    });
+  }
+
+  /* ---------- Ejemplos ---------- */
+  const sel = $('#ejemplos');
+  sel.innerHTML = '<option value="">Ejemplos…</option>' + X.ejemplos.map((e) => `<option value="${e.clave}">${e.nombre}</option>`).join('');
+  sel.addEventListener('change', () => { if (sel.value) abrirEjemplo(sel.value); });
+  function abrirEjemplo(clave) {
+    const e = X.ejemplos.find((x) => x.clave === clave);
+    if (!e) return;
+    sc = { ...sc, metodo: undefined, ...copia(e.sc) };
+    controles(); calcula(); sel.value = clave;
+  }
+
+  /* ---------- Cálculo ---------- */
+  let sol = null;
+  function calcula() {
+    const err = $('#error');
+    try { sol = X.resolver(sc); } catch (e) { sol = null; err.textContent = e.message; err.hidden = false; $('#res').innerHTML = ''; $('#pasos').innerHTML = ''; return; }
+    err.hidden = true; guarda();
+    $('#res').innerHTML = sol.res;
+    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('');
+  }
+
+  const ver = $('#ver'); if (ver) ver.textContent = Version.de('matrices').current;
+  controles(); calcula();
+  window.MatricesApp = { abrirEjemplo, resultado: () => sol && { op: sol.op, res: sol.res }, estado: () => copia(sc) };
+})();
+
+</script>
+</html>
