@@ -23,7 +23,7 @@ const Catalogo = {
       resumen: 'Mecánica y termodinámica de primer curso: energía, cinemática y calor.',
       herramientas: [
         { clave: 'trabajo-y-energia', nombre: 'Trabajo y energía', icono: 'W', disponible: true, desc: 'Conservación de la energía en rampas y muelles, con barras de energía.', buscar: 'energía cinética potencial muelle rampa rozamiento' },
-        { clave: 'tiro-parabolico', nombre: 'Tiro parabólico y cinemática', icono: 'v', desc: 'Trayectorias, alcance, altura máxima y gráficas x(t), v(t), a(t).', buscar: 'tiro parabólico proyectil cinemática mru mrua caída libre' },
+        { clave: 'tiro-parabolico', nombre: 'Tiro parabólico y cinemática', icono: 'v', disponible: true, desc: 'Trayectorias con y sin rozamiento del aire, alcance, altura máxima, MRU y MRUA con gráficas x(t), v(t), a(t).', buscar: 'tiro parabólico proyectil cinemática mru mrua caída libre' },
         { clave: 'calorimetria', nombre: 'Calorimetría y cambios de fase', icono: 'Q', desc: 'Temperatura de equilibrio con cambios de estado.', buscar: 'calor específico latente equilibrio térmico' },
       ],
     },

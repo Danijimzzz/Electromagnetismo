@@ -57,4 +57,6 @@ if [ "$1" != privado ]; then
     version.js quimica/elementos.js quimica/configuracion.js configuracion-electronica/app.js
   herramienta condensadores ../publico/electromagnetismo/condensadores/index.html "Condensadores con dieléctricos" "Capacidad, energía, campos E, D y P y cargas de polarización en condensadores planos, cilíndricos y esféricos con dieléctricos" \
     version.js condensadores/fisica.js condensadores/app.js
+  herramienta tiro-parabolico ../publico/fisica/tiro-parabolico/index.html "Tiro parabólico y cinemática" "Simulador de tiro parabólico con y sin rozamiento: alcance, altura máxima, tiempo de vuelo, gráficas x(t), v(t), a(t) y MRU y MRUA paso a paso" \
+    version.js tiro-parabolico/fisica.js tiro-parabolico/app.js
 fi
