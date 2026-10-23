@@ -1,0 +1,85 @@
+<title>Corriente alterna y fasores: circuitos RLC paso a paso · SimulaCiencia</title>
+<meta name="description" content="Calculadora de corriente alterna en español: circuitos RLC en serie y en paralelo con impedancias complejas, diagrama de fasores, potencias activa, reactiva y aparente, factor de potencia, resonancia y corrección del factor de potencia, paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root {
+  --bg: #eef0f4; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d6dbe3; --accent: #b0700a; --accent-soft: #fbf0dc; --v: #c2412a; --i: #2a5db5; --x: #1d7a3e;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #e6a640; --accent-soft: #3a2c12; --v: #ef7a62; --i: #74a2f2; --x: #5fcf8a; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #e6a640; --accent-soft: #3a2c12; --v: #ef7a62; --i: #74a2f2; --x: #5fcf8a; color-scheme: dark }
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
+.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
+.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+.layout { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 16px; align-items: start }
+@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr) } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 15px var(--f-ui); margin: 0 0 10px }
+.campos { display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px } .campos label small { color: var(--muted) }
+.in { font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.in:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer }
+.btn:hover { border-color: var(--accent) }
+.error { color: #c0392b; font-size: 13px; margin: 10px 0 0 }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+.res { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px 14px; font: 16px var(--f-math) } .res div { overflow-x: auto } .res span { display: block; font: 12px var(--f-ui); color: var(--muted) }
+.graficas { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 10px } @media (max-width: 640px) { .graficas { grid-template-columns: minmax(0, 1fr) } }
+.leyenda { font-size: 12.5px; color: var(--muted); margin: 6px 0 0 } .leyenda b { font-weight: 600 }
+canvas { display: block; width: 100%; height: 280px; border-radius: 8px; background: var(--bg); margin-top: 10px }
+.pasos ol { margin: 0; padding-left: 22px } .pasos li { margin: 0 0 12px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Laboratorio</a> / Corriente alterna y fasores</span></header>
+<div class="wrap">
+<h1>Corriente alterna y fasores</h1>
+<p class="lead">Resuelve circuitos RLC en serie y en paralelo con impedancias complejas: corriente, tensiones de cada elemento, potencias, factor de potencia y resonancia, con el diagrama de fasores y las ondas v(t) e i(t). También calcula el condensador para corregir el factor de potencia.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card"><h2>Resultado</h2><div class="res" id="res"></div>
+      <div class="graficas"><canvas id="fasores" aria-label="Diagrama de fasores"></canvas><canvas id="ondas" aria-label="Tensión y corriente frente al tiempo"></canvas></div>
+      <p class="leyenda" id="leyenda"></p></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Fasores e impedancia</h2>
+  <p>En régimen sinusoidal permanente cada tensión y cada corriente se representa con un fasor: un número complejo cuyo módulo es el valor eficaz y cuyo argumento es la fase. Así la ley de Ohm vale con complejos, V = Z·I, donde la impedancia de cada elemento es</p>
+  <p class="f">Z<sub>R</sub> = R, &nbsp; Z<sub>L</sub> = jωL = jX<sub>L</sub>, &nbsp; Z<sub>C</sub> = 1/(jωC) = −jX<sub>C</sub></p>
+  <p>En serie las impedancias se suman; en paralelo se suman las admitancias Y = 1/Z. En la bobina la corriente va 90° retrasada respecto a la tensión y en el condensador 90° adelantada.</p>
+  <h2>Potencias y factor de potencia</h2>
+  <p>Con φ el ángulo de la impedancia (el desfase entre la tensión y la corriente), la potencia activa es la que se consume de verdad, la reactiva va y viene entre la fuente y las bobinas y condensadores, y la aparente es el producto de los valores eficaces:</p>
+  <p class="f">P = VI cos φ (W), &nbsp; Q = VI sen φ (var), &nbsp; S = VI (VA), &nbsp; S<sup>2</sup> = P<sup>2</sup> + Q<sup>2</sup></p>
+  <p>Para corregir el factor de potencia de una carga inductiva se pone un condensador en paralelo que aporte Q<sub>C</sub> = P(tg φ<sub>1</sub> − tg φ<sub>2</sub>), es decir C = Q<sub>C</sub>/(ωV<sup>2</sup>).</p>
+  <h2>Resonancia</h2>
+  <p>Cuando X<sub>L</sub> = X<sub>C</sub>, a la frecuencia f<sub>0</sub> = 1/(2π√(LC)), las reactancias se anulan: en serie la impedancia es mínima (Z = R) y la corriente máxima; en paralelo la impedancia es máxima. El factor de calidad Q = ω<sub>0</sub>L/R mide lo estrecha que es la resonancia.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Corriente alterna <span id="ver"></span> (beta)</footer>
+</body>
