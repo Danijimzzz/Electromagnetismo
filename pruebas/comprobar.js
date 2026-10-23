@@ -90,7 +90,7 @@ const textos = hay.filter((f) => f.endsWith('.html')).map((f) => [f, fs.readFile
 const delPdf = juegos[1].Presets.list.flatMap((p) => [p.statement, p.title]).flatMap((t) => textos.filter(([, x]) => x.includes(t)).map(([f]) => `${f}: ${t}`));
 if (delPdf.length) mal(`publico/ contiene enunciados o títulos del Tema 3:\n      ${delPdf.join('\n      ')}`);
 else console.log('  ✓ publico/ no contiene ningún enunciado ni título del Tema 3');
-console.log(`  · versión ${Version.current}`);
+console.log(`  · versiones: ${Object.keys(Version.registros).map((k) => `${k} ${Version.de(k).current}`).join(' · ')}`);
 
 // magnetostática: los ejemplos contra pruebas/esperados-magnetostatica.json
 const Magneto = require(path.join(fuente, 'magnetostatica', 'fisica.js')), MagEjemplos = require(path.join(fuente, 'magnetostatica', 'ejemplos.js'));
@@ -168,7 +168,7 @@ async function navegador() {
       if (warn.length) mal(`Magnetostática · ${k}: ${warn.join(' · ')}`);
     }
     const ver = await page.locator('#ver').textContent();
-    if (ver !== Version.current) mal(`Magnetostática: la página muestra la versión «${ver}», se esperaba ${Version.current}`);
+    if (ver !== Version.de('magnetostatica').current) mal(`Magnetostática: la página muestra la versión «${ver}», se esperaba ${Version.de('magnetostatica').current}`);
     await page.close();
     if (consola.length) mal('Magnetostática: consola del navegador:\n      ' + consola.join('\n      '));
   }

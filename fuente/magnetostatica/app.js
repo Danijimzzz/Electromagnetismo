@@ -325,7 +325,7 @@
   });
   for (const [t, T] of Object.entries(SOURCES)) $('#add-fuente').append(h('button', { class: 'chip', onclick: () => { esc.fuentes.push({ id: newId(), tipo: t, nombre: `${T.label} ${esc.fuentes.length + 1}`, I: '1', s: 'I', ...T.def() }); editor(); encuadra(); recalcula(); } }, '+ ' + T.label));
   for (const [t, A] of Object.entries(ANALYSES)) $('#add-pregunta').append(h('button', { class: 'chip', onclick: () => { esc.preguntas.push({ id: newId(), tipo: t, ...A.def(esc.fuentes) }); editor(); encuadra(); recalcula(); } }, '+ ' + A.label));
-  const ver = $('#ver'); if (ver) ver.textContent = Version.current;
+  const ver = $('#ver'); if (ver) ver.textContent = Version.de('magnetostatica').current;
 
   new ResizeObserver(() => { tam(); encuadra(); dibuja(); }).observe(cv.parentElement);
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', dibuja);
