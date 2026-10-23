@@ -43,6 +43,7 @@ const Catalogo = {
       herramientas: [
         { clave: 'matrices', nombre: 'Matrices paso a paso', icono: 'A', disponible: true, desc: 'Determinante, inversa, rango, Gauss-Jordan y valores propios, con fracciones exactas y complejos.', buscar: 'matriz determinante inversa gauss jordan rango autovalores valores propios diagonalizar sarrus laplace adjunta' },
         { clave: 'sistemas', nombre: 'Sistemas de ecuaciones lineales', icono: 'x', disponible: true, desc: 'Rouché-Frobenius, Gauss, Cramer e inversa, en paramétricas, también con complejos.', buscar: 'sistema ecuaciones lineales gauss cramer rouché frobenius compatible indeterminado incompatible paramétrica complejos' },
+        { clave: 'estadistica', nombre: 'Distribuciones de probabilidad', icono: 'σ', disponible: true, desc: 'Normal, binomial, Poisson, t y χ² con el área sombreada, cuantiles y valores críticos.', buscar: 'estadística probabilidad distribución normal binomial poisson student chi cuadrado tipificar cuantil valor crítico' },
         { clave: 'campos-vectoriales', nombre: 'Campos vectoriales', icono: '∇', desc: 'Gradiente, divergencia, rotacional y flujo.', buscar: 'gradiente divergencia rotacional flujo' },
       ],
     },

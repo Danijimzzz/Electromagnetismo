@@ -69,4 +69,6 @@ if [ "$1" != privado ]; then
     version.js matematicas/algebra.js matrices/calculo.js matrices/app.js
   herramienta sistemas ../publico/matematicas/sistemas/index.html "Sistemas de ecuaciones lineales" "Calculadora de sistemas de ecuaciones paso a paso: Rouché-Frobenius, Gauss, Gauss-Jordan, Cramer y matriz inversa, en paramétricas y con números complejos" \
     version.js matematicas/algebra.js sistemas/calculo.js sistemas/app.js
+  herramienta estadistica ../publico/matematicas/estadistica/index.html "Distribuciones de probabilidad" "Calculadora de la normal, binomial, Poisson, t de Student y chi cuadrado con el área sombreada: probabilidades, cuantiles y valores críticos paso a paso" \
+    version.js estadistica/calculo.js estadistica/app.js
 fi
