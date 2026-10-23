@@ -17,7 +17,7 @@ Los problemas guardados viven en el almacenamiento local de cada navegador. Para
 
 ## Versión
 
-El número de versión y las novedades están en `fuente/version.js`; la página los muestra en la barra lateral y en la guía. Súbelo con cada cambio publicado: el primer número si hay algo nuevo (7.0) y el segundo si es solo un arreglo (6.1).
+El número de versión y las novedades están en `fuente/version.js`; la página los muestra en la barra lateral y en la guía. Hasta el lanzamiento se numera 0.x (beta) y la 1.0 será el lanzamiento: sube el segundo número si hay algo nuevo (0.6) y añade un tercero si es solo un arreglo (0.5.1). Las novedades son solo para usuarios; el historial completo está en Notion.
 
 ## Comprobación antes de fusionar
 

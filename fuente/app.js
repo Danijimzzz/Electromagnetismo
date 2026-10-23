@@ -742,7 +742,7 @@ ${img ? `<img class="snap" alt="Esquema del problema" src="${img}">` : ''}
     $('#ver').addEventListener('click', () => openGuide('g-novedades'));
     for (const el of document.querySelectorAll('.ver-n')) el.textContent = Version.current;
     // cada versión es un desplegable; solo la actual empieza abierta
-    // Índice de versiones: cada versión mayor (6, 5…) se despliega y dentro lleva sus subversiones (6.4, 6.3…).
+    // Índice de versiones: cada versión mayor (1, 2…; la beta es la 0) se despliega y dentro lleva sus subversiones (0.5, 0.4…).
     const mayores = [];
     for (const r of Version.log) {
       const m = r.v.split('.')[0];
@@ -750,7 +750,7 @@ ${img ? `<img class="snap" alt="Esquema del problema" src="${img}">` : ''}
       mayores.at(-1).rs.push(r);
     }
     $('#ver-log').replaceChildren(...mayores.map((g, i) => h('details', { open: i === 0 },
-      h('summary', {}, `Versión ${g.m}`, h('span', { class: 'ver-c' }, g.rs.length === 1 ? '1 versión' : `${g.rs.length} versiones`)),
+      h('summary', {}, g.m === '0' ? 'Beta (0.x)' : `Versión ${g.m}`, h('span', { class: 'ver-c' }, g.rs.length === 1 ? '1 versión' : `${g.rs.length} versiones`)),
       ...g.rs.map((r) => h('details', { class: 'ver-sub', open: r.v === Version.current }, h('summary', {}, `${r.v} · ${r.fecha.split('-').reverse().join('/')}`), h('ul', {}, r.cambios.map((c) => h('li', {}, c))))))));
     $('#guide-x').addEventListener('click', () => $('#guide').close());
     $('#guide').addEventListener('click', (e) => { if (e.target === e.currentTarget) e.currentTarget.close(); });
