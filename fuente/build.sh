@@ -49,4 +49,6 @@ if [ "$1" != privado ]; then
     version.js engine.js magnetostatica/fisica.js magnetostatica/ejemplos.js magnetostatica/app.js
   herramienta tabla-periodica ../publico/quimica/tabla-periodica/index.html "Tabla periódica interactiva" "Ficha de cada elemento con masa, configuración electrónica, electronegatividad y radio, y tendencias coloreadas" \
     version.js quimica/elementos.js tabla-periodica/app.js
+  herramienta trabajo-y-energia ../publico/fisica/trabajo-y-energia/index.html "Trabajo y energía: rampa, rozamiento y muelle" "Simulador de conservación de la energía con rozamiento y muelle: animación, barras de energía y desarrollo paso a paso" \
+    version.js trabajo-y-energia/fisica.js trabajo-y-energia/app.js
 fi

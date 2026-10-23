@@ -1,0 +1,544 @@
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMwZDZiNjYiLz48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlNmE2NDAiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtZGFzaGFycmF5PSI0IDYuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48cGF0aCBkPSJNMjAgMzJINDQiLz48cGF0aCBkPSJNMjEgMjdDMjcgMTQgMzcgMTQgNDMgMjciLz48cGF0aCBkPSJNMjEgMzdDMjcgNTAgMzcgNTAgNDMgMzciLz48cGF0aCBkPSJNMTcgMjRDMjIgNCA0MiA0IDQ3IDI0Ii8+PHBhdGggZD0iTTE3IDQwQzIyIDYwIDQyIDYwIDQ3IDQwIi8+PC9nPjxjaXJjbGUgY3g9IjE3IiBjeT0iMzIiIHI9IjgiIGZpbGw9IiNlZjdhNjIiLz48Y2lyY2xlIGN4PSI0NyIgY3k9IjMyIiByPSI4IiBmaWxsPSIjNzRhMmYyIi8+PHBhdGggZD0iTTEzIDMyaDhNMTcgMjh2OE00MyAzMmg4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta property="og:title" content="Trabajo y energía: rampa, rozamiento y muelle">
+<meta property="og:description" content="Simulador de conservación de la energía con rozamiento y muelle: animación, barras de energía y desarrollo paso a paso">
+<meta property="og:image" content="https://electromagnetismo-two.vercel.app/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<title>Trabajo y energía: rampa, rozamiento y muelle · SimulaCiencia</title>
+<meta name="description" content="Simulador de trabajo y energía en español: un bloque baja por una rampa con rozamiento, recorre un tramo horizontal y comprime un muelle. Animación, barras de energía y desarrollo paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root {
+  --bg: #eef0f4; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d6dbe3; --accent: #2a5db5; --accent-soft: #e3ebf8;
+  --e-k: #2a5db5; --e-g: #1d8a5b; --e-e: #b5562a; --e-q: #8a8f98; --suelo: #c9cfd8; --bloque: #f0b429;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #74a2f2; --accent-soft: #1b2a42;
+  --e-k: #74a2f2; --e-g: #4cc48e; --e-e: #ec8a5c; --e-q: #8f96a1; --suelo: #3a4452; --bloque: #e0a52a; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #74a2f2; --accent-soft: #1b2a42;
+  --e-k: #74a2f2; --e-g: #4cc48e; --e-e: #ec8a5c; --e-q: #8f96a1; --suelo: #3a4452; --bloque: #e0a52a; color-scheme: dark }
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
+.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
+.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+.layout { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 16px; align-items: start }
+@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr) } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px }
+.card h2 { font: 600 15px var(--f-ui); margin: 0 0 10px }
+.campos { display: grid; grid-template-columns: minmax(0, 1fr) 96px; gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px } .campos label small { color: var(--muted) }
+.in { font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.in:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.in.mal { border-color: #c0392b }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-top: 6px }
+.error { color: #c0392b; font-size: 13px; margin: 10px 0 0 }
+.btns { display: flex; gap: 8px; flex-wrap: wrap; align-items: center }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 12px; cursor: pointer }
+.btn:hover { border-color: var(--accent) } .btn.pri { background: var(--accent); border-color: var(--accent); color: var(--panel) }
+.escena { position: relative } canvas { display: block; width: 100%; border-radius: 8px; background: var(--bg) }
+#lienzo { height: clamp(170px, 42vw, 300px) } #grafica { height: 180px; margin-top: 10px }
+.controles { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 10px; font-size: 13px; color: var(--muted) }
+.controles input[type=range] { flex: 1; min-width: 140px; accent-color: var(--accent) }
+.lectura { font: 13px var(--f-mono); color: var(--ink) }
+.barras { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin-top: 12px; align-items: end }
+.barra { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12.5px }
+.barra .tubo { width: 100%; max-width: 70px; height: 140px; background: var(--bg); border-radius: 6px; position: relative; overflow: hidden }
+.barra .tubo i { position: absolute; left: 0; right: 0; bottom: 0; border-radius: 6px 6px 0 0; transition: none }
+.barra b { font: 500 12.5px var(--f-mono) } .barra span { color: var(--muted) }
+.pasos { margin-top: 16px } .pasos ol { margin: 0; padding-left: 20px } .pasos li { margin: 0 0 10px; font-family: var(--f-math); font-size: 15.5px }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.resumen { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 0 0 12px; font-size: 14px }
+.resumen div span { color: var(--muted) } .resumen div b { font-family: var(--f-mono); font-weight: 500 }
+.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física general</a> / Trabajo y energía</span></header>
+<div class="wrap">
+<h1>Trabajo y energía: rampa, rozamiento y muelle</h1>
+<p class="lead">Un bloque baja por una rampa, recorre un tramo horizontal y choca con un muelle. Cambia los datos y mira cómo la energía potencial se convierte en cinética, en elástica y en calor por el rozamiento. Abajo tienes el desarrollo paso a paso.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <div class="btns" style="margin-bottom:12px"><select id="ejemplos" class="in" aria-label="Ejemplos"></select></div>
+    <div class="campos" id="campos"></div>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card escena">
+      <canvas id="lienzo" aria-label="Animación del bloque"></canvas>
+      <div class="controles">
+        <button class="btn pri" id="play" type="button">▶ Reproducir</button>
+        <button class="btn" id="reinicio" type="button">↺</button>
+        <input type="range" id="tiempo" min="0" max="1000" value="0" aria-label="Tiempo">
+        <span class="lectura" id="lectura"></span>
+        <label>Velocidad <select id="ritmo" class="in" style="width:auto"><option value="0.25">×¼</option><option value="0.5">×½</option><option value="1" selected>×1</option><option value="2">×2</option></select></label>
+      </div>
+      <div class="barras" id="barras"></div>
+      <canvas id="grafica" aria-label="Energías frente al tiempo"></canvas>
+    </div>
+    <div class="card pasos"><h2>Resultados y desarrollo</h2><div class="resumen" id="resumen"></div><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Teorema del trabajo y la energía</h2>
+  <p>El trabajo de todas las fuerzas sobre un cuerpo es igual a la variación de su energía cinética. Si separamos las fuerzas conservativas (peso y muelle), cuyo trabajo se escribe como una pérdida de energía potencial, queda el balance que usa este simulador:</p>
+  <p class="f">E<sub>c,B</sub> + E<sub>p,B</sub> = E<sub>c,A</sub> + E<sub>p,A</sub> + W<sub>roz</sub>, &nbsp; con W<sub>roz</sub> = −μ N · s</p>
+  <h2>Rozamiento en la rampa y en el llano</h2>
+  <p>En la rampa la normal es N = m g cos θ, y el recorrido es L = h / sen θ, así que W<sub>roz</sub> = −μ m g h / tg θ. En el tramo horizontal N = m g. El trabajo del rozamiento se convierte en calor: la barra gris de la animación.</p>
+  <h2>Muelle</h2>
+  <p>Un muelle comprimido una distancia x guarda E<sub>e</sub> = ½ k x². Si también hay rozamiento bajo el muelle, la compresión máxima sale de ½ m v<sub>C</sub>² = ½ k x² + μ m g x. Después el muelle devuelve el bloque si su fuerza k x supera el rozamiento estático.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Trabajo y energía <span id="ver"></span> (beta)</footer>
+</body>
+<script>
+/* =====================================================================
+   Versiones y novedades: la web (portada, asignaturas, buscador) tiene su número y cada
+   herramienta el suyo. Hasta el lanzamiento se numera 0.x (beta); la 1.0 de una herramienta
+   llega cuando se da por terminada y la 1.0 de la web será el lanzamiento. Sube el segundo
+   número si hay algo nuevo (0.6) y añade un tercero si es solo un arreglo (0.5.1).
+   En las novedades de la web se anuncia también cada herramienta nueva.
+   Las notas son para los usuarios: solo funciones nuevas, arreglos visibles y cambios
+   en la interfaz. Lo interno (pruebas, CI, build, despliegue, refactorizaciones) no se anota;
+   el historial completo para desarrolladores está en Notion.
+   ===================================================================== */
+const Version = (() => {
+  const registros = {
+    web: [
+      { v: '0.3', fecha: '2026-10-23', cambios: ['Nueva herramienta: Trabajo y energía, en Física general.'] },
+      { v: '0.2', fecha: '2026-10-23', cambios: ['Nueva herramienta: Tabla periódica interactiva, en Química.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Portada para elegir asignatura y herramienta: Electromagnetismo, Física general, Química, Matemáticas y Laboratorio, con buscador. Las herramientas que vienen después aparecen como «Próximamente».', 'Nueva herramienta: Magnetostática, en Electromagnetismo.'] },
+    ],
+    electrostatica: [
+      { v: '0.5.1', fecha: '2026-10-23', cambios: ['El simulador tiene ahora su propia dirección, /electromagnetismo/electrostatica/. Tus problemas guardados siguen ahí. El botón «Todas las herramientas» de la barra lateral vuelve a la portada.'] },
+    { v: '0.5', fecha: '2026-10-23', cambios: ['Doce ejercicios de ejemplo con enunciados propios: los mismos tipos de pregunta que en clase, con otras figuras y otros números. La guía de uso tiene capturas nuevas hechas con ellos.', 'La web tiene icono propio: un dipolo con sus líneas de campo, en la pestaña del navegador, en la pantalla de inicio del móvil y en la vista previa al compartir el enlace.', 'Páginas de aviso legal, privacidad, cookies y contacto, enlazadas al pie de la barra lateral.'] },
+    { v: '0.4', fecha: '2026-10-22', cambios: ['Número de versión visible y este apartado de novedades.', 'Arreglo: en la vista 3D los cilindros se dibujan con su radio real, aparecen las superficies de Gauss, y las esferas, cascarones y conductores tienen volumen en lugar de parecer círculos planos.'] },
+    { v: '0.3', fecha: '2026-10-22', cambios: ['Guía de uso con capturas (botón ?, barra lateral o F1).', 'Los resultados se escriben con la misma forma que el solucionario oficial: perfiles por tramos, factor común en logaritmos y radicales, y la pregunta V_A − V_B.'] },
+    { v: '0.2', fecha: '2026-10-22', cambios: ['Anillos, discos, cortezas y conductores.', 'Varias incógnitas, modo numérico SI, flujo de Gauss y gráficas E(z) y V(z).', 'Modo práctica, exportar la solución, deshacer y rehacer, mapa de color y vista 3D.', 'Búsqueda, carpetas y etiquetas en la barra lateral.'] },
+    { v: '0.1', fecha: '2026-10-22', cambios: ['Primera versión: cargas, hilos, planos y esferas con el desarrollo paso a paso y 12 ejercicios resueltos.', 'Barra lateral con tus problemas, los importados y los ejercicios; título y enunciado editables; archivos .emsim.json.'] },
+    ],
+    magnetostatica: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: campo magnético de hilos, segmentos, hilos semiinfinitos, espiras, arcos, solenoides y toroides con Biot-Savart, y fuerza sobre cargas en movimiento y sobre conductores, con el desarrollo paso a paso en la forma μ₀I/(πa) o en unidades del SI.', 'Dibujo del campo B en el plano XY, XZ o YZ, con puntos que se pueden arrastrar y ocho ejemplos resueltos.'] },
+    ],
+    'tabla-periodica': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: cada elemento tiene su ficha con la masa atómica y molar, el grupo, el periodo, el bloque, la configuración electrónica (abreviada, completa y por capas), la electronegatividad, la energía de ionización, el radio y el estado.', 'La tabla se puede colorear por categoría, electronegatividad, energía de ionización, radio, masa, bloque o estado, y tiene un buscador por nombre, símbolo o número atómico.'] },
+    ],
+    'trabajo-y-energia': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: un bloque baja por una rampa con rozamiento, recorre un tramo horizontal y comprime un muelle. Animación con barras de energía cinética, gravitatoria, elástica y calor, gráfica de las energías en el tiempo y el desarrollo paso a paso con la velocidad al pie de la rampa, al llegar al muelle y la compresión máxima.', 'Seis ejemplos: sin rozamiento, se para antes del muelle, el rozamiento lo sujeta, con empujón inicial y muelle duro.'] },
+    ],
+  };
+  const de = (h) => ({ current: registros[h][0].v, log: registros[h] });
+  // Version.current y Version.log son los del simulador de electrostática
+  return { registros, de, ...de('electrostatica') };
+})();
+
+/* =====================================================================
+   Trabajo y energía (sin DOM): un bloque que baja por una rampa, recorre un
+   tramo horizontal y comprime un muelle, con rozamiento en cada tramo.
+   Resultados analíticos con el desarrollo paso a paso y una simulación en el
+   tiempo para la animación y las barras de energía. Unidades del SI.
+   ===================================================================== */
+const Energia = (() => {
+  const rad = (g) => (g * Math.PI) / 180;
+  const f = (x, d = 3) => {
+    if (!isFinite(x)) return '—';
+    if (Math.abs(x) < 1e-12) return '0';
+    const a = Math.abs(x);
+    const s = a >= 1e5 || a < 1e-3 ? x.toExponential(2).replace('e', '·10^').replace(/\^([+-]?)(\d+)/, (_, sg, e) => `<sup>${sg === '-' ? '−' : ''}${+e}</sup>`) : String(+x.toPrecision(d + 1));
+    return s.replace('.', ',').replace('-', '−');
+  };
+
+  // escena: { m, g, h, ang, mu1, d, mu2, k, v0 }
+  function leer(sc) {
+    const n = (k, nom, min = 0, estricto = false) => {
+      const v = +String(sc[k]).replace(',', '.');
+      if (!isFinite(v) || (estricto ? v <= min : v < min)) throw new Error(`${nom} debe ser ${estricto ? 'mayor que' : 'al menos'} ${min}`);
+      return v;
+    };
+    const o = { m: n('m', 'La masa', 0, true), g: n('g', 'La gravedad', 0, true), h: n('h', 'La altura'), ang: n('ang', 'El ángulo', 0, true),
+      mu1: n('mu1', 'El rozamiento de la rampa'), d: n('d', 'La longitud del tramo horizontal'), mu2: n('mu2', 'El rozamiento del tramo horizontal'), k: n('k', 'La constante del muelle'), v0: n('v0', 'La velocidad inicial') };
+    if (o.ang >= 90) throw new Error('El ángulo debe ser menor que 90°');
+    o.L = o.h / Math.sin(rad(o.ang));
+    return o;
+  }
+
+  /* ---------- Solución analítica con el desarrollo ---------- */
+  function resolver(sc) {
+    const p = leer(sc), { m, g, h, ang, mu1, d, mu2, k, v0, L } = p;
+    const pasos = [], res = {};
+    const Ei = 0.5 * m * v0 * v0 + m * g * h;
+    pasos.push({ t: 'Energía inicial', html: `E<sub>0</sub> = ½ m v<sub>0</sub><sup>2</sup> + m g h = ½·${f(m)}·${f(v0)}<sup>2</sup> + ${f(m)}·${f(g)}·${f(h)} = <b>${f(Ei)} J</b>` });
+    // ¿arranca? En reposo en la rampa solo baja si tan θ > μ
+    const tan = Math.tan(rad(ang));
+    if (v0 === 0 && h > 0 && mu1 >= tan) {
+      pasos.push({ t: 'Rampa', html: `En reposo el bloque no se mueve: μ<sub>1</sub> = ${f(mu1)} ≥ tg θ = ${f(tan)} (el rozamiento estático puede sujetarlo).` });
+      return { p, pasos, res: { quieto: true }, Ei };
+    }
+    // rampa: W_roz = −μ m g cos θ · L
+    const Wr1 = -mu1 * m * g * Math.cos(rad(ang)) * L;
+    let vb2 = v0 * v0 + 2 * g * h + (2 * Wr1) / m;
+    if (h > 0) pasos.push({ t: 'Bajada por la rampa', html: `Longitud L = h / sen θ = ${f(L)} m. Trabajo del rozamiento W<sub>r1</sub> = −μ<sub>1</sub> m g cos θ · L = <b>${f(Wr1)} J</b>.<br>½ m v<sub>B</sub><sup>2</sup> = E<sub>0</sub> + W<sub>r1</sub> ⇒ v<sub>B</sub> = √(v<sub>0</sub><sup>2</sup> + 2 g h − 2 μ<sub>1</sub> g h / tg θ) = <b>${vb2 > 0 ? f(Math.sqrt(vb2)) : '0'} m/s</b>` });
+    if (vb2 <= 0) {
+      // se para en la rampa (solo si sube con v0... aquí baja, así que v² < 0 significa que frena antes de llegar)
+      const s = (v0 * v0) / (2 * g * (mu1 * Math.cos(rad(ang)) - Math.sin(rad(ang))));
+      pasos.push({ t: 'Se para en la rampa', html: `El rozamiento frena el bloque tras recorrer s = v<sub>0</sub><sup>2</sup> / (2 g (μ<sub>1</sub> cos θ − sen θ)) = <b>${f(s)} m</b>.` });
+      res.paraRampa = s;
+      return { p, pasos, res, Ei };
+    }
+    res.vB = Math.sqrt(vb2);
+    // tramo horizontal
+    const Wr2 = -mu2 * m * g * d;
+    const vc2 = vb2 + (2 * Wr2) / m;
+    if (vc2 <= 0) {
+      const s = vb2 / (2 * mu2 * g);
+      pasos.push({ t: 'Tramo horizontal', html: `El rozamiento lo frena antes del muelle: ½ m v<sub>B</sub><sup>2</sup> = μ<sub>2</sub> m g s ⇒ s = v<sub>B</sub><sup>2</sup> / (2 μ<sub>2</sub> g) = <b>${f(s)} m</b> (de ${f(d)} m).` });
+      res.paraLlano = s;
+      res.calor = Ei;
+      pasos.push({ t: 'Balance', html: `Toda la energía inicial se disipa por rozamiento: Q = ${f(Ei)} J.` });
+      return { p, pasos, res, Ei };
+    }
+    res.vC = Math.sqrt(vc2);
+    pasos.push({ t: 'Tramo horizontal', html: `W<sub>r2</sub> = −μ<sub>2</sub> m g d = <b>${f(Wr2)} J</b> ⇒ v<sub>C</sub> = √(v<sub>B</sub><sup>2</sup> − 2 μ<sub>2</sub> g d) = <b>${f(res.vC)} m/s</b> al llegar al muelle.` });
+    if (k > 0) {
+      // compresión máxima con rozamiento μ₂ bajo el muelle: ½ k x² + μ₂ m g x = ½ m v_C²
+      const a = 0.5 * k, b = mu2 * m * g, c = -0.5 * m * vc2;
+      const x = (-b + Math.sqrt(b * b - 4 * a * c)) / (2 * a);
+      res.x = x;
+      res.Fmax = k * x;
+      pasos.push({ t: 'Compresión del muelle', html: `½ k x<sup>2</sup> + μ<sub>2</sub> m g x = ½ m v<sub>C</sub><sup>2</sup> ⇒ ${f(a)} x<sup>2</sup> + ${f(b)} x − ${f(-c)} = 0 ⇒ <b>x = ${f(x)} m</b>. Fuerza máxima del muelle k x = <b>${f(res.Fmax)} N</b>, energía elástica ½ k x<sup>2</sup> = <b>${f(0.5 * k * x * x)} J</b>.` });
+      // ¿vuelve? el muelle lo empuja si k x > μ m g
+      res.vuelve = k * x > mu2 * m * g;
+      pasos.push({ t: 'Después', html: res.vuelve ? `Como k x = ${f(k * x)} N > μ<sub>2</sub> m g = ${f(mu2 * m * g)} N, el muelle lo devuelve hacia la rampa. La animación sigue el movimiento completo.` : `Como k x ≤ μ<sub>2</sub> m g, el rozamiento estático lo mantiene comprimido: se queda ahí.` });
+    } else pasos.push({ t: 'Sin muelle', html: `Sigue con v<sub>C</sub> = ${f(res.vC)} m/s al final del tramo.` });
+    return { p, pasos, res, Ei };
+  }
+
+  /* ---------- Simulación en el tiempo ---------- */
+  // coordenada s a lo largo del recorrido: 0 en lo alto de la rampa, L al pie, L + d en el muelle.
+  // RK4 con el sentido del rozamiento fijo en cada paso; los pasos se recortan para caer justo en
+  // los cambios de tramo (pie de la rampa y muelle), así la energía se conserva salvo el calor.
+  function simular(sc, tmax = 30, dt = 1 / 600) {
+    const p = leer(sc), { m, g, ang, mu1, d, mu2, k, v0, L } = p;
+    const th = rad(ang), sin = Math.sin(th), cos = Math.cos(th);
+    const bordes = [L, L + d];
+    const tramo = (s, sv) => s < L || (s === L && sv < 0); // en la rampa
+    const Fap = (s, enRampa) => (enRampa ? m * g * sin : 0) - (s > L + d ? k * (s - L - d) : 0);
+    const roz = (enRampa) => (enRampa ? mu1 * m * g * cos : mu2 * m * g);
+    let s = 0, v = v0, Q = 0, t = 0;
+    const out = [];
+    const estado = () => {
+      const x = Math.max(0, s - L - d), y = s < L ? (L - s) * sin : 0;
+      return { t, s, v, K: 0.5 * m * v * v, Ug: m * g * y, Ue: 0.5 * k * x * x, Q, y, x };
+    };
+    // un paso RK4 de duración h con el rozamiento en sentido −dir y el tramo fijo
+    const paso = (h, dir, enRampa) => {
+      const fr = roz(enRampa) * dir;
+      const a = (x) => (Fap(x, enRampa) - fr) / m;
+      const k1v = a(s), k1s = v;
+      const k2v = a(s + (h / 2) * k1s), k2s = v + (h / 2) * k1v;
+      const k3v = a(s + (h / 2) * k2s), k3s = v + (h / 2) * k2v;
+      const k4v = a(s + h * k3s), k4s = v + h * k3v;
+      return { s: s + (h / 6) * (k1s + 2 * k2s + 2 * k3s + k4s), v: v + (h / 6) * (k1v + 2 * k2v + 2 * k3v + k4v) };
+    };
+    out.push(estado());
+    let quieto = 0, siguiente = 1 / 60;
+    while (t < tmax) {
+      let dir = Math.sign(v);
+      const enRampa = tramo(s, dir || Math.sign(Fap(s, s < L)));
+      if (dir === 0) {
+        // en reposo: el rozamiento estático lo sujeta si puede
+        const F = Fap(s, enRampa);
+        if (Math.abs(F) <= roz(enRampa) + 1e-9) { quieto += dt; t += dt; if (quieto > 0.5) break; if (t >= siguiente) { out.push(estado()); siguiente += 1 / 60; } continue; }
+        dir = Math.sign(F);
+      }
+      quieto = 0;
+      let h = dt, n = paso(h, dir, enRampa);
+      // ¿se para dentro del paso? busca el instante con v = 0
+      if (Math.sign(n.v) === -dir) {
+        let lo = 0, hi = h;
+        for (let i = 0; i < 40; i++) { const mid = (lo + hi) / 2; if (Math.sign(paso(mid, dir, enRampa).v) === -dir) hi = mid; else lo = mid; }
+        h = lo; n = paso(h, dir, enRampa); n.v = 0; n.para = true;
+      }
+      // ¿cruza un cambio de tramo? recorta el paso para caer justo en él
+      for (const b of bordes) {
+        if ((s - b) * (n.s - b) < 0) {
+          let lo = 0, hi = h;
+          for (let i = 0; i < 40; i++) { const mid = (lo + hi) / 2; if ((s - b) * (paso(mid, dir, enRampa).s - b) < 0) hi = mid; else lo = mid; }
+          h = hi; n = paso(h, dir, enRampa); n.s = b;
+          break;
+        }
+      }
+      Q += roz(enRampa) * Math.abs(n.s - s);
+      s = n.s; v = n.v; t += h;
+      if (s < 0) { s = 0; v = 0; }
+      if (t >= siguiente || n.para) { out.push(estado()); if (t >= siguiente) siguiente += 1 / 60; }
+    }
+    out.push(estado());
+    return { p, puntos: out, E0: out[0].K + out[0].Ug };
+  }
+
+  const ejemplos = [
+    { clave: 'rampa-muelle', nombre: 'Rampa, llano y muelle', sc: { m: 2, g: 9.8, h: 5, ang: 30, mu1: 0.1, d: 4, mu2: 0.2, k: 200, v0: 0 } },
+    { clave: 'sin-rozamiento', nombre: 'Sin rozamiento: oscila para siempre', sc: { m: 1, g: 9.8, h: 2, ang: 45, mu1: 0, d: 3, mu2: 0, k: 100, v0: 0 } },
+    { clave: 'para-llano', nombre: 'Se para antes del muelle', sc: { m: 2, g: 9.8, h: 5, ang: 30, mu1: 0.1, d: 10, mu2: 0.5, k: 200, v0: 0 } },
+    { clave: 'no-arranca', nombre: 'El rozamiento lo sujeta en la rampa', sc: { m: 2, g: 9.8, h: 1, ang: 20, mu1: 0.5, d: 4, mu2: 0.2, k: 200, v0: 0 } },
+    { clave: 'empujon', nombre: 'Con un empujón inicial', sc: { m: 2, g: 9.8, h: 1, ang: 20, mu1: 0.5, d: 4, mu2: 0.2, k: 200, v0: 3 } },
+    { clave: 'muelle-duro', nombre: 'Muelle duro que lo devuelve a la rampa', sc: { m: 0.5, g: 9.8, h: 3, ang: 40, mu1: 0.05, d: 2, mu2: 0.05, k: 800, v0: 0 } },
+  ];
+
+  return { resolver, simular, leer, f, ejemplos };
+})();
+
+/* =====================================================================
+   Trabajo y energía: interfaz (datos, animación, barras de energía,
+   gráfica E(t) y desarrollo). El cálculo está en fisica.js (Energia).
+   ===================================================================== */
+(() => {
+  const $ = (q) => document.querySelector(q);
+  const CLAVE = 'energia-v1';
+  const CAMPOS = [
+    { sep: 'Bloque' },
+    { k: 'm', nom: 'Masa', u: 'kg' },
+    { k: 'v0', nom: 'Velocidad inicial', u: 'm/s' },
+    { k: 'g', nom: 'Gravedad', u: 'm/s²' },
+    { sep: 'Rampa' },
+    { k: 'h', nom: 'Altura', u: 'm' },
+    { k: 'ang', nom: 'Ángulo', u: '°' },
+    { k: 'mu1', nom: 'Rozamiento μ₁', u: '' },
+    { sep: 'Tramo horizontal y muelle' },
+    { k: 'd', nom: 'Longitud del tramo', u: 'm' },
+    { k: 'mu2', nom: 'Rozamiento μ₂', u: '' },
+    { k: 'k', nom: 'Constante del muelle', u: 'N/m' },
+  ];
+  const ENERGIAS = [
+    { k: 'K', nom: 'Cinética', col: '--e-k' },
+    { k: 'Ug', nom: 'Gravitatoria', col: '--e-g' },
+    { k: 'Ue', nom: 'Elástica', col: '--e-e' },
+    { k: 'Q', nom: 'Calor', col: '--e-q' },
+  ];
+
+  let esc = { ...Energia.ejemplos[0].sc };
+  try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && typeof g === 'object') esc = { ...esc, ...g }; } catch (e) {}
+  let sim = null, sol = null, t = 0, jugando = false, ultimo = 0;
+  let col = {};
+
+  /* ---------- Formulario ---------- */
+  const campos = $('#campos');
+  for (const c of CAMPOS) {
+    if (c.sep) { campos.insertAdjacentHTML('beforeend', `<div class="sep">${c.sep}</div>`); continue; }
+    campos.insertAdjacentHTML('beforeend', `<label for="c-${c.k}">${c.nom}${c.u ? ` <small>(${c.u})</small>` : ''}</label><input id="c-${c.k}" class="in" inputmode="decimal" autocomplete="off">`);
+  }
+  const rellena = () => { for (const c of CAMPOS) if (c.k) $('#c-' + c.k).value = String(esc[c.k]).replace('.', ','); };
+  campos.addEventListener('input', (e) => {
+    const k = e.target.id.slice(2);
+    esc[k] = e.target.value;
+    $('#ejemplos').value = '';
+    calcula(true);
+  });
+  const sel = $('#ejemplos');
+  sel.innerHTML = '<option value="">Ejemplos…</option>' + Energia.ejemplos.map((e) => `<option value="${e.clave}">${e.nombre}</option>`).join('');
+  sel.addEventListener('change', () => { if (sel.value) abrirEjemplo(sel.value); });
+  function abrirEjemplo(clave) {
+    const e = Energia.ejemplos.find((x) => x.clave === clave);
+    if (!e) return;
+    esc = { ...e.sc }; rellena(); sel.value = clave; calcula(false);
+  }
+
+  /* ---------- Cálculo ---------- */
+  function calcula(guardar) {
+    const err = $('#error');
+    try {
+      sol = Energia.resolver(esc);
+      sim = Energia.simular(esc, 20);
+    } catch (e) {
+      err.textContent = e.message; err.hidden = false;
+      return;
+    }
+    err.hidden = true;
+    if (guardar) try { localStorage.setItem(CLAVE, JSON.stringify(esc)); } catch (e) {}
+    t = 0; para();
+    pintaResultados();
+    dibuja();
+  }
+
+  function pintaResultados() {
+    const f = Energia.f, r = sol.res, filas = [];
+    filas.push(['E₀', f(sol.Ei) + ' J']);
+    if (r.quieto) filas.push(['Movimiento', 'no arranca']);
+    if (r.vB !== undefined) filas.push(['v al pie de la rampa', f(r.vB) + ' m/s']);
+    if (r.paraRampa !== undefined) filas.push(['Se para en la rampa tras', f(r.paraRampa) + ' m']);
+    if (r.paraLlano !== undefined) filas.push(['Se para en el llano tras', f(r.paraLlano) + ' m']);
+    if (r.vC !== undefined) filas.push(['v al llegar al muelle', f(r.vC) + ' m/s']);
+    if (r.x !== undefined) filas.push(['Compresión máxima', f(r.x) + ' m'], ['Fuerza máxima del muelle', f(r.Fmax) + ' N']);
+    $('#resumen').innerHTML = filas.map(([a, b]) => `<div><span>${a}:</span> <b>${b}</b></div>`).join('');
+    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('');
+  }
+
+  /* ---------- Estado en un instante (interpolado) ---------- */
+  function enT(tt) {
+    const P = sim.puntos;
+    if (tt <= P[0].t) return P[0];
+    if (tt >= P[P.length - 1].t) return P[P.length - 1];
+    let lo = 0, hi = P.length - 1;
+    while (hi - lo > 1) { const mid = (lo + hi) >> 1; if (P[mid].t <= tt) lo = mid; else hi = mid; }
+    const a = P[lo], b = P[hi], u = b.t > a.t ? (tt - a.t) / (b.t - a.t) : 0;
+    const o = { t: tt };
+    for (const k of ['s', 'v', 'K', 'Ug', 'Ue', 'Q', 'x']) o[k] = a[k] + (b[k] - a[k]) * u;
+    return o;
+  }
+  const tFin = () => sim.puntos[sim.puntos.length - 1].t;
+
+  /* ---------- Dibujo ---------- */
+  function colores() {
+    const cs = getComputedStyle(document.documentElement);
+    for (const k of ['--ink', '--muted', '--line', '--bg', '--panel', '--accent', '--suelo', '--bloque', '--e-k', '--e-g', '--e-e', '--e-q']) col[k] = cs.getPropertyValue(k).trim();
+  }
+  function lienzo(c) {
+    const dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
+    if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
+    const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
+    return { g, w, h };
+  }
+
+  function dibujaEscena(e) {
+    const { g, w, h: H } = lienzo($('#lienzo'));
+    const p = sim.p, th = (p.ang * Math.PI) / 180;
+    const Lx = p.h / Math.tan(th);
+    const xm = sol.res.x || 0;
+    const l0 = Math.max(0.6, 1.8 * xm, 0.12 * (Lx + p.d));
+    const muro = Lx + p.d + l0;
+    const ancho = muro * 1.04 + 0.2;
+    const bs = Math.min(0.06 * ancho, Math.max(p.h, 0.3) * 0.35);
+    const alto = p.h + bs * 1.6;
+    const pad = 18, izq = p.h > 0 ? 62 : pad, sx = Math.min((w - izq - pad) / (ancho + bs), (H - 2 * pad) / alto);
+    const ox = izq + bs * sx + ((w - izq - pad) - (ancho + bs) * sx) / 2, oy = H - pad - ((H - 2 * pad) - alto * sx) / 2 - 0.1 * bs * sx;
+    const X = (x) => ox + x * sx, Y = (y) => oy - y * sx;
+    // suelo y rampa
+    g.fillStyle = col['--suelo'];
+    g.beginPath(); g.moveTo(X(-bs), Y(0)); g.lineTo(X(-bs), Y(p.h)); g.lineTo(X(0), Y(p.h)); g.lineTo(X(Lx), Y(0)); g.lineTo(X(muro), Y(0)); g.lineTo(X(muro), Y(bs * 1.4)); g.lineTo(X(muro + 0.15 + bs * 0.3), Y(bs * 1.4)); g.lineTo(X(muro + 0.15 + bs * 0.3), Y(-bs * 0.5)); g.lineTo(X(-bs), Y(-bs * 0.5)); g.closePath(); g.fill();
+    // tramos con rozamiento
+    g.lineWidth = 3; g.lineCap = 'round';
+    if (p.mu1 > 0 && p.h > 0) { g.strokeStyle = col['--e-q']; g.beginPath(); g.moveTo(X(0), Y(p.h)); g.lineTo(X(Lx), Y(0)); g.stroke(); }
+    if (p.mu2 > 0) { g.strokeStyle = col['--e-q']; g.beginPath(); g.moveTo(X(Lx), Y(0)); g.lineTo(X(muro), Y(0)); g.stroke(); }
+    // cotas
+    g.fillStyle = col['--muted']; g.font = '12px "IBM Plex Sans", system-ui, sans-serif'; g.textBaseline = 'middle';
+    if (p.h > 0) { g.textAlign = 'right'; g.fillText(`h = ${Energia.f(p.h)} m`, X(-bs) - 4, Y(p.h / 2)); }
+    g.textAlign = 'center'; g.fillText(`d = ${Energia.f(p.d)} m`, X(Lx + p.d / 2), Y(-bs * 0.25) + 0);
+    if (p.h > 0) {
+      g.strokeStyle = col['--muted']; g.lineWidth = 1; g.beginPath(); g.arc(X(Lx), Y(0), 26, Math.PI, Math.PI + th); g.stroke();
+      g.textAlign = 'right'; g.fillText(`${Energia.f(p.ang)}°`, X(Lx) - 30, Y(0) - 9);
+    }
+    // muelle
+    const comp = Math.min(e.x || 0, l0 * 0.92);
+    const xa = Lx + p.d + comp, xb = muro, yb = bs * 0.5, vueltas = 10, amp = bs * 0.28;
+    g.strokeStyle = p.k > 0 ? col['--e-e'] : col['--line']; g.lineWidth = 2; g.lineCap = 'round'; g.lineJoin = 'round';
+    g.beginPath(); g.moveTo(X(xa), Y(yb));
+    for (let i = 1; i < 2 * vueltas; i++) g.lineTo(X(xa + ((xb - xa) * i) / (2 * vueltas)), Y(yb + (i % 2 ? amp : -amp)));
+    g.lineTo(X(xb), Y(yb)); g.stroke();
+    g.lineWidth = 3; g.beginPath(); g.moveTo(X(xa), Y(yb - amp * 1.3)); g.lineTo(X(xa), Y(yb + amp * 1.3)); g.stroke();
+    // bloque: su esquina inferior delantera está en el punto s del recorrido
+    const s = Math.max(0, e.s);
+    let px, py, giro;
+    if (s < sim.p.L) { px = s * Math.cos(th); py = p.h - s * Math.sin(th); giro = th; } else { px = Lx + (s - sim.p.L); py = 0; giro = 0; }
+    g.save(); g.translate(X(px), Y(py)); g.rotate(giro);
+    g.fillStyle = col['--bloque']; g.strokeStyle = col['--ink']; g.lineWidth = 1.2;
+    g.beginPath(); g.rect(-bs * sx, -bs * sx, bs * sx, bs * sx); g.fill(); g.stroke();
+    g.fillStyle = col['--ink']; g.textAlign = 'center'; g.font = '600 12px "IBM Plex Sans", system-ui, sans-serif'; g.fillText('m', -bs * sx / 2, -bs * sx / 2);
+    // flecha de velocidad
+    if (Math.abs(e.v) > 1e-3) {
+      const vmax = Math.max(...sim.puntos.map((q) => Math.abs(q.v)), 1e-9), lon = (Math.abs(e.v) / vmax) * Math.max(40, bs * sx * 1.6), dir = Math.sign(e.v);
+      const y0 = -bs * sx - 10, x0 = -bs * sx / 2;
+      g.strokeStyle = col['--e-k']; g.fillStyle = col['--e-k']; g.lineWidth = 2.2;
+      g.beginPath(); g.moveTo(x0, y0); g.lineTo(x0 + dir * lon, y0); g.stroke();
+      g.beginPath(); g.moveTo(x0 + dir * (lon + 8), y0); g.lineTo(x0 + dir * lon, y0 - 5); g.lineTo(x0 + dir * lon, y0 + 5); g.closePath(); g.fill();
+    }
+    g.restore();
+  }
+
+  function dibujaBarras(e) {
+    const tot = e.K + e.Ug + e.Ue + e.Q, tope = Math.max(sim.E0, 1e-9);
+    const filas = [...ENERGIAS.map((q) => ({ ...q, v: e[q.k] })), { k: 'T', nom: 'Total', col: '--ink', v: tot }];
+    const cont = $('#barras');
+    if (cont.children.length !== filas.length) cont.innerHTML = filas.map((q) => `<div class="barra" data-e="${q.k}"><b></b><div class="tubo"><i style="background:var(${q.col})"></i></div><span>${q.nom}</span></div>`).join('');
+    filas.forEach((q, i) => {
+      const n = cont.children[i];
+      n.querySelector('b').textContent = Energia.f(Math.max(0, q.v)) + ' J';
+      n.querySelector('i').style.height = `${Math.min(100, (Math.max(0, q.v) / tope) * 100)}%`;
+    });
+  }
+
+  function dibujaGrafica(e) {
+    const { g, w, h } = lienzo($('#grafica'));
+    const P = sim.puntos, T = Math.max(tFin(), 1e-9), tope = Math.max(sim.E0, 1e-9);
+    const l = 44, r = 10, top = 10, b = 24;
+    const X = (tt) => l + (tt / T) * (w - l - r), Y = (v) => h - b - (v / tope) * (h - top - b);
+    g.strokeStyle = col['--line']; g.lineWidth = 1; g.fillStyle = col['--muted']; g.font = '11px "IBM Plex Mono", monospace';
+    g.textAlign = 'right'; g.textBaseline = 'middle';
+    for (const u of [0, 0.5, 1]) { g.beginPath(); g.moveTo(l, Y(u * tope)); g.lineTo(w - r, Y(u * tope)); g.stroke(); g.fillText(Energia.f(u * tope, 2), l - 4, Y(u * tope)); }
+    g.textAlign = 'center'; g.textBaseline = 'top';
+    for (let i = 0; i <= 4; i++) g.fillText(Energia.f((T * i) / 4, 2) + ' s', X((T * i) / 4), h - b + 6);
+    g.lineWidth = 1.8;
+    for (const q of ENERGIAS) {
+      g.strokeStyle = col[q.col]; g.beginPath();
+      P.forEach((p, i) => (i ? g.lineTo(X(p.t), Y(p[q.k])) : g.moveTo(X(p.t), Y(p[q.k]))));
+      g.stroke();
+    }
+    g.strokeStyle = col['--ink']; g.lineWidth = 1; g.setLineDash([4, 3]);
+    g.beginPath(); g.moveTo(X(e.t), top); g.lineTo(X(e.t), h - b); g.stroke(); g.setLineDash([]);
+  }
+
+  function dibuja() {
+    if (!sim) return;
+    const e = enT(t);
+    dibujaEscena(e); dibujaBarras(e); dibujaGrafica(e);
+    const p = sim.p, donde = e.s < p.L ? 'en la rampa' : e.s <= p.L + p.d ? 'en el llano' : `muelle x = ${Energia.f(e.x)} m`;
+    $('#lectura').textContent = `t = ${Energia.f(e.t, 2)} s · v = ${Energia.f(Math.abs(e.v), 2)} m/s · ${donde}`;
+    $('#tiempo').value = String(Math.round((t / Math.max(tFin(), 1e-9)) * 1000));
+  }
+
+  /* ---------- Reproducción ---------- */
+  function para() { jugando = false; $('#play').textContent = '▶ Reproducir'; }
+  function bucle(ahora) {
+    if (!jugando) return;
+    const dt = Math.min(0.05, (ahora - ultimo) / 1000); ultimo = ahora;
+    t += dt * +$('#ritmo').value;
+    if (t >= tFin()) { t = tFin(); dibuja(); para(); return; }
+    dibuja();
+    requestAnimationFrame(bucle);
+  }
+  $('#play').addEventListener('click', () => {
+    if (jugando) { para(); return; }
+    if (t >= tFin()) t = 0;
+    jugando = true; $('#play').textContent = '❚❚ Pausa'; ultimo = performance.now(); requestAnimationFrame(bucle);
+  });
+  $('#reinicio').addEventListener('click', () => { para(); t = 0; dibuja(); });
+  $('#tiempo').addEventListener('input', (e) => { para(); t = (+e.target.value / 1000) * tFin(); dibuja(); });
+  addEventListener('resize', dibuja);
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { colores(); dibuja(); });
+
+  const ver = $('#ver'); if (ver) ver.textContent = Version.de('trabajo-y-energia').current;
+  colores(); rellena(); calcula(false);
+  window.EnergiaApp = { escena: () => ({ ...esc }), abrirEjemplo, ir: (tt) => { para(); t = Math.max(0, Math.min(tFin(), tt)); dibuja(); }, estado: () => enT(t), fin: tFin };
+})();
+
+</script>
+</html>

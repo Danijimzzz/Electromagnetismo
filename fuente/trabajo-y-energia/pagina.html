@@ -1,0 +1,102 @@
+<title>Trabajo y energía: rampa, rozamiento y muelle · SimulaCiencia</title>
+<meta name="description" content="Simulador de trabajo y energía en español: un bloque baja por una rampa con rozamiento, recorre un tramo horizontal y comprime un muelle. Animación, barras de energía y desarrollo paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root {
+  --bg: #eef0f4; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d6dbe3; --accent: #2a5db5; --accent-soft: #e3ebf8;
+  --e-k: #2a5db5; --e-g: #1d8a5b; --e-e: #b5562a; --e-q: #8a8f98; --suelo: #c9cfd8; --bloque: #f0b429;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #74a2f2; --accent-soft: #1b2a42;
+  --e-k: #74a2f2; --e-g: #4cc48e; --e-e: #ec8a5c; --e-q: #8f96a1; --suelo: #3a4452; --bloque: #e0a52a; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #74a2f2; --accent-soft: #1b2a42;
+  --e-k: #74a2f2; --e-g: #4cc48e; --e-e: #ec8a5c; --e-q: #8f96a1; --suelo: #3a4452; --bloque: #e0a52a; color-scheme: dark }
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
+.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
+.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+.layout { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 16px; align-items: start }
+@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr) } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px }
+.card h2 { font: 600 15px var(--f-ui); margin: 0 0 10px }
+.campos { display: grid; grid-template-columns: minmax(0, 1fr) 96px; gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px } .campos label small { color: var(--muted) }
+.in { font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.in:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.in.mal { border-color: #c0392b }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-top: 6px }
+.error { color: #c0392b; font-size: 13px; margin: 10px 0 0 }
+.btns { display: flex; gap: 8px; flex-wrap: wrap; align-items: center }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 12px; cursor: pointer }
+.btn:hover { border-color: var(--accent) } .btn.pri { background: var(--accent); border-color: var(--accent); color: var(--panel) }
+.escena { position: relative } canvas { display: block; width: 100%; border-radius: 8px; background: var(--bg) }
+#lienzo { height: clamp(170px, 42vw, 300px) } #grafica { height: 180px; margin-top: 10px }
+.controles { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 10px; font-size: 13px; color: var(--muted) }
+.controles input[type=range] { flex: 1; min-width: 140px; accent-color: var(--accent) }
+.lectura { font: 13px var(--f-mono); color: var(--ink) }
+.barras { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin-top: 12px; align-items: end }
+.barra { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12.5px }
+.barra .tubo { width: 100%; max-width: 70px; height: 140px; background: var(--bg); border-radius: 6px; position: relative; overflow: hidden }
+.barra .tubo i { position: absolute; left: 0; right: 0; bottom: 0; border-radius: 6px 6px 0 0; transition: none }
+.barra b { font: 500 12.5px var(--f-mono) } .barra span { color: var(--muted) }
+.pasos { margin-top: 16px } .pasos ol { margin: 0; padding-left: 20px } .pasos li { margin: 0 0 10px; font-family: var(--f-math); font-size: 15.5px }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.resumen { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 0 0 12px; font-size: 14px }
+.resumen div span { color: var(--muted) } .resumen div b { font-family: var(--f-mono); font-weight: 500 }
+.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física general</a> / Trabajo y energía</span></header>
+<div class="wrap">
+<h1>Trabajo y energía: rampa, rozamiento y muelle</h1>
+<p class="lead">Un bloque baja por una rampa, recorre un tramo horizontal y choca con un muelle. Cambia los datos y mira cómo la energía potencial se convierte en cinética, en elástica y en calor por el rozamiento. Abajo tienes el desarrollo paso a paso.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <div class="btns" style="margin-bottom:12px"><select id="ejemplos" class="in" aria-label="Ejemplos"></select></div>
+    <div class="campos" id="campos"></div>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card escena">
+      <canvas id="lienzo" aria-label="Animación del bloque"></canvas>
+      <div class="controles">
+        <button class="btn pri" id="play" type="button">▶ Reproducir</button>
+        <button class="btn" id="reinicio" type="button">↺</button>
+        <input type="range" id="tiempo" min="0" max="1000" value="0" aria-label="Tiempo">
+        <span class="lectura" id="lectura"></span>
+        <label>Velocidad <select id="ritmo" class="in" style="width:auto"><option value="0.25">×¼</option><option value="0.5">×½</option><option value="1" selected>×1</option><option value="2">×2</option></select></label>
+      </div>
+      <div class="barras" id="barras"></div>
+      <canvas id="grafica" aria-label="Energías frente al tiempo"></canvas>
+    </div>
+    <div class="card pasos"><h2>Resultados y desarrollo</h2><div class="resumen" id="resumen"></div><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Teorema del trabajo y la energía</h2>
+  <p>El trabajo de todas las fuerzas sobre un cuerpo es igual a la variación de su energía cinética. Si separamos las fuerzas conservativas (peso y muelle), cuyo trabajo se escribe como una pérdida de energía potencial, queda el balance que usa este simulador:</p>
+  <p class="f">E<sub>c,B</sub> + E<sub>p,B</sub> = E<sub>c,A</sub> + E<sub>p,A</sub> + W<sub>roz</sub>, &nbsp; con W<sub>roz</sub> = −μ N · s</p>
+  <h2>Rozamiento en la rampa y en el llano</h2>
+  <p>En la rampa la normal es N = m g cos θ, y el recorrido es L = h / sen θ, así que W<sub>roz</sub> = −μ m g h / tg θ. En el tramo horizontal N = m g. El trabajo del rozamiento se convierte en calor: la barra gris de la animación.</p>
+  <h2>Muelle</h2>
+  <p>Un muelle comprimido una distancia x guarda E<sub>e</sub> = ½ k x². Si también hay rozamiento bajo el muelle, la compresión máxima sale de ½ m v<sub>C</sub>² = ½ k x² + μ m g x. Después el muelle devuelve el bloque si su fuerza k x supera el rozamiento estático.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Trabajo y energía <span id="ver"></span> (beta)</footer>
+</body>
