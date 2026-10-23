@@ -1,0 +1,111 @@
+<title>Configuración electrónica: diagrama de Moeller, orbitales y números cuánticos · SimulaCiencia</title>
+<meta name="description" content="Configuración electrónica de cualquier elemento o ion en español: orden de llenado con el diagrama de Moeller, forma abreviada, diagrama de orbitales con la regla de Hund, electrones desapareados, excepciones y números cuánticos del electrón diferenciador.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root {
+  --bg: #eef1ee; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d5dbd5; --accent: #0d6b66; --accent-soft: #e0efec; --heat: #0d6b66; --on-heat: #ffffff;
+  --c-a: #f3c7b8; --c-t: #f5dcb0; --c-m: #f0e3c4; --c-l: #e3d5ef; --c-c: #f0d4e6; --c-p: #d4e2ea; --c-s: #d5e8d0; --c-n: #cfe8e1; --c-h: #fbe6a6; --c-g: #d8d9f2;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #94a0a8; --line: #2a343b; --accent: #4dbcb0; --accent-soft: #173431; --heat: #4dbcb0; --on-heat: #0b1215;
+  --c-a: #5a2f24; --c-t: #574120; --c-m: #4a4230; --c-l: #3f3352; --c-c: #4d2f42; --c-p: #2b3a44; --c-s: #2f4230; --c-n: #234039; --c-h: #50461c; --c-g: #34355a; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #94a0a8; --line: #2a343b; --accent: #4dbcb0; --accent-soft: #173431; --heat: #4dbcb0; --on-heat: #0b1215;
+  --c-a: #5a2f24; --c-t: #574120; --c-m: #4a4230; --c-l: #3f3352; --c-c: #4d2f42; --c-p: #2b3a44; --c-s: #2f4230; --c-n: #234039; --c-h: #50461c; --c-g: #34355a; color-scheme: dark }
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
+.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
+.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
+.wrap { max-width: 1400px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px }
+.tools label { color: var(--muted); font-size: 13px; display: inline-flex; gap: 6px; align-items: center }
+.in { font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px }
+.in:focus-visible, .el:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 15px var(--f-ui); margin: 0 0 10px }
+.fila { display: flex; flex-wrap: wrap; gap: 8px; align-items: center }
+.fila .in.ancho { flex: 1; min-width: 180px; max-width: 360px; font: 15px var(--f-mono) }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px }
+.chip { font: 13px var(--f-mono); border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 999px; padding: 3px 10px; cursor: pointer }
+.chip:hover { border-color: var(--accent) }
+.error { color: #c0392b; font-size: 13.5px; margin: 10px 0 0 }
+.cab { display: flex; gap: 14px; align-items: center; flex-wrap: wrap }
+.simbolo { width: 72px; height: 72px; border-radius: 10px; background: var(--accent-soft); display: flex; flex-direction: column; justify-content: center; align-items: center }
+.simbolo span { font: 500 11px var(--f-mono); color: var(--muted) } .simbolo b { font: 600 28px/1.1 var(--f-ui) }
+.cab h2 { font: 600 20px var(--f-ui); margin: 0 } .cab .sub { color: var(--muted); font-size: 13.5px }
+.conf { font: 21px/1.5 var(--f-math); margin: 4px 0; overflow-wrap: anywhere }
+dl.datos { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 14px; margin: 12px 0 0; font-size: 14px }
+dl.datos dt { color: var(--muted) } dl.datos dd { margin: 0 } dl.datos dd.m { font-family: var(--f-math); font-size: 16px }
+.aviso { background: var(--accent-soft); border-radius: 8px; padding: 8px 12px; font-size: 13.5px; margin-top: 10px }
+.dos { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px }
+@media (max-width: 860px) { .dos { grid-template-columns: minmax(0, 1fr) } }
+.moeller { width: 100%; max-width: 360px; display: block; margin: 0 auto }
+.orbitales { display: flex; flex-wrap: wrap; gap: 12px 16px }
+.subnivel { display: flex; flex-direction: column; align-items: center; gap: 3px }
+.subnivel .cajas { display: flex } .subnivel .caja { width: 26px; height: 30px; border: 1.5px solid var(--ink); margin-left: -1.5px; display: flex; justify-content: center; align-items: center; font: 15px/1 var(--f-ui); letter-spacing: -2px }
+.subnivel .caja:first-child { margin-left: 0 } .subnivel .caja.uno { background: var(--accent-soft) }
+.subnivel small { font: 12.5px var(--f-math); color: var(--muted) }
+.cuanticos { display: flex; gap: 10px; flex-wrap: wrap } .cuanticos div { background: var(--bg); border-radius: 8px; padding: 8px 12px; text-align: center; min-width: 64px }
+.cuanticos div b { display: block; font: 600 20px var(--f-math) } .cuanticos div span { font-size: 12px; color: var(--muted) }
+.nota { color: var(--muted); font-size: 12.5px; margin: 10px 0 0 }
+.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria li { margin: 4px 0 }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Química</a> / Configuración electrónica</span></header>
+<div class="wrap">
+<h1>Configuración electrónica</h1>
+<p class="lead">Escribe un elemento o un ion para ver cómo se reparten sus electrones: orden de llenado, diagrama de Moeller, orbitales con la regla de Hund y los números cuánticos del último electrón.</p>
+<div class="card">
+  <div class="fila"><input id="entrada" class="in ancho" value="Fe" placeholder="Fe, hierro, 26, Fe^2+, Cl-…" aria-label="Elemento o ion" autocomplete="off" spellcheck="false"></div>
+  <div class="chips" id="chips"></div>
+  <p class="error" id="error" hidden></p>
+</div>
+<div id="res">
+  <div class="card">
+    <div class="cab"><div class="simbolo"><span id="z"></span><b id="sim"></b></div><div><h2 id="nombre"></h2><div class="sub" id="subtitulo"></div></div></div>
+    <dl class="datos">
+      <dt>Orden de llenado</dt><dd class="m conf" id="llenado"></dd>
+      <dt>Abreviada</dt><dd class="m" id="abreviada"></dd>
+      <dt>Ordenada por capas</dt><dd class="m" id="capas-txt"></dd>
+      <dt>Electrones por capa</dt><dd id="capas"></dd>
+      <dt>Capa más externa</dt><dd id="valencia"></dd>
+      <dt>Desapareados</dt><dd id="desap"></dd>
+    </dl>
+    <div class="aviso" id="excepcion" hidden></div>
+    <p class="nota"><a id="en-tabla" href="../tabla-periodica/">Ver el elemento en la tabla periódica</a></p>
+  </div>
+  <div class="dos">
+    <div class="card"><h2>Diagrama de Moeller</h2><svg class="moeller" id="moeller" viewBox="0 0 300 300" role="img" aria-label="Diagrama de Moeller"></svg><p class="nota">Se llena siguiendo las diagonales, de arriba abajo: es el orden de n + l creciente (regla de Madelung). Resaltados, los subniveles ocupados, con el número de orden de llenado.</p></div>
+    <div class="card"><h2>Diagrama de orbitales</h2><div class="orbitales" id="orbitales"></div>
+      <h2 style="margin-top:16px">Números cuánticos del electrón diferenciador</h2><div class="cuanticos" id="cuanticos"></div>
+      <p class="nota">El último electrón que entra según el orden de llenado. Convenio: los orbitales de un subnivel se llenan de m<sub>l</sub> = −l a +l, primero con s = +½ (regla de Hund) y después con −½. Algunos libros usan el orden contrario.</p></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Cómo se escribe la configuración electrónica</h2>
+  <ul>
+    <li><b>Principio de mínima energía (Aufbau)</b>: los electrones ocupan primero los subniveles de menor energía, en el orden de n + l creciente y, a igualdad, el de menor n: 1s 2s 2p 3s 3p 4s 3d 4p 5s 4d…</li>
+    <li><b>Principio de exclusión de Pauli</b>: en un orbital caben como mucho dos electrones, con espines opuestos. Por eso s admite 2, p 6, d 10 y f 14.</li>
+    <li><b>Regla de Hund</b>: en orbitales de la misma energía los electrones se colocan primero uno en cada orbital, con espines paralelos, y después se aparean.</li>
+  </ul>
+  <h2>Excepciones</h2>
+  <p>Algunos elementos se apartan del orden de llenado porque un subnivel d o f lleno o semilleno es especialmente estable. Los más preguntados son el cromo, [Ar] 3d⁵ 4s¹ en lugar de 3d⁴ 4s², y el cobre, [Ar] 3d¹⁰ 4s¹ en lugar de 3d⁹ 4s². Pasa lo mismo en Mo, Ag y Au.</p>
+  <h2>Iones</h2>
+  <p>Un anión gana electrones en el siguiente hueco libre. Un catión pierde primero los electrones de la capa más externa: en los metales de transición salen los 4s antes que los 3d, así que el Fe<sup>2+</sup> es [Ar] 3d⁶ y no [Ar] 4s² 3d⁴.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Configuración electrónica <span id="ver"></span> (beta)</footer>
+</body>

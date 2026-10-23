@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMwZDZiNjYiLz48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlNmE2NDAiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtZGFzaGFycmF5PSI0IDYuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48cGF0aCBkPSJNMjAgMzJINDQiLz48cGF0aCBkPSJNMjEgMjdDMjcgMTQgMzcgMTQgNDMgMjciLz48cGF0aCBkPSJNMjEgMzdDMjcgNTAgMzcgNTAgNDMgMzciLz48cGF0aCBkPSJNMTcgMjRDMjIgNCA0MiA0IDQ3IDI0Ii8+PHBhdGggZD0iTTE3IDQwQzIyIDYwIDQyIDYwIDQ3IDQwIi8+PC9nPjxjaXJjbGUgY3g9IjE3IiBjeT0iMzIiIHI9IjgiIGZpbGw9IiNlZjdhNjIiLz48Y2lyY2xlIGN4PSI0NyIgY3k9IjMyIiByPSI4IiBmaWxsPSIjNzRhMmYyIi8+PHBhdGggZD0iTTEzIDMyaDhNMTcgMjh2OE00MyAzMmg4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta property="og:title" content="Configuración electrónica">
+<meta property="og:description" content="Configuración electrónica de elementos e iones con el diagrama de Moeller, la regla de Hund y los números cuánticos">
+<meta property="og:image" content="https://electromagnetismo-two.vercel.app/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<title>Configuración electrónica: diagrama de Moeller, orbitales y números cuánticos · SimulaCiencia</title>
+<meta name="description" content="Configuración electrónica de cualquier elemento o ion en español: orden de llenado con el diagrama de Moeller, forma abreviada, diagrama de orbitales con la regla de Hund, electrones desapareados, excepciones y números cuánticos del electrón diferenciador.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root {
+  --bg: #eef1ee; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d5dbd5; --accent: #0d6b66; --accent-soft: #e0efec; --heat: #0d6b66; --on-heat: #ffffff;
+  --c-a: #f3c7b8; --c-t: #f5dcb0; --c-m: #f0e3c4; --c-l: #e3d5ef; --c-c: #f0d4e6; --c-p: #d4e2ea; --c-s: #d5e8d0; --c-n: #cfe8e1; --c-h: #fbe6a6; --c-g: #d8d9f2;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #94a0a8; --line: #2a343b; --accent: #4dbcb0; --accent-soft: #173431; --heat: #4dbcb0; --on-heat: #0b1215;
+  --c-a: #5a2f24; --c-t: #574120; --c-m: #4a4230; --c-l: #3f3352; --c-c: #4d2f42; --c-p: #2b3a44; --c-s: #2f4230; --c-n: #234039; --c-h: #50461c; --c-g: #34355a; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #94a0a8; --line: #2a343b; --accent: #4dbcb0; --accent-soft: #173431; --heat: #4dbcb0; --on-heat: #0b1215;
+  --c-a: #5a2f24; --c-t: #574120; --c-m: #4a4230; --c-l: #3f3352; --c-c: #4d2f42; --c-p: #2b3a44; --c-s: #2f4230; --c-n: #234039; --c-h: #50461c; --c-g: #34355a; color-scheme: dark }
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
+.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
+.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
+.wrap { max-width: 1400px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px }
+.tools label { color: var(--muted); font-size: 13px; display: inline-flex; gap: 6px; align-items: center }
+.in { font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px }
+.in:focus-visible, .el:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 15px var(--f-ui); margin: 0 0 10px }
+.fila { display: flex; flex-wrap: wrap; gap: 8px; align-items: center }
+.fila .in.ancho { flex: 1; min-width: 180px; max-width: 360px; font: 15px var(--f-mono) }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px }
+.chip { font: 13px var(--f-mono); border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 999px; padding: 3px 10px; cursor: pointer }
+.chip:hover { border-color: var(--accent) }
+.error { color: #c0392b; font-size: 13.5px; margin: 10px 0 0 }
+.cab { display: flex; gap: 14px; align-items: center; flex-wrap: wrap }
+.simbolo { width: 72px; height: 72px; border-radius: 10px; background: var(--accent-soft); display: flex; flex-direction: column; justify-content: center; align-items: center }
+.simbolo span { font: 500 11px var(--f-mono); color: var(--muted) } .simbolo b { font: 600 28px/1.1 var(--f-ui) }
+.cab h2 { font: 600 20px var(--f-ui); margin: 0 } .cab .sub { color: var(--muted); font-size: 13.5px }
+.conf { font: 21px/1.5 var(--f-math); margin: 4px 0; overflow-wrap: anywhere }
+dl.datos { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 14px; margin: 12px 0 0; font-size: 14px }
+dl.datos dt { color: var(--muted) } dl.datos dd { margin: 0 } dl.datos dd.m { font-family: var(--f-math); font-size: 16px }
+.aviso { background: var(--accent-soft); border-radius: 8px; padding: 8px 12px; font-size: 13.5px; margin-top: 10px }
+.dos { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px }
+@media (max-width: 860px) { .dos { grid-template-columns: minmax(0, 1fr) } }
+.moeller { width: 100%; max-width: 360px; display: block; margin: 0 auto }
+.orbitales { display: flex; flex-wrap: wrap; gap: 12px 16px }
+.subnivel { display: flex; flex-direction: column; align-items: center; gap: 3px }
+.subnivel .cajas { display: flex } .subnivel .caja { width: 26px; height: 30px; border: 1.5px solid var(--ink); margin-left: -1.5px; display: flex; justify-content: center; align-items: center; font: 15px/1 var(--f-ui); letter-spacing: -2px }
+.subnivel .caja:first-child { margin-left: 0 } .subnivel .caja.uno { background: var(--accent-soft) }
+.subnivel small { font: 12.5px var(--f-math); color: var(--muted) }
+.cuanticos { display: flex; gap: 10px; flex-wrap: wrap } .cuanticos div { background: var(--bg); border-radius: 8px; padding: 8px 12px; text-align: center; min-width: 64px }
+.cuanticos div b { display: block; font: 600 20px var(--f-math) } .cuanticos div span { font-size: 12px; color: var(--muted) }
+.nota { color: var(--muted); font-size: 12.5px; margin: 10px 0 0 }
+.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria li { margin: 4px 0 }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Química</a> / Configuración electrónica</span></header>
+<div class="wrap">
+<h1>Configuración electrónica</h1>
+<p class="lead">Escribe un elemento o un ion para ver cómo se reparten sus electrones: orden de llenado, diagrama de Moeller, orbitales con la regla de Hund y los números cuánticos del último electrón.</p>
+<div class="card">
+  <div class="fila"><input id="entrada" class="in ancho" value="Fe" placeholder="Fe, hierro, 26, Fe^2+, Cl-…" aria-label="Elemento o ion" autocomplete="off" spellcheck="false"></div>
+  <div class="chips" id="chips"></div>
+  <p class="error" id="error" hidden></p>
+</div>
+<div id="res">
+  <div class="card">
+    <div class="cab"><div class="simbolo"><span id="z"></span><b id="sim"></b></div><div><h2 id="nombre"></h2><div class="sub" id="subtitulo"></div></div></div>
+    <dl class="datos">
+      <dt>Orden de llenado</dt><dd class="m conf" id="llenado"></dd>
+      <dt>Abreviada</dt><dd class="m" id="abreviada"></dd>
+      <dt>Ordenada por capas</dt><dd class="m" id="capas-txt"></dd>
+      <dt>Electrones por capa</dt><dd id="capas"></dd>
+      <dt>Capa más externa</dt><dd id="valencia"></dd>
+      <dt>Desapareados</dt><dd id="desap"></dd>
+    </dl>
+    <div class="aviso" id="excepcion" hidden></div>
+    <p class="nota"><a id="en-tabla" href="../tabla-periodica/">Ver el elemento en la tabla periódica</a></p>
+  </div>
+  <div class="dos">
+    <div class="card"><h2>Diagrama de Moeller</h2><svg class="moeller" id="moeller" viewBox="0 0 300 300" role="img" aria-label="Diagrama de Moeller"></svg><p class="nota">Se llena siguiendo las diagonales, de arriba abajo: es el orden de n + l creciente (regla de Madelung). Resaltados, los subniveles ocupados, con el número de orden de llenado.</p></div>
+    <div class="card"><h2>Diagrama de orbitales</h2><div class="orbitales" id="orbitales"></div>
+      <h2 style="margin-top:16px">Números cuánticos del electrón diferenciador</h2><div class="cuanticos" id="cuanticos"></div>
+      <p class="nota">El último electrón que entra según el orden de llenado. Convenio: los orbitales de un subnivel se llenan de m<sub>l</sub> = −l a +l, primero con s = +½ (regla de Hund) y después con −½. Algunos libros usan el orden contrario.</p></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Cómo se escribe la configuración electrónica</h2>
+  <ul>
+    <li><b>Principio de mínima energía (Aufbau)</b>: los electrones ocupan primero los subniveles de menor energía, en el orden de n + l creciente y, a igualdad, el de menor n: 1s 2s 2p 3s 3p 4s 3d 4p 5s 4d…</li>
+    <li><b>Principio de exclusión de Pauli</b>: en un orbital caben como mucho dos electrones, con espines opuestos. Por eso s admite 2, p 6, d 10 y f 14.</li>
+    <li><b>Regla de Hund</b>: en orbitales de la misma energía los electrones se colocan primero uno en cada orbital, con espines paralelos, y después se aparean.</li>
+  </ul>
+  <h2>Excepciones</h2>
+  <p>Algunos elementos se apartan del orden de llenado porque un subnivel d o f lleno o semilleno es especialmente estable. Los más preguntados son el cromo, [Ar] 3d⁵ 4s¹ en lugar de 3d⁴ 4s², y el cobre, [Ar] 3d¹⁰ 4s¹ en lugar de 3d⁹ 4s². Pasa lo mismo en Mo, Ag y Au.</p>
+  <h2>Iones</h2>
+  <p>Un anión gana electrones en el siguiente hueco libre. Un catión pierde primero los electrones de la capa más externa: en los metales de transición salen los 4s antes que los 3d, así que el Fe<sup>2+</sup> es [Ar] 3d⁶ y no [Ar] 4s² 3d⁴.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Configuración electrónica <span id="ver"></span> (beta)</footer>
+</body>
+<script>
+/* =====================================================================
+   Versiones y novedades: la web (portada, asignaturas, buscador) tiene su número y cada
+   herramienta el suyo. Hasta el lanzamiento se numera 0.x (beta); la 1.0 de una herramienta
+   llega cuando se da por terminada y la 1.0 de la web será el lanzamiento. Sube el segundo
+   número si hay algo nuevo (0.6) y añade un tercero si es solo un arreglo (0.5.1).
+   En las novedades de la web se anuncia también cada herramienta nueva.
+   Las notas son para los usuarios: solo funciones nuevas, arreglos visibles y cambios
+   en la interfaz. Lo interno (pruebas, CI, build, despliegue, refactorizaciones) no se anota;
+   el historial completo para desarrolladores está en Notion.
+   ===================================================================== */
+const Version = (() => {
+  const registros = {
+    web: [
+      { v: '0.5', fecha: '2026-10-23', cambios: ['Nueva herramienta: Configuración electrónica, en Química.'] },
+      { v: '0.4', fecha: '2026-10-23', cambios: ['Nueva herramienta: Masa molar y estequiometría, en Química.'] },
+      { v: '0.3', fecha: '2026-10-23', cambios: ['Nueva herramienta: Trabajo y energía, en Física general.'] },
+      { v: '0.2', fecha: '2026-10-23', cambios: ['Nueva herramienta: Tabla periódica interactiva, en Química.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Portada para elegir asignatura y herramienta: Electromagnetismo, Física general, Química, Matemáticas y Laboratorio, con buscador. Las herramientas que vienen después aparecen como «Próximamente».', 'Nueva herramienta: Magnetostática, en Electromagnetismo.'] },
+    ],
+    electrostatica: [
+      { v: '0.5.1', fecha: '2026-10-23', cambios: ['El simulador tiene ahora su propia dirección, /electromagnetismo/electrostatica/. Tus problemas guardados siguen ahí. El botón «Todas las herramientas» de la barra lateral vuelve a la portada.'] },
+    { v: '0.5', fecha: '2026-10-23', cambios: ['Doce ejercicios de ejemplo con enunciados propios: los mismos tipos de pregunta que en clase, con otras figuras y otros números. La guía de uso tiene capturas nuevas hechas con ellos.', 'La web tiene icono propio: un dipolo con sus líneas de campo, en la pestaña del navegador, en la pantalla de inicio del móvil y en la vista previa al compartir el enlace.', 'Páginas de aviso legal, privacidad, cookies y contacto, enlazadas al pie de la barra lateral.'] },
+    { v: '0.4', fecha: '2026-10-22', cambios: ['Número de versión visible y este apartado de novedades.', 'Arreglo: en la vista 3D los cilindros se dibujan con su radio real, aparecen las superficies de Gauss, y las esferas, cascarones y conductores tienen volumen en lugar de parecer círculos planos.'] },
+    { v: '0.3', fecha: '2026-10-22', cambios: ['Guía de uso con capturas (botón ?, barra lateral o F1).', 'Los resultados se escriben con la misma forma que el solucionario oficial: perfiles por tramos, factor común en logaritmos y radicales, y la pregunta V_A − V_B.'] },
+    { v: '0.2', fecha: '2026-10-22', cambios: ['Anillos, discos, cortezas y conductores.', 'Varias incógnitas, modo numérico SI, flujo de Gauss y gráficas E(z) y V(z).', 'Modo práctica, exportar la solución, deshacer y rehacer, mapa de color y vista 3D.', 'Búsqueda, carpetas y etiquetas en la barra lateral.'] },
+    { v: '0.1', fecha: '2026-10-22', cambios: ['Primera versión: cargas, hilos, planos y esferas con el desarrollo paso a paso y 12 ejercicios resueltos.', 'Barra lateral con tus problemas, los importados y los ejercicios; título y enunciado editables; archivos .emsim.json.'] },
+    ],
+    magnetostatica: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: campo magnético de hilos, segmentos, hilos semiinfinitos, espiras, arcos, solenoides y toroides con Biot-Savart, y fuerza sobre cargas en movimiento y sobre conductores, con el desarrollo paso a paso en la forma μ₀I/(πa) o en unidades del SI.', 'Dibujo del campo B en el plano XY, XZ o YZ, con puntos que se pueden arrastrar y ocho ejemplos resueltos.'] },
+    ],
+    'tabla-periodica': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: cada elemento tiene su ficha con la masa atómica y molar, el grupo, el periodo, el bloque, la configuración electrónica (abreviada, completa y por capas), la electronegatividad, la energía de ionización, el radio y el estado.', 'La tabla se puede colorear por categoría, electronegatividad, energía de ionización, radio, masa, bloque o estado, y tiene un buscador por nombre, símbolo o número atómico.'] },
+    ],
+    'trabajo-y-energia': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: un bloque baja por una rampa con rozamiento, recorre un tramo horizontal y comprime un muelle. Animación con barras de energía cinética, gravitatoria, elástica y calor, gráfica de las energías en el tiempo y el desarrollo paso a paso con la velocidad al pie de la rampa, al llegar al muelle y la compresión máxima.', 'Seis ejemplos: sin rozamiento, se para antes del muelle, el rozamiento lo sujeta, con empujón inicial y muelle duro.'] },
+    ],
+    'masa-molar': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: masa molar y composición centesimal de cualquier fórmula, con paréntesis, hidratos e iones, y conversor entre gramos, moles, partículas y litros de gas.', 'Estequiometría: ajusta la reacción sola (también las iónicas), calcula el reactivo limitante, lo que se forma con el rendimiento que digas y lo que sobra, paso a paso.', 'Masas atómicas de la IUPAC o redondeadas como en clase.'] },
+    ],
+    'configuracion-electronica': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: configuración electrónica de cualquier elemento o ion por orden de llenado, abreviada y por capas, con el diagrama de Moeller, el diagrama de orbitales con la regla de Hund, los electrones desapareados y los números cuánticos del electrón diferenciador.', 'Avisa de las excepciones como el cromo o el cobre, y en los cationes quita primero los electrones de la capa más externa.'] },
+    ],
+  };
+  const de = (h) => ({ current: registros[h][0].v, log: registros[h] });
+  // Version.current y Version.log son los del simulador de electrostática
+  return { registros, de, ...de('electrostatica') };
+})();
+
+/* =====================================================================
+   Datos de los 118 elementos, compartidos por las herramientas de química
+   (tabla periódica, masa molar, configuración electrónica).
+   Cada fila: Z | símbolo | nombre | masa atómica (u; entre corchetes, la del isótopo más estable)
+            | categoría | electronegatividad de Pauling | 1.ª energía de ionización (kJ/mol)
+            | radio atómico calculado (pm, Clementi y Raimondi, 1967)
+   Un campo vacío es un dato desconocido o no medido.
+   Categorías: a alcalino, t alcalinotérreo, m metal de transición, l lantánido, c actínido,
+   p otro metal (bloque p), s metaloide, n no metal, h halógeno, g gas noble.
+   ===================================================================== */
+const Elementos = (() => {
+  const FILAS = `1|H|Hidrógeno|1.008|n|2.20|1312|53
+2|He|Helio|4.0026|g||2372|31
+3|Li|Litio|6.94|a|0.98|520|167
+4|Be|Berilio|9.0122|t|1.57|900|112
+5|B|Boro|10.81|s|2.04|801|87
+6|C|Carbono|12.011|n|2.55|1086|67
+7|N|Nitrógeno|14.007|n|3.04|1402|56
+8|O|Oxígeno|15.999|n|3.44|1314|48
+9|F|Flúor|18.998|h|3.98|1681|42
+10|Ne|Neón|20.180|g||2081|38
+11|Na|Sodio|22.990|a|0.93|496|190
+12|Mg|Magnesio|24.305|t|1.31|738|145
+13|Al|Aluminio|26.982|p|1.61|578|118
+14|Si|Silicio|28.085|s|1.90|787|111
+15|P|Fósforo|30.974|n|2.19|1012|98
+16|S|Azufre|32.06|n|2.58|1000|88
+17|Cl|Cloro|35.45|h|3.16|1251|79
+18|Ar|Argón|39.95|g||1521|71
+19|K|Potasio|39.098|a|0.82|419|243
+20|Ca|Calcio|40.078|t|1.00|590|194
+21|Sc|Escandio|44.956|m|1.36|633|184
+22|Ti|Titanio|47.867|m|1.54|659|176
+23|V|Vanadio|50.942|m|1.63|651|171
+24|Cr|Cromo|51.996|m|1.66|653|166
+25|Mn|Manganeso|54.938|m|1.55|717|161
+26|Fe|Hierro|55.845|m|1.83|763|156
+27|Co|Cobalto|58.933|m|1.88|760|152
+28|Ni|Níquel|58.693|m|1.91|737|149
+29|Cu|Cobre|63.546|m|1.90|746|145
+30|Zn|Zinc|65.38|m|1.65|906|142
+31|Ga|Galio|69.723|p|1.81|579|136
+32|Ge|Germanio|72.630|s|2.01|762|125
+33|As|Arsénico|74.922|s|2.18|947|114
+34|Se|Selenio|78.971|n|2.55|941|103
+35|Br|Bromo|79.904|h|2.96|1140|94
+36|Kr|Kriptón|83.798|g|3.00|1351|88
+37|Rb|Rubidio|85.468|a|0.82|403|265
+38|Sr|Estroncio|87.62|t|0.95|550|219
+39|Y|Itrio|88.906|m|1.22|600|212
+40|Zr|Circonio|91.224|m|1.33|640|206
+41|Nb|Niobio|92.906|m|1.6|652|198
+42|Mo|Molibdeno|95.95|m|2.16|684|190
+43|Tc|Tecnecio|[98]|m|1.9|702|183
+44|Ru|Rutenio|101.07|m|2.2|710|178
+45|Rh|Rodio|102.91|m|2.28|720|173
+46|Pd|Paladio|106.42|m|2.20|804|169
+47|Ag|Plata|107.87|m|1.93|731|165
+48|Cd|Cadmio|112.41|m|1.69|868|161
+49|In|Indio|114.82|p|1.78|558|156
+50|Sn|Estaño|118.71|p|1.96|709|145
+51|Sb|Antimonio|121.76|s|2.05|834|133
+52|Te|Telurio|127.60|s|2.1|869|123
+53|I|Yodo|126.90|h|2.66|1008|115
+54|Xe|Xenón|131.29|g|2.6|1170|108
+55|Cs|Cesio|132.91|a|0.79|376|298
+56|Ba|Bario|137.33|t|0.89|503|253
+57|La|Lantano|138.91|l|1.10|538|
+58|Ce|Cerio|140.12|l|1.12|534|
+59|Pr|Praseodimio|140.91|l|1.13|527|
+60|Nd|Neodimio|144.24|l|1.14|533|
+61|Pm|Prometio|[145]|l||540|
+62|Sm|Samario|150.36|l|1.17|545|
+63|Eu|Europio|151.96|l||547|
+64|Gd|Gadolinio|157.25|l|1.20|593|
+65|Tb|Terbio|158.93|l||566|
+66|Dy|Disprosio|162.50|l|1.22|573|
+67|Ho|Holmio|164.93|l|1.23|581|
+68|Er|Erbio|167.26|l|1.24|589|
+69|Tm|Tulio|168.93|l|1.25|597|
+70|Yb|Iterbio|173.05|l||603|
+71|Lu|Lutecio|174.97|l|1.27|524|
+72|Hf|Hafnio|178.49|m|1.3|659|208
+73|Ta|Tantalio|180.95|m|1.5|761|200
+74|W|Wolframio|183.84|m|2.36|770|193
+75|Re|Renio|186.21|m|1.9|760|188
+76|Os|Osmio|190.23|m|2.2|840|185
+77|Ir|Iridio|192.22|m|2.20|880|180
+78|Pt|Platino|195.08|m|2.28|870|177
+79|Au|Oro|196.97|m|2.54|890|174
+80|Hg|Mercurio|200.59|m|2.00|1007|171
+81|Tl|Talio|204.38|p|1.62|589|156
+82|Pb|Plomo|207.2|p|2.33|716|154
+83|Bi|Bismuto|208.98|p|2.02|703|143
+84|Po|Polonio|[209]|p|2.0|812|135
+85|At|Astato|[210]|h|2.2||127
+86|Rn|Radón|[222]|g|2.2|1037|120
+87|Fr|Francio|[223]|a|0.7||
+88|Ra|Radio|[226]|t|0.9|509|
+89|Ac|Actinio|[227]|c|1.1|499|
+90|Th|Torio|232.04|c|1.3|587|
+91|Pa|Protactinio|231.04|c|1.5|568|
+92|U|Uranio|238.03|c|1.38|598|
+93|Np|Neptunio|[237]|c|1.36|605|
+94|Pu|Plutonio|[244]|c|1.28|585|
+95|Am|Americio|[243]|c|1.3|578|
+96|Cm|Curio|[247]|c|1.3|581|
+97|Bk|Berkelio|[247]|c|1.3|601|
+98|Cf|Californio|[251]|c|1.3|608|
+99|Es|Einstenio|[252]|c|1.3|619|
+100|Fm|Fermio|[257]|c|1.3|627|
+101|Md|Mendelevio|[258]|c|1.3|635|
+102|No|Nobelio|[259]|c|1.3|642|
+103|Lr|Laurencio|[266]|c|1.3||
+104|Rf|Rutherfordio|[267]|m|||
+105|Db|Dubnio|[268]|m|||
+106|Sg|Seaborgio|[269]|m|||
+107|Bh|Bohrio|[270]|m|||
+108|Hs|Hasio|[269]|m|||
+109|Mt|Meitnerio|[278]|m|||
+110|Ds|Darmstatio|[281]|m|||
+111|Rg|Roentgenio|[282]|m|||
+112|Cn|Copernicio|[285]|m|||
+113|Nh|Nihonio|[286]|p|||
+114|Fl|Flerovio|[289]|p|||
+115|Mc|Moscovio|[290]|p|||
+116|Lv|Livermorio|[293]|p|||
+117|Ts|Teneso|[294]|h|||
+118|Og|Oganesón|[294]|g|||`;
+
+  const CATEGORIAS = {
+    a: 'Metal alcalino', t: 'Metal alcalinotérreo', m: 'Metal de transición', l: 'Lantánido', c: 'Actínido',
+    p: 'Otro metal', s: 'Metaloide', n: 'No metal', h: 'Halógeno', g: 'Gas noble',
+  };
+  const GASES = new Set(['H', 'He', 'N', 'O', 'F', 'Ne', 'Cl', 'Ar', 'Kr', 'Xe', 'Rn']), LIQUIDOS = new Set(['Br', 'Hg']);
+  const num = (s) => (s === '' || s == null ? null : +s);
+
+  // grupo y periodo; los lantánidos y actínidos (57–71, 89–103) van en sus filas aparte
+  const LIMITES = [2, 10, 18, 36, 54, 86, 118];
+  function posicion(Z) {
+    const periodo = LIMITES.findIndex((l) => Z <= l) + 1, ini = periodo === 1 ? 1 : LIMITES[periodo - 2] + 1, k = Z - ini;
+    if ((Z >= 57 && Z <= 71) || (Z >= 89 && Z <= 103)) return { periodo, grupo: null, fila: periodo === 6 ? 9 : 10, col: 3 + (Z - (periodo === 6 ? 57 : 89)) };
+    let grupo;
+    if (periodo === 1) grupo = Z === 1 ? 1 : 18;
+    else if (periodo <= 3) grupo = k < 2 ? k + 1 : k + 11;
+    else if (periodo <= 5) grupo = k + 1;
+    else grupo = k < 2 ? k + 1 : k < 17 ? 3 : k - 13;
+    return { periodo, grupo, fila: periodo, col: grupo };
+  }
+
+  /* ---------- Configuración electrónica: Madelung (n + l) con las excepciones conocidas ---------- */
+  const ORB = []; // orden de llenado
+  for (let s = 1; s <= 8; s++) for (let l = Math.min(s - 1, 3); l >= 0; l--) { const n = s - l; if (n > l) ORB.push([n, l]); }
+  const LETRA = 'spdf', CAP = [2, 6, 10, 14];
+  const EXCEPCIONES = {
+    24: { '3d': 5, '4s': 1 }, 29: { '3d': 10, '4s': 1 }, 41: { '4d': 4, '5s': 1 }, 42: { '4d': 5, '5s': 1 },
+    44: { '4d': 7, '5s': 1 }, 45: { '4d': 8, '5s': 1 }, 46: { '4d': 10, '5s': 0 }, 47: { '4d': 10, '5s': 1 },
+    57: { '4f': 0, '5d': 1 }, 58: { '4f': 1, '5d': 1 }, 64: { '4f': 7, '5d': 1 }, 78: { '5d': 9, '6s': 1 }, 79: { '5d': 10, '6s': 1 },
+    89: { '5f': 0, '6d': 1 }, 90: { '5f': 0, '6d': 2 }, 91: { '5f': 2, '6d': 1 }, 92: { '5f': 3, '6d': 1 }, 93: { '5f': 4, '6d': 1 },
+    96: { '5f': 7, '6d': 1 }, 103: { '6d': 0, '7p': 1 },
+  };
+  // devuelve [{n, l, e, nombre}] en orden de n y l (forma habitual: 1s² 2s² 2p⁶ 3s² 3p⁶ 3d¹⁰ 4s²…)
+  function configuracion(Z, ion = 0) {
+    const e = {};
+    let resto = Z;
+    for (const [n, l] of ORB) { if (!resto) break; const k = Math.min(CAP[l], resto); e[`${n}${LETRA[l]}`] = k; resto -= k; }
+    // los cationes salen de la configuración real del átomo neutro (Cu⁺: [Ar] 3d¹⁰, Cr³⁺: [Ar] 3d³)
+    if (ion >= 0 && EXCEPCIONES[Z]) Object.assign(e, EXCEPCIONES[Z]);
+    // un catión pierde primero los electrones de mayor n (4s antes que 3d)
+    for (let q = ion; q > 0; q--) {
+      const k = Object.keys(e).filter((o) => e[o] > 0).sort((x, y) => +y[0] - +x[0] || LETRA.indexOf(y[1]) - LETRA.indexOf(x[1]))[0];
+      if (k) e[k]--;
+    }
+    for (let q = ion; q < 0; q++) {
+      const libre = ORB.map(([n, l]) => `${n}${LETRA[l]}`).find((o) => (e[o] || 0) < CAP[LETRA.indexOf(o[1])]);
+      e[libre] = (e[libre] || 0) + 1;
+    }
+    return Object.entries(e).filter(([, k]) => k > 0).map(([o, k]) => ({ n: +o.slice(0, -1), l: LETRA.indexOf(o.slice(-1)), e: k, nombre: o }))
+      .sort((a, b) => a.n - b.n || a.l - b.l);
+  }
+  const SUP = (k) => String(k).replace(/\d/g, (d) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d]);
+  const NOBLES = [2, 10, 18, 36, 54, 86];
+  const texto = (conf) => conf.map((o) => o.nombre + SUP(o.e)).join(' ');
+  // forma abreviada con el gas noble anterior: [Ar] 3d⁶ 4s²
+  function abreviada(Z) {
+    const g = [...NOBLES].reverse().find((n) => n < Z);
+    if (!g) return texto(configuracion(Z));
+    const base = new Set(configuracion(g).map((o) => o.nombre));
+    const full = configuracion(Z).filter((o) => !base.has(o.nombre) || configuracion(g).find((b) => b.nombre === o.nombre).e !== o.e);
+    return `[${lista[g - 1].simbolo}] ${texto(full)}`;
+  }
+  const capas = (Z) => { const c = []; for (const o of configuracion(Z)) c[o.n - 1] = (c[o.n - 1] || 0) + o.e; return c.map((x) => x || 0); };
+  const bloque = (Z) => { const c = configuracion(Z); const ult = ORB.map(([n, l]) => `${n}${LETRA[l]}`).filter((o) => c.some((x) => x.nombre === o)).pop(); return ((Z >= 57 && Z <= 71) || (Z >= 89 && Z <= 103)) ? 'f' : Z === 2 ? 's' : ult ? ult.slice(-1) : 's'; };
+
+  const lista = FILAS.split('\n').map((f) => {
+    const [Z, simbolo, nombre, masa, cat, en, ei, radio] = f.split('|');
+    const z = +Z, estable = masa.startsWith('[');
+    return {
+      Z: z, simbolo, nombre, masa: +masa.replace(/[[\]]/g, ''), masaEstable: estable, cat, categoria: CATEGORIAS[cat],
+      en: num(en), ei: num(ei), radio: num(radio),
+      estado: z >= 100 ? null : GASES.has(simbolo) ? 'gas' : LIQUIDOS.has(simbolo) ? 'líquido' : 'sólido',
+      ...posicion(z),
+    };
+  });
+  const porSimbolo = Object.fromEntries(lista.map((e) => [e.simbolo, e]));
+  return { lista, porSimbolo, CATEGORIAS, configuracion, texto, abreviada, capas, bloque, NOBLES };
+})();
+
+/* =====================================================================
+   Configuración electrónica (sin DOM): a partir de un elemento y su carga,
+   la configuración por orden de llenado (diagrama de Moeller) y por capas,
+   el diagrama de orbitales con la regla de Hund, los electrones
+   desapareados y los números cuánticos del electrón diferenciador.
+   Usa Elementos (elementos.js).
+   ===================================================================== */
+const Configuracion = (() => {
+  const LETRA = 'spdf';
+  const SUP = (k) => String(k).replace(/\d/g, (d) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d]);
+  const sinTildes = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  // orden de llenado n + l, a igualdad el de menor n (regla de Madelung, diagrama de Moeller)
+  const ORDEN = [];
+  for (let s = 1; s <= 8; s++) for (let l = Math.min(s - 1, 3); l >= 0; l--) { const n = s - l; if (n > l) ORDEN.push(`${n}${LETRA[l]}`); }
+
+  // «Fe», «hierro», «26», «Fe2+», «Fe^3+», «Cl-», «O2−» → { el, carga }
+  function leer(texto, carga = null) {
+    let t = String(texto).trim().replace(/[⁺]/g, '+').replace(/[⁻−]/g, '-').replace(/[⁰-⁹]/g, (c) => '⁰¹²³⁴⁵⁶⁷⁸⁹'.indexOf(c));
+    if (!t) throw new Error('Escribe un elemento: símbolo, nombre o número atómico');
+    let q = 0;
+    const m = t.match(/^(.*?)\s*\^?\(?(\d*)([+-])(\d*)\)?$/);
+    if (m && m[1]) { q = (m[3] === '+' ? 1 : -1) * +(m[2] || m[4] || 1); t = m[1].trim(); }
+    let el = /^\d+$/.test(t) ? Elementos.lista[+t - 1] : Elementos.porSimbolo[t[0].toUpperCase() + t.slice(1).toLowerCase()];
+    if (!el) el = Elementos.lista.find((e) => sinTildes(e.nombre) === sinTildes(t));
+    if (!el) throw new Error(`No encuentro el elemento «${t}»`);
+    if (carga !== null && carga !== '' && isFinite(+carga)) q = +carga;
+    if (q >= el.Z) throw new Error(`Un ion ${el.simbolo}${q}+ no tendría electrones`);
+    if (q < -4) throw new Error('Un anión con más de 4 cargas negativas no existe');
+    return { el, carga: q };
+  }
+
+  function analizar(texto, carga = null) {
+    const { el, carga: q } = leer(texto, carga);
+    const Z = el.Z, ne = Z - q;
+    const conf = Elementos.configuracion(Z, q);
+    const porCapas = Elementos.texto(conf);
+    const porLlenado = ORDEN.filter((o) => conf.some((c) => c.nombre === o)).map((o) => o + SUP(conf.find((c) => c.nombre === o).e)).join(' ');
+    // ¿es una excepción a Madelung? (solo tiene sentido en el átomo neutro y en sus cationes)
+    const madelung = {};
+    let resto = Z;
+    for (const o of ORDEN) { if (!resto) break; const cap = 2 * (2 * LETRA.indexOf(o[o.length - 1]) + 1); madelung[o] = Math.min(cap, resto); resto -= madelung[o]; }
+    const neutro = Elementos.configuracion(Z, 0);
+    const excepcion = neutro.some((c) => madelung[c.nombre] !== c.e) || Object.keys(madelung).some((o) => !neutro.some((c) => c.nombre === o));
+    const esperada = ORDEN.filter((o) => madelung[o]).map((o) => o + SUP(madelung[o])).join(' ');
+    // abreviada con el gas noble anterior al número de electrones
+    const g = [...Elementos.NOBLES].reverse().find((n) => (q ? n <= ne : n < ne));
+    let abreviada = porLlenado;
+    if (g) {
+      const base = Elementos.configuracion(g);
+      const resto2 = conf.filter((c) => { const b = base.find((x) => x.nombre === c.nombre); return !b || b.e !== c.e; });
+      abreviada = `[${Elementos.lista[g - 1].simbolo}] ` + ORDEN.filter((o) => resto2.some((c) => c.nombre === o)).map((o) => o + SUP(resto2.find((c) => c.nombre === o).e)).join(' ');
+      if (!resto2.length) abreviada = `[${Elementos.lista[g - 1].simbolo}]`;
+    } else if (ne === 0) abreviada = '';
+    // diagrama de orbitales (Hund): primero un electrón ↑ en cada orbital, luego ↓
+    const cajas = ORDEN.filter((o) => conf.some((c) => c.nombre === o)).map((o) => {
+      const l = LETRA.indexOf(o[o.length - 1]), k = conf.find((c) => c.nombre === o).e, nOrb = 2 * l + 1;
+      const orbitales = Array.from({ length: nOrb }, (_, i) => (i < k ? 1 : 0) + (i < k - nOrb ? 1 : 0));
+      return { nombre: o, n: +o.slice(0, -1), l, e: k, orbitales };
+    });
+    const desapareados = cajas.reduce((s, c) => s + c.orbitales.filter((x) => x === 1).length, 0);
+    // electrón diferenciador: el último que entra según el orden de llenado
+    let diferenciador = null;
+    const ult = cajas[cajas.length - 1];
+    if (ult) {
+      const nOrb = 2 * ult.l + 1, k = ult.e;
+      const i = k <= nOrb ? k - 1 : k - nOrb - 1;
+      diferenciador = { orbital: ult.nombre, n: ult.n, l: ult.l, ml: i - ult.l, ms: k <= nOrb ? '+½' : '−½' };
+    }
+    // capa de valencia: la de mayor n
+    const nMax = conf.length ? Math.max(...conf.map((c) => c.n)) : 0;
+    const valencia = conf.filter((c) => c.n === nMax).reduce((s, c) => s + c.e, 0);
+    return {
+      el, carga: q, Z, electrones: ne, porLlenado, porCapas, abreviada, capas: capasDe(conf), cajas, desapareados,
+      magnetismo: desapareados ? 'paramagnético' : 'diamagnético', diferenciador, excepcion: excepcion && q >= 0, esperada,
+      capaValencia: nMax, electronesValencia: valencia, bloque: Elementos.bloque(Z),
+    };
+  }
+  const capasDe = (conf) => { const c = []; for (const o of conf) c[o.n - 1] = (c[o.n - 1] || 0) + o.e; return Array.from(c, (x) => x || 0); };
+
+  const ejemplos = ['Fe', 'Cr', 'Cu', 'Fe^2+', 'Cl-', 'O', 'Gd', 'Ag'];
+  return { leer, analizar, ORDEN, ejemplos };
+})();
+
+/* =====================================================================
+   Configuración electrónica: interfaz. El cálculo está en
+   quimica/configuracion.js (Configuracion) y quimica/elementos.js.
+   ===================================================================== */
+(() => {
+  const $ = (q) => document.querySelector(q);
+  const C = Configuracion, LETRA = 'spdf', CAPAS = 'KLMNOPQ';
+  const SUP = (k) => String(k).replace(/\d/g, (d) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d]);
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const CLAVE = 'configuracion-v1';
+  const cargaTxt = (q) => (q ? `<sup>${Math.abs(q) > 1 ? Math.abs(q) : ''}${q > 0 ? '+' : '−'}</sup>` : '');
+
+  const entrada = $('#entrada');
+  let inicial = 'Fe';
+  try { inicial = localStorage.getItem(CLAVE) || inicial; } catch (e) {}
+  if (location.hash.length > 1) inicial = decodeURIComponent(location.hash.slice(1));
+  entrada.value = inicial;
+  $('#chips').innerHTML = C.ejemplos.map((x) => `<button class="chip" type="button" data-x="${esc(x)}">${esc(x)}</button>`).join('');
+  $('#chips').addEventListener('click', (e) => { const b = e.target.closest('.chip'); if (b) { entrada.value = b.dataset.x; muestra(); } });
+  entrada.addEventListener('input', muestra);
+  addEventListener('hashchange', () => { if (location.hash.length > 1) { entrada.value = decodeURIComponent(location.hash.slice(1)); muestra(); } });
+
+  function muestra() {
+    const err = $('#error');
+    let r;
+    try { r = C.analizar(entrada.value); } catch (e) { err.textContent = e.message; err.hidden = false; return; }
+    err.hidden = true;
+    try { localStorage.setItem(CLAVE, entrada.value); } catch (e) {}
+    history.replaceState(null, '', '#' + encodeURIComponent(entrada.value.trim()));
+    const el = r.el, q = r.carga;
+    $('#z').textContent = el.Z;
+    $('#sim').innerHTML = el.simbolo + cargaTxt(q);
+    $('#nombre').textContent = q ? `Ion ${el.nombre.toLowerCase()} ${q > 0 ? `(${q}+)` : `(${-q}−)`}` : el.nombre;
+    $('#subtitulo').textContent = `Z = ${el.Z} · ${r.electrones} electrones · ${el.categoria}${el.grupo ? ` · grupo ${el.grupo}` : ''} · periodo ${el.periodo} · bloque ${r.bloque}`;
+    $('#llenado').textContent = r.porLlenado || '(sin electrones)';
+    $('#abreviada').textContent = r.abreviada;
+    $('#capas-txt').textContent = r.porCapas;
+    $('#capas').textContent = r.capas.map((k, i) => `${CAPAS[i]} (n = ${i + 1}): ${k}`).join(' · ');
+    $('#valencia').textContent = `n = ${r.capaValencia}, con ${r.electronesValencia} electr${r.electronesValencia === 1 ? 'ón' : 'ones'}`;
+    $('#desap').textContent = `${r.desapareados} · ${r.magnetismo}`;
+    const ex = $('#excepcion');
+    ex.hidden = !r.excepcion;
+    if (r.excepcion) ex.innerHTML = `<b>Excepción al orden de llenado.</b> Por la regla se esperaría ${esc(r.esperada.split(' ').slice(-2).join(' '))}, pero ${q ? 'el átomo neutro tiene' : 'tiene'} ${esc(Elementos.abreviada(el.Z).split(' ').slice(1).join(' '))}: un subnivel lleno o semilleno es más estable.`;
+    $('#en-tabla').href = '../tabla-periodica/#' + el.simbolo;
+    moeller(r); orbitales(r);
+  }
+
+  /* ---------- Diagrama de Moeller ---------- */
+  function moeller(r) {
+    const svg = $('#moeller'), ocupados = new Map(r.cajas.map((c) => [c.nombre, c.e]));
+    const X = (l) => 42 + l * 66, Y = (n) => 22 + (n - 1) * 40;
+    let h = '';
+    // diagonales n + l = cte, de arriba a la derecha hacia abajo a la izquierda
+    for (let s = 1; s <= 8; s++) {
+      const celdas = [];
+      for (let l = 3; l >= 0; l--) { const n = s - l; if (n > l && n >= 1 && n <= 7) celdas.push([n, l]); }
+      if (!celdas.length) continue;
+      const [a, b] = [celdas[0], celdas[celdas.length - 1]];
+      const x1 = X(a[1]) + 16, y1 = Y(a[0]) - 12, x2 = X(b[1]) - 20, y2 = Y(b[0]) + 16;
+      h += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--line)" stroke-width="2" marker-end="url(#punta)"/>`;
+    }
+    let orden = 0;
+    const num = {};
+    for (const o of C.ORDEN) if (ocupados.has(o)) num[o] = ++orden;
+    for (let n = 1; n <= 7; n++) for (let l = 0; l < Math.min(n, 4); l++) {
+      const o = `${n}${LETRA[l]}`, e = ocupados.get(o);
+      if (e) h += `<rect x="${X(l) - 24}" y="${Y(n) - 15}" width="48" height="28" rx="6" fill="var(--accent-soft)" stroke="var(--accent)"/>`;
+      h += `<text x="${X(l)}" y="${Y(n) + 5}" text-anchor="middle" font-family="STIX Two Text, serif" font-size="16" fill="${e ? 'var(--ink)' : 'var(--muted)'}">${o}${e ? `<tspan font-size="11" dy="-7">${e}</tspan>` : ''}</text>`;
+      if (e) h += `<text x="${X(l) + 21}" y="${Y(n) + 10}" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="8" fill="var(--accent)">${num[o]}</text>`;
+    }
+    svg.innerHTML = `<defs><marker id="punta" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--line)"/></marker></defs>${h}`;
+  }
+
+  /* ---------- Orbitales con flechas ---------- */
+  function orbitales(r) {
+    $('#orbitales').innerHTML = r.cajas.map((c) => `<div class="subnivel"><div class="cajas">${c.orbitales.map((k) => `<span class="caja${k === 1 ? ' uno' : ''}">${k === 2 ? '↑↓' : k === 1 ? '↑' : ''}</span>`).join('')}</div><small>${c.nombre}${SUP(c.e)}</small></div>`).join('');
+    const d = r.diferenciador;
+    $('#cuanticos').innerHTML = d ? [['n', d.n, 'principal'], ['l', d.l, `secundario (${LETRA[d.l]})`], ['m<sub>l</sub>', String(d.ml).replace('-', '−'), 'magnético'], ['s', d.ms, 'espín']].map(([a, b, c]) => `<div><span>${a}</span><b>${b}</b><span>${c}</span></div>`).join('') : '';
+  }
+
+  const ver = $('#ver'); if (ver) ver.textContent = Version.de('configuracion-electronica').current;
+  muestra();
+  window.ConfigApp = { muestra: (x) => { entrada.value = x; muestra(); } };
+})();
+
+</script>
+</html>
