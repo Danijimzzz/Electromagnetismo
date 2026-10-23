@@ -63,4 +63,6 @@ if [ "$1" != privado ]; then
     version.js quimica/elementos.js quimica/formulas.js quimica/disoluciones.js disoluciones/app.js
   herramienta calorimetria ../publico/fisica/calorimetria/index.html "Calorimetría y cambios de fase" "Temperatura de equilibrio al mezclar agua, hielo, vapor y metales, con cambios de fase y calorímetro, paso a paso" \
     version.js calorimetria/fisica.js calorimetria/app.js
+  herramienta induccion ../publico/electromagnetismo/induccion/index.html "Autoinducción e inducción mutua" "Coeficiente de autoinducción de solenoides, toroides y cables coaxiales, inducción mutua, energía magnética y circuito RL, paso a paso" \
+    version.js induccion/fisica.js induccion/app.js
 fi

@@ -1,0 +1,99 @@
+<title>Autoinducción e inducción mutua: L, M, energía y circuito RL · SimulaCiencia</title>
+<meta name="description" content="Calculadora de autoinducción e inducción mutua en español: L de solenoides, toroides, cables coaxiales y líneas bifilares, M entre dos circuitos, energía magnética, fem inducida y circuito RL, paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root {
+  --bg: #eef0f4; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d6dbe3; --accent: #2a5db5; --accent-soft: #e3ebf8;
+  --pos: #c0392b; --neg: #2a5db5; --cobre: #b8733a; --nucleo: #e4e7ec; --campo: #5b6670;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #74a2f2; --accent-soft: #1b2a42;
+  --pos: #f07a6a; --neg: #74a2f2; --cobre: #e09a5c; --nucleo: #262e38; --campo: #94a0ac; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #74a2f2; --accent-soft: #1b2a42;
+  --pos: #f07a6a; --neg: #74a2f2; --cobre: #e09a5c; --nucleo: #262e38; --campo: #94a0ac; color-scheme: dark }
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
+.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
+.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+.layout { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 16px; align-items: start }
+@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr) } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 15px var(--f-ui); margin: 0 0 10px }
+.campos { display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px } .campos label small { color: var(--muted) }
+.in { font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.in:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.modos { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-bottom: 14px }
+.modos button { font: 500 13.5px var(--f-ui); border: 0; background: var(--panel); color: var(--muted); padding: 7px 14px; cursor: pointer }
+.modos button[aria-selected=true] { background: var(--accent); color: var(--panel) }
+.modos button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer }
+.btn:hover { border-color: var(--accent) } .btn.mini { padding: 2px 8px }
+.radios { grid-column: 1 / -1; display: flex; gap: 14px; flex-wrap: wrap; font-size: 13.5px } .radios label { display: inline-flex; gap: 5px; align-items: center }
+.error { color: #c0392b; font-size: 13px; margin: 10px 0 0 }
+canvas { display: block; width: 100%; border-radius: 8px; background: var(--bg) }
+#dibujo { height: clamp(220px, 40vw, 300px) }
+.resumen { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 12px }
+@media (max-width: 600px) { .resumen { grid-template-columns: repeat(2, minmax(0, 1fr)) } }
+.resumen div { background: var(--bg); border-radius: 8px; padding: 8px 10px } .resumen span { display: block; font-size: 12px; color: var(--muted) } .resumen b { font: 500 16px var(--f-mono) }
+.resumen small { display: block; font-size: 11.5px; color: var(--muted); margin-top: 2px }
+table { border-collapse: collapse; width: 100%; font-size: 13px; font-variant-numeric: tabular-nums }
+th, td { text-align: right; padding: 6px 8px; border-bottom: 1px solid var(--line); white-space: nowrap } th:first-child, td:first-child { text-align: left }
+th { color: var(--muted); font-weight: 500 }
+.pasos ol { margin: 0; padding-left: 20px } .pasos li { margin: 0 0 10px; font-family: var(--f-math); font-size: 15.5px }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Electromagnetismo</a> / Autoinducción e inducción mutua</span></header>
+<div class="wrap">
+<h1>Autoinducción e inducción mutua</h1>
+<p class="lead">Calcula el coeficiente de autoinducción L de solenoides, toroides, cables coaxiales y líneas bifilares, el de inducción mutua M entre dos circuitos, la energía magnética y la fem inducida, y sigue el transitorio de un circuito RL.</p>
+<div class="modos" role="tablist"><button role="tab" id="tab-L" aria-selected="true">Autoinducción L</button><button role="tab" id="tab-M" aria-selected="false">Inducción mutua M</button><button role="tab" id="tab-RL" aria-selected="false">Circuito RL</button></div>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota-opc"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card">
+      <canvas id="dibujo" aria-label="Esquema del circuito"></canvas>
+      <div class="resumen" id="resumen"></div>
+    </div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Autoinducción</h2>
+  <p>Una corriente I crea un campo B y, con él, un flujo a través del propio circuito. Ese flujo es proporcional a la corriente, y la constante es el coeficiente de autoinducción, que solo depende de la forma del circuito y del medio. Se mide en henrios (H = Wb/A).</p>
+  <p class="f">Φ = L I, &nbsp; ε = −L dI/dt, &nbsp; U = ½ L I<sup>2</sup> = ∫ B<sup>2</sup>/(2μ) dV</p>
+  <p>Para calcularlo: halla B con la ley de Ampère suponiendo una corriente I, integra el flujo por una espira y multiplica por el número de espiras. En un solenoide largo sale L = μ<sub>0</sub> N<sup>2</sup> S / l; en un toroide de sección rectangular, L = μ<sub>0</sub> N<sup>2</sup> h ln(b/a) / (2π).</p>
+  <h2>Inducción mutua</h2>
+  <p>Si la corriente de un circuito crea flujo en otro, Φ<sub>21</sub> = M I<sub>1</sub> y una corriente variable induce en el segundo ε<sub>2</sub> = −M dI<sub>1</sub>/dt. El coeficiente es el mismo en los dos sentidos (M<sub>12</sub> = M<sub>21</sub>), así que conviene calcularlo con el circuito cuyo campo sea fácil. El coeficiente de acoplamiento k = M / √(L<sub>1</sub> L<sub>2</sub>) va de 0 a 1; vale 1 cuando todo el flujo de uno atraviesa el otro.</p>
+  <h2>Circuito RL</h2>
+  <p>La bobina se opone a los cambios de corriente: al cerrar el circuito la corriente no salta a ε/R, sino que crece con la constante de tiempo τ = L/R, y al quitar la fuente decae con esa misma τ mientras la bobina devuelve su energía, que se disipa en la resistencia.</p>
+  <p class="f">I(t) = (ε/R)(1 − e<sup>−t/τ</sup>), &nbsp; I(t) = I<sub>0</sub> e<sup>−t/τ</sup>, &nbsp; τ = L / R</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Autoinducción <span id="ver"></span> (beta)</footer>
+</body>
