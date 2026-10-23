@@ -13,8 +13,10 @@ jobs:
         with:
           node-version: 22
       - run: npm install --no-save playwright@1.56.1
-      - run: npx playwright install --with-deps chromium
+      # El runner ya trae Google Chrome; descargar Chromium con --with-deps se quedaba colgado.
       - name: Build, ejercicios (ejemplo y Tema 3) y consola del navegador
         run: node pruebas/comprobar.js
+        env:
+          CHROMIUM: /usr/bin/google-chrome
       - name: publico/ está al día con fuente/
         run: git add -N publico && git diff --exit-code publico/
