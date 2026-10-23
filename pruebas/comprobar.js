@@ -4,11 +4,12 @@
    - los 12 del Tema 3 de la versión privada (privado/tema3-pdf.js), contra pruebas/esperados.json,
      que es la forma escrita del solucionario oficial, no solo el valor.
    Pasos:
-   1. regenera publico/index.html y la versión privada con fuente/build.sh, y comprueba que
-      publico/ solo contiene lo que se publica y ningún enunciado del Tema 3;
+   1. regenera la web pública (portada, asignaturas y simulador) y la versión privada con
+      fuente/build.sh, y comprueba que publico/ solo contiene lo que se publica y ningún enunciado del Tema 3;
    2. resuelve los dos juegos en Node y compara cada resultado con su archivo de esperados;
    3. abre las dos páginas en Chromium, repite el cálculo dentro de la página, abre cada ejercicio
-      desde la barra lateral y la guía, y falla si hay errores en la consola.
+      desde la barra lateral y la guía, y falla si hay errores en la consola; abre también la portada
+      y las páginas de asignatura y comprueba sus enlaces.
    Uso: node pruebas/comprobar.js [--actualizar] [--sin-navegador]
    --actualizar reescribe los esperados con los resultados actuales (solo si el cambio de forma es intencionado). */
 const fs = require('fs'), os = require('os'), path = require('path'), { execFileSync } = require('child_process');
@@ -17,11 +18,15 @@ const args = process.argv.slice(2);
 let fallos = 0;
 const mal = (m) => { fallos++; console.log('  ✗ ' + m); };
 
-// lo único que puede haber en publico/ (lo que sirven Vercel y Cloudflare Pages)
-const PUBLICABLES = ['index.html', 'og.png', 'apple-touch-icon.png', 'legal.css', 'aviso-legal.html', 'privacidad.html', 'cookies.html', 'contacto.html'];
+// lo único que puede haber en publico/ (lo que sirven Vercel y Cloudflare): los archivos sueltos,
+// la portada, una página por asignatura y una por herramienta disponible del catálogo
+const Catalogo = require(path.join(fuente, 'catalogo.js'));
+const PUBLICABLES = ['index.html', 'og.png', 'apple-touch-icon.png', 'legal.css', 'aviso-legal.html', 'privacidad.html', 'cookies.html', 'contacto.html',
+  ...Catalogo.asignaturas.flatMap((a) => [`${a.clave}/index.html`, ...a.herramientas.filter((h) => h.disponible).map((h) => `${a.clave}/${h.clave}/index.html`)])];
+const listar = (dir, pre = '') => fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? listar(path.join(dir, e.name), pre + e.name + '/') : [pre + e.name]));
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'emsim-'));
 const juegos = [
-  { nombre: 'Ejemplos', presets: path.join(fuente, 'presets.js'), esperados: path.join(__dirname, 'esperados-ejemplos.json'), pagina: path.join(publico, 'index.html') },
+  { nombre: 'Ejemplos', presets: path.join(fuente, 'presets.js'), esperados: path.join(__dirname, 'esperados-ejemplos.json'), pagina: path.join(publico, 'electromagnetismo', 'electrostatica', 'index.html') },
   { nombre: 'Tema 3', presets: path.join(raiz, 'privado', 'tema3-pdf.js'), esperados: path.join(__dirname, 'esperados.json'), pagina: path.join(tmp, 'privado.html') },
 ];
 
@@ -30,9 +35,10 @@ execFileSync('sh', [path.join(fuente, 'build.sh')], { stdio: 'inherit' });
 execFileSync('sh', [path.join(fuente, 'build.sh'), 'privado', path.join(tmp, 'cuerpo.html')], { stdio: 'inherit' });
 // el artifact añade el esqueleto; aquí se añade el mínimo para abrirla en el navegador
 fs.writeFileSync(juegos[1].pagina, '<!doctype html>\n<meta charset="utf-8">\n' + fs.readFileSync(path.join(tmp, 'cuerpo.html'), 'utf8'));
-console.log(`  ✓ publico/index.html ${(fs.statSync(juegos[0].pagina).size / 1024).toFixed(0)} KB · privada ${(fs.statSync(juegos[1].pagina).size / 1024).toFixed(0)} KB`);
-const sobran = fs.readdirSync(publico).filter((f) => !PUBLICABLES.includes(f));
+console.log(`  ✓ simulador ${(fs.statSync(juegos[0].pagina).size / 1024).toFixed(0)} KB · privada ${(fs.statSync(juegos[1].pagina).size / 1024).toFixed(0)} KB`);
+const hay = listar(publico), sobran = hay.filter((f) => !PUBLICABLES.includes(f)), faltan = PUBLICABLES.filter((f) => !hay.includes(f));
 if (sobran.length) mal(`publico/ contiene archivos que no deberían publicarse: ${sobran.join(', ')}`);
+if (faltan.length) mal(`publico/ no tiene: ${faltan.join(', ')}`);
 const web = fs.readFileSync(juegos[0].pagina, 'utf8');
 
 // resultados de todos los ejercicios: { clave: { titulo, incognita, resultados: [html…] } }
@@ -80,9 +86,10 @@ for (const j of juegos) {
   if (fallos === antes) console.log(`  ✓ ${j.nombre}: ${Object.keys(j.esp).length} ejercicios iguales a ${path.basename(j.esperados)}`);
 }
 // la web pública no puede llevar nada del PDF de la asignatura
-const delPdf = juegos[1].Presets.list.flatMap((p) => [p.statement, p.title]).filter((t) => web.includes(t));
-if (delPdf.length) mal(`publico/index.html contiene enunciados o títulos del Tema 3:\n      ${delPdf.join('\n      ')}`);
-else console.log('  ✓ publico/index.html no contiene ningún enunciado ni título del Tema 3');
+const textos = hay.filter((f) => f.endsWith('.html')).map((f) => [f, fs.readFileSync(path.join(publico, f), 'utf8')]);
+const delPdf = juegos[1].Presets.list.flatMap((p) => [p.statement, p.title]).flatMap((t) => textos.filter(([, x]) => x.includes(t)).map(([f]) => `${f}: ${t}`));
+if (delPdf.length) mal(`publico/ contiene enunciados o títulos del Tema 3:\n      ${delPdf.join('\n      ')}`);
+else console.log('  ✓ publico/ no contiene ningún enunciado ni título del Tema 3');
 console.log(`  · versión ${Version.current}`);
 
 async function navegador() {
@@ -126,6 +133,29 @@ async function navegador() {
     if (consola.length) mal(`${j.nombre}: consola del navegador:\n      ` + consola.join('\n      '));
     if (fallos === antes) console.log(`  ✓ ${j.nombre}: mismos resultados, ${Object.keys(j.esp).length} ejercicios abiertos, guía y novedades sin errores de consola`);
   }
+  // portada y páginas de asignatura: sin errores de consola y sin enlaces internos rotos
+  const portal = ['index.html', ...Catalogo.asignaturas.map((a) => `${a.clave}/index.html`)];
+  const antes = fallos;
+  for (const f of portal) {
+    const page = await browser.newPage({ viewport: { width: 1200, height: 900 } });
+    const consola = [];
+    page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') consola.push(m.type() + ': ' + m.text()); });
+    page.on('pageerror', (e) => consola.push('excepción: ' + e.message));
+    await page.goto('file://' + path.join(publico, f));
+    const enlaces = await page.evaluate(() => [...document.querySelectorAll('a[href]')].map((a) => a.href).filter((u) => u.startsWith('file:')));
+    for (const u of enlaces) {
+      const destino = decodeURIComponent(new URL(u).pathname), archivo = destino.endsWith('/') ? destino + 'index.html' : destino;
+      if (!fs.existsSync(archivo)) mal(`${f}: enlace roto a ${path.relative(publico, archivo)}`);
+    }
+    if (f === 'index.html') {
+      await page.fill('#buscar', 'biot savart');
+      const vis = await page.locator('[data-buscar]:visible').count();
+      if (vis !== 1) mal(`portada: buscar «biot savart» deja ${vis} herramientas, se esperaba 1`);
+    }
+    await page.close();
+    if (consola.length) mal(`${f}: consola del navegador:\n      ` + consola.join('\n      '));
+  }
+  if (fallos === antes) console.log(`  ✓ Portada y ${portal.length - 1} asignaturas sin errores de consola ni enlaces rotos`);
   await browser.close();
 }
 
