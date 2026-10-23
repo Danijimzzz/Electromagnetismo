@@ -51,4 +51,6 @@ if [ "$1" != privado ]; then
     version.js quimica/elementos.js tabla-periodica/app.js
   herramienta trabajo-y-energia ../publico/fisica/trabajo-y-energia/index.html "Trabajo y energía: rampa, rozamiento y muelle" "Simulador de conservación de la energía con rozamiento y muelle: animación, barras de energía y desarrollo paso a paso" \
     version.js trabajo-y-energia/fisica.js trabajo-y-energia/app.js
+  herramienta masa-molar ../publico/quimica/masa-molar/index.html "Masa molar y estequiometría" "Masa molar y composición de cualquier fórmula, ajuste de reacciones, reactivo limitante y rendimiento, paso a paso" \
+    version.js quimica/elementos.js quimica/formulas.js masa-molar/app.js
 fi

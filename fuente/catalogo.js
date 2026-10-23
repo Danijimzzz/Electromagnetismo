@@ -32,7 +32,7 @@ const Catalogo = {
       resumen: 'Tabla periódica, estequiometría y disoluciones para química general.',
       herramientas: [
         { clave: 'tabla-periodica', nombre: 'Tabla periódica interactiva', icono: 'Z', disponible: true, desc: 'Ficha de cada elemento y tendencias coloreadas.', buscar: 'elementos tabla periódica electronegatividad radio atómico' },
-        { clave: 'masa-molar', nombre: 'Masa molar y estequiometría', icono: 'M', desc: 'Reactivo limitante, rendimiento, moles, gramos y litros.', buscar: 'masa molar moles estequiometría reactivo limitante' },
+        { clave: 'masa-molar', nombre: 'Masa molar y estequiometría', icono: 'M', disponible: true, desc: 'Reactivo limitante, rendimiento, moles, gramos y litros.', buscar: 'masa molar moles estequiometría reactivo limitante' },
         { clave: 'configuracion-electronica', nombre: 'Configuración electrónica', icono: 'e', desc: 'Diagrama de Moeller, excepciones y números cuánticos.', buscar: 'configuración electrónica moeller números cuánticos orbitales' },
         { clave: 'disoluciones', nombre: 'Disoluciones y concentraciones', icono: 'c', desc: 'Molaridad, molalidad, fracción molar y diluciones.', buscar: 'molaridad molalidad concentración dilución' },
       ],
