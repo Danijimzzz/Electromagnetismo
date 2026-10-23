@@ -15,7 +15,7 @@ const Catalogo = {
         { clave: 'electrostatica', nombre: 'Electrostática', icono: 'E', disponible: true, desc: 'Cargas, hilos, planos y esferas. Campo, potencial, energía y Gauss.', buscar: 'campo eléctrico potencial coulomb gauss carga hilo plano esfera dipolo' },
         { clave: 'magnetostatica', nombre: 'Magnetostática (Biot-Savart)', icono: 'B', disponible: true, desc: 'B de hilos, espiras, arcos, solenoides y toroides.', buscar: 'campo magnético biot savart ampère espira solenoide toroide' },
         { clave: 'condensadores', nombre: 'Dieléctricos y condensadores', icono: 'C', disponible: true, desc: 'Planos, cilíndricos y esféricos con capas de dieléctrico: capacidad, energía, D, P y polarización.', buscar: 'capacidad condensador dieléctrico polarización' },
-        { clave: 'induccion', nombre: 'Autoinducción e inducción mutua', icono: 'L', desc: 'L de solenoides y toroides, M entre circuitos y energía magnética.', buscar: 'inductancia autoinducción inducción mutua faraday' },
+        { clave: 'induccion', nombre: 'Autoinducción e inducción mutua', icono: 'L', disponible: true, desc: 'L de solenoides, toroides y coaxiales, M entre circuitos, energía magnética y circuito RL.', buscar: 'inductancia autoinducción inducción mutua faraday bobina circuito rl henrio' },
       ],
     },
     {

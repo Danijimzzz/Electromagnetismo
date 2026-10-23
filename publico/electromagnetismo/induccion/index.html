@@ -1,0 +1,672 @@
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMwZDZiNjYiLz48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlNmE2NDAiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtZGFzaGFycmF5PSI0IDYuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48cGF0aCBkPSJNMjAgMzJINDQiLz48cGF0aCBkPSJNMjEgMjdDMjcgMTQgMzcgMTQgNDMgMjciLz48cGF0aCBkPSJNMjEgMzdDMjcgNTAgMzcgNTAgNDMgMzciLz48cGF0aCBkPSJNMTcgMjRDMjIgNCA0MiA0IDQ3IDI0Ii8+PHBhdGggZD0iTTE3IDQwQzIyIDYwIDQyIDYwIDQ3IDQwIi8+PC9nPjxjaXJjbGUgY3g9IjE3IiBjeT0iMzIiIHI9IjgiIGZpbGw9IiNlZjdhNjIiLz48Y2lyY2xlIGN4PSI0NyIgY3k9IjMyIiByPSI4IiBmaWxsPSIjNzRhMmYyIi8+PHBhdGggZD0iTTEzIDMyaDhNMTcgMjh2OE00MyAzMmg4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta property="og:title" content="Autoinducción e inducción mutua">
+<meta property="og:description" content="Coeficiente de autoinducción de solenoides, toroides y cables coaxiales, inducción mutua, energía magnética y circuito RL, paso a paso">
+<meta property="og:image" content="https://electromagnetismo-two.vercel.app/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<title>Autoinducción e inducción mutua: L, M, energía y circuito RL · SimulaCiencia</title>
+<meta name="description" content="Calculadora de autoinducción e inducción mutua en español: L de solenoides, toroides, cables coaxiales y líneas bifilares, M entre dos circuitos, energía magnética, fem inducida y circuito RL, paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root {
+  --bg: #eef0f4; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d6dbe3; --accent: #2a5db5; --accent-soft: #e3ebf8;
+  --pos: #c0392b; --neg: #2a5db5; --cobre: #b8733a; --nucleo: #e4e7ec; --campo: #5b6670;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #74a2f2; --accent-soft: #1b2a42;
+  --pos: #f07a6a; --neg: #74a2f2; --cobre: #e09a5c; --nucleo: #262e38; --campo: #94a0ac; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #74a2f2; --accent-soft: #1b2a42;
+  --pos: #f07a6a; --neg: #74a2f2; --cobre: #e09a5c; --nucleo: #262e38; --campo: #94a0ac; color-scheme: dark }
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
+.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
+.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+.layout { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 16px; align-items: start }
+@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr) } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 15px var(--f-ui); margin: 0 0 10px }
+.campos { display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px } .campos label small { color: var(--muted) }
+.in { font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.in:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.modos { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-bottom: 14px }
+.modos button { font: 500 13.5px var(--f-ui); border: 0; background: var(--panel); color: var(--muted); padding: 7px 14px; cursor: pointer }
+.modos button[aria-selected=true] { background: var(--accent); color: var(--panel) }
+.modos button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer }
+.btn:hover { border-color: var(--accent) } .btn.mini { padding: 2px 8px }
+.radios { grid-column: 1 / -1; display: flex; gap: 14px; flex-wrap: wrap; font-size: 13.5px } .radios label { display: inline-flex; gap: 5px; align-items: center }
+.error { color: #c0392b; font-size: 13px; margin: 10px 0 0 }
+canvas { display: block; width: 100%; border-radius: 8px; background: var(--bg) }
+#dibujo { height: clamp(220px, 40vw, 300px) }
+.resumen { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 12px }
+@media (max-width: 600px) { .resumen { grid-template-columns: repeat(2, minmax(0, 1fr)) } }
+.resumen div { background: var(--bg); border-radius: 8px; padding: 8px 10px } .resumen span { display: block; font-size: 12px; color: var(--muted) } .resumen b { font: 500 16px var(--f-mono) }
+.resumen small { display: block; font-size: 11.5px; color: var(--muted); margin-top: 2px }
+table { border-collapse: collapse; width: 100%; font-size: 13px; font-variant-numeric: tabular-nums }
+th, td { text-align: right; padding: 6px 8px; border-bottom: 1px solid var(--line); white-space: nowrap } th:first-child, td:first-child { text-align: left }
+th { color: var(--muted); font-weight: 500 }
+.pasos ol { margin: 0; padding-left: 20px } .pasos li { margin: 0 0 10px; font-family: var(--f-math); font-size: 15.5px }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Electromagnetismo</a> / Autoinducción e inducción mutua</span></header>
+<div class="wrap">
+<h1>Autoinducción e inducción mutua</h1>
+<p class="lead">Calcula el coeficiente de autoinducción L de solenoides, toroides, cables coaxiales y líneas bifilares, el de inducción mutua M entre dos circuitos, la energía magnética y la fem inducida, y sigue el transitorio de un circuito RL.</p>
+<div class="modos" role="tablist"><button role="tab" id="tab-L" aria-selected="true">Autoinducción L</button><button role="tab" id="tab-M" aria-selected="false">Inducción mutua M</button><button role="tab" id="tab-RL" aria-selected="false">Circuito RL</button></div>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota-opc"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card">
+      <canvas id="dibujo" aria-label="Esquema del circuito"></canvas>
+      <div class="resumen" id="resumen"></div>
+    </div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Autoinducción</h2>
+  <p>Una corriente I crea un campo B y, con él, un flujo a través del propio circuito. Ese flujo es proporcional a la corriente, y la constante es el coeficiente de autoinducción, que solo depende de la forma del circuito y del medio. Se mide en henrios (H = Wb/A).</p>
+  <p class="f">Φ = L I, &nbsp; ε = −L dI/dt, &nbsp; U = ½ L I<sup>2</sup> = ∫ B<sup>2</sup>/(2μ) dV</p>
+  <p>Para calcularlo: halla B con la ley de Ampère suponiendo una corriente I, integra el flujo por una espira y multiplica por el número de espiras. En un solenoide largo sale L = μ<sub>0</sub> N<sup>2</sup> S / l; en un toroide de sección rectangular, L = μ<sub>0</sub> N<sup>2</sup> h ln(b/a) / (2π).</p>
+  <h2>Inducción mutua</h2>
+  <p>Si la corriente de un circuito crea flujo en otro, Φ<sub>21</sub> = M I<sub>1</sub> y una corriente variable induce en el segundo ε<sub>2</sub> = −M dI<sub>1</sub>/dt. El coeficiente es el mismo en los dos sentidos (M<sub>12</sub> = M<sub>21</sub>), así que conviene calcularlo con el circuito cuyo campo sea fácil. El coeficiente de acoplamiento k = M / √(L<sub>1</sub> L<sub>2</sub>) va de 0 a 1; vale 1 cuando todo el flujo de uno atraviesa el otro.</p>
+  <h2>Circuito RL</h2>
+  <p>La bobina se opone a los cambios de corriente: al cerrar el circuito la corriente no salta a ε/R, sino que crece con la constante de tiempo τ = L/R, y al quitar la fuente decae con esa misma τ mientras la bobina devuelve su energía, que se disipa en la resistencia.</p>
+  <p class="f">I(t) = (ε/R)(1 − e<sup>−t/τ</sup>), &nbsp; I(t) = I<sub>0</sub> e<sup>−t/τ</sup>, &nbsp; τ = L / R</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Autoinducción <span id="ver"></span> (beta)</footer>
+</body>
+<script>
+/* =====================================================================
+   Versiones y novedades: la web (portada, asignaturas, buscador) tiene su número y cada
+   herramienta el suyo. Hasta el lanzamiento se numera 0.x (beta); la 1.0 de una herramienta
+   llega cuando se da por terminada y la 1.0 de la web será el lanzamiento. Sube el segundo
+   número si hay algo nuevo (0.6) y añade un tercero si es solo un arreglo (0.5.1).
+   En las novedades de la web se anuncia también cada herramienta nueva.
+   Las notas son para los usuarios: solo funciones nuevas, arreglos visibles y cambios
+   en la interfaz. Lo interno (pruebas, CI, build, despliegue, refactorizaciones) no se anota;
+   el historial completo para desarrolladores está en Notion.
+   ===================================================================== */
+const Version = (() => {
+  const registros = {
+    web: [
+      { v: '0.10', fecha: '2026-10-23', cambios: ['Nueva herramienta: Autoinducción e inducción mutua, en Electromagnetismo.'] },
+      { v: '0.9', fecha: '2026-10-23', cambios: ['Nueva herramienta: Calorimetría y cambios de fase, en Física general.'] },
+      { v: '0.8', fecha: '2026-10-23', cambios: ['Nueva herramienta: Disoluciones y concentraciones, en Química.'] },
+      { v: '0.7', fecha: '2026-10-23', cambios: ['Nueva herramienta: Tiro parabólico y cinemática, en Física general.'] },
+      { v: '0.6', fecha: '2026-10-23', cambios: ['Nueva herramienta: Condensadores con dieléctricos, en Electromagnetismo.'] },
+      { v: '0.5', fecha: '2026-10-23', cambios: ['Nueva herramienta: Configuración electrónica, en Química.'] },
+      { v: '0.4', fecha: '2026-10-23', cambios: ['Nueva herramienta: Masa molar y estequiometría, en Química.'] },
+      { v: '0.3', fecha: '2026-10-23', cambios: ['Nueva herramienta: Trabajo y energía, en Física general.'] },
+      { v: '0.2', fecha: '2026-10-23', cambios: ['Nueva herramienta: Tabla periódica interactiva, en Química.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Portada para elegir asignatura y herramienta: Electromagnetismo, Física general, Química, Matemáticas y Laboratorio, con buscador. Las herramientas que vienen después aparecen como «Próximamente».', 'Nueva herramienta: Magnetostática, en Electromagnetismo.'] },
+    ],
+    electrostatica: [
+      { v: '0.5.1', fecha: '2026-10-23', cambios: ['El simulador tiene ahora su propia dirección, /electromagnetismo/electrostatica/. Tus problemas guardados siguen ahí. El botón «Todas las herramientas» de la barra lateral vuelve a la portada.'] },
+    { v: '0.5', fecha: '2026-10-23', cambios: ['Doce ejercicios de ejemplo con enunciados propios: los mismos tipos de pregunta que en clase, con otras figuras y otros números. La guía de uso tiene capturas nuevas hechas con ellos.', 'La web tiene icono propio: un dipolo con sus líneas de campo, en la pestaña del navegador, en la pantalla de inicio del móvil y en la vista previa al compartir el enlace.', 'Páginas de aviso legal, privacidad, cookies y contacto, enlazadas al pie de la barra lateral.'] },
+    { v: '0.4', fecha: '2026-10-22', cambios: ['Número de versión visible y este apartado de novedades.', 'Arreglo: en la vista 3D los cilindros se dibujan con su radio real, aparecen las superficies de Gauss, y las esferas, cascarones y conductores tienen volumen en lugar de parecer círculos planos.'] },
+    { v: '0.3', fecha: '2026-10-22', cambios: ['Guía de uso con capturas (botón ?, barra lateral o F1).', 'Los resultados se escriben con la misma forma que el solucionario oficial: perfiles por tramos, factor común en logaritmos y radicales, y la pregunta V_A − V_B.'] },
+    { v: '0.2', fecha: '2026-10-22', cambios: ['Anillos, discos, cortezas y conductores.', 'Varias incógnitas, modo numérico SI, flujo de Gauss y gráficas E(z) y V(z).', 'Modo práctica, exportar la solución, deshacer y rehacer, mapa de color y vista 3D.', 'Búsqueda, carpetas y etiquetas en la barra lateral.'] },
+    { v: '0.1', fecha: '2026-10-22', cambios: ['Primera versión: cargas, hilos, planos y esferas con el desarrollo paso a paso y 12 ejercicios resueltos.', 'Barra lateral con tus problemas, los importados y los ejercicios; título y enunciado editables; archivos .emsim.json.'] },
+    ],
+    magnetostatica: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: campo magnético de hilos, segmentos, hilos semiinfinitos, espiras, arcos, solenoides y toroides con Biot-Savart, y fuerza sobre cargas en movimiento y sobre conductores, con el desarrollo paso a paso en la forma μ₀I/(πa) o en unidades del SI.', 'Dibujo del campo B en el plano XY, XZ o YZ, con puntos que se pueden arrastrar y ocho ejemplos resueltos.'] },
+    ],
+    'tabla-periodica': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: cada elemento tiene su ficha con la masa atómica y molar, el grupo, el periodo, el bloque, la configuración electrónica (abreviada, completa y por capas), la electronegatividad, la energía de ionización, el radio y el estado.', 'La tabla se puede colorear por categoría, electronegatividad, energía de ionización, radio, masa, bloque o estado, y tiene un buscador por nombre, símbolo o número atómico.'] },
+    ],
+    'trabajo-y-energia': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: un bloque baja por una rampa con rozamiento, recorre un tramo horizontal y comprime un muelle. Animación con barras de energía cinética, gravitatoria, elástica y calor, gráfica de las energías en el tiempo y el desarrollo paso a paso con la velocidad al pie de la rampa, al llegar al muelle y la compresión máxima.', 'Seis ejemplos: sin rozamiento, se para antes del muelle, el rozamiento lo sujeta, con empujón inicial y muelle duro.'] },
+    ],
+    'masa-molar': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: masa molar y composición centesimal de cualquier fórmula, con paréntesis, hidratos e iones, y conversor entre gramos, moles, partículas y litros de gas.', 'Estequiometría: ajusta la reacción sola (también las iónicas), calcula el reactivo limitante, lo que se forma con el rendimiento que digas y lo que sobra, paso a paso.', 'Masas atómicas de la IUPAC o redondeadas como en clase.'] },
+    ],
+    'configuracion-electronica': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: configuración electrónica de cualquier elemento o ion por orden de llenado, abreviada y por capas, con el diagrama de Moeller, el diagrama de orbitales con la regla de Hund, los electrones desapareados y los números cuánticos del electrón diferenciador.', 'Avisa de las excepciones como el cromo o el cobre, y en los cationes quita primero los electrones de la capa más externa.'] },
+    ],
+    condensadores: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: condensadores planos, cilíndricos y esféricos con capas de dieléctrico en serie o, en el plano, ocupando parte del área. Capacidad, carga, tensión y energía; campos E, D y P en cada capa y cargas de polarización, con el desarrollo paso a paso.', 'Compara con el condensador vacío: qué pasa al meter el dieléctrico con la batería conectada o con el condensador aislado.', 'Dibujo del corte con las líneas de campo y gráfica de E a lo largo del condensador.'] },
+    ],
+    'tiro-parabolico': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: tiro parabólico desde cualquier altura hasta cualquier altura, con el tiempo de vuelo, la altura máxima, el alcance y la velocidad al caer, y el desarrollo paso a paso. Trayectoria animada con los vectores de velocidad y gráficas de posición, velocidad y aceleración frente al tiempo.', 'Rozamiento del aire lineal o cuadrático, comparado con la trayectoria sin rozamiento.', 'Blanco: dice si el proyectil pasa por un punto y con qué dos ángulos se acierta.', 'Movimiento rectilíneo (MRU y MRUA): posición y velocidad en un instante, cuándo pasa por un punto y cuándo se para, con las gráficas x(t), v(t) y a(t).'] },
+    ],
+    disoluciones: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: da la concentración de una disolución como molaridad, molalidad, fracción molar, % en masa, % masa/volumen, g/L o ppm y obtén todas las demás, con la densidad para pasar de masa a volumen y el desarrollo con su base de cálculo.', 'Preparar una disolución: los gramos de sólido (con su pureza) o los mililitros de reactivo comercial (con su riqueza y densidad) que hay que medir.', 'Diluciones con C₁V₁ = C₂V₂, despejando el dato que falte, y mezcla de dos disoluciones del mismo soluto.'] },
+    ],
+    calorimetria: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: temperatura de equilibrio al mezclar hasta cinco cuerpos de agua, hielo, vapor, metales, etanol, vidrio, un calorímetro o una sustancia con tus datos, con los cambios de fase que hagan falta.', 'Si la energía no llega para fundir todo el hielo o condensar todo el vapor, dice cuántos gramos quedan de cada fase.', 'Tabla con el calor de cada cuerpo, el desarrollo etapa por etapa (m c ΔT y m L) y la curva de calentamiento de cada uno.'] },
+    ],
+    induccion: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: coeficiente de autoinducción de solenoides (con núcleo), toroides de sección rectangular y circular, cables coaxiales y líneas bifilares, con el desarrollo desde la ley de Ampère.', 'Inducción mutua entre dos solenoides, dos espiras, un hilo y una espira, y una bobina sobre un toroide, o a partir de L₁, L₂ y k, con el coeficiente de acoplamiento.', 'Flujo, energía magnética y fem inducida si das la corriente o cómo cambia.', 'Circuito RL al cerrar el interruptor o al quitar la fuente: constante de tiempo, corriente y tensión en la bobina en cualquier instante y su gráfica.'] },
+    ],
+  };
+  const de = (h) => ({ current: registros[h][0].v, log: registros[h] });
+  // Version.current y Version.log son los del simulador de electrostática
+  return { registros, de, ...de('electrostatica') };
+})();
+
+/* =====================================================================
+   Autoinducción e inducción mutua (sin DOM): coeficiente de autoinducción
+   de solenoides, toroides, cables coaxiales y líneas bifilares; coeficiente
+   de inducción mutua de pares típicos; energía magnética, flujo y fem
+   inducida; y el transitorio de un circuito RL. Desarrollo en la forma
+   simbólica (μ₀ N² S / l) y con números. Unidades del SI.
+   ===================================================================== */
+const Induccion = (() => {
+  const MU0 = 4e-7 * Math.PI;
+  const f = (x, d = 4) => {
+    if (!isFinite(x)) return '—';
+    if (Math.abs(x) < 1e-15) return '0';
+    const a = Math.abs(x);
+    const s = a >= 1e5 || a < 1e-3 ? x.toExponential(d - 1).replace(/\.?0+e/, 'e').replace('e', '·10^').replace(/\^([+-]?)(\d+)/, (_, sg, e) => `<sup>${sg === '-' ? '−' : ''}${+e}</sup>`) : String(+x.toPrecision(d));
+    return s.replace('.', ',').replace('-', '−');
+  };
+  // con prefijo del SI: 4,935·10⁻⁴ H → 0,4935 mH
+  const PREF = [[1e9, 'G'], [1e6, 'M'], [1e3, 'k'], [1, ''], [1e-3, 'm'], [1e-6, 'μ'], [1e-9, 'n'], [1e-12, 'p']];
+  const u = (x, unidad, d = 4) => {
+    if (!isFinite(x) || x === 0) return `${f(x, d)} ${unidad}`;
+    const a = Math.abs(x), p = PREF.find(([v]) => a >= v * 0.9999999) || PREF[PREF.length - 1];
+    return `${String(+(x / p[0]).toPrecision(d)).replace('.', ',').replace('-', '−')} ${p[1]}${unidad}`;
+  };
+  const leeNum = (s) => +String(s).trim().replace(/\s/g, '').replace(',', '.').replace(/[·x×*]10\^?([+\-−]?\d+)/i, 'e$1').replace('−', '-');
+  const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
+  const lee = (sc, k, nom, { opcional = false, cero = false, signo = false } = {}) => {
+    if (vacio(sc[k])) { if (opcional) return null; throw new Error(`Falta ${nom}`); }
+    const v = leeNum(sc[k]);
+    if (!isFinite(v)) throw new Error(`${nom[0].toUpperCase() + nom.slice(1)} debe ser un número`);
+    if (!signo && (cero ? v < 0 : v <= 0)) throw new Error(`${nom[0].toUpperCase() + nom.slice(1)} debe ser ${cero ? 'positivo o cero' : 'mayor que 0'}`);
+    return v;
+  };
+
+  /* ---------- Autoinducción ---------- */
+  // cada geometría: campos (clave, nombre, unidad, factor a SI) y la función que da L con su desarrollo
+  const GEO_L = {
+    solenoide: {
+      nombre: 'Solenoide largo', campos: [['N', 'Número de espiras N', '', 1], ['l', 'Longitud l', 'cm', 1e-2], ['r', 'Radio r', 'cm', 1e-2], ['mur', 'Permeabilidad relativa μ<sub>r</sub>', '', 1]],
+      calc: ({ N, l, r, mur }) => {
+        const S = Math.PI * r * r, L = (MU0 * mur * N * N * S) / l;
+        return { L, pasos: [
+          { t: 'Campo dentro del solenoide (Ampère)', html: `B = μ<sub>0</sub> μ<sub>r</sub> N I / l, uniforme dentro y nulo fuera (si l ≫ r).` },
+          { t: 'Flujo propio', html: `Φ = N B S = μ<sub>0</sub> μ<sub>r</sub> N<sup>2</sup> S I / l, con S = π r<sup>2</sup> = ${f(S)} m<sup>2</sup>.` },
+          { t: 'Coeficiente de autoinducción', html: `L = Φ / I = μ<sub>0</sub> μ<sub>r</sub> N<sup>2</sup> π r<sup>2</sup> / l = 4π·10<sup>−7</sup> · ${f(mur)} · ${f(N)}<sup>2</sup> · ${f(S)} / ${f(l)} = <b>${u(L, 'H')}</b>` },
+        ], B1: (MU0 * mur * N) / l };
+      },
+    },
+    'toroide-rect': {
+      nombre: 'Toroide de sección rectangular', campos: [['N', 'Número de espiras N', '', 1], ['a', 'Radio interior a', 'cm', 1e-2], ['b', 'Radio exterior b', 'cm', 1e-2], ['h', 'Altura h', 'cm', 1e-2], ['mur', 'Permeabilidad relativa μ<sub>r</sub>', '', 1]],
+      valida: ({ a, b }) => { if (b <= a) throw new Error('El radio exterior debe ser mayor que el interior'); },
+      calc: ({ N, a, b, h, mur }) => {
+        const L = (MU0 * mur * N * N * h * Math.log(b / a)) / (2 * Math.PI);
+        return { L, pasos: [
+          { t: 'Campo dentro del toroide (Ampère)', html: `B(r) = μ<sub>0</sub> μ<sub>r</sub> N I / (2π r), para a < r < b.` },
+          { t: 'Flujo por una espira', html: `Φ<sub>1</sub> = ∫<sub>a</sub><sup>b</sup> B h dr = μ<sub>0</sub> μ<sub>r</sub> N I h ln(b/a) / (2π), con ln(b/a) = ln(${f(b / a)}) = ${f(Math.log(b / a))}.` },
+          { t: 'Coeficiente de autoinducción', html: `L = N Φ<sub>1</sub> / I = μ<sub>0</sub> μ<sub>r</sub> N<sup>2</sup> h ln(b/a) / (2π) = 2·10<sup>−7</sup> · ${f(mur)} · ${f(N)}<sup>2</sup> · ${f(h)} · ${f(Math.log(b / a))} = <b>${u(L, 'H')}</b>` },
+        ] };
+      },
+    },
+    'toroide-circ': {
+      nombre: 'Toroide de sección circular', campos: [['N', 'Número de espiras N', '', 1], ['R', 'Radio medio R', 'cm', 1e-2], ['r', 'Radio de la sección r', 'cm', 1e-2], ['mur', 'Permeabilidad relativa μ<sub>r</sub>', '', 1]],
+      valida: ({ R, r }) => { if (r >= R) throw new Error('El radio de la sección debe ser menor que el radio medio'); },
+      calc: ({ N, R, r, mur }) => {
+        const L = MU0 * mur * N * N * (R - Math.sqrt(R * R - r * r)), La = (MU0 * mur * N * N * r * r) / (2 * R);
+        return { L, pasos: [
+          { t: 'Campo dentro del toroide (Ampère)', html: `B(ρ) = μ<sub>0</sub> μ<sub>r</sub> N I / (2π ρ), a una distancia ρ del eje.` },
+          { t: 'Coeficiente de autoinducción', html: `Integrando el flujo sobre la sección circular: L = μ<sub>0</sub> μ<sub>r</sub> N<sup>2</sup> (R − √(R<sup>2</sup> − r<sup>2</sup>)) = <b>${u(L, 'H')}</b>` },
+          { t: 'Aproximación de toroide fino', html: `Si r ≪ R, B es casi uniforme y L ≈ μ<sub>0</sub> μ<sub>r</sub> N<sup>2</sup> π r<sup>2</sup> / (2π R) = ${u(La, 'H')} (difiere un ${f(100 * Math.abs(La / L - 1), 2)} %).` },
+        ] };
+      },
+    },
+    coaxial: {
+      nombre: 'Cable coaxial', campos: [['l', 'Longitud l', 'm', 1], ['a', 'Radio del conductor interior a', 'mm', 1e-3], ['b', 'Radio del conductor exterior b', 'mm', 1e-3]], interior: true,
+      valida: ({ a, b }) => { if (b <= a) throw new Error('El radio exterior debe ser mayor que el interior'); },
+      calc: ({ l, a, b, macizo }) => {
+        const Le = (MU0 * l * Math.log(b / a)) / (2 * Math.PI), Li = macizo ? (MU0 * l) / (8 * Math.PI) : 0, L = Le + Li;
+        const pasos = [
+          { t: 'Campo entre los conductores (Ampère)', html: `B(r) = μ<sub>0</sub> I / (2π r), para a < r < b; fuera del cable B = 0.` },
+          { t: 'Parte externa', html: `Φ = ∫<sub>a</sub><sup>b</sup> B l dr = μ<sub>0</sub> I l ln(b/a) / (2π) ⇒ L<sub>ext</sub> = μ<sub>0</sub> l ln(b/a) / (2π) = 2·10<sup>−7</sup> · ${f(l)} · ln(${f(b / a)}) = <b>${u(Le, 'H')}</b>` },
+        ];
+        if (macizo) pasos.push({ t: 'Parte interna (conductor macizo)', html: `Dentro del conductor B = μ<sub>0</sub> I r / (2π a<sup>2</sup>). Por energía, ½ L<sub>int</sub> I<sup>2</sup> = ∫ B<sup>2</sup>/(2μ<sub>0</sub>) dV ⇒ L<sub>int</sub> = μ<sub>0</sub> l / (8π) = ${u(Li, 'H')}. Total: L = <b>${u(L, 'H')}</b>` });
+        pasos.push({ t: 'Por unidad de longitud', html: `L / l = <b>${u(L / l, 'H/m')}</b>` });
+        return { L, pasos };
+      },
+    },
+    bifilar: {
+      nombre: 'Línea bifilar', campos: [['l', 'Longitud l', 'm', 1], ['d', 'Distancia entre ejes d', 'mm', 1e-3], ['a', 'Radio de cada hilo a', 'mm', 1e-3]], interior: true,
+      valida: ({ d, a }) => { if (d <= 2 * a) throw new Error('Los hilos se tocan: la distancia entre ejes debe ser mayor que 2a'); },
+      calc: ({ l, d, a, macizo }) => {
+        const Le = (MU0 * l * Math.log((d - a) / a)) / Math.PI, Li = macizo ? (MU0 * l) / (4 * Math.PI) : 0, L = Le + Li;
+        const pasos = [
+          { t: 'Campo entre los hilos', html: `Cada hilo crea B = μ<sub>0</sub> I / (2π r) y entre ellos los dos campos se suman: B(x) = μ<sub>0</sub> I / (2π) · (1/x + 1/(d − x)).` },
+          { t: 'Flujo entre los hilos', html: `Φ = ∫<sub>a</sub><sup>d−a</sup> B l dx = μ<sub>0</sub> I l ln((d − a)/a) / π ⇒ L<sub>ext</sub> = μ<sub>0</sub> l ln((d − a)/a) / π = 4·10<sup>−7</sup> · ${f(l)} · ln(${f((d - a) / a)}) = <b>${u(Le, 'H')}</b>${d > 20 * a ? ` (≈ μ<sub>0</sub> l ln(d/a) / π, pues d ≫ a)` : ''}` },
+        ];
+        if (macizo) pasos.push({ t: 'Parte interna (hilos macizos)', html: `Cada hilo aporta μ<sub>0</sub> l / (8π): L<sub>int</sub> = μ<sub>0</sub> l / (4π) = ${u(Li, 'H')}. Total: L = <b>${u(L, 'H')}</b>` });
+        pasos.push({ t: 'Por unidad de longitud', html: `L / l = <b>${u(L / l, 'H/m')}</b>` });
+        return { L, pasos };
+      },
+    },
+  };
+
+  /* ---------- Inducción mutua ---------- */
+  const GEO_M = {
+    solenoides: {
+      nombre: 'Dos solenoides coaxiales', campos: [['N1', 'Espiras del interior N<sub>1</sub>', '', 1], ['r1', 'Radio del interior r<sub>1</sub>', 'cm', 1e-2], ['N2', 'Espiras del exterior N<sub>2</sub>', '', 1], ['r2', 'Radio del exterior r<sub>2</sub>', 'cm', 1e-2], ['l', 'Longitud común l', 'cm', 1e-2]],
+      valida: ({ r1, r2 }) => { if (r1 > r2) throw new Error('El solenoide interior no puede ser más ancho que el exterior'); },
+      calc: ({ N1, r1, N2, r2, l }) => {
+        const S1 = Math.PI * r1 * r1, M = (MU0 * N1 * N2 * S1) / l, L1 = (MU0 * N1 * N1 * S1) / l, L2 = (MU0 * N2 * N2 * Math.PI * r2 * r2) / l;
+        return { M, L1, L2, pasos: [
+          { t: 'Campo del exterior', html: `Con una corriente I<sub>2</sub> en el exterior, B<sub>2</sub> = μ<sub>0</sub> N<sub>2</sub> I<sub>2</sub> / l dentro de él, también dentro del interior.` },
+          { t: 'Flujo en el interior', html: `Φ<sub>12</sub> = N<sub>1</sub> B<sub>2</sub> π r<sub>1</sub><sup>2</sup> = μ<sub>0</sub> N<sub>1</sub> N<sub>2</sub> π r<sub>1</sub><sup>2</sup> I<sub>2</sub> / l (solo cuenta la sección del interior).` },
+          { t: 'Coeficiente de inducción mutua', html: `M = Φ<sub>12</sub> / I<sub>2</sub> = μ<sub>0</sub> N<sub>1</sub> N<sub>2</sub> π r<sub>1</sub><sup>2</sup> / l = 4π·10<sup>−7</sup> · ${f(N1)} · ${f(N2)} · ${f(S1)} / ${f(l)} = <b>${u(M, 'H')}</b>. Sale lo mismo calculando el flujo del interior en el exterior (M<sub>12</sub> = M<sub>21</sub>).` },
+          { t: 'Coeficiente de acoplamiento', html: `L<sub>1</sub> = μ<sub>0</sub> N<sub>1</sub><sup>2</sup> π r<sub>1</sub><sup>2</sup> / l = ${u(L1, 'H')}, L<sub>2</sub> = μ<sub>0</sub> N<sub>2</sub><sup>2</sup> π r<sub>2</sub><sup>2</sup> / l = ${u(L2, 'H')} ⇒ k = M / √(L<sub>1</sub> L<sub>2</sub>) = r<sub>1</sub> / r<sub>2</sub> = <b>${f(M / Math.sqrt(L1 * L2))}</b>` },
+        ] };
+      },
+    },
+    espiras: {
+      nombre: 'Espira pequeña en el centro de otra grande', campos: [['N1', 'Espiras de la grande N<sub>1</sub>', '', 1], ['R', 'Radio de la grande R', 'cm', 1e-2], ['N2', 'Espiras de la pequeña N<sub>2</sub>', '', 1], ['r', 'Radio de la pequeña r', 'cm', 1e-2]],
+      valida: ({ R, r }) => { if (r >= R) throw new Error('La espira pequeña debe tener un radio menor que la grande'); },
+      calc: ({ N1, R, N2, r }) => {
+        const M = (MU0 * N1 * N2 * Math.PI * r * r) / (2 * R);
+        return { M, pasos: [
+          { t: 'Campo en el centro de la grande', html: `B<sub>1</sub> = μ<sub>0</sub> N<sub>1</sub> I<sub>1</sub> / (2R) (Biot-Savart en el centro de la espira).` },
+          { t: 'Flujo en la pequeña', html: `Si r ≪ R el campo es casi uniforme sobre la espira pequeña: Φ<sub>21</sub> = N<sub>2</sub> B<sub>1</sub> π r<sup>2</sup>.` },
+          { t: 'Coeficiente de inducción mutua', html: `M = Φ<sub>21</sub> / I<sub>1</sub> = μ<sub>0</sub> N<sub>1</sub> N<sub>2</sub> π r<sup>2</sup> / (2R) = <b>${u(M, 'H')}</b>${r > 0.2 * R ? '. Ojo: r no es mucho menor que R, así que es una aproximación gruesa.' : ''}` },
+        ] };
+      },
+    },
+    'hilo-espira': {
+      nombre: 'Hilo recto y espira rectangular coplanaria', campos: [['d', 'Distancia del hilo al lado cercano d', 'cm', 1e-2], ['w', 'Ancho de la espira w', 'cm', 1e-2], ['h', 'Lado paralelo al hilo h', 'cm', 1e-2], ['N2', 'Espiras de la espira N', '', 1]],
+      calc: ({ d, w, h, N2 }) => {
+        const M = (MU0 * N2 * h * Math.log((d + w) / d)) / (2 * Math.PI);
+        return { M, pasos: [
+          { t: 'Campo del hilo', html: `B(x) = μ<sub>0</sub> I / (2π x), perpendicular al plano de la espira.` },
+          { t: 'Flujo en la espira', html: `Φ = N ∫<sub>d</sub><sup>d+w</sup> μ<sub>0</sub> I h / (2π x) dx = μ<sub>0</sub> N I h ln((d + w)/d) / (2π), con ln(${f((d + w) / d)}) = ${f(Math.log((d + w) / d))}.` },
+          { t: 'Coeficiente de inducción mutua', html: `M = Φ / I = μ<sub>0</sub> N h ln((d + w)/d) / (2π) = 2·10<sup>−7</sup> · ${f(N2)} · ${f(h)} · ${f(Math.log((d + w) / d))} = <b>${u(M, 'H')}</b>` },
+        ] };
+      },
+    },
+    'toroide-bobina': {
+      nombre: 'Bobina enrollada sobre un toroide', campos: [['N1', 'Espiras del toroide N<sub>1</sub>', '', 1], ['N2', 'Espiras de la bobina N<sub>2</sub>', '', 1], ['a', 'Radio interior a', 'cm', 1e-2], ['b', 'Radio exterior b', 'cm', 1e-2], ['h', 'Altura h', 'cm', 1e-2]],
+      valida: ({ a, b }) => { if (b <= a) throw new Error('El radio exterior debe ser mayor que el interior'); },
+      calc: ({ N1, N2, a, b, h }) => {
+        const M = (MU0 * N1 * N2 * h * Math.log(b / a)) / (2 * Math.PI), L1 = (MU0 * N1 * N1 * h * Math.log(b / a)) / (2 * Math.PI), L2 = (MU0 * N2 * N2 * h * Math.log(b / a)) / (2 * Math.PI);
+        return { M, L1, L2, pasos: [
+          { t: 'Campo del toroide', html: `B(r) = μ<sub>0</sub> N<sub>1</sub> I<sub>1</sub> / (2π r) dentro del núcleo.` },
+          { t: 'Flujo en la bobina', html: `La bobina abraza todo el núcleo: Φ<sub>21</sub> = N<sub>2</sub> μ<sub>0</sub> N<sub>1</sub> I<sub>1</sub> h ln(b/a) / (2π).` },
+          { t: 'Coeficiente de inducción mutua', html: `M = μ<sub>0</sub> N<sub>1</sub> N<sub>2</sub> h ln(b/a) / (2π) = <b>${u(M, 'H')}</b>. Las dos bobinas comparten todo el flujo, así que k = M / √(L<sub>1</sub> L<sub>2</sub>) = <b>1</b> (L<sub>1</sub> = ${u(L1, 'H')}, L<sub>2</sub> = ${u(L2, 'H')}).` },
+        ] };
+      },
+    },
+    acoplamiento: {
+      nombre: 'A partir de L₁, L₂ y k', campos: [['L1', 'L<sub>1</sub>', 'mH', 1e-3], ['L2', 'L<sub>2</sub>', 'mH', 1e-3], ['k', 'Coeficiente de acoplamiento k', '', 1]],
+      valida: ({ k }) => { if (k > 1) throw new Error('El coeficiente de acoplamiento no puede ser mayor que 1'); },
+      calc: ({ L1, L2, k }) => {
+        const M = k * Math.sqrt(L1 * L2);
+        return { M, L1, L2, pasos: [{ t: 'Coeficiente de inducción mutua', html: `M = k √(L<sub>1</sub> L<sub>2</sub>) = ${f(k)} · √(${f(L1)} · ${f(L2)}) = <b>${u(M, 'H')}</b>` }] };
+      },
+    },
+  };
+
+  function leerGeo(G, sc) {
+    const p = {};
+    for (const [k, nom, un, fac] of G.campos) {
+      const n = nom.replace(/<[^>]+>/g, '');
+      p[k] = lee(sc, k, n.toLowerCase()) * fac;
+      if ((k === 'N' || k === 'N1' || k === 'N2') && !Number.isInteger(p[k])) throw new Error(`${n} debe ser un número entero`);
+    }
+    if (G.interior) p.macizo = sc.interior === 'macizo';
+    if (G.valida) G.valida(p);
+    return p;
+  }
+
+  // sc: { geo, ...campos, I, dIdt }
+  function autoinduccion(sc) {
+    const G = GEO_L[sc.geo] || GEO_L.solenoide, p = leerGeo(G, sc);
+    const r = G.calc(p), { L } = r, pasos = [...r.pasos], res = { L };
+    const I = lee(sc, 'I', 'la intensidad', { opcional: true, signo: true }), dI = lee(sc, 'dIdt', 'dI/dt', { opcional: true, signo: true });
+    if (I !== null) {
+      res.flujo = L * I; res.U = 0.5 * L * I * I;
+      pasos.push({ t: `Con I = ${f(I)} A`, html: `Flujo propio Φ = L I = <b>${u(res.flujo, 'Wb')}</b> · energía magnética U = ½ L I<sup>2</sup> = ½ · ${f(L)} · ${f(I)}<sup>2</sup> = <b>${u(res.U, 'J')}</b>${r.B1 ? `<br>Campo dentro: B = μ<sub>0</sub> μ<sub>r</sub> N I / l = ${u(r.B1 * I, 'T')}; la energía también sale de u = B<sup>2</sup>/(2μ<sub>0</sub>μ<sub>r</sub>) por el volumen.` : ''}` });
+    }
+    if (dI !== null) {
+      res.fem = -L * dI;
+      pasos.push({ t: `Si la corriente cambia a dI/dt = ${f(dI)} A/s`, html: `ε = −L dI/dt = −${f(L)} · ${f(dI)} = <b>${f(res.fem)} V</b>${dI ? `, que se opone al ${dI > 0 ? 'aumento' : 'descenso'} de la corriente (ley de Lenz)` : ''}.` });
+    }
+    return { G, p, res, pasos };
+  }
+
+  // sc: { geo, ...campos, I1, dI1dt, I2, sentido: 'aditivo'|'opuesto' }
+  function mutua(sc) {
+    const G = GEO_M[sc.geo] || GEO_M.solenoides, p = leerGeo(G, sc);
+    const r = G.calc(p), { M } = r, pasos = [...r.pasos], res = { M, L1: r.L1, L2: r.L2 };
+    const I1 = lee(sc, 'I1', 'la intensidad I₁', { opcional: true, signo: true }), dI = lee(sc, 'dI1dt', 'dI₁/dt', { opcional: true, signo: true });
+    if (I1 !== null) { res.flujo = M * I1; pasos.push({ t: `Con I<sub>1</sub> = ${f(I1)} A`, html: `Flujo en el circuito 2: Φ<sub>21</sub> = M I<sub>1</sub> = <b>${u(res.flujo, 'Wb')}</b>` }); }
+    if (dI !== null) { res.fem = -M * dI; pasos.push({ t: `Si I<sub>1</sub> cambia a ${f(dI)} A/s`, html: `fem inducida en el circuito 2: ε<sub>2</sub> = −M dI<sub>1</sub>/dt = −${f(M)} · ${f(dI)} = <b>${f(res.fem)} V</b>` }); }
+    const I2 = lee(sc, 'I2', 'la intensidad I₂', { opcional: true, signo: true });
+    if (I1 !== null && I2 !== null && r.L1 !== undefined) {
+      const s = sc.sentido === 'opuesto' ? -1 : 1;
+      res.U = 0.5 * r.L1 * I1 * I1 + 0.5 * r.L2 * I2 * I2 + s * M * I1 * I2;
+      pasos.push({ t: 'Energía de los dos circuitos', html: `U = ½ L<sub>1</sub> I<sub>1</sub><sup>2</sup> + ½ L<sub>2</sub> I<sub>2</sub><sup>2</sup> ${s > 0 ? '+' : '−'} M I<sub>1</sub> I<sub>2</sub> (flujos ${s > 0 ? 'que se suman' : 'opuestos'}) = <b>${u(res.U, 'J')}</b>` });
+    }
+    return { G, p, res, pasos };
+  }
+
+  /* ---------- Circuito RL ---------- */
+  // sc: { E (V), R (Ω), L (mH), modo: 'carga'|'descarga', t (ms) }
+  function rl(sc) {
+    const E = lee(sc, 'E', 'la fem de la fuente'), R = lee(sc, 'R', 'la resistencia'), L = lee(sc, 'L', 'la autoinducción') * 1e-3;
+    const t = lee(sc, 't', 'el instante', { opcional: true, cero: true }), carga = sc.modo !== 'descarga';
+    const tau = L / R, I0 = E / R;
+    const I = (s) => (carga ? I0 * (1 - Math.exp(-s / tau)) : I0 * Math.exp(-s / tau));
+    const VL = (s) => (carga ? E * Math.exp(-s / tau) : -E * Math.exp(-s / tau));
+    const pasos = [
+      { t: 'Ecuación del circuito', html: carga ? `Al cerrar el interruptor: ε = R I + L dI/dt ⇒ I(t) = (ε / R)(1 − e<sup>−t/τ</sup>)` : `Al quitar la fuente (la bobina se descarga por R): 0 = R I + L dI/dt ⇒ I(t) = I<sub>0</sub> e<sup>−t/τ</sup>, con I<sub>0</sub> = ε / R` },
+      { t: 'Constante de tiempo', html: `τ = L / R = ${f(L)} / ${f(R)} = <b>${u(tau, 's')}</b>. ${carga ? 'Corriente final' : 'Corriente inicial'}: ε / R = <b>${u(I0, 'A')}</b>. Energía en la bobina con esa corriente: ½ L I<sup>2</sup> = ${u(0.5 * L * I0 * I0, 'J')}.` },
+      { t: 'Tiempos característicos', html: `En t = τ la corriente ${carga ? 'llega al 63,2 %' : 'baja al 36,8 %'}; en 5τ = ${u(5 * tau, 's')} ${carga ? 'está al 99,3 % del valor final' : 'queda el 0,7 %'}. Tiempo para ${carga ? 'llegar a la mitad' : 'bajar a la mitad'}: τ ln 2 = ${u(tau * Math.LN2, 's')}.` },
+    ];
+    const res = { tau, I0 };
+    if (t !== null) {
+      const s = t * 1e-3, i = I(s);
+      Object.assign(res, { It: i, VLt: VL(s), VRt: R * i, Ut: 0.5 * L * i * i });
+      pasos.push({ t: `En t = ${f(t)} ms`, html: `I = ${carga ? `${f(I0)} (1 − e<sup>−${f(s)}/${f(tau)}</sup>)` : `${f(I0)} e<sup>−${f(s)}/${f(tau)}</sup>`} = <b>${u(i, 'A')}</b> · V<sub>R</sub> = R I = ${u(R * i, 'V')} · V<sub>L</sub> = L dI/dt = ${u(VL(s), 'V')} · U = ½ L I<sup>2</sup> = ${u(0.5 * L * i * i, 'J')}` });
+    }
+    return { p: { E, R, L, carga, t }, res, I, VL, tau, pasos };
+  }
+
+  const ejemplos = {
+    L: [
+      { clave: 'solenoide', nombre: 'Solenoide de 500 espiras', sc: { geo: 'solenoide', N: '500', l: '20', r: '1', mur: '1', I: '2', dIdt: '100' } },
+      { clave: 'solenoide-hierro', nombre: 'Solenoide con núcleo (μr = 800)', sc: { geo: 'solenoide', N: '300', l: '15', r: '1.5', mur: '800', I: '0.5' } },
+      { clave: 'toroide-rect', nombre: 'Toroide de sección rectangular', sc: { geo: 'toroide-rect', N: '1000', a: '5', b: '8', h: '2', mur: '1', I: '1' } },
+      { clave: 'toroide-circ', nombre: 'Toroide de sección circular', sc: { geo: 'toroide-circ', N: '200', R: '10', r: '2', mur: '1' } },
+      { clave: 'coaxial', nombre: 'Cable coaxial, conductor interior macizo', sc: { geo: 'coaxial', l: '1', a: '1', b: '4', interior: 'macizo' } },
+      { clave: 'bifilar', nombre: 'Línea bifilar', sc: { geo: 'bifilar', l: '1', d: '10', a: '1', interior: 'hueco' } },
+    ],
+    M: [
+      { clave: 'solenoides', nombre: 'Solenoide dentro de otro', sc: { geo: 'solenoides', N1: '200', r1: '1', N2: '1000', r2: '2', l: '40', dI1dt: '50' } },
+      { clave: 'espiras', nombre: 'Espira pequeña en el centro de una grande', sc: { geo: 'espiras', N1: '1', R: '20', N2: '10', r: '1', dI1dt: '1000' } },
+      { clave: 'hilo-espira', nombre: 'Hilo y espira rectangular', sc: { geo: 'hilo-espira', d: '5', w: '10', h: '20', N2: '1', dI1dt: '200' } },
+      { clave: 'toroide-bobina', nombre: 'Bobina sobre un toroide (k = 1)', sc: { geo: 'toroide-bobina', N1: '500', N2: '50', a: '4', b: '6', h: '2', I1: '2', I2: '1', sentido: 'aditivo' } },
+      { clave: 'acoplamiento', nombre: 'Desde L₁, L₂ y k', sc: { geo: 'acoplamiento', L1: '2', L2: '8', k: '0.5' } },
+    ],
+    RL: [
+      { clave: 'carga', nombre: 'Se cierra el interruptor', sc: { E: '12', R: '6', L: '300', modo: 'carga', t: '50' } },
+      { clave: 'descarga', nombre: 'La bobina se descarga por la resistencia', sc: { E: '10', R: '100', L: '500', modo: 'descarga', t: '2' } },
+    ],
+  };
+
+  return { autoinduccion, mutua, rl, GEO_L, GEO_M, ejemplos, f, u, MU0 };
+})();
+
+/* =====================================================================
+   Autoinducción e inducción mutua: interfaz (pestañas L, M y RL, datos,
+   esquema de la geometría o gráfica del transitorio, resumen y desarrollo).
+   El cálculo está en fisica.js (Induccion).
+   ===================================================================== */
+(() => {
+  const $ = (q) => document.querySelector(q);
+  const I = Induccion, f = I.f, u = I.u;
+  const CLAVE = 'induccion-v1';
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const copia = (o) => JSON.parse(JSON.stringify(o));
+
+  let st = { tab: 'L', L: copia(I.ejemplos.L[0].sc), M: copia(I.ejemplos.M[0].sc), RL: copia(I.ejemplos.RL[0].sc) };
+  try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && g.L && g.M && g.RL) st = { ...st, ...g }; } catch (e) {}
+  const guarda = () => { try { localStorage.setItem(CLAVE, JSON.stringify(st)); } catch (e) {} };
+  let sol = null, col = {};
+  const sc = () => st[st.tab];
+  const GEOS = { L: I.GEO_L, M: I.GEO_M };
+
+  /* ---------- Formulario ---------- */
+  const fila = (k, nom, un) => `<label for="f-${k}">${nom}${un ? ` <small>(${un})</small>` : ''}</label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc()[k] ?? '')}" inputmode="decimal" autocomplete="off">`;
+  const selector = (k, nom, ops) => `<label for="f-${k}">${nom}</label><select id="f-${k}" class="in" data-k="${k}">${ops.map(([v, t]) => `<option value="${v}"${(sc()[k] ?? ops[0][0]) === v ? ' selected' : ''}>${t}</option>`).join('')}</select>`;
+  function formulario() {
+    const s = sc();
+    let h = '', nota = '';
+    if (st.tab === 'RL') {
+      h = fila('E', 'Fem de la fuente ε', 'V') + fila('R', 'Resistencia R', 'Ω') + fila('L', 'Autoinducción L', 'mH') +
+        selector('modo', 'Qué pasa', [['carga', 'Cerrar el circuito'], ['descarga', 'Quitar la fuente']]) +
+        '<div class="sep">En un instante</div>' + fila('t', 'Tiempo t', 'ms');
+      nota = 'Deja el tiempo en blanco si solo quieres τ y la gráfica.';
+    } else {
+      const G = GEOS[st.tab][s.geo] || Object.values(GEOS[st.tab])[0];
+      h = selector('geo', st.tab === 'L' ? 'Circuito' : 'Pareja de circuitos', Object.entries(GEOS[st.tab]).map(([k, g]) => [k, g.nombre]));
+      h += G.campos.map(([k, nom, un]) => fila(k, nom, un)).join('');
+      if (G.interior) h += selector('interior', st.tab === 'L' ? 'Conductor' : 'Hilos', [['hueco', 'Hueco (solo flujo exterior)'], ['macizo', 'Macizo (añade el flujo interno)']]);
+      h += '<div class="sep">Opcional</div>';
+      if (st.tab === 'L') h += fila('I', 'Intensidad I', 'A') + fila('dIdt', 'Ritmo de cambio dI/dt', 'A/s');
+      else {
+        h += fila('I1', 'Intensidad I<sub>1</sub>', 'A') + fila('dI1dt', 'Ritmo de cambio dI<sub>1</sub>/dt', 'A/s');
+        if (['solenoides', 'toroide-bobina', 'acoplamiento'].includes(s.geo)) h += fila('I2', 'Intensidad I<sub>2</sub>', 'A') + selector('sentido', 'Flujos', [['aditivo', 'Se suman'], ['opuesto', 'Se oponen']]);
+      }
+      nota = st.tab === 'L' ? 'Con la intensidad salen el flujo y la energía; con dI/dt, la fem autoinducida.' : 'Con I₁ sale el flujo en el circuito 2; con dI₁/dt, la fem inducida; con I₁ e I₂, la energía de los dos.';
+    }
+    $('#campos').innerHTML = h;
+    $('#nota-opc').textContent = nota;
+  }
+
+  $('#campos').addEventListener('input', (e) => {
+    const t = e.target;
+    if (t.tagName !== 'INPUT' || !t.dataset.k) return;
+    sc()[t.dataset.k] = t.value; $('#ejemplos').value = ''; calcula();
+  });
+  $('#campos').addEventListener('change', (e) => {
+    const t = e.target;
+    if (t.tagName !== 'SELECT') return;
+    sc()[t.dataset.k] = t.value;
+    if (t.dataset.k === 'geo') {
+      // al cambiar de geometría, rellena los datos que falten con los de su ejemplo
+      const ej = I.ejemplos[st.tab].find((x) => x.sc.geo === t.value);
+      if (ej) for (const [k, v] of Object.entries(ej.sc)) if (sc()[k] === undefined || sc()[k] === '' || ['interior', 'sentido'].includes(k)) sc()[k] = v;
+    }
+    $('#ejemplos').value = '';
+    formulario(); calcula();
+  });
+
+  /* ---------- Pestañas y ejemplos ---------- */
+  const sel = $('#ejemplos');
+  function ejemplos() { sel.innerHTML = '<option value="">Ejemplos…</option>' + I.ejemplos[st.tab].map((e) => `<option value="${e.clave}">${e.nombre}</option>`).join(''); }
+  function pestana(t) {
+    st.tab = t; guarda();
+    for (const k of ['L', 'M', 'RL']) $('#tab-' + k).setAttribute('aria-selected', k === t);
+    $('#dibujo').setAttribute('aria-label', t === 'RL' ? 'Gráfica de la corriente y la tensión en la bobina frente al tiempo' : 'Esquema del circuito');
+    ejemplos(); formulario(); calcula();
+  }
+  for (const k of ['L', 'M', 'RL']) $('#tab-' + k).addEventListener('click', () => pestana(k));
+  sel.addEventListener('change', () => { if (sel.value) abrirEjemplo(st.tab, sel.value); });
+  function abrirEjemplo(tab, clave) {
+    const e = I.ejemplos[tab].find((x) => x.clave === clave);
+    if (!e) return;
+    st[tab] = copia(e.sc);
+    if (st.tab !== tab) pestana(tab); else { formulario(); calcula(); }
+    sel.value = clave;
+  }
+
+  /* ---------- Cálculo y resultados ---------- */
+  const caja = (n, v, extra) => `<div><span>${n}</span><b>${v}</b>${extra ? `<small>${extra}</small>` : ''}</div>`;
+  function calcula() {
+    const err = $('#error');
+    try { sol = st.tab === 'L' ? I.autoinduccion(sc()) : st.tab === 'M' ? I.mutua(sc()) : I.rl(sc()); } catch (e) { err.textContent = e.message; err.hidden = false; return; }
+    err.hidden = true; guarda();
+    const r = sol.res;
+    let h = '';
+    if (st.tab === 'L') {
+      h = caja('Autoinducción L', u(r.L, 'H'), sol.p.l && (sc().geo === 'coaxial' || sc().geo === 'bifilar') ? `por metro: ${u(r.L / sol.p.l, 'H/m')}` : '');
+      h += caja('Flujo propio Φ', r.flujo !== undefined ? u(r.flujo, 'Wb') : '—', r.flujo === undefined ? 'falta I' : '');
+      h += caja('Energía U', r.U !== undefined ? u(r.U, 'J') : '—', r.U === undefined ? 'falta I' : '');
+      h += caja('Fem autoinducida', r.fem !== undefined ? `${f(r.fem)} V` : '—', r.fem === undefined ? 'falta dI/dt' : '');
+    } else if (st.tab === 'M') {
+      const k = r.L1 !== undefined ? r.M / Math.sqrt(r.L1 * r.L2) : null;
+      h = caja('Inducción mutua M', u(r.M, 'H'), k !== null ? `k = ${f(k)}` : '');
+      h += r.L1 !== undefined ? caja('L₁ · L₂', `${u(r.L1, 'H', 3)}`, `L₂ = ${u(r.L2, 'H', 3)}`) : caja('Flujo Φ₂₁', r.flujo !== undefined ? u(r.flujo, 'Wb') : '—', r.flujo === undefined ? 'falta I₁' : '');
+      h += caja('Fem en el circuito 2', r.fem !== undefined ? `${f(r.fem)} V` : '—', r.fem === undefined ? 'falta dI₁/dt' : '');
+      h += r.L1 !== undefined ? caja('Energía U', r.U !== undefined ? u(r.U, 'J') : '—', r.U === undefined ? 'faltan I₁ e I₂' : '') : '';
+    } else {
+      h = caja('Constante de tiempo τ', u(r.tau, 's'), `τ ln 2 = ${u(r.tau * Math.LN2, 's')}`);
+      h += caja(sol.p.carga ? 'Corriente final' : 'Corriente inicial', u(r.I0, 'A'), `U = ${u(0.5 * sol.p.L * r.I0 * r.I0, 'J')}`);
+      h += caja('I(t)', r.It !== undefined ? u(r.It, 'A') : '—', r.It !== undefined ? `${f((100 * r.It) / r.I0, 3)} % de ε/R` : 'falta t');
+      h += caja('V<sub>L</sub>(t)', r.VLt !== undefined ? u(r.VLt, 'V') : '—', r.VRt !== undefined ? `V<sub>R</sub> = ${u(r.VRt, 'V')}` : '');
+    }
+    $('#resumen').innerHTML = h;
+    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('');
+    dibuja();
+  }
+
+  /* ---------- Dibujo ---------- */
+  function colores() {
+    const cs = getComputedStyle(document.documentElement);
+    for (const k of ['--ink', '--muted', '--line', '--bg', '--panel', '--accent', '--pos', '--neg', '--cobre', '--nucleo', '--campo']) col[k] = cs.getPropertyValue(k).trim();
+  }
+  function lienzo(c) {
+    const dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
+    if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
+    const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
+    return { g, w, h };
+  }
+  const flecha = (g, x1, y1, x2, y2, s = 6) => {
+    const a = Math.atan2(y2 - y1, x2 - x1);
+    g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.stroke();
+    g.beginPath(); g.moveTo(x2, y2); g.lineTo(x2 - s * Math.cos(a - 0.45), y2 - s * Math.sin(a - 0.45)); g.lineTo(x2 - s * Math.cos(a + 0.45), y2 - s * Math.sin(a + 0.45)); g.closePath(); g.fill();
+  };
+  const circulo = (g, x, y, r, relleno, trazo) => { g.beginPath(); g.arc(x, y, Math.max(r, 0.5), 0, 2 * Math.PI); if (relleno) { g.fillStyle = relleno; g.fill(); } if (trazo) { g.strokeStyle = trazo; g.stroke(); } };
+  const texto = (g, t, x, y, c = col['--muted'], al = 'center') => { g.fillStyle = c; g.textAlign = al; g.fillText(t, x, y); };
+  // bobina vista de lado: espiras como elipses estrechas entre x0 y x1
+  function bobina(g, x0, x1, yc, rr, n, c) {
+    g.strokeStyle = c; g.lineWidth = 1.6;
+    const paso = (x1 - x0) / n;
+    for (let i = 0; i < n; i++) { g.beginPath(); g.ellipse(x0 + paso * (i + 0.5), yc, Math.max(paso * 0.45, 1.5), rr, 0, 0, 2 * Math.PI); g.stroke(); }
+    g.lineWidth = 1;
+  }
+  // corte de un toroide visto desde arriba: anillo con espiras radiales
+  function toroide(g, cx, cy, ra, rb, n, c) {
+    g.fillStyle = col['--nucleo']; g.beginPath(); g.arc(cx, cy, rb, 0, 2 * Math.PI); g.arc(cx, cy, ra, 0, 2 * Math.PI, true); g.fill();
+    g.strokeStyle = c; g.lineWidth = 1.6;
+    for (let i = 0; i < n; i++) { const a = (2 * Math.PI * i) / n; g.beginPath(); g.moveTo(cx + (ra - 3) * Math.cos(a), cy + (ra - 3) * Math.sin(a)); g.lineTo(cx + (rb + 3) * Math.cos(a), cy + (rb + 3) * Math.sin(a)); g.stroke(); }
+    g.lineWidth = 1;
+  }
+  function dibuja() {
+    if (!sol) return;
+    colores();
+    const { g, w, h } = lienzo($('#dibujo'));
+    g.font = '12px "IBM Plex Sans", system-ui, sans-serif'; g.textBaseline = 'middle';
+    if (st.tab === 'RL') return grafica(g, w, h);
+    const p = sol.p, geo = sc().geo, cx = w / 2, cy = h / 2, H = h - 50;
+    g.strokeStyle = col['--line'];
+    if (geo === 'solenoide' || geo === 'solenoides') {
+      const lw = Math.min(w * 0.7, 520), x0 = cx - lw / 2, x1 = cx + lw / 2;
+      if (geo === 'solenoide') {
+        const rr = Math.min(H / 2, Math.max(14, (lw * p.r) / p.l));
+        if (p.mur > 1) { g.fillStyle = col['--nucleo']; g.fillRect(x0, cy - rr, lw, 2 * rr); texto(g, `núcleo μr = ${f(p.mur)}`, cx, cy - rr - 12); }
+        bobina(g, x0, x1, cy, rr, Math.min(p.N, 28), col['--cobre']);
+        g.strokeStyle = col['--accent']; g.fillStyle = col['--accent']; flecha(g, x0 + 10, cy, x1 - 10, cy); texto(g, 'B', x1 - 10, cy - 10, col['--accent']);
+        texto(g, `N = ${f(p.N)}, l = ${f(p.l * 100)} cm, r = ${f(p.r * 100)} cm`, cx, h - 14);
+      } else {
+        const r2 = Math.min(H / 2, 60), r1 = r2 * Math.min(1, p.r1 / p.r2);
+        bobina(g, x0, x1, cy, r2, Math.min(p.N2, 30), col['--cobre']);
+        bobina(g, x0 + 6, x1 - 6, cy, r1, Math.min(p.N1, 22), col['--accent']);
+        texto(g, `exterior: N₂ = ${f(p.N2)}, r₂ = ${f(p.r2 * 100)} cm`, cx, cy - r2 - 12, col['--cobre']);
+        texto(g, `interior: N₁ = ${f(p.N1)}, r₁ = ${f(p.r1 * 100)} cm · l = ${f(p.l * 100)} cm`, cx, h - 14, col['--accent']);
+      }
+    } else if (geo === 'toroide-rect' || geo === 'toroide-circ' || geo === 'toroide-bobina') {
+      const rmax = H / 2;
+      let ra, rb;
+      if (geo === 'toroide-circ') { rb = rmax; ra = rmax * Math.max(0.15, (p.R - p.r) / (p.R + p.r)); } else { rb = rmax; ra = rmax * Math.max(0.15, p.a / p.b); }
+      toroide(g, cx, cy, ra, rb, Math.min(geo === 'toroide-bobina' ? p.N1 : p.N, 36), col['--cobre']);
+      if (geo === 'toroide-bobina') {
+        g.strokeStyle = col['--accent']; g.lineWidth = 2.4;
+        for (let i = 0; i < 6; i++) { const a = -0.35 + i * 0.14; g.beginPath(); g.moveTo(cx + (ra - 5) * Math.cos(a), cy + (ra - 5) * Math.sin(a)); g.lineTo(cx + (rb + 5) * Math.cos(a), cy + (rb + 5) * Math.sin(a)); g.stroke(); }
+        g.lineWidth = 1; texto(g, `N₂ = ${f(p.N2)}`, cx + rb + 14, cy, col['--accent'], 'left');
+      }
+      g.strokeStyle = col['--accent']; g.fillStyle = col['--accent'];
+      g.beginPath(); g.arc(cx, cy, (ra + rb) / 2, -2.4, -0.9); g.stroke(); const a = -0.9, rm = (ra + rb) / 2; flecha(g, cx + rm * Math.cos(a - 0.05), cy + rm * Math.sin(a - 0.05), cx + rm * Math.cos(a), cy + rm * Math.sin(a));
+      texto(g, geo === 'toroide-circ' ? `N = ${f(p.N)}, R = ${f(p.R * 100)} cm, r = ${f(p.r * 100)} cm` : `a = ${f(p.a * 100)} cm, b = ${f(p.b * 100)} cm, h = ${f(p.h * 100)} cm`, 12, 14, col['--muted'], 'left');
+    } else if (geo === 'coaxial') {
+      const rb = H / 2, ra = rb * Math.max(0.08, p.a / p.b);
+      circulo(g, cx, cy, rb + 6, col['--cobre']); circulo(g, cx, cy, rb, col['--bg']);
+      circulo(g, cx, cy, ra, p.macizo ? col['--cobre'] : null, col['--cobre']);
+      g.strokeStyle = col['--accent']; g.fillStyle = col['--accent'];
+      for (const rr of [ra + (rb - ra) * 0.3, ra + (rb - ra) * 0.7]) { g.beginPath(); g.arc(cx, cy, rr, 0, 2 * Math.PI); g.setLineDash([4, 4]); g.stroke(); g.setLineDash([]); flecha(g, cx + rr, cy + 1, cx + rr, cy - 1); }
+      texto(g, `a = ${f(p.a * 1000)} mm, b = ${f(p.b * 1000)} mm`, 12, 14, col['--muted'], 'left'); texto(g, 'B entre los conductores', cx, h - 10, col['--accent']);
+    } else if (geo === 'bifilar') {
+      const sep = Math.min(w * 0.6, 360), ra = Math.max(6, Math.min(40, (sep * p.a) / p.d));
+      for (const [x, s] of [[cx - sep / 2, '⊙'], [cx + sep / 2, '⊗']]) { circulo(g, x, cy, ra, col['--cobre']); g.font = '15px system-ui'; texto(g, s, x, cy, col['--panel']); g.font = '12px "IBM Plex Sans", system-ui, sans-serif'; }
+      g.strokeStyle = col['--accent']; g.fillStyle = col['--accent']; flecha(g, cx, cy + 30, cx, cy - 30); texto(g, 'B', cx + 12, cy - 30, col['--accent']);
+      g.strokeStyle = col['--muted']; g.beginPath(); g.moveTo(cx - sep / 2, cy + ra + 18); g.lineTo(cx + sep / 2, cy + ra + 18); g.stroke(); texto(g, `d = ${f(p.d * 1000)} mm`, cx, cy + ra + 30);
+    } else if (geo === 'espiras') {
+      const R = H / 2, r = Math.max(6, R * Math.min(0.6, p.r / p.R));
+      circulo(g, cx, cy, R, null, col['--cobre']); circulo(g, cx, cy, r, null, col['--accent']);
+      texto(g, `R = ${f(p.R * 100)} cm, N₁ = ${f(p.N1)}`, cx, cy - R - 10, col['--cobre']); texto(g, `r = ${f(p.r * 100)} cm`, cx, cy + r + 12, col['--accent']);
+    } else if (geo === 'hilo-espira') {
+      const esc2 = Math.min((w * 0.7) / (p.d + p.w), (H * 0.9) / p.h), x0 = cx - ((p.d + p.w) * esc2) / 2, xd = x0 + p.d * esc2, xw = xd + p.w * esc2, hh = p.h * esc2;
+      g.strokeStyle = col['--cobre']; g.lineWidth = 3; g.beginPath(); g.moveTo(x0, 14); g.lineTo(x0, h - 14); g.stroke(); g.lineWidth = 1;
+      g.fillStyle = col['--cobre']; flecha(g, x0, cy + 20, x0, cy - 20, 8); texto(g, 'I₁', x0 - 12, cy, col['--cobre']);
+      g.strokeStyle = col['--accent']; g.lineWidth = 2; g.strokeRect(xd, cy - hh / 2, xw - xd, hh); g.lineWidth = 1;
+      g.font = '13px system-ui'; for (let i = 1; i < 4; i++) texto(g, '⊗', xd + ((xw - xd) * i) / 4, cy, col['--muted']); g.font = '12px "IBM Plex Sans", system-ui, sans-serif';
+      texto(g, `d = ${f(p.d * 100)} cm`, (x0 + xd) / 2, cy + hh / 2 + 12); texto(g, `w = ${f(p.w * 100)} cm`, (xd + xw) / 2, cy + hh / 2 + 12);
+      texto(g, `h = ${f(p.h * 100)} cm`, xw + 8, cy, col['--muted'], 'left');
+    } else {
+      const lw = Math.min(w * 0.32, 200);
+      bobina(g, cx - lw - 20, cx - 20, cy, 40, 10, col['--cobre']); bobina(g, cx + 20, cx + lw + 20, cy, 40, 10, col['--accent']);
+      texto(g, `L₁ = ${u(p.L1, 'H')}`, cx - lw / 2 - 20, cy + 58, col['--cobre']); texto(g, `L₂ = ${u(p.L2, 'H')}`, cx + lw / 2 + 20, cy + 58, col['--accent']);
+      texto(g, `k = ${f(p.k)}`, cx, cy - 58, col['--ink']);
+    }
+  }
+  // transitorio RL: I(t) a la izquierda en A, V_L(t) a la derecha en V
+  function grafica(g, w, h) {
+    const { p, tau, res } = sol, T = 5 * tau, m = { l: 52, r: 52, t: 16, b: 34 };
+    const X = (t) => m.l + (t / T) * (w - m.l - m.r), Yi = (i) => h - m.b - (i / res.I0) * (h - m.t - m.b);
+    const Vmax = p.E, Yv = (v) => h - m.b - ((v + (p.carga ? 0 : Vmax)) / Vmax) * (h - m.t - m.b);
+    g.strokeStyle = col['--line']; g.beginPath(); g.moveTo(m.l, m.t); g.lineTo(m.l, h - m.b); g.lineTo(w - m.r, h - m.b); g.lineTo(w - m.r, m.t); g.stroke();
+    for (let k = 1; k <= 5; k++) { g.setLineDash([3, 4]); g.beginPath(); g.moveTo(X(k * tau), m.t); g.lineTo(X(k * tau), h - m.b); g.stroke(); g.setLineDash([]); texto(g, `${k}τ`, X(k * tau), h - m.b + 12); }
+    texto(g, 't', w - m.r + 10, h - m.b + 12);
+    texto(g, u(res.I0, 'A', 3), m.l - 6, m.t, col['--accent'], 'right'); texto(g, '0', m.l - 6, h - m.b, col['--accent'], 'right');
+    texto(g, `${p.carga ? '' : '−'}${u(Vmax, 'V', 3)}`, w - m.r + 6, p.carga ? m.t : h - m.b, col['--pos'], 'left'); texto(g, '0', w - m.r + 6, p.carga ? h - m.b : m.t, col['--pos'], 'left');
+    const linea = (fn, Y, c) => { g.strokeStyle = c; g.lineWidth = 2; g.beginPath(); for (let i = 0; i <= 200; i++) { const t = (T * i) / 200, x = X(t), y = Y(fn(t)); i ? g.lineTo(x, y) : g.moveTo(x, y); } g.stroke(); g.lineWidth = 1; };
+    linea(sol.I, Yi, col['--accent']); linea(sol.VL, Yv, col['--pos']);
+    texto(g, 'I(t)', m.l + 8, m.t + 6, col['--accent'], 'left'); texto(g, 'tensión en la bobina', m.l + 50, m.t + 6, col['--pos'], 'left');
+    if (p.t !== null && p.t * 1e-3 <= T) {
+      const s = p.t * 1e-3;
+      circulo(g, X(s), Yi(sol.I(s)), 4, col['--accent']); circulo(g, X(s), Yv(sol.VL(s)), 4, col['--pos']);
+      texto(g, `t = ${f(p.t)} ms`, X(s), h - m.b + 24, col['--ink']);
+    }
+  }
+  window.addEventListener('resize', dibuja);
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', dibuja);
+
+  const ver = $('#ver'); if (ver) ver.textContent = Version.de('induccion').current;
+  pestana(['L', 'M', 'RL'].includes(st.tab) ? st.tab : 'L');
+  window.InducApp = { abrirEjemplo, pestana, resultado: () => sol && sol.res, estado: () => copia(st) };
+})();
+
+</script>
+</html>
