@@ -47,4 +47,6 @@ herramienta() {
 if [ "$1" != privado ]; then
   herramienta magnetostatica ../publico/electromagnetismo/magnetostatica/index.html "Calculadora de campo magnético (Biot-Savart)" "Campo magnético de hilos, espiras, solenoides y toroides, y fuerzas magnéticas, paso a paso" \
     version.js engine.js magnetostatica/fisica.js magnetostatica/ejemplos.js magnetostatica/app.js
+  herramienta tabla-periodica ../publico/quimica/tabla-periodica/index.html "Tabla periódica interactiva" "Ficha de cada elemento con masa, configuración electrónica, electronegatividad y radio, y tendencias coloreadas" \
+    version.js quimica/elementos.js tabla-periodica/app.js
 fi
