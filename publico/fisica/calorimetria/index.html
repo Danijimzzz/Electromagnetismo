@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMwZDZiNjYiLz48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlNmE2NDAiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtZGFzaGFycmF5PSI0IDYuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48cGF0aCBkPSJNMjAgMzJINDQiLz48cGF0aCBkPSJNMjEgMjdDMjcgMTQgMzcgMTQgNDMgMjciLz48cGF0aCBkPSJNMjEgMzdDMjcgNTAgMzcgNTAgNDMgMzciLz48cGF0aCBkPSJNMTcgMjRDMjIgNCA0MiA0IDQ3IDI0Ii8+PHBhdGggZD0iTTE3IDQwQzIyIDYwIDQyIDYwIDQ3IDQwIi8+PC9nPjxjaXJjbGUgY3g9IjE3IiBjeT0iMzIiIHI9IjgiIGZpbGw9IiNlZjdhNjIiLz48Y2lyY2xlIGN4PSI0NyIgY3k9IjMyIiByPSI4IiBmaWxsPSIjNzRhMmYyIi8+PHBhdGggZD0iTTEzIDMyaDhNMTcgMjh2OE00MyAzMmg4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta property="og:title" content="Calorimetría y cambios de fase">
+<meta property="og:description" content="Temperatura de equilibrio al mezclar agua, hielo, vapor y metales, con cambios de fase y calorímetro, paso a paso">
+<meta property="og:image" content="https://electromagnetismo-two.vercel.app/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<title>Calorimetría y cambios de fase: temperatura de equilibrio · SimulaCiencia</title>
+<meta name="description" content="Calculadora de calorimetría en español: temperatura de equilibrio al mezclar agua, hielo, vapor y metales, con cambios de fase, calorímetro y el desarrollo paso a paso, y la curva de calentamiento de cada cuerpo.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root {
+  --bg: #eef0f4; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d6dbe3; --accent: #2a5db5; --accent-soft: #e3ebf8;
+  --c1: #2a5db5; --c2: #c2412a; --c3: #1d8a5b; --c4: #b0700a; --c5: #6b3fa0; --frio: #2a5db5; --calor: #c2412a;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #74a2f2; --accent-soft: #1b2a42;
+  --c1: #74a2f2; --c2: #ef7a62; --c3: #4cc48e; --c4: #e6a640; --c5: #b892ec; --frio: #74a2f2; --calor: #ef7a62; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #74a2f2; --accent-soft: #1b2a42;
+  --c1: #74a2f2; --c2: #ef7a62; --c3: #4cc48e; --c4: #e6a640; --c5: #b892ec; --frio: #74a2f2; --calor: #ef7a62; color-scheme: dark }
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
+.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
+.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+.layout { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 16px; align-items: start }
+@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr) } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px }
+.card h2 { font: 600 15px var(--f-ui); margin: 0 0 10px }
+.campos { display: grid; grid-template-columns: minmax(0, 1fr) 96px; gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px } .campos label small { color: var(--muted) }
+.in { font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.in:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.in.mal { border-color: #c0392b }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-top: 6px }
+.error { color: #c0392b; font-size: 13px; margin: 10px 0 0 }
+.btns { display: flex; gap: 8px; flex-wrap: wrap; align-items: center }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 12px; cursor: pointer }
+.btn:hover { border-color: var(--accent) } .btn.pri { background: var(--accent); border-color: var(--accent); color: var(--panel) }
+.escena { position: relative } canvas { display: block; width: 100%; border-radius: 8px; background: var(--bg) }
+#lienzo { height: clamp(170px, 42vw, 300px) } #grafica { height: 180px; margin-top: 10px }
+.controles { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 10px; font-size: 13px; color: var(--muted) }
+.controles input[type=range] { flex: 1; min-width: 140px; accent-color: var(--accent) }
+.lectura { font: 13px var(--f-mono); color: var(--ink) }
+.barras { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin-top: 12px; align-items: end }
+.barra { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12.5px }
+.barra .tubo { width: 100%; max-width: 70px; height: 140px; background: var(--bg); border-radius: 6px; position: relative; overflow: hidden }
+.barra .tubo i { position: absolute; left: 0; right: 0; bottom: 0; border-radius: 6px 6px 0 0; transition: none }
+.barra b { font: 500 12.5px var(--f-mono) } .barra span { color: var(--muted) }
+.pasos { margin-top: 16px } .pasos ol { margin: 0; padding-left: 20px } .pasos li { margin: 0 0 10px; font-family: var(--f-math); font-size: 15.5px }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.resumen { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 0 0 12px; font-size: 14px }
+.resumen div span { color: var(--muted) } .resumen div b { font-family: var(--f-mono); font-weight: 500 }
+.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+@media (min-width: 901px) { .layout { grid-template-columns: 360px minmax(0, 1fr) } }
+.cuerpo { border: 1px solid var(--line); border-left: 4px solid var(--cc, var(--accent)); border-radius: 8px; padding: 10px; margin-bottom: 10px }
+.cuerpo .cab { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; font: 600 13.5px var(--f-ui) }
+.cuerpo .quita { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 18px; line-height: 1; padding: 2px 6px } .cuerpo .quita:hover { color: #c0392b }
+.cuerpo .campos { grid-template-columns: minmax(0, 1fr) 120px }
+.te { font: 600 30px var(--f-math); margin: 0 } .te small { font: 14px var(--f-ui); color: var(--muted) }
+.estados { margin: 6px 0 12px; padding-left: 18px } .estados li { margin: 2px 0 }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; font-variant-numeric: tabular-nums }
+th, td { text-align: right; padding: 6px 8px; border-bottom: 1px solid var(--line) } th:first-child, td:first-child { text-align: left } th { color: var(--muted); font-weight: 500 }
+.tabla-scroll { overflow-x: auto }
+.balance { display: flex; height: 16px; border-radius: 4px; overflow: hidden; margin-top: 10px } .balance span { height: 100% }
+#curvas { height: 260px; margin-top: 10px }
+.leyenda { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12.5px; color: var(--muted); margin-top: 6px } .leyenda i { display: inline-block; width: 14px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 5px }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física general</a> / Calorimetría</span></header>
+<div class="wrap">
+<h1>Calorimetría y cambios de fase</h1>
+<p class="lead">Mezcla agua, hielo, vapor, metales o un calorímetro y obtén la temperatura de equilibrio. Si el hielo no llega a fundirse entero o el vapor a condensarse, te dice cuánto queda de cada fase. Debajo tienes el calor de cada cuerpo, etapa por etapa.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Cuerpos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div id="cuerpos"></div>
+    <button class="btn" id="anade" type="button">+ Añadir cuerpo</button>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card">
+      <h2>Equilibrio</h2>
+      <p class="te" id="te"></p>
+      <ul class="estados" id="estados"></ul>
+      <div class="tabla-scroll"><table id="tabla"></table></div>
+      <div class="balance" id="balance" aria-hidden="true"></div>
+      <div class="leyenda"><span><i style="background:var(--calor)"></i>calor cedido</span><span><i style="background:var(--frio)"></i>calor absorbido</span></div>
+      <canvas id="curvas" aria-label="Temperatura de cada cuerpo frente al calor que intercambia"></canvas>
+      <div class="leyenda" id="ley-curvas"></div>
+    </div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Calor sensible y calor latente</h2>
+  <p>Para cambiar la temperatura de un cuerpo de masa m hace falta un calor proporcional a ΔT; para cambiar de fase a temperatura constante, uno proporcional a la masa que cambia:</p>
+  <p class="f">Q = m c ΔT &nbsp;&nbsp;&nbsp; Q = ± m L</p>
+  <p>c es el calor específico de la fase en la que está (el hielo, el agua y el vapor tienen c distintos) y L el calor latente de fusión o de vaporización. Con un calorímetro de capacidad calorífica C, su calor es C ΔT; si te dan su equivalente en agua m<sub>e</sub>, C = m<sub>e</sub> · 4180 J/(kg·K).</p>
+  <h2>Equilibrio térmico</h2>
+  <p>En un recipiente aislado el calor que ceden los cuerpos calientes lo absorben los fríos, así que la suma de todos los calores es cero:</p>
+  <p class="f">Σ Q<sub>i</sub> = 0 &nbsp;&nbsp; (calor cedido = calor absorbido)</p>
+  <p>Con cambios de fase hay que comprobar primero si la energía disponible llega para completarlos. Si no llega, la temperatura final es la del cambio de fase (0 °C con hielo y agua) y solo cambia de fase una parte de la masa.</p>
+  <h2>Curva de calentamiento</h2>
+  <p>En la gráfica cada cuerpo parte de su temperatura inicial y avanza hacia la derecha si absorbe calor o hacia la izquierda si lo cede. Los tramos horizontales son los cambios de fase; la pendiente de los inclinados es 1 / (m c).</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Calorimetría <span id="ver"></span> (beta)</footer>
+</body>
+<script>
+/* =====================================================================
+   Versiones y novedades: la web (portada, asignaturas, buscador) tiene su número y cada
+   herramienta el suyo. Hasta el lanzamiento se numera 0.x (beta); la 1.0 de una herramienta
+   llega cuando se da por terminada y la 1.0 de la web será el lanzamiento. Sube el segundo
+   número si hay algo nuevo (0.6) y añade un tercero si es solo un arreglo (0.5.1).
+   En las novedades de la web se anuncia también cada herramienta nueva.
+   Las notas son para los usuarios: solo funciones nuevas, arreglos visibles y cambios
+   en la interfaz. Lo interno (pruebas, CI, build, despliegue, refactorizaciones) no se anota;
+   el historial completo para desarrolladores está en Notion.
+   ===================================================================== */
+const Version = (() => {
+  const registros = {
+    web: [
+      { v: '0.9', fecha: '2026-10-23', cambios: ['Nueva herramienta: Calorimetría y cambios de fase, en Física general.'] },
+      { v: '0.8', fecha: '2026-10-23', cambios: ['Nueva herramienta: Disoluciones y concentraciones, en Química.'] },
+      { v: '0.7', fecha: '2026-10-23', cambios: ['Nueva herramienta: Tiro parabólico y cinemática, en Física general.'] },
+      { v: '0.6', fecha: '2026-10-23', cambios: ['Nueva herramienta: Condensadores con dieléctricos, en Electromagnetismo.'] },
+      { v: '0.5', fecha: '2026-10-23', cambios: ['Nueva herramienta: Configuración electrónica, en Química.'] },
+      { v: '0.4', fecha: '2026-10-23', cambios: ['Nueva herramienta: Masa molar y estequiometría, en Química.'] },
+      { v: '0.3', fecha: '2026-10-23', cambios: ['Nueva herramienta: Trabajo y energía, en Física general.'] },
+      { v: '0.2', fecha: '2026-10-23', cambios: ['Nueva herramienta: Tabla periódica interactiva, en Química.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Portada para elegir asignatura y herramienta: Electromagnetismo, Física general, Química, Matemáticas y Laboratorio, con buscador. Las herramientas que vienen después aparecen como «Próximamente».', 'Nueva herramienta: Magnetostática, en Electromagnetismo.'] },
+    ],
+    electrostatica: [
+      { v: '0.5.1', fecha: '2026-10-23', cambios: ['El simulador tiene ahora su propia dirección, /electromagnetismo/electrostatica/. Tus problemas guardados siguen ahí. El botón «Todas las herramientas» de la barra lateral vuelve a la portada.'] },
+    { v: '0.5', fecha: '2026-10-23', cambios: ['Doce ejercicios de ejemplo con enunciados propios: los mismos tipos de pregunta que en clase, con otras figuras y otros números. La guía de uso tiene capturas nuevas hechas con ellos.', 'La web tiene icono propio: un dipolo con sus líneas de campo, en la pestaña del navegador, en la pantalla de inicio del móvil y en la vista previa al compartir el enlace.', 'Páginas de aviso legal, privacidad, cookies y contacto, enlazadas al pie de la barra lateral.'] },
+    { v: '0.4', fecha: '2026-10-22', cambios: ['Número de versión visible y este apartado de novedades.', 'Arreglo: en la vista 3D los cilindros se dibujan con su radio real, aparecen las superficies de Gauss, y las esferas, cascarones y conductores tienen volumen en lugar de parecer círculos planos.'] },
+    { v: '0.3', fecha: '2026-10-22', cambios: ['Guía de uso con capturas (botón ?, barra lateral o F1).', 'Los resultados se escriben con la misma forma que el solucionario oficial: perfiles por tramos, factor común en logaritmos y radicales, y la pregunta V_A − V_B.'] },
+    { v: '0.2', fecha: '2026-10-22', cambios: ['Anillos, discos, cortezas y conductores.', 'Varias incógnitas, modo numérico SI, flujo de Gauss y gráficas E(z) y V(z).', 'Modo práctica, exportar la solución, deshacer y rehacer, mapa de color y vista 3D.', 'Búsqueda, carpetas y etiquetas en la barra lateral.'] },
+    { v: '0.1', fecha: '2026-10-22', cambios: ['Primera versión: cargas, hilos, planos y esferas con el desarrollo paso a paso y 12 ejercicios resueltos.', 'Barra lateral con tus problemas, los importados y los ejercicios; título y enunciado editables; archivos .emsim.json.'] },
+    ],
+    magnetostatica: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: campo magnético de hilos, segmentos, hilos semiinfinitos, espiras, arcos, solenoides y toroides con Biot-Savart, y fuerza sobre cargas en movimiento y sobre conductores, con el desarrollo paso a paso en la forma μ₀I/(πa) o en unidades del SI.', 'Dibujo del campo B en el plano XY, XZ o YZ, con puntos que se pueden arrastrar y ocho ejemplos resueltos.'] },
+    ],
+    'tabla-periodica': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: cada elemento tiene su ficha con la masa atómica y molar, el grupo, el periodo, el bloque, la configuración electrónica (abreviada, completa y por capas), la electronegatividad, la energía de ionización, el radio y el estado.', 'La tabla se puede colorear por categoría, electronegatividad, energía de ionización, radio, masa, bloque o estado, y tiene un buscador por nombre, símbolo o número atómico.'] },
+    ],
+    'trabajo-y-energia': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: un bloque baja por una rampa con rozamiento, recorre un tramo horizontal y comprime un muelle. Animación con barras de energía cinética, gravitatoria, elástica y calor, gráfica de las energías en el tiempo y el desarrollo paso a paso con la velocidad al pie de la rampa, al llegar al muelle y la compresión máxima.', 'Seis ejemplos: sin rozamiento, se para antes del muelle, el rozamiento lo sujeta, con empujón inicial y muelle duro.'] },
+    ],
+    'masa-molar': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: masa molar y composición centesimal de cualquier fórmula, con paréntesis, hidratos e iones, y conversor entre gramos, moles, partículas y litros de gas.', 'Estequiometría: ajusta la reacción sola (también las iónicas), calcula el reactivo limitante, lo que se forma con el rendimiento que digas y lo que sobra, paso a paso.', 'Masas atómicas de la IUPAC o redondeadas como en clase.'] },
+    ],
+    'configuracion-electronica': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: configuración electrónica de cualquier elemento o ion por orden de llenado, abreviada y por capas, con el diagrama de Moeller, el diagrama de orbitales con la regla de Hund, los electrones desapareados y los números cuánticos del electrón diferenciador.', 'Avisa de las excepciones como el cromo o el cobre, y en los cationes quita primero los electrones de la capa más externa.'] },
+    ],
+    condensadores: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: condensadores planos, cilíndricos y esféricos con capas de dieléctrico en serie o, en el plano, ocupando parte del área. Capacidad, carga, tensión y energía; campos E, D y P en cada capa y cargas de polarización, con el desarrollo paso a paso.', 'Compara con el condensador vacío: qué pasa al meter el dieléctrico con la batería conectada o con el condensador aislado.', 'Dibujo del corte con las líneas de campo y gráfica de E a lo largo del condensador.'] },
+    ],
+    'tiro-parabolico': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: tiro parabólico desde cualquier altura hasta cualquier altura, con el tiempo de vuelo, la altura máxima, el alcance y la velocidad al caer, y el desarrollo paso a paso. Trayectoria animada con los vectores de velocidad y gráficas de posición, velocidad y aceleración frente al tiempo.', 'Rozamiento del aire lineal o cuadrático, comparado con la trayectoria sin rozamiento.', 'Blanco: dice si el proyectil pasa por un punto y con qué dos ángulos se acierta.', 'Movimiento rectilíneo (MRU y MRUA): posición y velocidad en un instante, cuándo pasa por un punto y cuándo se para, con las gráficas x(t), v(t) y a(t).'] },
+    ],
+    disoluciones: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: da la concentración de una disolución como molaridad, molalidad, fracción molar, % en masa, % masa/volumen, g/L o ppm y obtén todas las demás, con la densidad para pasar de masa a volumen y el desarrollo con su base de cálculo.', 'Preparar una disolución: los gramos de sólido (con su pureza) o los mililitros de reactivo comercial (con su riqueza y densidad) que hay que medir.', 'Diluciones con C₁V₁ = C₂V₂, despejando el dato que falte, y mezcla de dos disoluciones del mismo soluto.'] },
+    ],
+    calorimetria: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: temperatura de equilibrio al mezclar hasta cinco cuerpos de agua, hielo, vapor, metales, etanol, vidrio, un calorímetro o una sustancia con tus datos, con los cambios de fase que hagan falta.', 'Si la energía no llega para fundir todo el hielo o condensar todo el vapor, dice cuántos gramos quedan de cada fase.', 'Tabla con el calor de cada cuerpo, el desarrollo etapa por etapa (m c ΔT y m L) y la curva de calentamiento de cada uno.'] },
+    ],
+  };
+  const de = (h) => ({ current: registros[h][0].v, log: registros[h] });
+  // Version.current y Version.log son los del simulador de electrostática
+  return { registros, de, ...de('electrostatica') };
+})();
+
+/* =====================================================================
+   Calorimetría (sin DOM): temperatura de equilibrio al mezclar cuerpos,
+   con cambios de fase. Cada cuerpo tiene una entalpía H(T) que crece con la
+   temperatura y salta en la fusión y en la ebullición; el equilibrio es la
+   temperatura en la que la suma de los calores es cero. Entre dos
+   temperaturas de cambio de fase H es lineal, así que la solución es exacta.
+   Masas en g, temperaturas en °C, c en J/(kg·K), L en J/kg.
+   ===================================================================== */
+const Calor = (() => {
+  const f = (x, d = 4) => {
+    if (!isFinite(x)) return '—';
+    if (Math.abs(x) < 1e-9) return '0';
+    const a = Math.abs(x);
+    const s = a >= 1e6 || a < 1e-3 ? x.toExponential(d - 1).replace(/\.?0+e/, 'e').replace('e', '·10^').replace(/\^([+-]?)(\d+)/, (_, sg, e) => `<sup>${sg === '-' ? '−' : ''}${+e}</sup>`) : String(+x.toPrecision(d));
+    return s.replace('.', ',').replace('-', '−');
+  };
+  const leeNum = (s) => +String(s).trim().replace(/\s/g, '').replace(',', '.').replace(/[·x×*]10\^?([+\-−]?\d+)/i, 'e$1').replace('−', '-');
+  const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
+
+  // c en J/(kg·K) de sólido, líquido y gas; Tf y Tv en °C; Lf y Lv en J/kg
+  const SUSTANCIAS = {
+    agua: { nombre: 'Agua', cs: 2090, cl: 4180, cg: 2010, Tf: 0, Tv: 100, Lf: 334e3, Lv: 2257e3, fases: ['hielo', 'agua', 'vapor'] },
+    etanol: { nombre: 'Etanol', cs: 1960, cl: 2440, cg: 1420, Tf: -114, Tv: 78, Lf: 108e3, Lv: 855e3 },
+    aluminio: { nombre: 'Aluminio', cs: 900, cl: 1180, Tf: 660, Lf: 397e3 },
+    cobre: { nombre: 'Cobre', cs: 385, cl: 494, Tf: 1085, Lf: 205e3 },
+    hierro: { nombre: 'Hierro', cs: 450, cl: 820, Tf: 1538, Lf: 247e3 },
+    plomo: { nombre: 'Plomo', cs: 128, cl: 142, Tf: 327.5, Lf: 23e3 },
+    estano: { nombre: 'Estaño', cs: 227, cl: 255, Tf: 231.9, Lf: 59e3 },
+    vidrio: { nombre: 'Vidrio', cs: 840 },
+    calorimetro: { nombre: 'Calorímetro' },
+    otra: { nombre: 'Otra (con tus datos)' },
+  };
+  const FASES = ['sólido', 'líquido', 'gas'];
+
+  // pasa un cuerpo de la pantalla a números: { nombre, m (kg), T0, estado0 (0|1|2), cs, cl, cg, Tf, Tv, Lf, Lv } o { C }
+  function leerCuerpo(c, i) {
+    const S = SUSTANCIAS[c.sustancia] || SUSTANCIAS.agua, quien = `Cuerpo ${i + 1}`;
+    const n = (k, nom, { opcional = false, positivo = false } = {}) => {
+      if (vacio(c[k])) { if (opcional) return null; throw new Error(`${quien}: falta ${nom}`); }
+      const v = leeNum(c[k]);
+      if (!isFinite(v)) throw new Error(`${quien}: ${nom} debe ser un número`);
+      if (positivo && v <= 0) throw new Error(`${quien}: ${nom} debe ser mayor que 0`);
+      return v;
+    };
+    const T0 = n('T0', 'la temperatura inicial');
+    if (T0 < -273.15) throw new Error(`${quien}: la temperatura no puede bajar del cero absoluto (−273,15 °C)`);
+    if (c.sustancia === 'calorimetro') return { i, clave: 'calorimetro', nombre: 'Calorímetro', C: n('C', 'la capacidad calorífica', { positivo: true }), T0, m: 0 };
+    const p = c.sustancia === 'otra'
+      ? { nombre: vacio(c.nombre) ? `Cuerpo ${i + 1}` : String(c.nombre), cs: n('cs', 'el calor específico del sólido', { opcional: true }), cl: n('cl', 'el calor específico del líquido', { opcional: true }), cg: n('cg', 'el calor específico del gas', { opcional: true }),
+        Tf: n('Tf', 'la temperatura de fusión', { opcional: true }), Tv: n('Tv', 'la temperatura de ebullición', { opcional: true }), Lf: n('Lf', 'el calor latente de fusión', { opcional: true }), Lv: n('Lv', 'el calor latente de vaporización', { opcional: true }) }
+      : { ...S };
+    const m = n('m', 'la masa', { positivo: true }) / 1000;
+    // sin temperatura de fusión el cuerpo es siempre la misma fase
+    if (p.Tf === null || p.Tf === undefined) { p.Tf = -Infinity; p.Lf = 0; }
+    if (p.Tv === null || p.Tv === undefined) { p.Tv = Infinity; p.Lv = 0; }
+    if (p.Tv <= p.Tf) throw new Error(`${quien}: la ebullición debe estar por encima de la fusión`);
+    for (const [k, nom] of [['cs', 'del sólido'], ['cl', 'del líquido'], ['cg', 'del gas']]) if (p[k] != null && p[k] <= 0) throw new Error(`${quien}: el calor específico ${nom} debe ser positivo`);
+    // estado inicial: el que toca por la temperatura; justo en un cambio de fase lo dice el usuario
+    let e = T0 < p.Tf ? 0 : T0 > p.Tv ? 2 : T0 > p.Tf && T0 < p.Tv ? 1 : null;
+    const pedido = { solido: 0, liquido: 1, gas: 2 }[c.estado];
+    if (e === null) e = pedido !== undefined ? pedido : 1;
+    else if (pedido !== undefined && pedido !== e) throw new Error(`${quien}: a ${f(T0)} °C no puede estar en estado ${FASES[pedido]}`);
+    if ((T0 === p.Tf && e === 2) || (T0 === p.Tv && e === 0)) throw new Error(`${quien}: a ${f(T0)} °C no puede estar en estado ${FASES[e]}`);
+    if (p.cs == null && p.cl == null && p.cg == null) throw new Error(`${quien}: falta el calor específico`);
+    if (isFinite(p.Tf) && (p.Lf == null || p.Lf < 0)) throw new Error(`${quien}: falta el calor latente de fusión`);
+    if (isFinite(p.Tv) && (p.Lv == null || p.Lv < 0)) throw new Error(`${quien}: falta el calor latente de vaporización`);
+    return { i, clave: c.sustancia, ...p, m, T0, e0: e };
+  }
+
+  /* ---------- Entalpía de un cuerpo ---------- */
+  // tramos ordenados de menor a mayor entalpía (J), con H = 0 en el cero absoluto. En los tramos
+  // sensibles H(T) = Ha + k (T − Ta), con k = m c; en los latentes H sube m L a temperatura fija.
+  function tramos(b) {
+    const T0K = -273.15;
+    if (b.C !== undefined) return [{ tipo: 'sensible', fase: 0, Ta: T0K, Tb: Infinity, k: b.C, Ha: 0, Hb: Infinity }];
+    const { m, Tf, Tv, Lf, Lv } = b;
+    const cs = b.cs ?? b.cl ?? b.cg, cl = b.cl ?? b.cs ?? b.cg, cg = b.cg ?? b.cl ?? b.cs;
+    const t = [];
+    if (isFinite(Tf)) t.push({ tipo: 'sensible', fase: 0, Ta: T0K, Tb: Tf, k: m * cs }, { tipo: 'latente', fase: 0, T: Tf, L: Lf, m });
+    t.push({ tipo: 'sensible', fase: 1, Ta: isFinite(Tf) ? Tf : T0K, Tb: Tv, k: m * cl });
+    if (isFinite(Tv)) t.push({ tipo: 'latente', fase: 1, T: Tv, L: Lv, m }, { tipo: 'sensible', fase: 2, Ta: Tv, Tb: Infinity, k: m * cg });
+    let Hc = 0;
+    for (const s of t) {
+      s.Ha = Hc;
+      s.Hb = s.tipo === 'latente' ? Hc + s.m * s.L : isFinite(s.Tb) ? Hc + s.k * (s.Tb - s.Ta) : Infinity;
+      Hc = s.Hb;
+    }
+    return t;
+  }
+  // H en el estado (T, e); en una temperatura de cambio de fase, e elige el lado del salto
+  function H(b, T, e) {
+    const s = tramos(b).find((x) => x.tipo === 'sensible' && x.fase === e && T >= x.Ta - 1e-9 && T <= x.Tb + 1e-9);
+    return s ? s.Ha + s.k * (T - s.Ta) : NaN;
+  }
+  const faseEn = (b, T, alto) => (b.C !== undefined ? 0 : T < b.Tf || (T === b.Tf && !alto) ? 0 : T < b.Tv || (T === b.Tv && !alto) ? 1 : 2);
+  const Hbajo = (b, T) => H(b, T, faseEn(b, T, false)), Halto = (b, T) => H(b, T, faseEn(b, T, true));
+
+  /* ---------- Equilibrio ---------- */
+  function equilibrio(sc) {
+    const lista = (sc.cuerpos || []).filter((c) => c && !c.quitar);
+    if (lista.length < 2) throw new Error('Hacen falta al menos dos cuerpos');
+    const B = lista.map(leerCuerpo);
+    if (B.every((b) => b.C !== undefined)) throw new Error('Además del calorímetro hace falta algo dentro');
+    const H0 = B.map((b) => H(b, b.T0, b.C !== undefined ? 0 : b.e0));
+
+    for (const [j, b] of B.entries()) if (!isFinite(H0[j])) throw new Error(`Cuerpo ${j + 1}: faltan datos de la fase en la que está`);
+    const total = (T, alto) => B.reduce((s, b, j) => s + (alto ? Halto(b, T) : Hbajo(b, T)) - H0[j], 0);
+    const Tmin = Math.min(...B.map((b) => b.T0)), Tmax = Math.max(...B.map((b) => b.T0));
+    // temperaturas donde alguien cambia de fase, dentro del intervalo
+    const cortes = [...new Set(B.flatMap((b) => (b.C !== undefined ? [] : [b.Tf, b.Tv])).filter((T) => isFinite(T) && T >= Tmin && T <= Tmax))].sort((a, b) => a - b);
+    const nodos = [...new Set([Tmin, ...cortes, Tmax])].sort((a, b) => a - b);
+    let Te = null, enCambio = null;
+    for (const T of nodos) {
+      const lo = total(T, false), hi = total(T, true);
+      if (lo <= 1e-9 && hi >= -1e-9) { Te = T; if (hi - lo > 1e-9 && cortes.includes(T)) enCambio = { T, lo, hi }; break; }
+    }
+    if (Te === null) {
+      for (let k = 0; k + 1 < nodos.length; k++) {
+        const a = nodos[k], z = nodos[k + 1], Fa = total(a, true), Fz = total(z, false);
+        if (Fa <= 0 && Fz >= 0) { Te = a + ((z - a) * -Fa) / (Fz - Fa); break; }
+      }
+    }
+    if (Te === null) throw new Error('No encuentro la temperatura de equilibrio: revisa los datos');
+    // estado final de cada cuerpo; en un cambio de fase la energía que sobra se reparte entre los que cambian ahí
+    const finales = B.map((b, j) => {
+      const lo = Hbajo(b, Te), hi = Halto(b, Te);
+      return { lo, hi, salto: hi - lo, j };
+    });
+    // cada cuerpo se queda lo más cerca posible de su estado inicial; lo que sobra (o falta) cambia de fase
+    // en los que pueden: si sobra energía, funden o hierven los que venían de abajo; si falta, se solidifican
+    // o condensan los que venían de arriba
+    const Hf = finales.map((x, j) => Math.min(x.hi, Math.max(x.lo, H0[j])));
+    let R = H0.reduce((s, v) => s + v, 0) - Hf.reduce((s, v) => s + v, 0);
+    if (Math.abs(R) > 1e-9) {
+      const cap = finales.map((x, j) => (R > 0 ? x.hi - Hf[j] : Hf[j] - x.lo)), tot = cap.reduce((s, v) => s + v, 0);
+      if (tot > 0) Hf.forEach((_, j) => { Hf[j] += Math.sign(R) * Math.min(cap[j], (cap[j] / tot) * Math.abs(R)); });
+    }
+    const cuerpos = B.map((b, j) => {
+      const Q = Hf[j] - H0[j], fr = finales[j].salto > 0 ? (Hf[j] - finales[j].lo) / finales[j].salto : null;
+      const etapas = camino(b, H0[j], Hf[j]);
+      let estado;
+      if (b.C !== undefined) estado = `a ${f(Te)} °C`;
+      else if (fr !== null && fr > 1e-9 && fr < 1 - 1e-9) {
+        const e = faseEn(b, Te, false), nom = nombreFase(b, e), nom2 = nombreFase(b, e + 1);
+        estado = `${f((1 - fr) * b.m * 1000)} g de ${nom} y ${f(fr * b.m * 1000)} g de ${nom2}`;
+      } else estado = `${f(b.m * 1000)} g de ${nombreFase(b, fr === null ? faseEn(b, Te, false) : fr >= 1 - 1e-9 ? faseEn(b, Te, true) : faseEn(b, Te, false))}`;
+      const nombre = b.fases ? b.fases[b.e0][0].toUpperCase() + b.fases[b.e0].slice(1) : b.nombre;
+      return { b, nombre, Q, etapas, estado, fraccion: fr };
+    });
+    const pasos = [];
+    for (const c of cuerpos) pasos.push({ t: `${c.nombre}${c.b.C === undefined ? ` (${f(c.b.m * 1000)} g a ${f(c.b.T0)} °C)` : ` (C = ${f(c.b.C)} J/K a ${f(c.b.T0)} °C)`}`, html: c.etapas.length ? c.etapas.map((e) => e.html).join('<br>') + (c.etapas.length > 1 ? `<br>Q = <b>${f(c.Q)} J</b>` : '') : 'No intercambia calor: ya está a la temperatura final.' });
+    const cedido = -cuerpos.filter((c) => c.Q < 0).reduce((s, c) => s + c.Q, 0), absorbido = cuerpos.filter((c) => c.Q > 0).reduce((s, c) => s + c.Q, 0);
+    if (enCambio) {
+      const cambian = cuerpos.filter((c) => c.fraccion !== null && c.fraccion > 1e-9 && c.fraccion < 1 - 1e-9);
+      pasos.push({ t: '¿Llega para cambiar de fase?', html: `Si todo acabara a ${f(Te)} °C antes del cambio de fase, sobrarían ${f(-enCambio.lo)} J; si acabara después, faltarían ${f(enCambio.hi)} J. La energía no llega para completar el cambio de fase, así que el equilibrio se queda en <b>T<sub>e</sub> = ${f(Te)} °C</b>${cambian.length ? ` con ${cambian.map((c) => c.estado).join(' y ')}` : ''}.` });
+    } else {
+      const Ce = B.reduce((s, b) => s + (b.C !== undefined ? b.C : b.m * cEn(b, Te)), 0);
+      pasos.push({ t: 'Temperatura de equilibrio', html: `Σ Q = 0 ⇒ la suma de todos los calores, con T<sub>e</sub> como incógnita, se anula en <b>T<sub>e</sub> = ${f(Te)} °C</b>. (Capacidad calorífica total a esa temperatura: ${f(Ce)} J/K.)` });
+    }
+    pasos.push({ t: 'Comprobación', html: `Calor cedido ${f(cedido)} J = calor absorbido ${f(absorbido)} J ⇒ Σ Q = ${f(absorbido - cedido)} J.` });
+    return { Te, cuerpos, cedido, absorbido, enCambio: !!enCambio, pasos };
+  }
+  const cEn = (b, T) => { const e = faseEn(b, T, false); return e === 0 ? b.cs : e === 1 ? b.cl : b.cg; };
+  const nombreFase = (b, e) => (b.fases ? b.fases[e] : !isFinite(b.Tf) && !isFinite(b.Tv) ? b.nombre.toLowerCase() : `${b.nombre.toLowerCase()} ${FASES[e]}`);
+
+  // etapas que recorre un cuerpo de H0 a Hf: calentamientos (m c ΔT) y cambios de fase (m L)
+  function camino(b, H0, Hf) {
+    const sube = Hf >= H0, lo = Math.min(H0, Hf), hi = Math.max(H0, Hf), out = [];
+    if (hi - lo < 1e-9) return out;
+    let lista = tramos(b).map((s) => ({ ...s })).filter((s) => Math.min(hi, s.Hb) - Math.max(lo, s.Ha) > 1e-9);
+    if (!sube) lista = lista.reverse();
+    for (const s of lista) {
+      const a = Math.max(lo, s.Ha), z = Math.min(hi, s.Hb), Q = (z - a) * (sube ? 1 : -1);
+      if (s.tipo === 'latente') {
+        const dm = (z - a) / s.L, nom = s.fase === 0 ? (sube ? 'Fusión' : 'Solidificación') : sube ? 'Vaporización' : 'Condensación';
+        out.push({ tipo: 'latente', Q, T: s.T, dm, html: `${nom} a ${f(s.T)} °C: Q = ${sube ? '' : '−'}m L = ${sube ? '' : '−'}${f(dm)} kg · ${f(s.L)} J/kg = <b>${f(Q)} J</b>` });
+      } else {
+        const Tde = (Hx) => s.Ta + (Hx - s.Ha) / s.k;
+        const Ti = Tde(sube ? a : z), Tf_ = Tde(sube ? z : a), c = b.C !== undefined ? null : s.k / b.m;
+        const fase = b.C !== undefined ? 'calorímetro' : nombreFase(b, s.fase);
+        out.push({ tipo: 'sensible', Q, Ti, Tf: Tf_, html: `${sube ? 'Se calienta' : 'Se enfría'} ${b.C !== undefined ? 'el calorímetro' : `(${fase})`} de ${f(Ti)} a ${f(Tf_)} °C: Q = ${b.C !== undefined ? `C ΔT = ${f(b.C)} · (${f(Tf_)} − ${f(Ti)})` : `m c ΔT = ${f(b.m)} · ${f(c)} · (${f(Tf_)} − ${f(Ti)})`} = <b>${f(Q)} J</b>` });
+      }
+    }
+    return out;
+  }
+
+  // curva T(Q) de cada cuerpo para la gráfica: puntos (Q acumulado, T)
+  function curva(c) {
+    const pts = [[0, c.b.T0]];
+    let Q = 0;
+    for (const e of c.etapas) { Q += e.Q; pts.push([Q, e.tipo === 'latente' ? e.T : e.Tf]); }
+    return pts;
+  }
+
+  const ejemplos = [
+    { clave: 'hielo-agua', nombre: 'Hielo a −10 °C en agua templada: se funde todo', cuerpos: [{ sustancia: 'agua', m: '50', T0: '-10' }, { sustancia: 'agua', m: '200', T0: '40' }] },
+    { clave: 'sobra-hielo', nombre: 'Mucho hielo: el equilibrio se queda a 0 °C', cuerpos: [{ sustancia: 'agua', m: '100', T0: '0', estado: 'solido' }, { sustancia: 'agua', m: '100', T0: '20' }] },
+    { clave: 'cobre-agua', nombre: 'Cobre caliente en agua', cuerpos: [{ sustancia: 'cobre', m: '200', T0: '100' }, { sustancia: 'agua', m: '300', T0: '20' }] },
+    { clave: 'calorimetro', nombre: 'Aluminio en un calorímetro con agua', cuerpos: [{ sustancia: 'aluminio', m: '150', T0: '90' }, { sustancia: 'agua', m: '250', T0: '18' }, { sustancia: 'calorimetro', C: '125', T0: '18' }] },
+    { clave: 'vapor', nombre: 'Vapor a 100 °C que se condensa en agua', cuerpos: [{ sustancia: 'agua', m: '10', T0: '100', estado: 'gas' }, { sustancia: 'agua', m: '200', T0: '20' }] },
+    { clave: 'plomo-fundido', nombre: 'Plomo fundido que se solidifica en agua', cuerpos: [{ sustancia: 'plomo', m: '500', T0: '400' }, { sustancia: 'agua', m: '1000', T0: '15' }] },
+  ];
+
+  return { equilibrio, curva, SUSTANCIAS, ejemplos, f, leeNum };
+})();
+
+/* =====================================================================
+   Calorimetría: interfaz (lista de cuerpos, equilibrio, tabla de calores,
+   curvas de calentamiento y desarrollo). El cálculo está en fisica.js (Calor).
+   ===================================================================== */
+(() => {
+  const $ = (q) => document.querySelector(q);
+  const K = Calor, f = K.f;
+  const CLAVE = 'calorimetria-v1', MAX = 5;
+  const COL = ['--c1', '--c2', '--c3', '--c4', '--c5'];
+  const txt = (s) => String(s).replace(/<sup>(.*?)<\/sup>/g, '^$1').replace(/<[^>]+>/g, '');
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const coma = (v) => String(v ?? '').replace('.', ',');
+  // campos de cada cuerpo según la sustancia
+  const CAMPOS = [
+    { k: 'm', nom: 'Masa', u: 'g', si: (s) => s !== 'calorimetro' },
+    { k: 'C', nom: 'Capacidad calorífica C', u: 'J/K', si: (s) => s === 'calorimetro' },
+    { k: 'T0', nom: 'Temperatura inicial', u: '°C' },
+    { k: 'estado', nom: 'Estado inicial', sel: [['', 'Automático'], ['solido', 'Sólido'], ['liquido', 'Líquido'], ['gas', 'Gas']], si: (s) => s !== 'calorimetro' && s !== 'vidrio' },
+    { k: 'nombre', nom: 'Nombre', si: (s) => s === 'otra', texto: true },
+    { k: 'cs', nom: 'c del sólido', u: 'J/(kg·K)', si: (s) => s === 'otra' },
+    { k: 'cl', nom: 'c del líquido', u: 'J/(kg·K)', si: (s) => s === 'otra' },
+    { k: 'cg', nom: 'c del gas', u: 'J/(kg·K)', si: (s) => s === 'otra' },
+    { k: 'Tf', nom: 'Temperatura de fusión', u: '°C', si: (s) => s === 'otra' },
+    { k: 'Lf', nom: 'Calor latente de fusión', u: 'J/kg', si: (s) => s === 'otra' },
+    { k: 'Tv', nom: 'Temperatura de ebullición', u: '°C', si: (s) => s === 'otra' },
+    { k: 'Lv', nom: 'Calor latente de vaporización', u: 'J/kg', si: (s) => s === 'otra' },
+  ];
+
+  let cuerpos = K.ejemplos[0].cuerpos.map((c) => ({ ...c }));
+  try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (Array.isArray(g) && g.length) cuerpos = g; } catch (e) {}
+  const guarda = () => { try { localStorage.setItem(CLAVE, JSON.stringify(cuerpos)); } catch (e) {} };
+  let res = null;
+  const col = {};
+  const colores = () => { const cs = getComputedStyle(document.documentElement); for (const k of ['--ink', '--muted', '--line', '--bg', '--panel', '--accent', ...COL]) col[k] = cs.getPropertyValue(k).trim(); };
+
+  /* ---------- Formulario ---------- */
+  function pinta() {
+    $('#cuerpos').innerHTML = cuerpos.map((c, i) => {
+      const s = c.sustancia || 'agua';
+      const filas = CAMPOS.filter((x) => !x.si || x.si(s)).map((x) => {
+        const id = `c${i}-${x.k}`;
+        const ctl = x.sel ? `<select id="${id}" class="in" data-i="${i}" data-k="${x.k}">${x.sel.map(([v, t]) => `<option value="${v}"${(c[x.k] || '') === v ? ' selected' : ''}>${t}</option>`).join('')}</select>`
+          : `<input id="${id}" class="in" data-i="${i}" data-k="${x.k}" value="${esc(x.texto ? c[x.k] : coma(c[x.k]))}" ${x.texto ? '' : 'inputmode="decimal"'} autocomplete="off">`;
+        return `<label for="${id}">${x.nom}${x.u ? ` <small>(${x.u})</small>` : ''}</label>${ctl}`;
+      }).join('');
+      return `<div class="cuerpo" style="--cc:var(${COL[i % COL.length]})"><div class="cab"><span>Cuerpo ${i + 1}</span>${cuerpos.length > 2 ? `<button class="quita" type="button" data-quita="${i}" aria-label="Quitar el cuerpo ${i + 1}">×</button>` : ''}</div>
+        <div class="campos"><label for="c${i}-sustancia">Sustancia</label><select id="c${i}-sustancia" class="in" data-i="${i}" data-k="sustancia">${Object.entries(K.SUSTANCIAS).map(([k, v]) => `<option value="${k}"${k === s ? ' selected' : ''}>${v.nombre}</option>`).join('')}</select>${filas}</div></div>`;
+    }).join('');
+    $('#anade').hidden = cuerpos.length >= MAX;
+  }
+  $('#cuerpos').addEventListener('input', (e) => {
+    const t = e.target, i = +t.dataset.i, k = t.dataset.k;
+    if (k === undefined) return;
+    cuerpos[i][k] = t.value;
+    $('#ejemplos').value = '';
+    if (k === 'sustancia') { pinta(); const n = document.getElementById(`c${i}-sustancia`); if (n) n.focus(); }
+    calcula(true);
+  });
+  $('#cuerpos').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-quita]'); if (!b) return;
+    cuerpos.splice(+b.dataset.quita, 1); $('#ejemplos').value = ''; pinta(); calcula(true);
+  });
+  $('#anade').addEventListener('click', () => { if (cuerpos.length >= MAX) return; cuerpos.push({ sustancia: 'agua', m: '100', T0: '20' }); $('#ejemplos').value = ''; pinta(); calcula(true); });
+  const sel = $('#ejemplos');
+  sel.innerHTML = '<option value="">Ejemplos…</option>' + K.ejemplos.map((e) => `<option value="${e.clave}">${e.nombre}</option>`).join('');
+  sel.addEventListener('change', () => { if (sel.value) abrirEjemplo(sel.value); });
+  function abrirEjemplo(clave) {
+    const e = K.ejemplos.find((x) => x.clave === clave); if (!e) return;
+    cuerpos = e.cuerpos.map((c) => ({ ...c })); pinta(); sel.value = clave; calcula(true);
+  }
+
+  /* ---------- Resultados ---------- */
+  function calcula(guardar) {
+    const err = $('#error');
+    try { res = K.equilibrio({ cuerpos }); } catch (e) {
+      err.textContent = e.message; err.hidden = false; res = null;
+      for (const id of ['#te', '#estados', '#tabla', '#balance', '#pasos', '#ley-curvas']) $(id).innerHTML = '';
+      lienzo($('#curvas'));
+      return;
+    }
+    err.hidden = true;
+    if (guardar) guarda();
+    $('#te').innerHTML = `T<sub>e</sub> = ${f(res.Te)} °C <small>${res.enCambio ? '(no llega para completar el cambio de fase)' : ''}</small>`;
+    $('#estados').innerHTML = res.cuerpos.map((c) => `<li>${esc(c.nombre)}: ${c.b.C !== undefined ? `calorímetro ${c.estado}` : `al final, ${c.estado}`}</li>`).join('');
+    $('#tabla').innerHTML = `<thead><tr><th>Cuerpo</th><th>T inicial (°C)</th><th>Q (J)</th><th></th></tr></thead><tbody>${res.cuerpos.map((c, i) => `<tr><td><span style="color:var(${COL[i % COL.length]})">●</span> ${esc(c.nombre)}</td><td>${f(c.b.T0)}</td><td>${f(c.Q)}</td><td>${Math.abs(c.Q) < 1e-9 ? '' : c.Q > 0 ? 'absorbe' : 'cede'}</td></tr>`).join('')}<tr><td><b>Total</b></td><td></td><td><b>${f(res.cuerpos.reduce((s, c) => s + c.Q, 0))}</b></td><td></td></tr></tbody>`;
+    const tot = res.cedido + res.absorbido || 1;
+    $('#balance').innerHTML = `<span style="width:${(100 * res.cedido) / tot}%;background:var(--calor)"></span><span style="flex:1;background:var(--frio)"></span>`;
+    $('#pasos').innerHTML = res.pasos.map((p) => `<li><strong>${esc(p.t)}</strong>${p.html}</li>`).join('');
+    $('#ley-curvas').innerHTML = res.cuerpos.map((c, i) => `<span><i style="background:var(${COL[i % COL.length]})"></i>${esc(c.nombre)}</span>`).join('') + '<span>· eje horizontal: calor absorbido (kJ)</span>';
+    dibuja();
+  }
+
+  function lienzo(c) {
+    const dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
+    if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
+    const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
+    return { g, w, h };
+  }
+  const paso = (rango, n = 5) => { const r = rango / n, p = 10 ** Math.floor(Math.log10(r || 1)), m = r / p; return (m < 1.5 ? 1 : m < 3.5 ? 2 : m < 7.5 ? 5 : 10) * p; };
+  function dibuja() {
+    if (!res) return;
+    const { g, w, h } = lienzo($('#curvas'));
+    const curvas = res.cuerpos.map((c) => K.curva(c).map(([q, T]) => [q / 1000, T]));
+    let q0 = 0, q1 = 0, T0 = res.Te, T1 = res.Te;
+    for (const cv of curvas) for (const [q, T] of cv) { q0 = Math.min(q0, q); q1 = Math.max(q1, q); T0 = Math.min(T0, T); T1 = Math.max(T1, T); }
+    if (q1 - q0 < 1e-9) { q0 -= 1; q1 += 1; }
+    if (T1 - T0 < 1e-9) { T0 -= 1; T1 += 1; }
+    const mT = (T1 - T0) * 0.08; T0 -= mT; T1 += mT;
+    const l = 46, r = 12, top = 10, b = 24;
+    const X = (q) => l + ((q - q0) / (q1 - q0)) * (w - l - r), Y = (T) => h - b - ((T - T0) / (T1 - T0)) * (h - top - b);
+    g.font = '11px "IBM Plex Mono", monospace'; g.fillStyle = col['--muted']; g.strokeStyle = col['--line']; g.lineWidth = 1;
+    g.textAlign = 'right'; g.textBaseline = 'middle';
+    const sT = paso(T1 - T0, 5);
+    for (let T = Math.ceil(T0 / sT) * sT; T <= T1; T += sT) { g.beginPath(); g.moveTo(l, Y(T)); g.lineTo(w - r, Y(T)); g.stroke(); g.fillText(txt(f(T, 3)), l - 4, Y(T)); }
+    g.textAlign = 'center'; g.textBaseline = 'top';
+    const sQ = paso(q1 - q0, 6);
+    for (let q = Math.ceil(q0 / sQ) * sQ; q <= q1 + 1e-9; q += sQ) g.fillText(txt(f(q, 3)), X(q), h - b + 5);
+    g.textAlign = 'left'; g.fillText('°C', 4, top - 4);
+    g.strokeStyle = col['--muted']; g.beginPath(); g.moveTo(X(0), top); g.lineTo(X(0), h - b); g.stroke();
+    // temperatura de equilibrio
+    g.setLineDash([4, 3]); g.strokeStyle = col['--ink']; g.beginPath(); g.moveTo(l, Y(res.Te)); g.lineTo(w - r, Y(res.Te)); g.stroke(); g.setLineDash([]);
+    g.lineWidth = 2.4; g.lineJoin = 'round';
+    curvas.forEach((cv, i) => {
+      g.strokeStyle = col[COL[i % COL.length]]; g.beginPath();
+      cv.forEach(([q, T], k) => (k ? g.lineTo(X(q), Y(T)) : g.moveTo(X(q), Y(T)))); g.stroke();
+      g.fillStyle = col[COL[i % COL.length]]; g.beginPath(); g.arc(X(cv[0][0]), Y(cv[0][1]), 3.5, 0, 2 * Math.PI); g.fill();
+    });
+  }
+  addEventListener('resize', dibuja);
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { colores(); dibuja(); });
+
+  const ver = $('#ver'); if (ver) ver.textContent = Version.de('calorimetria').current;
+  colores(); pinta(); calcula(false);
+  window.CalorApp = { abrirEjemplo, resultado: () => res, cuerpos: () => JSON.parse(JSON.stringify(cuerpos)) };
+})();
+
+</script>
+</html>

@@ -1,0 +1,117 @@
+<title>Calorimetría y cambios de fase: temperatura de equilibrio · SimulaCiencia</title>
+<meta name="description" content="Calculadora de calorimetría en español: temperatura de equilibrio al mezclar agua, hielo, vapor y metales, con cambios de fase, calorímetro y el desarrollo paso a paso, y la curva de calentamiento de cada cuerpo.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root {
+  --bg: #eef0f4; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d6dbe3; --accent: #2a5db5; --accent-soft: #e3ebf8;
+  --c1: #2a5db5; --c2: #c2412a; --c3: #1d8a5b; --c4: #b0700a; --c5: #6b3fa0; --frio: #2a5db5; --calor: #c2412a;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #74a2f2; --accent-soft: #1b2a42;
+  --c1: #74a2f2; --c2: #ef7a62; --c3: #4cc48e; --c4: #e6a640; --c5: #b892ec; --frio: #74a2f2; --calor: #ef7a62; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #74a2f2; --accent-soft: #1b2a42;
+  --c1: #74a2f2; --c2: #ef7a62; --c3: #4cc48e; --c4: #e6a640; --c5: #b892ec; --frio: #74a2f2; --calor: #ef7a62; color-scheme: dark }
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
+.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
+.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+.layout { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 16px; align-items: start }
+@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr) } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px }
+.card h2 { font: 600 15px var(--f-ui); margin: 0 0 10px }
+.campos { display: grid; grid-template-columns: minmax(0, 1fr) 96px; gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px } .campos label small { color: var(--muted) }
+.in { font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.in:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.in.mal { border-color: #c0392b }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-top: 6px }
+.error { color: #c0392b; font-size: 13px; margin: 10px 0 0 }
+.btns { display: flex; gap: 8px; flex-wrap: wrap; align-items: center }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 12px; cursor: pointer }
+.btn:hover { border-color: var(--accent) } .btn.pri { background: var(--accent); border-color: var(--accent); color: var(--panel) }
+.escena { position: relative } canvas { display: block; width: 100%; border-radius: 8px; background: var(--bg) }
+#lienzo { height: clamp(170px, 42vw, 300px) } #grafica { height: 180px; margin-top: 10px }
+.controles { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 10px; font-size: 13px; color: var(--muted) }
+.controles input[type=range] { flex: 1; min-width: 140px; accent-color: var(--accent) }
+.lectura { font: 13px var(--f-mono); color: var(--ink) }
+.barras { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin-top: 12px; align-items: end }
+.barra { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12.5px }
+.barra .tubo { width: 100%; max-width: 70px; height: 140px; background: var(--bg); border-radius: 6px; position: relative; overflow: hidden }
+.barra .tubo i { position: absolute; left: 0; right: 0; bottom: 0; border-radius: 6px 6px 0 0; transition: none }
+.barra b { font: 500 12.5px var(--f-mono) } .barra span { color: var(--muted) }
+.pasos { margin-top: 16px } .pasos ol { margin: 0; padding-left: 20px } .pasos li { margin: 0 0 10px; font-family: var(--f-math); font-size: 15.5px }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.resumen { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 0 0 12px; font-size: 14px }
+.resumen div span { color: var(--muted) } .resumen div b { font-family: var(--f-mono); font-weight: 500 }
+.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+@media (min-width: 901px) { .layout { grid-template-columns: 360px minmax(0, 1fr) } }
+.cuerpo { border: 1px solid var(--line); border-left: 4px solid var(--cc, var(--accent)); border-radius: 8px; padding: 10px; margin-bottom: 10px }
+.cuerpo .cab { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; font: 600 13.5px var(--f-ui) }
+.cuerpo .quita { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 18px; line-height: 1; padding: 2px 6px } .cuerpo .quita:hover { color: #c0392b }
+.cuerpo .campos { grid-template-columns: minmax(0, 1fr) 120px }
+.te { font: 600 30px var(--f-math); margin: 0 } .te small { font: 14px var(--f-ui); color: var(--muted) }
+.estados { margin: 6px 0 12px; padding-left: 18px } .estados li { margin: 2px 0 }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; font-variant-numeric: tabular-nums }
+th, td { text-align: right; padding: 6px 8px; border-bottom: 1px solid var(--line) } th:first-child, td:first-child { text-align: left } th { color: var(--muted); font-weight: 500 }
+.tabla-scroll { overflow-x: auto }
+.balance { display: flex; height: 16px; border-radius: 4px; overflow: hidden; margin-top: 10px } .balance span { height: 100% }
+#curvas { height: 260px; margin-top: 10px }
+.leyenda { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12.5px; color: var(--muted); margin-top: 6px } .leyenda i { display: inline-block; width: 14px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 5px }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física general</a> / Calorimetría</span></header>
+<div class="wrap">
+<h1>Calorimetría y cambios de fase</h1>
+<p class="lead">Mezcla agua, hielo, vapor, metales o un calorímetro y obtén la temperatura de equilibrio. Si el hielo no llega a fundirse entero o el vapor a condensarse, te dice cuánto queda de cada fase. Debajo tienes el calor de cada cuerpo, etapa por etapa.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Cuerpos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div id="cuerpos"></div>
+    <button class="btn" id="anade" type="button">+ Añadir cuerpo</button>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card">
+      <h2>Equilibrio</h2>
+      <p class="te" id="te"></p>
+      <ul class="estados" id="estados"></ul>
+      <div class="tabla-scroll"><table id="tabla"></table></div>
+      <div class="balance" id="balance" aria-hidden="true"></div>
+      <div class="leyenda"><span><i style="background:var(--calor)"></i>calor cedido</span><span><i style="background:var(--frio)"></i>calor absorbido</span></div>
+      <canvas id="curvas" aria-label="Temperatura de cada cuerpo frente al calor que intercambia"></canvas>
+      <div class="leyenda" id="ley-curvas"></div>
+    </div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Calor sensible y calor latente</h2>
+  <p>Para cambiar la temperatura de un cuerpo de masa m hace falta un calor proporcional a ΔT; para cambiar de fase a temperatura constante, uno proporcional a la masa que cambia:</p>
+  <p class="f">Q = m c ΔT &nbsp;&nbsp;&nbsp; Q = ± m L</p>
+  <p>c es el calor específico de la fase en la que está (el hielo, el agua y el vapor tienen c distintos) y L el calor latente de fusión o de vaporización. Con un calorímetro de capacidad calorífica C, su calor es C ΔT; si te dan su equivalente en agua m<sub>e</sub>, C = m<sub>e</sub> · 4180 J/(kg·K).</p>
+  <h2>Equilibrio térmico</h2>
+  <p>En un recipiente aislado el calor que ceden los cuerpos calientes lo absorben los fríos, así que la suma de todos los calores es cero:</p>
+  <p class="f">Σ Q<sub>i</sub> = 0 &nbsp;&nbsp; (calor cedido = calor absorbido)</p>
+  <p>Con cambios de fase hay que comprobar primero si la energía disponible llega para completarlos. Si no llega, la temperatura final es la del cambio de fase (0 °C con hielo y agua) y solo cambia de fase una parte de la masa.</p>
+  <h2>Curva de calentamiento</h2>
+  <p>En la gráfica cada cuerpo parte de su temperatura inicial y avanza hacia la derecha si absorbe calor o hacia la izquierda si lo cede. Los tramos horizontales son los cambios de fase; la pendiente de los inclinados es 1 / (m c).</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Calorimetría <span id="ver"></span> (beta)</footer>
+</body>
