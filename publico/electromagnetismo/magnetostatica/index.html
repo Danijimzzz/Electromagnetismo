@@ -1,0 +1,1358 @@
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMwZDZiNjYiLz48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlNmE2NDAiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtZGFzaGFycmF5PSI0IDYuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48cGF0aCBkPSJNMjAgMzJINDQiLz48cGF0aCBkPSJNMjEgMjdDMjcgMTQgMzcgMTQgNDMgMjciLz48cGF0aCBkPSJNMjEgMzdDMjcgNTAgMzcgNTAgNDMgMzciLz48cGF0aCBkPSJNMTcgMjRDMjIgNCA0MiA0IDQ3IDI0Ii8+PHBhdGggZD0iTTE3IDQwQzIyIDYwIDQyIDYwIDQ3IDQwIi8+PC9nPjxjaXJjbGUgY3g9IjE3IiBjeT0iMzIiIHI9IjgiIGZpbGw9IiNlZjdhNjIiLz48Y2lyY2xlIGN4PSI0NyIgY3k9IjMyIiByPSI4IiBmaWxsPSIjNzRhMmYyIi8+PHBhdGggZD0iTTEzIDMyaDhNMTcgMjh2OE00MyAzMmg4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta property="og:title" content="Calculadora de campo magnético (Biot-Savart)">
+<meta property="og:description" content="Campo magnético de hilos, espiras, solenoides y toroides, y fuerzas magnéticas, paso a paso">
+<meta property="og:image" content="https://electromagnetismo-two.vercel.app/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<title>Calculadora de campo magnético (Biot-Savart) · SimulaCiencia</title>
+<meta name="description" content="Campo magnético de hilos, espiras, arcos, solenoides y toroides con la ley de Biot-Savart, y fuerza sobre cargas y conductores, con el desarrollo paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap">
+<style>
+:root {
+  --bg: #eef1ee; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d5dbd5;
+  --accent: #0d6b66; --accent-soft: #e0efec; --pos: #c2412a; --neg: #2a5db5; --mark: #6b3fa0;
+  --canvas: #fbfcfa; --grid: #e7ebe6; --field: #7d8c86; --warn: #8a5a00; --warn-bg: #fff4dc; --bad: #b3261e;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #94a0a8; --line: #2a343b;
+  --accent: #4dbcb0; --accent-soft: #173431; --pos: #ef7a62; --neg: #74a2f2; --mark: #b892ec;
+  --canvas: #141b1f; --grid: #1e282d; --field: #6e8380; --warn: #f0c060; --warn-bg: #2d2412; --bad: #f08a80; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #94a0a8; --line: #2a343b;
+  --accent: #4dbcb0; --accent-soft: #173431; --pos: #ef7a62; --neg: #74a2f2; --mark: #b892ec;
+  --canvas: #141b1f; --grid: #1e282d; --field: #6e8380; --warn: #f0c060; --warn-bg: #2d2412; --bad: #f08a80; color-scheme: dark }
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
+.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
+.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
+.wrap { max-width: 1400px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px; container: main / inline-size }
+h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px }
+.in { font: 13px var(--f-mono); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 7px; min-width: 0; width: 100% }
+select.in { font-family: var(--f-ui); width: auto }
+textarea.in { font: 15px/1.5 var(--f-math); resize: vertical; min-height: 54px }
+.in:focus-visible, .btn:focus-visible, .chip:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 11px; cursor: pointer }
+.btn:hover { border-color: var(--accent) }
+.chip { font: 500 12.5px var(--f-ui); color: var(--accent); background: var(--accent-soft); border: 0; border-radius: 99px; padding: 4px 10px; cursor: pointer }
+.chip:hover { filter: brightness(.95) }
+.layout { display: grid; grid-template-columns: minmax(300px, 400px) minmax(0, 1fr); gap: 16px; align-items: start }
+@container main (max-width: 860px) { .layout { grid-template-columns: minmax(0, 1fr) } }
+.col { display: flex; flex-direction: column; gap: 14px; min-width: 0 }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 10px; min-width: 0 }
+.panel h2 { font: 600 12px var(--f-ui); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 }
+.chips { display: flex; flex-wrap: wrap; gap: 6px }
+.hint { color: var(--muted); font-size: 12.5px; margin: 0 }
+.card { border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px; display: flex; flex-direction: column; gap: 6px; background: var(--panel) }
+.card-h { display: flex; align-items: center; gap: 8px }
+.badge { font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 99px; background: var(--accent-soft); color: var(--accent); white-space: nowrap }
+.card-h .nom { flex: 1; font: 600 13px var(--f-ui); border-color: transparent; background: transparent }
+.card-h .nom:hover, .card-h .nom:focus { border-color: var(--line) }
+.x { border: 0; background: none; color: var(--muted); font-size: 18px; line-height: 1; cursor: pointer; padding: 2px 6px; border-radius: 5px }
+.x:hover { color: var(--bad); background: var(--bg) }
+.row { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 8px; align-items: center }
+@container main (max-width: 420px) { .row { grid-template-columns: minmax(0, 1fr) } }
+.lab { color: var(--muted); font-size: 12.5px }
+.vec { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px }
+.vc { display: flex; align-items: center; gap: 3px; min-width: 0 } .vc i { font: italic 13px var(--f-math); color: var(--muted) }
+.cur { display: flex; align-items: center; gap: 5px } .cur .in:first-child { flex: 1 1 60% } .cur .in:last-child { flex: 0 1 70px } .cur span { color: var(--muted); font-size: 12px }
+.stage { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; overflow: hidden }
+.stage-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 8px 10px; border-bottom: 1px solid var(--line); font-size: 12.5px; color: var(--muted) }
+.stage-bar label { display: inline-flex; align-items: center; gap: 5px; cursor: pointer }
+.stage-bar .in { width: 64px }
+.cvwrap { position: relative; height: min(58vh, 520px); min-height: 280px }
+#cv { display: block; width: 100%; height: 100%; touch-action: none; cursor: crosshair }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; padding: 7px 10px; border-top: 1px solid var(--line); font-size: 12px; color: var(--muted) }
+#errores, .warn { color: var(--warn); background: var(--warn-bg); border-radius: 6px; padding: 6px 9px; font: 13px var(--f-ui) }
+.result { font-family: var(--f-math); font-size: 17px; line-height: 2.1; overflow-x: auto; padding: 4px 2px; border-top: 1px dashed var(--line) }
+.result .sub { font-size: 15px }
+.steps summary { cursor: pointer; color: var(--accent); font: 500 13px var(--f-ui); padding: 2px 0 }
+.steps ol { margin: 4px 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; font-family: var(--f-math); font-size: 15px; line-height: 2 }
+.steps .st-h { font: 600 13px var(--f-ui) }
+.steps .st-d { font: 13px var(--f-ui); color: var(--muted); line-height: 1.5 }
+.fr { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; line-height: 1.15; margin: 0 .12em; font-size: .9em }
+.fr > .nu { border-bottom: 1px solid currentColor; padding: 0 .25em .05em }
+.fr > .de { padding: .05em .25em 0 }
+.uv, .vv { position: relative; font-style: italic; display: inline-block }
+.uv::before, .vv::before { content: "→"; position: absolute; top: -.58em; left: 0; right: 0; text-align: center; font-size: .62em; font-style: normal }
+.unit { font: 500 .78em var(--f-ui); color: var(--muted); margin-left: .15em }
+.result sub, .steps sub { font-size: .7em }
+.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .eq { font-family: var(--f-math); font-size: 17px; margin: 6px 0 6px 12px; overflow-x: auto }
+.teoria li { margin: 4px 0 }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+#flash { position: fixed; left: 50%; transform: translateX(-50%); bottom: 18px; background: var(--ink); color: var(--bg); padding: 7px 14px; border-radius: 8px; font-size: 13px; z-index: 20 }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Electromagnetismo</a> / Magnetostática</span></header>
+<div class="wrap">
+<h1 id="titulo">Magnetostática: campo magnético y Biot-Savart</h1>
+<p class="lead">Coloca hilos, espiras, arcos, solenoides y toroides, elige un punto y obtén el campo <span class="vv">B</span> con el desarrollo paso a paso, en la forma μ<sub>0</sub><i>I</i>/(π<i>a</i>) de los apuntes o en unidades del SI.</p>
+<div class="tools">
+  <select id="ejemplo" class="in" aria-label="Ejemplos"></select>
+  <select id="modo" class="in" aria-label="Modo"><option value="sym">Simbólico (a, I)</option><option value="si">Numérico SI (m, A)</option></select>
+  <button id="nuevo" class="btn">Nuevo</button>
+  <button id="abrir" class="btn">Abrir…</button>
+  <button id="guardar" class="btn">Guardar archivo</button>
+  <input type="file" id="archivo" accept=".json,application/json" hidden>
+</div>
+<div class="layout">
+  <div class="col">
+    <section class="panel"><h2>Enunciado</h2><textarea id="enunciado" class="in" rows="3" aria-label="Enunciado" placeholder="Escribe aquí el enunciado del problema (opcional)"></textarea></section>
+    <section class="panel"><h2>Fuentes</h2><div class="chips" id="add-fuente"></div><p class="hint" id="hint-unid"></p><div id="fuentes" class="col"></div></section>
+  </div>
+  <div class="col">
+    <div id="errores" hidden></div>
+    <section class="stage">
+      <div class="stage-bar">
+        <label>Vista <select id="plano" class="in" style="width:auto"><option value="xy">plano XY</option><option value="xz">plano XZ</option><option value="yz">plano YZ</option></select></label>
+        <label><span id="corte-l">z</span> = <input id="corte" class="in" value="0"></label>
+        <label><input type="checkbox" id="flechas" checked> campo B</label>
+        <span style="margin-left:auto">Arrastra los puntos P</span>
+      </div>
+      <div class="cvwrap"><canvas id="cv" aria-label="Dibujo de las fuentes y del campo magnético"></canvas></div>
+      <div class="legend"><span>⊙ corriente hacia ti · ⊗ hacia dentro</span><span>— conductor con su sentido</span><span>flechas: dirección de <i>B</i> en el plano; ⊙ ⊗ si <i>B</i> es perpendicular (más oscuro, más intenso)</span></div>
+    </section>
+    <section class="panel"><h2>Preguntas</h2><div class="chips" id="add-pregunta"></div><div id="preguntas" class="col"></div></section>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Cómo se calcula el campo magnético</h2>
+  <p>La ley de Biot-Savart da el campo que crea un elemento de corriente <i>I</i> d<span class="vv">l</span> en un punto situado a una distancia <i>r</i>:</p>
+  <p class="eq">d<span class="vv">B</span> = <span class="fr"><span class="nu">μ<sub>0</sub><i>I</i></span><span class="de">4π</span></span> <span class="fr"><span class="nu">d<span class="vv">l</span> × <span class="uv">r</span></span><span class="de"><i>r</i><sup>3</sup></span></span></p>
+  <p>Integrándola para las formas habituales salen las expresiones que usa la calculadora:</p>
+  <ul>
+    <li><b>Hilo indefinido</b> a distancia <i>d</i>: <i>B</i> = μ<sub>0</sub><i>I</i>/(2π<i>d</i>), con las líneas de campo en circunferencias alrededor del hilo (regla de la mano derecha).</li>
+    <li><b>Segmento</b>: <i>B</i> = μ<sub>0</sub><i>I</i>/(4π<i>d</i>)·(cos α<sub>1</sub> − cos α<sub>2</sub>), donde α<sub>1</sub> y α<sub>2</sub> son los ángulos entre la corriente y las rectas que unen cada extremo con el punto. Un hilo semiinfinito es el caso α<sub>2</sub> = π.</li>
+    <li><b>Espira circular</b> de radio <i>R</i>, en su eje a distancia <i>z</i>: <i>B</i> = μ<sub>0</sub><i>I R</i><sup>2</sup>/(2(<i>R</i><sup>2</sup> + <i>z</i><sup>2</sup>)<sup>3/2</sup>). Fuera del eje la integral no tiene forma sencilla y se calcula numéricamente.</li>
+    <li><b>Arco</b> de ángulo θ, en su centro: <i>B</i> = μ<sub>0</sub><i>I</i>θ/(4π<i>R</i>).</li>
+    <li><b>Solenoide</b> de <i>N</i> espiras y longitud <i>L</i>, en el eje: <i>B</i> = μ<sub>0</sub><i>NI</i>/(2<i>L</i>)·(cos β<sub>1</sub> − cos β<sub>2</sub>). Si es muy largo (ideal), <i>B</i> = μ<sub>0</sub><i>NI</i>/<i>L</i> dentro y 0 fuera.</li>
+    <li><b>Toroide</b> de <i>N</i> espiras, dentro del núcleo a distancia <i>r</i> del centro (ley de Ampère): <i>B</i> = μ<sub>0</sub><i>NI</i>/(2π<i>r</i>), y 0 fuera.</li>
+  </ul>
+  <p>El campo de varias fuentes es la suma vectorial de los campos de cada una (superposición). Con <span class="vv">B</span> se obtiene la fuerza de Lorentz sobre una carga, <span class="vv">F</span> = <i>q</i> <span class="vv">v</span> × <span class="vv">B</span>, y la fuerza sobre un conductor, <span class="vv">F</span> = ∫ <i>I</i> d<span class="vv">l</span> × <span class="vv">B</span>.</p>
+  <h2>Ejemplo resuelto: dos hilos paralelos</h2>
+  <p>Dos hilos indefinidos paralelos al eje Z pasan por (−<i>a</i>, 0) y (<i>a</i>, 0) con la misma corriente <i>I</i> en sentidos opuestos. En el origen cada hilo está a distancia <i>a</i> y crea <i>B</i> = μ<sub>0</sub><i>I</i>/(2π<i>a</i>); los dos campos apuntan en +Y, así que se suman:</p>
+  <p class="eq"><span class="vv">B</span>(0) = <span class="fr"><span class="nu">μ<sub>0</sub><i>I</i></span><span class="de">π<i>a</i></span></span> <span class="uv">u</span><sub>y</sub></p>
+  <p>La fuerza por unidad de longitud entre ellos es <i>F</i>/<i>L</i> = μ<sub>0</sub><i>I</i><sup>2</sup>/(2π·2<i>a</i>) = μ<sub>0</sub><i>I</i><sup>2</sup>/(4π<i>a</i>), repulsiva porque las corrientes son opuestas. Ábrelo en el selector de ejemplos para ver el desarrollo completo.</p>
+</section>
+</div>
+<footer data-solo-web><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Versión <span id="ver"></span> (beta)</footer>
+<div id="flash" hidden></div>
+</body>
+<script>
+/* =====================================================================
+   Versión del simulador y novedades. Hasta el lanzamiento se numera 0.x (beta) y la 1.0
+   será el lanzamiento. Sube el segundo número si hay algo nuevo (0.6) y añade un tercero
+   si es solo un arreglo (0.5.1).
+   Las notas son para los usuarios: solo funciones nuevas, arreglos visibles y cambios
+   en la interfaz. Lo interno (pruebas, CI, build, despliegue, refactorizaciones) no se anota;
+   el historial completo para desarrolladores está en Notion.
+   ===================================================================== */
+const Version = (() => {
+  const log = [
+    { v: '0.7', fecha: '2026-10-23', cambios: ['Nueva herramienta: Magnetostática, en Electromagnetismo. Calcula el campo magnético de hilos, segmentos, hilos semiinfinitos, espiras, arcos, solenoides y toroides con Biot-Savart, y la fuerza sobre cargas en movimiento y sobre conductores. Da el desarrollo paso a paso en la forma μ₀I/(πa) o en unidades del SI.', 'Dibujo del campo B en el plano XY, XZ o YZ, con puntos que se pueden arrastrar y ocho ejemplos resueltos.'] },
+    { v: '0.6', fecha: '2026-10-23', cambios: ['Portada nueva para elegir asignatura y herramienta: Electromagnetismo, Física general, Química, Matemáticas y Laboratorio, con buscador. Las herramientas que vienen después aparecen como «Próximamente».', 'El simulador de electrostática tiene ahora su propia dirección, /electromagnetismo/electrostatica/. Tus problemas guardados siguen ahí. El botón «Todas las herramientas» de la barra lateral vuelve a la portada.'] },
+    { v: '0.5', fecha: '2026-10-23', cambios: ['Doce ejercicios de ejemplo con enunciados propios: los mismos tipos de pregunta que en clase, con otras figuras y otros números. La guía de uso tiene capturas nuevas hechas con ellos.', 'La web tiene icono propio: un dipolo con sus líneas de campo, en la pestaña del navegador, en la pantalla de inicio del móvil y en la vista previa al compartir el enlace.', 'Páginas de aviso legal, privacidad, cookies y contacto, enlazadas al pie de la barra lateral.'] },
+    { v: '0.4', fecha: '2026-10-22', cambios: ['Número de versión visible y este apartado de novedades.', 'Arreglo: en la vista 3D los cilindros se dibujan con su radio real, aparecen las superficies de Gauss, y las esferas, cascarones y conductores tienen volumen en lugar de parecer círculos planos.'] },
+    { v: '0.3', fecha: '2026-10-22', cambios: ['Guía de uso con capturas (botón ?, barra lateral o F1).', 'Los resultados se escriben con la misma forma que el solucionario oficial: perfiles por tramos, factor común en logaritmos y radicales, y la pregunta V_A − V_B.'] },
+    { v: '0.2', fecha: '2026-10-22', cambios: ['Anillos, discos, cortezas y conductores.', 'Varias incógnitas, modo numérico SI, flujo de Gauss y gráficas E(z) y V(z).', 'Modo práctica, exportar la solución, deshacer y rehacer, mapa de color y vista 3D.', 'Búsqueda, carpetas y etiquetas en la barra lateral.'] },
+    { v: '0.1', fecha: '2026-10-22', cambios: ['Primera versión: cargas, hilos, planos y esferas con el desarrollo paso a paso y 12 ejercicios resueltos.', 'Barra lateral con tus problemas, los importados y los ejercicios; título y enunciado editables; archivos .emsim.json.'] },
+  ];
+  return { current: log[0].v, log };
+})();
+
+/* =====================================================================
+   Motor de cálculo (sin DOM). Unidades: longitud en unidades de "a",
+   ε₀ = 1 internamente; los resultados se muestran como coef·símbolos/(πε₀aⁿ).
+   ===================================================================== */
+const Engine = (() => {
+  const PI = Math.PI;
+
+  /* ---------- Parser de expresiones: 2*sqrt(3), 5/2, -1/(4pi), √3 ---------- */
+  const FUN = {
+    sqrt: Math.sqrt, ln: Math.log, log: Math.log10, exp: Math.exp, abs: Math.abs,
+    sin: Math.sin, cos: Math.cos, tan: Math.tan,
+  };
+  function parseExpr(src, unit, vars) {
+    if (typeof src === 'number') return src;
+    let s = String(src ?? '').trim();
+    if (!s) throw new Error('vacío');
+    s = s.replace(/π/g, 'pi').replace(/λ/g, 'lambda').replace(/σ/g, 'sigma').replace(/ρ/g, 'rho').replace(/ε₀|ε0|ε/g, 'eps0').replace(/[₀₁₂₃₄₅₆₇₈₉]/g, (c) => '₀₁₂₃₄₅₆₇₈₉'.indexOf(c)).replace(/²/g, '^2').replace(/³/g, '^3').replace(/[−–]/g, '-').replace(/[·×]/g, '*').replace(/,/g, '.');
+    const toks = [];
+    const re = /\s*(\d+\.?\d*(?:[eE][+-]?\d+)?|\.\d+|[A-Za-z_][A-Za-z_0-9]*|√|[-+*/^()])/y;
+    let m;
+    re.lastIndex = 0;
+    while (re.lastIndex < s.length) {
+      const at = re.lastIndex;
+      m = re.exec(s);
+      if (!m) { if (/^\s*$/.test(s.slice(at))) break; throw new Error('símbolo no válido: ' + s.slice(at, at + 3)); }
+      toks.push(m[1]);
+    }
+    let i = 0;
+    const peek = () => toks[i];
+    const eat = (t) => { if (toks[i] !== t) throw new Error('se esperaba ' + t); i++; };
+    const startsPrimary = (t) => t !== undefined && (/^[\d.A-Za-z_(]/.test(t) || t === '√');
+    function expr() {
+      let v = term();
+      while (peek() === '+' || peek() === '-') { const op = toks[i++]; const r = term(); v = op === '+' ? v + r : v - r; }
+      return v;
+    }
+    function term() {
+      let v = unary();
+      for (;;) {
+        const t = peek();
+        if (t === '*') { i++; v *= unary(); }
+        else if (t === '/') { i++; v /= unary(); }
+        else if (startsPrimary(t)) v *= power();
+        else return v;
+      }
+    }
+    function unary() {
+      if (peek() === '-') { i++; return -unary(); }
+      if (peek() === '+') { i++; return unary(); }
+      return power();
+    }
+    function power() {
+      const b = primary();
+      if (peek() === '^') { i++; return Math.pow(b, unary()); }
+      return b;
+    }
+    function primary() {
+      const t = toks[i++];
+      if (t === undefined) throw new Error('expresión incompleta');
+      if (t === '(') { const v = expr(); eat(')'); return v; }
+      if (t === '√') return power();
+      if (/^[\d.]/.test(t)) return parseFloat(t);
+      const id = t.toLowerCase();
+      if (id === 'pi') return PI;
+      if (id === 'e') return Math.E;
+      if (vars && t in vars) return vars[t];
+      if (unit && t === unit) return 1;
+      if (FUN[id]) {
+        if (peek() === '(') { i++; const v = expr(); eat(')'); return FUN[id](v); }
+        return FUN[id](power());
+      }
+      throw new Error('desconocido: ' + t);
+    }
+    const v = expr();
+    if (i < toks.length) throw new Error('sobra: ' + toks[i]);
+    if (!isFinite(v)) throw new Error('no es un número finito');
+    return v;
+  }
+
+  /* ---------- Vectores numéricos ---------- */
+  const V3 = {
+    add: (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]],
+    sub: (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]],
+    sc: (a, k) => [a[0] * k, a[1] * k, a[2] * k],
+    dot: (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2],
+    cross: (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]],
+    norm: (a) => Math.hypot(a[0], a[1], a[2]),
+  };
+  V3.unit = (a) => { const n = V3.norm(a); return n ? V3.sc(a, 1 / n) : [0, 0, 0]; };
+
+  /* ---------- Reconocer números "bonitos": (n/d)·√r ---------- */
+  const RADS = [1, 2, 3, 5, 6, 7, 10, 11, 13, 14, 15, 17, 19, 21, 22, 23, 26, 29, 30, 31, 33, 34, 35, 37, 38, 39, 41, 42, 43, 46, 47, 51, 53, 55];
+  function rat(x, maxDen, tol = 1e-11) {
+    let h0 = 0, h1 = 1, k0 = 1, k1 = 0, y = x;
+    for (let it = 0; it < 40; it++) {
+      const a = Math.floor(y);
+      const h2 = a * h1 + h0, k2 = a * k1 + k0;
+      if (k2 > maxDen) break;
+      h0 = h1; h1 = h2; k0 = k1; k1 = k2;
+      if (Math.abs(x - h1 / k1) <= tol * Math.abs(x)) return [h1, k1];
+      const f = y - a;
+      if (f < 1e-14) break;
+      y = 1 / f;
+    }
+    return null;
+  }
+  const MIXR = [2, 3, 5, 6, 7, 10, 15];
+  // x = (a + b·√r)/d con enteros pequeños
+  function identifyMix(x) {
+    for (let d = 1; d <= 96; d++) {
+      const X = x * d;
+      for (let m = 1; m <= 60; m++) for (const sg of [1, -1]) {
+        const b = sg * m;
+        for (const r of MIXR) {
+          const a = X - b * Math.sqrt(r), ar = Math.round(a);
+          if (ar === 0 || Math.abs(ar) > 5000) continue;
+          if (Math.abs(a - ar) <= 1e-10 * Math.max(Math.abs(X), Math.abs(b * Math.sqrt(r)))) {
+            const g = gcd3(Math.abs(ar), m, d);
+            return { mix: true, a: ar / g, b: b / g, r, d: d / g };
+          }
+        }
+      }
+    }
+    return null;
+  }
+  const gcd2 = (a, b) => (b ? gcd2(b, a % b) : a);
+  const gcd3 = (a, b, c) => gcd2(gcd2(a, b), c);
+  // devuelve {s, n, d, r} o {mix, a, b, r, d}; score = complejidad (menor = más simple)
+  function identify(x, allowMix = true) {
+    if (!isFinite(x)) return null;
+    if (Math.abs(x) < 1e-12) return { s: 1, n: 0, d: 1, r: 1, score: 0 };
+    const s = x < 0 ? -1 : 1, ax = Math.abs(x);
+    for (const r of RADS) {
+      const q = rat(ax / Math.sqrt(r), 1000, 1e-11);
+      if (q && q[0] < 1e6) return { s, n: q[0], d: q[1], r, score: q[1] + (r > 1 ? 3 : 0) };
+    }
+    if (allowMix) { const m = identifyMix(x); if (m) return { ...m, score: m.d + 6 }; }
+    const q = rat(ax, 100000, 2e-14);
+    if (q && q[0] < 1e7) return { s, n: q[0], d: q[1], r: 1, score: q[1] };
+    return null;
+  }
+
+  /* ---------- Ex: número exacto = parte algebraica + Σ α·ln β ---------- */
+  class Ex {
+    constructor(a = 0, L = []) { this.a = a; this.L = L; }
+    static of(x) { return x instanceof Ex ? x : new Ex(x); }
+    static ln(al, be) { const e = new Ex(0); addLn(e.L, al, be); return e; }
+    value() { return this.a + this.L.reduce((s, t) => s + t.al * Math.log(t.be), 0); }
+    add(o) { o = Ex.of(o); const r = new Ex(this.a + o.a, this.L.map((t) => ({ ...t }))); for (const t of o.L) addLn(r.L, t.al, t.be); return r; }
+    sub(o) { return this.add(Ex.of(o).scale(-1)); }
+    scale(k) { return new Ex(this.a * k, this.L.map((t) => ({ al: t.al * k, be: t.be }))); }
+    mul(o) {
+      o = Ex.of(o);
+      if (!o.L.length) return this.scale(o.a);
+      if (!this.L.length) return o.scale(this.a);
+      return new Ex(this.value() * o.value());
+    }
+    isZero() { return Math.abs(this.value()) < 1e-13 && Math.abs(this.a) < 1e-13; }
+  }
+  function addLn(L, al, be) {
+    if (Math.abs(al) < 1e-15 || !(be > 0) || Math.abs(Math.log(be)) < 1e-13) return;
+    for (const t of L) {
+      const s = Math.max(Math.abs(t.al), Math.abs(al));
+      if (Math.abs(t.al - al) < 1e-9 * s) { t.be *= be; prune(L); return; }
+      if (Math.abs(t.al + al) < 1e-9 * s) { t.be /= be; prune(L); return; }
+    }
+    L.push({ al, be });
+  }
+  function prune(L) { for (let i = L.length - 1; i >= 0; i--) if (Math.abs(Math.log(L[i].be)) < 1e-12) L.splice(i, 1); }
+
+  /* ---------- Poly: combinación lineal de monomios simbólicos ---------- */
+  const splitKey = (k) => (k ? k.split('*') : []);
+  const joinKey = (arr) => arr.slice().sort().join('*');
+  class Poly {
+    constructor(m) { this.m = m || new Map(); }
+    static sym(name, c = 1) { const p = new Poly(); p.m.set(name || '', Ex.of(c)); return p; }
+    static num(c) { return Poly.sym('', c); }
+    static zero() { return new Poly(); }
+    add(o) {
+      const r = new Poly(new Map(this.m));
+      for (const [k, c] of o.m) r.m.set(k, r.m.has(k) ? r.m.get(k).add(c) : c);
+      return r.clean();
+    }
+    sub(o) { return this.add(o.scale(-1)); }
+    scale(k) { const r = new Poly(); for (const [kk, c] of this.m) r.m.set(kk, c.mul(k)); return r.clean(); }
+    mul(o) {
+      let r = new Poly();
+      for (const [k1, c1] of this.m) for (const [k2, c2] of o.m) {
+        const k = joinKey([...splitKey(k1), ...splitKey(k2)]);
+        r = r.add(Poly.sym(k, c1.mul(c2)));
+      }
+      return r;
+    }
+    value(vals = {}) {
+      let s = 0;
+      for (const [k, c] of this.m) s += c.value() * splitKey(k).reduce((p, n) => p * (vals[n] ?? 1), 1);
+      return s;
+    }
+    clean() {
+      let mx = 0;
+      for (const c of this.m.values()) mx = Math.max(mx, Math.abs(c.value()), Math.abs(c.a));
+      for (const [k, c] of [...this.m]) if (Math.abs(c.value()) <= 1e-11 * Math.max(mx, 1e-300) && Math.abs(c.a) <= 1e-11 * Math.max(mx, 1e-300) && !c.L.length) this.m.delete(k);
+      return this;
+    }
+    keys() { return [...this.m.keys()]; }
+    isZero() { return this.m.size === 0; }
+    coef(k) { return this.m.get(k) || new Ex(0); }
+  }
+  // Vectores de Poly
+  const VP = {
+    zero: () => [Poly.zero(), Poly.zero(), Poly.zero()],
+    fromNum: (P, v) => v.map((x) => P.scale(x)),
+    add: (a, b) => a.map((p, i) => p.add(b[i])),
+    scaleP: (a, P) => a.map((p) => p.mul(P)),
+    dot: (a, b) => a[0].mul(b[0]).add(a[1].mul(b[1])).add(a[2].mul(b[2])),
+    cross: (a, b) => [
+      a[1].mul(b[2]).sub(a[2].mul(b[1])),
+      a[2].mul(b[0]).sub(a[0].mul(b[2])),
+      a[0].mul(b[1]).sub(a[1].mul(b[0])),
+    ],
+    dotNum: (a, v) => a[0].scale(v[0]).add(a[1].scale(v[1])).add(a[2].scale(v[2])),
+    value: (a, vals) => a.map((p) => p.value(vals)),
+    keys: (a) => [...new Set(a.flatMap((p) => p.keys()))],
+  };
+
+  /* ---------- Tipos de símbolo (dimensiones) ---------- */
+  // m: exponente tal que símbolo·a^m es una carga
+  const KINDS = {
+    q: { m: 0, label: 'Carga', hint: 'q', si: 'C' },
+    lambda: { m: 1, label: 'Densidad lineal', hint: 'λ', si: 'C/m' },
+    sigma: { m: 2, label: 'Densidad superficial', hint: 'σ', si: 'C/m²' },
+    rho: { m: 3, label: 'Densidad volumétrica', hint: 'ρ', si: 'C/m³' },
+    p: { m: -1, label: 'Momento dipolar', hint: 'p', si: 'C·m' },
+  };
+  // exponente de longitud de cada magnitud física (con ε₀ dividiendo)
+  const QTY = {
+    E: { L: -2, eps: true, si: 'N/C' }, V: { L: -1, eps: true, si: 'V' }, F: { L: -2, eps: true, si: 'N' },
+    U: { L: -1, eps: true, si: 'J' }, T: { L: -1, eps: true, si: 'N·m' }, Phi: { L: 0, eps: true, si: 'N·m²/C' },
+  };
+  const EPS0 = 8.8541878128e-12;
+
+  /* ---------- Integrales elípticas (AGM) y Gauss-Legendre ---------- */
+  function ellipKE(m) {
+    let a = 1, b = Math.sqrt(1 - m), c = Math.sqrt(m), sum = m / 2, p = 0.5;
+    for (let i = 0; i < 30 && Math.abs(c) > 1e-15; i++) {
+      const an = (a + b) / 2; c = (a - b) / 2; b = Math.sqrt(a * b); a = an;
+      p *= 2; sum += p * c * c;
+    }
+    const K = PI / (2 * a);
+    return [K, K * (1 - sum)];
+  }
+  function gaussLegendre(n) {
+    const x = [], w = [];
+    for (let i = 1; i <= n; i++) {
+      let z = Math.cos(PI * (i - 0.25) / (n + 0.5)), pp;
+      for (let it = 0; it < 100; it++) {
+        let p1 = 1, p2 = 0;
+        for (let j = 1; j <= n; j++) { const p3 = p2; p2 = p1; p1 = ((2 * j - 1) * z * p2 - (j - 1) * p3) / j; }
+        pp = n * (z * p1 - p2) / (z * z - 1);
+        const z1 = z; z = z1 - p1 / pp;
+        if (Math.abs(z - z1) < 1e-15) break;
+      }
+      x.push(z); w.push(2 / ((1 - z * z) * pp * pp));
+    }
+    return { x, w };
+  }
+  const GL = {};
+  const gl = (n) => GL[n] || (GL[n] = gaussLegendre(n));
+
+
+  return { PI, EPS0, parseExpr, V3, identify, Ex, Poly, VP, KINDS, QTY, splitKey, joinKey, ellipKE, gl };
+})();
+
+/* =====================================================================
+   Magnetostática (sin DOM): campo B de hilos, segmentos, espiras, arcos,
+   solenoides y toroides por Biot-Savart, y fuerzas magnéticas.
+   Unidades internas: μ₀ = 1 y longitudes en unidades de "a"; en modo simbólico
+   los resultados se escriben como coef·μ₀·símbolos/(π aⁿ). En modo SI las
+   longitudes van en metros (admite cm y mm) y las corrientes en amperios.
+   ===================================================================== */
+const Magneto = (() => {
+  const { V3, identify, parseExpr, gl } = Engine;
+  const PI = Math.PI, MU0 = 4e-7 * PI, MINUS = '−';
+  const EJES = { x: [1, 0, 0], y: [0, 1, 0], z: [0, 0, 1] };
+  // base de cada plano: e1 × e2 = normal; los ángulos se miden desde e1 hacia e2,
+  // así que «antihorario» es visto desde la normal (+z, +x o +y)
+  const PLANOS = {
+    xy: { e1: [1, 0, 0], e2: [0, 1, 0], n: [0, 0, 1], normal: '+z', desde: '+x' },
+    yz: { e1: [0, 1, 0], e2: [0, 0, 1], n: [1, 0, 0], normal: '+x', desde: '+y' },
+    xz: { e1: [1, 0, 0], e2: [0, 0, -1], n: [0, 1, 0], normal: '+y', desde: '+x' },
+  };
+  const PLANO_DE_EJE = { z: 'xy', x: 'yz', y: 'xz' };
+
+  /* ---------- Biot-Savart numérico ---------- */
+  // campo de un tramo de circunferencia (centro c, base pl, radio R) de t1 a t2, corriente 1
+  function arcoNum(P, c, pl, R, t1, t2, fino = true) {
+    const B = [0, 0, 0];
+    const add = (t, w) => {
+      const ct = Math.cos(t), st = Math.sin(t);
+      const r = V3.add(c, V3.add(V3.sc(pl.e1, R * ct), V3.sc(pl.e2, R * st)));
+      const dl = V3.add(V3.sc(pl.e1, -R * st), V3.sc(pl.e2, R * ct));
+      const d = V3.sub(P, r), n = V3.norm(d);
+      const k = w / (4 * PI * n * n * n), x = V3.cross(dl, d);
+      B[0] += k * x[0]; B[1] += k * x[1]; B[2] += k * x[2];
+    };
+    if (Math.abs(Math.abs(t2 - t1) - 2 * PI) < 1e-12) {
+      // vuelta completa: la regla del trapecio converge exponencialmente en integrandos periódicos
+      const N = fino ? 768 : 64, h = (t2 - t1) / N;
+      for (let i = 0; i < N; i++) add(t1 + i * h, h);
+    } else {
+      const g = gl(fino ? 32 : 8), pan = fino ? 12 : 3, h = (t2 - t1) / pan;
+      for (let p = 0; p < pan; p++) for (let i = 0; i < g.x.length; i++) add(t1 + h * (p + (g.x[i] + 1) / 2), (g.w[i] * h) / 2);
+    }
+    return B;
+  }
+  // campo de un segmento recto de A a B (B puede ser null con dirección u: semiinfinito; ambos infinitos: hilo)
+  function rectaNum(P, A, u, Bp, tipo) {
+    const uh = V3.unit(u), AP = V3.sub(P, A);
+    const rho = V3.sub(AP, V3.sc(uh, V3.dot(AP, uh))), d = V3.norm(rho);
+    let c1, c2;
+    if (tipo === 'hilo') { c1 = 1; c2 = -1; }
+    else {
+      const nA = V3.norm(AP);
+      c1 = nA < 1e-13 ? 1 : V3.dot(AP, uh) / nA;
+      if (tipo === 'semi') c2 = -1;
+      else { const BP = V3.sub(P, Bp), nB = V3.norm(BP); c2 = nB < 1e-13 ? -1 : V3.dot(BP, uh) / nB; }
+    }
+    if (d < 1e-10) return { B: [0, 0, 0], d, c1, c2, sobre: c1 - c2 > 1e-9 };
+    const dir = V3.cross(uh, V3.sc(rho, 1 / d));
+    return { B: V3.sc(dir, (c1 - c2) / (4 * PI * d)), d, c1, c2, dir, rho };
+  }
+  const ang = (t) => (t * PI) / 180;
+
+  /* ---------- Tipos de fuente ---------- */
+  // campo(f, P, fino) devuelve { B, info } con B por unidad de corriente (sin el valor ni el símbolo)
+  const SOURCES = {
+    hilo: {
+      label: 'Hilo infinito', icon: '|',
+      campos: [['A', 'Punto del hilo', 'vec'], ['u', 'Dirección de la corriente', 'vec']],
+      def: () => ({ A: ['0', '0', '0'], u: ['0', '0', '1'] }),
+      campo(f, P) {
+        const r = rectaNum(P, f.A, f.u, null, 'hilo');
+        if (r.d < 1e-10) return { error: 'el punto está sobre el hilo' };
+        return { B: r.B, info: { d: r.d, dir: r.dir } };
+      },
+      formula: () => 'B = <span class="fr"><span class="nu">μ<sub>0</sub><i>I</i></span><span class="de">2π<i>d</i></span></span>, dirección <span class="uv">u</span> × <span class="uv">ρ</span>/<i>d</i>',
+    },
+    segmento: {
+      label: 'Segmento', icon: '⟋',
+      campos: [['A', 'Desde (A)', 'vec'], ['B', 'Hasta (B)', 'vec']],
+      def: () => ({ A: ['-1', '0', '0'], B: ['1', '0', '0'] }),
+      campo(f, P) {
+        const u = V3.sub(f.B, f.A);
+        if (V3.norm(u) < 1e-12) return { error: 'A y B coinciden' };
+        const r = rectaNum(P, f.A, u, f.B, 'segmento');
+        if (r.sobre) return { error: 'el punto está sobre el segmento' };
+        return { B: r.B, info: { d: r.d, c1: r.c1, c2: r.c2, dir: r.dir } };
+      },
+      formula: () => 'B = <span class="fr"><span class="nu">μ<sub>0</sub><i>I</i></span><span class="de">4π<i>d</i></span></span>(cos α<sub>1</sub> − cos α<sub>2</sub>)',
+    },
+    semi: {
+      label: 'Hilo semiinfinito', icon: '↦',
+      campos: [['A', 'Extremo (A)', 'vec'], ['u', 'Dirección del hilo desde A', 'vec'], ['sentido', 'Corriente', 'salida']],
+      def: () => ({ A: ['0', '0', '0'], u: ['1', '0', '0'], sentido: 1 }),
+      campo(f, P) {
+        const r = rectaNum(P, f.A, f.u, null, 'semi');
+        if (r.sobre) return { error: 'el punto está sobre el hilo' };
+        return { B: V3.sc(r.B, f.sentido), info: { d: r.d, c1: r.c1, c2: -1, dir: r.dir && V3.sc(r.dir, f.sentido) } };
+      },
+      formula: () => 'B = <span class="fr"><span class="nu">μ<sub>0</sub><i>I</i></span><span class="de">4π<i>d</i></span></span>(cos α<sub>1</sub> + 1)',
+    },
+    espira: {
+      label: 'Espira circular', icon: '○',
+      campos: [['C', 'Centro', 'vec'], ['plano', 'Plano', 'plano'], ['R', 'Radio', 'num'], ['sentido', 'Sentido', 'sentido']],
+      def: () => ({ C: ['0', '0', '0'], plano: 'xy', R: '1', sentido: 1 }),
+      campo(f, P, fino) {
+        const pl = PLANOS[f.plano], CP = V3.sub(P, f.C), z = V3.dot(CP, pl.n);
+        const rho = V3.norm(V3.sub(CP, V3.sc(pl.n, z)));
+        if (rho < 1e-12 * f.R) {
+          const b = (f.R * f.R) / (2 * Math.pow(f.R * f.R + z * z, 1.5));
+          return { B: V3.sc(pl.n, b * f.sentido), info: { eje: true, z } };
+        }
+        if (Math.abs(z) < 1e-12 && Math.abs(rho - f.R) < 1e-9) return { error: 'el punto está sobre la espira' };
+        return { B: V3.sc(arcoNum(P, f.C, pl, f.R, 0, 2 * PI, fino), f.sentido), info: { eje: false } };
+      },
+      formula: (i) => (i.eje ? 'En el eje: B = <span class="fr"><span class="nu">μ<sub>0</sub><i>I R</i><sup>2</sup></span><span class="de">2(<i>R</i><sup>2</sup> + <i>z</i><sup>2</sup>)<sup>3/2</sup></span></span>' : 'Fuera del eje: integral de Biot-Savart d<span class="uv">B</span> = <span class="fr"><span class="nu">μ<sub>0</sub><i>I</i></span><span class="de">4π</span></span><span class="fr"><span class="nu">d<span class="uv">l</span> × <span class="uv">r</span></span><span class="de"><i>r</i><sup>3</sup></span></span>, resuelta numéricamente'),
+    },
+    arco: {
+      label: 'Arco', icon: '◠',
+      campos: [['C', 'Centro', 'vec'], ['plano', 'Plano', 'plano'], ['R', 'Radio', 'num'], ['t1', 'Desde (grados)', 'num'], ['t2', 'Hasta (grados)', 'num']],
+      def: () => ({ C: ['0', '0', '0'], plano: 'xy', R: '1', t1: '0', t2: '180' }),
+      campo(f, P, fino) {
+        const pl = PLANOS[f.plano], t1 = ang(f.t1), t2 = ang(f.t2), CP = V3.sub(P, f.C);
+        if (Math.abs(t2 - t1) < 1e-12) return { error: 'el arco no tiene longitud' };
+        if (V3.norm(CP) < 1e-12) {
+          // en el centro: B = μ₀ I θ / (4π R) según la normal
+          return { B: V3.sc(pl.n, (t2 - t1) / (4 * PI * f.R)), info: { centro: true, th: t2 - t1 } };
+        }
+        return { B: arcoNum(P, f.C, pl, f.R, t1, t2, fino), info: { centro: false } };
+      },
+      formula: (i) => (i.centro ? 'En el centro: B = <span class="fr"><span class="nu">μ<sub>0</sub><i>I</i> θ</span><span class="de">4π<i>R</i></span></span>' : 'Integral de Biot-Savart a lo largo del arco, resuelta numéricamente'),
+    },
+    solenoide: {
+      label: 'Solenoide', icon: '≋',
+      campos: [['C', 'Centro', 'vec'], ['eje', 'Eje', 'eje'], ['R', 'Radio', 'num'], ['L', 'Longitud', 'num'], ['N', 'Número de espiras N', 'num'], ['sentido', 'Sentido', 'sentido'], ['ideal', 'Ideal (muy largo)', 'bool']],
+      def: () => ({ C: ['0', '0', '0'], eje: 'z', R: '1', L: '4', N: '100', sentido: 1, ideal: false }),
+      campo(f, P, fino) {
+        const n = EJES[f.eje], CP = V3.sub(P, f.C), z = V3.dot(CP, n);
+        const rho = V3.norm(V3.sub(CP, V3.sc(n, z))), dens = f.N / f.L;
+        if (f.ideal) {
+          const dentro = rho < f.R - 1e-12 && Math.abs(z) < f.L / 2;
+          return { B: dentro ? V3.sc(n, dens * f.sentido) : [0, 0, 0], info: { ideal: true, dentro } };
+        }
+        if (rho < 1e-12 * f.R) {
+          const z1 = z + f.L / 2, z2 = z - f.L / 2;
+          const c1 = z1 / Math.hypot(z1, f.R), c2 = z2 / Math.hypot(z2, f.R);
+          return { B: V3.sc(n, (dens / 2) * (c1 - c2) * f.sentido), info: { eje: true, c1, c2 } };
+        }
+        if (Math.abs(rho - f.R) < 1e-9 && Math.abs(z) <= f.L / 2) return { error: 'el punto está sobre el bobinado' };
+        // lámina de corriente: suma de espiras con densidad N/L
+        const pl = PLANOS[PLANO_DE_EJE[f.eje]], g = gl(fino ? 24 : 6), pan = fino ? 16 : 4, h = f.L / pan, B = [0, 0, 0];
+        for (let p = 0; p < pan; p++) for (let i = 0; i < g.x.length; i++) {
+          const zz = -f.L / 2 + h * (p + (g.x[i] + 1) / 2);
+          const b = arcoNum(P, V3.add(f.C, V3.sc(n, zz)), pl, f.R, 0, 2 * PI, false);
+          const w = (g.w[i] * h) / 2 * dens * f.sentido;
+          B[0] += w * b[0]; B[1] += w * b[1]; B[2] += w * b[2];
+        }
+        return { B, info: { eje: false } };
+      },
+      formula: (i) => (i.ideal ? (i.dentro ? 'Dentro de un solenoide ideal: B = μ<sub>0</sub> <i>n I</i> = <span class="fr"><span class="nu">μ<sub>0</sub><i>N I</i></span><span class="de"><i>L</i></span></span>' : 'Fuera de un solenoide ideal: B = 0')
+        : i.eje ? 'En el eje: B = <span class="fr"><span class="nu">μ<sub>0</sub><i>N I</i></span><span class="de">2<i>L</i></span></span>(cos β<sub>1</sub> − cos β<sub>2</sub>)' : 'Fuera del eje: suma de espiras resuelta numéricamente'),
+    },
+    toroide: {
+      label: 'Toroide', icon: '◎',
+      campos: [['C', 'Centro', 'vec'], ['plano', 'Plano', 'plano'], ['R1', 'Radio interior', 'num'], ['R2', 'Radio exterior', 'num'], ['N', 'Número de espiras N', 'num'], ['sentido', 'Sentido de B', 'sentido']],
+      def: () => ({ C: ['0', '0', '0'], plano: 'xy', R1: '2', R2: '3', N: '500', sentido: 1 }),
+      campo(f, P) {
+        if (!(f.R2 > f.R1 && f.R1 >= 0)) return { error: 'el radio exterior debe ser mayor que el interior' };
+        const pl = PLANOS[f.plano], CP = V3.sub(P, f.C), hgt = V3.dot(CP, pl.n);
+        const rv = V3.sub(CP, V3.sc(pl.n, hgt)), r = V3.norm(rv);
+        const Rm = (f.R1 + f.R2) / 2, rm = (f.R2 - f.R1) / 2;
+        const dentro = r > 1e-12 && (r - Rm) ** 2 + hgt * hgt < rm * rm - 1e-12;
+        if (!dentro) return { B: [0, 0, 0], info: { dentro: false } };
+        const phi = V3.cross(pl.n, V3.sc(rv, 1 / r));
+        return { B: V3.sc(phi, (f.N / (2 * PI * r)) * f.sentido), info: { dentro: true, r } };
+      },
+      formula: (i) => (i.dentro ? 'Dentro del toroide (Ampère): B = <span class="fr"><span class="nu">μ<sub>0</sub><i>N I</i></span><span class="de">2π<i>r</i></span></span>' : 'Fuera del núcleo del toroide: B = 0'),
+    },
+  };
+
+  /* ---------- Lectura de la escena ---------- */
+  function lector(modo) {
+    const vars = modo === 'si' ? { m: 1, cm: 0.01, mm: 0.001, km: 1000 } : null;
+    const unit = modo === 'si' ? null : 'a';
+    return (src, que) => {
+      try { return parseExpr(src, unit, vars); } catch (e) { throw new Error(`${que}: ${e.message}`); }
+    };
+  }
+  function leerFuente(f, leer, i) {
+    const T = SOURCES[f.tipo], nom = f.nombre || `${T.label} ${i + 1}`, o = { ...f, nombre: nom };
+    for (const [k, lab, tipo] of T.campos) {
+      if (tipo === 'vec') o[k] = f[k].map((x, j) => leer(x, `${nom}, ${lab} (${'xyz'[j]})`));
+      else if (tipo === 'num') o[k] = leer(f[k], `${nom}, ${lab}`);
+      else if (tipo === 'sentido' || tipo === 'salida') o[k] = f[k] < 0 ? -1 : 1;
+    }
+    if (T.campos.some(([k, , t]) => k === 'u' && t === 'vec') && V3.norm(o.u) < 1e-12) throw new Error(`${nom}: la dirección no puede ser nula`);
+    for (const k of ['R', 'L', 'N']) if (k in o && !(o[k] > 0)) throw new Error(`${nom}: ${k} debe ser positivo`);
+    o.k = leer(f.I ?? '1', `${nom}, corriente`);
+    o.s = f.s || '';
+    return o;
+  }
+
+  /* ---------- Polinomio vectorial: símbolo -> vector ---------- */
+  const key = (...ss) => ss.flatMap((s) => (s ? s.split('*') : [])).sort().join('*');
+  function vpAdd(vp, k, v) { const o = vp[k] || [0, 0, 0]; vp[k] = V3.add(o, v); }
+  function vpLimpia(vp) {
+    const tam = Math.max(1e-300, ...Object.values(vp).flatMap((v) => v.map(Math.abs)));
+    for (const [k, v] of Object.entries(vp)) {
+      const w = v.map((x) => (Math.abs(x) < 1e-11 * tam ? 0 : x));
+      if (w.every((x) => x === 0)) delete vp[k]; else vp[k] = w;
+    }
+    return vp;
+  }
+  function campoTotal(fs, P, fino = true, excluir = null) {
+    const vp = {}, pasos = [];
+    for (const f of fs) {
+      if (f === excluir) continue;
+      const r = SOURCES[f.tipo].campo(f, P, fino);
+      if (r.error) throw new Error(`${f.nombre}: ${r.error}`);
+      const v = V3.sc(r.B, f.k);
+      vpAdd(vp, f.s, v);
+      pasos.push({ f, info: r.info, vp: vpLimpia({ [f.s]: v }) });
+    }
+    return { vp: vpLimpia(vp), pasos };
+  }
+  // campo aproximado y rápido para el dibujo (sin símbolos: todos valen 1)
+  function campoRapido(fs, P) {
+    let B = [0, 0, 0];
+    for (const f of fs) {
+      const r = SOURCES[f.tipo].campo(f, P, false);
+      if (!r.error) B = V3.add(B, V3.sc(r.B, f.k));
+    }
+    return B;
+  }
+
+  /* ---------- Formato ---------- */
+  const GREEK = { mu: 'μ', lambda: 'λ', alpha: 'α', beta: 'β', omega: 'ω', phi: 'φ', theta: 'θ' };
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  function sym(name) {
+    const m = String(name).match(/^([A-Za-z]+?)_?(\d*)$/);
+    if (!m) return `<i>${esc(name)}</i>`;
+    return `<i>${esc(GREEK[m[1].toLowerCase()] || m[1])}</i>${m[2] ? `<sub>${m[2]}</sub>` : ''}`;
+  }
+  const sup = (n) => (n === 1 ? '' : `<sup>${n}</sup>`);
+  function mono(k) {
+    const cnt = {};
+    for (const s of k ? k.split('*') : []) cnt[s] = (cnt[s] || 0) + 1;
+    return Object.keys(cnt).map((s) => sym(s) + sup(cnt[s])).join('');
+  }
+  const frac = (n, d) => (d ? `<span class="fr"><span class="nu">${n || '1'}</span><span class="de">${d}</span></span>` : n || '1');
+  const uv = (c) => `<span class="uv">u</span><sub>${c}</sub>`;
+  const gcd = (a, b) => (b ? gcd(b, a % b) : a);
+  function dec(x) {
+    if (Math.abs(x) < 1e-300) return '0';
+    const a = Math.abs(x);
+    let s = a >= 1e4 || a < 1e-3 ? x.toExponential(3).replace(/\.?0+e/, 'e').replace('e', '·10^') : String(+x.toPrecision(4));
+    s = s.replace(/·10\^([+-]?\d+)/, (_, e) => `·10<sup>${+e}</sup>`);
+    return s.replace('-', MINUS);
+  }
+  // número geométrico en línea: √2, 3/4, 0.4142
+  function num(x) {
+    const id = identify(x, false);
+    if (!id) return dec(x);
+    if (id.n === 0) return '0';
+    return (id.s < 0 ? MINUS : '') + `${id.n !== 1 || id.r === 1 ? id.n : ''}${id.r > 1 ? '√' + id.r : ''}${id.d !== 1 ? '/' + id.d : ''}`;
+  }
+  const pt = (v) => `(${v.map(num).join(', ')})`;
+  // contexto de formato: n = potencia de a (negativa en el denominador)
+  function cola(k, n, conPi) {
+    const syms = 'μ<sub>0</sub>' + mono(k) + (n > 0 ? `<i>a</i>${sup(n)}` : '');
+    const den = (conPi ? 'π' : '') + (n < 0 ? `<i>a</i>${sup(-n)}` : '');
+    return { syms, den };
+  }
+  // vector de un solo monomio con factor común: μ₀I/(4πa)·(u_x − u_y)
+  function vecMono(v, k, n) {
+    const comps = ['x', 'y', 'z'];
+    for (const conPi of [true, false]) {
+      const f = conPi ? PI : 1;
+      const ids = v.map((x) => identify(x * f, false));
+      if (ids.some((x) => !x)) continue;
+      const nz = ids.map((id, i) => ({ id, i })).filter((o) => o.id.n !== 0);
+      if (!nz.length) return '0';
+      const r0 = nz[0].id.r, mismoRad = nz.every((o) => o.id.r === r0);
+      const L = nz.reduce((l, o) => (l * o.id.d) / gcd(l, o.id.d), 1);
+      const ints = nz.map((o) => (o.id.n * L) / o.id.d);
+      const g = ints.reduce((a, b) => gcd(a, b), 0);
+      const neg = nz.every((o) => o.id.s < 0);
+      const { syms, den } = cola(k, n, conPi);
+      const rad = mismoRad && r0 > 1 ? '√' + r0 : '';
+      const front = (neg ? MINUS : '') + frac(`${g !== 1 ? g : ''}${rad}${syms}`, `${L !== 1 ? L : ''}${den}`);
+      if (nz.length === 1) return `${front} ${uv(comps[nz[0].i])}`;
+      const inner = nz.map((o, j) => {
+        const m = ints[j] / g, sg = (o.id.s < 0) !== neg, r = mismoRad ? 1 : o.id.r;
+        const c = m === 1 && r === 1 ? '' : `${m !== 1 || r === 1 ? m : ''}${r > 1 ? '√' + r : ''}`;
+        return (j === 0 ? (sg ? MINUS : '') : sg ? ` ${MINUS} ` : ' + ') + c + ' ' + uv(comps[o.i]);
+      }).join('');
+      return `${front}·(${inner})`;
+    }
+    return null;
+  }
+  // un término escalar: {neg, html}
+  function term(c, k, n) {
+    let best = null;
+    for (const conPi of [true, false]) {
+      const id = identify(c * (conPi ? PI : 1));
+      if (id && (!best || id.score < best.id.score)) best = { id, conPi };
+    }
+    if (!best) {
+      const { syms, den } = cola(k, n, true);
+      // (A + Bπ)/(Dπ): tramos rectos y arcos juntos, como en la horquilla
+      const x = c * PI;
+      for (let D = 1; D <= 24; D++) for (let Bn = -24; Bn <= 24; Bn++) {
+        if (!Bn) continue;
+        const A = x * D - Bn * PI, Ar = Math.round(A);
+        if (!Ar || Math.abs(Ar) > 200 || Math.abs(A - Ar) > 1e-9 * Math.max(1, Math.abs(x * D))) continue;
+        const g = gcd(gcd(Math.abs(Ar), Math.abs(Bn)), D), a2 = Ar / g, b2 = Bn / g, d2 = D / g;
+        const neg = a2 < 0 && b2 < 0, bs = `${Math.abs(b2) !== 1 ? Math.abs(b2) : ''}π`;
+        const top = b2 > 0 ? `(${bs} ${a2 < 0 ? MINUS : '+'} ${Math.abs(a2)})` : a2 > 0 ? `(${Math.abs(a2)} ${MINUS} ${bs})` : `(${bs} + ${Math.abs(a2)})`;
+        return { neg, html: frac(top + syms, `${d2 !== 1 ? d2 : ''}${den}`) };
+      }
+      // α·ln β (fuerza de un hilo sobre un segmento, flujos…)
+      for (const [p, q] of LN_BASES) {
+        const id = identify((c * PI) / Math.log(p / q), false);
+        if (id && id.r === 1 && id.d <= 24 && id.n <= 200 && id.n) return { neg: id.s < 0, html: `${frac(`${id.n !== 1 ? id.n : ''}${syms}`, `${id.d !== 1 ? id.d : ''}${den}`)} ln ${q === 1 ? p : `(${p}/${q})`}` };
+      }
+      return { neg: c < 0, html: `${dec(Math.abs(c * PI))}·${frac(syms, den)}` };
+    }
+    const { id, conPi } = best, { syms, den } = cola(k, n, conPi);
+    if (id.mix) {
+      const A = Math.abs(id.a), Bb = Math.abs(id.b), bs = `${Bb !== 1 ? Bb : ''}√${id.r}`;
+      const neg = id.a < 0 && id.b < 0;
+      const top = id.a > 0 ? `(${A} ${id.b < 0 ? MINUS : '+'} ${bs})` : id.b > 0 ? `(${bs} ${MINUS} ${A})` : `(${A} + ${bs})`;
+      return { neg, html: frac(top + syms, `${id.d !== 1 ? id.d : ''}${den}`) };
+    }
+    return { neg: id.s < 0, html: frac(`${id.n !== 1 ? id.n : ''}${id.r > 1 ? '√' + id.r : ''}${syms}`, `${id.d !== 1 ? id.d : ''}${den}`) };
+  }
+  const LN_BASES = [];
+  for (let p = 2; p <= 12; p++) for (let q = 1; q < p; q++) if (gcd(p, q) === 1 && !LN_BASES.some(([a, b]) => Math.abs(Math.log(a / b) / Math.log(p / q) - Math.round(Math.log(a / b) / Math.log(p / q))) < 1e-12 && Math.round(Math.log(p / q) / Math.log(a / b)) >= 1)) LN_BASES.push([p, q]);
+  const junta = (ts) => (ts.length ? ts.map((t, i) => (i === 0 ? (t.neg ? MINUS : '') : t.neg ? ` ${MINUS} ` : ' + ') + t.html).join('') : '0');
+  function vecHtml(vp, n, modo, unidad) {
+    const ks = Object.keys(vp);
+    if (!ks.length) return modo === 'si' ? `0 <span class="unit">${unidad}</span>` : '0';
+    if (modo === 'si') {
+      const v = V3.sc(Object.values(vp).reduce((a, b) => V3.add(a, b), [0, 0, 0]), MU0);
+      return `(${v.map(dec).join(', ')}) <span class="unit">${unidad}</span>`;
+    }
+    if (ks.length === 1) { const h = vecMono(vp[ks[0]], ks[0], n); if (h) return h; }
+    // componente a componente
+    return junta([0, 1, 2].map((i) => {
+      const ts = ks.filter((k) => vp[k][i] !== 0).map((k) => term(vp[k][i], k, n));
+      if (!ts.length) return null;
+      if (ts.length === 1) return { neg: ts[0].neg, html: `${ts[0].html} ${uv('xyz'[i])}` };
+      return { neg: false, html: `(${junta(ts)}) ${uv('xyz'[i])}` };
+    }).filter(Boolean));
+  }
+  function modHtml(vp, n, modo, unidad) {
+    const ks = Object.keys(vp);
+    if (modo === 'si') {
+      const v = Object.values(vp).reduce((a, b) => V3.add(a, b), [0, 0, 0]);
+      return `${dec(V3.norm(v) * MU0)} <span class="unit">${unidad}</span>`;
+    }
+    if (!ks.length) return '0';
+    if (ks.length !== 1) return null;
+    return term(V3.norm(vp[ks[0]]), ks[0], n).html;
+  }
+
+  /* ---------- Preguntas ---------- */
+  const ANALYSES = {
+    B: {
+      label: 'Campo B', titulo: 'Campo magnético en un punto',
+      def: () => ({ P: ['0', '0', '0'] }),
+      run(q, fs, leer, modo) {
+        const P = q.P.map((x, j) => leer(x, `Punto P (${'xyz'[j]})`));
+        const { vp, pasos } = campoTotal(fs, P);
+        const steps = pasos.map(({ f, info, vp: c }) => ({ f, info, html: vecHtml(c, -1, modo, 'T') }));
+        const m = modHtml(vp, -1, modo, 'T');
+        return {
+          P, vp,
+          res: `<span class="vv">B</span>(P) = ${vecHtml(vp, -1, modo, 'T')}${m ? `<br><span class="sub">|<span class="vv">B</span>| = ${m}</span>` : ''}`,
+          steps, final: 'Superposición: <span class="vv">B</span> = Σ <span class="vv">B</span><sub>i</sub>',
+        };
+      },
+    },
+    Fq: {
+      label: 'Fuerza sobre carga', titulo: 'Fuerza de Lorentz sobre una carga en movimiento',
+      def: () => ({ P: ['0', '0', '0'], q: '1', qs: 'q', v: ['1', '0', '0'], vs: 'v' }),
+      run(q, fs, leer, modo) {
+        const P = q.P.map((x, j) => leer(x, `Punto P (${'xyz'[j]})`));
+        const kq = leer(q.q, 'Carga'), v = q.v.map((x, j) => leer(x, `Velocidad (${'xyz'[j]})`));
+        const { vp } = campoTotal(fs, P);
+        const F = {};
+        for (const [k, B] of Object.entries(vp)) vpAdd(F, modo === 'si' ? '' : key(q.qs, q.vs, k), V3.sc(V3.cross(v, B), kq));
+        vpLimpia(F);
+        const m = modHtml(F, -1, modo, 'N');
+        const vtxt = modo === 'si' ? `${pt(v)} m/s` : `${pt(v)}·${sym(q.vs || 'v')}`;
+        return {
+          P, vp,
+          res: `<span class="vv">F</span> = <i>q</i> <span class="vv">v</span> × <span class="vv">B</span> = ${vecHtml(F, -1, modo, 'N')}${m ? `<br><span class="sub">|<span class="vv">F</span>| = ${m}</span>` : ''}`,
+          steps: [{ html: `<span class="vv">B</span>(P) = ${vecHtml(vp, -1, modo, 'T')}`, texto: 'Campo en el punto' }, { html: `<span class="vv">v</span> = ${vtxt}`, texto: 'Velocidad de la carga' }],
+          final: '<span class="vv">F</span> = <i>q</i> <span class="vv">v</span> × <span class="vv">B</span>',
+        };
+      },
+    },
+    Fhilo: {
+      label: 'Fuerza sobre un hilo', titulo: 'Fuerza magnética sobre un conductor',
+      def: (fs) => ({ fuente: fs.find((f) => f.tipo === 'hilo' || f.tipo === 'segmento')?.id || '' }),
+      run(q, fs, leer, modo) {
+        const f = fs.find((x) => x.id === q.fuente);
+        if (!f) throw new Error('elige el hilo o el segmento sobre el que actúa la fuerza');
+        const otros = fs.filter((x) => x !== f);
+        const F = {};
+        if (f.tipo === 'hilo') {
+          const u = V3.unit(f.u);
+          for (const o of otros) {
+            const paralelo = o.tipo === 'hilo' && V3.norm(V3.cross(V3.unit(o.u), u)) < 1e-12;
+            if (!paralelo) throw new Error('la fuerza por unidad de longitud sobre un hilo infinito solo se calcula con otros hilos infinitos paralelos');
+          }
+          const { vp } = campoTotal(otros, f.A);
+          for (const [k, B] of Object.entries(vp)) vpAdd(F, modo === 'si' ? '' : key(f.s, k), V3.sc(V3.cross(u, B), f.k));
+          vpLimpia(F);
+          const m = modHtml(F, -1, modo, 'N/m');
+          return {
+            vp: {}, res: `<span class="fr"><span class="nu"><span class="vv">F</span></span><span class="de"><i>L</i></span></span> = <i>I</i> <span class="uv">u</span> × <span class="vv">B</span> = ${vecHtml(F, -1, modo, 'N/m')}${m ? `<br><span class="sub">|<span class="vv">F</span>|/<i>L</i> = ${m}</span>` : ''}`,
+            steps: [{ html: `<span class="vv">B</span> = ${vecHtml(vp, -1, modo, 'T')}`, texto: `Campo de los demás hilos sobre ${esc(f.nombre)}` }],
+            final: 'Por unidad de longitud: <span class="vv">F</span>/<i>L</i> = <i>I</i> <span class="uv">u</span> × <span class="vv">B</span>',
+          };
+        }
+        if (f.tipo !== 'segmento') throw new Error('la fuerza se calcula sobre un hilo infinito o un segmento');
+        // segmento: F = ∫ I dl × B, con Gauss-Legendre
+        const dl = V3.sub(f.B, f.A), g = gl(32), pan = 8;
+        for (let p = 0; p < pan; p++) for (let i = 0; i < g.x.length; i++) {
+          const t = (p + (g.x[i] + 1) / 2) / pan, w = g.w[i] / 2 / pan;
+          const { vp } = campoTotal(otros, V3.add(f.A, V3.sc(dl, t)));
+          for (const [k, B] of Object.entries(vp)) vpAdd(F, modo === 'si' ? '' : key(f.s, k), V3.sc(V3.cross(dl, B), f.k * w));
+        }
+        vpLimpia(F);
+        const m = modHtml(F, 0, modo, 'N');
+        return {
+          vp: {}, res: `<span class="vv">F</span> = ∫ <i>I</i> d<span class="vv">l</span> × <span class="vv">B</span> = ${vecHtml(F, 0, modo, 'N')}${m ? `<br><span class="sub">|<span class="vv">F</span>| = ${m}</span>` : ''}`,
+          steps: [{ html: `d<span class="vv">l</span> a lo largo de ${pt(dl)}`, texto: `Tramo ${esc(f.nombre)} de A a B` }],
+          final: 'Integral de la fuerza a lo largo del segmento (Gauss-Legendre)',
+        };
+      },
+    },
+  };
+
+  /* ---------- Desarrollo de cada fuente ---------- */
+  function datos(f, info, modo) {
+    const L = (x) => { if (modo === 'si') return `${dec(x)} m`; const t = num(x); return t === '1' ? '<i>a</i>' : t === MINUS + '1' ? MINUS + '<i>a</i>' : t === '0' ? '0' : `${t}<i>a</i>`; };
+    const out = [];
+    if (info.d !== undefined) out.push(`<i>d</i> = ${L(info.d)}`);
+    if (info.c1 !== undefined) out.push(`cos α<sub>1</sub> = ${num(info.c1)}`, `cos α<sub>2</sub> = ${num(info.c2)}`);
+    if (info.dir) out.push(`dirección ${pt(info.dir)}`);
+    if (info.eje && info.z !== undefined) out.push(`<i>z</i> = ${L(info.z)}`);
+    if (info.th !== undefined) { const t = num(info.th / PI); out.push(`θ = ${t === '1' ? '' : t === MINUS + '1' ? MINUS : t}π`); }
+    if (info.r !== undefined) out.push(`<i>r</i> = ${L(info.r)}`);
+    return out.join(' · ');
+  }
+
+  function run(scene) {
+    const modo = scene.modo === 'si' ? 'si' : 'sym', leer = lector(modo);
+    const errors = [], fs = [];
+    scene.fuentes.forEach((f, i) => { try { fs.push({ ...leerFuente(f, leer, i), id: f.id }); } catch (e) { errors.push(e.message); } });
+    if (modo === 'si') for (const f of fs) f.s = '';
+    const results = scene.preguntas.map((q) => {
+      const A = ANALYSES[q.tipo];
+      if (errors.length) return { q, error: 'corrige primero los datos de las fuentes' };
+      try {
+        const r = A.run(q, fs, leer, modo);
+        for (const s of r.steps) if (s.f) { s.texto = `${esc(s.f.nombre)} · ${SOURCES[s.f.tipo].label}`; s.formula = SOURCES[s.f.tipo].formula(s.info || {}); s.datos = datos(s.f, s.info || {}, modo); }
+        return { q, ...r };
+      } catch (e) { return { q, error: e.message }; }
+    });
+    return { modo, fuentes: fs, errors, results };
+  }
+
+  return { SOURCES, ANALYSES, PLANOS, EJES, PLANO_DE_EJE, run, campoRapido, MU0, num, dec, sym };
+})();
+
+/* =====================================================================
+   Ejercicios de ejemplo de magnetostática, con enunciados propios.
+   ===================================================================== */
+const MagEjemplos = (() => {
+  const v = (x, y, z) => [String(x), String(y), String(z)];
+  const lista = [
+    {
+      clave: 'dos-hilos', titulo: 'Dos hilos paralelos con corrientes opuestas',
+      enunciado: 'Dos hilos rectilíneos e indefinidos, paralelos al eje Z, pasan por (−a, 0) y (a, 0) y llevan la misma corriente I en sentidos opuestos (+Z el primero). Calcular el campo magnético en el origen y en el punto (0, a, 0), y la fuerza por unidad de longitud entre los hilos.',
+      escena: () => ({
+        fuentes: [
+          { id: 'h1', tipo: 'hilo', nombre: 'Hilo 1', I: '1', s: 'I', A: v(-1, 0, 0), u: v(0, 0, 1) },
+          { id: 'h2', tipo: 'hilo', nombre: 'Hilo 2', I: '1', s: 'I', A: v(1, 0, 0), u: v(0, 0, -1) },
+        ],
+        preguntas: [{ tipo: 'B', P: v(0, 0, 0) }, { tipo: 'B', P: v(0, 1, 0) }, { tipo: 'Fhilo', fuente: 'h2' }],
+        vista: { plano: 'xy', corte: '0' },
+      }),
+    },
+    {
+      clave: 'espira', titulo: 'Espira circular: campo en el eje',
+      enunciado: 'Una espira circular de radio a, en el plano XY y centrada en el origen, lleva una corriente I en sentido antihorario visto desde +Z. Calcular el campo magnético en el centro y en el punto (0, 0, a) del eje.',
+      escena: () => ({
+        fuentes: [{ tipo: 'espira', nombre: 'Espira', I: '1', s: 'I', C: v(0, 0, 0), plano: 'xy', R: '1', sentido: 1 }],
+        preguntas: [{ tipo: 'B', P: v(0, 0, 0) }, { tipo: 'B', P: v(0, 0, 1) }],
+        vista: { plano: 'xz', corte: '0' },
+      }),
+    },
+    {
+      clave: 'cuadrada', titulo: 'Espira cuadrada de lado 2a',
+      enunciado: 'Una espira cuadrada de lado 2a está en el plano XY con centro en el origen y lados paralelos a los ejes. Recorre una corriente I en sentido antihorario visto desde +Z. Calcular el campo magnético en el centro y en el punto (0, 0, a).',
+      escena: () => {
+        const c = [[1, 1], [-1, 1], [-1, -1], [1, -1]];
+        return {
+          fuentes: c.map((p, i) => ({ tipo: 'segmento', nombre: `Lado ${i + 1}`, I: '1', s: 'I', A: v(p[0], p[1], 0), B: v(c[(i + 1) % 4][0], c[(i + 1) % 4][1], 0) })),
+          preguntas: [{ tipo: 'B', P: v(0, 0, 0) }, { tipo: 'B', P: v(0, 0, 1) }],
+          vista: { plano: 'xy', corte: '0' },
+        };
+      },
+    },
+    {
+      clave: 'horquilla', titulo: 'Horquilla: semicircunferencia y dos hilos',
+      enunciado: 'Un conductor está formado por un hilo semiinfinito que llega por y = a desde x = +∞, una semicircunferencia de radio a centrada en el origen (por el lado x < 0) y otro hilo semiinfinito que sale por y = −a hacia x = +∞. Si la corriente es I, calcular el campo magnético en el centro de la semicircunferencia.',
+      escena: () => ({
+        fuentes: [
+          { tipo: 'semi', nombre: 'Hilo de entrada', I: '1', s: 'I', A: v(0, 1, 0), u: v(1, 0, 0), sentido: -1 },
+          { tipo: 'arco', nombre: 'Semicircunferencia', I: '1', s: 'I', C: v(0, 0, 0), plano: 'xy', R: '1', t1: '90', t2: '270' },
+          { tipo: 'semi', nombre: 'Hilo de salida', I: '1', s: 'I', A: v(0, -1, 0), u: v(1, 0, 0), sentido: 1 },
+        ],
+        preguntas: [{ tipo: 'B', P: v(0, 0, 0) }],
+        vista: { plano: 'xy', corte: '0' },
+      }),
+    },
+    {
+      clave: 'solenoide', titulo: 'Solenoide finito: centro y extremo',
+      enunciado: 'Un solenoide de radio a y longitud 4a tiene 200 espiras por las que circula una corriente I. Su eje es el eje Z y está centrado en el origen. Calcular el campo en el centro y en el centro de una de sus bases, y compararlo con el de un solenoide ideal.',
+      escena: () => ({
+        fuentes: [{ tipo: 'solenoide', nombre: 'Solenoide', I: '1', s: 'I', C: v(0, 0, 0), eje: 'z', R: '1', L: '4', N: '200', sentido: 1, ideal: false }],
+        preguntas: [{ tipo: 'B', P: v(0, 0, 0) }, { tipo: 'B', P: v(0, 0, 2) }],
+        vista: { plano: 'xz', corte: '0' },
+      }),
+    },
+    {
+      clave: 'toroide', titulo: 'Toroide de sección circular',
+      enunciado: 'Un toroide con 300 espiras tiene radio interior 2a y exterior 4a, en el plano XY y centrado en el origen. Por él circula una corriente I. Calcular el campo magnético en (3a, 0, 0), dentro del núcleo, y en el centro del toroide.',
+      escena: () => ({
+        fuentes: [{ tipo: 'toroide', nombre: 'Toroide', I: '1', s: 'I', C: v(0, 0, 0), plano: 'xy', R1: '2', R2: '4', N: '300', sentido: 1 }],
+        preguntas: [{ tipo: 'B', P: v(3, 0, 0) }, { tipo: 'B', P: v(0, 0, 0) }],
+        vista: { plano: 'xy', corte: '0' },
+      }),
+    },
+    {
+      clave: 'carga', titulo: 'Carga que se mueve junto a un hilo',
+      enunciado: 'Por el eje Z circula una corriente I en sentido +Z. Una carga q pasa por el punto (2a, 0, 0) con velocidad v paralela al hilo y en el mismo sentido de la corriente. Calcular la fuerza magnética sobre la carga.',
+      escena: () => ({
+        fuentes: [{ tipo: 'hilo', nombre: 'Hilo', I: '1', s: 'I', A: v(0, 0, 0), u: v(0, 0, 1) }],
+        preguntas: [{ tipo: 'Fq', P: v(2, 0, 0), q: '1', qs: 'q', v: v(0, 0, 1), vs: 'v' }],
+        vista: { plano: 'xy', corte: '0' },
+      }),
+    },
+    {
+      clave: 'hilo-segmento', titulo: 'Hilo y varilla perpendicular',
+      enunciado: 'Un hilo indefinido a lo largo del eje Z lleva una corriente I₁ en sentido +Z. Una varilla conductora va de (a, 0, 0) a (3a, 0, 0) y lleva una corriente I₂ hacia +X. Calcular la fuerza magnética que el hilo ejerce sobre la varilla.',
+      escena: () => ({
+        fuentes: [
+          { id: 'h', tipo: 'hilo', nombre: 'Hilo', I: '1', s: 'I1', A: v(0, 0, 0), u: v(0, 0, 1) },
+          { id: 's', tipo: 'segmento', nombre: 'Varilla', I: '1', s: 'I2', A: v(1, 0, 0), B: v(3, 0, 0) },
+        ],
+        preguntas: [{ tipo: 'Fhilo', fuente: 's' }],
+        vista: { plano: 'xy', corte: '0' },
+      }),
+    },
+  ];
+  return { lista };
+})();
+
+/* =====================================================================
+   Interfaz de la calculadora de magnetostática: editor de fuentes y
+   preguntas, dibujo del campo en un plano, ejemplos y archivos .json.
+   ===================================================================== */
+(() => {
+  const { SOURCES, ANALYSES, PLANOS } = Magneto;
+  const { V3 } = Engine;
+  const $ = (s) => document.querySelector(s);
+  const h = (tag, attrs = {}, ...kids) => {
+    const el = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)) {
+      if (v == null || v === false) continue;
+      if (k === 'class') el.className = v;
+      else if (k === 'html') el.innerHTML = v;
+      else if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+      else el.setAttribute(k, v === true ? '' : v);
+    }
+    for (const c of kids.flat()) if (c != null) el.append(c.nodeType ? c : document.createTextNode(c));
+    return el;
+  };
+  const K_CUR = 'magneto-cur-v1', FORMATO = 'simulador-magnetostatica';
+  const store = {
+    get(k, d) { try { const v = JSON.parse(localStorage.getItem(k)); return v ?? d; } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* sin almacenamiento */ } },
+  };
+  let uid = 0;
+  const newId = () => 'm' + Date.now().toString(36) + (uid++).toString(36);
+  const vacia = () => ({ titulo: '', enunciado: '', modo: 'sym', vista: { plano: 'xy', corte: '0', flechas: true }, fuentes: [], preguntas: [] });
+  function valida(s) {
+    const o = { ...vacia(), ...s, vista: { ...vacia().vista, ...(s.vista || {}) } };
+    o.modo = s.modo === 'si' ? 'si' : 'sym';
+    o.fuentes = (s.fuentes || []).filter((f) => SOURCES[f.tipo]).map((f) => ({ ...SOURCES[f.tipo].def(), I: '1', s: 'I', ...f, id: f.id || newId() }));
+    o.preguntas = (s.preguntas || []).filter((q) => ANALYSES[q.tipo]).map((q) => ({ ...ANALYSES[q.tipo].def(o.fuentes), ...q, id: q.id || newId() }));
+    return o;
+  }
+  function deEjemplo(e) { return valida({ titulo: e.titulo, enunciado: e.enunciado, ejemplo: e.clave, ...e.escena() }); }
+
+  let esc = store.get(K_CUR, null);
+  try { esc = esc ? valida(esc) : deEjemplo(MagEjemplos.lista[0]); } catch (e) { esc = deEjemplo(MagEjemplos.lista[0]); }
+  let out = null;
+  const guarda = () => store.set(K_CUR, esc);
+  const flash = (t) => { const f = $('#flash'); f.textContent = t; f.hidden = false; clearTimeout(flash.t); flash.t = setTimeout(() => (f.hidden = true), 2200); };
+
+  /* ---------------- editor ---------------- */
+  const vecIn = (arr, onCh) => h('div', { class: 'vec' }, ...[0, 1, 2].map((j) => h('label', { class: 'vc' }, h('i', {}, 'xyz'[j]), h('input', { class: 'in', value: arr[j], 'aria-label': 'xyz'[j], oninput: (e) => { arr[j] = e.target.value; onCh(); } }))));
+  const fila = (lab, ctl) => h('div', { class: 'row' }, h('span', { class: 'lab' }, lab), ctl);
+  const sel = (val, opts, onCh, aria) => { const s = h('select', { class: 'in', 'aria-label': aria, onchange: (e) => onCh(e.target.value) }, ...opts.map(([v, t]) => h('option', { value: v }, t))); s.value = String(val); return s; };
+
+  function campoFuente(f, [k, lab, tipo]) {
+    const ch = () => recalcula();
+    if (tipo === 'vec') return fila(lab, vecIn(f[k], ch));
+    if (tipo === 'num') return fila(lab, h('input', { class: 'in', value: f[k], oninput: (e) => { f[k] = e.target.value; ch(); } }));
+    if (tipo === 'plano') return fila(lab, sel(f[k], [['xy', 'XY (normal +z)'], ['xz', 'XZ (normal +y)'], ['yz', 'YZ (normal +x)']], (v) => { f[k] = v; editor(); recalcula(); }, lab));
+    if (tipo === 'eje') return fila(lab, sel(f[k], [['x', 'X'], ['y', 'Y'], ['z', 'Z']], (v) => { f[k] = v; editor(); recalcula(); }, lab));
+    if (tipo === 'sentido') {
+      const desde = f.eje ? `+${f.eje}` : PLANOS[f.plano].normal;
+      return fila(lab, sel(f[k], [['1', `antihorario visto desde ${desde}`], ['-1', `horario visto desde ${desde}`]], (v) => { f[k] = +v; ch(); }, lab));
+    }
+    if (tipo === 'salida') return fila(lab, sel(f[k], [['1', 'sale de A'], ['-1', 'llega a A']], (v) => { f[k] = +v; ch(); }, lab));
+    if (tipo === 'bool') return fila(lab, h('input', { type: 'checkbox', checked: !!f[k], onchange: (e) => { f[k] = e.target.checked; ch(); } }));
+    return null;
+  }
+  function tarjetaFuente(f) {
+    const T = SOURCES[f.tipo];
+    const corriente = esc.modo === 'si'
+      ? h('div', { class: 'cur' }, h('input', { class: 'in', value: f.I, 'aria-label': 'Corriente', oninput: (e) => { f.I = e.target.value; recalcula(); } }), h('span', {}, 'A'))
+      : h('div', { class: 'cur' }, h('input', { class: 'in', value: f.I, 'aria-label': 'Coeficiente de la corriente', oninput: (e) => { f.I = e.target.value; recalcula(); } }), h('span', {}, '×'), h('input', { class: 'in', value: f.s, 'aria-label': 'Símbolo de la corriente', oninput: (e) => { f.s = e.target.value.replace(/[^A-Za-z0-9_]/g, ''); recalcula(); } }));
+    return h('div', { class: 'card' },
+      h('div', { class: 'card-h' }, h('span', { class: 'badge' }, T.label), h('input', { class: 'in nom', value: f.nombre || '', placeholder: 'nombre', 'aria-label': 'Nombre', oninput: (e) => { f.nombre = e.target.value; recalcula(false); } }),
+        h('button', { class: 'x', title: 'Quitar', 'aria-label': 'Quitar', onclick: () => { esc.fuentes = esc.fuentes.filter((x) => x !== f); editor(); recalcula(); } }, '×')),
+      fila(f.tipo === 'toroide' || f.tipo === 'solenoide' ? 'Corriente por espira' : 'Corriente', corriente),
+      ...T.campos.map((c) => campoFuente(f, c)));
+  }
+  function tarjetaPregunta(q, i) {
+    const A = ANALYSES[q.tipo], ch = () => recalcula();
+    const campos = [];
+    if (q.P) campos.push(fila('Punto P', vecIn(q.P, ch)));
+    if (q.tipo === 'Fq') {
+      campos.push(fila('Carga', esc.modo === 'si' ? h('div', { class: 'cur' }, h('input', { class: 'in', value: q.q, oninput: (e) => { q.q = e.target.value; ch(); } }), h('span', {}, 'C'))
+        : h('div', { class: 'cur' }, h('input', { class: 'in', value: q.q, oninput: (e) => { q.q = e.target.value; ch(); } }), h('span', {}, '×'), h('input', { class: 'in', value: q.qs, oninput: (e) => { q.qs = e.target.value.replace(/[^A-Za-z0-9_]/g, ''); ch(); } }))));
+      campos.push(fila(esc.modo === 'si' ? 'Velocidad (m/s)' : 'Velocidad', vecIn(q.v, ch)));
+      if (esc.modo !== 'si') campos.push(fila('Símbolo de v', h('input', { class: 'in', value: q.vs, oninput: (e) => { q.vs = e.target.value.replace(/[^A-Za-z0-9_]/g, ''); ch(); } })));
+    }
+    if (q.tipo === 'Fhilo') {
+      const ops = esc.fuentes.filter((f) => f.tipo === 'hilo' || f.tipo === 'segmento').map((f, j) => [f.id, f.nombre || `${SOURCES[f.tipo].label} ${j + 1}`]);
+      campos.push(fila('Sobre', ops.length ? sel(q.fuente, ops, (v) => { q.fuente = v; ch(); }, 'Conductor') : h('span', { class: 'hint' }, 'Añade un hilo o un segmento')));
+    }
+    return h('div', { class: 'card' },
+      h('div', { class: 'card-h' }, h('span', { class: 'badge' }, `P${i + 1} · ${A.titulo}`), h('span', { style: 'flex:1' }),
+        h('button', { class: 'x', title: 'Quitar', 'aria-label': 'Quitar', onclick: () => { esc.preguntas = esc.preguntas.filter((x) => x !== q); editor(); recalcula(); } }, '×')),
+      ...campos, h('div', { class: 'result', 'data-res': q.id }), h('details', { class: 'steps', 'data-steps': q.id }, h('summary', {}, 'Ver desarrollo paso a paso'), h('ol')));
+  }
+  function editor() {
+    $('#titulo').textContent = esc.titulo || 'Magnetostática: campo magnético y Biot-Savart';
+    $('#enunciado').value = esc.enunciado || '';
+    $('#modo').value = esc.modo;
+    $('#plano').value = esc.vista.plano; $('#corte').value = esc.vista.corte; $('#flechas').checked = esc.vista.flechas !== false;
+    $('#corte-l').textContent = { xy: 'z', xz: 'y', yz: 'x' }[esc.vista.plano];
+    $('#hint-unid').textContent = esc.modo === 'si' ? 'Longitudes en metros (admite cm y mm, p. ej. 5 cm) y corrientes en amperios.' : 'Longitudes en unidades de a; admite 1/2, sqrt(3), √2. Corriente = coeficiente × símbolo.';
+    $('#fuentes').replaceChildren(...esc.fuentes.map(tarjetaFuente));
+    $('#preguntas').replaceChildren(...esc.preguntas.map(tarjetaPregunta));
+    if (!esc.fuentes.length) $('#fuentes').append(h('p', { class: 'hint' }, 'Añade una fuente con los botones de arriba.'));
+    if (!esc.preguntas.length) $('#preguntas').append(h('p', { class: 'hint' }, 'Añade una pregunta: campo en un punto, fuerza sobre una carga o sobre un hilo.'));
+  }
+
+  /* ---------------- cálculo ---------------- */
+  let tRec = 0;
+  function recalcula(conGuardar = true) {
+    out = Magneto.run(esc);
+    const er = $('#errores');
+    er.hidden = !out.errors.length; er.textContent = out.errors.join(' · ');
+    for (const r of out.results) {
+      const res = document.querySelector(`[data-res="${r.q.id}"]`), st = document.querySelector(`[data-steps="${r.q.id}"]`);
+      if (!res) continue;
+      if (r.error) { res.innerHTML = `<div class="warn">${r.error.replace(/</g, '&lt;')}</div>`; st.hidden = true; continue; }
+      res.innerHTML = r.res; st.hidden = false;
+      st.querySelector('ol').innerHTML = r.steps.map((s) => `<li><div class="st-h">${s.texto || ''}</div>${s.formula ? `<div>${s.formula}</div>` : ''}${s.datos ? `<div class="st-d">${s.datos}</div>` : ''}<div>${s.html}</div></li>`).join('') + `<li><div class="st-h">Resultado</div><div class="st-d">${r.final}</div><div>${r.res}</div></li>`;
+    }
+    if (conGuardar) { clearTimeout(tRec); tRec = setTimeout(guarda, 300); }
+    dibuja();
+  }
+
+  /* ---------------- dibujo ---------------- */
+  const cv = $('#cv'), ctx = cv.getContext('2d');
+  let W = 0, H = 0, vista = { cx: 0, cy: 0, s: 40 }, arrastre = null, marcas = [];
+  const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+  const ejes = () => ({ xy: [0, 1, 2], xz: [0, 2, 1], yz: [1, 2, 0] }[esc.vista.plano]);
+  // dirección que sale de la pantalla: horizontal × vertical (en el plano XZ es −y)
+  const fuera = () => { const [i, j] = ejes(), a = [0, 0, 0], b = [0, 0, 0]; a[i] = 1; b[j] = 1; return V3.cross(a, b); };
+  const aPant = (p) => { const [i, j] = ejes(); return [W / 2 + (p[i] - vista.cx) * vista.s, H / 2 - (p[j] - vista.cy) * vista.s]; };
+  const aMundo = (x, y) => { const [i, j, k] = ejes(), p = [0, 0, 0]; p[i] = vista.cx + (x - W / 2) / vista.s; p[j] = vista.cy - (y - H / 2) / vista.s; p[k] = corte(); return p; };
+  const corte = () => { try { return Engine.parseExpr(esc.vista.corte || '0', esc.modo === 'si' ? null : 'a', esc.modo === 'si' ? { m: 1, cm: 0.01, mm: 0.001 } : null); } catch (e) { return 0; } };
+  function tam() {
+    const r = cv.parentElement.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+    W = r.width; H = r.height; cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  // encuadre: todos los puntos de las fuentes y de las preguntas
+  function encuadra() {
+    out = Magneto.run(esc);
+    const [i, j] = ejes(), pts = [];
+    for (const f of out.fuentes) {
+      for (const k of ['A', 'B', 'C']) if (f[k]) pts.push(f[k]);
+      const R = f.R2 || f.R || (f.L ? f.L / 2 : 0);
+      if (f.C && R) for (const d of [[R, 0, 0], [0, R, 0], [0, 0, R], [-R, 0, 0], [0, -R, 0], [0, 0, -R]]) pts.push(V3.add(f.C, d));
+      if (f.tipo === 'solenoide') { const n = Magneto.EJES[f.eje]; pts.push(V3.add(f.C, V3.sc(n, f.L / 2)), V3.add(f.C, V3.sc(n, -f.L / 2))); }
+    }
+    for (const r of out.results) if (r.P) pts.push(r.P);
+    if (!pts.length) pts.push([0, 0, 0]);
+    let x0 = Math.min(...pts.map((p) => p[i])), x1 = Math.max(...pts.map((p) => p[i])), y0 = Math.min(...pts.map((p) => p[j])), y1 = Math.max(...pts.map((p) => p[j]));
+    const m = Math.max(x1 - x0, y1 - y0, esc.modo === 'si' ? 0.02 : 2) * 0.35;
+    x0 -= m; x1 += m; y0 -= m; y1 += m;
+    vista = { cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, s: Math.min(W / (x1 - x0), H / (y1 - y0)) };
+  }
+  function flecha(x, y, ang, len, color, w = 1.5, hs = 0) {
+    const x2 = x + Math.cos(ang) * len, y2 = y - Math.sin(ang) * len;
+    ctx.strokeStyle = ctx.fillStyle = color; ctx.lineWidth = w;
+    ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x2, y2); ctx.stroke();
+    const s = hs || Math.max(4, len * 0.3);
+    ctx.beginPath(); ctx.moveTo(x2, y2);
+    ctx.lineTo(x2 - s * Math.cos(ang - 0.45), y2 + s * Math.sin(ang - 0.45));
+    ctx.lineTo(x2 - s * Math.cos(ang + 0.45), y2 + s * Math.sin(ang + 0.45)); ctx.fill();
+  }
+  function polilinea(pts, color, w = 2, conFlecha = true) {
+    let ps = pts.map(aPant);
+    ctx.strokeStyle = color; ctx.lineWidth = w; ctx.beginPath();
+    ps.forEach((p, k) => (k ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]))); ctx.stroke();
+    if (conFlecha && ps.length > 1) {
+      // punta de flecha a mitad del recorrido, en el sentido de la corriente
+      const m = Math.floor((ps.length - 1) / 2), a = ps[m], b = ps[m + 1];
+      const L = Math.hypot(b[0] - a[0], b[1] - a[1]);
+      if (L > 0.01) {
+        const ang = Math.atan2(-(b[1] - a[1]), b[0] - a[0]);
+        let t = 0;
+        // recta: la flecha va en el punto visible más cercano al centro del dibujo
+        if (ps.length === 2) t = Math.min(0.97, Math.max(0.03, ((W / 2 - a[0]) * (b[0] - a[0]) + (H / 2 - a[1]) * (b[1] - a[1])) / (L * L)));
+        if (ps.length === 2 && L * Math.min(t, 1 - t) < 14) t = Math.min(0.5, 14 / L) * (t < 0.5 ? 1 : -1) + (t < 0.5 ? 0 : 1);
+        const x = a[0] + (b[0] - a[0]) * t, y = a[1] + (b[1] - a[1]) * t;
+        flecha(x - Math.cos(ang) * 7, y + Math.sin(ang) * 7, ang, 14, color, w, 9);
+      }
+    }
+  }
+  // ⊙ (hacia el observador) o ⊗ (hacia dentro), de radio r
+  function simboloNormal(x, y, saliente, r, color, w = 1.2) {
+    ctx.strokeStyle = ctx.fillStyle = color; ctx.lineWidth = w;
+    ctx.beginPath(); ctx.arc(x, y, r, 0, 2 * Math.PI); ctx.stroke();
+    const c = r * 0.62;
+    if (saliente) { ctx.beginPath(); ctx.arc(x, y, Math.max(1, r * 0.3), 0, 2 * Math.PI); ctx.fill(); }
+    else { ctx.beginPath(); ctx.moveTo(x - c, y - c); ctx.lineTo(x + c, y + c); ctx.moveTo(x + c, y - c); ctx.lineTo(x - c, y + c); ctx.stroke(); }
+  }
+  function puntoCorriente(p, saliente, color) { const [x, y] = aPant(p); simboloNormal(x, y, saliente, 8, color, 2); }
+  function circ(C, pl, R, t1, t2, n = 96) {
+    const pts = [];
+    for (let k = 0; k <= n; k++) { const t = t1 + ((t2 - t1) * k) / n; pts.push(V3.add(C, V3.add(V3.sc(pl.e1, R * Math.cos(t)), V3.sc(pl.e2, R * Math.sin(t))))); }
+    return pts;
+  }
+  function dibujaFuente(f, color) {
+    const nrm = PLANOS[esc.vista.plano].n, lejos = 1e4 / vista.s;
+    const recta = (A, u, t0, t1, sg = 1) => {
+      const uh = V3.unit(u);
+      if (V3.norm(V3.cross(uh, nrm)) < 1e-9) { puntoCorriente(A, V3.dot(uh, fuera()) * sg * f.k > 0, color); return; }
+      const P0 = V3.add(A, V3.sc(uh, t0)), P1 = V3.add(A, V3.sc(uh, t1));
+      polilinea(sg * f.k >= 0 ? [P0, P1] : [P1, P0], color);
+    };
+    if (f.tipo === 'hilo') recta(f.A, f.u, -lejos, lejos);
+    else if (f.tipo === 'segmento') recta(f.A, V3.sub(f.B, f.A), 0, V3.norm(V3.sub(f.B, f.A)));
+    else if (f.tipo === 'semi') recta(f.A, f.u, 0, lejos, f.sentido);
+    else if (f.tipo === 'espira' || f.tipo === 'arco') {
+      const pl = PLANOS[f.plano];
+      let t1 = 0, t2 = 2 * Math.PI * f.sentido;
+      if (f.tipo === 'arco') { t1 = (f.t1 * Math.PI) / 180; t2 = (f.t2 * Math.PI) / 180; }
+      if (f.k < 0) [t1, t2] = [t2, t1];
+      const pts = circ(f.C, pl, f.R, t1, t2, 360);
+      polilinea(pts, color);
+      // si la espira corta el plano de la vista, ⊙ y ⊗ donde lo atraviesa
+      const nv = PLANOS[esc.vista.plano].n, kk = ejes()[2], c0 = corte();
+      if (V3.norm(V3.cross(pl.n, nv)) > 1e-9) for (let q = 0; q + 1 < pts.length; q++) {
+        const d0 = pts[q][kk] - c0, d1 = pts[q + 1][kk] - c0;
+        if ((d0 < -1e-12) === (d1 < -1e-12)) continue;
+        const pc = V3.add(pts[q], V3.sc(V3.sub(pts[q + 1], pts[q]), d0 / (d0 - d1)));
+        puntoCorriente(pc, V3.dot(V3.sub(pts[q + 1], pts[q]), fuera()) > 0, color);
+      }
+    } else if (f.tipo === 'solenoide') {
+      const n = Magneto.EJES[f.eje], pl = PLANOS[Magneto.PLANO_DE_EJE[f.eje]], vueltas = Math.min(Math.round(f.N), 24), pts = [];
+      for (let k = 0; k <= vueltas * 48; k++) { const t = k / 48; pts.push(V3.add(V3.add(f.C, V3.sc(n, -f.L / 2 + (f.L * t) / vueltas)), V3.add(V3.sc(pl.e1, f.R * Math.cos(2 * Math.PI * t * f.sentido)), V3.sc(pl.e2, f.R * Math.sin(2 * Math.PI * t * f.sentido))))); }
+      ctx.globalAlpha = 0.8; polilinea(pts, color, 1.2, false); ctx.globalAlpha = 1;
+    } else if (f.tipo === 'toroide') {
+      const pl = PLANOS[f.plano];
+      for (const R of [f.R1, f.R2]) polilinea(circ(f.C, pl, R, 0, 2 * Math.PI), color, 1.5, false);
+      polilinea(circ(f.C, pl, (f.R1 + f.R2) / 2, 0, 2 * Math.PI * f.sentido), color, 1, true);
+    }
+  }
+  function dibuja() {
+    if (!W) return;
+    const C = { fondo: css('--canvas'), grid: css('--grid'), ink: css('--ink'), muted: css('--muted'), field: css('--field'), pos: css('--pos'), neg: css('--neg'), mark: css('--mark'), accent: css('--accent') };
+    ctx.fillStyle = C.fondo; ctx.fillRect(0, 0, W, H);
+    // cuadrícula
+    const paso = [0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50].find((s) => s * vista.s >= 40) || 100;
+    const a0 = aMundo(0, H), a1 = aMundo(W, 0), [i, j, k] = ejes();
+    ctx.strokeStyle = C.grid; ctx.lineWidth = 1; ctx.beginPath();
+    for (let x = Math.ceil(a0[i] / paso) * paso; x <= a1[i]; x += paso) { const X = W / 2 + (x - vista.cx) * vista.s; ctx.moveTo(X, 0); ctx.lineTo(X, H); }
+    for (let y = Math.ceil(a0[j] / paso) * paso; y <= a1[j]; y += paso) { const Y = H / 2 - (y - vista.cy) * vista.s; ctx.moveTo(0, Y); ctx.lineTo(W, Y); }
+    ctx.stroke();
+    const [ox, oy] = aPant([0, 0, 0]);
+    ctx.strokeStyle = C.muted; ctx.globalAlpha = 0.5; ctx.beginPath(); ctx.moveTo(0, oy); ctx.lineTo(W, oy); ctx.moveTo(ox, 0); ctx.lineTo(ox, H); ctx.stroke(); ctx.globalAlpha = 1;
+    ctx.fillStyle = C.muted; ctx.font = 'italic 13px "STIX Two Text", serif';
+    ctx.fillText('xyz'[i].toUpperCase(), W - 14, oy - 6); ctx.fillText('xyz'[j].toUpperCase(), ox + 6, 14);
+    if (!out) return;
+    // campo: flechas normalizadas, más opacas donde el campo es más intenso
+    if (esc.vista.flechas !== false && out.fuentes.length) {
+      const n = Math.max(14, Math.min(34, Math.round(W / 34))), dx = W / n, mags = [], arr = [], sal = fuera();
+      for (let y = dx / 2; y < H; y += dx) for (let x = dx / 2; x < W; x += dx) {
+        const B = Magneto.campoRapido(out.fuentes, aMundo(x, y)), bx = B[i], by = B[j], m = Math.hypot(bx, by), M = V3.norm(B);
+        if (!(M > 0) || !isFinite(M)) continue;
+        // campo casi perpendicular al plano: ⊙ o ⊗ en lugar de flecha
+        arr.push(m < 0.3 * M ? [x, y, null, M, Math.sign(V3.dot(B, sal))] : [x, y, Math.atan2(by, bx), M]); mags.push(M);
+      }
+      mags.sort((a, b) => a - b);
+      const lo = Math.log(mags[Math.floor(mags.length * 0.05)] || 1e-9), hi = Math.log(mags[Math.floor(mags.length * 0.95)] || 1);
+      for (const [x, y, a, m, sg] of arr) {
+        const t = hi > lo ? Math.min(1, Math.max(0, (Math.log(m) - lo) / (hi - lo))) : 1;
+        ctx.globalAlpha = 0.25 + 0.7 * t;
+        if (a === null) { simboloNormal(x, y, sg > 0, 3.5, C.field); continue; }
+        flecha(x - Math.cos(a) * dx * 0.32, y + Math.sin(a) * dx * 0.32, a, dx * 0.64, C.field, 1.2);
+      }
+      ctx.globalAlpha = 1;
+    }
+    out.fuentes.forEach((f) => dibujaFuente(f, f.k >= 0 ? C.pos : C.neg));
+    // puntos de las preguntas, con la dirección de B
+    marcas = [];
+    out.results.forEach((r, k) => {
+      if (!r.P) return;
+      const [x, y] = aPant(r.P);
+      const B = Object.values(r.vp || {}).reduce((a, b) => V3.add(a, b), [0, 0, 0]), m = Math.hypot(B[i], B[j]);
+      const normal = !(m > 0.3 * V3.norm(B)) && V3.norm(B) > 0;
+      if (m > 0.3 * V3.norm(B)) flecha(x, y, Math.atan2(B[j], B[i]), 34, C.accent, 2.4);
+      if (normal) simboloNormal(x, y, V3.dot(B, fuera()) > 0, 11, C.accent, 2.4);
+      else { ctx.fillStyle = C.mark; ctx.beginPath(); ctx.arc(x, y, 5, 0, 2 * Math.PI); ctx.fill(); }
+      ctx.fillStyle = C.mark;
+      ctx.font = '600 12px "IBM Plex Sans", sans-serif'; ctx.fillText(`P${esc.preguntas.indexOf(r.q) + 1}`, x + 8, y + 16);
+      marcas.push({ x, y, q: r.q });
+    });
+  }
+  const posEv = (e) => { const r = cv.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+  cv.addEventListener('pointerdown', (e) => {
+    const [x, y] = posEv(e), m = marcas.find((m) => Math.hypot(m.x - x, m.y - y) < 12);
+    if (m) { arrastre = m.q; cv.setPointerCapture(e.pointerId); }
+  });
+  cv.addEventListener('pointermove', (e) => {
+    if (!arrastre) return;
+    const [x, y] = posEv(e), p = aMundo(x, y), [i, j] = ejes();
+    const red = (v) => { const st = esc.modo === 'si' ? 0.001 : 0.05; return String(+(Math.round(v / st) * st).toFixed(4)); };
+    arrastre.P[i] = red(p[i]); arrastre.P[j] = red(p[j]);
+    recalcula();
+  });
+  cv.addEventListener('pointerup', () => { if (arrastre) { arrastre = null; editor(); recalcula(); } });
+
+  /* ---------------- barra de herramientas ---------------- */
+  const sEj = $('#ejemplo');
+  sEj.append(h('option', { value: '' }, 'Ejemplos…'), ...MagEjemplos.lista.map((e, k) => h('option', { value: e.clave }, `${k + 1} · ${e.titulo}`)));
+  sEj.addEventListener('change', () => {
+    const e = MagEjemplos.lista.find((x) => x.clave === sEj.value);
+    if (e) { esc = deEjemplo(e); editor(); tam(); encuadra(); recalcula(); }
+    sEj.value = '';
+  });
+  $('#modo').addEventListener('change', (e) => { esc.modo = e.target.value; editor(); encuadra(); recalcula(); });
+  $('#enunciado').addEventListener('input', (e) => { esc.enunciado = e.target.value; recalcula(false); guarda(); });
+  $('#plano').addEventListener('change', (e) => { esc.vista.plano = e.target.value; editor(); encuadra(); recalcula(); });
+  $('#corte').addEventListener('input', (e) => { esc.vista.corte = e.target.value; recalcula(); });
+  $('#flechas').addEventListener('change', (e) => { esc.vista.flechas = e.target.checked; recalcula(); });
+  $('#nuevo').addEventListener('click', () => { esc = vacia(); esc.fuentes.push(valida({ fuentes: [{ tipo: 'hilo' }] }).fuentes[0]); esc.preguntas.push({ id: newId(), tipo: 'B', P: ['1', '0', '0'] }); editor(); encuadra(); recalcula(); });
+  $('#guardar').addEventListener('click', () => {
+    const datos = { formato: FORMATO, version: 1, problema: esc };
+    const a = h('a', { href: URL.createObjectURL(new Blob([JSON.stringify(datos, null, 1)], { type: 'application/json' })), download: `${(esc.titulo || 'magnetostatica').replace(/[^\wáéíóúñ -]/gi, '').trim() || 'magnetostatica'}.emsim.json` });
+    document.body.append(a); a.click(); a.remove();
+  });
+  $('#abrir').addEventListener('click', () => $('#archivo').click());
+  $('#archivo').addEventListener('change', async (e) => {
+    const f = e.target.files[0]; e.target.value = '';
+    if (!f) return;
+    try {
+      const d = JSON.parse(await f.text());
+      if (d.formato !== FORMATO) throw new Error('no es un problema de magnetostática');
+      esc = valida(d.problema); editor(); encuadra(); recalcula(); flash('Problema abierto');
+    } catch (err) { flash('No se pudo abrir: ' + err.message); }
+  });
+  for (const [t, T] of Object.entries(SOURCES)) $('#add-fuente').append(h('button', { class: 'chip', onclick: () => { esc.fuentes.push({ id: newId(), tipo: t, nombre: `${T.label} ${esc.fuentes.length + 1}`, I: '1', s: 'I', ...T.def() }); editor(); encuadra(); recalcula(); } }, '+ ' + T.label));
+  for (const [t, A] of Object.entries(ANALYSES)) $('#add-pregunta').append(h('button', { class: 'chip', onclick: () => { esc.preguntas.push({ id: newId(), tipo: t, ...A.def(esc.fuentes) }); editor(); encuadra(); recalcula(); } }, '+ ' + A.label));
+  const ver = $('#ver'); if (ver) ver.textContent = Version.current;
+
+  new ResizeObserver(() => { tam(); encuadra(); dibuja(); }).observe(cv.parentElement);
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', dibuja);
+  editor(); tam(); recalcula(false); encuadra(); dibuja();
+  window.MagApp = { get escena() { return esc; }, get salida() { return out; }, abrirEjemplo: (c) => { esc = deEjemplo(MagEjemplos.lista.find((x) => x.clave === c)); editor(); encuadra(); recalcula(); } };
+})();
+
+</script>
+</html>

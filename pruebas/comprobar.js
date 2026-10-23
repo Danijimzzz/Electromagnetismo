@@ -92,6 +92,26 @@ if (delPdf.length) mal(`publico/ contiene enunciados o títulos del Tema 3:\n   
 else console.log('  ✓ publico/ no contiene ningún enunciado ni título del Tema 3');
 console.log(`  · versión ${Version.current}`);
 
+// magnetostática: los ejemplos contra pruebas/esperados-magnetostatica.json
+const Magneto = require(path.join(fuente, 'magnetostatica', 'fisica.js')), MagEjemplos = require(path.join(fuente, 'magnetostatica', 'ejemplos.js'));
+const resolverMag = (M, E) => Object.fromEntries(E.lista.map((e) => { const o = M.run({ modo: 'sym', ...e.escena() }); return [e.clave, { titulo: e.titulo, errores: o.errors, resultados: o.results.map((r) => (r.error ? 'ERROR: ' + r.error : r.res)) }]; }));
+const espMagF = path.join(__dirname, 'esperados-magnetostatica.json');
+const magNodo = resolverMag(Magneto, MagEjemplos);
+if (args.includes('--actualizar') || !fs.existsSync(espMagF)) { fs.writeFileSync(espMagF, JSON.stringify(magNodo, null, 1) + '\n'); console.log('  ✓ esperados-magnetostatica.json reescrito'); }
+const espMag = JSON.parse(fs.readFileSync(espMagF, 'utf8'));
+function compararMag(obt, donde) {
+  const antes = fallos;
+  for (const [k, e] of Object.entries(espMag)) {
+    const o = obt[k];
+    if (!o) { mal(`${donde}: falta el ejemplo ${e.titulo}`); continue; }
+    if (o.errores.length) mal(`${donde} · ${e.titulo}: ${o.errores.join(' · ')}`);
+    e.resultados.forEach((r, i) => { if (o.resultados[i] !== r) mal(`${donde} · ${e.titulo} (pregunta ${i + 1})\n      esperado: ${r}\n      obtenido: ${o.resultados[i]}`); });
+    o.resultados.forEach((r, i) => { if (r.startsWith('ERROR: ')) mal(`${donde} · ${e.titulo} (pregunta ${i + 1}): ${r}`); });
+  }
+  if (fallos === antes) console.log(`  ✓ ${donde}: ${Object.keys(espMag).length} ejemplos de magnetostática iguales a esperados-magnetostatica.json`);
+}
+compararMag(magNodo, 'Node · Magnetostática');
+
 async function navegador() {
   console.log('3 · Páginas en Chromium');
   let chromium;
@@ -133,8 +153,27 @@ async function navegador() {
     if (consola.length) mal(`${j.nombre}: consola del navegador:\n      ` + consola.join('\n      '));
     if (fallos === antes) console.log(`  ✓ ${j.nombre}: mismos resultados, ${Object.keys(j.esp).length} ejercicios abiertos, guía y novedades sin errores de consola`);
   }
+  // magnetostática: mismos resultados en la página, cada ejemplo abierto sin errores de consola
+  {
+    const page = await browser.newPage({ viewport: { width: 1300, height: 900 } });
+    const consola = [];
+    page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') consola.push(m.type() + ': ' + m.text()); });
+    page.on('pageerror', (e) => consola.push('excepción: ' + e.message));
+    await page.goto('file://' + path.join(publico, 'electromagnetismo', 'magnetostatica', 'index.html'));
+    await page.waitForFunction(() => window.MagApp);
+    compararMag(await page.evaluate(`(${resolverMag})(Magneto, MagEjemplos)`), 'Chromium · Magnetostática');
+    for (const k of Object.keys(espMag)) {
+      await page.evaluate((c) => MagApp.abrirEjemplo(c), k);
+      const warn = await page.locator('.result .warn').allTextContents();
+      if (warn.length) mal(`Magnetostática · ${k}: ${warn.join(' · ')}`);
+    }
+    const ver = await page.locator('#ver').textContent();
+    if (ver !== Version.current) mal(`Magnetostática: la página muestra la versión «${ver}», se esperaba ${Version.current}`);
+    await page.close();
+    if (consola.length) mal('Magnetostática: consola del navegador:\n      ' + consola.join('\n      '));
+  }
   // portada y páginas de asignatura: sin errores de consola y sin enlaces internos rotos
-  const portal = ['index.html', ...Catalogo.asignaturas.map((a) => `${a.clave}/index.html`)];
+  const portal = ['index.html', ...Catalogo.asignaturas.map((a) => `${a.clave}/index.html`), 'electromagnetismo/magnetostatica/index.html'];
   const antes = fallos;
   for (const f of portal) {
     const page = await browser.newPage({ viewport: { width: 1200, height: 900 } });
@@ -155,7 +194,7 @@ async function navegador() {
     await page.close();
     if (consola.length) mal(`${f}: consola del navegador:\n      ` + consola.join('\n      '));
   }
-  if (fallos === antes) console.log(`  ✓ Portada y ${portal.length - 1} asignaturas sin errores de consola ni enlaces rotos`);
+  if (fallos === antes) console.log(`  ✓ Portada, ${Catalogo.asignaturas.length} asignaturas y magnetostática sin errores de consola ni enlaces rotos`);
   await browser.close();
 }
 

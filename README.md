@@ -4,7 +4,7 @@ Simuladores y calculadoras por asignatura. Es una web estática en `publico/`:
 
 - `publico/index.html`: la portada, donde se elige asignatura y herramienta.
 - `publico/<asignatura>/index.html`: una página por asignatura (electromagnetismo, fisica, quimica, matematicas, laboratorio).
-- `publico/<asignatura>/<herramienta>/index.html`: cada herramienta. Por ahora solo existe el simulador de electrostática, en `electromagnetismo/electrostatica/`.
+- `publico/<asignatura>/<herramienta>/index.html`: cada herramienta. El simulador de electrostática (`electromagnetismo/electrostatica/`) sale de `fuente/*.js`; las herramientas nuevas tienen su carpeta en `fuente/` (por ejemplo `fuente/magnetostatica/`: `fisica.js`, `ejemplos.js`, `app.js` y `pagina.html`) y `build.sh` las junta con la función `herramienta`. Sus ejemplos se comprueban contra `pruebas/esperados-<herramienta>.json`.
 
 La portada y las páginas de asignatura las genera `fuente/portal.js` a partir de `fuente/catalogo.js`. Para añadir una herramienta, ponla en el catálogo con `disponible: true`, genera su página en `publico/<asignatura>/<herramienta>/index.html` y añade sus pruebas a `pruebas/comprobar.js`.
 
