@@ -71,4 +71,6 @@ if [ "$1" != privado ]; then
     version.js matematicas/algebra.js sistemas/calculo.js sistemas/app.js
   herramienta estadistica ../publico/matematicas/estadistica/index.html "Distribuciones de probabilidad" "Calculadora de la normal, binomial, Poisson, t de Student y chi cuadrado con el área sombreada: probabilidades, cuantiles y valores críticos paso a paso" \
     version.js estadistica/calculo.js estadistica/app.js
+  herramienta alterna ../publico/laboratorio/alterna/index.html "Corriente alterna y fasores" "Calculadora de corriente alterna: circuitos RLC en serie y en paralelo con impedancias complejas, diagrama de fasores, potencias, factor de potencia y resonancia, paso a paso" \
+    version.js alterna/fisica.js alterna/app.js
 fi
