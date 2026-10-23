@@ -59,4 +59,6 @@ if [ "$1" != privado ]; then
     version.js condensadores/fisica.js condensadores/app.js
   herramienta tiro-parabolico ../publico/fisica/tiro-parabolico/index.html "Tiro parabólico y cinemática" "Simulador de tiro parabólico con y sin rozamiento: alcance, altura máxima, tiempo de vuelo, gráficas x(t), v(t), a(t) y MRU y MRUA paso a paso" \
     version.js tiro-parabolico/fisica.js tiro-parabolico/app.js
+  herramienta disoluciones ../publico/quimica/disoluciones/index.html "Disoluciones y concentraciones" "Calculadora de disoluciones: molaridad, molalidad, fracción molar, % en masa y ppm, preparar desde un reactivo comercial y diluir, paso a paso" \
+    version.js quimica/elementos.js quimica/formulas.js quimica/disoluciones.js disoluciones/app.js
 fi

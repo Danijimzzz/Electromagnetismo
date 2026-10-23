@@ -1,0 +1,186 @@
+<title>Disoluciones y concentraciones: molaridad, molalidad, fracción molar y diluciones · SimulaCiencia</title>
+<meta name="description" content="Calculadora de disoluciones en español: pasa entre % en masa, g/L, ppm, molaridad, molalidad y fracción molar con la densidad, prepara disoluciones desde un sólido o un reactivo comercial y calcula diluciones y mezclas, paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root {
+  --bg: #eef1ee; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d5dbd5; --accent: #0d6b66; --accent-soft: #e0efec; --heat: #0d6b66; --on-heat: #ffffff;
+  --c-a: #f3c7b8; --c-t: #f5dcb0; --c-m: #f0e3c4; --c-l: #e3d5ef; --c-c: #f0d4e6; --c-p: #d4e2ea; --c-s: #d5e8d0; --c-n: #cfe8e1; --c-h: #fbe6a6; --c-g: #d8d9f2;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #94a0a8; --line: #2a343b; --accent: #4dbcb0; --accent-soft: #173431; --heat: #4dbcb0; --on-heat: #0b1215;
+  --c-a: #5a2f24; --c-t: #574120; --c-m: #4a4230; --c-l: #3f3352; --c-c: #4d2f42; --c-p: #2b3a44; --c-s: #2f4230; --c-n: #234039; --c-h: #50461c; --c-g: #34355a; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #94a0a8; --line: #2a343b; --accent: #4dbcb0; --accent-soft: #173431; --heat: #4dbcb0; --on-heat: #0b1215;
+  --c-a: #5a2f24; --c-t: #574120; --c-m: #4a4230; --c-l: #3f3352; --c-c: #4d2f42; --c-p: #2b3a44; --c-s: #2f4230; --c-n: #234039; --c-h: #50461c; --c-g: #34355a; color-scheme: dark }
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
+.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
+.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
+.wrap { max-width: 1400px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px }
+.tools label { color: var(--muted); font-size: 13px; display: inline-flex; gap: 6px; align-items: center }
+.in { font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px }
+.in:focus-visible, .el:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.modos { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-bottom: 14px }
+.modos button { font: 500 13.5px var(--f-ui); border: 0; background: var(--panel); color: var(--muted); padding: 7px 14px; cursor: pointer }
+.modos button[aria-selected=true] { background: var(--accent); color: var(--panel) }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 15px var(--f-ui); margin: 0 0 10px }
+.fila { display: flex; flex-wrap: wrap; gap: 8px; align-items: center }
+.fila .in.ancho { flex: 1; min-width: 200px; font: 15px var(--f-mono) }
+.error { color: #c0392b; font-size: 13.5px; margin: 10px 0 0 }
+.grande { font: 600 24px var(--f-math); margin: 12px 0 4px } .grande small { font: 14px var(--f-ui); color: var(--muted) }
+.formula { font-family: var(--f-math); font-size: 1.15em }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; font-variant-numeric: tabular-nums }
+th, td { text-align: right; padding: 6px 8px; border-bottom: 1px solid var(--line) } th:first-child, td:first-child { text-align: left }
+th { color: var(--muted); font-weight: 500 }
+.tabla-scroll { overflow-x: auto }
+.barra-comp { display: flex; height: 14px; border-radius: 4px; overflow: hidden; margin: 10px 0 0 } .barra-comp span { height: 100% }
+.leyenda { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12.5px; color: var(--muted); margin-top: 6px } .leyenda b { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px }
+.conv { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 8px }
+@media (max-width: 700px) { .conv { grid-template-columns: repeat(2, minmax(0, 1fr)) } }
+.conv label { font-size: 12.5px; color: var(--muted); display: flex; flex-direction: column; gap: 4px }
+.ajustada { font: 20px var(--f-math); margin: 4px 0 12px; overflow-wrap: anywhere }
+.cantidad { display: flex; gap: 6px; justify-content: flex-end } .cantidad .q { width: 110px } .cantidad .u { width: auto }
+.flecha { font-family: var(--f-ui); font-size: .9em; padding: 0 .15em }
+.lim { color: var(--accent); font-weight: 600 }
+.pasos ol { margin: 0; padding-left: 20px } .pasos li { margin: 0 0 10px; font-family: var(--f-math); font-size: 15.5px }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.nota { color: var(--muted); font-size: 12.5px; margin: 10px 0 0 }
+.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria li { margin: 4px 0 }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+.layout { display: grid; grid-template-columns: 330px minmax(0, 1fr); gap: 14px; align-items: start }
+@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr) } }
+.campos { display: grid; grid-template-columns: minmax(0, 1fr) 130px; gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px } .campos label small { color: var(--muted) } .campos .in { width: 100%; font-variant-numeric: tabular-nums }
+.campos .sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-top: 6px }
+.valores { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px }
+.valor { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px } .valor span { display: block; font-size: 12.5px; color: var(--muted) }
+.valor b { display: block; font: 500 17px var(--f-mono); margin-top: 2px; overflow-wrap: anywhere } .valor.dato { border-color: var(--accent); background: var(--accent-soft) }
+.valor.falta b { color: var(--muted); font: 13px var(--f-ui) }
+.comp { margin-top: 14px } .comp div { font-size: 12.5px; color: var(--muted); margin-top: 8px }
+.comp .barra-comp { margin-top: 4px; height: 18px } .comp .barra-comp span { display: flex; align-items: center; padding: 0 6px; font: 11.5px var(--f-mono); color: var(--ink); white-space: nowrap; overflow: hidden }
+.instr { font-size: 15px; background: var(--accent-soft); border-radius: 8px; padding: 10px 12px; margin-top: 12px }
+.dos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px } @media (max-width: 900px) { .dos { grid-template-columns: minmax(0, 1fr) } }
+.resultado { font: 600 20px var(--f-math); margin: 12px 0 0 }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Química</a> / Disoluciones</span></header>
+<div class="wrap">
+<h1>Disoluciones y concentraciones</h1>
+<p class="lead">Da la concentración de una disolución en cualquier forma y obtén todas las demás. También calcula cuánto soluto o reactivo comercial necesitas para prepararla, y cómo diluirla o mezclarla. Cada resultado viene con el desarrollo.</p>
+<div class="modos" role="tablist"><button role="tab" id="tab-conc" aria-selected="true">Concentración</button><button role="tab" id="tab-prep" aria-selected="false">Preparar</button><button role="tab" id="tab-dil" aria-selected="false">Diluir y mezclar</button></div>
+<label class="nota" style="display:inline-flex;gap:6px;align-items:center;margin:0 0 12px 12px">Masas atómicas <select id="modo" class="in"><option value="iupac">IUPAC (H 1,008; O 15,999)</option><option value="redondeadas">De clase (H 1; O 16; Cl 35,5)</option></select></label>
+
+<section id="conc">
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="width:100%;margin-bottom:12px"></select>
+    <div class="campos">
+      <div class="sep">Sustancias</div>
+      <label for="c-soluto">Soluto</label><input id="c-soluto" class="in" autocomplete="off" spellcheck="false" placeholder="H2SO4">
+      <label for="c-disolvente">Disolvente</label><input id="c-disolvente" class="in" autocomplete="off" spellcheck="false" placeholder="H2O">
+      <div class="sep">Concentración conocida</div>
+      <label for="c-tipo">Expresada como</label><select id="c-tipo" class="in"></select>
+      <label for="c-valor">Valor <small id="c-unidad"></small></label><input id="c-valor" class="in" inputmode="decimal" autocomplete="off">
+      <label for="c-densidad">Densidad de la disolución <small>(g/mL)</small></label><input id="c-densidad" class="in" inputmode="decimal" autocomplete="off" placeholder="opcional">
+    </div>
+    <p class="nota">La densidad hace falta para pasar de las formas en masa (%, ppm, molalidad, fracción molar) a las de volumen (molaridad, g/L, % m/v), y al revés.</p>
+    <p class="error" id="error-conc" hidden></p>
+  </div>
+  <div>
+    <div class="card"><h2>La misma disolución expresada de todas las formas</h2><div class="valores" id="valores"></div><div class="comp" id="comp"></div></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos-conc"></ol></div>
+  </div>
+</div>
+</section>
+
+<section id="prep" hidden>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos-prep" class="in" aria-label="Ejemplos" style="width:100%;margin-bottom:12px"></select>
+    <div class="campos">
+      <div class="sep">Disolución que quieres</div>
+      <label for="p-soluto">Soluto</label><input id="p-soluto" class="in" autocomplete="off" spellcheck="false">
+      <label for="p-M">Molaridad <small>(mol/L)</small></label><input id="p-M" class="in" inputmode="decimal" autocomplete="off">
+      <label for="p-V">Volumen <small>(mL)</small></label><input id="p-V" class="in" inputmode="decimal" autocomplete="off">
+      <div class="sep">A partir de</div>
+      <label for="p-origen">Reactivo</label><select id="p-origen" class="in"><option value="solido">Sólido</option><option value="comercial">Comercial</option></select>
+      <label for="p-pureza" data-o="solido">Pureza <small>(%)</small></label><input id="p-pureza" class="in" inputmode="decimal" autocomplete="off" data-o="solido">
+      <label for="p-riqueza" data-o="comercial">Riqueza <small>(% en masa)</small></label><input id="p-riqueza" class="in" inputmode="decimal" autocomplete="off" data-o="comercial">
+      <label for="p-densidad" data-o="comercial">Densidad <small>(g/mL)</small></label><input id="p-densidad" class="in" inputmode="decimal" autocomplete="off" data-o="comercial">
+    </div>
+    <p class="error" id="error-prep" hidden></p>
+  </div>
+  <div>
+    <div class="card"><h2>Lo que necesitas</h2><div class="valores" id="valores-prep"></div><div class="instr" id="instr"></div></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos-prep"></ol></div>
+  </div>
+</div>
+</section>
+
+<section id="dil" hidden>
+<div class="dos">
+  <div>
+    <div class="card">
+      <h2>Dilución: C<sub>1</sub> V<sub>1</sub> = C<sub>2</sub> V<sub>2</sub></h2>
+      <div class="campos">
+        <label for="d-C1">Concentración inicial C<sub>1</sub></label><input id="d-C1" class="in" inputmode="decimal" autocomplete="off">
+        <label for="d-V1">Volumen inicial V<sub>1</sub></label><input id="d-V1" class="in" inputmode="decimal" autocomplete="off">
+        <label for="d-C2">Concentración final C<sub>2</sub></label><input id="d-C2" class="in" inputmode="decimal" autocomplete="off">
+        <label for="d-V2">Volumen final V<sub>2</sub></label><input id="d-V2" class="in" inputmode="decimal" autocomplete="off">
+      </div>
+      <p class="nota">Deja vacío el dato que quieres calcular. Usa las mismas unidades en los dos lados (mol/L y mL, por ejemplo).</p>
+      <p class="error" id="error-dil" hidden></p>
+      <div class="resultado" id="res-dil"></div>
+    </div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos-dil"></ol></div>
+  </div>
+  <div>
+    <div class="card">
+      <h2>Mezcla de dos disoluciones del mismo soluto</h2>
+      <div class="campos">
+        <label for="m-C1">Concentración de la primera</label><input id="m-C1" class="in" inputmode="decimal" autocomplete="off">
+        <label for="m-V1">Volumen de la primera</label><input id="m-V1" class="in" inputmode="decimal" autocomplete="off">
+        <label for="m-C2">Concentración de la segunda</label><input id="m-C2" class="in" inputmode="decimal" autocomplete="off">
+        <label for="m-V2">Volumen de la segunda</label><input id="m-V2" class="in" inputmode="decimal" autocomplete="off">
+        <label for="m-Va">Agua añadida <small>(opcional)</small></label><input id="m-Va" class="in" inputmode="decimal" autocomplete="off">
+      </div>
+      <p class="error" id="error-mez" hidden></p>
+      <div class="resultado" id="res-mez"></div>
+    </div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos-mez"></ol></div>
+  </div>
+</div>
+</section>
+
+<section class="teoria">
+  <h2>Formas de expresar la concentración</h2>
+  <ul>
+    <li><b>% en masa</b>: gramos de soluto por cada 100 g de disolución. <b>ppm</b>: miligramos de soluto por kilogramo de disolución.</li>
+    <li><b>Molaridad</b> M: moles de soluto por litro de disolución. <b>g/L</b> y <b>% m/v</b>: gramos de soluto por litro o por 100 mL de disolución.</li>
+    <li><b>Molalidad</b> m: moles de soluto por kilogramo de disolvente (no de disolución). No depende de la temperatura.</li>
+    <li><b>Fracción molar</b> x<sub>s</sub> = n<sub>s</sub> / (n<sub>s</sub> + n<sub>d</sub>): no tiene unidades y las de soluto y disolvente suman 1.</li>
+  </ul>
+  <h2>Cómo se pasa de una a otra</h2>
+  <p>Se elige una base de cálculo que haga sencillo el dato: 100 g de disolución para el % en masa, 1 kg de disolvente para la molalidad, 1 mol en total para la fracción molar o 1 L de disolución para la molaridad. Con esa cantidad se sacan los gramos y los moles de soluto y de disolvente, y la densidad (m = ρ V) pasa de masa a volumen.</p>
+  <h2>Diluciones</h2>
+  <p>Al añadir disolvente no cambia la cantidad de soluto, así que C<sub>1</sub> V<sub>1</sub> = C<sub>2</sub> V<sub>2</sub>. Para preparar una disolución desde un reactivo comercial se calculan los gramos de soluto puro que hacen falta, se dividen por la riqueza y la densidad da el volumen que hay que medir.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Disoluciones <span id="ver"></span> (beta)</footer>
+</body>
