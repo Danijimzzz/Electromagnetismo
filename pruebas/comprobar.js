@@ -191,6 +191,30 @@ const Configuracion = require(path.join(fuente, 'quimica', 'configuracion.js'));
   for (const mala of ['Xx', 'Na11+', '']) { let ok = false; try { Configuracion.analizar(mala); } catch (e) { ok = true; } if (!ok) mal(`Configuración: «${mala}» debería dar un error`); }
   if (fallos === antes) console.log(`  ✓ Configuración electrónica: ${Object.keys(REF).length} elementos e iones de referencia, excepciones y errores de entrada`);
 }
+const Condensador = require(path.join(fuente, 'condensadores', 'fisica.js'));
+{
+  // capacidades comprobadas a mano (ε0 = 8,8541878128·10⁻¹² F/m) y coherencia de cada solución
+  const antes = fallos;
+  const C = { 'plano-lleno': 2.2135e-10, 'plano-lamina': 7.0834e-11, 'plano-mitad': 1.7708e-10, 'dos-capas': 5.3125e-11, coaxial: 1.0214e-10, esferico: 1.7974e-11 };
+  for (const e of Condensador.ejemplos) {
+    const r = Condensador.resolver(e.sc);
+    if (!(Math.abs(r.C / C[e.clave] - 1) < 2e-4)) mal(`Condensadores · ${e.clave}: C = ${r.C}, se esperaba ${C[e.clave]}`);
+    if (Math.abs(r.Q - r.C * r.V) > 1e-9 * Math.abs(r.Q)) mal(`Condensadores · ${e.clave}: Q ≠ C V`);
+    if (r.g.disposicion === 'serie') {
+      const sumaV = r.regiones.reduce((s, o) => s + o.V, 0);
+      if (Math.abs(sumaV - r.V) > 1e-9 * r.V) mal(`Condensadores · ${e.clave}: las tensiones de las capas suman ${sumaV}, no ${r.V}`);
+    } else {
+      const sumaQ = r.regiones.reduce((s, o) => s + o.Q, 0);
+      if (Math.abs(sumaQ - r.Q) > 1e-9 * r.Q) mal(`Condensadores · ${e.clave}: las cargas de las partes suman ${sumaQ}, no ${r.Q}`);
+    }
+  }
+  const l = Condensador.resolver(Condensador.ejemplos[0].sc);
+  if (Math.abs(l.regiones[0].E1 - 5e4) > 1e-6 || Math.abs(l.regiones[0].Qp - 0.8 * l.Q) > 1e-18) mal('Condensadores · plano lleno: E debería ser 50 kV/m y Q_p = 0,8 Q');
+  for (const mala of [{ geo: 'plano', S: 'x', d: '1' }, { geo: 'esfera', a: '5', b: '3' }, { geo: 'plano', S: '1', d: '1', capas: [{ t: '2', er: '3' }] }, { geo: 'plano', S: '1', d: '1', capas: [{ t: '0.5', er: '0.5' }] }]) {
+    let ok = false; try { Condensador.resolver({ ...mala, fuente: 'V', V: '1' }); } catch (e) { ok = true; } if (!ok) mal(`Condensadores: ${JSON.stringify(mala)} debería dar un error`);
+  }
+  if (fallos === antes) console.log(`  ✓ Condensadores: ${Condensador.ejemplos.length} ejemplos con la capacidad esperada, Q = CV y tensiones o cargas que cuadran`);
+}
 
 async function navegador() {
   console.log('3 · Páginas en Chromium');
@@ -339,8 +363,30 @@ async function navegador() {
     if (consola.length) mal('Configuración: consola del navegador:\n      ' + consola.join('\n      '));
     if (fallos === antes) console.log('  ✓ Configuración electrónica: dirección #Cu, ejemplos y errores sin errores de consola');
   }
+  {
+    const page = await browser.newPage({ viewport: { width: 1200, height: 900 } });
+    const consola = [];
+    page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') consola.push(m.type() + ': ' + m.text()); });
+    page.on('pageerror', (e) => consola.push('excepción: ' + e.message));
+    await page.goto('file://' + path.join(publico, 'electromagnetismo', 'condensadores', 'index.html'));
+    await page.waitForFunction(() => window.CondApp);
+    const antes = fallos;
+    const verK = (await page.locator('#ver').textContent()).trim();
+    if (verK !== Version.de('condensadores').current) mal(`Condensadores: la página muestra la versión «${verK}», se esperaba ${Version.de('condensadores').current}`);
+    for (const e of Condensador.ejemplos) {
+      await page.evaluate((c) => CondApp.abrirEjemplo(c), e.clave);
+      if ((await page.locator('#regiones tbody tr').count()) < 1 || (await page.locator('#pasos li').count()) < 3) mal(`Condensadores · ${e.clave}: faltan la tabla o el desarrollo`);
+    }
+    await page.click('#anade');
+    await page.selectOption('#f-geo', 'cilindro');
+    await page.fill('#f-a', '3'); await page.fill('#f-b', '1');
+    if (await page.locator('#error').isHidden()) mal('Condensadores: radios al revés no muestran el error');
+    await page.close();
+    if (consola.length) mal('Condensadores: consola del navegador:\n      ' + consola.join('\n      '));
+    if (fallos === antes) console.log(`  ✓ Condensadores: ${Condensador.ejemplos.length} ejemplos, cambio de forma y errores sin errores de consola`);
+  }
   // portada y páginas de asignatura: sin errores de consola y sin enlaces internos rotos
-  const portal = ['index.html', ...Catalogo.asignaturas.map((a) => `${a.clave}/index.html`), 'electromagnetismo/magnetostatica/index.html', 'quimica/tabla-periodica/index.html', 'fisica/trabajo-y-energia/index.html', 'quimica/masa-molar/index.html', 'quimica/configuracion-electronica/index.html'];
+  const portal = ['index.html', ...Catalogo.asignaturas.map((a) => `${a.clave}/index.html`), 'electromagnetismo/magnetostatica/index.html', 'quimica/tabla-periodica/index.html', 'fisica/trabajo-y-energia/index.html', 'quimica/masa-molar/index.html', 'quimica/configuracion-electronica/index.html', 'electromagnetismo/condensadores/index.html'];
   const antes = fallos;
   for (const f of portal) {
     const page = await browser.newPage({ viewport: { width: 1200, height: 900 } });

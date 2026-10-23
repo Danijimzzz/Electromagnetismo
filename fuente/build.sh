@@ -55,4 +55,6 @@ if [ "$1" != privado ]; then
     version.js quimica/elementos.js quimica/formulas.js masa-molar/app.js
   herramienta configuracion-electronica ../publico/quimica/configuracion-electronica/index.html "Configuración electrónica" "Configuración electrónica de elementos e iones con el diagrama de Moeller, la regla de Hund y los números cuánticos" \
     version.js quimica/elementos.js quimica/configuracion.js configuracion-electronica/app.js
+  herramienta condensadores ../publico/electromagnetismo/condensadores/index.html "Condensadores con dieléctricos" "Capacidad, energía, campos E, D y P y cargas de polarización en condensadores planos, cilíndricos y esféricos con dieléctricos" \
+    version.js condensadores/fisica.js condensadores/app.js
 fi
