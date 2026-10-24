@@ -20,7 +20,7 @@ const mal = (m) => { fallos++; console.log('  ✗ ' + m); };
 
 // lo único que puede haber en publico/ (lo que sirven Vercel y Cloudflare): los archivos sueltos,
 // la portada, una página por asignatura y una por herramienta disponible del catálogo
-const Catalogo = require(path.join(fuente, 'catalogo.js'));
+const Catalogo = require(path.join(fuente, 'catalogo.js')), Biblioteca = require(path.join(fuente, 'biblioteca.js'));
 const PUBLICABLES = ['index.html', 'og.png', 'apple-touch-icon.png', 'legal.css', 'aviso-legal.html', 'privacidad.html', 'cookies.html', 'contacto.html', 'fuentes/stix-two-math.woff2', 'fuentes/OFL-STIX-Two.txt',
   ...Catalogo.asignaturas.flatMap((a) => [`${a.clave}/index.html`, ...a.herramientas.filter((h) => h.disponible).map((h) => `${a.clave}/${h.clave}/index.html`)]),
   // direcciones antiguas: una página que redirige a la nueva y las reglas 301 de Cloudflare
@@ -1288,6 +1288,58 @@ async function navegador() {
     await page.close();
     if (consola.length) mal('Arreglo 2: consola del navegador:\n      ' + consola.join('\n      '));
     if (fallos === antes) console.log('  ✓ Fórmulas MathML: desarrollo y teoría de Tiro parabólico, Trabajo y energía y Calorimetría, y la teoría de otras 12 herramientas');
+  }
+  {
+    // arreglo 6: barra lateral «Mis ejercicios» en todas las herramientas con estado (guardar, carpeta, fijar, abrir, exportar, borrar e importar)
+    const antes = fallos, consola = [];
+    const pags = Catalogo.asignaturas.flatMap((a) => a.herramientas.filter((h) => h.disponible).map((h) => `${a.clave}/${h.clave}`));
+    let probadas = 0;
+    for (const pag of pags) {
+      const html = fs.readFileSync(path.join(publico, ...pag.split('/'), 'index.html'), 'utf8'), dir = (html.match(/Biblioteca\.monta\('([^']+)'\)/) || [])[1];
+      if (!dir) continue;
+      const clave = Biblioteca.CLAVES[dir];
+      const page = await browser.newPage({ viewport: { width: 1400, height: 900 }, acceptDownloads: true });
+      page.on('console', (m) => { if (m.type() === 'error') consola.push(`${pag}: ${m.text()}`); });
+      page.on('pageerror', (e) => consola.push(`${pag}: excepción: ${e.message}`));
+      await page.goto('file://' + path.join(publico, ...pag.split('/'), 'index.html'));
+      if (!clave) { if (await page.$('.bib')) mal(`${pag}: tiene «Mis ejercicios» sin estado que guardar`); await page.close(); continue; }
+      await page.waitForSelector('.bib .bib-acc');
+      const ej = await page.evaluate(() => { const s = [...document.querySelectorAll('select')].find((x) => x.offsetParent && x.options.length > 2 && /ejemplo/i.test(x.id + x.options[0].textContent)); return s ? s.id : null; });
+      if (ej) await page.selectOption('#' + ej, { index: 1 });
+      await page.click('.bib [data-acc=nuevo]'); await page.fill('#bib-t', 'Prueba'); await page.fill('#bib-c', 'Tema 1'); await page.click('.bib [data-acc=guardar]');
+      const guardado = await page.evaluate((k) => JSON.parse(localStorage.getItem(k)).items, `simu-ejercicios:${dir}`);
+      if (guardado.length !== 1 || typeof guardado[0].datos !== 'string' || guardado[0].carpeta !== 'Tema 1') { mal(`${pag}: «Guardar el actual» no guarda el ejercicio`); await page.close(); continue; }
+      if (!(await page.$('.bib-carp'))) mal(`${pag}: no aparece la carpeta`);
+      if (ej) await page.selectOption('#' + ej, { index: 2 });
+      await page.click('.bib [data-acc=fijar]');
+      if (!(await page.evaluate(() => /Fijados/.test(document.querySelector('.bib-lista').textContent)))) mal(`${pag}: fijar no lo pone en Fijados`);
+      await Promise.all([page.waitForEvent('load'), page.click('.bib .bib-abre')]);
+      await page.waitForSelector('.bib .bib-it.activo');
+      if ((await page.evaluate((k) => localStorage.getItem(k), clave)) !== guardado[0].datos) mal(`${pag}: abrir no recupera los datos guardados`);
+      const [descarga] = await Promise.all([page.waitForEvent('download'), page.click('.bib [data-acc=exportar-todo]')]);
+      const arch = path.join(tmp, `bib-${dir}.simu.json`); await descarga.saveAs(arch);
+      const d = JSON.parse(fs.readFileSync(arch, 'utf8'));
+      if (d.formato !== Biblioteca.FORMATO || d.herramienta !== dir || d.ejercicios[0].datos !== guardado[0].datos) mal(`${pag}: el archivo exportado no es correcto`);
+      await page.click('.bib [data-acc=borrar]'); await page.click('.bib [data-acc=si-borrar]');
+      if (await page.$('.bib-it')) mal(`${pag}: borrar no quita el ejercicio`);
+      await page.setInputFiles('.bib ~ input[type=file]', arch);
+      await page.waitForSelector('.bib .bib-it');
+      const imp = await page.evaluate((k) => JSON.parse(localStorage.getItem(k)).items, `simu-ejercicios:${dir}`);
+      if (imp.length !== 1 || imp[0].titulo !== 'Prueba' || imp[0].datos !== guardado[0].datos || !imp[0].fijado) mal(`${pag}: importar no recupera el ejercicio`);
+      await page.close(); probadas++;
+    }
+    // en el móvil se abre por encima, sin ensanchar la página
+    const movil = await browser.newPage({ viewport: { width: 390, height: 800 } });
+    await movil.goto('file://' + path.join(publico, 'fisica', 'tiro-parabolico', 'index.html'));
+    await movil.waitForSelector('.bib-btn');
+    if (await movil.evaluate(() => document.querySelector('.bib').classList.contains('abierta'))) mal('Mis ejercicios: en el móvil no debería empezar abierta');
+    await movil.click('.bib-btn');
+    const m = await movil.evaluate(() => ({ ab: document.querySelector('.bib').classList.contains('abierta'), scrim: !document.querySelector('.bib-scrim').hidden, ancho: document.documentElement.scrollWidth }));
+    if (!m.ab || !m.scrim || m.ancho > 390) mal(`Mis ejercicios en el móvil: ${JSON.stringify(m)}`);
+    await movil.close();
+    if (consola.length) mal('Arreglo 6: consola del navegador:\n      ' + consola.join('\n      '));
+    if (probadas < 19) mal(`Mis ejercicios: solo se ha probado en ${probadas} herramientas`);
+    if (fallos === antes) console.log(`  ✓ Mis ejercicios: guardar, carpeta, fijar, abrir, exportar, borrar e importar en ${probadas} herramientas, y en el móvil`);
   }
   // portada y páginas de asignatura: sin errores de consola y sin enlaces internos rotos
   const portal = ['index.html', ...Catalogo.asignaturas.map((a) => `${a.clave}/index.html`), 'electromagnetismo/magnetostatica/index.html', 'quimica/tabla-periodica/index.html', 'fisica/trabajo-y-energia/index.html', 'quimica/masa-molar/index.html', 'quimica/configuracion-electronica/index.html', 'electromagnetismo/condensadores/index.html', 'fisica/tiro-parabolico/index.html', 'quimica/disoluciones/index.html', 'fisica/calorimetria/index.html', 'electromagnetismo/induccion/index.html', 'matematicas/matrices/index.html', 'matematicas/sistemas/index.html', 'estadistica/distribuciones/index.html', 'circuitos/alterna/index.html', 'fisica/dinamica/index.html', 'circuitos/continua/index.html', 'fisica/solido-rigido/index.html', 'fisica/ondas/index.html', 'fisica/gases/index.html', 'electromagnetismo/faraday/index.html'];

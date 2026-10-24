@@ -105,6 +105,8 @@
 
   /* ---------------- cálculo ---------------- */
   let tRec = 0;
+  // «Mis ejercicios» pide el estado al momento, sin esperar a la pausa
+  window.addEventListener('simu-guardar', () => { clearTimeout(tRec); guarda(); });
   function recalcula(conGuardar = true) {
     out = Magneto.run(esc);
     const er = $('#errores');

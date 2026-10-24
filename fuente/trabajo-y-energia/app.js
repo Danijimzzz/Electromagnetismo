@@ -56,7 +56,7 @@
   function abrirEjemplo(clave) {
     const e = Energia.ejemplos.find((x) => x.clave === clave);
     if (!e) return;
-    esc = { ...e.sc }; rellena(); sel.value = clave; calcula(false);
+    esc = { ...e.sc }; rellena(); sel.value = clave; calcula(true);
   }
 
   /* ---------- Cálculo ---------- */
@@ -234,6 +234,6 @@
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { colores(); dibuja(); });
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('trabajo-y-energia').current;
-  colores(); rellena(); calcula(false);
+  colores(); rellena(); calcula(true);
   window.EnergiaApp = { escena: () => ({ ...esc }), abrirEjemplo, ir: (tt) => { para(); t = Math.max(0, Math.min(tFin(), tt)); dibuja(); }, estado: () => enT(t), fin: tFin };
 })();
