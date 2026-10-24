@@ -39,7 +39,9 @@ herramienta() {
     printf '<link rel="apple-touch-icon" href="../../apple-touch-icon.png">\n'
     printf '<meta property="og:title" content="%s">\n<meta property="og:description" content="%s">\n' "$tit" "$des"
     printf '<meta property="og:image" content="https://electromagnetismo-two.vercel.app/og.png">\n<meta name="twitter:card" content="summary_large_image">\n'
-    cat "$dir/pagina.html"; echo '<script>'
+    # botón «← Inicio» común a todas las herramientas, al principio de la cabecera
+    printf '<style>.a-inicio { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; font-weight: 600; font-size: 13.5px; color: var(--accent); border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px 5px 10px; background: var(--panel); white-space: nowrap } .a-inicio:hover { border-color: var(--accent); text-decoration: none }</style>\n'
+    sed 's|<header class="top">|<header class="top"><a class="a-inicio" href="../../" title="Volver a la página de inicio">← Inicio</a>|' "$dir/pagina.html"; echo '<script>'
     for src in "$@"; do grep -v "^if (typeof module" "$src"; echo; done
     echo '</script>'; printf '</html>\n'
   } > "$out"

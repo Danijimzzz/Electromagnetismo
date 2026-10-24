@@ -677,6 +677,16 @@ const Mates = require(path.join(fuente, 'mates.js'));
   if (fallos === antes) console.log(`  ✓ ${Object.keys(Catalogo.redirecciones).length} direcciones antiguas redirigen a su nueva sección`);
 }
 
+{
+  // todas las herramientas (y el simulador de electrostática) tienen el botón «← Inicio» que lleva a la portada
+  const antes = fallos, pags = Catalogo.asignaturas.flatMap((a) => a.herramientas.filter((h) => h.disponible).map((h) => `${a.clave}/${h.clave}/index.html`));
+  for (const f of pags) {
+    const html = fs.readFileSync(path.join(publico, f), 'utf8');
+    if (!/<a [^>]*class="[^"]*a-inicio[^"]*"[^>]*href="\.\.\/\.\.\/"|<a [^>]*href="\.\.\/\.\.\/"[^>]*class="[^"]*a-inicio/.test(html)) mal(`${f}: falta el botón «← Inicio»`);
+  }
+  if (fallos === antes) console.log(`  ✓ Botón «← Inicio» en las ${pags.length} herramientas`);
+}
+
 async function navegador() {
   console.log('3 · Páginas en Chromium');
   let chromium;
