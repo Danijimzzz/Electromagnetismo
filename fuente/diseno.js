@@ -16,7 +16,7 @@ const css = (a) => `
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#111619; --panel:#182025; --ink:#e3e8ea; --muted:#94a0a8; --line:#2a343b; --accent:${a.colorOscuro}; --accent-soft:color-mix(in srgb, ${a.colorOscuro} 16%, #182025); --marca:#4dbcb0; color-scheme:dark } }
 :root[data-theme="dark"] { --bg:#111619; --panel:#182025; --ink:#e3e8ea; --muted:#94a0a8; --line:#2a343b; --accent:${a.colorOscuro}; --accent-soft:color-mix(in srgb, ${a.colorOscuro} 16%, #182025); --marca:#4dbcb0; color-scheme:dark }
 header.top { display:flex; align-items:center; gap:8px 20px; flex-wrap:wrap; padding:12px clamp(16px,3vw,28px); background:var(--panel); border-bottom:1px solid var(--line) }
-header.top .logo { font:600 18px var(--f-math); white-space:nowrap; color:var(--ink); text-decoration:none } header.top .logo i { color:var(--marca) }
+header.top .logo { font:600 18px var(--f-math); margin:0; white-space:nowrap; color:var(--ink); text-decoration:none } header.top .logo i { color:var(--marca) }
 header.top nav { display:flex; gap:4px 16px; font-size:14px; overflow-x:auto; max-width:100%; scrollbar-width:none }
 header.top nav a { white-space:nowrap; padding:2px 0; color:var(--muted); text-decoration:none } header.top nav a:hover { color:var(--ink) }
 header.top nav a[aria-current] { color:var(--ink); font-weight:600; box-shadow:inset 0 -2px 0 var(--accent) }
@@ -37,7 +37,9 @@ h1 { font:600 24px/1.25 var(--f-ui) }
 .destacado h2 { color:var(--accent) }
 .resumen div { background:var(--accent-soft) }
 .sep { color:var(--accent) }
-@media (max-width:700px) { header.top form { display:none } h1 { font-size:21px } }
+body.bib-ejemplos select[id^="ejemplo"] { display:none }
+@media (max-width:700px) { header.top form { display:none } h1 { font-size:21px }
+  .miga-izq, .miga-der, .miga::after { order:-1 } .miga::after { content:''; flex-basis:100%; height:0 } }
 `;
 
 function piezas(a, nombre) {
@@ -49,20 +51,48 @@ function piezas(a, nombre) {
   return { cab, miga };
 }
 
-// El simulador de electrostática (shell.html) tiene su propia maqueta: la cabecera y la miga van arriba
-// de la columna principal, a la derecha de su barra lateral, igual que en las demás herramientas.
+// El simulador de electrostática (shell.html) tiene su propia maqueta. En la web se le da la de las demás
+// herramientas: cabecera a lo ancho a la derecha de la barra lateral, contenido centrado con márgenes,
+// la miga con «Mis ejercicios» (abre y cierra su barra) a la izquierda y «Modo práctica» a la derecha,
+// y el título encima de los botones. La versión privada (artifact) no pasa por aquí.
 function aplicaElectrostatica(html) {
   const a = Catalogo.asignaturas.find((x) => x.clave === 'electromagnetismo');
   const { cab, miga } = piezas(a, 'Electrostática');
   const extra = `
-.main { padding-top:0 }
-.main > header.top { margin:0 calc(-1 * max(16px, env(safe-area-inset-right, 0px))) 12px -20px }
-.app.closed .main > header.top { margin-left:calc(-1 * max(16px, env(safe-area-inset-left, 0px))) }
-.main > .miga { margin-bottom:8px }`;
-  if (!/<a [^>]*a-inicio[^>]*>.*<\/a>\n?/.test(html) || !html.includes('<main class="main">')) throw new Error('diseno.js: shell.html no tiene la forma esperada');
-  return html.replace(/[ \t]*<a [^>]*a-inicio[^>]*>.*<\/a>\n?/, '')
-    .replace('<main class="main">', `<main class="main">\n${cab}\n${miga}`)
-    .replace('<div class="app"', `<style>${css(a)}${extra}</style>\n<div class="app"`);
+.main, .app:not(.closed) .main { padding:0 }
+@media (min-width:901px) { .app:not(.closed) { grid-template-columns:290px minmax(0,1fr) } }
+.main > .wrap { max-width:1300px; margin:0 auto; padding:16px clamp(16px,3vw,24px) 32px }
+#side-open, .app.closed #side-open { display:inline-flex; align-items:center; gap:6px; width:auto; height:auto; font:600 13.5px var(--f-ui); color:var(--ink); background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:6px 12px; cursor:pointer; white-space:nowrap }
+#side-open:hover, .app:not(.closed) #side-open { border-color:var(--accent); color:var(--accent) }
+.miga-der .toggle { font:600 13.5px var(--f-ui); border-radius:8px; padding:6px 12px; gap:6px }
+.miga-der .toggle input { position:absolute; opacity:0; width:1px; height:1px; pointer-events:none }
+.miga-der .toggle:has(input:checked) { background:var(--accent); border-color:var(--accent); color:var(--panel) }
+.miga-der .toggle:has(input:focus-visible) { outline:2px solid var(--accent); outline-offset:1px }
+.main .top { margin-bottom:12px }
+.main .top .title-in { font:600 24px/1.25 var(--f-ui); flex:1 1 300px; margin-left:-8px }
+.main .top .tools { flex-basis:100% }
+.side-h .logo { font:600 15px var(--f-ui) }
+#side-close { font-size:20px; line-height:1; color:var(--muted) }
+@media (max-width:700px) { .main .top .title-in { font-size:21px } }`;
+  const btnLado = /[ \t]*<button id="side-open"[^>]*>.*<\/button>\n?/, practica = /<label class="toggle"[^>]*><input type="checkbox" id="practice"> Modo práctica<\/label>/;
+  const cierra = /(<button id="side-close"[^>]*>).*?<\/button>/;
+  for (const r of [/[ \t]*<a [^>]*a-inicio[^>]*>.*<\/a>\n?/, btnLado, practica, cierra, /<span class="logo">.*?<\/span>/])
+    if (!r.test(html)) throw new Error(`diseno.js: shell.html no tiene la forma esperada (${r})`);
+  if (!html.includes('<main class="main">') || !html.includes('</main>')) throw new Error('diseno.js: shell.html no tiene <main class="main">');
+  const prac = html.match(practica)[0].replace('> Modo práctica<', '><span aria-hidden="true">✎</span> Modo práctica<');
+  const migaE = miga
+    .replace('<span class="miga-izq"></span>', '<span class="miga-izq"><button id="side-open" type="button" aria-controls="side" title="Tus problemas y los ejercicios de ejemplo"><span aria-hidden="true">☰</span> Mis ejercicios</button></span>')
+    .replace('<span class="miga-der"></span>', `<span class="miga-der">${prac}</span>`);
+  // «Mis ejercicios» abre la barra; si ya está abierta, la cierra (app.js solo sabe abrirla con este botón)
+  const alterna = `<script>document.addEventListener('click', (e) => {
+  if (!e.target.closest('#side-open')) return;
+  const app = document.getElementById('app'), side = document.getElementById('side');
+  if (app.classList.contains('mobile-open') || (!app.classList.contains('closed') && getComputedStyle(side).position !== 'fixed')) { e.stopImmediatePropagation(); document.getElementById('side-close').click(); }
+}, true);</script>`;
+  return html.replace(/[ \t]*<a [^>]*a-inicio[^>]*>.*<\/a>\n?/, '').replace(btnLado, '').replace(practica, '')
+    .replace(cierra, '$1×</button>').replace(/<span class="logo">.*?<\/span>/, '<span class="logo">Mis ejercicios</span>')
+    .replace('<main class="main">', `<main class="main">\n${cab}\n<div class="wrap">\n${migaE}`).replace('</main>', '</div>\n</main>')
+    .replace('<div class="app"', `<style>${css(a)}${extra}</style>\n${alterna}\n<div class="app"`);
 }
 
 function aplica(html, clave) {

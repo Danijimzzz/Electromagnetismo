@@ -2572,13 +2572,14 @@ async function navegador() {
       await page.goto('file://' + path.join(publico, ...pag.split('/'), 'index.html'));
       if (!clave) { if (await page.$('.bib')) mal(`${pag}: tiene «Mis ejercicios» sin estado que guardar`); await page.close(); continue; }
       await page.waitForSelector('.bib .bib-acc');
-      const ej = await page.evaluate(() => { const s = [...document.querySelectorAll('select')].find((x) => x.offsetParent && x.options.length > 2 && /ejemplo/i.test(x.id + x.options[0].textContent)); return s ? s.id : null; });
-      if (ej) await page.selectOption('#' + ej, { index: 1 });
+      // los ejemplos se abren desde la barra («Ejercicios de ejemplo»); el desplegable de la página está oculto
+      const ej = (await page.$$('.bib .bib-ej')).length >= 2;
+      if (ej) await page.click('.bib .bib-ej >> nth=0');
       await page.click('.bib [data-acc=nuevo]'); await page.fill('#bib-t', 'Prueba'); await page.fill('#bib-c', 'Tema 1'); await page.click('.bib [data-acc=guardar]');
       const guardado = await page.evaluate((k) => JSON.parse(localStorage.getItem(k)).items, `simu-ejercicios:${dir}`);
       if (guardado.length !== 1 || typeof guardado[0].datos !== 'string' || guardado[0].carpeta !== 'Tema 1') { mal(`${pag}: «Guardar el actual» no guarda el ejercicio`); await page.close(); continue; }
       if (!(await page.$('.bib-carp'))) mal(`${pag}: no aparece la carpeta`);
-      if (ej) await page.selectOption('#' + ej, { index: 2 });
+      if (ej) await page.click('.bib .bib-ej >> nth=1');
       await page.click('.bib [data-acc=fijar]');
       if (!(await page.evaluate(() => /Fijados/.test(document.querySelector('.bib-lista').textContent)))) mal(`${pag}: fijar no lo pone en Fijados`);
       await Promise.all([page.waitForEvent('load'), page.click('.bib .bib-abre')]);

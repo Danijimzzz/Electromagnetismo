@@ -81,7 +81,7 @@
     if (!e) return;
     st.ecuacion = e.ecuacion; st.cantidades = e.cantidades.map((c) => (c ? { ...c } : null)); st.rendimiento = '100';
     $('#ecuacion').value = st.ecuacion; $('#rendimiento').value = '100'; sel.value = clave;
-    pestana('este'); guarda(); este(true);
+    pestana('este'); este(true); guarda(); // después de este(), que completa las cantidades de la ecuación
   }
   $('#ecuacion').value = st.ecuacion;
   $('#rendimiento').value = st.rendimiento;
