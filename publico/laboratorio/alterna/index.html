@@ -81,11 +81,11 @@ footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8p
 <section class="teoria">
   <h2>Fasores e impedancia</h2>
   <p>En régimen sinusoidal permanente cada tensión y cada corriente se representa con un fasor: un número complejo cuyo módulo es el valor eficaz y cuyo argumento es la fase. Así la ley de Ohm vale con complejos, V = Z·I, donde la impedancia de cada elemento es</p>
-  <p class="f">Z<sub>R</sub> = R, &nbsp; Z<sub>L</sub> = jωL = jX<sub>L</sub>, &nbsp; Z<sub>C</sub> = 1/(jωC) = −jX<sub>C</sub></p>
+  <p class="f m">$Z_R = R$, &ensp; $Z_L = jωL = jX_L$, &ensp; $Z_C = 1/(jωC) = −jX_C$</p>
   <p>En serie las impedancias se suman; en paralelo se suman las admitancias Y = 1/Z. En la bobina la corriente va 90° retrasada respecto a la tensión y en el condensador 90° adelantada.</p>
   <h2>Potencias y factor de potencia</h2>
   <p>Con φ el ángulo de la impedancia (el desfase entre la tensión y la corriente), la potencia activa es la que se consume de verdad, la reactiva va y viene entre la fuente y las bobinas y condensadores, y la aparente es el producto de los valores eficaces:</p>
-  <p class="f">P = VI cos φ (W), &nbsp; Q = VI sen φ (var), &nbsp; S = VI (VA), &nbsp; S<sup>2</sup> = P<sup>2</sup> + Q<sup>2</sup></p>
+  <p class="f m">$P = VI cos φ$ (W), &ensp; $Q = VI sen φ$ (var), &ensp; $S = VI$ (VA), &ensp; $S^2 = P^2 + Q^2$</p>
   <p>Para corregir el factor de potencia de una carga inductiva se pone un condensador en paralelo que aporte Q<sub>C</sub> = P(tg φ<sub>1</sub> − tg φ<sub>2</sub>), es decir C = Q<sub>C</sub>/(ωV<sup>2</sup>).</p>
   <h2>Resonancia</h2>
   <p>Cuando X<sub>L</sub> = X<sub>C</sub>, a la frecuencia f<sub>0</sub> = 1/(2π√(LC)), las reactancias se anulan: en serie la impedancia es mínima (Z = R) y la corriente máxima; en paralelo la impedancia es máxima. El factor de calidad Q = ω<sub>0</sub>L/R mide lo estrecha que es la resonancia.</p>
@@ -106,6 +106,7 @@ footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8p
 const Version = (() => {
   const registros = {
     web: [
+      { v: '0.20.3', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría de todas las herramientas se ven como en los libros.'] },
       { v: '0.20.2', fecha: '2026-10-24', cambios: ['Tiro parabólico, Trabajo y energía y Calorimetría: las fórmulas se ven como en los libros, con fracciones, raíces y exponentes de verdad.'] },
       { v: '0.20.1', fecha: '2026-10-24', cambios: ['Tiro parabólico, Trabajo y energía y Calorimetría: los resultados salen en una tarjeta destacada arriba y la lectura del tiempo ya no se mueve al reproducir.'] },
       { v: '0.20', fecha: '2026-10-24', cambios: ['Nueva herramienta: Inducción, leyes de Faraday y Lenz, en Electromagnetismo.'] },
@@ -155,6 +156,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: configuración electrónica de cualquier elemento o ion por orden de llenado, abreviada y por capas, con el diagrama de Moeller, el diagrama de orbitales con la regla de Hund, los electrones desapareados y los números cuánticos del electrón diferenciador.', 'Avisa de las excepciones como el cromo o el cobre, y en los cationes quita primero los electrones de la capa más externa.'] },
     ],
     condensadores: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: condensadores planos, cilíndricos y esféricos con capas de dieléctrico en serie o, en el plano, ocupando parte del área. Capacidad, carga, tensión y energía; campos E, D y P en cada capa y cargas de polarización, con el desarrollo paso a paso.', 'Compara con el condensador vacío: qué pasa al meter el dieléctrico con la batería conectada o con el condensador aislado.', 'Dibujo del corte con las líneas de campo y gráfica de E a lo largo del condensador.'] },
     ],
     'tiro-parabolico': [
@@ -171,42 +173,183 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: temperatura de equilibrio al mezclar hasta cinco cuerpos de agua, hielo, vapor, metales, etanol, vidrio, un calorímetro o una sustancia con tus datos, con los cambios de fase que hagan falta.', 'Si la energía no llega para fundir todo el hielo o condensar todo el vapor, dice cuántos gramos quedan de cada fase.', 'Tabla con el calor de cada cuerpo, el desarrollo etapa por etapa (m c ΔT y m L) y la curva de calentamiento de cada uno.'] },
     ],
     induccion: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: coeficiente de autoinducción de solenoides (con núcleo), toroides de sección rectangular y circular, cables coaxiales y líneas bifilares, con el desarrollo desde la ley de Ampère.', 'Inducción mutua entre dos solenoides, dos espiras, un hilo y una espira, y una bobina sobre un toroide, o a partir de L₁, L₂ y k, con el coeficiente de acoplamiento.', 'Flujo, energía magnética y fem inducida si das la corriente o cómo cambia.', 'Circuito RL al cerrar el interruptor o al quitar la fuente: constante de tiempo, corriente y tensión en la bobina en cualquier instante y su gráfica.'] },
     ],
     matrices: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: determinante por Gauss, por Sarrus o por Laplace; inversa por Gauss-Jordan o por adjuntos; rango; forma escalonada y escalonada reducida, con cada operación entre filas y la matriz después de cada paso.', 'Valores y vectores propios con el polinomio característico, las raíces exactas (también con radicales o complejas) y si la matriz es diagonalizable, con P y D.', 'Suma, resta, producto (elemento a elemento), producto por un número, potencia y traspuesta.', 'Fracciones exactas y números complejos en cualquier casilla: 3/4, 0,25, 2−3i o (1+i)/2.'] },
     ],
     sistemas: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: hasta seis ecuaciones con seis incógnitas. Dice si el sistema es compatible determinado, indeterminado o incompatible con el teorema de Rouché-Frobenius y lo resuelve por Gauss con sustitución hacia atrás, por Gauss-Jordan, por la regla de Cramer o con la matriz inversa.', 'Si tiene infinitas soluciones, las da en forma paramétrica (λ, μ…).', 'Coeficientes con fracciones exactas, decimales o números complejos, como las mallas de un circuito de alterna, y nombres propios para las incógnitas (I1, I2…).', 'Comprobación de la solución sustituyendo en cada ecuación.'] },
     ],
     estadistica: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: normal, t de Student, chi cuadrado, exponencial, binomial y Poisson, con su media y su varianza.', 'Probabilidades P(X ≤ a), P(X ≥ a), entre dos valores y, en las discretas, P(X = k) y con desigualdad estricta; cuantiles y valores críticos bilaterales.', 'Gráfica con el área (o las barras) que se pide sombreada.', 'Desarrollo como en clase: tipificación Z = (X − μ)/σ y Φ(z), fórmula de la binomial y de la Poisson término a término, y aproximación de la binomial por la normal con corrección de continuidad.'] },
     ],
     alterna: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: circuitos RLC en serie y en paralelo (o solo con algunos de los elementos) con impedancias complejas en forma binómica y polar, la corriente, la tensión o la corriente de cada elemento, las potencias activa, reactiva y aparente y el factor de potencia, con el desarrollo paso a paso.', 'Diagrama de fasores y ondas v(t) e i(t) desfasadas.', 'Resonancia: frecuencia de resonancia, factor de calidad y ancho de banda.', 'Corrección del factor de potencia: el condensador que hay que poner en paralelo y cuánto baja la corriente de la línea.'] },
     ],
     dinamica: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: bloque en un plano horizontal o inclinado con rozamiento estático y dinámico, una fuerza aplicada con ángulo y, si quieres, una masa colgando de una polea. Dice si el bloque se mueve o el rozamiento lo sujeta y da la normal, el rozamiento, la aceleración y la tensión, con el desarrollo paso a paso.', 'Máquina de Atwood, también con una polea con masa.', 'Dibujo con el diagrama de fuerzas a escala y la aceleración, y la velocidad y el tiempo al recorrer una distancia.'] },
     ],
     circuitos: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: escribe el circuito como una lista de resistencias, fuentes de tensión y fuentes de corriente entre nudos, y obtén los potenciales, la corriente y la potencia de cada elemento por el método de los nudos, con las ecuaciones de Kirchhoff, el sistema en forma matricial y el balance de potencias.', 'Equivalente de Thévenin y de Norton visto por la resistencia que elijas, y máxima transferencia de potencia.', 'Esquema del circuito con el potencial de cada nudo y el sentido de cada corriente.'] },
     ],
     'solido-rigido': [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: momentos de inercia de esferas, cilindros, aros, varillas, discos y placas, con el teorema de Steiner y el radio de giro.', 'Rodadura por un plano inclinado: aceleración, velocidad al final, rozamiento necesario para que no deslice y qué pasa si no basta; comparación del tiempo que tarda cada cuerpo.', 'Polea con masa de la que cuelga un cuerpo: aceleración, tensión y balance de energía.', 'Conservación del momento angular, como la patinadora que encoge los brazos, con la variación de la energía cinética.'] },
     ],
     ondas: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ecuación de una onda armónica con ω y k en múltiplos de π, posición, velocidad y aceleración de un punto del medio y desfase entre dos puntos.', 'Ondas estacionarias en cuerdas y en tubos abiertos o cerrados: frecuencia de cada armónico, nodos y vientres, y velocidad en la cuerda con √(T/μ).', 'Efecto Doppler con la fuente y el observador moviéndose, y nivel sonoro en decibelios a distintas distancias y con varias fuentes.', 'Animación de la onda, de la onda estacionaria y de los frentes de onda del Doppler.'] },
     ],
     gases: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ecuación de estado PV = nRT con P, V, T y n en varias unidades, los moles a partir de la masa y la densidad del gas.', 'Transformaciones isoterma, isobara, isocora y adiabática encadenadas, con el trabajo, el calor y la variación de energía interna de cada tramo, y ciclos con su rendimiento comparado con el de Carnot.', 'Diagrama P-V con las isotermas y el área del ciclo.', 'Teoría cinética: velocidades cuadrática media, media y más probable, energía cinética media y la distribución de Maxwell.'] },
     ],
     faraday: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: fem y corriente inducidas en una barra que se desliza sobre unos raíles, con la fuerza que la frena y la potencia.', 'Bobina que gira en un campo (alternador): flujo y fem en función del tiempo, valores máximo y eficaz.', 'Flujo que cambia en un tiempo porque cambia el campo o el ángulo: fem media, corriente y carga.', 'Espira que atraviesa una región con campo: fem al entrar y al salir, fuerza y calor.', 'Sentido de la corriente por la ley de Lenz y animación con la gráfica de Φ y ε.'] },
     ],
   };
   const de = (h) => ({ current: registros[h][0].v, log: registros[h] });
   // Version.current y Version.log son los del simulador de electrostática
   return { registros, de, ...de('electrostatica') };
+})();
+
+/* =====================================================================
+   Fórmulas en MathML a partir de una sintaxis sencilla (sin DOM salvo
+   Mates.pinta). En los textos, lo que va entre $…$ es una fórmula:
+     a/b            fracción (los paréntesis de fuera se quitan)
+     x^2, e^{−bt/m} exponente; v_0x, E_{c,máx} subíndice
+     √(…), ∛(…)     raíz
+     "m/s"          texto tal cual (unidades, palabras)
+     sen cos tg ln log exp máx mín   funciones; binom(n, k)
+   Una palabra que no es una función se lee letra a letra (mgh = m·g·h).
+   También acepta <sup>, <sub> y las etiquetas que devuelve f().
+   ===================================================================== */
+const Mates = (() => {
+  const FUNC = new Set(['sen', 'cos', 'tg', 'tan', 'ln', 'log', 'exp', 'arcsen', 'arccos', 'arctg', 'máx', 'mín', 'lím', 'senh', 'cosh', 'tgh']);
+  const OPS = '+-−=·×÷⇒⇔→←↔≈≠<>≤≥±∓,;:!∝∈∼≡∑∏∫∂∇⊥∥';
+  const escH = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  function tokens(src) {
+    const s = String(src)
+      .replace(/<sup>/g, '^{').replace(/<\/sup>/g, '}').replace(/<sub>/g, '_{').replace(/<\/sub>/g, '}')
+      .replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+    const out = [];
+    let i = 0, sp = false;
+    while (i < s.length) {
+      const c = s[i], resto = s.slice(i);
+      let m;
+      if (/\s/.test(c)) { sp = true; i++; continue; }
+      if ((m = resto.match(/^\d+(?:[.,]\d+)?/))) out.push({ t: 'n', v: m[0].replace('.', ','), sp });
+      else if (c === '"') { const j = s.indexOf('"', i + 1); m = [s.slice(i, j < 0 ? s.length : j + 1)]; out.push({ t: 'x', v: m[0].replace(/"/g, ''), sp }); }
+      else if ((m = resto.match(/^[\p{L}\p{M}∞]+[′″]*/u))) out.push({ t: 'w', v: m[0], sp });
+      else { m = [c]; out.push({ t: 's', v: c, sp }); }
+      i += m[0].length; sp = false;
+    }
+    return out;
+  }
+
+  // nodo: { m: MathML, dentro: MathML sin los paréntesis de fuera (o null) }
+  const nodo = (m, dentro = null) => ({ m, dentro });
+  const fila = (xs) => (xs.length === 1 ? xs[0] : `<mrow>${xs.join('')}</mrow>`);
+  const letra = (v) => (/^\d+(,\d+)?$/.test(v) ? `<mn>${v}</mn>` : [...v].length === 1 ? `<mi>${escH(v)}</mi>` : `<mi mathvariant="normal">${escH(v)}</mi>`);
+
+  function analiza(tk) {
+    let p = 0;
+    const ver = () => tk[p], es = (v) => tk[p] && tk[p].t === 's' && tk[p].v === v;
+    function secuencia(cierre) {
+      const xs = [];
+      let prevOp = true;
+      while (p < tk.length && !(cierre && es(cierre))) {
+        const k = ver();
+        if (k.t === 's' && OPS.includes(k.v)) {
+          p++;
+          const v = k.v === '-' ? '−' : k.v;
+          // un signo detrás de otro operador (o al principio) es de número: = −19,28
+          const signo = prevOp && (v === '−' || v === '+' || v === '±');
+          xs.push(v === '!' ? '<mo lspace="0">!</mo>' : v === ',' || v === ';' ? `<mo separator="true">${v}</mo>` : signo ? `<mo form="prefix" lspace="0" rspace="0.05em">${v}</mo>` : `<mo>${escH(v)}</mo>`);
+          prevOp = true; continue;
+        }
+        if (k.t === 's' && (k.v === ')' || k.v === '}' || k.v === ']')) { p++; continue; } // paréntesis sueltos
+        xs.push(fraccion().m); prevOp = false;
+      }
+      return xs;
+    }
+    function fraccion() {
+      let a = guiones();
+      while (es('/')) { p++; const b = guiones(); a = nodo(`<mfrac>${a.dentro ?? a.m}${b.dentro ?? b.m}</mfrac>`); }
+      return a;
+    }
+    function argumento() {
+      if (es('{')) { p++; const xs = secuencia('}'); p++; return fila(xs); }
+      if (es('-') || es('−')) { p++; const a = argumento(); return `<mrow><mo>−</mo>${a}</mrow>`; }
+      if (es('(')) { const a = atomo(); return a.m; }
+      // una racha de letras y números pegados: 0x, máx, 12
+      const k = ver();
+      if (!k) return '<mrow></mrow>';
+      if (k.t === 's') { p++; return `<mo>${escH(k.v)}</mo>`; }
+      let v = k.v; p++;
+      while (ver() && !ver().sp && (ver().t === 'n' || ver().t === 'w')) { v += ver().v; p++; }
+      return letra(v);
+    }
+    function guiones() {
+      const base = atomo();
+      let sub = null, sup = null;
+      for (;;) {
+        if (es('_') && sub === null) { p++; sub = argumento(); } else if (es('^') && sup === null) { p++; sup = argumento(); } else break;
+      }
+      if (sub === null && sup === null) return base;
+      const b = base.m;
+      return nodo(sub !== null && sup !== null ? `<msubsup>${b}${sub}${sup}</msubsup>` : sub !== null ? `<msub>${b}${sub}</msub>` : `<msup>${b}${sup}</msup>`);
+    }
+    function atomo() {
+      const k = ver();
+      if (!k) return nodo('<mrow></mrow>');
+      p++;
+      if (k.t === 'n') return nodo(`<mn>${k.v}</mn>`);
+      if (k.t === 'x') return nodo(`${k.sp && p > 1 ? '<mspace width="0.3em"></mspace>' : ''}<mtext>${escH(k.v)}</mtext>`);
+      if (k.t === 'w') {
+        // binom(n, k): número combinatorio
+        if (k.v === 'binom' && es('(')) { p++; const a = secuencia(','); p++; const b = secuencia(')'); p++; return nodo(`<mrow><mo>(</mo><mfrac linethickness="0">${fila(a)}${fila(b)}</mfrac><mo>)</mo></mrow>`); }
+        if (FUNC.has(k.v)) { let m = `<mi mathvariant="normal">${k.v}</mi>`; if (es('^')) { p++; m = `<msup>${m}${argumento()}</msup>`; } return nodo(`<mspace width="0.17em"></mspace>${m}<mo>&#x2061;</mo><mspace width="0.12em"></mspace>`); }
+        const ls = [...k.v.replace(/[′″]+$/, '')], pr = (k.v.match(/[′″]+$/) || [''])[0];
+        // las marcas combinadas (î, ĵ con acento) van con su letra
+        const grupos = []; for (const c of ls) { if (/\p{M}/u.test(c) && grupos.length) grupos[grupos.length - 1] += c; else grupos.push(c); }
+        // las mayúsculas griegas (Δ, Σ, Φ, Ω) van rectas, como en los libros
+        return nodo(fila(grupos.map((c) => (c === '∞' ? '<mi>∞</mi>' : /^[Α-Ω]$/.test(c) ? `<mi mathvariant="normal">${c}</mi>` : `<mi>${escH(c)}</mi>`)).concat(pr ? [`<mo lspace="0" rspace="0">${pr}</mo>`] : [])));
+      }
+      const v = k.v;
+      if (v === '(' || v === '[') { const c = v === '(' ? ')' : ']'; const xs = secuencia(c); if (es(c)) p++; const d = fila(xs), est = /<m(frac|sqrt|root)/.test(d) ? '' : ' stretchy="false"'; return nodo(`<mrow><mo${est}>${v}</mo>${d}<mo${est}>${c}</mo></mrow>`, d); }
+      if (v === '{') { const xs = secuencia('}'); if (es('}')) p++; const d = fila(xs); return nodo(`<mrow>${d}</mrow>`, d); }
+      if (v === '√') { const a = guiones(); return nodo(`<msqrt>${a.dentro ?? a.m}</msqrt>`); }
+      if (v === '∛') { const a = guiones(); return nodo(`<mroot>${a.dentro ?? a.m}<mn>3</mn></mroot>`); }
+      if (v === '|') return nodo('<mo stretchy="false" lspace="0.05em" rspace="0.05em">|</mo>');
+      if (v === '°' || v === '%' || v === '‰') return nodo(`<mi mathvariant="normal">${v}</mi>`);
+      return nodo(`<mo>${escH(v)}</mo>`);
+    }
+    return fila(secuencia(null));
+  }
+
+  const mathml = (src) => `<math><mstyle displaystyle="true">${analiza(tokens(src))}</mstyle></math>`;
+  // sustituye cada $…$ de un texto HTML por su MathML
+  const html = (s) => String(s ?? '').replace(/\$([^$]+)\$/g, (_, x) => mathml(x));
+  // convierte en el documento los elementos con class="m" (fórmulas escritas en el HTML)
+  function pinta(raiz) { if (typeof document === 'undefined') return; for (const el of (raiz || document).querySelectorAll('.m:not([data-m])')) { el.dataset.m = '1'; el.innerHTML = html(el.innerHTML.includes('$') ? el.innerHTML : `$${el.innerHTML}$`); } }
+  if (typeof document !== 'undefined') {
+    const st = document.createElement('style');
+    st.textContent = '@font-face { font-family: "STIX Two Math"; src: url(../../fuentes/stix-two-math.woff2) format("woff2"); font-display: swap }\nmath { font-family: "STIX Two Math", "Cambria Math", math; font-size: 1.08em }\nmath mtext { font-family: "STIX Two Text", "STIX Two Math", serif }';
+    document.head.appendChild(st);
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => pinta()); else pinta();
+  }
+  return { html, mathml, pinta, tokens };
 })();
 
 /* =====================================================================

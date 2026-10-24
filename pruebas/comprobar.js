@@ -1233,9 +1233,16 @@ async function navegador() {
       if (r.dolar) mal(`${dir}: queda algún $ sin convertir en una fórmula`);
       if (!(r.ancho > 0)) mal(`${dir}: alguna fórmula MathML no se dibuja`);
     }
+    // las cajas de fórmulas de la teoría del resto de herramientas
+    for (const pag of ['laboratorio/alterna', 'laboratorio/circuitos', 'electromagnetismo/condensadores', 'fisica/dinamica', 'matematicas/estadistica', 'electromagnetismo/faraday', 'fisica/gases', 'electromagnetismo/induccion', 'matematicas/matrices', 'fisica/ondas', 'matematicas/sistemas', 'fisica/solido-rigido']) {
+      await page.goto('file://' + path.join(publico, ...pag.split('/'), 'index.html'));
+      await page.waitForFunction(() => document.querySelectorAll('.teoria .f[data-m]').length > 0);
+      const r = await page.evaluate(() => [...document.querySelectorAll('.teoria .f')].map((e) => e.querySelectorAll('math').length > 0 && !/\$/.test(e.textContent)));
+      if (!r.length || r.includes(false)) mal(`${pag}: alguna caja de la teoría no sale en MathML`);
+    }
     await page.close();
     if (consola.length) mal('Arreglo 2: consola del navegador:\n      ' + consola.join('\n      '));
-    if (fallos === antes) console.log('  ✓ Tiro parabólico, Trabajo y energía y Calorimetría: fórmulas MathML en el desarrollo y en la teoría');
+    if (fallos === antes) console.log('  ✓ Fórmulas MathML: desarrollo y teoría de Tiro parabólico, Trabajo y energía y Calorimetría, y la teoría de otras 12 herramientas');
   }
   // portada y páginas de asignatura: sin errores de consola y sin enlaces internos rotos
   const portal = ['index.html', ...Catalogo.asignaturas.map((a) => `${a.clave}/index.html`), 'electromagnetismo/magnetostatica/index.html', 'quimica/tabla-periodica/index.html', 'fisica/trabajo-y-energia/index.html', 'quimica/masa-molar/index.html', 'quimica/configuracion-electronica/index.html', 'electromagnetismo/condensadores/index.html', 'fisica/tiro-parabolico/index.html', 'quimica/disoluciones/index.html', 'fisica/calorimetria/index.html', 'electromagnetismo/induccion/index.html', 'matematicas/matrices/index.html', 'matematicas/sistemas/index.html', 'matematicas/estadistica/index.html', 'laboratorio/alterna/index.html', 'fisica/dinamica/index.html', 'laboratorio/circuitos/index.html', 'fisica/solido-rigido/index.html', 'fisica/ondas/index.html', 'fisica/gases/index.html', 'electromagnetismo/faraday/index.html'];

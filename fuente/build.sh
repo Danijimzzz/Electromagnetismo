@@ -56,7 +56,7 @@ if [ "$1" != privado ]; then
   herramienta configuracion-electronica ../publico/quimica/configuracion-electronica/index.html "Configuración electrónica" "Configuración electrónica de elementos e iones con el diagrama de Moeller, la regla de Hund y los números cuánticos" \
     version.js quimica/elementos.js quimica/configuracion.js configuracion-electronica/app.js
   herramienta condensadores ../publico/electromagnetismo/condensadores/index.html "Condensadores con dieléctricos" "Capacidad, energía, campos E, D y P y cargas de polarización en condensadores planos, cilíndricos y esféricos con dieléctricos" \
-    version.js condensadores/fisica.js condensadores/app.js
+    version.js mates.js condensadores/fisica.js condensadores/app.js
   herramienta tiro-parabolico ../publico/fisica/tiro-parabolico/index.html "Tiro parabólico y cinemática" "Simulador de tiro parabólico con y sin rozamiento: alcance, altura máxima, tiempo de vuelo, gráficas x(t), v(t), a(t) y MRU y MRUA paso a paso" \
     version.js mates.js tiro-parabolico/fisica.js tiro-parabolico/app.js
   herramienta disoluciones ../publico/quimica/disoluciones/index.html "Disoluciones y concentraciones" "Calculadora de disoluciones: molaridad, molalidad, fracción molar, % en masa y ppm, preparar desde un reactivo comercial y diluir, paso a paso" \
@@ -64,25 +64,25 @@ if [ "$1" != privado ]; then
   herramienta calorimetria ../publico/fisica/calorimetria/index.html "Calorimetría y cambios de fase" "Temperatura de equilibrio al mezclar agua, hielo, vapor y metales, con cambios de fase y calorímetro, paso a paso" \
     version.js mates.js calorimetria/fisica.js calorimetria/app.js
   herramienta induccion ../publico/electromagnetismo/induccion/index.html "Autoinducción e inducción mutua" "Coeficiente de autoinducción de solenoides, toroides y cables coaxiales, inducción mutua, energía magnética y circuito RL, paso a paso" \
-    version.js induccion/fisica.js induccion/app.js
+    version.js mates.js induccion/fisica.js induccion/app.js
   herramienta faraday ../publico/electromagnetismo/faraday/index.html "Inducción: Faraday y Lenz" "Calculadora de inducción electromagnética: fem inducida con la ley de Faraday y sentido de la corriente con la ley de Lenz en una barra sobre raíles, un alternador, un flujo que cambia y una espira que cruza un campo" \
-    version.js faraday/fisica.js faraday/app.js
+    version.js mates.js faraday/fisica.js faraday/app.js
   herramienta matrices ../publico/matematicas/matrices/index.html "Matrices paso a paso" "Calculadora de matrices con fracciones exactas y complejos: determinante, inversa, rango, Gauss-Jordan y valores y vectores propios, paso a paso" \
-    version.js matematicas/algebra.js matrices/calculo.js matrices/app.js
+    version.js mates.js matematicas/algebra.js matrices/calculo.js matrices/app.js
   herramienta sistemas ../publico/matematicas/sistemas/index.html "Sistemas de ecuaciones lineales" "Calculadora de sistemas de ecuaciones paso a paso: Rouché-Frobenius, Gauss, Gauss-Jordan, Cramer y matriz inversa, en paramétricas y con números complejos" \
-    version.js matematicas/algebra.js sistemas/calculo.js sistemas/app.js
+    version.js mates.js matematicas/algebra.js sistemas/calculo.js sistemas/app.js
   herramienta estadistica ../publico/matematicas/estadistica/index.html "Distribuciones de probabilidad" "Calculadora de la normal, binomial, Poisson, t de Student y chi cuadrado con el área sombreada: probabilidades, cuantiles y valores críticos paso a paso" \
-    version.js estadistica/calculo.js estadistica/app.js
+    version.js mates.js estadistica/calculo.js estadistica/app.js
   herramienta alterna ../publico/laboratorio/alterna/index.html "Corriente alterna y fasores" "Calculadora de corriente alterna: circuitos RLC en serie y en paralelo con impedancias complejas, diagrama de fasores, potencias, factor de potencia y resonancia, paso a paso" \
-    version.js alterna/fisica.js alterna/app.js
+    version.js mates.js alterna/fisica.js alterna/app.js
   herramienta dinamica ../publico/fisica/dinamica/index.html "Dinámica y diagramas de fuerzas" "Calculadora de dinámica con el diagrama de fuerzas: plano inclinado con rozamiento estático y dinámico, fuerza con ángulo, poleas y máquina de Atwood, paso a paso" \
-    version.js dinamica/fisica.js dinamica/app.js
+    version.js mates.js dinamica/fisica.js dinamica/app.js
   herramienta circuitos ../publico/laboratorio/circuitos/index.html "Circuitos de corriente continua" "Calculadora de circuitos de corriente continua por el método de los nudos: leyes de Kirchhoff, corrientes, potencias, Thévenin, Norton y máxima transferencia de potencia, paso a paso" \
-    version.js circuitos/fisica.js circuitos/app.js
+    version.js mates.js circuitos/fisica.js circuitos/app.js
   herramienta solido-rigido ../publico/fisica/solido-rigido/index.html "Sólido rígido" "Calculadora de sólido rígido: momentos de inercia con el teorema de Steiner, rodadura por un plano inclinado, polea con masa y conservación del momento angular, paso a paso" \
-    version.js solido-rigido/fisica.js solido-rigido/app.js
+    version.js mates.js solido-rigido/fisica.js solido-rigido/app.js
   herramienta ondas ../publico/fisica/ondas/index.html "Ondas mecánicas" "Calculadora de ondas: ecuación de la onda armónica, ondas estacionarias en cuerdas y tubos, efecto Doppler e intensidad y nivel sonoro, con animación y paso a paso" \
-    version.js ondas/fisica.js ondas/app.js
+    version.js mates.js ondas/fisica.js ondas/app.js
   herramienta gases ../publico/fisica/gases/index.html "Gases ideales" "Calculadora de gases ideales: ecuación de estado PV = nRT, transformaciones isoterma, isobara, isocora y adiabática, ciclos con su rendimiento y teoría cinética, paso a paso" \
-    version.js gases/fisica.js gases/app.js
+    version.js mates.js gases/fisica.js gases/app.js
 fi
