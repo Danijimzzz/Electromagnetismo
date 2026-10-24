@@ -930,6 +930,34 @@ const CinC = require(path.join(fuente, 'cinetica', 'calculo.js'));
   if (fallos === antes) console.log(`  ✓ Cinética química: ${CinC.ejemplos.length} ejemplos, leyes integradas y vidas medias a mano, unidades de k, orden a partir de datos, velocidades iniciales, Arrhenius de ida y vuelta y errores`);
 }
 
+const CamC = require(path.join(fuente, 'campos', 'calculo.js'));
+{
+  const antes = fallos, cerca = (a, b, tol, q) => { if (!(Math.abs(a - b) <= tol * Math.max(1, Math.abs(b)))) mal(`Campos · ${q}: ${a} en vez de ${b}`); };
+  const r = (c) => CamC.resolver(CamC.ejemplos.find((e) => e.clave === c).sc);
+  for (const e of CamC.ejemplos) { try { const x = CamC.resolver(e.sc); if (x.pasos.length < 3) mal(`Campos · ${e.clave}: desarrollo corto`); if (/\{\d{4,}\}\/\{\d{4,}\}/.test(x.pasos.map((q) => q.html).join(' '))) mal(`Campos · ${e.clave}: una fracción rara en el desarrollo`); } catch (err) { mal(`Campos · ${e.clave}: ${err.message}`); } }
+  const p = r('paraboloide'); cerca(p.g0[0], 2, 1e-12, 'gradiente'); cerca(p.g0[1], 4, 1e-12, 'gradiente'); cerca(p.du, 3 * Math.SQRT2, 1e-12, 'derivada direccional'); cerca(p.lap, 4, 1e-12, 'laplaciano');
+  const x3 = r('xyz'); cerca(x3.du, 16 / 3, 1e-12, 'derivada direccional en 3D'); if (!x3.armonica || !r('armonica').armonica || p.armonica) mal('Campos: no reconoce bien las funciones armónicas');
+  if (CamC.ex(2 * Math.PI) !== '2 π' || CamC.ex(Math.LN2 / 2) !== '{ln 2}/{2}' || CamC.ex(5 / 3) !== '{5}/{3}') mal(`Campos: valores exactos «${CamC.ex(2 * Math.PI)}», «${CamC.ex(Math.LN2 / 2)}»`);
+  const fu = r('fuente'); cerca(fu.div, 2, 1e-12, 'divergencia de (x, y)'); if (!fu.cons) mal('Campos: (x, y) no sale conservativo'); cerca(fu.phi, 1, 1e-9, 'potencial de (x, y)');
+  const re = r('remolino'); cerca(re.rot0[2], 2, 1e-12, 'rotacional de (−y, x)'); if (re.cons) mal('Campos: (−y, x) sale conservativo');
+  cerca(r('cizalla').rot0[2], -1, 1e-12, 'rotacional de la cizalla');
+  const co = r('conservativo'); if (!co.cons) mal('Campos: (yz, xz, xy) no sale conservativo'); cerca(co.phi, 6, 1e-9, 'potencial xyz');
+  const ca = r('carga'); if (!ca.cons || Math.abs(ca.div) > 1e-12) mal('Campos: el campo de una carga no sale con divergencia 0 y conservativo'); cerca(ca.phi, Math.LN2 / 2, 1e-9, 'potencial de la carga');
+  cerca(r('circulo').W, 2 * Math.PI, 1e-9, 'trabajo en una vuelta'); cerca(r('circulo').L, 2 * Math.PI, 1e-9, 'longitud de la circunferencia');
+  const pa = r('parabola'); cerca(pa.W, 1, 1e-9, 'trabajo por la parábola'); cerca(pa.dphi, 1, 1e-9, 'Δφ por la parábola');
+  cerca(r('helice').W, 2 * Math.PI + 2 * Math.PI ** 2, 1e-9, 'trabajo por la hélice'); cerca(r('segmento').W, 5 / 3, 1e-9, 'trabajo por el segmento');
+  const g1 = r('green-circulo'); cerca(g1.circula, 2 * Math.PI, 1e-9, 'circulación'); cerca(g1.dobleR, 2 * Math.PI, 1e-6, 'Green'); cerca(g1.flujo, 0, 1e-9, 'flujo');
+  const g2 = r('green-rect'); cerca(g2.circula, 2, 1e-9, 'circulación en el rectángulo'); cerca(g2.dobleR, 2, 1e-9, 'Green en el rectángulo'); cerca(g2.flujo, 1, 1e-9, 'flujo en el rectángulo'); cerca(g2.dobleD, 1, 1e-9, 'divergencia en el rectángulo');
+  const g3 = r('green-flujo'); cerca(g3.flujo, 8 * Math.PI, 1e-9, 'flujo de (x, y)'); cerca(g3.dobleD, 8 * Math.PI, 1e-6, 'divergencia de (x, y)');
+  const ag = r('green-agujero'); cerca(ag.circula, 2 * Math.PI, 1e-9, 'circulación alrededor del origen'); if (!ag.singular || g1.singular || g2.singular || g3.singular) mal('Campos: no se avisa (o se avisa sin motivo) de que Green no vale con una singularidad dentro');
+  const sc0 = CamC.ejemplos.find((e) => e.clave === 'paraboloide').sc;
+  for (const [q, sc] of [['una f vacía', { ...sc0, f: '' }], ['un punto que no es un número', { ...sc0, x0: 'abc' }], ['la dirección cero', { ...sc0, u: '0, 0' }], ['un campo vacío', { modo: 'vectorial', P: '', Q: '', R: '', x0: '1', y0: '1' }], ['t final menor que el inicial', { modo: 'linea', P: 'y', Q: 'x', cx: 't', cy: 't', a: '1', b: '0' }], ['un radio negativo', { modo: 'green', P: 'y', Q: 'x', region: 'circulo', cx: '0', cy: '0', rad: '-1' }]]) {
+    let ok = false; try { CamC.resolver(sc); } catch (e) { ok = true; }
+    if (!ok) mal(`Campos: ${q} no da error`);
+  }
+  if (fallos === antes) console.log(`  ✓ Campos vectoriales: ${CamC.ejemplos.length} ejemplos, gradiente, derivada direccional, laplaciano, divergencia, rotacional, potencial, trabajo, Green y errores`);
+}
+
 const Gases = require(path.join(fuente, 'gases', 'fisica.js'));
 {
   // valores calculados a mano
@@ -1911,6 +1939,47 @@ async function navegador() {
     const consola = [];
     page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') consola.push(m.type() + ': ' + m.text()); });
     page.on('pageerror', (e) => consola.push('excepción: ' + e.message));
+    await page.goto('file://' + path.join(publico, 'matematicas', 'campos', 'index.html'));
+    await page.waitForFunction(() => window.CamposApp);
+    const antes = fallos;
+    const verC = (await page.locator('#ver').textContent()).trim();
+    if (verC !== Version.de('campos').current) mal(`Campos: la página muestra la versión «${verC}», se esperaba ${Version.de('campos').current}`);
+    for (const e of CamC.ejemplos) {
+      await page.evaluate((c) => CamposApp.abrirEjemplo(c), e.clave);
+      await page.waitForTimeout(30);
+      const r = await page.evaluate(() => ({ err: !document.querySelector('#error').hidden, pasos: document.querySelectorAll('#pasos li').length, mathml: document.querySelectorAll('#pasos math').length, dolar: /\$/.test(document.querySelector('#pasos').textContent + document.querySelector('#resumen').textContent), res: document.querySelectorAll('#resumen > div.num').length, modo: document.querySelector('#f-modo').value }));
+      if (r.err || r.pasos < 3 || r.res < 1) mal(`Campos · ${e.clave}: falta el resultado o el desarrollo`);
+      if (!r.mathml || r.dolar) mal(`Campos · ${e.clave}: el desarrollo no sale en MathML`);
+      if (r.modo !== e.sc.modo) mal(`Campos · ${e.clave}: el modo no cuadra`);
+    }
+    await page.evaluate(() => CamposApp.abrirEjemplo('circulo'));
+    if (!(await page.locator('#resumen').textContent()).includes('6,2832')) mal('Campos: el trabajo de (−y, x) en una vuelta (2π) no sale en la página');
+    await page.fill('#f-P', 'y');
+    if (!/^0$/.test((await page.locator('#resumen > div.num b').first().textContent()).trim())) mal('Campos: con F = (y, x) el trabajo en una vuelta no sale 0');
+    await page.fill('#f-b', 'abc');
+    if (await page.locator('#error').isHidden()) mal('Campos: un t final que no es un número no da error');
+    await page.evaluate(() => CamposApp.abrirEjemplo('remolino'));
+    const caja = await page.locator('#grafica').boundingBox();
+    await page.mouse.click(caja.x + caja.width * 0.25, caja.y + caja.height * 0.25);
+    const est = await page.evaluate(() => CamposApp.estado());
+    if (!(parseFloat(est.x0.replace(',', '.')) < 0 && parseFloat(est.y0.replace(',', '.')) > 0)) mal(`Campos: tocar la gráfica no mueve el punto (${est.x0}, ${est.y0})`);
+    await page.evaluate(() => CamposApp.abrirEjemplo('green-circulo'));
+    await page.selectOption('#f-region', 'rectangulo');
+    if ((await page.locator('#f-x2').count()) !== 1 || !(await page.locator('#error').isHidden())) mal('Campos: al pasar a un rectángulo no salen sus campos o da error');
+    await page.selectOption('#f-modo', 'escalar');
+    if ((await page.locator('#f-f').count()) !== 1 || !(await page.locator('#error').isHidden())) mal('Campos: al pasar a campo escalar no sale el campo de f o da error');
+    await page.click('#animar');
+    if ((await page.locator('#animar').textContent()).trim() !== '▶ Animar') mal('Campos: el botón de parar no cambia');
+    for (let i = 0; i < 10; i++) { await page.evaluate(() => CamposApp.azar()); if (!(await page.locator('#error').isHidden())) mal(`Campos: un ejercicio al azar da error: ${JSON.stringify(await page.evaluate(() => CamposApp.estado()))}`); }
+    await page.close();
+    if (consola.length) mal('Campos: consola del navegador:\n      ' + consola.join('\n      '));
+    if (fallos === antes) console.log(`  ✓ Campos vectoriales: ${CamC.ejemplos.length} ejemplos con MathML, cambio de campo, errores, tocar la gráfica, regiones de Green, cambio de modo y ejercicios al azar sin errores de consola`);
+  }
+  {
+    const page = await browser.newPage({ viewport: { width: 1200, height: 900 } });
+    const consola = [];
+    page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') consola.push(m.type() + ': ' + m.text()); });
+    page.on('pageerror', (e) => consola.push('excepción: ' + e.message));
     await page.goto('file://' + path.join(publico, 'fisica', 'gases', 'index.html'));
     await page.waitForFunction(() => window.GasesApp);
     const antes = fallos;
@@ -2010,7 +2079,7 @@ async function navegador() {
       if (!(r.ancho > 0)) mal(`${dir}: alguna fórmula MathML no se dibuja`);
     }
     // las cajas de fórmulas de la teoría del resto de herramientas
-    for (const pag of ['circuitos/alterna', 'circuitos/continua', 'electromagnetismo/condensadores', 'fisica/dinamica', 'estadistica/distribuciones', 'electromagnetismo/faraday', 'fisica/gases', 'electromagnetismo/induccion', 'matematicas/matrices', 'fisica/ondas', 'fisica/doppler', 'circuitos/resistencias', 'estadistica/regresion', 'matematicas/complejos', 'fisica/fluidos', 'quimica/ph', 'fisica/ciclos', 'matematicas/taylor', 'matematicas/fourier', 'matematicas/edos', 'quimica/cinetica', 'matematicas/sistemas', 'fisica/solido-rigido']) {
+    for (const pag of ['circuitos/alterna', 'circuitos/continua', 'electromagnetismo/condensadores', 'fisica/dinamica', 'estadistica/distribuciones', 'electromagnetismo/faraday', 'fisica/gases', 'electromagnetismo/induccion', 'matematicas/matrices', 'fisica/ondas', 'fisica/doppler', 'circuitos/resistencias', 'estadistica/regresion', 'matematicas/complejos', 'fisica/fluidos', 'quimica/ph', 'fisica/ciclos', 'matematicas/taylor', 'matematicas/fourier', 'matematicas/edos', 'quimica/cinetica', 'matematicas/campos', 'matematicas/sistemas', 'fisica/solido-rigido']) {
       await page.goto('file://' + path.join(publico, ...pag.split('/'), 'index.html'));
       await page.waitForFunction(() => document.querySelectorAll('.teoria .f[data-m]').length > 0);
       const r = await page.evaluate(() => [...document.querySelectorAll('.teoria .f')].map((e) => e.querySelectorAll('math').length > 0 && !/\$/.test(e.textContent)));
@@ -2020,7 +2089,7 @@ async function navegador() {
     }
     await page.close();
     if (consola.length) mal('Arreglo 2: consola del navegador:\n      ' + consola.join('\n      '));
-    if (fallos === antes) console.log('  ✓ Fórmulas MathML: desarrollo y teoría de Tiro parabólico, Trabajo y energía y Calorimetría, y la teoría de otras 23 herramientas, sin $ sueltos');
+    if (fallos === antes) console.log('  ✓ Fórmulas MathML: desarrollo y teoría de Tiro parabólico, Trabajo y energía y Calorimetría, y la teoría de otras 24 herramientas, sin $ sueltos');
   }
   {
     // arreglo 6: barra lateral «Mis ejercicios» en todas las herramientas con estado (guardar, carpeta, fijar, abrir, exportar, borrar e importar)
@@ -2071,7 +2140,7 @@ async function navegador() {
     if (!m.ab || !m.scrim || m.ancho > 390) mal(`Mis ejercicios en el móvil: ${JSON.stringify(m)}`);
     await movil.close();
     if (consola.length) mal('Arreglo 6: consola del navegador:\n      ' + consola.join('\n      '));
-    if (probadas < 30) mal(`Mis ejercicios: solo se ha probado en ${probadas} herramientas`);
+    if (probadas < 31) mal(`Mis ejercicios: solo se ha probado en ${probadas} herramientas`);
     if (fallos === antes) console.log(`  ✓ Mis ejercicios: guardar, carpeta, fijar, abrir, exportar, borrar e importar en ${probadas} herramientas, y en el móvil`);
   }
   {
@@ -2110,11 +2179,11 @@ async function navegador() {
       await page.close(); probadas++;
     }
     if (consola.length) mal('Arreglo 7: consola del navegador:\n      ' + consola.join('\n      '));
-    if (probadas < 30) mal(`Modo práctica: solo se ha probado en ${probadas} herramientas`);
+    if (probadas < 31) mal(`Modo práctica: solo se ha probado en ${probadas} herramientas`);
     if (fallos === antes) console.log(`  ✓ Modo práctica: ${ejercicios} ejercicios al azar en ${probadas} herramientas, corregidos bien y mal, con la solución y la vuelta a los datos de antes`);
   }
   // portada y páginas de asignatura: sin errores de consola y sin enlaces internos rotos
-  const portal = ['index.html', ...Catalogo.asignaturas.map((a) => `${a.clave}/index.html`), 'electromagnetismo/magnetostatica/index.html', 'quimica/tabla-periodica/index.html', 'fisica/trabajo-y-energia/index.html', 'quimica/masa-molar/index.html', 'quimica/configuracion-electronica/index.html', 'electromagnetismo/condensadores/index.html', 'fisica/tiro-parabolico/index.html', 'quimica/disoluciones/index.html', 'fisica/calorimetria/index.html', 'electromagnetismo/induccion/index.html', 'matematicas/matrices/index.html', 'matematicas/sistemas/index.html', 'estadistica/distribuciones/index.html', 'circuitos/alterna/index.html', 'fisica/dinamica/index.html', 'circuitos/continua/index.html', 'fisica/solido-rigido/index.html', 'fisica/ondas/index.html', 'fisica/doppler/index.html', 'circuitos/resistencias/index.html', 'estadistica/regresion/index.html', 'matematicas/complejos/index.html', 'fisica/fluidos/index.html', 'quimica/ph/index.html', 'fisica/ciclos/index.html', 'matematicas/taylor/index.html', 'matematicas/fourier/index.html', 'matematicas/edos/index.html', 'quimica/cinetica/index.html', 'fisica/gases/index.html', 'electromagnetismo/faraday/index.html'];
+  const portal = ['index.html', ...Catalogo.asignaturas.map((a) => `${a.clave}/index.html`), 'electromagnetismo/magnetostatica/index.html', 'quimica/tabla-periodica/index.html', 'fisica/trabajo-y-energia/index.html', 'quimica/masa-molar/index.html', 'quimica/configuracion-electronica/index.html', 'electromagnetismo/condensadores/index.html', 'fisica/tiro-parabolico/index.html', 'quimica/disoluciones/index.html', 'fisica/calorimetria/index.html', 'electromagnetismo/induccion/index.html', 'matematicas/matrices/index.html', 'matematicas/sistemas/index.html', 'estadistica/distribuciones/index.html', 'circuitos/alterna/index.html', 'fisica/dinamica/index.html', 'circuitos/continua/index.html', 'fisica/solido-rigido/index.html', 'fisica/ondas/index.html', 'fisica/doppler/index.html', 'circuitos/resistencias/index.html', 'estadistica/regresion/index.html', 'matematicas/complejos/index.html', 'fisica/fluidos/index.html', 'quimica/ph/index.html', 'fisica/ciclos/index.html', 'matematicas/taylor/index.html', 'matematicas/fourier/index.html', 'matematicas/edos/index.html', 'quimica/cinetica/index.html', 'matematicas/campos/index.html', 'fisica/gases/index.html', 'electromagnetismo/faraday/index.html'];
   const antes = fallos;
   for (const f of portal) {
     const page = await browser.newPage({ viewport: { width: 1200, height: 900 } });
