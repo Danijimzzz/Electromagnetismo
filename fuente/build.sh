@@ -81,4 +81,6 @@ if [ "$1" != privado ]; then
     version.js solido-rigido/fisica.js solido-rigido/app.js
   herramienta ondas ../publico/fisica/ondas/index.html "Ondas mecánicas" "Calculadora de ondas: ecuación de la onda armónica, ondas estacionarias en cuerdas y tubos, efecto Doppler e intensidad y nivel sonoro, con animación y paso a paso" \
     version.js ondas/fisica.js ondas/app.js
+  herramienta gases ../publico/fisica/gases/index.html "Gases ideales" "Calculadora de gases ideales: ecuación de estado PV = nRT, transformaciones isoterma, isobara, isocora y adiabática, ciclos con su rendimiento y teoría cinética, paso a paso" \
+    version.js gases/fisica.js gases/app.js
 fi

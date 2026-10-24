@@ -1,0 +1,91 @@
+<title>Gases ideales: PV = nRT, transformaciones, ciclos y teoría cinética · SimulaCiencia</title>
+<meta name="description" content="Calculadora de gases ideales en español: ecuación de estado PV = nRT, transformaciones isoterma, isobara, isocora y adiabática con trabajo, calor y energía interna, ciclos con su rendimiento y diagrama P-V, y velocidades moleculares con la distribución de Maxwell, paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root {
+  --bg: #eef0f4; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d6dbe3; --accent: #2a5db5; --accent-soft: #e3ecfa; --peso: #c2412a; --normal: #1d7a3e; --roz: #b0700a; --fuerza: #6b3fa0; --tension: #2a5db5; --cuerpo: #c9d3e0; --suelo: #8a96a3;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #74a2f2; --accent-soft: #1c2a42; --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #74a2f2; --accent-soft: #1c2a42; --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784; color-scheme: dark }
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
+.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
+.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+.layout { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 16px; align-items: start }
+@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr) } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 15px var(--f-ui); margin: 0 0 10px }
+.campos { display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px } .campos label small { color: var(--muted) }
+.in { font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.in:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer }
+.btn:hover { border-color: var(--accent) }
+.error { color: #c0392b; font-size: 13px; margin: 10px 0 0 }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+.res { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px 14px; font: 16px var(--f-math) } .res div { overflow-x: auto } .res span { display: block; font: 12px var(--f-ui); color: var(--muted) }
+.leyenda { font-size: 12.5px; color: var(--muted); margin: 6px 0 0 } .leyenda b { font-weight: 600 }
+canvas { display: block; width: 100%; height: clamp(260px, 36vw, 380px); border-radius: 8px; background: var(--bg); margin-top: 10px }
+.pasos ol { margin: 0; padding-left: 22px } .pasos li { margin: 0 0 12px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+.tramos { grid-column: 1 / -1; display: grid; gap: 6px }
+.tramo { display: grid; grid-template-columns: 30px minmax(0, 1.3fr) 58px minmax(0, 1fr) 30px; gap: 6px; align-items: center; font-size: 13px }
+.tramo b { font: 600 13px var(--f-math); text-align: center }
+.botones { grid-column: 1 / -1; display: flex; gap: 8px; flex-wrap: wrap }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física general</a> / Gases ideales</span></header>
+<div class="wrap">
+<h1>Gases ideales</h1>
+<p class="lead">Aplica la ecuación de estado PV = nRT, encadena transformaciones isotermas, isobaras, isocoras y adiabáticas para obtener el trabajo, el calor y la energía interna de cada tramo y el rendimiento de un ciclo, y calcula las velocidades de las moléculas con la teoría cinética.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card"><h2>Resultado</h2><div class="res" id="res"></div>
+      <canvas id="escena" aria-label="Diagrama P-V o distribución de velocidades"></canvas>
+      <p class="leyenda" id="leyenda"></p></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Ecuación de estado</h2>
+  <p class="f">PV = nRT, &nbsp; R = 8,314 J/(mol·K) = 0,082 atm·L/(mol·K)</p>
+  <p>La temperatura siempre en kelvin (T = t + 273,15). En condiciones normales (1 atm y 0 °C) un mol ocupa 22,4 L. La densidad de un gas es ρ = PM/(RT).</p>
+  <h2>Primer principio</h2>
+  <p class="f">ΔU = Q − W, &nbsp; ΔU = nC<sub>v</sub>ΔT, &nbsp; C<sub>p</sub> − C<sub>v</sub> = R, &nbsp; γ = C<sub>p</sub>/C<sub>v</sub></p>
+  <p>W es el trabajo que hace el gas (positivo si se expande) y Q el calor que recibe. Un gas monoatómico tiene C<sub>v</sub> = 3R/2 y uno diatómico C<sub>v</sub> = 5R/2.</p>
+  <h2>Transformaciones</h2>
+  <p><b>Isoterma</b> (T constante): ΔU = 0 y Q = W = nRT ln(V<sub>2</sub>/V<sub>1</sub>). <b>Isobara</b> (P constante): W = PΔV y Q = nC<sub>p</sub>ΔT. <b>Isocora</b> (V constante): W = 0 y Q = nC<sub>v</sub>ΔT. <b>Adiabática</b> (Q = 0): PV<sup>γ</sup> = cte, TV<sup>γ−1</sup> = cte y W = (P<sub>1</sub>V<sub>1</sub> − P<sub>2</sub>V<sub>2</sub>)/(γ − 1).</p>
+  <h2>Ciclos</h2>
+  <p>En un ciclo el gas vuelve al estado inicial, así que ΔU = 0 y W<sub>neto</sub> = Q<sub>neto</sub>, que es el área encerrada en el diagrama P-V. El rendimiento es η = W/Q<sub>abs</sub>, y nunca supera el de un ciclo de Carnot entre las mismas temperaturas, η = 1 − T<sub>f</sub>/T<sub>c</sub>.</p>
+  <h2>Teoría cinética</h2>
+  <p class="f">v<sub>cm</sub> = √(3RT/M), &nbsp; ⟨E<sub>c</sub>⟩ = (3/2)kT</p>
+  <p>Las velocidades de las moléculas siguen la distribución de Maxwell: la más probable es √(2RT/M) y la media √(8RT/(πM)). La energía cinética media solo depende de la temperatura.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Gases ideales <span id="ver"></span> (beta)</footer>
+</body>

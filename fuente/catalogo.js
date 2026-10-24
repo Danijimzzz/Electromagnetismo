@@ -28,6 +28,7 @@ const Catalogo = {
         { clave: 'dinamica', nombre: 'Dinámica y diagramas de fuerzas', icono: 'F', disponible: true, desc: 'Planos inclinados, rozamiento, poleas y Atwood con el diagrama de fuerzas y las leyes de Newton.', buscar: 'dinámica fuerzas newton diagrama de cuerpo libre plano inclinado rozamiento estático dinámico normal tensión polea atwood' },
         { clave: 'solido-rigido', nombre: 'Sólido rígido', icono: 'I', disponible: true, desc: 'Momentos de inercia y Steiner, rodadura por un plano, poleas con masa y momento angular.', buscar: 'sólido rígido momento de inercia steiner rodadura rueda plano inclinado polea momento angular rotación torque par patinadora' },
         { clave: 'ondas', nombre: 'Ondas mecánicas', icono: '∿', disponible: true, desc: 'Ecuación de onda, estacionarias en cuerdas y tubos, efecto Doppler y nivel sonoro, con animación.', buscar: 'ondas mecánicas onda armónica ecuación longitud de onda frecuencia estacionaria armónicos cuerda tubo doppler sonido decibelios intensidad' },
+        { clave: 'gases', nombre: 'Gases ideales', icono: 'PV', disponible: true, desc: 'PV = nRT, transformaciones y ciclos con trabajo, calor y rendimiento, y velocidades moleculares.', buscar: 'gases ideales ecuación de estado pv nrt isoterma isobara isocora adiabática ciclo carnot rendimiento primer principio termodinámica calor trabajo energía interna maxwell velocidad cuadrática media' },
       ],
     },
     {
