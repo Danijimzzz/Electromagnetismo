@@ -73,4 +73,6 @@ if [ "$1" != privado ]; then
     version.js estadistica/calculo.js estadistica/app.js
   herramienta alterna ../publico/laboratorio/alterna/index.html "Corriente alterna y fasores" "Calculadora de corriente alterna: circuitos RLC en serie y en paralelo con impedancias complejas, diagrama de fasores, potencias, factor de potencia y resonancia, paso a paso" \
     version.js alterna/fisica.js alterna/app.js
+  herramienta dinamica ../publico/fisica/dinamica/index.html "Dinámica y diagramas de fuerzas" "Calculadora de dinámica con el diagrama de fuerzas: plano inclinado con rozamiento estático y dinámico, fuerza con ángulo, poleas y máquina de Atwood, paso a paso" \
+    version.js dinamica/fisica.js dinamica/app.js
 fi

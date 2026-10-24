@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMwZDZiNjYiLz48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlNmE2NDAiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtZGFzaGFycmF5PSI0IDYuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48cGF0aCBkPSJNMjAgMzJINDQiLz48cGF0aCBkPSJNMjEgMjdDMjcgMTQgMzcgMTQgNDMgMjciLz48cGF0aCBkPSJNMjEgMzdDMjcgNTAgMzcgNTAgNDMgMzciLz48cGF0aCBkPSJNMTcgMjRDMjIgNCA0MiA0IDQ3IDI0Ii8+PHBhdGggZD0iTTE3IDQwQzIyIDYwIDQyIDYwIDQ3IDQwIi8+PC9nPjxjaXJjbGUgY3g9IjE3IiBjeT0iMzIiIHI9IjgiIGZpbGw9IiNlZjdhNjIiLz48Y2lyY2xlIGN4PSI0NyIgY3k9IjMyIiByPSI4IiBmaWxsPSIjNzRhMmYyIi8+PHBhdGggZD0iTTEzIDMyaDhNMTcgMjh2OE00MyAzMmg4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta property="og:title" content="Dinámica y diagramas de fuerzas">
+<meta property="og:description" content="Calculadora de dinámica con el diagrama de fuerzas: plano inclinado con rozamiento estático y dinámico, fuerza con ángulo, poleas y máquina de Atwood, paso a paso">
+<meta property="og:image" content="https://electromagnetismo-two.vercel.app/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<title>Dinámica y diagramas de fuerzas: planos inclinados, poleas y rozamiento · SimulaCiencia</title>
+<meta name="description" content="Calculadora de dinámica en español con el diagrama de fuerzas: bloque en plano horizontal o inclinado con rozamiento estático y dinámico, fuerza con ángulo, polea con masa colgando y máquina de Atwood; normal, aceleración y tensión paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root {
+  --bg: #eef0f4; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d6dbe3; --accent: #2a5db5; --accent-soft: #e3ecfa; --peso: #c2412a; --normal: #1d7a3e; --roz: #b0700a; --fuerza: #6b3fa0; --tension: #2a5db5; --cuerpo: #c9d3e0; --suelo: #8a96a3;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #74a2f2; --accent-soft: #1c2a42; --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #74a2f2; --accent-soft: #1c2a42; --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784; color-scheme: dark }
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
+.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
+.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+.layout { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 16px; align-items: start }
+@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr) } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 15px var(--f-ui); margin: 0 0 10px }
+.campos { display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px } .campos label small { color: var(--muted) }
+.in { font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.in:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer }
+.btn:hover { border-color: var(--accent) }
+.error { color: #c0392b; font-size: 13px; margin: 10px 0 0 }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+.res { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px 14px; font: 16px var(--f-math) } .res div { overflow-x: auto } .res span { display: block; font: 12px var(--f-ui); color: var(--muted) }
+.leyenda { font-size: 12.5px; color: var(--muted); margin: 6px 0 0 } .leyenda b { font-weight: 600 }
+canvas { display: block; width: 100%; height: clamp(260px, 36vw, 380px); border-radius: 8px; background: var(--bg); margin-top: 10px }
+.pasos ol { margin: 0; padding-left: 22px } .pasos li { margin: 0 0 12px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física general</a> / Dinámica</span></header>
+<div class="wrap">
+<h1>Dinámica y diagramas de fuerzas</h1>
+<p class="lead">Dibuja el diagrama de fuerzas y aplica la segunda ley de Newton paso a paso: bloque en un plano horizontal o inclinado con rozamiento, fuerza aplicada con ángulo, masa colgando de una polea y máquina de Atwood. Dice si el bloque se mueve o el rozamiento lo sujeta.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card"><h2>Resultado</h2><div class="res" id="res"></div>
+      <canvas id="escena" aria-label="Diagrama de fuerzas"></canvas>
+      <p class="leyenda" id="leyenda"></p></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Cómo se resuelve un problema de dinámica</h2>
+  <p>Se aísla cada cuerpo, se dibujan todas las fuerzas que actúan sobre él (peso, normal, rozamiento, tensiones y fuerzas aplicadas) y se eligen unos ejes: en un plano inclinado, uno a lo largo del plano y otro perpendicular. En la dirección perpendicular no hay movimiento, así que ΣF<sub>y</sub> = 0 da la normal; a lo largo del plano, la segunda ley de Newton da la aceleración.</p>
+  <p class="f">ΣF = m a, &nbsp; P<sub>x</sub> = mg sen θ, &nbsp; P<sub>y</sub> = mg cos θ</p>
+  <h2>Rozamiento estático y dinámico</h2>
+  <p>Mientras el cuerpo está quieto, el rozamiento estático vale lo que haga falta para equilibrar, hasta un máximo μ<sub>e</sub>N. Si las demás fuerzas superan ese máximo, el cuerpo desliza y el rozamiento pasa a ser el dinámico, μ<sub>d</sub>N, opuesto al movimiento. Un bloque en un plano inclinado sin otras fuerzas se queda quieto si tg θ ≤ μ<sub>e</sub>.</p>
+  <h2>Poleas y máquina de Atwood</h2>
+  <p>Con una cuerda inextensible los cuerpos unidos tienen la misma aceleración, y con una polea ideal (sin masa ni rozamiento) la tensión es la misma a los dos lados. Si la polea tiene masa, las tensiones son distintas y su diferencia hace girar la polea: (T<sub>2</sub> − T<sub>1</sub>)R = Iα, con α = a/R.</p>
+  <p class="f">Atwood: a = (m<sub>2</sub> − m<sub>1</sub>)g / (m<sub>1</sub> + m<sub>2</sub> + I/R<sup>2</sup>)</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Dinámica <span id="ver"></span> (beta)</footer>
+</body><script>
+/* =====================================================================
+   Versiones y novedades: la web (portada, asignaturas, buscador) tiene su número y cada
+   herramienta el suyo. Hasta el lanzamiento se numera 0.x (beta); la 1.0 de una herramienta
+   llega cuando se da por terminada y la 1.0 de la web será el lanzamiento. Sube el segundo
+   número si hay algo nuevo (0.6) y añade un tercero si es solo un arreglo (0.5.1).
+   En las novedades de la web se anuncia también cada herramienta nueva.
+   Las notas son para los usuarios: solo funciones nuevas, arreglos visibles y cambios
+   en la interfaz. Lo interno (pruebas, CI, build, despliegue, refactorizaciones) no se anota;
+   el historial completo para desarrolladores está en Notion.
+   ===================================================================== */
+const Version = (() => {
+  const registros = {
+    web: [
+      { v: '0.15', fecha: '2026-10-23', cambios: ['Nueva herramienta: Dinámica y diagramas de fuerzas, en Física general.'] },
+      { v: '0.14', fecha: '2026-10-23', cambios: ['Nueva herramienta: Corriente alterna y fasores, en Laboratorio.'] },
+      { v: '0.13', fecha: '2026-10-23', cambios: ['Nueva herramienta: Distribuciones de probabilidad, en Matemáticas.'] },
+      { v: '0.12', fecha: '2026-10-23', cambios: ['Nueva herramienta: Sistemas de ecuaciones lineales, en Matemáticas.'] },
+      { v: '0.11', fecha: '2026-10-23', cambios: ['Nueva herramienta: Matrices paso a paso, en Matemáticas.'] },
+      { v: '0.10', fecha: '2026-10-23', cambios: ['Nueva herramienta: Autoinducción e inducción mutua, en Electromagnetismo.'] },
+      { v: '0.9', fecha: '2026-10-23', cambios: ['Nueva herramienta: Calorimetría y cambios de fase, en Física general.'] },
+      { v: '0.8', fecha: '2026-10-23', cambios: ['Nueva herramienta: Disoluciones y concentraciones, en Química.'] },
+      { v: '0.7', fecha: '2026-10-23', cambios: ['Nueva herramienta: Tiro parabólico y cinemática, en Física general.'] },
+      { v: '0.6', fecha: '2026-10-23', cambios: ['Nueva herramienta: Condensadores con dieléctricos, en Electromagnetismo.'] },
+      { v: '0.5', fecha: '2026-10-23', cambios: ['Nueva herramienta: Configuración electrónica, en Química.'] },
+      { v: '0.4', fecha: '2026-10-23', cambios: ['Nueva herramienta: Masa molar y estequiometría, en Química.'] },
+      { v: '0.3', fecha: '2026-10-23', cambios: ['Nueva herramienta: Trabajo y energía, en Física general.'] },
+      { v: '0.2', fecha: '2026-10-23', cambios: ['Nueva herramienta: Tabla periódica interactiva, en Química.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Portada para elegir asignatura y herramienta: Electromagnetismo, Física general, Química, Matemáticas y Laboratorio, con buscador. Las herramientas que vienen después aparecen como «Próximamente».', 'Nueva herramienta: Magnetostática, en Electromagnetismo.'] },
+    ],
+    electrostatica: [
+      { v: '0.5.1', fecha: '2026-10-23', cambios: ['El simulador tiene ahora su propia dirección, /electromagnetismo/electrostatica/. Tus problemas guardados siguen ahí. El botón «Todas las herramientas» de la barra lateral vuelve a la portada.'] },
+    { v: '0.5', fecha: '2026-10-23', cambios: ['Doce ejercicios de ejemplo con enunciados propios: los mismos tipos de pregunta que en clase, con otras figuras y otros números. La guía de uso tiene capturas nuevas hechas con ellos.', 'La web tiene icono propio: un dipolo con sus líneas de campo, en la pestaña del navegador, en la pantalla de inicio del móvil y en la vista previa al compartir el enlace.', 'Páginas de aviso legal, privacidad, cookies y contacto, enlazadas al pie de la barra lateral.'] },
+    { v: '0.4', fecha: '2026-10-22', cambios: ['Número de versión visible y este apartado de novedades.', 'Arreglo: en la vista 3D los cilindros se dibujan con su radio real, aparecen las superficies de Gauss, y las esferas, cascarones y conductores tienen volumen en lugar de parecer círculos planos.'] },
+    { v: '0.3', fecha: '2026-10-22', cambios: ['Guía de uso con capturas (botón ?, barra lateral o F1).', 'Los resultados se escriben con la misma forma que el solucionario oficial: perfiles por tramos, factor común en logaritmos y radicales, y la pregunta V_A − V_B.'] },
+    { v: '0.2', fecha: '2026-10-22', cambios: ['Anillos, discos, cortezas y conductores.', 'Varias incógnitas, modo numérico SI, flujo de Gauss y gráficas E(z) y V(z).', 'Modo práctica, exportar la solución, deshacer y rehacer, mapa de color y vista 3D.', 'Búsqueda, carpetas y etiquetas en la barra lateral.'] },
+    { v: '0.1', fecha: '2026-10-22', cambios: ['Primera versión: cargas, hilos, planos y esferas con el desarrollo paso a paso y 12 ejercicios resueltos.', 'Barra lateral con tus problemas, los importados y los ejercicios; título y enunciado editables; archivos .emsim.json.'] },
+    ],
+    magnetostatica: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: campo magnético de hilos, segmentos, hilos semiinfinitos, espiras, arcos, solenoides y toroides con Biot-Savart, y fuerza sobre cargas en movimiento y sobre conductores, con el desarrollo paso a paso en la forma μ₀I/(πa) o en unidades del SI.', 'Dibujo del campo B en el plano XY, XZ o YZ, con puntos que se pueden arrastrar y ocho ejemplos resueltos.'] },
+    ],
+    'tabla-periodica': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: cada elemento tiene su ficha con la masa atómica y molar, el grupo, el periodo, el bloque, la configuración electrónica (abreviada, completa y por capas), la electronegatividad, la energía de ionización, el radio y el estado.', 'La tabla se puede colorear por categoría, electronegatividad, energía de ionización, radio, masa, bloque o estado, y tiene un buscador por nombre, símbolo o número atómico.'] },
+    ],
+    'trabajo-y-energia': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: un bloque baja por una rampa con rozamiento, recorre un tramo horizontal y comprime un muelle. Animación con barras de energía cinética, gravitatoria, elástica y calor, gráfica de las energías en el tiempo y el desarrollo paso a paso con la velocidad al pie de la rampa, al llegar al muelle y la compresión máxima.', 'Seis ejemplos: sin rozamiento, se para antes del muelle, el rozamiento lo sujeta, con empujón inicial y muelle duro.'] },
+    ],
+    'masa-molar': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: masa molar y composición centesimal de cualquier fórmula, con paréntesis, hidratos e iones, y conversor entre gramos, moles, partículas y litros de gas.', 'Estequiometría: ajusta la reacción sola (también las iónicas), calcula el reactivo limitante, lo que se forma con el rendimiento que digas y lo que sobra, paso a paso.', 'Masas atómicas de la IUPAC o redondeadas como en clase.'] },
+    ],
+    'configuracion-electronica': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: configuración electrónica de cualquier elemento o ion por orden de llenado, abreviada y por capas, con el diagrama de Moeller, el diagrama de orbitales con la regla de Hund, los electrones desapareados y los números cuánticos del electrón diferenciador.', 'Avisa de las excepciones como el cromo o el cobre, y en los cationes quita primero los electrones de la capa más externa.'] },
+    ],
+    condensadores: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: condensadores planos, cilíndricos y esféricos con capas de dieléctrico en serie o, en el plano, ocupando parte del área. Capacidad, carga, tensión y energía; campos E, D y P en cada capa y cargas de polarización, con el desarrollo paso a paso.', 'Compara con el condensador vacío: qué pasa al meter el dieléctrico con la batería conectada o con el condensador aislado.', 'Dibujo del corte con las líneas de campo y gráfica de E a lo largo del condensador.'] },
+    ],
+    'tiro-parabolico': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: tiro parabólico desde cualquier altura hasta cualquier altura, con el tiempo de vuelo, la altura máxima, el alcance y la velocidad al caer, y el desarrollo paso a paso. Trayectoria animada con los vectores de velocidad y gráficas de posición, velocidad y aceleración frente al tiempo.', 'Rozamiento del aire lineal o cuadrático, comparado con la trayectoria sin rozamiento.', 'Blanco: dice si el proyectil pasa por un punto y con qué dos ángulos se acierta.', 'Movimiento rectilíneo (MRU y MRUA): posición y velocidad en un instante, cuándo pasa por un punto y cuándo se para, con las gráficas x(t), v(t) y a(t).'] },
+    ],
+    disoluciones: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: da la concentración de una disolución como molaridad, molalidad, fracción molar, % en masa, % masa/volumen, g/L o ppm y obtén todas las demás, con la densidad para pasar de masa a volumen y el desarrollo con su base de cálculo.', 'Preparar una disolución: los gramos de sólido (con su pureza) o los mililitros de reactivo comercial (con su riqueza y densidad) que hay que medir.', 'Diluciones con C₁V₁ = C₂V₂, despejando el dato que falte, y mezcla de dos disoluciones del mismo soluto.'] },
+    ],
+    calorimetria: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: temperatura de equilibrio al mezclar hasta cinco cuerpos de agua, hielo, vapor, metales, etanol, vidrio, un calorímetro o una sustancia con tus datos, con los cambios de fase que hagan falta.', 'Si la energía no llega para fundir todo el hielo o condensar todo el vapor, dice cuántos gramos quedan de cada fase.', 'Tabla con el calor de cada cuerpo, el desarrollo etapa por etapa (m c ΔT y m L) y la curva de calentamiento de cada uno.'] },
+    ],
+    induccion: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: coeficiente de autoinducción de solenoides (con núcleo), toroides de sección rectangular y circular, cables coaxiales y líneas bifilares, con el desarrollo desde la ley de Ampère.', 'Inducción mutua entre dos solenoides, dos espiras, un hilo y una espira, y una bobina sobre un toroide, o a partir de L₁, L₂ y k, con el coeficiente de acoplamiento.', 'Flujo, energía magnética y fem inducida si das la corriente o cómo cambia.', 'Circuito RL al cerrar el interruptor o al quitar la fuente: constante de tiempo, corriente y tensión en la bobina en cualquier instante y su gráfica.'] },
+    ],
+    matrices: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: determinante por Gauss, por Sarrus o por Laplace; inversa por Gauss-Jordan o por adjuntos; rango; forma escalonada y escalonada reducida, con cada operación entre filas y la matriz después de cada paso.', 'Valores y vectores propios con el polinomio característico, las raíces exactas (también con radicales o complejas) y si la matriz es diagonalizable, con P y D.', 'Suma, resta, producto (elemento a elemento), producto por un número, potencia y traspuesta.', 'Fracciones exactas y números complejos en cualquier casilla: 3/4, 0,25, 2−3i o (1+i)/2.'] },
+    ],
+    sistemas: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: hasta seis ecuaciones con seis incógnitas. Dice si el sistema es compatible determinado, indeterminado o incompatible con el teorema de Rouché-Frobenius y lo resuelve por Gauss con sustitución hacia atrás, por Gauss-Jordan, por la regla de Cramer o con la matriz inversa.', 'Si tiene infinitas soluciones, las da en forma paramétrica (λ, μ…).', 'Coeficientes con fracciones exactas, decimales o números complejos, como las mallas de un circuito de alterna, y nombres propios para las incógnitas (I1, I2…).', 'Comprobación de la solución sustituyendo en cada ecuación.'] },
+    ],
+    estadistica: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: normal, t de Student, chi cuadrado, exponencial, binomial y Poisson, con su media y su varianza.', 'Probabilidades P(X ≤ a), P(X ≥ a), entre dos valores y, en las discretas, P(X = k) y con desigualdad estricta; cuantiles y valores críticos bilaterales.', 'Gráfica con el área (o las barras) que se pide sombreada.', 'Desarrollo como en clase: tipificación Z = (X − μ)/σ y Φ(z), fórmula de la binomial y de la Poisson término a término, y aproximación de la binomial por la normal con corrección de continuidad.'] },
+    ],
+    alterna: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: circuitos RLC en serie y en paralelo (o solo con algunos de los elementos) con impedancias complejas en forma binómica y polar, la corriente, la tensión o la corriente de cada elemento, las potencias activa, reactiva y aparente y el factor de potencia, con el desarrollo paso a paso.', 'Diagrama de fasores y ondas v(t) e i(t) desfasadas.', 'Resonancia: frecuencia de resonancia, factor de calidad y ancho de banda.', 'Corrección del factor de potencia: el condensador que hay que poner en paralelo y cuánto baja la corriente de la línea.'] },
+    ],
+    dinamica: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: bloque en un plano horizontal o inclinado con rozamiento estático y dinámico, una fuerza aplicada con ángulo y, si quieres, una masa colgando de una polea. Dice si el bloque se mueve o el rozamiento lo sujeta y da la normal, el rozamiento, la aceleración y la tensión, con el desarrollo paso a paso.', 'Máquina de Atwood, también con una polea con masa.', 'Dibujo con el diagrama de fuerzas a escala y la aceleración, y la velocidad y el tiempo al recorrer una distancia.'] },
+    ],
+  };
+  const de = (h) => ({ current: registros[h][0].v, log: registros[h] });
+  // Version.current y Version.log son los del simulador de electrostática
+  return { registros, de, ...de('electrostatica') };
+})();
+
+/* =====================================================================
+   Dinámica y diagramas de fuerzas (sin DOM): bloque en un plano
+   (horizontal o inclinado) con rozamiento estático y dinámico, una fuerza
+   aplicada con ángulo y, si se quiere, una masa colgando de una polea en lo
+   alto del plano; y máquina de Atwood con polea con masa. Parte del reposo.
+   Eje x a lo largo del plano, positivo plano arriba (hacia la polea).
+   ===================================================================== */
+const Dinamica = (() => {
+  const f = (x, d = 4) => {
+    if (!isFinite(x)) return '—';
+    if (Math.abs(x) < 1e-9) return '0';
+    const a = Math.abs(x);
+    const s = a >= 1e6 || a < 1e-3 ? x.toExponential(d - 1).replace(/\.?0+e/, 'e').replace('e', '·10^').replace(/\^([+-]?)(\d+)/, (_, sg, e) => `<sup>${sg === '-' ? '−' : ''}${+e}</sup>`) : String(+x.toPrecision(d));
+    return s.replace('.', ',').replace('-', '−');
+  };
+  const leeNum = (s) => +String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace('−', '-');
+  const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
+  const RAD = Math.PI / 180;
+  function lee(sc, k, nom, { opcional = false, min = 0, estricto = false, max = Infinity } = {}) {
+    if (vacio(sc[k])) { if (opcional) return null; throw new Error(`Falta ${nom}`); }
+    const v = leeNum(sc[k]);
+    if (!isFinite(v)) throw new Error(`${nom[0].toUpperCase() + nom.slice(1)} debe ser un número`);
+    if (estricto ? v <= min : v < min) throw new Error(`${nom[0].toUpperCase() + nom.slice(1)} debe ser ${estricto ? 'mayor que' : 'como mínimo'} ${f(min)}`);
+    if (v > max) throw new Error(`${nom[0].toUpperCase() + nom.slice(1)} no puede pasar de ${f(max)}`);
+    return v;
+  }
+  // a·b con paréntesis si b es negativo
+  const p = (x) => (x < 0 ? `(${f(x)})` : f(x));
+
+  /* ---------- Bloque en un plano ---------- */
+  // sc: { m1 (kg), theta (°), mus, muk, F (N), alfa (° sobre el plano), m2 (kg, colgando; vacío = no hay), d (m, opcional), g }
+  function plano(sc) {
+    const g = lee(sc, 'g', 'la gravedad', { estricto: true });
+    const m1 = lee(sc, 'm1', 'la masa del bloque', { estricto: true }), th = lee(sc, 'theta', 'el ángulo del plano', { max: 90 });
+    const mus = lee(sc, 'mus', 'el coeficiente de rozamiento estático', { opcional: true }) ?? 0, muk = lee(sc, 'muk', 'el coeficiente de rozamiento dinámico', { opcional: true }) ?? 0;
+    if (muk > mus) throw new Error('El coeficiente dinámico no puede ser mayor que el estático');
+    const F = lee(sc, 'F', 'la fuerza aplicada', { opcional: true }) ?? 0, al = vacio(sc.alfa) ? 0 : leeNum(sc.alfa);
+    if (!isFinite(al) || al < -90 || al > 90) throw new Error('El ángulo de la fuerza debe estar entre −90° y 90°');
+    const m2 = lee(sc, 'm2', 'la masa que cuelga', { opcional: true, estricto: true }), d = lee(sc, 'd', 'la distancia', { opcional: true, estricto: true });
+    const t = th * RAD, a = al * RAD, P1 = m1 * g, Px = P1 * Math.sin(t), Py = P1 * Math.cos(t), Fx = F * Math.cos(a), Fy = F * Math.sin(a);
+    const P2 = m2 ? m2 * g : 0, M = m1 + (m2 || 0);
+    const N = Py - Fy;
+    const pasos = [];
+    const inclinado = th > 0;
+    pasos.push({ t: 'Peso y sus componentes', html: inclinado
+      ? `P = m<sub>1</sub>g = ${f(m1)}·${f(g)} = <b>${f(P1)} N</b><br>P<sub>x</sub> = P sen θ = ${f(P1)}·sen ${f(th)}° = ${f(Px)} N (plano abajo)<br>P<sub>y</sub> = P cos θ = ${f(P1)}·cos ${f(th)}° = ${f(Py)} N`
+      : `P = m<sub>1</sub>g = ${f(m1)}·${f(g)} = <b>${f(P1)} N</b>` });
+    if (F) pasos.push({ t: 'Componentes de la fuerza aplicada', html: `F<sub>x</sub> = F cos α = ${f(F)}·cos ${f(al)}° = ${f(Fx)} N<br>F<sub>y</sub> = F sen α = ${f(F)}·sen ${p(al)}° = ${f(Fy)} N` });
+    if (N < -1e-9) throw new Error(`La fuerza levanta el bloque del plano: F sen α = ${f(Fy).replace(/<[^>]+>/g, '')} N es mayor que P${inclinado ? ' cos θ' : ''} = ${f(Py).replace(/<[^>]+>/g, '')} N`);
+    pasos.push({ t: 'Normal (no hay movimiento perpendicular al plano: ΣF<sub>y</sub> = 0)', html: Fy ? `N + F<sub>y</sub> − ${inclinado ? 'P<sub>y</sub>' : 'P'} = 0 ⇒ N = ${f(Py)} − ${p(Fy)} = <b>${f(N)} N</b>` : `N − ${inclinado ? 'P<sub>y</sub>' : 'P'} = 0 ⇒ N = ${inclinado ? 'P<sub>y</sub>' : 'P'} = <b>${f(N)} N</b>` });
+    // fuerza neta sin rozamiento, positiva plano arriba
+    const D = Fx + P2 - Px;
+    const terminos = [F ? 'F<sub>x</sub>' : '', m2 ? 'P<sub>2</sub>' : '', inclinado ? '− P<sub>x</sub>' : ''].filter(Boolean).join(' + ').replace('+ −', '−');
+    const valores = [F ? f(Fx) : '', m2 ? f(P2) : '', inclinado ? `− ${f(Px)}` : ''].filter(Boolean).join(' + ').replace('+ −', '−');
+    let estado, acel = 0, Fr = 0, sentido = 0;
+    const Frmax = mus * N;
+    if (m2) pasos.push({ t: 'Peso de la masa que cuelga', html: `P<sub>2</sub> = m<sub>2</sub>g = ${f(m2)}·${f(g)} = <b>${f(P2)} N</b>. La cuerda es inextensible y la polea ideal: los dos cuerpos tienen la misma aceleración y la tensión es la misma a los dos lados.` });
+    pasos.push({ t: '¿Se mueve? (fuerzas a lo largo del plano sin contar el rozamiento)', html: terminos
+      ? `${terminos} = ${valores} = <b>${f(D)} N</b>${Math.abs(D) < 1e-9 ? ': está equilibrado' : D > 0 ? ` hacia ${inclinado ? 'arriba del plano' : 'la derecha'}` : ` hacia ${inclinado ? 'abajo del plano' : 'la izquierda'}`}<br>Rozamiento estático máximo: F<sub>r,máx</sub> = μ<sub>e</sub>N = ${f(mus)}·${f(N)} = <b>${f(Frmax)} N</b>`
+      : 'No hay ninguna fuerza a lo largo del plano: el bloque sigue en reposo.' });
+    if (Math.abs(D) <= Frmax + 1e-9) {
+      estado = 'reposo'; Fr = -D;
+      pasos.push({ t: 'Se queda en reposo', html: `Como |ΣF| = ${f(Math.abs(D))} N ≤ ${f(Frmax)} N, el rozamiento estático lo sujeta: a = 0 y el rozamiento vale exactamente F<sub>r</sub> = <b>${f(Math.abs(D))} N</b>${Math.abs(D) > 1e-9 ? `, ${D > 0 ? 'plano abajo' : 'plano arriba'}` : ''} (no μ<sub>e</sub>N, que es solo el máximo).` });
+    } else {
+      estado = 'mueve'; sentido = Math.sign(D); Fr = -sentido * muk * N; acel = (D + Fr) / M;
+      pasos.push({ t: 'Se mueve: rozamiento dinámico', html: `|ΣF| = ${f(Math.abs(D))} N &gt; ${f(Frmax)} N, así que el bloque desliza ${sentido > 0 ? (inclinado ? 'plano arriba' : 'hacia la derecha') : (inclinado ? 'plano abajo' : 'hacia la izquierda')} y el rozamiento se opone: F<sub>r</sub> = μ<sub>d</sub>N = ${f(muk)}·${f(N)} = <b>${f(Math.abs(Fr))} N</b>` });
+      pasos.push({ t: 'Segunda ley de Newton', html: m2
+        ? `Bloque: T ${F ? '+ F<sub>x</sub> ' : ''}${inclinado ? '− P<sub>x</sub> ' : ''}${sentido > 0 ? '−' : '+'} F<sub>r</sub> = m<sub>1</sub>a<br>Masa que cuelga: P<sub>2</sub> − T = m<sub>2</sub>a<br>Sumando las dos: ${terminos} ${sentido > 0 ? '−' : '+'} F<sub>r</sub> = (m<sub>1</sub> + m<sub>2</sub>) a ⇒ a = (${valores} ${sentido > 0 ? '−' : '+'} ${f(Math.abs(Fr))}) / ${f(M)} = <b>${f(acel)} m/s<sup>2</sup></b>`
+        : `ΣF<sub>x</sub> = m<sub>1</sub>a ⇒ ${terminos} ${sentido > 0 ? '−' : '+'} F<sub>r</sub> = m<sub>1</sub>a ⇒ a = (${valores} ${sentido > 0 ? '−' : '+'} ${f(Math.abs(Fr))}) / ${f(m1)} = <b>${f(acel)} m/s<sup>2</sup></b>` });
+    }
+    let T = null;
+    if (m2) {
+      T = m2 * (g - acel);
+      pasos.push({ t: 'Tensión de la cuerda', html: `De la masa que cuelga: T = m<sub>2</sub>(g − a) = ${f(m2)}·(${f(g)} − ${p(acel)}) = <b>${f(T)} N</b>` });
+    }
+    let cin = null;
+    if (d && estado === 'mueve') {
+      const A = Math.abs(acel), v = Math.sqrt(2 * A * d), tt = Math.sqrt((2 * d) / A);
+      cin = { v, t: tt };
+      pasos.push({ t: `Tras recorrer ${f(d)} m (MRUA desde el reposo)`, html: `v = √(2|a|d) = √(2·${f(A)}·${f(d)}) = <b>${f(v)} m/s</b><br>t = √(2d/|a|) = √(2·${f(d)}/${f(A)}) = <b>${f(tt)} s</b>` });
+    }
+    // fuerzas sobre el bloque para el diagrama (en ejes del plano: x a lo largo, y perpendicular)
+    const fuerzas = [{ k: 'P', nombre: 'Peso', x: -Px, y: -Py, mod: P1 }, { k: 'N', nombre: 'Normal', x: 0, y: N, mod: N }];
+    if (F) fuerzas.push({ k: 'F', nombre: 'Fuerza aplicada', x: Fx, y: Fy, mod: F });
+    if (Math.abs(Fr) > 1e-9) fuerzas.push({ k: 'Fr', nombre: 'Rozamiento', x: Fr, y: 0, mod: Math.abs(Fr) });
+    if (m2) fuerzas.push({ k: 'T', nombre: 'Tensión', x: T, y: 0, mod: T });
+    return { tipo: 'plano', g, m1, th, mus, muk, F, al, m2, d, P1, Px, Py, Fx, Fy, N, D, Frmax, Fr, a: acel, T, estado, sentido, cin, fuerzas, pasos };
+  }
+
+  /* ---------- Máquina de Atwood ---------- */
+  // sc: { m1, m2 (kg), mp (kg, polea como disco; vacío = sin masa), d (m), g }
+  function atwood(sc) {
+    const g = lee(sc, 'g', 'la gravedad', { estricto: true });
+    const m1 = lee(sc, 'm1', 'la masa 1', { estricto: true }), m2 = lee(sc, 'm2', 'la masa 2', { estricto: true });
+    const mp = lee(sc, 'mp', 'la masa de la polea', { opcional: true }) ?? 0, d = lee(sc, 'd', 'la distancia', { opcional: true, estricto: true });
+    const a = ((m2 - m1) * g) / (m1 + m2 + mp / 2), T1 = m1 * (g + a), T2 = m2 * (g - a);
+    const pasos = [];
+    pasos.push({ t: 'Pesos', html: `P<sub>1</sub> = m<sub>1</sub>g = ${f(m1 * g)} N, &nbsp; P<sub>2</sub> = m<sub>2</sub>g = ${f(m2 * g)} N.<br>Tomamos positivo el sentido en el que baja la masa 2 (sube la 1).` });
+    pasos.push({ t: 'Segunda ley de Newton para cada cuerpo', html: `Masa 1 (sube): T<sub>1</sub> − P<sub>1</sub> = m<sub>1</sub>a<br>Masa 2 (baja): P<sub>2</sub> − T<sub>2</sub> = m<sub>2</sub>a${mp ? `<br>Polea (disco, I = ½m<sub>p</sub>R<sup>2</sup>, sin deslizar α = a/R): (T<sub>2</sub> − T<sub>1</sub>)R = Iα ⇒ T<sub>2</sub> − T<sub>1</sub> = ½m<sub>p</sub>a` : '<br>Polea sin masa: T<sub>1</sub> = T<sub>2</sub> = T'}` });
+    pasos.push({ t: 'Aceleración', html: `Sumando: (m<sub>2</sub> − m<sub>1</sub>)g = (m<sub>1</sub> + m<sub>2</sub>${mp ? ' + ½m<sub>p</sub>' : ''}) a ⇒ a = (${f(m2)} − ${f(m1)})·${f(g)} / (${f(m1)} + ${f(m2)}${mp ? ` + ${f(mp / 2)}` : ''}) = <b>${f(a)} m/s<sup>2</sup></b>${Math.abs(a) < 1e-12 ? ' (masas iguales: equilibrio)' : a < 0 ? ' (negativa: en realidad baja la masa 1)' : ''}` });
+    pasos.push({ t: mp ? 'Tensiones' : 'Tensión', html: mp
+      ? `T<sub>1</sub> = m<sub>1</sub>(g + a) = ${f(m1)}·(${f(g)} + ${p(a)}) = <b>${f(T1)} N</b><br>T<sub>2</sub> = m<sub>2</sub>(g − a) = ${f(m2)}·(${f(g)} − ${p(a)}) = <b>${f(T2)} N</b>`
+      : `T = m<sub>1</sub>(g + a) = ${f(m1)}·(${f(g)} + ${p(a)}) = <b>${f(T1)} N</b> &nbsp;(= 2m<sub>1</sub>m<sub>2</sub>g/(m<sub>1</sub> + m<sub>2</sub>))` });
+    let cin = null;
+    if (d && Math.abs(a) > 1e-12) {
+      const A = Math.abs(a), v = Math.sqrt(2 * A * d), tt = Math.sqrt((2 * d) / A);
+      cin = { v, t: tt };
+      pasos.push({ t: `Cuando cada masa ha recorrido ${f(d)} m`, html: `v = √(2|a|d) = <b>${f(v)} m/s</b>, &nbsp; t = √(2d/|a|) = <b>${f(tt)} s</b>` });
+    }
+    return { tipo: 'atwood', g, m1, m2, mp, d, a, T1, T2, cin, pasos };
+  }
+
+  function resolver(sc) { return sc.tipo === 'atwood' ? atwood(sc) : plano(sc); }
+
+  const G = '9.8';
+  const ejemplos = [
+    { clave: 'horizontal', nombre: 'Tirar de una caja con una cuerda inclinada', sc: { tipo: 'plano', g: G, m1: '20', theta: '0', mus: '0.4', muk: '0.3', F: '100', alfa: '30', m2: '', d: '5' } },
+    { clave: 'inclinado-baja', nombre: 'Bloque que desliza por un plano inclinado', sc: { tipo: 'plano', g: G, m1: '5', theta: '30', mus: '0.3', muk: '0.2', F: '', alfa: '', m2: '', d: '2' } },
+    { clave: 'inclinado-quieto', nombre: 'El rozamiento sujeta el bloque', sc: { tipo: 'plano', g: G, m1: '5', theta: '20', mus: '0.5', muk: '0.4', F: '', alfa: '', m2: '', d: '' } },
+    { clave: 'empujar-arriba', nombre: 'Subir un bloque empujando paralelo al plano', sc: { tipo: 'plano', g: G, m1: '10', theta: '25', mus: '0.25', muk: '0.2', F: '80', alfa: '0', m2: '', d: '3' } },
+    { clave: 'mesa-polea', nombre: 'Bloque en una mesa y masa colgando', sc: { tipo: 'plano', g: G, m1: '4', theta: '0', mus: '0.3', muk: '0.25', F: '', alfa: '', m2: '2', d: '1' } },
+    { clave: 'plano-polea', nombre: 'Plano inclinado con polea y masa colgando', sc: { tipo: 'plano', g: G, m1: '6', theta: '37', mus: '0.2', muk: '0.15', F: '', alfa: '', m2: '5', d: '1.5' } },
+    { clave: 'atwood', nombre: 'Máquina de Atwood', sc: { tipo: 'atwood', g: G, m1: '3', m2: '5', mp: '', d: '2' } },
+    { clave: 'atwood-polea', nombre: 'Máquina de Atwood con polea con masa', sc: { tipo: 'atwood', g: G, m1: '3', m2: '5', mp: '2', d: '2' } },
+  ];
+
+  return { plano, atwood, resolver, ejemplos, f };
+})();
+
+/* =====================================================================
+   Dinámica y diagramas de fuerzas: interfaz (tipo de problema, datos,
+   resultado, dibujo con el diagrama de fuerzas y desarrollo).
+   El cálculo está en dinamica/fisica.js (Dinamica).
+   ===================================================================== */
+(() => {
+  const $ = (q) => document.querySelector(q);
+  const D = Dinamica, f = D.f, CLAVE = 'dinamica-v1';
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const copia = (o) => JSON.parse(JSON.stringify(o));
+  const txt = (h) => String(h).replace(/<[^>]+>/g, '');
+
+  let sc = copia(D.ejemplos[0].sc);
+  try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && (g.tipo === 'plano' || g.tipo === 'atwood')) sc = g; } catch (e) {}
+  const guarda = () => { try { localStorage.setItem(CLAVE, JSON.stringify(sc)); } catch (e) {} };
+  let sol = null, col = {};
+
+  /* ---------- Formulario ---------- */
+  const fila = (k, nom, un) => `<label for="f-${k}">${nom}${un ? ` <small>${un}</small>` : ''}</label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc[k] ?? '')}" inputmode="decimal" autocomplete="off">`;
+  const sep = (t) => `<div class="sep">${t}</div>`;
+  function formulario() {
+    let h = `<label for="f-tipo">Problema</label><select id="f-tipo" class="in" data-k="tipo"><option value="plano"${sc.tipo === 'plano' ? ' selected' : ''}>Bloque en un plano</option><option value="atwood"${sc.tipo === 'atwood' ? ' selected' : ''}>Máquina de Atwood</option></select>`;
+    if (sc.tipo === 'atwood') {
+      h += fila('m1', 'Masa 1 (izquierda)', 'kg') + fila('m2', 'Masa 2 (derecha)', 'kg') + fila('mp', 'Masa de la polea', 'kg');
+      $('#nota').textContent = 'La polea se toma como un disco (I = ½mR²). Déjala vacía si no tiene masa.';
+    } else {
+      h += sep('Bloque y plano') + fila('m1', 'Masa del bloque', 'kg') + fila('theta', 'Ángulo del plano θ', '°') + fila('mus', 'Rozamiento estático μ<sub>e</sub>', '') + fila('muk', 'Rozamiento dinámico μ<sub>d</sub>', '');
+      h += sep('Fuerza aplicada') + fila('F', 'Módulo F', 'N') + fila('alfa', 'Ángulo sobre el plano α', '°');
+      h += sep('Polea') + fila('m2', 'Masa que cuelga', 'kg');
+      $('#nota').textContent = 'θ = 0 es un plano horizontal. La fuerza tira plano arriba (α negativo la inclina hacia el plano). Deja vacío lo que no haya.';
+    }
+    h += sep('Otros') + fila('d', 'Distancia recorrida', 'm') + fila('g', 'Gravedad g', 'm/s²');
+    $('#campos').innerHTML = h;
+  }
+  $('#campos').addEventListener('input', (e) => { const t = e.target; if (t.tagName !== 'INPUT') return; sc[t.dataset.k] = t.value; $('#ejemplos').value = ''; calcula(); });
+  $('#campos').addEventListener('change', (e) => {
+    const t = e.target;
+    if (t.tagName !== 'SELECT') return;
+    sc[t.dataset.k] = t.value;
+    if (t.dataset.k === 'tipo') { const ej = D.ejemplos.find((x) => x.sc.tipo === t.value); sc = { ...copia(ej.sc), g: sc.g || ej.sc.g }; }
+    $('#ejemplos').value = ''; formulario(); calcula();
+  });
+
+  /* ---------- Ejemplos ---------- */
+  const sel = $('#ejemplos');
+  sel.innerHTML = '<option value="">Ejemplos…</option>' + D.ejemplos.map((e) => `<option value="${e.clave}">${e.nombre}</option>`).join('');
+  sel.addEventListener('change', () => { if (sel.value) abrirEjemplo(sel.value); });
+  function abrirEjemplo(clave) {
+    const e = D.ejemplos.find((x) => x.clave === clave);
+    if (!e) return;
+    sc = copia(e.sc);
+    formulario(); calcula(); sel.value = clave;
+  }
+
+  /* ---------- Cálculo ---------- */
+  const dato = (t, v) => `<div><span>${t}</span>${v}</div>`;
+  function calcula() {
+    const err = $('#error');
+    try { sol = D.resolver(sc); } catch (e) { sol = null; err.textContent = e.message; err.hidden = false; $('#res').innerHTML = ''; $('#pasos').innerHTML = ''; $('#leyenda').innerHTML = ''; dibuja(); return; }
+    err.hidden = true; guarda();
+    let h;
+    if (sol.tipo === 'atwood') {
+      h = dato('Aceleración', `a = <b>${f(sol.a)} m/s<sup>2</sup></b>`) + dato(sol.mp ? 'Tensiones' : 'Tensión', sol.mp ? `T<sub>1</sub> = ${f(sol.T1)} N, T<sub>2</sub> = ${f(sol.T2)} N` : `T = <b>${f(sol.T1)} N</b>`);
+    } else {
+      const mov = sol.estado === 'reposo' ? 'En reposo' : `Desliza ${sol.sentido > 0 ? (sol.th > 0 ? 'plano arriba' : 'a la derecha') : (sol.th > 0 ? 'plano abajo' : 'a la izquierda')}`;
+      h = dato('Qué pasa', `<b>${mov}</b>`) + dato('Aceleración', `a = <b>${f(Math.abs(sol.a))} m/s<sup>2</sup></b>`) + dato('Normal', `N = ${f(sol.N)} N`) + dato('Rozamiento', `F<sub>r</sub> = ${f(Math.abs(sol.Fr))} N${sol.estado === 'reposo' ? ' (estático)' : ''}`) + (sol.m2 ? dato('Tensión', `T = <b>${f(sol.T)} N</b>`) : '');
+    }
+    if (sol.cin) h += dato(`Al recorrer ${f(sol.d)} m`, `v = ${f(sol.cin.v)} m/s, t = ${f(sol.cin.t)} s`);
+    $('#res').innerHTML = h;
+    $('#leyenda').innerHTML = 'Las flechas son proporcionales a cada fuerza: <b style="color:var(--peso)">peso</b>, <b style="color:var(--normal)">normal</b>, <b style="color:var(--roz)">rozamiento</b>, <b style="color:var(--fuerza)">fuerza aplicada</b> y <b style="color:var(--tension)">tensión</b>. La flecha discontinua es la aceleración.';
+    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('');
+    dibuja();
+  }
+
+  /* ---------- Dibujo ---------- */
+  function colores() { const cs = getComputedStyle(document.documentElement); for (const k of ['--ink', '--muted', '--line', '--accent', '--bg', '--peso', '--normal', '--roz', '--fuerza', '--tension', '--cuerpo', '--suelo']) col[k] = cs.getPropertyValue(k).trim(); }
+  const COLOR = { P: '--peso', P2: '--peso', N: '--normal', Fr: '--roz', F: '--fuerza', T: '--tension', T1: '--tension', T2: '--tension' };
+  function flecha(g, x0, y0, x1, y1, color, ancho = 2.5, punteada = false) {
+    const L = Math.hypot(x1 - x0, y1 - y0);
+    if (L < 2) return;
+    g.strokeStyle = color; g.fillStyle = color; g.lineWidth = ancho; g.setLineDash(punteada ? [5, 4] : []);
+    const a = Math.atan2(y1 - y0, x1 - x0), p = Math.min(11, L * 0.45);
+    g.beginPath(); g.moveTo(x0, y0); g.lineTo(x1 - p * 0.6 * Math.cos(a), y1 - p * 0.6 * Math.sin(a)); g.stroke(); g.setLineDash([]);
+    g.beginPath(); g.moveTo(x1, y1); g.lineTo(x1 - p * Math.cos(a - 0.4), y1 - p * Math.sin(a - 0.4)); g.lineTo(x1 - p * Math.cos(a + 0.4), y1 - p * Math.sin(a + 0.4)); g.closePath(); g.fill();
+  }
+  function etiqueta(g, x, y, t, color) {
+    g.font = '600 12.5px "IBM Plex Sans", system-ui, sans-serif';
+    const w = g.measureText(t).width;
+    g.fillStyle = col['--bg']; g.globalAlpha = 0.85; g.fillRect(x - w / 2 - 2, y - 8, w + 4, 16); g.globalAlpha = 1;
+    g.fillStyle = color; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(t, x, y);
+  }
+  // flecha de una fuerza desde (x, y) en la dirección (dx, dy) de pantalla, con la etiqueta pasada la punta
+  function fuerza(g, x, y, dx, dy, k, nombre) {
+    flecha(g, x, y, x + dx, y + dy, col[COLOR[k] || '--ink']);
+    const L = Math.hypot(dx, dy) || 1;
+    etiqueta(g, x + dx + (dx / L) * 13, y + dy + (dy / L) * 13, nombre, col[COLOR[k] || '--ink']);
+  }
+  function cuerpo(g, cx, cy, s, ang, texto) {
+    g.save(); g.translate(cx, cy); g.rotate(-ang);
+    g.fillStyle = col['--cuerpo']; g.strokeStyle = col['--muted']; g.lineWidth = 1.2;
+    g.fillRect(-s / 2, -s / 2, s, s); g.strokeRect(-s / 2, -s / 2, s, s);
+    g.rotate(ang); g.fillStyle = col['--ink']; g.font = '12px "IBM Plex Sans", system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(texto, 0, 0);
+    g.restore();
+  }
+  function lienzo() {
+    const c = $('#escena'), dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
+    if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
+    const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h); g.lineCap = 'round'; g.lineJoin = 'round';
+    return { g, w, h };
+  }
+
+  function dibujaPlano(g, w, h) {
+    const t = sol.th * Math.PI / 180, m = 20, pol = !!sol.m2;
+    const s = Math.max(34, Math.min(54, w / 12)), r = 11;
+    const anchoMax = (pol ? w * 0.7 : w - 2 * m) - m, altoMax = h - 2 * m - 30;
+    const L = Math.min(anchoMax / Math.max(Math.cos(t), 1e-6), t > 1e-6 ? altoMax / Math.sin(t) : Infinity);
+    // en horizontal se sube la superficie para que quepa el peso (y, con polea, es una mesa)
+    const horiz = t < 1e-6, suelo = h - m, y0 = horiz ? h * (pol ? 0.46 : 0.6) : suelo;
+    const x0 = m, xe = x0 + L * Math.cos(t), ye = y0 - L * Math.sin(t);
+    const ux = [Math.cos(t), -Math.sin(t)], uy = [-Math.sin(t), -Math.cos(t)];
+    g.fillStyle = col['--line']; g.strokeStyle = col['--suelo']; g.lineWidth = 1.5;
+    if (!horiz) { g.beginPath(); g.moveTo(x0, y0); g.lineTo(xe, ye); g.lineTo(xe, y0); g.closePath(); g.fill(); g.stroke(); }
+    else if (pol) { g.fillRect(x0, y0, xe - x0, 8); g.strokeRect(x0, y0, xe - x0, 8); g.beginPath(); g.moveTo(x0 + 14, y0 + 8); g.lineTo(x0 + 14, suelo); g.moveTo(xe - 14, y0 + 8); g.lineTo(xe - 14, suelo); g.stroke(); }
+    else { g.beginPath(); g.moveTo(0, y0); g.lineTo(w, y0); g.stroke(); }
+    g.beginPath(); g.moveTo(0, suelo); g.lineTo(w, suelo); if (!horiz || pol) g.stroke();
+    if (t > 1e-6) { g.strokeStyle = col['--muted']; g.lineWidth = 1; g.beginPath(); g.arc(x0, y0, 34, -t, 0); g.stroke(); g.fillStyle = col['--muted']; g.font = '12px "IBM Plex Sans", system-ui, sans-serif'; g.textAlign = 'left'; g.textBaseline = 'middle'; g.fillText(`θ = ${txt(f(sol.th))}°`, x0 + 40, y0 - 10); }
+    // bloque en el centro del plano
+    const xb = x0 + (L * 0.5) * ux[0] + (s / 2) * uy[0], yb = y0 + (L * 0.5) * ux[1] + (s / 2) * uy[1];
+    // escala de las fuerzas: la mayor mide unos 0,3 del alto
+    const mods = sol.fuerzas.map((q) => q.mod).concat(sol.m2 ? [sol.m2 * sol.g] : []), k = (Math.min(h, w) * 0.26) / Math.max(...mods, 1e-9);
+    const pant = (fx, fy) => [k * (fx * ux[0] + fy * uy[0]), k * (fx * ux[1] + fy * uy[1])];
+    // polea y masa colgando
+    let xh, yh;
+    if (pol) {
+      const cxp = xe + (s / 2 - r) * uy[0] + r * ux[0] * 0, cyp = ye + (s / 2 - r) * uy[1];
+      g.strokeStyle = col['--suelo']; g.lineWidth = 3; g.beginPath(); g.moveTo(xe, ye); g.lineTo(cxp, cyp); g.stroke();
+      g.strokeStyle = col['--ink']; g.lineWidth = 1.2;
+      // cuerda: del bloque a la polea y de la polea abajo
+      const tx = cxp + r * uy[0], ty = cyp + r * uy[1];
+      g.beginPath(); g.moveTo(xb + (s / 2) * ux[0], yb + (s / 2) * ux[1]); g.lineTo(tx, ty); g.stroke();
+      xh = cxp + r; yh = Math.min(suelo - s / 2 - 6, cyp + Math.max(70, (suelo - cyp) * 0.5));
+      g.beginPath(); g.moveTo(xh, cyp); g.lineTo(xh, yh - s / 2); g.stroke();
+      g.fillStyle = col['--panel'] || col['--bg']; g.beginPath(); g.arc(cxp, cyp, r, 0, 2 * Math.PI); g.fillStyle = col['--cuerpo']; g.fill(); g.strokeStyle = col['--muted']; g.stroke();
+      cuerpo(g, xh, yh, s * 0.85, 0, 'm₂');
+    }
+    cuerpo(g, xb, yb, s, t, 'm₁');
+    // fuerzas sobre el bloque: el peso desde el centro; la normal y el rozamiento desde la cara de contacto
+    for (const q of sol.fuerzas) {
+      const [dx, dy] = pant(q.x, q.y);
+      let ox = xb, oy = yb;
+      if (q.k === 'Fr') { ox = xb - (s / 2) * uy[0]; oy = yb - (s / 2) * uy[1]; }
+      fuerza(g, ox, oy, dx, dy, q.k, q.k === 'Fr' ? 'Fr' : q.k);
+    }
+    if (pol) { fuerza(g, xh, yh, 0, k * sol.m2 * sol.g, 'P2', 'P₂'); fuerza(g, xh, yh - s * 0.42, 0, -k * sol.T, 'T', 'T'); }
+    // aceleración
+    if (Math.abs(sol.a) > 1e-9) {
+      const la = 46 * Math.sign(sol.a), ax = xb + (s * 0.9) * uy[0], ay = yb + (s * 0.9) * uy[1];
+      flecha(g, ax - (la / 2) * ux[0], ay - (la / 2) * ux[1], ax + (la / 2) * ux[0], ay + (la / 2) * ux[1], col['--ink'], 1.5, true);
+      etiqueta(g, ax + (la / 2 + 12 * Math.sign(la)) * ux[0], ay + (la / 2 + 12 * Math.sign(la)) * ux[1], 'a', col['--ink']);
+    }
+  }
+
+  function dibujaAtwood(g, w, h) {
+    const cx = w / 2, cy = 34, R = Math.max(18, Math.min(30, w / 18)), s = Math.max(34, Math.min(52, w / 12));
+    const y1 = h * 0.5 + (sol.m1 >= sol.m2 ? 20 : -20), y2 = h * 0.5 + (sol.m2 > sol.m1 ? 20 : -20);
+    g.strokeStyle = col['--suelo']; g.lineWidth = 3; g.beginPath(); g.moveTo(cx - 60, 6); g.lineTo(cx + 60, 6); g.moveTo(cx, 6); g.lineTo(cx, cy); g.stroke();
+    g.strokeStyle = col['--ink']; g.lineWidth = 1.2;
+    g.beginPath(); g.moveTo(cx - R, cy); g.lineTo(cx - R, y1 - s / 2); g.moveTo(cx + R, cy); g.lineTo(cx + R, y2 - s / 2); g.stroke();
+    g.beginPath(); g.arc(cx, cy, R, 0, 2 * Math.PI); g.fillStyle = col['--cuerpo']; g.fill(); g.strokeStyle = col['--muted']; g.stroke();
+    if (sol.mp) { g.fillStyle = col['--muted']; g.font = '11px "IBM Plex Sans", system-ui, sans-serif'; g.textAlign = 'left'; g.textBaseline = 'middle'; g.fillText(`m_p = ${txt(f(sol.mp))} kg`.replace('_', ''), cx + R + 8, cy); }
+    cuerpo(g, cx - R, y1, s, 0, 'm₁'); cuerpo(g, cx + R, y2, s, 0, 'm₂');
+    const k = (h * 0.26) / Math.max(sol.m1 * sol.g, sol.m2 * sol.g, sol.T1, sol.T2);
+    const ox = s * 0.85;
+    fuerza(g, cx - R - ox, y1, 0, k * sol.m1 * sol.g, 'P', 'P₁'); fuerza(g, cx - R - ox, y1, 0, -k * sol.T1, 'T', 'T₁');
+    fuerza(g, cx + R + ox, y2, 0, k * sol.m2 * sol.g, 'P', 'P₂'); fuerza(g, cx + R + ox, y2, 0, -k * sol.T2, 'T', 'T₂');
+    if (Math.abs(sol.a) > 1e-9) {
+      const la = 40 * Math.sign(sol.a);
+      flecha(g, cx - R - s, y1 + la / 2, cx - R - s, y1 - la / 2, col['--ink'], 1.5, true);
+      flecha(g, cx + R + s, y2 - la / 2, cx + R + s, y2 + la / 2, col['--ink'], 1.5, true);
+    }
+  }
+
+  function dibuja() {
+    const { g, w, h } = lienzo();
+    if (!sol) return;
+    colores();
+    if (sol.tipo === 'atwood') dibujaAtwood(g, w, h); else dibujaPlano(g, w, h);
+  }
+  window.addEventListener('resize', dibuja);
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', dibuja);
+
+  const ver = $('#ver'); if (ver) ver.textContent = Version.de('dinamica').current;
+  formulario(); calcula();
+  window.DinamicaApp = { abrirEjemplo, resultado: () => sol && { tipo: sol.tipo, a: sol.a, N: sol.N, T: sol.T ?? sol.T1, estado: sol.estado }, estado: () => copia(sc) };
+})();
+
+</script>
+</html>
