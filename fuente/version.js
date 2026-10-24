@@ -11,6 +11,7 @@
 const Version = (() => {
   const registros = {
     web: [
+      { v: '0.37', fecha: '2026-10-24', cambios: ['Nueva herramienta: Fuerza magnética, en Electromagnetismo.'] },
       { v: '0.36', fecha: '2026-10-24', cambios: ['Nueva herramienta: Campos vectoriales, en Matemáticas.'] },
       { v: '0.35', fecha: '2026-10-24', cambios: ['Nueva herramienta: Cinética química, en Química.'] },
       { v: '0.34', fecha: '2026-10-24', cambios: ['Nueva herramienta: Ecuaciones diferenciales, en Matemáticas.'] },
@@ -102,6 +103,9 @@ const Version = (() => {
     matrices: [
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: determinante por Gauss, por Sarrus o por Laplace; inversa por Gauss-Jordan o por adjuntos; rango; forma escalonada y escalonada reducida, con cada operación entre filas y la matriz después de cada paso.', 'Valores y vectores propios con el polinomio característico, las raíces exactas (también con radicales o complejas) y si la matriz es diagonalizable, con P y D.', 'Suma, resta, producto (elemento a elemento), producto por un número, potencia y traspuesta.', 'Fracciones exactas y números complejos en cualquier casilla: 3/4, 0,25, 2−3i o (1+i)/2.'] },
+    ],
+    fuerza: [
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: fuerza sobre una carga en un campo uniforme, con el radio, el periodo y el sentido de giro, o la hélice si v no es perpendicular a B. La velocidad se puede dar en m/s, por su energía en eV o por la ddp que la acelera.', 'Fuerza de Lorentz con vectores: v × B con su determinante y F = q(E + v × B).', 'Selector de velocidades y espectrómetro de masas, ciclotrón con la frecuencia, la energía de salida y las vueltas.', 'Fuerza sobre un hilo (y la corriente para que flote) y entre dos hilos paralelos.', 'Animación de cada situación.'] },
     ],
     campos: [
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: gradiente, derivada direccional y laplaciano de un campo escalar, con su mapa de color y las curvas de nivel.', 'Divergencia y rotacional de un campo vectorial en el plano o en el espacio y, si es conservativo, su potencial.', 'Integral de línea (trabajo) a lo largo de una curva r(t), comparada con la diferencia de potencial cuando el campo es conservativo.', 'Teorema de Green en un círculo o un rectángulo: circulación y flujo por el borde frente a las integrales dobles.', 'Gráfica con partículas que siguen el campo y un molinillo que gira con el rotacional; tocándola se mueve el punto.'] },

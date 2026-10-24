@@ -958,6 +958,34 @@ const CamC = require(path.join(fuente, 'campos', 'calculo.js'));
   if (fallos === antes) console.log(`  ✓ Campos vectoriales: ${CamC.ejemplos.length} ejemplos, gradiente, derivada direccional, laplaciano, divergencia, rotacional, potencial, trabajo, Green y errores`);
 }
 
+const FzC = require(path.join(fuente, 'fuerza', 'fisica.js'));
+{
+  const antes = fallos, cerca = (a, b, tol, q) => { if (!(Math.abs(a - b) <= tol * Math.max(1e-300, Math.abs(b)))) mal(`Fuerza magnética · ${q}: ${a} en vez de ${b}`); };
+  const r = (c) => FzC.resolver(FzC.ejemplos.find((e) => e.clave === c).sc), e = 1.602176634e-19, mp = 1.67262192e-27, me = 9.1093837e-31;
+  for (const x of FzC.ejemplos) { try { const s = FzC.resolver(x.sc); if (s.pasos.length < 2) mal(`Fuerza magnética · ${x.clave}: desarrollo corto`); } catch (err) { mal(`Fuerza magnética · ${x.clave}: ${err.message}`); } }
+  const p = r('proton'); cerca(p.F, e * 2e6 * 0.5, 1e-12, 'F del protón'); cerca(p.r, (mp * 2e6) / (e * 0.5), 1e-12, 'radio del protón'); cerca(p.T, (2 * Math.PI * mp) / (e * 0.5), 1e-12, 'periodo');
+  if (p.giro !== 'antihorario' || r('electron').giro !== 'antihorario' || FzC.carga({ ...p0(), sentidoB: 'saliente' }).giro !== 'horario') mal('Fuerza magnética: el sentido de giro no cuadra con F = q v × B');
+  function p0() { return { ...FzC.ejemplos[0].sc }; }
+  cerca(r('electron').v, Math.sqrt((2 * e * 1000) / me), 1e-12, 'v del electrón acelerado');
+  const he = r('helice'); cerca(he.paso, 5e5 * 0.5 * he.T, 1e-9, 'paso de la hélice'); cerca(he.r, (mp * 5e5 * Math.sin(Math.PI / 3)) / (e * 0.2), 1e-9, 'radio de la hélice');
+  if (FzC.carga({ ...p0(), th: '0' }).F !== 0) mal('Fuerza magnética: con v paralela a B debería salir F = 0');
+  const vp = r('vec-proton'); cerca(vp.Fm[0], e * 1.5e5, 1e-9, 'Fx'); cerca(vp.Fm[1], -e * 1e5, 1e-9, 'Fy'); if (vp.Fm[2] !== 0) mal('Fuerza magnética: Fz del protón no es 0');
+  const ve = r('vec-electron'); cerca(ve.Fm[1], e * 3e5, 1e-9, 'Fy del electrón'); if (Math.abs(ve.Fm.reduce((s, x, i) => s + x * ve.v[i], 0)) > 1e-30) mal('Fuerza magnética: F no es perpendicular a v');
+  const vl = r('vec-lorentz'); cerca(vl.F[2], 2e-6 * (50 - 40), 1e-9, 'Lorentz con E');
+  const se = r('selector'); cerca(se.vs, 5e5, 1e-12, 'v del selector'); cerca(se.r2, (mp * 5e5) / (e * 0.5), 1e-9, 'radio en el espectrómetro');
+  if (r('selector-rapido').hacia !== 'abajo' || FzC.selector({ ...r0('selector-rapido'), part: 'proton' }).hacia !== 'arriba') mal('Fuerza magnética: el sentido de desviación en el selector no cuadra');
+  function r0(c) { return { ...FzC.ejemplos.find((x) => x.clave === c).sc }; }
+  const ci = r('ciclotron'); cerca(ci.fr, (e * 1.5) / (2 * Math.PI * mp), 1e-12, 'frecuencia del ciclotrón'); cerca(ci.Ec, (e * 1.5 * 0.5) ** 2 / (2 * mp), 1e-12, 'energía del ciclotrón'); cerca(ci.n, ci.Ec / (2 * e * 5e4), 1e-12, 'vueltas');
+  const hi = r('hilo'); cerca(hi.F, 1, 1e-12, 'F sobre el hilo'); if (hi.arriba !== true || r('hilo-flota').arriba !== true || FzC.hilo({ ...r0('hilo'), sentidoI: 'izquierda' }).arriba !== false) mal('Fuerza magnética: el sentido de la fuerza sobre el hilo no cuadra');
+  cerca(r('hilo-flota').Iflota, (0.01 * 9.8) / (0.2 * 0.5), 1e-12, 'corriente para que flote');
+  const pa = r('paralelos'); cerca(pa.FL, 1e-4, 1e-9, 'F/L entre hilos'); if (!pa.mismo || r('antiparalelos').mismo) mal('Fuerza magnética: atracción y repulsión al revés');
+  for (const [q, sc] of [['una B vacía', { ...p0(), B: '' }], ['una velocidad que no es un número', { ...p0(), v: 'abc' }], ['un ángulo de 200°', { ...p0(), th: '200' }], ['una carga 0', { ...p0(), part: 'otra', q: '0', m: '1e-27' }], ['vectores sin B', { ...r0('vec-proton'), Bx: '', By: '', Bz: '' }], ['un selector sin E', { ...r0('selector'), E: '' }], ['dos hilos a distancia 0', { ...r0('paralelos'), d: '0' }]]) {
+    let ok = false; try { FzC.resolver(sc); } catch (err) { ok = true; }
+    if (!ok) mal(`Fuerza magnética: ${q} no da error`);
+  }
+  if (fallos === antes) console.log(`  ✓ Fuerza magnética: ${FzC.ejemplos.length} ejemplos, radio, periodo, hélice, sentido de giro, v × B, selector, espectrómetro, ciclotrón, hilos y errores`);
+}
+
 const Gases = require(path.join(fuente, 'gases', 'fisica.js'));
 {
   // valores calculados a mano
@@ -1980,6 +2008,46 @@ async function navegador() {
     const consola = [];
     page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') consola.push(m.type() + ': ' + m.text()); });
     page.on('pageerror', (e) => consola.push('excepción: ' + e.message));
+    await page.goto('file://' + path.join(publico, 'electromagnetismo', 'fuerza', 'index.html'));
+    await page.waitForFunction(() => window.FuerzaApp);
+    const antes = fallos;
+    const verC = (await page.locator('#ver').textContent()).trim();
+    if (verC !== Version.de('fuerza').current) mal(`Fuerza magnética: la página muestra la versión «${verC}», se esperaba ${Version.de('fuerza').current}`);
+    for (const e of FzC.ejemplos) {
+      await page.evaluate((c) => FuerzaApp.abrirEjemplo(c), e.clave);
+      await page.waitForTimeout(60);
+      const r = await page.evaluate(() => ({ err: !document.querySelector('#error').hidden, pasos: document.querySelectorAll('#pasos li').length, res: document.querySelectorAll('#res > div').length, modo: document.querySelector('#f-modo').value }));
+      if (r.err || r.pasos < 2 || r.res < 1) mal(`Fuerza magnética · ${e.clave}: falta el resultado o el desarrollo`);
+      if (r.modo !== e.sc.modo) mal(`Fuerza magnética · ${e.clave}: el modo no cuadra`);
+    }
+    await page.evaluate(() => FuerzaApp.abrirEjemplo('proton'));
+    if (!(await page.locator('#res').textContent()).includes('0,04176')) mal('Fuerza magnética: el radio del protón (0,04176 m) no sale en la página');
+    await page.fill('#f-B', '1');
+    if (!(await page.locator('#res').textContent()).includes('0,02088')) mal('Fuerza magnética: con el doble de campo el radio no se reduce a la mitad');
+    await page.selectOption('#f-part', 'electron');
+    if (!(await page.locator('#res').textContent()).includes('horario')) mal('Fuerza magnética: al cambiar a un electrón no cambia el sentido de giro');
+    await page.selectOption('#f-part', 'otra');
+    if ((await page.locator('#f-q').count()) !== 1 || !(await page.locator('#error').isHidden())) mal('Fuerza magnética: al elegir otra partícula no salen q y m o da error');
+    await page.selectOption('#f-uv', 'V');
+    if (!(await page.locator('#error').isHidden())) mal('Fuerza magnética: al dar la ddp en vez de la velocidad da error');
+    await page.fill('#f-B', 'abc');
+    if (await page.locator('#error').isHidden()) mal('Fuerza magnética: una B que no es un número no da error');
+    await page.selectOption('#f-modo', 'vectorial');
+    if ((await page.locator('#f-vx').count()) !== 1 || !(await page.locator('#error').isHidden())) mal('Fuerza magnética: al pasar a vectores no salen las componentes o da error');
+    await page.fill('#f-Ez', '1e5');
+    if (!(await page.locator('#res').textContent()).includes('Lorentz')) mal('Fuerza magnética: con E no sale la fuerza de Lorentz completa');
+    await page.click('#play');
+    if ((await page.locator('#play').textContent()).trim() !== '▶ Seguir') mal('Fuerza magnética: el botón de pausa no cambia');
+    for (let i = 0; i < 12; i++) { await page.evaluate(() => FuerzaApp.azar()); if (!(await page.locator('#error').isHidden())) mal(`Fuerza magnética: un ejercicio al azar da error: ${JSON.stringify(await page.evaluate(() => FuerzaApp.estado()))}`); }
+    await page.close();
+    if (consola.length) mal('Fuerza magnética: consola del navegador:\n      ' + consola.join('\n      '));
+    if (fallos === antes) console.log(`  ✓ Fuerza magnética: ${FzC.ejemplos.length} ejemplos, cambio de campo y de partícula, sentido de giro, ddp, errores, vectores con E y ejercicios al azar sin errores de consola`);
+  }
+  {
+    const page = await browser.newPage({ viewport: { width: 1200, height: 900 } });
+    const consola = [];
+    page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') consola.push(m.type() + ': ' + m.text()); });
+    page.on('pageerror', (e) => consola.push('excepción: ' + e.message));
     await page.goto('file://' + path.join(publico, 'fisica', 'gases', 'index.html'));
     await page.waitForFunction(() => window.GasesApp);
     const antes = fallos;
@@ -2079,7 +2147,7 @@ async function navegador() {
       if (!(r.ancho > 0)) mal(`${dir}: alguna fórmula MathML no se dibuja`);
     }
     // las cajas de fórmulas de la teoría del resto de herramientas
-    for (const pag of ['circuitos/alterna', 'circuitos/continua', 'electromagnetismo/condensadores', 'fisica/dinamica', 'estadistica/distribuciones', 'electromagnetismo/faraday', 'fisica/gases', 'electromagnetismo/induccion', 'matematicas/matrices', 'fisica/ondas', 'fisica/doppler', 'circuitos/resistencias', 'estadistica/regresion', 'matematicas/complejos', 'fisica/fluidos', 'quimica/ph', 'fisica/ciclos', 'matematicas/taylor', 'matematicas/fourier', 'matematicas/edos', 'quimica/cinetica', 'matematicas/campos', 'matematicas/sistemas', 'fisica/solido-rigido']) {
+    for (const pag of ['circuitos/alterna', 'circuitos/continua', 'electromagnetismo/condensadores', 'fisica/dinamica', 'estadistica/distribuciones', 'electromagnetismo/faraday', 'fisica/gases', 'electromagnetismo/induccion', 'matematicas/matrices', 'fisica/ondas', 'fisica/doppler', 'circuitos/resistencias', 'estadistica/regresion', 'matematicas/complejos', 'fisica/fluidos', 'quimica/ph', 'fisica/ciclos', 'matematicas/taylor', 'matematicas/fourier', 'matematicas/edos', 'quimica/cinetica', 'matematicas/campos', 'electromagnetismo/fuerza', 'matematicas/sistemas', 'fisica/solido-rigido']) {
       await page.goto('file://' + path.join(publico, ...pag.split('/'), 'index.html'));
       await page.waitForFunction(() => document.querySelectorAll('.teoria .f[data-m]').length > 0);
       const r = await page.evaluate(() => [...document.querySelectorAll('.teoria .f')].map((e) => e.querySelectorAll('math').length > 0 && !/\$/.test(e.textContent)));
@@ -2089,7 +2157,7 @@ async function navegador() {
     }
     await page.close();
     if (consola.length) mal('Arreglo 2: consola del navegador:\n      ' + consola.join('\n      '));
-    if (fallos === antes) console.log('  ✓ Fórmulas MathML: desarrollo y teoría de Tiro parabólico, Trabajo y energía y Calorimetría, y la teoría de otras 24 herramientas, sin $ sueltos');
+    if (fallos === antes) console.log('  ✓ Fórmulas MathML: desarrollo y teoría de Tiro parabólico, Trabajo y energía y Calorimetría, y la teoría de otras 25 herramientas, sin $ sueltos');
   }
   {
     // arreglo 6: barra lateral «Mis ejercicios» en todas las herramientas con estado (guardar, carpeta, fijar, abrir, exportar, borrar e importar)
@@ -2140,7 +2208,7 @@ async function navegador() {
     if (!m.ab || !m.scrim || m.ancho > 390) mal(`Mis ejercicios en el móvil: ${JSON.stringify(m)}`);
     await movil.close();
     if (consola.length) mal('Arreglo 6: consola del navegador:\n      ' + consola.join('\n      '));
-    if (probadas < 31) mal(`Mis ejercicios: solo se ha probado en ${probadas} herramientas`);
+    if (probadas < 32) mal(`Mis ejercicios: solo se ha probado en ${probadas} herramientas`);
     if (fallos === antes) console.log(`  ✓ Mis ejercicios: guardar, carpeta, fijar, abrir, exportar, borrar e importar en ${probadas} herramientas, y en el móvil`);
   }
   {
@@ -2179,11 +2247,11 @@ async function navegador() {
       await page.close(); probadas++;
     }
     if (consola.length) mal('Arreglo 7: consola del navegador:\n      ' + consola.join('\n      '));
-    if (probadas < 31) mal(`Modo práctica: solo se ha probado en ${probadas} herramientas`);
+    if (probadas < 32) mal(`Modo práctica: solo se ha probado en ${probadas} herramientas`);
     if (fallos === antes) console.log(`  ✓ Modo práctica: ${ejercicios} ejercicios al azar en ${probadas} herramientas, corregidos bien y mal, con la solución y la vuelta a los datos de antes`);
   }
   // portada y páginas de asignatura: sin errores de consola y sin enlaces internos rotos
-  const portal = ['index.html', ...Catalogo.asignaturas.map((a) => `${a.clave}/index.html`), 'electromagnetismo/magnetostatica/index.html', 'quimica/tabla-periodica/index.html', 'fisica/trabajo-y-energia/index.html', 'quimica/masa-molar/index.html', 'quimica/configuracion-electronica/index.html', 'electromagnetismo/condensadores/index.html', 'fisica/tiro-parabolico/index.html', 'quimica/disoluciones/index.html', 'fisica/calorimetria/index.html', 'electromagnetismo/induccion/index.html', 'matematicas/matrices/index.html', 'matematicas/sistemas/index.html', 'estadistica/distribuciones/index.html', 'circuitos/alterna/index.html', 'fisica/dinamica/index.html', 'circuitos/continua/index.html', 'fisica/solido-rigido/index.html', 'fisica/ondas/index.html', 'fisica/doppler/index.html', 'circuitos/resistencias/index.html', 'estadistica/regresion/index.html', 'matematicas/complejos/index.html', 'fisica/fluidos/index.html', 'quimica/ph/index.html', 'fisica/ciclos/index.html', 'matematicas/taylor/index.html', 'matematicas/fourier/index.html', 'matematicas/edos/index.html', 'quimica/cinetica/index.html', 'matematicas/campos/index.html', 'fisica/gases/index.html', 'electromagnetismo/faraday/index.html'];
+  const portal = ['index.html', ...Catalogo.asignaturas.map((a) => `${a.clave}/index.html`), 'electromagnetismo/magnetostatica/index.html', 'quimica/tabla-periodica/index.html', 'fisica/trabajo-y-energia/index.html', 'quimica/masa-molar/index.html', 'quimica/configuracion-electronica/index.html', 'electromagnetismo/condensadores/index.html', 'fisica/tiro-parabolico/index.html', 'quimica/disoluciones/index.html', 'fisica/calorimetria/index.html', 'electromagnetismo/induccion/index.html', 'matematicas/matrices/index.html', 'matematicas/sistemas/index.html', 'estadistica/distribuciones/index.html', 'circuitos/alterna/index.html', 'fisica/dinamica/index.html', 'circuitos/continua/index.html', 'fisica/solido-rigido/index.html', 'fisica/ondas/index.html', 'fisica/doppler/index.html', 'circuitos/resistencias/index.html', 'estadistica/regresion/index.html', 'matematicas/complejos/index.html', 'fisica/fluidos/index.html', 'quimica/ph/index.html', 'fisica/ciclos/index.html', 'matematicas/taylor/index.html', 'matematicas/fourier/index.html', 'matematicas/edos/index.html', 'quimica/cinetica/index.html', 'matematicas/campos/index.html', 'electromagnetismo/fuerza/index.html', 'fisica/gases/index.html', 'electromagnetismo/faraday/index.html'];
   const antes = fallos;
   for (const f of portal) {
     const page = await browser.newPage({ viewport: { width: 1200, height: 900 } });

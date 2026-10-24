@@ -1,0 +1,94 @@
+<title>Fuerza magnética: Lorentz, ciclotrón, selector e hilos · SimulaCiencia</title>
+<meta name="description" content="Calculadora de la fuerza magnética en español: fuerza de Lorentz F = q v × B con vectores, radio, periodo y hélice de una carga en un campo, selector de velocidades, espectrómetro de masas, ciclotrón, fuerza sobre un hilo y entre dos hilos paralelos, con animación y paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root {
+  --bg: #eef0f4; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d6dbe3; --accent: #2a5db5; --accent-soft: #e3ecfa; --peso: #c2412a; --normal: #1d7a3e; --roz: #b0700a; --fuerza: #6b3fa0; --tension: #2a5db5; --cuerpo: #c9d3e0; --suelo: #8a96a3;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #74a2f2; --accent-soft: #1c2a42; --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #74a2f2; --accent-soft: #1c2a42; --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784; color-scheme: dark }
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
+.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
+.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+.layout { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 16px; align-items: start }
+@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr) } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 15px var(--f-ui); margin: 0 0 10px }
+.campos { display: grid; grid-template-columns: minmax(0, 1fr) 190px; gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px } .campos label small { color: var(--muted) }
+.in { font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.in:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer }
+.btn:hover { border-color: var(--accent) }
+.error { color: #c0392b; font-size: 13px; margin: 10px 0 0 }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+.res { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px 14px; font: 16px var(--f-math) } .res div { overflow-x: auto } .res span { display: block; font: 12px var(--f-ui); color: var(--muted) }
+.leyenda { font-size: 12.5px; color: var(--muted); margin: 6px 0 0 } .leyenda b { font-weight: 600 }
+canvas { display: block; width: 100%; height: clamp(260px, 36vw, 380px); border-radius: 8px; background: var(--bg); margin-top: 10px }
+.pasos ol { margin: 0; padding-left: 22px } .pasos li { margin: 0 0 12px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+.controles { display: flex; gap: 8px; align-items: center; margin-top: 8px }
+.tres { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px }
+.uv { font-style: normal; font-weight: 600 }
+.btn { white-space: nowrap }
+.det { display: inline-block; vertical-align: middle; border-left: 1.4px solid currentColor; border-right: 1.4px solid currentColor; padding: 0 4px; margin: 2px 2px }
+.det table { border-collapse: collapse } .det td { padding: 1px 7px; text-align: center; white-space: nowrap; font-size: 14px }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Electromagnetismo</a> / Fuerza magnética</span></header>
+<div class="wrap">
+<h1>Fuerza magnética sobre cargas y corrientes</h1>
+<p class="lead">Calcula la fuerza de Lorentz sobre una carga, con vectores o con el ángulo, el radio y el periodo de su trayectoria (circunferencia o hélice), el selector de velocidades y el espectrómetro de masas, el ciclotrón, la fuerza sobre un hilo y entre dos hilos paralelos, con animación y el desarrollo paso a paso.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card"><h2>Resultado</h2><div class="res" id="res"></div>
+      <canvas id="escena" aria-label="Animación de la fuerza magnética"></canvas>
+      <div class="controles"><button class="btn" id="play" type="button">⏸ Pausa</button><span class="nota" id="leyenda" style="margin:0"></span></div></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Fuerza de Lorentz</h2>
+  <p class="f m">$F = q (E + v × B)$, &ensp; $|F_m| = |q| v B sen θ$</p>
+  <p>La fuerza magnética es perpendicular a la velocidad y al campo, y su sentido sale de la regla de la mano derecha (para una carga negativa, el contrario). Como es perpendicular a v, no hace trabajo: cambia la dirección de la velocidad pero no su módulo.</p>
+  <h2>Movimiento en un campo uniforme</h2>
+  <p class="f m">$r = {m v}/{|q| B}$, &ensp; $T = {2π m}/{|q| B}$, &ensp; $ω = {|q| B}/m$</p>
+  <p class="m">Si v es perpendicular a B la trayectoria es una circunferencia. Si forma un ángulo θ, la componente $v_∥ = v cos θ$ no cambia y la partícula describe una hélice de radio ${m v sen θ}/{|q| B}$ y paso $p = v_∥ T$. El periodo no depende de la velocidad.</p>
+  <h2>Selector de velocidades y espectrómetro de masas</h2>
+  <p class="m">Con E y B perpendiculares, las fuerzas eléctrica y magnética se anulan solo para $v = E/B$: esas partículas pasan sin desviarse. En el espectrómetro, con un campo B′, describen media circunferencia de radio $r = {m v}/{|q| B′}$, y las de distinta masa caen en sitios distintos.</p>
+  <h2>Ciclotrón</h2>
+  <p class="m">Dos des en un campo B y una tensión alterna entre ellas de frecuencia $f = {|q| B}/{2π m}$. Cada media vuelta la partícula se acelera en el hueco; sale por el borde con $E_c = {q^2 B^2 R^2}/{2m}$.</p>
+  <h2>Fuerza sobre corrientes</h2>
+  <p class="f m">$F = I L × B$, &ensp; $|F| = I L B sen θ$</p>
+  <p class="f m">${F}/{L} = {μ_0 I_1 I_2}/{2π d}$</p>
+  <p>Dos hilos paralelos se atraen si las corrientes van en el mismo sentido y se repelen si van en sentidos contrarios. Con μ₀ = 4π·10⁻⁷ T·m/A. Para el campo que crean los hilos y las espiras usa <a href="../magnetostatica/">Magnetostática</a>.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Fuerza magnética <span id="ver"></span> (beta)</footer>
+</body>
