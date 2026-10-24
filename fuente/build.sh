@@ -91,6 +91,8 @@ if [ "$1" != privado ]; then
     version.js mates.js matematicas/expresion.js fourier/calculo.js fourier/app.js
   herramienta edos ../publico/matematicas/edos/index.html "Ecuaciones diferenciales" "Calculadora de ecuaciones diferenciales: campo de pendientes con Euler y RK4, EDO lineales de segundo orden con coeficientes constantes y resonancia, y sistemas con su diagrama de fases y el tipo de cada punto crítico" \
     version.js mates.js matematicas/expresion.js edos/calculo.js edos/app.js
+  herramienta laplace ../publico/matematicas/laplace/index.html "Transformada de Laplace" "Calculadora de la transformada de Laplace paso a paso: directa con la tabla y sus propiedades, inversa por fracciones simples con polos dobles y complejos, valores inicial y final, y ecuaciones diferenciales con condiciones iniciales, con el plano s" \
+    version.js mates.js matematicas/expresion.js laplace/calculo.js laplace/app.js
   herramienta campos ../publico/matematicas/campos/index.html "Campos vectoriales" "Calculadora de campos vectoriales: gradiente y derivada direccional, laplaciano, divergencia y rotacional, potencial de un campo conservativo, integral de línea y teorema de Green, paso a paso y con la gráfica del campo" \
     version.js mates.js matematicas/expresion.js campos/calculo.js campos/app.js
   herramienta estadistica ../publico/estadistica/distribuciones/index.html "Distribuciones de probabilidad" "Calculadora de la normal, binomial, Poisson, t de Student y chi cuadrado con el área sombreada: probabilidades, cuantiles y valores críticos paso a paso" \

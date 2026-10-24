@@ -11,6 +11,7 @@
 const Version = (() => {
   const registros = {
     web: [
+      { v: '0.42', fecha: '2026-10-24', cambios: ['Nueva herramienta: Transformada de Laplace, en Matemáticas.'] },
       { v: '0.41', fecha: '2026-10-24', cambios: ['Nueva herramienta: Intervalos de confianza, en Estadística.', 'Nueva herramienta: Ondas electromagnéticas planas, en Electromagnetismo.', 'Nueva herramienta: Interferencia y difracción, en Física general.', 'Arreglo: al salir del modo práctica a veces no volvían los datos que tenías antes.'] },
       { v: '0.40', fecha: '2026-10-24', cambios: ['Las novedades tienen su propia página, con una línea de tiempo: cada versión es una tarjeta con todos sus cambios, una etiqueta de color para saber si es una herramienta nueva, una mejora o un arreglo, y un enlace para abrir cada herramienta nueva.'] },
       { v: '0.39', fecha: '2026-10-24', cambios: ['Nueva portada: las asignaturas están en una barra lateral siempre a mano y cada herramienta ocupa una ficha pequeña, así se ve todo de un vistazo y sin huecos. En el móvil, las asignaturas son una fila de pestañas arriba.'] },
@@ -107,6 +108,9 @@ const Version = (() => {
     matrices: [
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: determinante por Gauss, por Sarrus o por Laplace; inversa por Gauss-Jordan o por adjuntos; rango; forma escalonada y escalonada reducida, con cada operación entre filas y la matriz después de cada paso.', 'Valores y vectores propios con el polinomio característico, las raíces exactas (también con radicales o complejas) y si la matriz es diagonalizable, con P y D.', 'Suma, resta, producto (elemento a elemento), producto por un número, potencia y traspuesta.', 'Fracciones exactas y números complejos en cualquier casilla: 3/4, 0,25, 2−3i o (1+i)/2.'] },
+    ],
+    laplace: [
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: transformada directa de sumas de términos c·tⁿ·e^(at)·sen(bt) o cos(bt), senh y cosh, con la fila de la tabla y la propiedad que usa cada término, y F(s) con denominador común.', 'Inversa por fracciones simples: polos simples, múltiples y complejos (también dobles), con los coeficientes, la fila de la tabla y los valores inicial y final.', 'Ecuaciones diferenciales de primer y segundo orden con condiciones iniciales: transformar, despejar Y(s) y volver.', 'Plano s con los polos y los ceros, y gráfica animada de f(t) con cada término por separado.'] },
     ],
     interferencia: [
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: doble rendija de Young con la interfranja, la posición y el ángulo de cada máximo, la intensidad en un punto y la envolvente de difracción si das la anchura de las rendijas.', 'Rendija simple: mínimos, anchura del máximo central e intensidad.', 'Red de difracción: ángulos de cada orden, orden máximo y separación de dos longitudes de onda con el poder de resolución.', 'Láminas delgadas: colores que se refuerzan y se anulan y espesores para reforzar o quitar el reflejo.', 'Ondas que salen de las rendijas animadas y el patrón en la pantalla con el color de la luz.'] },

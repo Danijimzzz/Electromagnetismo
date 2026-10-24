@@ -1,0 +1,125 @@
+<title>Transformada de Laplace: directa, inversa y ecuaciones diferenciales · SimulaCiencia</title>
+<meta name="description" content="Calculadora de la transformada de Laplace en español, paso a paso: transformada directa con la tabla y sus propiedades, inversa por fracciones simples (polos simples, dobles y complejos), teoremas del valor inicial y final, y ecuaciones diferenciales con condiciones iniciales, con el plano s y la gráfica de f(t).">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root {
+  --bg: #eef0f4; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d6dbe3; --accent: #6b3fa0; --accent-soft: #efe6f8; --z1: #2a5db5; --z2: #c2410c; --z3: #6b3fa0; --peso: #c2412a; --normal: #1d7a3e; --roz: #b0700a; --fuerza: #6b3fa0; --tension: #2a5db5; --cuerpo: #c9d3e0; --suelo: #8a96a3;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #b892ec; --accent-soft: #2b2140; --z1: #74a2f2; --z2: #f0915a; --z3: #b892ec; --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #b892ec; --accent-soft: #2b2140; --z1: #74a2f2; --z2: #f0915a; --z3: #b892ec; --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784; color-scheme: dark }
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
+.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
+.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+.layout { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 16px; align-items: start }
+@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr) } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 15px var(--f-ui); margin: 0 0 10px }
+.campos { display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px } .campos label small { color: var(--muted) }
+.in { font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.in:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer }
+.btn:hover { border-color: var(--accent) }
+.error { color: #c0392b; font-size: 13px; margin: 10px 0 0 }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+.res { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px 14px; font: 16px var(--f-math) } .res div { overflow-x: auto } .res span { display: block; font: 12px var(--f-ui); color: var(--muted) }
+.leyenda { font-size: 12.5px; color: var(--muted); margin: 6px 0 0 } .leyenda b { font-weight: 600 }
+canvas { display: block; width: 100%; height: clamp(260px, 36vw, 380px); border-radius: 8px; background: var(--bg); margin-top: 10px }
+.pasos ol { margin: 0; padding-left: 22px } .pasos li { margin: 0 0 12px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+.campos .larga { grid-column: 1 / -1 }
+.controles { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px }
+.destacado { border-color: var(--accent); box-shadow: inset 4px 0 0 var(--accent) }
+.destacado h2 { color: var(--accent) }
+.resumen { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; margin: 0 }
+.resumen div { background: var(--accent-soft); border-radius: 8px; padding: 8px 10px; overflow-x: auto } .resumen div span { display: block; font-size: 12px; color: var(--muted) } .resumen div b { font: 600 17px var(--f-math) }
+.teoria ul { padding-left: 20px } .teoria li { margin-bottom: 4px }
+#grafica { height: clamp(280px, 40vw, 420px) }
+.mat { position: relative; display: inline-block; vertical-align: middle; padding: 0 7px; margin: 2px 2px }
+.mat::before, .mat::after { content: ""; position: absolute; top: 0; bottom: 0; width: 5px; border: 1.4px solid currentColor }
+.mat::before { left: 0; border-right: 0 } .mat::after { right: 0; border-left: 0 }
+.mat table { border-collapse: collapse } .mat td { padding: 2px 7px; text-align: center; white-space: nowrap; font-variant-numeric: tabular-nums }
+.pasos table.tabla { border-collapse: collapse; margin: 6px 0; font: 13px var(--f-ui); font-variant-numeric: tabular-nums }
+.pasos table.tabla th, .pasos table.tabla td { border: 1px solid var(--line); padding: 3px 9px; text-align: right }
+.pasos table.tabla th { background: var(--accent-soft); font-weight: 600 }
+.resumen div.ancho { grid-column: 1 / -1 }
+#grafica { cursor: crosshair }
+#plano { height: clamp(240px, 30vw, 320px) }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Matemáticas</a> / Transformada de Laplace</span></header>
+<div class="wrap">
+<h1>Transformada de Laplace</h1>
+<p class="lead">Calcula la transformada de una función con la tabla y sus propiedades, la inversa por fracciones simples y la solución de ecuaciones diferenciales con condiciones iniciales, paso a paso y con los polos en el plano s.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <select id="modo" class="in" aria-label="Qué calcular" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota-datos"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Gráfica</h2>
+      <canvas id="grafica" aria-label="Gráfica de f(t) y de cada uno de sus términos"></canvas>
+      <div class="controles"><button class="btn" id="animar" type="button">▶ Animar</button></div>
+      <p class="nota" id="leyenda"></p></div>
+    <div class="card"><h2>Plano s</h2>
+      <canvas id="plano" aria-label="Plano s con los polos y los ceros de F(s)"></canvas>
+      <p class="nota" id="leyenda-s"></p></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Qué es la transformada de Laplace</h2>
+  <p class="m">Convierte una función del tiempo f(t), definida para $t ≥ 0$, en una función F(s) de una variable s:</p>
+  <p class="f m">$F(s) = ℒ\{f(t)\} = ∫_0^∞ e^{−st} f(t) dt$</p>
+  <p>La integral solo converge para s mayor que un cierto valor: por ejemplo, la de e<sup>at</sup> existe para s &gt; a. Lo útil es que derivar en t pasa a ser multiplicar por s, así que una ecuación diferencial se vuelve una ecuación algebraica.</p>
+  <h2>Tabla básica y propiedades</h2>
+  <ul>
+    <li class="m">$ℒ\{1\} = {1}/{s}$, &ensp; $ℒ\{t^{n}\} = {n!}/{s^{n+1}}$, &ensp; $ℒ\{e^{at}\} = {1}/{s − a}$</li>
+    <li class="m">$ℒ\{sen(bt)\} = {b}/{s^{2} + b^{2}}$, &ensp; $ℒ\{cos(bt)\} = {s}/{s^{2} + b^{2}}$</li>
+    <li class="m">$ℒ\{senh(at)\} = {a}/{s^{2} − a^{2}}$, &ensp; $ℒ\{cosh(at)\} = {s}/{s^{2} − a^{2}}$</li>
+    <li class="m">Desplazamiento en s: $ℒ\{e^{at} f(t)\} = F(s − a)$</li>
+    <li class="m">Multiplicar por t: $ℒ\{t^{n} f(t)\} = (−1)^{n} {d^{n}F}/{ds^{n}}$</li>
+    <li class="m">Derivadas: $ℒ\{y′\} = sY − y(0)$, &ensp; $ℒ\{y″\} = s^{2}Y − s y(0) − y′(0)$</li>
+  </ul>
+  <h2>Inversa por fracciones simples</h2>
+  <p>Si F(s) es un cociente de polinomios con el numerador de menor grado, se buscan las raíces del denominador (los polos) y se separa en fracciones que están en la tabla:</p>
+  <ul>
+    <li class="m">Polo simple p: $A/(s − p)$, con $A = [(s − p) F(s)]_{s = p}$. Da $A e^{pt}$.</li>
+    <li class="m">Polo doble p: $A_1/(s − p) + A_2/(s − p)^{2}$. Da $(A_1 + A_2 t) e^{pt}$.</li>
+    <li class="m">Par complejo $α ± βi$: $(Bs + C)/((s − α)^{2} + β^{2})$. Da $e^{αt}$ por un seno y un coseno de βt.</li>
+  </ul>
+  <p>Por eso los polos dicen cómo es f(t) sin calcularla: a la izquierda del eje imaginario los términos se apagan, sobre él oscilan sin pararse y a la derecha crecen.</p>
+  <h2>Valores inicial y final</h2>
+  <p class="f m">$f(0^{+}) = lím_{s→∞} s F(s)$, &ensp; $lím_{t→∞} f(t) = lím_{s→0} s F(s)$</p>
+  <p>El del valor final solo vale si f(t) tiende a algo: todos los polos de s F(s) a la izquierda del eje imaginario.</p>
+  <h2>Ecuaciones diferenciales</h2>
+  <p class="m">Para $a y″ + b y′ + c y = g(t)$ con y(0) e y′(0) se transforman los dos lados, se despeja Y(s) y se hace la inversa. Las condiciones iniciales entran solas, sin calcular constantes al final. Por ejemplo, $y″ + y = sen t$ con todo en reposo da $Y(s) = 1/(s^{2} + 1)^{2}$, un polo doble en ±i, y la solución $y = {1}/{2} sen t − {1}/{2} t cos t$ crece sin límite: es la resonancia.</p>
+  <p>Para resolverlas sin Laplace (coeficientes indeterminados) usa <a href="../edos/">Ecuaciones diferenciales</a>, y para los circuitos RC, RL y RLC, <a href="../../circuitos/transitorios/">Transitorios</a>.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Transformada de Laplace <span id="ver"></span> (beta)</footer>
+</body>
