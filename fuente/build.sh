@@ -95,6 +95,8 @@ if [ "$1" != privado ]; then
     version.js mates.js estadistica/calculo.js estadistica/app.js
   herramienta regresion ../publico/estadistica/regresion/index.html "Regresión y correlación" "Calculadora de regresión y correlación: covarianza, coeficiente de correlación de Pearson con su contraste, rectas de regresión de Y sobre X y de X sobre Y, ajustes exponencial, potencial, logarítmico y parabólico y estimaciones, con la nube de puntos y paso a paso" \
     version.js mates.js estadistica/calculo.js regresion/calculo.js regresion/app.js
+  herramienta intervalos ../publico/estadistica/intervalos/index.html "Intervalos de confianza" "Calculadora de intervalos de confianza: media con z o t de Student, proporción, varianza con la χ², diferencia de medias y de proporciones y tamaño de muestra, paso a paso" \
+    version.js mates.js estadistica/calculo.js intervalos/calculo.js intervalos/app.js
   herramienta alterna ../publico/circuitos/alterna/index.html "Corriente alterna y fasores" "Calculadora de corriente alterna: circuitos RLC en serie y en paralelo con impedancias complejas, diagrama de fasores, potencias, factor de potencia y resonancia, paso a paso" \
     version.js mates.js alterna/fisica.js alterna/app.js
   herramienta transitorios ../publico/circuitos/transitorios/index.html "Transitorios RC, RL y RLC" "Calculadora de transitorios: carga y descarga de un condensador en un circuito RC, corriente en una bobina en un circuito RL y respuesta de un RLC en serie, con la constante de tiempo y la gráfica" \

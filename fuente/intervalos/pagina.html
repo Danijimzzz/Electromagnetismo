@@ -1,0 +1,99 @@
+<title>Intervalos de confianza: media, proporción, varianza y tamaño de muestra · SimulaCiencia</title>
+<meta name="description" content="Calculadora de intervalos de confianza en español: media con σ conocida o desconocida (t de Student), proporción, varianza con la χ², diferencia de medias y de proporciones y tamaño de la muestra, con el valor crítico, el error máximo, el desarrollo paso a paso y una simulación de 100 muestras.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root {
+  --bg: #eef0f4; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d6dbe3; --accent: #a3367a; --accent-soft: #f8e7f0; --ok: #1d7a3e; --mal: #c2412a;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #e07ab8; --accent-soft: #3a1d2f; --ok: #5fcf8a; --mal: #ef7a62; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #e07ab8; --accent-soft: #3a1d2f; --ok: #5fcf8a; --mal: #ef7a62; color-scheme: dark }
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
+.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
+.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+.layout { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 16px; align-items: start }
+@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr) } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 15px var(--f-ui); margin: 0 0 10px }
+.campos { display: grid; grid-template-columns: minmax(0, 1fr) 170px; gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px } .campos label small { color: var(--muted) }
+.in { font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.in:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer }
+.btn:hover { border-color: var(--accent) }
+.error { color: #c0392b; font-size: 13px; margin: 10px 0 0 }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+.res { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px 14px; font: 16px var(--f-math) } .res div { overflow-x: auto } .res span { display: block; font: 12px var(--f-ui); color: var(--muted) }
+#sim { height: 420px }
+.campos .ancho { grid-column: 1 / -1 }
+textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 90px }
+.cuenta { font-size: 13.5px; margin: 0 }
+.res div.ancho { grid-column: 1 / -1 }
+.controles { display: flex; gap: 8px; align-items: center; margin-top: 8px }
+.btn { white-space: nowrap }
+.leyenda { font-size: 12.5px; color: var(--muted); margin: 6px 0 0 } .leyenda b { font-weight: 600 }
+canvas { display: block; width: 100%; height: 260px; border-radius: 8px; background: var(--bg); margin-top: 10px }
+.pasos ol { margin: 0; padding-left: 22px } .pasos li { margin: 0 0 12px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Estadística</a> / Intervalos de confianza</span></header>
+<div class="wrap">
+<h1>Intervalos de confianza</h1>
+<p class="lead">Calcula el intervalo de confianza de una media (con σ conocida o con la t de Student), una proporción, una varianza o la diferencia entre dos muestras, y el tamaño de muestra para un error dado, con el valor crítico, el error máximo y el desarrollo. La simulación saca 100 muestras para ver qué significa «confianza del 95 %».</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card"><h2>Resultado</h2><div class="res" id="res"></div>
+      <canvas id="grafica" aria-label="Distribución del estadístico con el área de confianza sombreada"></canvas></div>
+    <div class="card" id="simcard"><h2>100 muestras</h2>
+      <p class="leyenda" style="margin:0">Se toma como población la que dan tus datos y se sacan 100 muestras del mismo tamaño. Cada línea es el intervalo de una muestra: en verde si contiene el valor real y en rojo si no.</p>
+      <canvas id="sim" aria-label="Intervalos de confianza de 100 muestras"></canvas>
+      <div class="controles"><button class="btn" id="otra" type="button">↻ Otras 100 muestras</button><button class="btn" id="play" type="button">⏸ Pausa</button><p class="cuenta" id="cuenta"></p></div></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Qué es un intervalo de confianza</h2>
+  <p>Con una muestra se estima un parámetro de la población (la media μ, una proporción p, la varianza σ<sup>2</sup>…). Un intervalo de confianza al 95 % es un intervalo calculado con un método que acierta, es decir que contiene el valor real, en el 95 % de las muestras. Por eso la simulación sale con unos 95 intervalos verdes de cada 100. El nivel de confianza es 1 − α, y α es la probabilidad de fallar, repartida en dos colas de α/2.</p>
+  <h2>Media de una población</h2>
+  <p>Si se conoce la desviación típica de la población σ, se usa la normal tipificada:</p>
+  <p class="f">IC<sub>1−α</sub>(μ) = (x̄ − z<sub>α/2</sub>·σ/√n, &ensp; x̄ + z<sub>α/2</sub>·σ/√n)</p>
+  <p>Los valores más usados son z<sub>0,05</sub> = 1,645 (90 %), z<sub>0,025</sub> = 1,96 (95 %) y z<sub>0,005</sub> = 2,576 (99 %). Si σ no se conoce, se cambia por la cuasidesviación de la muestra s (la que divide entre n − 1) y z por la t de Student con n − 1 grados de libertad, t<sub>n−1; α/2</sub>. Para n grande las dos dan casi lo mismo.</p>
+  <h2>Proporción</h2>
+  <p class="f">IC<sub>1−α</sub>(p) = (p̂ − z<sub>α/2</sub>·√(p̂q̂/n), &ensp; p̂ + z<sub>α/2</sub>·√(p̂q̂/n)), &ensp; q̂ = 1 − p̂</p>
+  <p>Vale cuando la muestra es grande (np̂ y nq̂ por encima de 5).</p>
+  <h2>Varianza</h2>
+  <p>(n − 1)s<sup>2</sup>/σ<sup>2</sup> sigue una χ<sup>2</sup> con n − 1 grados de libertad. Como no es simétrica, el intervalo usa dos valores críticos distintos:</p>
+  <p class="f">IC<sub>1−α</sub>(σ<sup>2</sup>) = ((n − 1)s<sup>2</sup>/χ<sup>2</sup><sub>α/2</sub>, &ensp; (n − 1)s<sup>2</sup>/χ<sup>2</sup><sub>1−α/2</sub>)</p>
+  <p>El de la desviación típica σ se obtiene con la raíz de los dos extremos.</p>
+  <h2>Error máximo y tamaño de la muestra</h2>
+  <p>El error máximo E es la mitad de la anchura del intervalo. Despejando n de E = z<sub>α/2</sub>·σ/√n sale n = (z<sub>α/2</sub>·σ/E)<sup>2</sup>, y para una proporción n = z<sub>α/2</sub><sup>2</sup>·pq/E<sup>2</sup>, con p = 0,5 si no hay una estimación previa. Siempre se redondea hacia arriba. Para reducir el error a la mitad hace falta cuatro veces más muestra.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Intervalos de confianza <span id="ver"></span> (beta)</footer>
+</body>
