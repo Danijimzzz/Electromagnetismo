@@ -1,0 +1,105 @@
+<title>pH y valoraciones: ácidos, bases, tampones y curvas de valoración · SimulaCiencia</title>
+<meta name="description" content="Calculadora de pH en español: ácidos y bases fuertes y débiles con el grado de disociación, mezclas, disoluciones reguladoras con Henderson-Hasselbalch y curvas de valoración con el punto de equivalencia y el indicador, paso a paso y con animación.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root {
+  --bg: #eef0f4; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d6dbe3; --accent: #1d7a3e; --accent-soft: #e2f2e7; --peso: #c2412a; --normal: #1d7a3e; --roz: #b0700a; --fuerza: #6b3fa0; --tension: #2a5db5; --cuerpo: #c9d3e0; --suelo: #8a96a3;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #5fcf8a; --accent-soft: #16301f; --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #5fcf8a; --accent-soft: #16301f; --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784; color-scheme: dark }
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
+.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
+.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+.layout { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 16px; align-items: start }
+@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr) } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 15px var(--f-ui); margin: 0 0 10px }
+.campos { display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px } .campos label small { color: var(--muted) }
+.in { font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.in:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer }
+.btn:hover { border-color: var(--accent) }
+.error { color: #c0392b; font-size: 13px; margin: 10px 0 0 }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+.res { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px 14px; font: 16px var(--f-math) } .res div { overflow-x: auto } .res span { display: block; font: 12px var(--f-ui); color: var(--muted) }
+.leyenda { font-size: 12.5px; color: var(--muted); margin: 6px 0 0 } .leyenda b { font-weight: 600 }
+canvas { display: block; width: 100%; height: clamp(260px, 36vw, 380px); border-radius: 8px; background: var(--bg); margin-top: 10px }
+.pasos ol { margin: 0; padding-left: 22px } .pasos li { margin: 0 0 12px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+.controles { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px }
+.destacado { border-color: var(--accent); box-shadow: inset 4px 0 0 var(--accent) }
+.destacado h2 { color: var(--accent) }
+.resumen { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; margin: 0 }
+.resumen div { background: var(--accent-soft); border-radius: 8px; padding: 8px 10px; overflow-x: auto } .resumen div span { display: block; font-size: 12px; color: var(--muted) } .resumen div b { font: 600 17px var(--f-math) }
+#grafica { height: clamp(170px, 22vw, 220px) }
+.teoria ul { padding-left: 20px } .teoria li { margin-bottom: 4px }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Química</a> / pH y valoraciones</span></header>
+<div class="wrap">
+<h1>pH y valoraciones</h1>
+<p class="lead">Calcula el pH de un ácido o una base, fuerte o débil, de una mezcla y de una disolución reguladora, también cuando se le añade ácido o base, y la curva de una valoración con su punto de equivalencia y el indicador que conviene. Con el color del indicador, las partículas en el vaso y el desarrollo paso a paso.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>En el vaso</h2>
+      <canvas id="escena" aria-label="Vaso con el color del indicador o montaje de la valoración"></canvas>
+      <canvas id="grafica" aria-label="Curva de valoración" hidden></canvas>
+      <div class="controles"><button class="btn" id="play" type="button">⏸ Pausa</button><span class="nota" id="leyenda" style="margin:0"></span></div></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>pH y pOH</h2>
+  <p class="f m">$pH = −log [H_{3}O^{+}]$, &ensp; $pOH = −log [OH^{−}]$, &ensp; $pH + pOH = 14$</p>
+  <p class="m">El agua pura tiene $[H_{3}O^{+}] = [OH^{−}] = 10^{−7}$ M porque $K_w = [H_{3}O^{+}][OH^{−}] = 10^{−14}$ a 25 °C. Una disolución es ácida con pH &lt; 7, neutra con pH = 7 y básica con pH &gt; 7.</p>
+  <h2>Ácidos y bases fuertes</h2>
+  <p class="m">Se disocian del todo: un ácido fuerte de concentración C da $[H_{3}O^{+}] = C$ (por cada H⁺ que tenga) y una base fuerte, $[OH^{−}] = C$. Solo si la disolución está muy diluida, por debajo de $10^{−6}$ M, hay que sumar los iones del agua: por eso el HCl 10⁻⁸ M tiene pH 6,98 y no 8.</p>
+  <h2>Ácidos y bases débiles</h2>
+  <p>Se disocian solo en parte. Para un ácido débil HA de concentración inicial C, con x la concentración de H₃O⁺ en el equilibrio:</p>
+  <p class="f m">$K_a = {x^2}/{C − x}$, &ensp; $α = x/C$</p>
+  <p class="m">Si α &lt; 5 % se puede aproximar $C − x ≈ C$ y queda $x ≈ √(K_a C)$; si no, se resuelve la ecuación de segundo grado. Con una base débil es igual con $K_b$ y $[OH^{−}]$. Para un par conjugado, $K_a K_b = K_w$.</p>
+  <h2>Disoluciones reguladoras</h2>
+  <p>Un ácido débil con su sal (o una base débil con la suya) mantiene el pH casi constante al añadir pequeñas cantidades de ácido o de base. Su pH sale de la ecuación de Henderson-Hasselbalch:</p>
+  <p class="f m">$pH = pK_a + log {[A^{−}]}/{[HA]}$</p>
+  <p>Al añadir un ácido fuerte, sus H₃O⁺ convierten A⁻ en HA; al añadir una base, sus OH⁻ convierten HA en A⁻. El cociente cambia poco y el pH también, hasta que se agota una de las dos formas.</p>
+  <h2>Valoraciones</h2>
+  <p class="m">En el punto de equivalencia los moles de valorante igualan a los del ácido o la base valorados: $C V = C_t V_{eq}$. El pH en ese punto es 7 solo si los dos son fuertes; si se valora un ácido débil queda su base conjugada y el pH es básico, y al revés con una base débil. A mitad de la valoración de un ácido débil, $pH = pK_a$.</p>
+  <ul>
+    <li>Naranja de metilo: vira entre 3,1 y 4,4, de rojo a amarillo.</li>
+    <li>Rojo de metilo: entre 4,2 y 6,3, de rojo a amarillo.</li>
+    <li>Azul de bromotimol: entre 6,0 y 7,6, de amarillo a azul.</li>
+    <li>Fenolftaleína: entre 8,2 y 10, de incolora a rosa.</li>
+  </ul>
+  <p>Se elige el indicador cuyo intervalo de viraje contiene el pH del punto de equivalencia.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· pH y valoraciones <span id="ver"></span> (beta)</footer>
+</body>

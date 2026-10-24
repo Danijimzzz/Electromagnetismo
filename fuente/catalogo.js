@@ -41,6 +41,7 @@ const Catalogo = {
         { clave: 'tabla-periodica', nombre: 'Tabla periódica interactiva', icono: 'Z', disponible: true, desc: 'Ficha de cada elemento y tendencias coloreadas.', buscar: 'elementos tabla periódica electronegatividad radio atómico' },
         { clave: 'masa-molar', nombre: 'Masa molar y estequiometría', icono: 'M', disponible: true, desc: 'Reactivo limitante, rendimiento, moles, gramos y litros.', buscar: 'masa molar moles estequiometría reactivo limitante' },
         { clave: 'configuracion-electronica', nombre: 'Configuración electrónica', icono: 'e', disponible: true, desc: 'Diagrama de Moeller, excepciones y números cuánticos.', buscar: 'configuración electrónica moeller números cuánticos orbitales' },
+        { clave: 'ph', nombre: 'pH y valoraciones', icono: 'pH', disponible: true, desc: 'Ácidos y bases fuertes y débiles, tampones con Henderson-Hasselbalch y curvas de valoración con el indicador.', buscar: 'ph poh ácido base fuerte débil ka kb pka grado de disociación hidrólisis disolución reguladora tampón amortiguadora henderson hasselbalch valoración volumetría neutralización punto de equivalencia indicador fenolftaleína curva de valoración acético amoniaco' },
         { clave: 'disoluciones', nombre: 'Disoluciones y concentraciones', icono: 'c', disponible: true, desc: 'Molaridad, molalidad, fracción molar, % y ppm; preparar desde un reactivo comercial y diluir.', buscar: 'molaridad molalidad concentración dilución' },
       ],
     },
