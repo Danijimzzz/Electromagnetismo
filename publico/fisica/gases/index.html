@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMwZDZiNjYiLz48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlNmE2NDAiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtZGFzaGFycmF5PSI0IDYuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48cGF0aCBkPSJNMjAgMzJINDQiLz48cGF0aCBkPSJNMjEgMjdDMjcgMTQgMzcgMTQgNDMgMjciLz48cGF0aCBkPSJNMjEgMzdDMjcgNTAgMzcgNTAgNDMgMzciLz48cGF0aCBkPSJNMTcgMjRDMjIgNCA0MiA0IDQ3IDI0Ii8+PHBhdGggZD0iTTE3IDQwQzIyIDYwIDQyIDYwIDQ3IDQwIi8+PC9nPjxjaXJjbGUgY3g9IjE3IiBjeT0iMzIiIHI9IjgiIGZpbGw9IiNlZjdhNjIiLz48Y2lyY2xlIGN4PSI0NyIgY3k9IjMyIiByPSI4IiBmaWxsPSIjNzRhMmYyIi8+PHBhdGggZD0iTTEzIDMyaDhNMTcgMjh2OE00MyAzMmg4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta property="og:title" content="Gases ideales">
+<meta property="og:description" content="Calculadora de gases ideales: ecuación de estado PV = nRT, transformaciones isoterma, isobara, isocora y adiabática, ciclos con su rendimiento y teoría cinética, paso a paso">
+<meta property="og:image" content="https://electromagnetismo-two.vercel.app/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<title>Gases ideales: PV = nRT, transformaciones, ciclos y teoría cinética · SimulaCiencia</title>
+<meta name="description" content="Calculadora de gases ideales en español: ecuación de estado PV = nRT, transformaciones isoterma, isobara, isocora y adiabática con trabajo, calor y energía interna, ciclos con su rendimiento y diagrama P-V, y velocidades moleculares con la distribución de Maxwell, paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root {
+  --bg: #eef0f4; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d6dbe3; --accent: #2a5db5; --accent-soft: #e3ecfa; --peso: #c2412a; --normal: #1d7a3e; --roz: #b0700a; --fuerza: #6b3fa0; --tension: #2a5db5; --cuerpo: #c9d3e0; --suelo: #8a96a3;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #74a2f2; --accent-soft: #1c2a42; --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #74a2f2; --accent-soft: #1c2a42; --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784; color-scheme: dark }
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
+.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
+.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+.layout { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 16px; align-items: start }
+@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr) } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 15px var(--f-ui); margin: 0 0 10px }
+.campos { display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px } .campos label small { color: var(--muted) }
+.in { font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.in:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer }
+.btn:hover { border-color: var(--accent) }
+.error { color: #c0392b; font-size: 13px; margin: 10px 0 0 }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+.res { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px 14px; font: 16px var(--f-math) } .res div { overflow-x: auto } .res span { display: block; font: 12px var(--f-ui); color: var(--muted) }
+.leyenda { font-size: 12.5px; color: var(--muted); margin: 6px 0 0 } .leyenda b { font-weight: 600 }
+canvas { display: block; width: 100%; height: clamp(260px, 36vw, 380px); border-radius: 8px; background: var(--bg); margin-top: 10px }
+.pasos ol { margin: 0; padding-left: 22px } .pasos li { margin: 0 0 12px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+.tramos { grid-column: 1 / -1; display: grid; gap: 6px }
+.tramo { display: grid; grid-template-columns: 30px minmax(0, 1.3fr) 58px minmax(0, 1fr) 30px; gap: 6px; align-items: center; font-size: 13px }
+.tramo b { font: 600 13px var(--f-math); text-align: center }
+.botones { grid-column: 1 / -1; display: flex; gap: 8px; flex-wrap: wrap }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física general</a> / Gases ideales</span></header>
+<div class="wrap">
+<h1>Gases ideales</h1>
+<p class="lead">Aplica la ecuación de estado PV = nRT, encadena transformaciones isotermas, isobaras, isocoras y adiabáticas para obtener el trabajo, el calor y la energía interna de cada tramo y el rendimiento de un ciclo, y calcula las velocidades de las moléculas con la teoría cinética.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card"><h2>Resultado</h2><div class="res" id="res"></div>
+      <canvas id="escena" aria-label="Diagrama P-V o distribución de velocidades"></canvas>
+      <p class="leyenda" id="leyenda"></p></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Ecuación de estado</h2>
+  <p class="f">PV = nRT, &nbsp; R = 8,314 J/(mol·K) = 0,082 atm·L/(mol·K)</p>
+  <p>La temperatura siempre en kelvin (T = t + 273,15). En condiciones normales (1 atm y 0 °C) un mol ocupa 22,4 L. La densidad de un gas es ρ = PM/(RT).</p>
+  <h2>Primer principio</h2>
+  <p class="f">ΔU = Q − W, &nbsp; ΔU = nC<sub>v</sub>ΔT, &nbsp; C<sub>p</sub> − C<sub>v</sub> = R, &nbsp; γ = C<sub>p</sub>/C<sub>v</sub></p>
+  <p>W es el trabajo que hace el gas (positivo si se expande) y Q el calor que recibe. Un gas monoatómico tiene C<sub>v</sub> = 3R/2 y uno diatómico C<sub>v</sub> = 5R/2.</p>
+  <h2>Transformaciones</h2>
+  <p><b>Isoterma</b> (T constante): ΔU = 0 y Q = W = nRT ln(V<sub>2</sub>/V<sub>1</sub>). <b>Isobara</b> (P constante): W = PΔV y Q = nC<sub>p</sub>ΔT. <b>Isocora</b> (V constante): W = 0 y Q = nC<sub>v</sub>ΔT. <b>Adiabática</b> (Q = 0): PV<sup>γ</sup> = cte, TV<sup>γ−1</sup> = cte y W = (P<sub>1</sub>V<sub>1</sub> − P<sub>2</sub>V<sub>2</sub>)/(γ − 1).</p>
+  <h2>Ciclos</h2>
+  <p>En un ciclo el gas vuelve al estado inicial, así que ΔU = 0 y W<sub>neto</sub> = Q<sub>neto</sub>, que es el área encerrada en el diagrama P-V. El rendimiento es η = W/Q<sub>abs</sub>, y nunca supera el de un ciclo de Carnot entre las mismas temperaturas, η = 1 − T<sub>f</sub>/T<sub>c</sub>.</p>
+  <h2>Teoría cinética</h2>
+  <p class="f">v<sub>cm</sub> = √(3RT/M), &nbsp; ⟨E<sub>c</sub>⟩ = (3/2)kT</p>
+  <p>Las velocidades de las moléculas siguen la distribución de Maxwell: la más probable es √(2RT/M) y la media √(8RT/(πM)). La energía cinética media solo depende de la temperatura.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Gases ideales <span id="ver"></span> (beta)</footer>
+</body>
+<script>
+/* =====================================================================
+   Versiones y novedades: la web (portada, asignaturas, buscador) tiene su número y cada
+   herramienta el suyo. Hasta el lanzamiento se numera 0.x (beta); la 1.0 de una herramienta
+   llega cuando se da por terminada y la 1.0 de la web será el lanzamiento. Sube el segundo
+   número si hay algo nuevo (0.6) y añade un tercero si es solo un arreglo (0.5.1).
+   En las novedades de la web se anuncia también cada herramienta nueva.
+   Las notas son para los usuarios: solo funciones nuevas, arreglos visibles y cambios
+   en la interfaz. Lo interno (pruebas, CI, build, despliegue, refactorizaciones) no se anota;
+   el historial completo para desarrolladores está en Notion.
+   ===================================================================== */
+const Version = (() => {
+  const registros = {
+    web: [
+      { v: '0.19', fecha: '2026-10-24', cambios: ['Nueva herramienta: Gases ideales, en Física general.'] },
+      { v: '0.18', fecha: '2026-10-24', cambios: ['Nueva herramienta: Ondas mecánicas, en Física general.'] },
+      { v: '0.17', fecha: '2026-10-24', cambios: ['Nueva herramienta: Sólido rígido, en Física general.'] },
+      { v: '0.16', fecha: '2026-10-23', cambios: ['Nueva herramienta: Circuitos de corriente continua, en Laboratorio.'] },
+      { v: '0.15', fecha: '2026-10-23', cambios: ['Nueva herramienta: Dinámica y diagramas de fuerzas, en Física general.'] },
+      { v: '0.14', fecha: '2026-10-23', cambios: ['Nueva herramienta: Corriente alterna y fasores, en Laboratorio.'] },
+      { v: '0.13', fecha: '2026-10-23', cambios: ['Nueva herramienta: Distribuciones de probabilidad, en Matemáticas.'] },
+      { v: '0.12', fecha: '2026-10-23', cambios: ['Nueva herramienta: Sistemas de ecuaciones lineales, en Matemáticas.'] },
+      { v: '0.11', fecha: '2026-10-23', cambios: ['Nueva herramienta: Matrices paso a paso, en Matemáticas.'] },
+      { v: '0.10', fecha: '2026-10-23', cambios: ['Nueva herramienta: Autoinducción e inducción mutua, en Electromagnetismo.'] },
+      { v: '0.9', fecha: '2026-10-23', cambios: ['Nueva herramienta: Calorimetría y cambios de fase, en Física general.'] },
+      { v: '0.8', fecha: '2026-10-23', cambios: ['Nueva herramienta: Disoluciones y concentraciones, en Química.'] },
+      { v: '0.7', fecha: '2026-10-23', cambios: ['Nueva herramienta: Tiro parabólico y cinemática, en Física general.'] },
+      { v: '0.6', fecha: '2026-10-23', cambios: ['Nueva herramienta: Condensadores con dieléctricos, en Electromagnetismo.'] },
+      { v: '0.5', fecha: '2026-10-23', cambios: ['Nueva herramienta: Configuración electrónica, en Química.'] },
+      { v: '0.4', fecha: '2026-10-23', cambios: ['Nueva herramienta: Masa molar y estequiometría, en Química.'] },
+      { v: '0.3', fecha: '2026-10-23', cambios: ['Nueva herramienta: Trabajo y energía, en Física general.'] },
+      { v: '0.2', fecha: '2026-10-23', cambios: ['Nueva herramienta: Tabla periódica interactiva, en Química.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Portada para elegir asignatura y herramienta: Electromagnetismo, Física general, Química, Matemáticas y Laboratorio, con buscador. Las herramientas que vienen después aparecen como «Próximamente».', 'Nueva herramienta: Magnetostática, en Electromagnetismo.'] },
+    ],
+    electrostatica: [
+      { v: '0.5.1', fecha: '2026-10-23', cambios: ['El simulador tiene ahora su propia dirección, /electromagnetismo/electrostatica/. Tus problemas guardados siguen ahí. El botón «Todas las herramientas» de la barra lateral vuelve a la portada.'] },
+    { v: '0.5', fecha: '2026-10-23', cambios: ['Doce ejercicios de ejemplo con enunciados propios: los mismos tipos de pregunta que en clase, con otras figuras y otros números. La guía de uso tiene capturas nuevas hechas con ellos.', 'La web tiene icono propio: un dipolo con sus líneas de campo, en la pestaña del navegador, en la pantalla de inicio del móvil y en la vista previa al compartir el enlace.', 'Páginas de aviso legal, privacidad, cookies y contacto, enlazadas al pie de la barra lateral.'] },
+    { v: '0.4', fecha: '2026-10-22', cambios: ['Número de versión visible y este apartado de novedades.', 'Arreglo: en la vista 3D los cilindros se dibujan con su radio real, aparecen las superficies de Gauss, y las esferas, cascarones y conductores tienen volumen en lugar de parecer círculos planos.'] },
+    { v: '0.3', fecha: '2026-10-22', cambios: ['Guía de uso con capturas (botón ?, barra lateral o F1).', 'Los resultados se escriben con la misma forma que el solucionario oficial: perfiles por tramos, factor común en logaritmos y radicales, y la pregunta V_A − V_B.'] },
+    { v: '0.2', fecha: '2026-10-22', cambios: ['Anillos, discos, cortezas y conductores.', 'Varias incógnitas, modo numérico SI, flujo de Gauss y gráficas E(z) y V(z).', 'Modo práctica, exportar la solución, deshacer y rehacer, mapa de color y vista 3D.', 'Búsqueda, carpetas y etiquetas en la barra lateral.'] },
+    { v: '0.1', fecha: '2026-10-22', cambios: ['Primera versión: cargas, hilos, planos y esferas con el desarrollo paso a paso y 12 ejercicios resueltos.', 'Barra lateral con tus problemas, los importados y los ejercicios; título y enunciado editables; archivos .emsim.json.'] },
+    ],
+    magnetostatica: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: campo magnético de hilos, segmentos, hilos semiinfinitos, espiras, arcos, solenoides y toroides con Biot-Savart, y fuerza sobre cargas en movimiento y sobre conductores, con el desarrollo paso a paso en la forma μ₀I/(πa) o en unidades del SI.', 'Dibujo del campo B en el plano XY, XZ o YZ, con puntos que se pueden arrastrar y ocho ejemplos resueltos.'] },
+    ],
+    'tabla-periodica': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: cada elemento tiene su ficha con la masa atómica y molar, el grupo, el periodo, el bloque, la configuración electrónica (abreviada, completa y por capas), la electronegatividad, la energía de ionización, el radio y el estado.', 'La tabla se puede colorear por categoría, electronegatividad, energía de ionización, radio, masa, bloque o estado, y tiene un buscador por nombre, símbolo o número atómico.'] },
+    ],
+    'trabajo-y-energia': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: un bloque baja por una rampa con rozamiento, recorre un tramo horizontal y comprime un muelle. Animación con barras de energía cinética, gravitatoria, elástica y calor, gráfica de las energías en el tiempo y el desarrollo paso a paso con la velocidad al pie de la rampa, al llegar al muelle y la compresión máxima.', 'Seis ejemplos: sin rozamiento, se para antes del muelle, el rozamiento lo sujeta, con empujón inicial y muelle duro.'] },
+    ],
+    'masa-molar': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: masa molar y composición centesimal de cualquier fórmula, con paréntesis, hidratos e iones, y conversor entre gramos, moles, partículas y litros de gas.', 'Estequiometría: ajusta la reacción sola (también las iónicas), calcula el reactivo limitante, lo que se forma con el rendimiento que digas y lo que sobra, paso a paso.', 'Masas atómicas de la IUPAC o redondeadas como en clase.'] },
+    ],
+    'configuracion-electronica': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: configuración electrónica de cualquier elemento o ion por orden de llenado, abreviada y por capas, con el diagrama de Moeller, el diagrama de orbitales con la regla de Hund, los electrones desapareados y los números cuánticos del electrón diferenciador.', 'Avisa de las excepciones como el cromo o el cobre, y en los cationes quita primero los electrones de la capa más externa.'] },
+    ],
+    condensadores: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: condensadores planos, cilíndricos y esféricos con capas de dieléctrico en serie o, en el plano, ocupando parte del área. Capacidad, carga, tensión y energía; campos E, D y P en cada capa y cargas de polarización, con el desarrollo paso a paso.', 'Compara con el condensador vacío: qué pasa al meter el dieléctrico con la batería conectada o con el condensador aislado.', 'Dibujo del corte con las líneas de campo y gráfica de E a lo largo del condensador.'] },
+    ],
+    'tiro-parabolico': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: tiro parabólico desde cualquier altura hasta cualquier altura, con el tiempo de vuelo, la altura máxima, el alcance y la velocidad al caer, y el desarrollo paso a paso. Trayectoria animada con los vectores de velocidad y gráficas de posición, velocidad y aceleración frente al tiempo.', 'Rozamiento del aire lineal o cuadrático, comparado con la trayectoria sin rozamiento.', 'Blanco: dice si el proyectil pasa por un punto y con qué dos ángulos se acierta.', 'Movimiento rectilíneo (MRU y MRUA): posición y velocidad en un instante, cuándo pasa por un punto y cuándo se para, con las gráficas x(t), v(t) y a(t).'] },
+    ],
+    disoluciones: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: da la concentración de una disolución como molaridad, molalidad, fracción molar, % en masa, % masa/volumen, g/L o ppm y obtén todas las demás, con la densidad para pasar de masa a volumen y el desarrollo con su base de cálculo.', 'Preparar una disolución: los gramos de sólido (con su pureza) o los mililitros de reactivo comercial (con su riqueza y densidad) que hay que medir.', 'Diluciones con C₁V₁ = C₂V₂, despejando el dato que falte, y mezcla de dos disoluciones del mismo soluto.'] },
+    ],
+    calorimetria: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: temperatura de equilibrio al mezclar hasta cinco cuerpos de agua, hielo, vapor, metales, etanol, vidrio, un calorímetro o una sustancia con tus datos, con los cambios de fase que hagan falta.', 'Si la energía no llega para fundir todo el hielo o condensar todo el vapor, dice cuántos gramos quedan de cada fase.', 'Tabla con el calor de cada cuerpo, el desarrollo etapa por etapa (m c ΔT y m L) y la curva de calentamiento de cada uno.'] },
+    ],
+    induccion: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: coeficiente de autoinducción de solenoides (con núcleo), toroides de sección rectangular y circular, cables coaxiales y líneas bifilares, con el desarrollo desde la ley de Ampère.', 'Inducción mutua entre dos solenoides, dos espiras, un hilo y una espira, y una bobina sobre un toroide, o a partir de L₁, L₂ y k, con el coeficiente de acoplamiento.', 'Flujo, energía magnética y fem inducida si das la corriente o cómo cambia.', 'Circuito RL al cerrar el interruptor o al quitar la fuente: constante de tiempo, corriente y tensión en la bobina en cualquier instante y su gráfica.'] },
+    ],
+    matrices: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: determinante por Gauss, por Sarrus o por Laplace; inversa por Gauss-Jordan o por adjuntos; rango; forma escalonada y escalonada reducida, con cada operación entre filas y la matriz después de cada paso.', 'Valores y vectores propios con el polinomio característico, las raíces exactas (también con radicales o complejas) y si la matriz es diagonalizable, con P y D.', 'Suma, resta, producto (elemento a elemento), producto por un número, potencia y traspuesta.', 'Fracciones exactas y números complejos en cualquier casilla: 3/4, 0,25, 2−3i o (1+i)/2.'] },
+    ],
+    sistemas: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: hasta seis ecuaciones con seis incógnitas. Dice si el sistema es compatible determinado, indeterminado o incompatible con el teorema de Rouché-Frobenius y lo resuelve por Gauss con sustitución hacia atrás, por Gauss-Jordan, por la regla de Cramer o con la matriz inversa.', 'Si tiene infinitas soluciones, las da en forma paramétrica (λ, μ…).', 'Coeficientes con fracciones exactas, decimales o números complejos, como las mallas de un circuito de alterna, y nombres propios para las incógnitas (I1, I2…).', 'Comprobación de la solución sustituyendo en cada ecuación.'] },
+    ],
+    estadistica: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: normal, t de Student, chi cuadrado, exponencial, binomial y Poisson, con su media y su varianza.', 'Probabilidades P(X ≤ a), P(X ≥ a), entre dos valores y, en las discretas, P(X = k) y con desigualdad estricta; cuantiles y valores críticos bilaterales.', 'Gráfica con el área (o las barras) que se pide sombreada.', 'Desarrollo como en clase: tipificación Z = (X − μ)/σ y Φ(z), fórmula de la binomial y de la Poisson término a término, y aproximación de la binomial por la normal con corrección de continuidad.'] },
+    ],
+    alterna: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: circuitos RLC en serie y en paralelo (o solo con algunos de los elementos) con impedancias complejas en forma binómica y polar, la corriente, la tensión o la corriente de cada elemento, las potencias activa, reactiva y aparente y el factor de potencia, con el desarrollo paso a paso.', 'Diagrama de fasores y ondas v(t) e i(t) desfasadas.', 'Resonancia: frecuencia de resonancia, factor de calidad y ancho de banda.', 'Corrección del factor de potencia: el condensador que hay que poner en paralelo y cuánto baja la corriente de la línea.'] },
+    ],
+    dinamica: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: bloque en un plano horizontal o inclinado con rozamiento estático y dinámico, una fuerza aplicada con ángulo y, si quieres, una masa colgando de una polea. Dice si el bloque se mueve o el rozamiento lo sujeta y da la normal, el rozamiento, la aceleración y la tensión, con el desarrollo paso a paso.', 'Máquina de Atwood, también con una polea con masa.', 'Dibujo con el diagrama de fuerzas a escala y la aceleración, y la velocidad y el tiempo al recorrer una distancia.'] },
+    ],
+    circuitos: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: escribe el circuito como una lista de resistencias, fuentes de tensión y fuentes de corriente entre nudos, y obtén los potenciales, la corriente y la potencia de cada elemento por el método de los nudos, con las ecuaciones de Kirchhoff, el sistema en forma matricial y el balance de potencias.', 'Equivalente de Thévenin y de Norton visto por la resistencia que elijas, y máxima transferencia de potencia.', 'Esquema del circuito con el potencial de cada nudo y el sentido de cada corriente.'] },
+    ],
+    'solido-rigido': [
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: momentos de inercia de esferas, cilindros, aros, varillas, discos y placas, con el teorema de Steiner y el radio de giro.', 'Rodadura por un plano inclinado: aceleración, velocidad al final, rozamiento necesario para que no deslice y qué pasa si no basta; comparación del tiempo que tarda cada cuerpo.', 'Polea con masa de la que cuelga un cuerpo: aceleración, tensión y balance de energía.', 'Conservación del momento angular, como la patinadora que encoge los brazos, con la variación de la energía cinética.'] },
+    ],
+    ondas: [
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ecuación de una onda armónica con ω y k en múltiplos de π, posición, velocidad y aceleración de un punto del medio y desfase entre dos puntos.', 'Ondas estacionarias en cuerdas y en tubos abiertos o cerrados: frecuencia de cada armónico, nodos y vientres, y velocidad en la cuerda con √(T/μ).', 'Efecto Doppler con la fuente y el observador moviéndose, y nivel sonoro en decibelios a distintas distancias y con varias fuentes.', 'Animación de la onda, de la onda estacionaria y de los frentes de onda del Doppler.'] },
+    ],
+    gases: [
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ecuación de estado PV = nRT con P, V, T y n en varias unidades, los moles a partir de la masa y la densidad del gas.', 'Transformaciones isoterma, isobara, isocora y adiabática encadenadas, con el trabajo, el calor y la variación de energía interna de cada tramo, y ciclos con su rendimiento comparado con el de Carnot.', 'Diagrama P-V con las isotermas y el área del ciclo.', 'Teoría cinética: velocidades cuadrática media, media y más probable, energía cinética media y la distribución de Maxwell.'] },
+    ],
+  };
+  const de = (h) => ({ current: registros[h][0].v, log: registros[h] });
+  // Version.current y Version.log son los del simulador de electrostática
+  return { registros, de, ...de('electrostatica') };
+})();
+
+/* =====================================================================
+   Gases ideales (sin DOM): ecuación de estado PV = nRT, transformaciones
+   (isoterma, isobara, isocora y adiabática) encadenadas en un proceso o un
+   ciclo con el primer principio, y teoría cinética (velocidades de las
+   moléculas y distribución de Maxwell).
+   Por dentro todo en el SI; el trabajo W es el que hace el gas y
+   ΔU = Q − W.
+   ===================================================================== */
+const Gases = (() => {
+  const f = (x, d = 4) => {
+    if (!isFinite(x)) return '—';
+    if (Math.abs(x) < 1e-60) return '0';
+    const a = Math.abs(x);
+    const s = a >= 1e6 || a < 1e-3 ? x.toExponential(d - 1).replace(/\.?0+e/, 'e').replace('e', '·10^').replace(/\^([+-]?)(\d+)/, (_, sg, e) => `<sup>${sg === '-' ? '−' : ''}${+e}</sup>`) : String(+x.toPrecision(d));
+    return s.replace('.', ',').replace('-', '−');
+  };
+  const leeNum = (s) => +String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace('−', '-').replace(/[·x×*]10\^?([+\-]?\d+)/i, 'e$1');
+  const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
+  const R = 8.314, Rs = '8,314', kB = 1.380649e-23, NA = 6.02214076e23;
+  const UP = { atm: [101325, 'atm'], kPa: [1000, 'kPa'], Pa: [1, 'Pa'], bar: [1e5, 'bar'], mmHg: [101325 / 760, 'mmHg'] };
+  const UV = { L: [1e-3, 'L'], m3: [1, 'm<sup>3</sup>'], cm3: [1e-6, 'cm<sup>3</sup>'] };
+  const GASES = {
+    monoatomico: { nombre: 'Monoatómico (He, Ne, Ar…)', gamma: 5 / 3, cv: '3/2', cp: '5/2' },
+    diatomico: { nombre: 'Diatómico (N₂, O₂, aire…)', gamma: 7 / 5, cv: '5/2', cp: '7/2' },
+  };
+  const MOLECULAS = { He: ['Helio', 4.003], Ne: ['Neón', 20.18], Ar: ['Argón', 39.95], H2: ['Hidrógeno, H₂', 2.016], N2: ['Nitrógeno, N₂', 28.01], O2: ['Oxígeno, O₂', 32.00], aire: ['Aire', 28.96], CO2: ['Dióxido de carbono, CO₂', 44.01] };
+
+  function num(sc, k, nom, { opcional = false, signo = false } = {}) {
+    if (vacio(sc[k])) { if (opcional) return null; throw new Error(`Falta ${nom}`); }
+    const v = leeNum(sc[k]);
+    if (!isFinite(v)) throw new Error(`${nom[0].toUpperCase() + nom.slice(1)} debe ser un número`);
+    if (!signo && v <= 0) throw new Error(`${nom[0].toUpperCase() + nom.slice(1)} debe ser mayor que 0`);
+    return v;
+  }
+  const unidades = (sc) => ({ P: UP[sc.uP] || UP.atm, V: UV[sc.uV] || UV.L, celsius: sc.uT === 'C' });
+  // pasa de las unidades de la pantalla al SI
+  function aSI(u, k, v) {
+    if (v === null) return null;
+    if (k === 'P') return v * u.P[0];
+    if (k === 'V') return v * u.V[0];
+    if (k === 'T') { const T = u.celsius ? v + 273.15 : v; if (T <= 0) throw new Error('La temperatura absoluta tiene que ser mayor que 0 K'); return T; }
+    return v;
+  }
+  const verP = (u, P) => `${f(P / u.P[0])} ${u.P[1]}`, verV = (u, V) => `${f(V / u.V[0])} ${u.V[1]}`, verT = (T) => `${f(T, 5)} K`;
+
+  /* ---------- Ecuación de estado ---------- */
+  // sc: { P, V, T, n, m (g), M (g/mol), uP, uV, uT }: tres de P, V, T, n (n también sale de m y M)
+  function estado(sc, { prefijo = '', pasos = [] } = {}) {
+    const u = unidades(sc), g = (k) => sc[prefijo + k];
+    const lee = (k, nom) => { const v = vacio(g(k)) ? null : leeNum(g(k)); if (v !== null && !isFinite(v)) throw new Error(`${nom} debe ser un número`); if (v !== null && k !== 'T' && v <= 0) throw new Error(`${nom} debe ser mayor que 0`); return v; };
+    let P = aSI(u, 'P', lee('P', 'La presión')), V = aSI(u, 'V', lee('V', 'El volumen')), T = aSI(u, 'T', lee('T', 'La temperatura')), n = lee('n', 'El número de moles');
+    const m = prefijo ? null : lee('m', 'La masa'), M = prefijo ? null : lee('M', 'La masa molar');
+    if (n === null && m !== null && M !== null) { n = m / M; pasos.push({ t: 'Número de moles', html: `n = m/M = ${f(m)} g / ${f(M)} g/mol = <b>${f(n)} mol</b>` }); }
+    const faltan = [['P', P], ['V', V], ['T', T], ['n', n]].filter(([, v]) => v === null).map(([k]) => k);
+    if (faltan.length > 1) throw new Error(`Faltan datos: da tres de P, V, T y n (ahora faltan ${faltan.join(' y ')})`);
+    const nr = (x) => f(x);
+    if (faltan.length === 0) {
+      const err = Math.abs(P * V - n * R * T) / (P * V);
+      if (err > 1e-3) throw new Error(`Los cuatro datos no cumplen PV = nRT (PV = ${nr(P * V).replace(/<[^>]+>/g, '')} J y nRT = ${nr(n * R * T).replace(/<[^>]+>/g, '')} J): deja uno vacío`);
+    } else {
+      const k = faltan[0], ecs = {
+        P: () => { P = (n * R * T) / V; return `P = nRT/V = ${f(n)}·${Rs}·${f(T, 5)} / ${f(V)} m<sup>3</sup> = ${f(P, 6)} Pa = <b>${verP(u, P)}</b>`; },
+        V: () => { V = (n * R * T) / P; return `V = nRT/P = ${f(n)}·${Rs}·${f(T, 5)} / ${f(P, 6)} Pa = ${f(V)} m<sup>3</sup> = <b>${verV(u, V)}</b>`; },
+        T: () => { T = (P * V) / (n * R); return `T = PV/(nR) = ${f(P, 6)} Pa·${f(V)} m<sup>3</sup> / (${f(n)}·${Rs}) = <b>${verT(T)}</b> (${f(T - 273.15)} °C)`; },
+        n: () => { n = (P * V) / (R * T); return `n = PV/(RT) = ${f(P, 6)} Pa·${f(V)} m<sup>3</sup> / (${Rs}·${f(T, 5)}) = <b>${f(n)} mol</b>`; },
+      };
+      if (!prefijo) pasos.push({ t: 'Datos en el SI', html: [P !== null && `P = ${verP(u, P)} = ${f(P, 6)} Pa`, V !== null && `V = ${verV(u, V)} = ${f(V)} m<sup>3</sup>`, T !== null && `T = ${verT(T)}`, n !== null && `n = ${f(n)} mol`].filter(Boolean).join(', &nbsp; ') + `. R = ${Rs} J/(mol·K)` });
+      pasos.push({ t: prefijo ? 'Estado inicial (PV = nRT)' : 'Ecuación de estado PV = nRT', html: ecs[k]() });
+    }
+    return { P, V, T, n, m, M, u, pasos };
+  }
+
+  function resolverEstado(sc) {
+    const pasos = [], e = estado(sc, { pasos });
+    if (e.M) { const rho = (e.P * e.M * 1e-3) / (R * e.T); pasos.push({ t: 'Densidad', html: `ρ = PM/(RT) = ${f(e.P, 6)}·${f(e.M * 1e-3)} / (${Rs}·${f(e.T, 5)}) = <b>${f(rho)} kg/m<sup>3</sup></b> (= ${f(rho)} g/L)` }); e.rho = rho; }
+    const Vm = (R * e.T) / e.P;
+    pasos.push({ t: 'Volumen molar y moléculas', html: `V<sub>m</sub> = V/n = ${f(Vm * 1000)} L/mol${Math.abs(e.T - 273.15) < 0.01 && Math.abs(e.P - 101325) < 1 ? ' (22,4 L/mol en condiciones normales)' : ''}; &nbsp; N = nN<sub>A</sub> = <b>${f(e.n * NA)} moléculas</b>` });
+    return { modo: 'estado', ...e, Vm, pasos };
+  }
+
+  /* ---------- Procesos y ciclos ---------- */
+  const NOMBRES = { isoterma: 'isoterma (T constante)', isobara: 'isobara (P constante)', isocora: 'isocora (V constante)', adiabatica: 'adiabática (Q = 0)' };
+  const LETRA = (i) => String.fromCharCode(65 + i);
+  // sc: { gas, uP, uV, uT, P1, V1, T1, n1, procesos: [{ tipo, dato: 'P'|'V'|'T', valor ('A' = el del estado inicial) }] }
+  function procesos(sc) {
+    const G = GASES[sc.gas] || GASES.diatomico, gm = G.gamma, cv = R / (gm - 1), cp = cv + R;
+    const pasos = [];
+    const e1 = estado(sc, { prefijo: '', pasos: [] });
+    const u = e1.u, n = e1.n;
+    pasos.push({ t: 'Estado A', html: `P<sub>A</sub> = ${verP(u, e1.P)}, V<sub>A</sub> = ${verV(u, e1.V)}, T<sub>A</sub> = ${verT(e1.T)}, n = <b>${f(n)} mol</b>${e1.pasos.length ? `<br>${e1.pasos.map((p) => p.html).join('<br>')}` : ''}<br>Gas ${G.nombre.split(' (')[0].toLowerCase()}: C<sub>v</sub> = ${G.cv}R, C<sub>p</sub> = ${G.cp}R, γ = ${f(gm)}` });
+    const est = [{ P: e1.P, V: e1.V, T: e1.T }], tramos = [];
+    const lista = sc.procesos || [];
+    if (!lista.length) throw new Error('Añade al menos una transformación');
+    lista.forEach((pr, i) => {
+      const a = est[i], de = LETRA(i), cierra = String(pr.valor).trim().toUpperCase() === 'A', a2 = cierra ? 'A' : LETRA(i + 1), tipo = pr.tipo;
+      if (!NOMBRES[tipo]) throw new Error(`Tramo ${de}→${a2}: tipo desconocido`);
+      const permitidos = { isoterma: ['V', 'P'], isobara: ['V', 'T'], isocora: ['P', 'T'], adiabatica: ['V', 'P', 'T'] }[tipo];
+      if (!permitidos.includes(pr.dato)) throw new Error(`Tramo ${de}→${a2}: en una ${tipo} se da ${permitidos.join(', ')} del estado final`);
+      let val;
+      if (cierra) val = est[0][pr.dato];
+      else { const v = num(pr, 'valor', `el dato del tramo ${de}→${a2}`); val = aSI(u, pr.dato, v); }
+      let b;
+      if (tipo === 'isoterma') b = pr.dato === 'V' ? { V: val, T: a.T, P: (a.P * a.V) / val } : { P: val, T: a.T, V: (a.P * a.V) / val };
+      else if (tipo === 'isobara') b = pr.dato === 'V' ? { P: a.P, V: val, T: (a.T * val) / a.V } : { P: a.P, T: val, V: (a.V * val) / a.T };
+      else if (tipo === 'isocora') b = pr.dato === 'P' ? { V: a.V, P: val, T: (a.T * val) / a.P } : { V: a.V, T: val, P: (a.P * val) / a.T };
+      else if (pr.dato === 'V') { const P = a.P * (a.V / val) ** gm; b = { V: val, P, T: (P * val) / (n * R) }; }
+      else if (pr.dato === 'P') { const V = a.V * (a.P / val) ** (1 / gm); b = { P: val, V, T: (val * V) / (n * R) }; }
+      else { const V = a.V * (a.T / val) ** (1 / (gm - 1)); b = { T: val, V, P: (n * R * val) / V }; }
+      if (cierra) {
+        const A = est[0], ok = ['P', 'V', 'T'].every((k) => Math.abs(b[k] - A[k]) <= 1e-6 * A[k]);
+        if (!ok) throw new Error(`Tramo ${de}→${a2}: con una ${tipo} no se vuelve al estado A desde ${de}; el ciclo no cierra`);
+        b = { ...A };
+      }
+      const dT = b.T - a.T, dU = n * cv * dT;
+      let W, Q, hW, hQ;
+      if (tipo === 'isoterma') { W = n * R * a.T * Math.log(b.V / a.V); Q = W; hW = `W = nRT ln(V<sub>${a2}</sub>/V<sub>${de}</sub>) = ${f(n)}·${Rs}·${f(a.T)}·ln(${f(b.V / a.V)}) = <b>${f(W)} J</b>`; hQ = `ΔU = 0 (T constante) ⇒ Q = W = <b>${f(Q)} J</b>`; }
+      else if (tipo === 'isobara') { W = a.P * (b.V - a.V); Q = n * cp * dT; hW = `W = P ΔV = ${f(a.P)}·(${f(b.V)} − ${f(a.V)}) = <b>${f(W)} J</b>`; hQ = `Q = nC<sub>p</sub>ΔT = ${f(n)}·${G.cp}·${Rs}·${f(dT)} = <b>${f(Q)} J</b>; ΔU = nC<sub>v</sub>ΔT = <b>${f(dU)} J</b>`; }
+      else if (tipo === 'isocora') { W = 0; Q = dU; hW = 'W = 0 (no cambia el volumen)'; hQ = `Q = ΔU = nC<sub>v</sub>ΔT = ${f(n)}·${G.cv}·${Rs}·${f(dT)} = <b>${f(Q)} J</b>`; }
+      else { W = (a.P * a.V - b.P * b.V) / (gm - 1); Q = 0; hW = `W = (P<sub>${de}</sub>V<sub>${de}</sub> − P<sub>${a2}</sub>V<sub>${a2}</sub>)/(γ − 1) = <b>${f(W)} J</b>`; hQ = `Q = 0 ⇒ ΔU = −W = <b>${f(dU)} J</b> (= nC<sub>v</sub>ΔT)`; }
+      const rel = { isoterma: `P<sub>${de}</sub>V<sub>${de}</sub> = P<sub>${a2}</sub>V<sub>${a2}</sub>`, isobara: `V<sub>${de}</sub>/T<sub>${de}</sub> = V<sub>${a2}</sub>/T<sub>${a2}</sub>`, isocora: `P<sub>${de}</sub>/T<sub>${de}</sub> = P<sub>${a2}</sub>/T<sub>${a2}</sub>`, adiabatica: `P V<sup>γ</sup> = cte y T V<sup>γ−1</sup> = cte` }[tipo];
+      pasos.push({ t: `${de} → ${a2}: ${NOMBRES[tipo]}`, html: `${rel} ⇒ P<sub>${a2}</sub> = ${verP(u, b.P)}, V<sub>${a2}</sub> = ${verV(u, b.V)}, T<sub>${a2}</sub> = ${verT(b.T)}<br>${hW}<br>${hQ}` });
+      est.push(b); tramos.push({ de, a: a2, tipo, W, Q, dU, ini: a, fin: b });
+    });
+    // los restos de redondeo de una suma que debe ser 0 (ΔU de un ciclo) se quedan en 0
+    const escala = Math.max(...tramos.map((t) => Math.abs(t.Q) + Math.abs(t.W) + Math.abs(t.dU))), limpia = (x) => (Math.abs(x) < 1e-9 * escala ? 0 : x);
+    const Wt = limpia(tramos.reduce((s, t) => s + t.W, 0)), Qt = limpia(tramos.reduce((s, t) => s + t.Q, 0)), Ut = limpia(tramos.reduce((s, t) => s + t.dU, 0));
+    const ult = est[est.length - 1], ciclo = lista.length > 1 && ['P', 'V', 'T'].every((k) => Math.abs(ult[k] - est[0][k]) <= 1e-6 * est[0][k]);
+    let rend = null;
+    const Qabs = tramos.filter((t) => t.Q > 0).reduce((s, t) => s + t.Q, 0), Qced = -tramos.filter((t) => t.Q < 0).reduce((s, t) => s + t.Q, 0);
+    if (ciclo) {
+      rend = Qabs > 0 ? Wt / Qabs : null;
+      const Tmax = Math.max(...est.map((e) => e.T)), Tmin = Math.min(...est.map((e) => e.T));
+      pasos.push({ t: 'Balance del ciclo', html: `ΔU = 0 (vuelve al estado A) ⇒ W<sub>neto</sub> = Q<sub>neto</sub> = <b>${f(Wt)} J</b><br>Calor absorbido: Q<sub>abs</sub> = ${f(Qabs)} J; cedido: ${f(Qced)} J${rend !== null ? `<br>${Wt > 0 ? 'Rendimiento' : 'Es un ciclo frigorífico (W &lt; 0); como motor'}: η = W/Q<sub>abs</sub> = <b>${f(100 * rend, 3)} %</b>; un Carnot entre ${f(Tmax)} K y ${f(Tmin)} K daría 1 − T<sub>mín</sub>/T<sub>máx</sub> = ${f(100 * (1 - Tmin / Tmax), 3)} %` : ''}` });
+    } else pasos.push({ t: 'Totales', html: `W = ${f(Wt)} J, Q = ${f(Qt)} J, ΔU = ${f(Ut)} J (Q − W = ${f(Qt - Wt)} J)` });
+    return { modo: 'procesos', G, u, n, est, tramos, Wt, Qt, Ut, ciclo, rend, Qabs, Qced, pasos };
+  }
+
+  /* ---------- Teoría cinética ---------- */
+  // sc: { molecula (o 'otra' con M), M (g/mol), T, uT, n (opcional) }
+  function cinetica(sc) {
+    const Mg = sc.molecula && sc.molecula !== 'otra' && MOLECULAS[sc.molecula] ? MOLECULAS[sc.molecula][1] : num(sc, 'M', 'la masa molar');
+    const nombre = sc.molecula && MOLECULAS[sc.molecula] ? MOLECULAS[sc.molecula][0] : 'Gas';
+    const u = unidades(sc), T = aSI(u, 'T', num(sc, 'T', 'la temperatura', { signo: true })), M = Mg * 1e-3;
+    const vrms = Math.sqrt((3 * R * T) / M), vmed = Math.sqrt((8 * R * T) / (Math.PI * M)), vp = Math.sqrt((2 * R * T) / M), Ec = 1.5 * kB * T, m = M / NA;
+    const n = num(sc, 'n', 'el número de moles', { opcional: true });
+    const pasos = [
+      { t: 'Velocidad cuadrática media', html: `v<sub>cm</sub> = √(3RT/M) = √(3·${Rs}·${f(T, 5)} / ${f(M)}) = <b>${f(vrms)} m/s</b> (M en kg/mol)` },
+      { t: 'Velocidad media y más probable', html: `v̄ = √(8RT/(πM)) = <b>${f(vmed)} m/s</b>, &nbsp; v<sub>p</sub> = √(2RT/M) = <b>${f(vp)} m/s</b><br>Siempre v<sub>p</sub> &lt; v̄ &lt; v<sub>cm</sub>.` },
+      { t: 'Energía cinética media de traslación de una molécula', html: `⟨E<sub>c</sub>⟩ = (3/2)kT = 1,5·1,381·10<sup>−23</sup>·${f(T, 5)} = <b>${f(Ec)} J</b> (= ½ m v<sub>cm</sub><sup>2</sup> con m = M/N<sub>A</sub> = ${f(m)} kg). Solo depende de T, no del gas.` },
+    ];
+    if (n) pasos.push({ t: `Energía cinética de traslación de ${f(n)} mol`, html: `E = (3/2)nRT = <b>${f(1.5 * n * R * T)} J</b>` });
+    return { modo: 'cinetica', nombre, Mg, M, T, vrms, vmed, vp, Ec, n, pasos };
+  }
+  // densidad de Maxwell para la gráfica
+  const maxwell = (M, T, v) => { const a = M / (2 * R * T); return 4 * Math.PI * (a / Math.PI) ** 1.5 * v * v * Math.exp(-a * v * v); };
+
+  function resolver(sc) {
+    if (sc.modo === 'procesos') return procesos(sc);
+    if (sc.modo === 'cinetica') return cinetica(sc);
+    return resolverEstado(sc);
+  }
+
+  const B = { uP: 'atm', uV: 'L', uT: 'K' };
+  const ejemplos = [
+    { clave: 'volumen', nombre: 'Volumen de un gas (PV = nRT)', sc: { modo: 'estado', ...B, uT: 'C', P: '2', V: '', T: '27', n: '', m: '16', M: '32' } },
+    { clave: 'normales', nombre: 'Un mol en condiciones normales', sc: { modo: 'estado', ...B, P: '1', V: '', T: '273.15', n: '1', m: '', M: '' } },
+    { clave: 'isoterma', nombre: 'Expansión isoterma', sc: { modo: 'procesos', gas: 'diatomico', ...B, P: '4', V: '5', T: '300', n: '', procesos: [{ tipo: 'isoterma', dato: 'V', valor: '20' }] } },
+    { clave: 'adiabatica', nombre: 'Compresión adiabática del aire', sc: { modo: 'procesos', gas: 'diatomico', ...B, P: '1', V: '10', T: '300', n: '', procesos: [{ tipo: 'adiabatica', dato: 'V', valor: '2' }] } },
+    { clave: 'ciclo-rect', nombre: 'Ciclo rectangular (dos isobaras y dos isocoras)', sc: { modo: 'procesos', gas: 'monoatomico', ...B, uP: 'kPa', P: '100', V: '2', T: '', n: '0.1', procesos: [{ tipo: 'isocora', dato: 'P', valor: '300' }, { tipo: 'isobara', dato: 'V', valor: '6' }, { tipo: 'isocora', dato: 'P', valor: '100' }, { tipo: 'isobara', dato: 'V', valor: 'A' }] } },
+    { clave: 'carnot', nombre: 'Ciclo de Carnot', sc: { modo: 'procesos', gas: 'diatomico', ...B, P: '10', V: '1', T: '600', n: '', procesos: [{ tipo: 'isoterma', dato: 'V', valor: '3' }, { tipo: 'adiabatica', dato: 'T', valor: '300' }, { tipo: 'isoterma', dato: 'V', valor: String(3 * 2 ** 2.5 / 3) }, { tipo: 'adiabatica', dato: 'V', valor: 'A' }] } },
+    { clave: 'cinetica', nombre: 'Velocidad de las moléculas de oxígeno', sc: { modo: 'cinetica', molecula: 'O2', M: '', T: '300', uT: 'K', n: '1' } },
+  ];
+  // en el Carnot, V_D = V_A·(T_A/T_C)^(1/(γ−1)) = 1·2^2,5 L
+  ejemplos[5].sc.procesos[2].valor = String(+(2 ** 2.5).toFixed(6));
+
+  return { resolver, estado: resolverEstado, procesos, cinetica, maxwell, GASES, MOLECULAS, UP, UV, NOMBRES, ejemplos, f, R };
+})();
+
+/* =====================================================================
+   Gases ideales: interfaz (modo, datos, lista de transformaciones,
+   diagrama P-V o curva de Maxwell y desarrollo). El cálculo está en
+   gases/fisica.js (Gases).
+   ===================================================================== */
+(() => {
+  const $ = (q) => document.querySelector(q);
+  const G = Gases, f = G.f, CLAVE = 'gases-v1';
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const copia = (o) => JSON.parse(JSON.stringify(o));
+  const txt = (h) => String(h).replace(/<sup>/g, '^').replace(/<[^>]+>/g, '');
+  const MODOS = [['estado', 'Ecuación de estado PV = nRT'], ['procesos', 'Transformaciones y ciclos'], ['cinetica', 'Teoría cinética']];
+  const TIPOS = [['isoterma', 'Isoterma'], ['isobara', 'Isobara'], ['isocora', 'Isocora'], ['adiabatica', 'Adiabática']];
+  const PERMITIDOS = { isoterma: ['V', 'P'], isobara: ['V', 'T'], isocora: ['P', 'T'], adiabatica: ['V', 'P', 'T'] };
+
+  let sc = copia(G.ejemplos[0].sc);
+  try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && MODOS.some(([k]) => k === g.modo)) sc = g; } catch (e) {}
+  const guarda = () => { try { localStorage.setItem(CLAVE, JSON.stringify(sc)); } catch (e) {} };
+  let sol = null, col = {};
+
+  /* ---------- Formulario ---------- */
+  const unP = () => txt((G.UP[sc.uP] || G.UP.atm)[1]), unV = () => txt((G.UV[sc.uV] || G.UV.L)[1]).replace('^3', '³'), unT = () => (sc.uT === 'C' ? '°C' : 'K');
+  const fila = (k, nom, un) => `<label for="f-${k}">${nom}${un ? ` <small>${un}</small>` : ''}</label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc[k] ?? '')}" inputmode="decimal" autocomplete="off">`;
+  const opciones = (v, lista) => lista.map(([k, t]) => `<option value="${k}"${v === k ? ' selected' : ''}>${t}</option>`).join('');
+  const elige = (k, nom, lista) => `<label for="f-${k}">${nom}</label><select id="f-${k}" class="in" data-k="${k}">${opciones(sc[k], lista)}</select>`;
+  const sep = (t) => `<div class="sep">${t}</div>`;
+  const unidades = () => elige('uP', 'Unidad de presión', Object.entries(G.UP).map(([k, [, t]]) => [k, t])) + elige('uV', 'Unidad de volumen', Object.entries(G.UV).map(([k, [, t]]) => [k, txt(t).replace('^3', '³')])) + elige('uT', 'Temperatura en', [['K', 'kelvin (K)'], ['C', 'grados Celsius (°C)']]);
+  const cuatro = () => fila('P', 'Presión P', unP()) + fila('V', 'Volumen V', unV()) + fila('T', 'Temperatura T', unT()) + fila('n', 'Moles n', 'mol');
+  function formulario() {
+    let h = elige('modo', 'Qué calcular', MODOS);
+    if (sc.modo === 'estado') {
+      h += unidades() + sep('Tres de los cuatro (deja vacío el que buscas)') + cuatro() + sep('O los moles a partir de la masa') + fila('m', 'Masa m', 'g') + fila('M', 'Masa molar M', 'g/mol');
+      $('#nota').textContent = 'Si das la masa molar también se calcula la densidad del gas.';
+    } else if (sc.modo === 'procesos') {
+      h += elige('gas', 'Gas', Object.entries(G.GASES).map(([k, g]) => [k, g.nombre])) + unidades() + sep('Estado A: tres de los cuatro') + cuatro() + sep('Transformaciones');
+      h += `<div class="tramos">${(sc.procesos || []).map((p, i) => {
+        const de = String.fromCharCode(65 + i), cierra = String(p.valor).trim().toUpperCase() === 'A', a = cierra ? 'A' : String.fromCharCode(66 + i);
+        const un = { P: unP(), V: unV(), T: unT() };
+        return `<div class="tramo"><b>${de}→${a}</b><select class="in" data-i="${i}" data-c="tipo" aria-label="Tipo del tramo ${de}">${opciones(p.tipo, TIPOS)}</select><select class="in" data-i="${i}" data-c="dato" aria-label="Dato final del tramo ${de}">${opciones(p.dato, PERMITIDOS[p.tipo].map((k) => [k, `${k}${a}`]))}</select><input class="in" data-i="${i}" data-c="valor" value="${esc(p.valor)}" placeholder="${un[p.dato]}" inputmode="decimal" autocomplete="off" aria-label="Valor del tramo ${de}"><button class="btn" type="button" data-quita="${i}" aria-label="Quitar el tramo ${de}">✕</button></div>`;
+      }).join('')}</div><div class="botones"><button class="btn" type="button" data-add="1">+ Añadir transformación</button></div>`;
+      $('#nota').textContent = 'Cada tramo parte del estado anterior; das un dato del estado final. Escribe A como valor para volver al estado A y cerrar el ciclo.';
+    } else {
+      h += elige('molecula', 'Gas', [...Object.entries(G.MOLECULAS).map(([k, [t, M]]) => [k, `${t} (${String(M).replace('.', ',')} g/mol)`]), ['otra', 'Otro (escribe M)']]);
+      if (sc.molecula === 'otra') h += fila('M', 'Masa molar M', 'g/mol');
+      h += elige('uT', 'Temperatura en', [['K', 'kelvin (K)'], ['C', 'grados Celsius (°C)']]) + fila('T', 'Temperatura T', unT()) + fila('n', 'Moles n (opcional)', 'mol');
+      $('#nota').textContent = 'M se pasa a kg/mol para usar R en el SI.';
+    }
+    $('#campos').innerHTML = h;
+  }
+  $('#campos').addEventListener('input', (e) => {
+    const t = e.target;
+    if (t.tagName !== 'INPUT') return;
+    if (t.dataset.c) sc.procesos[+t.dataset.i][t.dataset.c] = t.value; else sc[t.dataset.k] = t.value;
+    $('#ejemplos').value = ''; calcula();
+    // la etiqueta del tramo cambia al escribir A
+    if (t.dataset.c === 'valor') { const b = t.parentNode.querySelector('b'), i = +t.dataset.i; b.textContent = `${String.fromCharCode(65 + i)}→${t.value.trim().toUpperCase() === 'A' ? 'A' : String.fromCharCode(66 + i)}`; }
+  });
+  $('#campos').addEventListener('change', (e) => {
+    const t = e.target;
+    if (t.tagName !== 'SELECT') return;
+    if (t.dataset.c) {
+      const p = sc.procesos[+t.dataset.i]; p[t.dataset.c] = t.value;
+      if (t.dataset.c === 'tipo' && !PERMITIDOS[p.tipo].includes(p.dato)) p.dato = PERMITIDOS[p.tipo][0];
+    } else {
+      sc[t.dataset.k] = t.value;
+      if (t.dataset.k === 'modo') sc = copia(G.ejemplos.find((x) => x.sc.modo === t.value).sc);
+    }
+    $('#ejemplos').value = ''; formulario(); calcula();
+  });
+  $('#campos').addEventListener('click', (e) => {
+    const b = e.target.closest('button');
+    if (!b) return;
+    if (b.dataset.add) sc.procesos.push({ tipo: 'isoterma', dato: 'V', valor: '' });
+    else if (b.dataset.quita !== undefined) sc.procesos.splice(+b.dataset.quita, 1);
+    else return;
+    $('#ejemplos').value = ''; formulario(); calcula();
+  });
+
+  /* ---------- Ejemplos ---------- */
+  const sel = $('#ejemplos');
+  sel.innerHTML = '<option value="">Ejemplos…</option>' + G.ejemplos.map((e) => `<option value="${e.clave}">${e.nombre}</option>`).join('');
+  sel.addEventListener('change', () => { if (sel.value) abrirEjemplo(sel.value); });
+  function abrirEjemplo(clave) {
+    const e = G.ejemplos.find((x) => x.clave === clave);
+    if (!e) return;
+    sc = copia(e.sc);
+    formulario(); calcula(); sel.value = clave;
+  }
+
+  /* ---------- Cálculo ---------- */
+  const dato = (t, v) => `<div><span>${t}</span>${v}</div>`;
+  const vP = (P) => `${f(P / sol.u.P[0])} ${sol.u.P[1]}`, vV = (V) => `${f(V / sol.u.V[0])} ${sol.u.V[1]}`;
+  function calcula() {
+    const err = $('#error');
+    try { sol = G.resolver(sc); } catch (e) { sol = null; err.textContent = e.message; err.hidden = false; $('#res').innerHTML = ''; $('#pasos').innerHTML = ''; $('#leyenda').textContent = ''; dibuja(); return; }
+    err.hidden = true; guarda();
+    let h = '', ley = '';
+    if (sol.modo === 'estado') {
+      h = dato('Presión', `P = <b>${vP(sol.P)}</b>`) + dato('Volumen', `V = <b>${vV(sol.V)}</b>`) + dato('Temperatura', `T = <b>${f(sol.T, 5)} K</b> (${f(sol.T - 273.15)} °C)`) + dato('Moles', `n = <b>${f(sol.n)} mol</b>`) + (sol.rho ? dato('Densidad', `ρ = ${f(sol.rho)} kg/m<sup>3</sup>`) : '');
+      ley = 'El estado del gas en el diagrama P-V, sobre su isoterma (hipérbola PV = nRT).';
+    } else if (sol.modo === 'procesos') {
+      if (sol.ciclo) h = dato('Trabajo neto', `W = <b>${f(sol.Wt)} J</b>`) + dato('Calor absorbido', `Q<sub>abs</sub> = ${f(sol.Qabs)} J`) + (sol.rend !== null ? dato('Rendimiento', `η = <b>${f(100 * sol.rend, 3)} %</b>`) : '');
+      else h = dato('Trabajo del gas', `W = <b>${f(sol.Wt)} J</b>`) + dato('Calor', `Q = <b>${f(sol.Qt)} J</b>`) + dato('Energía interna', `ΔU = <b>${f(sol.Ut)} J</b>`);
+      const fin = sol.est[sol.est.length - 1], L = sol.ciclo ? String.fromCharCode(64 + sol.est.length - 1) : String.fromCharCode(64 + sol.est.length);
+      if (!sol.ciclo) h += dato(`Estado final ${L}`, `${vP(fin.P)}, ${vV(fin.V)}, ${f(fin.T, 5)} K`);
+      ley = (sol.ciclo ? `Ciclo en el diagrama P-V; el área encerrada es el trabajo neto${sol.Wt > 0 ? ' (sentido horario: motor)' : ' (sentido antihorario: frigorífico)'}. En gris, las isotermas de T máxima y mínima.` : 'Transformaciones en el diagrama P-V. En gris, las isotermas de los estados inicial y final.') + ' Colores: verde isoterma, azul isobara, naranja isocora y morado adiabática.';
+    } else {
+      h = dato('Velocidad cuadrática media', `v<sub>cm</sub> = <b>${f(sol.vrms)} m/s</b>`) + dato('Velocidad media', `v̄ = ${f(sol.vmed)} m/s`) + dato('Más probable', `v<sub>p</sub> = ${f(sol.vp)} m/s`) + dato('Energía cinética media', `⟨E<sub>c</sub>⟩ = ${f(sol.Ec)} J`);
+      ley = `Distribución de Maxwell de las velocidades a ${txt(f(sol.T, 5))} K; en gris, la del mismo gas al doble de temperatura.`;
+    }
+    $('#res').innerHTML = h; $('#leyenda').textContent = ley;
+    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('');
+    dibuja();
+  }
+
+  /* ---------- Dibujo ---------- */
+  function colores() { const cs = getComputedStyle(document.documentElement); for (const k of ['--ink', '--muted', '--line', '--accent', '--bg', '--peso', '--normal', '--roz', '--fuerza', '--cuerpo']) col[k] = cs.getPropertyValue(k).trim(); }
+  function texto(g, x, y, t, color = col['--ink'], al = 'center', peso = '') { g.font = `${peso}12px "IBM Plex Sans", system-ui, sans-serif`; g.fillStyle = color; g.textAlign = al; g.textBaseline = 'middle'; g.fillText(t, x, y); }
+  const paso = (max) => { const e = 10 ** Math.floor(Math.log10(max / 4)), r = max / 4 / e; return e * (r < 1.5 ? 1 : r < 3.5 ? 2 : r < 7.5 ? 5 : 10); };
+  const num = (x) => txt(f(+x.toPrecision(6)));
+  // ejes con marcas; devuelve las funciones de escala
+  function ejes(g, w, h, xmax, ymax, nx, ny) {
+    const m = { l: 52, r: 16, t: 16, b: 34 }, X = (x) => m.l + (x / xmax) * (w - m.l - m.r), Y = (y) => h - m.b - (y / ymax) * (h - m.t - m.b);
+    g.strokeStyle = col['--line']; g.lineWidth = 1;
+    const sx = paso(xmax), sy = paso(ymax);
+    for (let x = 0; x <= xmax * 1.0001; x += sx) { g.beginPath(); g.moveTo(X(x), Y(0)); g.lineTo(X(x), Y(ymax)); g.stroke(); texto(g, X(x), h - m.b + 12, num(x), col['--muted']); }
+    for (let y = 0; y <= ymax * 1.0001; y += sy) { g.beginPath(); g.moveTo(X(0), Y(y)); g.lineTo(X(xmax), Y(y)); g.stroke(); texto(g, m.l - 6, Y(y), num(y), col['--muted'], 'right'); }
+    g.strokeStyle = col['--muted']; g.beginPath(); g.moveTo(X(0), Y(ymax)); g.lineTo(X(0), Y(0)); g.lineTo(X(xmax), Y(0)); g.stroke();
+    texto(g, X(xmax), h - 8, nx, col['--muted'], 'right'); texto(g, m.l + 6, m.t - 6 + 6, ny, col['--muted'], 'left');
+    return { X, Y };
+  }
+  function curva(g, pts, X, Y) { g.beginPath(); pts.forEach(([x, y], i) => (i ? g.lineTo(X(x), Y(y)) : g.moveTo(X(x), Y(y)))); g.stroke(); }
+  function flecha(g, x1, y1, x2, y2) {
+    const a = Math.atan2(y2 - y1, x2 - x1), x = (x1 + x2) / 2, y = (y1 + y2) / 2;
+    g.beginPath(); g.moveTo(x + 6 * Math.cos(a), y + 6 * Math.sin(a)); g.lineTo(x - 6 * Math.cos(a) + 5 * Math.sin(a), y - 6 * Math.sin(a) - 5 * Math.cos(a)); g.lineTo(x - 6 * Math.cos(a) - 5 * Math.sin(a), y - 6 * Math.sin(a) + 5 * Math.cos(a)); g.closePath(); g.fill();
+  }
+  // puntos (V, P) de un tramo en unidades de la pantalla
+  function tramoPts(t, n, gm, u) {
+    const a = t.ini, b = t.fin, pts = [];
+    for (let i = 0; i <= 60; i++) {
+      const s = i / 60;
+      let V, P;
+      if (t.tipo === 'isocora') { V = a.V; P = a.P + (b.P - a.P) * s; }
+      else { V = a.V + (b.V - a.V) * s; P = t.tipo === 'isobara' ? a.P : t.tipo === 'isoterma' ? (a.P * a.V) / V : a.P * (a.V / V) ** gm; }
+      pts.push([V / u.V[0], P / u.P[0]]);
+    }
+    return pts;
+  }
+  function dibuja() {
+    const c = $('#escena'), dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
+    if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
+    const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h); g.lineCap = 'round'; g.lineJoin = 'round';
+    if (!sol) return;
+    if (!col['--ink']) colores();
+    if (sol.modo === 'cinetica') {
+      const vmax = 4.2 * sol.vp, pts = (T) => Array.from({ length: 201 }, (_, i) => { const v = (vmax * i) / 200; return [v, G.maxwell(sol.M, T, v) * 1000]; });
+      const p1 = pts(sol.T), p2 = pts(2 * sol.T), ymax = Math.max(...p1.map((p) => p[1])) * 1.18;
+      const { X, Y } = ejes(g, w, h, vmax, ymax, 'v (m/s)', 'f(v) (·10⁻³ s/m)');
+      g.strokeStyle = col['--line']; g.lineWidth = 2; g.setLineDash([5, 4]); curva(g, p2, X, Y); g.setLineDash([]);
+      g.fillStyle = col['--accent']; g.globalAlpha = 0.12; g.beginPath(); g.moveTo(X(0), Y(0)); p1.forEach(([x, y]) => g.lineTo(X(x), Y(y))); g.lineTo(X(vmax), Y(0)); g.closePath(); g.fill(); g.globalAlpha = 1;
+      g.strokeStyle = col['--accent']; g.lineWidth = 2.4; curva(g, p1, X, Y);
+      [[sol.vp, 'v_p', col['--normal']], [sol.vmed, 'v̄', col['--roz']], [sol.vrms, 'v_cm', col['--peso']]].forEach(([v, t, cl], i) => {
+        const y = G.maxwell(sol.M, sol.T, v) * 1000;
+        g.strokeStyle = cl; g.lineWidth = 1.5; g.beginPath(); g.moveTo(X(v), Y(0)); g.lineTo(X(v), Y(y)); g.stroke();
+        texto(g, w - 20, 26 + i * 17, `${t.replace('_p', 'ₚ').replace('_cm', 'cm')} = ${txt(f(v))} m/s`, cl, 'right', '600 ');
+      });
+      return;
+    }
+    const u = sol.u, est = sol.modo === 'estado' ? [{ P: sol.P, V: sol.V, T: sol.T }] : sol.est;
+    const Vs = est.map((e) => e.V / u.V[0]), Ps = est.map((e) => e.P / u.P[0]);
+    const { X, Y } = ejes(g, w, h, Math.max(...Vs) * 1.25, Math.max(...Ps) * 1.25, `V (${txt(u.V[1]).replace('^3', '³')})`, `P (${u.P[1]})`);
+    const xmax = Math.max(...Vs) * 1.25, ymax = Math.max(...Ps) * 1.25;
+    const iso = (PV) => { const pts = []; for (let i = 1; i <= 200; i++) { const V = (xmax * i) / 200, P = PV / V; if (P <= ymax) pts.push([V, P]); } return pts; };
+    g.strokeStyle = col['--line']; g.lineWidth = 1.6; g.setLineDash([5, 4]);
+    if (sol.modo === 'estado') curva(g, iso(Vs[0] * Ps[0]), X, Y);
+    else {
+      const PV = est.map((e, i) => Vs[i] * Ps[i]), lista = sol.ciclo ? [Math.max(...PV), Math.min(...PV)] : [PV[0], PV[PV.length - 1]];
+      for (const k of lista) curva(g, iso(k), X, Y);
+    }
+    g.setLineDash([]);
+    if (sol.modo === 'procesos') {
+      const gm = sol.G.gamma, colT = { isoterma: col['--normal'], isobara: col['--accent'], isocora: col['--roz'], adiabatica: col['--fuerza'] };
+      if (sol.ciclo) { g.fillStyle = col['--accent']; g.globalAlpha = 0.1; g.beginPath(); sol.tramos.forEach((t) => tramoPts(t, sol.n, gm, u).forEach(([x, y], i) => (i || t !== sol.tramos[0] ? g.lineTo(X(x), Y(y)) : g.moveTo(X(x), Y(y))))); g.closePath(); g.fill(); g.globalAlpha = 1; }
+      for (const t of sol.tramos) {
+        const pts = tramoPts(t, sol.n, gm, u);
+        g.strokeStyle = colT[t.tipo]; g.fillStyle = colT[t.tipo]; g.lineWidth = 2.6; curva(g, pts, X, Y);
+        const [x1, y1] = pts[28], [x2, y2] = pts[32]; flecha(g, X(x1), Y(y1), X(x2), Y(y2));
+      }
+    }
+    const nEst = sol.modo === 'procesos' && sol.ciclo ? est.length - 1 : est.length;
+    const cx = Vs.slice(0, nEst).reduce((s, v) => s + v, 0) / nEst, cy = Ps.slice(0, nEst).reduce((s, v) => s + v, 0) / nEst;
+    for (let i = 0; i < nEst; i++) {
+      const x = X(Vs[i]), y = Y(Ps[i]);
+      g.fillStyle = col['--ink']; g.beginPath(); g.arc(x, y, 4.5, 0, 2 * Math.PI); g.fill();
+      const dx = Vs[i] >= cx ? 1 : -1, dy = Ps[i] >= cy ? -1 : 1;
+      texto(g, x + dx * 10, y + dy * 12, sol.modo === 'estado' ? `(${num(Vs[i])}, ${num(Ps[i])})` : String.fromCharCode(65 + i), col['--ink'], dx > 0 ? 'left' : 'right', '600 ');
+    }
+    if (sol.modo === 'estado') { g.strokeStyle = col['--muted']; g.lineWidth = 1; g.setLineDash([3, 3]); g.beginPath(); g.moveTo(X(Vs[0]), Y(0)); g.lineTo(X(Vs[0]), Y(Ps[0])); g.lineTo(X(0), Y(Ps[0])); g.stroke(); g.setLineDash([]); }
+  }
+  window.addEventListener('resize', dibuja);
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { colores(); dibuja(); });
+
+  const ver = $('#ver'); if (ver) ver.textContent = Version.de('gases').current;
+  formulario(); colores(); calcula();
+  window.GasesApp = { abrirEjemplo, resultado: () => sol && { modo: sol.modo, P: sol.P, V: sol.V, T: sol.T, n: sol.n, Wt: sol.Wt, Qt: sol.Qt, Ut: sol.Ut, rend: sol.rend, ciclo: sol.ciclo, vrms: sol.vrms }, estado: () => copia(sc) };
+})();
+
+</script>
+</html>
