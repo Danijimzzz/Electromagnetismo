@@ -1,0 +1,89 @@
+<title>Interferencia y difracción: Young, rendija, red y láminas delgadas · SimulaCiencia</title>
+<meta name="description" content="Calculadora de interferencia y difracción de la luz en español: doble rendija de Young (interfranja, posición de los máximos, intensidad), rendija simple, red de difracción con sus órdenes y láminas delgadas como pompas de jabón o capas antirreflectantes, con el patrón en la pantalla y paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root {
+  --bg: #eef0f4; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d6dbe3; --accent: #2a5db5; --accent-soft: #e3ecfa;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #74a2f2; --accent-soft: #1c2a42; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #74a2f2; --accent-soft: #1c2a42; color-scheme: dark }
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
+.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
+.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+.layout { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 16px; align-items: start }
+@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr) } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 15px var(--f-ui); margin: 0 0 10px }
+.campos { display: grid; grid-template-columns: minmax(0, 1fr) 170px; gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px } .campos label small { color: var(--muted) }
+.in { font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.in:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer }
+.btn:hover { border-color: var(--accent) }
+.error { color: #c0392b; font-size: 13px; margin: 10px 0 0 }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+.res { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px 14px; font: 16px var(--f-math) } .res div { overflow-x: auto } .res span { display: block; font: 12px var(--f-ui); color: var(--muted) }
+#montaje { height: 240px } #patron { height: 200px }
+.res div.ancho { grid-column: 1 / -1 }
+.controles { display: flex; gap: 8px; align-items: center; margin-top: 8px }
+.btn { white-space: nowrap }
+.leyenda { font-size: 12.5px; color: var(--muted); margin: 6px 0 0 } .leyenda b { font-weight: 600 }
+canvas { display: block; width: 100%; height: 260px; border-radius: 8px; background: var(--bg); margin-top: 10px }
+.pasos ol { margin: 0; padding-left: 22px } .pasos li { margin: 0 0 12px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física general</a> / Interferencia y difracción</span></header>
+<div class="wrap">
+<h1>Interferencia y difracción</h1>
+<p class="lead">Calcula la interfranja y la posición de los máximos en la doble rendija de Young, los mínimos y el máximo central de una rendija simple, los órdenes de una red de difracción y los colores que refleja una lámina delgada, con el patrón que se vería en la pantalla.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card"><h2>Resultado</h2><div class="res" id="res"></div>
+      <canvas id="montaje" aria-label="Montaje con las ondas que salen de las rendijas"></canvas>
+      <canvas id="patron" aria-label="Intensidad en la pantalla"></canvas>
+      <div class="controles"><button class="btn" id="play" type="button">⏸ Pausa</button><span class="leyenda" id="leyenda" style="margin:0"></span></div></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Doble rendija de Young</h2>
+  <p>Dos rendijas separadas una distancia d se comportan como dos fuentes en fase. A un punto de la pantalla, a una distancia L, la luz de cada una llega con una diferencia de caminos d sen θ. Si es un número entero de longitudes de onda hay una franja brillante, y si es un número entero y medio, una oscura:</p>
+  <p class="f">d sen θ = mλ (máximos), &ensp; d sen θ = (m + ½)λ (mínimos), &ensp; Δy = λL/d</p>
+  <p>Para ángulos pequeños las franjas están igual de separadas, una interfranja Δy, y la intensidad va como I = I<sub>máx</sub> cos<sup>2</sup>(πd sen θ/λ).</p>
+  <h2>Difracción por una rendija</h2>
+  <p>Una rendija de anchura a abre la luz en un máximo central muy brillante, de anchura 2λL/a, con mínimos donde a sen θ = mλ (m ≠ 0) y máximos secundarios débiles. En la doble rendija real, este patrón hace de envolvente de las franjas de Young, y faltan los órdenes que caen en un mínimo de difracción.</p>
+  <h2>Red de difracción</h2>
+  <p>Con muchas rendijas igual de separadas, d = 1/N, los máximos siguen en d sen θ = mλ pero son muy estrechos. Como el ángulo depende de λ, la red separa los colores, igual que un prisma pero al revés: el rojo se desvía más que el violeta. El orden máximo es el entero más grande que no pasa de d/λ.</p>
+  <h2>Láminas delgadas</h2>
+  <p>En una lámina de índice n y espesor t interfieren la luz reflejada arriba y la reflejada abajo, que recorre un camino óptico 2nt de más. Al reflejarse en un medio de índice mayor la onda cambia de fase media longitud de onda. Si solo cambia en una de las dos superficies (una pompa de jabón en el aire), hay refuerzo cuando 2nt = (m + ½)λ; si cambia en las dos (una capa antirreflectante sobre vidrio), cuando 2nt = mλ. Por eso una capa de espesor λ/(4n) elimina el reflejo.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Interferencia y difracción <span id="ver"></span> (beta)</footer>
+</body>
