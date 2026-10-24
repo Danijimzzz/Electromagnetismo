@@ -113,38 +113,38 @@ const Cinematica = (() => {
     const { estado, tc, tv } = mov;
     const cima = estado(tc), fin = estado(tv);
     Object.assign(res, { tv, alcance: fin.x, tc, hmax: Math.max(cima.y, y0), xc: cima.x, vf: Math.hypot(fin.vx, fin.vy), angf: gra(Math.atan2(fin.vy, fin.vx)), vxf: fin.vx, vyf: fin.vy });
-    pasos.push({ t: 'Componentes de la velocidad inicial', html: `v<sub>0x</sub> = v<sub>0</sub> cos α = ${f(v0)} · cos ${f(ang)}° = <b>${f(vx0)} m/s</b> &nbsp; v<sub>0y</sub> = v<sub>0</sub> sen α = ${f(v0)} · sen ${f(ang)}° = <b>${f(vy0)} m/s</b>` });
+    pasos.push({ t: 'Componentes de la velocidad inicial', html: `$v_0x = v_0 cos α = ${f(v0)} · cos ${f(ang)}°$ = <b>${f(vx0)} m/s</b> &nbsp; $v_0y = v_0 sen α = ${f(v0)} · sen ${f(ang)}°$ = <b>${f(vy0)} m/s</b>` });
     if (modelo === 'ninguno') {
-      pasos.push({ t: 'Ecuaciones del movimiento', html: `Eje x (MRU): x(t) = ${f(vx0)} t &nbsp; v<sub>x</sub> = ${f(vx0)} m/s<br>Eje y (MRUA, a = −g): y(t) = ${f(y0)}${mas(vy0)} t − ${f(g / 2)} t<sup>2</sup> &nbsp; v<sub>y</sub>(t) = ${f(vy0)} − ${f(g)} t` });
-      if (vy0 > 0) pasos.push({ t: 'Altura máxima', html: `En la cima v<sub>y</sub> = 0 ⇒ t<sub>s</sub> = v<sub>0y</sub> / g = <b>${f(tc)} s</b>.<br>y<sub>máx</sub> = y<sub>0</sub> + v<sub>0y</sub><sup>2</sup> / (2 g) = ${f(y0)} + ${f(vy0)}<sup>2</sup> / (2 · ${f(g)}) = <b>${f(res.hmax)} m</b>, en x = ${f(res.xc)} m.` });
-      else pasos.push({ t: 'Altura máxima', html: `Como v<sub>0y</sub> ≤ 0 el proyectil no sube: la altura máxima es la inicial, <b>${f(y0)} m</b>.` });
-      const ec = `${f(y0)}${mas(vy0)} t − ${f(g / 2)} t<sup>2</sup> = ${f(yf)}`;
-      pasos.push({ t: 'Tiempo de vuelo', html: `Cae cuando y(t) = ${f(yf)} m: ${ec} ⇒ t = (v<sub>0y</sub> + √(v<sub>0y</sub><sup>2</sup> + 2 g (y<sub>0</sub> − y<sub>f</sub>))) / g = <b>${f(tv)} s</b>${y0 === yf && vy0 > 0 ? ' (= 2 t<sub>s</sub>, la trayectoria es simétrica)' : ''}.` });
-      pasos.push({ t: 'Alcance', html: `x = v<sub>0x</sub> t<sub>v</sub> = ${f(vx0)} · ${f(tv)} = <b>${f(res.alcance)} m</b>${y0 === yf ? `. Al mismo nivel también vale R = v<sub>0</sub><sup>2</sup> sen 2α / g = ${f((v0 * v0 * Math.sin(rad(2 * ang))) / g)} m` : ''}.` });
+      pasos.push({ t: 'Ecuaciones del movimiento', html: `Eje x (MRU): $x(t) = ${f(vx0)} t$ &nbsp; $v_x = ${f(vx0)} "m/s"$<br>Eje y (MRUA, a = −g): $y(t) = ${f(y0)}${mas(vy0)} t − ${f(g / 2)} t^2$ &nbsp; $v_y(t) = ${f(vy0)} − ${f(g)} t$` });
+      if (vy0 > 0) pasos.push({ t: 'Altura máxima', html: `En la cima $v_y = 0 ⇒ t_s = v_0y/g$ = <b>${f(tc)} s</b>.<br>$y_máx = y_0 + v_0y^2/(2g) = ${f(y0)} + ${f(vy0)}^2/(2 · ${f(g)})$ = <b>${f(res.hmax)} m</b>, en x = ${f(res.xc)} m.` });
+      else pasos.push({ t: 'Altura máxima', html: `Como $v_0y ≤ 0$ el proyectil no sube: la altura máxima es la inicial, <b>${f(y0)} m</b>.` });
+      const ec = `$${f(y0)}${mas(vy0)} t − ${f(g / 2)} t^2 = ${f(yf)}$`;
+      pasos.push({ t: 'Tiempo de vuelo', html: `Cae cuando y(t) = ${f(yf)} m: ${ec} ⇒ $t = {v_0y + √(v_0y^2 + 2g(y_0 − y_f))}/g$ = <b>${f(tv)} s</b>${y0 === yf && vy0 > 0 ? ' ($= 2t_s$, la trayectoria es simétrica)' : ''}.` });
+      pasos.push({ t: 'Alcance', html: `$x = v_0x t_v = ${f(vx0)} · ${f(tv)}$ = <b>${f(res.alcance)} m</b>${y0 === yf ? `. Al mismo nivel también vale $R = {v_0^2 sen 2α}/g$ = ${f((v0 * v0 * Math.sin(rad(2 * ang))) / g)} m` : ''}.` });
     } else if (modelo === 'lineal') {
       const { b } = p, vt = g / b;
-      pasos.push({ t: 'Ecuaciones con rozamiento lineal', html: `a = −g ĵ − (b/m) v, con b/m = ${f(b)} s<sup>−1</sup>. Velocidad límite v<sub>L</sub> = g / (b/m) = <b>${f(vt)} m/s</b>.<br>v<sub>x</sub>(t) = v<sub>0x</sub> e<sup>−bt/m</sup> &nbsp; x(t) = (v<sub>0x</sub> m / b)(1 − e<sup>−bt/m</sup>), que tiende a ${f(vx0 / b)} m<br>v<sub>y</sub>(t) = (v<sub>0y</sub> + v<sub>L</sub>) e<sup>−bt/m</sup> − v<sub>L</sub> &nbsp; y(t) = y<sub>0</sub> + (v<sub>0y</sub> + v<sub>L</sub>)(m / b)(1 − e<sup>−bt/m</sup>) − v<sub>L</sub> t` });
-      pasos.push({ t: 'Altura máxima', html: vy0 > 0 ? `v<sub>y</sub> = 0 ⇒ t<sub>s</sub> = (m / b) ln(1 + v<sub>0y</sub> / v<sub>L</sub>) = <b>${f(tc)} s</b> ⇒ y<sub>máx</sub> = <b>${f(res.hmax)} m</b>, en x = ${f(res.xc)} m.` : `Como v<sub>0y</sub> ≤ 0 no sube: y<sub>máx</sub> = <b>${f(y0)} m</b>.` });
-      pasos.push({ t: 'Tiempo de vuelo y alcance', html: `y(t) = ${f(yf)} m no se puede despejar a mano: resolviendo numéricamente, t<sub>v</sub> = <b>${f(tv)} s</b> y el alcance es x(t<sub>v</sub>) = <b>${f(res.alcance)} m</b>.` });
+      pasos.push({ t: 'Ecuaciones con rozamiento lineal', html: `$a = −g ĵ − (b/m) v$, con $b/m = ${f(b)} "s"^−1$. Velocidad límite $v_L = g/(b/m)$ = <b>${f(vt)} m/s</b>.<br>$v_x(t) = v_0x e^{−bt/m}$ &nbsp; $x(t) = {v_0x m}/b (1 − e^{−bt/m})$, que tiende a ${f(vx0 / b)} m<br>$v_y(t) = (v_0y + v_L) e^{−bt/m} − v_L$ &nbsp; $y(t) = y_0 + (v_0y + v_L) m/b (1 − e^{−bt/m}) − v_L t$` });
+      pasos.push({ t: 'Altura máxima', html: vy0 > 0 ? `$v_y = 0 ⇒ t_s = m/b ln(1 + v_0y/v_L)$ = <b>${f(tc)} s</b> ⇒ $y_máx$ = <b>${f(res.hmax)} m</b>, en x = ${f(res.xc)} m.` : `Como $v_0y ≤ 0$ no sube: $y_máx$ = <b>${f(y0)} m</b>.` });
+      pasos.push({ t: 'Tiempo de vuelo y alcance', html: `$y(t) = ${f(yf)} "m"$ no se puede despejar a mano: resolviendo numéricamente, $t_v$ = <b>${f(tv)} s</b> y el alcance es $x(t_v)$ = <b>${f(res.alcance)} m</b>.` });
     } else {
       const { c } = p;
-      pasos.push({ t: 'Ecuaciones con rozamiento cuadrático', html: `a = −g ĵ − (c/m) |v| v, con c/m = ${f(c)} m<sup>−1</sup>. Velocidad límite en caída v<sub>L</sub> = √(g / (c/m)) = <b>${f(Math.sqrt(g / c))} m/s</b>.<br>Las componentes están acopladas y no hay solución cerrada: se integra numéricamente (Runge-Kutta de orden 4, Δt = ${f(mov.dt)} s).` });
-      pasos.push({ t: 'Resultados de la integración', html: `${vy0 > 0 ? `Cima en t<sub>s</sub> = <b>${f(tc)} s</b>, y<sub>máx</sub> = <b>${f(res.hmax)} m</b> en x = ${f(res.xc)} m. ` : ''}Llega a y = ${f(yf)} m en t<sub>v</sub> = <b>${f(tv)} s</b>, con alcance <b>${f(res.alcance)} m</b>.` });
+      pasos.push({ t: 'Ecuaciones con rozamiento cuadrático', html: `$a = −g ĵ − (c/m) |v| v$, con $c/m = ${f(c)} "m"^−1$. Velocidad límite en caída $v_L = √(g/(c/m))$ = <b>${f(Math.sqrt(g / c))} m/s</b>.<br>Las componentes están acopladas y no hay solución cerrada: se integra numéricamente (Runge-Kutta de orden 4, $Δt = ${f(mov.dt)} "s"$).` });
+      pasos.push({ t: 'Resultados de la integración', html: `${vy0 > 0 ? `Cima en $t_s$ = <b>${f(tc)} s</b>, $y_máx$ = <b>${f(res.hmax)} m</b> en x = ${f(res.xc)} m. ` : ''}Llega a y = ${f(yf)} m en $t_v$ = <b>${f(tv)} s</b>, con alcance <b>${f(res.alcance)} m</b>.` });
     }
-    pasos.push({ t: 'Velocidad al caer', html: `v<sub>x</sub> = ${f(fin.vx)} m/s, v<sub>y</sub> = ${f(fin.vy)} m/s ⇒ |v| = √(v<sub>x</sub><sup>2</sup> + v<sub>y</sub><sup>2</sup>) = <b>${f(res.vf)} m/s</b>, a ${f(Math.abs(res.angf))}° ${res.angf <= 0 ? 'por debajo' : 'por encima'} de la horizontal.` });
+    pasos.push({ t: 'Velocidad al caer', html: `$v_x = ${f(fin.vx)} "m/s"$, $v_y = ${f(fin.vy)} "m/s" ⇒ |v| = √(v_x^2 + v_y^2)$ = <b>${f(res.vf)} m/s</b>, a ${f(Math.abs(res.angf))}° ${res.angf <= 0 ? 'por debajo' : 'por encima'} de la horizontal.` });
     if (modelo !== 'ninguno') {
       const sin = ideal(p);
       if (sin.tv) {
         res.alcanceIdeal = sin.estado(sin.tv).x; res.hmaxIdeal = Math.max(sin.estado(sin.tc).y, y0);
-        pasos.push({ t: 'Comparación sin rozamiento', html: `Sin rozamiento llegaría a ${f(res.alcanceIdeal)} m (y<sub>máx</sub> = ${f(res.hmaxIdeal)} m): el aire le quita un <b>${f(100 * (1 - res.alcance / res.alcanceIdeal), 2)} %</b> del alcance. Es la línea a trazos del dibujo.` });
+        pasos.push({ t: 'Comparación sin rozamiento', html: `Sin rozamiento llegaría a ${f(res.alcanceIdeal)} m ($y_máx$ = ${f(res.hmaxIdeal)} m): el aire le quita un <b>${f(100 * (1 - res.alcance / res.alcanceIdeal), 2)} %</b> del alcance. Es la línea a trazos del dibujo.` });
       }
     }
     if (p.tq !== null) {
-      if (p.tq > tv) pasos.push({ t: `En t = ${f(p.tq)} s`, html: `Para entonces ya ha caído (t<sub>v</sub> = ${f(tv)} s).` });
+      if (p.tq > tv) pasos.push({ t: `En t = ${f(p.tq)} s`, html: `Para entonces ya ha caído ($t_v$ = ${f(tv)} s).` });
       else {
         const e = estado(p.tq);
         res.enT = e;
-        pasos.push({ t: `En t = ${f(p.tq)} s`, html: `Posición (${f(e.x)}, ${f(e.y)}) m · velocidad (${f(e.vx)}, ${f(e.vy)}) m/s, |v| = <b>${f(Math.hypot(e.vx, e.vy))} m/s</b> · aceleración (${f(e.ax)}, ${f(e.ay)}) m/s<sup>2</sup>${modelo === 'ninguno' ? '' : `, |a| = ${f(Math.hypot(e.ax, e.ay))} m/s<sup>2</sup>`}.` });
+        pasos.push({ t: `En t = ${f(p.tq)} s`, html: `Posición (${f(e.x)}, ${f(e.y)}) m · velocidad (${f(e.vx)}, ${f(e.vy)}) m/s, |v| = <b>${f(Math.hypot(e.vx, e.vy))} m/s</b> · aceleración (${f(e.ax)}, ${f(e.ay)}) m/s²${modelo === 'ninguno' ? '' : `, |a| = ${f(Math.hypot(e.ax, e.ay))} m/s²`}.` });
       }
     }
     if (p.xb !== null) res.blanco = blanco(p, mov, pasos);
@@ -164,7 +164,7 @@ const Cinematica = (() => {
       const y = mov.estado(t).y;
       out.y = y; out.t = t; out.dif = y - yb;
       const acierta = Math.abs(out.dif) < 0.005 * Math.max(1, Math.abs(yb), xb / 100);
-      texto = `${p.modelo === 'ninguno' ? `t = x / v<sub>0x</sub> = ${f(t)} s ⇒ y = y<sub>0</sub> + v<sub>0y</sub> t − ½ g t<sup>2</sup>` : `En t = ${f(t)} s`} = <b>${f(y)} m</b>: ${acierta ? '<b>da en el blanco</b>.' : `pasa <b>${f(Math.abs(out.dif))} m ${out.dif > 0 ? 'por encima' : 'por debajo'}</b> del blanco.`}`;
+      texto = `${p.modelo === 'ninguno' ? `$t = x/v_0x = ${f(t)} "s" ⇒ y = y_0 + v_0y t − 1/2 g t^2$` : `En t = ${f(t)} s`} = <b>${f(y)} m</b>: ${acierta ? '<b>da en el blanco</b>.' : `pasa <b>${f(Math.abs(out.dif))} m ${out.dif > 0 ? 'por encima' : 'por debajo'}</b> del blanco.`}`;
     }
     if (p.modelo === 'ninguno') {
       // y = y0 + x tg α − g x² (1 + tg² α) / (2 v0²) ⇒ cuadrática en tg α
@@ -172,11 +172,11 @@ const Cinematica = (() => {
       if (v0 === 0 || D < 0) {
         const vmin = Math.sqrt(g * (Y + Math.hypot(xb, Y)));
         out.vmin = vmin;
-        texto += `<br>Con v<sub>0</sub> = ${f(v0)} m/s ningún ángulo llega: hace falta al menos v<sub>0</sub> = √(g (Δy + √(x<sup>2</sup> + Δy<sup>2</sup>))) = <b>${f(vmin)} m/s</b>.`;
+        texto += `<br>Con $v_0 = ${f(v0)} "m/s"$ ningún ángulo llega: hace falta al menos $v_0 = √(g(Δy + √(x^2 + Δy^2)))$ = <b>${f(vmin)} m/s</b>.`;
       } else {
         const a1 = gra(Math.atan((xb - Math.sqrt(D)) / (2 * A))), a2 = gra(Math.atan((xb + Math.sqrt(D)) / (2 * A)));
         out.angulos = D === 0 ? [a1] : [a1, a2];
-        texto += `<br>Para acertar con v<sub>0</sub> = ${f(v0)} m/s: y<sub>b</sub> − y<sub>0</sub> = x tg α − g x<sup>2</sup> (1 + tg<sup>2</sup> α) / (2 v<sub>0</sub><sup>2</sup>) ⇒ ${f(A)} tg<sup>2</sup> α − ${f(xb)} tg α + ${f(A + Y)} = 0 ⇒ <b>α = ${out.angulos.map((a) => f(a) + '°').join(' o α = ')}</b>${out.angulos.length > 1 ? ' (tiro tenso y tiro por elevación)' : ''}.`;
+        texto += `<br>Para acertar con $v_0 = ${f(v0)} "m/s"$: $y_b − y_0 = x tg α − {g x^2 (1 + tg^2 α)}/{2 v_0^2} ⇒ ${f(A)} tg^2 α − ${f(xb)} tg α + ${f(A + Y)} = 0$ ⇒ <b>α = ${out.angulos.map((a) => f(a) + '°').join(' o α = ')}</b>${out.angulos.length > 1 ? ' (tiro tenso y tiro por elevación)' : ''}.`;
       }
     }
     pasos.push({ t: `Blanco en (${f(xb)}, ${f(yb)}) m`, html: texto });
@@ -204,16 +204,16 @@ const Cinematica = (() => {
     const x = (t) => x0 + v0 * t + 0.5 * a * t * t, v = (t) => v0 + a * t;
     const pasos = [], res = { tipo: a === 0 ? 'MRU' : 'MRUA' };
     pasos.push({ t: a === 0 ? 'Movimiento rectilíneo uniforme' : 'Movimiento rectilíneo uniformemente acelerado', html: a === 0
-      ? `x(t) = x<sub>0</sub> + v t = ${f(x0)}${mas(v0)} t &nbsp; v = ${f(v0)} m/s constante`
-      : `x(t) = x<sub>0</sub> + v<sub>0</sub> t + ½ a t<sup>2</sup> = ${f(x0)}${mas(v0)} t${mas(a / 2)} t<sup>2</sup><br>v(t) = v<sub>0</sub> + a t = ${f(v0)}${mas(a)} t &nbsp; a = ${f(a)} m/s<sup>2</sup>` });
+      ? `$x(t) = x_0 + v t = ${f(x0)}${mas(v0)} t$ &nbsp; v = ${f(v0)} m/s constante`
+      : `$x(t) = x_0 + v_0 t + 1/2 a t^2 = ${f(x0)}${mas(v0)} t${mas(a / 2)} t^2$<br>$v(t) = v_0 + a t = ${f(v0)}${mas(a)} t$ &nbsp; a = ${f(a)} m/s²` });
     // ¿se para y da la vuelta?
     if (a !== 0 && v0 * a < 0) {
       res.tParada = -v0 / a; res.xParada = x(res.tParada);
-      pasos.push({ t: 'Se para', html: `v(t) = 0 ⇒ t = −v<sub>0</sub> / a = <b>${f(res.tParada)} s</b>, en x = <b>${f(res.xParada)} m</b> (recorre ${f(Math.abs(res.xParada - x0))} m frenando: v<sub>0</sub><sup>2</sup> = 2 |a| d). Después vuelve hacia atrás.` });
+      pasos.push({ t: 'Se para', html: `$v(t) = 0 ⇒ t = −v_0/a$ = <b>${f(res.tParada)} s</b>, en x = <b>${f(res.xParada)} m</b> (recorre ${f(Math.abs(res.xParada - x0))} m frenando: $v_0^2 = 2|a| d$). Después vuelve hacia atrás.` });
     }
     if (tq !== null) {
       res.xEnT = x(tq); res.vEnT = v(tq);
-      pasos.push({ t: `En t = ${f(tq)} s`, html: `x = ${f(x0)}${mas(v0)} · ${f(tq)}${a ? `${mas(a / 2)} · ${f(tq)}<sup>2</sup>` : ''} = <b>${f(res.xEnT)} m</b> &nbsp; v = <b>${f(res.vEnT)} m/s</b>` });
+      pasos.push({ t: `En t = ${f(tq)} s`, html: `$x = ${f(x0)}${mas(v0)} · ${f(tq)}${a ? `${mas(a / 2)} · ${f(tq)}^2` : ''}$ = <b>${f(res.xEnT)} m</b> &nbsp; v = <b>${f(res.vEnT)} m/s</b>` });
     }
     if (xq !== null) {
       let ts;
@@ -223,7 +223,7 @@ const Cinematica = (() => {
         ts = D < 0 ? [] : [...new Set([(-v0 - Math.sqrt(D)) / a, (-v0 + Math.sqrt(D)) / a])].filter((t) => t >= -1e-12).map((t) => Math.max(0, t)).sort((p, q) => p - q);
       }
       res.tEnX = ts;
-      const ec = a === 0 ? `${f(x0)}${mas(v0)} t = ${f(xq)}` : `${f(a / 2)} t<sup>2</sup>${mas(v0)} t${mas(x0 - xq)} = 0`;
+      const ec = a === 0 ? `$${f(x0)}${mas(v0)} t = ${f(xq)}$` : `$${f(a / 2)} t^2${mas(v0)} t${mas(x0 - xq)} = 0$`;
       pasos.push({ t: `¿Cuándo pasa por x = ${f(xq)} m?`, html: `${ec} ⇒ ${ts.length ? ts.map((t) => `<b>t = ${f(t)} s</b> (v = ${f(v(t))} m/s)`).join(' y ') : '<b>nunca</b> (con t ≥ 0)'}.` });
     }
     // duración de la gráfica

@@ -21,7 +21,7 @@ const mal = (m) => { fallos++; console.log('  ✗ ' + m); };
 // lo único que puede haber en publico/ (lo que sirven Vercel y Cloudflare): los archivos sueltos,
 // la portada, una página por asignatura y una por herramienta disponible del catálogo
 const Catalogo = require(path.join(fuente, 'catalogo.js'));
-const PUBLICABLES = ['index.html', 'og.png', 'apple-touch-icon.png', 'legal.css', 'aviso-legal.html', 'privacidad.html', 'cookies.html', 'contacto.html',
+const PUBLICABLES = ['index.html', 'og.png', 'apple-touch-icon.png', 'legal.css', 'aviso-legal.html', 'privacidad.html', 'cookies.html', 'contacto.html', 'fuentes/stix-two-math.woff2', 'fuentes/OFL-STIX-Two.txt',
   ...Catalogo.asignaturas.flatMap((a) => [`${a.clave}/index.html`, ...a.herramientas.filter((h) => h.disponible).map((h) => `${a.clave}/${h.clave}/index.html`)])];
 const listar = (dir, pre = '') => fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? listar(path.join(dir, e.name), pre + e.name + '/') : [pre + e.name]));
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'emsim-'));
@@ -629,6 +629,19 @@ const Faraday = require(path.join(fuente, 'faraday', 'fisica.js'));
   if (fallos === antes) console.log(`  ✓ Faraday: ${Faraday.ejemplos.length} ejemplos, barra, alternador, flujo variable, espira que cruza, sentidos de Lenz y errores`);
 }
 
+const Mates = require(path.join(fuente, 'mates.js'));
+{
+  const antes = fallos, m = (x) => Mates.mathml(x);
+  if (!m('v_0y^2/(2g)').includes('<mfrac><msubsup><mi>v</mi><mi mathvariant="normal">0y</mi><mn>2</mn></msubsup><mrow><mn>2</mn><mi>g</mi></mrow></mfrac>')) mal('Mates: la fracción v_0y²/(2g) no sale bien');
+  if (!m('√(v_x^2 + v_y^2)').includes('<msqrt><mrow><msubsup>')) mal('Mates: la raíz no quita los paréntesis');
+  if (!m('e^{−bt/m}').includes('<msup><mi>e</mi><mrow><mo')) mal('Mates: el exponente entre llaves no sale');
+  if (!m('x = 1,2·10<sup>−5</sup> "m/s"').includes('<mtext>m/s</mtext>')) mal('Mates: las unidades entre comillas no salen como texto');
+  if (!m('cos^2 α').includes('<msup><mi mathvariant="normal">cos</mi><mn>2</mn></msup>')) mal('Mates: cos² no sale');
+  if (!m('ΔT').includes('<mi mathvariant="normal">Δ</mi>')) mal('Mates: Δ debería ir recta');
+  if (Mates.html('a $x$ b $y$').split('<math>').length !== 3) mal('Mates: no sustituye cada $…$');
+  if (fallos === antes) console.log('  ✓ Mates: fracciones, raíces, exponentes, subíndices, unidades y funciones en MathML');
+}
+
 async function navegador() {
   console.log('3 · Páginas en Chromium');
   let chromium;
@@ -1203,6 +1216,26 @@ async function navegador() {
     await page.close();
     if (consola.length) mal('Arreglo 1: consola del navegador:\n      ' + consola.join('\n      '));
     if (fallos === antes) console.log('  ✓ Tiro parabólico, Trabajo y energía y Calorimetría: resultados destacados y lectura de ancho fijo');
+  }
+  {
+    // arreglo 2: fórmulas en MathML en el desarrollo y en la teoría
+    const page = await browser.newPage({ viewport: { width: 1200, height: 900 } });
+    const consola = [];
+    page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') consola.push(m.type() + ': ' + m.text()); });
+    page.on('pageerror', (e) => consola.push('excepción: ' + e.message));
+    const antes = fallos;
+    for (const dir of ['tiro-parabolico', 'trabajo-y-energia', 'calorimetria']) {
+      await page.goto('file://' + path.join(publico, 'fisica', dir, 'index.html'));
+      await page.waitForSelector('#pasos li');
+      await page.waitForTimeout(100);
+      const r = await page.evaluate(() => ({ pasos: document.querySelectorAll('#pasos math').length, teoria: document.querySelectorAll('.teoria math').length, dolar: /\$/.test(document.querySelector('#pasos').textContent + document.querySelector('.teoria').textContent), ancho: Math.min(...[...document.querySelectorAll('#pasos math')].map((m) => m.getBoundingClientRect().width)) }));
+      if (r.pasos < 3 || r.teoria < 2) mal(`${dir}: faltan fórmulas MathML (desarrollo ${r.pasos}, teoría ${r.teoria})`);
+      if (r.dolar) mal(`${dir}: queda algún $ sin convertir en una fórmula`);
+      if (!(r.ancho > 0)) mal(`${dir}: alguna fórmula MathML no se dibuja`);
+    }
+    await page.close();
+    if (consola.length) mal('Arreglo 2: consola del navegador:\n      ' + consola.join('\n      '));
+    if (fallos === antes) console.log('  ✓ Tiro parabólico, Trabajo y energía y Calorimetría: fórmulas MathML en el desarrollo y en la teoría');
   }
   // portada y páginas de asignatura: sin errores de consola y sin enlaces internos rotos
   const portal = ['index.html', ...Catalogo.asignaturas.map((a) => `${a.clave}/index.html`), 'electromagnetismo/magnetostatica/index.html', 'quimica/tabla-periodica/index.html', 'fisica/trabajo-y-energia/index.html', 'quimica/masa-molar/index.html', 'quimica/configuracion-electronica/index.html', 'electromagnetismo/condensadores/index.html', 'fisica/tiro-parabolico/index.html', 'quimica/disoluciones/index.html', 'fisica/calorimetria/index.html', 'electromagnetismo/induccion/index.html', 'matematicas/matrices/index.html', 'matematicas/sistemas/index.html', 'matematicas/estadistica/index.html', 'laboratorio/alterna/index.html', 'fisica/dinamica/index.html', 'laboratorio/circuitos/index.html', 'fisica/solido-rigido/index.html', 'fisica/ondas/index.html', 'fisica/gases/index.html', 'electromagnetismo/faraday/index.html'];
