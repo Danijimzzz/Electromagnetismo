@@ -20,6 +20,8 @@ const Practica = (() => {
     disoluciones: { items: '#valores > .valor:not(.dato)' },
     matrices: { items: '#res' },
     // solo sistemas compatibles determinados: la solución paramétrica no se pregunta por huecos
+    // complejos: una operación al azar con números pequeños (los datos son textos como 3 − 2i)
+    complejos: { datos: null, genera: () => window.ComplejosApp?.azar(), enunciado: () => window.ComplejosApp?.enunciado() },
     sistemas: { items: '#res', valido: () => !/[λμ]|incompatible|no tiene/i.test(document.querySelector('#res')?.textContent + document.querySelector('#tipo')?.textContent) },
     estadistica: { items: '#res' },
     // regresión: una tabla de datos al azar alrededor de una recta (están en un textarea, no en campos numéricos)
