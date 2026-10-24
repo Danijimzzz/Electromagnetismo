@@ -1,0 +1,115 @@
+<title>Regresión lineal y correlación: recta de regresión, r de Pearson y ajustes · SimulaCiencia</title>
+<meta name="description" content="Calculadora de regresión y correlación en español: medias, varianzas, covarianza, coeficiente de correlación de Pearson con su contraste, rectas de regresión de Y sobre X y de X sobre Y, ajustes exponencial, potencial, logarítmico y parabólico, residuos y estimaciones, con la nube de puntos y paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root {
+  --bg: #eef0f4; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d6dbe3; --accent: #a3367a; --accent-soft: #f8e7f0; --punto: #2a5db5; --otra: #8a96a3; --peso: #c2412a; --normal: #1d7a3e; --roz: #b0700a; --fuerza: #6b3fa0; --tension: #2a5db5; --cuerpo: #c9d3e0; --suelo: #8a96a3;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #e07ab8; --accent-soft: #3a1d2f; --punto: #74a2f2; --otra: #6b7784; --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #e07ab8; --accent-soft: #3a1d2f; --punto: #74a2f2; --otra: #6b7784; --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784; color-scheme: dark }
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
+.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
+.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+.layout { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 16px; align-items: start }
+@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr) } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 15px var(--f-ui); margin: 0 0 10px }
+.campos { display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px } .campos label small { color: var(--muted) }
+.in { font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.in:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer }
+.btn:hover { border-color: var(--accent) }
+.error { color: #c0392b; font-size: 13px; margin: 10px 0 0 }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+.res { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px 14px; font: 16px var(--f-math) } .res div { overflow-x: auto } .res span { display: block; font: 12px var(--f-ui); color: var(--muted) }
+.leyenda { font-size: 12.5px; color: var(--muted); margin: 6px 0 0 } .leyenda b { font-weight: 600 }
+canvas { display: block; width: 100%; height: clamp(260px, 36vw, 380px); border-radius: 8px; background: var(--bg); margin-top: 10px }
+.pasos ol { margin: 0; padding-left: 22px } .pasos li { margin: 0 0 12px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+.controles { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px }
+.destacado { border-color: var(--accent); box-shadow: inset 4px 0 0 var(--accent) }
+.destacado h2 { color: var(--accent) }
+.resumen { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; margin: 0 }
+.resumen div { background: var(--accent-soft); border-radius: 8px; padding: 8px 10px; overflow-x: auto } .resumen div span { display: block; font-size: 12px; color: var(--muted) } .resumen div b { font: 600 17px var(--f-math) }
+.teoria ul { padding-left: 20px } .teoria li { margin-bottom: 4px }
+.campos .ancho { grid-column: 1 / -1 }
+textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 120px }
+#grafica { height: clamp(260px, 38vw, 400px) } #grafica.marcando { cursor: crosshair }
+.tabla { border-collapse: collapse; font: 13.5px var(--f-ui); margin: 6px 0 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; display: block; overflow-x: auto; max-width: 100%; font-variant-numeric: tabular-nums }
+.tabla th, .tabla td { padding: 4px 10px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap } .tabla th { font-weight: 600; background: var(--bg) } .tabla tfoot td { font-weight: 600; background: var(--accent-soft) }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Estadística</a> / Regresión y correlación</span></header>
+<div class="wrap">
+<h1>Regresión y correlación</h1>
+<p class="lead">Escribe o pega tus datos (x, y), con frecuencias si las tienes, y obtén la covarianza, el coeficiente de correlación, las dos rectas de regresión o un ajuste exponencial, potencial, logarítmico o parabólico, con la nube de puntos, la tabla de cálculos y el desarrollo como en clase.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota">Separa x e y con espacios, un tabulador (al pegar desde una hoja de cálculo) o «;». La coma es decimal: 2,5. Las líneas que empiezan por # no se leen.</p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Nube de puntos</h2>
+      <canvas id="grafica" aria-label="Nube de puntos con la recta o la curva ajustada"></canvas>
+      <div class="controles"><button class="btn" id="marcar" type="button" aria-pressed="false">✚ Añadir puntos</button><button class="btn" id="vaciar" type="button">Vaciar</button><span class="nota" id="leyenda" style="margin:0"></span></div></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Covarianza y correlación</h2>
+  <p>Para N pares (x<sub>i</sub>, y<sub>i</sub>) la covarianza mide si las dos variables crecen a la vez (positiva) o una crece cuando la otra baja (negativa):</p>
+  <p class="f m">$σ_{xy} = {∑ x_i y_i}/N − x̄ ȳ$</p>
+  <p>Depende de las unidades, así que para medir la fuerza de la relación se divide entre las desviaciones típicas y sale el coeficiente de correlación de Pearson, que siempre está entre −1 y 1:</p>
+  <p class="f m">$r = σ_{xy}/{σ_x σ_y}$</p>
+  <ul>
+    <li>r = 1 o r = −1: los puntos están exactamente en una recta.</li>
+    <li>|r| cerca de 1 (por encima de 0,9): correlación muy fuerte; entre 0,7 y 0,9, fuerte; entre 0,5 y 0,7, moderada; por debajo, débil.</li>
+    <li>r cerca de 0: no hay relación <i>lineal</i>, aunque puede haber otra (una parábola, por ejemplo).</li>
+  </ul>
+  <p>Correlación no es causalidad: dos variables pueden ir juntas porque las dos dependen de una tercera.</p>
+  <h2>Las dos rectas de regresión</h2>
+  <p>La recta de regresión de Y sobre X es la que hace mínima la suma de los cuadrados de las distancias <i>verticales</i> de los puntos a la recta (mínimos cuadrados). Sirve para estimar y conociendo x:</p>
+  <p class="f m">$y − ȳ = σ_{xy}/{σ_x^2} (x − x̄)$</p>
+  <p>Para estimar x conociendo y no se despeja esa recta, sino que se usa la de X sobre Y, que minimiza las distancias horizontales:</p>
+  <p class="f m">$x − x̄ = σ_{xy}/{σ_y^2} (y − ȳ)$</p>
+  <p>Las dos pasan por el centro de gravedad (x̄, ȳ) y el producto de sus pendientes (la segunda escrita como dx/dy) es r<sup>2</sup>: si |r| = 1 coinciden y si r = 0 son perpendiculares. El coeficiente de determinación r<sup>2</sup> es la parte de la variación de y que explica la recta. Una estimación es fiable si r<sup>2</sup> es alto y el valor está dentro del intervalo de los datos; fuera de él es una extrapolación.</p>
+  <h2>Ajustes que no son rectas</h2>
+  <p>Muchos ajustes se convierten en una recta cambiando de variable y se resuelven igual:</p>
+  <ul>
+    <li>Exponencial, $y = a e^{bx}$: tomando logaritmos, $ln y = ln a + b x$, una recta entre x y ln y.</li>
+    <li>Potencial, $y = a x^b$: $ln y = ln a + b ln x$, una recta entre ln x y ln y.</li>
+    <li>Logarítmico, $y = a + b ln x$: una recta entre ln x e y.</li>
+  </ul>
+  <p>La parábola $y = a + bx + cx^2$ se ajusta directamente por mínimos cuadrados: se resuelve un sistema de tres ecuaciones (las ecuaciones normales). Para comparar ajustes se usa $R^2 = 1 − {∑ (y_i − ŷ_i)^2}/{∑ (y_i − ȳ)^2}$ en las y originales.</p>
+  <h2>¿Es significativa la correlación?</h2>
+  <p>Con pocos datos puede salir un r alto por casualidad. Para contrastar si la correlación de la población ρ es distinta de cero se usa</p>
+  <p class="f m">$t = r √(N − 2)/√(1 − r^2)$</p>
+  <p>que, si ρ = 0, sigue una t de Student con N − 2 grados de libertad. Si el p-valor es menor que 0,05 la correlación es significativa al 5 %. Puedes calcular la t en <a href="../distribuciones/">Distribuciones de probabilidad</a>.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Regresión y correlación <span id="ver"></span> (beta)</footer>
+</body>

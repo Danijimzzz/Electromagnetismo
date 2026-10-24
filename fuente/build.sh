@@ -77,6 +77,8 @@ if [ "$1" != privado ]; then
     version.js mates.js matematicas/algebra.js sistemas/calculo.js sistemas/app.js
   herramienta estadistica ../publico/estadistica/distribuciones/index.html "Distribuciones de probabilidad" "Calculadora de la normal, binomial, Poisson, t de Student y chi cuadrado con el área sombreada: probabilidades, cuantiles y valores críticos paso a paso" \
     version.js mates.js estadistica/calculo.js estadistica/app.js
+  herramienta regresion ../publico/estadistica/regresion/index.html "Regresión y correlación" "Calculadora de regresión y correlación: covarianza, coeficiente de correlación de Pearson con su contraste, rectas de regresión de Y sobre X y de X sobre Y, ajustes exponencial, potencial, logarítmico y parabólico y estimaciones, con la nube de puntos y paso a paso" \
+    version.js mates.js estadistica/calculo.js regresion/calculo.js regresion/app.js
   herramienta alterna ../publico/circuitos/alterna/index.html "Corriente alterna y fasores" "Calculadora de corriente alterna: circuitos RLC en serie y en paralelo con impedancias complejas, diagrama de fasores, potencias, factor de potencia y resonancia, paso a paso" \
     version.js mates.js alterna/fisica.js alterna/app.js
   herramienta dinamica ../publico/fisica/dinamica/index.html "Dinámica y diagramas de fuerzas" "Calculadora de dinámica con el diagrama de fuerzas: plano inclinado con rozamiento estático y dinámico, fuerza con ángulo, poleas y máquina de Atwood, paso a paso" \

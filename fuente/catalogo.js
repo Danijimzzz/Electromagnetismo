@@ -57,6 +57,7 @@ const Catalogo = {
       resumen: 'Probabilidad y estadística de la carrera: distribuciones, áreas, cuantiles y valores críticos.',
       herramientas: [
         { clave: 'distribuciones', nombre: 'Distribuciones de probabilidad', icono: 'σ', disponible: true, desc: 'Normal, binomial, Poisson, t y χ² con el área sombreada, cuantiles y valores críticos.', buscar: 'estadística probabilidad distribución normal binomial poisson student chi cuadrado tipificar cuantil valor crítico' },
+        { clave: 'regresion', nombre: 'Regresión y correlación', icono: 'r', disponible: true, desc: 'Covarianza, r de Pearson, las dos rectas de regresión y ajustes exponencial, potencial, logarítmico y parabólico, con la nube de puntos.', buscar: 'regresión lineal correlación pearson covarianza recta de regresión mínimos cuadrados nube de puntos coeficiente de determinación ajuste exponencial potencial logarítmico parábola estimación bidimensional' },
       ],
     },
     {
