@@ -1012,6 +1012,73 @@ const TrC = require(path.join(fuente, 'transitorios', 'fisica.js'));
   if (fallos === antes) console.log(`  ✓ Transitorios: ${TrC.ejemplos.length} ejemplos, τ, carga y descarga, tiempo hasta un valor, RL, energía, tipo de amortiguamiento, ecuación del RLC y errores`);
 }
 
+const IcC = require(path.join(fuente, 'intervalos', 'calculo.js'));
+{
+  const antes = fallos, cerca = (a, b, tol, q) => { if (!(Math.abs(a - b) <= tol * Math.max(1e-300, Math.abs(b)))) mal(`Intervalos · ${q}: ${a} en vez de ${b}`); };
+  const r = (c) => IcC.resolver(IcC.ejemplos.find((e) => e.clave === c).sc);
+  for (const x of IcC.ejemplos) { try { const s = IcC.resolver(x.sc); if (s.pasos.length < 2) mal(`Intervalos · ${x.clave}: desarrollo corto`); } catch (err) { mal(`Intervalos · ${x.clave}: ${err.message}`); } }
+  cerca(IcC.zc(0.025), 1.959964, 1e-6, 'z₀,₀₂₅'); cerca(IcC.zc(0.005), 2.575829, 1e-6, 'z₀,₀₀₅'); cerca(IcC.tc(15, 0.005), 2.946713, 1e-6, 't₁₅; ₀,₀₀₅'); cerca(IcC.xc(19, 0.025), 32.85233, 1e-6, 'χ²₁₉; ₀,₀₂₅'); cerca(IcC.xc(19, 0.975), 8.906516, 1e-6, 'χ²₁₉; ₀,₉₇₅');
+  const al = r('altura'); cerca(al.a, 172 - 1.959964 * 8 / 6, 1e-6, 'IC de la estatura'); cerca(al.err, 1.959964 * 8 / 6, 1e-6, 'error máximo');
+  const bo = r('bombillas'); cerca(bo.b - bo.a, 2 * 2.946713 * 90 / 4, 1e-6, 'anchura con la t');
+  const li = r('lista'); cerca(li.M.m, 10.01, 1e-12, 'media de la lista'); if (li.gl !== 9) mal('Intervalos: con 10 datos no salen 9 grados de libertad');
+  const mu = r('muestral'); cerca(mu.M.sc, 3.2 * Math.sqrt(12 / 11), 1e-12, 'cuasidesviación desde la desviación con n');
+  const en = r('encuesta'); cerca(en.err, 1.959964 * Math.sqrt(0.42 * 0.58 / 500), 1e-6, 'error de la proporción');
+  const va = r('varianza'); cerca(va.a, 19 * 6.25 / 32.85233, 1e-6, 'extremo inferior de σ²'); cerca(va.b, 19 * 6.25 / 8.906516, 1e-6, 'extremo superior de σ²');
+  const ig = r('dif-iguales'); cerca(ig.sp ** 2, (9 * 1.8 ** 2 + 11 * 2.1 ** 2) / 20, 1e-12, 'cuasivarianza ponderada'); if (ig.gl !== 20) mal('Intervalos: varianzas iguales sin n₁ + n₂ − 2 grados de libertad');
+  if (r('dif-welch').gl !== 27) mal('Intervalos: los grados de libertad de Welch no salen 27');
+  if (r('n-media').n !== 97 || r('n-prop').n !== 1068) mal('Intervalos: el tamaño de muestra no sale 97 y 1068');
+  // la simulación acierta más o menos el nivel de confianza
+  let seed = 7; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  for (const k of ['altura', 'encuesta', 'varianza']) { const s = r(k), g = IcC.simula(s, rnd); let d = 0; for (let i = 0; i < 2000; i++) { const [a, b] = g.una(); if (a <= g.real && g.real <= b) d++; } if (Math.abs(d / 2000 - s.c) > 0.025) mal(`Intervalos · ${k}: la simulación acierta un ${d / 20} % en vez del ${100 * s.c} %`); }
+  for (const [q, sc] of [['n = 1', { modo: 'media', sigmaC: 'no', xm: '5', s: '1', n: '1', nivel: '95' }], ['nivel 100 %', { modo: 'media', sigmaC: 'si', sigma: '1', xm: '5', n: '10', nivel: '100' }], ['más éxitos que n', { modo: 'proporcion', n: '10', x: '12', nivel: '95' }], ['un dato que no es un número', { modo: 'media', fuente: 'datos', sigmaC: 'no', datos: '1 2 x 4', nivel: '95' }], ['error de proporción ≥ 1', { modo: 'tamano', de: 'proporcion', E: '2', nivel: '95' }]]) {
+    let ok = false; try { IcC.resolver(sc); } catch (e) { ok = true; }
+    if (!ok) mal(`Intervalos: ${q} no da error`);
+  }
+  if (fallos === antes) console.log(`  ✓ Intervalos de confianza: ${IcC.ejemplos.length} ejemplos, z, t y χ², media, proporción, varianza, diferencias, Welch, tamaño de muestra, simulación y errores`);
+}
+
+const OeC = require(path.join(fuente, 'ondas-em', 'fisica.js'));
+{
+  const antes = fallos, cerca = (a, b, tol, q) => { if (!(Math.abs(a - b) <= tol * Math.max(1e-300, Math.abs(b)))) mal(`Ondas EM · ${q}: ${a} en vez de ${b}`); };
+  const r = (c) => OeC.resolver(OeC.ejemplos.find((e) => e.clave === c).sc), c0 = 299792458;
+  for (const x of OeC.ejemplos) { try { const s = OeC.resolver(x.sc); if (s.pasos.length < 2) mal(`Ondas EM · ${x.clave}: desarrollo corto`); } catch (err) { mal(`Ondas EM · ${x.clave}: ${err.message}`); } }
+  const fm = r('fm'); cerca(fm.F.lam, c0 / 1e8, 1e-9, 'λ de la FM'); cerca(fm.B0, 0.05 / c0, 1e-9, 'B₀ = E₀/c'); cerca(fm.I, 0.05 ** 2 / (2 * 376.730313), 1e-6, 'intensidad');
+  if (fm.Bv.join() !== '0,1,0') mal('Ondas EM: con k̂ = +z y Ê = +x, B̂ no sale +y');
+  const ex = r('expresion'); if (ex.Bv.join() !== '-1,0,0') mal('Ondas EM: con k̂ = −y y Ê = +z, B̂ no sale −x'); if (!ex.Eexp.includes('+')) mal('Ondas EM: hacia −y la fase no es ky + ωt');
+  const ag = r('agua'); cerca(ag.M.n, Math.sqrt(1.77), 1e-12, 'índice del agua'); cerca(ag.F.lam, c0 / Math.sqrt(1.77) / 5e14, 1e-9, 'λ en el agua');
+  if (!OeC.banda(5e14).includes('visible') || OeC.banda(1e8) !== 'ondas de radio' || OeC.banda(1e18) !== 'rayos X') mal('Ondas EM: la zona del espectro no cuadra');
+  cerca(r('bombilla').I, 100 / (4 * Math.PI * 4), 1e-12, 'I de una fuente puntual'); cerca(r('sol').E0, Math.sqrt(2 * 376.730313 * 1361), 1e-6, 'E₀ del Sol');
+  const cu = r('cobre'); cerca(cu.delta, 1 / Math.sqrt(Math.PI * 1e6 * 1.25663706212e-6 * 5.8e7), 1e-6, 'profundidad de penetración del cobre'); cerca(cu.th, Math.PI / 4, 1e-6, 'fase de η en un buen conductor');
+  const ba = r('baquelita'); cerca(ba.alfa, (1e-6 / 2) * Math.sqrt(1.25663706212e-6 / (4.9 * 8.8541878128e-12)), 1e-3, 'α con pocas pérdidas');
+  for (const [q, sc] of [['E paralelo a k', { modo: 'onda', dato: 'f', valor: '1e6', E0: '1', prop: '+z', pol: '-z' }], ['frecuencia negativa', { modo: 'onda', dato: 'f', valor: '-5', E0: '1', prop: '+z', pol: '+x' }], ['E₀ vacía', { modo: 'onda', dato: 'f', valor: '1e6', E0: '', prop: '+z', pol: '+x' }], ['σ que no es un número', { modo: 'perdidas', er: '1', sigma: 'abc', valor: '1e6' }]]) {
+    let ok = false; try { OeC.resolver(sc); } catch (e) { ok = true; }
+    if (!ok) mal(`Ondas EM: ${q} no da error`);
+  }
+  if (fallos === antes) console.log(`  ✓ Ondas EM planas: ${OeC.ejemplos.length} ejemplos, λ, k, B₀, dirección de B, fase, índice, espectro, intensidad, fuente puntual, profundidad de penetración y errores`);
+}
+
+const IfC = require(path.join(fuente, 'interferencia', 'fisica.js'));
+{
+  const antes = fallos, cerca = (a, b, tol, q) => { if (!(Math.abs(a - b) <= tol * Math.max(1e-300, Math.abs(b)))) mal(`Interferencia · ${q}: ${a} en vez de ${b}`); };
+  const r = (c) => IfC.resolver(IfC.ejemplos.find((e) => e.clave === c).sc);
+  for (const x of IfC.ejemplos) { try { const s = IfC.resolver(x.sc); if (s.pasos.length < 2) mal(`Interferencia · ${x.clave}: desarrollo corto`); } catch (err) { mal(`Interferencia · ${x.clave}: ${err.message}`); } }
+  const y = r('young'); cerca(y.dy, 633e-9 * 1.5 / 0.25e-3, 1e-12, 'interfranja'); cerca(y.ym, 1.5 * Math.tan(Math.asin(3 * 633e-9 / 0.25e-3)), 1e-12, 'posición del tercer máximo');
+  if (r('young-y').Iy > 1e-6) mal('Interferencia: a media interfranja no sale una franja oscura');
+  const ya = r('young-a'); if (!ya.pasos.at(-1).html.includes('±3') || !ya.pasos.at(-1).html.includes('5 franjas')) mal('Interferencia: con d = 3a no faltan los órdenes ±3 o no salen 5 franjas centrales');
+  cerca(r('young-agua').dy, (589e-9 / 1.33) / 0.2e-3, 1e-12, 'interfranja en el agua');
+  const re = r('rendija'); cerca(re.ym, 1.2 * Math.tan(Math.asin(500e-9 / 0.05e-3)), 1e-12, 'primer mínimo de la rendija'); cerca(re.ancho, 2 * re.ym, 1e-12, 'anchura del máximo central');
+  const rd = r('red'); if (rd.mmax !== 3) mal('Interferencia: la red de 600 líneas/mm con 500 nm no llega al orden 3'); cerca(rd.ords[0].th, Math.asin(0.3), 1e-12, 'ángulo del primer orden');
+  if (r('sodio').pasos.at(-1).html.indexOf('se resuelven') < 0 || r('sodio').pasos.at(-1).html.includes('no se resuelven')) mal('Interferencia: el doblete del sodio con 1500 líneas no se resuelve');
+  const po = r('pompa'); if (po.refuerzan.map(Math.round).join() !== '709,426' || po.anulan.map(Math.round).join() !== '532') mal(`Interferencia: los colores de la pompa no cuadran: ${po.refuerzan} / ${po.anulan}`);
+  const ar = r('antirreflejo'); if (ar.medio) mal('Interferencia: en el antirreflectante sale un desfase extra'); cerca(ar.tmin2, 550 / (4 * 1.38), 1e-12, 'espesor antirreflectante');
+  if (Math.abs(r('aceite').refuerzan[0] - 580) > 1e-9) mal('Interferencia: la mancha de aceite no refuerza 580 nm');
+  for (const [q, sc] of [['un orden que no existe', { modo: 'young', lambda: '600', d: '0,001', L: '1', m: '5' }], ['a mayor que d', { modo: 'young', lambda: '600', d: '0,1', L: '1', a: '0,2' }], ['una red sin primer orden', { modo: 'red', lambda: '700', N: '2000' }], ['lámina sin t ni λ', { modo: 'lamina', nl: '1,3' }], ['λ que no es un número', { modo: 'rendija', lambda: 'x', a: '0,1', L: '1' }]]) {
+    let ok = false; try { IfC.resolver(sc); } catch (e) { ok = true; }
+    if (!ok) mal(`Interferencia: ${q} no da error`);
+  }
+  if (fallos === antes) console.log(`  ✓ Interferencia y difracción: ${IfC.ejemplos.length} ejemplos, interfranja, máximos, intensidad, órdenes que faltan, rendija, red, resolución, láminas y errores`);
+}
+
 const Gases = require(path.join(fuente, 'gases', 'fisica.js'));
 {
   // valores calculados a mano
@@ -2110,6 +2177,116 @@ async function navegador() {
     const consola = [];
     page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') consola.push(m.type() + ': ' + m.text()); });
     page.on('pageerror', (e) => consola.push('excepción: ' + e.message));
+    await page.goto('file://' + path.join(publico, 'estadistica', 'intervalos', 'index.html'));
+    await page.waitForFunction(() => window.IntervalosApp);
+    const antes = fallos;
+    const verI = (await page.locator('#ver').textContent()).trim();
+    if (verI !== Version.de('intervalos').current) mal(`Intervalos: la página muestra la versión «${verI}», se esperaba ${Version.de('intervalos').current}`);
+    for (const e of IcC.ejemplos) {
+      await page.evaluate((c) => IntervalosApp.abrirEjemplo(c), e.clave);
+      await page.waitForTimeout(60);
+      const r = await page.evaluate(() => ({ err: !document.querySelector('#error').hidden, pasos: document.querySelectorAll('#pasos li').length, res: document.querySelectorAll('#res > div').length, modo: document.querySelector('#f-modo').value }));
+      if (r.err || r.pasos < 2 || r.res < 1) mal(`Intervalos · ${e.clave}: falta el resultado o el desarrollo`);
+      if (r.modo !== e.sc.modo) mal(`Intervalos · ${e.clave}: el modo no cuadra`);
+    }
+    await page.evaluate(() => IntervalosApp.abrirEjemplo('altura'));
+    if (!(await page.locator('#res').textContent()).includes('169,39; 174,61')) mal('Intervalos: el intervalo (169,39; 174,61) no sale en la página');
+    await page.fill('#f-nivel', '99');
+    if (!(await page.locator('#res').textContent()).includes('2,576')) mal('Intervalos: al 99 % no sale z = 2,576');
+    await page.selectOption('#f-sigmaC', 'no');
+    if ((await page.locator('#f-s').count()) !== 1) mal('Intervalos: con σ desconocida no sale la desviación de la muestra');
+    await page.fill('#f-s', '8');
+    if (!(await page.locator('#res').textContent()).includes('t35')) mal('Intervalos: con σ desconocida no se usa la t con 35 grados de libertad');
+    await page.selectOption('#f-fuente', 'datos');
+    if ((await page.locator('#f-datos').count()) !== 1 || !(await page.locator('#error').isHidden())) mal('Intervalos: al elegir la lista de datos no sale o da error');
+    await page.fill('#f-datos', '1 2 abc');
+    if (await page.locator('#error').isHidden()) mal('Intervalos: un dato que no es un número no da error');
+    await page.selectOption('#f-modo', 'tamano');
+    if (!(await page.locator('#simcard').isHidden())) mal('Intervalos: en el tamaño de muestra sigue saliendo la simulación');
+    await page.selectOption('#f-modo', 'proporcion');
+    await page.waitForTimeout(4500);
+    const sim = await page.evaluate(() => ({ s: IntervalosApp.simulacion(), t: document.querySelector('#cuenta').textContent }));
+    if (!sim.s || !sim.t.includes('de 100') || sim.s.dentro < 80) mal(`Intervalos: la simulación no saca 100 intervalos o acierta muy pocos: ${JSON.stringify(sim)}`);
+    await page.click('#otra');
+    if ((await page.locator('#play').textContent()).trim() !== '⏸ Pausa') mal('Intervalos: tras otras 100 muestras la animación no sigue');
+    for (let i = 0; i < 12; i++) { await page.evaluate(() => IntervalosApp.azar()); if (!(await page.locator('#error').isHidden())) mal(`Intervalos: un ejercicio al azar da error: ${JSON.stringify(await page.evaluate(() => IntervalosApp.estado()))}`); }
+    await page.close();
+    if (consola.length) mal('Intervalos: consola del navegador:\n      ' + consola.join('\n      '));
+    if (fallos === antes) console.log(`  ✓ Intervalos de confianza: ${IcC.ejemplos.length} ejemplos, nivel, σ desconocida, lista de datos, errores, tamaño de muestra, simulación y ejercicios al azar sin errores de consola`);
+  }
+  {
+    const page = await browser.newPage({ viewport: { width: 1200, height: 900 } });
+    const consola = [];
+    page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') consola.push(m.type() + ': ' + m.text()); });
+    page.on('pageerror', (e) => consola.push('excepción: ' + e.message));
+    await page.goto('file://' + path.join(publico, 'electromagnetismo', 'ondas-em', 'index.html'));
+    await page.waitForFunction(() => window.OndasEMApp);
+    const antes = fallos;
+    const verO = (await page.locator('#ver').textContent()).trim();
+    if (verO !== Version.de('ondas-em').current) mal(`Ondas EM: la página muestra la versión «${verO}», se esperaba ${Version.de('ondas-em').current}`);
+    for (const e of OeC.ejemplos) {
+      await page.evaluate((c) => OndasEMApp.abrirEjemplo(c), e.clave);
+      await page.waitForTimeout(60);
+      const r = await page.evaluate(() => ({ err: !document.querySelector('#error').hidden, pasos: document.querySelectorAll('#pasos li').length, res: document.querySelectorAll('#res > div').length, modo: document.querySelector('#f-modo').value }));
+      if (r.err || r.pasos < 2 || r.res < 1) mal(`Ondas EM · ${e.clave}: falta el resultado o el desarrollo`);
+      if (r.modo !== e.sc.modo) mal(`Ondas EM · ${e.clave}: el modo no cuadra`);
+    }
+    await page.evaluate(() => OndasEMApp.abrirEjemplo('fm'));
+    if (!(await page.locator('#res').textContent()).includes('2,998 m')) mal('Ondas EM: λ = 2,998 m no sale en la página');
+    await page.fill('#f-valor', '200e6');
+    if (!(await page.locator('#res').textContent()).includes('1,499 m')) mal('Ondas EM: con el doble de frecuencia λ no se reduce a la mitad');
+    await page.selectOption('#f-pol', '+z');
+    if ((await page.locator('#f-prop').inputValue()).slice(-1) === 'z' || !(await page.locator('#error').isHidden())) mal('Ondas EM: al poner E paralelo a k no se corrige la propagación o da error');
+    await page.selectOption('#f-medio', 'medio');
+    if ((await page.locator('#f-er').count()) !== 1 || !(await page.locator('#error').isHidden())) mal('Ondas EM: al elegir un material no sale εr o da error');
+    await page.fill('#f-E0', 'abc');
+    if (await page.locator('#error').isHidden()) mal('Ondas EM: una E₀ que no es un número no da error');
+    await page.selectOption('#f-modo', 'perdidas');
+    if (!(await page.locator('#res').textContent()).includes('buen conductor')) mal('Ondas EM: el cobre no sale buen conductor');
+    await page.click('#play');
+    if ((await page.locator('#play').textContent()).trim() !== '▶ Seguir') mal('Ondas EM: el botón de pausa no cambia');
+    for (let i = 0; i < 12; i++) { await page.evaluate(() => OndasEMApp.azar()); if (!(await page.locator('#error').isHidden())) mal(`Ondas EM: un ejercicio al azar da error: ${JSON.stringify(await page.evaluate(() => OndasEMApp.estado()))}`); }
+    await page.close();
+    if (consola.length) mal('Ondas EM: consola del navegador:\n      ' + consola.join('\n      '));
+    if (fallos === antes) console.log(`  ✓ Ondas EM planas: ${OeC.ejemplos.length} ejemplos, cambio de frecuencia, E perpendicular a k, material, pérdidas, errores y ejercicios al azar sin errores de consola`);
+  }
+  {
+    const page = await browser.newPage({ viewport: { width: 1200, height: 900 } });
+    const consola = [];
+    page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') consola.push(m.type() + ': ' + m.text()); });
+    page.on('pageerror', (e) => consola.push('excepción: ' + e.message));
+    await page.goto('file://' + path.join(publico, 'fisica', 'interferencia', 'index.html'));
+    await page.waitForFunction(() => window.InterferenciaApp);
+    const antes = fallos;
+    const verF = (await page.locator('#ver').textContent()).trim();
+    if (verF !== Version.de('interferencia').current) mal(`Interferencia: la página muestra la versión «${verF}», se esperaba ${Version.de('interferencia').current}`);
+    for (const e of IfC.ejemplos) {
+      await page.evaluate((c) => InterferenciaApp.abrirEjemplo(c), e.clave);
+      await page.waitForTimeout(60);
+      const r = await page.evaluate(() => ({ err: !document.querySelector('#error').hidden, pasos: document.querySelectorAll('#pasos li').length, res: document.querySelectorAll('#res > div').length, modo: document.querySelector('#f-modo').value }));
+      if (r.err || r.pasos < 2 || r.res < 1) mal(`Interferencia · ${e.clave}: falta el resultado o el desarrollo`);
+      if (r.modo !== e.sc.modo) mal(`Interferencia · ${e.clave}: el modo no cuadra`);
+    }
+    await page.evaluate(() => InterferenciaApp.abrirEjemplo('young'));
+    if (!(await page.locator('#res').textContent()).includes('3,798 mm')) mal('Interferencia: la interfranja de 3,798 mm no sale en la página');
+    await page.fill('#f-d', '0,5');
+    if (!(await page.locator('#res').textContent()).includes('1,899 mm')) mal('Interferencia: con el doble de d la interfranja no baja a la mitad');
+    await page.fill('#f-m', '9999');
+    if (await page.locator('#error').isHidden()) mal('Interferencia: un orden que no existe no da error');
+    await page.selectOption('#f-modo', 'lamina');
+    if ((await page.locator('#f-nl').count()) !== 1 || !(await page.locator('#error').isHidden())) mal('Interferencia: al pasar a lámina delgada no sale n o da error');
+    await page.click('#play');
+    if ((await page.locator('#play').textContent()).trim() !== '▶ Seguir') mal('Interferencia: el botón de pausa no cambia');
+    for (let i = 0; i < 12; i++) { await page.evaluate(() => InterferenciaApp.azar()); if (!(await page.locator('#error').isHidden())) mal(`Interferencia: un ejercicio al azar da error: ${JSON.stringify(await page.evaluate(() => InterferenciaApp.estado()))}`); }
+    await page.close();
+    if (consola.length) mal('Interferencia: consola del navegador:\n      ' + consola.join('\n      '));
+    if (fallos === antes) console.log(`  ✓ Interferencia y difracción: ${IfC.ejemplos.length} ejemplos, interfranja, cambio de d, orden imposible, lámina y ejercicios al azar sin errores de consola`);
+  }
+  {
+    const page = await browser.newPage({ viewport: { width: 1200, height: 900 } });
+    const consola = [];
+    page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') consola.push(m.type() + ': ' + m.text()); });
+    page.on('pageerror', (e) => consola.push('excepción: ' + e.message));
     await page.goto('file://' + path.join(publico, 'fisica', 'gases', 'index.html'));
     await page.waitForFunction(() => window.GasesApp);
     const antes = fallos;
@@ -2270,7 +2447,7 @@ async function navegador() {
     if (!m.ab || !m.scrim || m.ancho > 390) mal(`Mis ejercicios en el móvil: ${JSON.stringify(m)}`);
     await movil.close();
     if (consola.length) mal('Arreglo 6: consola del navegador:\n      ' + consola.join('\n      '));
-    if (probadas < 33) mal(`Mis ejercicios: solo se ha probado en ${probadas} herramientas`);
+    if (probadas < 36) mal(`Mis ejercicios: solo se ha probado en ${probadas} herramientas`);
     if (fallos === antes) console.log(`  ✓ Mis ejercicios: guardar, carpeta, fijar, abrir, exportar, borrar e importar en ${probadas} herramientas, y en el móvil`);
   }
   {
@@ -2309,11 +2486,11 @@ async function navegador() {
       await page.close(); probadas++;
     }
     if (consola.length) mal('Arreglo 7: consola del navegador:\n      ' + consola.join('\n      '));
-    if (probadas < 33) mal(`Modo práctica: solo se ha probado en ${probadas} herramientas`);
+    if (probadas < 36) mal(`Modo práctica: solo se ha probado en ${probadas} herramientas`);
     if (fallos === antes) console.log(`  ✓ Modo práctica: ${ejercicios} ejercicios al azar en ${probadas} herramientas, corregidos bien y mal, con la solución y la vuelta a los datos de antes`);
   }
   // portada y páginas de asignatura: sin errores de consola y sin enlaces internos rotos
-  const portal = ['index.html', 'novedades/index.html', ...Catalogo.asignaturas.map((a) => `${a.clave}/index.html`), 'electromagnetismo/magnetostatica/index.html', 'quimica/tabla-periodica/index.html', 'fisica/trabajo-y-energia/index.html', 'quimica/masa-molar/index.html', 'quimica/configuracion-electronica/index.html', 'electromagnetismo/condensadores/index.html', 'fisica/tiro-parabolico/index.html', 'quimica/disoluciones/index.html', 'fisica/calorimetria/index.html', 'electromagnetismo/induccion/index.html', 'matematicas/matrices/index.html', 'matematicas/sistemas/index.html', 'estadistica/distribuciones/index.html', 'circuitos/alterna/index.html', 'fisica/dinamica/index.html', 'circuitos/continua/index.html', 'fisica/solido-rigido/index.html', 'fisica/ondas/index.html', 'fisica/doppler/index.html', 'circuitos/resistencias/index.html', 'estadistica/regresion/index.html', 'matematicas/complejos/index.html', 'fisica/fluidos/index.html', 'quimica/ph/index.html', 'fisica/ciclos/index.html', 'matematicas/taylor/index.html', 'matematicas/fourier/index.html', 'matematicas/edos/index.html', 'quimica/cinetica/index.html', 'matematicas/campos/index.html', 'electromagnetismo/fuerza/index.html', 'circuitos/transitorios/index.html', 'fisica/gases/index.html', 'electromagnetismo/faraday/index.html'];
+  const portal = ['index.html', 'novedades/index.html', ...Catalogo.asignaturas.map((a) => `${a.clave}/index.html`), 'electromagnetismo/magnetostatica/index.html', 'quimica/tabla-periodica/index.html', 'fisica/trabajo-y-energia/index.html', 'quimica/masa-molar/index.html', 'quimica/configuracion-electronica/index.html', 'electromagnetismo/condensadores/index.html', 'fisica/tiro-parabolico/index.html', 'quimica/disoluciones/index.html', 'fisica/calorimetria/index.html', 'electromagnetismo/induccion/index.html', 'matematicas/matrices/index.html', 'matematicas/sistemas/index.html', 'estadistica/distribuciones/index.html', 'circuitos/alterna/index.html', 'fisica/dinamica/index.html', 'circuitos/continua/index.html', 'fisica/solido-rigido/index.html', 'fisica/ondas/index.html', 'fisica/doppler/index.html', 'circuitos/resistencias/index.html', 'estadistica/regresion/index.html', 'matematicas/complejos/index.html', 'fisica/fluidos/index.html', 'quimica/ph/index.html', 'fisica/ciclos/index.html', 'matematicas/taylor/index.html', 'matematicas/fourier/index.html', 'matematicas/edos/index.html', 'quimica/cinetica/index.html', 'matematicas/campos/index.html', 'electromagnetismo/fuerza/index.html', 'circuitos/transitorios/index.html', 'estadistica/intervalos/index.html', 'electromagnetismo/ondas-em/index.html', 'fisica/interferencia/index.html', 'fisica/gases/index.html', 'electromagnetismo/faraday/index.html'];
   const antes = fallos;
   for (const f of portal) {
     const page = await browser.newPage({ viewport: { width: 1200, height: 900 } });

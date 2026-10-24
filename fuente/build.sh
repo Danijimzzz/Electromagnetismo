@@ -77,6 +77,8 @@ if [ "$1" != privado ]; then
     version.js mates.js faraday/fisica.js faraday/app.js
   herramienta fuerza ../publico/electromagnetismo/fuerza/index.html "Fuerza magnética" "Calculadora de la fuerza magnética: fuerza de Lorentz con vectores, radio, periodo y hélice de una carga en un campo, selector de velocidades, espectrómetro de masas, ciclotrón, fuerza sobre un hilo y entre hilos paralelos, con animación y paso a paso" \
     version.js mates.js fuerza/fisica.js fuerza/app.js
+  herramienta ondas-em ../publico/electromagnetismo/ondas-em/index.html "Ondas electromagnéticas planas" "Calculadora de ondas electromagnéticas planas: longitud de onda, número de onda, campo B y su dirección, expresión de E y B, intensidad, presión de radiación y profundidad de penetración" \
+    version.js mates.js ondas-em/fisica.js ondas-em/app.js
   herramienta matrices ../publico/matematicas/matrices/index.html "Matrices paso a paso" "Calculadora de matrices con fracciones exactas y complejos: determinante, inversa, rango, Gauss-Jordan y valores y vectores propios, paso a paso" \
     version.js mates.js matematicas/algebra.js matrices/calculo.js matrices/app.js
   herramienta sistemas ../publico/matematicas/sistemas/index.html "Sistemas de ecuaciones lineales" "Calculadora de sistemas de ecuaciones paso a paso: Rouché-Frobenius, Gauss, Gauss-Jordan, Cramer y matriz inversa, en paramétricas y con números complejos" \
@@ -95,6 +97,8 @@ if [ "$1" != privado ]; then
     version.js mates.js estadistica/calculo.js estadistica/app.js
   herramienta regresion ../publico/estadistica/regresion/index.html "Regresión y correlación" "Calculadora de regresión y correlación: covarianza, coeficiente de correlación de Pearson con su contraste, rectas de regresión de Y sobre X y de X sobre Y, ajustes exponencial, potencial, logarítmico y parabólico y estimaciones, con la nube de puntos y paso a paso" \
     version.js mates.js estadistica/calculo.js regresion/calculo.js regresion/app.js
+  herramienta intervalos ../publico/estadistica/intervalos/index.html "Intervalos de confianza" "Calculadora de intervalos de confianza: media con z o t de Student, proporción, varianza con la χ², diferencia de medias y de proporciones y tamaño de muestra, paso a paso" \
+    version.js mates.js estadistica/calculo.js intervalos/calculo.js intervalos/app.js
   herramienta alterna ../publico/circuitos/alterna/index.html "Corriente alterna y fasores" "Calculadora de corriente alterna: circuitos RLC en serie y en paralelo con impedancias complejas, diagrama de fasores, potencias, factor de potencia y resonancia, paso a paso" \
     version.js mates.js alterna/fisica.js alterna/app.js
   herramienta transitorios ../publico/circuitos/transitorios/index.html "Transitorios RC, RL y RLC" "Calculadora de transitorios: carga y descarga de un condensador en un circuito RC, corriente en una bobina en un circuito RL y respuesta de un RLC en serie, con la constante de tiempo y la gráfica" \
@@ -111,6 +115,8 @@ if [ "$1" != privado ]; then
     version.js mates.js ondas/fisica.js ondas/app.js
   herramienta doppler ../publico/fisica/doppler/index.html "Efecto Doppler" "Calculadora del efecto Doppler con animación de los frentes de onda: fuente y observador en movimiento, con viento, una fuente que pasa de largo, el eco de un radar o un murciélago y el cono de Mach, paso a paso" \
     version.js mates.js doppler/fisica.js doppler/app.js
+  herramienta interferencia ../publico/fisica/interferencia/index.html "Interferencia y difracción" "Calculadora de interferencia y difracción: doble rendija de Young, rendija simple, red de difracción y láminas delgadas, con el patrón en la pantalla y paso a paso" \
+    version.js mates.js interferencia/fisica.js interferencia/app.js
   herramienta fluidos ../publico/fisica/fluidos/index.html "Fluidos" "Calculadora de fluidos con animación: presión hidrostática, tubo en U, prensa hidráulica, empuje de Arquímedes, continuidad y Bernoulli en una tubería y el chorro de Torricelli, paso a paso" \
     version.js mates.js fluidos/fisica.js fluidos/app.js
   herramienta ciclos ../publico/fisica/ciclos/index.html "Ciclos termodinámicos" "Calculadora de ciclos termodinámicos con diagrama p-V animado: Carnot, Otto y Diesel con estados, trabajo, calor y rendimiento, y máquinas térmicas, frigoríficos y bombas de calor comparados con Carnot, paso a paso" \
