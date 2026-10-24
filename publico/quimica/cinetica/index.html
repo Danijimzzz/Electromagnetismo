@@ -1,0 +1,1423 @@
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMwZDZiNjYiLz48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlNmE2NDAiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtZGFzaGFycmF5PSI0IDYuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48cGF0aCBkPSJNMjAgMzJINDQiLz48cGF0aCBkPSJNMjEgMjdDMjcgMTQgMzcgMTQgNDMgMjciLz48cGF0aCBkPSJNMjEgMzdDMjcgNTAgMzcgNTAgNDMgMzciLz48cGF0aCBkPSJNMTcgMjRDMjIgNCA0MiA0IDQ3IDI0Ii8+PHBhdGggZD0iTTE3IDQwQzIyIDYwIDQyIDYwIDQ3IDQwIi8+PC9nPjxjaXJjbGUgY3g9IjE3IiBjeT0iMzIiIHI9IjgiIGZpbGw9IiNlZjdhNjIiLz48Y2lyY2xlIGN4PSI0NyIgY3k9IjMyIiByPSI4IiBmaWxsPSIjNzRhMmYyIi8+PHBhdGggZD0iTTEzIDMyaDhNMTcgMjh2OE00MyAzMmg4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta property="og:title" content="Cinética química">
+<meta property="og:description" content="Calculadora de cinética química: leyes integradas de orden 0, 1 y 2 con la vida media, orden a partir de datos, método de las velocidades iniciales y ecuación de Arrhenius, paso a paso">
+<meta property="og:image" content="https://electromagnetismo-two.vercel.app/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<style>.a-inicio { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; font-weight: 600; font-size: 13.5px; color: var(--accent); border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px 5px 10px; background: var(--panel); white-space: nowrap } .a-inicio:hover { border-color: var(--accent); text-decoration: none }</style>
+<title>Cinética química: orden de reacción, vida media y Arrhenius · SimulaCiencia</title>
+<meta name="description" content="Calculadora de cinética química en español: leyes integradas de orden 0, 1 y 2 con la vida media, orden y constante a partir de datos de concentración frente al tiempo, método de las velocidades iniciales y ecuación de Arrhenius, paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root {
+  --bg: #eef0f4; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d6dbe3; --accent: #1d7a3e; --accent-soft: #e2f2e7; --peso: #c2412a; --normal: #1d7a3e; --roz: #b0700a; --fuerza: #6b3fa0; --tension: #2a5db5; --cuerpo: #c9d3e0; --suelo: #8a96a3;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #5fcf8a; --accent-soft: #16301f; --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #5fcf8a; --accent-soft: #16301f; --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784; color-scheme: dark }
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
+.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
+.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+.layout { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 16px; align-items: start }
+@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr) } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 15px var(--f-ui); margin: 0 0 10px }
+.campos { display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px } .campos label small { color: var(--muted) }
+.in { font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.in:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer }
+.btn:hover { border-color: var(--accent) }
+.error { color: #c0392b; font-size: 13px; margin: 10px 0 0 }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+.res { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px 14px; font: 16px var(--f-math) } .res div { overflow-x: auto } .res span { display: block; font: 12px var(--f-ui); color: var(--muted) }
+.leyenda { font-size: 12.5px; color: var(--muted); margin: 6px 0 0 } .leyenda b { font-weight: 600 }
+canvas { display: block; width: 100%; height: clamp(260px, 36vw, 380px); border-radius: 8px; background: var(--bg); margin-top: 10px }
+.pasos ol { margin: 0; padding-left: 22px } .pasos li { margin: 0 0 12px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+.controles { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px }
+.destacado { border-color: var(--accent); box-shadow: inset 4px 0 0 var(--accent) }
+.destacado h2 { color: var(--accent) }
+.resumen { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; margin: 0 }
+.resumen div { background: var(--accent-soft); border-radius: 8px; padding: 8px 10px; overflow-x: auto } .resumen div span { display: block; font-size: 12px; color: var(--muted) } .resumen div b { font: 600 17px var(--f-math) }
+#escena { height: clamp(200px, 26vw, 250px) }
+#grafica { height: clamp(240px, 32vw, 330px) }
+.teoria ul { padding-left: 20px } .teoria li { margin-bottom: 4px }
+.resumen div.ancho { grid-column: 1 / -1 }
+.campos .ancho { grid-column: 1 / -1 }
+.exps { display: grid; gap: 5px }
+.exp { display: grid; grid-template-columns: 28px repeat(3, minmax(0, 1fr)) 30px; gap: 5px; align-items: center; font-size: 13px }
+.exp.sinB { grid-template-columns: 28px repeat(2, minmax(0, 1fr)) 30px }
+.exp.cab { color: var(--muted); font-size: 12px } .exp.cab small { font-size: 10.5px }
+.exp .quita { padding: 3px 8px }
+.vistas { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap }
+.vistas button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); font-weight: 600 }
+</style>
+<body>
+<header class="top"><a class="a-inicio" href="../../" title="Volver a la página de inicio">← Inicio</a><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Química</a> / Cinética química</span></header>
+<div class="wrap">
+<h1>Cinética química</h1>
+<p class="lead">Calcula cómo baja la concentración de un reactivo con el tiempo en una reacción de orden 0, 1 o 2 y su vida media, averigua el orden a partir de medidas o de velocidades iniciales, y obtén la energía de activación con la ecuación de Arrhenius. Con las moléculas reaccionando en el vaso y el desarrollo paso a paso.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Gráfica</h2>
+      <canvas id="escena" aria-label="Vaso en el que las moléculas de A se convierten en producto"></canvas>
+      <div class="vistas" id="vistas" hidden><button class="btn" type="button" data-v="0">[A] frente a t</button><button class="btn" type="button" data-v="1">ln [A] frente a t</button><button class="btn" type="button" data-v="2">1/[A] frente a t</button></div>
+      <canvas id="grafica" aria-label="Gráfica de la cinética"></canvas>
+      <div class="controles"><button class="btn" id="play" type="button">⏸ Pausa</button><span class="nota" id="leyenda" style="margin:0"></span></div></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Velocidad de reacción y orden</h2>
+  <p class="m">Para una reacción $aA + bB → productos$, la velocidad es lo que cambia la concentración por unidad de tiempo, $v = −{1}/{a} {d[A]}/{dt}$, y la ley de velocidad se escribe $v = k [A]^m [B]^n$. Los órdenes m y n se miden en el laboratorio: no tienen por qué coincidir con los coeficientes de la reacción. El orden total es m + n, y las unidades de k dependen de él.</p>
+  <h2>Leyes integradas</h2>
+  <ul>
+    <li class="m">Orden 0: $[A] = [A]_0 − k t$, recta de [A] frente a t, y $t_{1/2} = [A]_0/(2k)$.</li>
+    <li class="m">Orden 1: $ln [A] = ln [A]_0 − k t$, o $[A] = [A]_0 e^{−kt}$; recta de ln [A] frente a t, y $t_{1/2} = {ln 2}/{k}$, que no depende de la concentración.</li>
+    <li class="m">Orden 2: ${1}/{[A]} = {1}/{[A]_0} + k t$, recta de 1/[A] frente a t, y $t_{1/2} = {1}/{k [A]_0}$.</li>
+  </ul>
+  <p>Por eso, con una tabla de concentraciones frente al tiempo, se prueba cuál de las tres gráficas sale recta: esa da el orden, y su pendiente, la constante.</p>
+  <h2>Método de las velocidades iniciales</h2>
+  <p class="m">Se hacen varios experimentos cambiando la concentración de un reactivo y dejando las demás iguales. Al dividir sus velocidades se va k: si al doblar [A] la velocidad se multiplica por 4, $4 = 2^m$ y $m = 2$.</p>
+  <h2>Ecuación de Arrhenius</h2>
+  <p class="f m">$k = A e^{−E_a/(RT)}$, &ensp; $ln {k_2}/{k_1} = −{E_a}/{R} ({1}/{T_2} − {1}/{T_1})$</p>
+  <p>La energía de activación Eₐ es la barrera que tienen que superar las moléculas al chocar, y A, el factor de frecuencia, tiene que ver con cuántos choques hay y con qué orientación. Al calentar hay muchas más moléculas con energía suficiente y k crece muy deprisa; un catalizador baja Eₐ. Para el equilibrio y el pH de las disoluciones usa <a href="../ph/">pH y valoraciones</a>.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Cinética química <span id="ver"></span> (beta)</footer>
+</body>
+<script>
+/* =====================================================================
+   Versiones y novedades: la web (portada, asignaturas, buscador) tiene su número y cada
+   herramienta el suyo. Hasta el lanzamiento se numera 0.x (beta); la 1.0 de una herramienta
+   llega cuando se da por terminada y la 1.0 de la web será el lanzamiento. Sube el segundo
+   número si hay algo nuevo (0.6) y añade un tercero si es solo un arreglo (0.5.1).
+   En las novedades de la web se anuncia también cada herramienta nueva.
+   Las notas son para los usuarios: solo funciones nuevas, arreglos visibles y cambios
+   en la interfaz. Lo interno (pruebas, CI, build, despliegue, refactorizaciones) no se anota;
+   el historial completo para desarrolladores está en Notion.
+   ===================================================================== */
+const Version = (() => {
+  const registros = {
+    web: [
+      { v: '0.35', fecha: '2026-10-24', cambios: ['Nueva herramienta: Cinética química, en Química.'] },
+      { v: '0.34', fecha: '2026-10-24', cambios: ['Nueva herramienta: Ecuaciones diferenciales, en Matemáticas.'] },
+      { v: '0.33', fecha: '2026-10-24', cambios: ['Nueva herramienta: Series de Fourier, en Matemáticas.'] },
+      { v: '0.32', fecha: '2026-10-24', cambios: ['Nueva herramienta: Series de Taylor, en Matemáticas.'] },
+      { v: '0.31', fecha: '2026-10-24', cambios: ['Nueva herramienta: Ciclos termodinámicos, en Física general.'] },
+      { v: '0.30', fecha: '2026-10-24', cambios: ['Nueva herramienta: pH y valoraciones, en Química.'] },
+      { v: '0.29', fecha: '2026-10-24', cambios: ['Nueva herramienta: Fluidos, en Física general.'] },
+      { v: '0.28', fecha: '2026-10-24', cambios: ['Nueva herramienta: Números complejos, en Matemáticas.'] },
+      { v: '0.27.1', fecha: '2026-10-24', cambios: ['Efecto Doppler, Código de colores y Regresión: las fórmulas dentro del texto de la teoría se ven bien escritas.'] },
+      { v: '0.27', fecha: '2026-10-24', cambios: ['Nueva herramienta: Regresión y correlación, en Estadística.'] },
+      { v: '0.26', fecha: '2026-10-24', cambios: ['Nueva herramienta: Código de colores de resistencias, en Circuitos.'] },
+      { v: '0.25', fecha: '2026-10-24', cambios: ['Nueva herramienta: Efecto Doppler, en Física general.'] },
+      { v: '0.24', fecha: '2026-10-24', cambios: ['Modo práctica en todas las herramientas: un ejercicio con datos al azar, tapa los resultados y el desarrollo, corrige lo que escribes y luego te enseña la solución. Al salir vuelven tus datos.', 'Mis ejercicios: abrir un ejercicio guardado de Configuración electrónica ya muestra ese elemento.'] },
+      { v: '0.23', fecha: '2026-10-24', cambios: ['«Mis ejercicios» en todas las herramientas: una barra lateral, como la de electrostática, para guardar los datos de cada ejercicio con su título y carpeta, fijar los importantes arriba, volver a abrirlos y exportarlos o importarlos en archivos .simu.json.'] },
+      { v: '0.22.1', fecha: '2026-10-24', cambios: ['Botón «← Inicio» arriba a la izquierda en todas las herramientas, también en el simulador de electrostática, para volver a la portada.'] },
+      { v: '0.22', fecha: '2026-10-24', cambios: ['Nuevas secciones en la portada: Estadística, con las distribuciones de probabilidad, y Circuitos, que reúne corriente continua y alterna. Las direcciones antiguas siguen funcionando y llevan a la nueva.'] },
+      { v: '0.21', fecha: '2026-10-24', cambios: ['Sistemas de ecuaciones: nuevos métodos de reducción, igualación y sustitución.'] },
+      { v: '0.20.3', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría de todas las herramientas se ven como en los libros.'] },
+      { v: '0.20.2', fecha: '2026-10-24', cambios: ['Tiro parabólico, Trabajo y energía y Calorimetría: las fórmulas se ven como en los libros, con fracciones, raíces y exponentes de verdad.'] },
+      { v: '0.20.1', fecha: '2026-10-24', cambios: ['Tiro parabólico, Trabajo y energía y Calorimetría: los resultados salen en una tarjeta destacada arriba y la lectura del tiempo ya no se mueve al reproducir.'] },
+      { v: '0.20', fecha: '2026-10-24', cambios: ['Nueva herramienta: Inducción, leyes de Faraday y Lenz, en Electromagnetismo.'] },
+      { v: '0.19', fecha: '2026-10-24', cambios: ['Nueva herramienta: Gases ideales, en Física general.'] },
+      { v: '0.18', fecha: '2026-10-24', cambios: ['Nueva herramienta: Ondas mecánicas, en Física general.'] },
+      { v: '0.17', fecha: '2026-10-24', cambios: ['Nueva herramienta: Sólido rígido, en Física general.'] },
+      { v: '0.16', fecha: '2026-10-23', cambios: ['Nueva herramienta: Circuitos de corriente continua, en Laboratorio.'] },
+      { v: '0.15', fecha: '2026-10-23', cambios: ['Nueva herramienta: Dinámica y diagramas de fuerzas, en Física general.'] },
+      { v: '0.14', fecha: '2026-10-23', cambios: ['Nueva herramienta: Corriente alterna y fasores, en Laboratorio.'] },
+      { v: '0.13', fecha: '2026-10-23', cambios: ['Nueva herramienta: Distribuciones de probabilidad, en Matemáticas.'] },
+      { v: '0.12', fecha: '2026-10-23', cambios: ['Nueva herramienta: Sistemas de ecuaciones lineales, en Matemáticas.'] },
+      { v: '0.11', fecha: '2026-10-23', cambios: ['Nueva herramienta: Matrices paso a paso, en Matemáticas.'] },
+      { v: '0.10', fecha: '2026-10-23', cambios: ['Nueva herramienta: Autoinducción e inducción mutua, en Electromagnetismo.'] },
+      { v: '0.9', fecha: '2026-10-23', cambios: ['Nueva herramienta: Calorimetría y cambios de fase, en Física general.'] },
+      { v: '0.8', fecha: '2026-10-23', cambios: ['Nueva herramienta: Disoluciones y concentraciones, en Química.'] },
+      { v: '0.7', fecha: '2026-10-23', cambios: ['Nueva herramienta: Tiro parabólico y cinemática, en Física general.'] },
+      { v: '0.6', fecha: '2026-10-23', cambios: ['Nueva herramienta: Condensadores con dieléctricos, en Electromagnetismo.'] },
+      { v: '0.5', fecha: '2026-10-23', cambios: ['Nueva herramienta: Configuración electrónica, en Química.'] },
+      { v: '0.4', fecha: '2026-10-23', cambios: ['Nueva herramienta: Masa molar y estequiometría, en Química.'] },
+      { v: '0.3', fecha: '2026-10-23', cambios: ['Nueva herramienta: Trabajo y energía, en Física general.'] },
+      { v: '0.2', fecha: '2026-10-23', cambios: ['Nueva herramienta: Tabla periódica interactiva, en Química.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Portada para elegir asignatura y herramienta: Electromagnetismo, Física general, Química, Matemáticas y Laboratorio, con buscador. Las herramientas que vienen después aparecen como «Próximamente».', 'Nueva herramienta: Magnetostática, en Electromagnetismo.'] },
+    ],
+    electrostatica: [
+      { v: '0.5.1', fecha: '2026-10-23', cambios: ['El simulador tiene ahora su propia dirección, /electromagnetismo/electrostatica/. Tus problemas guardados siguen ahí. El botón «Todas las herramientas» de la barra lateral vuelve a la portada.'] },
+    { v: '0.5', fecha: '2026-10-23', cambios: ['Doce ejercicios de ejemplo con enunciados propios: los mismos tipos de pregunta que en clase, con otras figuras y otros números. La guía de uso tiene capturas nuevas hechas con ellos.', 'La web tiene icono propio: un dipolo con sus líneas de campo, en la pestaña del navegador, en la pantalla de inicio del móvil y en la vista previa al compartir el enlace.', 'Páginas de aviso legal, privacidad, cookies y contacto, enlazadas al pie de la barra lateral.'] },
+    { v: '0.4', fecha: '2026-10-22', cambios: ['Número de versión visible y este apartado de novedades.', 'Arreglo: en la vista 3D los cilindros se dibujan con su radio real, aparecen las superficies de Gauss, y las esferas, cascarones y conductores tienen volumen en lugar de parecer círculos planos.'] },
+    { v: '0.3', fecha: '2026-10-22', cambios: ['Guía de uso con capturas (botón ?, barra lateral o F1).', 'Los resultados se escriben con la misma forma que el solucionario oficial: perfiles por tramos, factor común en logaritmos y radicales, y la pregunta V_A − V_B.'] },
+    { v: '0.2', fecha: '2026-10-22', cambios: ['Anillos, discos, cortezas y conductores.', 'Varias incógnitas, modo numérico SI, flujo de Gauss y gráficas E(z) y V(z).', 'Modo práctica, exportar la solución, deshacer y rehacer, mapa de color y vista 3D.', 'Búsqueda, carpetas y etiquetas en la barra lateral.'] },
+    { v: '0.1', fecha: '2026-10-22', cambios: ['Primera versión: cargas, hilos, planos y esferas con el desarrollo paso a paso y 12 ejercicios resueltos.', 'Barra lateral con tus problemas, los importados y los ejercicios; título y enunciado editables; archivos .emsim.json.'] },
+    ],
+    magnetostatica: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: campo magnético de hilos, segmentos, hilos semiinfinitos, espiras, arcos, solenoides y toroides con Biot-Savart, y fuerza sobre cargas en movimiento y sobre conductores, con el desarrollo paso a paso en la forma μ₀I/(πa) o en unidades del SI.', 'Dibujo del campo B en el plano XY, XZ o YZ, con puntos que se pueden arrastrar y ocho ejemplos resueltos.'] },
+    ],
+    'tabla-periodica': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: cada elemento tiene su ficha con la masa atómica y molar, el grupo, el periodo, el bloque, la configuración electrónica (abreviada, completa y por capas), la electronegatividad, la energía de ionización, el radio y el estado.', 'La tabla se puede colorear por categoría, electronegatividad, energía de ionización, radio, masa, bloque o estado, y tiene un buscador por nombre, símbolo o número atómico.'] },
+    ],
+    'trabajo-y-energia': [
+      { v: '0.1.2', fecha: '2026-10-24', cambios: ['Las fórmulas del desarrollo y de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Los resultados salen arriba, en una tarjeta destacada, y la lectura de t y v tiene ancho fijo: ya no mueve la barra de tiempo al reproducir.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: un bloque baja por una rampa con rozamiento, recorre un tramo horizontal y comprime un muelle. Animación con barras de energía cinética, gravitatoria, elástica y calor, gráfica de las energías en el tiempo y el desarrollo paso a paso con la velocidad al pie de la rampa, al llegar al muelle y la compresión máxima.', 'Seis ejemplos: sin rozamiento, se para antes del muelle, el rozamiento lo sujeta, con empujón inicial y muelle duro.'] },
+    ],
+    'masa-molar': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: masa molar y composición centesimal de cualquier fórmula, con paréntesis, hidratos e iones, y conversor entre gramos, moles, partículas y litros de gas.', 'Estequiometría: ajusta la reacción sola (también las iónicas), calcula el reactivo limitante, lo que se forma con el rendimiento que digas y lo que sobra, paso a paso.', 'Masas atómicas de la IUPAC o redondeadas como en clase.'] },
+    ],
+    'configuracion-electronica': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: configuración electrónica de cualquier elemento o ion por orden de llenado, abreviada y por capas, con el diagrama de Moeller, el diagrama de orbitales con la regla de Hund, los electrones desapareados y los números cuánticos del electrón diferenciador.', 'Avisa de las excepciones como el cromo o el cobre, y en los cationes quita primero los electrones de la capa más externa.'] },
+    ],
+    condensadores: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: condensadores planos, cilíndricos y esféricos con capas de dieléctrico en serie o, en el plano, ocupando parte del área. Capacidad, carga, tensión y energía; campos E, D y P en cada capa y cargas de polarización, con el desarrollo paso a paso.', 'Compara con el condensador vacío: qué pasa al meter el dieléctrico con la batería conectada o con el condensador aislado.', 'Dibujo del corte con las líneas de campo y gráfica de E a lo largo del condensador.'] },
+    ],
+    'tiro-parabolico': [
+      { v: '0.1.2', fecha: '2026-10-24', cambios: ['Las fórmulas del desarrollo y de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Los resultados salen arriba, en una tarjeta destacada, y la lectura de t, x, y y v tiene ancho fijo: ya no se mueve al reproducir.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: tiro parabólico desde cualquier altura hasta cualquier altura, con el tiempo de vuelo, la altura máxima, el alcance y la velocidad al caer, y el desarrollo paso a paso. Trayectoria animada con los vectores de velocidad y gráficas de posición, velocidad y aceleración frente al tiempo.', 'Rozamiento del aire lineal o cuadrático, comparado con la trayectoria sin rozamiento.', 'Blanco: dice si el proyectil pasa por un punto y con qué dos ángulos se acierta.', 'Movimiento rectilíneo (MRU y MRUA): posición y velocidad en un instante, cuándo pasa por un punto y cuándo se para, con las gráficas x(t), v(t) y a(t).'] },
+    ],
+    disoluciones: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: da la concentración de una disolución como molaridad, molalidad, fracción molar, % en masa, % masa/volumen, g/L o ppm y obtén todas las demás, con la densidad para pasar de masa a volumen y el desarrollo con su base de cálculo.', 'Preparar una disolución: los gramos de sólido (con su pureza) o los mililitros de reactivo comercial (con su riqueza y densidad) que hay que medir.', 'Diluciones con C₁V₁ = C₂V₂, despejando el dato que falte, y mezcla de dos disoluciones del mismo soluto.'] },
+    ],
+    calorimetria: [
+      { v: '0.1.2', fecha: '2026-10-24', cambios: ['Las fórmulas del desarrollo y de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['La temperatura de equilibrio sale en una tarjeta destacada, separada de la tabla de calores.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: temperatura de equilibrio al mezclar hasta cinco cuerpos de agua, hielo, vapor, metales, etanol, vidrio, un calorímetro o una sustancia con tus datos, con los cambios de fase que hagan falta.', 'Si la energía no llega para fundir todo el hielo o condensar todo el vapor, dice cuántos gramos quedan de cada fase.', 'Tabla con el calor de cada cuerpo, el desarrollo etapa por etapa (m c ΔT y m L) y la curva de calentamiento de cada uno.'] },
+    ],
+    induccion: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: coeficiente de autoinducción de solenoides (con núcleo), toroides de sección rectangular y circular, cables coaxiales y líneas bifilares, con el desarrollo desde la ley de Ampère.', 'Inducción mutua entre dos solenoides, dos espiras, un hilo y una espira, y una bobina sobre un toroide, o a partir de L₁, L₂ y k, con el coeficiente de acoplamiento.', 'Flujo, energía magnética y fem inducida si das la corriente o cómo cambia.', 'Circuito RL al cerrar el interruptor o al quitar la fuente: constante de tiempo, corriente y tensión en la bobina en cualquier instante y su gráfica.'] },
+    ],
+    matrices: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: determinante por Gauss, por Sarrus o por Laplace; inversa por Gauss-Jordan o por adjuntos; rango; forma escalonada y escalonada reducida, con cada operación entre filas y la matriz después de cada paso.', 'Valores y vectores propios con el polinomio característico, las raíces exactas (también con radicales o complejas) y si la matriz es diagonalizable, con P y D.', 'Suma, resta, producto (elemento a elemento), producto por un número, potencia y traspuesta.', 'Fracciones exactas y números complejos en cualquier casilla: 3/4, 0,25, 2−3i o (1+i)/2.'] },
+    ],
+    cinetica: [
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: leyes integradas de orden 0, 1 y 2 con la concentración a cualquier tiempo, la vida media y cuánto se tarda en llegar a una concentración.', 'Orden y constante a partir de una tabla de concentraciones frente al tiempo, con las tres rectas ([A], ln [A] y 1/[A]) y su R².', 'Método de las velocidades iniciales con uno o dos reactivos: órdenes, constante con sus unidades y ley de velocidad.', 'Ecuación de Arrhenius: energía de activación con dos temperaturas o la constante a otra temperatura, con la gráfica de ln k frente a 1/T.', 'Vaso animado en el que las moléculas de reactivo se convierten en producto.'] },
+    ],
+    edos: [
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ecuaciones de primer orden y′ = f(x, y) con el campo de pendientes, el método de Euler (con su tabla) y RK4, y la solución exacta cuando es lineal con coeficiente constante.', 'Ecuaciones lineales de segundo orden con coeficientes constantes: ecuación característica, solución homogénea, particular por coeficientes indeterminados (también con resonancia) y constantes por las condiciones iniciales.', 'Sistemas x′ = f(x, y), y′ = g(x, y): puntos críticos con su tipo (silla, nodo, foco o centro) por los autovalores del jacobiano, solución exacta si es lineal y diagrama de fases con trayectorias.', 'Gráfica animada; tocándola se cambia el punto inicial.'] },
+    ],
+    fourier: [
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: serie de Fourier de una función periódica dada hasta en cuatro tramos (1, x, x^2, |x|, sen x…), o desarrollo en senos o en cosenos de una función en [0, L].', 'Coeficientes a₀, aₙ y bₙ exactos (con π) y su término general cuando siguen una ley, como 2(1 − (−1)ⁿ)/(nπ), con la paridad de la función.', 'Convergencia en los saltos (a la media de los límites laterales), suma parcial en un punto e igualdad de Parseval.', 'Gráfica de la función y de la suma parcial, que se puede ver sumando armónicos uno a uno, y el espectro de amplitudes.'] },
+    ],
+    taylor: [
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: polinomio de Taylor o de Maclaurin de cualquier grado hasta 15 de una función escrita como en papel (e^x, sen x, ln(1+x), √x, arctg x…) en un punto que puede llevar π, con cada derivada, su valor exacto y los coeficientes.', 'Aproximación de f(x₀) con el error cometido y la cota del resto de Lagrange.', 'Reconoce los desarrollos conocidos (e^x, sen x, cos x, ln(1+x), la serie geométrica, arctg x y la binómica) y da su término general y dónde convergen.', 'Gráfica de la función con los polinomios de cada grado, que se pueden recorrer o ver acercarse uno tras otro.'] },
+    ],
+    complejos: [
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: escribe un complejo en forma binómica, polar, trigonométrica o exponencial y obtén las otras, con el módulo exacto y el argumento en su cuadrante.', 'Suma, resta, producto y cociente con fracciones exactas, potencias con De Moivre, raíces n-ésimas y ecuaciones de segundo grado.', 'Plano complejo con los afijos, el paralelogramo de la suma y el polígono de las raíces.'] },
+    ],
+    sistemas: [
+      { v: '0.2', fecha: '2026-10-24', cambios: ['Métodos de reducción, igualación y sustitución para sistemas de 2 o 3 ecuaciones con solución única, con cada ecuación numerada y cada paso explicado.'] },
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: hasta seis ecuaciones con seis incógnitas. Dice si el sistema es compatible determinado, indeterminado o incompatible con el teorema de Rouché-Frobenius y lo resuelve por Gauss con sustitución hacia atrás, por Gauss-Jordan, por la regla de Cramer o con la matriz inversa.', 'Si tiene infinitas soluciones, las da en forma paramétrica (λ, μ…).', 'Coeficientes con fracciones exactas, decimales o números complejos, como las mallas de un circuito de alterna, y nombres propios para las incógnitas (I1, I2…).', 'Comprobación de la solución sustituyendo en cada ecuación.'] },
+    ],
+    regresion: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas dentro del texto de la teoría se ven bien escritas, no con símbolos $.'] },
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: escribe o pega tus datos (x, y), con frecuencias si las tienes, y obtén medias, varianzas, covarianza, el coeficiente de correlación con su contraste y las dos rectas de regresión, con la tabla de cálculos y la nube de puntos.', 'Ajustes exponencial, potencial, logarítmico y parabólico, con R² para compararlos con la recta, y los residuos.', 'Estimaciones de y a partir de x y de x a partir de y, avisando si es una extrapolación.', 'Añade puntos pulsando en la gráfica.'] },
+    ],
+    estadistica: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: normal, t de Student, chi cuadrado, exponencial, binomial y Poisson, con su media y su varianza.', 'Probabilidades P(X ≤ a), P(X ≥ a), entre dos valores y, en las discretas, P(X = k) y con desigualdad estricta; cuantiles y valores críticos bilaterales.', 'Gráfica con el área (o las barras) que se pide sombreada.', 'Desarrollo como en clase: tipificación Z = (X − μ)/σ y Φ(z), fórmula de la binomial y de la Poisson término a término, y aproximación de la binomial por la normal con corrección de continuidad.'] },
+    ],
+    alterna: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: circuitos RLC en serie y en paralelo (o solo con algunos de los elementos) con impedancias complejas en forma binómica y polar, la corriente, la tensión o la corriente de cada elemento, las potencias activa, reactiva y aparente y el factor de potencia, con el desarrollo paso a paso.', 'Diagrama de fasores y ondas v(t) e i(t) desfasadas.', 'Resonancia: frecuencia de resonancia, factor de calidad y ancho de banda.', 'Corrección del factor de potencia: el condensador que hay que poner en paralelo y cuánto baja la corriente de la línea.'] },
+    ],
+    dinamica: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: bloque en un plano horizontal o inclinado con rozamiento estático y dinámico, una fuerza aplicada con ángulo y, si quieres, una masa colgando de una polea. Dice si el bloque se mueve o el rozamiento lo sujeta y da la normal, el rozamiento, la aceleración y la tensión, con el desarrollo paso a paso.', 'Máquina de Atwood, también con una polea con masa.', 'Dibujo con el diagrama de fuerzas a escala y la aceleración, y la velocidad y el tiempo al recorrer una distancia.'] },
+    ],
+    circuitos: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: escribe el circuito como una lista de resistencias, fuentes de tensión y fuentes de corriente entre nudos, y obtén los potenciales, la corriente y la potencia de cada elemento por el método de los nudos, con las ecuaciones de Kirchhoff, el sistema en forma matricial y el balance de potencias.', 'Equivalente de Thévenin y de Norton visto por la resistencia que elijas, y máxima transferencia de potencia.', 'Esquema del circuito con el potencial de cada nudo y el sentido de cada corriente.'] },
+    ],
+    'solido-rigido': [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: momentos de inercia de esferas, cilindros, aros, varillas, discos y placas, con el teorema de Steiner y el radio de giro.', 'Rodadura por un plano inclinado: aceleración, velocidad al final, rozamiento necesario para que no deslice y qué pasa si no basta; comparación del tiempo que tarda cada cuerpo.', 'Polea con masa de la que cuelga un cuerpo: aceleración, tensión y balance de energía.', 'Conservación del momento angular, como la patinadora que encoge los brazos, con la variación de la energía cinética.'] },
+    ],
+    ondas: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ecuación de una onda armónica con ω y k en múltiplos de π, posición, velocidad y aceleración de un punto del medio y desfase entre dos puntos.', 'Ondas estacionarias en cuerdas y en tubos abiertos o cerrados: frecuencia de cada armónico, nodos y vientres, y velocidad en la cuerda con √(T/μ).', 'Efecto Doppler con la fuente y el observador moviéndose, y nivel sonoro en decibelios a distintas distancias y con varias fuentes.', 'Animación de la onda, de la onda estacionaria y de los frentes de onda del Doppler.'] },
+    ],
+    gases: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ecuación de estado PV = nRT con P, V, T y n en varias unidades, los moles a partir de la masa y la densidad del gas.', 'Transformaciones isoterma, isobara, isocora y adiabática encadenadas, con el trabajo, el calor y la variación de energía interna de cada tramo, y ciclos con su rendimiento comparado con el de Carnot.', 'Diagrama P-V con las isotermas y el área del ciclo.', 'Teoría cinética: velocidades cuadrática media, media y más probable, energía cinética media y la distribución de Maxwell.'] },
+    ],
+    ciclos: [
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ciclos de Carnot, Otto y Diesel con un gas ideal, con la tabla de estados, el trabajo, el calor y la energía interna de cada tramo y el rendimiento comparado con su fórmula y con Carnot.', 'Máquinas térmicas, frigoríficos y bombas de calor: el dato que falta, el rendimiento o la eficiencia, el límite de Carnot y si la máquina es posible, con la entropía del universo.', 'Diagrama p-V con un punto que recorre el ciclo y el cilindro con el émbolo, y el esquema de flujos de energía de las máquinas.'] },
+    ],
+    ph: [
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: pH de ácidos y bases fuertes (también muy diluidos) y débiles, con el grado de disociación y la aproximación comprobada.', 'Mezclas de un ácido fuerte con una base fuerte y disoluciones reguladoras con Henderson-Hasselbalch, también al añadirles ácido o base.', 'Valoraciones de ácidos y bases fuertes y débiles: volumen y pH de equivalencia, pH a mitad, el pH con el volumen que pidas, el indicador adecuado y la curva.', 'Vaso con el color del indicador universal y las partículas, y una bureta que valora mientras se dibuja la curva.'] },
+    ],
+    fluidos: [
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: presión manométrica y absoluta a una profundidad, con la fuerza sobre el fondo, y alturas o densidades en un tubo en U con dos líquidos.', 'Prensa hidráulica: la fuerza que se consigue o la que hace falta para levantar una masa, con los recorridos de los émbolos.', 'Empuje de Arquímedes: si un cuerpo flota (y cuánto se sumerge) o se hunde (peso aparente y aceleración), y la densidad a partir del peso en el aire y dentro del fluido.', 'Tuberías con la ecuación de continuidad y Bernoulli, y el chorro de un depósito con Torricelli: velocidad, alcance, caudal y tiempo de vaciado.', 'Una animación de cada caso.'] },
+    ],
+    doppler: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas dentro del texto de la teoría se ven bien escritas, no con símbolos $.'] },
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: frecuencia que se oye con la fuente, el observador y el viento moviéndose, con la longitud de onda delante de la fuente.', 'Una fuente que pasa de largo: lo que se oye antes y después, el salto en hercios y semitonos y, al revés, su velocidad a partir de las dos frecuencias. Con el observador a un lado de la carretera, la gráfica del cambio gradual.', 'Eco en un obstáculo que se mueve (radar de tráfico, murciélago, ecografía Doppler): la frecuencia del eco y las pulsaciones, o la velocidad del obstáculo a partir de ellas.', 'Onda de choque: número de Mach, semiángulo del cono y cuándo se oye el estampido.', 'Animación de los frentes de onda y botón para escuchar la diferencia.'] },
+    ],
+    resistencias: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas dentro del texto de la teoría se ven bien escritas, no con símbolos $.'] },
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: elige los colores de una resistencia de 3, 4, 5 o 6 bandas y obtén el valor, la tolerancia, el margen del valor real y el coeficiente de temperatura, con el dibujo de la resistencia.', 'Del valor a los colores: escribe 4k7, 2M2 o 470R y te da las bandas y el valor normalizado más cercano de las series E6 a E96.', 'Códigos SMD de 3 y 4 cifras, con R y EIA-96.'] },
+    ],
+    faraday: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: fem y corriente inducidas en una barra que se desliza sobre unos raíles, con la fuerza que la frena y la potencia.', 'Bobina que gira en un campo (alternador): flujo y fem en función del tiempo, valores máximo y eficaz.', 'Flujo que cambia en un tiempo porque cambia el campo o el ángulo: fem media, corriente y carga.', 'Espira que atraviesa una región con campo: fem al entrar y al salir, fuerza y calor.', 'Sentido de la corriente por la ley de Lenz y animación con la gráfica de Φ y ε.'] },
+    ],
+  };
+  const de = (h) => ({ current: registros[h][0].v, log: registros[h] });
+  // Version.current y Version.log son los del simulador de electrostática
+  return { registros, de, ...de('electrostatica') };
+})();
+
+/* =====================================================================
+   Fórmulas en MathML a partir de una sintaxis sencilla (sin DOM salvo
+   Mates.pinta). En los textos, lo que va entre $…$ es una fórmula:
+     a/b            fracción (los paréntesis de fuera se quitan)
+     x^2, e^{−bt/m} exponente; v_0x, E_{c,máx} subíndice
+     √(…), ∛(…)     raíz
+     "m/s"          texto tal cual (unidades, palabras)
+     sen cos tg ln log exp máx mín   funciones; binom(n, k)
+   Una palabra que no es una función se lee letra a letra (mgh = m·g·h).
+   También acepta <sup>, <sub> y las etiquetas que devuelve f().
+   ===================================================================== */
+const Mates = (() => {
+  const FUNC = new Set(['sen', 'cos', 'tg', 'tan', 'ln', 'log', 'exp', 'arcsen', 'arccos', 'arctg', 'máx', 'mín', 'lím', 'senh', 'cosh', 'tgh']);
+  const OPS = '+-−=·×÷⇒⇔→←↔≈≠<>≤≥±∓,;:!∝∈∼≡∑∏∫∂∇⊥∥';
+  const escH = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  function tokens(src) {
+    const s = String(src)
+      .replace(/<sup>/g, '^{').replace(/<\/sup>/g, '}').replace(/<sub>/g, '_{').replace(/<\/sub>/g, '}')
+      .replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+    const out = [];
+    let i = 0, sp = false;
+    while (i < s.length) {
+      const c = s[i], resto = s.slice(i);
+      let m;
+      if (/\s/.test(c)) { sp = true; i++; continue; }
+      if ((m = resto.match(/^\d+(?:[.,]\d+)?/))) out.push({ t: 'n', v: m[0].replace('.', ','), sp });
+      else if (c === '"') { const j = s.indexOf('"', i + 1); m = [s.slice(i, j < 0 ? s.length : j + 1)]; out.push({ t: 'x', v: m[0].replace(/"/g, ''), sp }); }
+      else if ((m = resto.match(/^[\p{L}\p{M}∞]+[′″]*/u))) out.push({ t: 'w', v: m[0], sp });
+      else { m = [c]; out.push({ t: 's', v: c, sp }); }
+      i += m[0].length; sp = false;
+    }
+    return out;
+  }
+
+  // nodo: { m: MathML, dentro: MathML sin los paréntesis de fuera (o null) }
+  const nodo = (m, dentro = null) => ({ m, dentro });
+  const fila = (xs) => (xs.length === 1 ? xs[0] : `<mrow>${xs.join('')}</mrow>`);
+  const letra = (v) => (/^\d+(,\d+)?$/.test(v) ? `<mn>${v}</mn>` : [...v].length === 1 ? `<mi>${escH(v)}</mi>` : `<mi mathvariant="normal">${escH(v)}</mi>`);
+
+  function analiza(tk) {
+    let p = 0;
+    const ver = () => tk[p], es = (v) => tk[p] && tk[p].t === 's' && tk[p].v === v;
+    function secuencia(cierre) {
+      const xs = [];
+      let prevOp = true;
+      while (p < tk.length && !(cierre && es(cierre))) {
+        const k = ver();
+        if (k.t === 's' && OPS.includes(k.v)) {
+          p++;
+          const v = k.v === '-' ? '−' : k.v;
+          // un signo detrás de otro operador (o al principio) es de número: = −19,28
+          const signo = prevOp && (v === '−' || v === '+' || v === '±');
+          xs.push(v === '!' ? '<mo lspace="0">!</mo>' : v === ',' || v === ';' ? `<mo separator="true">${v}</mo>` : signo ? `<mo form="prefix" lspace="0" rspace="0.05em">${v}</mo>` : `<mo>${escH(v)}</mo>`);
+          prevOp = true; continue;
+        }
+        if (k.t === 's' && (k.v === ')' || k.v === '}' || k.v === ']')) { p++; continue; } // paréntesis sueltos
+        xs.push(fraccion().m); prevOp = false;
+      }
+      return xs;
+    }
+    function fraccion() {
+      let a = guiones();
+      while (es('/')) { p++; const b = guiones(); a = nodo(`<mfrac>${a.dentro ?? a.m}${b.dentro ?? b.m}</mfrac>`); }
+      return a;
+    }
+    function argumento() {
+      if (es('{')) { p++; const xs = secuencia('}'); p++; return fila(xs); }
+      if (es('-') || es('−')) { p++; const a = argumento(); return `<mrow><mo>−</mo>${a}</mrow>`; }
+      if (es('(')) { const a = atomo(); return a.m; }
+      // una racha de letras y números pegados: 0x, máx, 12
+      const k = ver();
+      if (!k) return '<mrow></mrow>';
+      if (k.t === 's') { p++; return `<mo>${escH(k.v)}</mo>`; }
+      let v = k.v; p++;
+      while (ver() && !ver().sp && (ver().t === 'n' || ver().t === 'w')) { v += ver().v; p++; }
+      return letra(v);
+    }
+    function guiones() {
+      const base = atomo();
+      let sub = null, sup = null;
+      for (;;) {
+        if (es('_') && sub === null) { p++; sub = argumento(); } else if (es('^') && sup === null) { p++; sup = argumento(); } else break;
+      }
+      if (sub === null && sup === null) return base;
+      const b = base.m;
+      return nodo(sub !== null && sup !== null ? `<msubsup>${b}${sub}${sup}</msubsup>` : sub !== null ? `<msub>${b}${sub}</msub>` : `<msup>${b}${sup}</msup>`);
+    }
+    function atomo() {
+      const k = ver();
+      if (!k) return nodo('<mrow></mrow>');
+      p++;
+      if (k.t === 'n') return nodo(`<mn>${k.v}</mn>`);
+      if (k.t === 'x') return nodo(`${k.sp && p > 1 ? '<mspace width="0.3em"></mspace>' : ''}<mtext>${escH(k.v)}</mtext>`);
+      if (k.t === 'w') {
+        // binom(n, k): número combinatorio
+        if (k.v === 'binom' && es('(')) { p++; const a = secuencia(','); p++; const b = secuencia(')'); p++; return nodo(`<mrow><mo>(</mo><mfrac linethickness="0">${fila(a)}${fila(b)}</mfrac><mo>)</mo></mrow>`); }
+        if (FUNC.has(k.v)) { let m = `<mi mathvariant="normal">${k.v}</mi>`; if (es('^')) { p++; m = `<msup>${m}${argumento()}</msup>`; } return nodo(`<mspace width="0.17em"></mspace>${m}<mo>&#x2061;</mo><mspace width="0.12em"></mspace>`); }
+        const ls = [...k.v.replace(/[′″]+$/, '')], pr = (k.v.match(/[′″]+$/) || [''])[0];
+        // las marcas combinadas (î, ĵ con acento) van con su letra
+        const grupos = []; for (const c of ls) { if (/\p{M}/u.test(c) && grupos.length) grupos[grupos.length - 1] += c; else grupos.push(c); }
+        // las mayúsculas griegas (Δ, Σ, Φ, Ω) van rectas, como en los libros
+        return nodo(fila(grupos.map((c) => (c === '∞' ? '<mi>∞</mi>' : /^[Α-Ω]$/.test(c) ? `<mi mathvariant="normal">${c}</mi>` : `<mi>${escH(c)}</mi>`)).concat(pr ? [`<mo lspace="0" rspace="0">${pr}</mo>`] : [])));
+      }
+      const v = k.v;
+      if (v === '(' || v === '[') { const c = v === '(' ? ')' : ']'; const xs = secuencia(c); if (es(c)) p++; const d = fila(xs), est = /<m(frac|sqrt|root)/.test(d) ? '' : ' stretchy="false"'; return nodo(`<mrow><mo${est}>${v}</mo>${d}<mo${est}>${c}</mo></mrow>`, d); }
+      if (v === '{') { const xs = secuencia('}'); if (es('}')) p++; const d = fila(xs); return nodo(`<mrow>${d}</mrow>`, d); }
+      if (v === '√') { const a = guiones(); return nodo(`<msqrt>${a.dentro ?? a.m}</msqrt>`); }
+      if (v === '∛') { const a = guiones(); return nodo(`<mroot>${a.dentro ?? a.m}<mn>3</mn></mroot>`); }
+      if (v === '|') return nodo('<mo stretchy="false" lspace="0.05em" rspace="0.05em">|</mo>');
+      if (v === '°' || v === '%' || v === '‰') return nodo(`<mi mathvariant="normal">${v}</mi>`);
+      return nodo(`<mo>${escH(v)}</mo>`);
+    }
+    return fila(secuencia(null));
+  }
+
+  const mathml = (src) => `<math><mstyle displaystyle="true">${analiza(tokens(src))}</mstyle></math>`;
+  // sustituye cada $…$ de un texto HTML por su MathML
+  const html = (s) => String(s ?? '').replace(/\$([^$]+)\$/g, (_, x) => mathml(x));
+  // convierte en el documento los elementos con class="m" (fórmulas escritas en el HTML)
+  function pinta(raiz) { if (typeof document === 'undefined') return; for (const el of (raiz || document).querySelectorAll('.m:not([data-m])')) { el.dataset.m = '1'; el.innerHTML = html(el.innerHTML.includes('$') ? el.innerHTML : `$${el.innerHTML}$`); } }
+  if (typeof document !== 'undefined') {
+    const st = document.createElement('style');
+    st.textContent = '@font-face { font-family: "STIX Two Math"; src: url(../../fuentes/stix-two-math.woff2) format("woff2"); font-display: swap }\nmath { font-family: "STIX Two Math", "Cambria Math", math; font-size: 1.08em }\nmath mtext { font-family: "STIX Two Text", "STIX Two Math", serif }';
+    document.head.appendChild(st);
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => pinta()); else pinta();
+  }
+  return { html, mathml, pinta, tokens };
+})();
+
+/* =====================================================================
+   Cinética química (sin DOM):
+   · leyes integradas de orden 0, 1 y 2 para A → productos: [A](t), vida
+     media y tiempo para llegar a una concentración;
+   · orden y constante a partir de datos [A] frente a t (las tres rectas
+     [A], ln[A] y 1/[A] frente a t, con su coeficiente R²);
+   · método de las velocidades iniciales, v = k [A]^m [B]^n;
+   · ecuación de Arrhenius: energía de activación con dos temperaturas, o
+     la constante a otra temperatura.
+   Concentraciones en mol/L; el tiempo en la unidad que se elija.
+   ===================================================================== */
+const Cinetica = (() => {
+  const R = 8.314;
+  const f = (x, d = 3) => {
+    if (!isFinite(x)) return '—';
+    if (Math.abs(x) < 1e-15) return '0';
+    const a = Math.abs(x);
+    const s = a >= 1e5 || a < 1e-2 ? x.toExponential(d - 1).replace(/\.?0+e/, 'e').replace('e', '·10^').replace(/\^([+-]?)(\d+)/, (_, sg, e) => `<sup>${sg === '-' ? '−' : ''}${+e}</sup>`) : String(+x.toPrecision(d));
+    return s.replace('.', ',').replace('-', '−');
+  };
+  // dentro de $…$: 10^{−3} en vez de <sup>
+  const m = (x, d = 3) => f(x, d).replace(/<sup>(.*?)<\/sup>/, '^{$1}');
+  const leeNum = (s) => +String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace(/[−–]/g, '-').replace(/[·x×*]10\^?([+\-]?\d+)/i, 'e$1');
+  const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
+  const Mayus = (s) => s[0].toUpperCase() + s.slice(1);
+  function lee(sc, k, nom, { opcional = false, cero = false, negativo = false } = {}) {
+    if (vacio(sc[k])) { if (opcional) return null; throw new Error(`Falta ${nom}`); }
+    const v = leeNum(sc[k]);
+    if (!isFinite(v)) throw new Error(`${Mayus(nom)} debe ser un número`);
+    if (!negativo && (cero ? v < 0 : v <= 0)) throw new Error(`${Mayus(nom)} debe ser ${cero ? 'positivo o cero' : 'mayor que 0'}`);
+    return v;
+  }
+  const UT = { s: 's', min: 'min', h: 'h' };
+  const ut = (sc) => UT[sc.ut] || 's';
+  // unidades de k según el orden (n puede ser cualquier suma de órdenes)
+  const sup = (v) => String(+v.toFixed(2)).replace('.', ',').replace('-', '−').replace(/[\d−]/g, (c) => (c === '−' ? '⁻' : '⁰¹²³⁴⁵⁶⁷⁸⁹'[c]));
+  const unidK = (n, u) => {
+    if (Math.abs(n - 1) < 1e-9) return `${u}⁻¹`;
+    if (Math.abs(n) < 1e-9) return `mol·L⁻¹·${u}⁻¹`;
+    const e = n - 1, p = (v) => (Math.abs(v - 1) < 1e-9 ? '' : sup(v));
+    return e > 0 ? `L${p(e)}·mol${sup(-e)}·${u}⁻¹` : `mol${p(-e)}·L${sup(e)}·${u}⁻¹`;
+  };
+  const ORD = ['orden 0', 'orden 1', 'orden 2'];
+
+  /* ---------- Leyes integradas ---------- */
+  // concentración, vida media y tiempo para llegar a C
+  const conc = (n, k, A0, t) => (n === 0 ? Math.max(0, A0 - k * t) : n === 1 ? A0 * Math.exp(-k * t) : A0 / (1 + k * A0 * t));
+  const vidaMedia = (n, k, A0) => (n === 0 ? A0 / (2 * k) : n === 1 ? Math.LN2 / k : 1 / (k * A0));
+  const tiempo = (n, k, A0, C) => (n === 0 ? (A0 - C) / k : n === 1 ? Math.log(A0 / C) / k : (1 / C - 1 / A0) / k);
+  const LEY = [
+    { dif: 'v = −{d[A]}/{dt} = k', int: '[A] = [A]_0 − k t', recta: '[A]', t12: 't_{1/2} = {[A]_0}/{2k}' },
+    { dif: 'v = −{d[A]}/{dt} = k [A]', int: 'ln [A] = ln [A]_0 − k t', recta: 'ln [A]', t12: 't_{1/2} = {ln 2}/{k}' },
+    { dif: 'v = −{d[A]}/{dt} = k [A]^2', int: '{1}/{[A]} = {1}/{[A]_0} + k t', recta: '1/[A]', t12: 't_{1/2} = {1}/{k [A]_0}' },
+  ];
+
+  // sc: { n: '0'|'1'|'2', k, A0, t, C (opcional), ut }
+  function orden(sc) {
+    const n = Math.round(leeNum(sc.n));
+    if (![0, 1, 2].includes(n)) throw new Error('El orden tiene que ser 0, 1 o 2');
+    const u = ut(sc), k = lee(sc, 'k', 'la constante k'), A0 = lee(sc, 'A0', 'la concentración inicial'), t = lee(sc, 't', 'el tiempo', { cero: true });
+    const C = lee(sc, 'C', 'la concentración final', { opcional: true });
+    if (C !== null && !(C < A0)) throw new Error('La concentración que se quiere alcanzar tiene que ser menor que la inicial');
+    const A = conc(n, k, A0, t), t12 = vidaMedia(n, k, A0), L = LEY[n], pasos = [];
+    pasos.push({ t: 'Ley de velocidad', html: `Para una reacción de ${ORD[n]}, $${L.dif}$, con $k = ${m(k)}$ ${unidK(n, u)}. Integrando entre 0 y t: $${L.int}$` });
+    const sust = n === 0 ? `$[A] = ${m(A0)} − ${m(k)} · ${m(t)}$` : n === 1 ? `$[A] = [A]_0 e^{−kt} = ${m(A0)} · e^{−${m(k)} · ${m(t)}}$` : `$${'{1}/{[A]}'} = {1}/{${m(A0)}} + ${m(k)} · ${m(t)} = ${m(1 / A)}$`;
+    const agot = n === 0 && A0 - k * t <= 0;
+    pasos.push({ t: `Concentración a t = ${f(t)} ${u}`, html: `${sust}${agot ? `, que saldría negativa: el reactivo se acaba en $t = [A]_0/k = ${m(A0 / k)}$ ${u}, así que` : ''} → $[A] = ${m(A, 4)}$ mol/L (queda el ${f((100 * A) / A0, 3)} %)` });
+    pasos.push({ t: 'Vida media', html: `Es el tiempo en el que [A] baja a la mitad: $${L.t12} = ${m(t12, 4)}$ ${u}. ${n === 1 ? 'En orden 1 no depende de la concentración: cada vida media se reduce a la mitad lo que quede.' : n === 0 ? 'En orden 0 es proporcional a [A]₀: cada vida media es la mitad de la anterior.' : 'En orden 2 es inversamente proporcional a [A]₀: cada vida media dura el doble que la anterior.'}` });
+    let tC = null;
+    if (C !== null) {
+      tC = tiempo(n, k, A0, C);
+      const d = n === 0 ? `$t = {[A]_0 − [A]}/{k} = {${m(A0)} − ${m(C)}}/{${m(k)}}$` : n === 1 ? `$t = {ln([A]_0/[A])}/{k} = {ln {${m(A0)}}/{${m(C)}}}/{${m(k)}}$` : `$t = {1/[A] − 1/[A]_0}/{k} = {{1}/{${m(C)}} − {1}/{${m(A0)}}}/{${m(k)}}$`;
+      pasos.push({ t: `Tiempo hasta [A] = ${f(C)} mol/L`, html: `Despejando de la ley integrada: ${d} = <b>${f(tC, 4)} ${u}</b>` });
+    }
+    const v0 = k * A0 ** n, v = A > 0 ? k * A ** n : 0;
+    pasos.push({ t: 'Velocidad', html: `Al principio $v_0 = k${n ? ` [A]_0${n === 2 ? '^2' : ''}` : ''} = ${m(v0)}$ mol·L⁻¹·${u}⁻¹ y a t = ${f(t)} ${u}, $v = ${m(v)}$ mol·L⁻¹·${u}⁻¹. La gráfica que da una recta es ${L.recta} frente a t.` });
+    return { modo: 'orden', n, k, A0, t, A, t12, C, tC, v0, v, u, unidad: unidK(n, u), c: (x) => conc(n, k, A0, x), pasos };
+  }
+
+  /* ---------- Orden a partir de datos ---------- */
+  function recta(xs, ys) {
+    const N = xs.length, mx = xs.reduce((a, b) => a + b, 0) / N, my = ys.reduce((a, b) => a + b, 0) / N;
+    let sxy = 0, sxx = 0, syy = 0;
+    for (let i = 0; i < N; i++) { sxy += (xs[i] - mx) * (ys[i] - my); sxx += (xs[i] - mx) ** 2; syy += (ys[i] - my) ** 2; }
+    const b = sxy / sxx, a = my - b * mx, r2 = syy > 0 ? (sxy * sxy) / (sxx * syy) : 1;
+    return { a, b, r2 };
+  }
+  const leeLista = (s, nom) => {
+    const xs = String(s ?? '').split(/[;\s]+/).filter(Boolean).map((v) => leeNum(v));
+    if (xs.some((v) => !isFinite(v))) throw new Error(`${Mayus(nom)}: hay algún valor que no es un número (sepáralos con espacios o con ;)`);
+    return xs;
+  };
+  // sc: { ts: '0 10 20…', As: '0,5 0,4…', ut }
+  function datos(sc) {
+    const u = ut(sc), ts = leeLista(sc.ts, 'los tiempos'), As = leeLista(sc.As, 'las concentraciones');
+    if (ts.length !== As.length) throw new Error(`Hay ${ts.length} tiempos y ${As.length} concentraciones: tienen que ser los mismos`);
+    if (ts.length < 3) throw new Error('Hacen falta al menos tres medidas');
+    if (ts.length > 20) throw new Error('Como mucho 20 medidas');
+    if (As.some((v) => v <= 0)) throw new Error('Las concentraciones tienen que ser mayores que 0');
+    if (ts.some((t, i) => i && t <= ts[i - 1])) throw new Error('Los tiempos tienen que ir de menor a mayor');
+    const ys = [As, As.map(Math.log), As.map((v) => 1 / v)], fits = ys.map((y) => recta(ts, y));
+    const n = fits.reduce((a, q, i) => (q.r2 > fits[a].r2 ? i : a), 0), F = fits[n];
+    const k = n === 2 ? F.b : -F.b, A0 = n === 0 ? F.a : n === 1 ? Math.exp(F.a) : 1 / F.a;
+    const pasos = [];
+    pasos.push({ t: 'Las tres rectas', html: `Cada orden da una recta distinta frente al tiempo: [A] en orden 0, ln [A] en orden 1 y 1/[A] en orden 2. Ajustando las tres por mínimos cuadrados:<br>${fits.map((q, i) => `${ORD[i]}: $${['[A]', 'ln [A]', '1/[A]'][i]} = ${m(q.a, 4)} ${q.b < 0 ? '−' : '+'} ${m(Math.abs(q.b), 4)} t$, &ensp; $R^2 = ${q.r2.toFixed(5).replace('.', ',')}$`).join('<br>')}` });
+    pasos.push({ t: 'El orden', html: `La que mejor se ajusta a una recta (R² más cercano a 1) es la de ${['[A]', 'ln [A]', '1/[A]'][n]}: la reacción es de <b>${ORD[n]}</b>.` });
+    pasos.push({ t: 'La constante', html: `${n === 2 ? 'La pendiente es +k' : 'La pendiente es −k'}: $k = ${m(k, 4)}$ ${unidK(n, u)}, y la ordenada en el origen da $[A]_0 ≈ ${m(A0, 4)}$ mol/L.` });
+    const t12 = vidaMedia(n, k, A0);
+    pasos.push({ t: 'Vida media', html: `$${LEY[n].t12} = ${m(t12, 4)}$ ${u}${n === 1 ? ', la misma empiece donde empiece' : ` (con [A]₀ = ${f(A0, 4)} mol/L)`}.` });
+    return { modo: 'datos', n, k, A0, t12, fits, ts, As, u, unidad: unidK(n, u), c: (x) => conc(n, k, A0, x), pasos };
+  }
+
+  /* ---------- Velocidades iniciales ---------- */
+  // sc: { exps: [{ A, B, v }], conB: true|false, ut }
+  function resuelveN(M, y) {
+    const n = y.length, a = M.map((r, i) => [...r, y[i]]);
+    for (let c = 0; c < n; c++) {
+      let p = c; for (let r = c + 1; r < n; r++) if (Math.abs(a[r][c]) > Math.abs(a[p][c])) p = r;
+      if (Math.abs(a[p][c]) < 1e-12) return null;
+      [a[c], a[p]] = [a[p], a[c]];
+      for (let r = 0; r < n; r++) if (r !== c) { const q = a[r][c] / a[c][c]; for (let j = c; j <= n; j++) a[r][j] -= q * a[c][j]; }
+    }
+    return a.map((r, i) => r[n] / r[i]);
+  }
+  const redondea = (o) => { const h = Math.round(o * 2) / 2; return Math.abs(o - h) < 0.08 ? h : +o.toFixed(2); };
+  const oTxt = (o) => String(o).replace('.', ',').replace('-', '−');
+  function iniciales(sc) {
+    const u = ut(sc), conB = !!sc.conB, filas = (sc.exps || []).filter((e) => !vacio(e.A) || !vacio(e.v) || (conB && !vacio(e.B)));
+    if (filas.length < (conB ? 3 : 2)) throw new Error(`Hacen falta al menos ${conB ? 'tres experimentos (dos reactivos)' : 'dos experimentos'}`);
+    const E = filas.map((e, i) => ({ A: lee(e, 'A', `[A] del experimento ${i + 1}`), B: conB ? lee(e, 'B', `[B] del experimento ${i + 1}`) : 1, v: lee(e, 'v', `la velocidad del experimento ${i + 1}`) }));
+    // mínimos cuadrados en logaritmos: ln v = ln k + m ln[A] + n ln[B]
+    const X = E.map((e) => (conB ? [1, Math.log(e.A), Math.log(e.B)] : [1, Math.log(e.A)])), Y = E.map((e) => Math.log(e.v)), p = X[0].length;
+    const XtX = Array.from({ length: p }, (_, i) => Array.from({ length: p }, (_, j) => X.reduce((s, r) => s + r[i] * r[j], 0))), XtY = Array.from({ length: p }, (_, i) => X.reduce((s, r, k) => s + r[i] * Y[k], 0));
+    const sol = resuelveN(XtX, XtY);
+    if (!sol) throw new Error(conB ? 'Con estos experimentos no se pueden separar los dos órdenes: cambia [A] y [B] por separado en alguno' : 'Las concentraciones de A tienen que ser distintas');
+    const oA = redondea(sol[1]), oB = conB ? redondea(sol[2]) : 0;
+    const pasos = [];
+    pasos.push({ t: 'Ley de velocidad', html: `Se escribe $v = k [A]^m${conB ? ' [B]^n' : ''}$ y se comparan experimentos en los que ${conB ? 'solo cambia un reactivo' : 'cambia [A]'}: al dividir sus velocidades se va k.` });
+    const par = (cambia, fija) => { for (let i = 0; i < E.length; i++) for (let j = i + 1; j < E.length; j++) if (Math.abs(E[i][cambia] - E[j][cambia]) > 1e-12 * E[i][cambia] && (!fija || Math.abs(E[i][fija] - E[j][fija]) <= 1e-9 * E[i][fija])) return [i, j]; return null; };
+    const paso = (L, o, cambia, fija, letra) => {
+      const q = par(cambia, fija);
+      if (!q) return `Ningún par de experimentos deja ${fija === 'B' ? '[B]' : '[A]'} fija, así que $${letra}$ sale del ajuste de todos a la vez: $${letra} ≈ ${oTxt(o)}$.`;
+      const [i, j] = q, a = E[j][cambia] / E[i][cambia], b = E[j].v / E[i].v, ex = Math.log(b) / Math.log(a);
+      return `Experimentos ${i + 1} y ${j + 1}${fija ? ` ([${fija}] igual)` : ''}: $${'{v_' + (j + 1) + '}/{v_' + (i + 1) + '}'} = ({[${L}]_${j + 1}}/{[${L}]_${i + 1}})^${letra}$, &ensp; $${m(b, 4)} = ${m(a, 4)}^${letra}$, &ensp; $${letra} = {ln ${m(b, 4)}}/{ln ${m(a, 4)}} = ${m(ex, 3)}$ → <b>${letra} = ${oTxt(o)}</b>`;
+    };
+    pasos.push({ t: 'Orden respecto de A', html: paso('A', oA, 'A', conB ? 'B' : null, 'm') });
+    if (conB) pasos.push({ t: 'Orden respecto de B', html: paso('B', oB, 'B', 'A', 'n') });
+    const ks = E.map((e) => e.v / (e.A ** oA * e.B ** oB)), k = ks.reduce((a, b) => a + b, 0) / ks.length, tot = oA + oB;
+    pasos.push({ t: 'La constante', html: `Con cada experimento, $k = v/(${oA === 1 ? '[A]' : `[A]^{${oTxt(oA)}}`}${conB ? (oB === 1 ? ' [B]' : ` [B]^{${oTxt(oB)}}`) : ''})$: ${ks.map((q) => m(q, 4)).join('; ')}. La media es $k = ${m(k, 4)}$ ${unidK(tot, u)}.` });
+    const ley = `v = ${m(k, 4)} ${oA ? `[A]${oA === 1 ? '' : `^{${oTxt(oA)}}`}` : ''}${oB ? ` [B]${oB === 1 ? '' : `^{${oTxt(oB)}}`}` : ''}`.replace(/ $/, '');
+    pasos.push({ t: 'Resultado', html: `$${ley}$: orden ${oTxt(oA)} respecto de A${conB ? `, ${oTxt(oB)} respecto de B` : ''} y orden total ${oTxt(tot)}.` });
+    return { modo: 'iniciales', E, conB, oA, oB, tot, k, ks, ley, u, unidad: unidK(tot, u), pasos };
+  }
+
+  /* ---------- Arrhenius ---------- */
+  // sc: { tipo: 'ea' (k1, T1, k2, T2) | 'k2' (Ea, k1, T1, T2), uT: 'K'|'C', ... }
+  function arrhenius(sc) {
+    const C = sc.uT === 'C', T = (k, nom) => { const v = lee(sc, k, nom, { negativo: C }); const K = C ? v + 273.15 : v; if (!(K > 0)) throw new Error(`${Mayus(nom)} tiene que estar por encima del cero absoluto`); return K; };
+    const k1 = lee(sc, 'k1', 'la constante k₁'), T1 = T('T1', 'la temperatura T₁'), T2 = T('T2', 'la temperatura T₂');
+    if (Math.abs(T1 - T2) < 1e-9) throw new Error('Las dos temperaturas tienen que ser distintas');
+    const pasos = [], tK = (v) => `${m(v, 5)} K`;
+    pasos.push({ t: 'Ecuación de Arrhenius', html: `$k = A e^{−E_a/(RT)}$, y dividiendo para dos temperaturas: $ln {k_2}/{k_1} = −{E_a}/{R} ({1}/{T_2} − {1}/{T_1})$, con $R = 8,314$ J/(mol·K)${C ? '. Las temperaturas pasan a kelvin: ' + `$T_1 = ${tK(T1)}$, $T_2 = ${tK(T2)}$` : ''}.` });
+    let Ea, k2;
+    if (sc.tipo === 'k2') {
+      Ea = lee(sc, 'Ea', 'la energía de activación') * 1000;
+      k2 = k1 * Math.exp((-Ea / R) * (1 / T2 - 1 / T1));
+      pasos.push({ t: 'Constante a T₂', html: `$ln {k_2}/{${m(k1)}} = −{${m(Ea, 4)}}/{8,314} ({1}/{${m(T2, 5)}} − {1}/{${m(T1, 5)}}) = ${m(Math.log(k2 / k1), 4)}$ → $k_2 = ${m(k1)} · e^{${m(Math.log(k2 / k1), 4)}}$ = <b>${f(k2, 4)}</b>` });
+    } else {
+      k2 = lee(sc, 'k2', 'la constante k₂');
+      Ea = (-R * Math.log(k2 / k1)) / (1 / T2 - 1 / T1);
+      pasos.push({ t: 'Energía de activación', html: `$E_a = {−R ln(k_2/k_1)}/{1/T_2 − 1/T_1} = {−8,314 · ln {${m(k2)}}/{${m(k1)}}}/{{1}/{${m(T2, 5)}} − {1}/{${m(T1, 5)}}} = ${m(Ea, 4)}$ J/mol = <b>${f(Ea / 1000, 4)} kJ/mol</b>${Ea < 0 ? '. Sale negativa: la constante baja al calentar, algo raro en una reacción elemental' : ''}` });
+    }
+    const A = k1 / Math.exp(-Ea / (R * T1)), r = k2 / k1;
+    pasos.push({ t: 'Factor de frecuencia', html: `$A = k_1 e^{E_a/(R T_1)} = ${m(A, 4)}$ (mismas unidades que k).` });
+    pasos.push({ t: 'Cuánto cambia', html: `De ${f(C ? T1 - 273.15 : T1, 4)} ${C ? '°C' : 'K'} a ${f(C ? T2 - 273.15 : T2, 4)} ${C ? '°C' : 'K'} la constante se multiplica por ${f(r, 4)}. En la gráfica de ln k frente a 1/T sale una recta de pendiente $−E_a/R = ${m(-Ea / R, 4)}$ K.` });
+    return { modo: 'arrhenius', tipo: sc.tipo === 'k2' ? 'k2' : 'ea', k1, k2, T1, T2, Ea, A, r, uT: C ? 'C' : 'K', k: (T) => A * Math.exp(-Ea / (R * T)), pasos };
+  }
+
+  function resolver(sc) {
+    if (sc.modo === 'datos') return datos(sc);
+    if (sc.modo === 'iniciales') return iniciales(sc);
+    if (sc.modo === 'arrhenius') return arrhenius(sc);
+    return orden(sc);
+  }
+
+  const ejemplos = [
+    { clave: 'primer-orden', nombre: 'Orden 1: descomposición del N₂O₅', sc: { modo: 'orden', n: '1', k: '5,1e-4', A0: '0,25', t: '3600', C: '0,05', ut: 's' } },
+    { clave: 'orden-cero', nombre: 'Orden 0: descomposición catalizada', sc: { modo: 'orden', n: '0', k: '0,002', A0: '0,5', t: '120', C: '0,1', ut: 's' } },
+    { clave: 'segundo-orden', nombre: 'Orden 2: 2 NO₂ → 2 NO + O₂', sc: { modo: 'orden', n: '2', k: '0,54', A0: '0,05', t: '60', C: '0,01', ut: 's' } },
+    { clave: 'farmaco', nombre: 'Orden 1 con el tiempo en horas', sc: { modo: 'orden', n: '1', k: '0,173', A0: '20', t: '8', C: '2', ut: 'h' } },
+    { clave: 'datos-1', nombre: 'Datos: H₂O₂ que se descompone', sc: { modo: 'datos', ts: '0 10 20 30 40 50', As: '1 0,707 0,5 0,354 0,25 0,177', ut: 'min' } },
+    { clave: 'datos-2', nombre: 'Datos: reacción de segundo orden', sc: { modo: 'datos', ts: '0 50 100 150 200 300', As: '0,1 0,0667 0,05 0,04 0,0333 0,025', ut: 's' } },
+    { clave: 'datos-0', nombre: 'Datos: orden 0', sc: { modo: 'datos', ts: '0 5 10 15 20', As: '0,8 0,7 0,6 0,5 0,4', ut: 'min' } },
+    { clave: 'iniciales-2', nombre: 'Velocidades iniciales: 2 NO + O₂', sc: { modo: 'iniciales', conB: true, ut: 's', exps: [{ A: '0,01', B: '0,01', v: '2,5e-5' }, { A: '0,02', B: '0,01', v: '1e-4' }, { A: '0,01', B: '0,02', v: '5e-5' }] } },
+    { clave: 'iniciales-1', nombre: 'Velocidades iniciales con un reactivo', sc: { modo: 'iniciales', conB: false, ut: 's', exps: [{ A: '0,1', v: '0,004' }, { A: '0,2', v: '0,008' }, { A: '0,4', v: '0,016' }] } },
+    { clave: 'iniciales-3', nombre: 'Velocidades iniciales: orden 1 y 2', sc: { modo: 'iniciales', conB: true, ut: 's', exps: [{ A: '0,1', B: '0,1', v: '0,02' }, { A: '0,2', B: '0,1', v: '0,04' }, { A: '0,1', B: '0,2', v: '0,08' }, { A: '0,3', B: '0,3', v: '0,54' }] } },
+    { clave: 'arrhenius-ea', nombre: 'Arrhenius: energía de activación', sc: { modo: 'arrhenius', tipo: 'ea', uT: 'K', k1: '3,46e-5', T1: '298', k2: '9,63e-4', T2: '328' } },
+    { clave: 'arrhenius-k2', nombre: 'Arrhenius: k a otra temperatura', sc: { modo: 'arrhenius', tipo: 'k2', uT: 'C', Ea: '50', k1: '0,01', T1: '25', T2: '35' } },
+  ];
+
+  return { resolver, orden, datos, iniciales, arrhenius, conc, vidaMedia, tiempo, recta, ejemplos, f, unidK, R };
+})();
+
+/* =====================================================================
+   Cinética química: interfaz (cuatro modos: leyes integradas, orden a
+   partir de datos, velocidades iniciales y Arrhenius; un vaso en el que
+   las moléculas de A se van convirtiendo en producto con el tiempo, la
+   gráfica de cada modo y el desarrollo). El cálculo está en
+   cinetica/calculo.js (Cinetica).
+   ===================================================================== */
+(() => {
+  const $ = (q) => document.querySelector(q);
+  const K = Cinetica, f = K.f, CLAVE = 'cinetica-v1', MAXE = 6;
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const copia = (o) => JSON.parse(JSON.stringify(o));
+  const txt = (h) => String(h).replace(/<sup>(.*?)<\/sup>/g, (_, e) => e.replace(/−/g, '⁻').replace(/\d/g, (d) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d])).replace(/<[^>]+>/g, '');
+  const MODOS = [['orden', 'Ley integrada (orden 0, 1 o 2)'], ['datos', 'Orden a partir de datos [A]–t'], ['iniciales', 'Método de las velocidades iniciales'], ['arrhenius', 'Ecuación de Arrhenius']];
+
+  let sc = copia(K.ejemplos[0].sc);
+  try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && MODOS.some(([k]) => k === g.modo)) sc = g; } catch (e) { /* sin almacenamiento */ }
+  const guarda = () => { try { localStorage.setItem(CLAVE, JSON.stringify(sc)); } catch (e) { /* sin almacenamiento */ } };
+  let sol = null, col = {}, anda = true, tA = 0, vista = null;
+
+  /* ---------- Formulario ---------- */
+  const fila = (k, nom, un, modo = 'decimal') => `<label for="f-${k}">${nom}${un ? ` <small>${un}</small>` : ''}</label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc[k] ?? '')}" inputmode="${modo}" autocomplete="off" spellcheck="false">`;
+  const opciones = (k, lista) => lista.map(([v, t]) => `<option value="${v}"${String(sc[k]) === v ? ' selected' : ''}>${t}</option>`).join('');
+  const elige = (k, nom, lista) => `<label for="f-${k}">${nom}</label><select id="f-${k}" class="in" data-k="${k}">${opciones(k, lista)}</select>`;
+  const unidT = () => elige('ut', 'Unidad de tiempo', [['s', 'segundos (s)'], ['min', 'minutos (min)'], ['h', 'horas (h)']]);
+  const NOTAS = {
+    orden: 'La concentración final es opcional: con ella se calcula cuánto tarda en llegar. Se admite 5,1e-4 o 5,1·10^-4.',
+    datos: 'Escribe los tiempos y las concentraciones separados por espacios o por punto y coma, en el mismo orden.',
+    iniciales: 'Cada experimento es una fila con las concentraciones iniciales y la velocidad inicial medida. Para ver un orden, cambia un reactivo y deja el otro igual.',
+    arrhenius: 'Con dos constantes a dos temperaturas sale la energía de activación; con ella y una constante, la de otra temperatura.',
+  };
+  function formulario() {
+    let h = elige('modo', 'Qué calcular', MODOS);
+    if (sc.modo === 'orden') h += elige('n', 'Orden de la reacción', [['0', 'Orden 0'], ['1', 'Orden 1'], ['2', 'Orden 2']]) + fila('k', 'Constante k') + fila('A0', 'Concentración inicial [A]₀', 'mol/L') + fila('t', 'Tiempo t') + fila('C', 'Concentración a alcanzar', '(opcional)') + unidT();
+    else if (sc.modo === 'datos') h += `<label for="f-ts" class="ancho">Tiempos</label><input id="f-ts" class="in ancho" data-k="ts" value="${esc(sc.ts)}" autocomplete="off" spellcheck="false"><label for="f-As" class="ancho">Concentraciones [A] <small>mol/L</small></label><input id="f-As" class="in ancho" data-k="As" value="${esc(sc.As)}" autocomplete="off" spellcheck="false">` + unidT();
+    else if (sc.modo === 'iniciales') {
+      h += `<label for="f-conB">Reactivos</label><select id="f-conB" class="in" data-k="conB"><option value="0"${sc.conB ? '' : ' selected'}>Solo A</option><option value="1"${sc.conB ? ' selected' : ''}>A y B</option></select>` + unidT();
+      h += `<div class="exps ancho"><div class="exp cab${sc.conB ? '' : ' sinB'}"><span>N.º</span><span>[A]₀</span>${sc.conB ? '<span>[B]₀</span>' : ''}<span>v₀ <small>mol·L⁻¹·${esc(sc.ut || 's')}⁻¹</small></span><span></span></div>${sc.exps.map((e, i) => `<div class="exp${sc.conB ? '' : ' sinB'}"><span>${i + 1}</span>${['A', ...(sc.conB ? ['B'] : []), 'v'].map((c) => `<input class="in" data-i="${i}" data-c="${c}" value="${esc(e[c] ?? '')}" inputmode="decimal" autocomplete="off" aria-label="${c === 'v' ? 'Velocidad' : `[${c}]`} del experimento ${i + 1}">`).join('')}${sc.exps.length > 2 ? `<button class="btn quita" type="button" data-quita="${i}" aria-label="Quitar el experimento ${i + 1}">×</button>` : '<span></span>'}</div>`).join('')}</div>${sc.exps.length < MAXE ? '<button class="btn ancho" id="mas" type="button">+ Añadir experimento</button>' : ''}`;
+    } else {
+      const k2 = sc.tipo === 'k2';
+      h += elige('tipo', 'Qué se busca', [['ea', 'La energía de activación'], ['k2', 'La constante a otra temperatura']]) + elige('uT', 'Temperaturas en', [['K', 'kelvin (K)'], ['C', 'grados Celsius (°C)']]);
+      h += (k2 ? fila('Ea', 'Energía de activación Eₐ', 'kJ/mol') : '') + fila('k1', 'Constante k₁') + fila('T1', 'Temperatura T₁') + (k2 ? '' : fila('k2', 'Constante k₂')) + fila('T2', 'Temperatura T₂');
+    }
+    $('#campos').innerHTML = h;
+    $('#nota').textContent = NOTAS[sc.modo];
+  }
+  const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
+  const cambia = () => { $('#ejemplos').value = ''; calcula(); };
+  $('#campos').addEventListener('input', (e) => {
+    const t = e.target; if (t.tagName !== 'INPUT') return;
+    if (t.dataset.c) sc.exps[+t.dataset.i][t.dataset.c] = t.value; else sc[t.dataset.k] = t.value;
+    cambia();
+  });
+  $('#campos').addEventListener('change', (e) => {
+    const t = e.target; if (t.tagName !== 'SELECT') return;
+    const k = t.dataset.k;
+    if (k === 'modo') sc = copia(K.ejemplos.find((x) => x.sc.modo === t.value).sc);
+    else if (k === 'conB') { sc.conB = t.value === '1'; if (sc.conB) for (const x of sc.exps) if (vacio(x.B)) x.B = '0,1'; }
+    else { sc[k] = t.value; if (k === 'tipo' && t.value === 'k2' && vacio(sc.Ea)) sc.Ea = '50'; if (k === 'tipo' && t.value === 'ea' && vacio(sc.k2)) sc.k2 = '0,05'; }
+    formulario(); cambia();
+  });
+  $('#campos').addEventListener('click', (e) => {
+    const q = e.target.closest('[data-quita]');
+    if (q) { sc.exps.splice(+q.dataset.quita, 1); formulario(); cambia(); return; }
+    if (e.target.id === 'mas') { sc.exps.push({ A: '', B: sc.conB ? '' : undefined, v: '' }); formulario(); cambia(); $(`#campos [data-i="${sc.exps.length - 1}"][data-c="A"]`).focus(); }
+  });
+
+  /* ---------- Ejemplos ---------- */
+  const sel = $('#ejemplos');
+  sel.innerHTML = '<option value="">Ejemplos…</option>' + MODOS.map(([k, n]) => `<optgroup label="${n}">${K.ejemplos.filter((e) => e.sc.modo === k).map((e) => `<option value="${e.clave}">${e.nombre}</option>`).join('')}</optgroup>`).join('');
+  sel.addEventListener('change', () => { if (sel.value) abrirEjemplo(sel.value); });
+  function abrirEjemplo(clave) {
+    const e = K.ejemplos.find((x) => x.clave === clave);
+    if (!e) return;
+    sc = copia(e.sc);
+    formulario(); calcula(); sel.value = clave;
+  }
+  // un ejercicio al azar de los de clase, para el modo práctica
+  function azar() {
+    const ent = (a, b) => a + Math.floor(Math.random() * (b - a + 1)), toma = (xs) => xs[ent(0, xs.length - 1)], c = (v) => String(+v.toPrecision(3)).replace('.', ',');
+    const tipos = [
+      () => { const n = ent(0, 2), A0 = toma([0.1, 0.2, 0.5, 1, 0.05]), k = n === 0 ? A0 / toma([100, 200, 500]) : n === 1 ? toma([0.01, 0.002, 0.05, 1e-3]) : toma([0.5, 1, 2, 0.1]); return { modo: 'orden', n: String(n), k: c(k), A0: c(A0), t: String(toma([10, 30, 60, 100, 120])), C: c(A0 / toma([2, 4, 5])), ut: 's' }; },
+      () => { const n = ent(0, 2), A0 = toma([0.5, 1, 0.2]), dt = toma([5, 10, 20]), N = 6, k = n === 0 ? (A0 * 0.8) / (dt * (N - 1)) : n === 1 ? toma([0.02, 0.05, 0.03]) : toma([0.2, 0.5, 1]) / A0 / 10; const ts = Array.from({ length: N }, (_, i) => i * dt); return { modo: 'datos', ts: ts.join(' '), As: ts.map((t) => c(K.conc(n, k, A0, t))).join(' '), ut: 'min' }; },
+      () => { const m = ent(0, 2), n = ent(0, 2), k = toma([0.5, 2, 10, 25]), A = toma([0.01, 0.1, 0.05]), B = toma([0.01, 0.1, 0.02]), v = (a, b) => c(k * a ** m * b ** n); return { modo: 'iniciales', conB: true, ut: 's', exps: [{ A: c(A), B: c(B), v: v(A, B) }, { A: c(2 * A), B: c(B), v: v(2 * A, B) }, { A: c(A), B: c(3 * B), v: v(A, 3 * B) }] }; },
+      () => { const Ea = toma([40, 50, 60, 75, 90]), T1 = toma([298, 300, 310]), T2 = T1 + toma([10, 20, 30]), k1 = toma([1e-3, 0.01, 2e-4]); return ent(0, 1) ? { modo: 'arrhenius', tipo: 'k2', uT: 'K', Ea: String(Ea), k1: c(k1), T1: String(T1), T2: String(T2) } : { modo: 'arrhenius', tipo: 'ea', uT: 'K', k1: c(k1), T1: String(T1), k2: c(k1 * Math.exp((-Ea * 1000 / K.R) * (1 / T2 - 1 / T1))), T2: String(T2) }; },
+    ];
+    sc = toma(tipos)();
+    formulario(); calcula(); sel.value = '';
+  }
+  const enunciado = () => {
+    const u = sc.ut || 's';
+    if (sc.modo === 'orden') return `Una reacción A → productos es de <b>orden ${esc(sc.n)}</b> con k = ${esc(sc.k)} y [A]₀ = ${esc(sc.A0)} mol/L. Calcula [A] a los ${esc(sc.t)} ${u}, la vida media${vacio(sc.C) ? '' : ` y cuánto tarda en llegar a ${esc(sc.C)} mol/L`}.`;
+    if (sc.modo === 'datos') return `Con estas medidas (t en ${u}: ${esc(sc.ts)}; [A] en mol/L: ${esc(sc.As)}), averigua el <b>orden</b> de la reacción, la constante k y la vida media.`;
+    if (sc.modo === 'iniciales') return `Con las velocidades iniciales de la tabla, halla los <b>órdenes</b> de reacción, la constante k y la ley de velocidad.`;
+    return sc.tipo === 'k2' ? `Una reacción tiene Eₐ = ${esc(sc.Ea)} kJ/mol y k = ${esc(sc.k1)} a ${esc(sc.T1)} ${sc.uT === 'C' ? '°C' : 'K'}. ¿Cuánto vale <b>k a ${esc(sc.T2)} ${sc.uT === 'C' ? '°C' : 'K'}</b>?` : `La constante vale ${esc(sc.k1)} a ${esc(sc.T1)} ${sc.uT === 'C' ? '°C' : 'K'} y ${esc(sc.k2)} a ${esc(sc.T2)} ${sc.uT === 'C' ? '°C' : 'K'}. Calcula la <b>energía de activación</b> y el factor de frecuencia.`;
+  };
+
+  /* ---------- Cálculo ---------- */
+  const dato = (t, v, cl = 'num') => `<div${cl ? ` class="${cl}"` : ''}><span>${t}</span><b>${v}</b></div>`;
+  function calcula() {
+    const err = $('#error');
+    try { sol = K.resolver(sc); } catch (e) {
+      sol = null; err.textContent = e.message; err.hidden = false;
+      $('#resumen').innerHTML = ''; $('#pasos').innerHTML = ''; $('#leyenda').textContent = ''; $('#vistas').hidden = true;
+      dibuja(); grafica(); return;
+    }
+    err.hidden = true; guarda();
+    let h = '', ley = '';
+    if (sol.modo === 'orden') {
+      h = dato(`[A] a t = ${f(sol.t)} ${sol.u}`, `${f(sol.A, 4)} mol/L`) + dato('Vida media', `t<sub>1/2</sub> = ${f(sol.t12, 4)} ${sol.u}`) + (sol.tC !== null ? dato(`Tiempo hasta ${f(sol.C)} mol/L`, `${f(sol.tC, 4)} ${sol.u}`) : '') + dato('Velocidad inicial', `${f(sol.v0)} mol·L⁻¹·${sol.u}⁻¹`);
+      ley = `[A] frente a t. Las líneas de puntos marcan cada vida media${sol.n === 1 ? ', todas iguales' : ''}; el punto es el tiempo que has pedido.`;
+    } else if (sol.modo === 'datos') {
+      h = dato('Orden', `orden ${sol.n}`, '') + dato('Constante', `k = ${f(sol.k, 4)} ${sol.unidad}`) + dato('Vida media', `t<sub>1/2</sub> = ${f(sol.t12, 4)} ${sol.u}`) + dato('R² de la recta', sol.fits[sol.n].r2.toFixed(5).replace('.', ','), '');
+      ley = 'Los puntos son las medidas y la línea, la recta de mínimos cuadrados. Cambia de gráfica para ver que solo una de las tres sale recta.';
+    } else if (sol.modo === 'iniciales') {
+      h = dato('Ley de velocidad', Mates.html(`$${sol.ley}$`), 'ancho') + dato('Orden respecto de A', String(sol.oA).replace('.', ',')) + (sol.conB ? dato('Orden respecto de B', String(sol.oB).replace('.', ',')) : '') + dato('Constante', `k = ${f(sol.k, 4)} ${sol.unidad}`);
+      ley = 'Velocidad inicial de cada experimento: la barra es la medida y el punto, la que da la ley de velocidad.';
+    } else {
+      h = (sol.tipo === 'ea' ? dato('Energía de activación', `E<sub>a</sub> = ${f(sol.Ea / 1000, 4)} kJ/mol`) : dato(`k a ${f(sol.uT === 'C' ? sol.T2 - 273.15 : sol.T2, 4)} ${sol.uT === 'C' ? '°C' : 'K'}`, `k₂ = ${f(sol.k2, 4)}`)) + dato('Factor de frecuencia', `A = ${f(sol.A, 4)}`) + dato('k₂/k₁', f(sol.r, 4));
+      ley = 'Gráfica de Arrhenius: ln k frente a 1/T es una recta de pendiente −Eₐ/R. Cuanto más empinada, más sube k al calentar.';
+    }
+    $('#resumen').innerHTML = h; $('#leyenda').textContent = ley;
+    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
+    $('#vistas').hidden = sol.modo !== 'datos';
+    if (sol.modo === 'datos') { vista = sol.n; marcaVista(); }
+    $('#escena').hidden = $('#play').hidden = !(sol.modo === 'orden' || sol.modo === 'datos');
+    tA = 0; particulas(); dibuja(); grafica();
+  }
+  const marcaVista = () => { for (const b of document.querySelectorAll('#vistas button')) b.setAttribute('aria-pressed', String(+b.dataset.v === vista)); };
+  $('#vistas').addEventListener('click', (e) => { const b = e.target.closest('[data-v]'); if (!b) return; vista = +b.dataset.v; marcaVista(); grafica(); });
+
+  /* ---------- Vaso con las moléculas ---------- */
+  function colores() { const cs = getComputedStyle(document.documentElement); for (const k of ['--ink', '--muted', '--line', '--accent', '--bg', '--panel', '--suelo', '--peso', '--tension', '--roz']) col[k] = cs.getPropertyValue(k).trim(); }
+  $('#play').addEventListener('click', () => { anda = !anda; $('#play').textContent = anda ? '⏸ Pausa' : '▶ Seguir'; });
+  const NP = 60;
+  let parts = [];
+  function particulas() {
+    parts = Array.from({ length: NP }, (_, i) => ({ x: Math.random(), y: Math.random(), vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3, u: (i + Math.random()) / NP }));
+    parts.sort(() => Math.random() - 0.5);
+  }
+  // hasta qué tiempo se dibuja y se anima
+  const tMax = () => (sol.modo === 'datos' ? sol.ts[sol.ts.length - 1] : Math.max(sol.t, sol.tC || 0, (sol.n === 0 ? 1.1 * sol.A0 / sol.k : 3 * sol.t12)));
+  const tDe = () => { const T = tMax(), ciclo = 9; return Math.min(1, (tA % ciclo) / 7.5) * T; };
+  function lienzo(c) {
+    const dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
+    if (!w || !h) return null;
+    if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
+    const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
+    return { g, w, h };
+  }
+  function texto(g, x, y, t, color = col['--ink'], al = 'center', peso = '') { g.font = `${peso}12px "IBM Plex Sans", system-ui, sans-serif`; g.fillStyle = color; g.textAlign = al; g.textBaseline = 'middle'; g.fillText(t, x, y); }
+  const punto = (g, x, y, r, color) => { g.fillStyle = color; g.beginPath(); g.arc(x, y, r, 0, 2 * Math.PI); g.fill(); };
+  function mueve(dt) {
+    for (const q of parts) {
+      q.vx += (Math.random() - 0.5) * dt; q.vy += (Math.random() - 0.5) * dt;
+      const v = Math.hypot(q.vx, q.vy); if (v > 0.35) { q.vx *= 0.35 / v; q.vy *= 0.35 / v; }
+      q.x += q.vx * dt; q.y += q.vy * dt;
+      if (q.x < 0 || q.x > 1) { q.vx = -q.vx; q.x = Math.max(0, Math.min(1, q.x)); }
+      if (q.y < 0 || q.y > 1) { q.vy = -q.vy; q.y = Math.max(0, Math.min(1, q.y)); }
+    }
+  }
+  function dibuja() {
+    const c = $('#escena'); if (c.hidden || !sol) return;
+    const L = lienzo(c); if (!L) return;
+    const { g, w, h } = L;
+    if (!col['--ink']) colores();
+    const t = tDe(), fr = Math.max(0, sol.c(t) / sol.c(0));
+    const bw = Math.min(w * 0.46, 320), bx = w * 0.06, by = 14, bh = h - 34;
+    g.fillStyle = col['--line']; g.globalAlpha = 0.45; g.fillRect(bx, by + bh * 0.12, bw, bh * 0.88); g.globalAlpha = 1;
+    g.strokeStyle = col['--suelo']; g.lineWidth = 3; g.beginPath(); g.moveTo(bx - 4, by); g.lineTo(bx, by + bh); g.lineTo(bx + bw, by + bh); g.lineTo(bx + bw + 4, by); g.stroke();
+    let nA = 0;
+    for (const q of parts) {
+      const x = bx + 10 + q.x * (bw - 20), y = by + bh * 0.12 + 10 + q.y * (bh * 0.88 - 20), esA = q.u < fr;
+      if (esA) { nA++; punto(g, x - 3.5, y, 5, col['--accent']); punto(g, x + 3.5, y, 5, col['--accent']); } else { punto(g, x - 4, y + 2, 3.6, col['--muted']); punto(g, x + 4, y - 2, 3.6, col['--muted']); }
+    }
+    const tx = bx + bw + 24;
+    punto(g, tx, by + 22, 5, col['--accent']); texto(g, tx + 12, by + 22, 'A', col['--ink'], 'left');
+    punto(g, tx, by + 44, 3.6, col['--muted']); texto(g, tx + 12, by + 44, 'productos', col['--ink'], 'left');
+    texto(g, tx, by + 80, `t = ${txt(f(t, 3))} ${sol.u}`, col['--ink'], 'left', '600 ');
+    texto(g, tx, by + 102, `[A] = ${txt(f(sol.c(t), 3))} mol/L`, col['--ink'], 'left', '600 ');
+    texto(g, tx, by + 124, `queda el ${txt(f(100 * fr, 3))} % (${nA} de ${NP})`, col['--muted'], 'left');
+  }
+
+  /* ---------- Gráficas ---------- */
+  const marcas = (a, b, n = 6) => {
+    const p0 = (b - a) / n, e = 10 ** Math.floor(Math.log10(p0)), paso = [1, 2, 2.5, 5, 10].map((q) => q * e).find((q) => q >= p0) || 10 * e;
+    const out = []; for (let v = Math.ceil(a / paso) * paso; v <= b + paso * 1e-9; v += paso) out.push(Math.abs(v) < paso * 1e-9 ? 0 : v);
+    return out;
+  };
+  function ejes(g, w, h, V, X, Y, etX, etY, fx = (v) => txt(f(v, 3)), fy = fx) {
+    g.lineWidth = 1; g.strokeStyle = col['--line'];
+    if (V.x2 > V.x1) for (const v of marcas(V.x1, V.x2, Math.max(4, Math.round(w / 90)))) { g.beginPath(); g.moveTo(X(v), V.mT); g.lineTo(X(v), h - V.mB); g.stroke(); texto(g, X(v), h - V.mB + 12, fx(v), col['--muted']); }
+    for (const v of marcas(V.y1, V.y2, Math.max(4, Math.round(h / 55)))) { g.beginPath(); g.moveTo(V.mL, Y(v)); g.lineTo(w - V.mR, Y(v)); g.stroke(); texto(g, V.mL - 5, Y(v), fy(v), col['--muted'], 'right'); }
+    texto(g, w - V.mR - 2, h - V.mB - 9, etX, col['--muted'], 'right'); texto(g, V.mL + 4, V.mT + 8, etY, col['--muted'], 'left');
+  }
+  function grafica() {
+    const L = lienzo($('#grafica')); if (!L) return;
+    const { g, w, h } = L;
+    if (!sol) return;
+    if (!col['--ink']) colores();
+    const V = { mL: 54, mR: 14, mT: 12, mB: 28 };
+    const marco = (x1, x2, y1, y2) => { Object.assign(V, { x1, x2, y1, y2 }); return [(x) => V.mL + ((x - x1) / (x2 - x1)) * (w - V.mL - V.mR), (y) => V.mT + ((y2 - y) / (y2 - y1)) * (h - V.mT - V.mB)]; };
+    if (sol.modo === 'orden') {
+      const T = tMax(), [X, Y] = marco(0, T, 0, sol.A0 * 1.08);
+      ejes(g, w, h, V, X, Y, `t (${sol.u})`, '[A] (mol/L)');
+      g.strokeStyle = col['--muted']; g.setLineDash([4, 4]);
+      let tt = 0, Ah = sol.A0;
+      for (let i = 0; i < 6; i++) { const t12 = K.vidaMedia(sol.n, sol.k, Ah); tt += t12; Ah /= 2; if (tt > T) break; g.beginPath(); g.moveTo(X(tt), Y(0)); g.lineTo(X(tt), Y(Ah)); g.lineTo(X(0), Y(Ah)); g.stroke(); }
+      g.setLineDash([]);
+      g.strokeStyle = col['--accent']; g.lineWidth = 2.4; g.beginPath();
+      for (let i = 0; i <= 400; i++) { const t = (T * i) / 400; i ? g.lineTo(X(t), Y(sol.c(t))) : g.moveTo(X(t), Y(sol.c(t))); }
+      g.stroke();
+      if (sol.t <= T) punto(g, X(sol.t), Y(sol.A), 5, col['--roz']);
+      if (sol.tC !== null) punto(g, X(sol.tC), Y(sol.C), 4.5, col['--ink']);
+      const t = tDe(); punto(g, X(t), Y(sol.c(t)), 4, col['--peso']);
+    } else if (sol.modo === 'datos') {
+      const fy = [(v) => v, Math.log, (v) => 1 / v][vista], ys = sol.As.map(fy), F = sol.fits[vista], T = sol.ts[sol.ts.length - 1];
+      const lo = Math.min(...ys, F.a, F.a + F.b * T), hi = Math.max(...ys, F.a, F.a + F.b * T), pad = (hi - lo) * 0.12 || 1;
+      const [X, Y] = marco(0, T * 1.04, lo - pad, hi + pad);
+      ejes(g, w, h, V, X, Y, `t (${sol.u})`, ['[A]', 'ln [A]', '1/[A]'][vista]);
+      g.strokeStyle = vista === sol.n ? col['--accent'] : col['--muted']; g.lineWidth = 2; g.beginPath(); g.moveTo(X(0), Y(F.a)); g.lineTo(X(T * 1.04), Y(F.a + F.b * T * 1.04)); g.stroke();
+      // la curva del modelo elegido, en la vista de [A]
+      if (vista === 0 && sol.n !== 0) { g.strokeStyle = col['--accent']; g.setLineDash([5, 4]); g.beginPath(); for (let i = 0; i <= 200; i++) { const t = (T * i) / 200; i ? g.lineTo(X(t), Y(sol.c(t))) : g.moveTo(X(t), Y(sol.c(t))); } g.stroke(); g.setLineDash([]); }
+      sol.ts.forEach((t, i) => punto(g, X(t), Y(ys[i]), 4.5, col['--ink']));
+      texto(g, w - V.mR - 6, V.mT + 10, `R² = ${F.r2.toFixed(5).replace('.', ',')}`, vista === sol.n ? col['--accent'] : col['--muted'], 'right', '600 ');
+      if (vista === 0) { const t = tDe(); punto(g, X(t), Y(sol.c(t)), 4, col['--peso']); }
+    } else if (sol.modo === 'iniciales') {
+      const vs = sol.E.map((e) => e.v), mx = Math.max(...vs, ...sol.E.map((e) => sol.k * e.A ** sol.oA * e.B ** sol.oB)) * 1.1, n = sol.E.length;
+      const [, Y] = marco(0, n, 0, mx), ancho = (w - V.mL - V.mR) / n;
+      ejes(g, w, h, { ...V, x1: 0, x2: 0 }, () => -99, Y, '', `v₀ (mol·L⁻¹·${sol.u}⁻¹)`);
+      sol.E.forEach((e, i) => {
+        const x = V.mL + i * ancho + ancho * 0.25;
+        g.fillStyle = col['--accent']; g.globalAlpha = 0.75; g.fillRect(x, Y(e.v), ancho * 0.5, Y(0) - Y(e.v)); g.globalAlpha = 1;
+        punto(g, x + ancho * 0.25, Y(sol.k * e.A ** sol.oA * e.B ** sol.oB), 5, col['--ink']);
+        texto(g, x + ancho * 0.25, h - V.mB + 12, `exp. ${i + 1}`, col['--muted']);
+      });
+    } else {
+      // ln k frente a 1/T, en 1000/T
+      const xs = [1000 / sol.T1, 1000 / sol.T2], ys = [Math.log(sol.k1), Math.log(sol.k2)];
+      const x1 = Math.min(...xs), x2 = Math.max(...xs), dx = (x2 - x1) * 0.35, y1 = Math.min(...ys), y2 = Math.max(...ys), dy = (y2 - y1) * 0.35 || 1;
+      const [X, Y] = marco(x1 - dx, x2 + dx, y1 - dy, y2 + dy);
+      ejes(g, w, h, V, X, Y, '1000/T (K⁻¹)', 'ln k', (v) => v.toFixed(3).replace('.', ','), (v) => v.toFixed(2).replace('.', ',').replace('-', '−'));
+      const lk = (x) => Math.log(sol.A) - (sol.Ea / K.R) * (x / 1000);
+      g.strokeStyle = col['--accent']; g.lineWidth = 2.4; g.beginPath(); g.moveTo(X(x1 - dx), Y(lk(x1 - dx))); g.lineTo(X(x2 + dx), Y(lk(x2 + dx))); g.stroke();
+      [[xs[0], ys[0], 'T₁'], [xs[1], ys[1], 'T₂']].forEach(([x, y, e]) => { punto(g, X(x), Y(y), 5, col['--ink']); texto(g, X(x) + 9, Y(y) - 10, e, col['--ink'], 'left', '600 '); });
+    }
+  }
+  let ultimo = performance.now();
+  function bucle() {
+    const ahora = performance.now(), dt = Math.min(0.1, (ahora - ultimo) / 1000); ultimo = ahora;
+    if (anda && sol && (sol.modo === 'orden' || sol.modo === 'datos')) { tA += dt; mueve(dt); dibuja(); grafica(); }
+    requestAnimationFrame(bucle);
+  }
+  window.addEventListener('resize', () => { dibuja(); grafica(); });
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { colores(); dibuja(); grafica(); });
+
+  const ver = $('#ver'); if (ver) ver.textContent = Version.de('cinetica').current;
+  formulario(); colores(); calcula(); requestAnimationFrame(bucle);
+  window.CineticaApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { modo: sol.modo, n: sol.n, k: sol.k, A: sol.A, t12: sol.t12, oA: sol.oA, oB: sol.oB, Ea: sol.Ea, k2: sol.k2 }, estado: () => copia(sc), vista: (v) => { vista = v; marcaVista(); grafica(); }, pausa: () => { anda = false; } };
+})();
+
+/* =====================================================================
+   «Mis ejercicios»: barra lateral común a todas las herramientas, como la
+   del simulador de electrostática. Guarda en este navegador el estado de la
+   herramienta (lo que cada app ya deja en localStorage con su CLAVE) con un
+   título, una carpeta y la marca de fijado; abre, renombra, borra, exporta e
+   importa ejercicios en archivos .simu.json. Abrir uno deja su estado en la
+   CLAVE de la app y recarga la página, así sirve para cualquier herramienta.
+   ===================================================================== */
+const Biblioteca = (() => {
+  // carpeta de la herramienta → clave de localStorage donde la app guarda su estado
+  const CLAVES = {
+    alterna: 'alterna-v1', calorimetria: 'calorimetria-v1', circuitos: 'circuitos-v1', condensadores: 'condensadores-v1',
+    'configuracion-electronica': 'configuracion-v1', dinamica: 'dinamica-v1', disoluciones: 'disoluciones-v1', ph: 'ph-v1', cinetica: 'cinetica-v1', doppler: 'doppler-v1', fluidos: 'fluidos-v1', ciclos: 'ciclos-v1', estadistica: 'estadistica-v1', regresion: 'regresion-v1',
+    faraday: 'faraday-v1', gases: 'gases-v1', induccion: 'induccion-v1', magnetostatica: 'magneto-cur-v1', 'masa-molar': 'masa-molar-v1',
+    matrices: 'matrices-v1', resistencias: 'resistencias-v1', ondas: 'ondas-v1', sistemas: 'sistemas-v1', complejos: 'complejos-v1', taylor: 'taylor-v1', fourier: 'fourier-v1', edos: 'edos-v1', 'solido-rigido': 'solido-rigido-v1', 'tiro-parabolico': 'tiro-v1',
+    'trabajo-y-energia': 'energia-v1',
+  };
+  const FORMATO = 'simulaciencia-ejercicios', ANCHO = 1280;
+  const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const lee = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); return v ?? d; } catch (e) { return d; } };
+  const escribe = (k, v) => { try { localStorage.setItem(k, typeof v === 'string' ? v : JSON.stringify(v)); return true; } catch (e) { return false; } };
+  const norm = (s) => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+
+  const CSS = `
+.bib-btn { display: inline-flex; align-items: center; gap: 6px; font: 600 13.5px var(--f-ui, system-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px; cursor: pointer; white-space: nowrap }
+.bib-btn:hover, .bib-btn[aria-expanded=true] { border-color: var(--accent); color: var(--accent) }
+.bib { position: fixed; top: 0; left: 0; bottom: 0; width: 290px; max-width: 88vw; z-index: 60; background: var(--panel); border-right: 1px solid var(--line); display: flex; flex-direction: column; transform: translateX(-102%); transition: transform .18s ease; font: 13.5px/1.4 var(--f-ui, system-ui); color: var(--ink) }
+.bib.abierta { transform: none; box-shadow: 4px 0 24px rgba(0,0,0,.12) }
+.bib-scrim { position: fixed; inset: 0; z-index: 59; background: rgba(0,0,0,.3) }
+@media (min-width: ${ANCHO}px) { body.bib-fija { padding-left: 290px } body.bib-fija .bib.abierta { box-shadow: none } body.bib-fija .bib-scrim { display: none } }
+@media (prefers-reduced-motion: reduce) { .bib { transition: none } }
+.bib-h { display: flex; align-items: center; justify-content: space-between; padding: 12px 12px 8px 14px }
+.bib-h b { font: 600 15px var(--f-ui, system-ui) }
+.bib-x { border: 0; background: none; color: var(--muted); font-size: 20px; line-height: 1; cursor: pointer; padding: 2px 6px; border-radius: 6px }
+.bib-x:hover { background: var(--bg) }
+.bib-acc { display: grid; gap: 2px; padding: 0 8px 8px }
+.bib-acc button, .bib-acc label { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; border: 0; background: none; color: var(--ink); font: 500 13.5px var(--f-ui, system-ui); padding: 6px 8px; border-radius: 8px; cursor: pointer }
+.bib-acc button:hover, .bib-acc label:hover { background: var(--bg) }
+.bib-acc button:disabled { opacity: .45; cursor: default; background: none }
+.bib-ic { width: 22px; height: 22px; border-radius: 6px; display: inline-grid; place-items: center; border: 1px solid var(--line); color: var(--accent); font-size: 13px; flex: 0 0 auto }
+.bib-busca { margin: 4px 2px 0; font: 13px var(--f-ui, system-ui); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 6px 9px; width: calc(100% - 4px) }
+.bib-form { margin: 0 10px 8px; padding: 10px; border: 1px solid var(--accent); border-radius: 10px; display: grid; gap: 6px }
+.bib-form label { font-size: 12px; color: var(--muted); display: grid; gap: 2px }
+.bib-form input { font: 13px var(--f-ui, system-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px }
+.bib-form .fila { display: flex; gap: 6px; justify-content: flex-end }
+.bib-form button { font: 500 13px var(--f-ui, system-ui); border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 6px; padding: 5px 10px; cursor: pointer }
+.bib-form button.si { background: var(--accent); border-color: var(--accent); color: var(--panel) }
+.bib-lista { flex: 1; overflow-y: auto; padding: 0 8px 8px; border-top: 1px solid var(--line) }
+.bib-sec { font: 600 11px var(--f-ui, system-ui); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 12px 6px 4px }
+.bib-carp { display: flex; align-items: center; gap: 6px; width: 100%; border: 0; background: none; color: var(--ink); font: 600 13px var(--f-ui, system-ui); padding: 5px 6px; border-radius: 6px; cursor: pointer; text-align: left }
+.bib-carp:hover { background: var(--bg) } .bib-carp .n { margin-left: auto; color: var(--muted); font-weight: 400; font-size: 12px }
+.bib-it { display: flex; align-items: center; gap: 2px; border-radius: 8px; padding-left: 2px }
+.bib-it:hover, .bib-it:focus-within { background: var(--bg) }
+.bib-it.activo { background: var(--accent-soft, var(--bg)); box-shadow: inset 3px 0 0 var(--accent) }
+.bib-carpd .bib-it { margin-left: 14px }
+.bib-abre { flex: 1; min-width: 0; border: 0; background: none; color: var(--ink); text-align: left; font: 13.5px var(--f-ui, system-ui); padding: 6px; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+.bib-mini { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 13px; width: 26px; height: 26px; border-radius: 6px; flex: 0 0 auto; opacity: .55 }
+.bib-it:hover .bib-mini, .bib-it:focus-within .bib-mini, .bib-mini.on { opacity: 1 } .bib-mini:hover { background: var(--panel); color: var(--accent) } .bib-mini.on { color: var(--accent) }
+@media (hover: none) { .bib-mini { opacity: 1 } }
+.bib-vacio { color: var(--muted); padding: 10px 6px; margin: 0 }
+.bib-pie { border-top: 1px solid var(--line); padding: 8px 14px 12px; color: var(--muted); font-size: 12px }
+.bib-pie p { margin: 0 }
+.bib-aviso { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 70; background: var(--ink); color: var(--panel); padding: 8px 14px; border-radius: 8px; font: 13px var(--f-ui, system-ui); box-shadow: 0 4px 16px rgba(0,0,0,.2) }
+.bib.arrastre { outline: 2px dashed var(--accent); outline-offset: -6px }
+`;
+
+  function monta(herramienta) {
+    const clave = CLAVES[herramienta], cab = document.querySelector('header.top');
+    if (!clave || !cab || document.querySelector('.bib')) return null;
+    const K = `simu-ejercicios:${herramienta}`, K_UI = 'simu-ejercicios-ui', K_ACT = `simu-ejercicios-activo:${herramienta}`;
+    const nombre = (document.querySelector('h1')?.textContent || document.title.split('·')[0]).trim();
+    let lib = lee(K, { items: [] }); if (!Array.isArray(lib.items)) lib = { items: [] };
+    let ui = { abierta: window.innerWidth >= ANCHO, cerradas: {}, ...lee(K_UI, {}) };
+    let activo = null; try { activo = sessionStorage.getItem(K_ACT); } catch (e) { /* sin almacenamiento */ }
+    if (activo && !lib.items.some((x) => x.id === activo)) activo = null;
+    let busca = '', form = null, borrando = null;
+    const guardaLib = () => escribe(K, lib) || aviso('No se pudo guardar: el navegador no deja usar el almacenamiento');
+    const guardaUI = () => escribe(K_UI, ui);
+    const ponActivo = (id) => { activo = id; try { if (id) sessionStorage.setItem(K_ACT, id); else sessionStorage.removeItem(K_ACT); } catch (e) { /* sin almacenamiento */ } };
+    // las apps que guardan con retraso escuchan «simu-guardar» y guardan al momento
+    const estado = () => { window.dispatchEvent(new Event('simu-guardar')); try { return localStorage.getItem(clave); } catch (e) { return null; } };
+    const nuevoId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+    const ejemplo = () => { const s = document.querySelector('select#ejemplo, select[id^="ejemplo"]'); return s && s.value && s.selectedOptions[0] ? s.selectedOptions[0].textContent.trim() : ''; };
+
+    const st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
+    const btn = document.createElement('button');
+    btn.className = 'bib-btn'; btn.type = 'button'; btn.setAttribute('aria-controls', 'bib'); btn.title = 'Guardar, abrir, exportar e importar tus ejercicios';
+    btn.innerHTML = '<span aria-hidden="true">☰</span> Mis ejercicios';
+    const ini = cab.querySelector('.a-inicio'); (ini ? ini.after(btn) : cab.prepend(btn));
+    const panel = document.createElement('aside'); panel.className = 'bib'; panel.id = 'bib'; panel.setAttribute('aria-label', 'Mis ejercicios');
+    const scrim = document.createElement('div'); scrim.className = 'bib-scrim'; scrim.hidden = true;
+    const archivo = document.createElement('input'); archivo.type = 'file'; archivo.accept = '.json,application/json'; archivo.multiple = true; archivo.hidden = true;
+    document.body.append(panel, scrim, archivo);
+
+    let tAviso = 0;
+    function aviso(t) {
+      let a = document.querySelector('.bib-aviso'); if (!a) { a = document.createElement('div'); a.className = 'bib-aviso'; a.setAttribute('role', 'status'); document.body.appendChild(a); }
+      a.textContent = t; a.hidden = false; clearTimeout(tAviso); tAviso = setTimeout(() => { a.hidden = true; }, 2600);
+    }
+    function abre(v) {
+      ui.abierta = v; guardaUI();
+      panel.classList.toggle('abierta', v); btn.setAttribute('aria-expanded', String(v));
+      document.body.classList.toggle('bib-fija', v && window.innerWidth >= ANCHO);
+      scrim.hidden = !v || window.innerWidth >= ANCHO;
+    }
+    function descarga(nombreArch, datos) {
+      const url = URL.createObjectURL(new Blob([JSON.stringify(datos, null, 2)], { type: 'application/json' }));
+      const a = document.createElement('a'); a.href = url; a.download = nombreArch; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+    const archivoDe = (items) => ({ formato: FORMATO, version: 1, herramienta, guardado: new Date().toISOString(), ejercicios: items.map((i) => ({ titulo: i.titulo, carpeta: i.carpeta || undefined, fijado: i.fijado || undefined, datos: i.datos })) });
+    const nombreArchivo = (t) => (norm(t).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'ejercicio') + '.simu.json';
+
+    function importa(texto) {
+      const d = JSON.parse(texto);
+      if (d?.formato !== FORMATO || !Array.isArray(d.ejercicios)) throw new Error('no es un archivo de ejercicios de SimulaCiencia');
+      if (d.herramienta !== herramienta) throw new Error(`es de otra herramienta (${d.herramienta})`);
+      let n = 0;
+      for (const e of d.ejercicios) {
+        if (typeof e?.datos !== 'string') continue;
+        lib.items.push({ id: nuevoId(), titulo: String(e.titulo || 'Ejercicio importado').slice(0, 120), carpeta: String(e.carpeta || '').slice(0, 60), fijado: !!e.fijado, datos: e.datos, actualizado: Date.now() }); n++;
+      }
+      return n;
+    }
+    async function importaArchivos(files) {
+      let n = 0;
+      for (const f of files) {
+        try { n += importa(await f.text()); } catch (err) { aviso(`No se pudo importar ${f.name}: ${err.message}`); return; }
+      }
+      guardaLib(); pinta(); aviso(n === 1 ? 'Ejercicio importado' : `${n} ejercicios importados`);
+    }
+    function carga(it) {
+      if (!escribe(clave, it.datos)) { aviso('No se pudo abrir: el navegador no deja usar el almacenamiento'); return; }
+      ponActivo(it.id);
+      // si se estaba practicando, lo que se abre sustituye a los datos de antes de la práctica
+      try { sessionStorage.removeItem(`simu-practica:${herramienta}`); } catch (e) { /* sin almacenamiento */ }
+      // sin el #… de la dirección, que en algunas herramientas (configuración electrónica) manda sobre lo guardado
+      history.replaceState(null, '', location.pathname + location.search);
+      location.reload();
+    }
+    function guardaForm() {
+      const t = panel.querySelector('#bib-t').value.trim() || 'Ejercicio sin título', c = panel.querySelector('#bib-c').value.trim();
+      if (form.id) { const it = lib.items.find((x) => x.id === form.id); if (it) Object.assign(it, { titulo: t, carpeta: c, actualizado: Date.now() }); }
+      else {
+        const datos = estado();
+        if (datos == null) { aviso('Todavía no hay nada que guardar: cambia algún dato primero'); return; }
+        const it = { id: nuevoId(), titulo: t, carpeta: c, fijado: false, datos, actualizado: Date.now() };
+        lib.items.push(it); ponActivo(it.id); aviso('Guardado en Mis ejercicios');
+      }
+      form = null; guardaLib(); pinta();
+    }
+    function actualiza() {
+      const it = lib.items.find((x) => x.id === activo), datos = estado();
+      if (!it || datos == null) return;
+      it.datos = datos; it.actualizado = Date.now(); guardaLib(); pinta(); aviso(`Cambios guardados en «${it.titulo}»`);
+    }
+
+    function fila(it) {
+      const b = borrando === it.id;
+      return `<div class="bib-it${it.id === activo ? ' activo' : ''}" data-id="${it.id}">
+<button class="bib-abre" data-acc="abrir" title="Abrir «${esc(it.titulo)}»">${esc(it.titulo)}</button>${b
+        ? '<button class="bib-mini on" data-acc="si-borrar" title="Borrar de verdad" aria-label="Confirmar borrar">✓</button><button class="bib-mini" data-acc="no-borrar" title="No borrar" aria-label="Cancelar">✕</button>'
+        : `<button class="bib-mini${it.fijado ? ' on' : ''}" data-acc="fijar" title="${it.fijado ? 'Quitar de fijados' : 'Fijar arriba'}" aria-label="${it.fijado ? 'Quitar de fijados' : 'Fijar'}" aria-pressed="${!!it.fijado}">${it.fijado ? '★' : '☆'}</button><button class="bib-mini" data-acc="editar" title="Cambiar el título o la carpeta" aria-label="Editar">✎</button><button class="bib-mini" data-acc="exportar" title="Exportar este ejercicio" aria-label="Exportar">⤓</button><button class="bib-mini" data-acc="borrar" title="Borrar" aria-label="Borrar">🗑</button>`}
+</div>`;
+    }
+    function pinta() {
+      const q = norm(busca), vis = lib.items.filter((i) => !q || norm(i.titulo + ' ' + (i.carpeta || '')).includes(q));
+      const orden = (a, b) => a.titulo.localeCompare(b.titulo, 'es', { numeric: true });
+      const fij = vis.filter((i) => i.fijado).sort(orden), resto = vis.filter((i) => !i.fijado);
+      const sueltos = resto.filter((i) => !i.carpeta).sort(orden), carpetas = {};
+      for (const i of resto) if (i.carpeta) (carpetas[i.carpeta] ||= []).push(i);
+      let lista = '';
+      if (fij.length) lista += `<p class="bib-sec">Fijados</p>${fij.map(fila).join('')}`;
+      const nombres = Object.keys(carpetas).sort((a, b) => a.localeCompare(b, 'es'));
+      if (nombres.length || sueltos.length) lista += `<p class="bib-sec">Mis ejercicios</p>`;
+      for (const n of nombres) {
+        const ab = q || !ui.cerradas[`${herramienta}/${n}`];
+        lista += `<button class="bib-carp" data-carpeta="${esc(n)}" aria-expanded="${!!ab}"><span aria-hidden="true">${ab ? '▾' : '▸'}</span>${esc(n)}<span class="n">${carpetas[n].length}</span></button>${ab ? `<div class="bib-carpd">${carpetas[n].sort(orden).map(fila).join('')}</div>` : ''}`;
+      }
+      lista += sueltos.map(fila).join('');
+      if (!vis.length) lista = `<p class="bib-vacio">${lib.items.length ? 'Ningún ejercicio coincide con la búsqueda.' : 'Aún no has guardado ningún ejercicio. Prepara los datos y pulsa «Guardar el actual».'}</p>`;
+      const it = lib.items.find((x) => x.id === activo), carps = [...new Set(lib.items.map((x) => x.carpeta).filter(Boolean))];
+      const f = form && (form.id ? lib.items.find((x) => x.id === form.id) : { titulo: ejemplo() || `Ejercicio ${lib.items.length + 1}`, carpeta: it?.carpeta || '' });
+      panel.innerHTML = `<div class="bib-h"><b>Mis ejercicios</b><button class="bib-x" data-acc="cerrar" title="Cerrar" aria-label="Cerrar Mis ejercicios">×</button></div>
+<div class="bib-acc">
+<button data-acc="nuevo"><span class="bib-ic">+</span>Guardar el actual como nuevo</button>
+<button data-acc="actualizar"${it ? '' : ' disabled'} title="${it ? `Guarda los datos de ahora en «${esc(it.titulo)}»` : 'Abre o guarda antes un ejercicio'}"><span class="bib-ic">↻</span>${it ? `Guardar cambios en «${esc(it.titulo.length > 22 ? it.titulo.slice(0, 21) + '…' : it.titulo)}»` : 'Guardar cambios'}</button>
+<button data-acc="importar"><span class="bib-ic">↥</span>Importar archivo…</button>
+<button data-acc="exportar-todo"${lib.items.length ? '' : ' disabled'}><span class="bib-ic">↧</span>Exportar todos</button>
+${lib.items.length > 5 ? `<input type="search" class="bib-busca" placeholder="Buscar por título o carpeta…" aria-label="Buscar ejercicios" value="${esc(busca)}">` : ''}
+</div>
+${f ? `<div class="bib-form"><label>Título<input id="bib-t" value="${esc(f.titulo)}" maxlength="120" autocomplete="off"></label><label>Carpeta (opcional)<input id="bib-c" value="${esc(f.carpeta || '')}" maxlength="60" list="bib-dl" placeholder="sin carpeta" autocomplete="off"></label><datalist id="bib-dl">${carps.map((c) => `<option value="${esc(c)}">`).join('')}</datalist><div class="fila"><button data-acc="cancelar">Cancelar</button><button class="si" data-acc="guardar">Guardar</button></div></div>` : ''}
+<div class="bib-lista">${lista}</div>
+<div class="bib-pie"><p>Se guardan en este navegador. Exporta un archivo <code>.simu.json</code> para llevarlos a otro equipo o compartirlos; también puedes arrastrarlo aquí.</p></div>`;
+      if (f) { const t = panel.querySelector('#bib-t'); t.focus(); t.select(); }
+    }
+
+    panel.addEventListener('click', (e) => {
+      const car = e.target.closest('.bib-carp');
+      if (car) { const k = `${herramienta}/${car.dataset.carpeta}`; ui.cerradas[k] = !ui.cerradas[k]; guardaUI(); pinta(); return; }
+      const b = e.target.closest('[data-acc]'); if (!b) return;
+      const id = b.closest('.bib-it')?.dataset.id, it = id && lib.items.find((x) => x.id === id);
+      switch (b.dataset.acc) {
+        case 'cerrar': abre(false); btn.focus(); break;
+        case 'nuevo': form = {}; pinta(); break;
+        case 'actualizar': actualiza(); break;
+        case 'importar': archivo.click(); break;
+        case 'exportar-todo': descarga(nombreArchivo(nombre + ' ejercicios'), archivoDe(lib.items)); break;
+        case 'guardar': guardaForm(); break;
+        case 'cancelar': form = null; pinta(); break;
+        case 'abrir': if (it) carga(it); break;
+        case 'fijar': if (it) { it.fijado = !it.fijado; guardaLib(); pinta(); } break;
+        case 'editar': if (it) { form = { id }; pinta(); } break;
+        case 'exportar': if (it) descarga(nombreArchivo(it.titulo), archivoDe([it])); break;
+        case 'borrar': borrando = id; pinta(); break;
+        case 'no-borrar': borrando = null; pinta(); break;
+        case 'si-borrar': lib.items = lib.items.filter((x) => x.id !== id); if (activo === id) ponActivo(null); borrando = null; guardaLib(); pinta(); aviso('Ejercicio borrado'); break;
+      }
+    });
+    panel.addEventListener('keydown', (e) => {
+      if (e.target.closest('.bib-form') && e.key === 'Enter') { e.preventDefault(); guardaForm(); }
+      else if (e.key === 'Escape') { if (form) { form = null; pinta(); } else { abre(false); btn.focus(); } }
+    });
+    panel.addEventListener('input', (e) => { if (e.target.classList.contains('bib-busca')) { busca = e.target.value; const pos = e.target.selectionStart; pinta(); const s = panel.querySelector('.bib-busca'); s.focus(); s.setSelectionRange(pos, pos); } });
+    panel.addEventListener('dragover', (e) => { e.preventDefault(); panel.classList.add('arrastre'); });
+    panel.addEventListener('dragleave', () => panel.classList.remove('arrastre'));
+    panel.addEventListener('drop', (e) => { e.preventDefault(); panel.classList.remove('arrastre'); if (e.dataTransfer.files.length) importaArchivos([...e.dataTransfer.files]); });
+    archivo.addEventListener('change', () => { if (archivo.files.length) importaArchivos([...archivo.files]); archivo.value = ''; });
+    btn.addEventListener('click', () => abre(!panel.classList.contains('abierta')));
+    scrim.addEventListener('click', () => abre(false));
+    window.addEventListener('resize', () => abre(panel.classList.contains('abierta')));
+
+    pinta(); abre(!!ui.abierta);
+    return { get items() { return lib.items; }, abre, importa: (t) => { const n = importa(t); guardaLib(); pinta(); return n; }, archivoDe };
+  }
+  return { monta, CLAVES, FORMATO };
+})();
+
+/* =====================================================================
+   Modo práctica común a todas las herramientas. «Otro ejercicio» parte de
+   un ejemplo al azar y cambia sus datos numéricos (con la misma forma de
+   número: enteros pequeños, ángulos, probabilidades…), tapa los resultados
+   y el desarrollo, y pide al alumno los resultados principales, con un
+   hueco por cada número de lo que la herramienta escribiría. «Comprobar»
+   los corrige (1 % o la última cifra mostrada) y «Ver la solución» destapa
+   el desarrollo. Al salir se vuelve a los datos que había antes.
+   Lee de la página lo que ya calcula cada app: no repite ninguna física.
+   ===================================================================== */
+const Practica = (() => {
+  const azar = (a, b) => a + Math.random() * (b - a), entero = (a, b) => Math.floor(azar(a, b + 1));
+  const toma = (xs) => xs[Math.floor(Math.random() * xs.length)];
+  const visible = (e) => !!e && !!(e.offsetWidth || e.offsetHeight || e.getClientRects().length) && !e.closest('[hidden]');
+  const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+  // lo que cambia de una herramienta a otra; lo demás sale de la estructura común de las páginas
+  const CONF = {
+    calorimetria: { items: '#te' },
+    disoluciones: { items: '#valores > .valor:not(.dato)' },
+    matrices: { items: '#res' },
+    // solo sistemas compatibles determinados: la solución paramétrica no se pregunta por huecos
+    // complejos: una operación al azar con números pequeños (los datos son textos como 3 − 2i)
+    // taylor: una función y un punto de los de clase; se preguntan los coeficientes, la aproximación y el error
+    taylor: { datos: null, items: '#resumen > div.num', genera: () => window.TaylorApp?.azar(), enunciado: () => window.TaylorApp?.enunciado() },
+    // fourier: una función de las de clase; se preguntan a₀ y los primeros coeficientes
+    fourier: { datos: null, items: '#resumen > div.num', genera: () => window.FourierApp?.azar(), enunciado: () => window.FourierApp?.enunciado() },
+    // edos: una ecuación de las de clase (Euler, segundo orden o sistema lineal); se preguntan los valores numéricos
+    edos: { datos: null, items: '#resumen > div.num', genera: () => window.EDOsApp?.azar(), enunciado: () => window.EDOsApp?.enunciado() },
+    // cinetica: un ejercicio de los de clase (ley integrada, datos, velocidades iniciales o Arrhenius)
+    cinetica: { datos: null, items: '#resumen > div.num', genera: () => window.CineticaApp?.azar(), enunciado: () => window.CineticaApp?.enunciado() },
+    complejos: { datos: null, genera: () => window.ComplejosApp?.azar(), enunciado: () => window.ComplejosApp?.enunciado() },
+    sistemas: { items: '#res', valido: () => !/[λμ]|incompatible|no tiene/i.test(document.querySelector('#res')?.textContent + document.querySelector('#tipo')?.textContent) },
+    estadistica: { items: '#res' },
+    // regresión: una tabla de datos al azar alrededor de una recta (están en un textarea, no en campos numéricos)
+    regresion: { datos: null, genera: () => window.RegresionApp?.azar(), enunciado: () => 'Con los datos de la tabla, calcula la recta de regresión de Y sobre X, la de X sobre Y, el coeficiente de correlación, las medias, la covarianza y la estimación de y que se pide.' },
+    // resistencias: unos colores al azar (no hay números que cambiar en los datos)
+    resistencias: { datos: null, genera: () => window.ResistenciasApp?.azar(), enunciado: () => `¿Cuánto vale una resistencia con las bandas <b>${esc(window.ResistenciasApp?.colores() || '')}</b>? Escribe el valor y el margen en el que puede estar en las mismas unidades.` },
+    magnetostatica: { items: '[data-res]', tapa: '[data-res], [data-steps], .cvwrap', datos: '#fuentes',
+      // el enunciado del ejemplo ya no vale con los datos nuevos
+      despues: () => pon(document.querySelector('#enunciado'), 'Ejercicio de práctica: calcula el campo magnético en los puntos de las preguntas con las fuentes de la izquierda.'),
+      antes: () => { const m = document.querySelector('#modo'); if (m && m.value !== 'si') { m.value = 'si'; m.dispatchEvent(new Event('change', { bubbles: true })); } } },
+    'masa-molar': {
+      items: '#res-masa .grande', quitar: '', tapa: '#res-masa, #conv-card', datos: null,
+      genera: () => pon(document.querySelector('#formula'), toma(['H2O', 'CO2', 'NaCl', 'H2SO4', 'HNO3', 'NaOH', 'NH3', 'CaCO3', 'C6H12O6', 'C2H5OH', 'Ca(OH)2', 'Al2(SO4)3', 'KMnO4', 'Fe2O3', 'Mg3(PO4)2', 'CuSO4·5H2O', 'Na2CO3', 'K2Cr2O7', 'CH4', 'C3H8', 'HCl', 'Ba(NO3)2', 'NH4Cl', 'MgCl2·6H2O'])),
+      enunciado: () => `Calcula la masa molar de <b>${esc(document.querySelector('#formula').value)}</b>.`,
+    },
+    'configuracion-electronica': {
+      items: null, tapa: '#res', datos: null,
+      genera: () => pon(document.querySelector('#entrada'), String(entero(1, 56))),
+      enunciado: () => { const g = (s) => document.querySelector(s)?.textContent.trim() || ''; return `Escribe la configuración electrónica del <b>${esc(g('#nombre').toLowerCase())}</b> (${esc(g('#sim'))}, Z = ${esc(g('#z'))}) en orden de llenado y cuántos electrones desapareados tiene.`; },
+      textos: [{ et: 'Configuración electrónica', sel: '#llenado', otros: ['#abreviada', '#capas-txt'] }],
+      numeros: [{ et: 'Electrones desapareados', sel: '#desap' }],
+    },
+  };
+
+  function pon(el, v) {
+    if (!el) return;
+    el.value = v;
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+    el.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+  const lee = (s) => { const t = String(s).trim().replace(/\s+/g, '').replace(/[−–]/g, '-'); return /^-?\d+(,\d+)?$/.test(t) || /^-?\d*\.\d+$/.test(t) ? parseFloat(t.replace(',', '.')) : null; };
+  const escribe = (x, como) => (como.includes(',') || !Number.isInteger(x) ? String(x).replace('.', ',') : String(x));
+  const redondea = (x, cifras) => { if (x === 0) return 0; const e = Math.floor(Math.log10(Math.abs(x))) - cifras + 1; return Math.round(x / 10 ** e) * 10 ** e; };
+  const limpio = (x) => parseFloat(x.toPrecision(12));
+
+  // un dato numérico nuevo, del mismo tipo que el que había
+  function otroValor(v, etiqueta, texto) {
+    if (v === 0) return 0;
+    const ang = /°|ángulo|grados|α|θ|φ/i.test(etiqueta), s = Math.sign(v), a = Math.abs(v);
+    if (Number.isInteger(v) && !texto.includes(',') && a <= 12) return s * entero(Math.max(1, Math.round(a * 0.5)), Math.round(a * 1.5) + 1);
+    if (ang && a > 0 && a < 90) return s * Math.round(azar(Math.max(5, a * 0.6), Math.min(85, a * 1.4)));
+    if (a > 0 && a < 1) return limpio(s * Math.min(0.98, Math.max(0.02, redondea(a * azar(0.6, 1.5), 2))));
+    const dec = (texto.split(',')[1] || '').length, cifras = Math.max(2, String(Math.round(a * 10 ** dec)).replace(/^0+/, '').length);
+    return limpio(s * redondea(a * azar(0.6, 1.5), Math.min(3, cifras)));
+  }
+  const etiquetaDe = (inp) => [inp.getAttribute('aria-label'), inp.id && document.querySelector(`label[for="${inp.id}"]`)?.textContent, inp.closest('label')?.textContent, inp.closest('.row, .fila')?.textContent].filter(Boolean).join(' ');
+
+  // los números de un resultado: la plantilla con un hueco por número y su valor (los de sub/sup, fórmulas y notas no cuentan)
+  // (también el número de la parte imaginaria, j31, y el decimal con punto de magnetostática)
+  const RE = /(?:(?<![\p{L}\d,.])|(?<=(?:^|[^\p{L}\d])j))([−-]?\d+(?:[.,]\d+)?(?:\/\d+)?)(\s*[·×]\s*10)?/gu;
+  const conEtiqueta = (el) => el.matches('div') && el.firstElementChild?.tagName === 'SPAN' && !el.firstElementChild.className && el.firstChild === el.firstElementChild;
+  function numeros(el, quitar = 'small, .nota') {
+    const c = el.cloneNode(true);
+    if (conEtiqueta(c)) c.firstElementChild.remove();
+    if (quitar) for (const x of c.querySelectorAll(quitar)) x.remove();
+    // las fracciones de matrices y sistemas (numerador y denominador apilados) pasan a a/b
+    for (const fr of c.querySelectorAll('.fr')) if (fr.children.length === 2) fr.replaceWith(`${fr.children[0].textContent.trim()}/${fr.children[1].textContent.trim()}`);
+    c.normalize();
+    const vals = [], tw = document.createTreeWalker(c, NodeFilter.SHOW_TEXT), nodos = [];
+    while (tw.nextNode()) if (!tw.currentNode.parentElement.closest('sub, sup, math, .formula')) nodos.push(tw.currentNode);
+    for (const n of nodos) {
+      const t = n.nodeValue, frag = document.createDocumentFragment();
+      let i = 0, m;
+      RE.lastIndex = 0;
+      while ((m = RE.exec(t))) {
+        let texto = m[1], v = texto.includes('/') ? texto.replace('−', '-').split('/').map((x) => parseFloat(x.replace(',', '.'))).reduce((a, b) => a / b) : parseFloat(texto.replace('−', '-').replace(',', '.')), exp = 0, fin = m.index + m[0].length;
+        if (m[2]) {
+          const sup = n.nextSibling;
+          if (fin === t.length && sup && sup.nodeName === 'SUP' && /^[−-]?\d+$/.test(sup.textContent.trim())) { exp = parseInt(sup.textContent.trim().replace('−', '-'), 10); v *= 10 ** exp; sup.remove(); } else fin = m.index + m[1].length;
+        }
+        if (!Number.isFinite(v)) continue;
+        frag.append(t.slice(i, m.index));
+        const h = document.createElement('span'); h.dataset.hueco = String(vals.length); frag.append(h);
+        vals.push({ t: texto + (exp ? `·10^${exp}` : ''), v, dec: (texto.split('/')[0].split(/[.,]/)[1] || '').length, exp, frac: texto.includes('/') });
+        i = fin;
+      }
+      if (vals.length && i) { frag.append(t.slice(i)); n.replaceWith(frag); }
+    }
+    return { plantilla: c.innerHTML, vals };
+  }
+  // lo que escribe el alumno: 12,5 · 1.2e-3 · 1,2·10^-3 · −3/4
+  function leeAlumno(s) {
+    let t = String(s).trim().replace(/\s+/g, '').replace(/[−–]/g, '-').replace(/,/g, '.');
+    if (!t) return null;
+    t = t.replace(/(?:·|\*|x|×)10\^?\(?(-?\d+)\)?$/i, 'e$1');
+    if (/^-?\d*\.?\d+(e-?\d+)?\/-?\d*\.?\d+$/.test(t)) { const [a, b] = t.split('/').map(Number); return b ? a / b : null; }
+    return /^-?(\d+\.?\d*|\.\d+)(e[+-]?\d+)?$/i.test(t) ? Number(t) : null;
+  }
+  const tolerancia = (x) => (x.frac ? 1e-9 + 0.005 * Math.abs(x.v) : Math.max(0.01 * Math.abs(x.v), 0.5 * 10 ** (x.exp - x.dec) * 1.0001));
+  const normaConf = (s) => String(s).replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]/g, (c) => '⁰¹²³⁴⁵⁶⁷⁸⁹'.indexOf(c)).replace(/\^/g, '').replace(/\s+/g, '').toLowerCase();
+
+  const CSS = `
+.prac-btn { display: inline-flex; align-items: center; gap: 6px; font: 600 13.5px var(--f-ui, system-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px; cursor: pointer; white-space: nowrap }
+.prac-btn:hover { border-color: var(--accent); color: var(--accent) }
+.prac-btn[aria-pressed=true] { background: var(--accent); border-color: var(--accent); color: var(--panel) }
+.prac-tapa { filter: blur(9px); opacity: .45; pointer-events: none; user-select: none; transition: filter .2s }
+.prac { background: var(--panel); border: 1px solid var(--accent); border-radius: 10px; padding: 14px; margin-bottom: 14px; box-shadow: inset 4px 0 0 var(--accent) }
+.prac h2 { font: 600 15px var(--f-ui, system-ui); margin: 0 0 6px; color: var(--accent) }
+.prac > p { margin: 0 0 10px; color: var(--muted) }
+.prac .enun { color: var(--ink) }
+.prac-q { display: grid; gap: 8px; margin: 0 0 12px }
+.prac-q > div { display: grid; grid-template-columns: minmax(120px, max-content) minmax(0, 1fr); gap: 4px 12px; align-items: baseline }
+.prac-q .et { color: var(--muted); font-size: 13px }
+.prac-q .val { line-height: 2.1 }
+@media (max-width: 560px) { .prac-q > div { grid-template-columns: minmax(0, 1fr) } }
+.prac-in { font: 13.5px var(--f-mono, ui-monospace, monospace); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 3px 6px; width: 7.5em; margin: 0 2px }
+.prac-in.ancha { width: min(100%, 22em) }
+.prac-in.bien { border-color: #1d8a5b; box-shadow: 0 0 0 1px #1d8a5b } .prac-in.mal { border-color: #c0392b; box-shadow: 0 0 0 1px #c0392b }
+.prac-sol { font: 12.5px var(--f-mono, ui-monospace, monospace); color: var(--accent); margin-left: 2px }
+.prac-acc { display: flex; flex-wrap: wrap; gap: 8px }
+.prac-acc button { font: 500 13px var(--f-ui, system-ui); border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 6px; padding: 6px 12px; cursor: pointer }
+.prac-acc button.si { background: var(--accent); border-color: var(--accent); color: var(--panel) }
+.prac-nota { margin: 10px 0 0; font-weight: 600 } .prac-nota.bien { color: #1d8a5b } .prac-nota.mal { color: #c0392b }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .prac-nota.bien { color: #4cc48e } :root:not([data-theme="light"]) .prac-nota.mal { color: #ef6a5a } }
+:root[data-theme="dark"] .prac-nota.bien { color: #4cc48e } :root[data-theme="dark"] .prac-nota.mal { color: #ef6a5a }
+`;
+
+  function monta(herramienta, clave) {
+    const cab = document.querySelector('header.top');
+    if (!cab || herramienta === 'tabla-periodica' || document.querySelector('.prac-btn')) return null;
+    const conf = CONF[herramienta] || {};
+    const K_ANTES = `simu-practica:${herramienta}`;
+    const st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
+    const btn = document.createElement('button');
+    btn.type = 'button'; btn.className = 'prac-btn'; btn.setAttribute('aria-pressed', 'false'); btn.title = 'Ejercicios con datos al azar: escribe tus resultados y compruébalos antes de ver el desarrollo';
+    btn.innerHTML = '<span aria-hidden="true">✎</span> Modo práctica';
+    const tras = cab.querySelector('.bib-btn') || cab.querySelector('.a-inicio'); (tras ? tras.after(btn) : cab.prepend(btn));
+
+    let activo = false, card = null, preguntas = [], tapados = [], resuelto = false;
+    const layout = () => [...document.querySelectorAll('.layout')].find(visible);
+    const datos = () => (conf.datos === null ? null : conf.datos ? document.querySelector(conf.datos) : layout()?.firstElementChild);
+    const hayError = () => [...document.querySelectorAll('.error, #errores')].some((e) => visible(e) && e.textContent.trim());
+    function zonaTapa() {
+      if (conf.tapa) return [...document.querySelectorAll(conf.tapa)].filter((e) => !e.closest('.prac'));
+      const l = layout(); return l ? [...l.children].slice(1).flatMap((col) => [...col.children]).filter((e) => !e.classList.contains('prac')) : [];
+    }
+    function items() {
+      if (!conf.items && conf.items !== undefined) return [];
+      const sel = conf.items || '#res > div, #resumen > div';
+      return [...document.querySelectorAll(sel)].filter((e) => !e.closest('.prac') && (visible(e) || e.closest('.prac-tapa')));
+    }
+    function ejemplo() {
+      const d = datos(); if (!d) return;
+      const s = [...d.querySelectorAll('select')].find((x) => visible(x) && x.options.length > 2 && /ejemplo/i.test(x.id + ' ' + x.options[0].textContent));
+      if (s) { s.selectedIndex = entero(1, s.options.length - 1); s.dispatchEvent(new Event('change', { bubbles: true })); }
+    }
+    function cambiaDatos() {
+      const d = datos(); if (!d) return;
+      for (const inp of [...d.querySelectorAll('input')].filter((x) => visible(x) && (!x.type || x.type === 'text' || x.type === 'number' || x.type === 'search') && !x.classList.contains('nom'))) {
+        const v = lee(inp.value); if (v === null) continue;
+        pon(inp, escribe(otroValor(v, etiquetaDe(inp), inp.value), inp.value));
+      }
+    }
+    // escoge qué resultados se preguntan: todos si son pocos; si no, el primero y tres al azar
+    function arma() {
+      const its = items().map((el) => ({ el, et: conEtiqueta(el) ? el.firstElementChild.textContent.trim() : '', n: numeros(el, conf.quitar) })).filter((x) => x.n.vals.length && x.n.vals.length <= 9);
+      let elegidos = its.length <= 4 ? its : [its[0], ...its.slice(1).sort(() => Math.random() - 0.5).slice(0, 3)].sort((a, b) => its.indexOf(a) - its.indexOf(b));
+      let huecos = 0; elegidos = elegidos.filter((x) => (huecos += x.n.vals.length) <= 10 || x === elegidos[0]);
+      const q = elegidos.map((x) => ({ tipo: 'num', idx: its.indexOf(x), et: x.et, plantilla: x.n.plantilla, vals: x.n.vals, el: x.el }));
+      for (const t of conf.textos || []) q.push({ tipo: 'texto', et: t.et, sel: t.sel, otros: t.otros || [] });
+      for (const t of conf.numeros || []) { const el = document.querySelector(t.sel), n = el && numeros(el); if (n && n.vals.length) q.push({ tipo: 'num', et: t.et, sel: t.sel, plantilla: '', vals: n.vals.slice(0, 1) }); }
+      return q;
+    }
+    function nuevo() {
+      resuelto = false;
+      let q = [];
+      for (let intento = 0; intento < 15 && !q.length; intento++) {
+        conf.antes?.();
+        if (conf.genera) conf.genera(); else { ejemplo(); cambiaDatos(); }
+        conf.despues?.();
+        if (!hayError() && (!conf.valido || conf.valido())) q = arma();
+      }
+      if (!q.length) { conf.genera ? conf.genera() : ejemplo(); q = arma(); }
+      preguntas = q; pinta();
+    }
+    function tapa(v) {
+      for (const e of tapados) { e.classList.remove('prac-tapa'); e.removeAttribute('aria-hidden'); }
+      tapados = v ? zonaTapa() : [];
+      for (const e of tapados) { e.classList.add('prac-tapa'); e.setAttribute('aria-hidden', 'true'); }
+    }
+    function pinta() {
+      if (!card) { card = document.createElement('section'); card.className = 'prac'; card.setAttribute('aria-label', 'Modo práctica'); card.addEventListener('click', clic); card.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.classList.contains('prac-in')) { e.preventDefault(); comprueba(); } }); }
+      tapa(!resuelto);
+      const z = zonaTapa()[0] || tapados[0]; if (z && card.nextElementSibling !== z) z.before(card);
+      let n = 0;
+      const filas = preguntas.map((p, i) => {
+        if (p.tipo === 'texto') return `<div><span class="et">${esc(p.et)}</span><span class="val"><input class="prac-in ancha" data-p="${i}" aria-label="${esc(p.et)}" autocomplete="off" spellcheck="false" placeholder="1s2 2s2 2p6…"></span></div>`;
+        const tpl = p.plantilla ? p.plantilla.replace(/<span data-hueco="(\d+)"><\/span>/g, (_, k) => `<input class="prac-in" data-p="${i}" data-k="${k}" inputmode="decimal" autocomplete="off" aria-label="${esc(p.et || 'Resultado')} (${+k + 1})">`) : `<input class="prac-in" data-p="${i}" data-k="0" inputmode="decimal" autocomplete="off" aria-label="${esc(p.et)}">`;
+        n++; return `<div><span class="et">${esc(p.et || (preguntas.length > 1 ? `Pregunta ${n}` : 'Resultado'))}</span><span class="val">${tpl}</span></div>`;
+      }).join('');
+      card.innerHTML = `<h2>Modo práctica</h2>
+<p class="enun">${conf.enunciado ? conf.enunciado() : 'Resuelve el ejercicio con estos datos y escribe tus resultados en las mismas unidades. Puedes usar coma o punto, 1,2·10^-3 y fracciones como 3/4.'}</p>
+${preguntas.length ? `<div class="prac-q">${filas}</div>` : '<p>Con estos datos no hay resultados numéricos que preguntar: prueba con otro ejercicio.</p>'}
+<div class="prac-acc"><button class="si" data-a="comprobar"${preguntas.length ? '' : ' disabled'}>Comprobar</button><button data-a="solucion">${resuelto ? 'Ocultar la solución' : 'Ver la solución'}</button><button data-a="otro">Otro ejercicio</button></div>
+<p class="prac-nota" role="status" hidden></p>`;
+    }
+    // el valor correcto se lee al comprobar, por si el alumno ha tocado los datos
+    function esperado(p) {
+      if (p.tipo === 'texto') return [document.querySelector(p.sel), ...p.otros.map((s) => document.querySelector(s))].filter(Boolean).map((e) => e.textContent);
+      const el = p.sel ? document.querySelector(p.sel) : items()[p.idx]; const n = el && numeros(el, conf.quitar);
+      return n && n.vals.length >= p.vals.length ? (p.sel ? n.vals.slice(0, 1) : n.vals) : p.vals;
+    }
+    function comprueba(mostrar) {
+      let bien = 0, total = 0, vacios = 0;
+      for (const inp of card.querySelectorAll('.prac-in')) {
+        const p = preguntas[+inp.dataset.p], e = esperado(p); total++;
+        inp.classList.remove('bien', 'mal'); inp.nextElementSibling?.classList.contains('prac-sol') && inp.nextElementSibling.remove();
+        let ok, sol;
+        if (p.tipo === 'texto') { ok = e.some((x) => normaConf(x) === normaConf(inp.value)); sol = e[0]; }
+        else { const x = e[+inp.dataset.k], a = leeAlumno(inp.value); ok = a !== null && Math.abs(a - x.v) <= tolerancia(x); sol = x.t; }
+        if (!inp.value.trim()) vacios++;
+        else { inp.classList.add(ok ? 'bien' : 'mal'); if (ok) bien++; }
+        if (mostrar && !ok && sol !== null) { const s = document.createElement('span'); s.className = 'prac-sol'; s.textContent = `(${sol.trim()})`; inp.after(s); }
+      }
+      const nota = card.querySelector('.prac-nota'); nota.hidden = false;
+      nota.className = 'prac-nota ' + (bien === total ? 'bien' : 'mal');
+      nota.textContent = mostrar ? (vacios === total ? 'Aquí tienes la solución, con el desarrollo debajo.' : `${bien} de ${total} bien. La solución y el desarrollo están debajo.`) : bien === total ? '¡Todo bien! Mira el desarrollo con «Ver la solución» o prueba con otro.' : vacios === total ? 'Escribe primero tus resultados.' : `${bien} de ${total} bien${vacios ? ` (${vacios} sin contestar)` : ''}. Revisa los que están en rojo.`;
+    }
+    function clic(e) {
+      const a = e.target.closest('[data-a]')?.dataset.a;
+      if (a === 'comprobar') comprueba(false);
+      else if (a === 'otro') nuevo();
+      else if (a === 'solucion') {
+        const valores = [...card.querySelectorAll('.prac-in')].map((i) => i.value);
+        resuelto = !resuelto; pinta();
+        card.querySelectorAll('.prac-in').forEach((inp, k) => { inp.value = valores[k] ?? ''; });
+        if (resuelto) comprueba(true);
+      }
+    }
+    function activa(v) {
+      if (v === activo) return;
+      activo = v; btn.setAttribute('aria-pressed', String(v));
+      if (v) {
+        try { if (clave) sessionStorage.setItem(K_ANTES, localStorage.getItem(clave) ?? ''); } catch (e) { /* sin almacenamiento */ }
+        nuevo(); card.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      } else {
+        tapa(false); card?.remove(); card = null;
+        // vuelve a los datos de antes de practicar
+        let antes = null; try { antes = clave ? sessionStorage.getItem(K_ANTES) : null; sessionStorage.removeItem(K_ANTES); } catch (e) { /* sin almacenamiento */ }
+        if (antes !== null) { try { if (antes) localStorage.setItem(clave, antes); else localStorage.removeItem(clave); } catch (e) { /* sin almacenamiento */ } history.replaceState(null, '', location.pathname + location.search); location.reload(); }
+      }
+    }
+    // si se recargó en mitad de una práctica, deja los datos como estaban
+    try { const antes = clave ? sessionStorage.getItem(K_ANTES) : null; if (antes !== null) { sessionStorage.removeItem(K_ANTES); if (antes) localStorage.setItem(clave, antes); else localStorage.removeItem(clave); history.replaceState(null, '', location.pathname + location.search); location.reload(); } } catch (e) { /* sin almacenamiento */ }
+    btn.addEventListener('click', () => activa(!activo));
+    // lo que habría que escribir en cada hueco, en orden (para las pruebas)
+    const respuestas = () => [...(card?.querySelectorAll('.prac-in') || [])].map((inp) => { const p = preguntas[+inp.dataset.p], e = esperado(p); return p.tipo === 'texto' ? e[0] : e[+inp.dataset.k].t; });
+    return (window.PracticaApp = { activa, nuevo, respuestas, get activo() { return activo; }, get preguntas() { return preguntas; } });
+  }
+  return { monta, CONF, numeros, leeAlumno, otroValor };
+})();
+
+Biblioteca.monta('cinetica');
+Practica.monta('cinetica', Biblioteca.CLAVES['cinetica']);
+</script>
+</html>

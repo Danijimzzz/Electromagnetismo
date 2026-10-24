@@ -1,0 +1,108 @@
+<title>Cinética química: orden de reacción, vida media y Arrhenius · SimulaCiencia</title>
+<meta name="description" content="Calculadora de cinética química en español: leyes integradas de orden 0, 1 y 2 con la vida media, orden y constante a partir de datos de concentración frente al tiempo, método de las velocidades iniciales y ecuación de Arrhenius, paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root {
+  --bg: #eef0f4; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d6dbe3; --accent: #1d7a3e; --accent-soft: #e2f2e7; --peso: #c2412a; --normal: #1d7a3e; --roz: #b0700a; --fuerza: #6b3fa0; --tension: #2a5db5; --cuerpo: #c9d3e0; --suelo: #8a96a3;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #5fcf8a; --accent-soft: #16301f; --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #5fcf8a; --accent-soft: #16301f; --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784; color-scheme: dark }
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
+.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
+.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+.layout { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 16px; align-items: start }
+@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr) } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 15px var(--f-ui); margin: 0 0 10px }
+.campos { display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px } .campos label small { color: var(--muted) }
+.in { font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.in:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer }
+.btn:hover { border-color: var(--accent) }
+.error { color: #c0392b; font-size: 13px; margin: 10px 0 0 }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+.res { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px 14px; font: 16px var(--f-math) } .res div { overflow-x: auto } .res span { display: block; font: 12px var(--f-ui); color: var(--muted) }
+.leyenda { font-size: 12.5px; color: var(--muted); margin: 6px 0 0 } .leyenda b { font-weight: 600 }
+canvas { display: block; width: 100%; height: clamp(260px, 36vw, 380px); border-radius: 8px; background: var(--bg); margin-top: 10px }
+.pasos ol { margin: 0; padding-left: 22px } .pasos li { margin: 0 0 12px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+.controles { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px }
+.destacado { border-color: var(--accent); box-shadow: inset 4px 0 0 var(--accent) }
+.destacado h2 { color: var(--accent) }
+.resumen { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; margin: 0 }
+.resumen div { background: var(--accent-soft); border-radius: 8px; padding: 8px 10px; overflow-x: auto } .resumen div span { display: block; font-size: 12px; color: var(--muted) } .resumen div b { font: 600 17px var(--f-math) }
+#escena { height: clamp(200px, 26vw, 250px) }
+#grafica { height: clamp(240px, 32vw, 330px) }
+.teoria ul { padding-left: 20px } .teoria li { margin-bottom: 4px }
+.resumen div.ancho { grid-column: 1 / -1 }
+.campos .ancho { grid-column: 1 / -1 }
+.exps { display: grid; gap: 5px }
+.exp { display: grid; grid-template-columns: 28px repeat(3, minmax(0, 1fr)) 30px; gap: 5px; align-items: center; font-size: 13px }
+.exp.sinB { grid-template-columns: 28px repeat(2, minmax(0, 1fr)) 30px }
+.exp.cab { color: var(--muted); font-size: 12px } .exp.cab small { font-size: 10.5px }
+.exp .quita { padding: 3px 8px }
+.vistas { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap }
+.vistas button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); font-weight: 600 }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Química</a> / Cinética química</span></header>
+<div class="wrap">
+<h1>Cinética química</h1>
+<p class="lead">Calcula cómo baja la concentración de un reactivo con el tiempo en una reacción de orden 0, 1 o 2 y su vida media, averigua el orden a partir de medidas o de velocidades iniciales, y obtén la energía de activación con la ecuación de Arrhenius. Con las moléculas reaccionando en el vaso y el desarrollo paso a paso.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Gráfica</h2>
+      <canvas id="escena" aria-label="Vaso en el que las moléculas de A se convierten en producto"></canvas>
+      <div class="vistas" id="vistas" hidden><button class="btn" type="button" data-v="0">[A] frente a t</button><button class="btn" type="button" data-v="1">ln [A] frente a t</button><button class="btn" type="button" data-v="2">1/[A] frente a t</button></div>
+      <canvas id="grafica" aria-label="Gráfica de la cinética"></canvas>
+      <div class="controles"><button class="btn" id="play" type="button">⏸ Pausa</button><span class="nota" id="leyenda" style="margin:0"></span></div></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Velocidad de reacción y orden</h2>
+  <p class="m">Para una reacción $aA + bB → productos$, la velocidad es lo que cambia la concentración por unidad de tiempo, $v = −{1}/{a} {d[A]}/{dt}$, y la ley de velocidad se escribe $v = k [A]^m [B]^n$. Los órdenes m y n se miden en el laboratorio: no tienen por qué coincidir con los coeficientes de la reacción. El orden total es m + n, y las unidades de k dependen de él.</p>
+  <h2>Leyes integradas</h2>
+  <ul>
+    <li class="m">Orden 0: $[A] = [A]_0 − k t$, recta de [A] frente a t, y $t_{1/2} = [A]_0/(2k)$.</li>
+    <li class="m">Orden 1: $ln [A] = ln [A]_0 − k t$, o $[A] = [A]_0 e^{−kt}$; recta de ln [A] frente a t, y $t_{1/2} = {ln 2}/{k}$, que no depende de la concentración.</li>
+    <li class="m">Orden 2: ${1}/{[A]} = {1}/{[A]_0} + k t$, recta de 1/[A] frente a t, y $t_{1/2} = {1}/{k [A]_0}$.</li>
+  </ul>
+  <p>Por eso, con una tabla de concentraciones frente al tiempo, se prueba cuál de las tres gráficas sale recta: esa da el orden, y su pendiente, la constante.</p>
+  <h2>Método de las velocidades iniciales</h2>
+  <p class="m">Se hacen varios experimentos cambiando la concentración de un reactivo y dejando las demás iguales. Al dividir sus velocidades se va k: si al doblar [A] la velocidad se multiplica por 4, $4 = 2^m$ y $m = 2$.</p>
+  <h2>Ecuación de Arrhenius</h2>
+  <p class="f m">$k = A e^{−E_a/(RT)}$, &ensp; $ln {k_2}/{k_1} = −{E_a}/{R} ({1}/{T_2} − {1}/{T_1})$</p>
+  <p>La energía de activación Eₐ es la barrera que tienen que superar las moléculas al chocar, y A, el factor de frecuencia, tiene que ver con cuántos choques hay y con qué orientación. Al calentar hay muchas más moléculas con energía suficiente y k crece muy deprisa; un catalizador baja Eₐ. Para el equilibrio y el pH de las disoluciones usa <a href="../ph/">pH y valoraciones</a>.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Cinética química <span id="ver"></span> (beta)</footer>
+</body>

@@ -67,6 +67,8 @@ if [ "$1" != privado ]; then
     version.js quimica/elementos.js quimica/formulas.js quimica/disoluciones.js disoluciones/app.js
   herramienta ph ../publico/quimica/ph/index.html "pH y valoraciones" "Calculadora de pH: ácidos y bases fuertes y débiles, mezclas, disoluciones reguladoras con Henderson-Hasselbalch y curvas de valoración con el punto de equivalencia y el indicador, paso a paso" \
     version.js mates.js ph/calculo.js ph/app.js
+  herramienta cinetica ../publico/quimica/cinetica/index.html "Cinética química" "Calculadora de cinética química: leyes integradas de orden 0, 1 y 2 con la vida media, orden a partir de datos, método de las velocidades iniciales y ecuación de Arrhenius, paso a paso" \
+    version.js mates.js cinetica/calculo.js cinetica/app.js
   herramienta calorimetria ../publico/fisica/calorimetria/index.html "Calorimetría y cambios de fase" "Temperatura de equilibrio al mezclar agua, hielo, vapor y metales, con cambios de fase y calorímetro, paso a paso" \
     version.js mates.js calorimetria/fisica.js calorimetria/app.js
   herramienta induccion ../publico/electromagnetismo/induccion/index.html "Autoinducción e inducción mutua" "Coeficiente de autoinducción de solenoides, toroides y cables coaxiales, inducción mutua, energía magnética y circuito RL, paso a paso" \
