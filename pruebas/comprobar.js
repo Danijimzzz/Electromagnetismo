@@ -642,6 +642,26 @@ const Mates = require(path.join(fuente, 'mates.js'));
   if (fallos === antes) console.log('  ✓ Mates: fracciones, raíces, exponentes, subíndices, unidades y funciones en MathML');
 }
 
+{
+  // arreglo 3: reducción, igualación y sustitución dan la solución de Gauss
+  const antes = fallos, X = require(path.join(fuente, 'sistemas', 'calculo.js'));
+  const txt = (h) => h.replace(/<[^>]+>/g, '');
+  for (const [M, esp] of [[[['3', '2', '7'], ['5', '-3', '-1']], 'x = 1, y = 2'], [[['1', '1', '1', '6'], ['2', '-1', '1', '3'], ['1', '2', '-1', '2']], 'x = 1, y = 2, z = 3'], [[['2', '1', '-1', '8'], ['-3', '-1', '2', '-11'], ['-2', '1', '2', '-3']], 'x = 2, y = 3, z = −1'], [[['1+i', '2', '3+i'], ['1', '-i', '1']], null]]) {
+    const g = txt(X.resolver({ metodo: 'gauss', M }).res).replace(/ |&nbsp;/g, ' ').replace(/\s+/g, ' ');
+    if (esp && g !== esp) mal(`Sistemas: Gauss da «${g}» en vez de «${esp}»`);
+    for (const metodo of ['reduccion', 'igualacion', 'sustitucion']) {
+      const r = X.resolver({ metodo, M });
+      if (txt(r.res).replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ') !== g) mal(`Sistemas · ${metodo}: no coincide con Gauss`);
+      if (r.pasos.some((p) => /^F<sub>/.test(p.t))) mal(`Sistemas · ${metodo}: usa pasos de Gauss en un sistema en el que se puede usar`);
+    }
+  }
+  const sci = X.resolver({ metodo: 'sustitucion', M: [['1', '1', '1', '6'], ['2', '-1', '1', '3'], ['3', '0', '2', '9']] });
+  if (!sci.pasos.some((p) => /No se usa sustitución/.test(p.t))) mal('Sistemas: en un indeterminado debería avisar de que no usa sustitución');
+  const red = X.resolver({ metodo: 'reduccion', M: [['3', '2', '7'], ['5', '-3', '-1']] });
+  if (!red.pasos.some((p) => /3·\(2\) − 5·\(1\)/.test(txt(p.html)))) mal('Sistemas: la reducción 2×2 no combina 3·(2) − 5·(1)');
+  if (fallos === antes) console.log('  ✓ Sistemas: reducción, igualación y sustitución en 2×2, 3×3 y complejos coinciden con Gauss');
+}
+
 async function navegador() {
   console.log('3 · Páginas en Chromium');
   let chromium;
