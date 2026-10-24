@@ -1178,6 +1178,32 @@ async function navegador() {
     if (consola.length) mal('Faraday: consola del navegador:\n      ' + consola.join('\n      '));
     if (fallos === antes) console.log(`  ✓ Faraday: ${Faraday.ejemplos.length} ejemplos, animación, cambio de forma y errores sin errores de consola`);
   }
+  {
+    // arreglo 1: resultados destacados arriba y lectura de ancho fijo mientras corre el tiempo
+    const page = await browser.newPage({ viewport: { width: 1200, height: 900 } });
+    const consola = [];
+    page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') consola.push(m.type() + ': ' + m.text()); });
+    page.on('pageerror', (e) => consola.push('excepción: ' + e.message));
+    const antes = fallos;
+    for (const [dir, lectura, rango, res] of [['tiro-parabolico', '#lectura', '#tiempo', '#resumen'], ['trabajo-y-energia', '#lectura', '#tiempo', '#resumen']]) {
+      await page.goto('file://' + path.join(publico, 'fisica', dir, 'index.html'));
+      await page.waitForSelector(`${res} > div`);
+      if ((await page.locator(`.destacado ${res} > div`).count()) < 2) mal(`${dir}: los resultados no están en la tarjeta destacada`);
+      const largos = new Set();
+      for (const v of ['0', '137', '420', '777', '1000']) {
+        await page.$eval(rango, (el, v) => { el.value = v; el.dispatchEvent(new Event('input', { bubbles: true })); }, v);
+        // la parte numérica (antes de «en la rampa…») no cambia de largo
+        largos.add((await page.locator(lectura).textContent()).split(' · ').slice(0, dir === 'tiro-parabolico' ? 4 : 2).join(' · ').length);
+      }
+      if (largos.size !== 1) mal(`${dir}: la lectura cambia de ancho al mover el tiempo (${[...largos].join(', ')} caracteres)`);
+    }
+    await page.goto('file://' + path.join(publico, 'fisica', 'calorimetria', 'index.html'));
+    await page.waitForFunction(() => document.querySelector('#te') && document.querySelector('#te').textContent.length > 0);
+    if ((await page.locator('.destacado #te').count()) !== 1) mal('Calorimetría: la temperatura de equilibrio no está en la tarjeta destacada');
+    await page.close();
+    if (consola.length) mal('Arreglo 1: consola del navegador:\n      ' + consola.join('\n      '));
+    if (fallos === antes) console.log('  ✓ Tiro parabólico, Trabajo y energía y Calorimetría: resultados destacados y lectura de ancho fijo');
+  }
   // portada y páginas de asignatura: sin errores de consola y sin enlaces internos rotos
   const portal = ['index.html', ...Catalogo.asignaturas.map((a) => `${a.clave}/index.html`), 'electromagnetismo/magnetostatica/index.html', 'quimica/tabla-periodica/index.html', 'fisica/trabajo-y-energia/index.html', 'quimica/masa-molar/index.html', 'quimica/configuracion-electronica/index.html', 'electromagnetismo/condensadores/index.html', 'fisica/tiro-parabolico/index.html', 'quimica/disoluciones/index.html', 'fisica/calorimetria/index.html', 'electromagnetismo/induccion/index.html', 'matematicas/matrices/index.html', 'matematicas/sistemas/index.html', 'matematicas/estadistica/index.html', 'laboratorio/alterna/index.html', 'fisica/dinamica/index.html', 'laboratorio/circuitos/index.html', 'fisica/solido-rigido/index.html', 'fisica/ondas/index.html', 'fisica/gases/index.html', 'electromagnetismo/faraday/index.html'];
   const antes = fallos;
