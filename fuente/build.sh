@@ -77,4 +77,6 @@ if [ "$1" != privado ]; then
     version.js dinamica/fisica.js dinamica/app.js
   herramienta circuitos ../publico/laboratorio/circuitos/index.html "Circuitos de corriente continua" "Calculadora de circuitos de corriente continua por el método de los nudos: leyes de Kirchhoff, corrientes, potencias, Thévenin, Norton y máxima transferencia de potencia, paso a paso" \
     version.js circuitos/fisica.js circuitos/app.js
+  herramienta solido-rigido ../publico/fisica/solido-rigido/index.html "Sólido rígido" "Calculadora de sólido rígido: momentos de inercia con el teorema de Steiner, rodadura por un plano inclinado, polea con masa y conservación del momento angular, paso a paso" \
+    version.js solido-rigido/fisica.js solido-rigido/app.js
 fi

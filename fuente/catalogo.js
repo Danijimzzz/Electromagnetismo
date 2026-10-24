@@ -26,6 +26,7 @@ const Catalogo = {
         { clave: 'tiro-parabolico', nombre: 'Tiro parabólico y cinemática', icono: 'v', disponible: true, desc: 'Trayectorias con y sin rozamiento del aire, alcance, altura máxima, MRU y MRUA con gráficas x(t), v(t), a(t).', buscar: 'tiro parabólico proyectil cinemática mru mrua caída libre' },
         { clave: 'calorimetria', nombre: 'Calorimetría y cambios de fase', icono: 'Q', disponible: true, desc: 'Temperatura de equilibrio con hielo, vapor, metales y calorímetro, y cuánto cambia de fase.', buscar: 'calor específico latente equilibrio térmico' },
         { clave: 'dinamica', nombre: 'Dinámica y diagramas de fuerzas', icono: 'F', disponible: true, desc: 'Planos inclinados, rozamiento, poleas y Atwood con el diagrama de fuerzas y las leyes de Newton.', buscar: 'dinámica fuerzas newton diagrama de cuerpo libre plano inclinado rozamiento estático dinámico normal tensión polea atwood' },
+        { clave: 'solido-rigido', nombre: 'Sólido rígido', icono: 'I', disponible: true, desc: 'Momentos de inercia y Steiner, rodadura por un plano, poleas con masa y momento angular.', buscar: 'sólido rígido momento de inercia steiner rodadura rueda plano inclinado polea momento angular rotación torque par patinadora' },
       ],
     },
     {
