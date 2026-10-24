@@ -125,6 +125,7 @@ footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8p
 const Version = (() => {
   const registros = {
     web: [
+      { v: '0.38', fecha: '2026-10-24', cambios: ['Nueva herramienta: Transitorios RC, RL y RLC, en Circuitos.'] },
       { v: '0.37', fecha: '2026-10-24', cambios: ['Nueva herramienta: Fuerza magnética, en Electromagnetismo.'] },
       { v: '0.36', fecha: '2026-10-24', cambios: ['Nueva herramienta: Campos vectoriales, en Matemáticas.'] },
       { v: '0.35', fecha: '2026-10-24', cambios: ['Nueva herramienta: Cinética química, en Química.'] },
@@ -217,6 +218,9 @@ const Version = (() => {
     matrices: [
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: determinante por Gauss, por Sarrus o por Laplace; inversa por Gauss-Jordan o por adjuntos; rango; forma escalonada y escalonada reducida, con cada operación entre filas y la matriz después de cada paso.', 'Valores y vectores propios con el polinomio característico, las raíces exactas (también con radicales o complejas) y si la matriz es diagonalizable, con P y D.', 'Suma, resta, producto (elemento a elemento), producto por un número, potencia y traspuesta.', 'Fracciones exactas y números complejos en cualquier casilla: 3/4, 0,25, 2−3i o (1+i)/2.'] },
+    ],
+    transitorios: [
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: carga y descarga de un condensador en un circuito RC (también si ya tenía carga), con τ = RC, la tensión y la corriente en un instante y el tiempo hasta una tensión.', 'Corriente que sube o baja en una bobina en un circuito RL, con τ = L/R y la tensión de la bobina.', 'Circuito RLC en serie: dice si es subamortiguado, crítico o sobreamortiguado y da la tensión del condensador frente al tiempo, también con carga o corriente al empezar.', 'Esquema del circuito con la corriente que circula y la gráfica de V e i frente a t animadas.'] },
     ],
     fuerza: [
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: fuerza sobre una carga en un campo uniforme, con el radio, el periodo y el sentido de giro, o la hélice si v no es perpendicular a B. La velocidad se puede dar en m/s, por su energía en eV o por la ddp que la acelera.', 'Fuerza de Lorentz con vectores: v × B con su determinante y F = q(E + v × B).', 'Selector de velocidades y espectrómetro de masas, ciclotrón con la frecuencia, la energía de salida y las vueltas.', 'Fuerza sobre un hilo (y la corriente para que flote) y entre dos hilos paralelos.', 'Animación de cada situación.'] },
@@ -646,7 +650,7 @@ const Biblioteca = (() => {
   const CLAVES = {
     alterna: 'alterna-v1', calorimetria: 'calorimetria-v1', circuitos: 'circuitos-v1', condensadores: 'condensadores-v1',
     'configuracion-electronica': 'configuracion-v1', dinamica: 'dinamica-v1', disoluciones: 'disoluciones-v1', ph: 'ph-v1', cinetica: 'cinetica-v1', doppler: 'doppler-v1', fluidos: 'fluidos-v1', ciclos: 'ciclos-v1', estadistica: 'estadistica-v1', regresion: 'regresion-v1',
-    faraday: 'faraday-v1', fuerza: 'fuerza-v1', gases: 'gases-v1', induccion: 'induccion-v1', magnetostatica: 'magneto-cur-v1', 'masa-molar': 'masa-molar-v1',
+    faraday: 'faraday-v1', fuerza: 'fuerza-v1', transitorios: 'transitorios-v1', gases: 'gases-v1', induccion: 'induccion-v1', magnetostatica: 'magneto-cur-v1', 'masa-molar': 'masa-molar-v1',
     matrices: 'matrices-v1', resistencias: 'resistencias-v1', ondas: 'ondas-v1', sistemas: 'sistemas-v1', complejos: 'complejos-v1', taylor: 'taylor-v1', fourier: 'fourier-v1', edos: 'edos-v1', campos: 'campos-v1', 'solido-rigido': 'solido-rigido-v1', 'tiro-parabolico': 'tiro-v1',
     'trabajo-y-energia': 'energia-v1',
   };
@@ -906,6 +910,8 @@ const Practica = (() => {
     campos: { datos: null, items: '#resumen > div.num', genera: () => window.CamposApp?.azar(), enunciado: () => window.CamposApp?.enunciado() },
     // fuerza: una carga, unos vectores, un selector, un ciclotrón o unos hilos con números de clase
     fuerza: { datos: null, items: '#res > div', genera: () => window.FuerzaApp?.azar(), enunciado: () => window.FuerzaApp?.enunciado() },
+    // transitorios: un RC, un RL o un RLC con valores de clase
+    transitorios: { datos: null, items: '#res > div', genera: () => window.TransitoriosApp?.azar(), enunciado: () => window.TransitoriosApp?.enunciado() },
     complejos: { datos: null, genera: () => window.ComplejosApp?.azar(), enunciado: () => window.ComplejosApp?.enunciado() },
     sistemas: { items: '#res', valido: () => !/[λμ]|incompatible|no tiene/i.test(document.querySelector('#res')?.textContent + document.querySelector('#tipo')?.textContent) },
     estadistica: { items: '#res' },

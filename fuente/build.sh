@@ -97,6 +97,8 @@ if [ "$1" != privado ]; then
     version.js mates.js estadistica/calculo.js regresion/calculo.js regresion/app.js
   herramienta alterna ../publico/circuitos/alterna/index.html "Corriente alterna y fasores" "Calculadora de corriente alterna: circuitos RLC en serie y en paralelo con impedancias complejas, diagrama de fasores, potencias, factor de potencia y resonancia, paso a paso" \
     version.js mates.js alterna/fisica.js alterna/app.js
+  herramienta transitorios ../publico/circuitos/transitorios/index.html "Transitorios RC, RL y RLC" "Calculadora de transitorios: carga y descarga de un condensador en un circuito RC, corriente en una bobina en un circuito RL y respuesta de un RLC en serie, con la constante de tiempo y la gráfica" \
+    version.js mates.js transitorios/fisica.js transitorios/app.js
   herramienta dinamica ../publico/fisica/dinamica/index.html "Dinámica y diagramas de fuerzas" "Calculadora de dinámica con el diagrama de fuerzas: plano inclinado con rozamiento estático y dinámico, fuerza con ángulo, poleas y máquina de Atwood, paso a paso" \
     version.js mates.js dinamica/fisica.js dinamica/app.js
   herramienta resistencias ../publico/circuitos/resistencias/index.html "Código de colores de resistencias" "Calculadora del código de colores de resistencias de 3, 4, 5 y 6 bandas: valor, tolerancia y coeficiente de temperatura, colores de un valor con el normalizado más cercano de las series E y códigos SMD, paso a paso" \

@@ -76,6 +76,7 @@ const Catalogo = {
         { clave: 'continua', nombre: 'Circuitos de corriente continua', icono: 'I', disponible: true, desc: 'Método de los nudos con Kirchhoff, corrientes, potencias, Thévenin, Norton y máxima potencia.', buscar: 'circuito corriente continua kirchhoff nudos mallas thévenin norton resistencia fuente tensión corriente potencia balance' },
         { clave: 'resistencias', nombre: 'Código de colores de resistencias', icono: 'R', disponible: true, desc: 'De los colores al valor con 3 a 6 bandas, del valor a los colores con el normalizado más cercano, y códigos SMD.', buscar: 'código de colores resistencia bandas valor tolerancia ohmios serie e12 e24 e96 smd 472 4k7 electrónica' },
         { clave: 'alterna', nombre: 'Corriente alterna y fasores', icono: '∿', disponible: true, desc: 'Circuitos RLC en serie y en paralelo con fasores, potencias, factor de potencia y resonancia.', buscar: 'corriente alterna fasores impedancia rlc reactancia potencia activa reactiva aparente factor de potencia resonancia condensador bobina' },
+        { clave: 'transitorios', nombre: 'Transitorios RC, RL y RLC', icono: 'τ', disponible: true, desc: 'Carga y descarga de un condensador, corriente en una bobina y respuesta de un RLC en serie, con la gráfica animada.', buscar: 'transitorio circuito rc rl rlc carga descarga condensador bobina constante de tiempo tau exponencial amortiguado subamortiguado sobreamortiguado crítico interruptor' },
       ],
     },
   ],

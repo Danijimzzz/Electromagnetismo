@@ -1,0 +1,1313 @@
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMwZDZiNjYiLz48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlNmE2NDAiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtZGFzaGFycmF5PSI0IDYuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48cGF0aCBkPSJNMjAgMzJINDQiLz48cGF0aCBkPSJNMjEgMjdDMjcgMTQgMzcgMTQgNDMgMjciLz48cGF0aCBkPSJNMjEgMzdDMjcgNTAgMzcgNTAgNDMgMzciLz48cGF0aCBkPSJNMTcgMjRDMjIgNCA0MiA0IDQ3IDI0Ii8+PHBhdGggZD0iTTE3IDQwQzIyIDYwIDQyIDYwIDQ3IDQwIi8+PC9nPjxjaXJjbGUgY3g9IjE3IiBjeT0iMzIiIHI9IjgiIGZpbGw9IiNlZjdhNjIiLz48Y2lyY2xlIGN4PSI0NyIgY3k9IjMyIiByPSI4IiBmaWxsPSIjNzRhMmYyIi8+PHBhdGggZD0iTTEzIDMyaDhNMTcgMjh2OE00MyAzMmg4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta property="og:title" content="Transitorios RC, RL y RLC">
+<meta property="og:description" content="Calculadora de transitorios: carga y descarga de un condensador en un circuito RC, corriente en una bobina en un circuito RL y respuesta de un RLC en serie, con la constante de tiempo y la gráfica">
+<meta property="og:image" content="https://electromagnetismo-two.vercel.app/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<style>.a-inicio { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; font-weight: 600; font-size: 13.5px; color: var(--accent); border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px 5px 10px; background: var(--panel); white-space: nowrap } .a-inicio:hover { border-color: var(--accent); text-decoration: none }</style>
+<title>Transitorios RC, RL y RLC: carga y descarga paso a paso · SimulaCiencia</title>
+<meta name="description" content="Calculadora de transitorios en español: carga y descarga de un condensador en un circuito RC, corriente en una bobina en un circuito RL y respuesta de un RLC en serie (subamortiguado, crítico o sobreamortiguado), con la constante de tiempo, la gráfica y el desarrollo paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root {
+  --bg: #eef0f4; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d6dbe3; --accent: #b0700a; --accent-soft: #fbf0dc; --v: #c2412a; --i: #2a5db5; --x: #1d7a3e;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #e6a640; --accent-soft: #3a2c12; --v: #ef7a62; --i: #74a2f2; --x: #5fcf8a; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #e6a640; --accent-soft: #3a2c12; --v: #ef7a62; --i: #74a2f2; --x: #5fcf8a; color-scheme: dark }
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
+.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
+.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+.layout { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 16px; align-items: start }
+@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr) } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 15px var(--f-ui); margin: 0 0 10px }
+.campos { display: grid; grid-template-columns: minmax(0, 1fr) 170px; gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px } .campos label small { color: var(--muted) }
+.in { font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.in:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer }
+.btn:hover { border-color: var(--accent) }
+.error { color: #c0392b; font-size: 13px; margin: 10px 0 0 }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+.res { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px 14px; font: 16px var(--f-math) } .res div { overflow-x: auto } .res span { display: block; font: 12px var(--f-ui); color: var(--muted) }
+#circuito { height: 230px }
+.res div.ancho { grid-column: 1 / -1 }
+.controles { display: flex; gap: 8px; align-items: center; margin-top: 8px }
+.btn { white-space: nowrap }
+.leyenda { font-size: 12.5px; color: var(--muted); margin: 6px 0 0 } .leyenda b { font-weight: 600 }
+canvas { display: block; width: 100%; height: 260px; border-radius: 8px; background: var(--bg); margin-top: 10px }
+.pasos ol { margin: 0; padding-left: 22px } .pasos li { margin: 0 0 12px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+</style>
+<body>
+<header class="top"><a class="a-inicio" href="../../" title="Volver a la página de inicio">← Inicio</a><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Circuitos</a> / Transitorios RC, RL y RLC</span></header>
+<div class="wrap">
+<h1>Transitorios RC, RL y RLC</h1>
+<p class="lead">Qué pasa justo después de cerrar el interruptor: la carga y la descarga de un condensador, la corriente que sube o baja en una bobina y la respuesta de un RLC en serie, con la constante de tiempo, los valores en un instante, el tiempo hasta un valor y la gráfica animada.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card"><h2>Resultado</h2><div class="res" id="res"></div>
+      <canvas id="circuito" aria-label="Esquema del circuito con la corriente"></canvas>
+      <canvas id="grafica" aria-label="Tensión y corriente frente al tiempo"></canvas>
+      <div class="controles"><button class="btn" id="play" type="button">⏸ Pausa</button><span class="leyenda" id="leyenda" style="margin:0"></span></div></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Circuito RC</h2>
+  <p>Al conectar un condensador a una fuente V a través de una resistencia R, la tensión del condensador no salta: crece de forma exponencial con la constante de tiempo τ = RC. Al cabo de τ ha llegado al 63&nbsp;% del valor final y a los 5τ se considera cargado.</p>
+  <p class="f">V<sub>C</sub>(t) = V (1 − e<sup>−t/τ</sup>), &ensp; i(t) = (V/R) e<sup>−t/τ</sup></p>
+  <p>En la descarga, sin fuente, V<sub>C</sub>(t) = V<sub>0</sub> e<sup>−t/τ</sup> y la corriente va en sentido contrario. Si el condensador ya tenía una tensión V<sub>0</sub> al conectarlo, V<sub>C</sub>(t) = V + (V<sub>0</sub> − V) e<sup>−t/τ</sup>. El tiempo hasta un valor se despeja con el logaritmo: t = τ ln[(V − V<sub>0</sub>)/(V − V<sub>C</sub>)].</p>
+  <h2>Circuito RL</h2>
+  <p>En una bobina lo que no puede saltar es la corriente. Al conectar la fuente crece hasta V/R con τ = L/R, y la tensión de la bobina, V<sub>L</sub> = L di/dt, empieza valiendo V y se anula:</p>
+  <p class="f">i(t) = (V/R)(1 − e<sup>−t/τ</sup>), &ensp; V<sub>L</sub>(t) = V e<sup>−t/τ</sup></p>
+  <p>Al quitar la fuente la corriente baja como i(t) = (V/R) e<sup>−t/τ</sup>. La energía de la bobina es ½LI<sup>2</sup> y la del condensador ½CV<sup>2</sup>.</p>
+  <h2>Circuito RLC en serie</h2>
+  <p>Con los tres elementos la tensión del condensador cumple una ecuación de segundo orden, LC V<sub>C</sub>″ + RC V<sub>C</sub>′ + V<sub>C</sub> = V. Su comportamiento depende de α = R/(2L) frente a ω<sub>0</sub> = 1/√(LC):</p>
+  <p class="f">α &gt; ω<sub>0</sub>: sobreamortiguado, &ensp; α = ω<sub>0</sub>: crítico, &ensp; α &lt; ω<sub>0</sub>: subamortiguado, con ω<sub>d</sub> = √(ω<sub>0</sub><sup>2</sup> − α<sup>2</sup>)</p>
+  <p>En el caso subamortiguado la tensión oscila alrededor del valor final con una envolvente e<sup>−αt</sup>. La resistencia crítica, la que separa los dos comportamientos, es R<sub>c</sub> = 2√(L/C).</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Transitorios <span id="ver"></span> (beta)</footer>
+</body><script>
+/* =====================================================================
+   Versiones y novedades: la web (portada, asignaturas, buscador) tiene su número y cada
+   herramienta el suyo. Hasta el lanzamiento se numera 0.x (beta); la 1.0 de una herramienta
+   llega cuando se da por terminada y la 1.0 de la web será el lanzamiento. Sube el segundo
+   número si hay algo nuevo (0.6) y añade un tercero si es solo un arreglo (0.5.1).
+   En las novedades de la web se anuncia también cada herramienta nueva.
+   Las notas son para los usuarios: solo funciones nuevas, arreglos visibles y cambios
+   en la interfaz. Lo interno (pruebas, CI, build, despliegue, refactorizaciones) no se anota;
+   el historial completo para desarrolladores está en Notion.
+   ===================================================================== */
+const Version = (() => {
+  const registros = {
+    web: [
+      { v: '0.38', fecha: '2026-10-24', cambios: ['Nueva herramienta: Transitorios RC, RL y RLC, en Circuitos.'] },
+      { v: '0.37', fecha: '2026-10-24', cambios: ['Nueva herramienta: Fuerza magnética, en Electromagnetismo.'] },
+      { v: '0.36', fecha: '2026-10-24', cambios: ['Nueva herramienta: Campos vectoriales, en Matemáticas.'] },
+      { v: '0.35', fecha: '2026-10-24', cambios: ['Nueva herramienta: Cinética química, en Química.'] },
+      { v: '0.34', fecha: '2026-10-24', cambios: ['Nueva herramienta: Ecuaciones diferenciales, en Matemáticas.'] },
+      { v: '0.33', fecha: '2026-10-24', cambios: ['Nueva herramienta: Series de Fourier, en Matemáticas.'] },
+      { v: '0.32', fecha: '2026-10-24', cambios: ['Nueva herramienta: Series de Taylor, en Matemáticas.'] },
+      { v: '0.31', fecha: '2026-10-24', cambios: ['Nueva herramienta: Ciclos termodinámicos, en Física general.'] },
+      { v: '0.30', fecha: '2026-10-24', cambios: ['Nueva herramienta: pH y valoraciones, en Química.'] },
+      { v: '0.29', fecha: '2026-10-24', cambios: ['Nueva herramienta: Fluidos, en Física general.'] },
+      { v: '0.28', fecha: '2026-10-24', cambios: ['Nueva herramienta: Números complejos, en Matemáticas.'] },
+      { v: '0.27.1', fecha: '2026-10-24', cambios: ['Efecto Doppler, Código de colores y Regresión: las fórmulas dentro del texto de la teoría se ven bien escritas.'] },
+      { v: '0.27', fecha: '2026-10-24', cambios: ['Nueva herramienta: Regresión y correlación, en Estadística.'] },
+      { v: '0.26', fecha: '2026-10-24', cambios: ['Nueva herramienta: Código de colores de resistencias, en Circuitos.'] },
+      { v: '0.25', fecha: '2026-10-24', cambios: ['Nueva herramienta: Efecto Doppler, en Física general.'] },
+      { v: '0.24', fecha: '2026-10-24', cambios: ['Modo práctica en todas las herramientas: un ejercicio con datos al azar, tapa los resultados y el desarrollo, corrige lo que escribes y luego te enseña la solución. Al salir vuelven tus datos.', 'Mis ejercicios: abrir un ejercicio guardado de Configuración electrónica ya muestra ese elemento.'] },
+      { v: '0.23', fecha: '2026-10-24', cambios: ['«Mis ejercicios» en todas las herramientas: una barra lateral, como la de electrostática, para guardar los datos de cada ejercicio con su título y carpeta, fijar los importantes arriba, volver a abrirlos y exportarlos o importarlos en archivos .simu.json.'] },
+      { v: '0.22.1', fecha: '2026-10-24', cambios: ['Botón «← Inicio» arriba a la izquierda en todas las herramientas, también en el simulador de electrostática, para volver a la portada.'] },
+      { v: '0.22', fecha: '2026-10-24', cambios: ['Nuevas secciones en la portada: Estadística, con las distribuciones de probabilidad, y Circuitos, que reúne corriente continua y alterna. Las direcciones antiguas siguen funcionando y llevan a la nueva.'] },
+      { v: '0.21', fecha: '2026-10-24', cambios: ['Sistemas de ecuaciones: nuevos métodos de reducción, igualación y sustitución.'] },
+      { v: '0.20.3', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría de todas las herramientas se ven como en los libros.'] },
+      { v: '0.20.2', fecha: '2026-10-24', cambios: ['Tiro parabólico, Trabajo y energía y Calorimetría: las fórmulas se ven como en los libros, con fracciones, raíces y exponentes de verdad.'] },
+      { v: '0.20.1', fecha: '2026-10-24', cambios: ['Tiro parabólico, Trabajo y energía y Calorimetría: los resultados salen en una tarjeta destacada arriba y la lectura del tiempo ya no se mueve al reproducir.'] },
+      { v: '0.20', fecha: '2026-10-24', cambios: ['Nueva herramienta: Inducción, leyes de Faraday y Lenz, en Electromagnetismo.'] },
+      { v: '0.19', fecha: '2026-10-24', cambios: ['Nueva herramienta: Gases ideales, en Física general.'] },
+      { v: '0.18', fecha: '2026-10-24', cambios: ['Nueva herramienta: Ondas mecánicas, en Física general.'] },
+      { v: '0.17', fecha: '2026-10-24', cambios: ['Nueva herramienta: Sólido rígido, en Física general.'] },
+      { v: '0.16', fecha: '2026-10-23', cambios: ['Nueva herramienta: Circuitos de corriente continua, en Laboratorio.'] },
+      { v: '0.15', fecha: '2026-10-23', cambios: ['Nueva herramienta: Dinámica y diagramas de fuerzas, en Física general.'] },
+      { v: '0.14', fecha: '2026-10-23', cambios: ['Nueva herramienta: Corriente alterna y fasores, en Laboratorio.'] },
+      { v: '0.13', fecha: '2026-10-23', cambios: ['Nueva herramienta: Distribuciones de probabilidad, en Matemáticas.'] },
+      { v: '0.12', fecha: '2026-10-23', cambios: ['Nueva herramienta: Sistemas de ecuaciones lineales, en Matemáticas.'] },
+      { v: '0.11', fecha: '2026-10-23', cambios: ['Nueva herramienta: Matrices paso a paso, en Matemáticas.'] },
+      { v: '0.10', fecha: '2026-10-23', cambios: ['Nueva herramienta: Autoinducción e inducción mutua, en Electromagnetismo.'] },
+      { v: '0.9', fecha: '2026-10-23', cambios: ['Nueva herramienta: Calorimetría y cambios de fase, en Física general.'] },
+      { v: '0.8', fecha: '2026-10-23', cambios: ['Nueva herramienta: Disoluciones y concentraciones, en Química.'] },
+      { v: '0.7', fecha: '2026-10-23', cambios: ['Nueva herramienta: Tiro parabólico y cinemática, en Física general.'] },
+      { v: '0.6', fecha: '2026-10-23', cambios: ['Nueva herramienta: Condensadores con dieléctricos, en Electromagnetismo.'] },
+      { v: '0.5', fecha: '2026-10-23', cambios: ['Nueva herramienta: Configuración electrónica, en Química.'] },
+      { v: '0.4', fecha: '2026-10-23', cambios: ['Nueva herramienta: Masa molar y estequiometría, en Química.'] },
+      { v: '0.3', fecha: '2026-10-23', cambios: ['Nueva herramienta: Trabajo y energía, en Física general.'] },
+      { v: '0.2', fecha: '2026-10-23', cambios: ['Nueva herramienta: Tabla periódica interactiva, en Química.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Portada para elegir asignatura y herramienta: Electromagnetismo, Física general, Química, Matemáticas y Laboratorio, con buscador. Las herramientas que vienen después aparecen como «Próximamente».', 'Nueva herramienta: Magnetostática, en Electromagnetismo.'] },
+    ],
+    electrostatica: [
+      { v: '0.5.1', fecha: '2026-10-23', cambios: ['El simulador tiene ahora su propia dirección, /electromagnetismo/electrostatica/. Tus problemas guardados siguen ahí. El botón «Todas las herramientas» de la barra lateral vuelve a la portada.'] },
+    { v: '0.5', fecha: '2026-10-23', cambios: ['Doce ejercicios de ejemplo con enunciados propios: los mismos tipos de pregunta que en clase, con otras figuras y otros números. La guía de uso tiene capturas nuevas hechas con ellos.', 'La web tiene icono propio: un dipolo con sus líneas de campo, en la pestaña del navegador, en la pantalla de inicio del móvil y en la vista previa al compartir el enlace.', 'Páginas de aviso legal, privacidad, cookies y contacto, enlazadas al pie de la barra lateral.'] },
+    { v: '0.4', fecha: '2026-10-22', cambios: ['Número de versión visible y este apartado de novedades.', 'Arreglo: en la vista 3D los cilindros se dibujan con su radio real, aparecen las superficies de Gauss, y las esferas, cascarones y conductores tienen volumen en lugar de parecer círculos planos.'] },
+    { v: '0.3', fecha: '2026-10-22', cambios: ['Guía de uso con capturas (botón ?, barra lateral o F1).', 'Los resultados se escriben con la misma forma que el solucionario oficial: perfiles por tramos, factor común en logaritmos y radicales, y la pregunta V_A − V_B.'] },
+    { v: '0.2', fecha: '2026-10-22', cambios: ['Anillos, discos, cortezas y conductores.', 'Varias incógnitas, modo numérico SI, flujo de Gauss y gráficas E(z) y V(z).', 'Modo práctica, exportar la solución, deshacer y rehacer, mapa de color y vista 3D.', 'Búsqueda, carpetas y etiquetas en la barra lateral.'] },
+    { v: '0.1', fecha: '2026-10-22', cambios: ['Primera versión: cargas, hilos, planos y esferas con el desarrollo paso a paso y 12 ejercicios resueltos.', 'Barra lateral con tus problemas, los importados y los ejercicios; título y enunciado editables; archivos .emsim.json.'] },
+    ],
+    magnetostatica: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: campo magnético de hilos, segmentos, hilos semiinfinitos, espiras, arcos, solenoides y toroides con Biot-Savart, y fuerza sobre cargas en movimiento y sobre conductores, con el desarrollo paso a paso en la forma μ₀I/(πa) o en unidades del SI.', 'Dibujo del campo B en el plano XY, XZ o YZ, con puntos que se pueden arrastrar y ocho ejemplos resueltos.'] },
+    ],
+    'tabla-periodica': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: cada elemento tiene su ficha con la masa atómica y molar, el grupo, el periodo, el bloque, la configuración electrónica (abreviada, completa y por capas), la electronegatividad, la energía de ionización, el radio y el estado.', 'La tabla se puede colorear por categoría, electronegatividad, energía de ionización, radio, masa, bloque o estado, y tiene un buscador por nombre, símbolo o número atómico.'] },
+    ],
+    'trabajo-y-energia': [
+      { v: '0.1.2', fecha: '2026-10-24', cambios: ['Las fórmulas del desarrollo y de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Los resultados salen arriba, en una tarjeta destacada, y la lectura de t y v tiene ancho fijo: ya no mueve la barra de tiempo al reproducir.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: un bloque baja por una rampa con rozamiento, recorre un tramo horizontal y comprime un muelle. Animación con barras de energía cinética, gravitatoria, elástica y calor, gráfica de las energías en el tiempo y el desarrollo paso a paso con la velocidad al pie de la rampa, al llegar al muelle y la compresión máxima.', 'Seis ejemplos: sin rozamiento, se para antes del muelle, el rozamiento lo sujeta, con empujón inicial y muelle duro.'] },
+    ],
+    'masa-molar': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: masa molar y composición centesimal de cualquier fórmula, con paréntesis, hidratos e iones, y conversor entre gramos, moles, partículas y litros de gas.', 'Estequiometría: ajusta la reacción sola (también las iónicas), calcula el reactivo limitante, lo que se forma con el rendimiento que digas y lo que sobra, paso a paso.', 'Masas atómicas de la IUPAC o redondeadas como en clase.'] },
+    ],
+    'configuracion-electronica': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: configuración electrónica de cualquier elemento o ion por orden de llenado, abreviada y por capas, con el diagrama de Moeller, el diagrama de orbitales con la regla de Hund, los electrones desapareados y los números cuánticos del electrón diferenciador.', 'Avisa de las excepciones como el cromo o el cobre, y en los cationes quita primero los electrones de la capa más externa.'] },
+    ],
+    condensadores: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: condensadores planos, cilíndricos y esféricos con capas de dieléctrico en serie o, en el plano, ocupando parte del área. Capacidad, carga, tensión y energía; campos E, D y P en cada capa y cargas de polarización, con el desarrollo paso a paso.', 'Compara con el condensador vacío: qué pasa al meter el dieléctrico con la batería conectada o con el condensador aislado.', 'Dibujo del corte con las líneas de campo y gráfica de E a lo largo del condensador.'] },
+    ],
+    'tiro-parabolico': [
+      { v: '0.1.2', fecha: '2026-10-24', cambios: ['Las fórmulas del desarrollo y de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Los resultados salen arriba, en una tarjeta destacada, y la lectura de t, x, y y v tiene ancho fijo: ya no se mueve al reproducir.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: tiro parabólico desde cualquier altura hasta cualquier altura, con el tiempo de vuelo, la altura máxima, el alcance y la velocidad al caer, y el desarrollo paso a paso. Trayectoria animada con los vectores de velocidad y gráficas de posición, velocidad y aceleración frente al tiempo.', 'Rozamiento del aire lineal o cuadrático, comparado con la trayectoria sin rozamiento.', 'Blanco: dice si el proyectil pasa por un punto y con qué dos ángulos se acierta.', 'Movimiento rectilíneo (MRU y MRUA): posición y velocidad en un instante, cuándo pasa por un punto y cuándo se para, con las gráficas x(t), v(t) y a(t).'] },
+    ],
+    disoluciones: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: da la concentración de una disolución como molaridad, molalidad, fracción molar, % en masa, % masa/volumen, g/L o ppm y obtén todas las demás, con la densidad para pasar de masa a volumen y el desarrollo con su base de cálculo.', 'Preparar una disolución: los gramos de sólido (con su pureza) o los mililitros de reactivo comercial (con su riqueza y densidad) que hay que medir.', 'Diluciones con C₁V₁ = C₂V₂, despejando el dato que falte, y mezcla de dos disoluciones del mismo soluto.'] },
+    ],
+    calorimetria: [
+      { v: '0.1.2', fecha: '2026-10-24', cambios: ['Las fórmulas del desarrollo y de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['La temperatura de equilibrio sale en una tarjeta destacada, separada de la tabla de calores.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: temperatura de equilibrio al mezclar hasta cinco cuerpos de agua, hielo, vapor, metales, etanol, vidrio, un calorímetro o una sustancia con tus datos, con los cambios de fase que hagan falta.', 'Si la energía no llega para fundir todo el hielo o condensar todo el vapor, dice cuántos gramos quedan de cada fase.', 'Tabla con el calor de cada cuerpo, el desarrollo etapa por etapa (m c ΔT y m L) y la curva de calentamiento de cada uno.'] },
+    ],
+    induccion: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: coeficiente de autoinducción de solenoides (con núcleo), toroides de sección rectangular y circular, cables coaxiales y líneas bifilares, con el desarrollo desde la ley de Ampère.', 'Inducción mutua entre dos solenoides, dos espiras, un hilo y una espira, y una bobina sobre un toroide, o a partir de L₁, L₂ y k, con el coeficiente de acoplamiento.', 'Flujo, energía magnética y fem inducida si das la corriente o cómo cambia.', 'Circuito RL al cerrar el interruptor o al quitar la fuente: constante de tiempo, corriente y tensión en la bobina en cualquier instante y su gráfica.'] },
+    ],
+    matrices: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: determinante por Gauss, por Sarrus o por Laplace; inversa por Gauss-Jordan o por adjuntos; rango; forma escalonada y escalonada reducida, con cada operación entre filas y la matriz después de cada paso.', 'Valores y vectores propios con el polinomio característico, las raíces exactas (también con radicales o complejas) y si la matriz es diagonalizable, con P y D.', 'Suma, resta, producto (elemento a elemento), producto por un número, potencia y traspuesta.', 'Fracciones exactas y números complejos en cualquier casilla: 3/4, 0,25, 2−3i o (1+i)/2.'] },
+    ],
+    transitorios: [
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: carga y descarga de un condensador en un circuito RC (también si ya tenía carga), con τ = RC, la tensión y la corriente en un instante y el tiempo hasta una tensión.', 'Corriente que sube o baja en una bobina en un circuito RL, con τ = L/R y la tensión de la bobina.', 'Circuito RLC en serie: dice si es subamortiguado, crítico o sobreamortiguado y da la tensión del condensador frente al tiempo, también con carga o corriente al empezar.', 'Esquema del circuito con la corriente que circula y la gráfica de V e i frente a t animadas.'] },
+    ],
+    fuerza: [
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: fuerza sobre una carga en un campo uniforme, con el radio, el periodo y el sentido de giro, o la hélice si v no es perpendicular a B. La velocidad se puede dar en m/s, por su energía en eV o por la ddp que la acelera.', 'Fuerza de Lorentz con vectores: v × B con su determinante y F = q(E + v × B).', 'Selector de velocidades y espectrómetro de masas, ciclotrón con la frecuencia, la energía de salida y las vueltas.', 'Fuerza sobre un hilo (y la corriente para que flote) y entre dos hilos paralelos.', 'Animación de cada situación.'] },
+    ],
+    campos: [
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: gradiente, derivada direccional y laplaciano de un campo escalar, con su mapa de color y las curvas de nivel.', 'Divergencia y rotacional de un campo vectorial en el plano o en el espacio y, si es conservativo, su potencial.', 'Integral de línea (trabajo) a lo largo de una curva r(t), comparada con la diferencia de potencial cuando el campo es conservativo.', 'Teorema de Green en un círculo o un rectángulo: circulación y flujo por el borde frente a las integrales dobles.', 'Gráfica con partículas que siguen el campo y un molinillo que gira con el rotacional; tocándola se mueve el punto.'] },
+    ],
+    cinetica: [
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: leyes integradas de orden 0, 1 y 2 con la concentración a cualquier tiempo, la vida media y cuánto se tarda en llegar a una concentración.', 'Orden y constante a partir de una tabla de concentraciones frente al tiempo, con las tres rectas ([A], ln [A] y 1/[A]) y su R².', 'Método de las velocidades iniciales con uno o dos reactivos: órdenes, constante con sus unidades y ley de velocidad.', 'Ecuación de Arrhenius: energía de activación con dos temperaturas o la constante a otra temperatura, con la gráfica de ln k frente a 1/T.', 'Vaso animado en el que las moléculas de reactivo se convierten en producto.'] },
+    ],
+    edos: [
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ecuaciones de primer orden y′ = f(x, y) con el campo de pendientes, el método de Euler (con su tabla) y RK4, y la solución exacta cuando es lineal con coeficiente constante.', 'Ecuaciones lineales de segundo orden con coeficientes constantes: ecuación característica, solución homogénea, particular por coeficientes indeterminados (también con resonancia) y constantes por las condiciones iniciales.', 'Sistemas x′ = f(x, y), y′ = g(x, y): puntos críticos con su tipo (silla, nodo, foco o centro) por los autovalores del jacobiano, solución exacta si es lineal y diagrama de fases con trayectorias.', 'Gráfica animada; tocándola se cambia el punto inicial.'] },
+    ],
+    fourier: [
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: serie de Fourier de una función periódica dada hasta en cuatro tramos (1, x, x^2, |x|, sen x…), o desarrollo en senos o en cosenos de una función en [0, L].', 'Coeficientes a₀, aₙ y bₙ exactos (con π) y su término general cuando siguen una ley, como 2(1 − (−1)ⁿ)/(nπ), con la paridad de la función.', 'Convergencia en los saltos (a la media de los límites laterales), suma parcial en un punto e igualdad de Parseval.', 'Gráfica de la función y de la suma parcial, que se puede ver sumando armónicos uno a uno, y el espectro de amplitudes.'] },
+    ],
+    taylor: [
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: polinomio de Taylor o de Maclaurin de cualquier grado hasta 15 de una función escrita como en papel (e^x, sen x, ln(1+x), √x, arctg x…) en un punto que puede llevar π, con cada derivada, su valor exacto y los coeficientes.', 'Aproximación de f(x₀) con el error cometido y la cota del resto de Lagrange.', 'Reconoce los desarrollos conocidos (e^x, sen x, cos x, ln(1+x), la serie geométrica, arctg x y la binómica) y da su término general y dónde convergen.', 'Gráfica de la función con los polinomios de cada grado, que se pueden recorrer o ver acercarse uno tras otro.'] },
+    ],
+    complejos: [
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: escribe un complejo en forma binómica, polar, trigonométrica o exponencial y obtén las otras, con el módulo exacto y el argumento en su cuadrante.', 'Suma, resta, producto y cociente con fracciones exactas, potencias con De Moivre, raíces n-ésimas y ecuaciones de segundo grado.', 'Plano complejo con los afijos, el paralelogramo de la suma y el polígono de las raíces.'] },
+    ],
+    sistemas: [
+      { v: '0.2', fecha: '2026-10-24', cambios: ['Métodos de reducción, igualación y sustitución para sistemas de 2 o 3 ecuaciones con solución única, con cada ecuación numerada y cada paso explicado.'] },
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: hasta seis ecuaciones con seis incógnitas. Dice si el sistema es compatible determinado, indeterminado o incompatible con el teorema de Rouché-Frobenius y lo resuelve por Gauss con sustitución hacia atrás, por Gauss-Jordan, por la regla de Cramer o con la matriz inversa.', 'Si tiene infinitas soluciones, las da en forma paramétrica (λ, μ…).', 'Coeficientes con fracciones exactas, decimales o números complejos, como las mallas de un circuito de alterna, y nombres propios para las incógnitas (I1, I2…).', 'Comprobación de la solución sustituyendo en cada ecuación.'] },
+    ],
+    regresion: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas dentro del texto de la teoría se ven bien escritas, no con símbolos $.'] },
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: escribe o pega tus datos (x, y), con frecuencias si las tienes, y obtén medias, varianzas, covarianza, el coeficiente de correlación con su contraste y las dos rectas de regresión, con la tabla de cálculos y la nube de puntos.', 'Ajustes exponencial, potencial, logarítmico y parabólico, con R² para compararlos con la recta, y los residuos.', 'Estimaciones de y a partir de x y de x a partir de y, avisando si es una extrapolación.', 'Añade puntos pulsando en la gráfica.'] },
+    ],
+    estadistica: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: normal, t de Student, chi cuadrado, exponencial, binomial y Poisson, con su media y su varianza.', 'Probabilidades P(X ≤ a), P(X ≥ a), entre dos valores y, en las discretas, P(X = k) y con desigualdad estricta; cuantiles y valores críticos bilaterales.', 'Gráfica con el área (o las barras) que se pide sombreada.', 'Desarrollo como en clase: tipificación Z = (X − μ)/σ y Φ(z), fórmula de la binomial y de la Poisson término a término, y aproximación de la binomial por la normal con corrección de continuidad.'] },
+    ],
+    alterna: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: circuitos RLC en serie y en paralelo (o solo con algunos de los elementos) con impedancias complejas en forma binómica y polar, la corriente, la tensión o la corriente de cada elemento, las potencias activa, reactiva y aparente y el factor de potencia, con el desarrollo paso a paso.', 'Diagrama de fasores y ondas v(t) e i(t) desfasadas.', 'Resonancia: frecuencia de resonancia, factor de calidad y ancho de banda.', 'Corrección del factor de potencia: el condensador que hay que poner en paralelo y cuánto baja la corriente de la línea.'] },
+    ],
+    dinamica: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: bloque en un plano horizontal o inclinado con rozamiento estático y dinámico, una fuerza aplicada con ángulo y, si quieres, una masa colgando de una polea. Dice si el bloque se mueve o el rozamiento lo sujeta y da la normal, el rozamiento, la aceleración y la tensión, con el desarrollo paso a paso.', 'Máquina de Atwood, también con una polea con masa.', 'Dibujo con el diagrama de fuerzas a escala y la aceleración, y la velocidad y el tiempo al recorrer una distancia.'] },
+    ],
+    circuitos: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: escribe el circuito como una lista de resistencias, fuentes de tensión y fuentes de corriente entre nudos, y obtén los potenciales, la corriente y la potencia de cada elemento por el método de los nudos, con las ecuaciones de Kirchhoff, el sistema en forma matricial y el balance de potencias.', 'Equivalente de Thévenin y de Norton visto por la resistencia que elijas, y máxima transferencia de potencia.', 'Esquema del circuito con el potencial de cada nudo y el sentido de cada corriente.'] },
+    ],
+    'solido-rigido': [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: momentos de inercia de esferas, cilindros, aros, varillas, discos y placas, con el teorema de Steiner y el radio de giro.', 'Rodadura por un plano inclinado: aceleración, velocidad al final, rozamiento necesario para que no deslice y qué pasa si no basta; comparación del tiempo que tarda cada cuerpo.', 'Polea con masa de la que cuelga un cuerpo: aceleración, tensión y balance de energía.', 'Conservación del momento angular, como la patinadora que encoge los brazos, con la variación de la energía cinética.'] },
+    ],
+    ondas: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ecuación de una onda armónica con ω y k en múltiplos de π, posición, velocidad y aceleración de un punto del medio y desfase entre dos puntos.', 'Ondas estacionarias en cuerdas y en tubos abiertos o cerrados: frecuencia de cada armónico, nodos y vientres, y velocidad en la cuerda con √(T/μ).', 'Efecto Doppler con la fuente y el observador moviéndose, y nivel sonoro en decibelios a distintas distancias y con varias fuentes.', 'Animación de la onda, de la onda estacionaria y de los frentes de onda del Doppler.'] },
+    ],
+    gases: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ecuación de estado PV = nRT con P, V, T y n en varias unidades, los moles a partir de la masa y la densidad del gas.', 'Transformaciones isoterma, isobara, isocora y adiabática encadenadas, con el trabajo, el calor y la variación de energía interna de cada tramo, y ciclos con su rendimiento comparado con el de Carnot.', 'Diagrama P-V con las isotermas y el área del ciclo.', 'Teoría cinética: velocidades cuadrática media, media y más probable, energía cinética media y la distribución de Maxwell.'] },
+    ],
+    ciclos: [
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ciclos de Carnot, Otto y Diesel con un gas ideal, con la tabla de estados, el trabajo, el calor y la energía interna de cada tramo y el rendimiento comparado con su fórmula y con Carnot.', 'Máquinas térmicas, frigoríficos y bombas de calor: el dato que falta, el rendimiento o la eficiencia, el límite de Carnot y si la máquina es posible, con la entropía del universo.', 'Diagrama p-V con un punto que recorre el ciclo y el cilindro con el émbolo, y el esquema de flujos de energía de las máquinas.'] },
+    ],
+    ph: [
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: pH de ácidos y bases fuertes (también muy diluidos) y débiles, con el grado de disociación y la aproximación comprobada.', 'Mezclas de un ácido fuerte con una base fuerte y disoluciones reguladoras con Henderson-Hasselbalch, también al añadirles ácido o base.', 'Valoraciones de ácidos y bases fuertes y débiles: volumen y pH de equivalencia, pH a mitad, el pH con el volumen que pidas, el indicador adecuado y la curva.', 'Vaso con el color del indicador universal y las partículas, y una bureta que valora mientras se dibuja la curva.'] },
+    ],
+    fluidos: [
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: presión manométrica y absoluta a una profundidad, con la fuerza sobre el fondo, y alturas o densidades en un tubo en U con dos líquidos.', 'Prensa hidráulica: la fuerza que se consigue o la que hace falta para levantar una masa, con los recorridos de los émbolos.', 'Empuje de Arquímedes: si un cuerpo flota (y cuánto se sumerge) o se hunde (peso aparente y aceleración), y la densidad a partir del peso en el aire y dentro del fluido.', 'Tuberías con la ecuación de continuidad y Bernoulli, y el chorro de un depósito con Torricelli: velocidad, alcance, caudal y tiempo de vaciado.', 'Una animación de cada caso.'] },
+    ],
+    doppler: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas dentro del texto de la teoría se ven bien escritas, no con símbolos $.'] },
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: frecuencia que se oye con la fuente, el observador y el viento moviéndose, con la longitud de onda delante de la fuente.', 'Una fuente que pasa de largo: lo que se oye antes y después, el salto en hercios y semitonos y, al revés, su velocidad a partir de las dos frecuencias. Con el observador a un lado de la carretera, la gráfica del cambio gradual.', 'Eco en un obstáculo que se mueve (radar de tráfico, murciélago, ecografía Doppler): la frecuencia del eco y las pulsaciones, o la velocidad del obstáculo a partir de ellas.', 'Onda de choque: número de Mach, semiángulo del cono y cuándo se oye el estampido.', 'Animación de los frentes de onda y botón para escuchar la diferencia.'] },
+    ],
+    resistencias: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas dentro del texto de la teoría se ven bien escritas, no con símbolos $.'] },
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: elige los colores de una resistencia de 3, 4, 5 o 6 bandas y obtén el valor, la tolerancia, el margen del valor real y el coeficiente de temperatura, con el dibujo de la resistencia.', 'Del valor a los colores: escribe 4k7, 2M2 o 470R y te da las bandas y el valor normalizado más cercano de las series E6 a E96.', 'Códigos SMD de 3 y 4 cifras, con R y EIA-96.'] },
+    ],
+    faraday: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: fem y corriente inducidas en una barra que se desliza sobre unos raíles, con la fuerza que la frena y la potencia.', 'Bobina que gira en un campo (alternador): flujo y fem en función del tiempo, valores máximo y eficaz.', 'Flujo que cambia en un tiempo porque cambia el campo o el ángulo: fem media, corriente y carga.', 'Espira que atraviesa una región con campo: fem al entrar y al salir, fuerza y calor.', 'Sentido de la corriente por la ley de Lenz y animación con la gráfica de Φ y ε.'] },
+    ],
+  };
+  const de = (h) => ({ current: registros[h][0].v, log: registros[h] });
+  // Version.current y Version.log son los del simulador de electrostática
+  return { registros, de, ...de('electrostatica') };
+})();
+
+/* =====================================================================
+   Fórmulas en MathML a partir de una sintaxis sencilla (sin DOM salvo
+   Mates.pinta). En los textos, lo que va entre $…$ es una fórmula:
+     a/b            fracción (los paréntesis de fuera se quitan)
+     x^2, e^{−bt/m} exponente; v_0x, E_{c,máx} subíndice
+     √(…), ∛(…)     raíz
+     "m/s"          texto tal cual (unidades, palabras)
+     sen cos tg ln log exp máx mín   funciones; binom(n, k)
+   Una palabra que no es una función se lee letra a letra (mgh = m·g·h).
+   También acepta <sup>, <sub> y las etiquetas que devuelve f().
+   ===================================================================== */
+const Mates = (() => {
+  const FUNC = new Set(['sen', 'cos', 'tg', 'tan', 'ln', 'log', 'exp', 'arcsen', 'arccos', 'arctg', 'máx', 'mín', 'lím', 'senh', 'cosh', 'tgh']);
+  const OPS = '+-−=·×÷⇒⇔→←↔≈≠<>≤≥±∓,;:!∝∈∼≡∑∏∫∂∇⊥∥';
+  const escH = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  function tokens(src) {
+    const s = String(src)
+      .replace(/<sup>/g, '^{').replace(/<\/sup>/g, '}').replace(/<sub>/g, '_{').replace(/<\/sub>/g, '}')
+      .replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+    const out = [];
+    let i = 0, sp = false;
+    while (i < s.length) {
+      const c = s[i], resto = s.slice(i);
+      let m;
+      if (/\s/.test(c)) { sp = true; i++; continue; }
+      if ((m = resto.match(/^\d+(?:[.,]\d+)?/))) out.push({ t: 'n', v: m[0].replace('.', ','), sp });
+      else if (c === '"') { const j = s.indexOf('"', i + 1); m = [s.slice(i, j < 0 ? s.length : j + 1)]; out.push({ t: 'x', v: m[0].replace(/"/g, ''), sp }); }
+      else if ((m = resto.match(/^[\p{L}\p{M}∞]+[′″]*/u))) out.push({ t: 'w', v: m[0], sp });
+      else { m = [c]; out.push({ t: 's', v: c, sp }); }
+      i += m[0].length; sp = false;
+    }
+    return out;
+  }
+
+  // nodo: { m: MathML, dentro: MathML sin los paréntesis de fuera (o null) }
+  const nodo = (m, dentro = null) => ({ m, dentro });
+  const fila = (xs) => (xs.length === 1 ? xs[0] : `<mrow>${xs.join('')}</mrow>`);
+  const letra = (v) => (/^\d+(,\d+)?$/.test(v) ? `<mn>${v}</mn>` : [...v].length === 1 ? `<mi>${escH(v)}</mi>` : `<mi mathvariant="normal">${escH(v)}</mi>`);
+
+  function analiza(tk) {
+    let p = 0;
+    const ver = () => tk[p], es = (v) => tk[p] && tk[p].t === 's' && tk[p].v === v;
+    function secuencia(cierre) {
+      const xs = [];
+      let prevOp = true;
+      while (p < tk.length && !(cierre && es(cierre))) {
+        const k = ver();
+        if (k.t === 's' && OPS.includes(k.v)) {
+          p++;
+          const v = k.v === '-' ? '−' : k.v;
+          // un signo detrás de otro operador (o al principio) es de número: = −19,28
+          const signo = prevOp && (v === '−' || v === '+' || v === '±');
+          xs.push(v === '!' ? '<mo lspace="0">!</mo>' : v === ',' || v === ';' ? `<mo separator="true">${v}</mo>` : signo ? `<mo form="prefix" lspace="0" rspace="0.05em">${v}</mo>` : `<mo>${escH(v)}</mo>`);
+          prevOp = true; continue;
+        }
+        if (k.t === 's' && (k.v === ')' || k.v === '}' || k.v === ']')) { p++; continue; } // paréntesis sueltos
+        xs.push(fraccion().m); prevOp = false;
+      }
+      return xs;
+    }
+    function fraccion() {
+      let a = guiones();
+      while (es('/')) { p++; const b = guiones(); a = nodo(`<mfrac>${a.dentro ?? a.m}${b.dentro ?? b.m}</mfrac>`); }
+      return a;
+    }
+    function argumento() {
+      if (es('{')) { p++; const xs = secuencia('}'); p++; return fila(xs); }
+      if (es('-') || es('−')) { p++; const a = argumento(); return `<mrow><mo>−</mo>${a}</mrow>`; }
+      if (es('(')) { const a = atomo(); return a.m; }
+      // una racha de letras y números pegados: 0x, máx, 12
+      const k = ver();
+      if (!k) return '<mrow></mrow>';
+      if (k.t === 's') { p++; return `<mo>${escH(k.v)}</mo>`; }
+      let v = k.v; p++;
+      while (ver() && !ver().sp && (ver().t === 'n' || ver().t === 'w')) { v += ver().v; p++; }
+      return letra(v);
+    }
+    function guiones() {
+      const base = atomo();
+      let sub = null, sup = null;
+      for (;;) {
+        if (es('_') && sub === null) { p++; sub = argumento(); } else if (es('^') && sup === null) { p++; sup = argumento(); } else break;
+      }
+      if (sub === null && sup === null) return base;
+      const b = base.m;
+      return nodo(sub !== null && sup !== null ? `<msubsup>${b}${sub}${sup}</msubsup>` : sub !== null ? `<msub>${b}${sub}</msub>` : `<msup>${b}${sup}</msup>`);
+    }
+    function atomo() {
+      const k = ver();
+      if (!k) return nodo('<mrow></mrow>');
+      p++;
+      if (k.t === 'n') return nodo(`<mn>${k.v}</mn>`);
+      if (k.t === 'x') return nodo(`${k.sp && p > 1 ? '<mspace width="0.3em"></mspace>' : ''}<mtext>${escH(k.v)}</mtext>`);
+      if (k.t === 'w') {
+        // binom(n, k): número combinatorio
+        if (k.v === 'binom' && es('(')) { p++; const a = secuencia(','); p++; const b = secuencia(')'); p++; return nodo(`<mrow><mo>(</mo><mfrac linethickness="0">${fila(a)}${fila(b)}</mfrac><mo>)</mo></mrow>`); }
+        if (FUNC.has(k.v)) { let m = `<mi mathvariant="normal">${k.v}</mi>`; if (es('^')) { p++; m = `<msup>${m}${argumento()}</msup>`; } return nodo(`<mspace width="0.17em"></mspace>${m}<mo>&#x2061;</mo><mspace width="0.12em"></mspace>`); }
+        const ls = [...k.v.replace(/[′″]+$/, '')], pr = (k.v.match(/[′″]+$/) || [''])[0];
+        // las marcas combinadas (î, ĵ con acento) van con su letra
+        const grupos = []; for (const c of ls) { if (/\p{M}/u.test(c) && grupos.length) grupos[grupos.length - 1] += c; else grupos.push(c); }
+        // las mayúsculas griegas (Δ, Σ, Φ, Ω) van rectas, como en los libros
+        return nodo(fila(grupos.map((c) => (c === '∞' ? '<mi>∞</mi>' : /^[Α-Ω]$/.test(c) ? `<mi mathvariant="normal">${c}</mi>` : `<mi>${escH(c)}</mi>`)).concat(pr ? [`<mo lspace="0" rspace="0">${pr}</mo>`] : [])));
+      }
+      const v = k.v;
+      if (v === '(' || v === '[') { const c = v === '(' ? ')' : ']'; const xs = secuencia(c); if (es(c)) p++; const d = fila(xs), est = /<m(frac|sqrt|root)/.test(d) ? '' : ' stretchy="false"'; return nodo(`<mrow><mo${est}>${v}</mo>${d}<mo${est}>${c}</mo></mrow>`, d); }
+      if (v === '{') { const xs = secuencia('}'); if (es('}')) p++; const d = fila(xs); return nodo(`<mrow>${d}</mrow>`, d); }
+      if (v === '√') { const a = guiones(); return nodo(`<msqrt>${a.dentro ?? a.m}</msqrt>`); }
+      if (v === '∛') { const a = guiones(); return nodo(`<mroot>${a.dentro ?? a.m}<mn>3</mn></mroot>`); }
+      if (v === '|') return nodo('<mo stretchy="false" lspace="0.05em" rspace="0.05em">|</mo>');
+      if (v === '°' || v === '%' || v === '‰') return nodo(`<mi mathvariant="normal">${v}</mi>`);
+      return nodo(`<mo>${escH(v)}</mo>`);
+    }
+    return fila(secuencia(null));
+  }
+
+  const mathml = (src) => `<math><mstyle displaystyle="true">${analiza(tokens(src))}</mstyle></math>`;
+  // sustituye cada $…$ de un texto HTML por su MathML
+  const html = (s) => String(s ?? '').replace(/\$([^$]+)\$/g, (_, x) => mathml(x));
+  // convierte en el documento los elementos con class="m" (fórmulas escritas en el HTML)
+  function pinta(raiz) { if (typeof document === 'undefined') return; for (const el of (raiz || document).querySelectorAll('.m:not([data-m])')) { el.dataset.m = '1'; el.innerHTML = html(el.innerHTML.includes('$') ? el.innerHTML : `$${el.innerHTML}$`); } }
+  if (typeof document !== 'undefined') {
+    const st = document.createElement('style');
+    st.textContent = '@font-face { font-family: "STIX Two Math"; src: url(../../fuentes/stix-two-math.woff2) format("woff2"); font-display: swap }\nmath { font-family: "STIX Two Math", "Cambria Math", math; font-size: 1.08em }\nmath mtext { font-family: "STIX Two Text", "STIX Two Math", serif }';
+    document.head.appendChild(st);
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => pinta()); else pinta();
+  }
+  return { html, mathml, pinta, tokens };
+})();
+
+/* =====================================================================
+   Transitorios en circuitos (sin DOM): carga y descarga de un
+   condensador (RC), subida y bajada de la corriente en una bobina (RL) y
+   circuito RLC en serie con un escalón de tensión (sobreamortiguado,
+   crítico o subamortiguado). El interruptor se cierra en t = 0.
+   Unidades: V, Ω, μF, mH, A y s.
+   ===================================================================== */
+const Transitorios = (() => {
+  const f = (x, d = 4) => {
+    if (!isFinite(x)) return x > 0 ? '∞' : '—';
+    if (Math.abs(x) < 1e-12) return '0';
+    const a = Math.abs(x);
+    const s = a >= 1e6 || a < 1e-3 ? x.toExponential(d - 1).replace(/\.?0+e/, 'e').replace(/e([+-])(\d+)/, (_, sg, e) => `·10<sup>${sg === '-' ? '−' : ''}${+e}</sup>`) : String(+x.toPrecision(d));
+    return s.replace('.', ',').replace('-', '−');
+  };
+  const PREF = [[1e6, 'M'], [1e3, 'k'], [1, ''], [1e-3, 'm'], [1e-6, 'μ'], [1e-9, 'n'], [1e-12, 'p']];
+  const u = (x, un, d = 4) => {
+    if (!isFinite(x)) return `${f(x)} ${un}`;
+    if (Math.abs(x) < 1e-15) return `0 ${un}`;
+    const a = Math.abs(x), p = PREF.find(([v]) => a >= v * 0.9999999) || PREF[PREF.length - 1];
+    return `${String(+(x / p[0]).toPrecision(d)).replace('.', ',').replace('-', '−')} ${p[1]}${un}`;
+  };
+  const leeNum = (s) => +String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace(/[−–]/g, '-').replace(/[·x×*]10\^?\(?([+\-]?\d+)\)?/i, 'e$1');
+  const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
+  const may = (s) => s[0].toUpperCase() + s.slice(1);
+  function lee(sc, k, nom, { opcional = false, cero = false, signo = false } = {}) {
+    if (vacio(sc[k])) { if (opcional) return null; throw new Error(`Falta ${nom}`); }
+    const v = leeNum(sc[k]);
+    if (!isFinite(v)) throw new Error(`${may(nom)} debe ser un número`);
+    if (!signo && (cero ? v < 0 : v <= 0)) throw new Error(`${may(nom)} debe ser ${cero ? 'positivo o cero' : 'mayor que 0'}`);
+    return v;
+  }
+  // e^(−t/τ) con τ en segundos
+  const ex = (tau) => `e<sup>−t/${f(tau)}</sup>`;
+  const sgn = (x) => (x < 0 ? '−' : '+');
+
+  /* ---------- RC ---------- */
+  // sc: { proceso: 'carga'|'descarga', V, V0, R, C (μF), t, Vobj }
+  function rc(sc) {
+    const carga = sc.proceso !== 'descarga', R = lee(sc, 'R', 'la resistencia'), C = lee(sc, 'C', 'la capacidad') * 1e-6, tau = R * C, pasos = [];
+    const V = carga ? lee(sc, 'V', 'la tensión de la fuente', { cero: true }) : 0, V0 = lee(sc, 'V0', 'la tensión inicial del condensador', { opcional: carga, signo: true }) ?? 0;
+    if (V === V0) throw new Error(carga ? 'El condensador ya está a la tensión de la fuente: no hay transitorio' : 'Con el condensador descargado no hay nada que descargar');
+    const Vc = (t) => V + (V0 - V) * Math.exp(-t / tau), I = (t) => ((V - V0) / R) * Math.exp(-t / tau);
+    pasos.push({ t: 'Constante de tiempo', html: `τ = R C = ${u(R, 'Ω')}·${u(C, 'F')} = <b>${u(tau, 's')}</b>. En un tiempo τ el condensador recorre el 63 % del camino; en 5τ = ${u(5 * tau, 's')}, el 99,3 %: se da por terminado.` });
+    const VcTxt = carga ? (V0 === 0 ? `${f(V)}·(1 − ${ex(tau)})` : `${f(V)} ${sgn(V0 - V)} ${f(Math.abs(V0 - V))}·${ex(tau)}`) : `${f(V0)}·${ex(tau)}`;
+    pasos.push({ t: carga ? 'Carga' : 'Descarga', html: `${carga ? `Al cerrar, la tensión del condensador va de ${f(V0)} V a ${f(V)} V: V<sub>C</sub>(t) = V + (V<sub>0</sub> − V)·e<sup>−t/τ</sup>` : `Sin fuente, el condensador se descarga a través de R: V<sub>C</sub>(t) = V<sub>0</sub>·e<sup>−t/τ</sup>`} ⇒ <b>V<sub>C</sub>(t) = ${VcTxt} V</b>` });
+    pasos.push({ t: 'Corriente', html: `i(t) = C dV<sub>C</sub>/dt = ${carga ? '(V − V<sub>0</sub>)/R' : '−V<sub>0</sub>/R'}·e<sup>−t/τ</sup> = <b>${f((V - V0) / R)}·${ex(tau)} A</b>. Empieza en ${u((V - V0) / R, 'A')} (el condensador se comporta como un cable) y tiende a 0 (como un circuito abierto)${carga ? '' : '; el signo menos indica que circula al revés que en la carga'}.` });
+    pasos.push({ t: 'Carga y energía', html: `q = C V<sub>C</sub>: de ${u(C * V0, 'C')} a ${u(C * V, 'C')}. Energía en el condensador: de ½CV<sub>0</sub><sup>2</sup> = ${u(0.5 * C * V0 * V0, 'J')} a ½CV<sup>2</sup> = ${u(0.5 * C * V * V, 'J')}. En la resistencia se disipan ${u(0.5 * C * (V - V0) ** 2, 'J')}${carga && V0 === 0 ? ', lo mismo que se queda en el condensador: la fuente da el doble' : ''}.` });
+    const t = lee(sc, 't', 'el instante t', { opcional: true, cero: true });
+    if (t !== null) pasos.push({ t: `En t = ${u(t, 's')}`, html: `t/τ = ${f(t / tau)}: V<sub>C</sub> = <b>${f(Vc(t))} V</b>, i = <b>${u(I(t), 'A')}</b>, V<sub>R</sub> = R i = ${f(R * I(t))} V.` });
+    const Vo = lee(sc, 'Vobj', 'la tensión que se quiere alcanzar', { opcional: true, signo: true });
+    let tObj = null;
+    if (Vo !== null) {
+      const fr = (Vo - V) / (V0 - V);
+      if (!(fr > 0 && fr <= 1)) throw new Error(`El condensador no llega a ${f(Vo)} V: va de ${f(V0)} V a ${f(V)} V`);
+      tObj = -tau * Math.log(fr);
+      pasos.push({ t: `Tiempo hasta V<sub>C</sub> = ${f(Vo)} V`, html: `${f(Vo)} = ${VcTxt} ⇒ e<sup>−t/τ</sup> = ${f(fr)} ⇒ t = −τ ln ${f(fr)} = <b>${u(tObj, 's')}</b> (${f(tObj / tau)} τ)` });
+    }
+    return { modo: 'rc', carga, V, V0, R, C, tau, Vc, I, VcTxt, t, Vct: t !== null ? Vc(t) : null, It: t !== null ? I(t) : null, Vo, tObj, I0: (V - V0) / R, Ef: 0.5 * C * V * V, Ed: 0.5 * C * (V - V0) ** 2, T: 5 * tau, pasos };
+  }
+
+  /* ---------- RL ---------- */
+  // sc: { proceso: 'subida'|'bajada', V, R, L (mH), t, Iobj }; en la bajada la corriente inicial es V/R
+  function rl(sc) {
+    const sube = sc.proceso !== 'bajada', V = lee(sc, 'V', 'la tensión de la fuente'), R = lee(sc, 'R', 'la resistencia'), L = lee(sc, 'L', 'la inductancia') * 1e-3, tau = L / R, Inf = V / R, pasos = [];
+    const I0 = sube ? 0 : Inf, Ifin = sube ? Inf : 0;
+    const I = (t) => Ifin + (I0 - Ifin) * Math.exp(-t / tau), VL = (t) => (sube ? V : -V) * Math.exp(-t / tau);
+    pasos.push({ t: 'Constante de tiempo', html: `τ = L/R = ${u(L, 'H')} / ${u(R, 'Ω')} = <b>${u(tau, 's')}</b>` });
+    const ITxt = sube ? `${f(Inf)}·(1 − ${ex(tau)})` : `${f(Inf)}·${ex(tau)}`;
+    pasos.push({ t: sube ? 'La corriente sube' : 'La corriente baja', html: sube ? `Al cerrar, la bobina se opone al cambio y la corriente crece poco a poco hasta I<sub>∞</sub> = V/R = ${u(Inf, 'A')}: i(t) = (V/R)·(1 − e<sup>−t/τ</sup>) ⇒ <b>i(t) = ${ITxt} A</b>` : `Se quita la fuente y el circuito se cierra por R: la corriente, que era V/R = ${u(Inf, 'A')}, no cae de golpe: i(t) = I<sub>0</sub>·e<sup>−t/τ</sup> ⇒ <b>i(t) = ${ITxt} A</b>` });
+    pasos.push({ t: 'Tensión en la bobina', html: `V<sub>L</sub> = L di/dt = <b>${f(sube ? V : -V)}·${ex(tau)} V</b>. ${sube ? 'Al principio toda la tensión está en la bobina (se comporta como un circuito abierto) y al final nada (como un cable).' : 'Cambia de signo: la bobina hace de fuente y mantiene la corriente mientras gasta su energía.'}` });
+    pasos.push({ t: 'Energía', html: `${sube ? 'Al final' : 'Al principio'} la bobina guarda ½ L I<sup>2</sup> = ½·${u(L, 'H')}·(${u(Inf, 'A')})<sup>2</sup> = <b>${u(0.5 * L * Inf * Inf, 'J')}</b>${sube ? '' : ', que acaba disipada en la resistencia'}.` });
+    const t = lee(sc, 't', 'el instante t', { opcional: true, cero: true });
+    if (t !== null) pasos.push({ t: `En t = ${u(t, 's')}`, html: `t/τ = ${f(t / tau)}: i = <b>${u(I(t), 'A')}</b>, V<sub>L</sub> = <b>${f(VL(t))} V</b>, V<sub>R</sub> = R i = ${f(R * I(t))} V.` });
+    const Io = lee(sc, 'Iobj', 'la corriente que se quiere alcanzar', { opcional: true, cero: true });
+    let tObj = null;
+    if (Io !== null) {
+      const fr = (Io - Ifin) / (I0 - Ifin);
+      if (!(fr > 0 && fr <= 1)) throw new Error(`La corriente no llega a ${f(Io)} A: va de ${f(I0)} A a ${f(Ifin)} A`);
+      tObj = -tau * Math.log(fr);
+      pasos.push({ t: `Tiempo hasta i = ${f(Io)} A`, html: `${f(Io)} = ${ITxt} ⇒ e<sup>−t/τ</sup> = ${f(fr)} ⇒ t = −τ ln ${f(fr)} = <b>${u(tObj, 's')}</b> (${f(tObj / tau)} τ)` });
+    }
+    return { modo: 'rl', sube, V, R, L, tau, Inf, I0, I, VL, ITxt, t, It: t !== null ? I(t) : null, VLt: t !== null ? VL(t) : null, Io, tObj, E: 0.5 * L * Inf * Inf, T: 5 * tau, pasos };
+  }
+
+  /* ---------- RLC en serie ---------- */
+  // sc: { V (escalón; 0 = respuesta libre), R, L (mH), C (μF), V0 (V del condensador en t = 0), I0, t }
+  function rlc(sc) {
+    const V = lee(sc, 'V', 'la tensión de la fuente', { cero: true }), R = lee(sc, 'R', 'la resistencia', { cero: true }), L = lee(sc, 'L', 'la inductancia') * 1e-3, C = lee(sc, 'C', 'la capacidad') * 1e-6;
+    const V0 = lee(sc, 'V0', 'la tensión inicial del condensador', { opcional: true, signo: true }) ?? 0, I0 = lee(sc, 'I0', 'la corriente inicial', { opcional: true, signo: true }) ?? 0;
+    if (V === V0 && I0 === 0) throw new Error('Con el condensador ya a la tensión de la fuente y sin corriente no hay transitorio');
+    const a = R / (2 * L), w0 = 1 / Math.sqrt(L * C), Rc = 2 * Math.sqrt(L / C), A0 = V0 - V, D0 = I0 / C, pasos = [];
+    const rel = (a - w0) / w0, tipo = Math.abs(rel) < 1e-9 ? 'critico' : a > w0 ? 'sobre' : 'sub';
+    pasos.push({ t: 'Ecuación', html: `Por la ley de las mallas, V = R i + L di/dt + V<sub>C</sub> con i = C dV<sub>C</sub>/dt: L C V<sub>C</sub>″ + R C V<sub>C</sub>′ + V<sub>C</sub> = V. La ecuación característica es s<sup>2</sup> + (R/L) s + 1/(LC) = 0, con α = R/(2L) = <b>${f(a)} s<sup>−1</sup></b> y ω<sub>0</sub> = 1/√(LC) = <b>${f(w0)} rad/s</b>.` });
+    let Vc, dV, txt, s1 = null, s2 = null, wd = null, A, B;
+    if (tipo === 'sub') {
+      wd = Math.sqrt(w0 * w0 - a * a); A = A0; B = (D0 + a * A) / wd;
+      Vc = (t) => V + Math.exp(-a * t) * (A * Math.cos(wd * t) + B * Math.sin(wd * t));
+      dV = (t) => Math.exp(-a * t) * ((-a * A + wd * B) * Math.cos(wd * t) + (-a * B - wd * A) * Math.sin(wd * t));
+      txt = `${V ? `${f(V)} + ` : ''}e<sup>−${f(a)}t</sup>·(${f(A)} cos ${f(wd)}t ${sgn(B)} ${f(Math.abs(B))} sen ${f(wd)}t)`;
+      pasos.push({ t: 'Subamortiguado', html: `α &lt; ω<sub>0</sub> (R = ${u(R, 'Ω')} es menor que la resistencia crítica 2√(L/C) = ${u(Rc, 'Ω')}): raíces complejas s = −α ± jω<sub>d</sub>, con ω<sub>d</sub> = √(ω<sub>0</sub><sup>2</sup> − α<sup>2</sup>) = <b>${f(wd)} rad/s</b>. La tensión oscila con periodo 2π/ω<sub>d</sub> = ${u((2 * Math.PI) / wd, 's')} mientras se amortigua.` });
+    } else if (tipo === 'critico') {
+      A = A0; B = D0 + a * A;
+      Vc = (t) => V + (A + B * t) * Math.exp(-a * t);
+      dV = (t) => (B - a * (A + B * t)) * Math.exp(-a * t);
+      txt = `${V ? `${f(V)} + ` : ''}(${f(A)} ${sgn(B)} ${f(Math.abs(B))} t)·e<sup>−${f(a)}t</sup>`;
+      pasos.push({ t: 'Amortiguamiento crítico', html: `α = ω<sub>0</sub> (R = 2√(L/C) = ${u(Rc, 'Ω')}): raíz doble s = −α. Es el caso que llega antes al final sin oscilar.` });
+    } else {
+      const r = Math.sqrt(a * a - w0 * w0); s1 = -a + r; s2 = -a - r; A = (D0 - s2 * A0) / (s1 - s2); B = A0 - A;
+      Vc = (t) => V + A * Math.exp(s1 * t) + B * Math.exp(s2 * t);
+      dV = (t) => A * s1 * Math.exp(s1 * t) + B * s2 * Math.exp(s2 * t);
+      txt = `${V ? `${f(V)} ` : ''}${V ? sgn(A) + ' ' : A < 0 ? '−' : ''}${f(Math.abs(A))}·e<sup>${f(s1)}t</sup> ${sgn(B)} ${f(Math.abs(B))}·e<sup>${f(s2)}t</sup>`;
+      pasos.push({ t: 'Sobreamortiguado', html: `α > ω<sub>0</sub> (R = ${u(R, 'Ω')} es mayor que la resistencia crítica 2√(L/C) = ${u(Rc, 'Ω')}): dos raíces reales s = −α ± √(α<sup>2</sup> − ω<sub>0</sub><sup>2</sup>) = <b>${f(s1)}</b> y <b>${f(s2)} s<sup>−1</sup></b>. Llega al final sin oscilar, despacio.` });
+    }
+    pasos.push({ t: 'Condiciones iniciales', html: `V<sub>C</sub>(0) = ${f(V0)} V y V<sub>C</sub>′(0) = i(0)/C = ${f(D0)} V/s (la tensión del condensador y la corriente de la bobina no pueden saltar). De ahí las constantes: <b>V<sub>C</sub>(t) = ${txt} V</b>` });
+    const I = (t) => C * dV(t), Q = w0 * L / (R || 1e-300);
+    pasos.push({ t: 'Corriente', html: `i(t) = C dV<sub>C</sub>/dt. Al final, V<sub>C</sub> → ${f(V)} V e i → 0. Factor de calidad Q = ω<sub>0</sub>L/R = ${R ? f(Q) : '∞'}${R ? '' : ': sin resistencia la oscilación no se amortigua nunca'}.` });
+    const t = lee(sc, 't', 'el instante t', { opcional: true, cero: true });
+    if (t !== null) pasos.push({ t: `En t = ${u(t, 's')}`, html: `V<sub>C</sub> = <b>${f(Vc(t))} V</b>, i = <b>${u(I(t), 'A')}</b>` });
+    // cuánto dibujar: unas cuantas constantes de tiempo del término más lento
+    const lento = tipo === 'sobre' ? -1 / s1 : 1 / (a || w0 / 20), T = tipo === 'sub' ? Math.min(5 * lento, 12 * (2 * Math.PI) / wd) : 6 * lento;
+    let pico = null;
+    if (tipo === 'sub' && V !== V0) { const tp = (Math.PI) / wd; pico = { t: tp, V: Vc(tp), sobre: Math.abs((Vc(tp) - V) / (V0 - V)) * 100 }; }
+    return { modo: 'rlc', V, R, L, C, V0, I0, a, w0, wd, s1, s2, Rc, tipo, Vc, I, txt, t, Vct: t !== null ? Vc(t) : null, It: t !== null ? I(t) : null, Q: R ? Q : Infinity, T, pico, pasos };
+  }
+
+  function resolver(sc) {
+    if (sc.modo === 'rl') return rl(sc);
+    if (sc.modo === 'rlc') return rlc(sc);
+    return rc(sc);
+  }
+
+  const ejemplos = [
+    { clave: 'carga', nombre: 'Carga de un condensador', sc: { modo: 'rc', proceso: 'carga', V: '12', V0: '', R: '10000', C: '100', t: '1', Vobj: '' } },
+    { clave: 'descarga', nombre: 'Descarga de un condensador', sc: { modo: 'rc', proceso: 'descarga', V: '', V0: '9', R: '2000', C: '470', t: '', Vobj: '3' } },
+    { clave: 'carga-v0', nombre: 'Condensador que ya tenía carga', sc: { modo: 'rc', proceso: 'carga', V: '10', V0: '4', R: '1000', C: '1000', t: '0,5', Vobj: '9' } },
+    { clave: 'flash', nombre: 'Flash de una cámara', sc: { modo: 'rc', proceso: 'carga', V: '300', V0: '', R: '1000', C: '200', t: '', Vobj: '290' } },
+    { clave: 'rl-sube', nombre: 'Corriente que sube en una bobina', sc: { modo: 'rl', proceso: 'subida', V: '12', R: '6', L: '300', t: '0,05', Iobj: '' } },
+    { clave: 'rl-baja', nombre: 'Bobina que se descarga por una resistencia', sc: { modo: 'rl', proceso: 'bajada', V: '24', R: '12', L: '600', t: '', Iobj: '0,5' } },
+    { clave: 'rlc-sub', nombre: 'RLC subamortiguado (oscila)', sc: { modo: 'rlc', V: '10', R: '20', L: '100', C: '10', V0: '', I0: '', t: '' } },
+    { clave: 'rlc-critico', nombre: 'RLC con amortiguamiento crítico', sc: { modo: 'rlc', V: '10', R: '200', L: '100', C: '10', V0: '', I0: '', t: '' } },
+    { clave: 'rlc-sobre', nombre: 'RLC sobreamortiguado', sc: { modo: 'rlc', V: '10', R: '1000', L: '100', C: '10', V0: '', I0: '', t: '' } },
+    { clave: 'lc', nombre: 'Condensador cargado que se descarga en una bobina', sc: { modo: 'rlc', V: '0', R: '5', L: '50', C: '20', V0: '20', I0: '', t: '0,001' } },
+  ];
+
+  return { resolver, rc, rl, rlc, ejemplos, f, u };
+})();
+
+/* =====================================================================
+   Transitorios: interfaz (RC, RL y RLC en serie; esquema del circuito
+   con la corriente que circula y la carga del condensador, gráfica de la
+   tensión y la corriente frente al tiempo con un cursor que avanza, y el
+   desarrollo). El cálculo está en transitorios/fisica.js (Transitorios).
+   ===================================================================== */
+(() => {
+  const $ = (q) => document.querySelector(q);
+  const T = Transitorios, f = T.f, u = T.u, CLAVE = 'transitorios-v1';
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const copia = (o) => JSON.parse(JSON.stringify(o));
+  const txt = (h) => String(h).replace(/<sup>(.*?)<\/sup>/g, (_, e) => e.replace(/−/g, '⁻').replace(/\d/g, (d) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d])).replace(/<[^>]+>/g, '');
+  const MODOS = [['rc', 'Circuito RC (condensador)'], ['rl', 'Circuito RL (bobina)'], ['rlc', 'Circuito RLC en serie']];
+
+  let sc = copia(T.ejemplos[0].sc);
+  try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && MODOS.some(([k]) => k === g.modo)) sc = g; } catch (e) { /* sin almacenamiento */ }
+  const guarda = () => { try { localStorage.setItem(CLAVE, JSON.stringify(sc)); } catch (e) { /* sin almacenamiento */ } };
+  let sol = null, col = {}, anda = true, tA = 0;
+
+  /* ---------- Formulario ---------- */
+  const fila = (k, nom, un) => `<label for="f-${k}">${nom}${un ? ` <small>${un}</small>` : ''}</label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc[k] ?? '')}" inputmode="decimal" autocomplete="off" spellcheck="false">`;
+  const elige = (k, nom, lista) => `<label for="f-${k}">${nom}</label><select id="f-${k}" class="in" data-k="${k}">${lista.map(([v, t]) => `<option value="${v}"${String(sc[k]) === v ? ' selected' : ''}>${t}</option>`).join('')}</select>`;
+  const sep = (t) => `<div class="sep">${t}</div>`;
+  const NOTAS = {
+    rc: 'El interruptor se cierra en t = 0. En la descarga no hay fuente: el condensador se descarga a través de R. Se admite 4,7e-3 o 4,7·10^-3.',
+    rl: 'En la subida se conecta la fuente en t = 0; en la bajada se quita y la bobina, que llevaba V/R, se descarga a través de R.',
+    rlc: 'R, L y C en serie con una fuente que se conecta en t = 0 (pon 0 V para la respuesta libre). V₀ e I₀ son la tensión del condensador y la corriente al empezar.',
+  };
+  function formulario() {
+    let h = elige('modo', 'Circuito', MODOS);
+    if (sc.modo === 'rc') {
+      const carga = sc.proceso !== 'descarga';
+      h += elige('proceso', 'Proceso', [['carga', 'Carga (se conecta la fuente)'], ['descarga', 'Descarga (sin fuente)']]) + (carga ? fila('V', 'Tensión de la fuente V', 'V') : '') + fila('V0', carga ? 'Tensión inicial V₀ (opcional)' : 'Tensión inicial V₀', 'V') + fila('R', 'Resistencia R', 'Ω') + fila('C', 'Capacidad C', 'μF') + sep('Opcional') + fila('t', 'Instante t', 's') + fila('Vobj', 'Tiempo hasta que V<sub>C</sub> valga', 'V');
+    } else if (sc.modo === 'rl') {
+      h += elige('proceso', 'Proceso', [['subida', 'Se conecta la fuente'], ['bajada', 'Se quita la fuente']]) + fila('V', 'Tensión de la fuente V', 'V') + fila('R', 'Resistencia R', 'Ω') + fila('L', 'Inductancia L', 'mH') + sep('Opcional') + fila('t', 'Instante t', 's') + fila('Iobj', 'Tiempo hasta que i valga', 'A');
+    } else h += fila('V', 'Tensión de la fuente V', 'V') + fila('R', 'Resistencia R', 'Ω') + fila('L', 'Inductancia L', 'mH') + fila('C', 'Capacidad C', 'μF') + sep('Opcional') + fila('V0', 'Tensión inicial del condensador V₀', 'V') + fila('I0', 'Corriente inicial I₀', 'A') + fila('t', 'Instante t', 's');
+    $('#campos').innerHTML = h;
+    $('#nota').textContent = NOTAS[sc.modo];
+  }
+  const cambia = () => { $('#ejemplos').value = ''; calcula(); };
+  $('#campos').addEventListener('input', (e) => { const t = e.target; if (t.tagName !== 'INPUT') return; sc[t.dataset.k] = t.value; cambia(); });
+  $('#campos').addEventListener('change', (e) => {
+    const t = e.target; if (t.tagName !== 'SELECT') return;
+    if (t.dataset.k === 'modo') sc = copia(T.ejemplos.find((x) => x.sc.modo === t.value).sc);
+    else { sc.proceso = t.value; if (t.value === 'descarga' && !sc.V0) sc.V0 = sc.V || '10'; if (t.value === 'carga' && !sc.V) sc.V = sc.V0 || '10'; if (t.value === 'descarga') sc.Vobj = ''; }
+    formulario(); cambia();
+  });
+
+  /* ---------- Ejemplos ---------- */
+  const sel = $('#ejemplos');
+  sel.innerHTML = '<option value="">Ejemplos…</option>' + MODOS.map(([k, m]) => `<optgroup label="${m}">${T.ejemplos.filter((e) => e.sc.modo === k).map((e) => `<option value="${e.clave}">${e.nombre}</option>`).join('')}</optgroup>`).join('');
+  sel.addEventListener('change', () => { if (sel.value) abrirEjemplo(sel.value); });
+  function abrirEjemplo(clave) {
+    const e = T.ejemplos.find((x) => x.clave === clave);
+    if (!e) return;
+    sc = copia(e.sc); formulario(); calcula(); sel.value = clave;
+  }
+  // un ejercicio al azar de los de clase, para el modo práctica
+  function azar() {
+    const ent = (a, b) => a + Math.floor(Math.random() * (b - a + 1)), de = (l) => l[ent(0, l.length - 1)], c = (x) => String(x).replace('.', ',');
+    const tipos = [
+      () => { const R = de([100, 220, 470, 1000, 2200, 4700, 10000]), C = de([10, 22, 47, 100, 220, 470, 1000]), tau = (R * C) / 1e6; return { modo: 'rc', proceso: 'carga', V: String(de([5, 9, 10, 12, 24])), V0: '', R: String(R), C: String(C), t: c(+(tau * de([0.5, 1, 2, 3])).toPrecision(3)), Vobj: '' }; },
+      () => { const R = de([100, 470, 1000, 2200, 10000]), C = de([10, 47, 100, 470, 1000]), V0 = de([6, 9, 12, 20]); return { modo: 'rc', proceso: 'descarga', V: '', V0: String(V0), R: String(R), C: String(C), t: '', Vobj: c(V0 / de([2, 3, 4])) }; },
+      () => { const R = de([2, 5, 10, 20, 50]), L = de([10, 50, 100, 200, 500]), tau = L / 1000 / R; return { modo: 'rl', proceso: de(['subida', 'bajada']), V: String(de([6, 10, 12, 24])), R: String(R), L: String(L), t: c(+(tau * de([0.5, 1, 2])).toPrecision(3)), Iobj: '' }; },
+      () => ({ modo: 'rlc', V: String(de([5, 10, 12])), R: String(de([10, 20, 50, 200, 500, 1000])), L: String(de([10, 50, 100])), C: String(de([1, 10, 100])), V0: '', I0: '', t: '' }),
+    ];
+    sc = de(tipos)();
+    formulario(); calcula(); sel.value = '';
+  }
+  const enunciado = () => {
+    if (sc.modo === 'rc') return sc.proceso === 'descarga' ? `Un condensador de ${esc(sc.C)} μF cargado a ${esc(sc.V0)} V se descarga por una resistencia de ${esc(sc.R)} Ω. Calcula la constante de tiempo${sc.Vobj ? ` y cuánto tarda en bajar a ${esc(sc.Vobj)} V` : ''}${sc.t ? ` y la tensión a los ${esc(sc.t)} s` : ''}.` : `Se conecta un condensador de ${esc(sc.C)} μF${sc.V0 ? ` (a ${esc(sc.V0)} V)` : ' descargado'} a una fuente de ${esc(sc.V)} V a través de ${esc(sc.R)} Ω. Calcula τ, la corriente inicial${sc.t ? ` y la tensión y la corriente a los ${esc(sc.t)} s` : ''}${sc.Vobj ? ` y cuánto tarda en llegar a ${esc(sc.Vobj)} V` : ''}.`;
+    if (sc.modo === 'rl') return `${sc.proceso === 'bajada' ? `Una bobina de ${esc(sc.L)} mH lleva la corriente que le da una fuente de ${esc(sc.V)} V con ${esc(sc.R)} Ω, y se quita la fuente` : `Se conecta una bobina de ${esc(sc.L)} mH en serie con ${esc(sc.R)} Ω a una fuente de ${esc(sc.V)} V`}. Calcula τ y la corriente final o inicial${sc.t ? `, y la corriente a los ${esc(sc.t)} s` : ''}${sc.Iobj ? `, y cuánto tarda en llegar a ${esc(sc.Iobj)} A` : ''}.`;
+    return `Un circuito RLC en serie con R = ${esc(sc.R)} Ω, L = ${esc(sc.L)} mH y C = ${esc(sc.C)} μF se conecta a ${esc(sc.V)} V. ¿Es sobreamortiguado, crítico o subamortiguado? Calcula α, ω₀ y la tensión del condensador.`;
+  };
+
+  /* ---------- Cálculo ---------- */
+  const dato = (t, v, cl = '') => `<div${cl ? ` class="${cl}"` : ''}><span>${t}</span>${v}</div>`;
+  const TIPOS = { sub: 'subamortiguado', critico: 'amortiguamiento crítico', sobre: 'sobreamortiguado' };
+  function calcula() {
+    const err = $('#error');
+    try { sol = T.resolver(sc); } catch (e) { sol = null; err.textContent = e.message; err.hidden = false; $('#res').innerHTML = ''; $('#pasos').innerHTML = ''; $('#leyenda').textContent = ''; dibuja(); return; }
+    err.hidden = true; guarda(); tA = 0;
+    let h = '';
+    if (sol.modo === 'rc') {
+      h = dato('Constante de tiempo', `τ = RC = <b>${u(sol.tau, 's')}</b>`) + dato('Tensión del condensador', `V<sub>C</sub>(t) = <b>${sol.VcTxt} V</b>`, 'ancho') + dato('Corriente inicial', `i(0) = ${u(sol.I0, 'A')}`);
+      if (sol.t !== null) h += dato(`V<sub>C</sub> en t = ${u(sol.t, 's')}`, `<b>${f(sol.Vct)} V</b>`) + dato(`i en t = ${u(sol.t, 's')}`, `${u(sol.It, 'A')}`);
+      if (sol.tObj !== null) h += dato(`Tiempo hasta ${f(sol.Vo)} V`, `t = <b>${u(sol.tObj, 's')}</b>`);
+      h += dato('Energía final', `${u(sol.Ef, 'J')}`);
+    } else if (sol.modo === 'rl') {
+      h = dato('Constante de tiempo', `τ = L/R = <b>${u(sol.tau, 's')}</b>`) + dato('Corriente', `i(t) = <b>${sol.ITxt} A</b>`, 'ancho') + dato(sol.sube ? 'Corriente final' : 'Corriente inicial', `${u(sol.Inf, 'A')}`);
+      if (sol.t !== null) h += dato(`i en t = ${u(sol.t, 's')}`, `<b>${u(sol.It, 'A')}</b>`) + dato(`V<sub>L</sub> en t = ${u(sol.t, 's')}`, `${f(sol.VLt)} V`);
+      if (sol.tObj !== null) h += dato(`Tiempo hasta ${f(sol.Io)} A`, `t = <b>${u(sol.tObj, 's')}</b>`);
+      h += dato('Energía en la bobina', `${u(sol.E, 'J')}`);
+    } else {
+      h = dato('Tipo', `<b>${TIPOS[sol.tipo]}</b>`) + dato('α', `${f(sol.a)} s<sup>−1</sup>`) + dato('ω<sub>0</sub>', `${f(sol.w0)} rad/s`) + (sol.wd !== null ? dato('ω<sub>d</sub>', `${f(sol.wd)} rad/s`) : '') + dato('Resistencia crítica', `${u(sol.Rc, 'Ω')}`) + dato('Tensión del condensador', `V<sub>C</sub>(t) = <b>${sol.txt} V</b>`, 'ancho');
+      if (sol.t !== null) h += dato(`V<sub>C</sub> en t = ${u(sol.t, 's')}`, `<b>${f(sol.Vct)} V</b>`) + dato(`i en t = ${u(sol.t, 's')}`, `${u(sol.It, 'A')}`);
+    }
+    $('#res').innerHTML = h;
+    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('');
+    $('#leyenda').innerHTML = sol.modo === 'rl' ? 'Arriba, el circuito: los puntos son la corriente. Abajo, i(t) en azul y V<sub>L</sub>(t) en rojo; la línea discontinua marca τ.' : `Arriba, el circuito: los puntos son la corriente y las cargas del condensador, su tensión. Abajo, V<sub>C</sub>(t) en rojo e i(t) en azul${sol.modo === 'rc' ? '; la línea discontinua marca τ' : ''}.`;
+    dibuja();
+  }
+
+  /* ---------- Dibujos ---------- */
+  function colores() { const cs = getComputedStyle(document.documentElement); for (const c of ['--ink', '--muted', '--line', '--accent', '--accent-soft', '--panel', '--bg', '--v', '--i']) col[c] = cs.getPropertyValue(c).trim(); }
+  const lienzo = (s) => {
+    const c = $(s), dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
+    if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
+    const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
+    return { g, w, h };
+  };
+  const DUR = 6, PAUSA = 1.2;
+  const tiempo = () => { const k = tA % (DUR + PAUSA); return Math.min(1, k / DUR) * sol.T; };
+  const fuente = () => (sol.modo === 'rc' ? sol.carga : sol.modo === 'rl' ? sol.sube : sol.V > 0);
+  const marcas = (a, b, n = 5) => {
+    const p0 = (b - a) / n, e = 10 ** Math.floor(Math.log10(p0)), paso = [1, 2, 2.5, 5, 10].map((q) => q * e).find((q) => q >= p0) || 10 * e;
+    const out = []; for (let v = Math.ceil(a / paso) * paso; v <= b + paso * 1e-9; v += paso) out.push(Math.abs(v) < paso * 1e-9 ? 0 : v);
+    return out;
+  };
+  function dibuja() { circuito(); grafica(); }
+  // esquema: fuente (o un cable si no hay) a la izquierda, interruptor y R arriba, C y/o L a la derecha
+  function circuito() {
+    const { g, w, h } = lienzo('#circuito');
+    if (!sol) return;
+    if (!col['--ink']) colores();
+    const t = tiempo(), x1 = Math.max(50, w * 0.2), x2 = Math.min(w - 50, w * 0.8), y1 = 34, y2 = h - 30, ink = col['--ink'];
+    g.strokeStyle = ink; g.lineWidth = 2; g.lineCap = 'round';
+    const linea = (a, b, c, d) => { g.beginPath(); g.moveTo(a, b); g.lineTo(c, d); g.stroke(); };
+    const xm = (x1 + x2) / 2, ym = (y1 + y2) / 2;
+    // lado izquierdo: fuente
+    if (fuente()) { linea(x1, y1, x1, ym - 8); linea(x1, ym + 8, x1, y2); g.lineWidth = 3; linea(x1 - 16, ym - 8, x1 + 16, ym - 8); g.lineWidth = 5; linea(x1 - 8, ym + 8, x1 + 8, ym + 8); g.lineWidth = 2; g.fillStyle = col['--muted']; g.font = '12px "IBM Plex Sans", system-ui, sans-serif'; g.textAlign = 'right'; g.textBaseline = 'middle'; g.fillText(`${f(sol.V, 3)} V`, x1 - 22, ym); }
+    else linea(x1, y1, x1, y2);
+    // arriba: interruptor (cerrado) y resistencia
+    const xs = x1 + (xm - x1) * 0.35; linea(x1, y1, xs - 10, y1); g.fillStyle = ink; g.beginPath(); g.arc(xs - 10, y1, 3, 0, 2 * Math.PI); g.fill(); linea(xs - 10, y1, xs + 12, y1); g.beginPath(); g.arc(xs + 12, y1, 3, 0, 2 * Math.PI); g.fill();
+    const r1 = xm - 24, r2 = xm + 24; linea(xs + 12, y1, r1, y1); g.beginPath(); g.moveTo(r1, y1); for (let k = 1; k <= 6; k++) g.lineTo(r1 + (k * (r2 - r1)) / 6 - (r2 - r1) / 12, y1 + (k % 2 ? -7 : 7)); g.lineTo(r2, y1); g.stroke(); linea(r2, y1, x2, y1);
+    g.fillStyle = col['--muted']; g.textAlign = 'center'; g.textBaseline = 'bottom'; g.fillText(`R = ${txt(u(sol.R, 'Ω', 3))}`, xm, y1 - 10);
+    // derecha: C, L o los dos
+    const hayL = sol.modo !== 'rc', hayC = sol.modo !== 'rl';
+    const bobina = (ya, yb) => { linea(x2, y1, x2, ya); g.beginPath(); const n = 4, hh = (yb - ya) / n; for (let k = 0; k < n; k++) g.arc(x2, ya + hh * (k + 0.5), hh / 2, -Math.PI / 2, Math.PI / 2); g.stroke(); g.fillStyle = col['--muted']; g.textAlign = 'left'; g.textBaseline = 'middle'; g.fillText(`L = ${txt(u(sol.L, 'H', 3))}`, x2 + 16, (ya + yb) / 2); };
+    let Vc = 0, I = 0, Imax = 1;
+    if (sol.modo === 'rc') { Vc = sol.Vc(t); I = sol.I(t); Imax = Math.abs(sol.I0) || 1; }
+    else if (sol.modo === 'rl') { I = sol.I(t); Imax = sol.Inf || 1; }
+    else { Vc = sol.Vc(t); I = sol.I(t); Imax = Math.max(1e-30, ...Array.from({ length: 60 }, (_, k) => Math.abs(sol.I((k / 60) * sol.T)))); }
+    const cond = (yc) => {
+      linea(x2, yc - 6, x2, yc - 6); g.lineWidth = 3; linea(x2 - 22, yc - 6, x2 + 22, yc - 6); linea(x2 - 22, yc + 6, x2 + 22, yc + 6); g.lineWidth = 2;
+      const Vm = Math.max(Math.abs(sol.V), Math.abs(sol.V0 || 0), 1e-30), n = Math.round((6 * Math.abs(Vc)) / Vm), arriba = Vc >= 0;
+      g.font = '600 11px system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+      for (let k = 0; k < n; k++) { const xx = x2 + (k - (n - 1) / 2) * 7.5; g.fillStyle = col['--v']; g.fillText(arriba ? '+' : '−', xx, yc - 14); g.fillStyle = col['--i']; g.fillText(arriba ? '−' : '+', xx, yc + 14); }
+      g.fillStyle = col['--muted']; g.font = '12px "IBM Plex Sans", system-ui, sans-serif'; g.textAlign = 'left'; g.fillText(`C = ${txt(u(sol.C, 'F', 3))}`, x2 + 30, yc); g.fillStyle = col['--v']; g.fillText(`V꜀ = ${txt(f(Vc, 3))} V`, x2 + 30, yc + 16);
+    };
+    if (hayC && hayL) { bobina(y1 + 14, ym - 6); linea(x2, ym - 6, x2, ym + 18); cond(ym + 24); linea(x2, ym + 30, x2, y2); }
+    else if (hayC) { linea(x2, y1, x2, ym - 6); cond(ym); linea(x2, ym + 6, x2, y2); }
+    else { bobina(ym - 40, ym + 40); linea(x2, ym + 40, x2, y2); }
+    linea(x1, y2, x2, y2);
+    // la corriente: puntos que recorren el circuito con velocidad proporcional a i
+    const per = 2 * (x2 - x1 + y2 - y1), pos = (s) => { s = ((s % per) + per) % per; if (s < x2 - x1) return [x1 + s, y1]; s -= x2 - x1; if (s < y2 - y1) return [x2, y1 + s]; s -= y2 - y1; if (s < x2 - x1) return [x2 - s, y2]; s -= x2 - x1; return [x1, y2 - s]; };
+    avance += (anda ? 1 : 0) * (I / Imax) * 2.2;
+    g.fillStyle = col['--accent']; g.globalAlpha = Math.min(1, 0.25 + Math.abs(I) / Imax);
+    for (let k = 0; k < per; k += 28) { const p = pos(k + avance); g.beginPath(); g.arc(p[0], p[1], 3.2, 0, 2 * Math.PI); g.fill(); }
+    g.globalAlpha = 1;
+    g.fillStyle = col['--i']; g.font = '12px "IBM Plex Sans", system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'top'; g.fillText(`i = ${txt(u(I, 'A', 3))}  ·  t = ${txt(u(t, 's', 3))}`, xm, y2 + 8);
+  }
+  let avance = 0;
+  // V (rojo, eje izquierdo) e i (azul, eje derecho) frente a t
+  function grafica() {
+    const { g, w, h } = lienzo('#grafica');
+    if (!sol) return;
+    const mL = 48, mR = 54, mT = 14, mB = 28, N = 400, t1 = sol.T;
+    const fV = sol.modo === 'rl' ? sol.VL : sol.Vc, fI = sol.I;
+    const ts = Array.from({ length: N + 1 }, (_, k) => (k / N) * t1), vs = ts.map(fV), is = ts.map(fI);
+    // los dos ejes con el cero a la misma altura: se escala cada curva por su máximo
+    const ext = (xs) => { const b = Math.max(0, ...xs), a = -Math.min(0, ...xs), m = Math.max(a, b) || 1; return [a / m, b / m, m]; };
+    const [vn, vp, vm] = ext(vs), [in_, ip, im] = ext(is), bajo = Math.max(vn, in_), alto = Math.max(vp, ip), pd = (alto + bajo) * 0.08;
+    const v1 = -(bajo + pd) * vm, v2 = (alto + pd) * vm, i1 = -(bajo + pd) * im, i2 = (alto + pd) * im;
+    const X = (t) => mL + (t / t1) * (w - mL - mR), YV = (v) => mT + ((v2 - v) / (v2 - v1)) * (h - mT - mB), YI = (i) => mT + ((i2 - i) / (i2 - i1)) * (h - mT - mB);
+    g.font = '11px "IBM Plex Sans", system-ui, sans-serif'; g.lineWidth = 1;
+    g.strokeStyle = col['--line']; g.fillStyle = col['--muted']; g.textAlign = 'center'; g.textBaseline = 'top';
+    for (const t of marcas(0, t1, Math.max(4, Math.round(w / 90)))) { g.beginPath(); g.moveTo(X(t), mT); g.lineTo(X(t), h - mB); g.stroke(); g.fillText(txt(u(t, 's', 3)), X(t), h - mB + 5); }
+    g.textAlign = 'right'; g.textBaseline = 'middle'; g.fillStyle = col['--v'];
+    for (const v of marcas(v1, v2, 5)) { g.strokeStyle = col['--line']; g.beginPath(); g.moveTo(mL, YV(v)); g.lineTo(w - mR, YV(v)); g.stroke(); g.fillText(txt(f(v, 3)), mL - 5, YV(v)); }
+    g.textAlign = 'left'; g.fillStyle = col['--i']; for (const i of marcas(i1, i2, 5)) g.fillText(txt(u(i, 'A', 3)), w - mR + 5, YI(i));
+    g.strokeStyle = col['--muted']; g.lineWidth = 1.2; g.beginPath(); g.moveTo(mL, YV(0)); g.lineTo(w - mR, YV(0)); g.stroke();
+    if (sol.tau) { g.setLineDash([5, 4]); g.strokeStyle = col['--muted']; g.beginPath(); g.moveTo(X(sol.tau), mT); g.lineTo(X(sol.tau), h - mB); g.stroke(); g.setLineDash([]); g.fillStyle = col['--muted']; g.textAlign = 'left'; g.textBaseline = 'top'; g.fillText('τ', X(sol.tau) + 4, mT + 2); }
+    if (sol.tObj !== null && sol.tObj !== undefined && sol.tObj <= t1) { g.fillStyle = col['--accent']; g.beginPath(); const y = sol.modo === 'rl' ? YI(sol.Io) : YV(sol.Vo); g.arc(X(sol.tObj), y, 5, 0, 2 * Math.PI); g.fill(); }
+    const curva = (ys, Y, c) => { g.strokeStyle = c; g.lineWidth = 2.4; g.beginPath(); ys.forEach((y, k) => (k ? g.lineTo(X(ts[k]), Y(y)) : g.moveTo(X(ts[k]), Y(y)))); g.stroke(); };
+    curva(vs, YV, col['--v']); curva(is, YI, col['--i']);
+    const t = tiempo(); g.strokeStyle = col['--ink']; g.globalAlpha = 0.5; g.beginPath(); g.moveTo(X(t), mT); g.lineTo(X(t), h - mB); g.stroke(); g.globalAlpha = 1;
+    g.fillStyle = col['--v']; g.beginPath(); g.arc(X(t), YV(fV(t)), 4.5, 0, 2 * Math.PI); g.fill(); g.fillStyle = col['--i']; g.beginPath(); g.arc(X(t), YI(fI(t)), 4.5, 0, 2 * Math.PI); g.fill();
+    g.font = '600 12px "IBM Plex Sans", system-ui, sans-serif'; g.textBaseline = 'top'; g.textAlign = 'left'; g.fillStyle = col['--v']; g.fillText(sol.modo === 'rl' ? 'Vʟ (V)' : 'V꜀ (V)', mL + 6, mT + 2); g.textAlign = 'right'; g.fillStyle = col['--i']; g.fillText('i (A)', w - mR - 6, mT + 2);
+  }
+
+  $('#play').addEventListener('click', () => { anda = !anda; $('#play').textContent = anda ? '⏸ Pausa' : '▶ Seguir'; });
+  let ultimo = performance.now();
+  function bucle() {
+    const ahora = performance.now(), dt = Math.min(0.1, (ahora - ultimo) / 1000); ultimo = ahora;
+    if (anda && sol) { tA += dt; dibuja(); }
+    requestAnimationFrame(bucle);
+  }
+  window.addEventListener('resize', dibuja);
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { colores(); dibuja(); });
+
+  const ver = $('#ver'); if (ver) ver.textContent = Version.de('transitorios').current;
+  formulario(); colores(); calcula(); requestAnimationFrame(bucle);
+  window.TransitoriosApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { modo: sol.modo, tau: sol.tau, tipo: sol.tipo, Vct: sol.Vct, It: sol.It, tObj: sol.tObj }, estado: () => copia(sc) };
+})();
+
+/* =====================================================================
+   «Mis ejercicios»: barra lateral común a todas las herramientas, como la
+   del simulador de electrostática. Guarda en este navegador el estado de la
+   herramienta (lo que cada app ya deja en localStorage con su CLAVE) con un
+   título, una carpeta y la marca de fijado; abre, renombra, borra, exporta e
+   importa ejercicios en archivos .simu.json. Abrir uno deja su estado en la
+   CLAVE de la app y recarga la página, así sirve para cualquier herramienta.
+   ===================================================================== */
+const Biblioteca = (() => {
+  // carpeta de la herramienta → clave de localStorage donde la app guarda su estado
+  const CLAVES = {
+    alterna: 'alterna-v1', calorimetria: 'calorimetria-v1', circuitos: 'circuitos-v1', condensadores: 'condensadores-v1',
+    'configuracion-electronica': 'configuracion-v1', dinamica: 'dinamica-v1', disoluciones: 'disoluciones-v1', ph: 'ph-v1', cinetica: 'cinetica-v1', doppler: 'doppler-v1', fluidos: 'fluidos-v1', ciclos: 'ciclos-v1', estadistica: 'estadistica-v1', regresion: 'regresion-v1',
+    faraday: 'faraday-v1', fuerza: 'fuerza-v1', transitorios: 'transitorios-v1', gases: 'gases-v1', induccion: 'induccion-v1', magnetostatica: 'magneto-cur-v1', 'masa-molar': 'masa-molar-v1',
+    matrices: 'matrices-v1', resistencias: 'resistencias-v1', ondas: 'ondas-v1', sistemas: 'sistemas-v1', complejos: 'complejos-v1', taylor: 'taylor-v1', fourier: 'fourier-v1', edos: 'edos-v1', campos: 'campos-v1', 'solido-rigido': 'solido-rigido-v1', 'tiro-parabolico': 'tiro-v1',
+    'trabajo-y-energia': 'energia-v1',
+  };
+  const FORMATO = 'simulaciencia-ejercicios', ANCHO = 1280;
+  const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const lee = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); return v ?? d; } catch (e) { return d; } };
+  const escribe = (k, v) => { try { localStorage.setItem(k, typeof v === 'string' ? v : JSON.stringify(v)); return true; } catch (e) { return false; } };
+  const norm = (s) => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+
+  const CSS = `
+.bib-btn { display: inline-flex; align-items: center; gap: 6px; font: 600 13.5px var(--f-ui, system-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px; cursor: pointer; white-space: nowrap }
+.bib-btn:hover, .bib-btn[aria-expanded=true] { border-color: var(--accent); color: var(--accent) }
+.bib { position: fixed; top: 0; left: 0; bottom: 0; width: 290px; max-width: 88vw; z-index: 60; background: var(--panel); border-right: 1px solid var(--line); display: flex; flex-direction: column; transform: translateX(-102%); transition: transform .18s ease; font: 13.5px/1.4 var(--f-ui, system-ui); color: var(--ink) }
+.bib.abierta { transform: none; box-shadow: 4px 0 24px rgba(0,0,0,.12) }
+.bib-scrim { position: fixed; inset: 0; z-index: 59; background: rgba(0,0,0,.3) }
+@media (min-width: ${ANCHO}px) { body.bib-fija { padding-left: 290px } body.bib-fija .bib.abierta { box-shadow: none } body.bib-fija .bib-scrim { display: none } }
+@media (prefers-reduced-motion: reduce) { .bib { transition: none } }
+.bib-h { display: flex; align-items: center; justify-content: space-between; padding: 12px 12px 8px 14px }
+.bib-h b { font: 600 15px var(--f-ui, system-ui) }
+.bib-x { border: 0; background: none; color: var(--muted); font-size: 20px; line-height: 1; cursor: pointer; padding: 2px 6px; border-radius: 6px }
+.bib-x:hover { background: var(--bg) }
+.bib-acc { display: grid; gap: 2px; padding: 0 8px 8px }
+.bib-acc button, .bib-acc label { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; border: 0; background: none; color: var(--ink); font: 500 13.5px var(--f-ui, system-ui); padding: 6px 8px; border-radius: 8px; cursor: pointer }
+.bib-acc button:hover, .bib-acc label:hover { background: var(--bg) }
+.bib-acc button:disabled { opacity: .45; cursor: default; background: none }
+.bib-ic { width: 22px; height: 22px; border-radius: 6px; display: inline-grid; place-items: center; border: 1px solid var(--line); color: var(--accent); font-size: 13px; flex: 0 0 auto }
+.bib-busca { margin: 4px 2px 0; font: 13px var(--f-ui, system-ui); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 6px 9px; width: calc(100% - 4px) }
+.bib-form { margin: 0 10px 8px; padding: 10px; border: 1px solid var(--accent); border-radius: 10px; display: grid; gap: 6px }
+.bib-form label { font-size: 12px; color: var(--muted); display: grid; gap: 2px }
+.bib-form input { font: 13px var(--f-ui, system-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px }
+.bib-form .fila { display: flex; gap: 6px; justify-content: flex-end }
+.bib-form button { font: 500 13px var(--f-ui, system-ui); border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 6px; padding: 5px 10px; cursor: pointer }
+.bib-form button.si { background: var(--accent); border-color: var(--accent); color: var(--panel) }
+.bib-lista { flex: 1; overflow-y: auto; padding: 0 8px 8px; border-top: 1px solid var(--line) }
+.bib-sec { font: 600 11px var(--f-ui, system-ui); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 12px 6px 4px }
+.bib-carp { display: flex; align-items: center; gap: 6px; width: 100%; border: 0; background: none; color: var(--ink); font: 600 13px var(--f-ui, system-ui); padding: 5px 6px; border-radius: 6px; cursor: pointer; text-align: left }
+.bib-carp:hover { background: var(--bg) } .bib-carp .n { margin-left: auto; color: var(--muted); font-weight: 400; font-size: 12px }
+.bib-it { display: flex; align-items: center; gap: 2px; border-radius: 8px; padding-left: 2px }
+.bib-it:hover, .bib-it:focus-within { background: var(--bg) }
+.bib-it.activo { background: var(--accent-soft, var(--bg)); box-shadow: inset 3px 0 0 var(--accent) }
+.bib-carpd .bib-it { margin-left: 14px }
+.bib-abre { flex: 1; min-width: 0; border: 0; background: none; color: var(--ink); text-align: left; font: 13.5px var(--f-ui, system-ui); padding: 6px; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+.bib-mini { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 13px; width: 26px; height: 26px; border-radius: 6px; flex: 0 0 auto; opacity: .55 }
+.bib-it:hover .bib-mini, .bib-it:focus-within .bib-mini, .bib-mini.on { opacity: 1 } .bib-mini:hover { background: var(--panel); color: var(--accent) } .bib-mini.on { color: var(--accent) }
+@media (hover: none) { .bib-mini { opacity: 1 } }
+.bib-vacio { color: var(--muted); padding: 10px 6px; margin: 0 }
+.bib-pie { border-top: 1px solid var(--line); padding: 8px 14px 12px; color: var(--muted); font-size: 12px }
+.bib-pie p { margin: 0 }
+.bib-aviso { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 70; background: var(--ink); color: var(--panel); padding: 8px 14px; border-radius: 8px; font: 13px var(--f-ui, system-ui); box-shadow: 0 4px 16px rgba(0,0,0,.2) }
+.bib.arrastre { outline: 2px dashed var(--accent); outline-offset: -6px }
+`;
+
+  function monta(herramienta) {
+    const clave = CLAVES[herramienta], cab = document.querySelector('header.top');
+    if (!clave || !cab || document.querySelector('.bib')) return null;
+    const K = `simu-ejercicios:${herramienta}`, K_UI = 'simu-ejercicios-ui', K_ACT = `simu-ejercicios-activo:${herramienta}`;
+    const nombre = (document.querySelector('h1')?.textContent || document.title.split('·')[0]).trim();
+    let lib = lee(K, { items: [] }); if (!Array.isArray(lib.items)) lib = { items: [] };
+    let ui = { abierta: window.innerWidth >= ANCHO, cerradas: {}, ...lee(K_UI, {}) };
+    let activo = null; try { activo = sessionStorage.getItem(K_ACT); } catch (e) { /* sin almacenamiento */ }
+    if (activo && !lib.items.some((x) => x.id === activo)) activo = null;
+    let busca = '', form = null, borrando = null;
+    const guardaLib = () => escribe(K, lib) || aviso('No se pudo guardar: el navegador no deja usar el almacenamiento');
+    const guardaUI = () => escribe(K_UI, ui);
+    const ponActivo = (id) => { activo = id; try { if (id) sessionStorage.setItem(K_ACT, id); else sessionStorage.removeItem(K_ACT); } catch (e) { /* sin almacenamiento */ } };
+    // las apps que guardan con retraso escuchan «simu-guardar» y guardan al momento
+    const estado = () => { window.dispatchEvent(new Event('simu-guardar')); try { return localStorage.getItem(clave); } catch (e) { return null; } };
+    const nuevoId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+    const ejemplo = () => { const s = document.querySelector('select#ejemplo, select[id^="ejemplo"]'); return s && s.value && s.selectedOptions[0] ? s.selectedOptions[0].textContent.trim() : ''; };
+
+    const st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
+    const btn = document.createElement('button');
+    btn.className = 'bib-btn'; btn.type = 'button'; btn.setAttribute('aria-controls', 'bib'); btn.title = 'Guardar, abrir, exportar e importar tus ejercicios';
+    btn.innerHTML = '<span aria-hidden="true">☰</span> Mis ejercicios';
+    const ini = cab.querySelector('.a-inicio'); (ini ? ini.after(btn) : cab.prepend(btn));
+    const panel = document.createElement('aside'); panel.className = 'bib'; panel.id = 'bib'; panel.setAttribute('aria-label', 'Mis ejercicios');
+    const scrim = document.createElement('div'); scrim.className = 'bib-scrim'; scrim.hidden = true;
+    const archivo = document.createElement('input'); archivo.type = 'file'; archivo.accept = '.json,application/json'; archivo.multiple = true; archivo.hidden = true;
+    document.body.append(panel, scrim, archivo);
+
+    let tAviso = 0;
+    function aviso(t) {
+      let a = document.querySelector('.bib-aviso'); if (!a) { a = document.createElement('div'); a.className = 'bib-aviso'; a.setAttribute('role', 'status'); document.body.appendChild(a); }
+      a.textContent = t; a.hidden = false; clearTimeout(tAviso); tAviso = setTimeout(() => { a.hidden = true; }, 2600);
+    }
+    function abre(v) {
+      ui.abierta = v; guardaUI();
+      panel.classList.toggle('abierta', v); btn.setAttribute('aria-expanded', String(v));
+      document.body.classList.toggle('bib-fija', v && window.innerWidth >= ANCHO);
+      scrim.hidden = !v || window.innerWidth >= ANCHO;
+    }
+    function descarga(nombreArch, datos) {
+      const url = URL.createObjectURL(new Blob([JSON.stringify(datos, null, 2)], { type: 'application/json' }));
+      const a = document.createElement('a'); a.href = url; a.download = nombreArch; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+    const archivoDe = (items) => ({ formato: FORMATO, version: 1, herramienta, guardado: new Date().toISOString(), ejercicios: items.map((i) => ({ titulo: i.titulo, carpeta: i.carpeta || undefined, fijado: i.fijado || undefined, datos: i.datos })) });
+    const nombreArchivo = (t) => (norm(t).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'ejercicio') + '.simu.json';
+
+    function importa(texto) {
+      const d = JSON.parse(texto);
+      if (d?.formato !== FORMATO || !Array.isArray(d.ejercicios)) throw new Error('no es un archivo de ejercicios de SimulaCiencia');
+      if (d.herramienta !== herramienta) throw new Error(`es de otra herramienta (${d.herramienta})`);
+      let n = 0;
+      for (const e of d.ejercicios) {
+        if (typeof e?.datos !== 'string') continue;
+        lib.items.push({ id: nuevoId(), titulo: String(e.titulo || 'Ejercicio importado').slice(0, 120), carpeta: String(e.carpeta || '').slice(0, 60), fijado: !!e.fijado, datos: e.datos, actualizado: Date.now() }); n++;
+      }
+      return n;
+    }
+    async function importaArchivos(files) {
+      let n = 0;
+      for (const f of files) {
+        try { n += importa(await f.text()); } catch (err) { aviso(`No se pudo importar ${f.name}: ${err.message}`); return; }
+      }
+      guardaLib(); pinta(); aviso(n === 1 ? 'Ejercicio importado' : `${n} ejercicios importados`);
+    }
+    function carga(it) {
+      if (!escribe(clave, it.datos)) { aviso('No se pudo abrir: el navegador no deja usar el almacenamiento'); return; }
+      ponActivo(it.id);
+      // si se estaba practicando, lo que se abre sustituye a los datos de antes de la práctica
+      try { sessionStorage.removeItem(`simu-practica:${herramienta}`); } catch (e) { /* sin almacenamiento */ }
+      // sin el #… de la dirección, que en algunas herramientas (configuración electrónica) manda sobre lo guardado
+      history.replaceState(null, '', location.pathname + location.search);
+      location.reload();
+    }
+    function guardaForm() {
+      const t = panel.querySelector('#bib-t').value.trim() || 'Ejercicio sin título', c = panel.querySelector('#bib-c').value.trim();
+      if (form.id) { const it = lib.items.find((x) => x.id === form.id); if (it) Object.assign(it, { titulo: t, carpeta: c, actualizado: Date.now() }); }
+      else {
+        const datos = estado();
+        if (datos == null) { aviso('Todavía no hay nada que guardar: cambia algún dato primero'); return; }
+        const it = { id: nuevoId(), titulo: t, carpeta: c, fijado: false, datos, actualizado: Date.now() };
+        lib.items.push(it); ponActivo(it.id); aviso('Guardado en Mis ejercicios');
+      }
+      form = null; guardaLib(); pinta();
+    }
+    function actualiza() {
+      const it = lib.items.find((x) => x.id === activo), datos = estado();
+      if (!it || datos == null) return;
+      it.datos = datos; it.actualizado = Date.now(); guardaLib(); pinta(); aviso(`Cambios guardados en «${it.titulo}»`);
+    }
+
+    function fila(it) {
+      const b = borrando === it.id;
+      return `<div class="bib-it${it.id === activo ? ' activo' : ''}" data-id="${it.id}">
+<button class="bib-abre" data-acc="abrir" title="Abrir «${esc(it.titulo)}»">${esc(it.titulo)}</button>${b
+        ? '<button class="bib-mini on" data-acc="si-borrar" title="Borrar de verdad" aria-label="Confirmar borrar">✓</button><button class="bib-mini" data-acc="no-borrar" title="No borrar" aria-label="Cancelar">✕</button>'
+        : `<button class="bib-mini${it.fijado ? ' on' : ''}" data-acc="fijar" title="${it.fijado ? 'Quitar de fijados' : 'Fijar arriba'}" aria-label="${it.fijado ? 'Quitar de fijados' : 'Fijar'}" aria-pressed="${!!it.fijado}">${it.fijado ? '★' : '☆'}</button><button class="bib-mini" data-acc="editar" title="Cambiar el título o la carpeta" aria-label="Editar">✎</button><button class="bib-mini" data-acc="exportar" title="Exportar este ejercicio" aria-label="Exportar">⤓</button><button class="bib-mini" data-acc="borrar" title="Borrar" aria-label="Borrar">🗑</button>`}
+</div>`;
+    }
+    function pinta() {
+      const q = norm(busca), vis = lib.items.filter((i) => !q || norm(i.titulo + ' ' + (i.carpeta || '')).includes(q));
+      const orden = (a, b) => a.titulo.localeCompare(b.titulo, 'es', { numeric: true });
+      const fij = vis.filter((i) => i.fijado).sort(orden), resto = vis.filter((i) => !i.fijado);
+      const sueltos = resto.filter((i) => !i.carpeta).sort(orden), carpetas = {};
+      for (const i of resto) if (i.carpeta) (carpetas[i.carpeta] ||= []).push(i);
+      let lista = '';
+      if (fij.length) lista += `<p class="bib-sec">Fijados</p>${fij.map(fila).join('')}`;
+      const nombres = Object.keys(carpetas).sort((a, b) => a.localeCompare(b, 'es'));
+      if (nombres.length || sueltos.length) lista += `<p class="bib-sec">Mis ejercicios</p>`;
+      for (const n of nombres) {
+        const ab = q || !ui.cerradas[`${herramienta}/${n}`];
+        lista += `<button class="bib-carp" data-carpeta="${esc(n)}" aria-expanded="${!!ab}"><span aria-hidden="true">${ab ? '▾' : '▸'}</span>${esc(n)}<span class="n">${carpetas[n].length}</span></button>${ab ? `<div class="bib-carpd">${carpetas[n].sort(orden).map(fila).join('')}</div>` : ''}`;
+      }
+      lista += sueltos.map(fila).join('');
+      if (!vis.length) lista = `<p class="bib-vacio">${lib.items.length ? 'Ningún ejercicio coincide con la búsqueda.' : 'Aún no has guardado ningún ejercicio. Prepara los datos y pulsa «Guardar el actual».'}</p>`;
+      const it = lib.items.find((x) => x.id === activo), carps = [...new Set(lib.items.map((x) => x.carpeta).filter(Boolean))];
+      const f = form && (form.id ? lib.items.find((x) => x.id === form.id) : { titulo: ejemplo() || `Ejercicio ${lib.items.length + 1}`, carpeta: it?.carpeta || '' });
+      panel.innerHTML = `<div class="bib-h"><b>Mis ejercicios</b><button class="bib-x" data-acc="cerrar" title="Cerrar" aria-label="Cerrar Mis ejercicios">×</button></div>
+<div class="bib-acc">
+<button data-acc="nuevo"><span class="bib-ic">+</span>Guardar el actual como nuevo</button>
+<button data-acc="actualizar"${it ? '' : ' disabled'} title="${it ? `Guarda los datos de ahora en «${esc(it.titulo)}»` : 'Abre o guarda antes un ejercicio'}"><span class="bib-ic">↻</span>${it ? `Guardar cambios en «${esc(it.titulo.length > 22 ? it.titulo.slice(0, 21) + '…' : it.titulo)}»` : 'Guardar cambios'}</button>
+<button data-acc="importar"><span class="bib-ic">↥</span>Importar archivo…</button>
+<button data-acc="exportar-todo"${lib.items.length ? '' : ' disabled'}><span class="bib-ic">↧</span>Exportar todos</button>
+${lib.items.length > 5 ? `<input type="search" class="bib-busca" placeholder="Buscar por título o carpeta…" aria-label="Buscar ejercicios" value="${esc(busca)}">` : ''}
+</div>
+${f ? `<div class="bib-form"><label>Título<input id="bib-t" value="${esc(f.titulo)}" maxlength="120" autocomplete="off"></label><label>Carpeta (opcional)<input id="bib-c" value="${esc(f.carpeta || '')}" maxlength="60" list="bib-dl" placeholder="sin carpeta" autocomplete="off"></label><datalist id="bib-dl">${carps.map((c) => `<option value="${esc(c)}">`).join('')}</datalist><div class="fila"><button data-acc="cancelar">Cancelar</button><button class="si" data-acc="guardar">Guardar</button></div></div>` : ''}
+<div class="bib-lista">${lista}</div>
+<div class="bib-pie"><p>Se guardan en este navegador. Exporta un archivo <code>.simu.json</code> para llevarlos a otro equipo o compartirlos; también puedes arrastrarlo aquí.</p></div>`;
+      if (f) { const t = panel.querySelector('#bib-t'); t.focus(); t.select(); }
+    }
+
+    panel.addEventListener('click', (e) => {
+      const car = e.target.closest('.bib-carp');
+      if (car) { const k = `${herramienta}/${car.dataset.carpeta}`; ui.cerradas[k] = !ui.cerradas[k]; guardaUI(); pinta(); return; }
+      const b = e.target.closest('[data-acc]'); if (!b) return;
+      const id = b.closest('.bib-it')?.dataset.id, it = id && lib.items.find((x) => x.id === id);
+      switch (b.dataset.acc) {
+        case 'cerrar': abre(false); btn.focus(); break;
+        case 'nuevo': form = {}; pinta(); break;
+        case 'actualizar': actualiza(); break;
+        case 'importar': archivo.click(); break;
+        case 'exportar-todo': descarga(nombreArchivo(nombre + ' ejercicios'), archivoDe(lib.items)); break;
+        case 'guardar': guardaForm(); break;
+        case 'cancelar': form = null; pinta(); break;
+        case 'abrir': if (it) carga(it); break;
+        case 'fijar': if (it) { it.fijado = !it.fijado; guardaLib(); pinta(); } break;
+        case 'editar': if (it) { form = { id }; pinta(); } break;
+        case 'exportar': if (it) descarga(nombreArchivo(it.titulo), archivoDe([it])); break;
+        case 'borrar': borrando = id; pinta(); break;
+        case 'no-borrar': borrando = null; pinta(); break;
+        case 'si-borrar': lib.items = lib.items.filter((x) => x.id !== id); if (activo === id) ponActivo(null); borrando = null; guardaLib(); pinta(); aviso('Ejercicio borrado'); break;
+      }
+    });
+    panel.addEventListener('keydown', (e) => {
+      if (e.target.closest('.bib-form') && e.key === 'Enter') { e.preventDefault(); guardaForm(); }
+      else if (e.key === 'Escape') { if (form) { form = null; pinta(); } else { abre(false); btn.focus(); } }
+    });
+    panel.addEventListener('input', (e) => { if (e.target.classList.contains('bib-busca')) { busca = e.target.value; const pos = e.target.selectionStart; pinta(); const s = panel.querySelector('.bib-busca'); s.focus(); s.setSelectionRange(pos, pos); } });
+    panel.addEventListener('dragover', (e) => { e.preventDefault(); panel.classList.add('arrastre'); });
+    panel.addEventListener('dragleave', () => panel.classList.remove('arrastre'));
+    panel.addEventListener('drop', (e) => { e.preventDefault(); panel.classList.remove('arrastre'); if (e.dataTransfer.files.length) importaArchivos([...e.dataTransfer.files]); });
+    archivo.addEventListener('change', () => { if (archivo.files.length) importaArchivos([...archivo.files]); archivo.value = ''; });
+    btn.addEventListener('click', () => abre(!panel.classList.contains('abierta')));
+    scrim.addEventListener('click', () => abre(false));
+    window.addEventListener('resize', () => abre(panel.classList.contains('abierta')));
+
+    pinta(); abre(!!ui.abierta);
+    return { get items() { return lib.items; }, abre, importa: (t) => { const n = importa(t); guardaLib(); pinta(); return n; }, archivoDe };
+  }
+  return { monta, CLAVES, FORMATO };
+})();
+
+/* =====================================================================
+   Modo práctica común a todas las herramientas. «Otro ejercicio» parte de
+   un ejemplo al azar y cambia sus datos numéricos (con la misma forma de
+   número: enteros pequeños, ángulos, probabilidades…), tapa los resultados
+   y el desarrollo, y pide al alumno los resultados principales, con un
+   hueco por cada número de lo que la herramienta escribiría. «Comprobar»
+   los corrige (1 % o la última cifra mostrada) y «Ver la solución» destapa
+   el desarrollo. Al salir se vuelve a los datos que había antes.
+   Lee de la página lo que ya calcula cada app: no repite ninguna física.
+   ===================================================================== */
+const Practica = (() => {
+  const azar = (a, b) => a + Math.random() * (b - a), entero = (a, b) => Math.floor(azar(a, b + 1));
+  const toma = (xs) => xs[Math.floor(Math.random() * xs.length)];
+  const visible = (e) => !!e && !!(e.offsetWidth || e.offsetHeight || e.getClientRects().length) && !e.closest('[hidden]');
+  const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+  // lo que cambia de una herramienta a otra; lo demás sale de la estructura común de las páginas
+  const CONF = {
+    calorimetria: { items: '#te' },
+    disoluciones: { items: '#valores > .valor:not(.dato)' },
+    matrices: { items: '#res' },
+    // solo sistemas compatibles determinados: la solución paramétrica no se pregunta por huecos
+    // complejos: una operación al azar con números pequeños (los datos son textos como 3 − 2i)
+    // taylor: una función y un punto de los de clase; se preguntan los coeficientes, la aproximación y el error
+    taylor: { datos: null, items: '#resumen > div.num', genera: () => window.TaylorApp?.azar(), enunciado: () => window.TaylorApp?.enunciado() },
+    // fourier: una función de las de clase; se preguntan a₀ y los primeros coeficientes
+    fourier: { datos: null, items: '#resumen > div.num', genera: () => window.FourierApp?.azar(), enunciado: () => window.FourierApp?.enunciado() },
+    // edos: una ecuación de las de clase (Euler, segundo orden o sistema lineal); se preguntan los valores numéricos
+    edos: { datos: null, items: '#resumen > div.num', genera: () => window.EDOsApp?.azar(), enunciado: () => window.EDOsApp?.enunciado() },
+    // cinetica: un ejercicio de los de clase (ley integrada, datos, velocidades iniciales o Arrhenius)
+    cinetica: { datos: null, items: '#resumen > div.num', genera: () => window.CineticaApp?.azar(), enunciado: () => window.CineticaApp?.enunciado() },
+    // campos: gradiente, divergencia y rotacional, trabajo o Green con números enteros; se preguntan los valores decimales
+    campos: { datos: null, items: '#resumen > div.num', genera: () => window.CamposApp?.azar(), enunciado: () => window.CamposApp?.enunciado() },
+    // fuerza: una carga, unos vectores, un selector, un ciclotrón o unos hilos con números de clase
+    fuerza: { datos: null, items: '#res > div', genera: () => window.FuerzaApp?.azar(), enunciado: () => window.FuerzaApp?.enunciado() },
+    // transitorios: un RC, un RL o un RLC con valores de clase
+    transitorios: { datos: null, items: '#res > div', genera: () => window.TransitoriosApp?.azar(), enunciado: () => window.TransitoriosApp?.enunciado() },
+    complejos: { datos: null, genera: () => window.ComplejosApp?.azar(), enunciado: () => window.ComplejosApp?.enunciado() },
+    sistemas: { items: '#res', valido: () => !/[λμ]|incompatible|no tiene/i.test(document.querySelector('#res')?.textContent + document.querySelector('#tipo')?.textContent) },
+    estadistica: { items: '#res' },
+    // regresión: una tabla de datos al azar alrededor de una recta (están en un textarea, no en campos numéricos)
+    regresion: { datos: null, genera: () => window.RegresionApp?.azar(), enunciado: () => 'Con los datos de la tabla, calcula la recta de regresión de Y sobre X, la de X sobre Y, el coeficiente de correlación, las medias, la covarianza y la estimación de y que se pide.' },
+    // resistencias: unos colores al azar (no hay números que cambiar en los datos)
+    resistencias: { datos: null, genera: () => window.ResistenciasApp?.azar(), enunciado: () => `¿Cuánto vale una resistencia con las bandas <b>${esc(window.ResistenciasApp?.colores() || '')}</b>? Escribe el valor y el margen en el que puede estar en las mismas unidades.` },
+    magnetostatica: { items: '[data-res]', tapa: '[data-res], [data-steps], .cvwrap', datos: '#fuentes',
+      // el enunciado del ejemplo ya no vale con los datos nuevos
+      despues: () => pon(document.querySelector('#enunciado'), 'Ejercicio de práctica: calcula el campo magnético en los puntos de las preguntas con las fuentes de la izquierda.'),
+      antes: () => { const m = document.querySelector('#modo'); if (m && m.value !== 'si') { m.value = 'si'; m.dispatchEvent(new Event('change', { bubbles: true })); } } },
+    'masa-molar': {
+      items: '#res-masa .grande', quitar: '', tapa: '#res-masa, #conv-card', datos: null,
+      genera: () => pon(document.querySelector('#formula'), toma(['H2O', 'CO2', 'NaCl', 'H2SO4', 'HNO3', 'NaOH', 'NH3', 'CaCO3', 'C6H12O6', 'C2H5OH', 'Ca(OH)2', 'Al2(SO4)3', 'KMnO4', 'Fe2O3', 'Mg3(PO4)2', 'CuSO4·5H2O', 'Na2CO3', 'K2Cr2O7', 'CH4', 'C3H8', 'HCl', 'Ba(NO3)2', 'NH4Cl', 'MgCl2·6H2O'])),
+      enunciado: () => `Calcula la masa molar de <b>${esc(document.querySelector('#formula').value)}</b>.`,
+    },
+    'configuracion-electronica': {
+      items: null, tapa: '#res', datos: null,
+      genera: () => pon(document.querySelector('#entrada'), String(entero(1, 56))),
+      enunciado: () => { const g = (s) => document.querySelector(s)?.textContent.trim() || ''; return `Escribe la configuración electrónica del <b>${esc(g('#nombre').toLowerCase())}</b> (${esc(g('#sim'))}, Z = ${esc(g('#z'))}) en orden de llenado y cuántos electrones desapareados tiene.`; },
+      textos: [{ et: 'Configuración electrónica', sel: '#llenado', otros: ['#abreviada', '#capas-txt'] }],
+      numeros: [{ et: 'Electrones desapareados', sel: '#desap' }],
+    },
+  };
+
+  function pon(el, v) {
+    if (!el) return;
+    el.value = v;
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+    el.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+  const lee = (s) => { const t = String(s).trim().replace(/\s+/g, '').replace(/[−–]/g, '-'); return /^-?\d+(,\d+)?$/.test(t) || /^-?\d*\.\d+$/.test(t) ? parseFloat(t.replace(',', '.')) : null; };
+  const escribe = (x, como) => (como.includes(',') || !Number.isInteger(x) ? String(x).replace('.', ',') : String(x));
+  const redondea = (x, cifras) => { if (x === 0) return 0; const e = Math.floor(Math.log10(Math.abs(x))) - cifras + 1; return Math.round(x / 10 ** e) * 10 ** e; };
+  const limpio = (x) => parseFloat(x.toPrecision(12));
+
+  // un dato numérico nuevo, del mismo tipo que el que había
+  function otroValor(v, etiqueta, texto) {
+    if (v === 0) return 0;
+    const ang = /°|ángulo|grados|α|θ|φ/i.test(etiqueta), s = Math.sign(v), a = Math.abs(v);
+    if (Number.isInteger(v) && !texto.includes(',') && a <= 12) return s * entero(Math.max(1, Math.round(a * 0.5)), Math.round(a * 1.5) + 1);
+    if (ang && a > 0 && a < 90) return s * Math.round(azar(Math.max(5, a * 0.6), Math.min(85, a * 1.4)));
+    if (a > 0 && a < 1) return limpio(s * Math.min(0.98, Math.max(0.02, redondea(a * azar(0.6, 1.5), 2))));
+    const dec = (texto.split(',')[1] || '').length, cifras = Math.max(2, String(Math.round(a * 10 ** dec)).replace(/^0+/, '').length);
+    return limpio(s * redondea(a * azar(0.6, 1.5), Math.min(3, cifras)));
+  }
+  const etiquetaDe = (inp) => [inp.getAttribute('aria-label'), inp.id && document.querySelector(`label[for="${inp.id}"]`)?.textContent, inp.closest('label')?.textContent, inp.closest('.row, .fila')?.textContent].filter(Boolean).join(' ');
+
+  // los números de un resultado: la plantilla con un hueco por número y su valor (los de sub/sup, fórmulas y notas no cuentan)
+  // (también el número de la parte imaginaria, j31, y el decimal con punto de magnetostática)
+  const RE = /(?:(?<![\p{L}\d,.])|(?<=(?:^|[^\p{L}\d])j))([−-]?\d+(?:[.,]\d+)?(?:\/\d+)?)(\s*[·×]\s*10)?/gu;
+  const conEtiqueta = (el) => el.matches('div') && el.firstElementChild?.tagName === 'SPAN' && !el.firstElementChild.className && el.firstChild === el.firstElementChild;
+  function numeros(el, quitar = 'small, .nota') {
+    const c = el.cloneNode(true);
+    if (conEtiqueta(c)) c.firstElementChild.remove();
+    if (quitar) for (const x of c.querySelectorAll(quitar)) x.remove();
+    // las fracciones de matrices y sistemas (numerador y denominador apilados) pasan a a/b
+    for (const fr of c.querySelectorAll('.fr')) if (fr.children.length === 2) fr.replaceWith(`${fr.children[0].textContent.trim()}/${fr.children[1].textContent.trim()}`);
+    c.normalize();
+    const vals = [], tw = document.createTreeWalker(c, NodeFilter.SHOW_TEXT), nodos = [];
+    while (tw.nextNode()) if (!tw.currentNode.parentElement.closest('sub, sup, math, .formula')) nodos.push(tw.currentNode);
+    for (const n of nodos) {
+      const t = n.nodeValue, frag = document.createDocumentFragment();
+      let i = 0, m;
+      RE.lastIndex = 0;
+      while ((m = RE.exec(t))) {
+        let texto = m[1], v = texto.includes('/') ? texto.replace('−', '-').split('/').map((x) => parseFloat(x.replace(',', '.'))).reduce((a, b) => a / b) : parseFloat(texto.replace('−', '-').replace(',', '.')), exp = 0, fin = m.index + m[0].length;
+        if (m[2]) {
+          const sup = n.nextSibling;
+          if (fin === t.length && sup && sup.nodeName === 'SUP' && /^[−-]?\d+$/.test(sup.textContent.trim())) { exp = parseInt(sup.textContent.trim().replace('−', '-'), 10); v *= 10 ** exp; sup.remove(); } else fin = m.index + m[1].length;
+        }
+        if (!Number.isFinite(v)) continue;
+        frag.append(t.slice(i, m.index));
+        const h = document.createElement('span'); h.dataset.hueco = String(vals.length); frag.append(h);
+        vals.push({ t: texto + (exp ? `·10^${exp}` : ''), v, dec: (texto.split('/')[0].split(/[.,]/)[1] || '').length, exp, frac: texto.includes('/') });
+        i = fin;
+      }
+      if (vals.length && i) { frag.append(t.slice(i)); n.replaceWith(frag); }
+    }
+    return { plantilla: c.innerHTML, vals };
+  }
+  // lo que escribe el alumno: 12,5 · 1.2e-3 · 1,2·10^-3 · −3/4
+  function leeAlumno(s) {
+    let t = String(s).trim().replace(/\s+/g, '').replace(/[−–]/g, '-').replace(/,/g, '.');
+    if (!t) return null;
+    t = t.replace(/(?:·|\*|x|×)10\^?\(?(-?\d+)\)?$/i, 'e$1');
+    if (/^-?\d*\.?\d+(e-?\d+)?\/-?\d*\.?\d+$/.test(t)) { const [a, b] = t.split('/').map(Number); return b ? a / b : null; }
+    return /^-?(\d+\.?\d*|\.\d+)(e[+-]?\d+)?$/i.test(t) ? Number(t) : null;
+  }
+  const tolerancia = (x) => (x.frac ? 1e-9 + 0.005 * Math.abs(x.v) : Math.max(0.01 * Math.abs(x.v), 0.5 * 10 ** (x.exp - x.dec) * 1.0001));
+  const normaConf = (s) => String(s).replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]/g, (c) => '⁰¹²³⁴⁵⁶⁷⁸⁹'.indexOf(c)).replace(/\^/g, '').replace(/\s+/g, '').toLowerCase();
+
+  const CSS = `
+.prac-btn { display: inline-flex; align-items: center; gap: 6px; font: 600 13.5px var(--f-ui, system-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px; cursor: pointer; white-space: nowrap }
+.prac-btn:hover { border-color: var(--accent); color: var(--accent) }
+.prac-btn[aria-pressed=true] { background: var(--accent); border-color: var(--accent); color: var(--panel) }
+.prac-tapa { filter: blur(9px); opacity: .45; pointer-events: none; user-select: none; transition: filter .2s }
+.prac { background: var(--panel); border: 1px solid var(--accent); border-radius: 10px; padding: 14px; margin-bottom: 14px; box-shadow: inset 4px 0 0 var(--accent) }
+.prac h2 { font: 600 15px var(--f-ui, system-ui); margin: 0 0 6px; color: var(--accent) }
+.prac > p { margin: 0 0 10px; color: var(--muted) }
+.prac .enun { color: var(--ink) }
+.prac-q { display: grid; gap: 8px; margin: 0 0 12px }
+.prac-q > div { display: grid; grid-template-columns: minmax(120px, max-content) minmax(0, 1fr); gap: 4px 12px; align-items: baseline }
+.prac-q .et { color: var(--muted); font-size: 13px }
+.prac-q .val { line-height: 2.1 }
+@media (max-width: 560px) { .prac-q > div { grid-template-columns: minmax(0, 1fr) } }
+.prac-in { font: 13.5px var(--f-mono, ui-monospace, monospace); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 3px 6px; width: 7.5em; margin: 0 2px }
+.prac-in.ancha { width: min(100%, 22em) }
+.prac-in.bien { border-color: #1d8a5b; box-shadow: 0 0 0 1px #1d8a5b } .prac-in.mal { border-color: #c0392b; box-shadow: 0 0 0 1px #c0392b }
+.prac-sol { font: 12.5px var(--f-mono, ui-monospace, monospace); color: var(--accent); margin-left: 2px }
+.prac-acc { display: flex; flex-wrap: wrap; gap: 8px }
+.prac-acc button { font: 500 13px var(--f-ui, system-ui); border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 6px; padding: 6px 12px; cursor: pointer }
+.prac-acc button.si { background: var(--accent); border-color: var(--accent); color: var(--panel) }
+.prac-nota { margin: 10px 0 0; font-weight: 600 } .prac-nota.bien { color: #1d8a5b } .prac-nota.mal { color: #c0392b }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .prac-nota.bien { color: #4cc48e } :root:not([data-theme="light"]) .prac-nota.mal { color: #ef6a5a } }
+:root[data-theme="dark"] .prac-nota.bien { color: #4cc48e } :root[data-theme="dark"] .prac-nota.mal { color: #ef6a5a }
+`;
+
+  function monta(herramienta, clave) {
+    const cab = document.querySelector('header.top');
+    if (!cab || herramienta === 'tabla-periodica' || document.querySelector('.prac-btn')) return null;
+    const conf = CONF[herramienta] || {};
+    const K_ANTES = `simu-practica:${herramienta}`;
+    const st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
+    const btn = document.createElement('button');
+    btn.type = 'button'; btn.className = 'prac-btn'; btn.setAttribute('aria-pressed', 'false'); btn.title = 'Ejercicios con datos al azar: escribe tus resultados y compruébalos antes de ver el desarrollo';
+    btn.innerHTML = '<span aria-hidden="true">✎</span> Modo práctica';
+    const tras = cab.querySelector('.bib-btn') || cab.querySelector('.a-inicio'); (tras ? tras.after(btn) : cab.prepend(btn));
+
+    let activo = false, card = null, preguntas = [], tapados = [], resuelto = false;
+    const layout = () => [...document.querySelectorAll('.layout')].find(visible);
+    const datos = () => (conf.datos === null ? null : conf.datos ? document.querySelector(conf.datos) : layout()?.firstElementChild);
+    const hayError = () => [...document.querySelectorAll('.error, #errores')].some((e) => visible(e) && e.textContent.trim());
+    function zonaTapa() {
+      if (conf.tapa) return [...document.querySelectorAll(conf.tapa)].filter((e) => !e.closest('.prac'));
+      const l = layout(); return l ? [...l.children].slice(1).flatMap((col) => [...col.children]).filter((e) => !e.classList.contains('prac')) : [];
+    }
+    function items() {
+      if (!conf.items && conf.items !== undefined) return [];
+      const sel = conf.items || '#res > div, #resumen > div';
+      return [...document.querySelectorAll(sel)].filter((e) => !e.closest('.prac') && (visible(e) || e.closest('.prac-tapa')));
+    }
+    function ejemplo() {
+      const d = datos(); if (!d) return;
+      const s = [...d.querySelectorAll('select')].find((x) => visible(x) && x.options.length > 2 && /ejemplo/i.test(x.id + ' ' + x.options[0].textContent));
+      if (s) { s.selectedIndex = entero(1, s.options.length - 1); s.dispatchEvent(new Event('change', { bubbles: true })); }
+    }
+    function cambiaDatos() {
+      const d = datos(); if (!d) return;
+      for (const inp of [...d.querySelectorAll('input')].filter((x) => visible(x) && (!x.type || x.type === 'text' || x.type === 'number' || x.type === 'search') && !x.classList.contains('nom'))) {
+        const v = lee(inp.value); if (v === null) continue;
+        pon(inp, escribe(otroValor(v, etiquetaDe(inp), inp.value), inp.value));
+      }
+    }
+    // escoge qué resultados se preguntan: todos si son pocos; si no, el primero y tres al azar
+    function arma() {
+      const its = items().map((el) => ({ el, et: conEtiqueta(el) ? el.firstElementChild.textContent.trim() : '', n: numeros(el, conf.quitar) })).filter((x) => x.n.vals.length && x.n.vals.length <= 9);
+      let elegidos = its.length <= 4 ? its : [its[0], ...its.slice(1).sort(() => Math.random() - 0.5).slice(0, 3)].sort((a, b) => its.indexOf(a) - its.indexOf(b));
+      let huecos = 0; elegidos = elegidos.filter((x) => (huecos += x.n.vals.length) <= 10 || x === elegidos[0]);
+      const q = elegidos.map((x) => ({ tipo: 'num', idx: its.indexOf(x), et: x.et, plantilla: x.n.plantilla, vals: x.n.vals, el: x.el }));
+      for (const t of conf.textos || []) q.push({ tipo: 'texto', et: t.et, sel: t.sel, otros: t.otros || [] });
+      for (const t of conf.numeros || []) { const el = document.querySelector(t.sel), n = el && numeros(el); if (n && n.vals.length) q.push({ tipo: 'num', et: t.et, sel: t.sel, plantilla: '', vals: n.vals.slice(0, 1) }); }
+      return q;
+    }
+    function nuevo() {
+      resuelto = false;
+      let q = [];
+      for (let intento = 0; intento < 15 && !q.length; intento++) {
+        conf.antes?.();
+        if (conf.genera) conf.genera(); else { ejemplo(); cambiaDatos(); }
+        conf.despues?.();
+        if (!hayError() && (!conf.valido || conf.valido())) q = arma();
+      }
+      if (!q.length) { conf.genera ? conf.genera() : ejemplo(); q = arma(); }
+      preguntas = q; pinta();
+    }
+    function tapa(v) {
+      for (const e of tapados) { e.classList.remove('prac-tapa'); e.removeAttribute('aria-hidden'); }
+      tapados = v ? zonaTapa() : [];
+      for (const e of tapados) { e.classList.add('prac-tapa'); e.setAttribute('aria-hidden', 'true'); }
+    }
+    function pinta() {
+      if (!card) { card = document.createElement('section'); card.className = 'prac'; card.setAttribute('aria-label', 'Modo práctica'); card.addEventListener('click', clic); card.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.classList.contains('prac-in')) { e.preventDefault(); comprueba(); } }); }
+      tapa(!resuelto);
+      const z = zonaTapa()[0] || tapados[0]; if (z && card.nextElementSibling !== z) z.before(card);
+      let n = 0;
+      const filas = preguntas.map((p, i) => {
+        if (p.tipo === 'texto') return `<div><span class="et">${esc(p.et)}</span><span class="val"><input class="prac-in ancha" data-p="${i}" aria-label="${esc(p.et)}" autocomplete="off" spellcheck="false" placeholder="1s2 2s2 2p6…"></span></div>`;
+        const tpl = p.plantilla ? p.plantilla.replace(/<span data-hueco="(\d+)"><\/span>/g, (_, k) => `<input class="prac-in" data-p="${i}" data-k="${k}" inputmode="decimal" autocomplete="off" aria-label="${esc(p.et || 'Resultado')} (${+k + 1})">`) : `<input class="prac-in" data-p="${i}" data-k="0" inputmode="decimal" autocomplete="off" aria-label="${esc(p.et)}">`;
+        n++; return `<div><span class="et">${esc(p.et || (preguntas.length > 1 ? `Pregunta ${n}` : 'Resultado'))}</span><span class="val">${tpl}</span></div>`;
+      }).join('');
+      card.innerHTML = `<h2>Modo práctica</h2>
+<p class="enun">${conf.enunciado ? conf.enunciado() : 'Resuelve el ejercicio con estos datos y escribe tus resultados en las mismas unidades. Puedes usar coma o punto, 1,2·10^-3 y fracciones como 3/4.'}</p>
+${preguntas.length ? `<div class="prac-q">${filas}</div>` : '<p>Con estos datos no hay resultados numéricos que preguntar: prueba con otro ejercicio.</p>'}
+<div class="prac-acc"><button class="si" data-a="comprobar"${preguntas.length ? '' : ' disabled'}>Comprobar</button><button data-a="solucion">${resuelto ? 'Ocultar la solución' : 'Ver la solución'}</button><button data-a="otro">Otro ejercicio</button></div>
+<p class="prac-nota" role="status" hidden></p>`;
+    }
+    // el valor correcto se lee al comprobar, por si el alumno ha tocado los datos
+    function esperado(p) {
+      if (p.tipo === 'texto') return [document.querySelector(p.sel), ...p.otros.map((s) => document.querySelector(s))].filter(Boolean).map((e) => e.textContent);
+      const el = p.sel ? document.querySelector(p.sel) : items()[p.idx]; const n = el && numeros(el, conf.quitar);
+      return n && n.vals.length >= p.vals.length ? (p.sel ? n.vals.slice(0, 1) : n.vals) : p.vals;
+    }
+    function comprueba(mostrar) {
+      let bien = 0, total = 0, vacios = 0;
+      for (const inp of card.querySelectorAll('.prac-in')) {
+        const p = preguntas[+inp.dataset.p], e = esperado(p); total++;
+        inp.classList.remove('bien', 'mal'); inp.nextElementSibling?.classList.contains('prac-sol') && inp.nextElementSibling.remove();
+        let ok, sol;
+        if (p.tipo === 'texto') { ok = e.some((x) => normaConf(x) === normaConf(inp.value)); sol = e[0]; }
+        else { const x = e[+inp.dataset.k], a = leeAlumno(inp.value); ok = a !== null && Math.abs(a - x.v) <= tolerancia(x); sol = x.t; }
+        if (!inp.value.trim()) vacios++;
+        else { inp.classList.add(ok ? 'bien' : 'mal'); if (ok) bien++; }
+        if (mostrar && !ok && sol !== null) { const s = document.createElement('span'); s.className = 'prac-sol'; s.textContent = `(${sol.trim()})`; inp.after(s); }
+      }
+      const nota = card.querySelector('.prac-nota'); nota.hidden = false;
+      nota.className = 'prac-nota ' + (bien === total ? 'bien' : 'mal');
+      nota.textContent = mostrar ? (vacios === total ? 'Aquí tienes la solución, con el desarrollo debajo.' : `${bien} de ${total} bien. La solución y el desarrollo están debajo.`) : bien === total ? '¡Todo bien! Mira el desarrollo con «Ver la solución» o prueba con otro.' : vacios === total ? 'Escribe primero tus resultados.' : `${bien} de ${total} bien${vacios ? ` (${vacios} sin contestar)` : ''}. Revisa los que están en rojo.`;
+    }
+    function clic(e) {
+      const a = e.target.closest('[data-a]')?.dataset.a;
+      if (a === 'comprobar') comprueba(false);
+      else if (a === 'otro') nuevo();
+      else if (a === 'solucion') {
+        const valores = [...card.querySelectorAll('.prac-in')].map((i) => i.value);
+        resuelto = !resuelto; pinta();
+        card.querySelectorAll('.prac-in').forEach((inp, k) => { inp.value = valores[k] ?? ''; });
+        if (resuelto) comprueba(true);
+      }
+    }
+    function activa(v) {
+      if (v === activo) return;
+      activo = v; btn.setAttribute('aria-pressed', String(v));
+      if (v) {
+        try { if (clave) sessionStorage.setItem(K_ANTES, localStorage.getItem(clave) ?? ''); } catch (e) { /* sin almacenamiento */ }
+        nuevo(); card.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      } else {
+        tapa(false); card?.remove(); card = null;
+        // vuelve a los datos de antes de practicar
+        let antes = null; try { antes = clave ? sessionStorage.getItem(K_ANTES) : null; sessionStorage.removeItem(K_ANTES); } catch (e) { /* sin almacenamiento */ }
+        if (antes !== null) { try { if (antes) localStorage.setItem(clave, antes); else localStorage.removeItem(clave); } catch (e) { /* sin almacenamiento */ } history.replaceState(null, '', location.pathname + location.search); location.reload(); }
+      }
+    }
+    // si se recargó en mitad de una práctica, deja los datos como estaban
+    try { const antes = clave ? sessionStorage.getItem(K_ANTES) : null; if (antes !== null) { sessionStorage.removeItem(K_ANTES); if (antes) localStorage.setItem(clave, antes); else localStorage.removeItem(clave); history.replaceState(null, '', location.pathname + location.search); location.reload(); } } catch (e) { /* sin almacenamiento */ }
+    btn.addEventListener('click', () => activa(!activo));
+    // lo que habría que escribir en cada hueco, en orden (para las pruebas)
+    const respuestas = () => [...(card?.querySelectorAll('.prac-in') || [])].map((inp) => { const p = preguntas[+inp.dataset.p], e = esperado(p); return p.tipo === 'texto' ? e[0] : e[+inp.dataset.k].t; });
+    return (window.PracticaApp = { activa, nuevo, respuestas, get activo() { return activo; }, get preguntas() { return preguntas; } });
+  }
+  return { monta, CONF, numeros, leeAlumno, otroValor };
+})();
+
+Biblioteca.monta('transitorios');
+Practica.monta('transitorios', Biblioteca.CLAVES['transitorios']);
+</script>
+</html>
