@@ -1,0 +1,124 @@
+<title>Código de colores de resistencias: calculadora de 4, 5 y 6 bandas · SimulaCiencia</title>
+<meta name="description" content="Calculadora del código de colores de resistencias en español: de los colores al valor con 3, 4, 5 y 6 bandas, tolerancia y coeficiente de temperatura; del valor a los colores con el valor normalizado más cercano de las series E6, E12, E24, E48 y E96; y códigos SMD de 3 y 4 cifras, con R y EIA-96, paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root {
+  --bg: #eef0f4; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d6dbe3; --accent: #b0700a; --accent-soft: #fbf0dc; --peso: #c2412a; --normal: #1d7a3e; --roz: #b0700a; --fuerza: #6b3fa0; --tension: #2a5db5; --cuerpo: #c9d3e0; --suelo: #8a96a3;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #e6a640; --accent-soft: #3a2c12; --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #e6a640; --accent-soft: #3a2c12; --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784; color-scheme: dark }
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
+.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
+.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+.layout { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 16px; align-items: start }
+@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr) } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 15px var(--f-ui); margin: 0 0 10px }
+.campos { display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px } .campos label small { color: var(--muted) }
+.in { font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.in:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer }
+.btn:hover { border-color: var(--accent) }
+.error { color: #c0392b; font-size: 13px; margin: 10px 0 0 }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+.res { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px 14px; font: 16px var(--f-math) } .res div { overflow-x: auto } .res span { display: block; font: 12px var(--f-ui); color: var(--muted) }
+.leyenda { font-size: 12.5px; color: var(--muted); margin: 6px 0 0 } .leyenda b { font-weight: 600 }
+canvas { display: block; width: 100%; height: clamp(260px, 36vw, 380px); border-radius: 8px; background: var(--bg); margin-top: 10px }
+.pasos ol { margin: 0; padding-left: 22px } .pasos li { margin: 0 0 12px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+.controles { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px }
+.destacado { border-color: var(--accent); box-shadow: inset 4px 0 0 var(--accent) }
+.destacado h2 { color: var(--accent) }
+.resumen { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; margin: 0 }
+.resumen div { background: var(--accent-soft); border-radius: 8px; padding: 8px 10px; overflow-x: auto } .resumen div span { display: block; font-size: 12px; color: var(--muted) } .resumen div b { font: 600 17px var(--f-math) }
+.teoria ul { padding-left: 20px } .teoria li { margin-bottom: 4px }
+.banda { margin-top: 12px } .banda-t { font-size: 13.5px; margin-bottom: 5px } .banda-t small { color: var(--muted); margin-left: 4px }
+.chips { display: flex; flex-wrap: wrap; gap: 5px }
+.chip { display: inline-flex; flex-direction: column; align-items: center; gap: 2px; min-width: 40px; padding: 4px 3px 3px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); color: var(--ink); cursor: pointer; font: 11.5px var(--f-ui) }
+.chip::before { content: ""; width: 22px; height: 14px; border-radius: 4px; background: var(--c, transparent); border: 1px solid rgba(127,127,127,.45) }
+.chip:hover { border-color: var(--accent) } .chip.sel { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); font-weight: 600 }
+.chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+#dibujo svg { display: block; width: 100%; max-width: 460px; margin: 12px auto 0 }
+#colores-res p { margin: 10px 0 0 }
+.mini { display: inline-block; width: 12px; height: 12px; border-radius: 3px; background: var(--c); border: 1px solid rgba(127,127,127,.5); vertical-align: -1px; margin: 0 3px 0 6px }
+.tabla { border-collapse: collapse; font-size: 14px; margin: 8px 0; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; display: block; overflow-x: auto; max-width: 100% }
+.tabla th, .tabla td { padding: 5px 10px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap } .tabla th { font-weight: 600; background: var(--bg) }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Circuitos</a> / Código de colores de resistencias</span></header>
+<div class="wrap">
+<h1>Código de colores de resistencias</h1>
+<p class="lead">Elige los colores de las bandas y obtén el valor, la tolerancia y el margen en el que está la resistencia real. También al revés: escribe un valor y te dice sus colores y el valor normalizado más cercano. Y para las resistencias SMD, el código impreso de 3 o 4 cifras, con R o EIA-96.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <div id="bandas"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div><div id="dibujo"></div><div id="colores-res"></div></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Tabla del código de colores</h2>
+  <table class="tabla">
+    <thead><tr><th>Color</th><th>Cifra</th><th>Multiplicador</th><th>Tolerancia</th><th>ppm/K</th></tr></thead>
+    <tbody>
+    <tr><td><i class="mini" style="--c:#1b1b1b"></i>Negro</td><td>0</td><td>×1</td><td>—</td><td>250</td></tr>
+    <tr><td><i class="mini" style="--c:#7b4a26"></i>Marrón</td><td>1</td><td>×10</td><td>±1 %</td><td>100</td></tr>
+    <tr><td><i class="mini" style="--c:#d0302a"></i>Rojo</td><td>2</td><td>×100</td><td>±2 %</td><td>50</td></tr>
+    <tr><td><i class="mini" style="--c:#ef7d1a"></i>Naranja</td><td>3</td><td>×1 k</td><td>±0,05 %</td><td>15</td></tr>
+    <tr><td><i class="mini" style="--c:#f2cf1d"></i>Amarillo</td><td>4</td><td>×10 k</td><td>±0,02 %</td><td>25</td></tr>
+    <tr><td><i class="mini" style="--c:#2e9a48"></i>Verde</td><td>5</td><td>×100 k</td><td>±0,5 %</td><td>20</td></tr>
+    <tr><td><i class="mini" style="--c:#2a63c4"></i>Azul</td><td>6</td><td>×1 M</td><td>±0,25 %</td><td>10</td></tr>
+    <tr><td><i class="mini" style="--c:#8a4fc2"></i>Violeta</td><td>7</td><td>×10 M</td><td>±0,1 %</td><td>5</td></tr>
+    <tr><td><i class="mini" style="--c:#8d8f93"></i>Gris</td><td>8</td><td>×100 M</td><td>±0,01 %</td><td>1</td></tr>
+    <tr><td><i class="mini" style="--c:#f4f4f0"></i>Blanco</td><td>9</td><td>×1 G</td><td>—</td><td>—</td></tr>
+    <tr><td><i class="mini" style="--c:#c8a03c"></i>Oro</td><td>—</td><td>×0,1</td><td>±5 %</td><td>—</td></tr>
+    <tr><td><i class="mini" style="--c:#c4c6c9"></i>Plata</td><td>—</td><td>×0,01</td><td>±10 %</td><td>—</td></tr>
+    <tr><td>Sin banda</td><td>—</td><td>—</td><td>±20 %</td><td>—</td></tr>
+    </tbody>
+  </table>
+  <p>Son los de la norma IEC 60062. Las cifras van del 0 al 9 en el orden negro, marrón, rojo, naranja, amarillo, verde, azul, violeta, gris y blanco: entre el negro y el blanco, los colores del arcoíris.</p>
+  <h2>Cómo se lee una resistencia</h2>
+  <ul>
+    <li><b>4 bandas</b> (las más comunes, de carbón, ±5 %): dos cifras, el multiplicador y la tolerancia. Amarillo, violeta, rojo y oro son 47 × 100 = 4700 Ω = 4,7 kΩ ±5 %.</li>
+    <li><b>5 bandas</b> (de película metálica, ±1 %): tres cifras, el multiplicador y la tolerancia.</li>
+    <li><b>6 bandas</b>: como las de 5 y una más para el coeficiente de temperatura.</li>
+    <li><b>3 bandas</b>: dos cifras y el multiplicador, sin banda de tolerancia, que entonces es ±20 %.</li>
+  </ul>
+  <p>Se empieza por el extremo contrario a la banda de tolerancia, que suele estar algo separada de las demás. El oro y la plata nunca van al principio, y la primera banda nunca es negra.</p>
+  <p class="f m">$R = (cifras) · 10^n$, &ensp; $R_mín = R (1 − t)$, &ensp; $R_máx = R (1 + t)$</p>
+  <h2>Valores normalizados: las series E</h2>
+  <p>Las resistencias no se fabrican de cualquier valor, sino de los de las series E. La E12 tiene 12 valores por década, cada uno unas $10^{1/12}$ = 1,21 veces el anterior, de forma que los márgenes de tolerancia (±10 %) casi se tocan. La E24 va con ±5 %, la E48 con ±2 % y la E96 con ±1 %.</p>
+  <p>E12: 10, 12, 15, 18, 22, 27, 33, 39, 47, 56, 68 y 82, multiplicados por la potencia de 10 que toque (1,2 Ω, 120 Ω, 12 kΩ…).</p>
+  <h2>Resistencias SMD</h2>
+  <p>Las de montaje superficial llevan el valor impreso. Con 3 cifras (5 %), las dos primeras son las cifras y la tercera el número de ceros: 472 = 47 × 10² = 4,7 kΩ. Con 4 cifras (1 %) son tres cifras y los ceros: 1002 = 10 kΩ. La R hace de coma: 4R7 = 4,7 Ω. En el código EIA-96, dos cifras dan la posición en la serie E96 y una letra el multiplicador: 01C = 100 × 100 = 10 kΩ.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Código de colores <span id="ver"></span> (beta)</footer>
+</body>

@@ -81,6 +81,8 @@ if [ "$1" != privado ]; then
     version.js mates.js alterna/fisica.js alterna/app.js
   herramienta dinamica ../publico/fisica/dinamica/index.html "Dinámica y diagramas de fuerzas" "Calculadora de dinámica con el diagrama de fuerzas: plano inclinado con rozamiento estático y dinámico, fuerza con ángulo, poleas y máquina de Atwood, paso a paso" \
     version.js mates.js dinamica/fisica.js dinamica/app.js
+  herramienta resistencias ../publico/circuitos/resistencias/index.html "Código de colores de resistencias" "Calculadora del código de colores de resistencias de 3, 4, 5 y 6 bandas: valor, tolerancia y coeficiente de temperatura, colores de un valor con el normalizado más cercano de las series E y códigos SMD, paso a paso" \
+    version.js mates.js resistencias/calculo.js resistencias/app.js
   herramienta circuitos ../publico/circuitos/continua/index.html "Circuitos de corriente continua" "Calculadora de circuitos de corriente continua por el método de los nudos: leyes de Kirchhoff, corrientes, potencias, Thévenin, Norton y máxima transferencia de potencia, paso a paso" \
     version.js mates.js circuitos/fisica.js circuitos/app.js
   herramienta solido-rigido ../publico/fisica/solido-rigido/index.html "Sólido rígido" "Calculadora de sólido rígido: momentos de inercia con el teorema de Steiner, rodadura por un plano inclinado, polea con masa y conservación del momento angular, paso a paso" \
