@@ -83,6 +83,8 @@ if [ "$1" != privado ]; then
     version.js mates.js matematicas/expresion.js taylor/calculo.js taylor/app.js
   herramienta fourier ../publico/matematicas/fourier/index.html "Series de Fourier" "Calculadora de series de Fourier: función por tramos o desarrollo en senos y cosenos, coeficientes con su término general, paridad, Gibbs, Parseval y la suma parcial animada con el espectro" \
     version.js mates.js matematicas/expresion.js fourier/calculo.js fourier/app.js
+  herramienta edos ../publico/matematicas/edos/index.html "Ecuaciones diferenciales" "Calculadora de ecuaciones diferenciales: campo de pendientes con Euler y RK4, EDO lineales de segundo orden con coeficientes constantes y resonancia, y sistemas con su diagrama de fases y el tipo de cada punto crítico" \
+    version.js mates.js matematicas/expresion.js edos/calculo.js edos/app.js
   herramienta estadistica ../publico/estadistica/distribuciones/index.html "Distribuciones de probabilidad" "Calculadora de la normal, binomial, Poisson, t de Student y chi cuadrado con el área sombreada: probabilidades, cuantiles y valores críticos paso a paso" \
     version.js mates.js estadistica/calculo.js estadistica/app.js
   herramienta regresion ../publico/estadistica/regresion/index.html "Regresión y correlación" "Calculadora de regresión y correlación: covarianza, coeficiente de correlación de Pearson con su contraste, rectas de regresión de Y sobre X y de X sobre Y, ajustes exponencial, potencial, logarítmico y parabólico y estimaciones, con la nube de puntos y paso a paso" \

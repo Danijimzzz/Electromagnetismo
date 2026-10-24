@@ -22,7 +22,7 @@ const Expresion = (() => {
   };
   const PALABRAS = [...Object.keys(FUN), 'pi'].sort((a, b) => b.length - a.length);
 
-  function tokens(src, nom) {
+  function tokens(src, nom, vars = ['x']) {
     const s = String(src ?? '').replace(/[−–]/g, '-').replace(/[·×]/g, '*').replace(/÷/g, '/').replace(/\*\*/g, '^').replace(/²/g, '^2').replace(/³/g, '^3').replace(/[\[{]/g, '(').replace(/[\]}]/g, ')');
     const out = [];
     let i = 0;
@@ -38,9 +38,9 @@ const Expresion = (() => {
         while (j < w.length) {
           const p = PALABRAS.find((q) => w.startsWith(q, j));
           if (p) { out.push(p === 'pi' ? { k: 'c', v: 'π' } : { k: 'f', v: FUN[p] }); j += p.length; }
-          else if (w[j] === 'x') { out.push({ k: 'x' }); j++; }
+          else if (vars.includes(w[j])) { out.push({ k: 'x', v: w[j] }); j++; }
           else if (w[j] === 'e') { out.push({ k: 'c', v: 'e' }); j++; }
-          else throw new Error(`${nom}: no sé qué es «${m[0].slice(j)}». La variable es x; las funciones son sen, cos, tg, arcsen, arctg, ln, e^x, √…`);
+          else throw new Error(`${nom}: no sé qué es «${m[0].slice(j)}». ${vars.length > 1 ? `Las variables son ${vars.join(' e ')}` : `La variable es ${vars[0]}`}; las funciones son sen, cos, tg, arcsen, arctg, ln, e^x, √…`);
         }
         i += m[0].length; continue;
       }
@@ -52,9 +52,9 @@ const Expresion = (() => {
     return out;
   }
 
-  function lee(src, nom = 'La función') {
+  function lee(src, nom = 'La función', vars = ['x']) {
     if (!String(src ?? '').trim()) throw new Error(`Falta ${nom.toLowerCase()}`);
-    const tk = tokens(src, nom);
+    const tk = tokens(src, nom, vars);
     let p = 0, enAbs = 0;
     const ve = () => tk[p], es = (k) => tk[p] && tk[p].k === k;
     const falla = (que) => new Error(`${nom}: ${que} en «${String(src).trim()}»`);
@@ -87,7 +87,7 @@ const Expresion = (() => {
       if (!k) throw falla('falta algo al final');
       p++;
       if (k.k === 'n') return N(k.v);
-      if (k.k === 'x') return X;
+      if (k.k === 'x') return k.v === 'x' ? X : { t: 'x', n: k.v };
       if (k.k === 'c') return C(k.v);
       if (k.k === '(') { const a = suma(); if (!es(')')) throw falla('falta cerrar un paréntesis'); p++; return a; }
       if (k.k === '|') { enAbs++; const a = suma(); enAbs--; if (!es('|')) throw falla('falta cerrar el valor absoluto'); p++; return fn('abs', a); }
@@ -120,27 +120,28 @@ const Expresion = (() => {
     ln: (u) => (u > 0 ? Math.log(u) : NaN), log: (u) => (u > 0 ? Math.log10(u) : NaN), sqrt: (u) => (u >= 0 ? Math.sqrt(u) : NaN), cbrt: Math.cbrt, abs: Math.abs,
   };
   const CTE = { 'π': Math.PI, e: Math.E };
-  function valor(n, x) {
+  // env: valores de las otras variables, { y: 2 }
+  function valor(n, x, env) {
     switch (n.t) {
       case 'n': return n.v;
-      case 'x': return x;
+      case 'x': return n.n ? env?.[n.n] ?? NaN : x;
       case 'c': return CTE[n.v];
-      case 'neg': return -valor(n.a, x);
-      case '+': return valor(n.a, x) + valor(n.b, x);
-      case '-': return valor(n.a, x) - valor(n.b, x);
-      case '*': return valor(n.a, x) * valor(n.b, x);
-      case '/': return valor(n.a, x) / valor(n.b, x);
+      case 'neg': return -valor(n.a, x, env);
+      case '+': return valor(n.a, x, env) + valor(n.b, x, env);
+      case '-': return valor(n.a, x, env) - valor(n.b, x, env);
+      case '*': return valor(n.a, x, env) * valor(n.b, x, env);
+      case '/': return valor(n.a, x, env) / valor(n.b, x, env);
       case '^': {
-        const b = valor(n.a, x), e = valor(n.b, x);
+        const b = valor(n.a, x, env), e = valor(n.b, x, env);
         // raíces impares de negativos: (−8)^(1/3) = −2
         if (b < 0 && !Number.isInteger(e)) { const q = fraccion(e); if (q && q[1] % 2) return (q[0] % 2 ? -1 : 1) * Math.abs(b) ** e; return NaN; }
         return b ** e;
       }
-      case 'fn': return F1[n.f](valor(n.a, x));
+      case 'fn': return F1[n.f](valor(n.a, x, env));
     }
     return NaN;
   }
-  const tieneX = (n) => n.t === 'x' || (n.a && tieneX(n.a)) || (n.b && tieneX(n.b));
+  const tieneX = (n, v = 'x') => (n.t === 'x' && (n.n || 'x') === v) || (n.a && tieneX(n.a, v)) || (n.b && tieneX(n.b, v));
 
   /* ---------- Fracciones y números exactos ---------- */
   // p/q con q pequeño si x lo es (fracción continua)
@@ -258,7 +259,8 @@ const Expresion = (() => {
     };
     // orden de los libros: el número, las potencias de x, las constantes, e^x, los paréntesis y luego las funciones
     const rango = (b) => (b.t === 'n' ? -1 : b.t === 'x' ? 0 : b.t === 'c' ? 1 : b.t === '^' ? 2 : b.t === '+' || b.t === '-' ? 3 : 4);
-    const orden = (p, q) => rango(p.base) - rango(q.base) || (p.k < q.k ? 1 : p.k > q.k ? -1 : 0);
+    // x antes que y, y sen antes que cos
+    const orden = (p, q) => rango(p.base) - rango(q.base) || (p.k < q.k ? 1 : p.k > q.k ? -1 : 0) * (rango(p.base) === 0 ? -1 : 1);
     const arriba = fs.filter((f) => f.e > 1e-12).sort(orden).map(fx);
     const abajo = fs.filter((f) => f.e < -1e-12).sort(orden).map((f) => fx({ base: f.base, e: -f.e }));
     // −(a − b) = b − a
@@ -308,22 +310,25 @@ const Expresion = (() => {
 
   /* ---------- Derivada ---------- */
   const uno = N(1), dos = N(2);
+  // derivada respecto de vd (x por defecto; y para las derivadas parciales)
+  let vd = 'x';
+  const tv = (m) => tieneX(m, vd);
   function d(n) {
-    if (!tieneX(n)) return N(0);
+    if (!tv(n)) return N(0);
     switch (n.t) {
       case 'x': return uno;
       case '+': case '-': return op(n.t, d(n.a), d(n.b));
       case 'neg': return neg(d(n.a));
       case '*': return op('+', op('*', d(n.a), n.b), op('*', n.a, d(n.b)));
       case '/':
-        if (!tieneX(n.b)) return op('/', d(n.a), n.b);
-        if (!tieneX(n.a)) return neg(op('/', op('*', n.a, d(n.b)), op('^', n.b, dos)));
+        if (!tv(n.b)) return op('/', d(n.a), n.b);
+        if (!tv(n.a)) return neg(op('/', op('*', n.a, d(n.b)), op('^', n.b, dos)));
         return op('/', op('-', op('*', d(n.a), n.b), op('*', n.a, d(n.b))), op('^', n.b, dos));
       case '^': {
         const { a, b } = n;
-        if (!tieneX(b)) return op('*', op('*', b, op('^', a, op('-', b, uno))), d(a));
+        if (!tv(b)) return op('*', op('*', b, op('^', a, op('-', b, uno))), d(a));
         if (a.t === 'c' && a.v === 'e') return op('*', n, d(b));
-        if (!tieneX(a)) return op('*', op('*', n, fn('ln', a)), d(b));
+        if (!tv(a)) return op('*', op('*', n, fn('ln', a)), d(b));
         return op('*', n, op('+', op('*', d(b), fn('ln', a)), op('/', op('*', b, d(a)), a)));
       }
       case 'fn': {
@@ -341,7 +346,7 @@ const Expresion = (() => {
     }
     return N(0);
   }
-  const deriva = (n) => simp(d(n));
+  const deriva = (n, v = 'x') => { vd = v; try { return simp(d(n)); } finally { vd = 'x'; } };
 
   /* ---------- Texto para Mates ---------- */
   const PREC = { '+': 1, '-': 1, neg: 2, '*': 3, '/': 4, '^': 5, fn: 6, n: 7, x: 7, c: 7 };
@@ -353,7 +358,7 @@ const Expresion = (() => {
   function texto(n) {
     switch (n.t) {
       case 'n': return numTxt(n.v);
-      case 'x': return 'x';
+      case 'x': return n.n || 'x';
       case 'c': return n.v;
       case 'neg': return `−${pr(n.a) <= 2 ? par(texto(n.a)) : texto(n.a)}`;
       case '+': return `${texto(n.a)} + ${texto(n.b)}`;
@@ -434,7 +439,7 @@ const Expresion = (() => {
       switch (m.t) {
         case 'n': return cte(m.v);
         case 'c': return cte(CTE[m.v]);
-        case 'x': { const s = cte(a); if (L > 1) s[1] = 1; return s; }
+        case 'x': { if (m.n) throw new Error(`La serie solo admite la variable x, no ${m.n}`); const s = cte(a); if (L > 1) s[1] = 1; return s; }
         case 'neg': return S(m.a).map((v) => -v);
         case '+': { const p = S(m.a), q = S(m.b); return p.map((v, i) => v + q[i]); }
         case '-': { const p = S(m.a), q = S(m.b); return p.map((v, i) => v - q[i]); }
