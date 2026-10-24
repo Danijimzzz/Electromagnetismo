@@ -29,6 +29,12 @@
   let esc = { ...Energia.ejemplos[0].sc };
   try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && typeof g === 'object') esc = { ...esc, ...g }; } catch (e) {}
   let sim = null, sol = null, t = 0, jugando = false, ultimo = 0;
+  // número con decimales fijos y relleno a la izquierda, para que la lectura no cambie de ancho mientras avanza el tiempo
+  const fijo = (x, d, ancho = 0) => (Math.abs(x) < 0.5 * 10 ** -d ? 0 : x).toFixed(d).replace('.', ',').replace('-', '−').padStart(ancho, ' ');
+  // cada dato en su span: no se parte por dentro, pero la línea puede bajar entera en el móvil
+  const lee = (el, texto) => { el.innerHTML = texto.split(' · ').map((x) => `<span>${x}</span>`).join(' · '); };
+  const anchoDe = (vals, d) => Math.max(...vals.map((v) => fijo(v, d).length));
+  let anchos = null; // anchos de la lectura para la simulación actual
   let col = {};
 
   /* ---------- Formulario ---------- */
@@ -79,7 +85,7 @@
     if (r.paraLlano !== undefined) filas.push(['Se para en el llano tras', f(r.paraLlano) + ' m']);
     if (r.vC !== undefined) filas.push(['v al llegar al muelle', f(r.vC) + ' m/s']);
     if (r.x !== undefined) filas.push(['Compresión máxima', f(r.x) + ' m'], ['Fuerza máxima del muelle', f(r.Fmax) + ' N']);
-    $('#resumen').innerHTML = filas.map(([a, b]) => `<div><span>${a}:</span> <b>${b}</b></div>`).join('');
+    $('#resumen').innerHTML = filas.map(([a, b]) => `<div><span>${a}</span><b>${b}</b></div>`).join('');
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('');
   }
 
@@ -200,8 +206,10 @@
     if (!sim) return;
     const e = enT(t);
     dibujaEscena(e); dibujaBarras(e); dibujaGrafica(e);
-    const p = sim.p, donde = e.s < p.L ? 'en la rampa' : e.s <= p.L + p.d ? 'en el llano' : `muelle x = ${Energia.f(e.x)} m`;
-    $('#lectura').textContent = `t = ${Energia.f(e.t, 2)} s · v = ${Energia.f(Math.abs(e.v), 2)} m/s · ${donde}`;
+    const p = sim.p;
+    if (!anchos || anchos.sim !== sim) { const m = sim.puntos; anchos = { sim, t: anchoDe([tFin()], 2), v: anchoDe(m.map((q) => Math.abs(q.v)), 2), x: anchoDe(m.map((q) => q.x || 0), 3) }; }
+    const donde = e.s < p.L ? 'en la rampa' : e.s <= p.L + p.d ? 'en el llano' : `en el muelle, x = ${fijo(e.x, 3, anchos.x)} m`;
+    lee($('#lectura'), `t = ${fijo(e.t, 2, anchos.t)} s · v = ${fijo(Math.abs(e.v), 2, anchos.v)} m/s · ${donde}`);
     $('#tiempo').value = String(Math.round((t / Math.max(tFin(), 1e-9)) * 1000));
   }
 

@@ -115,6 +115,12 @@
 
   /* =================== Tiro parabólico =================== */
   let tray = null, sol = null, t = 0, jugando = false, ultimo = 0;
+  // número con decimales fijos y relleno a la izquierda, para que la lectura no cambie de ancho mientras avanza el tiempo
+  const fijo = (x, d, ancho = 0) => (Math.abs(x) < 0.5 * 10 ** -d ? 0 : x).toFixed(d).replace('.', ',').replace('-', '−').padStart(ancho, ' ');
+  // cada dato en su span: no se parte por dentro, pero la línea puede bajar entera en el móvil
+  const lee = (el, texto) => { el.innerHTML = texto.split(' · ').map((x) => `<span>${x}</span>`).join(' · '); };
+  const anchoDe = (vals, d) => Math.max(...vals.map((v) => fijo(v, d).length));
+  let anchos = null; // anchos de la lectura para la trayectoria actual
   const rellena = formulario($('#campos'), CAMPOS, () => st.sc, (k) => { $('#ejemplos').value = ''; if (k === 'modelo') rellena(); calculaT(true); });
   const sel = $('#ejemplos');
   sel.innerHTML = '<option value="">Ejemplos…</option>' + C.ejemplos.map((e) => `<option value="${e.clave}">${e.nombre}</option>`).join('');
@@ -130,9 +136,10 @@
     err.hidden = true;
     if (guardar) guarda();
     t = Math.min(t, tray.tv);
+    const P = tray.puntos; anchos = { t: anchoDe([tray.tv], 2), x: anchoDe(P.map((q) => q.x), 2), y: anchoDe(P.map((q) => q.y), 2), v: anchoDe(P.map((q) => Math.hypot(q.vx, q.vy)), 2) };
     const r = sol.res, filas = [['Tiempo de vuelo', f(r.tv) + ' s'], ['Altura máxima', f(r.hmax) + ' m'], ['Alcance', f(r.alcance) + ' m'], ['Velocidad al caer', `${f(r.vf)} m/s a ${f(Math.abs(r.angf))}°`]];
     if (r.blanco && r.blanco.angulos) filas.push(['Ángulos para el blanco', r.blanco.angulos.map((a) => f(a) + '°').join(' y ')]);
-    $('#resumen').innerHTML = filas.map(([a, b]) => `<div><span>${a}:</span> <b>${b}</b></div>`).join('');
+    $('#resumen').innerHTML = filas.map(([a, b]) => `<div><span>${a}</span><b>${b}</b></div>`).join('');
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('');
     dibujaT();
   }
@@ -218,7 +225,7 @@
       : [{ nom: 'a<sub>x</sub>(t)', col: '--c-x', v: (p) => p.ax }, { nom: 'a<sub>y</sub>(t)', col: '--c-y', v: (p) => p.ay }];
     grafica($('#grafica'), tray.puntos, tray.tv, series, Math.min(t, tray.tv), q === 'pos' ? 'm' : q === 'vel' ? 'm/s' : 'm/s²');
     $('#leyenda').innerHTML = series.map((s) => `<span><i style="background:var(${s.col})"></i>${s.nom}</span>`).join('') + (I ? '<span>· a trazos en el dibujo: sin rozamiento</span>' : '');
-    $('#lectura').textContent = `t = ${txt(f(e.t, 2))} s · x = ${txt(f(e.x, 3))} m · y = ${txt(f(e.y, 3))} m · v = ${txt(f(Math.hypot(e.vx, e.vy), 3))} m/s`;
+    lee($('#lectura'), `t = ${fijo(e.t, 2, anchos.t)} s · x = ${fijo(e.x, 2, anchos.x)} m · y = ${fijo(e.y, 2, anchos.y)} m · v = ${fijo(Math.hypot(e.vx, e.vy), 2, anchos.v)} m/s`);
     $('#tiempo').value = String(Math.round((t / Math.max(tray.tv, 1e-9)) * 1000));
   }
   $('#que').addEventListener('change', dibujaT);
@@ -260,7 +267,7 @@
     if (r.tParada !== undefined) filas.push(['Se para en', `t = ${f(r.tParada)} s, x = ${f(r.xParada)} m`]);
     if (r.xEnT !== undefined) filas.push([`En t = ${f(rec.p.tq)} s`, `x = ${f(r.xEnT)} m, v = ${f(r.vEnT)} m/s`]);
     if (r.tEnX) filas.push([`Pasa por x = ${f(rec.p.xq)} m`, r.tEnX.length ? r.tEnX.map((x) => `t = ${f(x)} s`).join(' y ') : 'nunca']);
-    $('#resumen-r').innerHTML = filas.map(([a, b]) => `<div><span>${a}:</span> <b>${b}</b></div>`).join('');
+    $('#resumen-r').innerHTML = filas.map(([a, b]) => `<div><span>${a}</span><b>${b}</b></div>`).join('');
     $('#pasos-r').innerHTML = rec.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('');
     dibujaR();
   }
@@ -284,7 +291,7 @@
     grafica($('#g-x'), puntosR, rec.T, [{ col: '--c-x', v: (q) => q.x }], tr, 'x (m)');
     grafica($('#g-v'), puntosR, rec.T, [{ col: '--c-v', v: (q) => q.v }], tr, 'v (m/s)');
     grafica($('#g-a'), puntosR, rec.T, [{ col: '--c-a', v: (q) => q.a }], tr, 'a (m/s²)');
-    $('#lectura-r').textContent = `t = ${txt(f(tr, 2))} s · x = ${txt(f(x, 3))} m · v = ${txt(f(v, 3))} m/s`;
+    lee($('#lectura-r'), `t = ${fijo(tr, 2, anchoDe([rec.T], 2))} s · x = ${fijo(x, 2, anchoDe(puntosR.map((q) => q.x), 2))} m · v = ${fijo(v, 2, anchoDe(puntosR.map((q) => q.v), 2))} m/s`);
     $('#tiempo-r').value = String(Math.round((tr / rec.T) * 1000));
   }
   function paraR() { jugandoR = false; $('#play-r').textContent = '▶ Reproducir'; }

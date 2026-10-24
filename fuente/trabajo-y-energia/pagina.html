@@ -45,7 +45,7 @@ h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
 #lienzo { height: clamp(170px, 42vw, 300px) } #grafica { height: 180px; margin-top: 10px }
 .controles { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 10px; font-size: 13px; color: var(--muted) }
 .controles input[type=range] { flex: 1; min-width: 140px; accent-color: var(--accent) }
-.lectura { font: 13px var(--f-mono); color: var(--ink) }
+.lectura { font: 13px var(--f-mono); color: var(--ink); font-variant-numeric: tabular-nums } .lectura span { white-space: pre } .controles .lectura { flex-basis: 100%; order: 9 }
 .barras { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin-top: 12px; align-items: end }
 .barra { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12.5px }
 .barra .tubo { width: 100%; max-width: 70px; height: 140px; background: var(--bg); border-radius: 6px; position: relative; overflow: hidden }
@@ -53,8 +53,10 @@ h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
 .barra b { font: 500 12.5px var(--f-mono) } .barra span { color: var(--muted) }
 .pasos { margin-top: 16px } .pasos ol { margin: 0; padding-left: 20px } .pasos li { margin: 0 0 10px; font-family: var(--f-math); font-size: 15.5px }
 .pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
-.resumen { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 0 0 12px; font-size: 14px }
-.resumen div span { color: var(--muted) } .resumen div b { font-family: var(--f-mono); font-weight: 500 }
+.destacado { border-color: var(--accent); box-shadow: inset 4px 0 0 var(--accent); margin-bottom: 14px }
+.destacado h2 { color: var(--accent) }
+.resumen { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 8px; margin: 0 }
+.resumen div { background: var(--accent-soft); border-radius: 8px; padding: 8px 10px } .resumen div span { display: block; font-size: 12px; color: var(--muted) } .resumen div b { font: 600 17px var(--f-math) }
 .teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
 .teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
 .teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
@@ -73,6 +75,7 @@ footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8p
     <p class="error" id="error" hidden></p>
   </div>
   <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
     <div class="card escena">
       <canvas id="lienzo" aria-label="Animación del bloque"></canvas>
       <div class="controles">
@@ -85,7 +88,7 @@ footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8p
       <div class="barras" id="barras"></div>
       <canvas id="grafica" aria-label="Energías frente al tiempo"></canvas>
     </div>
-    <div class="card pasos"><h2>Resultados y desarrollo</h2><div class="resumen" id="resumen"></div><ol id="pasos"></ol></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
   </div>
 </div>
 <section class="teoria">

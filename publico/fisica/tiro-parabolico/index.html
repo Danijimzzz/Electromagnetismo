@@ -58,12 +58,14 @@ canvas { display: block; width: 100%; border-radius: 8px; background: var(--bg) 
 #pista { height: 90px } .g3 { height: 130px; margin-top: 8px }
 .controles { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 10px; font-size: 13px; color: var(--muted) }
 .controles input[type=range] { flex: 1; min-width: 140px; accent-color: var(--accent) }
-.lectura { font: 13px var(--f-mono); color: var(--ink) }
+.lectura { font: 13px var(--f-mono); color: var(--ink); font-variant-numeric: tabular-nums } .lectura span { white-space: pre } .controles .lectura { flex-basis: 100%; order: 9 }
 .leyenda { display: flex; gap: 4px 14px; flex-wrap: wrap; font-size: 12.5px; color: var(--muted); margin-top: 6px } .leyenda i { display: inline-block; width: 14px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 5px }
 .pasos { margin-top: 16px } .pasos ol { margin: 0; padding-left: 20px } .pasos li { margin: 0 0 10px; font-family: var(--f-math); font-size: 15.5px; overflow-wrap: anywhere }
 .pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
-.resumen { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 0 0 12px; font-size: 14px }
-.resumen div span { color: var(--muted) } .resumen div b { font-family: var(--f-mono); font-weight: 500 }
+.destacado { border-color: var(--accent); box-shadow: inset 4px 0 0 var(--accent); margin-bottom: 14px }
+.destacado h2 { color: var(--accent) }
+.resumen { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 8px; margin: 0 }
+.resumen div { background: var(--accent-soft); border-radius: 8px; padding: 8px 10px } .resumen div span { display: block; font-size: 12px; color: var(--muted) } .resumen div b { font: 600 17px var(--f-math) }
 .teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
 .teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
 .teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
@@ -85,6 +87,7 @@ footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8p
     <p class="error" id="error" hidden></p>
   </div>
   <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
     <div class="card">
       <canvas id="lienzo" aria-label="Trayectoria del proyectil"></canvas>
       <div class="controles">
@@ -100,7 +103,7 @@ footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8p
       <canvas id="grafica" aria-label="Gráfica frente al tiempo"></canvas>
       <div class="leyenda" id="leyenda"></div>
     </div>
-    <div class="card pasos"><h2>Resultados y desarrollo</h2><div class="resumen" id="resumen"></div><ol id="pasos"></ol></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
   </div>
 </div>
 </div>
@@ -114,6 +117,7 @@ footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8p
     <p class="error" id="error-r" hidden></p>
   </div>
   <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen-r"></div></div>
     <div class="card">
       <canvas id="pista" aria-label="Posición del móvil"></canvas>
       <div class="controles">
@@ -126,7 +130,7 @@ footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8p
       <canvas class="g3" id="g-v" aria-label="Velocidad frente al tiempo"></canvas>
       <canvas class="g3" id="g-a" aria-label="Aceleración frente al tiempo"></canvas>
     </div>
-    <div class="card pasos"><h2>Resultados y desarrollo</h2><div class="resumen" id="resumen-r"></div><ol id="pasos-r"></ol></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos-r"></ol></div>
   </div>
 </div>
 </div>
@@ -160,6 +164,7 @@ footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8p
 const Version = (() => {
   const registros = {
     web: [
+      { v: '0.20.1', fecha: '2026-10-24', cambios: ['Tiro parabólico, Trabajo y energía y Calorimetría: los resultados salen en una tarjeta destacada arriba y la lectura del tiempo ya no se mueve al reproducir.'] },
       { v: '0.20', fecha: '2026-10-24', cambios: ['Nueva herramienta: Inducción, leyes de Faraday y Lenz, en Electromagnetismo.'] },
       { v: '0.19', fecha: '2026-10-24', cambios: ['Nueva herramienta: Gases ideales, en Física general.'] },
       { v: '0.18', fecha: '2026-10-24', cambios: ['Nueva herramienta: Ondas mecánicas, en Física general.'] },
@@ -196,6 +201,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: cada elemento tiene su ficha con la masa atómica y molar, el grupo, el periodo, el bloque, la configuración electrónica (abreviada, completa y por capas), la electronegatividad, la energía de ionización, el radio y el estado.', 'La tabla se puede colorear por categoría, electronegatividad, energía de ionización, radio, masa, bloque o estado, y tiene un buscador por nombre, símbolo o número atómico.'] },
     ],
     'trabajo-y-energia': [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Los resultados salen arriba, en una tarjeta destacada, y la lectura de t y v tiene ancho fijo: ya no mueve la barra de tiempo al reproducir.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: un bloque baja por una rampa con rozamiento, recorre un tramo horizontal y comprime un muelle. Animación con barras de energía cinética, gravitatoria, elástica y calor, gráfica de las energías en el tiempo y el desarrollo paso a paso con la velocidad al pie de la rampa, al llegar al muelle y la compresión máxima.', 'Seis ejemplos: sin rozamiento, se para antes del muelle, el rozamiento lo sujeta, con empujón inicial y muelle duro.'] },
     ],
     'masa-molar': [
@@ -208,12 +214,14 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: condensadores planos, cilíndricos y esféricos con capas de dieléctrico en serie o, en el plano, ocupando parte del área. Capacidad, carga, tensión y energía; campos E, D y P en cada capa y cargas de polarización, con el desarrollo paso a paso.', 'Compara con el condensador vacío: qué pasa al meter el dieléctrico con la batería conectada o con el condensador aislado.', 'Dibujo del corte con las líneas de campo y gráfica de E a lo largo del condensador.'] },
     ],
     'tiro-parabolico': [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Los resultados salen arriba, en una tarjeta destacada, y la lectura de t, x, y y v tiene ancho fijo: ya no se mueve al reproducir.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: tiro parabólico desde cualquier altura hasta cualquier altura, con el tiempo de vuelo, la altura máxima, el alcance y la velocidad al caer, y el desarrollo paso a paso. Trayectoria animada con los vectores de velocidad y gráficas de posición, velocidad y aceleración frente al tiempo.', 'Rozamiento del aire lineal o cuadrático, comparado con la trayectoria sin rozamiento.', 'Blanco: dice si el proyectil pasa por un punto y con qué dos ángulos se acierta.', 'Movimiento rectilíneo (MRU y MRUA): posición y velocidad en un instante, cuándo pasa por un punto y cuándo se para, con las gráficas x(t), v(t) y a(t).'] },
     ],
     disoluciones: [
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: da la concentración de una disolución como molaridad, molalidad, fracción molar, % en masa, % masa/volumen, g/L o ppm y obtén todas las demás, con la densidad para pasar de masa a volumen y el desarrollo con su base de cálculo.', 'Preparar una disolución: los gramos de sólido (con su pureza) o los mililitros de reactivo comercial (con su riqueza y densidad) que hay que medir.', 'Diluciones con C₁V₁ = C₂V₂, despejando el dato que falte, y mezcla de dos disoluciones del mismo soluto.'] },
     ],
     calorimetria: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['La temperatura de equilibrio sale en una tarjeta destacada, separada de la tabla de calores.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: temperatura de equilibrio al mezclar hasta cinco cuerpos de agua, hielo, vapor, metales, etanol, vidrio, un calorímetro o una sustancia con tus datos, con los cambios de fase que hagan falta.', 'Si la energía no llega para fundir todo el hielo o condensar todo el vapor, dice cuántos gramos quedan de cada fase.', 'Tabla con el calor de cada cuerpo, el desarrollo etapa por etapa (m c ΔT y m L) y la curva de calentamiento de cada uno.'] },
     ],
     induccion: [
@@ -626,6 +634,12 @@ const Cinematica = (() => {
 
   /* =================== Tiro parabólico =================== */
   let tray = null, sol = null, t = 0, jugando = false, ultimo = 0;
+  // número con decimales fijos y relleno a la izquierda, para que la lectura no cambie de ancho mientras avanza el tiempo
+  const fijo = (x, d, ancho = 0) => (Math.abs(x) < 0.5 * 10 ** -d ? 0 : x).toFixed(d).replace('.', ',').replace('-', '−').padStart(ancho, ' ');
+  // cada dato en su span: no se parte por dentro, pero la línea puede bajar entera en el móvil
+  const lee = (el, texto) => { el.innerHTML = texto.split(' · ').map((x) => `<span>${x}</span>`).join(' · '); };
+  const anchoDe = (vals, d) => Math.max(...vals.map((v) => fijo(v, d).length));
+  let anchos = null; // anchos de la lectura para la trayectoria actual
   const rellena = formulario($('#campos'), CAMPOS, () => st.sc, (k) => { $('#ejemplos').value = ''; if (k === 'modelo') rellena(); calculaT(true); });
   const sel = $('#ejemplos');
   sel.innerHTML = '<option value="">Ejemplos…</option>' + C.ejemplos.map((e) => `<option value="${e.clave}">${e.nombre}</option>`).join('');
@@ -641,9 +655,10 @@ const Cinematica = (() => {
     err.hidden = true;
     if (guardar) guarda();
     t = Math.min(t, tray.tv);
+    const P = tray.puntos; anchos = { t: anchoDe([tray.tv], 2), x: anchoDe(P.map((q) => q.x), 2), y: anchoDe(P.map((q) => q.y), 2), v: anchoDe(P.map((q) => Math.hypot(q.vx, q.vy)), 2) };
     const r = sol.res, filas = [['Tiempo de vuelo', f(r.tv) + ' s'], ['Altura máxima', f(r.hmax) + ' m'], ['Alcance', f(r.alcance) + ' m'], ['Velocidad al caer', `${f(r.vf)} m/s a ${f(Math.abs(r.angf))}°`]];
     if (r.blanco && r.blanco.angulos) filas.push(['Ángulos para el blanco', r.blanco.angulos.map((a) => f(a) + '°').join(' y ')]);
-    $('#resumen').innerHTML = filas.map(([a, b]) => `<div><span>${a}:</span> <b>${b}</b></div>`).join('');
+    $('#resumen').innerHTML = filas.map(([a, b]) => `<div><span>${a}</span><b>${b}</b></div>`).join('');
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('');
     dibujaT();
   }
@@ -729,7 +744,7 @@ const Cinematica = (() => {
       : [{ nom: 'a<sub>x</sub>(t)', col: '--c-x', v: (p) => p.ax }, { nom: 'a<sub>y</sub>(t)', col: '--c-y', v: (p) => p.ay }];
     grafica($('#grafica'), tray.puntos, tray.tv, series, Math.min(t, tray.tv), q === 'pos' ? 'm' : q === 'vel' ? 'm/s' : 'm/s²');
     $('#leyenda').innerHTML = series.map((s) => `<span><i style="background:var(${s.col})"></i>${s.nom}</span>`).join('') + (I ? '<span>· a trazos en el dibujo: sin rozamiento</span>' : '');
-    $('#lectura').textContent = `t = ${txt(f(e.t, 2))} s · x = ${txt(f(e.x, 3))} m · y = ${txt(f(e.y, 3))} m · v = ${txt(f(Math.hypot(e.vx, e.vy), 3))} m/s`;
+    lee($('#lectura'), `t = ${fijo(e.t, 2, anchos.t)} s · x = ${fijo(e.x, 2, anchos.x)} m · y = ${fijo(e.y, 2, anchos.y)} m · v = ${fijo(Math.hypot(e.vx, e.vy), 2, anchos.v)} m/s`);
     $('#tiempo').value = String(Math.round((t / Math.max(tray.tv, 1e-9)) * 1000));
   }
   $('#que').addEventListener('change', dibujaT);
@@ -771,7 +786,7 @@ const Cinematica = (() => {
     if (r.tParada !== undefined) filas.push(['Se para en', `t = ${f(r.tParada)} s, x = ${f(r.xParada)} m`]);
     if (r.xEnT !== undefined) filas.push([`En t = ${f(rec.p.tq)} s`, `x = ${f(r.xEnT)} m, v = ${f(r.vEnT)} m/s`]);
     if (r.tEnX) filas.push([`Pasa por x = ${f(rec.p.xq)} m`, r.tEnX.length ? r.tEnX.map((x) => `t = ${f(x)} s`).join(' y ') : 'nunca']);
-    $('#resumen-r').innerHTML = filas.map(([a, b]) => `<div><span>${a}:</span> <b>${b}</b></div>`).join('');
+    $('#resumen-r').innerHTML = filas.map(([a, b]) => `<div><span>${a}</span><b>${b}</b></div>`).join('');
     $('#pasos-r').innerHTML = rec.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('');
     dibujaR();
   }
@@ -795,7 +810,7 @@ const Cinematica = (() => {
     grafica($('#g-x'), puntosR, rec.T, [{ col: '--c-x', v: (q) => q.x }], tr, 'x (m)');
     grafica($('#g-v'), puntosR, rec.T, [{ col: '--c-v', v: (q) => q.v }], tr, 'v (m/s)');
     grafica($('#g-a'), puntosR, rec.T, [{ col: '--c-a', v: (q) => q.a }], tr, 'a (m/s²)');
-    $('#lectura-r').textContent = `t = ${txt(f(tr, 2))} s · x = ${txt(f(x, 3))} m · v = ${txt(f(v, 3))} m/s`;
+    lee($('#lectura-r'), `t = ${fijo(tr, 2, anchoDe([rec.T], 2))} s · x = ${fijo(x, 2, anchoDe(puntosR.map((q) => q.x), 2))} m · v = ${fijo(v, 2, anchoDe(puntosR.map((q) => q.v), 2))} m/s`);
     $('#tiempo-r').value = String(Math.round((tr / rec.T) * 1000));
   }
   function paraR() { jugandoR = false; $('#play-r').textContent = '▶ Reproducir'; }
