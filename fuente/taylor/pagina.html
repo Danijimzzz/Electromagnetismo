@@ -1,0 +1,107 @@
+<title>Series de Taylor: polinomio de Taylor y Maclaurin paso a paso · SimulaCiencia</title>
+<meta name="description" content="Calculadora del polinomio de Taylor y de Maclaurin en español: derivadas, coeficientes, aproximación de f(x₀), error y cota del resto de Lagrange, desarrollos conocidos con su término general y una gráfica animada de cómo los polinomios se acercan a la función.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root {
+  --bg: #eef0f4; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d6dbe3; --accent: #6b3fa0; --accent-soft: #efe6f8; --z1: #2a5db5; --z2: #c2410c; --z3: #6b3fa0; --peso: #c2412a; --normal: #1d7a3e; --roz: #b0700a; --fuerza: #6b3fa0; --tension: #2a5db5; --cuerpo: #c9d3e0; --suelo: #8a96a3;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #b892ec; --accent-soft: #2b2140; --z1: #74a2f2; --z2: #f0915a; --z3: #b892ec; --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #b892ec; --accent-soft: #2b2140; --z1: #74a2f2; --z2: #f0915a; --z3: #b892ec; --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784; color-scheme: dark }
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
+.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
+.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+.layout { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 16px; align-items: start }
+@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr) } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 15px var(--f-ui); margin: 0 0 10px }
+.campos { display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px } .campos label small { color: var(--muted) }
+.in { font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.in:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer }
+.btn:hover { border-color: var(--accent) }
+.error { color: #c0392b; font-size: 13px; margin: 10px 0 0 }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+.res { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px 14px; font: 16px var(--f-math) } .res div { overflow-x: auto } .res span { display: block; font: 12px var(--f-ui); color: var(--muted) }
+.leyenda { font-size: 12.5px; color: var(--muted); margin: 6px 0 0 } .leyenda b { font-weight: 600 }
+canvas { display: block; width: 100%; height: clamp(260px, 36vw, 380px); border-radius: 8px; background: var(--bg); margin-top: 10px }
+.pasos ol { margin: 0; padding-left: 22px } .pasos li { margin: 0 0 12px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+.controles { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px }
+.destacado { border-color: var(--accent); box-shadow: inset 4px 0 0 var(--accent) }
+.destacado h2 { color: var(--accent) }
+.resumen { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; margin: 0 }
+.resumen div { background: var(--accent-soft); border-radius: 8px; padding: 8px 10px; overflow-x: auto } .resumen div span { display: block; font-size: 12px; color: var(--muted) } .resumen div b { font: 600 17px var(--f-math) }
+.teoria ul { padding-left: 20px } .teoria li { margin-bottom: 4px }
+#grafica { height: clamp(300px, 44vw, 460px) }
+.resumen div.ancho { grid-column: 1 / -1 }
+.grado { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 10px; font-size: 13.5px }
+.grado input[type=range] { flex: 1 1 160px; accent-color: var(--accent) }
+.grado b { font-variant-numeric: tabular-nums; min-width: 1.5em; display: inline-block }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Matemáticas</a> / Series de Taylor</span></header>
+<div class="wrap">
+<h1>Series de Taylor</h1>
+<p class="lead">Calcula el polinomio de Taylor (o de Maclaurin) de una función en un punto con sus derivadas y coeficientes, úsalo para aproximar un valor y acota el error con el resto de Lagrange. La gráfica muestra cómo cada grado se acerca más a la función.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota">Escribe la función con x: e^x, sen x, cos(2x), ln(1+x), √x, arctg x, 1/(1−x), x^3 − 2x… El punto puede llevar π: π/6.</p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Gráfica</h2>
+      <canvas id="grafica" aria-label="Gráfica de la función y de sus polinomios de Taylor"></canvas>
+      <div class="grado"><label for="grado">Grado mostrado: <b id="vgrado">0</b></label><input type="range" id="grado" min="0" max="4" step="1" value="4"><button class="btn" id="animar" type="button">▶ Ver cómo se acerca</button></div>
+      <p class="nota" id="leyenda"></p></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>El polinomio de Taylor</h2>
+  <p>Cerca de un punto a, una función derivable se parece a un polinomio que tiene en a el mismo valor y las mismas derivadas que ella. El de grado n es el polinomio de Taylor:</p>
+  <p class="f m">$P_n(x) = f(a) + f′(a) (x − a) + {f″(a)}/{2!} (x − a)^2 + … + {f^{(n)}(a)}/{n!} (x − a)^n$</p>
+  <p class="m">El coeficiente de $(x − a)^k$ es $c_k = {f^{(k)}(a)}/{k!}$. El de grado 1 es la recta tangente, y cada grado más corrige la curvatura un poco mejor. Cuando a = 0 se llama polinomio de Maclaurin.</p>
+  <h2>El error: resto de Lagrange</h2>
+  <p class="m">Al cambiar f(x) por $P_n(x)$ se comete un error, el resto $R_n(x) = f(x) − P_n(x)$. Si f tiene derivada n + 1 entre a y x, hay un ξ entre los dos con</p>
+  <p class="f m">$R_n(x) = {f^{(n+1)}(ξ)}/{(n+1)!} (x − a)^{n+1}$</p>
+  <p class="m">No se sabe cuánto vale ξ, pero si $|f^{(n+1)}| ≤ M$ en ese intervalo, el error es como mucho $M |x − a|^{n+1}/(n+1)!$. Para que el error sea menor que una cantidad dada se busca el n más pequeño que lo cumple.</p>
+  <h2>Desarrollos conocidos de Maclaurin</h2>
+  <ul>
+    <li class="m">$e^x = 1 + x + {x^2}/{2!} + {x^3}/{3!} + … = Σ_{k=0}^{∞} {x^k}/{k!}$, para todo x</li>
+    <li class="m">$sen x = x − {x^3}/{3!} + {x^5}/{5!} − … = Σ_{k=0}^{∞} {(−1)^k x^{2k+1}}/{(2k+1)!}$, para todo x</li>
+    <li class="m">$cos x = 1 − {x^2}/{2!} + {x^4}/{4!} − … = Σ_{k=0}^{∞} {(−1)^k x^{2k}}/{(2k)!}$, para todo x</li>
+    <li class="m">$ln (1 + x) = x − {x^2}/{2} + {x^3}/{3} − … = Σ_{k=1}^{∞} {(−1)^{k+1} x^k}/{k}$, para −1 &lt; x ≤ 1</li>
+    <li class="m">${1}/{1 − x} = 1 + x + x^2 + x^3 + … = Σ_{k=0}^{∞} x^k$, para |x| &lt; 1</li>
+    <li class="m">$arctg x = x − {x^3}/{3} + {x^5}/{5} − … = Σ_{k=0}^{∞} {(−1)^k x^{2k+1}}/{2k+1}$, para |x| ≤ 1</li>
+    <li class="m">$(1 + x)^α = 1 + α x + {α (α − 1)}/{2!} x^2 + … = Σ_{k=0}^{∞} binom(α, k) x^k$, para |x| &lt; 1</li>
+  </ul>
+  <p class="m">Con ellos se sacan otros sin derivar: cambiando x por $−x^2$ en el de $e^x$ sale $e^{−x^2} = 1 − x^2 + {x^4}/{2} − …$, y multiplicando por x el de sen x sale el de x sen x.</p>
+  <p class="m">Fuera de su intervalo de convergencia la serie no se acerca a la función por mucho que suba el grado: pruébalo con ln(1 + x) y x₀ = 1,5. Y sumando estas series con x = iθ sale la fórmula de Euler, $e^{iθ} = cos θ + i sen θ$, que se usa en <a href="../complejos/">Números complejos</a>.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Series de Taylor <span id="ver"></span> (beta)</footer>
+</body>

@@ -79,6 +79,8 @@ if [ "$1" != privado ]; then
     version.js mates.js matematicas/algebra.js sistemas/calculo.js sistemas/app.js
   herramienta complejos ../publico/matematicas/complejos/index.html "Números complejos" "Calculadora de números complejos: formas binómica, polar, trigonométrica y exponencial con el argumento en su cuadrante, suma, resta, producto, cociente, potencias con De Moivre, raíces n-ésimas y ecuaciones de segundo grado, con el plano de Argand y paso a paso" \
     version.js mates.js matematicas/algebra.js complejos/calculo.js complejos/app.js
+  herramienta taylor ../publico/matematicas/taylor/index.html "Series de Taylor" "Calculadora del polinomio de Taylor y de Maclaurin paso a paso: derivadas, coeficientes, aproximación de f(x₀), error y cota del resto de Lagrange, desarrollos conocidos con su término general y gráfica animada" \
+    version.js mates.js matematicas/expresion.js taylor/calculo.js taylor/app.js
   herramienta estadistica ../publico/estadistica/distribuciones/index.html "Distribuciones de probabilidad" "Calculadora de la normal, binomial, Poisson, t de Student y chi cuadrado con el área sombreada: probabilidades, cuantiles y valores críticos paso a paso" \
     version.js mates.js estadistica/calculo.js estadistica/app.js
   herramienta regresion ../publico/estadistica/regresion/index.html "Regresión y correlación" "Calculadora de regresión y correlación: covarianza, coeficiente de correlación de Pearson con su contraste, rectas de regresión de Y sobre X y de X sobre Y, ajustes exponencial, potencial, logarítmico y parabólico y estimaciones, con la nube de puntos y paso a paso" \
