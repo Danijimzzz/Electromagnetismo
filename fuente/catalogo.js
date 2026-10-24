@@ -49,6 +49,7 @@ const Catalogo = {
       herramientas: [
         { clave: 'matrices', nombre: 'Matrices paso a paso', icono: 'A', disponible: true, desc: 'Determinante, inversa, rango, Gauss-Jordan y valores propios, con fracciones exactas y complejos.', buscar: 'matriz determinante inversa gauss jordan rango autovalores valores propios diagonalizar sarrus laplace adjunta' },
         { clave: 'sistemas', nombre: 'Sistemas de ecuaciones lineales', icono: 'x', disponible: true, desc: 'Rouché-Frobenius, Gauss, Cramer e inversa, en paramétricas, también con complejos.', buscar: 'sistema ecuaciones lineales gauss cramer rouché frobenius compatible indeterminado incompatible paramétrica complejos' },
+        { clave: 'complejos', nombre: 'Números complejos', icono: 'i', disponible: true, desc: 'Formas binómica, polar y exponencial, operaciones, De Moivre, raíces n-ésimas y ecuaciones, con el plano de Argand.', buscar: 'números complejos imaginario binómica polar trigonométrica exponencial módulo argumento conjugado de moivre raíces n-ésimas euler plano de argand afijo ecuación segundo grado' },
         { clave: 'campos-vectoriales', nombre: 'Campos vectoriales', icono: '∇', desc: 'Gradiente, divergencia, rotacional y flujo.', buscar: 'gradiente divergencia rotacional flujo' },
       ],
     },
