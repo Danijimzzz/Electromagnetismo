@@ -78,15 +78,15 @@ footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8p
 :root { --bg:#eef1ee; --panel:#fff; --ink:#1a2128; --muted:#5b6670; --line:#d5dbd5; --accent:#6b3fa0; --accent-soft:color-mix(in srgb, #6b3fa0 12%, #fff); --marca:#0d6b66 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#111619; --panel:#182025; --ink:#e3e8ea; --muted:#94a0a8; --line:#2a343b; --accent:#b892ec; --accent-soft:color-mix(in srgb, #b892ec 16%, #182025); --marca:#4dbcb0; color-scheme:dark } }
 :root[data-theme="dark"] { --bg:#111619; --panel:#182025; --ink:#e3e8ea; --muted:#94a0a8; --line:#2a343b; --accent:#b892ec; --accent-soft:color-mix(in srgb, #b892ec 16%, #182025); --marca:#4dbcb0; color-scheme:dark }
-.top { display:flex; align-items:center; gap:8px 20px; flex-wrap:wrap; padding:12px clamp(16px,3vw,28px); background:var(--panel); border-bottom:1px solid var(--line) }
-.top .logo { font:600 18px var(--f-math); white-space:nowrap; color:var(--ink); text-decoration:none } .top .logo i { color:var(--marca) }
-.top nav { display:flex; gap:4px 16px; font-size:14px; overflow-x:auto; max-width:100%; scrollbar-width:none }
-.top nav a { white-space:nowrap; padding:2px 0; color:var(--muted); text-decoration:none } .top nav a:hover { color:var(--ink) }
-.top nav a[aria-current] { color:var(--ink); font-weight:600; box-shadow:inset 0 -2px 0 var(--accent) }
-.top form { margin-left:auto; flex:0 1 260px; min-width:150px }
-@media (min-width:701px) { .top { flex-wrap:nowrap } .top nav { min-width:0 } }
-.top .buscar { font:14px var(--f-ui); color:var(--ink); border:1px solid var(--line); border-radius:8px; padding:7px 12px; width:100%; background:var(--bg) }
-.top .buscar:focus-visible, .top a:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+header.top { display:flex; align-items:center; gap:8px 20px; flex-wrap:wrap; padding:12px clamp(16px,3vw,28px); background:var(--panel); border-bottom:1px solid var(--line) }
+header.top .logo { font:600 18px var(--f-math); white-space:nowrap; color:var(--ink); text-decoration:none } header.top .logo i { color:var(--marca) }
+header.top nav { display:flex; gap:4px 16px; font-size:14px; overflow-x:auto; max-width:100%; scrollbar-width:none }
+header.top nav a { white-space:nowrap; padding:2px 0; color:var(--muted); text-decoration:none } header.top nav a:hover { color:var(--ink) }
+header.top nav a[aria-current] { color:var(--ink); font-weight:600; box-shadow:inset 0 -2px 0 var(--accent) }
+header.top form { margin-left:auto; flex:0 1 260px; min-width:150px }
+@media (min-width:701px) { header.top { flex-wrap:nowrap } header.top nav { min-width:0 } }
+header.top .buscar { font:14px var(--f-ui); color:var(--ink); border:1px solid var(--line); border-radius:8px; padding:7px 12px; width:100%; background:var(--bg) }
+header.top .buscar:focus-visible, header.top a:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
 .miga { display:flex; align-items:center; flex-wrap:wrap; gap:8px; font-size:13.5px; color:var(--muted); margin:0 0 10px }
 .miga a { color:var(--accent); font-weight:600; text-decoration:none } .miga a:hover { text-decoration:underline }
 .miga-ico { display:inline-grid; place-items:center; width:22px; height:22px; border-radius:6px; background:var(--accent-soft); color:var(--accent); font:italic 600 13px var(--f-math) }
@@ -100,7 +100,7 @@ h1 { font:600 24px/1.25 var(--f-ui) }
 .destacado h2 { color:var(--accent) }
 .resumen div { background:var(--accent-soft) }
 .sep { color:var(--accent) }
-@media (max-width:700px) { .top form { display:none } h1 { font-size:21px } }
+@media (max-width:700px) { header.top form { display:none } h1 { font-size:21px } }
 </style>
 <body>
 <header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><nav aria-label="Asignaturas"><a href="../../">Inicio</a><a href="../../electromagnetismo/">Electromagnetismo</a><a href="../../fisica/">Física general</a><a href="../../quimica/">Química</a><a href="../../matematicas/" aria-current="page">Matemáticas</a><a href="../../estadistica/">Estadística</a><a href="../../circuitos/">Circuitos</a></nav><form action="../../" role="search"><input class="buscar" type="search" name="q" placeholder="Buscar: Biot-Savart, molaridad…" aria-label="Buscar herramientas"></form></header>
@@ -167,6 +167,7 @@ h1 { font:600 24px/1.25 var(--f-ui) }
 const Version = (() => {
   const registros = {
     web: [
+      { v: '0.44.1', fecha: '2026-10-24', cambios: ['El simulador de electrostática también tiene el diseño común: la barra de arriba con las asignaturas y el buscador, la ruta «Electromagnetismo › Electrostática» y el color de Electromagnetismo.'] },
       { v: '0.44', fecha: '2026-10-24', cambios: ['Todas las herramientas tienen el mismo diseño: arriba, la misma barra que la portada, con las asignaturas y el buscador, y cada herramienta lleva el color de su asignatura. Encima del título se ve en qué asignatura estás, con Mis ejercicios a la izquierda y Modo práctica a la derecha.', 'Mis ejercicios: la barra lateral también tiene los ejercicios de ejemplo de cada herramienta, como en el simulador de electrostática.'] },
       { v: '0.43', fecha: '2026-10-24', cambios: ['Nueva herramienta: Derivadas e integrales, en Matemáticas.'] },
       { v: '0.42', fecha: '2026-10-24', cambios: ['Nueva herramienta: Transformada de Laplace, en Matemáticas.'] },
