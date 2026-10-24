@@ -27,6 +27,7 @@ const Catalogo = {
         { clave: 'calorimetria', nombre: 'Calorimetría y cambios de fase', icono: 'Q', disponible: true, desc: 'Temperatura de equilibrio con hielo, vapor, metales y calorímetro, y cuánto cambia de fase.', buscar: 'calor específico latente equilibrio térmico' },
         { clave: 'dinamica', nombre: 'Dinámica y diagramas de fuerzas', icono: 'F', disponible: true, desc: 'Planos inclinados, rozamiento, poleas y Atwood con el diagrama de fuerzas y las leyes de Newton.', buscar: 'dinámica fuerzas newton diagrama de cuerpo libre plano inclinado rozamiento estático dinámico normal tensión polea atwood' },
         { clave: 'solido-rigido', nombre: 'Sólido rígido', icono: 'I', disponible: true, desc: 'Momentos de inercia y Steiner, rodadura por un plano, poleas con masa y momento angular.', buscar: 'sólido rígido momento de inercia steiner rodadura rueda plano inclinado polea momento angular rotación torque par patinadora' },
+        { clave: 'ondas', nombre: 'Ondas mecánicas', icono: '∿', disponible: true, desc: 'Ecuación de onda, estacionarias en cuerdas y tubos, efecto Doppler y nivel sonoro, con animación.', buscar: 'ondas mecánicas onda armónica ecuación longitud de onda frecuencia estacionaria armónicos cuerda tubo doppler sonido decibelios intensidad' },
       ],
     },
     {

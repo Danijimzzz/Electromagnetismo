@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMwZDZiNjYiLz48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlNmE2NDAiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtZGFzaGFycmF5PSI0IDYuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48cGF0aCBkPSJNMjAgMzJINDQiLz48cGF0aCBkPSJNMjEgMjdDMjcgMTQgMzcgMTQgNDMgMjciLz48cGF0aCBkPSJNMjEgMzdDMjcgNTAgMzcgNTAgNDMgMzciLz48cGF0aCBkPSJNMTcgMjRDMjIgNCA0MiA0IDQ3IDI0Ii8+PHBhdGggZD0iTTE3IDQwQzIyIDYwIDQyIDYwIDQ3IDQwIi8+PC9nPjxjaXJjbGUgY3g9IjE3IiBjeT0iMzIiIHI9IjgiIGZpbGw9IiNlZjdhNjIiLz48Y2lyY2xlIGN4PSI0NyIgY3k9IjMyIiByPSI4IiBmaWxsPSIjNzRhMmYyIi8+PHBhdGggZD0iTTEzIDMyaDhNMTcgMjh2OE00MyAzMmg4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta property="og:title" content="Ondas mecánicas">
+<meta property="og:description" content="Calculadora de ondas: ecuación de la onda armónica, ondas estacionarias en cuerdas y tubos, efecto Doppler e intensidad y nivel sonoro, con animación y paso a paso">
+<meta property="og:image" content="https://electromagnetismo-two.vercel.app/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<title>Ondas mecánicas: ecuación de onda, estacionarias, Doppler y nivel sonoro · SimulaCiencia</title>
+<meta name="description" content="Calculadora de ondas mecánicas en español: ecuación de la onda armónica, velocidad y aceleración de un punto, ondas estacionarias en cuerdas y tubos con sus armónicos, efecto Doppler e intensidad y nivel sonoro en decibelios, paso a paso y con animación.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root {
+  --bg: #eef0f4; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d6dbe3; --accent: #2a5db5; --accent-soft: #e3ecfa; --peso: #c2412a; --normal: #1d7a3e; --roz: #b0700a; --fuerza: #6b3fa0; --tension: #2a5db5; --cuerpo: #c9d3e0; --suelo: #8a96a3;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #74a2f2; --accent-soft: #1c2a42; --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #74a2f2; --accent-soft: #1c2a42; --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784; color-scheme: dark }
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
+.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
+.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+.layout { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 16px; align-items: start }
+@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr) } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 15px var(--f-ui); margin: 0 0 10px }
+.campos { display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px } .campos label small { color: var(--muted) }
+.in { font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.in:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer }
+.btn:hover { border-color: var(--accent) }
+.error { color: #c0392b; font-size: 13px; margin: 10px 0 0 }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+.res { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px 14px; font: 16px var(--f-math) } .res div { overflow-x: auto } .res span { display: block; font: 12px var(--f-ui); color: var(--muted) }
+.leyenda { font-size: 12.5px; color: var(--muted); margin: 6px 0 0 } .leyenda b { font-weight: 600 }
+canvas { display: block; width: 100%; height: clamp(260px, 36vw, 380px); border-radius: 8px; background: var(--bg); margin-top: 10px }
+.pasos ol { margin: 0; padding-left: 22px } .pasos li { margin: 0 0 12px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+.controles { display: flex; gap: 8px; align-items: center; margin-top: 8px }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física general</a> / Ondas mecánicas</span></header>
+<div class="wrap">
+<h1>Ondas mecánicas</h1>
+<p class="lead">Escribe la ecuación de una onda armónica y estudia un punto del medio, calcula los armónicos de una cuerda o de un tubo, la frecuencia que se oye con el efecto Doppler y el nivel sonoro en decibelios, con animación y el desarrollo paso a paso.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card"><h2>Resultado</h2><div class="res" id="res"></div>
+      <canvas id="escena" aria-label="Animación de la onda"></canvas>
+      <div class="controles"><button class="btn" id="play" type="button">⏸ Pausa</button><span class="nota" id="leyenda" style="margin:0"></span></div></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Onda armónica</h2>
+  <p>Una onda armónica que viaja hacia las x positivas con amplitud A, pulsación ω = 2πf y número de onda k = 2π/λ se escribe</p>
+  <p class="f">y(x, t) = A sen(ωt − kx + φ), &nbsp; v = λf = ω/k</p>
+  <p>Si viaja hacia las x negativas, el signo de kx es +. Cada punto del medio oscila con un movimiento armónico simple: su velocidad máxima es Aω y su aceleración máxima Aω<sup>2</sup>.</p>
+  <h2>Ondas estacionarias</h2>
+  <p>Al superponerse una onda y su reflejada aparecen nodos (que no se mueven) y vientres (de amplitud máxima), separados λ/2. En una cuerda con los extremos fijos y en un tubo abierto por los dos extremos f<sub>n</sub> = nv/(2L); en un tubo cerrado por un extremo solo hay armónicos impares, f = (2n − 1)v/(4L). En una cuerda, v = √(T/μ).</p>
+  <h2>Efecto Doppler</h2>
+  <p class="f">f′ = f (v + v<sub>O</sub>)/(v − v<sub>F</sub>)</p>
+  <p>Con las velocidades positivas cuando la fuente y el observador se acercan. Si se acercan se oye más agudo y si se alejan, más grave.</p>
+  <h2>Intensidad y nivel sonoro</h2>
+  <p class="f">I = P/(4πr<sup>2</sup>), &nbsp; β = 10 log(I/I<sub>0</sub>), &nbsp; I<sub>0</sub> = 10<sup>−12</sup> W/m<sup>2</sup></p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Ondas <span id="ver"></span> (beta)</footer>
+</body><script>
+/* =====================================================================
+   Versiones y novedades: la web (portada, asignaturas, buscador) tiene su número y cada
+   herramienta el suyo. Hasta el lanzamiento se numera 0.x (beta); la 1.0 de una herramienta
+   llega cuando se da por terminada y la 1.0 de la web será el lanzamiento. Sube el segundo
+   número si hay algo nuevo (0.6) y añade un tercero si es solo un arreglo (0.5.1).
+   En las novedades de la web se anuncia también cada herramienta nueva.
+   Las notas son para los usuarios: solo funciones nuevas, arreglos visibles y cambios
+   en la interfaz. Lo interno (pruebas, CI, build, despliegue, refactorizaciones) no se anota;
+   el historial completo para desarrolladores está en Notion.
+   ===================================================================== */
+const Version = (() => {
+  const registros = {
+    web: [
+      { v: '0.18', fecha: '2026-10-24', cambios: ['Nueva herramienta: Ondas mecánicas, en Física general.'] },
+      { v: '0.17', fecha: '2026-10-24', cambios: ['Nueva herramienta: Sólido rígido, en Física general.'] },
+      { v: '0.16', fecha: '2026-10-23', cambios: ['Nueva herramienta: Circuitos de corriente continua, en Laboratorio.'] },
+      { v: '0.15', fecha: '2026-10-23', cambios: ['Nueva herramienta: Dinámica y diagramas de fuerzas, en Física general.'] },
+      { v: '0.14', fecha: '2026-10-23', cambios: ['Nueva herramienta: Corriente alterna y fasores, en Laboratorio.'] },
+      { v: '0.13', fecha: '2026-10-23', cambios: ['Nueva herramienta: Distribuciones de probabilidad, en Matemáticas.'] },
+      { v: '0.12', fecha: '2026-10-23', cambios: ['Nueva herramienta: Sistemas de ecuaciones lineales, en Matemáticas.'] },
+      { v: '0.11', fecha: '2026-10-23', cambios: ['Nueva herramienta: Matrices paso a paso, en Matemáticas.'] },
+      { v: '0.10', fecha: '2026-10-23', cambios: ['Nueva herramienta: Autoinducción e inducción mutua, en Electromagnetismo.'] },
+      { v: '0.9', fecha: '2026-10-23', cambios: ['Nueva herramienta: Calorimetría y cambios de fase, en Física general.'] },
+      { v: '0.8', fecha: '2026-10-23', cambios: ['Nueva herramienta: Disoluciones y concentraciones, en Química.'] },
+      { v: '0.7', fecha: '2026-10-23', cambios: ['Nueva herramienta: Tiro parabólico y cinemática, en Física general.'] },
+      { v: '0.6', fecha: '2026-10-23', cambios: ['Nueva herramienta: Condensadores con dieléctricos, en Electromagnetismo.'] },
+      { v: '0.5', fecha: '2026-10-23', cambios: ['Nueva herramienta: Configuración electrónica, en Química.'] },
+      { v: '0.4', fecha: '2026-10-23', cambios: ['Nueva herramienta: Masa molar y estequiometría, en Química.'] },
+      { v: '0.3', fecha: '2026-10-23', cambios: ['Nueva herramienta: Trabajo y energía, en Física general.'] },
+      { v: '0.2', fecha: '2026-10-23', cambios: ['Nueva herramienta: Tabla periódica interactiva, en Química.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Portada para elegir asignatura y herramienta: Electromagnetismo, Física general, Química, Matemáticas y Laboratorio, con buscador. Las herramientas que vienen después aparecen como «Próximamente».', 'Nueva herramienta: Magnetostática, en Electromagnetismo.'] },
+    ],
+    electrostatica: [
+      { v: '0.5.1', fecha: '2026-10-23', cambios: ['El simulador tiene ahora su propia dirección, /electromagnetismo/electrostatica/. Tus problemas guardados siguen ahí. El botón «Todas las herramientas» de la barra lateral vuelve a la portada.'] },
+    { v: '0.5', fecha: '2026-10-23', cambios: ['Doce ejercicios de ejemplo con enunciados propios: los mismos tipos de pregunta que en clase, con otras figuras y otros números. La guía de uso tiene capturas nuevas hechas con ellos.', 'La web tiene icono propio: un dipolo con sus líneas de campo, en la pestaña del navegador, en la pantalla de inicio del móvil y en la vista previa al compartir el enlace.', 'Páginas de aviso legal, privacidad, cookies y contacto, enlazadas al pie de la barra lateral.'] },
+    { v: '0.4', fecha: '2026-10-22', cambios: ['Número de versión visible y este apartado de novedades.', 'Arreglo: en la vista 3D los cilindros se dibujan con su radio real, aparecen las superficies de Gauss, y las esferas, cascarones y conductores tienen volumen en lugar de parecer círculos planos.'] },
+    { v: '0.3', fecha: '2026-10-22', cambios: ['Guía de uso con capturas (botón ?, barra lateral o F1).', 'Los resultados se escriben con la misma forma que el solucionario oficial: perfiles por tramos, factor común en logaritmos y radicales, y la pregunta V_A − V_B.'] },
+    { v: '0.2', fecha: '2026-10-22', cambios: ['Anillos, discos, cortezas y conductores.', 'Varias incógnitas, modo numérico SI, flujo de Gauss y gráficas E(z) y V(z).', 'Modo práctica, exportar la solución, deshacer y rehacer, mapa de color y vista 3D.', 'Búsqueda, carpetas y etiquetas en la barra lateral.'] },
+    { v: '0.1', fecha: '2026-10-22', cambios: ['Primera versión: cargas, hilos, planos y esferas con el desarrollo paso a paso y 12 ejercicios resueltos.', 'Barra lateral con tus problemas, los importados y los ejercicios; título y enunciado editables; archivos .emsim.json.'] },
+    ],
+    magnetostatica: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: campo magnético de hilos, segmentos, hilos semiinfinitos, espiras, arcos, solenoides y toroides con Biot-Savart, y fuerza sobre cargas en movimiento y sobre conductores, con el desarrollo paso a paso en la forma μ₀I/(πa) o en unidades del SI.', 'Dibujo del campo B en el plano XY, XZ o YZ, con puntos que se pueden arrastrar y ocho ejemplos resueltos.'] },
+    ],
+    'tabla-periodica': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: cada elemento tiene su ficha con la masa atómica y molar, el grupo, el periodo, el bloque, la configuración electrónica (abreviada, completa y por capas), la electronegatividad, la energía de ionización, el radio y el estado.', 'La tabla se puede colorear por categoría, electronegatividad, energía de ionización, radio, masa, bloque o estado, y tiene un buscador por nombre, símbolo o número atómico.'] },
+    ],
+    'trabajo-y-energia': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: un bloque baja por una rampa con rozamiento, recorre un tramo horizontal y comprime un muelle. Animación con barras de energía cinética, gravitatoria, elástica y calor, gráfica de las energías en el tiempo y el desarrollo paso a paso con la velocidad al pie de la rampa, al llegar al muelle y la compresión máxima.', 'Seis ejemplos: sin rozamiento, se para antes del muelle, el rozamiento lo sujeta, con empujón inicial y muelle duro.'] },
+    ],
+    'masa-molar': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: masa molar y composición centesimal de cualquier fórmula, con paréntesis, hidratos e iones, y conversor entre gramos, moles, partículas y litros de gas.', 'Estequiometría: ajusta la reacción sola (también las iónicas), calcula el reactivo limitante, lo que se forma con el rendimiento que digas y lo que sobra, paso a paso.', 'Masas atómicas de la IUPAC o redondeadas como en clase.'] },
+    ],
+    'configuracion-electronica': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: configuración electrónica de cualquier elemento o ion por orden de llenado, abreviada y por capas, con el diagrama de Moeller, el diagrama de orbitales con la regla de Hund, los electrones desapareados y los números cuánticos del electrón diferenciador.', 'Avisa de las excepciones como el cromo o el cobre, y en los cationes quita primero los electrones de la capa más externa.'] },
+    ],
+    condensadores: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: condensadores planos, cilíndricos y esféricos con capas de dieléctrico en serie o, en el plano, ocupando parte del área. Capacidad, carga, tensión y energía; campos E, D y P en cada capa y cargas de polarización, con el desarrollo paso a paso.', 'Compara con el condensador vacío: qué pasa al meter el dieléctrico con la batería conectada o con el condensador aislado.', 'Dibujo del corte con las líneas de campo y gráfica de E a lo largo del condensador.'] },
+    ],
+    'tiro-parabolico': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: tiro parabólico desde cualquier altura hasta cualquier altura, con el tiempo de vuelo, la altura máxima, el alcance y la velocidad al caer, y el desarrollo paso a paso. Trayectoria animada con los vectores de velocidad y gráficas de posición, velocidad y aceleración frente al tiempo.', 'Rozamiento del aire lineal o cuadrático, comparado con la trayectoria sin rozamiento.', 'Blanco: dice si el proyectil pasa por un punto y con qué dos ángulos se acierta.', 'Movimiento rectilíneo (MRU y MRUA): posición y velocidad en un instante, cuándo pasa por un punto y cuándo se para, con las gráficas x(t), v(t) y a(t).'] },
+    ],
+    disoluciones: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: da la concentración de una disolución como molaridad, molalidad, fracción molar, % en masa, % masa/volumen, g/L o ppm y obtén todas las demás, con la densidad para pasar de masa a volumen y el desarrollo con su base de cálculo.', 'Preparar una disolución: los gramos de sólido (con su pureza) o los mililitros de reactivo comercial (con su riqueza y densidad) que hay que medir.', 'Diluciones con C₁V₁ = C₂V₂, despejando el dato que falte, y mezcla de dos disoluciones del mismo soluto.'] },
+    ],
+    calorimetria: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: temperatura de equilibrio al mezclar hasta cinco cuerpos de agua, hielo, vapor, metales, etanol, vidrio, un calorímetro o una sustancia con tus datos, con los cambios de fase que hagan falta.', 'Si la energía no llega para fundir todo el hielo o condensar todo el vapor, dice cuántos gramos quedan de cada fase.', 'Tabla con el calor de cada cuerpo, el desarrollo etapa por etapa (m c ΔT y m L) y la curva de calentamiento de cada uno.'] },
+    ],
+    induccion: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: coeficiente de autoinducción de solenoides (con núcleo), toroides de sección rectangular y circular, cables coaxiales y líneas bifilares, con el desarrollo desde la ley de Ampère.', 'Inducción mutua entre dos solenoides, dos espiras, un hilo y una espira, y una bobina sobre un toroide, o a partir de L₁, L₂ y k, con el coeficiente de acoplamiento.', 'Flujo, energía magnética y fem inducida si das la corriente o cómo cambia.', 'Circuito RL al cerrar el interruptor o al quitar la fuente: constante de tiempo, corriente y tensión en la bobina en cualquier instante y su gráfica.'] },
+    ],
+    matrices: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: determinante por Gauss, por Sarrus o por Laplace; inversa por Gauss-Jordan o por adjuntos; rango; forma escalonada y escalonada reducida, con cada operación entre filas y la matriz después de cada paso.', 'Valores y vectores propios con el polinomio característico, las raíces exactas (también con radicales o complejas) y si la matriz es diagonalizable, con P y D.', 'Suma, resta, producto (elemento a elemento), producto por un número, potencia y traspuesta.', 'Fracciones exactas y números complejos en cualquier casilla: 3/4, 0,25, 2−3i o (1+i)/2.'] },
+    ],
+    sistemas: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: hasta seis ecuaciones con seis incógnitas. Dice si el sistema es compatible determinado, indeterminado o incompatible con el teorema de Rouché-Frobenius y lo resuelve por Gauss con sustitución hacia atrás, por Gauss-Jordan, por la regla de Cramer o con la matriz inversa.', 'Si tiene infinitas soluciones, las da en forma paramétrica (λ, μ…).', 'Coeficientes con fracciones exactas, decimales o números complejos, como las mallas de un circuito de alterna, y nombres propios para las incógnitas (I1, I2…).', 'Comprobación de la solución sustituyendo en cada ecuación.'] },
+    ],
+    estadistica: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: normal, t de Student, chi cuadrado, exponencial, binomial y Poisson, con su media y su varianza.', 'Probabilidades P(X ≤ a), P(X ≥ a), entre dos valores y, en las discretas, P(X = k) y con desigualdad estricta; cuantiles y valores críticos bilaterales.', 'Gráfica con el área (o las barras) que se pide sombreada.', 'Desarrollo como en clase: tipificación Z = (X − μ)/σ y Φ(z), fórmula de la binomial y de la Poisson término a término, y aproximación de la binomial por la normal con corrección de continuidad.'] },
+    ],
+    alterna: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: circuitos RLC en serie y en paralelo (o solo con algunos de los elementos) con impedancias complejas en forma binómica y polar, la corriente, la tensión o la corriente de cada elemento, las potencias activa, reactiva y aparente y el factor de potencia, con el desarrollo paso a paso.', 'Diagrama de fasores y ondas v(t) e i(t) desfasadas.', 'Resonancia: frecuencia de resonancia, factor de calidad y ancho de banda.', 'Corrección del factor de potencia: el condensador que hay que poner en paralelo y cuánto baja la corriente de la línea.'] },
+    ],
+    dinamica: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: bloque en un plano horizontal o inclinado con rozamiento estático y dinámico, una fuerza aplicada con ángulo y, si quieres, una masa colgando de una polea. Dice si el bloque se mueve o el rozamiento lo sujeta y da la normal, el rozamiento, la aceleración y la tensión, con el desarrollo paso a paso.', 'Máquina de Atwood, también con una polea con masa.', 'Dibujo con el diagrama de fuerzas a escala y la aceleración, y la velocidad y el tiempo al recorrer una distancia.'] },
+    ],
+    circuitos: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: escribe el circuito como una lista de resistencias, fuentes de tensión y fuentes de corriente entre nudos, y obtén los potenciales, la corriente y la potencia de cada elemento por el método de los nudos, con las ecuaciones de Kirchhoff, el sistema en forma matricial y el balance de potencias.', 'Equivalente de Thévenin y de Norton visto por la resistencia que elijas, y máxima transferencia de potencia.', 'Esquema del circuito con el potencial de cada nudo y el sentido de cada corriente.'] },
+    ],
+    'solido-rigido': [
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: momentos de inercia de esferas, cilindros, aros, varillas, discos y placas, con el teorema de Steiner y el radio de giro.', 'Rodadura por un plano inclinado: aceleración, velocidad al final, rozamiento necesario para que no deslice y qué pasa si no basta; comparación del tiempo que tarda cada cuerpo.', 'Polea con masa de la que cuelga un cuerpo: aceleración, tensión y balance de energía.', 'Conservación del momento angular, como la patinadora que encoge los brazos, con la variación de la energía cinética.'] },
+    ],
+    ondas: [
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ecuación de una onda armónica con ω y k en múltiplos de π, posición, velocidad y aceleración de un punto del medio y desfase entre dos puntos.', 'Ondas estacionarias en cuerdas y en tubos abiertos o cerrados: frecuencia de cada armónico, nodos y vientres, y velocidad en la cuerda con √(T/μ).', 'Efecto Doppler con la fuente y el observador moviéndose, y nivel sonoro en decibelios a distintas distancias y con varias fuentes.', 'Animación de la onda, de la onda estacionaria y de los frentes de onda del Doppler.'] },
+    ],
+  };
+  const de = (h) => ({ current: registros[h][0].v, log: registros[h] });
+  // Version.current y Version.log son los del simulador de electrostática
+  return { registros, de, ...de('electrostatica') };
+})();
+
+/* =====================================================================
+   Ondas mecánicas (sin DOM): onda armónica y su ecuación, ondas
+   estacionarias en cuerdas y tubos (armónicos, nodos y vientres), efecto
+   Doppler e intensidad y nivel sonoro.
+   Unidades del SI; la fase en radianes.
+   ===================================================================== */
+const Ondas = (() => {
+  const f = (x, d = 4) => {
+    if (!isFinite(x)) return '—';
+    if (Math.abs(x) < 1e-12) return '0';
+    const a = Math.abs(x);
+    const s = a >= 1e6 || a < 1e-3 ? x.toExponential(d - 1).replace(/\.?0+e/, 'e').replace('e', '·10^').replace(/\^([+-]?)(\d+)/, (_, sg, e) => `<sup>${sg === '-' ? '−' : ''}${+e}</sup>`) : String(+x.toPrecision(d));
+    return s.replace('.', ',').replace('-', '−');
+  };
+  const leeNum = (s) => leePi(s);
+  const leeSimple = (s) => +String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace('−', '-').replace(/[·x×*]10\^?([+\-]?\d+)/i, 'e$1');
+  // admite 'pi', 'π', 'pi/2', '3π/4'
+  function leePi(s) {
+    const t = String(s ?? '').trim().replace(/\s/g, '').replace(/pi/gi, 'π');
+    const m = t.match(/^([+\-−]?\d*(?:[.,]\d+)?)π(?:\/(\d+(?:[.,]\d+)?))?$/);
+    if (m) { const c = m[1] === '' || m[1] === '+' ? 1 : m[1] === '-' || m[1] === '−' ? -1 : leeSimple(m[1]); return (c * Math.PI) / (m[2] ? leeSimple(m[2]) : 1); }
+    return leeSimple(t);
+  }
+  const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
+  function lee(sc, k, nom, { opcional = false, signo = false, cero = false } = {}) {
+    if (vacio(sc[k])) { if (opcional) return null; throw new Error(`Falta ${nom}`); }
+    const v = leeNum(sc[k]);
+    if (!isFinite(v)) throw new Error(`${nom[0].toUpperCase() + nom.slice(1)} debe ser un número`);
+    if (!signo && (cero ? v < 0 : v <= 0)) throw new Error(`${nom[0].toUpperCase() + nom.slice(1)} debe ser ${cero ? 'positivo o cero' : 'mayor que 0'}`);
+    return v;
+  }
+  const PI = 'π';
+  // múltiplo sencillo de π (4π, π/2, 3π/4…) si lo es; si no, el número
+  function fpi(x) {
+    const r = x / Math.PI;
+    for (let q = 1; q <= 12; q++) {
+      const pn = Math.round(r * q);
+      if (pn && Math.abs(r * q - pn) < 1e-9 * Math.max(1, Math.abs(r * q))) {
+        const g = (a, b) => (b ? g(b, a % b) : a), d = g(Math.abs(pn), q), nn = pn / d, qq = q / d;
+        const num = `${nn < 0 ? '−' : ''}${Math.abs(nn) === 1 ? '' : Math.abs(nn)}π`;
+        return qq === 1 ? num : `${num}/${qq}`;
+      }
+    }
+    return f(x);
+  }
+
+  /* ---------- Onda armónica ---------- */
+  // sc: { A (m), f (Hz), v (m/s), sentido: '+'|'-', fase (rad), x0, t0 }
+  function armonica(sc) {
+    const A = lee(sc, 'A', 'la amplitud'), fr = lee(sc, 'f', 'la frecuencia'), v = lee(sc, 'v', 'la velocidad de propagación');
+    const fase = lee(sc, 'fase', 'la fase inicial', { opcional: true, signo: true }) ?? 0, mas = sc.sentido !== '-';
+    const T = 1 / fr, w = 2 * Math.PI * fr, lam = v / fr, k = (2 * Math.PI) / lam;
+    const sg = mas ? '−' : '+';
+    const ec = `y(x, t) = ${f(A)} sen(${fpi(w)}t ${sg} ${fpi(k)}x${fase ? ` ${fase < 0 ? '−' : '+'} ${fpi(Math.abs(fase))}` : ''})`;
+    const pasos = [
+      { t: 'Periodo, pulsación y longitud de onda', html: `T = 1/f = <b>${f(T)} s</b>, &nbsp; ω = 2πf = <b>${fpi(w)} rad/s</b>${fpi(w) !== f(w) ? ` ≈ ${f(w)}` : ''}<br>λ = v/f = ${f(v)}/${f(fr)} = <b>${f(lam)} m</b>, &nbsp; k = 2π/λ = <b>${fpi(k)} rad/m</b>${fpi(k) !== f(k) ? ` ≈ ${f(k)}` : ''} (comprobación: v = ω/k = ${f(w / k)} m/s)` },
+      { t: 'Ecuación de la onda', html: `Viaja hacia ${mas ? 'x positivas' : 'x negativas'}, así que el signo entre ωt y kx es ${mas ? '−' : '+'}:<br><b>${ec}</b> (SI)` },
+      { t: 'Velocidad y aceleración de un punto del medio', html: `v<sub>y</sub> = ∂y/∂t = Aω cos(ωt ${sg} kx + φ), &nbsp; máxima: Aω = <b>${f(A * w)} m/s</b><br>a<sub>y</sub> = −ω<sup>2</sup>y, &nbsp; máxima: Aω<sup>2</sup> = <b>${f(A * w * w)} m/s<sup>2</sup></b><br>No hay que confundirla con la velocidad de propagación, v = ${f(v)} m/s.` },
+    ];
+    let punto = null;
+    const x0 = lee(sc, 'x0', 'la posición x', { opcional: true, signo: true }), t0 = lee(sc, 't0', 'el instante t', { opcional: true, signo: true });
+    if (x0 !== null && t0 !== null) {
+      const ph = w * t0 + (mas ? -1 : 1) * k * x0 + fase, y = A * Math.sin(ph), vy = A * w * Math.cos(ph), ay = -w * w * y;
+      punto = { x0, t0, y, vy, ay, ph };
+      pasos.push({ t: `En x = ${f(x0)} m y t = ${f(t0)} s`, html: `Fase: ωt ${sg} kx + φ = ${fpi(w)}·${f(t0)} ${sg} ${fpi(k)}·${f(x0)}${fase ? ` + ${fpi(fase)}` : ''} = ${fpi(ph)} rad<br>y = <b>${f(y)} m</b>, &nbsp; v<sub>y</sub> = <b>${f(vy)} m/s</b>, &nbsp; a<sub>y</sub> = <b>${f(ay)} m/s<sup>2</sup></b>` });
+    }
+    const dx = lee(sc, 'dx', 'la distancia entre dos puntos', { opcional: true });
+    if (dx) pasos.push({ t: `Desfase entre dos puntos separados ${f(dx)} m`, html: `Δφ = kΔx = 2πΔx/λ = <b>${f(k * dx)} rad</b> ${fpi(k * dx) !== f(k * dx) ? `(= ${fpi(k * dx)} rad)` : ''}${Math.abs(((dx / lam) % 1)) < 1e-9 || Math.abs(((dx / lam) % 1) - 1) < 1e-9 ? ': están en fase' : Math.abs(((dx / lam) % 1) - 0.5) < 1e-9 ? ': están en oposición de fase' : ''}` });
+    return { modo: 'armonica', A, fr, v, T, w, lam, k, fase, mas, ec, punto, pasos };
+  }
+
+  /* ---------- Ondas estacionarias ---------- */
+  // sc: { medio: 'cuerda'|'abierto'|'cerrado', L, tension, mu (kg/m), vs (m/s, tubos), n }
+  function estacionaria(sc) {
+    const medio = ['cuerda', 'abierto', 'cerrado'].includes(sc.medio) ? sc.medio : 'cuerda', L = lee(sc, 'L', 'la longitud');
+    const n = Math.round(lee(sc, 'n', 'el número de armónico'));
+    if (n < 1 || n > 30) throw new Error('El armónico tiene que estar entre 1 y 30');
+    const pasos = [];
+    let v;
+    if (medio === 'cuerda') {
+      const T = lee(sc, 'tension', 'la tensión'), mu = lee(sc, 'mu', 'la densidad lineal');
+      v = Math.sqrt(T / mu);
+      pasos.push({ t: 'Velocidad de las ondas en la cuerda', html: `v = √(T/μ) = √(${f(T)}/${f(mu)}) = <b>${f(v)} m/s</b>` });
+    } else v = lee(sc, 'vs', 'la velocidad del sonido');
+    // modo n: cuerda y tubo abierto, λ = 2L/n; tubo cerrado, solo impares, λ = 4L/(2n − 1)
+    const m = medio === 'cerrado' ? 2 * n - 1 : n, lam = medio === 'cerrado' ? (4 * L) / m : (2 * L) / m, fn = v / lam;
+    const freq = (j) => (medio === 'cerrado' ? ((2 * j - 1) * v) / (4 * L) : (j * v) / (2 * L));
+    const cond = medio === 'cuerda' ? 'Los dos extremos fijos son nodos: caben un número entero de medias longitudes de onda, L = nλ/2.'
+      : medio === 'abierto' ? 'Los dos extremos abiertos son vientres de desplazamiento: también L = nλ/2.'
+      : 'El extremo cerrado es un nodo y el abierto un vientre: L = (2n − 1)λ/4, así que solo hay armónicos impares.';
+    pasos.push({ t: 'Condición de onda estacionaria', html: cond });
+    pasos.push({ t: medio === 'cerrado' ? `Modo ${n} (armónico ${m})` : `Armónico ${n}`, html: medio === 'cerrado'
+      ? `λ = 4L/(2n − 1) = 4·${f(L)}/${m} = <b>${f(lam)} m</b>, &nbsp; f = v/λ = (2n − 1)v/(4L) = <b>${f(fn)} Hz</b>`
+      : `λ<sub>${n}</sub> = 2L/n = 2·${f(L)}/${n} = <b>${f(lam)} m</b>, &nbsp; f<sub>${n}</sub> = nv/(2L) = ${n}·${f(v)}/(2·${f(L)}) = <b>${f(fn)} Hz</b>` });
+    pasos.push({ t: 'Primeras frecuencias', html: [1, 2, 3, 4, 5].map((j) => `${f(freq(j))} Hz`).join(', ') + ` … (fundamental ${f(freq(1))} Hz${medio === 'cerrado' ? '; solo múltiplos impares' : '; todas las múltiplos'})` });
+    // nodos de desplazamiento medidos desde x = 0 (en el tubo cerrado, el cerrado está en x = 0)
+    let nodos = [], vientres = [];
+    if (medio === 'cuerda') { for (let j = 0; j <= n; j++) nodos.push((j * lam) / 2); for (let j = 0; j < n; j++) vientres.push(((j + 0.5) * lam) / 2); }
+    else if (medio === 'abierto') { for (let j = 0; j < n; j++) nodos.push(((j + 0.5) * lam) / 2); for (let j = 0; j <= n; j++) vientres.push((j * lam) / 2); }
+    else { for (let j = 0; j < n; j++) nodos.push((j * lam) / 2); for (let j = 0; j < n; j++) vientres.push(((j + 0.5) * lam) / 2); }
+    pasos.push({ t: 'Nodos y vientres (de desplazamiento)', html: `${nodos.length} nodo${nodos.length === 1 ? '' : 's'} en x = ${nodos.map((x) => f(x, 3)).join(', ')} m<br>${vientres.length} vientre${vientres.length === 1 ? '' : 's'} en x = ${vientres.map((x) => f(x, 3)).join(', ')} m<br>Distancia entre nodos consecutivos: λ/2 = ${f(lam / 2)} m` });
+    return { modo: 'estacionaria', medio, L, v, n, m, lam, fn, nodos, vientres, freqs: [1, 2, 3, 4, 5].map(freq), pasos };
+  }
+
+  /* ---------- Efecto Doppler ---------- */
+  // sc: { f, vs (sonido), vF (fuente, + hacia el observador), vO (observador, + hacia la fuente) }
+  function doppler(sc) {
+    const fr = lee(sc, 'f', 'la frecuencia emitida'), v = lee(sc, 'vs', 'la velocidad del sonido');
+    const vF = lee(sc, 'vF', 'la velocidad de la fuente', { opcional: true, signo: true }) ?? 0, vO = lee(sc, 'vO', 'la velocidad del observador', { opcional: true, signo: true }) ?? 0;
+    if (vF >= v) throw new Error('La fuente va a la velocidad del sonido o más deprisa hacia el observador: se forma una onda de choque y la fórmula de Doppler no vale');
+    if (-vO >= v) throw new Error('El observador se aleja a la velocidad del sonido o más: no le llega la onda');
+    const fp = (fr * (v + vO)) / (v - vF);
+    const pasos = [
+      { t: 'Convenio de signos', html: `Velocidades positivas cuando fuente y observador se acercan el uno al otro: fuente ${vF > 0 ? 'se acerca' : vF < 0 ? 'se aleja' : 'quieta'} (v<sub>F</sub> = ${f(vF)} m/s), observador ${vO > 0 ? 'se acerca' : vO < 0 ? 'se aleja' : 'quieto'} (v<sub>O</sub> = ${f(vO)} m/s).` },
+      { t: 'Frecuencia que se percibe', html: `f′ = f (v + v<sub>O</sub>)/(v − v<sub>F</sub>) = ${f(fr)}·(${f(v)} + ${vO < 0 ? `(${f(vO)})` : f(vO)})/(${f(v)} − ${vF < 0 ? `(${f(vF)})` : f(vF)}) = <b>${f(fp)} Hz</b><br>${fp > fr ? 'Más aguda: se acercan.' : fp < fr ? 'Más grave: se alejan.' : 'Igual: no hay movimiento relativo a lo largo de la línea que los une.'}` },
+      { t: 'Longitud de onda', html: `Delante de la fuente: λ′ = (v − v<sub>F</sub>)/f = <b>${f((v - vF) / fr)} m</b> (sin moverse sería ${f(v / fr)} m)` },
+    ];
+    return { modo: 'doppler', fr, v, vF, vO, fp, pasos };
+  }
+
+  /* ---------- Intensidad y nivel sonoro ---------- */
+  // sc: { P (W), r1 (m), r2 (m, opcional), N (fuentes iguales, opcional) }
+  const I0 = 1e-12;
+  function sonido(sc) {
+    const P = lee(sc, 'P', 'la potencia'), r1 = lee(sc, 'r1', 'la distancia'), r2 = lee(sc, 'r2', 'la segunda distancia', { opcional: true });
+    const N = vacio(sc.N) ? 1 : Math.round(lee(sc, 'N', 'el número de fuentes'));
+    const I1 = (N * P) / (4 * Math.PI * r1 * r1), b1 = 10 * Math.log10(I1 / I0);
+    const pasos = [
+      { t: 'Intensidad (fuente puntual que emite igual en todas direcciones)', html: `I = ${N > 1 ? 'N·' : ''}P/(4πr<sup>2</sup>) = ${N > 1 ? `${N}·` : ''}${f(P)}/(4π·${f(r1)}<sup>2</sup>) = <b>${f(I1)} W/m<sup>2</sup></b>` },
+      { t: 'Nivel de intensidad sonora', html: `β = 10 log(I/I<sub>0</sub>), con I<sub>0</sub> = 10<sup>−12</sup> W/m<sup>2</sup> (umbral de audición): β = 10 log(${f(I1)}/10<sup>−12</sup>) = <b>${f(b1)} dB</b>${N > 1 ? `<br>Con ${N} fuentes iguales el nivel sube 10 log ${N} = ${f(10 * Math.log10(N))} dB respecto a una sola, no ${N} veces.` : ''}` },
+    ];
+    let I2 = null, b2 = null;
+    if (r2) {
+      I2 = (N * P) / (4 * Math.PI * r2 * r2); b2 = 10 * Math.log10(I2 / I0);
+      pasos.push({ t: `A ${f(r2)} m`, html: `I va con 1/r<sup>2</sup>: I<sub>2</sub> = I<sub>1</sub>(r<sub>1</sub>/r<sub>2</sub>)<sup>2</sup> = <b>${f(I2)} W/m<sup>2</sup></b>, β<sub>2</sub> = <b>${f(b2)} dB</b><br>Δβ = 20 log(r<sub>1</sub>/r<sub>2</sub>) = ${f(b2 - b1)} dB (cada vez que se dobla la distancia baja unos 6 dB)` });
+    }
+    return { modo: 'sonido', P, r1, r2, N, I1, b1, I2, b2, pasos };
+  }
+
+  function resolver(sc) {
+    if (sc.modo === 'estacionaria') return estacionaria(sc);
+    if (sc.modo === 'doppler') return doppler(sc);
+    if (sc.modo === 'sonido') return sonido(sc);
+    return armonica(sc);
+  }
+
+  const ejemplos = [
+    { clave: 'armonica', nombre: 'Onda en una cuerda: ecuación y un punto', sc: { modo: 'armonica', A: '0.05', f: '2', v: '4', sentido: '+', fase: '', x0: '0.5', t0: '0.25', dx: '1' } },
+    { clave: 'armonica-izq', nombre: 'Onda que viaja hacia la izquierda', sc: { modo: 'armonica', A: '0.02', f: '50', v: '100', sentido: '-', fase: 'π/2', x0: '', t0: '', dx: '' } },
+    { clave: 'guitarra', nombre: 'Cuerda de guitarra (tercer armónico)', sc: { modo: 'estacionaria', medio: 'cuerda', L: '0.65', tension: '70', mu: '0.0011', n: '3' } },
+    { clave: 'tubo-abierto', nombre: 'Tubo abierto por los dos extremos', sc: { modo: 'estacionaria', medio: 'abierto', L: '0.85', vs: '340', n: '2' } },
+    { clave: 'tubo-cerrado', nombre: 'Tubo cerrado por un extremo', sc: { modo: 'estacionaria', medio: 'cerrado', L: '0.85', vs: '340', n: '2' } },
+    { clave: 'ambulancia', nombre: 'Ambulancia que se acerca', sc: { modo: 'doppler', f: '700', vs: '340', vF: '25', vO: '0' } },
+    { clave: 'cruce', nombre: 'Coche que se aleja de un ciclista que va hacia él', sc: { modo: 'doppler', f: '500', vs: '340', vF: '-30', vO: '8' } },
+    { clave: 'altavoz', nombre: 'Nivel sonoro de un altavoz', sc: { modo: 'sonido', P: '0.1', r1: '2', r2: '8', N: '' } },
+  ];
+
+  return { resolver, armonica, estacionaria, doppler, sonido, ejemplos, f };
+})();
+
+/* =====================================================================
+   Ondas mecánicas: interfaz (modo, datos, resultado, animación y
+   desarrollo). El cálculo está en ondas/fisica.js (Ondas).
+   ===================================================================== */
+(() => {
+  const $ = (q) => document.querySelector(q);
+  const O = Ondas, f = O.f, CLAVE = 'ondas-v1';
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const copia = (o) => JSON.parse(JSON.stringify(o));
+  const txt = (h) => String(h).replace(/<sup>/g, '^').replace(/<[^>]+>/g, '');
+  const MODOS = [['armonica', 'Onda armónica'], ['estacionaria', 'Ondas estacionarias'], ['doppler', 'Efecto Doppler'], ['sonido', 'Intensidad y nivel sonoro']];
+
+  let sc = copia(O.ejemplos[0].sc);
+  try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && MODOS.some(([k]) => k === g.modo)) sc = g; } catch (e) {}
+  const guarda = () => { try { localStorage.setItem(CLAVE, JSON.stringify(sc)); } catch (e) {} };
+  let sol = null, col = {}, anda = true;
+
+  /* ---------- Formulario ---------- */
+  const fila = (k, nom, un) => `<label for="f-${k}">${nom}${un ? ` <small>${un}</small>` : ''}</label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc[k] ?? '')}" inputmode="decimal" autocomplete="off">`;
+  const opciones = (k, lista) => lista.map(([v, t]) => `<option value="${v}"${sc[k] === v ? ' selected' : ''}>${t}</option>`).join('');
+  const sep = (t) => `<div class="sep">${t}</div>`;
+  function formulario() {
+    let h = `<label for="f-modo">Qué calcular</label><select id="f-modo" class="in" data-k="modo">${opciones('modo', MODOS)}</select>`;
+    if (sc.modo === 'armonica') {
+      h += fila('A', 'Amplitud A', 'm') + fila('f', 'Frecuencia f', 'Hz') + fila('v', 'Velocidad de propagación v', 'm/s') + `<label for="f-sentido">Sentido</label><select id="f-sentido" class="in" data-k="sentido">${opciones('sentido', [['+', 'Hacia x positivas'], ['-', 'Hacia x negativas']])}</select>` + fila('fase', 'Fase inicial φ', 'rad');
+      h += sep('Un punto del medio (opcional)') + fila('x0', 'Posición x', 'm') + fila('t0', 'Instante t', 's') + fila('dx', 'Desfase con un punto a Δx', 'm');
+      $('#nota').textContent = 'La fase admite π: por ejemplo π/2 o 3pi/4.';
+    } else if (sc.modo === 'estacionaria') {
+      h += `<label for="f-medio">Medio</label><select id="f-medio" class="in" data-k="medio">${opciones('medio', [['cuerda', 'Cuerda con los dos extremos fijos'], ['abierto', 'Tubo abierto por los dos extremos'], ['cerrado', 'Tubo cerrado por un extremo']])}</select>` + fila('L', 'Longitud L', 'm');
+      h += sc.medio === 'cuerda' ? fila('tension', 'Tensión T', 'N') + fila('mu', 'Densidad lineal μ', 'kg/m') : fila('vs', 'Velocidad del sonido', 'm/s');
+      h += fila('n', sc.medio === 'cerrado' ? 'Modo n (armónico 2n − 1)' : 'Armónico n', '');
+      $('#nota').textContent = sc.medio === 'cuerda' ? 'μ es la masa por unidad de longitud: 1,1 g/m = 0,0011 kg/m.' : 'En el dibujo se ve el desplazamiento del aire: nodos donde no se mueve.';
+    } else if (sc.modo === 'doppler') {
+      h += fila('f', 'Frecuencia que emite la fuente', 'Hz') + fila('vs', 'Velocidad del sonido', 'm/s') + fila('vF', 'Velocidad de la fuente', 'm/s') + fila('vO', 'Velocidad del observador', 'm/s');
+      $('#nota').textContent = 'Positivas si se acercan el uno al otro, negativas si se alejan.';
+    } else {
+      h += fila('P', 'Potencia de la fuente', 'W') + fila('r1', 'Distancia r₁', 'm') + fila('r2', 'Otra distancia r₂', 'm') + fila('N', 'Número de fuentes iguales', '');
+      $('#nota').textContent = 'Fuente puntual que emite igual en todas las direcciones, sin reflexiones ni absorción.';
+    }
+    $('#campos').innerHTML = h;
+  }
+  $('#campos').addEventListener('input', (e) => { const t = e.target; if (t.tagName !== 'INPUT') return; sc[t.dataset.k] = t.value; $('#ejemplos').value = ''; calcula(); });
+  $('#campos').addEventListener('change', (e) => {
+    const t = e.target;
+    if (t.tagName !== 'SELECT') return;
+    sc[t.dataset.k] = t.value;
+    if (t.dataset.k === 'modo') sc = copia(O.ejemplos.find((x) => x.sc.modo === t.value).sc);
+    if (t.dataset.k === 'medio') { const ej = O.ejemplos.find((x) => x.sc.medio === t.value); for (const [k, v] of Object.entries(ej.sc)) if (vacioC(sc[k])) sc[k] = v; }
+    $('#ejemplos').value = ''; formulario(); calcula();
+  });
+  const vacioC = (v) => v === undefined || v === null || String(v).trim() === '';
+
+  /* ---------- Ejemplos ---------- */
+  const sel = $('#ejemplos');
+  sel.innerHTML = '<option value="">Ejemplos…</option>' + O.ejemplos.map((e) => `<option value="${e.clave}">${e.nombre}</option>`).join('');
+  sel.addEventListener('change', () => { if (sel.value) abrirEjemplo(sel.value); });
+  function abrirEjemplo(clave) {
+    const e = O.ejemplos.find((x) => x.clave === clave);
+    if (!e) return;
+    sc = copia(e.sc);
+    formulario(); calcula(); sel.value = clave;
+  }
+
+  /* ---------- Cálculo ---------- */
+  const dato = (t, v) => `<div><span>${t}</span>${v}</div>`;
+  function calcula() {
+    const err = $('#error');
+    try { sol = O.resolver(sc); } catch (e) { sol = null; err.textContent = e.message; err.hidden = false; $('#res').innerHTML = ''; $('#pasos').innerHTML = ''; $('#leyenda').textContent = ''; dibuja(); return; }
+    err.hidden = true; guarda();
+    let h = '', ley = '';
+    if (sol.modo === 'armonica') {
+      h = dato('Ecuación', `<b>${sol.ec}</b>`) + dato('λ y T', `λ = ${f(sol.lam)} m, T = ${f(sol.T)} s`) + (sol.punto ? dato(`Punto x = ${f(sol.punto.x0)} m, t = ${f(sol.punto.t0)} s`, `y = ${f(sol.punto.y)} m, v<sub>y</sub> = ${f(sol.punto.vy)} m/s`) : '');
+      ley = 'Animación a cámara lenta: un periodo dura unos 3 s. El punto rojo es el de x pedido.';
+    } else if (sol.modo === 'estacionaria') {
+      h = dato(sol.medio === 'cerrado' ? `Modo ${sol.n} (armónico ${sol.m})` : `Armónico ${sol.n}`, `f = <b>${f(sol.fn)} Hz</b>, λ = ${f(sol.lam)} m`) + dato('Fundamental', `${f(sol.freqs[0])} Hz`) + dato('Velocidad', `v = ${f(sol.v)} m/s`);
+      ley = 'Nodos en rojo y vientres en azul; en gris, la envolvente.';
+    } else if (sol.modo === 'doppler') {
+      h = dato('Frecuencia que se oye', `f′ = <b>${f(sol.fp)} Hz</b>`) + dato('Cambio', `${sol.fp >= sol.fr ? '+' : '−'}${f(Math.abs(sol.fp - sol.fr))} Hz (${f((100 * (sol.fp - sol.fr)) / sol.fr, 3)} %)`);
+      ley = 'Frentes de onda de la fuente (izquierda) que llegan al observador (derecha), a cámara lenta.';
+    } else {
+      h = dato(`A ${f(sol.r1)} m`, `I = ${f(sol.I1)} W/m<sup>2</sup>, <b>β = ${f(sol.b1)} dB</b>`) + (sol.r2 ? dato(`A ${f(sol.r2)} m`, `I = ${f(sol.I2)} W/m<sup>2</sup>, <b>β = ${f(sol.b2)} dB</b>`) : '');
+      ley = 'Escala de niveles sonoros con algunos sonidos de referencia.';
+    }
+    $('#res').innerHTML = h; $('#leyenda').textContent = ley;
+    $('#play').hidden = sol.modo === 'sonido';
+    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('');
+    dibuja();
+  }
+  $('#play').addEventListener('click', () => { anda = !anda; $('#play').textContent = anda ? '⏸ Pausa' : '▶ Seguir'; if (anda) bucle(); });
+
+  /* ---------- Dibujo ---------- */
+  function colores() { const cs = getComputedStyle(document.documentElement); for (const k of ['--ink', '--muted', '--line', '--accent', '--bg', '--peso', '--normal', '--cuerpo', '--suelo']) col[k] = cs.getPropertyValue(k).trim(); }
+  function texto(g, x, y, t, color = col['--ink'], al = 'center', peso = '') { g.font = `${peso}12px "IBM Plex Sans", system-ui, sans-serif`; g.fillStyle = color; g.textAlign = al; g.textBaseline = 'middle'; g.fillText(t, x, y); }
+  let tAnim = 0;
+  function dibuja() {
+    const c = $('#escena'), dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
+    if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
+    const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h); g.lineCap = 'round'; g.lineJoin = 'round';
+    if (!sol) return;
+    if (!col['--ink']) colores();
+    const fase = tAnim; // en periodos
+    if (sol.modo === 'armonica') {
+      const m = 20, cy = h / 2, amp = h * 0.32, X = 2 * sol.lam, sx = (w - 2 * m) / X;
+      g.strokeStyle = col['--line']; g.lineWidth = 1; g.beginPath(); g.moveTo(m, cy); g.lineTo(w - m, cy); g.stroke();
+      for (let j = 0; j <= 4; j++) { const x = m + (j * sol.lam) / 2 * sx; g.beginPath(); g.moveTo(x, cy - 4); g.lineTo(x, cy + 4); g.stroke(); texto(g, x, cy + amp + 18, ['0', 'λ/2', 'λ', '3λ/2', '2λ'][j], col['--muted']); }
+      const y = (x) => Math.sin(2 * Math.PI * fase + (sol.mas ? -1 : 1) * sol.k * x + sol.fase);
+      g.strokeStyle = col['--accent']; g.lineWidth = 2.4; g.beginPath();
+      for (let i = 0; i <= 400; i++) { const x = (X * i) / 400, py = cy - amp * y(x); i ? g.lineTo(m + x * sx, py) : g.moveTo(m + x * sx, py); }
+      g.stroke();
+      if (sol.punto && sol.punto.x0 >= 0 && sol.punto.x0 <= X) { const px = m + sol.punto.x0 * sx, py = cy - amp * y(sol.punto.x0); g.fillStyle = col['--peso']; g.beginPath(); g.arc(px, py, 5, 0, 2 * Math.PI); g.fill(); }
+      // sentido de propagación
+      const yf = 18, dir = sol.mas ? 1 : -1;
+      g.strokeStyle = col['--muted']; g.fillStyle = col['--muted']; g.lineWidth = 1.5; g.beginPath(); g.moveTo(w / 2 - 30 * dir, yf); g.lineTo(w / 2 + 30 * dir, yf); g.stroke();
+      g.beginPath(); g.moveTo(w / 2 + 36 * dir, yf); g.lineTo(w / 2 + 28 * dir, yf - 5); g.lineTo(w / 2 + 28 * dir, yf + 5); g.closePath(); g.fill();
+      texto(g, w / 2 + 48 * dir, yf, `v = ${txt(f(sol.v))} m/s`, col['--muted'], dir > 0 ? 'left' : 'right');
+      texto(g, m, cy - amp - 10, `A = ${txt(f(sol.A))} m`, col['--muted'], 'left');
+    } else if (sol.modo === 'estacionaria') {
+      const m = 24, cy = h / 2, amp = h * 0.3, L = sol.L, sx = (w - 2 * m) / L;
+      // tubos: paredes
+      if (sol.medio !== 'cuerda') {
+        g.fillStyle = col['--cuerpo']; g.fillRect(m, cy - amp - 16, w - 2 * m, 8); g.fillRect(m, cy + amp + 8, w - 2 * m, 8);
+        if (sol.medio === 'cerrado') g.fillRect(m - 8, cy - amp - 16, 8, 2 * amp + 32);
+      } else { g.fillStyle = col['--suelo']; g.fillRect(m - 6, cy - 30, 6, 60); g.fillRect(w - m, cy - 30, 6, 60); }
+      const k = (2 * Math.PI) / sol.lam, forma = (x) => (sol.medio === 'cuerda' ? Math.sin(k * x) : sol.medio === 'abierto' ? Math.cos(k * x) : Math.sin(k * x));
+      g.strokeStyle = col['--line']; g.lineWidth = 1.2;
+      for (const s of [1, -1]) { g.beginPath(); for (let i = 0; i <= 300; i++) { const x = (L * i) / 300, py = cy - s * amp * forma(x); i ? g.lineTo(m + x * sx, py) : g.moveTo(m + x * sx, py); } g.stroke(); }
+      const c2 = Math.cos(2 * Math.PI * fase);
+      g.strokeStyle = col['--accent']; g.lineWidth = 2.4; g.beginPath();
+      for (let i = 0; i <= 300; i++) { const x = (L * i) / 300, py = cy - amp * forma(x) * c2; i ? g.lineTo(m + x * sx, py) : g.moveTo(m + x * sx, py); }
+      g.stroke();
+      for (const x of sol.nodos) { g.fillStyle = col['--peso']; g.beginPath(); g.arc(m + x * sx, cy, 4.5, 0, 2 * Math.PI); g.fill(); }
+      for (const x of sol.vientres) { g.fillStyle = col['--accent']; g.beginPath(); g.arc(m + x * sx, cy, 3, 0, 2 * Math.PI); g.fill(); }
+      texto(g, w / 2, h - 10, `L = ${txt(f(sol.L))} m · λ = ${txt(f(sol.lam))} m · f = ${txt(f(sol.fn))} Hz`, col['--muted']);
+    } else if (sol.modo === 'doppler') {
+      // a escala: la fuente va de izquierda a derecha si se acerca; el observador a la derecha
+      const cy = h / 2, sx0 = w * 0.3, ox = w * 0.82, pxs = Math.min(w, h) * 0.08, beta = sol.vF / sol.v;
+      const t = (fase * 3) % 9, xF = (tt) => sx0 + beta * pxs * tt;
+      g.lineWidth = 1.5;
+      for (let j = Math.floor(t); j >= 0; j--) {
+        const r = (t - j) * pxs; if (r <= 0) continue;
+        g.strokeStyle = col['--accent']; g.globalAlpha = Math.max(0.15, 1 - (t - j) / 9); g.beginPath(); g.arc(xF(j), cy, r, 0, 2 * Math.PI); g.stroke();
+      }
+      g.globalAlpha = 1;
+      g.fillStyle = col['--peso']; g.beginPath(); g.arc(xF(t), cy, 7, 0, 2 * Math.PI); g.fill(); texto(g, xF(t), cy + 20, 'fuente', col['--peso']);
+      g.fillStyle = col['--normal']; g.beginPath(); g.arc(ox, cy, 7, 0, 2 * Math.PI); g.fill(); texto(g, ox, cy + 20, 'observador', col['--normal']);
+      texto(g, 12, 16, `f = ${txt(f(sol.fr))} Hz → f′ = ${txt(f(sol.fp))} Hz`, col['--ink'], 'left', '600 ');
+    } else {
+      const m = 30, y = h / 2, x = (b) => m + (Math.max(0, Math.min(140, b)) / 140) * (w - 2 * m);
+      const grad = g.createLinearGradient(m, 0, w - m, 0); grad.addColorStop(0, col['--normal']); grad.addColorStop(0.6, col['--accent']); grad.addColorStop(1, col['--peso']);
+      g.fillStyle = grad; g.fillRect(m, y - 6, w - 2 * m, 12);
+      const ref = [[0, 'umbral'], [30, 'susurro'], [60, 'conversación'], [85, 'tráfico'], [110, 'concierto'], [130, 'dolor']];
+      ref.forEach(([b, t], i) => { g.strokeStyle = col['--muted']; g.lineWidth = 1; g.beginPath(); g.moveTo(x(b), y + 8); g.lineTo(x(b), y + 16); g.stroke(); texto(g, x(b), y + 26 + (i % 2) * 14, `${b} dB ${t}`, col['--muted'], i ? 'center' : 'left'); });
+      [[sol.b1, sol.r1], [sol.b2, sol.r2]].forEach(([b, r], i) => {
+        if (b === null || b === undefined) return;
+        g.fillStyle = col['--ink']; g.beginPath(); g.moveTo(x(b), y - 9); g.lineTo(x(b) - 7, y - 21); g.lineTo(x(b) + 7, y - 21); g.closePath(); g.fill();
+        g.strokeStyle = col['--muted']; g.lineWidth = 1; g.beginPath(); g.moveTo(x(b), y - 21); g.lineTo(x(b), y - 28 - i * 18); g.stroke();
+        texto(g, x(b), y - 34 - i * 18, `${txt(f(b, 3))} dB a ${txt(f(r))} m`, col['--ink'], 'center', '600 ');
+      });
+    }
+  }
+  let ultimo = performance.now();
+  function bucle() {
+    const ahora = performance.now(), dt = (ahora - ultimo) / 1000; ultimo = ahora;
+    if (anda && sol && sol.modo !== 'sonido') { tAnim += dt / 3; dibuja(); requestAnimationFrame(bucle); } else if (anda) requestAnimationFrame(bucle);
+  }
+  window.addEventListener('resize', dibuja);
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { colores(); dibuja(); });
+
+  const ver = $('#ver'); if (ver) ver.textContent = Version.de('ondas').current;
+  formulario(); colores(); calcula(); requestAnimationFrame(bucle);
+  window.OndasApp = { abrirEjemplo, resultado: () => sol && { modo: sol.modo, ec: sol.ec, fn: sol.fn, fp: sol.fp, b1: sol.b1 }, estado: () => copia(sc), pausa: () => { anda = false; } };
+})();
+
+</script>
+</html>

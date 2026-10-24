@@ -79,4 +79,6 @@ if [ "$1" != privado ]; then
     version.js circuitos/fisica.js circuitos/app.js
   herramienta solido-rigido ../publico/fisica/solido-rigido/index.html "Sólido rígido" "Calculadora de sólido rígido: momentos de inercia con el teorema de Steiner, rodadura por un plano inclinado, polea con masa y conservación del momento angular, paso a paso" \
     version.js solido-rigido/fisica.js solido-rigido/app.js
+  herramienta ondas ../publico/fisica/ondas/index.html "Ondas mecánicas" "Calculadora de ondas: ecuación de la onda armónica, ondas estacionarias en cuerdas y tubos, efecto Doppler e intensidad y nivel sonoro, con animación y paso a paso" \
+    version.js ondas/fisica.js ondas/app.js
 fi
