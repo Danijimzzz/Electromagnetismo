@@ -303,7 +303,7 @@ body.dropping .main { outline: 3px dashed var(--accent); outline-offset: -8px }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#111619; --panel:#182025; --ink:#e3e8ea; --muted:#94a0a8; --line:#2a343b; --accent:#ef7a62; --accent-soft:color-mix(in srgb, #ef7a62 16%, #182025); --marca:#4dbcb0; color-scheme:dark } }
 :root[data-theme="dark"] { --bg:#111619; --panel:#182025; --ink:#e3e8ea; --muted:#94a0a8; --line:#2a343b; --accent:#ef7a62; --accent-soft:color-mix(in srgb, #ef7a62 16%, #182025); --marca:#4dbcb0; color-scheme:dark }
 header.top { display:flex; align-items:center; gap:8px 20px; flex-wrap:wrap; padding:12px clamp(16px,3vw,28px); background:var(--panel); border-bottom:1px solid var(--line) }
-header.top .logo { font:600 18px var(--f-math); white-space:nowrap; color:var(--ink); text-decoration:none } header.top .logo i { color:var(--marca) }
+header.top .logo { font:600 18px var(--f-math); margin:0; white-space:nowrap; color:var(--ink); text-decoration:none } header.top .logo i { color:var(--marca) }
 header.top nav { display:flex; gap:4px 16px; font-size:14px; overflow-x:auto; max-width:100%; scrollbar-width:none }
 header.top nav a { white-space:nowrap; padding:2px 0; color:var(--muted); text-decoration:none } header.top nav a:hover { color:var(--ink) }
 header.top nav a[aria-current] { color:var(--ink); font-weight:600; box-shadow:inset 0 -2px 0 var(--accent) }
@@ -324,15 +324,33 @@ h1 { font:600 24px/1.25 var(--f-ui) }
 .destacado h2 { color:var(--accent) }
 .resumen div { background:var(--accent-soft) }
 .sep { color:var(--accent) }
-@media (max-width:700px) { header.top form { display:none } h1 { font-size:21px } }
+body.bib-ejemplos select[id^="ejemplo"] { display:none }
+@media (max-width:700px) { header.top form { display:none } h1 { font-size:21px }
+  .miga-izq, .miga-der, .miga::after { order:-1 } .miga::after { content:''; flex-basis:100%; height:0 } }
 
-.main { padding-top:0 }
-.main > header.top { margin:0 calc(-1 * max(16px, env(safe-area-inset-right, 0px))) 12px -20px }
-.app.closed .main > header.top { margin-left:calc(-1 * max(16px, env(safe-area-inset-left, 0px))) }
-.main > .miga { margin-bottom:8px }</style>
+.main, .app:not(.closed) .main { padding:0 }
+@media (min-width:901px) { .app:not(.closed) { grid-template-columns:290px minmax(0,1fr) } }
+.main > .wrap { max-width:1300px; margin:0 auto; padding:16px clamp(16px,3vw,24px) 32px }
+#side-open, .app.closed #side-open { display:inline-flex; align-items:center; gap:6px; width:auto; height:auto; font:600 13.5px var(--f-ui); color:var(--ink); background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:6px 12px; cursor:pointer; white-space:nowrap }
+#side-open:hover, .app:not(.closed) #side-open { border-color:var(--accent); color:var(--accent) }
+.miga-der .toggle { font:600 13.5px var(--f-ui); border-radius:8px; padding:6px 12px; gap:6px }
+.miga-der .toggle input { position:absolute; opacity:0; width:1px; height:1px; pointer-events:none }
+.miga-der .toggle:has(input:checked) { background:var(--accent); border-color:var(--accent); color:var(--panel) }
+.miga-der .toggle:has(input:focus-visible) { outline:2px solid var(--accent); outline-offset:1px }
+.main .top { margin-bottom:12px }
+.main .top .title-in { font:600 24px/1.25 var(--f-ui); flex:1 1 300px; margin-left:-8px }
+.main .top .tools { flex-basis:100% }
+.side-h .logo { font:600 15px var(--f-ui) }
+#side-close { font-size:20px; line-height:1; color:var(--muted) }
+@media (max-width:700px) { .main .top .title-in { font-size:21px } }</style>
+<script>document.addEventListener('click', (e) => {
+  if (!e.target.closest('#side-open')) return;
+  const app = document.getElementById('app'), side = document.getElementById('side');
+  if (app.classList.contains('mobile-open') || (!app.classList.contains('closed') && getComputedStyle(side).position !== 'fixed')) { e.stopImmediatePropagation(); document.getElementById('side-close').click(); }
+}, true);</script>
 <div class="app" id="app">
   <aside class="side" id="side" aria-label="Problemas">
-    <div class="side-h"><span class="logo">Simulador de <i>Electrostática</i></span><button id="side-close" class="iconbtn" aria-label="Cerrar barra lateral" title="Cerrar barra lateral"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/></svg></button></div>
+    <div class="side-h"><span class="logo">Mis ejercicios</span><button id="side-close" class="iconbtn" aria-label="Cerrar barra lateral" title="Cerrar barra lateral">×</button></div>
     <div class="side-act">
       <a href="../../" class="side-btn" data-solo-web><span class="ic">←</span>Todas las herramientas</a>
       <button id="new" class="side-btn"><span class="ic">+</span>Nuevo problema</button>
@@ -352,15 +370,15 @@ h1 { font:600 24px/1.25 var(--f-ui) }
   <div class="scrim" id="scrim"></div>
   <main class="main">
 <header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><nav aria-label="Asignaturas"><a href="../../">Inicio</a><a href="../../electromagnetismo/" aria-current="page">Electromagnetismo</a><a href="../../fisica/">Física general</a><a href="../../quimica/">Química</a><a href="../../matematicas/">Matemáticas</a><a href="../../estadistica/">Estadística</a><a href="../../circuitos/">Circuitos</a></nav><form action="../../" role="search"><input class="buscar" type="search" name="q" placeholder="Buscar: Biot-Savart, molaridad…" aria-label="Buscar herramientas"></form></header>
-<nav class="miga" aria-label="Estás en"><span class="miga-izq"></span><span class="miga-ico" aria-hidden="true">E</span><a href="../">Electromagnetismo</a><span aria-hidden="true">›</span><span>Electrostática</span><span class="miga-der"></span></nav>
+<div class="wrap">
+<nav class="miga" aria-label="Estás en"><span class="miga-izq"><button id="side-open" type="button" aria-controls="side" title="Tus problemas y los ejercicios de ejemplo"><span aria-hidden="true">☰</span> Mis ejercicios</button></span><span class="miga-ico" aria-hidden="true">E</span><a href="../">Electromagnetismo</a><span aria-hidden="true">›</span><span>Electrostática</span><span class="miga-der"><label class="toggle" title="Oculta las soluciones para que escribas tu respuesta y la compruebes"><input type="checkbox" id="practice"><span aria-hidden="true">✎</span> Modo práctica</label></span></nav>
     <div class="top">
-      <button id="side-open" class="iconbtn" aria-label="Abrir barra lateral" title="Abrir barra lateral"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/></svg></button>
       <input id="title" class="title-in" aria-label="Título del problema" placeholder="Título del problema" autocomplete="off">
       <span class="origin" id="origin"></span>
       <div class="tools">
         <select id="mode" class="in" aria-label="Tipo de cálculo"><option value="sym">Simbólico</option><option value="si">Numérico SI</option></select>
         <span class="unitbox">Unidad <input id="unit" class="in" aria-label="Unidad de longitud"></span>
-        <label class="toggle" title="Oculta las soluciones para que escribas tu respuesta y la compruebes"><input type="checkbox" id="practice"> Modo práctica</label>
+        
         <button id="help" class="btn g-help" title="Guía de uso (F1)" aria-label="Guía de uso">?</button>
         <span class="sep" aria-hidden="true"></span>
         <button id="undo" class="btn" title="Deshacer (Ctrl+Z)" aria-label="Deshacer">↶</button>
@@ -417,7 +435,8 @@ h1 { font:600 24px/1.25 var(--f-ui) }
     </section>
   </div>
 </div>
-  </main>
+  </div>
+</main>
 </div>
 <div id="flash" hidden></div>
 <dialog id="guide" class="guide" aria-labelledby="guide-t">
@@ -569,6 +588,7 @@ h1 { font:600 24px/1.25 var(--f-ui) }
 const Version = (() => {
   const registros = {
     web: [
+      { v: '0.44.2', fecha: '2026-10-24', cambios: ['Electrostática se ve ya como las demás herramientas: el contenido centrado con márgenes, el título encima de los botones y «Mis ejercicios» y «Modo práctica» junto a la ruta.', 'Los ejercicios de ejemplo están solo en la barra lateral de Mis ejercicios: se quita el desplegable «Ejemplos…» de los datos.', 'En el móvil, los botones Mis ejercicios y Modo práctica van en su propia fila, encima de la ruta.'] },
       { v: '0.44.1', fecha: '2026-10-24', cambios: ['El simulador de electrostática también tiene el diseño común: la barra de arriba con las asignaturas y el buscador, la ruta «Electromagnetismo › Electrostática» y el color de Electromagnetismo.'] },
       { v: '0.44', fecha: '2026-10-24', cambios: ['Todas las herramientas tienen el mismo diseño: arriba, la misma barra que la portada, con las asignaturas y el buscador, y cada herramienta lleva el color de su asignatura. Encima del título se ve en qué asignatura estás, con Mis ejercicios a la izquierda y Modo práctica a la derecha.', 'Mis ejercicios: la barra lateral también tiene los ejercicios de ejemplo de cada herramienta, como en el simulador de electrostática.'] },
       { v: '0.43', fecha: '2026-10-24', cambios: ['Nueva herramienta: Derivadas e integrales, en Matemáticas.'] },

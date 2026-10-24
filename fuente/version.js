@@ -11,6 +11,7 @@
 const Version = (() => {
   const registros = {
     web: [
+      { v: '0.44.2', fecha: '2026-10-24', cambios: ['Electrostática se ve ya como las demás herramientas: el contenido centrado con márgenes, el título encima de los botones y «Mis ejercicios» y «Modo práctica» junto a la ruta.', 'Los ejercicios de ejemplo están solo en la barra lateral de Mis ejercicios: se quita el desplegable «Ejemplos…» de los datos.', 'En el móvil, los botones Mis ejercicios y Modo práctica van en su propia fila, encima de la ruta.'] },
       { v: '0.44.1', fecha: '2026-10-24', cambios: ['El simulador de electrostática también tiene el diseño común: la barra de arriba con las asignaturas y el buscador, la ruta «Electromagnetismo › Electrostática» y el color de Electromagnetismo.'] },
       { v: '0.44', fecha: '2026-10-24', cambios: ['Todas las herramientas tienen el mismo diseño: arriba, la misma barra que la portada, con las asignaturas y el buscador, y cada herramienta lleva el color de su asignatura. Encima del título se ve en qué asignatura estás, con Mis ejercicios a la izquierda y Modo práctica a la derecha.', 'Mis ejercicios: la barra lateral también tiene los ejercicios de ejemplo de cada herramienta, como en el simulador de electrostática.'] },
       { v: '0.43', fecha: '2026-10-24', cambios: ['Nueva herramienta: Derivadas e integrales, en Matemáticas.'] },
