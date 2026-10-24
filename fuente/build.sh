@@ -50,7 +50,7 @@ if [ "$1" != privado ]; then
   herramienta tabla-periodica ../publico/quimica/tabla-periodica/index.html "Tabla periódica interactiva" "Ficha de cada elemento con masa, configuración electrónica, electronegatividad y radio, y tendencias coloreadas" \
     version.js quimica/elementos.js tabla-periodica/app.js
   herramienta trabajo-y-energia ../publico/fisica/trabajo-y-energia/index.html "Trabajo y energía: rampa, rozamiento y muelle" "Simulador de conservación de la energía con rozamiento y muelle: animación, barras de energía y desarrollo paso a paso" \
-    version.js trabajo-y-energia/fisica.js trabajo-y-energia/app.js
+    version.js mates.js trabajo-y-energia/fisica.js trabajo-y-energia/app.js
   herramienta masa-molar ../publico/quimica/masa-molar/index.html "Masa molar y estequiometría" "Masa molar y composición de cualquier fórmula, ajuste de reacciones, reactivo limitante y rendimiento, paso a paso" \
     version.js quimica/elementos.js quimica/formulas.js masa-molar/app.js
   herramienta configuracion-electronica ../publico/quimica/configuracion-electronica/index.html "Configuración electrónica" "Configuración electrónica de elementos e iones con el diagrama de Moeller, la regla de Hund y los números cuánticos" \
@@ -58,11 +58,11 @@ if [ "$1" != privado ]; then
   herramienta condensadores ../publico/electromagnetismo/condensadores/index.html "Condensadores con dieléctricos" "Capacidad, energía, campos E, D y P y cargas de polarización en condensadores planos, cilíndricos y esféricos con dieléctricos" \
     version.js condensadores/fisica.js condensadores/app.js
   herramienta tiro-parabolico ../publico/fisica/tiro-parabolico/index.html "Tiro parabólico y cinemática" "Simulador de tiro parabólico con y sin rozamiento: alcance, altura máxima, tiempo de vuelo, gráficas x(t), v(t), a(t) y MRU y MRUA paso a paso" \
-    version.js tiro-parabolico/fisica.js tiro-parabolico/app.js
+    version.js mates.js tiro-parabolico/fisica.js tiro-parabolico/app.js
   herramienta disoluciones ../publico/quimica/disoluciones/index.html "Disoluciones y concentraciones" "Calculadora de disoluciones: molaridad, molalidad, fracción molar, % en masa y ppm, preparar desde un reactivo comercial y diluir, paso a paso" \
     version.js quimica/elementos.js quimica/formulas.js quimica/disoluciones.js disoluciones/app.js
   herramienta calorimetria ../publico/fisica/calorimetria/index.html "Calorimetría y cambios de fase" "Temperatura de equilibrio al mezclar agua, hielo, vapor y metales, con cambios de fase y calorímetro, paso a paso" \
-    version.js calorimetria/fisica.js calorimetria/app.js
+    version.js mates.js calorimetria/fisica.js calorimetria/app.js
   herramienta induccion ../publico/electromagnetismo/induccion/index.html "Autoinducción e inducción mutua" "Coeficiente de autoinducción de solenoides, toroides y cables coaxiales, inducción mutua, energía magnética y circuito RL, paso a paso" \
     version.js induccion/fisica.js induccion/app.js
   herramienta faraday ../publico/electromagnetismo/faraday/index.html "Inducción: Faraday y Lenz" "Calculadora de inducción electromagnética: fem inducida con la ley de Faraday y sentido de la corriente con la ley de Lenz en una barra sobre raíles, un alternador, un flujo que cambia y una espira que cruza un campo" \

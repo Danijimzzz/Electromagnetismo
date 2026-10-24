@@ -33,21 +33,21 @@ const Energia = (() => {
     const p = leer(sc), { m, g, h, ang, mu1, d, mu2, k, v0, L } = p;
     const pasos = [], res = {};
     const Ei = 0.5 * m * v0 * v0 + m * g * h;
-    pasos.push({ t: 'Energía inicial', html: `E<sub>0</sub> = ½ m v<sub>0</sub><sup>2</sup> + m g h = ½·${f(m)}·${f(v0)}<sup>2</sup> + ${f(m)}·${f(g)}·${f(h)} = <b>${f(Ei)} J</b>` });
+    pasos.push({ t: 'Energía inicial', html: `$E_0 = 1/2 m v_0^2 + m g h = 1/2 · ${f(m)} · ${f(v0)}^2 + ${f(m)} · ${f(g)} · ${f(h)}$ = <b>${f(Ei)} J</b>` });
     // ¿arranca? En reposo en la rampa solo baja si tan θ > μ
     const tan = Math.tan(rad(ang));
     if (v0 === 0 && h > 0 && mu1 >= tan) {
-      pasos.push({ t: 'Rampa', html: `En reposo el bloque no se mueve: μ<sub>1</sub> = ${f(mu1)} ≥ tg θ = ${f(tan)} (el rozamiento estático puede sujetarlo).` });
+      pasos.push({ t: 'Rampa', html: `En reposo el bloque no se mueve: $μ_1 = ${f(mu1)} ≥ tg θ = ${f(tan)}$ (el rozamiento estático puede sujetarlo).` });
       return { p, pasos, res: { quieto: true }, Ei };
     }
     // rampa: W_roz = −μ m g cos θ · L
     const Wr1 = -mu1 * m * g * Math.cos(rad(ang)) * L;
     let vb2 = v0 * v0 + 2 * g * h + (2 * Wr1) / m;
-    if (h > 0) pasos.push({ t: 'Bajada por la rampa', html: `Longitud L = h / sen θ = ${f(L)} m. Trabajo del rozamiento W<sub>r1</sub> = −μ<sub>1</sub> m g cos θ · L = <b>${f(Wr1)} J</b>.<br>½ m v<sub>B</sub><sup>2</sup> = E<sub>0</sub> + W<sub>r1</sub> ⇒ v<sub>B</sub> = √(v<sub>0</sub><sup>2</sup> + 2 g h − 2 μ<sub>1</sub> g h / tg θ) = <b>${vb2 > 0 ? f(Math.sqrt(vb2)) : '0'} m/s</b>` });
+    if (h > 0) pasos.push({ t: 'Bajada por la rampa', html: `Longitud $L = h/{sen θ} = ${f(L)} "m"$. Trabajo del rozamiento $W_r1 = −μ_1 m g cos θ · L$ = <b>${f(Wr1)} J</b>.<br>$1/2 m v_B^2 = E_0 + W_r1 ⇒ v_B = √(v_0^2 + 2 g h − {2 μ_1 g h}/{tg θ})$ = <b>${vb2 > 0 ? f(Math.sqrt(vb2)) : '0'} m/s</b>` });
     if (vb2 <= 0) {
       // se para en la rampa (solo si sube con v0... aquí baja, así que v² < 0 significa que frena antes de llegar)
       const s = (v0 * v0) / (2 * g * (mu1 * Math.cos(rad(ang)) - Math.sin(rad(ang))));
-      pasos.push({ t: 'Se para en la rampa', html: `El rozamiento frena el bloque tras recorrer s = v<sub>0</sub><sup>2</sup> / (2 g (μ<sub>1</sub> cos θ − sen θ)) = <b>${f(s)} m</b>.` });
+      pasos.push({ t: 'Se para en la rampa', html: `El rozamiento frena el bloque tras recorrer $s = v_0^2/(2 g (μ_1 cos θ − sen θ))$ = <b>${f(s)} m</b>.` });
       res.paraRampa = s;
       return { p, pasos, res, Ei };
     }
@@ -57,25 +57,25 @@ const Energia = (() => {
     const vc2 = vb2 + (2 * Wr2) / m;
     if (vc2 <= 0) {
       const s = vb2 / (2 * mu2 * g);
-      pasos.push({ t: 'Tramo horizontal', html: `El rozamiento lo frena antes del muelle: ½ m v<sub>B</sub><sup>2</sup> = μ<sub>2</sub> m g s ⇒ s = v<sub>B</sub><sup>2</sup> / (2 μ<sub>2</sub> g) = <b>${f(s)} m</b> (de ${f(d)} m).` });
+      pasos.push({ t: 'Tramo horizontal', html: `El rozamiento lo frena antes del muelle: $1/2 m v_B^2 = μ_2 m g s ⇒ s = v_B^2/(2 μ_2 g)$ = <b>${f(s)} m</b> (de ${f(d)} m).` });
       res.paraLlano = s;
       res.calor = Ei;
       pasos.push({ t: 'Balance', html: `Toda la energía inicial se disipa por rozamiento: Q = ${f(Ei)} J.` });
       return { p, pasos, res, Ei };
     }
     res.vC = Math.sqrt(vc2);
-    pasos.push({ t: 'Tramo horizontal', html: `W<sub>r2</sub> = −μ<sub>2</sub> m g d = <b>${f(Wr2)} J</b> ⇒ v<sub>C</sub> = √(v<sub>B</sub><sup>2</sup> − 2 μ<sub>2</sub> g d) = <b>${f(res.vC)} m/s</b> al llegar al muelle.` });
+    pasos.push({ t: 'Tramo horizontal', html: `$W_r2 = −μ_2 m g d$ = <b>${f(Wr2)} J</b> ⇒ $v_C = √(v_B^2 − 2 μ_2 g d)$ = <b>${f(res.vC)} m/s</b> al llegar al muelle.` });
     if (k > 0) {
       // compresión máxima con rozamiento μ₂ bajo el muelle: ½ k x² + μ₂ m g x = ½ m v_C²
       const a = 0.5 * k, b = mu2 * m * g, c = -0.5 * m * vc2;
       const x = (-b + Math.sqrt(b * b - 4 * a * c)) / (2 * a);
       res.x = x;
       res.Fmax = k * x;
-      pasos.push({ t: 'Compresión del muelle', html: `½ k x<sup>2</sup> + μ<sub>2</sub> m g x = ½ m v<sub>C</sub><sup>2</sup> ⇒ ${f(a)} x<sup>2</sup> + ${f(b)} x − ${f(-c)} = 0 ⇒ <b>x = ${f(x)} m</b>. Fuerza máxima del muelle k x = <b>${f(res.Fmax)} N</b>, energía elástica ½ k x<sup>2</sup> = <b>${f(0.5 * k * x * x)} J</b>.` });
+      pasos.push({ t: 'Compresión del muelle', html: `$1/2 k x^2 + μ_2 m g x = 1/2 m v_C^2 ⇒ ${f(a)} x^2 + ${f(b)} x − ${f(-c)} = 0$ ⇒ <b>x = ${f(x)} m</b>. Fuerza máxima del muelle $k x$ = <b>${f(res.Fmax)} N</b>, energía elástica $1/2 k x^2$ = <b>${f(0.5 * k * x * x)} J</b>.` });
       // ¿vuelve? el muelle lo empuja si k x > μ m g
       res.vuelve = k * x > mu2 * m * g;
-      pasos.push({ t: 'Después', html: res.vuelve ? `Como k x = ${f(k * x)} N > μ<sub>2</sub> m g = ${f(mu2 * m * g)} N, el muelle lo devuelve hacia la rampa. La animación sigue el movimiento completo.` : `Como k x ≤ μ<sub>2</sub> m g, el rozamiento estático lo mantiene comprimido: se queda ahí.` });
-    } else pasos.push({ t: 'Sin muelle', html: `Sigue con v<sub>C</sub> = ${f(res.vC)} m/s al final del tramo.` });
+      pasos.push({ t: 'Después', html: res.vuelve ? `Como $k x = ${f(k * x)} "N" > μ_2 m g = ${f(mu2 * m * g)} "N"$, el muelle lo devuelve hacia la rampa. La animación sigue el movimiento completo.` : `Como $k x ≤ μ_2 m g$, el rozamiento estático lo mantiene comprimido: se queda ahí.` });
+    } else pasos.push({ t: 'Sin muelle', html: `Sigue con $v_C$ = ${f(res.vC)} m/s al final del tramo.` });
     return { p, pasos, res, Ei };
   }
 

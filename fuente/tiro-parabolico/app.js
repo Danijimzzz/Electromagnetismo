@@ -140,7 +140,7 @@
     const r = sol.res, filas = [['Tiempo de vuelo', f(r.tv) + ' s'], ['Altura máxima', f(r.hmax) + ' m'], ['Alcance', f(r.alcance) + ' m'], ['Velocidad al caer', `${f(r.vf)} m/s a ${f(Math.abs(r.angf))}°`]];
     if (r.blanco && r.blanco.angulos) filas.push(['Ángulos para el blanco', r.blanco.angulos.map((a) => f(a) + '°').join(' y ')]);
     $('#resumen').innerHTML = filas.map(([a, b]) => `<div><span>${a}</span><b>${b}</b></div>`).join('');
-    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('');
+    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
     dibujaT();
   }
 
@@ -268,7 +268,7 @@
     if (r.xEnT !== undefined) filas.push([`En t = ${f(rec.p.tq)} s`, `x = ${f(r.xEnT)} m, v = ${f(r.vEnT)} m/s`]);
     if (r.tEnX) filas.push([`Pasa por x = ${f(rec.p.xq)} m`, r.tEnX.length ? r.tEnX.map((x) => `t = ${f(x)} s`).join(' y ') : 'nunca']);
     $('#resumen-r').innerHTML = filas.map(([a, b]) => `<div><span>${a}</span><b>${b}</b></div>`).join('');
-    $('#pasos-r').innerHTML = rec.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('');
+    $('#pasos-r').innerHTML = rec.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
     dibujaR();
   }
   function dibujaR() {

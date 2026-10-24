@@ -15,6 +15,8 @@ const Calor = (() => {
     return s.replace('.', ',').replace('-', '−');
   };
   const leeNum = (s) => +String(s).trim().replace(/\s/g, '').replace(',', '.').replace(/[·x×*]10\^?([+\-−]?\d+)/i, 'e$1').replace('−', '-');
+  // un número negativo entre paréntesis, para restarlo: 0 − (−10)
+  const par = (x) => (x < 0 ? `(${f(x)})` : f(x));
   const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
 
   // c en J/(kg·K) de sólido, líquido y gas; Tf y Tv en °C; Lf y Lv en J/kg
@@ -148,16 +150,16 @@ const Calor = (() => {
       return { b, nombre, Q, etapas, estado, fraccion: fr };
     });
     const pasos = [];
-    for (const c of cuerpos) pasos.push({ t: `${c.nombre}${c.b.C === undefined ? ` (${f(c.b.m * 1000)} g a ${f(c.b.T0)} °C)` : ` (C = ${f(c.b.C)} J/K a ${f(c.b.T0)} °C)`}`, html: c.etapas.length ? c.etapas.map((e) => e.html).join('<br>') + (c.etapas.length > 1 ? `<br>Q = <b>${f(c.Q)} J</b>` : '') : 'No intercambia calor: ya está a la temperatura final.' });
+    for (const c of cuerpos) pasos.push({ t: `${c.nombre}${c.b.C === undefined ? ` (${f(c.b.m * 1000)} g a ${f(c.b.T0)} °C)` : ` (C = ${f(c.b.C)} J/K a ${f(c.b.T0)} °C)`}`, html: c.etapas.length ? c.etapas.map((e) => e.html).join('<br>') + (c.etapas.length > 1 ? `<br>$Q$ = <b>${f(c.Q)} J</b>` : '') : 'No intercambia calor: ya está a la temperatura final.' });
     const cedido = -cuerpos.filter((c) => c.Q < 0).reduce((s, c) => s + c.Q, 0), absorbido = cuerpos.filter((c) => c.Q > 0).reduce((s, c) => s + c.Q, 0);
     if (enCambio) {
       const cambian = cuerpos.filter((c) => c.fraccion !== null && c.fraccion > 1e-9 && c.fraccion < 1 - 1e-9);
       pasos.push({ t: '¿Llega para cambiar de fase?', html: `Si todo acabara a ${f(Te)} °C antes del cambio de fase, sobrarían ${f(-enCambio.lo)} J; si acabara después, faltarían ${f(enCambio.hi)} J. La energía no llega para completar el cambio de fase, así que el equilibrio se queda en <b>T<sub>e</sub> = ${f(Te)} °C</b>${cambian.length ? ` con ${cambian.map((c) => c.estado).join(' y ')}` : ''}.` });
     } else {
       const Ce = B.reduce((s, b) => s + (b.C !== undefined ? b.C : b.m * cEn(b, Te)), 0);
-      pasos.push({ t: 'Temperatura de equilibrio', html: `Σ Q = 0 ⇒ la suma de todos los calores, con T<sub>e</sub> como incógnita, se anula en <b>T<sub>e</sub> = ${f(Te)} °C</b>. (Capacidad calorífica total a esa temperatura: ${f(Ce)} J/K.)` });
+      pasos.push({ t: 'Temperatura de equilibrio', html: `$Σ Q = 0$ ⇒ la suma de todos los calores, con $T_e$ como incógnita, se anula en <b>$T_e$ = ${f(Te)} °C</b>. (Capacidad calorífica total a esa temperatura: ${f(Ce)} J/K.)` });
     }
-    pasos.push({ t: 'Comprobación', html: `Calor cedido ${f(cedido)} J = calor absorbido ${f(absorbido)} J ⇒ Σ Q = ${f(absorbido - cedido)} J.` });
+    pasos.push({ t: 'Comprobación', html: `Calor cedido ${f(cedido)} J = calor absorbido ${f(absorbido)} J ⇒ $Σ Q = ${f(absorbido - cedido)} "J"$.` });
     return { Te, cuerpos, cedido, absorbido, enCambio: !!enCambio, pasos };
   }
   const cEn = (b, T) => { const e = faseEn(b, T, false); return e === 0 ? b.cs : e === 1 ? b.cl : b.cg; };
@@ -173,12 +175,12 @@ const Calor = (() => {
       const a = Math.max(lo, s.Ha), z = Math.min(hi, s.Hb), Q = (z - a) * (sube ? 1 : -1);
       if (s.tipo === 'latente') {
         const dm = (z - a) / s.L, nom = s.fase === 0 ? (sube ? 'Fusión' : 'Solidificación') : sube ? 'Vaporización' : 'Condensación';
-        out.push({ tipo: 'latente', Q, T: s.T, dm, html: `${nom} a ${f(s.T)} °C: Q = ${sube ? '' : '−'}m L = ${sube ? '' : '−'}${f(dm)} kg · ${f(s.L)} J/kg = <b>${f(Q)} J</b>` });
+        out.push({ tipo: 'latente', Q, T: s.T, dm, html: `${nom} a ${f(s.T)} °C: $Q = ${sube ? '' : '−'}m L = ${sube ? '' : '−'}${f(dm)} "kg" · ${f(s.L)} "J/kg"$ = <b>${f(Q)} J</b>` });
       } else {
         const Tde = (Hx) => s.Ta + (Hx - s.Ha) / s.k;
         const Ti = Tde(sube ? a : z), Tf_ = Tde(sube ? z : a), c = b.C !== undefined ? null : s.k / b.m;
         const fase = b.C !== undefined ? 'calorímetro' : nombreFase(b, s.fase);
-        out.push({ tipo: 'sensible', Q, Ti, Tf: Tf_, html: `${sube ? 'Se calienta' : 'Se enfría'} ${b.C !== undefined ? 'el calorímetro' : `(${fase})`} de ${f(Ti)} a ${f(Tf_)} °C: Q = ${b.C !== undefined ? `C ΔT = ${f(b.C)} · (${f(Tf_)} − ${f(Ti)})` : `m c ΔT = ${f(b.m)} · ${f(c)} · (${f(Tf_)} − ${f(Ti)})`} = <b>${f(Q)} J</b>` });
+        out.push({ tipo: 'sensible', Q, Ti, Tf: Tf_, html: `${sube ? 'Se calienta' : 'Se enfría'} ${b.C !== undefined ? 'el calorímetro' : `(${fase})`} de ${f(Ti)} a ${f(Tf_)} °C: $Q = ${b.C !== undefined ? `C ΔT = ${f(b.C)} · (${f(Tf_)} − ${par(Ti)})` : `m c ΔT = ${f(b.m)} · ${f(c)} · (${f(Tf_)} − ${par(Ti)})`}$ = <b>${f(Q)} J</b>` });
       }
     }
     return out;
