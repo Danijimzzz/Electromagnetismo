@@ -1185,7 +1185,7 @@ const EDOs = (() => {
       const cuerpo = g.w ? `${xs}${e}(${pol('A')} cos ${linTxt(g.w, 'x')} + ${pol('B')} sen ${linTxt(g.w, 'x')})`.replace('( ', '(') : `${xs}${pol('A')}${e}`;
       return { cuerpo, s: g.s };
     });
-    const res = xs.some((q) => q.s) ? ` Como ${part.grupos.filter((g) => g.s).map((g) => `$λ = ${g.w ? `${Math.abs(g.r) < 1e-12 ? '' : cTxt(g.r) + ' '}± ${Math.abs(g.w - 1) < 1e-12 ? '' : cTxt(g.w) + ' '}i` : cTxt(g.r)}$`).join(' y ')} ${part.grupos.filter((g) => g.s).length > 1 ? 'son raíces' : 'es raíz'} de la ecuación característica (resonancia), se multiplica por $x${xs.some((q) => q.s === 2) ? '^2' : ''}$.` : '';
+    const res = xs.some((q) => q.s) ? ` Como ${part.grupos.filter((g) => g.s).map((g) => `$λ = ${g.w ? `${Math.abs(g.r) < 1e-12 ? '±' : cTxt(g.r) + ' ± '}${Math.abs(g.w - 1) < 1e-12 ? '' : cTxt(g.w) + ' '}i` : cTxt(g.r)}$`).join(' y ')} ${part.grupos.filter((g) => g.s).length > 1 ? 'son raíces' : 'es raíz'} de la ecuación característica (resonancia), se multiplica por $x${xs.some((q) => q.s === 2) ? '^2' : ''}$.` : '';
     return `Se prueba con una función de la misma forma que el término independiente: $y_p = ${xs.map((q) => (xs.length === 1 ? q.cuerpo.replace(/^\(([^()]*)\)$/, '$1') : q.cuerpo)).join(' + ')}$.${res}`;
   }
 
@@ -1258,7 +1258,7 @@ const EDOs = (() => {
     if (Math.abs(tr) < tol) return { nom: 'centro (órbitas cerradas)', est: null };
     return { nom: tr < 0 ? 'foco estable (espiral que entra)' : 'foco inestable (espiral que sale)', est: tr < 0 };
   }
-  const evTxt = (ev) => (ev.l ? (Math.abs(ev.l[0] - ev.l[1]) < 1e-12 ? `$λ = ${cTxt(limpio(ev.l[0]))}$ (doble)` : `$λ_1 = ${cTxt(limpio(ev.l[0]))}$, $λ_2 = ${cTxt(limpio(ev.l[1]))}$`) : `$λ = ${Math.abs(ev.al) < 1e-12 ? '' : cTxt(limpio(ev.al)) + ' '}± ${Math.abs(ev.be - 1) < 1e-12 ? '' : cTxt(limpio(ev.be)) + ' '}i$`);
+  const evTxt = (ev) => (ev.l ? (Math.abs(ev.l[0] - ev.l[1]) < 1e-12 ? `$λ = ${cTxt(limpio(ev.l[0]))}$ (doble)` : `$λ_1 = ${cTxt(limpio(ev.l[0]))}$, $λ_2 = ${cTxt(limpio(ev.l[1]))}$`) : `$λ = ${Math.abs(ev.al) < 1e-12 ? '±' : cTxt(limpio(ev.al)) + ' ± '}${Math.abs(ev.be - 1) < 1e-12 ? '' : cTxt(limpio(ev.be)) + ' '}i$`);
   const matHtml = (M) => `<span class="mat"><table>${M.map((r) => `<tr>${r.map((c) => `<td>$${c}$</td>`).join('')}</tr>`).join('')}</table></span>`;
   const matTxt = (J) => matHtml(J.map((r) => r.map((v) => cTxt(limpio(v)))));
   function sistema(sc) {
