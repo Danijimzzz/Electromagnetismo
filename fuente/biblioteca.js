@@ -10,7 +10,7 @@ const Biblioteca = (() => {
   // carpeta de la herramienta → clave de localStorage donde la app guarda su estado
   const CLAVES = {
     alterna: 'alterna-v1', calorimetria: 'calorimetria-v1', circuitos: 'circuitos-v1', condensadores: 'condensadores-v1',
-    'configuracion-electronica': 'configuracion-v1', dinamica: 'dinamica-v1', disoluciones: 'disoluciones-v1', ph: 'ph-v1', doppler: 'doppler-v1', fluidos: 'fluidos-v1', estadistica: 'estadistica-v1', regresion: 'regresion-v1',
+    'configuracion-electronica': 'configuracion-v1', dinamica: 'dinamica-v1', disoluciones: 'disoluciones-v1', ph: 'ph-v1', doppler: 'doppler-v1', fluidos: 'fluidos-v1', ciclos: 'ciclos-v1', estadistica: 'estadistica-v1', regresion: 'regresion-v1',
     faraday: 'faraday-v1', gases: 'gases-v1', induccion: 'induccion-v1', magnetostatica: 'magneto-cur-v1', 'masa-molar': 'masa-molar-v1',
     matrices: 'matrices-v1', resistencias: 'resistencias-v1', ondas: 'ondas-v1', sistemas: 'sistemas-v1', complejos: 'complejos-v1', 'solido-rigido': 'solido-rigido-v1', 'tiro-parabolico': 'tiro-v1',
     'trabajo-y-energia': 'energia-v1',

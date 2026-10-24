@@ -99,6 +99,8 @@ if [ "$1" != privado ]; then
     version.js mates.js doppler/fisica.js doppler/app.js
   herramienta fluidos ../publico/fisica/fluidos/index.html "Fluidos" "Calculadora de fluidos con animación: presión hidrostática, tubo en U, prensa hidráulica, empuje de Arquímedes, continuidad y Bernoulli en una tubería y el chorro de Torricelli, paso a paso" \
     version.js mates.js fluidos/fisica.js fluidos/app.js
+  herramienta ciclos ../publico/fisica/ciclos/index.html "Ciclos termodinámicos" "Calculadora de ciclos termodinámicos con diagrama p-V animado: Carnot, Otto y Diesel con estados, trabajo, calor y rendimiento, y máquinas térmicas, frigoríficos y bombas de calor comparados con Carnot, paso a paso" \
+    version.js mates.js ciclos/fisica.js ciclos/app.js
   herramienta gases ../publico/fisica/gases/index.html "Gases ideales" "Calculadora de gases ideales: ecuación de estado PV = nRT, transformaciones isoterma, isobara, isocora y adiabática, ciclos con su rendimiento y teoría cinética, paso a paso" \
     version.js mates.js gases/fisica.js gases/app.js
 fi

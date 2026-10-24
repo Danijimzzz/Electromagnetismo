@@ -1,0 +1,1316 @@
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMwZDZiNjYiLz48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlNmE2NDAiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtZGFzaGFycmF5PSI0IDYuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48cGF0aCBkPSJNMjAgMzJINDQiLz48cGF0aCBkPSJNMjEgMjdDMjcgMTQgMzcgMTQgNDMgMjciLz48cGF0aCBkPSJNMjEgMzdDMjcgNTAgMzcgNTAgNDMgMzciLz48cGF0aCBkPSJNMTcgMjRDMjIgNCA0MiA0IDQ3IDI0Ii8+PHBhdGggZD0iTTE3IDQwQzIyIDYwIDQyIDYwIDQ3IDQwIi8+PC9nPjxjaXJjbGUgY3g9IjE3IiBjeT0iMzIiIHI9IjgiIGZpbGw9IiNlZjdhNjIiLz48Y2lyY2xlIGN4PSI0NyIgY3k9IjMyIiByPSI4IiBmaWxsPSIjNzRhMmYyIi8+PHBhdGggZD0iTTEzIDMyaDhNMTcgMjh2OE00MyAzMmg4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta property="og:title" content="Ciclos termodinámicos">
+<meta property="og:description" content="Calculadora de ciclos termodinámicos con diagrama p-V animado: Carnot, Otto y Diesel con estados, trabajo, calor y rendimiento, y máquinas térmicas, frigoríficos y bombas de calor comparados con Carnot, paso a paso">
+<meta property="og:image" content="https://electromagnetismo-two.vercel.app/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<style>.a-inicio { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; font-weight: 600; font-size: 13.5px; color: var(--accent); border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px 5px 10px; background: var(--panel); white-space: nowrap } .a-inicio:hover { border-color: var(--accent); text-decoration: none }</style>
+<title>Ciclos termodinámicos: Carnot, Otto, Diesel y máquinas térmicas · SimulaCiencia</title>
+<meta name="description" content="Calculadora de ciclos termodinámicos en español con diagrama p-V animado: Carnot, Otto y Diesel con los estados, el trabajo, el calor y la energía interna de cada tramo y el rendimiento, y máquinas térmicas, frigoríficos y bombas de calor comparados con Carnot, paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root {
+  --bg: #eef0f4; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d6dbe3; --accent: #2a5db5; --accent-soft: #e3ecfa; --peso: #c2412a; --normal: #1d7a3e; --roz: #b0700a; --fuerza: #6b3fa0; --tension: #2a5db5; --cuerpo: #c9d3e0; --suelo: #8a96a3;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #74a2f2; --accent-soft: #1c2a42; --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #74a2f2; --accent-soft: #1c2a42; --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784; color-scheme: dark }
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
+.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
+.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+.layout { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 16px; align-items: start }
+@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr) } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 15px var(--f-ui); margin: 0 0 10px }
+.campos { display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px } .campos label small { color: var(--muted) }
+.in { font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.in:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer }
+.btn:hover { border-color: var(--accent) }
+.error { color: #c0392b; font-size: 13px; margin: 10px 0 0 }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+.res { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px 14px; font: 16px var(--f-math) } .res div { overflow-x: auto } .res span { display: block; font: 12px var(--f-ui); color: var(--muted) }
+.leyenda { font-size: 12.5px; color: var(--muted); margin: 6px 0 0 } .leyenda b { font-weight: 600 }
+canvas { display: block; width: 100%; height: clamp(260px, 36vw, 380px); border-radius: 8px; background: var(--bg); margin-top: 10px }
+.pasos ol { margin: 0; padding-left: 22px } .pasos li { margin: 0 0 12px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+.controles { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px }
+.destacado { border-color: var(--accent); box-shadow: inset 4px 0 0 var(--accent) }
+.destacado h2 { color: var(--accent) }
+.resumen { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; margin: 0 }
+.resumen div { background: var(--accent-soft); border-radius: 8px; padding: 8px 10px; overflow-x: auto } .resumen div span { display: block; font-size: 12px; color: var(--muted) } .resumen div b { font: 600 17px var(--f-math) }
+.teoria ul { padding-left: 20px } .teoria li { margin-bottom: 4px }
+.tabla { overflow-x: auto; margin-bottom: 10px } table { border-collapse: collapse; font: 13.5px var(--f-ui); font-variant-numeric: tabular-nums; min-width: 100% } th, td { padding: 4px 10px; border-bottom: 1px solid var(--line); text-align: right } th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align: left } th { color: var(--muted); font-weight: 500 } tr.tot td { font-weight: 600 }
+</style>
+<body>
+<header class="top"><a class="a-inicio" href="../../" title="Volver a la página de inicio">← Inicio</a><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física general</a> / Ciclos termodinámicos</span></header>
+<div class="wrap">
+<h1>Ciclos termodinámicos y máquinas térmicas</h1>
+<p class="lead">Resuelve los ciclos de Carnot, Otto y Diesel con un gas ideal: los estados, el trabajo, el calor y la variación de energía interna de cada tramo y el rendimiento, con el diagrama p-V animado y el cilindro. Y comprueba si una máquina térmica, un frigorífico o una bomba de calor son posibles comparándolos con Carnot.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Diagrama</h2>
+      <canvas id="escena" aria-label="Diagrama p-V del ciclo con el cilindro, o esquema de la máquina"></canvas>
+      <div class="controles"><button class="btn" id="play" type="button">⏸ Pausa</button><span class="nota" id="leyenda" style="margin:0"></span></div></div>
+    <div class="card" id="tablas"><h2>Estados y tramos</h2><div class="tabla"><table id="estados"></table></div><div class="tabla"><table id="tramos"></table></div></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Primer principio en un ciclo</h2>
+  <p class="m">Con W el trabajo que hace el gas, $ΔU = Q − W$. En un gas ideal $ΔU = n C_v ΔT$, con $C_v = {3}/{2} R$ si es monoatómico y ${5}/{2} R$ si es diatómico. Al cerrar el ciclo el gas vuelve a su estado inicial, $ΔU = 0$, y el trabajo neto es igual al calor neto: es el área encerrada en el diagrama p-V.</p>
+  <ul>
+    <li class="m">Isoterma: $ΔU = 0$, $Q = W = n R T ln {V_2}/{V_1}$.</li>
+    <li class="m">Adiabática: $Q = 0$, $P V^γ$ = cte, $T V^{γ − 1}$ = cte y $W = −ΔU$.</li>
+    <li class="m">Isocora: $W = 0$ y $Q = n C_v ΔT$.</li>
+    <li class="m">Isobara: $W = P ΔV$ y $Q = n C_p ΔT$.</li>
+  </ul>
+  <h2>Rendimiento</h2>
+  <p class="f m">$η = {W_{neto}}/{Q_{abs}} = 1 − {|Q_{ced}|}/{Q_{abs}}$</p>
+  <h2>Ciclo de Carnot</h2>
+  <p class="m">Dos isotermas y dos adiabáticas entre un foco caliente a $T_c$ y uno frío a $T_f$. Es reversible y tiene el mayor rendimiento posible entre esas dos temperaturas:</p>
+  <p class="f m">$η_C = 1 − T_f/T_c$</p>
+  <h2>Ciclos Otto y Diesel</h2>
+  <p class="m">El Otto (motor de gasolina) tiene dos adiabáticas y dos isocoras; su rendimiento solo depende de la relación de compresión $r = V_1/V_2$: $η = 1 − r^{1 − γ}$. En el Diesel la combustión es a presión constante, con relación de corte $r_c = V_3/V_2$, y permite relaciones de compresión mucho mayores.</p>
+  <p class="f m">$η_{Diesel} = 1 − {r_c^γ − 1}/{γ r^{γ − 1} (r_c − 1)}$</p>
+  <h2>Frigoríficos y bombas de calor</h2>
+  <p class="m">Usan trabajo para llevar calor del foco frío al caliente. Su eficiencia es $COP = Q_f/W$ para un frigorífico y $COP = Q_c/W$ para una bomba de calor, como mucho ${T_f}/{T_c − T_f}$ y ${T_c}/{T_c − T_f}$. Ninguna máquina puede superar a la de Carnot: si lo hiciera, la entropía del universo disminuiría (segundo principio).</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Ciclos termodinámicos <span id="ver"></span> (beta)</footer>
+</body>
+<script>
+/* =====================================================================
+   Versiones y novedades: la web (portada, asignaturas, buscador) tiene su número y cada
+   herramienta el suyo. Hasta el lanzamiento se numera 0.x (beta); la 1.0 de una herramienta
+   llega cuando se da por terminada y la 1.0 de la web será el lanzamiento. Sube el segundo
+   número si hay algo nuevo (0.6) y añade un tercero si es solo un arreglo (0.5.1).
+   En las novedades de la web se anuncia también cada herramienta nueva.
+   Las notas son para los usuarios: solo funciones nuevas, arreglos visibles y cambios
+   en la interfaz. Lo interno (pruebas, CI, build, despliegue, refactorizaciones) no se anota;
+   el historial completo para desarrolladores está en Notion.
+   ===================================================================== */
+const Version = (() => {
+  const registros = {
+    web: [
+      { v: '0.31', fecha: '2026-10-24', cambios: ['Nueva herramienta: Ciclos termodinámicos, en Física general.'] },
+      { v: '0.30', fecha: '2026-10-24', cambios: ['Nueva herramienta: pH y valoraciones, en Química.'] },
+      { v: '0.29', fecha: '2026-10-24', cambios: ['Nueva herramienta: Fluidos, en Física general.'] },
+      { v: '0.28', fecha: '2026-10-24', cambios: ['Nueva herramienta: Números complejos, en Matemáticas.'] },
+      { v: '0.27.1', fecha: '2026-10-24', cambios: ['Efecto Doppler, Código de colores y Regresión: las fórmulas dentro del texto de la teoría se ven bien escritas.'] },
+      { v: '0.27', fecha: '2026-10-24', cambios: ['Nueva herramienta: Regresión y correlación, en Estadística.'] },
+      { v: '0.26', fecha: '2026-10-24', cambios: ['Nueva herramienta: Código de colores de resistencias, en Circuitos.'] },
+      { v: '0.25', fecha: '2026-10-24', cambios: ['Nueva herramienta: Efecto Doppler, en Física general.'] },
+      { v: '0.24', fecha: '2026-10-24', cambios: ['Modo práctica en todas las herramientas: un ejercicio con datos al azar, tapa los resultados y el desarrollo, corrige lo que escribes y luego te enseña la solución. Al salir vuelven tus datos.', 'Mis ejercicios: abrir un ejercicio guardado de Configuración electrónica ya muestra ese elemento.'] },
+      { v: '0.23', fecha: '2026-10-24', cambios: ['«Mis ejercicios» en todas las herramientas: una barra lateral, como la de electrostática, para guardar los datos de cada ejercicio con su título y carpeta, fijar los importantes arriba, volver a abrirlos y exportarlos o importarlos en archivos .simu.json.'] },
+      { v: '0.22.1', fecha: '2026-10-24', cambios: ['Botón «← Inicio» arriba a la izquierda en todas las herramientas, también en el simulador de electrostática, para volver a la portada.'] },
+      { v: '0.22', fecha: '2026-10-24', cambios: ['Nuevas secciones en la portada: Estadística, con las distribuciones de probabilidad, y Circuitos, que reúne corriente continua y alterna. Las direcciones antiguas siguen funcionando y llevan a la nueva.'] },
+      { v: '0.21', fecha: '2026-10-24', cambios: ['Sistemas de ecuaciones: nuevos métodos de reducción, igualación y sustitución.'] },
+      { v: '0.20.3', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría de todas las herramientas se ven como en los libros.'] },
+      { v: '0.20.2', fecha: '2026-10-24', cambios: ['Tiro parabólico, Trabajo y energía y Calorimetría: las fórmulas se ven como en los libros, con fracciones, raíces y exponentes de verdad.'] },
+      { v: '0.20.1', fecha: '2026-10-24', cambios: ['Tiro parabólico, Trabajo y energía y Calorimetría: los resultados salen en una tarjeta destacada arriba y la lectura del tiempo ya no se mueve al reproducir.'] },
+      { v: '0.20', fecha: '2026-10-24', cambios: ['Nueva herramienta: Inducción, leyes de Faraday y Lenz, en Electromagnetismo.'] },
+      { v: '0.19', fecha: '2026-10-24', cambios: ['Nueva herramienta: Gases ideales, en Física general.'] },
+      { v: '0.18', fecha: '2026-10-24', cambios: ['Nueva herramienta: Ondas mecánicas, en Física general.'] },
+      { v: '0.17', fecha: '2026-10-24', cambios: ['Nueva herramienta: Sólido rígido, en Física general.'] },
+      { v: '0.16', fecha: '2026-10-23', cambios: ['Nueva herramienta: Circuitos de corriente continua, en Laboratorio.'] },
+      { v: '0.15', fecha: '2026-10-23', cambios: ['Nueva herramienta: Dinámica y diagramas de fuerzas, en Física general.'] },
+      { v: '0.14', fecha: '2026-10-23', cambios: ['Nueva herramienta: Corriente alterna y fasores, en Laboratorio.'] },
+      { v: '0.13', fecha: '2026-10-23', cambios: ['Nueva herramienta: Distribuciones de probabilidad, en Matemáticas.'] },
+      { v: '0.12', fecha: '2026-10-23', cambios: ['Nueva herramienta: Sistemas de ecuaciones lineales, en Matemáticas.'] },
+      { v: '0.11', fecha: '2026-10-23', cambios: ['Nueva herramienta: Matrices paso a paso, en Matemáticas.'] },
+      { v: '0.10', fecha: '2026-10-23', cambios: ['Nueva herramienta: Autoinducción e inducción mutua, en Electromagnetismo.'] },
+      { v: '0.9', fecha: '2026-10-23', cambios: ['Nueva herramienta: Calorimetría y cambios de fase, en Física general.'] },
+      { v: '0.8', fecha: '2026-10-23', cambios: ['Nueva herramienta: Disoluciones y concentraciones, en Química.'] },
+      { v: '0.7', fecha: '2026-10-23', cambios: ['Nueva herramienta: Tiro parabólico y cinemática, en Física general.'] },
+      { v: '0.6', fecha: '2026-10-23', cambios: ['Nueva herramienta: Condensadores con dieléctricos, en Electromagnetismo.'] },
+      { v: '0.5', fecha: '2026-10-23', cambios: ['Nueva herramienta: Configuración electrónica, en Química.'] },
+      { v: '0.4', fecha: '2026-10-23', cambios: ['Nueva herramienta: Masa molar y estequiometría, en Química.'] },
+      { v: '0.3', fecha: '2026-10-23', cambios: ['Nueva herramienta: Trabajo y energía, en Física general.'] },
+      { v: '0.2', fecha: '2026-10-23', cambios: ['Nueva herramienta: Tabla periódica interactiva, en Química.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Portada para elegir asignatura y herramienta: Electromagnetismo, Física general, Química, Matemáticas y Laboratorio, con buscador. Las herramientas que vienen después aparecen como «Próximamente».', 'Nueva herramienta: Magnetostática, en Electromagnetismo.'] },
+    ],
+    electrostatica: [
+      { v: '0.5.1', fecha: '2026-10-23', cambios: ['El simulador tiene ahora su propia dirección, /electromagnetismo/electrostatica/. Tus problemas guardados siguen ahí. El botón «Todas las herramientas» de la barra lateral vuelve a la portada.'] },
+    { v: '0.5', fecha: '2026-10-23', cambios: ['Doce ejercicios de ejemplo con enunciados propios: los mismos tipos de pregunta que en clase, con otras figuras y otros números. La guía de uso tiene capturas nuevas hechas con ellos.', 'La web tiene icono propio: un dipolo con sus líneas de campo, en la pestaña del navegador, en la pantalla de inicio del móvil y en la vista previa al compartir el enlace.', 'Páginas de aviso legal, privacidad, cookies y contacto, enlazadas al pie de la barra lateral.'] },
+    { v: '0.4', fecha: '2026-10-22', cambios: ['Número de versión visible y este apartado de novedades.', 'Arreglo: en la vista 3D los cilindros se dibujan con su radio real, aparecen las superficies de Gauss, y las esferas, cascarones y conductores tienen volumen en lugar de parecer círculos planos.'] },
+    { v: '0.3', fecha: '2026-10-22', cambios: ['Guía de uso con capturas (botón ?, barra lateral o F1).', 'Los resultados se escriben con la misma forma que el solucionario oficial: perfiles por tramos, factor común en logaritmos y radicales, y la pregunta V_A − V_B.'] },
+    { v: '0.2', fecha: '2026-10-22', cambios: ['Anillos, discos, cortezas y conductores.', 'Varias incógnitas, modo numérico SI, flujo de Gauss y gráficas E(z) y V(z).', 'Modo práctica, exportar la solución, deshacer y rehacer, mapa de color y vista 3D.', 'Búsqueda, carpetas y etiquetas en la barra lateral.'] },
+    { v: '0.1', fecha: '2026-10-22', cambios: ['Primera versión: cargas, hilos, planos y esferas con el desarrollo paso a paso y 12 ejercicios resueltos.', 'Barra lateral con tus problemas, los importados y los ejercicios; título y enunciado editables; archivos .emsim.json.'] },
+    ],
+    magnetostatica: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: campo magnético de hilos, segmentos, hilos semiinfinitos, espiras, arcos, solenoides y toroides con Biot-Savart, y fuerza sobre cargas en movimiento y sobre conductores, con el desarrollo paso a paso en la forma μ₀I/(πa) o en unidades del SI.', 'Dibujo del campo B en el plano XY, XZ o YZ, con puntos que se pueden arrastrar y ocho ejemplos resueltos.'] },
+    ],
+    'tabla-periodica': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: cada elemento tiene su ficha con la masa atómica y molar, el grupo, el periodo, el bloque, la configuración electrónica (abreviada, completa y por capas), la electronegatividad, la energía de ionización, el radio y el estado.', 'La tabla se puede colorear por categoría, electronegatividad, energía de ionización, radio, masa, bloque o estado, y tiene un buscador por nombre, símbolo o número atómico.'] },
+    ],
+    'trabajo-y-energia': [
+      { v: '0.1.2', fecha: '2026-10-24', cambios: ['Las fórmulas del desarrollo y de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Los resultados salen arriba, en una tarjeta destacada, y la lectura de t y v tiene ancho fijo: ya no mueve la barra de tiempo al reproducir.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: un bloque baja por una rampa con rozamiento, recorre un tramo horizontal y comprime un muelle. Animación con barras de energía cinética, gravitatoria, elástica y calor, gráfica de las energías en el tiempo y el desarrollo paso a paso con la velocidad al pie de la rampa, al llegar al muelle y la compresión máxima.', 'Seis ejemplos: sin rozamiento, se para antes del muelle, el rozamiento lo sujeta, con empujón inicial y muelle duro.'] },
+    ],
+    'masa-molar': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: masa molar y composición centesimal de cualquier fórmula, con paréntesis, hidratos e iones, y conversor entre gramos, moles, partículas y litros de gas.', 'Estequiometría: ajusta la reacción sola (también las iónicas), calcula el reactivo limitante, lo que se forma con el rendimiento que digas y lo que sobra, paso a paso.', 'Masas atómicas de la IUPAC o redondeadas como en clase.'] },
+    ],
+    'configuracion-electronica': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: configuración electrónica de cualquier elemento o ion por orden de llenado, abreviada y por capas, con el diagrama de Moeller, el diagrama de orbitales con la regla de Hund, los electrones desapareados y los números cuánticos del electrón diferenciador.', 'Avisa de las excepciones como el cromo o el cobre, y en los cationes quita primero los electrones de la capa más externa.'] },
+    ],
+    condensadores: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: condensadores planos, cilíndricos y esféricos con capas de dieléctrico en serie o, en el plano, ocupando parte del área. Capacidad, carga, tensión y energía; campos E, D y P en cada capa y cargas de polarización, con el desarrollo paso a paso.', 'Compara con el condensador vacío: qué pasa al meter el dieléctrico con la batería conectada o con el condensador aislado.', 'Dibujo del corte con las líneas de campo y gráfica de E a lo largo del condensador.'] },
+    ],
+    'tiro-parabolico': [
+      { v: '0.1.2', fecha: '2026-10-24', cambios: ['Las fórmulas del desarrollo y de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Los resultados salen arriba, en una tarjeta destacada, y la lectura de t, x, y y v tiene ancho fijo: ya no se mueve al reproducir.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: tiro parabólico desde cualquier altura hasta cualquier altura, con el tiempo de vuelo, la altura máxima, el alcance y la velocidad al caer, y el desarrollo paso a paso. Trayectoria animada con los vectores de velocidad y gráficas de posición, velocidad y aceleración frente al tiempo.', 'Rozamiento del aire lineal o cuadrático, comparado con la trayectoria sin rozamiento.', 'Blanco: dice si el proyectil pasa por un punto y con qué dos ángulos se acierta.', 'Movimiento rectilíneo (MRU y MRUA): posición y velocidad en un instante, cuándo pasa por un punto y cuándo se para, con las gráficas x(t), v(t) y a(t).'] },
+    ],
+    disoluciones: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: da la concentración de una disolución como molaridad, molalidad, fracción molar, % en masa, % masa/volumen, g/L o ppm y obtén todas las demás, con la densidad para pasar de masa a volumen y el desarrollo con su base de cálculo.', 'Preparar una disolución: los gramos de sólido (con su pureza) o los mililitros de reactivo comercial (con su riqueza y densidad) que hay que medir.', 'Diluciones con C₁V₁ = C₂V₂, despejando el dato que falte, y mezcla de dos disoluciones del mismo soluto.'] },
+    ],
+    calorimetria: [
+      { v: '0.1.2', fecha: '2026-10-24', cambios: ['Las fórmulas del desarrollo y de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['La temperatura de equilibrio sale en una tarjeta destacada, separada de la tabla de calores.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: temperatura de equilibrio al mezclar hasta cinco cuerpos de agua, hielo, vapor, metales, etanol, vidrio, un calorímetro o una sustancia con tus datos, con los cambios de fase que hagan falta.', 'Si la energía no llega para fundir todo el hielo o condensar todo el vapor, dice cuántos gramos quedan de cada fase.', 'Tabla con el calor de cada cuerpo, el desarrollo etapa por etapa (m c ΔT y m L) y la curva de calentamiento de cada uno.'] },
+    ],
+    induccion: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: coeficiente de autoinducción de solenoides (con núcleo), toroides de sección rectangular y circular, cables coaxiales y líneas bifilares, con el desarrollo desde la ley de Ampère.', 'Inducción mutua entre dos solenoides, dos espiras, un hilo y una espira, y una bobina sobre un toroide, o a partir de L₁, L₂ y k, con el coeficiente de acoplamiento.', 'Flujo, energía magnética y fem inducida si das la corriente o cómo cambia.', 'Circuito RL al cerrar el interruptor o al quitar la fuente: constante de tiempo, corriente y tensión en la bobina en cualquier instante y su gráfica.'] },
+    ],
+    matrices: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: determinante por Gauss, por Sarrus o por Laplace; inversa por Gauss-Jordan o por adjuntos; rango; forma escalonada y escalonada reducida, con cada operación entre filas y la matriz después de cada paso.', 'Valores y vectores propios con el polinomio característico, las raíces exactas (también con radicales o complejas) y si la matriz es diagonalizable, con P y D.', 'Suma, resta, producto (elemento a elemento), producto por un número, potencia y traspuesta.', 'Fracciones exactas y números complejos en cualquier casilla: 3/4, 0,25, 2−3i o (1+i)/2.'] },
+    ],
+    complejos: [
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: escribe un complejo en forma binómica, polar, trigonométrica o exponencial y obtén las otras, con el módulo exacto y el argumento en su cuadrante.', 'Suma, resta, producto y cociente con fracciones exactas, potencias con De Moivre, raíces n-ésimas y ecuaciones de segundo grado.', 'Plano complejo con los afijos, el paralelogramo de la suma y el polígono de las raíces.'] },
+    ],
+    sistemas: [
+      { v: '0.2', fecha: '2026-10-24', cambios: ['Métodos de reducción, igualación y sustitución para sistemas de 2 o 3 ecuaciones con solución única, con cada ecuación numerada y cada paso explicado.'] },
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: hasta seis ecuaciones con seis incógnitas. Dice si el sistema es compatible determinado, indeterminado o incompatible con el teorema de Rouché-Frobenius y lo resuelve por Gauss con sustitución hacia atrás, por Gauss-Jordan, por la regla de Cramer o con la matriz inversa.', 'Si tiene infinitas soluciones, las da en forma paramétrica (λ, μ…).', 'Coeficientes con fracciones exactas, decimales o números complejos, como las mallas de un circuito de alterna, y nombres propios para las incógnitas (I1, I2…).', 'Comprobación de la solución sustituyendo en cada ecuación.'] },
+    ],
+    regresion: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas dentro del texto de la teoría se ven bien escritas, no con símbolos $.'] },
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: escribe o pega tus datos (x, y), con frecuencias si las tienes, y obtén medias, varianzas, covarianza, el coeficiente de correlación con su contraste y las dos rectas de regresión, con la tabla de cálculos y la nube de puntos.', 'Ajustes exponencial, potencial, logarítmico y parabólico, con R² para compararlos con la recta, y los residuos.', 'Estimaciones de y a partir de x y de x a partir de y, avisando si es una extrapolación.', 'Añade puntos pulsando en la gráfica.'] },
+    ],
+    estadistica: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: normal, t de Student, chi cuadrado, exponencial, binomial y Poisson, con su media y su varianza.', 'Probabilidades P(X ≤ a), P(X ≥ a), entre dos valores y, en las discretas, P(X = k) y con desigualdad estricta; cuantiles y valores críticos bilaterales.', 'Gráfica con el área (o las barras) que se pide sombreada.', 'Desarrollo como en clase: tipificación Z = (X − μ)/σ y Φ(z), fórmula de la binomial y de la Poisson término a término, y aproximación de la binomial por la normal con corrección de continuidad.'] },
+    ],
+    alterna: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: circuitos RLC en serie y en paralelo (o solo con algunos de los elementos) con impedancias complejas en forma binómica y polar, la corriente, la tensión o la corriente de cada elemento, las potencias activa, reactiva y aparente y el factor de potencia, con el desarrollo paso a paso.', 'Diagrama de fasores y ondas v(t) e i(t) desfasadas.', 'Resonancia: frecuencia de resonancia, factor de calidad y ancho de banda.', 'Corrección del factor de potencia: el condensador que hay que poner en paralelo y cuánto baja la corriente de la línea.'] },
+    ],
+    dinamica: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: bloque en un plano horizontal o inclinado con rozamiento estático y dinámico, una fuerza aplicada con ángulo y, si quieres, una masa colgando de una polea. Dice si el bloque se mueve o el rozamiento lo sujeta y da la normal, el rozamiento, la aceleración y la tensión, con el desarrollo paso a paso.', 'Máquina de Atwood, también con una polea con masa.', 'Dibujo con el diagrama de fuerzas a escala y la aceleración, y la velocidad y el tiempo al recorrer una distancia.'] },
+    ],
+    circuitos: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: escribe el circuito como una lista de resistencias, fuentes de tensión y fuentes de corriente entre nudos, y obtén los potenciales, la corriente y la potencia de cada elemento por el método de los nudos, con las ecuaciones de Kirchhoff, el sistema en forma matricial y el balance de potencias.', 'Equivalente de Thévenin y de Norton visto por la resistencia que elijas, y máxima transferencia de potencia.', 'Esquema del circuito con el potencial de cada nudo y el sentido de cada corriente.'] },
+    ],
+    'solido-rigido': [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: momentos de inercia de esferas, cilindros, aros, varillas, discos y placas, con el teorema de Steiner y el radio de giro.', 'Rodadura por un plano inclinado: aceleración, velocidad al final, rozamiento necesario para que no deslice y qué pasa si no basta; comparación del tiempo que tarda cada cuerpo.', 'Polea con masa de la que cuelga un cuerpo: aceleración, tensión y balance de energía.', 'Conservación del momento angular, como la patinadora que encoge los brazos, con la variación de la energía cinética.'] },
+    ],
+    ondas: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ecuación de una onda armónica con ω y k en múltiplos de π, posición, velocidad y aceleración de un punto del medio y desfase entre dos puntos.', 'Ondas estacionarias en cuerdas y en tubos abiertos o cerrados: frecuencia de cada armónico, nodos y vientres, y velocidad en la cuerda con √(T/μ).', 'Efecto Doppler con la fuente y el observador moviéndose, y nivel sonoro en decibelios a distintas distancias y con varias fuentes.', 'Animación de la onda, de la onda estacionaria y de los frentes de onda del Doppler.'] },
+    ],
+    gases: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ecuación de estado PV = nRT con P, V, T y n en varias unidades, los moles a partir de la masa y la densidad del gas.', 'Transformaciones isoterma, isobara, isocora y adiabática encadenadas, con el trabajo, el calor y la variación de energía interna de cada tramo, y ciclos con su rendimiento comparado con el de Carnot.', 'Diagrama P-V con las isotermas y el área del ciclo.', 'Teoría cinética: velocidades cuadrática media, media y más probable, energía cinética media y la distribución de Maxwell.'] },
+    ],
+    ciclos: [
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ciclos de Carnot, Otto y Diesel con un gas ideal, con la tabla de estados, el trabajo, el calor y la energía interna de cada tramo y el rendimiento comparado con su fórmula y con Carnot.', 'Máquinas térmicas, frigoríficos y bombas de calor: el dato que falta, el rendimiento o la eficiencia, el límite de Carnot y si la máquina es posible, con la entropía del universo.', 'Diagrama p-V con un punto que recorre el ciclo y el cilindro con el émbolo, y el esquema de flujos de energía de las máquinas.'] },
+    ],
+    ph: [
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: pH de ácidos y bases fuertes (también muy diluidos) y débiles, con el grado de disociación y la aproximación comprobada.', 'Mezclas de un ácido fuerte con una base fuerte y disoluciones reguladoras con Henderson-Hasselbalch, también al añadirles ácido o base.', 'Valoraciones de ácidos y bases fuertes y débiles: volumen y pH de equivalencia, pH a mitad, el pH con el volumen que pidas, el indicador adecuado y la curva.', 'Vaso con el color del indicador universal y las partículas, y una bureta que valora mientras se dibuja la curva.'] },
+    ],
+    fluidos: [
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: presión manométrica y absoluta a una profundidad, con la fuerza sobre el fondo, y alturas o densidades en un tubo en U con dos líquidos.', 'Prensa hidráulica: la fuerza que se consigue o la que hace falta para levantar una masa, con los recorridos de los émbolos.', 'Empuje de Arquímedes: si un cuerpo flota (y cuánto se sumerge) o se hunde (peso aparente y aceleración), y la densidad a partir del peso en el aire y dentro del fluido.', 'Tuberías con la ecuación de continuidad y Bernoulli, y el chorro de un depósito con Torricelli: velocidad, alcance, caudal y tiempo de vaciado.', 'Una animación de cada caso.'] },
+    ],
+    doppler: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas dentro del texto de la teoría se ven bien escritas, no con símbolos $.'] },
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: frecuencia que se oye con la fuente, el observador y el viento moviéndose, con la longitud de onda delante de la fuente.', 'Una fuente que pasa de largo: lo que se oye antes y después, el salto en hercios y semitonos y, al revés, su velocidad a partir de las dos frecuencias. Con el observador a un lado de la carretera, la gráfica del cambio gradual.', 'Eco en un obstáculo que se mueve (radar de tráfico, murciélago, ecografía Doppler): la frecuencia del eco y las pulsaciones, o la velocidad del obstáculo a partir de ellas.', 'Onda de choque: número de Mach, semiángulo del cono y cuándo se oye el estampido.', 'Animación de los frentes de onda y botón para escuchar la diferencia.'] },
+    ],
+    resistencias: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas dentro del texto de la teoría se ven bien escritas, no con símbolos $.'] },
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: elige los colores de una resistencia de 3, 4, 5 o 6 bandas y obtén el valor, la tolerancia, el margen del valor real y el coeficiente de temperatura, con el dibujo de la resistencia.', 'Del valor a los colores: escribe 4k7, 2M2 o 470R y te da las bandas y el valor normalizado más cercano de las series E6 a E96.', 'Códigos SMD de 3 y 4 cifras, con R y EIA-96.'] },
+    ],
+    faraday: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: fem y corriente inducidas en una barra que se desliza sobre unos raíles, con la fuerza que la frena y la potencia.', 'Bobina que gira en un campo (alternador): flujo y fem en función del tiempo, valores máximo y eficaz.', 'Flujo que cambia en un tiempo porque cambia el campo o el ángulo: fem media, corriente y carga.', 'Espira que atraviesa una región con campo: fem al entrar y al salir, fuerza y calor.', 'Sentido de la corriente por la ley de Lenz y animación con la gráfica de Φ y ε.'] },
+    ],
+  };
+  const de = (h) => ({ current: registros[h][0].v, log: registros[h] });
+  // Version.current y Version.log son los del simulador de electrostática
+  return { registros, de, ...de('electrostatica') };
+})();
+
+/* =====================================================================
+   Fórmulas en MathML a partir de una sintaxis sencilla (sin DOM salvo
+   Mates.pinta). En los textos, lo que va entre $…$ es una fórmula:
+     a/b            fracción (los paréntesis de fuera se quitan)
+     x^2, e^{−bt/m} exponente; v_0x, E_{c,máx} subíndice
+     √(…), ∛(…)     raíz
+     "m/s"          texto tal cual (unidades, palabras)
+     sen cos tg ln log exp máx mín   funciones; binom(n, k)
+   Una palabra que no es una función se lee letra a letra (mgh = m·g·h).
+   También acepta <sup>, <sub> y las etiquetas que devuelve f().
+   ===================================================================== */
+const Mates = (() => {
+  const FUNC = new Set(['sen', 'cos', 'tg', 'tan', 'ln', 'log', 'exp', 'arcsen', 'arccos', 'arctg', 'máx', 'mín', 'lím', 'senh', 'cosh', 'tgh']);
+  const OPS = '+-−=·×÷⇒⇔→←↔≈≠<>≤≥±∓,;:!∝∈∼≡∑∏∫∂∇⊥∥';
+  const escH = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  function tokens(src) {
+    const s = String(src)
+      .replace(/<sup>/g, '^{').replace(/<\/sup>/g, '}').replace(/<sub>/g, '_{').replace(/<\/sub>/g, '}')
+      .replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+    const out = [];
+    let i = 0, sp = false;
+    while (i < s.length) {
+      const c = s[i], resto = s.slice(i);
+      let m;
+      if (/\s/.test(c)) { sp = true; i++; continue; }
+      if ((m = resto.match(/^\d+(?:[.,]\d+)?/))) out.push({ t: 'n', v: m[0].replace('.', ','), sp });
+      else if (c === '"') { const j = s.indexOf('"', i + 1); m = [s.slice(i, j < 0 ? s.length : j + 1)]; out.push({ t: 'x', v: m[0].replace(/"/g, ''), sp }); }
+      else if ((m = resto.match(/^[\p{L}\p{M}∞]+[′″]*/u))) out.push({ t: 'w', v: m[0], sp });
+      else { m = [c]; out.push({ t: 's', v: c, sp }); }
+      i += m[0].length; sp = false;
+    }
+    return out;
+  }
+
+  // nodo: { m: MathML, dentro: MathML sin los paréntesis de fuera (o null) }
+  const nodo = (m, dentro = null) => ({ m, dentro });
+  const fila = (xs) => (xs.length === 1 ? xs[0] : `<mrow>${xs.join('')}</mrow>`);
+  const letra = (v) => (/^\d+(,\d+)?$/.test(v) ? `<mn>${v}</mn>` : [...v].length === 1 ? `<mi>${escH(v)}</mi>` : `<mi mathvariant="normal">${escH(v)}</mi>`);
+
+  function analiza(tk) {
+    let p = 0;
+    const ver = () => tk[p], es = (v) => tk[p] && tk[p].t === 's' && tk[p].v === v;
+    function secuencia(cierre) {
+      const xs = [];
+      let prevOp = true;
+      while (p < tk.length && !(cierre && es(cierre))) {
+        const k = ver();
+        if (k.t === 's' && OPS.includes(k.v)) {
+          p++;
+          const v = k.v === '-' ? '−' : k.v;
+          // un signo detrás de otro operador (o al principio) es de número: = −19,28
+          const signo = prevOp && (v === '−' || v === '+' || v === '±');
+          xs.push(v === '!' ? '<mo lspace="0">!</mo>' : v === ',' || v === ';' ? `<mo separator="true">${v}</mo>` : signo ? `<mo form="prefix" lspace="0" rspace="0.05em">${v}</mo>` : `<mo>${escH(v)}</mo>`);
+          prevOp = true; continue;
+        }
+        if (k.t === 's' && (k.v === ')' || k.v === '}' || k.v === ']')) { p++; continue; } // paréntesis sueltos
+        xs.push(fraccion().m); prevOp = false;
+      }
+      return xs;
+    }
+    function fraccion() {
+      let a = guiones();
+      while (es('/')) { p++; const b = guiones(); a = nodo(`<mfrac>${a.dentro ?? a.m}${b.dentro ?? b.m}</mfrac>`); }
+      return a;
+    }
+    function argumento() {
+      if (es('{')) { p++; const xs = secuencia('}'); p++; return fila(xs); }
+      if (es('-') || es('−')) { p++; const a = argumento(); return `<mrow><mo>−</mo>${a}</mrow>`; }
+      if (es('(')) { const a = atomo(); return a.m; }
+      // una racha de letras y números pegados: 0x, máx, 12
+      const k = ver();
+      if (!k) return '<mrow></mrow>';
+      if (k.t === 's') { p++; return `<mo>${escH(k.v)}</mo>`; }
+      let v = k.v; p++;
+      while (ver() && !ver().sp && (ver().t === 'n' || ver().t === 'w')) { v += ver().v; p++; }
+      return letra(v);
+    }
+    function guiones() {
+      const base = atomo();
+      let sub = null, sup = null;
+      for (;;) {
+        if (es('_') && sub === null) { p++; sub = argumento(); } else if (es('^') && sup === null) { p++; sup = argumento(); } else break;
+      }
+      if (sub === null && sup === null) return base;
+      const b = base.m;
+      return nodo(sub !== null && sup !== null ? `<msubsup>${b}${sub}${sup}</msubsup>` : sub !== null ? `<msub>${b}${sub}</msub>` : `<msup>${b}${sup}</msup>`);
+    }
+    function atomo() {
+      const k = ver();
+      if (!k) return nodo('<mrow></mrow>');
+      p++;
+      if (k.t === 'n') return nodo(`<mn>${k.v}</mn>`);
+      if (k.t === 'x') return nodo(`${k.sp && p > 1 ? '<mspace width="0.3em"></mspace>' : ''}<mtext>${escH(k.v)}</mtext>`);
+      if (k.t === 'w') {
+        // binom(n, k): número combinatorio
+        if (k.v === 'binom' && es('(')) { p++; const a = secuencia(','); p++; const b = secuencia(')'); p++; return nodo(`<mrow><mo>(</mo><mfrac linethickness="0">${fila(a)}${fila(b)}</mfrac><mo>)</mo></mrow>`); }
+        if (FUNC.has(k.v)) { let m = `<mi mathvariant="normal">${k.v}</mi>`; if (es('^')) { p++; m = `<msup>${m}${argumento()}</msup>`; } return nodo(`<mspace width="0.17em"></mspace>${m}<mo>&#x2061;</mo><mspace width="0.12em"></mspace>`); }
+        const ls = [...k.v.replace(/[′″]+$/, '')], pr = (k.v.match(/[′″]+$/) || [''])[0];
+        // las marcas combinadas (î, ĵ con acento) van con su letra
+        const grupos = []; for (const c of ls) { if (/\p{M}/u.test(c) && grupos.length) grupos[grupos.length - 1] += c; else grupos.push(c); }
+        // las mayúsculas griegas (Δ, Σ, Φ, Ω) van rectas, como en los libros
+        return nodo(fila(grupos.map((c) => (c === '∞' ? '<mi>∞</mi>' : /^[Α-Ω]$/.test(c) ? `<mi mathvariant="normal">${c}</mi>` : `<mi>${escH(c)}</mi>`)).concat(pr ? [`<mo lspace="0" rspace="0">${pr}</mo>`] : [])));
+      }
+      const v = k.v;
+      if (v === '(' || v === '[') { const c = v === '(' ? ')' : ']'; const xs = secuencia(c); if (es(c)) p++; const d = fila(xs), est = /<m(frac|sqrt|root)/.test(d) ? '' : ' stretchy="false"'; return nodo(`<mrow><mo${est}>${v}</mo>${d}<mo${est}>${c}</mo></mrow>`, d); }
+      if (v === '{') { const xs = secuencia('}'); if (es('}')) p++; const d = fila(xs); return nodo(`<mrow>${d}</mrow>`, d); }
+      if (v === '√') { const a = guiones(); return nodo(`<msqrt>${a.dentro ?? a.m}</msqrt>`); }
+      if (v === '∛') { const a = guiones(); return nodo(`<mroot>${a.dentro ?? a.m}<mn>3</mn></mroot>`); }
+      if (v === '|') return nodo('<mo stretchy="false" lspace="0.05em" rspace="0.05em">|</mo>');
+      if (v === '°' || v === '%' || v === '‰') return nodo(`<mi mathvariant="normal">${v}</mi>`);
+      return nodo(`<mo>${escH(v)}</mo>`);
+    }
+    return fila(secuencia(null));
+  }
+
+  const mathml = (src) => `<math><mstyle displaystyle="true">${analiza(tokens(src))}</mstyle></math>`;
+  // sustituye cada $…$ de un texto HTML por su MathML
+  const html = (s) => String(s ?? '').replace(/\$([^$]+)\$/g, (_, x) => mathml(x));
+  // convierte en el documento los elementos con class="m" (fórmulas escritas en el HTML)
+  function pinta(raiz) { if (typeof document === 'undefined') return; for (const el of (raiz || document).querySelectorAll('.m:not([data-m])')) { el.dataset.m = '1'; el.innerHTML = html(el.innerHTML.includes('$') ? el.innerHTML : `$${el.innerHTML}$`); } }
+  if (typeof document !== 'undefined') {
+    const st = document.createElement('style');
+    st.textContent = '@font-face { font-family: "STIX Two Math"; src: url(../../fuentes/stix-two-math.woff2) format("woff2"); font-display: swap }\nmath { font-family: "STIX Two Math", "Cambria Math", math; font-size: 1.08em }\nmath mtext { font-family: "STIX Two Text", "STIX Two Math", serif }';
+    document.head.appendChild(st);
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => pinta()); else pinta();
+  }
+  return { html, mathml, pinta, tokens };
+})();
+
+/* =====================================================================
+   Ciclos termodinámicos y máquinas térmicas (sin DOM): los ciclos de
+   Carnot, Otto y Diesel con un gas ideal (estados, trabajo, calor y
+   variación de energía interna de cada tramo y el rendimiento), y las
+   máquinas térmicas, frigoríficos y bombas de calor con el límite de
+   Carnot y la variación de entropía del universo.
+   Presiones en kPa, volúmenes en L, temperaturas en K y energías en J.
+   W es el trabajo que hace el gas: ΔU = Q − W.
+   ===================================================================== */
+const Ciclos = (() => {
+  const f = (x, d = 4) => {
+    if (!isFinite(x)) return '—';
+    if (Math.abs(x) < 1e-9) return '0';
+    const a = Math.abs(x);
+    const s = a >= 1e6 || a < 1e-3 ? x.toExponential(d - 1).replace(/\.?0+e/, 'e').replace('e', '·10^').replace(/\^([+-]?)(\d+)/, (_, sg, e) => `<sup>${sg === '-' ? '−' : ''}${+e}</sup>`) : String(+x.toPrecision(d));
+    return s.replace('.', ',').replace('-', '−');
+  };
+  const leeNum = (s) => +String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace(/[−–]/g, '-').replace(/[·x×*]10\^?([+\-]?\d+)/i, 'e$1');
+  const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
+  const Mayus = (s) => s[0].toUpperCase() + s.slice(1);
+  function lee(sc, k, nom, { opcional = false, signo = false } = {}) {
+    if (vacio(sc[k])) { if (opcional) return null; throw new Error(`Falta ${nom}`); }
+    const v = leeNum(sc[k]);
+    if (!isFinite(v)) throw new Error(`${Mayus(nom)} debe ser un número`);
+    if (!signo && v <= 0) throw new Error(`${Mayus(nom)} debe ser mayor que 0`);
+    return v;
+  }
+  const R = 8.314;
+  const GASES = { mono: { nom: 'monoatómico', cv: 1.5, cvT: '3/2' }, di: { nom: 'diatómico (aire)', cv: 2.5, cvT: '5/2' } };
+  function gasDe(sc) {
+    const g = GASES[sc.gas] || GASES.di, Cv = g.cv * R, Cp = Cv + R;
+    return { ...g, Cv, Cp, gam: Cp / Cv, frac: `C_v = {${g.cvT.split('/')[0]}}/{${g.cvT.split('/')[1]}} R` };
+  }
+
+  /* ---------- Tramos ---------- */
+  // a y b: { P (Pa), V (m³), T (K) }; devuelve W, Q y ΔU con el desarrollo
+  function tramo(tipo, a, b, n, G, de, hasta) {
+    let W, Q, U, html;
+    const nom = `${de}→${hasta}`;
+    U = n * G.Cv * (b.T - a.T);
+    if (tipo === 'isoterma') {
+      W = n * R * a.T * Math.log(b.V / a.V); Q = W; U = 0;
+      html = `Isoterma a ${f(a.T)} K: $ΔU = 0$ y $Q = W = n R T ln {V_${hasta}}/{V_${de}} = ${f(n)} · 8,314 · ${f(a.T)} · ln {${f(b.V * 1000)}}/{${f(a.V * 1000)}}$ = <b>${f(W)} J</b>`;
+    } else if (tipo === 'adiabatica') {
+      Q = 0; W = -U;
+      html = `Adiabática: $Q = 0$, $ΔU = n C_v (T_${hasta} − T_${de}) = ${f(n)} · ${f(G.Cv)} · (${f(b.T)} − ${f(a.T)})$ = ${f(U)} J, y $W = −ΔU$ = <b>${f(W)} J</b>`;
+    } else if (tipo === 'isocora') {
+      W = 0; Q = U;
+      html = `Isocora: $W = 0$ y $Q = ΔU = n C_v (T_${hasta} − T_${de}) = ${f(n)} · ${f(G.Cv)} · (${f(b.T)} − ${f(a.T)})$ = <b>${f(Q)} J</b>`;
+    } else {
+      W = a.P * (b.V - a.V); Q = n * G.Cp * (b.T - a.T);
+      html = `Isobara a ${f(a.P / 1000)} kPa: $W = P ΔV = ${f(a.P)} · (${f(b.V)} − ${f(a.V)})$ = ${f(W)} J, $Q = n C_p ΔT = ${f(n)} · ${f(G.Cp)} · (${f(b.T)} − ${f(a.T)})$ = <b>${f(Q)} J</b>, $ΔU = Q − W$ = ${f(U)} J`;
+    }
+    return { de, a: hasta, nom, tipo, W, Q, U, html };
+  }
+  const NOMBRE = { isoterma: 'isoterma', adiabatica: 'adiabática', isocora: 'isocora', isobara: 'isobara' };
+
+  // balance común de un ciclo
+  function balance(est, tramos, pasos, formula) {
+    const W = tramos.reduce((s, t) => s + t.W, 0), Qabs = tramos.reduce((s, t) => s + Math.max(0, t.Q), 0), Qced = tramos.reduce((s, t) => s + Math.min(0, t.Q), 0);
+    const eta = W / Qabs, Tmax = Math.max(...est.map((e) => e.T)), Tmin = Math.min(...est.map((e) => e.T)), etaC = 1 - Tmin / Tmax;
+    pasos.push({ t: 'Balance del ciclo', html: `Vuelve al estado inicial, así que $ΔU = 0$ y $W_{neto} = Q_{neto}$ = <b>${f(W)} J</b><br>Calor absorbido $Q_{abs} = ${f(Qabs)}$ J, cedido $Q_{ced} = ${f(Qced)}$ J` });
+    pasos.push({ t: 'Rendimiento', html: `$η = {W_{neto}}/{Q_{abs}} = {${f(W)}}/{${f(Qabs)}}$ = <b>${f(100 * eta, 3)} %</b>${formula ? `<br>${formula}` : ''}` });
+    pasos.push({ t: 'Comparado con Carnot', html: `Una máquina de Carnot entre la temperatura más alta y la más baja del ciclo tendría $η_C = 1 − T_{mín}/T_{máx} = 1 − ${f(Tmin)}/${f(Tmax)}$ = ${f(100 * etaC, 3)} %, el máximo posible entre esas temperaturas.` });
+    return { W, Qabs, Qced, eta, Tmax, Tmin, etaC };
+  }
+  // estado en unidades de clase, para la tabla
+  const estado = (nom, P, V, T) => ({ nom, P, V, T });
+  function inicial(sc, G) {
+    const T1 = lee(sc, 'T1', 'la temperatura inicial'), P1 = lee(sc, 'P1', 'la presión inicial') * 1000, V1 = lee(sc, 'V1', 'el volumen inicial') / 1000;
+    const n = (P1 * V1) / (R * T1);
+    return { T1, P1, V1, n, paso: { t: 'Gas y estado inicial', html: `Gas ideal ${G.nom}: $${G.frac} = ${f(G.Cv)}$ J/(mol·K), $C_p = C_v + R = ${f(G.Cp)}$ J/(mol·K), $γ = C_p/C_v = ${f(G.gam)}$.<br>$n = {P_1 V_1}/{R T_1} = {${f(P1)} · ${f(V1)}}/{8,314 · ${f(T1)}}$ = ${f(n)} mol` } };
+  }
+
+  /* ---------- Ciclo de Carnot ---------- */
+  // sc: { gas, Tc, Tf, n, V1, V2 (L): expansión isoterma de V1 a V2 a Tc }
+  function carnot(sc) {
+    const G = gasDe(sc), Tc = lee(sc, 'Tc', 'la temperatura del foco caliente'), Tf = lee(sc, 'Tf', 'la temperatura del foco frío');
+    if (Tf >= Tc) throw new Error('El foco frío tiene que estar a menos temperatura que el caliente');
+    const n = lee(sc, 'n', 'el número de moles'), V1 = lee(sc, 'V1', 'el volumen inicial') / 1000, V2 = lee(sc, 'V2', 'el volumen al acabar la expansión isoterma') / 1000;
+    if (V2 <= V1) throw new Error('En la expansión isoterma el volumen tiene que aumentar: V₂ > V₁');
+    const k = (Tc / Tf) ** (1 / (G.gam - 1)), V3 = V2 * k, V4 = V1 * k;
+    const P = (V, T) => (n * R * T) / V;
+    const est = [estado('1', P(V1, Tc), V1, Tc), estado('2', P(V2, Tc), V2, Tc), estado('3', P(V3, Tf), V3, Tf), estado('4', P(V4, Tf), V4, Tf)];
+    const pasos = [{ t: 'Gas', html: `Gas ideal ${G.nom}: $${G.frac} = ${f(G.Cv)}$ J/(mol·K) y $γ = ${f(G.gam)}$, con n = ${f(n)} mol.` }];
+    pasos.push({ t: 'Volúmenes de las adiabáticas', html: `En una adiabática $T V^{γ − 1}$ = cte, así que $V_3 = V_2 (T_c/T_f)^{1/(γ − 1)} = ${f(V2 * 1000)} · (${f(Tc)}/${f(Tf)})^{${f(1 / (G.gam - 1))}}$ = ${f(V3 * 1000)} L y $V_4 = V_1 (T_c/T_f)^{1/(γ − 1)}$ = ${f(V4 * 1000)} L` });
+    const tipos = ['isoterma', 'adiabatica', 'isoterma', 'adiabatica'];
+    const tramos = tipos.map((t, i) => tramo(t, est[i], est[(i + 1) % 4], n, G, est[i].nom, est[(i + 1) % 4].nom));
+    for (const t of tramos) pasos.push({ t: `Tramo ${t.nom} (${NOMBRE[t.tipo]})`, html: t.html });
+    const b = balance(est, tramos, pasos, `Coincide con la fórmula de Carnot: $η = 1 − T_f/T_c = 1 − ${f(Tf)}/${f(Tc)} = ${f(100 * (1 - Tf / Tc), 3)}$ %`);
+    pasos.push({ t: 'Entropía', html: `En la isoterma caliente el gas gana $ΔS = Q_{abs}/T_c = ${f(b.Qabs / Tc)}$ J/K y en la fría la pierde, $Q_{ced}/T_f = ${f(b.Qced / Tf)}$ J/K: en el ciclo reversible la entropía del universo no cambia.` });
+    return { modo: 'carnot', G, n, est, tramos, ...b, pasos };
+  }
+
+  /* ---------- Ciclo Otto ---------- */
+  // sc: { gas, r, T1, P1 (kPa), V1 (L), datos: 'T3' | 'Q', T3 o Q (calor de la combustión en J) }
+  function otto(sc) {
+    const G = gasDe(sc), r = lee(sc, 'r', 'la relación de compresión');
+    if (r <= 1) throw new Error('La relación de compresión tiene que ser mayor que 1');
+    const I = inicial(sc, G), { T1, P1, V1, n } = I, V2 = V1 / r;
+    const T2 = T1 * r ** (G.gam - 1), P2 = P1 * r ** G.gam;
+    let T3;
+    const pasos = [I.paso, { t: '1→2: compresión adiabática', html: `$V_2 = V_1/r = ${f(V1 * 1000)}/${f(r)} = ${f(V2 * 1000)}$ L, $T_2 = T_1 r^{γ − 1} = ${f(T1)} · ${f(r)}^{${f(G.gam - 1)}}$ = ${f(T2)} K, $P_2 = P_1 r^γ$ = ${f(P2 / 1000)} kPa` }];
+    if (sc.datos === 'Q') {
+      const Q = lee(sc, 'Q', 'el calor de la combustión'); T3 = T2 + Q / (n * G.Cv);
+      pasos.push({ t: '2→3: combustión a volumen constante', html: `$Q = n C_v (T_3 − T_2)$, $T_3 = T_2 + {Q}/{n C_v} = ${f(T2)} + {${f(Q)}}/{${f(n)} · ${f(G.Cv)}}$ = ${f(T3)} K` });
+    } else {
+      T3 = lee(sc, 'T3', 'la temperatura máxima');
+      if (T3 <= T2) throw new Error(`La temperatura máxima tiene que ser mayor que la del final de la compresión (${f(T2)} K)`);
+      pasos.push({ t: '2→3: combustión a volumen constante', html: `Llega a $T_3 = ${f(T3)}$ K con $V_3 = V_2$` });
+    }
+    const P3 = (P2 * T3) / T2, T4 = T3 * r ** (1 - G.gam), P4 = (P1 * T4) / T1;
+    pasos.push({ t: '3→4: expansión adiabática', html: `$T_4 = T_3 r^{1 − γ} = ${f(T3)} · ${f(r)}^{${f(1 - G.gam)}}$ = ${f(T4)} K, $P_4$ = ${f(P4 / 1000)} kPa, con $V_4 = V_1$` });
+    const est = [estado('1', P1, V1, T1), estado('2', P2, V2, T2), estado('3', P3, V2, T3), estado('4', P4, V1, T4)];
+    const tramos = ['adiabatica', 'isocora', 'adiabatica', 'isocora'].map((t, i) => tramo(t, est[i], est[(i + 1) % 4], n, G, est[i].nom, est[(i + 1) % 4].nom));
+    for (const t of tramos) pasos.push({ t: `Tramo ${t.nom} (${NOMBRE[t.tipo]})`, html: t.html });
+    const b = balance(est, tramos, pasos, `Con la fórmula del ciclo Otto: $η = 1 − r^{1 − γ} = 1 − ${f(r)}^{${f(1 - G.gam)}} = ${f(100 * (1 - r ** (1 - G.gam)), 3)}$ %: solo depende de la relación de compresión.`);
+    return { modo: 'otto', G, n, r, est, tramos, ...b, pasos };
+  }
+
+  /* ---------- Ciclo Diesel ---------- */
+  // sc: { gas, r, rc (relación de corte V3/V2), T1, P1 (kPa), V1 (L) }
+  function diesel(sc) {
+    const G = gasDe(sc), r = lee(sc, 'r', 'la relación de compresión'), rc = lee(sc, 'rc', 'la relación de corte');
+    if (r <= 1) throw new Error('La relación de compresión tiene que ser mayor que 1');
+    if (rc <= 1 || rc >= r) throw new Error('La relación de corte tiene que estar entre 1 y la de compresión');
+    const I = inicial(sc, G), { T1, P1, V1, n } = I, V2 = V1 / r, V3 = rc * V2;
+    const T2 = T1 * r ** (G.gam - 1), P2 = P1 * r ** G.gam, T3 = T2 * rc, T4 = T3 * (V3 / V1) ** (G.gam - 1), P4 = (P1 * T4) / T1;
+    const pasos = [I.paso,
+      { t: '1→2: compresión adiabática', html: `$V_2 = V_1/r = ${f(V2 * 1000)}$ L, $T_2 = T_1 r^{γ − 1}$ = ${f(T2)} K, $P_2 = P_1 r^γ$ = ${f(P2 / 1000)} kPa` },
+      { t: '2→3: combustión a presión constante', html: `$V_3 = r_c V_2 = ${f(rc)} · ${f(V2 * 1000)} = ${f(V3 * 1000)}$ L y, como P es constante, $T_3 = T_2 V_3/V_2 = T_2 r_c$ = ${f(T3)} K` },
+      { t: '3→4: expansión adiabática', html: `$T_4 = T_3 (V_3/V_1)^{γ − 1} = ${f(T3)} · (${f(V3 * 1000)}/${f(V1 * 1000)})^{${f(G.gam - 1)}}$ = ${f(T4)} K, $P_4$ = ${f(P4 / 1000)} kPa` }];
+    const est = [estado('1', P1, V1, T1), estado('2', P2, V2, T2), estado('3', P2, V3, T3), estado('4', P4, V1, T4)];
+    const tramos = ['adiabatica', 'isobara', 'adiabatica', 'isocora'].map((t, i) => tramo(t, est[i], est[(i + 1) % 4], n, G, est[i].nom, est[(i + 1) % 4].nom));
+    for (const t of tramos) pasos.push({ t: `Tramo ${t.nom} (${NOMBRE[t.tipo]})`, html: t.html });
+    const etaF = 1 - (rc ** G.gam - 1) / (G.gam * r ** (G.gam - 1) * (rc - 1));
+    const b = balance(est, tramos, pasos, `Con la fórmula del ciclo Diesel: $η = 1 − {r_c^γ − 1}/{γ r^{γ − 1} (r_c − 1)} = ${f(100 * etaF, 3)}$ %. Un Otto con la misma r tendría ${f(100 * (1 - r ** (1 - G.gam)), 3)} %.`);
+    return { modo: 'diesel', G, n, r, rc, est, tramos, ...b, pasos };
+  }
+
+  /* ---------- Máquina, frigorífico o bomba de calor ---------- */
+  // sc: { tipo: 'motor' | 'frigorifico' | 'bomba', Qc, Qf, W (J, dos de los tres), Tc, Tf (K, opcionales) }
+  function maquina(sc) {
+    const tipo = ['frigorifico', 'bomba'].includes(sc.tipo) ? sc.tipo : 'motor';
+    let Qc = lee(sc, 'Qc', 'el calor del foco caliente', { opcional: true }), Qf = lee(sc, 'Qf', 'el calor del foco frío', { opcional: true }), W = lee(sc, 'W', 'el trabajo', { opcional: true });
+    const datos = [Qc, Qf, W].filter((x) => x !== null).length;
+    if (datos < 2) throw new Error('Hacen falta dos de los tres: Q del foco caliente, Q del foco frío y W');
+    const pasos = [];
+    const motor = tipo === 'motor';
+    const ec = motor ? 'Q_c = W + Q_f' : 'Q_c = Q_f + W';
+    if (W === null) W = Qc - Qf; else if (Qc === null) Qc = W + Qf; else if (Qf === null) Qf = Qc - W;
+    if (Math.abs(Qc - W - Qf) > 1e-9 * Math.max(Qc, 1)) throw new Error('Los tres datos no cumplen el primer principio: Q del foco caliente tiene que ser W + Q del foco frío (deja uno vacío)');
+    if (!(Qf > 0) || !(W > 0)) throw new Error('Con esos datos sale un calor o un trabajo negativo: revisa cuál es mayor');
+    pasos.push({ t: 'Primer principio', html: `${motor ? 'La máquina toma calor del foco caliente, hace trabajo y cede el resto al frío' : 'Con el trabajo se saca calor del foco frío y se echa más al caliente'}: $${ec}$<br>$Q_c$ = ${f(Qc)} J, $Q_f$ = ${f(Qf)} J, $W$ = ${f(W)} J` });
+    let ef, nomEf, efC = null;
+    if (motor) { ef = W / Qc; nomEf = 'Rendimiento'; pasos.push({ t: 'Rendimiento', html: `$η = W/Q_c = ${f(W)}/${f(Qc)}$ = <b>${f(100 * ef, 3)} %</b>` }); }
+    else if (tipo === 'frigorifico') { ef = Qf / W; nomEf = 'Eficiencia (COP)'; pasos.push({ t: 'Eficiencia del frigorífico', html: `$COP = Q_f/W = ${f(Qf)}/${f(W)}$ = <b>${f(ef, 3)}</b>: saca ${f(ef, 3)} J del interior por cada julio de trabajo.` }); }
+    else { ef = Qc / W; nomEf = 'Eficiencia (COP)'; pasos.push({ t: 'Eficiencia de la bomba de calor', html: `$COP = Q_c/W = ${f(Qc)}/${f(W)}$ = <b>${f(ef, 3)}</b>: da ${f(ef, 3)} J de calor por cada julio de trabajo.` }); }
+    const Tc = lee(sc, 'Tc', 'la temperatura del foco caliente', { opcional: true }), Tf = lee(sc, 'Tf', 'la temperatura del foco frío', { opcional: true });
+    let posible = null, dS = null;
+    if (Tc && Tf) {
+      if (Tf >= Tc) throw new Error('El foco frío tiene que estar a menos temperatura que el caliente');
+      efC = motor ? 1 - Tf / Tc : tipo === 'frigorifico' ? Tf / (Tc - Tf) : Tc / (Tc - Tf);
+      dS = motor ? -Qc / Tc + Qf / Tf : Qc / Tc - Qf / Tf;
+      posible = ef <= efC * (1 + 1e-9);
+      pasos.push({ t: 'Límite de Carnot', html: `${motor ? `$η_C = 1 − T_f/T_c = 1 − ${f(Tf)}/${f(Tc)}$ = ${f(100 * efC, 3)} %` : tipo === 'frigorifico' ? `$COP_C = {T_f}/{T_c − T_f} = {${f(Tf)}}/{${f(Tc)} − ${f(Tf)}}$ = ${f(efC, 3)}` : `$COP_C = {T_c}/{T_c − T_f} = {${f(Tc)}}/{${f(Tc)} − ${f(Tf)}}$ = ${f(efC, 3)}`}<br>${posible ? (Math.abs(ef - efC) < 1e-9 * efC ? 'Coincide con el de Carnot: sería una máquina reversible, ideal.' : 'Es menor que el de Carnot: la máquina es posible (e irreversible).') : '<b>Es mayor que el de Carnot: esa máquina es imposible</b>, violaría el segundo principio.'}` });
+      pasos.push({ t: 'Entropía del universo', html: `Los focos cambian su entropía: $ΔS = ${motor ? `−Q_c/T_c + Q_f/T_f = −${f(Qc)}/${f(Tc)} + ${f(Qf)}/${f(Tf)}` : `Q_c/T_c − Q_f/T_f = ${f(Qc)}/${f(Tc)} − ${f(Qf)}/${f(Tf)}`}$ = <b>${f(dS)} J/K</b> por ciclo (la del fluido de la máquina no cambia). ${dS >= -1e-12 ? 'Es positiva o cero, como exige el segundo principio.' : 'Sale negativa: imposible.'}` });
+    }
+    return { modo: 'maquina', tipo, Qc, Qf, W, ef, nomEf, efC, posible, dS, Tc, Tf, pasos };
+  }
+
+  function resolver(sc) {
+    if (sc.modo === 'otto') return otto(sc);
+    if (sc.modo === 'diesel') return diesel(sc);
+    if (sc.modo === 'maquina') return maquina(sc);
+    return carnot(sc);
+  }
+
+  const ejemplos = [
+    { clave: 'carnot', nombre: 'Ciclo de Carnot entre 600 K y 300 K', sc: { modo: 'carnot', gas: 'di', Tc: '600', Tf: '300', n: '1', V1: '10', V2: '20' } },
+    { clave: 'carnot-mono', nombre: 'Carnot con un gas monoatómico', sc: { modo: 'carnot', gas: 'mono', Tc: '500', Tf: '350', n: '0.5', V1: '5', V2: '15' } },
+    { clave: 'otto', nombre: 'Motor de gasolina (ciclo Otto)', sc: { modo: 'otto', gas: 'di', r: '8', T1: '300', P1: '100', V1: '0.5', datos: 'T3', T3: '1800' } },
+    { clave: 'otto-calor', nombre: 'Ciclo Otto con el calor de la combustión', sc: { modo: 'otto', gas: 'di', r: '10', T1: '290', P1: '95', V1: '0.6', datos: 'Q', Q: '800' } },
+    { clave: 'diesel', nombre: 'Motor diésel', sc: { modo: 'diesel', gas: 'di', r: '18', rc: '2', T1: '300', P1: '100', V1: '1' } },
+    { clave: 'motor', nombre: 'Máquina térmica: ¿es posible?', sc: { modo: 'maquina', tipo: 'motor', Qc: '1000', Qf: '', W: '350', Tc: '500', Tf: '300' } },
+    { clave: 'imposible', nombre: 'Un inventor promete un 60 %', sc: { modo: 'maquina', tipo: 'motor', Qc: '1000', Qf: '400', W: '', Tc: '600', Tf: '300' } },
+    { clave: 'frigorifico', nombre: 'Frigorífico doméstico', sc: { modo: 'maquina', tipo: 'frigorifico', Qc: '', Qf: '300', W: '100', Tc: '298', Tf: '268' } },
+    { clave: 'bomba', nombre: 'Bomba de calor para calefacción', sc: { modo: 'maquina', tipo: 'bomba', Qc: '3500', Qf: '', W: '1000', Tc: '308', Tf: '278' } },
+  ];
+
+  return { resolver, carnot, otto, diesel, maquina, ejemplos, f, R, GASES };
+})();
+
+/* =====================================================================
+   Ciclos termodinámicos: interfaz (modo, datos, resultados, tabla de
+   estados y tramos, diagrama p-V con un punto que recorre el ciclo y el
+   cilindro con el émbolo, o el esquema de flujos de una máquina, y
+   desarrollo). El cálculo está en ciclos/fisica.js (Ciclos).
+   ===================================================================== */
+(() => {
+  const $ = (q) => document.querySelector(q);
+  const C = Ciclos, f = C.f, CLAVE = 'ciclos-v1';
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const copia = (o) => JSON.parse(JSON.stringify(o));
+  const txt = (h) => String(h).replace(/<sup>(.*?)<\/sup>/g, (_, e) => e.replace(/−/g, '⁻').replace(/\d/g, (d) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d])).replace(/<[^>]+>/g, '');
+  const MODOS = [['carnot', 'Ciclo de Carnot'], ['otto', 'Ciclo Otto (gasolina)'], ['diesel', 'Ciclo Diesel'], ['maquina', 'Máquina, frigorífico o bomba de calor']];
+
+  let sc = copia(C.ejemplos[0].sc);
+  try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && MODOS.some(([k]) => k === g.modo)) sc = g; } catch (e) { /* sin almacenamiento */ }
+  const guarda = () => { try { localStorage.setItem(CLAVE, JSON.stringify(sc)); } catch (e) { /* sin almacenamiento */ } };
+  let sol = null, col = {}, anda = true;
+
+  /* ---------- Formulario ---------- */
+  const fila = (k, nom, un) => `<label for="f-${k}">${nom}${un ? ` <small>${un}</small>` : ''}</label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc[k] ?? '')}" inputmode="decimal" autocomplete="off">`;
+  const opciones = (k, lista) => lista.map(([v, t]) => `<option value="${v}"${sc[k] === v ? ' selected' : ''}>${t}</option>`).join('');
+  const elige = (k, nom, lista) => `<label for="f-${k}">${nom}</label><select id="f-${k}" class="in" data-k="${k}">${opciones(k, lista)}</select>`;
+  const sep = (t) => `<div class="sep">${t}</div>`;
+  const gas = () => elige('gas', 'Gas', [['di', 'Diatómico (aire), γ = 1,4'], ['mono', 'Monoatómico, γ = 5/3']]);
+  const NOTAS = {
+    carnot: 'El ciclo empieza en el estado 1 con una expansión isoterma a la temperatura del foco caliente, de V₁ a V₂.',
+    otto: 'La relación de compresión es r = V₁/V₂. La combustión se da con la temperatura que alcanza el gas o con el calor que recibe.',
+    diesel: 'La relación de corte es V₃/V₂: cuánto se expande el gas mientras se inyecta el combustible.',
+    maquina: 'Escribe dos de los tres (Q del foco caliente, Q del foco frío y W) y deja el otro vacío. Con las temperaturas de los focos se compara con Carnot.',
+  };
+  function formulario() {
+    let h = elige('modo', 'Qué calcular', MODOS);
+    if (sc.modo === 'carnot') h += gas() + fila('Tc', 'Temperatura del foco caliente', 'K') + fila('Tf', 'Temperatura del foco frío', 'K') + fila('n', 'Moles de gas', 'mol') + fila('V1', 'Volumen inicial V₁', 'L') + fila('V2', 'Volumen tras la isoterma V₂', 'L');
+    else if (sc.modo === 'otto') {
+      h += gas() + fila('r', 'Relación de compresión r') + fila('T1', 'Temperatura inicial', 'K') + fila('P1', 'Presión inicial', 'kPa') + fila('V1', 'Volumen inicial (cilindrada)', 'L');
+      h += elige('datos', 'Combustión', [['T3', 'Conozco la temperatura máxima'], ['Q', 'Conozco el calor que recibe']]) + (sc.datos === 'Q' ? fila('Q', 'Calor de la combustión', 'J') : fila('T3', 'Temperatura máxima T₃', 'K'));
+    } else if (sc.modo === 'diesel') h += gas() + fila('r', 'Relación de compresión r') + fila('rc', 'Relación de corte r<sub>c</sub>') + fila('T1', 'Temperatura inicial', 'K') + fila('P1', 'Presión inicial', 'kPa') + fila('V1', 'Volumen inicial', 'L');
+    else {
+      h += elige('tipo', 'Qué es', [['motor', 'Una máquina térmica (motor)'], ['frigorifico', 'Un frigorífico'], ['bomba', 'Una bomba de calor']]);
+      h += fila('Qc', 'Calor del foco caliente Q<sub>c</sub>', 'J') + fila('Qf', 'Calor del foco frío Q<sub>f</sub>', 'J') + fila('W', 'Trabajo W', 'J') + sep('Opcional') + fila('Tc', 'Temperatura del foco caliente', 'K') + fila('Tf', 'Temperatura del foco frío', 'K');
+    }
+    $('#campos').innerHTML = h;
+    $('#nota').textContent = NOTAS[sc.modo];
+  }
+  const vacioC = (v) => v === undefined || v === null || String(v).trim() === '';
+  $('#campos').addEventListener('input', (e) => { const t = e.target; if (t.tagName !== 'INPUT') return; sc[t.dataset.k] = t.value; $('#ejemplos').value = ''; calcula(); });
+  $('#campos').addEventListener('change', (e) => {
+    const t = e.target;
+    if (t.tagName !== 'SELECT') return;
+    sc[t.dataset.k] = t.value;
+    if (t.dataset.k === 'modo') sc = copia(C.ejemplos.find((x) => x.sc.modo === t.value).sc);
+    else { const ej = C.ejemplos.find((x) => x.sc.modo === sc.modo && x.sc[t.dataset.k] === t.value); if (ej) for (const [k, v] of Object.entries(ej.sc)) if (vacioC(sc[k])) sc[k] = v; }
+    $('#ejemplos').value = ''; formulario(); calcula();
+  });
+
+  /* ---------- Ejemplos ---------- */
+  const sel = $('#ejemplos');
+  sel.innerHTML = '<option value="">Ejemplos…</option>' + C.ejemplos.map((e) => `<option value="${e.clave}">${e.nombre}</option>`).join('');
+  sel.addEventListener('change', () => { if (sel.value) abrirEjemplo(sel.value); });
+  function abrirEjemplo(clave) {
+    const e = C.ejemplos.find((x) => x.clave === clave);
+    if (!e) return;
+    sc = copia(e.sc);
+    formulario(); calcula(); sel.value = clave;
+  }
+
+  /* ---------- Cálculo ---------- */
+  const dato = (t, v) => `<div><span>${t}</span><b>${v}</b></div>`;
+  const NOMT = { isoterma: 'isoterma', adiabatica: 'adiabática', isocora: 'isocora', isobara: 'isobara' };
+  function calcula() {
+    const err = $('#error');
+    try { sol = C.resolver(sc); } catch (e) {
+      sol = null; err.textContent = e.message; err.hidden = false;
+      $('#resumen').innerHTML = ''; $('#pasos').innerHTML = ''; $('#leyenda').textContent = ''; $('#tablas').hidden = true;
+      dibuja(); return;
+    }
+    err.hidden = true; guarda();
+    let h, ley;
+    if (sol.modo === 'maquina') {
+      h = dato(sol.nomEf, sol.tipo === 'motor' ? `η = ${f(100 * sol.ef, 3)} %` : `COP = ${f(sol.ef, 3)}`) + dato('Trabajo', `W = ${f(sol.W)} J`) + dato('Calor del foco caliente', `Q<sub>c</sub> = ${f(sol.Qc)} J`) + dato('Calor del foco frío', `Q<sub>f</sub> = ${f(sol.Qf)} J`) + (sol.efC !== null ? dato('Límite de Carnot', sol.tipo === 'motor' ? `η<sub>C</sub> = ${f(100 * sol.efC, 3)} %` : `COP<sub>C</sub> = ${f(sol.efC, 3)}`) + dato('¿Es posible?', sol.posible ? 'sí' : 'no: supera a Carnot') : '');
+      ley = 'El grosor de cada flecha es proporcional a la energía que pasa en cada ciclo.';
+      $('#tablas').hidden = true;
+    } else {
+      h = dato('Rendimiento', `η = ${f(100 * sol.eta, 3)} %`) + dato('Trabajo neto', `W = ${f(sol.W)} J`) + dato('Calor absorbido', `Q<sub>abs</sub> = ${f(sol.Qabs)} J`) + dato('Calor cedido', `Q<sub>ced</sub> = ${f(sol.Qced)} J`) + dato('Carnot entre T<sub>máx</sub> y T<sub>mín</sub>', `η<sub>C</sub> = ${f(100 * sol.etaC, 3)} %`);
+      ley = 'El punto recorre el ciclo y el cilindro muestra el émbolo y la temperatura del gas. El área encerrada es el trabajo neto.';
+      $('#estados').innerHTML = '<tr><th>Estado</th><th>P (kPa)</th><th>V (L)</th><th>T (K)</th></tr>' + sol.est.map((e) => `<tr><td>${e.nom}</td><td>${f(e.P / 1000)}</td><td>${f(e.V * 1000)}</td><td>${f(e.T)}</td></tr>`).join('');
+      $('#tramos').innerHTML = '<tr><th>Tramo</th><th>Proceso</th><th>W (J)</th><th>Q (J)</th><th>ΔU (J)</th></tr>' + sol.tramos.map((t) => `<tr><td>${t.nom}</td><td>${NOMT[t.tipo]}</td><td>${f(t.W)}</td><td>${f(t.Q)}</td><td>${f(t.U)}</td></tr>`).join('') + `<tr class="tot"><td>Ciclo</td><td></td><td>${f(sol.W)}</td><td>${f(sol.W)}</td><td>0</td></tr>`;
+      $('#tablas').hidden = false;
+    }
+    $('#resumen').innerHTML = h; $('#leyenda').textContent = ley;
+    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
+    tA = 0; dibuja();
+  }
+
+  /* ---------- Animación ---------- */
+  $('#play').addEventListener('click', () => { anda = !anda; $('#play').textContent = anda ? '⏸ Pausa' : '▶ Seguir'; });
+  function colores() { const cs = getComputedStyle(document.documentElement); for (const k of ['--ink', '--muted', '--line', '--accent', '--bg', '--peso', '--normal', '--roz', '--suelo', '--cuerpo', '--panel', '--tension']) col[k] = cs.getPropertyValue(k).trim(); }
+  function texto(g, x, y, t, color = col['--ink'], al = 'center', peso = '') { g.font = `${peso}12px "IBM Plex Sans", system-ui, sans-serif`; g.fillStyle = color; g.textAlign = al; g.textBaseline = 'middle'; g.fillText(t, x, y); }
+  function flecha(g, x, y, dx, dy, color, grosor = 2) {
+    const l = Math.hypot(dx, dy); if (l < 4) return;
+    const ux = dx / l, uy = dy / l, cab = 6 + grosor * 1.6;
+    g.strokeStyle = color; g.fillStyle = color; g.lineWidth = grosor; g.lineCap = 'butt'; g.beginPath(); g.moveTo(x, y); g.lineTo(x + dx - ux * cab, y + dy - uy * cab); g.stroke();
+    g.beginPath(); g.moveTo(x + dx, y + dy); g.lineTo(x + dx - ux * cab - uy * cab * 0.6, y + dy - uy * cab + ux * cab * 0.6); g.lineTo(x + dx - ux * cab + uy * cab * 0.6, y + dy - uy * cab - ux * cab * 0.6); g.closePath(); g.fill(); g.lineCap = 'round';
+  }
+  const punto = (g, x, y, r, color) => { g.fillStyle = color; g.beginPath(); g.arc(x, y, r, 0, 2 * Math.PI); g.fill(); };
+  let tA = 0;
+  // un punto del tramo t con s de 0 a 1: V y P según el tipo de proceso
+  function enTramo(t, s) {
+    const a = sol.est.find((e) => e.nom === t.de), b = sol.est.find((e) => e.nom === t.a);
+    if (t.tipo === 'isocora') return { V: a.V, P: a.P + (b.P - a.P) * s };
+    const V = a.V + (b.V - a.V) * s;
+    if (t.tipo === 'isobara') return { V, P: a.P };
+    if (t.tipo === 'isoterma') return { V, P: (a.P * a.V) / V };
+    return { V, P: a.P * (a.V / V) ** sol.G.gam };
+  }
+  // temperatura a color, del azul al rojo
+  const colorT = (T) => { const s = Math.max(0, Math.min(1, (T - sol.Tmin) / (sol.Tmax - sol.Tmin || 1))); return `rgb(${Math.round(60 + 180 * s)}, ${Math.round(110 - 40 * s)}, ${Math.round(210 - 160 * s)})`; };
+
+  function dibuja() {
+    const c = $('#escena'), dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
+    if (!w || !h) return;
+    if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
+    const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h); g.lineCap = 'round'; g.lineJoin = 'round';
+    if (!sol) return;
+    if (!col['--ink']) colores();
+    if (sol.modo === 'maquina') return flujos(g, w, h);
+    // diagrama p-V
+    const ml = 56, mt = 18, mb = 34, wd = Math.min(w * 0.66, w - 150), mr = w - wd;
+    const Vmax = Math.max(...sol.est.map((e) => e.V)) * 1.08, Pmax = Math.max(...sol.est.map((e) => e.P)) * 1.08;
+    const X = (V) => ml + (V / Vmax) * (wd - ml - 10), Y = (P) => mt + (1 - P / Pmax) * (h - mt - mb);
+    g.strokeStyle = col['--muted']; g.lineWidth = 1; g.beginPath(); g.moveTo(ml, mt); g.lineTo(ml, h - mb); g.lineTo(wd, h - mb); g.stroke();
+    texto(g, ml - 8, mt, 'P (kPa)', col['--muted'], 'right'); texto(g, wd, h - mb + 16, 'V (L)', col['--muted'], 'right');
+    for (const k of [0.5, 1]) { texto(g, ml - 6, Y(Pmax * k / 1.08), txt(f((Pmax * k) / 1.08 / 1000, 3)), col['--muted'], 'right'); texto(g, X((Vmax * k) / 1.08), h - mb + 14, txt(f((Vmax * k) / 1.08 * 1000, 3)), col['--muted']); }
+    // área del trabajo neto
+    g.beginPath();
+    sol.tramos.forEach((t, i) => { for (let k = 0; k <= 40; k++) { const q = enTramo(t, k / 40); (i || k ? g.lineTo : g.moveTo).call(g, X(q.V), Y(q.P)); } });
+    g.closePath(); g.fillStyle = col['--accent']; g.globalAlpha = 0.12; g.fill(); g.globalAlpha = 1;
+    sol.tramos.forEach((t) => {
+      g.strokeStyle = t.Q > 1e-9 ? col['--peso'] : t.Q < -1e-9 ? col['--tension'] : col['--ink']; g.lineWidth = 2.4; g.beginPath();
+      for (let k = 0; k <= 40; k++) { const q = enTramo(t, k / 40); k ? g.lineTo(X(q.V), Y(q.P)) : g.moveTo(X(q.V), Y(q.P)); }
+      g.stroke();
+      const m = enTramo(t, 0.5); flecha(g, X(m.V), Y(m.P), (X(enTramo(t, 0.56).V) - X(m.V)) * 3, (Y(enTramo(t, 0.56).P) - Y(m.P)) * 3, g.strokeStyle, 1.5);
+    });
+    for (const e of sol.est) { punto(g, X(e.V), Y(e.P), 4, col['--ink']); texto(g, X(e.V) + 10, Y(e.P) - 10, e.nom, col['--ink'], 'left', '600 '); }
+    // punto que recorre el ciclo: 2 s por tramo
+    const n = sol.tramos.length, u = (tA / 2) % n, i = Math.floor(u), t = sol.tramos[i], q = enTramo(t, u - i), T = (q.P * q.V) / (sol.n * C.R);
+    punto(g, X(q.V), Y(q.P), 6.5, colorT(T));
+    // cilindro con el émbolo
+    const cx = wd + 30, cw = Math.min(90, mr - 60), cb = h - mb, ch = h - mt - mb - 30, alto = (q.V / Vmax) * ch;
+    g.fillStyle = colorT(T); g.globalAlpha = 0.6; g.fillRect(cx, cb - alto, cw, alto); g.globalAlpha = 1;
+    g.strokeStyle = col['--suelo']; g.lineWidth = 3; g.beginPath(); g.moveTo(cx, cb - ch - 10); g.lineTo(cx, cb); g.lineTo(cx + cw, cb); g.lineTo(cx + cw, cb - ch - 10); g.stroke();
+    g.fillStyle = col['--ink']; g.fillRect(cx + 2, cb - alto - 8, cw - 4, 8); g.fillRect(cx + cw / 2 - 3, cb - alto - 8 - 30, 6, 30);
+    texto(g, cx + cw / 2, cb + 14, `${txt(f(T, 3))} K`, col['--ink'], 'center', '600 ');
+    if (t.Q > 1e-9) { flecha(g, cx + cw / 2, cb + 40, 0, -22, col['--peso'], 3); texto(g, cx + cw + 8, cb - 10, 'entra Q', col['--peso'], 'left'); }
+    else if (t.Q < -1e-9) { flecha(g, cx + cw + 4, cb - alto / 2, 26, 0, col['--tension'], 3); texto(g, cx + cw + 8, cb - alto / 2 - 14, 'sale Q', col['--tension'], 'left'); }
+    else texto(g, cx + cw + 8, cb - 10, 'aislado', col['--muted'], 'left');
+    texto(g, cx, mt, `${t.nom}: ${NOMT[t.tipo]}`, col['--ink'], 'left', '600 ');
+  }
+  // máquina: focos y flechas de energía
+  function flujos(g, w, h) {
+    const cx = w / 2, fw = Math.min(260, w * 0.5), yC = 30, yF = h - 50, yM = h / 2, E = Math.max(sol.Qc, sol.Qf, sol.W), gr = (x) => 3 + (22 * x) / E;
+    const motor = sol.tipo === 'motor';
+    g.fillStyle = col['--peso']; g.globalAlpha = 0.2; g.fillRect(cx - fw / 2, yC - 20, fw, 40); g.globalAlpha = 1;
+    g.fillStyle = col['--tension']; g.globalAlpha = 0.2; g.fillRect(cx - fw / 2, yF - 20, fw, 40); g.globalAlpha = 1;
+    texto(g, cx, yC, `Foco caliente${sol.Tc ? ` · ${txt(f(sol.Tc))} K` : ''}`, col['--peso'], 'center', '600 ');
+    texto(g, cx, yF, `Foco frío${sol.Tf ? ` · ${txt(f(sol.Tf))} K` : ''}`, col['--tension'], 'center', '600 ');
+    punto(g, cx, yM, 28, col['--cuerpo']); texto(g, cx, yM, motor ? 'motor' : sol.tipo === 'frigorifico' ? 'frigorífico' : 'bomba', col['--ink'], 'center', '600 ');
+    const s = (tA * 0.6) % 1;
+    if (motor) {
+      flecha(g, cx, yC + 22, 0, yM - 30 - yC - 22, col['--peso'], gr(sol.Qc)); flecha(g, cx, yM + 30, 0, yF - 22 - yM - 30, col['--tension'], gr(sol.Qf)); flecha(g, cx + 30, yM, w * 0.22, 0, col['--normal'], gr(sol.W));
+      punto(g, cx, yC + 22 + s * (yM - 52 - yC), 3, col['--panel']); punto(g, cx, yM + 30 + s * (yF - 52 - yM), 3, col['--panel']); punto(g, cx + 30 + s * w * 0.2, yM, 3, col['--panel']);
+    } else {
+      flecha(g, cx, yF - 22, 0, -(yF - 22 - yM - 30), col['--tension'], gr(sol.Qf)); flecha(g, cx, yM - 30, 0, -(yM - 30 - yC - 22), col['--peso'], gr(sol.Qc)); flecha(g, cx + 30 + w * 0.22, yM, -w * 0.22, 0, col['--normal'], gr(sol.W));
+      punto(g, cx, yF - 22 - s * (yF - 52 - yM), 3, col['--panel']); punto(g, cx, yM - 30 - s * (yM - 52 - yC), 3, col['--panel']); punto(g, cx + 30 + w * 0.22 - s * w * 0.2, yM, 3, col['--panel']);
+    }
+    texto(g, cx + 18, (yC + yM) / 2, `Q_c = ${txt(f(sol.Qc))} J`.replace('Q_c', 'Qc'), col['--peso'], 'left');
+    texto(g, cx + 18, (yM + yF) / 2, `Qf = ${txt(f(sol.Qf))} J`, col['--tension'], 'left');
+    texto(g, cx + 40 + w * 0.11, yM - 22, `W = ${txt(f(sol.W))} J`, col['--normal'], 'center');
+    if (sol.posible === false) texto(g, 14, h - 14, '¡Imposible! Supera el rendimiento de Carnot', col['--peso'], 'left', '700 ');
+  }
+  let ultimo = performance.now();
+  function bucle() {
+    const ahora = performance.now(), dt = Math.min(0.1, (ahora - ultimo) / 1000); ultimo = ahora;
+    if (anda && sol) { tA += dt; dibuja(); }
+    requestAnimationFrame(bucle);
+  }
+  window.addEventListener('resize', dibuja);
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { colores(); dibuja(); });
+
+  const ver = $('#ver'); if (ver) ver.textContent = Version.de('ciclos').current;
+  formulario(); colores(); calcula(); requestAnimationFrame(bucle);
+  window.CiclosApp = { abrirEjemplo, resultado: () => sol && { modo: sol.modo, eta: sol.eta, W: sol.W, ef: sol.ef, posible: sol.posible }, estado: () => copia(sc), pausa: () => { anda = false; } };
+})();
+
+/* =====================================================================
+   «Mis ejercicios»: barra lateral común a todas las herramientas, como la
+   del simulador de electrostática. Guarda en este navegador el estado de la
+   herramienta (lo que cada app ya deja en localStorage con su CLAVE) con un
+   título, una carpeta y la marca de fijado; abre, renombra, borra, exporta e
+   importa ejercicios en archivos .simu.json. Abrir uno deja su estado en la
+   CLAVE de la app y recarga la página, así sirve para cualquier herramienta.
+   ===================================================================== */
+const Biblioteca = (() => {
+  // carpeta de la herramienta → clave de localStorage donde la app guarda su estado
+  const CLAVES = {
+    alterna: 'alterna-v1', calorimetria: 'calorimetria-v1', circuitos: 'circuitos-v1', condensadores: 'condensadores-v1',
+    'configuracion-electronica': 'configuracion-v1', dinamica: 'dinamica-v1', disoluciones: 'disoluciones-v1', ph: 'ph-v1', doppler: 'doppler-v1', fluidos: 'fluidos-v1', ciclos: 'ciclos-v1', estadistica: 'estadistica-v1', regresion: 'regresion-v1',
+    faraday: 'faraday-v1', gases: 'gases-v1', induccion: 'induccion-v1', magnetostatica: 'magneto-cur-v1', 'masa-molar': 'masa-molar-v1',
+    matrices: 'matrices-v1', resistencias: 'resistencias-v1', ondas: 'ondas-v1', sistemas: 'sistemas-v1', complejos: 'complejos-v1', 'solido-rigido': 'solido-rigido-v1', 'tiro-parabolico': 'tiro-v1',
+    'trabajo-y-energia': 'energia-v1',
+  };
+  const FORMATO = 'simulaciencia-ejercicios', ANCHO = 1280;
+  const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const lee = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); return v ?? d; } catch (e) { return d; } };
+  const escribe = (k, v) => { try { localStorage.setItem(k, typeof v === 'string' ? v : JSON.stringify(v)); return true; } catch (e) { return false; } };
+  const norm = (s) => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+
+  const CSS = `
+.bib-btn { display: inline-flex; align-items: center; gap: 6px; font: 600 13.5px var(--f-ui, system-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px; cursor: pointer; white-space: nowrap }
+.bib-btn:hover, .bib-btn[aria-expanded=true] { border-color: var(--accent); color: var(--accent) }
+.bib { position: fixed; top: 0; left: 0; bottom: 0; width: 290px; max-width: 88vw; z-index: 60; background: var(--panel); border-right: 1px solid var(--line); display: flex; flex-direction: column; transform: translateX(-102%); transition: transform .18s ease; font: 13.5px/1.4 var(--f-ui, system-ui); color: var(--ink) }
+.bib.abierta { transform: none; box-shadow: 4px 0 24px rgba(0,0,0,.12) }
+.bib-scrim { position: fixed; inset: 0; z-index: 59; background: rgba(0,0,0,.3) }
+@media (min-width: ${ANCHO}px) { body.bib-fija { padding-left: 290px } body.bib-fija .bib.abierta { box-shadow: none } body.bib-fija .bib-scrim { display: none } }
+@media (prefers-reduced-motion: reduce) { .bib { transition: none } }
+.bib-h { display: flex; align-items: center; justify-content: space-between; padding: 12px 12px 8px 14px }
+.bib-h b { font: 600 15px var(--f-ui, system-ui) }
+.bib-x { border: 0; background: none; color: var(--muted); font-size: 20px; line-height: 1; cursor: pointer; padding: 2px 6px; border-radius: 6px }
+.bib-x:hover { background: var(--bg) }
+.bib-acc { display: grid; gap: 2px; padding: 0 8px 8px }
+.bib-acc button, .bib-acc label { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; border: 0; background: none; color: var(--ink); font: 500 13.5px var(--f-ui, system-ui); padding: 6px 8px; border-radius: 8px; cursor: pointer }
+.bib-acc button:hover, .bib-acc label:hover { background: var(--bg) }
+.bib-acc button:disabled { opacity: .45; cursor: default; background: none }
+.bib-ic { width: 22px; height: 22px; border-radius: 6px; display: inline-grid; place-items: center; border: 1px solid var(--line); color: var(--accent); font-size: 13px; flex: 0 0 auto }
+.bib-busca { margin: 4px 2px 0; font: 13px var(--f-ui, system-ui); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 6px 9px; width: calc(100% - 4px) }
+.bib-form { margin: 0 10px 8px; padding: 10px; border: 1px solid var(--accent); border-radius: 10px; display: grid; gap: 6px }
+.bib-form label { font-size: 12px; color: var(--muted); display: grid; gap: 2px }
+.bib-form input { font: 13px var(--f-ui, system-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px }
+.bib-form .fila { display: flex; gap: 6px; justify-content: flex-end }
+.bib-form button { font: 500 13px var(--f-ui, system-ui); border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 6px; padding: 5px 10px; cursor: pointer }
+.bib-form button.si { background: var(--accent); border-color: var(--accent); color: var(--panel) }
+.bib-lista { flex: 1; overflow-y: auto; padding: 0 8px 8px; border-top: 1px solid var(--line) }
+.bib-sec { font: 600 11px var(--f-ui, system-ui); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 12px 6px 4px }
+.bib-carp { display: flex; align-items: center; gap: 6px; width: 100%; border: 0; background: none; color: var(--ink); font: 600 13px var(--f-ui, system-ui); padding: 5px 6px; border-radius: 6px; cursor: pointer; text-align: left }
+.bib-carp:hover { background: var(--bg) } .bib-carp .n { margin-left: auto; color: var(--muted); font-weight: 400; font-size: 12px }
+.bib-it { display: flex; align-items: center; gap: 2px; border-radius: 8px; padding-left: 2px }
+.bib-it:hover, .bib-it:focus-within { background: var(--bg) }
+.bib-it.activo { background: var(--accent-soft, var(--bg)); box-shadow: inset 3px 0 0 var(--accent) }
+.bib-carpd .bib-it { margin-left: 14px }
+.bib-abre { flex: 1; min-width: 0; border: 0; background: none; color: var(--ink); text-align: left; font: 13.5px var(--f-ui, system-ui); padding: 6px; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+.bib-mini { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 13px; width: 26px; height: 26px; border-radius: 6px; flex: 0 0 auto; opacity: .55 }
+.bib-it:hover .bib-mini, .bib-it:focus-within .bib-mini, .bib-mini.on { opacity: 1 } .bib-mini:hover { background: var(--panel); color: var(--accent) } .bib-mini.on { color: var(--accent) }
+@media (hover: none) { .bib-mini { opacity: 1 } }
+.bib-vacio { color: var(--muted); padding: 10px 6px; margin: 0 }
+.bib-pie { border-top: 1px solid var(--line); padding: 8px 14px 12px; color: var(--muted); font-size: 12px }
+.bib-pie p { margin: 0 }
+.bib-aviso { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 70; background: var(--ink); color: var(--panel); padding: 8px 14px; border-radius: 8px; font: 13px var(--f-ui, system-ui); box-shadow: 0 4px 16px rgba(0,0,0,.2) }
+.bib.arrastre { outline: 2px dashed var(--accent); outline-offset: -6px }
+`;
+
+  function monta(herramienta) {
+    const clave = CLAVES[herramienta], cab = document.querySelector('header.top');
+    if (!clave || !cab || document.querySelector('.bib')) return null;
+    const K = `simu-ejercicios:${herramienta}`, K_UI = 'simu-ejercicios-ui', K_ACT = `simu-ejercicios-activo:${herramienta}`;
+    const nombre = (document.querySelector('h1')?.textContent || document.title.split('·')[0]).trim();
+    let lib = lee(K, { items: [] }); if (!Array.isArray(lib.items)) lib = { items: [] };
+    let ui = { abierta: window.innerWidth >= ANCHO, cerradas: {}, ...lee(K_UI, {}) };
+    let activo = null; try { activo = sessionStorage.getItem(K_ACT); } catch (e) { /* sin almacenamiento */ }
+    if (activo && !lib.items.some((x) => x.id === activo)) activo = null;
+    let busca = '', form = null, borrando = null;
+    const guardaLib = () => escribe(K, lib) || aviso('No se pudo guardar: el navegador no deja usar el almacenamiento');
+    const guardaUI = () => escribe(K_UI, ui);
+    const ponActivo = (id) => { activo = id; try { if (id) sessionStorage.setItem(K_ACT, id); else sessionStorage.removeItem(K_ACT); } catch (e) { /* sin almacenamiento */ } };
+    // las apps que guardan con retraso escuchan «simu-guardar» y guardan al momento
+    const estado = () => { window.dispatchEvent(new Event('simu-guardar')); try { return localStorage.getItem(clave); } catch (e) { return null; } };
+    const nuevoId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+    const ejemplo = () => { const s = document.querySelector('select#ejemplo, select[id^="ejemplo"]'); return s && s.value && s.selectedOptions[0] ? s.selectedOptions[0].textContent.trim() : ''; };
+
+    const st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
+    const btn = document.createElement('button');
+    btn.className = 'bib-btn'; btn.type = 'button'; btn.setAttribute('aria-controls', 'bib'); btn.title = 'Guardar, abrir, exportar e importar tus ejercicios';
+    btn.innerHTML = '<span aria-hidden="true">☰</span> Mis ejercicios';
+    const ini = cab.querySelector('.a-inicio'); (ini ? ini.after(btn) : cab.prepend(btn));
+    const panel = document.createElement('aside'); panel.className = 'bib'; panel.id = 'bib'; panel.setAttribute('aria-label', 'Mis ejercicios');
+    const scrim = document.createElement('div'); scrim.className = 'bib-scrim'; scrim.hidden = true;
+    const archivo = document.createElement('input'); archivo.type = 'file'; archivo.accept = '.json,application/json'; archivo.multiple = true; archivo.hidden = true;
+    document.body.append(panel, scrim, archivo);
+
+    let tAviso = 0;
+    function aviso(t) {
+      let a = document.querySelector('.bib-aviso'); if (!a) { a = document.createElement('div'); a.className = 'bib-aviso'; a.setAttribute('role', 'status'); document.body.appendChild(a); }
+      a.textContent = t; a.hidden = false; clearTimeout(tAviso); tAviso = setTimeout(() => { a.hidden = true; }, 2600);
+    }
+    function abre(v) {
+      ui.abierta = v; guardaUI();
+      panel.classList.toggle('abierta', v); btn.setAttribute('aria-expanded', String(v));
+      document.body.classList.toggle('bib-fija', v && window.innerWidth >= ANCHO);
+      scrim.hidden = !v || window.innerWidth >= ANCHO;
+    }
+    function descarga(nombreArch, datos) {
+      const url = URL.createObjectURL(new Blob([JSON.stringify(datos, null, 2)], { type: 'application/json' }));
+      const a = document.createElement('a'); a.href = url; a.download = nombreArch; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+    const archivoDe = (items) => ({ formato: FORMATO, version: 1, herramienta, guardado: new Date().toISOString(), ejercicios: items.map((i) => ({ titulo: i.titulo, carpeta: i.carpeta || undefined, fijado: i.fijado || undefined, datos: i.datos })) });
+    const nombreArchivo = (t) => (norm(t).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'ejercicio') + '.simu.json';
+
+    function importa(texto) {
+      const d = JSON.parse(texto);
+      if (d?.formato !== FORMATO || !Array.isArray(d.ejercicios)) throw new Error('no es un archivo de ejercicios de SimulaCiencia');
+      if (d.herramienta !== herramienta) throw new Error(`es de otra herramienta (${d.herramienta})`);
+      let n = 0;
+      for (const e of d.ejercicios) {
+        if (typeof e?.datos !== 'string') continue;
+        lib.items.push({ id: nuevoId(), titulo: String(e.titulo || 'Ejercicio importado').slice(0, 120), carpeta: String(e.carpeta || '').slice(0, 60), fijado: !!e.fijado, datos: e.datos, actualizado: Date.now() }); n++;
+      }
+      return n;
+    }
+    async function importaArchivos(files) {
+      let n = 0;
+      for (const f of files) {
+        try { n += importa(await f.text()); } catch (err) { aviso(`No se pudo importar ${f.name}: ${err.message}`); return; }
+      }
+      guardaLib(); pinta(); aviso(n === 1 ? 'Ejercicio importado' : `${n} ejercicios importados`);
+    }
+    function carga(it) {
+      if (!escribe(clave, it.datos)) { aviso('No se pudo abrir: el navegador no deja usar el almacenamiento'); return; }
+      ponActivo(it.id);
+      // si se estaba practicando, lo que se abre sustituye a los datos de antes de la práctica
+      try { sessionStorage.removeItem(`simu-practica:${herramienta}`); } catch (e) { /* sin almacenamiento */ }
+      // sin el #… de la dirección, que en algunas herramientas (configuración electrónica) manda sobre lo guardado
+      history.replaceState(null, '', location.pathname + location.search);
+      location.reload();
+    }
+    function guardaForm() {
+      const t = panel.querySelector('#bib-t').value.trim() || 'Ejercicio sin título', c = panel.querySelector('#bib-c').value.trim();
+      if (form.id) { const it = lib.items.find((x) => x.id === form.id); if (it) Object.assign(it, { titulo: t, carpeta: c, actualizado: Date.now() }); }
+      else {
+        const datos = estado();
+        if (datos == null) { aviso('Todavía no hay nada que guardar: cambia algún dato primero'); return; }
+        const it = { id: nuevoId(), titulo: t, carpeta: c, fijado: false, datos, actualizado: Date.now() };
+        lib.items.push(it); ponActivo(it.id); aviso('Guardado en Mis ejercicios');
+      }
+      form = null; guardaLib(); pinta();
+    }
+    function actualiza() {
+      const it = lib.items.find((x) => x.id === activo), datos = estado();
+      if (!it || datos == null) return;
+      it.datos = datos; it.actualizado = Date.now(); guardaLib(); pinta(); aviso(`Cambios guardados en «${it.titulo}»`);
+    }
+
+    function fila(it) {
+      const b = borrando === it.id;
+      return `<div class="bib-it${it.id === activo ? ' activo' : ''}" data-id="${it.id}">
+<button class="bib-abre" data-acc="abrir" title="Abrir «${esc(it.titulo)}»">${esc(it.titulo)}</button>${b
+        ? '<button class="bib-mini on" data-acc="si-borrar" title="Borrar de verdad" aria-label="Confirmar borrar">✓</button><button class="bib-mini" data-acc="no-borrar" title="No borrar" aria-label="Cancelar">✕</button>'
+        : `<button class="bib-mini${it.fijado ? ' on' : ''}" data-acc="fijar" title="${it.fijado ? 'Quitar de fijados' : 'Fijar arriba'}" aria-label="${it.fijado ? 'Quitar de fijados' : 'Fijar'}" aria-pressed="${!!it.fijado}">${it.fijado ? '★' : '☆'}</button><button class="bib-mini" data-acc="editar" title="Cambiar el título o la carpeta" aria-label="Editar">✎</button><button class="bib-mini" data-acc="exportar" title="Exportar este ejercicio" aria-label="Exportar">⤓</button><button class="bib-mini" data-acc="borrar" title="Borrar" aria-label="Borrar">🗑</button>`}
+</div>`;
+    }
+    function pinta() {
+      const q = norm(busca), vis = lib.items.filter((i) => !q || norm(i.titulo + ' ' + (i.carpeta || '')).includes(q));
+      const orden = (a, b) => a.titulo.localeCompare(b.titulo, 'es', { numeric: true });
+      const fij = vis.filter((i) => i.fijado).sort(orden), resto = vis.filter((i) => !i.fijado);
+      const sueltos = resto.filter((i) => !i.carpeta).sort(orden), carpetas = {};
+      for (const i of resto) if (i.carpeta) (carpetas[i.carpeta] ||= []).push(i);
+      let lista = '';
+      if (fij.length) lista += `<p class="bib-sec">Fijados</p>${fij.map(fila).join('')}`;
+      const nombres = Object.keys(carpetas).sort((a, b) => a.localeCompare(b, 'es'));
+      if (nombres.length || sueltos.length) lista += `<p class="bib-sec">Mis ejercicios</p>`;
+      for (const n of nombres) {
+        const ab = q || !ui.cerradas[`${herramienta}/${n}`];
+        lista += `<button class="bib-carp" data-carpeta="${esc(n)}" aria-expanded="${!!ab}"><span aria-hidden="true">${ab ? '▾' : '▸'}</span>${esc(n)}<span class="n">${carpetas[n].length}</span></button>${ab ? `<div class="bib-carpd">${carpetas[n].sort(orden).map(fila).join('')}</div>` : ''}`;
+      }
+      lista += sueltos.map(fila).join('');
+      if (!vis.length) lista = `<p class="bib-vacio">${lib.items.length ? 'Ningún ejercicio coincide con la búsqueda.' : 'Aún no has guardado ningún ejercicio. Prepara los datos y pulsa «Guardar el actual».'}</p>`;
+      const it = lib.items.find((x) => x.id === activo), carps = [...new Set(lib.items.map((x) => x.carpeta).filter(Boolean))];
+      const f = form && (form.id ? lib.items.find((x) => x.id === form.id) : { titulo: ejemplo() || `Ejercicio ${lib.items.length + 1}`, carpeta: it?.carpeta || '' });
+      panel.innerHTML = `<div class="bib-h"><b>Mis ejercicios</b><button class="bib-x" data-acc="cerrar" title="Cerrar" aria-label="Cerrar Mis ejercicios">×</button></div>
+<div class="bib-acc">
+<button data-acc="nuevo"><span class="bib-ic">+</span>Guardar el actual como nuevo</button>
+<button data-acc="actualizar"${it ? '' : ' disabled'} title="${it ? `Guarda los datos de ahora en «${esc(it.titulo)}»` : 'Abre o guarda antes un ejercicio'}"><span class="bib-ic">↻</span>${it ? `Guardar cambios en «${esc(it.titulo.length > 22 ? it.titulo.slice(0, 21) + '…' : it.titulo)}»` : 'Guardar cambios'}</button>
+<button data-acc="importar"><span class="bib-ic">↥</span>Importar archivo…</button>
+<button data-acc="exportar-todo"${lib.items.length ? '' : ' disabled'}><span class="bib-ic">↧</span>Exportar todos</button>
+${lib.items.length > 5 ? `<input type="search" class="bib-busca" placeholder="Buscar por título o carpeta…" aria-label="Buscar ejercicios" value="${esc(busca)}">` : ''}
+</div>
+${f ? `<div class="bib-form"><label>Título<input id="bib-t" value="${esc(f.titulo)}" maxlength="120" autocomplete="off"></label><label>Carpeta (opcional)<input id="bib-c" value="${esc(f.carpeta || '')}" maxlength="60" list="bib-dl" placeholder="sin carpeta" autocomplete="off"></label><datalist id="bib-dl">${carps.map((c) => `<option value="${esc(c)}">`).join('')}</datalist><div class="fila"><button data-acc="cancelar">Cancelar</button><button class="si" data-acc="guardar">Guardar</button></div></div>` : ''}
+<div class="bib-lista">${lista}</div>
+<div class="bib-pie"><p>Se guardan en este navegador. Exporta un archivo <code>.simu.json</code> para llevarlos a otro equipo o compartirlos; también puedes arrastrarlo aquí.</p></div>`;
+      if (f) { const t = panel.querySelector('#bib-t'); t.focus(); t.select(); }
+    }
+
+    panel.addEventListener('click', (e) => {
+      const car = e.target.closest('.bib-carp');
+      if (car) { const k = `${herramienta}/${car.dataset.carpeta}`; ui.cerradas[k] = !ui.cerradas[k]; guardaUI(); pinta(); return; }
+      const b = e.target.closest('[data-acc]'); if (!b) return;
+      const id = b.closest('.bib-it')?.dataset.id, it = id && lib.items.find((x) => x.id === id);
+      switch (b.dataset.acc) {
+        case 'cerrar': abre(false); btn.focus(); break;
+        case 'nuevo': form = {}; pinta(); break;
+        case 'actualizar': actualiza(); break;
+        case 'importar': archivo.click(); break;
+        case 'exportar-todo': descarga(nombreArchivo(nombre + ' ejercicios'), archivoDe(lib.items)); break;
+        case 'guardar': guardaForm(); break;
+        case 'cancelar': form = null; pinta(); break;
+        case 'abrir': if (it) carga(it); break;
+        case 'fijar': if (it) { it.fijado = !it.fijado; guardaLib(); pinta(); } break;
+        case 'editar': if (it) { form = { id }; pinta(); } break;
+        case 'exportar': if (it) descarga(nombreArchivo(it.titulo), archivoDe([it])); break;
+        case 'borrar': borrando = id; pinta(); break;
+        case 'no-borrar': borrando = null; pinta(); break;
+        case 'si-borrar': lib.items = lib.items.filter((x) => x.id !== id); if (activo === id) ponActivo(null); borrando = null; guardaLib(); pinta(); aviso('Ejercicio borrado'); break;
+      }
+    });
+    panel.addEventListener('keydown', (e) => {
+      if (e.target.closest('.bib-form') && e.key === 'Enter') { e.preventDefault(); guardaForm(); }
+      else if (e.key === 'Escape') { if (form) { form = null; pinta(); } else { abre(false); btn.focus(); } }
+    });
+    panel.addEventListener('input', (e) => { if (e.target.classList.contains('bib-busca')) { busca = e.target.value; const pos = e.target.selectionStart; pinta(); const s = panel.querySelector('.bib-busca'); s.focus(); s.setSelectionRange(pos, pos); } });
+    panel.addEventListener('dragover', (e) => { e.preventDefault(); panel.classList.add('arrastre'); });
+    panel.addEventListener('dragleave', () => panel.classList.remove('arrastre'));
+    panel.addEventListener('drop', (e) => { e.preventDefault(); panel.classList.remove('arrastre'); if (e.dataTransfer.files.length) importaArchivos([...e.dataTransfer.files]); });
+    archivo.addEventListener('change', () => { if (archivo.files.length) importaArchivos([...archivo.files]); archivo.value = ''; });
+    btn.addEventListener('click', () => abre(!panel.classList.contains('abierta')));
+    scrim.addEventListener('click', () => abre(false));
+    window.addEventListener('resize', () => abre(panel.classList.contains('abierta')));
+
+    pinta(); abre(!!ui.abierta);
+    return { get items() { return lib.items; }, abre, importa: (t) => { const n = importa(t); guardaLib(); pinta(); return n; }, archivoDe };
+  }
+  return { monta, CLAVES, FORMATO };
+})();
+
+/* =====================================================================
+   Modo práctica común a todas las herramientas. «Otro ejercicio» parte de
+   un ejemplo al azar y cambia sus datos numéricos (con la misma forma de
+   número: enteros pequeños, ángulos, probabilidades…), tapa los resultados
+   y el desarrollo, y pide al alumno los resultados principales, con un
+   hueco por cada número de lo que la herramienta escribiría. «Comprobar»
+   los corrige (1 % o la última cifra mostrada) y «Ver la solución» destapa
+   el desarrollo. Al salir se vuelve a los datos que había antes.
+   Lee de la página lo que ya calcula cada app: no repite ninguna física.
+   ===================================================================== */
+const Practica = (() => {
+  const azar = (a, b) => a + Math.random() * (b - a), entero = (a, b) => Math.floor(azar(a, b + 1));
+  const toma = (xs) => xs[Math.floor(Math.random() * xs.length)];
+  const visible = (e) => !!e && !!(e.offsetWidth || e.offsetHeight || e.getClientRects().length) && !e.closest('[hidden]');
+  const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+  // lo que cambia de una herramienta a otra; lo demás sale de la estructura común de las páginas
+  const CONF = {
+    calorimetria: { items: '#te' },
+    disoluciones: { items: '#valores > .valor:not(.dato)' },
+    matrices: { items: '#res' },
+    // solo sistemas compatibles determinados: la solución paramétrica no se pregunta por huecos
+    // complejos: una operación al azar con números pequeños (los datos son textos como 3 − 2i)
+    complejos: { datos: null, genera: () => window.ComplejosApp?.azar(), enunciado: () => window.ComplejosApp?.enunciado() },
+    sistemas: { items: '#res', valido: () => !/[λμ]|incompatible|no tiene/i.test(document.querySelector('#res')?.textContent + document.querySelector('#tipo')?.textContent) },
+    estadistica: { items: '#res' },
+    // regresión: una tabla de datos al azar alrededor de una recta (están en un textarea, no en campos numéricos)
+    regresion: { datos: null, genera: () => window.RegresionApp?.azar(), enunciado: () => 'Con los datos de la tabla, calcula la recta de regresión de Y sobre X, la de X sobre Y, el coeficiente de correlación, las medias, la covarianza y la estimación de y que se pide.' },
+    // resistencias: unos colores al azar (no hay números que cambiar en los datos)
+    resistencias: { datos: null, genera: () => window.ResistenciasApp?.azar(), enunciado: () => `¿Cuánto vale una resistencia con las bandas <b>${esc(window.ResistenciasApp?.colores() || '')}</b>? Escribe el valor y el margen en el que puede estar en las mismas unidades.` },
+    magnetostatica: { items: '[data-res]', tapa: '[data-res], [data-steps], .cvwrap', datos: '#fuentes',
+      // el enunciado del ejemplo ya no vale con los datos nuevos
+      despues: () => pon(document.querySelector('#enunciado'), 'Ejercicio de práctica: calcula el campo magnético en los puntos de las preguntas con las fuentes de la izquierda.'),
+      antes: () => { const m = document.querySelector('#modo'); if (m && m.value !== 'si') { m.value = 'si'; m.dispatchEvent(new Event('change', { bubbles: true })); } } },
+    'masa-molar': {
+      items: '#res-masa .grande', quitar: '', tapa: '#res-masa, #conv-card', datos: null,
+      genera: () => pon(document.querySelector('#formula'), toma(['H2O', 'CO2', 'NaCl', 'H2SO4', 'HNO3', 'NaOH', 'NH3', 'CaCO3', 'C6H12O6', 'C2H5OH', 'Ca(OH)2', 'Al2(SO4)3', 'KMnO4', 'Fe2O3', 'Mg3(PO4)2', 'CuSO4·5H2O', 'Na2CO3', 'K2Cr2O7', 'CH4', 'C3H8', 'HCl', 'Ba(NO3)2', 'NH4Cl', 'MgCl2·6H2O'])),
+      enunciado: () => `Calcula la masa molar de <b>${esc(document.querySelector('#formula').value)}</b>.`,
+    },
+    'configuracion-electronica': {
+      items: null, tapa: '#res', datos: null,
+      genera: () => pon(document.querySelector('#entrada'), String(entero(1, 56))),
+      enunciado: () => { const g = (s) => document.querySelector(s)?.textContent.trim() || ''; return `Escribe la configuración electrónica del <b>${esc(g('#nombre').toLowerCase())}</b> (${esc(g('#sim'))}, Z = ${esc(g('#z'))}) en orden de llenado y cuántos electrones desapareados tiene.`; },
+      textos: [{ et: 'Configuración electrónica', sel: '#llenado', otros: ['#abreviada', '#capas-txt'] }],
+      numeros: [{ et: 'Electrones desapareados', sel: '#desap' }],
+    },
+  };
+
+  function pon(el, v) {
+    if (!el) return;
+    el.value = v;
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+    el.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+  const lee = (s) => { const t = String(s).trim().replace(/\s+/g, '').replace(/[−–]/g, '-'); return /^-?\d+(,\d+)?$/.test(t) || /^-?\d*\.\d+$/.test(t) ? parseFloat(t.replace(',', '.')) : null; };
+  const escribe = (x, como) => (como.includes(',') || !Number.isInteger(x) ? String(x).replace('.', ',') : String(x));
+  const redondea = (x, cifras) => { if (x === 0) return 0; const e = Math.floor(Math.log10(Math.abs(x))) - cifras + 1; return Math.round(x / 10 ** e) * 10 ** e; };
+  const limpio = (x) => parseFloat(x.toPrecision(12));
+
+  // un dato numérico nuevo, del mismo tipo que el que había
+  function otroValor(v, etiqueta, texto) {
+    if (v === 0) return 0;
+    const ang = /°|ángulo|grados|α|θ|φ/i.test(etiqueta), s = Math.sign(v), a = Math.abs(v);
+    if (Number.isInteger(v) && !texto.includes(',') && a <= 12) return s * entero(Math.max(1, Math.round(a * 0.5)), Math.round(a * 1.5) + 1);
+    if (ang && a > 0 && a < 90) return s * Math.round(azar(Math.max(5, a * 0.6), Math.min(85, a * 1.4)));
+    if (a > 0 && a < 1) return limpio(s * Math.min(0.98, Math.max(0.02, redondea(a * azar(0.6, 1.5), 2))));
+    const dec = (texto.split(',')[1] || '').length, cifras = Math.max(2, String(Math.round(a * 10 ** dec)).replace(/^0+/, '').length);
+    return limpio(s * redondea(a * azar(0.6, 1.5), Math.min(3, cifras)));
+  }
+  const etiquetaDe = (inp) => [inp.getAttribute('aria-label'), inp.id && document.querySelector(`label[for="${inp.id}"]`)?.textContent, inp.closest('label')?.textContent, inp.closest('.row, .fila')?.textContent].filter(Boolean).join(' ');
+
+  // los números de un resultado: la plantilla con un hueco por número y su valor (los de sub/sup, fórmulas y notas no cuentan)
+  // (también el número de la parte imaginaria, j31, y el decimal con punto de magnetostática)
+  const RE = /(?:(?<![\p{L}\d,.])|(?<=(?:^|[^\p{L}\d])j))([−-]?\d+(?:[.,]\d+)?(?:\/\d+)?)(\s*[·×]\s*10)?/gu;
+  const conEtiqueta = (el) => el.matches('div') && el.firstElementChild?.tagName === 'SPAN' && !el.firstElementChild.className && el.firstChild === el.firstElementChild;
+  function numeros(el, quitar = 'small, .nota') {
+    const c = el.cloneNode(true);
+    if (conEtiqueta(c)) c.firstElementChild.remove();
+    if (quitar) for (const x of c.querySelectorAll(quitar)) x.remove();
+    // las fracciones de matrices y sistemas (numerador y denominador apilados) pasan a a/b
+    for (const fr of c.querySelectorAll('.fr')) if (fr.children.length === 2) fr.replaceWith(`${fr.children[0].textContent.trim()}/${fr.children[1].textContent.trim()}`);
+    c.normalize();
+    const vals = [], tw = document.createTreeWalker(c, NodeFilter.SHOW_TEXT), nodos = [];
+    while (tw.nextNode()) if (!tw.currentNode.parentElement.closest('sub, sup, math, .formula')) nodos.push(tw.currentNode);
+    for (const n of nodos) {
+      const t = n.nodeValue, frag = document.createDocumentFragment();
+      let i = 0, m;
+      RE.lastIndex = 0;
+      while ((m = RE.exec(t))) {
+        let texto = m[1], v = texto.includes('/') ? texto.replace('−', '-').split('/').map((x) => parseFloat(x.replace(',', '.'))).reduce((a, b) => a / b) : parseFloat(texto.replace('−', '-').replace(',', '.')), exp = 0, fin = m.index + m[0].length;
+        if (m[2]) {
+          const sup = n.nextSibling;
+          if (fin === t.length && sup && sup.nodeName === 'SUP' && /^[−-]?\d+$/.test(sup.textContent.trim())) { exp = parseInt(sup.textContent.trim().replace('−', '-'), 10); v *= 10 ** exp; sup.remove(); } else fin = m.index + m[1].length;
+        }
+        if (!Number.isFinite(v)) continue;
+        frag.append(t.slice(i, m.index));
+        const h = document.createElement('span'); h.dataset.hueco = String(vals.length); frag.append(h);
+        vals.push({ t: texto + (exp ? `·10^${exp}` : ''), v, dec: (texto.split('/')[0].split(/[.,]/)[1] || '').length, exp, frac: texto.includes('/') });
+        i = fin;
+      }
+      if (vals.length && i) { frag.append(t.slice(i)); n.replaceWith(frag); }
+    }
+    return { plantilla: c.innerHTML, vals };
+  }
+  // lo que escribe el alumno: 12,5 · 1.2e-3 · 1,2·10^-3 · −3/4
+  function leeAlumno(s) {
+    let t = String(s).trim().replace(/\s+/g, '').replace(/[−–]/g, '-').replace(/,/g, '.');
+    if (!t) return null;
+    t = t.replace(/(?:·|\*|x|×)10\^?\(?(-?\d+)\)?$/i, 'e$1');
+    if (/^-?\d*\.?\d+(e-?\d+)?\/-?\d*\.?\d+$/.test(t)) { const [a, b] = t.split('/').map(Number); return b ? a / b : null; }
+    return /^-?(\d+\.?\d*|\.\d+)(e[+-]?\d+)?$/i.test(t) ? Number(t) : null;
+  }
+  const tolerancia = (x) => (x.frac ? 1e-9 + 0.005 * Math.abs(x.v) : Math.max(0.01 * Math.abs(x.v), 0.5 * 10 ** (x.exp - x.dec) * 1.0001));
+  const normaConf = (s) => String(s).replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]/g, (c) => '⁰¹²³⁴⁵⁶⁷⁸⁹'.indexOf(c)).replace(/\^/g, '').replace(/\s+/g, '').toLowerCase();
+
+  const CSS = `
+.prac-btn { display: inline-flex; align-items: center; gap: 6px; font: 600 13.5px var(--f-ui, system-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px; cursor: pointer; white-space: nowrap }
+.prac-btn:hover { border-color: var(--accent); color: var(--accent) }
+.prac-btn[aria-pressed=true] { background: var(--accent); border-color: var(--accent); color: var(--panel) }
+.prac-tapa { filter: blur(9px); opacity: .45; pointer-events: none; user-select: none; transition: filter .2s }
+.prac { background: var(--panel); border: 1px solid var(--accent); border-radius: 10px; padding: 14px; margin-bottom: 14px; box-shadow: inset 4px 0 0 var(--accent) }
+.prac h2 { font: 600 15px var(--f-ui, system-ui); margin: 0 0 6px; color: var(--accent) }
+.prac > p { margin: 0 0 10px; color: var(--muted) }
+.prac .enun { color: var(--ink) }
+.prac-q { display: grid; gap: 8px; margin: 0 0 12px }
+.prac-q > div { display: grid; grid-template-columns: minmax(120px, max-content) minmax(0, 1fr); gap: 4px 12px; align-items: baseline }
+.prac-q .et { color: var(--muted); font-size: 13px }
+.prac-q .val { line-height: 2.1 }
+@media (max-width: 560px) { .prac-q > div { grid-template-columns: minmax(0, 1fr) } }
+.prac-in { font: 13.5px var(--f-mono, ui-monospace, monospace); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 3px 6px; width: 7.5em; margin: 0 2px }
+.prac-in.ancha { width: min(100%, 22em) }
+.prac-in.bien { border-color: #1d8a5b; box-shadow: 0 0 0 1px #1d8a5b } .prac-in.mal { border-color: #c0392b; box-shadow: 0 0 0 1px #c0392b }
+.prac-sol { font: 12.5px var(--f-mono, ui-monospace, monospace); color: var(--accent); margin-left: 2px }
+.prac-acc { display: flex; flex-wrap: wrap; gap: 8px }
+.prac-acc button { font: 500 13px var(--f-ui, system-ui); border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 6px; padding: 6px 12px; cursor: pointer }
+.prac-acc button.si { background: var(--accent); border-color: var(--accent); color: var(--panel) }
+.prac-nota { margin: 10px 0 0; font-weight: 600 } .prac-nota.bien { color: #1d8a5b } .prac-nota.mal { color: #c0392b }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .prac-nota.bien { color: #4cc48e } :root:not([data-theme="light"]) .prac-nota.mal { color: #ef6a5a } }
+:root[data-theme="dark"] .prac-nota.bien { color: #4cc48e } :root[data-theme="dark"] .prac-nota.mal { color: #ef6a5a }
+`;
+
+  function monta(herramienta, clave) {
+    const cab = document.querySelector('header.top');
+    if (!cab || herramienta === 'tabla-periodica' || document.querySelector('.prac-btn')) return null;
+    const conf = CONF[herramienta] || {};
+    const K_ANTES = `simu-practica:${herramienta}`;
+    const st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
+    const btn = document.createElement('button');
+    btn.type = 'button'; btn.className = 'prac-btn'; btn.setAttribute('aria-pressed', 'false'); btn.title = 'Ejercicios con datos al azar: escribe tus resultados y compruébalos antes de ver el desarrollo';
+    btn.innerHTML = '<span aria-hidden="true">✎</span> Modo práctica';
+    const tras = cab.querySelector('.bib-btn') || cab.querySelector('.a-inicio'); (tras ? tras.after(btn) : cab.prepend(btn));
+
+    let activo = false, card = null, preguntas = [], tapados = [], resuelto = false;
+    const layout = () => [...document.querySelectorAll('.layout')].find(visible);
+    const datos = () => (conf.datos === null ? null : conf.datos ? document.querySelector(conf.datos) : layout()?.firstElementChild);
+    const hayError = () => [...document.querySelectorAll('.error, #errores')].some((e) => visible(e) && e.textContent.trim());
+    function zonaTapa() {
+      if (conf.tapa) return [...document.querySelectorAll(conf.tapa)].filter((e) => !e.closest('.prac'));
+      const l = layout(); return l ? [...l.children].slice(1).flatMap((col) => [...col.children]).filter((e) => !e.classList.contains('prac')) : [];
+    }
+    function items() {
+      if (!conf.items && conf.items !== undefined) return [];
+      const sel = conf.items || '#res > div, #resumen > div';
+      return [...document.querySelectorAll(sel)].filter((e) => !e.closest('.prac') && (visible(e) || e.closest('.prac-tapa')));
+    }
+    function ejemplo() {
+      const d = datos(); if (!d) return;
+      const s = [...d.querySelectorAll('select')].find((x) => visible(x) && x.options.length > 2 && /ejemplo/i.test(x.id + ' ' + x.options[0].textContent));
+      if (s) { s.selectedIndex = entero(1, s.options.length - 1); s.dispatchEvent(new Event('change', { bubbles: true })); }
+    }
+    function cambiaDatos() {
+      const d = datos(); if (!d) return;
+      for (const inp of [...d.querySelectorAll('input')].filter((x) => visible(x) && (!x.type || x.type === 'text' || x.type === 'number' || x.type === 'search') && !x.classList.contains('nom'))) {
+        const v = lee(inp.value); if (v === null) continue;
+        pon(inp, escribe(otroValor(v, etiquetaDe(inp), inp.value), inp.value));
+      }
+    }
+    // escoge qué resultados se preguntan: todos si son pocos; si no, el primero y tres al azar
+    function arma() {
+      const its = items().map((el) => ({ el, et: conEtiqueta(el) ? el.firstElementChild.textContent.trim() : '', n: numeros(el, conf.quitar) })).filter((x) => x.n.vals.length && x.n.vals.length <= 9);
+      let elegidos = its.length <= 4 ? its : [its[0], ...its.slice(1).sort(() => Math.random() - 0.5).slice(0, 3)].sort((a, b) => its.indexOf(a) - its.indexOf(b));
+      let huecos = 0; elegidos = elegidos.filter((x) => (huecos += x.n.vals.length) <= 10 || x === elegidos[0]);
+      const q = elegidos.map((x) => ({ tipo: 'num', idx: its.indexOf(x), et: x.et, plantilla: x.n.plantilla, vals: x.n.vals, el: x.el }));
+      for (const t of conf.textos || []) q.push({ tipo: 'texto', et: t.et, sel: t.sel, otros: t.otros || [] });
+      for (const t of conf.numeros || []) { const el = document.querySelector(t.sel), n = el && numeros(el); if (n && n.vals.length) q.push({ tipo: 'num', et: t.et, sel: t.sel, plantilla: '', vals: n.vals.slice(0, 1) }); }
+      return q;
+    }
+    function nuevo() {
+      resuelto = false;
+      let q = [];
+      for (let intento = 0; intento < 15 && !q.length; intento++) {
+        conf.antes?.();
+        if (conf.genera) conf.genera(); else { ejemplo(); cambiaDatos(); }
+        conf.despues?.();
+        if (!hayError() && (!conf.valido || conf.valido())) q = arma();
+      }
+      if (!q.length) { conf.genera ? conf.genera() : ejemplo(); q = arma(); }
+      preguntas = q; pinta();
+    }
+    function tapa(v) {
+      for (const e of tapados) { e.classList.remove('prac-tapa'); e.removeAttribute('aria-hidden'); }
+      tapados = v ? zonaTapa() : [];
+      for (const e of tapados) { e.classList.add('prac-tapa'); e.setAttribute('aria-hidden', 'true'); }
+    }
+    function pinta() {
+      if (!card) { card = document.createElement('section'); card.className = 'prac'; card.setAttribute('aria-label', 'Modo práctica'); card.addEventListener('click', clic); card.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.classList.contains('prac-in')) { e.preventDefault(); comprueba(); } }); }
+      tapa(!resuelto);
+      const z = zonaTapa()[0] || tapados[0]; if (z && card.nextElementSibling !== z) z.before(card);
+      let n = 0;
+      const filas = preguntas.map((p, i) => {
+        if (p.tipo === 'texto') return `<div><span class="et">${esc(p.et)}</span><span class="val"><input class="prac-in ancha" data-p="${i}" aria-label="${esc(p.et)}" autocomplete="off" spellcheck="false" placeholder="1s2 2s2 2p6…"></span></div>`;
+        const tpl = p.plantilla ? p.plantilla.replace(/<span data-hueco="(\d+)"><\/span>/g, (_, k) => `<input class="prac-in" data-p="${i}" data-k="${k}" inputmode="decimal" autocomplete="off" aria-label="${esc(p.et || 'Resultado')} (${+k + 1})">`) : `<input class="prac-in" data-p="${i}" data-k="0" inputmode="decimal" autocomplete="off" aria-label="${esc(p.et)}">`;
+        n++; return `<div><span class="et">${esc(p.et || (preguntas.length > 1 ? `Pregunta ${n}` : 'Resultado'))}</span><span class="val">${tpl}</span></div>`;
+      }).join('');
+      card.innerHTML = `<h2>Modo práctica</h2>
+<p class="enun">${conf.enunciado ? conf.enunciado() : 'Resuelve el ejercicio con estos datos y escribe tus resultados en las mismas unidades. Puedes usar coma o punto, 1,2·10^-3 y fracciones como 3/4.'}</p>
+${preguntas.length ? `<div class="prac-q">${filas}</div>` : '<p>Con estos datos no hay resultados numéricos que preguntar: prueba con otro ejercicio.</p>'}
+<div class="prac-acc"><button class="si" data-a="comprobar"${preguntas.length ? '' : ' disabled'}>Comprobar</button><button data-a="solucion">${resuelto ? 'Ocultar la solución' : 'Ver la solución'}</button><button data-a="otro">Otro ejercicio</button></div>
+<p class="prac-nota" role="status" hidden></p>`;
+    }
+    // el valor correcto se lee al comprobar, por si el alumno ha tocado los datos
+    function esperado(p) {
+      if (p.tipo === 'texto') return [document.querySelector(p.sel), ...p.otros.map((s) => document.querySelector(s))].filter(Boolean).map((e) => e.textContent);
+      const el = p.sel ? document.querySelector(p.sel) : items()[p.idx]; const n = el && numeros(el, conf.quitar);
+      return n && n.vals.length >= p.vals.length ? (p.sel ? n.vals.slice(0, 1) : n.vals) : p.vals;
+    }
+    function comprueba(mostrar) {
+      let bien = 0, total = 0, vacios = 0;
+      for (const inp of card.querySelectorAll('.prac-in')) {
+        const p = preguntas[+inp.dataset.p], e = esperado(p); total++;
+        inp.classList.remove('bien', 'mal'); inp.nextElementSibling?.classList.contains('prac-sol') && inp.nextElementSibling.remove();
+        let ok, sol;
+        if (p.tipo === 'texto') { ok = e.some((x) => normaConf(x) === normaConf(inp.value)); sol = e[0]; }
+        else { const x = e[+inp.dataset.k], a = leeAlumno(inp.value); ok = a !== null && Math.abs(a - x.v) <= tolerancia(x); sol = x.t; }
+        if (!inp.value.trim()) vacios++;
+        else { inp.classList.add(ok ? 'bien' : 'mal'); if (ok) bien++; }
+        if (mostrar && !ok && sol !== null) { const s = document.createElement('span'); s.className = 'prac-sol'; s.textContent = `(${sol.trim()})`; inp.after(s); }
+      }
+      const nota = card.querySelector('.prac-nota'); nota.hidden = false;
+      nota.className = 'prac-nota ' + (bien === total ? 'bien' : 'mal');
+      nota.textContent = mostrar ? (vacios === total ? 'Aquí tienes la solución, con el desarrollo debajo.' : `${bien} de ${total} bien. La solución y el desarrollo están debajo.`) : bien === total ? '¡Todo bien! Mira el desarrollo con «Ver la solución» o prueba con otro.' : vacios === total ? 'Escribe primero tus resultados.' : `${bien} de ${total} bien${vacios ? ` (${vacios} sin contestar)` : ''}. Revisa los que están en rojo.`;
+    }
+    function clic(e) {
+      const a = e.target.closest('[data-a]')?.dataset.a;
+      if (a === 'comprobar') comprueba(false);
+      else if (a === 'otro') nuevo();
+      else if (a === 'solucion') {
+        const valores = [...card.querySelectorAll('.prac-in')].map((i) => i.value);
+        resuelto = !resuelto; pinta();
+        card.querySelectorAll('.prac-in').forEach((inp, k) => { inp.value = valores[k] ?? ''; });
+        if (resuelto) comprueba(true);
+      }
+    }
+    function activa(v) {
+      if (v === activo) return;
+      activo = v; btn.setAttribute('aria-pressed', String(v));
+      if (v) {
+        try { if (clave) sessionStorage.setItem(K_ANTES, localStorage.getItem(clave) ?? ''); } catch (e) { /* sin almacenamiento */ }
+        nuevo(); card.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      } else {
+        tapa(false); card?.remove(); card = null;
+        // vuelve a los datos de antes de practicar
+        let antes = null; try { antes = clave ? sessionStorage.getItem(K_ANTES) : null; sessionStorage.removeItem(K_ANTES); } catch (e) { /* sin almacenamiento */ }
+        if (antes !== null) { try { if (antes) localStorage.setItem(clave, antes); else localStorage.removeItem(clave); } catch (e) { /* sin almacenamiento */ } history.replaceState(null, '', location.pathname + location.search); location.reload(); }
+      }
+    }
+    // si se recargó en mitad de una práctica, deja los datos como estaban
+    try { const antes = clave ? sessionStorage.getItem(K_ANTES) : null; if (antes !== null) { sessionStorage.removeItem(K_ANTES); if (antes) localStorage.setItem(clave, antes); else localStorage.removeItem(clave); history.replaceState(null, '', location.pathname + location.search); location.reload(); } } catch (e) { /* sin almacenamiento */ }
+    btn.addEventListener('click', () => activa(!activo));
+    // lo que habría que escribir en cada hueco, en orden (para las pruebas)
+    const respuestas = () => [...(card?.querySelectorAll('.prac-in') || [])].map((inp) => { const p = preguntas[+inp.dataset.p], e = esperado(p); return p.tipo === 'texto' ? e[0] : e[+inp.dataset.k].t; });
+    return (window.PracticaApp = { activa, nuevo, respuestas, get activo() { return activo; }, get preguntas() { return preguntas; } });
+  }
+  return { monta, CONF, numeros, leeAlumno, otroValor };
+})();
+
+Biblioteca.monta('ciclos');
+Practica.monta('ciclos', Biblioteca.CLAVES['ciclos']);
+</script>
+</html>

@@ -1,0 +1,101 @@
+<title>Ciclos termodinámicos: Carnot, Otto, Diesel y máquinas térmicas · SimulaCiencia</title>
+<meta name="description" content="Calculadora de ciclos termodinámicos en español con diagrama p-V animado: Carnot, Otto y Diesel con los estados, el trabajo, el calor y la energía interna de cada tramo y el rendimiento, y máquinas térmicas, frigoríficos y bombas de calor comparados con Carnot, paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root {
+  --bg: #eef0f4; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d6dbe3; --accent: #2a5db5; --accent-soft: #e3ecfa; --peso: #c2412a; --normal: #1d7a3e; --roz: #b0700a; --fuerza: #6b3fa0; --tension: #2a5db5; --cuerpo: #c9d3e0; --suelo: #8a96a3;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #74a2f2; --accent-soft: #1c2a42; --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #74a2f2; --accent-soft: #1c2a42; --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784; color-scheme: dark }
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
+.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
+.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+.layout { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 16px; align-items: start }
+@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr) } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 15px var(--f-ui); margin: 0 0 10px }
+.campos { display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px } .campos label small { color: var(--muted) }
+.in { font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.in:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer }
+.btn:hover { border-color: var(--accent) }
+.error { color: #c0392b; font-size: 13px; margin: 10px 0 0 }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+.res { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px 14px; font: 16px var(--f-math) } .res div { overflow-x: auto } .res span { display: block; font: 12px var(--f-ui); color: var(--muted) }
+.leyenda { font-size: 12.5px; color: var(--muted); margin: 6px 0 0 } .leyenda b { font-weight: 600 }
+canvas { display: block; width: 100%; height: clamp(260px, 36vw, 380px); border-radius: 8px; background: var(--bg); margin-top: 10px }
+.pasos ol { margin: 0; padding-left: 22px } .pasos li { margin: 0 0 12px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+.controles { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px }
+.destacado { border-color: var(--accent); box-shadow: inset 4px 0 0 var(--accent) }
+.destacado h2 { color: var(--accent) }
+.resumen { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; margin: 0 }
+.resumen div { background: var(--accent-soft); border-radius: 8px; padding: 8px 10px; overflow-x: auto } .resumen div span { display: block; font-size: 12px; color: var(--muted) } .resumen div b { font: 600 17px var(--f-math) }
+.teoria ul { padding-left: 20px } .teoria li { margin-bottom: 4px }
+.tabla { overflow-x: auto; margin-bottom: 10px } table { border-collapse: collapse; font: 13.5px var(--f-ui); font-variant-numeric: tabular-nums; min-width: 100% } th, td { padding: 4px 10px; border-bottom: 1px solid var(--line); text-align: right } th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align: left } th { color: var(--muted); font-weight: 500 } tr.tot td { font-weight: 600 }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física general</a> / Ciclos termodinámicos</span></header>
+<div class="wrap">
+<h1>Ciclos termodinámicos y máquinas térmicas</h1>
+<p class="lead">Resuelve los ciclos de Carnot, Otto y Diesel con un gas ideal: los estados, el trabajo, el calor y la variación de energía interna de cada tramo y el rendimiento, con el diagrama p-V animado y el cilindro. Y comprueba si una máquina térmica, un frigorífico o una bomba de calor son posibles comparándolos con Carnot.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Diagrama</h2>
+      <canvas id="escena" aria-label="Diagrama p-V del ciclo con el cilindro, o esquema de la máquina"></canvas>
+      <div class="controles"><button class="btn" id="play" type="button">⏸ Pausa</button><span class="nota" id="leyenda" style="margin:0"></span></div></div>
+    <div class="card" id="tablas"><h2>Estados y tramos</h2><div class="tabla"><table id="estados"></table></div><div class="tabla"><table id="tramos"></table></div></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Primer principio en un ciclo</h2>
+  <p class="m">Con W el trabajo que hace el gas, $ΔU = Q − W$. En un gas ideal $ΔU = n C_v ΔT$, con $C_v = {3}/{2} R$ si es monoatómico y ${5}/{2} R$ si es diatómico. Al cerrar el ciclo el gas vuelve a su estado inicial, $ΔU = 0$, y el trabajo neto es igual al calor neto: es el área encerrada en el diagrama p-V.</p>
+  <ul>
+    <li class="m">Isoterma: $ΔU = 0$, $Q = W = n R T ln {V_2}/{V_1}$.</li>
+    <li class="m">Adiabática: $Q = 0$, $P V^γ$ = cte, $T V^{γ − 1}$ = cte y $W = −ΔU$.</li>
+    <li class="m">Isocora: $W = 0$ y $Q = n C_v ΔT$.</li>
+    <li class="m">Isobara: $W = P ΔV$ y $Q = n C_p ΔT$.</li>
+  </ul>
+  <h2>Rendimiento</h2>
+  <p class="f m">$η = {W_{neto}}/{Q_{abs}} = 1 − {|Q_{ced}|}/{Q_{abs}}$</p>
+  <h2>Ciclo de Carnot</h2>
+  <p class="m">Dos isotermas y dos adiabáticas entre un foco caliente a $T_c$ y uno frío a $T_f$. Es reversible y tiene el mayor rendimiento posible entre esas dos temperaturas:</p>
+  <p class="f m">$η_C = 1 − T_f/T_c$</p>
+  <h2>Ciclos Otto y Diesel</h2>
+  <p class="m">El Otto (motor de gasolina) tiene dos adiabáticas y dos isocoras; su rendimiento solo depende de la relación de compresión $r = V_1/V_2$: $η = 1 − r^{1 − γ}$. En el Diesel la combustión es a presión constante, con relación de corte $r_c = V_3/V_2$, y permite relaciones de compresión mucho mayores.</p>
+  <p class="f m">$η_{Diesel} = 1 − {r_c^γ − 1}/{γ r^{γ − 1} (r_c − 1)}$</p>
+  <h2>Frigoríficos y bombas de calor</h2>
+  <p class="m">Usan trabajo para llevar calor del foco frío al caliente. Su eficiencia es $COP = Q_f/W$ para un frigorífico y $COP = Q_c/W$ para una bomba de calor, como mucho ${T_f}/{T_c − T_f}$ y ${T_c}/{T_c − T_f}$. Ninguna máquina puede superar a la de Carnot: si lo hiciera, la entropía del universo disminuiría (segundo principio).</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Ciclos termodinámicos <span id="ver"></span> (beta)</footer>
+</body>
