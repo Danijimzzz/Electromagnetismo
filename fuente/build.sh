@@ -75,4 +75,6 @@ if [ "$1" != privado ]; then
     version.js alterna/fisica.js alterna/app.js
   herramienta dinamica ../publico/fisica/dinamica/index.html "Dinámica y diagramas de fuerzas" "Calculadora de dinámica con el diagrama de fuerzas: plano inclinado con rozamiento estático y dinámico, fuerza con ángulo, poleas y máquina de Atwood, paso a paso" \
     version.js dinamica/fisica.js dinamica/app.js
+  herramienta circuitos ../publico/laboratorio/circuitos/index.html "Circuitos de corriente continua" "Calculadora de circuitos de corriente continua por el método de los nudos: leyes de Kirchhoff, corrientes, potencias, Thévenin, Norton y máxima transferencia de potencia, paso a paso" \
+    version.js circuitos/fisica.js circuitos/app.js
 fi

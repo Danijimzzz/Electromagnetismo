@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMwZDZiNjYiLz48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlNmE2NDAiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtZGFzaGFycmF5PSI0IDYuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48cGF0aCBkPSJNMjAgMzJINDQiLz48cGF0aCBkPSJNMjEgMjdDMjcgMTQgMzcgMTQgNDMgMjciLz48cGF0aCBkPSJNMjEgMzdDMjcgNTAgMzcgNTAgNDMgMzciLz48cGF0aCBkPSJNMTcgMjRDMjIgNCA0MiA0IDQ3IDI0Ii8+PHBhdGggZD0iTTE3IDQwQzIyIDYwIDQyIDYwIDQ3IDQwIi8+PC9nPjxjaXJjbGUgY3g9IjE3IiBjeT0iMzIiIHI9IjgiIGZpbGw9IiNlZjdhNjIiLz48Y2lyY2xlIGN4PSI0NyIgY3k9IjMyIiByPSI4IiBmaWxsPSIjNzRhMmYyIi8+PHBhdGggZD0iTTEzIDMyaDhNMTcgMjh2OE00MyAzMmg4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta property="og:title" content="Circuitos de corriente continua">
+<meta property="og:description" content="Calculadora de circuitos de corriente continua por el método de los nudos: leyes de Kirchhoff, corrientes, potencias, Thévenin, Norton y máxima transferencia de potencia, paso a paso">
+<meta property="og:image" content="https://electromagnetismo-two.vercel.app/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<title>Circuitos de corriente continua: nudos, Kirchhoff y Thévenin · SimulaCiencia</title>
+<meta name="description" content="Calculadora de circuitos de corriente continua en español: resistencias, fuentes de tensión y de corriente resueltas por el método de los nudos con las leyes de Kirchhoff, corrientes, potencias, balance, equivalente de Thévenin y Norton y máxima transferencia de potencia, paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root {
+  --bg: #eef0f4; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d6dbe3; --accent: #b0700a; --accent-soft: #fbf0dc; --fuente: #c2412a; --corr: #2a5db5; --cable: #1a2128;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #e6a640; --accent-soft: #3a2c12; --fuente: #ef7a62; --corr: #74a2f2; --cable: #e3e8ee; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #e6a640; --accent-soft: #3a2c12; --fuente: #ef7a62; --corr: #74a2f2; --cable: #e3e8ee; color-scheme: dark }
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
+.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
+.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+.layout { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 16px; align-items: start }
+@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr) } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 15px var(--f-ui); margin: 0 0 10px }
+.campos { display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px } .campos label small { color: var(--muted) }
+.in { font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.in:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer }
+.btn:hover { border-color: var(--accent) }
+.error { color: #c0392b; font-size: 13px; margin: 10px 0 0 }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+.res { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px 14px; font: 16px var(--f-math) } .res div { overflow-x: auto } .res span { display: block; font: 12px var(--f-ui); color: var(--muted) }
+.leyenda { font-size: 12.5px; color: var(--muted); margin: 6px 0 0 } .leyenda b { font-weight: 600 }
+canvas { display: block; width: 100%; height: clamp(280px, 38vw, 400px); border-radius: 8px; background: var(--bg); margin-top: 10px }
+.pasos ol { margin: 0; padding-left: 22px } .pasos li { margin: 0 0 12px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+.lista { display: grid; grid-template-columns: 64px minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.3fr) 28px; gap: 5px 6px; align-items: center; margin-bottom: 8px }
+.lista .cab { font-size: 12px; color: var(--muted) } .lista b { font: 600 13.5px var(--f-math) }
+.lista .x { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 16px; padding: 0 } .lista .x:hover { color: #c0392b }
+.botones { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px }
+.mat { position: relative; display: inline-block; vertical-align: middle; padding: 0 7px; margin: 2px }
+.mat::before, .mat::after { content: ""; position: absolute; top: 0; bottom: 0; width: 5px; border: 1.4px solid currentColor }
+.mat::before { left: 0; border-right: 0 } .mat::after { right: 0; border-left: 0 }
+.mat-in { display: inline-grid; gap: 2px 12px; padding: 3px 0; text-align: center; font-variant-numeric: tabular-nums; white-space: nowrap }
+.pasos li { overflow-x: auto }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Laboratorio</a> / Circuitos de corriente continua</span></header>
+<div class="wrap">
+<h1>Circuitos de corriente continua</h1>
+<p class="lead">Escribe el circuito como una lista de elementos entre nudos y obtén los potenciales, la corriente y la potencia de cada elemento por el método de los nudos, con las ecuaciones de Kirchhoff, el sistema y el balance de potencias. Elige una resistencia como carga para ver su equivalente de Thévenin y de Norton.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Circuito</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="lista" id="lista"></div>
+    <div class="botones"><button class="btn" type="button" data-add="R">+ Resistencia</button><button class="btn" type="button" data-add="V">+ Fuente de tensión</button><button class="btn" type="button" data-add="I">+ Fuente de corriente</button></div>
+    <div class="campos"><label for="carga">Thévenin visto por</label><select id="carga" class="in"></select></div>
+    <p class="nota">Cada elemento va del nudo A al nudo B. En una fuente de tensión, A es el borne +. En una fuente de corriente, la corriente va de A a B por dentro de la fuente. El nudo 0 es la referencia.</p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card"><h2>Resultado</h2><div class="res" id="res"></div>
+      <canvas id="esquema" aria-label="Esquema del circuito con los potenciales y las corrientes"></canvas>
+      <p class="leyenda">Cada nudo con su potencial; cada elemento, con la corriente que lo recorre (la flecha indica el sentido real).</p></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Leyes de Kirchhoff</h2>
+  <p>La primera ley (de los nudos) dice que en cada nudo la suma de las corrientes que entran es igual a la de las que salen, porque la carga no se acumula. La segunda (de las mallas) dice que en cualquier camino cerrado la suma de las fuerzas electromotrices es igual a la suma de las caídas de tensión RI.</p>
+  <p class="f">Σ I = 0 en cada nudo, &nbsp; Σ E = Σ R I en cada malla</p>
+  <h2>Método de los nudos</h2>
+  <p>Se elige un nudo de referencia (V = 0) y se toman como incógnitas los potenciales de los demás. La corriente por una resistencia entre los nudos a y b es (V<sub>a</sub> − V<sub>b</sub>)/R, y la primera ley en cada nudo da un sistema lineal. Cada fuente de tensión añade su corriente como incógnita y la ecuación V<sub>+</sub> − V<sub>−</sub> = E.</p>
+  <h2>Thévenin, Norton y máxima transferencia</h2>
+  <p>Visto desde dos nudos, cualquier circuito lineal equivale a una fuente V<sub>th</sub> en serie con R<sub>th</sub>. V<sub>th</sub> es la tensión en circuito abierto y R<sub>th</sub> la resistencia entre esos nudos con las fuentes apagadas. El equivalente de Norton es una fuente I<sub>N</sub> = V<sub>th</sub>/R<sub>th</sub> en paralelo con R<sub>th</sub>. Una carga recibe la máxima potencia cuando R<sub>L</sub> = R<sub>th</sub>:</p>
+  <p class="f">P<sub>máx</sub> = V<sub>th</sub><sup>2</sup> / (4R<sub>th</sub>)</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Circuitos <span id="ver"></span> (beta)</footer>
+</body><script>
+/* =====================================================================
+   Versiones y novedades: la web (portada, asignaturas, buscador) tiene su número y cada
+   herramienta el suyo. Hasta el lanzamiento se numera 0.x (beta); la 1.0 de una herramienta
+   llega cuando se da por terminada y la 1.0 de la web será el lanzamiento. Sube el segundo
+   número si hay algo nuevo (0.6) y añade un tercero si es solo un arreglo (0.5.1).
+   En las novedades de la web se anuncia también cada herramienta nueva.
+   Las notas son para los usuarios: solo funciones nuevas, arreglos visibles y cambios
+   en la interfaz. Lo interno (pruebas, CI, build, despliegue, refactorizaciones) no se anota;
+   el historial completo para desarrolladores está en Notion.
+   ===================================================================== */
+const Version = (() => {
+  const registros = {
+    web: [
+      { v: '0.16', fecha: '2026-10-23', cambios: ['Nueva herramienta: Circuitos de corriente continua, en Laboratorio.'] },
+      { v: '0.15', fecha: '2026-10-23', cambios: ['Nueva herramienta: Dinámica y diagramas de fuerzas, en Física general.'] },
+      { v: '0.14', fecha: '2026-10-23', cambios: ['Nueva herramienta: Corriente alterna y fasores, en Laboratorio.'] },
+      { v: '0.13', fecha: '2026-10-23', cambios: ['Nueva herramienta: Distribuciones de probabilidad, en Matemáticas.'] },
+      { v: '0.12', fecha: '2026-10-23', cambios: ['Nueva herramienta: Sistemas de ecuaciones lineales, en Matemáticas.'] },
+      { v: '0.11', fecha: '2026-10-23', cambios: ['Nueva herramienta: Matrices paso a paso, en Matemáticas.'] },
+      { v: '0.10', fecha: '2026-10-23', cambios: ['Nueva herramienta: Autoinducción e inducción mutua, en Electromagnetismo.'] },
+      { v: '0.9', fecha: '2026-10-23', cambios: ['Nueva herramienta: Calorimetría y cambios de fase, en Física general.'] },
+      { v: '0.8', fecha: '2026-10-23', cambios: ['Nueva herramienta: Disoluciones y concentraciones, en Química.'] },
+      { v: '0.7', fecha: '2026-10-23', cambios: ['Nueva herramienta: Tiro parabólico y cinemática, en Física general.'] },
+      { v: '0.6', fecha: '2026-10-23', cambios: ['Nueva herramienta: Condensadores con dieléctricos, en Electromagnetismo.'] },
+      { v: '0.5', fecha: '2026-10-23', cambios: ['Nueva herramienta: Configuración electrónica, en Química.'] },
+      { v: '0.4', fecha: '2026-10-23', cambios: ['Nueva herramienta: Masa molar y estequiometría, en Química.'] },
+      { v: '0.3', fecha: '2026-10-23', cambios: ['Nueva herramienta: Trabajo y energía, en Física general.'] },
+      { v: '0.2', fecha: '2026-10-23', cambios: ['Nueva herramienta: Tabla periódica interactiva, en Química.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Portada para elegir asignatura y herramienta: Electromagnetismo, Física general, Química, Matemáticas y Laboratorio, con buscador. Las herramientas que vienen después aparecen como «Próximamente».', 'Nueva herramienta: Magnetostática, en Electromagnetismo.'] },
+    ],
+    electrostatica: [
+      { v: '0.5.1', fecha: '2026-10-23', cambios: ['El simulador tiene ahora su propia dirección, /electromagnetismo/electrostatica/. Tus problemas guardados siguen ahí. El botón «Todas las herramientas» de la barra lateral vuelve a la portada.'] },
+    { v: '0.5', fecha: '2026-10-23', cambios: ['Doce ejercicios de ejemplo con enunciados propios: los mismos tipos de pregunta que en clase, con otras figuras y otros números. La guía de uso tiene capturas nuevas hechas con ellos.', 'La web tiene icono propio: un dipolo con sus líneas de campo, en la pestaña del navegador, en la pantalla de inicio del móvil y en la vista previa al compartir el enlace.', 'Páginas de aviso legal, privacidad, cookies y contacto, enlazadas al pie de la barra lateral.'] },
+    { v: '0.4', fecha: '2026-10-22', cambios: ['Número de versión visible y este apartado de novedades.', 'Arreglo: en la vista 3D los cilindros se dibujan con su radio real, aparecen las superficies de Gauss, y las esferas, cascarones y conductores tienen volumen en lugar de parecer círculos planos.'] },
+    { v: '0.3', fecha: '2026-10-22', cambios: ['Guía de uso con capturas (botón ?, barra lateral o F1).', 'Los resultados se escriben con la misma forma que el solucionario oficial: perfiles por tramos, factor común en logaritmos y radicales, y la pregunta V_A − V_B.'] },
+    { v: '0.2', fecha: '2026-10-22', cambios: ['Anillos, discos, cortezas y conductores.', 'Varias incógnitas, modo numérico SI, flujo de Gauss y gráficas E(z) y V(z).', 'Modo práctica, exportar la solución, deshacer y rehacer, mapa de color y vista 3D.', 'Búsqueda, carpetas y etiquetas en la barra lateral.'] },
+    { v: '0.1', fecha: '2026-10-22', cambios: ['Primera versión: cargas, hilos, planos y esferas con el desarrollo paso a paso y 12 ejercicios resueltos.', 'Barra lateral con tus problemas, los importados y los ejercicios; título y enunciado editables; archivos .emsim.json.'] },
+    ],
+    magnetostatica: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: campo magnético de hilos, segmentos, hilos semiinfinitos, espiras, arcos, solenoides y toroides con Biot-Savart, y fuerza sobre cargas en movimiento y sobre conductores, con el desarrollo paso a paso en la forma μ₀I/(πa) o en unidades del SI.', 'Dibujo del campo B en el plano XY, XZ o YZ, con puntos que se pueden arrastrar y ocho ejemplos resueltos.'] },
+    ],
+    'tabla-periodica': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: cada elemento tiene su ficha con la masa atómica y molar, el grupo, el periodo, el bloque, la configuración electrónica (abreviada, completa y por capas), la electronegatividad, la energía de ionización, el radio y el estado.', 'La tabla se puede colorear por categoría, electronegatividad, energía de ionización, radio, masa, bloque o estado, y tiene un buscador por nombre, símbolo o número atómico.'] },
+    ],
+    'trabajo-y-energia': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: un bloque baja por una rampa con rozamiento, recorre un tramo horizontal y comprime un muelle. Animación con barras de energía cinética, gravitatoria, elástica y calor, gráfica de las energías en el tiempo y el desarrollo paso a paso con la velocidad al pie de la rampa, al llegar al muelle y la compresión máxima.', 'Seis ejemplos: sin rozamiento, se para antes del muelle, el rozamiento lo sujeta, con empujón inicial y muelle duro.'] },
+    ],
+    'masa-molar': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: masa molar y composición centesimal de cualquier fórmula, con paréntesis, hidratos e iones, y conversor entre gramos, moles, partículas y litros de gas.', 'Estequiometría: ajusta la reacción sola (también las iónicas), calcula el reactivo limitante, lo que se forma con el rendimiento que digas y lo que sobra, paso a paso.', 'Masas atómicas de la IUPAC o redondeadas como en clase.'] },
+    ],
+    'configuracion-electronica': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: configuración electrónica de cualquier elemento o ion por orden de llenado, abreviada y por capas, con el diagrama de Moeller, el diagrama de orbitales con la regla de Hund, los electrones desapareados y los números cuánticos del electrón diferenciador.', 'Avisa de las excepciones como el cromo o el cobre, y en los cationes quita primero los electrones de la capa más externa.'] },
+    ],
+    condensadores: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: condensadores planos, cilíndricos y esféricos con capas de dieléctrico en serie o, en el plano, ocupando parte del área. Capacidad, carga, tensión y energía; campos E, D y P en cada capa y cargas de polarización, con el desarrollo paso a paso.', 'Compara con el condensador vacío: qué pasa al meter el dieléctrico con la batería conectada o con el condensador aislado.', 'Dibujo del corte con las líneas de campo y gráfica de E a lo largo del condensador.'] },
+    ],
+    'tiro-parabolico': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: tiro parabólico desde cualquier altura hasta cualquier altura, con el tiempo de vuelo, la altura máxima, el alcance y la velocidad al caer, y el desarrollo paso a paso. Trayectoria animada con los vectores de velocidad y gráficas de posición, velocidad y aceleración frente al tiempo.', 'Rozamiento del aire lineal o cuadrático, comparado con la trayectoria sin rozamiento.', 'Blanco: dice si el proyectil pasa por un punto y con qué dos ángulos se acierta.', 'Movimiento rectilíneo (MRU y MRUA): posición y velocidad en un instante, cuándo pasa por un punto y cuándo se para, con las gráficas x(t), v(t) y a(t).'] },
+    ],
+    disoluciones: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: da la concentración de una disolución como molaridad, molalidad, fracción molar, % en masa, % masa/volumen, g/L o ppm y obtén todas las demás, con la densidad para pasar de masa a volumen y el desarrollo con su base de cálculo.', 'Preparar una disolución: los gramos de sólido (con su pureza) o los mililitros de reactivo comercial (con su riqueza y densidad) que hay que medir.', 'Diluciones con C₁V₁ = C₂V₂, despejando el dato que falte, y mezcla de dos disoluciones del mismo soluto.'] },
+    ],
+    calorimetria: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: temperatura de equilibrio al mezclar hasta cinco cuerpos de agua, hielo, vapor, metales, etanol, vidrio, un calorímetro o una sustancia con tus datos, con los cambios de fase que hagan falta.', 'Si la energía no llega para fundir todo el hielo o condensar todo el vapor, dice cuántos gramos quedan de cada fase.', 'Tabla con el calor de cada cuerpo, el desarrollo etapa por etapa (m c ΔT y m L) y la curva de calentamiento de cada uno.'] },
+    ],
+    induccion: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: coeficiente de autoinducción de solenoides (con núcleo), toroides de sección rectangular y circular, cables coaxiales y líneas bifilares, con el desarrollo desde la ley de Ampère.', 'Inducción mutua entre dos solenoides, dos espiras, un hilo y una espira, y una bobina sobre un toroide, o a partir de L₁, L₂ y k, con el coeficiente de acoplamiento.', 'Flujo, energía magnética y fem inducida si das la corriente o cómo cambia.', 'Circuito RL al cerrar el interruptor o al quitar la fuente: constante de tiempo, corriente y tensión en la bobina en cualquier instante y su gráfica.'] },
+    ],
+    matrices: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: determinante por Gauss, por Sarrus o por Laplace; inversa por Gauss-Jordan o por adjuntos; rango; forma escalonada y escalonada reducida, con cada operación entre filas y la matriz después de cada paso.', 'Valores y vectores propios con el polinomio característico, las raíces exactas (también con radicales o complejas) y si la matriz es diagonalizable, con P y D.', 'Suma, resta, producto (elemento a elemento), producto por un número, potencia y traspuesta.', 'Fracciones exactas y números complejos en cualquier casilla: 3/4, 0,25, 2−3i o (1+i)/2.'] },
+    ],
+    sistemas: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: hasta seis ecuaciones con seis incógnitas. Dice si el sistema es compatible determinado, indeterminado o incompatible con el teorema de Rouché-Frobenius y lo resuelve por Gauss con sustitución hacia atrás, por Gauss-Jordan, por la regla de Cramer o con la matriz inversa.', 'Si tiene infinitas soluciones, las da en forma paramétrica (λ, μ…).', 'Coeficientes con fracciones exactas, decimales o números complejos, como las mallas de un circuito de alterna, y nombres propios para las incógnitas (I1, I2…).', 'Comprobación de la solución sustituyendo en cada ecuación.'] },
+    ],
+    estadistica: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: normal, t de Student, chi cuadrado, exponencial, binomial y Poisson, con su media y su varianza.', 'Probabilidades P(X ≤ a), P(X ≥ a), entre dos valores y, en las discretas, P(X = k) y con desigualdad estricta; cuantiles y valores críticos bilaterales.', 'Gráfica con el área (o las barras) que se pide sombreada.', 'Desarrollo como en clase: tipificación Z = (X − μ)/σ y Φ(z), fórmula de la binomial y de la Poisson término a término, y aproximación de la binomial por la normal con corrección de continuidad.'] },
+    ],
+    alterna: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: circuitos RLC en serie y en paralelo (o solo con algunos de los elementos) con impedancias complejas en forma binómica y polar, la corriente, la tensión o la corriente de cada elemento, las potencias activa, reactiva y aparente y el factor de potencia, con el desarrollo paso a paso.', 'Diagrama de fasores y ondas v(t) e i(t) desfasadas.', 'Resonancia: frecuencia de resonancia, factor de calidad y ancho de banda.', 'Corrección del factor de potencia: el condensador que hay que poner en paralelo y cuánto baja la corriente de la línea.'] },
+    ],
+    dinamica: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: bloque en un plano horizontal o inclinado con rozamiento estático y dinámico, una fuerza aplicada con ángulo y, si quieres, una masa colgando de una polea. Dice si el bloque se mueve o el rozamiento lo sujeta y da la normal, el rozamiento, la aceleración y la tensión, con el desarrollo paso a paso.', 'Máquina de Atwood, también con una polea con masa.', 'Dibujo con el diagrama de fuerzas a escala y la aceleración, y la velocidad y el tiempo al recorrer una distancia.'] },
+    ],
+    circuitos: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: escribe el circuito como una lista de resistencias, fuentes de tensión y fuentes de corriente entre nudos, y obtén los potenciales, la corriente y la potencia de cada elemento por el método de los nudos, con las ecuaciones de Kirchhoff, el sistema en forma matricial y el balance de potencias.', 'Equivalente de Thévenin y de Norton visto por la resistencia que elijas, y máxima transferencia de potencia.', 'Esquema del circuito con el potencial de cada nudo y el sentido de cada corriente.'] },
+    ],
+  };
+  const de = (h) => ({ current: registros[h][0].v, log: registros[h] });
+  // Version.current y Version.log son los del simulador de electrostática
+  return { registros, de, ...de('electrostatica') };
+})();
+
+/* =====================================================================
+   Circuitos de corriente continua (sin DOM): resistencias, fuentes de
+   tensión y fuentes de corriente entre nudos con nombre. Se resuelve por el
+   método de los nudos (análisis nodal modificado): incógnitas, los
+   potenciales de los nudos y la corriente de cada fuente de tensión.
+   Después, corriente y potencia de cada elemento, balance de potencias y,
+   si se elige una resistencia como carga, el equivalente de Thévenin y de
+   Norton que ve y la máxima transferencia de potencia.
+   Convenios: en cada elemento la corriente I va de A a B; en una fuente de
+   tensión A es el borne positivo (V_A − V_B = E); en una fuente de
+   corriente la corriente J va de A a B por dentro de la fuente.
+   ===================================================================== */
+const Continua = (() => {
+  const f = (x, d = 4) => {
+    if (!isFinite(x)) return '—';
+    if (Math.abs(x) < 1e-10) return '0';
+    const a = Math.abs(x);
+    const s = a >= 1e6 || a < 1e-3 ? x.toExponential(d - 1).replace(/\.?0+e/, 'e').replace('e', '·10^').replace(/\^([+-]?)(\d+)/, (_, sg, e) => `<sup>${sg === '-' ? '−' : ''}${+e}</sup>`) : String(+x.toPrecision(d));
+    return s.replace('.', ',').replace('-', '−');
+  };
+  const p = (x) => (x < -1e-10 ? `(${f(x)})` : f(x));
+  const leeNum = (s) => +String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace('−', '-');
+  const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
+  const TIPOS = { R: { nombre: 'Resistencia', letra: 'R', un: 'Ω' }, V: { nombre: 'Fuente de tensión', letra: 'E', un: 'V' }, I: { nombre: 'Fuente de corriente', letra: 'J', un: 'A' } };
+  const sub = (n) => n.replace(/^([A-Za-z])(\w+)$/, '$1<sub>$2</sub>');
+  const Vn = (n, ref) => (n === ref ? '0' : `V<sub>${n}</sub>`);
+
+  // R1, R2, E1, J1… según el orden en la lista
+  function nombres(els) {
+    const c = { R: 0, V: 0, I: 0 };
+    return els.map((e) => `${TIPOS[e.t].letra}${++c[e.t]}`);
+  }
+
+  function leer(sc) {
+    const crudos = sc.elementos || [];
+    if (!crudos.length) throw new Error('Añade al menos un elemento');
+    const nom = nombres(crudos);
+    const els = crudos.map((e, i) => {
+      const q = nom[i], T = TIPOS[e.t];
+      if (!T) throw new Error(`${q}: tipo desconocido`);
+      const a = String(e.a ?? '').trim(), b = String(e.b ?? '').trim();
+      if (!a || !b) throw new Error(`${q}: faltan los nudos`);
+      if (!/^[\wÀ-ÿ]{1,8}$/.test(a) || !/^[\wÀ-ÿ]{1,8}$/.test(b)) throw new Error(`${q}: los nudos se nombran con letras o números (hasta 8)`);
+      if (a === b) throw new Error(`${q}: está conectado entre el mismo nudo por los dos lados`);
+      if (vacio(e.v)) throw new Error(`${q}: falta el valor`);
+      const v = leeNum(e.v);
+      if (!isFinite(v)) throw new Error(`${q}: el valor debe ser un número`);
+      if (e.t === 'R' && v <= 0) throw new Error(`${q}: la resistencia debe ser mayor que 0`);
+      return { i, t: e.t, n: q, a, b, v };
+    });
+    return els;
+  }
+
+  // Resuelve A x = b por Gauss con pivote parcial; null si es singular
+  function gauss(A, b) {
+    const n = b.length, M = A.map((f, i) => [...f, b[i]]);
+    const escala = Math.max(1e-300, ...A.flat().map(Math.abs));
+    for (let c = 0; c < n; c++) {
+      let piv = c;
+      for (let r = c + 1; r < n; r++) if (Math.abs(M[r][c]) > Math.abs(M[piv][c])) piv = r;
+      if (Math.abs(M[piv][c]) < 1e-12 * escala) return null;
+      [M[c], M[piv]] = [M[piv], M[c]];
+      for (let r = 0; r < n; r++) if (r !== c) { const k = M[r][c] / M[c][c]; if (k) for (let j = c; j <= n; j++) M[r][j] -= k * M[c][j]; }
+    }
+    return M.map((f, i) => f[n] / f[i]);
+  }
+
+  // Análisis nodal modificado de una lista de elementos
+  function nodal(els, ref) {
+    const nudos = [];
+    for (const e of els) for (const n of [e.a, e.b]) if (!nudos.includes(n)) nudos.push(n);
+    const inc = nudos.filter((n) => n !== ref), fuentes = els.filter((e) => e.t === 'V');
+    const N = inc.length + fuentes.length, A = Array.from({ length: N }, () => Array(N).fill(0)), b = Array(N).fill(0);
+    const k = (n) => inc.indexOf(n);
+    for (const e of els) {
+      const ia = k(e.a), ib = k(e.b);
+      if (e.t === 'R') {
+        const G = 1 / e.v;
+        if (ia >= 0) { A[ia][ia] += G; if (ib >= 0) A[ia][ib] -= G; }
+        if (ib >= 0) { A[ib][ib] += G; if (ia >= 0) A[ib][ia] -= G; }
+      } else if (e.t === 'I') {
+        if (ia >= 0) b[ia] -= e.v;
+        if (ib >= 0) b[ib] += e.v;
+      } else {
+        const s = inc.length + fuentes.indexOf(e);
+        if (ia >= 0) { A[ia][s] += 1; A[s][ia] += 1; }
+        if (ib >= 0) { A[ib][s] -= 1; A[s][ib] -= 1; }
+        b[s] = e.v;
+      }
+    }
+    const x = N ? gauss(A, b) : [];
+    if (!x) return null;
+    const V = Object.fromEntries(nudos.map((n) => [n, n === ref ? 0 : x[k(n)]]));
+    const Iv = Object.fromEntries(fuentes.map((e, j) => [e.n, x[inc.length + j]]));
+    return { nudos, inc, fuentes, A, b, x, V, Iv };
+  }
+
+  // Comprueba que el circuito está conectado y que cada parte tiene un camino cerrado
+  function conectado(els) {
+    const ady = {};
+    for (const e of els) { (ady[e.a] ||= []).push(e.b); (ady[e.b] ||= []).push(e.a); }
+    const nudos = Object.keys(ady), visto = new Set([nudos[0]]), pila = [nudos[0]];
+    while (pila.length) for (const m of ady[pila.pop()]) if (!visto.has(m)) { visto.add(m); pila.push(m); }
+    return nudos.filter((n) => !visto.has(n));
+  }
+
+  const matHtml = (M) => `<span class="mat"><span class="mat-in" style="grid-template-columns:repeat(${M[0].length}, auto)">${M.flat().map((v) => `<span>${v}</span>`).join('')}</span></span>`;
+
+  function resolver(sc) {
+    const els = leer(sc);
+    const todos = [...new Set(els.flatMap((e) => [e.a, e.b]))];
+    const ref = todos.includes('0') ? '0' : todos.includes('tierra') ? 'tierra' : todos[0];
+    const sueltos = conectado(els);
+    if (sueltos.length) throw new Error(`El circuito está partido: ${sueltos.join(', ')} no están unidos al resto`);
+    const sol = nodal(els, ref);
+    if (!sol) throw new Error('El sistema no tiene solución única: revisa que no haya fuentes de tensión en paralelo o formando un lazo, fuentes de corriente en serie, o un nudo al que solo llega una fuente de corriente');
+    const { V, Iv, inc, fuentes } = sol, nom = Object.fromEntries(els.map((e) => [e.n, e]));
+    const pasos = [];
+    pasos.push({ t: 'Nudos y referencia', html: `Nudos: ${sol.nudos.map((n) => `<b>${n}</b>`).join(', ')}. Tomamos <b>${ref}</b> como referencia (V = 0)${ref !== '0' ? ' porque no hay ningún nudo llamado 0' : ''}.<br>Incógnitas: ${[...inc.map((n) => `V<sub>${n}</sub>`), ...fuentes.map((e) => `I<sub>${e.n}</sub> (corriente por ${sub(e.n)}, del borne + al −, por dentro)`)].join(', ') || 'ninguna'}.` });
+    // ecuaciones de nudos: suma de corrientes que salen = 0
+    const ecs = inc.map((n) => {
+      const t = [], rhs = [];
+      for (const e of els) {
+        if (e.a !== n && e.b !== n) continue;
+        const otro = e.a === n ? e.b : e.a;
+        if (e.t === 'R') t.push(otro === ref ? `${Vn(n, ref)}/${f(e.v)}` : `(${Vn(n, ref)} − ${Vn(otro, ref)})/${f(e.v)}`);
+        else if (e.t === 'V') t.push(`${e.a === n ? '+' : '−'} I<sub>${e.n}</sub>`);
+        else rhs.push(`${e.a === n ? '−' : '+'} ${f(e.v)}`);
+      }
+      const izq = t.join(' + ').replace(/\+ ([+−]) /g, '$1 ').replace(/^\+ /, '');
+      const der = rhs.length ? rhs.join(' ').replace(/^\+ /, '') : '0';
+      return `Nudo ${n}: ${izq || '0'} = ${der}`;
+    });
+    const ecV = fuentes.map((e) => `${sub(e.n)}: ${Vn(e.a, ref)} − ${Vn(e.b, ref)} = ${f(e.v)}`.replace(/ − 0 =/, ' =').replace(/^([^:]+): 0 − /, '$1: −'));
+    pasos.push({ t: 'Primera ley de Kirchhoff en cada nudo: las corrientes que salen suman lo que inyectan las fuentes de corriente', html: ecs.join('<br>') + (ecV.length ? `<br><br>Cada fuente de tensión fija la diferencia de potencial entre sus bornes:<br>${ecV.join('<br>')}` : '') });
+    if (sol.A.length) {
+      const incTxt = [...inc.map((n) => `V<sub>${n}</sub>`), ...fuentes.map((e) => `I<sub>${e.n}</sub>`)];
+      pasos.push({ t: 'Sistema en forma matricial', html: `${matHtml(sol.A.map((fi) => fi.map((v) => f(v))))} · ${matHtml(incTxt.map((v) => [v]))} = ${matHtml(sol.b.map((v) => [f(v)]))}` });
+      pasos.push({ t: 'Solución', html: [...inc.map((n) => `V<sub>${n}</sub> = <b>${f(V[n])} V</b>`), ...fuentes.map((e) => `I<sub>${e.n}</sub> = <b>${f(Iv[e.n])} A</b>`)].join(', &nbsp; ') });
+    }
+    // corriente y potencia de cada elemento (I de A a B; potencia absorbida U·I con U = V_A − V_B)
+    const res = els.map((e) => {
+      const U = V[e.a] - V[e.b];
+      const I = e.t === 'R' ? U / e.v : e.t === 'V' ? Iv[e.n] : e.v;
+      const P = U * I; // absorbida (negativa = entrega)
+      return { ...e, U, I, P };
+    });
+    pasos.push({ t: 'Corriente y potencia de cada elemento', html: res.map((r) => {
+      if (r.t === 'R') return `${sub(r.n)}: I = ${r.b === ref ? Vn(r.a, ref) : r.a === ref ? `−${Vn(r.b, ref)}` : `(${Vn(r.a, ref)} − ${Vn(r.b, ref)})`}/${sub(r.n)} = ${r.b === ref ? p(V[r.a]) : r.a === ref ? `−${p(V[r.b])}` : `(${f(V[r.a])} − ${p(V[r.b])})`}/${f(r.v)} = <b>${f(Math.abs(r.I))} A</b>${Math.abs(r.I) > 1e-12 ? ` de ${r.I > 0 ? r.a : r.b} a ${r.I > 0 ? r.b : r.a}` : ''}; &nbsp; P = I<sup>2</sup>R = <b>${f(r.P)} W</b>`;
+      const que = r.P < -1e-12 ? 'entrega' : r.P > 1e-12 ? 'consume' : 'ni entrega ni consume';
+      if (r.t === 'V') return `${sub(r.n)}: I = ${f(r.I)} A ${r.I < -1e-12 ? '(sale por el borne +)' : r.I > 1e-12 ? '(entra por el borne +)' : ''}; &nbsp; P = E·I = <b>${f(Math.abs(r.P))} W</b> (${que})`;
+      return `${sub(r.n)}: tensión entre sus bornes U = ${Vn(r.a, ref)} − ${Vn(r.b, ref)} = ${f(r.U)} V; &nbsp; P = U·J = <b>${f(Math.abs(r.P))} W</b> (${que})`;
+    }).join('<br>') });
+    const ent = -res.filter((r) => r.P < 0).reduce((s, r) => s + r.P, 0), abs = res.filter((r) => r.P > 0).reduce((s, r) => s + r.P, 0);
+    pasos.push({ t: 'Balance de potencias', html: `Entregada: ${f(ent)} W; &nbsp; consumida: ${f(abs)} W. ${Math.abs(ent - abs) <= 1e-9 * Math.max(1, ent) ? 'Coinciden, como debe ser.' : 'No coinciden: revisa los datos.'}` });
+
+    // Thévenin visto por una resistencia de carga
+    let thev = null;
+    if (!vacio(sc.carga)) {
+      const L = els[+sc.carga];
+      if (!L || L.t !== 'R') throw new Error('La carga para el equivalente de Thévenin tiene que ser una resistencia');
+      const resto = els.filter((e) => e !== L);
+      if (!resto.length || conectado(resto).length || ![L.a, L.b].every((n) => resto.some((e) => e.a === n || e.b === n))) throw new Error(`Al quitar ${L.n} el circuito queda partido: no hay equivalente de Thévenin entre ${L.a} y ${L.b}`);
+      const ab = nodal(resto, ref);
+      if (!ab) throw new Error(`Al quitar ${L.n} el sistema no tiene solución única`);
+      const Vth = ab.V[L.a] - ab.V[L.b];
+      // fuentes apagadas (tensión → cortocircuito, corriente → abierto) y 1 A inyectado de B a A por fuera
+      const apagado = resto.filter((e) => e.t !== 'I').map((e) => (e.t === 'V' ? { ...e, v: 0 } : e)).concat([{ t: 'I', n: 'Jp', a: L.b, b: L.a, v: 1 }]);
+      const pr = nodal(apagado, ref);
+      if (!pr) throw new Error(`Con las fuentes apagadas no se puede calcular la resistencia de Thévenin entre ${L.a} y ${L.b}`);
+      const Rth = pr.V[L.a] - pr.V[L.b], IN = Math.abs(Rth) > 1e-12 ? Vth / Rth : Infinity;
+      const IL = Vth / (Rth + L.v), PL = IL * IL * L.v, Pmax = Math.abs(Rth) > 1e-12 ? (Vth * Vth) / (4 * Rth) : Infinity;
+      thev = { carga: L.n, a: L.a, b: L.b, RL: L.v, Vth, Rth, IN, IL, PL, Pmax };
+      pasos.push({ t: `Equivalente de Thévenin visto por ${L.n} (entre ${L.a} y ${L.b})`, html: `Se quita ${sub(L.n)} y se resuelve igual: V<sub>th</sub> = V<sub>${L.a}</sub> − V<sub>${L.b}</sub> en circuito abierto = <b>${f(Vth)} V</b><br>Con las fuentes apagadas (las de tensión en cortocircuito y las de corriente abiertas), la resistencia entre ${L.a} y ${L.b} es R<sub>th</sub> = <b>${f(Rth)} Ω</b><br>Norton: I<sub>N</sub> = V<sub>th</sub>/R<sub>th</sub> = <b>${f(IN)} A</b>` });
+      pasos.push({ t: 'Con la carga puesta y máxima transferencia de potencia', html: `I<sub>${L.n}</sub> = V<sub>th</sub>/(R<sub>th</sub> + ${sub(L.n)}) = ${f(Vth)}/(${f(Rth)} + ${f(L.v)}) = <b>${f(IL)} A</b> (coincide con la del circuito completo); P = <b>${f(PL)} W</b><br>La potencia en la carga es máxima si ${sub(L.n)} = R<sub>th</sub> = ${f(Rth)} Ω: P<sub>máx</sub> = V<sub>th</sub><sup>2</sup>/(4R<sub>th</sub>) = <b>${f(Pmax)} W</b>` });
+    }
+    return { ref, nudos: sol.nudos, V, els: res, ent, abs, thev, pasos };
+  }
+
+  const R = (a, b, v) => ({ t: 'R', a, b, v }), E = (a, b, v) => ({ t: 'V', a, b, v }), J = (a, b, v) => ({ t: 'I', a, b, v });
+  const ejemplos = [
+    { clave: 'divisor', nombre: 'Divisor de tensión', sc: { elementos: [E('a', '0', '12'), R('a', 'b', '1000'), R('b', '0', '2000')], carga: '' } },
+    { clave: 'dos-mallas', nombre: 'Dos mallas con dos fuentes', sc: { elementos: [E('a', '0', '10'), R('a', 'b', '2'), R('b', '0', '4'), R('b', 'c', '3'), E('c', '0', '5')], carga: '' } },
+    { clave: 'wheatstone', nombre: 'Puente de Wheatstone desequilibrado', sc: { elementos: [E('a', '0', '10'), R('a', 'b', '100'), R('a', 'c', '150'), R('b', '0', '200'), R('c', '0', '200'), R('b', 'c', '50')], carga: '' } },
+    { clave: 'corriente', nombre: 'Con una fuente de corriente', sc: { elementos: [J('0', 'a', '2'), R('a', '0', '10'), R('a', 'b', '5'), R('b', '0', '5')], carga: '' } },
+    { clave: 'mixto', nombre: 'Fuente de tensión y de corriente', sc: { elementos: [E('a', '0', '12'), R('a', 'b', '4'), J('0', 'b', '1'), R('b', '0', '6')], carga: '' } },
+    { clave: 'thevenin', nombre: 'Thévenin y máxima potencia', sc: { elementos: [E('a', '0', '24'), R('a', 'b', '6'), R('b', '0', '3'), R('b', '0', '2')], carga: '3' } },
+  ];
+
+  return { resolver, nombres, TIPOS, ejemplos, f };
+})();
+
+/* =====================================================================
+   Circuitos de corriente continua: interfaz (lista de elementos, carga
+   para Thévenin, resultado, esquema con potenciales y corrientes, y
+   desarrollo). El cálculo está en circuitos/fisica.js (Continua).
+   ===================================================================== */
+(() => {
+  const $ = (q) => document.querySelector(q);
+  const C = Continua, f = C.f, CLAVE = 'circuitos-v1', MAX = 14;
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const copia = (o) => JSON.parse(JSON.stringify(o));
+  const txt = (h) => String(h).replace(/<[^>]+>/g, '');
+
+  let sc = copia(C.ejemplos[1].sc);
+  try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && Array.isArray(g.elementos) && g.elementos.length) sc = g; } catch (e) {}
+  const guarda = () => { try { localStorage.setItem(CLAVE, JSON.stringify(sc)); } catch (e) {} };
+  let sol = null, col = {};
+
+  /* ---------- Lista de elementos ---------- */
+  function lista() {
+    const nom = C.nombres(sc.elementos);
+    $('#lista').innerHTML = '<span class="cab">Elemento</span><span class="cab">Nudo A</span><span class="cab">Nudo B</span><span class="cab">Valor</span><span></span>' + sc.elementos.map((e, i) => {
+      const T = C.TIPOS[e.t];
+      return `<b title="${T.nombre}">${nom[i].replace(/(\d+)/, '<sub>$1</sub>')}</b><input class="in" data-i="${i}" data-k="a" value="${esc(e.a)}" aria-label="${nom[i]}: nudo A" autocomplete="off" spellcheck="false"><input class="in" data-i="${i}" data-k="b" value="${esc(e.b)}" aria-label="${nom[i]}: nudo B" autocomplete="off" spellcheck="false"><span style="display:flex;gap:4px;align-items:center"><input class="in" data-i="${i}" data-k="v" value="${esc(e.v)}" inputmode="decimal" aria-label="${nom[i]}: valor en ${T.un}" autocomplete="off"><small>${T.un}</small></span><button class="x" type="button" data-quita="${i}" aria-label="Quitar ${nom[i]}">×</button>`;
+    }).join('');
+    const sel = $('#carga');
+    sel.innerHTML = '<option value="">(ninguna)</option>' + sc.elementos.map((e, i) => (e.t === 'R' ? `<option value="${i}"${String(sc.carga) === String(i) ? ' selected' : ''}>${nom[i]}</option>` : '')).join('');
+    if (sc.carga !== '' && !(sc.elementos[+sc.carga] && sc.elementos[+sc.carga].t === 'R')) sc.carga = '';
+    for (const b of document.querySelectorAll('[data-add]')) b.disabled = sc.elementos.length >= MAX;
+  }
+  $('#lista').addEventListener('input', (e) => { const t = e.target; if (t.dataset.i === undefined) return; sc.elementos[+t.dataset.i][t.dataset.k] = t.value; $('#ejemplos').value = ''; calcula(); });
+  $('#lista').addEventListener('click', (e) => {
+    const q = e.target.dataset.quita;
+    if (q === undefined) return;
+    const i = +q;
+    sc.elementos.splice(i, 1);
+    if (sc.carga !== '') { if (+sc.carga === i) sc.carga = ''; else if (+sc.carga > i) sc.carga = String(+sc.carga - 1); }
+    $('#ejemplos').value = ''; lista(); calcula();
+  });
+  for (const b of document.querySelectorAll('[data-add]')) b.addEventListener('click', () => {
+    if (sc.elementos.length >= MAX) return;
+    const t = b.dataset.add, ult = sc.elementos[sc.elementos.length - 1];
+    sc.elementos.push({ t, a: ult ? ult.b : 'a', b: '0', v: t === 'R' ? '10' : t === 'V' ? '5' : '1' });
+    $('#ejemplos').value = ''; lista(); calcula();
+  });
+  $('#carga').addEventListener('change', () => { sc.carga = $('#carga').value; $('#ejemplos').value = ''; calcula(); });
+
+  /* ---------- Ejemplos ---------- */
+  const sel = $('#ejemplos');
+  sel.innerHTML = '<option value="">Ejemplos…</option>' + C.ejemplos.map((e) => `<option value="${e.clave}">${e.nombre}</option>`).join('');
+  sel.addEventListener('change', () => { if (sel.value) abrirEjemplo(sel.value); });
+  function abrirEjemplo(clave) {
+    const e = C.ejemplos.find((x) => x.clave === clave);
+    if (!e) return;
+    sc = copia(e.sc);
+    lista(); calcula(); sel.value = clave;
+  }
+
+  /* ---------- Cálculo ---------- */
+  const dato = (t, v) => `<div><span>${t}</span>${v}</div>`;
+  function calcula() {
+    const err = $('#error');
+    try { sol = C.resolver(sc); } catch (e) { sol = null; err.textContent = e.message; err.hidden = false; $('#res').innerHTML = ''; $('#pasos').innerHTML = ''; dibuja(); return; }
+    err.hidden = true; guarda();
+    let h = dato('Potenciales', sol.nudos.filter((n) => n !== sol.ref).map((n) => `V<sub>${esc(n)}</sub> = <b>${f(sol.V[n])} V</b>`).join(', ') || '—');
+    h += dato('Potencia entregada', `${f(sol.ent)} W (= consumida)`);
+    if (sol.thev) { const t = sol.thev; h += dato(`Thévenin visto por ${t.carga}`, `V<sub>th</sub> = <b>${f(t.Vth)} V</b>, R<sub>th</sub> = <b>${f(t.Rth)} Ω</b>`) + dato('Norton y máxima potencia', `I<sub>N</sub> = ${f(t.IN)} A, P<sub>máx</sub> = ${f(t.Pmax)} W`); }
+    $('#res').innerHTML = h;
+    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('');
+    dibuja();
+  }
+
+  /* ---------- Esquema ---------- */
+  function colores() { const cs = getComputedStyle(document.documentElement); for (const k of ['--ink', '--muted', '--line', '--accent', '--bg', '--fuente', '--corr', '--cable', '--panel']) col[k] = cs.getPropertyValue(k).trim(); }
+  function etiqueta(g, x, y, t, color, fuente = '12px') {
+    g.font = `${fuente} "IBM Plex Sans", system-ui, sans-serif`;
+    const w = g.measureText(t).width;
+    g.fillStyle = col['--bg']; g.globalAlpha = 0.88; g.fillRect(x - w / 2 - 3, y - 8, w + 6, 16); g.globalAlpha = 1;
+    g.fillStyle = color; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(t, x, y);
+  }
+  function dibuja() {
+    const c = $('#esquema'), dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
+    if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
+    const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h); g.lineCap = 'round'; g.lineJoin = 'round';
+    if (!sol) return;
+    colores();
+    // nudos en una elipse, con la referencia abajo
+    const otros = sol.nudos.filter((n) => n !== sol.ref), orden = [sol.ref, ...otros], n = orden.length;
+    const cx = w / 2, cy = h / 2 + 4, rx = Math.max(60, w / 2 - 70), ry = Math.max(50, h / 2 - 44);
+    const pos = Object.fromEntries(orden.map((q, k) => { const a = Math.PI / 2 + (2 * Math.PI * k) / n; return [q, [cx + rx * Math.cos(a), cy + ry * Math.sin(a)]]; }));
+    if (n === 2) { pos[orden[0]] = [cx, cy + ry]; pos[orden[1]] = [cx, cy - ry]; }
+    // elementos entre el mismo par de nudos: curvas separadas
+    const pares = {};
+    for (const e of sol.els) { const k = [e.a, e.b].sort().join('|'); (pares[k] ||= []).push(e); }
+    const puestos = [];
+    for (const grupo of Object.values(pares)) grupo.forEach((e, j) => {
+      const [x1, y1] = pos[e.a], [x2, y2] = pos[e.b], dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy) || 1;
+      const nx = -dy / L, ny = dx / L, sgn = e.a < e.b ? 1 : -1, off = (j - (grupo.length - 1) / 2) * Math.min(110, L * 0.6) * sgn;
+      const qx = (x1 + x2) / 2 + nx * off * 2, qy = (y1 + y2) / 2 + ny * off * 2;
+      // el símbolo va en el punto de la curva más alejado de los ya dibujados (así no se pisan dos que se cruzan)
+      const punto = (t) => [(1 - t) ** 2 * x1 + 2 * t * (1 - t) * qx + t * t * x2, (1 - t) ** 2 * y1 + 2 * t * (1 - t) * qy + t * t * y2];
+      const tt = [0.5, 0.38, 0.62, 0.28, 0.72, 0.22, 0.78].find((t) => { const [px, py] = punto(t); return puestos.every(([ax, ay]) => Math.hypot(px - ax, py - ay) > 64); }) ?? 0.5;
+      const [mx, my] = punto(tt), tx = 2 * (1 - tt) * (qx - x1) + 2 * tt * (x2 - qx), ty = 2 * (1 - tt) * (qy - y1) + 2 * tt * (y2 - qy), tl = Math.hypot(tx, ty) || 1, ux = tx / tl, uy = ty / tl;
+      puestos.push([mx, my]);
+      g.strokeStyle = col['--cable']; g.lineWidth = 1.6; g.beginPath(); g.moveTo(x1, y1); g.quadraticCurveTo(qx, qy, x2, y2); g.stroke();
+      // símbolo
+      g.save(); g.translate(mx, my); g.rotate(Math.atan2(uy, ux));
+      g.fillStyle = col['--bg']; g.fillRect(-20, -12, 40, 24);
+      g.strokeStyle = col['--cable']; g.lineWidth = 1.6;
+      g.beginPath(); g.moveTo(-20, 0); g.lineTo(-14, 0); g.moveTo(14, 0); g.lineTo(20, 0); g.stroke();
+      if (e.t === 'R') { g.fillStyle = col['--panel']; g.fillRect(-14, -6, 28, 12); g.strokeRect(-14, -6, 28, 12); }
+      else if (e.t === 'V') {
+        // de A (+, placa larga) a B (−, placa corta)
+        g.strokeStyle = col['--fuente']; g.lineWidth = 2;
+        g.beginPath(); g.moveTo(-14, 0); g.lineTo(-4, 0); g.moveTo(4, 0); g.lineTo(14, 0); g.moveTo(-4, -11); g.lineTo(-4, 11); g.moveTo(4, -6); g.lineTo(4, 6); g.stroke();
+        g.fillStyle = col['--fuente']; g.font = '600 11px "IBM Plex Sans", system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('+', -11, -8);
+      } else {
+        g.strokeStyle = col['--fuente']; g.lineWidth = 1.8; g.beginPath(); g.arc(0, 0, 11, 0, 2 * Math.PI); g.stroke();
+        g.beginPath(); g.moveTo(-6, 0); g.lineTo(6, 0); g.stroke(); g.fillStyle = col['--fuente']; g.beginPath(); g.moveTo(7, 0); g.lineTo(2, -4); g.lineTo(2, 4); g.closePath(); g.fill();
+      }
+      g.restore();
+      // nombre y valor a un lado; corriente al otro (normal a la curva en el símbolo)
+      const nx2 = -uy, ny2 = ux;
+      const lado = off ? Math.sign(off) : (nx * (mx - cx) + ny * (my - cy)) >= 0 ? 1 : -1;
+      etiqueta(g, mx + nx2 * 24 * lado * Math.sign(nx2 * nx + ny2 * ny || 1), my + ny2 * 24 * lado * Math.sign(nx2 * nx + ny2 * ny || 1), `${e.n} = ${txt(f(e.v))} ${C.TIPOS[e.t].un}`, e.t === 'R' ? col['--ink'] : col['--fuente']);
+      if (Math.abs(e.I) > 1e-12) {
+        const s = e.I > 0 ? 1 : -1, k2 = lado * Math.sign(nx2 * nx + ny2 * ny || 1), ax = mx - nx2 * 22 * k2, ay = my - ny2 * 22 * k2;
+        g.strokeStyle = col['--corr']; g.fillStyle = col['--corr']; g.lineWidth = 1.6;
+        g.beginPath(); g.moveTo(ax - ux * 12 * s, ay - uy * 12 * s); g.lineTo(ax + ux * 10 * s, ay + uy * 10 * s); g.stroke();
+        g.beginPath(); g.moveTo(ax + ux * 14 * s, ay + uy * 14 * s); g.lineTo(ax + ux * 7 * s - uy * 4, ay + uy * 7 * s + ux * 4); g.lineTo(ax + ux * 7 * s + uy * 4, ay + uy * 7 * s - ux * 4); g.closePath(); g.fill();
+        etiqueta(g, ax - nx2 * 15 * k2, ay - ny2 * 15 * k2, `${txt(f(Math.abs(e.I)))} A`, col['--corr'], '11px');
+      }
+    });
+    // nudos
+    for (const q of orden) {
+      const [x, y] = pos[q];
+      g.fillStyle = col['--cable']; g.beginPath(); g.arc(x, y, 4.5, 0, 2 * Math.PI); g.fill();
+      const abajo = y > cy + 1, arriba = y < cy - 1;
+      etiqueta(g, x, y + (abajo ? 16 : arriba ? -16 : -16), `${q}: ${txt(f(sol.V[q]))} V`, col['--accent'], '600 12px');
+      if (q === sol.ref) {
+        g.strokeStyle = col['--cable']; g.lineWidth = 1.5; g.beginPath(); g.moveTo(x, y); g.lineTo(x, y + 5);
+        for (const [hw, dy] of [[9, 26], [6, 30], [3, 34]]) { g.moveTo(x - hw, y + dy - 2); g.lineTo(x + hw, y + dy - 2); }
+        g.stroke();
+      }
+    }
+  }
+  window.addEventListener('resize', dibuja);
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', dibuja);
+
+  const ver = $('#ver'); if (ver) ver.textContent = Version.de('circuitos').current;
+  lista(); calcula();
+  window.CircuitosApp = { abrirEjemplo, resultado: () => sol && { V: sol.V, thev: sol.thev, ent: sol.ent }, estado: () => copia(sc) };
+})();
+
+</script>
+</html>

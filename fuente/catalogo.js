@@ -53,7 +53,7 @@ const Catalogo = {
       resumen: 'Circuitos y medidas para las prácticas.',
       herramientas: [
         { clave: 'alterna', nombre: 'Corriente alterna y fasores', icono: '∿', disponible: true, desc: 'Circuitos RLC en serie y en paralelo con fasores, potencias, factor de potencia y resonancia.', buscar: 'corriente alterna fasores impedancia rlc reactancia potencia activa reactiva aparente factor de potencia resonancia condensador bobina' },
-        { clave: 'circuitos', nombre: 'Circuitos de corriente continua', icono: 'I', desc: 'Mallas, nudos, Thévenin y potencias.', buscar: 'circuito kirchhoff mallas nudos thévenin resistencia' },
+        { clave: 'circuitos', nombre: 'Circuitos de corriente continua', icono: 'I', disponible: true, desc: 'Método de los nudos con Kirchhoff, corrientes, potencias, Thévenin, Norton y máxima potencia.', buscar: 'circuito corriente continua kirchhoff nudos mallas thévenin norton resistencia fuente tensión corriente potencia balance' },
       ],
     },
   ],
