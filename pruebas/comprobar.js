@@ -22,7 +22,9 @@ const mal = (m) => { fallos++; console.log('  ✗ ' + m); };
 // la portada, una página por asignatura y una por herramienta disponible del catálogo
 const Catalogo = require(path.join(fuente, 'catalogo.js'));
 const PUBLICABLES = ['index.html', 'og.png', 'apple-touch-icon.png', 'legal.css', 'aviso-legal.html', 'privacidad.html', 'cookies.html', 'contacto.html', 'fuentes/stix-two-math.woff2', 'fuentes/OFL-STIX-Two.txt',
-  ...Catalogo.asignaturas.flatMap((a) => [`${a.clave}/index.html`, ...a.herramientas.filter((h) => h.disponible).map((h) => `${a.clave}/${h.clave}/index.html`)])];
+  ...Catalogo.asignaturas.flatMap((a) => [`${a.clave}/index.html`, ...a.herramientas.filter((h) => h.disponible).map((h) => `${a.clave}/${h.clave}/index.html`)]),
+  // direcciones antiguas: una página que redirige a la nueva y las reglas 301 de Cloudflare
+  ...Object.keys(Catalogo.redirecciones).map((v) => `${v}index.html`), '_redirects'];
 const listar = (dir, pre = '') => fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? listar(path.join(dir, e.name), pre + e.name + '/') : [pre + e.name]));
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'emsim-'));
 const juegos = [
@@ -662,6 +664,19 @@ const Mates = require(path.join(fuente, 'mates.js'));
   if (fallos === antes) console.log('  ✓ Sistemas: reducción, igualación y sustitución en 2×2, 3×3 y complejos coinciden con Gauss');
 }
 
+{
+  // direcciones antiguas: cada una lleva a una página que existe, con aviso, 301 en Cloudflare y en Vercel
+  const antes = fallos, red = fs.readFileSync(path.join(publico, '_redirects'), 'utf8'), vj = JSON.parse(fs.readFileSync(path.join(raiz, 'vercel.json'), 'utf8'));
+  for (const [v, n] of Object.entries(Catalogo.redirecciones)) {
+    if (!fs.existsSync(path.join(publico, n, 'index.html'))) mal(`Redirección ${v}: ${n} no existe`);
+    const stub = fs.readFileSync(path.join(publico, v, 'index.html'), 'utf8'), destino = '../'.repeat(v.split('/').filter(Boolean).length) + n;
+    if (!stub.includes(`url=${destino}`) || !stub.includes('noindex')) mal(`Redirección ${v}: la página de aviso no lleva a ${destino}`);
+    if (!red.includes(`/${v} /${n} 301`)) mal(`Redirección ${v}: falta en _redirects`);
+    if (!(vj.redirects || []).some((r) => r.source === `/${v.replace(/\/$/, '')}` && r.destination === `/${n}`)) mal(`Redirección ${v}: falta en vercel.json`);
+  }
+  if (fallos === antes) console.log(`  ✓ ${Object.keys(Catalogo.redirecciones).length} direcciones antiguas redirigen a su nueva sección`);
+}
+
 async function navegador() {
   console.log('3 · Páginas en Chromium');
   let chromium;
@@ -999,7 +1014,7 @@ async function navegador() {
     const consola = [];
     page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') consola.push(m.type() + ': ' + m.text()); });
     page.on('pageerror', (e) => consola.push('excepción: ' + e.message));
-    await page.goto('file://' + path.join(publico, 'matematicas', 'estadistica', 'index.html'));
+    await page.goto('file://' + path.join(publico, 'estadistica', 'distribuciones', 'index.html'));
     await page.waitForFunction(() => window.EstadisticaApp);
     const antes = fallos;
     const verE = (await page.locator('#ver').textContent()).trim();
@@ -1023,7 +1038,7 @@ async function navegador() {
     const consola = [];
     page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') consola.push(m.type() + ': ' + m.text()); });
     page.on('pageerror', (e) => consola.push('excepción: ' + e.message));
-    await page.goto('file://' + path.join(publico, 'laboratorio', 'alterna', 'index.html'));
+    await page.goto('file://' + path.join(publico, 'circuitos', 'alterna', 'index.html'));
     await page.waitForFunction(() => window.AlternaApp);
     const antes = fallos;
     const verA = (await page.locator('#ver').textContent()).trim();
@@ -1075,7 +1090,7 @@ async function navegador() {
     const consola = [];
     page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') consola.push(m.type() + ': ' + m.text()); });
     page.on('pageerror', (e) => consola.push('excepción: ' + e.message));
-    await page.goto('file://' + path.join(publico, 'laboratorio', 'circuitos', 'index.html'));
+    await page.goto('file://' + path.join(publico, 'circuitos', 'continua', 'index.html'));
     await page.waitForFunction(() => window.CircuitosApp);
     const antes = fallos;
     const verC = (await page.locator('#ver').textContent()).trim();
@@ -1254,7 +1269,7 @@ async function navegador() {
       if (!(r.ancho > 0)) mal(`${dir}: alguna fórmula MathML no se dibuja`);
     }
     // las cajas de fórmulas de la teoría del resto de herramientas
-    for (const pag of ['laboratorio/alterna', 'laboratorio/circuitos', 'electromagnetismo/condensadores', 'fisica/dinamica', 'matematicas/estadistica', 'electromagnetismo/faraday', 'fisica/gases', 'electromagnetismo/induccion', 'matematicas/matrices', 'fisica/ondas', 'matematicas/sistemas', 'fisica/solido-rigido']) {
+    for (const pag of ['circuitos/alterna', 'circuitos/continua', 'electromagnetismo/condensadores', 'fisica/dinamica', 'estadistica/distribuciones', 'electromagnetismo/faraday', 'fisica/gases', 'electromagnetismo/induccion', 'matematicas/matrices', 'fisica/ondas', 'matematicas/sistemas', 'fisica/solido-rigido']) {
       await page.goto('file://' + path.join(publico, ...pag.split('/'), 'index.html'));
       await page.waitForFunction(() => document.querySelectorAll('.teoria .f[data-m]').length > 0);
       const r = await page.evaluate(() => [...document.querySelectorAll('.teoria .f')].map((e) => e.querySelectorAll('math').length > 0 && !/\$/.test(e.textContent)));
@@ -1265,7 +1280,7 @@ async function navegador() {
     if (fallos === antes) console.log('  ✓ Fórmulas MathML: desarrollo y teoría de Tiro parabólico, Trabajo y energía y Calorimetría, y la teoría de otras 12 herramientas');
   }
   // portada y páginas de asignatura: sin errores de consola y sin enlaces internos rotos
-  const portal = ['index.html', ...Catalogo.asignaturas.map((a) => `${a.clave}/index.html`), 'electromagnetismo/magnetostatica/index.html', 'quimica/tabla-periodica/index.html', 'fisica/trabajo-y-energia/index.html', 'quimica/masa-molar/index.html', 'quimica/configuracion-electronica/index.html', 'electromagnetismo/condensadores/index.html', 'fisica/tiro-parabolico/index.html', 'quimica/disoluciones/index.html', 'fisica/calorimetria/index.html', 'electromagnetismo/induccion/index.html', 'matematicas/matrices/index.html', 'matematicas/sistemas/index.html', 'matematicas/estadistica/index.html', 'laboratorio/alterna/index.html', 'fisica/dinamica/index.html', 'laboratorio/circuitos/index.html', 'fisica/solido-rigido/index.html', 'fisica/ondas/index.html', 'fisica/gases/index.html', 'electromagnetismo/faraday/index.html'];
+  const portal = ['index.html', ...Catalogo.asignaturas.map((a) => `${a.clave}/index.html`), 'electromagnetismo/magnetostatica/index.html', 'quimica/tabla-periodica/index.html', 'fisica/trabajo-y-energia/index.html', 'quimica/masa-molar/index.html', 'quimica/configuracion-electronica/index.html', 'electromagnetismo/condensadores/index.html', 'fisica/tiro-parabolico/index.html', 'quimica/disoluciones/index.html', 'fisica/calorimetria/index.html', 'electromagnetismo/induccion/index.html', 'matematicas/matrices/index.html', 'matematicas/sistemas/index.html', 'estadistica/distribuciones/index.html', 'circuitos/alterna/index.html', 'fisica/dinamica/index.html', 'circuitos/continua/index.html', 'fisica/solido-rigido/index.html', 'fisica/ondas/index.html', 'fisica/gases/index.html', 'electromagnetismo/faraday/index.html'];
   const antes = fallos;
   for (const f of portal) {
     const page = await browser.newPage({ viewport: { width: 1200, height: 900 } });

@@ -71,13 +71,13 @@ if [ "$1" != privado ]; then
     version.js mates.js matematicas/algebra.js matrices/calculo.js matrices/app.js
   herramienta sistemas ../publico/matematicas/sistemas/index.html "Sistemas de ecuaciones lineales" "Calculadora de sistemas de ecuaciones paso a paso: Rouché-Frobenius, Gauss, Gauss-Jordan, Cramer y matriz inversa, en paramétricas y con números complejos" \
     version.js mates.js matematicas/algebra.js sistemas/calculo.js sistemas/app.js
-  herramienta estadistica ../publico/matematicas/estadistica/index.html "Distribuciones de probabilidad" "Calculadora de la normal, binomial, Poisson, t de Student y chi cuadrado con el área sombreada: probabilidades, cuantiles y valores críticos paso a paso" \
+  herramienta estadistica ../publico/estadistica/distribuciones/index.html "Distribuciones de probabilidad" "Calculadora de la normal, binomial, Poisson, t de Student y chi cuadrado con el área sombreada: probabilidades, cuantiles y valores críticos paso a paso" \
     version.js mates.js estadistica/calculo.js estadistica/app.js
-  herramienta alterna ../publico/laboratorio/alterna/index.html "Corriente alterna y fasores" "Calculadora de corriente alterna: circuitos RLC en serie y en paralelo con impedancias complejas, diagrama de fasores, potencias, factor de potencia y resonancia, paso a paso" \
+  herramienta alterna ../publico/circuitos/alterna/index.html "Corriente alterna y fasores" "Calculadora de corriente alterna: circuitos RLC en serie y en paralelo con impedancias complejas, diagrama de fasores, potencias, factor de potencia y resonancia, paso a paso" \
     version.js mates.js alterna/fisica.js alterna/app.js
   herramienta dinamica ../publico/fisica/dinamica/index.html "Dinámica y diagramas de fuerzas" "Calculadora de dinámica con el diagrama de fuerzas: plano inclinado con rozamiento estático y dinámico, fuerza con ángulo, poleas y máquina de Atwood, paso a paso" \
     version.js mates.js dinamica/fisica.js dinamica/app.js
-  herramienta circuitos ../publico/laboratorio/circuitos/index.html "Circuitos de corriente continua" "Calculadora de circuitos de corriente continua por el método de los nudos: leyes de Kirchhoff, corrientes, potencias, Thévenin, Norton y máxima transferencia de potencia, paso a paso" \
+  herramienta circuitos ../publico/circuitos/continua/index.html "Circuitos de corriente continua" "Calculadora de circuitos de corriente continua por el método de los nudos: leyes de Kirchhoff, corrientes, potencias, Thévenin, Norton y máxima transferencia de potencia, paso a paso" \
     version.js mates.js circuitos/fisica.js circuitos/app.js
   herramienta solido-rigido ../publico/fisica/solido-rigido/index.html "Sólido rígido" "Calculadora de sólido rígido: momentos de inercia con el teorema de Steiner, rodadura por un plano inclinado, polea con masa y conservación del momento angular, paso a paso" \
     version.js mates.js solido-rigido/fisica.js solido-rigido/app.js
