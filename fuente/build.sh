@@ -87,6 +87,8 @@ if [ "$1" != privado ]; then
     version.js mates.js solido-rigido/fisica.js solido-rigido/app.js
   herramienta ondas ../publico/fisica/ondas/index.html "Ondas mecánicas" "Calculadora de ondas: ecuación de la onda armónica, ondas estacionarias en cuerdas y tubos, efecto Doppler e intensidad y nivel sonoro, con animación y paso a paso" \
     version.js mates.js ondas/fisica.js ondas/app.js
+  herramienta doppler ../publico/fisica/doppler/index.html "Efecto Doppler" "Calculadora del efecto Doppler con animación de los frentes de onda: fuente y observador en movimiento, con viento, una fuente que pasa de largo, el eco de un radar o un murciélago y el cono de Mach, paso a paso" \
+    version.js mates.js doppler/fisica.js doppler/app.js
   herramienta gases ../publico/fisica/gases/index.html "Gases ideales" "Calculadora de gases ideales: ecuación de estado PV = nRT, transformaciones isoterma, isobara, isocora y adiabática, ciclos con su rendimiento y teoría cinética, paso a paso" \
     version.js mates.js gases/fisica.js gases/app.js
 fi
