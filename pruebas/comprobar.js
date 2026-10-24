@@ -1124,6 +1124,49 @@ const LapC = require(path.join(fuente, 'laplace', 'calculo.js'));
   if (fallos === antes) console.log(`  ✓ Transformada de Laplace: ${LapC.ejemplos.length} ejemplos, resultados como en clase, directa frente a la integral, inversa de ida y vuelta (polos dobles y complejos), EDOs que cumplen la ecuación y errores`);
 }
 
+const DerC = require(path.join(fuente, 'derivadas', 'calculo.js'));
+{
+  const antes = fallos, cerca = (a, b, tol, q) => { if (!(Math.abs(a - b) <= tol * Math.max(1, Math.abs(b)))) mal(`Derivadas · ${q}: ${a} en vez de ${b}`); };
+  const r = (c) => DerC.resolver(DerC.ejemplos.find((e) => e.clave === c).sc);
+  for (const e of DerC.ejemplos) { try { const x = DerC.resolver(e.sc); if (x.pasos.length < 3) mal(`Derivadas · ${e.clave}: desarrollo corto`); } catch (err) { mal(`Derivadas · ${e.clave}: ${err.message}`); } }
+  const igual = (a, b, q) => { if (a !== b) mal(`Derivadas · ${q}: sale «${a}», se esperaba «${b}»`); };
+  // derivadas como en clase
+  igual(r('producto').txt[0], '2 x sen x + x^{2} cos x', '(x² sen x)′');
+  igual(r('cociente').txt[0], '{x^{2} − 2 x − 1}/{(x − 1)^{2}}', '((x² + 1)/(x − 1))′');
+  igual(r('cadena').txt[0], '−2 x e^{−x^{2}}', '(e^(−x²))′');
+  igual(r('raiz').txt[0], '{x}/{x^{2} + 1}', '(ln √(x² + 1))′');
+  igual(r('arctg').txt[2], '{16 (12 x^{2} − 1)}/{(1 + 4 x^{2})^{3}}', '(arctg 2x)‴');
+  igual(r('tangente').tangente, 'y = 9 x − 16', 'tangente a x³ − 3x en 2');
+  const cr = r('tangente').crit; if (cr.length !== 2 || cr[0].tipo !== 'máximo' || cr[1].tipo !== 'mínimo' || cr[0].x !== -1 || cr[1].x !== 1) mal('Derivadas: x³ − 3x no da el máximo en −1 y el mínimo en 1');
+  // todas las derivadas cumplen el cociente incremental
+  for (const e of DerC.ejemplos.filter((q) => q.sc.modo === 'derivada')) {
+    const x = DerC.resolver(e.sc), h = 1e-5;
+    for (const t of [0.4, 1.3, 2.2]) for (let k = 1; k <= x.orden; k++) { const a = x.d(k - 1), b = x.d(k); cerca(b(t), (a(t + h) - a(t - h)) / (2 * h), 1e-4, `${e.clave}: derivada ${k} en x = ${t}`); }
+  }
+  // primitivas: todas se encuentran y al derivarlas sale f
+  const prims = { 'x^2 cos(2x)': 0, 'x^3 e^(2x)': 0, 'sen(3x)cos(3x)': 0, 'x sen(x)': 0, 'x e^(-x)': 0, 'sen(x)^3': 0, 'cos(x)^5': 0, 'tg(x)': 0, 'tg(x)^2': 0, 'ln(x)': 0, 'ln(x)^2': 0, 'arctg(x)': 0, 'x arctg(x)': 0, '2^x': 0, '1/sqrt(1-x^2)': 0, 'x/sqrt(1+x^2)': 0, 'e^(2x) sen(3x)': 0, 'x^2 ln(x)': 0, 'sqrt(x) ln(x)': 0, 'ln(x)/x': 0, '1/(x ln(x))': 0, 'cos(ln(x))/x': 0, 'e^x/(1+e^x)': 0, 'x (x^2+1)^3': 0, '(x+1)^5': 0, 'sqrt(2x+1)': 0, '1/(x^2 sqrt(x))': 0, '1/(x^2-1)': 0, 'x^4/(x^2-1)': 0, '1/(x(x+1)^2)': 0, '(2x+3)/(x^2+3x+5)': 0, '1/(x^2+x+1)': 0, '(x+2)/(x^2+2x+2)': 0, 'senh(x) cosh(x)': 0, 'sen(x)/cos(x)^2': 0 };
+  for (const fx of Object.keys(prims)) {
+    const x = DerC.integral({ f: fx });
+    if (!x.F) { mal(`Derivadas: no encuentra la primitiva de ${fx}`); continue; }
+    if (!DerC.igualNum(Expr.deriva(x.F), x.ast, 1e-7)) mal(`Derivadas: la primitiva de ${fx} no vuelve a f al derivarla`);
+  }
+  igual(DerC.integral({ f: '1/(x^2+x+1)' }).Ftxt, '{2 arctg ({2 x + 1}/{√3})}/{√3}', '∫ 1/(x² + x + 1)');
+  igual(DerC.integral({ f: 'x (x^2+1)^3' }).Ftxt, '{(x^{2} + 1)^{4}}/{8}', '∫ x (x² + 1)³');
+  igual(r('racional').Ftxt, 'ln |x + 3| + 2 ln |x − 1|', '∫ (3x + 5)/(x² + 2x − 3)');
+  // integrales definidas
+  cerca(r('partes').val, Math.E - 2, 1e-12, '∫₀¹ x² eˣ'); cerca(r('sustitucion').val, (Math.E - 1) / 2, 1e-12, '∫₀¹ x e^(x²)');
+  cerca(r('racional').val, Math.log(63 / 5), 1e-12, '∫₂⁴ racional'); cerca(r('arcotangente').val, Math.PI / 8, 1e-12, '∫₀² 1/(x² + 4)');
+  cerca(r('trig').val, Math.PI / 2, 1e-12, '∫₀^π sen² x'); cerca(r('cicliclica').val, (Math.exp(Math.PI / 2) - 1) / 2, 1e-12, '∫ eˣ cos x');
+  cerca(r('partes-ln').val, (Math.E ** 2 + 1) / 4, 1e-12, '∫₁^e x ln x'); cerca(r('gauss').val, 0.746824132812427, 1e-9, '∫₀¹ e^(−x²) numérica');
+  if (r('gauss').F) mal('Derivadas: da una primitiva elemental de e^(−x²)');
+  const ar = DerC.integral({ f: 'sen(x)', a: '0', b: '2pi' }); cerca(ar.val, 0, 1e-9, '∫₀^{2π} sen x'); cerca(ar.area, 4, 1e-5, 'área de sen x en [0, 2π]');
+  for (const [sc, q] of [[{ modo: 'derivada', f: '', orden: '1' }, 'sin f'], [{ modo: 'derivada', f: 'x + y', orden: '1' }, 'otra letra'], [{ modo: 'derivada', f: 'ln(x)', orden: '1', x0: '-1' }, 'x₀ fuera del dominio'], [{ modo: 'integral', f: 'x', a: '1', b: '1' }, 'a = b'], [{ modo: 'integral', f: '1/x', a: '-1', b: '1' }, 'integral impropia'], [{ modo: 'integral', f: 'x', a: '0', b: '' }, 'falta b']]) {
+    let ok = false; try { DerC.resolver(sc); } catch (e) { ok = true; }
+    if (!ok) mal(`Derivadas: ${q} no da error`);
+  }
+  if (fallos === antes) console.log(`  ✓ Derivadas e integrales: ${DerC.ejemplos.length} ejemplos, derivadas como en clase y frente al cociente incremental, tangente y extremos, ${Object.keys(prims).length} primitivas comprobadas derivándolas, Barrow, numérica, área y errores`);
+}
+
 const Gases = require(path.join(fuente, 'gases', 'fisica.js'));
 {
   // valores calculados a mano
@@ -2365,6 +2408,40 @@ async function navegador() {
     const consola = [];
     page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') consola.push(m.type() + ': ' + m.text()); });
     page.on('pageerror', (e) => consola.push('excepción: ' + e.message));
+    await page.goto('file://' + path.join(publico, 'matematicas', 'derivadas', 'index.html'));
+    await page.waitForFunction(() => window.DerivadasApp);
+    const antes = fallos;
+    const verD = (await page.locator('#ver').textContent()).trim();
+    if (verD !== Version.de('derivadas').current) mal(`Derivadas: la página muestra la versión «${verD}», se esperaba ${Version.de('derivadas').current}`);
+    for (const e of DerC.ejemplos) {
+      await page.evaluate((c) => DerivadasApp.abrirEjemplo(c), e.clave);
+      const r = await page.evaluate(() => ({ err: !document.querySelector('#error').hidden, pasos: document.querySelectorAll('#pasos li').length, mathml: document.querySelectorAll('#pasos math').length, dolar: /\$/.test(document.querySelector('#pasos').textContent + document.querySelector('#resumen').textContent), res: document.querySelectorAll('#resumen > div').length, modo: document.querySelector('#modo').value }));
+      if (r.err || r.pasos < 3 || r.res < 1) mal(`Derivadas · ${e.clave}: falta el resultado o el desarrollo`);
+      if (!r.mathml || r.dolar) mal(`Derivadas · ${e.clave}: el desarrollo no sale en MathML`);
+      if (r.modo !== e.sc.modo) mal(`Derivadas · ${e.clave}: el modo no cuadra`);
+    }
+    await page.evaluate(() => DerivadasApp.abrirEjemplo('partes'));
+    if (!(await page.locator('#resumen').textContent()).includes('0,718282')) mal('Derivadas: ∫₀¹ x² eˣ no sale 0,718282 en la página');
+    await page.fill('#f-b', '1');
+    await page.fill('#f-a', '1');
+    if (await page.locator('#error').isHidden()) mal('Derivadas: a = b no da error');
+    await page.selectOption('#modo', 'derivada');
+    if ((await page.locator('#f-x0').count()) !== 1 || !(await page.locator('#error').isHidden())) mal('Derivadas: al pasar a derivada no salen sus campos o da error');
+    const box = await page.locator('#grafica').boundingBox();
+    const x0 = await page.locator('#f-x0').inputValue();
+    await page.mouse.click(box.x + box.width * 0.7, box.y + box.height * 0.4);
+    if ((await page.locator('#f-x0').inputValue()) === x0 || !(await page.locator('#error').isHidden())) mal('Derivadas: tocar la gráfica no cambia x₀');
+    await page.click('#animar'); await page.waitForTimeout(500); await page.click('#animar');
+    for (let i = 0; i < 15; i++) { await page.evaluate(() => DerivadasApp.azar()); if (!(await page.locator('#error').isHidden()) || !(await page.locator('#resumen > div.num').count())) mal(`Derivadas: un ejercicio al azar da error o no tiene resultado numérico: ${JSON.stringify(await page.evaluate(() => DerivadasApp.estado()))}`); }
+    await page.close();
+    if (consola.length) mal('Derivadas: consola del navegador:\n      ' + consola.join('\n      '));
+    if (fallos === antes) console.log(`  ✓ Derivadas e integrales: ${DerC.ejemplos.length} ejemplos con MathML, a = b, cambio de modo, tocar la gráfica, animación y ejercicios al azar sin errores de consola`);
+  }
+  {
+    const page = await browser.newPage({ viewport: { width: 1200, height: 900 } });
+    const consola = [];
+    page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') consola.push(m.type() + ': ' + m.text()); });
+    page.on('pageerror', (e) => consola.push('excepción: ' + e.message));
     await page.goto('file://' + path.join(publico, 'fisica', 'gases', 'index.html'));
     await page.waitForFunction(() => window.GasesApp);
     const antes = fallos;
@@ -2464,7 +2541,7 @@ async function navegador() {
       if (!(r.ancho > 0)) mal(`${dir}: alguna fórmula MathML no se dibuja`);
     }
     // las cajas de fórmulas de la teoría del resto de herramientas
-    for (const pag of ['circuitos/alterna', 'circuitos/continua', 'electromagnetismo/condensadores', 'fisica/dinamica', 'estadistica/distribuciones', 'electromagnetismo/faraday', 'fisica/gases', 'electromagnetismo/induccion', 'matematicas/matrices', 'fisica/ondas', 'fisica/doppler', 'circuitos/resistencias', 'estadistica/regresion', 'matematicas/complejos', 'fisica/fluidos', 'quimica/ph', 'fisica/ciclos', 'matematicas/taylor', 'matematicas/fourier', 'matematicas/edos', 'matematicas/laplace', 'quimica/cinetica', 'matematicas/campos', 'electromagnetismo/fuerza', 'matematicas/sistemas', 'fisica/solido-rigido']) {
+    for (const pag of ['circuitos/alterna', 'circuitos/continua', 'electromagnetismo/condensadores', 'fisica/dinamica', 'estadistica/distribuciones', 'electromagnetismo/faraday', 'fisica/gases', 'electromagnetismo/induccion', 'matematicas/matrices', 'fisica/ondas', 'fisica/doppler', 'circuitos/resistencias', 'estadistica/regresion', 'matematicas/complejos', 'fisica/fluidos', 'quimica/ph', 'fisica/ciclos', 'matematicas/taylor', 'matematicas/fourier', 'matematicas/edos', 'matematicas/laplace', 'matematicas/derivadas', 'quimica/cinetica', 'matematicas/campos', 'electromagnetismo/fuerza', 'matematicas/sistemas', 'fisica/solido-rigido']) {
       await page.goto('file://' + path.join(publico, ...pag.split('/'), 'index.html'));
       await page.waitForFunction(() => document.querySelectorAll('.teoria .f[data-m]').length > 0);
       const r = await page.evaluate(() => [...document.querySelectorAll('.teoria .f')].map((e) => e.querySelectorAll('math').length > 0 && !/\$/.test(e.textContent)));
@@ -2525,7 +2602,7 @@ async function navegador() {
     if (!m.ab || !m.scrim || m.ancho > 390) mal(`Mis ejercicios en el móvil: ${JSON.stringify(m)}`);
     await movil.close();
     if (consola.length) mal('Arreglo 6: consola del navegador:\n      ' + consola.join('\n      '));
-    if (probadas < 37) mal(`Mis ejercicios: solo se ha probado en ${probadas} herramientas`);
+    if (probadas < 38) mal(`Mis ejercicios: solo se ha probado en ${probadas} herramientas`);
     if (fallos === antes) console.log(`  ✓ Mis ejercicios: guardar, carpeta, fijar, abrir, exportar, borrar e importar en ${probadas} herramientas, y en el móvil`);
   }
   {
@@ -2564,11 +2641,11 @@ async function navegador() {
       await page.close(); probadas++;
     }
     if (consola.length) mal('Arreglo 7: consola del navegador:\n      ' + consola.join('\n      '));
-    if (probadas < 37) mal(`Modo práctica: solo se ha probado en ${probadas} herramientas`);
+    if (probadas < 38) mal(`Modo práctica: solo se ha probado en ${probadas} herramientas`);
     if (fallos === antes) console.log(`  ✓ Modo práctica: ${ejercicios} ejercicios al azar en ${probadas} herramientas, corregidos bien y mal, con la solución y la vuelta a los datos de antes`);
   }
   // portada y páginas de asignatura: sin errores de consola y sin enlaces internos rotos
-  const portal = ['index.html', 'novedades/index.html', ...Catalogo.asignaturas.map((a) => `${a.clave}/index.html`), 'electromagnetismo/magnetostatica/index.html', 'quimica/tabla-periodica/index.html', 'fisica/trabajo-y-energia/index.html', 'quimica/masa-molar/index.html', 'quimica/configuracion-electronica/index.html', 'electromagnetismo/condensadores/index.html', 'fisica/tiro-parabolico/index.html', 'quimica/disoluciones/index.html', 'fisica/calorimetria/index.html', 'electromagnetismo/induccion/index.html', 'matematicas/matrices/index.html', 'matematicas/sistemas/index.html', 'estadistica/distribuciones/index.html', 'circuitos/alterna/index.html', 'fisica/dinamica/index.html', 'circuitos/continua/index.html', 'fisica/solido-rigido/index.html', 'fisica/ondas/index.html', 'fisica/doppler/index.html', 'circuitos/resistencias/index.html', 'estadistica/regresion/index.html', 'matematicas/complejos/index.html', 'fisica/fluidos/index.html', 'quimica/ph/index.html', 'fisica/ciclos/index.html', 'matematicas/taylor/index.html', 'matematicas/fourier/index.html', 'matematicas/edos/index.html', 'quimica/cinetica/index.html', 'matematicas/campos/index.html', 'electromagnetismo/fuerza/index.html', 'circuitos/transitorios/index.html', 'estadistica/intervalos/index.html', 'electromagnetismo/ondas-em/index.html', 'fisica/interferencia/index.html', 'matematicas/laplace/index.html', 'fisica/gases/index.html', 'electromagnetismo/faraday/index.html'];
+  const portal = ['index.html', 'novedades/index.html', ...Catalogo.asignaturas.map((a) => `${a.clave}/index.html`), 'electromagnetismo/magnetostatica/index.html', 'quimica/tabla-periodica/index.html', 'fisica/trabajo-y-energia/index.html', 'quimica/masa-molar/index.html', 'quimica/configuracion-electronica/index.html', 'electromagnetismo/condensadores/index.html', 'fisica/tiro-parabolico/index.html', 'quimica/disoluciones/index.html', 'fisica/calorimetria/index.html', 'electromagnetismo/induccion/index.html', 'matematicas/matrices/index.html', 'matematicas/sistemas/index.html', 'estadistica/distribuciones/index.html', 'circuitos/alterna/index.html', 'fisica/dinamica/index.html', 'circuitos/continua/index.html', 'fisica/solido-rigido/index.html', 'fisica/ondas/index.html', 'fisica/doppler/index.html', 'circuitos/resistencias/index.html', 'estadistica/regresion/index.html', 'matematicas/complejos/index.html', 'fisica/fluidos/index.html', 'quimica/ph/index.html', 'fisica/ciclos/index.html', 'matematicas/taylor/index.html', 'matematicas/fourier/index.html', 'matematicas/edos/index.html', 'quimica/cinetica/index.html', 'matematicas/campos/index.html', 'electromagnetismo/fuerza/index.html', 'circuitos/transitorios/index.html', 'estadistica/intervalos/index.html', 'electromagnetismo/ondas-em/index.html', 'fisica/interferencia/index.html', 'matematicas/laplace/index.html', 'matematicas/derivadas/index.html', 'fisica/gases/index.html', 'electromagnetismo/faraday/index.html'];
   const antes = fallos;
   for (const f of portal) {
     const page = await browser.newPage({ viewport: { width: 1200, height: 900 } });
