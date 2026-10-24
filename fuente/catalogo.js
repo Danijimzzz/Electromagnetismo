@@ -48,18 +48,31 @@ const Catalogo = {
       herramientas: [
         { clave: 'matrices', nombre: 'Matrices paso a paso', icono: 'A', disponible: true, desc: 'Determinante, inversa, rango, Gauss-Jordan y valores propios, con fracciones exactas y complejos.', buscar: 'matriz determinante inversa gauss jordan rango autovalores valores propios diagonalizar sarrus laplace adjunta' },
         { clave: 'sistemas', nombre: 'Sistemas de ecuaciones lineales', icono: 'x', disponible: true, desc: 'Rouché-Frobenius, Gauss, Cramer e inversa, en paramétricas, también con complejos.', buscar: 'sistema ecuaciones lineales gauss cramer rouché frobenius compatible indeterminado incompatible paramétrica complejos' },
-        { clave: 'estadistica', nombre: 'Distribuciones de probabilidad', icono: 'σ', disponible: true, desc: 'Normal, binomial, Poisson, t y χ² con el área sombreada, cuantiles y valores críticos.', buscar: 'estadística probabilidad distribución normal binomial poisson student chi cuadrado tipificar cuantil valor crítico' },
         { clave: 'campos-vectoriales', nombre: 'Campos vectoriales', icono: '∇', desc: 'Gradiente, divergencia, rotacional y flujo.', buscar: 'gradiente divergencia rotacional flujo' },
       ],
     },
     {
-      clave: 'laboratorio', nombre: 'Laboratorio', icono: 'Ω', color: '#b0700a', colorOscuro: '#e6a640',
-      resumen: 'Circuitos y medidas para las prácticas.',
+      clave: 'estadistica', nombre: 'Estadística', icono: 'σ', color: '#a3367a', colorOscuro: '#e07ab8',
+      resumen: 'Probabilidad y estadística de la carrera: distribuciones, áreas, cuantiles y valores críticos.',
       herramientas: [
+        { clave: 'distribuciones', nombre: 'Distribuciones de probabilidad', icono: 'σ', disponible: true, desc: 'Normal, binomial, Poisson, t y χ² con el área sombreada, cuantiles y valores críticos.', buscar: 'estadística probabilidad distribución normal binomial poisson student chi cuadrado tipificar cuantil valor crítico' },
+      ],
+    },
+    {
+      clave: 'circuitos', nombre: 'Circuitos', icono: 'Ω', color: '#b0700a', colorOscuro: '#e6a640',
+      resumen: 'Circuitos de corriente continua y alterna: Kirchhoff, Thévenin, fasores y potencias, para la teoría y las prácticas.',
+      herramientas: [
+        { clave: 'continua', nombre: 'Circuitos de corriente continua', icono: 'I', disponible: true, desc: 'Método de los nudos con Kirchhoff, corrientes, potencias, Thévenin, Norton y máxima potencia.', buscar: 'circuito corriente continua kirchhoff nudos mallas thévenin norton resistencia fuente tensión corriente potencia balance' },
         { clave: 'alterna', nombre: 'Corriente alterna y fasores', icono: '∿', disponible: true, desc: 'Circuitos RLC en serie y en paralelo con fasores, potencias, factor de potencia y resonancia.', buscar: 'corriente alterna fasores impedancia rlc reactancia potencia activa reactiva aparente factor de potencia resonancia condensador bobina' },
-        { clave: 'circuitos', nombre: 'Circuitos de corriente continua', icono: 'I', disponible: true, desc: 'Método de los nudos con Kirchhoff, corrientes, potencias, Thévenin, Norton y máxima potencia.', buscar: 'circuito corriente continua kirchhoff nudos mallas thévenin norton resistencia fuente tensión corriente potencia balance' },
       ],
     },
   ],
+  // direcciones antiguas que llevan a la nueva (portal.js genera la página de aviso, _redirects y vercel.json las redirigen con 301)
+  redirecciones: {
+    'matematicas/estadistica/': 'estadistica/distribuciones/',
+    'laboratorio/': 'circuitos/',
+    'laboratorio/alterna/': 'circuitos/alterna/',
+    'laboratorio/circuitos/': 'circuitos/continua/',
+  },
 };
 if (typeof module !== 'undefined') module.exports = Catalogo;

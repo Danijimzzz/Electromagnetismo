@@ -153,6 +153,28 @@ ${cards}
   });
 }
 
+// direcciones antiguas: una página que lleva a la nueva (por si se abre sin servidor) y las reglas 301
+const redir = Catalogo.redirecciones || {};
+for (const [vieja, nueva] of Object.entries(redir)) {
+  const sube = '../'.repeat(vieja.split('/').filter(Boolean).length), destino = sube + nueva;
+  archivos[`${vieja}index.html`] = `<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<title>Esta página se ha movido · ${esc(marca)}</title>
+<meta name="robots" content="noindex">
+<link rel="canonical" href="${destino}">
+<meta http-equiv="refresh" content="0; url=${destino}">
+<script>location.replace(${JSON.stringify(destino)} + location.search + location.hash)</script>
+<p>Esta página se ha movido a <a href="${destino}">su nueva dirección</a>.</p>
+</html>
+`;
+}
+// Cloudflare (Workers con assets) lee publico/_redirects; Vercel, vercel.json
+archivos._redirects = Object.entries(redir).flatMap(([v, n]) => [`/${v} /${n} 301`, `/${v.replace(/\/$/, '')} /${n} 301`]).join('\n') + '\n';
+const vercel = path.join(__dirname, '..', 'vercel.json'), conf = JSON.parse(fs.readFileSync(vercel, 'utf8'));
+conf.redirects = Object.entries(redir).flatMap(([v, n]) => [`/${v.replace(/\/$/, '')}`, `/${v}`].map((source) => ({ source, destination: `/${n}`, permanent: true })));
+fs.writeFileSync(vercel, JSON.stringify(conf, null, 2) + '\n');
+
 for (const [f, html] of Object.entries(archivos)) {
   fs.mkdirSync(path.dirname(path.join(publico, f)), { recursive: true });
   fs.writeFileSync(path.join(publico, f), html);

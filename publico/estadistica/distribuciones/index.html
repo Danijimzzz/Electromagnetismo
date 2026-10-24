@@ -1,0 +1,754 @@
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMwZDZiNjYiLz48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlNmE2NDAiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtZGFzaGFycmF5PSI0IDYuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48cGF0aCBkPSJNMjAgMzJINDQiLz48cGF0aCBkPSJNMjEgMjdDMjcgMTQgMzcgMTQgNDMgMjciLz48cGF0aCBkPSJNMjEgMzdDMjcgNTAgMzcgNTAgNDMgMzciLz48cGF0aCBkPSJNMTcgMjRDMjIgNCA0MiA0IDQ3IDI0Ii8+PHBhdGggZD0iTTE3IDQwQzIyIDYwIDQyIDYwIDQ3IDQwIi8+PC9nPjxjaXJjbGUgY3g9IjE3IiBjeT0iMzIiIHI9IjgiIGZpbGw9IiNlZjdhNjIiLz48Y2lyY2xlIGN4PSI0NyIgY3k9IjMyIiByPSI4IiBmaWxsPSIjNzRhMmYyIi8+PHBhdGggZD0iTTEzIDMyaDhNMTcgMjh2OE00MyAzMmg4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta property="og:title" content="Distribuciones de probabilidad">
+<meta property="og:description" content="Calculadora de la normal, binomial, Poisson, t de Student y chi cuadrado con el área sombreada: probabilidades, cuantiles y valores críticos paso a paso">
+<meta property="og:image" content="https://electromagnetismo-two.vercel.app/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<title>Distribuciones de probabilidad: normal, binomial, Poisson, t y χ² · SimulaCiencia</title>
+<meta name="description" content="Calculadora de distribuciones de probabilidad en español con el área sombreada: normal con tipificación, t de Student, chi cuadrado, exponencial, binomial y Poisson; probabilidades, cuantiles y valores críticos paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root {
+  --bg: #eef0f4; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d6dbe3; --accent: #6b3fa0; --accent-soft: #efe6f8; --area: rgba(107,63,160,.28); --curva: #1a2128;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #b892ec; --accent-soft: #2b2140; --area: rgba(184,146,236,.32); --curva: #e3e8ee; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #b892ec; --accent-soft: #2b2140; --area: rgba(184,146,236,.32); --curva: #e3e8ee; color-scheme: dark }
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
+.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
+.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+.layout { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 16px; align-items: start }
+@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr) } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 15px var(--f-ui); margin: 0 0 10px }
+.campos { display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px } .campos label small { color: var(--muted) }
+.in { font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.in:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer }
+.btn:hover { border-color: var(--accent) }
+.error { color: #c0392b; font-size: 13px; margin: 10px 0 0 }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+.res { font: 26px var(--f-math); padding: 2px 0 } .res small { font: 14px var(--f-ui); color: var(--muted); margin-left: 10px }
+canvas { display: block; width: 100%; height: clamp(220px, 34vw, 300px); border-radius: 8px; background: var(--bg); margin-top: 10px }
+.pasos ol { margin: 0; padding-left: 22px } .pasos li { margin: 0 0 12px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Estadística</a> / Distribuciones de probabilidad</span></header>
+<div class="wrap">
+<h1>Distribuciones de probabilidad</h1>
+<p class="lead">Calcula probabilidades, cuantiles y valores críticos de la normal, la t de Student, la χ², la exponencial, la binomial y la Poisson, con el área sombreada en la gráfica y el desarrollo como en clase: tipificación, fórmula de la binomial y aproximación normal.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota">Puedes usar coma o punto decimal: 0,05 o 0.05.</p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card"><h2>Resultado</h2><div class="res" id="res"></div><canvas id="grafica" aria-label="Gráfica de la distribución con el área sombreada"></canvas></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>La normal y la tipificación</h2>
+  <p>Si X ~ N(μ, σ), la variable Z = (X − μ)/σ sigue la normal tipificada N(0, 1), cuya función de distribución Φ(z) es la que viene en las tablas. Así cualquier probabilidad de una normal se reduce a Φ: P(X ≤ a) = Φ((a − μ)/σ) y P(X ≥ a) = 1 − Φ((a − μ)/σ). Por la simetría, Φ(−z) = 1 − Φ(z).</p>
+  <p class="f m">$P(a ≤ X ≤ b) = Φ((b − μ)/σ) − Φ((a − μ)/σ)$</p>
+  <h2>Binomial y Poisson</h2>
+  <p>La binomial B(n, p) cuenta los éxitos en n pruebas independientes con probabilidad p cada una: media np y varianza npq. La Poisson P(λ) cuenta sucesos raros en un intervalo, con media y varianza λ. En las discretas sí importa si la desigualdad es estricta: P(X &lt; k) = P(X ≤ k − 1).</p>
+  <p class="f m">$P(X = k) = binom(n, k) p^k q^{n−k}$, &ensp; $P(X = k) = {e^{−λ} λ^k}/{k!}$</p>
+  <p>Si np ≥ 5 y nq ≥ 5, la binomial se aproxima por N(np, √(npq)), sumando o restando 0,5 a los extremos (corrección de continuidad).</p>
+  <h2>t de Student y χ²</h2>
+  <p>La t de Student con ν grados de libertad aparece al estimar una media con la desviación típica de la muestra: es simétrica como la normal pero con colas más gruesas, y se parece a ella cuando ν crece. La χ² con k grados de libertad es la suma de k normales tipificadas al cuadrado y se usa en las pruebas de bondad de ajuste, de independencia y para la varianza.</p>
+  <h2>Valores críticos</h2>
+  <p>Para un nivel de significación α, el valor crítico bilateral c deja α/2 en cada cola: P(−c ≤ Z ≤ c) = 1 − α. Con α = 0,05, z<sub>α/2</sub> = 1,96.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Estadística <span id="ver"></span> (beta)</footer>
+</body>
+<script>
+/* =====================================================================
+   Versiones y novedades: la web (portada, asignaturas, buscador) tiene su número y cada
+   herramienta el suyo. Hasta el lanzamiento se numera 0.x (beta); la 1.0 de una herramienta
+   llega cuando se da por terminada y la 1.0 de la web será el lanzamiento. Sube el segundo
+   número si hay algo nuevo (0.6) y añade un tercero si es solo un arreglo (0.5.1).
+   En las novedades de la web se anuncia también cada herramienta nueva.
+   Las notas son para los usuarios: solo funciones nuevas, arreglos visibles y cambios
+   en la interfaz. Lo interno (pruebas, CI, build, despliegue, refactorizaciones) no se anota;
+   el historial completo para desarrolladores está en Notion.
+   ===================================================================== */
+const Version = (() => {
+  const registros = {
+    web: [
+      { v: '0.22', fecha: '2026-10-24', cambios: ['Nuevas secciones en la portada: Estadística, con las distribuciones de probabilidad, y Circuitos, que reúne corriente continua y alterna. Las direcciones antiguas siguen funcionando y llevan a la nueva.'] },
+      { v: '0.21', fecha: '2026-10-24', cambios: ['Sistemas de ecuaciones: nuevos métodos de reducción, igualación y sustitución.'] },
+      { v: '0.20.3', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría de todas las herramientas se ven como en los libros.'] },
+      { v: '0.20.2', fecha: '2026-10-24', cambios: ['Tiro parabólico, Trabajo y energía y Calorimetría: las fórmulas se ven como en los libros, con fracciones, raíces y exponentes de verdad.'] },
+      { v: '0.20.1', fecha: '2026-10-24', cambios: ['Tiro parabólico, Trabajo y energía y Calorimetría: los resultados salen en una tarjeta destacada arriba y la lectura del tiempo ya no se mueve al reproducir.'] },
+      { v: '0.20', fecha: '2026-10-24', cambios: ['Nueva herramienta: Inducción, leyes de Faraday y Lenz, en Electromagnetismo.'] },
+      { v: '0.19', fecha: '2026-10-24', cambios: ['Nueva herramienta: Gases ideales, en Física general.'] },
+      { v: '0.18', fecha: '2026-10-24', cambios: ['Nueva herramienta: Ondas mecánicas, en Física general.'] },
+      { v: '0.17', fecha: '2026-10-24', cambios: ['Nueva herramienta: Sólido rígido, en Física general.'] },
+      { v: '0.16', fecha: '2026-10-23', cambios: ['Nueva herramienta: Circuitos de corriente continua, en Laboratorio.'] },
+      { v: '0.15', fecha: '2026-10-23', cambios: ['Nueva herramienta: Dinámica y diagramas de fuerzas, en Física general.'] },
+      { v: '0.14', fecha: '2026-10-23', cambios: ['Nueva herramienta: Corriente alterna y fasores, en Laboratorio.'] },
+      { v: '0.13', fecha: '2026-10-23', cambios: ['Nueva herramienta: Distribuciones de probabilidad, en Matemáticas.'] },
+      { v: '0.12', fecha: '2026-10-23', cambios: ['Nueva herramienta: Sistemas de ecuaciones lineales, en Matemáticas.'] },
+      { v: '0.11', fecha: '2026-10-23', cambios: ['Nueva herramienta: Matrices paso a paso, en Matemáticas.'] },
+      { v: '0.10', fecha: '2026-10-23', cambios: ['Nueva herramienta: Autoinducción e inducción mutua, en Electromagnetismo.'] },
+      { v: '0.9', fecha: '2026-10-23', cambios: ['Nueva herramienta: Calorimetría y cambios de fase, en Física general.'] },
+      { v: '0.8', fecha: '2026-10-23', cambios: ['Nueva herramienta: Disoluciones y concentraciones, en Química.'] },
+      { v: '0.7', fecha: '2026-10-23', cambios: ['Nueva herramienta: Tiro parabólico y cinemática, en Física general.'] },
+      { v: '0.6', fecha: '2026-10-23', cambios: ['Nueva herramienta: Condensadores con dieléctricos, en Electromagnetismo.'] },
+      { v: '0.5', fecha: '2026-10-23', cambios: ['Nueva herramienta: Configuración electrónica, en Química.'] },
+      { v: '0.4', fecha: '2026-10-23', cambios: ['Nueva herramienta: Masa molar y estequiometría, en Química.'] },
+      { v: '0.3', fecha: '2026-10-23', cambios: ['Nueva herramienta: Trabajo y energía, en Física general.'] },
+      { v: '0.2', fecha: '2026-10-23', cambios: ['Nueva herramienta: Tabla periódica interactiva, en Química.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Portada para elegir asignatura y herramienta: Electromagnetismo, Física general, Química, Matemáticas y Laboratorio, con buscador. Las herramientas que vienen después aparecen como «Próximamente».', 'Nueva herramienta: Magnetostática, en Electromagnetismo.'] },
+    ],
+    electrostatica: [
+      { v: '0.5.1', fecha: '2026-10-23', cambios: ['El simulador tiene ahora su propia dirección, /electromagnetismo/electrostatica/. Tus problemas guardados siguen ahí. El botón «Todas las herramientas» de la barra lateral vuelve a la portada.'] },
+    { v: '0.5', fecha: '2026-10-23', cambios: ['Doce ejercicios de ejemplo con enunciados propios: los mismos tipos de pregunta que en clase, con otras figuras y otros números. La guía de uso tiene capturas nuevas hechas con ellos.', 'La web tiene icono propio: un dipolo con sus líneas de campo, en la pestaña del navegador, en la pantalla de inicio del móvil y en la vista previa al compartir el enlace.', 'Páginas de aviso legal, privacidad, cookies y contacto, enlazadas al pie de la barra lateral.'] },
+    { v: '0.4', fecha: '2026-10-22', cambios: ['Número de versión visible y este apartado de novedades.', 'Arreglo: en la vista 3D los cilindros se dibujan con su radio real, aparecen las superficies de Gauss, y las esferas, cascarones y conductores tienen volumen en lugar de parecer círculos planos.'] },
+    { v: '0.3', fecha: '2026-10-22', cambios: ['Guía de uso con capturas (botón ?, barra lateral o F1).', 'Los resultados se escriben con la misma forma que el solucionario oficial: perfiles por tramos, factor común en logaritmos y radicales, y la pregunta V_A − V_B.'] },
+    { v: '0.2', fecha: '2026-10-22', cambios: ['Anillos, discos, cortezas y conductores.', 'Varias incógnitas, modo numérico SI, flujo de Gauss y gráficas E(z) y V(z).', 'Modo práctica, exportar la solución, deshacer y rehacer, mapa de color y vista 3D.', 'Búsqueda, carpetas y etiquetas en la barra lateral.'] },
+    { v: '0.1', fecha: '2026-10-22', cambios: ['Primera versión: cargas, hilos, planos y esferas con el desarrollo paso a paso y 12 ejercicios resueltos.', 'Barra lateral con tus problemas, los importados y los ejercicios; título y enunciado editables; archivos .emsim.json.'] },
+    ],
+    magnetostatica: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: campo magnético de hilos, segmentos, hilos semiinfinitos, espiras, arcos, solenoides y toroides con Biot-Savart, y fuerza sobre cargas en movimiento y sobre conductores, con el desarrollo paso a paso en la forma μ₀I/(πa) o en unidades del SI.', 'Dibujo del campo B en el plano XY, XZ o YZ, con puntos que se pueden arrastrar y ocho ejemplos resueltos.'] },
+    ],
+    'tabla-periodica': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: cada elemento tiene su ficha con la masa atómica y molar, el grupo, el periodo, el bloque, la configuración electrónica (abreviada, completa y por capas), la electronegatividad, la energía de ionización, el radio y el estado.', 'La tabla se puede colorear por categoría, electronegatividad, energía de ionización, radio, masa, bloque o estado, y tiene un buscador por nombre, símbolo o número atómico.'] },
+    ],
+    'trabajo-y-energia': [
+      { v: '0.1.2', fecha: '2026-10-24', cambios: ['Las fórmulas del desarrollo y de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Los resultados salen arriba, en una tarjeta destacada, y la lectura de t y v tiene ancho fijo: ya no mueve la barra de tiempo al reproducir.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: un bloque baja por una rampa con rozamiento, recorre un tramo horizontal y comprime un muelle. Animación con barras de energía cinética, gravitatoria, elástica y calor, gráfica de las energías en el tiempo y el desarrollo paso a paso con la velocidad al pie de la rampa, al llegar al muelle y la compresión máxima.', 'Seis ejemplos: sin rozamiento, se para antes del muelle, el rozamiento lo sujeta, con empujón inicial y muelle duro.'] },
+    ],
+    'masa-molar': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: masa molar y composición centesimal de cualquier fórmula, con paréntesis, hidratos e iones, y conversor entre gramos, moles, partículas y litros de gas.', 'Estequiometría: ajusta la reacción sola (también las iónicas), calcula el reactivo limitante, lo que se forma con el rendimiento que digas y lo que sobra, paso a paso.', 'Masas atómicas de la IUPAC o redondeadas como en clase.'] },
+    ],
+    'configuracion-electronica': [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: configuración electrónica de cualquier elemento o ion por orden de llenado, abreviada y por capas, con el diagrama de Moeller, el diagrama de orbitales con la regla de Hund, los electrones desapareados y los números cuánticos del electrón diferenciador.', 'Avisa de las excepciones como el cromo o el cobre, y en los cationes quita primero los electrones de la capa más externa.'] },
+    ],
+    condensadores: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: condensadores planos, cilíndricos y esféricos con capas de dieléctrico en serie o, en el plano, ocupando parte del área. Capacidad, carga, tensión y energía; campos E, D y P en cada capa y cargas de polarización, con el desarrollo paso a paso.', 'Compara con el condensador vacío: qué pasa al meter el dieléctrico con la batería conectada o con el condensador aislado.', 'Dibujo del corte con las líneas de campo y gráfica de E a lo largo del condensador.'] },
+    ],
+    'tiro-parabolico': [
+      { v: '0.1.2', fecha: '2026-10-24', cambios: ['Las fórmulas del desarrollo y de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Los resultados salen arriba, en una tarjeta destacada, y la lectura de t, x, y y v tiene ancho fijo: ya no se mueve al reproducir.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: tiro parabólico desde cualquier altura hasta cualquier altura, con el tiempo de vuelo, la altura máxima, el alcance y la velocidad al caer, y el desarrollo paso a paso. Trayectoria animada con los vectores de velocidad y gráficas de posición, velocidad y aceleración frente al tiempo.', 'Rozamiento del aire lineal o cuadrático, comparado con la trayectoria sin rozamiento.', 'Blanco: dice si el proyectil pasa por un punto y con qué dos ángulos se acierta.', 'Movimiento rectilíneo (MRU y MRUA): posición y velocidad en un instante, cuándo pasa por un punto y cuándo se para, con las gráficas x(t), v(t) y a(t).'] },
+    ],
+    disoluciones: [
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: da la concentración de una disolución como molaridad, molalidad, fracción molar, % en masa, % masa/volumen, g/L o ppm y obtén todas las demás, con la densidad para pasar de masa a volumen y el desarrollo con su base de cálculo.', 'Preparar una disolución: los gramos de sólido (con su pureza) o los mililitros de reactivo comercial (con su riqueza y densidad) que hay que medir.', 'Diluciones con C₁V₁ = C₂V₂, despejando el dato que falte, y mezcla de dos disoluciones del mismo soluto.'] },
+    ],
+    calorimetria: [
+      { v: '0.1.2', fecha: '2026-10-24', cambios: ['Las fórmulas del desarrollo y de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['La temperatura de equilibrio sale en una tarjeta destacada, separada de la tabla de calores.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: temperatura de equilibrio al mezclar hasta cinco cuerpos de agua, hielo, vapor, metales, etanol, vidrio, un calorímetro o una sustancia con tus datos, con los cambios de fase que hagan falta.', 'Si la energía no llega para fundir todo el hielo o condensar todo el vapor, dice cuántos gramos quedan de cada fase.', 'Tabla con el calor de cada cuerpo, el desarrollo etapa por etapa (m c ΔT y m L) y la curva de calentamiento de cada uno.'] },
+    ],
+    induccion: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: coeficiente de autoinducción de solenoides (con núcleo), toroides de sección rectangular y circular, cables coaxiales y líneas bifilares, con el desarrollo desde la ley de Ampère.', 'Inducción mutua entre dos solenoides, dos espiras, un hilo y una espira, y una bobina sobre un toroide, o a partir de L₁, L₂ y k, con el coeficiente de acoplamiento.', 'Flujo, energía magnética y fem inducida si das la corriente o cómo cambia.', 'Circuito RL al cerrar el interruptor o al quitar la fuente: constante de tiempo, corriente y tensión en la bobina en cualquier instante y su gráfica.'] },
+    ],
+    matrices: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: determinante por Gauss, por Sarrus o por Laplace; inversa por Gauss-Jordan o por adjuntos; rango; forma escalonada y escalonada reducida, con cada operación entre filas y la matriz después de cada paso.', 'Valores y vectores propios con el polinomio característico, las raíces exactas (también con radicales o complejas) y si la matriz es diagonalizable, con P y D.', 'Suma, resta, producto (elemento a elemento), producto por un número, potencia y traspuesta.', 'Fracciones exactas y números complejos en cualquier casilla: 3/4, 0,25, 2−3i o (1+i)/2.'] },
+    ],
+    sistemas: [
+      { v: '0.2', fecha: '2026-10-24', cambios: ['Métodos de reducción, igualación y sustitución para sistemas de 2 o 3 ecuaciones con solución única, con cada ecuación numerada y cada paso explicado.'] },
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: hasta seis ecuaciones con seis incógnitas. Dice si el sistema es compatible determinado, indeterminado o incompatible con el teorema de Rouché-Frobenius y lo resuelve por Gauss con sustitución hacia atrás, por Gauss-Jordan, por la regla de Cramer o con la matriz inversa.', 'Si tiene infinitas soluciones, las da en forma paramétrica (λ, μ…).', 'Coeficientes con fracciones exactas, decimales o números complejos, como las mallas de un circuito de alterna, y nombres propios para las incógnitas (I1, I2…).', 'Comprobación de la solución sustituyendo en cada ecuación.'] },
+    ],
+    estadistica: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: normal, t de Student, chi cuadrado, exponencial, binomial y Poisson, con su media y su varianza.', 'Probabilidades P(X ≤ a), P(X ≥ a), entre dos valores y, en las discretas, P(X = k) y con desigualdad estricta; cuantiles y valores críticos bilaterales.', 'Gráfica con el área (o las barras) que se pide sombreada.', 'Desarrollo como en clase: tipificación Z = (X − μ)/σ y Φ(z), fórmula de la binomial y de la Poisson término a término, y aproximación de la binomial por la normal con corrección de continuidad.'] },
+    ],
+    alterna: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: circuitos RLC en serie y en paralelo (o solo con algunos de los elementos) con impedancias complejas en forma binómica y polar, la corriente, la tensión o la corriente de cada elemento, las potencias activa, reactiva y aparente y el factor de potencia, con el desarrollo paso a paso.', 'Diagrama de fasores y ondas v(t) e i(t) desfasadas.', 'Resonancia: frecuencia de resonancia, factor de calidad y ancho de banda.', 'Corrección del factor de potencia: el condensador que hay que poner en paralelo y cuánto baja la corriente de la línea.'] },
+    ],
+    dinamica: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: bloque en un plano horizontal o inclinado con rozamiento estático y dinámico, una fuerza aplicada con ángulo y, si quieres, una masa colgando de una polea. Dice si el bloque se mueve o el rozamiento lo sujeta y da la normal, el rozamiento, la aceleración y la tensión, con el desarrollo paso a paso.', 'Máquina de Atwood, también con una polea con masa.', 'Dibujo con el diagrama de fuerzas a escala y la aceleración, y la velocidad y el tiempo al recorrer una distancia.'] },
+    ],
+    circuitos: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: escribe el circuito como una lista de resistencias, fuentes de tensión y fuentes de corriente entre nudos, y obtén los potenciales, la corriente y la potencia de cada elemento por el método de los nudos, con las ecuaciones de Kirchhoff, el sistema en forma matricial y el balance de potencias.', 'Equivalente de Thévenin y de Norton visto por la resistencia que elijas, y máxima transferencia de potencia.', 'Esquema del circuito con el potencial de cada nudo y el sentido de cada corriente.'] },
+    ],
+    'solido-rigido': [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: momentos de inercia de esferas, cilindros, aros, varillas, discos y placas, con el teorema de Steiner y el radio de giro.', 'Rodadura por un plano inclinado: aceleración, velocidad al final, rozamiento necesario para que no deslice y qué pasa si no basta; comparación del tiempo que tarda cada cuerpo.', 'Polea con masa de la que cuelga un cuerpo: aceleración, tensión y balance de energía.', 'Conservación del momento angular, como la patinadora que encoge los brazos, con la variación de la energía cinética.'] },
+    ],
+    ondas: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ecuación de una onda armónica con ω y k en múltiplos de π, posición, velocidad y aceleración de un punto del medio y desfase entre dos puntos.', 'Ondas estacionarias en cuerdas y en tubos abiertos o cerrados: frecuencia de cada armónico, nodos y vientres, y velocidad en la cuerda con √(T/μ).', 'Efecto Doppler con la fuente y el observador moviéndose, y nivel sonoro en decibelios a distintas distancias y con varias fuentes.', 'Animación de la onda, de la onda estacionaria y de los frentes de onda del Doppler.'] },
+    ],
+    gases: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ecuación de estado PV = nRT con P, V, T y n en varias unidades, los moles a partir de la masa y la densidad del gas.', 'Transformaciones isoterma, isobara, isocora y adiabática encadenadas, con el trabajo, el calor y la variación de energía interna de cada tramo, y ciclos con su rendimiento comparado con el de Carnot.', 'Diagrama P-V con las isotermas y el área del ciclo.', 'Teoría cinética: velocidades cuadrática media, media y más probable, energía cinética media y la distribución de Maxwell.'] },
+    ],
+    faraday: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: fem y corriente inducidas en una barra que se desliza sobre unos raíles, con la fuerza que la frena y la potencia.', 'Bobina que gira en un campo (alternador): flujo y fem en función del tiempo, valores máximo y eficaz.', 'Flujo que cambia en un tiempo porque cambia el campo o el ángulo: fem media, corriente y carga.', 'Espira que atraviesa una región con campo: fem al entrar y al salir, fuerza y calor.', 'Sentido de la corriente por la ley de Lenz y animación con la gráfica de Φ y ε.'] },
+    ],
+  };
+  const de = (h) => ({ current: registros[h][0].v, log: registros[h] });
+  // Version.current y Version.log son los del simulador de electrostática
+  return { registros, de, ...de('electrostatica') };
+})();
+
+/* =====================================================================
+   Fórmulas en MathML a partir de una sintaxis sencilla (sin DOM salvo
+   Mates.pinta). En los textos, lo que va entre $…$ es una fórmula:
+     a/b            fracción (los paréntesis de fuera se quitan)
+     x^2, e^{−bt/m} exponente; v_0x, E_{c,máx} subíndice
+     √(…), ∛(…)     raíz
+     "m/s"          texto tal cual (unidades, palabras)
+     sen cos tg ln log exp máx mín   funciones; binom(n, k)
+   Una palabra que no es una función se lee letra a letra (mgh = m·g·h).
+   También acepta <sup>, <sub> y las etiquetas que devuelve f().
+   ===================================================================== */
+const Mates = (() => {
+  const FUNC = new Set(['sen', 'cos', 'tg', 'tan', 'ln', 'log', 'exp', 'arcsen', 'arccos', 'arctg', 'máx', 'mín', 'lím', 'senh', 'cosh', 'tgh']);
+  const OPS = '+-−=·×÷⇒⇔→←↔≈≠<>≤≥±∓,;:!∝∈∼≡∑∏∫∂∇⊥∥';
+  const escH = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  function tokens(src) {
+    const s = String(src)
+      .replace(/<sup>/g, '^{').replace(/<\/sup>/g, '}').replace(/<sub>/g, '_{').replace(/<\/sub>/g, '}')
+      .replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+    const out = [];
+    let i = 0, sp = false;
+    while (i < s.length) {
+      const c = s[i], resto = s.slice(i);
+      let m;
+      if (/\s/.test(c)) { sp = true; i++; continue; }
+      if ((m = resto.match(/^\d+(?:[.,]\d+)?/))) out.push({ t: 'n', v: m[0].replace('.', ','), sp });
+      else if (c === '"') { const j = s.indexOf('"', i + 1); m = [s.slice(i, j < 0 ? s.length : j + 1)]; out.push({ t: 'x', v: m[0].replace(/"/g, ''), sp }); }
+      else if ((m = resto.match(/^[\p{L}\p{M}∞]+[′″]*/u))) out.push({ t: 'w', v: m[0], sp });
+      else { m = [c]; out.push({ t: 's', v: c, sp }); }
+      i += m[0].length; sp = false;
+    }
+    return out;
+  }
+
+  // nodo: { m: MathML, dentro: MathML sin los paréntesis de fuera (o null) }
+  const nodo = (m, dentro = null) => ({ m, dentro });
+  const fila = (xs) => (xs.length === 1 ? xs[0] : `<mrow>${xs.join('')}</mrow>`);
+  const letra = (v) => (/^\d+(,\d+)?$/.test(v) ? `<mn>${v}</mn>` : [...v].length === 1 ? `<mi>${escH(v)}</mi>` : `<mi mathvariant="normal">${escH(v)}</mi>`);
+
+  function analiza(tk) {
+    let p = 0;
+    const ver = () => tk[p], es = (v) => tk[p] && tk[p].t === 's' && tk[p].v === v;
+    function secuencia(cierre) {
+      const xs = [];
+      let prevOp = true;
+      while (p < tk.length && !(cierre && es(cierre))) {
+        const k = ver();
+        if (k.t === 's' && OPS.includes(k.v)) {
+          p++;
+          const v = k.v === '-' ? '−' : k.v;
+          // un signo detrás de otro operador (o al principio) es de número: = −19,28
+          const signo = prevOp && (v === '−' || v === '+' || v === '±');
+          xs.push(v === '!' ? '<mo lspace="0">!</mo>' : v === ',' || v === ';' ? `<mo separator="true">${v}</mo>` : signo ? `<mo form="prefix" lspace="0" rspace="0.05em">${v}</mo>` : `<mo>${escH(v)}</mo>`);
+          prevOp = true; continue;
+        }
+        if (k.t === 's' && (k.v === ')' || k.v === '}' || k.v === ']')) { p++; continue; } // paréntesis sueltos
+        xs.push(fraccion().m); prevOp = false;
+      }
+      return xs;
+    }
+    function fraccion() {
+      let a = guiones();
+      while (es('/')) { p++; const b = guiones(); a = nodo(`<mfrac>${a.dentro ?? a.m}${b.dentro ?? b.m}</mfrac>`); }
+      return a;
+    }
+    function argumento() {
+      if (es('{')) { p++; const xs = secuencia('}'); p++; return fila(xs); }
+      if (es('-') || es('−')) { p++; const a = argumento(); return `<mrow><mo>−</mo>${a}</mrow>`; }
+      if (es('(')) { const a = atomo(); return a.m; }
+      // una racha de letras y números pegados: 0x, máx, 12
+      const k = ver();
+      if (!k) return '<mrow></mrow>';
+      if (k.t === 's') { p++; return `<mo>${escH(k.v)}</mo>`; }
+      let v = k.v; p++;
+      while (ver() && !ver().sp && (ver().t === 'n' || ver().t === 'w')) { v += ver().v; p++; }
+      return letra(v);
+    }
+    function guiones() {
+      const base = atomo();
+      let sub = null, sup = null;
+      for (;;) {
+        if (es('_') && sub === null) { p++; sub = argumento(); } else if (es('^') && sup === null) { p++; sup = argumento(); } else break;
+      }
+      if (sub === null && sup === null) return base;
+      const b = base.m;
+      return nodo(sub !== null && sup !== null ? `<msubsup>${b}${sub}${sup}</msubsup>` : sub !== null ? `<msub>${b}${sub}</msub>` : `<msup>${b}${sup}</msup>`);
+    }
+    function atomo() {
+      const k = ver();
+      if (!k) return nodo('<mrow></mrow>');
+      p++;
+      if (k.t === 'n') return nodo(`<mn>${k.v}</mn>`);
+      if (k.t === 'x') return nodo(`${k.sp && p > 1 ? '<mspace width="0.3em"></mspace>' : ''}<mtext>${escH(k.v)}</mtext>`);
+      if (k.t === 'w') {
+        // binom(n, k): número combinatorio
+        if (k.v === 'binom' && es('(')) { p++; const a = secuencia(','); p++; const b = secuencia(')'); p++; return nodo(`<mrow><mo>(</mo><mfrac linethickness="0">${fila(a)}${fila(b)}</mfrac><mo>)</mo></mrow>`); }
+        if (FUNC.has(k.v)) { let m = `<mi mathvariant="normal">${k.v}</mi>`; if (es('^')) { p++; m = `<msup>${m}${argumento()}</msup>`; } return nodo(`<mspace width="0.17em"></mspace>${m}<mo>&#x2061;</mo><mspace width="0.12em"></mspace>`); }
+        const ls = [...k.v.replace(/[′″]+$/, '')], pr = (k.v.match(/[′″]+$/) || [''])[0];
+        // las marcas combinadas (î, ĵ con acento) van con su letra
+        const grupos = []; for (const c of ls) { if (/\p{M}/u.test(c) && grupos.length) grupos[grupos.length - 1] += c; else grupos.push(c); }
+        // las mayúsculas griegas (Δ, Σ, Φ, Ω) van rectas, como en los libros
+        return nodo(fila(grupos.map((c) => (c === '∞' ? '<mi>∞</mi>' : /^[Α-Ω]$/.test(c) ? `<mi mathvariant="normal">${c}</mi>` : `<mi>${escH(c)}</mi>`)).concat(pr ? [`<mo lspace="0" rspace="0">${pr}</mo>`] : [])));
+      }
+      const v = k.v;
+      if (v === '(' || v === '[') { const c = v === '(' ? ')' : ']'; const xs = secuencia(c); if (es(c)) p++; const d = fila(xs), est = /<m(frac|sqrt|root)/.test(d) ? '' : ' stretchy="false"'; return nodo(`<mrow><mo${est}>${v}</mo>${d}<mo${est}>${c}</mo></mrow>`, d); }
+      if (v === '{') { const xs = secuencia('}'); if (es('}')) p++; const d = fila(xs); return nodo(`<mrow>${d}</mrow>`, d); }
+      if (v === '√') { const a = guiones(); return nodo(`<msqrt>${a.dentro ?? a.m}</msqrt>`); }
+      if (v === '∛') { const a = guiones(); return nodo(`<mroot>${a.dentro ?? a.m}<mn>3</mn></mroot>`); }
+      if (v === '|') return nodo('<mo stretchy="false" lspace="0.05em" rspace="0.05em">|</mo>');
+      if (v === '°' || v === '%' || v === '‰') return nodo(`<mi mathvariant="normal">${v}</mi>`);
+      return nodo(`<mo>${escH(v)}</mo>`);
+    }
+    return fila(secuencia(null));
+  }
+
+  const mathml = (src) => `<math><mstyle displaystyle="true">${analiza(tokens(src))}</mstyle></math>`;
+  // sustituye cada $…$ de un texto HTML por su MathML
+  const html = (s) => String(s ?? '').replace(/\$([^$]+)\$/g, (_, x) => mathml(x));
+  // convierte en el documento los elementos con class="m" (fórmulas escritas en el HTML)
+  function pinta(raiz) { if (typeof document === 'undefined') return; for (const el of (raiz || document).querySelectorAll('.m:not([data-m])')) { el.dataset.m = '1'; el.innerHTML = html(el.innerHTML.includes('$') ? el.innerHTML : `$${el.innerHTML}$`); } }
+  if (typeof document !== 'undefined') {
+    const st = document.createElement('style');
+    st.textContent = '@font-face { font-family: "STIX Two Math"; src: url(../../fuentes/stix-two-math.woff2) format("woff2"); font-display: swap }\nmath { font-family: "STIX Two Math", "Cambria Math", math; font-size: 1.08em }\nmath mtext { font-family: "STIX Two Text", "STIX Two Math", serif }';
+    document.head.appendChild(st);
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => pinta()); else pinta();
+  }
+  return { html, mathml, pinta, tokens };
+})();
+
+/* =====================================================================
+   Estadística: distribuciones (sin DOM). Normal, t de Student, χ²,
+   exponencial, binomial y Poisson: probabilidades P(X ≤ a), P(X ≥ a),
+   P(a ≤ X ≤ b), P(X = k), cuantiles y valores críticos, con media,
+   varianza y el desarrollo (tipificación, fórmula de la binomial…).
+   Funciones especiales con la gamma y la beta incompletas regularizadas.
+   ===================================================================== */
+const Estadistica = (() => {
+  /* ---------- Funciones especiales ---------- */
+  const LANCZOS = [676.5203681218851, -1259.1392167224028, 771.32342877765313, -176.61502916214059, 12.507343278686905, -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
+  function lnGamma(x) {
+    if (x < 0.5) return Math.log(Math.PI / Math.abs(Math.sin(Math.PI * x))) - lnGamma(1 - x);
+    x -= 1;
+    let a = 0.99999999999980993;
+    const t = x + 7.5;
+    LANCZOS.forEach((c, i) => { a += c / (x + i + 1); });
+    return 0.5 * Math.log(2 * Math.PI) + (x + 0.5) * Math.log(t) - t + Math.log(a);
+  }
+  // gamma incompleta regularizada P(a, x)
+  function gammaP(a, x) {
+    if (x <= 0) return 0;
+    if (x < a + 1) {
+      let s = 1 / a, d = s, ap = a;
+      for (let n = 0; n < 1000; n++) { ap += 1; d *= x / ap; s += d; if (Math.abs(d) < Math.abs(s) * 1e-16) break; }
+      return s * Math.exp(-x + a * Math.log(x) - lnGamma(a));
+    }
+    return 1 - gammaQcf(a, x);
+  }
+  function gammaQcf(a, x) {
+    const TINY = 1e-300;
+    let b = x + 1 - a, c = 1 / TINY, d = 1 / b, h = d;
+    for (let i = 1; i < 1000; i++) {
+      const an = -i * (i - a);
+      b += 2;
+      d = an * d + b; if (Math.abs(d) < TINY) d = TINY;
+      c = b + an / c; if (Math.abs(c) < TINY) c = TINY;
+      d = 1 / d;
+      const del = d * c;
+      h *= del;
+      if (Math.abs(del - 1) < 1e-16) break;
+    }
+    return Math.exp(-x + a * Math.log(x) - lnGamma(a)) * h;
+  }
+  const gammaQ = (a, x) => (x <= 0 ? 1 : x < a + 1 ? 1 - gammaP(a, x) : gammaQcf(a, x));
+  // beta incompleta regularizada I_x(a, b)
+  function betaI(x, a, b) {
+    if (x <= 0) return 0;
+    if (x >= 1) return 1;
+    const bt = Math.exp(lnGamma(a + b) - lnGamma(a) - lnGamma(b) + a * Math.log(x) + b * Math.log(1 - x));
+    return x < (a + 1) / (a + b + 2) ? (bt * betacf(x, a, b)) / a : 1 - (bt * betacf(1 - x, b, a)) / b;
+  }
+  function betacf(x, a, b) {
+    const TINY = 1e-300, qab = a + b, qap = a + 1, qam = a - 1;
+    let c = 1, d = 1 - (qab * x) / qap;
+    if (Math.abs(d) < TINY) d = TINY;
+    d = 1 / d;
+    let h = d;
+    for (let m = 1; m < 1000; m++) {
+      const m2 = 2 * m;
+      let aa = (m * (b - m) * x) / ((qam + m2) * (a + m2));
+      d = 1 + aa * d; if (Math.abs(d) < TINY) d = TINY; c = 1 + aa / c; if (Math.abs(c) < TINY) c = TINY; d = 1 / d; h *= d * c;
+      aa = (-(a + m) * (qab + m) * x) / ((a + m2) * (qap + m2));
+      d = 1 + aa * d; if (Math.abs(d) < TINY) d = TINY; c = 1 + aa / c; if (Math.abs(c) < TINY) c = TINY; d = 1 / d;
+      const del = d * c;
+      h *= del;
+      if (Math.abs(del - 1) < 1e-16) break;
+    }
+    return h;
+  }
+  const Phi = (z) => (z < 0 ? 0.5 * gammaQ(0.5, (z * z) / 2) : 1 - 0.5 * gammaQ(0.5, (z * z) / 2));
+
+  /* ---------- Formato ---------- */
+  const num = (x, d = 4) => {
+    if (!isFinite(x)) return x > 0 ? '∞' : x < 0 ? '−∞' : '—';
+    if (Math.abs(x) < 1e-15) return '0';
+    const a = Math.abs(x);
+    const s = a >= 1e6 || a < 1e-4 ? x.toExponential(d - 1).replace(/\.?0+e/, 'e').replace(/e([+-])(\d+)/, (_, sg, e) => `·10<sup>${sg === '-' ? '−' : ''}${+e}</sup>`) : String(+x.toPrecision(Math.max(d, Math.ceil(Math.log10(a + 1)) + 1)));
+    return s.replace('.', ',').replace('-', '−');
+  };
+  // probabilidad con 4 decimales como en las tablas (y más si es muy pequeña)
+  const prob = (p) => (p !== 0 && Math.abs(p) < 1e-4 ? num(p, 4) : p.toFixed(4).replace('.', ',').replace('-', '−'));
+  const leeNum = (s) => +String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace('−', '-');
+  const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
+  function lee(sc, k, nom, { entero = false, min = -Infinity, minEx = false, max = Infinity, maxEx = false } = {}) {
+    if (vacio(sc[k])) throw new Error(`Falta ${nom}`);
+    const v = leeNum(sc[k]);
+    if (!isFinite(v)) throw new Error(`${nom[0].toUpperCase() + nom.slice(1)} debe ser un número`);
+    if (entero && !Number.isInteger(v)) throw new Error(`${nom[0].toUpperCase() + nom.slice(1)} debe ser un número entero`);
+    if (minEx ? v <= min : v < min) throw new Error(`${nom[0].toUpperCase() + nom.slice(1)} debe ser ${minEx ? 'mayor que' : 'como mínimo'} ${num(min)}`);
+    if (maxEx ? v >= max : v > max) throw new Error(`${nom[0].toUpperCase() + nom.slice(1)} debe ser ${maxEx ? 'menor que' : 'como máximo'} ${num(max)}`);
+    return v;
+  }
+
+  /* ---------- Distribuciones ---------- */
+  // coeficiente binomial exacto con BigInt (para escribirlo) y en coma flotante
+  function combBig(n, k) { k = Math.min(k, n - k); let r = 1n; for (let i = 1; i <= k; i++) r = (r * BigInt(n - k + i)) / BigInt(i); return r; }
+  const combTxt = (n, k) => { const c = combBig(n, k); return c < 10n ** 15n ? c.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') : num(Number(c)); };
+
+  const DIST = {
+    normal: {
+      nombre: 'Normal N(μ, σ)', continua: true, params: [['mu', 'Media μ', {}], ['sigma', 'Desviación típica σ', { min: 0, minEx: true }]],
+      pdf: ({ mu, sigma }, x) => Math.exp(-0.5 * ((x - mu) / sigma) ** 2) / (sigma * Math.sqrt(2 * Math.PI)),
+      cdf: ({ mu, sigma }, x) => Phi((x - mu) / sigma),
+      momentos: ({ mu, sigma }) => ({ media: mu, varianza: sigma * sigma }),
+      rango: ({ mu, sigma }) => [mu - 4 * sigma, mu + 4 * sigma],
+      simetrica: true, nombreX: 'X', etiqueta: (p) => `N(${num(p.mu)}, ${num(p.sigma)})`,
+    },
+    t: {
+      nombre: 't de Student', continua: true, params: [['nu', 'Grados de libertad ν', { min: 0, minEx: true }]],
+      pdf: ({ nu }, x) => Math.exp(lnGamma((nu + 1) / 2) - lnGamma(nu / 2) - 0.5 * Math.log(nu * Math.PI) - ((nu + 1) / 2) * Math.log(1 + (x * x) / nu)),
+      cdf: ({ nu }, x) => { const c = 0.5 * betaI(nu / (nu + x * x), nu / 2, 0.5); return x > 0 ? 1 - c : c; },
+      momentos: ({ nu }) => ({ media: nu > 1 ? 0 : NaN, varianza: nu > 2 ? nu / (nu - 2) : nu > 1 ? Infinity : NaN }),
+      rango: ({ nu }) => { const r = nu < 3 ? 8 : 5; return [-r, r]; },
+      simetrica: true, nombreX: 'T', etiqueta: (p) => `t<sub>${num(p.nu)}</sub>`,
+    },
+    chi2: {
+      nombre: 'Chi cuadrado χ²', continua: true, params: [['k', 'Grados de libertad k', { min: 0, minEx: true }]],
+      pdf: ({ k }, x) => (x <= 0 ? (x === 0 && k === 2 ? 0.5 : 0) : Math.exp((k / 2 - 1) * Math.log(x) - x / 2 - (k / 2) * Math.LN2 - lnGamma(k / 2))),
+      cdf: ({ k }, x) => (x <= 0 ? 0 : gammaP(k / 2, x / 2)),
+      momentos: ({ k }) => ({ media: k, varianza: 2 * k }),
+      rango: ({ k }) => [0, k + 5 * Math.sqrt(2 * k) + 2],
+      nombreX: 'χ²', etiqueta: (p) => `χ²<sub>${num(p.k)}</sub>`,
+    },
+    exponencial: {
+      nombre: 'Exponencial Exp(λ)', continua: true, params: [['lambda', 'Tasa λ', { min: 0, minEx: true }]],
+      pdf: ({ lambda }, x) => (x < 0 ? 0 : lambda * Math.exp(-lambda * x)),
+      cdf: ({ lambda }, x) => (x <= 0 ? 0 : -Math.expm1(-lambda * x)),
+      momentos: ({ lambda }) => ({ media: 1 / lambda, varianza: 1 / (lambda * lambda) }),
+      rango: ({ lambda }) => [0, 6 / lambda],
+      nombreX: 'X', etiqueta: (p) => `Exp(${num(p.lambda)})`,
+    },
+    binomial: {
+      nombre: 'Binomial B(n, p)', continua: false, params: [['n', 'Número de pruebas n', { entero: true, min: 1, max: 100000 }], ['p', 'Probabilidad de éxito p', { min: 0, max: 1 }]],
+      pmf: ({ n, p }, k) => {
+        if (k < 0 || k > n || !Number.isInteger(k)) return 0;
+        if (p === 0) return k === 0 ? 1 : 0;
+        if (p === 1) return k === n ? 1 : 0;
+        return Math.exp(lnGamma(n + 1) - lnGamma(k + 1) - lnGamma(n - k + 1) + k * Math.log(p) + (n - k) * Math.log1p(-p));
+      },
+      cdf: (P, k) => { const { n, p } = P; if (k < 0) return 0; if (k >= n) return 1; if (p === 0) return 1; if (p === 1) return 0; return betaI(1 - p, n - Math.floor(k), Math.floor(k) + 1); },
+      momentos: ({ n, p }) => ({ media: n * p, varianza: n * p * (1 - p) }),
+      rango: ({ n, p }) => { const m = n * p, s = Math.sqrt(n * p * (1 - p)); return [Math.max(0, Math.floor(m - 5 * s - 1)), Math.min(n, Math.ceil(m + 5 * s + 1))]; },
+      nombreX: 'X', etiqueta: (p) => `B(${num(p.n)}, ${num(p.p)})`,
+      formula: ({ n, p }, k) => `P(X = ${k}) = C(${n}, ${k})·${num(p)}<sup>${k}</sup>·${num(1 - p)}<sup>${n - k}</sup> = ${combTxt(n, k)}·${num(p)}<sup>${k}</sup>·${num(1 - p)}<sup>${n - k}</sup>`,
+      general: ({ p }) => `P(X = k) = C(n, k)·p<sup>k</sup>·q<sup>n−k</sup>, con q = 1 − p = ${num(1 - p)} y C(n, k) = n! / (k! (n − k)!)`,
+    },
+    poisson: {
+      nombre: 'Poisson P(λ)', continua: false, params: [['lambda', 'Media λ', { min: 0, minEx: true, max: 1e6 }]],
+      pmf: ({ lambda }, k) => (k < 0 || !Number.isInteger(k) ? 0 : Math.exp(-lambda + k * Math.log(lambda) - lnGamma(k + 1))),
+      cdf: ({ lambda }, k) => (k < 0 ? 0 : gammaQ(Math.floor(k) + 1, lambda)),
+      momentos: ({ lambda }) => ({ media: lambda, varianza: lambda }),
+      rango: ({ lambda }) => [Math.max(0, Math.floor(lambda - 5 * Math.sqrt(lambda) - 1)), Math.ceil(lambda + 5 * Math.sqrt(lambda) + 3)],
+      nombreX: 'X', etiqueta: (p) => `P(${num(p.lambda)})`,
+      formula: ({ lambda }, k) => `P(X = ${k}) = e<sup>−${num(lambda)}</sup>·${num(lambda)}<sup>${k}</sup> / ${k}!`,
+      general: () => 'P(X = k) = e<sup>−λ</sup>·λ<sup>k</sup> / k!, para k = 0, 1, 2…',
+    },
+  };
+  const TIPOS_C = [['menor', 'P(X ≤ a)'], ['mayor', 'P(X ≥ a)'], ['entre', 'P(a ≤ X ≤ b)'], ['cuantil', 'Cuantil: a con P(X ≤ a) = p'], ['critico', 'Valor crítico bilateral (α)']];
+  const TIPOS_D = [['igual', 'P(X = k)'], ['menor', 'P(X ≤ k)'], ['menorE', 'P(X < k)'], ['mayor', 'P(X ≥ k)'], ['mayorE', 'P(X > k)'], ['entre', 'P(a ≤ X ≤ b)'], ['cuantil', 'Cuantil: menor k con P(X ≤ k) ≥ p']];
+  const tipos = (d) => (DIST[d].continua ? TIPOS_C.filter(([k]) => k !== 'critico' || DIST[d].simetrica) : TIPOS_D);
+
+  // cuantil continuo por bisección
+  function cuantil(D, P, p) {
+    let [lo, hi] = D.rango(P);
+    while (D.cdf(P, lo) > p) lo -= Math.max(1, Math.abs(hi - lo));
+    while (D.cdf(P, hi) < p) hi += Math.max(1, Math.abs(hi - lo));
+    for (let i = 0; i < 200; i++) { const m = (lo + hi) / 2; if (D.cdf(P, m) < p) lo = m; else hi = m; }
+    return (lo + hi) / 2;
+  }
+
+  function calcular(sc) {
+    const d = DIST[sc.dist] ? sc.dist : 'normal', D = DIST[d];
+    const P = {};
+    for (const [k, nom, op] of D.params) P[k] = lee(sc, k, nom.toLowerCase(), op);
+    const lista = tipos(d), tipo = lista.some(([k]) => k === sc.tipo) ? sc.tipo : lista[0][0];
+    const { media, varianza } = D.momentos(P), X = D.nombreX, pasos = [];
+    pasos.push({ t: 'Distribución', html: `${X} ~ ${D.etiqueta(P)}: media ${isNaN(media) ? 'no definida' : num(media)}, varianza ${isNaN(varianza) ? 'no definida' : num(varianza)}${isFinite(varianza) ? `, desviación típica ${num(Math.sqrt(varianza))}` : ''}` });
+    const r = { dist: d, tipo, P, media, varianza, pasos };
+    if (D.continua) {
+      const F = (x) => D.cdf(P, x);
+      const z = (x) => (d === 'normal' ? `<br>Tipificando, Z = (X − μ)/σ = (${num(x)} − ${num(P.mu)})/${num(P.sigma)} = ${num((x - P.mu) / P.sigma)}` : '');
+      if (tipo === 'menor' || tipo === 'mayor') {
+        const a = lee(sc, 'a', 'el valor a');
+        const pa = F(a), res = tipo === 'menor' ? pa : 1 - pa;
+        const zz = d === 'normal' ? (a - P.mu) / P.sigma : null;
+        pasos.push({ t: tipo === 'menor' ? `P(${X} ≤ ${num(a)})` : `P(${X} ≥ ${num(a)})`, html: d === 'normal'
+          ? `${z(a).slice(4)}<br>${tipo === 'menor' ? `P(Z ≤ ${num(zz)}) = Φ(${num(zz)})` : `P(Z ≥ ${num(zz)}) = 1 − Φ(${num(zz)})${zz < 0 ? ` = Φ(${num(-zz)})` : ''}`} = <b>${prob(res)}</b>`
+          : `${tipo === 'menor' ? `F(${num(a)})` : `1 − F(${num(a)}) = 1 − ${prob(pa)}`} = <b>${prob(res)}</b>${d === 'exponencial' ? ` &nbsp;(F(x) = 1 − e<sup>−λx</sup>)` : ''}` });
+        pasos.push({ t: 'En una distribución continua', html: `P(${X} = a) = 0, así que da igual escribir ≤ o &lt; (y ≥ o &gt;).` });
+        Object.assign(r, { p: res, a, sombra: tipo === 'menor' ? [-Infinity, a] : [a, Infinity] });
+      } else if (tipo === 'entre') {
+        const a = lee(sc, 'a', 'el valor a'), b = lee(sc, 'b', 'el valor b');
+        if (b < a) throw new Error('b tiene que ser mayor o igual que a');
+        const res = F(b) - F(a);
+        pasos.push({ t: `P(${num(a)} ≤ ${X} ≤ ${num(b)}) = F(${num(b)}) − F(${num(a)})`, html: d === 'normal'
+          ? `Z<sub>a</sub> = ${num((a - P.mu) / P.sigma)}, &nbsp;Z<sub>b</sub> = ${num((b - P.mu) / P.sigma)}<br>Φ(${num((b - P.mu) / P.sigma)}) − Φ(${num((a - P.mu) / P.sigma)}) = ${prob(F(b))} − ${prob(F(a))} = <b>${prob(res)}</b>`
+          : `${prob(F(b))} − ${prob(F(a))} = <b>${prob(res)}</b>` });
+        Object.assign(r, { p: res, a, b, sombra: [a, b] });
+      } else if (tipo === 'cuantil') {
+        const p = lee(sc, 'p', 'la probabilidad p', { min: 0, minEx: true, max: 1, maxEx: true });
+        const x = d === 'exponencial' ? -Math.log1p(-p) / P.lambda : cuantil(D, P, p);
+        let h = `Se busca a con P(${X} ≤ a) = ${num(p)}`;
+        if (d === 'normal') { const zq = cuantil(DIST.normal, { mu: 0, sigma: 1 }, p); h += `.<br>En la normal tipificada, Φ(z) = ${num(p)} ⇒ z = ${num(zq)}.<br>Destipificando, a = μ + zσ = ${num(P.mu)} + ${num(zq)}·${num(P.sigma)} = <b>${num(x)}</b>`; }
+        else if (d === 'exponencial') h += `: 1 − e<sup>−λa</sup> = ${num(p)} ⇒ a = −ln(1 − p)/λ = <b>${num(x)}</b>`;
+        else h += `: a = <b>${num(x)}</b>`;
+        pasos.push({ t: 'Cuantil', html: h });
+        Object.assign(r, { p, x, sombra: [-Infinity, x] });
+      } else {
+        const alfa = lee(sc, 'alfa', 'el nivel de significación α', { min: 0, minEx: true, max: 1, maxEx: true });
+        const c = cuantil(D, d === 'normal' ? { mu: 0, sigma: 1 } : P, 1 - alfa / 2), nombre = d === 'normal' ? 'z' : 't';
+        pasos.push({ t: 'Valor crítico', html: `Se busca c con P(−c ≤ ${d === 'normal' ? 'Z' : 'T'} ≤ c) = 1 − α = ${num(1 - alfa)}: cada cola deja α/2 = ${num(alfa / 2)}, así que P(${d === 'normal' ? 'Z' : 'T'} ≤ c) = ${num(1 - alfa / 2)}.<br>${nombre}<sub>α/2</sub> = <b>±${num(c)}</b>${d === 'normal' && (P.mu !== 0 || P.sigma !== 1) ? `<br>En X: μ ± cσ = ${num(P.mu - c * P.sigma)} y ${num(P.mu + c * P.sigma)}` : ''}` });
+        const k = d === 'normal' ? P.sigma : 1, m0 = d === 'normal' ? P.mu : 0;
+        Object.assign(r, { p: 1 - alfa, alfa, c, sombra: [m0 - c * k, m0 + c * k] });
+      }
+    } else {
+      const f = (k) => D.pmf(P, k), F = (k) => D.cdf(P, k);
+      pasos.push({ t: 'Función de probabilidad', html: D.general(P) });
+      const entero = (k, nom) => lee(sc, k, nom, { entero: true });
+      const detalle = (k0, k1) => {
+        // suma término a término si son pocos
+        if (k1 - k0 > 6) return '';
+        return '<br>' + Array.from({ length: k1 - k0 + 1 }, (_, i) => k0 + i).map((k) => `${D.formula(P, k)} = ${prob(f(k))}`).join('<br>');
+      };
+      let a, b, res, desc;
+      if (tipo === 'igual') { a = b = entero('a', 'el valor k'); res = f(a); desc = `P(X = ${a})`; pasos.push({ t: desc, html: `${a < 0 || a > (P.n ?? Infinity) ? `${desc} = 0, porque X no puede valer ${a}` : `${D.formula(P, a)} = <b>${prob(res)}</b>`}` }); }
+      else if (tipo === 'entre') {
+        a = entero('a', 'el valor a'); b = entero('b', 'el valor b');
+        if (b < a) throw new Error('b tiene que ser mayor o igual que a');
+        res = F(b) - F(a - 1); desc = `P(${a} ≤ X ≤ ${b})`;
+        pasos.push({ t: desc, html: `= P(X ≤ ${b}) − P(X ≤ ${a - 1}) = ${prob(F(b))} − ${prob(F(a - 1))} = <b>${prob(res)}</b>${detalle(Math.max(a, 0), b)}` });
+      } else if (tipo === 'cuantil') {
+        const p = lee(sc, 'p', 'la probabilidad p', { min: 0, minEx: true, max: 1, maxEx: true });
+        let k = Math.max(0, Math.floor(D.rango(P)[0]));
+        while (F(k) < p && k < 1e7) k++;
+        while (k > 0 && F(k - 1) >= p) k--;
+        pasos.push({ t: 'Cuantil', html: `P(X ≤ ${k - 1}) = ${prob(F(k - 1))} &lt; ${num(p)} y P(X ≤ ${k}) = ${prob(F(k))} ≥ ${num(p)} ⇒ k = <b>${k}</b>` });
+        Object.assign(r, { p, x: k, sombra: [-Infinity, k], discreta: true });
+        return terminar(D, r);
+      } else {
+        a = entero('a', 'el valor k');
+        const T = { menor: [-Infinity, a, `P(X ≤ ${a})`], menorE: [-Infinity, a - 1, `P(X < ${a}) = P(X ≤ ${a - 1})`], mayor: [a, Infinity, `P(X ≥ ${a}) = 1 − P(X ≤ ${a - 1})`], mayorE: [a + 1, Infinity, `P(X > ${a}) = 1 − P(X ≤ ${a})`] }[tipo];
+        [a, b, desc] = T;
+        res = isFinite(b) ? F(b) : 1 - F(a - 1);
+        const cuerpo = isFinite(b) ? `${b < 0 ? '' : `= Σ<sub>k=0</sub><sup>${b}</sup> P(X = k) `}= <b>${prob(res)}</b>${b >= 0 ? detalle(0, b) : ''}` : `= 1 − ${prob(F(a - 1))} = <b>${prob(res)}</b>${a - 1 >= 0 ? detalle(0, a - 1) : ''}`;
+        pasos.push({ t: desc, html: cuerpo });
+      }
+      // aproximación normal de la binomial
+      if (d === 'binomial' && P.n * P.p >= 5 && P.n * (1 - P.p) >= 5 && tipo !== 'cuantil') {
+        const s = Math.sqrt(varianza), lo = isFinite(a) ? a - 0.5 : -Infinity, hi = isFinite(b) ? b + 0.5 : Infinity;
+        const ap = (isFinite(hi) ? Phi((hi - media) / s) : 1) - (isFinite(lo) ? Phi((lo - media) / s) : 0);
+        pasos.push({ t: 'Aproximación por la normal (np ≥ 5 y nq ≥ 5)', html: `X ≈ N(np, √(npq)) = N(${num(media)}, ${num(s)}), con la corrección de continuidad (±0,5): ${isFinite(lo) ? `${num(lo)} ≤ X` : 'X'}${isFinite(hi) ? ` ≤ ${num(hi)}` : ''} ⇒ ≈ ${prob(ap)} (exacta: ${prob(res)})` });
+      }
+      Object.assign(r, { p: res, a, b, sombra: [a, b], discreta: true });
+    }
+    return terminar(D, r);
+  }
+  function terminar(D, r) {
+    r.res = r.tipo === 'cuantil' ? `${r.discreta ? 'k' : 'a'} = ${num(r.x)}` : r.tipo === 'critico' ? `c = ±${num(r.c)}` : `P = ${prob(r.p)}`;
+    r.pct = r.tipo === 'cuantil' || r.tipo === 'critico' ? '' : `${num(100 * r.p, 4)} %`;
+    return r;
+  }
+
+  const ejemplos = [
+    { clave: 'normal-menor', nombre: 'Normal: P(X ≤ 52) con N(50, 5)', sc: { dist: 'normal', mu: '50', sigma: '5', tipo: 'menor', a: '52' } },
+    { clave: 'normal-entre', nombre: 'Normal: P(μ − σ ≤ X ≤ μ + σ)', sc: { dist: 'normal', mu: '0', sigma: '1', tipo: 'entre', a: '-1', b: '1' } },
+    { clave: 'normal-cuantil', nombre: 'Normal: nota que supera el 90 %', sc: { dist: 'normal', mu: '6', sigma: '1.5', tipo: 'cuantil', p: '0.9' } },
+    { clave: 'z-critico', nombre: 'Valor crítico z para α = 0,05', sc: { dist: 'normal', mu: '0', sigma: '1', tipo: 'critico', alfa: '0.05' } },
+    { clave: 't-critico', nombre: 't de Student: valor crítico con 10 g. l.', sc: { dist: 't', nu: '10', tipo: 'critico', alfa: '0.05' } },
+    { clave: 'chi2', nombre: 'χ² con 5 g. l.: P(χ² ≥ 11,07)', sc: { dist: 'chi2', k: '5', tipo: 'mayor', a: '11.07' } },
+    { clave: 'exponencial', nombre: 'Exponencial: dura más de 3 horas', sc: { dist: 'exponencial', lambda: '0.5', tipo: 'mayor', a: '3' } },
+    { clave: 'binomial-igual', nombre: 'Binomial: 3 caras en 10 lanzamientos', sc: { dist: 'binomial', n: '10', p: '0.5', tipo: 'igual', a: '3' } },
+    { clave: 'binomial-menor', nombre: 'Binomial: como mucho 2 defectuosas', sc: { dist: 'binomial', n: '20', p: '0.05', tipo: 'menor', a: '2' } },
+    { clave: 'binomial-normal', nombre: 'Binomial grande y su aproximación normal', sc: { dist: 'binomial', n: '100', p: '0.3', tipo: 'entre', a: '25', b: '35' } },
+    { clave: 'poisson', nombre: 'Poisson: al menos 2 llamadas', sc: { dist: 'poisson', lambda: '3', tipo: 'mayor', a: '2' } },
+  ];
+
+  return { DIST, tipos, calcular, ejemplos, Phi, gammaP, betaI, lnGamma, num, prob, cuantil };
+})();
+
+/* =====================================================================
+   Distribuciones de probabilidad: interfaz (distribución, parámetros,
+   tipo de cálculo, gráfica con el área sombreada y desarrollo).
+   El cálculo está en estadistica/calculo.js (Estadistica).
+   ===================================================================== */
+(() => {
+  const $ = (q) => document.querySelector(q);
+  const E = Estadistica, num = E.num, CLAVE = 'estadistica-v1';
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const copia = (o) => JSON.parse(JSON.stringify(o));
+  const DEF = { mu: '0', sigma: '1', nu: '10', k: '5', lambda: '2', n: '10', p: '0.5', a: '1', b: '2', alfa: '0.05' };
+
+  let sc = copia(E.ejemplos[0].sc);
+  try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && E.DIST[g.dist]) sc = g; } catch (e) {}
+  const guarda = () => { try { localStorage.setItem(CLAVE, JSON.stringify(sc)); } catch (e) {} };
+  let sol = null, col = {};
+
+  /* ---------- Formulario ---------- */
+  const fila = (k, nom) => `<label for="f-${k}">${nom}</label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc[k] ?? DEF[k] ?? '')}" inputmode="decimal" autocomplete="off">`;
+  function formulario() {
+    const D = E.DIST[sc.dist], tipos = E.tipos(sc.dist);
+    if (!tipos.some(([k]) => k === sc.tipo)) sc.tipo = tipos[0][0];
+    let h = `<label for="f-dist">Distribución</label><select id="f-dist" class="in" data-k="dist">${Object.entries(E.DIST).map(([k, d]) => `<option value="${k}"${k === sc.dist ? ' selected' : ''}>${d.nombre}</option>`).join('')}</select>`;
+    h += D.params.map(([k, nom]) => fila(k, nom)).join('');
+    h += `<label for="f-tipo">Qué calcular</label><select id="f-tipo" class="in" data-k="tipo">${tipos.map(([k, t]) => `<option value="${k}"${k === sc.tipo ? ' selected' : ''}>${t.replace('X', D.nombreX)}</option>`).join('')}</select>`;
+    const t = sc.tipo;
+    if (t === 'cuantil') h += fila('p', 'Probabilidad p');
+    else if (t === 'critico') h += fila('alfa', 'Nivel de significación α');
+    else if (t === 'entre') h += fila('a', 'Valor a') + fila('b', 'Valor b');
+    else h += fila('a', D.continua ? 'Valor a' : 'Valor k');
+    $('#campos').innerHTML = h;
+  }
+  $('#campos').addEventListener('input', (e) => { const t = e.target; if (t.tagName !== 'INPUT') return; sc[t.dataset.k] = t.value; $('#ejemplos').value = ''; calcula(); });
+  $('#campos').addEventListener('change', (e) => {
+    const t = e.target;
+    if (t.tagName !== 'SELECT') return;
+    sc[t.dataset.k] = t.value;
+    if (t.dataset.k === 'dist') for (const [k] of E.DIST[t.value].params) if (sc[k] === undefined || sc[k] === '') sc[k] = DEF[k];
+    $('#ejemplos').value = ''; formulario(); calcula();
+  });
+
+  /* ---------- Ejemplos ---------- */
+  const sel = $('#ejemplos');
+  sel.innerHTML = '<option value="">Ejemplos…</option>' + E.ejemplos.map((e) => `<option value="${e.clave}">${e.nombre}</option>`).join('');
+  sel.addEventListener('change', () => { if (sel.value) abrirEjemplo(sel.value); });
+  function abrirEjemplo(clave) {
+    const e = E.ejemplos.find((x) => x.clave === clave);
+    if (!e) return;
+    sc = { ...sc, ...copia(e.sc) };
+    formulario(); calcula(); sel.value = clave;
+  }
+
+  /* ---------- Cálculo ---------- */
+  function calcula() {
+    const err = $('#error');
+    try { sol = E.calcular(sc); } catch (e) { sol = null; err.textContent = e.message; err.hidden = false; $('#res').innerHTML = ''; $('#pasos').innerHTML = ''; dibuja(); return; }
+    err.hidden = true; guarda();
+    $('#res').innerHTML = `${sol.res}${sol.pct ? `<small>${sol.pct}</small>` : ''}`;
+    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('');
+    dibuja();
+  }
+
+  /* ---------- Gráfica ---------- */
+  function colores() { const cs = getComputedStyle(document.documentElement); for (const k of ['--ink', '--muted', '--line', '--accent', '--area', '--curva']) col[k] = cs.getPropertyValue(k).trim(); }
+  function dibuja() {
+    const c = $('#grafica'), dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
+    if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
+    const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
+    if (!sol) return;
+    colores();
+    const D = E.DIST[sol.dist], P = sol.P, m = { l: 14, r: 14, t: 14, b: 30 };
+    let [x0, x1] = D.rango(P);
+    const [s0, s1] = sol.sombra;
+    // que se vean los extremos pedidos
+    for (const v of [s0, s1, sol.x]) if (isFinite(v)) { x0 = Math.min(x0, v - (x1 - x0) * 0.05); x1 = Math.max(x1, v + (x1 - x0) * 0.05); }
+    if (!D.continua) { x0 = Math.max(Math.floor(x0), D.rango(P)[0] - 1, 0) - 0.7; x1 = Math.ceil(x1) + 0.7; }
+    const X = (x) => m.l + ((x - x0) / (x1 - x0)) * (w - m.l - m.r);
+    const dentro = (x) => x >= s0 - 1e-9 && x <= s1 + 1e-9, critico = sol.tipo === 'critico';
+    let ymax = 0;
+    g.font = '12px "IBM Plex Sans", system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'top';
+    if (D.continua) {
+      const N = 400, xs = Array.from({ length: N + 1 }, (_, i) => x0 + ((x1 - x0) * i) / N), ys = xs.map((x) => D.pdf(P, x)).map((y) => (isFinite(y) ? y : 0));
+      ymax = Math.max(...ys.filter((y) => y < 1e6)) * 1.08 || 1;
+      const Y = (y) => h - m.b - (Math.min(y, ymax) / ymax) * (h - m.t - m.b);
+      // área sombreada (en el valor crítico, las dos colas)
+      const zona = (a, b) => { g.beginPath(); g.moveTo(X(a), Y(0)); for (let i = 0; i <= N; i++) { if (xs[i] < a || xs[i] > b) continue; g.lineTo(X(xs[i]), Y(ys[i])); } g.lineTo(X(b), Y(0)); g.closePath(); g.fill(); };
+      g.fillStyle = col['--area'];
+      if (critico) { zona(x0, s0); zona(s1, x1); } else zona(Math.max(s0, x0), Math.min(s1, x1));
+      g.strokeStyle = col['--curva']; g.lineWidth = 2; g.beginPath(); xs.forEach((x, i) => (i ? g.lineTo(X(x), Y(ys[i])) : g.moveTo(X(x), Y(ys[i])))); g.stroke(); g.lineWidth = 1;
+    } else {
+      const ks = []; for (let k = Math.ceil(x0); k <= x1; k++) if (k >= 0) ks.push(k);
+      const ys = ks.map((k) => D.pmf(P, k));
+      ymax = Math.max(...ys) * 1.08 || 1;
+      const Y = (y) => h - m.b - (y / ymax) * (h - m.t - m.b), bw = Math.max(1, Math.min(28, ((w - m.l - m.r) / Math.max(1, x1 - x0)) * 0.7));
+      ks.forEach((k, i) => { g.fillStyle = dentro(k) ? col['--accent'] : col['--line']; g.fillRect(X(k) - bw / 2, Y(ys[i]), bw, Y(0) - Y(ys[i])); });
+      // números de k bajo las barras (cada 1, 2, 5 o 10 según cuántas haya)
+      const paso = [1, 2, 5, 10, 20, 50, 100, 1000].find((q) => ks.length / q <= 16) || 1000;
+      g.fillStyle = col['--muted']; g.font = '11px "IBM Plex Sans", system-ui, sans-serif';
+      ks.forEach((k) => { if (k % paso === 0) g.fillText(String(k), X(k), h - m.b + 20); });
+      g.font = '12px "IBM Plex Sans", system-ui, sans-serif';
+    }
+    // eje y marcas
+    g.strokeStyle = col['--muted']; g.beginPath(); g.moveTo(m.l, h - m.b); g.lineTo(w - m.r, h - m.b); g.stroke();
+    g.fillStyle = col['--muted'];
+    const marcas = D.continua ? [...new Set([s0, s1, sol.x].filter((v) => v !== null && v !== undefined && isFinite(v)))] : [];
+    for (const v of marcas) { g.beginPath(); g.moveTo(X(v), h - m.b); g.lineTo(X(v), h - m.b + 5); g.stroke(); g.fillStyle = col['--ink']; g.fillText(num(v, 4).replace(/<[^>]+>/g, ''), X(v), h - m.b + 8); }
+    if (D.continua && isFinite(sol.media) && !marcas.some((v) => Math.abs(X(v) - X(sol.media)) < 40)) { g.fillStyle = col['--muted']; g.fillText(`media ${num(sol.media, 4).replace(/<[^>]+>/g, '')}`, X(sol.media), h - m.b + 8); }
+    g.textAlign = 'left'; g.fillStyle = col['--accent']; g.font = '600 13px "IBM Plex Sans", system-ui, sans-serif';
+    if (sol.tipo !== 'cuantil') g.fillText(critico ? `α = ${num(sol.alfa)} (α/2 en cada cola)` : `P = ${E.prob(sol.p)}`, m.l + 4, m.t);
+  }
+  window.addEventListener('resize', dibuja);
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', dibuja);
+
+  const ver = $('#ver'); if (ver) ver.textContent = Version.de('estadistica').current;
+  formulario(); calcula();
+  window.EstadisticaApp = { abrirEjemplo, resultado: () => sol && { p: sol.p, res: sol.res, x: sol.x, c: sol.c }, estado: () => copia(sc) };
+})();
+
+</script>
+</html>
