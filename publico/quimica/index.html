@@ -69,8 +69,32 @@ a.card:hover { border-color:var(--c) }
 .card .b { padding:12px 14px 14px; display:flex; flex-direction:column; gap:4px; flex:1 } .card h2 { margin:0; font:600 16px var(--f-ui) } .card p { margin:0; color:var(--muted); font-size:13.5px }
 .card .t { margin:8px 0 0; align-self:flex-start } .card.off { opacity:.65 }
 .otras { margin-top:32px; font-size:14px; color:var(--muted) } .otras a { color:var(--accent); margin-right:14px; white-space:nowrap } .otras a:hover { text-decoration:underline }
-.novedades { margin-top:28px; max-width:720px; font-size:14px; color:var(--muted) } .novedades summary { cursor:pointer; color:var(--accent); font-weight:500 }
-.novedades h3 { font:600 14px var(--f-ui); color:var(--ink); margin:12px 0 4px } .novedades ul { margin:0; padding-left:20px }
+/* novedades: una línea de tiempo por días y, en ella, una tarjeta por versión con todos sus cambios */
+:root { --nueva:#0d6b66; --mejora:#2a5db5; --arreglo:#9a5b00 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --nueva:#4dbcb0; --mejora:#74a2f2; --arreglo:#e6a640 } }
+:root[data-theme="dark"] { --nueva:#4dbcb0; --mejora:#74a2f2; --arreglo:#e6a640 }
+.tl { max-width:860px }
+.dia { display:grid; grid-template-columns:96px minmax(0,1fr); gap:0 18px }
+.fecha { text-align:right; padding-top:14px; font:600 13px var(--f-ui); color:var(--muted) } .fecha b { display:block; font:600 28px/1 var(--f-math); color:var(--ink) }
+.linea { border-left:2px solid var(--line); padding:8px 0 22px 22px; display:flex; flex-direction:column; gap:12px; min-width:0 }
+.vers { position:relative; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:12px 16px 10px; scroll-margin-top:16px }
+.vers::before { content:""; position:absolute; left:-30px; top:16px; width:12px; height:12px; border-radius:50%; background:var(--panel); border:3px solid var(--k) }
+.vers > header { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:4px }
+.vers h2 { margin:0; font:600 20px var(--f-math) } .vers header small { color:var(--muted); font-size:12.5px }
+.vers .actual { font-size:11px; font-weight:700; color:var(--panel); background:var(--accent); border-radius:99px; padding:1px 8px }
+.vers ul { list-style:none; margin:0; padding:0 }
+.vers li { display:grid; grid-template-columns:24px minmax(0,1fr) auto; gap:4px 12px; align-items:start; padding:8px 0; border-top:1px solid var(--line); font-size:14px }
+.vers li:first-child { border-top:0 }
+.vers li .ico { margin-top:1px } .vers li b { font-weight:600 }
+.vers li .ir { font-size:13px; font-weight:600; color:var(--c); white-space:nowrap } .vers li .ir:hover { text-decoration:underline }
+.tipo { display:inline-flex; align-items:center; gap:5px; font-size:10.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; padding:1px 8px; border-radius:99px; white-space:nowrap; margin-right:8px; vertical-align:1px }
+.tipo::before { content:""; width:6px; height:6px; border-radius:50%; background:currentColor }
+.tipo.nueva { color:var(--nueva); background:color-mix(in srgb,var(--nueva) 13%,transparent) }
+.tipo.mejora { color:var(--mejora); background:color-mix(in srgb,var(--mejora) 13%,transparent) }
+.tipo.arreglo { color:var(--arreglo); background:color-mix(in srgb,var(--arreglo) 15%,transparent) }
+.sim { width:24px; height:24px; border-radius:6px; display:grid; place-items:center; font-weight:700; font-size:13px; color:var(--k); background:color-mix(in srgb,var(--k) 14%,transparent) }
+.leyenda { display:flex; gap:8px; flex-wrap:wrap; margin:-10px 0 22px }
+@media (max-width:600px) { .dia { grid-template-columns:minmax(0,1fr) } .fecha { text-align:left; padding:6px 0 2px } .fecha b { display:inline; font-size:18px; margin-right:6px } .linea { padding-left:18px } .vers::before { left:-26px } .vers li { grid-template-columns:24px minmax(0,1fr) } .vers li .ir { grid-column:2 } }
 footer { text-align:center; font-size:12.5px; color:var(--muted); padding:0 16px 24px } footer a { margin:0 6px; white-space:nowrap } footer a:hover { color:var(--accent); text-decoration:underline }
 </style>
 <body>
@@ -91,6 +115,6 @@ footer { text-align:center; font-size:12.5px; color:var(--muted); padding:0 16px
 </div>
 <p class="otras">Otras asignaturas: <a href="../electromagnetismo/">Electromagnetismo</a><a href="../fisica/">Física general</a><a href="../matematicas/">Matemáticas</a><a href="../estadistica/">Estadística</a><a href="../circuitos/">Circuitos</a></p>
 </main>
-<footer><a href="../contacto.html">Contacto</a>·<a href="../aviso-legal.html">Aviso legal</a>·<a href="../privacidad.html">Privacidad</a>·<a href="../cookies.html">Cookies</a>· <a href="../#novedades">Versión 0.39 (beta)</a></footer>
+<footer><a href="../contacto.html">Contacto</a>·<a href="../aviso-legal.html">Aviso legal</a>·<a href="../privacidad.html">Privacidad</a>·<a href="../cookies.html">Cookies</a>· <a href="../novedades/">Versión 0.40 (beta)</a></footer>
 </body>
 </html>
