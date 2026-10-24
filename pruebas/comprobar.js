@@ -1467,10 +1467,12 @@ async function navegador() {
       await page.waitForFunction(() => document.querySelectorAll('.teoria .f[data-m]').length > 0);
       const r = await page.evaluate(() => [...document.querySelectorAll('.teoria .f')].map((e) => e.querySelectorAll('math').length > 0 && !/\$/.test(e.textContent)));
       if (!r.length || r.includes(false)) mal(`${pag}: alguna caja de la teoría no sale en MathML`);
+      // y ninguna fórmula suelta en el texto de la teoría se queda con sus $
+      if (await page.evaluate(() => /\$/.test(document.querySelector('.teoria').textContent))) mal(`${pag}: hay una fórmula de la teoría que se ve con $`);
     }
     await page.close();
     if (consola.length) mal('Arreglo 2: consola del navegador:\n      ' + consola.join('\n      '));
-    if (fallos === antes) console.log('  ✓ Fórmulas MathML: desarrollo y teoría de Tiro parabólico, Trabajo y energía y Calorimetría, y la teoría de otras 15 herramientas');
+    if (fallos === antes) console.log('  ✓ Fórmulas MathML: desarrollo y teoría de Tiro parabólico, Trabajo y energía y Calorimetría, y la teoría de otras 15 herramientas, sin $ sueltos');
   }
   {
     // arreglo 6: barra lateral «Mis ejercicios» en todas las herramientas con estado (guardar, carpeta, fijar, abrir, exportar, borrar e importar)

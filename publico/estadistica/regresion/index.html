@@ -111,11 +111,11 @@ textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 120px 
   <h2>Ajustes que no son rectas</h2>
   <p>Muchos ajustes se convierten en una recta cambiando de variable y se resuelven igual:</p>
   <ul>
-    <li>Exponencial, $y = a e^{bx}$: tomando logaritmos, $ln y = ln a + b x$, una recta entre x y ln y.</li>
-    <li>Potencial, $y = a x^b$: $ln y = ln a + b ln x$, una recta entre ln x y ln y.</li>
-    <li>Logarítmico, $y = a + b ln x$: una recta entre ln x e y.</li>
+    <li class="m">Exponencial, $y = a e^{bx}$: tomando logaritmos, $ln y = ln a + b x$, una recta entre x y ln y.</li>
+    <li class="m">Potencial, $y = a x^b$: $ln y = ln a + b ln x$, una recta entre ln x y ln y.</li>
+    <li class="m">Logarítmico, $y = a + b ln x$: una recta entre ln x e y.</li>
   </ul>
-  <p>La parábola $y = a + bx + cx^2$ se ajusta directamente por mínimos cuadrados: se resuelve un sistema de tres ecuaciones (las ecuaciones normales). Para comparar ajustes se usa $R^2 = 1 − {∑ (y_i − ŷ_i)^2}/{∑ (y_i − ȳ)^2}$ en las y originales.</p>
+  <p class="m">La parábola $y = a + bx + cx^2$ se ajusta directamente por mínimos cuadrados: se resuelve un sistema de tres ecuaciones (las ecuaciones normales). Para comparar ajustes se usa $R^2 = 1 − {∑ (y_i − ŷ_i)^2}/{∑ (y_i − ȳ)^2}$ en las y originales.</p>
   <h2>¿Es significativa la correlación?</h2>
   <p>Con pocos datos puede salir un r alto por casualidad. Para contrastar si la correlación de la población ρ es distinta de cero se usa</p>
   <p class="f m">$t = r √(N − 2)/√(1 − r^2)$</p>
@@ -138,6 +138,7 @@ textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 120px 
 const Version = (() => {
   const registros = {
     web: [
+      { v: '0.27.1', fecha: '2026-10-24', cambios: ['Efecto Doppler, Código de colores y Regresión: las fórmulas dentro del texto de la teoría se ven bien escritas.'] },
       { v: '0.27', fecha: '2026-10-24', cambios: ['Nueva herramienta: Regresión y correlación, en Estadística.'] },
       { v: '0.26', fecha: '2026-10-24', cambios: ['Nueva herramienta: Código de colores de resistencias, en Circuitos.'] },
       { v: '0.25', fecha: '2026-10-24', cambios: ['Nueva herramienta: Efecto Doppler, en Física general.'] },
@@ -226,6 +227,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: hasta seis ecuaciones con seis incógnitas. Dice si el sistema es compatible determinado, indeterminado o incompatible con el teorema de Rouché-Frobenius y lo resuelve por Gauss con sustitución hacia atrás, por Gauss-Jordan, por la regla de Cramer o con la matriz inversa.', 'Si tiene infinitas soluciones, las da en forma paramétrica (λ, μ…).', 'Coeficientes con fracciones exactas, decimales o números complejos, como las mallas de un circuito de alterna, y nombres propios para las incógnitas (I1, I2…).', 'Comprobación de la solución sustituyendo en cada ecuación.'] },
     ],
     regresion: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas dentro del texto de la teoría se ven bien escritas, no con símbolos $.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: escribe o pega tus datos (x, y), con frecuencias si las tienes, y obtén medias, varianzas, covarianza, el coeficiente de correlación con su contraste y las dos rectas de regresión, con la tabla de cálculos y la nube de puntos.', 'Ajustes exponencial, potencial, logarítmico y parabólico, con R² para compararlos con la recta, y los residuos.', 'Estimaciones de y a partir de x y de x a partir de y, avisando si es una extrapolación.', 'Añade puntos pulsando en la gráfica.'] },
     ],
     estadistica: [
@@ -257,9 +259,11 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ecuación de estado PV = nRT con P, V, T y n en varias unidades, los moles a partir de la masa y la densidad del gas.', 'Transformaciones isoterma, isobara, isocora y adiabática encadenadas, con el trabajo, el calor y la variación de energía interna de cada tramo, y ciclos con su rendimiento comparado con el de Carnot.', 'Diagrama P-V con las isotermas y el área del ciclo.', 'Teoría cinética: velocidades cuadrática media, media y más probable, energía cinética media y la distribución de Maxwell.'] },
     ],
     doppler: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas dentro del texto de la teoría se ven bien escritas, no con símbolos $.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: frecuencia que se oye con la fuente, el observador y el viento moviéndose, con la longitud de onda delante de la fuente.', 'Una fuente que pasa de largo: lo que se oye antes y después, el salto en hercios y semitonos y, al revés, su velocidad a partir de las dos frecuencias. Con el observador a un lado de la carretera, la gráfica del cambio gradual.', 'Eco en un obstáculo que se mueve (radar de tráfico, murciélago, ecografía Doppler): la frecuencia del eco y las pulsaciones, o la velocidad del obstáculo a partir de ellas.', 'Onda de choque: número de Mach, semiángulo del cono y cuándo se oye el estampido.', 'Animación de los frentes de onda y botón para escuchar la diferencia.'] },
     ],
     resistencias: [
+      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas dentro del texto de la teoría se ven bien escritas, no con símbolos $.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: elige los colores de una resistencia de 3, 4, 5 o 6 bandas y obtén el valor, la tolerancia, el margen del valor real y el coeficiente de temperatura, con el dibujo de la resistencia.', 'Del valor a los colores: escribe 4k7, 2M2 o 470R y te da las bandas y el valor normalizado más cercano de las series E6 a E96.', 'Códigos SMD de 3 y 4 cifras, con R y EIA-96.'] },
     ],
     faraday: [
