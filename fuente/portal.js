@@ -66,8 +66,32 @@ a.card:hover { border-color:var(--c) }
 .card .b { padding:12px 14px 14px; display:flex; flex-direction:column; gap:4px; flex:1 } .card h2 { margin:0; font:600 16px var(--f-ui) } .card p { margin:0; color:var(--muted); font-size:13.5px }
 .card .t { margin:8px 0 0; align-self:flex-start } .card.off { opacity:.65 }
 .otras { margin-top:32px; font-size:14px; color:var(--muted) } .otras a { color:var(--accent); margin-right:14px; white-space:nowrap } .otras a:hover { text-decoration:underline }
-.novedades { margin-top:28px; max-width:720px; font-size:14px; color:var(--muted) } .novedades summary { cursor:pointer; color:var(--accent); font-weight:500 }
-.novedades h3 { font:600 14px var(--f-ui); color:var(--ink); margin:12px 0 4px } .novedades ul { margin:0; padding-left:20px }
+/* novedades: una línea de tiempo por días y, en ella, una tarjeta por versión con todos sus cambios */
+:root { --nueva:#0d6b66; --mejora:#2a5db5; --arreglo:#9a5b00 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --nueva:#4dbcb0; --mejora:#74a2f2; --arreglo:#e6a640 } }
+:root[data-theme="dark"] { --nueva:#4dbcb0; --mejora:#74a2f2; --arreglo:#e6a640 }
+.tl { max-width:860px }
+.dia { display:grid; grid-template-columns:96px minmax(0,1fr); gap:0 18px }
+.fecha { text-align:right; padding-top:14px; font:600 13px var(--f-ui); color:var(--muted) } .fecha b { display:block; font:600 28px/1 var(--f-math); color:var(--ink) }
+.linea { border-left:2px solid var(--line); padding:8px 0 22px 22px; display:flex; flex-direction:column; gap:12px; min-width:0 }
+.vers { position:relative; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:12px 16px 10px; scroll-margin-top:16px }
+.vers::before { content:""; position:absolute; left:-30px; top:16px; width:12px; height:12px; border-radius:50%; background:var(--panel); border:3px solid var(--k) }
+.vers > header { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:4px }
+.vers h2 { margin:0; font:600 20px var(--f-math) } .vers header small { color:var(--muted); font-size:12.5px }
+.vers .actual { font-size:11px; font-weight:700; color:var(--panel); background:var(--accent); border-radius:99px; padding:1px 8px }
+.vers ul { list-style:none; margin:0; padding:0 }
+.vers li { display:grid; grid-template-columns:24px minmax(0,1fr) auto; gap:4px 12px; align-items:start; padding:8px 0; border-top:1px solid var(--line); font-size:14px }
+.vers li:first-child { border-top:0 }
+.vers li .ico { margin-top:1px } .vers li b { font-weight:600 }
+.vers li .ir { font-size:13px; font-weight:600; color:var(--c); white-space:nowrap } .vers li .ir:hover { text-decoration:underline }
+.tipo { display:inline-flex; align-items:center; gap:5px; font-size:10.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; padding:1px 8px; border-radius:99px; white-space:nowrap; margin-right:8px; vertical-align:1px }
+.tipo::before { content:""; width:6px; height:6px; border-radius:50%; background:currentColor }
+.tipo.nueva { color:var(--nueva); background:color-mix(in srgb,var(--nueva) 13%,transparent) }
+.tipo.mejora { color:var(--mejora); background:color-mix(in srgb,var(--mejora) 13%,transparent) }
+.tipo.arreglo { color:var(--arreglo); background:color-mix(in srgb,var(--arreglo) 15%,transparent) }
+.sim { width:24px; height:24px; border-radius:6px; display:grid; place-items:center; font-weight:700; font-size:13px; color:var(--k); background:color-mix(in srgb,var(--k) 14%,transparent) }
+.leyenda { display:flex; gap:8px; flex-wrap:wrap; margin:-10px 0 22px }
+@media (max-width:600px) { .dia { grid-template-columns:minmax(0,1fr) } .fecha { text-align:left; padding:6px 0 2px } .fecha b { display:inline; font-size:18px; margin-right:6px } .linea { padding-left:18px } .vers::before { left:-26px } .vers li { grid-template-columns:24px minmax(0,1fr) } .vers li .ir { grid-column:2 } }
 footer { text-align:center; font-size:12.5px; color:var(--muted); padding:0 16px 24px } footer a { margin:0 6px; white-space:nowrap } footer a:hover { color:var(--accent); text-decoration:underline }
 `;
 
@@ -94,7 +118,7 @@ function pagina({ titulo, desc, raiz, actual, cuerpo, buscar, script }) {
 <nav aria-label="Asignaturas"><a href="${raiz}"${actual ? '' : ' aria-current="page"'}>Inicio</a>${nav}</nav>
 ${buscar ? '<input type="search" id="buscar" class="buscar" placeholder="Buscar: Biot-Savart, molaridad…" aria-label="Buscar herramientas" autocomplete="off">' : ''}</header>
 ${cuerpo}
-<footer><a href="${raiz}contacto.html">Contacto</a>·<a href="${raiz}aviso-legal.html">Aviso legal</a>·<a href="${raiz}privacidad.html">Privacidad</a>·<a href="${raiz}cookies.html">Cookies</a>· <a href="${raiz}#novedades">Versión ${esc(Version.de('web').current)} (beta)</a></footer>
+<footer><a href="${raiz}contacto.html">Contacto</a>·<a href="${raiz}aviso-legal.html">Aviso legal</a>·<a href="${raiz}privacidad.html">Privacidad</a>·<a href="${raiz}cookies.html">Cookies</a>· <a href="${raiz}novedades/">Versión ${esc(Version.de('web').current)} (beta)</a></footer>
 ${script ? `<script>${script}</script>\n` : ''}</body>
 </html>
 `;
@@ -107,7 +131,7 @@ const textoBusqueda = (a, h) => esc([a.nombre, h.nombre, h.desc, h.buscar || '']
 // portada: barra lateral con las asignaturas y, a la derecha, una sección por asignatura con sus herramientas
 const lado = `<aside class="lado" aria-label="Asignaturas"><h2>Asignaturas</h2>
 ${Catalogo.asignaturas.map((a) => `  <a href="#${a.clave}" style="${estilo(a)}"><span class="ico s">${esc(a.icono)}</span>${esc(a.nombre)}<small>${disponibles(a).length}</small></a>`).join('\n')}
-  <div class="mas"><h2>La web</h2><a href="#novedades" style="--cl:#0d6b66;--co:#4dbcb0"><span class="ico s">↻</span>Novedades<small>${esc(Version.de('web').current)}</small></a></div></aside>`;
+  <div class="mas"><h2>La web</h2><a href="novedades/" style="--cl:#0d6b66;--co:#4dbcb0"><span class="ico s">↻</span>Novedades<small>${esc(Version.de('web').current)}</small></a></div></aside>`;
 const secciones = Catalogo.asignaturas.map((a) => {
   const fichas = a.herramientas.map((h) => h.disponible
     ? `  <a href="${a.clave}/${h.clave}/" title="${esc(h.desc)}" data-buscar="${textoBusqueda(a, h)}"><b>${esc(h.nombre)}</b><span>${esc(h.desc)}</span></a>`
@@ -122,8 +146,7 @@ ${fichas}
 const BUSCAR = `(() => {
   const q = document.getElementById('buscar'), nada = document.getElementById('nada');
   const norm = (s) => s.normalize('NFD').replace(/[\\u0300-\\u036f]/g, '').toLowerCase();
-  const abre = () => { if (location.hash === '#novedades') document.getElementById('novedades').open = true; };
-  abre(); addEventListener('hashchange', abre);
+  if (location.hash === '#novedades') location.replace('novedades/'); // enlaces antiguos a las novedades
   q.addEventListener('input', () => {
     const t = norm(q.value).split(/\\s+/).filter(Boolean);
     let hay = 0;
@@ -155,9 +178,6 @@ ${lado}
 <p class="sub">${esc(Catalogo.lema)}</p>
 ${secciones}
 <p class="nada" id="nada" hidden>No hay ninguna herramienta con ese nombre todavía.</p>
-<details class="novedades" id="novedades"><summary>Novedades de la web</summary>
-${Version.de('web').log.map((r) => `<h3>${esc(r.v)} · ${r.fecha.split('-').reverse().join('/')}</h3><ul>${r.cambios.map((c) => `<li>${esc(c)}</li>`).join('')}</ul>`).join('\n')}
-</details>
 </main>
 </div>`,
 }) };
@@ -179,6 +199,59 @@ for (const a of Catalogo.asignaturas) {
 ${cards}
 </div>
 <p class="otras">Otras asignaturas: ${otras}</p>
+</main>`,
+  });
+}
+
+// novedades: una página propia con una línea de tiempo por días y una tarjeta por versión con todos sus cambios.
+// El tipo de cada cambio sale de la nota: «Nueva herramienta: X, en Y.» es una herramienta nueva (con enlace),
+// una versión con tercer número (0.20.1) es un arreglo y lo demás es una mejora.
+{
+  const norm = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  const raizNombre = (n) => norm(n).split(/[:(,]/)[0].trim();
+  const herramienta = (nombre, asig) => {
+    const n = norm(nombre), donde = Catalogo.asignaturas.filter((a) => norm(a.nombre) === norm(asig));
+    const todas = [...donde, ...Catalogo.asignaturas].flatMap((a) => a.herramientas.filter((x) => x.disponible).map((h) => ({ a, h })));
+    const x = todas.find(({ h }) => n.includes(raizNombre(h.nombre))) || todas.find(({ h }) => norm(h.nombre).includes(raizNombre(nombre)));
+    if (x) return x;
+    // nombres que han cambiado de orden («Condensadores con dieléctricos»): las mismas palabras largas
+    const largas = (t) => norm(t).split(/[^a-zñ]+/).filter((w) => w.length > 4);
+    for (const a of donde) for (const h of a.herramientas.filter((x) => x.disponible)) if (largas(nombre).filter((w) => largas(h.nombre).includes(w)).length >= 2) return { a, h };
+    return null;
+  };
+  const SIM = { mejora: '+', arreglo: '✓' }, COLOR = { nueva: 'var(--nueva)', mejora: 'var(--mejora)', arreglo: 'var(--arreglo)' };
+  const MES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+  const web = Version.de('web'), dias = new Map();
+  for (const r of web.log) { if (!dias.has(r.fecha)) dias.set(r.fecha, []); dias.get(r.fecha).push(r); }
+  const tarjeta = (r) => {
+    const cambios = r.cambios.map((c) => {
+      const m = c.match(/^Nueva herramienta: (.+?), en (.+?)\.$/), tipo = m ? 'nueva' : r.v.split('.').length > 2 ? 'arreglo' : 'mejora';
+      if (m) {
+        const x = herramienta(m[1], m[2]);
+        return x
+          ? `<li style="${estilo(x.a)}"><span class="ico s">${esc(x.h.icono)}</span><span><span class="tipo nueva">Nueva herramienta</span><b>${esc(x.h.nombre)}</b>, en ${esc(x.a.nombre)}</span><a class="ir" href="../${x.a.clave}/${x.h.clave}/">Abrir →</a></li>`
+          : `<li style="--k:var(--nueva)"><span class="sim">★</span><span><span class="tipo nueva">Nueva herramienta</span><b>${esc(m[1])}</b>, en ${esc(m[2])}</span></li>`;
+      }
+      return { tipo, html: `<li style="--k:${COLOR[tipo]}"><span class="sim">${SIM[tipo]}</span><span><span class="tipo ${tipo}">${tipo === 'arreglo' ? 'Arreglo' : 'Mejora'}</span>${esc(c)}</span></li>` };
+    });
+    const tipos = cambios.map((c) => (typeof c === 'string' ? 'nueva' : c.tipo));
+    const k = COLOR[tipos.includes('nueva') ? 'nueva' : tipos.includes('mejora') ? 'mejora' : 'arreglo'];
+    return `<article class="vers" id="v${r.v}" style="--k:${k}"><header><h2>${esc(r.v)}</h2>${r.v === web.current ? '<span class="actual">Versión actual</span>' : ''}<small>${r.cambios.length === 1 ? '1 cambio' : `${r.cambios.length} cambios`}</small></header>
+<ul>${cambios.map((c) => (typeof c === 'string' ? c : c.html)).join('')}</ul></article>`;
+  };
+  const linea = [...dias].map(([f, rs]) => { const [y, m, d] = f.split('-'); return `<div class="dia"><div class="fecha"><b>${+d}</b>${MES[m - 1]} ${y}</div><div class="linea">
+${rs.map(tarjeta).join('\n')}
+</div></div>`; }).join('\n');
+  archivos['novedades/index.html'] = pagina({
+    titulo: `Novedades · ${marca}`, desc: `Lo último que ha llegado a ${marca}: herramientas nuevas, mejoras y arreglos, versión a versión.`, raiz: '../', actual: 'novedades',
+    cuerpo: `<main>
+<div class="crumb"><a href="../">Inicio</a> / Novedades</div>
+<h1>Novedades</h1>
+<p class="sub">Lo último que ha llegado a la web, de lo más nuevo a lo más antiguo. Estás viendo la versión ${esc(web.current)} (beta).</p>
+<div class="leyenda"><span class="tipo nueva">Nueva herramienta</span><span class="tipo mejora">Mejora</span><span class="tipo arreglo">Arreglo</span></div>
+<div class="tl">
+${linea}
+</div>
 </main>`,
   });
 }

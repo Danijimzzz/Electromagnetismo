@@ -11,6 +11,7 @@
 const Version = (() => {
   const registros = {
     web: [
+      { v: '0.40', fecha: '2026-10-24', cambios: ['Las novedades tienen su propia página, con una línea de tiempo: cada versión es una tarjeta con todos sus cambios, una etiqueta de color para saber si es una herramienta nueva, una mejora o un arreglo, y un enlace para abrir cada herramienta nueva.'] },
       { v: '0.39', fecha: '2026-10-24', cambios: ['Nueva portada: las asignaturas están en una barra lateral siempre a mano y cada herramienta ocupa una ficha pequeña, así se ve todo de un vistazo y sin huecos. En el móvil, las asignaturas son una fila de pestañas arriba.'] },
       { v: '0.38', fecha: '2026-10-24', cambios: ['Nueva herramienta: Transitorios RC, RL y RLC, en Circuitos.'] },
       { v: '0.37', fecha: '2026-10-24', cambios: ['Nueva herramienta: Fuerza magnética, en Electromagnetismo.'] },
