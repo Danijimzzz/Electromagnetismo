@@ -11,6 +11,7 @@
 const Version = (() => {
   const registros = {
     web: [
+      { v: '0.44', fecha: '2026-10-24', cambios: ['Todas las herramientas tienen el mismo diseño: arriba, la misma barra que la portada, con las asignaturas y el buscador, y cada herramienta lleva el color de su asignatura. Encima del título se ve en qué asignatura estás, con Mis ejercicios a la izquierda y Modo práctica a la derecha.', 'Mis ejercicios: la barra lateral también tiene los ejercicios de ejemplo de cada herramienta, como en el simulador de electrostática.'] },
       { v: '0.43', fecha: '2026-10-24', cambios: ['Nueva herramienta: Derivadas e integrales, en Matemáticas.'] },
       { v: '0.42', fecha: '2026-10-24', cambios: ['Nueva herramienta: Transformada de Laplace, en Matemáticas.'] },
       { v: '0.41', fecha: '2026-10-24', cambios: ['Nueva herramienta: Intervalos de confianza, en Estadística.', 'Nueva herramienta: Ondas electromagnéticas planas, en Electromagnetismo.', 'Nueva herramienta: Interferencia y difracción, en Física general.', 'Arreglo: al salir del modo práctica a veces no volvían los datos que tenías antes.'] },

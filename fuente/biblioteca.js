@@ -57,7 +57,11 @@ const Biblioteca = (() => {
 .bib-mini { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 13px; width: 26px; height: 26px; border-radius: 6px; flex: 0 0 auto; opacity: .55 }
 .bib-it:hover .bib-mini, .bib-it:focus-within .bib-mini, .bib-mini.on { opacity: 1 } .bib-mini:hover { background: var(--panel); color: var(--accent) } .bib-mini.on { color: var(--accent) }
 @media (hover: none) { .bib-mini { opacity: 1 } }
-.bib-vacio { color: var(--muted); padding: 10px 6px; margin: 0 }
+.bib-vacio { color: var(--muted); padding: 4px 6px 10px; margin: 0 }
+.bib-sec-ej { margin-top: 10px; font: 600 11px var(--f-ui, system-ui); letter-spacing: .06em; text-transform: uppercase; color: var(--muted) }
+.bib-sub { font: 600 12px var(--f-ui, system-ui); color: var(--muted); margin: 8px 6px 2px }
+.bib-ej { display: block; width: 100%; border: 0; background: none; color: var(--ink); text-align: left; font: 13.5px var(--f-ui, system-ui); padding: 6px; border-radius: 8px; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+.bib-ej:hover { background: var(--bg) } .bib-ej.activo { background: var(--accent-soft, var(--bg)); box-shadow: inset 3px 0 0 var(--accent) }
 .bib-pie { border-top: 1px solid var(--line); padding: 8px 14px 12px; color: var(--muted); font-size: 12px }
 .bib-pie p { margin: 0 }
 .bib-aviso { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 70; background: var(--ink); color: var(--panel); padding: 8px 14px; border-radius: 8px; font: 13px var(--f-ui, system-ui); box-shadow: 0 4px 16px rgba(0,0,0,.2) }
@@ -80,13 +84,37 @@ const Biblioteca = (() => {
     // las apps que guardan con retraso escuchan «simu-guardar» y guardan al momento
     const estado = () => { window.dispatchEvent(new Event('simu-guardar')); try { return localStorage.getItem(clave); } catch (e) { return null; } };
     const nuevoId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+    // «Ejercicios de ejemplo»: las opciones de los <select id="ejemplos…"> de la página, agrupadas
+    const selsEj = () => [...document.querySelectorAll('select[id^="ejemplo"]')];
+    function grupoDe(s) {
+      const p = s.closest('[role="tabpanel"]'); if (!p) return '';
+      const t = document.getElementById(p.getAttribute('aria-labelledby') || 'tab-' + p.id.replace(/^panel-/, ''));
+      return t ? t.textContent.trim() : '';
+    }
+    function ejemplosHTML(q) {
+      const sels = selsEj(); let h = '';
+      sels.forEach((s, i) => {
+        const bot = (o) => o.value && (!q || norm(o.textContent).includes(q)) ? `<button class="bib-ej${s.value === o.value ? ' activo' : ''}" data-acc="ejemplo" data-sel="${i}" data-v="${esc(o.value)}" title="${esc(o.textContent.trim())}">${esc(o.textContent.trim())}</button>` : '';
+        let cuerpo = '';
+        for (const c of s.children) {
+          if (c.tagName === 'OPTGROUP') { const b = [...c.children].map(bot).join(''); if (b) cuerpo += `<p class="bib-sub">${esc(c.label)}</p>${b}`; }
+          else cuerpo += bot(c);
+        }
+        const g = sels.length > 1 && grupoDe(s);
+        if (cuerpo) h += (g ? `<p class="bib-sub">${esc(g)}</p>` : '') + cuerpo;
+      });
+      return h;
+    }
+    const marcaEj = () => { const sels = selsEj(); for (const b of panel.querySelectorAll('.bib-ej')) b.classList.toggle('activo', sels[+b.dataset.sel]?.value === b.dataset.v); };
     const ejemplo = () => { const s = document.querySelector('select#ejemplo, select[id^="ejemplo"]'); return s && s.value && s.selectedOptions[0] ? s.selectedOptions[0].textContent.trim() : ''; };
 
     const st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
     const btn = document.createElement('button');
     btn.className = 'bib-btn'; btn.type = 'button'; btn.setAttribute('aria-controls', 'bib'); btn.title = 'Guardar, abrir, exportar e importar tus ejercicios';
     btn.innerHTML = '<span aria-hidden="true">☰</span> Mis ejercicios';
-    const ini = cab.querySelector('.a-inicio'); (ini ? ini.after(btn) : cab.prepend(btn));
+    // a la izquierda de la miga «Asignatura › Herramienta» (diseno.js), como la barra de electrostática
+    const izq = document.querySelector('.miga-izq'), ini = cab.querySelector('.a-inicio');
+    if (izq) izq.append(btn); else (ini ? ini.after(btn) : cab.prepend(btn));
     const panel = document.createElement('aside'); panel.className = 'bib'; panel.id = 'bib'; panel.setAttribute('aria-label', 'Mis ejercicios');
     const scrim = document.createElement('div'); scrim.className = 'bib-scrim'; scrim.hidden = true;
     const archivo = document.createElement('input'); archivo.type = 'file'; archivo.accept = '.json,application/json'; archivo.multiple = true; archivo.hidden = true;
@@ -178,7 +206,9 @@ const Biblioteca = (() => {
         lista += `<button class="bib-carp" data-carpeta="${esc(n)}" aria-expanded="${!!ab}"><span aria-hidden="true">${ab ? '▾' : '▸'}</span>${esc(n)}<span class="n">${carpetas[n].length}</span></button>${ab ? `<div class="bib-carpd">${carpetas[n].sort(orden).map(fila).join('')}</div>` : ''}`;
       }
       lista += sueltos.map(fila).join('');
-      if (!vis.length) lista = `<p class="bib-vacio">${lib.items.length ? 'Ningún ejercicio coincide con la búsqueda.' : 'Aún no has guardado ningún ejercicio. Prepara los datos y pulsa «Guardar el actual».'}</p>`;
+      if (!vis.length) lista = `<p class="bib-sec">Mis ejercicios</p><p class="bib-vacio">${lib.items.length ? 'Ningún ejercicio coincide con la búsqueda.' : 'Aún no has guardado ningún ejercicio. Prepara los datos y pulsa «Guardar el actual».'}</p>`;
+      const ejs = ejemplosHTML(q), abEj = q || !ui.cerradas[`${herramienta}/#ejemplos`];
+      if (ejs) lista += `<button class="bib-carp bib-sec-ej" data-carpeta="#ejemplos" aria-expanded="${!!abEj}">Ejercicios de ejemplo<span class="n" aria-hidden="true">${abEj ? '▾' : '▸'}</span></button>${abEj ? `<div class="bib-ejs">${ejs}</div>` : ''}`;
       const it = lib.items.find((x) => x.id === activo), carps = [...new Set(lib.items.map((x) => x.carpeta).filter(Boolean))];
       const f = form && (form.id ? lib.items.find((x) => x.id === form.id) : { titulo: ejemplo() || `Ejercicio ${lib.items.length + 1}`, carpeta: it?.carpeta || '' });
       panel.innerHTML = `<div class="bib-h"><b>Mis ejercicios</b><button class="bib-x" data-acc="cerrar" title="Cerrar" aria-label="Cerrar Mis ejercicios">×</button></div>
@@ -209,6 +239,12 @@ ${f ? `<div class="bib-form"><label>Título<input id="bib-t" value="${esc(f.titu
         case 'guardar': guardaForm(); break;
         case 'cancelar': form = null; pinta(); break;
         case 'abrir': if (it) carga(it); break;
+        case 'ejemplo': {
+          const s = selsEj()[+b.dataset.sel]; if (!s) break;
+          s.value = b.dataset.v; s.dispatchEvent(new Event('change', { bubbles: true }));
+          ponActivo(null); pinta(); if (window.innerWidth < ANCHO) abre(false);
+          break;
+        }
         case 'fijar': if (it) { it.fijado = !it.fijado; guardaLib(); pinta(); } break;
         case 'editar': if (it) { form = { id }; pinta(); } break;
         case 'exportar': if (it) descarga(nombreArchivo(it.titulo), archivoDe([it])); break;
@@ -230,6 +266,9 @@ ${f ? `<div class="bib-form"><label>Título<input id="bib-t" value="${esc(f.titu
     scrim.addEventListener('click', () => abre(false));
     window.addEventListener('resize', () => abre(panel.classList.contains('abierta')));
 
+    // el ejemplo marcado sigue al <select>: las apps lo vacían al tocar un dato
+    const sigue = (e) => { if (!panel.contains(e.target)) setTimeout(marcaEj); };
+    document.addEventListener('change', sigue); document.addEventListener('input', sigue);
     pinta(); abre(!!ui.abierta);
     return { get items() { return lib.items; }, abre, importa: (t) => { const n = importa(t); guardaLib(); pinta(); return n; }, archivoDe };
   }

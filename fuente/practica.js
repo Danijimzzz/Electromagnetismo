@@ -172,7 +172,9 @@ const Practica = (() => {
     const btn = document.createElement('button');
     btn.type = 'button'; btn.className = 'prac-btn'; btn.setAttribute('aria-pressed', 'false'); btn.title = 'Ejercicios con datos al azar: escribe tus resultados y compruébalos antes de ver el desarrollo';
     btn.innerHTML = '<span aria-hidden="true">✎</span> Modo práctica';
-    const tras = cab.querySelector('.bib-btn') || cab.querySelector('.a-inicio'); (tras ? tras.after(btn) : cab.prepend(btn));
+    // a la derecha de la miga (diseno.js); en páginas sin miga, en la cabecera
+    const der = document.querySelector('.miga-der'), tras = cab.querySelector('.bib-btn') || cab.querySelector('.a-inicio');
+    if (der) der.append(btn); else (tras ? tras.after(btn) : cab.prepend(btn));
 
     let activo = false, card = null, preguntas = [], tapados = [], resuelto = false;
     const layout = () => [...document.querySelectorAll('.layout')].find(visible);

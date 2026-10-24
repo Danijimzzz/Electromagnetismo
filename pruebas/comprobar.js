@@ -1268,13 +1268,21 @@ const Mates = require(path.join(fuente, 'mates.js'));
 }
 
 {
-  // todas las herramientas (y el simulador de electrostática) tienen el botón «← Inicio» que lleva a la portada
-  const antes = fallos, pags = Catalogo.asignaturas.flatMap((a) => a.herramientas.filter((h) => h.disponible).map((h) => `${a.clave}/${h.clave}/index.html`));
-  for (const f of pags) {
+  // todas las herramientas llevan la cabecera común (diseno.js), con «Inicio» y su asignatura marcada, y la miga
+  // «Asignatura › Herramienta»; el simulador de electrostática, con su propia maqueta, tiene el botón «← Inicio»
+  const antes = fallos, pags = Catalogo.asignaturas.flatMap((a) => a.herramientas.filter((h) => h.disponible).map((h) => [a, `${a.clave}/${h.clave}/index.html`]));
+  for (const [a, f] of pags) {
     const html = fs.readFileSync(path.join(publico, f), 'utf8');
-    if (!/<a [^>]*class="[^"]*a-inicio[^"]*"[^>]*href="\.\.\/\.\.\/"|<a [^>]*href="\.\.\/\.\.\/"[^>]*class="[^"]*a-inicio/.test(html)) mal(`${f}: falta el botón «← Inicio»`);
+    if (f === 'electromagnetismo/electrostatica/index.html') {
+      if (!/<a [^>]*class="[^"]*a-inicio[^"]*"[^>]*href="\.\.\/\.\.\/"|<a [^>]*href="\.\.\/\.\.\/"[^>]*class="[^"]*a-inicio/.test(html)) mal(`${f}: falta el botón «← Inicio»`);
+      continue;
+    }
+    if (!html.includes('<header class="top"><a class="logo" href="../../">') || !html.includes('<a href="../../">Inicio</a>')) mal(`${f}: falta la cabecera común con «Inicio»`);
+    if (!html.includes(`<a href="../../${a.clave}/" aria-current="page">`)) mal(`${f}: la cabecera no marca ${a.nombre}`);
+    if (!html.includes(`<a href="../">${a.nombre}</a>`) || !html.includes('class="miga-izq"')) mal(`${f}: falta la miga «${a.nombre} › …»`);
+    if (!html.includes(`--accent:${a.color}`)) mal(`${f}: no usa el color de ${a.nombre}`);
   }
-  if (fallos === antes) console.log(`  ✓ Botón «← Inicio» en las ${pags.length} herramientas`);
+  if (fallos === antes) console.log(`  ✓ Cabecera común, miga y color de la asignatura en las ${pags.length} herramientas`);
 }
 
 async function navegador() {

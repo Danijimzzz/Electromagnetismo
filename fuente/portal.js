@@ -158,6 +158,8 @@ const BUSCAR = `(() => {
     nada.hidden = !!hay;
     for (const a of document.querySelectorAll('.lado a[href^="#"]')) { const s = document.getElementById(a.hash.slice(1)); if (s?.classList.contains('asig')) a.hidden = s.hidden; }
   });
+  // el buscador de la cabecera de las herramientas llega con ?q=
+  const q0 = new URLSearchParams(location.search).get('q'); if (q0) { q.value = q0; q.dispatchEvent(new Event('input')); }
   // la barra lateral resalta la asignatura que está en pantalla
   const enlaces = [...document.querySelectorAll('.lado a[href^="#"]')], marca = (id) => { for (const a of enlaces) a.classList.toggle('on', a.hash === '#' + id); };
   // al pulsar un enlace se marca ese, aunque la página no pueda bajar tanto; al desplazarse a mano, la sección que está arriba
