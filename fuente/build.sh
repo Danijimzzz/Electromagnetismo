@@ -42,9 +42,9 @@ herramienta() {
     # botón «← Inicio» común a todas las herramientas, al principio de la cabecera
     printf '<style>.a-inicio { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; font-weight: 600; font-size: 13.5px; color: var(--accent); border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px 5px 10px; background: var(--panel); white-space: nowrap } .a-inicio:hover { border-color: var(--accent); text-decoration: none }</style>\n'
     sed 's|<header class="top">|<header class="top"><a class="a-inicio" href="../../" title="Volver a la página de inicio">← Inicio</a>|' "$dir/pagina.html"; echo '<script>'
-    for src in "$@" biblioteca.js; do grep -v "^if (typeof module" "$src"; echo; done
-    # barra lateral «Mis ejercicios» (no hace nada en las herramientas sin estado que guardar)
-    printf "Biblioteca.monta('%s');\n" "$dir"
+    for src in "$@" biblioteca.js practica.js; do grep -v "^if (typeof module" "$src"; echo; done
+    # barra lateral «Mis ejercicios» y modo práctica (no hacen nada en las herramientas sin datos que guardar o preguntar)
+    printf "Biblioteca.monta('%s');\nPractica.monta('%s', Biblioteca.CLAVES['%s']);\n" "$dir" "$dir" "$dir"
     echo '</script>'; printf '</html>\n'
   } > "$out"
 }
