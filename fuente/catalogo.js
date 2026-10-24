@@ -16,6 +16,7 @@ const Catalogo = {
         { clave: 'magnetostatica', nombre: 'Magnetostática (Biot-Savart)', icono: 'B', disponible: true, desc: 'B de hilos, espiras, arcos, solenoides y toroides.', buscar: 'campo magnético biot savart ampère espira solenoide toroide' },
         { clave: 'condensadores', nombre: 'Dieléctricos y condensadores', icono: 'C', disponible: true, desc: 'Planos, cilíndricos y esféricos con capas de dieléctrico: capacidad, energía, D, P y polarización.', buscar: 'capacidad condensador dieléctrico polarización' },
         { clave: 'induccion', nombre: 'Autoinducción e inducción mutua', icono: 'L', disponible: true, desc: 'L de solenoides, toroides y coaxiales, M entre circuitos, energía magnética y circuito RL.', buscar: 'inductancia autoinducción inducción mutua faraday bobina circuito rl henrio' },
+        { clave: 'faraday', nombre: 'Inducción: Faraday y Lenz', icono: 'ε', disponible: true, desc: 'Fem inducida en una barra, un alternador, un flujo que cambia y una espira que cruza un campo, con el sentido de Lenz.', buscar: 'inducción electromagnética ley de faraday lenz fem inducida flujo magnético weber barra raíles alternador espira giratoria corriente inducida' },
       ],
     },
     {

@@ -65,6 +65,8 @@ if [ "$1" != privado ]; then
     version.js calorimetria/fisica.js calorimetria/app.js
   herramienta induccion ../publico/electromagnetismo/induccion/index.html "Autoinducción e inducción mutua" "Coeficiente de autoinducción de solenoides, toroides y cables coaxiales, inducción mutua, energía magnética y circuito RL, paso a paso" \
     version.js induccion/fisica.js induccion/app.js
+  herramienta faraday ../publico/electromagnetismo/faraday/index.html "Inducción: Faraday y Lenz" "Calculadora de inducción electromagnética: fem inducida con la ley de Faraday y sentido de la corriente con la ley de Lenz en una barra sobre raíles, un alternador, un flujo que cambia y una espira que cruza un campo" \
+    version.js faraday/fisica.js faraday/app.js
   herramienta matrices ../publico/matematicas/matrices/index.html "Matrices paso a paso" "Calculadora de matrices con fracciones exactas y complejos: determinante, inversa, rango, Gauss-Jordan y valores y vectores propios, paso a paso" \
     version.js matematicas/algebra.js matrices/calculo.js matrices/app.js
   herramienta sistemas ../publico/matematicas/sistemas/index.html "Sistemas de ecuaciones lineales" "Calculadora de sistemas de ecuaciones paso a paso: Rouché-Frobenius, Gauss, Gauss-Jordan, Cramer y matriz inversa, en paramétricas y con números complejos" \
