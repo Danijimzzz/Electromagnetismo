@@ -93,6 +93,8 @@ if [ "$1" != privado ]; then
     version.js mates.js matematicas/expresion.js edos/calculo.js edos/app.js
   herramienta laplace ../publico/matematicas/laplace/index.html "Transformada de Laplace" "Calculadora de la transformada de Laplace paso a paso: directa con la tabla y sus propiedades, inversa por fracciones simples con polos dobles y complejos, valores inicial y final, y ecuaciones diferenciales con condiciones iniciales, con el plano s" \
     version.js mates.js matematicas/expresion.js laplace/calculo.js laplace/app.js
+  herramienta derivadas ../publico/matematicas/derivadas/index.html "Derivadas e integrales" "Calculadora de derivadas e integrales paso a paso: regla de cada derivada, recta tangente y puntos críticos, primitivas por tabla, sustitución, partes y fracciones simples, e integral definida con Barrow y el área" \
+    version.js mates.js matematicas/expresion.js laplace/calculo.js derivadas/calculo.js derivadas/app.js
   herramienta campos ../publico/matematicas/campos/index.html "Campos vectoriales" "Calculadora de campos vectoriales: gradiente y derivada direccional, laplaciano, divergencia y rotacional, potencial de un campo conservativo, integral de línea y teorema de Green, paso a paso y con la gráfica del campo" \
     version.js mates.js matematicas/expresion.js campos/calculo.js campos/app.js
   herramienta estadistica ../publico/estadistica/distribuciones/index.html "Distribuciones de probabilidad" "Calculadora de la normal, binomial, Poisson, t de Student y chi cuadrado con el área sombreada: probabilidades, cuantiles y valores críticos paso a paso" \

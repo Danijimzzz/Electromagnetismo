@@ -48,7 +48,8 @@ const Mates = (() => {
       let prevOp = true;
       while (p < tk.length && !(cierre && es(cierre))) {
         const k = ver();
-        if (k.t === 's' && OPS.includes(k.v)) {
+        // ∫ con límites lleva sus subíndices: ∫_a^b
+        if (k.t === 's' && OPS.includes(k.v) && !(k.v === '∫' && tk[p + 1] && tk[p + 1].t === 's' && (tk[p + 1].v === '_' || tk[p + 1].v === '^'))) {
           p++;
           const v = k.v === '-' ? '−' : k.v;
           // un signo detrás de otro operador (o al principio) es de número: = −19,28
