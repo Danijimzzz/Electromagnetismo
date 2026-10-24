@@ -1,0 +1,194 @@
+/* =====================================================================
+   Ciclos termodinámicos: interfaz (modo, datos, resultados, tabla de
+   estados y tramos, diagrama p-V con un punto que recorre el ciclo y el
+   cilindro con el émbolo, o el esquema de flujos de una máquina, y
+   desarrollo). El cálculo está en ciclos/fisica.js (Ciclos).
+   ===================================================================== */
+(() => {
+  const $ = (q) => document.querySelector(q);
+  const C = Ciclos, f = C.f, CLAVE = 'ciclos-v1';
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const copia = (o) => JSON.parse(JSON.stringify(o));
+  const txt = (h) => String(h).replace(/<sup>(.*?)<\/sup>/g, (_, e) => e.replace(/−/g, '⁻').replace(/\d/g, (d) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d])).replace(/<[^>]+>/g, '');
+  const MODOS = [['carnot', 'Ciclo de Carnot'], ['otto', 'Ciclo Otto (gasolina)'], ['diesel', 'Ciclo Diesel'], ['maquina', 'Máquina, frigorífico o bomba de calor']];
+
+  let sc = copia(C.ejemplos[0].sc);
+  try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && MODOS.some(([k]) => k === g.modo)) sc = g; } catch (e) { /* sin almacenamiento */ }
+  const guarda = () => { try { localStorage.setItem(CLAVE, JSON.stringify(sc)); } catch (e) { /* sin almacenamiento */ } };
+  let sol = null, col = {}, anda = true;
+
+  /* ---------- Formulario ---------- */
+  const fila = (k, nom, un) => `<label for="f-${k}">${nom}${un ? ` <small>${un}</small>` : ''}</label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc[k] ?? '')}" inputmode="decimal" autocomplete="off">`;
+  const opciones = (k, lista) => lista.map(([v, t]) => `<option value="${v}"${sc[k] === v ? ' selected' : ''}>${t}</option>`).join('');
+  const elige = (k, nom, lista) => `<label for="f-${k}">${nom}</label><select id="f-${k}" class="in" data-k="${k}">${opciones(k, lista)}</select>`;
+  const sep = (t) => `<div class="sep">${t}</div>`;
+  const gas = () => elige('gas', 'Gas', [['di', 'Diatómico (aire), γ = 1,4'], ['mono', 'Monoatómico, γ = 5/3']]);
+  const NOTAS = {
+    carnot: 'El ciclo empieza en el estado 1 con una expansión isoterma a la temperatura del foco caliente, de V₁ a V₂.',
+    otto: 'La relación de compresión es r = V₁/V₂. La combustión se da con la temperatura que alcanza el gas o con el calor que recibe.',
+    diesel: 'La relación de corte es V₃/V₂: cuánto se expande el gas mientras se inyecta el combustible.',
+    maquina: 'Escribe dos de los tres (Q del foco caliente, Q del foco frío y W) y deja el otro vacío. Con las temperaturas de los focos se compara con Carnot.',
+  };
+  function formulario() {
+    let h = elige('modo', 'Qué calcular', MODOS);
+    if (sc.modo === 'carnot') h += gas() + fila('Tc', 'Temperatura del foco caliente', 'K') + fila('Tf', 'Temperatura del foco frío', 'K') + fila('n', 'Moles de gas', 'mol') + fila('V1', 'Volumen inicial V₁', 'L') + fila('V2', 'Volumen tras la isoterma V₂', 'L');
+    else if (sc.modo === 'otto') {
+      h += gas() + fila('r', 'Relación de compresión r') + fila('T1', 'Temperatura inicial', 'K') + fila('P1', 'Presión inicial', 'kPa') + fila('V1', 'Volumen inicial (cilindrada)', 'L');
+      h += elige('datos', 'Combustión', [['T3', 'Conozco la temperatura máxima'], ['Q', 'Conozco el calor que recibe']]) + (sc.datos === 'Q' ? fila('Q', 'Calor de la combustión', 'J') : fila('T3', 'Temperatura máxima T₃', 'K'));
+    } else if (sc.modo === 'diesel') h += gas() + fila('r', 'Relación de compresión r') + fila('rc', 'Relación de corte r<sub>c</sub>') + fila('T1', 'Temperatura inicial', 'K') + fila('P1', 'Presión inicial', 'kPa') + fila('V1', 'Volumen inicial', 'L');
+    else {
+      h += elige('tipo', 'Qué es', [['motor', 'Una máquina térmica (motor)'], ['frigorifico', 'Un frigorífico'], ['bomba', 'Una bomba de calor']]);
+      h += fila('Qc', 'Calor del foco caliente Q<sub>c</sub>', 'J') + fila('Qf', 'Calor del foco frío Q<sub>f</sub>', 'J') + fila('W', 'Trabajo W', 'J') + sep('Opcional') + fila('Tc', 'Temperatura del foco caliente', 'K') + fila('Tf', 'Temperatura del foco frío', 'K');
+    }
+    $('#campos').innerHTML = h;
+    $('#nota').textContent = NOTAS[sc.modo];
+  }
+  const vacioC = (v) => v === undefined || v === null || String(v).trim() === '';
+  $('#campos').addEventListener('input', (e) => { const t = e.target; if (t.tagName !== 'INPUT') return; sc[t.dataset.k] = t.value; $('#ejemplos').value = ''; calcula(); });
+  $('#campos').addEventListener('change', (e) => {
+    const t = e.target;
+    if (t.tagName !== 'SELECT') return;
+    sc[t.dataset.k] = t.value;
+    if (t.dataset.k === 'modo') sc = copia(C.ejemplos.find((x) => x.sc.modo === t.value).sc);
+    else { const ej = C.ejemplos.find((x) => x.sc.modo === sc.modo && x.sc[t.dataset.k] === t.value); if (ej) for (const [k, v] of Object.entries(ej.sc)) if (vacioC(sc[k])) sc[k] = v; }
+    $('#ejemplos').value = ''; formulario(); calcula();
+  });
+
+  /* ---------- Ejemplos ---------- */
+  const sel = $('#ejemplos');
+  sel.innerHTML = '<option value="">Ejemplos…</option>' + C.ejemplos.map((e) => `<option value="${e.clave}">${e.nombre}</option>`).join('');
+  sel.addEventListener('change', () => { if (sel.value) abrirEjemplo(sel.value); });
+  function abrirEjemplo(clave) {
+    const e = C.ejemplos.find((x) => x.clave === clave);
+    if (!e) return;
+    sc = copia(e.sc);
+    formulario(); calcula(); sel.value = clave;
+  }
+
+  /* ---------- Cálculo ---------- */
+  const dato = (t, v) => `<div><span>${t}</span><b>${v}</b></div>`;
+  const NOMT = { isoterma: 'isoterma', adiabatica: 'adiabática', isocora: 'isocora', isobara: 'isobara' };
+  function calcula() {
+    const err = $('#error');
+    try { sol = C.resolver(sc); } catch (e) {
+      sol = null; err.textContent = e.message; err.hidden = false;
+      $('#resumen').innerHTML = ''; $('#pasos').innerHTML = ''; $('#leyenda').textContent = ''; $('#tablas').hidden = true;
+      dibuja(); return;
+    }
+    err.hidden = true; guarda();
+    let h, ley;
+    if (sol.modo === 'maquina') {
+      h = dato(sol.nomEf, sol.tipo === 'motor' ? `η = ${f(100 * sol.ef, 3)} %` : `COP = ${f(sol.ef, 3)}`) + dato('Trabajo', `W = ${f(sol.W)} J`) + dato('Calor del foco caliente', `Q<sub>c</sub> = ${f(sol.Qc)} J`) + dato('Calor del foco frío', `Q<sub>f</sub> = ${f(sol.Qf)} J`) + (sol.efC !== null ? dato('Límite de Carnot', sol.tipo === 'motor' ? `η<sub>C</sub> = ${f(100 * sol.efC, 3)} %` : `COP<sub>C</sub> = ${f(sol.efC, 3)}`) + dato('¿Es posible?', sol.posible ? 'sí' : 'no: supera a Carnot') : '');
+      ley = 'El grosor de cada flecha es proporcional a la energía que pasa en cada ciclo.';
+      $('#tablas').hidden = true;
+    } else {
+      h = dato('Rendimiento', `η = ${f(100 * sol.eta, 3)} %`) + dato('Trabajo neto', `W = ${f(sol.W)} J`) + dato('Calor absorbido', `Q<sub>abs</sub> = ${f(sol.Qabs)} J`) + dato('Calor cedido', `Q<sub>ced</sub> = ${f(sol.Qced)} J`) + dato('Carnot entre T<sub>máx</sub> y T<sub>mín</sub>', `η<sub>C</sub> = ${f(100 * sol.etaC, 3)} %`);
+      ley = 'El punto recorre el ciclo y el cilindro muestra el émbolo y la temperatura del gas. El área encerrada es el trabajo neto.';
+      $('#estados').innerHTML = '<tr><th>Estado</th><th>P (kPa)</th><th>V (L)</th><th>T (K)</th></tr>' + sol.est.map((e) => `<tr><td>${e.nom}</td><td>${f(e.P / 1000)}</td><td>${f(e.V * 1000)}</td><td>${f(e.T)}</td></tr>`).join('');
+      $('#tramos').innerHTML = '<tr><th>Tramo</th><th>Proceso</th><th>W (J)</th><th>Q (J)</th><th>ΔU (J)</th></tr>' + sol.tramos.map((t) => `<tr><td>${t.nom}</td><td>${NOMT[t.tipo]}</td><td>${f(t.W)}</td><td>${f(t.Q)}</td><td>${f(t.U)}</td></tr>`).join('') + `<tr class="tot"><td>Ciclo</td><td></td><td>${f(sol.W)}</td><td>${f(sol.W)}</td><td>0</td></tr>`;
+      $('#tablas').hidden = false;
+    }
+    $('#resumen').innerHTML = h; $('#leyenda').textContent = ley;
+    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
+    tA = 0; dibuja();
+  }
+
+  /* ---------- Animación ---------- */
+  $('#play').addEventListener('click', () => { anda = !anda; $('#play').textContent = anda ? '⏸ Pausa' : '▶ Seguir'; });
+  function colores() { const cs = getComputedStyle(document.documentElement); for (const k of ['--ink', '--muted', '--line', '--accent', '--bg', '--peso', '--normal', '--roz', '--suelo', '--cuerpo', '--panel', '--tension']) col[k] = cs.getPropertyValue(k).trim(); }
+  function texto(g, x, y, t, color = col['--ink'], al = 'center', peso = '') { g.font = `${peso}12px "IBM Plex Sans", system-ui, sans-serif`; g.fillStyle = color; g.textAlign = al; g.textBaseline = 'middle'; g.fillText(t, x, y); }
+  function flecha(g, x, y, dx, dy, color, grosor = 2) {
+    const l = Math.hypot(dx, dy); if (l < 4) return;
+    const ux = dx / l, uy = dy / l, cab = 6 + grosor * 1.6;
+    g.strokeStyle = color; g.fillStyle = color; g.lineWidth = grosor; g.lineCap = 'butt'; g.beginPath(); g.moveTo(x, y); g.lineTo(x + dx - ux * cab, y + dy - uy * cab); g.stroke();
+    g.beginPath(); g.moveTo(x + dx, y + dy); g.lineTo(x + dx - ux * cab - uy * cab * 0.6, y + dy - uy * cab + ux * cab * 0.6); g.lineTo(x + dx - ux * cab + uy * cab * 0.6, y + dy - uy * cab - ux * cab * 0.6); g.closePath(); g.fill(); g.lineCap = 'round';
+  }
+  const punto = (g, x, y, r, color) => { g.fillStyle = color; g.beginPath(); g.arc(x, y, r, 0, 2 * Math.PI); g.fill(); };
+  let tA = 0;
+  // un punto del tramo t con s de 0 a 1: V y P según el tipo de proceso
+  function enTramo(t, s) {
+    const a = sol.est.find((e) => e.nom === t.de), b = sol.est.find((e) => e.nom === t.a);
+    if (t.tipo === 'isocora') return { V: a.V, P: a.P + (b.P - a.P) * s };
+    const V = a.V + (b.V - a.V) * s;
+    if (t.tipo === 'isobara') return { V, P: a.P };
+    if (t.tipo === 'isoterma') return { V, P: (a.P * a.V) / V };
+    return { V, P: a.P * (a.V / V) ** sol.G.gam };
+  }
+  // temperatura a color, del azul al rojo
+  const colorT = (T) => { const s = Math.max(0, Math.min(1, (T - sol.Tmin) / (sol.Tmax - sol.Tmin || 1))); return `rgb(${Math.round(60 + 180 * s)}, ${Math.round(110 - 40 * s)}, ${Math.round(210 - 160 * s)})`; };
+
+  function dibuja() {
+    const c = $('#escena'), dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
+    if (!w || !h) return;
+    if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
+    const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h); g.lineCap = 'round'; g.lineJoin = 'round';
+    if (!sol) return;
+    if (!col['--ink']) colores();
+    if (sol.modo === 'maquina') return flujos(g, w, h);
+    // diagrama p-V
+    const ml = 56, mt = 18, mb = 34, wd = Math.min(w * 0.66, w - 150), mr = w - wd;
+    const Vmax = Math.max(...sol.est.map((e) => e.V)) * 1.08, Pmax = Math.max(...sol.est.map((e) => e.P)) * 1.08;
+    const X = (V) => ml + (V / Vmax) * (wd - ml - 10), Y = (P) => mt + (1 - P / Pmax) * (h - mt - mb);
+    g.strokeStyle = col['--muted']; g.lineWidth = 1; g.beginPath(); g.moveTo(ml, mt); g.lineTo(ml, h - mb); g.lineTo(wd, h - mb); g.stroke();
+    texto(g, ml - 8, mt, 'P (kPa)', col['--muted'], 'right'); texto(g, wd, h - mb + 16, 'V (L)', col['--muted'], 'right');
+    for (const k of [0.5, 1]) { texto(g, ml - 6, Y(Pmax * k / 1.08), txt(f((Pmax * k) / 1.08 / 1000, 3)), col['--muted'], 'right'); texto(g, X((Vmax * k) / 1.08), h - mb + 14, txt(f((Vmax * k) / 1.08 * 1000, 3)), col['--muted']); }
+    // área del trabajo neto
+    g.beginPath();
+    sol.tramos.forEach((t, i) => { for (let k = 0; k <= 40; k++) { const q = enTramo(t, k / 40); (i || k ? g.lineTo : g.moveTo).call(g, X(q.V), Y(q.P)); } });
+    g.closePath(); g.fillStyle = col['--accent']; g.globalAlpha = 0.12; g.fill(); g.globalAlpha = 1;
+    sol.tramos.forEach((t) => {
+      g.strokeStyle = t.Q > 1e-9 ? col['--peso'] : t.Q < -1e-9 ? col['--tension'] : col['--ink']; g.lineWidth = 2.4; g.beginPath();
+      for (let k = 0; k <= 40; k++) { const q = enTramo(t, k / 40); k ? g.lineTo(X(q.V), Y(q.P)) : g.moveTo(X(q.V), Y(q.P)); }
+      g.stroke();
+      const m = enTramo(t, 0.5); flecha(g, X(m.V), Y(m.P), (X(enTramo(t, 0.56).V) - X(m.V)) * 3, (Y(enTramo(t, 0.56).P) - Y(m.P)) * 3, g.strokeStyle, 1.5);
+    });
+    for (const e of sol.est) { punto(g, X(e.V), Y(e.P), 4, col['--ink']); texto(g, X(e.V) + 10, Y(e.P) - 10, e.nom, col['--ink'], 'left', '600 '); }
+    // punto que recorre el ciclo: 2 s por tramo
+    const n = sol.tramos.length, u = (tA / 2) % n, i = Math.floor(u), t = sol.tramos[i], q = enTramo(t, u - i), T = (q.P * q.V) / (sol.n * C.R);
+    punto(g, X(q.V), Y(q.P), 6.5, colorT(T));
+    // cilindro con el émbolo
+    const cx = wd + 30, cw = Math.min(90, mr - 60), cb = h - mb, ch = h - mt - mb - 30, alto = (q.V / Vmax) * ch;
+    g.fillStyle = colorT(T); g.globalAlpha = 0.6; g.fillRect(cx, cb - alto, cw, alto); g.globalAlpha = 1;
+    g.strokeStyle = col['--suelo']; g.lineWidth = 3; g.beginPath(); g.moveTo(cx, cb - ch - 10); g.lineTo(cx, cb); g.lineTo(cx + cw, cb); g.lineTo(cx + cw, cb - ch - 10); g.stroke();
+    g.fillStyle = col['--ink']; g.fillRect(cx + 2, cb - alto - 8, cw - 4, 8); g.fillRect(cx + cw / 2 - 3, cb - alto - 8 - 30, 6, 30);
+    texto(g, cx + cw / 2, cb + 14, `${txt(f(T, 3))} K`, col['--ink'], 'center', '600 ');
+    if (t.Q > 1e-9) { flecha(g, cx + cw / 2, cb + 40, 0, -22, col['--peso'], 3); texto(g, cx + cw + 8, cb - 10, 'entra Q', col['--peso'], 'left'); }
+    else if (t.Q < -1e-9) { flecha(g, cx + cw + 4, cb - alto / 2, 26, 0, col['--tension'], 3); texto(g, cx + cw + 8, cb - alto / 2 - 14, 'sale Q', col['--tension'], 'left'); }
+    else texto(g, cx + cw + 8, cb - 10, 'aislado', col['--muted'], 'left');
+    texto(g, cx, mt, `${t.nom}: ${NOMT[t.tipo]}`, col['--ink'], 'left', '600 ');
+  }
+  // máquina: focos y flechas de energía
+  function flujos(g, w, h) {
+    const cx = w / 2, fw = Math.min(260, w * 0.5), yC = 30, yF = h - 50, yM = h / 2, E = Math.max(sol.Qc, sol.Qf, sol.W), gr = (x) => 3 + (22 * x) / E;
+    const motor = sol.tipo === 'motor';
+    g.fillStyle = col['--peso']; g.globalAlpha = 0.2; g.fillRect(cx - fw / 2, yC - 20, fw, 40); g.globalAlpha = 1;
+    g.fillStyle = col['--tension']; g.globalAlpha = 0.2; g.fillRect(cx - fw / 2, yF - 20, fw, 40); g.globalAlpha = 1;
+    texto(g, cx, yC, `Foco caliente${sol.Tc ? ` · ${txt(f(sol.Tc))} K` : ''}`, col['--peso'], 'center', '600 ');
+    texto(g, cx, yF, `Foco frío${sol.Tf ? ` · ${txt(f(sol.Tf))} K` : ''}`, col['--tension'], 'center', '600 ');
+    punto(g, cx, yM, 28, col['--cuerpo']); texto(g, cx, yM, motor ? 'motor' : sol.tipo === 'frigorifico' ? 'frigorífico' : 'bomba', col['--ink'], 'center', '600 ');
+    const s = (tA * 0.6) % 1;
+    if (motor) {
+      flecha(g, cx, yC + 22, 0, yM - 30 - yC - 22, col['--peso'], gr(sol.Qc)); flecha(g, cx, yM + 30, 0, yF - 22 - yM - 30, col['--tension'], gr(sol.Qf)); flecha(g, cx + 30, yM, w * 0.22, 0, col['--normal'], gr(sol.W));
+      punto(g, cx, yC + 22 + s * (yM - 52 - yC), 3, col['--panel']); punto(g, cx, yM + 30 + s * (yF - 52 - yM), 3, col['--panel']); punto(g, cx + 30 + s * w * 0.2, yM, 3, col['--panel']);
+    } else {
+      flecha(g, cx, yF - 22, 0, -(yF - 22 - yM - 30), col['--tension'], gr(sol.Qf)); flecha(g, cx, yM - 30, 0, -(yM - 30 - yC - 22), col['--peso'], gr(sol.Qc)); flecha(g, cx + 30 + w * 0.22, yM, -w * 0.22, 0, col['--normal'], gr(sol.W));
+      punto(g, cx, yF - 22 - s * (yF - 52 - yM), 3, col['--panel']); punto(g, cx, yM - 30 - s * (yM - 52 - yC), 3, col['--panel']); punto(g, cx + 30 + w * 0.22 - s * w * 0.2, yM, 3, col['--panel']);
+    }
+    texto(g, cx + 18, (yC + yM) / 2, `Q_c = ${txt(f(sol.Qc))} J`.replace('Q_c', 'Qc'), col['--peso'], 'left');
+    texto(g, cx + 18, (yM + yF) / 2, `Qf = ${txt(f(sol.Qf))} J`, col['--tension'], 'left');
+    texto(g, cx + 40 + w * 0.11, yM - 22, `W = ${txt(f(sol.W))} J`, col['--normal'], 'center');
+    if (sol.posible === false) texto(g, 14, h - 14, '¡Imposible! Supera el rendimiento de Carnot', col['--peso'], 'left', '700 ');
+  }
+  let ultimo = performance.now();
+  function bucle() {
+    const ahora = performance.now(), dt = Math.min(0.1, (ahora - ultimo) / 1000); ultimo = ahora;
+    if (anda && sol) { tA += dt; dibuja(); }
+    requestAnimationFrame(bucle);
+  }
+  window.addEventListener('resize', dibuja);
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { colores(); dibuja(); });
+
+  const ver = $('#ver'); if (ver) ver.textContent = Version.de('ciclos').current;
+  formulario(); colores(); calcula(); requestAnimationFrame(bucle);
+  window.CiclosApp = { abrirEjemplo, resultado: () => sol && { modo: sol.modo, eta: sol.eta, W: sol.W, ef: sol.ef, posible: sol.posible }, estado: () => copia(sc), pausa: () => { anda = false; } };
+})();
