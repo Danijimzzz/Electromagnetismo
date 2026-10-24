@@ -7,7 +7,7 @@
      node diseno.js ASIGNATURA < pagina.html > página con el diseño común
    Las reglas van después del <style> de cada página, así que mandan sobre él.
    ===================================================================== */
-const Catalogo = require('./catalogo.js');
+const Catalogo = require('./catalogo.js'), Tema = require('./tema.js');
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 // los mismos tonos neutros que la portada; el acento es el de la asignatura
@@ -40,13 +40,13 @@ h1 { font:600 24px/1.25 var(--f-ui) }
 body.bib-ejemplos select[id^="ejemplo"] { display:none }
 @media (max-width:700px) { header.top form { display:none } h1 { font-size:21px }
   .miga-izq, .miga-der, .miga::after { order:-1 } .miga::after { content:''; flex-basis:100%; height:0 } }
-`;
+${Tema.CSS}`;
 
 function piezas(a, nombre) {
   const [m1, m2] = Catalogo.marca;
   const nav = Catalogo.asignaturas.map((x) => `<a href="../../${x.clave}/"${x === a ? ' aria-current="page"' : ''}>${esc(x.nombre)}</a>`).join('');
   const cab = `<header class="top"><a class="logo" href="../../">${m1}<i>${m2}</i></a><nav aria-label="Asignaturas"><a href="../../">Inicio</a>${nav}</nav>`
-    + `<form action="../../" role="search"><input class="buscar" type="search" name="q" placeholder="Buscar: Biot-Savart, molaridad…" aria-label="Buscar herramientas"></form></header>`;
+    + `<form action="../../" role="search"><input class="buscar" type="search" name="q" placeholder="Buscar: Biot-Savart, molaridad…" aria-label="Buscar herramientas"></form>${Tema.BOTON}</header>`;
   const miga = `<nav class="miga" aria-label="Estás en"><span class="miga-izq"></span><span class="miga-ico" aria-hidden="true">${esc(a.icono)}</span><a href="../">${esc(a.nombre)}</a><span aria-hidden="true">›</span><span>${esc(nombre)}</span><span class="miga-der"></span></nav>`;
   return { cab, miga };
 }
@@ -96,7 +96,10 @@ function aplicaElectrostatica(html) {
 }
 
 function aplica(html, clave) {
-  if (clave === 'electrostatica') return aplicaElectrostatica(html);
+  return `<script>${Tema.SCRIPT}</script>\n` + (clave === 'electrostatica' ? aplicaElectrostatica(html) : aplicaHerramienta(html, clave));
+}
+
+function aplicaHerramienta(html, clave) {
   const a = Catalogo.asignaturas.find((x) => x.clave === clave);
   if (!a) throw new Error(`diseno.js: no hay asignatura «${clave}» en catalogo.js`);
   const m = html.match(/<header class="top">.*<\/header>/);
