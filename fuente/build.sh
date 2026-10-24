@@ -77,6 +77,8 @@ if [ "$1" != privado ]; then
     version.js mates.js faraday/fisica.js faraday/app.js
   herramienta fuerza ../publico/electromagnetismo/fuerza/index.html "Fuerza magnética" "Calculadora de la fuerza magnética: fuerza de Lorentz con vectores, radio, periodo y hélice de una carga en un campo, selector de velocidades, espectrómetro de masas, ciclotrón, fuerza sobre un hilo y entre hilos paralelos, con animación y paso a paso" \
     version.js mates.js fuerza/fisica.js fuerza/app.js
+  herramienta ondas-em ../publico/electromagnetismo/ondas-em/index.html "Ondas electromagnéticas planas" "Calculadora de ondas electromagnéticas planas: longitud de onda, número de onda, campo B y su dirección, expresión de E y B, intensidad, presión de radiación y profundidad de penetración" \
+    version.js mates.js ondas-em/fisica.js ondas-em/app.js
   herramienta matrices ../publico/matematicas/matrices/index.html "Matrices paso a paso" "Calculadora de matrices con fracciones exactas y complejos: determinante, inversa, rango, Gauss-Jordan y valores y vectores propios, paso a paso" \
     version.js mates.js matematicas/algebra.js matrices/calculo.js matrices/app.js
   herramienta sistemas ../publico/matematicas/sistemas/index.html "Sistemas de ecuaciones lineales" "Calculadora de sistemas de ecuaciones paso a paso: Rouché-Frobenius, Gauss, Gauss-Jordan, Cramer y matriz inversa, en paramétricas y con números complejos" \
