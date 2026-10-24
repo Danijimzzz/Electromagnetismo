@@ -2330,6 +2330,13 @@ async function navegador() {
       await page.fill('#buscar', 'biot savart');
       const vis = await page.locator('[data-buscar]:visible').count();
       if (vis !== 1) mal(`portada: buscar «biot savart» deja ${vis} herramientas, se esperaba 1`);
+      await page.fill('#buscar', '');
+      // barra lateral: un enlace por asignatura que lleva a su sección y queda marcado
+      const lado = await page.locator('.lado a[href^="#"]').evaluateAll((as) => as.map((a) => a.hash.slice(1)));
+      for (const a of Catalogo.asignaturas) if (!lado.includes(a.clave)) mal(`portada: la barra lateral no enlaza ${a.nombre}`);
+      for (const id of lado) if (!(await page.locator(`[id="${id}"]`).count())) mal(`portada: la barra lateral enlaza #${id}, que no existe`);
+      await page.click('.lado a[href="#quimica"]');
+      if (!(await page.locator('.lado a.on[href="#quimica"]').count())) mal('portada: pulsar Química en la barra lateral no la marca');
     }
     await page.close();
     if (consola.length) mal(`${f}: consola del navegador:\n      ` + consola.join('\n      '));
