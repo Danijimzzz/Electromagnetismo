@@ -982,7 +982,7 @@ const Intervalos = (() => {
   const elige = (k, nom, lista) => `<label for="f-${k}">${nom}</label><select id="f-${k}" class="in" data-k="${k}">${lista.map(([v, t]) => `<option value="${v}"${String(sc[k]) === v ? ' selected' : ''}>${t}</option>`).join('')}</select>`;
   const area = (k, nom) => `<label for="f-${k}" class="ancho">${nom} <small>separados por espacios, «;» o en líneas</small></label><textarea id="f-${k}" class="in ancho" data-k="${k}" rows="4" spellcheck="false" autocomplete="off">${esc(sc[k] ?? '')}</textarea>`;
   const sep = (t) => `<div class="sep">${t}</div>`;
-  const FUENTE = [['resumen', 'x̄, s y n'], ['datos', 'La lista de valores']];
+  const FUENTE = [['resumen', 'Un resumen (x̄, s, n)'], ['datos', 'La lista de valores']];
   const TIPO_S = [['cuasi', 'Cuasidesviación (con n − 1)'], ['muestral', 'Desviación de la muestra (con n)']];
   const nivelF = () => fila('nivel', 'Nivel de confianza', '%');
   const NOTAS = {
@@ -1145,7 +1145,10 @@ const Intervalos = (() => {
     g.fillStyle = col['--muted']; g.textAlign = 'left'; g.textBaseline = 'top'; g.fillText(nom, mL, 4);
     g.fillStyle = col['--accent']; g.textAlign = 'center'; g.font = `600 13px ${FUENTE_UI}`; g.fillText(`1 − α = ${txt(f(sol.c))}`, X((lo + hi) / 2), Y(D.pdf(P, (lo + hi) / 2)) * 0.5 + Y(0) * 0.5);
     g.font = `12px ${FUENTE_UI}`; g.fillStyle = col['--mal'];
-    const ya = Y(0) - 16; g.fillText(`α/2 = ${txt(f(al / 2))}`, Math.max(X(x0) + 40, X(lo) - 46), ya); g.fillText(`α/2 = ${txt(f(al / 2))}`, Math.min(X(x1) - 40, X(hi) + 46), ya);
+    // α/2 fuera de las líneas de los valores críticos, a media altura
+    const ya = mT + (h - mT - mB) * 0.6, et = `α/2 = ${txt(f(al / 2))}`, an = g.measureText(et).width;
+    if (X(lo) - 8 - an >= mL) { g.textAlign = 'right'; g.fillText(et, X(lo) - 8, ya); } else { g.textAlign = 'left'; g.fillText(et, mL, ya - 18); }
+    if (X(hi) + 8 + an <= w - mR) { g.textAlign = 'left'; g.fillText(et, X(hi) + 8, ya); } else { g.textAlign = 'right'; g.fillText(et, w - mR, ya - 18); }
   }
   // 100 intervalos de muestras distintas: los que no contienen el valor real, en rojo
   function simulacion() {
