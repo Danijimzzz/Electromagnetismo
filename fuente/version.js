@@ -11,6 +11,7 @@
 const Version = (() => {
   const registros = {
     web: [
+      { v: '0.44.1', fecha: '2026-10-24', cambios: ['El simulador de electrostática también tiene el diseño común: la barra de arriba con las asignaturas y el buscador, la ruta «Electromagnetismo › Electrostática» y el color de Electromagnetismo.'] },
       { v: '0.44', fecha: '2026-10-24', cambios: ['Todas las herramientas tienen el mismo diseño: arriba, la misma barra que la portada, con las asignaturas y el buscador, y cada herramienta lleva el color de su asignatura. Encima del título se ve en qué asignatura estás, con Mis ejercicios a la izquierda y Modo práctica a la derecha.', 'Mis ejercicios: la barra lateral también tiene los ejercicios de ejemplo de cada herramienta, como en el simulador de electrostática.'] },
       { v: '0.43', fecha: '2026-10-24', cambios: ['Nueva herramienta: Derivadas e integrales, en Matemáticas.'] },
       { v: '0.42', fecha: '2026-10-24', cambios: ['Nueva herramienta: Transformada de Laplace, en Matemáticas.'] },

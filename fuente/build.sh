@@ -19,7 +19,8 @@ if [ "$1" = privado ]; then presets=../privado/tema3-pdf.js; out=${2:?falta el a
     printf '<meta property="og:image" content="https://electromagnetismo-two.vercel.app/og.png">\n<meta name="twitter:card" content="summary_large_image">\n'
   fi
   # Las líneas data-solo-web (enlaces a las páginas legales de publico/) no van en la versión privada.
-  if [ "$1" = privado ]; then grep -v 'data-solo-web' shell.html; else cat shell.html; fi; echo '<script>'
+  # en la web, el diseño común de las herramientas (diseno.js); en la versión privada, sin enlaces a la web
+  if [ "$1" = privado ]; then grep -v 'data-solo-web' shell.html; else node diseno.js electrostatica < shell.html || exit 1; fi; echo '<script>'
   for f in version engine fmt physics $presets canvas app; do case $f in *.js) src=$f ;; *) src=$f.js ;; esac; grep -v "^if (typeof module" "$src"; echo; done
   printf 'window.GUIA_IMG = {\n'
   for img in guia/*.webp; do [ -e "$img" ] || continue; printf '  "%s": "data:image/webp;base64,' "$(basename "$img" .webp)"; base64 < "$img" | tr -d '\n'; printf '",\n'; done
