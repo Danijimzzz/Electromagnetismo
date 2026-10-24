@@ -4,7 +4,7 @@
      a/b            fracción (los paréntesis de fuera se quitan)
      x^2, e^{−bt/m} exponente; v_0x, E_{c,máx} subíndice
      √(…), ∛(…)     raíz
-     "m/s"          texto tal cual (unidades, palabras)
+     "m/s"          texto tal cual (unidades, palabras); \{ \} llaves visibles
      sen cos tg ln log exp máx mín   funciones; binom(n, k)
    Una palabra que no es una función se lee letra a letra (mgh = m·g·h).
    También acepta <sup>, <sub> y las etiquetas que devuelve f().
@@ -24,6 +24,8 @@ const Mates = (() => {
       const c = s[i], resto = s.slice(i);
       let m;
       if (/\s/.test(c)) { sp = true; i++; continue; }
+      // \{ y \} son llaves que se ven: ℒ\{f(t)\}
+      if (c === '\\' && (s[i + 1] === '{' || s[i + 1] === '}')) { out.push({ t: 's', v: c + s[i + 1], sp }); i += 2; sp = false; continue; }
       if ((m = resto.match(/^\d+(?:[.,]\d+)?/))) out.push({ t: 'n', v: m[0].replace('.', ','), sp });
       else if (c === '"') { const j = s.indexOf('"', i + 1); m = [s.slice(i, j < 0 ? s.length : j + 1)]; out.push({ t: 'x', v: m[0].replace(/"/g, ''), sp }); }
       else if ((m = resto.match(/^[\p{L}\p{M}∞]+[′″]*/u))) out.push({ t: 'w', v: m[0], sp });
@@ -107,6 +109,7 @@ const Mates = (() => {
       if (v === '{') { const xs = secuencia('}'); if (es('}')) p++; const d = fila(xs); return nodo(`<mrow>${d}</mrow>`, d); }
       if (v === '√') { const a = guiones(); return nodo(`<msqrt>${a.dentro ?? a.m}</msqrt>`); }
       if (v === '∛') { const a = guiones(); return nodo(`<mroot>${a.dentro ?? a.m}<mn>3</mn></mroot>`); }
+      if (v === '\\{' || v === '\\}') return nodo(`<mo stretchy="false">${v[1]}</mo>`);
       if (v === '|') return nodo('<mo stretchy="false" lspace="0.05em" rspace="0.05em">|</mo>');
       if (v === '°' || v === '%' || v === '‰') return nodo(`<mi mathvariant="normal">${v}</mi>`);
       return nodo(`<mo>${escH(v)}</mo>`);

@@ -117,6 +117,7 @@ footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8p
 const Version = (() => {
   const registros = {
     web: [
+      { v: '0.42', fecha: '2026-10-24', cambios: ['Nueva herramienta: Transformada de Laplace, en Matemáticas.'] },
       { v: '0.41', fecha: '2026-10-24', cambios: ['Nueva herramienta: Intervalos de confianza, en Estadística.', 'Nueva herramienta: Ondas electromagnéticas planas, en Electromagnetismo.', 'Nueva herramienta: Interferencia y difracción, en Física general.', 'Arreglo: al salir del modo práctica a veces no volvían los datos que tenías antes.'] },
       { v: '0.40', fecha: '2026-10-24', cambios: ['Las novedades tienen su propia página, con una línea de tiempo: cada versión es una tarjeta con todos sus cambios, una etiqueta de color para saber si es una herramienta nueva, una mejora o un arreglo, y un enlace para abrir cada herramienta nueva.'] },
       { v: '0.39', fecha: '2026-10-24', cambios: ['Nueva portada: las asignaturas están en una barra lateral siempre a mano y cada herramienta ocupa una ficha pequeña, así se ve todo de un vistazo y sin huecos. En el móvil, las asignaturas son una fila de pestañas arriba.'] },
@@ -213,6 +214,9 @@ const Version = (() => {
     matrices: [
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: determinante por Gauss, por Sarrus o por Laplace; inversa por Gauss-Jordan o por adjuntos; rango; forma escalonada y escalonada reducida, con cada operación entre filas y la matriz después de cada paso.', 'Valores y vectores propios con el polinomio característico, las raíces exactas (también con radicales o complejas) y si la matriz es diagonalizable, con P y D.', 'Suma, resta, producto (elemento a elemento), producto por un número, potencia y traspuesta.', 'Fracciones exactas y números complejos en cualquier casilla: 3/4, 0,25, 2−3i o (1+i)/2.'] },
+    ],
+    laplace: [
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: transformada directa de sumas de términos c·tⁿ·e^(at)·sen(bt) o cos(bt), senh y cosh, con la fila de la tabla y la propiedad que usa cada término, y F(s) con denominador común.', 'Inversa por fracciones simples: polos simples, múltiples y complejos (también dobles), con los coeficientes, la fila de la tabla y los valores inicial y final.', 'Ecuaciones diferenciales de primer y segundo orden con condiciones iniciales: transformar, despejar Y(s) y volver.', 'Plano s con los polos y los ceros, y gráfica animada de f(t) con cada término por separado.'] },
     ],
     interferencia: [
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: doble rendija de Young con la interfranja, la posición y el ángulo de cada máximo, la intensidad en un punto y la envolvente de difracción si das la anchura de las rendijas.', 'Rendija simple: mínimos, anchura del máximo central e intensidad.', 'Red de difracción: ángulos de cada orden, orden máximo y separación de dos longitudes de onda con el poder de resolución.', 'Láminas delgadas: colores que se refuerzan y se anulan y espesores para reforzar o quitar el reflejo.', 'Ondas que salen de las rendijas animadas y el patrón en la pantalla con el color de la luz.'] },
@@ -317,7 +321,7 @@ const Version = (() => {
      a/b            fracción (los paréntesis de fuera se quitan)
      x^2, e^{−bt/m} exponente; v_0x, E_{c,máx} subíndice
      √(…), ∛(…)     raíz
-     "m/s"          texto tal cual (unidades, palabras)
+     "m/s"          texto tal cual (unidades, palabras); \{ \} llaves visibles
      sen cos tg ln log exp máx mín   funciones; binom(n, k)
    Una palabra que no es una función se lee letra a letra (mgh = m·g·h).
    También acepta <sup>, <sub> y las etiquetas que devuelve f().
@@ -337,6 +341,8 @@ const Mates = (() => {
       const c = s[i], resto = s.slice(i);
       let m;
       if (/\s/.test(c)) { sp = true; i++; continue; }
+      // \{ y \} son llaves que se ven: ℒ\{f(t)\}
+      if (c === '\\' && (s[i + 1] === '{' || s[i + 1] === '}')) { out.push({ t: 's', v: c + s[i + 1], sp }); i += 2; sp = false; continue; }
       if ((m = resto.match(/^\d+(?:[.,]\d+)?/))) out.push({ t: 'n', v: m[0].replace('.', ','), sp });
       else if (c === '"') { const j = s.indexOf('"', i + 1); m = [s.slice(i, j < 0 ? s.length : j + 1)]; out.push({ t: 'x', v: m[0].replace(/"/g, ''), sp }); }
       else if ((m = resto.match(/^[\p{L}\p{M}∞]+[′″]*/u))) out.push({ t: 'w', v: m[0], sp });
@@ -420,6 +426,7 @@ const Mates = (() => {
       if (v === '{') { const xs = secuencia('}'); if (es('}')) p++; const d = fila(xs); return nodo(`<mrow>${d}</mrow>`, d); }
       if (v === '√') { const a = guiones(); return nodo(`<msqrt>${a.dentro ?? a.m}</msqrt>`); }
       if (v === '∛') { const a = guiones(); return nodo(`<mroot>${a.dentro ?? a.m}<mn>3</mn></mroot>`); }
+      if (v === '\\{' || v === '\\}') return nodo(`<mo stretchy="false">${v[1]}</mo>`);
       if (v === '|') return nodo('<mo stretchy="false" lspace="0.05em" rspace="0.05em">|</mo>');
       if (v === '°' || v === '%' || v === '‰') return nodo(`<mi mathvariant="normal">${v}</mi>`);
       return nodo(`<mo>${escH(v)}</mo>`);
@@ -980,7 +987,7 @@ const Biblioteca = (() => {
     alterna: 'alterna-v1', calorimetria: 'calorimetria-v1', circuitos: 'circuitos-v1', condensadores: 'condensadores-v1',
     'configuracion-electronica': 'configuracion-v1', dinamica: 'dinamica-v1', disoluciones: 'disoluciones-v1', ph: 'ph-v1', cinetica: 'cinetica-v1', doppler: 'doppler-v1', fluidos: 'fluidos-v1', ciclos: 'ciclos-v1', estadistica: 'estadistica-v1', regresion: 'regresion-v1',
     faraday: 'faraday-v1', fuerza: 'fuerza-v1', transitorios: 'transitorios-v1', intervalos: 'intervalos-v1', 'ondas-em': 'ondasem-v1', interferencia: 'interferencia-v1', gases: 'gases-v1', induccion: 'induccion-v1', magnetostatica: 'magneto-cur-v1', 'masa-molar': 'masa-molar-v1',
-    matrices: 'matrices-v1', resistencias: 'resistencias-v1', ondas: 'ondas-v1', sistemas: 'sistemas-v1', complejos: 'complejos-v1', taylor: 'taylor-v1', fourier: 'fourier-v1', edos: 'edos-v1', campos: 'campos-v1', 'solido-rigido': 'solido-rigido-v1', 'tiro-parabolico': 'tiro-v1',
+    matrices: 'matrices-v1', resistencias: 'resistencias-v1', ondas: 'ondas-v1', sistemas: 'sistemas-v1', complejos: 'complejos-v1', taylor: 'taylor-v1', fourier: 'fourier-v1', edos: 'edos-v1', laplace: 'laplace-v1', campos: 'campos-v1', 'solido-rigido': 'solido-rigido-v1', 'tiro-parabolico': 'tiro-v1',
     'trabajo-y-energia': 'energia-v1',
   };
   const FORMATO = 'simulaciencia-ejercicios', ANCHO = 1280;
@@ -1247,6 +1254,8 @@ const Practica = (() => {
     'ondas-em': { datos: null, items: '#res > div', genera: () => window.OndasEMApp?.azar(), enunciado: () => window.OndasEMApp?.enunciado() },
     // interferencia: Young, una rendija, una red o una lámina delgada
     interferencia: { datos: null, items: '#res > div', genera: () => window.InterferenciaApp?.azar(), enunciado: () => window.InterferenciaApp?.enunciado() },
+    // laplace: una transformada, una inversa por fracciones simples o una EDO; se preguntan los valores numéricos
+    laplace: { datos: null, items: '#resumen > div.num', genera: () => window.LaplaceApp?.azar(), enunciado: () => window.LaplaceApp?.enunciado() },
     complejos: { datos: null, genera: () => window.ComplejosApp?.azar(), enunciado: () => window.ComplejosApp?.enunciado() },
     sistemas: { items: '#res', valido: () => !/[λμ]|incompatible|no tiene/i.test(document.querySelector('#res')?.textContent + document.querySelector('#tipo')?.textContent) },
     estadistica: { items: '#res' },

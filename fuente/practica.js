@@ -41,6 +41,8 @@ const Practica = (() => {
     'ondas-em': { datos: null, items: '#res > div', genera: () => window.OndasEMApp?.azar(), enunciado: () => window.OndasEMApp?.enunciado() },
     // interferencia: Young, una rendija, una red o una lámina delgada
     interferencia: { datos: null, items: '#res > div', genera: () => window.InterferenciaApp?.azar(), enunciado: () => window.InterferenciaApp?.enunciado() },
+    // laplace: una transformada, una inversa por fracciones simples o una EDO; se preguntan los valores numéricos
+    laplace: { datos: null, items: '#resumen > div.num', genera: () => window.LaplaceApp?.azar(), enunciado: () => window.LaplaceApp?.enunciado() },
     complejos: { datos: null, genera: () => window.ComplejosApp?.azar(), enunciado: () => window.ComplejosApp?.enunciado() },
     sistemas: { items: '#res', valido: () => !/[λμ]|incompatible|no tiene/i.test(document.querySelector('#res')?.textContent + document.querySelector('#tipo')?.textContent) },
     estadistica: { items: '#res' },
