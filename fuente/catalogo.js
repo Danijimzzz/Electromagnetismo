@@ -58,7 +58,6 @@ const Catalogo = {
         { clave: 'edos', nombre: 'Ecuaciones diferenciales', icono: 'y′', disponible: true, desc: 'Campo de pendientes con Euler y RK4, EDO lineales de segundo orden con resonancia y sistemas con su diagrama de fases.', buscar: 'ecuacion diferencial edo ode euler runge kutta rk4 campo pendientes direcciones segundo orden caracteristica coeficientes indeterminados resonancia oscilador amortiguado sistema diagrama fases punto critico silla nodo foco centro lotka volterra logistica' },
         { clave: 'campos', nombre: 'Campos vectoriales', icono: '∇', disponible: true, desc: 'Gradiente y derivada direccional, divergencia y rotacional, potencial, trabajo por una curva y teorema de Green, viendo el campo.', buscar: 'campo vectorial escalar gradiente nabla derivada direccional laplaciano armonica divergencia rotacional rotor conservativo potencial integral de linea trabajo circulacion flujo teorema de green stokes calculo vectorial' },
         { clave: 'complejos', nombre: 'Números complejos', icono: 'i', disponible: true, desc: 'Formas binómica, polar y exponencial, operaciones, De Moivre, raíces n-ésimas y ecuaciones, con el plano de Argand.', buscar: 'números complejos imaginario binómica polar trigonométrica exponencial módulo argumento conjugado de moivre raíces n-ésimas euler plano de argand afijo ecuación segundo grado' },
-        { clave: 'campos-vectoriales', nombre: 'Campos vectoriales', icono: '∇', desc: 'Gradiente, divergencia, rotacional y flujo.', buscar: 'gradiente divergencia rotacional flujo' },
       ],
     },
     {
