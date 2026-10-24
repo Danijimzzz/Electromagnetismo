@@ -2,7 +2,7 @@
 /* Genera la portada (publico/index.html) y una página por asignatura (publico/<asignatura>/index.html)
    a partir de catalogo.js. Lo llama build.sh; no hace falta ejecutarlo a mano. */
 const fs = require('fs'), path = require('path');
-const Catalogo = require('./catalogo.js'), Version = require('./version.js');
+const Catalogo = require('./catalogo.js'), Version = require('./version.js'), Tema = require('./tema.js');
 const publico = path.join(__dirname, '..', 'publico');
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -112,11 +112,12 @@ function pagina({ titulo, desc, raiz, actual, cuerpo, buscar, script }) {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
-<style>${CSS}</style>
+<script>${Tema.SCRIPT}</script>
+<style>${CSS}${Tema.CSS}</style>
 <body>
 <header class="top"><a class="logo" href="${raiz}">${esc(m1)}<i>${esc(m2)}</i></a>
 <nav aria-label="Asignaturas"><a href="${raiz}"${actual ? '' : ' aria-current="page"'}>Inicio</a>${nav}</nav>
-${buscar ? '<input type="search" id="buscar" class="buscar" placeholder="Buscar: Biot-Savart, molaridad…" aria-label="Buscar herramientas" autocomplete="off">' : ''}</header>
+${buscar ? '<input type="search" id="buscar" class="buscar" placeholder="Buscar: Biot-Savart, molaridad…" aria-label="Buscar herramientas" autocomplete="off">' : ''}${Tema.BOTON}</header>
 ${cuerpo}
 <footer><a href="${raiz}contacto.html">Contacto</a>·<a href="${raiz}aviso-legal.html">Aviso legal</a>·<a href="${raiz}privacidad.html">Privacidad</a>·<a href="${raiz}cookies.html">Cookies</a>· <a href="${raiz}novedades/">Versión ${esc(Version.de('web').current)} (beta)</a></footer>
 ${script ? `<script>${script}</script>\n` : ''}</body>
