@@ -1341,6 +1341,45 @@ async function navegador() {
     if (probadas < 19) mal(`Mis ejercicios: solo se ha probado en ${probadas} herramientas`);
     if (fallos === antes) console.log(`  ✓ Mis ejercicios: guardar, carpeta, fijar, abrir, exportar, borrar e importar en ${probadas} herramientas, y en el móvil`);
   }
+  {
+    // arreglo 7: modo práctica (datos al azar, se tapan los resultados, se corrigen las respuestas y se destapa la solución)
+    const antes = fallos, consola = [];
+    const pags = Catalogo.asignaturas.flatMap((a) => a.herramientas.filter((h) => h.disponible).map((h) => `${a.clave}/${h.clave}`));
+    let probadas = 0, ejercicios = 0;
+    for (const pag of pags) {
+      const html = fs.readFileSync(path.join(publico, ...pag.split('/'), 'index.html'), 'utf8'), dir = (html.match(/Practica\.monta\('([^']+)'/) || [])[1];
+      if (!dir || dir === 'tabla-periodica') continue;
+      const page = await browser.newPage({ viewport: { width: 1400, height: 900 } });
+      page.on('console', (m) => { if (m.type() === 'error') consola.push(`${pag}: ${m.text()}`); });
+      page.on('pageerror', (e) => consola.push(`${pag}: excepción: ${e.message}`));
+      await page.goto('file://' + path.join(publico, ...pag.split('/'), 'index.html'));
+      await page.waitForSelector('.prac-btn');
+      const clave = Biblioteca.CLAVES[dir], previo = await page.evaluate((k) => localStorage.getItem(k), clave);
+      await page.click('.prac-btn');
+      for (let n = 0; n < 5; n++) {
+        if (n) await page.click('.prac [data-a=otro]');
+        const r = await page.evaluate(() => ({ huecos: document.querySelectorAll('.prac-in').length, tapados: document.querySelectorAll('.prac-tapa').length, resp: window.PracticaApp.respuestas() }));
+        if (!r.huecos || !r.tapados) { mal(`${pag}: el modo práctica no pregunta nada o no tapa la solución (${r.huecos} huecos, ${r.tapados} tapados)`); break; }
+        const ins = await page.$$('.prac-in');
+        for (let k = 0; k < ins.length; k++) await ins[k].fill(r.resp[k]);
+        await page.click('.prac [data-a=comprobar]');
+        if (!(await page.$('.prac-nota.bien'))) { mal(`${pag}: las respuestas correctas no salen bien: ${r.resp.join(' · ')}`); break; }
+        ejercicios++;
+      }
+      await (await page.$('.prac-in')).fill('123456789');
+      await page.click('.prac [data-a=comprobar]');
+      if (!(await page.$('.prac-nota.mal'))) mal(`${pag}: una respuesta equivocada sale bien`);
+      await page.click('.prac [data-a=solucion]');
+      if (await page.$('.prac-tapa')) mal(`${pag}: «Ver la solución» no destapa el desarrollo`);
+      if (!(await page.$('.prac-sol'))) mal(`${pag}: «Ver la solución» no pone el valor correcto junto al hueco equivocado`);
+      await Promise.all([page.waitForEvent('load'), page.click('.prac-btn')]);
+      if ((await page.evaluate((k) => localStorage.getItem(k), clave)) !== previo) mal(`${pag}: al salir del modo práctica no vuelven los datos de antes`);
+      await page.close(); probadas++;
+    }
+    if (consola.length) mal('Arreglo 7: consola del navegador:\n      ' + consola.join('\n      '));
+    if (probadas < 19) mal(`Modo práctica: solo se ha probado en ${probadas} herramientas`);
+    if (fallos === antes) console.log(`  ✓ Modo práctica: ${ejercicios} ejercicios al azar en ${probadas} herramientas, corregidos bien y mal, con la solución y la vuelta a los datos de antes`);
+  }
   // portada y páginas de asignatura: sin errores de consola y sin enlaces internos rotos
   const portal = ['index.html', ...Catalogo.asignaturas.map((a) => `${a.clave}/index.html`), 'electromagnetismo/magnetostatica/index.html', 'quimica/tabla-periodica/index.html', 'fisica/trabajo-y-energia/index.html', 'quimica/masa-molar/index.html', 'quimica/configuracion-electronica/index.html', 'electromagnetismo/condensadores/index.html', 'fisica/tiro-parabolico/index.html', 'quimica/disoluciones/index.html', 'fisica/calorimetria/index.html', 'electromagnetismo/induccion/index.html', 'matematicas/matrices/index.html', 'matematicas/sistemas/index.html', 'estadistica/distribuciones/index.html', 'circuitos/alterna/index.html', 'fisica/dinamica/index.html', 'circuitos/continua/index.html', 'fisica/solido-rigido/index.html', 'fisica/ondas/index.html', 'fisica/gases/index.html', 'electromagnetismo/faraday/index.html'];
   const antes = fallos;
