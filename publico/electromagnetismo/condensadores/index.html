@@ -123,6 +123,7 @@ footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8p
 const Version = (() => {
   const registros = {
     web: [
+      { v: '0.26', fecha: '2026-10-24', cambios: ['Nueva herramienta: Código de colores de resistencias, en Circuitos.'] },
       { v: '0.25', fecha: '2026-10-24', cambios: ['Nueva herramienta: Efecto Doppler, en Física general.'] },
       { v: '0.24', fecha: '2026-10-24', cambios: ['Modo práctica en todas las herramientas: un ejercicio con datos al azar, tapa los resultados y el desarrollo, corrige lo que escribes y luego te enseña la solución. Al salir vuelven tus datos.', 'Mis ejercicios: abrir un ejercicio guardado de Configuración electrónica ya muestra ese elemento.'] },
       { v: '0.23', fecha: '2026-10-24', cambios: ['«Mis ejercicios» en todas las herramientas: una barra lateral, como la de electrostática, para guardar los datos de cada ejercicio con su título y carpeta, fijar los importantes arriba, volver a abrirlos y exportarlos o importarlos en archivos .simu.json.'] },
@@ -238,6 +239,9 @@ const Version = (() => {
     ],
     doppler: [
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: frecuencia que se oye con la fuente, el observador y el viento moviéndose, con la longitud de onda delante de la fuente.', 'Una fuente que pasa de largo: lo que se oye antes y después, el salto en hercios y semitonos y, al revés, su velocidad a partir de las dos frecuencias. Con el observador a un lado de la carretera, la gráfica del cambio gradual.', 'Eco en un obstáculo que se mueve (radar de tráfico, murciélago, ecografía Doppler): la frecuencia del eco y las pulsaciones, o la velocidad del obstáculo a partir de ellas.', 'Onda de choque: número de Mach, semiángulo del cono y cuándo se oye el estampido.', 'Animación de los frentes de onda y botón para escuchar la diferencia.'] },
+    ],
+    resistencias: [
+      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: elige los colores de una resistencia de 3, 4, 5 o 6 bandas y obtén el valor, la tolerancia, el margen del valor real y el coeficiente de temperatura, con el dibujo de la resistencia.', 'Del valor a los colores: escribe 4k7, 2M2 o 470R y te da las bandas y el valor normalizado más cercano de las series E6 a E96.', 'Códigos SMD de 3 y 4 cifras, con R y EIA-96.'] },
     ],
     faraday: [
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
@@ -779,7 +783,7 @@ const Biblioteca = (() => {
     alterna: 'alterna-v1', calorimetria: 'calorimetria-v1', circuitos: 'circuitos-v1', condensadores: 'condensadores-v1',
     'configuracion-electronica': 'configuracion-v1', dinamica: 'dinamica-v1', disoluciones: 'disoluciones-v1', doppler: 'doppler-v1', estadistica: 'estadistica-v1',
     faraday: 'faraday-v1', gases: 'gases-v1', induccion: 'induccion-v1', magnetostatica: 'magneto-cur-v1', 'masa-molar': 'masa-molar-v1',
-    matrices: 'matrices-v1', ondas: 'ondas-v1', sistemas: 'sistemas-v1', 'solido-rigido': 'solido-rigido-v1', 'tiro-parabolico': 'tiro-v1',
+    matrices: 'matrices-v1', resistencias: 'resistencias-v1', ondas: 'ondas-v1', sistemas: 'sistemas-v1', 'solido-rigido': 'solido-rigido-v1', 'tiro-parabolico': 'tiro-v1',
     'trabajo-y-energia': 'energia-v1',
   };
   const FORMATO = 'simulaciencia-ejercicios', ANCHO = 1280;
@@ -1027,6 +1031,8 @@ const Practica = (() => {
     // solo sistemas compatibles determinados: la solución paramétrica no se pregunta por huecos
     sistemas: { items: '#res', valido: () => !/[λμ]|incompatible|no tiene/i.test(document.querySelector('#res')?.textContent + document.querySelector('#tipo')?.textContent) },
     estadistica: { items: '#res' },
+    // resistencias: unos colores al azar (no hay números que cambiar en los datos)
+    resistencias: { datos: null, genera: () => window.ResistenciasApp?.azar(), enunciado: () => `¿Cuánto vale una resistencia con las bandas <b>${esc(window.ResistenciasApp?.colores() || '')}</b>? Escribe el valor y el margen en el que puede estar en las mismas unidades.` },
     magnetostatica: { items: '[data-res]', tapa: '[data-res], [data-steps], .cvwrap', datos: '#fuentes',
       // el enunciado del ejemplo ya no vale con los datos nuevos
       despues: () => pon(document.querySelector('#enunciado'), 'Ejercicio de práctica: calcula el campo magnético en los puntos de las preguntas con las fuentes de la izquierda.'),
