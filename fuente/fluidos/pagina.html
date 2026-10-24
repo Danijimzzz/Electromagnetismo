@@ -1,0 +1,107 @@
+<title>Fluidos: presión hidrostática, Pascal, Arquímedes, Bernoulli y Torricelli · SimulaCiencia</title>
+<meta name="description" content="Calculadora de mecánica de fluidos en español con animación: presión a una profundidad, tubo en U con dos líquidos, prensa hidráulica, empuje de Arquímedes (si flota o se hunde y la densidad con dos pesadas), continuidad y Bernoulli en una tubería y el chorro de Torricelli con su alcance y el tiempo de vaciado, paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root {
+  --bg: #eef0f4; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d6dbe3; --accent: #2a5db5; --accent-soft: #e3ecfa; --peso: #c2412a; --normal: #1d7a3e; --roz: #b0700a; --fuerza: #6b3fa0; --tension: #2a5db5; --cuerpo: #c9d3e0; --suelo: #8a96a3; --agua: #9cc3ef; --aceite: #e7c15a;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #74a2f2; --accent-soft: #1c2a42; --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784; --agua: #2b4f7e; --aceite: #8a6a1c; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #74a2f2; --accent-soft: #1c2a42; --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784; --agua: #2b4f7e; --aceite: #8a6a1c; color-scheme: dark }
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
+.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
+.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+.layout { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 16px; align-items: start }
+@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr) } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 15px var(--f-ui); margin: 0 0 10px }
+.campos { display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px } .campos label small { color: var(--muted) }
+.in { font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.in:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer }
+.btn:hover { border-color: var(--accent) }
+.error { color: #c0392b; font-size: 13px; margin: 10px 0 0 }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+.res { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px 14px; font: 16px var(--f-math) } .res div { overflow-x: auto } .res span { display: block; font: 12px var(--f-ui); color: var(--muted) }
+.leyenda { font-size: 12.5px; color: var(--muted); margin: 6px 0 0 } .leyenda b { font-weight: 600 }
+canvas { display: block; width: 100%; height: clamp(260px, 36vw, 380px); border-radius: 8px; background: var(--bg); margin-top: 10px }
+.pasos ol { margin: 0; padding-left: 22px } .pasos li { margin: 0 0 12px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+.controles { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px }
+.destacado { border-color: var(--accent); box-shadow: inset 4px 0 0 var(--accent) }
+.destacado h2 { color: var(--accent) }
+.resumen { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; margin: 0 }
+.resumen div { background: var(--accent-soft); border-radius: 8px; padding: 8px 10px; overflow-x: auto } .resumen div span { display: block; font-size: 12px; color: var(--muted) } .resumen div b { font: 600 17px var(--f-math) }
+.teoria ul { padding-left: 20px } .teoria li { margin-bottom: 4px }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física general</a> / Fluidos</span></header>
+<div class="wrap">
+<h1>Fluidos</h1>
+<p class="lead">Calcula la presión bajo el agua, las alturas en un tubo en U, la fuerza de una prensa hidráulica, si un cuerpo flota o se hunde y la densidad de una corona, la velocidad y la presión en una tubería que se estrecha o sube y el chorro que sale de un depósito. Con una animación de cada caso y el desarrollo paso a paso.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Animación</h2>
+      <canvas id="escena" aria-label="Animación del fluido"></canvas>
+      <div class="controles"><button class="btn" id="play" type="button">⏸ Pausa</button><span class="nota" id="leyenda" style="margin:0"></span></div></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Presión hidrostática</h2>
+  <p>En un líquido en reposo la presión aumenta con la profundidad h, y solo depende de ella, no de la forma del recipiente (es la paradoja hidrostática):</p>
+  <p class="f m">$p = p_0 + ρ g h$</p>
+  <p class="m">con ρ la densidad del líquido y $p_0$ la presión en la superficie, normalmente la atmosférica, 101 325 Pa. La parte $ρ g h$ es la presión manométrica, la que marca un manómetro. En el agua la presión sube 1 atm cada 10,3 m. A una misma profundidad empuja igual en todas direcciones.</p>
+  <h2>Tubo en U</h2>
+  <p class="m">Con dos líquidos que no se mezclan, a la altura de la superficie de separación la presión es la misma en las dos ramas, así que $ρ_1 h_1 = ρ_2 h_2$ (alturas medidas desde esa superficie). Sirve para medir la densidad de un líquido o presiones con un manómetro de mercurio.</p>
+  <h2>Principio de Pascal y prensa hidráulica</h2>
+  <p>Un cambio de presión en un líquido encerrado se transmite igual a todo él. En una prensa hidráulica</p>
+  <p class="f m">${F_1}/{A_1} = {F_2}/{A_2}$, &ensp; $A_1 x_1 = A_2 x_2$</p>
+  <p>La fuerza se multiplica por la relación de áreas, el cuadrado de la de diámetros, y el recorrido se divide por lo mismo: el trabajo que se hace es igual a los dos lados.</p>
+  <h2>Principio de Arquímedes</h2>
+  <p>Un cuerpo sumergido recibe un empuje hacia arriba igual al peso del fluido que desaloja:</p>
+  <p class="f m">$E = ρ_f V_s g$</p>
+  <ul>
+    <li class="m">Si el cuerpo es menos denso que el fluido, flota con una fracción sumergida $V_s/V = ρ/ρ_f$: un iceberg tiene fuera del agua solo un 10 %.</li>
+    <li class="m">Si es más denso, se hunde y dentro del fluido pesa menos: su peso aparente es $P − E$.</li>
+    <li class="m">Pesándolo en el aire y dentro del agua se saca su densidad, $ρ = ρ_f P/(P − P_{ap})$, que es como Arquímedes comprobó si la corona era de oro puro (19 300 kg/m³).</li>
+  </ul>
+  <h2>Continuidad y Bernoulli</h2>
+  <p>En una tubería con un fluido ideal (incompresible y sin viscosidad), el caudal es el mismo en todas las secciones y la energía por unidad de volumen se conserva:</p>
+  <p class="f m">$Q = A_1 v_1 = A_2 v_2$, &ensp; $p_1 + {1}/{2} ρ v_1^2 + ρ g h_1 = p_2 + {1}/{2} ρ v_2^2 + ρ g h_2$</p>
+  <p>Donde el tubo se estrecha, el fluido va más deprisa y la presión baja (efecto Venturi); por eso se miden caudales con un estrechamiento y dos tubos verticales.</p>
+  <h2>Teorema de Torricelli</h2>
+  <p>Por un agujero a una profundidad H bajo la superficie de un depósito abierto, el líquido sale con la velocidad de una caída libre desde esa altura:</p>
+  <p class="f m">$v = √(2 g H)$</p>
+  <p class="m">Si el agujero está a una altura y del suelo, el chorro llega a $x = 2 √(H y)$. Un depósito de diámetro D con un agujero de diámetro d se vacía en $t = (D/d)^2 √(2 H/g)$.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Fluidos <span id="ver"></span> (beta)</footer>
+</body>
