@@ -3,12 +3,11 @@
    curvas de calentamiento y desarrollo). El cálculo está en fisica.js (Calor).
    ===================================================================== */
 (() => {
-  const $ = (q) => document.querySelector(q);
+  const { $, esc } = Herramienta;
   const K = Calor, f = K.f;
   const CLAVE = 'calorimetria-v1', MAX = 5;
   const COL = ['--c1', '--c2', '--c3', '--c4', '--c5'];
   const txt = (s) => String(s).replace(/<sup>(.*?)<\/sup>/g, '^$1').replace(/<[^>]+>/g, '');
-  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const coma = (v) => String(v ?? '').replace('.', ',');
   // campos de cada cuerpo según la sustancia
   const CAMPOS = [
@@ -85,17 +84,12 @@
     $('#tabla').innerHTML = `<thead><tr><th>Cuerpo</th><th>T inicial (°C)</th><th>Q (J)</th><th></th></tr></thead><tbody>${res.cuerpos.map((c, i) => `<tr><td><span style="color:var(${COL[i % COL.length]})">●</span> ${esc(c.nombre)}</td><td>${f(c.b.T0)}</td><td>${f(c.Q)}</td><td>${Math.abs(c.Q) < 1e-9 ? '' : c.Q > 0 ? 'absorbe' : 'cede'}</td></tr>`).join('')}<tr><td><b>Total</b></td><td></td><td><b>${f(res.cuerpos.reduce((s, c) => s + c.Q, 0))}</b></td><td></td></tr></tbody>`;
     const tot = res.cedido + res.absorbido || 1;
     $('#balance').innerHTML = `<span style="width:${(100 * res.cedido) / tot}%;background:var(--calor)"></span><span style="flex:1;background:var(--frio)"></span>`;
-    $('#pasos').innerHTML = res.pasos.map((p) => `<li><strong>${esc(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
+    $('#pasos').innerHTML = res.pasos.map((p) => `<li><strong>${esc(p.t)}</strong>${Mates.html(p.html, true)}</li>`).join('');
     $('#ley-curvas').innerHTML = res.cuerpos.map((c, i) => `<span><i style="background:var(${COL[i % COL.length]})"></i>${esc(c.nombre)}</span>`).join('') + '<span>· eje horizontal: calor absorbido (kJ)</span>';
     dibuja();
   }
 
-  function lienzo(c) {
-    const dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
-    if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
-    const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
-    return { g, w, h };
-  }
+  const lienzo = (c) => Herramienta.lienzo(c);
   const paso = (rango, n = 5) => { const r = rango / n, p = 10 ** Math.floor(Math.log10(r || 1)), m = r / p; return (m < 1.5 ? 1 : m < 3.5 ? 2 : m < 7.5 ? 5 : 10) * p; };
   function dibuja() {
     if (!res) return;

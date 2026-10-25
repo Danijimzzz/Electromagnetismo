@@ -6,10 +6,8 @@
    fourier/calculo.js (Fourier) y las expresiones en matematicas/expresion.js.
    ===================================================================== */
 (() => {
-  const $ = (q) => document.querySelector(q);
+  const { $, esc, copia } = Herramienta;
   const F = Fourier, CLAVE = 'fourier-v1', MAXT = 4;
-  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const copia = (o) => JSON.parse(JSON.stringify(o));
   const fH = (x, d = 4) => F.f(x, d).replace(/\^\{([^}]*)\}/, '<sup>$1</sup>');
   const sup = (e) => [...e].map((c) => '⁰¹²³⁴⁵⁶⁷⁸⁹'['0123456789'.indexOf(c)] || (c === '−' ? '⁻' : c)).join('');
   const txt = (s) => s.replace(/<sup>(.*?)<\/sup>/g, (_, e) => sup(e)).replace(/<[^>]+>/g, '');
@@ -80,12 +78,15 @@
     err.hidden = true; guarda();
     const { an, bn } = sol, tres = (cs) => [1, 2, 3].map((n) => fH(cs[n], 4)).join('; ');
     let h = dato('Serie de Fourier', M(`f(x) ∼ ${sol.primeros}`), 'ancho');
-    if (sol.gA || sol.gB) h += dato('Término general', [sol.gA ? M(`a_n = ${sol.gA}`) : '', sol.gB ? M(`b_n = ${sol.gB}`) : ''].filter(Boolean).join('&emsp;'), 'ancho');
+    const desde = (d) => (d === 2 ? ' <small>(n ≥ 2)</small>' : '');
+    if (sol.gA || sol.gB) h += dato('Término general', [sol.gA ? M(`a_n = ${sol.gA}`) + desde(sol.desdeA) : '', sol.gB ? M(`b_n = ${sol.gB}`) + desde(sol.desdeB) : ''].filter(Boolean).join('&emsp;'), 'ancho');
+    if (sol.cnTxt && sol.cnTxt !== '0') h += dato('Forma compleja', M(`c_n = ${sol.cnTxt}`), 'ancho');
     h += dato('a₀', fH(an[0], 5), 'num');
     if (!sol.impar) h += dato('a₁; a₂; a₃', tres(an), 'num');
     if (!sol.par) h += dato('b₁; b₂; b₃', tres(bn), 'num');
     if (sol.x0 !== null) h += dato(`S${sub(sol.N)}(x₀), con x₀ = ${fH(sol.x0, 4)}`, fH(sol.sx0, 6), 'num');
     h += dato(`Energía en ${sol.N} armónicos`, `${fH((100 * sol.parcial) / sol.energia, 4)} %`);
+    if (sol.sumas.length) h += dato('Suma de una serie', sol.sumas.map((q) => M(q.txt)).join('<br>'), 'ancho');
     $('#resumen').innerHTML = h;
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
     const rg = $('#armonicos'); rg.max = sol.N; k = anda ? Math.min(k, sol.N) : sol.N; rg.value = k;
@@ -103,17 +104,8 @@
 
   /* ---------- Gráficas ---------- */
   function colores() { const cs = getComputedStyle(document.documentElement); for (const c of ['--ink', '--muted', '--line', '--accent', '--accent-soft', '--panel']) col[c] = cs.getPropertyValue(c).trim(); }
-  const marcas = (a, b, n = 6) => {
-    const p0 = (b - a) / n, e = 10 ** Math.floor(Math.log10(p0)), paso = [1, 2, 2.5, 5, 10].map((q) => q * e).find((q) => q >= p0) || 10 * e;
-    const out = []; for (let v = Math.ceil(a / paso) * paso; v <= b + paso * 1e-9; v += paso) out.push(Math.abs(v) < paso * 1e-9 ? 0 : v);
-    return out;
-  };
-  const lienzo = (sel) => {
-    const c = $(sel), dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
-    if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
-    const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
-    return { g, w, h };
-  };
+  const marcas = Herramienta.marcas;
+  const lienzo = (sel) => Herramienta.lienzo(sel);
   let cacheV = null;
   function ventana() {
     const x1 = sol.s0 - sol.T, x2 = sol.s0 + 2 * sol.T, xs = [], ys = [];

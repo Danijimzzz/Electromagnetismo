@@ -4,11 +4,8 @@
    doppler/fisica.js (Doppler).
    ===================================================================== */
 (() => {
-  const $ = (q) => document.querySelector(q);
+  const { $, esc, copia, txt } = Herramienta;
   const D = Doppler, f = D.f, fq = D.fq, CLAVE = 'doppler-v1';
-  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const copia = (o) => JSON.parse(JSON.stringify(o));
-  const txt = (h) => String(h).replace(/<sup>(.*?)<\/sup>/g, (_, e) => e.replace(/−/g, '⁻').replace(/\d/g, (d) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d])).replace(/<[^>]+>/g, '');
   const MODOS = [['recta', 'Fuente y observador en línea'], ['paso', 'Una fuente que pasa de largo'], ['eco', 'Eco en un obstáculo que se mueve'], ['choque', 'Onda de choque (cono de Mach)']];
 
   let sc = copia(D.ejemplos[0].sc);
@@ -93,7 +90,7 @@
       ley = 'La fuente va más deprisa que sus frentes de onda: se acumulan en el cono de Mach, que al llegar al observador se oye como un estampido.';
     }
     $('#resumen').innerHTML = h; $('#leyenda').textContent = ley;
-    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
+    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html, true)}</li>`).join('');
     const oir = tonos();
     $('#oir').hidden = !oir; if (oir) $('#oir').title = oir.titulo;
     $('#grafica').hidden = !(sol.modo === 'paso' && sol.curva);

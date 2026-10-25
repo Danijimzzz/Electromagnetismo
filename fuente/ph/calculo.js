@@ -195,7 +195,13 @@ const PH = (() => {
       } else if (d > 0) {
         if (debilV) {
           pHv = pKa + (esBase ? -1 : 1) * lg(nt / d);
-          html = `Ha reaccionado ${f(nt)} mol y quedan ${f(d)} mol de ${nomV}: es una disolución reguladora, $pH = pK_a + log {${esBase ? `n(B)`: `n(A^{−})`}}/{${esBase ? `n(BH^{+})` : `n(HA)`}} = ${f2(pKa)} + log {${f(esBase ? d : nt)}}/{${f(esBase ? nt : d)}}$ = <b>${f2(pHv)}</b>`;
+          const hh = pHv, ex = ph(v);
+          html = `Ha reaccionado ${f(nt)} mol y quedan ${f(d)} mol de ${nomV}: es una disolución reguladora, $pH = pK_a + log {${esBase ? `n(B)`: `n(A^{−})`}}/{${esBase ? `n(BH^{+})` : `n(HA)`}} = ${f2(pKa)} + log {${f(esBase ? d : nt)}}/{${f(esBase ? nt : d)}}$`;
+          // Henderson-Hasselbalch supone que la disociación del débil no cambia las dos formas: falla al principio y muy cerca de la equivalencia
+          if (Math.abs(hh - ex) > 0.02) {
+            pHv = ex;
+            html += ` = ${f2(hh)}. Pero aquí una de las dos formas es tan escasa que la ${esBase ? 'protonación de la base' : 'disociación del ácido'} (o la hidrólisis de su conjugado) la cambia mucho, y Henderson-Hasselbalch ya no vale. Resolviendo el equilibrio entero con el balance de cargas sale <b>pH = ${f2(pHv)}</b>`;
+          } else html += ` = <b>${f2(pHv)}</b>`;
         } else {
           const c = d / Vtot; pHv = esBase ? 14 + lg(c) : -lg(c);
           html = `Quedan $${f(n0)} − ${f(nt)} = ${f(d)}$ mol de ${esBase ? 'OH⁻' : 'H₃O⁺'} en ${f(V + v)} mL: $[${ionV}] = ${f(c)}$ M y <b>pH = ${f2(pHv)}</b>`;

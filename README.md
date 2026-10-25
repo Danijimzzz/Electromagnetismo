@@ -8,6 +8,8 @@ Simuladores y calculadoras por asignatura. Es una web estática en `publico/`:
 
 La portada y las páginas de asignatura las genera `fuente/portal.js` a partir de `fuente/catalogo.js`. Para añadir una herramienta, ponla en el catálogo con `disponible: true`, genera su página en `publico/<asignatura>/<herramienta>/index.html` y añade sus pruebas a `pruebas/comprobar.js`.
 
+**Diseño:** toda herramienta nueva sigue [DISENO.md](DISENO.md). Se empieza copiando `fuente/plantilla/pagina.html`; la hoja común `fuente/estilos.css`, el color de la asignatura y la cabecera los pone `fuente/diseno.js` al publicar, y la comprobación falla si una página vuelve a definir un estilo común o pone colores fijos.
+
 - Código fuente: `fuente/` (engine, fmt, physics, presets, canvas, app y shell.html). Las capturas de la guía de uso están en `fuente/guia/` y `build.sh` las incrusta en la página.
 - Para regenerar la web pública tras cambiar las fuentes: `sh fuente/build.sh` (simulador, portada y asignaturas).
 - **Solo se publica la carpeta `publico/`** (página, iconos y lo que se añada para la web). Vercel la sirve tal cual por `vercel.json`; en Cloudflare Pages el proyecto se configura con *Framework: None*, sin comando de compilación y *Output directory* `publico`. No pongas ahí nada más: la comprobación falla si aparece otro archivo.
@@ -28,5 +30,7 @@ El número de versión y las novedades están en `fuente/version.js`; la página
 ## Comprobación antes de fusionar
 
 `node pruebas/comprobar.js` regenera la web pública y la privada, y resuelve los dos juegos de ejercicios: los del Tema 3 contra `pruebas/esperados.json` (la forma del solucionario, no solo el valor) y los de ejemplo contra `pruebas/esperados-ejemplos.json`. También comprueba que `publico/` no contiene nada del PDF. Después abre las dos páginas en Chromium, abre cada ejercicio y la guía, y falla si hay errores en la consola. Necesita `playwright` (`npm install --no-save playwright`). La misma comprobación corre en GitHub Actions en cada pull request.
+
+La comprobación de cada herramienta está en `pruebas/herramientas/<carpeta>.js` y `pruebas/humo.js` hace la prueba de humo común (cambiar un dato, guardarlo en Mis ejercicios, recargar y verlo de vuelta). Mientras trabajas en una herramienta, `node pruebas/comprobar.js --solo <carpeta>` comprueba solo esa en unos segundos.
 
 Si un cambio de forma es intencionado, ejecuta `node pruebas/comprobar.js --actualizar` y revisa el diff de los esperados.

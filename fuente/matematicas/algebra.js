@@ -273,7 +273,8 @@ const Algebra = (() => {
     return z;
   }
   const aproxQ = (x) => {
-    for (let d = 1; d <= 60; d++) { const n = Math.round(x * d); if (Math.abs(x - n / d) < 1e-6 * Math.max(1, Math.abs(x))) return Q(n, d); }
+    // tolerancia amplia: las raíces múltiples salen con poca precisión, y cada candidata se comprueba exactamente después
+    for (let d = 1; d <= 60; d++) { const n = Math.round(x * d); if (Math.abs(x - n / d) < 1e-3 * Math.max(1, Math.abs(x)) / d) return Q(n, d); }
     return null;
   };
   // raíces exactas (racionales o complejas racionales) con su multiplicidad y el polinomio que queda sin ellas

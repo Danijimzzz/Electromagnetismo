@@ -1,48 +1,65 @@
 /* =====================================================================
-   Campos vectoriales: interfaz (cuatro modos: gradiente de un campo
-   escalar, divergencia y rotacional de un campo vectorial, integral de
-   línea y teorema de Green). La gráfica es el plano z = z₀: mapa de color
-   y curvas de nivel para f, flechas y partículas que siguen el campo para
-   F, la curva con un punto que la recorre y la región de Green. Tocando
-   la gráfica se cambia el punto. El cálculo está en campos/calculo.js
+   Campos vectoriales: interfaz (siete modos: gradiente de un campo
+   escalar, divergencia y rotacional (con el potencial) de un campo
+   vectorial, integral de línea, ∫ f ds, teorema de Green, flujo por una
+   superficie con Stokes y teorema de la divergencia). La gráfica es el
+   plano z = z₀: mapa de color y curvas de nivel para f, flechas y
+   partículas que siguen el campo para F, la curva con un punto que la
+   recorre y la región de Green; las superficies y los sólidos se ven en
+   perspectiva, girando. Tocando la gráfica se cambia el punto. El cálculo está en campos/calculo.js
    (Campos) y las expresiones en matematicas/expresion.js.
    ===================================================================== */
 (() => {
-  const $ = (q) => document.querySelector(q);
+  const { $, esc, copia, txt } = Herramienta;
   const C = Campos, CLAVE = 'campos-v1';
-  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const copia = (o) => JSON.parse(JSON.stringify(o));
   const fH = (x, d = 4) => C.f(x, d).replace(/\^\{([^}]*)\}/, '<sup>$1</sup>');
-  const txt = (h) => String(h).replace(/<sup>(.*?)<\/sup>/g, (_, e) => e.replace(/−/g, '⁻').replace(/\d/g, (d) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d])).replace(/<[^>]+>/g, '');
   const coma = (v) => String(v).replace('.', ',');
-  const MODOS = [['escalar', 'Gradiente de un campo escalar f'], ['vectorial', 'Divergencia y rotacional de F'], ['linea', 'Integral de línea (trabajo)'], ['green', 'Teorema de Green']];
-  const REGION = { circulo: { cx: '0', cy: '0', rad: '1' }, rectangulo: { x1: '0', x2: '2', y1: '0', y2: '1' } };
+  const MODOS = [['escalar', 'Gradiente de un campo escalar f'], ['vectorial', 'Divergencia, rotacional y potencial de F'], ['linea', 'Integral de línea (trabajo)'], ['masa', 'Integral de f a lo largo de una curva (∫ f ds)'], ['green', 'Teorema de Green'], ['superficie', 'Flujo por una superficie y Stokes'], ['gauss', 'Teorema de la divergencia (Gauss)']];
+  const REGION = { circulo: { cx: '0', cy: '0', rad: '1' }, rectangulo: { x1: '0', x2: '2', y1: '0', y2: '1' }, poligono: { vertices: '0 0; 2 0; 0 1' }, curvas: { g1: 'x^2', g2: 'x', a: '0', b: '1' } };
+  const SOLIDO = { caja: { x1: '0', x2: '1', y1: '0', y2: '1', z1: '0', z2: '1' }, esfera: { cx: '0', cy: '0', cz: '0', rad: '1' }, cilindro: { cx: '0', cy: '0', rad: '1', z1: '0', z2: '2' } };
+  const CURVA = { param: { cx: 'cos t', cy: 'sen t', cz: '', a: '0', b: 'π' }, poligonal: { vertices: '0 0; 1 0; 0 1', cierra: 'si' } };
+  const D3 = ['superficie', 'gauss'];
 
   let sc = copia(C.ejemplos[0].sc);
   try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && MODOS.some(([k]) => k === g.modo)) sc = g; } catch (e) { /* sin almacenamiento */ }
   const guarda = () => { try { localStorage.setItem(CLAVE, JSON.stringify(sc)); } catch (e) { /* sin almacenamiento */ } };
-  let sol = null, col = {}, V = null, trans = null, anda = true, u = 0, giro = 0, parts = [], fondo = null;
+  let sol = null, col = {}, V = null, trans = null, anda = true, u = 0, giro = 0, parts = [], fondo = null, az = 0.7;
 
   /* ---------- Formulario ---------- */
   const fila = (k, nom, ay = '', larga = false) => `<label for="f-${k}">${nom}${ay ? ` <small>${ay}</small>` : ''}</label><input id="f-${k}" class="in${larga ? ' larga' : ''}" data-k="${k}" value="${esc(sc[k] ?? '')}" autocomplete="off" spellcheck="false">`;
   const elige = (k, nom, lista) => `<label for="f-${k}">${nom}</label><select id="f-${k}" class="in" data-k="${k}">${lista.map(([v, t]) => `<option value="${v}"${String(sc[k]) === v ? ' selected' : ''}>${t}</option>`).join('')}</select>`;
   const sep = (t) => `<div class="sep">${t}</div>`;
-  const campoF = (conR = true) => sep('Campo F = (P, Q, R)') + fila('P', 'P', 'función de x, y, z', true) + fila('Q', 'Q', '', true) + (conR ? fila('R', 'R', 'vacía en el plano', true) : '');
+  const campoF = (conR = true) => sep('Campo F = (P, Q, R)') + fila('P', 'P', 'función de x, y, z', true) + fila('Q', 'Q', '', true) + (conR ? fila('R', 'R', D3.includes(sc.modo) ? '' : 'vacía en el plano', true) : '');
   const punto = () => sep('Punto') + fila('x0', 'x₀') + fila('y0', 'y₀') + fila('z0', 'z₀', 'si hay z');
+  const curvaF = () => sep('Curva') + elige('curva', 'Tipo', [['param', 'Paramétrica r(t)'], ['poligonal', 'Poligonal (segmentos)']]) + (sc.curva === 'poligonal'
+    ? fila('vertices', 'Vértices', 'x y (z); …', true) + elige('cierra', 'Volver al primero', [['si', 'Sí (cerrada)'], ['no', 'No']])
+    : fila('cx', 'x(t)', '', true) + fila('cy', 'y(t)', '', true) + fila('cz', 'z(t)', 'vacía en el plano', true) + fila('a', 't inicial') + fila('b', 't final'));
   const NOTAS = {
     escalar: 'Escribe f con x, y (y z si quieres): x^2 + y^2, x y z, e^x sen y… La dirección u es opcional y no hace falta que sea unitaria.',
     vectorial: 'Escribe las componentes con x, y, z. Si R está vacía y no hay z, el campo es plano. Toca la gráfica para mover el punto.',
-    linea: 'La curva r(t) = (x(t), y(t), z(t)) va de t inicial a t final; por ejemplo cos t, sen t con t de 0 a 2π.',
-    green: 'La curva es el borde de la región, recorrido en sentido antihorario. Con un círculo, toca la gráfica para mover su centro.',
+    linea: 'La curva r(t) = (x(t), y(t), z(t)) va de t inicial a t final; por ejemplo cos t, sen t con t de 0 a 2π. Una poligonal se escribe con sus vértices: 0 0; 1 0; 1 1 (separados por «;», decimales con punto).',
+    masa: 'f puede ser la densidad del alambre (para la masa y el centro de masas) o cualquier función; con f = 1 sale la longitud. Una poligonal se escribe con sus vértices: 0 0; 1 0; 1 1.',
+    green: 'La curva es el borde de la región, recorrido en sentido antihorario. Un polígono se escribe con sus vértices (0 0; 2 0; 0 1) y la región entre curvas, con la de abajo y la de arriba. Con un círculo, toca la gráfica para mover su centro.',
+    superficie: 'La superficie es r(u, v) con u y v en un rectángulo; por ejemplo la esfera unidad es (sen u cos v, sen u sen v, cos u) con u de 0 a π y v de 0 a 2π. La normal es r_u × r_v.',
+    gauss: 'El flujo se calcula cara a cara con la normal hacia fuera y se compara con la integral triple de la divergencia. El cilindro tiene el eje vertical.',
   };
   function formulario() {
     let h = elige('modo', 'Qué calcular', MODOS);
     if (sc.modo === 'escalar') h += fila('f', 'f(x, y, z) =', '', true) + punto() + fila('u', 'Dirección u', '(opcional) 1, 2');
     else if (sc.modo === 'vectorial') h += campoF() + punto();
-    else if (sc.modo === 'linea') h += campoF() + sep('Curva r(t)') + fila('cx', 'x(t)', '', true) + fila('cy', 'y(t)', '', true) + fila('cz', 'z(t)', 'vacía en el plano', true) + fila('a', 't inicial') + fila('b', 't final');
-    else {
-      h += sep('Campo F = (P, Q)') + fila('P', 'P', 'función de x e y', true) + fila('Q', 'Q', '', true) + sep('Región') + elige('region', 'Forma', [['circulo', 'Círculo'], ['rectangulo', 'Rectángulo']]);
-      h += sc.region === 'rectangulo' ? fila('x1', 'x mínima') + fila('x2', 'x máxima') + fila('y1', 'y mínima') + fila('y2', 'y máxima') : fila('cx', 'Centro x') + fila('cy', 'Centro y') + fila('rad', 'Radio');
+    else if (sc.modo === 'linea' || sc.modo === 'masa') h += (sc.modo === 'linea' ? campoF() : sep('Campo escalar') + fila('f', 'f(x, y, z) =', 'densidad', true)) + curvaF();
+    else if (sc.modo === 'superficie') h += campoF() + sep('Superficie r(u, v)') + fila('sx', 'x(u, v)', '', true) + fila('sy', 'y(u, v)', '', true) + fila('sz', 'z(u, v)', '', true) + fila('u1', 'u mínima') + fila('u2', 'u máxima') + fila('v1', 'v mínima') + fila('v2', 'v máxima');
+    else if (sc.modo === 'gauss') {
+      h += campoF() + sep('Sólido') + elige('solido', 'Forma', [['caja', 'Caja'], ['esfera', 'Esfera'], ['cilindro', 'Cilindro']]);
+      h += sc.solido === 'esfera' ? fila('cx', 'Centro x') + fila('cy', 'Centro y') + fila('cz', 'Centro z') + fila('rad', 'Radio')
+        : sc.solido === 'cilindro' ? fila('cx', 'Eje: x') + fila('cy', 'Eje: y') + fila('rad', 'Radio') + fila('z1', 'z mínima') + fila('z2', 'z máxima')
+          : fila('x1', 'x mínima') + fila('x2', 'x máxima') + fila('y1', 'y mínima') + fila('y2', 'y máxima') + fila('z1', 'z mínima') + fila('z2', 'z máxima');
+    } else {
+      h += sep('Campo F = (P, Q)') + fila('P', 'P', 'función de x e y', true) + fila('Q', 'Q', '', true) + sep('Región') + elige('region', 'Forma', [['circulo', 'Círculo'], ['rectangulo', 'Rectángulo'], ['poligono', 'Triángulo o polígono'], ['curvas', 'Entre dos curvas']]);
+      h += sc.region === 'rectangulo' ? fila('x1', 'x mínima') + fila('x2', 'x máxima') + fila('y1', 'y mínima') + fila('y2', 'y máxima')
+        : sc.region === 'poligono' ? fila('vertices', 'Vértices', 'x y; x y; …', true)
+          : sc.region === 'curvas' ? fila('g1', 'Abajo: y =', 'función de x', true) + fila('g2', 'Arriba: y =', '', true) + fila('a', 'x inicial') + fila('b', 'x final')
+            : fila('cx', 'Centro x') + fila('cy', 'Centro y') + fila('rad', 'Radio');
     }
     $('#campos').innerHTML = h;
     $('#nota').textContent = NOTAS[sc.modo];
@@ -51,8 +68,9 @@
   $('#campos').addEventListener('input', (e) => { const t = e.target; if (t.tagName !== 'INPUT') return; sc[t.dataset.k] = t.value; cambia(); });
   $('#campos').addEventListener('change', (e) => {
     const t = e.target; if (t.tagName !== 'SELECT') return;
-    if (t.dataset.k === 'modo') sc = copia(C.ejemplos.find((x) => x.sc.modo === t.value).sc);
-    else { sc.region = t.value; Object.assign(sc, REGION[t.value]); }
+    const k = t.dataset.k;
+    if (k === 'modo') sc = copia(C.ejemplos.find((x) => x.sc.modo === t.value).sc);
+    else { sc[k] = t.value; Object.assign(sc, ({ region: REGION, solido: SOLIDO, curva: CURVA }[k] || {})[t.value] || {}); }
     formulario(); cambia();
   });
 
@@ -79,6 +97,15 @@
       () => ({ modo: 'linea', P: k(nz(-2, 2), 'y'), Q: k(nz(-2, 2), 'x'), R: '', cx: `${ent(1, 3)} cos t`.replace(/^1 /, ''), cy: `${ent(1, 3)} sen t`.replace(/^1 /, ''), cz: '', a: '0', b: ['π/2', 'π', '2π'][ent(0, 2)] }),
       () => ({ modo: 'green', P: k(nz(-3, 3), 'y'), Q: k(nz(-3, 3), 'x'), region: 'circulo', cx: '0', cy: '0', rad: String(ent(1, 3)) }),
       () => { const x2 = ent(1, 3), y2 = ent(1, 3); return { modo: 'green', P: k(nz(-2, 2), 'x y'), Q: k(nz(-2, 2), 'x^2'), region: 'rectangulo', x1: '0', x2: String(x2), y1: '0', y2: String(y2) }; },
+      () => { const a = nz(1, 2), b = nz(-2, 2); return { modo: 'vectorial', P: mas(k(2 * a, 'x y'), String(nz(1, 3))), Q: mas(k(a, 'x^2'), k(3 * b, 'y^2')), R: '', x0: String(nz(-2, 2)), y0: String(nz(-2, 2)), z0: '' }; },
+      () => ({ modo: 'linea', P: k(nz(-2, 2), 'y'), Q: k(nz(-2, 2), 'x'), R: '', curva: 'poligonal', vertices: `0 0; ${ent(1, 3)} 0; 0 ${ent(1, 3)}`, cierra: 'si' }),
+      () => ({ modo: 'masa', f: ['1', 'x', 'y', 'x + y', 'x^2'][ent(0, 4)], curva: 'param', cx: `${ent(1, 3)} cos t`.replace(/^1 /, ''), cy: `${ent(1, 3)} sen t`.replace(/^1 /, ''), cz: '', a: '0', b: ['π/2', 'π'][ent(0, 1)] }),
+      () => ({ modo: 'green', P: k(nz(-3, 3), 'y'), Q: k(nz(-3, 3), 'x'), region: 'poligono', vertices: `0 0; ${ent(1, 4)} 0; ${ent(0, 2)} ${ent(1, 3)}` }),
+      () => ({ modo: 'green', P: k(nz(-2, 2), 'y'), Q: k(nz(-2, 2), 'x'), region: 'curvas', g1: `x^${ent(2, 3)}`, g2: 'x', a: '0', b: '1' }),
+      () => ({ modo: 'superficie', P: k(nz(-2, 2), 'x'), Q: k(nz(-2, 2), 'y'), R: k(nz(-2, 2), 'z'), sx: 'u', sy: 'v', sz: String(ent(1, 3)), u1: '0', u2: String(ent(1, 3)), v1: '0', v2: String(ent(1, 3)) }),
+      () => { const R = ent(1, 3); return { modo: 'superficie', P: k(nz(-2, 2), 'y'), Q: k(nz(-2, 2), 'x'), R: '0', sx: `${R} sen u cos v`.replace(/^1 /, ''), sy: `${R} sen u sen v`.replace(/^1 /, ''), sz: `${R} cos u`.replace(/^1 /, ''), u1: '0', u2: 'π/2', v1: '0', v2: '2π' }; },
+      () => ({ modo: 'gauss', P: k(nz(-2, 2), 'x'), Q: k(nz(-2, 2), 'y'), R: k(nz(-2, 2), 'z'), solido: 'caja', x1: '0', x2: String(ent(1, 3)), y1: '0', y2: String(ent(1, 3)), z1: '0', z2: String(ent(1, 3)) }),
+      () => ({ modo: 'gauss', P: k(nz(-2, 2), 'x'), Q: k(nz(-2, 2), 'y'), R: k(nz(-2, 2), 'z'), solido: ['esfera', 'cilindro'][ent(0, 1)], cx: '0', cy: '0', cz: '0', rad: String(ent(1, 2)), z1: '0', z2: String(ent(1, 3)) }),
     ];
     sc = tipos[ent(0, tipos.length - 1)]();
     formulario(); calcula(); sel.value = '';
@@ -88,8 +115,15 @@
     const P = () => `(${esc(sc.x0)}, ${esc(sc.y0)}${sc.z0 ? `, ${esc(sc.z0)}` : ''})`;
     if (sc.modo === 'escalar') return `Calcula el gradiente de <b>f = ${esc(sc.f)}</b> en el punto ${P()}${sc.u ? ` y la derivada direccional en la dirección (${esc(sc.u)})` : ''}, y su laplaciano.`;
     if (sc.modo === 'vectorial') return `Calcula la divergencia y el rotacional de <b>${F()}</b> en ${P()}. ¿Es conservativo?`;
-    if (sc.modo === 'linea') return `Calcula el trabajo de <b>${F()}</b> a lo largo de r(t) = (${esc(sc.cx)}, ${esc(sc.cy)}${sc.cz ? `, ${esc(sc.cz)}` : ''}) con t de ${esc(sc.a)} a ${esc(sc.b)}.`;
-    const reg = sc.region === 'rectangulo' ? `el rectángulo [${esc(sc.x1)}, ${esc(sc.x2)}] × [${esc(sc.y1)}, ${esc(sc.y2)}]` : `el círculo de centro (${esc(sc.cx)}, ${esc(sc.cy)}) y radio ${esc(sc.rad)}`;
+    const cur = () => (sc.curva === 'poligonal' ? `la poligonal ${esc(sc.vertices).split(';').map((q) => `(${q.trim().split(/[\s,]+/).join(', ')})`).join(' → ')}${sc.cierra === 'si' ? ' (cerrada)' : ''}` : `r(t) = (${esc(sc.cx)}, ${esc(sc.cy)}${sc.cz ? `, ${esc(sc.cz)}` : ''}) con t de ${esc(sc.a)} a ${esc(sc.b)}`);
+    if (sc.modo === 'linea') return `Calcula el trabajo de <b>${F()}</b> a lo largo de ${cur()}.`;
+    if (sc.modo === 'masa') return `Calcula <b>∫ f ds</b> con f = ${esc(sc.f)} a lo largo de ${cur()}. Si f es la densidad de un alambre, ¿cuál es su masa y su centro de masas?`;
+    if (sc.modo === 'superficie') return `Calcula el flujo de <b>${F()}</b> a través de la superficie r(u, v) = (${esc(sc.sx)}, ${esc(sc.sy)}, ${esc(sc.sz)}) con u de ${esc(sc.u1)} a ${esc(sc.u2)} y v de ${esc(sc.v1)} a ${esc(sc.v2)}, y comprueba el teorema de Stokes.`;
+    if (sc.modo === 'gauss') {
+      const s3 = sc.solido === 'esfera' ? `la esfera de centro (${esc(sc.cx)}, ${esc(sc.cy)}, ${esc(sc.cz)}) y radio ${esc(sc.rad)}` : sc.solido === 'cilindro' ? `el cilindro de radio ${esc(sc.rad)} y eje vertical por (${esc(sc.cx)}, ${esc(sc.cy)}), con z de ${esc(sc.z1)} a ${esc(sc.z2)}` : `la caja [${esc(sc.x1)}, ${esc(sc.x2)}] × [${esc(sc.y1)}, ${esc(sc.y2)}] × [${esc(sc.z1)}, ${esc(sc.z2)}]`;
+      return `Comprueba el teorema de la divergencia para <b>${F()}</b> en ${s3}: calcula el flujo hacia fuera y la integral triple de la divergencia.`;
+    }
+    const reg = sc.region === 'rectangulo' ? `el rectángulo [${esc(sc.x1)}, ${esc(sc.x2)}] × [${esc(sc.y1)}, ${esc(sc.y2)}]` : sc.region === 'poligono' ? `el polígono de vértices ${esc(sc.vertices).split(';').map((q) => `(${q.trim().split(/[\s,]+/).join(', ')})`).join(', ')}` : sc.region === 'curvas' ? `la región entre y = ${esc(sc.g1)} e y = ${esc(sc.g2)} con x de ${esc(sc.a)} a ${esc(sc.b)}` : `el círculo de centro (${esc(sc.cx)}, ${esc(sc.cy)}) y radio ${esc(sc.rad)}`;
     return `Comprueba el teorema de Green para <b>${F()}</b> en ${reg}: calcula la circulación por el borde y la integral doble del rotacional.`;
   };
 
@@ -119,7 +153,24 @@
       h += dato(`Divergencia en ${pt}`, nx(sol.div), 'num');
       h += dato(`Rotacional en ${pt}`, d3 ? M(vec(sol.rot0.map((v) => C.ex(v)))) : nx(sol.rot0[2]), d3 ? '' : 'num');
       h += dato('¿Conservativo?', sol.cons ? 'Sí' : 'No');
+      if (sol.phiTxt) h += dato('Potencial', M(`φ = ${sol.phiTxt} + K`), 'ancho');
       if (sol.phi !== null) h += dato(`Potencial φ${pt}`, nx(sol.phi), 'num');
+    } else if (sol.modo === 'masa') {
+      h += dato('∫ f ds', nx(sol.I, 5), 'num');
+      h += dato('Longitud', nx(sol.L, 5), 'num');
+      h += dato('Valor medio de f', nx(sol.media, 5), 'num');
+      h += sol.cm ? dato('Centro de masas', M(vec((d3 ? sol.cm : sol.cm.slice(0, 2)).map((v) => C.ex(v))))) : dato('Centroide de la curva', M(vec((d3 ? sol.cg : sol.cg.slice(0, 2)).map((v) => C.ex(v)))));
+    } else if (sol.modo === 'superficie') {
+      h += dato('Flujo ∬ F · dS', nx(sol.flujo, 5), 'num');
+      h += dato('Área de la superficie', nx(sol.area, 5), 'num');
+      h += dato('∬ (∇ × F) · dS', nx(sol.rotFlujo, 5), 'num');
+      h += dato(sol.cerrada ? '∮ borde (no tiene)' : 'Circulación por el borde', nx(sol.circula, 5), 'num');
+      if (!sol.stokes) h += dato('Atención', 'No coinciden: el campo tiene una singularidad sobre la superficie y Stokes no vale', 'ancho');
+    } else if (sol.modo === 'gauss') {
+      h += dato('Flujo hacia fuera ∯ F · dS', nx(sol.flujo, 5), 'num');
+      h += dato('∭ div F dV', nx(sol.vol, 5), 'num');
+      h += dato('Volumen', nx(sol.V, 5), 'num');
+      if (sol.singular) h += dato('Atención', 'No coinciden: hay un punto dentro donde F no está definido y el teorema no vale', 'ancho');
     } else if (sol.modo === 'linea') {
       h += dato('Trabajo W', nx(sol.W, 5), 'num');
       if (sol.dphi !== null) h += dato('φ(B) − φ(A)', nx(sol.dphi, 5), 'num');
@@ -130,37 +181,36 @@
       h += dato('∬ rot F dA', nx(sol.dobleR, 5), 'num');
       h += dato('Flujo ∮ F · n ds', nx(sol.flujo, 5), 'num');
       h += dato('∬ div F dA', nx(sol.dobleD, 5), 'num');
+      h += dato('Área de D', nx(sol.area, 5), 'num');
       if (sol.singular) h += dato('Atención', 'No coinciden: hay un punto de D donde F no está definido y Green no vale', 'ancho');
     }
     $('#resumen').innerHTML = h;
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
-    const corte = d3 && sol.modo !== 'green' ? ` Es el corte por el plano z = ${fH(sol.p ? sol.p[2] : 0, 3)}${sol.modo === 'linea' ? ' y la curva vista desde arriba' : ''}.` : '';
+    const corte = d3 && !['green', 'superficie', 'gauss'].includes(sol.modo) ? ` Es el corte por el plano z = ${fH(sol.p ? sol.p[2] : 0, 3)}${sol.modo === 'linea' || sol.modo === 'masa' ? ' y la curva vista desde arriba' : ''}.` : '';
     $('#leyenda').innerHTML = (sol.modo === 'escalar' ? `Mapa de color de f (azul, valores bajos; naranja, altos) con sus curvas de nivel y, en flechas grises, el gradiente. En color, ∇f en el punto${sol.u ? ' y en azul la dirección u' : ''}. Toca la gráfica para mover el punto.`
       : sol.modo === 'vectorial' ? 'Las flechas son la dirección del campo y las partículas lo siguen. El molinillo del punto gira según el rotacional. Toca la gráfica para mover el punto.'
         : sol.modo === 'linea' ? 'La curva va de A (hueco) a B (relleno). El punto que la recorre lleva la fuerza F (en color) y la velocidad r′(t) (en azul): el trabajo crece cuando van en el mismo sentido.'
+          : sol.modo === 'masa' ? `Mapa de color de f (azul, valores bajos; naranja, altos) y la curva encima. La cruz es el ${sol.cm ? 'centro de masas del alambre' : 'centroide de la curva'}.`
+            : sol.modo === 'superficie' ? `La superficie en perspectiva, girando. En color, la normal r_u × r_v; en azul, el campo F en los mismos puntos${sol.borde.length ? '; el borde, en trazo grueso' : ''}. Pulsa Parar para dejarla quieta.`
+              : sol.modo === 'gauss' ? 'El sólido en perspectiva, girando, con el campo F (en color) en puntos de su borde: donde apunta hacia fuera, sale flujo. Pulsa Parar para dejarlo quieto.'
           : 'La región D sombreada y su borde recorrido en sentido antihorario. Las partículas siguen el campo: si giran, hay circulación; si salen, hay flujo.') + corte;
     V = null; fondo = null; parts = []; dibuja();
   }
 
   /* ---------- Gráfica ---------- */
   function colores() { const cs = getComputedStyle(document.documentElement); for (const c of ['--ink', '--muted', '--line', '--accent', '--accent-soft', '--panel', '--bg', '--z1', '--z2']) col[c] = cs.getPropertyValue(c).trim(); fondo = null; }
-  const marcas = (a, b, n = 6) => {
-    const p0 = (b - a) / n, e = 10 ** Math.floor(Math.log10(p0)), paso = [1, 2, 2.5, 5, 10].map((q) => q * e).find((q) => q >= p0) || 10 * e;
-    const out = []; for (let v = Math.ceil(a / paso) * paso; v <= b + paso * 1e-9; v += paso) out.push(Math.abs(v) < paso * 1e-9 ? 0 : v);
-    return out;
-  };
-  const lienzo = (s) => {
-    const c = $(s), dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
-    if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); fondo = null; }
-    const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
-    return { g, w, h };
-  };
+  const marcas = Herramienta.marcas;
+  function lienzo(s) {
+    const r = Herramienta.lienzo(s);
+    if (r.cambia) fondo = null;
+    return r;
+  }
   const mL = 40, mR = 12, mT = 12, mB = 26;
   // ventana con la misma escala en x y en y, para que los círculos sean círculos
   function ventana(w, h) {
     let xs, ys;
-    if (sol.modo === 'linea') { xs = []; ys = []; for (let i = 0; i <= 200; i++) { const q = sol.r(sol.a + ((sol.b - sol.a) * i) / 200); if (isFinite(q[0]) && isFinite(q[1])) { xs.push(q[0]); ys.push(q[1]); } } }
-    else if (sol.modo === 'green') { const r = sol.reg; xs = r.tipo === 'circulo' ? [r.cx - r.R, r.cx + r.R] : [r.x1, r.x2]; ys = r.tipo === 'circulo' ? [r.cy - r.R, r.cy + r.R] : [r.y1, r.y2]; }
+    if (sol.modo === 'linea' || sol.modo === 'masa') { xs = []; ys = []; for (let i = 0; i <= 200; i++) { const q = sol.r(sol.a + ((sol.b - sol.a) * i) / 200); if (isFinite(q[0]) && isFinite(q[1])) { xs.push(q[0]); ys.push(q[1]); } } }
+    else if (sol.modo === 'green') { xs = []; ys = []; for (let i = 0; i < 200; i++) { const q = sol.borde(i / 200); xs.push(q[0]); ys.push(q[1]); } }
     else { const L = Math.max(2.5, 1.5 * Math.max(Math.abs(sol.p[0]), Math.abs(sol.p[1])) + 0.5); xs = [-L, L, sol.p[0]]; ys = [-L, L, sol.p[1]]; }
     let x1 = Math.min(...xs), x2 = Math.max(...xs), y1 = Math.min(...ys), y2 = Math.max(...ys);
     const lado = Math.max(x2 - x1, y2 - y1, 1) * (sol.modo === 'escalar' || sol.modo === 'vectorial' ? 1 : 1.5);
@@ -244,15 +294,40 @@
     g.globalAlpha = 1;
   }
   const circulo = (g, x, y, r, relleno, borde, lw = 1.8) => { g.beginPath(); g.arc(x, y, r, 0, 2 * Math.PI); if (relleno) { g.fillStyle = relleno; g.fill(); } if (borde) { g.strokeStyle = borde; g.lineWidth = lw; g.stroke(); } };
+  // superficies y sólidos en perspectiva (giro alrededor del eje z, vistos un poco desde arriba)
+  function dibuja3(g, w, h) {
+    const todos = sol.lineas.flat(), lo = [0, 1, 2].map((i) => Math.min(...todos.map((p) => p[i]))), hi = [0, 1, 2].map((i) => Math.max(...todos.map((p) => p[i])));
+    const c = lo.map((v, i) => (v + hi[i]) / 2), diag = Math.max(1e-9, Math.hypot(...hi.map((v, i) => v - lo[i]))), el = 0.42;
+    const k = (0.8 * Math.min(w, h)) / diag, ca = Math.cos(az), sa = Math.sin(az);
+    const pr = (p) => { const q = [p[0] - c[0], p[1] - c[1], p[2] - c[2]], x = q[0] * ca - q[1] * sa, y = q[0] * sa + q[1] * ca; return [w / 2 + k * x, h / 2 - k * (q[2] * Math.cos(el) + y * Math.sin(el))]; };
+    const linea = (ps) => { g.beginPath(); ps.forEach((p, i) => { const [x, y] = pr(p); i ? g.lineTo(x, y) : g.moveTo(x, y); }); g.stroke(); };
+    const flecha3 = (p, v, L) => { const m = Math.hypot(...v); if (!(m > 0) || !isFinite(m)) return; const a = pr(p), b = pr(p.map((q, i) => q + (v[i] / m) * L)); g.beginPath(); flecha(g, a[0], a[1], b[0] - a[0], b[1] - a[1], Math.hypot(b[0] - a[0], b[1] - a[1]), 4); g.stroke(); };
+    // ejes desde el centro de la figura
+    g.lineWidth = 1; g.strokeStyle = col['--muted']; g.fillStyle = col['--muted']; g.font = '11px "IBM Plex Sans", system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    ['x', 'y', 'z'].forEach((n, i) => { const e = c.slice(); e[i] += diag * 0.62; linea([c, e]); const [x, y] = pr(e); g.fillText(n, x, y); });
+    g.strokeStyle = col['--muted']; g.globalAlpha = 0.55; g.lineWidth = 1; sol.lineas.forEach(linea); g.globalAlpha = 1;
+    if (sol.borde) { g.strokeStyle = col['--ink']; g.lineWidth = 2.6; sol.borde.forEach(linea); }
+    const L = diag * 0.13;
+    if (sol.modo === 'superficie') {
+      g.lineWidth = 2; g.strokeStyle = col['--accent']; for (const q of sol.flechas) flecha3(q.p, q.n, L);
+      g.lineWidth = 1.6; g.strokeStyle = col['--z1']; for (const q of sol.flechas) { const F = sol.F(...q.p); if (F.every(isFinite)) flecha3(q.p, F, L * 0.8); }
+    } else {
+      const ms = sol.flechas.map((q) => Math.hypot(...q.F)).filter(isFinite), ref = Math.max(1e-12, ...ms);
+      g.lineWidth = 2; g.strokeStyle = col['--accent'];
+      for (const q of sol.flechas) { const m = Math.hypot(...q.F); if (isFinite(m) && m > 1e-9 * ref) { g.globalAlpha = 0.35 + 0.65 * (m / ref); flecha3(q.p, q.F, L * (0.4 + 0.6 * (m / ref))); } }
+      g.globalAlpha = 1;
+    }
+  }
   function dibuja(dt = 0) {
     const { g, w, h } = lienzo('#grafica');
     trans = null;
     if (!sol) return;
     if (!col['--ink']) colores();
+    if (D3.includes(sol.modo)) { dibuja3(g, w, h); return; }
     if (!V) V = ventana(w, h);
     const X = (x) => mL + ((x - V.x1) / (V.x2 - V.x1)) * (w - mL - mR), Y = (y) => mT + ((V.y2 - y) / (V.y2 - V.y1)) * (h - mT - mB);
     trans = { x: (px) => V.x1 + ((px - mL) / (w - mL - mR)) * (V.x2 - V.x1), y: (py) => V.y2 - ((py - mT) / (h - mT - mB)) * (V.y2 - V.y1) };
-    if (sol.modo === 'escalar') { if (!fondo) fondo = mapa(w, h, X, Y); g.drawImage(fondo, 0, 0, w, h); }
+    if (sol.modo === 'escalar' || sol.modo === 'masa') { if (!fondo) fondo = mapa(w, h, X, Y); g.drawImage(fondo, 0, 0, w, h); }
     ejes(g, w, h, X, Y);
     g.save(); g.beginPath(); g.rect(mL, mT, w - mL - mR, h - mT - mB); g.clip();
     if (sol.modo === 'escalar') {
@@ -262,6 +337,11 @@
       if (sol.u) { g.strokeStyle = col['--z1']; g.beginPath(); flecha(g, P0[0], P0[1], sol.u[0], -sol.u[1], 44, 5); g.stroke(); }
       circulo(g, P0[0], P0[1], 4.5, col['--panel'], col['--ink']);
       if (gm > 0) { g.font = '600 12px "IBM Plex Sans", system-ui, sans-serif'; g.fillStyle = col['--accent']; g.textAlign = 'left'; g.textBaseline = 'middle'; g.fillText('∇f', P0[0] + (sol.g0[0] / gm) * 64, P0[1] - (sol.g0[1] / gm) * 64); }
+    } else if (sol.modo === 'masa') {
+      const n = 400, pts = []; for (let i = 0; i <= n; i++) pts.push(sol.r(sol.a + ((sol.b - sol.a) * i) / n));
+      g.strokeStyle = col['--ink']; g.lineWidth = 3; g.beginPath(); pts.forEach((q, i) => (i ? g.lineTo(X(q[0]), Y(q[1])) : g.moveTo(X(q[0]), Y(q[1])))); g.stroke();
+      const c = sol.cm || sol.cg, cx = X(c[0]), cy = Y(c[1]);
+      g.strokeStyle = col['--accent']; g.lineWidth = 2.6; g.beginPath(); g.moveTo(cx - 7, cy - 7); g.lineTo(cx + 7, cy + 7); g.moveTo(cx - 7, cy + 7); g.lineTo(cx + 7, cy - 7); g.stroke();
     } else {
       if (sol.modo === 'green') {
         g.beginPath(); for (let i = 0; i <= 120; i++) { const q = sol.borde(i / 120); i ? g.lineTo(X(q[0]), Y(q[1])) : g.moveTo(X(q[0]), Y(q[1])); }
@@ -296,7 +376,7 @@
   }
   // tocar la gráfica mueve el punto (o el centro del círculo de Green)
   $('#grafica').addEventListener('click', (e) => {
-    if (!sol || !trans || sol.modo === 'linea' || (sol.modo === 'green' && sc.region !== 'circulo')) return;
+    if (!sol || !trans || ['linea', 'masa', ...D3].includes(sol.modo) || (sol.modo === 'green' && sc.region !== 'circulo')) return;
     const r = e.target.getBoundingClientRect(), x = trans.x(e.clientX - r.left), y = trans.y(e.clientY - r.top);
     const red = (v) => coma(+v.toPrecision(3));
     if (sol.modo === 'green') { sc.cx = red(x); sc.cy = red(y); } else { sc.x0 = red(x); sc.y0 = red(y); }
@@ -310,6 +390,7 @@
     if (anda && sol) {
       u = sol.modo === 'linea' ? (u + dt / 5) % 1 : sol.modo === 'green' ? (u + dt / 6) % 1 : u;
       if (sol.modo === 'vectorial') giro += Math.max(-4, Math.min(4, sol.rot0[2] / 2)) * dt;
+      if (D3.includes(sol.modo)) az += dt * 0.35;
       dibuja(dt);
     }
     requestAnimationFrame(bucle);
@@ -319,5 +400,5 @@
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('campos').current;
   formulario(); colores(); calcula(); requestAnimationFrame(bucle);
-  window.CamposApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { modo: sol.modo, g0: sol.g0, du: sol.du, div: sol.div, rot0: sol.rot0, phi: sol.phi, W: sol.W, circula: sol.circula, dobleR: sol.dobleR, flujo: sol.flujo, dobleD: sol.dobleD }, estado: () => copia(sc) };
+  window.CamposApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { modo: sol.modo, g0: sol.g0, du: sol.du, div: sol.div, rot0: sol.rot0, phi: sol.phi, phiTxt: sol.phiTxt, W: sol.W, I: sol.I, cm: sol.cm, circula: sol.circula, dobleR: sol.dobleR, flujo: sol.flujo, dobleD: sol.dobleD, rotFlujo: sol.rotFlujo, vol: sol.vol }, estado: () => copia(sc) };
 })();

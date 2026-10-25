@@ -5,56 +5,17 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
 <style>
 :root {
-  --bg: #eef0f4; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d6dbe3; --accent: #b0700a; --accent-soft: #fbf0dc; --fuente: #c2412a; --corr: #2a5db5; --cable: #1a2128;
-  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
-  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
-}
+  --alto-grafica: clamp(280px, 38vw, 400px);
+  --fuente: #c2412a; --corr: #2a5db5; --cable: #1a2128 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #e6a640; --accent-soft: #3a2c12; --fuente: #ef7a62; --corr: #74a2f2; --cable: #e3e8ee; color-scheme: dark } }
+  --fuente: #ef7a62; --corr: #74a2f2; --cable: #e3e8ee } }
 :root[data-theme="dark"] {
-  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #e6a640; --accent-soft: #3a2c12; --fuente: #ef7a62; --corr: #74a2f2; --cable: #e3e8ee; color-scheme: dark }
-* { box-sizing: border-box }
-[hidden] { display: none !important }
-html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
-a { color: var(--accent) }
-.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
-.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
-.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
-.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
-h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
-.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
-.layout { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 16px; align-items: start }
-@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr) } }
-.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 14px }
-.card h2 { font: 600 15px var(--f-ui); margin: 0 0 10px }
-.campos { display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 7px 10px; align-items: center }
-.campos label { font-size: 13.5px } .campos label small { color: var(--muted) }
-.in { font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
-.in:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
-.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
-.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer }
-.btn:hover { border-color: var(--accent) }
-.error { color: #c0392b; font-size: 13px; margin: 10px 0 0 }
-.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
-.res { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px 14px; font: 16px var(--f-math) } .res div { overflow-x: auto } .res span { display: block; font: 12px var(--f-ui); color: var(--muted) }
-.leyenda { font-size: 12.5px; color: var(--muted); margin: 6px 0 0 } .leyenda b { font-weight: 600 }
-canvas { display: block; width: 100%; height: clamp(280px, 38vw, 400px); border-radius: 8px; background: var(--bg); margin-top: 10px }
-.pasos ol { margin: 0; padding-left: 22px } .pasos li { margin: 0 0 12px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto }
-.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
-.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
-.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
-.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
-footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+  --fuente: #ef7a62; --corr: #74a2f2; --cable: #e3e8ee }
 .lista { display: grid; grid-template-columns: 64px minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.3fr) 28px; gap: 5px 6px; align-items: center; margin-bottom: 8px }
 .lista .cab { font-size: 12px; color: var(--muted) } .lista b { font: 600 13.5px var(--f-math) }
-.lista .x { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 16px; padding: 0 } .lista .x:hover { color: #c0392b }
+.lista .x { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 16px; padding: 0 } .lista .x:hover { color: var(--error) }
 .botones { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px }
-.mat { position: relative; display: inline-block; vertical-align: middle; padding: 0 7px; margin: 2px }
-.mat::before, .mat::after { content: ""; position: absolute; top: 0; bottom: 0; width: 5px; border: 1.4px solid currentColor }
-.mat::before { left: 0; border-right: 0 } .mat::after { right: 0; border-left: 0 }
 .mat-in { display: inline-grid; gap: 2px 12px; padding: 3px 0; text-align: center; font-variant-numeric: tabular-nums; white-space: nowrap }
-.pasos li { overflow-x: auto }
 </style>
 <body>
 <header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Circuitos</a> / Circuitos de corriente continua</span></header>
@@ -68,7 +29,7 @@ footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8p
     <div class="lista" id="lista"></div>
     <div class="botones"><button class="btn" type="button" data-add="R">+ Resistencia</button><button class="btn" type="button" data-add="V">+ Fuente de tensión</button><button class="btn" type="button" data-add="I">+ Fuente de corriente</button></div>
     <div class="campos"><label for="carga">Thévenin visto por</label><select id="carga" class="in"></select></div>
-    <p class="nota">Cada elemento va del nudo A al nudo B. En una fuente de tensión, A es el borne +. En una fuente de corriente, la corriente va de A a B por dentro de la fuente. El nudo 0 es la referencia.</p>
+    <p class="nota">Cada elemento va del nudo A al nudo B. En una fuente de tensión, A es el borne +. En una fuente de corriente, la corriente va de A a B por dentro de la fuente. El nudo 0 es la referencia. Los valores admiten prefijos como 4k7, 1,5k o 100m.</p>
     <p class="error" id="error" hidden></p>
   </div>
   <div>

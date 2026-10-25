@@ -4,10 +4,8 @@
    (Matrices) y matematicas/algebra.js (Algebra).
    ===================================================================== */
 (() => {
-  const $ = (q) => document.querySelector(q);
+  const { $, esc, copia } = Herramienta;
   const X = Matrices, CLAVE = 'matrices-v1', MAX = 6;
-  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const copia = (o) => JSON.parse(JSON.stringify(o));
   const vacia = (f, c) => Array.from({ length: f }, (_, i) => Array.from({ length: c }, (_, j) => (i === j ? '1' : '0')));
 
   let sc = copia(X.ejemplos[0].sc);

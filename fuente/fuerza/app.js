@@ -6,11 +6,8 @@
    en fuerza/fisica.js (Fuerza).
    ===================================================================== */
 (() => {
-  const $ = (q) => document.querySelector(q);
+  const { $, esc, copia, txt } = Herramienta;
   const F = Fuerza, f = F.f, CLAVE = 'fuerza-v1';
-  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const copia = (o) => JSON.parse(JSON.stringify(o));
-  const txt = (h) => String(h).replace(/<sup>(.*?)<\/sup>/g, (_, e) => e.replace(/−/g, '⁻').replace(/\d/g, (d) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d])).replace(/<[^>]+>/g, '');
   const MODOS = [['carga', 'Carga en un campo B (circunferencia o hélice)'], ['vectorial', 'Fuerza de Lorentz con vectores'], ['selector', 'Selector de velocidades y espectrómetro'], ['ciclotron', 'Ciclotrón'], ['hilo', 'Fuerza sobre un hilo'], ['paralelos', 'Fuerza entre dos hilos paralelos']];
   const PARTS = [['proton', 'Protón'], ['electron', 'Electrón'], ['alfa', 'Partícula α'], ['deuteron', 'Deuterón'], ['otra', 'Otra (escribo q y m)']];
 
@@ -138,12 +135,7 @@
 
   /* ---------- Animación ---------- */
   function colores() { const cs = getComputedStyle(document.documentElement); for (const c of ['--ink', '--muted', '--line', '--accent', '--accent-soft', '--panel', '--bg', '--peso', '--normal', '--fuerza', '--z1', '--z2']) col[c] = cs.getPropertyValue(c).trim(); }
-  const lienzo = () => {
-    const c = $('#escena'), dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
-    if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
-    const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
-    return { g, w, h };
-  };
+  const lienzo = () => Herramienta.lienzo('#escena');
   const flecha = (g, x, y, dx, dy, L, color, lw = 2.4, et = '') => {
     const n = Math.hypot(dx, dy); if (!(n > 0) || !isFinite(n) || !(L > 0)) return;
     const ux = dx / n, uy = dy / n, x2 = x + ux * L, y2 = y + uy * L, a = 4 + lw;

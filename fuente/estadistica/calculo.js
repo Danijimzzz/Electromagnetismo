@@ -168,6 +168,9 @@ const Estadistica = (() => {
     return (lo + hi) / 2;
   }
 
+  // la probabilidad del cuantil va en «q», para no pisar la p de la binomial (antes era «p»)
+  const probCuantil = (sc, D) => lee(vacio(sc.q) && !D.params.some(([k]) => k === 'p') ? { q: sc.p } : sc, 'q', 'la probabilidad p', { min: 0, minEx: true, max: 1, maxEx: true });
+
   function calcular(sc) {
     const d = DIST[sc.dist] ? sc.dist : 'normal', D = DIST[d];
     const P = {};
@@ -197,7 +200,7 @@ const Estadistica = (() => {
           : `${prob(F(b))} − ${prob(F(a))} = <b>${prob(res)}</b>` });
         Object.assign(r, { p: res, a, b, sombra: [a, b] });
       } else if (tipo === 'cuantil') {
-        const p = lee(sc, 'p', 'la probabilidad p', { min: 0, minEx: true, max: 1, maxEx: true });
+        const p = probCuantil(sc, D);
         const x = d === 'exponencial' ? -Math.log1p(-p) / P.lambda : cuantil(D, P, p);
         let h = `Se busca a con P(${X} ≤ a) = ${num(p)}`;
         if (d === 'normal') { const zq = cuantil(DIST.normal, { mu: 0, sigma: 1 }, p); h += `.<br>En la normal tipificada, Φ(z) = ${num(p)} ⇒ z = ${num(zq)}.<br>Destipificando, a = μ + zσ = ${num(P.mu)} + ${num(zq)}·${num(P.sigma)} = <b>${num(x)}</b>`; }
@@ -229,7 +232,7 @@ const Estadistica = (() => {
         res = F(b) - F(a - 1); desc = `P(${a} ≤ X ≤ ${b})`;
         pasos.push({ t: desc, html: `= P(X ≤ ${b}) − P(X ≤ ${a - 1}) = ${prob(F(b))} − ${prob(F(a - 1))} = <b>${prob(res)}</b>${detalle(Math.max(a, 0), b)}` });
       } else if (tipo === 'cuantil') {
-        const p = lee(sc, 'p', 'la probabilidad p', { min: 0, minEx: true, max: 1, maxEx: true });
+        const p = probCuantil(sc, D);
         let k = Math.max(0, Math.floor(D.rango(P)[0]));
         while (F(k) < p && k < 1e7) k++;
         while (k > 0 && F(k - 1) >= p) k--;
@@ -263,7 +266,7 @@ const Estadistica = (() => {
   const ejemplos = [
     { clave: 'normal-menor', nombre: 'Normal: P(X ≤ 52) con N(50, 5)', sc: { dist: 'normal', mu: '50', sigma: '5', tipo: 'menor', a: '52' } },
     { clave: 'normal-entre', nombre: 'Normal: P(μ − σ ≤ X ≤ μ + σ)', sc: { dist: 'normal', mu: '0', sigma: '1', tipo: 'entre', a: '-1', b: '1' } },
-    { clave: 'normal-cuantil', nombre: 'Normal: nota que supera el 90 %', sc: { dist: 'normal', mu: '6', sigma: '1.5', tipo: 'cuantil', p: '0.9' } },
+    { clave: 'normal-cuantil', nombre: 'Normal: nota que supera el 90 %', sc: { dist: 'normal', mu: '6', sigma: '1.5', tipo: 'cuantil', q: '0.9' } },
     { clave: 'z-critico', nombre: 'Valor crítico z para α = 0,05', sc: { dist: 'normal', mu: '0', sigma: '1', tipo: 'critico', alfa: '0.05' } },
     { clave: 't-critico', nombre: 't de Student: valor crítico con 10 g. l.', sc: { dist: 't', nu: '10', tipo: 'critico', alfa: '0.05' } },
     { clave: 'chi2', nombre: 'χ² con 5 g. l.: P(χ² ≥ 11,07)', sc: { dist: 'chi2', k: '5', tipo: 'mayor', a: '11.07' } },

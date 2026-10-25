@@ -3,11 +3,8 @@
    desarrollo). El cálculo está en fluidos/fisica.js (Fluidos).
    ===================================================================== */
 (() => {
-  const $ = (q) => document.querySelector(q);
+  const { $, esc, copia, txt } = Herramienta;
   const F = Fluidos, f = F.f, CLAVE = 'fluidos-v1';
-  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const copia = (o) => JSON.parse(JSON.stringify(o));
-  const txt = (h) => String(h).replace(/<sup>(.*?)<\/sup>/g, (_, e) => e.replace(/−/g, '⁻').replace(/\d/g, (d) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d])).replace(/<[^>]+>/g, '');
   const MODOS = [['presion', 'Presión a una profundidad'], ['tuboU', 'Tubo en U con dos líquidos'], ['prensa', 'Prensa hidráulica (Pascal)'], ['empuje', 'Empuje (Arquímedes)'], ['bernoulli', 'Tubería: continuidad y Bernoulli'], ['torricelli', 'Chorro de un depósito (Torricelli)']];
 
   let sc = copia(F.ejemplos[0].sc);
@@ -109,7 +106,7 @@
       ley = 'El chorro sale horizontal con la velocidad de caída libre desde la superficie y luego cae como un tiro horizontal.';
     }
     $('#resumen').innerHTML = h; $('#leyenda').textContent = ley;
-    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
+    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html, true)}</li>`).join('');
     tA = 0; gotas = null; dibuja();
   }
 

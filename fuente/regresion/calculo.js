@@ -8,9 +8,10 @@
    ===================================================================== */
 const Regresion = (() => {
   const E = typeof Estadistica !== 'undefined' ? Estadistica : require('../estadistica/calculo.js');
-  const f = (x, d = 4) => {
+  // cero: por debajo de esto se escribe 0 (ruido de redondeo); con 0, nunca (la a de y = a·e^{bx} no es 0 aunque sea muy pequeña)
+  const f = (x, d = 4, cero = 1e-12) => {
     if (!isFinite(x)) return '—';
-    if (Math.abs(x) < 1e-12) return '0';
+    if (x === 0 || Math.abs(x) < cero) return '0';
     const a = Math.abs(x);
     const s = a >= 1e6 || a < 1e-3 ? x.toExponential(d - 1).replace(/\.?0+e/, 'e').replace('e', '·10^').replace(/\^([+-]?)(\d+)/, (_, sg, e) => `<sup>${sg === '-' ? '−' : ''}${+e}</sup>`) : String(+x.toPrecision(d));
     return s.replace('.', ',').replace('-', '−');
@@ -131,9 +132,10 @@ const Regresion = (() => {
     } else if (modelo === 'parabolica') {
       const sum = (g) => pts.reduce((s, q) => s + q.n * g(q.x, q.y), 0);
       const s1 = m.N, s2 = m.sx, s3 = m.sxx, s4 = sum((x) => x ** 3), s5 = sum((x) => x ** 4), t1 = m.sy, t2 = m.sxy, t3 = sum((x, y) => x * x * y);
-      const sol = new Set(xs).size >= 3 ? cramer3([[s1, s2, s3], [s2, s3, s4], [s3, s4, s5]], [t1, t2, t3]) : null;
+      // se resuelve con u = x − x̄ (con x grandes, como años, el sistema en x queda mal condicionado) y se deshace el cambio
+      const su = (k) => sum((x) => (x - m.mx) ** k), sol = new Set(xs).size >= 3 ? cramer3([[s1, 0, su(2)], [0, su(2), su(3)], [su(2), su(3), su(4)]], [t1, sum((x, y) => (x - m.mx) * y), sum((x, y) => (x - m.mx) ** 2 * y)]) : null;
       if (!sol) throw new Error('Para una parábola hacen falta al menos tres valores de x distintos');
-      const [A, B, C] = sol;
+      const C = sol[2], B = sol[1] - 2 * C * m.mx, A = sol[0] - sol[1] * m.mx + C * m.mx ** 2;
       res.pred = (x) => A + B * x + C * x * x; res.inv = null; res.coef = { a: A, b: B, c: C };
       res.ecuacion = `y = ${f(A)} ${mas(B)}x ${mas(C)}x²`;
       pasos.push({ t: 'Ecuaciones normales de la parábola', html: `Al minimizar $∑ (y_i − a − b x_i − c x_i^2)^2$ salen tres ecuaciones:<br>$${f(s1, 6)} a + ${p(s2)} b + ${p(s3)} c = ${f(t1, 6)}$<br>$${f(s2, 6)} a + ${p(s3)} b + ${p(s4)} c = ${f(t2, 6)}$<br>$${f(s3, 6)} a + ${p(s4)} b + ${p(s5)} c = ${f(t3, 6)}$<br>Resolviendo: $a = ${f(A)}$, $b = ${f(B)}$, $c = ${f(C)}$ ⇒ <b>${res.ecuacion}</b>` });
@@ -147,10 +149,10 @@ const Regresion = (() => {
       const U = M.u === 'ln x' ? 'ln x' : 'x', W = M.w === 'ln y' ? 'ln y' : 'y', Ut = M.u === 'ln x' ? 'ln x_i' : 'x_i', Wt = M.w === 'ln y' ? 'ln y_i' : 'y_i';
       let html = `Se pasa a una recta cambiando de variable: $u = ${U}$, $w = ${W}$${M.w === 'ln y' ? (M.u === 'ln x' ? ', porque $ln y = ln a + b ln x$' : ', porque $ln y = ln a + b x$') : ', y la ecuación ya es lineal en u'}. Con los datos transformados:<br>$ū = ${f(mt.mx)}$, $w̄ = ${f(mt.my)}$, $σ_u^2 = ${f(mt.vx)}$, $σ_{uw} = ${f(mt.cxy)}$<br>$b = σ_{uw}/{σ_u^2} = ${f(B)}$, &ensp; $${M.w === 'ln y' ? 'ln a' : 'a'} = w̄ − b ū = ${f(A0)}$`;
       let A = A0;
-      if (M.w === 'ln y') { A = Math.exp(A0); html += ` ⇒ $a = e^{${f(A0)}} = ${f(A)}$`; }
+      if (M.w === 'ln y') { A = Math.exp(A0); html += ` ⇒ $a = e^{${f(A0)}} = ${f(A, 4, 0)}$`; if (A < 1e-6 && xmin > 1000) html += '<br>Con unas x tan grandes, a sale muy pequeña. Si las x son años, resta el primero a todas para que a sea el valor de y al empezar.'; }
       res.coef = { a: A, b: B }; res.rt = rt;
-      if (modelo === 'exponencial') { res.pred = (x) => A * Math.exp(B * x); res.inv = (y) => (y > 0 && B ? Math.log(y / A) / B : NaN); res.ecuacion = `y = ${f(A)}·e<sup>${f(B)}x</sup>`; }
-      if (modelo === 'potencial') { res.pred = (x) => (x > 0 ? A * x ** B : NaN); res.inv = (y) => (y > 0 && B ? (y / A) ** (1 / B) : NaN); res.ecuacion = `y = ${f(A)}·x<sup>${f(B)}</sup>`; }
+      if (modelo === 'exponencial') { res.pred = (x) => A * Math.exp(B * x); res.inv = (y) => (y > 0 && B ? Math.log(y / A) / B : NaN); res.ecuacion = `y = ${f(A, 4, 0)}·e<sup>${f(B)}x</sup>`; }
+      if (modelo === 'potencial') { res.pred = (x) => (x > 0 ? A * x ** B : NaN); res.inv = (y) => (y > 0 && B ? (y / A) ** (1 / B) : NaN); res.ecuacion = `y = ${f(A, 4, 0)}·x<sup>${f(B)}</sup>`; }
       if (modelo === 'logaritmica') { res.pred = (x) => (x > 0 ? A + B * Math.log(x) : NaN); res.inv = (y) => (B ? Math.exp((y - A) / B) : NaN); res.ecuacion = `y = ${f(A)} ${mas(B)} ln x`; }
       html += `<br><b>${res.ecuacion}</b><br>El coeficiente de correlación de las variables transformadas es $r_{uw} = ${d4(rt)}$ (${f(100 * rt * rt, 3)} % de la variación de ${W} explicada).`;
       const g = (x) => f(x, 6), tr = pts.some((q) => q.n !== 1);

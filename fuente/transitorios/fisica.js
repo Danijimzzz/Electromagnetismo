@@ -20,12 +20,12 @@ const Transitorios = (() => {
     const a = Math.abs(x), p = PREF.find(([v]) => a >= v * 0.9999999) || PREF[PREF.length - 1];
     return `${String(+(x / p[0]).toPrecision(d)).replace('.', ',').replace('-', '−')} ${p[1]}${un}`;
   };
-  const leeNum = (s) => +String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace(/[−–]/g, '-').replace(/[·x×*]10\^?\(?([+\-]?\d+)\)?/i, 'e$1');
+  // con prefijo (4k7, 100n, 5m) o unidad el valor va en unidades del SI; un número solo, en las del campo (base)
   const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
   const may = (s) => s[0].toUpperCase() + s.slice(1);
-  function lee(sc, k, nom, { opcional = false, cero = false, signo = false } = {}) {
+  function lee(sc, k, nom, { opcional = false, cero = false, signo = false, base = 1 } = {}) {
     if (vacio(sc[k])) { if (opcional) return null; throw new Error(`Falta ${nom}`); }
-    const v = leeNum(sc[k]);
+    const v = Herramienta.leeSI(sc[k], base);
     if (!isFinite(v)) throw new Error(`${may(nom)} debe ser un número`);
     if (!signo && (cero ? v < 0 : v <= 0)) throw new Error(`${may(nom)} debe ser ${cero ? 'positivo o cero' : 'mayor que 0'}`);
     return v;
@@ -37,7 +37,7 @@ const Transitorios = (() => {
   /* ---------- RC ---------- */
   // sc: { proceso: 'carga'|'descarga', V, V0, R, C (μF), t, Vobj }
   function rc(sc) {
-    const carga = sc.proceso !== 'descarga', R = lee(sc, 'R', 'la resistencia'), C = lee(sc, 'C', 'la capacidad') * 1e-6, tau = R * C, pasos = [];
+    const carga = sc.proceso !== 'descarga', R = lee(sc, 'R', 'la resistencia'), C = lee(sc, 'C', 'la capacidad', { base: 1e-6 }), tau = R * C, pasos = [];
     const V = carga ? lee(sc, 'V', 'la tensión de la fuente', { cero: true }) : 0, V0 = lee(sc, 'V0', 'la tensión inicial del condensador', { opcional: carga, signo: true }) ?? 0;
     if (V === V0) throw new Error(carga ? 'El condensador ya está a la tensión de la fuente: no hay transitorio' : 'Con el condensador descargado no hay nada que descargar');
     const Vc = (t) => V + (V0 - V) * Math.exp(-t / tau), I = (t) => ((V - V0) / R) * Math.exp(-t / tau);
@@ -62,7 +62,7 @@ const Transitorios = (() => {
   /* ---------- RL ---------- */
   // sc: { proceso: 'subida'|'bajada', V, R, L (mH), t, Iobj }; en la bajada la corriente inicial es V/R
   function rl(sc) {
-    const sube = sc.proceso !== 'bajada', V = lee(sc, 'V', 'la tensión de la fuente'), R = lee(sc, 'R', 'la resistencia'), L = lee(sc, 'L', 'la inductancia') * 1e-3, tau = L / R, Inf = V / R, pasos = [];
+    const sube = sc.proceso !== 'bajada', V = lee(sc, 'V', 'la tensión de la fuente'), R = lee(sc, 'R', 'la resistencia'), L = lee(sc, 'L', 'la inductancia', { base: 1e-3 }), tau = L / R, Inf = V / R, pasos = [];
     const I0 = sube ? 0 : Inf, Ifin = sube ? Inf : 0;
     const I = (t) => Ifin + (I0 - Ifin) * Math.exp(-t / tau), VL = (t) => (sube ? V : -V) * Math.exp(-t / tau);
     pasos.push({ t: 'Constante de tiempo', html: `τ = L/R = ${u(L, 'H')} / ${u(R, 'Ω')} = <b>${u(tau, 's')}</b>` });
@@ -86,7 +86,7 @@ const Transitorios = (() => {
   /* ---------- RLC en serie ---------- */
   // sc: { V (escalón; 0 = respuesta libre), R, L (mH), C (μF), V0 (V del condensador en t = 0), I0, t }
   function rlc(sc) {
-    const V = lee(sc, 'V', 'la tensión de la fuente', { cero: true }), R = lee(sc, 'R', 'la resistencia', { cero: true }), L = lee(sc, 'L', 'la inductancia') * 1e-3, C = lee(sc, 'C', 'la capacidad') * 1e-6;
+    const V = lee(sc, 'V', 'la tensión de la fuente', { cero: true }), R = lee(sc, 'R', 'la resistencia', { cero: true }), L = lee(sc, 'L', 'la inductancia', { base: 1e-3 }), C = lee(sc, 'C', 'la capacidad', { base: 1e-6 });
     const V0 = lee(sc, 'V0', 'la tensión inicial del condensador', { opcional: true, signo: true }) ?? 0, I0 = lee(sc, 'I0', 'la corriente inicial', { opcional: true, signo: true }) ?? 0;
     if (V === V0 && I0 === 0) throw new Error('Con el condensador ya a la tensión de la fuente y sin corriente no hay transitorio');
     const a = R / (2 * L), w0 = 1 / Math.sqrt(L * C), Rc = 2 * Math.sqrt(L / C), A0 = V0 - V, D0 = I0 / C, pasos = [];
@@ -120,7 +120,12 @@ const Transitorios = (() => {
     // cuánto dibujar: unas cuantas constantes de tiempo del término más lento
     const lento = tipo === 'sobre' ? -1 / s1 : 1 / (a || w0 / 20), T = tipo === 'sub' ? Math.min(5 * lento, 12 * (2 * Math.PI) / wd) : 6 * lento;
     let pico = null;
-    if (tipo === 'sub' && V !== V0) { const tp = (Math.PI) / wd; pico = { t: tp, V: Vc(tp), sobre: Math.abs((Vc(tp) - V) / (V0 - V)) * 100 }; }
+    if (tipo === 'sub' && V !== V0) {
+      // primer extremo de V_C: dV = e^(−αt)(P cos ω_d t + Q sen ω_d t) se anula en ω_d t = δ + π/2 + kπ (con i(0) = 0 es π/ω_d)
+      const P = -a * A + wd * B, Qs = -a * B - wd * A, d = Math.atan2(Qs, P), per = Math.PI / wd;
+      let tp = (d + Math.PI / 2) / wd; tp -= Math.floor(tp / per) * per; if (tp < 1e-9 * per) tp += per;
+      pico = { t: tp, V: Vc(tp), sobre: Math.abs((Vc(tp) - V) / (V0 - V)) * 100 };
+    }
     return { modo: 'rlc', V, R, L, C, V0, I0, a, w0, wd, s1, s2, Rc, tipo, Vc, I, txt, t, Vct: t !== null ? Vc(t) : null, It: t !== null ? I(t) : null, Q: R ? Q : Infinity, T, pico, pasos };
   }
 

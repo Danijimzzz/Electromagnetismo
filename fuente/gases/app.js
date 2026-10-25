@@ -4,10 +4,8 @@
    gases/fisica.js (Gases).
    ===================================================================== */
 (() => {
-  const $ = (q) => document.querySelector(q);
+  const { $, esc, copia } = Herramienta;
   const G = Gases, f = G.f, CLAVE = 'gases-v1';
-  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const copia = (o) => JSON.parse(JSON.stringify(o));
   const txt = (h) => String(h).replace(/<sup>/g, '^').replace(/<[^>]+>/g, '');
   const MODOS = [['estado', 'Ecuación de estado PV = nRT'], ['procesos', 'Transformaciones y ciclos'], ['cinetica', 'Teoría cinética']];
   const TIPOS = [['isoterma', 'Isoterma'], ['isobara', 'Isobara'], ['isocora', 'Isocora'], ['adiabatica', 'Adiabática']];

@@ -7,10 +7,8 @@
    expresiones en matematicas/expresion.js.
    ===================================================================== */
 (() => {
-  const $ = (q) => document.querySelector(q);
+  const { $, esc, copia } = Herramienta;
   const D = EDOs, CLAVE = 'edos-v1';
-  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const copia = (o) => JSON.parse(JSON.stringify(o));
   const fH = (x, d = 4) => D.f(x, d).replace(/\^\{([^}]*)\}/, '<sup>$1</sup>');
   const sup = (e) => [...e].map((c) => '⁰¹²³⁴⁵⁶⁷⁸⁹'['0123456789'.indexOf(c)] || (c === '−' ? '⁻' : c)).join('');
   const txt = (s) => s.replace(/<sup>(.*?)<\/sup>/g, (_, e) => sup(e)).replace(/<[^>]+>/g, '');
@@ -18,6 +16,7 @@
   const MODOS = {
     primer: { nom: 'Primer orden: y′ = f(x, y)', campos: [['f', 'y′ =', 'función de x e y'], ['x0', 'x₀', ''], ['y0', 'y(x₀)', ''], ['x1', 'Hasta x =', ''], ['h', 'Paso h de Euler', '']] },
     segundo: { nom: 'Segundo orden: a y″ + b y′ + c y = g(x)', campos: [['a', 'a', 'coeficiente de y″'], ['b', 'b', 'de y′'], ['c', 'c', 'de y'], ['g', 'g(x)', '0 si es homogénea'], ['x0', 'x₀', ''], ['y0', 'y(x₀)', ''], ['v0', 'y′(x₀)', ''], ['x1', 'Hasta x =', '']] },
+    superior: { nom: 'Orden 3 o 4, o Cauchy-Euler', campos: [['ec', 'Ecuación', "con y', y'', y''', y''''"], ['x0', 'x₀', ''], ['ini', 'y(x₀); y′(x₀); …', 'separadas por ;'], ['x1', 'Hasta x =', '']] },
     sistema: { nom: 'Sistema: x′ = f(x, y), y′ = g(x, y)', campos: [['f', 'x′ =', 'función de x e y'], ['g', 'y′ =', 'función de x e y'], ['x0', 'x(0)', ''], ['y0', 'y(0)', ''], ['t1', 'Hasta t =', '']] },
   };
   const primero = (m) => D.ejemplos.find((e) => e.sc.modo === m);
@@ -30,8 +29,8 @@
   /* ---------- Formulario ---------- */
   function formulario() {
     $('#modo').innerHTML = Object.entries(MODOS).map(([k, m]) => `<option value="${k}"${sc.modo === k ? ' selected' : ''}>${m.nom}</option>`).join('');
-    $('#campos').innerHTML = MODOS[sc.modo].campos.map(([k, et, ay]) => `<label for="f-${k}">${et}${ay ? ` <small>(${ay})</small>` : ''}</label><input id="f-${k}" class="in${k === 'f' || k === 'g' ? ' larga' : ''}" data-c="${k}" value="${esc(sc[k] ?? '')}" autocomplete="off" spellcheck="false">`).join('');
-    $('#nota-datos').innerHTML = sc.modo === 'primer' ? 'Escribe f con x e y: x + y, 4 − 2y, y(1 − y), sen x − y… Si dejas h vacío se usan 10 pasos.' : sc.modo === 'segundo' ? 'g(x) puede ser una suma de polinomios, exponenciales, senos y cosenos: x, e^(3x), 3 cos(2x), x e^x…' : 'Escribe x′ y y′ con x e y: y, −x, 2x − x y, −sen x − 0,3y… Toca el diagrama para empezar desde otro punto.';
+    $('#campos').innerHTML = MODOS[sc.modo].campos.map(([k, et, ay]) => `<label for="f-${k}">${et}${ay ? ` <small>(${ay})</small>` : ''}</label><input id="f-${k}" class="in${k === 'f' || k === 'g' || k === 'ec' ? ' larga' : ''}" data-c="${k}" value="${esc(sc[k] ?? '')}" autocomplete="off" spellcheck="false">`).join('');
+    $('#nota-datos').innerHTML = sc.modo === 'primer' ? 'Escribe f con x e y: x + y, 4 − 2y, y(1 − y), sen x − y… Si dejas h vacío se usan 10 pasos.' : sc.modo === 'segundo' ? 'g(x) puede ser una suma de polinomios, exponenciales, senos y cosenos: x, e^(3x), 3 cos(2x), x e^x… Si es otra (tg x, 1/cos x, eˣ/x) se usa variación de parámetros.' : sc.modo === 'superior' ? "Escribe la ecuación con y', y'', y''' e y'''' (o ′ ″ ‴): y''' − 3y'' + 3y' − y = e^x. Si cada derivada va por x^k, es de Cauchy-Euler: x^2 y'' − 2x y' + 2y = x^3." : 'Escribe x′ y y′ con x e y: y, −x, 2x − x y, −sen x − 0,3y… Toca el diagrama para empezar desde otro punto.';
   }
   const cambia = () => { $('#ejemplos').value = ''; calcula(); };
   $('#campos').addEventListener('input', (e) => { const t = e.target; if (!t.dataset.c) return; sc[t.dataset.c] = t.value; cambia(); });
@@ -64,6 +63,7 @@
   const enunciado = () => {
     if (sc.modo === 'primer') return `Resuelve <b>y′ = ${esc(sc.f)}</b> con y(${esc(sc.x0)}) = ${esc(sc.y0)}: aproxima y(${esc(sc.x1)}) con el método de Euler de paso h = ${esc(sc.h || '')} y compáralo con la solución exacta si la tiene.`;
     if (sc.modo === 'segundo') { const t = (k, s, p) => { const v = Number(String(k).replace(',', '.')); return !v ? '' : `${v < 0 ? ' − ' : p ? '' : ' + '}${Math.abs(v) === 1 ? '' : coma(Math.abs(v))}${s}`; }; return `Resuelve <b>${t(sc.a, 'y″', true)}${t(sc.b, 'y′')}${t(sc.c, 'y')} = ${esc(sc.g || '0')}</b> con y(${esc(sc.x0)}) = ${esc(sc.y0)} y y′(${esc(sc.x0)}) = ${esc(sc.v0)}, y da y(${esc(sc.x1)}).`; }
+    if (sc.modo === 'superior') return `Resuelve <b>${esc(sc.ec)}</b> con las condiciones iniciales ${esc(sc.ini)} en x = ${esc(sc.x0)}, y da y(${esc(sc.x1)}).`;
     return `Estudia el sistema <b>x′ = ${esc(sc.f)}, y′ = ${esc(sc.g)}</b>: sus puntos críticos y su tipo, y la solución que sale de (${esc(sc.x0)}, ${esc(sc.y0)}) hasta t = ${esc(sc.t1)}.`;
   };
 
@@ -81,10 +81,15 @@
     let h = '';
     if (sol.modo === 'primer') {
       if (sol.exacta) h += dato('Solución exacta', M(`y(x) = ${sol.exacta.txt}`), 'ancho');
-      h += dato(`y(${fH(sol.x1)}) con Euler`, fH(sol.yEu, 6), 'num');
-      h += dato(`y(${fH(sol.x1)}) con RK4`, fH(sol.yRK, 6), 'num');
-      if (sol.exacta) h += dato(`y(${fH(sol.x1)}) exacta`, fH(sol.yEx, 6), 'num');
-      h += dato('Error de Euler', fH(Math.abs(sol.yEu - (sol.exacta ? sol.yEx : sol.yRK)), 4));
+      else if (sol.implicita) h += dato('Solución (implícita)', M(sol.implicita), 'ancho');
+      if (sol.explota !== null) h += dato('La solución explota', `cerca de x ≈ ${fH(sol.explota, 4)} (asíntota vertical): y(${fH(sol.x1)}) no existe`, 'ancho');
+      else {
+        h += dato(`y(${fH(sol.x1)}) con Euler`, fH(sol.yEu, 6), 'num');
+        h += dato(`y(${fH(sol.x1)}) con RK4`, fH(sol.yRK, 6), 'num');
+        if (sol.exacta) h += dato(`y(${fH(sol.x1)}) exacta`, fH(sol.yEx, 6), 'num');
+        h += dato('Error de Euler', fH(Math.abs(sol.yEu - (sol.exacta ? sol.yEx : sol.yRK)), 4));
+        if (sol.metodos) h += dato(`Errores con h = ${fH(sol.h)}`, sol.metodos.filter((q) => q.nom !== 'Euler').map((q) => `${q.nom}: ${fH(q.err, 2)}`).join('; '));
+      }
     } else if (sol.modo === 'segundo') {
       h += dato('Solución', M(`y(x) = ${sol.txt}`), 'ancho');
       h += dato('Raíces', Mates.html(sol.raices.replace(/, (reales|doble|complejas).*$/, '')));
@@ -107,17 +112,8 @@
 
   /* ---------- Gráficas ---------- */
   function colores() { const cs = getComputedStyle(document.documentElement); for (const c of ['--ink', '--muted', '--line', '--accent', '--accent-soft', '--panel', '--z1', '--z2']) col[c] = cs.getPropertyValue(c).trim(); }
-  const marcas = (a, b, n = 6) => {
-    const p0 = (b - a) / n, e = 10 ** Math.floor(Math.log10(p0)), paso = [1, 2, 2.5, 5, 10].map((q) => q * e).find((q) => q >= p0) || 10 * e;
-    const out = []; for (let v = Math.ceil(a / paso) * paso; v <= b + paso * 1e-9; v += paso) out.push(Math.abs(v) < paso * 1e-9 ? 0 : v);
-    return out;
-  };
-  const lienzo = (s) => {
-    const c = $(s), dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
-    if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
-    const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
-    return { g, w, h };
-  };
+  const marcas = Herramienta.marcas;
+  const lienzo = (s) => Herramienta.lienzo(s);
   const rango = (vs, pad = 0.12, min = 1) => {
     const ok = vs.filter((v) => isFinite(v) && Math.abs(v) < 1e9);
     let a = Math.min(...ok), b = Math.max(...ok);
@@ -127,7 +123,9 @@
   };
   function ventana() {
     if (sol.modo === 'primer') {
-      const ys = [...sol.fino.map((q) => q.Y[0]), ...sol.eul.map((q) => q.y)];
+      // si la solución explota, la ventana llega solo hasta poco antes de la asíntota
+      const xm = sol.explota !== null ? sol.x0 + 0.9 * (sol.explota - sol.x0) : Infinity;
+      const ys = [...sol.fino.filter((q) => q.t <= xm).map((q) => q.Y[0]), ...sol.eul.filter((q) => q.x <= xm).map((q) => q.y)];
       const [y1, y2] = rango(ys, 0.15), dx = (sol.x1 - sol.x0) * 0.04;
       return { x1: sol.x0 - dx, x2: sol.x1 + dx, y1, y2 };
     }

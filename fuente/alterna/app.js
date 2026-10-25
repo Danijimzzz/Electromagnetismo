@@ -4,10 +4,8 @@
    El cálculo está en alterna/fisica.js (Alterna).
    ===================================================================== */
 (() => {
-  const $ = (q) => document.querySelector(q);
+  const { $, esc, copia } = Herramienta;
   const A = Alterna, CLAVE = 'alterna-v1';
-  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const copia = (o) => JSON.parse(JSON.stringify(o));
   const txt = (h) => String(h).replace(/<sup>/g, '^').replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ');
 
   let sc = copia(A.ejemplos[0].sc);
@@ -26,7 +24,7 @@
     } else {
       h += `<label for="f-conexion">Conexión</label><select id="f-conexion" class="in" data-k="conexion">${opcion('conexion', 'serie', 'En serie')}${opcion('conexion', 'paralelo', 'En paralelo')}</select>`;
       h += fila('V', 'Tensión eficaz V', 'V') + fila('f', 'Frecuencia f', 'Hz') + fila('R', 'Resistencia R', 'Ω') + fila('L', 'Inductancia L', 'mH') + fila('C', 'Capacidad C', 'μF');
-      $('#nota').textContent = 'Deja vacío un elemento si no está. Puedes usar coma o punto decimal.';
+      $('#nota').textContent = 'Deja vacío un elemento si no está. Puedes usar coma o punto decimal y prefijos como 4k7, 100n o 10m.';
     }
     $('#campos').innerHTML = h;
   }
@@ -73,11 +71,10 @@
   /* ---------- Dibujo ---------- */
   function colores() { const cs = getComputedStyle(document.documentElement); for (const k of ['--ink', '--muted', '--line', '--accent', '--v', '--i', '--x', '--bg']) col[k] = cs.getPropertyValue(k).trim(); }
   function lienzo(id) {
-    const c = $(id), dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
-    if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
-    const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
-    g.font = '12px "IBM Plex Sans", system-ui, sans-serif'; g.lineCap = 'round'; g.lineJoin = 'round';
-    return { g, w, h };
+    const r = Herramienta.lienzo(id);
+    r.g.font = '12px "IBM Plex Sans", system-ui, sans-serif';
+    r.g.lineCap = 'round'; r.g.lineJoin = 'round';
+    return r;
   }
   function flecha(g, x0, y0, x1, y1, color, ancho = 2, punteada = false) {
     const L = Math.hypot(x1 - x0, y1 - y0);

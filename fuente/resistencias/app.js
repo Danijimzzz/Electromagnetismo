@@ -4,10 +4,8 @@
    resistencias/calculo.js (Resistencias).
    ===================================================================== */
 (() => {
-  const $ = (q) => document.querySelector(q);
+  const { $, esc, copia } = Herramienta;
   const R = Resistencias, ohm = R.ohm, CLAVE = 'resistencias-v1';
-  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const copia = (o) => JSON.parse(JSON.stringify(o));
   const COL = Object.fromEntries(R.COLORES.map((c) => [c.k, c]));
   const MODOS = [['colores', 'De los colores al valor'], ['valor', 'Del valor a los colores'], ['smd', 'Código SMD (resistencias de montaje superficial)']];
 

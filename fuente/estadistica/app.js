@@ -4,11 +4,9 @@
    El cálculo está en estadistica/calculo.js (Estadistica).
    ===================================================================== */
 (() => {
-  const $ = (q) => document.querySelector(q);
+  const { $, esc, copia } = Herramienta;
   const E = Estadistica, num = E.num, CLAVE = 'estadistica-v1';
-  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const copia = (o) => JSON.parse(JSON.stringify(o));
-  const DEF = { mu: '0', sigma: '1', nu: '10', k: '5', lambda: '2', n: '10', p: '0.5', a: '1', b: '2', alfa: '0.05' };
+  const DEF = { mu: '0', sigma: '1', nu: '10', k: '5', lambda: '2', n: '10', p: '0.5', q: '0.5', a: '1', b: '2', alfa: '0.05' };
 
   let sc = copia(E.ejemplos[0].sc);
   try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && E.DIST[g.dist]) sc = g; } catch (e) {}
@@ -16,7 +14,7 @@
   let sol = null, col = {};
 
   /* ---------- Formulario ---------- */
-  const fila = (k, nom) => `<label for="f-${k}">${nom}</label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc[k] ?? DEF[k] ?? '')}" inputmode="decimal" autocomplete="off">`;
+  const fila = (k, nom) => (sc[k] === undefined && DEF[k] !== undefined && (sc[k] = DEF[k]), `<label for="f-${k}">${nom}</label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc[k] ?? DEF[k] ?? '')}" inputmode="decimal" autocomplete="off">`);
   function formulario() {
     const D = E.DIST[sc.dist], tipos = E.tipos(sc.dist);
     if (!tipos.some(([k]) => k === sc.tipo)) sc.tipo = tipos[0][0];
@@ -24,7 +22,7 @@
     h += D.params.map(([k, nom]) => fila(k, nom)).join('');
     h += `<label for="f-tipo">Qué calcular</label><select id="f-tipo" class="in" data-k="tipo">${tipos.map(([k, t]) => `<option value="${k}"${k === sc.tipo ? ' selected' : ''}>${t.replace('X', D.nombreX)}</option>`).join('')}</select>`;
     const t = sc.tipo;
-    if (t === 'cuantil') h += fila('p', 'Probabilidad p');
+    if (t === 'cuantil') h += fila('q', 'Probabilidad p');
     else if (t === 'critico') h += fila('alfa', 'Nivel de significación α');
     else if (t === 'entre') h += fila('a', 'Valor a') + fila('b', 'Valor b');
     else h += fila('a', D.continua ? 'Valor a' : 'Valor k');

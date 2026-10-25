@@ -4,11 +4,8 @@
    El cálculo está en regresion/calculo.js (Regresion).
    ===================================================================== */
 (() => {
-  const $ = (q) => document.querySelector(q);
+  const { $, esc, copia, txt } = Herramienta;
   const R = Regresion, f = R.f, d4 = R.d4, CLAVE = 'regresion-v1';
-  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const copia = (o) => JSON.parse(JSON.stringify(o));
-  const txt = (h) => String(h).replace(/<sup>(.*?)<\/sup>/g, (_, e) => e.replace(/−/g, '⁻').replace(/\d/g, (d) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d])).replace(/<[^>]+>/g, '');
   const FORMA = { lineal: 'y = a + bx', exponencial: 'y = a·eᵇˣ', potencial: 'y = a·xᵇ', logaritmica: 'y = a + b·ln x', parabolica: 'y = a + bx + cx²' };
 
   let sc = copia(R.ejemplos[0].sc);
@@ -50,7 +47,7 @@
 
   /* ---------- Cálculo ---------- */
   const dato = (t, v) => `<div><span>${t}</span><b>${v}</b></div>`;
-  const tablaHTML = (cab, filas, tot) => `<table class="tabla"><thead><tr>${cab.map((c) => `<th>${c}</th>`).join('')}</tr></thead><tbody>${filas.map((r) => `<tr>${r.map((c) => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody>${tot ? `<tfoot><tr>${tot.map((c, i) => `<td>${i === 0 && c === '' ? '∑' : c}</td>`).join('')}</tr></tfoot>` : ''}</table>`;
+  const tablaHTML = (cab, filas, tot) => `<table class="tabla-reg"><thead><tr>${cab.map((c) => `<th>${c}</th>`).join('')}</tr></thead><tbody>${filas.map((r) => `<tr>${r.map((c) => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody>${tot ? `<tfoot><tr>${tot.map((c, i) => `<td>${i === 0 && c === '' ? '∑' : c}</td>`).join('')}</tr></tfoot>` : ''}</table>`;
   function calcula() {
     const err = $('#error');
     try { sol = R.resolver(sc); } catch (e) {
@@ -82,11 +79,7 @@
   /* ---------- Gráfica ---------- */
   function colores() { const cs = getComputedStyle(document.documentElement); for (const k of ['--ink', '--muted', '--line', '--accent', '--bg', '--panel', '--punto', '--otra']) col[k] = cs.getPropertyValue(k).trim(); }
   // marcas «bonitas» del eje
-  function marcas(a, b, n = 6) {
-    const paso0 = (b - a) / n, e = 10 ** Math.floor(Math.log10(paso0)), paso = [1, 2, 2.5, 5, 10].map((k) => k * e).find((k) => k >= paso0) || 10 * e;
-    const out = []; for (let v = Math.ceil(a / paso) * paso; v <= b + paso * 1e-9; v += paso) out.push(Math.abs(v) < paso * 1e-9 ? 0 : v);
-    return out;
-  }
+  const marcas = Herramienta.marcas;
   function dibuja() {
     const c = $('#grafica'), dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
     if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }

@@ -1,67 +1,17 @@
 <title>Transformada de Laplace: directa, inversa y ecuaciones diferenciales · SimulaCiencia</title>
-<meta name="description" content="Calculadora de la transformada de Laplace en español, paso a paso: transformada directa con la tabla y sus propiedades, inversa por fracciones simples (polos simples, dobles y complejos), teoremas del valor inicial y final, y ecuaciones diferenciales con condiciones iniciales, con el plano s y la gráfica de f(t).">
+<meta name="description" content="Calculadora de la transformada de Laplace en español, paso a paso: transformada directa con la tabla y sus propiedades, inversa por fracciones simples (polos simples, dobles y complejos), teoremas del valor inicial y final, escalón u(t − a), delta de Dirac y funciones a trozos, convolución, función de transferencia, ecuaciones diferenciales y sistemas con condiciones iniciales, con el plano s y la gráfica de f(t).">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
 <style>
 :root {
-  --bg: #eef0f4; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d6dbe3; --accent: #6b3fa0; --accent-soft: #efe6f8; --z1: #2a5db5; --z2: #c2410c; --z3: #6b3fa0; --peso: #c2412a; --normal: #1d7a3e; --roz: #b0700a; --fuerza: #6b3fa0; --tension: #2a5db5; --cuerpo: #c9d3e0; --suelo: #8a96a3;
-  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
-  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
-}
+  --z1: #2a5db5; --z2: #c2410c; --z3: #6b3fa0; --peso: #c2412a; --normal: #1d7a3e; --roz: #b0700a; --fuerza: #6b3fa0; --tension: #2a5db5; --cuerpo: #c9d3e0; --suelo: #8a96a3 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #b892ec; --accent-soft: #2b2140; --z1: #74a2f2; --z2: #f0915a; --z3: #b892ec; --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784; color-scheme: dark } }
+  --z1: #74a2f2; --z2: #f0915a; --z3: #b892ec; --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784 } }
 :root[data-theme="dark"] {
-  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #b892ec; --accent-soft: #2b2140; --z1: #74a2f2; --z2: #f0915a; --z3: #b892ec; --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784; color-scheme: dark }
-* { box-sizing: border-box }
-[hidden] { display: none !important }
-html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
-a { color: var(--accent) }
-.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
-.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
-.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
-.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
-h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
-.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
-.layout { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 16px; align-items: start }
-@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr) } }
-.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 14px }
-.card h2 { font: 600 15px var(--f-ui); margin: 0 0 10px }
-.campos { display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 7px 10px; align-items: center }
-.campos label { font-size: 13.5px } .campos label small { color: var(--muted) }
-.in { font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
-.in:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
-.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
-.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer }
-.btn:hover { border-color: var(--accent) }
-.error { color: #c0392b; font-size: 13px; margin: 10px 0 0 }
-.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
-.res { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px 14px; font: 16px var(--f-math) } .res div { overflow-x: auto } .res span { display: block; font: 12px var(--f-ui); color: var(--muted) }
-.leyenda { font-size: 12.5px; color: var(--muted); margin: 6px 0 0 } .leyenda b { font-weight: 600 }
-canvas { display: block; width: 100%; height: clamp(260px, 36vw, 380px); border-radius: 8px; background: var(--bg); margin-top: 10px }
-.pasos ol { margin: 0; padding-left: 22px } .pasos li { margin: 0 0 12px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto }
-.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
-.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
-.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
-.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
-footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+  --z1: #74a2f2; --z2: #f0915a; --z3: #b892ec; --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784 }
 .campos .larga { grid-column: 1 / -1 }
-.controles { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px }
-.destacado { border-color: var(--accent); box-shadow: inset 4px 0 0 var(--accent) }
-.destacado h2 { color: var(--accent) }
-.resumen { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; margin: 0 }
-.resumen div { background: var(--accent-soft); border-radius: 8px; padding: 8px 10px; overflow-x: auto } .resumen div span { display: block; font-size: 12px; color: var(--muted) } .resumen div b { font: 600 17px var(--f-math) }
-.teoria ul { padding-left: 20px } .teoria li { margin-bottom: 4px }
 #grafica { height: clamp(280px, 40vw, 420px) }
-.mat { position: relative; display: inline-block; vertical-align: middle; padding: 0 7px; margin: 2px 2px }
-.mat::before, .mat::after { content: ""; position: absolute; top: 0; bottom: 0; width: 5px; border: 1.4px solid currentColor }
-.mat::before { left: 0; border-right: 0 } .mat::after { right: 0; border-left: 0 }
-.mat table { border-collapse: collapse } .mat td { padding: 2px 7px; text-align: center; white-space: nowrap; font-variant-numeric: tabular-nums }
-.pasos table.tabla { border-collapse: collapse; margin: 6px 0; font: 13px var(--f-ui); font-variant-numeric: tabular-nums }
-.pasos table.tabla th, .pasos table.tabla td { border: 1px solid var(--line); padding: 3px 9px; text-align: right }
-.pasos table.tabla th { background: var(--accent-soft); font-weight: 600 }
-.resumen div.ancho { grid-column: 1 / -1 }
 #grafica { cursor: crosshair }
 #plano { height: clamp(240px, 30vw, 320px) }
 </style>
@@ -69,7 +19,7 @@ footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8p
 <header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Matemáticas</a> / Transformada de Laplace</span></header>
 <div class="wrap">
 <h1>Transformada de Laplace</h1>
-<p class="lead">Calcula la transformada de una función con la tabla y sus propiedades, la inversa por fracciones simples y la solución de ecuaciones diferenciales con condiciones iniciales, paso a paso y con los polos en el plano s.</p>
+<p class="lead">Calcula la transformada de una función con la tabla y sus propiedades (también con escalones, deltas y funciones a trozos), la inversa por fracciones simples, convoluciones y la solución de ecuaciones diferenciales y sistemas con condiciones iniciales, paso a paso y con los polos en el plano s.</p>
 <div class="layout">
   <div class="card">
     <h2>Datos</h2>
@@ -104,7 +54,16 @@ footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8p
     <li class="m">Desplazamiento en s: $ℒ\{e^{at} f(t)\} = F(s − a)$</li>
     <li class="m">Multiplicar por t: $ℒ\{t^{n} f(t)\} = (−1)^{n} {d^{n}F}/{ds^{n}}$</li>
     <li class="m">Derivadas: $ℒ\{y′\} = sY − y(0)$, &ensp; $ℒ\{y″\} = s^{2}Y − s y(0) − y′(0)$</li>
+    <li class="m">Productos de senos y cosenos: se pasan a sumas antes de transformar, $sen^{2} t = {1}/{2} − {1}/{2} cos (2 t)$, &ensp; $sen A cos B = {1}/{2} [sen(A + B) + sen(A − B)]$</li>
   </ul>
+  <h2>Escalón, delta y funciones a trozos</h2>
+  <p class="m">El escalón unitario $u(t − a)$ (o de Heaviside, $H(t − a)$) vale 0 antes de $t = a$ y 1 después. Sirve para encender y apagar señales, y una función a trozos se escribe con escalones: $f(t) = g_{1}(t) [u(t) − u(t − a)] + g_{2}(t) u(t − a)$.</p>
+  <ul>
+    <li class="m">Segundo teorema de traslación: $ℒ\{u(t − a) g(t)\} = e^{−as} ℒ\{g(t + a)\}$, y en particular $ℒ\{u(t − a) f(t − a)\} = e^{−as} F(s)$.</li>
+    <li class="m">Delta de Dirac: $ℒ\{δ(t − a)\} = e^{−as}$. Es un impulso en $t = a$ de área 1, y $g(t) δ(t − a) = g(a) δ(t − a)$.</li>
+    <li class="m">En la inversa, cada $e^{−as}$ retrasa su parte: $ℒ^{−1}\{e^{−as} F(s)\} = u(t − a) f(t − a)$, y una constante sola da una delta.</li>
+  </ul>
+  <p>Escribe las funciones a trozos como «t si 0 ≤ t &lt; 2; 4 − t si 2 ≤ t &lt; 4; 0 si t ≥ 4», con los trozos separados por punto y coma.</p>
   <h2>Inversa por fracciones simples</h2>
   <p>Si F(s) es un cociente de polinomios con el numerador de menor grado, se buscan las raíces del denominador (los polos) y se separa en fracciones que están en la tabla:</p>
   <ul>
@@ -118,6 +77,12 @@ footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8p
   <p>El del valor final solo vale si f(t) tiende a algo: todos los polos de s F(s) a la izquierda del eje imaginario.</p>
   <h2>Ecuaciones diferenciales</h2>
   <p class="m">Para $a y″ + b y′ + c y = g(t)$ con y(0) e y′(0) se transforman los dos lados, se despeja Y(s) y se hace la inversa. Las condiciones iniciales entran solas, sin calcular constantes al final. Por ejemplo, $y″ + y = sen t$ con todo en reposo da $Y(s) = 1/(s^{2} + 1)^{2}$, un polo doble en ±i, y la solución $y = {1}/{2} sen t − {1}/{2} t cos t$ crece sin límite: es la resonancia.</p>
+  <h2>Función de transferencia y convolución</h2>
+  <p class="m">Con condiciones iniciales nulas, $Y(s) = H(s) G(s)$ con $H(s) = 1/(a s^{2} + b s + c)$. La inversa $h(t)$ es la respuesta al impulso, y la de $H(s)/s$, la respuesta al escalón. El producto de transformadas corresponde a la convolución:</p>
+  <p class="f m">$(f * g)(t) = ∫_{0}^{t} f(τ) g(t − τ) dτ$, &ensp; $ℒ\{f * g\} = F(s) G(s)$</p>
+  <p class="m">Así que la respuesta a cualquier entrada es $y = h * g$: por ejemplo, $sen t * cos t = {1}/{2} t sen t$.</p>
+  <h2>Sistemas de ecuaciones</h2>
+  <p class="m">Para $x′ = a_{11} x + a_{12} y + f(t)$, $y′ = a_{21} x + a_{22} y + g(t)$ se transforman las dos ecuaciones y queda un sistema lineal en X(s) e Y(s), que se resuelve por Cramer con $Δ(s) = (s − a_{11})(s − a_{22}) − a_{12} a_{21}$. Las raíces de Δ son los autovalores de la matriz del sistema.</p>
   <p>Para resolverlas sin Laplace (coeficientes indeterminados) usa <a href="../edos/">Ecuaciones diferenciales</a>, y para los circuitos RC, RL y RLC, <a href="../../circuitos/transitorios/">Transitorios</a>.</p>
 </section>
 </div>

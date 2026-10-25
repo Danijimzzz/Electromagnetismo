@@ -5,11 +5,8 @@
    El cálculo está en intervalos/calculo.js (Intervalos).
    ===================================================================== */
 (() => {
-  const $ = (q) => document.querySelector(q);
+  const { $, esc, copia, txt } = Herramienta;
   const I = Intervalos, f = I.f, CLAVE = 'intervalos-v1', E = Estadistica;
-  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const copia = (o) => JSON.parse(JSON.stringify(o));
-  const txt = (h) => String(h).replace(/<sup>(.*?)<\/sup>/g, (_, e) => e.replace(/−/g, '⁻').replace(/\d/g, (d) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d])).replace(/<[^>]+>/g, '');
   const MODOS = [['media', 'Media μ'], ['proporcion', 'Proporción p'], ['varianza', 'Varianza σ² y desviación σ'], ['dif-medias', 'Diferencia de medias μ₁ − μ₂'], ['dif-prop', 'Diferencia de proporciones p₁ − p₂'], ['tamano', 'Tamaño de la muestra']];
 
   let sc = copia(I.ejemplos[0].sc);
@@ -153,12 +150,7 @@
 
   /* ---------- Dibujos ---------- */
   function colores() { const cs = getComputedStyle(document.documentElement); for (const c of ['--ink', '--muted', '--line', '--accent', '--accent-soft', '--panel', '--bg', '--ok', '--mal']) col[c] = cs.getPropertyValue(c).trim(); }
-  const lienzo = (s) => {
-    const c = $(s), dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
-    if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
-    const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
-    return { g, w, h };
-  };
+  const lienzo = (s) => Herramienta.lienzo(s);
   const FUENTE_UI = '"IBM Plex Sans", system-ui, sans-serif';
   function dibuja() { campana(); simulacion(); }
   // densidad del estadístico (Z, T o χ²) con 1 − α sombreado y los valores críticos

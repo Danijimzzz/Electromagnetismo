@@ -19,7 +19,6 @@ const Continua = (() => {
     return s.replace('.', ',').replace('-', '−');
   };
   const p = (x) => (x < -1e-10 ? `(${f(x)})` : f(x));
-  const leeNum = (s) => +String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace('−', '-');
   const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
   const TIPOS = { R: { nombre: 'Resistencia', letra: 'R', un: 'Ω' }, V: { nombre: 'Fuente de tensión', letra: 'E', un: 'V' }, I: { nombre: 'Fuente de corriente', letra: 'J', un: 'A' } };
   const sub = (n) => n.replace(/^([A-Za-z])(\w+)$/, '$1<sub>$2</sub>');
@@ -43,7 +42,7 @@ const Continua = (() => {
       if (!/^[\wÀ-ÿ]{1,8}$/.test(a) || !/^[\wÀ-ÿ]{1,8}$/.test(b)) throw new Error(`${q}: los nudos se nombran con letras o números (hasta 8)`);
       if (a === b) throw new Error(`${q}: está conectado entre el mismo nudo por los dos lados`);
       if (vacio(e.v)) throw new Error(`${q}: falta el valor`);
-      const v = leeNum(e.v);
+      const v = Herramienta.leeSI(e.v); // admite 4k7, 1,5k, 100m…
       if (!isFinite(v)) throw new Error(`${q}: el valor debe ser un número`);
       if (e.t === 'R' && v <= 0) throw new Error(`${q}: la resistencia debe ser mayor que 0`);
       return { i, t: e.t, n: q, a, b, v };
@@ -168,11 +167,13 @@ const Continua = (() => {
       const apagado = resto.filter((e) => e.t !== 'I').map((e) => (e.t === 'V' ? { ...e, v: 0 } : e)).concat([{ t: 'I', n: 'Jp', a: L.b, b: L.a, v: 1 }]);
       const pr = nodal(apagado, ref);
       if (!pr) throw new Error(`Con las fuentes apagadas no se puede calcular la resistencia de Thévenin entre ${L.a} y ${L.b}`);
-      const Rth = pr.V[L.a] - pr.V[L.b], IN = Math.abs(Rth) > 1e-12 ? Vth / Rth : Infinity;
-      const IL = Vth / (Rth + L.v), PL = IL * IL * L.v, Pmax = Math.abs(Rth) > 1e-12 ? (Vth * Vth) / (4 * Rth) : Infinity;
-      thev = { carga: L.n, a: L.a, b: L.b, RL: L.v, Vth, Rth, IN, IL, PL, Pmax };
-      pasos.push({ t: `Equivalente de Thévenin visto por ${L.n} (entre ${L.a} y ${L.b})`, html: `Se quita ${sub(L.n)} y se resuelve igual: V<sub>th</sub> = V<sub>${L.a}</sub> − V<sub>${L.b}</sub> en circuito abierto = <b>${f(Vth)} V</b><br>Con las fuentes apagadas (las de tensión en cortocircuito y las de corriente abiertas), la resistencia entre ${L.a} y ${L.b} es R<sub>th</sub> = <b>${f(Rth)} Ω</b><br>Norton: I<sub>N</sub> = V<sub>th</sub>/R<sub>th</sub> = <b>${f(IN)} A</b>` });
-      pasos.push({ t: 'Con la carga puesta y máxima transferencia de potencia', html: `I<sub>${L.n}</sub> = V<sub>th</sub>/(R<sub>th</sub> + ${sub(L.n)}) = ${f(Vth)}/(${f(Rth)} + ${f(L.v)}) = <b>${f(IL)} A</b> (coincide con la del circuito completo); P = <b>${f(PL)} W</b><br>La potencia en la carga es máxima si ${sub(L.n)} = R<sub>th</sub> = ${f(Rth)} Ω: P<sub>máx</sub> = V<sub>th</sub><sup>2</sup>/(4R<sub>th</sub>) = <b>${f(Pmax)} W</b>` });
+      // R_th = 0: entre esos nudos hay una fuente de tensión ideal (no hay Norton ni máximo de potencia)
+      const Rmax = Math.max(...resto.filter((e) => e.t === 'R').map((e) => e.v), L.v), ideal = Math.abs(pr.V[L.a] - pr.V[L.b]) < 1e-9 * Rmax;
+      const Rth = ideal ? 0 : pr.V[L.a] - pr.V[L.b], IN = ideal ? Infinity : Vth / Rth;
+      const IL = Vth / (Rth + L.v), PL = IL * IL * L.v, Pmax = ideal ? Infinity : (Vth * Vth) / (4 * Rth);
+      thev = { carga: L.n, a: L.a, b: L.b, RL: L.v, Vth, Rth, IN, IL, PL, Pmax, ideal };
+      pasos.push({ t: `Equivalente de Thévenin visto por ${L.n} (entre ${L.a} y ${L.b})`, html: `Se quita ${sub(L.n)} y se resuelve igual: V<sub>th</sub> = V<sub>${L.a}</sub> − V<sub>${L.b}</sub> en circuito abierto = <b>${f(Vth)} V</b><br>Con las fuentes apagadas (las de tensión en cortocircuito y las de corriente abiertas), la resistencia entre ${L.a} y ${L.b} es R<sub>th</sub> = <b>${f(Rth)} Ω</b><br>${ideal ? `Con R<sub>th</sub> = 0 lo que ve ${sub(L.n)} es una fuente de tensión ideal: no tiene equivalente de Norton, porque I<sub>N</sub> = V<sub>th</sub>/R<sub>th</sub> sería infinita.` : `Norton: I<sub>N</sub> = V<sub>th</sub>/R<sub>th</sub> = <b>${f(IN)} A</b>`}` });
+      pasos.push({ t: 'Con la carga puesta y máxima transferencia de potencia', html: `I<sub>${L.n}</sub> = V<sub>th</sub>/(R<sub>th</sub> + ${sub(L.n)}) = ${f(Vth)}/(${f(Rth)} + ${f(L.v)}) = <b>${f(IL)} A</b> (coincide con la del circuito completo); P = <b>${f(PL)} W</b><br>${ideal ? `Con R<sub>th</sub> = 0 la tensión en la carga es siempre V<sub>th</sub> y su potencia V<sub>th</sub><sup>2</sup>/${sub(L.n)} crece sin límite al bajar ${sub(L.n)}: no hay máxima transferencia de potencia.` : `La potencia en la carga es máxima si ${sub(L.n)} = R<sub>th</sub> = ${f(Rth)} Ω: P<sub>máx</sub> = V<sub>th</sub><sup>2</sup>/(4R<sub>th</sub>) = <b>${f(Pmax)} W</b>`}` });
     }
     return { ref, nudos: sol.nudos, V, els: res, ent, abs, thev, pasos };
   }

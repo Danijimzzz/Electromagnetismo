@@ -5,11 +5,8 @@
    desarrollo). El cálculo está en transitorios/fisica.js (Transitorios).
    ===================================================================== */
 (() => {
-  const $ = (q) => document.querySelector(q);
+  const { $, esc, copia, txt } = Herramienta;
   const T = Transitorios, f = T.f, u = T.u, CLAVE = 'transitorios-v1';
-  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const copia = (o) => JSON.parse(JSON.stringify(o));
-  const txt = (h) => String(h).replace(/<sup>(.*?)<\/sup>/g, (_, e) => e.replace(/−/g, '⁻').replace(/\d/g, (d) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d])).replace(/<[^>]+>/g, '');
   const MODOS = [['rc', 'Circuito RC (condensador)'], ['rl', 'Circuito RL (bobina)'], ['rlc', 'Circuito RLC en serie']];
 
   let sc = copia(T.ejemplos[0].sc);
@@ -22,7 +19,7 @@
   const elige = (k, nom, lista) => `<label for="f-${k}">${nom}</label><select id="f-${k}" class="in" data-k="${k}">${lista.map(([v, t]) => `<option value="${v}"${String(sc[k]) === v ? ' selected' : ''}>${t}</option>`).join('')}</select>`;
   const sep = (t) => `<div class="sep">${t}</div>`;
   const NOTAS = {
-    rc: 'El interruptor se cierra en t = 0. En la descarga no hay fuente: el condensador se descarga a través de R. Se admite 4,7e-3 o 4,7·10^-3.',
+    rc: 'El interruptor se cierra en t = 0. En la descarga no hay fuente: el condensador se descarga a través de R. Se admite 4,7e-3, 4,7·10^-3 y prefijos como 4k7, 100n o 5m.',
     rl: 'En la subida se conecta la fuente en t = 0; en la bajada se quita y la bobina, que llevaba V/R, se descarga a través de R.',
     rlc: 'R, L y C en serie con una fuente que se conecta en t = 0 (pon 0 V para la respuesta libre). V₀ e I₀ son la tensión del condensador y la corriente al empezar.',
   };
@@ -103,20 +100,11 @@
 
   /* ---------- Dibujos ---------- */
   function colores() { const cs = getComputedStyle(document.documentElement); for (const c of ['--ink', '--muted', '--line', '--accent', '--accent-soft', '--panel', '--bg', '--v', '--i']) col[c] = cs.getPropertyValue(c).trim(); }
-  const lienzo = (s) => {
-    const c = $(s), dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
-    if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
-    const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
-    return { g, w, h };
-  };
+  const lienzo = (s) => Herramienta.lienzo(s);
   const DUR = 6, PAUSA = 1.2;
   const tiempo = () => { const k = tA % (DUR + PAUSA); return Math.min(1, k / DUR) * sol.T; };
   const fuente = () => (sol.modo === 'rc' ? sol.carga : sol.modo === 'rl' ? sol.sube : sol.V > 0);
-  const marcas = (a, b, n = 5) => {
-    const p0 = (b - a) / n, e = 10 ** Math.floor(Math.log10(p0)), paso = [1, 2, 2.5, 5, 10].map((q) => q * e).find((q) => q >= p0) || 10 * e;
-    const out = []; for (let v = Math.ceil(a / paso) * paso; v <= b + paso * 1e-9; v += paso) out.push(Math.abs(v) < paso * 1e-9 ? 0 : v);
-    return out;
-  };
+  const marcas = (a, b, n = 5) => Herramienta.marcas(a, b, n);
   function dibuja() { circuito(); grafica(); }
   // esquema: fuente (o un cable si no hay) a la izquierda, interruptor y R arriba, C y/o L a la derecha
   function circuito() {
