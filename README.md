@@ -31,4 +31,6 @@ El número de versión y las novedades están en `fuente/version.js`; la página
 
 `node pruebas/comprobar.js` regenera la web pública y la privada, y resuelve los dos juegos de ejercicios: los del Tema 3 contra `pruebas/esperados.json` (la forma del solucionario, no solo el valor) y los de ejemplo contra `pruebas/esperados-ejemplos.json`. También comprueba que `publico/` no contiene nada del PDF. Después abre las dos páginas en Chromium, abre cada ejercicio y la guía, y falla si hay errores en la consola. Necesita `playwright` (`npm install --no-save playwright`). La misma comprobación corre en GitHub Actions en cada pull request.
 
+La comprobación de cada herramienta está en `pruebas/herramientas/<carpeta>.js` y `pruebas/humo.js` hace la prueba de humo común (cambiar un dato, guardarlo en Mis ejercicios, recargar y verlo de vuelta). Mientras trabajas en una herramienta, `node pruebas/comprobar.js --solo <carpeta>` comprueba solo esa en unos segundos.
+
 Si un cambio de forma es intencionado, ejecuta `node pruebas/comprobar.js --actualizar` y revisa el diff de los esperados.

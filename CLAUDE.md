@@ -21,7 +21,9 @@ Web estática de simuladores y calculadoras de ciencias para la carrera, en espa
 | `fuente/<clave>/` | Una carpeta por herramienta (ver abajo). |
 | `fuente/{engine,fmt,physics,presets,canvas,app}.js`, `shell.html`, `guia/` | Simulador de Electrostática: arquitectura propia y más antigua. |
 | `privado/tema3-pdf.js` | Ejercicios del PDF de la asignatura. **Nunca van a `publico/`.** |
-| `pruebas/comprobar.js` | Toda la comprobación (Node + Playwright). `esperados*.json`: resultados de referencia. |
+| `pruebas/comprobar.js` | Comprobación común (build, publico/ limpio, diseño, Electrostática, portal, Mis ejercicios, práctica) y bucle de herramientas. `esperados*.json`: resultados de referencia. |
+| `pruebas/herramientas/<carpeta>.js` | Lo de cada herramienta: cálculos a mano en Node y su página en Chromium. |
+| `pruebas/humo.js` | Prueba de humo igual para todas: cambiar un dato, guardarlo, recargar y verlo; modo oscuro y 390 px. |
 | `pruebas/capturas.js` | Rehace las capturas de la guía de Electrostática. |
 | `publico/` | Lo único que se publica. Generado: no se edita a mano. |
 | `vercel.json`, `wrangler.jsonc`, `publico/_redirects` | Vercel y Cloudflare sirven `publico/` tal cual; redirecciones de URLs antiguas. |
@@ -43,8 +45,8 @@ Excepciones: `electrostatica` (shell.html + scripts raíz, su propia biblioteca)
 5. `biblioteca.js`: añadir `'<carpeta>': '<clave-ls>-v1'` a `CLAVES` (si no, no hay Mis ejercicios ni práctica).
 6. `practica.js`: entrada en `CONF` si la página no sigue la estructura estándar o la herramienta genera sus propios ejercicios (`genera: () => window.XApp?.azar()`).
 7. `version.js`: registro `'<carpeta>': [{ v: '0.1', … }]` y una entrada en `web` con «Nueva herramienta: …, en <Asignatura>.».
-8. `pruebas/comprobar.js`: resultados de los ejemplos calculados a mano y un bloque de navegador.
-9. `sh fuente/build.sh` y `node pruebas/comprobar.js`.
+8. `pruebas/herramientas/<carpeta>.js` (copiar uno parecido): resultados de los ejemplos calculados a mano y la parte de navegador; añadir la carpeta a `HERRAMIENTAS` en `comprobar.js`.
+9. `node pruebas/comprobar.js --solo <carpeta>` mientras se trabaja y `node pruebas/comprobar.js` entero al final.
 
 ## Contratos compartidos
 
@@ -72,7 +74,9 @@ Excepciones: `electrostatica` (shell.html + scripts raíz, su propia biblioteca)
 ```sh
 sh fuente/build.sh                      # regenera publico/ (hay que hacerlo y commitear publico/)
 node pruebas/comprobar.js               # todo: ejercicios, publico/ limpio, diseño y navegador (varios minutos)
+node pruebas/comprobar.js --solo CARPETA  # solo una herramienta (unos 15 s); --solo electrostatica para el simulador
 node pruebas/comprobar.js --sin-navegador   # solo cálculos (rápido)
+node pruebas/humo.js [--solo CARPETA]  # solo la prueba de humo (necesita publico/ compilado)
 node pruebas/comprobar.js --actualizar  # reescribe esperados*.json si el cambio de forma es intencionado
 sh fuente/build.sh privado SALIDA.html  # versión privada con el Tema 3 (artifact de claude.ai)
 ```
@@ -88,7 +92,7 @@ Playwright: en este contenedor ya está; en otro, `npm install --no-save playwri
 
 ## Reglas para Claude
 
-- Leer solo lo necesario: este fichero, la herramienta afectada y, si hace falta, una herramienta parecida. No leer `publico/` (es generado y enorme) ni `comprobar.js` entero: buscar con grep el bloque de la herramienta.
+- Leer solo lo necesario: este fichero, la herramienta afectada y, si hace falta, una herramienta parecida. No leer `publico/` (es generado y enorme) ni `pruebas/` entero: la prueba de una herramienta está en `pruebas/herramientas/<carpeta>.js`.
 - Para cambios pequeños, editar con reemplazos puntuales; no reescribir ficheros enteros.
 - Antes de escribir un ayudante (`esc`, formato de números, lectura de campos, lienzo, flechas, ejes), buscar si ya existe en un fichero común y reutilizarlo; no copiarlo de otra herramienta.
 - Tras tocar `fuente/`, `sh fuente/build.sh` y commitear también `publico/`.
