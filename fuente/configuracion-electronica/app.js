@@ -40,7 +40,7 @@
     $('#desap').textContent = `${r.desapareados} · ${r.magnetismo}`;
     const ex = $('#excepcion');
     ex.hidden = !r.excepcion;
-    if (r.excepcion) ex.innerHTML = `<b>Excepción al orden de llenado.</b> Por la regla se esperaría ${esc(r.esperada.split(' ').slice(-2).join(' '))}, pero ${q ? 'el átomo neutro tiene' : 'tiene'} ${esc(Elementos.abreviada(el.Z).split(' ').slice(1).join(' '))}: un subnivel lleno o semilleno es más estable.`;
+    if (r.excepcion) ex.innerHTML = `<b>Excepción al orden de llenado.</b> Por la regla se esperaría ${esc(r.cambio.esperada)}, pero tiene ${esc(r.cambio.real)}: ${/d[⁵]|d¹⁰|f⁷|f¹⁴/.test(r.cambio.real) ? 'un subnivel lleno o semilleno es más estable' : 'los dos subniveles tienen energías muy parecidas y la repulsión entre electrones decide el reparto'}.`;
     $('#en-tabla').href = '../tabla-periodica/#' + el.simbolo;
     moeller(r); orbitales(r);
   }

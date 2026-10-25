@@ -25,6 +25,9 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     cerca(vf.Veq, 25, 1e-12, 'volumen de equivalencia'); cerca(vf.pHv, -lg(0.0005 / 0.045), 1e-12, 'pH antes de la equivalencia'); cerca(vf.ph(25), 7, 1e-6, 'pH 7 en la equivalencia fuerte-fuerte');
     const va = r('val-acetico');
     cerca(va.pHv, pKa, 1e-12, 'pH = pKa a mitad'); cerca(va.ph(25), va.pHeq, 0.01, 'pH de equivalencia exacto y de clase'); cerca(va.ph(12.5), pKa, 0.01, 'curva exacta a mitad');
+    // Henderson-Hasselbalch no vale con casi nada de valorante: el pH sale del equilibrio entero
+    const vi = PHC.valoracion({ ...PHC.ejemplos.find((e) => e.clave === 'val-acetico').sc, Vt: '0.05' });
+    cerca(vi.pHv, vi.ph(0.05), 1e-9, 'valoración débil con 0,05 mL'); if (!(vi.pHv > r('acetico').pH)) mal('pH: al empezar a valorar el acético el pH no puede bajar');
     if (va.ind[0] !== 'fenolftaleína') mal(`pH: para el acético con NaOH sale ${va.ind[0]}`);
     if (va.curva.some((q, i) => i && q[1] < va.curva[i - 1][1] - 1e-9)) mal('pH: la curva de valoración de un ácido no sube siempre');
     const vb = r('val-amoniaco');

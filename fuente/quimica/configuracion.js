@@ -42,6 +42,10 @@ const Configuracion = (() => {
     const neutro = Elementos.configuracion(Z, 0);
     const excepcion = neutro.some((c) => madelung[c.nombre] !== c.e) || Object.keys(madelung).some((o) => !neutro.some((c) => c.nombre === o));
     const esperada = ORDEN.filter((o) => madelung[o]).map((o) => o + SUP(madelung[o])).join(' ');
+    // solo los subniveles en los que la configuración real se aparta de la regla: Pt 6s² 5d⁸ → 6s¹ 5d⁹
+    const real = (o) => neutro.find((c) => c.nombre === o)?.e || 0;
+    const cambian = ORDEN.filter((o) => (madelung[o] || 0) !== real(o));
+    const cambio = { esperada: cambian.map((o) => o + SUP(madelung[o] || 0)).join(' '), real: cambian.map((o) => o + SUP(real(o))).join(' ') };
     // abreviada con el gas noble anterior al número de electrones
     const g = [...Elementos.NOBLES].reverse().find((n) => (q ? n <= ne : n < ne));
     let abreviada = porLlenado;
@@ -71,7 +75,7 @@ const Configuracion = (() => {
     const valencia = conf.filter((c) => c.n === nMax).reduce((s, c) => s + c.e, 0);
     return {
       el, carga: q, Z, electrones: ne, porLlenado, porCapas, abreviada, capas: capasDe(conf), cajas, desapareados,
-      magnetismo: desapareados ? 'paramagnético' : 'diamagnético', diferenciador, excepcion: excepcion && q >= 0, esperada,
+      magnetismo: desapareados ? 'paramagnético' : 'diamagnético', diferenciador, excepcion: excepcion && q === 0, esperada, cambio,
       capaValencia: nMax, electronesValencia: valencia, bloque: Elementos.bloque(Z),
     };
   }

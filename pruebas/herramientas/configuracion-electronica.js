@@ -19,6 +19,8 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       if (r.desapareados !== d) mal(`Configuración · ${x}: ${r.desapareados} desapareados, se esperaban ${d}`);
       if ([q.n, q.l, q.ml, q.ms].join(',') !== qn) mal(`Configuración · ${x}: números cuánticos ${[q.n, q.l, q.ml, q.ms]}, se esperaban ${qn}`);
     }
+    if (Configuracion.analizar('Cr^3+').excepcion) mal('Configuración: el aviso de excepción es solo para el átomo neutro');
+    if (Configuracion.analizar('Pt').cambio.esperada !== '6s² 5d⁸' || Configuracion.analizar('Pt').cambio.real !== '6s¹ 5d⁹') mal('Configuración: la excepción del platino debería ser 6s² 5d⁸ → 6s¹ 5d⁹');
     if (!Configuracion.analizar('Cr').excepcion || Configuracion.analizar('Fe').excepcion) mal('Configuración: el cromo es una excepción y el hierro no');
     for (const z of [1, 26, 57, 92, 118]) { const r = Configuracion.analizar(String(z)); if (r.capas.reduce((a, b) => a + b, 0) !== z) mal(`Configuración · Z = ${z}: las capas no suman ${z} electrones`); }
     for (const mala of ['Xx', 'Na11+', '']) { let ok = false; try { Configuracion.analizar(mala); } catch (e) { ok = true; } if (!ok) mal(`Configuración: «${mala}» debería dar un error`); }
