@@ -10,12 +10,9 @@
    (Campos) y las expresiones en matematicas/expresion.js.
    ===================================================================== */
 (() => {
-  const $ = (q) => document.querySelector(q);
+  const { $, esc, copia, txt } = Herramienta;
   const C = Campos, CLAVE = 'campos-v1';
-  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const copia = (o) => JSON.parse(JSON.stringify(o));
   const fH = (x, d = 4) => C.f(x, d).replace(/\^\{([^}]*)\}/, '<sup>$1</sup>');
-  const txt = (h) => String(h).replace(/<sup>(.*?)<\/sup>/g, (_, e) => e.replace(/−/g, '⁻').replace(/\d/g, (d) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d])).replace(/<[^>]+>/g, '');
   const coma = (v) => String(v).replace('.', ',');
   const MODOS = [['escalar', 'Gradiente de un campo escalar f'], ['vectorial', 'Divergencia, rotacional y potencial de F'], ['linea', 'Integral de línea (trabajo)'], ['masa', 'Integral de f a lo largo de una curva (∫ f ds)'], ['green', 'Teorema de Green'], ['superficie', 'Flujo por una superficie y Stokes'], ['gauss', 'Teorema de la divergencia (Gauss)']];
   const REGION = { circulo: { cx: '0', cy: '0', rad: '1' }, rectangulo: { x1: '0', x2: '2', y1: '0', y2: '1' }, poligono: { vertices: '0 0; 2 0; 0 1' }, curvas: { g1: 'x^2', g2: 'x', a: '0', b: '1' } };
@@ -202,17 +199,12 @@
 
   /* ---------- Gráfica ---------- */
   function colores() { const cs = getComputedStyle(document.documentElement); for (const c of ['--ink', '--muted', '--line', '--accent', '--accent-soft', '--panel', '--bg', '--z1', '--z2']) col[c] = cs.getPropertyValue(c).trim(); fondo = null; }
-  const marcas = (a, b, n = 6) => {
-    const p0 = (b - a) / n, e = 10 ** Math.floor(Math.log10(p0)), paso = [1, 2, 2.5, 5, 10].map((q) => q * e).find((q) => q >= p0) || 10 * e;
-    const out = []; for (let v = Math.ceil(a / paso) * paso; v <= b + paso * 1e-9; v += paso) out.push(Math.abs(v) < paso * 1e-9 ? 0 : v);
-    return out;
-  };
-  const lienzo = (s) => {
-    const c = $(s), dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
-    if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); fondo = null; }
-    const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
-    return { g, w, h };
-  };
+  const marcas = Herramienta.marcas;
+  function lienzo(s) {
+    const r = Herramienta.lienzo(s);
+    if (r.cambia) fondo = null;
+    return r;
+  }
   const mL = 40, mR = 12, mT = 12, mB = 26;
   // ventana con la misma escala en x y en y, para que los círculos sean círculos
   function ventana(w, h) {

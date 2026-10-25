@@ -4,10 +4,8 @@
    desarrollo). El cálculo está en circuitos/fisica.js (Continua).
    ===================================================================== */
 (() => {
-  const $ = (q) => document.querySelector(q);
+  const { $, esc, copia } = Herramienta;
   const C = Continua, f = C.f, CLAVE = 'circuitos-v1', MAX = 14;
-  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const copia = (o) => JSON.parse(JSON.stringify(o));
   const txt = (h) => String(h).replace(/<[^>]+>/g, '');
 
   let sc = copia(C.ejemplos[1].sc);

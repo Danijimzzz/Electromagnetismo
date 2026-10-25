@@ -3,10 +3,8 @@
    desarrollo). El cálculo está en ondas/fisica.js (Ondas).
    ===================================================================== */
 (() => {
-  const $ = (q) => document.querySelector(q);
+  const { $, esc, copia } = Herramienta;
   const O = Ondas, f = O.f, CLAVE = 'ondas-v1';
-  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const copia = (o) => JSON.parse(JSON.stringify(o));
   const txt = (h) => String(h).replace(/<sup>/g, '^').replace(/<[^>]+>/g, '');
   const MODOS = [['armonica', 'Onda armónica'], ['estacionaria', 'Ondas estacionarias'], ['doppler', 'Efecto Doppler'], ['sonido', 'Intensidad y nivel sonoro']];
 

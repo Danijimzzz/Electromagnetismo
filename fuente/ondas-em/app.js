@@ -6,10 +6,8 @@
    El cálculo está en ondasem/fisica.js (OndasEM).
    ===================================================================== */
 (() => {
-  const $ = (q) => document.querySelector(q);
+  const { $, esc, copia } = Herramienta;
   const O = OndasEM, f = O.f, CLAVE = 'ondasem-v1';
-  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const copia = (o) => JSON.parse(JSON.stringify(o));
   const txt = (h) => String(h).replace(/<sup>(.*?)<\/sup>/g, (_, e) => e.replace(/−/g, '⁻').replace(/\d/g, (d) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d])).replace(/<sub>(.*?)<\/sub>/g, (_, e) => e.replace(/\d/g, (d) => '₀₁₂₃₄₅₆₇₈₉'[d])).replace(/<[^>]+>/g, '');
   const MODOS = [['onda', 'Onda plana: E, B y su expresión'], ['intensidad', 'Intensidad y presión de radiación'], ['perdidas', 'Medio con pérdidas (conductor)']];
   const DIRS = ['+x', '-x', '+y', '-y', '+z', '-z'].map((d) => [d, d.replace('-', '−')]);
@@ -111,12 +109,7 @@
 
   /* ---------- Dibujo ---------- */
   function colores() { const cs = getComputedStyle(document.documentElement); for (const c of ['--ink', '--muted', '--line', '--accent', '--bg', '--e', '--b', '--s']) col[c] = cs.getPropertyValue(c).trim(); }
-  const lienzo = () => {
-    const c = $('#escena'), dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
-    if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
-    const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
-    return { g, w, h };
-  };
+  const lienzo = () => Herramienta.lienzo('#escena');
   const FU = '"IBM Plex Sans", system-ui, sans-serif';
   const flecha = (g, x0, y0, x1, y1, c, ancho = 2) => {
     const L = Math.hypot(x1 - x0, y1 - y0); if (L < 1.5) return;

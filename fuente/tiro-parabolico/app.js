@@ -4,7 +4,7 @@
    (Cinematica).
    ===================================================================== */
 (() => {
-  const $ = (q) => document.querySelector(q);
+  const { $ } = Herramienta;
   const C = Cinematica, f = C.f;
   const txt = (s) => String(s).replace(/<sup>(.*?)<\/sup>/g, '^$1').replace(/<[^>]+>/g, ''); // para el lienzo
   const CLAVE = 'tiro-v1';
@@ -45,12 +45,7 @@
     const cs = getComputedStyle(document.documentElement);
     for (const k of ['--ink', '--muted', '--line', '--bg', '--panel', '--accent', '--suelo', '--bola', '--blanco', '--c-x', '--c-y', '--c-v', '--c-a']) col[k] = cs.getPropertyValue(k).trim();
   }
-  function lienzo(c) {
-    const dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
-    if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
-    const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
-    return { g, w, h };
-  }
+  const lienzo = (c) => Herramienta.lienzo(c);
   const paso = (rango, n = 5) => { const r = rango / n, p = 10 ** Math.floor(Math.log10(r || 1)), m = r / p; return (m < 1.5 ? 1 : m < 3.5 ? 2 : m < 7.5 ? 5 : 10) * p; };
   const flecha = (g, x0, y0, x1, y1, c) => {
     const L = Math.hypot(x1 - x0, y1 - y0); if (L < 2) return;

@@ -4,10 +4,8 @@
    sistemas/calculo.js (Sistemas) y matematicas/algebra.js (Algebra).
    ===================================================================== */
 (() => {
-  const $ = (q) => document.querySelector(q);
+  const { $, esc, copia } = Herramienta;
   const X = Sistemas, CLAVE = 'sistemas-v1', MAX = 6;
-  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const copia = (o) => JSON.parse(JSON.stringify(o));
 
   let sc = copia(X.ejemplos[0].sc);
   try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && Array.isArray(g.M) && g.M.length) sc = g; } catch (e) {}

@@ -4,10 +4,8 @@
    El cálculo está en estadistica/calculo.js (Estadistica).
    ===================================================================== */
 (() => {
-  const $ = (q) => document.querySelector(q);
+  const { $, esc, copia } = Herramienta;
   const E = Estadistica, num = E.num, CLAVE = 'estadistica-v1';
-  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const copia = (o) => JSON.parse(JSON.stringify(o));
   const DEF = { mu: '0', sigma: '1', nu: '10', k: '5', lambda: '2', n: '10', p: '0.5', a: '1', b: '2', alfa: '0.05' };
 
   let sc = copia(E.ejemplos[0].sc);

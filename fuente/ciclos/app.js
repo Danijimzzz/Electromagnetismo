@@ -5,11 +5,8 @@
    desarrollo). El cálculo está en ciclos/fisica.js (Ciclos).
    ===================================================================== */
 (() => {
-  const $ = (q) => document.querySelector(q);
+  const { $, esc, copia, txt } = Herramienta;
   const C = Ciclos, f = C.f, CLAVE = 'ciclos-v1';
-  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const copia = (o) => JSON.parse(JSON.stringify(o));
-  const txt = (h) => String(h).replace(/<sup>(.*?)<\/sup>/g, (_, e) => e.replace(/−/g, '⁻').replace(/\d/g, (d) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d])).replace(/<[^>]+>/g, '');
   const MODOS = [['carnot', 'Ciclo de Carnot'], ['otto', 'Ciclo Otto (gasolina)'], ['diesel', 'Ciclo Diesel'], ['maquina', 'Máquina, frigorífico o bomba de calor']];
 
   let sc = copia(C.ejemplos[0].sc);

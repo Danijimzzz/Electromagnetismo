@@ -3,12 +3,11 @@
    curvas de calentamiento y desarrollo). El cálculo está en fisica.js (Calor).
    ===================================================================== */
 (() => {
-  const $ = (q) => document.querySelector(q);
+  const { $, esc } = Herramienta;
   const K = Calor, f = K.f;
   const CLAVE = 'calorimetria-v1', MAX = 5;
   const COL = ['--c1', '--c2', '--c3', '--c4', '--c5'];
   const txt = (s) => String(s).replace(/<sup>(.*?)<\/sup>/g, '^$1').replace(/<[^>]+>/g, '');
-  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const coma = (v) => String(v ?? '').replace('.', ',');
   // campos de cada cuerpo según la sustancia
   const CAMPOS = [
@@ -90,12 +89,7 @@
     dibuja();
   }
 
-  function lienzo(c) {
-    const dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
-    if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
-    const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
-    return { g, w, h };
-  }
+  const lienzo = (c) => Herramienta.lienzo(c);
   const paso = (rango, n = 5) => { const r = rango / n, p = 10 ** Math.floor(Math.log10(r || 1)), m = r / p; return (m < 1.5 ? 1 : m < 3.5 ? 2 : m < 7.5 ? 5 : 10) * p; };
   function dibuja() {
     if (!res) return;

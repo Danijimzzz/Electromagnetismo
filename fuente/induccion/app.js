@@ -4,11 +4,9 @@
    El cálculo está en fisica.js (Induccion).
    ===================================================================== */
 (() => {
-  const $ = (q) => document.querySelector(q);
+  const { $, esc, copia } = Herramienta;
   const I = Induccion, f = I.f, u = I.u;
   const CLAVE = 'induccion-v1';
-  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const copia = (o) => JSON.parse(JSON.stringify(o));
 
   let st = { tab: 'L', L: copia(I.ejemplos.L[0].sc), M: copia(I.ejemplos.M[0].sc), RL: copia(I.ejemplos.RL[0].sc) };
   try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && g.L && g.M && g.RL) st = { ...st, ...g }; } catch (e) {}
@@ -117,12 +115,7 @@
     const cs = getComputedStyle(document.documentElement);
     for (const k of ['--ink', '--muted', '--line', '--bg', '--panel', '--accent', '--pos', '--neg', '--cobre', '--nucleo', '--campo']) col[k] = cs.getPropertyValue(k).trim();
   }
-  function lienzo(c) {
-    const dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
-    if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
-    const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
-    return { g, w, h };
-  }
+  const lienzo = (c) => Herramienta.lienzo(c);
   const flecha = (g, x1, y1, x2, y2, s = 6) => {
     const a = Math.atan2(y2 - y1, x2 - x1);
     g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.stroke();

@@ -5,10 +5,8 @@
    (Taylor) y las expresiones en matematicas/expresion.js.
    ===================================================================== */
 (() => {
-  const $ = (q) => document.querySelector(q);
+  const { $, esc, copia } = Herramienta;
   const T = Taylor, CLAVE = 'taylor-v1';
-  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const copia = (o) => JSON.parse(JSON.stringify(o));
   // decimal en HTML: 2,84·10<sup>−4</sup>
   const fH = (x, d = 4) => T.f(x, d).replace(/\^\{([^}]*)\}/, '<sup>$1</sup>');
   // para el lienzo: 10<sup>−7</sup> → 10⁻⁷
@@ -109,11 +107,7 @@
 
   /* ---------- Gráfica ---------- */
   function colores() { const cs = getComputedStyle(document.documentElement); for (const k of ['--ink', '--muted', '--line', '--accent', '--panel', '--bg', '--z2']) col[k] = cs.getPropertyValue(k).trim(); }
-  const marcas = (a, b, n = 6) => {
-    const p0 = (b - a) / n, e = 10 ** Math.floor(Math.log10(p0)), paso = [1, 2, 2.5, 5, 10].map((k) => k * e).find((k) => k >= p0) || 10 * e;
-    const out = []; for (let v = Math.ceil(a / paso) * paso; v <= b + paso * 1e-9; v += paso) out.push(Math.abs(v) < paso * 1e-9 ? 0 : v);
-    return out;
-  };
+  const marcas = Herramienta.marcas;
   let cacheVentana = null;
   function ventana() {
     const a = sol.a, W = Math.max(3, sol.x0 != null ? 1.6 * Math.abs(sol.x0 - a) : 0), x1 = a - W, x2 = a + W;

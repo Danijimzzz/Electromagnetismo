@@ -6,11 +6,8 @@
    El cálculo está en interferencia/fisica.js (Interferencia).
    ===================================================================== */
 (() => {
-  const $ = (q) => document.querySelector(q);
+  const { $, esc, copia, txt } = Herramienta;
   const IF = Interferencia, f = IF.f, CLAVE = 'interferencia-v1';
-  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const copia = (o) => JSON.parse(JSON.stringify(o));
-  const txt = (h) => String(h).replace(/<sup>(.*?)<\/sup>/g, (_, e) => e.replace(/−/g, '⁻').replace(/\d/g, (d) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d])).replace(/<[^>]+>/g, '');
   const MODOS = [['young', 'Doble rendija de Young'], ['rendija', 'Rendija simple (difracción)'], ['red', 'Red de difracción'], ['lamina', 'Lámina delgada']];
 
   let sc = copia(IF.ejemplos[0].sc);
@@ -100,12 +97,7 @@
 
   /* ---------- Dibujos ---------- */
   function colores() { const cs = getComputedStyle(document.documentElement); for (const c of ['--ink', '--muted', '--line', '--accent', '--bg', '--panel']) col[c] = cs.getPropertyValue(c).trim(); }
-  const lienzo = (s) => {
-    const c = $(s), dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
-    if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
-    const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
-    return { g, w, h };
-  };
+  const lienzo = (s) => Herramienta.lienzo(s);
   const FU = '"IBM Plex Sans", system-ui, sans-serif';
   const rgb = (nm, a = 1) => { const [r, g, b] = IF.color(nm); return `rgba(${r},${g},${b},${a})`; };
   const luz = () => (sol.modo === 'lamina' ? sol.l0 || 550 : sol.l0);

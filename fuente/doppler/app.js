@@ -4,11 +4,8 @@
    doppler/fisica.js (Doppler).
    ===================================================================== */
 (() => {
-  const $ = (q) => document.querySelector(q);
+  const { $, esc, copia, txt } = Herramienta;
   const D = Doppler, f = D.f, fq = D.fq, CLAVE = 'doppler-v1';
-  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const copia = (o) => JSON.parse(JSON.stringify(o));
-  const txt = (h) => String(h).replace(/<sup>(.*?)<\/sup>/g, (_, e) => e.replace(/−/g, '⁻').replace(/\d/g, (d) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d])).replace(/<[^>]+>/g, '');
   const MODOS = [['recta', 'Fuente y observador en línea'], ['paso', 'Una fuente que pasa de largo'], ['eco', 'Eco en un obstáculo que se mueve'], ['choque', 'Onda de choque (cono de Mach)']];
 
   let sc = copia(D.ejemplos[0].sc);

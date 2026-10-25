@@ -3,10 +3,8 @@
    desarrollo). El cálculo está en solido-rigido/fisica.js (Solido).
    ===================================================================== */
 (() => {
-  const $ = (q) => document.querySelector(q);
+  const { $, esc, copia } = Herramienta;
   const S = Solido, f = S.f, CLAVE = 'solido-rigido-v1';
-  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const copia = (o) => JSON.parse(JSON.stringify(o));
   const txt = (h) => String(h).replace(/<[^>]+>/g, '');
   const MODOS = [['inercia', 'Momento de inercia (Steiner)'], ['rodadura', 'Rodadura por un plano inclinado'], ['polea', 'Polea con masa'], ['momento', 'Conservación del momento angular']];
 

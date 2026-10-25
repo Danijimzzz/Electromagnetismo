@@ -4,11 +4,8 @@
    valoración, y desarrollo). El cálculo está en ph/calculo.js (PH).
    ===================================================================== */
 (() => {
-  const $ = (q) => document.querySelector(q);
+  const { $, esc, copia, txt } = Herramienta;
   const P = PH, f = P.f, f2 = P.f2, CLAVE = 'ph-v1';
-  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const copia = (o) => JSON.parse(JSON.stringify(o));
-  const txt = (h) => String(h).replace(/<sup>(.*?)<\/sup>/g, (_, e) => e.replace(/−/g, '⁻').replace(/\d/g, (d) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d])).replace(/<[^>]+>/g, '');
   const MODOS = [['fuerte', 'Ácido o base fuerte'], ['debil', 'Ácido o base débil'], ['tampon', 'Disolución reguladora (tampón)'], ['mezcla', 'Mezcla de ácido y base fuertes'], ['valoracion', 'Valoración']];
 
   let sc = copia(P.ejemplos[0].sc);
@@ -154,11 +151,10 @@
   const vAnim = (t) => { const ciclo = 11, s = (t % ciclo) / 9.5; return Math.min(1, s) * 2 * sol.Veq; };
 
   function lienzo(c) {
-    const dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
-    if (!w || !h) return null;
-    if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
-    const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h); g.lineCap = 'round'; g.lineJoin = 'round';
-    return { g, w, h };
+    if (!c.clientWidth || !c.clientHeight) return null;
+    const r = Herramienta.lienzo(c);
+    r.g.lineCap = 'round'; r.g.lineJoin = 'round';
+    return r;
   }
   function dibuja() {
     const L = lienzo($('#escena'));

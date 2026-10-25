@@ -3,7 +3,7 @@
    gráfica E(t) y desarrollo). El cálculo está en fisica.js (Energia).
    ===================================================================== */
 (() => {
-  const $ = (q) => document.querySelector(q);
+  const { $ } = Herramienta;
   const CLAVE = 'energia-v1';
   const CAMPOS = [
     { sep: 'Bloque' },
@@ -108,12 +108,7 @@
     const cs = getComputedStyle(document.documentElement);
     for (const k of ['--ink', '--muted', '--line', '--bg', '--panel', '--accent', '--suelo', '--bloque', '--e-k', '--e-g', '--e-e', '--e-q']) col[k] = cs.getPropertyValue(k).trim();
   }
-  function lienzo(c) {
-    const dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
-    if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
-    const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
-    return { g, w, h };
-  }
+  const lienzo = (c) => Herramienta.lienzo(c);
 
   function dibujaEscena(e) {
     const { g, w, h: H } = lienzo($('#lienzo'));

@@ -4,10 +4,8 @@
    El cálculo está en dinamica/fisica.js (Dinamica).
    ===================================================================== */
 (() => {
-  const $ = (q) => document.querySelector(q);
+  const { $, esc, copia } = Herramienta;
   const D = Dinamica, f = D.f, CLAVE = 'dinamica-v1';
-  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const copia = (o) => JSON.parse(JSON.stringify(o));
   const txt = (h) => String(h).replace(/<[^>]+>/g, '');
 
   let sc = copia(D.ejemplos[0].sc);
@@ -103,10 +101,9 @@
     g.restore();
   }
   function lienzo() {
-    const c = $('#escena'), dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
-    if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
-    const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h); g.lineCap = 'round'; g.lineJoin = 'round';
-    return { g, w, h };
+    const r = Herramienta.lienzo('#escena');
+    r.g.lineCap = 'round'; r.g.lineJoin = 'round';
+    return r;
   }
 
   function dibujaPlano(g, w, h) {

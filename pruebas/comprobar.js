@@ -133,6 +133,7 @@ global.Elementos = require(path.join(fuente, 'quimica', 'elementos.js'));
 global.Formulas = require(path.join(fuente, 'quimica', 'formulas.js'));
 global.Algebra = require(path.join(fuente, 'matematicas', 'algebra.js'));
 global.Expr = require(path.join(fuente, 'matematicas', 'expresion.js'));
+global.Herramienta = require(path.join(fuente, 'herramienta.js'));
 
 // cada herramienta del catálogo tiene su comprobación en pruebas/herramientas/<carpeta>.js, que devuelve la parte del navegador
 const HERRAMIENTAS = require(path.join(fuente, 'herramientas.js')).lista().map((h) => h.carpeta);

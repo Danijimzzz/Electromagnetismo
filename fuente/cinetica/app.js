@@ -6,11 +6,8 @@
    cinetica/calculo.js (Cinetica).
    ===================================================================== */
 (() => {
-  const $ = (q) => document.querySelector(q);
+  const { $, esc, copia, vacio, txt } = Herramienta;
   const K = Cinetica, f = K.f, CLAVE = 'cinetica-v1', MAXE = 6;
-  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const copia = (o) => JSON.parse(JSON.stringify(o));
-  const txt = (h) => String(h).replace(/<sup>(.*?)<\/sup>/g, (_, e) => e.replace(/−/g, '⁻').replace(/\d/g, (d) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d])).replace(/<[^>]+>/g, '');
   const MODOS = [['orden', 'Ley integrada (orden 0, 1 o 2)'], ['datos', 'Orden a partir de datos [A]–t'], ['iniciales', 'Método de las velocidades iniciales'], ['arrhenius', 'Ecuación de Arrhenius']];
 
   let sc = copia(K.ejemplos[0].sc);
@@ -44,7 +41,6 @@
     $('#campos').innerHTML = h;
     $('#nota').textContent = NOTAS[sc.modo];
   }
-  const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
   const cambia = () => { $('#ejemplos').value = ''; calcula(); };
   $('#campos').addEventListener('input', (e) => {
     const t = e.target; if (t.tagName !== 'INPUT') return;
@@ -142,11 +138,9 @@
   const tMax = () => (sol.modo === 'datos' ? sol.ts[sol.ts.length - 1] : Math.max(sol.t, sol.tC || 0, (sol.n === 0 ? 1.1 * sol.A0 / sol.k : 3 * sol.t12)));
   const tDe = () => { const T = tMax(), ciclo = 9; return Math.min(1, (tA % ciclo) / 7.5) * T; };
   function lienzo(c) {
-    const dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
-    if (!w || !h) return null;
-    if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
-    const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
-    return { g, w, h };
+    if (!c.clientWidth || !c.clientHeight) return null;
+    const r = Herramienta.lienzo(c);
+    return r;
   }
   function texto(g, x, y, t, color = col['--ink'], al = 'center', peso = '') { g.font = `${peso}12px "IBM Plex Sans", system-ui, sans-serif`; g.fillStyle = color; g.textAlign = al; g.textBaseline = 'middle'; g.fillText(t, x, y); }
   const punto = (g, x, y, r, color) => { g.fillStyle = color; g.beginPath(); g.arc(x, y, r, 0, 2 * Math.PI); g.fill(); };
@@ -182,11 +176,7 @@
   }
 
   /* ---------- Gráficas ---------- */
-  const marcas = (a, b, n = 6) => {
-    const p0 = (b - a) / n, e = 10 ** Math.floor(Math.log10(p0)), paso = [1, 2, 2.5, 5, 10].map((q) => q * e).find((q) => q >= p0) || 10 * e;
-    const out = []; for (let v = Math.ceil(a / paso) * paso; v <= b + paso * 1e-9; v += paso) out.push(Math.abs(v) < paso * 1e-9 ? 0 : v);
-    return out;
-  };
+  const marcas = Herramienta.marcas;
   function ejes(g, w, h, V, X, Y, etX, etY, fx = (v) => txt(f(v, 3)), fy = fx) {
     g.lineWidth = 1; g.strokeStyle = col['--line'];
     if (V.x2 > V.x1) for (const v of marcas(V.x1, V.x2, Math.max(4, Math.round(w / 90)))) { g.beginPath(); g.moveTo(X(v), V.mT); g.lineTo(X(v), h - V.mB); g.stroke(); texto(g, X(v), h - V.mB + 12, fx(v), col['--muted']); }

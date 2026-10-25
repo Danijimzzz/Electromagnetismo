@@ -3,10 +3,9 @@
    gráfica E(x), tabla por capas y desarrollo). El cálculo está en fisica.js.
    ===================================================================== */
 (() => {
-  const $ = (q) => document.querySelector(q);
+  const { $, esc } = Herramienta;
   const K = Condensador, cu = K.conUnidad;
   const CLAVE = 'condensadores-v1';
-  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const COLCAPA = ['--capa', '--capa2', '--capa3'];
   const texto = (h) => h.replace(/<sub>(.*?)<\/sub>/g, '$1').replace(/<sup>(.*?)<\/sup>/g, '^$1').replace(/<[^>]+>/g, '');
 
@@ -93,12 +92,7 @@
     const cs = getComputedStyle(document.documentElement);
     for (const k of ['--ink', '--muted', '--line', '--bg', '--panel', '--accent', '--pos', '--neg', '--capa', '--capa2', '--capa3', '--campo']) col[k] = cs.getPropertyValue(k).trim();
   }
-  function lienzo(c) {
-    const dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
-    if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
-    const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
-    return { g, w, h };
-  }
+  const lienzo = (c) => Herramienta.lienzo(c);
   const flecha = (g, x1, y1, x2, y2, s = 6) => {
     const a = Math.atan2(y2 - y1, x2 - x1);
     g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.stroke();

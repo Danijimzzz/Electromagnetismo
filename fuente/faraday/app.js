@@ -4,10 +4,8 @@
    faraday/fisica.js (Faraday).
    ===================================================================== */
 (() => {
-  const $ = (q) => document.querySelector(q);
+  const { $, esc, copia } = Herramienta;
   const F = Faraday, f = F.f, CLAVE = 'faraday-v1';
-  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const copia = (o) => JSON.parse(JSON.stringify(o));
   const txt = (h) => String(h).replace(/<sup>/g, '^').replace(/<[^>]+>/g, '');
   const MODOS = [['barra', 'Barra sobre raíles'], ['giratoria', 'Bobina que gira (alternador)'], ['flujo', 'Flujo que cambia en un tiempo'], ['cruza', 'Espira que atraviesa un campo']];
 
