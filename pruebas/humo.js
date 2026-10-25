@@ -8,7 +8,7 @@
    Uso: node pruebas/humo.js [--solo CARPETA]   (comprobar.js la llama con su navegador) */
 const fs = require('fs'), path = require('path');
 const publico = path.join(__dirname, '..', 'publico');
-const Catalogo = require('../fuente/catalogo.js'), Biblioteca = require('../fuente/biblioteca.js');
+const Catalogo = require('../fuente/catalogo.js');
 
 // un número como los que escribe la gente (coma decimal, signo, 3e8 o 3·10^8) cambiado sin salirse de su rango
 function otroNumero(v) {
@@ -25,9 +25,10 @@ async function humo(browser, { mal, solo } = {}) {
   let probadas = 0, sinDato = [];
   for (const pag of pags) {
     const archivo = path.join(publico, ...pag.split('/'), 'index.html');
-    const dir = (fs.readFileSync(archivo, 'utf8').match(/Biblioteca\.monta\('([^']+)'\)/) || [])[1] || pag.split('/')[1];
+    // la carpeta y la clave de localStorage, de la llamada que monta Mis ejercicios en la página
+    const [, dir = pag.split('/')[1], clave] = fs.readFileSync(archivo, 'utf8').match(/Biblioteca\.monta\('([^']+)', (?:'([^']+)'|null)\)/) || [];
     if (solo && solo !== dir && solo !== pag.split('/')[1]) continue;
-    const clave = Biblioteca.CLAVES[dir], consola = [];
+    const consola = [];
     const page = await browser.newPage({ viewport: { width: 1400, height: 900 } });
     page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') consola.push(`${m.type()}: ${m.text()}`); });
     page.on('pageerror', (e) => consola.push('excepción: ' + e.message));

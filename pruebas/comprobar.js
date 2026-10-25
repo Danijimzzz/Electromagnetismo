@@ -134,8 +134,9 @@ global.Formulas = require(path.join(fuente, 'quimica', 'formulas.js'));
 global.Algebra = require(path.join(fuente, 'matematicas', 'algebra.js'));
 global.Expr = require(path.join(fuente, 'matematicas', 'expresion.js'));
 
-// cada herramienta tiene su comprobación en pruebas/herramientas/<carpeta>.js; devuelve la parte del navegador
-const HERRAMIENTAS = ['magnetostatica', 'tabla-periodica', 'trabajo-y-energia', 'masa-molar', 'configuracion-electronica', 'condensadores', 'tiro-parabolico', 'disoluciones', 'calorimetria', 'induccion', 'matrices', 'sistemas', 'estadistica', 'alterna', 'dinamica', 'circuitos', 'solido-rigido', 'ondas', 'doppler', 'resistencias', 'regresion', 'complejos', 'fluidos', 'ph', 'ciclos', 'taylor', 'fourier', 'edos', 'cinetica', 'campos', 'fuerza', 'transitorios', 'intervalos', 'ondas-em', 'interferencia', 'laplace', 'derivadas', 'gases', 'faraday'];
+// cada herramienta del catálogo tiene su comprobación en pruebas/herramientas/<carpeta>.js, que devuelve la parte del navegador
+const HERRAMIENTAS = require(path.join(fuente, 'herramientas.js')).lista().map((h) => h.carpeta);
+for (const k of HERRAMIENTAS) if (!fs.existsSync(path.join(__dirname, 'herramientas', k + '.js'))) mal(`${k}: falta su comprobación en pruebas/herramientas/${k}.js`);
 const pagina = async (browser, width, height) => {
   const page = await browser.newPage({ viewport: { width, height } }), consola = [];
   page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') consola.push(m.type() + ': ' + m.text()); });
@@ -143,7 +144,7 @@ const pagina = async (browser, width, height) => {
   return { page, consola };
 };
 if (solo && !HERRAMIENTAS.includes(solo) && solo !== 'electrostatica') { console.log(`✗ --solo ${solo}: no hay ninguna herramienta con esa carpeta`); process.exit(1); }
-const enNavegador = HERRAMIENTAS.filter((k) => !solo || solo === k).map((k) => require(path.join(__dirname, 'herramientas', k + '.js'))({ fs, path, fuente, publico, args, mal, pagina }));
+const enNavegador = HERRAMIENTAS.filter((k) => (!solo || solo === k) && fs.existsSync(path.join(__dirname, 'herramientas', k + '.js'))).map((k) => require(path.join(__dirname, 'herramientas', k + '.js'))({ fs, path, fuente, publico, args, mal, pagina }));
 
 if (!solo) {
   {
@@ -328,9 +329,8 @@ async function navegador() {
     const pags = Catalogo.asignaturas.flatMap((a) => a.herramientas.filter((h) => h.disponible).map((h) => `${a.clave}/${h.clave}`));
     let probadas = 0;
     for (const pag of pags) {
-      const html = fs.readFileSync(path.join(publico, ...pag.split('/'), 'index.html'), 'utf8'), dir = (html.match(/Biblioteca\.monta\('([^']+)'\)/) || [])[1];
+      const html = fs.readFileSync(path.join(publico, ...pag.split('/'), 'index.html'), 'utf8'), [, dir, clave] = html.match(/Biblioteca\.monta\('([^']+)', (?:'([^']+)'|null)\)/) || [];
       if (!dir || (solo && dir !== solo)) continue;
-      const clave = Biblioteca.CLAVES[dir];
       const page = await browser.newPage({ viewport: { width: 1400, height: 900 }, acceptDownloads: true });
       page.on('console', (m) => { if (m.type() === 'error') consola.push(`${pag}: ${m.text()}`); });
       page.on('pageerror', (e) => consola.push(`${pag}: excepción: ${e.message}`));
@@ -383,14 +383,14 @@ async function navegador() {
     const pags = Catalogo.asignaturas.flatMap((a) => a.herramientas.filter((h) => h.disponible).map((h) => `${a.clave}/${h.clave}`));
     let probadas = 0, ejercicios = 0;
     for (const pag of pags) {
-      const html = fs.readFileSync(path.join(publico, ...pag.split('/'), 'index.html'), 'utf8'), dir = (html.match(/Practica\.monta\('([^']+)'/) || [])[1];
+      const html = fs.readFileSync(path.join(publico, ...pag.split('/'), 'index.html'), 'utf8'), [, dir, clave] = html.match(/Practica\.monta\('([^']+)', (?:'([^']+)'|null)\)/) || [];
       if (!dir || dir === 'tabla-periodica' || (solo && dir !== solo)) continue;
       const page = await browser.newPage({ viewport: { width: 1400, height: 900 } });
       page.on('console', (m) => { if (m.type() === 'error') consola.push(`${pag}: ${m.text()}`); });
       page.on('pageerror', (e) => consola.push(`${pag}: excepción: ${e.message}`));
       await page.goto('file://' + path.join(publico, ...pag.split('/'), 'index.html'));
       await page.waitForSelector('.prac-btn');
-      const clave = Biblioteca.CLAVES[dir], previo = await page.evaluate((k) => localStorage.getItem(k), clave);
+      const previo = await page.evaluate((k) => localStorage.getItem(k), clave);
       await page.click('.prac-btn');
       for (let n = 0; n < 5; n++) {
         if (n) await page.click('.prac [data-a=otro]');

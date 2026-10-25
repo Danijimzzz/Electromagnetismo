@@ -1220,20 +1220,14 @@ const Cinematica = (() => {
 /* =====================================================================
    «Mis ejercicios»: barra lateral común a todas las herramientas, como la
    del simulador de electrostática. Guarda en este navegador el estado de la
-   herramienta (lo que cada app ya deja en localStorage con su CLAVE) con un
+   herramienta (lo que cada app ya deja en localStorage con su clave) con un
    título, una carpeta y la marca de fijado; abre, renombra, borra, exporta e
    importa ejercicios en archivos .simu.json. Abrir uno deja su estado en la
-   CLAVE de la app y recarga la página, así sirve para cualquier herramienta.
+   clave de la app y recarga la página, así sirve para cualquier herramienta.
+   La clave sale del catálogo («guarda»): herramientas.js la pone en la llamada
+   Biblioteca.monta(carpeta, clave) de cada página.
    ===================================================================== */
 const Biblioteca = (() => {
-  // carpeta de la herramienta → clave de localStorage donde la app guarda su estado
-  const CLAVES = {
-    alterna: 'alterna-v1', calorimetria: 'calorimetria-v1', circuitos: 'circuitos-v1', condensadores: 'condensadores-v1',
-    'configuracion-electronica': 'configuracion-v1', dinamica: 'dinamica-v1', disoluciones: 'disoluciones-v1', ph: 'ph-v1', cinetica: 'cinetica-v1', doppler: 'doppler-v1', fluidos: 'fluidos-v1', ciclos: 'ciclos-v1', estadistica: 'estadistica-v1', regresion: 'regresion-v1',
-    faraday: 'faraday-v1', fuerza: 'fuerza-v1', transitorios: 'transitorios-v1', intervalos: 'intervalos-v1', 'ondas-em': 'ondasem-v1', interferencia: 'interferencia-v1', gases: 'gases-v1', induccion: 'induccion-v1', magnetostatica: 'magneto-cur-v1', 'masa-molar': 'masa-molar-v1',
-    matrices: 'matrices-v1', resistencias: 'resistencias-v1', ondas: 'ondas-v1', sistemas: 'sistemas-v1', complejos: 'complejos-v1', taylor: 'taylor-v1', fourier: 'fourier-v1', edos: 'edos-v1', laplace: 'laplace-v1', derivadas: 'derivadas-v1', campos: 'campos-v1', 'solido-rigido': 'solido-rigido-v1', 'tiro-parabolico': 'tiro-v1',
-    'trabajo-y-energia': 'energia-v1',
-  };
   const FORMATO = 'simulaciencia-ejercicios', ANCHO = 1280;
   const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   const lee = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); return v ?? d; } catch (e) { return d; } };
@@ -1287,8 +1281,8 @@ const Biblioteca = (() => {
 .bib.arrastre { outline: 2px dashed var(--accent); outline-offset: -6px }
 `;
 
-  function monta(herramienta) {
-    const clave = CLAVES[herramienta], cab = document.querySelector('header.top');
+  function monta(herramienta, clave) {
+    const cab = document.querySelector('header.top');
     if (!clave || !cab || document.querySelector('.bib')) return null;
     const K = `simu-ejercicios:${herramienta}`, K_UI = 'simu-ejercicios-ui', K_ACT = `simu-ejercicios-activo:${herramienta}`;
     const nombre = (document.querySelector('h1')?.textContent || document.title.split('·')[0]).trim();
@@ -1493,7 +1487,7 @@ ${f ? `<div class="bib-form"><label>Título<input id="bib-t" value="${esc(f.titu
     if (selsEj().some((s) => s.options.length > 1)) document.body.classList.add('bib-ejemplos');
     return { get items() { return lib.items; }, abre, importa: (t) => { const n = importa(t); guardaLib(); pinta(); return n; }, archivoDe };
   }
-  return { monta, CLAVES, FORMATO };
+  return { monta, FORMATO };
 })();
 
 /* =====================================================================
@@ -1805,7 +1799,7 @@ ${preguntas.length ? `<div class="prac-q">${filas}</div>` : '<p>Con estos datos 
   return { monta, CONF, numeros, leeAlumno, otroValor };
 })();
 
-Biblioteca.monta('tiro-parabolico');
-Practica.monta('tiro-parabolico', Biblioteca.CLAVES['tiro-parabolico']);
+Biblioteca.monta('tiro-parabolico', 'tiro-v1');
+Practica.monta('tiro-parabolico', 'tiro-v1');
 </script>
 </html>

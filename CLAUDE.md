@@ -6,8 +6,9 @@ Web estática de simuladores y calculadoras de ciencias para la carrera, en espa
 
 | Ruta | Qué es |
 | --- | --- |
-| `fuente/build.sh` | Genera todo `publico/`. Una línea `herramienta …` por herramienta. |
-| `fuente/catalogo.js` | Asignaturas y herramientas (clave, nombre, icono, `disponible`, desc, palabras de búsqueda). |
+| `fuente/build.sh` | Genera todo `publico/`: Electrostática, y llama a `portal.js` y a `herramientas.js`. |
+| `fuente/herramientas.js` | Genera la página de cada herramienta con los datos del catálogo. |
+| `fuente/catalogo.js` | Asignaturas y herramientas: clave, nombre, icono, `disponible`, desc, búsqueda y, para generar la página, `scripts`, `titulo`, `descripcion`, `carpeta` y `guarda` (ver cabecera de herramientas.js). **Único sitio donde se da de alta una herramienta.** |
 | `fuente/portal.js` | Genera portada, páginas de asignatura, novedades y foro desde el catálogo (lo llama build.sh). |
 | `fuente/diseno.js` | Pasa cada `pagina.html` y mete cabecera del portal, color de la asignatura, miga y CSS común. |
 | `fuente/estilos.css`, `DISENO.md`, `fuente/plantilla/pagina.html` | Hoja común, guía de diseño y plantilla de página. |
@@ -40,18 +41,16 @@ Excepciones: `electrostatica` (shell.html + scripts raíz, su propia biblioteca)
 **Crear una nueva**
 1. Copiar `fuente/plantilla/pagina.html` a `fuente/<clave>/pagina.html` y seguir `DISENO.md`.
 2. Escribir `fisica.js`/`calculo.js` con `ejemplos` y `app.js` siguiendo una herramienta parecida.
-3. `catalogo.js`: entrada con `disponible: true` (o pasar a `true` una «Próximamente»).
-4. `build.sh`: `herramienta <carpeta> ../publico/<asignatura>/<clave>/index.html "Título" "Descripción" version.js mates.js <carpeta>/fisica.js <carpeta>/app.js`.
-5. `biblioteca.js`: añadir `'<carpeta>': '<clave-ls>-v1'` a `CLAVES` (si no, no hay Mis ejercicios ni práctica).
-6. `practica.js`: entrada en `CONF` si la página no sigue la estructura estándar o la herramienta genera sus propios ejercicios (`genera: () => window.XApp?.azar()`).
-7. `version.js`: registro `'<carpeta>': [{ v: '0.1', … }]` y una entrada en `web` con «Nueva herramienta: …, en <Asignatura>.».
-8. `pruebas/herramientas/<carpeta>.js` (copiar uno parecido): resultados de los ejemplos calculados a mano y la parte de navegador; añadir la carpeta a `HERRAMIENTAS` en `comprobar.js`.
-9. `node pruebas/comprobar.js --solo <carpeta>` mientras se trabaja y `node pruebas/comprobar.js` entero al final.
+3. `catalogo.js`: entrada con `disponible: true` (o pasar a `true` una «Próximamente») y `scripts: ['mates.js', '<carpeta>/fisica.js', '<carpeta>/app.js'], titulo: '…', descripcion: '…'`. La app guarda su estado en `localStorage['<carpeta>-v1']` (si no, `guarda: '…'`).
+4. `practica.js`: entrada en `CONF` si la página no sigue la estructura estándar o la herramienta genera sus propios ejercicios (`genera: () => window.XApp?.azar()`).
+5. `version.js`: registro `'<carpeta>': [{ v: '0.1', … }]` y una entrada en `web` con «Nueva herramienta: …, en <Asignatura>.».
+6. `pruebas/herramientas/<carpeta>.js` (copiar uno parecido): resultados de los ejemplos calculados a mano y la parte de navegador. comprobar.js falla si falta.
+7. `node pruebas/comprobar.js --solo <carpeta>` mientras se trabaja y `node pruebas/comprobar.js` entero al final.
 
 ## Contratos compartidos
 
-- **`Biblioteca.monta(carpeta)`** y **`Practica.monta(carpeta, clave)`**: build.sh los añade al final de cada página. No hacen nada si la carpeta no está en `Biblioteca.CLAVES`.
-- **Estado de la app**: cada app guarda su estado entero en `localStorage[CLAVES[carpeta]]` (string JSON) en cada cambio. Mis ejercicios copia ese string; abrir un ejercicio lo escribe en esa clave y recarga la página.
+- **`Biblioteca.monta(carpeta, clave)`** y **`Practica.monta(carpeta, clave)`**: herramientas.js los añade al final de cada página con la clave de `guarda`. Con `null` no hacen nada.
+- **Estado de la app**: cada app guarda su estado entero en `localStorage[guarda]` (string JSON) en cada cambio. Mis ejercicios copia ese string; abrir un ejercicio lo escribe en esa clave y recarga la página.
 - **Claves de localStorage**: `<app>-v1` (estado de cada app); `simu-ejercicios:<carpeta>` (`{items:[{id,titulo,carpeta,fijado,datos,actualizado}]}`); `simu-ejercicios-ui` (barra abierta y carpetas cerradas); `simu-tema` (`dark`/`light`); Electrostática: `electro-sim-lib-v2`, `electro-sim-cur-v2`, `electro-sim-ui-v2`.
 - **sessionStorage**: `simu-ejercicios-activo:<carpeta>` (ejercicio abierto) y `simu-practica:<carpeta>` (datos de antes de practicar).
 - **Evento `simu-guardar`** (en `window`): Mis ejercicios lo lanza justo antes de leer el estado. Una app que guarda con retraso tiene que escucharlo y guardar al momento (hoy solo `magnetostatica/app.js`).
