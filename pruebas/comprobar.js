@@ -70,6 +70,37 @@ function comparar(obtenidos, esperados, donde) {
   }
 }
 
+// Diseño común (DISENO.md): ninguna herramienta vuelve a definir una regla de fuente/estilos.css ni los
+// colores comunes, y los colores fijos solo van en variables propias de :root (así cambian con el modo oscuro)
+{
+  const antes = fallos;
+  // reglas de primer nivel y de dentro de @media / @container: [selectores, cuerpo]
+  const reglas = (css) => {
+    const r = []; let i = 0, ini = 0, prof = 0, cab = [];
+    css = css.replace(/\/\*[\s\S]*?\*\//g, '');
+    for (; i < css.length; i++) {
+      if (css[i] === '{') { const s = css.slice(ini, i).trim(); if (s.startsWith('@')) { cab.push(prof); prof++; ini = i + 1; continue; } prof++; r.push([s, i + 1]); ini = i + 1; }
+      else if (css[i] === '}') { prof--; if (cab.length && cab[cab.length - 1] === prof) cab.pop(); else if (r.length && r[r.length - 1].length === 2) r[r.length - 1].push(css.slice(r[r.length - 1][1], i)); ini = i + 1; }
+    }
+    return r.filter((x) => x.length === 3).map(([s, , c]) => [s.split(',').map((t) => t.trim().replace(/\s+/g, ' ')), c]);
+  };
+  const comunes = new Set(reglas(fs.readFileSync(path.join(fuente, 'estilos.css'), 'utf8')).flatMap(([s]) => s).filter((s) => !s.startsWith(':root')));
+  const TOKENS = /--(bg|panel|ink|muted|line|error|accent|accent-soft|marca|f-ui|f-math|f-mono)\s*:/;
+  let n = 0;
+  for (const dir of fs.readdirSync(fuente).filter((d) => fs.existsSync(path.join(fuente, d, 'pagina.html')))) {
+    n++;
+    const css = [...fs.readFileSync(path.join(fuente, dir, 'pagina.html'), 'utf8').matchAll(/<style>([\s\S]*?)<\/style>/g)].map((m) => m[1]).join('\n');
+    for (const [sel, cuerpo] of reglas(css)) {
+      const rep = sel.filter((s) => comunes.has(s));
+      if (rep.length) mal(`${dir}: vuelve a definir ${rep.join(', ')}, que ya está en estilos.css (ajusta sus variables o usa una clase o un id propios)`);
+      if (sel.some((s) => s.startsWith(':root')) && TOKENS.test(cuerpo)) mal(`${dir}: redefine un color o una letra comunes en :root (${cuerpo.match(TOKENS)[0]})`);
+      const fijos = cuerpo.split(';').filter((d) => !/^\s*--/.test(d) && /#[0-9a-f]{3,8}\b|rgba?\(|hsla?\(/i.test(d));
+      if (fijos.length) mal(`${dir}: color fijo en ${sel.join(', ')} (${fijos[0].trim()}); ponlo en una variable de :root con su valor en modo oscuro`);
+    }
+  }
+  if (fallos === antes) console.log(`  ✓ Diseño común: ${n - 1} herramientas y la plantilla usan estilos.css sin redefinir sus reglas ni poner colores fijos`);
+}
+
 console.log('2 · Ejercicios en Node');
 for (const m of ['version', 'engine', 'fmt', 'physics']) {
   const g = { version: 'Version', engine: 'Engine', fmt: 'Fmt', physics: 'Physics' }[m];

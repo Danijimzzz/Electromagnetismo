@@ -30,70 +30,118 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
-<style>
+<style>/* =====================================================================
+   Hoja de estilos común de todas las herramientas (fuente/<herramienta>/pagina.html).
+   diseno.js la mete en cada página, antes de su propio <style>, junto con el color
+   de la asignatura (--accent, --accent-soft) y la cabecera del portal. La guía de uso
+   de cada componente, con su HTML, está en DISENO.md.
+   Una herramienta no vuelve a definir estas reglas: ajusta las variables de medida
+   (--col-datos, --ancho-valor, --alto-grafica) o añade una clase propia.
+   ===================================================================== */
+
+/* ---------- Colores y letras (claro y oscuro) ---------- */
 :root {
-  --bg: #eef0f4; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d6dbe3; --accent: #6b3fa0; --accent-soft: #efe6f8; --z1: #2a5db5; --z2: #c2410c; --z3: #6b3fa0; --peso: #c2412a; --normal: #1d7a3e; --roz: #b0700a; --fuerza: #6b3fa0; --tension: #2a5db5; --cuerpo: #c9d3e0; --suelo: #8a96a3;
+  --bg: #eef1ee; --panel: #fff; --ink: #1a2128; --muted: #5b6670; --line: #d5dbd5; --error: #c0392b;
   --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
   --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  /* medidas que cada herramienta puede ajustar */
+  --col-datos: 360px; --ancho-etiqueta: minmax(0, 1fr); --ancho-valor: 150px; --letra-campo: 13px var(--f-ui); --ancho-dato: 190px; --alto-grafica: clamp(260px, 36vw, 380px); --margen-grafica: 10px;
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #b892ec; --accent-soft: #2b2140; --z1: #74a2f2; --z2: #f0915a; --z3: #b892ec; --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784; color-scheme: dark } }
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #94a0a8; --line: #2a343b; --error: #f08a80; color-scheme: dark } }
 :root[data-theme="dark"] {
-  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #b892ec; --accent-soft: #2b2140; --z1: #74a2f2; --z2: #f0915a; --z3: #b892ec; --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784; color-scheme: dark }
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #94a0a8; --line: #2a343b; --error: #f08a80; color-scheme: dark }
+/* fin de los colores */
+
+/* ---------- Base ---------- */
 * { box-sizing: border-box }
 [hidden] { display: none !important }
 html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
 a { color: var(--accent) }
-.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
-.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
-.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
 .wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
-h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
+h1 { font: 600 24px/1.25 var(--f-ui); margin: 0 0 4px }
 .lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
-.layout { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 16px; align-items: start }
-@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr) } }
-.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 14px }
-.card h2 { font: 600 15px var(--f-ui); margin: 0 0 10px }
-.campos { display: grid; grid-template-columns: minmax(0, 1fr) 190px; gap: 7px 10px; align-items: center }
-.campos label { font-size: 13.5px } .campos label small { color: var(--muted) }
-.in { font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
-.in:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
-.sep { grid-column: 1 / -1; font: 600 12.5px var(--f-ui); color: var(--muted); margin-top: 8px }
-.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer }
-.btn:hover { border-color: var(--accent) }
-.error { color: #c0392b; font-size: 13px; margin: 10px 0 0 }
-.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
-.res { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px 14px; font: 16px var(--f-math) } .res div { overflow-x: auto } .res span { display: block; font: 12px var(--f-ui); color: var(--muted) }
-.leyenda { font-size: 12.5px; color: var(--muted); margin: 6px 0 0 } .leyenda b { font-weight: 600 }
-canvas { display: block; width: 100%; height: clamp(260px, 36vw, 380px); border-radius: 8px; background: var(--bg); margin-top: 10px }
-.pasos ol { margin: 0; padding-left: 22px } .pasos li { margin: 0 0 12px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto }
-.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
-.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
-.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
-.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
-footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
-.controles { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px }
-.destacado { border-color: var(--accent); box-shadow: inset 4px 0 0 var(--accent) }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px }
+footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+
+/* ---------- Diseño A: datos a la izquierda, resultados a la derecha ---------- */
+.layout { display: grid; grid-template-columns: var(--col-datos) minmax(0, 1fr); gap: 16px; align-items: start }
+.layout.invertido { grid-template-columns: minmax(0, 1fr) var(--col-datos) }
+@media (max-width: 900px) { .layout, .layout.invertido { grid-template-columns: minmax(0, 1fr) } }
+
+/* ---------- Tarjetas ---------- */
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 12px/1.4 var(--f-ui); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 10px }
+.destacado { border-color: var(--line); border-top: 3px solid var(--accent) }
 .destacado h2 { color: var(--accent) }
-.resumen { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; margin: 0 }
-.resumen div { background: var(--accent-soft); border-radius: 8px; padding: 8px 10px; overflow-x: auto } .resumen div span { display: block; font-size: 12px; color: var(--muted) } .resumen div b { font: 600 17px var(--f-math) }
-.teoria ul { padding-left: 20px } .teoria li { margin-bottom: 4px }
-#grafica { height: clamp(280px, 40vw, 420px) }
-.mat { position: relative; display: inline-block; vertical-align: middle; padding: 0 7px; margin: 2px 2px }
-.mat::before, .mat::after { content: ""; position: absolute; top: 0; bottom: 0; width: 5px; border: 1.4px solid currentColor }
-.mat::before { left: 0; border-right: 0 } .mat::after { right: 0; border-left: 0 }
-.mat table { border-collapse: collapse } .mat td { padding: 2px 7px; text-align: center; white-space: nowrap; font-variant-numeric: tabular-nums }
+
+/* ---------- Datos: campos, separadores, botones y pestañas ---------- */
+.campos { display: grid; grid-template-columns: var(--ancho-etiqueta) var(--ancho-valor); gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px }
+.campos label small { color: var(--muted) }
+.campos .ancho { grid-column: 1 / -1 }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--accent); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.in { font: var(--letra-campo); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer; white-space: nowrap }
+.btn:hover { border-color: var(--accent) }
+/* foco del teclado en todo lo que se pulsa o se escribe (sin especificidad: una herramienta puede ajustarlo) */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.controles { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px }
+.controles > .nota, .controles > .leyenda { flex: 1 1 220px; margin: 0 }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px }
+.tools label { color: var(--muted); font-size: 13px; display: inline-flex; gap: 6px; align-items: center }
+.modos { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-bottom: 14px }
+.modos button { font: 500 13.5px var(--f-ui); border: 0; background: var(--panel); color: var(--muted); padding: 7px 14px; cursor: pointer }
+.modos button[aria-selected=true] { background: var(--accent); color: var(--panel) }
+.error { color: var(--error); font-size: 13px; margin: 10px 0 0 }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+
+/* ---------- Resultados ---------- */
+.res { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--ancho-dato), 1fr)); gap: 6px 14px; font: 16px var(--f-math) }
+.res div { overflow-x: auto }
+.res span { display: block; font: 12px var(--f-ui); color: var(--muted) }
+.res div.ancho { grid-column: 1 / -1 }
+.resumen { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--ancho-dato), 1fr)); gap: 8px; margin: 0 }
+.resumen div { background: var(--accent-soft); border-radius: 8px; padding: 8px 10px; overflow-x: auto }
+.resumen div span { display: block; font-size: 12px; color: var(--muted) }
+.resumen div b { font: 600 17px var(--f-math) }
+.resumen div.ancho { grid-column: 1 / -1 }
+
+/* ---------- Gráficas ---------- */
+canvas { display: block; width: 100%; height: var(--alto-grafica); border-radius: 8px; background: var(--bg); margin-top: var(--margen-grafica) }
+.leyenda { font-size: 12.5px; color: var(--muted); margin: 6px 0 0 }
+.leyenda b { font-weight: 600 }
+
+/* ---------- Desarrollo paso a paso ---------- */
+/* el número va dentro del paso para que no lo corte el desplazamiento de las fórmulas largas */
+.pasos ol { margin: 0; padding: 0; list-style: none; counter-reset: paso }
+.pasos li { position: relative; margin: 0 0 12px; padding-left: 22px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto; counter-increment: paso }
+.pasos li::before { content: counter(paso) "."; position: absolute; left: 0; top: 0; font: 13.5px/1.45 var(--f-ui); color: var(--muted) }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
 .pasos table.tabla { border-collapse: collapse; margin: 6px 0; font: 13px var(--f-ui); font-variant-numeric: tabular-nums }
 .pasos table.tabla th, .pasos table.tabla td { border: 1px solid var(--line); padding: 3px 9px; text-align: right }
 .pasos table.tabla th { background: var(--accent-soft); font-weight: 600 }
-.resumen div.ancho { grid-column: 1 / -1 }
-#grafica { cursor: crosshair }
-</style>
-<style>
-:root { --bg:#eef1ee; --panel:#fff; --ink:#1a2128; --muted:#5b6670; --line:#d5dbd5; --accent:#6b3fa0; --accent-soft:color-mix(in srgb, #6b3fa0 12%, #fff); --marca:#0d6b66 }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#111619; --panel:#182025; --ink:#e3e8ea; --muted:#94a0a8; --line:#2a343b; --accent:#b892ec; --accent-soft:color-mix(in srgb, #b892ec 16%, #182025); --marca:#4dbcb0; color-scheme:dark } }
-:root[data-theme="dark"] { --bg:#111619; --panel:#182025; --ink:#e3e8ea; --muted:#94a0a8; --line:#2a343b; --accent:#b892ec; --accent-soft:color-mix(in srgb, #b892ec 16%, #182025); --marca:#4dbcb0; color-scheme:dark }
+.tabla-scroll { overflow-x: auto }
+
+/* matrices con corchetes, dentro de una fórmula */
+.mat { position: relative; display: inline-block; vertical-align: middle; padding: 0 7px; margin: 2px 2px }
+.mat::before, .mat::after { content: ""; position: absolute; top: 0; bottom: 0; width: 5px; border: 1.4px solid currentColor }
+.mat::before { left: 0; border-right: 0 }
+.mat::after { right: 0; border-left: 0 }
+.mat table { border-collapse: collapse }
+.mat td { padding: 2px 7px; text-align: center; white-space: nowrap; font-variant-numeric: tabular-nums }
+
+/* ---------- Teoría ---------- */
+.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+.teoria ul { padding-left: 20px }
+.teoria li { margin-bottom: 4px }
+
+:root { --accent:#6b3fa0; --accent-soft:color-mix(in srgb, #6b3fa0 12%, #fff); --marca:#0d6b66 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --accent:#b892ec; --accent-soft:color-mix(in srgb, #b892ec 16%, #182025); --marca:#4dbcb0 } }
+:root[data-theme="dark"] { --accent:#b892ec; --accent-soft:color-mix(in srgb, #b892ec 16%, #182025); --marca:#4dbcb0 }
 header.top { display:flex; align-items:center; gap:8px 20px; flex-wrap:wrap; padding:12px clamp(16px,3vw,28px); background:var(--panel); border-bottom:1px solid var(--line) }
 header.top .logo { font:600 18px var(--f-math); margin:0; white-space:nowrap; color:var(--ink); text-decoration:none } header.top .logo i { color:var(--marca) }
 header.top nav { display:flex; gap:4px 16px; font-size:14px; overflow-x:auto; max-width:100%; scrollbar-width:none }
@@ -109,14 +157,6 @@ header.top .buscar:focus-visible, header.top a:focus-visible { outline:2px solid
 .miga-ico { display:inline-grid; place-items:center; width:22px; height:22px; border-radius:6px; background:var(--accent-soft); color:var(--accent); font:italic 600 13px var(--f-math) }
 .miga-der { margin-left:auto; display:flex; gap:8px } .miga-izq:empty, .miga-der:empty { display:none }
 .bib-btn, .prac-btn { border-radius:8px !important; padding:6px 12px !important }
-.wrap { max-width:1300px }
-h1 { font:600 24px/1.25 var(--f-ui) }
-.card { border-radius:12px }
-.card h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--muted) }
-.destacado { box-shadow:none; border-color:var(--line); border-top:3px solid var(--accent) }
-.destacado h2 { color:var(--accent) }
-.resumen div { background:var(--accent-soft) }
-.sep { color:var(--accent) }
 body.bib-ejemplos select[id^="ejemplo"] { display:none }
 @media (max-width:700px) { header.top form { display:none } h1 { font-size:21px }
   .miga-izq, .miga-der, .miga::after { order:-1 } .miga::after { content:''; flex-basis:100%; height:0 } }
@@ -129,6 +169,17 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 :root[data-theme="dark"] .tema .sol { display:block } :root[data-theme="dark"] .tema .luna { display:none }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tema .sol { display:block } :root:not([data-theme="light"]) .tema .luna { display:none } }
 @media (max-width:700px) { .top > .tema { margin-left:auto } .top > nav { order:1 } }
+</style>
+<style>
+:root {
+  --ancho-valor: 190px;
+  --z1: #2a5db5; --z2: #c2410c; --z3: #6b3fa0; --peso: #c2412a; --normal: #1d7a3e; --roz: #b0700a; --fuerza: #6b3fa0; --tension: #2a5db5; --cuerpo: #c9d3e0; --suelo: #8a96a3 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --z1: #74a2f2; --z2: #f0915a; --z3: #b892ec; --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784 } }
+:root[data-theme="dark"] {
+  --z1: #74a2f2; --z2: #f0915a; --z3: #b892ec; --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784 }
+#grafica { height: clamp(280px, 40vw, 420px) }
+#grafica { cursor: crosshair }
 </style>
 <body>
 <header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><nav aria-label="Asignaturas"><a href="../../">Inicio</a><a href="../../electromagnetismo/">Electromagnetismo</a><a href="../../fisica/">Física general</a><a href="../../quimica/">Química</a><a href="../../matematicas/" aria-current="page">Matemáticas</a><a href="../../estadistica/">Estadística</a><a href="../../circuitos/">Circuitos</a><a href="../../economia/">Economía</a></nav><a class="foro" href="../../foro/"><span aria-hidden="true">💬</span>Foro</a><form action="../../" role="search"><input class="buscar" type="search" name="q" placeholder="Buscar: Biot-Savart, molaridad…" aria-label="Buscar herramientas"></form><button class="tema" type="button" title="Cambiar de modo claro u oscuro" aria-label="Cambiar de modo claro u oscuro"><svg class="luna" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11z"/></svg><svg class="sol" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button></header>
@@ -186,6 +237,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 const Version = (() => {
   const registros = {
     web: [
+      { v: '0.48', fecha: '2026-10-25', cambios: ['Todas las herramientas comparten ahora la misma hoja de estilos, así que tarjetas, campos, botones, resultados y desarrollo se ven exactamente igual en todas.', 'Los pasos del desarrollo van numerados en todas las herramientas.', 'Los mensajes de error se leen mejor en modo oscuro.', 'Arreglos: en Configuración electrónica el nombre del elemento vuelve a verse grande, y en el móvil Trabajo y energía ya no se sale de la pantalla.'] },
       { v: '0.47', fecha: '2026-10-25', cambios: ['Nueva asignatura: Economía, en la portada y en la barra de asignaturas. Trae 23 herramientas en camino, como «Próximamente»: oferta y demanda, elasticidades, IS-LM, interés compuesto, préstamos, VAN y TIR, punto muerto, ratios financieros o el índice de Gini, entre otras.'] },
       { v: '0.46', fecha: '2026-10-25', cambios: ['Nuevo apartado Foro en la barra superior. De momento está en construcción: muy pronto podrás preguntar dudas y compartir ejercicios.', 'La portada y cada asignatura muestran ya las herramientas que vienen después, como «Próximamente»: 30 más, desde la ley de Ampère y las ecuaciones de Maxwell hasta la propagación de errores y los diagramas de Bode.'] },
       { v: '0.45', fecha: '2026-10-24', cambios: ['Botón de modo claro y oscuro arriba a la derecha, en la portada y en todas las herramientas: la luna pasa a modo oscuro y el sol, a modo claro. La web recuerda tu elección; hasta que lo pulses, sigue el modo de tu sistema.'] },

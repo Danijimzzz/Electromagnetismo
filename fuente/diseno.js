@@ -5,16 +5,20 @@
    izquierda) y Modo práctica (a la derecha), y tarjetas iguales en todas.
    build.sh pasa cada pagina.html por aquí:
      node diseno.js ASIGNATURA < pagina.html > página con el diseño común
-   Las reglas van después del <style> de cada página, así que mandan sobre él.
+   La hoja común (estilos.css) va antes del <style> de cada página, que solo ajusta sus
+   variables o añade lo propio (ver DISENO.md).
    ===================================================================== */
 const Catalogo = require('./catalogo.js'), Tema = require('./tema.js');
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
-// los mismos tonos neutros que la portada; el acento es el de la asignatura
-const css = (a) => `
-:root { --bg:#eef1ee; --panel:#fff; --ink:#1a2128; --muted:#5b6670; --line:#d5dbd5; --accent:${a.color}; --accent-soft:color-mix(in srgb, ${a.color} 12%, #fff); --marca:#0d6b66 }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#111619; --panel:#182025; --ink:#e3e8ea; --muted:#94a0a8; --line:#2a343b; --accent:${a.colorOscuro}; --accent-soft:color-mix(in srgb, ${a.colorOscuro} 16%, #182025); --marca:#4dbcb0; color-scheme:dark } }
-:root[data-theme="dark"] { --bg:#111619; --panel:#182025; --ink:#e3e8ea; --muted:#94a0a8; --line:#2a343b; --accent:${a.colorOscuro}; --accent-soft:color-mix(in srgb, ${a.colorOscuro} 16%, #182025); --marca:#4dbcb0; color-scheme:dark }
+// Hoja común de las herramientas (estilos.css) y la cabecera del portal, que comparten con el simulador de
+// electrostática. El acento es el color de la asignatura; los tonos neutros son los de la portada.
+const ESTILOS = require('fs').readFileSync(require('path').join(__dirname, 'estilos.css'), 'utf8');
+const acento = (a) => `
+:root { --accent:${a.color}; --accent-soft:color-mix(in srgb, ${a.color} 12%, #fff); --marca:#0d6b66 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --accent:${a.colorOscuro}; --accent-soft:color-mix(in srgb, ${a.colorOscuro} 16%, #182025); --marca:#4dbcb0 } }
+:root[data-theme="dark"] { --accent:${a.colorOscuro}; --accent-soft:color-mix(in srgb, ${a.colorOscuro} 16%, #182025); --marca:#4dbcb0 }`;
+const cabecera = `
 header.top { display:flex; align-items:center; gap:8px 20px; flex-wrap:wrap; padding:12px clamp(16px,3vw,28px); background:var(--panel); border-bottom:1px solid var(--line) }
 header.top .logo { font:600 18px var(--f-math); margin:0; white-space:nowrap; color:var(--ink); text-decoration:none } header.top .logo i { color:var(--marca) }
 header.top nav { display:flex; gap:4px 16px; font-size:14px; overflow-x:auto; max-width:100%; scrollbar-width:none }
@@ -30,6 +34,15 @@ header.top .buscar:focus-visible, header.top a:focus-visible { outline:2px solid
 .miga-ico { display:inline-grid; place-items:center; width:22px; height:22px; border-radius:6px; background:var(--accent-soft); color:var(--accent); font:italic 600 13px var(--f-math) }
 .miga-der { margin-left:auto; display:flex; gap:8px } .miga-izq:empty, .miga-der:empty { display:none }
 .bib-btn, .prac-btn { border-radius:8px !important; padding:6px 12px !important }
+body.bib-ejemplos select[id^="ejemplo"] { display:none }
+@media (max-width:700px) { header.top form { display:none } h1 { font-size:21px }
+  .miga-izq, .miga-der, .miga::after { order:-1 } .miga::after { content:''; flex-basis:100%; height:0 } }
+${Tema.CSS}`;
+// el simulador de electrostática no usa estilos.css: solo los colores, la cabecera y el aspecto de sus tarjetas
+const css = (a) => `
+:root { --bg:#eef1ee; --panel:#fff; --ink:#1a2128; --muted:#5b6670; --line:#d5dbd5 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#111619; --panel:#182025; --ink:#e3e8ea; --muted:#94a0a8; --line:#2a343b; color-scheme:dark } }
+:root[data-theme="dark"] { --bg:#111619; --panel:#182025; --ink:#e3e8ea; --muted:#94a0a8; --line:#2a343b; color-scheme:dark }${acento(a)}
 .wrap { max-width:1300px }
 h1 { font:600 24px/1.25 var(--f-ui) }
 .card { border-radius:12px }
@@ -37,11 +50,7 @@ h1 { font:600 24px/1.25 var(--f-ui) }
 .destacado { box-shadow:none; border-color:var(--line); border-top:3px solid var(--accent) }
 .destacado h2 { color:var(--accent) }
 .resumen div { background:var(--accent-soft) }
-.sep { color:var(--accent) }
-body.bib-ejemplos select[id^="ejemplo"] { display:none }
-@media (max-width:700px) { header.top form { display:none } h1 { font-size:21px }
-  .miga-izq, .miga-der, .miga::after { order:-1 } .miga::after { content:''; flex-basis:100%; height:0 } }
-${Tema.CSS}`;
+.sep { color:var(--accent) }${cabecera}`;
 
 function piezas(a, nombre) {
   const [m1, m2] = Catalogo.marca;
@@ -108,10 +117,12 @@ function aplicaHerramienta(html, clave) {
   // el nombre corto de la herramienta es el último tramo de la miga de antes
   const nombre = m[0].replace(/<\/span><\/header>$/, '').split(' / ').pop().replace(/<[^>]*>/g, '').trim();
   const { cab, miga } = piezas(a, nombre);
-  return html.replace(m[0], cab).replace('<h1', miga + '\n<h1').replace(/^<body>/m, `<style>${css(a)}</style>\n<body>`);
+  // la hoja común va antes del <style> de la página, para que la página pueda ajustar sus variables
+  if (!/^<style>/m.test(html)) throw new Error('diseno.js: la página no tiene <style>');
+  return html.replace(m[0], cab).replace('<h1', miga + '\n<h1').replace(/^<style>/m, `<style>${ESTILOS}${acento(a)}${cabecera}</style>\n<style>`);
 }
 
-if (typeof module !== 'undefined') module.exports = { aplica, css };
+if (typeof module !== 'undefined') module.exports = { aplica, css, ESTILOS };
 if (typeof require !== 'undefined' && require.main === module) {
   let txt = ''; process.stdin.setEncoding('utf8');
   process.stdin.on('data', (d) => { txt += d; }).on('end', () => process.stdout.write(aplica(txt, process.argv[2])));

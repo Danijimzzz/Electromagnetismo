@@ -50,7 +50,7 @@
 
   /* ---------- Cálculo ---------- */
   const dato = (t, v) => `<div><span>${t}</span><b>${v}</b></div>`;
-  const tablaHTML = (cab, filas, tot) => `<table class="tabla"><thead><tr>${cab.map((c) => `<th>${c}</th>`).join('')}</tr></thead><tbody>${filas.map((r) => `<tr>${r.map((c) => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody>${tot ? `<tfoot><tr>${tot.map((c, i) => `<td>${i === 0 && c === '' ? '∑' : c}</td>`).join('')}</tr></tfoot>` : ''}</table>`;
+  const tablaHTML = (cab, filas, tot) => `<table class="tabla-reg"><thead><tr>${cab.map((c) => `<th>${c}</th>`).join('')}</tr></thead><tbody>${filas.map((r) => `<tr>${r.map((c) => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody>${tot ? `<tfoot><tr>${tot.map((c, i) => `<td>${i === 0 && c === '' ? '∑' : c}</td>`).join('')}</tr></tfoot>` : ''}</table>`;
   function calcula() {
     const err = $('#error');
     try { sol = R.resolver(sc); } catch (e) {
