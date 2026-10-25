@@ -10,7 +10,7 @@ const Sistemas = (() => {
   const METODOS = [['gauss', 'Gauss'], ['jordan', 'Gauss-Jordan'], ['cramer', 'Regla de Cramer'], ['inversa', 'Matriz inversa'], ['reduccion', 'Reducción'], ['igualacion', 'Igualación'], ['sustitucion', 'Sustitución']];
   const CLASICOS = { reduccion: 'reducción', igualacion: 'igualación', sustitucion: 'sustitución' };
   const PARAMS = ['λ', 'μ', 'ν', 'α', 'β', 'γ', 'δ'];
-  const P_ = typeof Parametro !== 'undefined' ? Parametro : null;
+  const P_ = typeof Parametro !== 'undefined' ? Parametro : typeof require !== 'undefined' ? require('../matematicas/parametro.js') : null;
   const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   // nombres propios («I1, I2» → I₁, I₂) o x, y, z, t; con más de cuatro, x₁ … xₙ
   function nombres(n, propios) {

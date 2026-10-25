@@ -367,12 +367,12 @@ const Matrices = require(path.join(fuente, 'matrices', 'calculo.js'));
   const R = Object.fromEntries(Matrices.ejemplos.map((e) => [e.clave, Matrices.resolver(e.sc)]));
   const esp = { det3: '−19', det4: '30', 'det-gauss': '30' };
   for (const [k, v] of Object.entries(esp)) if (Al.txt(R[k].valor) !== v) mal(`Matrices · ${k}: |A| = ${Al.txt(R[k].valor)}, se esperaba ${v}`);
-  for (const e of Matrices.ejemplos.filter((x) => x.sc.op === 'det')) {
+  for (const e of Matrices.ejemplos.filter((x) => x.sc.op === 'det' && !R[x.clave].letra)) {
     const otro = Matrices.resolver({ ...e.sc, metodo: e.sc.metodo === 'gauss' ? 'directo' : 'gauss' }).valor;
     if (!Al.igual(otro, R[e.clave].valor)) mal(`Matrices · ${e.clave}: Gauss y Sarrus/Laplace no dan lo mismo`);
   }
   if (!Al.iguales(R.inv3.valor, L('-24 18 5', '20 -15 -4', '-5 4 1'))) mal('Matrices · inv3: la inversa no es la esperada');
-  for (const e of Matrices.ejemplos.filter((x) => x.sc.op === 'inversa')) {
+  for (const e of Matrices.ejemplos.filter((x) => x.sc.op === 'inversa' && !R[x.clave].letra)) {
     const A = Al.leerMatriz(e.sc.A), inv = R[e.clave].valor;
     if (!inv || !Al.iguales(Al.producto(A, inv), Al.identidad(A.length))) mal(`Matrices · ${e.clave}: A·A⁻¹ no es la identidad`);
     const otro = Matrices.resolver({ ...e.sc, metodo: e.sc.metodo === 'gauss' ? 'adjuntos' : 'gauss' }).valor;
@@ -396,7 +396,7 @@ const Matrices = require(path.join(fuente, 'matrices', 'calculo.js'));
   if (!Matrices.resolver({ op: 'propios', A: [['1', '2'], ['3', '4']] }).res.includes('(5 + √33)/2')) mal('Matrices: los valores propios de [[1,2],[3,4]] deberían salir con radicales');
   if (!Al.iguales(R.producto.valor, L('2 -1', '6 2')) || !Al.iguales(R.potencia.valor, L('1 5', '0 1'))) mal('Matrices: producto o potencia incorrectos');
   for (const [s, v] of [['-1/2', '−1/2'], ['0,25', '1/4'], ['(1+i)/2', '1/2 + 1/2·i'], ['3(1-i)', '3 − 3i'], ['1/(1+i)', '1/2 − 1/2·i']]) if (Al.txt(Al.leer(s)) !== v) mal(`Matrices: «${s}» se lee como ${Al.txt(Al.leer(s))}`);
-  const malas = [{ op: 'det', A: [['1', '2', '3'], ['4', '5', '6']] }, { op: 'producto', A: [['1', '2']], B: [['1', '2']] }, { op: 'det', A: [['1', 'x'], ['2', '3']] }, { op: 'suma', A: [['1']], B: [['1', '2']] }, { op: 'potencia', A: [['1', '2'], ['2', '4']], n: '-1' }];
+  const malas = [{ op: 'det', A: [['1', '2', '3'], ['4', '5', '6']] }, { op: 'producto', A: [['1', '2']], B: [['1', '2']] }, { op: 'det', A: [['1', 'x y'], ['2', '3']] }, { op: 'suma', A: [['1']], B: [['1', '2']] }, { op: 'potencia', A: [['1', '2'], ['2', '4']], n: '-1' }];
   for (const m of malas) { let ok = false; try { Matrices.resolver(m); } catch (e) { ok = true; } if (!ok) mal(`Matrices: ${JSON.stringify(m)} debería dar un error`); }
   if (fallos === antes) console.log(`  ✓ Matrices: ${Matrices.ejemplos.length} ejemplos con el resultado esperado, inversas y determinantes por los dos métodos, A v = λ v, lectura de números y errores`);
 }
@@ -412,7 +412,7 @@ const Sistemas = require(path.join(fuente, 'sistemas', 'calculo.js'));
   for (const [k, v] of Object.entries(unicas)) { const x = R[k].sol.map((s) => Al.txt(s.c)); if (x.join() !== v.join()) mal(`Sistemas · ${k}: (${x}), se esperaba (${v})`); }
   for (const e of Sistemas.ejemplos) {
     const r = R[e.clave];
-    if (r.tipo === 'SI') continue;
+    if (r.tipo === 'SI' || r.letra || !r.sol) continue;
     const M = Al.leerMatriz(e.sc.M), n = M[0].length - 1;
     for (const p of [0, 1, 2]) {
       const x = r.sol.map((s) => s.t.reduce((acc, [a]) => Al.suma(acc, Al.mul(a, Al.ent(p))), s.c));
@@ -421,7 +421,7 @@ const Sistemas = require(path.join(fuente, 'sistemas', 'calculo.js'));
     for (const m of ['gauss', 'jordan', 'cramer', 'inversa']) { const o = Sistemas.resolver({ ...e.sc, metodo: m }); if (o.tipo !== r.tipo || o.res !== r.res) mal(`Sistemas · ${e.clave}: el método ${m} da otro resultado`); }
   }
   if (R.sci.param.length !== 1 || R.sci2.param.length !== 2) mal('Sistemas: número de parámetros incorrecto');
-  const malas = [{ M: [['1', 'x', '2']] }, { M: [['1', '2', '3']], vars: 'a, b, c' }, { M: [['1', '2', '3']], vars: 'a, a' }];
+  const malas = [{ M: [['1', 'x y', '2']] }, { M: [['1', '2', '3']], vars: 'a, b, c' }, { M: [['1', '2', '3']], vars: 'a, a' }];
   for (const m of malas) { let ok = false; try { Sistemas.resolver(m); } catch (e) { ok = true; } if (!ok) mal(`Sistemas: ${JSON.stringify(m)} debería dar un error`); }
   if (fallos === antes) console.log(`  ✓ Sistemas: ${Sistemas.ejemplos.length} sistemas bien clasificados, soluciones esperadas que cumplen las ecuaciones, los cuatro métodos coinciden y errores`);
 }
@@ -799,7 +799,7 @@ const TaylorC = require(path.join(fuente, 'taylor', 'calculo.js'));
   const antes = fallos, cerca = (a, b, tol, q) => { if (!(Math.abs(a - b) <= tol)) mal(`Taylor · ${q}: ${a} en vez de ${b}`); };
   const r = (c) => TaylorC.resolver(TaylorC.ejemplos.find((e) => e.clave === c).sc);
   for (const e of TaylorC.ejemplos) {
-    try { const x = TaylorC.resolver(e.sc); if (x.pasos.length < 4) mal(`Taylor · ${e.clave}: desarrollo corto`); if (x.cota !== null && !(x.err <= x.cota * (1 + 1e-9) + 1e-15)) mal(`Taylor · ${e.clave}: el error ${x.err} supera la cota ${x.cota}`); }
+    try { const x = TaylorC.resolver(e.sc); if (x.pasos.length < 4) mal(`Taylor · ${e.clave}: desarrollo corto`); if (x.cota != null && !(x.err <= x.cota * (1 + 1e-9) + 1e-15)) mal(`Taylor · ${e.clave}: el error ${x.err} supera la cota ${x.cota}`); }
     catch (err) { mal(`Taylor · ${e.clave}: ${err.message}`); }
   }
   // valores calculados a mano
@@ -825,7 +825,7 @@ const TaylorC = require(path.join(fuente, 'taylor', 'calculo.js'));
     cerca(Expr.serie(n, a, 2)[2] * 2, (Expr.valor(n, a + 1e-3) - 2 * Expr.valor(n, a) + Expr.valor(n, a - 1e-3)) / 1e-6, 1e-3 * Math.max(1, Math.abs(dn)), `segunda derivada de ${s}`);
   }
   if (Expr.valor(Expr.lee('2x sen x + 3,5'), 1) !== 2 * Math.sin(1) + 3.5 || Expr.valor(Expr.lee('sen 2x cos x'), 1) !== Math.sin(2) * Math.cos(1)) mal('Taylor: no lee el producto implícito o la coma decimal');
-  for (const [sc, q] of [[{ f: '', a: '0', n: '3' }, 'sin función'], [{ f: 'y + 1', a: '0', n: '3' }, 'otra letra'], [{ f: 'ln x', a: '0', n: '3' }, 'ln x en 0'], [{ f: 'sen x', a: '0', n: '16' }, 'grado 16'], [{ f: 'sen x', a: 'x', n: '2' }, 'a con x'], [{ f: '(x + 1', a: '0', n: '2' }, 'paréntesis sin cerrar'], [{ f: '√x', a: '1', n: '2', x0: '−1' }, 'x₀ fuera del dominio']]) {
+  for (const [sc, q] of [[{ f: '', a: '0', n: '3' }, 'sin función'], [{ f: 'y + 1', a: '0', n: '3' }, 'otra letra'], [{ f: 'ln x', a: '0', n: '3' }, 'ln x en 0'], [{ f: 'sen x', a: '0', n: '26' }, 'grado 26'], [{ f: 'sen x', a: 'x', n: '2' }, 'a con x'], [{ f: '(x + 1', a: '0', n: '2' }, 'paréntesis sin cerrar'], [{ f: '√x', a: '1', n: '2', x0: '−1' }, 'x₀ fuera del dominio']]) {
     let ok = false; try { TaylorC.resolver(sc); } catch (e) { ok = true; }
     if (!ok) mal(`Taylor: ${q} no da error`);
   }
@@ -855,7 +855,7 @@ const FourierC = require(path.join(fuente, 'fourier', 'calculo.js'));
   cerca(pa.energia, (2 * PI ** 4) / 5, 1e-9, 'Parseval de x²');
   // x² en x = π: la serie converge a π² y la suma parcial se acerca
   if (!(Math.abs(pa.sx0 - PI * PI) < 0.5)) mal('Fourier: la suma parcial de x² en π no se acerca a π²');
-  for (const [sc, q] of [[{ tramos: [{ f: '', a: '0', b: '1' }], N: '5' }, 'sin función'], [{ tramos: [{ f: '1', a: '1', b: '0' }], N: '5' }, 'tramo al revés'], [{ tramos: [{ f: '1', a: '0', b: '1' }, { f: '0', a: '2', b: '3' }], N: '5' }, 'hueco entre tramos'], [{ tramos: [{ f: '1', a: '0', b: 'π' }], N: '0' }, 'N = 0'], [{ tramos: [{ f: '1', a: '0', b: 'π' }], N: '101' }, 'N = 101'], [{ ext: 'par', tramos: [{ f: 'x', a: '1', b: '2' }], N: '5' }, 'extensión que no empieza en 0'], [{ tramos: [{ f: 'ln x', a: '-1', b: '1' }], N: '5' }, 'ln x con negativos']]) {
+  for (const [sc, q] of [[{ tramos: [{ f: '', a: '0', b: '1' }], N: '5' }, 'sin función'], [{ tramos: [{ f: '1', a: '1', b: '0' }], N: '5' }, 'tramo al revés'], [{ tramos: [{ f: '1', a: '0', b: '2' }, { f: '0', a: '1', b: '3' }], N: '5' }, 'tramos que se solapan'], [{ tramos: [{ f: '1', a: '0', b: 'π' }], N: '0' }, 'N = 0'], [{ tramos: [{ f: '1', a: '0', b: 'π' }], N: '101' }, 'N = 101'], [{ ext: 'par', tramos: [{ f: 'x', a: '1', b: '2' }], N: '5' }, 'extensión que no empieza en 0'], [{ tramos: [{ f: 'ln x', a: '-1', b: '1' }], N: '5' }, 'ln x con negativos']]) {
     let ok = false; try { FourierC.resolver(sc); } catch (e) { ok = true; }
     if (!ok) mal(`Fourier: ${q} no da error`);
   }
@@ -873,7 +873,12 @@ const EDOsC = require(path.join(fuente, 'edos', 'calculo.js'));
   cerca(eu.yEx, 2 * Math.E - 2, 1e-12, 'y(1) exacta'); cerca(eu.yEu, 3.1874849202, 1e-9, 'y(1) con Euler'); cerca(eu.yRK, 2 * Math.E - 2, 1e-7, 'y(1) con RK4');
   if (r('enfriamiento').exacta?.txt !== '70 e^{−{x}/{10}} + 20') mal('EDOs: la ley de enfriamiento no sale 70 e^(−x/10) + 20');
   if (r('forzada').exacta?.txt !== '{e^{−x}}/{2} − {cos x}/{2} + {sen x}/{2}') mal(`EDOs: y′ + y = sen x sale «${r('forzada').exacta?.txt}»`);
-  if (r('logistica').exacta || r('riccati').exacta) mal('EDOs: da solución exacta de una ecuación no lineal');
+  if (r('riccati').exacta) mal('EDOs: da solución exacta de y′ = x − y²');
+  if (r('logistica').exacta?.txt !== '{1}/{1 + 9 e^{−x}}') mal(`EDOs: la logística sale «${r('logistica').exacta?.txt}»`);
+  if (r('separable').exacta?.txt !== 'e^{{x^{2}}/{2}}') mal(`EDOs: y′ = x y sale «${r('separable').exacta?.txt}»`);
+  if (r('exacta').implicita !== 'x^{2} + x y + y^{2} = 1') mal(`EDOs: la exacta sale «${r('exacta').implicita}»`);
+  if (r('cauchy').txt !== '{x}/{2} − x^{2} + {x^{3}}/{2}') mal(`EDOs: la de Cauchy-Euler sale «${r('cauchy').txt}»`);
+  if (r('variacion').txt !== 'ln |cos x| cos x + x sen x') mal(`EDOs: y″ + y = 1/cos x sale «${r('variacion').txt}»`);
   // segundo orden: soluciones a mano y que cumplen la ecuación
   if (r('resonancia').txt !== '{x sen x}/{2}') mal(`EDOs: y″ + y = cos x sale «${r('resonancia').txt}»`);
   if (r('critico').txt !== '2 e^{−x} + x e^{−x} − 2 + x') mal(`EDOs: y″ + 2y′ + y = x sale «${r('critico').txt}»`);
@@ -2009,9 +2014,9 @@ async function navegador() {
     for (const e of TaylorC.ejemplos) {
       await page.evaluate((c) => TaylorApp.abrirEjemplo(c), e.clave);
       const r = await page.evaluate(() => ({ err: !document.querySelector('#error').hidden, pasos: document.querySelectorAll('#pasos li').length, mathml: document.querySelectorAll('#pasos math').length, pol: !!document.querySelector('#resumen .ancho math'), dolar: /\$/.test(document.querySelector('#pasos').textContent + document.querySelector('#resumen').textContent), res: document.querySelectorAll('#resumen > div.num').length, max: document.querySelector('#grado').max }));
-      if (r.err || r.pasos < 4 || r.res < 3 || !r.pol) mal(`Taylor · ${e.clave}: falta el resultado o el desarrollo`);
+      if (r.err || r.pasos < 4 || r.res < (e.sc.modo === 'limite' ? 1 : 3) || !r.pol) mal(`Taylor · ${e.clave}: falta el resultado o el desarrollo`);
       if (!r.mathml || r.dolar) mal(`Taylor · ${e.clave}: el desarrollo no sale en MathML`);
-      if (+r.max !== +e.sc.n) mal(`Taylor · ${e.clave}: el selector de grado no llega a ${e.sc.n}`);
+      if (e.sc.modo !== 'limite' && +r.max !== +e.sc.n) mal(`Taylor · ${e.clave}: el selector de grado no llega a ${e.sc.n}`);
     }
     await page.evaluate(() => TaylorApp.abrirEjemplo('exp'));
     if (!(await page.locator('#resumen').textContent()).includes('1,648438')) mal('Taylor: P4(0,5) de e^x no sale 1,648438');

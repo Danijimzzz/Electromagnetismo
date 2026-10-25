@@ -87,7 +87,7 @@
     const F = sol.formas;
     if (sol.op === 'raices') h = sol.raices.map((q) => dato(`w${'₀₁₂₃₄₅₆₇₈₉'[q.k] ?? q.k}`, `${M(`${f(sol.R)}_{${angulo(q.t)}}`)} = ${K.bin(q.z)}`)).join('');
     else if (sol.op === 'polinomio') h = sol.sols.map((q, k) => dato(`z${'₁₂₃₄₅₆₇₈₉'[k] ?? k + 1}${q.mult > 1 ? ` (${q.mult === 2 ? 'doble' : 'triple'})` : ''}`, q.ex ? M(Algebra.txt(q.ex)) : K.bin(q.z, 5))).join('');
-    else if (sol.op === 'region') h = dato('La región', sol.vacia ? 'Vacía: ningún punto cumple todas las condiciones' : sol.desc.join('<br>'));
+    else if (sol.op === 'region') h = dato('La región', sol.vacia ? 'Vacía: ningún punto cumple todas las condiciones' : sol.desc.join('<br>')) + (sol.punto ? dato('Un punto que la cumple', Mates.html(`$z = ${sol.punto}$`)) : '');
     else if (sol.op === 'ecuacion') h = dato('Solución z₁', sol.e1 ? M(Algebra.txt(sol.e1)) : K.bin(sol.z1)) + dato('Solución z₂', sol.e2 ? M(Algebra.txt(sol.e2)) : K.bin(sol.z2));
     else {
       h = dato(sol.op === 'formas' ? 'Forma binómica' : 'Resultado (binómica)', M(F.binomica)) + dato('Forma polar', M(F.polar)) + dato('Módulo', M(F.rT)) + dato('Argumento', M(F.tT));

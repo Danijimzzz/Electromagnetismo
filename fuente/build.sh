@@ -90,7 +90,7 @@ if [ "$1" != privado ]; then
   herramienta fourier ../publico/matematicas/fourier/index.html "Series de Fourier" "Calculadora de series de Fourier: función por tramos o desarrollo en senos y cosenos, coeficientes con su término general, paridad, Gibbs, Parseval y la suma parcial animada con el espectro" \
     version.js mates.js matematicas/expresion.js fourier/calculo.js fourier/app.js
   herramienta edos ../publico/matematicas/edos/index.html "Ecuaciones diferenciales" "Calculadora de ecuaciones diferenciales: campo de pendientes con Euler y RK4, EDO lineales de segundo orden con coeficientes constantes y resonancia, y sistemas con su diagrama de fases y el tipo de cada punto crítico" \
-    version.js mates.js matematicas/expresion.js edos/calculo.js edos/app.js
+    version.js mates.js matematicas/expresion.js laplace/calculo.js derivadas/calculo.js edos/calculo.js edos/app.js
   herramienta laplace ../publico/matematicas/laplace/index.html "Transformada de Laplace" "Calculadora de la transformada de Laplace paso a paso: directa con la tabla y sus propiedades, inversa por fracciones simples con polos dobles y complejos, valores inicial y final, y ecuaciones diferenciales con condiciones iniciales, con el plano s" \
     version.js mates.js matematicas/expresion.js laplace/calculo.js laplace/app.js
   herramienta derivadas ../publico/matematicas/derivadas/index.html "Derivadas e integrales" "Calculadora de derivadas e integrales paso a paso: regla de cada derivada, recta tangente y puntos críticos, primitivas por tabla, sustitución, partes y fracciones simples, e integral definida con Barrow y el área" \

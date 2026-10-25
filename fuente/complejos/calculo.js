@@ -341,7 +341,7 @@ const Complejos = (() => {
 
   /* ---------- Ecuaciones polinómicas ---------- */
   function polinomio(sc, res) {
-    const P_ = Parametro, pasos = res.pasos;
+    const P_ = typeof Parametro !== 'undefined' ? Parametro : require('../matematicas/parametro.js'), pasos = res.pasos;
     if (vacio(sc.p)) throw new Error('Escribe el polinomio en z, por ejemplo z^3 − 8 o z^4 + 2z^2 + 1');
     let p;
     try { p = P_.lee(String(sc.p).replace(/=\s*0\s*$/, ''), 'z'); } catch (e) { throw new Error(`El polinomio: ${e.message}`); }
@@ -414,18 +414,23 @@ const Complejos = (() => {
       if (a.tipo === 'mod') return c.op === '=' ? `La circunferencia de centro ${bin(a.c)} y radio ${f(c.k)}.` : `${c.op.startsWith('<') ? 'El interior' : 'El exterior'} de la circunferencia de centro ${bin(a.c)} y radio ${f(c.k)}${c.op.length > 1 ? ', con el borde' : ', sin el borde'}.`;
       if (a.tipo === 're') return c.op === '=' ? `La recta vertical x = ${f(c.k)}.` : `El semiplano ${c.op.startsWith('<') ? 'a la izquierda' : 'a la derecha'} de la recta vertical x = ${f(c.k)}.`;
       if (a.tipo === 'im') return c.op === '=' ? `La recta horizontal y = ${f(c.k)}.` : `El semiplano ${c.op.startsWith('<') ? 'por debajo' : 'por encima'} de la recta horizontal y = ${f(c.k)}.`;
-      return `${a.t[0].toUpperCase() + a.t.slice(1)} ${OPT[c.op]} ${angulo(c.k, u)}: ${c.op === '=' ? 'una semirrecta desde el origen' : 'la zona barrida por las semirrectas desde el origen'}.`;
+      return `${c.op === '=' ? 'Una semirrecta desde el origen' : 'La zona barrida por las semirrectas desde el origen'} (${a.t} ${OPT[c.op]} ${angulo(c.k, u)}).`;
     });
-    pasos.push({ t: conds.length > 1 ? 'Cada condición' : 'La condición', html: desc.map((d, i) => `${conds.length > 1 ? `(${i + 1}) ` : ''}${d}`).join('<br>') });
+    // cada condición también como fórmula: |z − (1 + i)| ≤ 2
+    const OPS = { '<': '<', '>': '>', '<=': '≤', '>=': '≥', '=': '=' };
+    const fz = (a) => (a.tipo === 'mod' ? (mod(a.c) < 1e-12 ? '|z|' : `|z − (${bin(a.c)})|`) : a.tipo === 're' ? '"Re" z' : a.tipo === 'im' ? '"Im" z' : 'arg z');
+    const fCond = (c) => `$${fz(c.a)} ${OPS[c.op]} ${c.b ? fz(c.b) : c.a.tipo === 'arg' ? angulo(c.k, u) : f(c.k)}$`;
+    pasos.push({ t: conds.length > 1 ? 'Cada condición' : 'La condición', html: desc.map((d, i) => `${conds.length > 1 ? `(${i + 1}) ` : ''}${fCond(conds[i])}: ${d[0].toLowerCase() + d.slice(1)}`).join('<br>') });
     if (conds.length > 1) pasos.push({ t: 'Todas a la vez', html: 'La región es la intersección: los puntos que cumplen todas las condiciones (la zona sombreada).' });
     // un punto de la región, para comprobar que no está vacía
     let L0 = 2;
     for (const c of conds) { if (c.a.c) L0 = Math.max(L0, mod(c.a.c) + (c.k || 0)); if (c.b && c.b.c) L0 = Math.max(L0, mod(c.b.c)); if (c.a.tipo !== 'arg' && c.k !== undefined) L0 = Math.max(L0, Math.abs(c.k) + 1); }
     L0 *= 1.3;
-    let hay = false;
-    for (let i = 0; i <= 60 && !hay; i++) for (let j = 0; j <= 60 && !hay; j++) if (dentro(Z(-L0 + (2 * L0 * i) / 60, -L0 + (2 * L0 * j) / 60), L0 / 40)) hay = true;
+    let hay = false, punto = null;
+    // un punto de la región, mejor con coordenadas sencillas (enteras) si las hay
+    for (const paso of [1, L0 / 30]) for (let i = 0; i <= 2 * L0 / paso && !hay; i++) for (let j = 0; j <= 2 * L0 / paso && !hay; j++) { const z = Z(Math.round(-L0 / paso) * paso + i * paso, Math.round(-L0 / paso) * paso + j * paso); if (dentro(z, paso === 1 ? 0 : L0 / 40)) { hay = true; punto = z; } }
     if (!hay) pasos.push({ t: 'Región vacía', html: 'Ningún punto cumple todas las condiciones a la vez.' });
-    Object.assign(res, { conds, dentro, frontera: (z, tol) => conds.some((c) => Math.abs(valor(c, z)) < tol), L: L0, vacia: !hay, desc });
+    Object.assign(res, { conds, dentro, frontera: (z, tol) => conds.some((c) => Math.abs(valor(c, z)) < tol), L: L0, vacia: !hay, desc, punto: punto && bin(Z(+f(punto.re).replace(',', '.').replace('−', '-'), +f(punto.im).replace(',', '.').replace('−', '-'))) });
     res.puntos = conds.flatMap((c) => [c.a.c, c.b?.c]).filter(Boolean).filter((z, i, xs) => xs.findIndex((w) => Math.abs(w.re - z.re) + Math.abs(w.im - z.im) < 1e-12) === i).map((z) => ({ z, n: bin(z), c: 1 }));
     return res;
   }

@@ -282,7 +282,7 @@ const Matrices = (() => {
   }
 
   /* ---------- Con un parámetro (k, a, m…) ---------- */
-  const P_ = typeof Parametro !== 'undefined' ? Parametro : null;
+  const P_ = typeof Parametro !== 'undefined' ? Parametro : typeof require !== 'undefined' ? require('../matematicas/parametro.js') : null;
   // «si k = 1: …; si k = −2: …; para los demás valores: …»
   const valoresTxt = (rs) => rs.map(P_.raizHtml).join(', ');
   function resolverParam(sc, op, O, letra) {

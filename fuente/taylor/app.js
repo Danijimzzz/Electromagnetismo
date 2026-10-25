@@ -73,7 +73,7 @@
     }
     err.hidden = true; guarda();
     if (sol.modo === 'limite') {
-      $('#resumen').innerHTML = dato(`Límite cuando x → ${esc(sol.aTxt)}`, sol.txt === 'no existe' ? 'No existe' : M(sol.txt), 'num')
+      $('#resumen').innerHTML = dato(`Límite cuando x → ${esc(sol.aTxt)}`, sol.txt === 'no existe' ? 'No existe' : M(sol.txt), 'num ancho')
         + dato('Orden del numerador', sol.oN < 0 ? '—' : sol.oN) + dato('Orden del denominador', sol.oD);
       $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
       $('#leyenda').innerHTML = `${Mates.html(`$f(x) = ${sol.f}$`)} cerca de a` + (isFinite(sol.val) ? '; el círculo hueco marca el límite, que la función alcanza sin estar definida en a.' : '.');

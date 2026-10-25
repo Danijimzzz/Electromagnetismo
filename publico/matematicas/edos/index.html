@@ -137,7 +137,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 <div class="wrap">
 <nav class="miga" aria-label="Estás en"><span class="miga-izq"></span><span class="miga-ico" aria-hidden="true">∑</span><a href="../">Matemáticas</a><span aria-hidden="true">›</span><span>Ecuaciones diferenciales</span><span class="miga-der"></span></nav>
 <h1>Ecuaciones diferenciales</h1>
-<p class="lead">Resuelve ecuaciones de primer orden con el campo de pendientes y el método de Euler, ecuaciones lineales de segundo orden con coeficientes constantes paso a paso, y sistemas de dos ecuaciones con su diagrama de fases y el tipo de cada punto crítico.</p>
+<p class="lead">Resuelve ecuaciones de primer orden con el campo de pendientes y el método de Euler, ecuaciones separables, de Bernoulli y exactas con su solución exacta, ecuaciones lineales de segundo orden (y de orden 3 y 4 o de Cauchy-Euler) paso a paso, y sistemas de dos ecuaciones con su diagrama de fases y el tipo de cada punto crítico.</p>
 <div class="layout">
   <div class="card">
     <h2>Datos</h2>
@@ -161,8 +161,15 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
   <h2>Primer orden: campo de pendientes y método de Euler</h2>
   <p class="m">Una ecuación $y′ = f(x, y)$ da en cada punto del plano la pendiente de la solución que pasa por él. Dibujando esas pendientes se ve la forma de todas las soluciones sin resolver nada. El método de Euler avanza con pasos de tamaño h siguiendo la pendiente:</p>
   <p class="f m">$y_{n+1} = y_n + h f(x_n, y_n)$, &ensp; $x_{n+1} = x_n + h$</p>
-  <p>Su error al final es proporcional a h: con la mitad de paso, más o menos la mitad de error. Runge-Kutta de orden 4 (RK4) usa cuatro pendientes por paso y su error va como h⁴.</p>
-  <p class="m">Si la ecuación es lineal, $y′ + p y = q(x)$ con p constante, la solución es $y = C e^{−p x} + y_p$. Si p depende de x se usa el factor integrante $e^{∫p dx}$.</p>
+  <p>Su error al final es proporcional a h: con la mitad de paso, más o menos la mitad de error. Heun (Euler mejorado) y el punto medio usan dos pendientes por paso y su error va como h²; Runge-Kutta de orden 4 (RK4) usa cuatro y su error va como h⁴. La tabla de comparación lo muestra: al partir h por la mitad, el error se divide por unos 2, 4 o 16.</p>
+  <p class="f m">Heun: $y_{n+1} = y_n + {h}/{2} (k_1 + k_2)$, $k_1 = f(x_n, y_n)$, $k_2 = f(x_n + h, y_n + h k_1)$</p>
+  <h2>Primer orden con solución exacta</h2>
+  <ul>
+    <li class="m"><b>Lineal</b>, $y′ + p(x) y = q(x)$: con el factor integrante $μ = e^{∫ p dx}$ queda $(μ y)′ = μ q$, así que $y = {1}/{μ} (∫ μ q dx + C)$. Si p es constante, $y = C e^{−p x} + y_p$.</li>
+    <li class="m"><b>Variables separables</b>, $y′ = g(x) h(y)$: $∫ {dy}/{h(y)} = ∫ g(x) dx + C$, y se despeja y si se puede. La logística $y′ = y(1 − y)$ da $y = {1}/{1 + K e^{−x}}$.</li>
+    <li class="m"><b>Bernoulli</b>, $y′ = p(x) y + q(x) y^n$: el cambio $v = y^{1 − n}$ la deja lineal, $v′ = (1 − n)(p v + q)$.</li>
+    <li class="m"><b>Exacta</b>, $M dx + N dy = 0$ con $∂M/∂y = ∂N/∂x$: hay un potencial Φ con $Φ_x = M$, $Φ_y = N$, y la solución es $Φ(x, y) = C$.</li>
+  </ul>
   <h2>Segundo orden con coeficientes constantes</h2>
   <p class="m">Para $a y″ + b y′ + c y = g(x)$ se prueba $y = e^{λx}$ en la homogénea, y sale la ecuación característica $a λ^2 + b λ + c = 0$:</p>
   <ul>
@@ -171,6 +178,10 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
     <li class="m">Complejas $λ = α ± β i$: $y_h = e^{αx} (C_1 cos βx + C_2 sen βx)$.</li>
   </ul>
   <p class="m">La particular se busca con la misma forma que g(x) (coeficientes indeterminados). Si esa forma ya es solución de la homogénea hay resonancia y se multiplica por x. Por ejemplo, $y″ + y = cos x$ da $y_p = {x sen x}/{2}$, que crece sin límite. Las constantes $C_1$ y $C_2$ salen de $y(x_0)$ y $y′(x_0)$.</p>
+  <p class="m">Si g(x) no tiene esa forma (tg x, 1/cos x, eˣ/x) se usa <b>variación de parámetros</b>: $y_p = u_1 y_1 + u_2 y_2$ con $u_1 = −∫ {y_2 g}/{a W} dx$ y $u_2 = ∫ {y_1 g}/{a W} dx$, donde $W = y_1 y_2′ − y_1′ y_2$ es el wronskiano.</p>
+  <h2>Orden 3 y 4, y Cauchy-Euler</h2>
+  <p class="m">Con orden n la ecuación característica tiene n raíces, y cada raíz de multiplicidad k da k soluciones: $e^{λx}, x e^{λx}, …, x^{k−1} e^{λx}$. Hacen falta n condiciones iniciales, $y(x_0), y′(x_0), …$</p>
+  <p class="m">La de <b>Cauchy-Euler</b> lleva cada derivada k-ésima multiplicada por $x^k$, como $x^2 y″ + b x y′ + c y = 0$. Probando $y = x^r$ sale la ecuación indicial $r(r − 1) + b r + c = 0$: dos raíces reales dan $x^{r_1}$ y $x^{r_2}$; una doble, $x^r$ y $x^r ln x$; y unas complejas $α ± βi$, $x^α cos(β ln x)$ y $x^α sen(β ln x)$. Es lo mismo que hacer el cambio $x = e^t$.</p>
   <h2>Sistemas y diagrama de fases</h2>
   <p class="m">En un sistema $x′ = f(x, y)$, $y′ = g(x, y)$ cada punto del plano tiene una velocidad, y las soluciones son curvas que la siguen. Los puntos críticos son donde $f = g = 0$. Cerca de cada uno el sistema se parece a su linealización con la matriz jacobiana, y sus autovalores dicen el tipo:</p>
   <ul>
@@ -1035,6 +1046,957 @@ const Expresion = (() => {
 })();
 
 /* =====================================================================
+   Transformada de Laplace (sin DOM):
+   · directa: f(t) como suma de términos c·tⁿ·e^{at}·(1, sen bt, cos bt,
+     senh, cosh) → F(s) término a término con la tabla y sus propiedades;
+   · inversa: F(s) racional → polos (con su multiplicidad), fracciones
+     simples y f(t), con los teoremas del valor inicial y final;
+   · ecuaciones diferenciales lineales de coeficientes constantes de
+     orden 1 o 2 con condiciones iniciales: se transforma, se despeja Y(s)
+     y se invierte.
+   Las expresiones las lee Expresion (variables t y s). Las funciones
+   racionales se guardan como dos polinomios (coeficientes de menor a
+   mayor grado).
+   ===================================================================== */
+const Laplace = (() => {
+  const E = typeof Expresion !== 'undefined' ? Expresion : require('../matematicas/expresion.js');
+  const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
+  const f = (x, d = 4) => E.dec4(Math.abs(x) < 1e-12 ? 0 : x, d);
+  const FACT = [1]; for (let k = 1; k <= 30; k++) FACT[k] = FACT[k - 1] * k;
+  // número exacto si es sencillo ({3}/{4}, √2, π), si no decimal
+  const cTxt = (c) => (E.exacto(c, 200) ? E.numTxt(c) : f(c, 4));
+  const may = (s) => s[0].toUpperCase() + s.slice(1);
+  function num(s, nom) {
+    if (vacio(s)) throw new Error(`Falta ${nom}`);
+    const n = E.lee(s, may(nom), ['t', 's']);
+    if (E.tieneX(n, 't') || E.tieneX(n, 's')) throw new Error(`${may(nom)} tiene que ser un número`);
+    const v = E.valor(n, 0, {});
+    if (!isFinite(v)) throw new Error(`${may(nom)} no es un número`);
+    return v;
+  }
+
+  /* ---------- Polinomios y funciones racionales ---------- */
+  const limpia = (p) => { const q = p.slice(); while (q.length > 1 && Math.abs(q[q.length - 1]) < 1e-12 * Math.max(1, ...q.map(Math.abs))) q.pop(); return q; };
+  const grado = (p) => limpia(p).length - 1;
+  const pSuma = (a, b) => limpia(Array.from({ length: Math.max(a.length, b.length) }, (_, i) => (a[i] || 0) + (b[i] || 0)));
+  const pEsc = (a, k) => a.map((x) => x * k);
+  const pMul = (a, b) => { const r = new Array(a.length + b.length - 1).fill(0); a.forEach((x, i) => b.forEach((y, j) => { r[i + j] += x * y; })); return limpia(r); };
+  const pDer = (a) => (a.length <= 1 ? [0] : a.slice(1).map((x, i) => x * (i + 1)));
+  const pVal = (a, x) => a.reduceRight((s, c) => s * x + c, 0);
+  const R = (n, d = [1]) => ({ n: limpia(n), d: limpia(d) });
+  const rSuma = (a, b) => R(pSuma(pMul(a.n, b.d), pMul(b.n, a.d)), pMul(a.d, b.d));
+  const rMul = (a, b) => R(pMul(a.n, b.n), pMul(a.d, b.d));
+  const rDiv = (a, b) => { if (limpia(b.n).length === 1 && Math.abs(b.n[0]) < 1e-300) throw new Error('División entre cero en F(s)'); return R(pMul(a.n, b.d), pMul(a.d, b.n)); };
+  const rDer = (a) => R(pSuma(pMul(pDer(a.n), a.d), pEsc(pMul(a.n, pDer(a.d)), -1)), pMul(a.d, a.d));
+  const rPot = (a, k) => { let r = R([1]); for (let i = 0; i < Math.abs(k); i++) r = rMul(r, a); return k < 0 ? rDiv(R([1]), r) : r; };
+  // texto de un polinomio en s: s^{2} + 4 s + 13
+  function pTxt(p, v = 's') {
+    const q = limpia(p), ts = [];
+    for (let i = q.length - 1; i >= 0; i--) {
+      const c = q[i]; if (Math.abs(c) < 1e-12) continue;
+      const pot = i === 0 ? '' : i === 1 ? v : `${v}^{${i}}`, a = Math.abs(c);
+      const cuerpo = !pot ? cTxt(a) : Math.abs(a - 1) < 1e-12 ? pot : `${cTxt(a)} ${pot}`;
+      ts.push({ neg: c < 0, cuerpo });
+    }
+    if (!ts.length) return '0';
+    return ts.map((t, i) => (i ? `${t.neg ? ' − ' : ' + '}${t.cuerpo}` : `${t.neg ? '−' : ''}${t.cuerpo}`)).join('');
+  }
+  // divide numerador y denominador por el coeficiente principal del denominador
+  const normaliza = (r) => { const d = limpia(r.d), k = d[d.length - 1]; return R(pEsc(r.n, 1 / k), pEsc(d, 1 / k)); };
+  const rTxt = (r) => { const q = normaliza(r); return grado(q.d) === 0 ? pTxt(pEsc(q.n, 1 / q.d[0])) : `{${pTxt(q.n)}}/{${pTxt(q.d)}}`; };
+
+  // árbol de Expresion en s → función racional
+  function racional(n) {
+    switch (n.t) {
+      case 'n': return R([n.v]);
+      case 'c': return R([E.valor(n, 0, {})]);
+      case 'x': if (n.n === 's') return R([0, 1]); throw new Error('F(s) solo puede llevar la variable s');
+      case 'neg': { const a = racional(n.a); return R(pEsc(a.n, -1), a.d); }
+      case '+': return rSuma(racional(n.a), racional(n.b));
+      case '-': { const b = racional(n.b); return rSuma(racional(n.a), R(pEsc(b.n, -1), b.d)); }
+      case '*': return rMul(racional(n.a), racional(n.b));
+      case '/': return rDiv(racional(n.a), racional(n.b));
+      case '^': {
+        if (E.tieneX(n.b, 's')) throw new Error('F(s) no puede tener s en un exponente: tiene que ser una fracción de polinomios');
+        const k = E.valor(n.b, 0, {});
+        if (!Number.isInteger(k) || Math.abs(k) > 20) throw new Error('Los exponentes de F(s) tienen que ser enteros');
+        return rPot(racional(n.a), k);
+      }
+      case 'fn': if (!E.tieneX(n, 's')) return R([E.valor(n, 0, {})]); throw new Error(`F(s) tiene que ser una fracción de polinomios en s (no vale ${n.f}(s))`);
+    }
+    throw new Error('No entiendo F(s)');
+  }
+
+  /* ---------- Números complejos y raíces ---------- */
+  const C = (re, im = 0) => ({ re, im });
+  const cAdd = (a, b) => C(a.re + b.re, a.im + b.im), cSub = (a, b) => C(a.re - b.re, a.im - b.im);
+  const cMul = (a, b) => C(a.re * b.re - a.im * b.im, a.re * b.im + a.im * b.re);
+  const cDiv = (a, b) => { const d = b.re * b.re + b.im * b.im; return C((a.re * b.re + a.im * b.im) / d, (a.im * b.re - a.re * b.im) / d); };
+  const cAbs = (a) => Math.hypot(a.re, a.im);
+  const cVal = (p, z) => p.reduceRight((s, c) => cAdd(cMul(s, z), typeof c === 'number' ? C(c) : c), C(0));
+  // todas las raíces de un polinomio real (Durand-Kerner), agrupadas por multiplicidad y redondeadas a valores sencillos
+  function raices(p) {
+    const q = limpia(p), n = q.length - 1;
+    if (n < 1) return [];
+    // cota de Fujiwara: todas las raíces tienen |z| ≤ cota
+    const m = pEsc(q, 1 / q[n]), cota = 2 * Math.max(...m.slice(0, n).map((c, i) => Math.abs(c) ** (1 / (n - i)))) || 1;
+    let z = Array.from({ length: n }, (_, k) => { const a = (2 * Math.PI * k) / n + 0.4; return C(cota * 0.9 * Math.cos(a), cota * 0.9 * Math.sin(a)); });
+    for (let it = 0; it < 2000; it++) {
+      let mx = 0;
+      z = z.map((zi, i) => { let den = C(1); z.forEach((zj, j) => { if (j !== i) den = cMul(den, cSub(zi, zj)); }); const dz = cDiv(cVal(m, zi), den); mx = Math.max(mx, cAbs(dz)); return cSub(zi, dz); });
+      if (mx < 1e-15 * cota) break;
+    }
+    // agrupar las que salen juntas (raíces múltiples): se prueba de más a menos tolerancia hasta que el producto cuadra
+    const snap = (x, tol) => { if (Math.abs(x) < tol) return 0; for (let q = 1; q <= 24; q++) { const k = Math.round(x * q); if (Math.abs(k / q - x) < tol * Math.max(1, Math.abs(x))) return k / q; } return x; };
+    let out = null;
+    for (const radio of [1e-1, 2e-2, 2e-3, 2e-4, 0]) {
+      const grupos = [];
+      for (const r of z) { const g = grupos.find((x) => cAbs(cSub(x.c, r)) <= radio * Math.max(1, cAbs(r))); if (g) { g.v.push(r); g.c = C(g.v.reduce((s, x) => s + x.re, 0) / g.v.length, g.v.reduce((s, x) => s + x.im, 0) / g.v.length); } else grupos.push({ c: r, v: [r] }); }
+      // una raíz de multiplicidad k es raíz simple de la derivada k − 1: Newton ahí para afinar el centro del grupo
+      for (const g of grupos) if (g.v.length > 1) {
+        let d = m; for (let k = 1; k < g.v.length; k++) d = pDer(d);
+        const d1 = pDer(d);
+        for (let it = 0; it < 40; it++) { const v = cVal(d1, g.c); if (cAbs(v) < 1e-300) break; const dz = cDiv(cVal(d, g.c), v); g.c = cSub(g.c, dz); if (cAbs(dz) < 1e-15 * cota) break; }
+      }
+      const cand = grupos.map((g) => ({ p: C(snap(g.c.re, 1e-7), snap(g.c.im, 1e-7)), m: g.v.length }));
+      // comprobación: el producto de (s − p)^m tiene que dar el polinomio
+      let prod = [C(1)];
+      for (const r of cand) for (let k = 0; k < r.m; k++) { const nx = new Array(prod.length + 1).fill(null).map(() => C(0)); prod.forEach((c, i) => { nx[i + 1] = cAdd(nx[i + 1], c); nx[i] = cSub(nx[i], cMul(c, r.p)); }); prod = nx; }
+      const err = Math.max(...prod.map((c, i) => Math.abs(c.re - m[i]) + Math.abs(c.im))) / Math.max(1, ...m.map(Math.abs));
+      if (err < 1e-8) { out = cand; break; }
+    }
+    if (!out) throw new Error('No he podido factorizar el denominador con precisión');
+    return out.sort((a, b) => a.p.re - b.p.re || Math.abs(a.p.im) - Math.abs(b.p.im) || a.p.im - b.p.im);
+  }
+  // coeficientes de Taylor de un polinomio (complejo) alrededor de z0: p(z0 + h) = Σ c_k h^k
+  function taylorP(p, z0) {
+    let a = p.map((c) => (typeof c === 'number' ? C(c) : c));
+    const out = [];
+    while (a.length) { const q = new Array(a.length - 1).fill(null).map(() => C(0)); let acc = C(0); for (let i = a.length - 1; i >= 0; i--) { acc = cAdd(cMul(acc, z0), a[i]); if (i > 0) q[i - 1] = acc; } out.push(acc); a = q; }
+    return out;
+  }
+  // fracciones simples: para cada polo p de multiplicidad m, A_1 … A_m de A_j/(s − p)^j
+  function residuos(r) {
+    const N = limpia(r.n), D = limpia(r.d), lead = D[D.length - 1], polos = raices(D);
+    return polos.map(({ p, m }) => {
+      // Q_p(s) = D(s)/(lead·(s − p)^m) como producto del resto de factores
+      let Qp = [C(1)];
+      for (const o of polos) if (o.p !== p) for (let k = 0; k < o.m; k++) { const nx = new Array(Qp.length + 1).fill(null).map(() => C(0)); Qp.forEach((c, i) => { nx[i + 1] = cAdd(nx[i + 1], c); nx[i] = cSub(nx[i], cMul(c, o.p)); }); Qp = nx; }
+      const nT = taylorP(N, p).map((c) => cDiv(c, C(lead))), dT = taylorP(Qp, p);
+      // serie de N/Q_p alrededor de p hasta el orden m − 1
+      const g = [];
+      for (let k = 0; k < m; k++) { let s = nT[k] || C(0); for (let j = 1; j <= k; j++) s = cSub(s, cMul(dT[j] || C(0), g[k - j])); g.push(cDiv(s, dT[0])); }
+      // A_j (con j = 1…m) es el coeficiente de h^(m − j)
+      return { p, m, A: Array.from({ length: m }, (_, j) => g[m - 1 - j]) };
+    });
+  }
+
+  // quita los factores comunes de numerador y denominador (raíces que coinciden)
+  function desde(rs, lead) {
+    let p = [C(lead)];
+    for (const r of rs) for (let k = 0; k < r.m; k++) { const nx = new Array(p.length + 1).fill(null).map(() => C(0)); p.forEach((c, i) => { nx[i + 1] = cAdd(nx[i + 1], c); nx[i] = cSub(nx[i], cMul(c, r.p)); }); p = nx; }
+    return p.map((c) => (Math.abs(c.re) < 1e-12 ? 0 : c.re));
+  }
+  function simplifica(r) {
+    const q = normaliza(r);
+    if (grado(q.n) < 1 || limpia(q.n).every((c) => c === 0)) return q;
+    let pn, pd;
+    try { pn = raices(q.n); pd = raices(q.d); } catch (e) { return q; }
+    let quita = false;
+    for (const z of pn) for (const o of pd) if (z.m && o.m && cAbs(cSub(z.p, o.p)) < 1e-6) { const k = Math.min(z.m, o.m); z.m -= k; o.m -= k; quita = true; }
+    if (!quita) return q;
+    const ln = limpia(q.n);
+    return R(desde(pn.filter((x) => x.m), ln[ln.length - 1]), desde(pd.filter((x) => x.m), 1));
+  }
+
+  // denominador factorizado como en clase: s (s + 1)^{2} (s^{2} + 4)
+  function factTxt(r) {
+    const q = normaliza(r);
+    let rs; try { rs = raices(q.d); } catch (e) { return rTxt(q); }
+    const fs = [];
+    for (const { p, m } of rs.slice().sort((x, y) => cAbs(x.p) - cAbs(y.p) || y.p.re - x.p.re)) {
+      if (p.im < -1e-12) continue;
+      let b;
+      if (Math.abs(p.im) < 1e-12) b = sMenos(p.re);
+      else b = pTxt([p.re * p.re + p.im * p.im, -2 * p.re, 1]);
+      const sola = b === 's';
+      fs.push(m > 1 ? `${sola ? 's' : `(${b})`}^{${m}}` : sola || rs.length === 1 ? b : `(${b})`);
+    }
+    if (fs.length === 1 && /^\(.*\)$/.test(fs[0])) fs[0] = fs[0].slice(1, -1);
+    const n = limpia(q.n);
+    return grado(q.d) === 0 ? rTxt(q) : `{${pTxt(n)}}/{${fs.join(' ')}}`;
+  }
+
+  /* ---------- Textos de términos ---------- */
+  // c·{num}/{den} escrito como en clase: {6}/{s^{3}}, {5}/{2 (s + 1)}
+  const sinParen = (d) => /^s(\^\{\d+\})?$|^\([^()]*\)\^\{\d+\}$/.test(d);
+  function frNum(c, num, den) {
+    const v = Math.abs(c) * num, e = E.fraccion(v, 200);
+    if (!e || Math.abs(e[0] / e[1] - v) > 1e-9 * Math.max(1, v)) return { c, s: `{${cTxt(num)}}/{${den}}` };
+    return { c: Math.sign(c), s: e[1] === 1 ? `{${e[0]}}/{${den}}` : `{${e[0]}}/{${e[1]} ${sinParen(den) ? den : `(${den})`}}` };
+  }
+  // (s − p) con el signo bien: s + 2, s − 3, s
+  const sMenos = (p) => (Math.abs(p) < 1e-12 ? 's' : p > 0 ? `s − ${cTxt(p)}` : `s + ${cTxt(-p)}`);
+  const linT = (r, v = 't') => { const a = Math.abs(r), sg = r < 0 ? '−' : ''; if (Math.abs(a - 1) < 1e-12) return `${sg}${v}`; const e = E.exacto(a, 12); if (e && !e.s && e.q !== 1) return `${sg}{${e.p === 1 ? '' : e.p + ' '}${v}}/{${e.q}}`; return `${sg}${cTxt(a)} ${v}`; };
+  const expT = (r) => (Math.abs(r) < 1e-12 ? '' : `e^{${linT(r)}}`);
+  const trigT = (p, w) => (w ? `${p} ${/[ {]/.test(linT(w)) ? `(${linT(w)})` : linT(w)}` : '');
+  const potT = (k) => (k === 0 ? '' : k === 1 ? 't' : `t^{${k}}`);
+  // c·(cuerpo) con signo, para sumas
+  function suma(ts) {
+    const vivos = ts.filter((t) => Math.abs(t.c) > 1e-10);
+    if (!vivos.length) return '0';
+    return vivos.map((t, i) => {
+      const a = Math.abs(t.c), neg = t.c < 0;
+      const cuerpo = !t.s ? cTxt(a) : Math.abs(a - 1) < 1e-12 ? t.s : `${cTxt(a)} ${t.s}`;
+      return i ? `${neg ? ' − ' : ' + '}${cuerpo}` : `${neg ? '−' : ''}${cuerpo}`;
+    }).join('');
+  }
+
+  /* ---------- f(t) como suma de términos ---------- */
+  function lineal(u) {
+    const u0 = E.valor(u, 0, { t: 0 }), r = E.valor(u, 0, { t: 1 }) - u0;
+    if (!isFinite(u0) || !isFinite(r) || Math.abs(E.valor(u, 0, { t: 2.5 }) - (u0 + 2.5 * r)) > 1e-9 * Math.max(1, Math.abs(r))) return null;
+    return { u0, r };
+  }
+  // términos { c, k, r, w, p }: c·t^k·e^{rt}·(sen|cos)(wt)
+  function terminos(ast) {
+    const ts = [];
+    const nT = (q) => !E.tieneX(q, 't');
+    function enSuma(m, s) {
+      if (m.t === '+') { enSuma(m.a, s); enSuma(m.b, s); return; }
+      if (m.t === '-') { enSuma(m.a, s); enSuma(m.b, -s); return; }
+      if (m.t === 'neg') { enSuma(m.a, -s); return; }
+      const t = producto(m);
+      if (!t) throw 0;
+      for (const q of t) ts.push({ ...q, c: q.c * s });
+    }
+    function producto(m) {
+      let base = [{ c: 1, k: 0, r: 0, w: 0, p: null }];
+      const mult = (otros) => { const nb = []; for (const a of base) for (const b of otros) { if (a.p && b.p) return false; nb.push({ c: a.c * b.c, k: a.k + b.k, r: a.r + b.r, w: a.w + b.w, p: a.p || b.p, h: a.h || b.h }); } base = nb; return true; };
+      function fac(q) {
+        if (q.t === '*') return fac(q.a) && fac(q.b);
+        if (q.t === '/' && nT(q.b)) { const d = E.valor(q.b, 0, {}); return fac(q.a) && mult([{ c: 1 / d, k: 0, r: 0, w: 0, p: null }]); }
+        if (q.t === 'neg') return fac(q.a) && mult([{ c: -1, k: 0, r: 0, w: 0, p: null }]);
+        // un paréntesis con una suma dentro: se reparte (propiedad distributiva)
+        if (q.t === '+' || q.t === '-') { const sub = terminos(q); return !!sub && mult(sub); }
+        if (nT(q)) { const v = E.valor(q, 0, {}); return isFinite(v) && mult([{ c: v, k: 0, r: 0, w: 0, p: null }]); }
+        if (q.t === '^' && nT(q.b) && E.tieneX(q.a, 't')) { const n = E.valor(q.b, 0, {}); if (!Number.isInteger(n) || n < 0 || n > 12 || (q.a.t === 'x')) { if (q.a.t !== 'x') return false; } else { for (let i = 0; i < n; i++) if (!fac(q.a)) return false; return true; } }
+        if (q.t === 'x' && q.n === 't') return mult([{ c: 1, k: 1, r: 0, w: 0, p: null }]);
+        if (q.t === '^' && q.a.t === 'x' && q.a.n === 't' && q.b.t === 'n' && Number.isInteger(q.b.v) && q.b.v >= 0 && q.b.v <= 12) return mult([{ c: 1, k: q.b.v, r: 0, w: 0, p: null }]);
+        if ((q.t === '^' && q.a.t === 'c' && q.a.v === 'e') || (q.t === 'fn' && q.f === 'exp')) { const l = lineal(q.t === '^' ? q.b : q.a); return !!l && mult([{ c: Math.exp(l.u0), k: 0, r: l.r, w: 0, p: null }]); }
+        if (q.t === 'fn' && (q.f === 'sen' || q.f === 'cos')) {
+          const l = lineal(q.a); if (!l || Math.abs(l.r) < 1e-14) return false;
+          const w = Math.abs(l.r), sg = Math.sign(l.r), c0 = Math.cos(l.u0), s0 = Math.sin(l.u0);
+          return mult(q.f === 'sen' ? [{ c: sg * c0, k: 0, r: 0, w, p: 'sen' }, { c: s0, k: 0, r: 0, w, p: 'cos' }] : [{ c: c0, k: 0, r: 0, w, p: 'cos' }, { c: -sg * s0, k: 0, r: 0, w, p: 'sen' }]);
+        }
+        if (q.t === 'fn' && (q.f === 'senh' || q.f === 'cosh')) { const l = lineal(q.a); if (!l) return false; const a = Math.exp(l.u0) / 2, b = Math.exp(-l.u0) / 2; return mult([{ c: a, k: 0, r: l.r, w: 0, p: null, h: q.f }, { c: q.f === 'senh' ? -b : b, k: 0, r: -l.r, w: 0, p: null, h: q.f }]); }
+        return false;
+      }
+      if (!fac(m)) return null;
+      return base.map((b) => (b.w ? b : { ...b, p: null }));
+    }
+    try { enSuma(E.simp(ast), 1); } catch (e) { if (e === 0) return null; throw e; }
+    // juntar términos iguales
+    const out = [];
+    for (const t of ts) { const o = out.find((q) => q.k === t.k && Math.abs(q.r - t.r) < 1e-12 && Math.abs(q.w - t.w) < 1e-12 && q.p === t.p); if (o) { o.c += t.c; if (o.h !== t.h) o.h = undefined; } else out.push({ ...t }); }
+    return out.filter((t) => Math.abs(t.c) > 1e-14);
+  }
+  // transformada de un término: tabla + desplazamiento en s + multiplicar por t^k
+  function transTermino({ k, r, w, p }) {
+    let base = !p ? R([1], [-r, 1]) : p === 'sen' ? R([w], [r * r + w * w, -2 * r, 1]) : R([-r, 1], [r * r + w * w, -2 * r, 1]);
+    for (let i = 0; i < k; i++) base = simplifica(rDer(base));
+    if (k % 2) base = R(pEsc(base.n, -1), base.d);
+    return base;
+  }
+  // F(s) de un término en la forma de la tabla
+  function formaTabla({ c, k, r, w, p }) {
+    const a = sMenos(r), q2 = w ? `${r === 0 ? 's^{2}' : `(${a})^{2}`} + ${cTxt(w * w)}` : '';
+    let num = null, den = null, txt;
+    if (!p) { num = FACT[k]; den = k === 0 ? a : r === 0 ? `s^{${k + 1}}` : `(${a})^{${k + 1}}`; }
+    else if (k === 0 && p === 'sen') { num = w; den = q2; }
+    else if (k === 0) txt = `{${a}}/{${q2}}`;
+    else txt = factTxt(transTermino({ k, r, w, p }));
+    if (num !== null) txt = `{${cTxt(num)}}/{${den}}`;
+    return { c, txt, conC: num !== null ? frNum(c, num, den) : { c, s: txt } };
+  }
+  const fTermTxt = (t) => [potT(t.k), expT(t.r), trigT(t.p, t.w)].filter(Boolean).join(' ');
+
+  /* ---------- Directa ---------- */
+  function directa(sc) {
+    if (vacio(sc.f)) throw new Error('Falta f(t)');
+    const ast = E.lee(sc.f, 'f(t)', ['t']);
+    if (E.tieneX(ast, 's')) throw new Error('f(t) no puede llevar s');
+    const ts = terminos(ast);
+    if (!ts) throw new Error('Solo sé transformar sumas de términos c·tⁿ·e^{at}·sen(bt) o cos(bt) (también senh y cosh)');
+    if (!ts.length) throw new Error('f(t) es 0');
+    const pasos = [];
+    if (ts.length > 1) pasos.push({ t: 'Linealidad', html: `$ℒ\\{a f + b g\\} = a F(s) + b G(s)$: se transforma cada término por separado.<br>$f(t) = ${suma(ts.map((t) => ({ c: t.c, s: fTermTxt(t) })))}$` });
+    const usa = new Set();
+    const lineas = ts.map((t) => {
+      const ft = fTermTxt(t), F = formaTabla(t);
+      if (!t.p && t.k === 0 && t.r === 0) usa.add('$ℒ\\{1\\} = {1}/{s}$');
+      if (!t.p && t.k > 0) usa.add('$ℒ\\{t^{n}\\} = {n!}/{s^{n+1}}$');
+      if (t.p === 'sen') usa.add('$ℒ\\{sen(bt)\\} = {b}/{s^{2} + b^{2}}$');
+      if (t.p === 'cos') usa.add('$ℒ\\{cos(bt)\\} = {s}/{s^{2} + b^{2}}$');
+      if (t.r) usa.add('$ℒ\\{e^{at} f(t)\\} = F(s − a)$ (desplazamiento en s)');
+      if (t.k && t.p) usa.add('$ℒ\\{t^{n} f(t)\\} = (−1)^{n} {d^{n}F}/{ds^{n}}$');
+      // con t^k delante: primero la transformada sin t^k y luego se deriva
+      if (t.k && t.p) { const b = formaTabla({ ...t, k: 0 }), d = t.k === 1 ? '−{d}/{ds}' : `${t.k % 2 ? '−' : ''}{d^{${t.k}}}/{ds^{${t.k}}}`; return `$ℒ\\{${fTermTxt({ ...t, k: 0 })}\\} = ${b.txt}$ &ensp;⇒&ensp; $ℒ\\{${ft}\\} = ${d} (${b.txt}) = ${F.txt}$`; }
+      return `$ℒ\\{${ft || '1'}\\} = ${F.txt}$`;
+    });
+    pasos.push({ t: 'Tabla y propiedades', html: `${[...usa].join('<br>')}` });
+    pasos.push({ t: 'Cada término', html: lineas.join('<br>') });
+    let Fs = R([0]);
+    for (const t of ts) { const b = transTermino(t); Fs = simplifica(rSuma(Fs, R(pEsc(b.n, t.c), b.d))); }
+    // senh y cosh se escriben con su fila de la tabla en vez de como dos exponenciales
+    const hechos = new Set(), sumaTxt = [];
+    ts.forEach((t, i) => {
+      if (hechos.has(i)) return;
+      const j = t.h && t.k === 0 ? ts.findIndex((o, jj) => jj > i && !hechos.has(jj) && o.h === t.h && o.k === 0 && !o.p && !t.p && Math.abs(Math.abs(o.c) - Math.abs(t.c)) < 1e-12) : -1;
+      if (j < 0) { sumaTxt.push(formaTabla(t).conC); return; }
+      hechos.add(j);
+      // e^{αt}·(cosh | senh)(at): F(s − α) con la fila de la tabla
+      const al = (t.r + ts[j].r) / 2, a = Math.abs(t.r - ts[j].r) / 2, d = `${Math.abs(al) < 1e-12 ? 's^{2}' : `(${sMenos(al)})^{2}`} − ${cTxt(a * a)}`, cosh = Math.abs(t.c - ts[j].c) < 1e-12;
+      const c = 2 * (cosh ? t.c : (t.r > ts[j].r ? t.c : ts[j].c));
+      sumaTxt.push(cosh ? { c, s: `{${sMenos(al)}}/{${d}}` } : frNum(c, a, d));
+      usa.add(cosh ? '$ℒ\\{cosh(at)\\} = {s}/{s^{2} − a^{2}}$' : '$ℒ\\{senh(at)\\} = {a}/{s^{2} − a^{2}}$');
+    });
+    const conv = Math.max(...ts.map((t) => t.r));
+    pasos.push({ t: 'Resultado', html: `$F(s) = ${suma(sumaTxt)}$${ts.length > 1 ? `<br>Con denominador común: $F(s) = ${factTxt(Fs)}$` : ''}<br>Existe para $s > ${cTxt(conv)}$.` });
+    const fn = (tt) => ts.reduce((s, q) => s + q.c * tt ** q.k * Math.exp(q.r * tt) * (q.p === 'sen' ? Math.sin(q.w * tt) : q.p === 'cos' ? Math.cos(q.w * tt) : 1), 0);
+    return { modo: 'directa', ts, conv, F: Fs, Ftxt: suma(sumaTxt), Fcomun: rTxt(Fs), Ffact: factTxt(Fs), f: fn, ftxt: suma(ts.map((t) => ({ c: t.c, s: fTermTxt(t) }))), polos: raicesSeguras(Fs.d), ceros: raicesSeguras(Fs.n), pasos };
+  }
+  function raicesSeguras(p) { try { return raices(p); } catch (e) { return []; } }
+
+  /* ---------- Inversa ---------- */
+  // F(s) → f(t) por fracciones simples
+  function invierte(F, pasos, nombre = 'F') {
+    const q = simplifica(F);
+    if (grado(q.d) < 1) throw new Error(`${nombre}(s) no tiene denominador con s: su inversa sería una delta de Dirac`);
+    if (grado(q.n) >= grado(q.d)) throw new Error(`${nombre}(s) tiene que ser propia (el grado del numerador menor que el del denominador); si no, la inversa lleva deltas de Dirac`);
+    const rs = residuos(q);
+    const polosTxt = rs.filter(({ p }) => p.im > -1e-12).map(({ p, m }) => { const par = p.im > 1e-12, b = Math.abs(p.im), bt = Math.abs(b - 1) < 1e-12 ? '' : cTxt(b) + ' '; return `$s = ${!par ? cTxt(p.re) : `${Math.abs(p.re) < 1e-12 ? '±' : cTxt(p.re) + ' ±'} ${bt}i`}$${m > 1 ? ` (${m === 2 ? 'doble' : m === 3 ? 'triple' : `multiplicidad ${m}`}${par ? 's' : ''})` : ''}`; });
+    pasos.push({ t: 'Polos', html: `Las raíces del denominador $${factTxt(R([1], q.d)).replace(/^\{1\}\/\{(.*)\}$/, '$1')} = 0$ son ${polosTxt.join(', ')}.` });
+    const frac = [], terms = [];
+    for (const { p, m, A } of rs) {
+      if (Math.abs(p.im) < 1e-12) {
+        A.forEach((a, j) => { frac.push(frNum(a.re, 1, j ? (Math.abs(p.re) < 1e-12 ? `s^{${j + 1}}` : `(${sMenos(p.re)})^{${j + 1}}`) : sMenos(p.re))); terms.push({ c: a.re / FACT[j], k: j, r: p.re, w: 0, p: null }); });
+      } else if (p.im > 0) {
+        const al = p.re, be = p.im, Q = [al * al + be * be, -2 * al, 1], Qtxt = `${Math.abs(al) < 1e-12 ? 's^{2}' : `(${sMenos(al)})^{2}`} + ${cTxt(be * be)}`;
+        // A_j/(s − p)^j + conjugado = t^{j−1}/(j−1)! e^{αt} · 2(Re A_j cos βt − Im A_j sen βt)
+        A.forEach((a, j) => { terms.push({ c: (2 * a.re) / FACT[j], k: j, r: al, w: be, p: 'cos' }, { c: (-2 * a.im) / FACT[j], k: j, r: al, w: be, p: 'sen' }); });
+        // en real: Σ (B_j s + C_j)/Q^j, sacando de N/Q^m los restos de dividir entre Q una y otra vez
+        const cp = (z) => [C(-z.re, -z.im), C(1)], cpMul = (a, b) => { const r = new Array(a.length + b.length - 1).fill(null).map(() => C(0)); a.forEach((x, i) => b.forEach((y, k) => { r[i + k] = cAdd(r[i + k], cMul(x, y)); })); return r; };
+        let Nre = [0];
+        A.forEach((a, j) => { let t = [a]; for (let i = 0; i < m - 1 - j; i++) t = cpMul(t, cp(p)); for (let i = 0; i < m; i++) t = cpMul(t, cp(C(p.re, -p.im))); Nre = pSuma(Nre, t.map((z) => 2 * z.re)); });
+        const restos = [];
+        for (let i = 0; i < m; i++) { const r = Nre.slice(), qq = new Array(Math.max(1, r.length - 2)).fill(0); for (let d = r.length - 1; d >= 2; d--) { const k = r[d]; qq[d - 2] = k; r[d] -= k; r[d - 1] -= k * Q[1]; r[d - 2] -= k * Q[0]; } restos.push([r[0] || 0, r[1] || 0]); Nre = qq; }
+        restos.forEach((r, i) => {
+          const jj = m - i, den = jj > 1 ? `(${Qtxt})^{${jj}}` : Qtxt;
+          const ent = (x) => Math.abs(x - Math.round(x)) < 1e-9, mcd = (x, y) => (y ? mcd(y, x % y) : x);
+          if (Math.abs(r[1]) > 1e-10) {
+            // (Bs + C) con enteros si se puede; si no, B(s + C/B) cuando C/B es entero
+            let c = 1;
+            if (ent(r[0]) && ent(r[1])) c = Math.sign(r[1]) * mcd(Math.abs(Math.round(r[1])), Math.abs(Math.round(r[0])));
+            else if (ent(r[0] / r[1])) c = r[1];
+            frac.push({ c, s: `{${pTxt([r[0] / c, r[1] / c])}}/{${den}}` });
+          }
+          else if (Math.abs(r[0]) > 1e-10) frac.push(frNum(r[0], 1, den));
+        });
+      }
+    }
+    const fracTxt = suma(frac);
+    const reales = rs.filter((x) => Math.abs(x.p.im) < 1e-12), compl = rs.filter((x) => x.p.im > 1e-12);
+    let h = `$${nombre}(s) = ${fracTxt}$`;
+    if (reales.some((x) => x.m === 1)) {
+      h += `<br>Cada coeficiente de un polo simple sale tapando su factor: $A = [(s − p) ${nombre}(s)]_{s = p}$`;
+      h += reales.filter((x) => x.m === 1).map(({ p, A }) => `<br>$[(${sMenos(p.re)}) ${nombre}(s)]_{s = ${cTxt(p.re)}} = ${cTxt(A[0].re)}$`).join('');
+    }
+    if (reales.some((x) => x.m > 1)) h += '<br>Con un polo de multiplicidad m, $A_{m−j} = {1}/{j!} [{d^{j}}/{ds^{j}} ((s − p)^{m} F(s))]_{s = p}$.';
+    if (compl.length) h += '<br>Cada par de polos complejos $α ± βi$ da un término $(Bs + C)/((s − α)^{2} + β^{2})$, que se separa en $B (s − α)/(…) + (C + Bα)/β · β/(…)$.';
+    if (compl.some((x) => x.m > 1)) h += '<br>Con polos complejos dobles se trabaja con $p = α + βi$ complejo: $ℒ^{−1}\\{{A}/{(s − p)^{2}} + {Ā}/{(s − p̄)^{2}}\\} = 2 t e^{αt} ("Re" A cos βt − "Im" A sen βt)$.';
+    pasos.push({ t: 'Fracciones simples', html: h });
+    const ft = terms.filter((t) => Math.abs(t.c) > 1e-10);
+    const tab = [];
+    if (reales.length) tab.push('$ℒ^{−1}\\{{1}/{s − a}\\} = e^{at}$');
+    if (reales.some((x) => x.m > 1)) tab.push('$ℒ^{−1}\\{{1}/{(s − a)^{n+1}}\\} = {t^{n}}/{n!} e^{at}$');
+    if (compl.length) tab.push('$ℒ^{−1}\\{{s − α}/{(s − α)^{2} + β^{2}}\\} = e^{αt} cos(βt)$, $ℒ^{−1}\\{{β}/{(s − α)^{2} + β^{2}}\\} = e^{αt} sen(βt)$');
+    pasos.push({ t: 'Inversa término a término', html: `${tab.join('<br>')}<br>$f(t) = ${suma(ft.map((t) => ({ c: t.c, s: fTermTxt(t) })))}$ &ensp; para $t ≥ 0$` });
+    return { rs, terms: ft, frac: fracTxt, txt: suma(ft.map((t) => ({ c: t.c, s: fTermTxt(t) }))) };
+  }
+  const evalTerms = (ts) => (tt) => ts.reduce((s, q) => s + q.c * tt ** q.k * Math.exp(q.r * tt) * (q.p === 'sen' ? Math.sin(q.w * tt) : q.p === 'cos' ? Math.cos(q.w * tt) : 1), 0);
+  function limites(F, rs, pasos) {
+    const q = normaliza(F), sF = simplifica(R(pMul(q.n, [0, 1]), q.d));
+    const gn = grado(sF.n), gd = grado(sF.d), ini = gn < gd ? 0 : gn === gd ? limpia(sF.n)[gn] / limpia(sF.d)[gd] : Infinity;
+    const estable = rs.every(({ p }) => p.re < -1e-12 || (Math.abs(p.re) < 1e-12 && Math.abs(p.im) < 1e-12 && rs.find((x) => x.p === p).m === 1));
+    const fin = estable ? pVal(sF.n, 0) / pVal(sF.d, 0) : null;
+    pasos.push({ t: 'Valores inicial y final', html: `Valor inicial: $f(0^{+}) = lím_{s→∞} s F(s) = ${isFinite(ini) ? cTxt(ini) : '∞'}$<br>${estable ? `Valor final: $lím_{t→∞} f(t) = lím_{s→0} s F(s) = ${cTxt(fin)}$` : 'Valor final: no existe, porque hay polos con parte real positiva, o en el eje imaginario (salvo un polo simple en 0), y f(t) crece u oscila sin pararse.'}` });
+    return { ini, fin };
+  }
+  function inversa(sc) {
+    if (vacio(sc.F)) throw new Error('Falta F(s)');
+    const ast = E.lee(sc.F, 'F(s)', ['s']);
+    if (E.tieneX(ast, 't')) throw new Error('F(s) no puede llevar t');
+    const F = simplifica(racional(ast)), pasos = [];
+    pasos.push({ t: 'Función racional', html: `$F(s) = ${rTxt(F)}${factTxt(F) !== rTxt(F) ? ` = ${factTxt(F)}` : ''}$` });
+    const inv = invierte(F, pasos), lim = limites(F, inv.rs, pasos);
+    return { modo: 'inversa', F, Fcomun: rTxt(F), Ffact: factTxt(F), ...inv, f: evalTerms(inv.terms), lim, polos: inv.rs, ceros: raicesSeguras(normaliza(F).n), pasos };
+  }
+
+  /* ---------- Ecuaciones diferenciales ---------- */
+  function edo(sc) {
+    const orden = sc.orden === '1' ? 1 : 2, a = orden === 2 ? num(sc.a, 'el coeficiente de y″') : 0, b = num(sc.b, `el coeficiente de y′`), c = num(sc.c, 'el coeficiente de y');
+    if (orden === 2 && a === 0) throw new Error('El coeficiente de y″ no puede ser 0 (sería de primer orden)');
+    if (orden === 1 && b === 0) throw new Error('El coeficiente de y′ no puede ser 0');
+    const y0 = num(sc.y0, 'y(0)'), v0 = orden === 2 ? num(sc.v0, 'y′(0)') : 0, pasos = [];
+    let G = R([0]), g = () => 0, gts = [];
+    if (!vacio(sc.g) && String(sc.g).trim() !== '0') {
+      const ast = E.lee(sc.g, 'g(t)', ['t']);
+      gts = terminos(ast);
+      if (!gts) throw new Error('g(t) tiene que ser una suma de términos c·tⁿ·e^{at}·sen(bt) o cos(bt)');
+      for (const t of gts) { const q = transTermino(t); G = rSuma(G, R(pEsc(q.n, t.c), q.d)); }
+      g = evalTerms(gts);
+    }
+    const ec = `${orden === 2 ? `${a === 1 ? '' : cTxt(a) + ' '}y″ ` : ''}${suma([...(orden === 2 ? [] : []), { c: b, s: 'y′' }, { c, s: 'y' }]).replace(/^(?!−)/, orden === 2 ? '+ ' : '').replace(/^\+ −/, '− ')} = ${gts.length ? suma(gts.map((t) => ({ c: t.c, s: fTermTxt(t) }))) : '0'}`;
+    pasos.push({ t: 'Ecuación', html: `$${ec}$, con $y(0) = ${cTxt(y0)}$${orden === 2 ? ` e $y′(0) = ${cTxt(v0)}$` : ''}` });
+    const dentro = (ts) => suma(ts) === '0' ? '0' : suma(ts);
+    const lado = [orden === 2 ? { c: a, s: y0 || v0 ? `(${dentro([{ c: 1, s: 's^{2}Y' }, { c: -y0, s: 's' }, { c: -v0, s: '' }])})` : 's^{2}Y' } : null, { c: b, s: y0 ? `(sY − ${cTxt(y0)})`.replace('− −', '+ ') : 'sY' }, { c, s: 'Y' }].filter(Boolean);
+    pasos.push({ t: 'Transformando', html: `Con $ℒ\\{y′\\} = sY − y(0)$${orden === 2 ? ' y $ℒ\\{y″\\} = s^{2}Y − s y(0) − y′(0)$' : ''}:<br>$${suma(lado)} = ${gts.length ? factTxt(G) : '0'}$` });
+    // Y(s) = (G(s) + a(s y0 + v0) + b y0)/(a s² + b s + c)
+    const car = orden === 2 ? [c, b, a] : [c, b], ini = orden === 2 ? [a * v0 + b * y0, a * y0] : [b * y0];
+    const Y = simplifica(rDiv(rSuma(G, R(ini)), R(car)));
+    pasos.push({ t: 'Despejando Y(s)', html: `$(${pTxt(car)}) Y(s) = ${gts.length ? `${factTxt(G)}${limpia(ini).some((x) => Math.abs(x) > 1e-12) ? ` + ${pTxt(ini)}`.replace('+ −', '− ') : ''}` : pTxt(ini)}$<br>$Y(s) = ${factTxt(Y)}$` });
+    const inv = invierte(Y, pasos, 'Y');
+    pasos[pasos.length - 1].t = 'Solución';
+    pasos[pasos.length - 1].html = pasos[pasos.length - 1].html.replace('f(t) =', 'y(t) =');
+    return { modo: 'edo', orden, a, b, c, y0, v0, G, g, Y, Fcomun: rTxt(Y), Ffact: factTxt(Y), ...inv, f: evalTerms(inv.terms), polos: inv.rs, ceros: raicesSeguras(normaliza(Y).n), ec, pasos };
+  }
+
+  const MODOS = { directa, inversa, edo };
+  function resolver(sc) { return MODOS[sc.modo] ? MODOS[sc.modo](sc) : directa(sc); }
+
+  const ejemplos = [
+    { clave: 'basica', nombre: 'Polinomio y exponencial', sc: { modo: 'directa', f: '3t^2 + 2e^(-4t) - 5' } },
+    { clave: 'trig', nombre: 'Seno y coseno', sc: { modo: 'directa', f: '4sen(3t) - 2cos(3t)' } },
+    { clave: 'amortiguada', nombre: 'Oscilación amortiguada', sc: { modo: 'directa', f: 'e^(-2t) cos(5t)' } },
+    { clave: 'tsen', nombre: 't·sen(t) (derivar F)', sc: { modo: 'directa', f: 't sen(t)' } },
+    { clave: 'hiper', nombre: 'Coseno hiperbólico por t', sc: { modo: 'directa', f: 't^2 e^(3t) + cosh(2t)' } },
+    { clave: 'simples', nombre: 'Polos simples', sc: { modo: 'inversa', F: '(3s + 7)/((s + 1)(s + 3))' } },
+    { clave: 'doble', nombre: 'Polo doble', sc: { modo: 'inversa', F: '(s + 5)/(s (s + 1)^2)' } },
+    { clave: 'complejos', nombre: 'Polos complejos', sc: { modo: 'inversa', F: '(2s + 3)/(s^2 + 4s + 13)' } },
+    { clave: 'mixta', nombre: 'Polo real y par complejo', sc: { modo: 'inversa', F: '10/((s + 1)(s^2 + 2s + 5))' } },
+    { clave: 'escalon', nombre: 'Respuesta a un escalón', sc: { modo: 'inversa', F: '4/(s (s^2 + 4))' } },
+    { clave: 'edo-sub', nombre: 'Oscilador amortiguado', sc: { modo: 'edo', orden: '2', a: '1', b: '2', c: '5', g: '0', y0: '1', v0: '0' } },
+    { clave: 'edo-forzada', nombre: 'y″ + 3y′ + 2y = e^(−3t)', sc: { modo: 'edo', orden: '2', a: '1', b: '3', c: '2', g: 'e^(-3t)', y0: '0', v0: '1' } },
+    { clave: 'edo-resonancia', nombre: 'Resonancia: y″ + y = sen t', sc: { modo: 'edo', orden: '2', a: '1', b: '0', c: '1', g: 'sen(t)', y0: '0', v0: '0' } },
+    { clave: 'edo-1', nombre: 'Primer orden: y′ + 2y = 4t', sc: { modo: 'edo', orden: '1', a: '', b: '1', c: '2', g: '4t', y0: '1', v0: '' } },
+  ];
+  return { resolver, directa, inversa, edo, raices, residuos, racional, terminos, ejemplos, f, R, rTxt, factTxt, simplifica, pVal };
+})();
+
+/* =====================================================================
+   Derivadas e integrales (sin DOM): derivada de cualquier orden con la
+   regla que se usa en cada paso (suma, producto, cociente, cadena…),
+   recta tangente y puntos críticos; primitiva por la tabla, sustitución,
+   partes, fracciones simples e identidades trigonométricas, comprobada
+   derivándola, e integral definida por Barrow (o numérica si no hay
+   primitiva elemental). Usa Expresion (matematicas/expresion.js) para
+   leer, derivar y escribir, y Laplace (laplace/calculo.js) para las
+   raíces y los coeficientes de las fracciones simples.
+   ===================================================================== */
+const Derivadas = (() => {
+  const E = typeof Expresion !== 'undefined' ? Expresion : require('../matematicas/expresion.js');
+  const LapR = typeof Laplace !== 'undefined' ? Laplace : require('../laplace/calculo.js');
+  const N = (v) => ({ t: 'n', v }), X = { t: 'x' }, C = (v) => ({ t: 'c', v });
+  const op = (t, a, b) => ({ t, a, b }), neg = (a) => ({ t: 'neg', a }), fn = (f, a) => ({ t: 'fn', f, a });
+  const esNum = (n) => n.t === 'n';
+  const tx = (n) => E.tieneX(n);
+  // texto para Mates, con ln |u| sin paréntesis de más y los cocientes de polinomios desarrollados
+  const T = (n) => E.texto(pulir(E.simp(n))).replace(/(ln|tg|sen|cos) \(\|([^()|]*)\|\)/g, '$1 |$2|');
+  const mcd = (a, b) => (b ? mcd(b, a % b) : Math.abs(a));
+  // numerador polinómico desarrollado y, si se puede, simplificado con los factores del denominador
+  function pulir(n) {
+    let sg = 1, q = n;
+    if (q.t === 'neg') { sg = -1; q = q.a; }
+    if (q.t !== '/' || !tx(q.b)) return n;
+    let Pn = poli(q.a);
+    if (!Pn || Pn.length < 2) return n;
+    const den = factores(q.b), fs = den.fs.map((g) => { const b = g.n.t === '^' && esNum(g.n.b) && Number.isInteger(g.n.b.v) ? g.n.a : g.n, k = b === g.n ? 1 : g.n.b.v; return { b, k: k * g.s, P: poli(b) }; });
+    if (fs.some((g) => g.k < 0)) return n;
+    // dividir Pn entre P si es exacto
+    const divide = (A, B) => {
+      const r = A.slice(), dq = new Array(Math.max(0, A.length - B.length + 1)).fill(0), l = B[B.length - 1];
+      for (let i = A.length - B.length; i >= 0; i--) { const c = r[i + B.length - 1] / l; dq[i] = c; for (let j = 0; j < B.length; j++) r[i + j] -= c * B[j]; }
+      return r.slice(0, B.length - 1).every((v) => Math.abs(v) < 1e-9 * Math.max(1, ...A.map(Math.abs))) ? dq.map((v) => { const k = Math.round(v); return Math.abs(v - k) < 1e-9 ? k : v; }) : null;
+    };
+    for (const g of fs) while (g.P && g.P.length > 1 && g.k > 0) { const d = divide(Pn, g.P); if (!d) break; Pn = d; g.k--; }
+    Pn = Pn.map((c) => c * sg * den.k ** -1);
+    // signo fuera y el factor común entero del numerador
+    let lead = Pn[Pn.length - 1] < 0 ? -1 : 1;
+    const ent = Pn.every((c) => Number.isInteger(c)), g0 = ent ? Pn.reduce((a, c) => mcd(a, c), 0) : 1;
+    const k = ent && g0 > 1 ? lead * g0 : lead;
+    const numA = poliDesc(Pn.map((c) => c / k)), kk = Math.abs(k);
+    const arriba = kk !== 1 ? (numA.t === '+' || numA.t === '-' ? op('*', N(kk), numA) : poliDesc(Pn.map((c) => c * lead))) : numA;
+    const resto = fs.filter((g) => g.k > 0).map((g) => (g.k === 1 ? g.b : op('^', g.b, N(g.k))));
+    const r = resto.length ? op('/', arriba, mul(resto)) : arriba;
+    return lead < 0 ? neg(r) : r;
+  }
+  // polinomio de mayor a menor grado: x^2 − 2x − 1
+  const poliDesc = (c) => { let r = null; for (let i = c.length - 1; i >= 0; i--) { const k = c[i]; if (Math.abs(k) < 1e-14) continue; const m = i === 0 ? N(Math.abs(k)) : Math.abs(k) === 1 ? (i === 1 ? X : op('^', X, N(i))) : op('*', N(Math.abs(k)), i === 1 ? X : op('^', X, N(i))); r = r ? op(k < 0 ? '-' : '+', r, m) : k < 0 ? neg(m) : m; } return r || N(0); };
+  const f = (x, d = 4) => E.dec4(Math.abs(x) < 1e-12 ? 0 : x, d);
+  const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
+  function num(s, nom) {
+    if (vacio(s)) throw new Error(`Falta ${nom}`);
+    const a = E.lee(String(s), nom, ['x']);
+    if (tx(a)) throw new Error(`${nom} tiene que ser un número`);
+    const v = E.valor(a, 0);
+    if (!isFinite(v)) throw new Error(`${nom} no es un número válido`);
+    return v;
+  }
+  const mul = (xs) => (xs.length ? xs.reduce((a, b) => op('*', a, b)) : N(1));
+  // mismo valor en unos puntos de prueba (donde las dos existen)
+  const PRUEBA = [-2.3, -1.1, -0.37, 0.29, 0.83, 1.7, 2.6, 3.4];
+  function igualNum(a, b, tol = 1e-7) {
+    let n = 0;
+    for (const x of PRUEBA) {
+      const p = E.valor(a, x), q = E.valor(b, x);
+      if (!isFinite(p) || !isFinite(q)) continue;
+      if (Math.abs(p - q) > tol * Math.max(1, Math.abs(q))) return false;
+      n++;
+    }
+    return n >= 3;
+  }
+  // a/b es constante: el número o null
+  function cociente(a, b) {
+    let k = null, n = 0;
+    for (const x of PRUEBA) {
+      const p = E.valor(a, x), q = E.valor(b, x);
+      if (!isFinite(p) || !isFinite(q) || Math.abs(q) < 1e-9) continue;
+      const r = p / q;
+      if (k === null) k = r; else if (Math.abs(r - k) > 1e-8 * Math.max(1, Math.abs(k))) return null;
+      n++;
+    }
+    return n >= 3 ? k : null;
+  }
+  // u = a x + b
+  function lineal(u) {
+    if (!tx(u)) return null;
+    const b = E.valor(u, 0), a = E.valor(u, 1) - b;
+    if (!isFinite(a) || !isFinite(b) || Math.abs(a) < 1e-14) return null;
+    for (const x of [-1.7, 2.3]) if (Math.abs(E.valor(u, x) - (a * x + b)) > 1e-9 * Math.max(1, Math.abs(a * x + b))) return null;
+    return { a, b };
+  }
+  // polinomio en x: coeficientes de grado 0 … n o null
+  function poli(n) {
+    if (!tx(n)) { const v = E.valor(n, 0); return isFinite(v) ? [v] : null; }
+    let c;
+    try { c = [...E.serie(n, 0, 20)]; } catch (e) { return null; }
+    let g = c.length - 1; while (g > 0 && Math.abs(c[g]) < 1e-10) g--;
+    if (g > 16) return null;
+    c = c.slice(0, g + 1).map((v) => { const r = Math.round(v); return Math.abs(v - r) < 1e-9 ? r : v; });
+    for (const x of [-1.9, 0.7, 2.2]) { const p = c.reduceRight((s, k) => s * x + k, 0), q = E.valor(n, x); if (!isFinite(q) || Math.abs(p - q) > 1e-8 * Math.max(1, Math.abs(q))) return null; }
+    return c;
+  }
+  const poliAst = (c) => poliDesc(c);
+
+  /* ---------- Derivada con sus reglas ---------- */
+  const D = (n) => E.deriva(n);
+  const FUNC = {
+    sen: 'cos u', cos: '−sen u', tg: '{1}/{cos^{2} u} = 1 + tg^{2} u', ln: '{1}/{u}', log: '{1}/{u ln 10}', sqrt: '{1}/{2 √u}', cbrt: '{1}/{3 ∛u^{2}}',
+    arcsen: '{1}/{√(1 − u^{2})}', arccos: '−{1}/{√(1 − u^{2})}', arctg: '{1}/{1 + u^{2}}', senh: 'cosh u', cosh: 'senh u', tgh: '{1}/{cosh^{2} u}',
+    sec: '"sec" u tg u', cosec: '−"cosec" u "cotg" u', cotg: '−{1}/{sen^{2} u}', abs: '{u}/{|u|}',
+  };
+  function reglas(n, pasos, prof = 0) {
+    if (pasos.length >= 9 || !tx(n) || n.t === 'x') return;
+    const d = (q) => T(D(q)), t = T;
+    const sub = (q) => { if (tx(q) && q.t !== 'x' && !lineal(q)) reglas(q, pasos, prof + 1); };
+    switch (n.t) {
+      case '+': case '-': {
+        if (prof === 0) pasos.push({ t: 'Suma', html: `La derivada de una suma es la suma de las derivadas: se deriva cada término.` });
+        sub(n.a); sub(n.b); return;
+      }
+      case 'neg': sub(n.a); return;
+      case '*': {
+        if (!tx(n.a) || !tx(n.b)) { const k = tx(n.a) ? n.b : n.a, u = tx(n.a) ? n.a : n.b; if (prof === 0) pasos.push({ t: 'Constante por función', html: `$(k u)′ = k u′$, con $k = ${t(k)}$.` }); sub(u); return; }
+        pasos.push({ t: 'Regla del producto', html: `$(u v)′ = u′ v + u v′$, con $u = ${t(n.a)}$ y $v = ${t(n.b)}$:<br>$u′ = ${d(n.a)}$, &ensp; $v′ = ${d(n.b)}$` });
+        sub(n.a); sub(n.b); return;
+      }
+      case '/': {
+        if (!tx(n.b)) { sub(n.a); return; }
+        pasos.push({ t: 'Regla del cociente', html: `$({u}/{v})′ = {u′ v − u v′}/{v^{2}}$, con $u = ${t(n.a)}$ y $v = ${t(n.b)}$:<br>$u′ = ${d(n.a)}$, &ensp; $v′ = ${d(n.b)}$` });
+        sub(n.a); sub(n.b); return;
+      }
+      case '^': {
+        const { a, b } = n;
+        if (!tx(b)) {
+          if (a.t === 'x') return;
+          pasos.push({ t: 'Potencia y regla de la cadena', html: `$(u^{n})′ = n u^{n − 1} u′$, con $u = ${t(a)}$ y $n = ${t(b)}$:<br>$u′ = ${d(a)}$` });
+          sub(a); return;
+        }
+        if (a.t === 'c' && a.v === 'e') { if (b.t !== 'x') pasos.push({ t: 'Exponencial y regla de la cadena', html: `$(e^{u})′ = e^{u} u′$, con $u = ${t(b)}$:<br>$u′ = ${d(b)}$` }); sub(b); return; }
+        if (!tx(a)) { pasos.push({ t: 'Exponencial de base a', html: `$(a^{u})′ = a^{u} ln a · u′$, con $a = ${t(a)}$ y $u = ${t(b)}$:<br>$u′ = ${d(b)}$` }); sub(b); return; }
+        pasos.push({ t: 'Derivación logarítmica', html: `Para $y = u^{v}$ se toma logaritmo: $ln y = v ln u$, y derivando $y′ = u^{v} (v′ ln u + {v u′}/{u})$, con $u = ${t(a)}$ y $v = ${t(b)}$.` });
+        return;
+      }
+      case 'fn': {
+        const u = n.a, F = FUNC[n.f] || '';
+        if (u.t === 'x') { if (prof === 0) pasos.push({ t: 'Derivada de la tabla', html: `$(${n.f} x)′ = ${F.replace(/u/g, 'x')}$` }); return; }
+        pasos.push({ t: 'Regla de la cadena', html: `$(f(u))′ = f′(u) · u′$: aquí $f = ${n.f === 'sqrt' ? '√' : n.f}$ y $u = ${t(u)}$, con $(${n.f === 'sqrt' ? '√u' : `${n.f} u`})′ = ${F}$ y $u′ = ${d(u)}$` });
+        sub(u); return;
+      }
+    }
+  }
+  function derivada(sc) {
+    const ast = E.lee(sc.f, 'f(x)', ['x']);
+    const orden = Math.max(1, Math.min(4, Math.round(num(sc.orden || '1', 'el orden'))));
+    const pasos = [];
+    pasos.push({ t: 'Función', html: `$f(x) = ${T(ast)}$` });
+    const r = [];
+    reglas(E.simp(ast), r);
+    if (!r.length) r.push({ t: 'Tabla', html: 'Es una derivada directa de la tabla.' });
+    pasos.push(...r);
+    const ders = [E.simp(ast)];
+    for (let k = 1; k <= orden; k++) ders.push(pulir(D(ders[k - 1])));
+    const prima = (k) => (k <= 3 ? `f${'′'.repeat(k)}` : `f^{(${k})}`);
+    pasos.push({ t: 'Simplificando', html: ders.slice(1).map((q, i) => `$${prima(i + 1)}(x) = ${T(q)}$`).join('<br>') });
+    const out = { modo: 'derivada', ast: ders[0], ders, orden, txt: ders.slice(1).map(T), f: (x) => E.valor(ders[0], x), d: (k) => (x) => E.valor(ders[k] || D(ders[ders.length - 1]), x), pasos };
+    // en un punto: valor, pendiente y recta tangente
+    if (!vacio(sc.x0)) {
+      const x0 = num(sc.x0, 'x₀'), y0 = E.valor(ders[0], x0), m = E.valor(ders[1], x0);
+      if (!isFinite(y0)) throw new Error(`f no existe en x₀ = ${f(x0)}`);
+      if (!isFinite(m)) throw new Error(`f no es derivable en x₀ = ${f(x0)}`);
+      out.x0 = x0; out.y0 = y0; out.m = m; out.vals = ders.map((q) => E.valor(q, x0));
+      const nt = E.numTxt, b = y0 - m * x0;
+      out.tangente = `y = ${Math.abs(m) < 1e-12 ? nt(y0) : `${E.texto(E.simp(op('+', op('*', N(m), X), N(b))))}`}`;
+      pasos.push({ t: `En x₀ = ${f(x0)}`, html: `$f(${nt(x0)}) = ${nt(y0)}$, &ensp; $f′(${nt(x0)}) = ${nt(m)}$${orden > 1 ? ders.slice(2).map((q, i) => `, &ensp; $${prima(i + 2)}(${nt(x0)}) = ${nt(E.valor(q, x0))}$`).join('') : ''}<br>Recta tangente: $y − f(x_0) = f′(x_0)(x − x_0)$ &ensp;⇒&ensp; $${out.tangente}$` });
+    }
+    // puntos críticos en la ventana: f′ = 0, y su tipo por f″
+    const d1 = ders[1], d2 = D(d1), a = out.x0 !== undefined ? out.x0 - 5 : -5, b = out.x0 !== undefined ? out.x0 + 5 : 5, crit = [];
+    // f′ = 0 en todo x (por ejemplo sen²x + cos²x): f es constante y no tiene puntos críticos aislados
+    out.constante = esNum(d1) ? d1.v === 0 : Array.from({ length: 41 }, (_, i) => E.valor(d1, a + ((b - a) * i) / 40)).every((v) => isFinite(v) && Math.abs(v) < 1e-12);
+    if (out.constante) pasos.push({ t: 'Función constante', html: `$f′(x) = 0$ en todo x, así que f es constante: no tiene máximos ni mínimos aislados.` });
+    let xa = a, va = E.valor(d1, a);
+    for (let i = 1; i <= 400 && !out.constante; i++) {
+      const xb = a + ((b - a) * i) / 400, vb = E.valor(d1, xb);
+      if (isFinite(va) && isFinite(vb) && va * vb <= 0 && !(va === 0 && i > 1)) {
+        let lo = xa, hi = xb, fl = va;
+        for (let k = 0; k < 60; k++) { const mi = (lo + hi) / 2, vm = E.valor(d1, mi); if (fl * vm <= 0) hi = mi; else { lo = mi; fl = vm; } }
+        const xc = (lo + hi) / 2, yc = E.valor(ders[0], xc);
+        if (isFinite(yc) && Math.abs(E.valor(d1, xc)) < 1e-6 * Math.max(1, Math.abs(yc)) && !crit.some((q) => Math.abs(q.x - xc) < 1e-6)) {
+          // la primera derivada que no se anula: par da extremo (por su signo), impar da inflexión
+          let q = d2, k = 2, s = E.valor(q, xc);
+          while (Math.abs(s) < 1e-7 && k < 5) { q = D(q); k++; s = E.valor(q, xc); }
+          const tipo = Math.abs(s) < 1e-7 ? 'dudoso' : k % 2 ? 'punto de inflexión con tangente horizontal' : s > 0 ? 'mínimo' : 'máximo';
+          crit.push({ x: Math.abs(xc) < 1e-10 ? 0 : xc, y: yc, tipo });
+        }
+      }
+      xa = xb; va = vb;
+    }
+    out.crit = crit.slice(0, 8);
+    if (out.crit.length) pasos.push({ t: 'Puntos críticos', html: `Donde $f′(x) = 0$ entre ${f(a)} y ${f(b)}; el signo de $f″$ dice si es máximo o mínimo:<br>${out.crit.map((q) => `$x = ${E.numTxt(q.x)}$: ${q.tipo} (f = ${f(q.y)})`).join('<br>')}` });
+    return out;
+  }
+
+  /* ---------- Primitivas ---------- */
+  const abs = (u) => fn('abs', u), ln = (u) => fn('ln', u);
+  const div = (a, b) => op('/', a, b), prod = (a, b) => op('*', a, b), pot = (a, k) => op('^', a, N(k));
+  // factores de un producto con su exponente (±1)
+  function factores(n, s = 1, out = { k: 1, fs: [] }) {
+    if (n.t === 'neg') { out.k *= -1; return factores(n.a, s, out); }
+    if (n.t === '*') { factores(n.a, s, out); return factores(n.b, s, out); }
+    if (n.t === '/') { factores(n.a, s, out); return factores(n.b, -s, out); }
+    if (esNum(n)) { out.k *= n.v ** s; return out; }
+    out.fs.push({ n, s });
+    return out;
+  }
+  const junta = (fs) => { const a = fs.filter((q) => q.s > 0).map((q) => q.n), b = fs.filter((q) => q.s < 0).map((q) => q.n); return b.length ? div(mul(a), mul(b)) : mul(a); };
+  // tipo de función de la tabla: { k, u } (k: sen, cos, exp, pot (con e), inv, sec2…)
+  function tipo(n, s = 1) {
+    if (s < 0) {
+      // 1/u, 1/u^k, 1/cos² u, 1/sen² u, 1/√u, 1/(1 + u²), 1/√(1 − u²)
+      if (n.t === '^' && !tx(n.b)) { const e = E.valor(n.b, 0); if (n.a.t === 'fn' && e === 2 && n.a.f === 'cos') return { k: 'sec2', u: n.a.a }; if (n.a.t === 'fn' && e === 2 && n.a.f === 'sen') return { k: 'csc2', u: n.a.a }; return { k: 'pot', e: -e, u: n.a }; }
+      if (n.t === 'fn' && n.f === 'sqrt') { const q = poli(n.a); if (q && q.length === 3 && q[1] === 0 && q[0] > 0 && q[2] < 0) return { k: 'asen', p: q[0], q: -q[2] }; return { k: 'pot', e: -0.5, u: n.a }; }
+      if (n.t === 'fn' && n.f === 'cbrt') return { k: 'pot', e: -1 / 3, u: n.a };
+      if (n.t === 'fn' && n.f === 'cos') return { k: 'sec', u: n.a };
+      return { k: 'pot', e: -1, u: n };
+    }
+    if (n.t === 'fn') { if (n.f === 'sqrt') return { k: 'pot', e: 0.5, u: n.a }; if (n.f === 'cbrt') return { k: 'pot', e: 1 / 3, u: n.a }; return { k: n.f, u: n.a }; }
+    if (n.t === '^') {
+      if (n.a.t === 'c' && n.a.v === 'e') return { k: 'exp', u: n.b };
+      if (!tx(n.a)) return { k: 'apot', a: n.a, u: n.b };
+      if (!tx(n.b)) { const e = E.valor(n.b, 0); return { k: 'pot', e, u: n.a }; }
+    }
+    if (n.t === 'x') return { k: 'pot', e: 1, u: n };
+    return { k: 'otra', u: n };
+  }
+  // primitiva de la tabla en la variable u (AST con u dentro)
+  function tabla(t) {
+    const u = t.u;
+    switch (t.k) {
+      case 'sen': return neg(fn('cos', u));
+      case 'cos': return fn('sen', u);
+      case 'exp': return op('^', C('e'), u);
+      case 'senh': return fn('cosh', u);
+      case 'cosh': return fn('senh', u);
+      case 'sec2': return fn('tg', u);
+      case 'csc2': return neg(fn('cotg', u));
+      case 'tg': return neg(ln(abs(fn('cos', u))));
+      case 'cotg': return ln(abs(fn('sen', u)));
+      case 'sec': return ln(abs(op('+', fn('sec', u), fn('tg', u))));
+      case 'ln': return op('-', prod(u, ln(u)), u);
+      case 'arctg': return op('-', prod(u, fn('arctg', u)), prod(N(0.5), ln(op('+', N(1), pot(u, 2)))));
+      case 'arcsen': return op('+', prod(u, fn('arcsen', u)), fn('sqrt', op('-', N(1), pot(u, 2))));
+      case 'apot': return div(op('^', t.a, u), ln(t.a));
+      case 'pot':
+        if (Math.abs(t.e + 1) < 1e-12) return ln(abs(u));
+        return div(op('^', u, N(t.e + 1)), N(t.e + 1));
+    }
+    return null;
+  }
+  const NOMBRE_T = { sen: '∫ sen u du = −cos u', cos: '∫ cos u du = sen u', exp: '∫ e^{u} du = e^{u}', senh: '∫ senh u du = cosh u', cosh: '∫ cosh u du = senh u', sec2: '∫ {du}/{cos^{2} u} = tg u', csc2: '∫ {du}/{sen^{2} u} = −"cotg" u', tg: '∫ tg u du = −ln |cos u|', ln: '∫ ln u du = u ln u − u (por partes)', apot: '∫ a^{u} du = {a^{u}}/{ln a}', arctg: '∫ arctg u du = u arctg u − {1}/{2} ln(1 + u^{2}) (por partes)', arcsen: '∫ arcsen u du = u arcsen u + √(1 − u^{2}) (por partes)' };
+  const nomT = (t) => (t.k === 'pot' ? (Math.abs(t.e + 1) < 1e-12 ? '∫ {du}/{u} = ln |u|' : '∫ u^{n} du = {u^{n + 1}}/{n + 1}') : NOMBRE_T[t.k] || '');
+
+  // primitiva directa de c·h(ax + b) con h de la tabla (para el método de la tabla en partes)
+  function prim1(h) {
+    const { k, fs } = factores(E.simp(h));
+    if (fs.length !== 1) return null;
+    const t = tipo(fs[0].n, fs[0].s), L = t.u && lineal(t.u), F = L && tabla(t);
+    return F ? E.simp(prod(N(k / L.a), F)) : null;
+  }
+  // primitiva de n: { F, como } o null; ps recoge el desarrollo
+  function prim(n0, ps, prof = 0) {
+    if (prof > 6) return null;
+    const n = E.simp(n0);
+    if (!tx(n)) return { F: prod(n, X), como: 'constante' };
+    // linealidad
+    if (n.t === '+' || n.t === '-') {
+      const a = prim(n.a, ps, prof + 1), b = a && prim(n.b, ps, prof + 1);
+      if (!a || !b) return null;
+      return { F: op(n.t, a.F, b.F), como: 'suma' };
+    }
+    if (n.t === 'neg') { const a = prim(n.a, ps, prof + 1); return a && { F: neg(a.F), como: a.como }; }
+    const { k, fs } = factores(n);
+    const cte = fs.filter((q) => !tx(q.n)), vs = fs.filter((q) => tx(q.n));
+    if (k !== 1 || cte.length) {
+      const kk = cte.length ? prod(N(k), junta(cte)) : N(k);
+      const a = prim(junta(vs), ps, prof + 1);
+      return a && { F: prod(kk, a.F), como: a.como };
+    }
+    // potencias de x juntas: x² √x = x^{5/2}
+    if (vs.length > 1 && vs.every((q) => { const t = tipo(q.n, 1); return t.k === 'pot' && t.u.t === 'x'; })) {
+      const e = vs.reduce((acc, q) => acc + tipo(q.n, 1).e * q.s, 0), F = tabla({ k: 'pot', e, u: X });
+      ps.push(`$∫ ${T(n)} dx = ∫ x^{${E.numTxt(e)}} dx = ${T(F)}$ &ensp; (potencias)`);
+      return { F, como: 'potencias' };
+    }
+    // tg² u = 1/cos² u − 1
+    if (vs.length === 1 && vs[0].s > 0 && vs[0].n.t === '^' && vs[0].n.a.t === 'fn' && vs[0].n.a.f === 'tg' && E.valor(vs[0].n.b, 0) === 2) {
+      ps.push('$tg^{2} u = {1}/{cos^{2} u} − 1$');
+      const a = prim(op('-', div(N(1), pot(fn('cos', vs[0].n.a.a), 2)), N(1)), ps, prof + 1); if (a) return a;
+    }
+    const nota = (txt, F) => { ps.push(`$∫ ${T(n)} dx = ${T(F)}$ &ensp; (${txt})`); return F; };
+    // un solo factor de la tabla con argumento lineal
+    if (vs.length === 1) {
+      const t = tipo(vs[0].n, vs[0].s);
+      if (t.k === 'asen') { const F = prod(N(1 / Math.sqrt(t.q)), fn('arcsen', prod(N(Math.sqrt(t.q / t.p)), X))); return { F: nota('$∫ {dx}/{√(a^{2} − b^{2}x^{2})} = {1}/{b} arcsen {b x}/{a}$', F), como: 'tabla' }; }
+      const L = t.u && lineal(t.u), Ft = L && tabla(t);
+      if (Ft) return { F: nota(`tabla, ${Math.abs(L.a - 1) < 1e-12 ? `$${nomT(t)}$` : `$${nomT(t)}$ con $u = ${T(t.u)}$, $du = ${E.numTxt(L.a)} dx$`}`, div(Ft, N(L.a))), como: 'tabla' };
+    }
+    // sustitución: un factor f(g(x)) por g′(x)
+    for (let i = 0; i < vs.length; i++) {
+      // u es el argumento de la función, o el factor entero (u · u′ = (u²/2)′)
+      const q = vs[i].n, base = q.t === '^' && !tx(q.b) ? { k: 'pot', e: E.valor(q.b, 0) * vs[i].s, u: q.a } : null;
+      for (const t of [tipo(q, vs[i].s), { k: 'pot', e: vs[i].s, u: q }, base].filter(Boolean)) {
+        if (!t.u || t.k === 'otra' || t.k === 'asen' || t.u.t === 'x' || !tx(t.u)) continue;
+        const Ft = tabla(t); if (!Ft) continue;
+        const resto = junta(vs.filter((_, j) => j !== i)), du = D(t.u);
+        const c = cociente(resto, du);
+        if (c !== null && Math.abs(c) > 1e-12) return { F: nota(`sustitución $u = ${T(t.u)}$, $du = ${T(du)} dx$, y $${nomT(t)}$`, prod(N(c), Ft)), como: 'sustitución' };
+      }
+    }
+    // potencia impar de sen o cos: sen^{2m+1} u = sen u (1 − cos² u)^m, y cada término por sustitución
+    if (vs.length === 1 && vs[0].s > 0 && vs[0].n.t === '^' && vs[0].n.a.t === 'fn' && ['sen', 'cos'].includes(vs[0].n.a.f) && !tx(vs[0].n.b)) {
+      const e = E.valor(vs[0].n.b, 0), m = (e - 1) / 2;
+      if (Number.isInteger(m) && m >= 1 && m <= 4) {
+        const u = vs[0].n.a.a, sf = vs[0].n.a.f, of = sf === 'sen' ? 'cos' : 'sen';
+        let suma = null, bin = 1;
+        for (let k = 0; k <= m; k++) { if (k) bin = (bin * (m - k + 1)) / k; const t = prod(N(bin * (-1) ** k), prod(fn(sf, u), op('^', fn(of, u), N(2 * k)))); suma = suma ? op('+', suma, t) : t; }
+        ps.push(`$${sf}^{${e}} u = ${sf} u (1 − ${of}^{2} u)^{${m}}$, y se sustituye $t = ${of} u$`);
+        const a = prim(suma, ps, prof + 1); if (a) return { F: a.F, como: 'trigonométrica' };
+      }
+    }
+    // polinomio: término a término
+    const P = poli(n);
+    if (P) { const F = poliAst(P.map((c, i) => (i ? c : c)).reduce((acc, c, i) => { acc[i + 1] = c / (i + 1); return acc; }, [0])); return { F: nota('potencias: $∫ x^{n} dx = {x^{n + 1}}/{n + 1}$', F), como: 'potencias' }; }
+    // cociente de polinomios: fracciones simples
+    const R = racional(n, nota);
+    if (R) return { F: R, como: 'racional' };
+    // sen² y cos²: se baja el grado con el ángulo doble; sen u cos u = sen(2u)/2
+    if (vs.length === 1 && vs[0].s > 0 && vs[0].n.t === '^' && vs[0].n.a.t === 'fn' && ['sen', 'cos'].includes(vs[0].n.a.f) && E.valor(vs[0].n.b, 0) === 2) {
+      const u = vs[0].n.a.a, s = vs[0].n.a.f === 'sen' ? -1 : 1, id = op(s < 0 ? '-' : '+', N(0.5), prod(N(0.5), fn('cos', prod(N(2), u))));
+      ps.push(`$${vs[0].n.a.f}^{2} u = {1 ${s < 0 ? '−' : '+'} cos 2u}/{2}$ (ángulo doble)`);
+      const a = prim(id, ps, prof + 1); if (a) return { F: a.F, como: 'trigonométrica' };
+    }
+    if (vs.length === 2 && vs.every((q) => q.s > 0 && q.n.t === 'fn') && new Set(vs.map((q) => q.n.f)).size === 2 && vs.every((q) => ['sen', 'cos'].includes(q.n.f)) && E.texto(vs[0].n.a) === E.texto(vs[1].n.a)) {
+      // (ya cubierta por la sustitución, pero por si el argumento no es lineal)
+    }
+    // por partes: polinomio por e^{ax+b}, sen, cos, senh, cosh (método de la tabla)
+    if (vs.length >= 2) {
+      const ip = vs.findIndex((q) => q.s > 0 && (() => { const t = tipo(q.n); return ['exp', 'sen', 'cos', 'senh', 'cosh'].includes(t.k) && lineal(t.u); })());
+      if (ip >= 0) {
+        const Pp = poli(junta(vs.filter((_, j) => j !== ip)));
+        const t = tipo(vs[ip].n), L = lineal(t.u);
+        if (Pp && Pp.length > 1) {
+          // ∫ P h = P H₁ − P′ H₂ + P″ H₃ − …
+          const H = [vs[ip].n];
+          let Pk = Pp, F = null, sg = 1, k = 0, filas = [];
+          while (Pk.length && Pk.some((c) => Math.abs(c) > 1e-14) && k < 12) {
+            const Hk = prim1(H[k]);
+            if (!Hk) return null;
+            H.push(Hk);
+            const term = prod(N(sg), prod(poliAst(Pk), Hk));
+            F = F ? op('+', F, term) : term;
+            filas.push(`$${T(poliAst(Pk))}$ · $${T(Hk)}$`);
+            Pk = Pk.slice(1).map((c, i) => c * (i + 1)); sg = -sg; k++;
+          }
+          return { F: nota(`por partes ${k} ${k === 1 ? 'vez' : 'veces'}: $∫ u dv = u v − ∫ v du$ con $u = ${T(poliAst(Pp))}$ y $dv = ${T(vs[ip].n)} dx$`, F), como: 'partes' };
+        }
+        // e^{ax} sen(bx), e^{ax} cos(bx): partes dos veces y se despeja
+        const otro = vs.length === 2 ? tipo(vs[1 - ip].n) : null;
+        if (otro && vs[1 - ip].s > 0 && ((t.k === 'exp' && ['sen', 'cos'].includes(otro.k)) || (otro.k === 'exp' && ['sen', 'cos'].includes(t.k)))) {
+          const ex = t.k === 'exp' ? t : otro, tr = t.k === 'exp' ? otro : t, A = lineal(ex.u), B = lineal(tr.u);
+          if (A && B) {
+            const a = A.a, b = B.a, k2 = a * a + b * b, e = op('^', C('e'), ex.u), s = fn('sen', tr.u), c = fn('cos', tr.u);
+            const F = tr.k === 'sen' ? prod(div(e, N(k2)), op('-', prod(N(a), s), prod(N(b), c))) : prod(div(e, N(k2)), op('+', prod(N(a), c), prod(N(b), s)));
+            return { F: nota('por partes dos veces: vuelve a salir la integral del principio y se despeja', F), como: 'partes' };
+          }
+        }
+      }
+      // polinomio por ln, arctg o arcsen: u = la función, dv = el polinomio
+      const il = vs.findIndex((q) => q.s > 0 && q.n.t === 'fn' && ['ln', 'arctg', 'arcsen'].includes(q.n.f));
+      if (il >= 0) {
+        const dv = junta(vs.filter((_, j) => j !== il)), V = prim(dv, [], prof + 2);
+        if (V) {
+          const Q = E.simp(V.F), g = vs[il].n;
+          const resto = prim(prod(Q, D(g)), ps, prof + 1);
+          if (resto) return { F: nota(`por partes: $u = ${T(g)}$, $dv = ${T(dv)} dx$, así $v = ${T(Q)}$`, op('-', prod(Q, g), resto.F)), como: 'partes' };
+        }
+      }
+    }
+    // una potencia de ln o una función inversa sola: por partes con dv = dx
+    if (vs.length === 1 && vs[0].s > 0 && /ln|arc/.test(E.texto(n)) && prof < 4) {
+      const resto = prim(prod(X, D(n)), ps, prof + 2);
+      if (resto) return { F: nota(`por partes: $u = ${T(n)}$, $dv = dx$, así $v = x$`, op('-', prod(X, n), resto.F)), como: 'partes' };
+    }
+    // u′/u: logaritmo
+    if (n.t === '/') { const c = cociente(n.a, D(n.b)); if (c !== null) return { F: nota('$∫ {u′}/{u} dx = ln |u|$', prod(N(c), ln(abs(n.b)))), como: 'logaritmo' }; }
+    return null;
+  }
+  // fracciones simples con los polos de Laplace
+  function racional(n, nota) {
+    const cambia = (m) => (m.t === 'x' ? { t: 'x', n: 's' } : m.t === 'n' || m.t === 'c' ? m : { ...m, a: m.a && cambia(m.a), b: m.b && cambia(m.b) });
+    let F;
+    try { F = LapR.simplifica(LapR.racional(cambia(n))); } catch (e) { return null; }
+    const g = (p) => p.length - 1;
+    if (g(F.d) < 1) return null;
+    // parte entera: división de polinomios
+    let r = F.n.slice(); const q = new Array(Math.max(0, g(r) - g(F.d) + 1)).fill(0), dl = F.d[F.d.length - 1];
+    for (let i = g(r) - g(F.d); i >= 0; i--) { const c = r[i + g(F.d)] / dl; q[i] = c; for (let j = 0; j <= g(F.d); j++) r[i + j] -= c * F.d[j]; }
+    r = r.slice(0, g(F.d)); while (r.length > 1 && Math.abs(r[r.length - 1]) < 1e-12) r.pop();
+    let rs;
+    try { rs = LapR.residuos({ n: r, d: F.d }); } catch (e) { return null; }
+    let out = q.length && q.some((c) => Math.abs(c) > 1e-14) ? poliAst(q.reduce((acc, c, i) => { acc[i + 1] = c / (i + 1); return acc; }, [0])) : null;
+    const add = (t) => { out = out ? op('+', out, t) : t; };
+    const lin = (p) => (Math.abs(p) < 1e-12 ? X : op(p > 0 ? '-' : '+', X, N(Math.abs(p))));
+    const fr = [];
+    for (const { p, m, A } of rs) {
+      if (Math.abs(p.im) < 1e-12) {
+        A.forEach((a, j) => {
+          if (Math.abs(a.re) < 1e-12) return;
+          fr.push(`{${E.numTxt(a.re)}}/{${j ? `(${T(lin(p.re))})^{${j + 1}}` : T(lin(p.re))}}`);
+          add(j === 0 ? prod(N(a.re), ln(abs(lin(p.re)))) : div(N(-a.re / j), pot(lin(p.re), j)));
+        });
+      } else if (p.im > 0) {
+        if (m > 1) return null;
+        const a = A[0], B = 2 * a.re, Cc = -2 * (a.re * p.re + a.im * p.im), al = p.re, be = p.im, Q = poliDesc([al * al + be * be, -2 * al, 1]);
+        fr.push(`{${T(op('+', prod(N(B), X), N(Cc)))}}/{${T(Q)}}`);
+        if (Math.abs(B) > 1e-12) add(prod(N(B / 2), ln(Q)));
+        if (Math.abs(Cc + B * al) > 1e-12) {
+          // (x − α)/β = (r x − r α)/√m con enteros, como en clase: (2x + 1)/√3
+          let r = 1; while (r < 48 && !(Number.isInteger(+(r * al).toFixed(9)) && Number.isInteger(+(r * r * be * be).toFixed(9)))) r++;
+          const m = Math.round(r * r * be * be), rq = Math.round(Math.sqrt(m)), raiz = rq * rq === m ? N(rq) : fn('sqrt', N(m));
+          const ok = r < 48;
+          const arg = ok ? div(poliDesc([-r * al, r]), raiz) : div(lin(al), N(be)), k = ok ? div(N((Cc + B * al) * r), raiz) : N((Cc + B * al) / be);
+          add(prod(k, fn('arctg', arg)));
+        }
+      }
+    }
+    if (!out) return null;
+    nota(`fracciones simples: ${q.some((c) => Math.abs(c) > 1e-14) ? `parte entera $${T(poliAst(q))}$ y ` : ''}$${fr.join(' + ').replace(/\+ \{−/g, '− {')}$`, out);
+    return out;
+  }
+  function integral(sc) {
+    const ast = E.simp(E.lee(sc.f, 'f(x)', ['x']));
+    const pasos = [{ t: 'Función', html: `$f(x) = ${T(ast)}$` }], ps = [];
+    let r = null;
+    try { r = prim(ast, ps); } catch (e) { r = null; }
+    let F = r && E.simp(r.F);
+    // la primitiva se comprueba derivándola
+    if (F && !igualNum(D(F), ast, 1e-6)) F = null;
+    const out = { modo: 'integral', ast, f: (x) => E.valor(ast, x), pasos };
+    if (F) {
+      out.F = F; out.Ftxt = T(F); out.Ff = (x) => E.valor(F, x);
+      if (ps.length) pasos.push({ t: ast.t === '+' || ast.t === '-' ? 'Término a término' : 'Método', html: ps.slice(-8).join('<br>') });
+      pasos.push({ t: 'Primitiva', html: `$∫ f(x) dx = ${out.Ftxt} + C$<br>Comprobación: al derivar sale otra vez f(x).` });
+    } else pasos.push({ t: 'Primitiva', html: 'No encuentro una primitiva con funciones elementales (o no sé hacerla con la tabla, sustitución, partes y fracciones simples).' });
+    if (!vacio(sc.a) || !vacio(sc.b)) {
+      const a = num(sc.a, 'el límite inferior a'), b = num(sc.b, 'el límite superior b');
+      if (a === b) throw new Error('Los dos límites son iguales: la integral vale 0');
+      out.a = a; out.b = b;
+      // numérica (Simpson) siempre, para comparar; si f no es finita en [a, b], impropia
+      const n = 2000, h = (b - a) / n; let s = 0, finita = true;
+      for (let i = 0; i <= n; i++) { const v = E.valor(ast, a + i * h); if (!isFinite(v)) { finita = false; break; } s += (i === 0 || i === n ? 1 : i % 2 ? 4 : 2) * v; }
+      out.num = finita ? (s * h) / 3 : NaN;
+      if (!finita) throw new Error(`f(x) no es finita en todo [${f(Math.min(a, b))}, ${f(Math.max(a, b))}]: la integral es impropia`);
+      const nt = E.numTxt;
+      if (F && isFinite(E.valor(F, a)) && isFinite(E.valor(F, b)) && Math.abs(E.valor(F, b) - E.valor(F, a) - out.num) < 1e-5 * Math.max(1, Math.abs(out.num))) {
+        out.val = E.valor(F, b) - E.valor(F, a);
+        pasos.push({ t: 'Regla de Barrow', html: `$∫_{${nt(a)}}^{${nt(b)}} f(x) dx = F(${nt(b)}) − F(${nt(a)}) = ${nt(E.valor(F, b))} − ${nt(E.valor(F, a))}`.replace('− −', '+ ') + ` = ${nt(out.val)}$${E.exacto(out.val) && !Number.isInteger(out.val) ? ` ≈ ${f(out.val, 6)}` : ''}` });
+      } else {
+        out.val = out.num;
+        pasos.push({ t: 'Integral numérica', html: `Con la regla de Simpson y 2000 intervalos: $∫_{${nt(a)}}^{${nt(b)}} f(x) dx ≈ ${f(out.num, 7)}$` });
+      }
+      // área: con los trozos negativos restando, y el área total en valor absoluto
+      let ar = 0; for (let i = 0; i < n; i++) { const p = E.valor(ast, a + i * h), q = E.valor(ast, a + (i + 1) * h); ar += (Math.abs(p) + Math.abs(q)) / 2 * Math.abs(h); }
+      out.area = ar;
+      if (Math.abs(ar - Math.abs(out.val)) > 1e-4 * Math.max(1, ar)) pasos.push({ t: 'Área', html: `f cambia de signo en el intervalo: la integral resta las partes de debajo del eje. El área total encerrada es ≈ ${f(ar, 6)}.` });
+    }
+    return out;
+  }
+
+  const MODOS = { derivada, integral };
+  function resolver(sc) { return (MODOS[sc.modo] || derivada)(sc); }
+  const ejemplos = [
+    { clave: 'producto', nombre: 'Producto: x² sen x', sc: { modo: 'derivada', f: 'x^2 sen(x)', orden: '1', x0: '' } },
+    { clave: 'cociente', nombre: 'Cociente: (x² + 1)/(x − 1)', sc: { modo: 'derivada', f: '(x^2 + 1)/(x - 1)', orden: '1', x0: '3' } },
+    { clave: 'cadena', nombre: 'Cadena: e^(−x²)', sc: { modo: 'derivada', f: 'e^(-x^2)', orden: '2', x0: '' } },
+    { clave: 'raiz', nombre: 'Raíz y logaritmo', sc: { modo: 'derivada', f: 'ln(sqrt(x^2 + 1))', orden: '1', x0: '1' } },
+    { clave: 'tangente', nombre: 'Recta tangente a x³ − 3x', sc: { modo: 'derivada', f: 'x^3 - 3x', orden: '2', x0: '2' } },
+    { clave: 'arctg', nombre: 'arctg(2x) y orden 3', sc: { modo: 'derivada', f: 'arctg(2x)', orden: '3', x0: '0' } },
+    { clave: 'logaritmica', nombre: 'Derivación logarítmica: x^x', sc: { modo: 'derivada', f: 'x^x', orden: '1', x0: '1' } },
+    { clave: 'potencias', nombre: 'Potencias y raíces', sc: { modo: 'integral', f: '3x^2 - 4/x + sqrt(x)', a: '1', b: '4' } },
+    { clave: 'sustitucion', nombre: 'Sustitución: x e^(x²)', sc: { modo: 'integral', f: 'x e^(x^2)', a: '0', b: '1' } },
+    { clave: 'partes', nombre: 'Por partes: x² eˣ', sc: { modo: 'integral', f: 'x^2 e^x', a: '0', b: '1' } },
+    { clave: 'partes-ln', nombre: 'Por partes: x ln x', sc: { modo: 'integral', f: 'x ln(x)', a: '1', b: 'e' } },
+    { clave: 'racional', nombre: 'Racional: fracciones simples', sc: { modo: 'integral', f: '(3x + 5)/(x^2 + 2x - 3)', a: '2', b: '4' } },
+    { clave: 'arcotangente', nombre: 'Racional con arcotangente', sc: { modo: 'integral', f: '1/(x^2 + 4)', a: '0', b: '2' } },
+    { clave: 'trig', nombre: 'sen² x (ángulo doble)', sc: { modo: 'integral', f: 'sen(x)^2', a: '0', b: 'pi' } },
+    { clave: 'cicliclica', nombre: 'eˣ cos x (partes dos veces)', sc: { modo: 'integral', f: 'e^x cos(x)', a: '0', b: 'pi/2' } },
+    { clave: 'gauss', nombre: 'e^(−x²): sin primitiva elemental', sc: { modo: 'integral', f: 'e^(-x^2)', a: '0', b: '1' } },
+  ];
+  return { resolver, derivada, integral, prim, igualNum, ejemplos, f, T };
+})();
+
+/* =====================================================================
    Ecuaciones diferenciales (sin DOM):
    · primer orden y′ = f(x, y): campo de pendientes, método de Euler y
      RK4, y la solución exacta si es lineal con coeficiente constante;
@@ -1049,6 +2011,9 @@ const Expresion = (() => {
    ===================================================================== */
 const EDOs = (() => {
   const E = typeof Expresion !== 'undefined' ? Expresion : require('../matematicas/expresion.js');
+  // las primitivas (separables, factor integrante, variación de parámetros) las da Derivadas
+  const Dv = typeof Derivadas !== 'undefined' ? Derivadas : require('../derivadas/calculo.js');
+  const Lp = typeof Laplace !== 'undefined' ? Laplace : require('../laplace/calculo.js'); // raíces de polinomios
   const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
   const f = (x, d = 4) => E.dec4(Math.abs(x) < 1e-12 ? 0 : x, d);
   const FACT = [1]; for (let k = 1; k <= 30; k++) FACT[k] = FACT[k - 1] * k;
@@ -1187,8 +2152,6 @@ const EDOs = (() => {
   /* ---------- Solución particular por coeficientes indeterminados ---------- */
   // P: coeficientes del operador [p0, p1, p2] (p0 y + p1 y′ + p2 y″)
   function particular(P, ts) {
-    const car = (l) => P.reduce((s, p, i) => zs(s, zm(Z(p), zpow(l, i))), Z(0));
-    const dcar = (l) => P.reduce((s, p, i) => (i ? zs(s, zm(Z(i * p), zpow(l, i - 1))) : s), Z(0));
     const mod = (z) => Math.hypot(z.re, z.im);
     const grupos = [];
     for (const t of ts) {
@@ -1199,7 +2162,9 @@ const EDOs = (() => {
     const bases = [];
     for (const g of grupos) {
       const l = Z(g.r, g.w), sc = Math.max(1, ...P.map(Math.abs));
-      g.s = mod(car(l)) < 1e-9 * sc ? (P.length > 2 && mod(dcar(l)) < 1e-9 * sc ? 2 : 1) : 0;
+      // multiplicidad de λ como raíz: cuántas derivadas del polinomio característico se anulan
+      g.s = 0;
+      for (let k = 0; k < P.length - 1; k++) { const dk = P.reduce((q, p, i) => (i >= k ? zs(q, zm(Z((p * FACT[i]) / FACT[i - k]), zpow(l, i - k))) : q), Z(0)); if (mod(dk) < 1e-9 * sc) g.s++; else break; }
       for (let j = 0; j <= g.k; j++) {
         bases.push({ m: j + g.s, r: g.r, w: g.w, p: g.w ? 'cos' : null });
         if (g.w) bases.push({ m: j + g.s, r: g.r, w: g.w, p: 'sen' });
@@ -1231,6 +2196,220 @@ const EDOs = (() => {
     return out;
   }
 
+  /* ---------- Primer orden: soluciones exactas no lineales ---------- */
+  const NN = E.N, XX = { t: 'x' }, YY = { t: 'x', n: 'y' };
+  const op = (t, a, b) => ({ t, a, b });
+  // cambia los nodos que cumplen q por «por»
+  const sust = (n, q, por) => (q(n) ? por : n.a === undefined && n.b === undefined ? n : { ...n, ...(n.a ? { a: sust(n.a, q, por) } : {}), ...(n.b ? { b: sust(n.b, q, por) } : {}) });
+  const esX = (n) => n.t === 'x' && !n.n;
+  const enY = (n) => sust(n, esX, YY); // un AST en x pasado a y
+  const deY = (n) => sust(n, esY, XX); // y al revés
+  const T = (n) => Dv.T(n);
+  const prim = (n) => { try { const r = Dv.prim(E.simp(n), []); return r ? E.simp(r.F) : null; } catch (e) { return null; } };
+  // ¿la solución explícita coincide con RK4? (por si un valor absoluto o una rama se cuela)
+  const coincide = (yf, fino) => fino.filter((_, i) => i % 40 === 0 || i === fino.length - 1).every((q) => { const v = yf(q.t); return isFinite(v) && Math.abs(v - q.Y[0]) < 1e-5 * Math.max(1, Math.abs(q.Y[0])); });
+  // polinomio de grado ≤ 3 en x (para h(y)), o null
+  function poli3(n) {
+    let c; try { c = [...E.serie(n, 0, 3)]; } catch (e) { return null; }
+    for (const x of [-1.3, 0.7, 2.1]) { const v = c.reduceRight((q, k) => q * x + k, 0), w = E.valor(n, x); if (!isFinite(w) || Math.abs(v - w) > 1e-9 * Math.max(1, Math.abs(w))) return null; }
+    return c.map((k) => limpio(Math.abs(k) < 1e-12 ? 0 : k));
+  }
+  const exTxt = (k, G) => `e^{${T(E.simp(op('*', NN(k), G)))}}`; // e^{k G(x)}
+  const kT = (k, s) => (Math.abs(k - 1) < 1e-12 ? s : Math.abs(k + 1) < 1e-12 ? `−${s}` : `${cTxt(k)} ${s}`);
+  const par = (t) => (/^[^ ]+$/.test(t) || /^\{.*\}$/.test(t) ? t : `(${t})`);
+
+  // y′ = g(x) h(y)
+  function separable(ast, F, x0, y0, fino) {
+    const pts = [[0.3, 0.7], [1.4, -0.6], [-0.8, 1.9], [2.2, 2.6], [1.1, 0.4], [0.6, 3.1]];
+    let vistos = 0;
+    for (const [xa, ya] of pts) for (const [xb, yb] of pts) {
+      const l = F(xa, ya) * F(xb, yb), r = F(xa, yb) * F(xb, ya);
+      if (!isFinite(l) || !isFinite(r)) continue;
+      if (Math.abs(l - r) > 1e-9 * Math.max(1, Math.abs(l))) return null;
+      vistos++;
+    }
+    if (vistos < 10) return null;
+    let xr = null, yr = null;
+    for (const a of [1, 0, 2, 0.5]) for (const b of [0, 1, 2, 0.5]) if (xr === null && Math.abs(F(a, b)) > 1e-9 && isFinite(F(a, b))) { xr = a; yr = b; }
+    if (xr === null) return null;
+    const g = E.simp(op('/', sust(ast, esY, NN(yr)), NN(F(xr, yr)))), hX = E.simp(deY(sust(ast, esX, NN(xr)))); // h con x en vez de y
+    const sinY = !E.tieneX(hX), sinX = !E.tieneX(g);
+    // 1/h: si h = k e^{u}, mejor e^{−u}/k para que salga la primitiva
+    const inv = (h) => { let k = 1, q = h; if (q.t === '*' && !E.tieneX(q.a)) { k = E.valor(q.a, 0); q = q.b; } return q.t === '^' && q.a.t === 'c' && q.a.v === 'e' ? E.simp(op('*', NN(1 / k), op('^', q.a, { t: 'neg', a: q.b }))) : op('/', NN(1), h); };
+    const G = prim(g), H = sinY ? null : prim(inv(hX)), pasos = [];
+    const gT = T(g), hT = T(enY(hX));
+    pasos.push({ t: sinY ? 'Se integra directamente' : 'Variables separables', html: sinY ? `y′ solo depende de x: $y = ∫ ${gT === '1' ? '' : gT + ' '}${T(hX) === '1' ? '' : T(hX) + ' '}dx$.`.replace('∫  dx', '∫ dx') : `$y′ = g(x) h(y)$ con $g(x) = ${gT}$ y $h(y) = ${hT}$. Se separan las variables, $${'{dy}/{h(y)}'} = g(x) dx$, y se integra cada lado${sinX ? ' (aquí g = 1: es autónoma)' : ''}.` });
+    if (!G) return { pasos: [...pasos, { t: 'Primitiva', html: `$∫ ${gT} dx$ no tiene una primitiva sencilla, así que se resuelve numéricamente.` }] };
+    const Gf = (x) => E.valor(G, x), GT = T(G);
+    // h constante: y = k G(x) + C
+    if (sinY) {
+      const k = E.valor(hX, 0), C = limpio(y0 - k * Gf(x0)), yf = (x) => k * Gf(x) + C;
+      const txt = T(E.simp(op('+', op('*', NN(k), G), NN(C))));
+      if (!coincide(yf, fino)) return { pasos };
+      pasos.push({ t: 'Solución', html: `$y = ${T(E.simp(op('*', NN(k), G)))} + C$, y con $y(${f(x0)}) = ${f(y0)}$ sale $C = ${cTxt(C)}$:<br>$y(x) = ${txt}$` });
+      return { pasos, exacta: { txt, y: yf } };
+    }
+    const h0 = E.valor(hX, y0);
+    if (Math.abs(h0) < 1e-12) {
+      pasos.push({ t: 'Solución de equilibrio', html: `$h(${f(y0)}) = 0$: la recta $y = ${cTxt(y0)}$ es solución (la pendiente es 0 en todos sus puntos) y por unicidad es la que pasa por el punto inicial.` });
+      return { pasos, exacta: { txt: cTxt(limpio(y0)), y: () => y0 } };
+    }
+    const HT = H ? T(enY(H)) : null;
+    pasos.push({ t: 'Integrales', html: `$∫ {dy}/{${hT}} = ${HT ?? '(sin primitiva sencilla)'}$ &ensp; y &ensp; $∫ ${gT} dx = ${GT}$` });
+    // explícita según la forma de h
+    const c = poli3(hX);
+    let sol = null;
+    if (c && !c[2] && !c[3] && c[1]) {
+      // h = k (y − a): y = a + K e^{k G}
+      const k = c[1], a = limpio(-c[0] / k), K = limpio((y0 - a) * Math.exp(-k * Gf(x0)));
+      sol = { y: (x) => a + K * Math.exp(k * Gf(x)), txt: suma([{ c: K, s: exTxt(k, G) }, { c: a, s: '' }]), como: `$${HT} = ${GT} + C$, así que $${a ? `y ${a < 0 ? '+' : '−'} ${cTxt(Math.abs(a))}` : 'y'} = K ${exTxt(k, G)}$ (con $K = ± e^{${cTxt(k)} C}$), y con el punto inicial $K = ${cTxt(K)}$` };
+    } else if (c && !c[3] && c[2]) {
+      const k = c[2], D2 = c[1] * c[1] - 4 * c[2] * c[0];
+      if (D2 > 1e-12) {
+        // h = k (y − a)(y − b): {y − a}/{y − b} = K e^{k (a − b) G}
+        const r1 = limpio((-c[1] + Math.sqrt(D2)) / (2 * k)), r2 = limpio((-c[1] - Math.sqrt(D2)) / (2 * k));
+        const [a, b] = Math.abs(r1) < 1e-12 ? [r1, r2] : [r2, r1], m = k * (a - b);
+        if (Math.abs(y0 - b) > 1e-12) {
+          const K = limpio(((y0 - a) / (y0 - b)) * Math.exp(-m * Gf(x0)));
+          const yf = (x) => { const e = K * Math.exp(m * Gf(x)); return (a - b * e) / (1 - e); };
+          // con a = 0 queda y = b / (1 − K⁻¹ e^{−m G}), la forma de la logística
+          const txt = Math.abs(a) < 1e-12 ? `{${cTxt(b)}}/{1 ${-1 / K < 0 ? '−' : '+'} ${Math.abs(1 / K - 1) < 1e-12 || Math.abs(1 / K + 1) < 1e-12 ? '' : cTxt(limpio(Math.abs(1 / K))) + ' '}${exTxt(-m, G)}}` : `{${cTxt(a)} ${-b * K < 0 ? '−' : '+'} ${cTxt(limpio(Math.abs(b * K)))} ${exTxt(m, G)}}/{1 ${-K < 0 ? '−' : '+'} ${cTxt(limpio(Math.abs(K)))} ${exTxt(m, G)}}`;
+          sol = { y: yf, txt, como: `Por fracciones simples, $${HT} = ${GT} + C$, es decir, $${'{y − a}/{y − b}'.replace('a', cTxt(a)).replace('b', cTxt(b)).replace('− −', '+ ').replace('y − 0', 'y')} = K ${exTxt(m, G)}$, y con el punto inicial $K = ${cTxt(K)}$. Despejando y` };
+        }
+      } else if (Math.abs(D2) <= 1e-12) {
+        // h = k (y − d)²: y = d + 1/(C − k G)
+        const d = limpio(-c[1] / (2 * k));
+        if (Math.abs(y0 - d) > 1e-12) {
+          const C = limpio(1 / (y0 - d) + k * Gf(x0)), den = T(E.simp(op('-', NN(C), op('*', NN(k), G))));
+          sol = { y: (x) => d + 1 / (C - k * Gf(x)), txt: `{1}/{${den}}${d ? ` ${d < 0 ? '−' : '+'} ${cTxt(Math.abs(d))}` : ''}`, como: `$${HT} = ${GT} + C$; despejando y con el punto inicial` };
+        }
+      } else if (D2 < -1e-12) {
+        // h = k ((y − d)² + w²): y = d + w tg(k w G + C)
+        const d = limpio(-c[1] / (2 * k)), w = limpio(Math.sqrt(-D2) / (2 * Math.abs(k))), C = limpio(Math.atan((y0 - d) / w) - k * w * Gf(x0));
+        const arg = T(E.simp(op('+', op('*', NN(k * w), G), NN(C))));
+        sol = { y: (x) => d + w * Math.tan(k * w * Gf(x) + C), txt: `${Math.abs(w - 1) < 1e-12 ? '' : cTxt(w) + ' '}tg(${arg})${d ? ` ${d < 0 ? '−' : '+'} ${cTxt(Math.abs(d))}` : ''}`, como: `$${HT} = ${GT} + C$; despejando con la tangente y con el punto inicial, $C = ${cTxt(C)}$` };
+      }
+    }
+    const la = Math.log(Math.abs(E.valor(hX, 1) / E.valor(hX, 0)));
+    if (!sol && isFinite(la) && Math.abs(la) > 1e-12 && E.valor(hX, 0) * E.valor(hX, 1) > 0 && [2, -1.5].every((y) => Math.abs(E.valor(hX, y) - E.valor(hX, 0) * Math.exp(la * y)) < 1e-9 * Math.max(1, Math.abs(E.valor(hX, y))))) {
+      // h = k e^{a y}: e^{−a y} = C − a k G, y = −ln(C − a k G)/a
+      const a = limpio(la), k = limpio(E.valor(hX, 0)), C = limpio(Math.exp(-a * y0) + a * k * Gf(x0));
+      const dentro = T(E.simp(op('-', NN(C), op('*', NN(a * k), G))));
+      sol = { y: (x) => -Math.log(C - a * k * Gf(x)) / a, txt: `${Math.abs(a + 1) < 1e-12 ? '' : Math.abs(a - 1) < 1e-12 ? '−' : `${linTxt(-1 / a, '').trim() || '−'} `}ln(${dentro})`, como: `$${HT} = ${GT} + C$, así que $e^{${linTxt(-a, 'y')}} = ${dentro}$ con el punto inicial, y se toma el logaritmo` };
+    } else if (!sol && (!c || (!c[0] && !c[1] && !c[2] && c[3]))) {
+      // h = k y^p: y^{1−p} = (1 − p) k G + C
+      const p = Math.log(E.valor(hX, 4) / E.valor(hX, 1)) / Math.log(4), k = E.valor(hX, 1);
+      if (isFinite(p) && Math.abs(p - 1) > 1e-9 && [0.5, 2.5, 9].every((y) => Math.abs(E.valor(hX, y) - k * y ** p) < 1e-9 * Math.max(1, Math.abs(k * y ** p))) && y0 > 0) {
+        const q = 1 - p, C = limpio(y0 ** q - q * k * Gf(x0)), e = limpio(1 / q);
+        const dentro = T(E.simp(op('+', op('*', NN(q * k), G), NN(C))));
+        sol = { y: (x) => (q * k * Gf(x) + C) ** (1 / q), txt: Math.abs(e + 1) < 1e-12 ? `{1}/{${dentro}}` : Math.abs(e - 0.5) < 1e-12 ? `√(${dentro})` : `(${dentro})^{${cTxt(e)}}`, como: `$${HT} = ${GT} + C$, así que $y^{${cTxt(limpio(q))}} = ${dentro}$ con el punto inicial` };
+      }
+    }
+    if (sol && coincide(sol.y, fino)) {
+      pasos.push({ t: 'Solución', html: `${sol.como}:<br>$y(x) = ${sol.txt}$` });
+      return { pasos, exacta: { txt: sol.txt, y: sol.y } };
+    }
+    if (H) {
+      const C = limpio(E.valor(H, y0) - Gf(x0)), imp = `${HT} = ${T(E.simp(op('+', G, NN(C))))}`;
+      pasos.push({ t: 'Solución implícita', html: `$${HT} = ${GT} + C$ y con $y(${f(x0)}) = ${f(y0)}$ sale $C = ${cTxt(C)}$:<br>$${imp}$<br>No se puede despejar y de forma sencilla; la gráfica la dibuja con RK4.` });
+      return { pasos, implicita: imp };
+    }
+    return { pasos };
+  }
+
+  // y′ + p(x) y = q(x) por el factor integrante (para lineales con coeficientes variables y Bernoulli)
+  function factorIntegrante(pA, qA, x0, y0) {
+    const P = prim(pA);
+    if (!P) return null;
+    // μ = e^{∫p}; si ∫p = c ln|u|, μ = u^c (quitando el valor absoluto cerca de x₀)
+    let c = 1, L = P;
+    if (L.t === 'neg') { c = -1; L = L.a; }
+    if (L.t === '*' && !E.tieneX(L.a)) { c *= E.valor(L.a, 0); L = L.b; }
+    const u = L.t === 'fn' && L.f === 'ln' ? (L.a.t === 'fn' && L.a.f === 'abs' ? L.a.a : L.a) : null;
+    const mu = u && E.valor(u, x0) > 0 ? E.simp(op('^', u, NN(limpio(c)))) : E.simp(op('^', { t: 'c', v: 'e' }, P));
+    const I = prim(op('*', mu, qA));
+    if (!I) return { P, mu, I: null };
+    const m0 = E.valor(mu, x0), C = limpio(y0 * m0 - E.valor(I, x0));
+    // y = I/μ + C/μ; si I/μ es un polinomio se escribe como tal
+    const r = (x) => E.valor(I, x) / E.valor(mu, x);
+    let c3 = null;
+    try { c3 = [...E.serie(E.simp(op('/', I, mu)), x0, 6)].map((v) => (Math.abs(v) < 1e-12 ? 0 : v)); } catch (e) { c3 = null; }
+    const polOk = c3 && [0.37, 0.81, 1.3].every((d) => { const x = x0 + d, v = c3.reduceRight((q, k) => q * (x - x0) + k, 0); return Math.abs(v - r(x)) < 1e-9 * Math.max(1, Math.abs(v)); });
+    let p1 = E.simp(op('/', I, mu));
+    if (polOk) {
+      // de potencias de (x − x₀) a potencias de x
+      const cs = Array(7).fill(0);
+      c3.forEach((k, j) => { for (let i = 0; i <= j; i++) cs[i] += k * binom(j, i) * (-x0) ** (j - i); });
+      let pA2 = NN(0); cs.forEach((k, i) => { const kk = limpio(k); if (kk) pA2 = op('+', pA2, op('*', NN(kk), op('^', XX, NN(i)))); });
+      p1 = E.simp(pA2);
+    }
+    const p2 = E.simp(mu.t === '^' && mu.a.t === 'c' ? op('*', NN(C), op('^', mu.a, { t: 'neg', a: mu.b })) : op('/', NN(C), mu));
+    const yA = E.simp(op('+', p1, p2));
+    return { P, mu, I, C, yA, y: (x) => E.valor(yA, x) };
+  }
+  function linealVariable(ast, x0, y0, fino) {
+    const qA = E.simp(sust(ast, esY, NN(0))), pA = E.simp(op('-', qA, sust(ast, esY, NN(1))));
+    const r = factorIntegrante(pA, qA, x0, y0), pasos = [];
+    pasos.push({ t: 'Lineal con coeficientes variables', html: `Es $y′ + p(x) y = q(x)$ con $p(x) = ${T(pA)}$ y $q(x) = ${T(qA)}$. Se multiplica por el factor integrante $μ(x) = e^{∫ p dx}$, que hace que la izquierda sea $(μ y)′$, y $μ y = ∫ μ q dx + C$.` });
+    if (!r || !r.I) return { pasos: [...pasos, { t: 'Primitiva', html: r ? `$μ = ${T(r.mu)}$, pero $∫ μ q dx$ no tiene primitiva sencilla: se resuelve numéricamente.` : '$∫ p dx$ no tiene primitiva sencilla: se resuelve numéricamente.' }] };
+    if (!coincide(r.y, fino)) return { pasos };
+    const txt = T(r.yA);
+    pasos.push({ t: 'Factor integrante', html: `$∫ p dx = ${T(r.P)}$, así que $μ = ${T(r.mu)}$${r.mu.t === '^' && esX(r.mu.a) ? ' (para x > 0)' : ''}. Entonces $μ y = ∫ ${T(E.simp(op('*', r.mu, qA)))} dx = ${T(r.I)} + C$, y con el punto inicial $C = ${cTxt(r.C)}$:<br>$y(x) = ${txt}$` });
+    return { pasos, exacta: { txt, y: r.y } };
+  }
+  // y′ = p(x) y + q(x) yⁿ: con v = y^{1−n} queda lineal
+  function bernoulli(ast, F, x0, y0, fino) {
+    for (const n of [2, 3, -1, 0.5, -2, 4, 1 / 3]) {
+      const k = 2 ** n - 2;
+      const ok = [0.4, 1.3, 2.2].every((x) => { const a = F(x, 1), b = F(x, 2), p = (2 ** n * a - b) / k, q = (b - 2 * a) / k; return [0.5, 3].every((y) => Math.abs(F(x, y) - p * y - q * y ** n) < 1e-9 * Math.max(1, Math.abs(F(x, y)))); });
+      if (!ok) continue;
+      const a1 = sust(ast, esY, NN(1)), a2 = sust(ast, esY, NN(2));
+      const pA = E.simp(op('/', op('-', op('*', NN(2 ** n), a1), a2), NN(k))), qA = E.simp(op('/', op('-', a2, op('*', NN(2), a1)), NN(k)));
+      if ([0.4, 1.3].every((x) => Math.abs(E.valor(qA, x)) < 1e-12 || Math.abs(E.valor(pA, x)) < 1e-12)) return null;
+      const m = 1 - n, nT = cTxt(n), pasos = [];
+      pasos.push({ t: 'Ecuación de Bernoulli', html: `Es $y′ = p(x) y + q(x) y^{${nT}}$ con $p = ${T(pA)}$ y $q = ${T(qA)}$. Con el cambio $v = y^{${cTxt(m)}}$, $v′ = ${kT(m, `y^{${cTxt(-n)}} y′`)}$, y queda lineal: $v′ = ${kT(m, '(p v + q)')}$.` });
+      if (!(y0 > 0) && !Number.isInteger(m)) return { pasos };
+      const v0 = y0 ** m, r = factorIntegrante(E.simp(op('*', NN(-m), pA)), E.simp(op('*', NN(m), qA)), x0, v0);
+      if (!r || !r.I) return { pasos: [...pasos, { t: 'Primitiva', html: 'Las integrales del factor integrante no tienen primitiva sencilla: se resuelve numéricamente.' }] };
+      const yf = (x) => r.y(x) ** (1 / m), vT = T(r.yA), e = limpio(1 / m);
+      if (!coincide(yf, fino)) return { pasos };
+      const txt = Math.abs(e + 1) < 1e-12 ? `{1}/{${vT}}` : Math.abs(e - 0.5) < 1e-12 ? `√(${vT})` : `(${vT})^{${cTxt(e)}}`;
+      pasos.push({ t: 'Solución', html: `Con el factor integrante $μ = ${T(r.mu)}$ y $v(${f(x0)}) = ${f(v0)}$ sale $v = ${vT}$, y deshaciendo el cambio, $y = v^{${cTxt(e)}}$:<br>$y(x) = ${txt}$` });
+      return { pasos, exacta: { txt, y: yf } };
+    }
+    return null;
+  }
+  // y′ = A/B como M dx + N dy = 0 con M_y = N_x
+  function ecExacta(ast, x0, y0) {
+    let A, B, sg = 1, n = ast;
+    if (n.t === 'neg') { sg = -1; n = n.a; }
+    if (n.t !== '/') return null;
+    A = n.a; B = n.b;
+    const M = sg > 0 ? A : A, N = sg > 0 ? E.simp({ t: 'neg', a: B }) : B; // y′ = A/B → A dx − B dy = 0; y′ = −A/B → A dx + B dy = 0
+    const My = E.deriva(M, 'y'), Nx = E.deriva(N, 'x');
+    const ok = [[0.3, 0.8], [1.7, -0.4], [-1.1, 1.6]].every(([x, y]) => { const a = E.valor(My, x, { y }), b = E.valor(Nx, x, { y }); return isFinite(a) && Math.abs(a - b) < 1e-9 * Math.max(1, Math.abs(a)); });
+    if (!ok) return null;
+    const pasos = [{ t: 'Ecuación exacta', html: `Se escribe como $M dx + N dy = 0$ con $M = ${T(M)}$ y $N = ${T(N)}$. Como $∂M/∂y = ${T(E.simp(My))} = ∂N/∂x$, es exacta: hay una función $Φ(x, y)$ con $Φ_x = M$ y $Φ_y = N$, y la solución es $Φ(x, y) = C$.` }];
+    const P1 = prim(M);
+    if (!P1) return { pasos };
+    const resto = E.simp(op('-', N, E.deriva(P1, 'y')));
+    if (E.tieneX(resto)) return { pasos };
+    const R2 = E.tieneX(resto, 'y') ? prim(deY(resto)) : E.simp(op('*', resto, XX));
+    if (!R2) return { pasos };
+    const Phi = E.simp(op('+', P1, enY(R2))), C = limpio(E.valor(Phi, x0, { y: y0 })), imp = `${T(Phi)} = ${cTxt(C)}`;
+    pasos.push({ t: 'Función potencial', html: `$Φ = ∫ M dx = ${T(P1)} + φ(y)$. Derivando respecto de y e igualando a N, $φ′(y) = ${T(resto)}$, así que $φ(y) = ${T(enY(R2))}$ y<br>$Φ(x, y) = ${T(Phi)}$<br>Con el punto inicial, $C = Φ(${f(x0)}, ${f(y0)}) = ${cTxt(C)}$:<br>$${imp}$` });
+    return { pasos, implicita: imp };
+  }
+
+  /* ---------- Métodos numéricos de un paso ---------- */
+  const METODOS = {
+    Euler: { orden: 1, paso: (F, x, y, h) => y + h * F(x, y) },
+    Heun: { orden: 2, paso: (F, x, y, h) => { const k1 = F(x, y), k2 = F(x + h, y + h * k1); return y + (h / 2) * (k1 + k2); } },
+    'Punto medio': { orden: 2, paso: (F, x, y, h) => y + h * F(x + h / 2, y + (h / 2) * F(x, y)) },
+    RK4: { orden: 4, paso: (F, x, y, h) => { const k1 = F(x, y), k2 = F(x + h / 2, y + (h / 2) * k1), k3 = F(x + h / 2, y + (h / 2) * k2), k4 = F(x + h, y + h * k3); return y + (h / 6) * (k1 + 2 * k2 + 2 * k3 + k4); } },
+  };
+  function integra(m, F, x0, y0, h, n) { let y = y0; for (let i = 0; i < n; i++) y = METODOS[m].paso(F, x0 + i * h, y, h); return y; }
+
   /* ---------- Primer orden ---------- */
   function primer(sc) {
     const ast = E.lee(sc.f, 'La función f(x, y)', ['x', 'y']);
@@ -1245,7 +2424,7 @@ const EDOs = (() => {
     pasos.push({ t: 'La ecuación', html: `$y′ = ${fTxt}$ con $y(${f(x0)}) = ${f(y0)}$. En cada punto (x, y) la ecuación da la pendiente de la solución que pasa por él: es el campo de pendientes de la gráfica.` });
 
     // ¿lineal con coeficiente constante? f = q(x) − p y
-    let exacta = null, p = null;
+    let exacta = null, p = null, sinPart = false;
     const xsT = [x0, x0 + 0.37, x0 + 1.1, x0 - 0.6], lin = xsT.every((x) => { const a = F(x, 0), b = F(x, 1), c = F(x, 2.5); return isFinite(a) && Math.abs(c - a - 2.5 * (b - a)) < 1e-9 * Math.max(1, Math.abs(a), Math.abs(b)); });
     if (lin) {
       const ps = xsT.map((x) => F(x, 0) - F(x, 1));
@@ -1266,8 +2445,9 @@ const EDOs = (() => {
         const sTxt = suma(juntar(ts2));
         pasos.push({ t: 'Condición inicial', html: `$y = ${yhTxt} + ${ypTxt.startsWith('−') ? `(${ypTxt})` : ypTxt}$ y $y(${f(x0)}) = ${f(y0)}$ da $C = ${cTxt(C)}$:<br>$y(x) = ${sTxt}$` });
         exacta = { txt: sTxt, y: (x) => C * Math.exp(-p * x) + evalBases(part.bases, x) };
-      } else pasos.push({ t: 'Solución', html: 'El término independiente no es de los que se resuelven por coeficientes indeterminados (polinomios, exponenciales, senos y cosenos), así que se resuelve con el factor integrante o numéricamente, como aquí abajo.' });
-    } else pasos.push({ t: 'Tipo', html: lin ? 'Es lineal pero con coeficientes que dependen de x: se resuelve con el factor integrante $μ(x) = e^{∫ p(x) dx}$ o numéricamente.' : 'No es lineal en y: si se pueden separar las variables, $∫ dy/h(y) = ∫ g(x) dx$; si no, se resuelve numéricamente.' });
+      } else sinPart = true;
+    }
+    let implicita = null;
 
     // Euler con el paso del alumno y RK4 fino como referencia
     const n = Math.round((x1 - x0) / h), eul = [{ x: x0, y: y0 }];
@@ -1275,14 +2455,27 @@ const EDOs = (() => {
     eul.forEach((e, i) => { if (i < eul.length - 1) e.m = F(e.x, e.y); });
     const fino = rk4((t, Y) => [F(t, Y[0])], x0, [y0], x1, Math.max(400, n * 20));
     const yRK = fino[fino.length - 1].t >= x1 - 1e-9 ? fino[fino.length - 1].Y[0] : NaN;
-    const yEu = eul[eul.length - 1].y, yEx = exacta ? exacta.y(x1) : null;
     // RK4 se para si la solución se dispara: explota (asíntota vertical) antes de x₁
     const explota = fino[fino.length - 1].t < x1 - 1e-9 ? fino[fino.length - 1].t : null;
+    // no es lineal con coeficiente constante: separable, lineal con factor integrante, Bernoulli o exacta
+    if (p === null || sinPart) {
+      let r = null;
+      try { r = separable(ast, F, x0, y0, fino) || (lin ? linealVariable(ast, x0, y0, fino) : bernoulli(ast, F, x0, y0, fino) || ecExacta(E.simp(ast), x0, y0)); } catch (e) { r = null; }
+      if (r) { pasos.push(...r.pasos); exacta = r.exacta || null; implicita = r.implicita || null; }
+      if (!r || (!r.exacta && !r.implicita)) pasos.push({ t: 'Tipo', html: r ? 'Sin solución en fórmula: se resuelve numéricamente, como aquí abajo.' : 'No es lineal, ni de variables separables, ni de Bernoulli, ni exacta: se resuelve numéricamente, como aquí abajo.' });
+    }
+    const yEu = eul[eul.length - 1].y, yEx = exacta ? exacta.y(x1) : null;
     const filas = eul.slice(0, Math.min(eul.length - 1, 8)).map((e, i) => `<tr><td>${i}</td><td>${f(e.x, 5)}</td><td>${f(e.y, 6)}</td><td>${f(e.m, 6)}</td><td>${f(eul[i + 1].y, 6)}</td></tr>`).join('');
     pasos.push({ t: `Método de Euler con h = ${f(h)}`, html: `$y_{n+1} = y_n + h f(x_n, y_n)$, empezando en $(x_0, y_0) = (${f(x0)}, ${f(y0)})$:<table class="tabla"><tr><th>n</th><th>xₙ</th><th>yₙ</th><th>f(xₙ, yₙ)</th><th>yₙ₊₁</th></tr>${filas}</table>${eul.length - 1 > 8 ? `… y así hasta n = ${eul.length - 1}. ` : ''}En x = ${f(x1)} Euler da y ≈ ${f(yEu, 6)}.` });
     if (explota !== null) pasos.push({ t: 'La solución explota', html: `Con RK4 la solución crece sin límite cerca de $x ≈ ${f(explota, 4)}$: tiene una asíntota vertical antes de x = ${f(x1)}, así que $y(${f(x1)})$ no existe. Pasa en ecuaciones no lineales como $y′ = y^2$, cuya solución $y = 1/(C − x)$ se va a infinito en x = C. Los valores de Euler a partir de ahí no tienen sentido.` });
-    else pasos.push({ t: 'Comparación', html: `${exacta ? `La solución exacta vale $y(${f(x1)}) = ${f(yEx, 7)}$` : `Con Runge-Kutta (RK4, ${fino.length - 1} pasos) sale $y(${f(x1)}) ≈ ${f(yRK, 7)}$`}, así que el error de Euler es ${f(Math.abs(yEu - (exacta ? yEx : yRK)), 3)}. El error de Euler es proporcional a h: con la mitad de paso, más o menos la mitad de error.` });
-    return { modo: 'primer', fTxt, F, x0, y0, x1, h, eul, fino, exacta, yRK, yEu, yEx, explota, pasos, lineal: p !== null };
+    let metodos = null;
+    if (explota === null) {
+      const ref = exacta ? yEx : yRK;
+      metodos = Object.entries(METODOS).map(([nom, m]) => { const y1 = integra(nom, F, x0, y0, h, n), y2 = integra(nom, F, x0, y0, h / 2, 2 * n); return { nom, orden: m.orden, y: y1, err: Math.abs(y1 - ref), err2: Math.abs(y2 - ref) }; });
+      const fila = (q) => `<tr><td>${q.nom}</td><td>${q.orden}</td><td>${f(q.y, 7)}</td><td>${f(q.err, 2)}</td><td>${f(q.err2, 2)}</td><td>${q.err2 > 1e-13 ? f(q.err / q.err2, 3) : '—'}</td></tr>`;
+      pasos.push({ t: 'Comparación de métodos', html: `${exacta ? `La solución exacta vale $y(${f(x1)}) = ${f(yEx, 7)}$` : `Con RK4 muy fino (${fino.length - 1} pasos) sale $y(${f(x1)}) ≈ ${f(yRK, 7)}$`}. Con el mismo paso h = ${f(h)} y con h/2:<table class="tabla"><tr><th>Método</th><th>Orden</th><th>y(${f(x1)})</th><th>Error con h</th><th>Error con h/2</th><th>Cociente</th></tr>${metodos.map(fila).join('')}</table>Un método de orden p tiene un error proporcional a $h^p$: al partir el paso por la mitad el error se divide por unos $2^p$ (2 Euler, 4 Heun y el punto medio, 16 RK4). Heun hace $y_{n+1} = y_n + {h}/{2}(k_1 + k_2)$ con $k_2 = f(x_n + h, y_n + h k_1)$, y el punto medio $y_{n+1} = y_n + h f(x_n + {h}/{2}, y_n + {h}/{2} k_1)$.` });
+    }
+    return { modo: 'primer', fTxt, F, x0, y0, x1, h, eul, fino, exacta, implicita, yRK, yEu, yEx, explota, metodos, pasos, lineal: p !== null };
   }
   // sustituye y por un nodo
   function sustY(n, por) {
@@ -1295,11 +2488,11 @@ const EDOs = (() => {
   function ansatzTxt(part, orden) {
     const xs = part.grupos.map((g) => {
       const pol = (L) => (g.k === 0 ? L : `(${Array.from({ length: g.k + 1 }, (_, j) => `${L}_{${j}}${j ? (j === 1 ? ' x' : ` x^{${j}}`) : ''}`).join(' + ')})`);
-      const e = g.r ? ` e^{${linTxt(g.r, 'x')}}` : '', xs = g.s ? (g.s === 1 ? 'x ' : 'x^{2} ') : '';
+      const e = g.r ? ` e^{${linTxt(g.r, 'x')}}` : '', xs = g.s ? (g.s === 1 ? 'x ' : `x^{${g.s}} `) : '';
       const cuerpo = g.w ? `${xs}${e}(${pol('A')} cos ${linTxt(g.w, 'x')} + ${pol('B')} sen ${linTxt(g.w, 'x')})`.replace('( ', '(') : `${xs}${pol('A')}${e}`;
       return { cuerpo, s: g.s };
     });
-    const res = xs.some((q) => q.s) ? ` Como ${part.grupos.filter((g) => g.s).map((g) => `$λ = ${g.w ? `${Math.abs(g.r) < 1e-12 ? '±' : cTxt(g.r) + ' ± '}${Math.abs(g.w - 1) < 1e-12 ? '' : cTxt(g.w) + ' '}i` : cTxt(g.r)}$`).join(' y ')} ${part.grupos.filter((g) => g.s).length > 1 ? 'son raíces' : 'es raíz'} de la ecuación característica (resonancia), se multiplica por $x${xs.some((q) => q.s === 2) ? '^2' : ''}$.` : '';
+    const res = xs.some((q) => q.s) ? ` Como ${part.grupos.filter((g) => g.s).map((g) => `$λ = ${g.w ? `${Math.abs(g.r) < 1e-12 ? '±' : cTxt(g.r) + ' ± '}${Math.abs(g.w - 1) < 1e-12 ? '' : cTxt(g.w) + ' '}i` : cTxt(g.r)}$`).join(' y ')} ${part.grupos.filter((g) => g.s).length > 1 ? 'son raíces' : 'es raíz'} de la ecuación característica (resonancia), se multiplica por $x${Math.max(...xs.map((q) => q.s)) > 1 ? `^${Math.max(...xs.map((q) => q.s))}` : ''}$.` : '';
     return `Se prueba con una función de la misma forma que el término independiente: $y_p = ${xs.map((q) => (xs.length === 1 ? q.cuerpo.replace(/^\(([^()]*)\)$/, '$1') : q.cuerpo)).join(' + ')}$.${res}`;
   }
 
@@ -1339,23 +2532,194 @@ const EDOs = (() => {
     }
     if (hb[0].r > 1e-12 || hb[1].r > 1e-12) tipo = D < 0 ? tipo : 'Crece sin límite (inestable)';
     pasos.push({ t: 'Ecuación característica', html: `Probando $y = e^{λx}$ sale $${carTxt}$, con discriminante $Δ = b^2 − 4ac = ${f(D)}$: ${raices}.<br>$y_h = ${yhTxt}$` });
-    let part = { bases: [], grupos: [] }, ypTxt = '0';
+    let part = { bases: [], grupos: [] }, ypTxt = '0', vp = null;
     if (!homog) {
       const ts = terminos(gAst);
       part = ts ? particular([c, b, a], ts) : null;
-      if (!part) throw new Error('g(x) tiene que ser una suma de polinomios, exponenciales, senos y cosenos (por ejemplo 3x^2, e^(2x), 5 sen(3x) o x e^x) para resolverla por coeficientes indeterminados');
-      ypTxt = suma(part.bases.map((q) => ({ c: q.c, s: baseTxt(q) })));
-      pasos.push({ t: 'Solución particular', html: ansatzTxt(part, 2) + `<br>Sustituyendo en la ecuación e igualando coeficientes: $y_p = ${ypTxt}$` });
+      if (part) {
+        ypTxt = suma(part.bases.map((q) => ({ c: q.c, s: baseTxt(q) })));
+        pasos.push({ t: 'Solución particular', html: ansatzTxt(part, 2) + `<br>Sustituyendo en la ecuación e igualando coeficientes: $y_p = ${ypTxt}$` });
+      } else {
+        // variación de parámetros: y_p = u₁ y₁ + u₂ y₂ con u₁′ = −y₂ g/(a W), u₂′ = y₁ g/(a W)
+        vp = variacion(hb, a, b, gAst, x0);
+        if (!vp) throw new Error('No sale la solución particular: g(x) no es de las de coeficientes indeterminados (polinomios, exponenciales, senos y cosenos) y por variación de parámetros las integrales no tienen primitiva sencilla');
+        part = { bases: [], grupos: [] };
+        ypTxt = T(vp.yp);
+        pasos.push({ t: 'Variación de parámetros', html: `g(x) no es de las que se resuelven por coeficientes indeterminados, así que se buscan $y_p = u_1(x) y_1 + u_2(x) y_2$ con $y_1 = ${T(vp.y1)}$ y $y_2 = ${T(vp.y2)}$. El wronskiano es $W = y_1 y_2′ − y_1′ y_2 = ${T(vp.W)}$ y<br>$u_1 = −∫ {y_2 g}/{${a === 1 ? '' : cTxt(a) + ' '}W} dx = ${T(vp.u1)}$, &ensp; $u_2 = ∫ {y_1 g}/{${a === 1 ? '' : cTxt(a) + ' '}W} dx = ${T(vp.u2)}$<br>así que $y_p = ${ypTxt}$` });
+      }
     }
+    const ypV = (x, i = 0) => (vp ? E.valor([vp.yp, vp.dyp, vp.d2][i], x) : evalBases(part.bases, x, i));
     // C₁ y C₂ por las condiciones iniciales
     const M = [[dReal(hb[0], 0, x0), dReal(hb[1], 0, x0)], [dReal(hb[0], 1, x0), dReal(hb[1], 1, x0)]];
-    const Cs = resuelve(M, [y0 - evalBases(part.bases, x0), v0 - evalBases(part.bases, x0, 1)]).map(limpio);
+    const Cs = resuelve(M, [y0 - ypV(x0), v0 - ypV(x0, 1)]).map(limpio);
     const todo = [...hb.map((q, i) => ({ ...q, c: Cs[i] })), ...part.bases];
-    const sTxt = suma(juntar(todo.map((q) => ({ c: q.c, s: baseTxt(q) }))));
+    let sTxt = suma(juntar(todo.map((q) => ({ c: q.c, s: baseTxt(q) }))));
+    if (vp) sTxt = sTxt === '0' ? ypTxt : `${sTxt} ${ypTxt.startsWith('−') ? '− ' + ypTxt.slice(1) : '+ ' + ypTxt}`;
     pasos.push({ t: 'Condiciones iniciales', html: `$y = ${yhTxt}${homog ? '' : ` + ${ypTxt.startsWith('−') ? `(${ypTxt})` : ypTxt}`}$. Imponiendo $y(${f(x0)}) = ${f(y0)}$ y $y′(${f(x0)}) = ${f(v0)}$ sale un sistema de dos ecuaciones con $C_1 = ${cTxt(Cs[0])}$ y $C_2 = ${cTxt(Cs[1])}$:<br>$y(x) = ${sTxt}$` });
     if (homog && a > 0 && c > 0 && b >= 0) pasos.push({ t: 'Interpretación', html: `Es como un oscilador: masa a = ${f(a)}, rozamiento b = ${f(b)} y muelle c = ${f(c)}. ${b === 0 ? `Sin rozamiento oscila para siempre con $ω = √(c/a) = ${cTxt(limpio(Math.sqrt(c / a)))}$ y periodo $T = 2π/ω = ${cTxt(limpio((2 * Math.PI) / Math.sqrt(c / a)))}$.` : D < 0 ? `El rozamiento es pequeño (Δ < 0): oscila con $ω = ${f(Math.sqrt(-D) / (2 * a))}$ mientras la amplitud baja como $e^{${linTxt(al, 'x')}}$.` : D === 0 ? 'Es el amortiguamiento crítico: vuelve al equilibrio lo más rápido posible sin oscilar.' : 'El rozamiento es grande (Δ > 0): vuelve al equilibrio sin oscilar, despacio.'}` });
-    const y = (x, i = 0) => todo.reduce((s, q) => s + q.c * dReal(q, i, x), 0);
+    const y = (x, i = 0) => todo.reduce((s, q) => s + q.c * dReal(q, i, x), 0) + (vp ? ypV(x, i) : 0);
     return { modo: 'segundo', a, b, c, D, x0, y0, v0, x1, y, txt: sTxt, yhTxt, ypTxt, tipo, raices, homog, pasos, carTxt, ecTxt };
+  }
+
+  // una base x^m e^{rx} cos/sen(wx) como AST
+  function baseAst({ m = 0, r = 0, w = 0, p: tr = null }) {
+    let n = NN(1);
+    if (m) n = op('*', n, op('^', XX, NN(m)));
+    if (r) n = op('*', n, op('^', { t: 'c', v: 'e' }, op('*', NN(r), XX)));
+    if (w) n = op('*', n, { t: 'fn', f: tr === 'sen' ? 'sen' : 'cos', a: op('*', NN(w), XX) });
+    return E.simp(n);
+  }
+  function variacion(hb, a, b, g, x0) {
+    const y1 = baseAst(hb[0]), y2 = baseAst(hb[1]), s = -b / a;
+    const K = limpio(dReal(hb[0], 0, 0) * dReal(hb[1], 1, 0) - dReal(hb[0], 1, 0) * dReal(hb[1], 0, 0));
+    if (Math.abs(K) < 1e-12) return null;
+    const W = E.simp(s ? op('*', NN(K), op('^', { t: 'c', v: 'e' }, op('*', NN(limpio(s)), XX))) : NN(K));
+    const invW = s ? op('*', NN(1 / (a * K)), op('^', { t: 'c', v: 'e' }, op('*', NN(limpio(-s)), XX))) : NN(1 / (a * K));
+    const u1 = prim(op('*', NN(-1), op('*', op('*', y2, g), invW))), u2 = u1 && prim(op('*', op('*', y1, g), invW));
+    if (!u1 || !u2) return null;
+    const yp = E.simp(op('+', op('*', u1, y1), op('*', u2, y2))), dyp = E.simp(E.deriva(yp)), d2 = E.simp(E.deriva(dyp));
+    // comprobación: a y_p″ + b y_p′ + c y_p = g
+    const c = -(a * dReal(hb[0], 2, 0.3) + b * dReal(hb[0], 1, 0.3)) / dReal(hb[0], 0, 0.3);
+    const ok = [x0 + 0.13, x0 + 0.29, x0 + 0.41].every((x) => { const l = a * E.valor(d2, x) + b * E.valor(dyp, x) + c * E.valor(yp, x), r = E.valor(g, x); return isFinite(l) && Math.abs(l - r) < 1e-6 * Math.max(1, Math.abs(r)); });
+    return ok ? { y1, y2, W, u1, u2, yp, dyp, d2 } : null;
+  }
+
+  /* ---------- Orden 3 y 4, y Cauchy-Euler ---------- */
+  // «y''' − 3y'' + 3y' − y = e^x» o «x^2 y'' − 2x y' + 2y = 0»: coeficientes c x^k de cada derivada
+  function leeEcuacion(src) {
+    const t = String(src).replace(/⁗/g, "''''").replace(/‴/g, "'''").replace(/″/g, "''").replace(/[′’]/g, "'").replace(/[−–]/g, '-');
+    const partes = t.split('=');
+    if (partes.length !== 2) throw new Error('Escribe la ecuación con un «=»: y‴ − y′ = x');
+    const [izq, der] = partes, ts = [];
+    let prof = 0, ini = 0;
+    for (let i = 0; i <= izq.length; i++) {
+      const ch = izq[i];
+      if (ch === '(') prof++; else if (ch === ')') prof--;
+      if (i === izq.length || ((ch === '+' || ch === '-') && !prof && i > 0 && !/[\^*/(]\s*$/.test(izq.slice(0, i)))) { if (izq.slice(ini, i).trim()) ts.push(izq.slice(ini, i)); ini = i; }
+    }
+    const co = [];
+    for (const raw of ts) {
+      const m = raw.trim().match(/^([+-]?)\s*(.*?)\s*[*·]?\s*y\s*('*)$/);
+      if (!m) throw new Error(`No entiendo el término «${raw.trim()}»: cada término es un coeficiente por y, y′, y″, y‴ o y⁗`);
+      const k = m[3].length;
+      if (k > 4) throw new Error('El orden máximo es 4');
+      let c = 1, e = 0;
+      if (m[2]) {
+        const n = E.lee(m[2], 'El coeficiente');
+        const v1 = E.valor(n, 1), v2 = E.valor(n, 2);
+        e = E.tieneX(n) ? Math.round(Math.log2(v2 / v1)) : 0; c = v1;
+        if (!isFinite(c) || [0.5, 3].some((x) => Math.abs(E.valor(n, x) - c * x ** e) > 1e-9 * Math.max(1, Math.abs(c * x ** e)))) throw new Error(`El coeficiente «${m[2]}» tiene que ser un número o un número por una potencia de x (Cauchy-Euler)`);
+      }
+      if (m[1] === '-') c = -c;
+      const q = co.find((z) => z.k === k && z.e === e);
+      if (q) q.c += c; else co.push({ k, c, e });
+    }
+    const orden = Math.max(...co.map((q) => q.k));
+    if (orden < 1) throw new Error('La ecuación tiene que llevar alguna derivada de y');
+    const g = der.trim() ? E.lee(der, 'El término de la derecha') : NN(0);
+    return { co: co.filter((q) => Math.abs(q.c) > 1e-14), orden, g };
+  }
+  // potencias de x: g = Σ c x^m (para Cauchy-Euler), o null. g x^4 (o g x^{7/2}) tiene que ser un polinomio:
+  // su serie en x = 1 se corta, y se pasa de potencias de (x − 1) a potencias de x
+  function potencias(g) {
+    for (const b of [0, 0.5]) {
+      let c;
+      try { c = [...E.serie(E.simp(op('*', g, op('^', XX, NN(4 - b)))), 1, 14)]; } catch (e) { continue; }
+      if (c.slice(11).some((v) => Math.abs(v) > 1e-9 * Math.max(1, ...c.map(Math.abs)))) continue;
+      const cs = Array(11).fill(0);
+      c.slice(0, 11).forEach((k, j) => { for (let i = 0; i <= j; i++) cs[i] += k * binom(j, i) * (-1) ** (j - i); });
+      const ts = cs.map((k, i) => ({ m: i - 4 + b, c: limpio(Math.abs(k) < 1e-9 ? 0 : k) })).filter((q) => q.c);
+      if ([1.1, 2.5, 3.7].every((x) => Math.abs(ts.reduce((q, t) => q + t.c * x ** t.m, 0) - E.valor(g, x)) < 1e-7 * Math.max(1, Math.abs(E.valor(g, x))))) return ts;
+    }
+    return null;
+  }
+  const ordTxt = (k) => ['y', 'y′', 'y″', 'y‴', 'y^{(4)}'][k];
+  function superior(sc) {
+    const { co, orden, g } = leeEcuacion(sc.ec || '');
+    const x0 = num(sc.x0, 'el valor x₀'), x1 = num(sc.x1, 'el final del intervalo');
+    if (!(x1 > x0)) throw new Error('El final del intervalo tiene que ser mayor que x₀');
+    const ini = String(sc.ini ?? '').split(';').map((q) => q.trim()).filter(Boolean);
+    if (ini.length !== orden) throw new Error(`Faltan las condiciones iniciales: escribe ${orden} valores separados por «;», ${['y(x₀)', 'y′(x₀)', 'y″(x₀)', 'y‴(x₀)'].slice(0, orden).join('; ')}`);
+    const Y0 = ini.map((q, i) => num(q, `la condición ${i + 1}`));
+    const cauchy = co.some((q) => q.e), homog = !E.tieneX(g) && Math.abs(E.valor(g, 0)) < 1e-14;
+    if (cauchy && co.some((q) => q.e !== q.k)) throw new Error('Con coeficientes que llevan x solo se resuelve la de Cauchy-Euler: cada derivada k-ésima multiplicada por x^k (x^2 y″ + x y′ − y = 0)');
+    if (cauchy && !(x0 > 0)) throw new Error('En la de Cauchy-Euler x₀ tiene que ser positivo (la solución usa ln x)');
+    const a = Array(orden + 1).fill(0); co.forEach((q) => { a[q.k] += q.c; });
+    if (Math.abs(a[orden]) < 1e-14) throw new Error('El coeficiente de la derivada más alta no puede ser 0');
+    const pasos = [], gTxt = E.texto(E.simp(g));
+    const ecTxt = co.sort((p, q) => q.k - p.k).map((q, i) => { const xk = q.e ? (q.e === 1 ? 'x ' : `x^{${q.e}} `) : '', m = Math.abs(q.c), cc = Math.abs(m - 1) < 1e-12 ? '' : cTxt(m) + ' '; return `${i ? (q.c < 0 ? ' − ' : ' + ') : q.c < 0 ? '−' : ''}${cc}${xk}${ordTxt(q.k)}`; }).join('') + ` = ${gTxt}`;
+    pasos.push({ t: 'La ecuación', html: `$${ecTxt}$, de orden ${orden}${cauchy ? ', de <b>Cauchy-Euler</b> (cada derivada k-ésima va por $x^k$)' : ', lineal con coeficientes constantes'}, con ${Y0.map((v, i) => `$${ordTxt(i)}(${f(x0)}) = ${f(v)}$`).join(', ')}.` });
+    // polinomio característico (o indicial): Σ a_k λ^k, o Σ a_k r(r − 1)…(r − k + 1)
+    let P = a;
+    if (cauchy) {
+      P = Array(orden + 1).fill(0);
+      a.forEach((ak, k) => { let q = [1]; for (let j = 0; j < k; j++) { const nq = Array(q.length + 1).fill(0); q.forEach((c, i) => { nq[i + 1] += c; nq[i] -= j * c; }); q = nq; } q.forEach((c, i) => { P[i] += ak * c; }); });
+      P = P.map(limpio);
+    }
+    const rs = Lp.raices(P), v = cauchy ? 'r' : 'λ';
+    const polTxt = P.map((c, i) => ({ c, s: i ? (i === 1 ? v : `${v}^{${i}}`) : '' })).reverse();
+    const raizTxt = (q) => (Math.abs(q.p.im) < 1e-12 ? cTxt(limpio(q.p.re)) : `${Math.abs(q.p.re) < 1e-12 ? '' : cTxt(limpio(q.p.re)) + ' + '}${Math.abs(Math.abs(q.p.im) - 1) < 1e-12 ? '' : cTxt(limpio(Math.abs(q.p.im))) + ' '}i`);
+    const raices = rs.filter((q) => q.p.im >= -1e-12).map((q) => `$${v} = ${raizTxt(q)}$${q.p.im > 1e-12 ? ' y su conjugada' : ''}${q.m > 1 ? ` (${['', '', 'doble', 'triple', 'cuádruple'][q.m]})` : ''}`).join(', ');
+    // bases de la homogénea (en t = ln x para Cauchy-Euler)
+    const hb = [];
+    for (const q of rs) {
+      if (q.p.im < -1e-12) continue;
+      for (let j = 0; j < q.m; j++) {
+        if (Math.abs(q.p.im) < 1e-12) hb.push({ m: j, r: limpio(q.p.re), w: 0, p: null });
+        else hb.push({ m: j, r: limpio(q.p.re), w: limpio(q.p.im), p: 'cos' }, { m: j, r: limpio(q.p.re), w: limpio(q.p.im), p: 'sen' });
+      }
+    }
+    // la base como AST en x: x^m e^{rx} cos(wx), o (ln x)^m x^r cos(w ln x)
+    const LN = { t: 'fn', f: 'ln', a: XX };
+    const ast = (b) => {
+      if (!cauchy) return baseAst(b);
+      let n = NN(1);
+      if (b.m) n = op('*', n, op('^', LN, NN(b.m)));
+      if (b.r) n = op('*', n, op('^', XX, NN(b.r)));
+      if (b.w) n = op('*', n, { t: 'fn', f: b.p === 'sen' ? 'sen' : 'cos', a: op('*', NN(b.w), LN) });
+      return E.simp(n);
+    };
+    const bTxt = (b) => { const t = cauchy ? T(ast(b)) : baseTxt(b); return t === '1' ? '' : t; };
+    const yhTxt = hb.map((b, i) => `C_{${i + 1}}${bTxt(b) ? ' ' + bTxt(b) : ''}`).join(' + ');
+    pasos.push({ t: cauchy ? 'Ecuación indicial' : 'Ecuación característica', html: `${cauchy ? 'Probando $y = x^r$ (o con el cambio $x = e^t$, que la deja con coeficientes constantes)' : 'Probando $y = e^{λx}$'} sale $${suma(polTxt)} = 0$, con raíces ${raices}.<br>$y_h = ${yhTxt}$${cauchy ? '<br>Una raíz doble da $x^r$ y $x^r ln x$; una compleja $α ± βi$ da $x^α cos(β ln x)$ y $x^α sen(β ln x)$.' : ''}` });
+    // solución particular
+    let yp = NN(0), ypTxt = '0';
+    if (!homog) {
+      if (cauchy) {
+        const ts = potencias(g);
+        if (!ts) throw new Error('En la de Cauchy-Euler el término de la derecha tiene que ser una suma de potencias de x: x, x^2, 1/x…');
+        // derivada k del polinomio indicial en m; si m es raíz de multiplicidad s se prueba A x^m (ln x)^s y A = c/Q^{(s)}(m)
+        const Pd = (m, k) => P.reduce((q, c, i) => (i >= k ? q + ((c * FACT[i]) / FACT[i - k]) * m ** (i - k) : q), 0);
+        let reson = false;
+        yp = E.simp(ts.reduce((q, t) => {
+          let sM = 0; while (sM < orden && Math.abs(Pd(t.m, sM)) < 1e-9) sM++;
+          if (sM) reson = true;
+          const base = sM ? op('*', op('^', XX, NN(t.m)), op('^', LN, NN(sM))) : op('^', XX, NN(t.m));
+          return op('+', q, op('*', NN(limpio(t.c / Pd(t.m, sM))), base));
+        }, NN(0)));
+        ypTxt = T(yp);
+        pasos.push({ t: 'Solución particular', html: `Para cada potencia $x^m$ de la derecha se prueba $A x^m$: al sustituir sale $A Q(m) x^m$, con Q el polinomio indicial, así que $A = {c}/{Q(m)}$.${reson ? ' Si m es raíz de Q (resonancia), se prueba $A x^m ln x$ (o $A x^m (ln x)^2$ si es doble), y entonces $A = {c}/{Q′(m)}$ (o ${c}/{Q″(m)}$).' : ''}<br>$y_p = ${ypTxt}$` });
+      } else {
+        const ts = terminos(g), part = ts ? particular(a, ts) : null;
+        if (!part) throw new Error('El término de la derecha tiene que ser una suma de polinomios, exponenciales, senos y cosenos para resolverla por coeficientes indeterminados');
+        yp = E.simp(part.bases.reduce((q, b) => op('+', q, op('*', NN(b.c), baseAst(b))), NN(0)));
+        ypTxt = suma(part.bases.map((q) => ({ c: q.c, s: baseTxt(q) })));
+        pasos.push({ t: 'Solución particular', html: ansatzTxt(part, orden) + `<br>Sustituyendo en la ecuación e igualando coeficientes: $y_p = ${ypTxt}$` });
+      }
+    }
+    // constantes por las condiciones iniciales
+    const der = (n, k) => { let q = n; for (let i = 0; i < k; i++) q = E.simp(E.deriva(q)); return q; };
+    const bs = hb.map(ast), Mx = Y0.map((_, k) => bs.map((b) => E.valor(der(b, k), x0))), rhs = Y0.map((y, k) => y - E.valor(der(yp, k), x0));
+    const Cs = resuelve(Mx, rhs);
+    if (!Cs) throw new Error('No salen las constantes con esas condiciones iniciales');
+    const Cl = Cs.map(limpio);
+    const sol = E.simp(bs.reduce((q, b, i) => op('+', q, op('*', NN(Cl[i]), b)), yp));
+    const hTxt = suma(hb.map((b, i) => ({ c: Cl[i], s: bTxt(b) })));
+    const txt = homog ? hTxt : hTxt === '0' ? ypTxt : `${hTxt} ${ypTxt.startsWith('−') ? '− ' + ypTxt.slice(1) : '+ ' + ypTxt}`;
+    pasos.push({ t: 'Condiciones iniciales', html: `Imponiendo las ${orden} condiciones sale un sistema de ${orden} ecuaciones con ${Cl.map((c, i) => `$C_{${i + 1}} = ${cTxt(c)}$`).join(', ')}:<br>$y(x) = ${txt}$` });
+    const d1 = der(sol, 1), y = (x, i = 0) => E.valor(i ? d1 : sol, x);
+    const tipo = cauchy ? `Cauchy-Euler de orden ${orden}` : `Coeficientes constantes, orden ${orden}`;
+    return { modo: 'segundo', superior: true, orden, cauchy, x0, y0: Y0[0], v0: Y0[1] ?? 0, x1, y, sol, txt, raices, tipo, homog, pasos, ecTxt };
   }
 
   /* ---------- Sistemas 2×2 ---------- */
@@ -1467,12 +2831,14 @@ const EDOs = (() => {
   function resolver(sc) {
     if (sc.modo === 'segundo') return segundo(sc);
     if (sc.modo === 'sistema') return sistema(sc);
+    if (sc.modo === 'superior') return superior(sc);
     return primer(sc);
   }
 
   const P1 = (f_, x0, y0, x1, h) => ({ modo: 'primer', f: f_, x0, y0, x1, h });
   const P2 = (a, b, c, g, y0, v0, x1) => ({ modo: 'segundo', a, b, c, g, x0: '0', y0, v0, x1 });
   const PS = (f_, g, x0, y0, t1) => ({ modo: 'sistema', f: f_, g, x0, y0, t1 });
+  const PN = (ec, x0, ini, x1) => ({ modo: 'superior', ec, x0, ini, x1 });
   const ejemplos = [
     { clave: 'euler', nombre: 'y′ = x + y con Euler (h = 0,1)', sc: P1('x + y', '0', '1', '1', '0,1') },
     { clave: 'lineal', nombre: 'y′ = 4 − 2y: tiende al equilibrio', sc: P1('4 - 2y', '0', '0', '3', '0,25') },
@@ -1480,12 +2846,21 @@ const EDOs = (() => {
     { clave: 'forzada', nombre: 'y′ + y = sen x', sc: P1('sen x - y', '0', '0', '10', '0,5') },
     { clave: 'logistica', nombre: 'Logística: y′ = y(1 − y)', sc: P1('y(1 - y)', '0', '0,1', '10', '0,5') },
     { clave: 'riccati', nombre: 'y′ = x − y² (no lineal)', sc: P1('x - y^2', '0', '0', '4', '0,2') },
+    { clave: 'separable', nombre: 'Separable: y′ = x y', sc: P1('x y', '0', '1', '2', '0,2') },
+    { clave: 'factor', nombre: 'Factor integrante: y′ = x² − y/x', sc: P1('x^2 - y/x', '1', '1', '3', '0,2') },
+    { clave: 'bernoulli', nombre: 'Bernoulli: y′ = y + x y²', sc: P1('y + x y^2', '0', '0,1', '1,5', '0,1') },
+    { clave: 'exacta', nombre: 'Exacta: y′ = −(2x + y)/(x + 2y)', sc: P1('-(2x + y)/(x + 2y)', '0', '1', '0,5', '0,05') },
     { clave: 'mas', nombre: 'y″ + 4y = 0: oscilador armónico', sc: P2('1', '0', '4', '0', '1', '0', '10') },
     { clave: 'subamortiguado', nombre: 'y″ + 2y′ + 5y = 0: subamortiguado', sc: P2('1', '2', '5', '0', '1', '0', '6') },
     { clave: 'critico', nombre: 'y″ + 2y′ + y = x: crítico con fuerza', sc: P2('1', '2', '1', 'x', '0', '0', '8') },
     { clave: 'exponencial', nombre: 'y″ − 3y′ + 2y = e^(3x)', sc: P2('1', '-3', '2', 'e^(3x)', '0', '0', '1,5') },
     { clave: 'resonancia', nombre: 'y″ + y = cos x: resonancia', sc: P2('1', '0', '1', 'cos x', '0', '0', '30') },
     { clave: 'forzado', nombre: 'Oscilador forzado: y″ + 0,5y′ + 4y = 3 cos(2x)', sc: P2('1', '0,5', '4', '3 cos(2x)', '0', '0', '20') },
+    { clave: 'variacion', nombre: 'Variación de parámetros: y″ + y = 1/cos x', sc: P2('1', '0', '1', '1/cos(x)', '0', '0', '1,4') },
+    { clave: 'orden3', nombre: 'Orden 3: y‴ − 3y″ + 3y′ − y = eˣ', sc: PN("y''' - 3y'' + 3y' - y = e^x", '0', '1; 0; 0', '2') },
+    { clave: 'orden4', nombre: 'Orden 4: y⁗ − y = 0', sc: PN("y'''' - y = 0", '0', '1; 0; 0; 0', '4') },
+    { clave: 'cauchy', nombre: 'Cauchy-Euler: x² y″ − 2x y′ + 2y = x³', sc: PN("x^2 y'' - 2x y' + 2y = x^3", '1', '0; 0', '3') },
+    { clave: 'cauchy-complejo', nombre: 'Cauchy-Euler: x² y″ + x y′ + y = 0', sc: PN("x^2 y'' + x y' + y = 0", '1', '1; 0', '20') },
     { clave: 'silla', nombre: 'Sistema lineal: punto de silla', sc: PS('x + y', '4x + y', '1', '-1,5', '2') },
     { clave: 'centro', nombre: 'Sistema lineal: centro', sc: PS('y', '-x', '2', '0', '7') },
     { clave: 'foco', nombre: 'Sistema lineal: foco estable', sc: PS('-x - 2y', '2x - y', '3', '0', '6') },
@@ -1517,6 +2892,7 @@ const EDOs = (() => {
   const MODOS = {
     primer: { nom: 'Primer orden: y′ = f(x, y)', campos: [['f', 'y′ =', 'función de x e y'], ['x0', 'x₀', ''], ['y0', 'y(x₀)', ''], ['x1', 'Hasta x =', ''], ['h', 'Paso h de Euler', '']] },
     segundo: { nom: 'Segundo orden: a y″ + b y′ + c y = g(x)', campos: [['a', 'a', 'coeficiente de y″'], ['b', 'b', 'de y′'], ['c', 'c', 'de y'], ['g', 'g(x)', '0 si es homogénea'], ['x0', 'x₀', ''], ['y0', 'y(x₀)', ''], ['v0', 'y′(x₀)', ''], ['x1', 'Hasta x =', '']] },
+    superior: { nom: 'Orden 3 o 4, o Cauchy-Euler', campos: [['ec', 'Ecuación', "con y', y'', y''', y''''"], ['x0', 'x₀', ''], ['ini', 'y(x₀); y′(x₀); …', 'separadas por ;'], ['x1', 'Hasta x =', '']] },
     sistema: { nom: 'Sistema: x′ = f(x, y), y′ = g(x, y)', campos: [['f', 'x′ =', 'función de x e y'], ['g', 'y′ =', 'función de x e y'], ['x0', 'x(0)', ''], ['y0', 'y(0)', ''], ['t1', 'Hasta t =', '']] },
   };
   const primero = (m) => D.ejemplos.find((e) => e.sc.modo === m);
@@ -1529,8 +2905,8 @@ const EDOs = (() => {
   /* ---------- Formulario ---------- */
   function formulario() {
     $('#modo').innerHTML = Object.entries(MODOS).map(([k, m]) => `<option value="${k}"${sc.modo === k ? ' selected' : ''}>${m.nom}</option>`).join('');
-    $('#campos').innerHTML = MODOS[sc.modo].campos.map(([k, et, ay]) => `<label for="f-${k}">${et}${ay ? ` <small>(${ay})</small>` : ''}</label><input id="f-${k}" class="in${k === 'f' || k === 'g' ? ' larga' : ''}" data-c="${k}" value="${esc(sc[k] ?? '')}" autocomplete="off" spellcheck="false">`).join('');
-    $('#nota-datos').innerHTML = sc.modo === 'primer' ? 'Escribe f con x e y: x + y, 4 − 2y, y(1 − y), sen x − y… Si dejas h vacío se usan 10 pasos.' : sc.modo === 'segundo' ? 'g(x) puede ser una suma de polinomios, exponenciales, senos y cosenos: x, e^(3x), 3 cos(2x), x e^x…' : 'Escribe x′ y y′ con x e y: y, −x, 2x − x y, −sen x − 0,3y… Toca el diagrama para empezar desde otro punto.';
+    $('#campos').innerHTML = MODOS[sc.modo].campos.map(([k, et, ay]) => `<label for="f-${k}">${et}${ay ? ` <small>(${ay})</small>` : ''}</label><input id="f-${k}" class="in${k === 'f' || k === 'g' || k === 'ec' ? ' larga' : ''}" data-c="${k}" value="${esc(sc[k] ?? '')}" autocomplete="off" spellcheck="false">`).join('');
+    $('#nota-datos').innerHTML = sc.modo === 'primer' ? 'Escribe f con x e y: x + y, 4 − 2y, y(1 − y), sen x − y… Si dejas h vacío se usan 10 pasos.' : sc.modo === 'segundo' ? 'g(x) puede ser una suma de polinomios, exponenciales, senos y cosenos: x, e^(3x), 3 cos(2x), x e^x… Si es otra (tg x, 1/cos x, eˣ/x) se usa variación de parámetros.' : sc.modo === 'superior' ? "Escribe la ecuación con y', y'', y''' e y'''' (o ′ ″ ‴): y''' − 3y'' + 3y' − y = e^x. Si cada derivada va por x^k, es de Cauchy-Euler: x^2 y'' − 2x y' + 2y = x^3." : 'Escribe x′ y y′ con x e y: y, −x, 2x − x y, −sen x − 0,3y… Toca el diagrama para empezar desde otro punto.';
   }
   const cambia = () => { $('#ejemplos').value = ''; calcula(); };
   $('#campos').addEventListener('input', (e) => { const t = e.target; if (!t.dataset.c) return; sc[t.dataset.c] = t.value; cambia(); });
@@ -1563,6 +2939,7 @@ const EDOs = (() => {
   const enunciado = () => {
     if (sc.modo === 'primer') return `Resuelve <b>y′ = ${esc(sc.f)}</b> con y(${esc(sc.x0)}) = ${esc(sc.y0)}: aproxima y(${esc(sc.x1)}) con el método de Euler de paso h = ${esc(sc.h || '')} y compáralo con la solución exacta si la tiene.`;
     if (sc.modo === 'segundo') { const t = (k, s, p) => { const v = Number(String(k).replace(',', '.')); return !v ? '' : `${v < 0 ? ' − ' : p ? '' : ' + '}${Math.abs(v) === 1 ? '' : coma(Math.abs(v))}${s}`; }; return `Resuelve <b>${t(sc.a, 'y″', true)}${t(sc.b, 'y′')}${t(sc.c, 'y')} = ${esc(sc.g || '0')}</b> con y(${esc(sc.x0)}) = ${esc(sc.y0)} y y′(${esc(sc.x0)}) = ${esc(sc.v0)}, y da y(${esc(sc.x1)}).`; }
+    if (sc.modo === 'superior') return `Resuelve <b>${esc(sc.ec)}</b> con las condiciones iniciales ${esc(sc.ini)} en x = ${esc(sc.x0)}, y da y(${esc(sc.x1)}).`;
     return `Estudia el sistema <b>x′ = ${esc(sc.f)}, y′ = ${esc(sc.g)}</b>: sus puntos críticos y su tipo, y la solución que sale de (${esc(sc.x0)}, ${esc(sc.y0)}) hasta t = ${esc(sc.t1)}.`;
   };
 
@@ -1580,12 +2957,14 @@ const EDOs = (() => {
     let h = '';
     if (sol.modo === 'primer') {
       if (sol.exacta) h += dato('Solución exacta', M(`y(x) = ${sol.exacta.txt}`), 'ancho');
+      else if (sol.implicita) h += dato('Solución (implícita)', M(sol.implicita), 'ancho');
       if (sol.explota !== null) h += dato('La solución explota', `cerca de x ≈ ${fH(sol.explota, 4)} (asíntota vertical): y(${fH(sol.x1)}) no existe`, 'ancho');
       else {
         h += dato(`y(${fH(sol.x1)}) con Euler`, fH(sol.yEu, 6), 'num');
         h += dato(`y(${fH(sol.x1)}) con RK4`, fH(sol.yRK, 6), 'num');
         if (sol.exacta) h += dato(`y(${fH(sol.x1)}) exacta`, fH(sol.yEx, 6), 'num');
         h += dato('Error de Euler', fH(Math.abs(sol.yEu - (sol.exacta ? sol.yEx : sol.yRK)), 4));
+        if (sol.metodos) h += dato(`Errores con h = ${fH(sol.h)}`, sol.metodos.filter((q) => q.nom !== 'Euler').map((q) => `${q.nom}: ${fH(q.err, 2)}`).join('; '));
       }
     } else if (sol.modo === 'segundo') {
       h += dato('Solución', M(`y(x) = ${sol.txt}`), 'ancho');
