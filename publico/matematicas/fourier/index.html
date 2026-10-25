@@ -147,7 +147,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
       <label for="f-N">Armónicos N <small>(1 a 100)</small></label><input id="f-N" class="in" inputmode="numeric" autocomplete="off">
       <label for="f-x0">Punto x₀ <small>(opcional)</small></label><input id="f-x0" class="in" autocomplete="off" spellcheck="false">
     </div>
-    <p class="nota">Cada tramo va de un extremo al siguiente, sin huecos: −π ≤ x &lt; 0, 0 ≤ x &lt; π. Las funciones se escriben con x: 1, x, x^2, |x|, sen x, π − x, e^x…</p>
+    <p class="nota">Cada tramo va de un extremo al siguiente: −π ≤ x &lt; 0, 0 ≤ x &lt; π. Si dejas un hueco, ahí se toma f = 0. Las funciones se escriben con x: 1, x, x^2, |x|, sen x, π − x, e^x…</p>
     <p class="error" id="error" hidden></p>
   </div>
   <div>
@@ -178,7 +178,13 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
   <p>Si f es derivable a trozos, la serie converge a f(x) donde f es continua y, en un salto, a la media de los límites laterales. Cerca de un salto la suma parcial se pasa del valor de f en torno a un 9 % del salto, y ese pico no desaparece al sumar más términos: solo se estrecha.</p>
   <h2>Igualdad de Parseval</h2>
   <p class="f m">${2}/{T} ∫_T f(x)^2 dx = {a_0^2}/{2} + Σ_{n=1}^{∞} (a_n^2 + b_n^2)$</p>
-  <p class="m">Dice cuánta «energía» lleva cada armónico, y sirve para sumar series: con $f(x) = x$ en [−π, π] sale $Σ 1/n^2 = π^2/6$. Para aproximar con polinomios en vez de senos y cosenos usa <a href="../taylor/">Series de Taylor</a>.</p>
+  <p class="m">Dice cuánta «energía» lleva cada armónico, y sirve para sumar series: con $f(x) = x$ en [−π, π] sale $Σ 1/n^2 = π^2/6$. Lo mismo pasa al evaluar la serie en un punto: la onda cuadrada en x = π/2 da $1 − 1/3 + 1/5 − … = π/4$. Para aproximar con polinomios en vez de senos y cosenos usa <a href="../taylor/">Series de Taylor</a>.</p>
+  <h2>Forma compleja y forma amplitud-fase</h2>
+  <p class="m">Con $e^{iθ} = cos θ + i sen θ$ la serie se escribe con exponenciales, que es como se usa en señales:</p>
+  <p class="f m">$f(x) ∼ Σ_{n=−∞}^{∞} c_n e^{i n ω_0 x}$, &ensp; $c_n = {1}/{T} ∫_T f(x) e^{−i n ω_0 x} dx = {a_n − i b_n}/{2}$</p>
+  <p class="m">y $c_{−n}$ es el conjugado de $c_n$ cuando f es real. Juntando el seno y el coseno de cada armónico también queda $f(x) ∼ {a_0}/{2} + Σ A_n cos(n ω_0 x + φ_n)$, con amplitud $A_n = √(a_n^2 + b_n^2) = 2|c_n|$ y fase $φ_n$: las $A_n$ son las barras del espectro.</p>
+  <h2>Términos generales menos sencillos</h2>
+  <p class="m">No siempre sale $1/n$ o $1/n^2$: con $|sen x|$ el denominador es $n^2 − 1$ y la fórmula vale desde n = 2 (el primer coeficiente se calcula aparte), con $e^x$ aparecen $n^2 + 1$ y senh π, y en una onda trapezoidal sale $sen(nπ/2)$, que va 1, 0, −1, 0… Si los tramos dejan un hueco, ahí se toma f = 0.</p>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Series de Fourier <span id="ver"></span> (beta)</footer>
@@ -1066,31 +1072,79 @@ const Fourier = (() => {
   const conDec = (v) => { const e = exacto(v); return e && (e.k || e.q !== 1) ? `${numF(v)} ≈ ${f(v, 5)}` : numF(v); };
 
   /* ---------- Ley de los coeficientes ---------- */
-  // c_n = (A + B(−1)^n) / (n^k π^m) con A y B racionales, comprobado hasta n = NPAT
+  // c_n = P(n) / (D(n) π^m), con P(n) = A + B(−1)^n (+ C cos(nπ/2) + D sen(nπ/2) en los trapecios) y
+  // D(n) = n^k, n² − 1 (|sen x|), 1 + n² (e^x)…; A, B, C, D racionales o por una constante como e^π.
+  // Se comprueba hasta n = NPAT; desde = 2 cuando el primer coeficiente va aparte (la media onda)
+  const DEN = [0, 1, 2, 3, 4].map((k) => ({ v: (n) => n ** k, t: k ? (k === 1 ? 'n' : `n^{${k}}`) : '', k }))
+    .concat([[(n) => n * n - 1, '(n^{2} − 1)'], [(n) => 4 * n * n - 1, '(4 n^{2} − 1)'], [(n) => n * n + 1, '(n^{2} + 1)'], [(n) => n * n + 4, '(n^{2} + 4)'], [(n) => 1 + n * n * PI * PI, '(1 + n^{2} π^{2})'], [(n) => 1 + 4 * n * n * PI * PI, '(1 + 4 n^{2} π^{2})']].flatMap(([v, t]) => [{ v, t }, { v: (n) => v(n) / n, t, num: true }]));
+  const CTE = [[1, ''], [Math.E, 'e'], [Math.exp(PI), 'e^{π}'], [Math.exp(-PI), 'e^{−π}'], [Math.exp(2 * PI), 'e^{2π}'], [Math.exp(-1), 'e^{−1}'], [Math.sinh(PI), 'senh π'], [Math.sinh(1), 'senh 1']];
+  const BASE = [() => 1, (n) => (n % 2 ? -1 : 1), (n) => [1, 0, -1, 0][n % 4], (n) => [0, 1, 0, -1][n % 4]];
+  const PAT = ['', '(−1)^n', 'cos({n π}/{2})', 'sen({n π}/{2})'];
+  // resuelve el sistema lineal pequeño M c = y (Gauss con pivote)
+  function resuelve(M, y) {
+    const n = y.length, A = M.map((r, i) => [...r, y[i]]);
+    for (let c = 0; c < n; c++) {
+      let p = c; for (let r = c + 1; r < n; r++) if (Math.abs(A[r][c]) > Math.abs(A[p][c])) p = r;
+      if (Math.abs(A[p][c]) < 1e-12) return null;
+      [A[c], A[p]] = [A[p], A[c]];
+      for (let r = 0; r < n; r++) if (r !== c) { const k = A[r][c] / A[c][c]; for (let j = c; j <= n; j++) A[r][j] -= k * A[c][j]; }
+    }
+    return A.map((r, i) => r[n] / r[i]);
+  }
+  // un número como racional por una constante de CTE
+  function conCte(v) {
+    if (Math.abs(v) < 1e-10) return { p: 0, q: 1, cte: '', v: 0 };
+    for (const [c, t] of CTE) { const r = E.fraccion(v / c, 2000); if (r && Math.abs((r[0] / r[1]) * c - v) < 1e-9 * Math.max(1, Math.abs(v))) return { p: r[0], q: r[1], cte: t, v: (r[0] / r[1]) * c }; }
+    return null;
+  }
   function ley(cs) {
     const esc = Math.max(1e-12, ...cs.slice(1).map(Math.abs));
     if (cs.slice(1).every((c) => Math.abs(c) < 1e-9 * Math.max(1, esc))) return { cero: true };
-    for (const m of [0, 1, 2, 3]) for (const k of [0, 1, 2, 3, 4]) {
-      const g = (n) => cs[n] * n ** k * PI ** m, A = (g(1) + g(2)) / 2, B = (g(2) - g(1)) / 2;
-      const ok = cs.slice(1).every((c, i) => { const n = i + 1; return Math.abs(c - (A + B * (n % 2 ? -1 : 1)) / (n ** k * PI ** m)) <= 1e-8 * esc; });
+    for (const desde of [1, 2]) for (const nb of [2, 4]) for (const m of [0, 1, 2, 3]) for (const D of DEN) {
+      if (D.v(desde) === 0) continue;
+      const ns = Array.from({ length: nb }, (_, i) => desde + i), g = (n) => cs[n] * D.v(n) * PI ** m;
+      const co = resuelve(ns.map((n) => BASE.slice(0, nb).map((b) => b(n))), ns.map(g));
+      if (!co) continue;
+      const P = (n) => co.reduce((s, c, i) => s + c * BASE[i](n), 0);
+      let ok = true;
+      for (let n = desde; n < cs.length && ok; n++) ok = Math.abs(cs[n] - P(n) / (D.v(n) * PI ** m)) <= 1e-8 * esc;
       if (!ok) continue;
-      const fa = Math.abs(A) < 1e-10 ? [0, 1] : E.fraccion(A, 2000), fb = Math.abs(B) < 1e-10 ? [0, 1] : E.fraccion(B, 2000);
-      if (!fa || !fb) continue;
-      return { k, m, A: fa, B: fb };
+      const id = co.map(conCte);
+      if (id.some((x) => !x)) continue;
+      // el patrón de 4 solo si de verdad hace falta (C o D no nulos)
+      if (nb === 4 && !id[2].p && !id[3].p) continue;
+      return { m, D, desde, co: id, k: D.k };
     }
     return null;
   }
   // texto Mates del término general
   function leyTxt(L) {
-    const [pa, qa] = L.A, [pb, qb] = L.B, q = (qa * qb) / gcd(qa, qb), a = (pa * q) / qa, b = (pb * q) / qb;
+    const t = L.co.map((c, i) => ({ ...c, pat: PAT[i] })).filter((c) => c.p);
+    if (!t.length) return '0';
+    const Q = t.reduce((q, c) => (q * c.q) / gcd(q, c.q), 1), ints = t.map((c) => (c.p * Q) / c.q);
+    const g = ints.reduce((x, y) => gcd(x, y), 0) || 1;
     let arriba, sg = '';
-    const g = gcd(Math.abs(a), Math.abs(b)) || 1;
-    if (!b) { arriba = String(Math.abs(a)); sg = a < 0 ? '−' : ''; }
-    else if (!a) { arriba = `${Math.abs(b) === 1 ? '' : Math.abs(b) + ' '}(−1)^{${b < 0 ? 'n+1' : 'n'}}`; }
-    else if (a === -b) { arriba = g === 1 ? '1 − (−1)^n' : `${g} (1 − (−1)^n)`; sg = a < 0 ? '−' : ''; }
-    else if (a === b) { arriba = g === 1 ? '1 + (−1)^n' : `${g} (1 + (−1)^n)`; sg = a < 0 ? '−' : ''; }
-    else arriba = `${a} ${b < 0 ? '−' : '+'} ${Math.abs(b)} (−1)^n`;
-    const abajo = [q !== 1 ? String(q) : '', L.k ? (L.k === 1 ? 'n' : `n^{${L.k}}`) : '', L.m ? piK(L.m) : ''].filter(Boolean).join(' ');
+    const [a, b] = [t.find((c) => !c.pat), t.find((c) => c.pat === '(−1)^n')].map((c) => (c ? (c.p * Q) / c.q : 0));
+    const simple = !L.D.num && t.every((c) => !c.cte && (c.pat === '' || c.pat === '(−1)^n'));
+    if (simple && !b) { arriba = String(Math.abs(a)); sg = a < 0 ? '−' : ''; }
+    else if (simple && !a) arriba = `${Math.abs(b) === 1 ? '' : Math.abs(b) + ' '}(−1)^{${b < 0 ? 'n+1' : 'n'}}`;
+    else if (simple && a === -b) { arriba = g === 1 ? '1 − (−1)^n' : `${g} (1 − (−1)^n)`; sg = a < 0 ? '−' : ''; }
+    else if (simple && a === b) { arriba = g === 1 ? '1 + (−1)^n' : `${g} (1 + (−1)^n)`; sg = a < 0 ? '−' : ''; }
+    else if (simple) arriba = `${a} ${b < 0 ? '−' : '+'} ${Math.abs(b)} (−1)^n`;
+    else {
+      // los trapecios y las exponenciales: términos con sus constantes, sacando el factor común
+      // empieza por un término positivo si lo hay: 2 (e^π (−1)^n − 1) mejor que −2 (1 − e^π (−1)^n)
+      const j = ints.findIndex((v) => v > 0);
+      if (j > 0) { t.unshift(...t.splice(j, 1)); ints.unshift(...ints.splice(j, 1)); }
+      const gg = t.length > 1 ? g : Math.abs(ints[0]), neg = ints[0] < 0;
+      const cuerpo = t.map((c, i) => {
+        const v = Math.abs(ints[i] / gg), u = [v === 1 && (c.cte || c.pat) ? '' : String(v), c.cte, c.pat].filter(Boolean).join(' ');
+        return (i ? ((ints[i] < 0) !== neg ? ' − ' : ' + ') : '') + u;
+      }).join('');
+      sg = neg ? '−' : '';
+      arriba = L.D.num ? (t.length > 1 ? `${gg === 1 ? '' : gg + ' '}n (${cuerpo})` : [gg === 1 ? '' : gg, 'n', cuerpo.replace(/^1 ?/, '')].filter(Boolean).join(' ')) : gg === 1 ? cuerpo : t.length > 1 ? `${gg} (${cuerpo})` : `${gg} ${cuerpo}`;
+    }
+    const abajo = [Q !== 1 ? String(Q) : '', L.D.t, L.m ? piK(L.m) : ''].filter(Boolean).join(' ');
     return sg + (abajo ? `{${arriba}}/{${abajo}}` : arriba);
   }
   function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) [a, b] = [b, a % b]; return a; }
@@ -1145,7 +1199,13 @@ const Fourier = (() => {
       const i1 = I(64), i2 = I(256), i3 = I(1024);
       if (isFinite(i3) && i3 - i2 > 0.01 * Math.max(1, i3) && i3 - i2 > 0.75 * (i2 - i1)) throw new Error(`La función${tramos.length > 1 ? ` del tramo ${i + 1}` : ''} se va a infinito y su integral no existe: no tiene serie de Fourier`);
     });
-    for (let i = 1; i < tramos.length; i++) if (Math.abs(tramos[i].a - tramos[i - 1].b) > 1e-9 * Math.max(1, Math.abs(tramos[i].a))) throw new Error(`El tramo ${i + 1} tiene que empezar donde acaba el ${i} (${f(tramos[i - 1].b)})`);
+    // los huecos entre tramos se rellenan con f = 0; los solapes son un error
+    const huecos = [];
+    for (let i = 1; i < tramos.length; i++) {
+      const u = tramos[i - 1].b, v = tramos[i].a, tol = 1e-9 * Math.max(1, Math.abs(v));
+      if (v < u - tol) throw new Error(`El tramo ${i + 1} empieza antes de que acabe el ${i} (en ${f(u)}): los tramos no pueden solaparse`);
+      if (v > u + tol) { huecos.push({ a: u, b: v }); tramos.splice(i, 0, { ast: null, a: u, b: v, txt: '0', fn: () => 0, hueco: true }); i++; }
+    }
     const a0x = tramos[0].a, b0x = tramos[tramos.length - 1].b;
     if (ext !== 'periodica' && Math.abs(a0x) > 1e-12) throw new Error('Para la extensión par o impar la función se da en [0, L]: el primer tramo tiene que empezar en 0');
     const N = vacio(sc.N) ? 10 : +String(sc.N).trim();
@@ -1198,7 +1258,7 @@ const Fourier = (() => {
     const a0t = numF(s0), b0t = numF(s0 + T);
     const pasos = [];
     const defTxt = (t) => `$f(x) = ${t.txt}$ si $${numF(t.a)} ≤ x < ${numF(t.b)}$`;
-    pasos.push({ t: 'Periodo y frecuencia', html: (ext === 'periodica' ? `La función tiene periodo $T = ${Tt}$: ${tramos.map(defTxt).join('; ')}.` : `La función se da en [0, ${Lt}] (${tramos.map(defTxt).join('; ')}) y se extiende de forma <b>${ext}</b> a [−${Lt}, ${Lt}], así que $T = 2L = ${Tt}$${ext === 'par' ? ' y salen solo cosenos' : ' y salen solo senos'}.`) + ` La frecuencia fundamental es $ω_0 = {2π}/{T} = ${numF(w0)}$ y la serie es<br>$f(x) ∼ {a_0}/{2} + Σ_{n=1}^{∞} (a_n cos(${arg}) + b_n sen(${arg}))$` });
+    pasos.push({ t: 'Periodo y frecuencia', html: (ext === 'periodica' ? `La función tiene periodo $T = ${Tt}$: ${tramos.map(defTxt).join('; ')}.` : `La función se da en [0, ${Lt}] (${tramos.map(defTxt).join('; ')}) y se extiende de forma <b>${ext}</b> a [−${Lt}, ${Lt}], así que $T = 2L = ${Tt}$${ext === 'par' ? ' y salen solo cosenos' : ' y salen solo senos'}.`) + (huecos.length ? ` Entre ${huecos.map((h) => `$${numF(h.a)}$ y $${numF(h.b)}$`).join(', ')} no se ha dado la función, así que ahí se toma <b>f = 0</b>.` : '') + ` La frecuencia fundamental es $ω_0 = {2π}/{T} = ${numF(w0)}$ y la serie es<br>$f(x) ∼ {a_0}/{2} + Σ_{n=1}^{∞} (a_n cos(${arg}) + b_n sen(${arg}))$` });
     pasos.push({ t: 'Paridad', html: par && impar ? 'f es 0 en todo el periodo.' : par ? `f es <b>par</b>, $f(−x) = f(x)$: el producto f(x) sen(nω₀x) es impar y su integral en un periodo simétrico es 0, así que todos los $b_n = 0$ (serie de cosenos).` : impar ? `f es <b>impar</b>, $f(−x) = −f(x)$: $a_0$ y todos los $a_n$ son 0 (serie de senos).` : 'f no es par ni impar: hay que calcular los $a_n$ y los $b_n$.' });
     const intDef = (q) => `${dosT} ∫_{${a0t}}^{${b0t}} f(x) ${q} dx`;
     const lA = impar ? { cero: true } : ley(an.slice(0, NPAT + 1)), lB = par ? { cero: true } : ley(bn.slice(0, NPAT + 1));
@@ -1206,8 +1266,11 @@ const Fourier = (() => {
     pasos.push({ t: 'Coeficiente a₀', html: `$a_0 = ${intDef('')} = ${conDec(an[0])}$, así que el valor medio de f es $a_0/2 = ${numF(an[0] / 2)}$.` });
     const general = (L) => (L && !L.cero ? leyTxt(L) : null);
     const gA = general(lA), gB = general(lB);
-    if (!impar) pasos.push({ t: 'Coeficientes aₙ', html: `$a_n = ${intDef(`cos(${arg})`)}$` + (lA?.cero ? ' = 0 para todo n ≥ 1.' : gA ? ` = <b>$${gA}$</b><br>Dando valores: ${lista(an, 'a')}…` : `<br>No siguen una fórmula sencilla; los primeros valen ${lista(an, 'a')}…`) });
-    if (!par) pasos.push({ t: 'Coeficientes bₙ', html: `$b_n = ${intDef(`sen(${arg})`)}$` + (lB?.cero ? ' = 0 para todo n.' : gB ? ` = <b>$${gB}$</b><br>Dando valores: ${lista(bn, 'b')}…` : `<br>No siguen una fórmula sencilla; los primeros valen ${lista(bn, 'b')}…`) });
+    // cuando la fórmula vale desde n = 2 (al poner n = 1 sale 0/0), el primer coeficiente va aparte
+    const aparte = (L, cs, nom) => (L?.desde === 2 ? ` para n ≥ 2, y el primero, que se calcula aparte, $${nom}_1 = ${numF(cs[1])}$` : '');
+    const coefTxt = (L, g, cs, nom) => (L?.cero ? ` = 0 para todo n ≥ 1.` : g === '0' ? ` = 0 para n ≥ 2, y el primero, que se calcula aparte, es <b>$${nom}_1 = ${numF(cs[1])}$</b>.` : g ? ` = <b>$${g}$</b>${aparte(L, cs, nom)}<br>Dando valores: ${lista(cs, nom)}…` : `<br>No siguen una fórmula sencilla; los primeros valen ${lista(cs, nom)}…`);
+    if (!impar) pasos.push({ t: 'Coeficientes aₙ', html: `$a_n = ${intDef(`cos(${arg})`)}$` + coefTxt(lA, gA, an, 'a') });
+    if (!par) pasos.push({ t: 'Coeficientes bₙ', html: `$b_n = ${intDef(`sen(${arg})`)}$` + coefTxt(lB, gB, bn, 'b') });
 
     // la serie con el término general y los primeros términos
     const terminos = [];
@@ -1219,8 +1282,29 @@ const Fourier = (() => {
     }
     const unT = (t, i) => { const v = numF(Math.abs(t.c)), neg = t.c < 0, cuerpo = !t.s ? v : v === '1' ? t.s : `${v} ${t.s}`; return (i ? (neg ? ' − ' : ' + ') : neg ? '−' : '') + cuerpo; };
     const primeros = terminos.map(unT).join('') + ' + …';
-    const sumaTxt = [an[0] ? numF(an[0] / 2) : '', gA && !lA.cero ? `Σ_{n=1}^{∞} ${gA.startsWith('−') ? '(' + gA + ')' : gA} cos(${arg})` : '', gB && !lB.cero ? `Σ_{n=1}^{∞} ${gB.startsWith('−') ? '(' + gB + ')' : gB} sen(${arg})` : ''].filter(Boolean).join(' + ');
-    pasos.push({ t: 'Serie de Fourier', html: ((gA || lA?.cero) && (gB || lB?.cero) && sumaTxt ? `$f(x) ∼ ${sumaTxt}$<br>` : '') + `$f(x) ∼ ${primeros}$` });
+    const u1 = conN(arg, 1), u1a = /^[xπ]$/.test(u1) ? ` ${u1}` : `(${u1})`;
+    const sumaL = (L, g, cs, q) => {
+      if (!g || L.cero) return [];
+      const uno = L.desde === 2 && cs[1] ? [`${numF(cs[1])} ${q}${u1a}`] : [];
+      return g === '0' ? uno : [...uno, `Σ_{n=${L.desde}}^{∞} ${g.startsWith('−') ? '(' + g + ')' : g} ${q}(${arg})`];
+    };
+    const sumaTxt = [an[0] ? numF(an[0] / 2) : '', ...sumaL(lA, gA, an, 'cos'), ...sumaL(lB, gB, bn, 'sen')].filter(Boolean).join(' + ').replace(/\+ −/g, '− ');
+    // con dos sumatorios, el segundo en otra línea para que quepa en el móvil
+    const partido = (t) => { const i = t.indexOf(' + Σ', t.indexOf('Σ') + 1); return i < 0 ? t : `${t.slice(0, i)}$<br>$\u2003 ${t.slice(i + 1)}`; };
+    pasos.push({ t: 'Serie de Fourier', html: ((gA || lA?.cero) && (gB || lB?.cero) && sumaTxt ? `$f(x) ∼ ${partido(sumaTxt)}$<br>` : '') + `$f(x) ∼ ${primeros}$` });
+
+    // forma compleja, c_n = (a_n − i b_n)/2, y forma amplitud-fase, A_n cos(nω₀x + φ_n)
+    const cn = an.map((a, n) => (n ? { re: a / 2, im: -bn[n] / 2 } : { re: a / 2, im: 0 })).slice(0, N + 1);
+    const An = an.map((a, n) => (n ? Math.hypot(a, bn[n]) : Math.abs(a) / 2)).slice(0, N + 1);
+    const fase = an.map((a, n) => (n && An[n] > 1e-12 ? Math.atan2(-bn[n], a) : 0)).slice(0, N + 1);
+    const mitad = (L) => (L && !L.cero && L.desde === 1 ? leyTxt({ ...L, co: L.co.map((c) => { const g = gcd(c.p, 2 * c.q) || 1; return { ...c, p: c.p / g, q: (2 * c.q) / g }; }) }) : null);
+    const hA = impar || lA?.cero ? '0' : mitad(lA), hB = par || lB?.cero ? '0' : mitad(lB);
+    const porI = (t) => (t.startsWith('−') ? `i ${t.slice(1)}` : `−i ${t}`);
+    const cnTxt = hA && hB ? (hB === '0' ? hA : hA === '0' ? porI(hB) : `${hA} ${porI(hB).replace(/^−/, '− ').replace(/^i/, '+ i')}`) : null;
+    const cTxt = (c) => (Math.abs(c.im) < 1e-12 ? numF(c.re) : `${Math.abs(c.re) < 1e-12 ? (c.im < 0 ? '−' : '') : `${numF(c.re)} ${c.im < 0 ? '−' : '+'} `}${numF(Math.abs(c.im)) === '1' ? '' : numF(Math.abs(c.im)) + ' '}i`);
+    pasos.push({ t: 'Forma compleja', html: `Con $cos θ = {e^{iθ} + e^{−iθ}}/{2}$ y $sen θ = {e^{iθ} − e^{−iθ}}/{2i}$ la serie queda $f(x) ∼ Σ_{n=−∞}^{∞} c_n e^{i n ω_0 x}$, con $c_0 = {a_0}/{2} = ${numF(an[0] / 2)}$, $c_n = {a_n − i b_n}/{2}$ y $c_{−n}$ el conjugado de $c_n$${cnTxt ? `:<br>$c_n = ${cnTxt}$` : ''}.<br>Los primeros: ${[1, 2, 3].filter((n) => n <= N).map((n) => `$c_{${n}} = ${cTxt(cn[n])}$`).join(', ')}.` });
+    const faseTxt = (p) => (Math.abs(p) < 1e-12 ? '0' : exacto(p)?.k === 1 ? numF(p) : f(p, 4));
+    pasos.push({ t: 'Forma amplitud-fase', html: `Juntando el coseno y el seno de cada armónico, $a_n cos(n ω_0 x) + b_n sen(n ω_0 x) = A_n cos(n ω_0 x + φ_n)$, con $A_n = √(a_n^2 + b_n^2)$ (la amplitud, la del espectro) y $φ_n = arctg(−b_n/a_n)$ en su cuadrante:<br>${[1, 2, 3, 4].filter((n) => n <= N).map((n) => `$A_{${n}} = ${An[n] < 1e-12 ? '0' : conDec(An[n]).replace(/ ≈ .*/, '')}$${An[n] < 1e-12 ? '' : `, $φ_{${n}} = ${faseTxt(fase[n])}$`}`).join('; ')}.` });
 
     // convergencia y saltos
     pasos.push({ t: 'Convergencia', html: saltos.length ? `f tiene ${saltos.length === 1 ? 'un salto' : 'saltos'} en ${saltos.map((s) => `$x = ${numF(s.x)}$`).join(', ')}. Allí la serie converge a la media de los límites laterales, ${saltos.map((s) => `${'$'}{${f(s.izq)} ${s.der < 0 ? '−' : '+'} ${f(Math.abs(s.der))}}/{2} = ${f(s.media)}$`).join('; ')}, y cerca del salto la suma parcial se pasa un 9 % del salto (fenómeno de Gibbs) por muchos términos que tenga. En el resto de puntos converge a f(x).` : 'f es continua (también al pasar de un periodo al siguiente), así que la serie converge a f(x) en todos los puntos, y los coeficientes bajan rápido.' });
@@ -1235,7 +1319,40 @@ const Fourier = (() => {
     }
     pasos.push({ t: 'Igualdad de Parseval', html: `$${dosT} ∫ f(x)^2 dx = {a_0^2}/{2} + Σ_{n=1}^{∞} (a_n^2 + b_n^2) = ${conDec(energia)}$. Los ${N} primeros armónicos (con a₀) ya suman ${f(parcial, 6)}, el ${f((100 * parcial) / energia, 4)} % de la «energía» de f.` });
 
-    return { tramos, ext, T, L, w0, N, nmax, an, bn, par, impar, saltos, S, fper, energia, parcial, x0, sx0, fx0, gA, gB, cerosA: !!lA?.cero, cerosB: !!lB?.cero, pasos, s0, primeros };
+    // sumas de series numéricas: la serie en un punto (o Parseval) da una suma exacta, como 1 − 1/3 + 1/5 − … = π/4
+    const sumas = [];
+    const conv = (x) => { const sj = saltos.find((q) => { const d = (x - q.x) / T; return Math.abs(d - Math.round(d)) < 1e-9; }); return { v: sj ? sj.media : fper(x), salto: !!sj }; };
+    const serieNum = (ts, S) => {
+      const nz = ts.map((v, i) => ({ v, n: i + 1 })).filter((q) => Math.abs(q.v) > 1e-10 * esc);
+      if (nz.length < 4) return null;
+      // se escala para que los términos queden como ±1/entero: 1/3 + 1/15 + 1/35 + …
+      let K = null, us = null;
+      for (let j = 1; j <= 200 && !us; j++) {
+        const k = nz[0].v * j, u = nz.slice(0, 4).map((q) => E.fraccion(q.v / k, 100000));
+        if (u.every((r, i) => r && Math.abs(r[0] / r[1] - nz[i].v / k) < 1e-9 && Math.abs(r[0]) === 1)) { K = k; us = u; }
+      }
+      if (!us) return null;
+      const val = S / K, e = exacto(val);
+      if (!e || Math.abs(val) < 1e-12) return null;
+      const fr = (r) => (r[1] === 1 ? String(Math.abs(r[0])) : `{${Math.abs(r[0])}}/{${r[1]}}`);
+      const txt = us.map((r, i) => (i ? (r[0] < 0 ? ' − ' : ' + ') : r[0] < 0 ? '−' : '') + fr(r)).join('') + ' + …';
+      return { txt: `${txt} = ${numF(val)}`, clave: us.map((r) => r.join('/')).join(',') };
+    };
+    if ((gA || lA?.cero) && (gB || lB?.cero)) {
+      for (const x of [0, T / 2, T / 4, -T / 4]) {
+        const { v, salto } = conv(x), ts = [];
+        for (let n = 1; n <= nmax; n++) { const c = Math.cos(n * w0 * x), sn = Math.sin(n * w0 * x); ts.push(an[n] * (Math.abs(c) < 1e-12 ? 0 : c) + bn[n] * (Math.abs(sn) < 1e-12 ? 0 : sn)); }
+        const r = serieNum(ts, v - an[0] / 2);
+        if (r && !sumas.some((q) => q.clave === r.clave)) sumas.push({ ...r, como: `En $x = ${numF(x)}$ la serie converge a ${salto ? 'la media del salto, ' : ''}$${numF(v)}$, así que despejando` });
+        if (sumas.length >= 2) break;
+      }
+      const ts = []; for (let n = 1; n <= nmax; n++) ts.push(an[n] ** 2 + bn[n] ** 2);
+      const r = serieNum(ts, energia - an[0] ** 2 / 2);
+      if (r && !sumas.some((q) => q.clave === r.clave)) sumas.push({ ...r, como: 'Con la igualdad de Parseval, restando ${a_0^2}/{2}$ y dividiendo,' });
+    }
+    if (sumas.length) pasos.push({ t: 'Sumas de series numéricas', html: sumas.map((q) => `${q.como}<br>$${q.txt}$`).join('<br>') });
+
+    return { tramos, huecos, ext, T, L, w0, N, nmax, an, bn, par, impar, saltos, S, fper, energia, parcial, x0, sx0, fx0, gA, gB, desdeA: lA?.desde || 1, desdeB: lB?.desde || 1, cerosA: !!lA?.cero, cerosB: !!lB?.cero, cn, cnTxt, An, fase, sumas, pasos, s0, primeros };
   }
 
   const ejemplos = [
@@ -1251,6 +1368,9 @@ const Fourier = (() => {
     { clave: 'senos', nombre: 'Desarrollo en senos de 1 en [0, π]', sc: { ext: 'impar', tramos: [{ f: '1', a: '0', b: 'π' }], N: '9', x0: '' } },
     { clave: 'senos-parabola', nombre: 'Desarrollo en senos de x(π − x)', sc: { ext: 'impar', tramos: [{ f: 'x(π - x)', a: '0', b: 'π' }], N: '5', x0: 'π/2' } },
     { clave: 'cuadrada-T2', nombre: 'Onda cuadrada de periodo 2', sc: { ext: 'periodica', tramos: [{ f: '-1', a: '-1', b: '0' }, { f: '1', a: '0', b: '1' }], N: '9', x0: '' } },
+    { clave: 'exponencial', nombre: 'f(x) = eˣ en [−π, π]', sc: { ext: 'periodica', tramos: [{ f: 'e^x', a: '-π', b: 'π' }], N: '10', x0: '' } },
+    { clave: 'trapecio', nombre: 'Onda trapezoidal de periodo 4', sc: { ext: 'periodica', tramos: [{ f: 'x', a: '0', b: '1' }, { f: '1', a: '1', b: '2' }, { f: '3 - x', a: '2', b: '3' }, { f: '0', a: '3', b: '4' }], N: '10', x0: '' } },
+    { clave: 'hueco', nombre: 'Tramos con un hueco (f = 0 en medio)', sc: { ext: 'periodica', tramos: [{ f: '1', a: '-π', b: '-π/2' }, { f: '1', a: 'π/2', b: 'π' }], N: '9', x0: '' } },
   ];
 
   return { resolver, ejemplos, ley, leyTxt, numF, exacto, f, MAXN };
@@ -1338,12 +1458,15 @@ const Fourier = (() => {
     err.hidden = true; guarda();
     const { an, bn } = sol, tres = (cs) => [1, 2, 3].map((n) => fH(cs[n], 4)).join('; ');
     let h = dato('Serie de Fourier', M(`f(x) ∼ ${sol.primeros}`), 'ancho');
-    if (sol.gA || sol.gB) h += dato('Término general', [sol.gA ? M(`a_n = ${sol.gA}`) : '', sol.gB ? M(`b_n = ${sol.gB}`) : ''].filter(Boolean).join('&emsp;'), 'ancho');
+    const desde = (d) => (d === 2 ? ' <small>(n ≥ 2)</small>' : '');
+    if (sol.gA || sol.gB) h += dato('Término general', [sol.gA ? M(`a_n = ${sol.gA}`) + desde(sol.desdeA) : '', sol.gB ? M(`b_n = ${sol.gB}`) + desde(sol.desdeB) : ''].filter(Boolean).join('&emsp;'), 'ancho');
+    if (sol.cnTxt && sol.cnTxt !== '0') h += dato('Forma compleja', M(`c_n = ${sol.cnTxt}`), 'ancho');
     h += dato('a₀', fH(an[0], 5), 'num');
     if (!sol.impar) h += dato('a₁; a₂; a₃', tres(an), 'num');
     if (!sol.par) h += dato('b₁; b₂; b₃', tres(bn), 'num');
     if (sol.x0 !== null) h += dato(`S${sub(sol.N)}(x₀), con x₀ = ${fH(sol.x0, 4)}`, fH(sol.sx0, 6), 'num');
     h += dato(`Energía en ${sol.N} armónicos`, `${fH((100 * sol.parcial) / sol.energia, 4)} %`);
+    if (sol.sumas.length) h += dato('Suma de una serie', sol.sumas.map((q) => M(q.txt)).join('<br>'), 'ancho');
     $('#resumen').innerHTML = h;
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
     const rg = $('#armonicos'); rg.max = sol.N; k = anda ? Math.min(k, sol.N) : sol.N; rg.value = k;
