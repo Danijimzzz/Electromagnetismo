@@ -11,7 +11,10 @@ Web estática de simuladores y calculadoras de ciencias para la carrera, en espa
 | `fuente/catalogo.js` | Asignaturas y herramientas: clave, nombre, icono, `disponible`, desc, búsqueda y, para generar la página, `scripts`, `titulo`, `descripcion`, `carpeta` y `guarda` (ver cabecera de herramientas.js). **Único sitio donde se da de alta una herramienta.** |
 | `fuente/portal.js` | Genera portada, páginas de asignatura, novedades y foro desde el catálogo (lo llama build.sh). |
 | `fuente/diseno.js` | Pasa cada `pagina.html` y mete cabecera del portal, color de la asignatura, miga y CSS común. |
-| `fuente/estilos.css`, `DISENO.md`, `fuente/plantilla/pagina.html` | Hoja común, guía de diseño y plantilla de página. |
+| `fuente/estilos.css`, `DISENO.md` | Hoja común y guía de diseño. |
+| `fuente/plantilla/` | Plantilla de herramienta: `pagina.html`, `calculo.js`, `app.js` y `prueba.js` (funcionan tal cual). |
+| `fuente/nueva.js` | `node fuente/nueva.js <asignatura> <clave> "<Nombre>"`: copia la plantilla y la da de alta en catalogo.js y version.js. |
+| `fuente/herramienta.js` | `Herramienta`: ayudantes comunes de las app.js (`$`, `esc`, `copia`, `vacio`, `txt`, `marcas`, `lienzo`). Va en cada página tras version.js. |
 | `fuente/biblioteca.js` | Barra lateral «Mis ejercicios», común a todas las herramientas. |
 | `fuente/practica.js` | Modo práctica común (datos al azar, corrige respuestas). |
 | `fuente/tema.js` | Botón claro/oscuro (`simu-tema`). |
@@ -34,18 +37,17 @@ Web estática de simuladores y calculadoras de ciencias para la carrera, en espa
 `fuente/<clave>/` con:
 - `pagina.html`: `<title>`, `<meta description>`, `<style>` solo con lo propio, `<header class="top">` (diseno.js lo sustituye), `.wrap > h1 + .lead + .layout(.card datos | resultados) + section.teoria`, y `<footer>` que acaba en `<span id="ver"></span>`.
 - `fisica.js` o `calculo.js` (sin DOM): `const Nombre = (() => { … return { resolver, ejemplos, … }; })();` y última línea `if (typeof module !== 'undefined') module.exports = Nombre;` (build.sh la quita; comprobar.js la usa con `require`).
-- `app.js` (interfaz): IIFE con `$`, estado `sc` guardado en `localStorage[CLAVE]`, `formulario()`, `calcula()`, `dibuja()` en `<canvas>`, `<select id="ejemplos">`, y expone `window.<Nombre>App = { abrirEjemplo, azar, enunciado, resultado, estado }` para práctica y pruebas.
+- `app.js` (interfaz): IIFE con `const { $, esc, copia, … } = Herramienta;`, estado `sc` guardado en `localStorage[CLAVE]`, `formulario()`, `calcula()`, `dibuja()` en `<canvas>`, `<select id="ejemplos">`, y expone `window.<Nombre>App = { abrirEjemplo, azar, enunciado, resultado, estado }` para práctica y pruebas.
 
 Excepciones: `electrostatica` (shell.html + scripts raíz, su propia biblioteca), `tabla-periodica` (sin estado), `magnetostatica` (fisica + ejemplos + app). La carpeta no siempre coincide con la clave del catálogo: `estadistica/` → `distribuciones`, `circuitos/` → `continua`.
 
 **Crear una nueva**
-1. Copiar `fuente/plantilla/pagina.html` a `fuente/<clave>/pagina.html` y seguir `DISENO.md`.
-2. Escribir `fisica.js`/`calculo.js` con `ejemplos` y `app.js` siguiendo una herramienta parecida.
-3. `catalogo.js`: entrada con `disponible: true` (o pasar a `true` una «Próximamente») y `scripts: ['mates.js', '<carpeta>/fisica.js', '<carpeta>/app.js'], titulo: '…', descripcion: '…'`. La app guarda su estado en `localStorage['<carpeta>-v1']` (si no, `guarda: '…'`).
+1. `node fuente/nueva.js <asignatura> <clave> "<Nombre>"`: crea `fuente/<clave>/` y `pruebas/herramientas/<clave>.js` desde `fuente/plantilla/` (un ejemplo que ya funciona y pasa las pruebas), y da de alta la herramienta en `catalogo.js` (o completa su «Próximamente») y en `version.js` (0.1).
+2. Cambiar el ejemplo por lo de verdad: `calculo.js` con `resolver` y `ejemplos`, `app.js`, `pagina.html` siguiendo `DISENO.md`, y en la prueba los resultados de los ejemplos calculados a mano.
+3. `catalogo.js`: revisar `desc`, `buscar`, `icono`, `titulo` y `descripcion`. Si la carpeta no es la clave, `carpeta: '…'`; si el estado no va en `localStorage['<carpeta>-v1']`, `guarda: '…'`.
 4. `practica.js`: entrada en `CONF` si la página no sigue la estructura estándar o la herramienta genera sus propios ejercicios (`genera: () => window.XApp?.azar()`).
-5. `version.js`: registro `'<carpeta>': [{ v: '0.1', … }]` y una entrada en `web` con «Nueva herramienta: …, en <Asignatura>.».
-6. `pruebas/herramientas/<carpeta>.js` (copiar uno parecido): resultados de los ejemplos calculados a mano y la parte de navegador. comprobar.js falla si falta.
-7. `node pruebas/comprobar.js --solo <carpeta>` mientras se trabaja y `node pruebas/comprobar.js` entero al final.
+5. `version.js`: las novedades de la 0.1 y una entrada en `web` con «Nueva herramienta: …, en <Asignatura>.».
+6. `sh fuente/build.sh && node pruebas/comprobar.js --solo <clave>` mientras se trabaja y `node pruebas/comprobar.js` entero al final.
 
 ## Contratos compartidos
 
@@ -93,6 +95,6 @@ Playwright: en este contenedor ya está; en otro, `npm install --no-save playwri
 
 - Leer solo lo necesario: este fichero, la herramienta afectada y, si hace falta, una herramienta parecida. No leer `publico/` (es generado y enorme) ni `pruebas/` entero: la prueba de una herramienta está en `pruebas/herramientas/<carpeta>.js`.
 - Para cambios pequeños, editar con reemplazos puntuales; no reescribir ficheros enteros.
-- Antes de escribir un ayudante (`esc`, formato de números, lectura de campos, lienzo, flechas, ejes), buscar si ya existe en un fichero común y reutilizarlo; no copiarlo de otra herramienta.
+- Antes de escribir un ayudante, mirar `fuente/herramienta.js` (y `mates.js`, `matematicas/`, `quimica/`) y reutilizarlo; no copiarlo de otra herramienta. El formato de números `f()` y la lectura de campos `lee()` siguen siendo de cada herramienta (cambian las cifras que se muestran), igual que las constantes físicas (cada una usa el valor del solucionario de su tema).
 - Tras tocar `fuente/`, `sh fuente/build.sh` y commitear también `publico/`.
 - No publicar nada de `privado/` ni del PDF de la asignatura.
