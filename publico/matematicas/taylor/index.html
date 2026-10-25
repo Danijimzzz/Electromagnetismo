@@ -135,9 +135,10 @@ canvas { display: block; width: 100%; height: var(--alto-grafica); border-radius
 /* ---------- Teoría ---------- */
 .teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
 .teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
-.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+.teoria .f { max-width: 100%; overflow-x: auto; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
 .teoria ul { padding-left: 20px }
 .teoria li { margin-bottom: 4px }
+.teoria li, .teoria p { overflow-x: auto }
 
 :root { --accent:#6b3fa0; --accent-soft:color-mix(in srgb, #6b3fa0 12%, #fff); --marca:#0d6b66 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --accent:#b892ec; --accent-soft:color-mix(in srgb, #b892ec 16%, #182025); --marca:#4dbcb0 } }
@@ -180,6 +181,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 #grafica { height: clamp(300px, 44vw, 460px) }
 .grado { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 10px; font-size: 13.5px }
 .grado input[type=range] { flex: 1 1 160px; accent-color: var(--accent) }
+.grado[hidden] { display: none }
 .grado b { font-variant-numeric: tabular-nums; min-width: 1.5em; display: inline-block }
 </style>
 <body>
@@ -193,14 +195,14 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
     <h2>Datos</h2>
     <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
     <div class="campos" id="campos"></div>
-    <p class="nota">Escribe la función con x: e^x, sen x, cos(2x), ln(1+x), √x, arctg x, 1/(1−x), x^3 − 2x… El punto puede llevar π: π/6.</p>
+    <p class="nota">Escribe la función con x: e^x, sen x, cos(2x), ln(1+x), √x, arctg x, 1/(1−x), x^3 − 2x… El punto puede llevar π: π/6. En «Límite con Taylor» escribe un cociente: (sen x − x)/x^3.</p>
     <p class="error" id="error" hidden></p>
   </div>
   <div>
     <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
     <div class="card"><h2>Gráfica</h2>
       <canvas id="grafica" aria-label="Gráfica de la función y de sus polinomios de Taylor"></canvas>
-      <div class="grado"><label for="grado">Grado mostrado: <b id="vgrado">0</b></label><input type="range" id="grado" min="0" max="4" step="1" value="4"><button class="btn" id="animar" type="button">▶ Ver cómo se acerca</button></div>
+      <div class="grado" id="control"><label for="grado">Grado mostrado: <b id="vgrado">0</b></label><input type="range" id="grado" min="0" max="4" step="1" value="4"><button class="btn" id="animar" type="button">▶ Ver cómo se acerca</button></div>
       <p class="nota" id="leyenda"></p></div>
     <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
   </div>
@@ -225,7 +227,14 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
     <li class="m">$(1 + x)^α = 1 + α x + {α (α − 1)}/{2!} x^2 + … = Σ_{k=0}^{∞} binom(α, k) x^k$, para |x| &lt; 1</li>
   </ul>
   <p class="m">Con ellos se sacan otros sin derivar: cambiando x por $−x^2$ en el de $e^x$ sale $e^{−x^2} = 1 − x^2 + {x^4}/{2} − …$, y multiplicando por x el de sen x sale el de x sen x.</p>
+  <h2>Radio de convergencia</h2>
+  <p class="m">La serie de Taylor $Σ c_k (x − a)^k$ converge para $|x − a| &lt; R$ y no converge para $|x − a| &gt; R$. El radio se saca con el criterio del cociente, $R = lím_{k → ∞} {|c_k|}/{|c_{k+1}|}$, y suele ser la distancia de a al punto más cercano, también complejo, donde f deja de estar definida: para ${1}/{1 + x^2}$ en a = 0 es R = 1, por los puntos ±i, aunque en los reales la función no tiene problemas.</p>
   <p class="m">Fuera de su intervalo de convergencia la serie no se acerca a la función por mucho que suba el grado: pruébalo con ln(1 + x) y x₀ = 1,5. Y sumando estas series con x = iθ sale la fórmula de Euler, $e^{iθ} = cos θ + i sen θ$, que se usa en <a href="../complejos/">Números complejos</a>.</p>
+  <h2>Singularidades evitables</h2>
+  <p class="m">${sen x}/{x}$ no está definida en 0 (sale 0/0), pero desarrollando el numerador, $sen x/x = (x − {x^3}/{6} + …)/x = 1 − {x^2}/{6} + …$, se ve que tiende a 1. Dándole ese valor en 0 la función queda derivable y tiene polinomio de Taylor.</p>
+  <h2>Límites con Taylor</h2>
+  <p class="m">Para un límite 0/0 se cambian el numerador y el denominador por sus desarrollos y se compara el primer término que no se anula en cada uno: si empiezan con la misma potencia, el límite es el cociente de sus coeficientes; si el numerador empieza más alto, es 0; y si empieza más alto el denominador, va a ±∞ (o no existe si los laterales tienen distinto signo). Por ejemplo,</p>
+  <p class="f m">$lím_{x → 0} {sen x − x}/{x^3} = lím_{x → 0} {−{x^3}/{6} + …}/{x^3} = −{1}/{6}$</p>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Series de Taylor <span id="ver"></span> (beta)</footer>
@@ -347,13 +356,16 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: coeficiente de autoinducción de solenoides (con núcleo), toroides de sección rectangular y circular, cables coaxiales y líneas bifilares, con el desarrollo desde la ley de Ampère.', 'Inducción mutua entre dos solenoides, dos espiras, un hilo y una espira, y una bobina sobre un toroide, o a partir de L₁, L₂ y k, con el coeficiente de acoplamiento.', 'Flujo, energía magnética y fem inducida si das la corriente o cómo cambia.', 'Circuito RL al cerrar el interruptor o al quitar la fuente: constante de tiempo, corriente y tensión en la bobina en cualquier instante y su gráfica.'] },
     ],
     matrices: [
+      { v: '0.2', fecha: '2026-10-25', cambios: ['Matrices con un parámetro (k, a, m…): el determinante y el rango discutidos según su valor, y la inversa cuando existe.', 'Ecuaciones matriciales AX = B, XA = B y AX + B = C, paso a paso.', 'Aⁿ por diagonalización (P·Dⁿ·P⁻¹), también para potencias grandes.', 'Nuevas operaciones: matriz adjunta y de cofactores, descomposición LU, diagonalización ortogonal de matrices simétricas y forma de Jordan en 2×2 y 3×3.', 'Comparte el ejercicio con un enlace (lleva los datos), cópialo como texto o en LaTeX para tus apuntes, o imprímelo o guárdalo en PDF solo con los resultados y el desarrollo.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: determinante por Gauss, por Sarrus o por Laplace; inversa por Gauss-Jordan o por adjuntos; rango; forma escalonada y escalonada reducida, con cada operación entre filas y la matriz después de cada paso.', 'Valores y vectores propios con el polinomio característico, las raíces exactas (también con radicales o complejas) y si la matriz es diagonalizable, con P y D.', 'Suma, resta, producto (elemento a elemento), producto por un número, potencia y traspuesta.', 'Fracciones exactas y números complejos en cualquier casilla: 3/4, 0,25, 2−3i o (1+i)/2.'] },
     ],
     derivadas: [
+      { v: '0.2', fecha: '2026-10-25', cambios: ['Arreglo: una función constante ya no sale con un punto crítico falso.', 'Integrales impropias: con límites en ∞ o con una asíntota dentro, diciendo si convergen o divergen.', 'Nuevas primitivas: productos de senos y cosenos (sen 3x cos 2x) y cambios trigonométricos (√(1 − x²)).', 'Límites con L’Hôpital, también 0·∞, 1^∞, 0⁰, ∞⁰ e ∞ − ∞.', 'Área entre dos curvas y volumen de revolución (discos y capas).', 'Estudio completo de una función: dominio, simetría, cortes, asíntotas, monotonía y curvatura.', 'Derivación implícita y derivadas parciales, con los puntos críticos y la matriz hessiana.', 'Comparte el ejercicio con un enlace (lleva los datos), cópialo como texto o en LaTeX para tus apuntes, o imprímelo o guárdalo en PDF solo con los resultados y el desarrollo.', 'Aviso junto a los datos: ln es el logaritmo neperiano y log, el decimal.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: derivadas de orden 1 a 4 con la regla de cada paso (suma, producto, cociente, cadena, derivación logarítmica) y el resultado simplificado.', 'Recta tangente en un punto y puntos críticos con su tipo.', 'Primitivas por la tabla, sustitución, partes (también dos veces), fracciones simples e identidades trigonométricas, comprobadas derivándolas.', 'Integral definida con la regla de Barrow, o numérica si no hay primitiva elemental, y el área encerrada.', 'Gráfica de f y f′ con la tangente que recorre la curva, o del área que se va llenando con la primitiva.'] },
     ],
     laplace: [
+      { v: '0.2', fecha: '2026-10-25', cambios: ['Escalón u(t − a), delta δ(t − a) y retrasos e^{−as}, en la directa, en la inversa y en las ecuaciones diferenciales.', 'sen²t, cos²t y productos de senos y cosenos (linealizando), y funciones definidas a trozos.', 'Convolución y función de transferencia H(s), con la respuesta al impulso y al escalón.', 'Sistemas de dos ecuaciones diferenciales por Laplace.', 'Comparte el ejercicio con un enlace (lleva los datos), cópialo como texto o en LaTeX para tus apuntes, o imprímelo o guárdalo en PDF solo con los resultados y el desarrollo.', 'Aviso junto a los datos: ln es el logaritmo neperiano y log, el decimal.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: transformada directa de sumas de términos c·tⁿ·e^(at)·sen(bt) o cos(bt), senh y cosh, con la fila de la tabla y la propiedad que usa cada término, y F(s) con denominador común.', 'Inversa por fracciones simples: polos simples, múltiples y complejos (también dobles), con los coeficientes, la fila de la tabla y los valores inicial y final.', 'Ecuaciones diferenciales de primer y segundo orden con condiciones iniciales: transformar, despejar Y(s) y volver.', 'Plano s con los polos y los ceros, y gráfica animada de f(t) con cada término por separado.'] },
     ],
     interferencia: [
@@ -372,24 +384,30 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: fuerza sobre una carga en un campo uniforme, con el radio, el periodo y el sentido de giro, o la hélice si v no es perpendicular a B. La velocidad se puede dar en m/s, por su energía en eV o por la ddp que la acelera.', 'Fuerza de Lorentz con vectores: v × B con su determinante y F = q(E + v × B).', 'Selector de velocidades y espectrómetro de masas, ciclotrón con la frecuencia, la energía de salida y las vueltas.', 'Fuerza sobre un hilo (y la corriente para que flote) y entre dos hilos paralelos.', 'Animación de cada situación.'] },
     ],
     campos: [
+      { v: '0.2', fecha: '2026-10-25', cambios: ['La función potencial con su expresión, φ = x²y + y³ + K, integrando componente a componente.', 'Integral de línea por una poligonal (como el contorno de un triángulo), tramo a tramo.', 'Nuevo modo ∫ f ds: longitud, masa y centro de masas de un alambre.', 'Teorema de Green en triángulos, polígonos y regiones entre dos curvas, con el área.', 'Nuevo modo de flujo por una superficie r(u, v) con el teorema de Stokes, y nuevo modo del teorema de la divergencia en una caja, una esfera o un cilindro, con la figura en 3D.', 'Comparte el ejercicio con un enlace (lleva los datos), cópialo como texto o en LaTeX para tus apuntes, o imprímelo o guárdalo en PDF solo con los resultados y el desarrollo.', 'Aviso junto a los datos: ln es el logaritmo neperiano y log, el decimal.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: gradiente, derivada direccional y laplaciano de un campo escalar, con su mapa de color y las curvas de nivel.', 'Divergencia y rotacional de un campo vectorial en el plano o en el espacio y, si es conservativo, su potencial.', 'Integral de línea (trabajo) a lo largo de una curva r(t), comparada con la diferencia de potencial cuando el campo es conservativo.', 'Teorema de Green en un círculo o un rectángulo: circulación y flujo por el borde frente a las integrales dobles.', 'Gráfica con partículas que siguen el campo y un molinillo que gira con el rotacional; tocándola se mueve el punto.'] },
     ],
     cinetica: [
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: leyes integradas de orden 0, 1 y 2 con la concentración a cualquier tiempo, la vida media y cuánto se tarda en llegar a una concentración.', 'Orden y constante a partir de una tabla de concentraciones frente al tiempo, con las tres rectas ([A], ln [A] y 1/[A]) y su R².', 'Método de las velocidades iniciales con uno o dos reactivos: órdenes, constante con sus unidades y ley de velocidad.', 'Ecuación de Arrhenius: energía de activación con dos temperaturas o la constante a otra temperatura, con la gráfica de ln k frente a 1/T.', 'Vaso animado en el que las moléculas de reactivo se convierten en producto.'] },
     ],
     edos: [
+      { v: '0.2', fecha: '2026-10-25', cambios: ['Arreglo: avisa cuando la solución explota (y′ = y²) y corta la gráfica ahí.', 'Solución exacta de ecuaciones separables (como la logística), de Bernoulli y exactas, con factor integrante.', 'Euler mejorado (Heun) y punto medio, con una tabla que compara el error según h.', 'Variación de parámetros cuando g(x) no admite coeficientes indeterminados (tg x, 1/cos x, eˣ/x).', 'Ecuaciones de orden 3 y 4 con coeficientes constantes, y de Cauchy-Euler.', 'Comparte el ejercicio con un enlace (lleva los datos), cópialo como texto o en LaTeX para tus apuntes, o imprímelo o guárdalo en PDF solo con los resultados y el desarrollo.', 'Aviso junto a los datos: ln es el logaritmo neperiano y log, el decimal.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ecuaciones de primer orden y′ = f(x, y) con el campo de pendientes, el método de Euler (con su tabla) y RK4, y la solución exacta cuando es lineal con coeficiente constante.', 'Ecuaciones lineales de segundo orden con coeficientes constantes: ecuación característica, solución homogénea, particular por coeficientes indeterminados (también con resonancia) y constantes por las condiciones iniciales.', 'Sistemas x′ = f(x, y), y′ = g(x, y): puntos críticos con su tipo (silla, nodo, foco o centro) por los autovalores del jacobiano, solución exacta si es lineal y diagrama de fases con trayectorias.', 'Gráfica animada; tocándola se cambia el punto inicial.'] },
     ],
     fourier: [
+      { v: '0.2', fecha: '2026-10-25', cambios: ['Arreglo: avisa si la función no es integrable (1/x en [−1, 1]) en vez de dar coeficientes sin sentido.', 'Arreglo: en el móvil las fórmulas largas ya no se salen de la pantalla.', 'Término general en más casos: eˣ, |sen x| o funciones trapezoidales.', 'Los huecos entre tramos se rellenan con 0.', 'Forma compleja (cₙ) y forma amplitud-fase, con el espectro de fase.', 'Suma de series numéricas con Parseval o con un punto (Σ 1/n² = π²/6).', 'Comparte el ejercicio con un enlace (lleva los datos), cópialo como texto o en LaTeX para tus apuntes, o imprímelo o guárdalo en PDF solo con los resultados y el desarrollo.', 'Aviso junto a los datos: ln es el logaritmo neperiano y log, el decimal.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: serie de Fourier de una función periódica dada hasta en cuatro tramos (1, x, x^2, |x|, sen x…), o desarrollo en senos o en cosenos de una función en [0, L].', 'Coeficientes a₀, aₙ y bₙ exactos (con π) y su término general cuando siguen una ley, como 2(1 − (−1)ⁿ)/(nπ), con la paridad de la función.', 'Convergencia en los saltos (a la media de los límites laterales), suma parcial en un punto e igualdad de Parseval.', 'Gráfica de la función y de la suma parcial, que se puede ver sumando armónicos uno a uno, y el espectro de amplitudes.'] },
     ],
     taylor: [
+      { v: '0.2', fecha: '2026-10-25', cambios: ['Arreglo: con aˣ los coeficientes salen claros, (ln 2)²/2 en vez de 0,240227.', 'Arreglo: en el móvil las fórmulas largas ya no se salen de la pantalla.', 'Singularidades evitables: sen x / x o (eˣ − 1)/x en 0 ya tienen desarrollo.', 'Radio de convergencia para cualquier función, con un aviso si el punto cae fuera.', 'Límites con Taylor, como lím (sen x − x)/x³.', 'Grado hasta 25.', 'Comparte el ejercicio con un enlace (lleva los datos), cópialo como texto o en LaTeX para tus apuntes, o imprímelo o guárdalo en PDF solo con los resultados y el desarrollo.', 'Aviso junto a los datos: ln es el logaritmo neperiano y log, el decimal.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: polinomio de Taylor o de Maclaurin de cualquier grado hasta 15 de una función escrita como en papel (e^x, sen x, ln(1+x), √x, arctg x…) en un punto que puede llevar π, con cada derivada, su valor exacto y los coeficientes.', 'Aproximación de f(x₀) con el error cometido y la cota del resto de Lagrange.', 'Reconoce los desarrollos conocidos (e^x, sen x, cos x, ln(1+x), la serie geométrica, arctg x y la binómica) y da su término general y dónde convergen.', 'Gráfica de la función con los polinomios de cada grado, que se pueden recorrer o ver acercarse uno tras otro.'] },
     ],
     complejos: [
+      { v: '0.2', fecha: '2026-10-25', cambios: ['Arreglo: ya entiende raíces en forma binómica, como 1 + √3 i.', 'Arreglo: la exponencial sale como e^{−iπ/2}, la trigonométrica con paréntesis y la polar con el módulo exacto (5√2).', 'Logaritmo complejo, eᶻ y potencias con exponente fraccionario o complejo (z^{1/2}, iⁱ).', 'Ecuaciones polinómicas de grado 3 y 4, y zⁿ = w directamente.', 'Regiones del plano dibujadas: |z − 1| < 2, Re z > 0, arg z entre dos ángulos…', 'Comparte el ejercicio con un enlace (lleva los datos), cópialo como texto o en LaTeX para tus apuntes, o imprímelo o guárdalo en PDF solo con los resultados y el desarrollo.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: escribe un complejo en forma binómica, polar, trigonométrica o exponencial y obtén las otras, con el módulo exacto y el argumento en su cuadrante.', 'Suma, resta, producto y cociente con fracciones exactas, potencias con De Moivre, raíces n-ésimas y ecuaciones de segundo grado.', 'Plano complejo con los afijos, el paralelogramo de la suma y el polígono de las raíces.'] },
     ],
     sistemas: [
+      { v: '0.3', fecha: '2026-10-25', cambios: ['Discusión de un sistema según un parámetro (Rouché): los valores especiales de k con SCD, SCI o SI en cada caso.', 'Las ecuaciones se pueden escribir como texto, «2x + y − z = 8», además de con la rejilla de coeficientes.', 'Interpretación geométrica: las rectas en el plano o los planos en el espacio, y cómo se cortan.', 'Sistemas incompatibles con más ecuaciones que incógnitas: solución por mínimos cuadrados.', 'Comparte el ejercicio con un enlace (lleva los datos), cópialo como texto o en LaTeX para tus apuntes, o imprímelo o guárdalo en PDF solo con los resultados y el desarrollo.'] },
       { v: '0.2', fecha: '2026-10-24', cambios: ['Métodos de reducción, igualación y sustitución para sistemas de 2 o 3 ecuaciones con solución única, con cada ecuación numerada y cada paso explicado.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: hasta seis ecuaciones con seis incógnitas. Dice si el sistema es compatible determinado, indeterminado o incompatible con el teorema de Rouché-Frobenius y lo resuelve por Gauss con sustitución hacia atrás, por Gauss-Jordan, por la regla de Cramer o con la matriz inversa.', 'Si tiene infinitas soluciones, las da en forma paramétrica (λ, μ…).', 'Coeficientes con fracciones exactas, decimales o números complejos, como las mallas de un circuito de alterna, y nombres propios para las incógnitas (I1, I2…).', 'Comprobación de la solución sustituyendo en cada ecuación.'] },
@@ -554,6 +572,8 @@ const Mates = (() => {
         // binom(n, k): número combinatorio
         if (k.v === 'binom' && es('(')) { p++; const a = secuencia(','); p++; const b = secuencia(')'); p++; return nodo(`<mrow><mo>(</mo><mfrac linethickness="0">${fila(a)}${fila(b)}</mfrac><mo>)</mo></mrow>`); }
         if (FUNC.has(k.v)) { let m = `<mi mathvariant="normal">${k.v}</mi>`; if (es('^')) { p++; m = `<msup>${m}${argumento()}</msup>`; } return nodo(`<mspace width="0.17em"></mspace>${m}<mo>&#x2061;</mo><mspace width="0.12em"></mspace>`); }
+        // diferencial suelto (dx, dt, dS, dθ…) detrás de algo: con un poco de aire, como en «f(x) dx»
+        if (k.sp && p > 1 && /^d[a-zA-Zθφρ]$/.test(k.v)) return nodo(`<mspace width="0.17em"></mspace><mi>d</mi><mi>${escH(k.v[1])}</mi>`);
         const ls = [...k.v.replace(/[′″]+$/, '')], pr = (k.v.match(/[′″]+$/) || [''])[0];
         // las marcas combinadas (î, ĵ con acento) van con su letra
         const grupos = []; for (const c of ls) { if (/\p{M}/u.test(c) && grupos.length) grupos[grupos.length - 1] += c; else grupos.push(c); }
@@ -573,7 +593,8 @@ const Mates = (() => {
     return fila(secuencia(null));
   }
 
-  const mathml = (src) => `<math><mstyle displaystyle="true">${analiza(tokens(src))}</mstyle></math>`;
+  // la fuente se queda en data-src para poder copiarla (como texto o LaTeX)
+  const mathml = (src) => `<math data-src="${escH(src).replace(/"/g, '&quot;')}"><mstyle displaystyle="true">${analiza(tokens(src))}</mstyle></math>`;
   // sustituye cada $…$ de un texto HTML por su MathML
   const html = (s) => String(s ?? '').replace(/\$([^$]+)\$/g, (_, x) => mathml(x));
   // convierte en el documento los elementos con class="m" (fórmulas escritas en el HTML)
@@ -585,6 +606,190 @@ const Mates = (() => {
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => pinta()); else pinta();
   }
   return { html, mathml, pinta, tokens };
+})();
+
+/* =====================================================================
+   Compartir, copiar e imprimir (herramientas de Matemáticas):
+   · un enlace con los datos del ejercicio en la dirección (#d=…): al
+     abrirlo, los datos se dejan donde la herramienta guarda los suyos
+     (localStorage, «<herramienta>-v1») antes de que arranque, así que se
+     abre con ellos sin que la herramienta tenga que saber nada;
+   · copiar los resultados y el desarrollo como texto o como LaTeX (las
+     fórmulas salen de su fuente, que Mates deja en data-src);
+   · imprimir (o guardar en PDF) solo el ejercicio, sin menús ni teoría;
+   · un aviso de que log es el logaritmo decimal.
+   Tiene que ir antes que el app.js de la herramienta.
+   ===================================================================== */
+const Compartir = (() => {
+  const partes = () => (typeof location === 'undefined' ? '/herramienta/' : location.pathname).split('/').filter((q) => q && !/\.html?$/.test(q));
+  const CLAVE = `${partes().pop()}-v1`;
+  const b64 = (s) => btoa(unescape(encodeURIComponent(s))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  const deB64 = (s) => decodeURIComponent(escape(atob(s.replace(/-/g, '+').replace(/_/g, '/'))));
+
+  // los datos de un enlace compartido pasan a donde la herramienta los lee al arrancar
+  if (typeof location !== 'undefined') {
+    const m = /[#&]d=([A-Za-z0-9_-]+)/.exec(location.hash);
+    if (m) {
+      try { const json = deB64(m[1]); JSON.parse(json); localStorage.setItem(CLAVE, json); } catch (e) { /* enlace roto o sin almacenamiento */ }
+      try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* file:// */ }
+    }
+  }
+  const enlace = () => { let d = null; try { d = localStorage.getItem(CLAVE); } catch (e) { /* sin almacenamiento */ } return location.href.split('#')[0] + (d ? `#d=${b64(d)}` : ''); };
+
+  /* ---------- De la sintaxis de Mates a LaTeX y a texto ---------- */
+  const FUNC = { sen: '\\operatorname{sen}', cos: '\\cos', tg: '\\operatorname{tg}', tan: '\\tan', ln: '\\ln', log: '\\log', exp: '\\exp', arcsen: '\\operatorname{arcsen}', arccos: '\\arccos', arctg: '\\operatorname{arctg}', 'máx': '\\max', 'mín': '\\min', 'lím': '\\lim', senh: '\\operatorname{senh}', cosh: '\\cosh', tgh: '\\operatorname{tgh}', cotg: '\\operatorname{cotg}', sec: '\\sec' };
+  const SIM = { '·': '\\cdot', '×': '\\times', '÷': '\\div', '−': '-', '≤': '\\le', '≥': '\\ge', '≠': '\\ne', '≈': '\\approx', '±': '\\pm', '∓': '\\mp', '→': '\\to', '←': '\\leftarrow', '⇒': '\\Rightarrow', '⇔': '\\Leftrightarrow', '↔': '\\leftrightarrow', '∞': '\\infty', '∫': '\\int', '∬': '\\iint', '∭': '\\iiint', '∮': '\\oint', '∯': '\\oiint', '∑': '\\sum', '∏': '\\prod', '∂': '\\partial', '∇': '\\nabla', '∈': '\\in', '∝': '\\propto', '⊥': '\\perp', '∥': '\\parallel', '≡': '\\equiv', '∼': '\\sim', '°': '^{\\circ}', '%': '\\%', '′': "'", '″': "''", '|': '|', '\\{': '\\{', '\\}': '\\}', 'ℒ': '\\mathcal{L}', '∅': '\\emptyset', '∪': '\\cup', '∩': '\\cap' };
+  const GRIEGO = { α: 'alpha', β: 'beta', γ: 'gamma', δ: 'delta', ε: 'varepsilon', ζ: 'zeta', η: 'eta', θ: 'theta', ι: 'iota', κ: 'kappa', λ: 'lambda', μ: 'mu', ν: 'nu', ξ: 'xi', π: 'pi', ρ: 'rho', σ: 'sigma', τ: 'tau', υ: 'upsilon', φ: 'varphi', χ: 'chi', ψ: 'psi', ω: 'omega', Γ: 'Gamma', Δ: 'Delta', Θ: 'Theta', Λ: 'Lambda', Ξ: 'Xi', Π: 'Pi', Σ: 'Sigma', Φ: 'Phi', Ψ: 'Psi', Ω: 'Omega' };
+  const SUB = { '₀': '0', '₁': '1', '₂': '2', '₃': '3', '₄': '4', '₅': '5', '₆': '6', '₇': '7', '₈': '8', '₉': '9' }, SUP = { '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9', '⁻': '-' };
+  function latex(src) {
+    const tk = Mates.tokens(src);
+    let p = 0;
+    const es = (v) => tk[p] && tk[p].t === 's' && tk[p].v === v;
+    // quita los paréntesis o las llaves de fuera si envuelven todo
+    const quita = (s) => {
+      let m = /^\\left\((.*)\\right\)$/.exec(s);
+      if (m) return m[1];
+      if (s[0] === '{' && s.endsWith('}')) { let d = 0; for (let i = 0; i < s.length; i++) { if (s[i] === '{' && s[i - 1] !== '\\') d++; else if (s[i] === '}' && s[i - 1] !== '\\') d--; if (d === 0 && i < s.length - 1) return s; } return s.slice(1, -1); }
+      return s;
+    };
+    const palabra = (w) => {
+      if (FUNC[w]) return FUNC[w] + ' ';
+      return [...w].map((c) => (GRIEGO[c] ? `\\${GRIEGO[c]} ` : SUB[c] ? `_{${SUB[c]}}` : SUP[c] ? `^{${SUP[c]}}` : SIM[c] || c)).join('');
+    };
+    function secuencia(cierre) {
+      const xs = [];
+      while (p < tk.length && !(cierre && es(cierre))) {
+        if (es(')') || es('}') || es(']')) { p++; continue; }
+        xs.push(fraccion());
+      }
+      return xs.join(' ').replace(/\s+/g, ' ').trim();
+    }
+    function fraccion() {
+      let a = guiones();
+      while (es('/')) { p++; const b = guiones(); a = `\\frac{${quita(a)}}{${quita(b)}}`; }
+      return a;
+    }
+    function argumento() {
+      if (es('{')) { p++; const s = secuencia('}'); p++; return `{${s}}`; }
+      if (es('-') || es('−')) { p++; return `{-${argumento().replace(/^\{|\}$/g, '')}}`; }
+      if (es('(')) return `{${atomo()}}`;
+      const k = tk[p];
+      if (!k) return '{}';
+      p++;
+      if (k.t === 's') return `{${SIM[k.v] || k.v}}`;
+      let v = k.v;
+      while (tk[p] && !tk[p].sp && (tk[p].t === 'n' || tk[p].t === 'w')) { v += tk[p].v; p++; }
+      return `{${palabra(v).trim()}}`;
+    }
+    function guiones() {
+      let b = atomo();
+      for (;;) {
+        if (es('_')) { p++; b += `_${argumento()}`; } else if (es('^')) { p++; b += `^${argumento()}`; } else break;
+      }
+      return b;
+    }
+    function atomo() {
+      const k = tk[p];
+      if (!k) return '';
+      p++;
+      if (k.t === 'n') return k.v.replace(',', '{,}');
+      if (k.t === 'x') return `\\text{${k.v}}`;
+      if (k.t === 'w') return k.sp && p > 1 && /^d[a-zA-Zθφρ]$/.test(k.v) ? `\\, d${palabra(k.v[1])}` : palabra(k.v);
+      const v = k.v;
+      if (v === '(' || v === '[') { const c = v === '(' ? ')' : ']', s = secuencia(c); if (es(c)) p++; return v === '(' ? `\\left(${s}\\right)` : `\\left[${s}\\right]`; }
+      if (v === '{') { const s = secuencia('}'); if (es('}')) p++; return `{${s}}`; }
+      if (v === '√') return `\\sqrt{${quita(guiones()).replace(/^\{(.*)\}$/, '$1')}}`;
+      if (v === '∛') return `\\sqrt[3]{${quita(guiones()).replace(/^\{(.*)\}$/, '$1')}}`;
+      return SIM[v] || v;
+    }
+    return secuencia(null);
+  }
+  // texto plano: la fuente sin las llaves de agrupar
+  function texto(src) {
+    let s = String(src).replace(/<sup>(.*?)<\/sup>/g, '^($1)').replace(/<sub>(.*?)<\/sub>/g, '_$1').replace(/<[^>]+>/g, '').replace(/"/g, '').replace(/\\\{/g, '\u0001').replace(/\\\}/g, '\u0002');
+    const simple = (a) => /^[\w.,′α-ωπ∂^−-]+$/.test(a) || /^\([^()]*\)$/.test(a);
+    for (let i = 0, antes = ''; i < 12 && antes !== s; i++) {
+      antes = s;
+      s = s.replace(/([\^_])\{([^{}]*)\}/g, (_, o, a) => (/^[\w.,′α-ωπ−-]+$/.test(a) && a.length <= 3 ? `${o}${a}` : `${o}(${a})`));
+      s = s.replace(/\{([^{}]*)\}\/\{([^{}]*)\}/g, (_, a, b) => `${simple(a) ? a : `(${a})`}/${simple(b) ? b : `(${b})`}`);
+    }
+    return s.replace(/[{}]/g, '').replace(/\u0001/g, '{').replace(/\u0002/g, '}');
+  }
+
+  /* ---------- El ejercicio como texto o como LaTeX ---------- */
+  const escTex = (s) => s.replace(/\\/g, '\\textbackslash{}').replace(/([%#&_$])/g, '\\$1').replace(/[{}]/g, (c) => `\\${c}`);
+  function lee(nodo, tex) {
+    let out = '';
+    for (const n of nodo.childNodes) {
+      if (n.nodeType === 3) { out += tex ? escTex(n.nodeValue) : n.nodeValue; continue; }
+      if (n.nodeType !== 1 || n.hidden) continue;
+      const tag = n.tagName.toLowerCase();
+      if (tag === 'math') { const s = n.getAttribute('data-src'); out += s ? (tex ? `$${latex(s)}$` : texto(s)) : n.textContent; continue; }
+      if (tag === 'canvas' || tag === 'svg' || tag === 'button' || tag === 'select' || tag === 'input') continue;
+      if (n.classList.contains('mat')) {
+        const filas = [...n.querySelectorAll('tr')].map((tr) => [...tr.children].map((td) => lee(td, tex).trim()));
+        const env = n.classList.contains('det') ? 'vmatrix' : 'pmatrix';
+        out += tex ? `$\\begin{${env}} ${filas.map((f) => f.join(' & ').replace(/\$/g, '')).join(' \\\\ ')} \\end{${env}}$` : `${env === 'vmatrix' ? '|' : '['}${filas.map((f) => f.join('  ')).join('; ')}${env === 'vmatrix' ? '|' : ']'}`;
+        continue;
+      }
+      if (n.classList.contains('fr') && n.children.length === 2) { const [a, b] = [...n.children].map((c) => lee(c, tex).trim().replace(/\$/g, '')); out += tex ? `$\\frac{${a}}{${b}}$` : `${/^[\w.,√−-]+$/.test(a) ? a : `(${a})`}/${/^[\w.,√−-]+$/.test(b) ? b : `(${b})`}`; continue; }
+      if (tag === 'sup' || tag === 'sub') { const a = lee(n, tex).trim().replace(/\$/g, ''), o = tag === 'sup' ? '^' : '_'; out += tex ? `$${o}{${a}}$` : a.length > 1 ? `${o}(${a})` : `${o}${a}`; continue; }
+      if (tag === 'br') { out += '\n'; continue; }
+      const dentro = lee(n, tex);
+      if (tex && (tag === 'b' || tag === 'strong')) out += `\\textbf{${dentro}}`;
+      else if (tag === 'tr') out += '\n' + [...n.children].map((c) => lee(c, tex).trim()).join(tex ? ' & ' : ' | ');
+      else if (['div', 'p', 'li', 'table', 'ol', 'ul'].includes(tag)) out += `\n${dentro}\n`;
+      else out += dentro;
+    }
+    return out;
+  }
+  const limpia = (s) => s.replace(/[ \t]+/g, ' ').replace(/ *\n */g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+  function ejercicio(tex) {
+    const tit = (document.querySelector('h1') || {}).textContent || document.title;
+    const res = document.querySelector('#resumen') || document.querySelector('#res'), pasos = [...document.querySelectorAll('#pasos > li')];
+    const items = res ? (res.id === 'resumen' ? [...res.children].filter((d) => !d.hidden).map((d) => { const sp = d.querySelector('span'), b = d.querySelector('b'); return sp && b ? `${limpia(lee(sp, tex))}: ${limpia(lee(b, tex))}` : limpia(lee(d, tex)); }) : [limpia(lee(res, tex))]) : [];
+    const paso = (li) => { const t = li.querySelector('strong'), c = li.cloneNode(true), ct = c.querySelector('strong'); if (ct) ct.remove(); return { t: t ? limpia(lee(t, tex)) : '', c: limpia(lee(c, tex)).replace(/\n+/g, tex ? ' \\\\ ' : '\n   ') }; };
+    if (!tex) return [tit, '', 'Resultados', ...items.map((q) => `· ${q.replace(/\n+/g, ' ')}`), '', 'Desarrollo', ...pasos.map((li, i) => { const q = paso(li); return `${i + 1}. ${q.t}${q.t ? ': ' : ''}${q.c}`; }), '', enlace()].join('\n');
+    return [`% ${tit} · SimulaCiencia`, `% ${enlace()}`, '\\section*{Resultados}', '\\begin{itemize}', ...items.map((q) => `  \\item ${q.replace(/\n+/g, ' ')}`), '\\end{itemize}', '\\section*{Desarrollo}', '\\begin{enumerate}', ...pasos.map((li) => { const q = paso(li); return `  \\item ${q.t ? `\\textbf{${q.t}.} ` : ''}${q.c}`; }), '\\end{enumerate}'].join('\n');
+  }
+
+  /* ---------- Botones ---------- */
+  async function copia(s) {
+    try { await navigator.clipboard.writeText(s); return true; } catch (e) {
+      const t = document.createElement('textarea'); t.value = s; t.style.position = 'fixed'; t.style.opacity = '0'; document.body.appendChild(t); t.select();
+      let ok = false; try { ok = document.execCommand('copy'); } catch (e2) { /* sin portapapeles */ }
+      t.remove(); return ok;
+    }
+  }
+  function botones() {
+    if (typeof document === 'undefined') return;
+    const card = document.querySelector('#pasos') && document.querySelector('#pasos').closest('.card');
+    if (!card || card.querySelector('.compartir')) return;
+    const caja = document.createElement('div');
+    caja.className = 'controles compartir';
+    caja.innerHTML = '<button class="btn" type="button" data-a="enlace">Copiar enlace</button><button class="btn" type="button" data-a="texto">Copiar como texto</button><button class="btn" type="button" data-a="latex">Copiar en LaTeX</button><button class="btn" type="button" data-a="imprimir">Imprimir o PDF</button>';
+    caja.style.margin = '0 0 10px';
+    card.querySelector('h2').after(caja);
+    caja.addEventListener('click', async (e) => {
+      const b = e.target.closest('button'); if (!b) return;
+      const a = b.dataset.a;
+      if (a === 'imprimir') { window.print(); return; }
+      const ok = await copia(a === 'enlace' ? enlace() : ejercicio(a === 'latex'));
+      const antes = b.textContent; b.textContent = ok ? '¡Copiado!' : 'No se ha podido copiar'; setTimeout(() => { b.textContent = antes; }, 1600);
+    });
+    // al imprimir: solo el ejercicio, en claro
+    const css = document.createElement('style');
+    css.textContent = '@media print { .top, .miga, .bib, .bib-scrim, footer, .teoria, .compartir, #ejemplos, .controles, .nota:empty, .error[hidden] { display: none !important } html, body { background: #fff !important } .wrap { max-width: none; padding: 0 } .layout { display: block !important } .card { break-inside: avoid; box-shadow: none !important } .pasos li { break-inside: avoid } canvas { max-height: 9cm; object-fit: contain } }';
+    document.head.appendChild(css);
+    let tema = null;
+    addEventListener('beforeprint', () => { tema = document.documentElement.getAttribute('data-theme'); document.documentElement.setAttribute('data-theme', 'light'); dispatchEvent(new Event('resize')); });
+    addEventListener('afterprint', () => { if (tema === null) document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', tema); dispatchEvent(new Event('resize')); });
+    // log es el decimal
+    const err = document.querySelector('#error');
+    if (err && ['taylor', 'fourier', 'edos', 'laplace', 'derivadas', 'campos'].includes(CLAVE.slice(0, -3))) { const q = document.createElement('p'); q.className = 'nota'; q.id = 'nota-log'; q.textContent = 'ln es el logaritmo neperiano y log, el decimal (log₁₀).'; err.before(q); }
+  }
+  botones();
+  return { enlace, ejercicio, latex, texto, CLAVE };
 })();
 
 /* =====================================================================
@@ -608,6 +813,8 @@ const Expresion = (() => {
     arcsen: 'arcsen', arcsin: 'arcsen', asin: 'arcsen', arccos: 'arccos', acos: 'arccos', arctg: 'arctg', arctan: 'arctg', atan: 'arctg',
     senh: 'senh', sinh: 'senh', sh: 'senh', cosh: 'cosh', ch: 'cosh', tgh: 'tgh', tanh: 'tgh', th: 'tgh',
     ln: 'ln', log: 'log', exp: 'exp', sqrt: 'sqrt', raiz: 'sqrt', 'raíz': 'sqrt', cbrt: 'cbrt', abs: 'abs',
+    // escalón de Heaviside y delta de Dirac (los usa Laplace)
+    escalon: 'u', 'escalón': 'u', heaviside: 'u', delta: 'δ', dirac: 'δ',
   };
   const PALABRAS = [...Object.keys(FUN), 'pi'].sort((a, b) => b.length - a.length);
 
@@ -629,7 +836,7 @@ const Expresion = (() => {
           if (p) { out.push(p === 'pi' ? { k: 'c', v: 'π' } : { k: 'f', v: FUN[p] }); j += p.length; }
           else if (vars.includes(w[j])) { out.push({ k: 'x', v: w[j] }); j++; }
           else if (w[j] === 'e') { out.push({ k: 'c', v: 'e' }); j++; }
-          else throw new Error(`${nom}: no sé qué es «${m[0].slice(j)}». ${vars.length > 1 ? `Las variables son ${vars.join(' e ')}` : `La variable es ${vars[0]}`}; las funciones son sen, cos, tg, arcsen, arctg, ln, e^x, √…`);
+          else throw new Error(`${nom}: no sé qué es «${m[0].slice(j)}». ${vars.length > 1 ? `Las variables son ${vars.join(' e ')}` : `La variable es ${vars[0]}`}; las funciones son sen, cos, tg, arcsen, arctg, ln (neperiano), log (decimal), e^x, √…`);
         }
         i += m[0].length; continue;
       }
@@ -707,6 +914,7 @@ const Expresion = (() => {
     sen: Math.sin, cos: Math.cos, tg: Math.tan, sec: (u) => 1 / Math.cos(u), cosec: (u) => 1 / Math.sin(u), cotg: (u) => 1 / Math.tan(u),
     arcsen: Math.asin, arccos: Math.acos, arctg: Math.atan, senh: Math.sinh, cosh: Math.cosh, tgh: Math.tanh,
     ln: (u) => (u > 0 ? Math.log(u) : NaN), log: (u) => (u > 0 ? Math.log10(u) : NaN), sqrt: (u) => (u >= 0 ? Math.sqrt(u) : NaN), cbrt: Math.cbrt, abs: Math.abs,
+    u: (u) => (u >= 0 ? 1 : 0), 'δ': () => 0,
   };
   const CTE = { 'π': Math.PI, e: Math.E };
   // env: valores de las otras variables, { y: 2 }
@@ -984,12 +1192,19 @@ const Expresion = (() => {
 
   /* ---------- Serie de Taylor truncada ---------- */
   // coeficientes c_0 … c_N de f(a + h) = Σ c_k h^k
-  function serie(n, a, Nn) {
+  // evitable: en 0/0 (sen x / x en 0) se quitan los ceros comunes del numerador y el denominador;
+  // los últimos coeficientes dejan de ser fiables, así que quien lo usa pide unos cuantos de más
+  function serie(n, a, Nn, { evitable = false } = {}) {
     const L = Nn + 1, cero = () => new Float64Array(L);
     const cte = (v) => { const s = cero(); s[0] = v; return s; };
     const noDer = (q) => { throw new Error(`La función no es derivable en x = a (${q}): prueba con otro punto`); };
     const mul = (p, q) => { const r = cero(); for (let i = 0; i < L; i++) if (p[i]) for (let j = 0; i + j < L; j++) r[i + j] += p[i] * q[j]; return r; };
+    const corre = (p, m) => { const r = cero(); for (let k = 0; k + m < L; k++) r[k] = p[k + m]; return r; };
     const div = (p, q) => {
+      if (Math.abs(q[0]) < 1e-14 && evitable) {
+        const esc = Math.max(1e-300, ...q.map(Math.abs)), m = q.findIndex((v) => Math.abs(v) > 1e-10 * esc), escP = Math.max(1, ...p.map(Math.abs));
+        if (m > 0 && p.slice(0, m).every((v) => Math.abs(v) < 1e-10 * escP)) { p = corre(p, m); q = corre(q, m); serie.quitados = (serie.quitados || 0) + m; }
+      }
       if (Math.abs(q[0]) < 1e-14) noDer('división entre cero');
       const r = cero();
       for (let k = 0; k < L; k++) { let s = p[k]; for (let j = 1; j <= k; j++) s -= q[j] * r[k - j]; r[k] = s / q[0]; }
@@ -1088,7 +1303,7 @@ const Taylor = (() => {
   const { numTxt, dec4, exacto } = E;
   const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
   const FACT = [1]; for (let k = 1; k <= 40; k++) FACT[k] = FACT[k - 1] * k;
-  const MAXN = 15;
+  const MAXN = 25;
   const f = (x, d = 4) => dec4(x, d);
 
   // un número que no depende de x: a, x₀
@@ -1114,11 +1329,24 @@ const Taylor = (() => {
   }
   const potTxt = (B, k) => (k === 0 ? '' : k === 1 ? B.b : `${B.b}^{${k}}`);
   // un término c (x − a)^k sin el signo: { neg, s }
+  // exacto, o una potencia de un logaritmo entre k!: los de aˣ, c_k = (ln a)^k/k!
+  function exactoC(c, k) {
+    const e = exacto(c);
+    if ((e && (e.s || e.q <= 1000)) || k < 1) return e;
+    // una fracción con denominador enorme suele ser casualidad: antes se prueba con ln 2, ln 3…
+    for (const b of [2, 3, 5, 10]) { const L = Math.log(b) ** k, r = exacto(c / L, 1000); if (r && !r.s) return { p: r.p, q: r.q, s: k === 1 ? `ln ${b}` : `(ln ${b})^{${k}}` }; }
+    return e;
+  }
   function termino(c, k, B) {
-    const pw = potTxt(B, k), e = exacto(c);
+    const pw = potTxt(B, k), e = exactoC(c, k);
     if (!e) return { neg: c < 0, s: [f(Math.abs(c), 6), pw].filter(Boolean).join(' ') };
     const P = Math.abs(e.p);
     // en x = 0 la potencia va en el numerador ({x^2}/{2}); en otro punto, detrás del coeficiente ({1}/{4} (x − 4))
+    // con un logaritmo la x va delante (x ln 2, no ln 2 x, que se lee ln(2x))
+    if (pw && /ln/.test(e.s)) {
+      const arriba = [P !== 1 ? String(P) : '', pw, e.s].filter(Boolean).join(' ');
+      return { neg: e.p < 0, s: e.q === 1 ? arriba : `{${arriba}}/{${e.q}}` };
+    }
     if (B.par && pw) {
       const cf = [P !== 1 || (!e.s && e.q !== 1) ? String(P) : '', e.s].filter(Boolean).join(' ');
       return { neg: e.p < 0, s: [e.q === 1 ? cf : `{${cf}}/{${e.q}}`, pw].filter(Boolean).join(' ') };
@@ -1159,7 +1387,65 @@ const Taylor = (() => {
     return null;
   }
 
+  // serie con la singularidad evitable quitada (null si no lo es); se piden 10 términos de más
+  function serieEvitable(ast, a, N) {
+    try { E.serie.quitados = 0; const s = [...E.serie(ast, a, N + 10, { evitable: true })]; if (E.serie.quitados > 10) return null; return s.slice(0, N + 1).map((c) => (Math.abs(c) < 1e-14 ? 0 : c)); } catch (e) { return null; }
+  }
+  const serieSegura = (ast, t, N) => { try { return [...E.serie(ast, t, N)]; } catch (e) { const s = serieEvitable(ast, t, N); if (s) return s; throw e; } };
+  // radio de convergencia estimado con los coeficientes: cociente |c_k/c_{k+2}|^{1/2} (de dos en dos para
+  // las series con solo potencias pares o impares), extrapolado en 1/k para que converja deprisa
+  function radio(ast, a) {
+    let cs;
+    try { cs = serieSegura(ast, a, 40); } catch (e) { return null; }
+    const tope = Math.max(...cs.map(Math.abs)) * 1e-280 || 1e-300;
+    if (cs.slice(20).every((c) => Math.abs(c) <= tope)) return Infinity; // un polinomio
+    const s = (k) => (Math.abs(cs[k]) > tope && Math.abs(cs[k + 2]) > tope ? Math.sqrt(Math.abs(cs[k] / cs[k + 2])) : null);
+    const ext = (k) => { const u = s(k), v = s(k - 2); return u !== null && v !== null ? { k, s: u, R: (k * u - (k - 2) * v) / 2 } : null; };
+    const busca = (k) => { for (let j = k; j > k - 4; j--) { const e = ext(j); if (e) return e; } return null; };
+    const e1 = busca(37), e0 = busca(21);
+    if (!e1 || !e0) return null;
+    if (e1.s / e0.s > 1.4) return Infinity; // los cocientes crecen como k: la serie converge en todo x
+    if (!(e1.R > 0) || Math.abs(e1.R - e0.R) > 0.05 * e1.R) return null;
+    // se redondea al valor sencillo más cercano (2, √2, π/2…) si está a menos del 0,5 %
+    for (let q = 1; q <= 12; q++) for (const b of [1, Math.SQRT2, Math.sqrt(3), Math.sqrt(5), Math.PI]) {
+      const p = Math.round((e1.R * q) / b);
+      if (p > 0 && Math.abs((p * b) / q - e1.R) < 0.005 * e1.R) return (p * b) / q;
+    }
+    return e1.R;
+  }
+
+  /* ---------- Límites con Taylor ---------- */
+  function limite(sc) {
+    const ast = E.lee(sc.f, 'La función');
+    if (vacio(sc.a)) throw new Error('Falta el punto a');
+    const a = leeNum(sc.a, 'El punto a'), aTxt = numTxt(a), pasos = [];
+    const q = ast.t === '/' ? ast : null;
+    if (!q) throw new Error('Para el límite escribe la función como un cociente: (sen x − x)/x^3, (1 − cos x)/x^2…');
+    const N = q.a, D = q.b, ser = (n) => { try { return [...E.serie(n, a, 14)]; } catch (e) { throw new Error(`No se puede desarrollar ${E.texto(E.simp(n))} en x = ${f(a)}: ${e.message.replace(/: prueba.*$/, '')}`); } };
+    const sN = ser(N), sD = ser(D), esc = (s) => Math.max(1, ...s.map(Math.abs));
+    const orden = (s) => s.findIndex((v) => Math.abs(v) > 1e-10 * esc(s));
+    const oN = orden(sN), oD = orden(sD);
+    if (oD < 0) throw new Error('El denominador es 0 cerca de a');
+    const B = base(a), term = (c, k) => polinomio(Array.from({ length: k + 1 }, (_, j) => (j === k ? c : 0)), a);
+    const desarrollo = (s, o) => { const cs = Array.from({ length: Math.min(14, o + 3) }, (_, j) => (j < o ? 0 : s[j])); return `${polinomio(cs, a)}${s.slice(cs.length).some((v) => Math.abs(v) > 1e-12) ? ' + …' : ''}`; };
+    pasos.push({ t: 'La idea', html: `Se sustituyen el numerador y el denominador por su desarrollo de Taylor en x = $${aTxt}$ y se comparan los primeros términos que no se anulan.` });
+    pasos.push({ t: 'Numerador', html: oN < 0 ? 'El numerador vale 0 cerca de a.' : `$${E.texto(E.simp(N))} = ${desarrollo(sN, oN)}$` });
+    pasos.push({ t: 'Denominador', html: `$${E.texto(E.simp(D))}${desarrollo(sD, oD) === E.texto(E.simp(D)) ? '' : ` = ${desarrollo(sD, oD)}`}$` });
+    const par = (t) => (/[/−]/.test(t) ? `(${t})` : t);
+    let val, txt;
+    if (oN < 0 || oN > oD) { val = 0; txt = '0'; pasos.push({ t: 'Límite', html: `El numerador empieza en un orden más alto (${oN < 0 ? '∞' : oN} > ${oD}), así que el cociente tiende a <b>0</b>.` }); }
+    else if (oN === oD) { val = sN[oN] / sD[oD]; txt = numTxt(val); pasos.push({ t: 'Límite', html: `Los dos empiezan en $${potTxt(B, oN) || '1'}$: se simplifica y queda el cociente de los coeficientes,<br>$lím_{x → ${aTxt}} {${term(sN[oN], oN)}}/{${term(sD[oD], oD)}} ${Math.abs(sD[oD] - 1) < 1e-12 ? '' : `= ${par(numTxt(sN[oN]))}/${par(numTxt(sD[oD]))} `}= $ <b>$${txt}$</b>` }); }
+    else {
+      const k = oD - oN, sg = sN[oN] / sD[oD];
+      val = k % 2 ? NaN : sg > 0 ? Infinity : -Infinity;
+      txt = k % 2 ? 'no existe' : sg > 0 ? '+∞' : '−∞';
+      pasos.push({ t: 'Límite', html: `El denominador empieza en un orden más alto (${oD} > ${oN}): el cociente se comporta como $${par(numTxt(sg))}/${potTxt(B, k)}$, así que ${k % 2 ? `por la izquierda y por la derecha va a infinitos de signo contrario: <b>el límite no existe</b> (los laterales son ${sg > 0 ? '−∞ y +∞' : '+∞ y −∞'})` : `tiende a <b>${txt}</b>`}.` });
+    }
+    return { modo: 'limite', f: E.texto(E.simp(ast)), a, aTxt, val, txt, oN, oD, fv: (x) => E.valor(ast, x), pasos };
+  }
+
   function resolver(sc) {
+    if (sc.modo === 'limite') return limite(sc);
     const ast = E.lee(sc.f, 'La función');
     if (vacio(sc.a)) throw new Error('Falta el punto a');
     const a = leeNum(sc.a, 'El punto a');
@@ -1167,8 +1453,13 @@ const Taylor = (() => {
     const n = +String(sc.n).trim();
     if (!Number.isInteger(n) || n < 0 || n > MAXN) throw new Error(`El grado n tiene que ser un número entero entre 0 y ${MAXN}`);
     const hayX0 = !vacio(sc.x0), x0 = hayX0 ? leeNum(sc.x0, 'El punto x₀') : null;
-    let cs;
-    try { cs = [...E.serie(ast, a, n + 1)].map((c) => (Math.abs(c) < 1e-14 ? 0 : c)); } catch (e) { throw new Error(e.message.replace('x = a', `x = ${f(a)}`)); }
+    let cs, evitable = false;
+    try { cs = [...E.serie(ast, a, n + 1)].map((c) => (Math.abs(c) < 1e-14 ? 0 : c)); } catch (e) {
+      // 0/0 en a: si el límite existe (singularidad evitable), el desarrollo sale quitando los ceros comunes
+      const s2 = serieEvitable(ast, a, n + 1);
+      if (!s2) throw new Error(e.message.replace('x = a', `x = ${f(a)}`));
+      cs = s2; evitable = true;
+    }
     const der = cs.map((c, k) => c * FACT[k]);
     const coef = cs.slice(0, n + 1);
     const P = (x, k = n) => { let s = 0; for (let j = Math.min(k, n); j >= 0; j--) s = s * (x - a) + coef[j]; return s; };
@@ -1178,6 +1469,7 @@ const Taylor = (() => {
     const pasos = [];
     const aTxt = numTxt(a);
 
+    if (evitable) pasos.push({ t: 'Singularidad evitable', html: `f no está definida en x = $${aTxt}$ (sale 0/0), pero el límite existe: se desarrollan el numerador y el denominador y se simplifica la potencia común de $${potTxt(B, 1)}$. Así f se extiende con $f(${aTxt}) = ${numTxt(cs[0])}$ y tiene desarrollo de Taylor.` });
     pasos.push({ t: 'Fórmula de Taylor', html: `El polinomio de Taylor de grado ${n} de f en x = ${'$' + aTxt + '$'} es $${Pn}(x) = Σ_{k=0}^{${n}} {f^{(k)}(${aTxt})}/{k!} ${potTxt(B, 1)}^k$, así que hacen falta f y sus derivadas hasta la de orden ${n} en ese punto.${Math.abs(a) < 1e-14 ? ' Como a = 0, también se llama polinomio de Maclaurin.' : ''}` });
 
     // derivadas: escritas mientras sean cortas, y su valor en a
@@ -1202,6 +1494,10 @@ const Taylor = (() => {
       if (con) pasos.push({ t: 'Desarrollo conocido', html: `Es el desarrollo de Maclaurin de $${con.f} = ${con.gen}$, que converge ${con.conv}.${con.R < Infinity && hayX0 && Math.abs(x0) > con.R ? ` Ojo: x₀ = ${f(x0)} está fuera, así que al subir el grado el polinomio no se acerca a f(x₀).` : ''}` });
     }
 
+    // radio de convergencia: el de los desarrollos conocidos o el estimado con los coeficientes
+    const R = con ? con.R : radio(ast, a);
+    const Rtxt = R === null || R === Infinity ? null : `R ${Math.abs(R - Math.round(R)) < 1e-12 || /[√π]/.test(numTxt(R)) ? '=' : '≈'} ${numTxt(R)}`;
+    if (!con && R !== null) pasos.push({ t: 'Radio de convergencia', html: R === Infinity ? 'Los coeficientes se hacen pequeños muy deprisa: la serie de Taylor converge para todo x (radio ∞).' : `Con el criterio del cociente, $R = lím_{k → ∞} {|c_k|}/{|c_{k+1}|}$, los coeficientes dan $${Rtxt}$: la serie converge para $|${Math.abs(a) < 1e-14 ? 'x' : `x − ${aTxt}`.replace('− −', '+ ')}| < ${numTxt(R)}$${hayX0 && Math.abs(x0 - a) > R * 1.0001 ? `. <b>Ojo:</b> x₀ = ${f(x0)} está fuera, así que al subir el grado el polinomio no se acerca a f(x₀)` : ''}. Suele ser la distancia de a al punto más cercano (también complejo) donde f deja de estar definida.` });
     let fx0 = null, px0 = null, err = null, cota = null, M = null, cotaNota = '';
     if (hayX0) {
       fx0 = fv(x0); px0 = P(x0);
@@ -1215,7 +1511,7 @@ const Taylor = (() => {
         let ok = true; M = 0;
         for (let i = 0; i <= 200; i++) {
           const t = a + (h * i) / 200;
-          try { const s = E.serie(ast, t, n + 1); M = Math.max(M, Math.abs(s[n + 1] * FACT[n + 1])); } catch (e) { ok = false; break; }
+          try { const s = serieSegura(ast, t, n + 1); M = Math.max(M, Math.abs(s[n + 1] * FACT[n + 1])); } catch (e) { ok = false; break; }
         }
         if (ok && M < 1e-12) { cota = 0; pasos.push({ t: 'Cota del error (resto de Lagrange)', html: `La derivada de orden ${n + 1} es 0, así que el resto de Lagrange es 0: el polinomio de Taylor coincide con f.` }); }
         else if (ok && isFinite(M)) {
@@ -1224,7 +1520,7 @@ const Taylor = (() => {
         } else { cotaNota = 'La derivada siguiente no está acotada entre a y x₀ (f no es derivable en algún punto), así que no hay cota de Lagrange.'; pasos.push({ t: 'Cota del error', html: cotaNota }); }
       }
     }
-    return { f: fTxt, a, n, x0, coef, der, pol, Pn, P, fv, fx0, px0, err, cota, M, conocido: con, pasos, aTxt };
+    return { f: fTxt, a, n, x0, coef, der, pol, Pn, P, fv, fx0, px0, err, cota, M, conocido: con, pasos, aTxt, evitable, R, Rtxt };
   }
 
   const ejemplos = [
@@ -1242,6 +1538,10 @@ const Taylor = (() => {
     { clave: 'tangente', nombre: 'tg x en 0', sc: { f: 'tg x', a: '0', n: '5', x0: '0,3' } },
     { clave: 'polinomio', nombre: 'Un polinomio en x = 1', sc: { f: 'x^3 - 2x + 1', a: '1', n: '3', x0: '1,5' } },
     { clave: 'producto', nombre: 'e^x sen x en 0', sc: { f: 'e^x sen x', a: '0', n: '3', x0: '0,2' } },
+    { clave: 'evitable', nombre: 'sen x / x: singularidad evitable', sc: { f: 'sen(x)/x', a: '0', n: '6', x0: '0,5' } },
+    { clave: 'fuera', nombre: '1/(1 + x²) fuera del radio', sc: { f: '1/(1+x^2)', a: '0', n: '6', x0: '1,5' } },
+    { clave: 'limite', nombre: 'Límite (sen x − x)/x³', sc: { modo: 'limite', f: '(sen(x) - x)/x^3', a: '0' } },
+    { clave: 'limite-cos', nombre: 'Límite (1 − cos x)/x²', sc: { modo: 'limite', f: '(1 - cos(x))/x^2', a: '0' } },
   ];
 
   return { resolver, ejemplos, conocido, polinomio, f, MAXN, CONOCIDOS };
@@ -1270,10 +1570,20 @@ const Taylor = (() => {
 
   /* ---------- Formulario ---------- */
   const fila = (k, nom, modo = 'text') => `<label for="f-${k}">${nom}</label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc[k] ?? '')}" inputmode="${modo}" autocomplete="off" spellcheck="false">`;
+  const esLimite = () => sc.modo === 'limite';
   function formulario() {
-    $('#campos').innerHTML = fila('f', 'Función f(x)') + fila('a', 'Punto a <small>(centro)</small>') + fila('n', 'Grado n', 'numeric') + '<div class="sep">Aproximación (opcional)</div>' + fila('x0', 'Valor x₀ <small>(para f(x₀))</small>');
+    const modo = `<label for="f-modo">Qué calcular</label><select id="f-modo" class="in" data-k="modo"><option value="polinomio">Polinomio de Taylor</option><option value="limite"${esLimite() ? ' selected' : ''}>Límite con Taylor</option></select>`;
+    $('#campos').innerHTML = modo + (esLimite()
+      ? fila('f', 'Función <small>(un cociente)</small>') + fila('a', 'Punto a <small>(x → a)</small>')
+      : fila('f', 'Función f(x)') + fila('a', 'Punto a <small>(centro)</small>') + fila('n', `Grado n <small>(hasta ${T.MAXN})</small>`, 'numeric') + '<div class="sep">Aproximación (opcional)</div>' + fila('x0', 'Valor x₀ <small>(para f(x₀))</small>'));
+    $('#control').hidden = esLimite();
   }
-  $('#campos').addEventListener('input', (e) => { const t = e.target; if (t.tagName !== 'INPUT') return; sc[t.dataset.k] = t.value; $('#ejemplos').value = ''; calcula(); });
+  $('#campos').addEventListener('input', (e) => {
+    const t = e.target; if (!t.dataset.k) return;
+    sc[t.dataset.k] = t.value; $('#ejemplos').value = '';
+    if (t.dataset.k === 'modo') { if (t.value === 'polinomio') sc = { ...sc, n: sc.n || '4', x0: sc.x0 ?? '' }; formulario(); }
+    calcula();
+  });
 
   /* ---------- Ejemplos ---------- */
   const sel = $('#ejemplos');
@@ -1295,10 +1605,10 @@ const Taylor = (() => {
     const ent = (a, b) => a + Math.floor(Math.random() * (b - a + 1)), uno = (xs) => xs[ent(0, xs.length - 1)];
     const [fx, as, xs] = uno(AZAR), a = uno(as);
     const x0 = xs ? uno(xs) : String(+a + uno([0.1, 0.2, -0.1])).replace('.', ',').replace('-', '−');
-    sc = { f: fx, a, n: String(ent(2, 4)), x0 };
+    sc = { modo: 'polinomio', f: fx, a, n: String(ent(2, 4)), x0 };
     formulario(); calcula(); sel.value = '';
   }
-  const enunciado = () => `Calcula el polinomio de Taylor de grado <b>${esc(sc.n)}</b> de <b>f(x) = ${esc(sc.f)}</b> en <b>x = ${esc(sc.a)}</b>, sus coeficientes, y úsalo para aproximar <b>f(${esc(sc.x0)})</b>. ¿Qué error se comete?`;
+  const enunciado = () => esLimite() ? `Calcula con desarrollos de Taylor el límite de <b>${esc(sc.f)}</b> cuando <b>x → ${esc(sc.a)}</b>.` : `Calcula el polinomio de Taylor de grado <b>${esc(sc.n)}</b> de <b>f(x) = ${esc(sc.f)}</b> en <b>x = ${esc(sc.a)}</b>, sus coeficientes, y úsalo para aproximar <b>f(${esc(sc.x0)})</b>. ¿Qué error se comete?`;
 
   /* ---------- Cálculo ---------- */
   const dato = (t, v, cl = '') => `<div${cl ? ` class="${cl}"` : ''}><span>${t}</span><b>${v}</b></div>`;
@@ -1311,6 +1621,14 @@ const Taylor = (() => {
       dibuja(); return;
     }
     err.hidden = true; guarda();
+    if (sol.modo === 'limite') {
+      $('#resumen').innerHTML = dato(`Límite cuando x → ${esc(sol.aTxt)}`, sol.txt === 'no existe' ? 'No existe' : M(sol.txt), 'num ancho')
+        + dato('Orden del numerador', sol.oN < 0 ? '—' : sol.oN) + dato('Orden del denominador', sol.oD);
+      $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
+      $('#leyenda').innerHTML = `${Mates.html(`$f(x) = ${sol.f}$`)} cerca de a` + (isFinite(sol.val) ? '; el círculo hueco marca el límite, que la función alcanza sin estar definida en a.' : '.');
+      if (anda) para();
+      dibuja(); return;
+    }
     const n = sol.n, sub = (k) => String(k).replace(/\d/g, (d) => '₀₁₂₃₄₅₆₇₈₉'[d]);
     let h = dato(`Polinomio de Taylor P${sub(n)}(x)`, M(`${sol.Pn}(x) = ${sol.pol}`), 'ancho');
     if (n <= 8) h += dato(`Coeficientes c₀ … c${sub(n)}`, sol.coef.map((c) => fH(c, 4)).join('; '), 'num');
@@ -1319,6 +1637,8 @@ const Taylor = (() => {
       if (sol.cota !== null) h += dato('Cota de Lagrange', `≤ ${fH(sol.cota, 3)}`);
     }
     if (sol.conocido) h += dato('Converge', sol.conocido.conv.replace(/^para /, ''));
+    else if (sol.R !== null) h += dato('Radio de convergencia', sol.R === Infinity ? '∞ (todo x)' : M(sol.Rtxt));
+    if (sol.evitable) h += dato('Singularidad evitable', `f(${esc(sol.aTxt)}) = ${fH(sol.coef[0], 6)} por continuidad`);
     $('#resumen').innerHTML = h;
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
     const rg = $('#grado'); rg.max = n; grado = Math.min(n, anda ? grado : n); rg.value = grado;
@@ -1326,14 +1646,14 @@ const Taylor = (() => {
     dibuja();
   }
   function pintaGrado() {
-    if (!sol) return;
+    if (!sol || sol.modo === 'limite') return;
     $('#vgrado').textContent = grado;
     $('#leyenda').innerHTML = `${Mates.html(`$f(x) = ${sol.f}$`)} en negro, ${Mates.html(`$P_{${grado}}(x)$`)} en color y los de grado menor más claros. ` + (sol.x0 !== null ? 'La línea vertical marca x₀: la distancia entre los dos puntos es el error.' : 'Escribe x₀ para ver la aproximación y el error.');
   }
   $('#grado').addEventListener('input', (e) => { grado = +e.target.value; if (anda) para(); pintaGrado(); dibuja(); });
   $('#animar').addEventListener('click', () => (anda ? para() : arranca()));
   let tA = 0;
-  function arranca() { if (!sol) return; anda = true; grado = 0; tA = 0; $('#grado').value = 0; $('#animar').textContent = '⏸ Parar'; pintaGrado(); dibuja(); }
+  function arranca() { if (!sol || sol.modo === 'limite') return; anda = true; grado = 0; tA = 0; $('#grado').value = 0; $('#animar').textContent = '⏸ Parar'; pintaGrado(); dibuja(); }
   function para() { anda = false; $('#animar').textContent = '▶ Ver cómo se acerca'; }
 
   /* ---------- Gráfica ---------- */
@@ -1345,12 +1665,12 @@ const Taylor = (() => {
   };
   let cacheVentana = null;
   function ventana() {
-    const a = sol.a, W = Math.max(3, sol.x0 !== null ? 1.6 * Math.abs(sol.x0 - a) : 0), x1 = a - W, x2 = a + W;
+    const a = sol.a, W = Math.max(3, sol.x0 != null ? 1.6 * Math.abs(sol.x0 - a) : 0), x1 = a - W, x2 = a + W;
     const xs = [], ys = [];
     for (let i = 0; i <= 600; i++) { const x = x1 + ((x2 - x1) * i) / 600; let y; try { y = sol.fv(x); } catch (e) { y = NaN; } xs.push(x); ys.push(isFinite(y) ? y : NaN); }
     const ok = ys.filter(isFinite).sort((p, q) => p - q);
     let y1 = ok.length ? ok[Math.floor(ok.length * 0.03)] : -1, y2 = ok.length ? ok[Math.ceil(ok.length * 0.97) - 1] : 1;
-    for (const v of [sol.coef[0], sol.fx0, sol.px0]) if (v !== null && isFinite(v)) { y1 = Math.min(y1, v); y2 = Math.max(y2, v); }
+    for (const v of sol.modo === 'limite' ? [isFinite(sol.val) ? sol.val : null] : [sol.coef[0], sol.fx0, sol.px0]) if (v !== null && isFinite(v)) { y1 = Math.min(y1, v); y2 = Math.max(y2, v); }
     if (y2 - y1 < 1e-9) { y1 -= 1; y2 += 1; }
     const pad = (y2 - y1) * 0.15;
     return { x1, x2, y1: y1 - pad, y2: y2 + pad, xs, ys };
@@ -1361,7 +1681,7 @@ const Taylor = (() => {
     const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
     if (!sol) return;
     if (!col['--ink']) colores();
-    const clave = JSON.stringify([sc.f, sc.a, sc.n, sc.x0]);
+    const clave = JSON.stringify([sc.modo, sc.f, sc.a, sc.n, sc.x0]);
     if (!cacheVentana || cacheVentana.k !== clave) cacheVentana = { k: clave, v: ventana() };
     const V = cacheVentana.v, mL = 44, mR = 12, mT = 12, mB = 26;
     const X = (x) => mL + ((x - V.x1) / (V.x2 - V.x1)) * (w - mL - mR), Y = (y) => mT + ((V.y2 - y) / (V.y2 - V.y1)) * (h - mT - mB);
@@ -1386,6 +1706,16 @@ const Taylor = (() => {
       }
       g.stroke();
     };
+    if (sol.modo === 'limite') {
+      g.strokeStyle = col['--ink']; g.lineWidth = 2.4;
+      const ys = V.ys; let i = 0; curva(() => ys[i++]);
+      g.restore();
+      g.strokeStyle = col['--muted']; g.setLineDash([4, 4]); g.lineWidth = 1; g.beginPath(); g.moveTo(X(sol.a), mT); g.lineTo(X(sol.a), h - mB); g.stroke(); g.setLineDash([]);
+      if (isFinite(sol.val)) { g.strokeStyle = col['--accent']; g.fillStyle = col['--panel']; g.lineWidth = 2; g.beginPath(); g.arc(X(sol.a), Y(sol.val), 5, 0, 2 * Math.PI); g.fill(); g.stroke(); }
+      g.fillStyle = col['--accent']; g.font = '600 13px "IBM Plex Sans", system-ui, sans-serif'; g.textAlign = 'right'; g.textBaseline = 'top';
+      g.fillText(`límite = ${txt(sol.txt === 'no existe' ? 'no existe' : fH(sol.val, 4))}`, w - mR - 6, mT + 4);
+      return;
+    }
     // polinomios de grado menor, más claros
     g.strokeStyle = col['--accent']; g.lineWidth = 1.3; g.globalAlpha = 0.22;
     for (let k = 0; k < grado; k++) curva((x) => sol.P(x, k));
@@ -1428,7 +1758,7 @@ const Taylor = (() => {
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('taylor').current;
   formulario(); colores(); calcula(); requestAnimationFrame(bucle);
-  window.TaylorApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { pol: sol.pol, coef: sol.coef, px0: sol.px0, fx0: sol.fx0, err: sol.err, cota: sol.cota }, estado: () => copia(sc), grado: (k) => { grado = Math.max(0, Math.min(sol ? sol.n : 0, k)); $('#grado').value = grado; pintaGrado(); dibuja(); } };
+  window.TaylorApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && (sol.modo === 'limite' ? { lim: sol.val, txt: sol.txt } : { pol: sol.pol, coef: sol.coef, px0: sol.px0, fx0: sol.fx0, err: sol.err, cota: sol.cota }), estado: () => copia(sc), grado: (k) => { grado = Math.max(0, Math.min(sol ? sol.n : 0, k)); $('#grado').value = grado; pintaGrado(); dibuja(); } };
 })();
 
 /* =====================================================================

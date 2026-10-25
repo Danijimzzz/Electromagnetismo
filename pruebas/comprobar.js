@@ -398,12 +398,12 @@ const Matrices = require(path.join(fuente, 'matrices', 'calculo.js'));
   const R = Object.fromEntries(Matrices.ejemplos.map((e) => [e.clave, Matrices.resolver(e.sc)]));
   const esp = { det3: '−19', det4: '30', 'det-gauss': '30' };
   for (const [k, v] of Object.entries(esp)) if (Al.txt(R[k].valor) !== v) mal(`Matrices · ${k}: |A| = ${Al.txt(R[k].valor)}, se esperaba ${v}`);
-  for (const e of Matrices.ejemplos.filter((x) => x.sc.op === 'det')) {
+  for (const e of Matrices.ejemplos.filter((x) => x.sc.op === 'det' && !R[x.clave].letra)) {
     const otro = Matrices.resolver({ ...e.sc, metodo: e.sc.metodo === 'gauss' ? 'directo' : 'gauss' }).valor;
     if (!Al.igual(otro, R[e.clave].valor)) mal(`Matrices · ${e.clave}: Gauss y Sarrus/Laplace no dan lo mismo`);
   }
   if (!Al.iguales(R.inv3.valor, L('-24 18 5', '20 -15 -4', '-5 4 1'))) mal('Matrices · inv3: la inversa no es la esperada');
-  for (const e of Matrices.ejemplos.filter((x) => x.sc.op === 'inversa')) {
+  for (const e of Matrices.ejemplos.filter((x) => x.sc.op === 'inversa' && !R[x.clave].letra)) {
     const A = Al.leerMatriz(e.sc.A), inv = R[e.clave].valor;
     if (!inv || !Al.iguales(Al.producto(A, inv), Al.identidad(A.length))) mal(`Matrices · ${e.clave}: A·A⁻¹ no es la identidad`);
     const otro = Matrices.resolver({ ...e.sc, metodo: e.sc.metodo === 'gauss' ? 'adjuntos' : 'gauss' }).valor;
@@ -427,7 +427,7 @@ const Matrices = require(path.join(fuente, 'matrices', 'calculo.js'));
   if (!Matrices.resolver({ op: 'propios', A: [['1', '2'], ['3', '4']] }).res.includes('(5 + √33)/2')) mal('Matrices: los valores propios de [[1,2],[3,4]] deberían salir con radicales');
   if (!Al.iguales(R.producto.valor, L('2 -1', '6 2')) || !Al.iguales(R.potencia.valor, L('1 5', '0 1'))) mal('Matrices: producto o potencia incorrectos');
   for (const [s, v] of [['-1/2', '−1/2'], ['0,25', '1/4'], ['(1+i)/2', '1/2 + 1/2·i'], ['3(1-i)', '3 − 3i'], ['1/(1+i)', '1/2 − 1/2·i']]) if (Al.txt(Al.leer(s)) !== v) mal(`Matrices: «${s}» se lee como ${Al.txt(Al.leer(s))}`);
-  const malas = [{ op: 'det', A: [['1', '2', '3'], ['4', '5', '6']] }, { op: 'producto', A: [['1', '2']], B: [['1', '2']] }, { op: 'det', A: [['1', 'x'], ['2', '3']] }, { op: 'suma', A: [['1']], B: [['1', '2']] }, { op: 'potencia', A: [['1', '2'], ['2', '4']], n: '-1' }];
+  const malas = [{ op: 'det', A: [['1', '2', '3'], ['4', '5', '6']] }, { op: 'producto', A: [['1', '2']], B: [['1', '2']] }, { op: 'det', A: [['1', 'x y'], ['2', '3']] }, { op: 'suma', A: [['1']], B: [['1', '2']] }, { op: 'potencia', A: [['1', '2'], ['2', '4']], n: '-1' }];
   for (const m of malas) { let ok = false; try { Matrices.resolver(m); } catch (e) { ok = true; } if (!ok) mal(`Matrices: ${JSON.stringify(m)} debería dar un error`); }
   if (fallos === antes) console.log(`  ✓ Matrices: ${Matrices.ejemplos.length} ejemplos con el resultado esperado, inversas y determinantes por los dos métodos, A v = λ v, lectura de números y errores`);
 }
@@ -443,7 +443,7 @@ const Sistemas = require(path.join(fuente, 'sistemas', 'calculo.js'));
   for (const [k, v] of Object.entries(unicas)) { const x = R[k].sol.map((s) => Al.txt(s.c)); if (x.join() !== v.join()) mal(`Sistemas · ${k}: (${x}), se esperaba (${v})`); }
   for (const e of Sistemas.ejemplos) {
     const r = R[e.clave];
-    if (r.tipo === 'SI') continue;
+    if (r.tipo === 'SI' || r.letra || !r.sol) continue;
     const M = Al.leerMatriz(e.sc.M), n = M[0].length - 1;
     for (const p of [0, 1, 2]) {
       const x = r.sol.map((s) => s.t.reduce((acc, [a]) => Al.suma(acc, Al.mul(a, Al.ent(p))), s.c));
@@ -452,7 +452,7 @@ const Sistemas = require(path.join(fuente, 'sistemas', 'calculo.js'));
     for (const m of ['gauss', 'jordan', 'cramer', 'inversa']) { const o = Sistemas.resolver({ ...e.sc, metodo: m }); if (o.tipo !== r.tipo || o.res !== r.res) mal(`Sistemas · ${e.clave}: el método ${m} da otro resultado`); }
   }
   if (R.sci.param.length !== 1 || R.sci2.param.length !== 2) mal('Sistemas: número de parámetros incorrecto');
-  const malas = [{ M: [['1', 'x', '2']] }, { M: [['1', '2', '3']], vars: 'a, b, c' }, { M: [['1', '2', '3']], vars: 'a, a' }];
+  const malas = [{ M: [['1', 'x y', '2']] }, { M: [['1', '2', '3']], vars: 'a, b, c' }, { M: [['1', '2', '3']], vars: 'a, a' }];
   for (const m of malas) { let ok = false; try { Sistemas.resolver(m); } catch (e) { ok = true; } if (!ok) mal(`Sistemas: ${JSON.stringify(m)} debería dar un error`); }
   if (fallos === antes) console.log(`  ✓ Sistemas: ${Sistemas.ejemplos.length} sistemas bien clasificados, soluciones esperadas que cumplen las ecuaciones, los cuatro métodos coinciden y errores`);
 }
@@ -830,7 +830,7 @@ const TaylorC = require(path.join(fuente, 'taylor', 'calculo.js'));
   const antes = fallos, cerca = (a, b, tol, q) => { if (!(Math.abs(a - b) <= tol)) mal(`Taylor · ${q}: ${a} en vez de ${b}`); };
   const r = (c) => TaylorC.resolver(TaylorC.ejemplos.find((e) => e.clave === c).sc);
   for (const e of TaylorC.ejemplos) {
-    try { const x = TaylorC.resolver(e.sc); if (x.pasos.length < 4) mal(`Taylor · ${e.clave}: desarrollo corto`); if (x.cota !== null && !(x.err <= x.cota * (1 + 1e-9) + 1e-15)) mal(`Taylor · ${e.clave}: el error ${x.err} supera la cota ${x.cota}`); }
+    try { const x = TaylorC.resolver(e.sc); if (x.pasos.length < 4) mal(`Taylor · ${e.clave}: desarrollo corto`); if (x.cota != null && !(x.err <= x.cota * (1 + 1e-9) + 1e-15)) mal(`Taylor · ${e.clave}: el error ${x.err} supera la cota ${x.cota}`); }
     catch (err) { mal(`Taylor · ${e.clave}: ${err.message}`); }
   }
   // valores calculados a mano
@@ -856,7 +856,7 @@ const TaylorC = require(path.join(fuente, 'taylor', 'calculo.js'));
     cerca(Expr.serie(n, a, 2)[2] * 2, (Expr.valor(n, a + 1e-3) - 2 * Expr.valor(n, a) + Expr.valor(n, a - 1e-3)) / 1e-6, 1e-3 * Math.max(1, Math.abs(dn)), `segunda derivada de ${s}`);
   }
   if (Expr.valor(Expr.lee('2x sen x + 3,5'), 1) !== 2 * Math.sin(1) + 3.5 || Expr.valor(Expr.lee('sen 2x cos x'), 1) !== Math.sin(2) * Math.cos(1)) mal('Taylor: no lee el producto implícito o la coma decimal');
-  for (const [sc, q] of [[{ f: '', a: '0', n: '3' }, 'sin función'], [{ f: 'y + 1', a: '0', n: '3' }, 'otra letra'], [{ f: 'ln x', a: '0', n: '3' }, 'ln x en 0'], [{ f: 'sen x', a: '0', n: '16' }, 'grado 16'], [{ f: 'sen x', a: 'x', n: '2' }, 'a con x'], [{ f: '(x + 1', a: '0', n: '2' }, 'paréntesis sin cerrar'], [{ f: '√x', a: '1', n: '2', x0: '−1' }, 'x₀ fuera del dominio']]) {
+  for (const [sc, q] of [[{ f: '', a: '0', n: '3' }, 'sin función'], [{ f: 'y + 1', a: '0', n: '3' }, 'otra letra'], [{ f: 'ln x', a: '0', n: '3' }, 'ln x en 0'], [{ f: 'sen x', a: '0', n: '26' }, 'grado 26'], [{ f: 'sen x', a: 'x', n: '2' }, 'a con x'], [{ f: '(x + 1', a: '0', n: '2' }, 'paréntesis sin cerrar'], [{ f: '√x', a: '1', n: '2', x0: '−1' }, 'x₀ fuera del dominio']]) {
     let ok = false; try { TaylorC.resolver(sc); } catch (e) { ok = true; }
     if (!ok) mal(`Taylor: ${q} no da error`);
   }
@@ -886,7 +886,7 @@ const FourierC = require(path.join(fuente, 'fourier', 'calculo.js'));
   cerca(pa.energia, (2 * PI ** 4) / 5, 1e-9, 'Parseval de x²');
   // x² en x = π: la serie converge a π² y la suma parcial se acerca
   if (!(Math.abs(pa.sx0 - PI * PI) < 0.5)) mal('Fourier: la suma parcial de x² en π no se acerca a π²');
-  for (const [sc, q] of [[{ tramos: [{ f: '', a: '0', b: '1' }], N: '5' }, 'sin función'], [{ tramos: [{ f: '1', a: '1', b: '0' }], N: '5' }, 'tramo al revés'], [{ tramos: [{ f: '1', a: '0', b: '1' }, { f: '0', a: '2', b: '3' }], N: '5' }, 'hueco entre tramos'], [{ tramos: [{ f: '1', a: '0', b: 'π' }], N: '0' }, 'N = 0'], [{ tramos: [{ f: '1', a: '0', b: 'π' }], N: '101' }, 'N = 101'], [{ ext: 'par', tramos: [{ f: 'x', a: '1', b: '2' }], N: '5' }, 'extensión que no empieza en 0'], [{ tramos: [{ f: 'ln x', a: '-1', b: '1' }], N: '5' }, 'ln x con negativos']]) {
+  for (const [sc, q] of [[{ tramos: [{ f: '', a: '0', b: '1' }], N: '5' }, 'sin función'], [{ tramos: [{ f: '1', a: '1', b: '0' }], N: '5' }, 'tramo al revés'], [{ tramos: [{ f: '1', a: '0', b: '2' }, { f: '0', a: '1', b: '3' }], N: '5' }, 'tramos que se solapan'], [{ tramos: [{ f: '1', a: '0', b: 'π' }], N: '0' }, 'N = 0'], [{ tramos: [{ f: '1', a: '0', b: 'π' }], N: '101' }, 'N = 101'], [{ ext: 'par', tramos: [{ f: 'x', a: '1', b: '2' }], N: '5' }, 'extensión que no empieza en 0'], [{ tramos: [{ f: 'ln x', a: '-1', b: '1' }], N: '5' }, 'ln x con negativos']]) {
     let ok = false; try { FourierC.resolver(sc); } catch (e) { ok = true; }
     if (!ok) mal(`Fourier: ${q} no da error`);
   }
@@ -904,7 +904,12 @@ const EDOsC = require(path.join(fuente, 'edos', 'calculo.js'));
   cerca(eu.yEx, 2 * Math.E - 2, 1e-12, 'y(1) exacta'); cerca(eu.yEu, 3.1874849202, 1e-9, 'y(1) con Euler'); cerca(eu.yRK, 2 * Math.E - 2, 1e-7, 'y(1) con RK4');
   if (r('enfriamiento').exacta?.txt !== '70 e^{−{x}/{10}} + 20') mal('EDOs: la ley de enfriamiento no sale 70 e^(−x/10) + 20');
   if (r('forzada').exacta?.txt !== '{e^{−x}}/{2} − {cos x}/{2} + {sen x}/{2}') mal(`EDOs: y′ + y = sen x sale «${r('forzada').exacta?.txt}»`);
-  if (r('logistica').exacta || r('riccati').exacta) mal('EDOs: da solución exacta de una ecuación no lineal');
+  if (r('riccati').exacta) mal('EDOs: da solución exacta de y′ = x − y²');
+  if (r('logistica').exacta?.txt !== '{1}/{1 + 9 e^{−x}}') mal(`EDOs: la logística sale «${r('logistica').exacta?.txt}»`);
+  if (r('separable').exacta?.txt !== 'e^{{x^{2}}/{2}}') mal(`EDOs: y′ = x y sale «${r('separable').exacta?.txt}»`);
+  if (r('exacta').implicita !== 'x^{2} + x y + y^{2} = 1') mal(`EDOs: la exacta sale «${r('exacta').implicita}»`);
+  if (r('cauchy').txt !== '{x}/{2} − x^{2} + {x^{3}}/{2}') mal(`EDOs: la de Cauchy-Euler sale «${r('cauchy').txt}»`);
+  if (r('variacion').txt !== 'ln |cos x| cos x + x sen x') mal(`EDOs: y″ + y = 1/cos x sale «${r('variacion').txt}»`);
   // segundo orden: soluciones a mano y que cumplen la ecuación
   if (r('resonancia').txt !== '{x sen x}/{2}') mal(`EDOs: y″ + y = cos x sale «${r('resonancia').txt}»`);
   if (r('critico').txt !== '2 e^{−x} + x e^{−x} − 2 + x') mal(`EDOs: y″ + 2y′ + y = x sale «${r('critico').txt}»`);
@@ -961,6 +966,20 @@ const CinC = require(path.join(fuente, 'cinetica', 'calculo.js'));
   if (fallos === antes) console.log(`  ✓ Cinética química: ${CinC.ejemplos.length} ejemplos, leyes integradas y vidas medias a mano, unidades de k, orden a partir de datos, velocidades iniciales, Arrhenius de ida y vuelta y errores`);
 }
 
+{
+  // copiar en LaTeX y en texto (compartir.js) a partir de la fuente de las fórmulas
+  const antes = fallos;
+  const Ma = require(path.join(fuente, 'mates.js'));
+  global.Mates = Ma;
+  const Co = require(path.join(fuente, 'matematicas', 'compartir.js'));
+  for (const [src, tex, txt] of [['{x^{2}}/{2} + K', '\\frac{x^{2}}{2} + K', 'x^2/2 + K'], ['√(1 − x^{2})', '\\sqrt{1 - x^{2}}', '√(1 − x^2)'], ['∫_{0}^{π} sen x dx', '\\int_{0}^{\\pi} \\operatorname{sen} x \\, dx', '∫_0^π sen x dx'], ['{1}/{s^{2} + 1}', '\\frac{1}{s^{2} + 1}', '1/(s^2 + 1)'], ['e^{x^{2}}', 'e^{x^{2}}', 'e^(x^2)']]) {
+    if (Co.latex(src) !== tex) mal(`Compartir: «${src}» en LaTeX sale «${Co.latex(src)}» en vez de «${tex}»`);
+    if (Co.texto(src) !== txt) mal(`Compartir: «${src}» en texto sale «${Co.texto(src)}» en vez de «${txt}»`);
+  }
+  if (!Ma.html('$x^2$').includes('data-src="x^2"')) mal('Mates: la fórmula no guarda su fuente');
+  if (fallos === antes) console.log('  ✓ Compartir: fórmulas a LaTeX y a texto');
+}
+
 const CamC = require(path.join(fuente, 'campos', 'calculo.js'));
 {
   const antes = fallos, cerca = (a, b, tol, q) => { if (!(Math.abs(a - b) <= tol * Math.max(1, Math.abs(b)))) mal(`Campos · ${q}: ${a} en vez de ${b}`); };
@@ -981,12 +1000,39 @@ const CamC = require(path.join(fuente, 'campos', 'calculo.js'));
   const g2 = r('green-rect'); cerca(g2.circula, 2, 1e-9, 'circulación en el rectángulo'); cerca(g2.dobleR, 2, 1e-9, 'Green en el rectángulo'); cerca(g2.flujo, 1, 1e-9, 'flujo en el rectángulo'); cerca(g2.dobleD, 1, 1e-9, 'divergencia en el rectángulo');
   const g3 = r('green-flujo'); cerca(g3.flujo, 8 * Math.PI, 1e-9, 'flujo de (x, y)'); cerca(g3.dobleD, 8 * Math.PI, 1e-6, 'divergencia de (x, y)');
   const ag = r('green-agujero'); cerca(ag.circula, 2 * Math.PI, 1e-9, 'circulación alrededor del origen'); if (!ag.singular || g1.singular || g2.singular || g3.singular) mal('Campos: no se avisa (o se avisa sin motivo) de que Green no vale con una singularidad dentro');
+  // potencial simbólico: ∇φ = F y su valor
+  const pot = (c, txt, v) => { const x = r(c); if (x.phiTxt !== txt) mal(`Campos · ${c}: el potencial sale «${x.phiTxt}» en vez de «${txt}»`); cerca(x.phi, v, 1e-12, `potencial de ${c}`); };
+  pot('potencial-2d', 'x^{2} y + y^{3}', 10); pot('potencial-3d', 'x y^{2} + x^{2} z + y z', 5); pot('conservativo', 'x y z', 6);
+  if (r('remolino').phiTxt) mal('Campos: (−y, x) tiene potencial');
+  // poligonales e ∫ f ds
+  cerca(r('poligonal-triangulo').W, 1, 1e-12, 'trabajo de (−y, x) por el triángulo (el doble del área)'); const pc = r('poligonal-camino'); cerca(pc.W, 2, 1e-12, 'trabajo por dos segmentos'); cerca(pc.dphi, 2, 1e-12, 'Δφ por dos segmentos');
+  const ms = r('masa-semicirculo'); cerca(ms.I, 2, 1e-9, 'masa del semicírculo'); cerca(ms.L, Math.PI, 1e-9, 'longitud del semicírculo'); cerca(ms.cm[0], 0, 1e-9, 'x̄'); cerca(ms.cm[1], Math.PI / 4, 1e-9, 'ȳ');
+  cerca(r('cicloide').I, 8, 1e-9, 'longitud de la cicloide'); cerca(r('masa-helice').I, 2 * Math.SQRT2 * Math.PI ** 2, 1e-9, 'masa de la hélice'); cerca(r('masa-triangulo').I, 1.5 + Math.SQRT1_2, 1e-12, '∫ x ds por el triángulo');
+  { const x = CamC.resolver({ modo: 'masa', f: 'x', curva: 'param', cx: 'cos t', cy: 'sen t', a: '0', b: '2π' }); if (x.cm) mal('Campos: una f con valores negativos sale como densidad'); cerca(x.I, 0, 1e-9, '∫ x ds en la circunferencia'); }
+  // Green en polígonos y entre curvas (incluido un polígono horario y uno no convexo)
+  cerca(r('green-triangulo').circula, 2, 1e-9, 'Green en el triángulo'); cerca(r('green-triangulo').area, 1, 1e-12, 'área del triángulo');
+  const gp = r('green-poligono'); cerca(gp.circula, gp.dobleR, 1e-9, 'Green en el pentágono'); cerca(gp.area, 5, 1e-12, 'área del pentágono');
+  { const a = CamC.resolver({ modo: 'green', P: 'x y', Q: 'x^2', region: 'poligono', vertices: '(0,0), (0,2), (3,2), (3,0)' }); cerca(a.circula, 9, 1e-9, 'Green en un rectángulo horario'); cerca(a.dobleR, 9, 1e-9, '∬ x dA');
+    const b = CamC.resolver({ modo: 'green', P: 'x y', Q: 'x^2', region: 'poligono', vertices: '0 0; 2 0; 2 2; 1 1; 0 2' }); cerca(b.circula, b.dobleR, 1e-9, 'Green en un polígono no convexo'); cerca(b.area, 3, 1e-12, 'área del polígono no convexo'); }
+  const gc = r('green-curvas'); cerca(gc.circula, 1 / 3, 1e-9, 'circulación entre y = x² e y = x'); cerca(gc.dobleR, 1 / 3, 1e-9, 'Green entre curvas'); cerca(gc.area, 1 / 6, 1e-9, 'área entre curvas');
+  const gs = r('green-semicirculo'); cerca(gs.circula, 2 / 3, 1e-9, 'circulación en el semicírculo'); cerca(gs.dobleR, 2 / 3, 1e-9, 'Green en el semicírculo'); cerca(gs.area, Math.PI / 2, 1e-9, 'área del semicírculo');
+  { const d = CamC.resolver({ modo: 'green', P: 'x', Q: 'y', region: 'curvas', g1: '-√(4 - x^2)', g2: '√(4 - x^2)', a: '-2', b: '2' }); cerca(d.flujo, 8 * Math.PI, 1e-6, 'flujo por el disco hecho con dos curvas'); if (d.singular) mal('Campos: el disco hecho con dos curvas sale singular'); }
+  // superficies y Stokes
+  const fe = r('flujo-esfera'); cerca(fe.flujo, 4 * Math.PI, 1e-9, 'flujo de (x, y, z) por la esfera'); cerca(fe.area, 4 * Math.PI, 1e-9, 'área de la esfera'); if (!fe.cerrada || fe.borde.length) mal('Campos: la esfera no sale cerrada');
+  cerca(r('flujo-plano').flujo, 2, 1e-9, 'flujo por el cuadrado');
+  const sp = r('stokes-paraboloide'); cerca(sp.rotFlujo, 2 * Math.PI, 1e-9, 'flujo del rotacional por el paraboloide'); cerca(sp.circula, 2 * Math.PI, 1e-9, 'circulación por el borde del paraboloide'); if (!sp.stokes || sp.cerrada || sp.borde.length !== 1) mal('Campos: el borde del paraboloide no es una sola circunferencia');
+  const sh = r('stokes-hemisferio'); cerca(sh.rotFlujo, -2 * Math.PI, 1e-9, 'Stokes en media esfera'); cerca(sh.circula, -2 * Math.PI, 1e-9, 'circulación por el ecuador');
+  // Gauss
+  cerca(r('gauss-caja').flujo, 18, 1e-9, 'flujo por la caja'); cerca(r('gauss-caja').vol, 18, 1e-9, '∭ div en la caja');
+  const ge = r('gauss-esfera'); cerca(ge.flujo, 12 * Math.PI / 5, 1e-9, 'flujo de (x³, y³, z³)'); cerca(ge.vol, 12 * Math.PI / 5, 1e-9, '∭ 3(x² + y² + z²)');
+  const gz = r('gauss-cilindro'); cerca(gz.flujo, 8 * Math.PI, 1e-9, 'flujo por el cilindro'); cerca(gz.vol, 8 * Math.PI, 1e-9, '∭ div en el cilindro');
+  const gq = r('gauss-carga'); cerca(gq.flujo, 4 * Math.PI, 1e-7, 'flujo del campo de una carga'); if (!gq.singular || ge.singular || gz.singular) mal('Campos: no se avisa (o se avisa sin motivo) de que Gauss no vale con una carga dentro');
   const sc0 = CamC.ejemplos.find((e) => e.clave === 'paraboloide').sc;
-  for (const [q, sc] of [['una f vacía', { ...sc0, f: '' }], ['un punto que no es un número', { ...sc0, x0: 'abc' }], ['la dirección cero', { ...sc0, u: '0, 0' }], ['un campo vacío', { modo: 'vectorial', P: '', Q: '', R: '', x0: '1', y0: '1' }], ['t final menor que el inicial', { modo: 'linea', P: 'y', Q: 'x', cx: 't', cy: 't', a: '1', b: '0' }], ['un radio negativo', { modo: 'green', P: 'y', Q: 'x', region: 'circulo', cx: '0', cy: '0', rad: '-1' }]]) {
+  for (const [q, sc] of [['un vértice con una coordenada', { modo: 'linea', P: 'y', Q: 'x', curva: 'poligonal', vertices: '0 0; 1' }], ['un polígono de vértices alineados', { modo: 'green', P: 'y', Q: 'x', region: 'poligono', vertices: '0 0; 1 1; 2 2' }], ['curvas cruzadas', { modo: 'green', P: 'y', Q: 'x', region: 'curvas', g1: 'x', g2: 'x^2', a: '0', b: '1' }], ['una superficie que no depende de v', { modo: 'superficie', P: 'x', Q: 'y', R: 'z', sx: 'u', sy: 'u', sz: '0', u1: '0', u2: '1', v1: '0', v2: '1' }], ['una caja al revés', { modo: 'gauss', P: 'x', Q: 'y', R: 'z', solido: 'caja', x1: '1', x2: '0', y1: '0', y2: '1', z1: '0', z2: '1' }], ['una f vacía', { ...sc0, f: '' }], ['un punto que no es un número', { ...sc0, x0: 'abc' }], ['la dirección cero', { ...sc0, u: '0, 0' }], ['un campo vacío', { modo: 'vectorial', P: '', Q: '', R: '', x0: '1', y0: '1' }], ['t final menor que el inicial', { modo: 'linea', P: 'y', Q: 'x', cx: 't', cy: 't', a: '1', b: '0' }], ['un radio negativo', { modo: 'green', P: 'y', Q: 'x', region: 'circulo', cx: '0', cy: '0', rad: '-1' }]]) {
     let ok = false; try { CamC.resolver(sc); } catch (e) { ok = true; }
     if (!ok) mal(`Campos: ${q} no da error`);
   }
-  if (fallos === antes) console.log(`  ✓ Campos vectoriales: ${CamC.ejemplos.length} ejemplos, gradiente, derivada direccional, laplaciano, divergencia, rotacional, potencial, trabajo, Green y errores`);
+  if (fallos === antes) console.log(`  ✓ Campos vectoriales: ${CamC.ejemplos.length} ejemplos, gradiente, derivada direccional, laplaciano, divergencia, rotacional, potencial simbólico, trabajo por curvas y poligonales, ∫ f ds y centro de masas, Green en polígonos y entre curvas, flujo, Stokes, Gauss y errores`);
 }
 
 const FzC = require(path.join(fuente, 'fuerza', 'fisica.js'));
@@ -1131,7 +1177,9 @@ const LapC = require(path.join(fuente, 'laplace', 'calculo.js'));
   for (const e of LapC.ejemplos.filter((q) => q.sc.modo === 'directa')) {
     const x = LapC.resolver(e.sc), s0 = x.conv + 1.5, T = 40 / (s0 - x.conv), n = 20000;
     let I = 0; for (let i = 0; i <= n; i++) { const t = (T * i) / n, w = i === 0 || i === n ? 1 : i % 2 ? 4 : 2; I += w * Math.exp(-s0 * t) * x.f(t); }
-    cerca((I * T) / n / 3, LapC.pVal(x.F.n, s0) / LapC.pVal(x.F.d, s0), 1e-6, `${e.clave}: F(${s0}) frente a la integral`);
+    // las deltas suman su e^{−as} aparte
+    const dl = (x.deltas || []).reduce((v, q) => v + q.c * Math.exp(-q.a * s0), 0);
+    cerca((I * T) / n / 3 + dl, x.Fval ? x.Fval(s0) : LapC.pVal(x.F.n, s0) / LapC.pVal(x.F.d, s0), x.saltos ? 1e-4 : 1e-6, `${e.clave}: F(${s0}) frente a la integral`);
     const inv = LapC.inversa({ F: x.Fcomun.replace(/\{/g, '(').replace(/\}/g, ')').replace(/−/g, '-') });
     for (const t of [0.2, 1.1, 2.5]) cerca(inv.f(t), x.f(t), 1e-8, `${e.clave}: la inversa no vuelve a f(${t})`);
   }
@@ -1146,13 +1194,40 @@ const LapC = require(path.join(fuente, 'laplace', 'calculo.js'));
     const x = LapC.resolver(e.sc), h = 1e-4, d1 = (t) => (x.f(t + h) - x.f(t - h)) / (2 * h), d2 = (t) => (x.f(t + h) - 2 * x.f(t) + x.f(t - h)) / (h * h);
     cerca(x.f(0), x.y0, 1e-9, `${e.clave}: y(0)`);
     if (x.orden === 2) cerca((x.f(h) - x.f(0)) / h, x.v0, 1e-3, `${e.clave}: y′(0)`);
+    if (/δ/.test(e.sc.g)) continue;
     for (const t of [0.4, 1.3, 2.2]) cerca(x.a * d2(t) + x.b * d1(t) + x.c * x.f(t), x.g(t), 1e-5, `${e.clave}: la solución no cumple la ecuación en t = ${t}`);
   }
-  for (const [sc, q] of [[{ modo: 'directa', f: '' }, 'sin f'], [{ modo: 'directa', f: 'tg(t)' }, 'tg t'], [{ modo: 'directa', f: 's t' }, 'f con s'], [{ modo: 'inversa', F: '(s^2 + 1)/(s + 1)' }, 'F impropia'], [{ modo: 'inversa', F: 's + 3' }, 'F sin denominador'], [{ modo: 'inversa', F: '1/(s + t)' }, 'F con t'], [{ modo: 'edo', orden: '2', a: '0', b: '1', c: '1', g: '0', y0: '1', v0: '0' }, 'a = 0'], [{ modo: 'edo', orden: '2', a: '1', b: '0', c: '1', g: 'ln(t)', y0: '1', v0: '0' }, 'g sin transformada de la tabla']]) {
+  // escalones, deltas, trozos, convolución y sistemas
+  igual(r('trozos').Ftxt, '{1}/{s^{2}} − 2 {e^{−2 s}}/{s^{2}} + {e^{−4 s}}/{s^{2}}', 'triángulo a trozos');
+  igual(r('retrasada').Ftxt, '{e^{−s}}/{s^{2}} + 2 {e^{−3 s}}/{s}', '(t − 1) u(t − 1) + 2 u(t − 3)');
+  igual(r('delta').Ftxt, '3 e^{−s} + e^{−2} {e^{−2 s}}/{s + 1}', '3δ(t − 1) + e^(−t) u(t − 2)');
+  igual(r('pulso').txt, 't − (t − 1) u(t − 1)', '(1 − e^(−s))/s²');
+  igual(r('con-delta').txt, '2 e^{−t} + δ(t)', '(s + 3)/(s + 1)');
+  igual(r('edo-impulso').txt, 'cos t + sen (t − π) u(t − π)', 'y″ + y = δ(t − π)');
+  igual(r('conv-sen').txt, '{1}/{2} t sen t', 'sen t * cos t');
+  igual(r('sis-oscila').txt + ' | ' + r('sis-oscila').txt2, 'cos t | −sen t', 'x′ = y, y′ = −x');
+  igual(r('edo-1').htxt, 'e^{−2 t}', 'respuesta al impulso de y′ + 2y');
+  {
+    const x = r('edo-impulso');
+    // tras el impulso, y′ salta en 1: y′(π⁺) − y′(π⁻) = 1
+    const h = 1e-5, d = (t) => (x.f(t + h) - x.f(t - h)) / (2 * h);
+    cerca(d(Math.PI + 1e-3) - d(Math.PI - 1e-3), 1, 1e-2, 'edo-impulso: el salto de y′ en t = π');
+  }
+  for (const e of LapC.ejemplos.filter((q) => q.sc.modo === 'convolucion')) {
+    // (f * g)(t) = ∫₀ᵗ f(τ) g(t − τ) dτ por Simpson
+    const x = LapC.resolver(e.sc);
+    for (const t of [0.7, 1.6, 2.5]) { const n = 4000; let I = 0; for (let i = 0; i <= n; i++) { const u = (t * i) / n, w = i === 0 || i === n ? 1 : i % 2 ? 4 : 2; I += w * x.f1(u) * x.g1(t - u); } cerca(x.f(t), (I * t) / n / 3, 1e-4, `${e.clave}: la convolución en t = ${t}`); }
+  }
+  for (const e of LapC.ejemplos.filter((q) => q.sc.modo === 'sistema')) {
+    const x = LapC.resolver(e.sc), h = 1e-5, d = (f, t) => (f(t + h) - f(t - h)) / (2 * h);
+    cerca(x.f(0), x.x0, 1e-9, `${e.clave}: x(0)`); cerca(x.f2(0), x.y0, 1e-9, `${e.clave}: y(0)`);
+    for (const t of [0.3, 1.1]) { cerca(d(x.f, t), x.a * x.f(t) + x.b * x.f2(t) + x.fx(t), 1e-5, `${e.clave}: x′ en t = ${t}`); cerca(d(x.f2, t), x.c * x.f(t) + x.d * x.f2(t) + x.gy(t), 1e-5, `${e.clave}: y′ en t = ${t}`); }
+  }
+  for (const [sc, q] of [[{ modo: 'directa', f: '' }, 'sin f'], [{ modo: 'directa', f: 'tg(t)' }, 'tg t'], [{ modo: 'directa', f: 's t' }, 'f con s'], [{ modo: 'inversa', F: '(s^2 + 1)/(s + 1)' }, 'F impropia'], [{ modo: 'inversa', F: 's + 3' }, 'F sin denominador'], [{ modo: 'inversa', F: '1/(s + t)' }, 'F con t'], [{ modo: 'edo', orden: '2', a: '0', b: '1', c: '1', g: '0', y0: '1', v0: '0' }, 'a = 0'], [{ modo: 'edo', orden: '2', a: '1', b: '0', c: '1', g: 'ln(t)', y0: '1', v0: '0' }, 'g sin transformada de la tabla'], [{ modo: 'directa', f: 'u(2 - t)' }, 'u(a − t)'], [{ modo: 'inversa', F: 'e^(2s)/s' }, 'e^(as) con a > 0'], [{ modo: 'directa', f: 't si 2 ≤ t < 1' }, 'trozo al revés'], [{ modo: 'sistema', a11: '1', a12: 'x', a21: '0', a22: '1', f: '0', g: '0', x0: '1', y0: '0' }, 'sistema con letra']]) {
     let ok = false; try { LapC.resolver(sc); } catch (e) { ok = true; }
     if (!ok) mal(`Laplace: ${q} no da error`);
   }
-  if (fallos === antes) console.log(`  ✓ Transformada de Laplace: ${LapC.ejemplos.length} ejemplos, resultados como en clase, directa frente a la integral, inversa de ida y vuelta (polos dobles y complejos), EDOs que cumplen la ecuación y errores`);
+  if (fallos === antes) console.log(`  ✓ Transformada de Laplace: ${LapC.ejemplos.length} ejemplos, resultados como en clase, directa frente a la integral, inversa de ida y vuelta (polos dobles y complejos), EDOs que cumplen la ecuación, escalones, deltas y trozos, convolución frente a la integral, sistemas que cumplen sus ecuaciones y errores`);
 }
 
 const DerC = require(path.join(fuente, 'derivadas', 'calculo.js'));
@@ -1175,7 +1250,7 @@ const DerC = require(path.join(fuente, 'derivadas', 'calculo.js'));
     for (const t of [0.4, 1.3, 2.2]) for (let k = 1; k <= x.orden; k++) { const a = x.d(k - 1), b = x.d(k); cerca(b(t), (a(t + h) - a(t - h)) / (2 * h), 1e-4, `${e.clave}: derivada ${k} en x = ${t}`); }
   }
   // primitivas: todas se encuentran y al derivarlas sale f
-  const prims = { 'x^2 cos(2x)': 0, 'x^3 e^(2x)': 0, 'sen(3x)cos(3x)': 0, 'x sen(x)': 0, 'x e^(-x)': 0, 'sen(x)^3': 0, 'cos(x)^5': 0, 'tg(x)': 0, 'tg(x)^2': 0, 'ln(x)': 0, 'ln(x)^2': 0, 'arctg(x)': 0, 'x arctg(x)': 0, '2^x': 0, '1/sqrt(1-x^2)': 0, 'x/sqrt(1+x^2)': 0, 'e^(2x) sen(3x)': 0, 'x^2 ln(x)': 0, 'sqrt(x) ln(x)': 0, 'ln(x)/x': 0, '1/(x ln(x))': 0, 'cos(ln(x))/x': 0, 'e^x/(1+e^x)': 0, 'x (x^2+1)^3': 0, '(x+1)^5': 0, 'sqrt(2x+1)': 0, '1/(x^2 sqrt(x))': 0, '1/(x^2-1)': 0, 'x^4/(x^2-1)': 0, '1/(x(x+1)^2)': 0, '(2x+3)/(x^2+3x+5)': 0, '1/(x^2+x+1)': 0, '(x+2)/(x^2+2x+2)': 0, 'senh(x) cosh(x)': 0, 'sen(x)/cos(x)^2': 0 };
+  const prims = { 'x^2 cos(2x)': 0, 'x^3 e^(2x)': 0, 'sen(3x)cos(3x)': 0, 'x sen(x)': 0, 'x e^(-x)': 0, 'sen(x)^3': 0, 'cos(x)^5': 0, 'tg(x)': 0, 'tg(x)^2': 0, 'ln(x)': 0, 'ln(x)^2': 0, 'arctg(x)': 0, 'x arctg(x)': 0, '2^x': 0, '1/sqrt(1-x^2)': 0, 'x/sqrt(1+x^2)': 0, 'e^(2x) sen(3x)': 0, 'x^2 ln(x)': 0, 'sqrt(x) ln(x)': 0, 'ln(x)/x': 0, '1/(x ln(x))': 0, 'cos(ln(x))/x': 0, 'e^x/(1+e^x)': 0, 'x (x^2+1)^3': 0, '(x+1)^5': 0, 'sqrt(2x+1)': 0, '1/(x^2 sqrt(x))': 0, '1/(x^2-1)': 0, 'x^4/(x^2-1)': 0, '1/(x(x+1)^2)': 0, '(2x+3)/(x^2+3x+5)': 0, '1/(x^2+x+1)': 0, '(x+2)/(x^2+2x+2)': 0, 'senh(x) cosh(x)': 0, 'sen(x)/cos(x)^2': 0, 'sen(3x)cos(2x)': 0, 'sen(x)sen(4x)': 0, 'cos(2x)cos(5x)': 0, 'cos(x)sen(3x)': 0, 'sqrt(4-9x^2)': 0, 'sqrt(1-x^2)': 0, 'sqrt(x^2+1)': 0, '1/sqrt(x^2+4)': 0, 'sqrt(x^2-1)': 0, '1/sqrt(9x^2-4)': 0 };
   for (const fx of Object.keys(prims)) {
     const x = DerC.integral({ f: fx });
     if (!x.F) { mal(`Derivadas: no encuentra la primitiva de ${fx}`); continue; }
@@ -1191,11 +1266,26 @@ const DerC = require(path.join(fuente, 'derivadas', 'calculo.js'));
   cerca(r('partes-ln').val, (Math.E ** 2 + 1) / 4, 1e-12, '∫₁^e x ln x'); cerca(r('gauss').val, 0.746824132812427, 1e-9, '∫₀¹ e^(−x²) numérica');
   if (r('gauss').F) mal('Derivadas: da una primitiva elemental de e^(−x²)');
   const ar = DerC.integral({ f: 'sen(x)', a: '0', b: '2pi' }); cerca(ar.val, 0, 1e-9, '∫₀^{2π} sen x'); cerca(ar.area, 4, 1e-5, 'área de sen x en [0, 2π]');
-  for (const [sc, q] of [[{ modo: 'derivada', f: '', orden: '1' }, 'sin f'], [{ modo: 'derivada', f: 'x + y', orden: '1' }, 'otra letra'], [{ modo: 'derivada', f: 'ln(x)', orden: '1', x0: '-1' }, 'x₀ fuera del dominio'], [{ modo: 'integral', f: 'x', a: '1', b: '1' }, 'a = b'], [{ modo: 'integral', f: '1/x', a: '-1', b: '1' }, 'integral impropia'], [{ modo: 'integral', f: 'x', a: '0', b: '' }, 'falta b']]) {
+  for (const [sc, q] of [[{ modo: 'derivada', f: '', orden: '1' }, 'sin f'], [{ modo: 'derivada', f: 'x + y', orden: '1' }, 'otra letra'], [{ modo: 'derivada', f: 'ln(x)', orden: '1', x0: '-1' }, 'x₀ fuera del dominio'], [{ modo: 'integral', f: 'x', a: '1', b: '1' }, 'a = b'], [{ modo: 'integral', f: 'x', a: '0', b: '' }, 'falta b'], [{ modo: 'limite', f: 'sen(x)/x', a: '' }, 'límite sin punto'], [{ modo: 'area', f: 'x^2 + 1', g: '0', a: '', b: '' }, 'curvas que no se cortan'], [{ modo: 'volumen', f: 'x', g: '', a: '-1', b: '1', eje: 'y' }, 'capas con x < 0'], [{ modo: 'implicita', ec: 'x^2 + y^2 = 25', x0: '1', y0: '1' }, 'punto fuera de la curva'], [{ modo: 'implicita', ec: 'x^2 = 4', x0: '', y0: '' }, 'ecuación sin y']]) {
     let ok = false; try { DerC.resolver(sc); } catch (e) { ok = true; }
     if (!ok) mal(`Derivadas: ${q} no da error`);
   }
-  if (fallos === antes) console.log(`  ✓ Derivadas e integrales: ${DerC.ejemplos.length} ejemplos, derivadas como en clase y frente al cociente incremental, tangente y extremos, ${Object.keys(prims).length} primitivas comprobadas derivándolas, Barrow, numérica, área y errores`);
+  // impropias, límites, área, volumen, estudio, implícita y parciales
+  cerca(r('impropia').val, 1, 1e-12, '∫₁^∞ 1/x²'); if (!r('impropia-diverge').diverge) mal('Derivadas: ∫₁^∞ 1/x no diverge');
+  cerca(r('impropia-asintota').val, 2, 1e-12, '∫₀¹ 1/√x'); cerca(r('impropia-dentro').val, 4.5, 1e-9, '∫₋₁⁸ 1/∛x'); cerca(r('impropia-gauss').val, Math.sqrt(Math.PI) / 2, 1e-9, '∫₀^∞ e^(−x²)');
+  if (!DerC.integral({ f: '1/x', a: '-1', b: '1' }).diverge) mal('Derivadas: ∫₋₁¹ 1/x no diverge'); if (!DerC.integral({ f: 'sen(x)', a: '0', b: '∞' }).diverge) mal('Derivadas: ∫₀^∞ sen x no diverge');
+  cerca(DerC.integral({ f: '1/(1+x^2)', a: '-∞', b: '∞' }).val, Math.PI, 1e-9, '∫ 1/(1 + x²) en ℝ'); cerca(DerC.integral({ f: 'x e^(-x)', a: '0', b: 'inf' }).val, 1, 1e-9, '∫₀^∞ x e^(−x)');
+  cerca(r('prod-trig').val, 0.6, 1e-12, '∫ sen 3x cos 2x'); cerca(r('semicirculo').val, 2 * Math.PI, 1e-12, '∫ √(4 − x²)');
+  for (const [c, v] of [['lh-sen', 1], ['lh-dos', 0.5], ['lh-cero-inf', 0], ['lh-uno-inf', Math.E], ['lh-resta', 0]]) { const x = r(c); cerca(x.val, v, 1e-9, `límite ${c}`); if (!x.lhopital) mal(`Derivadas · ${c}: no usa L'Hôpital`); }
+  cerca(DerC.limite({ f: '(1+2x)^(1/x)', a: '0' }).val, Math.E ** 2, 1e-9, '(1 + 2x)^(1/x)'); cerca(DerC.limite({ f: 'x^x', a: '0' }).val, 1, 1e-9, 'x^x en 0'); if (DerC.limite({ f: '1/x', a: '0' }).existe) mal('Derivadas: lím 1/x en 0 existe');
+  cerca(r('area').val, 1 / 6, 1e-12, 'área entre x y x²'); cerca(r('area-cruce').val, 0.5, 1e-12, 'área entre x³ y x');
+  cerca(r('volumen').val, 8 * Math.PI, 1e-12, 'volumen de √x'); cerca(r('esfera').val, (4 * Math.PI) / 3, 1e-12, 'volumen de la esfera'); cerca(r('capas').val, Math.PI / 6, 1e-12, 'capas entre x y x²');
+  igual(r('volumen').txt, '8 π', 'V = 8π'); igual(r('circunferencia').txt, '−{x}/{y}', 'y′ en la circunferencia'); cerca(r('folium').m, -1, 1e-12, 'pendiente del folium en (3, 3)');
+  { const x = r('estudio'); if (x.asV.join() !== '1' || x.asO.length !== 2 || x.asO[0].m !== 1 || x.asO[0].n !== 1 || x.extremos.map((q) => q.tipo).join() !== 'máximo,mínimo' || x.dom !== 'ℝ − \\{1\\}') mal('Derivadas: el estudio de (x² + 1)/(x − 1) no da la asíntota x = 1, la oblicua y = x + 1 y el máximo y el mínimo'); }
+  { const x = r('estudio-ln'); if (x.dom !== '(0, ∞)' || x.asV.join() !== '0' || x.asH[0].y !== 0 || Math.abs(x.extremos[0].x - Math.E) > 1e-9) mal('Derivadas: el estudio de ln x / x no cuadra'); }
+  { const x = r('silla'); if (x.crit.map((q) => `${q.x},${q.y},${q.tipo}`).join(' ') !== '-1,0,punto de silla 1,0,mínimo') mal('Derivadas: x³ − 3x + y² no da la silla en (−1, 0) y el mínimo en (1, 0)'); }
+  { const x = r('parciales'); if (x.crit.length !== 4 || x.punto.gx !== 4 || x.punto.gy !== 10) mal('Derivadas: los puntos críticos o el gradiente de x² y + y³ − 3y no cuadran'); }
+  if (fallos === antes) console.log(`  ✓ Derivadas e integrales: ${DerC.ejemplos.length} ejemplos, derivadas como en clase y frente al cociente incremental, tangente y extremos, ${Object.keys(prims).length} primitivas comprobadas derivándolas, Barrow, numérica, área, impropias, L'Hôpital, área entre curvas, volúmenes, estudio completo, implícita, parciales y errores`);
 }
 
 const Gases = require(path.join(fuente, 'gases', 'fisica.js'));
@@ -1261,7 +1351,7 @@ const Mates = require(path.join(fuente, 'mates.js'));
   if (!m('x = 1,2·10<sup>−5</sup> "m/s"').includes('<mtext>m/s</mtext>')) mal('Mates: las unidades entre comillas no salen como texto');
   if (!m('cos^2 α').includes('<msup><mi mathvariant="normal">cos</mi><mn>2</mn></msup>')) mal('Mates: cos² no sale');
   if (!m('ΔT').includes('<mi mathvariant="normal">Δ</mi>')) mal('Mates: Δ debería ir recta');
-  if (Mates.html('a $x$ b $y$').split('<math>').length !== 3) mal('Mates: no sustituye cada $…$');
+  if (Mates.html('a $x$ b $y$').split('<math ').length !== 3) mal('Mates: no sustituye cada $…$');
   if (fallos === antes) console.log('  ✓ Mates: fracciones, raíces, exponentes, subíndices, unidades y funciones en MathML');
 }
 
@@ -2040,9 +2130,9 @@ async function navegador() {
     for (const e of TaylorC.ejemplos) {
       await page.evaluate((c) => TaylorApp.abrirEjemplo(c), e.clave);
       const r = await page.evaluate(() => ({ err: !document.querySelector('#error').hidden, pasos: document.querySelectorAll('#pasos li').length, mathml: document.querySelectorAll('#pasos math').length, pol: !!document.querySelector('#resumen .ancho math'), dolar: /\$/.test(document.querySelector('#pasos').textContent + document.querySelector('#resumen').textContent), res: document.querySelectorAll('#resumen > div.num').length, max: document.querySelector('#grado').max }));
-      if (r.err || r.pasos < 4 || r.res < 3 || !r.pol) mal(`Taylor · ${e.clave}: falta el resultado o el desarrollo`);
+      if (r.err || r.pasos < 4 || r.res < (e.sc.modo === 'limite' ? 1 : 3) || !r.pol) mal(`Taylor · ${e.clave}: falta el resultado o el desarrollo`);
       if (!r.mathml || r.dolar) mal(`Taylor · ${e.clave}: el desarrollo no sale en MathML`);
-      if (+r.max !== +e.sc.n) mal(`Taylor · ${e.clave}: el selector de grado no llega a ${e.sc.n}`);
+      if (e.sc.modo !== 'limite' && +r.max !== +e.sc.n) mal(`Taylor · ${e.clave}: el selector de grado no llega a ${e.sc.n}`);
     }
     await page.evaluate(() => TaylorApp.abrirEjemplo('exp'));
     if (!(await page.locator('#resumen').textContent()).includes('1,648438')) mal('Taylor: P4(0,5) de e^x no sale 1,648438');
@@ -2210,11 +2300,36 @@ async function navegador() {
     await page.evaluate(() => CamposApp.abrirEjemplo('green-circulo'));
     await page.selectOption('#f-region', 'rectangulo');
     if ((await page.locator('#f-x2').count()) !== 1 || !(await page.locator('#error').isHidden())) mal('Campos: al pasar a un rectángulo no salen sus campos o da error');
+    await page.selectOption('#f-region', 'poligono');
+    if ((await page.locator('#f-vertices').count()) !== 1 || !(await page.locator('#error').isHidden())) mal('Campos: al pasar a un polígono no salen los vértices o da error');
+    await page.selectOption('#f-region', 'curvas');
+    if ((await page.locator('#f-g2').count()) !== 1 || !(await page.locator('#error').isHidden())) mal('Campos: al pasar a la región entre curvas no salen sus campos o da error');
+    await page.selectOption('#f-modo', 'linea'); await page.selectOption('#f-curva', 'poligonal');
+    if ((await page.locator('#f-vertices').count()) !== 1 || !(await page.locator('#error').isHidden())) mal('Campos: al pasar a una poligonal no salen los vértices o da error');
+    await page.selectOption('#f-modo', 'gauss');
+    for (const so of ['esfera', 'cilindro', 'caja']) { await page.selectOption('#f-solido', so); if (!(await page.locator('#error').isHidden())) mal(`Campos: Gauss en un sólido «${so}» da error`); }
+    await page.selectOption('#f-modo', 'superficie');
+    if ((await page.locator('#f-sz').count()) !== 1 || !(await page.locator('#error').isHidden())) mal('Campos: al pasar a superficie no salen sus campos o da error');
+    await page.evaluate(() => CamposApp.abrirEjemplo('potencial-2d'));
+    if (!(await page.locator('#resumen').textContent()).includes('φ')) mal('Campos: no sale el potencial φ(x, y) en los resultados');
     await page.selectOption('#f-modo', 'escalar');
     if ((await page.locator('#f-f').count()) !== 1 || !(await page.locator('#error').isHidden())) mal('Campos: al pasar a campo escalar no sale el campo de f o da error');
     await page.click('#animar');
     if ((await page.locator('#animar').textContent()).trim() !== '▶ Animar') mal('Campos: el botón de parar no cambia');
     for (let i = 0; i < 10; i++) { await page.evaluate(() => CamposApp.azar()); if (!(await page.locator('#error').isHidden())) mal(`Campos: un ejercicio al azar da error: ${JSON.stringify(await page.evaluate(() => CamposApp.estado()))}`); }
+    // compartir: el enlace abre el mismo ejercicio en otro navegador; copiar en texto y en LaTeX; imprimir
+    await page.evaluate(() => CamposApp.abrirEjemplo('potencial-3d'));
+    if ((await page.locator('.compartir button').count()) !== 4 || !(await page.locator('#nota-log').count())) mal('Campos: faltan los botones de compartir o el aviso de log');
+    const co = await page.evaluate(() => ({ url: Compartir.enlace(), txt: Compartir.ejercicio(false), tex: Compartir.ejercicio(true), pasos: document.querySelector('#pasos').innerText }));
+    if (!/#d=[\w-]+$/.test(co.url)) mal(`Campos: el enlace para compartir no lleva los datos: ${co.url}`);
+    if (!co.txt.includes('φ = x y^2 + x^2 z + y z + K') || !co.txt.includes('Desarrollo')) mal('Campos: el texto copiado no trae el potencial o el desarrollo');
+    if (!co.tex.includes('\\begin{enumerate}') || !co.tex.includes('\\frac{\\partial \\varphi}{\\partial y}') || /\$\$/.test(co.tex)) mal('Campos: el LaTeX copiado no sale bien');
+    { const ctx = await browser.newContext(), p2 = await ctx.newPage(); await p2.goto(co.url); await p2.waitForFunction(() => window.CamposApp);
+      if ((await p2.evaluate(() => document.querySelector('#pasos').innerText)) !== co.pasos || (await p2.evaluate(() => CamposApp.estado().P)) !== 'y^2 + 2x z') mal('Campos: el enlace compartido no abre el mismo ejercicio');
+      await ctx.close(); }
+    await page.emulateMedia({ media: 'print' });
+    if (await page.locator('.teoria').isVisible() || await page.locator('.compartir').isVisible() || !(await page.locator('#pasos').isVisible())) mal('Campos: al imprimir no se quitan la teoría y los botones (o se quita el desarrollo)');
+    await page.emulateMedia({ media: 'screen' });
     await page.close();
     if (consola.length) mal('Campos: consola del navegador:\n      ' + consola.join('\n      '));
     if (fallos === antes) console.log(`  ✓ Campos vectoriales: ${CamC.ejemplos.length} ejemplos con MathML, cambio de campo, errores, tocar la gráfica, regiones de Green, cambio de modo y ejercicios al azar sin errores de consola`);

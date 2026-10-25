@@ -1,5 +1,5 @@
 <title>Derivadas e integrales paso a paso · SimulaCiencia</title>
-<meta name="description" content="Calculadora de derivadas e integrales en español, paso a paso: la regla de cada derivada (producto, cociente, cadena), recta tangente y puntos críticos; primitivas por la tabla, sustitución, partes y fracciones simples, e integral definida con la regla de Barrow y el área, con la gráfica.">
+<meta name="description" content="Calculadora de derivadas e integrales en español, paso a paso: la regla de cada derivada (producto, cociente, cadena), recta tangente y puntos críticos; primitivas por la tabla, sustitución, partes y fracciones simples, integral definida e impropia, área entre curvas, volúmenes de revolución, límites con L'Hôpital, estudio completo de una función, derivación implícita y derivadas parciales, con la gráfica.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
@@ -19,7 +19,7 @@
 <header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Matemáticas</a> / Derivadas e integrales</span></header>
 <div class="wrap">
 <h1>Derivadas e integrales</h1>
-<p class="lead">Deriva cualquier función diciendo qué regla se usa en cada paso, con la recta tangente y los máximos y mínimos, y calcula primitivas por la tabla, sustitución, partes o fracciones simples, con la integral definida y su área.</p>
+<p class="lead">Deriva cualquier función diciendo qué regla se usa en cada paso, con la recta tangente y los máximos y mínimos, y calcula primitivas por la tabla, sustitución, partes o fracciones simples, con la integral definida o impropia. También límites con L'Hôpital, el área entre dos curvas, volúmenes de revolución, el estudio completo de una función, la derivación implícita y las derivadas parciales.</p>
 <div class="layout">
   <div class="card">
     <h2>Datos</h2>
@@ -53,10 +53,26 @@
     <li class="m">Sustitución: si aparece $f(g(x)) g′(x)$, con $u = g(x)$ queda $∫ f(u) du$. Por ejemplo $∫ x e^{x^{2}} dx = {e^{x^{2}}}/{2}$.</li>
     <li class="m">Por partes: $∫ u dv = u v − ∫ v du$. Para un polinomio por $e^{x}$, sen o cos, u es el polinomio; con ln o arctg, u es la función.</li>
     <li>Fracciones simples: un cociente de polinomios se separa en fracciones con los factores del denominador, que dan logaritmos y arcotangentes.</li>
+    <li class="m">Productos de senos y cosenos: se pasan a sumas, $sen A cos B = {1}/{2} [sen(A + B) + sen(A − B)]$, y lo mismo con $cos A cos B$ y $sen A sen B$.</li>
+    <li class="m">Cambios trigonométricos: con $√(a^{2} − x^{2})$ se hace $x = a sen t$, que da $∫ √(a^{2} − x^{2}) dx = {x}/{2} √(a^{2} − x^{2}) + {a^{2}}/{2} arcsen {x}/{a}$; con $√(x^{2} ± a^{2})$, $x = a tg t$ o $x = a sec t$ (o senh y cosh), que dan logaritmos.</li>
   </ul>
   <h2>Integral definida</h2>
   <p class="f m">$∫_a^b f(x) dx = F(b) − F(a)$</p>
   <p>Es la regla de Barrow, con F cualquier primitiva. Mide el área con signo: lo que queda debajo del eje resta. Algunas funciones, como e<sup>−x²</sup>, no tienen primitiva elemental, y entonces la integral se calcula de forma numérica.</p>
+  <h2>Integrales impropias</h2>
+  <p class="m">Si un límite es infinito, o f no está acotada en algún punto del intervalo, la integral se define como un límite: $∫_{1}^{∞} f(x) dx = lím_{R→∞} ∫_{1}^{R} f(x) dx$. Si el límite es un número, la integral converge; si no, diverge. Por ejemplo $∫_{1}^{∞} {dx}/{x^{2}} = 1$ converge pero $∫_{1}^{∞} {dx}/{x}$ diverge, y $∫_{0}^{1} {dx}/{√x} = 2$ converge aunque f se vaya a infinito en 0. Con una asíntota dentro del intervalo se parte en dos integrales, y las dos tienen que converger.</p>
+  <h2>Área entre curvas y volúmenes de revolución</h2>
+  <ul>
+    <li class="m">Área entre f y g: $A = ∫_{a}^{b} |f(x) − g(x)| dx$. Se buscan los puntos de corte ($f = g$) y en cada trozo se resta la de abajo a la de arriba.</li>
+    <li class="m">Alrededor del eje x (discos o arandelas): $V = π ∫_{a}^{b} (f^{2} − g^{2}) dx$.</li>
+    <li class="m">Alrededor del eje y (capas cilíndricas): $V = 2π ∫_{a}^{b} x (f − g) dx$, con $x ≥ 0$.</li>
+  </ul>
+  <h2>Límites con la regla de L'Hôpital</h2>
+  <p class="m">Si $lím u/v$ es de la forma $0/0$ o $∞/∞$, vale lo mismo que $lím u′/v′$ (si este existe), y se puede repetir. Las otras indeterminaciones se llevan a esas: $0 · ∞$ como $u/(1/v)$, $∞ − ∞$ con denominador común, y $1^{∞}$, $0^{0}$, $∞^{0}$ tomando logaritmos, porque $u^{v} = e^{v ln u}$. Así sale, por ejemplo, $lím_{x→∞} (1 + 1/x)^{x} = e$.</p>
+  <h2>Estudio de una función</h2>
+  <p>Dominio, simetría (par o impar), cortes con los ejes, asíntotas (verticales donde f se va a infinito, horizontales con el límite en ±∞, y oblicuas y = mx + n con m = lím f/x y n = lím (f − mx)), monotonía y extremos con el signo de f′, y curvatura y puntos de inflexión con el signo de f″.</p>
+  <h2>Derivación implícita y derivadas parciales</h2>
+  <p class="m">Si la curva viene dada por una ecuación $F(x, y) = 0$, se deriva pensando que y depende de x y se despeja: $y′ = −F_{x}/F_{y}$. Para una función de dos variables, $f_{x}$ se calcula derivando en x con y constante (y al revés); el gradiente $∇f = (f_{x}, f_{y})$ apunta hacia donde f crece más deprisa. En un punto crítico ($∇f = 0$) el hessiano $D = f_{xx} f_{yy} − f_{xy}^{2}$ dice si es un mínimo ($D > 0$, $f_{xx} > 0$), un máximo ($D > 0$, $f_{xx} < 0$) o un punto de silla ($D < 0$).</p>
   <p>Para desarrollos en serie usa <a href="../taylor/">Series de Taylor</a>, y para gradientes y derivadas parciales, <a href="../campos/">Campos vectoriales</a>.</p>
 </section>
 </div>

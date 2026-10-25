@@ -35,7 +35,7 @@
       <label for="f-N">Armónicos N <small>(1 a 100)</small></label><input id="f-N" class="in" inputmode="numeric" autocomplete="off">
       <label for="f-x0">Punto x₀ <small>(opcional)</small></label><input id="f-x0" class="in" autocomplete="off" spellcheck="false">
     </div>
-    <p class="nota">Cada tramo va de un extremo al siguiente, sin huecos: −π ≤ x &lt; 0, 0 ≤ x &lt; π. Las funciones se escriben con x: 1, x, x^2, |x|, sen x, π − x, e^x…</p>
+    <p class="nota">Cada tramo va de un extremo al siguiente: −π ≤ x &lt; 0, 0 ≤ x &lt; π. Si dejas un hueco, ahí se toma f = 0. Las funciones se escriben con x: 1, x, x^2, |x|, sen x, π − x, e^x…</p>
     <p class="error" id="error" hidden></p>
   </div>
   <div>
@@ -66,7 +66,13 @@
   <p>Si f es derivable a trozos, la serie converge a f(x) donde f es continua y, en un salto, a la media de los límites laterales. Cerca de un salto la suma parcial se pasa del valor de f en torno a un 9 % del salto, y ese pico no desaparece al sumar más términos: solo se estrecha.</p>
   <h2>Igualdad de Parseval</h2>
   <p class="f m">${2}/{T} ∫_T f(x)^2 dx = {a_0^2}/{2} + Σ_{n=1}^{∞} (a_n^2 + b_n^2)$</p>
-  <p class="m">Dice cuánta «energía» lleva cada armónico, y sirve para sumar series: con $f(x) = x$ en [−π, π] sale $Σ 1/n^2 = π^2/6$. Para aproximar con polinomios en vez de senos y cosenos usa <a href="../taylor/">Series de Taylor</a>.</p>
+  <p class="m">Dice cuánta «energía» lleva cada armónico, y sirve para sumar series: con $f(x) = x$ en [−π, π] sale $Σ 1/n^2 = π^2/6$. Lo mismo pasa al evaluar la serie en un punto: la onda cuadrada en x = π/2 da $1 − 1/3 + 1/5 − … = π/4$. Para aproximar con polinomios en vez de senos y cosenos usa <a href="../taylor/">Series de Taylor</a>.</p>
+  <h2>Forma compleja y forma amplitud-fase</h2>
+  <p class="m">Con $e^{iθ} = cos θ + i sen θ$ la serie se escribe con exponenciales, que es como se usa en señales:</p>
+  <p class="f m">$f(x) ∼ Σ_{n=−∞}^{∞} c_n e^{i n ω_0 x}$, &ensp; $c_n = {1}/{T} ∫_T f(x) e^{−i n ω_0 x} dx = {a_n − i b_n}/{2}$</p>
+  <p class="m">y $c_{−n}$ es el conjugado de $c_n$ cuando f es real. Juntando el seno y el coseno de cada armónico también queda $f(x) ∼ {a_0}/{2} + Σ A_n cos(n ω_0 x + φ_n)$, con amplitud $A_n = √(a_n^2 + b_n^2) = 2|c_n|$ y fase $φ_n$: las $A_n$ son las barras del espectro.</p>
+  <h2>Términos generales menos sencillos</h2>
+  <p class="m">No siempre sale $1/n$ o $1/n^2$: con $|sen x|$ el denominador es $n^2 − 1$ y la fórmula vale desde n = 2 (el primer coeficiente se calcula aparte), con $e^x$ aparecen $n^2 + 1$ y senh π, y en una onda trapezoidal sale $sen(nπ/2)$, que va 1, 0, −1, 0… Si los tramos dejan un hueco, ahí se toma f = 0.</p>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Series de Fourier <span id="ver"></span> (beta)</footer>

@@ -18,7 +18,7 @@
 <header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Matemáticas</a> / Ecuaciones diferenciales</span></header>
 <div class="wrap">
 <h1>Ecuaciones diferenciales</h1>
-<p class="lead">Resuelve ecuaciones de primer orden con el campo de pendientes y el método de Euler, ecuaciones lineales de segundo orden con coeficientes constantes paso a paso, y sistemas de dos ecuaciones con su diagrama de fases y el tipo de cada punto crítico.</p>
+<p class="lead">Resuelve ecuaciones de primer orden con el campo de pendientes y el método de Euler, ecuaciones separables, de Bernoulli y exactas con su solución exacta, ecuaciones lineales de segundo orden (y de orden 3 y 4 o de Cauchy-Euler) paso a paso, y sistemas de dos ecuaciones con su diagrama de fases y el tipo de cada punto crítico.</p>
 <div class="layout">
   <div class="card">
     <h2>Datos</h2>
@@ -42,8 +42,15 @@
   <h2>Primer orden: campo de pendientes y método de Euler</h2>
   <p class="m">Una ecuación $y′ = f(x, y)$ da en cada punto del plano la pendiente de la solución que pasa por él. Dibujando esas pendientes se ve la forma de todas las soluciones sin resolver nada. El método de Euler avanza con pasos de tamaño h siguiendo la pendiente:</p>
   <p class="f m">$y_{n+1} = y_n + h f(x_n, y_n)$, &ensp; $x_{n+1} = x_n + h$</p>
-  <p>Su error al final es proporcional a h: con la mitad de paso, más o menos la mitad de error. Runge-Kutta de orden 4 (RK4) usa cuatro pendientes por paso y su error va como h⁴.</p>
-  <p class="m">Si la ecuación es lineal, $y′ + p y = q(x)$ con p constante, la solución es $y = C e^{−p x} + y_p$. Si p depende de x se usa el factor integrante $e^{∫p dx}$.</p>
+  <p>Su error al final es proporcional a h: con la mitad de paso, más o menos la mitad de error. Heun (Euler mejorado) y el punto medio usan dos pendientes por paso y su error va como h²; Runge-Kutta de orden 4 (RK4) usa cuatro y su error va como h⁴. La tabla de comparación lo muestra: al partir h por la mitad, el error se divide por unos 2, 4 o 16.</p>
+  <p class="f m">Heun: $y_{n+1} = y_n + {h}/{2} (k_1 + k_2)$, $k_1 = f(x_n, y_n)$, $k_2 = f(x_n + h, y_n + h k_1)$</p>
+  <h2>Primer orden con solución exacta</h2>
+  <ul>
+    <li class="m"><b>Lineal</b>, $y′ + p(x) y = q(x)$: con el factor integrante $μ = e^{∫ p dx}$ queda $(μ y)′ = μ q$, así que $y = {1}/{μ} (∫ μ q dx + C)$. Si p es constante, $y = C e^{−p x} + y_p$.</li>
+    <li class="m"><b>Variables separables</b>, $y′ = g(x) h(y)$: $∫ {dy}/{h(y)} = ∫ g(x) dx + C$, y se despeja y si se puede. La logística $y′ = y(1 − y)$ da $y = {1}/{1 + K e^{−x}}$.</li>
+    <li class="m"><b>Bernoulli</b>, $y′ = p(x) y + q(x) y^n$: el cambio $v = y^{1 − n}$ la deja lineal, $v′ = (1 − n)(p v + q)$.</li>
+    <li class="m"><b>Exacta</b>, $M dx + N dy = 0$ con $∂M/∂y = ∂N/∂x$: hay un potencial Φ con $Φ_x = M$, $Φ_y = N$, y la solución es $Φ(x, y) = C$.</li>
+  </ul>
   <h2>Segundo orden con coeficientes constantes</h2>
   <p class="m">Para $a y″ + b y′ + c y = g(x)$ se prueba $y = e^{λx}$ en la homogénea, y sale la ecuación característica $a λ^2 + b λ + c = 0$:</p>
   <ul>
@@ -52,6 +59,10 @@
     <li class="m">Complejas $λ = α ± β i$: $y_h = e^{αx} (C_1 cos βx + C_2 sen βx)$.</li>
   </ul>
   <p class="m">La particular se busca con la misma forma que g(x) (coeficientes indeterminados). Si esa forma ya es solución de la homogénea hay resonancia y se multiplica por x. Por ejemplo, $y″ + y = cos x$ da $y_p = {x sen x}/{2}$, que crece sin límite. Las constantes $C_1$ y $C_2$ salen de $y(x_0)$ y $y′(x_0)$.</p>
+  <p class="m">Si g(x) no tiene esa forma (tg x, 1/cos x, eˣ/x) se usa <b>variación de parámetros</b>: $y_p = u_1 y_1 + u_2 y_2$ con $u_1 = −∫ {y_2 g}/{a W} dx$ y $u_2 = ∫ {y_1 g}/{a W} dx$, donde $W = y_1 y_2′ − y_1′ y_2$ es el wronskiano.</p>
+  <h2>Orden 3 y 4, y Cauchy-Euler</h2>
+  <p class="m">Con orden n la ecuación característica tiene n raíces, y cada raíz de multiplicidad k da k soluciones: $e^{λx}, x e^{λx}, …, x^{k−1} e^{λx}$. Hacen falta n condiciones iniciales, $y(x_0), y′(x_0), …$</p>
+  <p class="m">La de <b>Cauchy-Euler</b> lleva cada derivada k-ésima multiplicada por $x^k$, como $x^2 y″ + b x y′ + c y = 0$. Probando $y = x^r$ sale la ecuación indicial $r(r − 1) + b r + c = 0$: dos raíces reales dan $x^{r_1}$ y $x^{r_2}$; una doble, $x^r$ y $x^r ln x$; y unas complejas $α ± βi$, $x^α cos(β ln x)$ y $x^α sen(β ln x)$. Es lo mismo que hacer el cambio $x = e^t$.</p>
   <h2>Sistemas y diagrama de fases</h2>
   <p class="m">En un sistema $x′ = f(x, y)$, $y′ = g(x, y)$ cada punto del plano tiene una velocidad, y las soluciones son curvas que la siguen. Los puntos críticos son donde $f = g = 0$. Cerca de cada uno el sistema se parece a su linealización con la matriz jacobiana, y sus autovalores dicen el tipo:</p>
   <ul>

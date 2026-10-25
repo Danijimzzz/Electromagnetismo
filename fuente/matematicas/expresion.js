@@ -19,6 +19,8 @@ const Expresion = (() => {
     arcsen: 'arcsen', arcsin: 'arcsen', asin: 'arcsen', arccos: 'arccos', acos: 'arccos', arctg: 'arctg', arctan: 'arctg', atan: 'arctg',
     senh: 'senh', sinh: 'senh', sh: 'senh', cosh: 'cosh', ch: 'cosh', tgh: 'tgh', tanh: 'tgh', th: 'tgh',
     ln: 'ln', log: 'log', exp: 'exp', sqrt: 'sqrt', raiz: 'sqrt', 'raíz': 'sqrt', cbrt: 'cbrt', abs: 'abs',
+    // escalón de Heaviside y delta de Dirac (los usa Laplace)
+    escalon: 'u', 'escalón': 'u', heaviside: 'u', delta: 'δ', dirac: 'δ',
   };
   const PALABRAS = [...Object.keys(FUN), 'pi'].sort((a, b) => b.length - a.length);
 
@@ -40,7 +42,7 @@ const Expresion = (() => {
           if (p) { out.push(p === 'pi' ? { k: 'c', v: 'π' } : { k: 'f', v: FUN[p] }); j += p.length; }
           else if (vars.includes(w[j])) { out.push({ k: 'x', v: w[j] }); j++; }
           else if (w[j] === 'e') { out.push({ k: 'c', v: 'e' }); j++; }
-          else throw new Error(`${nom}: no sé qué es «${m[0].slice(j)}». ${vars.length > 1 ? `Las variables son ${vars.join(' e ')}` : `La variable es ${vars[0]}`}; las funciones son sen, cos, tg, arcsen, arctg, ln, e^x, √…`);
+          else throw new Error(`${nom}: no sé qué es «${m[0].slice(j)}». ${vars.length > 1 ? `Las variables son ${vars.join(' e ')}` : `La variable es ${vars[0]}`}; las funciones son sen, cos, tg, arcsen, arctg, ln (neperiano), log (decimal), e^x, √…`);
         }
         i += m[0].length; continue;
       }
@@ -118,6 +120,7 @@ const Expresion = (() => {
     sen: Math.sin, cos: Math.cos, tg: Math.tan, sec: (u) => 1 / Math.cos(u), cosec: (u) => 1 / Math.sin(u), cotg: (u) => 1 / Math.tan(u),
     arcsen: Math.asin, arccos: Math.acos, arctg: Math.atan, senh: Math.sinh, cosh: Math.cosh, tgh: Math.tanh,
     ln: (u) => (u > 0 ? Math.log(u) : NaN), log: (u) => (u > 0 ? Math.log10(u) : NaN), sqrt: (u) => (u >= 0 ? Math.sqrt(u) : NaN), cbrt: Math.cbrt, abs: Math.abs,
+    u: (u) => (u >= 0 ? 1 : 0), 'δ': () => 0,
   };
   const CTE = { 'π': Math.PI, e: Math.E };
   // env: valores de las otras variables, { y: 2 }
@@ -395,12 +398,19 @@ const Expresion = (() => {
 
   /* ---------- Serie de Taylor truncada ---------- */
   // coeficientes c_0 … c_N de f(a + h) = Σ c_k h^k
-  function serie(n, a, Nn) {
+  // evitable: en 0/0 (sen x / x en 0) se quitan los ceros comunes del numerador y el denominador;
+  // los últimos coeficientes dejan de ser fiables, así que quien lo usa pide unos cuantos de más
+  function serie(n, a, Nn, { evitable = false } = {}) {
     const L = Nn + 1, cero = () => new Float64Array(L);
     const cte = (v) => { const s = cero(); s[0] = v; return s; };
     const noDer = (q) => { throw new Error(`La función no es derivable en x = a (${q}): prueba con otro punto`); };
     const mul = (p, q) => { const r = cero(); for (let i = 0; i < L; i++) if (p[i]) for (let j = 0; i + j < L; j++) r[i + j] += p[i] * q[j]; return r; };
+    const corre = (p, m) => { const r = cero(); for (let k = 0; k + m < L; k++) r[k] = p[k + m]; return r; };
     const div = (p, q) => {
+      if (Math.abs(q[0]) < 1e-14 && evitable) {
+        const esc = Math.max(1e-300, ...q.map(Math.abs)), m = q.findIndex((v) => Math.abs(v) > 1e-10 * esc), escP = Math.max(1, ...p.map(Math.abs));
+        if (m > 0 && p.slice(0, m).every((v) => Math.abs(v) < 1e-10 * escP)) { p = corre(p, m); q = corre(q, m); serie.quitados = (serie.quitados || 0) + m; }
+      }
       if (Math.abs(q[0]) < 1e-14) noDer('división entre cero');
       const r = cero();
       for (let k = 0; k < L; k++) { let s = p[k]; for (let j = 1; j <= k; j++) s -= q[j] * r[k - j]; r[k] = s / q[0]; }

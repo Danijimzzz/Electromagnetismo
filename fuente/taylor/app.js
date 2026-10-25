@@ -21,10 +21,20 @@
 
   /* ---------- Formulario ---------- */
   const fila = (k, nom, modo = 'text') => `<label for="f-${k}">${nom}</label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc[k] ?? '')}" inputmode="${modo}" autocomplete="off" spellcheck="false">`;
+  const esLimite = () => sc.modo === 'limite';
   function formulario() {
-    $('#campos').innerHTML = fila('f', 'Función f(x)') + fila('a', 'Punto a <small>(centro)</small>') + fila('n', 'Grado n', 'numeric') + '<div class="sep">Aproximación (opcional)</div>' + fila('x0', 'Valor x₀ <small>(para f(x₀))</small>');
+    const modo = `<label for="f-modo">Qué calcular</label><select id="f-modo" class="in" data-k="modo"><option value="polinomio">Polinomio de Taylor</option><option value="limite"${esLimite() ? ' selected' : ''}>Límite con Taylor</option></select>`;
+    $('#campos').innerHTML = modo + (esLimite()
+      ? fila('f', 'Función <small>(un cociente)</small>') + fila('a', 'Punto a <small>(x → a)</small>')
+      : fila('f', 'Función f(x)') + fila('a', 'Punto a <small>(centro)</small>') + fila('n', `Grado n <small>(hasta ${T.MAXN})</small>`, 'numeric') + '<div class="sep">Aproximación (opcional)</div>' + fila('x0', 'Valor x₀ <small>(para f(x₀))</small>'));
+    $('#control').hidden = esLimite();
   }
-  $('#campos').addEventListener('input', (e) => { const t = e.target; if (t.tagName !== 'INPUT') return; sc[t.dataset.k] = t.value; $('#ejemplos').value = ''; calcula(); });
+  $('#campos').addEventListener('input', (e) => {
+    const t = e.target; if (!t.dataset.k) return;
+    sc[t.dataset.k] = t.value; $('#ejemplos').value = '';
+    if (t.dataset.k === 'modo') { if (t.value === 'polinomio') sc = { ...sc, n: sc.n || '4', x0: sc.x0 ?? '' }; formulario(); }
+    calcula();
+  });
 
   /* ---------- Ejemplos ---------- */
   const sel = $('#ejemplos');
@@ -46,10 +56,10 @@
     const ent = (a, b) => a + Math.floor(Math.random() * (b - a + 1)), uno = (xs) => xs[ent(0, xs.length - 1)];
     const [fx, as, xs] = uno(AZAR), a = uno(as);
     const x0 = xs ? uno(xs) : String(+a + uno([0.1, 0.2, -0.1])).replace('.', ',').replace('-', '−');
-    sc = { f: fx, a, n: String(ent(2, 4)), x0 };
+    sc = { modo: 'polinomio', f: fx, a, n: String(ent(2, 4)), x0 };
     formulario(); calcula(); sel.value = '';
   }
-  const enunciado = () => `Calcula el polinomio de Taylor de grado <b>${esc(sc.n)}</b> de <b>f(x) = ${esc(sc.f)}</b> en <b>x = ${esc(sc.a)}</b>, sus coeficientes, y úsalo para aproximar <b>f(${esc(sc.x0)})</b>. ¿Qué error se comete?`;
+  const enunciado = () => esLimite() ? `Calcula con desarrollos de Taylor el límite de <b>${esc(sc.f)}</b> cuando <b>x → ${esc(sc.a)}</b>.` : `Calcula el polinomio de Taylor de grado <b>${esc(sc.n)}</b> de <b>f(x) = ${esc(sc.f)}</b> en <b>x = ${esc(sc.a)}</b>, sus coeficientes, y úsalo para aproximar <b>f(${esc(sc.x0)})</b>. ¿Qué error se comete?`;
 
   /* ---------- Cálculo ---------- */
   const dato = (t, v, cl = '') => `<div${cl ? ` class="${cl}"` : ''}><span>${t}</span><b>${v}</b></div>`;
@@ -62,6 +72,14 @@
       dibuja(); return;
     }
     err.hidden = true; guarda();
+    if (sol.modo === 'limite') {
+      $('#resumen').innerHTML = dato(`Límite cuando x → ${esc(sol.aTxt)}`, sol.txt === 'no existe' ? 'No existe' : M(sol.txt), 'num ancho')
+        + dato('Orden del numerador', sol.oN < 0 ? '—' : sol.oN) + dato('Orden del denominador', sol.oD);
+      $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
+      $('#leyenda').innerHTML = `${Mates.html(`$f(x) = ${sol.f}$`)} cerca de a` + (isFinite(sol.val) ? '; el círculo hueco marca el límite, que la función alcanza sin estar definida en a.' : '.');
+      if (anda) para();
+      dibuja(); return;
+    }
     const n = sol.n, sub = (k) => String(k).replace(/\d/g, (d) => '₀₁₂₃₄₅₆₇₈₉'[d]);
     let h = dato(`Polinomio de Taylor P${sub(n)}(x)`, M(`${sol.Pn}(x) = ${sol.pol}`), 'ancho');
     if (n <= 8) h += dato(`Coeficientes c₀ … c${sub(n)}`, sol.coef.map((c) => fH(c, 4)).join('; '), 'num');
@@ -70,6 +88,8 @@
       if (sol.cota !== null) h += dato('Cota de Lagrange', `≤ ${fH(sol.cota, 3)}`);
     }
     if (sol.conocido) h += dato('Converge', sol.conocido.conv.replace(/^para /, ''));
+    else if (sol.R !== null) h += dato('Radio de convergencia', sol.R === Infinity ? '∞ (todo x)' : M(sol.Rtxt));
+    if (sol.evitable) h += dato('Singularidad evitable', `f(${esc(sol.aTxt)}) = ${fH(sol.coef[0], 6)} por continuidad`);
     $('#resumen').innerHTML = h;
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
     const rg = $('#grado'); rg.max = n; grado = Math.min(n, anda ? grado : n); rg.value = grado;
@@ -77,14 +97,14 @@
     dibuja();
   }
   function pintaGrado() {
-    if (!sol) return;
+    if (!sol || sol.modo === 'limite') return;
     $('#vgrado').textContent = grado;
     $('#leyenda').innerHTML = `${Mates.html(`$f(x) = ${sol.f}$`)} en negro, ${Mates.html(`$P_{${grado}}(x)$`)} en color y los de grado menor más claros. ` + (sol.x0 !== null ? 'La línea vertical marca x₀: la distancia entre los dos puntos es el error.' : 'Escribe x₀ para ver la aproximación y el error.');
   }
   $('#grado').addEventListener('input', (e) => { grado = +e.target.value; if (anda) para(); pintaGrado(); dibuja(); });
   $('#animar').addEventListener('click', () => (anda ? para() : arranca()));
   let tA = 0;
-  function arranca() { if (!sol) return; anda = true; grado = 0; tA = 0; $('#grado').value = 0; $('#animar').textContent = '⏸ Parar'; pintaGrado(); dibuja(); }
+  function arranca() { if (!sol || sol.modo === 'limite') return; anda = true; grado = 0; tA = 0; $('#grado').value = 0; $('#animar').textContent = '⏸ Parar'; pintaGrado(); dibuja(); }
   function para() { anda = false; $('#animar').textContent = '▶ Ver cómo se acerca'; }
 
   /* ---------- Gráfica ---------- */
@@ -96,12 +116,12 @@
   };
   let cacheVentana = null;
   function ventana() {
-    const a = sol.a, W = Math.max(3, sol.x0 !== null ? 1.6 * Math.abs(sol.x0 - a) : 0), x1 = a - W, x2 = a + W;
+    const a = sol.a, W = Math.max(3, sol.x0 != null ? 1.6 * Math.abs(sol.x0 - a) : 0), x1 = a - W, x2 = a + W;
     const xs = [], ys = [];
     for (let i = 0; i <= 600; i++) { const x = x1 + ((x2 - x1) * i) / 600; let y; try { y = sol.fv(x); } catch (e) { y = NaN; } xs.push(x); ys.push(isFinite(y) ? y : NaN); }
     const ok = ys.filter(isFinite).sort((p, q) => p - q);
     let y1 = ok.length ? ok[Math.floor(ok.length * 0.03)] : -1, y2 = ok.length ? ok[Math.ceil(ok.length * 0.97) - 1] : 1;
-    for (const v of [sol.coef[0], sol.fx0, sol.px0]) if (v !== null && isFinite(v)) { y1 = Math.min(y1, v); y2 = Math.max(y2, v); }
+    for (const v of sol.modo === 'limite' ? [isFinite(sol.val) ? sol.val : null] : [sol.coef[0], sol.fx0, sol.px0]) if (v !== null && isFinite(v)) { y1 = Math.min(y1, v); y2 = Math.max(y2, v); }
     if (y2 - y1 < 1e-9) { y1 -= 1; y2 += 1; }
     const pad = (y2 - y1) * 0.15;
     return { x1, x2, y1: y1 - pad, y2: y2 + pad, xs, ys };
@@ -112,7 +132,7 @@
     const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
     if (!sol) return;
     if (!col['--ink']) colores();
-    const clave = JSON.stringify([sc.f, sc.a, sc.n, sc.x0]);
+    const clave = JSON.stringify([sc.modo, sc.f, sc.a, sc.n, sc.x0]);
     if (!cacheVentana || cacheVentana.k !== clave) cacheVentana = { k: clave, v: ventana() };
     const V = cacheVentana.v, mL = 44, mR = 12, mT = 12, mB = 26;
     const X = (x) => mL + ((x - V.x1) / (V.x2 - V.x1)) * (w - mL - mR), Y = (y) => mT + ((V.y2 - y) / (V.y2 - V.y1)) * (h - mT - mB);
@@ -137,6 +157,16 @@
       }
       g.stroke();
     };
+    if (sol.modo === 'limite') {
+      g.strokeStyle = col['--ink']; g.lineWidth = 2.4;
+      const ys = V.ys; let i = 0; curva(() => ys[i++]);
+      g.restore();
+      g.strokeStyle = col['--muted']; g.setLineDash([4, 4]); g.lineWidth = 1; g.beginPath(); g.moveTo(X(sol.a), mT); g.lineTo(X(sol.a), h - mB); g.stroke(); g.setLineDash([]);
+      if (isFinite(sol.val)) { g.strokeStyle = col['--accent']; g.fillStyle = col['--panel']; g.lineWidth = 2; g.beginPath(); g.arc(X(sol.a), Y(sol.val), 5, 0, 2 * Math.PI); g.fill(); g.stroke(); }
+      g.fillStyle = col['--accent']; g.font = '600 13px "IBM Plex Sans", system-ui, sans-serif'; g.textAlign = 'right'; g.textBaseline = 'top';
+      g.fillText(`límite = ${txt(sol.txt === 'no existe' ? 'no existe' : fH(sol.val, 4))}`, w - mR - 6, mT + 4);
+      return;
+    }
     // polinomios de grado menor, más claros
     g.strokeStyle = col['--accent']; g.lineWidth = 1.3; g.globalAlpha = 0.22;
     for (let k = 0; k < grado; k++) curva((x) => sol.P(x, k));
@@ -179,5 +209,5 @@
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('taylor').current;
   formulario(); colores(); calcula(); requestAnimationFrame(bucle);
-  window.TaylorApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { pol: sol.pol, coef: sol.coef, px0: sol.px0, fx0: sol.fx0, err: sol.err, cota: sol.cota }, estado: () => copia(sc), grado: (k) => { grado = Math.max(0, Math.min(sol ? sol.n : 0, k)); $('#grado').value = grado; pintaGrado(); dibuja(); } };
+  window.TaylorApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && (sol.modo === 'limite' ? { lim: sol.val, txt: sol.txt } : { pol: sol.pol, coef: sol.coef, px0: sol.px0, fx0: sol.fx0, err: sol.err, cota: sol.cota }), estado: () => copia(sc), grado: (k) => { grado = Math.max(0, Math.min(sol ? sol.n : 0, k)); $('#grado').value = grado; pintaGrado(); dibuja(); } };
 })();

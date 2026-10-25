@@ -80,12 +80,15 @@
     err.hidden = true; guarda();
     const { an, bn } = sol, tres = (cs) => [1, 2, 3].map((n) => fH(cs[n], 4)).join('; ');
     let h = dato('Serie de Fourier', M(`f(x) ∼ ${sol.primeros}`), 'ancho');
-    if (sol.gA || sol.gB) h += dato('Término general', [sol.gA ? M(`a_n = ${sol.gA}`) : '', sol.gB ? M(`b_n = ${sol.gB}`) : ''].filter(Boolean).join('&emsp;'), 'ancho');
+    const desde = (d) => (d === 2 ? ' <small>(n ≥ 2)</small>' : '');
+    if (sol.gA || sol.gB) h += dato('Término general', [sol.gA ? M(`a_n = ${sol.gA}`) + desde(sol.desdeA) : '', sol.gB ? M(`b_n = ${sol.gB}`) + desde(sol.desdeB) : ''].filter(Boolean).join('&emsp;'), 'ancho');
+    if (sol.cnTxt && sol.cnTxt !== '0') h += dato('Forma compleja', M(`c_n = ${sol.cnTxt}`), 'ancho');
     h += dato('a₀', fH(an[0], 5), 'num');
     if (!sol.impar) h += dato('a₁; a₂; a₃', tres(an), 'num');
     if (!sol.par) h += dato('b₁; b₂; b₃', tres(bn), 'num');
     if (sol.x0 !== null) h += dato(`S${sub(sol.N)}(x₀), con x₀ = ${fH(sol.x0, 4)}`, fH(sol.sx0, 6), 'num');
     h += dato(`Energía en ${sol.N} armónicos`, `${fH((100 * sol.parcial) / sol.energia, 4)} %`);
+    if (sol.sumas.length) h += dato('Suma de una serie', sol.sumas.map((q) => M(q.txt)).join('<br>'), 'ancho');
     $('#resumen').innerHTML = h;
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
     const rg = $('#armonicos'); rg.max = sol.N; k = anda ? Math.min(k, sol.N) : sol.N; rg.value = k;

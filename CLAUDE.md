@@ -10,7 +10,7 @@ Web estática de simuladores y calculadoras de ciencias para la carrera, en espa
 | `fuente/catalogo.js` | Asignaturas y herramientas (clave, nombre, icono, `disponible`, desc, palabras de búsqueda). |
 | `fuente/portal.js` | Genera portada, páginas de asignatura, novedades y foro desde el catálogo (lo llama build.sh). |
 | `fuente/diseno.js` | Pasa cada `pagina.html` y mete cabecera del portal, color de la asignatura, miga y CSS común. |
-| `fuente/estilos.css`, `DISENO.md`, `fuente/plantilla/pagina.html` | Hoja común, guía de diseño y plantilla de página (llegan con la rama de la guía de diseño, web 0.48). |
+| `fuente/estilos.css`, `DISENO.md`, `fuente/plantilla/pagina.html` | Hoja común, guía de diseño y plantilla de página. |
 | `fuente/biblioteca.js` | Barra lateral «Mis ejercicios», común a todas las herramientas. |
 | `fuente/practica.js` | Modo práctica común (datos al azar, corrige respuestas). |
 | `fuente/tema.js` | Botón claro/oscuro (`simu-tema`). |

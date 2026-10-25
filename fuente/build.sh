@@ -80,23 +80,23 @@ if [ "$1" != privado ]; then
   herramienta ondas-em ../publico/electromagnetismo/ondas-em/index.html "Ondas electromagnéticas planas" "Calculadora de ondas electromagnéticas planas: longitud de onda, número de onda, campo B y su dirección, expresión de E y B, intensidad, presión de radiación y profundidad de penetración" \
     version.js mates.js ondas-em/fisica.js ondas-em/app.js
   herramienta matrices ../publico/matematicas/matrices/index.html "Matrices paso a paso" "Calculadora de matrices con fracciones exactas y complejos: determinante, inversa, rango, Gauss-Jordan y valores y vectores propios, paso a paso" \
-    version.js mates.js matematicas/algebra.js matrices/calculo.js matrices/app.js
+    version.js mates.js matematicas/compartir.js matematicas/algebra.js matematicas/parametro.js matrices/calculo.js matrices/app.js
   herramienta sistemas ../publico/matematicas/sistemas/index.html "Sistemas de ecuaciones lineales" "Calculadora de sistemas de ecuaciones paso a paso: Rouché-Frobenius, Gauss, Gauss-Jordan, Cramer y matriz inversa, en paramétricas y con números complejos" \
-    version.js mates.js matematicas/algebra.js sistemas/calculo.js sistemas/app.js
+    version.js mates.js matematicas/compartir.js matematicas/algebra.js matematicas/parametro.js sistemas/calculo.js sistemas/app.js
   herramienta complejos ../publico/matematicas/complejos/index.html "Números complejos" "Calculadora de números complejos: formas binómica, polar, trigonométrica y exponencial con el argumento en su cuadrante, suma, resta, producto, cociente, potencias con De Moivre, raíces n-ésimas y ecuaciones de segundo grado, con el plano de Argand y paso a paso" \
-    version.js mates.js matematicas/algebra.js complejos/calculo.js complejos/app.js
+    version.js mates.js matematicas/compartir.js matematicas/algebra.js matematicas/parametro.js complejos/calculo.js complejos/app.js
   herramienta taylor ../publico/matematicas/taylor/index.html "Series de Taylor" "Calculadora del polinomio de Taylor y de Maclaurin paso a paso: derivadas, coeficientes, aproximación de f(x₀), error y cota del resto de Lagrange, desarrollos conocidos con su término general y gráfica animada" \
-    version.js mates.js matematicas/expresion.js taylor/calculo.js taylor/app.js
+    version.js mates.js matematicas/compartir.js matematicas/expresion.js taylor/calculo.js taylor/app.js
   herramienta fourier ../publico/matematicas/fourier/index.html "Series de Fourier" "Calculadora de series de Fourier: función por tramos o desarrollo en senos y cosenos, coeficientes con su término general, paridad, Gibbs, Parseval y la suma parcial animada con el espectro" \
-    version.js mates.js matematicas/expresion.js fourier/calculo.js fourier/app.js
+    version.js mates.js matematicas/compartir.js matematicas/expresion.js fourier/calculo.js fourier/app.js
   herramienta edos ../publico/matematicas/edos/index.html "Ecuaciones diferenciales" "Calculadora de ecuaciones diferenciales: campo de pendientes con Euler y RK4, EDO lineales de segundo orden con coeficientes constantes y resonancia, y sistemas con su diagrama de fases y el tipo de cada punto crítico" \
-    version.js mates.js matematicas/expresion.js edos/calculo.js edos/app.js
+    version.js mates.js matematicas/compartir.js matematicas/expresion.js laplace/calculo.js derivadas/calculo.js edos/calculo.js edos/app.js
   herramienta laplace ../publico/matematicas/laplace/index.html "Transformada de Laplace" "Calculadora de la transformada de Laplace paso a paso: directa con la tabla y sus propiedades, inversa por fracciones simples con polos dobles y complejos, valores inicial y final, y ecuaciones diferenciales con condiciones iniciales, con el plano s" \
-    version.js mates.js matematicas/expresion.js laplace/calculo.js laplace/app.js
+    version.js mates.js matematicas/compartir.js matematicas/expresion.js laplace/calculo.js laplace/app.js
   herramienta derivadas ../publico/matematicas/derivadas/index.html "Derivadas e integrales" "Calculadora de derivadas e integrales paso a paso: regla de cada derivada, recta tangente y puntos críticos, primitivas por tabla, sustitución, partes y fracciones simples, e integral definida con Barrow y el área" \
-    version.js mates.js matematicas/expresion.js laplace/calculo.js derivadas/calculo.js derivadas/app.js
-  herramienta campos ../publico/matematicas/campos/index.html "Campos vectoriales" "Calculadora de campos vectoriales: gradiente y derivada direccional, laplaciano, divergencia y rotacional, potencial de un campo conservativo, integral de línea y teorema de Green, paso a paso y con la gráfica del campo" \
-    version.js mates.js matematicas/expresion.js campos/calculo.js campos/app.js
+    version.js mates.js matematicas/compartir.js matematicas/expresion.js laplace/calculo.js derivadas/calculo.js derivadas/app.js
+  herramienta campos ../publico/matematicas/campos/index.html "Campos vectoriales" "Calculadora de campos vectoriales: gradiente y derivada direccional, laplaciano, divergencia y rotacional, potencial φ de un campo conservativo, integral de línea y ∫ f ds, teorema de Green, flujo por una superficie, Stokes y Gauss, paso a paso y con la gráfica del campo" \
+    version.js mates.js matematicas/compartir.js matematicas/expresion.js laplace/calculo.js derivadas/calculo.js campos/calculo.js campos/app.js
   herramienta estadistica ../publico/estadistica/distribuciones/index.html "Distribuciones de probabilidad" "Calculadora de la normal, binomial, Poisson, t de Student y chi cuadrado con el área sombreada: probabilidades, cuantiles y valores críticos paso a paso" \
     version.js mates.js estadistica/calculo.js estadistica/app.js
   herramienta regresion ../publico/estadistica/regresion/index.html "Regresión y correlación" "Calculadora de regresión y correlación: covarianza, coeficiente de correlación de Pearson con su contraste, rectas de regresión de Y sobre X y de X sobre Y, ajustes exponencial, potencial, logarítmico y parabólico y estimaciones, con la nube de puntos y paso a paso" \

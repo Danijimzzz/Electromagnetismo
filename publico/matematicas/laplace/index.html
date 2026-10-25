@@ -26,7 +26,7 @@
   });
 })();</script>
 <title>Transformada de Laplace: directa, inversa y ecuaciones diferenciales · SimulaCiencia</title>
-<meta name="description" content="Calculadora de la transformada de Laplace en español, paso a paso: transformada directa con la tabla y sus propiedades, inversa por fracciones simples (polos simples, dobles y complejos), teoremas del valor inicial y final, y ecuaciones diferenciales con condiciones iniciales, con el plano s y la gráfica de f(t).">
+<meta name="description" content="Calculadora de la transformada de Laplace en español, paso a paso: transformada directa con la tabla y sus propiedades, inversa por fracciones simples (polos simples, dobles y complejos), teoremas del valor inicial y final, escalón u(t − a), delta de Dirac y funciones a trozos, convolución, función de transferencia, ecuaciones diferenciales y sistemas con condiciones iniciales, con el plano s y la gráfica de f(t).">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
@@ -135,9 +135,10 @@ canvas { display: block; width: 100%; height: var(--alto-grafica); border-radius
 /* ---------- Teoría ---------- */
 .teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
 .teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
-.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+.teoria .f { max-width: 100%; overflow-x: auto; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
 .teoria ul { padding-left: 20px }
 .teoria li { margin-bottom: 4px }
+.teoria li, .teoria p { overflow-x: auto }
 
 :root { --accent:#6b3fa0; --accent-soft:color-mix(in srgb, #6b3fa0 12%, #fff); --marca:#0d6b66 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --accent:#b892ec; --accent-soft:color-mix(in srgb, #b892ec 16%, #182025); --marca:#4dbcb0 } }
@@ -187,7 +188,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 <div class="wrap">
 <nav class="miga" aria-label="Estás en"><span class="miga-izq"></span><span class="miga-ico" aria-hidden="true">∑</span><a href="../">Matemáticas</a><span aria-hidden="true">›</span><span>Transformada de Laplace</span><span class="miga-der"></span></nav>
 <h1>Transformada de Laplace</h1>
-<p class="lead">Calcula la transformada de una función con la tabla y sus propiedades, la inversa por fracciones simples y la solución de ecuaciones diferenciales con condiciones iniciales, paso a paso y con los polos en el plano s.</p>
+<p class="lead">Calcula la transformada de una función con la tabla y sus propiedades (también con escalones, deltas y funciones a trozos), la inversa por fracciones simples, convoluciones y la solución de ecuaciones diferenciales y sistemas con condiciones iniciales, paso a paso y con los polos en el plano s.</p>
 <div class="layout">
   <div class="card">
     <h2>Datos</h2>
@@ -222,7 +223,16 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
     <li class="m">Desplazamiento en s: $ℒ\{e^{at} f(t)\} = F(s − a)$</li>
     <li class="m">Multiplicar por t: $ℒ\{t^{n} f(t)\} = (−1)^{n} {d^{n}F}/{ds^{n}}$</li>
     <li class="m">Derivadas: $ℒ\{y′\} = sY − y(0)$, &ensp; $ℒ\{y″\} = s^{2}Y − s y(0) − y′(0)$</li>
+    <li class="m">Productos de senos y cosenos: se pasan a sumas antes de transformar, $sen^{2} t = {1}/{2} − {1}/{2} cos (2 t)$, &ensp; $sen A cos B = {1}/{2} [sen(A + B) + sen(A − B)]$</li>
   </ul>
+  <h2>Escalón, delta y funciones a trozos</h2>
+  <p class="m">El escalón unitario $u(t − a)$ (o de Heaviside, $H(t − a)$) vale 0 antes de $t = a$ y 1 después. Sirve para encender y apagar señales, y una función a trozos se escribe con escalones: $f(t) = g_{1}(t) [u(t) − u(t − a)] + g_{2}(t) u(t − a)$.</p>
+  <ul>
+    <li class="m">Segundo teorema de traslación: $ℒ\{u(t − a) g(t)\} = e^{−as} ℒ\{g(t + a)\}$, y en particular $ℒ\{u(t − a) f(t − a)\} = e^{−as} F(s)$.</li>
+    <li class="m">Delta de Dirac: $ℒ\{δ(t − a)\} = e^{−as}$. Es un impulso en $t = a$ de área 1, y $g(t) δ(t − a) = g(a) δ(t − a)$.</li>
+    <li class="m">En la inversa, cada $e^{−as}$ retrasa su parte: $ℒ^{−1}\{e^{−as} F(s)\} = u(t − a) f(t − a)$, y una constante sola da una delta.</li>
+  </ul>
+  <p>Escribe las funciones a trozos como «t si 0 ≤ t &lt; 2; 4 − t si 2 ≤ t &lt; 4; 0 si t ≥ 4», con los trozos separados por punto y coma.</p>
   <h2>Inversa por fracciones simples</h2>
   <p>Si F(s) es un cociente de polinomios con el numerador de menor grado, se buscan las raíces del denominador (los polos) y se separa en fracciones que están en la tabla:</p>
   <ul>
@@ -236,6 +246,12 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
   <p>El del valor final solo vale si f(t) tiende a algo: todos los polos de s F(s) a la izquierda del eje imaginario.</p>
   <h2>Ecuaciones diferenciales</h2>
   <p class="m">Para $a y″ + b y′ + c y = g(t)$ con y(0) e y′(0) se transforman los dos lados, se despeja Y(s) y se hace la inversa. Las condiciones iniciales entran solas, sin calcular constantes al final. Por ejemplo, $y″ + y = sen t$ con todo en reposo da $Y(s) = 1/(s^{2} + 1)^{2}$, un polo doble en ±i, y la solución $y = {1}/{2} sen t − {1}/{2} t cos t$ crece sin límite: es la resonancia.</p>
+  <h2>Función de transferencia y convolución</h2>
+  <p class="m">Con condiciones iniciales nulas, $Y(s) = H(s) G(s)$ con $H(s) = 1/(a s^{2} + b s + c)$. La inversa $h(t)$ es la respuesta al impulso, y la de $H(s)/s$, la respuesta al escalón. El producto de transformadas corresponde a la convolución:</p>
+  <p class="f m">$(f * g)(t) = ∫_{0}^{t} f(τ) g(t − τ) dτ$, &ensp; $ℒ\{f * g\} = F(s) G(s)$</p>
+  <p class="m">Así que la respuesta a cualquier entrada es $y = h * g$: por ejemplo, $sen t * cos t = {1}/{2} t sen t$.</p>
+  <h2>Sistemas de ecuaciones</h2>
+  <p class="m">Para $x′ = a_{11} x + a_{12} y + f(t)$, $y′ = a_{21} x + a_{22} y + g(t)$ se transforman las dos ecuaciones y queda un sistema lineal en X(s) e Y(s), que se resuelve por Cramer con $Δ(s) = (s − a_{11})(s − a_{22}) − a_{12} a_{21}$. Las raíces de Δ son los autovalores de la matriz del sistema.</p>
   <p>Para resolverlas sin Laplace (coeficientes indeterminados) usa <a href="../edos/">Ecuaciones diferenciales</a>, y para los circuitos RC, RL y RLC, <a href="../../circuitos/transitorios/">Transitorios</a>.</p>
 </section>
 </div>
@@ -357,13 +373,16 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: coeficiente de autoinducción de solenoides (con núcleo), toroides de sección rectangular y circular, cables coaxiales y líneas bifilares, con el desarrollo desde la ley de Ampère.', 'Inducción mutua entre dos solenoides, dos espiras, un hilo y una espira, y una bobina sobre un toroide, o a partir de L₁, L₂ y k, con el coeficiente de acoplamiento.', 'Flujo, energía magnética y fem inducida si das la corriente o cómo cambia.', 'Circuito RL al cerrar el interruptor o al quitar la fuente: constante de tiempo, corriente y tensión en la bobina en cualquier instante y su gráfica.'] },
     ],
     matrices: [
+      { v: '0.2', fecha: '2026-10-25', cambios: ['Matrices con un parámetro (k, a, m…): el determinante y el rango discutidos según su valor, y la inversa cuando existe.', 'Ecuaciones matriciales AX = B, XA = B y AX + B = C, paso a paso.', 'Aⁿ por diagonalización (P·Dⁿ·P⁻¹), también para potencias grandes.', 'Nuevas operaciones: matriz adjunta y de cofactores, descomposición LU, diagonalización ortogonal de matrices simétricas y forma de Jordan en 2×2 y 3×3.', 'Comparte el ejercicio con un enlace (lleva los datos), cópialo como texto o en LaTeX para tus apuntes, o imprímelo o guárdalo en PDF solo con los resultados y el desarrollo.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: determinante por Gauss, por Sarrus o por Laplace; inversa por Gauss-Jordan o por adjuntos; rango; forma escalonada y escalonada reducida, con cada operación entre filas y la matriz después de cada paso.', 'Valores y vectores propios con el polinomio característico, las raíces exactas (también con radicales o complejas) y si la matriz es diagonalizable, con P y D.', 'Suma, resta, producto (elemento a elemento), producto por un número, potencia y traspuesta.', 'Fracciones exactas y números complejos en cualquier casilla: 3/4, 0,25, 2−3i o (1+i)/2.'] },
     ],
     derivadas: [
+      { v: '0.2', fecha: '2026-10-25', cambios: ['Arreglo: una función constante ya no sale con un punto crítico falso.', 'Integrales impropias: con límites en ∞ o con una asíntota dentro, diciendo si convergen o divergen.', 'Nuevas primitivas: productos de senos y cosenos (sen 3x cos 2x) y cambios trigonométricos (√(1 − x²)).', 'Límites con L’Hôpital, también 0·∞, 1^∞, 0⁰, ∞⁰ e ∞ − ∞.', 'Área entre dos curvas y volumen de revolución (discos y capas).', 'Estudio completo de una función: dominio, simetría, cortes, asíntotas, monotonía y curvatura.', 'Derivación implícita y derivadas parciales, con los puntos críticos y la matriz hessiana.', 'Comparte el ejercicio con un enlace (lleva los datos), cópialo como texto o en LaTeX para tus apuntes, o imprímelo o guárdalo en PDF solo con los resultados y el desarrollo.', 'Aviso junto a los datos: ln es el logaritmo neperiano y log, el decimal.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: derivadas de orden 1 a 4 con la regla de cada paso (suma, producto, cociente, cadena, derivación logarítmica) y el resultado simplificado.', 'Recta tangente en un punto y puntos críticos con su tipo.', 'Primitivas por la tabla, sustitución, partes (también dos veces), fracciones simples e identidades trigonométricas, comprobadas derivándolas.', 'Integral definida con la regla de Barrow, o numérica si no hay primitiva elemental, y el área encerrada.', 'Gráfica de f y f′ con la tangente que recorre la curva, o del área que se va llenando con la primitiva.'] },
     ],
     laplace: [
+      { v: '0.2', fecha: '2026-10-25', cambios: ['Escalón u(t − a), delta δ(t − a) y retrasos e^{−as}, en la directa, en la inversa y en las ecuaciones diferenciales.', 'sen²t, cos²t y productos de senos y cosenos (linealizando), y funciones definidas a trozos.', 'Convolución y función de transferencia H(s), con la respuesta al impulso y al escalón.', 'Sistemas de dos ecuaciones diferenciales por Laplace.', 'Comparte el ejercicio con un enlace (lleva los datos), cópialo como texto o en LaTeX para tus apuntes, o imprímelo o guárdalo en PDF solo con los resultados y el desarrollo.', 'Aviso junto a los datos: ln es el logaritmo neperiano y log, el decimal.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: transformada directa de sumas de términos c·tⁿ·e^(at)·sen(bt) o cos(bt), senh y cosh, con la fila de la tabla y la propiedad que usa cada término, y F(s) con denominador común.', 'Inversa por fracciones simples: polos simples, múltiples y complejos (también dobles), con los coeficientes, la fila de la tabla y los valores inicial y final.', 'Ecuaciones diferenciales de primer y segundo orden con condiciones iniciales: transformar, despejar Y(s) y volver.', 'Plano s con los polos y los ceros, y gráfica animada de f(t) con cada término por separado.'] },
     ],
     interferencia: [
@@ -382,24 +401,30 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: fuerza sobre una carga en un campo uniforme, con el radio, el periodo y el sentido de giro, o la hélice si v no es perpendicular a B. La velocidad se puede dar en m/s, por su energía en eV o por la ddp que la acelera.', 'Fuerza de Lorentz con vectores: v × B con su determinante y F = q(E + v × B).', 'Selector de velocidades y espectrómetro de masas, ciclotrón con la frecuencia, la energía de salida y las vueltas.', 'Fuerza sobre un hilo (y la corriente para que flote) y entre dos hilos paralelos.', 'Animación de cada situación.'] },
     ],
     campos: [
+      { v: '0.2', fecha: '2026-10-25', cambios: ['La función potencial con su expresión, φ = x²y + y³ + K, integrando componente a componente.', 'Integral de línea por una poligonal (como el contorno de un triángulo), tramo a tramo.', 'Nuevo modo ∫ f ds: longitud, masa y centro de masas de un alambre.', 'Teorema de Green en triángulos, polígonos y regiones entre dos curvas, con el área.', 'Nuevo modo de flujo por una superficie r(u, v) con el teorema de Stokes, y nuevo modo del teorema de la divergencia en una caja, una esfera o un cilindro, con la figura en 3D.', 'Comparte el ejercicio con un enlace (lleva los datos), cópialo como texto o en LaTeX para tus apuntes, o imprímelo o guárdalo en PDF solo con los resultados y el desarrollo.', 'Aviso junto a los datos: ln es el logaritmo neperiano y log, el decimal.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: gradiente, derivada direccional y laplaciano de un campo escalar, con su mapa de color y las curvas de nivel.', 'Divergencia y rotacional de un campo vectorial en el plano o en el espacio y, si es conservativo, su potencial.', 'Integral de línea (trabajo) a lo largo de una curva r(t), comparada con la diferencia de potencial cuando el campo es conservativo.', 'Teorema de Green en un círculo o un rectángulo: circulación y flujo por el borde frente a las integrales dobles.', 'Gráfica con partículas que siguen el campo y un molinillo que gira con el rotacional; tocándola se mueve el punto.'] },
     ],
     cinetica: [
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: leyes integradas de orden 0, 1 y 2 con la concentración a cualquier tiempo, la vida media y cuánto se tarda en llegar a una concentración.', 'Orden y constante a partir de una tabla de concentraciones frente al tiempo, con las tres rectas ([A], ln [A] y 1/[A]) y su R².', 'Método de las velocidades iniciales con uno o dos reactivos: órdenes, constante con sus unidades y ley de velocidad.', 'Ecuación de Arrhenius: energía de activación con dos temperaturas o la constante a otra temperatura, con la gráfica de ln k frente a 1/T.', 'Vaso animado en el que las moléculas de reactivo se convierten en producto.'] },
     ],
     edos: [
+      { v: '0.2', fecha: '2026-10-25', cambios: ['Arreglo: avisa cuando la solución explota (y′ = y²) y corta la gráfica ahí.', 'Solución exacta de ecuaciones separables (como la logística), de Bernoulli y exactas, con factor integrante.', 'Euler mejorado (Heun) y punto medio, con una tabla que compara el error según h.', 'Variación de parámetros cuando g(x) no admite coeficientes indeterminados (tg x, 1/cos x, eˣ/x).', 'Ecuaciones de orden 3 y 4 con coeficientes constantes, y de Cauchy-Euler.', 'Comparte el ejercicio con un enlace (lleva los datos), cópialo como texto o en LaTeX para tus apuntes, o imprímelo o guárdalo en PDF solo con los resultados y el desarrollo.', 'Aviso junto a los datos: ln es el logaritmo neperiano y log, el decimal.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ecuaciones de primer orden y′ = f(x, y) con el campo de pendientes, el método de Euler (con su tabla) y RK4, y la solución exacta cuando es lineal con coeficiente constante.', 'Ecuaciones lineales de segundo orden con coeficientes constantes: ecuación característica, solución homogénea, particular por coeficientes indeterminados (también con resonancia) y constantes por las condiciones iniciales.', 'Sistemas x′ = f(x, y), y′ = g(x, y): puntos críticos con su tipo (silla, nodo, foco o centro) por los autovalores del jacobiano, solución exacta si es lineal y diagrama de fases con trayectorias.', 'Gráfica animada; tocándola se cambia el punto inicial.'] },
     ],
     fourier: [
+      { v: '0.2', fecha: '2026-10-25', cambios: ['Arreglo: avisa si la función no es integrable (1/x en [−1, 1]) en vez de dar coeficientes sin sentido.', 'Arreglo: en el móvil las fórmulas largas ya no se salen de la pantalla.', 'Término general en más casos: eˣ, |sen x| o funciones trapezoidales.', 'Los huecos entre tramos se rellenan con 0.', 'Forma compleja (cₙ) y forma amplitud-fase, con el espectro de fase.', 'Suma de series numéricas con Parseval o con un punto (Σ 1/n² = π²/6).', 'Comparte el ejercicio con un enlace (lleva los datos), cópialo como texto o en LaTeX para tus apuntes, o imprímelo o guárdalo en PDF solo con los resultados y el desarrollo.', 'Aviso junto a los datos: ln es el logaritmo neperiano y log, el decimal.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: serie de Fourier de una función periódica dada hasta en cuatro tramos (1, x, x^2, |x|, sen x…), o desarrollo en senos o en cosenos de una función en [0, L].', 'Coeficientes a₀, aₙ y bₙ exactos (con π) y su término general cuando siguen una ley, como 2(1 − (−1)ⁿ)/(nπ), con la paridad de la función.', 'Convergencia en los saltos (a la media de los límites laterales), suma parcial en un punto e igualdad de Parseval.', 'Gráfica de la función y de la suma parcial, que se puede ver sumando armónicos uno a uno, y el espectro de amplitudes.'] },
     ],
     taylor: [
+      { v: '0.2', fecha: '2026-10-25', cambios: ['Arreglo: con aˣ los coeficientes salen claros, (ln 2)²/2 en vez de 0,240227.', 'Arreglo: en el móvil las fórmulas largas ya no se salen de la pantalla.', 'Singularidades evitables: sen x / x o (eˣ − 1)/x en 0 ya tienen desarrollo.', 'Radio de convergencia para cualquier función, con un aviso si el punto cae fuera.', 'Límites con Taylor, como lím (sen x − x)/x³.', 'Grado hasta 25.', 'Comparte el ejercicio con un enlace (lleva los datos), cópialo como texto o en LaTeX para tus apuntes, o imprímelo o guárdalo en PDF solo con los resultados y el desarrollo.', 'Aviso junto a los datos: ln es el logaritmo neperiano y log, el decimal.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: polinomio de Taylor o de Maclaurin de cualquier grado hasta 15 de una función escrita como en papel (e^x, sen x, ln(1+x), √x, arctg x…) en un punto que puede llevar π, con cada derivada, su valor exacto y los coeficientes.', 'Aproximación de f(x₀) con el error cometido y la cota del resto de Lagrange.', 'Reconoce los desarrollos conocidos (e^x, sen x, cos x, ln(1+x), la serie geométrica, arctg x y la binómica) y da su término general y dónde convergen.', 'Gráfica de la función con los polinomios de cada grado, que se pueden recorrer o ver acercarse uno tras otro.'] },
     ],
     complejos: [
+      { v: '0.2', fecha: '2026-10-25', cambios: ['Arreglo: ya entiende raíces en forma binómica, como 1 + √3 i.', 'Arreglo: la exponencial sale como e^{−iπ/2}, la trigonométrica con paréntesis y la polar con el módulo exacto (5√2).', 'Logaritmo complejo, eᶻ y potencias con exponente fraccionario o complejo (z^{1/2}, iⁱ).', 'Ecuaciones polinómicas de grado 3 y 4, y zⁿ = w directamente.', 'Regiones del plano dibujadas: |z − 1| < 2, Re z > 0, arg z entre dos ángulos…', 'Comparte el ejercicio con un enlace (lleva los datos), cópialo como texto o en LaTeX para tus apuntes, o imprímelo o guárdalo en PDF solo con los resultados y el desarrollo.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: escribe un complejo en forma binómica, polar, trigonométrica o exponencial y obtén las otras, con el módulo exacto y el argumento en su cuadrante.', 'Suma, resta, producto y cociente con fracciones exactas, potencias con De Moivre, raíces n-ésimas y ecuaciones de segundo grado.', 'Plano complejo con los afijos, el paralelogramo de la suma y el polígono de las raíces.'] },
     ],
     sistemas: [
+      { v: '0.3', fecha: '2026-10-25', cambios: ['Discusión de un sistema según un parámetro (Rouché): los valores especiales de k con SCD, SCI o SI en cada caso.', 'Las ecuaciones se pueden escribir como texto, «2x + y − z = 8», además de con la rejilla de coeficientes.', 'Interpretación geométrica: las rectas en el plano o los planos en el espacio, y cómo se cortan.', 'Sistemas incompatibles con más ecuaciones que incógnitas: solución por mínimos cuadrados.', 'Comparte el ejercicio con un enlace (lleva los datos), cópialo como texto o en LaTeX para tus apuntes, o imprímelo o guárdalo en PDF solo con los resultados y el desarrollo.'] },
       { v: '0.2', fecha: '2026-10-24', cambios: ['Métodos de reducción, igualación y sustitución para sistemas de 2 o 3 ecuaciones con solución única, con cada ecuación numerada y cada paso explicado.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: hasta seis ecuaciones con seis incógnitas. Dice si el sistema es compatible determinado, indeterminado o incompatible con el teorema de Rouché-Frobenius y lo resuelve por Gauss con sustitución hacia atrás, por Gauss-Jordan, por la regla de Cramer o con la matriz inversa.', 'Si tiene infinitas soluciones, las da en forma paramétrica (λ, μ…).', 'Coeficientes con fracciones exactas, decimales o números complejos, como las mallas de un circuito de alterna, y nombres propios para las incógnitas (I1, I2…).', 'Comprobación de la solución sustituyendo en cada ecuación.'] },
@@ -564,6 +589,8 @@ const Mates = (() => {
         // binom(n, k): número combinatorio
         if (k.v === 'binom' && es('(')) { p++; const a = secuencia(','); p++; const b = secuencia(')'); p++; return nodo(`<mrow><mo>(</mo><mfrac linethickness="0">${fila(a)}${fila(b)}</mfrac><mo>)</mo></mrow>`); }
         if (FUNC.has(k.v)) { let m = `<mi mathvariant="normal">${k.v}</mi>`; if (es('^')) { p++; m = `<msup>${m}${argumento()}</msup>`; } return nodo(`<mspace width="0.17em"></mspace>${m}<mo>&#x2061;</mo><mspace width="0.12em"></mspace>`); }
+        // diferencial suelto (dx, dt, dS, dθ…) detrás de algo: con un poco de aire, como en «f(x) dx»
+        if (k.sp && p > 1 && /^d[a-zA-Zθφρ]$/.test(k.v)) return nodo(`<mspace width="0.17em"></mspace><mi>d</mi><mi>${escH(k.v[1])}</mi>`);
         const ls = [...k.v.replace(/[′″]+$/, '')], pr = (k.v.match(/[′″]+$/) || [''])[0];
         // las marcas combinadas (î, ĵ con acento) van con su letra
         const grupos = []; for (const c of ls) { if (/\p{M}/u.test(c) && grupos.length) grupos[grupos.length - 1] += c; else grupos.push(c); }
@@ -583,7 +610,8 @@ const Mates = (() => {
     return fila(secuencia(null));
   }
 
-  const mathml = (src) => `<math><mstyle displaystyle="true">${analiza(tokens(src))}</mstyle></math>`;
+  // la fuente se queda en data-src para poder copiarla (como texto o LaTeX)
+  const mathml = (src) => `<math data-src="${escH(src).replace(/"/g, '&quot;')}"><mstyle displaystyle="true">${analiza(tokens(src))}</mstyle></math>`;
   // sustituye cada $…$ de un texto HTML por su MathML
   const html = (s) => String(s ?? '').replace(/\$([^$]+)\$/g, (_, x) => mathml(x));
   // convierte en el documento los elementos con class="m" (fórmulas escritas en el HTML)
@@ -595,6 +623,190 @@ const Mates = (() => {
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => pinta()); else pinta();
   }
   return { html, mathml, pinta, tokens };
+})();
+
+/* =====================================================================
+   Compartir, copiar e imprimir (herramientas de Matemáticas):
+   · un enlace con los datos del ejercicio en la dirección (#d=…): al
+     abrirlo, los datos se dejan donde la herramienta guarda los suyos
+     (localStorage, «<herramienta>-v1») antes de que arranque, así que se
+     abre con ellos sin que la herramienta tenga que saber nada;
+   · copiar los resultados y el desarrollo como texto o como LaTeX (las
+     fórmulas salen de su fuente, que Mates deja en data-src);
+   · imprimir (o guardar en PDF) solo el ejercicio, sin menús ni teoría;
+   · un aviso de que log es el logaritmo decimal.
+   Tiene que ir antes que el app.js de la herramienta.
+   ===================================================================== */
+const Compartir = (() => {
+  const partes = () => (typeof location === 'undefined' ? '/herramienta/' : location.pathname).split('/').filter((q) => q && !/\.html?$/.test(q));
+  const CLAVE = `${partes().pop()}-v1`;
+  const b64 = (s) => btoa(unescape(encodeURIComponent(s))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  const deB64 = (s) => decodeURIComponent(escape(atob(s.replace(/-/g, '+').replace(/_/g, '/'))));
+
+  // los datos de un enlace compartido pasan a donde la herramienta los lee al arrancar
+  if (typeof location !== 'undefined') {
+    const m = /[#&]d=([A-Za-z0-9_-]+)/.exec(location.hash);
+    if (m) {
+      try { const json = deB64(m[1]); JSON.parse(json); localStorage.setItem(CLAVE, json); } catch (e) { /* enlace roto o sin almacenamiento */ }
+      try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* file:// */ }
+    }
+  }
+  const enlace = () => { let d = null; try { d = localStorage.getItem(CLAVE); } catch (e) { /* sin almacenamiento */ } return location.href.split('#')[0] + (d ? `#d=${b64(d)}` : ''); };
+
+  /* ---------- De la sintaxis de Mates a LaTeX y a texto ---------- */
+  const FUNC = { sen: '\\operatorname{sen}', cos: '\\cos', tg: '\\operatorname{tg}', tan: '\\tan', ln: '\\ln', log: '\\log', exp: '\\exp', arcsen: '\\operatorname{arcsen}', arccos: '\\arccos', arctg: '\\operatorname{arctg}', 'máx': '\\max', 'mín': '\\min', 'lím': '\\lim', senh: '\\operatorname{senh}', cosh: '\\cosh', tgh: '\\operatorname{tgh}', cotg: '\\operatorname{cotg}', sec: '\\sec' };
+  const SIM = { '·': '\\cdot', '×': '\\times', '÷': '\\div', '−': '-', '≤': '\\le', '≥': '\\ge', '≠': '\\ne', '≈': '\\approx', '±': '\\pm', '∓': '\\mp', '→': '\\to', '←': '\\leftarrow', '⇒': '\\Rightarrow', '⇔': '\\Leftrightarrow', '↔': '\\leftrightarrow', '∞': '\\infty', '∫': '\\int', '∬': '\\iint', '∭': '\\iiint', '∮': '\\oint', '∯': '\\oiint', '∑': '\\sum', '∏': '\\prod', '∂': '\\partial', '∇': '\\nabla', '∈': '\\in', '∝': '\\propto', '⊥': '\\perp', '∥': '\\parallel', '≡': '\\equiv', '∼': '\\sim', '°': '^{\\circ}', '%': '\\%', '′': "'", '″': "''", '|': '|', '\\{': '\\{', '\\}': '\\}', 'ℒ': '\\mathcal{L}', '∅': '\\emptyset', '∪': '\\cup', '∩': '\\cap' };
+  const GRIEGO = { α: 'alpha', β: 'beta', γ: 'gamma', δ: 'delta', ε: 'varepsilon', ζ: 'zeta', η: 'eta', θ: 'theta', ι: 'iota', κ: 'kappa', λ: 'lambda', μ: 'mu', ν: 'nu', ξ: 'xi', π: 'pi', ρ: 'rho', σ: 'sigma', τ: 'tau', υ: 'upsilon', φ: 'varphi', χ: 'chi', ψ: 'psi', ω: 'omega', Γ: 'Gamma', Δ: 'Delta', Θ: 'Theta', Λ: 'Lambda', Ξ: 'Xi', Π: 'Pi', Σ: 'Sigma', Φ: 'Phi', Ψ: 'Psi', Ω: 'Omega' };
+  const SUB = { '₀': '0', '₁': '1', '₂': '2', '₃': '3', '₄': '4', '₅': '5', '₆': '6', '₇': '7', '₈': '8', '₉': '9' }, SUP = { '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9', '⁻': '-' };
+  function latex(src) {
+    const tk = Mates.tokens(src);
+    let p = 0;
+    const es = (v) => tk[p] && tk[p].t === 's' && tk[p].v === v;
+    // quita los paréntesis o las llaves de fuera si envuelven todo
+    const quita = (s) => {
+      let m = /^\\left\((.*)\\right\)$/.exec(s);
+      if (m) return m[1];
+      if (s[0] === '{' && s.endsWith('}')) { let d = 0; for (let i = 0; i < s.length; i++) { if (s[i] === '{' && s[i - 1] !== '\\') d++; else if (s[i] === '}' && s[i - 1] !== '\\') d--; if (d === 0 && i < s.length - 1) return s; } return s.slice(1, -1); }
+      return s;
+    };
+    const palabra = (w) => {
+      if (FUNC[w]) return FUNC[w] + ' ';
+      return [...w].map((c) => (GRIEGO[c] ? `\\${GRIEGO[c]} ` : SUB[c] ? `_{${SUB[c]}}` : SUP[c] ? `^{${SUP[c]}}` : SIM[c] || c)).join('');
+    };
+    function secuencia(cierre) {
+      const xs = [];
+      while (p < tk.length && !(cierre && es(cierre))) {
+        if (es(')') || es('}') || es(']')) { p++; continue; }
+        xs.push(fraccion());
+      }
+      return xs.join(' ').replace(/\s+/g, ' ').trim();
+    }
+    function fraccion() {
+      let a = guiones();
+      while (es('/')) { p++; const b = guiones(); a = `\\frac{${quita(a)}}{${quita(b)}}`; }
+      return a;
+    }
+    function argumento() {
+      if (es('{')) { p++; const s = secuencia('}'); p++; return `{${s}}`; }
+      if (es('-') || es('−')) { p++; return `{-${argumento().replace(/^\{|\}$/g, '')}}`; }
+      if (es('(')) return `{${atomo()}}`;
+      const k = tk[p];
+      if (!k) return '{}';
+      p++;
+      if (k.t === 's') return `{${SIM[k.v] || k.v}}`;
+      let v = k.v;
+      while (tk[p] && !tk[p].sp && (tk[p].t === 'n' || tk[p].t === 'w')) { v += tk[p].v; p++; }
+      return `{${palabra(v).trim()}}`;
+    }
+    function guiones() {
+      let b = atomo();
+      for (;;) {
+        if (es('_')) { p++; b += `_${argumento()}`; } else if (es('^')) { p++; b += `^${argumento()}`; } else break;
+      }
+      return b;
+    }
+    function atomo() {
+      const k = tk[p];
+      if (!k) return '';
+      p++;
+      if (k.t === 'n') return k.v.replace(',', '{,}');
+      if (k.t === 'x') return `\\text{${k.v}}`;
+      if (k.t === 'w') return k.sp && p > 1 && /^d[a-zA-Zθφρ]$/.test(k.v) ? `\\, d${palabra(k.v[1])}` : palabra(k.v);
+      const v = k.v;
+      if (v === '(' || v === '[') { const c = v === '(' ? ')' : ']', s = secuencia(c); if (es(c)) p++; return v === '(' ? `\\left(${s}\\right)` : `\\left[${s}\\right]`; }
+      if (v === '{') { const s = secuencia('}'); if (es('}')) p++; return `{${s}}`; }
+      if (v === '√') return `\\sqrt{${quita(guiones()).replace(/^\{(.*)\}$/, '$1')}}`;
+      if (v === '∛') return `\\sqrt[3]{${quita(guiones()).replace(/^\{(.*)\}$/, '$1')}}`;
+      return SIM[v] || v;
+    }
+    return secuencia(null);
+  }
+  // texto plano: la fuente sin las llaves de agrupar
+  function texto(src) {
+    let s = String(src).replace(/<sup>(.*?)<\/sup>/g, '^($1)').replace(/<sub>(.*?)<\/sub>/g, '_$1').replace(/<[^>]+>/g, '').replace(/"/g, '').replace(/\\\{/g, '\u0001').replace(/\\\}/g, '\u0002');
+    const simple = (a) => /^[\w.,′α-ωπ∂^−-]+$/.test(a) || /^\([^()]*\)$/.test(a);
+    for (let i = 0, antes = ''; i < 12 && antes !== s; i++) {
+      antes = s;
+      s = s.replace(/([\^_])\{([^{}]*)\}/g, (_, o, a) => (/^[\w.,′α-ωπ−-]+$/.test(a) && a.length <= 3 ? `${o}${a}` : `${o}(${a})`));
+      s = s.replace(/\{([^{}]*)\}\/\{([^{}]*)\}/g, (_, a, b) => `${simple(a) ? a : `(${a})`}/${simple(b) ? b : `(${b})`}`);
+    }
+    return s.replace(/[{}]/g, '').replace(/\u0001/g, '{').replace(/\u0002/g, '}');
+  }
+
+  /* ---------- El ejercicio como texto o como LaTeX ---------- */
+  const escTex = (s) => s.replace(/\\/g, '\\textbackslash{}').replace(/([%#&_$])/g, '\\$1').replace(/[{}]/g, (c) => `\\${c}`);
+  function lee(nodo, tex) {
+    let out = '';
+    for (const n of nodo.childNodes) {
+      if (n.nodeType === 3) { out += tex ? escTex(n.nodeValue) : n.nodeValue; continue; }
+      if (n.nodeType !== 1 || n.hidden) continue;
+      const tag = n.tagName.toLowerCase();
+      if (tag === 'math') { const s = n.getAttribute('data-src'); out += s ? (tex ? `$${latex(s)}$` : texto(s)) : n.textContent; continue; }
+      if (tag === 'canvas' || tag === 'svg' || tag === 'button' || tag === 'select' || tag === 'input') continue;
+      if (n.classList.contains('mat')) {
+        const filas = [...n.querySelectorAll('tr')].map((tr) => [...tr.children].map((td) => lee(td, tex).trim()));
+        const env = n.classList.contains('det') ? 'vmatrix' : 'pmatrix';
+        out += tex ? `$\\begin{${env}} ${filas.map((f) => f.join(' & ').replace(/\$/g, '')).join(' \\\\ ')} \\end{${env}}$` : `${env === 'vmatrix' ? '|' : '['}${filas.map((f) => f.join('  ')).join('; ')}${env === 'vmatrix' ? '|' : ']'}`;
+        continue;
+      }
+      if (n.classList.contains('fr') && n.children.length === 2) { const [a, b] = [...n.children].map((c) => lee(c, tex).trim().replace(/\$/g, '')); out += tex ? `$\\frac{${a}}{${b}}$` : `${/^[\w.,√−-]+$/.test(a) ? a : `(${a})`}/${/^[\w.,√−-]+$/.test(b) ? b : `(${b})`}`; continue; }
+      if (tag === 'sup' || tag === 'sub') { const a = lee(n, tex).trim().replace(/\$/g, ''), o = tag === 'sup' ? '^' : '_'; out += tex ? `$${o}{${a}}$` : a.length > 1 ? `${o}(${a})` : `${o}${a}`; continue; }
+      if (tag === 'br') { out += '\n'; continue; }
+      const dentro = lee(n, tex);
+      if (tex && (tag === 'b' || tag === 'strong')) out += `\\textbf{${dentro}}`;
+      else if (tag === 'tr') out += '\n' + [...n.children].map((c) => lee(c, tex).trim()).join(tex ? ' & ' : ' | ');
+      else if (['div', 'p', 'li', 'table', 'ol', 'ul'].includes(tag)) out += `\n${dentro}\n`;
+      else out += dentro;
+    }
+    return out;
+  }
+  const limpia = (s) => s.replace(/[ \t]+/g, ' ').replace(/ *\n */g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+  function ejercicio(tex) {
+    const tit = (document.querySelector('h1') || {}).textContent || document.title;
+    const res = document.querySelector('#resumen') || document.querySelector('#res'), pasos = [...document.querySelectorAll('#pasos > li')];
+    const items = res ? (res.id === 'resumen' ? [...res.children].filter((d) => !d.hidden).map((d) => { const sp = d.querySelector('span'), b = d.querySelector('b'); return sp && b ? `${limpia(lee(sp, tex))}: ${limpia(lee(b, tex))}` : limpia(lee(d, tex)); }) : [limpia(lee(res, tex))]) : [];
+    const paso = (li) => { const t = li.querySelector('strong'), c = li.cloneNode(true), ct = c.querySelector('strong'); if (ct) ct.remove(); return { t: t ? limpia(lee(t, tex)) : '', c: limpia(lee(c, tex)).replace(/\n+/g, tex ? ' \\\\ ' : '\n   ') }; };
+    if (!tex) return [tit, '', 'Resultados', ...items.map((q) => `· ${q.replace(/\n+/g, ' ')}`), '', 'Desarrollo', ...pasos.map((li, i) => { const q = paso(li); return `${i + 1}. ${q.t}${q.t ? ': ' : ''}${q.c}`; }), '', enlace()].join('\n');
+    return [`% ${tit} · SimulaCiencia`, `% ${enlace()}`, '\\section*{Resultados}', '\\begin{itemize}', ...items.map((q) => `  \\item ${q.replace(/\n+/g, ' ')}`), '\\end{itemize}', '\\section*{Desarrollo}', '\\begin{enumerate}', ...pasos.map((li) => { const q = paso(li); return `  \\item ${q.t ? `\\textbf{${q.t}.} ` : ''}${q.c}`; }), '\\end{enumerate}'].join('\n');
+  }
+
+  /* ---------- Botones ---------- */
+  async function copia(s) {
+    try { await navigator.clipboard.writeText(s); return true; } catch (e) {
+      const t = document.createElement('textarea'); t.value = s; t.style.position = 'fixed'; t.style.opacity = '0'; document.body.appendChild(t); t.select();
+      let ok = false; try { ok = document.execCommand('copy'); } catch (e2) { /* sin portapapeles */ }
+      t.remove(); return ok;
+    }
+  }
+  function botones() {
+    if (typeof document === 'undefined') return;
+    const card = document.querySelector('#pasos') && document.querySelector('#pasos').closest('.card');
+    if (!card || card.querySelector('.compartir')) return;
+    const caja = document.createElement('div');
+    caja.className = 'controles compartir';
+    caja.innerHTML = '<button class="btn" type="button" data-a="enlace">Copiar enlace</button><button class="btn" type="button" data-a="texto">Copiar como texto</button><button class="btn" type="button" data-a="latex">Copiar en LaTeX</button><button class="btn" type="button" data-a="imprimir">Imprimir o PDF</button>';
+    caja.style.margin = '0 0 10px';
+    card.querySelector('h2').after(caja);
+    caja.addEventListener('click', async (e) => {
+      const b = e.target.closest('button'); if (!b) return;
+      const a = b.dataset.a;
+      if (a === 'imprimir') { window.print(); return; }
+      const ok = await copia(a === 'enlace' ? enlace() : ejercicio(a === 'latex'));
+      const antes = b.textContent; b.textContent = ok ? '¡Copiado!' : 'No se ha podido copiar'; setTimeout(() => { b.textContent = antes; }, 1600);
+    });
+    // al imprimir: solo el ejercicio, en claro
+    const css = document.createElement('style');
+    css.textContent = '@media print { .top, .miga, .bib, .bib-scrim, footer, .teoria, .compartir, #ejemplos, .controles, .nota:empty, .error[hidden] { display: none !important } html, body { background: #fff !important } .wrap { max-width: none; padding: 0 } .layout { display: block !important } .card { break-inside: avoid; box-shadow: none !important } .pasos li { break-inside: avoid } canvas { max-height: 9cm; object-fit: contain } }';
+    document.head.appendChild(css);
+    let tema = null;
+    addEventListener('beforeprint', () => { tema = document.documentElement.getAttribute('data-theme'); document.documentElement.setAttribute('data-theme', 'light'); dispatchEvent(new Event('resize')); });
+    addEventListener('afterprint', () => { if (tema === null) document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', tema); dispatchEvent(new Event('resize')); });
+    // log es el decimal
+    const err = document.querySelector('#error');
+    if (err && ['taylor', 'fourier', 'edos', 'laplace', 'derivadas', 'campos'].includes(CLAVE.slice(0, -3))) { const q = document.createElement('p'); q.className = 'nota'; q.id = 'nota-log'; q.textContent = 'ln es el logaritmo neperiano y log, el decimal (log₁₀).'; err.before(q); }
+  }
+  botones();
+  return { enlace, ejercicio, latex, texto, CLAVE };
 })();
 
 /* =====================================================================
@@ -618,6 +830,8 @@ const Expresion = (() => {
     arcsen: 'arcsen', arcsin: 'arcsen', asin: 'arcsen', arccos: 'arccos', acos: 'arccos', arctg: 'arctg', arctan: 'arctg', atan: 'arctg',
     senh: 'senh', sinh: 'senh', sh: 'senh', cosh: 'cosh', ch: 'cosh', tgh: 'tgh', tanh: 'tgh', th: 'tgh',
     ln: 'ln', log: 'log', exp: 'exp', sqrt: 'sqrt', raiz: 'sqrt', 'raíz': 'sqrt', cbrt: 'cbrt', abs: 'abs',
+    // escalón de Heaviside y delta de Dirac (los usa Laplace)
+    escalon: 'u', 'escalón': 'u', heaviside: 'u', delta: 'δ', dirac: 'δ',
   };
   const PALABRAS = [...Object.keys(FUN), 'pi'].sort((a, b) => b.length - a.length);
 
@@ -639,7 +853,7 @@ const Expresion = (() => {
           if (p) { out.push(p === 'pi' ? { k: 'c', v: 'π' } : { k: 'f', v: FUN[p] }); j += p.length; }
           else if (vars.includes(w[j])) { out.push({ k: 'x', v: w[j] }); j++; }
           else if (w[j] === 'e') { out.push({ k: 'c', v: 'e' }); j++; }
-          else throw new Error(`${nom}: no sé qué es «${m[0].slice(j)}». ${vars.length > 1 ? `Las variables son ${vars.join(' e ')}` : `La variable es ${vars[0]}`}; las funciones son sen, cos, tg, arcsen, arctg, ln, e^x, √…`);
+          else throw new Error(`${nom}: no sé qué es «${m[0].slice(j)}». ${vars.length > 1 ? `Las variables son ${vars.join(' e ')}` : `La variable es ${vars[0]}`}; las funciones son sen, cos, tg, arcsen, arctg, ln (neperiano), log (decimal), e^x, √…`);
         }
         i += m[0].length; continue;
       }
@@ -717,6 +931,7 @@ const Expresion = (() => {
     sen: Math.sin, cos: Math.cos, tg: Math.tan, sec: (u) => 1 / Math.cos(u), cosec: (u) => 1 / Math.sin(u), cotg: (u) => 1 / Math.tan(u),
     arcsen: Math.asin, arccos: Math.acos, arctg: Math.atan, senh: Math.sinh, cosh: Math.cosh, tgh: Math.tanh,
     ln: (u) => (u > 0 ? Math.log(u) : NaN), log: (u) => (u > 0 ? Math.log10(u) : NaN), sqrt: (u) => (u >= 0 ? Math.sqrt(u) : NaN), cbrt: Math.cbrt, abs: Math.abs,
+    u: (u) => (u >= 0 ? 1 : 0), 'δ': () => 0,
   };
   const CTE = { 'π': Math.PI, e: Math.E };
   // env: valores de las otras variables, { y: 2 }
@@ -994,12 +1209,19 @@ const Expresion = (() => {
 
   /* ---------- Serie de Taylor truncada ---------- */
   // coeficientes c_0 … c_N de f(a + h) = Σ c_k h^k
-  function serie(n, a, Nn) {
+  // evitable: en 0/0 (sen x / x en 0) se quitan los ceros comunes del numerador y el denominador;
+  // los últimos coeficientes dejan de ser fiables, así que quien lo usa pide unos cuantos de más
+  function serie(n, a, Nn, { evitable = false } = {}) {
     const L = Nn + 1, cero = () => new Float64Array(L);
     const cte = (v) => { const s = cero(); s[0] = v; return s; };
     const noDer = (q) => { throw new Error(`La función no es derivable en x = a (${q}): prueba con otro punto`); };
     const mul = (p, q) => { const r = cero(); for (let i = 0; i < L; i++) if (p[i]) for (let j = 0; i + j < L; j++) r[i + j] += p[i] * q[j]; return r; };
+    const corre = (p, m) => { const r = cero(); for (let k = 0; k + m < L; k++) r[k] = p[k + m]; return r; };
     const div = (p, q) => {
+      if (Math.abs(q[0]) < 1e-14 && evitable) {
+        const esc = Math.max(1e-300, ...q.map(Math.abs)), m = q.findIndex((v) => Math.abs(v) > 1e-10 * esc), escP = Math.max(1, ...p.map(Math.abs));
+        if (m > 0 && p.slice(0, m).every((v) => Math.abs(v) < 1e-10 * escP)) { p = corre(p, m); q = corre(q, m); serie.quitados = (serie.quitados || 0) + m; }
+      }
       if (Math.abs(q[0]) < 1e-14) noDer('división entre cero');
       const r = cero();
       for (let k = 0; k < L; k++) { let s = p[k]; for (let j = 1; j <= k; j++) s -= q[j] * r[k - j]; r[k] = s / q[0]; }
@@ -1278,9 +1500,9 @@ const Laplace = (() => {
   // (s − p) con el signo bien: s + 2, s − 3, s
   const sMenos = (p) => (Math.abs(p) < 1e-12 ? 's' : p > 0 ? `s − ${cTxt(p)}` : `s + ${cTxt(-p)}`);
   const linT = (r, v = 't') => { const a = Math.abs(r), sg = r < 0 ? '−' : ''; if (Math.abs(a - 1) < 1e-12) return `${sg}${v}`; const e = E.exacto(a, 12); if (e && !e.s && e.q !== 1) return `${sg}{${e.p === 1 ? '' : e.p + ' '}${v}}/{${e.q}}`; return `${sg}${cTxt(a)} ${v}`; };
-  const expT = (r) => (Math.abs(r) < 1e-12 ? '' : `e^{${linT(r)}}`);
-  const trigT = (p, w) => (w ? `${p} ${/[ {]/.test(linT(w)) ? `(${linT(w)})` : linT(w)}` : '');
-  const potT = (k) => (k === 0 ? '' : k === 1 ? 't' : `t^{${k}}`);
+  const expT = (r, v = 't') => (Math.abs(r) < 1e-12 ? '' : `e^{${linT(r, v)}}`);
+  const trigT = (p, w, v = 't') => { if (!w) return ''; const a = linT(w, v); return `${p} ${a === v ? v : /[ {]/.test(a) ? `(${a})` : a}`; };
+  const potT = (k, v = 't') => (k === 0 ? '' : k === 1 ? v : `${v}^{${k}}`);
   // c·(cuerpo) con signo, para sumas
   function suma(ts) {
     const vivos = ts.filter((t) => Math.abs(t.c) > 1e-10);
@@ -1299,6 +1521,7 @@ const Laplace = (() => {
     return { u0, r };
   }
   // términos { c, k, r, w, p }: c·t^k·e^{rt}·(sen|cos)(wt)
+  let linealiza = false;
   function terminos(ast) {
     const ts = [];
     const nT = (q) => !E.tieneX(q, 't');
@@ -1312,7 +1535,21 @@ const Laplace = (() => {
     }
     function producto(m) {
       let base = [{ c: 1, k: 0, r: 0, w: 0, p: null }];
-      const mult = (otros) => { const nb = []; for (const a of base) for (const b of otros) { if (a.p && b.p) return false; nb.push({ c: a.c * b.c, k: a.k + b.k, r: a.r + b.r, w: a.w + b.w, p: a.p || b.p, h: a.h || b.h }); } base = nb; return true; };
+      const mult = (otros) => {
+        const nb = [];
+        for (const a of base) for (const b of otros) {
+          const q = { c: a.c * b.c, k: a.k + b.k, r: a.r + b.r, h: a.h || b.h };
+          if (!(a.p && b.p)) { nb.push({ ...q, w: a.w + b.w, p: a.p || b.p }); continue; }
+          // sen A cos B = ½[sen(A + B) + sen(A − B)], cos A cos B = ½[cos(A − B) + cos(A + B)], sen A sen B = ½[cos(A − B) − cos(A + B)]
+          linealiza = true;
+          const d = a.w - b.w, s1 = a.w + b.w, mas = (p, w, c) => { if (Math.abs(w) < 1e-14) { if (p === 'cos') nb.push({ ...q, c: q.c * c, w: 0, p: null }); return; } nb.push({ ...q, c: q.c * c * (p === 'sen' && w < 0 ? -1 : 1), w: Math.abs(w), p }); };
+          if (a.p === 'cos' && b.p === 'cos') { mas('cos', d, 0.5); mas('cos', s1, 0.5); }
+          else if (a.p === 'sen' && b.p === 'sen') { mas('cos', d, 0.5); mas('cos', s1, -0.5); }
+          else if (a.p === 'sen') { mas('sen', s1, 0.5); mas('sen', d, 0.5); }
+          else { mas('sen', s1, 0.5); mas('sen', -d, 0.5); }
+        }
+        base = nb; return true;
+      };
       function fac(q) {
         if (q.t === '*') return fac(q.a) && fac(q.b);
         if (q.t === '/' && nT(q.b)) { const d = E.valor(q.b, 0, {}); return fac(q.a) && mult([{ c: 1 / d, k: 0, r: 0, w: 0, p: null }]); }
@@ -1359,13 +1596,15 @@ const Laplace = (() => {
     if (num !== null) txt = `{${cTxt(num)}}/{${den}}`;
     return { c, txt, conC: num !== null ? frNum(c, num, den) : { c, s: txt } };
   }
-  const fTermTxt = (t) => [potT(t.k), expT(t.r), trigT(t.p, t.w)].filter(Boolean).join(' ');
+  const fTermTxt = (t, v = 't') => [potT(t.k, v), expT(t.r, v), trigT(t.p, t.w, v)].filter(Boolean).join(' ');
 
   /* ---------- Directa ---------- */
   function directa(sc) {
     if (vacio(sc.f)) throw new Error('Falta f(t)');
-    const ast = E.lee(sc.f, 'f(t)', ['t']);
+    const ast = leeT(sc.f, 'f(t)');
     if (E.tieneX(ast, 's')) throw new Error('f(t) no puede llevar s');
+    if (tieneSalto(ast)) return directaSaltos(ast, sc);
+    linealiza = false;
     const ts = terminos(ast);
     if (!ts) throw new Error('Solo sé transformar sumas de términos c·tⁿ·e^{at}·sen(bt) o cos(bt) (también senh y cosh)');
     if (!ts.length) throw new Error('f(t) es 0');
@@ -1384,6 +1623,7 @@ const Laplace = (() => {
       if (t.k && t.p) { const b = formaTabla({ ...t, k: 0 }), d = t.k === 1 ? '−{d}/{ds}' : `${t.k % 2 ? '−' : ''}{d^{${t.k}}}/{ds^{${t.k}}}`; return `$ℒ\\{${fTermTxt({ ...t, k: 0 })}\\} = ${b.txt}$ &ensp;⇒&ensp; $ℒ\\{${ft}\\} = ${d} (${b.txt}) = ${F.txt}$`; }
       return `$ℒ\\{${ft || '1'}\\} = ${F.txt}$`;
     });
+    if (linealiza) pasos.unshift({ t: 'Linealizar', html: 'Los productos de senos y cosenos se pasan a sumas: $sen A cos B = {1}/{2} [sen(A + B) + sen(A − B)]$, $cos A cos B = {1}/{2} [cos(A − B) + cos(A + B)]$, $sen A sen B = {1}/{2} [cos(A − B) − cos(A + B)]$. Por ejemplo, $sen^{2} t = {1}/{2} − {1}/{2} cos (2 t)$.' });
     pasos.push({ t: 'Tabla y propiedades', html: `${[...usa].join('<br>')}` });
     pasos.push({ t: 'Cada término', html: lineas.join('<br>') });
     let Fs = R([0]);
@@ -1465,9 +1705,10 @@ const Laplace = (() => {
     return { rs, terms: ft, frac: fracTxt, txt: suma(ft.map((t) => ({ c: t.c, s: fTermTxt(t) }))) };
   }
   const evalTerms = (ts) => (tt) => ts.reduce((s, q) => s + q.c * tt ** q.k * Math.exp(q.r * tt) * (q.p === 'sen' ? Math.sin(q.w * tt) : q.p === 'cos' ? Math.cos(q.w * tt) : 1), 0);
-  function limites(F, rs, pasos) {
-    const q = normaliza(F), sF = simplifica(R(pMul(q.n, [0, 1]), q.d));
-    const gn = grado(sF.n), gd = grado(sF.d), ini = gn < gd ? 0 : gn === gd ? limpia(sF.n)[gn] / limpia(sF.d)[gd] : Infinity;
+  // F0: la parte sin retraso, que es la única que cuenta para f(0⁺)
+  function limites(F, rs, pasos, F0 = F) {
+    const q = normaliza(F), sF = simplifica(R(pMul(q.n, [0, 1]), q.d)), q0 = normaliza(F0), sF0 = esCero(F0) ? R([0]) : simplifica(R(pMul(q0.n, [0, 1]), q0.d));
+    const gn = grado(sF0.n), gd = grado(sF0.d), ini = esCero(F0) ? 0 : gn < gd ? 0 : gn === gd ? limpia(sF0.n)[gn] / limpia(sF0.d)[gd] : Infinity;
     const estable = rs.every(({ p }) => p.re < -1e-12 || (Math.abs(p.re) < 1e-12 && Math.abs(p.im) < 1e-12 && rs.find((x) => x.p === p).m === 1));
     const fin = estable ? pVal(sF.n, 0) / pVal(sF.d, 0) : null;
     pasos.push({ t: 'Valores inicial y final', html: `Valor inicial: $f(0^{+}) = lím_{s→∞} s F(s) = ${isFinite(ini) ? cTxt(ini) : '∞'}$<br>${estable ? `Valor final: $lím_{t→∞} f(t) = lím_{s→0} s F(s) = ${cTxt(fin)}$` : 'Valor final: no existe, porque hay polos con parte real positiva, o en el eje imaginario (salvo un polo simple en 0), y f(t) crece u oscila sin pararse.'}` });
@@ -1477,6 +1718,16 @@ const Laplace = (() => {
     if (vacio(sc.F)) throw new Error('Falta F(s)');
     const ast = E.lee(sc.F, 'F(s)', ['s']);
     if (E.tieneX(ast, 't')) throw new Error('F(s) no puede llevar t');
+    const igualG = () => { try { const r = simplifica(racional(ast)); return grado(r.d) >= 1 && grado(r.n) === grado(r.d); } catch (e) { return false; } };
+    if (tieneExpS(ast) || igualG()) {
+      const gs = gruposS(ast, 'F(s)'), pasos = [];
+      if (!gs.length) throw new Error('F(s) es 0');
+      const inv = invierteSG(gs, pasos), tot = gs.reduce((x, g) => rSuma(x, g.R), R([0])), g0 = gs.find((g) => !g.a);
+      // la delta de t = 0 no cuenta para f(0⁺)
+      const prop = (r) => { const q = normaliza(r), gn = grado(q.n); return gn === grado(q.d) && gn ? simplifica(rSuma(q, R([-limpia(q.n)[gn]]))) : gn ? q : R([0]); };
+      const lim = limites(prop(tot), inv.rs, pasos, g0 ? prop(g0.R) : R([0]));
+      return { modo: 'inversa', saltos: true, gs, Fcomun: sgTxt(gs), Ffact: sgTxt(gs), Fval: (s) => sgVal(gs, s), ...inv, lim, polos: inv.rs, ceros: [], pasos };
+    }
     const F = simplifica(racional(ast)), pasos = [];
     pasos.push({ t: 'Función racional', html: `$F(s) = ${rTxt(F)}${factTxt(F) !== rTxt(F) ? ` = ${factTxt(F)}` : ''}$` });
     const inv = invierte(F, pasos), lim = limites(F, inv.rs, pasos);
@@ -1489,30 +1740,318 @@ const Laplace = (() => {
     if (orden === 2 && a === 0) throw new Error('El coeficiente de y″ no puede ser 0 (sería de primer orden)');
     if (orden === 1 && b === 0) throw new Error('El coeficiente de y′ no puede ser 0');
     const y0 = num(sc.y0, 'y(0)'), v0 = orden === 2 ? num(sc.v0, 'y′(0)') : 0, pasos = [];
-    let G = R([0]), g = () => 0, gts = [];
+    let G = R([0]), g = () => 0, gts = [], GS = null, gtxt = '0';
     if (!vacio(sc.g) && String(sc.g).trim() !== '0') {
-      const ast = E.lee(sc.g, 'g(t)', ['t']);
-      gts = terminos(ast);
-      if (!gts) throw new Error('g(t) tiene que ser una suma de términos c·tⁿ·e^{at}·sen(bt) o cos(bt)');
-      for (const t of gts) { const q = transTermino(t); G = rSuma(G, R(pEsc(q.n, t.c), q.d)); }
-      g = evalTerms(gts);
+      const ast = leeT(sc.g, 'g(t)');
+      if (tieneSalto(ast)) { const T = transformaT(ast, 'g(t)'); GS = T.gs; g = T.f; gtxt = T.txt; }
+      else {
+        gts = terminos(ast);
+        if (!gts) throw new Error('g(t) tiene que ser una suma de términos c·tⁿ·e^{at}·sen(bt) o cos(bt), con escalones u(t − a) o deltas δ(t − a)');
+        for (const t of gts) { const q = transTermino(t); G = rSuma(G, R(pEsc(q.n, t.c), q.d)); }
+        g = evalTerms(gts); gtxt = suma(gts.map((t) => ({ c: t.c, s: fTermTxt(t) })));
+      }
     }
-    const ec = `${orden === 2 ? `${a === 1 ? '' : cTxt(a) + ' '}y″ ` : ''}${suma([...(orden === 2 ? [] : []), { c: b, s: 'y′' }, { c, s: 'y' }]).replace(/^(?!−)/, orden === 2 ? '+ ' : '').replace(/^\+ −/, '− ')} = ${gts.length ? suma(gts.map((t) => ({ c: t.c, s: fTermTxt(t) }))) : '0'}`;
+    const ec = `${orden === 2 ? `${a === 1 ? '' : cTxt(a) + ' '}y″ ` : ''}${suma([...(orden === 2 ? [] : []), { c: b, s: 'y′' }, { c, s: 'y' }]).replace(/^(?!−)/, orden === 2 ? '+ ' : '').replace(/^\+ −/, '− ')} = ${gtxt}`;
     pasos.push({ t: 'Ecuación', html: `$${ec}$, con $y(0) = ${cTxt(y0)}$${orden === 2 ? ` e $y′(0) = ${cTxt(v0)}$` : ''}` });
     const dentro = (ts) => suma(ts) === '0' ? '0' : suma(ts);
     const lado = [orden === 2 ? { c: a, s: y0 || v0 ? `(${dentro([{ c: 1, s: 's^{2}Y' }, { c: -y0, s: 's' }, { c: -v0, s: '' }])})` : 's^{2}Y' } : null, { c: b, s: y0 ? `(sY − ${cTxt(y0)})`.replace('− −', '+ ') : 'sY' }, { c, s: 'Y' }].filter(Boolean);
-    pasos.push({ t: 'Transformando', html: `Con $ℒ\\{y′\\} = sY − y(0)$${orden === 2 ? ' y $ℒ\\{y″\\} = s^{2}Y − s y(0) − y′(0)$' : ''}:<br>$${suma(lado)} = ${gts.length ? factTxt(G) : '0'}$` });
+    pasos.push({ t: 'Transformando', html: `Con $ℒ\\{y′\\} = sY − y(0)$${orden === 2 ? ' y $ℒ\\{y″\\} = s^{2}Y − s y(0) − y′(0)$' : ''}:<br>$${suma(lado)} = ${GS ? sgTxt(GS) : gts.length ? factTxt(G) : '0'}$` });
     // Y(s) = (G(s) + a(s y0 + v0) + b y0)/(a s² + b s + c)
     const car = orden === 2 ? [c, b, a] : [c, b], ini = orden === 2 ? [a * v0 + b * y0, a * y0] : [b * y0];
-    const Y = simplifica(rDiv(rSuma(G, R(ini)), R(car)));
-    pasos.push({ t: 'Despejando Y(s)', html: `$(${pTxt(car)}) Y(s) = ${gts.length ? `${factTxt(G)}${limpia(ini).some((x) => Math.abs(x) > 1e-12) ? ` + ${pTxt(ini)}`.replace('+ −', '− ') : ''}` : pTxt(ini)}$<br>$Y(s) = ${factTxt(Y)}$` });
-    const inv = invierte(Y, pasos, 'Y');
-    pasos[pasos.length - 1].t = 'Solución';
-    pasos[pasos.length - 1].html = pasos[pasos.length - 1].html.replace('f(t) =', 'y(t) =');
-    return { modo: 'edo', orden, a, b, c, y0, v0, G, g, Y, Fcomun: rTxt(Y), Ffact: factTxt(Y), ...inv, f: evalTerms(inv.terms), polos: inv.rs, ceros: raicesSeguras(normaliza(Y).n), ec, pasos };
+    const hayIni = limpia(ini).some((x) => Math.abs(x) > 1e-12);
+    let out;
+    if (!GS) {
+      const Y = simplifica(rDiv(rSuma(G, R(ini)), R(car)));
+      pasos.push({ t: 'Despejando Y(s)', html: `$(${pTxt(car)}) Y(s) = ${gts.length ? `${factTxt(G)}${hayIni ? ` + ${pTxt(ini)}`.replace('+ −', '− ') : ''}` : pTxt(ini)}$<br>$Y(s) = ${factTxt(Y)}$` });
+      const inv = invierte(Y, pasos, 'Y');
+      pasos[pasos.length - 1].t = 'Solución';
+      pasos[pasos.length - 1].html = pasos[pasos.length - 1].html.replace('f(t) =', 'y(t) =');
+      out = { G, Y, Fcomun: rTxt(Y), Ffact: factTxt(Y), ...inv, f: evalTerms(inv.terms), polos: inv.rs, ceros: raicesSeguras(normaliza(Y).n) };
+    } else {
+      const YS = sgSuma(sgMulR(GS, R([1], car)), hayIni ? [{ a: 0, R: R(ini, car) }] : []).filter((q) => !esCero(q.R));
+      pasos.push({ t: 'Despejando Y(s)', html: `$(${pTxt(car)}) Y(s) = ${sgTxt(GS)}${hayIni ? ` + ${pTxt(ini)}`.replace('+ −', '− ') : ''}$<br>$Y(s) = ${sgTxt(YS)}$` });
+      const inv = invierteSG(YS, pasos, 'Y');
+      pasos[pasos.length - 1].t = 'Solución';
+      out = { G: GS, Y: YS, Fcomun: sgTxt(YS), Ffact: sgTxt(YS), ...inv, polos: inv.rs, ceros: [] };
+    }
+    // función de transferencia: con condiciones iniciales nulas, Y = H G
+    const H = R([1], car), hI = invierte(H, []), hE = invierte(R([1], pMul(car, [0, 1])), []);
+    pasos.push({ t: 'Función de transferencia', html: `Con condiciones iniciales nulas, $Y(s) = H(s) G(s)$ con $H(s) = ${factTxt(H)}$.<br>Respuesta al impulso (con $g = δ(t)$): $h(t) = ℒ^{−1}\\{H(s)\\} = ${hI.txt}$<br>Respuesta al escalón unitario (con $g = u(t)$): $ℒ^{−1}\\{{H(s)}/{s}\\} = ${hE.txt}$<br>Y en general la parte forzada es la convolución $(h * g)(t)$.` });
+    return { modo: 'edo', orden, a, b, c, y0, v0, g, ...out, H, htxt: hI.txt, Htxt: factTxt(H), escTxt: hE.txt, ec, pasos };
   }
 
-  const MODOS = { directa, inversa, edo };
+  /* ---------- Escalón u(t − a), delta δ(t − a) y e^{−as} ---------- */
+  // Una transformada con desplazamientos se guarda como grupos { a, R }: F(s) = Σ e^{−a s} R_a(s).
+  const T_ = { t: 'x', n: 't' }, uno = E.N(1), menos = E.N(-1);
+  const opN = (o, a, b) => ({ t: o, a, b });
+  const tieneSalto = (n) => !!n && ((n.t === 'fn' && (n.f === 'u' || n.f === 'δ')) || tieneSalto(n.a) || tieneSalto(n.b));
+  const esExpS = (n) => n.t === '^' && n.a.t === 'c' && n.a.v === 'e' && E.tieneX(n.b, 's');
+  const tieneExpS = (n) => !!n && (esExpS(n) || tieneExpS(n.a) || tieneExpS(n.b));
+  // sustituye t por t + a
+  const corre = (n, a) => (n.t === 'x' && n.n === 't' ? opN('+', T_, E.N(a)) : n.a ? { ...n, a: corre(n.a, a), ...(n.b ? { b: corre(n.b, a) } : {}) } : n);
+  // reparte los productos sobre las sumas que llevan escalones (o exponenciales en s): lista de sumandos, cada uno una lista de factores
+  function sumandos(n, hay) {
+    if (!hay(n)) return [[n]];
+    if (n.t === '+') return [...sumandos(n.a, hay), ...sumandos(n.b, hay)];
+    if (n.t === '-') return [...sumandos(n.a, hay), ...sumandos(n.b, hay).map((fs) => [menos, ...fs])];
+    if (n.t === 'neg') return sumandos(n.a, hay).map((fs) => [menos, ...fs]);
+    if (n.t === '*') { const A = sumandos(n.a, hay), B = sumandos(n.b, hay); return A.flatMap((x) => B.map((y) => [...x, ...y])); }
+    if (n.t === '/' && !hay(n.b)) return sumandos(n.a, hay).map((fs) => [...fs, opN('/', uno, n.b)]);
+    // u(t − a)² = u(t − a)
+    if (n.t === '^' && n.a.t === 'fn' && n.a.f === 'u' && n.b.t === 'n' && Number.isInteger(n.b.v) && n.b.v > 0) return [[n.a]];
+    return [[n]];
+  }
+  const prodF = (fs) => (fs.length ? fs.reduce((x, y) => opN('*', x, y)) : uno);
+  const minus = (n) => n[0].toLowerCase() + n.slice(1);
+  const tA = (a) => (Math.abs(a) < 1e-12 ? 't' : `t − ${cTxt(a)}`);
+  const eS = (a) => `e^{−${linT(a, 's')}}`;
+
+  // f(t) a trozos: «t si 0 ≤ t < 2; 4 − t si 2 ≤ t < 4; 0 si t ≥ 4» → Σ g_i [u(t − a_i) − u(t − b_i)]
+  function trozos(src, nom) {
+    const ps = String(src).split(';').map((x) => x.trim()).filter(Boolean), out = [];
+    for (const p of ps) {
+      const m = p.match(/^(.*?)\s+si\s+(.+)$/i);
+      if (!m) throw new Error(`${nom}: cada trozo tiene que ser «expresión si a ≤ t < b», separados por «;»`);
+      const c = m[2].replace(/≤|=</g, '<=').replace(/≥|=>/g, '>=').replace(/\s+/g, '');
+      let a = 0, b = Infinity, q;
+      if ((q = c.match(/^(.+?)<=?t<=?(.+)$/))) { a = num(q[1], 'el inicio del trozo'); b = num(q[2], 'el final del trozo'); }
+      else if ((q = c.match(/^t>=?(.+)$/))) a = num(q[1], 'el inicio del trozo');
+      else if ((q = c.match(/^t<=?(.+)$/))) b = num(q[1], 'el final del trozo');
+      else throw new Error(`${nom}: no entiendo la condición «${m[2]}»; escribe a ≤ t < b, t ≥ a o t < b`);
+      if (!(b > a)) throw new Error(`${nom}: en el trozo «${p}» el final tiene que ser mayor que el inicio`);
+      if (a < 0) a = 0;
+      out.push({ g: E.lee(m[1], nom, ['t']), a, b });
+    }
+    if (!out.length) throw new Error(`Falta ${nom}`);
+    return out;
+  }
+  // lee una función de t: con u(t − a), H(t − a), δ(t − a) o a trozos
+  function leeT(src, nom) {
+    const pre = String(src).replace(/(^|[^a-zA-Záéíóúñ])[uH]\s*\(/g, '$1escalon(').replace(/δ\s*\(/g, 'delta(');
+    if (!/\bsi\b/i.test(pre)) return E.lee(pre, nom, ['t']);
+    const ts = trozos(pre, nom), U = (a) => ({ t: 'fn', f: 'u', a: opN('-', T_, E.N(a)) });
+    const ast = ts.map(({ g, a, b }) => opN('*', g, isFinite(b) ? opN('-', U(a), U(b)) : U(a))).reduce((x, y) => opN('+', x, y));
+    ast.trozos = ts;
+    return ast;
+  }
+  const trozosTxt = (ts) => ts.map(({ g, a, b }) => `$${E.texto(g)}$ &ensp; si &ensp; $${isFinite(b) ? `${cTxt(a)} ≤ t < ${cTxt(b)}` : `t ≥ ${cTxt(a)}`}$`).join('<br>');
+  const trozosU = (ts) => suma(ts.filter(({ g }) => !(g.t === 'n' && g.v === 0)).map(({ g, a, b }) => { const x = E.texto(g), u1 = a ? `u(${tA(a)})` : '1'; return { c: 1, s: `${/[ ]/.test(x) ? `(${x})` : x === '1' ? '' : x} [${isFinite(b) ? `${u1} − u(${tA(b)})` : u1}]`.trim() }; }));
+
+  const linealT = (arg, que) => { const l = lineal(arg); if (!l || Math.abs(l.r) < 1e-14) throw new Error(`Dentro de ${que}( ) tiene que ir t − a`); return { r: l.r, a: -l.u0 / l.r }; };
+  // f(t) con escalones y deltas → grupos por instante en que se encienden
+  function piezasT(ast, nom) {
+    const G = new Map(), grupo = (a) => { const k = Math.round(a * 1e9) / 1e9; if (!G.has(k)) G.set(k, { a, g: [], d: 0 }); return G.get(k); };
+    for (const fs of sumandos(ast, tieneSalto)) {
+      let a = 0, d = null, k = 1;
+      const resto = [];
+      for (const q of fs) {
+        if (q.t === 'fn' && q.f === 'u') { const l = linealT(q.a, 'u'); if (l.r < 0) throw new Error(`${nom}: solo sé el escalón u(t − a), que se enciende en t = a (no u(a − t))`); a = Math.max(a, l.a); }
+        else if (q.t === 'fn' && q.f === 'δ') { if (d !== null) throw new Error(`${nom}: no sé multiplicar dos deltas`); const l = linealT(q.a, 'δ'); d = l.a; k /= Math.abs(l.r); }
+        else if (tieneSalto(q)) throw new Error(`${nom}: u y δ tienen que ir multiplicando, no dentro de otra función`);
+        else resto.push(q);
+      }
+      const g = prodF(resto);
+      if (d !== null) {
+        // g(t) δ(t − d) = g(d) δ(t − d); si cae antes de t = 0 o donde el escalón aún vale 0, no cuenta
+        if (d < -1e-12 || d < a - 1e-12) continue;
+        const v = k * E.valor(g, 0, { t: d });
+        if (!isFinite(v)) throw new Error(`${nom}: lo que multiplica a la delta no tiene valor en t = ${cTxt(d)}`);
+        grupo(Math.max(0, d)).d += v;
+      } else grupo(a).g.push(g);
+    }
+    const out = [];
+    for (const q of [...G.values()].sort((x, y) => x.a - y.a)) {
+      let ts = [], gts = [];
+      if (q.g.length) {
+        const gA = q.g.reduce((x, y) => opN('+', x, y));
+        ts = terminos(q.a ? corre(gA, q.a) : gA);
+        if (!ts) throw new Error(`${nom}: lo que multiplica a cada escalón tiene que ser una suma de términos c·tⁿ·e^{at}·sen(bt) o cos(bt)`);
+        gts = q.a ? terminos(gA) || [] : ts;
+      }
+      let R = R_([0]);
+      for (const t of ts) { const b = transTermino(t); R = rSuma(R, R_(pEsc(b.n, t.c), b.d)); }
+      if (Math.abs(q.d) > 1e-14) R = rSuma(R, R_([q.d]));
+      out.push({ a: q.a, ts, gts, d: q.d, R: simplifica(R) });
+    }
+    return out.filter((q) => q.ts.length || Math.abs(q.d) > 1e-14);
+  }
+  const R_ = (n, d) => R(n, d);
+  const esCero = (r) => limpia(r.n).every((c) => Math.abs(c) < 1e-14);
+  // un sumando de F(s) multiplicado por e^{−as}, para escribirlo en una suma
+  function pieza(r, a) {
+    const q = normaliza(r), N = limpia(q.n), ex = a ? eS(a) : '';
+    if (grado(q.d) === 0) {
+      const p = pEsc(N, 1 / q.d[0]);
+      return grado(p) === 0 ? [{ c: p[0], s: ex }] : [{ c: 1, s: `${ex ? ex + ' ' : ''}(${pTxt(p)})` }];
+    }
+    const den = factTxt(R([1], q.d)).replace(/^\{1\}\/\{(.*)\}$/, '$1');
+    if (grado(N) === 0) {
+      if (!ex) return [frNum(N[0], 1, den)];
+      // e^{−t} u(t − 2) da e^{−2}·e^{−2s}/(s + 1): el número se escribe como potencia de e
+      const k = E.exacto(N[0], 200) ? 0 : [-1, -2, -3, -4, -5, -6, 1, 2, 3, 4, 5, 6].find((j) => { const x = E.exacto(N[0] / Math.exp(j), 50); return x && !x.s; });
+      return [k ? { c: N[0] / Math.exp(k), s: `e^{${k < 0 ? '−' : ''}${Math.abs(k)}} {${ex}}/{${den}}` } : { c: N[0], s: `{${ex}}/{${den}}` }];
+    }
+    return [{ c: 1, s: `${ex ? ex + ' ' : ''}{${pTxt(N)}}/{${den}}` }];
+  }
+  const sgTxt = (gs) => suma(gs.flatMap((g) => (esCero(g.R) ? [] : pieza(g.R, g.a))));
+  const sgVal = (gs, s) => gs.reduce((v, g) => v + Math.exp(-g.a * s) * pVal(g.R.n, s) / pVal(g.R.d, s), 0);
+  const sgMulR = (gs, r) => gs.map((g) => ({ a: g.a, R: simplifica(rMul(g.R, r)) }));
+  function sgSuma(...ls) { const m = new Map(); for (const g of ls.flat()) { const k = Math.round(g.a * 1e9) / 1e9; m.set(k, m.has(k) ? { a: m.get(k).a, R: rSuma(m.get(k).R, g.R) } : { a: g.a, R: g.R }); } return [...m.values()].sort((x, y) => x.a - y.a).map(({ a, R: r }) => ({ a, R: simplifica(r) })); }
+  function sgMul(A, B) { return sgSuma(A.flatMap((x) => B.map((y) => ({ a: x.a + y.a, R: rMul(x.R, y.R) })))); }
+  const polosSG = (gs) => { const out = []; for (const g of gs) for (const z of raicesSeguras(normaliza(g.R).d)) if (!out.some((o) => cAbs(cSub(o.p, z.p)) < 1e-9)) out.push(z); return out; };
+
+  // F(s) con exponenciales e^{−as} → grupos
+  function gruposS(ast, nom) {
+    const G = new Map();
+    for (const fs of sumandos(ast, tieneExpS)) {
+      let a = 0; const resto = [];
+      for (const q of fs) {
+        if (esExpS(q)) {
+          const u0 = E.valor(q.b, 0, { s: 0 }), r = E.valor(q.b, 0, { s: 1 }) - u0;
+          if (!isFinite(u0) || Math.abs(E.valor(q.b, 0, { s: 2.5 }) - (u0 + 2.5 * r)) > 1e-9 * Math.max(1, Math.abs(r))) throw new Error(`${nom}: el exponente de e tiene que ser −a s`);
+          if (r > 1e-12) throw new Error(`${nom}: e^{as} con a > 0 adelantaría la señal en el tiempo; solo sé invertir e^{−as}`);
+          a += -r; resto.push(E.N(Math.exp(u0)));
+        } else if (tieneExpS(q)) throw new Error(`${nom}: las exponenciales e^{−as} tienen que ir multiplicando`);
+        else resto.push(q);
+      }
+      const k = Math.round(a * 1e9) / 1e9, r = racional(prodF(resto));
+      G.set(k, G.has(k) ? { a: G.get(k).a, R: rSuma(G.get(k).R, r) } : { a, R: r });
+    }
+    return [...G.values()].sort((x, y) => x.a - y.a).map(({ a, R: r }) => ({ a, R: simplifica(r) })).filter((g) => !esCero(g.R));
+  }
+
+  // transformada de una f(t) cualquiera de las que se entienden (para la convolución, la EDO y los sistemas)
+  function transformaT(ast, nom) {
+    if (tieneSalto(ast)) { const ps = piezasT(ast, nom); return { gs: ps.map(({ a, R: r }) => ({ a, R: r })), ps, f: evalPiezas(ps.map((p) => ({ a: p.a, terms: p.ts }))), txt: enT(ps) }; }
+    const ts = terminos(ast);
+    if (!ts) throw new Error(`${nom} tiene que ser una suma de términos c·tⁿ·e^{at}·sen(bt) o cos(bt), con escalones u(t − a) o deltas δ(t − a)`);
+    let r = R([0]); for (const t of ts) { const b = transTermino(t); r = rSuma(r, R(pEsc(b.n, t.c), b.d)); }
+    return { gs: [{ a: 0, R: simplifica(r) }], ts, f: evalTerms(ts), txt: suma(ts.map((t) => ({ c: t.c, s: fTermTxt(t) }))) };
+  }
+  // f(t) escrita con los términos en t (g(t) u(t − a)) cuando se puede
+  const enT = (ps) => piezasTxt(ps.map((p) => { const t = p.gts.length && p.gts.length <= p.ts.length; return { a: p.a, terms: t ? p.gts : p.ts, d: p.d, crudo: p.a > 0 && t }; }));
+  const evalPiezas = (ps) => (tt) => ps.reduce((v, p) => (tt >= p.a - 1e-12 ? v + evalTerms(p.terms)(tt - p.a) : v), 0);
+  // texto de f(t) = Σ u(t − a) g(t − a) + Σ k δ(t − a); con crudo, los términos ya están en t
+  function piezasTxt(ps) {
+    const out = [];
+    for (const p of ps) {
+      const v = p.a ? `(${tA(p.a)})` : 't', vivos = p.terms.filter((t) => Math.abs(t.c) > 1e-10);
+      if (vivos.length && !p.a) out.push(...vivos.map((t) => ({ c: t.c, s: fTermTxt(t) })));
+      else if (vivos.length === 1) out.push({ c: vivos[0].c, s: [fTermTxt(vivos[0], p.crudo ? 't' : v), `u(${tA(p.a)})`].filter(Boolean).join(' ') });
+      else if (vivos.length) out.push({ c: 1, s: `[${suma(vivos.map((t) => ({ c: t.c, s: fTermTxt(t, p.crudo ? 't' : v) })))}] u(${tA(p.a)})` });
+      if (Math.abs(p.d || 0) > 1e-10) out.push({ c: p.d, s: `δ(${tA(p.a)})` });
+    }
+    return suma(out);
+  }
+
+  function directaSaltos(ast, sc) {
+    linealiza = false;
+    const ps = piezasT(ast, 'f(t)');
+    if (!ps.length) throw new Error('f(t) es 0');
+    const pasos = [];
+    if (ast.trozos) pasos.push({ t: 'Función a trozos', html: `$f(t) =$<br>${trozosTxt(ast.trozos)}<br>Con escalones: $f(t) = ${trozosU(ast.trozos)}$` });
+    if (linealiza) pasos.push({ t: 'Linealizar', html: 'Los productos de senos y cosenos se pasan a sumas, por ejemplo $sen^{2} t = {1}/{2} − {1}/{2} cos (2 t)$ y $sen A cos B = {1}/{2} [sen(A + B) + sen(A − B)]$.' });
+    const usa = [];
+    if (ps.some((p) => p.a && p.ts.length)) usa.push('$ℒ\\{u(t − a) g(t)\\} = e^{−as} ℒ\\{g(t + a)\\}$ (segundo teorema de traslación)');
+    if (ps.some((p) => Math.abs(p.d) > 1e-14)) usa.push('$ℒ\\{δ(t − a)\\} = e^{−as}$');
+    pasos.push({ t: 'Escalones y deltas', html: `${usa.join('<br>')}<br>Se agrupan los términos según el instante $a$ en que se encienden.` });
+    const lineas = ps.map((p) => {
+      const out = [];
+      if (p.ts.length) {
+        const sinD = { a: p.a, R: p.R };
+        let Rg = R([0]); for (const t of p.ts) { const b = transTermino(t); Rg = rSuma(Rg, R(pEsc(b.n, t.c), b.d)); }
+        sinD.R = simplifica(Rg);
+        const gTxt = suma((p.gts.length ? p.gts : p.ts).map((t) => ({ c: t.c, s: fTermTxt(t) })));
+        if (!p.a) out.push(`$ℒ\\{${gTxt}\\} = ${sgTxt([sinD])}$`);
+        else out.push(`Desde $t = ${cTxt(p.a)}$: $g(t) = ${p.gts.length ? gTxt : '…'}$, &ensp; $g(t + ${cTxt(p.a)}) = ${suma(p.ts.map((t) => ({ c: t.c, s: fTermTxt(t) })))}$ &ensp;⇒&ensp; $ℒ\\{g(t) u(${tA(p.a)})\\} = ${sgTxt([sinD])}$`);
+      }
+      if (Math.abs(p.d) > 1e-14) out.push(`$ℒ\\{${suma([{ c: p.d, s: `δ(${tA(p.a)})` }])}\\} = ${suma([{ c: p.d, s: p.a ? eS(p.a) : '' }])}$`);
+      return out.join('<br>');
+    });
+    pasos.push({ t: 'Cada término', html: lineas.join('<br>') });
+    const gs = ps.map(({ a, R: r }) => ({ a, R: r })), Ftxt = sgTxt(gs);
+    const rs = ps.flatMap((p) => p.ts.map((t) => t.r)), conv = rs.length ? Math.max(...rs) : -Infinity;
+    pasos.push({ t: 'Resultado', html: `$F(s) = ${Ftxt}$<br>${isFinite(conv) ? `Existe para $s > ${cTxt(conv)}$.` : 'Existe para todo $s$.'}` });
+    const piezas = ps.map((p) => ({ a: p.a, terms: p.ts, d: p.d }));
+    const ftxt = enT(ps);
+    return { modo: 'directa', saltos: true, gs, piezas, ts: ps.flatMap((p) => p.ts), conv, Ftxt, Ffact: Ftxt, Fcomun: Ftxt, Fval: (s) => sgVal(gs, s), f: evalPiezas(piezas), deltas: deltasDe(piezas), ftxt, polos: polosSG(gs), ceros: [], pasos };
+  }
+  const deltasDe = (ps) => ps.filter((p) => Math.abs(p.d || 0) > 1e-10).map((p) => ({ a: p.a, c: p.d }));
+
+  // inversa de Σ e^{−a s} R_a(s): u(t − a) f_a(t − a), y las partes constantes dan deltas
+  function invierteSG(gs, pasos, nombre = 'F') {
+    if (gs.length === 1 && !gs[0].a && grado(simplifica(gs[0].R).n) < grado(simplifica(gs[0].R).d)) {
+      const inv = invierte(gs[0].R, pasos, nombre), ult = pasos[pasos.length - 1];
+      ult.html = ult.html.replace('f(t) =', `${minus(nombre)}(t) =`);
+      return { ...inv, piezas: [{ a: 0, terms: inv.terms, d: 0 }], deltas: [], f: evalTerms(inv.terms) };
+    }
+    const varios = gs.length > 1;
+    const nom = (i) => (varios ? `${nombre}_{${i + 1}}` : nombre), nomT = (i) => (varios ? `${nombre}${'₀₁₂₃₄₅₆₇₈₉'[i + 1] || `_${i + 1}`}` : nombre);
+    if (varios || gs[0].a) pasos.push({ t: 'Separar las exponenciales', html: `$${nombre}(s) = ${suma(gs.map((g, i) => ({ c: 1, s: `${g.a ? eS(g.a) + ' ' : ''}${nom(i)}(s)` })))}$${gs.map((g, i) => `<br>$${nom(i)}(s) = ${factTxt(g.R)}$`).join('')}<br>Desplazamiento en t: $ℒ^{−1}\\{e^{−as} F(s)\\} = u(t − a) f(t − a)$` });
+    const piezas = [], rs = [], fr = [];
+    gs.forEach((g, i) => {
+      const q = simplifica(g.R), gn = grado(q.n), gd = grado(q.d);
+      if (gn > gd) throw new Error(`${nom(i)}(s) tiene el numerador de más grado que el denominador: su inversa lleva derivadas de la delta`);
+      let d = 0, resto = q;
+      if (gn === gd) {
+        const n = normaliza(q); d = limpia(n.n)[gn]; resto = gd ? simplifica(rSuma(n, R([-d]))) : R([0]);
+        pasos.push({ t: `Parte constante de ${nomT(i)}(s)`, html: `$${nom(i)}(s) = ${esCero(resto) ? cTxt(d) : suma([{ c: d, s: '' }, ...pieza(resto, 0)])}$${esCero(resto) ? ' es una constante' : ''}, y como $ℒ^{−1}\\{1\\} = δ(t)$, da $${suma([{ c: d, s: `δ(${tA(g.a)})` }])}$.` });
+      }
+      let terms = [];
+      if (!esCero(resto)) {
+        const sub = [], inv = invierte(resto, sub, nom(i));
+        for (const p of sub) pasos.push({ ...p, t: varios ? `${p.t} de ${nomT(i)}` : p.t, html: p.html.replace('f(t) =', `${minus(nom(i))}(t) =`) });
+        terms = inv.terms; rs.push(...inv.rs); fr.push(...pieza(resto, 0));
+        if (g.a) pasos[pasos.length - 1].html += `<br>Con el retraso: $${piezasTxt([{ a: g.a, terms, d: 0 }])}$`;
+      }
+      piezas.push({ a: g.a, terms, d });
+    });
+    const txt = piezasTxt(piezas);
+    pasos.push({ t: 'Resultado', html: `$${nombre === 'F' ? 'f' : nombre.toLowerCase()}(t) = ${txt}$ &ensp; para $t ≥ 0$` });
+    return { rs: polosSG(gs), terms: piezas.flatMap((p) => p.terms), piezas, deltas: deltasDe(piezas), frac: sgTxt(gs), txt, f: evalPiezas(piezas) };
+  }
+
+  /* ---------- Convolución ---------- */
+  function convolucion(sc) {
+    if (vacio(sc.f)) throw new Error('Falta f(t)');
+    if (vacio(sc.g)) throw new Error('Falta g(t)');
+    linealiza = false;
+    const af = leeT(sc.f, 'f(t)'), ag = leeT(sc.g, 'g(t)');
+    if (E.tieneX(af, 's') || E.tieneX(ag, 's')) throw new Error('f(t) y g(t) no pueden llevar s');
+    const F = transformaT(af, 'f(t)'), G = transformaT(ag, 'g(t)'), H = sgMul(F.gs, G.gs), pasos = [];
+    if (!H.length) throw new Error('El producto F(s) G(s) es 0');
+    pasos.push({ t: 'Teorema de convolución', html: '$(f * g)(t) = ∫_{0}^{t} f(τ) g(t − τ) dτ$ &ensp; y &ensp; $ℒ\\{f * g\\} = F(s) G(s)$: en vez de hacer la integral se multiplican las transformadas y se invierte el producto.' });
+    pasos.push({ t: 'Transformadas', html: `$f(t) = ${F.txt}$ &ensp;⇒&ensp; $F(s) = ${sgTxt(F.gs)}$<br>$g(t) = ${G.txt}$ &ensp;⇒&ensp; $G(s) = ${sgTxt(G.gs)}$` });
+    pasos.push({ t: 'Producto', html: `$F(s) G(s) = ${sgTxt(H)}$` });
+    const inv = invierteSG(H, pasos, 'H');
+    const ult = pasos[pasos.length - 1];
+    if (ult.t === 'Resultado') ult.html = ult.html.replace('h(t) =', '(f * g)(t) =');
+    else pasos.push({ t: 'Resultado', html: `$(f * g)(t) = ${inv.txt}$ &ensp; para $t ≥ 0$` });
+    return { modo: 'convolucion', gs: H, F: F.gs, G: G.gs, Ftxt: sgTxt(F.gs), Gtxt: sgTxt(G.gs), Ffact: sgTxt(H), Fcomun: sgTxt(H), ...inv, f1: F.f, g1: G.f, polos: inv.rs, ceros: [], pasos };
+  }
+
+  /* ---------- Sistemas de dos EDOs de primer orden ---------- */
+  function sistema(sc) {
+    const a = num(sc.a11, 'a₁₁'), b = num(sc.a12, 'a₁₂'), c = num(sc.a21, 'a₂₁'), d = num(sc.a22, 'a₂₂'), x0 = num(sc.x0, 'x(0)'), y0 = num(sc.y0, 'y(0)');
+    linealiza = false;
+    const fu = (src, nom) => (vacio(src) || String(src).trim() === '0' ? { gs: [], txt: '0', f: () => 0 } : transformaT(leeT(src, nom), nom));
+    const F = fu(sc.f, 'f(t)'), G = fu(sc.g, 'g(t)'), pasos = [];
+    const lado = (p, q, f) => `${suma([{ c: p, s: 'x' }, { c: q, s: 'y' }])}${f === '0' ? '' : ` + ${f}`.replace('+ −', '− ')}`;
+    pasos.push({ t: 'Sistema', html: `$x′ = ${lado(a, b, F.txt)}$<br>$y′ = ${lado(c, d, G.txt)}$<br>con $x(0) = ${cTxt(x0)}$ e $y(0) = ${cTxt(y0)}$` });
+    const fs = (x0, gs) => (!gs.length ? cTxt(x0) : !x0 ? sgTxt(gs) : `${cTxt(x0)} + ${sgTxt(gs)}`.replace('+ −', '− '));
+    pasos.push({ t: 'Transformando', html: `Con $ℒ\\{x′\\} = sX − x(0)$ y $ℒ\\{y′\\} = sY − y(0)$, queda un sistema lineal en $X(s)$ e $Y(s)$:<br>$(${pTxt([-a, 1])}) X ${suma([{ c: -b, s: 'Y' }]).replace(/^(?!−)/, '+ ').replace(/^−/, '− ')} = ${fs(x0, F.gs)}$<br>$${suma([{ c: -c, s: 'X' }])} + (${pTxt([-d, 1])}) Y = ${fs(y0, G.gs)}$`.replace(/\+ − /g, '− ').replace(/\$0 X \+ /g, '$') });
+    // regla de Cramer: Δ = (s − a)(s − d) − bc
+    const D = [a * d - b * c, -(a + d), 1], P = sgSuma([{ a: 0, R: R([x0]) }], F.gs), Q = sgSuma([{ a: 0, R: R([y0]) }], G.gs);
+    const X = sgSuma(sgMulR(P, R([-d, 1], D)), sgMulR(Q, R([b], D))).filter((g) => !esCero(g.R));
+    const Y = sgSuma(sgMulR(P, R([c], D)), sgMulR(Q, R([-a, 1], D))).filter((g) => !esCero(g.R));
+    pasos.push({ t: 'Regla de Cramer', html: `$Δ(s) = (${pTxt([-a, 1])}) (${pTxt([-d, 1])}) − (${cTxt(b)}) (${cTxt(c)}) = ${pTxt(D)}$<br>$X(s) = {(x(0) + F) (${pTxt([-d, 1])}) + ${cTxt(b)} (y(0) + G)}/{Δ} = ${X.length ? sgTxt(X) : '0'}$<br>$Y(s) = {${cTxt(c)} (x(0) + F) + (${pTxt([-a, 1])}) (y(0) + G)}/{Δ} = ${Y.length ? sgTxt(Y) : '0'}$`.replace(/\(− /g, '(−') });
+    const parte = (gs, n) => { if (!gs.length) return { txt: '0', f: () => 0, rs: [], terms: [], piezas: [] }; const sub = [], inv = invierteSG(gs, sub, n); for (const p of sub) pasos.push({ ...p, t: `${n}(s): ${p.t.toLowerCase()}` }); return inv; };
+    const ix = parte(X, 'X'), iy = parte(Y, 'Y');
+    pasos.push({ t: 'Solución', html: `$x(t) = ${ix.txt}$<br>$y(t) = ${iy.txt}$ &ensp; para $t ≥ 0$` });
+    return { modo: 'sistema', a, b, c, d, x0, y0, fx: F.f, gy: G.f, X, Y, Xtxt: X.length ? sgTxt(X) : '0', Ytxt: Y.length ? sgTxt(Y) : '0', txt: ix.txt, txt2: iy.txt, f: ix.f, f2: iy.f, terms: [...ix.terms, ...iy.terms], piezas: [...(ix.piezas || []), ...(iy.piezas || [])], deltas: [], polos: raicesSeguras(D), ceros: [], pasos };
+  }
+
+  const MODOS = { directa, inversa, edo, convolucion, sistema };
   function resolver(sc) { return MODOS[sc.modo] ? MODOS[sc.modo](sc) : directa(sc); }
 
   const ejemplos = [
@@ -1526,18 +2065,33 @@ const Laplace = (() => {
     { clave: 'complejos', nombre: 'Polos complejos', sc: { modo: 'inversa', F: '(2s + 3)/(s^2 + 4s + 13)' } },
     { clave: 'mixta', nombre: 'Polo real y par complejo', sc: { modo: 'inversa', F: '10/((s + 1)(s^2 + 2s + 5))' } },
     { clave: 'escalon', nombre: 'Respuesta a un escalón', sc: { modo: 'inversa', F: '4/(s (s^2 + 4))' } },
+    { clave: 'retardo', nombre: 'Con retardo e^(−2s)', sc: { modo: 'inversa', F: 'e^(-2s)/(s (s + 1))' } },
+    { clave: 'pulso', nombre: 'Rampa que se para: (1 − e^(−s))/s²', sc: { modo: 'inversa', F: '(1 - e^(-s))/s^2' } },
+    { clave: 'con-delta', nombre: 'Grado igual: sale una delta', sc: { modo: 'inversa', F: '(s + 3)/(s + 1)' } },
+    { clave: 'sen2', nombre: 'sen² t (linealizar)', sc: { modo: 'directa', f: 'sen^2(t) + sen(3t) cos(t)' } },
+    { clave: 'retrasada', nombre: 'Rampa retrasada y escalón', sc: { modo: 'directa', f: '(t - 1) u(t - 1) + 2 u(t - 3)' } },
+    { clave: 'trozos', nombre: 'Función a trozos (triángulo)', sc: { modo: 'directa', f: 't si 0 ≤ t < 2; 4 - t si 2 ≤ t < 4; 0 si t ≥ 4' } },
+    { clave: 'delta', nombre: 'Delta de Dirac', sc: { modo: 'directa', f: '3δ(t - 1) + e^(-t) u(t - 2)' } },
     { clave: 'edo-sub', nombre: 'Oscilador amortiguado', sc: { modo: 'edo', orden: '2', a: '1', b: '2', c: '5', g: '0', y0: '1', v0: '0' } },
     { clave: 'edo-forzada', nombre: 'y″ + 3y′ + 2y = e^(−3t)', sc: { modo: 'edo', orden: '2', a: '1', b: '3', c: '2', g: 'e^(-3t)', y0: '0', v0: '1' } },
     { clave: 'edo-resonancia', nombre: 'Resonancia: y″ + y = sen t', sc: { modo: 'edo', orden: '2', a: '1', b: '0', c: '1', g: 'sen(t)', y0: '0', v0: '0' } },
     { clave: 'edo-1', nombre: 'Primer orden: y′ + 2y = 4t', sc: { modo: 'edo', orden: '1', a: '', b: '1', c: '2', g: '4t', y0: '1', v0: '' } },
+    { clave: 'edo-impulso', nombre: 'Impulso: y″ + y = δ(t − π)', sc: { modo: 'edo', orden: '2', a: '1', b: '0', c: '1', g: 'δ(t - π)', y0: '1', v0: '0' } },
+    { clave: 'edo-pulso', nombre: 'Pulso: y′ + y = u(t − 1) − u(t − 2)', sc: { modo: 'edo', orden: '1', a: '', b: '1', c: '1', g: 'u(t - 1) - u(t - 2)', y0: '0', v0: '' } },
+    { clave: 'conv', nombre: 't * e^(−t)', sc: { modo: 'convolucion', f: 't', g: 'e^(-t)' } },
+    { clave: 'conv-sen', nombre: 'sen t * cos t', sc: { modo: 'convolucion', f: 'sen(t)', g: 'cos(t)' } },
+    { clave: 'conv-escalon', nombre: 'e^(−2t) * escalón retrasado', sc: { modo: 'convolucion', f: 'e^(-2t)', g: 'u(t - 1)' } },
+    { clave: 'sis-acoplado', nombre: 'Dos depósitos: x′ = −2x + y, y′ = x − 2y', sc: { modo: 'sistema', a11: '-2', a12: '1', a21: '1', a22: '-2', f: '0', g: '0', x0: '1', y0: '0' } },
+    { clave: 'sis-oscila', nombre: 'Oscilador: x′ = y, y′ = −x', sc: { modo: 'sistema', a11: '0', a12: '1', a21: '-1', a22: '0', f: '0', g: '0', x0: '1', y0: '0' } },
+    { clave: 'sis-forzado', nombre: 'Forzado: x′ = x + 2y + e^t, y′ = 2x + y', sc: { modo: 'sistema', a11: '1', a12: '2', a21: '2', a22: '1', f: 'e^(t)', g: '0', x0: '0', y0: '1' } },
   ];
-  return { resolver, directa, inversa, edo, raices, residuos, racional, terminos, ejemplos, f, R, rTxt, factTxt, simplifica, pVal };
+  return { resolver, directa, inversa, edo, convolucion, sistema, raices, residuos, racional, terminos, ejemplos, f, R, rTxt, factTxt, simplifica, pVal };
 })();
 
 /* =====================================================================
-   Transformada de Laplace: interfaz (tres modos: f(t) → F(s), F(s) → f(t)
-   por fracciones simples y ecuaciones diferenciales con condiciones
-   iniciales; el plano s con los polos y los ceros, y f(t) con cada
+   Transformada de Laplace: interfaz (cinco modos: f(t) → F(s), F(s) → f(t)
+   por fracciones simples, ecuaciones diferenciales con condiciones
+   iniciales, convolución y sistemas de dos ecuaciones; el plano s con los polos y los ceros, y f(t) con cada
    término por separado y una animación que la recorre). El cálculo está
    en laplace/calculo.js (Laplace) y las expresiones en
    matematicas/expresion.js.
@@ -1554,7 +2108,10 @@ const Laplace = (() => {
     directa: { nom: 'Directa: f(t) → F(s)', campos: [['f', 'f(t) =', 'función de t']] },
     inversa: { nom: 'Inversa: F(s) → f(t)', campos: [['F', 'F(s) =', 'cociente de polinomios en s']] },
     edo: { nom: 'Ecuación diferencial con y(0) e y′(0)', campos: [['a', 'a', 'coeficiente de y″'], ['b', 'b', 'de y′'], ['c', 'c', 'de y'], ['g', 'g(t)', '0 si es homogénea'], ['y0', 'y(0)', ''], ['v0', 'y′(0)', '']] },
+    convolucion: { nom: 'Convolución: (f * g)(t)', campos: [['f', 'f(t) =', ''], ['g', 'g(t) =', '']] },
+    sistema: { nom: 'Sistema: x′ = a₁₁x + a₁₂y + f, y′ = a₂₁x + a₂₂y + g', campos: [['a11', 'a₁₁', 'de x en x′'], ['a12', 'a₁₂', 'de y en x′'], ['f', 'f(t)', '0 si no hay'], ['a21', 'a₂₁', 'de x en y′'], ['a22', 'a₂₂', 'de y en y′'], ['g', 'g(t)', '0 si no hay'], ['x0', 'x(0)', ''], ['y0', 'y(0)', '']] },
   };
+  const ANCHOS = ['f', 'F', 'g'];
   const primero = (m) => L.ejemplos.find((e) => e.sc.modo === m);
 
   let sc = copia(L.ejemplos[0].sc);
@@ -1567,11 +2124,14 @@ const Laplace = (() => {
     $('#modo').innerHTML = Object.entries(MODOS).map(([k, m]) => `<option value="${k}"${sc.modo === k ? ' selected' : ''}>${m.nom}</option>`).join('');
     const uno = sc.modo === 'edo' && sc.orden === '1';
     let h = sc.modo === 'edo' ? `<label for="f-orden">Orden</label><select id="f-orden" class="in larga" data-c="orden"><option value="2"${uno ? '' : ' selected'}>Segundo: a y″ + b y′ + c y = g(t)</option><option value="1"${uno ? ' selected' : ''}>Primero: b y′ + c y = g(t)</option></select>` : '';
-    h += MODOS[sc.modo].campos.filter(([k]) => !(uno && (k === 'a' || k === 'v0'))).map(([k, et, ay]) => `<label for="f-${k}">${et}${ay ? ` <small>(${ay})</small>` : ''}</label><input id="f-${k}" class="in${k === 'f' || k === 'F' || k === 'g' ? ' larga' : ''}" data-c="${k}" value="${esc(sc[k] ?? '')}" autocomplete="off" spellcheck="false">`).join('');
+    h += MODOS[sc.modo].campos.filter(([k]) => !(uno && (k === 'a' || k === 'v0'))).map(([k, et, ay]) => `<label for="f-${k}">${et}${ay ? ` <small>(${ay})</small>` : ''}</label><input id="f-${k}" class="in${ANCHOS.includes(k) ? ' larga' : ''}" data-c="${k}" value="${esc(sc[k] ?? '')}" autocomplete="off" spellcheck="false">`).join('');
     $('#campos').innerHTML = h;
-    $('#nota-datos').innerHTML = sc.modo === 'directa' ? 'Sumas de términos c·tⁿ·e^(at)·sen(bt) o cos(bt), y también senh y cosh: 3t^2 + 2e^(-4t), t sen(2t), e^(-t) cos(3t), cosh(2t)…'
-      : sc.modo === 'inversa' ? 'Un cociente de polinomios en s, factorizado o no: (3s + 7)/((s + 1)(s + 3)), 10/(s^3 + 3s^2 + 7s + 5), 4/(s(s^2 + 4))…'
-        : 'g(t) puede ser una suma de polinomios, exponenciales, senos y cosenos: 4t, e^(-3t), sen(t), 2 + t e^(-t)…';
+    const saltos = 'Escalón u(t - a) (o H(t - a)), delta δ(t - a) y funciones a trozos: «t si 0 ≤ t < 2; 4 - t si 2 ≤ t < 4; 0 si t ≥ 4».';
+    $('#nota-datos').innerHTML = sc.modo === 'directa' ? `Sumas de términos c·tⁿ·e^(at)·sen(bt) o cos(bt), también senh, cosh y productos como sen^2(t): 3t^2 + 2e^(-4t), t sen(2t), e^(-t) cos(3t)… ${saltos}`
+      : sc.modo === 'inversa' ? 'Un cociente de polinomios en s, factorizado o no, que puede ir multiplicado por e^(-as): (3s + 7)/((s + 1)(s + 3)), 4/(s(s^2 + 4)), e^(-2s)/(s + 1), (1 - e^(-s))/s^2…'
+        : sc.modo === 'convolucion' ? `Dos funciones de t como en la directa: t, e^(-t), sen(t), u(t - 1)… El resultado es (f * g)(t) = ∫₀ᵗ f(τ) g(t − τ) dτ.`
+          : sc.modo === 'sistema' ? 'Dos ecuaciones de primer orden con coeficientes constantes. f(t) y g(t) pueden ser 0, polinomios, exponenciales, senos y cosenos, escalones o deltas.'
+            : `g(t) puede ser una suma de polinomios, exponenciales, senos y cosenos: 4t, e^(-3t), sen(t), 2 + t e^(-t)… ${saltos}`;
   }
   const cambia = () => { $('#ejemplos').value = ''; calcula(); };
   $('#campos').addEventListener('input', (e) => { const t = e.target; if (!t.dataset.c || t.tagName === 'SELECT') return; sc[t.dataset.c] = t.value; cambia(); });
@@ -1603,6 +2163,10 @@ const Laplace = (() => {
       () => { let r1 = nz(-4, -1), r2 = nz(-4, -1); if (r1 === r2) r2 = r1 === -1 ? -2 : r1 + 1; return { modo: 'edo', orden: '2', a: '1', b: String(-(r1 + r2)), c: String(r1 * r2), g: ['0', String(ent(1, 6)), `e^(${nz(-5, 1)}t)`][ent(0, 2)], y0: String(ent(-2, 2)), v0: String(ent(-2, 2)) }; },
       () => { const al = ent(-2, 0), be = ent(1, 3); return { modo: 'edo', orden: '2', a: '1', b: String(-2 * al), c: String(al * al + be * be), g: ['0', String(ent(1, 5))][ent(0, 1)], y0: String(ent(0, 2)), v0: String(ent(0, 2)) }; },
       () => ({ modo: 'edo', orden: '1', a: '', b: '1', c: String(ent(1, 4)), g: [String(ent(1, 6)), `${ent(1, 4)}t`, `e^(${nz(-5, 2)}t)`][ent(0, 2)], y0: String(ent(-2, 3)), v0: '' }),
+      () => ({ modo: 'directa', f: `${k(nz(-3, 4), `u(t - ${ent(1, 4)})`, true)}${k(nz(-3, 3), `(t - ${ent(1, 3)})u(t - ${ent(1, 3)})`)}`.replace(/\(t - (\d)\)u\(t - \d\)/, '(t - $1)u(t - $1)') }),
+      () => { const a = ent(1, 4), b = ent(1, 3); return { modo: 'inversa', F: `${ent(1, 5)}e^(-${a}s)/(s(s + ${b}))` }; },
+      () => ({ modo: 'convolucion', f: [`e^(${nz(-3, -1)}t)`, 't', `sen(${ent(1, 3)}t)`][ent(0, 2)], g: [`e^(${nz(-3, -1)}t)`, '1', `${ent(1, 3)}t`][ent(0, 2)] }),
+      () => { const p = nz(-3, -1), q = ent(1, 2); return { modo: 'sistema', a11: String(p), a12: String(q), a21: String(q), a22: String(p), f: '0', g: '0', x0: String(ent(0, 2)), y0: String(ent(-1, 2)) }; },
     ];
     for (let i = 0; i < 20; i++) { sc = tipos[ent(0, tipos.length - 1)](); try { L.resolver(sc); break; } catch (e) { /* otro */ } }
     formulario(); calcula(); sel.value = '';
@@ -1610,6 +2174,11 @@ const Laplace = (() => {
   const enunciado = () => {
     if (sc.modo === 'directa') return `Calcula la transformada de Laplace de <b>f(t) = ${esc(sc.f)}</b> y da su valor en s = ${sol ? sol.s1 : 1}.`;
     if (sc.modo === 'inversa') return `Calcula por fracciones simples la transformada inversa de <b>F(s) = ${esc(sc.F)}</b> y da f(1) y f(2).`;
+    if (sc.modo === 'convolucion') return `Calcula con la transformada de Laplace la convolución <b>(f * g)(t)</b> de f(t) = ${esc(sc.f)} y g(t) = ${esc(sc.g)}, y da su valor en t = 1 y t = 2.`;
+    if (sc.modo === 'sistema') {
+      const t2 = (p, q, f) => { const x = (v, l, pr) => { const n = Number(String(v).replace(',', '.')); return !n ? '' : `${n < 0 ? (pr ? '−' : ' − ') : pr ? '' : ' + '}${Math.abs(n) === 1 ? '' : String(Math.abs(n)).replace('.', ',')}${l}`; }; const r = `${x(p, 'x', true)}${x(q, 'y', !Number(String(p).replace(',', '.')))}`; return `${r || '0'}${f && String(f).trim() !== '0' ? ` + ${esc(f)}` : ''}`; };
+      return `Resuelve con la transformada de Laplace el sistema <b>x′ = ${t2(sc.a11, sc.a12, sc.f)}</b>, <b>y′ = ${t2(sc.a21, sc.a22, sc.g)}</b> con x(0) = ${esc(sc.x0)} e y(0) = ${esc(sc.y0)}, y da x(1) e y(1).`;
+    }
     const t = (v, s, p) => { const x = Number(String(v).replace(',', '.')); return !x ? '' : `${x < 0 ? ' − ' : p ? '' : ' + '}${Math.abs(x) === 1 ? '' : String(Math.abs(x)).replace('.', ',')}${s}`; };
     const ec = sc.orden === '1' ? `${t(sc.b, 'y′', true)}${t(sc.c, 'y')}` : `${t(sc.a, 'y″', true)}${t(sc.b, 'y′')}${t(sc.c, 'y')}`;
     return `Resuelve con la transformada de Laplace <b>${ec} = ${esc(sc.g || '0')}</b> con y(0) = ${esc(sc.y0)}${sc.orden === '1' ? '' : ` e y′(0) = ${esc(sc.v0)}`}, y da y(1) e y(2).`;
@@ -1618,7 +2187,7 @@ const Laplace = (() => {
   /* ---------- Cálculo ---------- */
   const dato = (t, v, cl = '') => `<div${cl ? ` class="${cl}"` : ''}><span>${t}</span><b>${v}</b></div>`;
   const M = (s) => Mates.html(`$${s}$`);
-  const Fval = (F, s) => L.pVal(F.n, s) / L.pVal(F.d, s);
+  const Fval = (sol, s) => (sol.Fval ? sol.Fval(s) : L.pVal(sol.F.n, s) / L.pVal(sol.F.d, s));
   function calcula() {
     const err = $('#error');
     try { sol = L.resolver(sc); } catch (e) {
@@ -1629,23 +2198,33 @@ const Laplace = (() => {
     err.hidden = true; guarda();
     let h = '';
     if (sol.modo === 'directa') {
-      sol.s1 = Math.max(0, Math.floor(sol.conv)) + 1;
+      sol.s1 = Math.max(0, Math.floor(isFinite(sol.conv) ? sol.conv : 0)) + 1;
       h += dato('Transformada', M(`F(s) = ${sol.Ftxt}`), 'ancho');
-      if (sol.ts.length > 1) h += dato('Con denominador común', M(`F(s) = ${sol.Ffact}`), 'ancho');
-      h += dato('Existe para', M(`s > ${L.f(sol.conv)}`));
-      h += dato(`F(${sol.s1})`, fH(Fval(sol.F, sol.s1), 6), 'num');
+      if (!sol.saltos && sol.ts.length > 1) h += dato('Con denominador común', M(`F(s) = ${sol.Ffact}`), 'ancho');
+      h += dato('Existe para', isFinite(sol.conv) ? M(`s > ${L.f(sol.conv)}`) : 'todo s');
+      h += dato(`F(${sol.s1})`, fH(Fval(sol, sol.s1), 6), 'num');
+    } else if (sol.modo === 'sistema') {
+      h += dato('Solución', M(`x(t) = ${sol.txt}`), 'ancho') + dato('', M(`y(t) = ${sol.txt2}`), 'ancho');
+      h += dato('Transformadas', M(`X(s) = ${sol.Xtxt}`), 'ancho') + dato('', M(`Y(s) = ${sol.Ytxt}`), 'ancho');
+      h += dato('x(1)', fH(sol.f(1), 6), 'num') + dato('y(1)', fH(sol.f2(1), 6), 'num');
+    } else if (sol.modo === 'convolucion') {
+      h += dato('Convolución', M(`(f * g)(t) = ${sol.txt}`), 'ancho');
+      h += dato('Producto de transformadas', M(`F(s) G(s) = ${sol.Ffact}`), 'ancho');
+      h += dato('(f * g)(1)', fH(sol.f(1), 6), 'num') + dato('(f * g)(2)', fH(sol.f(2), 6), 'num');
     } else {
       const y = sol.modo === 'edo' ? 'y' : 'f';
       h += dato(sol.modo === 'edo' ? 'Solución' : 'Transformada inversa', M(`${y}(t) = ${sol.txt}`), 'ancho');
       h += dato(sol.modo === 'edo' ? 'Transformada de la solución' : 'Fracciones simples', M(sol.modo === 'edo' ? `Y(s) = ${sol.Ffact}` : `F(s) = ${sol.frac}`), 'ancho');
       h += dato(`${y}(1)`, fH(sol.f(1), 6), 'num') + dato(`${y}(2)`, fH(sol.f(2), 6), 'num');
       if (sol.lim) h += dato(`${y}(0⁺)`, isFinite(sol.lim.ini) ? fH(sol.lim.ini) : '∞') + dato('Cuando t → ∞', sol.lim.fin === null ? 'no tiende a un valor' : fH(sol.lim.fin));
+      if (sol.modo === 'edo') h += dato('Función de transferencia', M(`H(s) = ${sol.Htxt}`), 'ancho') + dato('Respuesta al impulso', M(`h(t) = ${sol.htxt}`), 'ancho');
     }
     $('#resumen').innerHTML = h;
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
-    const terms = sol.ts || sol.terms;
-    $('#leyenda').innerHTML = `En color, ${sol.modo === 'edo' ? 'y(t)' : 'f(t)'} desde t = 0${terms.length > 1 ? '; en gris, cada término por separado' : ''}. Con ▶ Animar un punto la recorre.`;
-    $('#leyenda-s').innerHTML = `× polos, ○ ceros${sol.modo === 'directa' ? `; sombreada, la zona Re(s) > ${fH(sol.conv)} donde existe F(s)` : ''}. Los polos con parte real negativa dan términos que se apagan; en el eje imaginario, oscilaciones que no se paran; a la derecha, términos que crecen.`;
+    const gris = ventanaComp().length > 1 || sol.modo === 'convolucion';
+    const quien = sol.modo === 'edo' ? 'y(t)' : sol.modo === 'sistema' ? 'x(t) y, en el segundo color, y(t)' : sol.modo === 'convolucion' ? '(f * g)(t)' : 'f(t)';
+    $('#leyenda').innerHTML = `En color, ${quien} desde t = 0${gris ? (sol.modo === 'convolucion' ? '; en gris, f(t) y g(t)' : '; en gris, cada término por separado') : ''}${sol.deltas && sol.deltas.length ? '; las flechas son deltas de Dirac' : ''}. Con ▶ Animar un punto la recorre.`;
+    $('#leyenda-s').innerHTML = `× polos, ○ ceros${sol.modo === 'directa' && isFinite(sol.conv) ? `; sombreada, la zona Re(s) > ${fH(sol.conv)} donde existe F(s)` : ''}. Los polos con parte real negativa dan términos que se apagan; en el eje imaginario, oscilaciones que no se paran; a la derecha, términos que crecen.`;
     V = null; if (!anda) u = 1; dibuja();
   }
 
@@ -1671,6 +2250,13 @@ const Laplace = (() => {
   };
   const evalT = (q) => (t) => q.c * t ** q.k * Math.exp(q.r * t) * (q.p === 'sen' ? Math.sin(q.w * t) : q.p === 'cos' ? Math.cos(q.w * t) : 1);
   // hasta dónde dibujar f(t): unas cinco constantes de tiempo del término más lento y un par de oscilaciones
+  // curvas en gris: cada término (sin escalones) o, en la convolución, f y g
+  function ventanaComp() {
+    if (sol.modo === 'convolucion') return [sol.f1, sol.g1];
+    const terms = sol.ts || sol.terms;
+    if (sol.modo === 'sistema' || sol.saltos || (sol.piezas && sol.piezas.some((p) => p.a || p.d))) return [];
+    return terms.length > 1 && terms.length <= 6 ? terms.map(evalT) : [];
+  }
   function ventana() {
     const terms = sol.ts || sol.terms;
     let T = 0;
@@ -1679,12 +2265,16 @@ const Laplace = (() => {
       if (q.r > 1e-9) T = Math.max(T, 3 / q.r);
       if (q.w > 1e-9) T = Math.max(T, (2.5 * 2 * Math.PI) / q.w);
     }
+    // con escalones o deltas, que se vea un rato después del último
+    const tope = Math.max(0, ...(sol.piezas || []).map((p) => p.a));
     T = Math.min(30, Math.max(2, T || 5));
-    const ts = [], ys = [];
-    for (let i = 0; i <= 800; i++) { const t = (T * i) / 800; ts.push(t); ys.push(sol.f(t)); }
-    const comp = terms.length > 1 && terms.length <= 6 ? terms.map((q) => ts.map(evalT(q))) : [];
-    const [y1, y2] = rango([...ys, ...comp.flat(), 0], 0.12);
-    return { x1: 0, x2: T, y1, y2, ts, ys, comp };
+    if (tope) T = Math.min(40, Math.max(T, tope * 1.6 + 2));
+    const ts = [], ys = [], ys2 = [];
+    for (let i = 0; i <= 800; i++) { const t = (T * i) / 800; ts.push(t); ys.push(sol.f(t)); if (sol.f2) ys2.push(sol.f2(t)); }
+    const comp = ventanaComp().map((fn) => ts.map((t) => fn(t)));
+    const ds = (sol.deltas || []).map((d) => d.c);
+    const [y1, y2] = rango([...ys, ...ys2, ...comp.flat(), ...ds, 0], 0.12);
+    return { x1: 0, x2: T, y1, y2, ts, ys, ys2, comp };
   }
   const mL = 44, mR = 12, mT = 12, mB = 26;
   function ejes(g, w, h, X, Y, W, etX, etY) {
@@ -1708,7 +2298,7 @@ const Laplace = (() => {
     if (!col['--ink']) colores();
     if (!V) V = ventana();
     const X = (x) => mL + ((x - V.x1) / (V.x2 - V.x1)) * (w - mL - mR), Y = (y) => mT + ((V.y2 - y) / (V.y2 - V.y1)) * (h - mT - mB);
-    ejes(g, w, h, X, Y, V, 't', sol.modo === 'edo' ? 'y(t)' : 'f(t)');
+    ejes(g, w, h, X, Y, V, 't', sol.modo === 'edo' ? 'y(t)' : sol.modo === 'sistema' ? 'x(t), y(t)' : sol.modo === 'convolucion' ? '(f * g)(t)' : 'f(t)');
     g.save(); g.beginPath(); g.rect(mL, mT, w - mL - mR, h - mT - mB); g.clip();
     const n = Math.round(u * (V.ts.length - 1));
     // cada término por separado
@@ -1716,8 +2306,21 @@ const Laplace = (() => {
     for (const c of V.comp) linea(g, V.ts.slice(0, n + 1).map((t, i) => [t, c[i]]), X, Y);
     g.setLineDash([]); g.globalAlpha = 1;
     g.strokeStyle = col['--ink']; g.globalAlpha = 0.18; g.lineWidth = 2.4; linea(g, V.ts.map((t, i) => [t, V.ys[i]]), X, Y); g.globalAlpha = 1;
+    if (V.ys2.length) {
+      g.strokeStyle = col['--z1']; g.globalAlpha = 0.18; g.lineWidth = 2.4; linea(g, V.ts.map((t, i) => [t, V.ys2[i]]), X, Y); g.globalAlpha = 1;
+      g.lineWidth = 2.6; linea(g, V.ts.slice(0, n + 1).map((t, i) => [t, V.ys2[i]]), X, Y);
+      if (isFinite(V.ys2[n])) { g.fillStyle = col['--z1']; g.beginPath(); g.arc(X(V.ts[n]), Y(V.ys2[n]), 5, 0, 2 * Math.PI); g.fill(); }
+    }
     g.strokeStyle = col['--accent']; g.lineWidth = 2.6; linea(g, V.ts.slice(0, n + 1).map((t, i) => [t, V.ys[i]]), X, Y);
     if (isFinite(V.ys[n])) { g.fillStyle = col['--accent']; g.beginPath(); g.arc(X(V.ts[n]), Y(V.ys[n]), 5, 0, 2 * Math.PI); g.fill(); }
+    // deltas de Dirac: una flecha de altura igual a su peso
+    g.strokeStyle = col['--accent']; g.fillStyle = col['--accent']; g.lineWidth = 2.2;
+    for (const d of sol.deltas || []) {
+      if (d.a > V.ts[n] + 1e-9) continue;
+      const x = X(d.a), y0 = Y(0), y = Y(d.c), sg = Math.sign(y0 - y) || 1;
+      g.beginPath(); g.moveTo(x, y0); g.lineTo(x, y); g.stroke();
+      g.beginPath(); g.moveTo(x, y); g.lineTo(x - 5, y + 8 * sg); g.lineTo(x + 5, y + 8 * sg); g.closePath(); g.fill();
+    }
     g.restore();
   }
   // plano s: polos (×), ceros (○) y, en la directa, la zona donde existe F(s)

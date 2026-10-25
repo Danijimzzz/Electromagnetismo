@@ -135,9 +135,10 @@ canvas { display: block; width: 100%; height: var(--alto-grafica); border-radius
 /* ---------- Teoría ---------- */
 .teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
 .teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
-.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+.teoria .f { max-width: 100%; overflow-x: auto; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
 .teoria ul { padding-left: 20px }
 .teoria li { margin-bottom: 4px }
+.teoria li, .teoria p { overflow-x: auto }
 
 :root { --accent:#6b3fa0; --accent-soft:color-mix(in srgb, #6b3fa0 12%, #fff); --marca:#0d6b66 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --accent:#b892ec; --accent-soft:color-mix(in srgb, #b892ec 16%, #182025); --marca:#4dbcb0 } }
@@ -223,6 +224,10 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
   <p class="f m">$(r_θ)^{1/n} = (r^{1/n})_{(θ + 360° k)/n}$, &ensp; $k = 0, 1, …, n − 1$</p>
   <h2>Ecuaciones de segundo grado</h2>
   <p class="m">Con los complejos, toda ecuación $a z^2 + b z + c = 0$ tiene dos soluciones, $z = {−b ± √Δ}/{2a}$. Si los coeficientes son reales y $Δ = b^2 − 4ac &lt; 0$, las soluciones son complejas conjugadas, porque $√Δ = i √(−Δ)$.</p>
+  <h2>Logaritmo, exponencial y potencias complejas</h2>
+  <p>La exponencial de z = a + bi es e<sup>z</sup> = e<sup>a</sup>(cos b + i sen b): tiene módulo e<sup>a</sup> y argumento b, y se repite cada 2πi. Por eso el logaritmo tiene infinitos valores, ln z = ln|z| + i(θ + 2kπ); el principal es el de −π < θ ≤ π. Con él se definen las potencias de exponente complejo, z<sup>w</sup> = e<sup>w ln z</sup>: por ejemplo, i<sup>i</sup> = e<sup>−π/2</sup> es un número real.</p>
+  <h2>Ecuaciones polinómicas y regiones</h2>
+  <p>Una ecuación polinómica de grado n tiene exactamente n soluciones complejas, contando las repetidas (teorema fundamental del álgebra). Las racionales se buscan con Ruffini entre los divisores del término independiente, y si los coeficientes son reales, las complejas van por parejas de conjugadas. En el plano, |z − a| = r es la circunferencia de centro a y radio r, |z − a| < r su interior, Re z > c un semiplano y |z − a| = |z − b| la mediatriz del segmento que une a y b.</p>
   <p>Para matrices y sistemas con complejos usa <a href="../matrices/">Matrices</a> y <a href="../sistemas/">Sistemas de ecuaciones</a>; para circuitos con fasores, <a href="../../circuitos/alterna/">Corriente alterna</a>.</p>
 </section>
 </div>
@@ -345,13 +350,16 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: coeficiente de autoinducción de solenoides (con núcleo), toroides de sección rectangular y circular, cables coaxiales y líneas bifilares, con el desarrollo desde la ley de Ampère.', 'Inducción mutua entre dos solenoides, dos espiras, un hilo y una espira, y una bobina sobre un toroide, o a partir de L₁, L₂ y k, con el coeficiente de acoplamiento.', 'Flujo, energía magnética y fem inducida si das la corriente o cómo cambia.', 'Circuito RL al cerrar el interruptor o al quitar la fuente: constante de tiempo, corriente y tensión en la bobina en cualquier instante y su gráfica.'] },
     ],
     matrices: [
+      { v: '0.2', fecha: '2026-10-25', cambios: ['Matrices con un parámetro (k, a, m…): el determinante y el rango discutidos según su valor, y la inversa cuando existe.', 'Ecuaciones matriciales AX = B, XA = B y AX + B = C, paso a paso.', 'Aⁿ por diagonalización (P·Dⁿ·P⁻¹), también para potencias grandes.', 'Nuevas operaciones: matriz adjunta y de cofactores, descomposición LU, diagonalización ortogonal de matrices simétricas y forma de Jordan en 2×2 y 3×3.', 'Comparte el ejercicio con un enlace (lleva los datos), cópialo como texto o en LaTeX para tus apuntes, o imprímelo o guárdalo en PDF solo con los resultados y el desarrollo.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: determinante por Gauss, por Sarrus o por Laplace; inversa por Gauss-Jordan o por adjuntos; rango; forma escalonada y escalonada reducida, con cada operación entre filas y la matriz después de cada paso.', 'Valores y vectores propios con el polinomio característico, las raíces exactas (también con radicales o complejas) y si la matriz es diagonalizable, con P y D.', 'Suma, resta, producto (elemento a elemento), producto por un número, potencia y traspuesta.', 'Fracciones exactas y números complejos en cualquier casilla: 3/4, 0,25, 2−3i o (1+i)/2.'] },
     ],
     derivadas: [
+      { v: '0.2', fecha: '2026-10-25', cambios: ['Arreglo: una función constante ya no sale con un punto crítico falso.', 'Integrales impropias: con límites en ∞ o con una asíntota dentro, diciendo si convergen o divergen.', 'Nuevas primitivas: productos de senos y cosenos (sen 3x cos 2x) y cambios trigonométricos (√(1 − x²)).', 'Límites con L’Hôpital, también 0·∞, 1^∞, 0⁰, ∞⁰ e ∞ − ∞.', 'Área entre dos curvas y volumen de revolución (discos y capas).', 'Estudio completo de una función: dominio, simetría, cortes, asíntotas, monotonía y curvatura.', 'Derivación implícita y derivadas parciales, con los puntos críticos y la matriz hessiana.', 'Comparte el ejercicio con un enlace (lleva los datos), cópialo como texto o en LaTeX para tus apuntes, o imprímelo o guárdalo en PDF solo con los resultados y el desarrollo.', 'Aviso junto a los datos: ln es el logaritmo neperiano y log, el decimal.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: derivadas de orden 1 a 4 con la regla de cada paso (suma, producto, cociente, cadena, derivación logarítmica) y el resultado simplificado.', 'Recta tangente en un punto y puntos críticos con su tipo.', 'Primitivas por la tabla, sustitución, partes (también dos veces), fracciones simples e identidades trigonométricas, comprobadas derivándolas.', 'Integral definida con la regla de Barrow, o numérica si no hay primitiva elemental, y el área encerrada.', 'Gráfica de f y f′ con la tangente que recorre la curva, o del área que se va llenando con la primitiva.'] },
     ],
     laplace: [
+      { v: '0.2', fecha: '2026-10-25', cambios: ['Escalón u(t − a), delta δ(t − a) y retrasos e^{−as}, en la directa, en la inversa y en las ecuaciones diferenciales.', 'sen²t, cos²t y productos de senos y cosenos (linealizando), y funciones definidas a trozos.', 'Convolución y función de transferencia H(s), con la respuesta al impulso y al escalón.', 'Sistemas de dos ecuaciones diferenciales por Laplace.', 'Comparte el ejercicio con un enlace (lleva los datos), cópialo como texto o en LaTeX para tus apuntes, o imprímelo o guárdalo en PDF solo con los resultados y el desarrollo.', 'Aviso junto a los datos: ln es el logaritmo neperiano y log, el decimal.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: transformada directa de sumas de términos c·tⁿ·e^(at)·sen(bt) o cos(bt), senh y cosh, con la fila de la tabla y la propiedad que usa cada término, y F(s) con denominador común.', 'Inversa por fracciones simples: polos simples, múltiples y complejos (también dobles), con los coeficientes, la fila de la tabla y los valores inicial y final.', 'Ecuaciones diferenciales de primer y segundo orden con condiciones iniciales: transformar, despejar Y(s) y volver.', 'Plano s con los polos y los ceros, y gráfica animada de f(t) con cada término por separado.'] },
     ],
     interferencia: [
@@ -370,24 +378,30 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: fuerza sobre una carga en un campo uniforme, con el radio, el periodo y el sentido de giro, o la hélice si v no es perpendicular a B. La velocidad se puede dar en m/s, por su energía en eV o por la ddp que la acelera.', 'Fuerza de Lorentz con vectores: v × B con su determinante y F = q(E + v × B).', 'Selector de velocidades y espectrómetro de masas, ciclotrón con la frecuencia, la energía de salida y las vueltas.', 'Fuerza sobre un hilo (y la corriente para que flote) y entre dos hilos paralelos.', 'Animación de cada situación.'] },
     ],
     campos: [
+      { v: '0.2', fecha: '2026-10-25', cambios: ['La función potencial con su expresión, φ = x²y + y³ + K, integrando componente a componente.', 'Integral de línea por una poligonal (como el contorno de un triángulo), tramo a tramo.', 'Nuevo modo ∫ f ds: longitud, masa y centro de masas de un alambre.', 'Teorema de Green en triángulos, polígonos y regiones entre dos curvas, con el área.', 'Nuevo modo de flujo por una superficie r(u, v) con el teorema de Stokes, y nuevo modo del teorema de la divergencia en una caja, una esfera o un cilindro, con la figura en 3D.', 'Comparte el ejercicio con un enlace (lleva los datos), cópialo como texto o en LaTeX para tus apuntes, o imprímelo o guárdalo en PDF solo con los resultados y el desarrollo.', 'Aviso junto a los datos: ln es el logaritmo neperiano y log, el decimal.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: gradiente, derivada direccional y laplaciano de un campo escalar, con su mapa de color y las curvas de nivel.', 'Divergencia y rotacional de un campo vectorial en el plano o en el espacio y, si es conservativo, su potencial.', 'Integral de línea (trabajo) a lo largo de una curva r(t), comparada con la diferencia de potencial cuando el campo es conservativo.', 'Teorema de Green en un círculo o un rectángulo: circulación y flujo por el borde frente a las integrales dobles.', 'Gráfica con partículas que siguen el campo y un molinillo que gira con el rotacional; tocándola se mueve el punto.'] },
     ],
     cinetica: [
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: leyes integradas de orden 0, 1 y 2 con la concentración a cualquier tiempo, la vida media y cuánto se tarda en llegar a una concentración.', 'Orden y constante a partir de una tabla de concentraciones frente al tiempo, con las tres rectas ([A], ln [A] y 1/[A]) y su R².', 'Método de las velocidades iniciales con uno o dos reactivos: órdenes, constante con sus unidades y ley de velocidad.', 'Ecuación de Arrhenius: energía de activación con dos temperaturas o la constante a otra temperatura, con la gráfica de ln k frente a 1/T.', 'Vaso animado en el que las moléculas de reactivo se convierten en producto.'] },
     ],
     edos: [
+      { v: '0.2', fecha: '2026-10-25', cambios: ['Arreglo: avisa cuando la solución explota (y′ = y²) y corta la gráfica ahí.', 'Solución exacta de ecuaciones separables (como la logística), de Bernoulli y exactas, con factor integrante.', 'Euler mejorado (Heun) y punto medio, con una tabla que compara el error según h.', 'Variación de parámetros cuando g(x) no admite coeficientes indeterminados (tg x, 1/cos x, eˣ/x).', 'Ecuaciones de orden 3 y 4 con coeficientes constantes, y de Cauchy-Euler.', 'Comparte el ejercicio con un enlace (lleva los datos), cópialo como texto o en LaTeX para tus apuntes, o imprímelo o guárdalo en PDF solo con los resultados y el desarrollo.', 'Aviso junto a los datos: ln es el logaritmo neperiano y log, el decimal.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ecuaciones de primer orden y′ = f(x, y) con el campo de pendientes, el método de Euler (con su tabla) y RK4, y la solución exacta cuando es lineal con coeficiente constante.', 'Ecuaciones lineales de segundo orden con coeficientes constantes: ecuación característica, solución homogénea, particular por coeficientes indeterminados (también con resonancia) y constantes por las condiciones iniciales.', 'Sistemas x′ = f(x, y), y′ = g(x, y): puntos críticos con su tipo (silla, nodo, foco o centro) por los autovalores del jacobiano, solución exacta si es lineal y diagrama de fases con trayectorias.', 'Gráfica animada; tocándola se cambia el punto inicial.'] },
     ],
     fourier: [
+      { v: '0.2', fecha: '2026-10-25', cambios: ['Arreglo: avisa si la función no es integrable (1/x en [−1, 1]) en vez de dar coeficientes sin sentido.', 'Arreglo: en el móvil las fórmulas largas ya no se salen de la pantalla.', 'Término general en más casos: eˣ, |sen x| o funciones trapezoidales.', 'Los huecos entre tramos se rellenan con 0.', 'Forma compleja (cₙ) y forma amplitud-fase, con el espectro de fase.', 'Suma de series numéricas con Parseval o con un punto (Σ 1/n² = π²/6).', 'Comparte el ejercicio con un enlace (lleva los datos), cópialo como texto o en LaTeX para tus apuntes, o imprímelo o guárdalo en PDF solo con los resultados y el desarrollo.', 'Aviso junto a los datos: ln es el logaritmo neperiano y log, el decimal.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: serie de Fourier de una función periódica dada hasta en cuatro tramos (1, x, x^2, |x|, sen x…), o desarrollo en senos o en cosenos de una función en [0, L].', 'Coeficientes a₀, aₙ y bₙ exactos (con π) y su término general cuando siguen una ley, como 2(1 − (−1)ⁿ)/(nπ), con la paridad de la función.', 'Convergencia en los saltos (a la media de los límites laterales), suma parcial en un punto e igualdad de Parseval.', 'Gráfica de la función y de la suma parcial, que se puede ver sumando armónicos uno a uno, y el espectro de amplitudes.'] },
     ],
     taylor: [
+      { v: '0.2', fecha: '2026-10-25', cambios: ['Arreglo: con aˣ los coeficientes salen claros, (ln 2)²/2 en vez de 0,240227.', 'Arreglo: en el móvil las fórmulas largas ya no se salen de la pantalla.', 'Singularidades evitables: sen x / x o (eˣ − 1)/x en 0 ya tienen desarrollo.', 'Radio de convergencia para cualquier función, con un aviso si el punto cae fuera.', 'Límites con Taylor, como lím (sen x − x)/x³.', 'Grado hasta 25.', 'Comparte el ejercicio con un enlace (lleva los datos), cópialo como texto o en LaTeX para tus apuntes, o imprímelo o guárdalo en PDF solo con los resultados y el desarrollo.', 'Aviso junto a los datos: ln es el logaritmo neperiano y log, el decimal.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: polinomio de Taylor o de Maclaurin de cualquier grado hasta 15 de una función escrita como en papel (e^x, sen x, ln(1+x), √x, arctg x…) en un punto que puede llevar π, con cada derivada, su valor exacto y los coeficientes.', 'Aproximación de f(x₀) con el error cometido y la cota del resto de Lagrange.', 'Reconoce los desarrollos conocidos (e^x, sen x, cos x, ln(1+x), la serie geométrica, arctg x y la binómica) y da su término general y dónde convergen.', 'Gráfica de la función con los polinomios de cada grado, que se pueden recorrer o ver acercarse uno tras otro.'] },
     ],
     complejos: [
+      { v: '0.2', fecha: '2026-10-25', cambios: ['Arreglo: ya entiende raíces en forma binómica, como 1 + √3 i.', 'Arreglo: la exponencial sale como e^{−iπ/2}, la trigonométrica con paréntesis y la polar con el módulo exacto (5√2).', 'Logaritmo complejo, eᶻ y potencias con exponente fraccionario o complejo (z^{1/2}, iⁱ).', 'Ecuaciones polinómicas de grado 3 y 4, y zⁿ = w directamente.', 'Regiones del plano dibujadas: |z − 1| < 2, Re z > 0, arg z entre dos ángulos…', 'Comparte el ejercicio con un enlace (lleva los datos), cópialo como texto o en LaTeX para tus apuntes, o imprímelo o guárdalo en PDF solo con los resultados y el desarrollo.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: escribe un complejo en forma binómica, polar, trigonométrica o exponencial y obtén las otras, con el módulo exacto y el argumento en su cuadrante.', 'Suma, resta, producto y cociente con fracciones exactas, potencias con De Moivre, raíces n-ésimas y ecuaciones de segundo grado.', 'Plano complejo con los afijos, el paralelogramo de la suma y el polígono de las raíces.'] },
     ],
     sistemas: [
+      { v: '0.3', fecha: '2026-10-25', cambios: ['Discusión de un sistema según un parámetro (Rouché): los valores especiales de k con SCD, SCI o SI en cada caso.', 'Las ecuaciones se pueden escribir como texto, «2x + y − z = 8», además de con la rejilla de coeficientes.', 'Interpretación geométrica: las rectas en el plano o los planos en el espacio, y cómo se cortan.', 'Sistemas incompatibles con más ecuaciones que incógnitas: solución por mínimos cuadrados.', 'Comparte el ejercicio con un enlace (lleva los datos), cópialo como texto o en LaTeX para tus apuntes, o imprímelo o guárdalo en PDF solo con los resultados y el desarrollo.'] },
       { v: '0.2', fecha: '2026-10-24', cambios: ['Métodos de reducción, igualación y sustitución para sistemas de 2 o 3 ecuaciones con solución única, con cada ecuación numerada y cada paso explicado.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: hasta seis ecuaciones con seis incógnitas. Dice si el sistema es compatible determinado, indeterminado o incompatible con el teorema de Rouché-Frobenius y lo resuelve por Gauss con sustitución hacia atrás, por Gauss-Jordan, por la regla de Cramer o con la matriz inversa.', 'Si tiene infinitas soluciones, las da en forma paramétrica (λ, μ…).', 'Coeficientes con fracciones exactas, decimales o números complejos, como las mallas de un circuito de alterna, y nombres propios para las incógnitas (I1, I2…).', 'Comprobación de la solución sustituyendo en cada ecuación.'] },
@@ -552,6 +566,8 @@ const Mates = (() => {
         // binom(n, k): número combinatorio
         if (k.v === 'binom' && es('(')) { p++; const a = secuencia(','); p++; const b = secuencia(')'); p++; return nodo(`<mrow><mo>(</mo><mfrac linethickness="0">${fila(a)}${fila(b)}</mfrac><mo>)</mo></mrow>`); }
         if (FUNC.has(k.v)) { let m = `<mi mathvariant="normal">${k.v}</mi>`; if (es('^')) { p++; m = `<msup>${m}${argumento()}</msup>`; } return nodo(`<mspace width="0.17em"></mspace>${m}<mo>&#x2061;</mo><mspace width="0.12em"></mspace>`); }
+        // diferencial suelto (dx, dt, dS, dθ…) detrás de algo: con un poco de aire, como en «f(x) dx»
+        if (k.sp && p > 1 && /^d[a-zA-Zθφρ]$/.test(k.v)) return nodo(`<mspace width="0.17em"></mspace><mi>d</mi><mi>${escH(k.v[1])}</mi>`);
         const ls = [...k.v.replace(/[′″]+$/, '')], pr = (k.v.match(/[′″]+$/) || [''])[0];
         // las marcas combinadas (î, ĵ con acento) van con su letra
         const grupos = []; for (const c of ls) { if (/\p{M}/u.test(c) && grupos.length) grupos[grupos.length - 1] += c; else grupos.push(c); }
@@ -571,7 +587,8 @@ const Mates = (() => {
     return fila(secuencia(null));
   }
 
-  const mathml = (src) => `<math><mstyle displaystyle="true">${analiza(tokens(src))}</mstyle></math>`;
+  // la fuente se queda en data-src para poder copiarla (como texto o LaTeX)
+  const mathml = (src) => `<math data-src="${escH(src).replace(/"/g, '&quot;')}"><mstyle displaystyle="true">${analiza(tokens(src))}</mstyle></math>`;
   // sustituye cada $…$ de un texto HTML por su MathML
   const html = (s) => String(s ?? '').replace(/\$([^$]+)\$/g, (_, x) => mathml(x));
   // convierte en el documento los elementos con class="m" (fórmulas escritas en el HTML)
@@ -583,6 +600,190 @@ const Mates = (() => {
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => pinta()); else pinta();
   }
   return { html, mathml, pinta, tokens };
+})();
+
+/* =====================================================================
+   Compartir, copiar e imprimir (herramientas de Matemáticas):
+   · un enlace con los datos del ejercicio en la dirección (#d=…): al
+     abrirlo, los datos se dejan donde la herramienta guarda los suyos
+     (localStorage, «<herramienta>-v1») antes de que arranque, así que se
+     abre con ellos sin que la herramienta tenga que saber nada;
+   · copiar los resultados y el desarrollo como texto o como LaTeX (las
+     fórmulas salen de su fuente, que Mates deja en data-src);
+   · imprimir (o guardar en PDF) solo el ejercicio, sin menús ni teoría;
+   · un aviso de que log es el logaritmo decimal.
+   Tiene que ir antes que el app.js de la herramienta.
+   ===================================================================== */
+const Compartir = (() => {
+  const partes = () => (typeof location === 'undefined' ? '/herramienta/' : location.pathname).split('/').filter((q) => q && !/\.html?$/.test(q));
+  const CLAVE = `${partes().pop()}-v1`;
+  const b64 = (s) => btoa(unescape(encodeURIComponent(s))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  const deB64 = (s) => decodeURIComponent(escape(atob(s.replace(/-/g, '+').replace(/_/g, '/'))));
+
+  // los datos de un enlace compartido pasan a donde la herramienta los lee al arrancar
+  if (typeof location !== 'undefined') {
+    const m = /[#&]d=([A-Za-z0-9_-]+)/.exec(location.hash);
+    if (m) {
+      try { const json = deB64(m[1]); JSON.parse(json); localStorage.setItem(CLAVE, json); } catch (e) { /* enlace roto o sin almacenamiento */ }
+      try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* file:// */ }
+    }
+  }
+  const enlace = () => { let d = null; try { d = localStorage.getItem(CLAVE); } catch (e) { /* sin almacenamiento */ } return location.href.split('#')[0] + (d ? `#d=${b64(d)}` : ''); };
+
+  /* ---------- De la sintaxis de Mates a LaTeX y a texto ---------- */
+  const FUNC = { sen: '\\operatorname{sen}', cos: '\\cos', tg: '\\operatorname{tg}', tan: '\\tan', ln: '\\ln', log: '\\log', exp: '\\exp', arcsen: '\\operatorname{arcsen}', arccos: '\\arccos', arctg: '\\operatorname{arctg}', 'máx': '\\max', 'mín': '\\min', 'lím': '\\lim', senh: '\\operatorname{senh}', cosh: '\\cosh', tgh: '\\operatorname{tgh}', cotg: '\\operatorname{cotg}', sec: '\\sec' };
+  const SIM = { '·': '\\cdot', '×': '\\times', '÷': '\\div', '−': '-', '≤': '\\le', '≥': '\\ge', '≠': '\\ne', '≈': '\\approx', '±': '\\pm', '∓': '\\mp', '→': '\\to', '←': '\\leftarrow', '⇒': '\\Rightarrow', '⇔': '\\Leftrightarrow', '↔': '\\leftrightarrow', '∞': '\\infty', '∫': '\\int', '∬': '\\iint', '∭': '\\iiint', '∮': '\\oint', '∯': '\\oiint', '∑': '\\sum', '∏': '\\prod', '∂': '\\partial', '∇': '\\nabla', '∈': '\\in', '∝': '\\propto', '⊥': '\\perp', '∥': '\\parallel', '≡': '\\equiv', '∼': '\\sim', '°': '^{\\circ}', '%': '\\%', '′': "'", '″': "''", '|': '|', '\\{': '\\{', '\\}': '\\}', 'ℒ': '\\mathcal{L}', '∅': '\\emptyset', '∪': '\\cup', '∩': '\\cap' };
+  const GRIEGO = { α: 'alpha', β: 'beta', γ: 'gamma', δ: 'delta', ε: 'varepsilon', ζ: 'zeta', η: 'eta', θ: 'theta', ι: 'iota', κ: 'kappa', λ: 'lambda', μ: 'mu', ν: 'nu', ξ: 'xi', π: 'pi', ρ: 'rho', σ: 'sigma', τ: 'tau', υ: 'upsilon', φ: 'varphi', χ: 'chi', ψ: 'psi', ω: 'omega', Γ: 'Gamma', Δ: 'Delta', Θ: 'Theta', Λ: 'Lambda', Ξ: 'Xi', Π: 'Pi', Σ: 'Sigma', Φ: 'Phi', Ψ: 'Psi', Ω: 'Omega' };
+  const SUB = { '₀': '0', '₁': '1', '₂': '2', '₃': '3', '₄': '4', '₅': '5', '₆': '6', '₇': '7', '₈': '8', '₉': '9' }, SUP = { '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9', '⁻': '-' };
+  function latex(src) {
+    const tk = Mates.tokens(src);
+    let p = 0;
+    const es = (v) => tk[p] && tk[p].t === 's' && tk[p].v === v;
+    // quita los paréntesis o las llaves de fuera si envuelven todo
+    const quita = (s) => {
+      let m = /^\\left\((.*)\\right\)$/.exec(s);
+      if (m) return m[1];
+      if (s[0] === '{' && s.endsWith('}')) { let d = 0; for (let i = 0; i < s.length; i++) { if (s[i] === '{' && s[i - 1] !== '\\') d++; else if (s[i] === '}' && s[i - 1] !== '\\') d--; if (d === 0 && i < s.length - 1) return s; } return s.slice(1, -1); }
+      return s;
+    };
+    const palabra = (w) => {
+      if (FUNC[w]) return FUNC[w] + ' ';
+      return [...w].map((c) => (GRIEGO[c] ? `\\${GRIEGO[c]} ` : SUB[c] ? `_{${SUB[c]}}` : SUP[c] ? `^{${SUP[c]}}` : SIM[c] || c)).join('');
+    };
+    function secuencia(cierre) {
+      const xs = [];
+      while (p < tk.length && !(cierre && es(cierre))) {
+        if (es(')') || es('}') || es(']')) { p++; continue; }
+        xs.push(fraccion());
+      }
+      return xs.join(' ').replace(/\s+/g, ' ').trim();
+    }
+    function fraccion() {
+      let a = guiones();
+      while (es('/')) { p++; const b = guiones(); a = `\\frac{${quita(a)}}{${quita(b)}}`; }
+      return a;
+    }
+    function argumento() {
+      if (es('{')) { p++; const s = secuencia('}'); p++; return `{${s}}`; }
+      if (es('-') || es('−')) { p++; return `{-${argumento().replace(/^\{|\}$/g, '')}}`; }
+      if (es('(')) return `{${atomo()}}`;
+      const k = tk[p];
+      if (!k) return '{}';
+      p++;
+      if (k.t === 's') return `{${SIM[k.v] || k.v}}`;
+      let v = k.v;
+      while (tk[p] && !tk[p].sp && (tk[p].t === 'n' || tk[p].t === 'w')) { v += tk[p].v; p++; }
+      return `{${palabra(v).trim()}}`;
+    }
+    function guiones() {
+      let b = atomo();
+      for (;;) {
+        if (es('_')) { p++; b += `_${argumento()}`; } else if (es('^')) { p++; b += `^${argumento()}`; } else break;
+      }
+      return b;
+    }
+    function atomo() {
+      const k = tk[p];
+      if (!k) return '';
+      p++;
+      if (k.t === 'n') return k.v.replace(',', '{,}');
+      if (k.t === 'x') return `\\text{${k.v}}`;
+      if (k.t === 'w') return k.sp && p > 1 && /^d[a-zA-Zθφρ]$/.test(k.v) ? `\\, d${palabra(k.v[1])}` : palabra(k.v);
+      const v = k.v;
+      if (v === '(' || v === '[') { const c = v === '(' ? ')' : ']', s = secuencia(c); if (es(c)) p++; return v === '(' ? `\\left(${s}\\right)` : `\\left[${s}\\right]`; }
+      if (v === '{') { const s = secuencia('}'); if (es('}')) p++; return `{${s}}`; }
+      if (v === '√') return `\\sqrt{${quita(guiones()).replace(/^\{(.*)\}$/, '$1')}}`;
+      if (v === '∛') return `\\sqrt[3]{${quita(guiones()).replace(/^\{(.*)\}$/, '$1')}}`;
+      return SIM[v] || v;
+    }
+    return secuencia(null);
+  }
+  // texto plano: la fuente sin las llaves de agrupar
+  function texto(src) {
+    let s = String(src).replace(/<sup>(.*?)<\/sup>/g, '^($1)').replace(/<sub>(.*?)<\/sub>/g, '_$1').replace(/<[^>]+>/g, '').replace(/"/g, '').replace(/\\\{/g, '\u0001').replace(/\\\}/g, '\u0002');
+    const simple = (a) => /^[\w.,′α-ωπ∂^−-]+$/.test(a) || /^\([^()]*\)$/.test(a);
+    for (let i = 0, antes = ''; i < 12 && antes !== s; i++) {
+      antes = s;
+      s = s.replace(/([\^_])\{([^{}]*)\}/g, (_, o, a) => (/^[\w.,′α-ωπ−-]+$/.test(a) && a.length <= 3 ? `${o}${a}` : `${o}(${a})`));
+      s = s.replace(/\{([^{}]*)\}\/\{([^{}]*)\}/g, (_, a, b) => `${simple(a) ? a : `(${a})`}/${simple(b) ? b : `(${b})`}`);
+    }
+    return s.replace(/[{}]/g, '').replace(/\u0001/g, '{').replace(/\u0002/g, '}');
+  }
+
+  /* ---------- El ejercicio como texto o como LaTeX ---------- */
+  const escTex = (s) => s.replace(/\\/g, '\\textbackslash{}').replace(/([%#&_$])/g, '\\$1').replace(/[{}]/g, (c) => `\\${c}`);
+  function lee(nodo, tex) {
+    let out = '';
+    for (const n of nodo.childNodes) {
+      if (n.nodeType === 3) { out += tex ? escTex(n.nodeValue) : n.nodeValue; continue; }
+      if (n.nodeType !== 1 || n.hidden) continue;
+      const tag = n.tagName.toLowerCase();
+      if (tag === 'math') { const s = n.getAttribute('data-src'); out += s ? (tex ? `$${latex(s)}$` : texto(s)) : n.textContent; continue; }
+      if (tag === 'canvas' || tag === 'svg' || tag === 'button' || tag === 'select' || tag === 'input') continue;
+      if (n.classList.contains('mat')) {
+        const filas = [...n.querySelectorAll('tr')].map((tr) => [...tr.children].map((td) => lee(td, tex).trim()));
+        const env = n.classList.contains('det') ? 'vmatrix' : 'pmatrix';
+        out += tex ? `$\\begin{${env}} ${filas.map((f) => f.join(' & ').replace(/\$/g, '')).join(' \\\\ ')} \\end{${env}}$` : `${env === 'vmatrix' ? '|' : '['}${filas.map((f) => f.join('  ')).join('; ')}${env === 'vmatrix' ? '|' : ']'}`;
+        continue;
+      }
+      if (n.classList.contains('fr') && n.children.length === 2) { const [a, b] = [...n.children].map((c) => lee(c, tex).trim().replace(/\$/g, '')); out += tex ? `$\\frac{${a}}{${b}}$` : `${/^[\w.,√−-]+$/.test(a) ? a : `(${a})`}/${/^[\w.,√−-]+$/.test(b) ? b : `(${b})`}`; continue; }
+      if (tag === 'sup' || tag === 'sub') { const a = lee(n, tex).trim().replace(/\$/g, ''), o = tag === 'sup' ? '^' : '_'; out += tex ? `$${o}{${a}}$` : a.length > 1 ? `${o}(${a})` : `${o}${a}`; continue; }
+      if (tag === 'br') { out += '\n'; continue; }
+      const dentro = lee(n, tex);
+      if (tex && (tag === 'b' || tag === 'strong')) out += `\\textbf{${dentro}}`;
+      else if (tag === 'tr') out += '\n' + [...n.children].map((c) => lee(c, tex).trim()).join(tex ? ' & ' : ' | ');
+      else if (['div', 'p', 'li', 'table', 'ol', 'ul'].includes(tag)) out += `\n${dentro}\n`;
+      else out += dentro;
+    }
+    return out;
+  }
+  const limpia = (s) => s.replace(/[ \t]+/g, ' ').replace(/ *\n */g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+  function ejercicio(tex) {
+    const tit = (document.querySelector('h1') || {}).textContent || document.title;
+    const res = document.querySelector('#resumen') || document.querySelector('#res'), pasos = [...document.querySelectorAll('#pasos > li')];
+    const items = res ? (res.id === 'resumen' ? [...res.children].filter((d) => !d.hidden).map((d) => { const sp = d.querySelector('span'), b = d.querySelector('b'); return sp && b ? `${limpia(lee(sp, tex))}: ${limpia(lee(b, tex))}` : limpia(lee(d, tex)); }) : [limpia(lee(res, tex))]) : [];
+    const paso = (li) => { const t = li.querySelector('strong'), c = li.cloneNode(true), ct = c.querySelector('strong'); if (ct) ct.remove(); return { t: t ? limpia(lee(t, tex)) : '', c: limpia(lee(c, tex)).replace(/\n+/g, tex ? ' \\\\ ' : '\n   ') }; };
+    if (!tex) return [tit, '', 'Resultados', ...items.map((q) => `· ${q.replace(/\n+/g, ' ')}`), '', 'Desarrollo', ...pasos.map((li, i) => { const q = paso(li); return `${i + 1}. ${q.t}${q.t ? ': ' : ''}${q.c}`; }), '', enlace()].join('\n');
+    return [`% ${tit} · SimulaCiencia`, `% ${enlace()}`, '\\section*{Resultados}', '\\begin{itemize}', ...items.map((q) => `  \\item ${q.replace(/\n+/g, ' ')}`), '\\end{itemize}', '\\section*{Desarrollo}', '\\begin{enumerate}', ...pasos.map((li) => { const q = paso(li); return `  \\item ${q.t ? `\\textbf{${q.t}.} ` : ''}${q.c}`; }), '\\end{enumerate}'].join('\n');
+  }
+
+  /* ---------- Botones ---------- */
+  async function copia(s) {
+    try { await navigator.clipboard.writeText(s); return true; } catch (e) {
+      const t = document.createElement('textarea'); t.value = s; t.style.position = 'fixed'; t.style.opacity = '0'; document.body.appendChild(t); t.select();
+      let ok = false; try { ok = document.execCommand('copy'); } catch (e2) { /* sin portapapeles */ }
+      t.remove(); return ok;
+    }
+  }
+  function botones() {
+    if (typeof document === 'undefined') return;
+    const card = document.querySelector('#pasos') && document.querySelector('#pasos').closest('.card');
+    if (!card || card.querySelector('.compartir')) return;
+    const caja = document.createElement('div');
+    caja.className = 'controles compartir';
+    caja.innerHTML = '<button class="btn" type="button" data-a="enlace">Copiar enlace</button><button class="btn" type="button" data-a="texto">Copiar como texto</button><button class="btn" type="button" data-a="latex">Copiar en LaTeX</button><button class="btn" type="button" data-a="imprimir">Imprimir o PDF</button>';
+    caja.style.margin = '0 0 10px';
+    card.querySelector('h2').after(caja);
+    caja.addEventListener('click', async (e) => {
+      const b = e.target.closest('button'); if (!b) return;
+      const a = b.dataset.a;
+      if (a === 'imprimir') { window.print(); return; }
+      const ok = await copia(a === 'enlace' ? enlace() : ejercicio(a === 'latex'));
+      const antes = b.textContent; b.textContent = ok ? '¡Copiado!' : 'No se ha podido copiar'; setTimeout(() => { b.textContent = antes; }, 1600);
+    });
+    // al imprimir: solo el ejercicio, en claro
+    const css = document.createElement('style');
+    css.textContent = '@media print { .top, .miga, .bib, .bib-scrim, footer, .teoria, .compartir, #ejemplos, .controles, .nota:empty, .error[hidden] { display: none !important } html, body { background: #fff !important } .wrap { max-width: none; padding: 0 } .layout { display: block !important } .card { break-inside: avoid; box-shadow: none !important } .pasos li { break-inside: avoid } canvas { max-height: 9cm; object-fit: contain } }';
+    document.head.appendChild(css);
+    let tema = null;
+    addEventListener('beforeprint', () => { tema = document.documentElement.getAttribute('data-theme'); document.documentElement.setAttribute('data-theme', 'light'); dispatchEvent(new Event('resize')); });
+    addEventListener('afterprint', () => { if (tema === null) document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', tema); dispatchEvent(new Event('resize')); });
+    // log es el decimal
+    const err = document.querySelector('#error');
+    if (err && ['taylor', 'fourier', 'edos', 'laplace', 'derivadas', 'campos'].includes(CLAVE.slice(0, -3))) { const q = document.createElement('p'); q.className = 'nota'; q.id = 'nota-log'; q.textContent = 'ln es el logaritmo neperiano y log, el decimal (log₁₀).'; err.before(q); }
+  }
+  botones();
+  return { enlace, ejercicio, latex, texto, CLAVE };
 })();
 
 /* =====================================================================
@@ -860,7 +1061,8 @@ const Algebra = (() => {
     return z;
   }
   const aproxQ = (x) => {
-    for (let d = 1; d <= 60; d++) { const n = Math.round(x * d); if (Math.abs(x - n / d) < 1e-6 * Math.max(1, Math.abs(x))) return Q(n, d); }
+    // tolerancia amplia: las raíces múltiples salen con poca precisión, y cada candidata se comprueba exactamente después
+    for (let d = 1; d <= 60; d++) { const n = Math.round(x * d); if (Math.abs(x - n / d) < 1e-3 * Math.max(1, Math.abs(x)) / d) return Q(n, d); }
     return null;
   };
   // raíces exactas (racionales o complejas racionales) con su multiplicidad y el polinomio que queda sin ellas
@@ -913,6 +1115,244 @@ const Algebra = (() => {
     leer, leerMatriz, txt, html, htmlP, htmlF, signo, decimal, decimalC,
     copia, identidad, traspuesta, sumaM, restaM, escalar, producto, iguales, traza, esRealM, matHtml, vecHtml, F,
     escalonar, determinante, menor, cofactor, nucleo, limpia, caracteristico, evalua, ruffini, raicesNum, raices, raizHtml, polHtml,
+  };
+})();
+
+/* =====================================================================
+   Matrices con un parámetro (sin DOM): polinomios en k con coeficientes
+   racionales o complejos de Algebra, lectura de «2k − 1», «k^2», «(k+1)/2»,
+   determinante y menores de una matriz de polinomios, máximo común
+   divisor, raíces exactas y fracciones de polinomios. Lo usan Matrices y
+   Sistemas para discutir según el valor del parámetro.
+   Un polinomio es la lista de coeficientes de menor a mayor grado.
+   ===================================================================== */
+const Parametro = (() => {
+  const A = Algebra, { c0, c1, suma, resta, mul, div, neg, esCero, igual, esUno } = A;
+  // letras que pueden ser parámetro: no i ni j (imaginaria) ni e
+  const LETRA = /[a-dfghk-zα-ωA-HJ-Z]/;
+
+  /* ---------- Polinomios ---------- */
+  const limpia = (p) => { const q = p.slice(); while (q.length > 1 && esCero(q[q.length - 1])) q.pop(); return q.length ? q : [c0]; };
+  const cte = (c) => [c];
+  const grado = (p) => { const q = limpia(p); return q.length === 1 && esCero(q[0]) ? -Infinity : q.length - 1; };
+  const nulo = (p) => grado(p) === -Infinity;
+  const constante = (p) => grado(p) <= 0;
+  const psuma = (p, q) => limpia(Array.from({ length: Math.max(p.length, q.length) }, (_, i) => suma(p[i] || c0, q[i] || c0)));
+  const pneg = (p) => p.map(neg);
+  const presta = (p, q) => psuma(p, pneg(q));
+  function pmul(p, q) {
+    const r = Array(p.length + q.length - 1).fill(c0);
+    p.forEach((a, i) => { if (!esCero(a)) q.forEach((b, j) => { r[i + j] = suma(r[i + j], mul(a, b)); }); });
+    return limpia(r);
+  }
+  const pesc = (k, p) => limpia(p.map((a) => mul(k, a)));
+  const ppot = (p, n) => { let r = cte(c1); for (let i = 0; i < n; i++) r = pmul(r, p); return r; };
+  const pval = (p, x) => p.reduceRight((s, a) => suma(mul(s, x), a), c0);
+  const pvalF = (p, x) => p.reduceRight((s, a) => s * x + A.qnum(a.re), 0);
+  // división con resto
+  function pdiv(p, q) {
+    p = limpia(p); q = limpia(q);
+    const dq = grado(q);
+    if (dq === -Infinity) throw new Error('División por cero');
+    let r = p.slice();
+    const c = Array(Math.max(1, p.length - q.length + 1)).fill(c0);
+    while (grado(r) >= dq) {
+      const dr = grado(r), f = div(r[dr], q[dq]);
+      c[dr - dq] = f;
+      r = presta(r, Array(dr - dq).fill(c0).concat(q.map((x) => mul(f, x))));
+    }
+    return [limpia(c), limpia(r)];
+  }
+  const monico = (p) => { const q = limpia(p); return nulo(q) ? q : q.map((a) => div(a, q[q.length - 1])); };
+  function mcd(p, q) {
+    p = limpia(p); q = limpia(q);
+    while (!nulo(q)) [p, q] = [q, pdiv(p, q)[1]];
+    return monico(p);
+  }
+
+  /* ---------- Lectura ---------- */
+  // la letra del parámetro que aparece en las casillas (null si no hay ninguna)
+  function letraDe(celdas) {
+    const vistas = new Set();
+    for (const c of celdas) for (const ch of String(c ?? '').replace(/sqrt|√/g, '')) if (LETRA.test(ch)) vistas.add(ch);
+    if (vistas.size > 1) throw new Error(`Solo puede haber un parámetro, y aparecen ${[...vistas].join(', ')}`);
+    return vistas.size ? [...vistas][0] : null;
+  }
+  function lee(texto, letra) {
+    const orig = String(texto ?? '').trim();
+    const s = orig.replace(/\s+/g, '').replace(/[−–]/g, '-').replace(/[·×]/g, '*');
+    if (!s) throw new Error('casilla vacía: escribe un número o una expresión con el parámetro');
+    let p = 0;
+    const mal = () => new Error(`«${orig}» no se entiende: escribe por ejemplo 3, −1/2, 2${letra} − 1 o ${letra}^2`);
+    const ve = () => s[p];
+    const empieza = (c) => c !== undefined && (/[\d.,(i]/.test(c) || c === letra);
+    function expr() { let v = term(); while (ve() === '+' || ve() === '-') { const o = s[p++], t = term(); v = o === '+' ? psuma(v, t) : presta(v, t); } return v; }
+    function term() {
+      let v = un();
+      for (;;) {
+        const c = ve();
+        if (c === '*') { p++; v = pmul(v, un()); }
+        else if (c === '/') { p++; const t = un(); if (!constante(t) || nulo(t)) throw mal(); v = v.map((a) => div(a, t[0])); }
+        else if (empieza(c)) v = pmul(v, pot());
+        else return v;
+      }
+    }
+    function un() { if (ve() === '-') { p++; return pneg(un()); } if (ve() === '+') { p++; return un(); } return pot(); }
+    function pot() {
+      const b = at();
+      if (ve() !== '^') return b;
+      p++;
+      const m = /^\(?(\d+)\)?/.exec(s.slice(p));
+      if (!m || +m[1] > 12) throw mal();
+      p += m[0].length;
+      return ppot(b, +m[1]);
+    }
+    function at() {
+      const c = ve();
+      if (c === '(') { p++; const v = expr(); if (s[p++] !== ')') throw mal(); return v; }
+      if (c === letra) { p++; return [c0, c1]; }
+      if (c === 'i' || c === 'j') { p++; return cte(A.cI); }
+      const m = /^(\d+(?:[.,]\d*)?|[.,]\d+)/.exec(s.slice(p));
+      if (!m) throw mal();
+      p += m[0].length;
+      return cte(A.leer(m[0]));
+    }
+    let v;
+    try { v = expr(); } catch (e) { throw mal(); }
+    if (p < s.length) throw mal();
+    return v;
+  }
+  const leeMatriz = (filas, letra) => filas.map((f, i) => f.map((v, j) => { try { return lee(v, letra); } catch (e) { throw new Error(`Fila ${i + 1}, columna ${j + 1}: ${e.message}`); } }));
+
+  /* ---------- Escritura ---------- */
+  // de mayor a menor grado, como espera Algebra.polHtml
+  const alto = (p) => limpia(p).slice().reverse();
+  const html = (p, letra) => A.polHtml(alto(p), letra);
+  const htmlP = (p, letra) => { const n = limpia(p).filter((a) => !esCero(a)).length; const h = html(p, letra); return n > 1 ? `(${h})` : h; };
+  // factorizado por sus raíces exactas: 2(k − 1)(k + 3)
+  function factorHtml(p, letra) {
+    const q = limpia(p);
+    if (constante(q)) return A.html(q[0]);
+    const r = A.raices(alto(q));
+    const lc = q[q.length - 1];
+    let resto = r.resto, sal = '';
+    const lin = (v) => { if (esCero(v)) return letra; const [sg, t] = A.signo(neg(v)); return `(${letra} ${sg} ${t})`; };
+    for (const { valor, mult } of r.exactas) sal += lin(valor) + (mult > 1 ? `<sup>${mult}</sup>` : '');
+    // lo que queda sin raíces exactas, mónico (el coeficiente principal va delante)
+    const k = esUno(lc) ? '' : igual(lc, A.ent(-1)) ? '−' : A.htmlP(lc);
+    if (resto.length > 1) {
+      const rh = A.polHtml(resto.map((a) => div(a, resto[0])), letra);
+      // sin ningún otro factor no hacen falta los paréntesis: k² − 2
+      if (!sal) return A.polHtml(alto(q), letra);
+      sal += `(${rh})`;
+    }
+    // un solo factor no lleva paréntesis: k − 4, no (k − 4)
+    return (k + sal).replace(/^\((\w)\)/, '$1').replace(/^\(([^()]*)\)$/, '$1');
+  }
+  // las raíces (exactas o aproximadas, solo reales) de un polinomio no nulo
+  function raices(p) {
+    const q = limpia(p);
+    if (constante(q)) return [];
+    const r = A.raices(alto(q)), out = r.exactas.filter((x) => A.esReal(x.valor)).map((x) => ({ exacta: true, valor: x.valor, mult: x.mult, num: A.qnum(x.valor.re) }));
+    const resto = r.resto;
+    // segundo grado con coeficientes racionales: raíces con √, (−b ± √Δ)/2a
+    if (resto.length === 3 && resto.every(A.esReal)) {
+      const [a2, b2, c2] = resto.map((x) => x.re);
+      const Dq = { n: b2.n * b2.n * a2.d * c2.d - 4n * a2.n * c2.n * b2.d * b2.d, d: b2.d * b2.d * a2.d * c2.d };
+      if (Dq.n > 0n) {
+        const rz = A.raizHtml(A.Q(Dq.n, Dq.d)), p0 = A.div(A.C(A.Q(-b2.n, b2.d)), A.C(A.Q(2n * a2.n, a2.d))), sq = A.qnum(A.Q(Dq.n, Dq.d)) ** 0.5 / Math.abs(A.qnum(a2) * 2);
+        if (rz) {
+          // √Δ/(2a) = (a√d)/b · 1/(2a)
+          const k = A.div(A.C(A.Q(rz.a, rz.b)), A.C(A.Q(2n * (a2.n < 0n ? -a2.n : a2.n), a2.d))), kk = k.re;
+          const coef = kk.d === 1n ? (kk.n === 1n ? '' : `${kk.n}`) : null, raiz = `√${rz.dentro}`;
+          const parte = coef !== null ? `${coef}${raiz}` : `${kk.n === 1n ? '' : kk.n}${raiz}/${kk.d}`;
+          const c = A.qnum(p0.re), h = (sg) => (A.esCero(p0) ? `${sg === '−' ? '−' : ''}${parte}` : `${A.html(p0)} ${sg} ${parte}`);
+          out.push({ exacta: false, raiz: true, html: h('−'), num: c - sq, mult: 1 }, { exacta: false, raiz: true, html: h('+'), num: c + sq, mult: 1 });
+          return out.sort((x, y) => x.num - y.num);
+        }
+      }
+    }
+    for (const z of r.aprox) if (Math.abs(z.im) < 1e-9) out.push({ exacta: false, num: z.re, mult: 1 });
+    return out.sort((a, b) => a.num - b.num);
+  }
+  const raizHtml = (r) => (r.exacta ? A.html(r.valor) : r.html ? `${r.html} ≈ ${A.decimal(r.num, 4)}` : `≈ ${A.decimal(r.num, 5)}`);
+
+  /* ---------- Matrices de polinomios ---------- */
+  // determinante por Laplace con memoria (columnas usadas): bien hasta 6×6
+  function det(M) {
+    const n = M.length, memo = new Map();
+    const d = (fila, usadas) => {
+      if (fila === n) return cte(c1);
+      const k = fila * 64 + usadas;
+      if (memo.has(k)) return memo.get(k);
+      let s = cte(c0), signo = 1;
+      for (let j = 0; j < n; j++) {
+        if (usadas & (1 << j)) continue;
+        if (!nulo(M[fila][j])) { const t = pmul(M[fila][j], d(fila + 1, usadas | (1 << j))); s = signo > 0 ? psuma(s, t) : presta(s, t); }
+        signo = -signo;
+      }
+      memo.set(k, s);
+      return s;
+    };
+    return d(0, 0);
+  }
+  // combinaciones de k elementos de 0..n−1
+  function combina(n, k) {
+    const out = [], cur = [];
+    const go = (i) => { if (cur.length === k) { out.push(cur.slice()); return; } for (let j = i; j < n; j++) { cur.push(j); go(j + 1); cur.pop(); } };
+    go(0);
+    return out;
+  }
+  const submatriz = (M, fs, cs) => fs.map((i) => cs.map((j) => M[i][j]));
+  // rango genérico (para casi todos los valores) y los valores en los que baja: raíces del mcd de sus menores
+  function rangoGenerico(M) {
+    const m = M.length, n = M[0].length;
+    for (let r = Math.min(m, n); r >= 1; r--) {
+      let g = null, alguno = null;
+      for (const fs of combina(m, r)) for (const cs of combina(n, r)) {
+        const d = det(submatriz(M, fs, cs));
+        if (nulo(d)) continue;
+        alguno = alguno || { fs, cs, d };
+        g = g ? mcd(g, d) : monico(d);
+      }
+      if (g) return { r, mcd: g, menor: alguno };
+    }
+    return { r: 0, mcd: cte(c1), menor: null };
+  }
+  const evaluaM = (M, x) => M.map((f) => f.map((p) => pval(p, x)));
+  // rango numérico (con tolerancia) para las raíces que no son exactas
+  function rangoF(M, x) {
+    const R = M.map((f) => f.map((p) => pvalF(p, x))), m = R.length, n = R[0].length, esc = Math.max(1, ...R.flat().map(Math.abs));
+    let r = 0;
+    for (let c = 0; c < n && r < m; c++) {
+      let k = r; for (let i = r + 1; i < m; i++) if (Math.abs(R[i][c]) > Math.abs(R[k][c])) k = i;
+      if (Math.abs(R[k][c]) < 1e-8 * esc) continue;
+      [R[r], R[k]] = [R[k], R[r]];
+      for (let i = r + 1; i < m; i++) { const f = R[i][c] / R[r][c]; for (let j = c; j < n; j++) R[i][j] -= f * R[r][j]; }
+      r++;
+    }
+    return r;
+  }
+  function matHtml(M, letra, { barra = null, det: esDet = false } = {}) {
+    return `<span class="mat${esDet ? ' det' : ''}"><table>${M.map((f) => `<tr>${f.map((p, j) => `<td${j === barra ? ' class="barra"' : ''}>${html(p, letra)}</td>`).join('')}</tr>`).join('')}</table></span>`;
+  }
+  // fracción de polinomios simplificada: [numerador, denominador]
+  function fraccion(n, d) {
+    const g = mcd(n, d);
+    let N = pdiv(n, g)[0], D = pdiv(d, g)[0];
+    const lc = limpia(D)[limpia(D).length - 1];
+    if (!esUno(lc)) { N = N.map((a) => div(a, lc)); D = D.map((a) => div(a, lc)); }
+    return [limpia(N), limpia(D)];
+  }
+  function fracHtml(n, d, letra) {
+    const [N, D] = fraccion(n, d);
+    if (constante(D)) return html(N, letra);
+    return `<span class="fr"><span>${factorHtml(N, letra)}</span><span>${factorHtml(D, letra)}</span></span>`;
+  }
+
+  return {
+    letraDe, lee, leeMatriz, limpia, cte, grado, nulo, constante, psuma, presta, pmul, pneg, pesc, ppot, pval, pvalF, pdiv, mcd, monico,
+    html, htmlP, factorHtml, raices, raizHtml, det, combina, submatriz, rangoGenerico, evaluaM, rangoF, matHtml, fraccion, fracHtml,
   };
 })();
 
@@ -1003,10 +1443,38 @@ const Complejos = (() => {
       const a = leeReal(t, `el argumento de ${nom}`);
       return { z: pol(leeReal(m[1] || '1', `el módulo de ${nom}`).v, a.grados || a.conPi || unidad === 'radianes' ? a.v : a.v / GR), ex: null, forma: 'exponencial' };
     }
+    // binómica con raíces o π: 1 + √3i, 1 + i√3, √2/2 − (√2/2)i, π + 2i
+    if (/π|√/.test(s) && !/[°º]/.test(s)) { const w = binomicaReal(s); if (w) return w; }
     if (/π|√|°|º/.test(s)) throw new Error(`«${orig}» no se entiende: escribe ${nom} como 3 − 2i, 2∠60°, 2(cos 60° + i sen 60°) o 2e^(iπ/3)`);
     let ex;
     try { ex = A.leer(s); } catch (e) { throw new Error(`«${orig}» no se entiende: escribe ${nom} como 3 − 2i, 2∠60°, 2(cos 60° + i sen 60°) o 2e^(iπ/3)`); }
     return { z: A.aFloat(ex), ex, forma: 'binómica' };
+  }
+
+  // a + bi con a y b reales escritos con √, π o fracciones; null si no tiene esa forma
+  function binomicaReal(s) {
+    const t = s.replace(/\s+/g, '').replace(/j/g, 'i'), terms = [];
+    let dentro = 0, ini = 0;
+    for (let k = 0; k < t.length; k++) {
+      const c = t[k];
+      if (c === '(') dentro++; else if (c === ')') dentro--;
+      else if ((c === '+' || c === '-') && dentro === 0 && k > 0 && !/[*/^]/.test(t[k - 1])) { terms.push(t.slice(ini, k)); ini = k; }
+    }
+    terms.push(t.slice(ini));
+    let re = 0, im = 0;
+    try {
+      for (const q of terms) {
+        const n = (q.match(/i/g) || []).length;
+        if (n > 1) return null;
+        if (!n) { re += leeReal(q, 'la parte real').v; continue; }
+        let c = q.replace(/[*·]?i[*·]?/, '');
+        if (c === '' || c === '+') c = '1'; else if (c === '-') c = '-1';
+        im += leeReal(c, 'la parte imaginaria').v;
+      }
+    } catch (e) { return null; }
+    // se escribe como lo puso el alumno: 1 + √3 i
+    const txt = terms.map((q, k) => { const sg = q[0] === '-' ? '−' : '+', c = q.replace(/^[+-]/, '').replace(/[*·]?i[*·]?/, (m) => (m ? ' i' : '')).trim(); return k ? ` ${sg} ${c}` : `${sg === '−' ? '−' : ''}${c}`; }).join('').replace(/^ i|\( i/g, (m) => m.replace(' ', ''));
+    return { z: Z(re, im), ex: null, forma: 'binómica', txt };
   }
 
   /* ---------- Escritura ---------- */
@@ -1046,13 +1514,15 @@ const Complejos = (() => {
   const exTxt = (ex) => A.txt(ex), qT = (q) => A.txt(A.C(q));
   // entre paréntesis si tiene dos términos o es negativo, para sustituir: (3 − 2i), (−45°)
   const enPar = (s) => (/^[^+−]+$/.test(s) ? s : `(${s})`);
-  const binHtml = (w) => (w.ex ? exTxt(w.ex) : bin(w.z));
+  const binHtml = (w) => (w.ex ? exTxt(w.ex) : w.txt ?? bin(w.z));
 
   // las formas de un complejo y el argumento con su cuadrante
   function formas(w, unidad, nom = 'z') {
     const z = limpia(w.z), r = mod(z), t = arg(z), { re: a, im: b } = z;
     const rT = moduloTxt(z, w.ex), rN = f(r), tT = angulo(t, unidad), tP = piFrac(t) ?? f(t);
     const x = w.ex ? qT(w.ex.re) : f(a), y = w.ex ? qT(w.ex.im) : f(b);
+    // el módulo exacto si lo hay (5√2 en vez de 7,071) y el ángulo negativo entre paréntesis: cos(−53,13°)
+    const rE = rT.includes('≈') ? rT.split(' ≈')[0] : rN, tA = tT.startsWith('−') ? `(${tT})` : tT;
     let argH;
     if (r === 0) argH = 'El 0 tiene módulo 0 y su argumento no está definido.';
     else if (a === 0) argH = `Está sobre el eje imaginario ${b > 0 ? 'positivo' : 'negativo'}: $θ = ${angulo(b > 0 ? PI / 2 : -PI / 2, unidad)}$`;
@@ -1064,7 +1534,7 @@ const Complejos = (() => {
     }
     return {
       r, t, rT, tT,
-      binomica: binHtml(w), polar: `${rN}_{${tT}}`, trig: `${rN}(cos ${tT} + i sen ${tT})`, expo: `${rN} e^{${tP === '0' ? '0' : `${tP}i`}}`,
+      binomica: binHtml(w), polar: `${rE}_{${tT}}`, trig: rE === '1' ? `cos ${tA} + i sen ${tA}` : `${rE}(cos ${tA} + i sen ${tA})`, expo: `${rE === '1' ? '' : rE + ' '}e^{${tP === '0' ? '0' : piFrac(t) ? tP.replace('π', 'iπ') : `${tP} i`}}`,
       pasos: [
         { t: `Módulo de ${nom}`, html: `$|${nom}| = √(a^2 + b^2) = √(${enPar(x)}^2 + ${enPar(y)}^2)$ = <b>$${rT}$</b>` },
         { t: `Argumento de ${nom}`, html: argH },
@@ -1073,7 +1543,9 @@ const Complejos = (() => {
   }
   const OPS = {
     formas: 'Formas de un complejo', suma: 'Suma z₁ + z₂', resta: 'Resta z₁ − z₂', producto: 'Producto z₁ · z₂', cociente: 'Cociente z₁ / z₂',
-    potencia: 'Potencia zⁿ (De Moivre)', raices: 'Raíces n-ésimas', ecuacion: 'Ecuación de segundo grado',
+    potencia: 'Potencia zⁿ (De Moivre)', raices: 'Raíces n-ésimas (zⁿ = w)', ecuacion: 'Ecuación de segundo grado',
+    polinomio: 'Ecuación polinómica (grado 3 o más)', logaritmo: 'Logaritmo ln z', exponencial: 'Exponencial e^z', potenciaC: 'Potencia z^w (exponente complejo)',
+    region: 'Región del plano',
   };
 
   /* ---------- Cálculo ---------- */
@@ -1083,6 +1555,9 @@ const Complejos = (() => {
     const aBin = (w, nom) => { if (w.forma !== 'binómica') { pasos.push({ t: `${nom} en forma binómica`, html: `$${nom} = r cos θ + i r sen θ$ = <b>$${bin(w.z)}$</b>` }); } };
     const aPol = (w, nom) => { const F = formas(w, u, nom); pasos.push(...F.pasos.filter(() => w.forma === 'binómica')); return F; };
     if (op === 'ecuacion') return ecuacion(sc, res);
+    if (op === 'polinomio') return polinomio(sc, res);
+    if (op === 'region') return region(sc, res);
+    if (op === 'logaritmo' || op === 'exponencial' || op === 'potenciaC') return trascendente(op, sc, res);
     const w1 = leeZ(sc.z1, u, op === 'formas' || op === 'potencia' || op === 'raices' ? 'z' : 'z₁');
     if (op === 'formas') {
       const F = formas(w1, u);
@@ -1187,6 +1662,137 @@ const Complejos = (() => {
     return res;
   }
 
+  /* ---------- Logaritmo, exponencial y potencia compleja ---------- */
+  const zln = (z) => Z(Math.log(mod(z)), arg(z));
+  const zexp = (z) => pol(Math.exp(z.re), z.im);
+  function trascendente(op, sc, res) {
+    const u = res.unidad, pasos = res.pasos, PI2 = u === 'radianes' ? '2kπ' : '360°k';
+    if (op === 'exponencial') {
+      const w = leeZ(sc.z1, 'radianes', 'z'), z = w.z, r = Math.exp(z.re), zz = pol(r, z.im);
+      pasos.push({ t: 'Fórmula de Euler', html: `Si $z = a + bi$, $e^z = e^a · e^{ib} = e^a (cos b + i sen b)$: el módulo es $e^a$ y el argumento es b (en radianes).` });
+      pasos.push({ t: 'Con z = ' + bin(z), html: `$e^{${bin(z)}} = e^{${f(z.re)}} (cos ${f(z.im)} + i sen ${f(z.im)})$ = $${f(r)}_{${angulo(z.im, u)}}$ = <b>$${bin(zz)}$</b>${Math.abs(z.re) < 1e-12 && Math.abs(Math.abs(z.im) - PI) < 1e-12 ? '<br>Es la identidad de Euler: $e^{iπ} = −1$.' : ''}<br>La exponencial compleja es periódica: $e^{z + 2πi} = e^z$.` });
+      Object.assign(res, { z: zz, formas: formas({ z: zz, ex: null }, u, 'e^z') });
+      res.puntos = [{ z, n: 'z', c: 1 }, { z: zz, n: 'eᶻ', c: 3 }];
+      return res;
+    }
+    const w1 = leeZ(sc.z1, u, 'z');
+    if (mod(w1.z) === 0) throw new Error(op === 'logaritmo' ? 'El logaritmo de 0 no existe' : 'La base 0 no se puede elevar a un exponente complejo');
+    const F = formas(w1, u, 'z'), L = zln(w1.z);
+    pasos.push(...F.pasos);
+    const lnTxt = `${f(L.re)} ${L.im < 0 ? '−' : '+'} ${f(Math.abs(L.im))}i`;
+    pasos.push({ t: 'Logaritmo', html: `$ln z = ln|z| + i (θ + 2kπ)$, con θ en radianes: hay infinitos logaritmos, uno por cada vuelta. El <b>principal</b> (k = 0, con −π < θ ≤ π) es:<br>$Ln z = ln ${f(F.r)} + ${piFrac(F.t) ?? f(F.t)} i$ = <b>$${lnTxt}$</b>` });
+    if (op === 'logaritmo') {
+      pasos.push({ t: 'Los demás valores', html: [-1, 1, 2].map((k) => `$k = ${k}$: $${f(L.re)} ${L.im + 2 * PI * k < 0 ? '−' : '+'} ${f(Math.abs(L.im + 2 * PI * k))}i$`).join('<br>') + `<br>Todos tienen la misma parte real, ln|z|, y la parte imaginaria va de 2π en 2π.${void PI2 || ''}` });
+      Object.assign(res, { z: L, formas: formas({ z: L, ex: null }, u, 'Ln z') });
+      res.puntos = [{ z: w1.z, n: 'z', c: 1 }, { z: L, n: 'Ln z', c: 3 }];
+      return res;
+    }
+    const w2 = leeZ(sc.z2, u, 'w'), e = w2.z, prod = zm(e, L), zz = zexp(prod);
+    pasos.push({ t: 'Definición', html: `$z^w = e^{w · ln z}$. Con el logaritmo principal sale el valor principal:<br>$w · Ln z = (${bin(e)})(${lnTxt})$ = $${bin(prod)}$<br>$z^w = e^{${bin(prod)}}$ = $${f(Math.exp(prod.re))}_{${angulo(prod.im, u)}}$ = <b>$${bin(zz)}$</b>` });
+    const q = w2.ex && A.esReal(w2.ex) ? w2.ex.re : null;
+    if (q && q.d !== 1n) pasos.push({ t: 'Cuántos valores tiene', html: `Como w = ${qT(q)} es una fracción con denominador ${q.d}, $z^w$ tiene ${q.d} valores distintos (los de las raíces ${q.d}-ésimas); el de arriba es el principal.` });
+    else if (!q) pasos.push({ t: 'Cuántos valores tiene', html: `Con un exponente no real, cada logaritmo $ln z + 2kπi$ da un valor distinto: hay infinitos, y el de arriba es el principal. Por ejemplo, $i^i = e^{−π/2} ≈ 0,2079$ es real.` });
+    Object.assign(res, { z: zz, formas: formas({ z: zz, ex: null }, u, 'z^w') });
+    res.puntos = [{ z: w1.z, n: 'z', c: 1 }, { z: e, n: 'w', c: 2 }, { z: zz, n: 'zʷ', c: 3 }];
+    return res;
+  }
+
+  /* ---------- Ecuaciones polinómicas ---------- */
+  function polinomio(sc, res) {
+    const P_ = typeof Parametro !== 'undefined' ? Parametro : require('../matematicas/parametro.js'), pasos = res.pasos;
+    if (vacio(sc.p)) throw new Error('Escribe el polinomio en z, por ejemplo z^3 − 8 o z^4 + 2z^2 + 1');
+    let p;
+    try { p = P_.lee(String(sc.p).replace(/=\s*0\s*$/, ''), 'z'); } catch (e) { throw new Error(`El polinomio: ${e.message}`); }
+    const g = P_.grado(p);
+    if (g < 1) throw new Error('El polinomio tiene que tener z');
+    if (g > 8) throw new Error('Como mucho de grado 8');
+    const alto = p.slice().reverse(), r = A.raices(alto), sols = [];
+    pasos.push({ t: 'La ecuación', html: `$${A.polHtml(alto, 'z').replace(/<sup>(.*?)<\/sup>/g, '^{$1}')} = 0$, de grado ${g}: por el teorema fundamental del álgebra tiene ${g} soluciones complejas, contando las repetidas.` });
+    const noCero = p.map((c, i) => [c, i]).filter(([c]) => !A.esCero(c));
+    if (noCero.length === 2 && noCero[0][1] === 0) {
+      const [c0, n] = [noCero[0][0], noCero[1][1]], w = A.div(A.neg(c0), noCero[1][0]);
+      pasos.push({ t: 'Es una ecuación binómica', html: `Se despeja $z^{${n}} = ${exTxt(w)}$: las soluciones son las ${n} raíces ${n}-ésimas de ${exTxt(w)}, que están en un polígono regular (usa «Raíces n-ésimas» para verlas paso a paso).` });
+    }
+    for (const { valor, mult } of r.exactas) sols.push({ z: A.aFloat(valor), ex: valor, mult });
+    for (const z of r.aprox) sols.push({ z, ex: null, mult: 1 });
+    if (r.exactas.length) {
+      const fac = r.exactas.map(({ valor, mult }) => { const [sg, v] = A.signo(A.neg(valor)); return `(z ${sg} ${v})${mult > 1 ? `^{${mult}}` : ''}`; }).join(' ');
+      pasos.push({ t: 'Raíces exactas (Ruffini)', html: `Probando los divisores del término independiente y dividiendo por Ruffini: ${r.exactas.map((x) => `$z = ${exTxt(x.ex ?? x.valor)}$${x.mult > 1 ? ` (${x.mult === 2 ? 'doble' : 'triple'})` : ''}`).join(', ')}${r.resto.length > 1 ? `. Queda $${A.polHtml(r.resto, 'z').replace(/<sup>(.*?)<\/sup>/g, '^{$1}')}$` : ''}.<br>Factorizado: $${fac}${r.resto.length > 1 ? ` (${A.polHtml(r.resto, 'z').replace(/<sup>(.*?)<\/sup>/g, '^{$1}')})` : ''}$` });
+    }
+    if (r.aprox.length) pasos.push({ t: r.exactas.length ? 'El resto, numéricamente' : 'Raíces numéricas', html: `${r.resto.length === 3 ? 'Es de segundo grado: se resuelve con la fórmula $z = {−b ± √Δ}/{2a}$. ' : 'No tiene más raíces racionales: se calculan numéricamente (método de Durand-Kerner). '}${r.aprox.map((z) => `$z ≈ ${bin(z, 5)}$`).join(', ')}` });
+    if (alto.every(A.esReal)) pasos.push({ t: 'Coeficientes reales', html: 'Como los coeficientes son reales, las soluciones complejas aparecen por parejas de conjugadas.' });
+    Object.assign(res, { sols, z: sols[0]?.z });
+    res.puntos = sols.map((q, k) => ({ z: q.z, n: `z${'₁₂₃₄₅₆₇₈₉'[k] ?? k + 1}`, c: 3 }));
+    return res;
+  }
+
+  /* ---------- Regiones del plano ---------- */
+  // condiciones separadas por comas o «y»: |z − 1| < 2, Re z > 0, 0 ≤ arg z ≤ π/2, |z − i| = |z + 1|
+  function region(sc, res) {
+    const u = res.unidad, pasos = res.pasos;
+    const txt = String(sc.cond ?? '').replace(/[−–]/g, '-').replace(/≤/g, '<=').replace(/≥/g, '>=').replace(/\s+/g, ' ').trim();
+    if (!txt) throw new Error('Escribe una o varias condiciones: |z − 1| < 2, Re z > 0, 0 ≤ arg z ≤ π/2…');
+    const partes = txt.split(/\s*(?:,|;|\by\b|∧)\s*/).filter(Boolean), conds = [];
+    // una expresión en z: devuelve { f(z), txt, centro? }
+    const expr = (e0) => {
+      const e = e0.trim().replace(/\s+/g, '');
+      let m;
+      if ((m = /^\|z(?:([+-])(.+))?\|$/.exec(e))) {
+        // |z − 1 − i| = |z − (1 + i)|: el centro es lo que se resta, con todo su signo
+        const resto = m[1] ? leeZ(m[1] + m[2], u, 'el centro').z : Z(0), cc = Z(-resto.re || 0, -resto.im || 0);
+        return { f: (z) => mod(zr(z, cc)), t: m[1] ? `la distancia de z a ${bin(cc)}` : 'el módulo de z', c: cc, tipo: 'mod' };
+      }
+      if (/^Re\(?z\)?$/i.test(e)) return { f: (z) => z.re, t: 'la parte real', tipo: 're' };
+      if (/^Im\(?z\)?$/i.test(e)) return { f: (z) => z.im, t: 'la parte imaginaria', tipo: 'im' };
+      if (/^arg\(?z\)?$/i.test(e)) return { f: (z) => arg(z), t: 'el argumento', tipo: 'arg' };
+      return null;
+    };
+    const num = (e, ang) => (ang ? leeAngulo(e, u, 'el ángulo') : leeReal(e, 'el número').v);
+    for (const pz of partes) {
+      const tok = pz.split(/(<=|>=|<|>|=)/).map((x) => x.trim());
+      if (tok.length !== 3 && tok.length !== 5) throw new Error(`«${pz}» no se entiende: escribe por ejemplo |z − 1| < 2, Re z > 0 o 0 < arg z < π/2`);
+      const pon = (izq, op, der) => {
+        const L = expr(izq), R = expr(der);
+        if (L && R) { conds.push({ a: L, b: R, op, t: `${L.t} ${op} ${R.t}` }); return; }
+        const X = L || R; if (!X) throw new Error(`«${pz}» no tiene z: usa |z − a|, Re z, Im z o arg z`);
+        const k = num(L ? der : izq, X.tipo === 'arg');
+        let o = op; if (!L) o = { '<': '>', '>': '<', '<=': '>=', '>=': '<=', '=': '=' }[op];
+        conds.push({ a: X, k, op: o });
+      };
+      if (tok.length === 3) pon(tok[0], tok[1], tok[2]);
+      else { pon(tok[0], tok[1], tok[2]); pon(tok[2], tok[3], tok[4]); }
+    }
+    const cmp = (x, op, y, tol) => ({ '<': x < y - tol, '>': x > y + tol, '<=': x <= y + tol, '>=': x >= y - tol, '=': Math.abs(x - y) <= tol }[op]);
+    const valor = (c, z) => c.a.f(z) - (c.b ? c.b.f(z) : c.k);
+    const dentro = (z, tol = 0) => conds.every((c) => cmp(valor(c, z), c.op, 0, c.op === '=' ? tol : 0));
+    const OPT = { '<': 'menor que', '>': 'mayor que', '<=': 'menor o igual que', '>=': 'mayor o igual que', '=': 'igual a' };
+    const desc = conds.map((c) => {
+      const a = c.a;
+      if (c.b) return c.op === '=' ? `${c.t}: los puntos que están a la misma distancia de ${bin(a.c)} y de ${bin(c.b.c)}, la mediatriz del segmento que los une.` : `${c.t}: el semiplano de los puntos más ${c.op.startsWith('<') ? 'cerca' : 'lejos'} de ${bin(a.c)} que de ${bin(c.b.c)}; la frontera es la mediatriz.`;
+      if (a.tipo === 'mod') return c.op === '=' ? `La circunferencia de centro ${bin(a.c)} y radio ${f(c.k)}.` : `${c.op.startsWith('<') ? 'El interior' : 'El exterior'} de la circunferencia de centro ${bin(a.c)} y radio ${f(c.k)}${c.op.length > 1 ? ', con el borde' : ', sin el borde'}.`;
+      if (a.tipo === 're') return c.op === '=' ? `La recta vertical x = ${f(c.k)}.` : `El semiplano ${c.op.startsWith('<') ? 'a la izquierda' : 'a la derecha'} de la recta vertical x = ${f(c.k)}.`;
+      if (a.tipo === 'im') return c.op === '=' ? `La recta horizontal y = ${f(c.k)}.` : `El semiplano ${c.op.startsWith('<') ? 'por debajo' : 'por encima'} de la recta horizontal y = ${f(c.k)}.`;
+      return `${c.op === '=' ? 'Una semirrecta desde el origen' : 'La zona barrida por las semirrectas desde el origen'} (${a.t} ${OPT[c.op]} ${angulo(c.k, u)}).`;
+    });
+    // cada condición también como fórmula: |z − (1 + i)| ≤ 2
+    const OPS = { '<': '<', '>': '>', '<=': '≤', '>=': '≥', '=': '=' };
+    const fz = (a) => (a.tipo === 'mod' ? (mod(a.c) < 1e-12 ? '|z|' : `|z − (${bin(a.c)})|`) : a.tipo === 're' ? '"Re" z' : a.tipo === 'im' ? '"Im" z' : 'arg z');
+    const fCond = (c) => `$${fz(c.a)} ${OPS[c.op]} ${c.b ? fz(c.b) : c.a.tipo === 'arg' ? angulo(c.k, u) : f(c.k)}$`;
+    pasos.push({ t: conds.length > 1 ? 'Cada condición' : 'La condición', html: desc.map((d, i) => `${conds.length > 1 ? `(${i + 1}) ` : ''}${fCond(conds[i])}: ${d[0].toLowerCase() + d.slice(1)}`).join('<br>') });
+    if (conds.length > 1) pasos.push({ t: 'Todas a la vez', html: 'La región es la intersección: los puntos que cumplen todas las condiciones (la zona sombreada).' });
+    // un punto de la región, para comprobar que no está vacía
+    let L0 = 2;
+    for (const c of conds) { if (c.a.c) L0 = Math.max(L0, mod(c.a.c) + (c.k || 0)); if (c.b && c.b.c) L0 = Math.max(L0, mod(c.b.c)); if (c.a.tipo !== 'arg' && c.k !== undefined) L0 = Math.max(L0, Math.abs(c.k) + 1); }
+    L0 *= 1.3;
+    let hay = false, punto = null;
+    // un punto de la región, mejor con coordenadas sencillas (enteras) si las hay
+    for (const paso of [1, L0 / 30]) for (let i = 0; i <= 2 * L0 / paso && !hay; i++) for (let j = 0; j <= 2 * L0 / paso && !hay; j++) { const z = Z(Math.round(-L0 / paso) * paso + i * paso, Math.round(-L0 / paso) * paso + j * paso); if (dentro(z, paso === 1 ? 0 : L0 / 40)) { hay = true; punto = z; } }
+    if (!hay) pasos.push({ t: 'Región vacía', html: 'Ningún punto cumple todas las condiciones a la vez.' });
+    Object.assign(res, { conds, dentro, frontera: (z, tol) => conds.some((c) => Math.abs(valor(c, z)) < tol), L: L0, vacia: !hay, desc, punto: punto && bin(Z(+f(punto.re).replace(',', '.').replace('−', '-'), +f(punto.im).replace(',', '.').replace('−', '-'))) });
+    res.puntos = conds.flatMap((c) => [c.a.c, c.b?.c]).filter(Boolean).filter((z, i, xs) => xs.findIndex((w) => Math.abs(w.re - z.re) + Math.abs(w.im - z.im) < 1e-12) === i).map((z) => ({ z, n: bin(z), c: 1 }));
+    return res;
+  }
+
   const ejemplos = [
     { clave: 'formas', nombre: 'Formas de 3 + 4i', sc: { op: 'formas', z1: '3+4i', unidad: 'grados' } },
     { clave: 'cuadrante', nombre: 'De polar a binómica: 2∠120°', sc: { op: 'formas', z1: '2∠120°', unidad: 'grados' } },
@@ -1201,6 +1807,13 @@ const Complejos = (() => {
     { clave: 'ecuacion', nombre: 'Ecuación z² − 2z + 5 = 0', sc: { op: 'ecuacion', a: '1', b: '-2', c: '5', unidad: 'grados' } },
     { clave: 'ecuacion-compleja', nombre: 'Ecuación con coeficientes complejos', sc: { op: 'ecuacion', a: '1', b: '-3i', c: '-3+i', unidad: 'grados' } },
     { clave: 'exponencial', nombre: 'De exponencial a binómica: 2e^(iπ/3)', sc: { op: 'formas', z1: '2e^(iπ/3)', unidad: 'radianes' } },
+    { clave: 'cubica', nombre: 'Ecuación z³ − 8 = 0', sc: { op: 'polinomio', p: 'z^3 - 8', unidad: 'grados' } },
+    { clave: 'cuarta', nombre: 'Ecuación z⁴ + 5z² + 4 = 0', sc: { op: 'polinomio', p: 'z^4 + 5z^2 + 4', unidad: 'grados' } },
+    { clave: 'logaritmo', nombre: 'Logaritmo de −1', sc: { op: 'logaritmo', z1: '-1', unidad: 'radianes' } },
+    { clave: 'euler', nombre: 'e^(1 + iπ/2)', sc: { op: 'exponencial', z1: '1+iπ/2', unidad: 'radianes' } },
+    { clave: 'ii', nombre: 'iⁱ es un número real', sc: { op: 'potenciaC', z1: 'i', z2: 'i', unidad: 'radianes' } },
+    { clave: 'disco', nombre: 'Región |z − 1 − i| ≤ 2 con Re z > 0', sc: { op: 'region', cond: '|z - 1 - i| <= 2, Re z > 0', unidad: 'grados' } },
+    { clave: 'sector', nombre: 'Sector 0 ≤ arg z ≤ 60° con |z| < 3', sc: { op: 'region', cond: '0 <= arg z <= 60°, |z| < 3', unidad: 'grados' } },
   ];
 
   return { resolver, leeZ, leeReal, formas, piFrac, OPS, ejemplos, mod, arg, bin, f, Z };
@@ -1231,10 +1844,13 @@ const Complejos = (() => {
     let h = elige('op', 'Qué calcular', Object.entries(K.OPS));
     if (sc.op === 'ecuacion') h += '<div class="sep">a z² + b z + c = 0</div>' + fila('a', 'Coeficiente a') + fila('b', 'Coeficiente b') + fila('c', 'Coeficiente c');
     else if (DOS.includes(sc.op)) h += fila('z1', 'z₁') + fila('z2', 'z₂');
+    else if (sc.op === 'polinomio') h += fila('p', 'Polinomio en z <small>(= 0)</small>');
+    else if (sc.op === 'region') h += fila('cond', 'Condiciones');
+    else if (sc.op === 'potenciaC') h += fila('z1', 'Base z') + fila('z2', 'Exponente w');
     else h += fila('z1', 'z') + (sc.op === 'potencia' ? fila('n', 'Exponente n', 'numeric') : sc.op === 'raices' ? fila('n', 'Índice n', 'numeric') : '');
     h += elige('unidad', 'Ángulos en', [['grados', 'grados (°)'], ['radianes', 'radianes']]);
     $('#campos').innerHTML = h;
-    $('#nota').textContent = sc.op === 'ecuacion' ? 'Los coeficientes pueden ser complejos en forma binómica: 1, −3i, 2 + i, 1/2.' : 'Escribe 3 − 2i, 1/2 + i, 2∠60° (o 2_60), 2(cos 60° + i sen 60°) o 2e^(iπ/3). Un ángulo con π va en radianes y uno con ° en grados.';
+    $('#nota').textContent = sc.op === 'ecuacion' ? 'Los coeficientes pueden ser complejos en forma binómica: 1, −3i, 2 + i, 1/2.' : sc.op === 'polinomio' ? 'Escribe el polinomio con z: z^3 − 8, z^4 + 5z^2 + 4, (1 + i)z^3 − 2. Los coeficientes pueden ser complejos.' : sc.op === 'region' ? 'Separa las condiciones con comas: |z − 1| < 2, Re z > 0, Im z ≤ 1, 0 ≤ arg z ≤ π/2, |z − i| = |z + 1|.' : sc.op === 'exponencial' ? 'Escribe z en binómica, con la parte imaginaria en radianes: 1 + iπ/2, 2 − 3i.' : 'Escribe 3 − 2i, 1/2 + i, 2∠60° (o 2_60), 2(cos 60° + i sen 60°) o 2e^(iπ/3). Un ángulo con π va en radianes y uno con ° en grados.';
   }
   $('#campos').addEventListener('input', (e) => { const t = e.target; if (t.tagName !== 'INPUT') return; sc[t.dataset.k] = t.value; $('#ejemplos').value = ''; calcula(); });
   $('#campos').addEventListener('change', (e) => {
@@ -1291,14 +1907,20 @@ const Complejos = (() => {
     let h = '';
     const F = sol.formas;
     if (sol.op === 'raices') h = sol.raices.map((q) => dato(`w${'₀₁₂₃₄₅₆₇₈₉'[q.k] ?? q.k}`, `${M(`${f(sol.R)}_{${angulo(q.t)}}`)} = ${K.bin(q.z)}`)).join('');
-    else if (sol.op === 'ecuacion') h = dato('Solución z₁', sol.e1 ? M(Algebra.txt(sol.e1)) : K.bin(sol.z1)) + dato('Solución z₂', sol.e2 ? M(Algebra.txt(sol.e2)) : K.bin(sol.z2));
+    else if (sol.op === 'polinomio') h = sol.sols.map((q, k) => dato(`z${'₁₂₃₄₅₆₇₈₉'[k] ?? k + 1}${q.mult > 1 ? ` (${q.mult === 2 ? 'doble' : 'triple'})` : ''}`, q.ex ? M(Algebra.txt(q.ex)) : K.bin(q.z, 5))).join('');
+    else if (sol.op === 'region') h = dato('La región', sol.vacia ? 'Vacía: ningún punto cumple todas las condiciones' : sol.desc.join('<br>')) + (sol.punto ? dato('Un punto que la cumple', Mates.html(`$z = ${sol.punto}$`)) : '');
+    else if (sol.op === 'ecuacion') {
+      // con raíces, la exacta y el decimal al lado; si no, el número tal cual (lo que se pregunta en el modo práctica)
+      const sz = (e, z) => (e && /√/.test(Algebra.txt(e)) ? `${M(Algebra.txt(e))} ≈ ${K.bin(z)}` : K.bin(z));
+      h = dato('Solución z₁', sz(sol.e1, sol.z1)) + dato('Solución z₂', sz(sol.e2, sol.z2));
+    }
     else {
       h = dato(sol.op === 'formas' ? 'Forma binómica' : 'Resultado (binómica)', M(F.binomica)) + dato('Forma polar', M(F.polar)) + dato('Módulo', M(F.rT)) + dato('Argumento', M(F.tT));
       if (sol.op === 'formas') h += dato('Trigonométrica', M(F.trig)) + dato('Exponencial', M(F.expo)) + dato('Conjugado', K.bin(sol.conj)) + (sol.inv ? dato('Inverso', sol.ex ? M(Algebra.txt(Algebra.div(Algebra.c1, sol.ex))) : K.bin(sol.inv)) : '');
     }
     $('#resumen').innerHTML = h;
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
-    $('#leyenda').textContent = { formas: 'El afijo de z, su módulo (la longitud de la flecha), su argumento (el arco) y el conjugado, simétrico respecto al eje real.', potencia: 'Al elevar a n, el módulo se eleva a n y el argumento se multiplica por n.', raices: 'Las raíces están en una circunferencia y forman un polígono regular.', ecuacion: 'Las soluciones en el plano complejo.' }[sol.op] || (sol.op === 'suma' || sol.op === 'resta' ? 'La suma es la diagonal del paralelogramo que forman los dos vectores.' : 'En el producto se suman los argumentos y se multiplican los módulos; en el cociente se restan y se dividen.');
+    $('#leyenda').textContent = { formas: 'El afijo de z, su módulo (la longitud de la flecha), su argumento (el arco) y el conjugado, simétrico respecto al eje real.', potencia: 'Al elevar a n, el módulo se eleva a n y el argumento se multiplica por n.', raices: 'Las raíces están en una circunferencia y forman un polígono regular.', ecuacion: 'Las soluciones en el plano complejo.', polinomio: 'Las soluciones de la ecuación en el plano complejo.', region: 'Los puntos que cumplen todas las condiciones, sombreados, con su frontera.', logaritmo: 'z y su logaritmo principal: la parte real es ln|z| y la imaginaria, el argumento.', exponencial: 'z = a + bi y eᶻ, de módulo eᵃ y argumento b.', potenciaC: 'La base, el exponente y el valor principal de zʷ.' }[sol.op] || (sol.op === 'suma' || sol.op === 'resta' ? 'La suma es la diagonal del paralelogramo que forman los dos vectores.' : 'En el producto se suman los argumentos y se multiplican los módulos; en el cociente se restan y se dividen.');
     dibuja();
   }
   const angulo = (t) => (sc.unidad === 'radianes' ? (K.piFrac(t) ?? `${f(t)} rad`) : `${f((t * 180) / Math.PI, 4)}°`);
@@ -1318,6 +1940,7 @@ const Complejos = (() => {
     colores();
     const pts = sol.puntos.filter((p) => isFinite(p.z.re) && isFinite(p.z.im));
     let L = Math.max(1, ...pts.flatMap((p) => [Math.abs(p.z.re), Math.abs(p.z.im)])) * 1.25;
+    if (sol.op === 'region') L = sol.L;
     if (sol.op === 'suma' || sol.op === 'resta') L = Math.max(L, ...sol.puntos.map((p) => K.mod(p.z) * 1.1));
     // misma escala en los dos ejes
     const m = 26, esc = Math.min(w - 2 * m, h - 2 * m) / (2 * L), cx = w / 2, cy = h / 2;
@@ -1352,6 +1975,22 @@ const Complejos = (() => {
       sol.puntos.forEach(punto);
       return;
     }
+    if (sol.op === 'region') {
+      // se sombrea cada celda cuyo centro cumple las condiciones; la frontera, más oscura
+      const paso = 3, tol = 1.6 / esc;
+      g.fillStyle = col['--z3'];
+      for (let px = 0; px < w; px += paso) for (let py = 0; py < h; py += paso) {
+        const z = K.Z((px + paso / 2 - cx) / esc, (cy - py - paso / 2) / esc);
+        if (sol.dentro(z, tol)) { g.globalAlpha = 0.22; g.fillRect(px, py, paso, paso); }
+        if (sol.frontera(z, tol) && sol.dentro(z, 3 * tol)) { g.globalAlpha = 0.9; g.fillRect(px, py, paso, paso); }
+      }
+      g.globalAlpha = 1;
+      sol.puntos.forEach(punto);
+      return;
+    }
+    if (sol.op === 'polinomio') { sol.puntos.forEach(punto); return; }
+    if (sol.op === 'logaritmo' || sol.op === 'exponencial') { flecha(sol.puntos[0].z, C[1]); flecha(sol.puntos[1].z, C[3]); sol.puntos.forEach(punto); return; }
+    if (sol.op === 'potenciaC') { sol.puntos.forEach((p) => { flecha(p.z, C[p.c]); punto(p); }); return; }
     if (sol.op === 'ecuacion' || sol.op === 'potencia') { sol.puntos.forEach((p) => { flecha(p.z, C[p.c]); punto(p); }); return; }
     if (sol.op === 'formas') {
       const z = sol.z, r = K.mod(z), t = K.arg(z);

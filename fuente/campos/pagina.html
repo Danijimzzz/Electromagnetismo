@@ -1,5 +1,5 @@
-<title>Campos vectoriales: gradiente, divergencia, rotacional y Green · SimulaCiencia</title>
-<meta name="description" content="Calculadora de campos vectoriales en español: gradiente y derivada direccional, laplaciano, divergencia y rotacional, potencial de un campo conservativo, integral de línea (trabajo) y teorema de Green, paso a paso y con la gráfica del campo.">
+<title>Campos vectoriales: gradiente, rotacional, potencial, Green, Stokes y Gauss · SimulaCiencia</title>
+<meta name="description" content="Calculadora de campos vectoriales en español: gradiente y derivada direccional, laplaciano, divergencia y rotacional, potencial φ(x, y, z) de un campo conservativo, integral de línea (trabajo) y ∫ f ds (masa de un alambre), teorema de Green en polígonos y entre curvas, flujo por una superficie, teorema de Stokes y de la divergencia, paso a paso y con la gráfica del campo.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
@@ -18,7 +18,7 @@
 <header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Matemáticas</a> / Campos vectoriales</span></header>
 <div class="wrap">
 <h1>Campos vectoriales</h1>
-<p class="lead">Calcula el gradiente y la derivada direccional de un campo escalar, la divergencia y el rotacional de un campo vectorial, el trabajo a lo largo de una curva y comprueba el teorema de Green, paso a paso y viendo el campo.</p>
+<p class="lead">Calcula el gradiente de un campo escalar, la divergencia, el rotacional y el potencial de un campo vectorial, el trabajo o la masa a lo largo de una curva, el flujo por una superficie y comprueba los teoremas de Green, Stokes y Gauss, paso a paso y viendo el campo.</p>
 <div class="layout">
   <div class="card">
     <h2>Datos</h2>
@@ -46,11 +46,24 @@
   <p class="f m">$∇ × F = ({∂R}/{∂y} − {∂Q}/{∂z}, {∂P}/{∂z} − {∂R}/{∂x}, {∂Q}/{∂x} − {∂P}/{∂y})$</p>
   <p>La divergencia mide cuánto campo sale de un punto: positiva en una fuente y negativa en un sumidero. El rotacional mide cuánto gira: un molinillo puesto en el campo gira con la mitad del rotacional. El campo (y, 0) no da vueltas y sin embargo tiene rotacional, porque arriba empuja más que abajo.</p>
   <h2>Campos conservativos e integral de línea</h2>
-  <p class="m">El trabajo de F a lo largo de una curva $r(t)$ con $t ∈ [a, b]$ es $W = ∫_C F · dr = ∫_a^b F(r(t)) · r′(t) dt$. Si el rotacional es 0 (en una región sin agujeros), F es conservativo: $F = ∇φ$ y el trabajo solo depende de los extremos, $W = φ(B) − φ(A)$. En una curva cerrada es 0.</p>
+  <p class="m">El trabajo de F a lo largo de una curva $r(t)$ con $t ∈ [a, b]$ es $W = ∫_C F · dr = ∫_a^b F(r(t)) · r′(t) dt$. Si la curva es una poligonal (el contorno de un triángulo, por ejemplo), se suma lo de cada segmento, recorrido como $r(t) = A + t (B − A)$ con $t ∈ [0, 1]$.</p>
+  <p class="m">Si el rotacional es 0 (en una región sin agujeros), F es conservativo: $F = ∇φ$ y el trabajo solo depende de los extremos, $W = φ(B) − φ(A)$. En una curva cerrada es 0. El potencial se saca integrando por partes de una en una: $φ = ∫ P dx + g(y, z)$; derivando respecto de y e igualando a Q sale $g$ salvo una función de z, y con R se termina. Por ejemplo, para $F = (2xy, x^2 + 3y^2)$: $φ = x^2 y + g(y)$, $x^2 + g′(y) = x^2 + 3y^2$, así que $φ = x^2 y + y^3 + K$.</p>
+  <h2>Integral de un campo escalar: masa de un alambre</h2>
+  <p class="f m">$∫_C f ds = ∫_a^b f(r(t)) |r′(t)| dt$</p>
+  <p class="m">Aquí no hay dirección: se suman los valores de f pesados por la longitud de cada trozo de curva. Con $f = 1$ es la longitud; si f es la densidad lineal de un alambre, es su masa M, y el centro de masas es $x̄ = {1}/{M} ∫_C x f ds$ (igual con y y z). Un semicírculo de radio 1 con densidad $y$ tiene masa 2 y su centro de masas en $(0, π/4)$.</p>
   <h2>Teorema de Green</h2>
   <p class="f m">$∮_C P dx + Q dy = ∬_D ({∂Q}/{∂x} − {∂P}/{∂y}) dA$</p>
   <p class="m">La circulación por el borde de una región, recorrido en sentido antihorario, es la integral doble del rotacional dentro. Con la normal hacia fuera sale el teorema de la divergencia en el plano: $∮_C F · n ds = ∬_D ∇ · F dA$. Por ejemplo, el área de D es $1/2 ∮_C x dy − y dx$.</p>
-  <p class="m">En electromagnetismo, el campo eléctrico es $E = −∇V$ y la ley de Gauss es el teorema de la divergencia; puedes verlo en el <a href="../../electromagnetismo/electrostatica/">simulador de electrostática</a>.</p>
+  <p class="m">La región puede ser un polígono (el borde son sus lados, recorridos en sentido antihorario) o la región entre dos curvas $g_1(x) ≤ y ≤ g_2(x)$ con $a ≤ x ≤ b$, donde la integral doble se hace como iterada: $∫_a^b ∫_{g_1(x)}^{g_2(x)} … dy dx$. Si el campo tiene una singularidad dentro de D (como $(−y, x)/(x^2 + y^2)$ en el origen), Green no se puede aplicar.</p>
+  <h2>Flujo por una superficie y teorema de Stokes</h2>
+  <p class="f m">$Φ = ∬_S F · dS = ∬ F(r(u, v)) · (r_u × r_v) du dv$</p>
+  <p class="m">Con la superficie dada como $r(u, v)$, el producto vectorial $r_u × r_v$ es un vector normal y su módulo es el elemento de área. Por ejemplo, la esfera de radio R es $r = (R sen u cos v, R sen u sen v, R cos u)$ con $u ∈ [0, π]$ y $v ∈ [0, 2π]$, y su normal apunta hacia fuera.</p>
+  <p class="f m">$∬_S (∇ × F) · dS = ∮_{∂S} F · dr$</p>
+  <p class="m">El teorema de Stokes dice que el flujo del rotacional a través de una superficie es la circulación por su borde, recorrido dejando la superficie a la izquierda si se mira desde la punta de la normal. Todas las superficies con el mismo borde dan lo mismo, y en una superficie cerrada (sin borde) sale 0. Green es el caso plano.</p>
+  <h2>Teorema de la divergencia (Gauss)</h2>
+  <p class="f m">$∯_S F · dS = ∭_V ∇ · F dV$</p>
+  <p class="m">El flujo hacia fuera por una superficie cerrada es la integral de la divergencia dentro. En una caja se suma cara a cara (en la cara $x = x_2$ sale $∬ P dy dz$; en $x = x_1$, $−∬ P dy dz$); en una esfera o un cilindro se usan coordenadas esféricas o cilíndricas. Si la divergencia es constante, el flujo es ella por el volumen.</p>
+  <p class="m">En electromagnetismo, el campo eléctrico es $E = −∇V$ y la ley de Gauss es el teorema de la divergencia: el campo de una carga puntual tiene divergencia 0 fuera de ella, pero su flujo por una esfera que la rodea es $4π$ (por $kq$), porque dentro hay una singularidad; puedes verlo en el <a href="../../electromagnetismo/electrostatica/">simulador de electrostática</a>.</p>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Campos vectoriales <span id="ver"></span> (beta)</footer>
