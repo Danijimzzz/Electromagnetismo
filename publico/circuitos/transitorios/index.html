@@ -358,6 +358,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: intervalo de confianza de una media con σ conocida (z) o desconocida (t de Student), a partir de x̄, s y n o de la lista de datos, también si te dan la desviación con n.', 'Intervalos de una proporción, de la varianza y la desviación típica (con la χ²), de la diferencia de medias (σ conocidas, iguales o Welch) y de la diferencia de proporciones.', 'Tamaño de muestra para un error máximo en una media o una proporción.', 'Gráfica de la distribución con el área de confianza y simulación de 100 muestras que muestra cuántos intervalos aciertan.'] },
     ],
     transitorios: [
+      { v: '0.1.1', fecha: '2026-10-25', cambios: ['Los valores admiten prefijos del SI y unidades: 4k7, 1,5 kΩ, 100n, 10 µF o 5 ms. Un número solo sigue en la unidad del campo (mH, μF).'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: carga y descarga de un condensador en un circuito RC (también si ya tenía carga), con τ = RC, la tensión y la corriente en un instante y el tiempo hasta una tensión.', 'Corriente que sube o baja en una bobina en un circuito RL, con τ = L/R y la tensión de la bobina.', 'Circuito RLC en serie: dice si es subamortiguado, crítico o sobreamortiguado y da la tensión del condensador frente al tiempo, también con carga o corriente al empezar.', 'Esquema del circuito con la corriente que circula y la gráfica de V e i frente a t animadas.'] },
     ],
     fuerza: [
@@ -401,6 +402,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: normal, t de Student, chi cuadrado, exponencial, binomial y Poisson, con su media y su varianza.', 'Probabilidades P(X ≤ a), P(X ≥ a), entre dos valores y, en las discretas, P(X = k) y con desigualdad estricta; cuantiles y valores críticos bilaterales.', 'Gráfica con el área (o las barras) que se pide sombreada.', 'Desarrollo como en clase: tipificación Z = (X − μ)/σ y Φ(z), fórmula de la binomial y de la Poisson término a término, y aproximación de la binomial por la normal con corrección de continuidad.'] },
     ],
     alterna: [
+      { v: '0.1.2', fecha: '2026-10-25', cambios: ['Los valores admiten prefijos del SI y unidades: 4k7, 1,5 kΩ, 100n, 10 µF o 5 ms. Un número solo sigue en la unidad del campo (mH, μF, kW).', 'Arreglo: en paralelo, una resistencia de 0 Ω se ignoraba como si no estuviera; ahora avisa de que cortocircuita la fuente.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: circuitos RLC en serie y en paralelo (o solo con algunos de los elementos) con impedancias complejas en forma binómica y polar, la corriente, la tensión o la corriente de cada elemento, las potencias activa, reactiva y aparente y el factor de potencia, con el desarrollo paso a paso.', 'Diagrama de fasores y ondas v(t) e i(t) desfasadas.', 'Resonancia: frecuencia de resonancia, factor de calidad y ancho de banda.', 'Corrección del factor de potencia: el condensador que hay que poner en paralelo y cuánto baja la corriente de la línea.'] },
     ],
@@ -409,6 +411,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: bloque en un plano horizontal o inclinado con rozamiento estático y dinámico, una fuerza aplicada con ángulo y, si quieres, una masa colgando de una polea. Dice si el bloque se mueve o el rozamiento lo sujeta y da la normal, el rozamiento, la aceleración y la tensión, con el desarrollo paso a paso.', 'Máquina de Atwood, también con una polea con masa.', 'Dibujo con el diagrama de fuerzas a escala y la aceleración, y la velocidad y el tiempo al recorrer una distancia.'] },
     ],
     circuitos: [
+      { v: '0.1.2', fecha: '2026-10-25', cambios: ['Los valores admiten prefijos del SI: 4k7, 1,5k, 2M2 o 100m. Antes «1k» daba error.', 'Arreglo: si la carga está en paralelo con una fuente de tensión ideal (Rth = 0), en vez de «—» explica que no hay equivalente de Norton ni máxima transferencia de potencia.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: escribe el circuito como una lista de resistencias, fuentes de tensión y fuentes de corriente entre nudos, y obtén los potenciales, la corriente y la potencia de cada elemento por el método de los nudos, con las ecuaciones de Kirchhoff, el sistema en forma matricial y el balance de potencias.', 'Equivalente de Thévenin y de Norton visto por la resistencia que elijas, y máxima transferencia de potencia.', 'Esquema del circuito con el potencial de cada nudo y el sentido de cada corriente.'] },
     ],
@@ -460,6 +463,11 @@ const Version = (() => {
      esc(s)        texto seguro dentro de HTML y de atributos
      copia(o)      copia profunda de datos JSON (el estado sc, un ejemplo)
      vacio(v)      campo sin rellenar (undefined, null o solo espacios)
+     leeSI(s, base)  número de un campo con coma, 3·10^8, prefijos del SI y
+                   unidad: «4k7», «1,5 kΩ», «100n», «10 µF», «5 ms». Con prefijo,
+                   notación 4k7 o unidad escrita da el valor en unidades del SI;
+                   un número solo se multiplica por base (1e-3 si el campo
+                   está en mH, 1e-6 si en μF). NaN si no se entiende
      txt(h)        HTML de un resultado a texto para el lienzo (exponentes ⁰¹²…)
      marcas(a, b, n)  valores redondos (1, 2, 2,5, 5 × 10ⁿ) para las marcas de un eje
      lienzo(c)     prepara un <canvas> (o su selector) a la resolución de la
@@ -471,6 +479,17 @@ const Herramienta = (() => {
   const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const copia = (o) => JSON.parse(JSON.stringify(o));
   const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
+  const PREFIJOS = { p: 1e-12, n: 1e-9, u: 1e-6, 'µ': 1e-6, 'μ': 1e-6, m: 1e-3, k: 1e3, K: 1e3, M: 1e6, G: 1e9, R: 1 };
+  const leeSI = (s, base = 1) => {
+    let t = String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace(/[−–]/g, '-').replace(/[·x×*]10\^?\(?([+\-]?\d+)\)?/i, 'e$1');
+    const sinUnidad = t.replace(/(Ω|ohmios?|ohms?|Hz|var|VA|V|A|F|H|W|S|s)$/, ''), unidad = sinUnidad !== t;
+    t = sinUnidad;
+    let m = t.match(/^([+-]?)(\d*)([pnuµμmkKMGR])(\d+)$/);
+    if (m) return +`${m[1]}${m[2] || 0}.${m[4]}` * PREFIJOS[m[3]];
+    m = t.match(/^([+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?)([pnuµμmkKMG]?)$/i);
+    if (!m) return NaN;
+    return +m[1] * (m[2] ? PREFIJOS[m[2]] : unidad ? 1 : base);
+  };
   const txt = (h) => String(h).replace(/<sup>(.*?)<\/sup>/g, (_, e) => e.replace(/−/g, '⁻').replace(/\d/g, (d) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d])).replace(/<[^>]+>/g, '');
   const marcas = (a, b, n = 6) => {
     const p0 = (b - a) / n, e = 10 ** Math.floor(Math.log10(p0)), paso = [1, 2, 2.5, 5, 10].map((q) => q * e).find((q) => q >= p0) || 10 * e;
@@ -485,7 +504,7 @@ const Herramienta = (() => {
     const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
     return { g, w, h, c, cambia };
   };
-  return { $, esc, copia, vacio, txt, marcas, lienzo };
+  return { $, esc, copia, vacio, leeSI, txt, marcas, lienzo };
 })();
 
 /* =====================================================================
@@ -647,12 +666,12 @@ const Transitorios = (() => {
     const a = Math.abs(x), p = PREF.find(([v]) => a >= v * 0.9999999) || PREF[PREF.length - 1];
     return `${String(+(x / p[0]).toPrecision(d)).replace('.', ',').replace('-', '−')} ${p[1]}${un}`;
   };
-  const leeNum = (s) => +String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace(/[−–]/g, '-').replace(/[·x×*]10\^?\(?([+\-]?\d+)\)?/i, 'e$1');
+  // con prefijo (4k7, 100n, 5m) o unidad el valor va en unidades del SI; un número solo, en las del campo (base)
   const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
   const may = (s) => s[0].toUpperCase() + s.slice(1);
-  function lee(sc, k, nom, { opcional = false, cero = false, signo = false } = {}) {
+  function lee(sc, k, nom, { opcional = false, cero = false, signo = false, base = 1 } = {}) {
     if (vacio(sc[k])) { if (opcional) return null; throw new Error(`Falta ${nom}`); }
-    const v = leeNum(sc[k]);
+    const v = Herramienta.leeSI(sc[k], base);
     if (!isFinite(v)) throw new Error(`${may(nom)} debe ser un número`);
     if (!signo && (cero ? v < 0 : v <= 0)) throw new Error(`${may(nom)} debe ser ${cero ? 'positivo o cero' : 'mayor que 0'}`);
     return v;
@@ -664,7 +683,7 @@ const Transitorios = (() => {
   /* ---------- RC ---------- */
   // sc: { proceso: 'carga'|'descarga', V, V0, R, C (μF), t, Vobj }
   function rc(sc) {
-    const carga = sc.proceso !== 'descarga', R = lee(sc, 'R', 'la resistencia'), C = lee(sc, 'C', 'la capacidad') * 1e-6, tau = R * C, pasos = [];
+    const carga = sc.proceso !== 'descarga', R = lee(sc, 'R', 'la resistencia'), C = lee(sc, 'C', 'la capacidad', { base: 1e-6 }), tau = R * C, pasos = [];
     const V = carga ? lee(sc, 'V', 'la tensión de la fuente', { cero: true }) : 0, V0 = lee(sc, 'V0', 'la tensión inicial del condensador', { opcional: carga, signo: true }) ?? 0;
     if (V === V0) throw new Error(carga ? 'El condensador ya está a la tensión de la fuente: no hay transitorio' : 'Con el condensador descargado no hay nada que descargar');
     const Vc = (t) => V + (V0 - V) * Math.exp(-t / tau), I = (t) => ((V - V0) / R) * Math.exp(-t / tau);
@@ -689,7 +708,7 @@ const Transitorios = (() => {
   /* ---------- RL ---------- */
   // sc: { proceso: 'subida'|'bajada', V, R, L (mH), t, Iobj }; en la bajada la corriente inicial es V/R
   function rl(sc) {
-    const sube = sc.proceso !== 'bajada', V = lee(sc, 'V', 'la tensión de la fuente'), R = lee(sc, 'R', 'la resistencia'), L = lee(sc, 'L', 'la inductancia') * 1e-3, tau = L / R, Inf = V / R, pasos = [];
+    const sube = sc.proceso !== 'bajada', V = lee(sc, 'V', 'la tensión de la fuente'), R = lee(sc, 'R', 'la resistencia'), L = lee(sc, 'L', 'la inductancia', { base: 1e-3 }), tau = L / R, Inf = V / R, pasos = [];
     const I0 = sube ? 0 : Inf, Ifin = sube ? Inf : 0;
     const I = (t) => Ifin + (I0 - Ifin) * Math.exp(-t / tau), VL = (t) => (sube ? V : -V) * Math.exp(-t / tau);
     pasos.push({ t: 'Constante de tiempo', html: `τ = L/R = ${u(L, 'H')} / ${u(R, 'Ω')} = <b>${u(tau, 's')}</b>` });
@@ -713,7 +732,7 @@ const Transitorios = (() => {
   /* ---------- RLC en serie ---------- */
   // sc: { V (escalón; 0 = respuesta libre), R, L (mH), C (μF), V0 (V del condensador en t = 0), I0, t }
   function rlc(sc) {
-    const V = lee(sc, 'V', 'la tensión de la fuente', { cero: true }), R = lee(sc, 'R', 'la resistencia', { cero: true }), L = lee(sc, 'L', 'la inductancia') * 1e-3, C = lee(sc, 'C', 'la capacidad') * 1e-6;
+    const V = lee(sc, 'V', 'la tensión de la fuente', { cero: true }), R = lee(sc, 'R', 'la resistencia', { cero: true }), L = lee(sc, 'L', 'la inductancia', { base: 1e-3 }), C = lee(sc, 'C', 'la capacidad', { base: 1e-6 });
     const V0 = lee(sc, 'V0', 'la tensión inicial del condensador', { opcional: true, signo: true }) ?? 0, I0 = lee(sc, 'I0', 'la corriente inicial', { opcional: true, signo: true }) ?? 0;
     if (V === V0 && I0 === 0) throw new Error('Con el condensador ya a la tensión de la fuente y sin corriente no hay transitorio');
     const a = R / (2 * L), w0 = 1 / Math.sqrt(L * C), Rc = 2 * Math.sqrt(L / C), A0 = V0 - V, D0 = I0 / C, pasos = [];
@@ -747,7 +766,12 @@ const Transitorios = (() => {
     // cuánto dibujar: unas cuantas constantes de tiempo del término más lento
     const lento = tipo === 'sobre' ? -1 / s1 : 1 / (a || w0 / 20), T = tipo === 'sub' ? Math.min(5 * lento, 12 * (2 * Math.PI) / wd) : 6 * lento;
     let pico = null;
-    if (tipo === 'sub' && V !== V0) { const tp = (Math.PI) / wd; pico = { t: tp, V: Vc(tp), sobre: Math.abs((Vc(tp) - V) / (V0 - V)) * 100 }; }
+    if (tipo === 'sub' && V !== V0) {
+      // primer extremo de V_C: dV = e^(−αt)(P cos ω_d t + Q sen ω_d t) se anula en ω_d t = δ + π/2 + kπ (con i(0) = 0 es π/ω_d)
+      const P = -a * A + wd * B, Qs = -a * B - wd * A, d = Math.atan2(Qs, P), per = Math.PI / wd;
+      let tp = (d + Math.PI / 2) / wd; tp -= Math.floor(tp / per) * per; if (tp < 1e-9 * per) tp += per;
+      pico = { t: tp, V: Vc(tp), sobre: Math.abs((Vc(tp) - V) / (V0 - V)) * 100 };
+    }
     return { modo: 'rlc', V, R, L, C, V0, I0, a, w0, wd, s1, s2, Rc, tipo, Vc, I, txt, t, Vct: t !== null ? Vc(t) : null, It: t !== null ? I(t) : null, Q: R ? Q : Infinity, T, pico, pasos };
   }
 
@@ -794,7 +818,7 @@ const Transitorios = (() => {
   const elige = (k, nom, lista) => `<label for="f-${k}">${nom}</label><select id="f-${k}" class="in" data-k="${k}">${lista.map(([v, t]) => `<option value="${v}"${String(sc[k]) === v ? ' selected' : ''}>${t}</option>`).join('')}</select>`;
   const sep = (t) => `<div class="sep">${t}</div>`;
   const NOTAS = {
-    rc: 'El interruptor se cierra en t = 0. En la descarga no hay fuente: el condensador se descarga a través de R. Se admite 4,7e-3 o 4,7·10^-3.',
+    rc: 'El interruptor se cierra en t = 0. En la descarga no hay fuente: el condensador se descarga a través de R. Se admite 4,7e-3, 4,7·10^-3 y prefijos como 4k7, 100n o 5m.',
     rl: 'En la subida se conecta la fuente en t = 0; en la bajada se quita y la bobina, que llevaba V/R, se descarga a través de R.',
     rlc: 'R, L y C en serie con una fuente que se conecta en t = 0 (pon 0 V para la respuesta libre). V₀ e I₀ son la tensión del condensador y la corriente al empezar.',
   };

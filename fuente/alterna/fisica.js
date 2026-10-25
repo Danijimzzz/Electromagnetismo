@@ -41,11 +41,11 @@ const Alterna = (() => {
   const pol = (z, d = 4) => `${f(mod(z), d)}∠${ang(arg(z))}`;
   const ambos = (z, un) => `${bin(z)} ${un} = ${pol(z)} ${un}`;
 
-  const leeNum = (s) => +String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace('−', '-');
+  // con prefijo (4k7, 100n, 10m) o unidad el valor va en unidades del SI; un número solo, en las del campo (base)
   const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
-  function lee(sc, k, nom, { opcional = false, cero = false } = {}) {
+  function lee(sc, k, nom, { opcional = false, cero = false, base = 1 } = {}) {
     if (vacio(sc[k])) { if (opcional) return null; throw new Error(`Falta ${nom}`); }
-    const v = leeNum(sc[k]);
+    const v = Herramienta.leeSI(sc[k], base);
     if (!isFinite(v)) throw new Error(`${nom[0].toUpperCase() + nom.slice(1)} debe ser un número`);
     if (cero ? v < 0 : v <= 0) throw new Error(`${nom[0].toUpperCase() + nom.slice(1)} debe ser ${cero ? 'positivo o cero' : 'mayor que 0'}`);
     return v;
@@ -56,12 +56,12 @@ const Alterna = (() => {
   function circuito(sc) {
     const serie = sc.conexion !== 'paralelo';
     const V = lee(sc, 'V', 'la tensión de la fuente'), fr = lee(sc, 'f', 'la frecuencia');
-    const R = lee(sc, 'R', 'la resistencia', { opcional: true, cero: !serie }), Lm = lee(sc, 'L', 'la inductancia', { opcional: true }), Cu = lee(sc, 'C', 'la capacidad', { opcional: true });
-    const L = Lm === null ? null : Lm * 1e-3, C = Cu === null ? null : Cu * 1e-6;
+    const R = lee(sc, 'R', 'la resistencia', { opcional: true, cero: !serie }), L = lee(sc, 'L', 'la inductancia', { opcional: true, base: 1e-3 }), C = lee(sc, 'C', 'la capacidad', { opcional: true, base: 1e-6 });
     if (R === null && L === null && C === null) throw new Error('Pon al menos un elemento: R, L o C');
     const w = 2 * Math.PI * fr, XL = L === null ? null : w * L, XC = C === null ? null : 1 / (w * C);
     const el = [];
-    if (R !== null && (serie || R > 0)) el.push({ k: 'R', nombre: 'Resistencia', Z: Z(R, 0) });
+    if (!serie && R === 0) throw new Error('En paralelo, una resistencia de 0 Ω cortocircuita la fuente. Si no hay resistencia, deja R vacía');
+    if (R !== null) el.push({ k: 'R', nombre: 'Resistencia', Z: Z(R, 0) });
     if (L !== null) el.push({ k: 'L', nombre: 'Bobina', Z: Z(0, XL) });
     if (C !== null) el.push({ k: 'C', nombre: 'Condensador', Z: Z(0, -XC) });
     if (!el.length) throw new Error('En paralelo, una resistencia de 0 Ω cortocircuita la fuente');
@@ -108,7 +108,7 @@ const Alterna = (() => {
   /* ---------- Corrección del factor de potencia ---------- */
   // sc: { V, f, P (kW), fp1, fp2 }
   function correccion(sc) {
-    const V = lee(sc, 'V', 'la tensión'), fr = lee(sc, 'f', 'la frecuencia'), P = lee(sc, 'P', 'la potencia activa') * 1e3;
+    const V = lee(sc, 'V', 'la tensión'), fr = lee(sc, 'f', 'la frecuencia'), P = lee(sc, 'P', 'la potencia activa', { base: 1e3 });
     const fp1 = lee(sc, 'fp1', 'el factor de potencia inicial'), fp2 = lee(sc, 'fp2', 'el factor de potencia deseado');
     if (fp1 > 1 || fp2 > 1) throw new Error('El factor de potencia no puede ser mayor que 1');
     if (fp2 <= fp1) throw new Error('El factor de potencia deseado tiene que ser mayor que el inicial');

@@ -27,6 +27,13 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       let ok = false; try { TrC.resolver(sc); } catch (e) { ok = true; }
       if (!ok) mal(`Transitorios: ${q} no da error`);
     }
+    // primer pico del RLC subamortiguado también con corriente inicial: ahí i = 0 por primera vez
+    for (const I0 of ['', '0,5', '-0,5']) {
+      const x = TrC.rlc({ V: '10', R: '20', L: '100', C: '10', V0: '', I0, t: '' }), n = 20000;
+      let t0 = null; for (let k = 1, prev = x.I(1e-12); k <= n; k++) { const t = (x.T * k) / n, c = x.I(t); if (c * prev < 0) { t0 = t; break; } prev = c; }
+      if (!x.pico || t0 === null || Math.abs(x.pico.t - t0) > x.T / n) mal(`Transitorios: el primer pico del RLC con I₀ = ${I0 || 0} no está donde i = 0 (${x.pico && x.pico.t} en vez de ${t0})`);
+    }
+    { const a = TrC.rc({ proceso: 'carga', V: '12', R: '10000', C: '100' }), b = TrC.rc({ proceso: 'carga', V: '12V', R: '10k', C: '100µF' }); cerca(b.tau, a.tau, 1e-12, 'τ con prefijos'); }
     if (fallos === antes) console.log(`  ✓ Transitorios: ${TrC.ejemplos.length} ejemplos, τ, carga y descarga, tiempo hasta un valor, RL, energía, tipo de amortiguamiento, ecuación del RLC y errores`);
   }
 

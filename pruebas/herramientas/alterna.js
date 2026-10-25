@@ -28,6 +28,9 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     let ok = false; try { Alterna.correccion({ V: '400', f: '50', P: '10', fp1: '0.9', fp2: '0.8' }); } catch (e) { ok = true; }
     if (!ok) mal('Alterna: un cos φ deseado menor que el inicial no da error');
     if (!Alterna.circuito(ej('rc')).pasos[1].html.includes('R − jX<sub>C</sub>')) mal('Alterna: la impedancia RC no se escribe R − jX_C');
+    // prefijos: con prefijo o unidad, SI; un número solo, en mH y μF. Y R = 0 en paralelo cortocircuita la fuente
+    { const a = Alterna.circuito({ conexion: 'serie', V: '230', f: '50', R: '40', L: '200', C: '100' }), b = Alterna.circuito({ conexion: 'serie', V: '230', f: '50', R: '0,04k', L: '0,2H', C: '100µ' }); cerca(Alterna.mod(b.Zt), Alterna.mod(a.Zt), 1e-9, '|Z| con prefijos'); }
+    { let ok = false; try { Alterna.circuito({ conexion: 'paralelo', V: '10', f: '50', R: '0', L: '100', C: '' }); } catch (e) { ok = /cortocircuita/.test(e.message); } if (!ok) mal('Alterna: R = 0 en paralelo no avisa del cortocircuito'); }
     if (fallos === antes) console.log(`  ✓ Corriente alterna: ${Alterna.ejemplos.length} ejemplos, Z, φ, potencias, resonancia y corrección del factor de potencia`);
   }
 

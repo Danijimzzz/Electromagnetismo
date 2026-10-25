@@ -198,7 +198,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
     <div class="lista" id="lista"></div>
     <div class="botones"><button class="btn" type="button" data-add="R">+ Resistencia</button><button class="btn" type="button" data-add="V">+ Fuente de tensión</button><button class="btn" type="button" data-add="I">+ Fuente de corriente</button></div>
     <div class="campos"><label for="carga">Thévenin visto por</label><select id="carga" class="in"></select></div>
-    <p class="nota">Cada elemento va del nudo A al nudo B. En una fuente de tensión, A es el borne +. En una fuente de corriente, la corriente va de A a B por dentro de la fuente. El nudo 0 es la referencia.</p>
+    <p class="nota">Cada elemento va del nudo A al nudo B. En una fuente de tensión, A es el borne +. En una fuente de corriente, la corriente va de A a B por dentro de la fuente. El nudo 0 es la referencia. Los valores admiten prefijos como 4k7, 1,5k o 100m.</p>
     <p class="error" id="error" hidden></p>
   </div>
   <div>
@@ -359,6 +359,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: intervalo de confianza de una media con σ conocida (z) o desconocida (t de Student), a partir de x̄, s y n o de la lista de datos, también si te dan la desviación con n.', 'Intervalos de una proporción, de la varianza y la desviación típica (con la χ²), de la diferencia de medias (σ conocidas, iguales o Welch) y de la diferencia de proporciones.', 'Tamaño de muestra para un error máximo en una media o una proporción.', 'Gráfica de la distribución con el área de confianza y simulación de 100 muestras que muestra cuántos intervalos aciertan.'] },
     ],
     transitorios: [
+      { v: '0.1.1', fecha: '2026-10-25', cambios: ['Los valores admiten prefijos del SI y unidades: 4k7, 1,5 kΩ, 100n, 10 µF o 5 ms. Un número solo sigue en la unidad del campo (mH, μF).'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: carga y descarga de un condensador en un circuito RC (también si ya tenía carga), con τ = RC, la tensión y la corriente en un instante y el tiempo hasta una tensión.', 'Corriente que sube o baja en una bobina en un circuito RL, con τ = L/R y la tensión de la bobina.', 'Circuito RLC en serie: dice si es subamortiguado, crítico o sobreamortiguado y da la tensión del condensador frente al tiempo, también con carga o corriente al empezar.', 'Esquema del circuito con la corriente que circula y la gráfica de V e i frente a t animadas.'] },
     ],
     fuerza: [
@@ -402,6 +403,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: normal, t de Student, chi cuadrado, exponencial, binomial y Poisson, con su media y su varianza.', 'Probabilidades P(X ≤ a), P(X ≥ a), entre dos valores y, en las discretas, P(X = k) y con desigualdad estricta; cuantiles y valores críticos bilaterales.', 'Gráfica con el área (o las barras) que se pide sombreada.', 'Desarrollo como en clase: tipificación Z = (X − μ)/σ y Φ(z), fórmula de la binomial y de la Poisson término a término, y aproximación de la binomial por la normal con corrección de continuidad.'] },
     ],
     alterna: [
+      { v: '0.1.2', fecha: '2026-10-25', cambios: ['Los valores admiten prefijos del SI y unidades: 4k7, 1,5 kΩ, 100n, 10 µF o 5 ms. Un número solo sigue en la unidad del campo (mH, μF, kW).', 'Arreglo: en paralelo, una resistencia de 0 Ω se ignoraba como si no estuviera; ahora avisa de que cortocircuita la fuente.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: circuitos RLC en serie y en paralelo (o solo con algunos de los elementos) con impedancias complejas en forma binómica y polar, la corriente, la tensión o la corriente de cada elemento, las potencias activa, reactiva y aparente y el factor de potencia, con el desarrollo paso a paso.', 'Diagrama de fasores y ondas v(t) e i(t) desfasadas.', 'Resonancia: frecuencia de resonancia, factor de calidad y ancho de banda.', 'Corrección del factor de potencia: el condensador que hay que poner en paralelo y cuánto baja la corriente de la línea.'] },
     ],
@@ -410,6 +412,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: bloque en un plano horizontal o inclinado con rozamiento estático y dinámico, una fuerza aplicada con ángulo y, si quieres, una masa colgando de una polea. Dice si el bloque se mueve o el rozamiento lo sujeta y da la normal, el rozamiento, la aceleración y la tensión, con el desarrollo paso a paso.', 'Máquina de Atwood, también con una polea con masa.', 'Dibujo con el diagrama de fuerzas a escala y la aceleración, y la velocidad y el tiempo al recorrer una distancia.'] },
     ],
     circuitos: [
+      { v: '0.1.2', fecha: '2026-10-25', cambios: ['Los valores admiten prefijos del SI: 4k7, 1,5k, 2M2 o 100m. Antes «1k» daba error.', 'Arreglo: si la carga está en paralelo con una fuente de tensión ideal (Rth = 0), en vez de «—» explica que no hay equivalente de Norton ni máxima transferencia de potencia.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: escribe el circuito como una lista de resistencias, fuentes de tensión y fuentes de corriente entre nudos, y obtén los potenciales, la corriente y la potencia de cada elemento por el método de los nudos, con las ecuaciones de Kirchhoff, el sistema en forma matricial y el balance de potencias.', 'Equivalente de Thévenin y de Norton visto por la resistencia que elijas, y máxima transferencia de potencia.', 'Esquema del circuito con el potencial de cada nudo y el sentido de cada corriente.'] },
     ],
@@ -461,6 +464,11 @@ const Version = (() => {
      esc(s)        texto seguro dentro de HTML y de atributos
      copia(o)      copia profunda de datos JSON (el estado sc, un ejemplo)
      vacio(v)      campo sin rellenar (undefined, null o solo espacios)
+     leeSI(s, base)  número de un campo con coma, 3·10^8, prefijos del SI y
+                   unidad: «4k7», «1,5 kΩ», «100n», «10 µF», «5 ms». Con prefijo,
+                   notación 4k7 o unidad escrita da el valor en unidades del SI;
+                   un número solo se multiplica por base (1e-3 si el campo
+                   está en mH, 1e-6 si en μF). NaN si no se entiende
      txt(h)        HTML de un resultado a texto para el lienzo (exponentes ⁰¹²…)
      marcas(a, b, n)  valores redondos (1, 2, 2,5, 5 × 10ⁿ) para las marcas de un eje
      lienzo(c)     prepara un <canvas> (o su selector) a la resolución de la
@@ -472,6 +480,17 @@ const Herramienta = (() => {
   const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const copia = (o) => JSON.parse(JSON.stringify(o));
   const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
+  const PREFIJOS = { p: 1e-12, n: 1e-9, u: 1e-6, 'µ': 1e-6, 'μ': 1e-6, m: 1e-3, k: 1e3, K: 1e3, M: 1e6, G: 1e9, R: 1 };
+  const leeSI = (s, base = 1) => {
+    let t = String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace(/[−–]/g, '-').replace(/[·x×*]10\^?\(?([+\-]?\d+)\)?/i, 'e$1');
+    const sinUnidad = t.replace(/(Ω|ohmios?|ohms?|Hz|var|VA|V|A|F|H|W|S|s)$/, ''), unidad = sinUnidad !== t;
+    t = sinUnidad;
+    let m = t.match(/^([+-]?)(\d*)([pnuµμmkKMGR])(\d+)$/);
+    if (m) return +`${m[1]}${m[2] || 0}.${m[4]}` * PREFIJOS[m[3]];
+    m = t.match(/^([+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?)([pnuµμmkKMG]?)$/i);
+    if (!m) return NaN;
+    return +m[1] * (m[2] ? PREFIJOS[m[2]] : unidad ? 1 : base);
+  };
   const txt = (h) => String(h).replace(/<sup>(.*?)<\/sup>/g, (_, e) => e.replace(/−/g, '⁻').replace(/\d/g, (d) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d])).replace(/<[^>]+>/g, '');
   const marcas = (a, b, n = 6) => {
     const p0 = (b - a) / n, e = 10 ** Math.floor(Math.log10(p0)), paso = [1, 2, 2.5, 5, 10].map((q) => q * e).find((q) => q >= p0) || 10 * e;
@@ -486,7 +505,7 @@ const Herramienta = (() => {
     const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
     return { g, w, h, c, cambia };
   };
-  return { $, esc, copia, vacio, txt, marcas, lienzo };
+  return { $, esc, copia, vacio, leeSI, txt, marcas, lienzo };
 })();
 
 /* =====================================================================
@@ -647,7 +666,6 @@ const Continua = (() => {
     return s.replace('.', ',').replace('-', '−');
   };
   const p = (x) => (x < -1e-10 ? `(${f(x)})` : f(x));
-  const leeNum = (s) => +String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace('−', '-');
   const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
   const TIPOS = { R: { nombre: 'Resistencia', letra: 'R', un: 'Ω' }, V: { nombre: 'Fuente de tensión', letra: 'E', un: 'V' }, I: { nombre: 'Fuente de corriente', letra: 'J', un: 'A' } };
   const sub = (n) => n.replace(/^([A-Za-z])(\w+)$/, '$1<sub>$2</sub>');
@@ -671,7 +689,7 @@ const Continua = (() => {
       if (!/^[\wÀ-ÿ]{1,8}$/.test(a) || !/^[\wÀ-ÿ]{1,8}$/.test(b)) throw new Error(`${q}: los nudos se nombran con letras o números (hasta 8)`);
       if (a === b) throw new Error(`${q}: está conectado entre el mismo nudo por los dos lados`);
       if (vacio(e.v)) throw new Error(`${q}: falta el valor`);
-      const v = leeNum(e.v);
+      const v = Herramienta.leeSI(e.v); // admite 4k7, 1,5k, 100m…
       if (!isFinite(v)) throw new Error(`${q}: el valor debe ser un número`);
       if (e.t === 'R' && v <= 0) throw new Error(`${q}: la resistencia debe ser mayor que 0`);
       return { i, t: e.t, n: q, a, b, v };
@@ -796,11 +814,13 @@ const Continua = (() => {
       const apagado = resto.filter((e) => e.t !== 'I').map((e) => (e.t === 'V' ? { ...e, v: 0 } : e)).concat([{ t: 'I', n: 'Jp', a: L.b, b: L.a, v: 1 }]);
       const pr = nodal(apagado, ref);
       if (!pr) throw new Error(`Con las fuentes apagadas no se puede calcular la resistencia de Thévenin entre ${L.a} y ${L.b}`);
-      const Rth = pr.V[L.a] - pr.V[L.b], IN = Math.abs(Rth) > 1e-12 ? Vth / Rth : Infinity;
-      const IL = Vth / (Rth + L.v), PL = IL * IL * L.v, Pmax = Math.abs(Rth) > 1e-12 ? (Vth * Vth) / (4 * Rth) : Infinity;
-      thev = { carga: L.n, a: L.a, b: L.b, RL: L.v, Vth, Rth, IN, IL, PL, Pmax };
-      pasos.push({ t: `Equivalente de Thévenin visto por ${L.n} (entre ${L.a} y ${L.b})`, html: `Se quita ${sub(L.n)} y se resuelve igual: V<sub>th</sub> = V<sub>${L.a}</sub> − V<sub>${L.b}</sub> en circuito abierto = <b>${f(Vth)} V</b><br>Con las fuentes apagadas (las de tensión en cortocircuito y las de corriente abiertas), la resistencia entre ${L.a} y ${L.b} es R<sub>th</sub> = <b>${f(Rth)} Ω</b><br>Norton: I<sub>N</sub> = V<sub>th</sub>/R<sub>th</sub> = <b>${f(IN)} A</b>` });
-      pasos.push({ t: 'Con la carga puesta y máxima transferencia de potencia', html: `I<sub>${L.n}</sub> = V<sub>th</sub>/(R<sub>th</sub> + ${sub(L.n)}) = ${f(Vth)}/(${f(Rth)} + ${f(L.v)}) = <b>${f(IL)} A</b> (coincide con la del circuito completo); P = <b>${f(PL)} W</b><br>La potencia en la carga es máxima si ${sub(L.n)} = R<sub>th</sub> = ${f(Rth)} Ω: P<sub>máx</sub> = V<sub>th</sub><sup>2</sup>/(4R<sub>th</sub>) = <b>${f(Pmax)} W</b>` });
+      // R_th = 0: entre esos nudos hay una fuente de tensión ideal (no hay Norton ni máximo de potencia)
+      const Rmax = Math.max(...resto.filter((e) => e.t === 'R').map((e) => e.v), L.v), ideal = Math.abs(pr.V[L.a] - pr.V[L.b]) < 1e-9 * Rmax;
+      const Rth = ideal ? 0 : pr.V[L.a] - pr.V[L.b], IN = ideal ? Infinity : Vth / Rth;
+      const IL = Vth / (Rth + L.v), PL = IL * IL * L.v, Pmax = ideal ? Infinity : (Vth * Vth) / (4 * Rth);
+      thev = { carga: L.n, a: L.a, b: L.b, RL: L.v, Vth, Rth, IN, IL, PL, Pmax, ideal };
+      pasos.push({ t: `Equivalente de Thévenin visto por ${L.n} (entre ${L.a} y ${L.b})`, html: `Se quita ${sub(L.n)} y se resuelve igual: V<sub>th</sub> = V<sub>${L.a}</sub> − V<sub>${L.b}</sub> en circuito abierto = <b>${f(Vth)} V</b><br>Con las fuentes apagadas (las de tensión en cortocircuito y las de corriente abiertas), la resistencia entre ${L.a} y ${L.b} es R<sub>th</sub> = <b>${f(Rth)} Ω</b><br>${ideal ? `Con R<sub>th</sub> = 0 lo que ve ${sub(L.n)} es una fuente de tensión ideal: no tiene equivalente de Norton, porque I<sub>N</sub> = V<sub>th</sub>/R<sub>th</sub> sería infinita.` : `Norton: I<sub>N</sub> = V<sub>th</sub>/R<sub>th</sub> = <b>${f(IN)} A</b>`}` });
+      pasos.push({ t: 'Con la carga puesta y máxima transferencia de potencia', html: `I<sub>${L.n}</sub> = V<sub>th</sub>/(R<sub>th</sub> + ${sub(L.n)}) = ${f(Vth)}/(${f(Rth)} + ${f(L.v)}) = <b>${f(IL)} A</b> (coincide con la del circuito completo); P = <b>${f(PL)} W</b><br>${ideal ? `Con R<sub>th</sub> = 0 la tensión en la carga es siempre V<sub>th</sub> y su potencia V<sub>th</sub><sup>2</sup>/${sub(L.n)} crece sin límite al bajar ${sub(L.n)}: no hay máxima transferencia de potencia.` : `La potencia en la carga es máxima si ${sub(L.n)} = R<sub>th</sub> = ${f(Rth)} Ω: P<sub>máx</sub> = V<sub>th</sub><sup>2</sup>/(4R<sub>th</sub>) = <b>${f(Pmax)} W</b>`}` });
     }
     return { ref, nudos: sol.nudos, V, els: res, ent, abs, thev, pasos };
   }
@@ -881,7 +901,7 @@ const Continua = (() => {
     err.hidden = true; guarda();
     let h = dato('Potenciales', sol.nudos.filter((n) => n !== sol.ref).map((n) => `V<sub>${esc(n)}</sub> = <b>${f(sol.V[n])} V</b>`).join(', ') || '—');
     h += dato('Potencia entregada', `${f(sol.ent)} W (= consumida)`);
-    if (sol.thev) { const t = sol.thev; h += dato(`Thévenin visto por ${t.carga}`, `V<sub>th</sub> = <b>${f(t.Vth)} V</b>, R<sub>th</sub> = <b>${f(t.Rth)} Ω</b>`) + dato('Norton y máxima potencia', `I<sub>N</sub> = ${f(t.IN)} A, P<sub>máx</sub> = ${f(t.Pmax)} W`); }
+    if (sol.thev) { const t = sol.thev; h += dato(`Thévenin visto por ${t.carga}`, `V<sub>th</sub> = <b>${f(t.Vth)} V</b>, R<sub>th</sub> = <b>${f(t.Rth)} Ω</b>`) + dato('Norton y máxima potencia', t.ideal ? 'No hay: R<sub>th</sub> = 0 (fuente de tensión ideal)' : `I<sub>N</sub> = ${f(t.IN)} A, P<sub>máx</sub> = ${f(t.Pmax)} W`); }
     $('#res').innerHTML = h;
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('');
     dibuja();

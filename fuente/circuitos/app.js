@@ -61,7 +61,7 @@
     err.hidden = true; guarda();
     let h = dato('Potenciales', sol.nudos.filter((n) => n !== sol.ref).map((n) => `V<sub>${esc(n)}</sub> = <b>${f(sol.V[n])} V</b>`).join(', ') || '—');
     h += dato('Potencia entregada', `${f(sol.ent)} W (= consumida)`);
-    if (sol.thev) { const t = sol.thev; h += dato(`Thévenin visto por ${t.carga}`, `V<sub>th</sub> = <b>${f(t.Vth)} V</b>, R<sub>th</sub> = <b>${f(t.Rth)} Ω</b>`) + dato('Norton y máxima potencia', `I<sub>N</sub> = ${f(t.IN)} A, P<sub>máx</sub> = ${f(t.Pmax)} W`); }
+    if (sol.thev) { const t = sol.thev; h += dato(`Thévenin visto por ${t.carga}`, `V<sub>th</sub> = <b>${f(t.Vth)} V</b>, R<sub>th</sub> = <b>${f(t.Rth)} Ω</b>`) + dato('Norton y máxima potencia', t.ideal ? 'No hay: R<sub>th</sub> = 0 (fuente de tensión ideal)' : `I<sub>N</sub> = ${f(t.IN)} A, P<sub>máx</sub> = ${f(t.Pmax)} W`); }
     $('#res').innerHTML = h;
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('');
     dibuja();

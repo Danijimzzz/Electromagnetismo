@@ -14,7 +14,7 @@ Web estática de simuladores y calculadoras de ciencias para la carrera, en espa
 | `fuente/estilos.css`, `DISENO.md` | Hoja común y guía de diseño. |
 | `fuente/plantilla/` | Plantilla de herramienta: `pagina.html`, `calculo.js`, `app.js` y `prueba.js` (funcionan tal cual). |
 | `fuente/nueva.js` | `node fuente/nueva.js <asignatura> <clave> "<Nombre>"`: copia la plantilla y la da de alta en catalogo.js y version.js. |
-| `fuente/herramienta.js` | `Herramienta`: ayudantes comunes de las app.js (`$`, `esc`, `copia`, `vacio`, `txt`, `marcas`, `lienzo`). Va en cada página tras version.js. |
+| `fuente/herramienta.js` | `Herramienta`: ayudantes comunes de las app.js (`$`, `esc`, `copia`, `vacio`, `leeSI`, `txt`, `marcas`, `lienzo`). Va en cada página tras version.js. |
 | `fuente/biblioteca.js` | Barra lateral «Mis ejercicios», común a todas las herramientas. |
 | `fuente/practica.js` | Modo práctica común (datos al azar, corrige respuestas). |
 | `fuente/tema.js` | Botón claro/oscuro (`simu-tema`). |
@@ -66,7 +66,7 @@ Excepciones: `electrostatica` (shell.html + scripts raíz, su propia biblioteca)
 - Todo en español: código, comentarios, nombres (`calcula`, `dibuja`, `guarda`, `sc`, `sol`, `pasos`) y textos con frases completas.
 - Cada fichero empieza con un bloque `/* ===== … ===== */` que dice qué hace y dónde está lo demás.
 - Funciones pequeñas en una línea, estilo compacto; sin dependencias ni módulos ES (globales + IIFE).
-- Números con coma decimal y `·10<sup>n</sup>`; los campos aceptan `3e8`, `3·10^8` y coma.
+- Números con coma decimal y `·10<sup>n</sup>`; los campos aceptan `3e8`, `3·10^8` y coma; con `Herramienta.leeSI` también prefijos y unidades (`4k7`, `100n`, `10 µF`), como en Circuitos.
 - Colores solo con variables CSS y su valor en modo oscuro; las gráficas los leen con `getComputedStyle` y se redibujan con `matchMedia('(prefers-color-scheme: dark)')`.
 - Resultados de Electromagnetismo con la forma del solucionario oficial (no solo el valor).
 

@@ -24,6 +24,9 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       let ok = false; try { Continua.resolver({ elementos: els, carga: '' }); } catch (e) { ok = true; }
       if (!ok) mal(`Circuitos: ${q} no da error`);
     }
+    // prefijos (4k7, 1k) y carga en paralelo con una fuente de tensión ideal (R_th = 0: sin Norton ni máximo)
+    { const s = Continua.resolver({ elementos: [{ t: 'V', a: 'a', b: '0', v: '12' }, { t: 'R', a: 'a', b: 'b', v: '1k' }, { t: 'R', a: 'b', b: '0', v: '2k' }], carga: '' }); cerca(s.V.b, 8, 1e-9, 'divisor con 1k y 2k'); }
+    { const s = Continua.resolver({ elementos: [{ t: 'V', a: 'a', b: '0', v: '12' }, { t: 'R', a: 'a', b: '0', v: '4k7' }, { t: 'R', a: 'a', b: '0', v: '4' }], carga: '1' }); if (!s.thev.ideal || s.thev.Rth !== 0 || !/no tiene equivalente de Norton/.test(s.pasos.map((p) => p.html).join(''))) mal('Circuitos: con R_th = 0 no explica que no hay Norton'); cerca(s.thev.IL, 12 / 4700, 1e-12, 'corriente con R_th = 0'); }
     if (fallos === antes) console.log(`  ✓ Circuitos de continua: ${Continua.ejemplos.length} circuitos con los potenciales esperados, balance de potencias, Thévenin y Norton, y errores`);
   }
 

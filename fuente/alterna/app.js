@@ -24,7 +24,7 @@
     } else {
       h += `<label for="f-conexion">Conexión</label><select id="f-conexion" class="in" data-k="conexion">${opcion('conexion', 'serie', 'En serie')}${opcion('conexion', 'paralelo', 'En paralelo')}</select>`;
       h += fila('V', 'Tensión eficaz V', 'V') + fila('f', 'Frecuencia f', 'Hz') + fila('R', 'Resistencia R', 'Ω') + fila('L', 'Inductancia L', 'mH') + fila('C', 'Capacidad C', 'μF');
-      $('#nota').textContent = 'Deja vacío un elemento si no está. Puedes usar coma o punto decimal.';
+      $('#nota').textContent = 'Deja vacío un elemento si no está. Puedes usar coma o punto decimal y prefijos como 4k7, 100n o 10m.';
     }
     $('#campos').innerHTML = h;
   }
