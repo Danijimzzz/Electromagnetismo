@@ -376,6 +376,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: onda plana en el vacío o en un material a partir de f, λ, ω o k, con λ, k, el campo B y su dirección (B̂ = k̂ × Ê) y las expresiones de E(r, t) y B(r, t).', 'Intensidad, densidad de energía y presión de radiación, también de una fuente puntual a una distancia.', 'Medios con pérdidas: tangente de pérdidas, atenuación, profundidad de penetración e impedancia compleja.', 'La onda dibujada en 3D con E y B moviéndose.'] },
     ],
     intervalos: [
+      { v: '0.1.1', fecha: '2026-10-25', cambios: ['Una proporción con 0 éxitos, o con todos, ya no da un intervalo de un solo punto: se usa el intervalo de Wilson. Con pocos éxitos o fracasos también se muestra el de Wilson al lado del de siempre.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: intervalo de confianza de una media con σ conocida (z) o desconocida (t de Student), a partir de x̄, s y n o de la lista de datos, también si te dan la desviación con n.', 'Intervalos de una proporción, de la varianza y la desviación típica (con la χ²), de la diferencia de medias (σ conocidas, iguales o Welch) y de la diferencia de proporciones.', 'Tamaño de muestra para un error máximo en una media o una proporción.', 'Gráfica de la distribución con el área de confianza y simulación de 100 muestras que muestra cuántos intervalos aciertan.'] },
     ],
     transitorios: [
@@ -415,10 +416,12 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: hasta seis ecuaciones con seis incógnitas. Dice si el sistema es compatible determinado, indeterminado o incompatible con el teorema de Rouché-Frobenius y lo resuelve por Gauss con sustitución hacia atrás, por Gauss-Jordan, por la regla de Cramer o con la matriz inversa.', 'Si tiene infinitas soluciones, las da en forma paramétrica (λ, μ…).', 'Coeficientes con fracciones exactas, decimales o números complejos, como las mallas de un circuito de alterna, y nombres propios para las incógnitas (I1, I2…).', 'Comprobación de la solución sustituyendo en cada ecuación.'] },
     ],
     regresion: [
+      { v: '0.1.2', fecha: '2026-10-25', cambios: ['El ajuste parabólico funciona con x grandes, como los años (2015, 2016…): antes decía que faltaban valores de x distintos.', 'En los ajustes exponencial y potencial, una a muy pequeña se escribe en notación científica en vez de 0.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas dentro del texto de la teoría se ven bien escritas, no con símbolos $.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: escribe o pega tus datos (x, y), con frecuencias si las tienes, y obtén medias, varianzas, covarianza, el coeficiente de correlación con su contraste y las dos rectas de regresión, con la tabla de cálculos y la nube de puntos.', 'Ajustes exponencial, potencial, logarítmico y parabólico, con R² para compararlos con la recta, y los residuos.', 'Estimaciones de y a partir de x y de x a partir de y, avisando si es una extrapolación.', 'Añade puntos pulsando en la gráfica.'] },
     ],
     estadistica: [
+      { v: '0.1.2', fecha: '2026-10-25', cambios: ['En la binomial, al calcular un cuantil, la probabilidad del cuantil ya no cambia la probabilidad de éxito p.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: normal, t de Student, chi cuadrado, exponencial, binomial y Poisson, con su media y su varianza.', 'Probabilidades P(X ≤ a), P(X ≥ a), entre dos valores y, en las discretas, P(X = k) y con desigualdad estricta; cuantiles y valores críticos bilaterales.', 'Gráfica con el área (o las barras) que se pide sombreada.', 'Desarrollo como en clase: tipificación Z = (X − μ)/σ y Φ(z), fórmula de la binomial y de la Poisson término a término, y aproximación de la binomial por la normal con corrección de continuidad.'] },
     ],
@@ -836,6 +839,9 @@ const Estadistica = (() => {
     return (lo + hi) / 2;
   }
 
+  // la probabilidad del cuantil va en «q», para no pisar la p de la binomial (antes era «p»)
+  const probCuantil = (sc, D) => lee(vacio(sc.q) && !D.params.some(([k]) => k === 'p') ? { q: sc.p } : sc, 'q', 'la probabilidad p', { min: 0, minEx: true, max: 1, maxEx: true });
+
   function calcular(sc) {
     const d = DIST[sc.dist] ? sc.dist : 'normal', D = DIST[d];
     const P = {};
@@ -865,7 +871,7 @@ const Estadistica = (() => {
           : `${prob(F(b))} − ${prob(F(a))} = <b>${prob(res)}</b>` });
         Object.assign(r, { p: res, a, b, sombra: [a, b] });
       } else if (tipo === 'cuantil') {
-        const p = lee(sc, 'p', 'la probabilidad p', { min: 0, minEx: true, max: 1, maxEx: true });
+        const p = probCuantil(sc, D);
         const x = d === 'exponencial' ? -Math.log1p(-p) / P.lambda : cuantil(D, P, p);
         let h = `Se busca a con P(${X} ≤ a) = ${num(p)}`;
         if (d === 'normal') { const zq = cuantil(DIST.normal, { mu: 0, sigma: 1 }, p); h += `.<br>En la normal tipificada, Φ(z) = ${num(p)} ⇒ z = ${num(zq)}.<br>Destipificando, a = μ + zσ = ${num(P.mu)} + ${num(zq)}·${num(P.sigma)} = <b>${num(x)}</b>`; }
@@ -897,7 +903,7 @@ const Estadistica = (() => {
         res = F(b) - F(a - 1); desc = `P(${a} ≤ X ≤ ${b})`;
         pasos.push({ t: desc, html: `= P(X ≤ ${b}) − P(X ≤ ${a - 1}) = ${prob(F(b))} − ${prob(F(a - 1))} = <b>${prob(res)}</b>${detalle(Math.max(a, 0), b)}` });
       } else if (tipo === 'cuantil') {
-        const p = lee(sc, 'p', 'la probabilidad p', { min: 0, minEx: true, max: 1, maxEx: true });
+        const p = probCuantil(sc, D);
         let k = Math.max(0, Math.floor(D.rango(P)[0]));
         while (F(k) < p && k < 1e7) k++;
         while (k > 0 && F(k - 1) >= p) k--;
@@ -931,7 +937,7 @@ const Estadistica = (() => {
   const ejemplos = [
     { clave: 'normal-menor', nombre: 'Normal: P(X ≤ 52) con N(50, 5)', sc: { dist: 'normal', mu: '50', sigma: '5', tipo: 'menor', a: '52' } },
     { clave: 'normal-entre', nombre: 'Normal: P(μ − σ ≤ X ≤ μ + σ)', sc: { dist: 'normal', mu: '0', sigma: '1', tipo: 'entre', a: '-1', b: '1' } },
-    { clave: 'normal-cuantil', nombre: 'Normal: nota que supera el 90 %', sc: { dist: 'normal', mu: '6', sigma: '1.5', tipo: 'cuantil', p: '0.9' } },
+    { clave: 'normal-cuantil', nombre: 'Normal: nota que supera el 90 %', sc: { dist: 'normal', mu: '6', sigma: '1.5', tipo: 'cuantil', q: '0.9' } },
     { clave: 'z-critico', nombre: 'Valor crítico z para α = 0,05', sc: { dist: 'normal', mu: '0', sigma: '1', tipo: 'critico', alfa: '0.05' } },
     { clave: 't-critico', nombre: 't de Student: valor crítico con 10 g. l.', sc: { dist: 't', nu: '10', tipo: 'critico', alfa: '0.05' } },
     { clave: 'chi2', nombre: 'χ² con 5 g. l.: P(χ² ≥ 11,07)', sc: { dist: 'chi2', k: '5', tipo: 'mayor', a: '11.07' } },
@@ -955,9 +961,10 @@ const Estadistica = (() => {
    ===================================================================== */
 const Regresion = (() => {
   const E = typeof Estadistica !== 'undefined' ? Estadistica : require('../estadistica/calculo.js');
-  const f = (x, d = 4) => {
+  // cero: por debajo de esto se escribe 0 (ruido de redondeo); con 0, nunca (la a de y = a·e^{bx} no es 0 aunque sea muy pequeña)
+  const f = (x, d = 4, cero = 1e-12) => {
     if (!isFinite(x)) return '—';
-    if (Math.abs(x) < 1e-12) return '0';
+    if (x === 0 || Math.abs(x) < cero) return '0';
     const a = Math.abs(x);
     const s = a >= 1e6 || a < 1e-3 ? x.toExponential(d - 1).replace(/\.?0+e/, 'e').replace('e', '·10^').replace(/\^([+-]?)(\d+)/, (_, sg, e) => `<sup>${sg === '-' ? '−' : ''}${+e}</sup>`) : String(+x.toPrecision(d));
     return s.replace('.', ',').replace('-', '−');
@@ -1078,9 +1085,10 @@ const Regresion = (() => {
     } else if (modelo === 'parabolica') {
       const sum = (g) => pts.reduce((s, q) => s + q.n * g(q.x, q.y), 0);
       const s1 = m.N, s2 = m.sx, s3 = m.sxx, s4 = sum((x) => x ** 3), s5 = sum((x) => x ** 4), t1 = m.sy, t2 = m.sxy, t3 = sum((x, y) => x * x * y);
-      const sol = new Set(xs).size >= 3 ? cramer3([[s1, s2, s3], [s2, s3, s4], [s3, s4, s5]], [t1, t2, t3]) : null;
+      // se resuelve con u = x − x̄ (con x grandes, como años, el sistema en x queda mal condicionado) y se deshace el cambio
+      const su = (k) => sum((x) => (x - m.mx) ** k), sol = new Set(xs).size >= 3 ? cramer3([[s1, 0, su(2)], [0, su(2), su(3)], [su(2), su(3), su(4)]], [t1, sum((x, y) => (x - m.mx) * y), sum((x, y) => (x - m.mx) ** 2 * y)]) : null;
       if (!sol) throw new Error('Para una parábola hacen falta al menos tres valores de x distintos');
-      const [A, B, C] = sol;
+      const C = sol[2], B = sol[1] - 2 * C * m.mx, A = sol[0] - sol[1] * m.mx + C * m.mx ** 2;
       res.pred = (x) => A + B * x + C * x * x; res.inv = null; res.coef = { a: A, b: B, c: C };
       res.ecuacion = `y = ${f(A)} ${mas(B)}x ${mas(C)}x²`;
       pasos.push({ t: 'Ecuaciones normales de la parábola', html: `Al minimizar $∑ (y_i − a − b x_i − c x_i^2)^2$ salen tres ecuaciones:<br>$${f(s1, 6)} a + ${p(s2)} b + ${p(s3)} c = ${f(t1, 6)}$<br>$${f(s2, 6)} a + ${p(s3)} b + ${p(s4)} c = ${f(t2, 6)}$<br>$${f(s3, 6)} a + ${p(s4)} b + ${p(s5)} c = ${f(t3, 6)}$<br>Resolviendo: $a = ${f(A)}$, $b = ${f(B)}$, $c = ${f(C)}$ ⇒ <b>${res.ecuacion}</b>` });
@@ -1094,10 +1102,10 @@ const Regresion = (() => {
       const U = M.u === 'ln x' ? 'ln x' : 'x', W = M.w === 'ln y' ? 'ln y' : 'y', Ut = M.u === 'ln x' ? 'ln x_i' : 'x_i', Wt = M.w === 'ln y' ? 'ln y_i' : 'y_i';
       let html = `Se pasa a una recta cambiando de variable: $u = ${U}$, $w = ${W}$${M.w === 'ln y' ? (M.u === 'ln x' ? ', porque $ln y = ln a + b ln x$' : ', porque $ln y = ln a + b x$') : ', y la ecuación ya es lineal en u'}. Con los datos transformados:<br>$ū = ${f(mt.mx)}$, $w̄ = ${f(mt.my)}$, $σ_u^2 = ${f(mt.vx)}$, $σ_{uw} = ${f(mt.cxy)}$<br>$b = σ_{uw}/{σ_u^2} = ${f(B)}$, &ensp; $${M.w === 'ln y' ? 'ln a' : 'a'} = w̄ − b ū = ${f(A0)}$`;
       let A = A0;
-      if (M.w === 'ln y') { A = Math.exp(A0); html += ` ⇒ $a = e^{${f(A0)}} = ${f(A)}$`; }
+      if (M.w === 'ln y') { A = Math.exp(A0); html += ` ⇒ $a = e^{${f(A0)}} = ${f(A, 4, 0)}$`; if (A < 1e-6 && xmin > 1000) html += '<br>Con unas x tan grandes, a sale muy pequeña. Si las x son años, resta el primero a todas para que a sea el valor de y al empezar.'; }
       res.coef = { a: A, b: B }; res.rt = rt;
-      if (modelo === 'exponencial') { res.pred = (x) => A * Math.exp(B * x); res.inv = (y) => (y > 0 && B ? Math.log(y / A) / B : NaN); res.ecuacion = `y = ${f(A)}·e<sup>${f(B)}x</sup>`; }
-      if (modelo === 'potencial') { res.pred = (x) => (x > 0 ? A * x ** B : NaN); res.inv = (y) => (y > 0 && B ? (y / A) ** (1 / B) : NaN); res.ecuacion = `y = ${f(A)}·x<sup>${f(B)}</sup>`; }
+      if (modelo === 'exponencial') { res.pred = (x) => A * Math.exp(B * x); res.inv = (y) => (y > 0 && B ? Math.log(y / A) / B : NaN); res.ecuacion = `y = ${f(A, 4, 0)}·e<sup>${f(B)}x</sup>`; }
+      if (modelo === 'potencial') { res.pred = (x) => (x > 0 ? A * x ** B : NaN); res.inv = (y) => (y > 0 && B ? (y / A) ** (1 / B) : NaN); res.ecuacion = `y = ${f(A, 4, 0)}·x<sup>${f(B)}</sup>`; }
       if (modelo === 'logaritmica') { res.pred = (x) => (x > 0 ? A + B * Math.log(x) : NaN); res.inv = (y) => (B ? Math.exp((y - A) / B) : NaN); res.ecuacion = `y = ${f(A)} ${mas(B)} ln x`; }
       html += `<br><b>${res.ecuacion}</b><br>El coeficiente de correlación de las variables transformadas es $r_{uw} = ${d4(rt)}$ (${f(100 * rt * rt, 3)} % de la variación de ${W} explicada).`;
       const g = (x) => f(x, 6), tr = pts.some((q) => q.n !== 1);

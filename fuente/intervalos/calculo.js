@@ -102,10 +102,17 @@ const Intervalos = (() => {
     pasos.push({ t: 'Datos', html: `n = ${P.n}, ${P.x !== null ? `x = ${P.x} éxitos ⇒ p̂ = x/n = ${P.x}/${P.n} = ` : 'p̂ = '}<b>${f(P.ph)}</b>, q̂ = 1 − p̂ = ${f(q)}<br>${alfaTxt(c)}` });
     const k = zc(al / 2), sd = Math.sqrt((P.ph * q) / P.n);
     pasos.push({ t: 'Valor crítico', html: `Para n grande, p̂ ≈ N(p, √(pq/n)): z<sub>α/2</sub> = z<sub>${f(al / 2)}</sub> = <b>${f(k)}</b>` });
-    const err = k * sd, a = P.ph - err, b = P.ph + err;
+    let err = k * sd, a = P.ph - err, b = P.ph + err;
     pasos.push({ t: 'Error máximo', html: `E = z<sub>α/2</sub>·√(p̂q̂/n) = ${f(k)}·√(${f(P.ph)}·${f(q)}/${P.n}) = <b>${f(err)}</b>` });
     pasos.push({ t: 'Intervalo', html: `IC<sub>${f(c)}</sub>(p) = (p̂ − E, p̂ + E) = <b>${ic(a, b)}</b>${a < 0 || b > 1 ? ` (se recorta a ${ic(Math.max(0, a), Math.min(1, b))}, porque p está entre 0 y 1)` : ''}` });
-    if (P.n * P.ph < 5 || P.n * q < 5) pasos.push({ t: 'Cuidado', html: `np̂ = ${f(P.n * P.ph)} o nq̂ = ${f(P.n * q)} es menor que 5: la aproximación normal no es buena con tan pocos éxitos o fracasos.` });
+    if (P.n * P.ph < 5 || P.n * q < 5) {
+      // intervalo de Wilson: no se sale de [0, 1] ni se queda en un punto con 0 éxitos o con todos
+      const k2 = k * k, cen = (P.ph + k2 / (2 * P.n)) / (1 + k2 / P.n), med = (k / (1 + k2 / P.n)) * Math.sqrt((P.ph * q) / P.n + k2 / (4 * P.n * P.n));
+      const wa = Math.max(0, cen - med), wb = Math.min(1, cen + med), extremo = P.ph === 0 || P.ph === 1;
+      pasos.push({ t: 'Cuidado', html: `np̂ = ${f(P.n * P.ph)} o nq̂ = ${f(P.n * q)} es menor que 5: la aproximación normal no es buena con tan pocos éxitos o fracasos.${extremo ? ` Con p̂ = ${f(P.ph)}, el error sale 0 y el intervalo se queda en un punto, lo que no tiene sentido.` : ''}` });
+      pasos.push({ t: 'Intervalo de Wilson', html: `Funciona bien aunque haya pocos éxitos o fracasos:<br>centro = (p̂ + z<sup>2</sup>/(2n))/(1 + z<sup>2</sup>/n) = ${f(cen)}, &ensp; semiamplitud = z/(1 + z<sup>2</sup>/n)·√(p̂q̂/n + z<sup>2</sup>/(4n<sup>2</sup>)) = ${f(med)}<br>IC<sub>${f(c)}</sub>(p) = <b>${ic(wa, wb)}</b>${extremo ? ' (es el que se da como resultado)' : ''}` });
+      if (extremo) { a = wa; b = wb; err = (wb - wa) / 2; }
+    }
     pasos.push({ t: 'Interpretación', html: `Con una confianza del ${pc(c)}, la proporción de la población está entre ${f(100 * Math.max(0, a))} % y ${f(100 * Math.min(1, b))} %.` });
     return { a, b, est: P.ph, err, k, crit: 'z', c, P, pasos, param: 'p', dist: { d: 'normal' } };
   }

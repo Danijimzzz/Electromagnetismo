@@ -22,6 +22,8 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     // la simulación acierta más o menos el nivel de confianza
     let seed = 7; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
     for (const k of ['altura', 'encuesta', 'varianza']) { const s = r(k), g = IcC.simula(s, rnd); let d = 0; for (let i = 0; i < 2000; i++) { const [a, b] = g.una(); if (a <= g.real && g.real <= b) d++; } if (Math.abs(d / 2000 - s.c) > 0.025) mal(`Intervalos · ${k}: la simulación acierta un ${d / 20} % en vez del ${100 * s.c} %`); }
+    // con 0 éxitos el intervalo es el de Wilson, (0; z²/(n + z²)), no un punto
+    { const w = IcC.resolver({ modo: 'proporcion', tipoP: 'exitos', n: '20', x: '0', nivel: '95' }), z2 = IcC.zc(0.025) ** 2; cerca(w.b, z2 / (20 + z2), 1e-9, 'Wilson con 0 éxitos'); if (w.a !== 0) mal('Intervalos: con 0 éxitos el extremo inferior no es 0'); }
     for (const [q, sc] of [['n = 1', { modo: 'media', sigmaC: 'no', xm: '5', s: '1', n: '1', nivel: '95' }], ['nivel 100 %', { modo: 'media', sigmaC: 'si', sigma: '1', xm: '5', n: '10', nivel: '100' }], ['más éxitos que n', { modo: 'proporcion', n: '10', x: '12', nivel: '95' }], ['un dato que no es un número', { modo: 'media', fuente: 'datos', sigmaC: 'no', datos: '1 2 x 4', nivel: '95' }], ['error de proporción ≥ 1', { modo: 'tamano', de: 'proporcion', E: '2', nivel: '95' }]]) {
       let ok = false; try { IcC.resolver(sc); } catch (e) { ok = true; }
       if (!ok) mal(`Intervalos: ${q} no da error`);

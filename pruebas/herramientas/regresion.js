@@ -13,6 +13,10 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     cerca(n.m.mx, 4, 1e-12, 'media de x'); cerca(n.m.vx, 4, 1e-12, 'varianza de x'); cerca(n.m.cxy, 4, 1e-12, 'covarianza'); cerca(n.lineal.b, 1, 1e-12, 'pendiente'); cerca(n.lineal.a, 43 / 7 - 4, 1e-12, 'ordenada');
     cerca(n.r, 4 / (2 * Math.sqrt(292.5 / 7 - (43 / 7) ** 2)), 1e-12, 'r de las notas'); cerca(n.yx0, 43 / 7 - 4 + 4.5, 1e-12, 'estimación para x = 4,5');
     const pa = r('peso-altura'); cerca(pa.lineal.b * pa.xSobreY.b, pa.r * pa.r, 1e-12, 'producto de las pendientes = r²');
+    // con x grandes (años) la parábola sale igual que con x desplazadas, y la a de la exponencial no se escribe 0
+    { const fila = (x0) => [...Array(10)].map((_, i) => `${x0 + i} ${100 + 3 * i + ((i * 7) % 5)}`).join('\n'), pa = RegresionC.resolver({ modelo: 'parabolica', datos: fila(2015) }), pb = RegresionC.resolver({ modelo: 'parabolica', datos: fila(0) });
+      cerca(pa.pred(2020), pb.pred(5), 1e-6, 'parábola con años'); cerca(pa.R2, pb.R2, 1e-9, 'R² de la parábola con años');
+      if (!/10<sup>−22<\/sup>/.test(RegresionC.resolver({ modelo: 'exponencial', datos: fila(2015) }).ecuacion)) mal('Regresión: la a muy pequeña de la exponencial no sale en notación científica'); }
     if (r('inversa').r >= -0.9) mal('Regresión: el ejemplo inverso no da una correlación negativa fuerte');
     if (r('frecuencias').m.N !== 24) mal('Regresión: la tabla con frecuencias no suma N = 24');
     if (!(r('debil').pval > 0.05)) mal('Regresión: los datos sin relación salen significativos');

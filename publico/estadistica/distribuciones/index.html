@@ -353,6 +353,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: onda plana en el vacío o en un material a partir de f, λ, ω o k, con λ, k, el campo B y su dirección (B̂ = k̂ × Ê) y las expresiones de E(r, t) y B(r, t).', 'Intensidad, densidad de energía y presión de radiación, también de una fuente puntual a una distancia.', 'Medios con pérdidas: tangente de pérdidas, atenuación, profundidad de penetración e impedancia compleja.', 'La onda dibujada en 3D con E y B moviéndose.'] },
     ],
     intervalos: [
+      { v: '0.1.1', fecha: '2026-10-25', cambios: ['Una proporción con 0 éxitos, o con todos, ya no da un intervalo de un solo punto: se usa el intervalo de Wilson. Con pocos éxitos o fracasos también se muestra el de Wilson al lado del de siempre.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: intervalo de confianza de una media con σ conocida (z) o desconocida (t de Student), a partir de x̄, s y n o de la lista de datos, también si te dan la desviación con n.', 'Intervalos de una proporción, de la varianza y la desviación típica (con la χ²), de la diferencia de medias (σ conocidas, iguales o Welch) y de la diferencia de proporciones.', 'Tamaño de muestra para un error máximo en una media o una proporción.', 'Gráfica de la distribución con el área de confianza y simulación de 100 muestras que muestra cuántos intervalos aciertan.'] },
     ],
     transitorios: [
@@ -392,10 +393,12 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: hasta seis ecuaciones con seis incógnitas. Dice si el sistema es compatible determinado, indeterminado o incompatible con el teorema de Rouché-Frobenius y lo resuelve por Gauss con sustitución hacia atrás, por Gauss-Jordan, por la regla de Cramer o con la matriz inversa.', 'Si tiene infinitas soluciones, las da en forma paramétrica (λ, μ…).', 'Coeficientes con fracciones exactas, decimales o números complejos, como las mallas de un circuito de alterna, y nombres propios para las incógnitas (I1, I2…).', 'Comprobación de la solución sustituyendo en cada ecuación.'] },
     ],
     regresion: [
+      { v: '0.1.2', fecha: '2026-10-25', cambios: ['El ajuste parabólico funciona con x grandes, como los años (2015, 2016…): antes decía que faltaban valores de x distintos.', 'En los ajustes exponencial y potencial, una a muy pequeña se escribe en notación científica en vez de 0.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas dentro del texto de la teoría se ven bien escritas, no con símbolos $.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: escribe o pega tus datos (x, y), con frecuencias si las tienes, y obtén medias, varianzas, covarianza, el coeficiente de correlación con su contraste y las dos rectas de regresión, con la tabla de cálculos y la nube de puntos.', 'Ajustes exponencial, potencial, logarítmico y parabólico, con R² para compararlos con la recta, y los residuos.', 'Estimaciones de y a partir de x y de x a partir de y, avisando si es una extrapolación.', 'Añade puntos pulsando en la gráfica.'] },
     ],
     estadistica: [
+      { v: '0.1.2', fecha: '2026-10-25', cambios: ['En la binomial, al calcular un cuantil, la probabilidad del cuantil ya no cambia la probabilidad de éxito p.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: normal, t de Student, chi cuadrado, exponencial, binomial y Poisson, con su media y su varianza.', 'Probabilidades P(X ≤ a), P(X ≥ a), entre dos valores y, en las discretas, P(X = k) y con desigualdad estricta; cuantiles y valores críticos bilaterales.', 'Gráfica con el área (o las barras) que se pide sombreada.', 'Desarrollo como en clase: tipificación Z = (X − μ)/σ y Φ(z), fórmula de la binomial y de la Poisson término a término, y aproximación de la binomial por la normal con corrección de continuidad.'] },
     ],
@@ -813,6 +816,9 @@ const Estadistica = (() => {
     return (lo + hi) / 2;
   }
 
+  // la probabilidad del cuantil va en «q», para no pisar la p de la binomial (antes era «p»)
+  const probCuantil = (sc, D) => lee(vacio(sc.q) && !D.params.some(([k]) => k === 'p') ? { q: sc.p } : sc, 'q', 'la probabilidad p', { min: 0, minEx: true, max: 1, maxEx: true });
+
   function calcular(sc) {
     const d = DIST[sc.dist] ? sc.dist : 'normal', D = DIST[d];
     const P = {};
@@ -842,7 +848,7 @@ const Estadistica = (() => {
           : `${prob(F(b))} − ${prob(F(a))} = <b>${prob(res)}</b>` });
         Object.assign(r, { p: res, a, b, sombra: [a, b] });
       } else if (tipo === 'cuantil') {
-        const p = lee(sc, 'p', 'la probabilidad p', { min: 0, minEx: true, max: 1, maxEx: true });
+        const p = probCuantil(sc, D);
         const x = d === 'exponencial' ? -Math.log1p(-p) / P.lambda : cuantil(D, P, p);
         let h = `Se busca a con P(${X} ≤ a) = ${num(p)}`;
         if (d === 'normal') { const zq = cuantil(DIST.normal, { mu: 0, sigma: 1 }, p); h += `.<br>En la normal tipificada, Φ(z) = ${num(p)} ⇒ z = ${num(zq)}.<br>Destipificando, a = μ + zσ = ${num(P.mu)} + ${num(zq)}·${num(P.sigma)} = <b>${num(x)}</b>`; }
@@ -874,7 +880,7 @@ const Estadistica = (() => {
         res = F(b) - F(a - 1); desc = `P(${a} ≤ X ≤ ${b})`;
         pasos.push({ t: desc, html: `= P(X ≤ ${b}) − P(X ≤ ${a - 1}) = ${prob(F(b))} − ${prob(F(a - 1))} = <b>${prob(res)}</b>${detalle(Math.max(a, 0), b)}` });
       } else if (tipo === 'cuantil') {
-        const p = lee(sc, 'p', 'la probabilidad p', { min: 0, minEx: true, max: 1, maxEx: true });
+        const p = probCuantil(sc, D);
         let k = Math.max(0, Math.floor(D.rango(P)[0]));
         while (F(k) < p && k < 1e7) k++;
         while (k > 0 && F(k - 1) >= p) k--;
@@ -908,7 +914,7 @@ const Estadistica = (() => {
   const ejemplos = [
     { clave: 'normal-menor', nombre: 'Normal: P(X ≤ 52) con N(50, 5)', sc: { dist: 'normal', mu: '50', sigma: '5', tipo: 'menor', a: '52' } },
     { clave: 'normal-entre', nombre: 'Normal: P(μ − σ ≤ X ≤ μ + σ)', sc: { dist: 'normal', mu: '0', sigma: '1', tipo: 'entre', a: '-1', b: '1' } },
-    { clave: 'normal-cuantil', nombre: 'Normal: nota que supera el 90 %', sc: { dist: 'normal', mu: '6', sigma: '1.5', tipo: 'cuantil', p: '0.9' } },
+    { clave: 'normal-cuantil', nombre: 'Normal: nota que supera el 90 %', sc: { dist: 'normal', mu: '6', sigma: '1.5', tipo: 'cuantil', q: '0.9' } },
     { clave: 'z-critico', nombre: 'Valor crítico z para α = 0,05', sc: { dist: 'normal', mu: '0', sigma: '1', tipo: 'critico', alfa: '0.05' } },
     { clave: 't-critico', nombre: 't de Student: valor crítico con 10 g. l.', sc: { dist: 't', nu: '10', tipo: 'critico', alfa: '0.05' } },
     { clave: 'chi2', nombre: 'χ² con 5 g. l.: P(χ² ≥ 11,07)', sc: { dist: 'chi2', k: '5', tipo: 'mayor', a: '11.07' } },
@@ -930,7 +936,7 @@ const Estadistica = (() => {
 (() => {
   const { $, esc, copia } = Herramienta;
   const E = Estadistica, num = E.num, CLAVE = 'estadistica-v1';
-  const DEF = { mu: '0', sigma: '1', nu: '10', k: '5', lambda: '2', n: '10', p: '0.5', a: '1', b: '2', alfa: '0.05' };
+  const DEF = { mu: '0', sigma: '1', nu: '10', k: '5', lambda: '2', n: '10', p: '0.5', q: '0.5', a: '1', b: '2', alfa: '0.05' };
 
   let sc = copia(E.ejemplos[0].sc);
   try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && E.DIST[g.dist]) sc = g; } catch (e) {}
@@ -938,7 +944,7 @@ const Estadistica = (() => {
   let sol = null, col = {};
 
   /* ---------- Formulario ---------- */
-  const fila = (k, nom) => `<label for="f-${k}">${nom}</label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc[k] ?? DEF[k] ?? '')}" inputmode="decimal" autocomplete="off">`;
+  const fila = (k, nom) => (sc[k] === undefined && DEF[k] !== undefined && (sc[k] = DEF[k]), `<label for="f-${k}">${nom}</label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc[k] ?? DEF[k] ?? '')}" inputmode="decimal" autocomplete="off">`);
   function formulario() {
     const D = E.DIST[sc.dist], tipos = E.tipos(sc.dist);
     if (!tipos.some(([k]) => k === sc.tipo)) sc.tipo = tipos[0][0];
@@ -946,7 +952,7 @@ const Estadistica = (() => {
     h += D.params.map(([k, nom]) => fila(k, nom)).join('');
     h += `<label for="f-tipo">Qué calcular</label><select id="f-tipo" class="in" data-k="tipo">${tipos.map(([k, t]) => `<option value="${k}"${k === sc.tipo ? ' selected' : ''}>${t.replace('X', D.nombreX)}</option>`).join('')}</select>`;
     const t = sc.tipo;
-    if (t === 'cuantil') h += fila('p', 'Probabilidad p');
+    if (t === 'cuantil') h += fila('q', 'Probabilidad p');
     else if (t === 'critico') h += fila('alfa', 'Nivel de significación α');
     else if (t === 'entre') h += fila('a', 'Valor a') + fila('b', 'Valor b');
     else h += fila('a', D.continua ? 'Valor a' : 'Valor k');
