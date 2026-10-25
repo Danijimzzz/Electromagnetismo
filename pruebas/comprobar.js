@@ -1178,7 +1178,7 @@ const DerC = require(path.join(fuente, 'derivadas', 'calculo.js'));
     for (const t of [0.4, 1.3, 2.2]) for (let k = 1; k <= x.orden; k++) { const a = x.d(k - 1), b = x.d(k); cerca(b(t), (a(t + h) - a(t - h)) / (2 * h), 1e-4, `${e.clave}: derivada ${k} en x = ${t}`); }
   }
   // primitivas: todas se encuentran y al derivarlas sale f
-  const prims = { 'x^2 cos(2x)': 0, 'x^3 e^(2x)': 0, 'sen(3x)cos(3x)': 0, 'x sen(x)': 0, 'x e^(-x)': 0, 'sen(x)^3': 0, 'cos(x)^5': 0, 'tg(x)': 0, 'tg(x)^2': 0, 'ln(x)': 0, 'ln(x)^2': 0, 'arctg(x)': 0, 'x arctg(x)': 0, '2^x': 0, '1/sqrt(1-x^2)': 0, 'x/sqrt(1+x^2)': 0, 'e^(2x) sen(3x)': 0, 'x^2 ln(x)': 0, 'sqrt(x) ln(x)': 0, 'ln(x)/x': 0, '1/(x ln(x))': 0, 'cos(ln(x))/x': 0, 'e^x/(1+e^x)': 0, 'x (x^2+1)^3': 0, '(x+1)^5': 0, 'sqrt(2x+1)': 0, '1/(x^2 sqrt(x))': 0, '1/(x^2-1)': 0, 'x^4/(x^2-1)': 0, '1/(x(x+1)^2)': 0, '(2x+3)/(x^2+3x+5)': 0, '1/(x^2+x+1)': 0, '(x+2)/(x^2+2x+2)': 0, 'senh(x) cosh(x)': 0, 'sen(x)/cos(x)^2': 0 };
+  const prims = { 'x^2 cos(2x)': 0, 'x^3 e^(2x)': 0, 'sen(3x)cos(3x)': 0, 'x sen(x)': 0, 'x e^(-x)': 0, 'sen(x)^3': 0, 'cos(x)^5': 0, 'tg(x)': 0, 'tg(x)^2': 0, 'ln(x)': 0, 'ln(x)^2': 0, 'arctg(x)': 0, 'x arctg(x)': 0, '2^x': 0, '1/sqrt(1-x^2)': 0, 'x/sqrt(1+x^2)': 0, 'e^(2x) sen(3x)': 0, 'x^2 ln(x)': 0, 'sqrt(x) ln(x)': 0, 'ln(x)/x': 0, '1/(x ln(x))': 0, 'cos(ln(x))/x': 0, 'e^x/(1+e^x)': 0, 'x (x^2+1)^3': 0, '(x+1)^5': 0, 'sqrt(2x+1)': 0, '1/(x^2 sqrt(x))': 0, '1/(x^2-1)': 0, 'x^4/(x^2-1)': 0, '1/(x(x+1)^2)': 0, '(2x+3)/(x^2+3x+5)': 0, '1/(x^2+x+1)': 0, '(x+2)/(x^2+2x+2)': 0, 'senh(x) cosh(x)': 0, 'sen(x)/cos(x)^2': 0, 'sen(3x)cos(2x)': 0, 'sen(x)sen(4x)': 0, 'cos(2x)cos(5x)': 0, 'cos(x)sen(3x)': 0, 'sqrt(4-9x^2)': 0, 'sqrt(1-x^2)': 0, 'sqrt(x^2+1)': 0, '1/sqrt(x^2+4)': 0, 'sqrt(x^2-1)': 0, '1/sqrt(9x^2-4)': 0 };
   for (const fx of Object.keys(prims)) {
     const x = DerC.integral({ f: fx });
     if (!x.F) { mal(`Derivadas: no encuentra la primitiva de ${fx}`); continue; }
@@ -1194,11 +1194,26 @@ const DerC = require(path.join(fuente, 'derivadas', 'calculo.js'));
   cerca(r('partes-ln').val, (Math.E ** 2 + 1) / 4, 1e-12, '∫₁^e x ln x'); cerca(r('gauss').val, 0.746824132812427, 1e-9, '∫₀¹ e^(−x²) numérica');
   if (r('gauss').F) mal('Derivadas: da una primitiva elemental de e^(−x²)');
   const ar = DerC.integral({ f: 'sen(x)', a: '0', b: '2pi' }); cerca(ar.val, 0, 1e-9, '∫₀^{2π} sen x'); cerca(ar.area, 4, 1e-5, 'área de sen x en [0, 2π]');
-  for (const [sc, q] of [[{ modo: 'derivada', f: '', orden: '1' }, 'sin f'], [{ modo: 'derivada', f: 'x + y', orden: '1' }, 'otra letra'], [{ modo: 'derivada', f: 'ln(x)', orden: '1', x0: '-1' }, 'x₀ fuera del dominio'], [{ modo: 'integral', f: 'x', a: '1', b: '1' }, 'a = b'], [{ modo: 'integral', f: '1/x', a: '-1', b: '1' }, 'integral impropia'], [{ modo: 'integral', f: 'x', a: '0', b: '' }, 'falta b']]) {
+  for (const [sc, q] of [[{ modo: 'derivada', f: '', orden: '1' }, 'sin f'], [{ modo: 'derivada', f: 'x + y', orden: '1' }, 'otra letra'], [{ modo: 'derivada', f: 'ln(x)', orden: '1', x0: '-1' }, 'x₀ fuera del dominio'], [{ modo: 'integral', f: 'x', a: '1', b: '1' }, 'a = b'], [{ modo: 'integral', f: 'x', a: '0', b: '' }, 'falta b'], [{ modo: 'limite', f: 'sen(x)/x', a: '' }, 'límite sin punto'], [{ modo: 'area', f: 'x^2 + 1', g: '0', a: '', b: '' }, 'curvas que no se cortan'], [{ modo: 'volumen', f: 'x', g: '', a: '-1', b: '1', eje: 'y' }, 'capas con x < 0'], [{ modo: 'implicita', ec: 'x^2 + y^2 = 25', x0: '1', y0: '1' }, 'punto fuera de la curva'], [{ modo: 'implicita', ec: 'x^2 = 4', x0: '', y0: '' }, 'ecuación sin y']]) {
     let ok = false; try { DerC.resolver(sc); } catch (e) { ok = true; }
     if (!ok) mal(`Derivadas: ${q} no da error`);
   }
-  if (fallos === antes) console.log(`  ✓ Derivadas e integrales: ${DerC.ejemplos.length} ejemplos, derivadas como en clase y frente al cociente incremental, tangente y extremos, ${Object.keys(prims).length} primitivas comprobadas derivándolas, Barrow, numérica, área y errores`);
+  // impropias, límites, área, volumen, estudio, implícita y parciales
+  cerca(r('impropia').val, 1, 1e-12, '∫₁^∞ 1/x²'); if (!r('impropia-diverge').diverge) mal('Derivadas: ∫₁^∞ 1/x no diverge');
+  cerca(r('impropia-asintota').val, 2, 1e-12, '∫₀¹ 1/√x'); cerca(r('impropia-dentro').val, 4.5, 1e-9, '∫₋₁⁸ 1/∛x'); cerca(r('impropia-gauss').val, Math.sqrt(Math.PI) / 2, 1e-9, '∫₀^∞ e^(−x²)');
+  if (!DerC.integral({ f: '1/x', a: '-1', b: '1' }).diverge) mal('Derivadas: ∫₋₁¹ 1/x no diverge'); if (!DerC.integral({ f: 'sen(x)', a: '0', b: '∞' }).diverge) mal('Derivadas: ∫₀^∞ sen x no diverge');
+  cerca(DerC.integral({ f: '1/(1+x^2)', a: '-∞', b: '∞' }).val, Math.PI, 1e-9, '∫ 1/(1 + x²) en ℝ'); cerca(DerC.integral({ f: 'x e^(-x)', a: '0', b: 'inf' }).val, 1, 1e-9, '∫₀^∞ x e^(−x)');
+  cerca(r('prod-trig').val, 0.6, 1e-12, '∫ sen 3x cos 2x'); cerca(r('semicirculo').val, 2 * Math.PI, 1e-12, '∫ √(4 − x²)');
+  for (const [c, v] of [['lh-sen', 1], ['lh-dos', 0.5], ['lh-cero-inf', 0], ['lh-uno-inf', Math.E], ['lh-resta', 0]]) { const x = r(c); cerca(x.val, v, 1e-9, `límite ${c}`); if (!x.lhopital) mal(`Derivadas · ${c}: no usa L'Hôpital`); }
+  cerca(DerC.limite({ f: '(1+2x)^(1/x)', a: '0' }).val, Math.E ** 2, 1e-9, '(1 + 2x)^(1/x)'); cerca(DerC.limite({ f: 'x^x', a: '0' }).val, 1, 1e-9, 'x^x en 0'); if (DerC.limite({ f: '1/x', a: '0' }).existe) mal('Derivadas: lím 1/x en 0 existe');
+  cerca(r('area').val, 1 / 6, 1e-12, 'área entre x y x²'); cerca(r('area-cruce').val, 0.5, 1e-12, 'área entre x³ y x');
+  cerca(r('volumen').val, 8 * Math.PI, 1e-12, 'volumen de √x'); cerca(r('esfera').val, (4 * Math.PI) / 3, 1e-12, 'volumen de la esfera'); cerca(r('capas').val, Math.PI / 6, 1e-12, 'capas entre x y x²');
+  igual(r('volumen').txt, '8 π', 'V = 8π'); igual(r('circunferencia').txt, '−{x}/{y}', 'y′ en la circunferencia'); cerca(r('folium').m, -1, 1e-12, 'pendiente del folium en (3, 3)');
+  { const x = r('estudio'); if (x.asV.join() !== '1' || x.asO.length !== 2 || x.asO[0].m !== 1 || x.asO[0].n !== 1 || x.extremos.map((q) => q.tipo).join() !== 'máximo,mínimo' || x.dom !== 'ℝ − \\{1\\}') mal('Derivadas: el estudio de (x² + 1)/(x − 1) no da la asíntota x = 1, la oblicua y = x + 1 y el máximo y el mínimo'); }
+  { const x = r('estudio-ln'); if (x.dom !== '(0, ∞)' || x.asV.join() !== '0' || x.asH[0].y !== 0 || Math.abs(x.extremos[0].x - Math.E) > 1e-9) mal('Derivadas: el estudio de ln x / x no cuadra'); }
+  { const x = r('silla'); if (x.crit.map((q) => `${q.x},${q.y},${q.tipo}`).join(' ') !== '-1,0,punto de silla 1,0,mínimo') mal('Derivadas: x³ − 3x + y² no da la silla en (−1, 0) y el mínimo en (1, 0)'); }
+  { const x = r('parciales'); if (x.crit.length !== 4 || x.punto.gx !== 4 || x.punto.gy !== 10) mal('Derivadas: los puntos críticos o el gradiente de x² y + y³ − 3y no cuadran'); }
+  if (fallos === antes) console.log(`  ✓ Derivadas e integrales: ${DerC.ejemplos.length} ejemplos, derivadas como en clase y frente al cociente incremental, tangente y extremos, ${Object.keys(prims).length} primitivas comprobadas derivándolas, Barrow, numérica, área, impropias, L'Hôpital, área entre curvas, volúmenes, estudio completo, implícita, parciales y errores`);
 }
 
 const Gases = require(path.join(fuente, 'gases', 'fisica.js'));
