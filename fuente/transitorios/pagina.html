@@ -1,5 +1,5 @@
 <title>Transitorios RC, RL y RLC: carga y descarga paso a paso · SimulaCiencia</title>
-<meta name="description" content="Calculadora de transitorios en español: carga y descarga de un condensador en un circuito RC, corriente en una bobina en un circuito RL y respuesta de un RLC en serie (subamortiguado, crítico o sobreamortiguado), con la constante de tiempo, la gráfica y el desarrollo paso a paso.">
+<meta name="description" content="Calculadora de transitorios en español: carga y descarga de un condensador en un circuito RC, corriente en una bobina en un circuito RL, RLC en serie y en paralelo (subamortiguado, crítico o sobreamortiguado) y cualquier circuito de primer orden por el método de los tres valores, con la constante de tiempo, la gráfica y el desarrollo paso a paso.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
@@ -12,12 +12,20 @@
 :root[data-theme="dark"] {
   --v: #ef7a62; --i: #74a2f2; --x: #5fcf8a }
 #circuito { height: 230px }
+#grafica { cursor: crosshair }
+#lectura { display: block; min-height: 1.4em; margin-top: 4px; font-size: 13px }
+.lista { display: grid; grid-template-columns: 26px minmax(0, .8fr) minmax(0, .8fr) minmax(0, 1.4fr) minmax(0, 1.5fr) 16px; gap: 5px 5px; align-items: center }
+.lista .cab { font-size: 12px; color: var(--muted) } .lista b { font: 600 13.5px var(--f-math) }
+.lista .valor { display: flex; gap: 3px; align-items: center } .lista .valor small { color: var(--muted) }
+.lista .in { min-width: 0; padding-left: 4px; padding-right: 4px }
+.lista .x { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 16px; padding: 0 } .lista .x:hover { color: var(--error) }
+.botones { display: flex; gap: 6px; flex-wrap: wrap }
 </style>
 <body>
 <header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Circuitos</a> / Transitorios RC, RL y RLC</span></header>
 <div class="wrap">
 <h1>Transitorios RC, RL y RLC</h1>
-<p class="lead">Qué pasa justo después de cerrar el interruptor: la carga y la descarga de un condensador, la corriente que sube o baja en una bobina y la respuesta de un RLC en serie, con la constante de tiempo, los valores en un instante, el tiempo hasta un valor y la gráfica animada.</p>
+<p class="lead">Qué pasa justo después de cerrar el interruptor: la carga y la descarga de un condensador, la corriente que sube o baja en una bobina y la respuesta de un RLC en serie o en paralelo, y cualquier circuito de primer orden que escribas, con la constante de tiempo, los valores en un instante, el tiempo hasta un valor y la gráfica animada.</p>
 <div class="layout">
   <div class="card">
     <h2>Datos</h2>
@@ -30,7 +38,7 @@
     <div class="card"><h2>Resultado</h2><div class="res" id="res"></div>
       <canvas id="circuito" aria-label="Esquema del circuito con la corriente"></canvas>
       <canvas id="grafica" aria-label="Tensión y corriente frente al tiempo"></canvas>
-      <div class="controles"><button class="btn" id="play" type="button">⏸ Pausa</button><span class="leyenda" id="leyenda" style="margin:0"></span></div></div>
+      <div class="controles"><button class="btn" id="play" type="button">⏸ Pausa</button><span class="leyenda" id="leyenda" style="margin:0"></span></div><span class="leyenda" id="lectura" aria-live="polite"></span></div>
     <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
   </div>
 </div>
@@ -47,6 +55,14 @@
   <p>Con los tres elementos la tensión del condensador cumple una ecuación de segundo orden, LC V<sub>C</sub>″ + RC V<sub>C</sub>′ + V<sub>C</sub> = V. Su comportamiento depende de α = R/(2L) frente a ω<sub>0</sub> = 1/√(LC):</p>
   <p class="f">α &gt; ω<sub>0</sub>: sobreamortiguado, &ensp; α = ω<sub>0</sub>: crítico, &ensp; α &lt; ω<sub>0</sub>: subamortiguado, con ω<sub>d</sub> = √(ω<sub>0</sub><sup>2</sup> − α<sup>2</sup>)</p>
   <p>En el caso subamortiguado la tensión oscila alrededor del valor final con una envolvente e<sup>−αt</sup>. La resistencia crítica, la que separa los dos comportamientos, es R<sub>c</sub> = 2√(L/C).</p>
+  <h2>Circuito RLC en paralelo</h2>
+  <p>Con una fuente de corriente I y R, L y C en paralelo, los tres comparten la tensión v y la corriente de la bobina cumple LC i<sub>L</sub>″ + (L/R) i<sub>L</sub>′ + i<sub>L</sub> = I. Es la misma ecuación que en serie, pero con α = 1/(2RC): aquí una resistencia grande amortigua poco. La resistencia crítica es R<sub>c</sub> = ½√(L/C); por encima oscila y por debajo no.</p>
+  <h2>Cualquier circuito de primer orden: los tres valores</h2>
+  <p>Si el circuito tiene un solo condensador (o una sola bobina), cualquier tensión o corriente sigue la misma forma, y basta con tres números:</p>
+  <p class="f">x(t) = x(∞) + [x(0<sup>+</sup>) − x(∞)] e<sup>−t/τ</sup>, &ensp; τ = R<sub>th</sub> C &ensp;o&ensp; τ = L/R<sub>th</sub></p>
+  <p>x(0<sup>+</sup>) sale del circuito de antes del interruptor en régimen permanente (el condensador abierto, la bobina en cortocircuito), porque la tensión de un condensador y la corriente de una bobina no saltan. x(∞) sale igual con el circuito de después. R<sub>th</sub> es la resistencia que ve el condensador o la bobina con las fuentes apagadas.</p>
+  <h2>Conmutar dos veces</h2>
+  <p>Si el interruptor cambia otra vez en t<sub>1</sub>, el valor en t<sub>1</sub> es el valor inicial del segundo tramo, que tiene su propia constante de tiempo. Al abrir el circuito de una bobina la corriente sigue siendo la misma, así que si se descarga por una resistencia grande R<sub>2</sub> la tensión salta a −i·R<sub>2</sub>: es la chispa de los interruptores y la razón de los diodos de protección.</p>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Transitorios <span id="ver"></span> (beta)</footer>
