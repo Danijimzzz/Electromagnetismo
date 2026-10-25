@@ -9,7 +9,7 @@
 const Parametro = (() => {
   const A = Algebra, { c0, c1, suma, resta, mul, div, neg, esCero, igual, esUno } = A;
   // letras que pueden ser parámetro: no i ni j (imaginaria) ni e
-  const LETRA = /[a-dfghk-zα-ωA-Z]/;
+  const LETRA = /[a-dfghk-zα-ωA-HJ-Z]/;
 
   /* ---------- Polinomios ---------- */
   const limpia = (p) => { const q = p.slice(); while (q.length > 1 && esCero(q[q.length - 1])) q.pop(); return q.length ? q : [c0]; };

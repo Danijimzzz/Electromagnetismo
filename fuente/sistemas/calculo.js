@@ -9,7 +9,8 @@ const Sistemas = (() => {
   const A_ = Algebra, { html, htmlF, matHtml } = A_;
   const METODOS = [['gauss', 'Gauss'], ['jordan', 'Gauss-Jordan'], ['cramer', 'Regla de Cramer'], ['inversa', 'Matriz inversa'], ['reduccion', 'Reducción'], ['igualacion', 'Igualación'], ['sustitucion', 'Sustitución']];
   const CLASICOS = { reduccion: 'reducción', igualacion: 'igualación', sustitucion: 'sustitución' };
-  const PARAM = ['λ', 'μ', 'ν', 'α', 'β', 'γ'];
+  const PARAMS = ['λ', 'μ', 'ν', 'α', 'β', 'γ', 'δ'];
+  const P_ = typeof Parametro !== 'undefined' ? Parametro : null;
   const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   // nombres propios («I1, I2» → I₁, I₂) o x, y, z, t; con más de cuatro, x₁ … xₙ
   function nombres(n, propios) {
@@ -121,7 +122,14 @@ const Sistemas = (() => {
   function resolver(sc) {
     const m = sc.M.length, n = sc.M[0].length - 1;
     if (n < 1) throw new Error('Hace falta al menos una incógnita');
-    const M = A_.leerMatriz(sc.M), A = M.map((f) => f.slice(0, n)), vars = nombres(n, sc.vars);
+    const letra = P_ ? P_.letraDe(sc.M.flat()) : null;
+    if (letra) return resolverParam(sc, letra);
+    return resolverNum(A_.leerMatriz(sc.M), sc);
+  }
+  function resolverNum(M, sc, evita = null) {
+    const m = M.length, n = M[0].length - 1;
+    const PARAM = PARAMS.filter((p) => p !== evita);
+    const A = M.map((f) => f.slice(0, n)), vars = nombres(n, sc.vars);
     const metodo = METODOS.some(([k]) => k === sc.metodo) ? sc.metodo : 'gauss';
     const pasos = [{ t: 'Sistema', html: sistemaHtml(M, vars) }, { t: 'Matriz ampliada A* = [A | b]', html: matHtml(M, { barra: n }) }];
     // Rouché-Frobenius
@@ -189,12 +197,145 @@ const Sistemas = (() => {
       if (!ok) throw new Error('La comprobación de la solución ha fallado');
       if (tipo === 'SCD') pasos.push({ t: 'Comprobación', html: M.map((f) => `${f.slice(0, n).map((a, j) => (A_.esCero(a) ? null : `${htmlF(a)}·${htmlF(x0[j])}`)).filter(Boolean).join(' + ') || '0'} = ${html(f[n])} ✓`).join('<br>') });
     }
-    const res = tipo === 'SI' ? 'Sistema incompatible: no tiene solución' : `${vars.map((v, j) => `${v} = ${combinacion(sol[j].t, sol[j].c)}`).join(', &nbsp;')}`;
-    return { tipo, rA, rAmp, n, m, vars, sol, param, pasos, res, descripcion: TIPOS[tipo], metodo };
+    // incompatible con más ecuaciones que incógnitas: la mejor aproximación por mínimos cuadrados
+    let mc = null;
+    if (tipo === 'SI' && m > n && M.flat().every(A_.esReal)) {
+      const b = M.map((f) => [f[n]]), At = A_.traspuesta(A), AtA = A_.producto(At, A), Atb = A_.producto(At, b);
+      if (!A_.esCero(A_.determinante(AtA))) {
+        const N = AtA.map((f, i) => [...f, Atb[i][0]]), xr = A_.escalonar(N, { reducida: true, columnas: n }).R.map((f) => f[n]);
+        const r = A.map((f, i) => A_.resta(f.reduce((s2, a, j) => A_.suma(s2, A_.mul(a, xr[j])), A_.c0), M[i][n]));
+        const e2 = r.reduce((s2, x) => A_.suma(s2, A_.mul(x, x)), A_.c0);
+        mc = { x: xr, e2 };
+        pasos.push({ t: 'Solución por mínimos cuadrados', html: `No hay ningún x que cumpla todas las ecuaciones, pero sí uno que las cumple «lo mejor posible»: el que hace mínimo ‖A x − b‖<sup>2</sup>. Sale de las ecuaciones normales A<sup>t</sup>A x = A<sup>t</sup>b:<br>${matHtml(AtA)} x = ${matHtml(Atb)} &nbsp;⇒&nbsp; ${vars.map((v, j) => `${v} = <b>${html(xr[j])}</b>`).join(', &nbsp;')}<br>Con esa solución, la suma de los cuadrados de los errores es ${html(e2)} ≈ ${A_.decimal(A_.qnum(e2.re), 4)}. Es lo que hace la recta de regresión.` });
+      }
+    }
+    pasos.push(...geometria(M, n, m, tipo, rA, rAmp));
+    const res = tipo === 'SI' ? `Sistema incompatible: no tiene solución${mc ? `<br><small>Por mínimos cuadrados: ${vars.map((v, j) => `${v} ≈ ${html(mc.x[j])}`).join(', ')}</small>` : ''}` : `${vars.map((v, j) => `${v} = ${combinacion(sol[j].t, sol[j].c)}`).join(', &nbsp;')}`;
+    return { tipo, rA, rAmp, n, m, vars, sol, param, pasos, res, descripcion: TIPOS[tipo], metodo, mc, M: M.map((f) => f.map((x) => A_.esReal(x) ? A_.qnum(x.re) : NaN)) };
+  }
+
+  /* ---------- Interpretación geométrica ---------- */
+  // 2 incógnitas: rectas en el plano; 3 incógnitas: planos en el espacio (por los rangos y si hay ecuaciones proporcionales)
+  function geometria(M, n, m, tipo, rA, rAmp) {
+    if (!M.flat().every(A_.esReal) || (n !== 2 && n !== 3)) return [];
+    const filas = M.filter((f) => f.slice(0, n).some((x) => !A_.esCero(x)));
+    const rangoF = (fs) => (fs.length ? A_.escalonar(fs).rango : 0);
+    // pares de ecuaciones paralelas (coeficientes proporcionales) o iguales
+    let paralelas = 0, iguales = 0;
+    for (let i = 0; i < filas.length; i++) for (let j = i + 1; j < filas.length; j++) {
+      if (rangoF([filas[i].slice(0, n), filas[j].slice(0, n)]) === 1) { if (rangoF([filas[i], filas[j]]) === 1) iguales++; else paralelas++; }
+    }
+    const obj = n === 2 ? ['recta', 'rectas'] : ['plano', 'planos'], k = filas.length;
+    let t;
+    if (n === 2) {
+      if (tipo === 'SCD') t = k === 2 ? 'Las dos rectas se cortan en un punto, que es la solución.' : `Las ${k} rectas pasan por el mismo punto, que es la solución.`;
+      else if (tipo === 'SCI') t = k <= 1 ? 'Solo queda una recta: todos sus puntos son solución.' : `Las ${k} rectas son la misma (coincidentes): todos sus puntos son solución.`;
+      else t = paralelas && rAmp === 2 && rA === 1 ? `Las rectas son paralelas: no se cortan nunca.` : `Las rectas se cortan dos a dos, pero no las ${k} en el mismo punto.`;
+    } else {
+      if (tipo === 'SCD') t = `Los ${k} planos se cortan en un único punto.`;
+      else if (tipo === 'SCI') t = rA === 2 ? (iguales ? 'Los planos se cortan en una recta (dos de ellos coinciden): los puntos de esa recta son la solución.' : `Los ${k} planos se cortan en una misma recta (forman un haz): sus puntos son la solución.`) : 'Todos los planos son el mismo: cualquier punto suyo es solución.';
+      else if (rA === 1) t = iguales ? 'Hay planos paralelos (y alguno coincidente): no tienen ningún punto común.' : 'Los planos son paralelos: no tienen ningún punto común.';
+      else t = paralelas ? 'Dos planos son paralelos y el otro los corta: no hay ningún punto común a todos.' : `Los planos se cortan dos a dos en rectas paralelas (forman un prisma): no hay ningún punto común a los ${k}.`;
+    }
+    void obj;
+    return [{ t: 'Interpretación geométrica', html: `Cada ecuación con ${n} incógnitas es ${n === 2 ? 'una recta en el plano' : 'un plano en el espacio'}. ${t}`, geo: true }];
+  }
+
+  /* ---------- Con un parámetro ---------- */
+  function resolverParam(sc, letra) {
+    const M = P_.leeMatriz(sc.M, letra), m = M.length, n = M[0].length - 1, A = M.map((f) => f.slice(0, n));
+    const vars = nombres(n, sc.vars), mh = (X, o) => P_.matHtml(X, letra, o), fh = (q) => P_.factorHtml(q, letra), vh = P_.raizHtml;
+    const pasos = [{ t: `Sistema con el parámetro ${letra}`, html: `A* = [A | b] = ${mh(M, { barra: n })}` }];
+    const unicas = (rs) => rs.filter((r, i, xs) => !xs.slice(0, i).some((q) => Math.abs(q.num - r.num) < 1e-9));
+    let rs, generico;
+    if (m === n) {
+      const d = P_.det(A);
+      rs = unicas(P_.raices(d));
+      pasos.push({ t: 'Determinante de la matriz de coeficientes', html: `|A| = ${mh(A, { det: true })} = <b>${fh(d)}</b>${P_.constante(d) ? '' : rs.length ? `, que se anula para ${letra} = ${rs.map(vh).join(', ')}` : `, que no se anula para ningún ${letra} real`}` });
+      if (P_.nulo(d)) generico = null;
+      else {
+        generico = { tipo: 'SCD', txt: 'compatible determinado' };
+        // Cramer con el parámetro: x_j = |A_j| / |A|
+        const xs = vars.map((v, j) => `${v} = ${P_.fracHtml(P_.det(A.map((f, i) => f.map((x, k) => (k === j ? M[i][n] : x)))), d, letra)}`);
+        generico.sol = xs.join(', &nbsp;');
+        pasos.push({ t: `Si ${letra} ≠ ${rs.map(vh).join(', ') || '…'}`, html: `|A| ≠ 0, así que rang(A) = rang(A*) = ${n}: <b>compatible determinado</b>. Por Cramer, x<sub>i</sub> = |A<sub>i</sub>| / |A|:<br>${xs.join('<br>')}` });
+      }
+    }
+    if (m !== n || generico === null) {
+      const gA = P_.rangoGenerico(A), gM = P_.rangoGenerico(M);
+      rs = unicas([...P_.raices(gA.mcd), ...P_.raices(gM.mcd)]).sort((a, b) => a.num - b.num);
+      const t = gA.r < gM.r ? 'SI' : gA.r === n ? 'SCD' : 'SCI';
+      generico = { tipo: t, txt: { SI: 'incompatible', SCD: 'compatible determinado', SCI: `compatible indeterminado (${n - gA.r} ${n - gA.r === 1 ? 'parámetro' : 'parámetros'})` }[t] };
+      pasos.push({ t: 'Rangos para casi todos los valores', html: `Para casi todo ${letra}: rang(A) = ${gA.r} y rang(A*) = ${gM.r} ⇒ <b>${generico.txt}</b>.${rs.length ? ` Los rangos solo pueden bajar donde se anulan a la vez todos los menores de ese orden: ${letra} = ${rs.map(vh).join(', ')}.` : ''}` });
+    }
+    // cada valor especial: se sustituye y se resuelve
+    const casos = rs.map((r) => {
+      if (r.exacta) {
+        const S = resolverNum(P_.evaluaM(M, r.valor), sc, letra);
+        return { r, tipo: S.tipo, txt: S.descripcion, sol: S.tipo === 'SI' ? '' : S.res };
+      }
+      const ra = P_.rangoF(A, r.num), rm = P_.rangoF(M, r.num), t = ra < rm ? 'SI' : ra === n ? 'SCD' : 'SCI';
+      return { r, tipo: t, txt: { SI: 'incompatible', SCD: 'compatible determinado', SCI: 'compatible indeterminado' }[t], sol: '' };
+    });
+    if (casos.length) pasos.push({ t: 'Los valores especiales', html: casos.map((c) => `${letra} = ${vh(c.r)}: se sustituye en el sistema y queda <b>${c.txt}</b>${c.sol ? `: ${c.sol}` : ''}`).join('<br>') });
+    const linea = (pre, t, sl) => `${pre}: <b>${t}</b>${sl ? ` &nbsp;(${sl})` : ''}`;
+    const res = [linea(casos.length ? `Si ${letra} ≠ ${rs.map(vh).join(', ')}` : `Para todo ${letra}`, generico.txt, generico.sol), ...casos.map((c) => linea(`Si ${letra} = ${vh(c.r)}`, c.txt, c.sol))].join('<br>');
+    pasos.push({ t: 'Discusión', html: res });
+    return { tipo: 'PARAM', letra, n, m, vars, pasos, res, descripcion: `discutido según el valor de ${letra}`, casos: [{ valor: null, tipo: generico.tipo }, ...casos.map((c) => ({ valor: c.r.num, tipo: c.tipo }))] };
+  }
+
+  /* ---------- Escribir las ecuaciones como texto ---------- */
+  // «2x + y − z = 8» (una por línea) → coeficientes y nombres de las incógnitas
+  function leeTexto(texto) {
+    const lineas = String(texto ?? '').split(/\n|;/).map((l) => l.trim()).filter(Boolean);
+    if (!lineas.length) throw new Error('Escribe al menos una ecuación');
+    const orden = [], ecs = [];
+    lineas.forEach((l, k) => {
+      const lados = l.replace(/[−–]/g, '-').replace(/\s+/g, '').split('=');
+      if (lados.length !== 2 || !lados[0] || !lados[1]) throw new Error(`Ecuación ${k + 1}: tiene que tener un «=»`);
+      const co = {};
+      let cte = A_.c0;
+      lados.forEach((lado, li) => {
+        const sg = li ? -1 : 1;
+        // se parte por los + y − que no están dentro de un paréntesis
+        const terms = [];
+        let dentro = 0, ini = 0;
+        for (let q = 0; q < lado.length; q++) {
+          const ch = lado[q];
+          if (ch === '(') dentro++; else if (ch === ')') dentro--;
+          else if ((ch === '+' || ch === '-') && !dentro && q > ini && !/[*/^]/.test(lado[q - 1])) { terms.push(lado.slice(ini, q)); ini = q; }
+        }
+        terms.push(lado.slice(ini));
+        for (const t0 of terms) {
+          let t = t0, neg = false;
+          if (t[0] === '+') t = t.slice(1); else if (t[0] === '-') { neg = true; t = t.slice(1); }
+          // la incógnita al final del término (o sola): 3x, (1+i)y, x/2, 2·z
+          const m = /^(.*?)[*·]?([a-hk-zA-Zα-ωΑ-Ω](?:_?\d+)?|[ij]_?\d+)(\/\d+)?$/.exec(t);
+          let c, v = null;
+          if (m && !/^\d*[.,]?\d*i$/.test(t)) {
+            v = m[2]; const cs = (m[1] || '1').replace(/^\((.*)\)$/, '$1');
+            c = A_.leer(cs === '' ? '1' : cs);
+            if (m[3]) c = A_.div(c, A_.leer(m[3].slice(1)));
+          } else c = A_.leer(t);
+          if (neg) c = A_.neg(c);
+          if (sg < 0) c = A_.neg(c);
+          if (v) { if (!(v in co)) co[v] = A_.c0; co[v] = A_.suma(co[v], c); if (!orden.includes(v)) orden.push(v); }
+          else cte = A_.resta(cte, c);
+        }
+      });
+      ecs.push({ co, cte });
+    });
+    if (!orden.length) throw new Error('No hay ninguna incógnita');
+    if (orden.length > 6) throw new Error('Como mucho 6 incógnitas');
+    const M = ecs.map((e) => [...orden.map((v) => A_.txt(e.co[v] || A_.c0)), A_.txt(e.cte)]);
+    return { M, vars: orden.join(', ') };
   }
 
   const S = (...filas) => filas.map((f) => f.split(' '));
   const ejemplos = [
+    { clave: 'parametro', nombre: 'Discutir según el parámetro k', sc: { metodo: 'gauss', M: S('1 1 k 1', '1 k 1 1', 'k 1 1 1') } },
+    { clave: 'parametro2', nombre: 'Discutir un sistema 2×2 con a', sc: { metodo: 'gauss', M: S('a 1 2', '1 a 2') } },
+    { clave: 'minimos', nombre: 'Incompatible: mínimos cuadrados', sc: { metodo: 'gauss', M: S('1 1 2', '1 -1 0', '2 1 4') } },
     { clave: 'scd', nombre: 'Compatible determinado 3×3', sc: { metodo: 'gauss', M: S('2 1 -1 8', '-3 -1 2 -11', '-2 1 2 -3') } },
     { clave: 'cramer', nombre: 'Por la regla de Cramer', sc: { metodo: 'cramer', M: S('1 1 1 6', '0 2 5 -4', '2 5 -1 27') } },
     { clave: 'sci', nombre: 'Compatible indeterminado (un parámetro)', sc: { metodo: 'gauss', M: S('1 1 1 6', '2 -1 1 3', '3 0 2 9') } },
@@ -210,6 +351,6 @@ const Sistemas = (() => {
     { clave: 'complejo', nombre: 'Con números complejos', sc: { metodo: 'gauss', M: S('1+i 2 3+i', '1 -i 1') } },
     { clave: 'mallas', nombre: 'Mallas en alterna (impedancias complejas)', sc: { metodo: 'cramer', vars: 'I1, I2', M: S('2+3i -3i 10', '-3i 4+i 0') } },
   ];
-  return { METODOS, resolver, ejemplos, nombres, combinacion };
+  return { METODOS, resolver, leeTexto, ejemplos, nombres, combinacion };
 })();
 if (typeof module !== 'undefined') module.exports = Sistemas;
