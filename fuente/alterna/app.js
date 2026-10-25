@@ -1,6 +1,7 @@
 /* =====================================================================
-   Corriente alterna y fasores: interfaz (modo, conexión, datos,
-   resultado, diagrama de fasores, ondas v(t) e i(t) y desarrollo).
+   Corriente alterna y fasores: interfaz (modo, conexión, datos, lista
+   de elementos de una red, resultado, diagrama de fasores, ondas, triángulo
+   de potencias, curva de resonancia y desarrollo).
    El cálculo está en alterna/fisica.js (Alterna).
    ===================================================================== */
 (() => {
@@ -9,31 +10,64 @@
   const txt = (h) => String(h).replace(/<sup>/g, '^').replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ');
 
   let sc = copia(A.ejemplos[0].sc);
-  try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && (g.modo === 'circuito' || g.modo === 'correccion')) sc = g; } catch (e) {}
+  try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && ['circuito', 'correccion', 'red', 'trifasica'].includes(g.modo)) sc = g; } catch (e) {}
   const guarda = () => { try { localStorage.setItem(CLAVE, JSON.stringify(sc)); } catch (e) {} };
   let sol = null, col = {};
 
   /* ---------- Formulario ---------- */
   const fila = (k, nom, un) => `<label for="f-${k}">${nom} <small>${un}</small></label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc[k] ?? '')}" inputmode="decimal" autocomplete="off">`;
-  const opcion = (k, v, t) => `<option value="${v}"${sc[k] === v ? ' selected' : ''}>${t}</option>`;
+  const opcion = (k, v, t, def) => `<option value="${v}"${(sc[k] ?? def) === v ? ' selected' : ''}>${t}</option>`;
+  const elige = (k, nom, ops) => `<label for="f-${k}">${nom}</label><select id="f-${k}" class="in" data-k="${k}">${ops.map(([v, t], i) => opcion(k, v, t, ops[0][0])).join('')}</select>`;
+  const DATO = { P: ['Potencia activa P', 'kW'], S: ['Potencia aparente S', 'kVA'], I: ['Corriente I', 'A'], Q: ['Potencia reactiva Q', 'kvar'] };
   function formulario() {
-    let h = `<label for="f-modo">Qué calcular</label><select id="f-modo" class="in" data-k="modo">${opcion('modo', 'circuito', 'Circuito RLC')}${opcion('modo', 'correccion', 'Corregir el factor de potencia')}</select>`;
+    let h = elige('modo', 'Qué calcular', [['circuito', 'Circuito RLC en serie o en paralelo'], ['red', 'Red de alterna (método de los nudos)'], ['trifasica', 'Sistema trifásico equilibrado'], ['correccion', 'Corregir el factor de potencia']]);
+    const red = sc.modo === 'red';
     if (sc.modo === 'correccion') {
-      h += fila('V', 'Tensión eficaz V', 'V') + fila('f', 'Frecuencia f', 'Hz') + fila('P', 'Potencia activa P', 'kW') + fila('fp1', 'cos φ inicial', '') + fila('fp2', 'cos φ deseado', '');
-      $('#nota').textContent = 'La carga es inductiva; el condensador va en paralelo con ella.';
+      const d = DATO[sc.dato] ? sc.dato : 'P';
+      h += fila('V', 'Tensión eficaz V', 'V') + fila('f', 'Frecuencia f', 'Hz') + elige('carga', 'La carga es', [['inductiva', 'Inductiva (motores)'], ['capacitiva', 'Capacitiva']]) + elige('dato', 'Dato de la carga', [['P', 'Potencia activa'], ['S', 'Potencia aparente'], ['I', 'Corriente'], ['Q', 'Potencia reactiva']]) + fila('P', DATO[d][0], DATO[d][1]) + fila('fp1', 'cos φ inicial', '') + fila('fp2', 'cos φ deseado', '');
+      $('#nota').textContent = sc.carga === 'capacitiva' ? 'Una carga capacitiva se corrige con una bobina en paralelo.' : 'El condensador va en paralelo con la carga.';
+    } else if (sc.modo === 'trifasica') {
+      h += fila('VL', 'Tensión de línea V<sub>L</sub>', 'V') + fila('f', 'Frecuencia f', 'Hz') + elige('conexion', 'Carga conectada en', [['estrella', 'Estrella (Y)'], ['triangulo', 'Triángulo (Δ)']]) + fila('R', 'Resistencia de cada fase R', 'Ω') + fila('X', 'Reactancia de cada fase X', 'Ω') + fila('fp2', 'cos φ deseado (opcional)', '');
+      $('#nota').textContent = 'Carga equilibrada: las tres fases iguales. X positiva si es inductiva y negativa si es capacitiva. Con un cos φ deseado calcula la batería de condensadores.';
+    } else if (red) {
+      h += fila('f', 'Frecuencia f', 'Hz');
+      $('#nota').textContent = 'Cada elemento va del nudo A al nudo B; en una fuente de tensión A es el borne +, y en una de corriente la corriente va de A a B por dentro. Valores eficaces; la fase en grados. L en mH y C en μF si no pones unidad. El nudo 0 es la referencia.';
     } else {
-      h += `<label for="f-conexion">Conexión</label><select id="f-conexion" class="in" data-k="conexion">${opcion('conexion', 'serie', 'En serie')}${opcion('conexion', 'paralelo', 'En paralelo')}</select>`;
-      h += fila('V', 'Tensión eficaz V', 'V') + fila('f', 'Frecuencia f', 'Hz') + fila('R', 'Resistencia R', 'Ω') + fila('L', 'Inductancia L', 'mH') + fila('C', 'Capacidad C', 'μF');
+      if (!['serie', 'paralelo'].includes(sc.conexion)) sc.conexion = 'serie';
+      h += elige('conexion', 'Conexión', [['serie', 'En serie'], ['paralelo', 'En paralelo']]);
+      h += elige('tipoV', 'La tensión es el valor', [['eficaz', 'Eficaz'], ['pico', 'De pico']]) + fila('V', sc.tipoV === 'pico' ? 'Tensión de pico V<sub>m</sub>' : 'Tensión eficaz V', 'V') + fila('faseV', 'Fase inicial φ (opcional)', '°');
+      h += elige('unidadF', 'Frecuencia dada como', [['f', 'Frecuencia f (Hz)'], ['w', 'Pulsación ω (rad/s)']]) + fila('f', sc.unidadF === 'w' ? 'Pulsación ω' : 'Frecuencia f', sc.unidadF === 'w' ? 'rad/s' : 'Hz');
+      h += fila('R', 'Resistencia R', 'Ω') + fila('L', 'Inductancia L', 'mH') + fila('C', 'Capacidad C', 'μF');
       $('#nota').textContent = 'Deja vacío un elemento si no está. Puedes usar coma o punto decimal y prefijos como 4k7, 100n o 10m.';
     }
     $('#campos').innerHTML = h;
+    $('#red').hidden = !red;
+    if (red) lista();
   }
+
+  /* ---------- Lista de elementos de una red ---------- */
+  function lista() {
+    sc.elementos = Array.isArray(sc.elementos) && sc.elementos.length ? sc.elementos : copia(A.ejemplos.find((e) => e.sc.modo === 'red').sc.elementos);
+    const nom = A.nombres(sc.elementos), campo = (i, k, v, et, extra = '') => `<input class="in" data-i="${i}" data-k="${k}" value="${esc(v ?? '')}" aria-label="${nom[i]}: ${et}" autocomplete="off" spellcheck="false"${extra}>`;
+    $('#lista').innerHTML = '<span class="cab">Elemento</span><span class="cab">Nudo A</span><span class="cab">Nudo B</span><span class="cab">Valor</span><span class="cab">Fase</span><span></span>' + sc.elementos.map((e, i) => {
+      const T = A.TIPOS[e.t];
+      return `<b title="${T.nombre}">${nom[i].replace(/(\d+)/, '<sub>$1</sub>')}</b>${campo(i, 'a', e.a, 'nudo A')}${campo(i, 'b', e.b, 'nudo B')}<span class="valor">${campo(i, 'v', e.v, `valor en ${T.un}`, ' inputmode="decimal"')}<small>${T.un}</small></span>${'VI'.includes(e.t) ? `<span class="valor">${campo(i, 'fase', e.fase, 'fase en grados', ' inputmode="decimal"')}<small>°</small></span>` : '<span></span>'}<button class="x" type="button" data-quita="${i}" aria-label="Quitar ${nom[i]}">×</button>`;
+    }).join('');
+    for (const b of document.querySelectorAll('[data-add]')) b.disabled = sc.elementos.length >= 14;
+  }
+  $('#lista').addEventListener('input', (e) => { const t = e.target; if (t.dataset.i === undefined) return; sc.elementos[+t.dataset.i][t.dataset.k] = t.value; $('#ejemplos').value = ''; calcula(); });
+  $('#lista').addEventListener('click', (e) => { const q = e.target.dataset.quita; if (q === undefined) return; sc.elementos.splice(+q, 1); $('#ejemplos').value = ''; lista(); calcula(); });
+  for (const b of document.querySelectorAll('[data-add]')) b.addEventListener('click', () => {
+    const t = b.dataset.add, ult = sc.elementos[sc.elementos.length - 1];
+    sc.elementos.push({ t, a: ult ? ult.b : 'a', b: '0', v: { R: '10', L: '10', C: '100', V: '10', I: '1' }[t], ...('VI'.includes(t) ? { fase: '0' } : {}) });
+    $('#ejemplos').value = ''; lista(); calcula();
+  });
   $('#campos').addEventListener('input', (e) => { const t = e.target; if (t.tagName !== 'INPUT') return; sc[t.dataset.k] = t.value; $('#ejemplos').value = ''; calcula(); });
   $('#campos').addEventListener('change', (e) => {
     const t = e.target;
     if (t.tagName !== 'SELECT') return;
     sc[t.dataset.k] = t.value;
-    if (t.dataset.k === 'modo') { const ej = A.ejemplos.find((x) => x.sc.modo === t.value); for (const [k, v] of Object.entries(ej.sc)) if (sc[k] === undefined || sc[k] === '' || k === 'P') sc[k] = v; }
+    if (t.dataset.k === 'modo') { const ej = A.ejemplos.find((x) => x.sc.modo === t.value); for (const [k, v] of Object.entries(copia(ej.sc))) if (sc[k] === undefined || sc[k] === '' || ['P', 'conexion', 'elementos'].includes(k)) sc[k] = v; }
     $('#ejemplos').value = ''; formulario(); calcula();
   });
 
@@ -44,7 +78,7 @@
   function abrirEjemplo(clave) {
     const e = A.ejemplos.find((x) => x.clave === clave);
     if (!e) return;
-    sc = { ...sc, ...copia(e.sc) };
+    sc = { ...sc, tipoV: 'eficaz', faseV: '', unidadF: 'f', dato: 'P', carga: 'inductiva', fp2: '', ...copia(e.sc) };
     formulario(); calcula(); sel.value = clave;
   }
 
@@ -52,24 +86,33 @@
   const dato = (t, v) => `<div><span>${t}</span>${v}</div>`;
   function calcula() {
     const err = $('#error');
-    try { sol = sc.modo === 'correccion' ? { modo: 'correccion', ...A.correccion(sc) } : { modo: 'circuito', ...A.circuito(sc) }; }
-    catch (e) { sol = null; err.textContent = e.message; err.hidden = false; $('#res').innerHTML = ''; $('#pasos').innerHTML = ''; $('#leyenda').innerHTML = ''; dibuja(); return; }
+    const modo = ['correccion', 'red', 'trifasica'].includes(sc.modo) ? sc.modo : 'circuito';
+    try { sol = { modo, ...A[modo](sc) }; }
+    catch (e) { sol = null; err.textContent = e.message; err.hidden = false; $('#res').innerHTML = ''; $('#pasos').innerHTML = ''; $('#leyenda').innerHTML = ''; guarda(); dibuja(); return; }
     err.hidden = true; guarda();
     if (sol.modo === 'correccion') {
-      $('#res').innerHTML = dato('Capacidad del condensador', `C = <b>${A.u(sol.C, 'F')}</b>`) + dato('Reactiva que aporta', `Q<sub>C</sub> = ${A.u(sol.Qc, 'var')}`) + dato('Corriente de línea', `${A.u(sol.I1, 'A')} → ${A.u(sol.I2, 'A')}`);
+      $('#res').innerHTML = (sol.capac ? dato('Inductancia de la bobina', `L = <b>${A.u(sol.L, 'H')}</b>`) + dato('Reactiva que consume', `Q<sub>L</sub> = ${A.u(sol.Qc, 'var')}`) : dato('Capacidad del condensador', `C = <b>${A.u(sol.C, 'F')}</b>`) + dato('Reactiva que aporta', `Q<sub>C</sub> = ${A.u(sol.Qc, 'var')}`)) + dato('Corriente de línea', `${A.u(sol.I1, 'A')} → ${A.u(sol.I2, 'A')}`);
       $('#leyenda').innerHTML = 'Izquierda: triángulo de potencias antes (<b style="color:var(--v)">S<sub>1</sub></b>) y después (<b style="color:var(--i)">S<sub>2</sub></b>). Derecha: v(t) y la corriente de línea antes y después.';
+    } else if (sol.modo === 'red') {
+      $('#res').innerHTML = dato('Potenciales', sol.nudos.filter((n) => n !== sol.ref).map((n) => `V<sub>${esc(n)}</sub> = <b>${A.pol(sol.V[n])} V</b>`).join('<br>')) + dato('Potencias consumidas', `P = ${A.u(sol.P, 'W')}, Q = ${A.u(sol.Q, 'var')}`);
+      $('#leyenda').innerHTML = 'Fasores: el potencial de cada nudo respecto a la referencia. Ondas: v(t) de cada nudo, con valores de pico √2 veces los eficaces.';
+    } else if (sol.modo === 'trifasica') {
+      $('#res').innerHTML = dato('Fase', `V<sub>fase</sub> = <b>${A.f(sol.Vf)} V</b>, I<sub>fase</sub> = <b>${A.u(sol.If, 'A')}</b>`) + dato('Línea', `V<sub>L</sub> = ${A.f(sol.VL)} V, I<sub>L</sub> = <b>${A.u(sol.IL, 'A')}</b>`) + dato('Potencias', `P = ${A.u(sol.P, 'W')}, Q = ${A.u(sol.Q, 'var')}, S = ${A.u(sol.S, 'VA')}`) + dato('Factor de potencia', `cos φ = <b>${A.f(sol.fp)}</b>`) + (sol.corr ? dato('Condensadores por fase', `${A.u(sol.corr.Cy, 'F')} en estrella o ${A.u(sol.corr.Cd, 'F')} en triángulo`) : '');
+      $('#leyenda').innerHTML = 'Fasores: tensiones simples <b style="color:var(--f1)">V<sub>RN</sub></b>, <b style="color:var(--f2)">V<sub>SN</sub></b> y <b style="color:var(--f3)">V<sub>TN</sub></b>, y las corrientes de línea punteadas (escala propia). Ondas: las tres tensiones simples. Abajo, el triángulo de potencias de las tres fases.';
     } else {
       $('#res').innerHTML = dato('Impedancia', `Z = ${A.bin(sol.Zt)} = <b>${A.pol(sol.Zt)} Ω</b>`) + dato('Corriente', `I = <b>${A.pol(sol.I)} A</b>`) + dato('Factor de potencia', `cos φ = <b>${A.f(sol.fp)}</b>${Math.abs(sol.fi) < 1e-5 ? ' (resistivo)' : sol.fi > 0 ? ' inductivo' : ' capacitivo'}`) + dato('Potencias', `P = ${A.u(sol.P, 'W')}, Q = ${A.u(sol.Q, 'var')}, S = ${A.u(sol.S, 'VA')}`) + (sol.res ? dato('Resonancia', `f<sub>0</sub> = ${A.u(sol.res.f0, 'Hz')}`) : '');
       $('#leyenda').innerHTML = sol.serie
         ? 'Fasores: <b style="color:var(--v)">V</b> de la fuente como suma de las tensiones de cada elemento, y <b style="color:var(--i)">I</b> (escala propia). Ondas: v(t) e i(t) con valores de pico √2 veces los eficaces.'
         : 'Fasores: <b style="color:var(--i)">I</b> total como suma de las corrientes de cada rama, y <b style="color:var(--v)">V</b> de la fuente (escala propia). Ondas: v(t) e i(t) con valores de pico √2 veces los eficaces.';
+      $('#res').innerHTML += dato('Valores instantáneos', `${sol.vt}<br>${sol.it}`);
+      $('#leyenda').innerHTML += ` Abajo, el triángulo de potencias${sol.res ? ' y la curva de resonancia: la corriente frente a la frecuencia, con f<sub>0</sub> y el punto de trabajo' : ''}.`;
     }
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('');
     dibuja();
   }
 
   /* ---------- Dibujo ---------- */
-  function colores() { const cs = getComputedStyle(document.documentElement); for (const k of ['--ink', '--muted', '--line', '--accent', '--v', '--i', '--x', '--bg']) col[k] = cs.getPropertyValue(k).trim(); }
+  function colores() { const cs = getComputedStyle(document.documentElement); for (const k of ['--ink', '--muted', '--line', '--accent', '--v', '--i', '--x', '--bg', '--f1', '--f2', '--f3']) col[k] = cs.getPropertyValue(k).trim(); }
   function lienzo(id) {
     const r = Herramienta.lienzo(id);
     r.g.font = '12px "IBM Plex Sans", system-ui, sans-serif';
@@ -104,6 +147,7 @@
     const { g, w, h } = lienzo('#fasores');
     if (!sol) return;
     if (sol.modo === 'correccion') return triangulos(g, w, h);
+    if (sol.modo === 'red' || sol.modo === 'trifasica') return estrella(g, w, h);
     const nombreV = { R: 'V_R', L: 'V_L', C: 'V_C' }, nombreI = { R: 'I_R', L: 'I_L', C: 'I_C' };
     // la magnitud principal se dibuja encadenada; la otra, sola y escalada a la mitad de la principal
     const serie = sol.serie, cadena = sol.partes.map((p) => (serie ? p.V : p.I)), total = serie ? sol.Vf : sol.I, otra = serie ? sol.I : sol.Vf;
@@ -145,13 +189,56 @@
     etiqueta(g, T.X(P / 2), T.Y(0), `P = ${txt(A.u(P, 'W'))}`, col['--ink'], 0, 6);
     flecha(g, T.X(P), T.Y(0), T.X(P), T.Y(sol.Q2), col['--x'], 2);
     flecha(g, T.X(P), T.Y(sol.Q2), T.X(P), T.Y(sol.Q1), col['--accent'], 2, true);
-    etiqueta(g, T.X(P), T.Y((sol.Q1 + sol.Q2) / 2), `QC = ${txt(A.u(sol.Qc, 'var'))}`, col['--accent'], -6, 0);
+    etiqueta(g, T.X(P), T.Y((sol.Q1 + sol.Q2) / 2), `${sol.capac ? 'QL' : 'QC'} = ${txt(A.u(sol.Qc, 'var'))}`, col['--accent'], -6, 0);
     etiqueta(g, T.X(P), T.Y(sol.Q2 / 2), `Q2`, col['--x'], 6, 0);
     flecha(g, T.X(0), T.Y(0), T.X(P), T.Y(sol.Q1), col['--v'], 2.5);
     etiqueta(g, T.X(P / 2), T.Y(sol.Q1 / 2), 'S1', col['--v'], -8, -8);
     flecha(g, T.X(0), T.Y(0), T.X(P), T.Y(sol.Q2), col['--i'], 2.5);
     etiqueta(g, T.X(P * 0.7), T.Y(sol.Q2 * 0.7), 'S2', col['--i'], 4, 8);
     etiqueta(g, 8, 8, `φ1 = ${txt(A.ang(sol.f1))}, φ2 = ${txt(A.ang(sol.f2))}`, col['--muted'], 1, 1);
+  }
+
+  // fasores que salen todos del origen: los potenciales de una red, o las tres fases
+  const PALETA = ['--v', '--i', '--x', '--accent', '--f1', '--f3'];
+  function vectores() {
+    if (sol.modo === 'trifasica') {
+      const kI = (Math.max(...sol.fases.map((p) => A.mod(p.Vs))) * 0.6) / (A.mod(sol.fases[0].IL) || 1);
+      return [...sol.fases.map((p, k) => ({ z: p.Vs, nom: `V${p.q}N`, c: col[`--f${k + 1}`] })), ...sol.fases.map((p, k) => ({ z: A.mul(p.IL, A.Z(kI)), nom: `I${p.q}`, c: col[`--f${k + 1}`], punteada: true }))];
+    }
+    return sol.nudos.filter((n) => n !== sol.ref).map((n, k) => ({ z: sol.V[n], nom: `V${n}`, c: col[PALETA[k % PALETA.length]] }));
+  }
+  function estrella(g, w, h) {
+    const vs = vectores(), T = encaja(vs.map((v) => [v.z.re, v.z.im]).concat(vs.map((v) => [-v.z.re * 0.05, -v.z.im * 0.05])), w, h);
+    g.strokeStyle = col['--line']; g.lineWidth = 1; g.beginPath(); g.moveTo(0, T.oy); g.lineTo(w, T.oy); g.moveTo(T.ox, 0); g.lineTo(T.ox, h); g.stroke();
+    etiqueta(g, w - 4, T.oy, 'Re', col['--muted'], -1, -4); etiqueta(g, T.ox, 4, 'Im', col['--muted'], 4, 4);
+    for (const v of vs) { flecha(g, T.X(0), T.Y(0), T.X(v.z.re), T.Y(v.z.im), v.c, v.punteada ? 1.8 : 2.5, v.punteada); etiqueta(g, T.X(v.z.re), T.Y(v.z.im), v.nom, v.c, v.z.re >= 0 ? 4 : -4, v.z.im >= 0 ? -4 : 4); }
+  }
+
+  function potencias() {
+    const { g, w, h } = lienzo('#triangulo');
+    if (!sol || !('Q' in sol) || sol.modo === 'correccion' || sol.modo === 'red') return;
+    const P = sol.P, Q = sol.Q, T = encaja([[P, 0], [P, Q]], w, h, 30);
+    g.strokeStyle = col['--line']; g.lineWidth = 1; g.beginPath(); g.moveTo(0, T.oy); g.lineTo(w, T.oy); g.stroke();
+    flecha(g, T.X(0), T.Y(0), T.X(P), T.Y(0), col['--ink'], 2);
+    etiqueta(g, T.X(P / 2), T.Y(0), `P = ${txt(A.u(P, 'W'))}`, col['--ink'], 0, Q >= 0 ? 6 : -6);
+    if (Math.abs(Q) > 1e-9 * Math.max(1, sol.S)) { flecha(g, T.X(P), T.Y(0), T.X(P), T.Y(Q), col['--x'], 2); etiqueta(g, T.X(P), T.Y(Q / 2), `Q = ${txt(A.u(Q, 'var'))}`, col['--x'], -6, 0); }
+    flecha(g, T.X(0), T.Y(0), T.X(P), T.Y(Q), col['--v'], 2.5);
+    etiqueta(g, T.X(P / 2), T.Y(Q / 2), `S = ${txt(A.u(sol.S, 'VA'))}`, col['--v'], -8, Q >= 0 ? -8 : 8);
+    etiqueta(g, 8, 8, `φ = ${txt(A.ang(sol.fi))}, cos φ = ${txt(A.f(sol.fp))}`, col['--muted'], 1, 1);
+  }
+
+  function curva() {
+    const { g, w, h } = lienzo('#curva');
+    if (!sol || sol.modo !== 'circuito' || !sol.res) return;
+    const pts = A.barrido(sol), m = { l: 12, r: 12, t: 24, b: 24 }, Imax = Math.max(...pts.map((p) => p.I)) * 1.1, f0 = pts[0].f, f1 = pts[pts.length - 1].f;
+    const X = (fr) => m.l + (Math.log(fr / f0) / Math.log(f1 / f0)) * (w - m.l - m.r), Y = (I) => h - m.b - (I / Imax) * (h - m.t - m.b);
+    g.strokeStyle = col['--line']; g.lineWidth = 1; g.beginPath(); g.moveTo(m.l, h - m.b); g.lineTo(w - m.r, h - m.b); g.stroke();
+    g.strokeStyle = col['--i']; g.lineWidth = 2; g.beginPath(); pts.forEach((p, k) => (k ? g.lineTo(X(p.f), Y(p.I)) : g.moveTo(X(p.f), Y(p.I)))); g.stroke();
+    const xr = X(sol.res.f0); g.strokeStyle = col['--muted']; g.setLineDash([4, 4]); g.beginPath(); g.moveTo(xr, m.t); g.lineTo(xr, h - m.b); g.stroke(); g.setLineDash([]);
+    etiqueta(g, xr, h - m.b, `f0 = ${txt(A.u(sol.res.f0, 'Hz'))}`, col['--muted'], 0, 4);
+    if (sol.res.B) { const a = sol.res.f0 - sol.res.B / 2, b = sol.res.f0 + sol.res.B / 2, y = Y(Math.max(...pts.map((p) => p.I)) / Math.SQRT2); if (a > f0) { g.strokeStyle = col['--x']; g.lineWidth = 1.5; g.beginPath(); g.moveTo(X(a), y); g.lineTo(X(b), y); g.stroke(); etiqueta(g, X(b), y, `Δf = ${txt(A.u(sol.res.B, 'Hz'))}`, col['--x'], 6, 0); } }
+    const I = A.mod(sol.I); if (sol.fr > f0 && sol.fr < f1) { g.fillStyle = col['--v']; g.beginPath(); g.arc(X(sol.fr), Y(I), 4.5, 0, 2 * Math.PI); g.fill(); }
+    etiqueta(g, 8, 6, 'I frente a f (escala logarítmica)', col['--muted'], 1, 1);
   }
 
   function ondas() {
@@ -168,6 +255,12 @@
       g.stroke(); g.setLineDash([]);
     };
     g.textAlign = 'left'; g.textBaseline = 'top'; g.font = '12px "IBM Plex Sans", system-ui, sans-serif';
+    if (sol.modo === 'red' || sol.modo === 'trifasica') {
+      const vs = vectores().filter((v) => !v.punteada), M = Math.max(...vs.map((v) => A.mod(v.z))) || 1;
+      let x = m.l + 2;
+      for (const v of vs) { curva(A.arg(v.z), A.mod(v.z) / M, v.c); const t = `${v.nom.replace(/^V/, 'v')}(t)`; g.fillStyle = v.c; g.fillText(t, x, 0); x += g.measureText(t).width + 14; }
+      return;
+    }
     if (sol.modo === 'correccion') {
       curva(0, 1, col['--v']);
       curva(-sol.f1, 0.85, col['--muted'], 1.5, true);
@@ -183,11 +276,16 @@
     g.fillStyle = col['--v']; const tv = `v(t), pico ${txt(A.u(Math.SQRT2 * sol.V, 'V'))}`; g.fillText(tv, m.l + 2, 0);
     g.fillStyle = col['--i']; g.fillText(`i(t), pico ${txt(A.u(Math.SQRT2 * A.mod(sol.I), 'A'))}`, m.l + 16 + g.measureText(tv).width, 0);
   }
-  function dibuja() { colores(); fasores(); ondas(); }
+  function dibuja() {
+    colores(); fasores(); ondas();
+    const tri = !!sol && (sol.modo === 'circuito' || sol.modo === 'trifasica'), res = !!sol && sol.modo === 'circuito' && !!sol.res;
+    $('#graficas2').hidden = !tri; $('#curva').hidden = !res; $('#graficas2').classList.toggle('una', !res);
+    if (tri) { potencias(); curva(); }
+  }
   window.addEventListener('resize', dibuja);
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', dibuja);
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('alterna').current;
   formulario(); calcula();
-  window.AlternaApp = { abrirEjemplo, resultado: () => sol && { modo: sol.modo, Z: sol.Zt && A.mod(sol.Zt), fi: sol.fi, fp: sol.fp, I: sol.I && A.mod(sol.I), C: sol.C, P: sol.P }, estado: () => copia(sc) };
+  window.AlternaApp = { abrirEjemplo, resultado: () => sol && { modo: sol.modo, Z: sol.Zt && A.mod(sol.Zt), fi: sol.fi, fp: sol.fp, I: sol.I && A.mod(sol.I), C: sol.C, L: sol.L, P: sol.P, IL: sol.IL, V: sol.V && sol.modo === 'red' ? Object.fromEntries(Object.entries(sol.V).map(([k, z]) => [k, A.mod(z)])) : undefined }, estado: () => copia(sc) };
 })();

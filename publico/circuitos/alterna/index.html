@@ -174,11 +174,17 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 <style>
 :root {
   --alto-grafica: 280px;
-  --v: #c2412a; --i: #2a5db5; --x: #1d7a3e }
+  --v: #c2412a; --i: #2a5db5; --x: #1d7a3e; --f1: #8a5a2b; --f2: #2b2f36; --f3: #7d8088 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --v: #ef7a62; --i: #74a2f2; --x: #5fcf8a } }
+  --v: #ef7a62; --i: #74a2f2; --x: #5fcf8a; --f1: #d79a5e; --f2: #e3e8ee; --f3: #9aa0aa } }
 :root[data-theme="dark"] {
-  --v: #ef7a62; --i: #74a2f2; --x: #5fcf8a }
+  --v: #ef7a62; --i: #74a2f2; --x: #5fcf8a; --f1: #d79a5e; --f2: #e3e8ee; --f3: #9aa0aa }
+.graficas.una { grid-template-columns: minmax(0, 1fr) }
+.lista { display: grid; grid-template-columns: 48px minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.4fr) minmax(0, 1.1fr) 24px; gap: 5px 6px; align-items: center; margin: 4px 0 8px }
+.lista .cab { font-size: 12px; color: var(--muted) } .lista b { font: 600 13.5px var(--f-math) } .lista .valor { display: flex; gap: 3px; align-items: center }
+.lista .x { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 16px; padding: 0 } .lista .x:hover { color: var(--error) }
+.botones { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px }
+.mat-in { display: inline-grid; gap: 2px 12px; padding: 3px 0; text-align: center; font-variant-numeric: tabular-nums; white-space: nowrap }
 .graficas { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 10px } @media (max-width: 640px) { .graficas { grid-template-columns: minmax(0, 1fr) } }
 </style>
 <body>
@@ -186,18 +192,21 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 <div class="wrap">
 <nav class="miga" aria-label="Estás en"><span class="miga-izq"></span><span class="miga-ico" aria-hidden="true">Ω</span><a href="../">Circuitos</a><span aria-hidden="true">›</span><span>Corriente alterna y fasores</span><span class="miga-der"></span></nav>
 <h1>Corriente alterna y fasores</h1>
-<p class="lead">Resuelve circuitos RLC en serie y en paralelo con impedancias complejas: corriente, tensiones de cada elemento, potencias, factor de potencia y resonancia, con el diagrama de fasores y las ondas v(t) e i(t). También calcula el condensador para corregir el factor de potencia.</p>
+<p class="lead">Resuelve circuitos RLC en serie y en paralelo con impedancias complejas: corriente, tensiones de cada elemento, potencias, factor de potencia y resonancia, con el diagrama de fasores, las ondas v(t) e i(t), el triángulo de potencias y la curva de resonancia. También resuelve redes cualesquiera por el método de los nudos con fasores, sistemas trifásicos en estrella y en triángulo, y la corrección del factor de potencia.</p>
 <div class="layout">
   <div class="card">
     <h2>Datos</h2>
     <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
     <div class="campos" id="campos"></div>
+    <div id="red" hidden><div class="lista" id="lista"></div>
+      <div class="botones"><button class="btn" type="button" data-add="R">+ R</button><button class="btn" type="button" data-add="L">+ L</button><button class="btn" type="button" data-add="C">+ C</button><button class="btn" type="button" data-add="V">+ Fuente de tensión</button><button class="btn" type="button" data-add="I">+ Fuente de corriente</button></div></div>
     <p class="nota" id="nota"></p>
     <p class="error" id="error" hidden></p>
   </div>
   <div>
     <div class="card"><h2>Resultado</h2><div class="res" id="res"></div>
       <div class="graficas"><canvas id="fasores" aria-label="Diagrama de fasores"></canvas><canvas id="ondas" aria-label="Tensión y corriente frente al tiempo"></canvas></div>
+      <div class="graficas" id="graficas2" hidden style="margin-top:10px"><canvas id="triangulo" aria-label="Triángulo de potencias"></canvas><canvas id="curva" aria-label="Curva de resonancia: corriente frente a la frecuencia"></canvas></div>
       <p class="leyenda" id="leyenda"></p></div>
     <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
   </div>
@@ -213,6 +222,12 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
   <p>Para corregir el factor de potencia de una carga inductiva se pone un condensador en paralelo que aporte Q<sub>C</sub> = P(tg φ<sub>1</sub> − tg φ<sub>2</sub>), es decir C = Q<sub>C</sub>/(ωV<sup>2</sup>).</p>
   <h2>Resonancia</h2>
   <p>Cuando X<sub>L</sub> = X<sub>C</sub>, a la frecuencia f<sub>0</sub> = 1/(2π√(LC)), las reactancias se anulan: en serie la impedancia es mínima (Z = R) y la corriente máxima; en paralelo la impedancia es máxima. El factor de calidad Q = ω<sub>0</sub>L/R mide lo estrecha que es la resonancia.</p>
+  <h2>Redes de alterna</h2>
+  <p>Con fasores, una red de alterna se resuelve como una de continua: cada elemento tiene su impedancia compleja, la primera ley de Kirchhoff se aplica en cada nudo y sale un sistema lineal con números complejos. El teorema de Boucherot dice que la potencia activa y la reactiva que dan las fuentes es la suma de las que consumen los elementos.</p>
+  <h2>Sistemas trifásicos</h2>
+  <p>Tres tensiones del mismo valor eficaz desfasadas 120°. Las tensiones simples (fase-neutro) y las compuestas (entre líneas) cumplen V<sub>L</sub> = √3·V<sub>fase</sub>, con las compuestas 30° adelantadas. En estrella la corriente de línea es la de fase; en triángulo la tensión de fase es la de línea y I<sub>L</sub> = √3·I<sub>fase</sub>. Con la carga equilibrada:</p>
+  <p class="f m">$P = √3 V_L I_L cos φ$, &ensp; $Q = √3 V_L I_L sen φ$, &ensp; $S = √3 V_L I_L$</p>
+  <p>Una batería de condensadores en triángulo necesita tres veces menos capacidad que en estrella, porque cada condensador soporta la tensión de línea.</p>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Corriente alterna <span id="ver"></span> (beta)</footer>
@@ -407,6 +422,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: normal, t de Student, chi cuadrado, exponencial, binomial y Poisson, con su media y su varianza.', 'Probabilidades P(X ≤ a), P(X ≥ a), entre dos valores y, en las discretas, P(X = k) y con desigualdad estricta; cuantiles y valores críticos bilaterales.', 'Gráfica con el área (o las barras) que se pide sombreada.', 'Desarrollo como en clase: tipificación Z = (X − μ)/σ y Φ(z), fórmula de la binomial y de la Poisson término a término, y aproximación de la binomial por la normal con corrección de continuidad.'] },
     ],
     alterna: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Redes de alterna cualesquiera por el método de los nudos con fasores: resistencias, bobinas, condensadores y fuentes de tensión o de corriente con su fase, con el sistema en complejos y el balance de potencias de Boucherot.', 'Sistemas trifásicos equilibrados en estrella y en triángulo: tensiones y corrientes de fase y de línea, fasores de las tres fases, potencias y la batería de condensadores para corregir el factor de potencia.', 'Triángulo de potencias y curva de resonancia (la corriente frente a la frecuencia, con f₀ y el ancho de banda) en el circuito RLC.', 'La fuente se puede dar con su valor de pico o eficaz, con fase inicial y con ω en lugar de f, y el resultado escribe v(t) e i(t).', 'Corrección del factor de potencia a partir de P, S, I o Q, y también de cargas capacitivas (con una bobina).'] },
       { v: '0.1.2', fecha: '2026-10-25', cambios: ['Los valores admiten prefijos del SI y unidades: 4k7, 1,5 kΩ, 100n, 10 µF o 5 ms. Un número solo sigue en la unidad del campo (mH, μF, kW).', 'Arreglo: en paralelo, una resistencia de 0 Ω se ignoraba como si no estuviera; ahora avisa de que cortocircuita la fuente.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: circuitos RLC en serie y en paralelo (o solo con algunos de los elementos) con impedancias complejas en forma binómica y polar, la corriente, la tensión o la corriente de cada elemento, las potencias activa, reactiva y aparente y el factor de potencia, con el desarrollo paso a paso.', 'Diagrama de fasores y ondas v(t) e i(t) desfasadas.', 'Resonancia: frecuencia de resonancia, factor de calidad y ancho de banda.', 'Corrección del factor de potencia: el condensador que hay que poner en paralelo y cuánto baja la corriente de la línea.'] },
@@ -725,11 +741,20 @@ const Alterna = (() => {
     return v;
   }
 
+  // un ángulo en grados que puede ser negativo o no estar (0)
+  function leeFase(sc, k, nom) {
+    if (vacio(sc[k])) return 0;
+    const v = Herramienta.leeSI(String(sc[k]).replace(/[°º]/g, ''));
+    if (!isFinite(v)) throw new Error(`${nom[0].toUpperCase() + nom.slice(1)} debe ser un número (en grados)`);
+    return v / GRAD;
+  }
+
   /* ---------- Circuito RLC ---------- */
-  // sc: { conexion: 'serie'|'paralelo', V (V eficaces), f (Hz), R (Ω), L (mH), C (μF) }; R, L y C vacíos = no están
+  // sc: { conexion: 'serie'|'paralelo', V, tipoV: 'eficaz'|'pico', faseV (°), f, unidadF: 'f' (Hz)|'w' (rad/s), R (Ω), L (mH), C (μF) }; R, L y C vacíos = no están
   function circuito(sc) {
-    const serie = sc.conexion !== 'paralelo';
-    const V = lee(sc, 'V', 'la tensión de la fuente'), fr = lee(sc, 'f', 'la frecuencia');
+    const serie = sc.conexion !== 'paralelo', pico = sc.tipoV === 'pico', enW = sc.unidadF === 'w';
+    const Vin = lee(sc, 'V', pico ? 'el valor de pico de la tensión' : 'la tensión de la fuente'), V = pico ? Vin / Math.SQRT2 : Vin, faseV = leeFase(sc, 'faseV', 'la fase de la tensión');
+    const fin = lee(sc, 'f', enW ? 'la pulsación' : 'la frecuencia'), fr = enW ? fin / (2 * Math.PI) : fin;
     const R = lee(sc, 'R', 'la resistencia', { opcional: true, cero: !serie }), L = lee(sc, 'L', 'la inductancia', { opcional: true, base: 1e-3 }), C = lee(sc, 'C', 'la capacidad', { opcional: true, base: 1e-6 });
     if (R === null && L === null && C === null) throw new Error('Pon al menos un elemento: R, L o C');
     const w = 2 * Math.PI * fr, XL = L === null ? null : w * L, XC = C === null ? null : 1 / (w * C);
@@ -740,8 +765,9 @@ const Alterna = (() => {
     if (C !== null) el.push({ k: 'C', nombre: 'Condensador', Z: Z(0, -XC) });
     if (!el.length) throw new Error('En paralelo, una resistencia de 0 Ω cortocircuita la fuente');
     const pasos = [];
+    if (pico || faseV || enW) pasos.push({ t: 'La fuente', html: [pico ? `Valor eficaz: V = V<sub>m</sub>/√2 = ${f(Vin)}/√2 = <b>${f(V)} V</b>` : '', enW ? `Frecuencia: f = ω/(2π) = ${f(fin)}/(2π) = <b>${u(fr, 'Hz')}</b>` : '', `Fasor de la tensión: V = <b>${f(V)}∠${ang(faseV)} V</b> (módulo eficaz y fase inicial)`].filter(Boolean).join('<br>') });
     pasos.push({ t: 'Pulsación y reactancias', html: `ω = 2πf = 2π·${f(fr)} = ${f(w)} rad/s${XL !== null ? `<br>X<sub>L</sub> = ωL = ${f(w)}·${f(L)} = <b>${u(XL, 'Ω')}</b>` : ''}${XC !== null ? `<br>X<sub>C</sub> = 1/(ωC) = 1/(${f(w)}·${f(C)}) = <b>${u(XC, 'Ω')}</b>` : ''}` });
-    const Vf = Z(V, 0);
+    const Vf = polar(V, faseV);
     let Zt, I, partes;
     if (serie) {
       if (R === 0 && XL !== null && XC !== null && Math.abs(XL - XC) < 1e-12 * XL) throw new Error('Sin resistencia y en resonancia la impedancia es 0: la corriente sería infinita');
@@ -749,7 +775,7 @@ const Alterna = (() => {
       if (mod(Zt) === 0) throw new Error('La impedancia total es 0');
       pasos.push({ t: 'Impedancia en serie: se suman', html: `Z = ${[R !== null ? 'R' : '', XL !== null ? 'jX<sub>L</sub>' : '', XC !== null ? '−jX<sub>C</sub>' : ''].filter(Boolean).join(' + ').replace('+ −', '− ')} = <b>${ambos(Zt, 'Ω')}</b><br>|Z| = √(R<sup>2</sup> + X<sup>2</sup>) = ${u(mod(Zt), 'Ω')}, &nbsp; φ = arctg(X/R) = ${ang(arg(Zt))}` });
       I = div(Vf, Zt);
-      pasos.push({ t: 'Corriente (Ley de Ohm con fasores)', html: `I = V / Z = ${f(V)}∠0° / ${pol(Zt)} = <b>${ambos(I, 'A')}</b>` });
+      pasos.push({ t: 'Corriente (Ley de Ohm con fasores)', html: `I = V / Z = ${pol(Vf)} / ${pol(Zt)} = <b>${ambos(I, 'A')}</b>` });
       partes = el.map((e) => ({ ...e, V: mul(I, e.Z), I }));
       pasos.push({ t: 'Tensión en cada elemento', html: partes.map((p) => `V<sub>${p.k}</sub> = I·Z<sub>${p.k}</sub> = ${pol(I)}·${pol(p.Z)} = <b>${ambos(p.V, 'V')}</b>`).join('<br>') + `<br>Sumadas como fasores dan la de la fuente (${f(V)} V), aunque sus módulos sumen ${f(partes.reduce((s, p) => s + mod(p.V), 0))} V.` });
     } else {
@@ -776,26 +802,175 @@ const Alterna = (() => {
       else if (!serie) { h += ', la admitancia es mínima y la corriente que da la fuente también'; if (R) { res.Q = R / (w0 * L); h += `. Factor de calidad Q = R/(ω<sub>0</sub>L) = ${f(res.Q)}`; } }
       pasos.push({ t: 'Resonancia', html: h + `.<br>Ahora f ${Math.abs(fr - f0) < 1e-5 * f0 ? '= f<sub>0</sub>' : fr > f0 ? '&gt; f<sub>0</sub>' : '&lt; f<sub>0</sub>'}.` });
     }
-    return { serie, V, fr, w, R, L, C, XL, XC, Zt, I, partes, P, Q, S: Sa, fi, fp, res, pasos, Vf };
+    const vt = `v(t) = ${f(Math.SQRT2 * V)} sen(${f(w)} t ${arg(Vf) < -1e-9 ? '−' : '+'} ${ang(Math.abs(arg(Vf)))}) V`, it = `i(t) = ${f(Math.SQRT2 * mod(I))} sen(${f(w)} t ${arg(I) < -1e-9 ? '−' : '+'} ${ang(Math.abs(arg(I)))}) A`;
+    pasos.push({ t: 'Valores instantáneos', html: `Con valores de pico √2 veces los eficaces y la fase de cada fasor:<br><b>${vt}</b><br><b>${it}</b>` });
+    return { serie, V, fr, w, R, L, C, XL, XC, Zt, I, partes, P, Q, S: Sa, fi, fp, res, pasos, Vf, vt, it };
+  }
+
+  // Curva de resonancia: corriente que da la fuente y |Z| frente a la frecuencia (escala logarítmica)
+  function barrido(sol, n = 240) {
+    const { serie, V, R, L, C } = sol, fc = sol.res ? sol.res.f0 : sol.fr, pts = [];
+    for (let k = 0; k <= n; k++) {
+      const fr = fc * 10 ** (-1 + (2 * k) / n), w = 2 * Math.PI * fr;
+      let Zt;
+      if (serie) Zt = Z(R || 0, (L !== null ? w * L : 0) - (C !== null ? 1 / (w * C) : 0));
+      else { const Y = Z(R ? 1 / R : 0, (C !== null ? w * C : 0) - (L !== null ? 1 / (w * L) : 0)); Zt = div(Z(1), Y); }
+      pts.push({ f: fr, Z: mod(Zt), I: V / mod(Zt) });
+    }
+    return pts;
   }
 
   /* ---------- Corrección del factor de potencia ---------- */
-  // sc: { V, f, P (kW), fp1, fp2 }
+  // sc: { V, f, dato: 'P' (kW)|'S' (kVA)|'I' (A)|'Q' (kvar), P (el valor del dato), fp1, fp2, carga: 'inductiva'|'capacitiva' }
+  const DATOS = { P: ['la potencia activa', 1e3, 'W'], S: ['la potencia aparente', 1e3, 'VA'], I: ['la corriente', 1, 'A'], Q: ['la potencia reactiva', 1e3, 'var'] };
   function correccion(sc) {
-    const V = lee(sc, 'V', 'la tensión'), fr = lee(sc, 'f', 'la frecuencia'), P = lee(sc, 'P', 'la potencia activa', { base: 1e3 });
-    const fp1 = lee(sc, 'fp1', 'el factor de potencia inicial'), fp2 = lee(sc, 'fp2', 'el factor de potencia deseado');
+    const V = lee(sc, 'V', 'la tensión'), fr = lee(sc, 'f', 'la frecuencia'), dato = DATOS[sc.dato] ? sc.dato : 'P', [nomD, baseD] = DATOS[dato], valor = lee(sc, 'P', nomD, { base: baseD });
+    const fp1 = lee(sc, 'fp1', 'el factor de potencia inicial'), fp2 = lee(sc, 'fp2', 'el factor de potencia deseado'), capac = sc.carga === 'capacitiva';
     if (fp1 > 1 || fp2 > 1) throw new Error('El factor de potencia no puede ser mayor que 1');
     if (fp2 <= fp1) throw new Error('El factor de potencia deseado tiene que ser mayor que el inicial');
-    const f1 = Math.acos(fp1), f2 = Math.acos(fp2), Q1 = P * Math.tan(f1), Q2 = P * Math.tan(f2), Qc = Q1 - Q2, w = 2 * Math.PI * fr, C = Qc / (w * V * V);
+    if (dato === 'Q' && fp1 === 1) throw new Error('Con cos φ = 1 no hay potencia reactiva de la que partir');
+    const f1 = Math.acos(fp1), f2 = Math.acos(fp2);
+    const P = dato === 'P' ? valor : dato === 'S' ? valor * fp1 : dato === 'I' ? V * valor * fp1 : valor / Math.tan(f1);
+    const Q1 = P * Math.tan(f1), Q2 = P * Math.tan(f2), Qc = Q1 - Q2, w = 2 * Math.PI * fr, C = capac ? null : Qc / (w * V * V), L = capac ? (V * V) / (w * Qc) : null;
     const I1 = P / (V * fp1), I2 = P / (V * fp2);
-    const pasos = [
-      { t: 'Antes', html: `φ<sub>1</sub> = arccos(${f(fp1)}) = ${ang(f1)} ⇒ Q<sub>1</sub> = P·tg φ<sub>1</sub> = ${u(P, 'W')}·${f(Math.tan(f1))} = <b>${u(Q1, 'var')}</b>; S<sub>1</sub> = ${u(P / fp1, 'VA')}, I<sub>1</sub> = P/(V cos φ<sub>1</sub>) = ${u(I1, 'A')}` },
-      { t: 'Después', html: `φ<sub>2</sub> = arccos(${f(fp2)}) = ${ang(f2)} ⇒ Q<sub>2</sub> = P·tg φ<sub>2</sub> = <b>${u(Q2, 'var')}</b>; S<sub>2</sub> = ${u(P / fp2, 'VA')}, I<sub>2</sub> = ${u(I2, 'A')}` },
-      { t: 'Potencia reactiva del condensador', html: `Q<sub>C</sub> = Q<sub>1</sub> − Q<sub>2</sub> = P (tg φ<sub>1</sub> − tg φ<sub>2</sub>) = <b>${u(Qc, 'var')}</b>` },
-      { t: 'Capacidad (en paralelo con la carga)', html: `Q<sub>C</sub> = V<sup>2</sup> ω C ⇒ C = Q<sub>C</sub> / (ω V<sup>2</sup>) = ${f(Qc)} / (${f(w)}·${f(V)}<sup>2</sup>) = <b>${u(C, 'F')}</b>` },
+    const pasos = [];
+    if (dato !== 'P') pasos.push({ t: 'Potencia activa', html: dato === 'S' ? `P = S·cos φ<sub>1</sub> = ${u(valor, 'VA')}·${f(fp1)} = <b>${u(P, 'W')}</b>` : dato === 'I' ? `P = V·I·cos φ<sub>1</sub> = ${f(V)}·${u(valor, 'A')}·${f(fp1)} = <b>${u(P, 'W')}</b>` : `P = Q/tg φ<sub>1</sub> = ${u(valor, 'var')}/${f(Math.tan(f1))} = <b>${u(P, 'W')}</b>` });
+    pasos.push(
+      { t: 'Antes', html: `φ<sub>1</sub> = arccos(${f(fp1)}) = ${ang(f1)} ⇒ Q<sub>1</sub> = ${capac ? '−' : ''}P·tg φ<sub>1</sub> = ${capac ? '−' : ''}${u(P, 'W')}·${f(Math.tan(f1))} = <b>${capac ? '−' : ''}${u(Q1, 'var')}</b>; S<sub>1</sub> = ${u(P / fp1, 'VA')}, I<sub>1</sub> = P/(V cos φ<sub>1</sub>) = ${u(I1, 'A')}` },
+      { t: 'Después', html: `φ<sub>2</sub> = arccos(${f(fp2)}) = ${ang(f2)} ⇒ Q<sub>2</sub> = ${capac ? '−' : ''}P·tg φ<sub>2</sub> = <b>${capac ? '−' : ''}${u(Q2, 'var')}</b>; S<sub>2</sub> = ${u(P / fp2, 'VA')}, I<sub>2</sub> = ${u(I2, 'A')}` },
+      capac
+        ? { t: 'Potencia reactiva de la bobina', html: `La carga es capacitiva (Q<sub>1</sub> = −${u(Q1, 'var')}): para acercar cos φ a 1 hace falta una bobina que consuma Q<sub>L</sub> = P (tg φ<sub>1</sub> − tg φ<sub>2</sub>) = <b>${u(Qc, 'var')}</b>` }
+        : { t: 'Potencia reactiva del condensador', html: `Q<sub>C</sub> = Q<sub>1</sub> − Q<sub>2</sub> = P (tg φ<sub>1</sub> − tg φ<sub>2</sub>) = <b>${u(Qc, 'var')}</b>` },
+      capac
+        ? { t: 'Inductancia (en paralelo con la carga)', html: `Q<sub>L</sub> = V<sup>2</sup> / (ω L) ⇒ L = V<sup>2</sup> / (ω Q<sub>L</sub>) = ${f(V)}<sup>2</sup> / (${f(w)}·${f(Qc)}) = <b>${u(L, 'H')}</b>` }
+        : { t: 'Capacidad (en paralelo con la carga)', html: `Q<sub>C</sub> = V<sup>2</sup> ω C ⇒ C = Q<sub>C</sub> / (ω V<sup>2</sup>) = ${f(Qc)} / (${f(w)}·${f(V)}<sup>2</sup>) = <b>${u(C, 'F')}</b>` },
       { t: 'Qué se gana', html: `La potencia activa no cambia, pero la corriente de la línea baja de ${u(I1, 'A')} a ${u(I2, 'A')} (un ${f(100 * (1 - I2 / I1), 3)} % menos), y con ella las pérdidas por efecto Joule en los cables, que van con I<sup>2</sup>.` },
+    );
+    return { V, fr, P, fp1, fp2, f1, f2, Q1: capac ? -Q1 : Q1, Q2: capac ? -Q2 : Q2, Qc, C, L, capac, I1, I2, pasos };
+  }
+
+  /* ---------- Redes de alterna por el método de los nudos ---------- */
+  // sc: { f (Hz), elementos: [{ t: 'R'|'L'|'C'|'V'|'I', a, b, v, fase (°) }] }: R en Ω, L en mH, C en μF, V y I eficaces
+  const TIPOS = { R: { nombre: 'Resistencia', letra: 'R', un: 'Ω' }, L: { nombre: 'Bobina', letra: 'L', un: 'mH', base: 1e-3 }, C: { nombre: 'Condensador', letra: 'C', un: 'μF', base: 1e-6 }, V: { nombre: 'Fuente de tensión', letra: 'E', un: 'V' }, I: { nombre: 'Fuente de corriente', letra: 'J', un: 'A' } };
+  const nombres = (els) => { const c = {}; return els.map((e) => { const l = (TIPOS[e.t] || TIPOS.R).letra; c[l] = (c[l] || 0) + 1; return `${l}${c[l]}`; }); };
+  const subN = (n) => n.replace(/^([A-Za-z])(\d+)$/, '$1<sub>$2</sub>');
+  // Gauss con pivote parcial en complejos; null si es singular
+  function gaussZ(A, b) {
+    const n = b.length, M = A.map((fi, i) => [...fi, b[i]]), escala = Math.max(1e-300, ...A.flat().map(mod));
+    for (let c = 0; c < n; c++) {
+      let piv = c;
+      for (let r = c + 1; r < n; r++) if (mod(M[r][c]) > mod(M[piv][c])) piv = r;
+      if (mod(M[piv][c]) < 1e-12 * escala) return null;
+      [M[c], M[piv]] = [M[piv], M[c]];
+      for (let r = 0; r < n; r++) if (r !== c) { const k = div(M[r][c], M[c][c]); if (mod(k)) for (let j = c; j <= n; j++) M[r][j] = suma(M[r][j], mul(Z(-k.re, -k.im), M[c][j])); }
+    }
+    return M.map((fi, i) => div(fi[n], fi[i]));
+  }
+  function red(sc) {
+    const fr = lee(sc, 'f', 'la frecuencia'), w = 2 * Math.PI * fr, crudos = sc.elementos || [];
+    if (!crudos.length) throw new Error('Añade al menos un elemento');
+    const nom = nombres(crudos);
+    const els = crudos.map((e, i) => {
+      const q = nom[i], T = TIPOS[e.t];
+      if (!T) throw new Error(`${q}: tipo desconocido`);
+      const a = String(e.a ?? '').trim(), b = String(e.b ?? '').trim();
+      if (!a || !b) throw new Error(`${q}: faltan los nudos`);
+      if (!/^[\wÀ-ÿ]{1,8}$/.test(a) || !/^[\wÀ-ÿ]{1,8}$/.test(b)) throw new Error(`${q}: los nudos se nombran con letras o números (hasta 8)`);
+      if (a === b) throw new Error(`${q}: está conectado entre el mismo nudo por los dos lados`);
+      if (vacio(e.v)) throw new Error(`${q}: falta el valor`);
+      const v = Herramienta.leeSI(e.v, T.base || 1);
+      if (!isFinite(v)) throw new Error(`${q}: el valor debe ser un número`);
+      if ('RLC'.includes(e.t) && v <= 0) throw new Error(`${q}: el valor debe ser mayor que 0`);
+      const fase = 'VI'.includes(e.t) ? leeFase(e, 'fase', `la fase de ${q}`) : 0;
+      const Ze = e.t === 'R' ? Z(v, 0) : e.t === 'L' ? Z(0, w * v) : e.t === 'C' ? Z(0, -1 / (w * v)) : null;
+      return { i, t: e.t, n: q, a, b, v, fase, Z: Ze, F: 'VI'.includes(e.t) ? polar(v, fase) : null };
+    });
+    const nudos = [...new Set(els.flatMap((e) => [e.a, e.b]))], ref = nudos.includes('0') ? '0' : nudos[0];
+    // conexión
+    const ady = {}; for (const e of els) { (ady[e.a] ||= []).push(e.b); (ady[e.b] ||= []).push(e.a); }
+    const visto = new Set([nudos[0]]), pila = [nudos[0]];
+    while (pila.length) for (const m of ady[pila.pop()]) if (!visto.has(m)) { visto.add(m); pila.push(m); }
+    const sueltos = nudos.filter((n) => !visto.has(n));
+    if (sueltos.length) throw new Error(`El circuito está partido: ${sueltos.join(', ')} no están unidos al resto`);
+    const inc = nudos.filter((n) => n !== ref), fuentes = els.filter((e) => e.t === 'V'), N = inc.length + fuentes.length, k = (n) => inc.indexOf(n);
+    const A = Array.from({ length: N }, () => Array.from({ length: N }, () => Z(0))), b = Array.from({ length: N }, () => Z(0));
+    const mas = (i, j, z) => { A[i][j] = suma(A[i][j], z); };
+    for (const e of els) {
+      const ia = k(e.a), ib = k(e.b);
+      if (e.Z) { const Y = div(Z(1), e.Z), mY = Z(-Y.re, -Y.im); if (ia >= 0) { mas(ia, ia, Y); if (ib >= 0) mas(ia, ib, mY); } if (ib >= 0) { mas(ib, ib, Y); if (ia >= 0) mas(ib, ia, mY); } }
+      else if (e.t === 'I') { if (ia >= 0) b[ia] = suma(b[ia], Z(-e.F.re, -e.F.im)); if (ib >= 0) b[ib] = suma(b[ib], e.F); }
+      else { const s2 = inc.length + fuentes.indexOf(e); if (ia >= 0) { mas(ia, s2, Z(1)); mas(s2, ia, Z(1)); } if (ib >= 0) { mas(ib, s2, Z(-1)); mas(s2, ib, Z(-1)); } b[s2] = e.F; }
+    }
+    const x = N ? gaussZ(A, b) : [];
+    if (!x) throw new Error('El sistema no tiene solución única: revisa que no haya fuentes de tensión en paralelo o formando un lazo, fuentes de corriente en serie, o un nudo al que solo llegan fuentes de corriente');
+    const V = Object.fromEntries(nudos.map((n) => [n, n === ref ? Z(0) : x[k(n)]]));
+    const res = els.map((e) => {
+      const U = suma(V[e.a], Z(-V[e.b].re, -V[e.b].im)), I = e.Z ? div(U, e.Z) : e.t === 'V' ? x[inc.length + fuentes.indexOf(e)] : e.F;
+      const S = mul(U, Z(I.re, -I.im)); // absorbida: S = U·I*
+      return { ...e, U, I, S };
+    });
+    // quita los restos de redondeo (la Q de una resistencia, la P de una bobina)
+    const escala = Math.max(1e-300, ...res.map((x) => mod(x.S))), limpio = (v) => (Math.abs(v) < 1e-9 * escala ? 0 : v);
+    for (const x of res) x.S = Z(limpio(x.S.re), limpio(x.S.im));
+    const Vn = (n) => (n === ref ? '0' : `V<sub>${n}</sub>`), pasos = [];
+    pasos.push({ t: 'Pulsación e impedancias', html: `ω = 2πf = ${f(w)} rad/s<br>${els.filter((e) => e.Z).map((e) => `Z<sub>${e.n}</sub> = ${e.t === 'R' ? 'R' : e.t === 'L' ? 'jωL' : '1/(jωC)'} = <b>${bin(e.Z)} Ω</b>`).join('<br>')}${els.some((e) => e.F) ? `<br>Fuentes (valores eficaces): ${els.filter((e) => e.F).map((e) => `${subN(e.n)} = ${pol(e.F)} ${e.t === 'V' ? 'V' : 'A'}`).join(', ')}` : ''}` });
+    const ecs = inc.map((n) => {
+      const t = [], rhs = [];
+      for (const e of els) {
+        if (e.a !== n && e.b !== n) continue;
+        const otro = e.a === n ? e.b : e.a;
+        if (e.Z) t.push(`+ ${otro === ref ? Vn(n) : `(${Vn(n)} − ${Vn(otro)})`}/Z<sub>${e.n}</sub>`);
+        else if (e.t === 'V') t.push(`${e.a === n ? '+' : '−'} I<sub>${e.n}</sub>`);
+        else rhs.push(`${e.a === n ? '−' : '+'} ${subN(e.n)}`);
+      }
+      return `Nudo ${n}: ${t.join(' ').replace(/^\+ /, '').replace(/^− /, '−') || '0'} = ${rhs.join(' ').replace(/^\+ /, '').replace(/^− /, '−') || '0'}`;
+    });
+    pasos.push({ t: 'Nudos (referencia ' + ref + ') y primera ley de Kirchhoff con fasores', html: ecs.join('<br>') + (fuentes.length ? '<br>' + fuentes.map((e) => `${subN(e.n)}: ${Vn(e.a)} − ${Vn(e.b)} = ${pol(e.F)}`.replace(/ − 0 =/, ' =')).join('<br>') : '') });
+    if (N) {
+      const mh = (M) => `<span class="mat"><span class="mat-in" style="grid-template-columns:repeat(${M[0].length}, auto)">${M.flat().map((v) => `<span>${v}</span>`).join('')}</span></span>`;
+      pasos.push({ t: 'Sistema con números complejos', html: `${mh(A.map((fi) => fi.map((z) => bin(z, 3))))} · ${mh([...inc.map((n) => [`V<sub>${n}</sub>`]), ...fuentes.map((e) => [`I<sub>${e.n}</sub>`])])} = ${mh(b.map((z) => [bin(z, 3)]))}` });
+      pasos.push({ t: 'Solución', html: [...inc.map((n) => `V<sub>${n}</sub> = <b>${pol(V[n])} V</b>`), ...fuentes.map((e) => `I<sub>${e.n}</sub> = <b>${pol(x[inc.length + fuentes.indexOf(e)])} A</b>`)].join('<br>') });
+    }
+    pasos.push({ t: 'Corriente y potencia de cada elemento (S = V·I*)', html: res.map((r) => `${subN(r.n)}: U = ${pol(r.U)} V, I = <b>${pol(r.I)} A</b> (de ${r.a} a ${r.b}); ${r.Z ? `P = <b>${u(r.S.re, 'W')}</b>, Q = <b>${u(r.S.im, 'var')}</b>` : `P entregada = <b>${u(-r.S.re, 'W')}</b>, Q entregada = <b>${u(-r.S.im, 'var')}</b>${r.S.re > 0 ? ' (recibe potencia activa)' : ''}`}`).join('<br>') });
+    const fu = res.filter((r) => !r.Z).reduce((s2, r) => suma(s2, r.S), Z(0)), ca = res.filter((r) => r.Z).reduce((s2, r) => suma(s2, r.S), Z(0));
+    const ok = mod(suma(fu, ca)) <= 1e-9 * Math.max(1, mod(ca));
+    pasos.push({ t: 'Balance de potencias', html: `Las fuentes entregan P = ${u(-fu.re, 'W')} y Q = ${u(-fu.im, 'var')}; las resistencias consumen ${u(ca.re, 'W')} y bobinas y condensadores, en total, Q = ${u(ca.im, 'var')}. ${ok ? 'Coinciden, como debe ser (Boucherot).' : 'No coinciden: revisa los datos.'}` });
+    return { fr, w, ref, nudos, V, els: res, P: ca.re, Q: ca.im, ok, pasos };
+  }
+
+  /* ---------- Sistemas trifásicos equilibrados ---------- */
+  // sc: { VL (tensión de línea eficaz), f, conexion: 'estrella'|'triangulo', R, X (Ω por fase, X > 0 inductiva), fp2 (opcional) }
+  function trifasica(sc) {
+    const VL = lee(sc, 'VL', 'la tensión de línea'), fr = lee(sc, 'f', 'la frecuencia'), R = lee(sc, 'R', 'la resistencia de cada fase', { cero: true });
+    if (vacio(sc.X)) throw new Error('Falta la reactancia de cada fase (0 si es solo resistiva)');
+    const X = Herramienta.leeSI(sc.X);
+    if (!isFinite(X)) throw new Error('La reactancia debe ser un número');
+    const Zf = Z(R, X);
+    if (!mod(Zf)) throw new Error('La impedancia de cada fase no puede ser 0');
+    const est = sc.conexion !== 'triangulo', w = 2 * Math.PI * fr, s3 = Math.sqrt(3), fi = arg(Zf), fp = Math.cos(fi);
+    const Vf = est ? VL / s3 : VL, If = Vf / mod(Zf), IL = est ? If : s3 * If;
+    const P = 3 * Vf * If * fp, Q = 3 * Vf * If * Math.sin(fi), S = 3 * Vf * If;
+    // fasores con secuencia directa R, S, T: tensiones simples V_RN∠0°, V_SN∠−120°, V_TN∠120°; compuestas 30° adelantadas
+    const fases = ['R', 'S', 'T'].map((q, k) => ({ q, Vs: polar(VL / s3, (-2 * Math.PI * k) / 3), Vc: polar(VL, (-2 * Math.PI * k) / 3 + Math.PI / 6) }));
+    for (const p of fases) { p.Vf = est ? p.Vs : p.Vc; p.If = div(p.Vf, Zf); p.IL = est ? p.If : div(p.Vs, div(Zf, Z(3))); }
+    const car = Math.abs(fi) < 1e-5 ? 'resistiva' : fi > 0 ? 'inductiva' : 'capacitiva';
+    const pasos = [
+      { t: 'Impedancia de cada fase', html: `Z = R + jX = <b>${ambos(Zf, 'Ω')}</b>: carga ${car}, con cos φ = <b>${f(fp)}</b>` },
+      { t: est ? 'Carga en estrella' : 'Carga en triángulo', html: est ? `Cada fase está entre una línea y el neutro: V<sub>fase</sub> = V<sub>L</sub>/√3 = ${f(VL)}/√3 = <b>${f(Vf)} V</b>; I<sub>fase</sub> = V<sub>fase</sub>/|Z| = <b>${u(If, 'A')}</b>, y la corriente de línea es la misma: I<sub>L</sub> = <b>${u(IL, 'A')}</b>` : `Cada fase está entre dos líneas: V<sub>fase</sub> = V<sub>L</sub> = <b>${f(Vf)} V</b>; I<sub>fase</sub> = V<sub>L</sub>/|Z| = <b>${u(If, 'A')}</b>, y la de línea es √3 veces mayor: I<sub>L</sub> = √3·I<sub>fase</sub> = <b>${u(IL, 'A')}</b>` },
+      { t: 'Fasores (secuencia directa R, S, T)', html: fases.map((p) => `V<sub>${p.q}N</sub> = ${pol(p.Vs)} V, &nbsp; ${est ? `I<sub>${p.q}</sub> = ${pol(p.IL)} A` : `I<sub>${p.q}${'RST'['RST'.indexOf(p.q) + 1] || 'R'}</sub> = ${pol(p.If)} A, &nbsp; I<sub>${p.q}</sub> = ${pol(p.IL)} A`}`).join('<br>') + `<br>Las tensiones compuestas van 30° por delante de las simples (V<sub>RS</sub> = ${pol(fases[0].Vc)} V)${est ? ', y el neutro no lleva corriente porque la carga está equilibrada' : ''}.` },
+      { t: 'Potencias', html: `P = √3·V<sub>L</sub>·I<sub>L</sub>·cos φ = 3·V<sub>fase</sub>·I<sub>fase</sub>·cos φ = <b>${u(P, 'W')}</b><br>Q = √3·V<sub>L</sub>·I<sub>L</sub>·sen φ = <b>${u(Q, 'var')}</b><br>S = √3·V<sub>L</sub>·I<sub>L</sub> = <b>${u(S, 'VA')}</b>` },
     ];
-    return { V, fr, P, fp1, fp2, f1, f2, Q1, Q2, Qc, C, I1, I2, pasos };
+    let corr = null;
+    if (!vacio(sc.fp2)) {
+      const fp2 = Herramienta.leeSI(sc.fp2);
+      if (!(fp2 > 0 && fp2 <= 1)) throw new Error('El factor de potencia deseado tiene que estar entre 0 y 1');
+      if (fi <= 0) throw new Error('La carga no es inductiva: no se corrige con condensadores');
+      if (fp2 <= fp) throw new Error('El factor de potencia deseado tiene que ser mayor que el de la carga');
+      const Qc = P * (Math.tan(fi) - Math.tan(Math.acos(fp2))), Cy = Qc / 3 / (w * (VL / s3) ** 2), Cd = Qc / 3 / (w * VL * VL), IL2 = P / (s3 * VL * fp2);
+      corr = { fp2, Qc, Cy, Cd, IL2 };
+      pasos.push({ t: 'Batería de condensadores', html: `Q<sub>C</sub> = P (tg φ<sub>1</sub> − tg φ<sub>2</sub>) = <b>${u(Qc, 'var')}</b>, un tercio por fase.<br>En estrella (a V<sub>L</sub>/√3): C = Q<sub>C</sub>/(3ω(V<sub>L</sub>/√3)<sup>2</sup>) = <b>${u(Cy, 'F')}</b> por fase<br>En triángulo (a V<sub>L</sub>): C = Q<sub>C</sub>/(3ωV<sub>L</sub><sup>2</sup>) = <b>${u(Cd, 'F')}</b> por fase, tres veces menos<br>La corriente de línea baja de ${u(IL, 'A')} a ${u(IL2, 'A')}.` });
+    }
+    return { VL, fr, w, est, Zf, fi, fp, Vf, If, IL, P, Q, S, fases, corr, pasos };
   }
 
   const ejemplos = [
@@ -804,15 +979,22 @@ const Alterna = (() => {
     { clave: 'rl', nombre: 'Bobina real (R y L en serie)', sc: { modo: 'circuito', conexion: 'serie', V: '230', f: '50', R: '30', L: '127.32', C: '' } },
     { clave: 'rc', nombre: 'Filtro RC en serie a 1 kHz', sc: { modo: 'circuito', conexion: 'serie', V: '5', f: '1000', R: '1000', L: '', C: '0.159' } },
     { clave: 'paralelo', nombre: 'RLC en paralelo', sc: { modo: 'circuito', conexion: 'paralelo', V: '120', f: '60', R: '60', L: '159.2', C: '22.1' } },
-    { clave: 'fp', nombre: 'Corregir el factor de potencia de un motor', sc: { modo: 'correccion', V: '400', f: '50', P: '10', fp1: '0.7', fp2: '0.95' } },
+    { clave: 'fp', nombre: 'Corregir el factor de potencia de un motor', sc: { modo: 'correccion', V: '400', f: '50', dato: 'P', P: '10', fp1: '0.7', fp2: '0.95', carga: 'inductiva' } },
+    { clave: 'fuente-pico', nombre: 'Fuente dada con su valor de pico, fase y ω', sc: { modo: 'circuito', conexion: 'serie', V: '325', tipoV: 'pico', faseV: '30', f: '314.16', unidadF: 'w', R: '20', L: '50', C: '' } },
+    { clave: 'fp-capacitiva', nombre: 'Corregir una carga capacitiva con una bobina', sc: { modo: 'correccion', V: '230', f: '50', dato: 'S', P: '5', fp1: '0.8', fp2: '0.95', carga: 'capacitiva' } },
+    { clave: 'red-bobina-real', nombre: 'Red: bobina real en paralelo con un condensador', sc: { modo: 'red', f: '50', elementos: [{ t: 'V', a: 'a', b: '0', v: '230', fase: '0' }, { t: 'R', a: 'a', b: 'b', v: '10' }, { t: 'L', a: 'b', b: '0', v: '100' }, { t: 'C', a: 'a', b: '0', v: '50' }] } },
+    { clave: 'red-dos-fuentes', nombre: 'Red con dos fuentes desfasadas', sc: { modo: 'red', f: '50', elementos: [{ t: 'V', a: 'a', b: '0', v: '100', fase: '0' }, { t: 'R', a: 'a', b: 'b', v: '5' }, { t: 'C', a: 'b', b: '0', v: '318.3' }, { t: 'L', a: 'b', b: 'c', v: '15.92' }, { t: 'V', a: 'c', b: '0', v: '50', fase: '90' }] } },
+    { clave: 'trifasica-estrella', nombre: 'Trifásica: motor en estrella a 400 V', sc: { modo: 'trifasica', VL: '400', f: '50', conexion: 'estrella', R: '8', X: '6', fp2: '' } },
+    { clave: 'trifasica-triangulo', nombre: 'Trifásica: carga en triángulo y batería de condensadores', sc: { modo: 'trifasica', VL: '400', f: '50', conexion: 'triangulo', R: '30', X: '40', fp2: '0.95' } },
   ];
 
-  return { circuito, correccion, ejemplos, Z, mod, arg, polar, mul, div, suma, f, u, bin, pol, ang, GRAD };
+  return { circuito, correccion, red, trifasica, barrido, nombres, TIPOS, ejemplos, Z, mod, arg, polar, mul, div, suma, f, u, bin, pol, ang, GRAD };
 })();
 
 /* =====================================================================
-   Corriente alterna y fasores: interfaz (modo, conexión, datos,
-   resultado, diagrama de fasores, ondas v(t) e i(t) y desarrollo).
+   Corriente alterna y fasores: interfaz (modo, conexión, datos, lista
+   de elementos de una red, resultado, diagrama de fasores, ondas, triángulo
+   de potencias, curva de resonancia y desarrollo).
    El cálculo está en alterna/fisica.js (Alterna).
    ===================================================================== */
 (() => {
@@ -821,31 +1003,64 @@ const Alterna = (() => {
   const txt = (h) => String(h).replace(/<sup>/g, '^').replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ');
 
   let sc = copia(A.ejemplos[0].sc);
-  try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && (g.modo === 'circuito' || g.modo === 'correccion')) sc = g; } catch (e) {}
+  try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && ['circuito', 'correccion', 'red', 'trifasica'].includes(g.modo)) sc = g; } catch (e) {}
   const guarda = () => { try { localStorage.setItem(CLAVE, JSON.stringify(sc)); } catch (e) {} };
   let sol = null, col = {};
 
   /* ---------- Formulario ---------- */
   const fila = (k, nom, un) => `<label for="f-${k}">${nom} <small>${un}</small></label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc[k] ?? '')}" inputmode="decimal" autocomplete="off">`;
-  const opcion = (k, v, t) => `<option value="${v}"${sc[k] === v ? ' selected' : ''}>${t}</option>`;
+  const opcion = (k, v, t, def) => `<option value="${v}"${(sc[k] ?? def) === v ? ' selected' : ''}>${t}</option>`;
+  const elige = (k, nom, ops) => `<label for="f-${k}">${nom}</label><select id="f-${k}" class="in" data-k="${k}">${ops.map(([v, t], i) => opcion(k, v, t, ops[0][0])).join('')}</select>`;
+  const DATO = { P: ['Potencia activa P', 'kW'], S: ['Potencia aparente S', 'kVA'], I: ['Corriente I', 'A'], Q: ['Potencia reactiva Q', 'kvar'] };
   function formulario() {
-    let h = `<label for="f-modo">Qué calcular</label><select id="f-modo" class="in" data-k="modo">${opcion('modo', 'circuito', 'Circuito RLC')}${opcion('modo', 'correccion', 'Corregir el factor de potencia')}</select>`;
+    let h = elige('modo', 'Qué calcular', [['circuito', 'Circuito RLC en serie o en paralelo'], ['red', 'Red de alterna (método de los nudos)'], ['trifasica', 'Sistema trifásico equilibrado'], ['correccion', 'Corregir el factor de potencia']]);
+    const red = sc.modo === 'red';
     if (sc.modo === 'correccion') {
-      h += fila('V', 'Tensión eficaz V', 'V') + fila('f', 'Frecuencia f', 'Hz') + fila('P', 'Potencia activa P', 'kW') + fila('fp1', 'cos φ inicial', '') + fila('fp2', 'cos φ deseado', '');
-      $('#nota').textContent = 'La carga es inductiva; el condensador va en paralelo con ella.';
+      const d = DATO[sc.dato] ? sc.dato : 'P';
+      h += fila('V', 'Tensión eficaz V', 'V') + fila('f', 'Frecuencia f', 'Hz') + elige('carga', 'La carga es', [['inductiva', 'Inductiva (motores)'], ['capacitiva', 'Capacitiva']]) + elige('dato', 'Dato de la carga', [['P', 'Potencia activa'], ['S', 'Potencia aparente'], ['I', 'Corriente'], ['Q', 'Potencia reactiva']]) + fila('P', DATO[d][0], DATO[d][1]) + fila('fp1', 'cos φ inicial', '') + fila('fp2', 'cos φ deseado', '');
+      $('#nota').textContent = sc.carga === 'capacitiva' ? 'Una carga capacitiva se corrige con una bobina en paralelo.' : 'El condensador va en paralelo con la carga.';
+    } else if (sc.modo === 'trifasica') {
+      h += fila('VL', 'Tensión de línea V<sub>L</sub>', 'V') + fila('f', 'Frecuencia f', 'Hz') + elige('conexion', 'Carga conectada en', [['estrella', 'Estrella (Y)'], ['triangulo', 'Triángulo (Δ)']]) + fila('R', 'Resistencia de cada fase R', 'Ω') + fila('X', 'Reactancia de cada fase X', 'Ω') + fila('fp2', 'cos φ deseado (opcional)', '');
+      $('#nota').textContent = 'Carga equilibrada: las tres fases iguales. X positiva si es inductiva y negativa si es capacitiva. Con un cos φ deseado calcula la batería de condensadores.';
+    } else if (red) {
+      h += fila('f', 'Frecuencia f', 'Hz');
+      $('#nota').textContent = 'Cada elemento va del nudo A al nudo B; en una fuente de tensión A es el borne +, y en una de corriente la corriente va de A a B por dentro. Valores eficaces; la fase en grados. L en mH y C en μF si no pones unidad. El nudo 0 es la referencia.';
     } else {
-      h += `<label for="f-conexion">Conexión</label><select id="f-conexion" class="in" data-k="conexion">${opcion('conexion', 'serie', 'En serie')}${opcion('conexion', 'paralelo', 'En paralelo')}</select>`;
-      h += fila('V', 'Tensión eficaz V', 'V') + fila('f', 'Frecuencia f', 'Hz') + fila('R', 'Resistencia R', 'Ω') + fila('L', 'Inductancia L', 'mH') + fila('C', 'Capacidad C', 'μF');
+      if (!['serie', 'paralelo'].includes(sc.conexion)) sc.conexion = 'serie';
+      h += elige('conexion', 'Conexión', [['serie', 'En serie'], ['paralelo', 'En paralelo']]);
+      h += elige('tipoV', 'La tensión es el valor', [['eficaz', 'Eficaz'], ['pico', 'De pico']]) + fila('V', sc.tipoV === 'pico' ? 'Tensión de pico V<sub>m</sub>' : 'Tensión eficaz V', 'V') + fila('faseV', 'Fase inicial φ (opcional)', '°');
+      h += elige('unidadF', 'Frecuencia dada como', [['f', 'Frecuencia f (Hz)'], ['w', 'Pulsación ω (rad/s)']]) + fila('f', sc.unidadF === 'w' ? 'Pulsación ω' : 'Frecuencia f', sc.unidadF === 'w' ? 'rad/s' : 'Hz');
+      h += fila('R', 'Resistencia R', 'Ω') + fila('L', 'Inductancia L', 'mH') + fila('C', 'Capacidad C', 'μF');
       $('#nota').textContent = 'Deja vacío un elemento si no está. Puedes usar coma o punto decimal y prefijos como 4k7, 100n o 10m.';
     }
     $('#campos').innerHTML = h;
+    $('#red').hidden = !red;
+    if (red) lista();
   }
+
+  /* ---------- Lista de elementos de una red ---------- */
+  function lista() {
+    sc.elementos = Array.isArray(sc.elementos) && sc.elementos.length ? sc.elementos : copia(A.ejemplos.find((e) => e.sc.modo === 'red').sc.elementos);
+    const nom = A.nombres(sc.elementos), campo = (i, k, v, et, extra = '') => `<input class="in" data-i="${i}" data-k="${k}" value="${esc(v ?? '')}" aria-label="${nom[i]}: ${et}" autocomplete="off" spellcheck="false"${extra}>`;
+    $('#lista').innerHTML = '<span class="cab">Elemento</span><span class="cab">Nudo A</span><span class="cab">Nudo B</span><span class="cab">Valor</span><span class="cab">Fase</span><span></span>' + sc.elementos.map((e, i) => {
+      const T = A.TIPOS[e.t];
+      return `<b title="${T.nombre}">${nom[i].replace(/(\d+)/, '<sub>$1</sub>')}</b>${campo(i, 'a', e.a, 'nudo A')}${campo(i, 'b', e.b, 'nudo B')}<span class="valor">${campo(i, 'v', e.v, `valor en ${T.un}`, ' inputmode="decimal"')}<small>${T.un}</small></span>${'VI'.includes(e.t) ? `<span class="valor">${campo(i, 'fase', e.fase, 'fase en grados', ' inputmode="decimal"')}<small>°</small></span>` : '<span></span>'}<button class="x" type="button" data-quita="${i}" aria-label="Quitar ${nom[i]}">×</button>`;
+    }).join('');
+    for (const b of document.querySelectorAll('[data-add]')) b.disabled = sc.elementos.length >= 14;
+  }
+  $('#lista').addEventListener('input', (e) => { const t = e.target; if (t.dataset.i === undefined) return; sc.elementos[+t.dataset.i][t.dataset.k] = t.value; $('#ejemplos').value = ''; calcula(); });
+  $('#lista').addEventListener('click', (e) => { const q = e.target.dataset.quita; if (q === undefined) return; sc.elementos.splice(+q, 1); $('#ejemplos').value = ''; lista(); calcula(); });
+  for (const b of document.querySelectorAll('[data-add]')) b.addEventListener('click', () => {
+    const t = b.dataset.add, ult = sc.elementos[sc.elementos.length - 1];
+    sc.elementos.push({ t, a: ult ? ult.b : 'a', b: '0', v: { R: '10', L: '10', C: '100', V: '10', I: '1' }[t], ...('VI'.includes(t) ? { fase: '0' } : {}) });
+    $('#ejemplos').value = ''; lista(); calcula();
+  });
   $('#campos').addEventListener('input', (e) => { const t = e.target; if (t.tagName !== 'INPUT') return; sc[t.dataset.k] = t.value; $('#ejemplos').value = ''; calcula(); });
   $('#campos').addEventListener('change', (e) => {
     const t = e.target;
     if (t.tagName !== 'SELECT') return;
     sc[t.dataset.k] = t.value;
-    if (t.dataset.k === 'modo') { const ej = A.ejemplos.find((x) => x.sc.modo === t.value); for (const [k, v] of Object.entries(ej.sc)) if (sc[k] === undefined || sc[k] === '' || k === 'P') sc[k] = v; }
+    if (t.dataset.k === 'modo') { const ej = A.ejemplos.find((x) => x.sc.modo === t.value); for (const [k, v] of Object.entries(copia(ej.sc))) if (sc[k] === undefined || sc[k] === '' || ['P', 'conexion', 'elementos'].includes(k)) sc[k] = v; }
     $('#ejemplos').value = ''; formulario(); calcula();
   });
 
@@ -856,7 +1071,7 @@ const Alterna = (() => {
   function abrirEjemplo(clave) {
     const e = A.ejemplos.find((x) => x.clave === clave);
     if (!e) return;
-    sc = { ...sc, ...copia(e.sc) };
+    sc = { ...sc, tipoV: 'eficaz', faseV: '', unidadF: 'f', dato: 'P', carga: 'inductiva', fp2: '', ...copia(e.sc) };
     formulario(); calcula(); sel.value = clave;
   }
 
@@ -864,24 +1079,33 @@ const Alterna = (() => {
   const dato = (t, v) => `<div><span>${t}</span>${v}</div>`;
   function calcula() {
     const err = $('#error');
-    try { sol = sc.modo === 'correccion' ? { modo: 'correccion', ...A.correccion(sc) } : { modo: 'circuito', ...A.circuito(sc) }; }
-    catch (e) { sol = null; err.textContent = e.message; err.hidden = false; $('#res').innerHTML = ''; $('#pasos').innerHTML = ''; $('#leyenda').innerHTML = ''; dibuja(); return; }
+    const modo = ['correccion', 'red', 'trifasica'].includes(sc.modo) ? sc.modo : 'circuito';
+    try { sol = { modo, ...A[modo](sc) }; }
+    catch (e) { sol = null; err.textContent = e.message; err.hidden = false; $('#res').innerHTML = ''; $('#pasos').innerHTML = ''; $('#leyenda').innerHTML = ''; guarda(); dibuja(); return; }
     err.hidden = true; guarda();
     if (sol.modo === 'correccion') {
-      $('#res').innerHTML = dato('Capacidad del condensador', `C = <b>${A.u(sol.C, 'F')}</b>`) + dato('Reactiva que aporta', `Q<sub>C</sub> = ${A.u(sol.Qc, 'var')}`) + dato('Corriente de línea', `${A.u(sol.I1, 'A')} → ${A.u(sol.I2, 'A')}`);
+      $('#res').innerHTML = (sol.capac ? dato('Inductancia de la bobina', `L = <b>${A.u(sol.L, 'H')}</b>`) + dato('Reactiva que consume', `Q<sub>L</sub> = ${A.u(sol.Qc, 'var')}`) : dato('Capacidad del condensador', `C = <b>${A.u(sol.C, 'F')}</b>`) + dato('Reactiva que aporta', `Q<sub>C</sub> = ${A.u(sol.Qc, 'var')}`)) + dato('Corriente de línea', `${A.u(sol.I1, 'A')} → ${A.u(sol.I2, 'A')}`);
       $('#leyenda').innerHTML = 'Izquierda: triángulo de potencias antes (<b style="color:var(--v)">S<sub>1</sub></b>) y después (<b style="color:var(--i)">S<sub>2</sub></b>). Derecha: v(t) y la corriente de línea antes y después.';
+    } else if (sol.modo === 'red') {
+      $('#res').innerHTML = dato('Potenciales', sol.nudos.filter((n) => n !== sol.ref).map((n) => `V<sub>${esc(n)}</sub> = <b>${A.pol(sol.V[n])} V</b>`).join('<br>')) + dato('Potencias consumidas', `P = ${A.u(sol.P, 'W')}, Q = ${A.u(sol.Q, 'var')}`);
+      $('#leyenda').innerHTML = 'Fasores: el potencial de cada nudo respecto a la referencia. Ondas: v(t) de cada nudo, con valores de pico √2 veces los eficaces.';
+    } else if (sol.modo === 'trifasica') {
+      $('#res').innerHTML = dato('Fase', `V<sub>fase</sub> = <b>${A.f(sol.Vf)} V</b>, I<sub>fase</sub> = <b>${A.u(sol.If, 'A')}</b>`) + dato('Línea', `V<sub>L</sub> = ${A.f(sol.VL)} V, I<sub>L</sub> = <b>${A.u(sol.IL, 'A')}</b>`) + dato('Potencias', `P = ${A.u(sol.P, 'W')}, Q = ${A.u(sol.Q, 'var')}, S = ${A.u(sol.S, 'VA')}`) + dato('Factor de potencia', `cos φ = <b>${A.f(sol.fp)}</b>`) + (sol.corr ? dato('Condensadores por fase', `${A.u(sol.corr.Cy, 'F')} en estrella o ${A.u(sol.corr.Cd, 'F')} en triángulo`) : '');
+      $('#leyenda').innerHTML = 'Fasores: tensiones simples <b style="color:var(--f1)">V<sub>RN</sub></b>, <b style="color:var(--f2)">V<sub>SN</sub></b> y <b style="color:var(--f3)">V<sub>TN</sub></b>, y las corrientes de línea punteadas (escala propia). Ondas: las tres tensiones simples. Abajo, el triángulo de potencias de las tres fases.';
     } else {
       $('#res').innerHTML = dato('Impedancia', `Z = ${A.bin(sol.Zt)} = <b>${A.pol(sol.Zt)} Ω</b>`) + dato('Corriente', `I = <b>${A.pol(sol.I)} A</b>`) + dato('Factor de potencia', `cos φ = <b>${A.f(sol.fp)}</b>${Math.abs(sol.fi) < 1e-5 ? ' (resistivo)' : sol.fi > 0 ? ' inductivo' : ' capacitivo'}`) + dato('Potencias', `P = ${A.u(sol.P, 'W')}, Q = ${A.u(sol.Q, 'var')}, S = ${A.u(sol.S, 'VA')}`) + (sol.res ? dato('Resonancia', `f<sub>0</sub> = ${A.u(sol.res.f0, 'Hz')}`) : '');
       $('#leyenda').innerHTML = sol.serie
         ? 'Fasores: <b style="color:var(--v)">V</b> de la fuente como suma de las tensiones de cada elemento, y <b style="color:var(--i)">I</b> (escala propia). Ondas: v(t) e i(t) con valores de pico √2 veces los eficaces.'
         : 'Fasores: <b style="color:var(--i)">I</b> total como suma de las corrientes de cada rama, y <b style="color:var(--v)">V</b> de la fuente (escala propia). Ondas: v(t) e i(t) con valores de pico √2 veces los eficaces.';
+      $('#res').innerHTML += dato('Valores instantáneos', `${sol.vt}<br>${sol.it}`);
+      $('#leyenda').innerHTML += ` Abajo, el triángulo de potencias${sol.res ? ' y la curva de resonancia: la corriente frente a la frecuencia, con f<sub>0</sub> y el punto de trabajo' : ''}.`;
     }
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('');
     dibuja();
   }
 
   /* ---------- Dibujo ---------- */
-  function colores() { const cs = getComputedStyle(document.documentElement); for (const k of ['--ink', '--muted', '--line', '--accent', '--v', '--i', '--x', '--bg']) col[k] = cs.getPropertyValue(k).trim(); }
+  function colores() { const cs = getComputedStyle(document.documentElement); for (const k of ['--ink', '--muted', '--line', '--accent', '--v', '--i', '--x', '--bg', '--f1', '--f2', '--f3']) col[k] = cs.getPropertyValue(k).trim(); }
   function lienzo(id) {
     const r = Herramienta.lienzo(id);
     r.g.font = '12px "IBM Plex Sans", system-ui, sans-serif';
@@ -916,6 +1140,7 @@ const Alterna = (() => {
     const { g, w, h } = lienzo('#fasores');
     if (!sol) return;
     if (sol.modo === 'correccion') return triangulos(g, w, h);
+    if (sol.modo === 'red' || sol.modo === 'trifasica') return estrella(g, w, h);
     const nombreV = { R: 'V_R', L: 'V_L', C: 'V_C' }, nombreI = { R: 'I_R', L: 'I_L', C: 'I_C' };
     // la magnitud principal se dibuja encadenada; la otra, sola y escalada a la mitad de la principal
     const serie = sol.serie, cadena = sol.partes.map((p) => (serie ? p.V : p.I)), total = serie ? sol.Vf : sol.I, otra = serie ? sol.I : sol.Vf;
@@ -957,13 +1182,56 @@ const Alterna = (() => {
     etiqueta(g, T.X(P / 2), T.Y(0), `P = ${txt(A.u(P, 'W'))}`, col['--ink'], 0, 6);
     flecha(g, T.X(P), T.Y(0), T.X(P), T.Y(sol.Q2), col['--x'], 2);
     flecha(g, T.X(P), T.Y(sol.Q2), T.X(P), T.Y(sol.Q1), col['--accent'], 2, true);
-    etiqueta(g, T.X(P), T.Y((sol.Q1 + sol.Q2) / 2), `QC = ${txt(A.u(sol.Qc, 'var'))}`, col['--accent'], -6, 0);
+    etiqueta(g, T.X(P), T.Y((sol.Q1 + sol.Q2) / 2), `${sol.capac ? 'QL' : 'QC'} = ${txt(A.u(sol.Qc, 'var'))}`, col['--accent'], -6, 0);
     etiqueta(g, T.X(P), T.Y(sol.Q2 / 2), `Q2`, col['--x'], 6, 0);
     flecha(g, T.X(0), T.Y(0), T.X(P), T.Y(sol.Q1), col['--v'], 2.5);
     etiqueta(g, T.X(P / 2), T.Y(sol.Q1 / 2), 'S1', col['--v'], -8, -8);
     flecha(g, T.X(0), T.Y(0), T.X(P), T.Y(sol.Q2), col['--i'], 2.5);
     etiqueta(g, T.X(P * 0.7), T.Y(sol.Q2 * 0.7), 'S2', col['--i'], 4, 8);
     etiqueta(g, 8, 8, `φ1 = ${txt(A.ang(sol.f1))}, φ2 = ${txt(A.ang(sol.f2))}`, col['--muted'], 1, 1);
+  }
+
+  // fasores que salen todos del origen: los potenciales de una red, o las tres fases
+  const PALETA = ['--v', '--i', '--x', '--accent', '--f1', '--f3'];
+  function vectores() {
+    if (sol.modo === 'trifasica') {
+      const kI = (Math.max(...sol.fases.map((p) => A.mod(p.Vs))) * 0.6) / (A.mod(sol.fases[0].IL) || 1);
+      return [...sol.fases.map((p, k) => ({ z: p.Vs, nom: `V${p.q}N`, c: col[`--f${k + 1}`] })), ...sol.fases.map((p, k) => ({ z: A.mul(p.IL, A.Z(kI)), nom: `I${p.q}`, c: col[`--f${k + 1}`], punteada: true }))];
+    }
+    return sol.nudos.filter((n) => n !== sol.ref).map((n, k) => ({ z: sol.V[n], nom: `V${n}`, c: col[PALETA[k % PALETA.length]] }));
+  }
+  function estrella(g, w, h) {
+    const vs = vectores(), T = encaja(vs.map((v) => [v.z.re, v.z.im]).concat(vs.map((v) => [-v.z.re * 0.05, -v.z.im * 0.05])), w, h);
+    g.strokeStyle = col['--line']; g.lineWidth = 1; g.beginPath(); g.moveTo(0, T.oy); g.lineTo(w, T.oy); g.moveTo(T.ox, 0); g.lineTo(T.ox, h); g.stroke();
+    etiqueta(g, w - 4, T.oy, 'Re', col['--muted'], -1, -4); etiqueta(g, T.ox, 4, 'Im', col['--muted'], 4, 4);
+    for (const v of vs) { flecha(g, T.X(0), T.Y(0), T.X(v.z.re), T.Y(v.z.im), v.c, v.punteada ? 1.8 : 2.5, v.punteada); etiqueta(g, T.X(v.z.re), T.Y(v.z.im), v.nom, v.c, v.z.re >= 0 ? 4 : -4, v.z.im >= 0 ? -4 : 4); }
+  }
+
+  function potencias() {
+    const { g, w, h } = lienzo('#triangulo');
+    if (!sol || !('Q' in sol) || sol.modo === 'correccion' || sol.modo === 'red') return;
+    const P = sol.P, Q = sol.Q, T = encaja([[P, 0], [P, Q]], w, h, 30);
+    g.strokeStyle = col['--line']; g.lineWidth = 1; g.beginPath(); g.moveTo(0, T.oy); g.lineTo(w, T.oy); g.stroke();
+    flecha(g, T.X(0), T.Y(0), T.X(P), T.Y(0), col['--ink'], 2);
+    etiqueta(g, T.X(P / 2), T.Y(0), `P = ${txt(A.u(P, 'W'))}`, col['--ink'], 0, Q >= 0 ? 6 : -6);
+    if (Math.abs(Q) > 1e-9 * Math.max(1, sol.S)) { flecha(g, T.X(P), T.Y(0), T.X(P), T.Y(Q), col['--x'], 2); etiqueta(g, T.X(P), T.Y(Q / 2), `Q = ${txt(A.u(Q, 'var'))}`, col['--x'], -6, 0); }
+    flecha(g, T.X(0), T.Y(0), T.X(P), T.Y(Q), col['--v'], 2.5);
+    etiqueta(g, T.X(P / 2), T.Y(Q / 2), `S = ${txt(A.u(sol.S, 'VA'))}`, col['--v'], -8, Q >= 0 ? -8 : 8);
+    etiqueta(g, 8, 8, `φ = ${txt(A.ang(sol.fi))}, cos φ = ${txt(A.f(sol.fp))}`, col['--muted'], 1, 1);
+  }
+
+  function curva() {
+    const { g, w, h } = lienzo('#curva');
+    if (!sol || sol.modo !== 'circuito' || !sol.res) return;
+    const pts = A.barrido(sol), m = { l: 12, r: 12, t: 24, b: 24 }, Imax = Math.max(...pts.map((p) => p.I)) * 1.1, f0 = pts[0].f, f1 = pts[pts.length - 1].f;
+    const X = (fr) => m.l + (Math.log(fr / f0) / Math.log(f1 / f0)) * (w - m.l - m.r), Y = (I) => h - m.b - (I / Imax) * (h - m.t - m.b);
+    g.strokeStyle = col['--line']; g.lineWidth = 1; g.beginPath(); g.moveTo(m.l, h - m.b); g.lineTo(w - m.r, h - m.b); g.stroke();
+    g.strokeStyle = col['--i']; g.lineWidth = 2; g.beginPath(); pts.forEach((p, k) => (k ? g.lineTo(X(p.f), Y(p.I)) : g.moveTo(X(p.f), Y(p.I)))); g.stroke();
+    const xr = X(sol.res.f0); g.strokeStyle = col['--muted']; g.setLineDash([4, 4]); g.beginPath(); g.moveTo(xr, m.t); g.lineTo(xr, h - m.b); g.stroke(); g.setLineDash([]);
+    etiqueta(g, xr, h - m.b, `f0 = ${txt(A.u(sol.res.f0, 'Hz'))}`, col['--muted'], 0, 4);
+    if (sol.res.B) { const a = sol.res.f0 - sol.res.B / 2, b = sol.res.f0 + sol.res.B / 2, y = Y(Math.max(...pts.map((p) => p.I)) / Math.SQRT2); if (a > f0) { g.strokeStyle = col['--x']; g.lineWidth = 1.5; g.beginPath(); g.moveTo(X(a), y); g.lineTo(X(b), y); g.stroke(); etiqueta(g, X(b), y, `Δf = ${txt(A.u(sol.res.B, 'Hz'))}`, col['--x'], 6, 0); } }
+    const I = A.mod(sol.I); if (sol.fr > f0 && sol.fr < f1) { g.fillStyle = col['--v']; g.beginPath(); g.arc(X(sol.fr), Y(I), 4.5, 0, 2 * Math.PI); g.fill(); }
+    etiqueta(g, 8, 6, 'I frente a f (escala logarítmica)', col['--muted'], 1, 1);
   }
 
   function ondas() {
@@ -980,6 +1248,12 @@ const Alterna = (() => {
       g.stroke(); g.setLineDash([]);
     };
     g.textAlign = 'left'; g.textBaseline = 'top'; g.font = '12px "IBM Plex Sans", system-ui, sans-serif';
+    if (sol.modo === 'red' || sol.modo === 'trifasica') {
+      const vs = vectores().filter((v) => !v.punteada), M = Math.max(...vs.map((v) => A.mod(v.z))) || 1;
+      let x = m.l + 2;
+      for (const v of vs) { curva(A.arg(v.z), A.mod(v.z) / M, v.c); const t = `${v.nom.replace(/^V/, 'v')}(t)`; g.fillStyle = v.c; g.fillText(t, x, 0); x += g.measureText(t).width + 14; }
+      return;
+    }
     if (sol.modo === 'correccion') {
       curva(0, 1, col['--v']);
       curva(-sol.f1, 0.85, col['--muted'], 1.5, true);
@@ -995,13 +1269,18 @@ const Alterna = (() => {
     g.fillStyle = col['--v']; const tv = `v(t), pico ${txt(A.u(Math.SQRT2 * sol.V, 'V'))}`; g.fillText(tv, m.l + 2, 0);
     g.fillStyle = col['--i']; g.fillText(`i(t), pico ${txt(A.u(Math.SQRT2 * A.mod(sol.I), 'A'))}`, m.l + 16 + g.measureText(tv).width, 0);
   }
-  function dibuja() { colores(); fasores(); ondas(); }
+  function dibuja() {
+    colores(); fasores(); ondas();
+    const tri = !!sol && (sol.modo === 'circuito' || sol.modo === 'trifasica'), res = !!sol && sol.modo === 'circuito' && !!sol.res;
+    $('#graficas2').hidden = !tri; $('#curva').hidden = !res; $('#graficas2').classList.toggle('una', !res);
+    if (tri) { potencias(); curva(); }
+  }
   window.addEventListener('resize', dibuja);
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', dibuja);
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('alterna').current;
   formulario(); calcula();
-  window.AlternaApp = { abrirEjemplo, resultado: () => sol && { modo: sol.modo, Z: sol.Zt && A.mod(sol.Zt), fi: sol.fi, fp: sol.fp, I: sol.I && A.mod(sol.I), C: sol.C, P: sol.P }, estado: () => copia(sc) };
+  window.AlternaApp = { abrirEjemplo, resultado: () => sol && { modo: sol.modo, Z: sol.Zt && A.mod(sol.Zt), fi: sol.fi, fp: sol.fp, I: sol.I && A.mod(sol.I), C: sol.C, L: sol.L, P: sol.P, IL: sol.IL, V: sol.V && sol.modo === 'red' ? Object.fromEntries(Object.entries(sol.V).map(([k, z]) => [k, A.mod(z)])) : undefined }, estado: () => copia(sc) };
 })();
 
 /* =====================================================================
