@@ -93,11 +93,14 @@
     const L = Math.hypot(dx, dy) || 1;
     etiqueta(g, x + dx + (dx / L) * 13, y + dy + (dy / L) * 13, nombre, col[COLOR[k] || '--ink']);
   }
-  function cuerpo(g, cx, cy, s, ang, texto) {
+  // con esquina, el nombre va arriba a la izquierda, donde no llega ninguna flecha de las que salen del centro
+  function cuerpo(g, cx, cy, s, ang, texto, esquina = false) {
     g.save(); g.translate(cx, cy); g.rotate(-ang);
     g.fillStyle = col['--cuerpo']; g.strokeStyle = col['--muted']; g.lineWidth = 1.2;
     g.fillRect(-s / 2, -s / 2, s, s); g.strokeRect(-s / 2, -s / 2, s, s);
-    g.rotate(ang); g.fillStyle = col['--ink']; g.font = '12px "IBM Plex Sans", system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(texto, 0, 0);
+    g.fillStyle = col['--ink']; g.font = '12px "IBM Plex Sans", system-ui, sans-serif';
+    if (esquina) { g.textAlign = 'left'; g.textBaseline = 'top'; g.fillText(texto, -s / 2 + 4, -s / 2 + 3); }
+    else { g.rotate(ang); g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(texto, 0, 0); }
     g.restore();
   }
   function lienzo() {
@@ -108,7 +111,7 @@
 
   function dibujaPlano(g, w, h) {
     const t = sol.th * Math.PI / 180, m = 20, pol = !!sol.m2;
-    const s = Math.max(34, Math.min(54, w / 12)), r = 11;
+    const s = Math.max(44, Math.min(68, w / 9)), r = 11;
     const anchoMax = (pol ? w * 0.7 : w - 2 * m) - m, altoMax = h - 2 * m - 30;
     const L = Math.min(anchoMax / Math.max(Math.cos(t), 1e-6), t > 1e-6 ? altoMax / Math.sin(t) : Infinity);
     // en horizontal se sube la superficie para que quepa el peso (y, con polea, es una mesa)
@@ -138,9 +141,9 @@
       xh = cxp + r; yh = Math.min(suelo - s / 2 - 6, cyp + Math.max(70, (suelo - cyp) * 0.5));
       g.beginPath(); g.moveTo(xh, cyp); g.lineTo(xh, yh - s / 2); g.stroke();
       g.fillStyle = col['--panel'] || col['--bg']; g.beginPath(); g.arc(cxp, cyp, r, 0, 2 * Math.PI); g.fillStyle = col['--cuerpo']; g.fill(); g.strokeStyle = col['--muted']; g.stroke();
-      cuerpo(g, xh, yh, s * 0.85, 0, 'm₂');
+      cuerpo(g, xh, yh, s * 0.85, 0, 'm₂', true);
     }
-    cuerpo(g, xb, yb, s, t, 'm₁');
+    cuerpo(g, xb, yb, s, t, 'm₁', true);
     // fuerzas sobre el bloque: el peso desde el centro; la normal y el rozamiento desde la cara de contacto
     for (const q of sol.fuerzas) {
       const [dx, dy] = pant(q.x, q.y);
@@ -151,7 +154,8 @@
     if (pol) { fuerza(g, xh, yh, 0, k * sol.m2 * sol.g, 'P2', 'P₂'); fuerza(g, xh, yh - s * 0.42, 0, -k * sol.T, 'T', 'T'); }
     // aceleración
     if (Math.abs(sol.a) > 1e-9) {
-      const la = 46 * Math.sign(sol.a), ax = xb + (s * 0.9) * uy[0], ay = yb + (s * 0.9) * uy[1];
+      // a un lado de la normal, empezando junto a ella, para no cruzarla
+      const la = 46 * Math.sign(sol.a), d0 = la / 2 + 6 * Math.sign(la), ax = xb + (s * 0.9) * uy[0] + d0 * ux[0], ay = yb + (s * 0.9) * uy[1] + d0 * ux[1];
       flecha(g, ax - (la / 2) * ux[0], ay - (la / 2) * ux[1], ax + (la / 2) * ux[0], ay + (la / 2) * ux[1], col['--ink'], 1.5, true);
       etiqueta(g, ax + (la / 2 + 12 * Math.sign(la)) * ux[0], ay + (la / 2 + 12 * Math.sign(la)) * ux[1], 'a', col['--ink']);
     }

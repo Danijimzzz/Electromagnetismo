@@ -86,7 +86,7 @@
       $('#tablas').hidden = false;
     }
     $('#resumen').innerHTML = h; $('#leyenda').textContent = ley;
-    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
+    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html, true)}</li>`).join('');
     tA = 0; dibuja();
   }
 

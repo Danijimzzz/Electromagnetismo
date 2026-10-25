@@ -90,7 +90,7 @@
       ley = 'La fuente va más deprisa que sus frentes de onda: se acumulan en el cono de Mach, que al llegar al observador se oye como un estampido.';
     }
     $('#resumen').innerHTML = h; $('#leyenda').textContent = ley;
-    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
+    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html, true)}</li>`).join('');
     const oir = tonos();
     $('#oir').hidden = !oir; if (oir) $('#oir').title = oir.titulo;
     $('#grafica').hidden = !(sol.modo === 'paso' && sol.curva);

@@ -86,7 +86,7 @@
     if (r.vC !== undefined) filas.push(['v al llegar al muelle', f(r.vC) + ' m/s']);
     if (r.x !== undefined) filas.push(['Compresión máxima', f(r.x) + ' m'], ['Fuerza máxima del muelle', f(r.Fmax) + ' N']);
     $('#resumen').innerHTML = filas.map(([a, b]) => `<div><span>${a}</span><b>${b}</b></div>`).join('');
-    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
+    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html, true)}</li>`).join('');
   }
 
   /* ---------- Estado en un instante (interpolado) ---------- */

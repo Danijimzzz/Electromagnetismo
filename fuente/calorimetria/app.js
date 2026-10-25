@@ -84,7 +84,7 @@
     $('#tabla').innerHTML = `<thead><tr><th>Cuerpo</th><th>T inicial (°C)</th><th>Q (J)</th><th></th></tr></thead><tbody>${res.cuerpos.map((c, i) => `<tr><td><span style="color:var(${COL[i % COL.length]})">●</span> ${esc(c.nombre)}</td><td>${f(c.b.T0)}</td><td>${f(c.Q)}</td><td>${Math.abs(c.Q) < 1e-9 ? '' : c.Q > 0 ? 'absorbe' : 'cede'}</td></tr>`).join('')}<tr><td><b>Total</b></td><td></td><td><b>${f(res.cuerpos.reduce((s, c) => s + c.Q, 0))}</b></td><td></td></tr></tbody>`;
     const tot = res.cedido + res.absorbido || 1;
     $('#balance').innerHTML = `<span style="width:${(100 * res.cedido) / tot}%;background:var(--calor)"></span><span style="flex:1;background:var(--frio)"></span>`;
-    $('#pasos').innerHTML = res.pasos.map((p) => `<li><strong>${esc(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
+    $('#pasos').innerHTML = res.pasos.map((p) => `<li><strong>${esc(p.t)}</strong>${Mates.html(p.html, true)}</li>`).join('');
     $('#ley-curvas').innerHTML = res.cuerpos.map((c, i) => `<span><i style="background:var(${COL[i % COL.length]})"></i>${esc(c.nombre)}</span>`).join('') + '<span>· eje horizontal: calor absorbido (kJ)</span>';
     dibuja();
   }

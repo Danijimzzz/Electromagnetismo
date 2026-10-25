@@ -122,8 +122,25 @@ const Mates = (() => {
 
   // la fuente se queda en data-src para poder copiarla (como texto o LaTeX)
   const mathml = (src) => `<math data-src="${escH(src).replace(/"/g, '&quot;')}"><mstyle displaystyle="true">${analiza(tokens(src))}</mstyle></math>`;
-  // sustituye cada $…$ de un texto HTML por su MathML
-  const html = (s) => String(s ?? '').replace(/\$([^$]+)\$/g, (_, x) => mathml(x));
+  // parte una fórmula antes de cada = o ⇒ que no esté dentro de paréntesis, llaves o comillas
+  function trozos(src) {
+    const out = [];
+    let ini = 0, nivel = 0, comillas = false;
+    for (let i = 0; i < src.length; i++) {
+      const c = src[i];
+      if (c === '"') comillas = !comillas;
+      else if (comillas || src[i - 1] === '\\') continue;
+      else if ('([{'.includes(c)) nivel++;
+      else if (')]}'.includes(c)) nivel--;
+      else if ((c === '=' || c === '⇒') && nivel === 0 && src.slice(ini, i).trim()) { out.push(src.slice(ini, i)); ini = i; }
+    }
+    return out.concat(src.slice(ini)).map((x) => x.trim()).filter(Boolean);
+  }
+  // sustituye cada $…$ de un texto HTML por su MathML; con partir, cada igualdad va en su propio
+  // <math> para que una cadena larga (a = b = c) baje de línea en el móvil en vez de salirse
+  const html = (s, partir = false) => String(s ?? '').replace(/\$([^$]+)\$/g, (_, x) => (partir
+    ? trozos(x).map((t, i) => (i ? mathml(t).replace(/^(<math[^>]*><mstyle[^>]*>(?:<mrow>)?)<mo>/, '$1<mo lspace="0">') : mathml(t))).join(' ')
+    : mathml(x)));
   // convierte en el documento los elementos con class="m" (fórmulas escritas en el HTML)
   function pinta(raiz) { if (typeof document === 'undefined') return; for (const el of (raiz || document).querySelectorAll('.m:not([data-m])')) { el.dataset.m = '1'; el.innerHTML = html(el.innerHTML.includes('$') ? el.innerHTML : `$${el.innerHTML}$`); } }
   if (typeof document !== 'undefined') {
