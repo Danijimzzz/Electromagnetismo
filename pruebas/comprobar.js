@@ -1105,7 +1105,9 @@ const LapC = require(path.join(fuente, 'laplace', 'calculo.js'));
   for (const e of LapC.ejemplos.filter((q) => q.sc.modo === 'directa')) {
     const x = LapC.resolver(e.sc), s0 = x.conv + 1.5, T = 40 / (s0 - x.conv), n = 20000;
     let I = 0; for (let i = 0; i <= n; i++) { const t = (T * i) / n, w = i === 0 || i === n ? 1 : i % 2 ? 4 : 2; I += w * Math.exp(-s0 * t) * x.f(t); }
-    cerca((I * T) / n / 3, LapC.pVal(x.F.n, s0) / LapC.pVal(x.F.d, s0), 1e-6, `${e.clave}: F(${s0}) frente a la integral`);
+    // las deltas suman su e^{−as} aparte
+    const dl = (x.deltas || []).reduce((v, q) => v + q.c * Math.exp(-q.a * s0), 0);
+    cerca((I * T) / n / 3 + dl, x.Fval ? x.Fval(s0) : LapC.pVal(x.F.n, s0) / LapC.pVal(x.F.d, s0), x.saltos ? 1e-4 : 1e-6, `${e.clave}: F(${s0}) frente a la integral`);
     const inv = LapC.inversa({ F: x.Fcomun.replace(/\{/g, '(').replace(/\}/g, ')').replace(/−/g, '-') });
     for (const t of [0.2, 1.1, 2.5]) cerca(inv.f(t), x.f(t), 1e-8, `${e.clave}: la inversa no vuelve a f(${t})`);
   }
@@ -1120,13 +1122,40 @@ const LapC = require(path.join(fuente, 'laplace', 'calculo.js'));
     const x = LapC.resolver(e.sc), h = 1e-4, d1 = (t) => (x.f(t + h) - x.f(t - h)) / (2 * h), d2 = (t) => (x.f(t + h) - 2 * x.f(t) + x.f(t - h)) / (h * h);
     cerca(x.f(0), x.y0, 1e-9, `${e.clave}: y(0)`);
     if (x.orden === 2) cerca((x.f(h) - x.f(0)) / h, x.v0, 1e-3, `${e.clave}: y′(0)`);
+    if (/δ/.test(e.sc.g)) continue;
     for (const t of [0.4, 1.3, 2.2]) cerca(x.a * d2(t) + x.b * d1(t) + x.c * x.f(t), x.g(t), 1e-5, `${e.clave}: la solución no cumple la ecuación en t = ${t}`);
   }
-  for (const [sc, q] of [[{ modo: 'directa', f: '' }, 'sin f'], [{ modo: 'directa', f: 'tg(t)' }, 'tg t'], [{ modo: 'directa', f: 's t' }, 'f con s'], [{ modo: 'inversa', F: '(s^2 + 1)/(s + 1)' }, 'F impropia'], [{ modo: 'inversa', F: 's + 3' }, 'F sin denominador'], [{ modo: 'inversa', F: '1/(s + t)' }, 'F con t'], [{ modo: 'edo', orden: '2', a: '0', b: '1', c: '1', g: '0', y0: '1', v0: '0' }, 'a = 0'], [{ modo: 'edo', orden: '2', a: '1', b: '0', c: '1', g: 'ln(t)', y0: '1', v0: '0' }, 'g sin transformada de la tabla']]) {
+  // escalones, deltas, trozos, convolución y sistemas
+  igual(r('trozos').Ftxt, '{1}/{s^{2}} − 2 {e^{−2 s}}/{s^{2}} + {e^{−4 s}}/{s^{2}}', 'triángulo a trozos');
+  igual(r('retrasada').Ftxt, '{e^{−s}}/{s^{2}} + 2 {e^{−3 s}}/{s}', '(t − 1) u(t − 1) + 2 u(t − 3)');
+  igual(r('delta').Ftxt, '3 e^{−s} + e^{−2} {e^{−2 s}}/{s + 1}', '3δ(t − 1) + e^(−t) u(t − 2)');
+  igual(r('pulso').txt, 't − (t − 1) u(t − 1)', '(1 − e^(−s))/s²');
+  igual(r('con-delta').txt, '2 e^{−t} + δ(t)', '(s + 3)/(s + 1)');
+  igual(r('edo-impulso').txt, 'cos t + sen (t − π) u(t − π)', 'y″ + y = δ(t − π)');
+  igual(r('conv-sen').txt, '{1}/{2} t sen t', 'sen t * cos t');
+  igual(r('sis-oscila').txt + ' | ' + r('sis-oscila').txt2, 'cos t | −sen t', 'x′ = y, y′ = −x');
+  igual(r('edo-1').htxt, 'e^{−2 t}', 'respuesta al impulso de y′ + 2y');
+  {
+    const x = r('edo-impulso');
+    // tras el impulso, y′ salta en 1: y′(π⁺) − y′(π⁻) = 1
+    const h = 1e-5, d = (t) => (x.f(t + h) - x.f(t - h)) / (2 * h);
+    cerca(d(Math.PI + 1e-3) - d(Math.PI - 1e-3), 1, 1e-2, 'edo-impulso: el salto de y′ en t = π');
+  }
+  for (const e of LapC.ejemplos.filter((q) => q.sc.modo === 'convolucion')) {
+    // (f * g)(t) = ∫₀ᵗ f(τ) g(t − τ) dτ por Simpson
+    const x = LapC.resolver(e.sc);
+    for (const t of [0.7, 1.6, 2.5]) { const n = 4000; let I = 0; for (let i = 0; i <= n; i++) { const u = (t * i) / n, w = i === 0 || i === n ? 1 : i % 2 ? 4 : 2; I += w * x.f1(u) * x.g1(t - u); } cerca(x.f(t), (I * t) / n / 3, 1e-4, `${e.clave}: la convolución en t = ${t}`); }
+  }
+  for (const e of LapC.ejemplos.filter((q) => q.sc.modo === 'sistema')) {
+    const x = LapC.resolver(e.sc), h = 1e-5, d = (f, t) => (f(t + h) - f(t - h)) / (2 * h);
+    cerca(x.f(0), x.x0, 1e-9, `${e.clave}: x(0)`); cerca(x.f2(0), x.y0, 1e-9, `${e.clave}: y(0)`);
+    for (const t of [0.3, 1.1]) { cerca(d(x.f, t), x.a * x.f(t) + x.b * x.f2(t) + x.fx(t), 1e-5, `${e.clave}: x′ en t = ${t}`); cerca(d(x.f2, t), x.c * x.f(t) + x.d * x.f2(t) + x.gy(t), 1e-5, `${e.clave}: y′ en t = ${t}`); }
+  }
+  for (const [sc, q] of [[{ modo: 'directa', f: '' }, 'sin f'], [{ modo: 'directa', f: 'tg(t)' }, 'tg t'], [{ modo: 'directa', f: 's t' }, 'f con s'], [{ modo: 'inversa', F: '(s^2 + 1)/(s + 1)' }, 'F impropia'], [{ modo: 'inversa', F: 's + 3' }, 'F sin denominador'], [{ modo: 'inversa', F: '1/(s + t)' }, 'F con t'], [{ modo: 'edo', orden: '2', a: '0', b: '1', c: '1', g: '0', y0: '1', v0: '0' }, 'a = 0'], [{ modo: 'edo', orden: '2', a: '1', b: '0', c: '1', g: 'ln(t)', y0: '1', v0: '0' }, 'g sin transformada de la tabla'], [{ modo: 'directa', f: 'u(2 - t)' }, 'u(a − t)'], [{ modo: 'inversa', F: 'e^(2s)/s' }, 'e^(as) con a > 0'], [{ modo: 'directa', f: 't si 2 ≤ t < 1' }, 'trozo al revés'], [{ modo: 'sistema', a11: '1', a12: 'x', a21: '0', a22: '1', f: '0', g: '0', x0: '1', y0: '0' }, 'sistema con letra']]) {
     let ok = false; try { LapC.resolver(sc); } catch (e) { ok = true; }
     if (!ok) mal(`Laplace: ${q} no da error`);
   }
-  if (fallos === antes) console.log(`  ✓ Transformada de Laplace: ${LapC.ejemplos.length} ejemplos, resultados como en clase, directa frente a la integral, inversa de ida y vuelta (polos dobles y complejos), EDOs que cumplen la ecuación y errores`);
+  if (fallos === antes) console.log(`  ✓ Transformada de Laplace: ${LapC.ejemplos.length} ejemplos, resultados como en clase, directa frente a la integral, inversa de ida y vuelta (polos dobles y complejos), EDOs que cumplen la ecuación, escalones, deltas y trozos, convolución frente a la integral, sistemas que cumplen sus ecuaciones y errores`);
 }
 
 const DerC = require(path.join(fuente, 'derivadas', 'calculo.js'));

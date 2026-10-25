@@ -1,5 +1,5 @@
 <title>Transformada de Laplace: directa, inversa y ecuaciones diferenciales · SimulaCiencia</title>
-<meta name="description" content="Calculadora de la transformada de Laplace en español, paso a paso: transformada directa con la tabla y sus propiedades, inversa por fracciones simples (polos simples, dobles y complejos), teoremas del valor inicial y final, y ecuaciones diferenciales con condiciones iniciales, con el plano s y la gráfica de f(t).">
+<meta name="description" content="Calculadora de la transformada de Laplace en español, paso a paso: transformada directa con la tabla y sus propiedades, inversa por fracciones simples (polos simples, dobles y complejos), teoremas del valor inicial y final, escalón u(t − a), delta de Dirac y funciones a trozos, convolución, función de transferencia, ecuaciones diferenciales y sistemas con condiciones iniciales, con el plano s y la gráfica de f(t).">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
@@ -70,7 +70,7 @@ footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8p
 <header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Matemáticas</a> / Transformada de Laplace</span></header>
 <div class="wrap">
 <h1>Transformada de Laplace</h1>
-<p class="lead">Calcula la transformada de una función con la tabla y sus propiedades, la inversa por fracciones simples y la solución de ecuaciones diferenciales con condiciones iniciales, paso a paso y con los polos en el plano s.</p>
+<p class="lead">Calcula la transformada de una función con la tabla y sus propiedades (también con escalones, deltas y funciones a trozos), la inversa por fracciones simples, convoluciones y la solución de ecuaciones diferenciales y sistemas con condiciones iniciales, paso a paso y con los polos en el plano s.</p>
 <div class="layout">
   <div class="card">
     <h2>Datos</h2>
@@ -105,7 +105,16 @@ footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8p
     <li class="m">Desplazamiento en s: $ℒ\{e^{at} f(t)\} = F(s − a)$</li>
     <li class="m">Multiplicar por t: $ℒ\{t^{n} f(t)\} = (−1)^{n} {d^{n}F}/{ds^{n}}$</li>
     <li class="m">Derivadas: $ℒ\{y′\} = sY − y(0)$, &ensp; $ℒ\{y″\} = s^{2}Y − s y(0) − y′(0)$</li>
+    <li class="m">Productos de senos y cosenos: se pasan a sumas antes de transformar, $sen^{2} t = {1}/{2} − {1}/{2} cos (2 t)$, &ensp; $sen A cos B = {1}/{2} [sen(A + B) + sen(A − B)]$</li>
   </ul>
+  <h2>Escalón, delta y funciones a trozos</h2>
+  <p class="m">El escalón unitario $u(t − a)$ (o de Heaviside, $H(t − a)$) vale 0 antes de $t = a$ y 1 después. Sirve para encender y apagar señales, y una función a trozos se escribe con escalones: $f(t) = g_{1}(t) [u(t) − u(t − a)] + g_{2}(t) u(t − a)$.</p>
+  <ul>
+    <li class="m">Segundo teorema de traslación: $ℒ\{u(t − a) g(t)\} = e^{−as} ℒ\{g(t + a)\}$, y en particular $ℒ\{u(t − a) f(t − a)\} = e^{−as} F(s)$.</li>
+    <li class="m">Delta de Dirac: $ℒ\{δ(t − a)\} = e^{−as}$. Es un impulso en $t = a$ de área 1, y $g(t) δ(t − a) = g(a) δ(t − a)$.</li>
+    <li class="m">En la inversa, cada $e^{−as}$ retrasa su parte: $ℒ^{−1}\{e^{−as} F(s)\} = u(t − a) f(t − a)$, y una constante sola da una delta.</li>
+  </ul>
+  <p>Escribe las funciones a trozos como «t si 0 ≤ t &lt; 2; 4 − t si 2 ≤ t &lt; 4; 0 si t ≥ 4», con los trozos separados por punto y coma.</p>
   <h2>Inversa por fracciones simples</h2>
   <p>Si F(s) es un cociente de polinomios con el numerador de menor grado, se buscan las raíces del denominador (los polos) y se separa en fracciones que están en la tabla:</p>
   <ul>
@@ -119,6 +128,12 @@ footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8p
   <p>El del valor final solo vale si f(t) tiende a algo: todos los polos de s F(s) a la izquierda del eje imaginario.</p>
   <h2>Ecuaciones diferenciales</h2>
   <p class="m">Para $a y″ + b y′ + c y = g(t)$ con y(0) e y′(0) se transforman los dos lados, se despeja Y(s) y se hace la inversa. Las condiciones iniciales entran solas, sin calcular constantes al final. Por ejemplo, $y″ + y = sen t$ con todo en reposo da $Y(s) = 1/(s^{2} + 1)^{2}$, un polo doble en ±i, y la solución $y = {1}/{2} sen t − {1}/{2} t cos t$ crece sin límite: es la resonancia.</p>
+  <h2>Función de transferencia y convolución</h2>
+  <p class="m">Con condiciones iniciales nulas, $Y(s) = H(s) G(s)$ con $H(s) = 1/(a s^{2} + b s + c)$. La inversa $h(t)$ es la respuesta al impulso, y la de $H(s)/s$, la respuesta al escalón. El producto de transformadas corresponde a la convolución:</p>
+  <p class="f m">$(f * g)(t) = ∫_{0}^{t} f(τ) g(t − τ) dτ$, &ensp; $ℒ\{f * g\} = F(s) G(s)$</p>
+  <p class="m">Así que la respuesta a cualquier entrada es $y = h * g$: por ejemplo, $sen t * cos t = {1}/{2} t sen t$.</p>
+  <h2>Sistemas de ecuaciones</h2>
+  <p class="m">Para $x′ = a_{11} x + a_{12} y + f(t)$, $y′ = a_{21} x + a_{22} y + g(t)$ se transforman las dos ecuaciones y queda un sistema lineal en X(s) e Y(s), que se resuelve por Cramer con $Δ(s) = (s − a_{11})(s − a_{22}) − a_{12} a_{21}$. Las raíces de Δ son los autovalores de la matriz del sistema.</p>
   <p>Para resolverlas sin Laplace (coeficientes indeterminados) usa <a href="../edos/">Ecuaciones diferenciales</a>, y para los circuitos RC, RL y RLC, <a href="../../circuitos/transitorios/">Transitorios</a>.</p>
 </section>
 </div>

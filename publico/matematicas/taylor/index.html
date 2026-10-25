@@ -559,6 +559,8 @@ const Expresion = (() => {
     arcsen: 'arcsen', arcsin: 'arcsen', asin: 'arcsen', arccos: 'arccos', acos: 'arccos', arctg: 'arctg', arctan: 'arctg', atan: 'arctg',
     senh: 'senh', sinh: 'senh', sh: 'senh', cosh: 'cosh', ch: 'cosh', tgh: 'tgh', tanh: 'tgh', th: 'tgh',
     ln: 'ln', log: 'log', exp: 'exp', sqrt: 'sqrt', raiz: 'sqrt', 'raíz': 'sqrt', cbrt: 'cbrt', abs: 'abs',
+    // escalón de Heaviside y delta de Dirac (los usa Laplace)
+    escalon: 'u', 'escalón': 'u', heaviside: 'u', delta: 'δ', dirac: 'δ',
   };
   const PALABRAS = [...Object.keys(FUN), 'pi'].sort((a, b) => b.length - a.length);
 
@@ -658,6 +660,7 @@ const Expresion = (() => {
     sen: Math.sin, cos: Math.cos, tg: Math.tan, sec: (u) => 1 / Math.cos(u), cosec: (u) => 1 / Math.sin(u), cotg: (u) => 1 / Math.tan(u),
     arcsen: Math.asin, arccos: Math.acos, arctg: Math.atan, senh: Math.sinh, cosh: Math.cosh, tgh: Math.tanh,
     ln: (u) => (u > 0 ? Math.log(u) : NaN), log: (u) => (u > 0 ? Math.log10(u) : NaN), sqrt: (u) => (u >= 0 ? Math.sqrt(u) : NaN), cbrt: Math.cbrt, abs: Math.abs,
+    u: (u) => (u >= 0 ? 1 : 0), 'δ': () => 0,
   };
   const CTE = { 'π': Math.PI, e: Math.E };
   // env: valores de las otras variables, { y: 2 }
