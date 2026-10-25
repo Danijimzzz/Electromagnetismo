@@ -195,9 +195,11 @@ th { color: var(--muted); font-weight: 500 }
 @media (max-width: 700px) { .conv { grid-template-columns: repeat(2, minmax(0, 1fr)) } }
 .conv label { font-size: 12.5px; color: var(--muted); display: flex; flex-direction: column; gap: 4px }
 .ajustada { font: 20px var(--f-math); margin: 4px 0 12px; overflow-wrap: anywhere }
-.cantidad { display: flex; gap: 6px; justify-content: flex-end } .cantidad .q { width: 110px } .cantidad .u { width: auto }
+.cantidad { display: flex; gap: 6px; justify-content: flex-end; flex-wrap: wrap } .cantidad .q { width: 100px } .cantidad .u { width: auto } .cantidad .x { width: 80px }
+.gases .in { width: 70px } .estado { font-family: var(--f-ui); font-size: .7em; color: var(--muted); margin-left: 1px }
 .flecha { font-family: var(--f-ui); font-size: .9em; padding: 0 .15em }
 .lim { color: var(--accent); font-weight: 600 }
+#pasos .tabla th:first-child, #pasos .tabla td:first-child { text-align: left }
 </style>
 <body>
 <header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><nav aria-label="Asignaturas"><a href="../../">Inicio</a><a href="../../electromagnetismo/">Electromagnetismo</a><a href="../../fisica/">Física general</a><a href="../../quimica/" aria-current="page">Química</a><a href="../../matematicas/">Matemáticas</a><a href="../../estadistica/">Estadística</a><a href="../../circuitos/">Circuitos</a><a href="../../economia/">Economía</a></nav><a class="foro" href="../../foro/"><span aria-hidden="true">💬</span>Foro</a><form action="../../" role="search"><input class="buscar" type="search" name="q" placeholder="Buscar: Biot-Savart, molaridad…" aria-label="Buscar herramientas"></form><button class="tema" type="button" title="Cambiar de modo claro u oscuro" aria-label="Cambiar de modo claro u oscuro"><svg class="luna" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11z"/></svg><svg class="sol" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button></header>
@@ -205,14 +207,14 @@ th { color: var(--muted); font-weight: 500 }
 <nav class="miga" aria-label="Estás en"><span class="miga-izq"></span><span class="miga-ico" aria-hidden="true">Q</span><a href="../">Química</a><span aria-hidden="true">›</span><span>Masa molar y estequiometría</span><span class="miga-der"></span></nav>
 <h1>Masa molar y estequiometría</h1>
 <p class="lead">Escribe una fórmula para ver su masa molar y su composición, o una reacción para ajustarla y calcular el reactivo limitante, lo que se forma y lo que sobra.</p>
-<div class="modos" role="tablist"><button role="tab" id="tab-masa" aria-selected="true">Masa molar</button><button role="tab" id="tab-este" aria-selected="false">Estequiometría</button></div>
+<div class="modos" role="tablist"><button role="tab" id="tab-masa" aria-selected="true">Masa molar</button><button role="tab" id="tab-este" aria-selected="false">Estequiometría</button><button role="tab" id="tab-emp" aria-selected="false">Fórmula empírica</button></div>
 <label class="nota" style="display:inline-flex;gap:6px;align-items:center;margin:0 0 12px 12px">Masas atómicas <select id="modo" class="in"><option value="iupac">IUPAC (H 1,008; O 15,999)</option><option value="redondeadas">De clase (H 1; O 16; Cl 35,5)</option></select></label>
 
 <section id="masa">
   <div class="card">
     <h2>Fórmula</h2>
     <div class="fila"><input id="formula" class="in ancho" value="CuSO4·5H2O" placeholder="H2SO4, Ca(OH)2, CuSO4·5H2O…" aria-label="Fórmula" autocomplete="off" spellcheck="false"></div>
-    <p class="nota">Paréntesis y corchetes, hidratos con · (o * o .) y cargas con ^: SO4^2-, Fe^3+. Las mayúsculas importan: Co es cobalto y CO, monóxido de carbono.</p>
+    <p class="nota">Paréntesis y corchetes, hidratos con · (o * o .), estados como (aq) o (g) y cargas con o sin ^: SO4^2-, SO42-, Fe3+, NO3-. Las mayúsculas importan: Co es cobalto y CO, monóxido de carbono.</p>
     <p class="error" id="error-masa" hidden></p>
     <div id="res-masa"></div>
   </div>
@@ -222,9 +224,10 @@ th { color: var(--muted); font-weight: 500 }
       <label>Masa (g)<input id="cv-g" class="in" inputmode="decimal"></label>
       <label>Cantidad (mol)<input id="cv-mol" class="in" inputmode="decimal"></label>
       <label>Partículas<input id="cv-n" class="in" inputmode="decimal"></label>
-      <label>Volumen de gas en CN (L)<input id="cv-L" class="in" inputmode="decimal"></label>
+      <label>Volumen de gas (L)<input id="cv-L" class="in" inputmode="decimal"></label>
     </div>
-    <p class="nota">N<sub>A</sub> = 6,022·10<sup>23</sup> mol<sup>−1</sup>. Volumen molar de un gas ideal en condiciones normales (0 °C, 1 atm): 22,4 L/mol.</p>
+    <div class="fila gases"><span class="nota">Gas a</span><input class="in gT" inputmode="decimal" aria-label="Temperatura del gas en °C"> <span class="nota">°C y</span> <input class="in gP" inputmode="decimal" aria-label="Presión del gas en atm"> <span class="nota">atm</span></div>
+    <p class="nota">N<sub>A</sub> = 6,022·10<sup>23</sup> mol<sup>−1</sup>. En condiciones normales (0 °C y 1 atm) el volumen molar es 22,4 L/mol; en otras, V<sub>m</sub> = RT/P con R = 0,082 atm·L/(mol·K).</p>
   </div>
 </section>
 
@@ -233,13 +236,31 @@ th { color: var(--muted); font-weight: 500 }
     <h2>Reacción</h2>
     <div class="fila"><select id="ejemplos" class="in" aria-label="Ejemplos"></select></div>
     <div class="fila" style="margin-top:8px"><input id="ecuacion" class="in ancho" placeholder="C3H8 + O2 -> CO2 + H2O" aria-label="Reacción" autocomplete="off" spellcheck="false"></div>
-    <p class="nota">Separa las especies con « + » y los dos lados con -> o =. No hace falta poner coeficientes: se ajusta sola. Para iones: MnO4^- + Fe^2+ + H^+ -> …</p>
+    <p class="nota">Separa las especies con + y los dos lados con ->, = o ⇌. No hace falta poner coeficientes: se ajusta sola. Se admiten estados (g), (aq)…, iones como MnO4- o Fe^2+ y electrones (e-) para las semirreacciones.</p>
     <p class="error" id="error-este" hidden></p>
     <div id="ajustada" class="ajustada"></div>
     <div class="tabla-scroll"><table id="tabla-este"></table></div>
-    <div class="fila" style="margin-top:10px"><label class="nota" style="margin:0;display:inline-flex;gap:6px;align-items:center">Rendimiento <input id="rendimiento" class="in" style="width:80px" value="100" inputmode="decimal"> %</label></div>
+    <div class="fila" style="margin-top:10px"><label class="nota" style="margin:0;display:inline-flex;gap:6px;align-items:center">Rendimiento <input id="rendimiento" class="in" style="width:80px" value="100" inputmode="decimal"> %</label>
+      <span class="nota">o se han obtenido de verdad</span> <input id="real-masa" class="in" style="width:90px" inputmode="decimal" aria-label="Masa obtenida de verdad en gramos" placeholder="g"> <span class="nota">g de</span> <select id="real-i" class="in" aria-label="Producto obtenido"></select></div>
+    <div class="fila gases" style="margin-top:8px"><span class="nota">Los gases, a</span><input class="in gT" inputmode="decimal" aria-label="Temperatura de los gases en °C"> <span class="nota">°C y</span> <input class="in gP" inputmode="decimal" aria-label="Presión de los gases en atm"> <span class="nota">atm. Con (g) detrás de un producto se calcula también su volumen.</span></div>
+    <p class="nota">En cada reactivo: g (con su pureza en %, si no es puro), mol, L de gas o mL de una disolución (con su molaridad).</p>
+    <div class="resumen" id="resumen-este" style="margin-top:12px"></div>
   </div>
   <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+</section>
+
+<section id="emp" hidden>
+  <div class="card">
+    <h2>Datos</h2>
+    <div class="fila"><select id="emp-tipo" class="in" aria-label="Qué datos tienes"><option value="composicion">Composición centesimal (%)</option><option value="gramos">Gramos de cada elemento</option><option value="combustion">Análisis por combustión</option></select></div>
+    <div class="fila" id="emp-comp" style="margin-top:8px"><input id="emp-texto" class="in ancho" placeholder="C 40; H 6,7; O 53,3" aria-label="Composición: símbolo y cantidad de cada elemento" autocomplete="off" spellcheck="false"></div>
+    <div class="fila" id="emp-comb" style="margin-top:8px" hidden><label class="nota" style="margin:0">Muestra <input id="emp-m" class="in" style="width:90px" inputmode="decimal"> g</label> <label class="nota" style="margin:0">CO<sub>2</sub> <input id="emp-co2" class="in" style="width:90px" inputmode="decimal"> g</label> <label class="nota" style="margin:0">H<sub>2</sub>O <input id="emp-h2o" class="in" style="width:90px" inputmode="decimal"> g</label></div>
+    <div class="fila" style="margin-top:8px"><label class="nota" style="margin:0">Masa molar (para la fórmula molecular) <input id="emp-M" class="in" style="width:100px" inputmode="decimal" placeholder="opcional"> g/mol</label></div>
+    <p class="nota">Cada elemento con su símbolo y su porcentaje o sus gramos, separados por punto y coma. En la combustión, el C sale del CO<sub>2</sub>, el H del H<sub>2</sub>O y el O por diferencia.</p>
+    <p class="error" id="error-emp" hidden></p>
+    <div class="resumen" id="resumen-emp" style="margin-top:12px"></div>
+  </div>
+  <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos-emp"></ol></div>
 </section>
 
 <section class="teoria">
@@ -253,6 +274,14 @@ th { color: var(--muted); font-weight: 500 }
     <li>Divide los moles de cada reactivo entre su coeficiente. El menor cociente marca el <b>reactivo limitante</b>: se gasta entero y decide cuánto producto se forma.</li>
     <li>Los moles de producto salen de la proporción de coeficientes con el limitante. Si el rendimiento no es del 100 %, se multiplica por él.</li>
     <li>Del resto de reactivos <b>sobra</b> lo que no reacciona: el reactivo en exceso.</li>
+  </ul>
+  <p>Si un reactivo no es puro, solo cuenta su riqueza: de 10 g al 90 % reaccionan 9 g. Si está en disolución, n = M · V. Un gas que no está en condiciones normales ocupa V = nRT/P, con R = 0,082 atm·L/(mol·K). Si se sabe cuánto producto se ha obtenido de verdad, el rendimiento es la masa real entre la teórica, por 100.</p>
+  <h2>Fórmula empírica y molecular</h2>
+  <ul>
+    <li>Pasa la composición a gramos (con 100 g de compuesto, cada % son gramos) y los gramos a moles de cada elemento.</li>
+    <li>Divide todos entre el menor. Si alguno no sale entero (1,5; 1,33; 1,25…), multiplica todos por 2, 3 o 4.</li>
+    <li>Esos números son los subíndices de la <b>fórmula empírica</b>. La <b>molecular</b> es un múltiplo suyo: n = M / M<sub>empírica</sub>.</li>
+    <li>En un análisis por combustión todo el carbono acaba en CO<sub>2</sub> y todo el hidrógeno en H<sub>2</sub>O; el oxígeno es lo que falta hasta la masa de la muestra.</li>
   </ul>
 </section>
 </div>
@@ -350,6 +379,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: un bloque baja por una rampa con rozamiento, recorre un tramo horizontal y comprime un muelle. Animación con barras de energía cinética, gravitatoria, elástica y calor, gráfica de las energías en el tiempo y el desarrollo paso a paso con la velocidad al pie de la rampa, al llegar al muelle y la compresión máxima.', 'Seis ejemplos: sin rozamiento, se para antes del muelle, el rozamiento lo sujeta, con empujón inicial y muelle duro.'] },
     ],
     'masa-molar': [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Nueva pestaña «Fórmula empírica»: de la composición centesimal, de los gramos de cada elemento o de un análisis por combustión a la fórmula empírica y, con la masa molar, a la molecular, paso a paso.', 'Reactivos impuros (con su pureza) y en disolución (con su molaridad y su volumen) en la estequiometría.', 'Gases a cualquier temperatura y presión con PV = nRT, y el volumen de los productos que lleven (g).', 'Rendimiento al revés: escribe la masa obtenida de verdad y calcula el rendimiento.', 'Acepta los estados (s), (l), (g) y (aq), las cargas sin ^ (Fe3+, NO3-, SO42-), el + sin espacios, la doble flecha ⇌ y los electrones de las semirreacciones.', 'Tabla de moles al principio, lo que cambia y al final, y un resumen con el limitante, lo que se forma y lo que sobra.', 'Modo práctica también para la estequiometría y la fórmula empírica.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: masa molar y composición centesimal de cualquier fórmula, con paréntesis, hidratos e iones, y conversor entre gramos, moles, partículas y litros de gas.', 'Estequiometría: ajusta la reacción sola (también las iónicas), calcula el reactivo limitante, lo que se forma con el rendimiento que digas y lo que sobra, paso a paso.', 'Masas atómicas de la IUPAC o redondeadas como en clase.'] },
     ],
     'configuracion-electronica': [
@@ -780,6 +810,10 @@ const Formulas = (() => {
   const SUB = { '₀': '0', '₁': '1', '₂': '2', '₃': '3', '₄': '4', '₅': '5', '₆': '6', '₇': '7', '₈': '8', '₉': '9' };
   const SUP = { '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9', '⁺': '+', '⁻': '-' };
   const NA = 6.02214076e23, VM = 22.4; // L/mol en condiciones normales (0 °C, 1 atm)
+  const R = 0.082; // atm·L/(mol·K), el de clase
+  // volumen molar de un gas ideal: 22,4 L/mol en condiciones normales y RT/P en las demás
+  const vm = (T = 273.15, P = 1) => (Math.abs(T - 273.15) < 1e-9 && Math.abs(P - 1) < 1e-12 ? VM : (R * T) / P);
+  const ME = 5.48579909e-4; // masa molar del electrón (g/mol), para las semirreacciones
 
   // masas «de clase»: enteras salvo las que se suelen dar con medio
   const MEDIAS = { Cl: 35.5, Cu: 63.5 };
@@ -790,15 +824,36 @@ const Formulas = (() => {
   };
 
   /* ---------- Lectura de una fórmula ---------- */
-  // Devuelve { atomos: {símbolo: n}, carga, html }. Admite H2O, Ca(OH)2, K4[Fe(CN)6],
-  // CuSO4·5H2O (también con * o .), SO4^2-, Fe^3+, subíndices y superíndices Unicode.
+  // Devuelve { atomos: {símbolo: n}, carga, estado, html }. Es el lector de fórmulas de todas las
+  // herramientas de química. Admite H2O, Ca(OH)2, K4[Fe(CN)6], CuSO4·5H2O (también con * o .),
+  // estados (s), (l), (g), (aq), cargas con ^ (SO4^2-, Fe^3+), sin ^ (Fe3+, NO3-, SO42-, SO4 2-),
+  // subíndices y superíndices Unicode y el electrón e^- de las semirreacciones.
+  const ESTADOS = { s: 's', l: 'l', g: 'g', aq: 'aq', ac: 'aq', dis: 'aq' };
   function leer(texto) {
-    let t = String(texto).trim().replace(/[₀-₉]/g, (c) => SUB[c]).replace(/[⁰-⁹⁺⁻]/g, (c) => SUP[c]).replace(/\s+/g, '');
+    let t = String(texto).trim().replace(/[₀-₉]/g, (c) => SUB[c]).replace(/[⁰¹²³⁴-⁹⁺⁻]/g, (c) => SUP[c]).replace(/[−–]/g, '-');
     if (!t) throw new Error('Escribe una fórmula');
-    // carga al final: ^2-, ^+, ^3+, ^-2, o superíndice ya convertido a ^…
+    let estado = null;
+    const me = t.match(/\s*\((s|l|g|aq|ac|dis)\)$/i);
+    if (me) { estado = ESTADOS[me[1].toLowerCase()]; t = t.slice(0, me.index).trim(); }
+    // carga al final: ^2-, ^+, ^3+, ^-2; separada por un espacio (SO4 2-); o pegada (Fe3+, NO3-, SO42-)
     let carga = 0;
-    const mc = t.match(/\^(\d*)([+-])(\d*)$/) || t.match(/\^\(?(\d*)([+-])(\d*)\)?$/);
+    const mc = t.match(/\^\(?(\d*)([+-])(\d*)\)?$/) || t.match(/\s+(\d*)([+-])$/);
     if (mc) { carga = (mc[2] === '+' ? 1 : -1) * (+(mc[1] || mc[3] || 1)); t = t.slice(0, mc.index); }
+    else {
+      const mp = t.match(/(\d*)([+-])$/);
+      if (mp) {
+        const cuerpo = t.slice(0, mp.index), dig = mp[1];
+        // una sola cifra pegada a un ion de varios elementos es su subíndice (NO3-, NH4+); con dos cifras
+        // la última es la carga (SO42-, PO43-); en un ion de un solo elemento, la carga (Fe3+, O2-)
+        const unAtomo = /^[A-Z][a-z]?$/.test(cuerpo);
+        let q = '';
+        if (dig.length >= 2) q = dig.slice(-1); else if (dig && unAtomo) q = dig;
+        carga = (mp[2] === '+' ? 1 : -1) * (+(q || 1));
+        t = cuerpo + dig.slice(0, dig.length - q.length);
+      }
+    }
+    t = t.replace(/\s+/g, '');
+    if (t === 'e') return { atomos: {}, carga: carga || -1, estado, electron: true, html: 'e<sup>−</sup>' };
     const partes = t.split(/[·*•.]/);
     const atomos = {};
     const suma = (a, b, f) => { for (const [k, v] of Object.entries(b)) a[k] = (a[k] || 0) + v * f; };
@@ -834,7 +889,7 @@ const Formulas = (() => {
       if (!Object.keys(at).length) throw new Error(`«${texto}» no tiene ningún elemento`);
       suma(atomos, at, coef);
     }
-    return { atomos, carga, html: html(t, carga) };
+    return { atomos, carga, estado, html: html(t, carga) + (estado ? `<small class="estado">(${estado})</small>` : '') };
   }
   // H2O → H<sub>2</sub>O, CuSO4·5H2O conserva el coeficiente del hidrato
   function html(t, carga) {
@@ -846,6 +901,7 @@ const Formulas = (() => {
   /* ---------- Masa molar ---------- */
   function masaMolar(texto, modo = 'iupac') {
     const f = leer(texto);
+    if (f.electron) return { ...f, M: ME, filas: [] };
     let M = 0;
     const filas = Object.entries(f.atomos).map(([s, n]) => { const a = masaDe(s, modo); M += n * a; return { simbolo: s, nombre: Elementos.porSimbolo[s].nombre, n, masa: a, aporte: n * a }; });
     filas.forEach((r) => (r.porcentaje = (100 * r.aporte) / M));
@@ -859,12 +915,13 @@ const Formulas = (() => {
   const mul = (a, b) => fr(a[0] * b[0], a[1] * b[1]), sub = (a, b) => fr(a[0] * b[1] - b[0] * a[1], a[1] * b[1]), div = (a, b) => fr(a[0] * b[1], a[1] * b[0]);
 
   function separar(texto) {
-    const t = String(texto).replace(/⟶|⇒|→|=>|-+>|=/g, '→');
+    const t = String(texto).replace(/<-+>|<=+>|⇌|⇄|↔|⟷|⟶|⇒|→|=>|-+>|=/g, '→');
     const lados = t.split('→');
     if (lados.length !== 2) throw new Error('Escribe la reacción con una flecha: reactivos -> productos');
     // las especies se separan con « + » (con espacios); un + pegado es una carga
-    const especies = (lado) => lado.split(/\s\+\s|\s\+(?=\s*[A-Z(\[\d])/).map((s) => s.trim()).filter(Boolean)
-      .map((s) => s.replace(/^\d+\s*(?=[A-Z(\[])/, '').replace(/^\d+\s+/, '')); // quita los coeficientes que ponga el usuario
+    // un + pegado también separa si va detrás de una fórmula o de una carga y delante de otra fórmula (CH4+O2, Na++Cl-)
+    const especies = (lado) => lado.split(/\s\+\s|\s\+(?=\s*[A-Z(\[\d])|(?<=[A-Za-z0-9)\]]|(?<!\^)[+-])(?<!\^)\+(?=\s*(?:\d+\s*)?(?:[A-Z(\[]|e(?![a-z])))/).map((s) => s.trim()).filter(Boolean)
+      .map((s) => s.replace(/^\d+\s*(?=[A-Z(\[]|e(?![a-z]))/, '').replace(/^\d+\s+/, '')); // quita los coeficientes que ponga el usuario
     const R = especies(lados[0]), P = especies(lados[1]);
     if (!R.length || !P.length) throw new Error('Falta algún reactivo o producto');
     return { R, P };
@@ -912,41 +969,130 @@ const Formulas = (() => {
   }
 
   /* ---------- Estequiometría ---------- */
-  // cantidades: lista paralela a las especies con { valor, unidad: 'g' | 'mol' | 'L' } o null
-  function estequiometria(texto, cantidades, { modo = 'iupac', rendimiento = 100 } = {}) {
+  // cantidades: lista paralela a las especies con { valor, unidad, extra } o null. Unidades:
+  //   'g' (extra: pureza en %, opcional), 'mol', 'L' (gas a T y P) y 'disol' (valor en mL, extra: molaridad)
+  // opciones: modo de masas, rendimiento (%), T (K) y P (atm) de los gases, real: { i, masa } para sacar el rendimiento
+  const leeNum = (v) => +String(v ?? '').trim().replace(/\s/g, '').replace(',', '.').replace(/[·x×*]10\^?\(?([+\-−]?\d+)\)?/i, 'e$1').replace('−', '-');
+  const vacia = (v) => v === '' || v == null || String(v).trim() === '';
+  function estequiometria(texto, cantidades, { modo = 'iupac', rendimiento = 100, T = 273.15, P = 1, real = null } = {}) {
     const aj = ajustar(texto);
-    const E = aj.especies.map((s) => ({ ...s, M: masaMolar(s.texto, modo).M }));
-    const pasos = [];
-    const dadas = E.map((s, i) => ({ s, i, q: cantidades[i] })).filter((d) => d.s.reactivo && d.q && d.q.valor !== '' && d.q.valor != null);
+    const E = aj.especies.map((s) => ({ ...s, M: masaMolar(s.texto, modo).M, estado: leer(s.texto).estado }));
+    const pasos = [], Vm = vm(T, P), cn = Vm === VM;
+    const gas = cn ? 'gas en condiciones normales, 22,4 L/mol' : `gas ideal a ${num(T)} K y ${num(P)} atm: V<sub>m</sub> = RT/P = 0,082 · ${num(T)} / ${num(P)} = ${num(Vm)} L/mol`;
+    const dadas = E.map((s, i) => ({ s, i, q: cantidades[i] })).filter((d) => d.s.reactivo && d.q && !vacia(d.q.valor));
     if (!dadas.length) throw new Error('Escribe la cantidad de al menos un reactivo');
     for (const d of dadas) {
-      const v = +String(d.q.valor).replace(',', '.');
+      const v = leeNum(d.q.valor);
       if (!isFinite(v) || v <= 0) throw new Error(`La cantidad de ${d.s.texto} debe ser un número positivo`);
       d.v = v;
-      if (d.q.unidad === 'g') { d.n = v / d.s.M; pasos.push({ t: `Moles de ${d.s.html}`, html: `n = m / M = ${num(v)} g / ${num(d.s.M)} g/mol = <b>${num(d.n)} mol</b>` }); }
-      else if (d.q.unidad === 'L') { d.n = v / VM; pasos.push({ t: `Moles de ${d.s.html}`, html: `n = V / V<sub>m</sub> = ${num(v)} L / 22,4 L/mol = <b>${num(d.n)} mol</b> (gas en condiciones normales)` }); }
-      else d.n = v;
+      if (d.q.unidad === 'g') {
+        const p = vacia(d.q.extra) ? 100 : leeNum(d.q.extra);
+        if (!(p > 0 && p <= 100)) throw new Error(`La pureza de ${d.s.texto} tiene que estar entre 0 y 100 %`);
+        const mp = (v * p) / 100;
+        d.n = mp / d.s.M;
+        pasos.push({ t: `Moles de ${d.s.html}`, html: `${p < 100 ? `Solo el ${num(p)} % es ${d.s.html} puro: m = ${num(v)} · ${num(p)} / 100 = ${num(mp)} g. ` : ''}n = m / M = ${num(mp)} g / ${num(d.s.M)} g/mol = <b>${num(d.n)} mol</b>` });
+      } else if (d.q.unidad === 'L') { d.n = v / Vm; pasos.push({ t: `Moles de ${d.s.html}`, html: `n = V / V<sub>m</sub> = ${num(v)} L / ${num(Vm)} L/mol = <b>${num(d.n)} mol</b> (${gas})` }); }
+      else if (d.q.unidad === 'disol') {
+        const c = leeNum(d.q.extra);
+        if (!(c > 0)) throw new Error(`Escribe la molaridad de la disolución de ${d.s.texto}`);
+        d.n = (c * v) / 1000;
+        pasos.push({ t: `Moles de ${d.s.html}`, html: `En disolución: n = M · V = ${num(c)} mol/L · ${num(v / 1000)} L = <b>${num(d.n)} mol</b>` });
+      } else d.n = v;
     }
     // reactivo limitante: el menor n / coeficiente
     for (const d of dadas) d.r = d.n / d.s.coef;
     const lim = dadas.reduce((a, b) => (b.r < a.r ? b : a));
     if (dadas.length > 1) pasos.push({ t: 'Reactivo limitante', html: dadas.map((d) => `${d.s.html}: ${num(d.n)} / ${d.s.coef} = ${num(d.r)}`).join(' · ') + `. El menor es el de <b>${lim.s.html}</b>: es el reactivo limitante y se consume entero.` });
-    const avance = lim.r, ren = rendimiento / 100;
+    const avance = lim.r;
+    // rendimiento: el dado, o el que sale de la masa obtenida de verdad
+    let ren = rendimiento / 100, renReal = null;
+    if (real && real.i != null && !vacia(real.masa)) {
+      const o = E[real.i], mr = leeNum(real.masa);
+      if (!o || o.reactivo) throw new Error('El rendimiento se calcula con la masa obtenida de un producto');
+      if (!(mr > 0)) throw new Error('La masa obtenida tiene que ser un número positivo');
+      const teo = o.coef * avance * o.M;
+      ren = mr / teo; renReal = 100 * ren;
+      pasos.push({ t: 'Rendimiento', html: `Teóricamente se forman ${num(o.coef * avance)} mol · ${num(o.M)} g/mol = ${num(teo)} g de ${o.html}; se han obtenido ${num(mr)} g: rendimiento = 100 · ${num(mr)} / ${num(teo)} = <b>${num(renReal)} %</b>${renReal > 100 ? '. Sale más del 100 %: el producto estaba húmedo o impuro, o hay un dato mal' : ''}` });
+    }
     const res = E.map((s, i) => {
       const o = { ...s, i };
       if (s.reactivo) {
         o.gastado = s.coef * avance;
         const d = dadas.find((x) => x.i === i);
         if (d) { o.inicial = d.n; o.sobra = Math.max(0, d.n - o.gastado); }
-      } else { o.formado = s.coef * avance * ren; o.masa = o.formado * s.M; }
+      } else { o.formado = s.coef * avance * ren; o.masa = o.formado * s.M; if (s.estado === 'g') o.volumen = o.formado * Vm; }
       return o;
     });
     for (const o of res) {
-      if (!o.reactivo) pasos.push({ t: `${o.html} que se forma`, html: `n = ${num(lim.n)} mol de ${lim.s.html} · ${o.coef} / ${lim.s.coef}${ren !== 1 ? ` · ${num(rendimiento)} %` : ''} = <b>${num(o.formado)} mol</b> ⇒ m = n · M = ${num(o.formado)} · ${num(o.M)} = <b>${num(o.masa)} g</b>` });
+      if (o.electron) continue;
+      if (!o.reactivo) pasos.push({ t: `${o.html} que se forma`, html: `n = ${num(lim.n)} mol de ${lim.s.html} · ${o.coef} / ${lim.s.coef}${ren !== 1 ? ` · ${num(100 * ren)} %` : ''} = <b>${num(o.formado)} mol</b> ⇒ m = n · M = ${num(o.formado)} · ${num(o.M)} = <b>${num(o.masa)} g</b>${o.volumen ? ` y, como es un gas, V = n · V<sub>m</sub> = ${num(o.formado)} · ${num(Vm)} = <b>${num(o.volumen)} L</b>` : ''}` });
       else if (o.inicial !== undefined && o !== res[lim.i] && o.sobra > 0) pasos.push({ t: `${o.html} que sobra`, html: `Reaccionan ${num(lim.n)} · ${o.coef} / ${lim.s.coef} = ${num(o.gastado)} mol de los ${num(o.inicial)} mol: sobran <b>${num(o.sobra)} mol = ${num(o.sobra * o.M)} g</b>.` });
       else if (o.inicial === undefined && o.reactivo) pasos.push({ t: `${o.html} necesario`, html: `n = ${num(lim.n)} · ${o.coef} / ${lim.s.coef} = <b>${num(o.gastado)} mol = ${num(o.gastado * o.M)} g</b>` });
     }
-    return { ajuste: aj, especies: res, limitante: lim.i, varios: dadas.length > 1, pasos };
+    // tabla de moles al principio, lo que cambia y al final
+    const filaT = (o) => {
+      const ini = o.reactivo ? o.inicial : 0, cam = o.reactivo ? -o.gastado : o.formado;
+      return `<tr><td>${o.html}</td><td>${ini === undefined ? '—' : num(ini)}</td><td>${num(cam)}</td><td>${ini === undefined ? '—' : num(Math.max(0, ini + cam))}</td></tr>`;
+    };
+    pasos.push({ t: 'Moles al principio, lo que cambia y al final', html: `<div class="tabla-scroll"><table class="tabla"><thead><tr><th>Especie</th><th>Inicial (mol)</th><th>Cambio (mol)</th><th>Final (mol)</th></tr></thead><tbody>${res.filter((o) => !o.electron).map(filaT).join('')}</tbody></table></div>` });
+    return { ajuste: aj, especies: res, limitante: lim.i, varios: dadas.length > 1, rendimiento: 100 * ren, renReal, Vm, pasos };
+  }
+
+  /* ---------- Fórmula empírica y molecular ---------- */
+  // sc: { tipo: 'composicion' | 'combustion', composicion: 'C 40; H 6,7; O 53,3' (% o g), muestra, co2, h2o (g), M (g/mol, opcional), modo }
+  function empirica(sc) {
+    const modo = sc.modo || 'iupac', pasos = [], A = (e) => masaDe(e, modo);
+    let gramos; // gramos de cada elemento en la muestra (o en 100 g)
+    if (sc.tipo === 'combustion') {
+      const m = leeNum(sc.muestra), co2 = leeNum(sc.co2), h2o = leeNum(sc.h2o);
+      if (!(m > 0)) throw new Error('Escribe la masa de la muestra que se quema');
+      if (!(co2 >= 0) || !(h2o >= 0) || co2 + h2o === 0) throw new Error('Escribe los gramos de CO2 y de H2O que se recogen');
+      const Mco2 = A('C') + 2 * A('O'), Mh2o = 2 * A('H') + A('O');
+      const gC = (co2 * A('C')) / Mco2, gH = (h2o * 2 * A('H')) / Mh2o, gO = m - gC - gH;
+      if (gO < -0.005 * m) throw new Error(`El carbono y el hidrógeno (${num(gC + gH)} g) pesan más que la muestra (${num(m)} g): revisa los datos`);
+      gramos = { C: gC, H: gH };
+      if (gO > 0.005 * m) gramos.O = gO;
+      pasos.push({ t: 'Carbono e hidrógeno de la combustión', html: `Todo el C acaba en el CO<sub>2</sub> y todo el H en el H<sub>2</sub>O: m(C) = ${num(co2)} · ${num(A('C'))} / ${num(Mco2)} = <b>${num(gC)} g</b>, &nbsp; m(H) = ${num(h2o)} · 2 · ${num(A('H'))} / ${num(Mh2o)} = <b>${num(gH)} g</b>` });
+      pasos.push({ t: 'Oxígeno por diferencia', html: gramos.O ? `m(O) = ${num(m)} − ${num(gC)} − ${num(gH)} = <b>${num(gO)} g</b>` : `${num(m)} − ${num(gC)} − ${num(gH)} ≈ 0: el compuesto no tiene oxígeno.` });
+    } else {
+      gramos = {};
+      const re = /([A-Z][a-z]?)\s*[:=]?\s*(\d+(?:[.,]\d+)?)/g;
+      let mt;
+      while ((mt = re.exec(String(sc.composicion || '')))) {
+        if (!Elementos.porSimbolo[mt[1]]) throw new Error(`«${mt[1]}» no es el símbolo de ningún elemento`);
+        gramos[mt[1]] = (gramos[mt[1]] || 0) + +mt[2].replace(',', '.');
+      }
+      const k = Object.keys(gramos);
+      if (k.length < 2) throw new Error('Escribe al menos dos elementos con su porcentaje o sus gramos: C 40; H 6,7; O 53,3');
+      const suma = k.reduce((t, e) => t + gramos[e], 0);
+      pasos.push({ t: 'Base de cálculo', html: sc.unidad === 'g' ? `Se parte de los gramos de cada elemento (${num(suma)} g en total).` : `Con 100 g de compuesto, cada porcentaje son gramos.${Math.abs(suma - 100) > 0.5 ? ` Los porcentajes suman ${num(suma)} %, no 100: revisa si falta algún elemento.` : ''}` });
+    }
+    const els = Object.keys(gramos), n = Object.fromEntries(els.map((e) => [e, gramos[e] / A(e)]));
+    pasos.push({ t: 'Moles de cada elemento', html: els.map((e) => `n(${e}) = ${num(gramos[e])} / ${num(A(e))} = ${num(n[e])} mol`).join(' &nbsp; ') });
+    const min = Math.min(...els.map((e) => n[e])), rel = Object.fromEntries(els.map((e) => [e, n[e] / min]));
+    pasos.push({ t: 'Se divide entre el menor', html: els.map((e) => `${e}: ${num(n[e])} / ${num(min)} = ${num(rel[e], 3)}`).join(' &nbsp; ') });
+    // el menor factor que deja todo en enteros (1,5 → ×2; 1,33 → ×3…)
+    let fac = 1;
+    for (let k = 1; k <= 8; k++) if (els.every((e) => Math.abs(rel[e] * k - Math.round(rel[e] * k)) < 0.1 * k ** 0.5 / 1.2)) { fac = k; break; } else if (k === 8) fac = 0;
+    if (!fac) throw new Error('Las proporciones no dan números enteros pequeños: revisa los datos (redondea con más cifras)');
+    const sub = Object.fromEntries(els.map((e) => [e, Math.round(rel[e] * fac)]));
+    if (fac > 1) pasos.push({ t: 'Números enteros', html: `No todos salen enteros: multiplicando por ${fac}, ${els.map((e) => `${e} ${num(rel[e] * fac, 3)} ≈ ${sub[e]}`).join(', ')}.` });
+    // orgánicos en el orden de Hill (C, H y luego alfabético); inorgánicos de menos a más electronegativo (K2Cr2O7, Fe2O3)
+    const en = (e) => Elementos.porSimbolo[e].en ?? 4;
+    const orden = els.includes('C') ? ['C', 'H', ...els.filter((e) => e !== 'C' && e !== 'H').sort()].filter((e) => els.includes(e)) : [...els].sort((x, y) => en(x) - en(y));
+    const formula = (k) => orden.map((e) => e + (sub[e] * k > 1 ? sub[e] * k : '')).join('');
+    const emp = formula(1), Memp = masaMolar(emp, modo).M;
+    pasos.push({ t: 'Fórmula empírica', html: `<b class="formula">${html(emp, 0)}</b>, con M = ${num(Memp)} g/mol` });
+    let mol = null, k = null;
+    if (!vacia(sc.M)) {
+      const M = leeNum(sc.M);
+      if (!(M > 0)) throw new Error('La masa molar tiene que ser un número positivo');
+      k = Math.round(M / Memp);
+      if (k < 1 || Math.abs(M / Memp - k) > 0.08 * k) throw new Error(`La masa molar (${num(M)} g/mol) no es un múltiplo de la de la fórmula empírica (${num(Memp)} g/mol)`);
+      mol = formula(k);
+      pasos.push({ t: 'Fórmula molecular', html: `n = M / M<sub>empírica</sub> = ${num(M)} / ${num(Memp)} = ${num(M / Memp, 3)} ≈ ${k} ⇒ <b class="formula">${html(mol, 0)}</b>` });
+    }
+    return { gramos, moles: n, relacion: rel, factor: fac, subindices: sub, empirica: emp, Mempirica: Memp, molecular: mol, k, pasos, html: (f) => html(f, 0) };
   }
 
   // número con coma decimal y 4 cifras significativas (notación científica si es muy grande o pequeño)
@@ -970,7 +1116,7 @@ const Formulas = (() => {
     { clave: 'redox-ionica', nombre: 'Redox iónica: permanganato y hierro(II)', ecuacion: 'MnO4^- + Fe^2+ + H^+ -> Mn^2+ + Fe^3+ + H2O', cantidades: [{ valor: 0.02, unidad: 'mol' }, { valor: 0.05, unidad: 'mol' }, { valor: 1, unidad: 'mol' }] },
   ];
 
-  return { leer, masaMolar, ajustar, estequiometria, num, masaDe, ejemplos, NA, VM };
+  return { leer, masaMolar, ajustar, estequiometria, empirica, num, masaDe, ejemplos, NA, VM, R, vm };
 })();
 
 /* =====================================================================
@@ -995,7 +1141,8 @@ const Formulas = (() => {
     return t === '' ? NaN : +t;
   };
 
-  let st = { tab: 'masa', formula: 'CuSO4·5H2O', ecuacion: F.ejemplos[0].ecuacion, cantidades: F.ejemplos[0].cantidades, modo: 'iupac', rendimiento: '100', gramos: '' };
+  let st = { tab: 'masa', formula: 'CuSO4·5H2O', ecuacion: F.ejemplos[0].ecuacion, cantidades: F.ejemplos[0].cantidades, modo: 'iupac', rendimiento: '100', gramos: '', T: '0', P: '1', realMasa: '', realI: '',
+    emp: { tipo: 'composicion', texto: 'C 40; H 6,7; O 53,3', m: '', co2: '', h2o: '', M: '180' } };
   try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && typeof g === 'object') st = { ...st, ...g }; } catch (e) {}
   const guarda = () => { try { localStorage.setItem(CLAVE, JSON.stringify(st)); } catch (e) {} };
 
@@ -1004,13 +1151,19 @@ const Formulas = (() => {
     st.tab = t;
     $('#tab-masa').setAttribute('aria-selected', t === 'masa');
     $('#tab-este').setAttribute('aria-selected', t === 'este');
-    $('#masa').hidden = t !== 'masa'; $('#este').hidden = t !== 'este';
+    $('#tab-emp').setAttribute('aria-selected', t === 'emp');
+    $('#masa').hidden = t !== 'masa'; $('#este').hidden = t !== 'este'; $('#emp').hidden = t !== 'emp';
     guarda();
   }
+  $('#tab-emp').addEventListener('click', () => pestana('emp'));
+  // temperatura y presión de los gases, las mismas en el conversor y en la estequiometría
+  const gas = () => { const T = leeNum(st.T), P = leeNum(st.P); return { T: (isFinite(T) ? T : 0) + 273.15, P: P > 0 ? P : 1 }; };
+  document.querySelectorAll('.gT').forEach((x) => { x.value = st.T; x.addEventListener('input', () => { st.T = x.value; document.querySelectorAll('.gT').forEach((y) => y !== x && (y.value = x.value)); guarda(); convierte(null); este(false); }); });
+  document.querySelectorAll('.gP').forEach((x) => { x.value = st.P; x.addEventListener('input', () => { st.P = x.value; document.querySelectorAll('.gP').forEach((y) => y !== x && (y.value = x.value)); guarda(); convierte(null); este(false); }); });
   $('#tab-masa').addEventListener('click', () => pestana('masa'));
   $('#tab-este').addEventListener('click', () => pestana('este'));
   $('#modo').value = st.modo;
-  $('#modo').addEventListener('change', () => { st.modo = $('#modo').value; guarda(); masa(); este(); });
+  $('#modo').addEventListener('change', () => { st.modo = $('#modo').value; guarda(); masa(); este(); emp(); });
 
   /* ---------- Masa molar ---------- */
   let M = NaN;
@@ -1031,8 +1184,9 @@ const Formulas = (() => {
   $('#formula').addEventListener('input', () => { st.formula = $('#formula').value; guarda(); masa(); });
 
   // conversor: el último campo escrito manda
-  const CONV = { g: (n) => n * M, mol: (n) => n, n: (n) => n * F.NA, L: (n) => n * F.VM };
-  const A_MOL = { g: (v) => v / M, mol: (v) => v, n: (v) => v / F.NA, L: (v) => v / F.VM };
+  const Vm = () => F.vm(gas().T, gas().P);
+  const CONV = { g: (n) => n * M, mol: (n) => n, n: (n) => n * F.NA, L: (n) => n * Vm() };
+  const A_MOL = { g: (v) => v / M, mol: (v) => v, n: (v) => v / F.NA, L: (v) => v / Vm() };
   let ultimo = 'g';
   function convierte(desde) {
     if (desde) ultimo = desde;
@@ -1054,20 +1208,24 @@ const Formulas = (() => {
   function abrirEjemplo(clave) {
     const e = F.ejemplos.find((x) => x.clave === clave);
     if (!e) return;
-    st.ecuacion = e.ecuacion; st.cantidades = e.cantidades.map((c) => (c ? { ...c } : null)); st.rendimiento = '100';
-    $('#ecuacion').value = st.ecuacion; $('#rendimiento').value = '100'; sel.value = clave;
+    st.ecuacion = e.ecuacion; st.cantidades = e.cantidades.map((c) => (c ? { ...c } : null)); st.rendimiento = '100'; st.realMasa = ''; st.T = e.T ?? '0'; st.P = e.P ?? '1';
+    $('#ecuacion').value = st.ecuacion; $('#rendimiento').value = '100'; $('#real-masa').value = ''; sel.value = clave;
+    document.querySelectorAll('.gT').forEach((x) => (x.value = st.T)); document.querySelectorAll('.gP').forEach((x) => (x.value = st.P));
     pestana('este'); este(true); guarda(); // después de este(), que completa las cantidades de la ecuación
   }
   $('#ecuacion').value = st.ecuacion;
   $('#rendimiento').value = st.rendimiento;
   $('#ecuacion').addEventListener('input', () => { st.ecuacion = $('#ecuacion').value; sel.value = ''; guarda(); este(true); });
   $('#rendimiento').addEventListener('input', () => { st.rendimiento = $('#rendimiento').value; guarda(); este(false); });
+  $('#real-masa').value = st.realMasa;
+  $('#real-masa').addEventListener('input', () => { st.realMasa = $('#real-masa').value; guarda(); este(false); });
+  $('#real-i').addEventListener('change', () => { st.realI = $('#real-i').value; guarda(); este(false); });
 
   let forma = ''; // especies de la tabla dibujada, para no rehacer los campos mientras se escribe
   function este(rehacer) {
     const err = $('#error-este'), tabla = $('#tabla-este');
     let aj;
-    try { aj = F.ajustar(st.ecuacion); } catch (e) { err.textContent = e.message; err.hidden = false; $('#ajustada').innerHTML = ''; tabla.innerHTML = ''; $('#pasos').innerHTML = ''; forma = ''; return; }
+    try { aj = F.ajustar(st.ecuacion); } catch (e) { err.textContent = e.message; err.hidden = false; $('#ajustada').innerHTML = ''; tabla.innerHTML = ''; $('#pasos').innerHTML = ''; $('#resumen-este').innerHTML = ''; forma = ''; return; }
     err.hidden = true;
     $('#ajustada').innerHTML = aj.html;
     const clave = aj.especies.map((s) => s.texto).join('|');
@@ -1076,18 +1234,29 @@ const Formulas = (() => {
       st.cantidades = aj.especies.map((s, i) => (s.reactivo ? st.cantidades?.[i] || { valor: '', unidad: 'g' } : null));
       tabla.innerHTML = `<thead><tr><th>Especie</th><th>Coef.</th><th>M (g/mol)</th><th>Cantidad inicial</th><th>Reacciona / se forma</th><th>Masa</th><th>Sobra</th></tr></thead><tbody>${aj.especies.map((s, i) => `<tr data-i="${i}">
         <td class="formula">${s.html}</td><td>${s.coef}</td><td class="M"></td>
-        <td>${s.reactivo ? `<div class="cantidad"><input class="in q" inputmode="decimal" value="${esc(String(st.cantidades[i].valor ?? '').replace('.', ','))}" aria-label="Cantidad de ${esc(s.texto)}"><select class="in u" aria-label="Unidad"><option value="g">g</option><option value="mol">mol</option><option value="L">L (gas, CN)</option></select></div>` : '<span style="color:var(--muted)">producto</span>'}</td>
+        <td>${s.reactivo ? `<div class="cantidad"><input class="in q" inputmode="decimal" value="${esc(String(st.cantidades[i].valor ?? '').replace('.', ','))}" aria-label="Cantidad de ${esc(s.texto)}"><select class="in u" aria-label="Unidad"><option value="g">g</option><option value="mol">mol</option><option value="L">L de gas</option><option value="disol">mL de disolución</option></select><input class="in x" inputmode="decimal" aria-label="Pureza en % o molaridad de ${esc(s.texto)}"></div>` : '<span style="color:var(--muted)">producto</span>'}</td>
         <td class="n"></td><td class="m"></td><td class="s"></td></tr>`).join('')}</tbody>`;
       tabla.querySelectorAll('tr[data-i]').forEach((tr) => {
         const i = +tr.dataset.i, q = tr.querySelector('.q'), u = tr.querySelector('.u');
         if (!q) return;
+        const x = tr.querySelector('.x');
         u.value = st.cantidades[i].unidad || 'g';
-        const cambia = () => { st.cantidades[i] = { valor: q.value.replace(',', '.'), unidad: u.value }; guarda(); este(false); };
-        q.addEventListener('input', cambia); u.addEventListener('change', cambia);
+        x.value = String(st.cantidades[i].extra ?? '').replace('.', ',');
+        // el campo de al lado es la pureza (g) o la molaridad (disolución)
+        const extra = () => { x.hidden = !['g', 'disol'].includes(u.value); x.placeholder = u.value === 'disol' ? 'mol/L' : 'pureza %'; };
+        const cambia = () => { extra(); st.cantidades[i] = { valor: q.value.replace(',', '.'), unidad: u.value, extra: x.value.replace(',', '.') }; guarda(); este(false); };
+        extra();
+        q.addEventListener('input', cambia); u.addEventListener('change', cambia); x.addEventListener('input', cambia);
       });
     }
+    // productos para el rendimiento real
+    const ri = $('#real-i'), prods = aj.especies.map((s, i) => ({ s, i })).filter((x) => !x.s.reactivo && !x.s.atomos.e && Object.keys(x.s.atomos).length);
+    const opts = prods.map((x) => `<option value="${x.i}">${esc(x.s.texto)}</option>`).join('');
+    if (ri.innerHTML !== opts) ri.innerHTML = opts;
+    if (prods.some((x) => String(x.i) === String(st.realI))) ri.value = st.realI;
     let r = null;
-    try { r = F.estequiometria(st.ecuacion, st.cantidades, { modo: st.modo, rendimiento: leeNum(st.rendimiento) || 100 }); err.hidden = true; } catch (e) { err.textContent = e.message; err.hidden = false; }
+    try { r = F.estequiometria(st.ecuacion, st.cantidades, { modo: st.modo, rendimiento: leeNum(st.rendimiento) || 100, ...gas(), real: st.realMasa ? { i: +ri.value, masa: st.realMasa } : null }); err.hidden = true; } catch (e) { err.textContent = e.message; err.hidden = false; }
+    $('#rendimiento').disabled = !!(r && r.renReal != null);
     aj.especies.forEach((s, i) => {
       const tr = tabla.querySelector(`tr[data-i="${i}"]`), o = r?.especies[i];
       tr.querySelector('.M').innerHTML = num(F.masaMolar(s.texto, st.modo).M, 5);
@@ -1097,11 +1266,60 @@ const Formulas = (() => {
       tr.querySelector('.s').innerHTML = !o || !o.reactivo || o.sobra === undefined ? '' : o.sobra > 1e-12 ? `${num(o.sobra * o.M)} g` : '0';
     });
     $('#pasos').innerHTML = r ? r.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('') : '';
+    // resumen: el limitante, cada producto y lo que sobra
+    const res = r ? [
+      r.varios ? `<div><span>Reactivo limitante</span><b class="formula">${aj.especies[r.limitante].html}</b></div>` : '',
+      ...r.especies.filter((o) => !o.reactivo && !o.electron).map((o) => `<div><span>Masa de ${esc(o.texto)}</span><b>${num(o.masa)} g</b></div>${o.volumen ? `<div><span>Volumen de ${esc(o.texto)}</span><b>${num(o.volumen)} L</b></div>` : ''}`),
+      ...r.especies.filter((o) => o.reactivo && o.sobra > 1e-12).map((o) => `<div><span>Sobra de ${esc(o.texto)}</span><b>${num(o.sobra * o.M)} g</b></div>`),
+      r.renReal != null ? `<div><span>Rendimiento</span><b>${num(r.renReal)} %</b></div>` : '',
+    ].join('') : '';
+    $('#resumen-este').innerHTML = res;
+  }
+
+  /* ---------- Fórmula empírica ---------- */
+  const E = st.emp;
+  const campos = { 'emp-texto': 'texto', 'emp-m': 'm', 'emp-co2': 'co2', 'emp-h2o': 'h2o', 'emp-M': 'M' };
+  for (const [id, k] of Object.entries(campos)) { $('#' + id).value = E[k] ?? ''; $('#' + id).addEventListener('input', () => { E[k] = $('#' + id).value; guarda(); emp(); }); }
+  $('#emp-tipo').value = E.tipo;
+  $('#emp-tipo').addEventListener('change', () => { E.tipo = $('#emp-tipo').value; guarda(); emp(); });
+  function emp() {
+    $('#emp-comp').hidden = E.tipo === 'combustion'; $('#emp-comb').hidden = E.tipo !== 'combustion';
+    $('#emp-texto').placeholder = E.tipo === 'gramos' ? 'C 2,4; H 0,4; O 3,2' : 'C 40; H 6,7; O 53,3';
+    const err = $('#error-emp');
+    let r;
+    try { r = F.empirica({ tipo: E.tipo === 'combustion' ? 'combustion' : 'composicion', unidad: E.tipo === 'gramos' ? 'g' : '%', composicion: E.texto, muestra: E.m, co2: E.co2, h2o: E.h2o, M: E.M, modo: st.modo }); } catch (e) { err.textContent = e.message; err.hidden = false; $('#resumen-emp').innerHTML = ''; $('#pasos-emp').innerHTML = ''; return; }
+    err.hidden = true;
+    $('#resumen-emp').innerHTML = `<div><span>Fórmula empírica</span><b class="formula">${r.html(r.empirica)}</b></div><div><span>M empírica</span><b>${num(r.Mempirica)} g/mol</b></div>${r.molecular ? `<div><span>Fórmula molecular</span><b class="formula">${r.html(r.molecular)}</b></div>` : ''}`;
+    $('#pasos-emp').innerHTML = r.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('');
+  }
+
+  /* ---------- Modo práctica ---------- */
+  const toma = (xs) => xs[Math.floor(Math.random() * xs.length)], azarEn = (a, b) => a + Math.random() * (b - a);
+  const tres = (x) => +x.toPrecision(3);
+  const FORMULAS = ['H2O', 'CO2', 'NaCl', 'H2SO4', 'HNO3', 'NaOH', 'NH3', 'CaCO3', 'C6H12O6', 'C2H5OH', 'Ca(OH)2', 'Al2(SO4)3', 'KMnO4', 'Fe2O3', 'Mg3(PO4)2', 'CuSO4·5H2O', 'Na2CO3', 'K2Cr2O7', 'CH4', 'C3H8', 'HCl', 'Ba(NO3)2', 'NH4Cl', 'MgCl2·6H2O'];
+  const EMPIRICAS = [['C6H12O6', 1], ['C2H4O2', 1], ['C4H10', 1], ['C3H6O', 0], ['C6H6', 1], ['C2H6O', 0], ['C8H18', 1], ['Fe2O3', 0], ['K2Cr2O7', 0], ['Na2S2O3', 0], ['C4H8O2', 1]];
+  function azar() {
+    if (st.tab === 'masa') { const f = toma(FORMULAS); $('#formula').value = f; st.formula = f; guarda(); masa(); return; }
+    if (st.tab === 'emp') {
+      const [f, conM] = toma(EMPIRICAS), r = F.masaMolar(f, st.modo);
+      Object.assign(E, { tipo: 'composicion', texto: r.filas.map((x) => `${x.simbolo} ${String(+x.porcentaje.toFixed(2)).replace('.', ',')}`).join('; '), M: conM ? String(+r.M.toFixed(1)).replace('.', ',') : '' });
+      window.MasaApp.empirica({}); return;
+    }
+    const e = toma(F.ejemplos);
+    abrirEjemplo(e.clave);
+    st.cantidades = st.cantidades.map((c) => (c && c.valor !== '' ? { ...c, valor: String(tres(+c.valor * azarEn(0.6, 1.5))) } : c));
+    $('#tabla-este').innerHTML = ''; forma = ''; este(false); guarda();
+  }
+  function enunciado() {
+    if (st.tab === 'masa') return `Calcula la masa molar de <b>${esc(st.formula)}</b>.`;
+    if (st.tab === 'emp') return `Un compuesto tiene la composición <b>${esc(E.texto)}</b> (en % en masa)${E.M ? ` y una masa molar de ${esc(E.M)} g/mol` : ''}. Halla su fórmula empírica${E.M ? ' y su molecular' : ''} y la masa molar de la empírica (escribe la fórmula sin subíndices: CH2O).`;
+    const dadas = st.cantidades.map((c, i) => (c && c.valor !== '' ? `${String(c.valor).replace('.', ',')} ${c.unidad === 'disol' ? `mL de disolución ${String(c.extra).replace('.', ',')} M` : c.unidad === 'L' ? 'L' : c.unidad} de ${esc(F.ajustar(st.ecuacion).especies[i].texto)}` : null)).filter(Boolean);
+    return `En la reacción <b>${esc(st.ecuacion)}</b> se mezclan ${dadas.join(' y ')}. Calcula ${dadas.length > 1 ? 'cuál es el reactivo limitante, ' : ''}la masa de cada producto${dadas.length > 1 ? ' y cuánto sobra del reactivo en exceso' : ''}.`;
   }
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('masa-molar').current;
-  masa(); este(true); pestana(st.tab);
-  window.MasaApp = { pestana, abrirEjemplo, formula: (f) => { $('#formula').value = f; st.formula = f; masa(); }, M: () => M, ecuacion: (e) => { $('#ecuacion').value = e; st.ecuacion = e; este(true); } };
+  masa(); este(true); emp(); pestana(st.tab);
+  window.MasaApp = { pestana, abrirEjemplo, formula: (f) => { $('#formula').value = f; st.formula = f; masa(); }, M: () => M, ecuacion: (e) => { $('#ecuacion').value = e; st.ecuacion = e; este(true); }, empirica: (o) => { Object.assign(E, o); for (const [id, k] of Object.entries(campos)) $('#' + id).value = E[k] ?? ''; $('#emp-tipo').value = E.tipo; guarda(); emp(); }, estado: () => st, azar, enunciado };
 })();
 
 /* =====================================================================
@@ -1435,10 +1653,12 @@ const Practica = (() => {
       // el enunciado del ejemplo ya no vale con los datos nuevos
       despues: () => pon(document.querySelector('#enunciado'), 'Ejercicio de práctica: calcula el campo magnético en los puntos de las preguntas con las fuentes de la izquierda.'),
       antes: () => { const m = document.querySelector('#modo'); if (m && m.value !== 'si') { m.value = 'si'; m.dispatchEvent(new Event('change', { bubbles: true })); } } },
+    // masa-molar: según la pestaña, una masa molar, una estequiometría con su limitante o una fórmula empírica
     'masa-molar': {
-      items: '#res-masa .grande', quitar: '', tapa: '#res-masa, #conv-card', datos: null,
-      genera: () => pon(document.querySelector('#formula'), toma(['H2O', 'CO2', 'NaCl', 'H2SO4', 'HNO3', 'NaOH', 'NH3', 'CaCO3', 'C6H12O6', 'C2H5OH', 'Ca(OH)2', 'Al2(SO4)3', 'KMnO4', 'Fe2O3', 'Mg3(PO4)2', 'CuSO4·5H2O', 'Na2CO3', 'K2Cr2O7', 'CH4', 'C3H8', 'HCl', 'Ba(NO3)2', 'NH4Cl', 'MgCl2·6H2O'])),
-      enunciado: () => `Calcula la masa molar de <b>${esc(document.querySelector('#formula').value)}</b>.`,
+      items: '#res-masa .grande, #resumen-este > div, #resumen-emp > div', quitar: '', datos: null,
+      tapa: '#res-masa, #conv-card, #tabla-este td.n, #tabla-este td.m, #tabla-este td.s, #resumen-este, #este .pasos, #resumen-emp, #emp .pasos',
+      genera: () => window.MasaApp?.azar(), enunciado: () => window.MasaApp?.enunciado(),
+      get textos() { return document.querySelector('#tab-emp')?.getAttribute('aria-selected') === 'true' ? [{ et: 'Fórmula empírica', sel: '#resumen-emp .formula' }] : []; },
     },
     'configuracion-electronica': {
       items: null, tapa: '#res', datos: null,

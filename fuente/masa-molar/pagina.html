@@ -27,23 +27,25 @@ th { color: var(--muted); font-weight: 500 }
 @media (max-width: 700px) { .conv { grid-template-columns: repeat(2, minmax(0, 1fr)) } }
 .conv label { font-size: 12.5px; color: var(--muted); display: flex; flex-direction: column; gap: 4px }
 .ajustada { font: 20px var(--f-math); margin: 4px 0 12px; overflow-wrap: anywhere }
-.cantidad { display: flex; gap: 6px; justify-content: flex-end } .cantidad .q { width: 110px } .cantidad .u { width: auto }
+.cantidad { display: flex; gap: 6px; justify-content: flex-end; flex-wrap: wrap } .cantidad .q { width: 100px } .cantidad .u { width: auto } .cantidad .x { width: 80px }
+.gases .in { width: 70px } .estado { font-family: var(--f-ui); font-size: .7em; color: var(--muted); margin-left: 1px }
 .flecha { font-family: var(--f-ui); font-size: .9em; padding: 0 .15em }
 .lim { color: var(--accent); font-weight: 600 }
+#pasos .tabla th:first-child, #pasos .tabla td:first-child { text-align: left }
 </style>
 <body>
 <header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Química</a> / Masa molar y estequiometría</span></header>
 <div class="wrap">
 <h1>Masa molar y estequiometría</h1>
 <p class="lead">Escribe una fórmula para ver su masa molar y su composición, o una reacción para ajustarla y calcular el reactivo limitante, lo que se forma y lo que sobra.</p>
-<div class="modos" role="tablist"><button role="tab" id="tab-masa" aria-selected="true">Masa molar</button><button role="tab" id="tab-este" aria-selected="false">Estequiometría</button></div>
+<div class="modos" role="tablist"><button role="tab" id="tab-masa" aria-selected="true">Masa molar</button><button role="tab" id="tab-este" aria-selected="false">Estequiometría</button><button role="tab" id="tab-emp" aria-selected="false">Fórmula empírica</button></div>
 <label class="nota" style="display:inline-flex;gap:6px;align-items:center;margin:0 0 12px 12px">Masas atómicas <select id="modo" class="in"><option value="iupac">IUPAC (H 1,008; O 15,999)</option><option value="redondeadas">De clase (H 1; O 16; Cl 35,5)</option></select></label>
 
 <section id="masa">
   <div class="card">
     <h2>Fórmula</h2>
     <div class="fila"><input id="formula" class="in ancho" value="CuSO4·5H2O" placeholder="H2SO4, Ca(OH)2, CuSO4·5H2O…" aria-label="Fórmula" autocomplete="off" spellcheck="false"></div>
-    <p class="nota">Paréntesis y corchetes, hidratos con · (o * o .) y cargas con ^: SO4^2-, Fe^3+. Las mayúsculas importan: Co es cobalto y CO, monóxido de carbono.</p>
+    <p class="nota">Paréntesis y corchetes, hidratos con · (o * o .), estados como (aq) o (g) y cargas con o sin ^: SO4^2-, SO42-, Fe3+, NO3-. Las mayúsculas importan: Co es cobalto y CO, monóxido de carbono.</p>
     <p class="error" id="error-masa" hidden></p>
     <div id="res-masa"></div>
   </div>
@@ -53,9 +55,10 @@ th { color: var(--muted); font-weight: 500 }
       <label>Masa (g)<input id="cv-g" class="in" inputmode="decimal"></label>
       <label>Cantidad (mol)<input id="cv-mol" class="in" inputmode="decimal"></label>
       <label>Partículas<input id="cv-n" class="in" inputmode="decimal"></label>
-      <label>Volumen de gas en CN (L)<input id="cv-L" class="in" inputmode="decimal"></label>
+      <label>Volumen de gas (L)<input id="cv-L" class="in" inputmode="decimal"></label>
     </div>
-    <p class="nota">N<sub>A</sub> = 6,022·10<sup>23</sup> mol<sup>−1</sup>. Volumen molar de un gas ideal en condiciones normales (0 °C, 1 atm): 22,4 L/mol.</p>
+    <div class="fila gases"><span class="nota">Gas a</span><input class="in gT" inputmode="decimal" aria-label="Temperatura del gas en °C"> <span class="nota">°C y</span> <input class="in gP" inputmode="decimal" aria-label="Presión del gas en atm"> <span class="nota">atm</span></div>
+    <p class="nota">N<sub>A</sub> = 6,022·10<sup>23</sup> mol<sup>−1</sup>. En condiciones normales (0 °C y 1 atm) el volumen molar es 22,4 L/mol; en otras, V<sub>m</sub> = RT/P con R = 0,082 atm·L/(mol·K).</p>
   </div>
 </section>
 
@@ -64,13 +67,31 @@ th { color: var(--muted); font-weight: 500 }
     <h2>Reacción</h2>
     <div class="fila"><select id="ejemplos" class="in" aria-label="Ejemplos"></select></div>
     <div class="fila" style="margin-top:8px"><input id="ecuacion" class="in ancho" placeholder="C3H8 + O2 -> CO2 + H2O" aria-label="Reacción" autocomplete="off" spellcheck="false"></div>
-    <p class="nota">Separa las especies con « + » y los dos lados con -> o =. No hace falta poner coeficientes: se ajusta sola. Para iones: MnO4^- + Fe^2+ + H^+ -> …</p>
+    <p class="nota">Separa las especies con + y los dos lados con ->, = o ⇌. No hace falta poner coeficientes: se ajusta sola. Se admiten estados (g), (aq)…, iones como MnO4- o Fe^2+ y electrones (e-) para las semirreacciones.</p>
     <p class="error" id="error-este" hidden></p>
     <div id="ajustada" class="ajustada"></div>
     <div class="tabla-scroll"><table id="tabla-este"></table></div>
-    <div class="fila" style="margin-top:10px"><label class="nota" style="margin:0;display:inline-flex;gap:6px;align-items:center">Rendimiento <input id="rendimiento" class="in" style="width:80px" value="100" inputmode="decimal"> %</label></div>
+    <div class="fila" style="margin-top:10px"><label class="nota" style="margin:0;display:inline-flex;gap:6px;align-items:center">Rendimiento <input id="rendimiento" class="in" style="width:80px" value="100" inputmode="decimal"> %</label>
+      <span class="nota">o se han obtenido de verdad</span> <input id="real-masa" class="in" style="width:90px" inputmode="decimal" aria-label="Masa obtenida de verdad en gramos" placeholder="g"> <span class="nota">g de</span> <select id="real-i" class="in" aria-label="Producto obtenido"></select></div>
+    <div class="fila gases" style="margin-top:8px"><span class="nota">Los gases, a</span><input class="in gT" inputmode="decimal" aria-label="Temperatura de los gases en °C"> <span class="nota">°C y</span> <input class="in gP" inputmode="decimal" aria-label="Presión de los gases en atm"> <span class="nota">atm. Con (g) detrás de un producto se calcula también su volumen.</span></div>
+    <p class="nota">En cada reactivo: g (con su pureza en %, si no es puro), mol, L de gas o mL de una disolución (con su molaridad).</p>
+    <div class="resumen" id="resumen-este" style="margin-top:12px"></div>
   </div>
   <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+</section>
+
+<section id="emp" hidden>
+  <div class="card">
+    <h2>Datos</h2>
+    <div class="fila"><select id="emp-tipo" class="in" aria-label="Qué datos tienes"><option value="composicion">Composición centesimal (%)</option><option value="gramos">Gramos de cada elemento</option><option value="combustion">Análisis por combustión</option></select></div>
+    <div class="fila" id="emp-comp" style="margin-top:8px"><input id="emp-texto" class="in ancho" placeholder="C 40; H 6,7; O 53,3" aria-label="Composición: símbolo y cantidad de cada elemento" autocomplete="off" spellcheck="false"></div>
+    <div class="fila" id="emp-comb" style="margin-top:8px" hidden><label class="nota" style="margin:0">Muestra <input id="emp-m" class="in" style="width:90px" inputmode="decimal"> g</label> <label class="nota" style="margin:0">CO<sub>2</sub> <input id="emp-co2" class="in" style="width:90px" inputmode="decimal"> g</label> <label class="nota" style="margin:0">H<sub>2</sub>O <input id="emp-h2o" class="in" style="width:90px" inputmode="decimal"> g</label></div>
+    <div class="fila" style="margin-top:8px"><label class="nota" style="margin:0">Masa molar (para la fórmula molecular) <input id="emp-M" class="in" style="width:100px" inputmode="decimal" placeholder="opcional"> g/mol</label></div>
+    <p class="nota">Cada elemento con su símbolo y su porcentaje o sus gramos, separados por punto y coma. En la combustión, el C sale del CO<sub>2</sub>, el H del H<sub>2</sub>O y el O por diferencia.</p>
+    <p class="error" id="error-emp" hidden></p>
+    <div class="resumen" id="resumen-emp" style="margin-top:12px"></div>
+  </div>
+  <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos-emp"></ol></div>
 </section>
 
 <section class="teoria">
@@ -84,6 +105,14 @@ th { color: var(--muted); font-weight: 500 }
     <li>Divide los moles de cada reactivo entre su coeficiente. El menor cociente marca el <b>reactivo limitante</b>: se gasta entero y decide cuánto producto se forma.</li>
     <li>Los moles de producto salen de la proporción de coeficientes con el limitante. Si el rendimiento no es del 100 %, se multiplica por él.</li>
     <li>Del resto de reactivos <b>sobra</b> lo que no reacciona: el reactivo en exceso.</li>
+  </ul>
+  <p>Si un reactivo no es puro, solo cuenta su riqueza: de 10 g al 90 % reaccionan 9 g. Si está en disolución, n = M · V. Un gas que no está en condiciones normales ocupa V = nRT/P, con R = 0,082 atm·L/(mol·K). Si se sabe cuánto producto se ha obtenido de verdad, el rendimiento es la masa real entre la teórica, por 100.</p>
+  <h2>Fórmula empírica y molecular</h2>
+  <ul>
+    <li>Pasa la composición a gramos (con 100 g de compuesto, cada % son gramos) y los gramos a moles de cada elemento.</li>
+    <li>Divide todos entre el menor. Si alguno no sale entero (1,5; 1,33; 1,25…), multiplica todos por 2, 3 o 4.</li>
+    <li>Esos números son los subíndices de la <b>fórmula empírica</b>. La <b>molecular</b> es un múltiplo suyo: n = M / M<sub>empírica</sub>.</li>
+    <li>En un análisis por combustión todo el carbono acaba en CO<sub>2</sub> y todo el hidrógeno en H<sub>2</sub>O; el oxígeno es lo que falta hasta la masa de la muestra.</li>
   </ul>
 </section>
 </div>
