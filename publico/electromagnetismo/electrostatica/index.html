@@ -316,9 +316,20 @@ body.dropping .main { outline: 3px dashed var(--accent); outline-offset: -8px }
 </style>
 
 <style>
-:root { --bg:#eef1ee; --panel:#fff; --ink:#1a2128; --muted:#5b6670; --line:#d5dbd5; --accent:#c2412a; --accent-soft:color-mix(in srgb, #c2412a 12%, #fff); --marca:#0d6b66 }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#111619; --panel:#182025; --ink:#e3e8ea; --muted:#94a0a8; --line:#2a343b; --accent:#ef7a62; --accent-soft:color-mix(in srgb, #ef7a62 16%, #182025); --marca:#4dbcb0; color-scheme:dark } }
-:root[data-theme="dark"] { --bg:#111619; --panel:#182025; --ink:#e3e8ea; --muted:#94a0a8; --line:#2a343b; --accent:#ef7a62; --accent-soft:color-mix(in srgb, #ef7a62 16%, #182025); --marca:#4dbcb0; color-scheme:dark }
+:root { --bg:#eef1ee; --panel:#fff; --ink:#1a2128; --muted:#5b6670; --line:#d5dbd5 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#111619; --panel:#182025; --ink:#e3e8ea; --muted:#94a0a8; --line:#2a343b; color-scheme:dark } }
+:root[data-theme="dark"] { --bg:#111619; --panel:#182025; --ink:#e3e8ea; --muted:#94a0a8; --line:#2a343b; color-scheme:dark }
+:root { --accent:#c2412a; --accent-soft:color-mix(in srgb, #c2412a 12%, #fff); --marca:#0d6b66 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --accent:#ef7a62; --accent-soft:color-mix(in srgb, #ef7a62 16%, #182025); --marca:#4dbcb0 } }
+:root[data-theme="dark"] { --accent:#ef7a62; --accent-soft:color-mix(in srgb, #ef7a62 16%, #182025); --marca:#4dbcb0 }
+.wrap { max-width:1300px }
+h1 { font:600 24px/1.25 var(--f-ui) }
+.card { border-radius:12px }
+.card h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--muted) }
+.destacado { box-shadow:none; border-color:var(--line); border-top:3px solid var(--accent) }
+.destacado h2 { color:var(--accent) }
+.resumen div { background:var(--accent-soft) }
+.sep { color:var(--accent) }
 header.top { display:flex; align-items:center; gap:8px 20px; flex-wrap:wrap; padding:12px clamp(16px,3vw,28px); background:var(--panel); border-bottom:1px solid var(--line) }
 header.top .logo { font:600 18px var(--f-math); margin:0; white-space:nowrap; color:var(--ink); text-decoration:none } header.top .logo i { color:var(--marca) }
 header.top nav { display:flex; gap:4px 16px; font-size:14px; overflow-x:auto; max-width:100%; scrollbar-width:none }
@@ -334,14 +345,6 @@ header.top .buscar:focus-visible, header.top a:focus-visible { outline:2px solid
 .miga-ico { display:inline-grid; place-items:center; width:22px; height:22px; border-radius:6px; background:var(--accent-soft); color:var(--accent); font:italic 600 13px var(--f-math) }
 .miga-der { margin-left:auto; display:flex; gap:8px } .miga-izq:empty, .miga-der:empty { display:none }
 .bib-btn, .prac-btn { border-radius:8px !important; padding:6px 12px !important }
-.wrap { max-width:1300px }
-h1 { font:600 24px/1.25 var(--f-ui) }
-.card { border-radius:12px }
-.card h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--muted) }
-.destacado { box-shadow:none; border-color:var(--line); border-top:3px solid var(--accent) }
-.destacado h2 { color:var(--accent) }
-.resumen div { background:var(--accent-soft) }
-.sep { color:var(--accent) }
 body.bib-ejemplos select[id^="ejemplo"] { display:none }
 @media (max-width:700px) { header.top form { display:none } h1 { font-size:21px }
   .miga-izq, .miga-der, .miga::after { order:-1 } .miga::after { content:''; flex-basis:100%; height:0 } }
@@ -615,6 +618,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 const Version = (() => {
   const registros = {
     web: [
+      { v: '0.48', fecha: '2026-10-25', cambios: ['Todas las herramientas comparten ahora la misma hoja de estilos, así que tarjetas, campos, botones, resultados y desarrollo se ven exactamente igual en todas.', 'Los pasos del desarrollo van numerados en todas las herramientas.', 'Los mensajes de error se leen mejor en modo oscuro.', 'Arreglos: en Configuración electrónica el nombre del elemento vuelve a verse grande, y en el móvil Trabajo y energía ya no se sale de la pantalla.'] },
       { v: '0.47', fecha: '2026-10-25', cambios: ['Nueva asignatura: Economía, en la portada y en la barra de asignaturas. Trae 23 herramientas en camino, como «Próximamente»: oferta y demanda, elasticidades, IS-LM, interés compuesto, préstamos, VAN y TIR, punto muerto, ratios financieros o el índice de Gini, entre otras.'] },
       { v: '0.46', fecha: '2026-10-25', cambios: ['Nuevo apartado Foro en la barra superior. De momento está en construcción: muy pronto podrás preguntar dudas y compartir ejercicios.', 'La portada y cada asignatura muestran ya las herramientas que vienen después, como «Próximamente»: 30 más, desde la ley de Ampère y las ecuaciones de Maxwell hasta la propagación de errores y los diagramas de Bode.'] },
       { v: '0.45', fecha: '2026-10-24', cambios: ['Botón de modo claro y oscuro arriba a la derecha, en la portada y en todas las herramientas: la luna pasa a modo oscuro y el sol, a modo claro. La web recuerda tu elección; hasta que lo pulses, sigue el modo de tu sistema.'] },

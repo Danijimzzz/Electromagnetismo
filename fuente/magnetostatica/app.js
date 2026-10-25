@@ -65,7 +65,7 @@
     const corriente = esc.modo === 'si'
       ? h('div', { class: 'cur' }, h('input', { class: 'in', value: f.I, 'aria-label': 'Corriente', oninput: (e) => { f.I = e.target.value; recalcula(); } }), h('span', {}, 'A'))
       : h('div', { class: 'cur' }, h('input', { class: 'in', value: f.I, 'aria-label': 'Coeficiente de la corriente', oninput: (e) => { f.I = e.target.value; recalcula(); } }), h('span', {}, '×'), h('input', { class: 'in', value: f.s, 'aria-label': 'Símbolo de la corriente', oninput: (e) => { f.s = e.target.value.replace(/[^A-Za-z0-9_]/g, ''); recalcula(); } }));
-    return h('div', { class: 'card' },
+    return h('div', { class: 'pieza' },
       h('div', { class: 'card-h' }, h('span', { class: 'badge' }, T.label), h('input', { class: 'in nom', value: f.nombre || '', placeholder: 'nombre', 'aria-label': 'Nombre', oninput: (e) => { f.nombre = e.target.value; recalcula(false); } }),
         h('button', { class: 'x', title: 'Quitar', 'aria-label': 'Quitar', onclick: () => { esc.fuentes = esc.fuentes.filter((x) => x !== f); editor(); recalcula(); } }, '×')),
       fila(f.tipo === 'toroide' || f.tipo === 'solenoide' ? 'Corriente por espira' : 'Corriente', corriente),
@@ -85,7 +85,7 @@
       const ops = esc.fuentes.filter((f) => f.tipo === 'hilo' || f.tipo === 'segmento').map((f, j) => [f.id, f.nombre || `${SOURCES[f.tipo].label} ${j + 1}`]);
       campos.push(fila('Sobre', ops.length ? sel(q.fuente, ops, (v) => { q.fuente = v; ch(); }, 'Conductor') : h('span', { class: 'hint' }, 'Añade un hilo o un segmento')));
     }
-    return h('div', { class: 'card' },
+    return h('div', { class: 'pieza' },
       h('div', { class: 'card-h' }, h('span', { class: 'badge' }, `P${i + 1} · ${A.titulo}`), h('span', { style: 'flex:1' }),
         h('button', { class: 'x', title: 'Quitar', 'aria-label': 'Quitar', onclick: () => { esc.preguntas = esc.preguntas.filter((x) => x !== q); editor(); recalcula(); } }, '×')),
       ...campos, h('div', { class: 'result', 'data-res': q.id }), h('details', { class: 'steps', 'data-steps': q.id }, h('summary', {}, 'Ver desarrollo paso a paso'), h('ol')));

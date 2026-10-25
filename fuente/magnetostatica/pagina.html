@@ -5,48 +5,28 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap">
 <style>
 :root {
-  --bg: #eef1ee; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d5dbd5;
-  --accent: #0d6b66; --accent-soft: #e0efec; --pos: #c2412a; --neg: #2a5db5; --mark: #6b3fa0;
-  --canvas: #fbfcfa; --grid: #e7ebe6; --field: #7d8c86; --warn: #8a5a00; --warn-bg: #fff4dc; --bad: #b3261e;
-  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
-  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
-}
+  --letra-campo: 13px var(--f-mono);
+  --col-datos: minmax(300px, 400px);
+  --pos: #c2412a; --neg: #2a5db5; --mark: #6b3fa0;
+  --canvas: #fbfcfa; --grid: #e7ebe6; --field: #7d8c86; --warn: #8a5a00; --warn-bg: #fff4dc; --bad: #b3261e }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #94a0a8; --line: #2a343b;
-  --accent: #4dbcb0; --accent-soft: #173431; --pos: #ef7a62; --neg: #74a2f2; --mark: #b892ec;
-  --canvas: #141b1f; --grid: #1e282d; --field: #6e8380; --warn: #f0c060; --warn-bg: #2d2412; --bad: #f08a80; color-scheme: dark } }
+  --pos: #ef7a62; --neg: #74a2f2; --mark: #b892ec;
+  --canvas: #141b1f; --grid: #1e282d; --field: #6e8380; --warn: #f0c060; --warn-bg: #2d2412; --bad: #f08a80 } }
 :root[data-theme="dark"] {
-  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #94a0a8; --line: #2a343b;
-  --accent: #4dbcb0; --accent-soft: #173431; --pos: #ef7a62; --neg: #74a2f2; --mark: #b892ec;
-  --canvas: #141b1f; --grid: #1e282d; --field: #6e8380; --warn: #f0c060; --warn-bg: #2d2412; --bad: #f08a80; color-scheme: dark }
-* { box-sizing: border-box }
-[hidden] { display: none !important }
-html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
-a { color: var(--accent) }
-.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
-.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
-.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
-.wrap { max-width: 1400px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px; container: main / inline-size }
-h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
-.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
-.tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px }
-.in { font: 13px var(--f-mono); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 7px; min-width: 0; width: 100% }
+  --pos: #ef7a62; --neg: #74a2f2; --mark: #b892ec;
+  --canvas: #141b1f; --grid: #1e282d; --field: #6e8380; --warn: #f0c060; --warn-bg: #2d2412; --bad: #f08a80 }
+#principal { container: main / inline-size }
 select.in { font-family: var(--f-ui); width: auto }
 textarea.in { font: 15px/1.5 var(--f-math); resize: vertical; min-height: 54px }
-.in:focus-visible, .btn:focus-visible, .chip:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
-.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 11px; cursor: pointer }
-.btn:hover { border-color: var(--accent) }
 .chip { font: 500 12.5px var(--f-ui); color: var(--accent); background: var(--accent-soft); border: 0; border-radius: 99px; padding: 4px 10px; cursor: pointer }
 .chip:hover { filter: brightness(.95) }
-.layout { display: grid; grid-template-columns: minmax(300px, 400px) minmax(0, 1fr); gap: 16px; align-items: start }
-@container main (max-width: 860px) { .layout { grid-template-columns: minmax(0, 1fr) } }
+@container main (max-width: 860px) { #mag-layout { grid-template-columns: minmax(0, 1fr) } }
 .col { display: flex; flex-direction: column; gap: 14px; min-width: 0 }
 .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 10px; min-width: 0 }
 .panel h2 { font: 600 12px var(--f-ui); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 }
 .chips { display: flex; flex-wrap: wrap; gap: 6px }
 .hint { color: var(--muted); font-size: 12.5px; margin: 0 }
-.card { border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px; display: flex; flex-direction: column; gap: 6px; background: var(--panel) }
+.pieza { border: 1px solid var(--line); border-radius: 12px; padding: 9px 10px; display: flex; flex-direction: column; gap: 6px; background: var(--panel) }
 .card-h { display: flex; align-items: center; gap: 8px }
 .badge { font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 99px; background: var(--accent-soft); color: var(--accent); white-space: nowrap }
 .card-h .nom { flex: 1; font: 600 13px var(--f-ui); border-color: transparent; background: transparent }
@@ -80,16 +60,12 @@ textarea.in { font: 15px/1.5 var(--f-math); resize: vertical; min-height: 54px }
 .uv::before, .vv::before { content: "→"; position: absolute; top: -.58em; left: 0; right: 0; text-align: center; font-size: .62em; font-style: normal }
 .unit { font: 500 .78em var(--f-ui); color: var(--muted); margin-left: .15em }
 .result sub, .steps sub { font-size: .7em }
-.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
-.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
 .teoria .eq { font-family: var(--f-math); font-size: 17px; margin: 6px 0 6px 12px; overflow-x: auto }
-.teoria li { margin: 4px 0 }
-footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
 #flash { position: fixed; left: 50%; transform: translateX(-50%); bottom: 18px; background: var(--ink); color: var(--bg); padding: 7px 14px; border-radius: 8px; font-size: 13px; z-index: 20 }
 </style>
 <body>
 <header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Electromagnetismo</a> / Magnetostática</span></header>
-<div class="wrap">
+<div class="wrap" id="principal">
 <h1 id="titulo">Magnetostática: campo magnético y Biot-Savart</h1>
 <p class="lead">Coloca hilos, espiras, arcos, solenoides y toroides, elige un punto y obtén el campo <span class="vv">B</span> con el desarrollo paso a paso, en la forma μ<sub>0</sub><i>I</i>/(π<i>a</i>) de los apuntes o en unidades del SI.</p>
 <div class="tools">
@@ -100,7 +76,7 @@ footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8p
   <button id="guardar" class="btn">Guardar archivo</button>
   <input type="file" id="archivo" accept=".json,application/json" hidden>
 </div>
-<div class="layout">
+<div class="layout" id="mag-layout">
   <div class="col">
     <section class="panel"><h2>Enunciado</h2><textarea id="enunciado" class="in" rows="3" aria-label="Enunciado" placeholder="Escribe aquí el enunciado del problema (opcional)"></textarea></section>
     <section class="panel"><h2>Fuentes</h2><div class="chips" id="add-fuente"></div><p class="hint" id="hint-unid"></p><div id="fuentes" class="col"></div></section>

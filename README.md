@@ -8,6 +8,8 @@ Simuladores y calculadoras por asignatura. Es una web estática en `publico/`:
 
 La portada y las páginas de asignatura las genera `fuente/portal.js` a partir de `fuente/catalogo.js`. Para añadir una herramienta, ponla en el catálogo con `disponible: true`, genera su página en `publico/<asignatura>/<herramienta>/index.html` y añade sus pruebas a `pruebas/comprobar.js`.
 
+**Diseño:** toda herramienta nueva sigue [DISENO.md](DISENO.md). Se empieza copiando `fuente/plantilla/pagina.html`; la hoja común `fuente/estilos.css`, el color de la asignatura y la cabecera los pone `fuente/diseno.js` al publicar, y la comprobación falla si una página vuelve a definir un estilo común o pone colores fijos.
+
 - Código fuente: `fuente/` (engine, fmt, physics, presets, canvas, app y shell.html). Las capturas de la guía de uso están en `fuente/guia/` y `build.sh` las incrusta en la página.
 - Para regenerar la web pública tras cambiar las fuentes: `sh fuente/build.sh` (simulador, portada y asignaturas).
 - **Solo se publica la carpeta `publico/`** (página, iconos y lo que se añada para la web). Vercel la sirve tal cual por `vercel.json`; en Cloudflare Pages el proyecto se configura con *Framework: None*, sin comando de compilación y *Output directory* `publico`. No pongas ahí nada más: la comprobación falla si aparece otro archivo.

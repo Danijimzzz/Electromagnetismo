@@ -5,48 +5,13 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
 <style>
 :root {
-  --bg: #eef0f4; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d6dbe3; --accent: #b0700a; --accent-soft: #fbf0dc; --v: #c2412a; --i: #2a5db5; --x: #1d7a3e;
-  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
-  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
-}
+  --alto-grafica: 280px;
+  --v: #c2412a; --i: #2a5db5; --x: #1d7a3e }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #e6a640; --accent-soft: #3a2c12; --v: #ef7a62; --i: #74a2f2; --x: #5fcf8a; color-scheme: dark } }
+  --v: #ef7a62; --i: #74a2f2; --x: #5fcf8a } }
 :root[data-theme="dark"] {
-  --bg: #11151b; --panel: #181e26; --ink: #e3e8ee; --muted: #94a0ac; --line: #2a333e; --accent: #e6a640; --accent-soft: #3a2c12; --v: #ef7a62; --i: #74a2f2; --x: #5fcf8a; color-scheme: dark }
-* { box-sizing: border-box }
-[hidden] { display: none !important }
-html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
-a { color: var(--accent) }
-.top { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 10px clamp(16px, 3vw, 24px); background: var(--panel); border-bottom: 1px solid var(--line) }
-.logo { font: 600 18px var(--f-math); white-space: nowrap; color: var(--ink); text-decoration: none } .logo i { color: var(--accent) }
-.crumb { font-size: 13.5px; color: var(--muted) } .crumb a { text-decoration: none } .crumb a:hover { text-decoration: underline }
-.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
-h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
-.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
-.layout { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 16px; align-items: start }
-@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr) } }
-.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 14px }
-.card h2 { font: 600 15px var(--f-ui); margin: 0 0 10px }
-.campos { display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 7px 10px; align-items: center }
-.campos label { font-size: 13.5px } .campos label small { color: var(--muted) }
-.in { font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
-.in:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
-.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
-.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer }
-.btn:hover { border-color: var(--accent) }
-.error { color: #c0392b; font-size: 13px; margin: 10px 0 0 }
-.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
-.res { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px 14px; font: 16px var(--f-math) } .res div { overflow-x: auto } .res span { display: block; font: 12px var(--f-ui); color: var(--muted) }
+  --v: #ef7a62; --i: #74a2f2; --x: #5fcf8a }
 .graficas { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 10px } @media (max-width: 640px) { .graficas { grid-template-columns: minmax(0, 1fr) } }
-.leyenda { font-size: 12.5px; color: var(--muted); margin: 6px 0 0 } .leyenda b { font-weight: 600 }
-canvas { display: block; width: 100%; height: 280px; border-radius: 8px; background: var(--bg); margin-top: 10px }
-.pasos ol { margin: 0; padding-left: 22px } .pasos li { margin: 0 0 12px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto }
-.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
-.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
-.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
-.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
-footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
 </style>
 <body>
 <header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Circuitos</a> / Corriente alterna y fasores</span></header>

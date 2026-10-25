@@ -11,6 +11,7 @@
 const Version = (() => {
   const registros = {
     web: [
+      { v: '0.48', fecha: '2026-10-25', cambios: ['Todas las herramientas comparten ahora la misma hoja de estilos, así que tarjetas, campos, botones, resultados y desarrollo se ven exactamente igual en todas.', 'Los pasos del desarrollo van numerados en todas las herramientas.', 'Los mensajes de error se leen mejor en modo oscuro.', 'Arreglos: en Configuración electrónica el nombre del elemento vuelve a verse grande, y en el móvil Trabajo y energía ya no se sale de la pantalla.'] },
       { v: '0.47', fecha: '2026-10-25', cambios: ['Nueva asignatura: Economía, en la portada y en la barra de asignaturas. Trae 23 herramientas en camino, como «Próximamente»: oferta y demanda, elasticidades, IS-LM, interés compuesto, préstamos, VAN y TIR, punto muerto, ratios financieros o el índice de Gini, entre otras.'] },
       { v: '0.46', fecha: '2026-10-25', cambios: ['Nuevo apartado Foro en la barra superior. De momento está en construcción: muy pronto podrás preguntar dudas y compartir ejercicios.', 'La portada y cada asignatura muestran ya las herramientas que vienen después, como «Próximamente»: 30 más, desde la ley de Ampère y las ecuaciones de Maxwell hasta la propagación de errores y los diagramas de Bode.'] },
       { v: '0.45', fecha: '2026-10-24', cambios: ['Botón de modo claro y oscuro arriba a la derecha, en la portada y en todas las herramientas: la luna pasa a modo oscuro y el sol, a modo claro. La web recuerda tu elección; hasta que lo pulses, sigue el modo de tu sistema.'] },
