@@ -935,6 +935,20 @@ const CinC = require(path.join(fuente, 'cinetica', 'calculo.js'));
   if (fallos === antes) console.log(`  ✓ Cinética química: ${CinC.ejemplos.length} ejemplos, leyes integradas y vidas medias a mano, unidades de k, orden a partir de datos, velocidades iniciales, Arrhenius de ida y vuelta y errores`);
 }
 
+{
+  // copiar en LaTeX y en texto (compartir.js) a partir de la fuente de las fórmulas
+  const antes = fallos;
+  const Ma = require(path.join(fuente, 'mates.js'));
+  global.Mates = Ma;
+  const Co = require(path.join(fuente, 'matematicas', 'compartir.js'));
+  for (const [src, tex, txt] of [['{x^{2}}/{2} + K', '\\frac{x^{2}}{2} + K', 'x^2/2 + K'], ['√(1 − x^{2})', '\\sqrt{1 - x^{2}}', '√(1 − x^2)'], ['∫_{0}^{π} sen x dx', '\\int_{0}^{\\pi} \\operatorname{sen} x \\, dx', '∫_0^π sen x dx'], ['{1}/{s^{2} + 1}', '\\frac{1}{s^{2} + 1}', '1/(s^2 + 1)'], ['e^{x^{2}}', 'e^{x^{2}}', 'e^(x^2)']]) {
+    if (Co.latex(src) !== tex) mal(`Compartir: «${src}» en LaTeX sale «${Co.latex(src)}» en vez de «${tex}»`);
+    if (Co.texto(src) !== txt) mal(`Compartir: «${src}» en texto sale «${Co.texto(src)}» en vez de «${txt}»`);
+  }
+  if (!Ma.html('$x^2$').includes('data-src="x^2"')) mal('Mates: la fórmula no guarda su fuente');
+  if (fallos === antes) console.log('  ✓ Compartir: fórmulas a LaTeX y a texto');
+}
+
 const CamC = require(path.join(fuente, 'campos', 'calculo.js'));
 {
   const antes = fallos, cerca = (a, b, tol, q) => { if (!(Math.abs(a - b) <= tol * Math.max(1, Math.abs(b)))) mal(`Campos · ${q}: ${a} en vez de ${b}`); };
@@ -955,12 +969,39 @@ const CamC = require(path.join(fuente, 'campos', 'calculo.js'));
   const g2 = r('green-rect'); cerca(g2.circula, 2, 1e-9, 'circulación en el rectángulo'); cerca(g2.dobleR, 2, 1e-9, 'Green en el rectángulo'); cerca(g2.flujo, 1, 1e-9, 'flujo en el rectángulo'); cerca(g2.dobleD, 1, 1e-9, 'divergencia en el rectángulo');
   const g3 = r('green-flujo'); cerca(g3.flujo, 8 * Math.PI, 1e-9, 'flujo de (x, y)'); cerca(g3.dobleD, 8 * Math.PI, 1e-6, 'divergencia de (x, y)');
   const ag = r('green-agujero'); cerca(ag.circula, 2 * Math.PI, 1e-9, 'circulación alrededor del origen'); if (!ag.singular || g1.singular || g2.singular || g3.singular) mal('Campos: no se avisa (o se avisa sin motivo) de que Green no vale con una singularidad dentro');
+  // potencial simbólico: ∇φ = F y su valor
+  const pot = (c, txt, v) => { const x = r(c); if (x.phiTxt !== txt) mal(`Campos · ${c}: el potencial sale «${x.phiTxt}» en vez de «${txt}»`); cerca(x.phi, v, 1e-12, `potencial de ${c}`); };
+  pot('potencial-2d', 'x^{2} y + y^{3}', 10); pot('potencial-3d', 'x y^{2} + x^{2} z + y z', 5); pot('conservativo', 'x y z', 6);
+  if (r('remolino').phiTxt) mal('Campos: (−y, x) tiene potencial');
+  // poligonales e ∫ f ds
+  cerca(r('poligonal-triangulo').W, 1, 1e-12, 'trabajo de (−y, x) por el triángulo (el doble del área)'); const pc = r('poligonal-camino'); cerca(pc.W, 2, 1e-12, 'trabajo por dos segmentos'); cerca(pc.dphi, 2, 1e-12, 'Δφ por dos segmentos');
+  const ms = r('masa-semicirculo'); cerca(ms.I, 2, 1e-9, 'masa del semicírculo'); cerca(ms.L, Math.PI, 1e-9, 'longitud del semicírculo'); cerca(ms.cm[0], 0, 1e-9, 'x̄'); cerca(ms.cm[1], Math.PI / 4, 1e-9, 'ȳ');
+  cerca(r('cicloide').I, 8, 1e-9, 'longitud de la cicloide'); cerca(r('masa-helice').I, 2 * Math.SQRT2 * Math.PI ** 2, 1e-9, 'masa de la hélice'); cerca(r('masa-triangulo').I, 1.5 + Math.SQRT1_2, 1e-12, '∫ x ds por el triángulo');
+  { const x = CamC.resolver({ modo: 'masa', f: 'x', curva: 'param', cx: 'cos t', cy: 'sen t', a: '0', b: '2π' }); if (x.cm) mal('Campos: una f con valores negativos sale como densidad'); cerca(x.I, 0, 1e-9, '∫ x ds en la circunferencia'); }
+  // Green en polígonos y entre curvas (incluido un polígono horario y uno no convexo)
+  cerca(r('green-triangulo').circula, 2, 1e-9, 'Green en el triángulo'); cerca(r('green-triangulo').area, 1, 1e-12, 'área del triángulo');
+  const gp = r('green-poligono'); cerca(gp.circula, gp.dobleR, 1e-9, 'Green en el pentágono'); cerca(gp.area, 5, 1e-12, 'área del pentágono');
+  { const a = CamC.resolver({ modo: 'green', P: 'x y', Q: 'x^2', region: 'poligono', vertices: '(0,0), (0,2), (3,2), (3,0)' }); cerca(a.circula, 9, 1e-9, 'Green en un rectángulo horario'); cerca(a.dobleR, 9, 1e-9, '∬ x dA');
+    const b = CamC.resolver({ modo: 'green', P: 'x y', Q: 'x^2', region: 'poligono', vertices: '0 0; 2 0; 2 2; 1 1; 0 2' }); cerca(b.circula, b.dobleR, 1e-9, 'Green en un polígono no convexo'); cerca(b.area, 3, 1e-12, 'área del polígono no convexo'); }
+  const gc = r('green-curvas'); cerca(gc.circula, 1 / 3, 1e-9, 'circulación entre y = x² e y = x'); cerca(gc.dobleR, 1 / 3, 1e-9, 'Green entre curvas'); cerca(gc.area, 1 / 6, 1e-9, 'área entre curvas');
+  const gs = r('green-semicirculo'); cerca(gs.circula, 2 / 3, 1e-9, 'circulación en el semicírculo'); cerca(gs.dobleR, 2 / 3, 1e-9, 'Green en el semicírculo'); cerca(gs.area, Math.PI / 2, 1e-9, 'área del semicírculo');
+  { const d = CamC.resolver({ modo: 'green', P: 'x', Q: 'y', region: 'curvas', g1: '-√(4 - x^2)', g2: '√(4 - x^2)', a: '-2', b: '2' }); cerca(d.flujo, 8 * Math.PI, 1e-6, 'flujo por el disco hecho con dos curvas'); if (d.singular) mal('Campos: el disco hecho con dos curvas sale singular'); }
+  // superficies y Stokes
+  const fe = r('flujo-esfera'); cerca(fe.flujo, 4 * Math.PI, 1e-9, 'flujo de (x, y, z) por la esfera'); cerca(fe.area, 4 * Math.PI, 1e-9, 'área de la esfera'); if (!fe.cerrada || fe.borde.length) mal('Campos: la esfera no sale cerrada');
+  cerca(r('flujo-plano').flujo, 2, 1e-9, 'flujo por el cuadrado');
+  const sp = r('stokes-paraboloide'); cerca(sp.rotFlujo, 2 * Math.PI, 1e-9, 'flujo del rotacional por el paraboloide'); cerca(sp.circula, 2 * Math.PI, 1e-9, 'circulación por el borde del paraboloide'); if (!sp.stokes || sp.cerrada || sp.borde.length !== 1) mal('Campos: el borde del paraboloide no es una sola circunferencia');
+  const sh = r('stokes-hemisferio'); cerca(sh.rotFlujo, -2 * Math.PI, 1e-9, 'Stokes en media esfera'); cerca(sh.circula, -2 * Math.PI, 1e-9, 'circulación por el ecuador');
+  // Gauss
+  cerca(r('gauss-caja').flujo, 18, 1e-9, 'flujo por la caja'); cerca(r('gauss-caja').vol, 18, 1e-9, '∭ div en la caja');
+  const ge = r('gauss-esfera'); cerca(ge.flujo, 12 * Math.PI / 5, 1e-9, 'flujo de (x³, y³, z³)'); cerca(ge.vol, 12 * Math.PI / 5, 1e-9, '∭ 3(x² + y² + z²)');
+  const gz = r('gauss-cilindro'); cerca(gz.flujo, 8 * Math.PI, 1e-9, 'flujo por el cilindro'); cerca(gz.vol, 8 * Math.PI, 1e-9, '∭ div en el cilindro');
+  const gq = r('gauss-carga'); cerca(gq.flujo, 4 * Math.PI, 1e-7, 'flujo del campo de una carga'); if (!gq.singular || ge.singular || gz.singular) mal('Campos: no se avisa (o se avisa sin motivo) de que Gauss no vale con una carga dentro');
   const sc0 = CamC.ejemplos.find((e) => e.clave === 'paraboloide').sc;
-  for (const [q, sc] of [['una f vacía', { ...sc0, f: '' }], ['un punto que no es un número', { ...sc0, x0: 'abc' }], ['la dirección cero', { ...sc0, u: '0, 0' }], ['un campo vacío', { modo: 'vectorial', P: '', Q: '', R: '', x0: '1', y0: '1' }], ['t final menor que el inicial', { modo: 'linea', P: 'y', Q: 'x', cx: 't', cy: 't', a: '1', b: '0' }], ['un radio negativo', { modo: 'green', P: 'y', Q: 'x', region: 'circulo', cx: '0', cy: '0', rad: '-1' }]]) {
+  for (const [q, sc] of [['un vértice con una coordenada', { modo: 'linea', P: 'y', Q: 'x', curva: 'poligonal', vertices: '0 0; 1' }], ['un polígono de vértices alineados', { modo: 'green', P: 'y', Q: 'x', region: 'poligono', vertices: '0 0; 1 1; 2 2' }], ['curvas cruzadas', { modo: 'green', P: 'y', Q: 'x', region: 'curvas', g1: 'x', g2: 'x^2', a: '0', b: '1' }], ['una superficie que no depende de v', { modo: 'superficie', P: 'x', Q: 'y', R: 'z', sx: 'u', sy: 'u', sz: '0', u1: '0', u2: '1', v1: '0', v2: '1' }], ['una caja al revés', { modo: 'gauss', P: 'x', Q: 'y', R: 'z', solido: 'caja', x1: '1', x2: '0', y1: '0', y2: '1', z1: '0', z2: '1' }], ['una f vacía', { ...sc0, f: '' }], ['un punto que no es un número', { ...sc0, x0: 'abc' }], ['la dirección cero', { ...sc0, u: '0, 0' }], ['un campo vacío', { modo: 'vectorial', P: '', Q: '', R: '', x0: '1', y0: '1' }], ['t final menor que el inicial', { modo: 'linea', P: 'y', Q: 'x', cx: 't', cy: 't', a: '1', b: '0' }], ['un radio negativo', { modo: 'green', P: 'y', Q: 'x', region: 'circulo', cx: '0', cy: '0', rad: '-1' }]]) {
     let ok = false; try { CamC.resolver(sc); } catch (e) { ok = true; }
     if (!ok) mal(`Campos: ${q} no da error`);
   }
-  if (fallos === antes) console.log(`  ✓ Campos vectoriales: ${CamC.ejemplos.length} ejemplos, gradiente, derivada direccional, laplaciano, divergencia, rotacional, potencial, trabajo, Green y errores`);
+  if (fallos === antes) console.log(`  ✓ Campos vectoriales: ${CamC.ejemplos.length} ejemplos, gradiente, derivada direccional, laplaciano, divergencia, rotacional, potencial simbólico, trabajo por curvas y poligonales, ∫ f ds y centro de masas, Green en polígonos y entre curvas, flujo, Stokes, Gauss y errores`);
 }
 
 const FzC = require(path.join(fuente, 'fuerza', 'fisica.js'));
@@ -1279,7 +1320,7 @@ const Mates = require(path.join(fuente, 'mates.js'));
   if (!m('x = 1,2·10<sup>−5</sup> "m/s"').includes('<mtext>m/s</mtext>')) mal('Mates: las unidades entre comillas no salen como texto');
   if (!m('cos^2 α').includes('<msup><mi mathvariant="normal">cos</mi><mn>2</mn></msup>')) mal('Mates: cos² no sale');
   if (!m('ΔT').includes('<mi mathvariant="normal">Δ</mi>')) mal('Mates: Δ debería ir recta');
-  if (Mates.html('a $x$ b $y$').split('<math>').length !== 3) mal('Mates: no sustituye cada $…$');
+  if (Mates.html('a $x$ b $y$').split('<math ').length !== 3) mal('Mates: no sustituye cada $…$');
   if (fallos === antes) console.log('  ✓ Mates: fracciones, raíces, exponentes, subíndices, unidades y funciones en MathML');
 }
 
@@ -2228,11 +2269,36 @@ async function navegador() {
     await page.evaluate(() => CamposApp.abrirEjemplo('green-circulo'));
     await page.selectOption('#f-region', 'rectangulo');
     if ((await page.locator('#f-x2').count()) !== 1 || !(await page.locator('#error').isHidden())) mal('Campos: al pasar a un rectángulo no salen sus campos o da error');
+    await page.selectOption('#f-region', 'poligono');
+    if ((await page.locator('#f-vertices').count()) !== 1 || !(await page.locator('#error').isHidden())) mal('Campos: al pasar a un polígono no salen los vértices o da error');
+    await page.selectOption('#f-region', 'curvas');
+    if ((await page.locator('#f-g2').count()) !== 1 || !(await page.locator('#error').isHidden())) mal('Campos: al pasar a la región entre curvas no salen sus campos o da error');
+    await page.selectOption('#f-modo', 'linea'); await page.selectOption('#f-curva', 'poligonal');
+    if ((await page.locator('#f-vertices').count()) !== 1 || !(await page.locator('#error').isHidden())) mal('Campos: al pasar a una poligonal no salen los vértices o da error');
+    await page.selectOption('#f-modo', 'gauss');
+    for (const so of ['esfera', 'cilindro', 'caja']) { await page.selectOption('#f-solido', so); if (!(await page.locator('#error').isHidden())) mal(`Campos: Gauss en un sólido «${so}» da error`); }
+    await page.selectOption('#f-modo', 'superficie');
+    if ((await page.locator('#f-sz').count()) !== 1 || !(await page.locator('#error').isHidden())) mal('Campos: al pasar a superficie no salen sus campos o da error');
+    await page.evaluate(() => CamposApp.abrirEjemplo('potencial-2d'));
+    if (!(await page.locator('#resumen').textContent()).includes('φ')) mal('Campos: no sale el potencial φ(x, y) en los resultados');
     await page.selectOption('#f-modo', 'escalar');
     if ((await page.locator('#f-f').count()) !== 1 || !(await page.locator('#error').isHidden())) mal('Campos: al pasar a campo escalar no sale el campo de f o da error');
     await page.click('#animar');
     if ((await page.locator('#animar').textContent()).trim() !== '▶ Animar') mal('Campos: el botón de parar no cambia');
     for (let i = 0; i < 10; i++) { await page.evaluate(() => CamposApp.azar()); if (!(await page.locator('#error').isHidden())) mal(`Campos: un ejercicio al azar da error: ${JSON.stringify(await page.evaluate(() => CamposApp.estado()))}`); }
+    // compartir: el enlace abre el mismo ejercicio en otro navegador; copiar en texto y en LaTeX; imprimir
+    await page.evaluate(() => CamposApp.abrirEjemplo('potencial-3d'));
+    if ((await page.locator('.compartir button').count()) !== 4 || !(await page.locator('#nota-log').count())) mal('Campos: faltan los botones de compartir o el aviso de log');
+    const co = await page.evaluate(() => ({ url: Compartir.enlace(), txt: Compartir.ejercicio(false), tex: Compartir.ejercicio(true), pasos: document.querySelector('#pasos').innerText }));
+    if (!/#d=[\w-]+$/.test(co.url)) mal(`Campos: el enlace para compartir no lleva los datos: ${co.url}`);
+    if (!co.txt.includes('φ = x y^2 + x^2 z + y z + K') || !co.txt.includes('Desarrollo')) mal('Campos: el texto copiado no trae el potencial o el desarrollo');
+    if (!co.tex.includes('\\begin{enumerate}') || !co.tex.includes('\\frac{\\partial \\varphi}{\\partial y}') || /\$\$/.test(co.tex)) mal('Campos: el LaTeX copiado no sale bien');
+    { const ctx = await browser.newContext(), p2 = await ctx.newPage(); await p2.goto(co.url); await p2.waitForFunction(() => window.CamposApp);
+      if ((await p2.evaluate(() => document.querySelector('#pasos').innerText)) !== co.pasos || (await p2.evaluate(() => CamposApp.estado().P)) !== 'y^2 + 2x z') mal('Campos: el enlace compartido no abre el mismo ejercicio');
+      await ctx.close(); }
+    await page.emulateMedia({ media: 'print' });
+    if (await page.locator('.teoria').isVisible() || await page.locator('.compartir').isVisible() || !(await page.locator('#pasos').isVisible())) mal('Campos: al imprimir no se quitan la teoría y los botones (o se quita el desarrollo)');
+    await page.emulateMedia({ media: 'screen' });
     await page.close();
     if (consola.length) mal('Campos: consola del navegador:\n      ' + consola.join('\n      '));
     if (fallos === antes) console.log(`  ✓ Campos vectoriales: ${CamC.ejemplos.length} ejemplos con MathML, cambio de campo, errores, tocar la gráfica, regiones de Green, cambio de modo y ejercicios al azar sin errores de consola`);
