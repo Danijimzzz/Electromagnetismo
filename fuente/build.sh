@@ -80,9 +80,9 @@ if [ "$1" != privado ]; then
   herramienta ondas-em ../publico/electromagnetismo/ondas-em/index.html "Ondas electromagnéticas planas" "Calculadora de ondas electromagnéticas planas: longitud de onda, número de onda, campo B y su dirección, expresión de E y B, intensidad, presión de radiación y profundidad de penetración" \
     version.js mates.js ondas-em/fisica.js ondas-em/app.js
   herramienta matrices ../publico/matematicas/matrices/index.html "Matrices paso a paso" "Calculadora de matrices con fracciones exactas y complejos: determinante, inversa, rango, Gauss-Jordan y valores y vectores propios, paso a paso" \
-    version.js mates.js matematicas/algebra.js matrices/calculo.js matrices/app.js
+    version.js mates.js matematicas/algebra.js matematicas/parametro.js matrices/calculo.js matrices/app.js
   herramienta sistemas ../publico/matematicas/sistemas/index.html "Sistemas de ecuaciones lineales" "Calculadora de sistemas de ecuaciones paso a paso: Rouché-Frobenius, Gauss, Gauss-Jordan, Cramer y matriz inversa, en paramétricas y con números complejos" \
-    version.js mates.js matematicas/algebra.js sistemas/calculo.js sistemas/app.js
+    version.js mates.js matematicas/algebra.js matematicas/parametro.js sistemas/calculo.js sistemas/app.js
   herramienta complejos ../publico/matematicas/complejos/index.html "Números complejos" "Calculadora de números complejos: formas binómica, polar, trigonométrica y exponencial con el argumento en su cuadrante, suma, resta, producto, cociente, potencias con De Moivre, raíces n-ésimas y ecuaciones de segundo grado, con el plano de Argand y paso a paso" \
     version.js mates.js matematicas/algebra.js complejos/calculo.js complejos/app.js
   herramienta taylor ../publico/matematicas/taylor/index.html "Series de Taylor" "Calculadora del polinomio de Taylor y de Maclaurin paso a paso: derivadas, coeficientes, aproximación de f(x₀), error y cota del resto de Lagrange, desarrollos conocidos con su término general y gráfica animada" \

@@ -37,11 +37,24 @@ const Taylor = (() => {
   }
   const potTxt = (B, k) => (k === 0 ? '' : k === 1 ? B.b : `${B.b}^{${k}}`);
   // un término c (x − a)^k sin el signo: { neg, s }
+  // exacto, o una potencia de un logaritmo entre k!: los de aˣ, c_k = (ln a)^k/k!
+  function exactoC(c, k) {
+    const e = exacto(c);
+    if ((e && (e.s || e.q <= 1000)) || k < 1) return e;
+    // una fracción con denominador enorme suele ser casualidad: antes se prueba con ln 2, ln 3…
+    for (const b of [2, 3, 5, 10]) { const L = Math.log(b) ** k, r = exacto(c / L, 1000); if (r && !r.s) return { p: r.p, q: r.q, s: k === 1 ? `ln ${b}` : `(ln ${b})^{${k}}` }; }
+    return e;
+  }
   function termino(c, k, B) {
-    const pw = potTxt(B, k), e = exacto(c);
+    const pw = potTxt(B, k), e = exactoC(c, k);
     if (!e) return { neg: c < 0, s: [f(Math.abs(c), 6), pw].filter(Boolean).join(' ') };
     const P = Math.abs(e.p);
     // en x = 0 la potencia va en el numerador ({x^2}/{2}); en otro punto, detrás del coeficiente ({1}/{4} (x − 4))
+    // con un logaritmo la x va delante (x ln 2, no ln 2 x, que se lee ln(2x))
+    if (pw && /ln/.test(e.s)) {
+      const arriba = [P !== 1 ? String(P) : '', pw, e.s].filter(Boolean).join(' ');
+      return { neg: e.p < 0, s: e.q === 1 ? arriba : `{${arriba}}/{${e.q}}` };
+    }
     if (B.par && pw) {
       const cf = [P !== 1 || (!e.s && e.q !== 1) ? String(P) : '', e.s].filter(Boolean).join(' ');
       return { neg: e.p < 0, s: [e.q === 1 ? cf : `{${cf}}/{${e.q}}`, pw].filter(Boolean).join(' ') };

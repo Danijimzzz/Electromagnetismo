@@ -240,10 +240,13 @@ const EDOs = (() => {
     const fino = rk4((t, Y) => [F(t, Y[0])], x0, [y0], x1, Math.max(400, n * 20));
     const yRK = fino[fino.length - 1].t >= x1 - 1e-9 ? fino[fino.length - 1].Y[0] : NaN;
     const yEu = eul[eul.length - 1].y, yEx = exacta ? exacta.y(x1) : null;
+    // RK4 se para si la solución se dispara: explota (asíntota vertical) antes de x₁
+    const explota = fino[fino.length - 1].t < x1 - 1e-9 ? fino[fino.length - 1].t : null;
     const filas = eul.slice(0, Math.min(eul.length - 1, 8)).map((e, i) => `<tr><td>${i}</td><td>${f(e.x, 5)}</td><td>${f(e.y, 6)}</td><td>${f(e.m, 6)}</td><td>${f(eul[i + 1].y, 6)}</td></tr>`).join('');
     pasos.push({ t: `Método de Euler con h = ${f(h)}`, html: `$y_{n+1} = y_n + h f(x_n, y_n)$, empezando en $(x_0, y_0) = (${f(x0)}, ${f(y0)})$:<table class="tabla"><tr><th>n</th><th>xₙ</th><th>yₙ</th><th>f(xₙ, yₙ)</th><th>yₙ₊₁</th></tr>${filas}</table>${eul.length - 1 > 8 ? `… y así hasta n = ${eul.length - 1}. ` : ''}En x = ${f(x1)} Euler da y ≈ ${f(yEu, 6)}.` });
-    pasos.push({ t: 'Comparación', html: `${exacta ? `La solución exacta vale $y(${f(x1)}) = ${f(yEx, 7)}$` : `Con Runge-Kutta (RK4, ${fino.length - 1} pasos) sale $y(${f(x1)}) ≈ ${f(yRK, 7)}$`}, así que el error de Euler es ${f(Math.abs(yEu - (exacta ? yEx : yRK)), 3)}. El error de Euler es proporcional a h: con la mitad de paso, más o menos la mitad de error.` });
-    return { modo: 'primer', fTxt, F, x0, y0, x1, h, eul, fino, exacta, yRK, yEu, yEx, pasos, lineal: p !== null };
+    if (explota !== null) pasos.push({ t: 'La solución explota', html: `Con RK4 la solución crece sin límite cerca de $x ≈ ${f(explota, 4)}$: tiene una asíntota vertical antes de x = ${f(x1)}, así que $y(${f(x1)})$ no existe. Pasa en ecuaciones no lineales como $y′ = y^2$, cuya solución $y = 1/(C − x)$ se va a infinito en x = C. Los valores de Euler a partir de ahí no tienen sentido.` });
+    else pasos.push({ t: 'Comparación', html: `${exacta ? `La solución exacta vale $y(${f(x1)}) = ${f(yEx, 7)}$` : `Con Runge-Kutta (RK4, ${fino.length - 1} pasos) sale $y(${f(x1)}) ≈ ${f(yRK, 7)}$`}, así que el error de Euler es ${f(Math.abs(yEu - (exacta ? yEx : yRK)), 3)}. El error de Euler es proporcional a h: con la mitad de paso, más o menos la mitad de error.` });
+    return { modo: 'primer', fTxt, F, x0, y0, x1, h, eul, fino, exacta, yRK, yEu, yEx, explota, pasos, lineal: p !== null };
   }
   // sustituye y por un nodo
   function sustY(n, por) {

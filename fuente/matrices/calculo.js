@@ -14,12 +14,18 @@ const Matrices = (() => {
     gauss: { nombre: 'Escalonar (Gauss)' },
     reducida: { nombre: 'Escalonada reducida (Gauss-Jordan)' },
     propios: { nombre: 'Valores y vectores propios', cuadrada: true },
+    jordan: { nombre: 'Forma de Jordan', cuadrada: true },
+    ortogonal: { nombre: 'Diagonalización ortogonal (simétrica)', cuadrada: true },
+    adjunta: { nombre: 'Matriz adjunta (cofactores)', cuadrada: true },
+    lu: { nombre: 'Descomposición LU', cuadrada: true },
     traspuesta: { nombre: 'Traspuesta' },
     suma: { nombre: 'A + B', B: true },
     resta: { nombre: 'A − B', B: true },
     producto: { nombre: 'A · B', B: true },
     escalar: { nombre: 'k · A', k: true },
-    potencia: { nombre: 'Aⁿ', cuadrada: true, n: true },
+    potencia: { nombre: 'Aⁿ', cuadrada: true, n: true, metodos: [['producto', 'Multiplicando'], ['diagonal', 'Por diagonalización (P·Dⁿ·P⁻¹)']] },
+    ecAX: { nombre: 'Ecuación A·X = B', cuadrada: true, B: true },
+    ecXA: { nombre: 'Ecuación X·A = B', cuadrada: true, B: true },
   };
   const pasosGauss = (pasos, opts = {}) => pasos.map((p) => ({ t: p.ops.join(', &nbsp;'), html: matHtml(p.M, { barra: opts.barra ?? p.barra, marca: p.piv }) }));
   const dims = (M) => `${M.length}×${M[0].length}`;
@@ -135,23 +141,227 @@ const Matrices = (() => {
       pasos.push({ t: `Vectores propios de λ = ${html(v.valor)}`, html: `(A ${s === '+' ? '+' : '−'} ${vv.replace(/^\((.*)\)$/, '($1)')}I) x = 0: ${matHtml(M)} → ${matHtml(N.R)}<br>dim = ${N.base.length}${v.mult > 1 ? ` (multiplicidad algebraica ${v.mult})` : ''}; base: ${N.base.map((b) => A_.vecHtml(b)).join(' ')}` });
     }
     const todos = vals.every((x) => x.exacto);
-    let diag;
+    let diag, PD = null;
     if (todos) {
       diag = esp.every((x) => x.base.length === x.mult);
       if (diag) {
         const P = A_.traspuesta(esp.flatMap((x) => x.base)), D = esp.flatMap((x) => Array(x.mult).fill(x.valor)).map((x, i, arr) => arr.map((_, j) => (i === j ? x : A_.c0)));
         pasos.push({ t: 'Es diagonalizable', html: `Cada valor propio tiene tantos vectores como su multiplicidad. Con los vectores en columnas, A = P D P<sup>−1</sup>:<br>P = ${matHtml(P)}, &nbsp; D = ${matHtml(D)}` });
+        PD = { P, D };
       } else pasos.push({ t: 'No es diagonalizable', html: `Algún valor propio tiene menos vectores propios independientes que su multiplicidad.` });
     } else {
       diag = vals.every((x) => x.mult === 1) ? true : null;
       if (diag) pasos.push({ t: 'Es diagonalizable', html: `Los ${n} valores propios son distintos, así que es diagonalizable${A_.esRealM(A) && vals.some((x) => !x.exacto && Math.abs(x.valor.im) > 1e-9) ? ' (en los complejos)' : ''}. Los vectores propios de las raíces no racionales no se calculan de forma exacta aquí.` });
     }
-    return { valor: vals, pasos, diag, polinomio: pc };
+    return { valor: vals, pasos, diag, polinomio: pc, PD, esp };
+  }
+
+  /* ---------- Potencia por diagonalización ---------- */
+  function potDiagonal(A, n) {
+    if (!Number.isInteger(n) || Math.abs(n) > 1000) throw new Error('El exponente n tiene que ser un número entero entre −1000 y 1000');
+    const pr = propios(A);
+    if (!pr.PD) throw new Error(pr.diag === false ? 'A no es diagonalizable: calcula la potencia multiplicando' : 'Los valores propios no son exactos: calcula la potencia multiplicando');
+    const { P, D } = pr.PD, Pi = invGauss(P).valor;
+    if (n < 0 && D.some((f, i) => A_.esCero(f[i]))) throw new Error('A tiene el valor propio 0, así que no tiene inversa ni potencias negativas');
+    const Dn = D.map((f, i) => f.map((x, j) => (i === j ? A_.potencia(x, n) : A_.c0)));
+    const R = A_.producto(A_.producto(P, Dn), Pi);
+    const pasos = pr.pasos.filter((p) => /Polinomio|Valores propios|diagonalizable/.test(p.t));
+    pasos.push({ t: 'Por qué funciona', html: `A = P D P<sup>−1</sup> ⇒ A<sup>n</sup> = P D P<sup>−1</sup> · P D P<sup>−1</sup> ⋯ = P D<sup>n</sup> P<sup>−1</sup>, y D<sup>n</sup> se calcula elevando cada elemento de la diagonal.` });
+    pasos.push({ t: `D<sup>${n}</sup> y P<sup>−1</sup>`, html: `D<sup>${n}</sup> = ${matHtml(Dn)}, &nbsp; P<sup>−1</sup> = ${matHtml(Pi)}` });
+    pasos.push({ t: 'Resultado', html: `A<sup>${n}</sup> = P·D<sup>${n}</sup>·P<sup>−1</sup> = <b>${matHtml(R)}</b>` });
+    return { valor: R, pasos };
+  }
+
+  /* ---------- Forma de Jordan ---------- */
+  const potM = (M, k) => { let R = A_.identidad(M.length); for (let i = 0; i < k; i++) R = A_.producto(R, M); return R; };
+  const columna = (M, j) => M.map((f) => f[j]);
+  const rangoV = (vs) => (vs.length ? A_.escalonar(vs).rango : 0);
+  function jordan(A) {
+    const n = A.length, pr = propios(A), pasos = pr.pasos.filter((p) => /Polinomio|Raíces|Valores propios/.test(p.t));
+    if (!pr.valor.every((v) => v.exacto)) throw new Error('La forma de Jordan solo se calcula aquí cuando los valores propios son exactos (racionales o complejos racionales)');
+    const cols = [], bloques = [];
+    for (const v of pr.valor) {
+      const N = A_.restaM(A, A_.escalar(v.valor, A_.identidad(n)));
+      // dimensiones de ker(N^k) hasta llegar a la multiplicidad
+      const dims = [0];
+      for (let k = 1; k <= n && dims[k - 1] < v.mult; k++) dims.push(A_.nucleo(potM(N, k)).base.length);
+      const s = dims.length - 1, g = dims[1];
+      pasos.push({ t: `λ = ${html(v.valor)}`, html: `Multiplicidad algebraica ${v.mult} y geométrica ${g} (dim ker(A − λI)${s > 1 ? `; ${dims.slice(2).map((d, i) => `dim ker(A − λI)<sup>${i + 2}</sup> = ${d}`).join(', ')}` : ''}).${g === v.mult ? ' Tiene todos sus vectores propios: bloques de tamaño 1.' : ` Le faltan ${v.mult - g} vectores: hacen falta vectores propios generalizados.`}` });
+      // cadenas de Jordan, de la más larga a la más corta
+      const usados = [];
+      for (let k = s; k >= 1; k--) {
+        // cuántos bloques de tamaño ≥ k: dims[k] − dims[k−1]; los de tamaño exactamente k
+        const cuantos = (dims[k] - dims[k - 1]) - (k < s ? dims[k + 1] - dims[k] : 0);
+        if (cuantos <= 0) continue;
+        const ker = A_.nucleo(potM(N, k)).base;
+        let puestos = 0;
+        for (const w of ker) {
+          if (puestos >= cuantos) break;
+          const cad = [w]; for (let i = 1; i < k; i++) cad.unshift(columna(A_.producto(N, cad[0].map((x) => [x])), 0));
+          if (cad.some((c) => c.every(A_.esCero))) continue;
+          if (rangoV([...usados, ...cad]) !== usados.length + k) continue;
+          usados.push(...cad); cols.push(...cad); bloques.push({ l: v.valor, k }); puestos++;
+        }
+      }
+    }
+    if (cols.length !== n) throw new Error('No he podido construir la base de Jordan de esta matriz');
+    const P = A_.traspuesta(cols), J = A.map((_, i) => A.map((_, j) => A_.c0));
+    let pos = 0;
+    for (const b of bloques) { for (let i = 0; i < b.k; i++) { J[pos + i][pos + i] = b.l; if (i < b.k - 1) J[pos + i][pos + i + 1] = A_.c1; } pos += b.k; }
+    if (!A_.iguales(A_.producto(A, P), A_.producto(P, J))) throw new Error('No he podido comprobar la forma de Jordan de esta matriz');
+    pasos.push({ t: 'Base de Jordan', html: `Cada cadena empieza en un vector propio v₁ y sigue con (A − λI) v₂ = v₁, (A − λI) v₃ = v₂…, con los vectores en columnas:<br>P = ${matHtml(P)}` });
+    pasos.push({ t: 'Forma de Jordan', html: `J = P<sup>−1</sup> A P = <b>${matHtml(J)}</b>${bloques.every((b) => b.k === 1) ? ' (es diagonal: A es diagonalizable)' : ', con un 1 encima de la diagonal en cada bloque de tamaño mayor que 1'}.` });
+    return { valor: J, P, pasos };
+  }
+
+  /* ---------- Diagonalización ortogonal ---------- */
+  function ortogonal(A) {
+    const n = A.length;
+    if (!A_.iguales(A, A_.traspuesta(A)) || !A_.esRealM(A)) throw new Error('La diagonalización ortogonal es para matrices simétricas reales (A = Aᵗ)');
+    const pr = propios(A), pasos = pr.pasos.filter((p) => /Polinomio|Raíces|Valores propios|Vectores propios/.test(p.t));
+    if (!pr.valor.every((v) => v.exacto)) throw new Error('Los valores propios no son racionales: la diagonalización ortogonal exacta no se puede escribir aquí');
+    pasos.push({ t: 'Teorema espectral', html: 'Una matriz simétrica real siempre es diagonalizable y sus vectores propios de valores distintos son ortogonales. Dentro de cada subespacio propio se ortogonaliza con Gram-Schmidt y después se normaliza.' });
+    const dot = (u, v) => u.reduce((s, x, i) => A_.suma(s, A_.mul(x, v[i])), A_.c0), cols = [];
+    for (const e of pr.esp) {
+      const orto = [];
+      for (const v of e.base) {
+        let w = v;
+        for (const u of orto) w = w.map((x, i) => A_.resta(x, A_.mul(A_.div(dot(v, u), dot(u, u)), u[i])));
+        orto.push(A_.limpia(w));
+      }
+      if (e.base.length > 1) pasos.push({ t: `Gram-Schmidt en λ = ${html(e.valor)}`, html: `u₁ = v₁, u₂ = v₂ − (v₂·u₁ / u₁·u₁) u₁ …: ${orto.map((u) => A_.vecHtml(u)).join(' ')}` });
+      cols.push(...orto);
+    }
+    // normalizar: cada columna entre √(u·u)
+    const raizTxt = (q) => { const r = A_.raizHtml(q.re); if (!r) { const n2 = q.re; const sq = (b) => { let x = BigInt(Math.round(Math.sqrt(Number(b)))); while (x * x > b) x--; while ((x + 1n) * (x + 1n) <= b) x++; return x; }; return A_.html(A_.C(A_.Q(sq(n2.n), sq(n2.d)))); } return `${r.a === 1n ? '' : r.a}√${r.dentro}${r.b === 1n ? '' : '/' + r.b}`; };
+    const normas = cols.map((u) => raizTxt(dot(u, u)));
+    const Qh = `<span class="mat"><table>${A.map((_, i) => `<tr>${cols.map((u, j) => `<td>${A_.esCero(u[i]) ? '0' : normas[j] === '1' ? html(u[i]) : `<span class="fr"><span>${html(u[i])}</span><span>${normas[j]}</span></span>`}</td>`).join('')}</tr>`).join('')}</table></span>`;
+    const D = pr.esp.flatMap((x) => Array(x.mult).fill(x.valor)).map((x, i, arr) => arr.map((_, j) => (i === j ? x : A_.c0)));
+    pasos.push({ t: 'Se normaliza', html: `Normas: ${normas.map((t, j) => `‖u<sub>${j + 1}</sub>‖ = ${t}`).join(', ')}` });
+    pasos.push({ t: 'Resultado', html: `A = Q D Q<sup>t</sup>, con Q ortogonal (Q<sup>−1</sup> = Q<sup>t</sup>):<br>Q = ${Qh}, &nbsp; D = ${matHtml(D)}` });
+    return { valor: D, pasos, Qh };
+  }
+
+  /* ---------- LU ---------- */
+  function lu(A) {
+    const n = A.length, U = A_.copia(A), L = A_.identidad(n), pasos = [{ t: 'Idea', html: 'Se escalona A sin intercambiar filas. U es la matriz escalonada y L guarda, debajo de la diagonal, los multiplicadores de cada paso F<sub>i</sub> → F<sub>i</sub> − m·F<sub>j</sub>.' }];
+    for (let c = 0; c < n; c++) {
+      if (A_.esCero(U[c][c])) {
+        if (U.slice(c + 1).every((f) => A_.esCero(f[c]))) continue;
+        throw new Error(`Hace falta intercambiar filas (el pivote ${c + 1} es 0): esta matriz no tiene LU sin permutar. Prueba a cambiar el orden de las filas (PA = LU)`);
+      }
+      const ops = [];
+      for (let r = c + 1; r < n; r++) {
+        if (A_.esCero(U[r][c])) continue;
+        const m = A_.div(U[r][c], U[c][c]);
+        L[r][c] = m; U[r] = U[r].map((x, j) => A_.resta(x, A_.mul(m, U[c][j])));
+        ops.push(`m<sub>${r + 1}${c + 1}</sub> = ${html(m)}: ${A_.F(r)} → ${A_.F(r)} − ${esUnoM(m) ? '' : htmlP(m) + '·'}${A_.F(c)}`);
+      }
+      if (ops.length) pasos.push({ t: `Columna ${c + 1}`, html: `${ops.join('<br>')}<br>${matHtml(U)}` });
+    }
+    pasos.push({ t: 'Resultado', html: `A = L·U con L = ${matHtml(L)} y U = ${matHtml(U)}` });
+    return { valor: { L, U }, pasos, L, U };
+  }
+  const esUnoM = (m) => A_.esUno(m);
+
+  /* ---------- Ecuaciones matriciales ---------- */
+  function ecuacion(A, B, lado) {
+    const n = A.length;
+    if (lado === 'AX' && B.length !== n) throw new Error(`En A·X = B, B tiene que tener ${n} filas (tiene ${B.length})`);
+    if (lado === 'XA' && B[0].length !== n) throw new Error(`En X·A = B, B tiene que tener ${n} columnas (tiene ${B[0].length})`);
+    const pasos = [{ t: 'Se despeja X', html: lado === 'AX' ? 'Si A tiene inversa, se multiplica por A<sup>−1</sup> <b>por la izquierda</b>: A<sup>−1</sup>·A·X = A<sup>−1</sup>·B ⇒ X = A<sup>−1</sup>·B' : 'Si A tiene inversa, se multiplica por A<sup>−1</sup> <b>por la derecha</b>: X·A·A<sup>−1</sup> = B·A<sup>−1</sup> ⇒ X = B·A<sup>−1</sup>' }];
+    const d = A_.determinante(A);
+    pasos.push({ t: 'Determinante de A', html: `|A| = ${html(d)}${A_.esCero(d) ? ': A no tiene inversa' : ' ≠ 0: A tiene inversa'}` });
+    if (A_.esCero(d)) { pasos.push({ t: 'Sin inversa', html: 'Con |A| = 0 la ecuación no tiene solución única: o no tiene ninguna o tiene infinitas (se resuelve como un sistema columna a columna).' }); return { valor: null, pasos, res: 'A no tiene inversa: X no es única (o no existe)' }; }
+    const inv = invGauss(A).valor;
+    pasos.push({ t: 'Inversa de A', html: `A<sup>−1</sup> = ${matHtml(inv)}` });
+    const X = lado === 'AX' ? A_.producto(inv, B) : A_.producto(B, inv);
+    pasos.push({ t: 'Resultado', html: `X = ${lado === 'AX' ? `A<sup>−1</sup>·B = ${matHtml(inv)}·${matHtml(B)}` : `B·A<sup>−1</sup> = ${matHtml(B)}·${matHtml(inv)}`} = <b>${matHtml(X)}</b>` });
+    pasos.push({ t: 'Comprobación', html: `${lado === 'AX' ? 'A·X' : 'X·A'} = ${matHtml(lado === 'AX' ? A_.producto(A, X) : A_.producto(X, A))} = B ✓<br>Para A·X + C = D se hace lo mismo con B = D − C.` });
+    return { valor: X, pasos, res: matHtml(X) };
+  }
+
+  /* ---------- Con un parámetro (k, a, m…) ---------- */
+  const P_ = typeof Parametro !== 'undefined' ? Parametro : null;
+  // «si k = 1: …; si k = −2: …; para los demás valores: …»
+  const valoresTxt = (rs) => rs.map(P_.raizHtml).join(', ');
+  function resolverParam(sc, op, O, letra) {
+    const sinParam = { gauss: 'escalonar', reducida: 'la escalonada reducida', propios: 'los valores propios' };
+    if (sinParam[op]) throw new Error(`Con el parámetro ${letra} se pueden calcular el determinante, el rango, la inversa y las operaciones, pero no ${sinParam[op]}: dale un valor a ${letra}`);
+    const A = P_.leeMatriz(sc.A, letra), mh = (M, o) => P_.matHtml(M, letra, o), ph = (q) => P_.html(q, letra), fh = (q) => P_.factorHtml(q, letra);
+    if (!A.length || !A[0].length) throw new Error('La matriz está vacía');
+    if (O.cuadrada && A.length !== A[0].length) throw new Error(`${O.nombre}: la matriz tiene que ser cuadrada (es ${dims(A)})`);
+    const pasos = [{ t: 'Matriz con el parámetro ' + letra, html: `A = ${mh(A)}` }];
+    let res, valor = null, discusion = null;
+    const raicesDe = (d) => P_.raices(d).filter((r, i, xs) => !xs.slice(0, i).some((q) => Math.abs(q.num - r.num) < 1e-9));
+    if (op === 'det' || op === 'inversa') {
+      const d = P_.det(A), rs = raicesDe(d);
+      pasos.push({ t: 'Determinante', html: `|A| = ${mh(A, { det: true })} = ${ph(d)}${P_.grado(d) >= 2 && fh(d) !== ph(d) ? ` = <b>${fh(d)}</b>` : ''}` });
+      if (P_.constante(d)) pasos.push({ t: 'No depende de ' + letra, html: `|A| = ${ph(d)} vale lo mismo para cualquier ${letra}.` });
+      else pasos.push({ t: `¿Cuándo es |A| = 0?`, html: rs.length ? `${ph(d)} = 0 &ensp;⇔&ensp; ${letra} = ${valoresTxt(rs)}` : `${ph(d)} no se anula para ningún ${letra} real.` });
+      if (op === 'det') { res = `|A| = ${fh(d)}`; valor = d; discusion = rs; }
+      else {
+        const n = A.length;
+        if (P_.nulo(d)) { res = `A no tiene inversa para ningún ${letra} (|A| = 0 siempre)`; pasos.push({ t: 'Resultado', html: res }); }
+        else {
+          pasos.push({ t: 'Cuándo tiene inversa', html: rs.length ? `A tiene inversa si y solo si |A| ≠ 0: <b>para ${letra} ≠ ${valoresTxt(rs)}</b>. Para ${rs.length > 1 ? 'esos valores' : 'ese valor'} no tiene inversa.` : `|A| no se anula nunca, así que A tiene inversa para todo ${letra}.` });
+          if (n > 4) pasos.push({ t: 'La inversa', html: `Para ${n}×${n} la inversa con ${letra} es demasiado larga: dale un valor a ${letra} para calcularla.` });
+          else {
+            const cof = (i, j) => { const m = A.filter((_, r) => r !== i).map((f) => f.filter((_, c) => c !== j)); const v = n === 1 ? P_.cte(A_.c1) : P_.det(m); return (i + j) % 2 ? P_.pneg(v) : v; };
+            const adj = A.map((f, i) => f.map((_, j) => cof(i, j))), adjT = adj[0].map((_, j) => adj.map((f) => f[j]));
+            pasos.push({ t: 'Matriz adjunta y traspuesta', html: `Cada elemento es su adjunto (−1)<sup>i+j</sup>·|menor|: (Adj A)<sup>t</sup> = ${mh(adjT)}` });
+            const inv = `<span class="mat"><table>${adjT.map((f) => `<tr>${f.map((q) => `<td>${P_.fracHtml(q, d, letra)}</td>`).join('')}</tr>`).join('')}</table></span>`;
+            pasos.push({ t: 'Resultado', html: `A<sup>−1</sup> = (1 / |A|)·(Adj A)<sup>t</sup> = ${inv}${rs.length ? `, para ${letra} ≠ ${valoresTxt(rs)}` : ''}` });
+            res = `A<sup>−1</sup> = ${inv}`;
+          }
+          if (!res) res = rs.length ? `A tiene inversa para ${letra} ≠ ${valoresTxt(rs)}` : `A tiene inversa para todo ${letra}`;
+          discusion = rs;
+        }
+      }
+    } else if (op === 'rango') {
+      const g = P_.rangoGenerico(A), rs = raicesDe(g.mcd), m = A.length, n = A[0].length;
+      if (g.r === 0) { res = 'rang(A) = 0'; pasos.push({ t: 'Resultado', html: 'Todos los elementos son 0: rang(A) = 0' }); }
+      else {
+        if (g.menor) pasos.push({ t: `Un menor de orden ${g.r}`, html: `Con las filas ${g.menor.fs.map((i) => i + 1).join(', ')} y las columnas ${g.menor.cs.map((j) => j + 1).join(', ')}: ${mh(P_.submatriz(A, g.menor.fs, g.menor.cs), { det: true })} = ${fh(g.menor.d)}${g.r < Math.min(m, n) ? `. Todos los menores de orden ${g.r + 1} son 0 para cualquier ${letra}, así que el rango nunca pasa de ${g.r}` : ''}.` });
+        const casos = rs.map((r) => {
+          const rg = r.exacta ? A_.escalonar(P_.evaluaM(A, r.valor)).rango : P_.rangoF(A, r.num);
+          return { r, rg };
+        });
+        pasos.push({ t: rs.length ? `¿Cuándo se anulan todos los menores de orden ${g.r}?` : 'Discusión', html: rs.length ? `Todos los menores de orden ${g.r} se anulan a la vez solo si ${letra} = ${valoresTxt(rs)} (las raíces comunes, que son las de su máximo común divisor ${fh(g.mcd)}). Para cada valor se sustituye y se escalona:<br>${casos.map((c) => `${letra} = ${P_.raizHtml(c.r)}: rang(A) = <b>${c.rg}</b>`).join('<br>')}` : `Hay un menor de orden ${g.r} que no se anula para ningún ${letra}: rang(A) = ${g.r} siempre.` });
+        res = casos.length ? `Si ${letra} ≠ ${valoresTxt(rs)}: rang(A) = ${g.r}${casos.map((c) => `<br>Si ${letra} = ${P_.raizHtml(c.r)}: rang(A) = ${c.rg}`).join('')}` : `rang(A) = ${g.r} para todo ${letra}`;
+        valor = { r: g.r, casos: casos.map((c) => ({ valor: c.r.num, rango: c.rg })) };
+      }
+    } else {
+      // operaciones: el resultado es una matriz de polinomios
+      const B = O.B ? (() => { try { return P_.leeMatriz(sc.B, letra); } catch (e) { throw new Error('Matriz B · ' + e.message); } })() : null;
+      const prod = (X, Y) => X.map((f) => Y[0].map((_, j) => f.reduce((s, x, k) => P_.psuma(s, P_.pmul(x, Y[k][j])), P_.cte(A_.c0))));
+      let R;
+      if (op === 'traspuesta') R = A[0].map((_, j) => A.map((f) => f[j]));
+      else if (op === 'suma' || op === 'resta') {
+        if (A.length !== B.length || A[0].length !== B[0].length) throw new Error(`Para ${op === 'suma' ? 'sumar' : 'restar'}, A y B deben tener el mismo tamaño (A es ${dims(A)} y B es ${dims(B)})`);
+        R = A.map((f, i) => f.map((x, j) => (op === 'suma' ? P_.psuma : P_.presta)(x, B[i][j])));
+        pasos.push({ t: 'B', html: `B = ${mh(B)}` });
+      } else if (op === 'producto') {
+        if (A[0].length !== B.length) throw new Error(`Para multiplicar A·B, las columnas de A (${A[0].length}) tienen que ser tantas como las filas de B (${B.length})`);
+        R = prod(A, B); pasos.push({ t: 'B', html: `B = ${mh(B)}` });
+      } else if (op === 'escalar') { const k = P_.lee(sc.k, letra); R = A.map((f) => f.map((x) => P_.pmul(k, x))); }
+      else if (op === 'potencia') {
+        const n = Number(String(sc.n).trim().replace('−', '-'));
+        if (!Number.isInteger(n) || n < 0 || n > 10) throw new Error(`Con el parámetro ${letra}, el exponente n tiene que ser un entero entre 0 y 10`);
+        R = A.map((f, i) => f.map((_, j) => P_.cte(i === j ? A_.c1 : A_.c0)));
+        for (let k = 1; k <= n; k++) { R = prod(R, A); if (k > 1 && n <= 4) pasos.push({ t: `A<sup>${k}</sup>`, html: mh(R) }); }
+      }
+      pasos.push({ t: 'Resultado', html: mh(R) });
+      res = mh(R); valor = R;
+    }
+    return { op, metodo: null, letra, A: sc.A, valor, discusion, res, pasos };
   }
 
   /* ---------- Resolución ---------- */
   function resolver(sc) {
     const op = OPS[sc.op] ? sc.op : 'det', O = OPS[op];
+    const letra = P_ ? P_.letraDe([...(sc.A || []).flat(), ...(O.B ? (sc.B || []).flat() : []), ...(O.k ? [sc.k] : [])]) : null;
+    if (letra) return resolverParam(sc, op, O, letra);
     const A = A_.leerMatriz(sc.A);
     if (!A.length || !A[0].length) throw new Error('La matriz está vacía');
     if (O.cuadrada && A.length !== A[0].length) throw new Error(`${O.nombre}: la matriz tiene que ser cuadrada (es ${dims(A)})`);
@@ -170,6 +380,16 @@ const Matrices = (() => {
         r.res = op === 'rango' ? `rang(A) = ${e.rango}` : matHtml(e.R);
         break;
       }
+      case 'jordan': r = jordan(A); r.res = `J = ${matHtml(r.valor)}`; break;
+      case 'ortogonal': r = ortogonal(A); r.res = `Q = ${r.Qh}, &nbsp; D = ${matHtml(r.valor)}`; break;
+      case 'lu': r = lu(A); r.res = `L = ${matHtml(r.L)}, &nbsp; U = ${matHtml(r.U)}`; break;
+      case 'adjunta': {
+        const n = A.length, adj = n === 1 ? [[A_.c1]] : A.map((f, i) => f.map((_, j) => A_.cofactor(A, i, j))), pasos = [{ t: 'Matriz', html: matHtml(A) }];
+        if (n > 1) pasos.push({ t: 'Adjuntos', html: `A<sub>ij</sub> = (−1)<sup>i+j</sup>·|M<sub>ij</sub>|, con M<sub>ij</sub> la matriz sin la fila i ni la columna j.${n <= 3 ? '<br>' + adj.map((f, i) => f.map((x, j) => `A<sub>${i + 1}${j + 1}</sub> = ${(i + j) % 2 ? '−' : '+'}${matHtml(A_.menor(A, i, j), { det: true })} = ${html(x)}`).join('<br>')).join('<br>') : ''}` });
+        pasos.push({ t: 'Matriz adjunta', html: `Adj(A) = ${matHtml(adj)}` }, { t: 'Traspuesta de la adjunta', html: `(Adj A)<sup>t</sup> = ${matHtml(A_.traspuesta(adj))}. Cumple A·(Adj A)<sup>t</sup> = |A|·I, con |A| = ${html(A_.determinante(A))}.` });
+        r = { valor: adj, pasos, res: `Adj(A) = ${matHtml(adj)}` }; break;
+      }
+      case 'ecAX': case 'ecXA': r = ecuacion(A, B, op === 'ecAX' ? 'AX' : 'XA'); break;
       case 'propios': r = propios(A); r.res = `λ = ${r.valor.map((v) => (v.exacto ? html(v.valor) : v.etiqueta || '≈ ' + A_.decimalC(v.valor, 5))).join(', &nbsp;')}`; break;
       case 'traspuesta': { const T = A_.traspuesta(A); r = { valor: T, pasos: [{ t: 'Las filas pasan a ser columnas', html: `A<sup>t</sup> = ${matHtml(T)} (de ${dims(A)} a ${dims(T)})` }] }; r.res = matHtml(T); break; }
       case 'suma': case 'resta': {
@@ -190,7 +410,8 @@ const Matrices = (() => {
       }
       case 'potencia': {
         const n = Number(String(sc.n).trim().replace('−', '-'));
-        if (!Number.isInteger(n) || Math.abs(n) > 50) throw new Error('El exponente n tiene que ser un número entero entre −50 y 50');
+        if (metodo === 'diagonal') { r = potDiagonal(A, n); r.res = matHtml(r.valor); break; }
+        if (!Number.isInteger(n) || Math.abs(n) > 50) throw new Error('El exponente n tiene que ser un número entero entre −50 y 50 (para más, usa la diagonalización)');
         const pasos = [];
         let base = A;
         if (n < 0) { const inv = invGauss(A); if (!inv.valor) throw new Error('A no tiene inversa, así que no se puede elevar a un exponente negativo'); base = inv.valor; pasos.push({ t: 'Exponente negativo', html: `A<sup>${n}</sup> = (A<sup>−1</sup>)<sup>${-n}</sup>, con A<sup>−1</sup> = ${matHtml(base)}` }); }
@@ -206,6 +427,13 @@ const Matrices = (() => {
 
   const M = (...filas) => filas.map((f) => f.split(' '));
   const ejemplos = [
+    { clave: 'param-rango', nombre: 'Rango según el parámetro k', sc: { op: 'rango', A: M('1 1 k', '1 k 1', 'k 1 1') } },
+    { clave: 'param-inversa', nombre: 'Inversa según el valor de a', sc: { op: 'inversa', metodo: 'adjuntos', A: M('1 0 -1', '0 a 3', '4 1 -a') } },
+    { clave: 'jordan', nombre: 'Forma de Jordan 3×3', sc: { op: 'jordan', A: M('2 1 0', '0 2 0', '0 0 3') } },
+    { clave: 'ortogonal', nombre: 'Diagonalización ortogonal', sc: { op: 'ortogonal', A: M('2 1 1', '1 2 1', '1 1 2') } },
+    { clave: 'ecuacion', nombre: 'Ecuación matricial A·X = B', sc: { op: 'ecAX', A: M('1 2', '3 4'), B: M('5 6', '7 8') } },
+    { clave: 'lu', nombre: 'Descomposición LU', sc: { op: 'lu', A: M('2 1 1', '4 3 3', '8 7 9') } },
+    { clave: 'potencia-diag', nombre: 'A¹⁰ por diagonalización', sc: { op: 'potencia', metodo: 'diagonal', A: M('4 1', '2 3'), n: '10' } },
     { clave: 'det3', nombre: 'Determinante 3×3 por Sarrus', sc: { op: 'det', metodo: 'directo', A: M('2 1 3', '0 -1 4', '1 2 5') } },
     { clave: 'det4', nombre: 'Determinante 4×4 por Laplace', sc: { op: 'det', metodo: 'directo', A: M('1 0 2 -1', '3 0 0 5', '2 1 4 -3', '1 0 5 0') } },
     { clave: 'det-gauss', nombre: 'Determinante por Gauss', sc: { op: 'det', metodo: 'gauss', A: M('2 4 -2', '1 3 1', '3 1 2') } },

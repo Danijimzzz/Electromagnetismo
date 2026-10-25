@@ -102,6 +102,13 @@ const Fourier = (() => {
       if (!(b > a)) throw new Error(`El tramo ${i + 1} tiene que ir de menos a más (a < b)`);
       return { ast, a, b, txt: E.texto(E.simp(ast)), fn: (x) => E.valor(ast, x) };
     });
+    // ¿es integrable? ∫|f| con Gauss cada vez más fino: si converge, las diferencias se van reduciendo;
+    // si f se va a infinito sin ser integrable (1/x cerca de 0), siguen creciendo lo mismo
+    tramos.forEach((t, i) => {
+      const I = (sub) => { let s = 0; const h = (t.b - t.a) / sub; for (let k = 0; k < sub; k++) for (let j = 0; j < 8; j++) s += (GW[j] * h * Math.abs(t.fn(t.a + (k + 0.5) * h + (GX[j] * h) / 2))) / 2; return s; };
+      const i1 = I(64), i2 = I(256), i3 = I(1024);
+      if (isFinite(i3) && i3 - i2 > 0.01 * Math.max(1, i3) && i3 - i2 > 0.75 * (i2 - i1)) throw new Error(`La función${tramos.length > 1 ? ` del tramo ${i + 1}` : ''} se va a infinito y su integral no existe: no tiene serie de Fourier`);
+    });
     for (let i = 1; i < tramos.length; i++) if (Math.abs(tramos[i].a - tramos[i - 1].b) > 1e-9 * Math.max(1, Math.abs(tramos[i].a))) throw new Error(`El tramo ${i + 1} tiene que empezar donde acaba el ${i} (${f(tramos[i - 1].b)})`);
     const a0x = tramos[0].a, b0x = tramos[tramos.length - 1].b;
     if (ext !== 'periodica' && Math.abs(a0x) > 1e-12) throw new Error('Para la extensión par o impar la función se da en [0, L]: el primer tramo tiene que empezar en 0');

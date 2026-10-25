@@ -176,8 +176,11 @@ const Derivadas = (() => {
     }
     // puntos críticos en la ventana: f′ = 0, y su tipo por f″
     const d1 = ders[1], d2 = D(d1), a = out.x0 !== undefined ? out.x0 - 5 : -5, b = out.x0 !== undefined ? out.x0 + 5 : 5, crit = [];
+    // f′ = 0 en todo x (por ejemplo sen²x + cos²x): f es constante y no tiene puntos críticos aislados
+    out.constante = esNum(d1) ? d1.v === 0 : Array.from({ length: 41 }, (_, i) => E.valor(d1, a + ((b - a) * i) / 40)).every((v) => isFinite(v) && Math.abs(v) < 1e-12);
+    if (out.constante) pasos.push({ t: 'Función constante', html: `$f′(x) = 0$ en todo x, así que f es constante: no tiene máximos ni mínimos aislados.` });
     let xa = a, va = E.valor(d1, a);
-    for (let i = 1; i <= 400; i++) {
+    for (let i = 1; i <= 400 && !out.constante; i++) {
       const xb = a + ((b - a) * i) / 400, vb = E.valor(d1, xb);
       if (isFinite(va) && isFinite(vb) && va * vb <= 0 && !(va === 0 && i > 1)) {
         let lo = xa, hi = xb, fl = va;

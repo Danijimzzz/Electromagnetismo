@@ -85,10 +85,38 @@ const Complejos = (() => {
       const a = leeReal(t, `el argumento de ${nom}`);
       return { z: pol(leeReal(m[1] || '1', `el módulo de ${nom}`).v, a.grados || a.conPi || unidad === 'radianes' ? a.v : a.v / GR), ex: null, forma: 'exponencial' };
     }
+    // binómica con raíces o π: 1 + √3i, 1 + i√3, √2/2 − (√2/2)i, π + 2i
+    if (/π|√/.test(s) && !/[°º]/.test(s)) { const w = binomicaReal(s); if (w) return w; }
     if (/π|√|°|º/.test(s)) throw new Error(`«${orig}» no se entiende: escribe ${nom} como 3 − 2i, 2∠60°, 2(cos 60° + i sen 60°) o 2e^(iπ/3)`);
     let ex;
     try { ex = A.leer(s); } catch (e) { throw new Error(`«${orig}» no se entiende: escribe ${nom} como 3 − 2i, 2∠60°, 2(cos 60° + i sen 60°) o 2e^(iπ/3)`); }
     return { z: A.aFloat(ex), ex, forma: 'binómica' };
+  }
+
+  // a + bi con a y b reales escritos con √, π o fracciones; null si no tiene esa forma
+  function binomicaReal(s) {
+    const t = s.replace(/\s+/g, '').replace(/j/g, 'i'), terms = [];
+    let dentro = 0, ini = 0;
+    for (let k = 0; k < t.length; k++) {
+      const c = t[k];
+      if (c === '(') dentro++; else if (c === ')') dentro--;
+      else if ((c === '+' || c === '-') && dentro === 0 && k > 0 && !/[*/^]/.test(t[k - 1])) { terms.push(t.slice(ini, k)); ini = k; }
+    }
+    terms.push(t.slice(ini));
+    let re = 0, im = 0;
+    try {
+      for (const q of terms) {
+        const n = (q.match(/i/g) || []).length;
+        if (n > 1) return null;
+        if (!n) { re += leeReal(q, 'la parte real').v; continue; }
+        let c = q.replace(/[*·]?i[*·]?/, '');
+        if (c === '' || c === '+') c = '1'; else if (c === '-') c = '-1';
+        im += leeReal(c, 'la parte imaginaria').v;
+      }
+    } catch (e) { return null; }
+    // se escribe como lo puso el alumno: 1 + √3 i
+    const txt = terms.map((q, k) => { const sg = q[0] === '-' ? '−' : '+', c = q.replace(/^[+-]/, '').replace(/[*·]?i[*·]?/, (m) => (m ? ' i' : '')).trim(); return k ? ` ${sg} ${c}` : `${sg === '−' ? '−' : ''}${c}`; }).join('').replace(/^ i|\( i/g, (m) => m.replace(' ', ''));
+    return { z: Z(re, im), ex: null, forma: 'binómica', txt };
   }
 
   /* ---------- Escritura ---------- */
@@ -128,13 +156,15 @@ const Complejos = (() => {
   const exTxt = (ex) => A.txt(ex), qT = (q) => A.txt(A.C(q));
   // entre paréntesis si tiene dos términos o es negativo, para sustituir: (3 − 2i), (−45°)
   const enPar = (s) => (/^[^+−]+$/.test(s) ? s : `(${s})`);
-  const binHtml = (w) => (w.ex ? exTxt(w.ex) : bin(w.z));
+  const binHtml = (w) => (w.ex ? exTxt(w.ex) : w.txt ?? bin(w.z));
 
   // las formas de un complejo y el argumento con su cuadrante
   function formas(w, unidad, nom = 'z') {
     const z = limpia(w.z), r = mod(z), t = arg(z), { re: a, im: b } = z;
     const rT = moduloTxt(z, w.ex), rN = f(r), tT = angulo(t, unidad), tP = piFrac(t) ?? f(t);
     const x = w.ex ? qT(w.ex.re) : f(a), y = w.ex ? qT(w.ex.im) : f(b);
+    // el módulo exacto si lo hay (5√2 en vez de 7,071) y el ángulo negativo entre paréntesis: cos(−53,13°)
+    const rE = rT.includes('≈') ? rT.split(' ≈')[0] : rN, tA = tT.startsWith('−') ? `(${tT})` : tT;
     let argH;
     if (r === 0) argH = 'El 0 tiene módulo 0 y su argumento no está definido.';
     else if (a === 0) argH = `Está sobre el eje imaginario ${b > 0 ? 'positivo' : 'negativo'}: $θ = ${angulo(b > 0 ? PI / 2 : -PI / 2, unidad)}$`;
@@ -146,7 +176,7 @@ const Complejos = (() => {
     }
     return {
       r, t, rT, tT,
-      binomica: binHtml(w), polar: `${rN}_{${tT}}`, trig: `${rN}(cos ${tT} + i sen ${tT})`, expo: `${rN} e^{${tP === '0' ? '0' : `${tP}i`}}`,
+      binomica: binHtml(w), polar: `${rE}_{${tT}}`, trig: rE === '1' ? `cos ${tA} + i sen ${tA}` : `${rE}(cos ${tA} + i sen ${tA})`, expo: `${rE === '1' ? '' : rE + ' '}e^{${tP === '0' ? '0' : piFrac(t) ? tP.replace('π', 'iπ') : `${tP} i`}}`,
       pasos: [
         { t: `Módulo de ${nom}`, html: `$|${nom}| = √(a^2 + b^2) = √(${enPar(x)}^2 + ${enPar(y)}^2)$ = <b>$${rT}$</b>` },
         { t: `Argumento de ${nom}`, html: argH },

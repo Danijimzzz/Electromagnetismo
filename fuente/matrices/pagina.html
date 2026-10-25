@@ -60,7 +60,8 @@ h1 { font: 600 22px/1.25 var(--f-ui); margin: 0 0 4px }
 .fr > span:first-child { border-bottom: 1px solid currentColor; padding: 0 2px }
 .teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
 .teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
-.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+.teoria .f { max-width: 100%; box-sizing: border-box; overflow-x: auto; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+.teoria li, .teoria p { overflow-x: auto }
 footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
 </style>
 <body>
@@ -80,7 +81,7 @@ footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8p
     </div>
     <div class="editor" id="ed-A"></div>
     <div class="editor" id="ed-B"></div>
-    <p class="nota">Escribe enteros, fracciones (3/4), decimales (0,25) o complejos (2−3i, (1+i)/2). Con Tab pasas a la casilla siguiente.</p>
+    <p class="nota">Escribe enteros, fracciones (3/4), decimales (0,25) o complejos (2−3i, (1+i)/2). También puedes usar un parámetro, como k, 2k − 1 o a^2, para discutir el rango, el determinante o la inversa según su valor. Con Tab pasas a la casilla siguiente.</p>
     <p class="error" id="error" hidden></p>
   </div>
   <div>
@@ -99,7 +100,12 @@ footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8p
   <p>Una matriz cuadrada tiene inversa si y solo si su determinante no es cero. Por Gauss-Jordan se reduce [A | I] hasta que a la izquierda quede la identidad, y entonces a la derecha queda A<sup>−1</sup>. Por adjuntos se usa la fórmula:</p>
   <p class="f m">$A^{−1} = 1/{|A|} · ("Adj" A)^t$</p>
   <h2>Valores y vectores propios</h2>
-  <p>λ es un valor propio de A si hay un vector v ≠ 0 con A v = λ v. Los valores propios son las raíces del polinomio característico |A − λI| = 0, y los vectores propios de cada λ son las soluciones no nulas de (A − λI) v = 0. La matriz es diagonalizable cuando cada valor propio tiene tantos vectores propios independientes como su multiplicidad. Entonces A = P D P<sup>−1</sup>, con los vectores propios en las columnas de P y los valores propios en la diagonal de D.</p>
+  <p>λ es un valor propio de A si hay un vector v ≠ 0 con A v = λ v. Los valores propios son las raíces del polinomio característico |A − λI| = 0, y los vectores propios de cada λ son las soluciones no nulas de (A − λI) v = 0. La matriz es diagonalizable cuando cada valor propio tiene tantos vectores propios independientes como su multiplicidad. Entonces A = P D P<sup>−1</sup>, con los vectores propios en las columnas de P y los valores propios en la diagonal de D. Así las potencias salen solas: A<sup>n</sup> = P D<sup>n</sup> P<sup>−1</sup>.</p>
+  <p>Si a algún valor propio le faltan vectores propios, la matriz no es diagonalizable, pero sí se puede llevar a su <b>forma de Jordan</b> J = P<sup>−1</sup> A P: casi diagonal, con un 1 encima de la diagonal en cada bloque. Las columnas de P forman cadenas de vectores propios generalizados, (A − λI) v<sub>2</sub> = v<sub>1</sub>. Si A es simétrica real, siempre se puede diagonalizar con una matriz ortogonal Q (Q<sup>−1</sup> = Q<sup>t</sup>), ortonormalizando los vectores propios con Gram-Schmidt.</p>
+  <h2>Con un parámetro</h2>
+  <p>Cuando la matriz lleva una letra (k, a, m…), el determinante es un polinomio en ella. Sus raíces son los valores en los que A deja de tener inversa y el rango baja. Para el rango se busca el menor de mayor orden que no es 0 para casi todos los valores; el rango solo baja cuando todos los menores de ese orden se anulan a la vez, y en cada uno de esos valores se sustituye y se escalona.</p>
+  <h2>Ecuaciones matriciales y LU</h2>
+  <p>En A·X = B se despeja multiplicando por A<sup>−1</sup> por la izquierda, X = A<sup>−1</sup>·B, y en X·A = B por la derecha, X = B·A<sup>−1</sup>: el orden importa porque el producto de matrices no es conmutativo. La descomposición A = L·U guarda la eliminación de Gauss: U es la matriz escalonada y L, triangular inferior con unos en la diagonal, los multiplicadores de cada paso.</p>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Matrices <span id="ver"></span> (beta)</footer>

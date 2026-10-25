@@ -81,10 +81,13 @@
     let h = '';
     if (sol.modo === 'primer') {
       if (sol.exacta) h += dato('Solución exacta', M(`y(x) = ${sol.exacta.txt}`), 'ancho');
-      h += dato(`y(${fH(sol.x1)}) con Euler`, fH(sol.yEu, 6), 'num');
-      h += dato(`y(${fH(sol.x1)}) con RK4`, fH(sol.yRK, 6), 'num');
-      if (sol.exacta) h += dato(`y(${fH(sol.x1)}) exacta`, fH(sol.yEx, 6), 'num');
-      h += dato('Error de Euler', fH(Math.abs(sol.yEu - (sol.exacta ? sol.yEx : sol.yRK)), 4));
+      if (sol.explota !== null) h += dato('La solución explota', `cerca de x ≈ ${fH(sol.explota, 4)} (asíntota vertical): y(${fH(sol.x1)}) no existe`, 'ancho');
+      else {
+        h += dato(`y(${fH(sol.x1)}) con Euler`, fH(sol.yEu, 6), 'num');
+        h += dato(`y(${fH(sol.x1)}) con RK4`, fH(sol.yRK, 6), 'num');
+        if (sol.exacta) h += dato(`y(${fH(sol.x1)}) exacta`, fH(sol.yEx, 6), 'num');
+        h += dato('Error de Euler', fH(Math.abs(sol.yEu - (sol.exacta ? sol.yEx : sol.yRK)), 4));
+      }
     } else if (sol.modo === 'segundo') {
       h += dato('Solución', M(`y(x) = ${sol.txt}`), 'ancho');
       h += dato('Raíces', Mates.html(sol.raices.replace(/, (reales|doble|complejas).*$/, '')));
@@ -127,7 +130,9 @@
   };
   function ventana() {
     if (sol.modo === 'primer') {
-      const ys = [...sol.fino.map((q) => q.Y[0]), ...sol.eul.map((q) => q.y)];
+      // si la solución explota, la ventana llega solo hasta poco antes de la asíntota
+      const xm = sol.explota !== null ? sol.x0 + 0.9 * (sol.explota - sol.x0) : Infinity;
+      const ys = [...sol.fino.filter((q) => q.t <= xm).map((q) => q.Y[0]), ...sol.eul.filter((q) => q.x <= xm).map((q) => q.y)];
       const [y1, y2] = rango(ys, 0.15), dx = (sol.x1 - sol.x0) * 0.04;
       return { x1: sol.x0 - dx, x2: sol.x1 + dx, y1, y2 };
     }

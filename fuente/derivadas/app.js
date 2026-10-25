@@ -100,7 +100,8 @@
         sol.vals.slice(1).forEach((v, i) => { h += dato(`${txt(prima(i + 1).replace(/\^\{\((\d)\)\}/, '⁽$1⁾'))}(${fH(sol.x0)})`, fH(v, 6), 'num'); });
         h += dato('Recta tangente', M(sol.tangente), 'ancho');
       }
-      if (sol.crit.length) h += dato('Puntos críticos', sol.crit.slice(0, 4).map((q) => `x = ${fH(q.x)}: ${q.tipo}`).join('<br>'), 'ancho');
+      if (sol.constante) h += dato('Puntos críticos', 'Ninguno: f′ = 0 en todo x (f es constante)', 'ancho');
+      else if (sol.crit.length) h += dato('Puntos críticos', sol.crit.slice(0, 4).map((q) => `x = ${fH(q.x)}: ${q.tipo}`).join('<br>'), 'ancho');
     } else {
       h += dato('Primitiva', sol.F ? M(`∫ f(x) dx = ${sol.Ftxt} + C`) : 'No es elemental (o no sé hacerla)', 'ancho');
       if (sol.a !== undefined) {
