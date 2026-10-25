@@ -26,6 +26,7 @@ a { color:inherit; text-decoration:none }
 .top nav { display:flex; gap:4px 16px; font-size:14px; color:var(--muted); overflow-x:auto; max-width:100%; scrollbar-width:none }
 .top nav a { white-space:nowrap; padding:2px 0 } .top nav a:hover, .top nav a[aria-current] { color:var(--ink) } .top nav a[aria-current] { font-weight:600 }
 .buscar { margin-left:auto; font:14px var(--f-ui); color:var(--ink); border:1px solid var(--line); border-radius:8px; padding:7px 12px; width:min(300px,100%); background:var(--bg) }
+.top .foro { margin-left:auto; display:inline-flex; align-items:center; gap:6px; white-space:nowrap; font:600 14px var(--f-ui); color:var(--ink); text-decoration:none; border:1px solid var(--line); border-radius:8px; padding:6px 12px } .top .foro:hover, .top .foro[aria-current] { border-color:var(--accent); color:var(--accent) } .foro + .buscar { margin-left:0 } .top > .foro ~ .tema { margin-left:0 }
 .buscar:focus-visible, a:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
 main { max-width:1120px; margin:0 auto; padding:28px clamp(16px,3vw,28px) 40px }
 h1 { font:600 clamp(24px,4vw,28px)/1.2 var(--f-ui); margin:0 0 6px } .sub { color:var(--muted); margin:0 0 24px; max-width:640px }
@@ -51,7 +52,8 @@ a .t { background:var(--c); color:var(--panel) }
 .mini > * { min-width:0; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--c); border-radius:4px 10px 10px 4px; padding:10px 12px }
 .mini a:hover { background:color-mix(in srgb,var(--c) 6%,var(--panel)); border-color:color-mix(in srgb,var(--c) 50%,var(--line)); border-left-color:var(--c) }
 .mini b { display:block; font-weight:600; font-size:14px } .mini span { display:block; color:var(--muted); font-size:12.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
-.mini .off { color:var(--muted); border-style:dashed; border-left-style:solid }
+.mini .off { color:var(--muted); border-style:dashed; border-left-style:solid; cursor:default }
+.mini .pronto { font-style:normal; font-weight:600; color:var(--c) }
 @media (prefers-reduced-motion: no-preference) { html { scroll-behavior:smooth } }
 @media (max-width:760px) {
   .lay { grid-template-columns:minmax(0,1fr) }
@@ -64,7 +66,10 @@ a .t { background:var(--c); color:var(--panel) }
 a.card:hover { border-color:var(--c) }
 .card .img { height:110px; background:linear-gradient(135deg,color-mix(in srgb,var(--c) 16%,var(--panel)),var(--panel)); display:grid; place-items:center; font:italic 38px var(--f-math); color:var(--c) }
 .card .b { padding:12px 14px 14px; display:flex; flex-direction:column; gap:4px; flex:1 } .card h2 { margin:0; font:600 16px var(--f-ui) } .card p { margin:0; color:var(--muted); font-size:13.5px }
-.card .t { margin:8px 0 0; align-self:flex-start } .card.off { opacity:.65 }
+.card .t { margin:8px 0 0; align-self:flex-start } .card.off { opacity:.65; border-style:dashed; cursor:default }
+.obras { max-width:640px; margin:24px auto 0; text-align:center; background:var(--panel); border:1px dashed var(--line); border-radius:14px; padding:36px 24px }
+.obras .ico { width:56px; height:56px; border-radius:14px; font-size:28px; margin:0 auto 14px; font-style:normal } .obras h1 { margin-bottom:8px } .obras p { color:var(--muted); margin:0 auto 10px; max-width:480px }
+.obras a { color:var(--accent); font-weight:600 } .obras a:hover { text-decoration:underline }
 .otras { margin-top:32px; font-size:14px; color:var(--muted) } .otras a { color:var(--accent); margin-right:14px; white-space:nowrap } .otras a:hover { text-decoration:underline }
 /* novedades: una línea de tiempo por días y, en ella, una tarjeta por versión con todos sus cambios */
 :root { --nueva:#0d6b66; --mejora:#2a5db5; --arreglo:#9a5b00 }
@@ -117,6 +122,7 @@ function pagina({ titulo, desc, raiz, actual, cuerpo, buscar, script }) {
 <body>
 <header class="top"><a class="logo" href="${raiz}">${esc(m1)}<i>${esc(m2)}</i></a>
 <nav aria-label="Asignaturas"><a href="${raiz}"${actual ? '' : ' aria-current="page"'}>Inicio</a>${nav}</nav>
+<a class="foro" href="${raiz}foro/"${actual === 'foro' ? ' aria-current="page"' : ''}><span aria-hidden="true">💬</span>Foro</a>
 ${buscar ? '<input type="search" id="buscar" class="buscar" placeholder="Buscar: Biot-Savart, molaridad…" aria-label="Buscar herramientas" autocomplete="off">' : ''}${Tema.BOTON}</header>
 ${cuerpo}
 <footer><a href="${raiz}contacto.html">Contacto</a>·<a href="${raiz}aviso-legal.html">Aviso legal</a>·<a href="${raiz}privacidad.html">Privacidad</a>·<a href="${raiz}cookies.html">Cookies</a>· <a href="${raiz}novedades/">Versión ${esc(Version.de('web').current)} (beta)</a></footer>
@@ -126,7 +132,10 @@ ${script ? `<script>${script}</script>\n` : ''}</body>
 }
 
 const estilo = (a) => `--cl:${a.color};--co:${a.colorOscuro}`;
-const contar = (a) => (disponibles(a).length ? `${disponibles(a).length} de ${a.herramientas.length}` : 'en preparación');
+const contar = (a) => {
+  const n = disponibles(a).length, p = a.herramientas.length - n;
+  return n ? `${n} herramientas${p ? ` · ${p} próximamente` : ''}` : 'en preparación';
+};
 const textoBusqueda = (a, h) => esc([a.nombre, h.nombre, h.desc, h.buscar || ''].join(' '));
 
 // portada: barra lateral con las asignaturas y, a la derecha, una sección por asignatura con sus herramientas
@@ -136,7 +145,7 @@ ${Catalogo.asignaturas.map((a) => `  <a href="#${a.clave}" style="${estilo(a)}">
 const secciones = Catalogo.asignaturas.map((a) => {
   const fichas = a.herramientas.map((h) => h.disponible
     ? `  <a href="${a.clave}/${h.clave}/" title="${esc(h.desc)}" data-buscar="${textoBusqueda(a, h)}"><b>${esc(h.nombre)}</b><span>${esc(h.desc)}</span></a>`
-    : `  <div class="off" data-buscar="${textoBusqueda(a, h)}"><b>${esc(h.nombre)}</b><span>Próximamente</span></div>`).join('\n');
+    : `  <div class="off" title="${esc(h.desc)}" data-buscar="${textoBusqueda(a, h)}"><b>${esc(h.nombre)}</b><span><i class="pronto">Próximamente</i> ${esc(h.desc)}</span></div>`).join('\n');
   return `<section class="asig" id="${a.clave}" style="${estilo(a)}"><header><span class="ico">${esc(a.icono)}</span><h2>${esc(a.nombre)}</h2><small>${contar(a)}</small><a class="ver" href="${a.clave}/">Ver la asignatura →</a></header>
 <div class="mini">
 ${fichas}
@@ -205,6 +214,19 @@ ${cards}
 </main>`,
   });
 }
+
+// foro: de momento solo una página que avisa de que está en construcción
+archivos['foro/index.html'] = pagina({
+  titulo: `Foro · ${marca}`, desc: `El foro de ${marca} para preguntar dudas y compartir ejercicios llegará pronto.`, raiz: '../', actual: 'foro',
+  cuerpo: `<main style="--cl:#0d6b66;--co:#4dbcb0">
+<div class="crumb"><a href="../">Inicio</a> / Foro</div>
+<section class="obras"><span class="ico" aria-hidden="true">🚧</span>
+<h1>Foro en construcción</h1>
+<p>Muy pronto podrás preguntar tus dudas, ayudar a otros estudiantes y compartir ejercicios resueltos con las herramientas de la web.</p>
+<p>Mientras tanto, <a href="../">vuelve al inicio</a> o mira las <a href="../novedades/">novedades</a>.</p>
+</section>
+</main>`,
+});
 
 // novedades: una página propia con una línea de tiempo por días y una tarjeta por versión con todos sus cambios.
 // El tipo de cada cambio sale de la nota: «Nueva herramienta: X, en Y.» es una herramienta nueva (con enlace),

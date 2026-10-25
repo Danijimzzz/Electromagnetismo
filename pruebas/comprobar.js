@@ -21,7 +21,7 @@ const mal = (m) => { fallos++; console.log('  ✗ ' + m); };
 // lo único que puede haber en publico/ (lo que sirven Vercel y Cloudflare): los archivos sueltos,
 // la portada, una página por asignatura y una por herramienta disponible del catálogo
 const Catalogo = require(path.join(fuente, 'catalogo.js')), Biblioteca = require(path.join(fuente, 'biblioteca.js'));
-const PUBLICABLES = ['index.html', 'novedades/index.html', 'og.png', 'apple-touch-icon.png', 'legal.css', 'aviso-legal.html', 'privacidad.html', 'cookies.html', 'contacto.html', 'fuentes/stix-two-math.woff2', 'fuentes/OFL-STIX-Two.txt',
+const PUBLICABLES = ['index.html', 'novedades/index.html', 'foro/index.html', 'og.png', 'apple-touch-icon.png', 'legal.css', 'aviso-legal.html', 'privacidad.html', 'cookies.html', 'contacto.html', 'fuentes/stix-two-math.woff2', 'fuentes/OFL-STIX-Two.txt',
   ...Catalogo.asignaturas.flatMap((a) => [`${a.clave}/index.html`, ...a.herramientas.filter((h) => h.disponible).map((h) => `${a.clave}/${h.clave}/index.html`)]),
   // direcciones antiguas: una página que redirige a la nueva y las reglas 301 de Cloudflare
   ...Object.keys(Catalogo.redirecciones).map((v) => `${v}index.html`), '_redirects'];
@@ -1276,7 +1276,7 @@ const Mates = require(path.join(fuente, 'mates.js'));
     if (!html.includes('<header class="top"><a class="logo" href="../../">') || !html.includes('<a href="../../">Inicio</a>')) mal(`${f}: falta la cabecera común con «Inicio»`);
     if (!html.includes(`<a href="../../${a.clave}/" aria-current="page">`)) mal(`${f}: la cabecera no marca ${a.nombre}`);
     if (!html.includes(`<a href="../">${a.nombre}</a>`) || !html.includes('class="miga-izq"')) mal(`${f}: falta la miga «${a.nombre} › …»`);
-    if (!html.includes(`--accent:${a.color}`)) mal(`${f}: no usa el color de ${a.nombre}`);
+    if (!html.includes(`--accent:${a.color}`)) mal(`${f}: no usa el color de ${a.nombre}`);    if (!html.includes('<a class="foro" href="../../foro/">')) mal(`${f}: la cabecera no tiene el enlace al Foro`);
   }
   if (fallos === antes) console.log(`  ✓ Cabecera común, miga y color de la asignatura en las ${pags.length} herramientas`);
 }
@@ -2650,7 +2650,7 @@ async function navegador() {
     if (fallos === antes) console.log(`  ✓ Modo práctica: ${ejercicios} ejercicios al azar en ${probadas} herramientas, corregidos bien y mal, con la solución y la vuelta a los datos de antes`);
   }
   // portada y páginas de asignatura: sin errores de consola y sin enlaces internos rotos
-  const portal = ['index.html', 'novedades/index.html', ...Catalogo.asignaturas.map((a) => `${a.clave}/index.html`), 'electromagnetismo/magnetostatica/index.html', 'quimica/tabla-periodica/index.html', 'fisica/trabajo-y-energia/index.html', 'quimica/masa-molar/index.html', 'quimica/configuracion-electronica/index.html', 'electromagnetismo/condensadores/index.html', 'fisica/tiro-parabolico/index.html', 'quimica/disoluciones/index.html', 'fisica/calorimetria/index.html', 'electromagnetismo/induccion/index.html', 'matematicas/matrices/index.html', 'matematicas/sistemas/index.html', 'estadistica/distribuciones/index.html', 'circuitos/alterna/index.html', 'fisica/dinamica/index.html', 'circuitos/continua/index.html', 'fisica/solido-rigido/index.html', 'fisica/ondas/index.html', 'fisica/doppler/index.html', 'circuitos/resistencias/index.html', 'estadistica/regresion/index.html', 'matematicas/complejos/index.html', 'fisica/fluidos/index.html', 'quimica/ph/index.html', 'fisica/ciclos/index.html', 'matematicas/taylor/index.html', 'matematicas/fourier/index.html', 'matematicas/edos/index.html', 'quimica/cinetica/index.html', 'matematicas/campos/index.html', 'electromagnetismo/fuerza/index.html', 'circuitos/transitorios/index.html', 'estadistica/intervalos/index.html', 'electromagnetismo/ondas-em/index.html', 'fisica/interferencia/index.html', 'matematicas/laplace/index.html', 'matematicas/derivadas/index.html', 'fisica/gases/index.html', 'electromagnetismo/faraday/index.html'];
+  const portal = ['index.html', 'novedades/index.html', 'foro/index.html', ...Catalogo.asignaturas.map((a) => `${a.clave}/index.html`), 'electromagnetismo/magnetostatica/index.html', 'quimica/tabla-periodica/index.html', 'fisica/trabajo-y-energia/index.html', 'quimica/masa-molar/index.html', 'quimica/configuracion-electronica/index.html', 'electromagnetismo/condensadores/index.html', 'fisica/tiro-parabolico/index.html', 'quimica/disoluciones/index.html', 'fisica/calorimetria/index.html', 'electromagnetismo/induccion/index.html', 'matematicas/matrices/index.html', 'matematicas/sistemas/index.html', 'estadistica/distribuciones/index.html', 'circuitos/alterna/index.html', 'fisica/dinamica/index.html', 'circuitos/continua/index.html', 'fisica/solido-rigido/index.html', 'fisica/ondas/index.html', 'fisica/doppler/index.html', 'circuitos/resistencias/index.html', 'estadistica/regresion/index.html', 'matematicas/complejos/index.html', 'fisica/fluidos/index.html', 'quimica/ph/index.html', 'fisica/ciclos/index.html', 'matematicas/taylor/index.html', 'matematicas/fourier/index.html', 'matematicas/edos/index.html', 'quimica/cinetica/index.html', 'matematicas/campos/index.html', 'electromagnetismo/fuerza/index.html', 'circuitos/transitorios/index.html', 'estadistica/intervalos/index.html', 'electromagnetismo/ondas-em/index.html', 'fisica/interferencia/index.html', 'matematicas/laplace/index.html', 'matematicas/derivadas/index.html', 'fisica/gases/index.html', 'electromagnetismo/faraday/index.html'];
   const antes = fallos;
   for (const f of portal) {
     const page = await browser.newPage({ viewport: { width: 1200, height: 900 } });
@@ -2674,7 +2674,20 @@ async function navegador() {
       for (const id of lado) if (!(await page.locator(`[id="${id}"]`).count())) mal(`portada: la barra lateral enlaza #${id}, que no existe`);
       await page.click('.lado a[href="#quimica"]');
       if (!(await page.locator('.lado a.on[href="#quimica"]').count())) mal('portada: pulsar Química en la barra lateral no la marca');
+      // las herramientas que vienen después salen como «Próximamente», sin enlace
+      const pronto = Catalogo.asignaturas.flatMap((x) => x.herramientas.filter((h) => !h.disponible)).length;
+      const off = await page.locator('.mini .off').evaluateAll((ds) => ds.filter((d) => !d.closest('a') && !d.querySelector('a') && d.textContent.includes('Próximamente')).length);
+      if (off !== pronto) mal(`portada: ${off} herramientas «Próximamente» sin enlace, se esperaban ${pronto}`);
     }
+    const asig = Catalogo.asignaturas.find((y) => f === `${y.clave}/index.html`);
+    if (asig) {
+      const x = asig, pronto = x.herramientas.filter((h) => !h.disponible).length;
+      if ((await page.locator('.cards div.card.off').count()) !== pronto || (await page.locator('.cards a.card').count()) !== x.herramientas.length - pronto) mal(`${f}: las tarjetas «Próximamente» no coinciden con el catálogo o tienen enlace`);
+    }
+    if (f === 'foro/index.html') {
+      if (!(await page.locator('h1').textContent()).includes('en construcción')) mal('foro: la página no dice que está en construcción');
+    }
+    if (!(await page.locator('header.top a.foro:visible').count())) mal(`${f}: la cabecera no tiene el enlace al Foro`);
     if (f === 'novedades/index.html') {
       // una tarjeta por versión con todos sus cambios dentro, y cada herramienta nueva enlazada
       const log = require(path.join(fuente, 'version.js')).de('web').log;

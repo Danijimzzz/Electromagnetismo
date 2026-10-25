@@ -11,6 +11,7 @@
 const Version = (() => {
   const registros = {
     web: [
+      { v: '0.46', fecha: '2026-10-25', cambios: ['Nuevo apartado Foro en la barra superior. De momento está en construcción: muy pronto podrás preguntar dudas y compartir ejercicios.', 'La portada y cada asignatura muestran ya las herramientas que vienen después, como «Próximamente»: 30 más, desde la ley de Ampère y las ecuaciones de Maxwell hasta la propagación de errores y los diagramas de Bode.'] },
       { v: '0.45', fecha: '2026-10-24', cambios: ['Botón de modo claro y oscuro arriba a la derecha, en la portada y en todas las herramientas: la luna pasa a modo oscuro y el sol, a modo claro. La web recuerda tu elección; hasta que lo pulses, sigue el modo de tu sistema.'] },
       { v: '0.44.2', fecha: '2026-10-24', cambios: ['Electrostática se ve ya como las demás herramientas: el contenido centrado con márgenes, el título encima de los botones y «Mis ejercicios» y «Modo práctica» junto a la ruta.', 'Los ejercicios de ejemplo están solo en la barra lateral de Mis ejercicios: se quita el desplegable «Ejemplos…» de los datos.', 'En el móvil, los botones Mis ejercicios y Modo práctica van en su propia fila, encima de la ruta.'] },
       { v: '0.44.1', fecha: '2026-10-24', cambios: ['El simulador de electrostática también tiene el diseño común: la barra de arriba con las asignaturas y el buscador, la ruta «Electromagnetismo › Electrostática» y el color de Electromagnetismo.'] },

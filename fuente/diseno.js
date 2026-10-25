@@ -21,6 +21,7 @@ header.top nav { display:flex; gap:4px 16px; font-size:14px; overflow-x:auto; ma
 header.top nav a { white-space:nowrap; padding:2px 0; color:var(--muted); text-decoration:none } header.top nav a:hover { color:var(--ink) }
 header.top nav a[aria-current] { color:var(--ink); font-weight:600; box-shadow:inset 0 -2px 0 var(--accent) }
 header.top form { margin-left:auto; flex:0 1 260px; min-width:150px }
+header.top .foro { margin-left:auto; display:inline-flex; align-items:center; gap:6px; white-space:nowrap; font:600 14px var(--f-ui); color:var(--ink); text-decoration:none; border:1px solid var(--line); border-radius:8px; padding:6px 12px } header.top .foro:hover, header.top .foro[aria-current] { border-color:var(--accent); color:var(--accent) } header.top .foro + form { margin-left:0 } header.top > .foro ~ .tema { margin-left:0 }
 @media (min-width:701px) { header.top { flex-wrap:nowrap } header.top nav { min-width:0 } }
 header.top .buscar { font:14px var(--f-ui); color:var(--ink); border:1px solid var(--line); border-radius:8px; padding:7px 12px; width:100%; background:var(--bg) }
 header.top .buscar:focus-visible, header.top a:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
@@ -46,7 +47,7 @@ function piezas(a, nombre) {
   const [m1, m2] = Catalogo.marca;
   const nav = Catalogo.asignaturas.map((x) => `<a href="../../${x.clave}/"${x === a ? ' aria-current="page"' : ''}>${esc(x.nombre)}</a>`).join('');
   const cab = `<header class="top"><a class="logo" href="../../">${m1}<i>${m2}</i></a><nav aria-label="Asignaturas"><a href="../../">Inicio</a>${nav}</nav>`
-    + `<form action="../../" role="search"><input class="buscar" type="search" name="q" placeholder="Buscar: Biot-Savart, molaridad…" aria-label="Buscar herramientas"></form>${Tema.BOTON}</header>`;
+    + `<a class="foro" href="../../foro/"><span aria-hidden="true">💬</span>Foro</a><form action="../../" role="search"><input class="buscar" type="search" name="q" placeholder="Buscar: Biot-Savart, molaridad…" aria-label="Buscar herramientas"></form>${Tema.BOTON}</header>`;
   const miga = `<nav class="miga" aria-label="Estás en"><span class="miga-izq"></span><span class="miga-ico" aria-hidden="true">${esc(a.icono)}</span><a href="../">${esc(a.nombre)}</a><span aria-hidden="true">›</span><span>${esc(nombre)}</span><span class="miga-der"></span></nav>`;
   return { cab, miga };
 }
