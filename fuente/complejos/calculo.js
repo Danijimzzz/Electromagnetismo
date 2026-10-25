@@ -185,7 +185,9 @@ const Complejos = (() => {
   }
   const OPS = {
     formas: 'Formas de un complejo', suma: 'Suma z₁ + z₂', resta: 'Resta z₁ − z₂', producto: 'Producto z₁ · z₂', cociente: 'Cociente z₁ / z₂',
-    potencia: 'Potencia zⁿ (De Moivre)', raices: 'Raíces n-ésimas', ecuacion: 'Ecuación de segundo grado',
+    potencia: 'Potencia zⁿ (De Moivre)', raices: 'Raíces n-ésimas (zⁿ = w)', ecuacion: 'Ecuación de segundo grado',
+    polinomio: 'Ecuación polinómica (grado 3 o más)', logaritmo: 'Logaritmo ln z', exponencial: 'Exponencial e^z', potenciaC: 'Potencia z^w (exponente complejo)',
+    region: 'Región del plano',
   };
 
   /* ---------- Cálculo ---------- */
@@ -195,6 +197,9 @@ const Complejos = (() => {
     const aBin = (w, nom) => { if (w.forma !== 'binómica') { pasos.push({ t: `${nom} en forma binómica`, html: `$${nom} = r cos θ + i r sen θ$ = <b>$${bin(w.z)}$</b>` }); } };
     const aPol = (w, nom) => { const F = formas(w, u, nom); pasos.push(...F.pasos.filter(() => w.forma === 'binómica')); return F; };
     if (op === 'ecuacion') return ecuacion(sc, res);
+    if (op === 'polinomio') return polinomio(sc, res);
+    if (op === 'region') return region(sc, res);
+    if (op === 'logaritmo' || op === 'exponencial' || op === 'potenciaC') return trascendente(op, sc, res);
     const w1 = leeZ(sc.z1, u, op === 'formas' || op === 'potencia' || op === 'raices' ? 'z' : 'z₁');
     if (op === 'formas') {
       const F = formas(w1, u);
@@ -299,6 +304,132 @@ const Complejos = (() => {
     return res;
   }
 
+  /* ---------- Logaritmo, exponencial y potencia compleja ---------- */
+  const zln = (z) => Z(Math.log(mod(z)), arg(z));
+  const zexp = (z) => pol(Math.exp(z.re), z.im);
+  function trascendente(op, sc, res) {
+    const u = res.unidad, pasos = res.pasos, PI2 = u === 'radianes' ? '2kπ' : '360°k';
+    if (op === 'exponencial') {
+      const w = leeZ(sc.z1, 'radianes', 'z'), z = w.z, r = Math.exp(z.re), zz = pol(r, z.im);
+      pasos.push({ t: 'Fórmula de Euler', html: `Si $z = a + bi$, $e^z = e^a · e^{ib} = e^a (cos b + i sen b)$: el módulo es $e^a$ y el argumento es b (en radianes).` });
+      pasos.push({ t: 'Con z = ' + bin(z), html: `$e^{${bin(z)}} = e^{${f(z.re)}} (cos ${f(z.im)} + i sen ${f(z.im)})$ = $${f(r)}_{${angulo(z.im, u)}}$ = <b>$${bin(zz)}$</b>${Math.abs(z.re) < 1e-12 && Math.abs(Math.abs(z.im) - PI) < 1e-12 ? '<br>Es la identidad de Euler: $e^{iπ} = −1$.' : ''}<br>La exponencial compleja es periódica: $e^{z + 2πi} = e^z$.` });
+      Object.assign(res, { z: zz, formas: formas({ z: zz, ex: null }, u, 'e^z') });
+      res.puntos = [{ z, n: 'z', c: 1 }, { z: zz, n: 'eᶻ', c: 3 }];
+      return res;
+    }
+    const w1 = leeZ(sc.z1, u, 'z');
+    if (mod(w1.z) === 0) throw new Error(op === 'logaritmo' ? 'El logaritmo de 0 no existe' : 'La base 0 no se puede elevar a un exponente complejo');
+    const F = formas(w1, u, 'z'), L = zln(w1.z);
+    pasos.push(...F.pasos);
+    const lnTxt = `${f(L.re)} ${L.im < 0 ? '−' : '+'} ${f(Math.abs(L.im))}i`;
+    pasos.push({ t: 'Logaritmo', html: `$ln z = ln|z| + i (θ + 2kπ)$, con θ en radianes: hay infinitos logaritmos, uno por cada vuelta. El <b>principal</b> (k = 0, con −π < θ ≤ π) es:<br>$Ln z = ln ${f(F.r)} + ${piFrac(F.t) ?? f(F.t)} i$ = <b>$${lnTxt}$</b>` });
+    if (op === 'logaritmo') {
+      pasos.push({ t: 'Los demás valores', html: [-1, 1, 2].map((k) => `$k = ${k}$: $${f(L.re)} ${L.im + 2 * PI * k < 0 ? '−' : '+'} ${f(Math.abs(L.im + 2 * PI * k))}i$`).join('<br>') + `<br>Todos tienen la misma parte real, ln|z|, y la parte imaginaria va de 2π en 2π.${void PI2 || ''}` });
+      Object.assign(res, { z: L, formas: formas({ z: L, ex: null }, u, 'Ln z') });
+      res.puntos = [{ z: w1.z, n: 'z', c: 1 }, { z: L, n: 'Ln z', c: 3 }];
+      return res;
+    }
+    const w2 = leeZ(sc.z2, u, 'w'), e = w2.z, prod = zm(e, L), zz = zexp(prod);
+    pasos.push({ t: 'Definición', html: `$z^w = e^{w · ln z}$. Con el logaritmo principal sale el valor principal:<br>$w · Ln z = (${bin(e)})(${lnTxt})$ = $${bin(prod)}$<br>$z^w = e^{${bin(prod)}}$ = $${f(Math.exp(prod.re))}_{${angulo(prod.im, u)}}$ = <b>$${bin(zz)}$</b>` });
+    const q = w2.ex && A.esReal(w2.ex) ? w2.ex.re : null;
+    if (q && q.d !== 1n) pasos.push({ t: 'Cuántos valores tiene', html: `Como w = ${qT(q)} es una fracción con denominador ${q.d}, $z^w$ tiene ${q.d} valores distintos (los de las raíces ${q.d}-ésimas); el de arriba es el principal.` });
+    else if (!q) pasos.push({ t: 'Cuántos valores tiene', html: `Con un exponente no real, cada logaritmo $ln z + 2kπi$ da un valor distinto: hay infinitos, y el de arriba es el principal. Por ejemplo, $i^i = e^{−π/2} ≈ 0,2079$ es real.` });
+    Object.assign(res, { z: zz, formas: formas({ z: zz, ex: null }, u, 'z^w') });
+    res.puntos = [{ z: w1.z, n: 'z', c: 1 }, { z: e, n: 'w', c: 2 }, { z: zz, n: 'zʷ', c: 3 }];
+    return res;
+  }
+
+  /* ---------- Ecuaciones polinómicas ---------- */
+  function polinomio(sc, res) {
+    const P_ = Parametro, pasos = res.pasos;
+    if (vacio(sc.p)) throw new Error('Escribe el polinomio en z, por ejemplo z^3 − 8 o z^4 + 2z^2 + 1');
+    let p;
+    try { p = P_.lee(String(sc.p).replace(/=\s*0\s*$/, ''), 'z'); } catch (e) { throw new Error(`El polinomio: ${e.message}`); }
+    const g = P_.grado(p);
+    if (g < 1) throw new Error('El polinomio tiene que tener z');
+    if (g > 8) throw new Error('Como mucho de grado 8');
+    const alto = p.slice().reverse(), r = A.raices(alto), sols = [];
+    pasos.push({ t: 'La ecuación', html: `$${A.polHtml(alto, 'z').replace(/<sup>(.*?)<\/sup>/g, '^{$1}')} = 0$, de grado ${g}: por el teorema fundamental del álgebra tiene ${g} soluciones complejas, contando las repetidas.` });
+    const noCero = p.map((c, i) => [c, i]).filter(([c]) => !A.esCero(c));
+    if (noCero.length === 2 && noCero[0][1] === 0) {
+      const [c0, n] = [noCero[0][0], noCero[1][1]], w = A.div(A.neg(c0), noCero[1][0]);
+      pasos.push({ t: 'Es una ecuación binómica', html: `Se despeja $z^{${n}} = ${exTxt(w)}$: las soluciones son las ${n} raíces ${n}-ésimas de ${exTxt(w)}, que están en un polígono regular (usa «Raíces n-ésimas» para verlas paso a paso).` });
+    }
+    for (const { valor, mult } of r.exactas) sols.push({ z: A.aFloat(valor), ex: valor, mult });
+    for (const z of r.aprox) sols.push({ z, ex: null, mult: 1 });
+    if (r.exactas.length) {
+      const fac = r.exactas.map(({ valor, mult }) => { const [sg, v] = A.signo(A.neg(valor)); return `(z ${sg} ${v})${mult > 1 ? `^{${mult}}` : ''}`; }).join(' ');
+      pasos.push({ t: 'Raíces exactas (Ruffini)', html: `Probando los divisores del término independiente y dividiendo por Ruffini: ${r.exactas.map((x) => `$z = ${exTxt(x.ex ?? x.valor)}$${x.mult > 1 ? ` (${x.mult === 2 ? 'doble' : 'triple'})` : ''}`).join(', ')}${r.resto.length > 1 ? `. Queda $${A.polHtml(r.resto, 'z').replace(/<sup>(.*?)<\/sup>/g, '^{$1}')}$` : ''}.<br>Factorizado: $${fac}${r.resto.length > 1 ? ` (${A.polHtml(r.resto, 'z').replace(/<sup>(.*?)<\/sup>/g, '^{$1}')})` : ''}$` });
+    }
+    if (r.aprox.length) pasos.push({ t: r.exactas.length ? 'El resto, numéricamente' : 'Raíces numéricas', html: `${r.resto.length === 3 ? 'Es de segundo grado: se resuelve con la fórmula $z = {−b ± √Δ}/{2a}$. ' : 'No tiene más raíces racionales: se calculan numéricamente (método de Durand-Kerner). '}${r.aprox.map((z) => `$z ≈ ${bin(z, 5)}$`).join(', ')}` });
+    if (alto.every(A.esReal)) pasos.push({ t: 'Coeficientes reales', html: 'Como los coeficientes son reales, las soluciones complejas aparecen por parejas de conjugadas.' });
+    Object.assign(res, { sols, z: sols[0]?.z });
+    res.puntos = sols.map((q, k) => ({ z: q.z, n: `z${'₁₂₃₄₅₆₇₈₉'[k] ?? k + 1}`, c: 3 }));
+    return res;
+  }
+
+  /* ---------- Regiones del plano ---------- */
+  // condiciones separadas por comas o «y»: |z − 1| < 2, Re z > 0, 0 ≤ arg z ≤ π/2, |z − i| = |z + 1|
+  function region(sc, res) {
+    const u = res.unidad, pasos = res.pasos;
+    const txt = String(sc.cond ?? '').replace(/[−–]/g, '-').replace(/≤/g, '<=').replace(/≥/g, '>=').replace(/\s+/g, ' ').trim();
+    if (!txt) throw new Error('Escribe una o varias condiciones: |z − 1| < 2, Re z > 0, 0 ≤ arg z ≤ π/2…');
+    const partes = txt.split(/\s*(?:,|;|\by\b|∧)\s*/).filter(Boolean), conds = [];
+    // una expresión en z: devuelve { f(z), txt, centro? }
+    const expr = (e0) => {
+      const e = e0.trim().replace(/\s+/g, '');
+      let m;
+      if ((m = /^\|z(?:([+-])(.+))?\|$/.exec(e))) {
+        // |z − 1 − i| = |z − (1 + i)|: el centro es lo que se resta, con todo su signo
+        const resto = m[1] ? leeZ(m[1] + m[2], u, 'el centro').z : Z(0), cc = Z(-resto.re || 0, -resto.im || 0);
+        return { f: (z) => mod(zr(z, cc)), t: m[1] ? `la distancia de z a ${bin(cc)}` : 'el módulo de z', c: cc, tipo: 'mod' };
+      }
+      if (/^Re\(?z\)?$/i.test(e)) return { f: (z) => z.re, t: 'la parte real', tipo: 're' };
+      if (/^Im\(?z\)?$/i.test(e)) return { f: (z) => z.im, t: 'la parte imaginaria', tipo: 'im' };
+      if (/^arg\(?z\)?$/i.test(e)) return { f: (z) => arg(z), t: 'el argumento', tipo: 'arg' };
+      return null;
+    };
+    const num = (e, ang) => (ang ? leeAngulo(e, u, 'el ángulo') : leeReal(e, 'el número').v);
+    for (const pz of partes) {
+      const tok = pz.split(/(<=|>=|<|>|=)/).map((x) => x.trim());
+      if (tok.length !== 3 && tok.length !== 5) throw new Error(`«${pz}» no se entiende: escribe por ejemplo |z − 1| < 2, Re z > 0 o 0 < arg z < π/2`);
+      const pon = (izq, op, der) => {
+        const L = expr(izq), R = expr(der);
+        if (L && R) { conds.push({ a: L, b: R, op, t: `${L.t} ${op} ${R.t}` }); return; }
+        const X = L || R; if (!X) throw new Error(`«${pz}» no tiene z: usa |z − a|, Re z, Im z o arg z`);
+        const k = num(L ? der : izq, X.tipo === 'arg');
+        let o = op; if (!L) o = { '<': '>', '>': '<', '<=': '>=', '>=': '<=', '=': '=' }[op];
+        conds.push({ a: X, k, op: o });
+      };
+      if (tok.length === 3) pon(tok[0], tok[1], tok[2]);
+      else { pon(tok[0], tok[1], tok[2]); pon(tok[2], tok[3], tok[4]); }
+    }
+    const cmp = (x, op, y, tol) => ({ '<': x < y - tol, '>': x > y + tol, '<=': x <= y + tol, '>=': x >= y - tol, '=': Math.abs(x - y) <= tol }[op]);
+    const valor = (c, z) => c.a.f(z) - (c.b ? c.b.f(z) : c.k);
+    const dentro = (z, tol = 0) => conds.every((c) => cmp(valor(c, z), c.op, 0, c.op === '=' ? tol : 0));
+    const OPT = { '<': 'menor que', '>': 'mayor que', '<=': 'menor o igual que', '>=': 'mayor o igual que', '=': 'igual a' };
+    const desc = conds.map((c) => {
+      const a = c.a;
+      if (c.b) return c.op === '=' ? `${c.t}: los puntos que están a la misma distancia de ${bin(a.c)} y de ${bin(c.b.c)}, la mediatriz del segmento que los une.` : `${c.t}: el semiplano de los puntos más ${c.op.startsWith('<') ? 'cerca' : 'lejos'} de ${bin(a.c)} que de ${bin(c.b.c)}; la frontera es la mediatriz.`;
+      if (a.tipo === 'mod') return c.op === '=' ? `La circunferencia de centro ${bin(a.c)} y radio ${f(c.k)}.` : `${c.op.startsWith('<') ? 'El interior' : 'El exterior'} de la circunferencia de centro ${bin(a.c)} y radio ${f(c.k)}${c.op.length > 1 ? ', con el borde' : ', sin el borde'}.`;
+      if (a.tipo === 're') return c.op === '=' ? `La recta vertical x = ${f(c.k)}.` : `El semiplano ${c.op.startsWith('<') ? 'a la izquierda' : 'a la derecha'} de la recta vertical x = ${f(c.k)}.`;
+      if (a.tipo === 'im') return c.op === '=' ? `La recta horizontal y = ${f(c.k)}.` : `El semiplano ${c.op.startsWith('<') ? 'por debajo' : 'por encima'} de la recta horizontal y = ${f(c.k)}.`;
+      return `${a.t[0].toUpperCase() + a.t.slice(1)} ${OPT[c.op]} ${angulo(c.k, u)}: ${c.op === '=' ? 'una semirrecta desde el origen' : 'la zona barrida por las semirrectas desde el origen'}.`;
+    });
+    pasos.push({ t: conds.length > 1 ? 'Cada condición' : 'La condición', html: desc.map((d, i) => `${conds.length > 1 ? `(${i + 1}) ` : ''}${d}`).join('<br>') });
+    if (conds.length > 1) pasos.push({ t: 'Todas a la vez', html: 'La región es la intersección: los puntos que cumplen todas las condiciones (la zona sombreada).' });
+    // un punto de la región, para comprobar que no está vacía
+    let L0 = 2;
+    for (const c of conds) { if (c.a.c) L0 = Math.max(L0, mod(c.a.c) + (c.k || 0)); if (c.b && c.b.c) L0 = Math.max(L0, mod(c.b.c)); if (c.a.tipo !== 'arg' && c.k !== undefined) L0 = Math.max(L0, Math.abs(c.k) + 1); }
+    L0 *= 1.3;
+    let hay = false;
+    for (let i = 0; i <= 60 && !hay; i++) for (let j = 0; j <= 60 && !hay; j++) if (dentro(Z(-L0 + (2 * L0 * i) / 60, -L0 + (2 * L0 * j) / 60), L0 / 40)) hay = true;
+    if (!hay) pasos.push({ t: 'Región vacía', html: 'Ningún punto cumple todas las condiciones a la vez.' });
+    Object.assign(res, { conds, dentro, frontera: (z, tol) => conds.some((c) => Math.abs(valor(c, z)) < tol), L: L0, vacia: !hay, desc });
+    res.puntos = conds.flatMap((c) => [c.a.c, c.b?.c]).filter(Boolean).filter((z, i, xs) => xs.findIndex((w) => Math.abs(w.re - z.re) + Math.abs(w.im - z.im) < 1e-12) === i).map((z) => ({ z, n: bin(z), c: 1 }));
+    return res;
+  }
+
   const ejemplos = [
     { clave: 'formas', nombre: 'Formas de 3 + 4i', sc: { op: 'formas', z1: '3+4i', unidad: 'grados' } },
     { clave: 'cuadrante', nombre: 'De polar a binómica: 2∠120°', sc: { op: 'formas', z1: '2∠120°', unidad: 'grados' } },
@@ -313,6 +444,13 @@ const Complejos = (() => {
     { clave: 'ecuacion', nombre: 'Ecuación z² − 2z + 5 = 0', sc: { op: 'ecuacion', a: '1', b: '-2', c: '5', unidad: 'grados' } },
     { clave: 'ecuacion-compleja', nombre: 'Ecuación con coeficientes complejos', sc: { op: 'ecuacion', a: '1', b: '-3i', c: '-3+i', unidad: 'grados' } },
     { clave: 'exponencial', nombre: 'De exponencial a binómica: 2e^(iπ/3)', sc: { op: 'formas', z1: '2e^(iπ/3)', unidad: 'radianes' } },
+    { clave: 'cubica', nombre: 'Ecuación z³ − 8 = 0', sc: { op: 'polinomio', p: 'z^3 - 8', unidad: 'grados' } },
+    { clave: 'cuarta', nombre: 'Ecuación z⁴ + 5z² + 4 = 0', sc: { op: 'polinomio', p: 'z^4 + 5z^2 + 4', unidad: 'grados' } },
+    { clave: 'logaritmo', nombre: 'Logaritmo de −1', sc: { op: 'logaritmo', z1: '-1', unidad: 'radianes' } },
+    { clave: 'euler', nombre: 'e^(1 + iπ/2)', sc: { op: 'exponencial', z1: '1+iπ/2', unidad: 'radianes' } },
+    { clave: 'ii', nombre: 'iⁱ es un número real', sc: { op: 'potenciaC', z1: 'i', z2: 'i', unidad: 'radianes' } },
+    { clave: 'disco', nombre: 'Región |z − 1 − i| ≤ 2 con Re z > 0', sc: { op: 'region', cond: '|z - 1 - i| <= 2, Re z > 0', unidad: 'grados' } },
+    { clave: 'sector', nombre: 'Sector 0 ≤ arg z ≤ 60° con |z| < 3', sc: { op: 'region', cond: '0 <= arg z <= 60°, |z| < 3', unidad: 'grados' } },
   ];
 
   return { resolver, leeZ, leeReal, formas, piFrac, OPS, ejemplos, mod, arg, bin, f, Z };

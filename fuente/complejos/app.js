@@ -23,10 +23,13 @@
     let h = elige('op', 'Qué calcular', Object.entries(K.OPS));
     if (sc.op === 'ecuacion') h += '<div class="sep">a z² + b z + c = 0</div>' + fila('a', 'Coeficiente a') + fila('b', 'Coeficiente b') + fila('c', 'Coeficiente c');
     else if (DOS.includes(sc.op)) h += fila('z1', 'z₁') + fila('z2', 'z₂');
+    else if (sc.op === 'polinomio') h += fila('p', 'Polinomio en z <small>(= 0)</small>');
+    else if (sc.op === 'region') h += fila('cond', 'Condiciones');
+    else if (sc.op === 'potenciaC') h += fila('z1', 'Base z') + fila('z2', 'Exponente w');
     else h += fila('z1', 'z') + (sc.op === 'potencia' ? fila('n', 'Exponente n', 'numeric') : sc.op === 'raices' ? fila('n', 'Índice n', 'numeric') : '');
     h += elige('unidad', 'Ángulos en', [['grados', 'grados (°)'], ['radianes', 'radianes']]);
     $('#campos').innerHTML = h;
-    $('#nota').textContent = sc.op === 'ecuacion' ? 'Los coeficientes pueden ser complejos en forma binómica: 1, −3i, 2 + i, 1/2.' : 'Escribe 3 − 2i, 1/2 + i, 2∠60° (o 2_60), 2(cos 60° + i sen 60°) o 2e^(iπ/3). Un ángulo con π va en radianes y uno con ° en grados.';
+    $('#nota').textContent = sc.op === 'ecuacion' ? 'Los coeficientes pueden ser complejos en forma binómica: 1, −3i, 2 + i, 1/2.' : sc.op === 'polinomio' ? 'Escribe el polinomio con z: z^3 − 8, z^4 + 5z^2 + 4, (1 + i)z^3 − 2. Los coeficientes pueden ser complejos.' : sc.op === 'region' ? 'Separa las condiciones con comas: |z − 1| < 2, Re z > 0, Im z ≤ 1, 0 ≤ arg z ≤ π/2, |z − i| = |z + 1|.' : sc.op === 'exponencial' ? 'Escribe z en binómica, con la parte imaginaria en radianes: 1 + iπ/2, 2 − 3i.' : 'Escribe 3 − 2i, 1/2 + i, 2∠60° (o 2_60), 2(cos 60° + i sen 60°) o 2e^(iπ/3). Un ángulo con π va en radianes y uno con ° en grados.';
   }
   $('#campos').addEventListener('input', (e) => { const t = e.target; if (t.tagName !== 'INPUT') return; sc[t.dataset.k] = t.value; $('#ejemplos').value = ''; calcula(); });
   $('#campos').addEventListener('change', (e) => {
@@ -83,6 +86,8 @@
     let h = '';
     const F = sol.formas;
     if (sol.op === 'raices') h = sol.raices.map((q) => dato(`w${'₀₁₂₃₄₅₆₇₈₉'[q.k] ?? q.k}`, `${M(`${f(sol.R)}_{${angulo(q.t)}}`)} = ${K.bin(q.z)}`)).join('');
+    else if (sol.op === 'polinomio') h = sol.sols.map((q, k) => dato(`z${'₁₂₃₄₅₆₇₈₉'[k] ?? k + 1}${q.mult > 1 ? ` (${q.mult === 2 ? 'doble' : 'triple'})` : ''}`, q.ex ? M(Algebra.txt(q.ex)) : K.bin(q.z, 5))).join('');
+    else if (sol.op === 'region') h = dato('La región', sol.vacia ? 'Vacía: ningún punto cumple todas las condiciones' : sol.desc.join('<br>'));
     else if (sol.op === 'ecuacion') h = dato('Solución z₁', sol.e1 ? M(Algebra.txt(sol.e1)) : K.bin(sol.z1)) + dato('Solución z₂', sol.e2 ? M(Algebra.txt(sol.e2)) : K.bin(sol.z2));
     else {
       h = dato(sol.op === 'formas' ? 'Forma binómica' : 'Resultado (binómica)', M(F.binomica)) + dato('Forma polar', M(F.polar)) + dato('Módulo', M(F.rT)) + dato('Argumento', M(F.tT));
@@ -90,7 +95,7 @@
     }
     $('#resumen').innerHTML = h;
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
-    $('#leyenda').textContent = { formas: 'El afijo de z, su módulo (la longitud de la flecha), su argumento (el arco) y el conjugado, simétrico respecto al eje real.', potencia: 'Al elevar a n, el módulo se eleva a n y el argumento se multiplica por n.', raices: 'Las raíces están en una circunferencia y forman un polígono regular.', ecuacion: 'Las soluciones en el plano complejo.' }[sol.op] || (sol.op === 'suma' || sol.op === 'resta' ? 'La suma es la diagonal del paralelogramo que forman los dos vectores.' : 'En el producto se suman los argumentos y se multiplican los módulos; en el cociente se restan y se dividen.');
+    $('#leyenda').textContent = { formas: 'El afijo de z, su módulo (la longitud de la flecha), su argumento (el arco) y el conjugado, simétrico respecto al eje real.', potencia: 'Al elevar a n, el módulo se eleva a n y el argumento se multiplica por n.', raices: 'Las raíces están en una circunferencia y forman un polígono regular.', ecuacion: 'Las soluciones en el plano complejo.', polinomio: 'Las soluciones de la ecuación en el plano complejo.', region: 'Los puntos que cumplen todas las condiciones, sombreados, con su frontera.', logaritmo: 'z y su logaritmo principal: la parte real es ln|z| y la imaginaria, el argumento.', exponencial: 'z = a + bi y eᶻ, de módulo eᵃ y argumento b.', potenciaC: 'La base, el exponente y el valor principal de zʷ.' }[sol.op] || (sol.op === 'suma' || sol.op === 'resta' ? 'La suma es la diagonal del paralelogramo que forman los dos vectores.' : 'En el producto se suman los argumentos y se multiplican los módulos; en el cociente se restan y se dividen.');
     dibuja();
   }
   const angulo = (t) => (sc.unidad === 'radianes' ? (K.piFrac(t) ?? `${f(t)} rad`) : `${f((t * 180) / Math.PI, 4)}°`);
@@ -110,6 +115,7 @@
     colores();
     const pts = sol.puntos.filter((p) => isFinite(p.z.re) && isFinite(p.z.im));
     let L = Math.max(1, ...pts.flatMap((p) => [Math.abs(p.z.re), Math.abs(p.z.im)])) * 1.25;
+    if (sol.op === 'region') L = sol.L;
     if (sol.op === 'suma' || sol.op === 'resta') L = Math.max(L, ...sol.puntos.map((p) => K.mod(p.z) * 1.1));
     // misma escala en los dos ejes
     const m = 26, esc = Math.min(w - 2 * m, h - 2 * m) / (2 * L), cx = w / 2, cy = h / 2;
@@ -144,6 +150,22 @@
       sol.puntos.forEach(punto);
       return;
     }
+    if (sol.op === 'region') {
+      // se sombrea cada celda cuyo centro cumple las condiciones; la frontera, más oscura
+      const paso = 3, tol = 1.6 / esc;
+      g.fillStyle = col['--z3'];
+      for (let px = 0; px < w; px += paso) for (let py = 0; py < h; py += paso) {
+        const z = K.Z((px + paso / 2 - cx) / esc, (cy - py - paso / 2) / esc);
+        if (sol.dentro(z, tol)) { g.globalAlpha = 0.22; g.fillRect(px, py, paso, paso); }
+        if (sol.frontera(z, tol) && sol.dentro(z, 3 * tol)) { g.globalAlpha = 0.9; g.fillRect(px, py, paso, paso); }
+      }
+      g.globalAlpha = 1;
+      sol.puntos.forEach(punto);
+      return;
+    }
+    if (sol.op === 'polinomio') { sol.puntos.forEach(punto); return; }
+    if (sol.op === 'logaritmo' || sol.op === 'exponencial') { flecha(sol.puntos[0].z, C[1]); flecha(sol.puntos[1].z, C[3]); sol.puntos.forEach(punto); return; }
+    if (sol.op === 'potenciaC') { sol.puntos.forEach((p) => { flecha(p.z, C[p.c]); punto(p); }); return; }
     if (sol.op === 'ecuacion' || sol.op === 'potencia') { sol.puntos.forEach((p) => { flecha(p.z, C[p.c]); punto(p); }); return; }
     if (sol.op === 'formas') {
       const z = sol.z, r = K.mod(z), t = K.arg(z);
