@@ -57,6 +57,7 @@ footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8p
 .resumen div.ancho { grid-column: 1 / -1 }
 .grado { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 10px; font-size: 13.5px }
 .grado input[type=range] { flex: 1 1 160px; accent-color: var(--accent) }
+.grado[hidden] { display: none }
 .grado b { font-variant-numeric: tabular-nums; min-width: 1.5em; display: inline-block }
 </style>
 <body>
@@ -69,14 +70,14 @@ footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8p
     <h2>Datos</h2>
     <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
     <div class="campos" id="campos"></div>
-    <p class="nota">Escribe la función con x: e^x, sen x, cos(2x), ln(1+x), √x, arctg x, 1/(1−x), x^3 − 2x… El punto puede llevar π: π/6.</p>
+    <p class="nota">Escribe la función con x: e^x, sen x, cos(2x), ln(1+x), √x, arctg x, 1/(1−x), x^3 − 2x… El punto puede llevar π: π/6. En «Límite con Taylor» escribe un cociente: (sen x − x)/x^3.</p>
     <p class="error" id="error" hidden></p>
   </div>
   <div>
     <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
     <div class="card"><h2>Gráfica</h2>
       <canvas id="grafica" aria-label="Gráfica de la función y de sus polinomios de Taylor"></canvas>
-      <div class="grado"><label for="grado">Grado mostrado: <b id="vgrado">0</b></label><input type="range" id="grado" min="0" max="4" step="1" value="4"><button class="btn" id="animar" type="button">▶ Ver cómo se acerca</button></div>
+      <div class="grado" id="control"><label for="grado">Grado mostrado: <b id="vgrado">0</b></label><input type="range" id="grado" min="0" max="4" step="1" value="4"><button class="btn" id="animar" type="button">▶ Ver cómo se acerca</button></div>
       <p class="nota" id="leyenda"></p></div>
     <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
   </div>
@@ -101,7 +102,14 @@ footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8p
     <li class="m">$(1 + x)^α = 1 + α x + {α (α − 1)}/{2!} x^2 + … = Σ_{k=0}^{∞} binom(α, k) x^k$, para |x| &lt; 1</li>
   </ul>
   <p class="m">Con ellos se sacan otros sin derivar: cambiando x por $−x^2$ en el de $e^x$ sale $e^{−x^2} = 1 − x^2 + {x^4}/{2} − …$, y multiplicando por x el de sen x sale el de x sen x.</p>
+  <h2>Radio de convergencia</h2>
+  <p class="m">La serie de Taylor $Σ c_k (x − a)^k$ converge para $|x − a| &lt; R$ y no converge para $|x − a| &gt; R$. El radio se saca con el criterio del cociente, $R = lím_{k → ∞} {|c_k|}/{|c_{k+1}|}$, y suele ser la distancia de a al punto más cercano, también complejo, donde f deja de estar definida: para ${1}/{1 + x^2}$ en a = 0 es R = 1, por los puntos ±i, aunque en los reales la función no tiene problemas.</p>
   <p class="m">Fuera de su intervalo de convergencia la serie no se acerca a la función por mucho que suba el grado: pruébalo con ln(1 + x) y x₀ = 1,5. Y sumando estas series con x = iθ sale la fórmula de Euler, $e^{iθ} = cos θ + i sen θ$, que se usa en <a href="../complejos/">Números complejos</a>.</p>
+  <h2>Singularidades evitables</h2>
+  <p class="m">${sen x}/{x}$ no está definida en 0 (sale 0/0), pero desarrollando el numerador, $sen x/x = (x − {x^3}/{6} + …)/x = 1 − {x^2}/{6} + …$, se ve que tiende a 1. Dándole ese valor en 0 la función queda derivable y tiene polinomio de Taylor.</p>
+  <h2>Límites con Taylor</h2>
+  <p class="m">Para un límite 0/0 se cambian el numerador y el denominador por sus desarrollos y se compara el primer término que no se anula en cada uno: si empiezan con la misma potencia, el límite es el cociente de sus coeficientes; si el numerador empieza más alto, es 0; y si empieza más alto el denominador, va a ±∞ (o no existe si los laterales tienen distinto signo). Por ejemplo,</p>
+  <p class="f m">$lím_{x → 0} {sen x − x}/{x^3} = lím_{x → 0} {−{x^3}/{6} + …}/{x^3} = −{1}/{6}$</p>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Series de Taylor <span id="ver"></span> (beta)</footer>

@@ -71,7 +71,8 @@ canvas { display: block; width: 100%; height: clamp(260px, 36vw, 380px); border-
 .pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
 .teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
 .teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
-.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+.teoria .f { max-width: 100%; box-sizing: border-box; overflow-x: auto; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+.teoria li, .teoria p { overflow-x: auto }
 footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
 .campos .larga { grid-column: 1 / -1 }
 .controles { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px }
@@ -932,12 +933,19 @@ const Expresion = (() => {
 
   /* ---------- Serie de Taylor truncada ---------- */
   // coeficientes c_0 … c_N de f(a + h) = Σ c_k h^k
-  function serie(n, a, Nn) {
+  // evitable: en 0/0 (sen x / x en 0) se quitan los ceros comunes del numerador y el denominador;
+  // los últimos coeficientes dejan de ser fiables, así que quien lo usa pide unos cuantos de más
+  function serie(n, a, Nn, { evitable = false } = {}) {
     const L = Nn + 1, cero = () => new Float64Array(L);
     const cte = (v) => { const s = cero(); s[0] = v; return s; };
     const noDer = (q) => { throw new Error(`La función no es derivable en x = a (${q}): prueba con otro punto`); };
     const mul = (p, q) => { const r = cero(); for (let i = 0; i < L; i++) if (p[i]) for (let j = 0; i + j < L; j++) r[i + j] += p[i] * q[j]; return r; };
+    const corre = (p, m) => { const r = cero(); for (let k = 0; k + m < L; k++) r[k] = p[k + m]; return r; };
     const div = (p, q) => {
+      if (Math.abs(q[0]) < 1e-14 && evitable) {
+        const esc = Math.max(1e-300, ...q.map(Math.abs)), m = q.findIndex((v) => Math.abs(v) > 1e-10 * esc), escP = Math.max(1, ...p.map(Math.abs));
+        if (m > 0 && p.slice(0, m).every((v) => Math.abs(v) < 1e-10 * escP)) { p = corre(p, m); q = corre(q, m); serie.quitados = (serie.quitados || 0) + m; }
+      }
       if (Math.abs(q[0]) < 1e-14) noDer('división entre cero');
       const r = cero();
       for (let k = 0; k < L; k++) { let s = p[k]; for (let j = 1; j <= k; j++) s -= q[j] * r[k - j]; r[k] = s / q[0]; }
@@ -1650,8 +1658,11 @@ const Derivadas = (() => {
     }
     // puntos críticos en la ventana: f′ = 0, y su tipo por f″
     const d1 = ders[1], d2 = D(d1), a = out.x0 !== undefined ? out.x0 - 5 : -5, b = out.x0 !== undefined ? out.x0 + 5 : 5, crit = [];
+    // f′ = 0 en todo x (por ejemplo sen²x + cos²x): f es constante y no tiene puntos críticos aislados
+    out.constante = esNum(d1) ? d1.v === 0 : Array.from({ length: 41 }, (_, i) => E.valor(d1, a + ((b - a) * i) / 40)).every((v) => isFinite(v) && Math.abs(v) < 1e-12);
+    if (out.constante) pasos.push({ t: 'Función constante', html: `$f′(x) = 0$ en todo x, así que f es constante: no tiene máximos ni mínimos aislados.` });
     let xa = a, va = E.valor(d1, a);
-    for (let i = 1; i <= 400; i++) {
+    for (let i = 1; i <= 400 && !out.constante; i++) {
       const xb = a + ((b - a) * i) / 400, vb = E.valor(d1, xb);
       if (isFinite(va) && isFinite(vb) && va * vb <= 0 && !(va === 0 && i > 1)) {
         let lo = xa, hi = xb, fl = va;
@@ -2073,7 +2084,8 @@ const Derivadas = (() => {
         sol.vals.slice(1).forEach((v, i) => { h += dato(`${txt(prima(i + 1).replace(/\^\{\((\d)\)\}/, '⁽$1⁾'))}(${fH(sol.x0)})`, fH(v, 6), 'num'); });
         h += dato('Recta tangente', M(sol.tangente), 'ancho');
       }
-      if (sol.crit.length) h += dato('Puntos críticos', sol.crit.slice(0, 4).map((q) => `x = ${fH(q.x)}: ${q.tipo}`).join('<br>'), 'ancho');
+      if (sol.constante) h += dato('Puntos críticos', 'Ninguno: f′ = 0 en todo x (f es constante)', 'ancho');
+      else if (sol.crit.length) h += dato('Puntos críticos', sol.crit.slice(0, 4).map((q) => `x = ${fH(q.x)}: ${q.tipo}`).join('<br>'), 'ancho');
     } else {
       h += dato('Primitiva', sol.F ? M(`∫ f(x) dx = ${sol.Ftxt} + C`) : 'No es elemental (o no sé hacerla)', 'ancho');
       if (sol.a !== undefined) {

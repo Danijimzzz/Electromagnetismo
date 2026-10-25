@@ -71,7 +71,8 @@ canvas { display: block; width: 100%; height: clamp(260px, 36vw, 380px); border-
 .pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
 .teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
 .teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
-.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+.teoria .f { max-width: 100%; box-sizing: border-box; overflow-x: auto; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+.teoria li, .teoria p { overflow-x: auto }
 footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
 .controles { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px }
 .destacado { border-color: var(--accent); box-shadow: inset 4px 0 0 var(--accent) }
@@ -935,12 +936,19 @@ const Expresion = (() => {
 
   /* ---------- Serie de Taylor truncada ---------- */
   // coeficientes c_0 … c_N de f(a + h) = Σ c_k h^k
-  function serie(n, a, Nn) {
+  // evitable: en 0/0 (sen x / x en 0) se quitan los ceros comunes del numerador y el denominador;
+  // los últimos coeficientes dejan de ser fiables, así que quien lo usa pide unos cuantos de más
+  function serie(n, a, Nn, { evitable = false } = {}) {
     const L = Nn + 1, cero = () => new Float64Array(L);
     const cte = (v) => { const s = cero(); s[0] = v; return s; };
     const noDer = (q) => { throw new Error(`La función no es derivable en x = a (${q}): prueba con otro punto`); };
     const mul = (p, q) => { const r = cero(); for (let i = 0; i < L; i++) if (p[i]) for (let j = 0; i + j < L; j++) r[i + j] += p[i] * q[j]; return r; };
+    const corre = (p, m) => { const r = cero(); for (let k = 0; k + m < L; k++) r[k] = p[k + m]; return r; };
     const div = (p, q) => {
+      if (Math.abs(q[0]) < 1e-14 && evitable) {
+        const esc = Math.max(1e-300, ...q.map(Math.abs)), m = q.findIndex((v) => Math.abs(v) > 1e-10 * esc), escP = Math.max(1, ...p.map(Math.abs));
+        if (m > 0 && p.slice(0, m).every((v) => Math.abs(v) < 1e-10 * escP)) { p = corre(p, m); q = corre(q, m); serie.quitados = (serie.quitados || 0) + m; }
+      }
       if (Math.abs(q[0]) < 1e-14) noDer('división entre cero');
       const r = cero();
       for (let k = 0; k < L; k++) { let s = p[k]; for (let j = 1; j <= k; j++) s -= q[j] * r[k - j]; r[k] = s / q[0]; }
@@ -1268,10 +1276,13 @@ const EDOs = (() => {
     const fino = rk4((t, Y) => [F(t, Y[0])], x0, [y0], x1, Math.max(400, n * 20));
     const yRK = fino[fino.length - 1].t >= x1 - 1e-9 ? fino[fino.length - 1].Y[0] : NaN;
     const yEu = eul[eul.length - 1].y, yEx = exacta ? exacta.y(x1) : null;
+    // RK4 se para si la solución se dispara: explota (asíntota vertical) antes de x₁
+    const explota = fino[fino.length - 1].t < x1 - 1e-9 ? fino[fino.length - 1].t : null;
     const filas = eul.slice(0, Math.min(eul.length - 1, 8)).map((e, i) => `<tr><td>${i}</td><td>${f(e.x, 5)}</td><td>${f(e.y, 6)}</td><td>${f(e.m, 6)}</td><td>${f(eul[i + 1].y, 6)}</td></tr>`).join('');
     pasos.push({ t: `Método de Euler con h = ${f(h)}`, html: `$y_{n+1} = y_n + h f(x_n, y_n)$, empezando en $(x_0, y_0) = (${f(x0)}, ${f(y0)})$:<table class="tabla"><tr><th>n</th><th>xₙ</th><th>yₙ</th><th>f(xₙ, yₙ)</th><th>yₙ₊₁</th></tr>${filas}</table>${eul.length - 1 > 8 ? `… y así hasta n = ${eul.length - 1}. ` : ''}En x = ${f(x1)} Euler da y ≈ ${f(yEu, 6)}.` });
-    pasos.push({ t: 'Comparación', html: `${exacta ? `La solución exacta vale $y(${f(x1)}) = ${f(yEx, 7)}$` : `Con Runge-Kutta (RK4, ${fino.length - 1} pasos) sale $y(${f(x1)}) ≈ ${f(yRK, 7)}$`}, así que el error de Euler es ${f(Math.abs(yEu - (exacta ? yEx : yRK)), 3)}. El error de Euler es proporcional a h: con la mitad de paso, más o menos la mitad de error.` });
-    return { modo: 'primer', fTxt, F, x0, y0, x1, h, eul, fino, exacta, yRK, yEu, yEx, pasos, lineal: p !== null };
+    if (explota !== null) pasos.push({ t: 'La solución explota', html: `Con RK4 la solución crece sin límite cerca de $x ≈ ${f(explota, 4)}$: tiene una asíntota vertical antes de x = ${f(x1)}, así que $y(${f(x1)})$ no existe. Pasa en ecuaciones no lineales como $y′ = y^2$, cuya solución $y = 1/(C − x)$ se va a infinito en x = C. Los valores de Euler a partir de ahí no tienen sentido.` });
+    else pasos.push({ t: 'Comparación', html: `${exacta ? `La solución exacta vale $y(${f(x1)}) = ${f(yEx, 7)}$` : `Con Runge-Kutta (RK4, ${fino.length - 1} pasos) sale $y(${f(x1)}) ≈ ${f(yRK, 7)}$`}, así que el error de Euler es ${f(Math.abs(yEu - (exacta ? yEx : yRK)), 3)}. El error de Euler es proporcional a h: con la mitad de paso, más o menos la mitad de error.` });
+    return { modo: 'primer', fTxt, F, x0, y0, x1, h, eul, fino, exacta, yRK, yEu, yEx, explota, pasos, lineal: p !== null };
   }
   // sustituye y por un nodo
   function sustY(n, por) {
@@ -1569,10 +1580,13 @@ const EDOs = (() => {
     let h = '';
     if (sol.modo === 'primer') {
       if (sol.exacta) h += dato('Solución exacta', M(`y(x) = ${sol.exacta.txt}`), 'ancho');
-      h += dato(`y(${fH(sol.x1)}) con Euler`, fH(sol.yEu, 6), 'num');
-      h += dato(`y(${fH(sol.x1)}) con RK4`, fH(sol.yRK, 6), 'num');
-      if (sol.exacta) h += dato(`y(${fH(sol.x1)}) exacta`, fH(sol.yEx, 6), 'num');
-      h += dato('Error de Euler', fH(Math.abs(sol.yEu - (sol.exacta ? sol.yEx : sol.yRK)), 4));
+      if (sol.explota !== null) h += dato('La solución explota', `cerca de x ≈ ${fH(sol.explota, 4)} (asíntota vertical): y(${fH(sol.x1)}) no existe`, 'ancho');
+      else {
+        h += dato(`y(${fH(sol.x1)}) con Euler`, fH(sol.yEu, 6), 'num');
+        h += dato(`y(${fH(sol.x1)}) con RK4`, fH(sol.yRK, 6), 'num');
+        if (sol.exacta) h += dato(`y(${fH(sol.x1)}) exacta`, fH(sol.yEx, 6), 'num');
+        h += dato('Error de Euler', fH(Math.abs(sol.yEu - (sol.exacta ? sol.yEx : sol.yRK)), 4));
+      }
     } else if (sol.modo === 'segundo') {
       h += dato('Solución', M(`y(x) = ${sol.txt}`), 'ancho');
       h += dato('Raíces', Mates.html(sol.raices.replace(/, (reales|doble|complejas).*$/, '')));
@@ -1615,7 +1629,9 @@ const EDOs = (() => {
   };
   function ventana() {
     if (sol.modo === 'primer') {
-      const ys = [...sol.fino.map((q) => q.Y[0]), ...sol.eul.map((q) => q.y)];
+      // si la solución explota, la ventana llega solo hasta poco antes de la asíntota
+      const xm = sol.explota !== null ? sol.x0 + 0.9 * (sol.explota - sol.x0) : Infinity;
+      const ys = [...sol.fino.filter((q) => q.t <= xm).map((q) => q.Y[0]), ...sol.eul.filter((q) => q.x <= xm).map((q) => q.y)];
       const [y1, y2] = rango(ys, 0.15), dx = (sol.x1 - sol.x0) * 0.04;
       return { x1: sol.x0 - dx, x2: sol.x1 + dx, y1, y2 };
     }

@@ -395,12 +395,19 @@ const Expresion = (() => {
 
   /* ---------- Serie de Taylor truncada ---------- */
   // coeficientes c_0 … c_N de f(a + h) = Σ c_k h^k
-  function serie(n, a, Nn) {
+  // evitable: en 0/0 (sen x / x en 0) se quitan los ceros comunes del numerador y el denominador;
+  // los últimos coeficientes dejan de ser fiables, así que quien lo usa pide unos cuantos de más
+  function serie(n, a, Nn, { evitable = false } = {}) {
     const L = Nn + 1, cero = () => new Float64Array(L);
     const cte = (v) => { const s = cero(); s[0] = v; return s; };
     const noDer = (q) => { throw new Error(`La función no es derivable en x = a (${q}): prueba con otro punto`); };
     const mul = (p, q) => { const r = cero(); for (let i = 0; i < L; i++) if (p[i]) for (let j = 0; i + j < L; j++) r[i + j] += p[i] * q[j]; return r; };
+    const corre = (p, m) => { const r = cero(); for (let k = 0; k + m < L; k++) r[k] = p[k + m]; return r; };
     const div = (p, q) => {
+      if (Math.abs(q[0]) < 1e-14 && evitable) {
+        const esc = Math.max(1e-300, ...q.map(Math.abs)), m = q.findIndex((v) => Math.abs(v) > 1e-10 * esc), escP = Math.max(1, ...p.map(Math.abs));
+        if (m > 0 && p.slice(0, m).every((v) => Math.abs(v) < 1e-10 * escP)) { p = corre(p, m); q = corre(q, m); serie.quitados = (serie.quitados || 0) + m; }
+      }
       if (Math.abs(q[0]) < 1e-14) noDer('división entre cero');
       const r = cero();
       for (let k = 0; k < L; k++) { let s = p[k]; for (let j = 1; j <= k; j++) s -= q[j] * r[k - j]; r[k] = s / q[0]; }

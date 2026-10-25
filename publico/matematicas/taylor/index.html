@@ -71,7 +71,8 @@ canvas { display: block; width: 100%; height: clamp(260px, 36vw, 380px); border-
 .pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
 .teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
 .teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
-.teoria .f { max-width: 100%; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+.teoria .f { max-width: 100%; box-sizing: border-box; overflow-x: auto; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+.teoria li, .teoria p { overflow-x: auto }
 footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px } footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
 .controles { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px }
 .destacado { border-color: var(--accent); box-shadow: inset 4px 0 0 var(--accent) }
@@ -83,6 +84,7 @@ footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8p
 .resumen div.ancho { grid-column: 1 / -1 }
 .grado { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 10px; font-size: 13.5px }
 .grado input[type=range] { flex: 1 1 160px; accent-color: var(--accent) }
+.grado[hidden] { display: none }
 .grado b { font-variant-numeric: tabular-nums; min-width: 1.5em; display: inline-block }
 </style>
 <style>
@@ -136,14 +138,14 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
     <h2>Datos</h2>
     <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
     <div class="campos" id="campos"></div>
-    <p class="nota">Escribe la función con x: e^x, sen x, cos(2x), ln(1+x), √x, arctg x, 1/(1−x), x^3 − 2x… El punto puede llevar π: π/6.</p>
+    <p class="nota">Escribe la función con x: e^x, sen x, cos(2x), ln(1+x), √x, arctg x, 1/(1−x), x^3 − 2x… El punto puede llevar π: π/6. En «Límite con Taylor» escribe un cociente: (sen x − x)/x^3.</p>
     <p class="error" id="error" hidden></p>
   </div>
   <div>
     <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
     <div class="card"><h2>Gráfica</h2>
       <canvas id="grafica" aria-label="Gráfica de la función y de sus polinomios de Taylor"></canvas>
-      <div class="grado"><label for="grado">Grado mostrado: <b id="vgrado">0</b></label><input type="range" id="grado" min="0" max="4" step="1" value="4"><button class="btn" id="animar" type="button">▶ Ver cómo se acerca</button></div>
+      <div class="grado" id="control"><label for="grado">Grado mostrado: <b id="vgrado">0</b></label><input type="range" id="grado" min="0" max="4" step="1" value="4"><button class="btn" id="animar" type="button">▶ Ver cómo se acerca</button></div>
       <p class="nota" id="leyenda"></p></div>
     <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
   </div>
@@ -168,7 +170,14 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
     <li class="m">$(1 + x)^α = 1 + α x + {α (α − 1)}/{2!} x^2 + … = Σ_{k=0}^{∞} binom(α, k) x^k$, para |x| &lt; 1</li>
   </ul>
   <p class="m">Con ellos se sacan otros sin derivar: cambiando x por $−x^2$ en el de $e^x$ sale $e^{−x^2} = 1 − x^2 + {x^4}/{2} − …$, y multiplicando por x el de sen x sale el de x sen x.</p>
+  <h2>Radio de convergencia</h2>
+  <p class="m">La serie de Taylor $Σ c_k (x − a)^k$ converge para $|x − a| &lt; R$ y no converge para $|x − a| &gt; R$. El radio se saca con el criterio del cociente, $R = lím_{k → ∞} {|c_k|}/{|c_{k+1}|}$, y suele ser la distancia de a al punto más cercano, también complejo, donde f deja de estar definida: para ${1}/{1 + x^2}$ en a = 0 es R = 1, por los puntos ±i, aunque en los reales la función no tiene problemas.</p>
   <p class="m">Fuera de su intervalo de convergencia la serie no se acerca a la función por mucho que suba el grado: pruébalo con ln(1 + x) y x₀ = 1,5. Y sumando estas series con x = iθ sale la fórmula de Euler, $e^{iθ} = cos θ + i sen θ$, que se usa en <a href="../complejos/">Números complejos</a>.</p>
+  <h2>Singularidades evitables</h2>
+  <p class="m">${sen x}/{x}$ no está definida en 0 (sale 0/0), pero desarrollando el numerador, $sen x/x = (x − {x^3}/{6} + …)/x = 1 − {x^2}/{6} + …$, se ve que tiende a 1. Dándole ese valor en 0 la función queda derivable y tiene polinomio de Taylor.</p>
+  <h2>Límites con Taylor</h2>
+  <p class="m">Para un límite 0/0 se cambian el numerador y el denominador por sus desarrollos y se compara el primer término que no se anula en cada uno: si empiezan con la misma potencia, el límite es el cociente de sus coeficientes; si el numerador empieza más alto, es 0; y si empieza más alto el denominador, va a ±∞ (o no existe si los laterales tienen distinto signo). Por ejemplo,</p>
+  <p class="f m">$lím_{x → 0} {sen x − x}/{x^3} = lím_{x → 0} {−{x^3}/{6} + …}/{x^3} = −{1}/{6}$</p>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Series de Taylor <span id="ver"></span> (beta)</footer>
@@ -926,12 +935,19 @@ const Expresion = (() => {
 
   /* ---------- Serie de Taylor truncada ---------- */
   // coeficientes c_0 … c_N de f(a + h) = Σ c_k h^k
-  function serie(n, a, Nn) {
+  // evitable: en 0/0 (sen x / x en 0) se quitan los ceros comunes del numerador y el denominador;
+  // los últimos coeficientes dejan de ser fiables, así que quien lo usa pide unos cuantos de más
+  function serie(n, a, Nn, { evitable = false } = {}) {
     const L = Nn + 1, cero = () => new Float64Array(L);
     const cte = (v) => { const s = cero(); s[0] = v; return s; };
     const noDer = (q) => { throw new Error(`La función no es derivable en x = a (${q}): prueba con otro punto`); };
     const mul = (p, q) => { const r = cero(); for (let i = 0; i < L; i++) if (p[i]) for (let j = 0; i + j < L; j++) r[i + j] += p[i] * q[j]; return r; };
+    const corre = (p, m) => { const r = cero(); for (let k = 0; k + m < L; k++) r[k] = p[k + m]; return r; };
     const div = (p, q) => {
+      if (Math.abs(q[0]) < 1e-14 && evitable) {
+        const esc = Math.max(1e-300, ...q.map(Math.abs)), m = q.findIndex((v) => Math.abs(v) > 1e-10 * esc), escP = Math.max(1, ...p.map(Math.abs));
+        if (m > 0 && p.slice(0, m).every((v) => Math.abs(v) < 1e-10 * escP)) { p = corre(p, m); q = corre(q, m); serie.quitados = (serie.quitados || 0) + m; }
+      }
       if (Math.abs(q[0]) < 1e-14) noDer('división entre cero');
       const r = cero();
       for (let k = 0; k < L; k++) { let s = p[k]; for (let j = 1; j <= k; j++) s -= q[j] * r[k - j]; r[k] = s / q[0]; }
@@ -1030,7 +1046,7 @@ const Taylor = (() => {
   const { numTxt, dec4, exacto } = E;
   const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
   const FACT = [1]; for (let k = 1; k <= 40; k++) FACT[k] = FACT[k - 1] * k;
-  const MAXN = 15;
+  const MAXN = 25;
   const f = (x, d = 4) => dec4(x, d);
 
   // un número que no depende de x: a, x₀
@@ -1056,11 +1072,24 @@ const Taylor = (() => {
   }
   const potTxt = (B, k) => (k === 0 ? '' : k === 1 ? B.b : `${B.b}^{${k}}`);
   // un término c (x − a)^k sin el signo: { neg, s }
+  // exacto, o una potencia de un logaritmo entre k!: los de aˣ, c_k = (ln a)^k/k!
+  function exactoC(c, k) {
+    const e = exacto(c);
+    if ((e && (e.s || e.q <= 1000)) || k < 1) return e;
+    // una fracción con denominador enorme suele ser casualidad: antes se prueba con ln 2, ln 3…
+    for (const b of [2, 3, 5, 10]) { const L = Math.log(b) ** k, r = exacto(c / L, 1000); if (r && !r.s) return { p: r.p, q: r.q, s: k === 1 ? `ln ${b}` : `(ln ${b})^{${k}}` }; }
+    return e;
+  }
   function termino(c, k, B) {
-    const pw = potTxt(B, k), e = exacto(c);
+    const pw = potTxt(B, k), e = exactoC(c, k);
     if (!e) return { neg: c < 0, s: [f(Math.abs(c), 6), pw].filter(Boolean).join(' ') };
     const P = Math.abs(e.p);
     // en x = 0 la potencia va en el numerador ({x^2}/{2}); en otro punto, detrás del coeficiente ({1}/{4} (x − 4))
+    // con un logaritmo la x va delante (x ln 2, no ln 2 x, que se lee ln(2x))
+    if (pw && /ln/.test(e.s)) {
+      const arriba = [P !== 1 ? String(P) : '', pw, e.s].filter(Boolean).join(' ');
+      return { neg: e.p < 0, s: e.q === 1 ? arriba : `{${arriba}}/{${e.q}}` };
+    }
     if (B.par && pw) {
       const cf = [P !== 1 || (!e.s && e.q !== 1) ? String(P) : '', e.s].filter(Boolean).join(' ');
       return { neg: e.p < 0, s: [e.q === 1 ? cf : `{${cf}}/{${e.q}}`, pw].filter(Boolean).join(' ') };
@@ -1101,7 +1130,65 @@ const Taylor = (() => {
     return null;
   }
 
+  // serie con la singularidad evitable quitada (null si no lo es); se piden 10 términos de más
+  function serieEvitable(ast, a, N) {
+    try { E.serie.quitados = 0; const s = [...E.serie(ast, a, N + 10, { evitable: true })]; if (E.serie.quitados > 10) return null; return s.slice(0, N + 1).map((c) => (Math.abs(c) < 1e-14 ? 0 : c)); } catch (e) { return null; }
+  }
+  const serieSegura = (ast, t, N) => { try { return [...E.serie(ast, t, N)]; } catch (e) { const s = serieEvitable(ast, t, N); if (s) return s; throw e; } };
+  // radio de convergencia estimado con los coeficientes: cociente |c_k/c_{k+2}|^{1/2} (de dos en dos para
+  // las series con solo potencias pares o impares), extrapolado en 1/k para que converja deprisa
+  function radio(ast, a) {
+    let cs;
+    try { cs = serieSegura(ast, a, 40); } catch (e) { return null; }
+    const tope = Math.max(...cs.map(Math.abs)) * 1e-280 || 1e-300;
+    if (cs.slice(20).every((c) => Math.abs(c) <= tope)) return Infinity; // un polinomio
+    const s = (k) => (Math.abs(cs[k]) > tope && Math.abs(cs[k + 2]) > tope ? Math.sqrt(Math.abs(cs[k] / cs[k + 2])) : null);
+    const ext = (k) => { const u = s(k), v = s(k - 2); return u !== null && v !== null ? { k, s: u, R: (k * u - (k - 2) * v) / 2 } : null; };
+    const busca = (k) => { for (let j = k; j > k - 4; j--) { const e = ext(j); if (e) return e; } return null; };
+    const e1 = busca(37), e0 = busca(21);
+    if (!e1 || !e0) return null;
+    if (e1.s / e0.s > 1.4) return Infinity; // los cocientes crecen como k: la serie converge en todo x
+    if (!(e1.R > 0) || Math.abs(e1.R - e0.R) > 0.05 * e1.R) return null;
+    // se redondea al valor sencillo más cercano (2, √2, π/2…) si está a menos del 0,5 %
+    for (let q = 1; q <= 12; q++) for (const b of [1, Math.SQRT2, Math.sqrt(3), Math.sqrt(5), Math.PI]) {
+      const p = Math.round((e1.R * q) / b);
+      if (p > 0 && Math.abs((p * b) / q - e1.R) < 0.005 * e1.R) return (p * b) / q;
+    }
+    return e1.R;
+  }
+
+  /* ---------- Límites con Taylor ---------- */
+  function limite(sc) {
+    const ast = E.lee(sc.f, 'La función');
+    if (vacio(sc.a)) throw new Error('Falta el punto a');
+    const a = leeNum(sc.a, 'El punto a'), aTxt = numTxt(a), pasos = [];
+    const q = ast.t === '/' ? ast : null;
+    if (!q) throw new Error('Para el límite escribe la función como un cociente: (sen x − x)/x^3, (1 − cos x)/x^2…');
+    const N = q.a, D = q.b, ser = (n) => { try { return [...E.serie(n, a, 14)]; } catch (e) { throw new Error(`No se puede desarrollar ${E.texto(E.simp(n))} en x = ${f(a)}: ${e.message.replace(/: prueba.*$/, '')}`); } };
+    const sN = ser(N), sD = ser(D), esc = (s) => Math.max(1, ...s.map(Math.abs));
+    const orden = (s) => s.findIndex((v) => Math.abs(v) > 1e-10 * esc(s));
+    const oN = orden(sN), oD = orden(sD);
+    if (oD < 0) throw new Error('El denominador es 0 cerca de a');
+    const B = base(a), term = (c, k) => polinomio(Array.from({ length: k + 1 }, (_, j) => (j === k ? c : 0)), a);
+    const desarrollo = (s, o) => { const cs = Array.from({ length: Math.min(14, o + 3) }, (_, j) => (j < o ? 0 : s[j])); return `${polinomio(cs, a)}${s.slice(cs.length).some((v) => Math.abs(v) > 1e-12) ? ' + …' : ''}`; };
+    pasos.push({ t: 'La idea', html: `Se sustituyen el numerador y el denominador por su desarrollo de Taylor en x = $${aTxt}$ y se comparan los primeros términos que no se anulan.` });
+    pasos.push({ t: 'Numerador', html: oN < 0 ? 'El numerador vale 0 cerca de a.' : `$${E.texto(E.simp(N))} = ${desarrollo(sN, oN)}$` });
+    pasos.push({ t: 'Denominador', html: `$${E.texto(E.simp(D))}${desarrollo(sD, oD) === E.texto(E.simp(D)) ? '' : ` = ${desarrollo(sD, oD)}`}$` });
+    const par = (t) => (/[/−]/.test(t) ? `(${t})` : t);
+    let val, txt;
+    if (oN < 0 || oN > oD) { val = 0; txt = '0'; pasos.push({ t: 'Límite', html: `El numerador empieza en un orden más alto (${oN < 0 ? '∞' : oN} > ${oD}), así que el cociente tiende a <b>0</b>.` }); }
+    else if (oN === oD) { val = sN[oN] / sD[oD]; txt = numTxt(val); pasos.push({ t: 'Límite', html: `Los dos empiezan en $${potTxt(B, oN) || '1'}$: se simplifica y queda el cociente de los coeficientes,<br>$lím_{x → ${aTxt}} {${term(sN[oN], oN)}}/{${term(sD[oD], oD)}} ${Math.abs(sD[oD] - 1) < 1e-12 ? '' : `= ${par(numTxt(sN[oN]))}/${par(numTxt(sD[oD]))} `}= $ <b>$${txt}$</b>` }); }
+    else {
+      const k = oD - oN, sg = sN[oN] / sD[oD];
+      val = k % 2 ? NaN : sg > 0 ? Infinity : -Infinity;
+      txt = k % 2 ? 'no existe' : sg > 0 ? '+∞' : '−∞';
+      pasos.push({ t: 'Límite', html: `El denominador empieza en un orden más alto (${oD} > ${oN}): el cociente se comporta como $${par(numTxt(sg))}/${potTxt(B, k)}$, así que ${k % 2 ? `por la izquierda y por la derecha va a infinitos de signo contrario: <b>el límite no existe</b> (los laterales son ${sg > 0 ? '−∞ y +∞' : '+∞ y −∞'})` : `tiende a <b>${txt}</b>`}.` });
+    }
+    return { modo: 'limite', f: E.texto(E.simp(ast)), a, aTxt, val, txt, oN, oD, fv: (x) => E.valor(ast, x), pasos };
+  }
+
   function resolver(sc) {
+    if (sc.modo === 'limite') return limite(sc);
     const ast = E.lee(sc.f, 'La función');
     if (vacio(sc.a)) throw new Error('Falta el punto a');
     const a = leeNum(sc.a, 'El punto a');
@@ -1109,8 +1196,13 @@ const Taylor = (() => {
     const n = +String(sc.n).trim();
     if (!Number.isInteger(n) || n < 0 || n > MAXN) throw new Error(`El grado n tiene que ser un número entero entre 0 y ${MAXN}`);
     const hayX0 = !vacio(sc.x0), x0 = hayX0 ? leeNum(sc.x0, 'El punto x₀') : null;
-    let cs;
-    try { cs = [...E.serie(ast, a, n + 1)].map((c) => (Math.abs(c) < 1e-14 ? 0 : c)); } catch (e) { throw new Error(e.message.replace('x = a', `x = ${f(a)}`)); }
+    let cs, evitable = false;
+    try { cs = [...E.serie(ast, a, n + 1)].map((c) => (Math.abs(c) < 1e-14 ? 0 : c)); } catch (e) {
+      // 0/0 en a: si el límite existe (singularidad evitable), el desarrollo sale quitando los ceros comunes
+      const s2 = serieEvitable(ast, a, n + 1);
+      if (!s2) throw new Error(e.message.replace('x = a', `x = ${f(a)}`));
+      cs = s2; evitable = true;
+    }
     const der = cs.map((c, k) => c * FACT[k]);
     const coef = cs.slice(0, n + 1);
     const P = (x, k = n) => { let s = 0; for (let j = Math.min(k, n); j >= 0; j--) s = s * (x - a) + coef[j]; return s; };
@@ -1120,6 +1212,7 @@ const Taylor = (() => {
     const pasos = [];
     const aTxt = numTxt(a);
 
+    if (evitable) pasos.push({ t: 'Singularidad evitable', html: `f no está definida en x = $${aTxt}$ (sale 0/0), pero el límite existe: se desarrollan el numerador y el denominador y se simplifica la potencia común de $${potTxt(B, 1)}$. Así f se extiende con $f(${aTxt}) = ${numTxt(cs[0])}$ y tiene desarrollo de Taylor.` });
     pasos.push({ t: 'Fórmula de Taylor', html: `El polinomio de Taylor de grado ${n} de f en x = ${'$' + aTxt + '$'} es $${Pn}(x) = Σ_{k=0}^{${n}} {f^{(k)}(${aTxt})}/{k!} ${potTxt(B, 1)}^k$, así que hacen falta f y sus derivadas hasta la de orden ${n} en ese punto.${Math.abs(a) < 1e-14 ? ' Como a = 0, también se llama polinomio de Maclaurin.' : ''}` });
 
     // derivadas: escritas mientras sean cortas, y su valor en a
@@ -1144,6 +1237,10 @@ const Taylor = (() => {
       if (con) pasos.push({ t: 'Desarrollo conocido', html: `Es el desarrollo de Maclaurin de $${con.f} = ${con.gen}$, que converge ${con.conv}.${con.R < Infinity && hayX0 && Math.abs(x0) > con.R ? ` Ojo: x₀ = ${f(x0)} está fuera, así que al subir el grado el polinomio no se acerca a f(x₀).` : ''}` });
     }
 
+    // radio de convergencia: el de los desarrollos conocidos o el estimado con los coeficientes
+    const R = con ? con.R : radio(ast, a);
+    const Rtxt = R === null || R === Infinity ? null : `R ${Math.abs(R - Math.round(R)) < 1e-12 || /[√π]/.test(numTxt(R)) ? '=' : '≈'} ${numTxt(R)}`;
+    if (!con && R !== null) pasos.push({ t: 'Radio de convergencia', html: R === Infinity ? 'Los coeficientes se hacen pequeños muy deprisa: la serie de Taylor converge para todo x (radio ∞).' : `Con el criterio del cociente, $R = lím_{k → ∞} {|c_k|}/{|c_{k+1}|}$, los coeficientes dan $${Rtxt}$: la serie converge para $|${Math.abs(a) < 1e-14 ? 'x' : `x − ${aTxt}`.replace('− −', '+ ')}| < ${numTxt(R)}$${hayX0 && Math.abs(x0 - a) > R * 1.0001 ? `. <b>Ojo:</b> x₀ = ${f(x0)} está fuera, así que al subir el grado el polinomio no se acerca a f(x₀)` : ''}. Suele ser la distancia de a al punto más cercano (también complejo) donde f deja de estar definida.` });
     let fx0 = null, px0 = null, err = null, cota = null, M = null, cotaNota = '';
     if (hayX0) {
       fx0 = fv(x0); px0 = P(x0);
@@ -1157,7 +1254,7 @@ const Taylor = (() => {
         let ok = true; M = 0;
         for (let i = 0; i <= 200; i++) {
           const t = a + (h * i) / 200;
-          try { const s = E.serie(ast, t, n + 1); M = Math.max(M, Math.abs(s[n + 1] * FACT[n + 1])); } catch (e) { ok = false; break; }
+          try { const s = serieSegura(ast, t, n + 1); M = Math.max(M, Math.abs(s[n + 1] * FACT[n + 1])); } catch (e) { ok = false; break; }
         }
         if (ok && M < 1e-12) { cota = 0; pasos.push({ t: 'Cota del error (resto de Lagrange)', html: `La derivada de orden ${n + 1} es 0, así que el resto de Lagrange es 0: el polinomio de Taylor coincide con f.` }); }
         else if (ok && isFinite(M)) {
@@ -1166,7 +1263,7 @@ const Taylor = (() => {
         } else { cotaNota = 'La derivada siguiente no está acotada entre a y x₀ (f no es derivable en algún punto), así que no hay cota de Lagrange.'; pasos.push({ t: 'Cota del error', html: cotaNota }); }
       }
     }
-    return { f: fTxt, a, n, x0, coef, der, pol, Pn, P, fv, fx0, px0, err, cota, M, conocido: con, pasos, aTxt };
+    return { f: fTxt, a, n, x0, coef, der, pol, Pn, P, fv, fx0, px0, err, cota, M, conocido: con, pasos, aTxt, evitable, R, Rtxt };
   }
 
   const ejemplos = [
@@ -1184,6 +1281,10 @@ const Taylor = (() => {
     { clave: 'tangente', nombre: 'tg x en 0', sc: { f: 'tg x', a: '0', n: '5', x0: '0,3' } },
     { clave: 'polinomio', nombre: 'Un polinomio en x = 1', sc: { f: 'x^3 - 2x + 1', a: '1', n: '3', x0: '1,5' } },
     { clave: 'producto', nombre: 'e^x sen x en 0', sc: { f: 'e^x sen x', a: '0', n: '3', x0: '0,2' } },
+    { clave: 'evitable', nombre: 'sen x / x: singularidad evitable', sc: { f: 'sen(x)/x', a: '0', n: '6', x0: '0,5' } },
+    { clave: 'fuera', nombre: '1/(1 + x²) fuera del radio', sc: { f: '1/(1+x^2)', a: '0', n: '6', x0: '1,5' } },
+    { clave: 'limite', nombre: 'Límite (sen x − x)/x³', sc: { modo: 'limite', f: '(sen(x) - x)/x^3', a: '0' } },
+    { clave: 'limite-cos', nombre: 'Límite (1 − cos x)/x²', sc: { modo: 'limite', f: '(1 - cos(x))/x^2', a: '0' } },
   ];
 
   return { resolver, ejemplos, conocido, polinomio, f, MAXN, CONOCIDOS };
@@ -1212,10 +1313,20 @@ const Taylor = (() => {
 
   /* ---------- Formulario ---------- */
   const fila = (k, nom, modo = 'text') => `<label for="f-${k}">${nom}</label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc[k] ?? '')}" inputmode="${modo}" autocomplete="off" spellcheck="false">`;
+  const esLimite = () => sc.modo === 'limite';
   function formulario() {
-    $('#campos').innerHTML = fila('f', 'Función f(x)') + fila('a', 'Punto a <small>(centro)</small>') + fila('n', 'Grado n', 'numeric') + '<div class="sep">Aproximación (opcional)</div>' + fila('x0', 'Valor x₀ <small>(para f(x₀))</small>');
+    const modo = `<label for="f-modo">Qué calcular</label><select id="f-modo" class="in" data-k="modo"><option value="polinomio">Polinomio de Taylor</option><option value="limite"${esLimite() ? ' selected' : ''}>Límite con Taylor</option></select>`;
+    $('#campos').innerHTML = modo + (esLimite()
+      ? fila('f', 'Función <small>(un cociente)</small>') + fila('a', 'Punto a <small>(x → a)</small>')
+      : fila('f', 'Función f(x)') + fila('a', 'Punto a <small>(centro)</small>') + fila('n', `Grado n <small>(hasta ${T.MAXN})</small>`, 'numeric') + '<div class="sep">Aproximación (opcional)</div>' + fila('x0', 'Valor x₀ <small>(para f(x₀))</small>'));
+    $('#control').hidden = esLimite();
   }
-  $('#campos').addEventListener('input', (e) => { const t = e.target; if (t.tagName !== 'INPUT') return; sc[t.dataset.k] = t.value; $('#ejemplos').value = ''; calcula(); });
+  $('#campos').addEventListener('input', (e) => {
+    const t = e.target; if (!t.dataset.k) return;
+    sc[t.dataset.k] = t.value; $('#ejemplos').value = '';
+    if (t.dataset.k === 'modo') { if (t.value === 'polinomio') sc = { ...sc, n: sc.n || '4', x0: sc.x0 ?? '' }; formulario(); }
+    calcula();
+  });
 
   /* ---------- Ejemplos ---------- */
   const sel = $('#ejemplos');
@@ -1237,10 +1348,10 @@ const Taylor = (() => {
     const ent = (a, b) => a + Math.floor(Math.random() * (b - a + 1)), uno = (xs) => xs[ent(0, xs.length - 1)];
     const [fx, as, xs] = uno(AZAR), a = uno(as);
     const x0 = xs ? uno(xs) : String(+a + uno([0.1, 0.2, -0.1])).replace('.', ',').replace('-', '−');
-    sc = { f: fx, a, n: String(ent(2, 4)), x0 };
+    sc = { modo: 'polinomio', f: fx, a, n: String(ent(2, 4)), x0 };
     formulario(); calcula(); sel.value = '';
   }
-  const enunciado = () => `Calcula el polinomio de Taylor de grado <b>${esc(sc.n)}</b> de <b>f(x) = ${esc(sc.f)}</b> en <b>x = ${esc(sc.a)}</b>, sus coeficientes, y úsalo para aproximar <b>f(${esc(sc.x0)})</b>. ¿Qué error se comete?`;
+  const enunciado = () => esLimite() ? `Calcula con desarrollos de Taylor el límite de <b>${esc(sc.f)}</b> cuando <b>x → ${esc(sc.a)}</b>.` : `Calcula el polinomio de Taylor de grado <b>${esc(sc.n)}</b> de <b>f(x) = ${esc(sc.f)}</b> en <b>x = ${esc(sc.a)}</b>, sus coeficientes, y úsalo para aproximar <b>f(${esc(sc.x0)})</b>. ¿Qué error se comete?`;
 
   /* ---------- Cálculo ---------- */
   const dato = (t, v, cl = '') => `<div${cl ? ` class="${cl}"` : ''}><span>${t}</span><b>${v}</b></div>`;
@@ -1253,6 +1364,14 @@ const Taylor = (() => {
       dibuja(); return;
     }
     err.hidden = true; guarda();
+    if (sol.modo === 'limite') {
+      $('#resumen').innerHTML = dato(`Límite cuando x → ${esc(sol.aTxt)}`, sol.txt === 'no existe' ? 'No existe' : M(sol.txt), 'num')
+        + dato('Orden del numerador', sol.oN < 0 ? '—' : sol.oN) + dato('Orden del denominador', sol.oD);
+      $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
+      $('#leyenda').innerHTML = `${Mates.html(`$f(x) = ${sol.f}$`)} cerca de a` + (isFinite(sol.val) ? '; el círculo hueco marca el límite, que la función alcanza sin estar definida en a.' : '.');
+      if (anda) para();
+      dibuja(); return;
+    }
     const n = sol.n, sub = (k) => String(k).replace(/\d/g, (d) => '₀₁₂₃₄₅₆₇₈₉'[d]);
     let h = dato(`Polinomio de Taylor P${sub(n)}(x)`, M(`${sol.Pn}(x) = ${sol.pol}`), 'ancho');
     if (n <= 8) h += dato(`Coeficientes c₀ … c${sub(n)}`, sol.coef.map((c) => fH(c, 4)).join('; '), 'num');
@@ -1261,6 +1380,8 @@ const Taylor = (() => {
       if (sol.cota !== null) h += dato('Cota de Lagrange', `≤ ${fH(sol.cota, 3)}`);
     }
     if (sol.conocido) h += dato('Converge', sol.conocido.conv.replace(/^para /, ''));
+    else if (sol.R !== null) h += dato('Radio de convergencia', sol.R === Infinity ? '∞ (todo x)' : M(sol.Rtxt));
+    if (sol.evitable) h += dato('Singularidad evitable', `f(${esc(sol.aTxt)}) = ${fH(sol.coef[0], 6)} por continuidad`);
     $('#resumen').innerHTML = h;
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
     const rg = $('#grado'); rg.max = n; grado = Math.min(n, anda ? grado : n); rg.value = grado;
@@ -1268,14 +1389,14 @@ const Taylor = (() => {
     dibuja();
   }
   function pintaGrado() {
-    if (!sol) return;
+    if (!sol || sol.modo === 'limite') return;
     $('#vgrado').textContent = grado;
     $('#leyenda').innerHTML = `${Mates.html(`$f(x) = ${sol.f}$`)} en negro, ${Mates.html(`$P_{${grado}}(x)$`)} en color y los de grado menor más claros. ` + (sol.x0 !== null ? 'La línea vertical marca x₀: la distancia entre los dos puntos es el error.' : 'Escribe x₀ para ver la aproximación y el error.');
   }
   $('#grado').addEventListener('input', (e) => { grado = +e.target.value; if (anda) para(); pintaGrado(); dibuja(); });
   $('#animar').addEventListener('click', () => (anda ? para() : arranca()));
   let tA = 0;
-  function arranca() { if (!sol) return; anda = true; grado = 0; tA = 0; $('#grado').value = 0; $('#animar').textContent = '⏸ Parar'; pintaGrado(); dibuja(); }
+  function arranca() { if (!sol || sol.modo === 'limite') return; anda = true; grado = 0; tA = 0; $('#grado').value = 0; $('#animar').textContent = '⏸ Parar'; pintaGrado(); dibuja(); }
   function para() { anda = false; $('#animar').textContent = '▶ Ver cómo se acerca'; }
 
   /* ---------- Gráfica ---------- */
@@ -1287,12 +1408,12 @@ const Taylor = (() => {
   };
   let cacheVentana = null;
   function ventana() {
-    const a = sol.a, W = Math.max(3, sol.x0 !== null ? 1.6 * Math.abs(sol.x0 - a) : 0), x1 = a - W, x2 = a + W;
+    const a = sol.a, W = Math.max(3, sol.x0 != null ? 1.6 * Math.abs(sol.x0 - a) : 0), x1 = a - W, x2 = a + W;
     const xs = [], ys = [];
     for (let i = 0; i <= 600; i++) { const x = x1 + ((x2 - x1) * i) / 600; let y; try { y = sol.fv(x); } catch (e) { y = NaN; } xs.push(x); ys.push(isFinite(y) ? y : NaN); }
     const ok = ys.filter(isFinite).sort((p, q) => p - q);
     let y1 = ok.length ? ok[Math.floor(ok.length * 0.03)] : -1, y2 = ok.length ? ok[Math.ceil(ok.length * 0.97) - 1] : 1;
-    for (const v of [sol.coef[0], sol.fx0, sol.px0]) if (v !== null && isFinite(v)) { y1 = Math.min(y1, v); y2 = Math.max(y2, v); }
+    for (const v of sol.modo === 'limite' ? [isFinite(sol.val) ? sol.val : null] : [sol.coef[0], sol.fx0, sol.px0]) if (v !== null && isFinite(v)) { y1 = Math.min(y1, v); y2 = Math.max(y2, v); }
     if (y2 - y1 < 1e-9) { y1 -= 1; y2 += 1; }
     const pad = (y2 - y1) * 0.15;
     return { x1, x2, y1: y1 - pad, y2: y2 + pad, xs, ys };
@@ -1303,7 +1424,7 @@ const Taylor = (() => {
     const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
     if (!sol) return;
     if (!col['--ink']) colores();
-    const clave = JSON.stringify([sc.f, sc.a, sc.n, sc.x0]);
+    const clave = JSON.stringify([sc.modo, sc.f, sc.a, sc.n, sc.x0]);
     if (!cacheVentana || cacheVentana.k !== clave) cacheVentana = { k: clave, v: ventana() };
     const V = cacheVentana.v, mL = 44, mR = 12, mT = 12, mB = 26;
     const X = (x) => mL + ((x - V.x1) / (V.x2 - V.x1)) * (w - mL - mR), Y = (y) => mT + ((V.y2 - y) / (V.y2 - V.y1)) * (h - mT - mB);
@@ -1328,6 +1449,16 @@ const Taylor = (() => {
       }
       g.stroke();
     };
+    if (sol.modo === 'limite') {
+      g.strokeStyle = col['--ink']; g.lineWidth = 2.4;
+      const ys = V.ys; let i = 0; curva(() => ys[i++]);
+      g.restore();
+      g.strokeStyle = col['--muted']; g.setLineDash([4, 4]); g.lineWidth = 1; g.beginPath(); g.moveTo(X(sol.a), mT); g.lineTo(X(sol.a), h - mB); g.stroke(); g.setLineDash([]);
+      if (isFinite(sol.val)) { g.strokeStyle = col['--accent']; g.fillStyle = col['--panel']; g.lineWidth = 2; g.beginPath(); g.arc(X(sol.a), Y(sol.val), 5, 0, 2 * Math.PI); g.fill(); g.stroke(); }
+      g.fillStyle = col['--accent']; g.font = '600 13px "IBM Plex Sans", system-ui, sans-serif'; g.textAlign = 'right'; g.textBaseline = 'top';
+      g.fillText(`límite = ${txt(sol.txt === 'no existe' ? 'no existe' : fH(sol.val, 4))}`, w - mR - 6, mT + 4);
+      return;
+    }
     // polinomios de grado menor, más claros
     g.strokeStyle = col['--accent']; g.lineWidth = 1.3; g.globalAlpha = 0.22;
     for (let k = 0; k < grado; k++) curva((x) => sol.P(x, k));
@@ -1370,7 +1501,7 @@ const Taylor = (() => {
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('taylor').current;
   formulario(); colores(); calcula(); requestAnimationFrame(bucle);
-  window.TaylorApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { pol: sol.pol, coef: sol.coef, px0: sol.px0, fx0: sol.fx0, err: sol.err, cota: sol.cota }, estado: () => copia(sc), grado: (k) => { grado = Math.max(0, Math.min(sol ? sol.n : 0, k)); $('#grado').value = grado; pintaGrado(); dibuja(); } };
+  window.TaylorApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && (sol.modo === 'limite' ? { lim: sol.val, txt: sol.txt } : { pol: sol.pol, coef: sol.coef, px0: sol.px0, fx0: sol.fx0, err: sol.err, cota: sol.cota }), estado: () => copia(sc), grado: (k) => { grado = Math.max(0, Math.min(sol ? sol.n : 0, k)); $('#grado').value = grado; pintaGrado(); dibuja(); } };
 })();
 
 /* =====================================================================
