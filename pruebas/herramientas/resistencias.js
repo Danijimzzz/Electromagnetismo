@@ -4,6 +4,7 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
   let fallos = 0;
   const mal = (m) => { fallos++; avisa(m); };
 
+  global.Herramienta = global.Herramienta || require(path.join(fuente, 'herramienta.js'));
   const ResistenciasC = require(path.join(fuente, 'resistencias', 'calculo.js'));
   {
     const antes = fallos, cerca = (a, b, tol, q) => { if (!(Math.abs(a - b) <= tol)) mal(`Resistencias · ${q}: ${a} en vez de ${b}`); };
@@ -29,7 +30,25 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       let ok = false; try { ResistenciasC.resolver(sc); } catch (e) { ok = true; }
       if (!ok) mal(`Resistencias: ${q} no da error`);
     }
-    if (fallos === antes) console.log(`  ✓ Código de colores: ${ResistenciasC.ejemplos.length} ejemplos, 3 a 6 bandas, ida y vuelta valor ↔ colores, series E, SMD y errores`);
+    // al revés: 4,99 kΩ ±1 % leído desde el otro extremo
+    const rv = r('reves'); if (!rv.aviso || rv.reves !== 4990) mal('Resistencias: no avisa de que marrón, marrón, blanco, blanco, amarillo es 4,99 kΩ al revés');
+    if (r('cuatro').aviso) mal('Resistencias: avisa de lectura al revés en una resistencia normal');
+    { let m = ''; try { ResistenciasC.colores({ bandas: '4', b1: 'oro', b2: 'rojo', b3: 'violeta', b4: 'amarillo' }); } catch (e) { m = e.message; } if (!/al revés/.test(m)) mal('Resistencias: oro en la primera banda no dice que está al revés'); }
+    const bo = r('bobina'); cerca(bo.R, 10, 1e-12, 'bobina de 10 μH'); cerca(bo.tol, 10, 0, 'bobina ±10 %');
+    cerca(r('cond-104').C, 100e-9, 1e-20, 'condensador 104'); if (r('cond-104').V !== 100 || r('cond-104').tol !== '±10 %') mal('Resistencias: 104K 2A no da ±10 % y 100 V');
+    cerca(r('cond-4n7').C, 4.7e-9, 1e-20, 'condensador 4n7'); cerca(ResistenciasC.condensador({ codigo: '479' }).C, 4.7e-12, 1e-22, 'condensador 479 (×0,1)'); cerca(ResistenciasC.condensador({ codigo: '47p' }).C, 47e-12, 1e-22, '47p'); cerca(ResistenciasC.condensador({ codigo: '2,2uF' }).C, 2.2e-6, 1e-15, '2,2uF');
+    // asociación a mano: 220 ‖ 330 = 132, + 100 = 232 Ω; con 12 V, I = 12/232
+    const as = r('asoc'); cerca(as.R, 232, 1e-9, '100 + (220 ‖ 330)'); cerca(as.I, 12 / 232, 1e-12, 'corriente de la asociación');
+    cerca(r('asoc-iguales').R, 1000 / 3 + 4700, 1e-9, 'tres iguales en paralelo + 4k7');
+    cerca(ResistenciasC.asociacion({ expr: '1k + 2k || 2k' }).R, 2000, 1e-9, 'el paralelo va antes que la suma');
+    for (const ex of ['100 +', '(100 + 200', '100 ** 2', '']) { let ok = false; try { ResistenciasC.asociacion({ expr: ex }); } catch (e) { ok = true; } if (!ok) mal(`Resistencias: la asociación «${ex}» no da error`); }
+    const pa = r('pareja'); cerca(pa.p.x, 5000, 1e-9, '5 kΩ = 10k ‖ 10k'); if (pa.mejor !== 'en paralelo') mal('Resistencias: para 5 kΩ la mejor no es en paralelo');
+    // LED: (9 − 2)/0,02 = 350 Ω → 390 Ω de la E12, I = 7/390
+    const le = r('led'); cerca(le.R, 350, 1e-9, 'resistencia del LED'); cerca(le.Rn, 390, 0, 'normalizada de arriba'); cerca(le.I, 7 / 390, 1e-12, 'corriente con la normalizada');
+    // divisor 12 → 5 V: 4k7 y 3k3 dan 12·3,3/8 = 4,95 V
+    const dv = r('divisor'); cerca(dv.V, 12 * dv.R2 / (dv.R1 + dv.R2), 1e-12, 'salida del divisor'); if (Math.abs(dv.V - 5) > 0.06) mal(`Resistencias: el divisor de 12 a 5 V da ${dv.V} V`);
+    cerca(ResistenciasC.divisor({ Vin: '12', Vout: '5', Rt: '10k', serie: 'E12', RL: '3k3' }).Vc, 12 * (1650) / (4700 + 1650), 1e-9, 'divisor con carga');
+    if (fallos === antes) console.log(`  ✓ Código de colores: ${ResistenciasC.ejemplos.length} ejemplos, 3 a 6 bandas, ida y vuelta valor ↔ colores, series E, SMD, lectura al revés, bobinas, condensadores, asociación, pareja, LED, divisor y errores`);
   }
 
   return async (browser) => {
@@ -44,7 +63,7 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
         await page.evaluate((c) => ResistenciasApp.abrirEjemplo(c), e.clave);
         const r = await page.evaluate(() => ({ err: !document.querySelector('#error').hidden, pasos: document.querySelectorAll('#pasos li').length, dolar: /\$/.test(document.querySelector('#pasos').textContent), res: document.querySelectorAll('#resumen > div').length, svg: !!document.querySelector('#dibujo svg') }));
         if (r.err || !r.pasos || r.res < 2 || r.dolar) mal(`Resistencias · ${e.clave}: falta el resultado o el desarrollo`);
-        if (r.svg !== (e.sc.modo !== 'smd')) mal(`Resistencias · ${e.clave}: el dibujo de la resistencia ${r.svg ? 'sale y no debería' : 'no sale'}`);
+        if (r.svg !== ['colores', 'valor'].includes(e.sc.modo)) mal(`Resistencias · ${e.clave}: el dibujo de la resistencia ${r.svg ? 'sale y no debería' : 'no sale'}`);
       }
       // elegir colores con los botones
       await page.evaluate(() => ResistenciasApp.abrirEjemplo('mil'));
@@ -58,6 +77,13 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       if (!(await page.locator('#colores-res').textContent()).includes('rojo rojo rojo oro')) mal('Resistencias: 2k2 no sale rojo, rojo, rojo, oro');
       await page.fill('#f-valor', 'hola');
       if (await page.locator('#error').isHidden()) mal('Resistencias: un valor sin sentido no muestra el error');
+      await page.evaluate(() => ResistenciasApp.abrirEjemplo('reves'));
+      if (!(await page.locator('#colores-res').textContent()).includes('al revés')) mal('Resistencias: no sale el aviso de lectura al revés');
+      await page.selectOption('#f-modo', 'asociacion');
+      await page.fill('#f-expr', '(10k || 10k) + 1k');
+      if (!(await page.locator('#resumen').textContent()).includes('6 kΩ')) mal('Resistencias: (10k ‖ 10k) + 1k no da 6 kΩ en la página');
+      await page.selectOption('#f-modo', 'colores'); await page.selectOption('#f-comp', 'L');
+      if (!(await page.locator('#resumen').textContent()).includes('μH') || (await page.locator('.banda').count()) !== 4) mal('Resistencias: la bobina no sale en μH con 4 bandas');
       await page.close();
       if (consola.length) mal('Resistencias: consola del navegador:\n      ' + consola.join('\n      '));
       if (fallos === antes) console.log(`  ✓ Código de colores: ${ResistenciasC.ejemplos.length} ejemplos, dibujo, botones de colores, 6 bandas, valor a colores y errores sin errores de consola`);

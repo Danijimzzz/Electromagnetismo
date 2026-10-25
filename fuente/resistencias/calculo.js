@@ -1,8 +1,12 @@
 /* =====================================================================
    Código de colores de resistencias (sin DOM): de los colores al valor
    (3, 4, 5 y 6 bandas, IEC 60062), del valor a los colores con el valor
-   normalizado más cercano de las series E6 a E96, y los códigos SMD de
-   3 y 4 cifras, con R, y EIA-96.
+   normalizado más cercano de las series E6 a E96, los códigos SMD de
+   3 y 4 cifras, con R, y EIA-96, el código de colores de las bobinas y
+   el impreso de los condensadores, la asociación en serie y en paralelo
+   escrita como expresión, la mejor pareja de normalizadas para un valor,
+   la resistencia de un LED y el divisor de tensión con normalizadas.
+   Los campos con números se leen con Herramienta.leeSI.
    ===================================================================== */
 const Resistencias = (() => {
   // color: cifra, multiplicador (potencia de 10), tolerancia (%), coeficiente de temperatura (ppm/K), color de dibujo
@@ -41,14 +45,28 @@ const Resistencias = (() => {
     const [div, u] = pref.find(([d]) => Math.abs(x) >= d * 0.9999999) || pref[pref.length - 1];
     return `${String(+(x / div).toPrecision(cifras)).replace('.', ',')} ${u}`;
   }
+  // 4,7 μH (el valor de una bobina va en μH)
+  function henrio(x, cifras = 4) {
+    const pref = [[1e6, 'H'], [1e3, 'mH'], [1, 'μH'], [1e-3, 'nH']];
+    const [div, u] = pref.find(([d]) => Math.abs(x) >= d * 0.9999999) || pref[pref.length - 1];
+    return `${String(+(x / div).toPrecision(cifras)).replace('.', ',')} ${u}`;
+  }
+  // 1e-7 → '100 nF'
+  function faradio(x, cifras = 4) {
+    const pref = [[1, 'F'], [1e-3, 'mF'], [1e-6, 'μF'], [1e-9, 'nF'], [1e-12, 'pF']];
+    const [div, u] = pref.find(([d]) => Math.abs(x) >= d * 0.9999999) || pref[pref.length - 1];
+    return `${String(+(x / div).toPrecision(cifras)).replace('.', ',')} ${u}`;
+  }
   const num = (x, c = 4) => String(+(+x).toPrecision(c)).replace('.', ',').replace('-', '−');
   const pct = (x) => `${num(x)} %`;
 
   /* ---------- De los colores al valor ---------- */
   // sc: { bandas: 3|4|5|6, b1..b6 } (claves de color)
   function colores(sc) {
-    const n = +sc.bandas || 4;
+    const n = +sc.bandas || 4, bob = sc.comp === 'L', un = bob ? henrio : ohm;
     if (![3, 4, 5, 6].includes(n)) throw new Error('Una resistencia tiene 3, 4, 5 o 6 bandas');
+    if (bob && n !== 4) throw new Error('Las bobinas con código de colores llevan 4 bandas');
+    if (n !== 3 && ['oro', 'plata'].includes(sc.b1)) throw new Error('La primera banda no puede ser oro ni plata: estás leyendo la resistencia al revés, empieza por el otro extremo');
     const nc = n >= 5 ? 3 : 2, b = (i) => C[sc[`b${i}`]];
     const cif = [];
     for (let i = 1; i <= nc; i++) {
@@ -66,15 +84,29 @@ const Resistencias = (() => {
     const base = +cif.map((c) => c.d).join(''), R = base * 10 ** cm.m;
     const Rr = +R.toPrecision(12), tol = ct.tol, min = Rr * (1 - tol / 100), max = Rr * (1 + tol / 100);
     const pasos = [
+      ...(bob ? [{ t: 'Bobina', html: 'Las bobinas usan el mismo código que las resistencias, pero el valor sale en microhenrios (μH): oro como multiplicador es ×0,1 μH.' }] : []),
       { t: 'Cómo se lee', html: `${n === 3 ? 'Tres bandas: dos cifras y el multiplicador; sin banda de tolerancia es ±20 %.' : n === 4 ? 'Cuatro bandas: dos cifras, el multiplicador y la tolerancia.' : n === 5 ? 'Cinco bandas (resistencias de precisión): tres cifras, el multiplicador y la tolerancia.' : 'Seis bandas: tres cifras, el multiplicador, la tolerancia y el coeficiente de temperatura.'} Se empieza por el lado contrario a la banda de tolerancia, que suele estar más separada.` },
       { t: 'Cifras', html: cif.map((c, i) => `banda ${i + 1}: ${c.n.toLowerCase()} = ${c.d}`).join(', ') + ` → <b>${base}</b>` },
-      { t: 'Multiplicador', html: `${cm.n.toLowerCase()} = $×10^{${cm.m < 0 ? '−' + -cm.m : cm.m}}$ → $R = ${base} · 10^{${cm.m < 0 ? '−' + -cm.m : cm.m}}$ = <b>${num(Rr, 12)} Ω = ${ohm(Rr)}</b>` },
-      { t: 'Tolerancia', html: `${ct === C.ninguno ? 'sin banda' : ct.n.toLowerCase()} = ±${pct(tol)} → el valor real está entre $${num(Rr, 12)} · (1 − ${num(tol / 100)})$ = <b>${ohm(min, 5)}</b> y $${num(Rr, 12)} · (1 + ${num(tol / 100)})$ = <b>${ohm(max, 5)}</b>` },
+      { t: 'Multiplicador', html: `${cm.n.toLowerCase()} = $×10^{${cm.m < 0 ? '−' + -cm.m : cm.m}}$ → $${bob ? 'L' : 'R'} = ${base} · 10^{${cm.m < 0 ? '−' + -cm.m : cm.m}}$ = <b>${num(Rr, 12)} ${bob ? 'μH' : 'Ω'} = ${un(Rr)}</b>` },
+      { t: 'Tolerancia', html: `${ct === C.ninguno ? 'sin banda' : ct.n.toLowerCase()} = ±${pct(tol)} → el valor real está entre $${num(Rr, 12)} · (1 − ${num(tol / 100)})$ = <b>${un(min, 5)}</b> y $${num(Rr, 12)} · (1 + ${num(tol / 100)})$ = <b>${un(max, 5)}</b>` },
     ];
+    if (bob) { pasos.push({ t: 'Serie normalizada', html: normalizado(Rr).exacta ? `${un(Rr)} es un valor de la serie <b>${normalizado(Rr).exacta}</b>.` : `${un(Rr)} no es un valor de las series E: comprueba los colores.` }); return { modo: 'colores', comp: 'L', n, R: Rr, L: Rr * 1e-6, tol, min, max, tc: null, bandas: [...cif, cm, ct].map((c) => c.k), serie: normalizado(Rr).exacta, aviso: null, pasos }; }
     if (ctc) pasos.push({ t: 'Coeficiente de temperatura', html: `${ctc.n.toLowerCase()} = ${ctc.tc} ppm/K: por cada grado que sube la temperatura, R cambia ${ctc.tc}·10<sup>−6</sup> de su valor, unos ${ohm((Rr * ctc.tc) / 1e6, 3)} por grado.` });
     const serie = normalizado(Rr);
     pasos.push({ t: 'Serie normalizada', html: serie.exacta ? `${ohm(Rr)} es un valor de la serie <b>${serie.exacta}</b> (y de las mayores).` : `${ohm(Rr)} no es un valor normalizado de las series E6 a E96: comprueba que has leído bien los colores.` });
-    return { modo: 'colores', n, R: Rr, tol, min, max, tc: ctc ? ctc.tc : null, bandas: [...cif, cm, ...(n === 3 ? [] : [ct]), ...(ctc ? [ctc] : [])].map((c) => c.k), serie: serie.exacta, pasos };
+    // ¿y si se está leyendo al revés? (solo con 4 y 5 bandas, que son simétricas salvo por la separación)
+    let aviso = null;
+    const rev = (n === 4 || n === 5) && !sc.sinReves ? alReves(sc, n) : null;
+    if (rev) {
+      if (!serie.exacta && rev.serie) aviso = `Así no es un valor normalizado, pero leída al revés sería ${ohm(rev.R)} ±${pct(rev.tol)}, que sí lo es: seguramente la estás leyendo al revés.`;
+      pasos.push({ t: 'Leída al revés', html: `Empezando por el otro extremo serían ${rev.bandas.map((k) => C[k].n.toLowerCase()).join(', ')}: ${ohm(rev.R)} ±${pct(rev.tol)}${rev.serie ? ` (de la serie ${rev.serie})` : ' (no normalizado)'}. ${aviso ? '<b>Es más probable esta lectura.</b>' : serie.exacta && !rev.serie ? 'Como no es normalizado, la lectura buena es la primera.' : 'Las dos lecturas son posibles: la buena empieza por el extremo contrario a la banda más separada.'}` });
+    }
+    return { modo: 'colores', n, R: Rr, tol, min, max, tc: ctc ? ctc.tc : null, bandas: [...cif, cm, ...(n === 3 ? [] : [ct]), ...(ctc ? [ctc] : [])].map((c) => c.k), serie: serie.exacta, aviso, reves: rev ? rev.R : null, pasos };
+  }
+  function alReves(sc, n) {
+    const r = { bandas: String(n), sinReves: true };
+    for (let i = 1; i <= n; i++) r[`b${i}`] = sc[`b${n + 1 - i}`];
+    try { return colores(r); } catch (e) { return null; }
   }
 
   // las series que contienen el valor (por sus cifras significativas)
@@ -157,9 +189,196 @@ const Resistencias = (() => {
     return { modo: 'smd', codigo: t, R, como, pasos };
   }
 
+
+  /* ---------- Código de los condensadores ---------- */
+  const TOL_C = { B: '±0,1 pF', C: '±0,25 pF', D: '±0,5 pF', F: '±1 %', G: '±2 %', J: '±5 %', K: '±10 %', M: '±20 %', Z: '+80 % / −20 %' };
+  const VOLT_C = { '0G': 4, '0L': 5.5, '0J': 6.3, '1A': 10, '1C': 16, '1D': 20, '1E': 25, '1V': 35, '1H': 50, '1J': 63, '1K': 80, '2A': 100, '2Q': 110, '2B': 125, '2C': 160, '2Z': 180, '2D': 200, '2P': 220, '2E': 250, '2F': 315, '2V': 350, '2G': 400, '2W': 450, '2H': 500, '2J': 630, '3A': 1000 };
+  // sc: { codigo } como 104, 104K, 104J 2A, 472 100V, 4n7, 47p o 2,2u
+  function condensador(sc) {
+    const crudo = String(sc.codigo ?? '').trim();
+    if (!crudo) throw new Error('Escribe el código que lleva impreso el condensador, por ejemplo 104, 104K 2A, 4n7 o 47p');
+    let V = null, como, C, tol = null;
+    const trozos = [];
+    for (const t of crudo.split(/\s+/)) {
+      if (VOLT_C[t.toUpperCase()] && /^\d[A-Z]$/i.test(t)) V = { v: VOLT_C[t.toUpperCase()], codigo: t.toUpperCase() };
+      else if (/^\d+([.,]\d+)?V$/i.test(t)) V = { v: +t.slice(0, -1).replace(',', '.') };
+      else trozos.push(t);
+    }
+    let t = trozos.join('');
+    const mt = t.match(/^(.*\d)([BCDFGJKMZ])$/);
+    if (mt) { t = mt[1]; tol = mt[2]; }
+    const pasos = [];
+    if (/^\d{3}$/.test(t)) {
+      const e = +t[2], pot = e === 8 ? -2 : e === 9 ? -1 : e;
+      if (e === 6 || e === 7) throw new Error(`Un ${t[2]} como tercera cifra no se usa: el multiplicador va de 0 a 5 (o 8 y 9 para ×0,01 y ×0,1)`);
+      C = +(+t.slice(0, 2) * 10 ** pot).toPrecision(12) * 1e-12; como = 'código de 3 cifras en pF';
+      pasos.push({ t: 'Código de 3 cifras', html: `Igual que en las resistencias SMD, pero en picofaradios: las dos primeras son las cifras y la tercera, los ceros. ${t.slice(0, 2)} y ${pot >= 0 ? `${pot} cero${pot === 1 ? '' : 's'}` : `×10<sup>${pot}</sup>`} → $C = ${+t.slice(0, 2)} · 10^{${pot < 0 ? '−' + -pot : pot}}$ pF = <b>${faradio(C)}</b>` });
+    } else if (/^\d{1,2}$/.test(t)) {
+      C = +t * 1e-12; como = 'valor en pF';
+      pasos.push({ t: 'Una o dos cifras', html: `Con solo una o dos cifras es directamente el valor en picofaradios: <b>${faradio(C)}</b>` });
+    } else {
+      C = Herramienta.leeSI(t.replace(/F$/i, '').replace(/^(\d*)([pnuµμ])$/, '$1$2'), 1e-12);
+      if (!(C > 0)) throw new Error('No reconozco el código: prueba con 3 cifras (104, 472J), una letra en la coma (4n7, 2u2) o el valor con su prefijo (47p, 100nF)');
+      como = /\d[pnuµμ]\d/i.test(t) ? 'la letra del prefijo hace de coma' : 'valor con prefijo';
+      pasos.push({ t: como === 'valor con prefijo' ? 'Valor con prefijo' : 'Letra como coma', html: `${como === 'valor con prefijo' ? 'El valor va escrito con su prefijo' : 'Como en 4k7, la letra (p, n o u = μ) es el prefijo y marca dónde va la coma'}: ${esc(t)} → <b>${faradio(C)}</b>` });
+    }
+    if (tol) pasos.push({ t: 'Tolerancia', html: `La letra ${tol} es ${TOL_C[tol]}${/[BCD]/.test(tol) ? ' (en pF: se usa en condensadores pequeños)' : ''}${/%/.test(TOL_C[tol]) && !/Z/.test(tol) ? `: el valor real está entre ${faradio(C * (1 - parseFloat(TOL_C[tol].slice(1).replace(',', '.')) / 100))} y ${faradio(C * (1 + parseFloat(TOL_C[tol].slice(1).replace(',', '.')) / 100))}` : ''}.` });
+    if (V) pasos.push({ t: 'Tensión máxima', html: V.codigo ? `${V.codigo} es el código EIA de la tensión: <b>${num(V.v)} V</b> como máximo.` : `Aguanta como máximo <b>${num(V.v)} V</b>.` });
+    pasos.push({ t: 'En otras unidades', html: `${faradio(C)} = ${num(C * 1e12, 6)} pF = ${num(C * 1e9, 6)} nF = ${num(C * 1e6, 6)} μF` });
+    return { modo: 'condensador', C, como, tol: tol ? TOL_C[tol] : null, V: V ? V.v : null, pasos };
+  }
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  /* ---------- Asociación en serie y en paralelo ---------- */
+  // «100 + (220 ‖ 330)»: + es serie y ‖ (o || o //) paralelo, que va antes que la suma
+  function arbol(texto) {
+    const t = String(texto ?? '').replace(/\|\||\/\/|∥/g, '‖').replace(/Ω|ohmios?|ohms?/gi, ''), toks = [];
+    for (let i = 0; i < t.length;) {
+      const c = t[i];
+      if (/\s/.test(c)) { i++; continue; }
+      if ('+‖()'.includes(c)) { toks.push(c); i++; continue; }
+      const m = t.slice(i).match(/^[\d.,]+(?:e[+-]?\d+)?[RrkKMGm]?\d*/);
+      if (!m) throw new Error(`No entiendo «${t.slice(i, i + 6)}»: usa números (100, 4k7, 2,2k), + para serie, ‖ o || para paralelo y paréntesis`);
+      const v = leeValor(m[0]);
+      if (!(v >= 0)) throw new Error(`«${m[0]}» no es un valor de resistencia`);
+      toks.push({ v, t: m[0] }); i += m[0].length;
+    }
+    if (!toks.length) throw new Error('Escribe la asociación, por ejemplo 100 + (220 ‖ 330)');
+    let k = 0;
+    const ve = () => toks[k], come = (x) => { if (toks[k] !== x) throw new Error(`Falta «${x}»${toks[k] ? ` antes de «${typeof toks[k] === 'string' ? toks[k] : toks[k].t}»` : ' al final'}`); k++; };
+    const prim = () => { const x = ve(); if (x === '(') { k++; const e = suma(); come(')'); return e; } if (x && typeof x === 'object') { k++; return { v: x.v }; } throw new Error(x ? `Sobra «${x}»` : 'La expresión acaba en un operador'); };
+    const par = () => { const h = [prim()]; while (ve() === '‖') { k++; h.push(prim()); } return h.length === 1 ? h[0] : { op: '‖', h }; };
+    function suma() { const h = [par()]; while (ve() === '+') { k++; h.push(par()); } return h.length === 1 ? h[0] : { op: '+', h }; }
+    const e = suma();
+    if (k < toks.length) throw new Error(`Sobra «${typeof toks[k] === 'string' ? toks[k] : toks[k].t}»`);
+    return e;
+  }
+  // sc: { expr, V (opcional) }
+  function asociacion(sc) {
+    const raiz = arbol(sc.expr), pasos = [];
+    const evalua = (n) => {
+      if (n.v !== undefined) return n.v;
+      const vs = n.h.map(evalua);
+      let r, como;
+      if (n.op === '+') { r = vs.reduce((a, b) => a + b, 0); como = `${vs.map((x) => ohm(x)).join(' + ')} = <b>${ohm(r)}</b>`; }
+      else if (vs.some((x) => x === 0)) { r = 0; como = `${vs.map((x) => ohm(x)).join(' ‖ ')}: una de 0 Ω cortocircuita a las demás → <b>0 Ω</b>`; }
+      else if (vs.every((x) => Math.abs(x - vs[0]) < 1e-12 * vs[0])) { r = vs[0] / vs.length; como = `${vs.length} iguales de ${ohm(vs[0])} en paralelo: R/${vs.length} = <b>${ohm(r)}</b>`; }
+      else if (vs.length === 2) { r = (vs[0] * vs[1]) / (vs[0] + vs[1]); como = `${ohm(vs[0])} ‖ ${ohm(vs[1])} = $(${num(vs[0])} · ${num(vs[1])})/(${num(vs[0])} + ${num(vs[1])})$ = <b>${ohm(r)}</b> (producto partido por suma)`; }
+      else { r = 1 / vs.reduce((a, b) => a + 1 / b, 0); como = `${vs.map((x) => ohm(x)).join(' ‖ ')} = 1/(${vs.map((x) => `1/${num(x)}`).join(' + ')}) = <b>${ohm(r)}</b>`; }
+      pasos.push({ t: n.op === '+' ? 'En serie: se suman' : 'En paralelo: se suman las inversas', html: como });
+      return r;
+    };
+    const R = evalua(raiz);
+    if (!pasos.length) pasos.push({ t: 'Una sola resistencia', html: `No hay nada que asociar: <b>${ohm(R)}</b>` });
+    const V = vacio(sc.V) ? null : Herramienta.leeSI(sc.V);
+    if (V !== null && !isFinite(V)) throw new Error('La tensión debe ser un número');
+    let I = null, P = null;
+    if (V !== null) {
+      if (R === 0) throw new Error('Con 0 Ω la corriente sería infinita: es un cortocircuito');
+      I = V / R; P = V * I;
+      pasos.push({ t: `Con ${num(V)} V aplicados`, html: `I = V/R = ${num(V)}/${num(R)} = <b>${amp(I)}</b> y la potencia total, P = V·I = V<sup>2</sup>/R = <b>${vatio(P)}</b>` });
+    }
+    return { modo: 'asociacion', R, V, I, P, pasos };
+  }
+  const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
+  const conPref = (u) => (x, c = 4) => { if (!isFinite(x)) return '—'; if (x === 0) return `0 ${u}`; const p = [[1e6, 'M'], [1e3, 'k'], [1, ''], [1e-3, 'm'], [1e-6, 'μ'], [1e-9, 'n']].find(([d]) => Math.abs(x) >= d * 0.9999999) || [1e-9, 'n']; return `${String(+(x / p[0]).toPrecision(c)).replace('.', ',').replace('-', '−')} ${p[1]}${u}`; };
+  const amp = conPref('A'), vatio = conPref('W'), voltio = conPref('V');
+
+  /* ---------- Valores normalizados de 1 Ω a 82 MΩ ---------- */
+  const DE_SERIE = {};
+  function valoresDe(ser) {
+    if (DE_SERIE[ser]) return DE_SERIE[ser];
+    const l = SERIES[ser], dig = l[0] >= 100 ? 3 : 2, out = [];
+    for (let k = 0; k <= 7; k++) for (const v of l) out.push(+(v * 10 ** (k - dig + 1)).toPrecision(12));
+    return (DE_SERIE[ser] = out);
+  }
+  const serieDe = (sc, def = 'E12') => (SERIES[sc.serie] ? sc.serie : def);
+  const leePos = (v, nom, base = 1) => { if (vacio(v)) throw new Error(`Falta ${nom}`); const x = Herramienta.leeSI(v, base); if (!(x > 0)) throw new Error(`${nom[0].toUpperCase() + nom.slice(1)} debe ser un número mayor que 0`); return x; };
+  const rel = (x, R) => (100 * (x - R)) / R;
+  const dif = (e) => (Math.abs(e) < 1e-9 ? 'exacto' : `${e > 0 ? '+' : '−'}${num(Math.abs(e), 3)} %`);
+
+  /* ---------- La mejor pareja de normalizadas ---------- */
+  // sc: { R, serie }
+  function pareja(sc) {
+    const R = leePos(sc.R, 'el valor que quieres'), ser = serieDe(sc), vals = valoresDe(ser);
+    if (R < 2 || R > 1e7) throw new Error('Busca valores entre 2 Ω y 10 MΩ');
+    const cerca = (x) => Math.abs(Math.log(x / R));
+    let uno = null, s = null, p = null;
+    for (const a of vals) {
+      if (!uno || cerca(a) < cerca(uno.x)) uno = { x: a };
+      for (const b of vals) {
+        if (b > a) break;
+        if (a < R) { const x = a + b; if (!s || cerca(x) < cerca(s.x) - 1e-12) s = { a, b, x }; }
+        if (b > R) { const x = (a * b) / (a + b); if (!p || cerca(x) < cerca(p.x) - 1e-12) p = { a, b, x }; }
+      }
+    }
+    for (const o of [uno, s, p]) if (o) o.err = rel(o.x, R);
+    const cand = [['una sola', uno], ['en serie', s], ['en paralelo', p]].filter(([, o]) => o), mejor = cand.reduce((m, c) => (Math.abs(c[1].err) < Math.abs(m[1].err) - 1e-9 ? c : m));
+    const pasos = [
+      { t: `Una sola de la serie ${ser}`, html: `La más cercana es <b>${ohm(uno.x)}</b> (${dif(uno.err)}).` },
+      ...(s ? [{ t: 'Dos en serie', html: `Se prueban todas las parejas menores que ${ohm(R)}: la mejor es ${ohm(s.a)} + ${ohm(s.b)} = <b>${ohm(s.x)}</b> (${dif(s.err)}).` }] : []),
+      ...(p ? [{ t: 'Dos en paralelo', html: `Y todas las parejas mayores: la mejor es ${ohm(p.a)} ‖ ${ohm(p.b)} = $(${num(p.a)} · ${num(p.b)})/(${num(p.a)} + ${num(p.b)})$ = <b>${ohm(p.x)}</b> (${dif(p.err)}).` }] : []),
+      { t: 'La mejor', html: `<b>${mejor[0] === 'una sola' ? ohm(mejor[1].x) : `${ohm(mejor[1].a)} ${mejor[0] === 'en serie' ? '+' : '‖'} ${ohm(mejor[1].b)}`}</b> ${mejor[0]}, con un error del ${num(Math.abs(mejor[1].err), 3)} %${Math.abs(mejor[1].err) < TOL_SERIE[ser] / 2 ? `, menor que la tolerancia de la serie (±${TOL_SERIE[ser]} %)` : ''}.` },
+    ];
+    return { modo: 'pareja', R, serie: ser, uno, s, p, mejor: mejor[0], pasos };
+  }
+
+  /* ---------- Resistencia para un LED ---------- */
+  const POTENCIAS = [0.125, 0.25, 0.5, 1, 2, 5, 10];
+  const potencia = (P) => POTENCIAS.find((x) => x >= 2 * P) ?? null;
+  const nomP = (x) => ({ 0.125: '1/8 W', 0.25: '1/4 W', 0.5: '1/2 W' }[x] || `${num(x)} W`);
+  // sc: { Vs, Vled, I (mA), serie }
+  function led(sc) {
+    const Vs = leePos(sc.Vs, 'la tensión de la fuente'), Vl = leePos(sc.Vled, 'la tensión del LED'), I = leePos(sc.I, 'la corriente del LED', 1e-3), ser = serieDe(sc, 'E12');
+    if (Vs <= Vl) throw new Error(`Con ${num(Vs)} V no se enciende un LED de ${num(Vl)} V: la fuente tiene que dar más tensión que el LED`);
+    const R = (Vs - Vl) / I, Rn = valoresDe(ser).find((x) => x >= R * (1 - 1e-9));
+    if (!Rn) throw new Error('Sale una resistencia demasiado grande');
+    const In = (Vs - Vl) / Rn, P = In * In * Rn, Pn = potencia(P);
+    const pasos = [
+      { t: 'Ley de Ohm en la resistencia', html: `La resistencia se queda con lo que sobra de tensión: $R = (V_s − V_{LED})/I = (${num(Vs)} − ${num(Vl)})/${num(I)}$ = <b>${ohm(R)}</b>` },
+      { t: `Normalizado (serie ${ser})`, html: Math.abs(Rn - R) < 1e-9 * R ? `${ohm(R)} ya es normalizado.` : `Se toma el siguiente valor hacia arriba, <b>${ohm(Rn)}</b>, para no pasar de la corriente máxima: I = (${num(Vs)} − ${num(Vl)})/${num(Rn)} = <b>${amp(In)}</b>.` },
+      { t: 'Potencia', html: `En la resistencia: P = I<sup>2</sup>R = <b>${vatio(P)}</b>. Con margen del doble, ${Pn ? `basta una de <b>${nomP(Pn)}</b>` : 'hace falta más de 10 W: mejor baja la corriente o usa una fuente menor'}. El LED consume V·I = ${vatio(Vl * In)} y la fuente da ${vatio(Vs * In)} (rendimiento del ${num((100 * Vl) / Vs, 3)} %).` },
+    ];
+    return { modo: 'led', R, Rn, I: In, P, Pn, serie: ser, pasos };
+  }
+
+  /* ---------- Divisor de tensión ---------- */
+  // sc: { Vin, Vout, Rt (orientativa: R₁ + R₂), serie, RL (carga, opcional) }
+  function divisor(sc) {
+    const Vi = leePos(sc.Vin, 'la tensión de entrada'), Vo = leePos(sc.Vout, 'la tensión de salida'), Rt = vacio(sc.Rt) ? 1e4 : leePos(sc.Rt, 'la resistencia total'), ser = serieDe(sc, 'E12');
+    if (Vo >= Vi) throw new Error('Un divisor solo baja la tensión: la salida tiene que ser menor que la entrada');
+    const RL = vacio(sc.RL) ? null : leePos(sc.RL, 'la carga');
+    const vals = valoresDe(ser).filter((x) => x >= Rt / 30 && x <= Rt * 3);
+    let m = null;
+    for (const r1 of vals) for (const r2 of vals) {
+      const t = r1 + r2;
+      if (t < Rt / 3 || t > Rt * 3) continue;
+      const v = (Vi * r2) / t, e = Math.abs(v - Vo) / Vo + 1e-4 * Math.abs(Math.log(t / Rt));
+      if (!m || e < m.e) m = { r1, r2, v, e };
+    }
+    if (!m) throw new Error('No hay ninguna pareja normalizada para esa resistencia total');
+    const R2i = (Rt * Vo) / Vi, R1i = Rt - R2i, I = Vi / (m.r1 + m.r2), err = rel(m.v, Vo);
+    const pasos = [
+      { t: 'Fórmula del divisor', html: `$V_{out} = V_{in} R_2/(R_1 + R_2)$ ⇒ $R_2/(R_1 + R_2) = ${num(Vo)}/${num(Vi)}$ = ${num(Vo / Vi)}. Con R<sub>1</sub> + R<sub>2</sub> = ${ohm(Rt)} saldrían R<sub>1</sub> = ${ohm(R1i)} y R<sub>2</sub> = ${ohm(R2i)}.` },
+      { t: `Con valores de la serie ${ser}`, html: `La pareja que más se acerca es <b>R<sub>1</sub> = ${ohm(m.r1)}</b> y <b>R<sub>2</sub> = ${ohm(m.r2)}</b>: V<sub>out</sub> = ${num(Vi)} · ${num(m.r2)}/${num(m.r1 + m.r2)} = <b>${voltio(m.v)}</b> (${dif(err)}).` },
+      { t: 'Corriente y potencia', html: `I = V<sub>in</sub>/(R<sub>1</sub> + R<sub>2</sub>) = ${amp(I)}; P<sub>1</sub> = ${vatio(I * I * m.r1)} y P<sub>2</sub> = ${vatio(I * I * m.r2)}${potencia(Math.max(I * I * m.r1, I * I * m.r2)) ? `: valen de ${nomP(potencia(Math.max(I * I * m.r1, I * I * m.r2)))}` : ''}.` },
+    ];
+    let Vc = null;
+    if (RL !== null) {
+      const Rp = (m.r2 * RL) / (m.r2 + RL); Vc = (Vi * Rp) / (m.r1 + Rp);
+      pasos.push({ t: `Con una carga de ${ohm(RL)}`, html: `La carga queda en paralelo con R<sub>2</sub>: ${ohm(m.r2)} ‖ ${ohm(RL)} = ${ohm(Rp)}, y la salida baja a <b>${voltio(Vc)}</b> (${dif(rel(Vc, Vo))}). ${RL < 10 * m.r2 ? 'Para que la carga no la cambie, R<sub>2</sub> tiene que ser mucho menor que la carga (unas 10 veces).' : 'Como la carga es mucho mayor que R<sub>2</sub>, apenas cambia.'}` });
+    }
+    return { modo: 'divisor', R1: m.r1, R2: m.r2, V: m.v, err, I, Vc, serie: ser, pasos };
+  }
+
   function resolver(sc) {
     if (sc.modo === 'valor') return valor(sc);
     if (sc.modo === 'smd') return smd(sc);
+    if (sc.modo === 'condensador') return condensador(sc);
+    if (sc.modo === 'asociacion') return asociacion(sc);
+    if (sc.modo === 'pareja') return pareja(sc);
+    if (sc.modo === 'led') return led(sc);
+    if (sc.modo === 'divisor') return divisor(sc);
     return colores(sc);
   }
 
@@ -176,8 +395,17 @@ const Resistencias = (() => {
     { clave: 'smd-472', nombre: 'SMD 472', sc: { modo: 'smd', codigo: '472' } },
     { clave: 'smd-4r7', nombre: 'SMD 4R7', sc: { modo: 'smd', codigo: '4R7' } },
     { clave: 'smd-eia', nombre: 'SMD EIA-96: 01C', sc: { modo: 'smd', codigo: '01C' } },
+    { clave: 'reves', nombre: '5 bandas leídas al revés: marrón, marrón, blanco, blanco, amarillo', sc: { modo: 'colores', bandas: '5', b1: 'marron', b2: 'marron', b3: 'blanco', b4: 'blanco', b5: 'amarillo' } },
+    { clave: 'bobina', nombre: 'Bobina: marrón, negro, negro, plata (10 μH)', sc: { modo: 'colores', comp: 'L', bandas: '4', b1: 'marron', b2: 'negro', b3: 'negro', b4: 'plata' } },
+    { clave: 'cond-104', nombre: 'Condensador 104K 2A', sc: { modo: 'condensador', codigo: '104K 2A' } },
+    { clave: 'cond-4n7', nombre: 'Condensador 4n7J', sc: { modo: 'condensador', codigo: '4n7J' } },
+    { clave: 'asoc', nombre: 'Asociación: 100 + (220 ‖ 330)', sc: { modo: 'asociacion', expr: '100 + (220 || 330)', V: '12' } },
+    { clave: 'asoc-iguales', nombre: 'Asociación: tres de 1 kΩ en paralelo y en serie con 4k7', sc: { modo: 'asociacion', expr: '(1k || 1k || 1k) + 4k7', V: '' } },
+    { clave: 'pareja', nombre: '5 kΩ con dos de la E12', sc: { modo: 'pareja', R: '5k', serie: 'E12' } },
+    { clave: 'led', nombre: 'LED rojo a 9 V y 20 mA', sc: { modo: 'led', Vs: '9', Vled: '2', I: '20', serie: 'E12' } },
+    { clave: 'divisor', nombre: 'Divisor de 12 V a 5 V', sc: { modo: 'divisor', Vin: '12', Vout: '5', Rt: '10k', serie: 'E12', RL: '' } },
   ];
 
-  return { resolver, colores, valor, smd, leeValor, normalizado, ohm, COLORES, CIFRAS, MULTS, TOLS, TCS, SERIES, ejemplos };
+  return { resolver, colores, valor, smd, condensador, asociacion, pareja, led, divisor, leeValor, normalizado, ohm, henrio, faradio, COLORES, CIFRAS, MULTS, TOLS, TCS, SERIES, ejemplos };
 })();
 if (typeof module !== 'undefined') module.exports = Resistencias;
