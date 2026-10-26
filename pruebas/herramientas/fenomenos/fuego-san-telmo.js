@@ -1,4 +1,4 @@
-/* Comprobación del fuego de San Telmo («Física en la vida real»): los números del modelo y la escena que se abre en
+/* Comprobación del Fuego de San Telmo («Física en la vida real»): los números del modelo y la escena que se abre en
    Electrostática, en Node, y la página en Chromium (pasos, controles, enlace con los datos, modo oscuro y 390 px).
    La carga pruebas/comprobar.js (node pruebas/comprobar.js --solo fenomenos/fuego-san-telmo ejecuta solo esta). */
 module.exports = ({ path, fuente, publico, mal: avisa, pagina }) => {
@@ -44,6 +44,17 @@ module.exports = ({ path, fuente, publico, mal: avisa, pagina }) => {
       if (r.dolar) mal(`San Telmo: el paso ${i + 1} tiene fórmulas sin convertir`);
     }
     if (!r.sig) mal('San Telmo: «Siguiente» debería apagarse en el último paso');
+    // último paso: «Pruébalo tú» con el radio de la punta (1 cm brilla, 3 cm no)
+    if (!(await page.textContent('#prueba-v')).includes('brilla') || (await page.textContent('#prueba-v')).includes('no brilla')) mal('San Telmo: el deslizador del último paso no empieza en una punta que brilla');
+    await page.fill('#prueba', '3');
+    if (!(await page.textContent('#prueba-v')).includes('1,7 MV/m < 3 MV/m: no brilla')) mal(`San Telmo: con una punta de 3 cm el deslizador dice «${await page.textContent('#prueba-v')}»`);
+    if (await page.evaluate(() => FenomenoApp.avanza())) mal('San Telmo: mover el deslizador debería parar el avance');
+    const extra = await page.evaluate(() => ({ dato: document.querySelectorAll('#paso-x .fen-dato').length, nombres: [...document.querySelectorAll('#puntos button span')].map((x) => x.textContent).join(','), sonido: FenomenoApp.sonido(), boton: document.querySelector('#sonido')?.getAttribute('aria-pressed'), etiquetas: document.querySelectorAll('.fen-etiquetas span').length }));
+    if (extra.dato !== 1) mal('San Telmo: falta el dato destacado del paso');
+    if (extra.nombres !== 'Tormenta,Inducción,Efecto punta,Campo,Avalancha,Brillo') mal(`San Telmo: la línea de tiempo tiene los nombres «${extra.nombres}»`);
+    if (extra.sonido || extra.boton !== 'false') mal('San Telmo: el sonido debería empezar apagado');
+    if (extra.etiquetas !== 3) mal('San Telmo: faltan las etiquetas sobre el título');
+    if ((await page.locator('.fen-historia li').count()) < 3) mal('San Telmo: falta «Un poco de historia»');
     await page.click('#ant'); if ((await lee()).paso !== 4) mal('San Telmo: «Anterior» no vuelve atrás');
     await page.click('#puntos button >> nth=2'); r = await lee();
     if (r.paso !== 2 || !r.mathml) mal('San Telmo: el botón del paso 3 no lleva a él o el texto no tiene fórmulas');
@@ -64,7 +75,7 @@ module.exports = ({ path, fuente, publico, mal: avisa, pagina }) => {
     const e = await page.evaluate(() => ({ titulo: document.querySelector('#title').value, inc: document.querySelector('#unknown').textContent, err: (() => { const x = document.querySelector('#errors'); return x && !x.hidden ? x.textContent : ''; })() }));
     if (!e.titulo.includes('San Telmo') || e.err) mal(`San Telmo: Electrostática no abre el ejercicio (${JSON.stringify(e)})`);
     // la página de Electrostática enlaza el fenómeno
-    if (!(await page.locator('.vida-real a[href="../../fenomenos/fuego-san-telmo/"]').count())) mal('Electrostática: falta el enlace «En la vida real» al fuego de San Telmo');
+    if (!(await page.locator('.vida-real a[href="../../fenomenos/fuego-san-telmo/"]').count())) mal('Electrostática: falta el enlace «En la vida real» al Fuego de San Telmo');
     await page.evaluate(() => localStorage.clear());
     // modo oscuro y móvil
     await page.emulateMedia({ colorScheme: 'dark' });
@@ -77,6 +88,6 @@ module.exports = ({ path, fuente, publico, mal: avisa, pagina }) => {
     if (!(m.alto >= 200)) mal(`San Telmo: la animación mide ${m.alto} px de alto en el móvil`);
     await page.close();
     if (consola.length) mal('San Telmo: consola del navegador:\n      ' + consola.join('\n      '));
-    if (fallos === antes) console.log('  ✓ Fuego de San Telmo: avance solo, parar, anterior, siguiente, botones y flechas, recuadro con enlace que abre Electrostática con los datos, modo oscuro y 390 px');
+    if (fallos === antes) console.log('  ✓ Fuego de San Telmo: avance solo, parar, anterior, siguiente, línea de tiempo y flechas, dato destacado, «Pruébalo tú», sonido apagado, recuadro con enlace que abre Electrostática con los datos, modo oscuro y 390 px');
   };
 };

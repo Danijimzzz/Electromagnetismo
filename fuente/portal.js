@@ -25,7 +25,7 @@ html, body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.5 var
 a { color:inherit; text-decoration:none }
 .top { display:flex; align-items:center; gap:8px 20px; flex-wrap:wrap; padding:12px clamp(16px,3vw,28px); background:var(--panel); border-bottom:1px solid var(--line) }
 .logo { font:600 18px var(--f-math); white-space:nowrap } .logo i { color:var(--accent) }
-.top nav { display:flex; gap:4px 16px; font-size:14px; color:var(--muted); overflow-x:auto; max-width:100%; scrollbar-width:none }
+.top nav { display:flex; gap:4px 14px; font-size:14px; color:var(--muted); overflow-x:auto; max-width:100%; scrollbar-width:none }
 .top nav a { white-space:nowrap; padding:2px 0 } .top nav a:hover, .top nav a[aria-current] { color:var(--ink) } .top nav a[aria-current] { font-weight:600 }
 .buscar { margin-left:auto; font:14px var(--f-ui); color:var(--ink); border:1px solid var(--line); border-radius:8px; padding:7px 12px; width:min(300px,100%); background:var(--bg) }
 .top .foro { margin-left:auto; display:inline-flex; align-items:center; gap:6px; white-space:nowrap; font:600 14px var(--f-ui); color:var(--ink); text-decoration:none; border:1px solid var(--line); border-radius:8px; padding:6px 12px } .top .foro:hover, .top .foro[aria-current] { border-color:var(--accent); color:var(--accent) } .foro + .buscar { margin-left:0 } .top > .foro ~ .tema { margin-left:0 }

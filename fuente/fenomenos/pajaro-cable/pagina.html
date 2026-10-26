@@ -1,0 +1,62 @@
+<title>El pájaro posado en un cable, explicado paso a paso · SimulaCiencia</title>
+<meta name="description" content="Por qué un pájaro no se electrocuta en un cable de alta tensión: resistencia del cable, ley de Ohm, resistencias en paralelo y diferencia de potencial, con una animación paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<!-- =====================================================================
+     El pájaro posado en un cable («Física en la vida real»). Maqueta común de los
+     fenómenos (ver fuego-san-telmo/pagina.html): animación, texto del paso, historia
+     y recuadro de la herramienta. Los pasos y el dibujo están en escena.js.
+     ===================================================================== -->
+<style>
+/* colores del dibujo, con su valor en modo oscuro */
+:root {
+  --cielo: #dbe9f2; --cielo-alto: #9cc3dd; --nube: #ffffff; --colina: #9fbf8a; --suelo: #7fa66a; --torre: #6b737a; --aislador: #b9876a; --cable: #3a3f44;
+  --corriente: #c26a00; --resalta: #c2412a; --alta: #7b3fc4; --ave: #6b4a33; --ave-pecho: #d9b48a; --ave-ala: #4f3524; --pico: #3a2a1c; --ojo: #111111;
+  --chispa: #7b61ff; --chispa-centro: #f1edff; --rotulo: #1a2128 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --cielo: #1c2a38; --cielo-alto: #0e1824; --nube: #3a4654; --colina: #2e4a2a; --suelo: #24391f; --torre: #8f989f; --aislador: #a77a5e; --cable: #b9c1c8;
+  --corriente: #f0a040; --resalta: #ef7a62; --alta: #b48af0; --ave: #a5805f; --ave-pecho: #e4c7a2; --ave-ala: #7a5a40; --pico: #e0cdb5; --ojo: #0b0b0b;
+  --chispa: #a99bff; --chispa-centro: #f6f3ff; --rotulo: #e3e8ea } }
+:root[data-theme="dark"] {
+  --cielo: #1c2a38; --cielo-alto: #0e1824; --nube: #3a4654; --colina: #2e4a2a; --suelo: #24391f; --torre: #8f989f; --aislador: #a77a5e; --cable: #b9c1c8;
+  --corriente: #f0a040; --resalta: #ef7a62; --alta: #b48af0; --ave: #a5805f; --ave-pecho: #e4c7a2; --ave-ala: #7a5a40; --pico: #e0cdb5; --ojo: #0b0b0b;
+  --chispa: #a99bff; --chispa-centro: #f6f3ff; --rotulo: #e3e8ea }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física en la vida real</a> / El pájaro posado en un cable</span></header>
+<div class="wrap fen">
+<div class="fen-etiquetas"><span>⚡ Circuitos</span><span>Dificultad baja</span><span>6 pasos · 1 min</span></div>
+<h1>El pájaro posado en un cable</h1>
+<p class="lead">Un cable de alta tensión mata a una persona en un instante, pero los pájaros se posan en ellos y ni se inmutan. ¿Por qué no se electrocutan?</p>
+<div class="fen-escena"><canvas id="escena" role="img" aria-label="Animación de un pájaro que se posa en un cable de una línea de alta tensión, entre dos torres"></canvas></div>
+<div class="fen-puntos" id="puntos" role="group" aria-label="Pasos"></div>
+<div class="fen-controles">
+  <button class="btn" id="ant" type="button">‹ Anterior</button>
+  <button class="btn" id="play" type="button" aria-pressed="true">❚❚ Parar</button>
+  <button class="btn" id="sig" type="button">Siguiente ›</button>
+</div>
+<div class="fen-texto" aria-live="polite"><h2 id="paso-t"></h2><div id="paso-x"></div></div>
+<section class="fen-historia" aria-label="Un poco de historia">
+  <h2>Un poco de historia</h2>
+  <ol>
+    <li><b>1827</b>Georg Simon Ohm publica que la corriente por un conductor es proporcional a la tensión entre sus extremos: V = I·R. Al principio casi nadie le hizo caso.</li>
+    <li><b>1845</b>Gustav Kirchhoff, todavía estudiante, enuncia las leyes de los nudos y de las mallas, con las que se reparte la corriente entre ramas en paralelo como la del cable y el pájaro.</li>
+    <li><b>1891</b>Se inaugura la primera línea de alta tensión en alterna, de Lauffen a Fráncfort: unos 175 km a 15 kV. Subir la tensión permite llevar la misma potencia con menos corriente y menos pérdidas.</li>
+    <li><b>2008</b>En España, el Real Decreto 1432/2008 obliga a proteger las líneas de alta tensión en las zonas con aves amenazadas, porque las águilas y cigüeñas que tocan a la vez el cable y la torre mueren electrocutadas.</li>
+  </ol>
+</section>
+<section class="fen-rel" aria-label="Herramienta relacionada">
+  <div class="fen-ico" aria-hidden="true">I</div>
+  <h2>Con qué herramienta se relaciona</h2>
+  <h3>Circuitos de corriente continua <small>· Circuitos</small></h3>
+  <p>El pájaro y el trozo de cable que hay entre sus patas son dos resistencias en paralelo por las que se reparte la corriente de la línea. Es un problema de ley de Ohm y de nudos.</p>
+  <p class="f m">ΔV = I R_{cable} ,  I_{pájaro} = ΔV/R_{pájaro}</p>
+  <p class="f m">I_{pájaro}/I_{cable} = R_{cable}/R_{pájaro}</p>
+  <p>Se abre con una fuente de corriente de 500 A (la línea), el cable entre las patas (R<sub>1</sub> = 5 µΩ), el pájaro en paralelo (R<sub>2</sub> = 10 kΩ) y una carga de 800 Ω que deja el cable a 400 kV. Sale una tensión de 2,5 mV entre las patas y 0,25 µA por el pájaro.</p>
+  <div class="fen-fichas"><div><small>Entre las patas</small><b>2,5 mV</b></div><div><small>Por el pájaro</small><b>0,25 µA</b></div><div><small>Tensión de la línea</small><b>400 kV</b></div></div>
+  <a class="fen-abrir" id="abrir" href="../../circuitos/continua/">Abrir en Circuitos de continua con estos datos →</a>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Física en la vida real <span id="ver"></span> (beta)</footer>
+</body>
