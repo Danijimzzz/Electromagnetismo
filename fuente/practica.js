@@ -65,7 +65,7 @@ const Practica = (() => {
     },
     'configuracion-electronica': {
       items: null, tapa: '#res', datos: null,
-      genera: () => pon(document.querySelector('#entrada'), String(entero(1, 56))),
+      genera: () => { window.ConfigApp?.pestana('el'); pon(document.querySelector('#entrada'), String(entero(1, 56))); },
       enunciado: () => { const g = (s) => document.querySelector(s)?.textContent.trim() || ''; return `Escribe la configuración electrónica del <b>${esc(g('#nombre').toLowerCase())}</b> (${esc(g('#sim'))}, Z = ${esc(g('#z'))}) en orden de llenado y cuántos electrones desapareados tiene.`; },
       textos: [{ et: 'Configuración electrónica', sel: '#llenado', otros: ['#abreviada', '#capas-txt'] }],
       numeros: [{ et: 'Electrones desapareados', sel: '#desap' }],

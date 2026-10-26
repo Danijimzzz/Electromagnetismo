@@ -206,6 +206,10 @@ dl.datos dt { color: var(--muted) } dl.datos dd { margin: 0 } dl.datos dd.m { fo
 .subnivel small { font: 12.5px var(--f-math); color: var(--muted) }
 .cuanticos { display: flex; gap: 10px; flex-wrap: wrap } .cuanticos div { background: var(--bg); border-radius: 8px; padding: 8px 12px; text-align: center; min-width: 64px }
 .cuanticos div b { display: block; font: 600 20px var(--f-math) } .cuanticos div span { font-size: 12px; color: var(--muted) }
+.dos + .dos { margin-top: 14px }
+#iso { display: flex; flex-wrap: wrap; gap: 6px } #iso span { font: 15px var(--f-math); background: var(--bg); border-radius: 6px; padding: 3px 8px } #iso span.yo { background: var(--accent-soft); font-weight: 600 }
+#iso small { font: 11px var(--f-mono); color: var(--muted); margin-left: 4px }
+#tabla-nq { width: 100% } #tabla-nq td, #tabla-nq th { text-align: center } #tabla-nq td:first-child { font-family: var(--f-math) }
 </style>
 <body>
 <header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><nav aria-label="Asignaturas"><a href="../../">Inicio</a><a href="../../electromagnetismo/">Electromagnetismo</a><a href="../../fisica/">Física general</a><a href="../../quimica/" aria-current="page">Química</a><a href="../../matematicas/">Matemáticas</a><a href="../../estadistica/">Estadística</a><a href="../../circuitos/">Circuitos</a><a href="../../economia/">Economía</a></nav><a class="foro" href="../../foro/"><span aria-hidden="true">💬</span>Foro</a><form action="../../" role="search"><input class="buscar" type="search" name="q" placeholder="Buscar: Biot-Savart, molaridad…" aria-label="Buscar herramientas"></form><button class="tema" type="button" title="Cambiar de modo claro u oscuro" aria-label="Cambiar de modo claro u oscuro"><svg class="luna" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11z"/></svg><svg class="sol" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button></header>
@@ -213,9 +217,11 @@ dl.datos dt { color: var(--muted) } dl.datos dd { margin: 0 } dl.datos dd.m { fo
 <nav class="miga" aria-label="Estás en"><span class="miga-izq"></span><span class="miga-ico" aria-hidden="true">Q</span><a href="../">Química</a><span aria-hidden="true">›</span><span>Configuración electrónica</span><span class="miga-der"></span></nav>
 <h1>Configuración electrónica</h1>
 <p class="lead">Escribe un elemento o un ion para ver cómo se reparten sus electrones: orden de llenado, diagrama de Moeller, orbitales con la regla de Hund y los números cuánticos del último electrón.</p>
+<div class="modos" role="tablist" style="margin-bottom:12px"><button role="tab" id="tab-el" aria-selected="true">Elemento o ion</button><button role="tab" id="tab-conf" aria-selected="false">¿Qué elemento es?</button><button role="tab" id="tab-nq" aria-selected="false">Números cuánticos</button></div>
+<section id="s-el">
 <div class="card">
-  <div class="fila"><input id="entrada" class="in ancho" value="Fe" placeholder="Fe, hierro, 26, Fe^2+, Cl-…" aria-label="Elemento o ion" autocomplete="off" spellcheck="false"></div>
-  <div class="chips" id="chips"></div>
+  <div class="fila"><input id="entrada" class="in ancho" value="Fe" placeholder="Fe, hierro, 26, Fe^2+, Cl-…" aria-label="Elemento o ion" autocomplete="off" spellcheck="false">
+    <select id="ejemplos" class="in" aria-label="Ejemplos"></select></div>
   <p class="error" id="error" hidden></p>
 </div>
 <div id="res">
@@ -226,7 +232,9 @@ dl.datos dt { color: var(--muted) } dl.datos dd { margin: 0 } dl.datos dd.m { fo
       <dt>Abreviada</dt><dd class="m" id="abreviada"></dd>
       <dt>Ordenada por capas</dt><dd class="m" id="capas-txt"></dd>
       <dt>Electrones por capa</dt><dd id="capas"></dd>
+      <dt>Electrones de valencia</dt><dd id="val-e"></dd>
       <dt>Capa más externa</dt><dd id="valencia"></dd>
+      <dt>Carga nuclear efectiva</dt><dd id="zef"></dd>
       <dt>Desapareados</dt><dd id="desap"></dd>
     </dl>
     <div class="aviso" id="excepcion" hidden></div>
@@ -238,7 +246,39 @@ dl.datos dt { color: var(--muted) } dl.datos dd { margin: 0 } dl.datos dd.m { fo
       <h2 style="margin-top:16px">Números cuánticos del electrón diferenciador</h2><div class="cuanticos" id="cuanticos"></div>
       <p class="nota">El último electrón que entra según el orden de llenado. Convenio: los orbitales de un subnivel se llenan de m<sub>l</sub> = −l a +l, primero con s = +½ (regla de Hund) y después con −½. Algunos libros usan el orden contrario.</p></div>
   </div>
+  <div class="dos">
+    <div class="card"><h2>Números cuánticos de los electrones de valencia</h2><div class="tabla-scroll"><table class="tabla" id="tabla-nq"></table></div></div>
+    <div class="card"><h2>Carga nuclear efectiva (Slater)</h2><p id="slater" class="nota" style="color:var(--ink)"></p>
+      <h2 style="margin-top:16px">Especies isoelectrónicas</h2><div id="iso"></div>
+      <p class="nota">Todas tienen los mismos electrones. Con más protones, la carga nuclear efectiva es mayor y atrae más a los electrones: el radio es menor. Van ordenadas de mayor a menor radio.</p></div>
+  </div>
 </div>
+</section>
+
+<section id="s-conf" hidden>
+<div class="card">
+  <div class="fila"><input id="conf-txt" class="in ancho" placeholder="1s2 2s2 2p6 3s1 o [Ar] 4s2 3d5" aria-label="Configuración electrónica" autocomplete="off" spellcheck="false"></div>
+  <p class="nota">Escribe cada subnivel con sus electrones (3d6 o 3d⁶), y si quieres empieza por el gas noble entre corchetes. Dice de qué elemento es, si es el estado fundamental, uno excitado o una configuración imposible.</p>
+  <p class="error" id="error-conf" hidden></p>
+  <div class="resumen" id="resumen-conf"></div>
+  <p id="conf-exp" style="margin:10px 0 0"></p>
+</div>
+</section>
+
+<section id="s-nq" hidden>
+<div class="card">
+  <div class="campos" style="--ancho-valor: 110px">
+    <label for="nq-n">n <small>principal</small></label><input id="nq-n" class="in" inputmode="numeric">
+    <label for="nq-l">l <small>secundario</small></label><input id="nq-l" class="in" inputmode="numeric">
+    <label for="nq-ml">m<sub>l</sub> <small>magnético</small></label><input id="nq-ml" class="in" inputmode="numeric">
+    <label for="nq-ms">s <small>espín</small></label><input id="nq-ms" class="in" placeholder="+1/2 o −1/2">
+  </div>
+  <p class="error" id="error-nq" hidden></p>
+  <div class="resumen" id="resumen-nq" style="margin-top:12px"></div>
+  <p id="nq-exp" style="margin:10px 0 0"></p>
+  <p class="nota">Reglas: n = 1, 2, 3…; l de 0 a n − 1 (s, p, d, f); m<sub>l</sub> de −l a +l; s = +½ o −½. En la capa n caben 2n² electrones.</p>
+</div>
+</section>
 <section class="teoria">
   <h2>Cómo se escribe la configuración electrónica</h2>
   <ul>
@@ -248,6 +288,10 @@ dl.datos dt { color: var(--muted) } dl.datos dd { margin: 0 } dl.datos dd.m { fo
   </ul>
   <h2>Excepciones</h2>
   <p>Algunos elementos se apartan del orden de llenado porque un subnivel d o f lleno o semilleno es especialmente estable. Los más preguntados son el cromo, [Ar] 3d⁵ 4s¹ en lugar de 3d⁴ 4s², y el cobre, [Ar] 3d¹⁰ 4s¹ en lugar de 3d⁹ 4s². Pasa lo mismo en Mo, Ag y Au.</p>
+  <h2>Electrones de valencia y carga nuclear efectiva</h2>
+  <p>Los electrones de valencia son los de los subniveles que intervienen en los enlaces: ns y np en los elementos de los grupos principales, ns y (n − 1)d en los de transición (el Fe tiene 4s² 3d⁶, ocho) y además (n − 2)f en los lantánidos y actínidos. La carga nuclear efectiva Z<sub>ef</sub> = Z − S es la que nota el electrón más externo: con las reglas de Slater, cada electrón del mismo grupo apantalla 0,35 (0,30 en 1s), cada uno de la capa n − 1, 0,85, y los más internos, 1. Para un electrón d o f, todos los de su izquierda apantallan 1.</p>
+  <h2>Números cuánticos</h2>
+  <p>Cada electrón tiene cuatro: n (la capa, 1, 2, 3…), l (el tipo de subnivel, de 0 a n − 1: s, p, d, f), m<sub>l</sub> (el orbital, de −l a +l) y s (el espín, +½ o −½). Por el principio de exclusión de Pauli no hay dos electrones de un átomo con los cuatro iguales. Una configuración es excitada si un electrón está en un subnivel más alto habiendo huecos por debajo, e imposible si un subnivel no existe (2d) o tiene más electrones de los que caben (2p⁷).</p>
   <h2>Iones</h2>
   <p>Un anión gana electrones en el siguiente hueco libre. Un catión pierde primero los electrones de la capa más externa: en los metales de transición salen los 4s antes que los 3d, así que el Fe<sup>2+</sup> es [Ar] 3d⁶ y no [Ar] 4s² 3d⁴.</p>
 </section>
@@ -350,6 +394,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: masa molar y composición centesimal de cualquier fórmula, con paréntesis, hidratos e iones, y conversor entre gramos, moles, partículas y litros de gas.', 'Estequiometría: ajusta la reacción sola (también las iónicas), calcula el reactivo limitante, lo que se forma con el rendimiento que digas y lo que sobra, paso a paso.', 'Masas atómicas de la IUPAC o redondeadas como en clase.'] },
     ],
     'configuracion-electronica': [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Electrones de valencia como en clase (el Fe tiene 4s² 3d⁶, ocho), no solo los de la capa más externa.', 'Nueva pestaña «¿Qué elemento es?»: escribe una configuración y dice de qué elemento es y si es el estado fundamental, uno excitado o una configuración imposible (2p⁷, 2d¹).', 'Nueva pestaña «Números cuánticos»: comprueba si un conjunto (n, l, m_l, s) está permitido y a qué orbital corresponde.', 'Tabla con los cuatro números cuánticos de cada electrón de valencia.', 'Carga nuclear efectiva con las reglas de Slater, paso a paso.', 'Especies isoelectrónicas (Na⁺, Mg²⁺, F⁻…) ordenadas de mayor a menor radio.', 'Los ejemplos están ahora en la barra lateral, con Mis ejercicios.'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['El aviso de excepción al orden de llenado sale solo en los átomos neutros, no en sus iones, y muestra justo los subniveles que cambian (Pt: se esperaría 6s² 5d⁸ y tiene 6s¹ 5d⁹).'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: configuración electrónica de cualquier elemento o ion por orden de llenado, abreviada y por capas, con el diagrama de Moeller, el diagrama de orbitales con la regla de Hund, los electrones desapareados y los números cuánticos del electrón diferenciador.', 'Avisa de las excepciones como el cromo o el cobre, y en los cationes quita primero los electrones de la capa más externa.'] },
     ],
@@ -843,16 +888,125 @@ const Configuracion = (() => {
     // capa de valencia: la de mayor n
     const nMax = conf.length ? Math.max(...conf.map((c) => c.n)) : 0;
     const valencia = conf.filter((c) => c.n === nMax).reduce((s, c) => s + c.e, 0);
+    // electrones de valencia como en clase: los subniveles de valencia del átomo neutro (ns np; ns (n−1)d; ns (n−2)f (n−1)d)
+    const nN = Math.max(...neutro.map((c) => c.n)), bl = Elementos.bloque(Z);
+    const esVal = (o) => o.n === nN || (bl !== 's' && bl !== 'p' && o.n === nN - 1 && o.l === 2) || (bl === 'f' && o.n === nN - 2 && o.l === 3);
+    const subVal = neutro.filter(esVal).map((o) => o.nombre);
+    const val = subVal.map((o) => ({ nombre: o, e: conf.find((c) => c.nombre === o)?.e || 0 }));
+    const nValencia = val.reduce((t, o) => t + o.e, 0);
+    // los cuatro números cuánticos de cada electrón de valencia (convenio: m_l de −l a +l, primero +½)
+    const cuanticos = [];
+    for (const o of val) {
+      const n = +o.nombre.slice(0, -1), l = LETRA.indexOf(o.nombre.slice(-1)), nOrb = 2 * l + 1;
+      for (let k = 0; k < o.e; k++) cuanticos.push({ orbital: o.nombre, n, l, ml: (k % nOrb) - l, ms: k < nOrb ? '+½' : '−½' });
+    }
     return {
       el, carga: q, Z, electrones: ne, porLlenado, porCapas, abreviada, capas: capasDe(conf), cajas, desapareados,
       magnetismo: desapareados ? 'paramagnético' : 'diamagnético', diferenciador, excepcion: excepcion && q === 0, esperada, cambio,
       capaValencia: nMax, electronesValencia: valencia, bloque: Elementos.bloque(Z),
+      valencia: { subniveles: val, n: nValencia, texto: val.map((o) => o.nombre + SUP(o.e)).join(' ') }, cuanticos,
+      slater: slater(Z, conf), isoelectronicos: isoelectronicos(ne),
     };
   }
   const capasDe = (conf) => { const c = []; for (const o of conf) c[o.n - 1] = (c[o.n - 1] || 0) + o.e; return Array.from(c, (x) => x || 0); };
 
+  /* ---------- Carga nuclear efectiva (reglas de Slater) ---------- */
+  // grupos (1s)(2s,2p)(3s,3p)(3d)(4s,4p)(4d)(4f)(5s,5p)…; para el electrón más externo
+  function slater(Z, conf) {
+    if (!conf.length) return null;
+    const grupo = (o) => (o.l <= 1 ? `${o.n}sp` : `${o.n}${LETRA[o.l]}`);
+    const ordenG = (g) => { const n = parseInt(g, 10), t = g.replace(/^\d+/, ''); return n + (t === 'sp' ? 0 : t === 'd' ? 0.5 : 0.7); };
+    // el electrón más externo: el del último grupo de Slater (4s en el Fe, 3d en el Fe²⁺)
+    const ext = conf.reduce((a, o) => (ordenG(grupo(o)) > ordenG(grupo(a)) || (grupo(o) === grupo(a) && o.l > a.l) ? o : a));
+    const gE = grupo(ext), nE = ext.n, sp = ext.l <= 1;
+    let S = 0;
+    const partes = [];
+    const cuenta = (e, f, txt) => { if (e > 0) { S += e * f; partes.push(`${e} · ${String(f).replace('.', ',')} (${txt})`); } };
+    const mismo = conf.filter((o) => grupo(o) === gE).reduce((t, o) => t + o.e, 0) - 1;
+    cuenta(mismo, gE === '1sp' ? 0.3 : 0.35, 'mismo grupo');
+    if (sp) {
+      cuenta(conf.filter((o) => o.n === nE - 1).reduce((t, o) => t + o.e, 0), 0.85, `capa n = ${nE - 1}`);
+      cuenta(conf.filter((o) => o.n <= nE - 2).reduce((t, o) => t + o.e, 0), 1, 'capas más internas');
+    } else cuenta(conf.filter((o) => grupo(o) !== gE && ordenG(grupo(o)) < ordenG(gE)).reduce((t, o) => t + o.e, 0), 1, 'grupos de la izquierda');
+    return { orbital: ext.nombre, S, Zef: Z - S, partes };
+  }
+
+  /* ---------- Especies isoelectrónicas ---------- */
+  // las que tienen el mismo número de electrones, con cargas de −3 a +3; a más protones, menor radio
+  function isoelectronicos(ne) {
+    const out = [];
+    // solo los iones que existen de verdad: aniones de no metales (hasta llenar la capa) y cationes de metales (hasta su grupo)
+    const posible = (Z, q) => {
+      const e = Elementos.lista[Z - 1], g = e.grupo;
+      if (q === 0) return true;
+      if (q < 0) return ['n', 'h', 's'].includes(e.cat) && g >= 15 && g <= 17 && -q <= 18 - g;
+      if (!['a', 't', 'm', 'p', 'l', 'c'].includes(e.cat)) return false;
+      return g == null ? q <= 3 : g <= 2 ? q <= g : g >= 13 ? q <= g - 10 : q <= 3;
+    };
+    for (let q = -3; q <= 3; q++) { const Z = ne + q; if (Z >= 1 && Z <= 118 && Z > q && posible(Z, q)) out.push({ Z, carga: q, simbolo: Elementos.lista[Z - 1].simbolo, zef: slater(Z, Elementos.configuracion(Z, q))?.Zef }); }
+    return out;
+  }
+
+  /* ---------- Al revés: de una configuración al elemento ---------- */
+  // «1s2 2s2 2p6 3s1», «[Ar] 4s2 3d5», «1s² 2s¹ 2p¹» → electrones, elemento y si es fundamental, excitada o imposible
+  function identificar(texto) {
+    let t = String(texto).trim().replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]/g, (c) => '⁰¹²³⁴⁵⁶⁷⁸⁹'.indexOf(c)).replace(/\^/g, '');
+    if (!t) throw new Error('Escribe una configuración: 1s2 2s2 2p6 3s1 o [Ne] 3s1');
+    const occ = {};
+    let base = null;
+    const mb = t.match(/^\[\s*([A-Za-z]{1,2})\s*\]/);
+    if (mb) {
+      const g = Elementos.porSimbolo[mb[1][0].toUpperCase() + mb[1].slice(1).toLowerCase()];
+      if (!g || !Elementos.NOBLES.includes(g.Z)) throw new Error(`[${mb[1]}] no es un gas noble`);
+      base = g; for (const o of Elementos.configuracion(g.Z)) occ[o.nombre] = o.e;
+      t = t.slice(mb[0].length);
+    }
+    const re = /(\d+)\s*([spdfghSPDFGH])\s*(\d+)/g, problemas = [];
+    let m, alguno = false;
+    const resto = t.replace(re, '').replace(/[\s,;·.]/g, '');
+    if (resto) throw new Error(`No entiendo «${resto}»: escribe cada subnivel como 3d6 o 3d⁶`);
+    while ((m = re.exec(t))) {
+      alguno = true;
+      const n = +m[1], letra = m[2].toLowerCase(), l = 'spdfgh'.indexOf(letra), e = +m[3], o = `${n}${letra}`;
+      if (l >= n) problemas.push(`el subnivel ${o} no existe: con n = ${n}, l solo puede ir de 0 a ${n - 1}`);
+      else if (e > 2 * (2 * l + 1)) problemas.push(`en ${o} caben como mucho ${2 * (2 * l + 1)} electrones (principio de exclusión de Pauli) y hay ${e}`);
+      if (occ[o] !== undefined && !(base && Elementos.configuracion(base.Z).some((x) => x.nombre === o))) problemas.push(`el subnivel ${o} está escrito dos veces`);
+      occ[o] = (base && Elementos.configuracion(base.Z).some((x) => x.nombre === o) ? occ[o] : 0) + e;
+    }
+    if (!alguno && !base) throw new Error('Escribe al menos un subnivel con sus electrones: 1s2');
+    const ne = Object.values(occ).reduce((a, b) => a + b, 0);
+    const lista = ORDEN.filter((o) => occ[o]).map((o) => o + SUP(occ[o]));
+    if (problemas.length) return { tipo: 'imposible', ne, problemas, texto: lista.join(' ') };
+    if (ne > 118) return { tipo: 'imposible', ne, problemas: [`tiene ${ne} electrones y no hay ningún elemento con tantos`], texto: lista.join(' ') };
+    const el = Elementos.lista[ne - 1], fund = Elementos.configuracion(ne);
+    const igual = fund.length === Object.keys(occ).filter((o) => occ[o]).length && fund.every((o) => occ[o.nombre] === o.e);
+    // excitada: algún electrón está en un subnivel por encima de otro que no está lleno
+    const ocupados = ORDEN.filter((o) => occ[o]), huecos = ORDEN.slice(0, ORDEN.indexOf(ocupados[ocupados.length - 1]) + 1).filter((o) => (occ[o] || 0) < 2 * (2 * LETRA.indexOf(o.slice(-1)) + 1));
+    return { tipo: igual ? 'fundamental' : 'excitada', ne, el, texto: lista.join(' '), fundamental: Elementos.texto(fund), huecos,
+      iones: [-2, -1, 1, 2, 3].map((q) => ({ q, Z: ne + q })).filter((x) => x.Z >= 1 && x.Z <= 118).filter((x) => { const c = Elementos.configuracion(x.Z, x.q); return c.length === ocupados.length && c.every((o) => occ[o.nombre] === o.e); }).map((x) => ({ simbolo: Elementos.lista[x.Z - 1].simbolo, carga: x.q })) };
+  }
+
+  /* ---------- Números cuánticos ---------- */
+  // ¿está permitido (n, l, m_l, m_s)? y a qué orbital corresponde
+  function cuanticos({ n, l, ml, ms }) {
+    const lee = (v) => +String(v ?? '').trim().replace(',', '.').replace(/[−–]/g, '-').replace(/^\+/, '');
+    const N = lee(n), L = lee(l), ML = lee(ml);
+    const sTxt = String(ms ?? '').trim().replace(/[−–]/g, '-').replace(/\s/g, '');
+    const MS = /^\+?(1\/2|½|0[.,]5)$/.test(sTxt) ? 0.5 : /^-(1\/2|½|0[.,]5)$/.test(sTxt) ? -0.5 : NaN;
+    const fallos = [];
+    if (!Number.isInteger(N) || N < 1) fallos.push('n tiene que ser un número entero positivo (1, 2, 3…)');
+    if (!Number.isInteger(L) || L < 0) fallos.push('l tiene que ser un entero mayor o igual que 0');
+    else if (Number.isInteger(N) && N >= 1 && L > N - 1) fallos.push(`con n = ${N}, l solo puede valer de 0 a ${N - 1}`);
+    if (!Number.isInteger(ML)) fallos.push('m_l tiene que ser un número entero');
+    else if (Number.isInteger(L) && L >= 0 && Math.abs(ML) > L) fallos.push(L ? `con l = ${L}, m_l solo puede ir de −${L} a +${L}` : 'con l = 0, m_l solo puede valer 0');
+    if (isNaN(MS)) fallos.push('s (o m_s) solo puede valer +½ o −½');
+    const orbital = fallos.length ? null : `${N}${'spdfghik'[L] || `(l=${L})`}`;
+    return { valido: !fallos.length, fallos, orbital, n: N, l: L, ml: ML, ms: MS,
+      maximo: Number.isInteger(N) && N >= 1 ? 2 * N * N : null };
+  }
+
   const ejemplos = ['Fe', 'Cr', 'Cu', 'Fe^2+', 'Cl-', 'O', 'Gd', 'Ag'];
-  return { leer, analizar, ORDEN, ejemplos };
+  return { leer, analizar, identificar, cuanticos, slater, isoelectronicos, ORDEN, ejemplos };
 })();
 
 /* =====================================================================
@@ -868,13 +1022,24 @@ const Configuracion = (() => {
   const cargaTxt = (q) => (q ? `<sup>${Math.abs(q) > 1 ? Math.abs(q) : ''}${q > 0 ? '+' : '−'}</sup>` : '');
 
   const entrada = $('#entrada');
-  let inicial = 'Fe';
-  try { inicial = localStorage.getItem(CLAVE) || inicial; } catch (e) {}
-  if (location.hash.length > 1) inicial = decodeURIComponent(location.hash.slice(1));
-  entrada.value = inicial;
-  $('#chips').innerHTML = C.ejemplos.map((x) => `<button class="chip" type="button" data-x="${esc(x)}">${esc(x)}</button>`).join('');
-  $('#chips').addEventListener('click', (e) => { const b = e.target.closest('.chip'); if (b) { entrada.value = b.dataset.x; muestra(); } });
-  entrada.addEventListener('input', muestra);
+  // estado: la pestaña y lo escrito en cada una (antes solo se guardaba el texto del elemento)
+  let st = { tab: 'el', entrada: 'Fe', conf: '[Ar] 4s2 3d5', nq: { n: '3', l: '2', ml: '-2', ms: '+1/2' } };
+  try { const g = localStorage.getItem(CLAVE); if (g) { let o = null; try { o = JSON.parse(g); } catch (e) {} st = o && typeof o === 'object' ? { ...st, ...o } : { ...st, entrada: g }; } } catch (e) {}
+  if (location.hash.length > 1) st.entrada = decodeURIComponent(location.hash.slice(1));
+  const guarda = () => { try { localStorage.setItem(CLAVE, JSON.stringify(st)); } catch (e) {} };
+  entrada.value = st.entrada;
+  const sel = $('#ejemplos');
+  sel.innerHTML = '<option value="">Ejemplos…</option>' + C.ejemplos.map((x) => `<option value="${esc(x)}">${esc(x)}</option>`).join('');
+  sel.addEventListener('change', () => { if (sel.value) { pestana('el'); entrada.value = sel.value; muestra(); } });
+  entrada.addEventListener('input', () => { sel.value = ''; muestra(); });
+
+  /* ---------- Pestañas ---------- */
+  function pestana(t) {
+    st.tab = t;
+    for (const k of ['el', 'conf', 'nq']) { $('#tab-' + k).setAttribute('aria-selected', t === k); $('#s-' + k).hidden = t !== k; }
+    guarda();
+  }
+  for (const k of ['el', 'conf', 'nq']) $('#tab-' + k).addEventListener('click', () => pestana(k));
   addEventListener('hashchange', () => { if (location.hash.length > 1) { entrada.value = decodeURIComponent(location.hash.slice(1)); muestra(); } });
 
   function muestra() {
@@ -882,7 +1047,7 @@ const Configuracion = (() => {
     let r;
     try { r = C.analizar(entrada.value); } catch (e) { err.textContent = e.message; err.hidden = false; return; }
     err.hidden = true;
-    try { localStorage.setItem(CLAVE, entrada.value); } catch (e) {}
+    st.entrada = entrada.value; guarda();
     history.replaceState(null, '', '#' + encodeURIComponent(entrada.value.trim()));
     const el = r.el, q = r.carga;
     $('#z').textContent = el.Z;
@@ -895,6 +1060,12 @@ const Configuracion = (() => {
     $('#capas').textContent = r.capas.map((k, i) => `${CAPAS[i]} (n = ${i + 1}): ${k}`).join(' · ');
     $('#valencia').textContent = `n = ${r.capaValencia}, con ${r.electronesValencia} electr${r.electronesValencia === 1 ? 'ón' : 'ones'}`;
     $('#desap').textContent = `${r.desapareados} · ${r.magnetismo}`;
+    $('#val-e').textContent = `${r.valencia.n} (${r.valencia.texto})`;
+    const sl = r.slater, coma = (x) => String(+x.toFixed(2)).replace('.', ',');
+    $('#zef').innerHTML = sl ? `Z<sub>ef</sub> = ${coma(sl.Zef)} para un electrón ${sl.orbital}` : '—';
+    $('#slater').innerHTML = sl ? `Para un electrón ${sl.orbital}: S = ${sl.partes.join(' + ') || '0'} = ${coma(sl.S)}, &nbsp; Z<sub>ef</sub> = Z − S = ${el.Z} − ${coma(sl.S)} = <b>${coma(sl.Zef)}</b>` : '';
+    $('#iso').innerHTML = [...r.isoelectronicos].sort((a, b) => a.Z - b.Z).map((x) => `<span class="${x.Z === el.Z && x.carga === q ? 'yo' : ''}">${x.simbolo}${cargaTxt(x.carga)}<small>Z<sub>ef</sub> ${coma(x.zef)}</small></span>`).join('');
+    $('#tabla-nq').innerHTML = r.cuanticos.length ? `<thead><tr><th>Orbital</th><th>n</th><th>l</th><th>m<sub>l</sub></th><th>s</th></tr></thead><tbody>${r.cuanticos.map((c) => `<tr><td>${c.orbital}</td><td>${c.n}</td><td>${c.l}</td><td>${String(c.ml).replace('-', '−')}</td><td>${c.ms}</td></tr>`).join('')}</tbody>` : '<tbody><tr><td>Sin electrones de valencia</td></tr></tbody>';
     const ex = $('#excepcion');
     ex.hidden = !r.excepcion;
     if (r.excepcion) ex.innerHTML = `<b>Excepción al orden de llenado.</b> Por la regla se esperaría ${esc(r.cambio.esperada)}, pero tiene ${esc(r.cambio.real)}: ${/d[⁵]|d¹⁰|f⁷|f¹⁴/.test(r.cambio.real) ? 'un subnivel lleno o semilleno es más estable' : 'los dos subniveles tienen energías muy parecidas y la repulsión entre electrones decide el reparto'}.`;
@@ -935,9 +1106,53 @@ const Configuracion = (() => {
     $('#cuanticos').innerHTML = d ? [['n', d.n, 'principal'], ['l', d.l, `secundario (${LETRA[d.l]})`], ['m<sub>l</sub>', String(d.ml).replace('-', '−'), 'magnético'], ['s', d.ms, 'espín']].map(([a, b, c]) => `<div><span>${a}</span><b>${b}</b><span>${c}</span></div>`).join('') : '';
   }
 
+  /* ---------- ¿Qué elemento es? ---------- */
+  const confTxt = $('#conf-txt');
+  confTxt.value = st.conf;
+  confTxt.addEventListener('input', () => { st.conf = confTxt.value; guarda(); identifica(); });
+  function identifica() {
+    const err = $('#error-conf');
+    let r;
+    try { r = C.identificar(confTxt.value); } catch (e) { err.textContent = e.message; err.hidden = false; $('#resumen-conf').innerHTML = ''; $('#conf-exp').innerHTML = ''; return; }
+    err.hidden = true;
+    const TIPO = { fundamental: 'Estado fundamental', excitada: 'Estado excitado', imposible: 'Imposible' };
+    $('#resumen-conf').innerHTML = `<div><span>Electrones</span><b>${r.ne}</b></div><div><span>Es</span><b>${TIPO[r.tipo]}</b></div>${r.el ? `<div><span>Elemento neutro</span><b>${r.el.nombre} (${r.el.simbolo}, Z = ${r.el.Z})</b></div>` : ''}`;
+    let h;
+    if (r.tipo === 'imposible') h = `No puede ser: ${r.problemas.join('; ')}.`;
+    else {
+      h = `Con ${r.ne} electrones, si el átomo es neutro es el <b>${r.el.nombre.toLowerCase()}</b>. `;
+      h += r.tipo === 'fundamental' ? 'Es su configuración en el estado fundamental.' : `No es su estado fundamental, ${esc(r.fundamental)}: hay electrones en subniveles más altos con huecos por debajo, así que es un <b>estado excitado</b> (se llega a él absorbiendo energía).`;
+      if (r.iones.length) h += ` La misma configuración la tiene${r.iones.length > 1 ? 'n' : ''}, en su estado fundamental, ${r.iones.map((x) => `el ion ${x.simbolo}${cargaTxt(x.carga)}`).join(', ')}.`;
+    }
+    $('#conf-exp').innerHTML = h;
+  }
+
+  /* ---------- Números cuánticos ---------- */
+  for (const k of ['n', 'l', 'ml', 'ms']) { const x = $('#nq-' + k); x.value = st.nq[k] ?? ''; x.addEventListener('input', () => { st.nq[k] = x.value; guarda(); nq(); }); }
+  function nq() {
+    const r = C.cuanticos(st.nq);
+    $('#error-nq').hidden = true;
+    $('#resumen-nq').innerHTML = `<div><span>¿Está permitido?</span><b>${r.valido ? 'Sí' : 'No'}</b></div>${r.valido ? `<div><span>Orbital</span><b>${r.orbital}</b></div>` : ''}${r.maximo ? `<div><span>Electrones en la capa n = ${r.n}</span><b>${r.maximo}</b></div>` : ''}`;
+    $('#nq-exp').innerHTML = r.valido ? `Es un electrón de un orbital ${r.orbital} (n = ${r.n}, l = ${r.l}: subnivel ${'spdfghik'[r.l]}), en el orbital de m<sub>l</sub> = ${String(r.ml).replace('-', '−')} y con espín ${r.ms > 0 ? '+½' : '−½'}. El subnivel tiene ${2 * r.l + 1} orbital${r.l ? 'es' : ''} y caben ${2 * (2 * r.l + 1)} electrones.` : `No es posible: ${r.fallos.join('; ')}.`;
+  }
+
+  /* ---------- Modo práctica ---------- */
+  const toma = (xs) => xs[Math.floor(Math.random() * xs.length)];
+  function azar() {
+    if (st.tab === 'conf') {
+      const Z = 3 + Math.floor(Math.random() * 34), c = Elementos.configuracion(Z).map((o) => ({ ...o }));
+      // a veces un estado excitado: un electrón del último subnivel sube al siguiente
+      if (Math.random() < 0.4) { const u = c[c.length - 1]; u.e--; c.push({ nombre: C.ORDEN[C.ORDEN.indexOf(u.nombre) + 1], e: 1 }); }
+      confTxt.value = st.conf = c.filter((o) => o.e > 0).map((o) => o.nombre + o.e).join(' '); guarda(); identifica(); return;
+    }
+    if (st.tab === 'nq') return; // sin números que calcular
+    pestana('el'); entrada.value = String(1 + Math.floor(Math.random() * 56)); muestra();
+  }
+  const enunciado = () => (st.tab === 'conf' ? `¿Cuántos electrones tiene la configuración <b>${esc(confTxt.value)}</b> y de qué elemento neutro es? ¿Es su estado fundamental?` : null);
+
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('configuracion-electronica').current;
-  muestra();
-  window.ConfigApp = { muestra: (x) => { entrada.value = x; muestra(); } };
+  muestra(); identifica(); nq(); pestana(st.tab);
+  window.ConfigApp = { muestra: (x) => { pestana('el'); entrada.value = x; muestra(); }, identifica: (x) => { pestana('conf'); confTxt.value = st.conf = x; identifica(); }, cuanticos: (o) => { pestana('nq'); Object.assign(st.nq, o); for (const k of ['n', 'l', 'ml', 'ms']) $('#nq-' + k).value = st.nq[k]; nq(); }, pestana, azar, enunciado, estado: () => st };
 })();
 
 /* =====================================================================
@@ -1280,7 +1495,7 @@ const Practica = (() => {
     },
     'configuracion-electronica': {
       items: null, tapa: '#res', datos: null,
-      genera: () => pon(document.querySelector('#entrada'), String(entero(1, 56))),
+      genera: () => { window.ConfigApp?.pestana('el'); pon(document.querySelector('#entrada'), String(entero(1, 56))); },
       enunciado: () => { const g = (s) => document.querySelector(s)?.textContent.trim() || ''; return `Escribe la configuración electrónica del <b>${esc(g('#nombre').toLowerCase())}</b> (${esc(g('#sim'))}, Z = ${esc(g('#z'))}) en orden de llenado y cuántos electrones desapareados tiene.`; },
       textos: [{ et: 'Configuración electrónica', sel: '#llenado', otros: ['#abreviada', '#capas-txt'] }],
       numeros: [{ et: 'Electrones desapareados', sel: '#desap' }],

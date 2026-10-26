@@ -312,6 +312,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: masa molar y composición centesimal de cualquier fórmula, con paréntesis, hidratos e iones, y conversor entre gramos, moles, partículas y litros de gas.', 'Estequiometría: ajusta la reacción sola (también las iónicas), calcula el reactivo limitante, lo que se forma con el rendimiento que digas y lo que sobra, paso a paso.', 'Masas atómicas de la IUPAC o redondeadas como en clase.'] },
     ],
     'configuracion-electronica': [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Electrones de valencia como en clase (el Fe tiene 4s² 3d⁶, ocho), no solo los de la capa más externa.', 'Nueva pestaña «¿Qué elemento es?»: escribe una configuración y dice de qué elemento es y si es el estado fundamental, uno excitado o una configuración imposible (2p⁷, 2d¹).', 'Nueva pestaña «Números cuánticos»: comprueba si un conjunto (n, l, m_l, s) está permitido y a qué orbital corresponde.', 'Tabla con los cuatro números cuánticos de cada electrón de valencia.', 'Carga nuclear efectiva con las reglas de Slater, paso a paso.', 'Especies isoelectrónicas (Na⁺, Mg²⁺, F⁻…) ordenadas de mayor a menor radio.', 'Los ejemplos están ahora en la barra lateral, con Mis ejercicios.'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['El aviso de excepción al orden de llenado sale solo en los átomos neutros, no en sus iones, y muestra justo los subniveles que cambian (Pt: se esperaría 6s² 5d⁸ y tiene 6s¹ 5d⁹).'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: configuración electrónica de cualquier elemento o ion por orden de llenado, abreviada y por capas, con el diagrama de Moeller, el diagrama de orbitales con la regla de Hund, los electrones desapareados y los números cuánticos del electrón diferenciador.', 'Avisa de las excepciones como el cromo o el cobre, y en los cationes quita primero los electrones de la capa más externa.'] },
     ],
@@ -1414,7 +1415,7 @@ const Practica = (() => {
     },
     'configuracion-electronica': {
       items: null, tapa: '#res', datos: null,
-      genera: () => pon(document.querySelector('#entrada'), String(entero(1, 56))),
+      genera: () => { window.ConfigApp?.pestana('el'); pon(document.querySelector('#entrada'), String(entero(1, 56))); },
       enunciado: () => { const g = (s) => document.querySelector(s)?.textContent.trim() || ''; return `Escribe la configuración electrónica del <b>${esc(g('#nombre').toLowerCase())}</b> (${esc(g('#sim'))}, Z = ${esc(g('#z'))}) en orden de llenado y cuántos electrones desapareados tiene.`; },
       textos: [{ et: 'Configuración electrónica', sel: '#llenado', otros: ['#abreviada', '#capas-txt'] }],
       numeros: [{ et: 'Electrones desapareados', sel: '#desap' }],

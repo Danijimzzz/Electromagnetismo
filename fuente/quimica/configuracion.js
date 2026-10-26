@@ -73,15 +73,124 @@ const Configuracion = (() => {
     // capa de valencia: la de mayor n
     const nMax = conf.length ? Math.max(...conf.map((c) => c.n)) : 0;
     const valencia = conf.filter((c) => c.n === nMax).reduce((s, c) => s + c.e, 0);
+    // electrones de valencia como en clase: los subniveles de valencia del átomo neutro (ns np; ns (n−1)d; ns (n−2)f (n−1)d)
+    const nN = Math.max(...neutro.map((c) => c.n)), bl = Elementos.bloque(Z);
+    const esVal = (o) => o.n === nN || (bl !== 's' && bl !== 'p' && o.n === nN - 1 && o.l === 2) || (bl === 'f' && o.n === nN - 2 && o.l === 3);
+    const subVal = neutro.filter(esVal).map((o) => o.nombre);
+    const val = subVal.map((o) => ({ nombre: o, e: conf.find((c) => c.nombre === o)?.e || 0 }));
+    const nValencia = val.reduce((t, o) => t + o.e, 0);
+    // los cuatro números cuánticos de cada electrón de valencia (convenio: m_l de −l a +l, primero +½)
+    const cuanticos = [];
+    for (const o of val) {
+      const n = +o.nombre.slice(0, -1), l = LETRA.indexOf(o.nombre.slice(-1)), nOrb = 2 * l + 1;
+      for (let k = 0; k < o.e; k++) cuanticos.push({ orbital: o.nombre, n, l, ml: (k % nOrb) - l, ms: k < nOrb ? '+½' : '−½' });
+    }
     return {
       el, carga: q, Z, electrones: ne, porLlenado, porCapas, abreviada, capas: capasDe(conf), cajas, desapareados,
       magnetismo: desapareados ? 'paramagnético' : 'diamagnético', diferenciador, excepcion: excepcion && q === 0, esperada, cambio,
       capaValencia: nMax, electronesValencia: valencia, bloque: Elementos.bloque(Z),
+      valencia: { subniveles: val, n: nValencia, texto: val.map((o) => o.nombre + SUP(o.e)).join(' ') }, cuanticos,
+      slater: slater(Z, conf), isoelectronicos: isoelectronicos(ne),
     };
   }
   const capasDe = (conf) => { const c = []; for (const o of conf) c[o.n - 1] = (c[o.n - 1] || 0) + o.e; return Array.from(c, (x) => x || 0); };
 
+  /* ---------- Carga nuclear efectiva (reglas de Slater) ---------- */
+  // grupos (1s)(2s,2p)(3s,3p)(3d)(4s,4p)(4d)(4f)(5s,5p)…; para el electrón más externo
+  function slater(Z, conf) {
+    if (!conf.length) return null;
+    const grupo = (o) => (o.l <= 1 ? `${o.n}sp` : `${o.n}${LETRA[o.l]}`);
+    const ordenG = (g) => { const n = parseInt(g, 10), t = g.replace(/^\d+/, ''); return n + (t === 'sp' ? 0 : t === 'd' ? 0.5 : 0.7); };
+    // el electrón más externo: el del último grupo de Slater (4s en el Fe, 3d en el Fe²⁺)
+    const ext = conf.reduce((a, o) => (ordenG(grupo(o)) > ordenG(grupo(a)) || (grupo(o) === grupo(a) && o.l > a.l) ? o : a));
+    const gE = grupo(ext), nE = ext.n, sp = ext.l <= 1;
+    let S = 0;
+    const partes = [];
+    const cuenta = (e, f, txt) => { if (e > 0) { S += e * f; partes.push(`${e} · ${String(f).replace('.', ',')} (${txt})`); } };
+    const mismo = conf.filter((o) => grupo(o) === gE).reduce((t, o) => t + o.e, 0) - 1;
+    cuenta(mismo, gE === '1sp' ? 0.3 : 0.35, 'mismo grupo');
+    if (sp) {
+      cuenta(conf.filter((o) => o.n === nE - 1).reduce((t, o) => t + o.e, 0), 0.85, `capa n = ${nE - 1}`);
+      cuenta(conf.filter((o) => o.n <= nE - 2).reduce((t, o) => t + o.e, 0), 1, 'capas más internas');
+    } else cuenta(conf.filter((o) => grupo(o) !== gE && ordenG(grupo(o)) < ordenG(gE)).reduce((t, o) => t + o.e, 0), 1, 'grupos de la izquierda');
+    return { orbital: ext.nombre, S, Zef: Z - S, partes };
+  }
+
+  /* ---------- Especies isoelectrónicas ---------- */
+  // las que tienen el mismo número de electrones, con cargas de −3 a +3; a más protones, menor radio
+  function isoelectronicos(ne) {
+    const out = [];
+    // solo los iones que existen de verdad: aniones de no metales (hasta llenar la capa) y cationes de metales (hasta su grupo)
+    const posible = (Z, q) => {
+      const e = Elementos.lista[Z - 1], g = e.grupo;
+      if (q === 0) return true;
+      if (q < 0) return ['n', 'h', 's'].includes(e.cat) && g >= 15 && g <= 17 && -q <= 18 - g;
+      if (!['a', 't', 'm', 'p', 'l', 'c'].includes(e.cat)) return false;
+      return g == null ? q <= 3 : g <= 2 ? q <= g : g >= 13 ? q <= g - 10 : q <= 3;
+    };
+    for (let q = -3; q <= 3; q++) { const Z = ne + q; if (Z >= 1 && Z <= 118 && Z > q && posible(Z, q)) out.push({ Z, carga: q, simbolo: Elementos.lista[Z - 1].simbolo, zef: slater(Z, Elementos.configuracion(Z, q))?.Zef }); }
+    return out;
+  }
+
+  /* ---------- Al revés: de una configuración al elemento ---------- */
+  // «1s2 2s2 2p6 3s1», «[Ar] 4s2 3d5», «1s² 2s¹ 2p¹» → electrones, elemento y si es fundamental, excitada o imposible
+  function identificar(texto) {
+    let t = String(texto).trim().replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]/g, (c) => '⁰¹²³⁴⁵⁶⁷⁸⁹'.indexOf(c)).replace(/\^/g, '');
+    if (!t) throw new Error('Escribe una configuración: 1s2 2s2 2p6 3s1 o [Ne] 3s1');
+    const occ = {};
+    let base = null;
+    const mb = t.match(/^\[\s*([A-Za-z]{1,2})\s*\]/);
+    if (mb) {
+      const g = Elementos.porSimbolo[mb[1][0].toUpperCase() + mb[1].slice(1).toLowerCase()];
+      if (!g || !Elementos.NOBLES.includes(g.Z)) throw new Error(`[${mb[1]}] no es un gas noble`);
+      base = g; for (const o of Elementos.configuracion(g.Z)) occ[o.nombre] = o.e;
+      t = t.slice(mb[0].length);
+    }
+    const re = /(\d+)\s*([spdfghSPDFGH])\s*(\d+)/g, problemas = [];
+    let m, alguno = false;
+    const resto = t.replace(re, '').replace(/[\s,;·.]/g, '');
+    if (resto) throw new Error(`No entiendo «${resto}»: escribe cada subnivel como 3d6 o 3d⁶`);
+    while ((m = re.exec(t))) {
+      alguno = true;
+      const n = +m[1], letra = m[2].toLowerCase(), l = 'spdfgh'.indexOf(letra), e = +m[3], o = `${n}${letra}`;
+      if (l >= n) problemas.push(`el subnivel ${o} no existe: con n = ${n}, l solo puede ir de 0 a ${n - 1}`);
+      else if (e > 2 * (2 * l + 1)) problemas.push(`en ${o} caben como mucho ${2 * (2 * l + 1)} electrones (principio de exclusión de Pauli) y hay ${e}`);
+      if (occ[o] !== undefined && !(base && Elementos.configuracion(base.Z).some((x) => x.nombre === o))) problemas.push(`el subnivel ${o} está escrito dos veces`);
+      occ[o] = (base && Elementos.configuracion(base.Z).some((x) => x.nombre === o) ? occ[o] : 0) + e;
+    }
+    if (!alguno && !base) throw new Error('Escribe al menos un subnivel con sus electrones: 1s2');
+    const ne = Object.values(occ).reduce((a, b) => a + b, 0);
+    const lista = ORDEN.filter((o) => occ[o]).map((o) => o + SUP(occ[o]));
+    if (problemas.length) return { tipo: 'imposible', ne, problemas, texto: lista.join(' ') };
+    if (ne > 118) return { tipo: 'imposible', ne, problemas: [`tiene ${ne} electrones y no hay ningún elemento con tantos`], texto: lista.join(' ') };
+    const el = Elementos.lista[ne - 1], fund = Elementos.configuracion(ne);
+    const igual = fund.length === Object.keys(occ).filter((o) => occ[o]).length && fund.every((o) => occ[o.nombre] === o.e);
+    // excitada: algún electrón está en un subnivel por encima de otro que no está lleno
+    const ocupados = ORDEN.filter((o) => occ[o]), huecos = ORDEN.slice(0, ORDEN.indexOf(ocupados[ocupados.length - 1]) + 1).filter((o) => (occ[o] || 0) < 2 * (2 * LETRA.indexOf(o.slice(-1)) + 1));
+    return { tipo: igual ? 'fundamental' : 'excitada', ne, el, texto: lista.join(' '), fundamental: Elementos.texto(fund), huecos,
+      iones: [-2, -1, 1, 2, 3].map((q) => ({ q, Z: ne + q })).filter((x) => x.Z >= 1 && x.Z <= 118).filter((x) => { const c = Elementos.configuracion(x.Z, x.q); return c.length === ocupados.length && c.every((o) => occ[o.nombre] === o.e); }).map((x) => ({ simbolo: Elementos.lista[x.Z - 1].simbolo, carga: x.q })) };
+  }
+
+  /* ---------- Números cuánticos ---------- */
+  // ¿está permitido (n, l, m_l, m_s)? y a qué orbital corresponde
+  function cuanticos({ n, l, ml, ms }) {
+    const lee = (v) => +String(v ?? '').trim().replace(',', '.').replace(/[−–]/g, '-').replace(/^\+/, '');
+    const N = lee(n), L = lee(l), ML = lee(ml);
+    const sTxt = String(ms ?? '').trim().replace(/[−–]/g, '-').replace(/\s/g, '');
+    const MS = /^\+?(1\/2|½|0[.,]5)$/.test(sTxt) ? 0.5 : /^-(1\/2|½|0[.,]5)$/.test(sTxt) ? -0.5 : NaN;
+    const fallos = [];
+    if (!Number.isInteger(N) || N < 1) fallos.push('n tiene que ser un número entero positivo (1, 2, 3…)');
+    if (!Number.isInteger(L) || L < 0) fallos.push('l tiene que ser un entero mayor o igual que 0');
+    else if (Number.isInteger(N) && N >= 1 && L > N - 1) fallos.push(`con n = ${N}, l solo puede valer de 0 a ${N - 1}`);
+    if (!Number.isInteger(ML)) fallos.push('m_l tiene que ser un número entero');
+    else if (Number.isInteger(L) && L >= 0 && Math.abs(ML) > L) fallos.push(L ? `con l = ${L}, m_l solo puede ir de −${L} a +${L}` : 'con l = 0, m_l solo puede valer 0');
+    if (isNaN(MS)) fallos.push('s (o m_s) solo puede valer +½ o −½');
+    const orbital = fallos.length ? null : `${N}${'spdfghik'[L] || `(l=${L})`}`;
+    return { valido: !fallos.length, fallos, orbital, n: N, l: L, ml: ML, ms: MS,
+      maximo: Number.isInteger(N) && N >= 1 ? 2 * N * N : null };
+  }
+
   const ejemplos = ['Fe', 'Cr', 'Cu', 'Fe^2+', 'Cl-', 'O', 'Gd', 'Ag'];
-  return { leer, analizar, ORDEN, ejemplos };
+  return { leer, analizar, identificar, cuanticos, slater, isoelectronicos, ORDEN, ejemplos };
 })();
 if (typeof module !== 'undefined') module.exports = Configuracion;

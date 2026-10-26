@@ -23,6 +23,16 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     if (Configuracion.analizar('Pt').cambio.esperada !== '6s² 5d⁸' || Configuracion.analizar('Pt').cambio.real !== '6s¹ 5d⁹') mal('Configuración: la excepción del platino debería ser 6s² 5d⁸ → 6s¹ 5d⁹');
     if (!Configuracion.analizar('Cr').excepcion || Configuracion.analizar('Fe').excepcion) mal('Configuración: el cromo es una excepción y el hierro no');
     for (const z of [1, 26, 57, 92, 118]) { const r = Configuracion.analizar(String(z)); if (r.capas.reduce((a, b) => a + b, 0) !== z) mal(`Configuración · Z = ${z}: las capas no suman ${z} electrones`); }
+    // electrones de valencia, Slater, isoelectrónicos, configuración al revés y números cuánticos (a mano)
+    const VAL = { Fe: 8, 'Fe^2+': 6, Cl: 7, Zn: 12, Na: 1, Ce: 4 };
+    for (const [x, n] of Object.entries(VAL)) if (Configuracion.analizar(x).valencia.n !== n) mal(`Configuración · ${x}: ${Configuracion.analizar(x).valencia.n} electrones de valencia, se esperaban ${n}`);
+    const ZEF = { Na: 2.2, Cl: 6.1, Fe: 3.75, 'Fe^2+': 6.25, Ne: 5.85, K: 2.2 };
+    for (const [x, z] of Object.entries(ZEF)) if (Math.abs(Configuracion.analizar(x).slater.Zef - z) > 1e-9) mal(`Configuración · ${x}: Z_ef ${Configuracion.analizar(x).slater.Zef}, se esperaba ${z}`);
+    if (Configuracion.analizar('Ne').isoelectronicos.map((i) => i.simbolo).join(' ') !== 'N O F Ne Na Mg Al') mal('Configuración: los isoelectrónicos del neón deberían ser N³⁻ … Al³⁺');
+    const ID = { '1s2 2s2 2p6 3s1': ['fundamental', 'Na'], '[Ar] 4s2 3d5': ['fundamental', 'Mn'], '1s2 2s1 2p1': ['excitada', 'Be'], '[Ar] 3d6': ['excitada', 'Cr'], '1s2 2s2 2p7': ['imposible'], '2d1': ['imposible'] };
+    for (const [t, [tipo, el]] of Object.entries(ID)) { const r = Configuracion.identificar(t); if (r.tipo !== tipo || (el && r.el.simbolo !== el)) mal(`Configuración · «${t}»: ${r.tipo} ${r.el?.simbolo}`); }
+    const NQ = [[{ n: 3, l: 2, ml: -2, ms: '+1/2' }, '3d'], [{ n: 2, l: 2, ml: 0, ms: '-1/2' }, null], [{ n: 1, l: 0, ml: 1, ms: '1/2' }, null], [{ n: 4, l: 3, ml: 3, ms: '−½' }, '4f'], [{ n: 4, l: 1, ml: 0, ms: '0' }, null]];
+    for (const [q, o] of NQ) if (Configuracion.cuanticos(q).orbital !== o) mal(`Configuración · números cuánticos ${JSON.stringify(q)}: ${Configuracion.cuanticos(q).orbital}`);
     for (const mala of ['Xx', 'Na11+', '']) { let ok = false; try { Configuracion.analizar(mala); } catch (e) { ok = true; } if (!ok) mal(`Configuración: «${mala}» debería dar un error`); }
     if (fallos === antes) console.log(`  ✓ Configuración electrónica: ${Object.keys(REF).length} elementos e iones de referencia, excepciones y errores de entrada`);
   }
