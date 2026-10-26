@@ -5,7 +5,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMwZDZiNjYiLz48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlNmE2NDAiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtZGFzaGFycmF5PSI0IDYuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48cGF0aCBkPSJNMjAgMzJINDQiLz48cGF0aCBkPSJNMjEgMjdDMjcgMTQgMzcgMTQgNDMgMjciLz48cGF0aCBkPSJNMjEgMzdDMjcgNTAgMzcgNTAgNDMgMzciLz48cGF0aCBkPSJNMTcgMjRDMjIgNCA0MiA0IDQ3IDI0Ii8+PHBhdGggZD0iTTE3IDQwQzIyIDYwIDQyIDYwIDQ3IDQwIi8+PC9nPjxjaXJjbGUgY3g9IjE3IiBjeT0iMzIiIHI9IjgiIGZpbGw9IiNlZjdhNjIiLz48Y2lyY2xlIGN4PSI0NyIgY3k9IjMyIiByPSI4IiBmaWxsPSIjNzRhMmYyIi8+PHBhdGggZD0iTTEzIDMyaDhNMTcgMjh2OE00MyAzMmg4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K">
 <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
 <meta property="og:title" content="Gases ideales">
-<meta property="og:description" content="Calculadora de gases ideales: ecuación de estado PV = nRT, transformaciones isoterma, isobara, isocora y adiabática, ciclos con su rendimiento y teoría cinética, paso a paso">
+<meta property="og:description" content="Calculadora de gases ideales: ecuación de estado PV = nRT, transformaciones isoterma, isobara, isocora y adiabática, ciclos con su rendimiento, mezclas con la ley de Dalton, gases reales de Van der Waals y teoría cinética con recorrido libre medio, paso a paso">
 <meta property="og:image" content="https://electromagnetismo-two.vercel.app/og.png">
 <meta name="twitter:card" content="summary_large_image">
 <script>(() => {
@@ -26,7 +26,7 @@
   });
 })();</script>
 <title>Gases ideales: PV = nRT, transformaciones, ciclos y teoría cinética · SimulaCiencia</title>
-<meta name="description" content="Calculadora de gases ideales en español: ecuación de estado PV = nRT, transformaciones isoterma, isobara, isocora y adiabática con trabajo, calor y energía interna, ciclos con su rendimiento y diagrama P-V, y velocidades moleculares con la distribución de Maxwell, paso a paso.">
+<meta name="description" content="Calculadora de gases ideales en español: ecuación de estado PV = nRT, transformaciones isoterma, isobara, isocora y adiabática con trabajo, calor y energía interna, ciclos con su rendimiento y diagrama P-V, mezclas con la ley de Dalton, gases reales con Van der Waals y velocidades moleculares con la distribución de Maxwell y el recorrido libre medio, paso a paso.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
@@ -181,6 +181,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 .tramos { grid-column: 1 / -1; display: grid; gap: 6px }
 .tramo { display: grid; grid-template-columns: 30px minmax(0, 1.3fr) 58px minmax(0, 1fr) 30px; gap: 6px; align-items: center; font-size: 13px }
 .tramo b { font: 600 13px var(--f-math); text-align: center }
+#caja { height: 200px; margin-top: 8px }
 .botones { grid-column: 1 / -1; display: flex; gap: 8px; flex-wrap: wrap }
 </style>
 <body>
@@ -188,7 +189,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 <div class="wrap">
 <nav class="miga" aria-label="Estás en"><span class="miga-izq"></span><span class="miga-ico" aria-hidden="true">F</span><a href="../">Física general</a><span aria-hidden="true">›</span><span>Gases ideales</span><span class="miga-der"></span></nav>
 <h1>Gases ideales</h1>
-<p class="lead">Aplica la ecuación de estado PV = nRT, encadena transformaciones isotermas, isobaras, isocoras y adiabáticas para obtener el trabajo, el calor y la energía interna de cada tramo y el rendimiento de un ciclo, y calcula las velocidades de las moléculas con la teoría cinética.</p>
+<p class="lead">Aplica la ecuación de estado PV = nRT, encadena transformaciones isotermas, isobaras, isocoras y adiabáticas para obtener el trabajo, el calor y la energía interna de cada tramo y el rendimiento de un ciclo, resuelve mezclas de gases y gases reales, y calcula las velocidades de las moléculas con la teoría cinética.</p>
 <div class="layout">
   <div class="card">
     <h2>Datos</h2>
@@ -200,6 +201,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
   <div>
     <div class="card"><h2>Resultado</h2><div class="res" id="res"></div>
       <canvas id="escena" aria-label="Diagrama P-V o distribución de velocidades"></canvas>
+      <canvas id="caja" aria-label="Moléculas moviéndose en una caja"></canvas>
       <p class="leyenda" id="leyenda"></p></div>
     <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
   </div>
@@ -207,17 +209,22 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 <section class="teoria">
   <h2>Ecuación de estado</h2>
   <p class="f m">$P V = n R T$, &ensp; $R = 8,314 "J/(mol·K)" = 0,082 "atm·L/(mol·K)"$</p>
-  <p>La temperatura siempre en kelvin (T = t + 273,15). En condiciones normales (1 atm y 0 °C) un mol ocupa 22,4 L. La densidad de un gas es ρ = PM/(RT).</p>
+  <p class="m">La temperatura siempre en kelvin (T = t + 273,15). En condiciones normales (1 atm y 0 °C) un mol ocupa 22,4 L. La densidad de un gas es $ρ = PM/(RT)$.</p>
   <h2>Primer principio</h2>
   <p class="f m">$ΔU = Q − W$, &ensp; $ΔU = n C_v ΔT$, &ensp; $C_p − C_v = R$, &ensp; $γ = C_p/C_v$</p>
-  <p>W es el trabajo que hace el gas (positivo si se expande) y Q el calor que recibe. Un gas monoatómico tiene C<sub>v</sub> = 3R/2 y uno diatómico C<sub>v</sub> = 5R/2.</p>
+  <p class="m">W es el trabajo que hace el gas (positivo si se expande) y Q el calor que recibe. Un gas monoatómico tiene $C_v = {3}/{2} R$ y uno diatómico $C_v = {5}/{2} R$.</p>
   <h2>Transformaciones</h2>
-  <p><b>Isoterma</b> (T constante): ΔU = 0 y Q = W = nRT ln(V<sub>2</sub>/V<sub>1</sub>). <b>Isobara</b> (P constante): W = PΔV y Q = nC<sub>p</sub>ΔT. <b>Isocora</b> (V constante): W = 0 y Q = nC<sub>v</sub>ΔT. <b>Adiabática</b> (Q = 0): PV<sup>γ</sup> = cte, TV<sup>γ−1</sup> = cte y W = (P<sub>1</sub>V<sub>1</sub> − P<sub>2</sub>V<sub>2</sub>)/(γ − 1).</p>
+  <p class="m"><b>Isoterma</b> (T constante): $ΔU = 0$ y $Q = W = nRT ln {V_2}/{V_1}$. <b>Isobara</b> (P constante): $W = P ΔV$ y $Q = n C_p ΔT$. <b>Isocora</b> (V constante): $W = 0$ y $Q = n C_v ΔT$. <b>Adiabática</b> (Q = 0): $P V^γ$ = cte, $T V^{γ − 1}$ = cte y $W = {P_1 V_1 − P_2 V_2}/{γ − 1}$.</p>
   <h2>Ciclos</h2>
-  <p>En un ciclo el gas vuelve al estado inicial, así que ΔU = 0 y W<sub>neto</sub> = Q<sub>neto</sub>, que es el área encerrada en el diagrama P-V. El rendimiento es η = W/Q<sub>abs</sub>, y nunca supera el de un ciclo de Carnot entre las mismas temperaturas, η = 1 − T<sub>f</sub>/T<sub>c</sub>.</p>
+  <p class="m">En un ciclo el gas vuelve al estado inicial, así que $ΔU = 0$ y $W_{neto} = Q_{neto}$, que es el área encerrada en el diagrama P-V. El rendimiento es $η = W/Q_{abs}$, y nunca supera el de un ciclo de Carnot entre las mismas temperaturas, $η = 1 − T_f/T_c$. Los ciclos con nombre (Carnot, Otto, Diesel, Brayton, Stirling) y el diagrama T-S están en <a href="../ciclos/">Ciclos termodinámicos</a>.</p>
+  <h2>Mezclas de gases</h2>
+  <p class="m">En una mezcla de gases ideales cada uno se comporta como si estuviera solo en todo el recipiente. Su presión parcial es $P_i = x_i P$, con $x_i = n_i/n$ su fracción molar, y la presión total es la suma de las parciales (ley de Dalton).</p>
+  <h2>Gases reales</h2>
+  <p class="f m">$(P + {a n^2}/{V^2})(V − nb) = nRT$</p>
+  <p class="m">La ecuación de Van der Waals corrige el gas ideal: b es el volumen de las propias moléculas y a mide lo que se atraen. El factor de compresibilidad $Z = PV/(nRT)$ vale 1 en un gas ideal. Por encima de la temperatura crítica, $T_c = 8a/(27Rb)$, el gas no se licúa.</p>
   <h2>Teoría cinética</h2>
-  <p class="f m">$v_cm = √({3RT}/M)$, &ensp; $⟨E_c⟩ = 3/2 k T$</p>
-  <p>Las velocidades de las moléculas siguen la distribución de Maxwell: la más probable es √(2RT/M) y la media √(8RT/(πM)). La energía cinética media solo depende de la temperatura.</p>
+  <p class="f m">$v_{cm} = √({3RT}/M)$, &ensp; $⟨E_c⟩ = {3}/{2} k T$</p>
+  <p class="m">Las velocidades de las moléculas siguen la distribución de Maxwell: la más probable es $√(2RT/M)$ y la media $√(8RT/(πM))$. La energía cinética media solo depende de la temperatura. Entre choque y choque una molécula recorre de media $λ = 1/(√2 π d^2 n_V)$, con d su diámetro y $n_V = P/(kT)$ las moléculas por metro cúbico.</p>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Gases ideales <span id="ver"></span> (beta)</footer>
@@ -454,6 +461,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ecuación de una onda armónica con ω y k en múltiplos de π, posición, velocidad y aceleración de un punto del medio y desfase entre dos puntos.', 'Ondas estacionarias en cuerdas y en tubos abiertos o cerrados: frecuencia de cada armónico, nodos y vientres, y velocidad en la cuerda con √(T/μ).', 'Efecto Doppler con la fuente y el observador moviéndose, y nivel sonoro en decibelios a distintas distancias y con varias fuentes.', 'Animación de la onda, de la onda estacionaria y de los frentes de onda del Doppler.'] },
     ],
     gases: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Mezclas de gases con la ley de Dalton: presiones parciales, fracciones molares, masa molar media y densidad, con un gráfico de barras.', 'Gases reales con la ecuación de Van der Waals: presión, factor de compresibilidad Z, comparación con el gas ideal, punto crítico y la isoterma dibujada.', 'Teoría cinética con el recorrido libre medio, el número de choques por segundo y la densidad de moléculas.', 'Caja de partículas animada que se mueve más rápido o más despacio según la temperatura.', 'Las fórmulas del desarrollo y de la teoría se ven como en los apuntes.', 'Los ejemplos usan coma decimal.', 'Modo práctica con enunciado escrito.', 'Enlace a Ciclos termodinámicos para Otto, Diesel, Brayton y Stirling.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ecuación de estado PV = nRT con P, V, T y n en varias unidades, los moles a partir de la masa y la densidad del gas.', 'Transformaciones isoterma, isobara, isocora y adiabática encadenadas, con el trabajo, el calor y la variación de energía interna de cada tramo, y ciclos con su rendimiento comparado con el de Carnot.', 'Diagrama P-V con las isotermas y el área del ciclo.', 'Teoría cinética: velocidades cuadrática media, media y más probable, energía cinética media y la distribución de Maxwell.'] },
     ],
@@ -703,8 +711,10 @@ const Mates = (() => {
 /* =====================================================================
    Gases ideales (sin DOM): ecuación de estado PV = nRT, transformaciones
    (isoterma, isobara, isocora y adiabática) encadenadas en un proceso o un
-   ciclo con el primer principio, y teoría cinética (velocidades de las
-   moléculas y distribución de Maxwell).
+   ciclo con el primer principio, mezclas de gases (ley de Dalton), gases
+   reales con la ecuación de Van der Waals y teoría cinética (velocidades
+   de las moléculas, distribución de Maxwell y recorrido libre medio).
+   Los pasos llevan fórmulas $…$ que la página pasa a MathML (mates.js).
    Por dentro todo en el SI; el trabajo W es el que hace el gas y
    ΔU = Q − W.
    ===================================================================== */
@@ -725,7 +735,10 @@ const Gases = (() => {
     monoatomico: { nombre: 'Monoatómico (He, Ne, Ar…)', gamma: 5 / 3, cv: '3/2', cp: '5/2' },
     diatomico: { nombre: 'Diatómico (N₂, O₂, aire…)', gamma: 7 / 5, cv: '5/2', cp: '7/2' },
   };
-  const MOLECULAS = { He: ['Helio', 4.003], Ne: ['Neón', 20.18], Ar: ['Argón', 39.95], H2: ['Hidrógeno, H₂', 2.016], N2: ['Nitrógeno, N₂', 28.01], O2: ['Oxígeno, O₂', 32.00], aire: ['Aire', 28.96], CO2: ['Dióxido de carbono, CO₂', 44.01] };
+  // nombre, masa molar (g/mol) y diámetro cinético (pm) para el recorrido libre medio
+  const MOLECULAS = { He: ['Helio', 4.003, 260], Ne: ['Neón', 20.18, 275], Ar: ['Argón', 39.95, 340], H2: ['Hidrógeno, H₂', 2.016, 289], N2: ['Nitrógeno, N₂', 28.01, 364], O2: ['Oxígeno, O₂', 32.00, 346], aire: ['Aire', 28.96, 365], CO2: ['Dióxido de carbono, CO₂', 44.01, 330] };
+  // constantes de Van der Waals: a (Pa·m⁶/mol²), b (m³/mol)
+  const VDW = { He: ['Helio', 0.00346, 2.38e-5], H2: ['Hidrógeno, H₂', 0.02476, 2.661e-5], N2: ['Nitrógeno, N₂', 0.1370, 3.87e-5], O2: ['Oxígeno, O₂', 0.1382, 3.19e-5], Ar: ['Argón', 0.1355, 3.20e-5], CO2: ['Dióxido de carbono, CO₂', 0.3640, 4.267e-5], NH3: ['Amoniaco, NH₃', 0.4225, 3.707e-5], H2O: ['Vapor de agua', 0.5536, 3.049e-5] };
 
   function num(sc, k, nom, { opcional = false, signo = false } = {}) {
     if (vacio(sc[k])) { if (opcional) return null; throw new Error(`Falta ${nom}`); }
@@ -752,7 +765,7 @@ const Gases = (() => {
     const lee = (k, nom) => { const v = vacio(g(k)) ? null : leeNum(g(k)); if (v !== null && !isFinite(v)) throw new Error(`${nom} debe ser un número`); if (v !== null && k !== 'T' && v <= 0) throw new Error(`${nom} debe ser mayor que 0`); return v; };
     let P = aSI(u, 'P', lee('P', 'La presión')), V = aSI(u, 'V', lee('V', 'El volumen')), T = aSI(u, 'T', lee('T', 'La temperatura')), n = lee('n', 'El número de moles');
     const m = prefijo ? null : lee('m', 'La masa'), M = prefijo ? null : lee('M', 'La masa molar');
-    if (n === null && m !== null && M !== null) { n = m / M; pasos.push({ t: 'Número de moles', html: `n = m/M = ${f(m)} g / ${f(M)} g/mol = <b>${f(n)} mol</b>` }); }
+    if (n === null && m !== null && M !== null) { n = m / M; pasos.push({ t: 'Número de moles', html: `$n = m/M = ${f(m)}/${f(M)}$ = <b>${f(n)} mol</b>` }); }
     const faltan = [['P', P], ['V', V], ['T', T], ['n', n]].filter(([, v]) => v === null).map(([k]) => k);
     if (faltan.length > 1) throw new Error(`Faltan datos: da tres de P, V, T y n (ahora faltan ${faltan.join(' y ')})`);
     const nr = (x) => f(x);
@@ -761,10 +774,10 @@ const Gases = (() => {
       if (err > 1e-3) throw new Error(`Los cuatro datos no cumplen PV = nRT (PV = ${nr(P * V).replace(/<[^>]+>/g, '')} J y nRT = ${nr(n * R * T).replace(/<[^>]+>/g, '')} J): deja uno vacío`);
     } else {
       const k = faltan[0], ecs = {
-        P: () => { P = (n * R * T) / V; return `P = nRT/V = ${f(n)}·${Rs}·${f(T, 5)} / ${f(V)} m<sup>3</sup> = ${f(P, 6)} Pa = <b>${verP(u, P)}</b>`; },
-        V: () => { V = (n * R * T) / P; return `V = nRT/P = ${f(n)}·${Rs}·${f(T, 5)} / ${f(P, 6)} Pa = ${f(V)} m<sup>3</sup> = <b>${verV(u, V)}</b>`; },
-        T: () => { T = (P * V) / (n * R); return `T = PV/(nR) = ${f(P, 6)} Pa·${f(V)} m<sup>3</sup> / (${f(n)}·${Rs}) = <b>${verT(T)}</b> (${f(T - 273.15)} °C)`; },
-        n: () => { n = (P * V) / (R * T); return `n = PV/(RT) = ${f(P, 6)} Pa·${f(V)} m<sup>3</sup> / (${Rs}·${f(T, 5)}) = <b>${f(n)} mol</b>`; },
+        P: () => { P = (n * R * T) / V; return `$P = {nRT}/V = {${f(n)} · ${Rs} · ${f(T, 5)}}/{${f(V)}} = ${f(P, 6)}$ Pa = <b>${verP(u, P)}</b>`; },
+        V: () => { V = (n * R * T) / P; return `$V = {nRT}/P = {${f(n)} · ${Rs} · ${f(T, 5)}}/{${f(P, 6)}} = ${f(V)}$ m<sup>3</sup> = <b>${verV(u, V)}</b>`; },
+        T: () => { T = (P * V) / (n * R); return `$T = {PV}/{nR} = {${f(P, 6)} · ${f(V)}}/{${f(n)} · ${Rs}}$ = <b>${verT(T)}</b> (${f(T - 273.15)} °C)`; },
+        n: () => { n = (P * V) / (R * T); return `$n = {PV}/{RT} = {${f(P, 6)} · ${f(V)}}/{${Rs} · ${f(T, 5)}}$ = <b>${f(n)} mol</b>`; },
       };
       if (!prefijo) pasos.push({ t: 'Datos en el SI', html: [P !== null && `P = ${verP(u, P)} = ${f(P, 6)} Pa`, V !== null && `V = ${verV(u, V)} = ${f(V)} m<sup>3</sup>`, T !== null && `T = ${verT(T)}`, n !== null && `n = ${f(n)} mol`].filter(Boolean).join(', &nbsp; ') + `. R = ${Rs} J/(mol·K)` });
       pasos.push({ t: prefijo ? 'Estado inicial (PV = nRT)' : 'Ecuación de estado PV = nRT', html: ecs[k]() });
@@ -774,9 +787,9 @@ const Gases = (() => {
 
   function resolverEstado(sc) {
     const pasos = [], e = estado(sc, { pasos });
-    if (e.M) { const rho = (e.P * e.M * 1e-3) / (R * e.T); pasos.push({ t: 'Densidad', html: `ρ = PM/(RT) = ${f(e.P, 6)}·${f(e.M * 1e-3)} / (${Rs}·${f(e.T, 5)}) = <b>${f(rho)} kg/m<sup>3</sup></b> (= ${f(rho)} g/L)` }); e.rho = rho; }
+    if (e.M) { const rho = (e.P * e.M * 1e-3) / (R * e.T); pasos.push({ t: 'Densidad', html: `$ρ = {PM}/{RT} = {${f(e.P, 6)} · ${f(e.M * 1e-3)}}/{${Rs} · ${f(e.T, 5)}}$ = <b>${f(rho)} kg/m<sup>3</sup></b> (= ${f(rho)} g/L)` }); e.rho = rho; }
     const Vm = (R * e.T) / e.P;
-    pasos.push({ t: 'Volumen molar y moléculas', html: `V<sub>m</sub> = V/n = ${f(Vm * 1000)} L/mol${Math.abs(e.T - 273.15) < 0.01 && Math.abs(e.P - 101325) < 1 ? ' (22,4 L/mol en condiciones normales)' : ''}; &nbsp; N = nN<sub>A</sub> = <b>${f(e.n * NA)} moléculas</b>` });
+    pasos.push({ t: 'Volumen molar y moléculas', html: `$V_m = V/n = ${f(Vm * 1000)}$ L/mol${Math.abs(e.T - 273.15) < 0.01 && Math.abs(e.P - 101325) < 1 ? ' (22,4 L/mol en condiciones normales)' : ''}; &nbsp; $N = n N_A$ = <b>${f(e.n * NA)} moléculas</b>` });
     return { modo: 'estado', ...e, Vm, pasos };
   }
 
@@ -789,7 +802,7 @@ const Gases = (() => {
     const pasos = [];
     const e1 = estado(sc, { prefijo: '', pasos: [] });
     const u = e1.u, n = e1.n;
-    pasos.push({ t: 'Estado A', html: `P<sub>A</sub> = ${verP(u, e1.P)}, V<sub>A</sub> = ${verV(u, e1.V)}, T<sub>A</sub> = ${verT(e1.T)}, n = <b>${f(n)} mol</b>${e1.pasos.length ? `<br>${e1.pasos.map((p) => p.html).join('<br>')}` : ''}<br>Gas ${G.nombre.split(' (')[0].toLowerCase()}: C<sub>v</sub> = ${G.cv}R, C<sub>p</sub> = ${G.cp}R, γ = ${f(gm)}` });
+    pasos.push({ t: 'Estado A', html: `$P_A$ = ${verP(u, e1.P)}, $V_A$ = ${verV(u, e1.V)}, $T_A$ = ${verT(e1.T)}, n = <b>${f(n)} mol</b>${e1.pasos.length ? `<br>${e1.pasos.map((p) => p.html).join('<br>')}` : ''}<br>Gas ${G.nombre.split(' (')[0].toLowerCase()}: $C_v = {${G.cv.split('/')[0]}}/{${G.cv.split('/')[1]}} R$, $C_p = {${G.cp.split('/')[0]}}/{${G.cp.split('/')[1]}} R$, $γ = ${f(gm)}$` });
     const est = [{ P: e1.P, V: e1.V, T: e1.T }], tramos = [];
     const lista = sc.procesos || [];
     if (!lista.length) throw new Error('Añade al menos una transformación');
@@ -815,12 +828,13 @@ const Gases = (() => {
       }
       const dT = b.T - a.T, dU = n * cv * dT;
       let W, Q, hW, hQ;
-      if (tipo === 'isoterma') { W = n * R * a.T * Math.log(b.V / a.V); Q = W; hW = `W = nRT ln(V<sub>${a2}</sub>/V<sub>${de}</sub>) = ${f(n)}·${Rs}·${f(a.T)}·ln(${f(b.V / a.V)}) = <b>${f(W)} J</b>`; hQ = `ΔU = 0 (T constante) ⇒ Q = W = <b>${f(Q)} J</b>`; }
-      else if (tipo === 'isobara') { W = a.P * (b.V - a.V); Q = n * cp * dT; hW = `W = P ΔV = ${f(a.P)}·(${f(b.V)} − ${f(a.V)}) = <b>${f(W)} J</b>`; hQ = `Q = nC<sub>p</sub>ΔT = ${f(n)}·${G.cp}·${Rs}·${f(dT)} = <b>${f(Q)} J</b>; ΔU = nC<sub>v</sub>ΔT = <b>${f(dU)} J</b>`; }
-      else if (tipo === 'isocora') { W = 0; Q = dU; hW = 'W = 0 (no cambia el volumen)'; hQ = `Q = ΔU = nC<sub>v</sub>ΔT = ${f(n)}·${G.cv}·${Rs}·${f(dT)} = <b>${f(Q)} J</b>`; }
-      else { W = (a.P * a.V - b.P * b.V) / (gm - 1); Q = 0; hW = `W = (P<sub>${de}</sub>V<sub>${de}</sub> − P<sub>${a2}</sub>V<sub>${a2}</sub>)/(γ − 1) = <b>${f(W)} J</b>`; hQ = `Q = 0 ⇒ ΔU = −W = <b>${f(dU)} J</b> (= nC<sub>v</sub>ΔT)`; }
-      const rel = { isoterma: `P<sub>${de}</sub>V<sub>${de}</sub> = P<sub>${a2}</sub>V<sub>${a2}</sub>`, isobara: `V<sub>${de}</sub>/T<sub>${de}</sub> = V<sub>${a2}</sub>/T<sub>${a2}</sub>`, isocora: `P<sub>${de}</sub>/T<sub>${de}</sub> = P<sub>${a2}</sub>/T<sub>${a2}</sub>`, adiabatica: `P V<sup>γ</sup> = cte y T V<sup>γ−1</sup> = cte` }[tipo];
-      pasos.push({ t: `${de} → ${a2}: ${NOMBRES[tipo]}`, html: `${rel} ⇒ P<sub>${a2}</sub> = ${verP(u, b.P)}, V<sub>${a2}</sub> = ${verV(u, b.V)}, T<sub>${a2}</sub> = ${verT(b.T)}<br>${hW}<br>${hQ}` });
+      const cvT = `{${G.cv.split('/')[0]}}/{${G.cv.split('/')[1]}}`, cpT = `{${G.cp.split('/')[0]}}/{${G.cp.split('/')[1]}}`;
+      if (tipo === 'isoterma') { W = n * R * a.T * Math.log(b.V / a.V); Q = W; hW = `$W = nRT ln {V_${a2}}/{V_${de}} = ${f(n)} · ${Rs} · ${f(a.T)} · ln ${f(b.V / a.V)}$ = <b>${f(W)} J</b>`; hQ = `$ΔU = 0$ (T constante) ⇒ $Q = W$ = <b>${f(Q)} J</b>`; }
+      else if (tipo === 'isobara') { W = a.P * (b.V - a.V); Q = n * cp * dT; hW = `$W = P ΔV = ${f(a.P)} · (${f(b.V)} − ${f(a.V)})$ = <b>${f(W)} J</b>`; hQ = `$Q = n C_p ΔT = ${f(n)} · ${cpT} · ${Rs} · ${f(dT)}$ = <b>${f(Q)} J</b>; $ΔU = n C_v ΔT$ = <b>${f(dU)} J</b>`; }
+      else if (tipo === 'isocora') { W = 0; Q = dU; hW = '$W = 0$ (no cambia el volumen)'; hQ = `$Q = ΔU = n C_v ΔT = ${f(n)} · ${cvT} · ${Rs} · ${f(dT)}$ = <b>${f(Q)} J</b>`; }
+      else { W = (a.P * a.V - b.P * b.V) / (gm - 1); Q = 0; hW = `$W = {P_${de} V_${de} − P_${a2} V_${a2}}/{γ − 1}$ = <b>${f(W)} J</b>`; hQ = `$Q = 0$ ⇒ $ΔU = −W$ = <b>${f(dU)} J</b> (= $n C_v ΔT$)`; }
+      const rel = { isoterma: `$P_${de} V_${de} = P_${a2} V_${a2}$`, isobara: `$V_${de}/T_${de} = V_${a2}/T_${a2}$`, isocora: `$P_${de}/T_${de} = P_${a2}/T_${a2}$`, adiabatica: '$P V^γ$ = cte y $T V^{γ − 1}$ = cte' }[tipo];
+      pasos.push({ t: `${de} → ${a2}: ${NOMBRES[tipo]}`, html: `${rel} ⇒ $P_${a2}$ = ${verP(u, b.P)}, $V_${a2}$ = ${verV(u, b.V)}, $T_${a2}$ = ${verT(b.T)}<br>${hW}<br>${hQ}` });
       est.push(b); tramos.push({ de, a: a2, tipo, W, Q, dU, ini: a, fin: b });
     });
     // los restos de redondeo de una suma que debe ser 0 (ΔU de un ciclo) se quedan en 0
@@ -832,8 +846,8 @@ const Gases = (() => {
     if (ciclo) {
       rend = Qabs > 0 ? Wt / Qabs : null;
       const Tmax = Math.max(...est.map((e) => e.T)), Tmin = Math.min(...est.map((e) => e.T));
-      pasos.push({ t: 'Balance del ciclo', html: `ΔU = 0 (vuelve al estado A) ⇒ W<sub>neto</sub> = Q<sub>neto</sub> = <b>${f(Wt)} J</b><br>Calor absorbido: Q<sub>abs</sub> = ${f(Qabs)} J; cedido: ${f(Qced)} J${rend !== null ? `<br>${Wt > 0 ? 'Rendimiento' : 'Es un ciclo frigorífico (W &lt; 0); como motor'}: η = W/Q<sub>abs</sub> = <b>${f(100 * rend, 3)} %</b>; un Carnot entre ${f(Tmax)} K y ${f(Tmin)} K daría 1 − T<sub>mín</sub>/T<sub>máx</sub> = ${f(100 * (1 - Tmin / Tmax), 3)} %` : ''}` });
-    } else pasos.push({ t: 'Totales', html: `W = ${f(Wt)} J, Q = ${f(Qt)} J, ΔU = ${f(Ut)} J (Q − W = ${f(Qt - Wt)} J)` });
+      pasos.push({ t: 'Balance del ciclo', html: `$ΔU = 0$ (vuelve al estado A) ⇒ $W_{neto} = Q_{neto}$ = <b>${f(Wt)} J</b><br>Calor absorbido: $Q_{abs} = ${f(Qabs)}$ J; cedido: ${f(Qced)} J${rend !== null ? `<br>${Wt > 0 ? 'Rendimiento' : 'Es un ciclo frigorífico (W &lt; 0); como motor'}: $η = W/Q_{abs}$ = <b>${f(100 * rend, 3)} %</b>; un Carnot entre ${f(Tmax)} K y ${f(Tmin)} K daría $1 − T_{"mín"}/T_{"máx"} = ${f(100 * (1 - Tmin / Tmax), 3)}$ %. Para ver el ciclo también en el diagrama T-S, ábrelo en Ciclos termodinámicos (ciclo propio).` : ''}` });
+    } else pasos.push({ t: 'Totales', html: `$W = ${f(Wt)}$ J, $Q = ${f(Qt)}$ J, $ΔU = ${f(Ut)}$ J ($Q − W = ${f(Qt - Wt)}$ J)` });
     return { modo: 'procesos', G, u, n, est, tramos, Wt, Qt, Ut, ciclo, rend, Qabs, Qced, pasos };
   }
 
@@ -846,12 +860,66 @@ const Gases = (() => {
     const vrms = Math.sqrt((3 * R * T) / M), vmed = Math.sqrt((8 * R * T) / (Math.PI * M)), vp = Math.sqrt((2 * R * T) / M), Ec = 1.5 * kB * T, m = M / NA;
     const n = num(sc, 'n', 'el número de moles', { opcional: true });
     const pasos = [
-      { t: 'Velocidad cuadrática media', html: `v<sub>cm</sub> = √(3RT/M) = √(3·${Rs}·${f(T, 5)} / ${f(M)}) = <b>${f(vrms)} m/s</b> (M en kg/mol)` },
-      { t: 'Velocidad media y más probable', html: `v̄ = √(8RT/(πM)) = <b>${f(vmed)} m/s</b>, &nbsp; v<sub>p</sub> = √(2RT/M) = <b>${f(vp)} m/s</b><br>Siempre v<sub>p</sub> &lt; v̄ &lt; v<sub>cm</sub>.` },
-      { t: 'Energía cinética media de traslación de una molécula', html: `⟨E<sub>c</sub>⟩ = (3/2)kT = 1,5·1,381·10<sup>−23</sup>·${f(T, 5)} = <b>${f(Ec)} J</b> (= ½ m v<sub>cm</sub><sup>2</sup> con m = M/N<sub>A</sub> = ${f(m)} kg). Solo depende de T, no del gas.` },
+      { t: 'Velocidad cuadrática media', html: `$v_{cm} = √({3RT}/M) = √({3 · ${Rs} · ${f(T, 5)}}/{${f(M)}})$ = <b>${f(vrms)} m/s</b> (M en kg/mol)` },
+      { t: 'Velocidad media y más probable', html: `$v̄ = √({8RT}/{πM})$ = <b>${f(vmed)} m/s</b>, &nbsp; $v_p = √({2RT}/M)$ = <b>${f(vp)} m/s</b><br>Siempre $v_p < v̄ < v_{cm}$.` },
+      { t: 'Energía cinética media de traslación de una molécula', html: `$⟨E_c⟩ = {3}/{2} k T = 1,5 · 1,381·10<sup>−23</sup> · ${f(T, 5)}$ = <b>${f(Ec)} J</b> (= $½ m v_{cm}^2$ con $m = M/N_A = ${f(m)}$ kg). Solo depende de T, no del gas.` },
     ];
-    if (n) pasos.push({ t: `Energía cinética de traslación de ${f(n)} mol`, html: `E = (3/2)nRT = <b>${f(1.5 * n * R * T)} J</b>` });
-    return { modo: 'cinetica', nombre, Mg, M, T, vrms, vmed, vp, Ec, n, pasos };
+    if (n) pasos.push({ t: `Energía cinética de traslación de ${f(n)} mol`, html: `$E = {3}/{2} n R T$ = <b>${f(1.5 * n * R * T)} J</b>` });
+    // recorrido libre medio con la presión
+    const Patm = num(sc, 'P', 'la presión', { opcional: true });
+    let lam = null, z = null, nV = null, d = null;
+    if (Patm) {
+      const P = Patm * 101325, d0 = num(sc, 'd', 'el diámetro de la molécula', { opcional: true });
+      d = (d0 ?? (MOLECULAS[sc.molecula] ? MOLECULAS[sc.molecula][2] : 0)) * 1e-12;
+      if (!d) throw new Error('Para el recorrido libre medio hace falta el diámetro de la molécula');
+      nV = P / (kB * T); lam = 1 / (Math.SQRT2 * Math.PI * d * d * nV); z = vmed / lam;
+      pasos.push({ t: 'Moléculas por metro cúbico', html: `$n_V = P/(kT) = {${f(P, 6)}}/{1,381·10<sup>−23</sup> · ${f(T, 5)}}$ = <b>${f(nV)} m<sup>−3</sup></b>` });
+      pasos.push({ t: 'Recorrido libre medio', html: `Con un diámetro molecular $d = ${f(d * 1e12)}$ pm${d0 ? '' : ' (diámetro cinético típico)'}, la distancia media entre dos choques es $λ = 1/(√2 π d^2 n_V)$ = <b>${f(lam)} m</b> (${f(lam * 1e9)} nm), unas ${f(lam / d, 3)} veces el tamaño de la molécula.` });
+      pasos.push({ t: 'Choques por segundo', html: `Cada molécula choca $z = v̄/λ = ${f(vmed)}/${f(lam)}$ = <b>${f(z)} veces por segundo</b>, una cada ${f(1 / z)} s.` });
+    }
+    return { modo: 'cinetica', nombre, Mg, M, T, vrms, vmed, vp, Ec, n, lam, z, nV, d, pasos };
+  }
+
+  /* ---------- Mezcla de gases (Dalton) ---------- */
+  // sc: { T, V (L), cant: 'n' | 'm', g1..g3 (claves de MOLECULAS), c1..c3 (moles o gramos) }
+  function mezcla(sc) {
+    const T = num(sc, 'T', 'la temperatura'), V = num(sc, 'V', 'el volumen') * 1e-3, gramos = sc.cant === 'm', comp = [];
+    for (let i = 1; i <= 3; i++) {
+      if (vacio(sc[`c${i}`])) continue;
+      const k = sc[`g${i}`], gas = MOLECULAS[k];
+      if (!gas) throw new Error(`Elige el gas ${i}`);
+      const c = num(sc, `c${i}`, `la cantidad del gas ${i}`), n = gramos ? c / gas[1] : c;
+      comp.push({ k, nombre: gas[0], M: gas[1], m: gramos ? c : c * gas[1], n });
+    }
+    if (comp.length < 2) throw new Error('Una mezcla necesita al menos dos gases');
+    const nt = comp.reduce((s2, c) => s2 + c.n, 0), Pt = (nt * R * T) / V, mt = comp.reduce((s2, c) => s2 + c.m, 0), Mm = mt / nt;
+    for (const c of comp) { c.x = c.n / nt; c.P = c.x * Pt; }
+    const pasos = [];
+    if (gramos) pasos.push({ t: 'Moles de cada gas', html: comp.map((c) => `$n_{"${c.k}"} = m/M = ${f(c.m)}/${f(c.M)}$ = ${f(c.n)} mol`).join('<br>') });
+    pasos.push({ t: 'Moles totales y fracciones molares', html: `$n = ${comp.map((c) => f(c.n)).join(' + ')} = ${f(nt)}$ mol<br>${comp.map((c) => `$x_{"${c.k}"} = n_{"${c.k}"}/n = ${f(c.n)}/${f(nt)}$ = <b>${f(c.x)}</b>`).join('<br>')}` });
+    pasos.push({ t: 'Presión total', html: `Cada gas ocupa todo el recipiente como si estuviera solo, así que la mezcla cumple $P V = n R T$ con los moles totales: $P = {nRT}/V = {${f(nt)} · ${Rs} · ${f(T)}}/{${f(V)}}$ = <b>${f(Pt)} Pa</b> (${f(Pt / 101325)} atm)` });
+    pasos.push({ t: 'Presiones parciales (ley de Dalton)', html: `La presión de cada gas es la que tendría él solo en todo el volumen, $P_i = x_i P$, y la suma es la total: ${comp.map((c) => `$P_{"${c.k}"} = ${f(c.x)} · ${f(Pt)}$ = <b>${f(c.P)} Pa</b>`).join(', ')}.` });
+    pasos.push({ t: 'Masa molar media y densidad', html: `$M̄ = Σ x_i M_i = ${f(Mm)}$ g/mol y $ρ = {P M̄}/{RT} = ${f((Pt * Mm * 1e-3) / (R * T))}$ kg/m³` });
+    return { modo: 'mezcla', T, V, comp, nt, Pt, mt, Mm, rho: (Pt * Mm * 1e-3) / (R * T), pasos };
+  }
+
+  /* ---------- Gas real: Van der Waals ---------- */
+  // sc: { gasR (clave de VDW u 'otra'), a, b (si es otra), n, V (L), T (K) }
+  function real(sc) {
+    let a, b, nombre;
+    if (VDW[sc.gasR]) [nombre, a, b] = VDW[sc.gasR];
+    else { nombre = 'Gas'; a = num(sc, 'a', 'la constante a'); b = num(sc, 'b', 'la constante b'); }
+    const n = num(sc, 'n', 'el número de moles'), V = num(sc, 'V', 'el volumen') * 1e-3, T = num(sc, 'T', 'la temperatura');
+    if (V <= n * b) throw new Error(`El volumen tiene que ser mayor que el que ocupan las propias moléculas, nb = ${f(n * b * 1000).replace(/<[^>]+>/g, '')} L`);
+    const Pi = (n * R * T) / V, rep = (n * R * T) / (V - n * b), atr = (a * n * n) / (V * V), P = rep - atr, Z = (P * V) / (n * R * T);
+    const Tc = (8 * a) / (27 * R * b), Pc = a / (27 * b * b), Vc = 3 * b;
+    const pasos = [
+      { t: 'Ecuación de Van der Waals', html: `${nombre}: $a = ${f(a)}$ Pa·m⁶/mol², $b = ${f(b)}$ m³/mol. La ecuación $(P + {a n^2}/{V^2})(V − nb) = nRT$ corrige el gas ideal: b es el volumen que ocupan las moléculas y a mide lo que se atraen.` },
+      { t: 'Presión del gas real', html: `$P = {nRT}/{V − nb} − {a n^2}/{V^2} = {${f(n)} · ${Rs} · ${f(T)}}/{${f(V)} − ${f(n * b)}} − {${f(a)} · ${f(n)}^2}/{(${f(V)})^2} = ${f(rep)} − ${f(atr)}$ = <b>${f(P)} Pa</b> (${f(P / 101325)} atm)` },
+      { t: 'Comparación con el gas ideal', html: `Ideal: $P = {nRT}/V$ = ${f(Pi)} Pa (${f(Pi / 101325)} atm). El real da un ${f((100 * (P - Pi)) / Pi, 3)} %. Factor de compresibilidad $Z = {PV}/{nRT}$ = <b>${f(Z)}</b>: ${Z < 1 ? 'menor que 1, mandan las atracciones' : 'mayor que 1, manda el volumen de las moléculas'}.` },
+      { t: 'Punto crítico', html: `$T_c = {8a}/{27Rb}$ = <b>${f(Tc)} K</b>, $P_c = {a}/{27 b^2}$ = ${f(Pc / 101325)} atm, $V_{m,c} = 3b$ = ${f(Vc * 1000)} L/mol. Por encima de $T_c$ el gas no se puede licuar por mucho que se comprima.` },
+    ];
+    return { modo: 'real', nombre, a, b, n, V, T, P, Pi, Z, Tc, Pc, Vc, pasos };
   }
   // densidad de Maxwell para la gráfica
   const maxwell = (M, T, v) => { const a = M / (2 * R * T); return 4 * Math.PI * (a / Math.PI) ** 1.5 * v * v * Math.exp(-a * v * v); };
@@ -859,35 +927,43 @@ const Gases = (() => {
   function resolver(sc) {
     if (sc.modo === 'procesos') return procesos(sc);
     if (sc.modo === 'cinetica') return cinetica(sc);
+    if (sc.modo === 'mezcla') return mezcla(sc);
+    if (sc.modo === 'real') return real(sc);
     return resolverEstado(sc);
   }
 
   const B = { uP: 'atm', uV: 'L', uT: 'K' };
   const ejemplos = [
     { clave: 'volumen', nombre: 'Volumen de un gas (PV = nRT)', sc: { modo: 'estado', ...B, uT: 'C', P: '2', V: '', T: '27', n: '', m: '16', M: '32' } },
-    { clave: 'normales', nombre: 'Un mol en condiciones normales', sc: { modo: 'estado', ...B, P: '1', V: '', T: '273.15', n: '1', m: '', M: '' } },
+    { clave: 'normales', nombre: 'Un mol en condiciones normales', sc: { modo: 'estado', ...B, P: '1', V: '', T: '273,15', n: '1', m: '', M: '' } },
     { clave: 'isoterma', nombre: 'Expansión isoterma', sc: { modo: 'procesos', gas: 'diatomico', ...B, P: '4', V: '5', T: '300', n: '', procesos: [{ tipo: 'isoterma', dato: 'V', valor: '20' }] } },
     { clave: 'adiabatica', nombre: 'Compresión adiabática del aire', sc: { modo: 'procesos', gas: 'diatomico', ...B, P: '1', V: '10', T: '300', n: '', procesos: [{ tipo: 'adiabatica', dato: 'V', valor: '2' }] } },
-    { clave: 'ciclo-rect', nombre: 'Ciclo rectangular (dos isobaras y dos isocoras)', sc: { modo: 'procesos', gas: 'monoatomico', ...B, uP: 'kPa', P: '100', V: '2', T: '', n: '0.1', procesos: [{ tipo: 'isocora', dato: 'P', valor: '300' }, { tipo: 'isobara', dato: 'V', valor: '6' }, { tipo: 'isocora', dato: 'P', valor: '100' }, { tipo: 'isobara', dato: 'V', valor: 'A' }] } },
+    { clave: 'ciclo-rect', nombre: 'Ciclo rectangular (dos isobaras y dos isocoras)', sc: { modo: 'procesos', gas: 'monoatomico', ...B, uP: 'kPa', P: '100', V: '2', T: '', n: '0,1', procesos: [{ tipo: 'isocora', dato: 'P', valor: '300' }, { tipo: 'isobara', dato: 'V', valor: '6' }, { tipo: 'isocora', dato: 'P', valor: '100' }, { tipo: 'isobara', dato: 'V', valor: 'A' }] } },
     { clave: 'carnot', nombre: 'Ciclo de Carnot', sc: { modo: 'procesos', gas: 'diatomico', ...B, P: '10', V: '1', T: '600', n: '', procesos: [{ tipo: 'isoterma', dato: 'V', valor: '3' }, { tipo: 'adiabatica', dato: 'T', valor: '300' }, { tipo: 'isoterma', dato: 'V', valor: String(3 * 2 ** 2.5 / 3) }, { tipo: 'adiabatica', dato: 'V', valor: 'A' }] } },
-    { clave: 'cinetica', nombre: 'Velocidad de las moléculas de oxígeno', sc: { modo: 'cinetica', molecula: 'O2', M: '', T: '300', uT: 'K', n: '1' } },
+    { clave: 'cinetica', nombre: 'Velocidad de las moléculas de oxígeno', sc: { modo: 'cinetica', molecula: 'O2', M: '', T: '300', uT: 'K', n: '1', P: '', d: '' } },
+    { clave: 'recorrido', nombre: 'Recorrido libre medio del aire', sc: { modo: 'cinetica', molecula: 'aire', M: '', T: '293', uT: 'K', n: '', P: '1', d: '' } },
+    { clave: 'aire-mezcla', nombre: 'Presiones parciales del aire (N₂, O₂, Ar)', sc: { modo: 'mezcla', T: '298', V: '22,4', cant: 'n', g1: 'N2', c1: '0,78', g2: 'O2', c2: '0,21', g3: 'Ar', c3: '0,01' } },
+    { clave: 'buceo', nombre: 'Botella de buceo con oxígeno y helio', sc: { modo: 'mezcla', T: '293', V: '12', cant: 'm', g1: 'O2', c1: '800', g2: 'He', c2: '400', g3: 'N2', c3: '' } },
+    { clave: 'vdw', nombre: 'CO₂ comprimido: real frente a ideal', sc: { modo: 'real', gasR: 'CO2', a: '', b: '', n: '1', V: '0,5', T: '300' } },
+    { clave: 'vdw-n2', nombre: 'Nitrógeno a presión moderada', sc: { modo: 'real', gasR: 'N2', a: '', b: '', n: '2', V: '10', T: '273' } },
   ];
   // en el Carnot, V_D = V_A·(T_A/T_C)^(1/(γ−1)) = 1·2^2,5 L
   ejemplos[5].sc.procesos[2].valor = String(+(2 ** 2.5).toFixed(6));
 
-  return { resolver, estado: resolverEstado, procesos, cinetica, maxwell, GASES, MOLECULAS, UP, UV, NOMBRES, ejemplos, f, R };
+  return { resolver, estado: resolverEstado, procesos, cinetica, mezcla, real, maxwell, GASES, MOLECULAS, VDW, UP, UV, NOMBRES, ejemplos, f, R, kB };
 })();
 
 /* =====================================================================
    Gases ideales: interfaz (modo, datos, lista de transformaciones,
-   diagrama P-V o curva de Maxwell y desarrollo). El cálculo está en
+   diagrama P-V, curva de Maxwell o de Van der Waals, caja con partículas
+   animadas, modo práctica con enunciado y desarrollo). El cálculo está en
    gases/fisica.js (Gases).
    ===================================================================== */
 (() => {
   const { $, esc, copia } = Herramienta;
   const G = Gases, f = G.f, CLAVE = 'gases-v1';
   const txt = (h) => String(h).replace(/<sup>/g, '^').replace(/<[^>]+>/g, '');
-  const MODOS = [['estado', 'Ecuación de estado PV = nRT'], ['procesos', 'Transformaciones y ciclos'], ['cinetica', 'Teoría cinética']];
+  const MODOS = [['estado', 'Ecuación de estado PV = nRT'], ['procesos', 'Transformaciones y ciclos'], ['mezcla', 'Mezcla de gases (Dalton)'], ['real', 'Gas real (Van der Waals)'], ['cinetica', 'Teoría cinética']];
   const TIPOS = [['isoterma', 'Isoterma'], ['isobara', 'Isobara'], ['isocora', 'Isocora'], ['adiabatica', 'Adiabática']];
   const PERMITIDOS = { isoterma: ['V', 'P'], isobara: ['V', 'T'], isocora: ['P', 'T'], adiabatica: ['V', 'P', 'T'] };
 
@@ -917,11 +993,21 @@ const Gases = (() => {
         return `<div class="tramo"><b>${de}→${a}</b><select class="in" data-i="${i}" data-c="tipo" aria-label="Tipo del tramo ${de}">${opciones(p.tipo, TIPOS)}</select><select class="in" data-i="${i}" data-c="dato" aria-label="Dato final del tramo ${de}">${opciones(p.dato, PERMITIDOS[p.tipo].map((k) => [k, `${k}${a}`]))}</select><input class="in" data-i="${i}" data-c="valor" value="${esc(p.valor)}" placeholder="${un[p.dato]}" inputmode="decimal" autocomplete="off" aria-label="Valor del tramo ${de}"><button class="btn" type="button" data-quita="${i}" aria-label="Quitar el tramo ${de}">✕</button></div>`;
       }).join('')}</div><div class="botones"><button class="btn" type="button" data-add="1">+ Añadir transformación</button></div>`;
       $('#nota').textContent = 'Cada tramo parte del estado anterior; das un dato del estado final. Escribe A como valor para volver al estado A y cerrar el ciclo.';
+    } else if (sc.modo === 'mezcla') {
+      const gasesL = Object.entries(G.MOLECULAS).map(([k, [t]]) => [k, t]);
+      h += fila('T', 'Temperatura', 'K') + fila('V', 'Volumen del recipiente', 'L') + elige('cant', 'Cantidad de cada gas en', [['n', 'moles'], ['m', 'gramos']]);
+      for (let i = 1; i <= 3; i++) h += sep(`Gas ${i}${i === 3 ? ' (opcional)' : ''}`) + elige(`g${i}`, 'Gas', gasesL) + fila(`c${i}`, 'Cantidad', sc.cant === 'm' ? 'g' : 'mol');
+      $('#nota').textContent = 'Cada gas ocupa todo el recipiente: su presión parcial es la que tendría él solo. Deja vacía la cantidad del tercero si solo hay dos.';
+    } else if (sc.modo === 'real') {
+      h += elige('gasR', 'Gas', [...Object.entries(G.VDW).map(([k, [t]]) => [k, t]), ['otra', 'Otro (escribe a y b)']]);
+      if (sc.gasR === 'otra') h += fila('a', 'Constante a', 'Pa·m⁶/mol²') + fila('b', 'Constante b', 'm³/mol');
+      h += fila('n', 'Moles n', 'mol') + fila('V', 'Volumen V', 'L') + fila('T', 'Temperatura T', 'K');
+      $('#nota').textContent = 'Las constantes a y b de los gases de la lista están en el SI. Compara con el gas ideal: a volúmenes pequeños la diferencia es grande.';
     } else {
       h += elige('molecula', 'Gas', [...Object.entries(G.MOLECULAS).map(([k, [t, M]]) => [k, `${t} (${String(M).replace('.', ',')} g/mol)`]), ['otra', 'Otro (escribe M)']]);
       if (sc.molecula === 'otra') h += fila('M', 'Masa molar M', 'g/mol');
-      h += elige('uT', 'Temperatura en', [['K', 'kelvin (K)'], ['C', 'grados Celsius (°C)']]) + fila('T', 'Temperatura T', unT()) + fila('n', 'Moles n (opcional)', 'mol');
-      $('#nota').textContent = 'M se pasa a kg/mol para usar R en el SI.';
+      h += elige('uT', 'Temperatura en', [['K', 'kelvin (K)'], ['C', 'grados Celsius (°C)']]) + fila('T', 'Temperatura T', unT()) + sep('Opcional') + fila('n', 'Moles n', 'mol') + fila('P', 'Presión (para el recorrido libre medio)', 'atm') + fila('d', 'Diámetro de la molécula', 'pm');
+      $('#nota').textContent = 'M se pasa a kg/mol para usar R en el SI. Con la presión sale el recorrido libre medio; si no das el diámetro se usa el típico de cada gas.';
     }
     $('#campos').innerHTML = h;
   }
@@ -982,13 +1068,20 @@ const Gases = (() => {
       const fin = sol.est[sol.est.length - 1], L = sol.ciclo ? String.fromCharCode(64 + sol.est.length - 1) : String.fromCharCode(64 + sol.est.length);
       if (!sol.ciclo) h += dato(`Estado final ${L}`, `${vP(fin.P)}, ${vV(fin.V)}, ${f(fin.T, 5)} K`);
       ley = (sol.ciclo ? `Ciclo en el diagrama P-V; el área encerrada es el trabajo neto${sol.Wt > 0 ? ' (sentido horario: motor)' : ' (sentido antihorario: frigorífico)'}. En gris, las isotermas de T máxima y mínima.` : 'Transformaciones en el diagrama P-V. En gris, las isotermas de los estados inicial y final.') + ' Colores: verde isoterma, azul isobara, naranja isocora y morado adiabática.';
+    } else if (sol.modo === 'mezcla') {
+      h = dato('Presión total', `P = <b>${f(sol.Pt)} Pa</b> (${f(sol.Pt / 101325)} atm)`) + sol.comp.map((c) => dato(`Presión parcial de ${c.nombre}`, `<b>${f(c.P)} Pa</b> (x = ${f(c.x)})`)).join('') + dato('Masa molar media', `M̄ = ${f(sol.Mm)} g/mol`);
+      ley = 'Las barras son la presión parcial de cada gas: juntas suman la total. Abajo, las moléculas de cada gas en la caja.';
+    } else if (sol.modo === 'real') {
+      h = dato('Presión (Van der Waals)', `P = <b>${f(sol.P)} Pa</b> (${f(sol.P / 101325)} atm)`) + dato('Presión si fuera ideal', `P = ${f(sol.Pi)} Pa`) + dato('Factor de compresibilidad', `Z = <b>${f(sol.Z)}</b>`) + dato('Temperatura crítica', `T<sub>c</sub> = ${f(sol.Tc)} K`);
+      ley = 'Isoterma de Van der Waals (color) frente a la del gas ideal (gris) a la misma temperatura, con el estado marcado. En gris discontinuo, la isoterma crítica.';
     } else {
-      h = dato('Velocidad cuadrática media', `v<sub>cm</sub> = <b>${f(sol.vrms)} m/s</b>`) + dato('Velocidad media', `v̄ = ${f(sol.vmed)} m/s`) + dato('Más probable', `v<sub>p</sub> = ${f(sol.vp)} m/s`) + dato('Energía cinética media', `⟨E<sub>c</sub>⟩ = ${f(sol.Ec)} J`);
-      ley = `Distribución de Maxwell de las velocidades a ${txt(f(sol.T, 5))} K; en gris, la del mismo gas al doble de temperatura.`;
+      h = dato('Velocidad cuadrática media', `v<sub>cm</sub> = <b>${f(sol.vrms)} m/s</b>`) + dato('Velocidad media', `v̄ = ${f(sol.vmed)} m/s`) + dato('Más probable', `v<sub>p</sub> = ${f(sol.vp)} m/s`) + dato('Energía cinética media', `⟨E<sub>c</sub>⟩ = ${f(sol.Ec)} J`) + (sol.lam ? dato('Recorrido libre medio', `λ = <b>${f(sol.lam * 1e9)} nm</b>`) + dato('Choques por segundo', `z = ${f(sol.z)} s<sup>−1</sup>`) : '');
+      ley = `Distribución de Maxwell de las velocidades a ${txt(f(sol.T, 5))} K; en gris, la del mismo gas al doble de temperatura. Abajo, moléculas que se mueven con esas velocidades (más claras las rápidas).`;
     }
     $('#res').innerHTML = h; $('#leyenda').textContent = ley;
-    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('');
-    dibuja();
+    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html, true)}</li>`).join('');
+    $('#caja').hidden = !['estado', 'cinetica', 'mezcla'].includes(sol.modo);
+    particulas = null; dibuja();
   }
 
   /* ---------- Dibujo ---------- */
@@ -997,11 +1090,11 @@ const Gases = (() => {
   const paso = (max) => { const e = 10 ** Math.floor(Math.log10(max / 4)), r = max / 4 / e; return e * (r < 1.5 ? 1 : r < 3.5 ? 2 : r < 7.5 ? 5 : 10); };
   const num = (x) => txt(f(+x.toPrecision(6)));
   // ejes con marcas; devuelve las funciones de escala
-  function ejes(g, w, h, xmax, ymax, nx, ny) {
+  function ejes(g, w, h, xmax, ymax, nx, ny, numX = true) {
     const m = { l: 52, r: 16, t: 16, b: 34 }, X = (x) => m.l + (x / xmax) * (w - m.l - m.r), Y = (y) => h - m.b - (y / ymax) * (h - m.t - m.b);
     g.strokeStyle = col['--line']; g.lineWidth = 1;
     const sx = paso(xmax), sy = paso(ymax);
-    for (let x = 0; x <= xmax * 1.0001; x += sx) { g.beginPath(); g.moveTo(X(x), Y(0)); g.lineTo(X(x), Y(ymax)); g.stroke(); texto(g, X(x), h - m.b + 12, num(x), col['--muted']); }
+    for (let x = 0; x <= xmax * 1.0001; x += sx) { g.beginPath(); g.moveTo(X(x), Y(0)); g.lineTo(X(x), Y(ymax)); g.stroke(); if (numX) texto(g, X(x), h - m.b + 12, num(x), col['--muted']); }
     for (let y = 0; y <= ymax * 1.0001; y += sy) { g.beginPath(); g.moveTo(X(0), Y(y)); g.lineTo(X(xmax), Y(y)); g.stroke(); texto(g, m.l - 6, Y(y), num(y), col['--muted'], 'right'); }
     g.strokeStyle = col['--muted']; g.beginPath(); g.moveTo(X(0), Y(ymax)); g.lineTo(X(0), Y(0)); g.lineTo(X(xmax), Y(0)); g.stroke();
     texto(g, X(xmax), h - 8, nx, col['--muted'], 'right'); texto(g, m.l + 6, m.t - 6 + 6, ny, col['--muted'], 'left');
@@ -1030,6 +1123,26 @@ const Gases = (() => {
     const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h); g.lineCap = 'round'; g.lineJoin = 'round';
     if (!sol) return;
     if (!col['--ink']) colores();
+    if (sol.modo === 'mezcla') {
+      const comp = sol.comp, pmax = sol.Pt * 1.15, { X, Y } = ejes(g, w, h, comp.length + 1, pmax / 1000, '', 'P (kPa)', false), cs = [col['--accent'], col['--peso'], col['--normal']];
+      comp.forEach((c, i) => { g.fillStyle = cs[i]; g.fillRect(X(i + 0.25), Y(c.P / 1000), X(0.5) - X(0), Y(0) - Y(c.P / 1000)); texto(g, X(i + 0.5), Y(c.P / 1000) - 10, txt(f(c.P / 1000)), cs[i], 'center', '600 '); texto(g, X(i + 0.5), h - 22, c.k.replace('2', '₂'), col['--ink'], 'center', '600 '); });
+      let y0 = 0; comp.forEach((c, i) => { g.fillStyle = cs[i]; g.fillRect(X(comp.length + 0.25), Y((y0 + c.P) / 1000), X(0.5) - X(0), Y(y0 / 1000) - Y((y0 + c.P) / 1000)); y0 += c.P; });
+      texto(g, X(comp.length + 0.5), Y(sol.Pt / 1000) - 10, `total ${txt(f(sol.Pt / 1000))}`, col['--ink'], 'center', '600 '); texto(g, X(comp.length + 0.5), h - 22, 'mezcla', col['--ink'], 'center', '600 ');
+      return;
+    }
+    if (sol.modo === 'real') {
+      // isotermas de Van der Waals y del gas ideal, P(V) a la temperatura y los moles dados
+      const nb = sol.n * sol.b, Vmax = Math.max(sol.V * 2.2, nb * 12), Vmin = nb * 1.08, Pvdw = (V, T) => (sol.n * G.R * T) / (V - nb) - (sol.a * sol.n * sol.n) / (V * V), Pid = (V) => (sol.n * G.R * sol.T) / V;
+      const ymax = Math.max(sol.P, sol.Pi) * 2.4 / 101325, pts = (fn) => { const r = []; for (let i = 0; i <= 300; i++) { const V = Vmin + ((Vmax - Vmin) * i) / 300, P = fn(V) / 101325; if (P <= ymax && P >= 0) r.push([V * 1000, P]); } return r; };
+      const { X, Y } = ejes(g, w, h, Vmax * 1000, ymax, 'V (L)', 'P (atm)');
+      g.strokeStyle = col['--line']; g.lineWidth = 2; curva(g, pts(Pid), X, Y);
+      g.setLineDash([5, 4]); curva(g, pts((V) => Pvdw(V, sol.Tc)), X, Y); g.setLineDash([]);
+      g.strokeStyle = col['--accent']; g.lineWidth = 2.6; curva(g, pts((V) => Pvdw(V, sol.T)), X, Y);
+      g.fillStyle = col['--ink']; g.beginPath(); g.arc(X(sol.V * 1000), Y(sol.P / 101325), 5, 0, 2 * Math.PI); g.fill();
+      g.fillStyle = col['--muted']; g.beginPath(); g.arc(X(sol.V * 1000), Y(sol.Pi / 101325), 4, 0, 2 * Math.PI); g.fill();
+      texto(g, w - 20, 26, `real ${txt(f(sol.P / 101325))} atm · ideal ${txt(f(sol.Pi / 101325))} atm`, col['--ink'], 'right', '600 ');
+      return;
+    }
     if (sol.modo === 'cinetica') {
       const vmax = 4.2 * sol.vp, pts = (T) => Array.from({ length: 201 }, (_, i) => { const v = (vmax * i) / 200; return [v, G.maxwell(sol.M, T, v) * 1000]; });
       const p1 = pts(sol.T), p2 = pts(2 * sol.T), ymax = Math.max(...p1.map((p) => p[1])) * 1.18;
@@ -1075,12 +1188,72 @@ const Gases = (() => {
     }
     if (sol.modo === 'estado') { g.strokeStyle = col['--muted']; g.lineWidth = 1; g.setLineDash([3, 3]); g.beginPath(); g.moveTo(X(Vs[0]), Y(0)); g.lineTo(X(Vs[0]), Y(Ps[0])); g.lineTo(X(0), Y(Ps[0])); g.stroke(); g.setLineDash([]); }
   }
-  window.addEventListener('resize', dibuja);
+  /* ---------- Caja con partículas ---------- */
+  // velocidades al azar de la distribución de Maxwell (cada componente, una normal de varianza RT/M)
+  let particulas = null, choques = 0, tCaja = 0;
+  const normal = () => Math.sqrt(-2 * Math.log(1 - Math.random())) * Math.cos(2 * Math.PI * Math.random());
+  function iniciaCaja(w, h) {
+    const grupos = sol.modo === 'mezcla' ? sol.comp.map((c, i) => ({ N: Math.max(3, Math.round(70 * c.x)), M: c.M * 1e-3, i })) : [{ N: 60, M: sol.modo === 'cinetica' ? sol.M : 0.029, i: 0 }];
+    const T = sol.T, vref = Math.sqrt((3 * G.R * T) / Math.min(...grupos.map((q) => q.M))), esc = (0.22 * w) / vref; // px/s por m/s
+    particulas = [];
+    for (const q of grupos) { const s = Math.sqrt((G.R * T) / q.M) * esc; for (let k = 0; k < q.N; k++) particulas.push({ x: 8 + Math.random() * (w - 16), y: 8 + Math.random() * (h - 16), vx: normal() * s, vy: normal() * s, i: q.i, vmax: 2.2 * Math.sqrt(2) * s }); }
+    choques = 0; tCaja = 0;
+  }
+  function caja(dt) {
+    const c = $('#caja');
+    if (c.hidden || !sol) return;
+    const { g, w, h } = Herramienta.lienzo(c);
+    if (!w) return;
+    if (!col['--ink']) colores();
+    if (!particulas) iniciaCaja(w, h);
+    const cs = [col['--accent'], col['--peso'], col['--normal']], r = 3.5;
+    tCaja += dt;
+    g.strokeStyle = col['--muted']; g.lineWidth = 2; g.strokeRect(1, 1, w - 2, h - 2);
+    for (const q of particulas) {
+      q.x += q.vx * dt; q.y += q.vy * dt;
+      if (q.x < r) { q.x = 2 * r - q.x; q.vx = -q.vx; choques++; } if (q.x > w - r) { q.x = 2 * (w - r) - q.x; q.vx = -q.vx; choques++; }
+      if (q.y < r) { q.y = 2 * r - q.y; q.vy = -q.vy; choques++; } if (q.y > h - r) { q.y = 2 * (h - r) - q.y; q.vy = -q.vy; choques++; }
+      g.fillStyle = cs[q.i]; g.globalAlpha = sol.modo === 'mezcla' ? 0.9 : 0.45 + 0.55 * Math.min(1, Math.hypot(q.vx, q.vy) / q.vmax);
+      g.beginPath(); g.arc(q.x, q.y, r, 0, 2 * Math.PI); g.fill();
+    }
+    g.globalAlpha = 1;
+    texto(g, 10, 14, `${txt(f(sol.T, 4))} K${tCaja > 0.5 ? ` · ${Math.round(choques / tCaja)} choques con las paredes por segundo (en la animación)` : ''}`, col['--ink'], 'left', '600 ');
+  }
+  let ultimo = performance.now();
+  function bucle() { const ahora = performance.now(), dt = Math.min(0.05, (ahora - ultimo) / 1000); ultimo = ahora; caja(dt); requestAnimationFrame(bucle); }
+  window.addEventListener('resize', () => { particulas = null; dibuja(); });
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { colores(); dibuja(); });
 
+  /* ---------- Modo práctica: un ejercicio con enunciado ---------- */
+  function azar() {
+    const ent = (a, b) => a + Math.floor(Math.random() * (b - a + 1)), de = (l) => l[ent(0, l.length - 1)], c = (x) => String(x).replace('.', ',');
+    const B = { uP: 'atm', uV: 'L', uT: 'K' };
+    const tipos = [
+      () => ({ modo: 'estado', ...B, P: c(de([1, 1.5, 2, 3, 5])), V: '', T: String(ent(27, 50) * 10), n: '', m: String(ent(2, 20) * 4), M: de(['4', '28', '32', '44']) }),
+      () => ({ modo: 'estado', ...B, P: '', V: String(ent(2, 30)), T: String(ent(27, 50) * 10), n: c(ent(1, 20) / 10), m: '', M: '' }),
+      () => ({ modo: 'procesos', gas: de(['monoatomico', 'diatomico']), ...B, P: String(ent(1, 5)), V: String(ent(2, 10)), T: String(ent(27, 50) * 10), n: '', procesos: [{ tipo: de(['isoterma', 'adiabatica', 'isobara']), dato: 'V', valor: String(ent(11, 30)) }] }),
+      () => ({ modo: 'procesos', gas: 'monoatomico', ...B, uP: 'kPa', P: '100', V: String(ent(1, 3)), T: '', n: c(ent(1, 5) / 10), procesos: [{ tipo: 'isocora', dato: 'P', valor: String(ent(2, 4) * 100) }, { tipo: 'isobara', dato: 'V', valor: String(ent(4, 8)) }, { tipo: 'isocora', dato: 'P', valor: '100' }, { tipo: 'isobara', dato: 'V', valor: 'A' }] }),
+      () => ({ modo: 'mezcla', T: String(ent(27, 35) * 10), V: String(ent(5, 30)), cant: 'm', g1: 'N2', c1: String(ent(1, 10) * 7), g2: de(['O2', 'He', 'CO2']), c2: String(ent(1, 10) * 4), g3: 'Ar', c3: '' }),
+      () => ({ modo: 'real', gasR: de(['CO2', 'N2', 'NH3', 'H2O', 'O2']), a: '', b: '', n: '1', V: c(de([0.2, 0.5, 1, 2])), T: String(ent(30, 50) * 10) }),
+      () => ({ modo: 'cinetica', molecula: de(['He', 'N2', 'O2', 'H2', 'CO2']), M: '', T: String(ent(20, 60) * 10), uT: 'K', n: '', P: Math.random() < 0.5 ? '' : '1', d: '' }),
+    ];
+    sc = de(tipos)();
+    formulario(); sel.value = ''; calcula();
+  }
+  const enunciado = () => {
+    const e = (x) => esc(String(x ?? '').replace('.', ',')), up = (G.UP[sc.uP] || G.UP.atm)[1], uv = txt((G.UV[sc.uV] || G.UV.L)[1]).replace('^3', '³');
+    const nombreG = (k) => (G.MOLECULAS[k] || G.VDW[k] || ['gas'])[0].replace(/, .*/, '').toLowerCase();
+    if (sc.modo === 'estado') return sc.m ? `¿Qué volumen ocupan ${e(sc.m)} g de un gas de masa molar ${e(sc.M)} g/mol a ${e(sc.P)} ${up} y ${e(sc.T)} K? Calcula también su densidad.` : `${e(sc.n)} mol de un gas ideal ocupan ${e(sc.V)} ${uv} a ${e(sc.T)} K. ¿Qué presión tienen?`;
+    if (sc.modo === 'procesos' && (sc.procesos || []).length > 1) return `${e(sc.n)} mol de un gas monoatómico parten de ${e(sc.P)} ${up} y ${e(sc.V)} ${uv} y recorren un ciclo rectangular: isocora hasta ${e(sc.procesos[0].valor)} ${up}, isobara hasta ${e(sc.procesos[1].valor)} ${uv}, isocora hasta ${e(sc.procesos[2].valor)} ${up} e isobara de vuelta. Calcula el trabajo neto, el calor absorbido y el rendimiento.`;
+    if (sc.modo === 'procesos') { const p = sc.procesos[0]; return `Un gas ideal ${sc.gas === 'monoatomico' ? 'monoatómico' : 'diatómico'} a ${e(sc.P)} ${up}, ${e(sc.V)} ${uv} y ${e(sc.T)} K se expande de forma ${{ isoterma: 'isoterma', adiabatica: 'adiabática', isobara: 'isobara' }[p.tipo]} hasta ${e(p.valor)} ${uv}. Calcula el estado final, el trabajo, el calor y la variación de energía interna.`; }
+    if (sc.modo === 'mezcla') return `En un recipiente de ${e(sc.V)} L a ${e(sc.T)} K hay ${e(sc.c1)} ${sc.cant === 'm' ? 'g' : 'mol'} de ${nombreG(sc.g1)} y ${e(sc.c2)} ${sc.cant === 'm' ? 'g' : 'mol'} de ${nombreG(sc.g2)}${sc.c3 ? ` y ${e(sc.c3)} ${sc.cant === 'm' ? 'g' : 'mol'} de ${nombreG(sc.g3)}` : ''}. Calcula las fracciones molares, las presiones parciales y la presión total.`;
+    if (sc.modo === 'real') return `Calcula la presión de ${e(sc.n)} mol de ${nombreG(sc.gasR)} en ${e(sc.V)} L a ${e(sc.T)} K con la ecuación de Van der Waals y compárala con la del gas ideal. ¿Cuánto vale el factor de compresibilidad?`;
+    return `Calcula las velocidades cuadrática media, media y más probable de las moléculas de ${nombreG(sc.molecula)} a ${e(sc.T)} K y su energía cinética media${sc.P ? `, y el recorrido libre medio a ${e(sc.P)} atm` : ''}.`;
+  };
+
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('gases').current;
-  formulario(); colores(); calcula();
-  window.GasesApp = { abrirEjemplo, resultado: () => sol && { modo: sol.modo, P: sol.P, V: sol.V, T: sol.T, n: sol.n, Wt: sol.Wt, Qt: sol.Qt, Ut: sol.Ut, rend: sol.rend, ciclo: sol.ciclo, vrms: sol.vrms }, estado: () => copia(sc) };
+  formulario(); colores(); calcula(); requestAnimationFrame(bucle);
+  window.GasesApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { modo: sol.modo, P: sol.P, V: sol.V, T: sol.T, n: sol.n, Wt: sol.Wt, Qt: sol.Qt, Ut: sol.Ut, rend: sol.rend, ciclo: sol.ciclo, vrms: sol.vrms, Pt: sol.Pt, Z: sol.Z, lam: sol.lam }, estado: () => copia(sc) };
 })();
 
 /* =====================================================================
@@ -1412,6 +1585,8 @@ const Practica = (() => {
     // ciclos: un Carnot, un Otto, un Diesel, un Brayton, un Stirling, un ciclo propio o una máquina
     ciclos: { datos: null, items: '#resumen > div', genera: () => window.CiclosApp?.azar(), enunciado: () => window.CiclosApp?.enunciado() },
     // fluidos: una presión, un tubo en U, una prensa, un empuje, una tubería, un chorro, una viscosidad, un medidor, una presa o un capilar
+    // gases: un estado, una transformación, una mezcla, un gas real o una velocidad molecular
+    gases: { datos: null, items: '#res > div', genera: () => window.GasesApp?.azar(), enunciado: () => window.GasesApp?.enunciado() },
     fluidos: { datos: null, items: '#resumen > div', genera: () => window.FluidosApp?.azar(), enunciado: () => window.FluidosApp?.enunciado() },
     // dinamica: un bloque en un plano, dos bloques, Atwood, una curva, un péndulo cónico o un muelle
     dinamica: { datos: null, items: '#res > div', genera: () => window.DinamicaApp?.azar(), enunciado: () => window.DinamicaApp?.enunciado() },

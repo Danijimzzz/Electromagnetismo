@@ -1,5 +1,5 @@
 <title>Gases ideales: PV = nRT, transformaciones, ciclos y teoría cinética · SimulaCiencia</title>
-<meta name="description" content="Calculadora de gases ideales en español: ecuación de estado PV = nRT, transformaciones isoterma, isobara, isocora y adiabática con trabajo, calor y energía interna, ciclos con su rendimiento y diagrama P-V, y velocidades moleculares con la distribución de Maxwell, paso a paso.">
+<meta name="description" content="Calculadora de gases ideales en español: ecuación de estado PV = nRT, transformaciones isoterma, isobara, isocora y adiabática con trabajo, calor y energía interna, ciclos con su rendimiento y diagrama P-V, mezclas con la ley de Dalton, gases reales con Van der Waals y velocidades moleculares con la distribución de Maxwell y el recorrido libre medio, paso a paso.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
@@ -13,13 +13,14 @@
 .tramos { grid-column: 1 / -1; display: grid; gap: 6px }
 .tramo { display: grid; grid-template-columns: 30px minmax(0, 1.3fr) 58px minmax(0, 1fr) 30px; gap: 6px; align-items: center; font-size: 13px }
 .tramo b { font: 600 13px var(--f-math); text-align: center }
+#caja { height: 200px; margin-top: 8px }
 .botones { grid-column: 1 / -1; display: flex; gap: 8px; flex-wrap: wrap }
 </style>
 <body>
 <header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física general</a> / Gases ideales</span></header>
 <div class="wrap">
 <h1>Gases ideales</h1>
-<p class="lead">Aplica la ecuación de estado PV = nRT, encadena transformaciones isotermas, isobaras, isocoras y adiabáticas para obtener el trabajo, el calor y la energía interna de cada tramo y el rendimiento de un ciclo, y calcula las velocidades de las moléculas con la teoría cinética.</p>
+<p class="lead">Aplica la ecuación de estado PV = nRT, encadena transformaciones isotermas, isobaras, isocoras y adiabáticas para obtener el trabajo, el calor y la energía interna de cada tramo y el rendimiento de un ciclo, resuelve mezclas de gases y gases reales, y calcula las velocidades de las moléculas con la teoría cinética.</p>
 <div class="layout">
   <div class="card">
     <h2>Datos</h2>
@@ -31,6 +32,7 @@
   <div>
     <div class="card"><h2>Resultado</h2><div class="res" id="res"></div>
       <canvas id="escena" aria-label="Diagrama P-V o distribución de velocidades"></canvas>
+      <canvas id="caja" aria-label="Moléculas moviéndose en una caja"></canvas>
       <p class="leyenda" id="leyenda"></p></div>
     <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
   </div>
@@ -38,17 +40,22 @@
 <section class="teoria">
   <h2>Ecuación de estado</h2>
   <p class="f m">$P V = n R T$, &ensp; $R = 8,314 "J/(mol·K)" = 0,082 "atm·L/(mol·K)"$</p>
-  <p>La temperatura siempre en kelvin (T = t + 273,15). En condiciones normales (1 atm y 0 °C) un mol ocupa 22,4 L. La densidad de un gas es ρ = PM/(RT).</p>
+  <p class="m">La temperatura siempre en kelvin (T = t + 273,15). En condiciones normales (1 atm y 0 °C) un mol ocupa 22,4 L. La densidad de un gas es $ρ = PM/(RT)$.</p>
   <h2>Primer principio</h2>
   <p class="f m">$ΔU = Q − W$, &ensp; $ΔU = n C_v ΔT$, &ensp; $C_p − C_v = R$, &ensp; $γ = C_p/C_v$</p>
-  <p>W es el trabajo que hace el gas (positivo si se expande) y Q el calor que recibe. Un gas monoatómico tiene C<sub>v</sub> = 3R/2 y uno diatómico C<sub>v</sub> = 5R/2.</p>
+  <p class="m">W es el trabajo que hace el gas (positivo si se expande) y Q el calor que recibe. Un gas monoatómico tiene $C_v = {3}/{2} R$ y uno diatómico $C_v = {5}/{2} R$.</p>
   <h2>Transformaciones</h2>
-  <p><b>Isoterma</b> (T constante): ΔU = 0 y Q = W = nRT ln(V<sub>2</sub>/V<sub>1</sub>). <b>Isobara</b> (P constante): W = PΔV y Q = nC<sub>p</sub>ΔT. <b>Isocora</b> (V constante): W = 0 y Q = nC<sub>v</sub>ΔT. <b>Adiabática</b> (Q = 0): PV<sup>γ</sup> = cte, TV<sup>γ−1</sup> = cte y W = (P<sub>1</sub>V<sub>1</sub> − P<sub>2</sub>V<sub>2</sub>)/(γ − 1).</p>
+  <p class="m"><b>Isoterma</b> (T constante): $ΔU = 0$ y $Q = W = nRT ln {V_2}/{V_1}$. <b>Isobara</b> (P constante): $W = P ΔV$ y $Q = n C_p ΔT$. <b>Isocora</b> (V constante): $W = 0$ y $Q = n C_v ΔT$. <b>Adiabática</b> (Q = 0): $P V^γ$ = cte, $T V^{γ − 1}$ = cte y $W = {P_1 V_1 − P_2 V_2}/{γ − 1}$.</p>
   <h2>Ciclos</h2>
-  <p>En un ciclo el gas vuelve al estado inicial, así que ΔU = 0 y W<sub>neto</sub> = Q<sub>neto</sub>, que es el área encerrada en el diagrama P-V. El rendimiento es η = W/Q<sub>abs</sub>, y nunca supera el de un ciclo de Carnot entre las mismas temperaturas, η = 1 − T<sub>f</sub>/T<sub>c</sub>.</p>
+  <p class="m">En un ciclo el gas vuelve al estado inicial, así que $ΔU = 0$ y $W_{neto} = Q_{neto}$, que es el área encerrada en el diagrama P-V. El rendimiento es $η = W/Q_{abs}$, y nunca supera el de un ciclo de Carnot entre las mismas temperaturas, $η = 1 − T_f/T_c$. Los ciclos con nombre (Carnot, Otto, Diesel, Brayton, Stirling) y el diagrama T-S están en <a href="../ciclos/">Ciclos termodinámicos</a>.</p>
+  <h2>Mezclas de gases</h2>
+  <p class="m">En una mezcla de gases ideales cada uno se comporta como si estuviera solo en todo el recipiente. Su presión parcial es $P_i = x_i P$, con $x_i = n_i/n$ su fracción molar, y la presión total es la suma de las parciales (ley de Dalton).</p>
+  <h2>Gases reales</h2>
+  <p class="f m">$(P + {a n^2}/{V^2})(V − nb) = nRT$</p>
+  <p class="m">La ecuación de Van der Waals corrige el gas ideal: b es el volumen de las propias moléculas y a mide lo que se atraen. El factor de compresibilidad $Z = PV/(nRT)$ vale 1 en un gas ideal. Por encima de la temperatura crítica, $T_c = 8a/(27Rb)$, el gas no se licúa.</p>
   <h2>Teoría cinética</h2>
-  <p class="f m">$v_cm = √({3RT}/M)$, &ensp; $⟨E_c⟩ = 3/2 k T$</p>
-  <p>Las velocidades de las moléculas siguen la distribución de Maxwell: la más probable es √(2RT/M) y la media √(8RT/(πM)). La energía cinética media solo depende de la temperatura.</p>
+  <p class="f m">$v_{cm} = √({3RT}/M)$, &ensp; $⟨E_c⟩ = {3}/{2} k T$</p>
+  <p class="m">Las velocidades de las moléculas siguen la distribución de Maxwell: la más probable es $√(2RT/M)$ y la media $√(8RT/(πM))$. La energía cinética media solo depende de la temperatura. Entre choque y choque una molécula recorre de media $λ = 1/(√2 π d^2 n_V)$, con d su diámetro y $n_V = P/(kT)$ las moléculas por metro cúbico.</p>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Gases ideales <span id="ver"></span> (beta)</footer>
