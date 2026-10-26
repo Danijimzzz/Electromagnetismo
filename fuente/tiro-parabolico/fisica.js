@@ -4,7 +4,10 @@
    hasta que cae a la altura yf. Sin rozamiento y con rozamiento lineal
    (a = −b v) la solución es analítica; con rozamiento cuadrático
    (a = −c |v| v) se integra con RK4. Desarrollo paso a paso.
-   rectilineo: MRU y MRUA en una dimensión. Unidades del SI.
+   También: ángulo de alcance máximo, v0 para acertar a un blanco con el
+   ángulo dado y la familia de tiros con la parábola de seguridad.
+   rectilineo: MRU y MRUA en una dimensión, con un segundo móvil y sus
+   encuentros. circular: MCU y MCUA. Unidades del SI.
    ===================================================================== */
 const Cinematica = (() => {
   const rad = (g) => (g * Math.PI) / 180, gra = (r) => (r * 180) / Math.PI;
@@ -33,7 +36,7 @@ const Cinematica = (() => {
     const p = {
       v0: n(sc, 'v0', 'la velocidad inicial', { min: 0 }), ang: n(sc, 'ang', 'el ángulo'), y0: n(sc, 'y0', 'la altura inicial'),
       yf: vacio(sc.yf) ? 0 : n(sc, 'yf', 'la altura del suelo'), g: n(sc, 'g', 'la gravedad', { min: 0, estricto: true }),
-      modelo: ['lineal', 'cuadratico'].includes(sc.modelo) ? sc.modelo : 'ninguno',
+      modelo: ['lineal', 'cuadratico'].includes(sc.modelo) ? sc.modelo : 'ninguno', familia: sc.familia === 'si',
       tq: n(sc, 'tq', 'el instante', { min: 0, opcional: true }), xb: n(sc, 'xb', 'la x del blanco', { min: 0, estricto: true, opcional: true }), yb: null,
     };
     if (p.ang < -90 || p.ang > 90) throw new Error('El ángulo debe estar entre −90° y 90°');
@@ -121,6 +124,14 @@ const Cinematica = (() => {
       const ec = `$${f(y0)}${mas(vy0)} t − ${f(g / 2)} t^2 = ${f(yf)}$`;
       pasos.push({ t: 'Tiempo de vuelo', html: `Cae cuando y(t) = ${f(yf)} m: ${ec} ⇒ $t = {v_0y + √(v_0y^2 + 2g(y_0 − y_f))}/g$ = <b>${f(tv)} s</b>${y0 === yf && vy0 > 0 ? ' ($= 2t_s$, la trayectoria es simétrica)' : ''}.` });
       pasos.push({ t: 'Alcance', html: `$x = v_0x t_v = ${f(vx0)} · ${f(tv)}$ = <b>${f(res.alcance)} m</b>${y0 === yf ? `. Al mismo nivel también vale $R = {v_0^2 sen 2α}/g$ = ${f((v0 * v0 * Math.sin(rad(2 * ang))) / g)} m` : ''}.` });
+      const op = optimo(p);
+      if (op) {
+        Object.assign(res, op);
+        pasos.push({ t: 'Ángulo de alcance máximo', html: y0 === yf
+          ? `Al mismo nivel $R = {v_0^2 sen 2α}/g$ es máximo con $sen 2α = 1 ⇒ α = 45°$: $R_máx = v_0^2/g$ = <b>${f(op.Rmax)} m</b>.`
+          : `Con desnivel $h = y_0 − y_f = ${f(y0 - yf)} "m"$ el mejor ángulo ya no es 45°: $tg α = v_0/√(v_0^2 + 2g h)$ ⇒ <b>α = ${f(op.angOpt)}°</b> ⇒ $R_máx = {v_0 √(v_0^2 + 2g h)}/g$ = <b>${f(op.Rmax)} m</b>.` });
+      }
+      if (p.familia) pasos.push({ t: 'Parábola de seguridad', html: `Con $v_0 = ${f(v0)} "m/s"$ y cualquier ángulo, ningún tiro pasa por encima de $y = y_0 + v_0^2/(2g) − {g x^2}/{2 v_0^2} = ${f(y0 + (v0 * v0) / (2 * g))} − ${f(g / (2 * v0 * v0))} x^2$, la envolvente de todas las trayectorias (a trazos en el dibujo).` });
     } else if (modelo === 'lineal') {
       const { b } = p, vt = g / b;
       pasos.push({ t: 'Ecuaciones con rozamiento lineal', html: `$a = −g ĵ − (b/m) v$, con $b/m = ${f(b)} "s"^−1$. Velocidad límite $v_L = g/(b/m)$ = <b>${f(vt)} m/s</b>.<br>$v_x(t) = v_0x e^{−bt/m}$ &nbsp; $x(t) = {v_0x m}/b (1 − e^{−bt/m})$, que tiende a ${f(vx0 / b)} m<br>$v_y(t) = (v_0y + v_L) e^{−bt/m} − v_L$ &nbsp; $y(t) = y_0 + (v_0y + v_L) m/b (1 − e^{−bt/m}) − v_L t$` });
@@ -151,9 +162,16 @@ const Cinematica = (() => {
     return { p, pasos, res };
   }
 
-  // ¿pasa por el blanco (xb, yb)? y, sin rozamiento, con qué ángulos se acierta
+  // ángulo de alcance máximo sin rozamiento desde y0 hasta yf: tg α = v0 / √(v0² + 2g h)
+  function optimo({ v0, g, y0, yf }) {
+    const D = v0 * v0 + 2 * g * (y0 - yf);
+    if (!(v0 > 0) || D <= 0) return null;
+    return { angOpt: gra(Math.atan(v0 / Math.sqrt(D))), Rmax: (v0 * Math.sqrt(D)) / g };
+  }
+
+  // ¿pasa por el blanco (xb, yb)? y, sin rozamiento, con qué ángulos se acierta y qué v0 hace falta con el ángulo dado
   function blanco(p, mov, pasos) {
-    const { xb, yb, v0, g, y0, vx0 } = p, out = {};
+    const { xb, yb, v0, g, y0, vx0, ang } = p, out = {};
     const fin = mov.estado(mov.tv);
     let texto;
     if (vx0 <= 0 || xb > fin.x) texto = `El proyectil cae antes de llegar a x = ${f(xb)} m.`;
@@ -178,6 +196,12 @@ const Cinematica = (() => {
         out.angulos = D === 0 ? [a1] : [a1, a2];
         texto += `<br>Para acertar con $v_0 = ${f(v0)} "m/s"$: $y_b − y_0 = x tg α − {g x^2 (1 + tg^2 α)}/{2 v_0^2} ⇒ ${f(A)} tg^2 α − ${f(xb)} tg α + ${f(A + Y)} = 0$ ⇒ <b>α = ${out.angulos.map((a) => f(a) + '°').join(' o α = ')}</b>${out.angulos.length > 1 ? ' (tiro tenso y tiro por elevación)' : ''}.`;
       }
+      // con el ángulo fijo: y_b − y0 = x tg α − g x² / (2 v0² cos² α) ⇒ v0
+      const ca = Math.cos(rad(ang)), den = xb * Math.tan(rad(ang)) - Y;
+      if (ca > 1e-9 && den > 0) {
+        out.v0nec = Math.sqrt((g * xb * xb) / (2 * ca * ca * den));
+        texto += `<br>Para acertar con $α = ${f(ang)}°$: $v_0 = √({g x^2}/{2 cos^2 α (x tg α − Δy)})$ = <b>${f(out.v0nec)} m/s</b>.`;
+      } else texto += `<br>Con $α = ${f(ang)}°$ no se acierta con ninguna velocidad: el blanco queda por encima de la recta de lanzamiento.`;
     }
     pasos.push({ t: `Blanco en (${f(xb)}, ${f(yb)}) m`, html: texto });
     return out;
@@ -193,11 +217,26 @@ const Cinematica = (() => {
       const s = ideal(p);
       if (s.tv) { ideal_ = []; for (let i = 0; i <= N; i++) ideal_.push(s.estado((s.tv * i) / N)); }
     }
-    return { p, puntos, ideal: ideal_, tv: T, tc: mov.tc, estado: mov.estado };
+    // familia de tiros con la misma v0 (sin rozamiento) y su envolvente, la parábola de seguridad
+    let familia = null, envolvente = null;
+    if (p.familia && p.v0 > 0) {
+      const op = optimo(p), angs = [15, 30, 45, 60, 75];
+      if (op && Math.abs(op.angOpt - 45) > 0.5) angs.push(op.angOpt);
+      familia = [];
+      for (const a of angs.sort((u, v) => u - v)) {
+        const q = { ...p, ang: a, vx0: p.v0 * Math.cos(rad(a)), vy0: p.v0 * Math.sin(rad(a)) }, s = ideal(q);
+        if (!s.tv) continue;
+        const P = []; for (let i = 0; i <= 120; i++) P.push(s.estado((s.tv * i) / 120));
+        familia.push({ ang: a, optimo: op && a === op.angOpt, puntos: P });
+      }
+      const k = p.g / (2 * p.v0 * p.v0), y = (x) => p.y0 + 1 / (4 * k) - k * x * x, xf = Math.sqrt(Math.max(0, (p.y0 + 1 / (4 * k) - p.yf) / k));
+      envolvente = []; for (let i = 0; i <= 120; i++) { const x = (xf * i) / 120; envolvente.push({ x, y: y(x) }); }
+    }
+    return { p, puntos, ideal: ideal_, tv: T, tc: mov.tc, estado: mov.estado, familia, envolvente };
   }
 
   /* =================== Movimiento rectilíneo =================== */
-  // escena: { x0, v0, a, tq, xq }
+  // escena: { x0, v0, a, tq, xq, x0b, v0b, ab } (los tres últimos, el segundo móvil B, opcionales)
   function rectilineo(sc) {
     const x0 = n(sc, 'x0', 'la posición inicial'), v0 = n(sc, 'v0', 'la velocidad inicial'), a = n(sc, 'a', 'la aceleración');
     const tq = n(sc, 'tq', 'el instante', { min: 0, opcional: true }), xq = n(sc, 'xq', 'la posición buscada', { opcional: true });
@@ -226,10 +265,71 @@ const Cinematica = (() => {
       const ec = a === 0 ? `$${f(x0)}${mas(v0)} t = ${f(xq)}$` : `$${f(a / 2)} t^2${mas(v0)} t${mas(x0 - xq)} = 0$`;
       pasos.push({ t: `¿Cuándo pasa por x = ${f(xq)} m?`, html: `${ec} ⇒ ${ts.length ? ts.map((t) => `<b>t = ${f(t)} s</b> (v = ${f(v(t))} m/s)`).join(' y ') : '<b>nunca</b> (con t ≥ 0)'}.` });
     }
+    // segundo móvil B y sus encuentros con A: x_A(t) = x_B(t)
+    let b = null, xB = null, vB = null;
+    if (!vacio(sc.x0b) || !vacio(sc.v0b) || !vacio(sc.ab)) {
+      b = { x0: vacio(sc.x0b) ? 0 : n(sc, 'x0b', 'la posición inicial de B'), v0: vacio(sc.v0b) ? 0 : n(sc, 'v0b', 'la velocidad de B'), a: vacio(sc.ab) ? 0 : n(sc, 'ab', 'la aceleración de B') };
+      xB = (t) => b.x0 + b.v0 * t + 0.5 * b.a * t * t; vB = (t) => b.v0 + b.a * t;
+      pasos.push({ t: 'Segundo móvil B', html: `$x_B(t) = ${f(b.x0)}${mas(b.v0)} t${b.a ? `${mas(b.a / 2)} t^2` : ''}$ &nbsp; $v_B(t) = ${f(b.v0)}${b.a ? `${mas(b.a)} t` : ''}$` });
+      // (x0 − x0b) + (v0 − v0b) t + ½ (a − ab) t² = 0
+      const c0 = x0 - b.x0, c1 = v0 - b.v0, c2 = (a - b.a) / 2;
+      let ts;
+      if (Math.abs(c2) < 1e-12) ts = Math.abs(c1) < 1e-12 ? [] : [-c0 / c1];
+      else { const D = c1 * c1 - 4 * c2 * c0; ts = D < 0 ? [] : [...new Set([(-c1 - Math.sqrt(D)) / (2 * c2), (-c1 + Math.sqrt(D)) / (2 * c2)])]; }
+      ts = ts.filter((t) => t > 1e-9).sort((u, w) => u - w);
+      res.encuentros = ts.map((t) => ({ t, x: x(t) }));
+      const ec = Math.abs(c2) < 1e-12 ? `$${f(c1)} t${mas(c0)} = 0$` : `$${f(c2)} t^2${mas(c1)} t${mas(c0)} = 0$`;
+      pasos.push({ t: 'Encuentro', html: `Se encuentran cuando $x_A(t) = x_B(t)$: ${ec} ⇒ ${ts.length ? res.encuentros.map((e) => `<b>t = ${f(e.t)} s</b>, en <b>x = ${f(e.x)} m</b>`).join(' y ') : `<b>nunca</b> (con t > 0)${Math.abs(c0) < 1e-12 ? ', solo salen juntos' : ''}`}.` });
+    }
     // duración de la gráfica
-    const marcas = [tq, ...(res.tEnX || []), res.tParada !== undefined ? 2 * res.tParada : null].filter((t) => t !== null && t > 0);
+    const marcas = [tq, ...(res.tEnX || []), ...(res.encuentros || []).map((e) => e.t), res.tParada !== undefined ? 2 * res.tParada : null].filter((t) => t !== null && t > 0);
     const T = marcas.length ? Math.max(...marcas) * 1.15 : 10;
-    return { p: { x0, v0, a, tq, xq }, pasos, res, x, v, T };
+    return { p: { x0, v0, a, tq, xq }, b, pasos, res, x, v, xB, vB, T };
+  }
+
+  /* =================== Movimiento circular =================== */
+  // escena: { R, dato: 'v'|'w'|'T'|'rpm', val, alfa, tq, nv }
+  const DATOS_C = { v: 'la velocidad lineal', w: 'la velocidad angular', T: 'el periodo', rpm: 'las revoluciones por minuto' };
+  function circular(sc) {
+    const R = n(sc, 'R', 'el radio', { min: 0, estricto: true }), dato = DATOS_C[sc.dato] ? sc.dato : 'w';
+    const val = n(sc, 'val', DATOS_C[dato], dato === 'T' ? { min: 0, estricto: true } : {});
+    const al = vacio(sc.alfa) ? 0 : n(sc, 'alfa', 'la aceleración angular');
+    const tq = n(sc, 'tq', 'el instante', { min: 0, opcional: true }), nv = n(sc, 'nv', 'el número de vueltas', { min: 0, estricto: true, opcional: true });
+    const w0 = dato === 'v' ? val / R : dato === 'T' ? (2 * Math.PI) / val : dato === 'rpm' ? (2 * Math.PI * val) / 60 : val;
+    if (w0 === 0 && al === 0) throw new Error('Con velocidad y aceleración angular nulas no se mueve');
+    const w = (t) => w0 + al * t, th = (t) => w0 * t + 0.5 * al * t * t;
+    const pasos = [], res = { tipo: al === 0 ? 'MCU' : 'MCUA', w0, v0: w0 * R };
+    const deDato = { v: `$ω = v/R = ${f(val)}/${f(R)}$`, w: '$ω$', T: `$ω = 2π/T = 2π/${f(val)}$`, rpm: `$ω = 2π n/60 = 2π · ${f(val)}/60$` }[dato];
+    pasos.push({ t: 'Velocidad angular', html: `${deDato} = <b>${f(w0)} rad/s</b> &nbsp; $v = ω R = ${f(w0)} · ${f(R)}$ = <b>${f(w0 * R)} m/s</b>` });
+    if (al === 0) {
+      Object.assign(res, { periodo: (2 * Math.PI) / Math.abs(w0), frec: Math.abs(w0) / (2 * Math.PI), ac: w0 * w0 * R });
+      pasos.push({ t: 'Periodo y frecuencia', html: `$T = 2π/ω$ = <b>${f(res.periodo)} s</b> &nbsp; $f = 1/T$ = <b>${f(res.frec)} Hz</b> (${f(60 * res.frec)} rpm)` });
+      pasos.push({ t: 'Aceleración centrípeta', html: `En el MCU solo hay aceleración normal, hacia el centro: $a_c = ω^2 R = v^2/R$ = <b>${f(res.ac)} m/s²</b>.` });
+    } else {
+      res.at = al * R; res.an0 = w0 * w0 * R;
+      pasos.push({ t: 'Ecuaciones del MCUA', html: `$ω(t) = ω_0 + α t = ${f(w0)}${mas(al)} t$ &nbsp; $θ(t) = ω_0 t + 1/2 α t^2 = ${f(w0)} t${mas(al / 2)} t^2$<br>Aceleración tangencial constante $a_t = α R = ${f(al)} · ${f(R)}$ = <b>${f(res.at)} m/s²</b>; la normal $a_n = ω^2 R$ cambia (al principio ${f(res.an0)} m/s²).` });
+      if (w0 * al < 0) {
+        res.tParada = -w0 / al; res.thParada = Math.abs(th(res.tParada)); res.vueltasParada = res.thParada / (2 * Math.PI);
+        pasos.push({ t: 'Se para', html: `$ω = 0 ⇒ t = −ω_0/α$ = <b>${f(res.tParada)} s</b>, tras girar $θ = ω_0^2/(2|α|)$ = ${f(res.thParada)} rad = <b>${f(res.vueltasParada)} vueltas</b>.` });
+      }
+    }
+    if (nv !== null) {
+      const ang = 2 * Math.PI * nv;
+      let t = null;
+      if (al === 0) t = ang / Math.abs(w0);
+      else { const D = w0 * w0 + 2 * Math.sign(w0 || al) * al * ang; if (D >= 0) { const wf = Math.sqrt(D); t = (wf - Math.abs(w0)) / (Math.sign(w0 || al) * al); } }
+      res.tVueltas = t !== null && t >= 0 ? t : null;
+      pasos.push({ t: `¿Cuándo da ${f(nv)} vueltas?`, html: res.tVueltas === null ? `<b>Nunca</b>: se para antes (${f(res.vueltasParada)} vueltas).`
+        : `$θ = 2π · ${f(nv)} = ${f(ang)} "rad"$ ⇒ ${al === 0 ? `$t = θ/ω$` : `$${f(Math.abs(al) / 2)} t^2${mas(Math.abs(w0) * Math.sign(al * (w0 || al)))} t − ${f(ang)} = 0$ ⇒`} <b>t = ${f(res.tVueltas)} s</b>${al ? `, con ω = ${f(w(res.tVueltas))} rad/s` : ''}.` });
+    }
+    if (tq !== null) {
+      const wt = w(tq), an = wt * wt * R, at = al * R;
+      Object.assign(res, { wEnT: wt, vEnT: wt * R, thEnT: th(tq), anEnT: an, aEnT: Math.hypot(an, at) });
+      pasos.push({ t: `En t = ${f(tq)} s`, html: `$ω = ${f(wt)} "rad/s"$, $v = ${f(wt * R)} "m/s"$, $θ = ${f(res.thEnT)} "rad"$ (${f(Math.abs(res.thEnT) / (2 * Math.PI))} vueltas)<br>$a_n = ω^2 R = ${f(an)} "m/s²"$${al ? `, $a_t = ${f(at)} "m/s²" ⇒ |a| = √(a_n^2 + a_t^2)$` : ' ⇒ |a|'} = <b>${f(res.aEnT)} m/s²</b>` });
+    }
+    const marcas = [tq, res.tVueltas, res.tParada].filter((t) => t !== null && t !== undefined && t > 0);
+    const T = marcas.length ? Math.max(...marcas) * (res.tParada && Math.max(...marcas) === res.tParada ? 1 : 1.1) : al === 0 ? 2 * res.periodo : 4;
+    return { p: { R, w0, al, tq, nv }, pasos, res, w, th, T };
   }
 
   const ejemplos = [
@@ -247,8 +347,17 @@ const Cinematica = (() => {
     { clave: 'arranque', nombre: 'Arranque: ¿cuándo llega a 100 m?', sc: { x0: 0, v0: 0, a: 2, xq: 100 } },
     { clave: 'mru', nombre: 'Velocidad constante', sc: { x0: 10, v0: 12, a: 0, tq: 5 } },
     { clave: 'vertical', nombre: 'Lanzamiento vertical hacia arriba', sc: { x0: 0, v0: 20, a: -9.81, xq: 0 } },
+    { clave: 'persecucion', nombre: 'Persecución: arranca cuando pasa el otro', sc: { x0: 0, v0: 20, a: 0, x0b: 0, v0b: 0, ab: 3 } },
+    { clave: 'cruce', nombre: 'Dos trenes de frente: ¿dónde se cruzan?', sc: { x0: 0, v0: 20, a: 0, x0b: 1000, v0b: -30, ab: 0 } },
+  ];
+  const ejemplosCirculo = [
+    { clave: 'tiovivo', nombre: 'Tiovivo: una vuelta cada 8 s', sc: { R: 4, dato: 'T', val: 8 } },
+    { clave: 'centrifugadora', nombre: 'Centrifugadora a 1200 rpm', sc: { R: 0.25, dato: 'rpm', val: 1200 } },
+    { clave: 'curva', nombre: 'Coche en una curva a 72 km/h', sc: { R: 50, dato: 'v', val: 20, tq: 1 } },
+    { clave: 'frena', nombre: 'Rueda que frena hasta pararse', sc: { R: 0.3, dato: 'w', val: 30, alfa: -2, tq: 5 } },
+    { clave: 'arranca', nombre: 'Arranca desde el reposo: ¿cuándo da 10 vueltas?', sc: { R: 0.15, dato: 'w', val: 0, alfa: 4, nv: 10 } },
   ];
 
-  return { leer, resolver, trayectoria, rectilineo, ejemplos, ejemplosRecta, f };
+  return { leer, resolver, trayectoria, rectilineo, circular, ejemplos, ejemplosRecta, ejemplosCirculo, f };
 })();
 if (typeof module !== 'undefined') module.exports = Cinematica;

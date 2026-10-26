@@ -1,5 +1,5 @@
 <title>Tiro parabólico y cinemática: alcance, altura máxima y gráficas · SimulaCiencia</title>
-<meta name="description" content="Simulador de tiro parabólico en español: trayectoria, alcance, altura máxima, tiempo de vuelo y velocidad al caer, con y sin rozamiento del aire, gráficas x(t), v(t), a(t) y MRU y MRUA, con el desarrollo paso a paso.">
+<meta name="description" content="Simulador de tiro parabólico en español: trayectoria, alcance, altura máxima, tiempo de vuelo y velocidad al caer, con y sin rozamiento del aire, ángulo de alcance máximo, blanco, gráficas x(t), v(t), a(t), MRU y MRUA con encuentros y movimiento circular (MCU y MCUA), con el desarrollo paso a paso.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
@@ -15,11 +15,11 @@
 .campos .nota { grid-column: 1 / -1; font-size: 12.5px; color: var(--muted); margin: -2px 0 0 }
 .btn.pri { background: var(--accent); border-color: var(--accent); color: var(--panel) }
 #lienzo { height: 300px } #grafica { height: 200px; margin-top: 10px }
-#pista { height: 90px } .g3 { height: 130px; margin-top: 8px }
+#pista { height: 110px } #rueda { height: 280px } .g3 { height: 130px; margin-top: 8px }
 .card .controles { font-size: 13px; color: var(--muted) }
 .controles input[type=range] { flex: 1; min-width: 140px; accent-color: var(--accent) }
 .lectura { font: 13px var(--f-mono); color: var(--ink); font-variant-numeric: tabular-nums } .lectura span { white-space: pre } .controles .lectura { flex-basis: 100%; order: 9 }
-#leyenda { display: flex; gap: 4px 14px; flex-wrap: wrap; font-size: 12.5px; color: var(--muted); margin-top: 6px } #leyenda i { display: inline-block; width: 14px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 5px }
+#leyenda, #leyenda-c { display: flex; gap: 4px 14px; flex-wrap: wrap; font-size: 12.5px; color: var(--muted); margin-top: 6px } #leyenda i, #leyenda-c i { display: inline-block; width: 14px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 5px }
 .pasos { margin-top: 16px }
 
 </style>
@@ -27,8 +27,8 @@
 <header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física general</a> / Tiro parabólico</span></header>
 <div class="wrap">
 <h1>Tiro parabólico y cinemática</h1>
-<p class="lead">Lanza un proyectil y obtén el tiempo de vuelo, la altura máxima, el alcance y la velocidad al caer, con o sin rozamiento del aire. En la otra pestaña tienes el movimiento rectilíneo (MRU y MRUA). Debajo de cada resultado está el desarrollo.</p>
-<div class="modos" role="tablist"><button role="tab" id="tab-tiro" aria-selected="true">Tiro parabólico</button><button role="tab" id="tab-recta" aria-selected="false">Movimiento rectilíneo</button></div>
+<p class="lead">Lanza un proyectil y obtén el tiempo de vuelo, la altura máxima, el alcance y la velocidad al caer, con o sin rozamiento del aire. También el ángulo de alcance máximo, cómo acertar a un blanco y varios tiros a la vez. En las otras pestañas tienes el movimiento rectilíneo (MRU y MRUA, con un segundo móvil para encuentros y persecuciones) y el movimiento circular (MCU y MCUA). Debajo de cada resultado está el desarrollo.</p>
+<div class="modos" role="tablist"><button role="tab" id="tab-tiro" aria-selected="true">Tiro parabólico</button><button role="tab" id="tab-recta" aria-selected="false">Movimiento rectilíneo</button><button role="tab" id="tab-circ" aria-selected="false">Movimiento circular</button></div>
 
 <div id="panel-tiro" role="tabpanel">
 <div class="layout">
@@ -87,17 +87,49 @@
 </div>
 </div>
 
+<div id="panel-circ" role="tabpanel" hidden>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos-c" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos-circ"></div>
+    <p class="error" id="error-c" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen-c"></div></div>
+    <div class="card">
+      <canvas id="rueda" aria-label="Móvil en la circunferencia con su velocidad y su aceleración"></canvas>
+      <div class="leyenda" id="leyenda-c"></div>
+      <div class="controles">
+        <button class="btn pri" id="play-c" type="button">▶ Girar</button>
+        <button class="btn" id="reinicio-c" type="button" aria-label="Volver al inicio">↺</button>
+        <input type="range" id="tiempo-c" min="0" max="1000" value="0" aria-label="Tiempo">
+        <span class="lectura" id="lectura-c"></span>
+      </div>
+      <canvas class="g3" id="g-th" aria-label="Ángulo girado frente al tiempo"></canvas>
+      <canvas class="g3" id="g-w" aria-label="Velocidad angular frente al tiempo"></canvas>
+    </div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos-c"></ol></div>
+  </div>
+</div>
+</div>
+
 <section class="teoria">
   <h2>Ecuaciones del tiro parabólico</h2>
   <p class="m">Sin rozamiento el movimiento se separa en dos: en horizontal es uniforme (MRU) y en vertical uniformemente acelerado con $a = −g$ (MRUA).</p>
   <p class="f m">$x = v_0 cos α · t$ &emsp; $y = y_0 + v_0 sen α · t − 1/2 g t^2$</p>
   <p class="m">La altura máxima se alcanza cuando $v_y = 0$, en $t = {v_0 sen α}/g$, y vale $y_0 + {v_0^2 sen^2 α}/{2g}$. Si sale y cae a la misma altura, el alcance es $R = {v_0^2 sen 2α}/g$, máximo a 45°. Eliminando t sale la ecuación de la trayectoria, una parábola:</p>
   <p class="f m">$y = y_0 + x tg α − {g x^2}/{2 v_0^2 cos^2 α}$</p>
+  <p class="m">Si sale desde una altura $h$ por encima del suelo, el ángulo de alcance máximo es algo menor que 45°: $tg α = v_0/√(v_0^2 + 2gh)$. Con la misma $v_0$ y todos los ángulos posibles, ninguna trayectoria pasa por encima de la <i>parábola de seguridad</i> $y = y_0 + v_0^2/(2g) − {g x^2}/{2 v_0^2}$. Despejando $v_0$ de la ecuación de la trayectoria sale la velocidad necesaria para acertar a un blanco con un ángulo dado.</p>
   <h2>Con rozamiento del aire</h2>
   <p class="m">Con una fuerza de rozamiento proporcional a la velocidad, $a = −g ĵ − (b/m) v$, las ecuaciones siguen teniendo solución exacta con exponenciales y la velocidad de caída tiende a $v_L = {m g}/b$. Con rozamiento cuadrático, $a = −g ĵ − (c/m) |v| v$, que es lo que pasa con una pelota real, hay que integrar numéricamente. En los dos casos la trayectoria deja de ser simétrica: baja más empinada de lo que sube.</p>
   <h2>MRU y MRUA</h2>
   <p class="f m">$x = x_0 + v_0 t + 1/2 a t^2$ &emsp; $v = v_0 + a t$ &emsp; $v^2 = v_0^2 + 2a(x − x_0)$</p>
   <p>En la gráfica x(t) la pendiente es la velocidad, y en v(t) la pendiente es la aceleración y el área bajo la curva es el desplazamiento.</p>
+  <p class="m">Dos móviles en la misma recta se encuentran cuando están en el mismo sitio a la vez: $x_A(t) = x_B(t)$, una ecuación de primer o segundo grado en t.</p>
+  <h2>Movimiento circular</h2>
+  <p class="m">En el MCU la velocidad angular es constante: $θ = ω t$, $v = ω R$, $T = 2π/ω$ y $f = 1/T$. Aunque el módulo de la velocidad no cambia, su dirección sí, y hay una aceleración hacia el centro, la centrípeta: $a_n = ω^2 R = v^2/R$.</p>
+  <p class="m">En el MCUA la aceleración angular α es constante: $ω = ω_0 + α t$ y $θ = ω_0 t + 1/2 α t^2$, igual que el MRUA cambiando x por θ. Aparece además una aceleración tangencial $a_t = α R$, y la total es $|a| = √(a_n^2 + a_t^2)$.</p>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Tiro parabólico <span id="ver"></span> (beta)</footer>
