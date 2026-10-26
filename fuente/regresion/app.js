@@ -1,12 +1,13 @@
 /* =====================================================================
-   Regresión y correlación: interfaz (datos, modelo, nube de puntos con
-   la recta o la curva ajustada, resultados, tablas y desarrollo).
+   Regresión y correlación: interfaz (datos en lista o tabla de doble
+   entrada, modelo, nube de puntos con la recta o la curva ajustada y la
+   banda de confianza, gráfica de residuos, resultados, tablas y desarrollo).
    El cálculo está en regresion/calculo.js (Regresion).
    ===================================================================== */
 (() => {
-  const { $, esc, copia, txt } = Herramienta;
+  const { $, esc, copia, txt, lienzo } = Herramienta;
   const R = Regresion, f = R.f, d4 = R.d4, CLAVE = 'regresion-v1';
-  const FORMA = { lineal: 'y = a + bx', exponencial: 'y = a·eᵇˣ', potencial: 'y = a·xᵇ', logaritmica: 'y = a + b·ln x', parabolica: 'y = a + bx + cx²' };
+  const FORMA = { lineal: 'y = a + bx', origen: 'y = bx', exponencial: 'y = a·eᵇˣ', potencial: 'y = a·xᵇ', logaritmica: 'y = a + b·ln x', hiperbolica: 'y = a + b/x', parabolica: 'y = a + bx + cx²' };
 
   let sc = copia(R.ejemplos[0].sc);
   try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && typeof g.datos === 'string' && R.MODELOS[g.modelo]) sc = g; } catch (e) { /* sin almacenamiento */ }
@@ -17,13 +18,19 @@
   const fila = (k, nom, ayuda) => `<label for="f-${k}">${nom}${ayuda ? ` <small>${ayuda}</small>` : ''}</label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc[k] ?? '')}" inputmode="decimal" autocomplete="off">`;
   function formulario() {
     let h = `<label for="f-modelo">Ajuste</label><select id="f-modelo" class="in" data-k="modelo">${Object.entries(R.MODELOS).map(([k, m]) => `<option value="${k}"${k === sc.modelo ? ' selected' : ''}>${m.nombre}: ${FORMA[k]}</option>`).join('')}</select>`;
-    h += `<label for="f-datos" class="ancho">Datos <small>una fila por punto: x y, o x y n con la frecuencia</small></label><textarea id="f-datos" class="in ancho" data-k="datos" rows="9" spellcheck="false" autocomplete="off">${esc(sc.datos ?? '')}</textarea>`;
-    h += '<div class="sep">Estimar (opcional)</div>' + fila('x0', 'y para x =') + fila('y0', 'x para y =');
+    const doble = sc.formato === 'doble', sl = (k, nom, ops) => `<label for="f-${k}">${nom}</label><select id="f-${k}" class="in" data-k="${k}">${ops.map(([v, t]) => `<option value="${v}"${v === (sc[k] ?? ops[0][0]) ? ' selected' : ''}>${t}</option>`).join('')}</select>`;
+    h += sl('formato', 'Forma de los datos', [['lista', 'Lista de puntos'], ['doble', 'Tabla de doble entrada']]) + sl('div', 'Varianzas y covarianza', [['n', 'Dividiendo entre N'], ['n1', 'Dividiendo entre N − 1']]);
+    h += doble
+      ? `<label for="f-doble" class="ancho">Tabla <small>primera fila: «x\\y» y los valores de y; después, cada x con sus frecuencias</small></label><textarea id="f-doble" class="in ancho" data-k="doble" rows="9" spellcheck="false" autocomplete="off">${esc(sc.doble ?? 'x\\y 1 2 3\n1 4 1 0\n2 1 5 2\n3 0 2 6')}</textarea>`
+      : `<label for="f-datos" class="ancho">Datos <small>una fila por punto: x y, o x y n con la frecuencia</small></label><textarea id="f-datos" class="in ancho" data-k="datos" rows="9" spellcheck="false" autocomplete="off">${esc(sc.datos ?? '')}</textarea>`;
+    if (doble && sc.doble === undefined) sc.doble = $('#f-doble')?.value ?? 'x\\y 1 2 3\n1 4 1 0\n2 1 5 2\n3 0 2 6';
+    h += '<div class="sep">Estimar (opcional)</div>' + fila('x0', 'y para x =') + fila('y0', 'x para y =') + fila('nivel', 'Nivel de confianza', '%');
+    $('#marcar').hidden = doble;
     $('#campos').innerHTML = h;
   }
   const cambia = (k, v) => { sc[k] = v; $('#ejemplos').value = ''; calcula(); };
   $('#campos').addEventListener('input', (e) => { const t = e.target; if (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA') cambia(t.dataset.k, t.value); });
-  $('#campos').addEventListener('change', (e) => { const t = e.target; if (t.tagName === 'SELECT') cambia(t.dataset.k, t.value); });
+  $('#campos').addEventListener('change', (e) => { const t = e.target; if (t.tagName !== 'SELECT') return; if (t.dataset.k === 'formato') { sc.formato = t.value; formulario(); } cambia(t.dataset.k, t.value); });
 
   /* ---------- Ejemplos ---------- */
   const sel = $('#ejemplos');
@@ -57,19 +64,24 @@
     }
     err.hidden = true; guarda();
     const lin = sol.modelo === 'lineal', M = R.MODELOS[sol.modelo];
-    let h = dato(lin ? 'Recta de regresión de Y sobre X' : `Ajuste ${M.adj}`, sol.ecuacion);
+    let h = dato(lin ? 'Recta de regresión de Y sobre X' : `Ajuste ${M.adj}`, sol.ecuacion), L = sol.div === 'n1' ? 's' : 'σ';
     if (lin && sol.xSobreY) h += dato('Recta de regresión de X sobre Y', `x = ${f(sol.xSobreY.a)} ${sol.xSobreY.b < 0 ? '−' : '+'} ${f(Math.abs(sol.xSobreY.b))}y`);
     h += dato('Coeficiente de correlación', `r = ${d4(sol.r)}`);
     h += dato(lin ? 'Coeficiente de determinación' : 'Bondad del ajuste', `R² = ${d4(sol.R2)}`);
     if (!lin && sol.rt !== undefined) h += dato('Correlación de las variables transformadas', `r = ${d4(sol.rt)}`);
-    h += dato('Medias', `x̄ = ${f(sol.m.mx)}, ȳ = ${f(sol.m.my)}`) + dato('Covarianza', `σ<sub>xy</sub> = ${f(sol.m.cxy)}`);
+    h += dato('Medias', `x̄ = ${f(sol.m.mx)}, ȳ = ${f(sol.m.my)}`) + dato(sol.div === 'n1' ? 'Cuasicovarianza' : 'Covarianza', `${L}<sub>xy</sub> = ${f(sol.cov)}`);
+    if (sol.rs !== null) h += dato('Correlación de Spearman', `r<sub>s</sub> = ${d4(sol.rs)}`);
+    if (sol.inc) h += dato('Pendiente con su error', `b = ${R.conError(sol.lineal.b, sol.inc.sb)}`) + dato('Ordenada con su error', `a = ${R.conError(sol.lineal.a, sol.inc.sa)}`);
+    if (sol.inc0) h += dato('Pendiente con su error', `b = ${R.conError(sol.coef.b, sol.inc0.sb)}`);
+    if (sol.angulo !== undefined && lin) h += dato('Ángulo entre las dos rectas', `${f(sol.angulo, 3)}°`);
     if (sol.yx0 !== undefined) h += dato(`Estimación para x = ${f(sol.x0)}`, `ŷ = ${f(sol.yx0)}`);
+    if (sol.icPred) h += dato(`Predicción al ${f(100 * sol.inc.nivel)} %`, `(${f(sol.icPred[0])}; ${f(sol.icPred[1])})`);
     if (sol.xy0 !== undefined) h += dato(`Estimación para y = ${f(sol.y0)}`, `x̂ = ${f(sol.xy0)}`);
     $('#resumen').innerHTML = h;
     $('#pasos').innerHTML = sol.pasos.map((p) => {
       let extra = '';
       if (p.tabla) extra = tablaHTML(p.tabla.cab, p.tabla.filas, p.tabla.tot);
-      if (p.residuos) extra = tablaHTML(['x<sub>i</sub>', 'y<sub>i</sub>', 'ŷ<sub>i</sub>', 'e<sub>i</sub> = y<sub>i</sub> − ŷ<sub>i</sub>'], sol.residuos.map((q) => [f(q.x, 6), f(q.y, 6), f(q.yp), f(q.e)]));
+      if (p.residuos) extra = tablaHTML(['x<sub>i</sub>', 'y<sub>i</sub>', 'ŷ<sub>i</sub>', 'e<sub>i</sub> = y<sub>i</sub> − ŷ<sub>i</sub>'], sol.residuos.map((q) => [f(q.x, 6), f(q.y, 6), f(q.yp), sol.atipicos.includes(q) ? `<b>${f(q.e)} ⚠</b>` : f(q.e)]));
       return `<li><strong>${Mates.html(p.t)}</strong>${extra}${Mates.html(p.html)}</li>`;
     }).join('');
     $('#leyenda').textContent = `${sol.pts.length} puntos${sol.m.N !== sol.pts.length ? ` (N = ${txt(f(sol.m.N))} con las frecuencias, el tamaño del punto)` : ''}. ${lin ? 'En color la recta de Y sobre X y a trazos la de X sobre Y; se cortan en (x̄, ȳ).' : 'En color la curva ajustada y a trazos la recta, para comparar.'}`;
@@ -122,6 +134,12 @@
       dentro = true;
     }
     g.stroke(); g.lineWidth = 1;
+    // banda de confianza de la recta (para la media de y)
+    if (sol.inc && sol.modelo === 'lineal') {
+      g.setLineDash([2, 4]); g.strokeStyle = col['--accent']; g.globalAlpha = 0.7;
+      for (const sg of [-1, 1]) { g.beginPath(); for (let i = 0; i <= 120; i++) { const x = x0 + ((x1 - x0) * i) / 120, y = sol.pred(x) + sg * sol.inc.banda(x); i ? g.lineTo(X(x), Y(y)) : g.moveTo(X(x), Y(y)); } g.stroke(); }
+      g.setLineDash([]); g.globalAlpha = 1;
+    }
     // residuos como segmentos verticales
     g.strokeStyle = col['--muted']; g.globalAlpha = 0.5;
     for (const q of sol.residuos) if (isFinite(q.yp)) { g.beginPath(); g.moveTo(X(q.x), Y(q.y)); g.lineTo(X(q.x), Y(q.yp)); g.stroke(); }
@@ -140,6 +158,25 @@
     if (sol.yx0 !== undefined) estima(sol.x0, sol.yx0, `ŷ = ${num(sol.yx0)}`);
     if (sol.xy0 !== undefined) estima(sol.xy0, sol.y0, `x̂ = ${num(sol.xy0)}`);
     g.restore();
+    dibujaResiduos();
+  }
+  // residuos frente a x: si el ajuste es bueno se reparten al azar alrededor de 0, sin forma
+  function dibujaResiduos() {
+    const { g, w, h } = lienzo('#residuos');
+    if (!sol) return;
+    const rs = sol.residuos.filter((q) => isFinite(q.e)), m = { l: 52, r: 14, t: 10, b: 24 };
+    if (!rs.length) return;
+    let x0 = Math.min(...rs.map((q) => q.x)), x1 = Math.max(...rs.map((q) => q.x)), em = Math.max(...rs.map((q) => Math.abs(q.e)), sol.se ? 2.2 * sol.se : 0) || 1;
+    const ax = x1 - x0 || 1; x0 -= ax * 0.08; x1 += ax * 0.08;
+    const X = (x) => m.l + ((x - x0) / (x1 - x0)) * (w - m.l - m.r), Y = (e) => m.t + ((em - e) / (2 * em)) * (h - m.t - m.b);
+    g.font = '11px "IBM Plex Sans", system-ui, sans-serif'; g.fillStyle = col['--muted']; g.strokeStyle = col['--line'];
+    g.textAlign = 'center'; g.textBaseline = 'top';
+    for (const v of marcas(x0, x1)) g.fillText(txt(f(v, 4)), X(v), h - m.b + 5);
+    g.textAlign = 'right'; g.textBaseline = 'middle';
+    for (const v of marcas(-em, em, 4)) { g.beginPath(); g.moveTo(m.l, Y(v)); g.lineTo(w - m.r, Y(v)); g.stroke(); g.fillText(txt(f(v, 3)), m.l - 6, Y(v)); }
+    g.strokeStyle = col['--muted']; g.beginPath(); g.moveTo(m.l, Y(0)); g.lineTo(w - m.r, Y(0)); g.stroke();
+    if (sol.se) { g.setLineDash([4, 4]); g.strokeStyle = col['--otra']; for (const sg of [-2, 2]) { g.beginPath(); g.moveTo(m.l, Y(sg * sol.se)); g.lineTo(w - m.r, Y(sg * sol.se)); g.stroke(); } g.setLineDash([]); }
+    for (const q of rs) { const at = sol.atipicos.includes(q); g.fillStyle = at ? col['--accent'] : col['--punto']; g.beginPath(); g.arc(X(q.x), Y(q.e), at ? 6 : 4, 0, 2 * Math.PI); g.fill(); }
   }
   window.addEventListener('resize', dibuja);
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', dibuja);
@@ -156,7 +193,7 @@
     sc.datos = (sc.datos || '').replace(/\s*$/, '') + '\n' + lin;
     $('#f-datos').value = sc.datos; $('#ejemplos').value = ''; calcula();
   });
-  $('#vaciar').addEventListener('click', () => { sc.datos = ''; $('#f-datos').value = ''; $('#ejemplos').value = ''; calcula(); });
+  $('#vaciar').addEventListener('click', () => { const k = sc.formato === 'doble' ? 'doble' : 'datos'; sc[k] = ''; $(`#f-${k}`).value = ''; $('#ejemplos').value = ''; calcula(); });
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('regresion').current;
   formulario(); calcula();
