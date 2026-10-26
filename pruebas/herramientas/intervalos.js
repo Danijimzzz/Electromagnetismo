@@ -19,16 +19,29 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     const ig = r('dif-iguales'); cerca(ig.sp ** 2, (9 * 1.8 ** 2 + 11 * 2.1 ** 2) / 20, 1e-12, 'cuasivarianza ponderada'); if (ig.gl !== 20) mal('Intervalos: varianzas iguales sin n₁ + n₂ − 2 grados de libertad');
     if (r('dif-welch').gl !== 27) mal('Intervalos: los grados de libertad de Welch no salen 27');
     if (r('n-media').n !== 97 || r('n-prop').n !== 1068) mal('Intervalos: el tamaño de muestra no sale 97 y 1068');
+    // lo nuevo de la 0.2: apareadas, cociente F, cotas, población finita, contraste y tamaños
+    const ap = r('apareadas'); cerca(ap.est, 2.5, 1e-12, 'd̄ de los datos apareados'); cerca(ap.err, 2.364624 * Math.sqrt(20 / 7) / Math.sqrt(8), 1e-6, 'error de los datos apareados'); if (ap.gl !== 7) mal('Intervalos: 8 pares no dan 7 grados de libertad');
+    const co = r('cociente'), Es = require(path.join(fuente, 'estadistica', 'calculo.js'));
+    cerca(co.a, (7.84 / 3.61) / Es.cuantil(Es.DIST.f, { d1: 12, d2: 15 }, 0.975), 1e-9, 'cociente de varianzas'); cerca(co.b, (7.84 / 3.61) * Es.cuantil(Es.DIST.f, { d1: 15, d2: 12 }, 0.975), 1e-6, 'F₁₋α/₂ = 1/F de los g. l. cambiados'); if (!(co.a < 1 && co.b > 1)) mal('Intervalos: el cociente de varianzas del ejemplo no contiene el 1');
+    const cm = r('cota-media'); cerca(cm.a, 1200 - 1.753050 * 90 / 4, 1e-6, 'cota inferior de la media'); if (cm.b !== Infinity) mal('Intervalos: la cota inferior no llega a +∞');
+    const cp = r('cota-prop'); cerca(cp.b, 0.03 + 1.644854 * Math.sqrt(0.03 * 0.97 / 400), 1e-6, 'cota superior de la proporción'); if (cp.a !== 0) mal('Intervalos: la cota superior de una proporción no empieza en 0');
+    cerca(r('finita').err, 1.959964 * 1.2 / Math.sqrt(80) * Math.sqrt(420 / 499), 1e-6, 'error con población finita');
+    if (r('contraste').rechaza !== true || r('altura').rechaza !== undefined) mal('Intervalos: μ = 1250 no se rechaza con el intervalo (1152; 1248)');
+    if (IcC.resolver({ ...IcC.ejemplos.find((e) => e.clave === 'contraste').sc, h0: '1220' }).rechaza !== false) mal('Intervalos: μ = 1220 dentro del intervalo se rechaza');
+    if (r('n-dif').n !== 89 || r('n-finita').n !== 323) mal(`Intervalos: el tamaño para dos medias o con N = 2000 no sale 89 y 323 (${r('n-dif').n}, ${r('n-finita').n})`);
+    if (IcC.simula(r('finita')) !== null) mal('Intervalos: con población finita no debería haber simulación');
     // la simulación acierta más o menos el nivel de confianza
     let seed = 7; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
-    for (const k of ['altura', 'encuesta', 'varianza']) { const s = r(k), g = IcC.simula(s, rnd); let d = 0; for (let i = 0; i < 2000; i++) { const [a, b] = g.una(); if (a <= g.real && g.real <= b) d++; } if (Math.abs(d / 2000 - s.c) > 0.025) mal(`Intervalos · ${k}: la simulación acierta un ${d / 20} % en vez del ${100 * s.c} %`); }
+    // (la cota de una proporción se prueba con p̂ = 0,42: con p̂ = 0,03 el método de Wald de verdad acierta menos)
+    const encSup = IcC.resolver({ ...IcC.ejemplos.find((e) => e.clave === 'encuesta').sc, lado: 'sup' });
+    for (const k of ['altura', 'encuesta', 'varianza', 'apareadas', 'cociente', 'cota-media', encSup]) { const s = typeof k === 'string' ? r(k) : k, g = IcC.simula(s, rnd); let d = 0; for (let i = 0; i < 2000; i++) { const [a, b] = g.una(); if (a <= g.real && g.real <= b) d++; } if (Math.abs(d / 2000 - s.c) > 0.025) mal(`Intervalos · ${typeof k === 'string' ? k : 'cota de la encuesta'}: la simulación acierta un ${d / 20} % en vez del ${100 * s.c} %`); }
     // con 0 éxitos el intervalo es el de Wilson, (0; z²/(n + z²)), no un punto
     { const w = IcC.resolver({ modo: 'proporcion', tipoP: 'exitos', n: '20', x: '0', nivel: '95' }), z2 = IcC.zc(0.025) ** 2; cerca(w.b, z2 / (20 + z2), 1e-9, 'Wilson con 0 éxitos'); if (w.a !== 0) mal('Intervalos: con 0 éxitos el extremo inferior no es 0'); }
-    for (const [q, sc] of [['n = 1', { modo: 'media', sigmaC: 'no', xm: '5', s: '1', n: '1', nivel: '95' }], ['nivel 100 %', { modo: 'media', sigmaC: 'si', sigma: '1', xm: '5', n: '10', nivel: '100' }], ['más éxitos que n', { modo: 'proporcion', n: '10', x: '12', nivel: '95' }], ['un dato que no es un número', { modo: 'media', fuente: 'datos', sigmaC: 'no', datos: '1 2 x 4', nivel: '95' }], ['error de proporción ≥ 1', { modo: 'tamano', de: 'proporcion', E: '2', nivel: '95' }]]) {
+    for (const [q, sc] of [['n = 1', { modo: 'media', sigmaC: 'no', xm: '5', s: '1', n: '1', nivel: '95' }], ['nivel 100 %', { modo: 'media', sigmaC: 'si', sigma: '1', xm: '5', n: '10', nivel: '100' }], ['más éxitos que n', { modo: 'proporcion', n: '10', x: '12', nivel: '95' }], ['un dato que no es un número', { modo: 'media', fuente: 'datos', sigmaC: 'no', datos: '1 2 x 4', nivel: '95' }], ['error de proporción ≥ 1', { modo: 'tamano', de: 'proporcion', E: '2', nivel: '95' }], ['listas apareadas de distinto tamaño', { modo: 'apareadas', fuente: 'datos', datos1: '1 2 3', datos2: '1 2', nivel: '95' }], ['N menor que n', { modo: 'media', sigmaC: 'si', sigma: '1', xm: '5', n: '50', Npob: '20', nivel: '95' }], ['cociente sin desviaciones', { modo: 'cociente-var', fuente: 'resumen', n1: '10', n2: '12', nivel: '95' }]]) {
       let ok = false; try { IcC.resolver(sc); } catch (e) { ok = true; }
       if (!ok) mal(`Intervalos: ${q} no da error`);
     }
-    if (fallos === antes) console.log(`  ✓ Intervalos de confianza: ${IcC.ejemplos.length} ejemplos, z, t y χ², media, proporción, varianza, diferencias, Welch, tamaño de muestra, simulación y errores`);
+    if (fallos === antes) console.log(`  ✓ Intervalos de confianza: ${IcC.ejemplos.length} ejemplos, z, t, χ² y F, media, proporción, varianza, diferencias, Welch, apareadas, cociente de varianzas, cotas, población finita, contraste, tamaños de muestra, simulación y errores`);
   }
 
   return async (browser) => {
@@ -66,6 +79,17 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       if (!sim.s || !sim.t.includes('de 100') || sim.s.dentro < 80) mal(`Intervalos: la simulación no saca 100 intervalos o acierta muy pocos: ${JSON.stringify(sim)}`);
       await page.click('#otra');
       if ((await page.locator('#play').textContent()).trim() !== '⏸ Pausa') mal('Intervalos: tras otras 100 muestras la animación no sigue');
+      // cota con ±∞, cociente de varianzas con F y contraste
+      await page.evaluate(() => IntervalosApp.abrirEjemplo('cota-media'));
+      if (!(await page.locator('#res').textContent()).includes('+∞') || !(await page.locator('#res').textContent()).includes('t15; α')) mal('Intervalos: la cota inferior no muestra +∞ o t con α');
+      await page.evaluate(() => IntervalosApp.abrirEjemplo('cociente'));
+      if (!(await page.locator('#res').textContent()).includes('F =') || (await page.locator('#f-s2').count()) !== 1) mal('Intervalos: el cociente de varianzas no muestra la F o los campos');
+      await page.evaluate(() => IntervalosApp.abrirEjemplo('contraste'));
+      if (!(await page.locator('#res').textContent()).includes('Se rechaza')) mal('Intervalos: el contraste con μ = 1250 no dice que se rechaza');
+      await page.selectOption('#f-lado', 'sup');
+      if (!(await page.locator('#res').textContent()).includes('Cota superior') || !(await page.locator('#error').isHidden())) mal('Intervalos: al elegir cota superior no cambia el resultado');
+      await page.selectOption('#f-modo', 'apareadas');
+      if ((await page.locator('#f-datos2').count()) !== 1 || !(await page.locator('#res').textContent()).includes('2,5')) mal('Intervalos: los datos apareados no salen con d̄ = 2,5');
       for (let i = 0; i < 12; i++) { await page.evaluate(() => IntervalosApp.azar()); if (!(await page.locator('#error').isHidden())) mal(`Intervalos: un ejercicio al azar da error: ${JSON.stringify(await page.evaluate(() => IntervalosApp.estado()))}`); }
       await page.close();
       if (consola.length) mal('Intervalos: consola del navegador:\n      ' + consola.join('\n      '));
