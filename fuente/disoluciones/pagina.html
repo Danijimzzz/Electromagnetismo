@@ -41,13 +41,14 @@ th { color: var(--muted); font-weight: 500 }
 .instr { font-size: 15px; background: var(--accent-soft); border-radius: 8px; padding: 10px 12px; margin-top: 12px }
 .dos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px } @media (max-width: 900px) { .dos { grid-template-columns: minmax(0, 1fr) } }
 .resultado { font: 600 20px var(--f-math); margin: 12px 0 0 }
+#dil .cantidad .q { flex: 0 0 90px; width: 90px } #dil .cantidad .u { flex: 0 0 92px; width: 92px }
 </style>
 <body>
 <header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Química</a> / Disoluciones</span></header>
 <div class="wrap">
 <h1>Disoluciones y concentraciones</h1>
 <p class="lead">Da la concentración de una disolución en cualquier forma y obtén todas las demás. También calcula cuánto soluto o reactivo comercial necesitas para prepararla, y cómo diluirla o mezclarla. Cada resultado viene con el desarrollo.</p>
-<div class="modos" role="tablist"><button role="tab" id="tab-conc" aria-selected="true">Concentración</button><button role="tab" id="tab-prep" aria-selected="false">Preparar</button><button role="tab" id="tab-dil" aria-selected="false">Diluir y mezclar</button></div>
+<div class="modos" role="tablist"><button role="tab" id="tab-conc" aria-selected="true">Concentración</button><button role="tab" id="tab-prep" aria-selected="false">Preparar</button><button role="tab" id="tab-dil" aria-selected="false">Diluir y mezclar</button><button role="tab" id="tab-col" aria-selected="false">Propiedades coligativas</button></div>
 <label class="nota" style="display:inline-flex;gap:6px;align-items:center;margin:0 0 12px 12px">Masas atómicas <select id="modo" class="in"><option value="iupac">IUPAC (H 1,008; O 15,999)</option><option value="redondeadas">De clase (H 1; O 16; Cl 35,5)</option></select></label>
 
 <section id="conc">
@@ -63,6 +64,7 @@ th { color: var(--muted); font-weight: 500 }
       <label for="c-tipo">Expresada como</label><select id="c-tipo" class="in"></select>
       <label for="c-valor">Valor <small id="c-unidad"></small></label><input id="c-valor" class="in" inputmode="decimal" autocomplete="off">
       <label for="c-densidad">Densidad de la disolución <small>(g/mL)</small></label><input id="c-densidad" class="in" inputmode="decimal" autocomplete="off" placeholder="opcional">
+      <label for="c-z">Equivalentes por mol z <small>(para la normalidad)</small></label><input id="c-z" class="in" inputmode="decimal" autocomplete="off" placeholder="de la fórmula">
     </div>
     <p class="nota">La densidad hace falta para pasar de las formas en masa (%, ppm, molalidad, fracción molar) a las de volumen (molaridad, g/L, % m/v), y al revés.</p>
     <p class="error" id="error-conc" hidden></p>
@@ -82,8 +84,10 @@ th { color: var(--muted); font-weight: 500 }
     <div class="campos">
       <div class="sep">Disolución que quieres</div>
       <label for="p-soluto">Soluto</label><input id="p-soluto" class="in" autocomplete="off" spellcheck="false">
-      <label for="p-M">Molaridad <small>(mol/L)</small></label><input id="p-M" class="in" inputmode="decimal" autocomplete="off">
-      <label for="p-V">Volumen <small>(mL)</small></label><input id="p-V" class="in" inputmode="decimal" autocomplete="off">
+      <label for="p-obj">Concentración en</label><select id="p-obj" class="in"><option value="M">Molaridad (mol/L)</option><option value="N">Normalidad (eq/L)</option><option value="gL">g/L</option><option value="mv">% m/v</option><option value="mm">% en masa</option><option value="m">Molalidad (mol/kg)</option></select>
+      <label for="p-M" id="et-pM">Molaridad <small>(mol/L)</small></label><input id="p-M" class="in" inputmode="decimal" autocomplete="off">
+      <label for="p-V" id="et-pV">Volumen <small>(mL)</small></label><input id="p-V" class="in" inputmode="decimal" autocomplete="off">
+      <label for="p-z" data-obj="N">Equivalentes por mol z</label><input id="p-z" class="in" inputmode="decimal" autocomplete="off" placeholder="de la fórmula" data-obj="N">
       <div class="sep">A partir de</div>
       <label for="p-origen">Reactivo</label><select id="p-origen" class="in"><option value="solido">Sólido</option><option value="comercial">Comercial</option></select>
       <label for="p-pureza" data-o="solido">Pureza <small>(%)</small></label><input id="p-pureza" class="in" inputmode="decimal" autocomplete="off" data-o="solido">
@@ -105,12 +109,12 @@ th { color: var(--muted); font-weight: 500 }
     <div class="card">
       <h2>Dilución: C<sub>1</sub> V<sub>1</sub> = C<sub>2</sub> V<sub>2</sub></h2>
       <div class="campos">
-        <label for="d-C1">Concentración inicial C<sub>1</sub></label><input id="d-C1" class="in" inputmode="decimal" autocomplete="off">
-        <label for="d-V1">Volumen inicial V<sub>1</sub></label><input id="d-V1" class="in" inputmode="decimal" autocomplete="off">
-        <label for="d-C2">Concentración final C<sub>2</sub></label><input id="d-C2" class="in" inputmode="decimal" autocomplete="off">
-        <label for="d-V2">Volumen final V<sub>2</sub></label><input id="d-V2" class="in" inputmode="decimal" autocomplete="off">
+        <label for="d-C1">Concentración inicial C<sub>1</sub></label><div class="cantidad"><input id="d-C1" class="in q" inputmode="decimal" autocomplete="off"><select id="d-uC1" class="in u" aria-label="Unidad de la concentración 1"><option value="M">mol/L</option><option value="mM">mmol/L</option><option value="uM">µmol/L</option><option value="N">eq/L</option><option value="gL">g/L</option><option value="mgL">mg/L</option><option value="mv">% m/v</option></select></div>
+        <label for="d-V1">Volumen inicial V<sub>1</sub></label><div class="cantidad"><input id="d-V1" class="in q" inputmode="decimal" autocomplete="off"><select id="d-uV1" class="in u" aria-label="Unidad de el volumen 1"><option value="mL">mL</option><option value="L">L</option><option value="uL">µL</option></select></div>
+        <label for="d-C2">Concentración final C<sub>2</sub></label><div class="cantidad"><input id="d-C2" class="in q" inputmode="decimal" autocomplete="off"><select id="d-uC2" class="in u" aria-label="Unidad de la concentración 2"><option value="M">mol/L</option><option value="mM">mmol/L</option><option value="uM">µmol/L</option><option value="N">eq/L</option><option value="gL">g/L</option><option value="mgL">mg/L</option><option value="mv">% m/v</option></select></div>
+        <label for="d-V2">Volumen final V<sub>2</sub></label><div class="cantidad"><input id="d-V2" class="in q" inputmode="decimal" autocomplete="off"><select id="d-uV2" class="in u" aria-label="Unidad de el volumen 2"><option value="mL">mL</option><option value="L">L</option><option value="uL">µL</option></select></div>
       </div>
-      <p class="nota">Deja vacío el dato que quieres calcular. Usa las mismas unidades en los dos lados (mol/L y mL, por ejemplo).</p>
+      <p class="nota">Deja vacío el dato que quieres calcular y elige la unidad de cada uno: se pasan solos a las mismas unidades.</p>
       <p class="error" id="error-dil" hidden></p>
       <div class="resultado" id="res-dil"></div>
     </div>
@@ -134,6 +138,36 @@ th { color: var(--muted); font-weight: 500 }
 </div>
 </section>
 
+<section id="col" hidden>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos-col" class="in" aria-label="Ejemplos" style="width:100%;margin-bottom:12px"></select>
+    <div class="campos">
+      <label for="g-busca">Qué calcular</label><select id="g-busca" class="in"><option value="prop">Las propiedades de la disolución</option><option value="M">La masa molar del soluto</option></select>
+      <div class="sep">Disolución</div>
+      <label for="g-soluto" data-b="prop">Soluto</label><input id="g-soluto" class="in" autocomplete="off" spellcheck="false" placeholder="C6H12O6" data-b="prop">
+      <label for="g-ms">Masa de soluto <small>(g)</small></label><input id="g-ms" class="in" inputmode="decimal" autocomplete="off">
+      <label for="g-disolvente">Disolvente</label><select id="g-disolvente" class="in"><option value="agua">Agua</option><option value="benceno">Benceno</option><option value="ciclohexano">Ciclohexano</option><option value="etanol">Etanol</option><option value="acetico">Ácido acético</option><option value="cloroformo">Cloroformo</option><option value="alcanfor">Alcanfor</option></select>
+      <label for="g-md">Masa de disolvente <small>(g)</small></label><input id="g-md" class="in" inputmode="decimal" autocomplete="off">
+      <label for="g-i">Factor de van 't Hoff i</label><input id="g-i" class="in" inputmode="decimal" autocomplete="off" placeholder="de la fórmula">
+      <div class="sep" data-b="M">Lo que se ha medido</div>
+      <label for="g-via" data-b="M">Medida</label><select id="g-via" class="in" data-b="M"><option value="crio">Descenso del punto de congelación (K)</option><option value="ebu">Aumento del punto de ebullición (K)</option><option value="osm">Presión osmótica (atm)</option></select>
+      <label for="g-medida" data-b="M">Valor</label><input id="g-medida" class="in" inputmode="decimal" autocomplete="off" data-b="M">
+      <div class="sep">Para la presión osmótica y la de vapor</div>
+      <label for="g-T">Temperatura <small>(°C)</small></label><input id="g-T" class="in" inputmode="decimal" autocomplete="off" placeholder="25">
+      <label for="g-V">Volumen de disolución <small>(mL)</small></label><input id="g-V" class="in" inputmode="decimal" autocomplete="off" placeholder="opcional">
+      <label for="g-P0" data-b="prop">P° del disolvente <small>(mmHg)</small></label><input id="g-P0" class="in" inputmode="decimal" autocomplete="off" placeholder="la de 25 °C" data-b="prop">
+    </div>
+    <p class="nota">Si dejas i vacío se deduce de la fórmula: 1 si no se disocia, 2 para el NaCl, 3 para el CaCl₂. Las constantes K<sub>c</sub> y K<sub>e</sub> son las de tabla de cada disolvente.</p>
+    <p class="error" id="error-col" hidden></p>
+  </div>
+  <div>
+    <div class="card"><h2>Resultados</h2><div class="valores" id="valores-col"></div></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos-col"></ol></div>
+  </div>
+</div>
+</section>
 <section class="teoria">
   <h2>Formas de expresar la concentración</h2>
   <ul>
@@ -141,11 +175,21 @@ th { color: var(--muted); font-weight: 500 }
     <li><b>Molaridad</b> M: moles de soluto por litro de disolución. <b>g/L</b> y <b>% m/v</b>: gramos de soluto por litro o por 100 mL de disolución.</li>
     <li><b>Molalidad</b> m: moles de soluto por kilogramo de disolvente (no de disolución). No depende de la temperatura.</li>
     <li><b>Fracción molar</b> x<sub>s</sub> = n<sub>s</sub> / (n<sub>s</sub> + n<sub>d</sub>): no tiene unidades y las de soluto y disolvente suman 1.</li>
+    <li><b>Normalidad</b> N: equivalentes de soluto por litro, N = z · M, con z los H⁺ que cede un ácido, los OH⁻ de una base o los electrones de una redox.</li>
   </ul>
   <h2>Cómo se pasa de una a otra</h2>
   <p>Se elige una base de cálculo que haga sencillo el dato: 100 g de disolución para el % en masa, 1 kg de disolvente para la molalidad, 1 mol en total para la fracción molar o 1 L de disolución para la molaridad. Con esa cantidad se sacan los gramos y los moles de soluto y de disolvente, y la densidad (m = ρ V) pasa de masa a volumen.</p>
   <h2>Diluciones</h2>
-  <p>Al añadir disolvente no cambia la cantidad de soluto, así que C<sub>1</sub> V<sub>1</sub> = C<sub>2</sub> V<sub>2</sub>. Para preparar una disolución desde un reactivo comercial se calculan los gramos de soluto puro que hacen falta, se dividen por la riqueza y la densidad da el volumen que hay que medir.</p>
+  <p>Al añadir disolvente no cambia la cantidad de soluto, así que C<sub>1</sub> V<sub>1</sub> = C<sub>2</sub> V<sub>2</sub>. Para preparar una disolución desde un reactivo comercial se calculan los gramos de soluto puro que hacen falta, se dividen por la riqueza y la densidad da el volumen que hay que medir. Con ácidos concentrados, siempre el ácido sobre el agua y nunca al revés.</p>
+  <h2>Propiedades coligativas</h2>
+  <p>Dependen de cuántas partículas de soluto hay, no de cuáles. Con m la molalidad e i el factor de van 't Hoff (las partículas que da cada fórmula al disolverse):</p>
+  <ul>
+    <li><b>Descenso crioscópico</b>: ΔT<sub>c</sub> = i K<sub>c</sub> m. El agua salada congela por debajo de 0 °C.</li>
+    <li><b>Aumento ebulloscópico</b>: ΔT<sub>e</sub> = i K<sub>e</sub> m.</li>
+    <li><b>Presión osmótica</b>: π = i M R T, con M la molaridad y R = 0,082 atm·L/(mol·K).</li>
+    <li><b>Ley de Raoult</b>: la presión de vapor del disolvente baja, P = x<sub>d</sub> P°.</li>
+  </ul>
+  <p>Al revés, midiendo cualquiera de ellas se obtiene la masa molar del soluto. La presión osmótica es la más sensible y sirve para moléculas grandes como las proteínas.</p>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Disoluciones <span id="ver"></span> (beta)</footer>
