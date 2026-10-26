@@ -196,7 +196,7 @@ th { color: var(--muted); font-weight: 500 }
 <div class="wrap">
 <nav class="miga" aria-label="Estás en"><span class="miga-izq"></span><span class="miga-ico" aria-hidden="true">E</span><a href="../">Electromagnetismo</a><span aria-hidden="true">›</span><span>Autoinducción e inducción mutua</span><span class="miga-der"></span></nav>
 <h1>Autoinducción e inducción mutua</h1>
-<p class="lead">Calcula el coeficiente de autoinducción L de solenoides, toroides, cables coaxiales y líneas bifilares, el de inducción mutua M entre dos circuitos, la energía magnética y la fem inducida, y sigue el transitorio de un circuito RL.</p>
+<p class="lead">Calcula el coeficiente de autoinducción L de solenoides, toroides, cables coaxiales y líneas bifilares, toroides con entrehierro, el de inducción mutua M entre dos circuitos y de bobinas acopladas en serie o en paralelo, la energía magnética y la fem inducida, y sigue el transitorio de un circuito RL, también con la fuente que se conecta y desconecta.</p>
 <div class="modos" role="tablist"><button role="tab" id="tab-L" aria-selected="true">Autoinducción L</button><button role="tab" id="tab-M" aria-selected="false">Inducción mutua M</button><button role="tab" id="tab-RL" aria-selected="false">Circuito RL</button></div>
 <div class="layout">
   <div class="card">
@@ -219,11 +219,17 @@ th { color: var(--muted); font-weight: 500 }
   <p>Una corriente I crea un campo B y, con él, un flujo a través del propio circuito. Ese flujo es proporcional a la corriente, y la constante es el coeficiente de autoinducción, que solo depende de la forma del circuito y del medio. Se mide en henrios (H = Wb/A).</p>
   <p class="f m">$Φ = L I$, &ensp; $ε = −L {dI}/{dt}$, &ensp; $U = 1/2 L I^2 = ∫ B^2/(2μ) dV$</p>
   <p>Para calcularlo: halla B con la ley de Ampère suponiendo una corriente I, integra el flujo por una espira y multiplica por el número de espiras. En un solenoide largo sale L = μ<sub>0</sub> N<sup>2</sup> S / l; en un toroide de sección rectangular, L = μ<sub>0</sub> N<sup>2</sup> h ln(b/a) / (2π).</p>
+  <h2>Circuitos magnéticos y entrehierro</h2>
+  <p class="f m">$ℛ = l/{μ S}$, &ensp; $Φ = {N I}/{ℛ_n + ℛ_g}$, &ensp; $L = N^2/ℛ$</p>
+  <p>Un núcleo con un hueco de aire es como dos resistencias en serie: la reluctancia del hueco, g/(μ<sub>0</sub>S), suele pesar más que la de todo el núcleo, porque μ<sub>r</sub> es muy grande. Por eso un entrehierro de milímetros reduce mucho L, pero la hace casi independiente del material.</p>
   <h2>Inducción mutua</h2>
   <p>Si la corriente de un circuito crea flujo en otro, Φ<sub>21</sub> = M I<sub>1</sub> y una corriente variable induce en el segundo ε<sub>2</sub> = −M dI<sub>1</sub>/dt. El coeficiente es el mismo en los dos sentidos (M<sub>12</sub> = M<sub>21</sub>), así que conviene calcularlo con el circuito cuyo campo sea fácil. El coeficiente de acoplamiento k = M / √(L<sub>1</sub> L<sub>2</sub>) va de 0 a 1; vale 1 cuando todo el flujo de uno atraviesa el otro.</p>
+  <p class="f m">$L_{serie} = L_1 + L_2 ± 2M$, &ensp; $L_{paralelo} = {L_1 L_2 − M^2}/{L_1 + L_2 ∓ 2M}$</p>
+  <p>El signo de arriba vale cuando los flujos de las dos bobinas se suman, y el de abajo cuando se oponen. Para dos espiras coaxiales separadas una distancia z, si la pequeña es pequeña, M = μ<sub>0</sub>π N<sub>1</sub>N<sub>2</sub> R<sup>2</sup> r<sup>2</sup> / (2(R<sup>2</sup> + z<sup>2</sup>)<sup>3/2</sup>); para una bobina dentro de un solenoide, M = μ<sub>0</sub> N<sub>1</sub> N<sub>2</sub> π r<sup>2</sup> cos θ / l.</p>
   <h2>Circuito RL</h2>
   <p>La bobina se opone a los cambios de corriente: al cerrar el circuito la corriente no salta a ε/R, sino que crece con la constante de tiempo τ = L/R, y al quitar la fuente decae con esa misma τ mientras la bobina devuelve su energía, que se disipa en la resistencia.</p>
   <p class="f m">$I(t) = ε/R (1 − e^{−t/τ})$, &ensp; $I(t) = I_0 e^{−t/τ}$, &ensp; $τ = L/R$</p>
+  <p class="m">En la carga, la fuente da $W_ε = ε I_0 (t − τ(1 − e^{−t/τ}))$: una parte queda en la bobina, $1/2 L I^2$, y el resto se disipa en R. En la descarga se disipa toda la energía de la bobina. Si la fuente se conecta y desconecta una y otra vez, la corriente acaba oscilando entre un máximo y un mínimo fijos, con una media de $ε/R · t_{on}/T$.</p>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Autoinducción <span id="ver"></span> (beta)</footer>
@@ -354,6 +360,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: temperatura de equilibrio al mezclar hasta cinco cuerpos de agua, hielo, vapor, metales, etanol, vidrio, un calorímetro o una sustancia con tus datos, con los cambios de fase que hagan falta.', 'Si la energía no llega para fundir todo el hielo o condensar todo el vapor, dice cuántos gramos quedan de cada fase.', 'Tabla con el calor de cada cuerpo, el desarrollo etapa por etapa (m c ΔT y m L) y la curva de calentamiento de cada uno.'] },
     ],
     induccion: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Toroide con entrehierro: reluctancia del núcleo y del hueco de aire y la autoinducción que queda.', 'Inducción mutua de dos espiras coaxiales a una distancia y de una bobina girada dentro de un solenoide.', 'Bobinas acopladas en serie y en paralelo, con los flujos que se suman o que se oponen.', 'Circuito RL: balance de energía (lo que da la fuente, lo que guarda la bobina y lo que se disipa en la resistencia) y una fuente que se conecta y desconecta una y otra vez, con la corriente máxima, mínima y media.', 'Los dibujos usan azul para el campo y el segundo circuito, y la gráfica del RL distingue corriente y tensión.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: coeficiente de autoinducción de solenoides (con núcleo), toroides de sección rectangular y circular, cables coaxiales y líneas bifilares, con el desarrollo desde la ley de Ampère.', 'Inducción mutua entre dos solenoides, dos espiras, un hilo y una espira, y una bobina sobre un toroide, o a partir de L₁, L₂ y k, con el coeficiente de acoplamiento.', 'Flujo, energía magnética y fem inducida si das la corriente o cómo cambia.', 'Circuito RL al cerrar el interruptor o al quitar la fuente: constante de tiempo, corriente y tensión en la bobina en cualquier instante y su gráfica.'] },
     ],
@@ -713,9 +720,11 @@ const Mates = (() => {
 
 /* =====================================================================
    Autoinducción e inducción mutua (sin DOM): coeficiente de autoinducción
-   de solenoides, toroides, cables coaxiales y líneas bifilares; coeficiente
-   de inducción mutua de pares típicos; energía magnética, flujo y fem
-   inducida; y el transitorio de un circuito RL. Desarrollo en la forma
+   de solenoides, toroides (también con entrehierro), cables coaxiales y
+   líneas bifilares; coeficiente de inducción mutua de pares típicos y
+   bobinas acopladas en serie y en paralelo; energía magnética, flujo y fem
+   inducida; y el transitorio de un circuito RL (cerrar, abrir o conectar y
+   desconectar una y otra vez), con la energía disipada. Desarrollo en la forma
    simbólica (μ₀ N² S / l) y con números. Unidades del SI.
    ===================================================================== */
 const Induccion = (() => {
@@ -782,6 +791,18 @@ const Induccion = (() => {
         ] };
       },
     },
+    entrehierro: {
+      nombre: 'Toroide con entrehierro', campos: [['N', 'Número de espiras N', '', 1], ['R', 'Radio medio R', 'cm', 1e-2], ['S', 'Sección S', 'cm²', 1e-4], ['mur', 'Permeabilidad relativa del núcleo μ<sub>r</sub>', '', 1], ['g', 'Entrehierro g', 'mm', 1e-3]],
+      valida: ({ R, g }) => { if (g >= 2 * Math.PI * R) throw new Error('El entrehierro no puede ser más largo que el toroide'); },
+      calc: ({ N, R, S, mur, g }) => {
+        const lc = 2 * Math.PI * R - g, Rn = lc / (MU0 * mur * S), Rg = g / (MU0 * S), Rt = Rn + Rg, L = (N * N) / Rt, L0 = (MU0 * mur * N * N * S) / (2 * Math.PI * R);
+        return { L, pasos: [
+          { t: 'Ley de Ampère', html: `Por la línea media del toroide: H<sub>n</sub> l<sub>n</sub> + H<sub>g</sub> g = N I, con l<sub>n</sub> = 2πR − g = ${f(lc)} m de núcleo. Sin dispersión, B es el mismo en el núcleo y en el hueco: H<sub>n</sub> = B/(μ<sub>0</sub>μ<sub>r</sub>) y H<sub>g</sub> = B/μ<sub>0</sub>, así que B = μ<sub>0</sub> N I / (l<sub>n</sub>/μ<sub>r</sub> + g).` },
+          { t: 'Reluctancias', html: `Como en un circuito en serie: ℛ<sub>n</sub> = l<sub>n</sub>/(μ<sub>0</sub>μ<sub>r</sub>S) = ${f(Rn)} A/Wb y ℛ<sub>g</sub> = g/(μ<sub>0</sub>S) = ${f(Rg)} A/Wb. Total ℛ = <b>${f(Rt)} A/Wb</b>${Rg > Rn ? `: el hueco de aire, aunque mide solo ${f(g * 1000)} mm, pesa más que todo el núcleo` : ''}.` },
+          { t: 'Coeficiente de autoinducción', html: `Φ = N I/ℛ por espira, y L = N Φ/I = N<sup>2</sup>/ℛ = ${f(N)}<sup>2</sup> / ${f(Rt)} = <b>${u(L, 'H')}</b>. Sin entrehierro sería μ<sub>0</sub>μ<sub>r</sub>N<sup>2</sup>S/(2πR) = ${u(L0, 'H')}, ${f(L0 / L, 3)} veces más.` },
+        ], B1: N / (Rt * S) };
+      },
+    },
     coaxial: {
       nombre: 'Cable coaxial', campos: [['l', 'Longitud l', 'm', 1], ['a', 'Radio del conductor interior a', 'mm', 1e-3], ['b', 'Radio del conductor exterior b', 'mm', 1e-3]], interior: true,
       valida: ({ a, b }) => { if (b <= a) throw new Error('El radio exterior debe ser mayor que el interior'); },
@@ -839,6 +860,30 @@ const Induccion = (() => {
         ] };
       },
     },
+    'espiras-coaxiales': {
+      nombre: 'Dos espiras coaxiales separadas', campos: [['N1', 'Espiras de la grande N<sub>1</sub>', '', 1], ['R', 'Radio de la grande R', 'cm', 1e-2], ['N2', 'Espiras de la pequeña N<sub>2</sub>', '', 1], ['r', 'Radio de la pequeña r', 'cm', 1e-2], ['z', 'Distancia entre los centros z', 'cm', 1e-2]],
+      valida: ({ R, r }) => { if (r > R) throw new Error('Pon como espira 1 la de radio mayor'); },
+      calc: ({ N1, R, N2, r, z }) => {
+        const D = Math.pow(R * R + z * z, 1.5), M = (MU0 * N1 * N2 * Math.PI * R * R * r * r) / (2 * D);
+        return { M, pasos: [
+          { t: 'Campo de la grande en su eje', html: `B<sub>1</sub>(z) = μ<sub>0</sub> N<sub>1</sub> I<sub>1</sub> R<sup>2</sup> / (2 (R<sup>2</sup> + z<sup>2</sup>)<sup>3/2</sup>) (Biot-Savart), con (R<sup>2</sup> + z<sup>2</sup>)<sup>3/2</sup> = ${f(D)} m<sup>3</sup>.` },
+          { t: 'Flujo en la pequeña', html: `Si la pequeña es pequeña frente a la distancia a los hilos de la grande, B<sub>1</sub> es casi uniforme sobre ella: Φ<sub>21</sub> = N<sub>2</sub> B<sub>1</sub> π r<sup>2</sup>.` },
+          { t: 'Coeficiente de inducción mutua', html: `M = μ<sub>0</sub> π N<sub>1</sub> N<sub>2</sub> R<sup>2</sup> r<sup>2</sup> / (2 (R<sup>2</sup> + z<sup>2</sup>)<sup>3/2</sup>) = <b>${u(M, 'H')}</b>. Con z ≫ R baja como 1/z<sup>3</sup>, igual que el campo de un dipolo.${r > 0.3 * Math.sqrt(R * R + z * z) ? ' Ojo: r no es pequeño frente a √(R² + z²), así que es una aproximación gruesa.' : ''}` },
+        ] };
+      },
+    },
+    'espira-solenoide': {
+      nombre: 'Espira o bobina dentro de un solenoide', campos: [['N1', 'Espiras del solenoide N<sub>1</sub>', '', 1], ['l', 'Longitud del solenoide l', 'cm', 1e-2], ['N2', 'Espiras de la bobina N<sub>2</sub>', '', 1], ['r', 'Radio de la bobina r', 'cm', 1e-2], ['th', 'Ángulo entre los ejes θ', '°', 1]],
+      valida: ({ th }) => { if (th > 180) throw new Error('El ángulo entre los ejes tiene que estar entre 0° y 180°'); },
+      calc: ({ N1, l, N2, r, th }) => {
+        const c = Math.abs(Math.cos((th * Math.PI) / 180)) < 1e-12 ? 0 : Math.cos((th * Math.PI) / 180), M = (MU0 * N1 * N2 * Math.PI * r * r * c) / l;
+        return { M, pasos: [
+          { t: 'Campo del solenoide', html: `B<sub>1</sub> = μ<sub>0</sub> N<sub>1</sub> I<sub>1</sub> / l, uniforme dentro (la bobina tiene que caber dentro y lejos de los extremos).` },
+          { t: 'Flujo en la bobina', html: `Φ<sub>21</sub> = N<sub>2</sub> B<sub>1</sub> π r<sup>2</sup> cos θ: solo cuenta la componente de B perpendicular a la bobina.` },
+          { t: 'Coeficiente de inducción mutua', html: `M = μ<sub>0</sub> N<sub>1</sub> N<sub>2</sub> π r<sup>2</sup> cos θ / l = 4π·10<sup>−7</sup> · ${f(N1)} · ${f(N2)} · π·${f(r)}<sup>2</sup>${th ? ` · cos ${f(th)}°` : ''} / ${f(l)} = <b>${u(M, 'H')}</b>${c === 0 ? ': con los ejes perpendiculares no hay acoplamiento' : ''}. Girando la bobina, M cambia como cos θ (así funciona un generador).` },
+        ] };
+      },
+    },
     'hilo-espira': {
       nombre: 'Hilo recto y espira rectangular coplanaria', campos: [['d', 'Distancia del hilo al lado cercano d', 'cm', 1e-2], ['w', 'Ancho de la espira w', 'cm', 1e-2], ['h', 'Lado paralelo al hilo h', 'cm', 1e-2], ['N2', 'Espiras de la espira N', '', 1]],
       calc: ({ d, w, h, N2 }) => {
@@ -876,7 +921,7 @@ const Induccion = (() => {
     const p = {};
     for (const [k, nom, un, fac] of G.campos) {
       const n = nom.replace(/<[^>]+>/g, '');
-      p[k] = lee(sc, k, n.toLowerCase()) * fac;
+      p[k] = lee(sc, k, n.toLowerCase(), { cero: k === 'th' }) * fac;
       if ((k === 'N' || k === 'N1' || k === 'N2') && !Number.isInteger(p[k])) throw new Error(`${n} debe ser un número entero`);
     }
     if (G.interior) p.macizo = sc.interior === 'macizo';
@@ -891,7 +936,7 @@ const Induccion = (() => {
     const I = lee(sc, 'I', 'la intensidad', { opcional: true, signo: true }), dI = lee(sc, 'dIdt', 'dI/dt', { opcional: true, signo: true });
     if (I !== null) {
       res.flujo = L * I; res.U = 0.5 * L * I * I;
-      pasos.push({ t: `Con I = ${f(I)} A`, html: `Flujo propio Φ = L I = <b>${u(res.flujo, 'Wb')}</b> · energía magnética U = ½ L I<sup>2</sup> = ½ · ${f(L)} · ${f(I)}<sup>2</sup> = <b>${u(res.U, 'J')}</b>${r.B1 ? `<br>Campo dentro: B = μ<sub>0</sub> μ<sub>r</sub> N I / l = ${u(r.B1 * I, 'T')}; la energía también sale de u = B<sup>2</sup>/(2μ<sub>0</sub>μ<sub>r</sub>) por el volumen.` : ''}` });
+      pasos.push({ t: `Con I = ${f(I)} A`, html: `Flujo propio Φ = L I = <b>${u(res.flujo, 'Wb')}</b> · energía magnética U = ½ L I<sup>2</sup> = ½ · ${f(L)} · ${f(I)}<sup>2</sup> = <b>${u(res.U, 'J')}</b>${r.B1 ? `<br>Campo ${sc.geo === 'entrehierro' ? 'en el núcleo y en el hueco' : 'dentro'}: B = ${sc.geo === 'entrehierro' ? 'N I/(ℛ S)' : 'μ<sub>0</sub> μ<sub>r</sub> N I / l'} = ${u(r.B1 * I, 'T')}; la energía también sale de u = B<sup>2</sup>/(2μ) por el volumen.` : ''}` });
     }
     if (dI !== null) {
       res.fem = -L * dI;
@@ -907,6 +952,12 @@ const Induccion = (() => {
     const I1 = lee(sc, 'I1', 'la intensidad I₁', { opcional: true, signo: true }), dI = lee(sc, 'dI1dt', 'dI₁/dt', { opcional: true, signo: true });
     if (I1 !== null) { res.flujo = M * I1; pasos.push({ t: `Con I<sub>1</sub> = ${f(I1)} A`, html: `Flujo en el circuito 2: Φ<sub>21</sub> = M I<sub>1</sub> = <b>${u(res.flujo, 'Wb')}</b>` }); }
     if (dI !== null) { res.fem = -M * dI; pasos.push({ t: `Si I<sub>1</sub> cambia a ${f(dI)} A/s`, html: `fem inducida en el circuito 2: ε<sub>2</sub> = −M dI<sub>1</sub>/dt = −${f(M)} · ${f(dI)} = <b>${f(res.fem)} V</b>` }); }
+    if (r.L1 !== undefined) {
+      const { L1, L2 } = r, D = L1 * L2 - M * M;
+      Object.assign(res, { Ls: L1 + L2 + 2 * M, Lso: L1 + L2 - 2 * M, Lp: D / (L1 + L2 - 2 * M), Lpo: D / (L1 + L2 + 2 * M) });
+      pasos.push({ t: 'Bobinas asociadas en serie', html: `Con los flujos que se suman (terminales homólogos seguidos): L = L<sub>1</sub> + L<sub>2</sub> + 2M = <b>${u(res.Ls, 'H')}</b>. Con los flujos opuestos: L = L<sub>1</sub> + L<sub>2</sub> − 2M = <b>${u(res.Lso, 'H')}</b>. Midiendo las dos se saca M = (L<sub>sumados</sub> − L<sub>opuestos</sub>)/4.` });
+      pasos.push({ t: 'Bobinas asociadas en paralelo', html: `L = (L<sub>1</sub> L<sub>2</sub> − M<sup>2</sup>) / (L<sub>1</sub> + L<sub>2</sub> ∓ 2M): con los flujos que se suman, <b>${u(res.Lp, 'H')}</b>; con los flujos opuestos, <b>${u(res.Lpo, 'H')}</b>.${Math.abs(D) < 1e-12 * L1 * L2 ? ' Con k = 1 el numerador es 0: en paralelo y bien acopladas se comportan como una sola bobina sin ninguna L extra que se oponga.' : ''}` });
+    }
     const I2 = lee(sc, 'I2', 'la intensidad I₂', { opcional: true, signo: true });
     if (I1 !== null && I2 !== null && r.L1 !== undefined) {
       const s = sc.sentido === 'opuesto' ? -1 : 1;
@@ -917,10 +968,11 @@ const Induccion = (() => {
   }
 
   /* ---------- Circuito RL ---------- */
-  // sc: { E (V), R (Ω), L (mH), modo: 'carga'|'descarga', t (ms) }
+  // sc: { E (V), R (Ω), L (mH), modo: 'carga'|'descarga'|'pulsos', ton y toff (ms, en pulsos), t (ms) }
   function rl(sc) {
     const E = lee(sc, 'E', 'la fem de la fuente'), R = lee(sc, 'R', 'la resistencia'), L = lee(sc, 'L', 'la autoinducción') * 1e-3;
     const t = lee(sc, 't', 'el instante', { opcional: true, cero: true }), carga = sc.modo !== 'descarga';
+    if (sc.modo === 'pulsos') return pulsos(sc, E, R, L, t);
     const tau = L / R, I0 = E / R;
     const I = (s) => (carga ? I0 * (1 - Math.exp(-s / tau)) : I0 * Math.exp(-s / tau));
     const VL = (s) => (carga ? E * Math.exp(-s / tau) : -E * Math.exp(-s / tau));
@@ -934,8 +986,35 @@ const Induccion = (() => {
       const s = t * 1e-3, i = I(s);
       Object.assign(res, { It: i, VLt: VL(s), VRt: R * i, Ut: 0.5 * L * i * i });
       pasos.push({ t: `En t = ${f(t)} ms`, html: `I = ${carga ? `${f(I0)} (1 − e<sup>−${f(s)}/${f(tau)}</sup>)` : `${f(I0)} e<sup>−${f(s)}/${f(tau)}</sup>`} = <b>${u(i, 'A')}</b> · V<sub>R</sub> = R I = ${u(R * i, 'V')} · V<sub>L</sub> = L dI/dt = ${u(VL(s), 'V')} · U = ½ L I<sup>2</sup> = ${u(0.5 * L * i * i, 'J')}` });
+      if (carga) {
+        const Wf = E * I0 * (s - tau * (1 - Math.exp(-s / tau))), U = 0.5 * L * i * i;
+        Object.assign(res, { Wf, WR: Wf - U });
+        pasos.push({ t: 'Balance de energía hasta t', html: `La fuente ha dado W<sub>ε</sub> = ∫ε I dt = ε I<sub>0</sub> (t − τ (1 − e<sup>−t/τ</sup>)) = <b>${u(Wf, 'J')}</b>. De ella, ½ L I<sup>2</sup> = ${u(U, 'J')} queda en la bobina y el resto, W<sub>R</sub> = ∫R I<sup>2</sup> dt = <b>${u(Wf - U, 'J')}</b>, se disipa en la resistencia.` });
+      } else {
+        const WR = 0.5 * L * I0 * I0 * (1 - Math.exp((-2 * s) / tau));
+        res.WR = WR;
+        pasos.push({ t: 'Energía disipada hasta t', html: `W<sub>R</sub> = ∫<sub>0</sub><sup>t</sup> R I<sup>2</sup> dt = ½ L I<sub>0</sub><sup>2</sup> (1 − e<sup>−2t/τ</sup>) = <b>${u(WR, 'J')}</b>. Al final se disipa toda la energía que tenía la bobina, ½ L I<sub>0</sub><sup>2</sup> = ${u(0.5 * L * I0 * I0, 'J')}.` });
+      }
     }
     return { p: { E, R, L, carga, t }, res, I, VL, tau, pasos };
+  }
+
+  // la fuente se conecta durante ton y se quita durante toff, una y otra vez (la bobina se descarga por R)
+  function pulsos(sc, E, R, L, t) {
+    const ton = lee(sc, 'ton', 'el tiempo conectada') * 1e-3, toff = lee(sc, 'toff', 'el tiempo desconectada') * 1e-3;
+    const tau = L / R, I0 = E / R, P = ton + toff, a = Math.exp(-ton / tau), b = Math.exp(-toff / tau), A = a * b;
+    const Imax = (I0 * (1 - a)) / (1 - A), Imin = Imax * b, Imed = (I0 * ton) / P;
+    const inicio = (k) => Imin * (1 - Math.pow(A, k));
+    const I = (s) => { const k = Math.floor(s / P), x = s - k * P, i0 = inicio(k); if (x < ton) return I0 + (i0 - I0) * Math.exp(-x / tau); return (I0 + (i0 - I0) * a) * Math.exp(-(x - ton) / tau); };
+    const VL = (s) => { const x = s - Math.floor(s / P) * P; return x < ton ? E - R * I(s) : -R * I(s); };
+    const pasos = [
+      { t: 'Cada tramo', html: `Mientras está conectada, I tiende a ε/R = ${u(I0, 'A')} con τ = L/R = <b>${u(tau, 's')}</b>: I = ε/R + (I<sub>inicio</sub> − ε/R) e<sup>−t/τ</sup>. Al quitar la fuente, la bobina se descarga por R: I = I<sub>fin</sub> e<sup>−t/τ</sup>. Cada tramo empieza con la corriente con la que acabó el anterior, porque la corriente en una bobina no puede saltar.` },
+      { t: 'Régimen permanente', html: `Tras unos ciclos, la corriente sube y baja siempre entre los mismos valores. Imponiendo que un ciclo termine como empieza: I<sub>máx</sub> = (ε/R)(1 − e<sup>−t<sub>on</sub>/τ</sup>) / (1 − e<sup>−T/τ</sup>) = <b>${u(Imax, 'A')}</b> e I<sub>mín</sub> = I<sub>máx</sub> e<sup>−t<sub>off</sub>/τ</sup> = <b>${u(Imin, 'A')}</b>, con T = ${u(P, 's')}.` },
+      { t: 'Corriente media', html: `En un ciclo la tensión media en la bobina es 0, así que R I<sub>media</sub> = ε t<sub>on</sub>/T: I<sub>media</sub> = <b>${u(Imed, 'A')}</b> (${f((100 * ton) / P, 3)} % del tiempo conectada). Es la idea de la regulación por PWM. El rizado es I<sub>máx</sub> − I<sub>mín</sub> = ${u(Imax - Imin, 'A')}${tau > 3 * P ? ', pequeño porque τ es mucho mayor que el periodo' : ''}.` },
+    ];
+    const res = { tau, I0, Imax, Imin, Imed };
+    if (t !== null) { const s = t * 1e-3, i = I(s); Object.assign(res, { It: i, VLt: VL(s), VRt: R * i, Ut: 0.5 * L * i * i }); pasos.push({ t: `En t = ${f(t)} ms`, html: `Va por el ciclo ${Math.floor(s / P) + 1}, ${s - Math.floor(s / P) * P < ton ? 'conectada' : 'desconectada'}: I = <b>${u(i, 'A')}</b>, V<sub>L</sub> = ${u(VL(s), 'V')} y U = ½ L I<sup>2</sup> = ${u(0.5 * L * i * i, 'J')}.` }); }
+    return { p: { E, R, L, carga: true, pulsos: true, ton, toff, t }, res, I, VL, tau, pasos };
   }
 
   const ejemplos = {
@@ -945,18 +1024,22 @@ const Induccion = (() => {
       { clave: 'toroide-rect', nombre: 'Toroide de sección rectangular', sc: { geo: 'toroide-rect', N: '1000', a: '5', b: '8', h: '2', mur: '1', I: '1' } },
       { clave: 'toroide-circ', nombre: 'Toroide de sección circular', sc: { geo: 'toroide-circ', N: '200', R: '10', r: '2', mur: '1' } },
       { clave: 'coaxial', nombre: 'Cable coaxial, conductor interior macizo', sc: { geo: 'coaxial', l: '1', a: '1', b: '4', interior: 'macizo' } },
+      { clave: 'entrehierro', nombre: 'Toroide de hierro con entrehierro', sc: { geo: 'entrehierro', N: '500', R: '10', S: '4', mur: '2000', g: '2', I: '1' } },
       { clave: 'bifilar', nombre: 'Línea bifilar', sc: { geo: 'bifilar', l: '1', d: '10', a: '1', interior: 'hueco' } },
     ],
     M: [
       { clave: 'solenoides', nombre: 'Solenoide dentro de otro', sc: { geo: 'solenoides', N1: '200', r1: '1', N2: '1000', r2: '2', l: '40', dI1dt: '50' } },
       { clave: 'espiras', nombre: 'Espira pequeña en el centro de una grande', sc: { geo: 'espiras', N1: '1', R: '20', N2: '10', r: '1', dI1dt: '1000' } },
+      { clave: 'espiras-coaxiales', nombre: 'Dos espiras coaxiales a una distancia', sc: { geo: 'espiras-coaxiales', N1: '100', R: '10', N2: '20', r: '1', z: '10', dI1dt: '50' } },
+      { clave: 'espira-solenoide', nombre: 'Bobina girada dentro de un solenoide', sc: { geo: 'espira-solenoide', N1: '1000', l: '50', N2: '30', r: '1', th: '60', dI1dt: '100' } },
       { clave: 'hilo-espira', nombre: 'Hilo y espira rectangular', sc: { geo: 'hilo-espira', d: '5', w: '10', h: '20', N2: '1', dI1dt: '200' } },
       { clave: 'toroide-bobina', nombre: 'Bobina sobre un toroide (k = 1)', sc: { geo: 'toroide-bobina', N1: '500', N2: '50', a: '4', b: '6', h: '2', I1: '2', I2: '1', sentido: 'aditivo' } },
-      { clave: 'acoplamiento', nombre: 'Desde L₁, L₂ y k', sc: { geo: 'acoplamiento', L1: '2', L2: '8', k: '0.5' } },
+      { clave: 'acoplamiento', nombre: 'Bobinas acopladas en serie y en paralelo', sc: { geo: 'acoplamiento', L1: '2', L2: '8', k: '0.5' } },
     ],
     RL: [
       { clave: 'carga', nombre: 'Se cierra el interruptor', sc: { E: '12', R: '6', L: '300', modo: 'carga', t: '50' } },
       { clave: 'descarga', nombre: 'La bobina se descarga por la resistencia', sc: { E: '10', R: '100', L: '500', modo: 'descarga', t: '2' } },
+      { clave: 'pulsos', nombre: 'Se conecta y desconecta una y otra vez', sc: { E: '12', R: '10', L: '50', modo: 'pulsos', ton: '5', toff: '5', t: '' } },
     ],
   };
 
@@ -965,7 +1048,8 @@ const Induccion = (() => {
 
 /* =====================================================================
    Autoinducción e inducción mutua: interfaz (pestañas L, M y RL, datos,
-   esquema de la geometría o gráfica del transitorio, resumen y desarrollo).
+   esquema de la geometría o gráfica del transitorio, también con la fuente
+   que se conecta y desconecta, resumen y desarrollo).
    El cálculo está en fisica.js (Induccion).
    ===================================================================== */
 (() => {
@@ -988,9 +1072,10 @@ const Induccion = (() => {
     let h = '', nota = '';
     if (st.tab === 'RL') {
       h = fila('E', 'Fem de la fuente ε', 'V') + fila('R', 'Resistencia R', 'Ω') + fila('L', 'Autoinducción L', 'mH') +
-        selector('modo', 'Qué pasa', [['carga', 'Cerrar el circuito'], ['descarga', 'Quitar la fuente']]) +
+        selector('modo', 'Qué pasa', [['carga', 'Cerrar el circuito'], ['descarga', 'Quitar la fuente'], ['pulsos', 'Conectar y desconectar una y otra vez']]) +
+        (s.modo === 'pulsos' ? fila('ton', 'Tiempo conectada t<sub>on</sub>', 'ms') + fila('toff', 'Tiempo desconectada t<sub>off</sub>', 'ms') : '') +
         '<div class="sep">En un instante</div>' + fila('t', 'Tiempo t', 'ms');
-      nota = 'Deja el tiempo en blanco si solo quieres τ y la gráfica.';
+      nota = s.modo === 'pulsos' ? 'Al desconectar, la bobina se descarga por la misma resistencia. Con t sale el valor en ese instante.' : 'Deja el tiempo en blanco si solo quieres τ y la gráfica. Con t sale también el balance de energía.';
     } else {
       const G = GEOS[st.tab][s.geo] || Object.values(GEOS[st.tab])[0];
       h = selector('geo', st.tab === 'L' ? 'Circuito' : 'Pareja de circuitos', Object.entries(GEOS[st.tab]).map(([k, g]) => [k, g.nombre]));
@@ -1017,6 +1102,7 @@ const Induccion = (() => {
     const t = e.target;
     if (t.tagName !== 'SELECT') return;
     sc()[t.dataset.k] = t.value;
+    if (t.dataset.k === 'modo' && t.value === 'pulsos' && !sc().ton) Object.assign(sc(), { ton: '5', toff: '5' });
     if (t.dataset.k === 'geo') {
       // al cambiar de geometría, rellena los datos que falten con los de su ejemplo
       const ej = I.ejemplos[st.tab].find((x) => x.sc.geo === t.value);
@@ -1064,11 +1150,18 @@ const Induccion = (() => {
       h += r.L1 !== undefined ? caja('L₁ · L₂', `${u(r.L1, 'H', 3)}`, `L₂ = ${u(r.L2, 'H', 3)}`) : caja('Flujo Φ₂₁', r.flujo !== undefined ? u(r.flujo, 'Wb') : '—', r.flujo === undefined ? 'falta I₁' : '');
       h += caja('Fem en el circuito 2', r.fem !== undefined ? `${f(r.fem)} V` : '—', r.fem === undefined ? 'falta dI₁/dt' : '');
       h += r.L1 !== undefined ? caja('Energía U', r.U !== undefined ? u(r.U, 'J') : '—', r.U === undefined ? 'faltan I₁ e I₂' : '') : '';
+      if (r.Ls !== undefined) h += caja('En serie', u(r.Ls, 'H'), `flujos opuestos: ${u(r.Lso, 'H')}`) + caja('En paralelo', u(r.Lp, 'H'), `flujos opuestos: ${u(r.Lpo, 'H')}`);
+    } else if (sol.p.pulsos) {
+      h = caja('Constante de tiempo τ', u(r.tau, 's'), `periodo T = ${u(sol.p.ton + sol.p.toff, 's')}`);
+      h += caja('Entre', `${u(r.Imin, 'A', 3)} y ${u(r.Imax, 'A', 3)}`, 'en régimen permanente');
+      h += caja('Corriente media', u(r.Imed, 'A'), `rizado ${u(r.Imax - r.Imin, 'A', 3)}`);
+      h += caja('I(t)', r.It !== undefined ? u(r.It, 'A') : '—', r.It === undefined ? 'falta t' : `V<sub>L</sub> = ${u(r.VLt, 'V')}`);
     } else {
       h = caja('Constante de tiempo τ', u(r.tau, 's'), `τ ln 2 = ${u(r.tau * Math.LN2, 's')}`);
       h += caja(sol.p.carga ? 'Corriente final' : 'Corriente inicial', u(r.I0, 'A'), `U = ${u(0.5 * sol.p.L * r.I0 * r.I0, 'J')}`);
       h += caja('I(t)', r.It !== undefined ? u(r.It, 'A') : '—', r.It !== undefined ? `${f((100 * r.It) / r.I0, 3)} % de ε/R` : 'falta t');
       h += caja('V<sub>L</sub>(t)', r.VLt !== undefined ? u(r.VLt, 'V') : '—', r.VRt !== undefined ? `V<sub>R</sub> = ${u(r.VRt, 'V')}` : '');
+      if (r.WR !== undefined) h += caja('Disipada en R hasta t', u(r.WR, 'J'), r.Wf !== undefined ? `la fuente dio ${u(r.Wf, 'J')}` : `de ${u(0.5 * sol.p.L * r.I0 * r.I0, 'J')} que tenía`);
     }
     $('#resumen').innerHTML = h;
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('');
@@ -1116,14 +1209,14 @@ const Induccion = (() => {
         const rr = Math.min(H / 2, Math.max(14, (lw * p.r) / p.l));
         if (p.mur > 1) { g.fillStyle = col['--nucleo']; g.fillRect(x0, cy - rr, lw, 2 * rr); texto(g, `núcleo μr = ${f(p.mur)}`, cx, cy - rr - 12); }
         bobina(g, x0, x1, cy, rr, Math.min(p.N, 28), col['--cobre']);
-        g.strokeStyle = col['--accent']; g.fillStyle = col['--accent']; flecha(g, x0 + 10, cy, x1 - 10, cy); texto(g, 'B', x1 - 10, cy - 10, col['--accent']);
+        g.strokeStyle = col['--neg']; g.fillStyle = col['--neg']; flecha(g, x0 + 10, cy, x1 - 10, cy); texto(g, 'B', x1 - 10, cy - 10, col['--neg']);
         texto(g, `N = ${f(p.N)}, l = ${f(p.l * 100)} cm, r = ${f(p.r * 100)} cm`, cx, h - 14);
       } else {
         const r2 = Math.min(H / 2, 60), r1 = r2 * Math.min(1, p.r1 / p.r2);
         bobina(g, x0, x1, cy, r2, Math.min(p.N2, 30), col['--cobre']);
-        bobina(g, x0 + 6, x1 - 6, cy, r1, Math.min(p.N1, 22), col['--accent']);
+        bobina(g, x0 + 6, x1 - 6, cy, r1, Math.min(p.N1, 22), col['--neg']);
         texto(g, `exterior: N₂ = ${f(p.N2)}, r₂ = ${f(p.r2 * 100)} cm`, cx, cy - r2 - 12, col['--cobre']);
-        texto(g, `interior: N₁ = ${f(p.N1)}, r₁ = ${f(p.r1 * 100)} cm · l = ${f(p.l * 100)} cm`, cx, h - 14, col['--accent']);
+        texto(g, `interior: N₁ = ${f(p.N1)}, r₁ = ${f(p.r1 * 100)} cm · l = ${f(p.l * 100)} cm`, cx, h - 14, col['--neg']);
       }
     } else if (geo === 'toroide-rect' || geo === 'toroide-circ' || geo === 'toroide-bobina') {
       const rmax = H / 2;
@@ -1131,60 +1224,86 @@ const Induccion = (() => {
       if (geo === 'toroide-circ') { rb = rmax; ra = rmax * Math.max(0.15, (p.R - p.r) / (p.R + p.r)); } else { rb = rmax; ra = rmax * Math.max(0.15, p.a / p.b); }
       toroide(g, cx, cy, ra, rb, Math.min(geo === 'toroide-bobina' ? p.N1 : p.N, 36), col['--cobre']);
       if (geo === 'toroide-bobina') {
-        g.strokeStyle = col['--accent']; g.lineWidth = 2.4;
+        g.strokeStyle = col['--neg']; g.lineWidth = 2.4;
         for (let i = 0; i < 6; i++) { const a = -0.35 + i * 0.14; g.beginPath(); g.moveTo(cx + (ra - 5) * Math.cos(a), cy + (ra - 5) * Math.sin(a)); g.lineTo(cx + (rb + 5) * Math.cos(a), cy + (rb + 5) * Math.sin(a)); g.stroke(); }
-        g.lineWidth = 1; texto(g, `N₂ = ${f(p.N2)}`, cx + rb + 14, cy, col['--accent'], 'left');
+        g.lineWidth = 1; texto(g, `N₂ = ${f(p.N2)}`, cx + rb + 14, cy, col['--neg'], 'left');
       }
-      g.strokeStyle = col['--accent']; g.fillStyle = col['--accent'];
+      g.strokeStyle = col['--neg']; g.fillStyle = col['--neg'];
       g.beginPath(); g.arc(cx, cy, (ra + rb) / 2, -2.4, -0.9); g.stroke(); const a = -0.9, rm = (ra + rb) / 2; flecha(g, cx + rm * Math.cos(a - 0.05), cy + rm * Math.sin(a - 0.05), cx + rm * Math.cos(a), cy + rm * Math.sin(a));
       texto(g, geo === 'toroide-circ' ? `N = ${f(p.N)}, R = ${f(p.R * 100)} cm, r = ${f(p.r * 100)} cm` : `a = ${f(p.a * 100)} cm, b = ${f(p.b * 100)} cm, h = ${f(p.h * 100)} cm`, 12, 14, col['--muted'], 'left');
+    } else if (geo === 'entrehierro') {
+      const rb = H / 2, ra = rb * 0.62, gap = Math.max(0.05, Math.min(0.4, p.g / p.R)) / 2;
+      g.fillStyle = col['--nucleo']; g.beginPath(); g.arc(cx, cy, rb, gap, 2 * Math.PI - gap); g.arc(cx, cy, ra, 2 * Math.PI - gap, gap, true); g.closePath(); g.fill();
+      g.strokeStyle = col['--cobre']; g.lineWidth = 1.6;
+      for (let i = 0; i < Math.min(p.N, 30); i++) { const a = gap + 0.25 + ((2 * Math.PI - 2 * gap - 0.5) * i) / Math.max(1, Math.min(p.N, 30) - 1); g.beginPath(); g.moveTo(cx + (ra - 3) * Math.cos(a), cy + (ra - 3) * Math.sin(a)); g.lineTo(cx + (rb + 3) * Math.cos(a), cy + (rb + 3) * Math.sin(a)); g.stroke(); }
+      g.lineWidth = 1; g.strokeStyle = col['--neg']; g.fillStyle = col['--neg'];
+      g.beginPath(); g.arc(cx, cy, (ra + rb) / 2, -2.4, -0.9); g.stroke(); const rm = (ra + rb) / 2; flecha(g, cx + rm * Math.cos(-0.95), cy + rm * Math.sin(-0.95), cx + rm * Math.cos(-0.9), cy + rm * Math.sin(-0.9));
+      texto(g, `g = ${f(p.g * 1000)} mm`, cx + rb + 8, cy, col['--ink'], 'left');
+      texto(g, `μr = ${f(p.mur)}, R = ${f(p.R * 100)} cm, S = ${f(p.S * 1e4)} cm²`, 12, 14, col['--muted'], 'left');
+    } else if (geo === 'espiras-coaxiales') {
+      const esc2 = Math.min((w * 0.6) / Math.max(p.z, 1e-9), (H * 0.45) / p.R), R1 = p.R * esc2, r2 = Math.max(5, p.r * esc2), zz = Math.min(p.z * esc2, w * 0.6), x1 = cx - zz / 2, x2 = cx + zz / 2;
+      g.strokeStyle = col['--muted']; g.setLineDash([4, 4]); g.beginPath(); g.moveTo(16, cy); g.lineTo(w - 16, cy); g.stroke(); g.setLineDash([]);
+      g.lineWidth = 2.4; g.strokeStyle = col['--cobre']; g.beginPath(); g.ellipse(x1, cy, Math.max(4, R1 * 0.22), R1, 0, 0, 2 * Math.PI); g.stroke();
+      g.strokeStyle = col['--neg']; g.beginPath(); g.ellipse(x2, cy, Math.max(3, r2 * 0.22), r2, 0, 0, 2 * Math.PI); g.stroke(); g.lineWidth = 1;
+      texto(g, `R = ${f(p.R * 100)} cm, N₁ = ${f(p.N1)}`, x1, cy - R1 - 10, col['--cobre']); texto(g, `r = ${f(p.r * 100)} cm`, x2, cy - r2 - 12, col['--neg']);
+      g.strokeStyle = col['--muted']; g.beginPath(); g.moveTo(x1, cy + R1 + 10); g.lineTo(x2, cy + R1 + 10); g.stroke(); texto(g, `z = ${f(p.z * 100)} cm`, cx, cy + R1 + 22);
+    } else if (geo === 'espira-solenoide') {
+      const lw = Math.min(w * 0.7, 520), x0 = cx - lw / 2, x1 = cx + lw / 2, rr = Math.min(H / 2, 70), th = (p.th * Math.PI) / 180, rb = rr * 0.55;
+      bobina(g, x0, x1, cy, rr, Math.min(p.N1, 30), col['--cobre']);
+      g.strokeStyle = col['--campo']; g.fillStyle = col['--campo']; flecha(g, x0 + 10, cy - rr * 0.8, x0 + 70, cy - rr * 0.8); texto(g, 'B', x0 + 80, cy - rr * 0.8, col['--campo'], 'left');
+      // la bobina pequeña vista de lado, con su normal girada θ respecto al eje
+      g.strokeStyle = col['--neg']; g.lineWidth = 2.4; g.beginPath(); g.ellipse(cx, cy, rb * 0.25, rb, -th, 0, 2 * Math.PI); g.stroke(); g.lineWidth = 1;
+      g.fillStyle = col['--neg']; flecha(g, cx, cy, cx + 50 * Math.cos(th), cy - 50 * Math.sin(th)); texto(g, `θ = ${f(p.th)}°`, cx + 56 * Math.cos(th) + 6, cy - 56 * Math.sin(th), col['--neg'], 'left');
+      texto(g, `N₁ = ${f(p.N1)}, l = ${f(p.l * 100)} cm · bobina: N₂ = ${f(p.N2)}, r = ${f(p.r * 100)} cm`, cx, h - 14);
     } else if (geo === 'coaxial') {
       const rb = H / 2, ra = rb * Math.max(0.08, p.a / p.b);
       circulo(g, cx, cy, rb + 6, col['--cobre']); circulo(g, cx, cy, rb, col['--bg']);
       circulo(g, cx, cy, ra, p.macizo ? col['--cobre'] : null, col['--cobre']);
-      g.strokeStyle = col['--accent']; g.fillStyle = col['--accent'];
+      g.strokeStyle = col['--neg']; g.fillStyle = col['--neg'];
       for (const rr of [ra + (rb - ra) * 0.3, ra + (rb - ra) * 0.7]) { g.beginPath(); g.arc(cx, cy, rr, 0, 2 * Math.PI); g.setLineDash([4, 4]); g.stroke(); g.setLineDash([]); flecha(g, cx + rr, cy + 1, cx + rr, cy - 1); }
-      texto(g, `a = ${f(p.a * 1000)} mm, b = ${f(p.b * 1000)} mm`, 12, 14, col['--muted'], 'left'); texto(g, 'B entre los conductores', cx, h - 10, col['--accent']);
+      texto(g, `a = ${f(p.a * 1000)} mm, b = ${f(p.b * 1000)} mm`, 12, 14, col['--muted'], 'left'); texto(g, 'B entre los conductores', cx, h - 10, col['--neg']);
     } else if (geo === 'bifilar') {
       const sep = Math.min(w * 0.6, 360), ra = Math.max(6, Math.min(40, (sep * p.a) / p.d));
       for (const [x, s] of [[cx - sep / 2, '⊙'], [cx + sep / 2, '⊗']]) { circulo(g, x, cy, ra, col['--cobre']); g.font = '15px system-ui'; texto(g, s, x, cy, col['--panel']); g.font = '12px "IBM Plex Sans", system-ui, sans-serif'; }
-      g.strokeStyle = col['--accent']; g.fillStyle = col['--accent']; flecha(g, cx, cy + 30, cx, cy - 30); texto(g, 'B', cx + 12, cy - 30, col['--accent']);
+      g.strokeStyle = col['--neg']; g.fillStyle = col['--neg']; flecha(g, cx, cy + 30, cx, cy - 30); texto(g, 'B', cx + 12, cy - 30, col['--neg']);
       g.strokeStyle = col['--muted']; g.beginPath(); g.moveTo(cx - sep / 2, cy + ra + 18); g.lineTo(cx + sep / 2, cy + ra + 18); g.stroke(); texto(g, `d = ${f(p.d * 1000)} mm`, cx, cy + ra + 30);
     } else if (geo === 'espiras') {
       const R = H / 2, r = Math.max(6, R * Math.min(0.6, p.r / p.R));
-      circulo(g, cx, cy, R, null, col['--cobre']); circulo(g, cx, cy, r, null, col['--accent']);
-      texto(g, `R = ${f(p.R * 100)} cm, N₁ = ${f(p.N1)}`, cx, cy - R - 10, col['--cobre']); texto(g, `r = ${f(p.r * 100)} cm`, cx, cy + r + 12, col['--accent']);
+      circulo(g, cx, cy, R, null, col['--cobre']); circulo(g, cx, cy, r, null, col['--neg']);
+      texto(g, `R = ${f(p.R * 100)} cm, N₁ = ${f(p.N1)}`, cx, cy - R - 10, col['--cobre']); texto(g, `r = ${f(p.r * 100)} cm`, cx, cy + r + 12, col['--neg']);
     } else if (geo === 'hilo-espira') {
       const esc2 = Math.min((w * 0.7) / (p.d + p.w), (H * 0.9) / p.h), x0 = cx - ((p.d + p.w) * esc2) / 2, xd = x0 + p.d * esc2, xw = xd + p.w * esc2, hh = p.h * esc2;
       g.strokeStyle = col['--cobre']; g.lineWidth = 3; g.beginPath(); g.moveTo(x0, 14); g.lineTo(x0, h - 14); g.stroke(); g.lineWidth = 1;
       g.fillStyle = col['--cobre']; flecha(g, x0, cy + 20, x0, cy - 20, 8); texto(g, 'I₁', x0 - 12, cy, col['--cobre']);
-      g.strokeStyle = col['--accent']; g.lineWidth = 2; g.strokeRect(xd, cy - hh / 2, xw - xd, hh); g.lineWidth = 1;
+      g.strokeStyle = col['--neg']; g.lineWidth = 2; g.strokeRect(xd, cy - hh / 2, xw - xd, hh); g.lineWidth = 1;
       g.font = '13px system-ui'; for (let i = 1; i < 4; i++) texto(g, '⊗', xd + ((xw - xd) * i) / 4, cy, col['--muted']); g.font = '12px "IBM Plex Sans", system-ui, sans-serif';
       texto(g, `d = ${f(p.d * 100)} cm`, (x0 + xd) / 2, cy + hh / 2 + 12); texto(g, `w = ${f(p.w * 100)} cm`, (xd + xw) / 2, cy + hh / 2 + 12);
       texto(g, `h = ${f(p.h * 100)} cm`, xw + 8, cy, col['--muted'], 'left');
     } else {
       const lw = Math.min(w * 0.32, 200);
-      bobina(g, cx - lw - 20, cx - 20, cy, 40, 10, col['--cobre']); bobina(g, cx + 20, cx + lw + 20, cy, 40, 10, col['--accent']);
-      texto(g, `L₁ = ${u(p.L1, 'H')}`, cx - lw / 2 - 20, cy + 58, col['--cobre']); texto(g, `L₂ = ${u(p.L2, 'H')}`, cx + lw / 2 + 20, cy + 58, col['--accent']);
+      bobina(g, cx - lw - 20, cx - 20, cy, 40, 10, col['--cobre']); bobina(g, cx + 20, cx + lw + 20, cy, 40, 10, col['--neg']);
+      texto(g, `L₁ = ${u(p.L1, 'H')}`, cx - lw / 2 - 20, cy + 58, col['--cobre']); texto(g, `L₂ = ${u(p.L2, 'H')}`, cx + lw / 2 + 20, cy + 58, col['--neg']);
       texto(g, `k = ${f(p.k)}`, cx, cy - 58, col['--ink']);
     }
   }
   // transitorio RL: I(t) a la izquierda en A, V_L(t) a la derecha en V
   function grafica(g, w, h) {
-    const { p, tau, res } = sol, T = 5 * tau, m = { l: 52, r: 52, t: 16, b: 34 };
+    const { p, tau, res } = sol, T = p.pulsos ? Math.min(Math.max(5 * tau, 4 * (p.ton + p.toff)), 12 * (p.ton + p.toff)) : 5 * tau, m = { l: 52, r: 52, t: 16, b: 34 };
     const X = (t) => m.l + (t / T) * (w - m.l - m.r), Yi = (i) => h - m.b - (i / res.I0) * (h - m.t - m.b);
-    const Vmax = p.E, Yv = (v) => h - m.b - ((v + (p.carga ? 0 : Vmax)) / Vmax) * (h - m.t - m.b);
+    const Vmax = p.E, Yv = p.pulsos ? (v) => h - m.b - ((v + Vmax) / (2 * Vmax)) * (h - m.t - m.b) : (v) => h - m.b - ((v + (p.carga ? 0 : Vmax)) / Vmax) * (h - m.t - m.b);
     g.strokeStyle = col['--line']; g.beginPath(); g.moveTo(m.l, m.t); g.lineTo(m.l, h - m.b); g.lineTo(w - m.r, h - m.b); g.lineTo(w - m.r, m.t); g.stroke();
-    for (let k = 1; k <= 5; k++) { g.setLineDash([3, 4]); g.beginPath(); g.moveTo(X(k * tau), m.t); g.lineTo(X(k * tau), h - m.b); g.stroke(); g.setLineDash([]); texto(g, `${k}τ`, X(k * tau), h - m.b + 12); }
+    if (p.pulsos) { for (let s = p.ton; s < T; s += p.ton + p.toff) { g.fillStyle = col['--nucleo']; g.fillRect(X(s), m.t, Math.min(X(s + p.toff), w - m.r) - X(s), h - m.t - m.b); } texto(g, 'sombreado: desconectada', w - m.r - 4, h - m.b - 10, col['--muted'], 'right'); }
+    else for (let k = 1; k <= 5; k++) { g.setLineDash([3, 4]); g.beginPath(); g.moveTo(X(k * tau), m.t); g.lineTo(X(k * tau), h - m.b); g.stroke(); g.setLineDash([]); texto(g, `${k}τ`, X(k * tau), h - m.b + 12); }
     texto(g, 't', w - m.r + 10, h - m.b + 12);
-    texto(g, u(res.I0, 'A', 3), m.l - 6, m.t, col['--accent'], 'right'); texto(g, '0', m.l - 6, h - m.b, col['--accent'], 'right');
-    texto(g, `${p.carga ? '' : '−'}${u(Vmax, 'V', 3)}`, w - m.r + 6, p.carga ? m.t : h - m.b, col['--pos'], 'left'); texto(g, '0', w - m.r + 6, p.carga ? h - m.b : m.t, col['--pos'], 'left');
-    const linea = (fn, Y, c) => { g.strokeStyle = c; g.lineWidth = 2; g.beginPath(); for (let i = 0; i <= 200; i++) { const t = (T * i) / 200, x = X(t), y = Y(fn(t)); i ? g.lineTo(x, y) : g.moveTo(x, y); } g.stroke(); g.lineWidth = 1; };
-    linea(sol.I, Yi, col['--accent']); linea(sol.VL, Yv, col['--pos']);
-    texto(g, 'I(t)', m.l + 8, m.t + 6, col['--accent'], 'left'); texto(g, 'tensión en la bobina', m.l + 50, m.t + 6, col['--pos'], 'left');
+    texto(g, u(res.I0, 'A', 3), m.l - 6, m.t, col['--neg'], 'right'); texto(g, '0', m.l - 6, h - m.b, col['--neg'], 'right');
+    if (p.pulsos) { texto(g, u(Vmax, 'V', 3), w - m.r + 6, m.t, col['--pos'], 'left'); texto(g, `−${u(Vmax, 'V', 3)}`, w - m.r + 6, h - m.b, col['--pos'], 'left'); texto(g, `${f(T * 1000, 3)} ms`, w - m.r, h - m.b + 24); }
+    else { texto(g, `${p.carga ? '' : '−'}${u(Vmax, 'V', 3)}`, w - m.r + 6, p.carga ? m.t : h - m.b, col['--pos'], 'left'); texto(g, '0', w - m.r + 6, p.carga ? h - m.b : m.t, col['--pos'], 'left'); }
+    const linea = (fn, Y, c) => { g.strokeStyle = c; g.lineWidth = 2; g.beginPath(); for (let i = 0; i <= 600; i++) { const t = (T * i) / 600, x = X(t), y = Y(fn(t)); i ? g.lineTo(x, y) : g.moveTo(x, y); } g.stroke(); g.lineWidth = 1; };
+    linea(sol.I, Yi, col['--neg']); linea(sol.VL, Yv, col['--pos']);
+    texto(g, 'I(t)', m.l + 8, m.t + 6, col['--neg'], 'left'); texto(g, 'tensión en la bobina', m.l + 50, m.t + 6, col['--pos'], 'left');
     if (p.t !== null && p.t * 1e-3 <= T) {
       const s = p.t * 1e-3;
-      circulo(g, X(s), Yi(sol.I(s)), 4, col['--accent']); circulo(g, X(s), Yv(sol.VL(s)), 4, col['--pos']);
+      circulo(g, X(s), Yi(sol.I(s)), 4, col['--neg']); circulo(g, X(s), Yv(sol.VL(s)), 4, col['--pos']);
       texto(g, `t = ${f(p.t)} ms`, X(s), h - m.b + 24, col['--ink']);
     }
   }

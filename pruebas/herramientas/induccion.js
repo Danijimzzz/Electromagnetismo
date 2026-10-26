@@ -22,15 +22,22 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       'M hilo-espira': [M['hilo-espira'].M, (m0 * 0.2 * Math.log(3)) / (2 * Math.PI)],
       'M toroide-bobina k': [M['toroide-bobina'].M / Math.sqrt(M['toroide-bobina'].L1 * M['toroide-bobina'].L2), 1],
       'M acoplamiento': [M.acoplamiento.M, 0.5 * Math.sqrt(2e-3 * 8e-3)],
+      'L entrehierro': [L.entrehierro.L, 500 ** 2 / ((2 * Math.PI * 0.1 - 0.002) / (m0 * 2000 * 4e-4) + 0.002 / (m0 * 4e-4))],
+      'M espiras-coaxiales': [M['espiras-coaxiales'].M, (m0 * Math.PI * 100 * 20 * 0.01 * 1e-4) / (2 * 0.02 ** 1.5)],
+      'M espira-solenoide': [M['espira-solenoide'].M, (m0 * 1000 * 30 * Math.PI * 1e-4 * 0.5) / 0.5],
+      'M serie': [M.acoplamiento.Ls, 0.014], 'M serie opuesta': [M.acoplamiento.Lso, 0.006], 'M paralelo': [M.acoplamiento.Lp, 0.002], 'M paralelo opuesto': [M.acoplamiento.Lpo, 12e-6 / 0.014],
     };
     for (const [k, [v, e]] of Object.entries(ESP)) if (!cerca(v, e)) mal(`Inducción · ${k}: ${v}, se esperaba ${e}`);
     const c = Induccion.rl(Induccion.ejemplos.RL[0].sc).res, d = Induccion.rl(Induccion.ejemplos.RL[1].sc).res;
     if (!cerca(c.tau, 0.05) || !cerca(c.I0, 2) || !cerca(c.It, 2 * (1 - Math.exp(-1))) || !cerca(c.VLt + c.VRt, 12)) mal(`Inducción · RL carga: ${JSON.stringify(c)}`);
     if (!cerca(d.tau, 0.005) || !cerca(d.It, 0.1 * Math.exp(-0.4)) || !cerca(d.VLt, -d.VRt)) mal(`Inducción · RL descarga: ${JSON.stringify(d)}`);
+    if (!cerca(c.Wf, 12 * 2 * 0.05 * Math.exp(-1)) || !cerca(c.WR, c.Wf - 0.5 * 0.3 * c.It ** 2) || !cerca(d.WR, 0.5 * 0.5 * 0.01 * (1 - Math.exp(-0.8)))) mal(`Inducción · RL energía: ${JSON.stringify([c, d])}`);
+    const pu = Induccion.rl(Induccion.ejemplos.RL.find((e) => e.clave === 'pulsos').sc), e1 = Math.exp(-1);
+    if (!cerca(pu.res.Imax, (1.2 * (1 - e1)) / (1 - e1 * e1)) || !cerca(pu.res.Imin, pu.res.Imax * e1) || !cerca(pu.res.Imed, 0.6) || !cerca(pu.I(0.1), pu.res.Imin, 1e-6) || !cerca(pu.I(0.005), 1.2 * (1 - e1))) mal(`Inducción · RL a pulsos: ${JSON.stringify(pu.res)}`);
     const malas = [() => Induccion.autoinduccion({ geo: 'solenoide', N: '10.5', l: '10', r: '1', mur: '1' }), () => Induccion.autoinduccion({ geo: 'coaxial', l: '1', a: '4', b: '2' }),
       () => Induccion.autoinduccion({ geo: 'bifilar', l: '1', d: '1', a: '1' }), () => Induccion.mutua({ geo: 'acoplamiento', L1: '1', L2: '1', k: '1.2' }), () => Induccion.rl({ E: '1', R: '0', L: '1' })];
     for (const m of malas) { let ok = false; try { m(); } catch (e) { ok = true; } if (!ok) mal(`Inducción: ${m} debería dar un error`); }
-    if (fallos === antes) console.log(`  ✓ Inducción: ${Induccion.ejemplos.L.length} autoinducciones, ${Induccion.ejemplos.M.length} inducciones mutuas y ${Induccion.ejemplos.RL.length} circuitos RL con el valor esperado, y errores`);
+    if (fallos === antes) console.log(`  ✓ Inducción: ${Induccion.ejemplos.L.length} autoinducciones, ${Induccion.ejemplos.M.length} inducciones mutuas y ${Induccion.ejemplos.RL.length} circuitos RL con el valor esperado, serie y paralelo, energía disipada, pulsos y errores`);
   }
 
   return async (browser) => {
