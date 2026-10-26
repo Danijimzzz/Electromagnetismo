@@ -11,6 +11,8 @@
      carpeta      solo si no se llama como la clave (estadistica → distribuciones)
      guarda       clave de localStorage del estado: por defecto '<carpeta>-v1';
                   null si no hay estado que guardar (sin Mis ejercicios)
+   Los fenómenos disponibles de «Física en la vida real» salen igual, en
+   publico/fenomenos/<clave>/ desde fuente/fenomenos/<clave>/pagina.html.
    ===================================================================== */
 const fs = require('fs'), path = require('path'), { execFileSync } = require('child_process');
 const Catalogo = require('./catalogo.js');
@@ -23,10 +25,12 @@ const script = (f) => {
   return ls.filter((l) => !l.startsWith('if (typeof module')).map((l) => l + '\n').join('') + '\n';
 };
 
-const lista = () => Catalogo.asignaturas.flatMap((a) => a.herramientas.filter((h) => h.disponible && h.scripts).map((h) => {
+const lista = () => [...Catalogo.asignaturas.flatMap((a) => a.herramientas.filter((h) => h.disponible && h.scripts).map((h) => {
   const carpeta = h.carpeta || h.clave;
   return { asignatura: a.clave, ...h, carpeta, guarda: h.guarda === undefined ? `${carpeta}-v1` : h.guarda };
-}));
+})),
+  // los fenómenos de «Física en la vida real» (publico/fenomenos/<clave>/), sin estado que guardar
+  ...Catalogo.fenomenos.lista.filter((f) => f.disponible).map((f) => ({ asignatura: 'fenomenos', ...f, carpeta: `fenomenos/${f.clave}`, guarda: null }))];
 
 function pagina(h) {
   let html = '<!doctype html>\n<html lang="es">\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n'
@@ -35,14 +39,16 @@ function pagina(h) {
     + `<meta property="og:title" content="${h.titulo}">\n<meta property="og:description" content="${h.descripcion}">\n`
     + '<meta property="og:image" content="https://electromagnetismo-two.vercel.app/og.png">\n<meta name="twitter:card" content="summary_large_image">\n';
   // diseño común (diseno.js): cabecera de la portada, color de la asignatura y miga con los botones
-  html += execFileSync('node', [path.join(__dirname, 'diseno.js'), h.asignatura], { input: fs.readFileSync(path.join(__dirname, h.carpeta, 'pagina.html')) }).toString();
+  html += execFileSync('node', [path.join(__dirname, 'diseno.js'), h.asignatura, h.clave], { input: fs.readFileSync(path.join(__dirname, h.carpeta, 'pagina.html')) }).toString();
   html += '<script>\n';
   // datos de la página para los scripts comunes que arrancan antes que la app (compartir.js)
   html += `const Pagina = { carpeta: '${h.carpeta}', guarda: ${h.guarda === null ? 'null' : `'${h.guarda}'`} };\n`;
-  for (const f of ['version.js', 'herramienta.js', ...h.scripts, 'biblioteca.js', 'practica.js']) html += script(f);
+  // los fenómenos no tienen Mis ejercicios ni modo práctica
+  const fenomeno = h.asignatura === 'fenomenos';
+  for (const f of ['version.js', 'herramienta.js', ...h.scripts, ...(fenomeno ? [] : ['biblioteca.js', 'practica.js'])]) html += script(f);
   // barra lateral «Mis ejercicios» y modo práctica (no hacen nada en las herramientas sin datos que guardar o preguntar)
   const guarda = h.guarda === null ? 'null' : `'${h.guarda}'`;
-  html += `Biblioteca.monta('${h.carpeta}', ${guarda});\nPractica.monta('${h.carpeta}', ${guarda});\n`;
+  if (!fenomeno) html += `Biblioteca.monta('${h.carpeta}', ${guarda});\nPractica.monta('${h.carpeta}', ${guarda});\n`;
   return html + '</script>\n</html>\n';
 }
 
