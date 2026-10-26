@@ -186,6 +186,42 @@ const Catalogo = {
       ],
     },
   ],
+  // «Física en la vida real»: fenómenos que se ven fuera de clase (el rayo, el fuego de San Telmo…), cada uno con una
+  // animación por pasos y, debajo, la herramienta con la que se calcula. No es una asignatura: portal.js genera su
+  // índice en /fenomenos/ y el bloque «En la vida real» de cada asignatura, y diseno.js el de cada herramienta.
+  // Cada fenómeno: asignaturas que toca, herramientas ('asignatura/clave') con las que se relaciona y dificultad de
+  // construcción (D1 a D4). Los disponibles llevan además scripts, titulo y descripcion, como las herramientas, y su
+  // carpeta es fuente/fenomenos/<clave>/.
+  fenomenos: {
+    clave: 'fenomenos', nombre: 'Física en la vida real', corto: 'Vida real', icono: '✦', color: '#6a4fc2', colorOscuro: '#b39ff7',
+    resumen: 'Fenómenos que has visto alguna vez, como el rayo o el fuego de San Telmo, explicados paso a paso con una animación y con la herramienta que los calcula.',
+    lista: [
+      { clave: 'fuego-san-telmo', nombre: 'El fuego de San Telmo', icono: 'E', disponible: true, dificultad: 'D2', desc: 'Por qué brillan las puntas de los mástiles en una tormenta: efecto punta y descarga corona.', asignaturas: ['electromagnetismo'], herramientas: ['electromagnetismo/electrostatica'],
+        scripts: ['mates.js', 'fenomenos/animacion.js', 'fenomenos/fuego-san-telmo/escena.js'],
+        titulo: 'El fuego de San Telmo, explicado', descripcion: 'Por qué brillan las puntas de los mástiles durante una tormenta: inducción, efecto punta, campo de ruptura del aire y descarga corona, con una animación paso a paso y el cálculo en el simulador de electrostática' },
+      { clave: 'chispa-pomo', nombre: 'La chispa al tocar el pomo', icono: 'q', disponible: false, dificultad: 'D1', desc: 'El cuerpo como condensador: unos 150 pF a 10 kV y su descarga en microsegundos.', asignaturas: ['electromagnetismo', 'circuitos'], herramientas: ['electromagnetismo/condensadores', 'circuitos/transitorios'] },
+      { clave: 'jaula-faraday', nombre: 'La jaula de Faraday', icono: '#', disponible: false, dificultad: 'D1', desc: 'Por qué no pasa nada dentro de un coche alcanzado por un rayo y no hay cobertura en el ascensor.', asignaturas: ['electromagnetismo'], herramientas: ['electromagnetismo/electrostatica', 'electromagnetismo/ondas-em'] },
+      { clave: 'pajaro-cable', nombre: 'El pájaro posado en un cable', icono: 'V', disponible: false, dificultad: 'D1', desc: 'Por qué no se electrocuta: la tensión entre sus patas es casi nula.', asignaturas: ['circuitos'], herramientas: ['circuitos/continua'] },
+      { clave: 'transporte-alta-tension', nombre: 'Por qué la luz viaja en alta tensión', icono: 'I²R', disponible: false, dificultad: 'D1', desc: 'Pérdidas en los cables a 400 kV frente a 230 V.', asignaturas: ['circuitos'], herramientas: ['circuitos/alterna', 'circuitos/continua'] },
+      { clave: 'microondas', nombre: 'La rejilla del microondas', icono: 'λ', disponible: false, dificultad: 'D1', desc: 'Ondas de 12 cm que no pasan por agujeros de milímetros, y cómo calientan el agua.', asignaturas: ['electromagnetismo'], herramientas: ['electromagnetismo/ondas-em'] },
+      { clave: 'radar-sirena', nombre: 'El radar de tráfico y la sirena', icono: 'f′', disponible: false, dificultad: 'D1', desc: 'Cómo cambia la frecuencia con la velocidad.', asignaturas: ['fisica'], herramientas: ['fisica/doppler'] },
+      { clave: 'carbono-14', nombre: 'La datación por carbono 14', icono: '¹⁴C', disponible: false, dificultad: 'D1', desc: 'Desintegración de primer orden y semivida de 5730 años.', asignaturas: ['quimica'], herramientas: ['quimica/cinetica'] },
+      { clave: 'manguera', nombre: 'Tapar la manguera con el dedo', icono: 'v', disponible: false, dificultad: 'D1', desc: 'Ecuación de continuidad y alcance del chorro.', asignaturas: ['fisica'], herramientas: ['fisica/fluidos'] },
+      { clave: 'lluvia-acida', nombre: 'La lluvia ácida y el pH del mar', icono: 'pH', disponible: false, dificultad: 'D1', desc: 'Ácidos débiles y tampones en la naturaleza.', asignaturas: ['quimica'], herramientas: ['quimica/ph'] },
+      { clave: 'linea-alta-tension', nombre: 'La línea de alta tensión y el suelo', icono: 'C′', disponible: false, dificultad: 'D2', desc: 'El cable y el suelo forman un condensador: por qué se enciende un fluorescente debajo.', asignaturas: ['electromagnetismo'], herramientas: ['electromagnetismo/electrostatica'] },
+      { clave: 'rayo', nombre: 'El rayo', icono: 'Q', disponible: false, dificultad: 'D2', desc: 'La nube y el suelo como un condensador gigante: energía, corriente y duración.', asignaturas: ['electromagnetismo', 'circuitos'], herramientas: ['electromagnetismo/condensadores', 'circuitos/transitorios', 'electromagnetismo/electrostatica'] },
+      { clave: 'auroras', nombre: 'Las auroras boreales', icono: 'B', disponible: false, dificultad: 'D2', desc: 'Electrones del viento solar que giran en hélice alrededor del campo de la Tierra.', asignaturas: ['electromagnetismo'], herramientas: ['electromagnetismo/fuerza'] },
+      { clave: 'altavoz-motor', nombre: 'El altavoz y el motor eléctrico', icono: 'F', disponible: false, dificultad: 'D2', desc: 'Fuerza sobre un hilo con corriente y par sobre una bobina.', asignaturas: ['electromagnetismo'], herramientas: ['electromagnetismo/fuerza'] },
+      { clave: 'cocina-induccion', nombre: 'La cocina de inducción', icono: 'ε', disponible: false, dificultad: 'D2', desc: 'Corrientes inducidas que calientan la sartén, y el imán que cae despacio por un tubo de cobre.', asignaturas: ['electromagnetismo'], herramientas: ['electromagnetismo/faraday', 'electromagnetismo/ondas-em'] },
+      { clave: 'cargador-inalambrico', nombre: 'El cargador inalámbrico', icono: 'M', disponible: false, dificultad: 'D2', desc: 'Inducción mutua entre dos bobinas.', asignaturas: ['electromagnetismo'], herramientas: ['electromagnetismo/induccion', 'electromagnetismo/faraday'] },
+      { clave: 'airbag', nombre: 'El airbag y el cinturón', icono: 'Δp', disponible: false, dificultad: 'D2', desc: 'Fuerza media en un choque según la distancia de frenado.', asignaturas: ['fisica'], herramientas: ['fisica/trabajo-y-energia', 'fisica/dinamica'] },
+      { clave: 'tension-paso', nombre: 'La tensión de paso', icono: 'ΔV', disponible: false, dificultad: 'D3', desc: 'Por qué es peligroso acercarse a un cable caído o a un árbol alcanzado por un rayo.', asignaturas: ['electromagnetismo'], herramientas: ['electromagnetismo/electrostatica'] },
+      { clave: 'olla-presion', nombre: 'La olla a presión y el agua en la montaña', icono: 'T', disponible: false, dificultad: 'D3', desc: 'Temperatura de ebullición según la presión.', asignaturas: ['fisica', 'quimica'], herramientas: ['fisica/calorimetria', 'fisica/gases'] },
+      { clave: 'cielo-azul', nombre: 'Por qué el cielo es azul', icono: 'λ⁻⁴', disponible: false, dificultad: 'D3', desc: 'Dispersión de Rayleigh: el azul se dispersa unas 6 veces más que el rojo.', asignaturas: ['electromagnetismo'], herramientas: ['electromagnetismo/ondas-em'] },
+      { clave: 'gps-relatividad', nombre: 'El GPS y la relatividad', icono: 'Δt', disponible: false, dificultad: 'D3', desc: 'Unos 38 µs al día de desfase entre los relojes de los satélites y los de la Tierra.', asignaturas: ['fisica'], herramientas: [] },
+      { clave: 'arcoiris', nombre: 'El arcoíris', icono: '42°', disponible: false, dificultad: 'D4', desc: 'Refracción y reflexión en una gota: por qué sale a 42° y con colores.', asignaturas: ['fisica'], herramientas: [] },
+    ],
+  },
   // direcciones antiguas que llevan a la nueva (portal.js genera la página de aviso, _redirects y vercel.json las redirigen con 301)
   redirecciones: {
     'matematicas/estadistica/': 'estadistica/distribuciones/',

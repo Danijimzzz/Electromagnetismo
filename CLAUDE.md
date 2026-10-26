@@ -24,10 +24,11 @@ Web estática de simuladores y calculadoras de ciencias para la carrera, en espa
 | `fuente/matematicas/` | Común de Matemáticas: `algebra.js` (fracciones, complejos, matrices) y `expresion.js` (expresiones simbólicas). |
 | `fuente/quimica/` | Común de Química: elementos, fórmulas, configuración, disoluciones. |
 | `fuente/<clave>/` | Una carpeta por herramienta (ver abajo). |
+| `fuente/fenomenos/` | «Física en la vida real»: `animacion.js` (motor de la animación por pasos: avanza sola, parar, adelante y atrás), `estilos.css` y una carpeta por fenómeno (`pagina.html` + `escena.js` con los pasos, el dibujo y los datos para abrir la herramienta relacionada). Se dan de alta en `catalogo.js` (`fenomenos.lista`); `portal.js` hace el índice `/fenomenos/` y el bloque «En la vida real» de cada asignatura, y `diseno.js` el de cada herramienta. Sin Mis ejercicios ni práctica; versión común `fenomenos` en version.js. Seguimiento en la base de Notion «Fenómenos (Física en la vida real)». |
 | `fuente/{engine,fmt,physics,presets,canvas,app}.js`, `shell.html`, `guia/` | Simulador de Electrostática: arquitectura propia y más antigua. |
 | `privado/tema3-pdf.js` | Ejercicios del PDF de la asignatura. **Nunca van a `publico/`.** |
 | `pruebas/comprobar.js` | Comprobación común (build, publico/ limpio, diseño, Electrostática, portal, Mis ejercicios, práctica) y bucle de herramientas. `esperados*.json`: resultados de referencia. |
-| `pruebas/herramientas/<carpeta>.js` | Lo de cada herramienta: cálculos a mano en Node y su página en Chromium. |
+| `pruebas/herramientas/<carpeta>.js` (y `fenomenos/<clave>.js`) | Lo de cada herramienta: cálculos a mano en Node y su página en Chromium. |
 | `pruebas/humo.js` | Prueba de humo igual para todas: cambiar un dato, guardarlo, recargar y verlo; modo oscuro y 390 px. |
 | `pruebas/capturas.js` | Rehace las capturas de la guía de Electrostática. |
 | `publico/` | Lo único que se publica. Generado: no se edita a mano. |

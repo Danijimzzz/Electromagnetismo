@@ -26,6 +26,8 @@ const mal = (m) => { fallos++; console.log('  ✗ ' + m); };
 const Catalogo = require(path.join(fuente, 'catalogo.js')), Biblioteca = require(path.join(fuente, 'biblioteca.js'));
 const PUBLICABLES = ['index.html', 'novedades/index.html', 'foro/index.html', 'og.png', 'apple-touch-icon.png', 'legal.css', 'aviso-legal.html', 'privacidad.html', 'cookies.html', 'contacto.html', 'fuentes/stix-two-math.woff2', 'fuentes/OFL-STIX-Two.txt',
   ...Catalogo.asignaturas.flatMap((a) => [`${a.clave}/index.html`, ...a.herramientas.filter((h) => h.disponible).map((h) => `${a.clave}/${h.clave}/index.html`)]),
+  // «Física en la vida real»: el índice y una página por fenómeno disponible
+  'fenomenos/index.html', ...Catalogo.fenomenos.lista.filter((f) => f.disponible).map((f) => `fenomenos/${f.clave}/index.html`),
   // direcciones antiguas: una página que redirige a la nueva y las reglas 301 de Cloudflare
   ...Object.keys(Catalogo.redirecciones).map((v) => `${v}index.html`), '_redirects'];
 const listar = (dir, pre = '') => fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? listar(path.join(dir, e.name), pre + e.name + '/') : [pre + e.name]));
@@ -425,7 +427,7 @@ async function navegador() {
     if (fallos === antes) console.log(`  ✓ Humo: ${r.probadas} herramientas guardan un dato cambiado y lo recuperan al recargar, en modo oscuro y a 390 px, sin errores de consola`);
   }
   // portada y páginas de asignatura: sin errores de consola y sin enlaces internos rotos
-  const portal = solo ? [] : ['index.html', 'novedades/index.html', 'foro/index.html', ...Catalogo.asignaturas.map((a) => `${a.clave}/index.html`), 'electromagnetismo/magnetostatica/index.html', 'quimica/tabla-periodica/index.html', 'fisica/trabajo-y-energia/index.html', 'quimica/masa-molar/index.html', 'quimica/configuracion-electronica/index.html', 'electromagnetismo/condensadores/index.html', 'fisica/tiro-parabolico/index.html', 'quimica/disoluciones/index.html', 'fisica/calorimetria/index.html', 'electromagnetismo/induccion/index.html', 'matematicas/matrices/index.html', 'matematicas/sistemas/index.html', 'estadistica/distribuciones/index.html', 'circuitos/alterna/index.html', 'fisica/dinamica/index.html', 'circuitos/continua/index.html', 'fisica/solido-rigido/index.html', 'fisica/ondas/index.html', 'fisica/doppler/index.html', 'circuitos/resistencias/index.html', 'estadistica/regresion/index.html', 'matematicas/complejos/index.html', 'fisica/fluidos/index.html', 'quimica/ph/index.html', 'fisica/ciclos/index.html', 'matematicas/taylor/index.html', 'matematicas/fourier/index.html', 'matematicas/edos/index.html', 'quimica/cinetica/index.html', 'matematicas/campos/index.html', 'electromagnetismo/fuerza/index.html', 'circuitos/transitorios/index.html', 'estadistica/intervalos/index.html', 'electromagnetismo/ondas-em/index.html', 'fisica/interferencia/index.html', 'matematicas/laplace/index.html', 'matematicas/derivadas/index.html', 'fisica/gases/index.html', 'electromagnetismo/faraday/index.html'];
+  const portal = solo ? [] : ['index.html', 'novedades/index.html', 'foro/index.html', 'fenomenos/index.html', ...Catalogo.asignaturas.map((a) => `${a.clave}/index.html`), 'electromagnetismo/magnetostatica/index.html', 'quimica/tabla-periodica/index.html', 'fisica/trabajo-y-energia/index.html', 'quimica/masa-molar/index.html', 'quimica/configuracion-electronica/index.html', 'electromagnetismo/condensadores/index.html', 'fisica/tiro-parabolico/index.html', 'quimica/disoluciones/index.html', 'fisica/calorimetria/index.html', 'electromagnetismo/induccion/index.html', 'matematicas/matrices/index.html', 'matematicas/sistemas/index.html', 'estadistica/distribuciones/index.html', 'circuitos/alterna/index.html', 'fisica/dinamica/index.html', 'circuitos/continua/index.html', 'fisica/solido-rigido/index.html', 'fisica/ondas/index.html', 'fisica/doppler/index.html', 'circuitos/resistencias/index.html', 'estadistica/regresion/index.html', 'matematicas/complejos/index.html', 'fisica/fluidos/index.html', 'quimica/ph/index.html', 'fisica/ciclos/index.html', 'matematicas/taylor/index.html', 'matematicas/fourier/index.html', 'matematicas/edos/index.html', 'quimica/cinetica/index.html', 'matematicas/campos/index.html', 'electromagnetismo/fuerza/index.html', 'circuitos/transitorios/index.html', 'estadistica/intervalos/index.html', 'electromagnetismo/ondas-em/index.html', 'fisica/interferencia/index.html', 'matematicas/laplace/index.html', 'matematicas/derivadas/index.html', 'fisica/gases/index.html', 'electromagnetismo/faraday/index.html'];
   const antes = fallos;
   for (const f of portal) {
     const page = await browser.newPage({ viewport: { width: 1200, height: 900 } });
@@ -459,6 +461,16 @@ async function navegador() {
       const x = asig, pronto = x.herramientas.filter((h) => !h.disponible).length;
       if ((await page.locator('.cards div.card.off').count()) !== pronto || (await page.locator('.cards a.card').count()) !== x.herramientas.length - pronto) mal(`${f}: las tarjetas «Próximamente» no coinciden con el catálogo o tienen enlace`);
     }
+    if (f === 'fenomenos/index.html') {
+      // una tarjeta por fenómeno (los que faltan, «Próximamente» y sin enlace) y el filtro por asignatura
+      const V = Catalogo.fenomenos, pronto = V.lista.filter((x) => !x.disponible).length;
+      if ((await page.locator('.cards div.card.off').count()) !== pronto || (await page.locator('.cards a.card').count()) !== V.lista.length - pronto) mal('fenomenos: las tarjetas no coinciden con el catálogo');
+      await page.click('.filtro button[data-asig="quimica"]');
+      const vis = await page.locator('.cards [data-asig]:visible').count(), esp = V.lista.filter((x) => x.asignaturas.includes('quimica')).length;
+      if (vis !== esp) mal(`fenomenos: el filtro de Química deja ${vis} fenómenos, se esperaban ${esp}`);
+    }
+    if (asig && Catalogo.fenomenos.lista.some((x) => x.asignaturas.includes(asig.clave)) && !(await page.locator('.vida .mini > *').count())) mal(`${f}: falta el bloque «En la vida real»`);
+    if (!(await page.locator('header.top nav a[href$="fenomenos/"]').count())) mal(`${f}: la cabecera no enlaza «Física en la vida real»`);
     if (f === 'foro/index.html') {
       if (!(await page.locator('h1').textContent()).includes('en construcción')) mal('foro: la página no dice que está en construcción');
     }

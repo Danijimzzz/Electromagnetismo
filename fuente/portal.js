@@ -1,6 +1,7 @@
 #!/usr/bin/env node
-/* Genera la portada (publico/index.html) y una página por asignatura (publico/<asignatura>/index.html)
-   a partir de catalogo.js. Lo llama build.sh; no hace falta ejecutarlo a mano. */
+/* Genera la portada (publico/index.html), una página por asignatura (publico/<asignatura>/index.html), el foro,
+   las novedades y el índice de «Física en la vida real» (publico/fenomenos/index.html) a partir de catalogo.js.
+   Lo llama build.sh; no hace falta ejecutarlo a mano. Las páginas de cada fenómeno las hace herramientas.js. */
 const fs = require('fs'), path = require('path');
 const Catalogo = require('./catalogo.js'), Version = require('./version.js'), Tema = require('./tema.js');
 const publico = path.join(__dirname, '..', 'publico');
@@ -9,6 +10,7 @@ const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
 const icono = 'data:image/svg+xml;base64,' + fs.readFileSync(path.join(__dirname, 'icono.svg')).toString('base64');
 const [m1, m2] = Catalogo.marca, marca = m1 + m2;
 const disponibles = (a) => a.herramientas.filter((h) => h.disponible);
+const V = Catalogo.fenomenos;
 
 const CSS = `
 [style*="--cl:"] { --c:var(--cl) }
@@ -70,6 +72,13 @@ a.card:hover { border-color:var(--c) }
 .obras { max-width:640px; margin:24px auto 0; text-align:center; background:var(--panel); border:1px dashed var(--line); border-radius:14px; padding:36px 24px }
 .obras .ico { width:56px; height:56px; border-radius:14px; font-size:28px; margin:0 auto 14px; font-style:normal } .obras h1 { margin-bottom:8px } .obras p { color:var(--muted); margin:0 auto 10px; max-width:480px }
 .obras a { color:var(--accent); font-weight:600 } .obras a:hover { text-decoration:underline }
+/* «Física en la vida real»: bloque en cada asignatura e índice con filtro por asignatura */
+.vida { margin-top:28px } .vida h2 { font:600 19px var(--f-ui); margin:0 0 4px } .vida > p { color:var(--muted); margin:0 0 12px; font-size:14px } .vida > p a { color:var(--accent); font-weight:600 } .vida > p a:hover { text-decoration:underline }
+.filtro { display:flex; flex-wrap:wrap; gap:6px; margin:-8px 0 18px }
+.filtro button { font:500 13px var(--f-ui); color:var(--ink); background:var(--panel); border:1px solid var(--line); border-radius:99px; padding:4px 12px; cursor:pointer }
+.filtro button[aria-pressed=true] { background:var(--c); border-color:var(--c); color:var(--panel) }
+.filtro button:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.etq { display:flex; flex-wrap:wrap; gap:4px; margin-top:4px } .etq span { font-size:11px; font-weight:600; padding:1px 8px; border-radius:99px; color:var(--c); background:color-mix(in srgb,var(--c) 12%,transparent) }
 .otras { margin-top:32px; font-size:14px; color:var(--muted) } .otras a { color:var(--accent); margin-right:14px; white-space:nowrap } .otras a:hover { text-decoration:underline }
 /* novedades: una línea de tiempo por días y, en ella, una tarjeta por versión con todos sus cambios */
 :root { --nueva:#0d6b66; --mejora:#2a5db5; --arreglo:#9a5b00 }
@@ -101,7 +110,7 @@ footer { text-align:center; font-size:12.5px; color:var(--muted); padding:0 16px
 `;
 
 function pagina({ titulo, desc, raiz, actual, cuerpo, buscar, script }) {
-  const nav = Catalogo.asignaturas.map((a) => `<a href="${raiz}${a.clave}/"${a.clave === actual ? ' aria-current="page"' : ''}>${esc(a.nombre)}</a>`).join('');
+  const nav = [...Catalogo.asignaturas, V].map((a) => `<a href="${raiz}${a.clave}/"${a.clave === actual ? ' aria-current="page"' : ''}>${esc(a.corto || a.nombre)}</a>`).join('');
   return `<!doctype html>
 <html lang="es">
 <meta charset="utf-8">
@@ -132,6 +141,10 @@ ${script ? `<script>${script}</script>\n` : ''}</body>
 }
 
 const estilo = (a) => `--cl:${a.color};--co:${a.colorOscuro}`;
+// ficha pequeña de un fenómeno (bloque «En la vida real» de cada asignatura)
+const fichaFenomeno = (f, raiz) => (f.disponible
+  ? `  <a href="${raiz}fenomenos/${f.clave}/" title="${esc(f.desc)}"><b>${esc(f.nombre)}</b><span>${esc(f.desc)}</span></a>`
+  : `  <div class="off" title="${esc(f.desc)}"><b>${esc(f.nombre)}</b><span><i class="pronto">Próximamente</i> ${esc(f.desc)}</span></div>`);
 const contar = (a) => {
   const n = disponibles(a).length, p = a.herramientas.length - n;
   return n ? `${n} herramientas${p ? ` · ${p} próximamente` : ''}` : 'en preparación';
@@ -141,7 +154,8 @@ const textoBusqueda = (a, h) => esc([a.nombre, h.nombre, h.desc, h.buscar || '']
 // portada: barra lateral con las asignaturas y, a la derecha, una sección por asignatura con sus herramientas
 const lado = `<aside class="lado" aria-label="Asignaturas"><h2>Asignaturas</h2>
 ${Catalogo.asignaturas.map((a) => `  <a href="#${a.clave}" style="${estilo(a)}"><span class="ico s">${esc(a.icono)}</span>${esc(a.nombre)}<small>${disponibles(a).length}</small></a>`).join('\n')}
-  <div class="mas"><h2>La web</h2><a href="novedades/" style="--cl:#0d6b66;--co:#4dbcb0"><span class="ico s">↻</span>Novedades<small>${esc(Version.de('web').current)}</small></a></div></aside>`;
+  <div class="mas"><h2>La web</h2><a href="novedades/" style="--cl:#0d6b66;--co:#4dbcb0"><span class="ico s">↻</span>Novedades<small>${esc(Version.de('web').current)}</small></a>
+  <a href="fenomenos/" style="${estilo(V)}"><span class="ico s">${esc(V.icono)}</span>${esc(V.nombre)}<small>${V.lista.filter((f) => f.disponible).length}</small></a></div></aside>`;
 const secciones = Catalogo.asignaturas.map((a) => {
   const fichas = a.herramientas.map((h) => h.disponible
     ? `  <a href="${a.clave}/${h.clave}/" title="${esc(h.desc)}" data-buscar="${textoBusqueda(a, h)}"><b>${esc(h.nombre)}</b><span>${esc(h.desc)}</span></a>`
@@ -201,6 +215,12 @@ for (const a of Catalogo.asignaturas) {
     return h.disponible ? `<a class="card" href="${h.clave}/">${dentro}</a>` : `<div class="card off">${dentro}</div>`;
   }).join('\n');
   const otras = Catalogo.asignaturas.filter((b) => b !== a).map((b) => `<a href="../${b.clave}/">${esc(b.nombre)}</a>`).join('');
+  const fen = V.lista.filter((f) => f.asignaturas.includes(a.clave)).sort((x, y) => y.disponible - x.disponible);
+  const vida = fen.length ? `<section class="vida" style="${estilo(V)}"><h2>En la vida real</h2>
+<p>Fenómenos que se explican con ${esc(a.nombre)}, paso a paso. <a href="../fenomenos/">Ver todos →</a></p>
+<div class="mini">
+${fen.map((f) => fichaFenomeno(f, '../')).join('\n')}
+</div></section>\n` : '';
   archivos[`${a.clave}/index.html`] = pagina({
     titulo: `${a.nombre} · ${marca}`, desc: a.resumen, raiz: '../', actual: a.clave,
     cuerpo: `<main style="${estilo(a)}">
@@ -210,7 +230,7 @@ for (const a of Catalogo.asignaturas) {
 <div class="cards">
 ${cards}
 </div>
-<p class="otras">Otras asignaturas: ${otras}</p>
+${vida}<p class="otras">Otras asignaturas: ${otras}</p>
 </main>`,
   });
 }
@@ -227,6 +247,37 @@ archivos['foro/index.html'] = pagina({
 </section>
 </main>`,
 });
+
+// «Física en la vida real»: tarjetas de todos los fenómenos (primero los disponibles), con las asignaturas que tocan
+// y un filtro por asignatura
+{
+  const asig = (k) => Catalogo.asignaturas.find((a) => a.clave === k);
+  const usadas = Catalogo.asignaturas.filter((a) => V.lista.some((f) => f.asignaturas.includes(a.clave)));
+  const cards = [...V.lista].sort((x, y) => y.disponible - x.disponible).map((f) => {
+    const etq = f.asignaturas.map((k) => `<span style="${estilo(asig(k))}">${esc(asig(k).nombre)}</span>`).join('');
+    const dentro = `<div class="img" aria-hidden="true">${esc(f.icono)}</div><div class="b"><h2>${esc(f.nombre)}</h2><p>${esc(f.desc)}</p><div class="etq">${etq}</div><span class="t">${f.disponible ? 'Ver la explicación' : 'Próximamente'}</span></div>`;
+    return f.disponible ? `<a class="card" href="${f.clave}/" data-asig="${f.asignaturas.join(' ')}">${dentro}</a>` : `<div class="card off" data-asig="${f.asignaturas.join(' ')}">${dentro}</div>`;
+  }).join('\n');
+  const FILTRO = `(() => {
+  const bs = document.querySelectorAll('.filtro button');
+  for (const b of bs) b.addEventListener('click', () => {
+    for (const x of bs) x.setAttribute('aria-pressed', x === b);
+    for (const c of document.querySelectorAll('.cards [data-asig]')) c.hidden = !!b.dataset.asig && !c.dataset.asig.split(' ').includes(b.dataset.asig);
+  });
+})();`;
+  archivos['fenomenos/index.html'] = pagina({
+    titulo: `${V.nombre} · ${marca}`, desc: V.resumen, raiz: '../', actual: V.clave, script: FILTRO,
+    cuerpo: `<main style="${estilo(V)}">
+<div class="crumb"><a href="../">Inicio</a> / ${esc(V.nombre)}</div>
+<h1>${esc(V.nombre)}</h1>
+<p class="sub">${esc(V.resumen)}</p>
+<div class="filtro" role="group" aria-label="Filtrar por asignatura"><button type="button" aria-pressed="true" data-asig="">Todas</button>${usadas.map((a) => `<button type="button" aria-pressed="false" data-asig="${a.clave}">${esc(a.nombre)}</button>`).join('')}</div>
+<div class="cards">
+${cards}
+</div>
+</main>`,
+  });
+}
 
 // novedades: una página propia con una línea de tiempo por días y una tarjeta por versión con todos sus cambios.
 // El tipo de cada cambio sale de la nota: «Nueva herramienta: X, en Y.» es una herramienta nueva (con enlace),
