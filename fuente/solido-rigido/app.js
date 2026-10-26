@@ -191,8 +191,8 @@
     g.fillStyle = col['--line']; g.strokeStyle = col['--suelo']; g.lineWidth = 1.4;
     g.beginPath(); g.moveTo(x0, y0); g.lineTo(xe, ye); g.lineTo(xe, y0); g.closePath(); g.fill(); g.stroke();
     // baja desde arriba del plano: s es lo recorrido (a escala del dibujo) y φ lo girado
-    const r = Math.max(10, Math.min(26, L * 0.08)), mv = sol.mov(tAnim), s = L * 0.92 - (mv.s / sol.d) * (L * 0.92 - r * 1.2), bx = x0 + s * Math.cos(t) - r * Math.sin(t), by = y0 - s * Math.sin(t) - r * Math.cos(t);
-    rueda(g, bx, by, r, sc.cuerpo, -mv.phi * (sol.R / ((sol.d / (L * 0.92 - r * 1.2)) * r)) - Math.PI / 2);
+    const r = Math.max(10, Math.min(26, L * 0.08)), mv = sol.mov(tAnim), s = L * 0.92 - (mv.s / sol.d) * (L * 0.92 - r * 2.5), bx = x0 + s * Math.cos(t) - r * Math.sin(t), by = y0 - s * Math.sin(t) - r * Math.cos(t);
+    rueda(g, bx, by, r, sc.cuerpo, -mv.phi * (sol.R / ((sol.d / (L * 0.92 - r * 2.5)) * r)) - Math.PI / 2);
     giro(g, bx, by, r + 8, col['--accent'], -1.0, -2.6, true);
     flecha(g, bx, by, bx - 44 * Math.cos(t), by + 44 * Math.sin(t), col['--accent']);
     texto(g, bx - 54 * Math.cos(t), by + 54 * Math.sin(t) + 2, 'a', col['--accent'], 'center', '600 ');
@@ -209,7 +209,7 @@
   }
 
   function dibujaPolea(g, w, h) {
-    const cx = w / 2 - 30, cy = 70, R = Math.min(48, h * 0.16), s = 44, recorre = Math.min(h - s / 2 - 14, cy + R + 140) - (cy + R + 40), mv = sol.mov(tAnim), yh = cy + R + 40 + (mv.y / sol.d) * recorre;
+    const cx = w / 2 - 30, cy = 70, R = Math.min(48, h * 0.16), s = 44, kF = Math.min(90, h * 0.3) / (sol.m * sol.g), recorre = Math.max(10, Math.min(h - s / 2 - 18 - kF * sol.m * sol.g, cy + R + 140) - (cy + R + 40)), mv = sol.mov(tAnim), yh = cy + R + 40 + (mv.y / sol.d) * recorre;
     g.strokeStyle = col['--suelo']; g.lineWidth = 3; g.beginPath(); g.moveTo(cx - 60, 8); g.lineTo(cx + 60, 8); g.moveTo(cx, 8); g.lineTo(cx, cy); g.stroke();
     rueda(g, cx, cy, R, sc.cuerpo, (mv.y / sol.d) * (recorre / R) - Math.PI / 2);
     g.strokeStyle = col['--ink']; g.lineWidth = 1.3; g.beginPath(); g.moveTo(cx + R, cy); g.lineTo(cx + R, yh - s / 2); g.stroke();
