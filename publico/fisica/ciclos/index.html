@@ -5,7 +5,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMwZDZiNjYiLz48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlNmE2NDAiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtZGFzaGFycmF5PSI0IDYuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48cGF0aCBkPSJNMjAgMzJINDQiLz48cGF0aCBkPSJNMjEgMjdDMjcgMTQgMzcgMTQgNDMgMjciLz48cGF0aCBkPSJNMjEgMzdDMjcgNTAgMzcgNTAgNDMgMzciLz48cGF0aCBkPSJNMTcgMjRDMjIgNCA0MiA0IDQ3IDI0Ii8+PHBhdGggZD0iTTE3IDQwQzIyIDYwIDQyIDYwIDQ3IDQwIi8+PC9nPjxjaXJjbGUgY3g9IjE3IiBjeT0iMzIiIHI9IjgiIGZpbGw9IiNlZjdhNjIiLz48Y2lyY2xlIGN4PSI0NyIgY3k9IjMyIiByPSI4IiBmaWxsPSIjNzRhMmYyIi8+PHBhdGggZD0iTTEzIDMyaDhNMTcgMjh2OE00MyAzMmg4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K">
 <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
 <meta property="og:title" content="Ciclos termodinámicos">
-<meta property="og:description" content="Calculadora de ciclos termodinámicos con diagrama p-V animado: Carnot, Otto y Diesel con estados, trabajo, calor y rendimiento, y máquinas térmicas, frigoríficos y bombas de calor comparados con Carnot, paso a paso">
+<meta property="og:description" content="Calculadora de ciclos termodinámicos con diagramas p-V y T-S animados: Carnot, Otto, Diesel, Brayton, Stirling y ciclos propios con estados, trabajo, calor y rendimiento, y máquinas térmicas, frigoríficos y bombas de calor comparados con Carnot, paso a paso">
 <meta property="og:image" content="https://electromagnetismo-two.vercel.app/og.png">
 <meta name="twitter:card" content="summary_large_image">
 <script>(() => {
@@ -26,7 +26,7 @@
   });
 })();</script>
 <title>Ciclos termodinámicos: Carnot, Otto, Diesel y máquinas térmicas · SimulaCiencia</title>
-<meta name="description" content="Calculadora de ciclos termodinámicos en español con diagrama p-V animado: Carnot, Otto y Diesel con los estados, el trabajo, el calor y la energía interna de cada tramo y el rendimiento, y máquinas térmicas, frigoríficos y bombas de calor comparados con Carnot, paso a paso.">
+<meta name="description" content="Calculadora de ciclos termodinámicos en español con diagrama p-V animado: Carnot, Otto, Diesel, Brayton, Stirling y un ciclo propio con los estados, el trabajo, el calor y la energía interna de cada tramo, el diagrama T-S, el rendimiento y la potencia del motor, y máquinas térmicas, frigoríficos y bombas de calor comparados con Carnot, paso a paso.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
@@ -178,6 +178,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
   --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784 } }
 :root[data-theme="dark"] {
   --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784 }
+#ts { height: 220px; margin-top: 8px }
 .tabla { overflow-x: auto; margin-bottom: 10px } table { border-collapse: collapse; font: 13.5px var(--f-ui); font-variant-numeric: tabular-nums; min-width: 100% } th, td { padding: 4px 10px; border-bottom: 1px solid var(--line); text-align: right } th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align: left } th { color: var(--muted); font-weight: 500 } tr.tot td { font-weight: 600 }
 </style>
 <body>
@@ -185,7 +186,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 <div class="wrap">
 <nav class="miga" aria-label="Estás en"><span class="miga-izq"></span><span class="miga-ico" aria-hidden="true">F</span><a href="../">Física general</a><span aria-hidden="true">›</span><span>Ciclos termodinámicos</span><span class="miga-der"></span></nav>
 <h1>Ciclos termodinámicos y máquinas térmicas</h1>
-<p class="lead">Resuelve los ciclos de Carnot, Otto y Diesel con un gas ideal: los estados, el trabajo, el calor y la variación de energía interna de cada tramo y el rendimiento, con el diagrama p-V animado y el cilindro. Y comprueba si una máquina térmica, un frigorífico o una bomba de calor son posibles comparándolos con Carnot.</p>
+<p class="lead">Resuelve los ciclos de Carnot, Otto, Diesel, Brayton, Stirling o uno propio con un gas ideal: los estados, el trabajo, el calor y la variación de energía interna de cada tramo y el rendimiento, con los diagramas p-V y T-S animados y el cilindro. Y comprueba si una máquina térmica, un frigorífico o una bomba de calor son posibles comparándolos con Carnot.</p>
 <div class="layout">
   <div class="card">
     <h2>Datos</h2>
@@ -198,6 +199,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
     <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
     <div class="card"><h2>Diagrama</h2>
       <canvas id="escena" aria-label="Diagrama p-V del ciclo con el cilindro, o esquema de la máquina"></canvas>
+      <canvas id="ts" aria-label="Diagrama T-S del ciclo"></canvas>
       <div class="controles"><button class="btn" id="play" type="button">⏸ Pausa</button><span class="nota" id="leyenda" style="margin:0"></span></div></div>
     <div class="card" id="tablas"><h2>Estados y tramos</h2><div class="tabla"><table id="estados"></table></div><div class="tabla"><table id="tramos"></table></div></div>
     <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
@@ -220,6 +222,13 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
   <h2>Ciclos Otto y Diesel</h2>
   <p class="m">El Otto (motor de gasolina) tiene dos adiabáticas y dos isocoras; su rendimiento solo depende de la relación de compresión $r = V_1/V_2$: $η = 1 − r^{1 − γ}$. En el Diesel la combustión es a presión constante, con relación de corte $r_c = V_3/V_2$, y permite relaciones de compresión mucho mayores.</p>
   <p class="f m">$η_{Diesel} = 1 − {r_c^γ − 1}/{γ r^{γ − 1} (r_c − 1)}$</p>
+  <h2>Ciclos Brayton y Stirling</h2>
+  <p class="m">El Brayton (turbinas de gas y aviones) tiene dos adiabáticas y dos isobaras: el compresor sube la presión en una relación $r_p = P_2/P_1$ y $η = 1 − r_p^{−(γ − 1)/γ}$. El Stirling tiene dos isotermas y dos isocoras; con un regenerador que guarda el calor de una isocora y lo devuelve en la otra, alcanza el rendimiento de Carnot.</p>
+  <h2>Diagrama T-S</h2>
+  <p class="m">La entropía de un gas ideal cambia en $ΔS = n C_v ln {T_b}/{T_a} + n R ln {V_b}/{V_a}$. En el diagrama T-S las adiabáticas reversibles son verticales y las isotermas, horizontales: el Carnot es un rectángulo. El calor de un tramo es el área bajo la curva, $Q = ∫ T dS$, y el área encerrada es el trabajo neto.</p>
+  <h2>Potencia de un motor</h2>
+  <p class="m">En un motor de cuatro tiempos cada cilindro completa un ciclo cada dos vueltas del cigüeñal, así que $P = N_{cil} · W · rpm/120$, con W el trabajo de un ciclo en julios.</p>
+  <p>Para encadenar transformaciones a partir de un estado (y la teoría cinética de los gases), abre <a href="../gases/">Gases ideales</a>.</p>
   <h2>Frigoríficos y bombas de calor</h2>
   <p class="m">Usan trabajo para llevar calor del foco frío al caliente. Su eficiencia es $COP = Q_f/W$ para un frigorífico y $COP = Q_c/W$ para una bomba de calor, como mucho ${T_f}/{T_c − T_f}$ y ${T_c}/{T_c − T_f}$. Ninguna máquina puede superar a la de Carnot: si lo hiciera, la entropía del universo disminuiría (segundo principio).</p>
 </section>
@@ -462,6 +471,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ecuación de estado PV = nRT con P, V, T y n en varias unidades, los moles a partir de la masa y la densidad del gas.', 'Transformaciones isoterma, isobara, isocora y adiabática encadenadas, con el trabajo, el calor y la variación de energía interna de cada tramo, y ciclos con su rendimiento comparado con el de Carnot.', 'Diagrama P-V con las isotermas y el área del ciclo.', 'Teoría cinética: velocidades cuadrática media, media y más probable, energía cinética media y la distribución de Maxwell.'] },
     ],
     ciclos: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Nuevos ciclos Brayton (turbina de gas) y Stirling, este con y sin regenerador.', 'Ciclo propio: das la presión y el volumen de tres o cuatro estados y el tipo de cada tramo (isocora, isobara, recta, isoterma o adiabática).', 'Diagrama T-S animado junto al p-V y la variación de entropía de cada tramo en la tabla y en el desarrollo.', 'Potencia de un motor Otto o Diesel a partir de las revoluciones por minuto y el número de cilindros.', 'Modo práctica con enunciado: ejercicios al azar de cada ciclo y de máquinas térmicas.', 'Enlace a Gases ideales para encadenar transformaciones.'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['Arreglo: en el móvil, las fórmulas largas del desarrollo se cortaban por la derecha; ahora bajan de línea en cada igual.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ciclos de Carnot, Otto y Diesel con un gas ideal, con la tabla de estados, el trabajo, el calor y la energía interna de cada tramo y el rendimiento comparado con su fórmula y con Carnot.', 'Máquinas térmicas, frigoríficos y bombas de calor: el dato que falta, el rendimiento o la eficiencia, el límite de Carnot y si la máquina es posible, con la entropía del universo.', 'Diagrama p-V con un punto que recorre el ciclo y el cilindro con el émbolo, y el esquema de flujos de energía de las máquinas.'] },
     ],
@@ -704,8 +714,10 @@ const Mates = (() => {
 
 /* =====================================================================
    Ciclos termodinámicos y máquinas térmicas (sin DOM): los ciclos de
-   Carnot, Otto y Diesel con un gas ideal (estados, trabajo, calor y
-   variación de energía interna de cada tramo y el rendimiento), y las
+   Carnot, Otto, Diesel, Brayton, Stirling y uno propio dado por sus
+   estados, con un gas ideal (estados, trabajo, calor, variación de energía
+   interna y de entropía de cada tramo, el rendimiento y la potencia de un
+   motor a partir de las revoluciones), y las
    máquinas térmicas, frigoríficos y bombas de calor con el límite de
    Carnot y la variación de entropía del universo.
    Presiones en kPa, volúmenes en L, temperaturas en K y energías en J.
@@ -751,22 +763,39 @@ const Ciclos = (() => {
     } else if (tipo === 'isocora') {
       W = 0; Q = U;
       html = `Isocora: $W = 0$ y $Q = ΔU = n C_v (T_${hasta} − T_${de}) = ${f(n)} · ${f(G.Cv)} · (${f(b.T)} − ${f(a.T)})$ = <b>${f(Q)} J</b>`;
+    } else if (tipo === 'recta') {
+      W = ((a.P + b.P) / 2) * (b.V - a.V); Q = U + W;
+      html = `Recta en el diagrama p-V: el trabajo es el área del trapecio, $W = {P_${de} + P_${hasta}}/2 · (V_${hasta} − V_${de}) = {${f(a.P)} + ${f(b.P)}}/2 · (${f(b.V)} − ${f(a.V)})$ = ${f(W)} J, $ΔU = n C_v ΔT = ${f(U)}$ J y $Q = ΔU + W$ = <b>${f(Q)} J</b>`;
     } else {
       W = a.P * (b.V - a.V); Q = n * G.Cp * (b.T - a.T);
       html = `Isobara a ${f(a.P / 1000)} kPa: $W = P ΔV = ${f(a.P)} · (${f(b.V)} − ${f(a.V)})$ = ${f(W)} J, $Q = n C_p ΔT = ${f(n)} · ${f(G.Cp)} · (${f(b.T)} − ${f(a.T)})$ = <b>${f(Q)} J</b>, $ΔU = Q − W$ = ${f(U)} J`;
     }
-    return { de, a: hasta, nom, tipo, W, Q, U, html };
+    // variación de entropía del gas: ΔS = n C_v ln(T_b/T_a) + n R ln(V_b/V_a)
+    const S = tipo === 'adiabatica' ? 0 : n * G.Cv * Math.log(b.T / a.T) + n * R * Math.log(b.V / a.V);
+    // en una recta de p-V la temperatura puede pasar por un máximo entre los dos estados
+    let Tpico = Math.max(a.T, b.T);
+    if (tipo === 'recta') { const dP = b.P - a.P, dV = b.V - a.V, s0 = -(a.P * dV + a.V * dP) / (2 * dP * dV); if (s0 > 0 && s0 < 1) Tpico = Math.max(Tpico, ((a.P + dP * s0) * (a.V + dV * s0)) / (n * R)); }
+    return { de, a: hasta, nom, tipo, W, Q, U, S, Tpico, html };
   }
-  const NOMBRE = { isoterma: 'isoterma', adiabatica: 'adiabática', isocora: 'isocora', isobara: 'isobara' };
+  const NOMBRE = { isoterma: 'isoterma', adiabatica: 'adiabática', isocora: 'isocora', isobara: 'isobara', recta: 'recta en p-V' };
 
   // balance común de un ciclo
   function balance(est, tramos, pasos, formula) {
     const W = tramos.reduce((s, t) => s + t.W, 0), Qabs = tramos.reduce((s, t) => s + Math.max(0, t.Q), 0), Qced = tramos.reduce((s, t) => s + Math.min(0, t.Q), 0);
-    const eta = W / Qabs, Tmax = Math.max(...est.map((e) => e.T)), Tmin = Math.min(...est.map((e) => e.T)), etaC = 1 - Tmin / Tmax;
+    const eta = W / Qabs, Tmax = Math.max(...est.map((e) => e.T), ...tramos.map((t) => t.Tpico)), Tmin = Math.min(...est.map((e) => e.T)), etaC = 1 - Tmin / Tmax;
     pasos.push({ t: 'Balance del ciclo', html: `Vuelve al estado inicial, así que $ΔU = 0$ y $W_{neto} = Q_{neto}$ = <b>${f(W)} J</b><br>Calor absorbido $Q_{abs} = ${f(Qabs)}$ J, cedido $Q_{ced} = ${f(Qced)}$ J` });
     pasos.push({ t: 'Rendimiento', html: `$η = {W_{neto}}/{Q_{abs}} = {${f(W)}}/{${f(Qabs)}}$ = <b>${f(100 * eta, 3)} %</b>${formula ? `<br>${formula}` : ''}` });
     pasos.push({ t: 'Comparado con Carnot', html: `Una máquina de Carnot entre la temperatura más alta y la más baja del ciclo tendría $η_C = 1 − T_{mín}/T_{máx} = 1 − ${f(Tmin)}/${f(Tmax)}$ = ${f(100 * etaC, 3)} %, el máximo posible entre esas temperaturas.` });
+    pasos.push({ t: 'Entropía de cada tramo (diagrama T-S)', html: `En un gas ideal $ΔS = n C_v ln {T_b}/{T_a} + n R ln {V_b}/{V_a}$ (0 en las adiabáticas reversibles): ${tramos.map((t) => `${t.nom}: ${f(t.S)} J/K`).join(', ')}. La suma es 0 porque S es función de estado. En el diagrama T-S el área encerrada también es el trabajo neto.` });
     return { W, Qabs, Qced, eta, Tmax, Tmin, etaC };
+  }
+  // potencia de un motor de cuatro tiempos: un ciclo cada dos vueltas en cada cilindro
+  function potencia(sc, W, pasos) {
+    const rpm = lee(sc, 'rpm', 'las revoluciones por minuto', { opcional: true });
+    if (rpm === null) return null;
+    const cil = lee(sc, 'cil', 'el número de cilindros', { opcional: true }) ?? 1, P = (cil * W * rpm) / 120;
+    pasos.push({ t: 'Potencia del motor', html: `En un motor de cuatro tiempos cada cilindro hace un ciclo cada dos vueltas: $P = {N_{cil} · W · rpm}/{2 · 60} = {${f(cil)} · ${f(W)} · ${f(rpm)}}/{120}$ = <b>${f(P / 1000)} kW</b> (${f(P / 735.5)} CV). Es la potencia del ciclo ideal; la de un motor real es bastante menor.` });
+    return P;
   }
   // estado en unidades de clase, para la tabla
   const estado = (nom, P, V, T) => ({ nom, P, V, T });
@@ -819,7 +848,8 @@ const Ciclos = (() => {
     const tramos = ['adiabatica', 'isocora', 'adiabatica', 'isocora'].map((t, i) => tramo(t, est[i], est[(i + 1) % 4], n, G, est[i].nom, est[(i + 1) % 4].nom));
     for (const t of tramos) pasos.push({ t: `Tramo ${t.nom} (${NOMBRE[t.tipo]})`, html: t.html });
     const b = balance(est, tramos, pasos, `Con la fórmula del ciclo Otto: $η = 1 − r^{1 − γ} = 1 − ${f(r)}^{${f(1 - G.gam)}} = ${f(100 * (1 - r ** (1 - G.gam)), 3)}$ %: solo depende de la relación de compresión.`);
-    return { modo: 'otto', G, n, r, est, tramos, ...b, pasos };
+    const Pot = potencia(sc, b.W, pasos);
+    return { modo: 'otto', G, n, r, est, tramos, ...b, Pot, pasos };
   }
 
   /* ---------- Ciclo Diesel ---------- */
@@ -839,8 +869,71 @@ const Ciclos = (() => {
     for (const t of tramos) pasos.push({ t: `Tramo ${t.nom} (${NOMBRE[t.tipo]})`, html: t.html });
     const etaF = 1 - (rc ** G.gam - 1) / (G.gam * r ** (G.gam - 1) * (rc - 1));
     const b = balance(est, tramos, pasos, `Con la fórmula del ciclo Diesel: $η = 1 − {r_c^γ − 1}/{γ r^{γ − 1} (r_c − 1)} = ${f(100 * etaF, 3)}$ %. Un Otto con la misma r tendría ${f(100 * (1 - r ** (1 - G.gam)), 3)} %.`);
-    return { modo: 'diesel', G, n, r, rc, est, tramos, ...b, pasos };
+    const Pot = potencia(sc, b.W, pasos);
+    return { modo: 'diesel', G, n, r, rc, est, tramos, ...b, Pot, pasos };
   }
+
+  /* ---------- Ciclo Brayton (turbina de gas) ---------- */
+  // sc: { gas, rp (P2/P1), T1, P1 (kPa), V1 (L), T3 (entrada de la turbina) }
+  function brayton(sc) {
+    const G = gasDe(sc), rp = lee(sc, 'rp', 'la relación de presiones');
+    if (rp <= 1) throw new Error('La relación de presiones tiene que ser mayor que 1');
+    const I = inicial(sc, G), { T1, P1, V1, n } = I, e = (G.gam - 1) / G.gam;
+    const T2 = T1 * rp ** e, P2 = P1 * rp, V2 = V1 * rp ** (-1 / G.gam), T3 = lee(sc, 'T3', 'la temperatura a la entrada de la turbina');
+    if (T3 <= T2) throw new Error(`La temperatura a la entrada de la turbina tiene que ser mayor que la de salida del compresor (${f(T2)} K)`);
+    const V3 = (V2 * T3) / T2, T4 = T3 * rp ** -e, V4 = (V1 * T4) / T1;
+    const pasos = [I.paso,
+      { t: '1→2: compresor (adiabática)', html: `$P_2 = r_p P_1 = ${f(P2 / 1000)}$ kPa, $T_2 = T_1 r_p^{(γ − 1)/γ} = ${f(T1)} · ${f(rp)}^{${f(e)}}$ = ${f(T2)} K, $V_2 = V_1 r_p^{−1/γ}$ = ${f(V2 * 1000)} L` },
+      { t: '2→3: cámara de combustión (isobara)', html: `Llega a $T_3 = ${f(T3)}$ K a presión constante: $V_3 = V_2 T_3/T_2$ = ${f(V3 * 1000)} L` },
+      { t: '3→4: turbina (adiabática)', html: `$T_4 = T_3 r_p^{−(γ − 1)/γ}$ = ${f(T4)} K, $P_4 = P_1$, $V_4 = V_1 T_4/T_1$ = ${f(V4 * 1000)} L` }];
+    const est = [estado('1', P1, V1, T1), estado('2', P2, V2, T2), estado('3', P2, V3, T3), estado('4', P1, V4, T4)];
+    const tramos = ['adiabatica', 'isobara', 'adiabatica', 'isobara'].map((t, i) => tramo(t, est[i], est[(i + 1) % 4], n, G, est[i].nom, est[(i + 1) % 4].nom));
+    for (const t of tramos) pasos.push({ t: `Tramo ${t.nom} (${NOMBRE[t.tipo]})`, html: t.html });
+    const b = balance(est, tramos, pasos, `Con la fórmula del ciclo Brayton: $η = 1 − r_p^{−(γ − 1)/γ} = 1 − ${f(rp)}^{−${f(e)}} = ${f(100 * (1 - rp ** -e), 3)}$ %: solo depende de la relación de presiones.`);
+    return { modo: 'brayton', G, n, rp, est, tramos, ...b, pasos };
+  }
+
+  /* ---------- Ciclo Stirling ---------- */
+  // sc: { gas, n, Tc, Tf, V1 (mínimo), V2 (máximo) }: isoterma caliente, isocora, isoterma fría, isocora
+  function stirling(sc) {
+    const G = gasDe(sc), Tc = lee(sc, 'Tc', 'la temperatura del foco caliente'), Tf = lee(sc, 'Tf', 'la temperatura del foco frío');
+    if (Tf >= Tc) throw new Error('El foco frío tiene que estar a menos temperatura que el caliente');
+    const n = lee(sc, 'n', 'el número de moles'), V1 = lee(sc, 'V1', 'el volumen mínimo') / 1000, V2 = lee(sc, 'V2', 'el volumen máximo') / 1000;
+    if (V2 <= V1) throw new Error('El volumen máximo tiene que ser mayor que el mínimo');
+    const P = (V, T) => (n * R * T) / V;
+    const est = [estado('1', P(V1, Tc), V1, Tc), estado('2', P(V2, Tc), V2, Tc), estado('3', P(V2, Tf), V2, Tf), estado('4', P(V1, Tf), V1, Tf)];
+    const pasos = [{ t: 'Gas y estados', html: `Gas ideal ${G.nom}: $${G.frac} = ${f(G.Cv)}$ J/(mol·K), con n = ${f(n)} mol. Dos isotermas, a $T_c = ${f(Tc)}$ K y $T_f = ${f(Tf)}$ K, unidas por dos isocoras entre $V_1 = ${f(V1 * 1000)}$ L y $V_2 = ${f(V2 * 1000)}$ L. Las presiones salen de $P = nRT/V$.` }];
+    const tramos = ['isoterma', 'isocora', 'isoterma', 'isocora'].map((t, i) => tramo(t, est[i], est[(i + 1) % 4], n, G, est[i].nom, est[(i + 1) % 4].nom));
+    for (const t of tramos) pasos.push({ t: `Tramo ${t.nom} (${NOMBRE[t.tipo]})`, html: t.html });
+    const Wn = tramos.reduce((s2, t) => s2 + t.W, 0), etaReg = Wn / tramos[0].Q;
+    const b = balance(est, tramos, pasos, `Con un regenerador ideal, el calor que suelta el gas en la isocora 2→3 se guarda y se le devuelve en la 4→1; entonces solo se absorbe en la isoterma caliente y $η = W/Q_{12} = ${f(Wn)}/${f(tramos[0].Q)} = ${f(100 * etaReg, 3)}$ %, igual que Carnot.`);
+    return { modo: 'stirling', G, n, est, tramos, ...b, etaReg, pasos };
+  }
+
+  /* ---------- Ciclo propio: estados y tipo de cada tramo ---------- */
+  // sc: { gas, n, P1..P4 (kPa), V1..V4 (L; el 4 opcional), t12, t23, t34, tfin (el que vuelve al 1): 'auto' | 'isoterma' | 'adiabatica' }
+  function propio(sc) {
+    const G = gasDe(sc), n = lee(sc, 'n', 'el número de moles'), est = [];
+    for (let i = 1; i <= 4; i++) {
+      const P = lee(sc, `P${i}`, `la presión del estado ${i}`, { opcional: i === 4 }), V = lee(sc, `V${i}`, `el volumen del estado ${i}`, { opcional: i === 4 });
+      if (i === 4 && (P === null) !== (V === null)) throw new Error('Para el estado 4 hacen falta la presión y el volumen (o ninguno, para un ciclo de tres tramos)');
+      if (P !== null) est.push(estado(String(i), P * 1000, V / 1000, (P * V) / (n * R)));
+    }
+    const N = est.length, pasos = [{ t: 'Estados', html: `Gas ideal ${G.nom}, n = ${f(n)} mol. Cada temperatura sale de $T = PV/(nR)$: ${est.map((e) => `$T_${e.nom} = ${f(e.T)}$ K`).join(', ')}.` }];
+    const tramos = [];
+    for (let i = 0; i < N; i++) {
+      const a = est[i], b = est[(i + 1) % N], k = i === N - 1 ? 'tfin' : `t${a.nom}${b.nom}`, pedido = sc[k] || 'auto', cerca = (x, y) => Math.abs(x - y) <= 1e-6 * Math.max(Math.abs(x), Math.abs(y));
+      if (cerca(a.P, b.P) && cerca(a.V, b.V)) throw new Error(`Los estados ${a.nom} y ${b.nom} son el mismo`);
+      let tipo = cerca(a.V, b.V) ? 'isocora' : cerca(a.P, b.P) ? 'isobara' : 'recta';
+      if (pedido === 'isoterma') { if (Math.abs(a.P * a.V - b.P * b.V) > 0.01 * a.P * a.V) throw new Error(`El tramo ${a.nom}→${b.nom} no puede ser una isoterma: PV pasa de ${f(a.P * a.V)} a ${f(b.P * b.V)} J (tendría que ser igual)`); tipo = 'isoterma'; }
+      if (pedido === 'adiabatica') { if (Math.abs(a.P * a.V ** G.gam - b.P * b.V ** G.gam) > 0.01 * a.P * a.V ** G.gam) throw new Error(`El tramo ${a.nom}→${b.nom} no puede ser una adiabática: PV^γ no se conserva entre esos estados`); tipo = 'adiabatica'; }
+      tramos.push(tramo(tipo, a, b, n, G, a.nom, b.nom));
+    }
+    for (const t of tramos) pasos.push({ t: `Tramo ${t.nom} (${NOMBRE[t.tipo]})`, html: t.html });
+    const b = balance(est, tramos, pasos, W0(tramos) < 0 ? 'El trabajo neto sale negativo: el ciclo va en sentido antihorario en el diagrama p-V, así que no es un motor sino un frigorífico (o una bomba de calor).' : '');
+    return { modo: 'propio', G, n, est, tramos, ...b, pasos };
+  }
+  const W0 = (tramos) => tramos.reduce((s2, t) => s2 + t.W, 0);
 
   /* ---------- Máquina, frigorífico o bomba de calor ---------- */
   // sc: { tipo: 'motor' | 'frigorifico' | 'bomba', Qc, Qf, W (J, dos de los tres), Tc, Tf (K, opcionales) }
@@ -877,34 +970,42 @@ const Ciclos = (() => {
     if (sc.modo === 'otto') return otto(sc);
     if (sc.modo === 'diesel') return diesel(sc);
     if (sc.modo === 'maquina') return maquina(sc);
+    if (sc.modo === 'brayton') return brayton(sc);
+    if (sc.modo === 'stirling') return stirling(sc);
+    if (sc.modo === 'propio') return propio(sc);
     return carnot(sc);
   }
 
   const ejemplos = [
     { clave: 'carnot', nombre: 'Ciclo de Carnot entre 600 K y 300 K', sc: { modo: 'carnot', gas: 'di', Tc: '600', Tf: '300', n: '1', V1: '10', V2: '20' } },
-    { clave: 'carnot-mono', nombre: 'Carnot con un gas monoatómico', sc: { modo: 'carnot', gas: 'mono', Tc: '500', Tf: '350', n: '0.5', V1: '5', V2: '15' } },
-    { clave: 'otto', nombre: 'Motor de gasolina (ciclo Otto)', sc: { modo: 'otto', gas: 'di', r: '8', T1: '300', P1: '100', V1: '0.5', datos: 'T3', T3: '1800' } },
-    { clave: 'otto-calor', nombre: 'Ciclo Otto con el calor de la combustión', sc: { modo: 'otto', gas: 'di', r: '10', T1: '290', P1: '95', V1: '0.6', datos: 'Q', Q: '800' } },
-    { clave: 'diesel', nombre: 'Motor diésel', sc: { modo: 'diesel', gas: 'di', r: '18', rc: '2', T1: '300', P1: '100', V1: '1' } },
+    { clave: 'carnot-mono', nombre: 'Carnot con un gas monoatómico', sc: { modo: 'carnot', gas: 'mono', Tc: '500', Tf: '350', n: '0,5', V1: '5', V2: '15' } },
+    { clave: 'otto', nombre: 'Motor de gasolina (ciclo Otto)', sc: { modo: 'otto', gas: 'di', r: '8', T1: '300', P1: '100', V1: '0,5', datos: 'T3', T3: '1800', rpm: '', cil: '' } },
+    { clave: 'otto-calor', nombre: 'Ciclo Otto con el calor de la combustión', sc: { modo: 'otto', gas: 'di', r: '10', T1: '290', P1: '95', V1: '0,6', datos: 'Q', Q: '800', rpm: '', cil: '' } },
+    { clave: 'otto-potencia', nombre: 'Potencia de un motor de 4 cilindros a 3000 rpm', sc: { modo: 'otto', gas: 'di', r: '9', T1: '300', P1: '100', V1: '0,4', datos: 'T3', T3: '2000', rpm: '3000', cil: '4' } },
+    { clave: 'diesel', nombre: 'Motor diésel', sc: { modo: 'diesel', gas: 'di', r: '18', rc: '2', T1: '300', P1: '100', V1: '1', rpm: '', cil: '' } },
+    { clave: 'brayton', nombre: 'Turbina de gas (ciclo Brayton)', sc: { modo: 'brayton', gas: 'di', rp: '10', T1: '300', P1: '100', V1: '1', T3: '1400' } },
+    { clave: 'stirling', nombre: 'Motor Stirling', sc: { modo: 'stirling', gas: 'mono', Tc: '700', Tf: '300', n: '1', V1: '1', V2: '3' } },
+    { clave: 'rectangulo', nombre: 'Ciclo rectangular (dos isobaras y dos isocoras)', sc: { modo: 'propio', gas: 'mono', n: '1', P1: '100', V1: '10', P2: '300', V2: '10', P3: '300', V3: '30', P4: '100', V4: '30', t12: 'auto', t23: 'auto', t34: 'auto', tfin: 'auto' } },
+    { clave: 'triangulo', nombre: 'Ciclo triangular con una recta en p-V', sc: { modo: 'propio', gas: 'di', n: '0,5', P1: '100', V1: '10', P2: '300', V2: '10', P3: '100', V3: '30', P4: '', V4: '', t12: 'auto', t23: 'auto', t34: 'auto', tfin: 'auto' } },
     { clave: 'motor', nombre: 'Máquina térmica: ¿es posible?', sc: { modo: 'maquina', tipo: 'motor', Qc: '1000', Qf: '', W: '350', Tc: '500', Tf: '300' } },
     { clave: 'imposible', nombre: 'Un inventor promete un 60 %', sc: { modo: 'maquina', tipo: 'motor', Qc: '1000', Qf: '400', W: '', Tc: '600', Tf: '300' } },
     { clave: 'frigorifico', nombre: 'Frigorífico doméstico', sc: { modo: 'maquina', tipo: 'frigorifico', Qc: '', Qf: '300', W: '100', Tc: '298', Tf: '268' } },
     { clave: 'bomba', nombre: 'Bomba de calor para calefacción', sc: { modo: 'maquina', tipo: 'bomba', Qc: '3500', Qf: '', W: '1000', Tc: '308', Tf: '278' } },
   ];
 
-  return { resolver, carnot, otto, diesel, maquina, ejemplos, f, R, GASES };
+  return { resolver, carnot, otto, diesel, brayton, stirling, propio, maquina, ejemplos, f, R, GASES };
 })();
 
 /* =====================================================================
    Ciclos termodinámicos: interfaz (modo, datos, resultados, tabla de
-   estados y tramos, diagrama p-V con un punto que recorre el ciclo y el
-   cilindro con el émbolo, o el esquema de flujos de una máquina, y
+   estados y tramos, diagramas p-V y T-S con un punto que recorre el ciclo
+   y el cilindro con el émbolo, o el esquema de flujos de una máquina, y
    desarrollo). El cálculo está en ciclos/fisica.js (Ciclos).
    ===================================================================== */
 (() => {
   const { $, esc, copia, txt } = Herramienta;
   const C = Ciclos, f = C.f, CLAVE = 'ciclos-v1';
-  const MODOS = [['carnot', 'Ciclo de Carnot'], ['otto', 'Ciclo Otto (gasolina)'], ['diesel', 'Ciclo Diesel'], ['maquina', 'Máquina, frigorífico o bomba de calor']];
+  const MODOS = [['carnot', 'Ciclo de Carnot'], ['otto', 'Ciclo Otto (gasolina)'], ['diesel', 'Ciclo Diesel'], ['brayton', 'Ciclo Brayton (turbina de gas)'], ['stirling', 'Ciclo Stirling'], ['propio', 'Ciclo propio (estados en p-V)'], ['maquina', 'Máquina, frigorífico o bomba de calor']];
 
   let sc = copia(C.ejemplos[0].sc);
   try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && MODOS.some(([k]) => k === g.modo)) sc = g; } catch (e) { /* sin almacenamiento */ }
@@ -921,6 +1022,9 @@ const Ciclos = (() => {
     carnot: 'El ciclo empieza en el estado 1 con una expansión isoterma a la temperatura del foco caliente, de V₁ a V₂.',
     otto: 'La relación de compresión es r = V₁/V₂. La combustión se da con la temperatura que alcanza el gas o con el calor que recibe.',
     diesel: 'La relación de corte es V₃/V₂: cuánto se expande el gas mientras se inyecta el combustible.',
+    brayton: 'La relación de presiones es r_p = P₂/P₁: la que da el compresor. T₃ es la temperatura de los gases a la entrada de la turbina.',
+    stirling: 'Dos isotermas y dos isocoras entre el volumen mínimo V₁ y el máximo V₂. El ciclo empieza en el estado 1 con una expansión isoterma a la temperatura caliente.',
+    propio: 'Da la presión y el volumen de cada estado, en orden; el cuarto es opcional (ciclo de tres tramos). Entre dos estados con el mismo V o la misma P el tramo es isocora o isobara; si no, es una recta en p-V, salvo que digas que es una isoterma o una adiabática. Para encadenar transformaciones a partir de un estado, abre Gases ideales.',
     maquina: 'Escribe dos de los tres (Q del foco caliente, Q del foco frío y W) y deja el otro vacío. Con las temperaturas de los focos se compara con Carnot.',
   };
   function formulario() {
@@ -929,14 +1033,23 @@ const Ciclos = (() => {
     else if (sc.modo === 'otto') {
       h += gas() + fila('r', 'Relación de compresión r') + fila('T1', 'Temperatura inicial', 'K') + fila('P1', 'Presión inicial', 'kPa') + fila('V1', 'Volumen inicial (cilindrada)', 'L');
       h += elige('datos', 'Combustión', [['T3', 'Conozco la temperatura máxima'], ['Q', 'Conozco el calor que recibe']]) + (sc.datos === 'Q' ? fila('Q', 'Calor de la combustión', 'J') : fila('T3', 'Temperatura máxima T₃', 'K'));
-    } else if (sc.modo === 'diesel') h += gas() + fila('r', 'Relación de compresión r') + fila('rc', 'Relación de corte r<sub>c</sub>') + fila('T1', 'Temperatura inicial', 'K') + fila('P1', 'Presión inicial', 'kPa') + fila('V1', 'Volumen inicial', 'L');
-    else {
+      h += motorF();
+    } else if (sc.modo === 'diesel') h += gas() + fila('r', 'Relación de compresión r') + fila('rc', 'Relación de corte r<sub>c</sub>') + fila('T1', 'Temperatura inicial', 'K') + fila('P1', 'Presión inicial', 'kPa') + fila('V1', 'Volumen inicial', 'L') + motorF();
+    else if (sc.modo === 'brayton') h += gas() + fila('rp', 'Relación de presiones r<sub>p</sub>') + fila('T1', 'Temperatura del aire que entra', 'K') + fila('P1', 'Presión del aire que entra', 'kPa') + fila('V1', 'Volumen inicial', 'L') + fila('T3', 'Temperatura a la entrada de la turbina T₃', 'K');
+    else if (sc.modo === 'stirling') h += gas() + fila('Tc', 'Temperatura del foco caliente', 'K') + fila('Tf', 'Temperatura del foco frío', 'K') + fila('n', 'Moles de gas', 'mol') + fila('V1', 'Volumen mínimo V₁', 'L') + fila('V2', 'Volumen máximo V₂', 'L');
+    else if (sc.modo === 'propio') {
+      const tipoT = (k, nom) => elige(k, nom, [['auto', 'Isocora, isobara o recta'], ['isoterma', 'Isoterma'], ['adiabatica', 'Adiabática']]);
+      h += gas() + fila('n', 'Moles de gas', 'mol');
+      for (let i = 1; i <= 4; i++) h += sep(`Estado ${i}${i === 4 ? ' (opcional)' : ''}`) + fila(`P${i}`, `Presión P${'₁₂₃₄'[i - 1]}`, 'kPa') + fila(`V${i}`, `Volumen V${'₁₂₃₄'[i - 1]}`, 'L');
+      h += sep('Tramos') + tipoT('t12', 'Tramo 1→2') + tipoT('t23', 'Tramo 2→3') + tipoT('t34', 'Tramo 3→4') + tipoT('tfin', 'Tramo que vuelve al 1');
+    } else {
       h += elige('tipo', 'Qué es', [['motor', 'Una máquina térmica (motor)'], ['frigorifico', 'Un frigorífico'], ['bomba', 'Una bomba de calor']]);
       h += fila('Qc', 'Calor del foco caliente Q<sub>c</sub>', 'J') + fila('Qf', 'Calor del foco frío Q<sub>f</sub>', 'J') + fila('W', 'Trabajo W', 'J') + sep('Opcional') + fila('Tc', 'Temperatura del foco caliente', 'K') + fila('Tf', 'Temperatura del foco frío', 'K');
     }
     $('#campos').innerHTML = h;
     $('#nota').textContent = NOTAS[sc.modo];
   }
+  function motorF() { return sep('Opcional: potencia del motor') + fila('rpm', 'Revoluciones por minuto', 'rpm') + fila('cil', 'Número de cilindros'); }
   const vacioC = (v) => v === undefined || v === null || String(v).trim() === '';
   $('#campos').addEventListener('input', (e) => { const t = e.target; if (t.tagName !== 'INPUT') return; sc[t.dataset.k] = t.value; $('#ejemplos').value = ''; calcula(); });
   $('#campos').addEventListener('change', (e) => {
@@ -961,7 +1074,7 @@ const Ciclos = (() => {
 
   /* ---------- Cálculo ---------- */
   const dato = (t, v) => `<div><span>${t}</span><b>${v}</b></div>`;
-  const NOMT = { isoterma: 'isoterma', adiabatica: 'adiabática', isocora: 'isocora', isobara: 'isobara' };
+  const NOMT = { isoterma: 'isoterma', adiabatica: 'adiabática', isocora: 'isocora', isobara: 'isobara', recta: 'recta' };
   function calcula() {
     const err = $('#error');
     try { sol = C.resolver(sc); } catch (e) {
@@ -976,10 +1089,10 @@ const Ciclos = (() => {
       ley = 'El grosor de cada flecha es proporcional a la energía que pasa en cada ciclo.';
       $('#tablas').hidden = true;
     } else {
-      h = dato('Rendimiento', `η = ${f(100 * sol.eta, 3)} %`) + dato('Trabajo neto', `W = ${f(sol.W)} J`) + dato('Calor absorbido', `Q<sub>abs</sub> = ${f(sol.Qabs)} J`) + dato('Calor cedido', `Q<sub>ced</sub> = ${f(sol.Qced)} J`) + dato('Carnot entre T<sub>máx</sub> y T<sub>mín</sub>', `η<sub>C</sub> = ${f(100 * sol.etaC, 3)} %`);
-      ley = 'El punto recorre el ciclo y el cilindro muestra el émbolo y la temperatura del gas. El área encerrada es el trabajo neto.';
+      h = dato('Rendimiento', `η = ${f(100 * sol.eta, 3)} %`) + (sol.Pot ? dato('Potencia del motor', `P = ${f(sol.Pot / 1000)} kW`) : '') + (sol.etaReg ? dato('Con regenerador ideal', `η = ${f(100 * sol.etaReg, 3)} %`) : '') + dato('Trabajo neto', `W = ${f(sol.W)} J`) + dato('Calor absorbido', `Q<sub>abs</sub> = ${f(sol.Qabs)} J`) + dato('Calor cedido', `Q<sub>ced</sub> = ${f(sol.Qced)} J`) + dato('Carnot entre T<sub>máx</sub> y T<sub>mín</sub>', `η<sub>C</sub> = ${f(100 * sol.etaC, 3)} %`);
+      ley = 'El punto recorre el ciclo y el cilindro muestra el émbolo y la temperatura del gas. Abajo, el mismo ciclo en el diagrama T-S. En los dos, el área encerrada es el trabajo neto.';
       $('#estados').innerHTML = '<tr><th>Estado</th><th>P (kPa)</th><th>V (L)</th><th>T (K)</th></tr>' + sol.est.map((e) => `<tr><td>${e.nom}</td><td>${f(e.P / 1000)}</td><td>${f(e.V * 1000)}</td><td>${f(e.T)}</td></tr>`).join('');
-      $('#tramos').innerHTML = '<tr><th>Tramo</th><th>Proceso</th><th>W (J)</th><th>Q (J)</th><th>ΔU (J)</th></tr>' + sol.tramos.map((t) => `<tr><td>${t.nom}</td><td>${NOMT[t.tipo]}</td><td>${f(t.W)}</td><td>${f(t.Q)}</td><td>${f(t.U)}</td></tr>`).join('') + `<tr class="tot"><td>Ciclo</td><td></td><td>${f(sol.W)}</td><td>${f(sol.W)}</td><td>0</td></tr>`;
+      $('#tramos').innerHTML = '<tr><th>Tramo</th><th>Proceso</th><th>W (J)</th><th>Q (J)</th><th>ΔU (J)</th><th>ΔS (J/K)</th></tr>' + sol.tramos.map((t) => `<tr><td>${t.nom}</td><td>${NOMT[t.tipo]}</td><td>${f(t.W)}</td><td>${f(t.Q)}</td><td>${f(t.U)}</td><td>${f(t.S)}</td></tr>`).join('') + `<tr class="tot"><td>Ciclo</td><td></td><td>${f(sol.W)}</td><td>${f(sol.W)}</td><td>0</td><td>0</td></tr>`;
       $('#tablas').hidden = false;
     }
     $('#resumen').innerHTML = h; $('#leyenda').textContent = ley;
@@ -1005,6 +1118,7 @@ const Ciclos = (() => {
     if (t.tipo === 'isocora') return { V: a.V, P: a.P + (b.P - a.P) * s };
     const V = a.V + (b.V - a.V) * s;
     if (t.tipo === 'isobara') return { V, P: a.P };
+    if (t.tipo === 'recta') return { V, P: a.P + (b.P - a.P) * s };
     if (t.tipo === 'isoterma') return { V, P: (a.P * a.V) / V };
     return { V, P: a.P * (a.V / V) ** sol.G.gam };
   }
@@ -1018,6 +1132,7 @@ const Ciclos = (() => {
     const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h); g.lineCap = 'round'; g.lineJoin = 'round';
     if (!sol) return;
     if (!col['--ink']) colores();
+    $('#ts').hidden = sol.modo === 'maquina';
     if (sol.modo === 'maquina') return flujos(g, w, h);
     // diagrama p-V
     const ml = 56, mt = 18, mb = 34, wd = Math.min(w * 0.66, w - 150), mr = w - wd;
@@ -1050,6 +1165,26 @@ const Ciclos = (() => {
     else if (t.Q < -1e-9) { flecha(g, cx + cw + 4, cb - alto / 2, 26, 0, col['--tension'], 3); texto(g, cx + cw + 8, cb - alto / 2 - 14, 'sale Q', col['--tension'], 'left'); }
     else texto(g, cx + cw + 8, cb - 10, 'aislado', col['--muted'], 'left');
     texto(g, cx, mt, `${t.nom}: ${NOMT[t.tipo]}`, col['--ink'], 'left', '600 ');
+    diagramaTS(t, u - i);
+  }
+  /* ---------- Diagrama T-S ---------- */
+  // entropía respecto al estado 1: S = n C_v ln(T/T₁) + n R ln(V/V₁)
+  const entropia = (q) => { const e1 = sol.est[0], T = (q.P * q.V) / (sol.n * C.R); return { T, S: sol.n * sol.G.Cv * Math.log(T / e1.T) + sol.n * C.R * Math.log(q.V / e1.V) }; };
+  function diagramaTS(tAct, sAct) {
+    const { g, w, h } = Herramienta.lienzo('#ts');
+    if (!w || !sol || sol.modo === 'maquina') return;
+    const pts = sol.tramos.map((t) => Array.from({ length: 41 }, (_, k) => entropia(enTramo(t, k / 40))));
+    const todos = pts.flat(), Smin = Math.min(...todos.map((p) => p.S)), Smax = Math.max(...todos.map((p) => p.S)), Tmax = Math.max(...todos.map((p) => p.T)) * 1.06, Tmin0 = Math.min(...todos.map((p) => p.T)) * 0.85;
+    const ml = 56, mt = 18, mb = 34, mr = 16, dS = Smax - Smin || 1;
+    const X = (S) => ml + ((S - Smin + 0.06 * dS) / (1.12 * dS)) * (w - ml - mr), Y = (T) => mt + (1 - (T - Tmin0) / (Tmax - Tmin0)) * (h - mt - mb);
+    g.strokeStyle = col['--muted']; g.lineWidth = 1; g.beginPath(); g.moveTo(ml, mt); g.lineTo(ml, h - mb); g.lineTo(w - mr, h - mb); g.stroke();
+    texto(g, ml - 8, mt, 'T (K)', col['--muted'], 'right'); texto(g, w - mr, h - mb - 10, 'S − S₁ (J/K)', col['--muted'], 'right');
+    for (const T of [sol.Tmin, sol.Tmax]) texto(g, ml - 6, Y(T), txt(f(T, 3)), col['--muted'], 'right');
+    for (const S of [Smin, Smax]) texto(g, X(S), h - mb + 14, txt(f(S, 3)), col['--muted']);
+    g.beginPath(); pts.flat().forEach((p, k) => (k ? g.lineTo(X(p.S), Y(p.T)) : g.moveTo(X(p.S), Y(p.T)))); g.closePath(); g.fillStyle = col['--accent']; g.globalAlpha = 0.12; g.fill(); g.globalAlpha = 1;
+    sol.tramos.forEach((t, i) => { g.strokeStyle = t.Q > 1e-9 ? col['--peso'] : t.Q < -1e-9 ? col['--tension'] : col['--ink']; g.lineWidth = 2.4; g.beginPath(); pts[i].forEach((p, k) => (k ? g.lineTo(X(p.S), Y(p.T)) : g.moveTo(X(p.S), Y(p.T)))); g.stroke(); });
+    sol.est.forEach((e, i) => { const p = pts[i][0]; punto(g, X(p.S), Y(p.T), 4, col['--ink']); texto(g, X(p.S) + 10, Y(p.T) - 10, e.nom, col['--ink'], 'left', '600 '); });
+    const q = entropia(enTramo(tAct, sAct)); punto(g, X(q.S), Y(q.T), 6.5, colorT(q.T));
   }
   // máquina: focos y flechas de energía
   function flujos(g, w, h) {
@@ -1083,8 +1218,38 @@ const Ciclos = (() => {
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { colores(); dibuja(); });
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('ciclos').current;
+  /* ---------- Modo práctica: un ejercicio con enunciado ---------- */
+  function azar() {
+    const ent = (a, b) => a + Math.floor(Math.random() * (b - a + 1)), de = (l) => l[ent(0, l.length - 1)], c = (x) => String(x).replace('.', ',');
+    const tipos = [
+      () => ({ modo: 'carnot', gas: de(['di', 'mono']), Tc: String(ent(5, 9) * 100), Tf: String(ent(25, 40) * 10), n: c(de([0.5, 1, 2])), V1: String(ent(2, 10)), V2: '' }),
+      () => ({ modo: 'otto', gas: 'di', r: String(ent(7, 11)), T1: '300', P1: '100', V1: c(de([0.4, 0.5, 0.6])), datos: 'T3', T3: String(ent(15, 22) * 100), rpm: Math.random() < 0.5 ? '' : String(ent(2, 6) * 1000), cil: '4' }),
+      () => ({ modo: 'diesel', gas: 'di', r: String(ent(15, 22)), rc: c(de([1.5, 2, 2.5, 3])), T1: '300', P1: '100', V1: c(de([0.5, 1])), rpm: '', cil: '' }),
+      () => ({ modo: 'brayton', gas: 'di', rp: String(ent(6, 16)), T1: '300', P1: '100', V1: '1', T3: String(ent(11, 16) * 100) }),
+      () => ({ modo: 'stirling', gas: de(['mono', 'di']), Tc: String(ent(5, 9) * 100), Tf: '300', n: '1', V1: '1', V2: String(ent(2, 4)) }),
+      () => ({ modo: 'propio', gas: de(['mono', 'di']), n: '1', P1: '100', V1: '10', P2: String(ent(2, 4) * 100), V2: '10', P3: '', V3: String(ent(2, 4) * 10), P4: '100', V4: '', t12: 'auto', t23: 'auto', t34: 'auto', tfin: 'auto' }),
+      () => ({ modo: 'maquina', tipo: de(['motor', 'frigorifico', 'bomba']), Qc: '', Qf: String(ent(3, 9) * 100), W: String(ent(1, 4) * 100), Tc: String(ent(29, 60) * 10), Tf: String(ent(26, 28) * 10) }),
+    ];
+    sc = de(tipos)();
+    if (sc.modo === 'carnot') sc.V2 = String(+sc.V1 * ent(2, 3));
+    if (sc.modo === 'propio') { sc.P3 = sc.P2; sc.V4 = sc.V3; }
+    formulario(); sel.value = ''; calcula();
+  }
+  const enunciado = () => {
+    const e = (x) => esc(String(x ?? '').replace('.', ',')), g = sc.gas === 'mono' ? 'un gas ideal monoatómico' : 'aire (gas ideal diatómico)';
+    const mot = sc.rpm ? ` Si el motor tiene ${e(sc.cil || 1)} cilindros como este y gira a ${e(sc.rpm)} rpm, ¿qué potencia da?` : '';
+    if (sc.modo === 'carnot') return `${e(sc.n)} mol de ${g} recorren un ciclo de Carnot entre ${e(sc.Tc)} K y ${e(sc.Tf)} K. La expansión isoterma va de ${e(sc.V1)} L a ${e(sc.V2)} L. Calcula los estados, el calor y el trabajo de cada tramo y el rendimiento.`;
+    if (sc.modo === 'otto') return `Un ciclo Otto con ${g} tiene una relación de compresión ${e(sc.r)}. Al empezar la compresión el gas está a ${e(sc.T1)} K y ${e(sc.P1)} kPa en ${e(sc.V1)} L, y tras la combustión llega a ${e(sc.T3)} K. Calcula los estados, el trabajo neto y el rendimiento.${mot}`;
+    if (sc.modo === 'diesel') return `Un ciclo Diesel con ${g} tiene una relación de compresión ${e(sc.r)} y de corte ${e(sc.rc)}. Al empezar, el gas está a ${e(sc.T1)} K y ${e(sc.P1)} kPa en ${e(sc.V1)} L. Calcula los estados, el trabajo neto y el rendimiento.${mot}`;
+    if (sc.modo === 'brayton') return `Una turbina de gas funciona con un ciclo Brayton de relación de presiones ${e(sc.rp)}. Entra aire a ${e(sc.T1)} K y ${e(sc.P1)} kPa (${e(sc.V1)} L) y los gases llegan a la turbina a ${e(sc.T3)} K. Calcula las temperaturas, el trabajo neto y el rendimiento.`;
+    if (sc.modo === 'stirling') return `${e(sc.n)} mol de ${g} recorren un ciclo Stirling entre ${e(sc.Tc)} K y ${e(sc.Tf)} K, con volúmenes de ${e(sc.V1)} L y ${e(sc.V2)} L. Calcula el trabajo neto y el rendimiento, sin regenerador y con un regenerador ideal.`;
+    if (sc.modo === 'propio') return `${e(sc.n)} mol de ${g} recorren un ciclo de cuatro tramos por los estados (${e(sc.P1)} kPa, ${e(sc.V1)} L), (${e(sc.P2)} kPa, ${e(sc.V2)} L), (${e(sc.P3)} kPa, ${e(sc.V3)} L) y (${e(sc.P4)} kPa, ${e(sc.V4)} L), unidos por isocoras e isobaras. Calcula W, Q, ΔU y ΔS de cada tramo y el rendimiento.`;
+    const que = sc.tipo === 'motor' ? 'Una máquina térmica cede' : sc.tipo === 'frigorifico' ? 'Un frigorífico saca' : 'Una bomba de calor saca';
+    return `${que} ${e(sc.Qf)} J ${sc.tipo === 'motor' ? 'al foco frío' : 'del foco frío'} por ciclo con un trabajo de ${e(sc.W)} J, entre focos a ${e(sc.Tc)} K y ${e(sc.Tf)} K. Calcula el calor del foco caliente, ${sc.tipo === 'motor' ? 'el rendimiento' : 'la eficiencia'} y si es posible comparándola con Carnot.`;
+  };
+
   formulario(); colores(); calcula(); requestAnimationFrame(bucle);
-  window.CiclosApp = { abrirEjemplo, resultado: () => sol && { modo: sol.modo, eta: sol.eta, W: sol.W, ef: sol.ef, posible: sol.posible }, estado: () => copia(sc), pausa: () => { anda = false; } };
+  window.CiclosApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { modo: sol.modo, eta: sol.eta, W: sol.W, ef: sol.ef, posible: sol.posible, Pot: sol.Pot }, estado: () => copia(sc), pausa: () => { anda = false; } };
 })();
 
 /* =====================================================================
@@ -1413,6 +1578,8 @@ const Practica = (() => {
     ondas: { datos: null, items: '#res > div', genera: () => window.OndasApp?.azar(), enunciado: () => window.OndasApp?.enunciado() },
     // doppler: una fuente en línea o en ángulo, una que pasa, un eco, un cono de Mach o una luz que se corre al rojo
     doppler: { datos: null, items: '#resumen > div', genera: () => window.DopplerApp?.azar(), enunciado: () => window.DopplerApp?.enunciado() },
+    // ciclos: un Carnot, un Otto, un Diesel, un Brayton, un Stirling, un ciclo propio o una máquina
+    ciclos: { datos: null, items: '#resumen > div', genera: () => window.CiclosApp?.azar(), enunciado: () => window.CiclosApp?.enunciado() },
     // dinamica: un bloque en un plano, dos bloques, Atwood, una curva, un péndulo cónico o un muelle
     dinamica: { datos: null, items: '#res > div', genera: () => window.DinamicaApp?.azar(), enunciado: () => window.DinamicaApp?.enunciado() },
     // interferencia: Young, una rendija, una red o una lámina delgada

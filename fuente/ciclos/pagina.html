@@ -1,5 +1,5 @@
 <title>Ciclos termodinámicos: Carnot, Otto, Diesel y máquinas térmicas · SimulaCiencia</title>
-<meta name="description" content="Calculadora de ciclos termodinámicos en español con diagrama p-V animado: Carnot, Otto y Diesel con los estados, el trabajo, el calor y la energía interna de cada tramo y el rendimiento, y máquinas térmicas, frigoríficos y bombas de calor comparados con Carnot, paso a paso.">
+<meta name="description" content="Calculadora de ciclos termodinámicos en español con diagrama p-V animado: Carnot, Otto, Diesel, Brayton, Stirling y un ciclo propio con los estados, el trabajo, el calor y la energía interna de cada tramo, el diagrama T-S, el rendimiento y la potencia del motor, y máquinas térmicas, frigoríficos y bombas de calor comparados con Carnot, paso a paso.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
@@ -10,13 +10,14 @@
   --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784 } }
 :root[data-theme="dark"] {
   --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784 }
+#ts { height: 220px; margin-top: 8px }
 .tabla { overflow-x: auto; margin-bottom: 10px } table { border-collapse: collapse; font: 13.5px var(--f-ui); font-variant-numeric: tabular-nums; min-width: 100% } th, td { padding: 4px 10px; border-bottom: 1px solid var(--line); text-align: right } th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align: left } th { color: var(--muted); font-weight: 500 } tr.tot td { font-weight: 600 }
 </style>
 <body>
 <header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física general</a> / Ciclos termodinámicos</span></header>
 <div class="wrap">
 <h1>Ciclos termodinámicos y máquinas térmicas</h1>
-<p class="lead">Resuelve los ciclos de Carnot, Otto y Diesel con un gas ideal: los estados, el trabajo, el calor y la variación de energía interna de cada tramo y el rendimiento, con el diagrama p-V animado y el cilindro. Y comprueba si una máquina térmica, un frigorífico o una bomba de calor son posibles comparándolos con Carnot.</p>
+<p class="lead">Resuelve los ciclos de Carnot, Otto, Diesel, Brayton, Stirling o uno propio con un gas ideal: los estados, el trabajo, el calor y la variación de energía interna de cada tramo y el rendimiento, con los diagramas p-V y T-S animados y el cilindro. Y comprueba si una máquina térmica, un frigorífico o una bomba de calor son posibles comparándolos con Carnot.</p>
 <div class="layout">
   <div class="card">
     <h2>Datos</h2>
@@ -29,6 +30,7 @@
     <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
     <div class="card"><h2>Diagrama</h2>
       <canvas id="escena" aria-label="Diagrama p-V del ciclo con el cilindro, o esquema de la máquina"></canvas>
+      <canvas id="ts" aria-label="Diagrama T-S del ciclo"></canvas>
       <div class="controles"><button class="btn" id="play" type="button">⏸ Pausa</button><span class="nota" id="leyenda" style="margin:0"></span></div></div>
     <div class="card" id="tablas"><h2>Estados y tramos</h2><div class="tabla"><table id="estados"></table></div><div class="tabla"><table id="tramos"></table></div></div>
     <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
@@ -51,6 +53,13 @@
   <h2>Ciclos Otto y Diesel</h2>
   <p class="m">El Otto (motor de gasolina) tiene dos adiabáticas y dos isocoras; su rendimiento solo depende de la relación de compresión $r = V_1/V_2$: $η = 1 − r^{1 − γ}$. En el Diesel la combustión es a presión constante, con relación de corte $r_c = V_3/V_2$, y permite relaciones de compresión mucho mayores.</p>
   <p class="f m">$η_{Diesel} = 1 − {r_c^γ − 1}/{γ r^{γ − 1} (r_c − 1)}$</p>
+  <h2>Ciclos Brayton y Stirling</h2>
+  <p class="m">El Brayton (turbinas de gas y aviones) tiene dos adiabáticas y dos isobaras: el compresor sube la presión en una relación $r_p = P_2/P_1$ y $η = 1 − r_p^{−(γ − 1)/γ}$. El Stirling tiene dos isotermas y dos isocoras; con un regenerador que guarda el calor de una isocora y lo devuelve en la otra, alcanza el rendimiento de Carnot.</p>
+  <h2>Diagrama T-S</h2>
+  <p class="m">La entropía de un gas ideal cambia en $ΔS = n C_v ln {T_b}/{T_a} + n R ln {V_b}/{V_a}$. En el diagrama T-S las adiabáticas reversibles son verticales y las isotermas, horizontales: el Carnot es un rectángulo. El calor de un tramo es el área bajo la curva, $Q = ∫ T dS$, y el área encerrada es el trabajo neto.</p>
+  <h2>Potencia de un motor</h2>
+  <p class="m">En un motor de cuatro tiempos cada cilindro completa un ciclo cada dos vueltas del cigüeñal, así que $P = N_{cil} · W · rpm/120$, con W el trabajo de un ciclo en julios.</p>
+  <p>Para encadenar transformaciones a partir de un estado (y la teoría cinética de los gases), abre <a href="../gases/">Gases ideales</a>.</p>
   <h2>Frigoríficos y bombas de calor</h2>
   <p class="m">Usan trabajo para llevar calor del foco frío al caliente. Su eficiencia es $COP = Q_f/W$ para un frigorífico y $COP = Q_c/W$ para una bomba de calor, como mucho ${T_f}/{T_c − T_f}$ y ${T_c}/{T_c − T_f}$. Ninguna máquina puede superar a la de Carnot: si lo hiciera, la entropía del universo disminuiría (segundo principio).</p>
 </section>
