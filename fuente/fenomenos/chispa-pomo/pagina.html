@@ -1,0 +1,60 @@
+<title>La chispa al tocar el pomo, explicada paso a paso · SimulaCiencia</title>
+<meta name="description" content="Por qué salta una chispa al tocar el pomo de una puerta: efecto triboeléctrico, el cuerpo como condensador, rigidez dieléctrica del aire y descarga RC, con una animación paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<!-- =====================================================================
+     La chispa al tocar el pomo («Física en la vida real»). Maqueta común de los
+     fenómenos (ver fuego-san-telmo/pagina.html): animación, texto del paso, historia
+     y recuadro de la herramienta. Los pasos y el dibujo están en escena.js.
+     ===================================================================== -->
+<style>
+/* colores del dibujo, con su valor en modo oscuro */
+:root {
+  --pared: #e9e4da; --zocalo: #b9ab95; --alfombra: #8c4a3c; --alfombra-dibujo: #b46a58; --puerta: #a8794f; --metal: #9aa4ad; --metal-brillo: #eef2f5;
+  --persona: #56636e; --piel: #e2b38f; --suela: #26303a; --neg: #2a5db5; --pos: #c2412a; --campo: #8a6d00; --chispa: #7b61ff; --chispa-centro: #f1edff; --rotulo: #1a2128 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --pared: #262b31; --zocalo: #3d3830; --alfombra: #5e2f27; --alfombra-dibujo: #7c4136; --puerta: #6e5036; --metal: #8a949d; --metal-brillo: #d9dee2;
+  --persona: #8995a0; --piel: #c9987a; --suela: #11161b; --neg: #74a2f2; --pos: #ef7a62; --campo: #e6c04a; --chispa: #a99bff; --chispa-centro: #f6f3ff; --rotulo: #e3e8ea } }
+:root[data-theme="dark"] {
+  --pared: #262b31; --zocalo: #3d3830; --alfombra: #5e2f27; --alfombra-dibujo: #7c4136; --puerta: #6e5036; --metal: #8a949d; --metal-brillo: #d9dee2;
+  --persona: #8995a0; --piel: #c9987a; --suela: #11161b; --neg: #74a2f2; --pos: #ef7a62; --campo: #e6c04a; --chispa: #a99bff; --chispa-centro: #f6f3ff; --rotulo: #e3e8ea }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física en la vida real</a> / La chispa al tocar el pomo</span></header>
+<div class="wrap fen">
+<div class="fen-etiquetas"><span>⚡ Electromagnetismo y Circuitos</span><span>Dificultad baja</span><span>6 pasos · 1 min</span></div>
+<h1>La chispa al tocar el pomo</h1>
+<p class="lead">Cruzas una habitación con moqueta, acercas la mano a la puerta y… ¡zas! Salta una chispa que se oye y se siente. ¿De dónde sale, si no has tocado ningún enchufe?</p>
+<div class="fen-escena"><canvas id="escena" role="img" aria-label="Animación de la chispa: una persona cruza la moqueta, se carga y acerca la mano al pomo de la puerta"></canvas></div>
+<div class="fen-puntos" id="puntos" role="group" aria-label="Pasos"></div>
+<div class="fen-controles">
+  <button class="btn" id="ant" type="button">‹ Anterior</button>
+  <button class="btn" id="play" type="button" aria-pressed="true">❚❚ Parar</button>
+  <button class="btn" id="sig" type="button">Siguiente ›</button>
+  <button class="btn" id="sonido" type="button" aria-pressed="false">🔇 Sonido</button>
+</div>
+<div class="fen-texto" aria-live="polite"><h2 id="paso-t"></h2><div id="paso-x"></div></div>
+<section class="fen-historia" aria-label="Un poco de historia">
+  <h2>Un poco de historia</h2>
+  <ol>
+    <li><b>Hacia el 600 a. C.</b>Tales de Mileto observa que el ámbar frotado atrae pajitas y plumas. En griego, ámbar se dice <i>élektron</i>: de ahí viene la palabra electricidad.</li>
+    <li><b>1600</b>William Gilbert, en <i>De Magnete</i>, comprueba que muchos otros materiales se cargan al frotarlos y los llama «eléctricos».</li>
+    <li><b>1745</b>Ewald von Kleist y Pieter van Musschenbroek inventan la botella de Leyden, el primer condensador. Sus descargas, como esta chispa pero mucho mayores, se hacían en público como espectáculo.</li>
+    <li><b>Siglo XX</b>Con los chips llega el problema: una chispa que ni notas los puede romper. Se crean modelos del cuerpo humano para ensayarlos, como el de la norma IEC 61000-4-2 (150 pF y 330 Ω), el que se usa aquí.</li>
+  </ol>
+</section>
+<section class="fen-rel" aria-label="Herramienta relacionada">
+  <div class="fen-ico" aria-hidden="true">τ</div>
+  <h2>Con qué herramienta se relaciona</h2>
+  <h3>Transitorios RC, RL y RLC <small>· Circuitos</small></h3>
+  <p>La chispa es la descarga de un condensador (tu cuerpo) a través de una resistencia (tu piel y el arco): un circuito RC que se descarga, con una tensión y una corriente que caen de forma exponencial.</p>
+  <p class="f m">V_C(t) = V_0 e^{−t/τ} ,  i(t) = −(V_0/R) e^{−t/τ}</p>
+  <p class="f m">τ = R C ,  U = 1/2 C V_0^2</p>
+  <p>Se abre como una descarga RC con el condensador a V<sub>0</sub> = 10 kV, R = 330 Ω y C = 150 pF, y pregunta por el instante t = 100 ns. Sale una constante de tiempo de 49,5 ns, una corriente inicial de 30,3 A y, a los 100 ns, el cuerpo todavía a unos 1326 V.</p>
+  <div class="fen-fichas"><div><small>Constante de tiempo</small><b>τ = 49,5 ns</b></div><div><small>Corriente inicial</small><b>30,3 A</b></div><div><small>Energía</small><b>7,5 mJ</b></div></div>
+  <a class="fen-abrir" id="abrir" href="../../circuitos/transitorios/">Abrir en Transitorios con estos datos →</a>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Física en la vida real <span id="ver"></span> (beta)</footer>
+</body>

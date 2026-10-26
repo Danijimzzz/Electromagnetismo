@@ -142,7 +142,7 @@ function aplicaHerramienta(html, clave, herramienta) {
   if (!/^<style>/m.test(html)) throw new Error('diseno.js: la página no tiene <style>');
   const propios = a === V ? ESTILOS_FENOMENOS : '', vida = a === V ? '' : vidaReal(`${clave}/${herramienta}`);
   if (vida && !html.includes('<footer')) throw new Error('diseno.js: la página no tiene <footer>');
-  return html.replace(m[0], cab).replace('<h1', miga + '\n<h1').replace(/^<style>/m, `<style>${ESTILOS}${acento(a)}${cabecera}${propios}</style>\n<style>`)
+  return html.replace(m[0], cab).replace(/<div class="fen-etiquetas"|<h1/, (x) => miga + '\n' + x).replace(/^<style>/m, `<style>${ESTILOS}${acento(a)}${cabecera}${propios}</style>\n<style>`)
     .replace(/(<\/div>\s*)?<footer/, (x) => (vida ? vida + x : x));
 }
 

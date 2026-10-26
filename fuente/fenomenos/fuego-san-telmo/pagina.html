@@ -1,10 +1,10 @@
-<title>El fuego de San Telmo, explicado paso a paso · SimulaCiencia</title>
+<title>El Fuego de San Telmo, explicado paso a paso · SimulaCiencia</title>
 <meta name="description" content="Por qué brillan las puntas de los mástiles durante una tormenta: inducción, efecto punta, rigidez dieléctrica del aire y descarga corona, con una animación paso a paso.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
 <!-- =====================================================================
-     El fuego de San Telmo («Física en la vida real»). Maqueta común de los fenómenos:
+     El Fuego de San Telmo («Física en la vida real»). Maqueta común de los fenómenos:
      la animación (#escena) con sus controles, el texto del paso y el recuadro de la
      herramienta relacionada. Los estilos están en fenomenos/estilos.css, el motor en
      fenomenos/animacion.js y los pasos y el dibujo en escena.js.
@@ -12,35 +12,48 @@
 <style>
 /* colores del dibujo, con su valor en modo oscuro */
 :root {
-  --cielo: #d5e0ea; --cielo-noche: #121a2b; --mar: #2f6f8f; --nube: #6f7884; --casco: #5a3b24; --mastil: #7a5636; --vela: #f4efe4; --metal: #9aa4ad;
+  --cielo: #d5e0ea; --cielo-alto: #a9b7c6; --ola: #6aa3bf; --lluvia: #6f8090; --rayo: #f6f3ff; --cielo-noche: #121a2b; --mar: #2f6f8f; --nube: #6f7884; --casco: #5a3b24; --mastil: #7a5636; --vela: #f4efe4; --metal: #9aa4ad;
   --neg: #2a5db5; --pos: #c2412a; --campo: #8a6d00; --brillo: #7b61ff; --brillo-centro: #e8e2ff; --molecula: #8a96a0; --rotulo: #1a2128 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --cielo: #1e2a38; --cielo-noche: #0b1019; --mar: #1d4a63; --nube: #4a5260; --casco: #8a6040; --mastil: #a8805a; --vela: #b9b3a6; --metal: #6f7a84;
+  --cielo: #1e2a38; --cielo-alto: #0f1620; --ola: #3a7a9c; --lluvia: #8696a6; --rayo: #e9e4ff; --cielo-noche: #0b1019; --mar: #1d4a63; --nube: #4a5260; --casco: #8a6040; --mastil: #a8805a; --vela: #b9b3a6; --metal: #6f7a84;
   --neg: #74a2f2; --pos: #ef7a62; --campo: #e6c04a; --brillo: #a99bff; --brillo-centro: #f1edff; --molecula: #7b8790; --rotulo: #e3e8ea } }
 :root[data-theme="dark"] {
-  --cielo: #1e2a38; --cielo-noche: #0b1019; --mar: #1d4a63; --nube: #4a5260; --casco: #8a6040; --mastil: #a8805a; --vela: #b9b3a6; --metal: #6f7a84;
+  --cielo: #1e2a38; --cielo-alto: #0f1620; --ola: #3a7a9c; --lluvia: #8696a6; --rayo: #e9e4ff; --cielo-noche: #0b1019; --mar: #1d4a63; --nube: #4a5260; --casco: #8a6040; --mastil: #a8805a; --vela: #b9b3a6; --metal: #6f7a84;
   --neg: #74a2f2; --pos: #ef7a62; --campo: #e6c04a; --brillo: #a99bff; --brillo-centro: #f1edff; --molecula: #7b8790; --rotulo: #e3e8ea }
 </style>
 <body>
-<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física en la vida real</a> / El fuego de San Telmo</span></header>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física en la vida real</a> / El Fuego de San Telmo</span></header>
 <div class="wrap fen">
-<h1>El fuego de San Telmo</h1>
+<div class="fen-etiquetas"><span>⚡ Electromagnetismo</span><span>Dificultad media</span><span>6 pasos · 1 min</span></div>
+<h1>El Fuego de San Telmo</h1>
 <p class="lead">En plena tormenta, las puntas de los mástiles de un barco brillan con una luz azulada y chisporrotean. ¿De dónde sale esa luz, si no hay ningún rayo?</p>
-<div class="fen-escena"><canvas id="escena" role="img" aria-label="Animación del fuego de San Telmo: la nube de tormenta, el barco y las puntas de los mástiles"></canvas></div>
+<div class="fen-escena"><canvas id="escena" role="img" aria-label="Animación del Fuego de San Telmo: la nube de tormenta, el barco y las puntas de los mástiles"></canvas></div>
+<div class="fen-puntos" id="puntos" role="group" aria-label="Pasos"></div>
 <div class="fen-controles">
   <button class="btn" id="ant" type="button">‹ Anterior</button>
   <button class="btn" id="play" type="button" aria-pressed="true">❚❚ Parar</button>
   <button class="btn" id="sig" type="button">Siguiente ›</button>
-  <div class="fen-puntos" id="puntos" role="group" aria-label="Pasos"></div>
+  <button class="btn" id="sonido" type="button" aria-pressed="false">🔇 Sonido</button>
 </div>
 <div class="fen-texto" aria-live="polite"><h2 id="paso-t"></h2><div id="paso-x"></div></div>
+<section class="fen-historia" aria-label="Un poco de historia">
+  <h2>Un poco de historia</h2>
+  <ol>
+    <li><b>Siglo I</b>Plinio el Viejo describe en su <i>Historia natural</i> las luces que se posan en los mástiles durante las tormentas. Los marineros griegos las llamaban Cástor y Pólux: dos luces eran buena señal y una sola, mala.</li>
+    <li><b>Edad Media</b>Toman el nombre de San Erasmo de Formia (San Elmo o San Telmo), patrón de los marineros: ver el brillo se entendía como su protección en plena tormenta.</li>
+    <li><b>1520</b>Antonio Pigafetta, cronista de la vuelta al mundo de Magallanes y Elcano, cuenta cómo el Fuego de San Telmo aparecía en lo alto de los mástiles y tranquilizaba a la tripulación.</li>
+    <li><b>1750</b>Benjamin Franklin propone que el rayo es una chispa eléctrica y que una punta metálica descarga las nubes poco a poco y en silencio, con un brillo como este. De ahí sale el pararrayos.</li>
+  </ol>
+</section>
 <section class="fen-rel" aria-label="Herramienta relacionada">
+  <div class="fen-ico" aria-hidden="true">E</div>
   <h2>Con qué herramienta se relaciona</h2>
   <h3>Electrostática <small>· Electromagnetismo</small></h3>
   <p>El modelo del paso 3 es un problema de esferas conductoras: dos esferas unidas por un hilo están al mismo potencial, así que la carga se reparte en proporción a su radio y el campo junto a la superficie es mayor en la pequeña.</p>
   <p class="f m">V = Q_1/(4πε_0 R_1) = Q_2/(4πε_0 R_2)</p>
   <p class="f m">σ_2/σ_1 = R_1/R_2 ,  E = σ/ε_0 = V/R</p>
   <p>Se abre con dos esferas conductoras en el SI: el casco, de 1 m y 5,56 µC (unos 50 kV), y la punta, de 1 cm y a 20 m, con su carga como incógnita y la condición de que las dos tengan el mismo potencial. Sale una carga de unos 5,3·10<sup>−8</sup> C en la punta, 50 kV/m junto al casco y 4,75 MV/m junto a la punta, por encima de los 3 MV/m del aire. Es algo menos que los 5 MV/m del modelo porque, a 20 m, el casco también sube el potencial de la punta.</p>
+  <div class="fen-fichas"><div><small>Carga en la punta</small><b>5,29·10<sup>−8</sup> C</b></div><div><small>E en el casco</small><b>50 kV/m</b></div><div><small>E en la punta</small><b>4,75 MV/m</b></div></div>
   <a class="fen-abrir" id="abrir" href="../../electromagnetismo/electrostatica/">Abrir en Electrostática con estos datos →</a>
 </section>
 </div>

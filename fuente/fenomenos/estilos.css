@@ -2,33 +2,67 @@
    Página de un fenómeno de «Física en la vida real» (diseno.js la añade tras
    estilos.css cuando la asignatura es fenomenos). De arriba abajo: la animación
    (media pantalla de alto, con las franjas de los lados como las herramientas),
-   los controles de animacion.js, el texto del paso y el recuadro de la
-   herramienta con la que se relaciona. La maqueta está en fenomenos/<clave>/pagina.html.
+   los controles de animacion.js, el texto del paso, la historia (.fen-historia,
+   si hace falta) y el recuadro de la herramienta con la que se relaciona. La maqueta está en fenomenos/<clave>/pagina.html.
    ===================================================================== */
 .fen { max-width: 1100px }
 .fen h1 { font-size: clamp(28px, 4.2vw, 40px); line-height: 1.15; letter-spacing: -.01em; margin: 6px 0 8px }
 .fen .lead { font-size: clamp(16px, 1.6vw, 18.5px); line-height: 1.55; margin-bottom: 16px }
 .fen-escena { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 8px }
 .fen-escena canvas { height: clamp(220px, min(50vh, 70vw), 560px); margin: 0; background: var(--bg) }
-.fen-controles { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 10px 0 0 }
+.fen-etiquetas { display: flex; gap: 8px; flex-wrap: wrap; margin: 4px 0 2px }
+.fen-etiquetas span { font: 600 12px var(--f-ui); padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel); color: var(--muted) }
+.fen-etiquetas span:first-child { background: var(--accent-soft); border-color: transparent; color: var(--accent) }
+/* línea de tiempo de los pasos (animacion.js la rellena con --avance) */
+.fen-puntos { --avance: 0; position: relative; display: flex; justify-content: space-between; margin: 16px 0 0; padding: 0 6px }
+.fen-puntos::before, .fen-puntos::after { content: ""; position: absolute; left: 23px; top: 16px; height: 3px; border-radius: 2px }
+.fen-puntos::before { right: 23px; background: var(--line) }
+.fen-puntos::after { width: calc((100% - 46px) * var(--avance)); background: var(--accent) }
+.fen-puntos button { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; width: 34px; padding: 0; border: 0; background: none; cursor: pointer; font: 600 12.5px var(--f-ui); color: var(--muted) }
+.fen-puntos button b { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--line); background: var(--panel); font: 600 13px var(--f-ui); transition: background .3s, border-color .3s, box-shadow .3s }
+.fen-puntos button span { white-space: nowrap }
+.fen-puntos button.hecho { color: var(--ink) }
+.fen-puntos button.hecho b { background: var(--accent); border-color: var(--accent); color: var(--panel) }
+.fen-puntos button[aria-current=step] { color: var(--accent) }
+.fen-puntos button[aria-current=step] b { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 0 5px var(--accent-soft) }
+.fen-puntos button:hover b { border-color: var(--accent) }
+.fen-controles { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; margin: 14px 0 0 }
 .fen-controles .btn { font-size: 13.5px; padding: 6px 12px }
-#play { min-width: 104px }
-.fen-puntos { display: flex; gap: 6px; flex-wrap: wrap; margin-left: auto }
-.fen-puntos button { --p: 0; width: 34px; height: 34px; border: 0; border-radius: 50%; padding: 3px; cursor: pointer; background: conic-gradient(var(--accent) calc(var(--p) * 1turn), var(--line) 0) }
-.fen-puntos button span { display: grid; place-items: center; width: 100%; height: 100%; border-radius: 50%; background: var(--panel); color: var(--muted); font: 600 12.5px var(--f-ui) }
-.fen-puntos button[aria-current=step] span { color: var(--accent); font-weight: 700 }
-.fen-puntos button.hecho span { background: var(--accent-soft); color: var(--accent) }
+#play { min-width: 112px }
 .fen-texto { max-width: 860px; margin: 16px 0 0; min-height: 132px }
 .fen-texto h2 { font: 600 19px/1.3 var(--f-ui); margin: 0 0 6px }
 .fen-texto h2 small { display: block; font: 600 12px var(--f-ui); color: var(--accent); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 2px }
 .fen-texto p { font-size: 15.5px; line-height: 1.6; margin: 0 0 8px; overflow-x: auto }
-.fen-rel { max-width: 860px; margin: 22px 0 0; background: var(--panel); border: 1px solid var(--line); border-top: 3px solid var(--accent); border-radius: 12px; padding: 14px 16px }
+.fen-texto.entra { animation: fen-entra .45s ease-out }
+@keyframes fen-entra { from { opacity: 0; transform: translateY(6px) } }
+@media (prefers-reduced-motion: reduce) { .fen-texto.entra { animation: none } .fen-puntos button b { transition: none } }
+.fen-dato { display: flex; align-items: center; gap: 6px 14px; flex-wrap: wrap; background: var(--accent-soft); border-left: 4px solid var(--accent); border-radius: 10px; padding: 10px 14px; margin: 6px 0 12px; font: 500 15px var(--f-ui) }
+.fen-dato b { font: 700 21px var(--f-ui); color: var(--accent); white-space: nowrap }
+.fen-historia { max-width: 860px; margin: 22px 0 0 }
+.fen-historia h2 { font: 600 12px/1.4 var(--f-ui); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 10px }
+.fen-historia ol { list-style: none; margin: 0; padding: 0 0 0 18px; border-left: 2px solid var(--line) }
+.fen-historia li { position: relative; margin: 0 0 12px; font-size: 14.5px; line-height: 1.55 }
+.fen-historia li::before { content: ""; position: absolute; left: -25px; top: 5px; width: 12px; height: 12px; border-radius: 50%; background: var(--panel); border: 2px solid var(--accent) }
+.fen-historia li b { display: block; font: 700 13px var(--f-ui); color: var(--accent) }
+.fen-rel { max-width: 860px; margin: 22px 0 0; background: var(--panel); border: 1px solid var(--line); border-top: 3px solid var(--accent); border-radius: 12px; padding: 14px 16px; display: grid; grid-template-columns: 56px 1fr; column-gap: 16px }
+.fen-rel > * { grid-column: 2 }
+.fen-rel .fen-ico { grid-column: 1; grid-row: 1 / span 3; width: 56px; height: 56px; border-radius: 14px; display: grid; place-items: center; font: italic 600 26px var(--f-math); color: var(--panel); background: var(--accent) }
+.fen-fichas { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0 14px }
+.fen-fichas div { flex: 1 1 140px; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px }
+.fen-fichas small { display: block; font: 600 11.5px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .05em }
+.fen-fichas b { font: 700 18px var(--f-ui) }
 .fen-rel h2 { font: 600 12px/1.4 var(--f-ui); text-transform: uppercase; letter-spacing: .06em; color: var(--accent); margin: 0 0 8px }
 .fen-rel h3 { font: 600 17px var(--f-ui); margin: 0 0 6px }
 .fen-rel p { font-size: 14.5px; line-height: 1.55; margin: 0 0 10px; overflow-x: auto }
 .fen-rel .f { font-family: var(--f-math); font-size: 16px; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; margin: 0 0 8px; overflow-x: auto }
-.fen-abrir { display: inline-block; margin-top: 4px; font: 600 14px var(--f-ui); color: var(--panel); background: var(--accent); border: 0; border-radius: 8px; padding: 8px 14px; cursor: pointer; text-decoration: none }
+.fen-abrir { display: block; text-align: center; margin-top: 4px; font: 600 15px var(--f-ui); color: var(--panel); background: var(--accent); border: 0; border-radius: 10px; padding: 11px 18px; cursor: pointer; text-decoration: none }
 .fen-abrir:hover { filter: brightness(1.08) }
 @media (max-width: 600px) {
-  .fen-puntos { margin-left: 0; flex-basis: 100% }
+  .fen-puntos button span { display: none }
+  .fen-rel { grid-template-columns: 1fr } .fen-rel > * { grid-column: 1 } .fen-rel .fen-ico { grid-row: auto; width: 44px; height: 44px; font-size: 21px; margin-bottom: 8px }
   .fen-texto h2 { font-size: 17.5px } .fen-texto p { font-size: 15px } }
+.fen-prueba { display: flex; align-items: center; gap: 8px 14px; flex-wrap: wrap; margin: 10px 0 4px; background: var(--accent-soft); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; font: 500 14.5px var(--f-ui) }
+.fen-prueba label b { color: var(--accent) }
+.fen-prueba input { flex: 1 1 180px; accent-color: var(--accent) }
+.fen-prueba output { font: 600 14.5px var(--f-ui); min-width: 15em }
+#sonido { margin-left: 4px }
