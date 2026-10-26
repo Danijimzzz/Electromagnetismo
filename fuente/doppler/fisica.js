@@ -2,7 +2,8 @@
    Efecto Doppler (sin DOM): fuente y observador en una recta con viento,
    una fuente que pasa de largo (antes y después, y al revés: la velocidad
    a partir de las dos frecuencias), el eco en un obstáculo que se mueve
-   (radar, murciélago) y la onda de choque con el cono de Mach.
+   (radar, murciélago), la onda de choque con el cono de Mach y el Doppler
+   de la luz (relativista: corrimiento al rojo de una galaxia).
    Unidades del SI. Velocidades positivas cuando se acercan.
    ===================================================================== */
 const Doppler = (() => {
@@ -31,12 +32,17 @@ const Doppler = (() => {
   const tono = (fp, fr) => (fp > fr ? 'Se oye más aguda que la emitida.' : fp < fr ? 'Se oye más grave que la emitida.' : 'Se oye igual que la emitida.');
 
   /* ---------- Fuente y observador en una recta ---------- */
-  // sc: { f, v (sonido), vF (+ hacia el observador), vO (+ hacia la fuente), w (viento, + de la fuente al observador) }
+  // sc: { f, v (sonido), vF (+ hacia el observador), vO (+ hacia la fuente), w (viento, + de la fuente al observador),
+  //       aF, aO (opcionales: ángulo en grados entre cada velocidad y la recta que los une) }
   function recta(sc) {
     const fr = lee(sc, 'f', 'la frecuencia emitida'), v = lee(sc, 'v', 'la velocidad del sonido');
-    const vF = lee(sc, 'vF', 'la velocidad de la fuente', { opcional: true, signo: true }) ?? 0;
-    const vO = lee(sc, 'vO', 'la velocidad del observador', { opcional: true, signo: true }) ?? 0;
+    const vF0 = lee(sc, 'vF', 'la velocidad de la fuente', { opcional: true, signo: true }) ?? 0;
+    const vO0 = lee(sc, 'vO', 'la velocidad del observador', { opcional: true, signo: true }) ?? 0;
     const w = lee(sc, 'w', 'la velocidad del viento', { opcional: true, signo: true }) ?? 0;
+    const aF = lee(sc, 'aF', 'el ángulo de la fuente', { opcional: true, signo: true }) ?? 0;
+    const aO = lee(sc, 'aO', 'el ángulo del observador', { opcional: true, signo: true }) ?? 0;
+    const cos = (a) => (Math.abs(a % 180) === 90 ? 0 : Math.cos((a * Math.PI) / 180));
+    const vF = vF0 * cos(aF), vO = vO0 * cos(aO);
     const ve = v + w; // velocidad del sonido respecto al suelo, de la fuente al observador
     if (ve <= 0) throw new Error('El viento en contra es tan fuerte como el sonido: la onda no llega al observador');
     if (vF >= ve) throw new Error('La fuente va hacia el observador a la velocidad del sonido o más deprisa: se forma una onda de choque y la fórmula de Doppler no vale (mira la pestaña «Onda de choque»)');
@@ -45,11 +51,12 @@ const Doppler = (() => {
     const pasos = [
       { t: 'Convenio de signos', html: `Las velocidades son positivas cuando la fuente y el observador se acercan el uno al otro: ${sentido(vF, 'la fuente')} ($v_F = ${f(vF)}$ m/s) y ${sentido(vO, 'el observador')} ($v_O = ${f(vO)}$ m/s).` },
     ];
+    if (aF || aO) pasos.unshift({ t: 'Velocidades que se mueven en ángulo', html: `Solo cuenta la componente de cada velocidad a lo largo de la recta que une la fuente con el observador; la perpendicular no acerca ni aleja y no cambia el tono:${aF ? ` $v_F = ${f(vF0)} · cos ${f(aF)}° = ${f(vF)}$ m/s` : ''}${aF && aO ? ',' : ''}${aO ? ` $v_O = ${f(vO0)} · cos ${f(aO)}° = ${f(vO)}$ m/s` : ''}.` });
     if (w) pasos.push({ t: 'Viento', html: `El aire se mueve ${w > 0 ? 'de la fuente hacia el observador' : 'del observador hacia la fuente'}, así que respecto al suelo el sonido va hacia el observador a $v + w = ${f(v)} ${w < 0 ? '−' : '+'} ${f(Math.abs(w))} = ${f(ve)}$ m/s. En la fórmula se pone esa velocidad en lugar de $v$.` });
     const V = w ? 'v + w' : 'v', Vn = w ? `${f(ve)}` : f(v);
     pasos.push({ t: 'Frecuencia que se oye', html: `$f′ = f (${V} + v_O)/(${V} − v_F) = ${fq(fr)} · (${Vn} + ${p(vO)})/(${Vn} − ${p(vF)})$ = <b>${fq(fp)} Hz</b><br>${tono(fp, fr)} El cambio es de ${fp >= fr ? '+' : '−'}${fq(Math.abs(fp - fr))} Hz (${f((100 * (fp - fr)) / fr, 3)} %).` });
     pasos.push({ t: 'Longitud de onda entre los dos', html: `$λ′ = (${V} − v_F)/f = (${Vn} − ${p(vF)})/${fq(fr)}$ = <b>${f(lamp)} m</b><br>Con la fuente quieta sería $λ = ${V}/f = ${f(lam)}$ m. El movimiento del observador no cambia λ: cambia la rapidez con la que le llegan los frentes.` });
-    return { modo: 'recta', fr, v, vF, vO, w, ve, fp, lam, lamp, pasos };
+    return { modo: 'recta', fr, v, vF, vO, vF0, vO0, aF, aO, w, ve, fp, lam, lamp, pasos };
   }
 
   /* ---------- Una fuente que pasa de largo ---------- */
@@ -79,9 +86,9 @@ const Doppler = (() => {
     let curva = null;
     if (d > 0) {
       const L = Math.max(8 * d, 40), xs = [];
-      for (let i = 0; i <= 200; i++) { const x = -L + (2 * L * i) / 200, c = -x / Math.hypot(x, d); xs.push({ x, t: x / u, fp: (fr * v) / (v - u * c) }); }
+      for (let i = 0; i <= 200; i++) { const x = -L + (2 * L * i) / 200, c = -x / Math.hypot(x, d); xs.push({ x, t: x / u, tr: x / u + Math.hypot(x, d) / v, fp: (fr * v) / (v - u * c) }); }
       curva = { d, L, puntos: xs };
-      pasos.push({ t: `Observador a ${f(d)} m de la carretera`, html: `Solo cuenta la componente de la velocidad de la fuente en la dirección del observador, $v_F cos α$, con α el ángulo entre la carretera y la recta fuente–observador: $f′ = f v/(v − v_F cos α)$. Lejos, cos α ≈ ±1 y se oyen $f_1$ y $f_2$; justo enfrente, cos α = 0 y se oye la frecuencia emitida, ${fq(fr)} Hz. La gráfica muestra el cambio gradual.` });
+      pasos.push({ t: `Observador a ${f(d)} m de la carretera`, html: `Solo cuenta la componente de la velocidad de la fuente en la dirección del observador, $v_F cos α$, con α el ángulo entre la carretera y la recta fuente–observador: $f′ = f v/(v − v_F cos α)$. Lejos, cos α ≈ ±1 y se oyen $f_1$ y $f_2$; justo enfrente, cos α = 0 y se oye la frecuencia emitida, ${fq(fr)} Hz. La gráfica muestra el cambio gradual frente al instante en que se oye: el sonido tarda $r/v$ en llegar, así que el tono que se oye justo cuando la fuente pasa enfrente ya es más grave que $f$.` });
     }
     return { modo: 'paso', datos: sc.datos === 'oidas' ? 'oidas' : 'fuente', fr, v, u, f1, f2, salto, d, curva, pasos };
   }
@@ -132,7 +139,39 @@ const Doppler = (() => {
     return { modo: 'choque', v, vF, M, th, gr, h, x, t, r, pasos };
   }
 
+  /* ---------- Doppler de la luz (relativista) ---------- */
+  // sc: { dato: 'fuente' | 'observado', geo: 'radial' | 'transversal', lam (nm emitida), beta (v/c, + si se aleja), lamO (nm observada) }
+  const C = 299792458;
+  function luz(sc) {
+    const lam = lee(sc, 'lam', 'la longitud de onda emitida');
+    const pasos = [];
+    let beta, lamO, geo = sc.geo === 'transversal' ? 'transversal' : 'radial';
+    if (sc.dato === 'observado') {
+      geo = 'radial';
+      lamO = lee(sc, 'lamO', 'la longitud de onda observada');
+      const R = lamO / lam; beta = (R * R - 1) / (R * R + 1);
+      pasos.push({ t: 'Velocidad a partir del corrimiento', html: `Para una fuente que se aleja en línea recta $λ′/λ = √((1 + β)/(1 − β))$. Con $R = λ′/λ = ${f(lamO)}/${f(lam)} = ${f(R, 6)}$ se despeja $β = (R^2 − 1)/(R^2 + 1)$ = <b>${f(beta)}</b>, es decir $v = β c$ = <b>${f(beta * C)} m/s</b> ${beta > 0 ? 'alejándose' : beta < 0 ? 'acercándose' : '(quieta)'}.` });
+    } else {
+      beta = lee(sc, 'beta', 'β = v/c', { signo: true });
+      if (Math.abs(beta) >= 1) throw new Error('Nada va a la velocidad de la luz o más deprisa: β tiene que estar entre −1 y 1');
+    }
+    const g = 1 / Math.sqrt(1 - beta * beta);
+    const k = geo === 'transversal' ? g : Math.sqrt((1 + beta) / (1 - beta)); // λ′/λ
+    lamO = lam * k;
+    const z = k - 1, kc = geo === 'transversal' ? 1 : 1 + beta, nu = C / (lam * 1e-9);
+    if (sc.dato !== 'observado') {
+      pasos.push({ t: 'Convenio', html: `$β = v/c = ${f(beta)}$, positiva si la fuente se aleja y negativa si se acerca. Factor de Lorentz $γ = 1/√(1 − β^2) = ${f(g, 6)}$.` });
+      pasos.push(geo === 'transversal'
+        ? { t: 'Doppler transversal', html: `Si la fuente se mueve perpendicular a la visual no hay efecto clásico, pero su reloj va más lento (dilatación del tiempo): $λ′ = γ λ = ${f(g, 6)} · ${f(lam)}$ = <b>${f(lamO)} nm</b>. Es un efecto puramente relativista.` }
+        : { t: 'Doppler relativista', html: `$λ′ = λ √((1 + β)/(1 − β)) = ${f(lam)} · √((1 + ${p(beta)})/(1 − ${p(beta)}))$ = <b>${f(lamO)} nm</b>` });
+    }
+    pasos.push({ t: 'Frecuencia y corrimiento', html: `$f = c/λ = ${f(nu)}$ Hz y $f′ = f λ/λ′ = ${f(nu / k)}$ Hz. Corrimiento $z = λ′/λ − 1$ = <b>${f(z)}</b>: ${z > 0 ? 'al rojo (la fuente se aleja o su reloj va lento)' : z < 0 ? 'al azul (la fuente se acerca)' : 'ninguno'}.` });
+    pasos.push({ t: 'Comparación con la fórmula clásica', html: geo === 'transversal' ? `Clásicamente una fuente que se mueve perpendicular a la visual no cambia el color: $λ′ = λ$. La diferencia, $${f(lamO - lam)}$ nm, es solo de la dilatación del tiempo.` : `Para $|β| ≪ 1$ vale $λ′ ≈ λ (1 + β) = ${f(lam * kc)}$ nm (o $z ≈ β$), que se aleja del valor exacto un ${f((100 * Math.abs(lam * kc - lamO)) / lamO, 3)} %.` });
+    return { modo: 'luz', dato: sc.dato === 'observado' ? 'observado' : 'fuente', geo, lam, lamO, beta, g, z, k, nu, pasos };
+  }
+
   function resolver(sc) {
+    if (sc.modo === 'luz') return luz(sc);
     if (sc.modo === 'paso') return paso(sc);
     if (sc.modo === 'eco') return eco(sc);
     if (sc.modo === 'choque') return choque(sc);
@@ -149,8 +188,12 @@ const Doppler = (() => {
     { clave: 'murcielago', nombre: 'Murciélago que vuela hacia una pared', sc: { modo: 'eco', buscar: 'frecuencia', f: '40000', v: '340', vE: '6', u: '0' } },
     { clave: 'ecografia', nombre: 'Velocidad de la sangre con una ecografía Doppler', sc: { modo: 'eco', buscar: 'velocidad', f: '5e6', v: '1540', vE: '0', df: '1300' } },
     { clave: 'avion', nombre: 'Avión supersónico y estampido', sc: { modo: 'choque', v: '340', vF: '680', h: '8000' } },
+    { clave: 'cruce', nombre: 'Coche que cruza en ángulo', sc: { modo: 'recta', f: '600', v: '340', vF: '30', vO: '0', w: '', aF: '60', aO: '' } },
+    { clave: 'galaxia', nombre: 'Velocidad de una galaxia por su corrimiento al rojo', sc: { modo: 'luz', dato: 'observado', lam: '656,3', lamO: '721,9' } },
+    { clave: 'estrella', nombre: 'Estrella que se acerca a 0,1c', sc: { modo: 'luz', dato: 'fuente', geo: 'radial', lam: '500', beta: '-0,1' } },
+    { clave: 'transversal', nombre: 'Doppler transversal a 0,6c', sc: { modo: 'luz', dato: 'fuente', geo: 'transversal', lam: '500', beta: '0,6' } },
   ];
 
-  return { resolver, recta, paso, eco, choque, ejemplos, f, fq };
+  return { resolver, recta, paso, eco, choque, luz, ejemplos, f, fq, C };
 })();
 if (typeof module !== 'undefined') module.exports = Doppler;
