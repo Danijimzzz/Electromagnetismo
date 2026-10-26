@@ -217,6 +217,12 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
   <p>Un ácido débil con su sal (o una base débil con la suya) mantiene el pH casi constante al añadir pequeñas cantidades de ácido o de base. Su pH sale de la ecuación de Henderson-Hasselbalch:</p>
   <p class="f m">$pH = pK_a + log {[A^{−}]}/{[HA]}$</p>
   <p>Al añadir un ácido fuerte, sus H₃O⁺ convierten A⁻ en HA; al añadir una base, sus OH⁻ convierten HA en A⁻. El cociente cambia poco y el pH también, hasta que se agota una de las dos formas.</p>
+  <h2>Hidrólisis de sales</h2>
+  <p>Una sal de ácido fuerte y base fuerte (NaCl) es neutra. El anión de un ácido débil (acetato) es una base: A⁻ + H₂O ⇌ HA + OH⁻, con K<sub>b</sub> = K<sub>w</sub>/K<sub>a</sub>, y la disolución es básica. El catión de una base débil (amonio) es un ácido, con K<sub>a</sub> = K<sub>w</sub>/K<sub>b</sub>, y la disolución es ácida. Se resuelve como un ácido o una base débil con esa constante.</p>
+  <h2>Ácidos polipróticos</h2>
+  <p>Ceden sus protones de uno en uno, cada vez con una constante mucho menor (K<sub>a1</sub> ≫ K<sub>a2</sub> ≫ K<sub>a3</sub>). El pH sale casi entero de la primera disociación, y la concentración del anión de la segunda es casi igual a K<sub>a2</sub>. En su valoración hay un salto de pH en cada equivalencia; a mitad de cada tramo pH ≈ pK<sub>a</sub>, y en las equivalencias intermedias, la media de dos pK<sub>a</sub> seguidas.</p>
+  <h2>Otra temperatura</h2>
+  <p>K<sub>w</sub> crece con la temperatura: a 50 °C vale 5,5·10<sup>−14</sup>, y el agua neutra tiene pH 6,63, no 7. Sigue siendo neutra porque [H₃O⁺] = [OH⁻]; lo que cambia es que pH + pOH = pK<sub>w</sub>.</p>
   <h2>Valoraciones</h2>
   <p class="m">En el punto de equivalencia los moles de valorante igualan a los del ácido o la base valorados: $C V = C_t V_{eq}$. El pH en ese punto es 7 solo si los dos son fuertes; si se valora un ácido débil queda su base conjugada y el pH es básico, y al revés con una base débil. A mitad de la valoración de un ácido débil, $pH = pK_a$.</p>
   <ul>
@@ -457,6 +463,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ciclos de Carnot, Otto y Diesel con un gas ideal, con la tabla de estados, el trabajo, el calor y la energía interna de cada tramo y el rendimiento comparado con su fórmula y con Carnot.', 'Máquinas térmicas, frigoríficos y bombas de calor: el dato que falta, el rendimiento o la eficiencia, el límite de Carnot y si la máquina es posible, con la entropía del universo.', 'Diagrama p-V con un punto que recorre el ciclo y el cilindro con el émbolo, y el esquema de flujos de energía de las máquinas.'] },
     ],
     ph: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Hidrólisis de sales: pH del acetato de sodio, del cloruro de amonio o de una sal neutra, con la constante de hidrólisis.', 'Al revés: Ka o Kb a partir del pH medido, y la concentración que hace falta para un pH.', 'Preparar un tampón: el cociente sal/ácido y los gramos de sal para un pH dado.', 'Ácidos polipróticos (carbónico, fosfórico, sulfúrico con su segunda constante) y su valoración con una equivalencia por protón.', 'Mezclas de un ácido débil con una base fuerte, o al revés, como modo propio.', 'Agua a otra temperatura: Kw y el pH neutro cambian (6,63 a 50 °C).'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['Valoraciones de un ácido o una base débil: con muy poco valorante añadido, o muy cerca del punto de equivalencia, el pH ya sale bien. Antes se usaba Henderson-Hasselbalch también ahí y daba un pH equivocado (por ejemplo 2,05 en vez de 2,91 al empezar a valorar el ácido acético).'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: pH de ácidos y bases fuertes (también muy diluidos) y débiles, con el grado de disociación y la aproximación comprobada.', 'Mezclas de un ácido fuerte con una base fuerte y disoluciones reguladoras con Henderson-Hasselbalch, también al añadirles ácido o base.', 'Valoraciones de ácidos y bases fuertes y débiles: volumen y pH de equivalencia, pH a mitad, el pH con el volumen que pidas, el indicador adecuado y la curva.', 'Vaso con el color del indicador universal y las partículas, y una bureta que valora mientras se dibuja la curva.'] },
     ],
@@ -692,6 +699,532 @@ const Mates = (() => {
 })();
 
 /* =====================================================================
+   Datos de los 118 elementos, compartidos por las herramientas de química
+   (tabla periódica, masa molar, configuración electrónica).
+   Cada fila: Z | símbolo | nombre | masa atómica (u; entre corchetes, la del isótopo más estable)
+            | categoría | electronegatividad de Pauling | 1.ª energía de ionización (kJ/mol)
+            | radio atómico calculado (pm, Clementi y Raimondi, 1967)
+   Un campo vacío es un dato desconocido o no medido.
+   Categorías: a alcalino, t alcalinotérreo, m metal de transición, l lantánido, c actínido,
+   p otro metal (bloque p), s metaloide, n no metal, h halógeno, g gas noble.
+   ===================================================================== */
+const Elementos = (() => {
+  const FILAS = `1|H|Hidrógeno|1.008|n|2.20|1312|53
+2|He|Helio|4.0026|g||2372|31
+3|Li|Litio|6.94|a|0.98|520|167
+4|Be|Berilio|9.0122|t|1.57|900|112
+5|B|Boro|10.81|s|2.04|801|87
+6|C|Carbono|12.011|n|2.55|1086|67
+7|N|Nitrógeno|14.007|n|3.04|1402|56
+8|O|Oxígeno|15.999|n|3.44|1314|48
+9|F|Flúor|18.998|h|3.98|1681|42
+10|Ne|Neón|20.180|g||2081|38
+11|Na|Sodio|22.990|a|0.93|496|190
+12|Mg|Magnesio|24.305|t|1.31|738|145
+13|Al|Aluminio|26.982|p|1.61|578|118
+14|Si|Silicio|28.085|s|1.90|787|111
+15|P|Fósforo|30.974|n|2.19|1012|98
+16|S|Azufre|32.06|n|2.58|1000|88
+17|Cl|Cloro|35.45|h|3.16|1251|79
+18|Ar|Argón|39.95|g||1521|71
+19|K|Potasio|39.098|a|0.82|419|243
+20|Ca|Calcio|40.078|t|1.00|590|194
+21|Sc|Escandio|44.956|m|1.36|633|184
+22|Ti|Titanio|47.867|m|1.54|659|176
+23|V|Vanadio|50.942|m|1.63|651|171
+24|Cr|Cromo|51.996|m|1.66|653|166
+25|Mn|Manganeso|54.938|m|1.55|717|161
+26|Fe|Hierro|55.845|m|1.83|763|156
+27|Co|Cobalto|58.933|m|1.88|760|152
+28|Ni|Níquel|58.693|m|1.91|737|149
+29|Cu|Cobre|63.546|m|1.90|746|145
+30|Zn|Zinc|65.38|m|1.65|906|142
+31|Ga|Galio|69.723|p|1.81|579|136
+32|Ge|Germanio|72.630|s|2.01|762|125
+33|As|Arsénico|74.922|s|2.18|947|114
+34|Se|Selenio|78.971|n|2.55|941|103
+35|Br|Bromo|79.904|h|2.96|1140|94
+36|Kr|Kriptón|83.798|g|3.00|1351|88
+37|Rb|Rubidio|85.468|a|0.82|403|265
+38|Sr|Estroncio|87.62|t|0.95|550|219
+39|Y|Itrio|88.906|m|1.22|600|212
+40|Zr|Circonio|91.224|m|1.33|640|206
+41|Nb|Niobio|92.906|m|1.6|652|198
+42|Mo|Molibdeno|95.95|m|2.16|684|190
+43|Tc|Tecnecio|[98]|m|1.9|702|183
+44|Ru|Rutenio|101.07|m|2.2|710|178
+45|Rh|Rodio|102.91|m|2.28|720|173
+46|Pd|Paladio|106.42|m|2.20|804|169
+47|Ag|Plata|107.87|m|1.93|731|165
+48|Cd|Cadmio|112.41|m|1.69|868|161
+49|In|Indio|114.82|p|1.78|558|156
+50|Sn|Estaño|118.71|p|1.96|709|145
+51|Sb|Antimonio|121.76|s|2.05|834|133
+52|Te|Telurio|127.60|s|2.1|869|123
+53|I|Yodo|126.90|h|2.66|1008|115
+54|Xe|Xenón|131.29|g|2.6|1170|108
+55|Cs|Cesio|132.91|a|0.79|376|298
+56|Ba|Bario|137.33|t|0.89|503|253
+57|La|Lantano|138.91|l|1.10|538|
+58|Ce|Cerio|140.12|l|1.12|534|
+59|Pr|Praseodimio|140.91|l|1.13|527|
+60|Nd|Neodimio|144.24|l|1.14|533|
+61|Pm|Prometio|[145]|l||540|
+62|Sm|Samario|150.36|l|1.17|545|
+63|Eu|Europio|151.96|l||547|
+64|Gd|Gadolinio|157.25|l|1.20|593|
+65|Tb|Terbio|158.93|l||566|
+66|Dy|Disprosio|162.50|l|1.22|573|
+67|Ho|Holmio|164.93|l|1.23|581|
+68|Er|Erbio|167.26|l|1.24|589|
+69|Tm|Tulio|168.93|l|1.25|597|
+70|Yb|Iterbio|173.05|l||603|
+71|Lu|Lutecio|174.97|l|1.27|524|
+72|Hf|Hafnio|178.49|m|1.3|659|208
+73|Ta|Tantalio|180.95|m|1.5|761|200
+74|W|Wolframio|183.84|m|2.36|770|193
+75|Re|Renio|186.21|m|1.9|760|188
+76|Os|Osmio|190.23|m|2.2|840|185
+77|Ir|Iridio|192.22|m|2.20|880|180
+78|Pt|Platino|195.08|m|2.28|870|177
+79|Au|Oro|196.97|m|2.54|890|174
+80|Hg|Mercurio|200.59|m|2.00|1007|171
+81|Tl|Talio|204.38|p|1.62|589|156
+82|Pb|Plomo|207.2|p|2.33|716|154
+83|Bi|Bismuto|208.98|p|2.02|703|143
+84|Po|Polonio|[209]|p|2.0|812|135
+85|At|Astato|[210]|h|2.2||127
+86|Rn|Radón|[222]|g|2.2|1037|120
+87|Fr|Francio|[223]|a|0.7||
+88|Ra|Radio|[226]|t|0.9|509|
+89|Ac|Actinio|[227]|c|1.1|499|
+90|Th|Torio|232.04|c|1.3|587|
+91|Pa|Protactinio|231.04|c|1.5|568|
+92|U|Uranio|238.03|c|1.38|598|
+93|Np|Neptunio|[237]|c|1.36|605|
+94|Pu|Plutonio|[244]|c|1.28|585|
+95|Am|Americio|[243]|c|1.3|578|
+96|Cm|Curio|[247]|c|1.3|581|
+97|Bk|Berkelio|[247]|c|1.3|601|
+98|Cf|Californio|[251]|c|1.3|608|
+99|Es|Einstenio|[252]|c|1.3|619|
+100|Fm|Fermio|[257]|c|1.3|627|
+101|Md|Mendelevio|[258]|c|1.3|635|
+102|No|Nobelio|[259]|c|1.3|642|
+103|Lr|Laurencio|[266]|c|1.3||
+104|Rf|Rutherfordio|[267]|m|||
+105|Db|Dubnio|[268]|m|||
+106|Sg|Seaborgio|[269]|m|||
+107|Bh|Bohrio|[270]|m|||
+108|Hs|Hasio|[269]|m|||
+109|Mt|Meitnerio|[278]|m|||
+110|Ds|Darmstatio|[281]|m|||
+111|Rg|Roentgenio|[282]|m|||
+112|Cn|Copernicio|[285]|m|||
+113|Nh|Nihonio|[286]|p|||
+114|Fl|Flerovio|[289]|p|||
+115|Mc|Moscovio|[290]|p|||
+116|Lv|Livermorio|[293]|p|||
+117|Ts|Teneso|[294]|h|||
+118|Og|Oganesón|[294]|g|||`;
+
+  const CATEGORIAS = {
+    a: 'Metal alcalino', t: 'Metal alcalinotérreo', m: 'Metal de transición', l: 'Lantánido', c: 'Actínido',
+    p: 'Otro metal', s: 'Metaloide', n: 'No metal', h: 'Halógeno', g: 'Gas noble',
+  };
+  const GASES = new Set(['H', 'He', 'N', 'O', 'F', 'Ne', 'Cl', 'Ar', 'Kr', 'Xe', 'Rn']), LIQUIDOS = new Set(['Br', 'Hg']);
+  const num = (s) => (s === '' || s == null ? null : +s);
+
+  // grupo y periodo; los lantánidos y actínidos (57–71, 89–103) van en sus filas aparte
+  const LIMITES = [2, 10, 18, 36, 54, 86, 118];
+  function posicion(Z) {
+    const periodo = LIMITES.findIndex((l) => Z <= l) + 1, ini = periodo === 1 ? 1 : LIMITES[periodo - 2] + 1, k = Z - ini;
+    if ((Z >= 57 && Z <= 71) || (Z >= 89 && Z <= 103)) return { periodo, grupo: null, fila: periodo === 6 ? 9 : 10, col: 3 + (Z - (periodo === 6 ? 57 : 89)) };
+    let grupo;
+    if (periodo === 1) grupo = Z === 1 ? 1 : 18;
+    else if (periodo <= 3) grupo = k < 2 ? k + 1 : k + 11;
+    else if (periodo <= 5) grupo = k + 1;
+    else grupo = k < 2 ? k + 1 : k < 17 ? 3 : k - 13;
+    return { periodo, grupo, fila: periodo, col: grupo };
+  }
+
+  /* ---------- Configuración electrónica: Madelung (n + l) con las excepciones conocidas ---------- */
+  const ORB = []; // orden de llenado
+  for (let s = 1; s <= 8; s++) for (let l = Math.min(s - 1, 3); l >= 0; l--) { const n = s - l; if (n > l) ORB.push([n, l]); }
+  const LETRA = 'spdf', CAP = [2, 6, 10, 14];
+  const EXCEPCIONES = {
+    24: { '3d': 5, '4s': 1 }, 29: { '3d': 10, '4s': 1 }, 41: { '4d': 4, '5s': 1 }, 42: { '4d': 5, '5s': 1 },
+    44: { '4d': 7, '5s': 1 }, 45: { '4d': 8, '5s': 1 }, 46: { '4d': 10, '5s': 0 }, 47: { '4d': 10, '5s': 1 },
+    57: { '4f': 0, '5d': 1 }, 58: { '4f': 1, '5d': 1 }, 64: { '4f': 7, '5d': 1 }, 78: { '5d': 9, '6s': 1 }, 79: { '5d': 10, '6s': 1 },
+    89: { '5f': 0, '6d': 1 }, 90: { '5f': 0, '6d': 2 }, 91: { '5f': 2, '6d': 1 }, 92: { '5f': 3, '6d': 1 }, 93: { '5f': 4, '6d': 1 },
+    96: { '5f': 7, '6d': 1 }, 103: { '6d': 0, '7p': 1 },
+  };
+  // devuelve [{n, l, e, nombre}] en orden de n y l (forma habitual: 1s² 2s² 2p⁶ 3s² 3p⁶ 3d¹⁰ 4s²…)
+  function configuracion(Z, ion = 0) {
+    const e = {};
+    let resto = Z;
+    for (const [n, l] of ORB) { if (!resto) break; const k = Math.min(CAP[l], resto); e[`${n}${LETRA[l]}`] = k; resto -= k; }
+    // los cationes salen de la configuración real del átomo neutro (Cu⁺: [Ar] 3d¹⁰, Cr³⁺: [Ar] 3d³)
+    if (ion >= 0 && EXCEPCIONES[Z]) Object.assign(e, EXCEPCIONES[Z]);
+    // un catión pierde primero los electrones de mayor n (4s antes que 3d)
+    for (let q = ion; q > 0; q--) {
+      const k = Object.keys(e).filter((o) => e[o] > 0).sort((x, y) => +y[0] - +x[0] || LETRA.indexOf(y[1]) - LETRA.indexOf(x[1]))[0];
+      if (k) e[k]--;
+    }
+    for (let q = ion; q < 0; q++) {
+      const libre = ORB.map(([n, l]) => `${n}${LETRA[l]}`).find((o) => (e[o] || 0) < CAP[LETRA.indexOf(o[1])]);
+      e[libre] = (e[libre] || 0) + 1;
+    }
+    return Object.entries(e).filter(([, k]) => k > 0).map(([o, k]) => ({ n: +o.slice(0, -1), l: LETRA.indexOf(o.slice(-1)), e: k, nombre: o }))
+      .sort((a, b) => a.n - b.n || a.l - b.l);
+  }
+  const SUP = (k) => String(k).replace(/\d/g, (d) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d]);
+  const NOBLES = [2, 10, 18, 36, 54, 86];
+  const texto = (conf) => conf.map((o) => o.nombre + SUP(o.e)).join(' ');
+  // forma abreviada con el gas noble anterior: [Ar] 3d⁶ 4s²
+  function abreviada(Z) {
+    const g = [...NOBLES].reverse().find((n) => n < Z);
+    if (!g) return texto(configuracion(Z));
+    const base = new Set(configuracion(g).map((o) => o.nombre));
+    const full = configuracion(Z).filter((o) => !base.has(o.nombre) || configuracion(g).find((b) => b.nombre === o.nombre).e !== o.e);
+    return `[${lista[g - 1].simbolo}] ${texto(full)}`;
+  }
+  const capas = (Z) => { const c = []; for (const o of configuracion(Z)) c[o.n - 1] = (c[o.n - 1] || 0) + o.e; return c.map((x) => x || 0); };
+  const bloque = (Z) => { const c = configuracion(Z); const ult = ORB.map(([n, l]) => `${n}${LETRA[l]}`).filter((o) => c.some((x) => x.nombre === o)).pop(); return ((Z >= 57 && Z <= 71) || (Z >= 89 && Z <= 103)) ? 'f' : Z === 2 ? 's' : ult ? ult.slice(-1) : 's'; };
+
+  const lista = FILAS.split('\n').map((f) => {
+    const [Z, simbolo, nombre, masa, cat, en, ei, radio] = f.split('|');
+    const z = +Z, estable = masa.startsWith('[');
+    return {
+      Z: z, simbolo, nombre, masa: +masa.replace(/[[\]]/g, ''), masaEstable: estable, cat, categoria: CATEGORIAS[cat],
+      en: num(en), ei: num(ei), radio: num(radio),
+      estado: z >= 100 ? null : GASES.has(simbolo) ? 'gas' : LIQUIDOS.has(simbolo) ? 'líquido' : 'sólido',
+      ...posicion(z),
+    };
+  });
+  const porSimbolo = Object.fromEntries(lista.map((e) => [e.simbolo, e]));
+  return { lista, porSimbolo, CATEGORIAS, configuracion, texto, abreviada, capas, bloque, NOBLES };
+})();
+
+/* =====================================================================
+   Fórmulas químicas (sin DOM): lectura de fórmulas con paréntesis, hidratos
+   y cargas, masa molar, ajuste de ecuaciones y estequiometría con reactivo
+   limitante. Usa Elementos (elementos.js) para las masas atómicas.
+   ===================================================================== */
+const Formulas = (() => {
+  const SUB = { '₀': '0', '₁': '1', '₂': '2', '₃': '3', '₄': '4', '₅': '5', '₆': '6', '₇': '7', '₈': '8', '₉': '9' };
+  const SUP = { '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9', '⁺': '+', '⁻': '-' };
+  const NA = 6.02214076e23, VM = 22.4; // L/mol en condiciones normales (0 °C, 1 atm)
+  const R = 0.082; // atm·L/(mol·K), el de clase
+  // volumen molar de un gas ideal: 22,4 L/mol en condiciones normales y RT/P en las demás
+  const vm = (T = 273.15, P = 1) => (Math.abs(T - 273.15) < 1e-9 && Math.abs(P - 1) < 1e-12 ? VM : (R * T) / P);
+  const ME = 5.48579909e-4; // masa molar del electrón (g/mol), para las semirreacciones
+
+  // masas «de clase»: enteras salvo las que se suelen dar con medio
+  const MEDIAS = { Cl: 35.5, Cu: 63.5 };
+  const masaDe = (sim, modo) => {
+    const e = Elementos.porSimbolo[sim];
+    if (modo === 'redondeadas') return MEDIAS[sim] ?? Math.round(e.masa);
+    return e.masa;
+  };
+
+  /* ---------- Lectura de una fórmula ---------- */
+  // Devuelve { atomos: {símbolo: n}, carga, estado, html }. Es el lector de fórmulas de todas las
+  // herramientas de química. Admite H2O, Ca(OH)2, K4[Fe(CN)6], CuSO4·5H2O (también con * o .),
+  // estados (s), (l), (g), (aq), cargas con ^ (SO4^2-, Fe^3+), sin ^ (Fe3+, NO3-, SO42-, SO4 2-),
+  // subíndices y superíndices Unicode y el electrón e^- de las semirreacciones.
+  const ESTADOS = { s: 's', l: 'l', g: 'g', aq: 'aq', ac: 'aq', dis: 'aq' };
+  function leer(texto) {
+    let t = String(texto).trim().replace(/[₀-₉]/g, (c) => SUB[c]).replace(/[⁰¹²³⁴-⁹⁺⁻]/g, (c) => SUP[c]).replace(/[−–]/g, '-');
+    if (!t) throw new Error('Escribe una fórmula');
+    let estado = null;
+    const me = t.match(/\s*\((s|l|g|aq|ac|dis)\)$/i);
+    if (me) { estado = ESTADOS[me[1].toLowerCase()]; t = t.slice(0, me.index).trim(); }
+    // carga al final: ^2-, ^+, ^3+, ^-2; separada por un espacio (SO4 2-); o pegada (Fe3+, NO3-, SO42-)
+    let carga = 0;
+    const mc = t.match(/\^\(?(\d*)([+-])(\d*)\)?$/) || t.match(/\s+(\d*)([+-])$/);
+    if (mc) { carga = (mc[2] === '+' ? 1 : -1) * (+(mc[1] || mc[3] || 1)); t = t.slice(0, mc.index); }
+    else {
+      const mp = t.match(/(\d*)([+-])$/);
+      if (mp) {
+        const cuerpo = t.slice(0, mp.index), dig = mp[1];
+        // una sola cifra pegada a un ion de varios elementos es su subíndice (NO3-, NH4+); con dos cifras
+        // la última es la carga (SO42-, PO43-); en un ion de un solo elemento, la carga (Fe3+, O2-)
+        const unAtomo = /^[A-Z][a-z]?$/.test(cuerpo);
+        let q = '';
+        if (dig.length >= 2) q = dig.slice(-1); else if (dig && unAtomo) q = dig;
+        carga = (mp[2] === '+' ? 1 : -1) * (+(q || 1));
+        t = cuerpo + dig.slice(0, dig.length - q.length);
+      }
+    }
+    t = t.replace(/\s+/g, '');
+    if (t === 'e') return { atomos: {}, carga: carga || -1, estado, electron: true, html: 'e<sup>−</sup>' };
+    const partes = t.split(/[·*•.]/);
+    const atomos = {};
+    const suma = (a, b, f) => { for (const [k, v] of Object.entries(b)) a[k] = (a[k] || 0) + v * f; };
+    for (const parte of partes) {
+      if (!parte) throw new Error('Falta una parte de la fórmula alrededor del punto del hidrato');
+      const m = parte.match(/^(\d+)(.*)$/);
+      const coef = m ? +m[1] : 1, cuerpo = m ? m[2] : parte;
+      let i = 0;
+      const grupo = (cierre) => {
+        const at = {};
+        while (i < cuerpo.length) {
+          const c = cuerpo[i];
+          if (c === '(' || c === '[') {
+            i++;
+            const dentro = grupo(c === '(' ? ')' : ']');
+            suma(at, dentro, numero());
+          } else if (c === ')' || c === ']') {
+            if (c !== cierre) throw new Error(`Paréntesis mal cerrado en «${texto}»`);
+            i++;
+            return at;
+          } else if (/[A-Z]/.test(c)) {
+            let s = c; i++;
+            if (i < cuerpo.length && /[a-z]/.test(cuerpo[i])) { s += cuerpo[i]; i++; }
+            if (!Elementos.porSimbolo[s]) throw new Error(`«${s}» no es el símbolo de ningún elemento`);
+            at[s] = (at[s] || 0) + numero();
+          } else throw new Error(`No entiendo «${c}» en «${texto}». Los símbolos empiezan por mayúscula: Co es cobalto, CO es monóxido de carbono.`);
+        }
+        if (cierre) throw new Error(`Falta cerrar un paréntesis en «${texto}»`);
+        return at;
+      };
+      const numero = () => { let n = ''; while (i < cuerpo.length && /\d/.test(cuerpo[i])) n += cuerpo[i++]; return n ? +n : 1; };
+      const at = grupo(null);
+      if (!Object.keys(at).length) throw new Error(`«${texto}» no tiene ningún elemento`);
+      suma(atomos, at, coef);
+    }
+    return { atomos, carga, estado, html: html(t, carga) + (estado ? `<small class="estado">(${estado})</small>` : '') };
+  }
+  // H2O → H<sub>2</sub>O, CuSO4·5H2O conserva el coeficiente del hidrato
+  function html(t, carga) {
+    let h = t.replace(/[*•.]/g, '·').replace(/([A-Za-z)\]])(\d+)/g, '$1<sub>$2</sub>');
+    if (carga) h += `<sup>${Math.abs(carga) > 1 ? Math.abs(carga) : ''}${carga > 0 ? '+' : '−'}</sup>`;
+    return h;
+  }
+
+  /* ---------- Masa molar ---------- */
+  function masaMolar(texto, modo = 'iupac') {
+    const f = leer(texto);
+    if (f.electron) return { ...f, M: ME, filas: [] };
+    let M = 0;
+    const filas = Object.entries(f.atomos).map(([s, n]) => { const a = masaDe(s, modo); M += n * a; return { simbolo: s, nombre: Elementos.porSimbolo[s].nombre, n, masa: a, aporte: n * a }; });
+    filas.forEach((r) => (r.porcentaje = (100 * r.aporte) / M));
+    return { ...f, M, filas };
+  }
+
+  /* ---------- Ajuste de ecuaciones ---------- */
+  // fracciones exactas con BigInt para la eliminación gaussiana
+  const mcd = (a, b) => { a = a < 0n ? -a : a; b = b < 0n ? -b : b; while (b) [a, b] = [b, a % b]; return a; };
+  const fr = (n, d = 1n) => { if (d < 0n) { n = -n; d = -d; } const g = mcd(n, d) || 1n; return [n / g, d / g]; };
+  const mul = (a, b) => fr(a[0] * b[0], a[1] * b[1]), sub = (a, b) => fr(a[0] * b[1] - b[0] * a[1], a[1] * b[1]), div = (a, b) => fr(a[0] * b[1], a[1] * b[0]);
+
+  function separar(texto) {
+    const t = String(texto).replace(/<-+>|<=+>|⇌|⇄|↔|⟷|⟶|⇒|→|=>|-+>|=/g, '→');
+    const lados = t.split('→');
+    if (lados.length !== 2) throw new Error('Escribe la reacción con una flecha: reactivos -> productos');
+    // las especies se separan con « + » (con espacios); un + pegado es una carga
+    // un + pegado también separa si va detrás de una fórmula o de una carga y delante de otra fórmula (CH4+O2, Na++Cl-)
+    const especies = (lado) => lado.split(/\s\+\s|\s\+(?=\s*[A-Z(\[\d])|(?<=[A-Za-z0-9)\]]|(?<!\^)[+-])(?<!\^)\+(?=\s*(?:\d+\s*)?(?:[A-Z(\[]|e(?![a-z])))/).map((s) => s.trim()).filter(Boolean)
+      .map((s) => s.replace(/^\d+\s*(?=[A-Z(\[]|e(?![a-z]))/, '').replace(/^\d+\s+/, '')); // quita los coeficientes que ponga el usuario
+    const R = especies(lados[0]), P = especies(lados[1]);
+    if (!R.length || !P.length) throw new Error('Falta algún reactivo o producto');
+    return { R, P };
+  }
+
+  function ajustar(texto) {
+    const { R, P } = separar(texto);
+    const sp = [...R, ...P].map((s) => ({ texto: s, ...leer(s) }));
+    const els = [...new Set(sp.flatMap((s) => Object.keys(s.atomos)))];
+    const filas = els.map((e) => sp.map((s, j) => (j < R.length ? 1 : -1) * (s.atomos[e] || 0)));
+    if (sp.some((s) => s.carga)) filas.push(sp.map((s, j) => (j < R.length ? 1 : -1) * s.carga));
+    for (const e of els) {
+      if (!R.some((s) => leer(s).atomos[e])) throw new Error(`El ${Elementos.porSimbolo[e].nombre.toLowerCase()} (${e}) solo aparece en los productos`);
+      if (!P.some((s) => leer(s).atomos[e])) throw new Error(`El ${Elementos.porSimbolo[e].nombre.toLowerCase()} (${e}) solo aparece en los reactivos`);
+    }
+    // forma escalonada reducida
+    const n = sp.length, A = filas.map((f) => f.map((v) => fr(BigInt(v))));
+    const piv = [];
+    let r = 0;
+    for (let c = 0; c < n && r < A.length; c++) {
+      let p = r; while (p < A.length && A[p][c][0] === 0n) p++;
+      if (p === A.length) continue;
+      [A[r], A[p]] = [A[p], A[r]];
+      const pv = A[r][c];
+      A[r] = A[r].map((v) => div(v, pv));
+      for (let i = 0; i < A.length; i++) if (i !== r && A[i][c][0] !== 0n) { const f = A[i][c]; A[i] = A[i].map((v, j) => sub(v, mul(f, A[r][j]))); }
+      piv.push(c); r++;
+    }
+    const libres = [...Array(n).keys()].filter((c) => !piv.includes(c));
+    if (libres.length === 0) throw new Error('Esta reacción no se puede ajustar: revisa las fórmulas');
+    if (libres.length > 1) throw new Error('La reacción admite varios ajustes independientes (son dos reacciones juntas). Sepáralas.');
+    const lib = libres[0], x = Array(n).fill(null);
+    x[lib] = fr(1n);
+    piv.forEach((c, i) => (x[c] = fr(-A[i][lib][0], A[i][lib][1])));
+    const mcm = x.reduce((m, v) => (m * v[1]) / mcd(m, v[1]), 1n);
+    let coef = x.map((v) => (v[0] * mcm) / v[1]);
+    const g = coef.reduce((a, b) => mcd(a, b));
+    coef = coef.map((c) => c / g);
+    if (coef.some((c) => c === 0n)) throw new Error('Alguna especie no interviene en la reacción ajustada: sobra en la ecuación');
+    if (coef.some((c) => (c > 0n) !== (coef[0] > 0n))) throw new Error('No hay un ajuste con todos los coeficientes positivos: revisa qué es reactivo y qué es producto');
+    if (coef[0] < 0n) coef = coef.map((c) => -c);
+    const especies = sp.map((s, j) => ({ texto: s.texto, html: s.html, atomos: s.atomos, carga: s.carga, coef: Number(coef[j]), reactivo: j < R.length }));
+    const lado = (L) => L.map((s) => (s.coef > 1 ? s.coef + ' ' : '') + s.html).join(' + ');
+    return { especies, html: lado(especies.filter((s) => s.reactivo)) + ' <span class="flecha">→</span> ' + lado(especies.filter((s) => !s.reactivo)) };
+  }
+
+  /* ---------- Estequiometría ---------- */
+  // cantidades: lista paralela a las especies con { valor, unidad, extra } o null. Unidades:
+  //   'g' (extra: pureza en %, opcional), 'mol', 'L' (gas a T y P) y 'disol' (valor en mL, extra: molaridad)
+  // opciones: modo de masas, rendimiento (%), T (K) y P (atm) de los gases, real: { i, masa } para sacar el rendimiento
+  const leeNum = (v) => +String(v ?? '').trim().replace(/\s/g, '').replace(',', '.').replace(/[·x×*]10\^?\(?([+\-−]?\d+)\)?/i, 'e$1').replace('−', '-');
+  const vacia = (v) => v === '' || v == null || String(v).trim() === '';
+  function estequiometria(texto, cantidades, { modo = 'iupac', rendimiento = 100, T = 273.15, P = 1, real = null } = {}) {
+    const aj = ajustar(texto);
+    const E = aj.especies.map((s) => ({ ...s, M: masaMolar(s.texto, modo).M, estado: leer(s.texto).estado }));
+    const pasos = [], Vm = vm(T, P), cn = Vm === VM;
+    const gas = cn ? 'gas en condiciones normales, 22,4 L/mol' : `gas ideal a ${num(T)} K y ${num(P)} atm: V<sub>m</sub> = RT/P = 0,082 · ${num(T)} / ${num(P)} = ${num(Vm)} L/mol`;
+    const dadas = E.map((s, i) => ({ s, i, q: cantidades[i] })).filter((d) => d.s.reactivo && d.q && !vacia(d.q.valor));
+    if (!dadas.length) throw new Error('Escribe la cantidad de al menos un reactivo');
+    for (const d of dadas) {
+      const v = leeNum(d.q.valor);
+      if (!isFinite(v) || v <= 0) throw new Error(`La cantidad de ${d.s.texto} debe ser un número positivo`);
+      d.v = v;
+      if (d.q.unidad === 'g') {
+        const p = vacia(d.q.extra) ? 100 : leeNum(d.q.extra);
+        if (!(p > 0 && p <= 100)) throw new Error(`La pureza de ${d.s.texto} tiene que estar entre 0 y 100 %`);
+        const mp = (v * p) / 100;
+        d.n = mp / d.s.M;
+        pasos.push({ t: `Moles de ${d.s.html}`, html: `${p < 100 ? `Solo el ${num(p)} % es ${d.s.html} puro: m = ${num(v)} · ${num(p)} / 100 = ${num(mp)} g. ` : ''}n = m / M = ${num(mp)} g / ${num(d.s.M)} g/mol = <b>${num(d.n)} mol</b>` });
+      } else if (d.q.unidad === 'L') { d.n = v / Vm; pasos.push({ t: `Moles de ${d.s.html}`, html: `n = V / V<sub>m</sub> = ${num(v)} L / ${num(Vm)} L/mol = <b>${num(d.n)} mol</b> (${gas})` }); }
+      else if (d.q.unidad === 'disol') {
+        const c = leeNum(d.q.extra);
+        if (!(c > 0)) throw new Error(`Escribe la molaridad de la disolución de ${d.s.texto}`);
+        d.n = (c * v) / 1000;
+        pasos.push({ t: `Moles de ${d.s.html}`, html: `En disolución: n = M · V = ${num(c)} mol/L · ${num(v / 1000)} L = <b>${num(d.n)} mol</b>` });
+      } else d.n = v;
+    }
+    // reactivo limitante: el menor n / coeficiente
+    for (const d of dadas) d.r = d.n / d.s.coef;
+    const lim = dadas.reduce((a, b) => (b.r < a.r ? b : a));
+    if (dadas.length > 1) pasos.push({ t: 'Reactivo limitante', html: dadas.map((d) => `${d.s.html}: ${num(d.n)} / ${d.s.coef} = ${num(d.r)}`).join(' · ') + `. El menor es el de <b>${lim.s.html}</b>: es el reactivo limitante y se consume entero.` });
+    const avance = lim.r;
+    // rendimiento: el dado, o el que sale de la masa obtenida de verdad
+    let ren = rendimiento / 100, renReal = null;
+    if (real && real.i != null && !vacia(real.masa)) {
+      const o = E[real.i], mr = leeNum(real.masa);
+      if (!o || o.reactivo) throw new Error('El rendimiento se calcula con la masa obtenida de un producto');
+      if (!(mr > 0)) throw new Error('La masa obtenida tiene que ser un número positivo');
+      const teo = o.coef * avance * o.M;
+      ren = mr / teo; renReal = 100 * ren;
+      pasos.push({ t: 'Rendimiento', html: `Teóricamente se forman ${num(o.coef * avance)} mol · ${num(o.M)} g/mol = ${num(teo)} g de ${o.html}; se han obtenido ${num(mr)} g: rendimiento = 100 · ${num(mr)} / ${num(teo)} = <b>${num(renReal)} %</b>${renReal > 100 ? '. Sale más del 100 %: el producto estaba húmedo o impuro, o hay un dato mal' : ''}` });
+    }
+    const res = E.map((s, i) => {
+      const o = { ...s, i };
+      if (s.reactivo) {
+        o.gastado = s.coef * avance;
+        const d = dadas.find((x) => x.i === i);
+        if (d) { o.inicial = d.n; o.sobra = Math.max(0, d.n - o.gastado); }
+      } else { o.formado = s.coef * avance * ren; o.masa = o.formado * s.M; if (s.estado === 'g') o.volumen = o.formado * Vm; }
+      return o;
+    });
+    for (const o of res) {
+      if (o.electron) continue;
+      if (!o.reactivo) pasos.push({ t: `${o.html} que se forma`, html: `n = ${num(lim.n)} mol de ${lim.s.html} · ${o.coef} / ${lim.s.coef}${ren !== 1 ? ` · ${num(100 * ren)} %` : ''} = <b>${num(o.formado)} mol</b> ⇒ m = n · M = ${num(o.formado)} · ${num(o.M)} = <b>${num(o.masa)} g</b>${o.volumen ? ` y, como es un gas, V = n · V<sub>m</sub> = ${num(o.formado)} · ${num(Vm)} = <b>${num(o.volumen)} L</b>` : ''}` });
+      else if (o.inicial !== undefined && o !== res[lim.i] && o.sobra > 0) pasos.push({ t: `${o.html} que sobra`, html: `Reaccionan ${num(lim.n)} · ${o.coef} / ${lim.s.coef} = ${num(o.gastado)} mol de los ${num(o.inicial)} mol: sobran <b>${num(o.sobra)} mol = ${num(o.sobra * o.M)} g</b>.` });
+      else if (o.inicial === undefined && o.reactivo) pasos.push({ t: `${o.html} necesario`, html: `n = ${num(lim.n)} · ${o.coef} / ${lim.s.coef} = <b>${num(o.gastado)} mol = ${num(o.gastado * o.M)} g</b>` });
+    }
+    // tabla de moles al principio, lo que cambia y al final
+    const filaT = (o) => {
+      const ini = o.reactivo ? o.inicial : 0, cam = o.reactivo ? -o.gastado : o.formado;
+      return `<tr><td>${o.html}</td><td>${ini === undefined ? '—' : num(ini)}</td><td>${num(cam)}</td><td>${ini === undefined ? '—' : num(Math.max(0, ini + cam))}</td></tr>`;
+    };
+    pasos.push({ t: 'Moles al principio, lo que cambia y al final', html: `<div class="tabla-scroll"><table class="tabla"><thead><tr><th>Especie</th><th>Inicial (mol)</th><th>Cambio (mol)</th><th>Final (mol)</th></tr></thead><tbody>${res.filter((o) => !o.electron).map(filaT).join('')}</tbody></table></div>` });
+    return { ajuste: aj, especies: res, limitante: lim.i, varios: dadas.length > 1, rendimiento: 100 * ren, renReal, Vm, pasos };
+  }
+
+  /* ---------- Fórmula empírica y molecular ---------- */
+  // sc: { tipo: 'composicion' | 'combustion', composicion: 'C 40; H 6,7; O 53,3' (% o g), muestra, co2, h2o (g), M (g/mol, opcional), modo }
+  function empirica(sc) {
+    const modo = sc.modo || 'iupac', pasos = [], A = (e) => masaDe(e, modo);
+    let gramos; // gramos de cada elemento en la muestra (o en 100 g)
+    if (sc.tipo === 'combustion') {
+      const m = leeNum(sc.muestra), co2 = leeNum(sc.co2), h2o = leeNum(sc.h2o);
+      if (!(m > 0)) throw new Error('Escribe la masa de la muestra que se quema');
+      if (!(co2 >= 0) || !(h2o >= 0) || co2 + h2o === 0) throw new Error('Escribe los gramos de CO2 y de H2O que se recogen');
+      const Mco2 = A('C') + 2 * A('O'), Mh2o = 2 * A('H') + A('O');
+      const gC = (co2 * A('C')) / Mco2, gH = (h2o * 2 * A('H')) / Mh2o, gO = m - gC - gH;
+      if (gO < -0.005 * m) throw new Error(`El carbono y el hidrógeno (${num(gC + gH)} g) pesan más que la muestra (${num(m)} g): revisa los datos`);
+      gramos = { C: gC, H: gH };
+      if (gO > 0.005 * m) gramos.O = gO;
+      pasos.push({ t: 'Carbono e hidrógeno de la combustión', html: `Todo el C acaba en el CO<sub>2</sub> y todo el H en el H<sub>2</sub>O: m(C) = ${num(co2)} · ${num(A('C'))} / ${num(Mco2)} = <b>${num(gC)} g</b>, &nbsp; m(H) = ${num(h2o)} · 2 · ${num(A('H'))} / ${num(Mh2o)} = <b>${num(gH)} g</b>` });
+      pasos.push({ t: 'Oxígeno por diferencia', html: gramos.O ? `m(O) = ${num(m)} − ${num(gC)} − ${num(gH)} = <b>${num(gO)} g</b>` : `${num(m)} − ${num(gC)} − ${num(gH)} ≈ 0: el compuesto no tiene oxígeno.` });
+    } else {
+      gramos = {};
+      const re = /([A-Z][a-z]?)\s*[:=]?\s*(\d+(?:[.,]\d+)?)/g;
+      let mt;
+      while ((mt = re.exec(String(sc.composicion || '')))) {
+        if (!Elementos.porSimbolo[mt[1]]) throw new Error(`«${mt[1]}» no es el símbolo de ningún elemento`);
+        gramos[mt[1]] = (gramos[mt[1]] || 0) + +mt[2].replace(',', '.');
+      }
+      const k = Object.keys(gramos);
+      if (k.length < 2) throw new Error('Escribe al menos dos elementos con su porcentaje o sus gramos: C 40; H 6,7; O 53,3');
+      const suma = k.reduce((t, e) => t + gramos[e], 0);
+      pasos.push({ t: 'Base de cálculo', html: sc.unidad === 'g' ? `Se parte de los gramos de cada elemento (${num(suma)} g en total).` : `Con 100 g de compuesto, cada porcentaje son gramos.${Math.abs(suma - 100) > 0.5 ? ` Los porcentajes suman ${num(suma)} %, no 100: revisa si falta algún elemento.` : ''}` });
+    }
+    const els = Object.keys(gramos), n = Object.fromEntries(els.map((e) => [e, gramos[e] / A(e)]));
+    pasos.push({ t: 'Moles de cada elemento', html: els.map((e) => `n(${e}) = ${num(gramos[e])} / ${num(A(e))} = ${num(n[e])} mol`).join(' &nbsp; ') });
+    const min = Math.min(...els.map((e) => n[e])), rel = Object.fromEntries(els.map((e) => [e, n[e] / min]));
+    pasos.push({ t: 'Se divide entre el menor', html: els.map((e) => `${e}: ${num(n[e])} / ${num(min)} = ${num(rel[e], 3)}`).join(' &nbsp; ') });
+    // el menor factor que deja todo en enteros (1,5 → ×2; 1,33 → ×3…)
+    let fac = 1;
+    for (let k = 1; k <= 8; k++) if (els.every((e) => Math.abs(rel[e] * k - Math.round(rel[e] * k)) < 0.1 * k ** 0.5 / 1.2)) { fac = k; break; } else if (k === 8) fac = 0;
+    if (!fac) throw new Error('Las proporciones no dan números enteros pequeños: revisa los datos (redondea con más cifras)');
+    const sub = Object.fromEntries(els.map((e) => [e, Math.round(rel[e] * fac)]));
+    if (fac > 1) pasos.push({ t: 'Números enteros', html: `No todos salen enteros: multiplicando por ${fac}, ${els.map((e) => `${e} ${num(rel[e] * fac, 3)} ≈ ${sub[e]}`).join(', ')}.` });
+    // orgánicos en el orden de Hill (C, H y luego alfabético); inorgánicos de menos a más electronegativo (K2Cr2O7, Fe2O3)
+    const en = (e) => Elementos.porSimbolo[e].en ?? 4;
+    const orden = els.includes('C') ? ['C', 'H', ...els.filter((e) => e !== 'C' && e !== 'H').sort()].filter((e) => els.includes(e)) : [...els].sort((x, y) => en(x) - en(y));
+    const formula = (k) => orden.map((e) => e + (sub[e] * k > 1 ? sub[e] * k : '')).join('');
+    const emp = formula(1), Memp = masaMolar(emp, modo).M;
+    pasos.push({ t: 'Fórmula empírica', html: `<b class="formula">${html(emp, 0)}</b>, con M = ${num(Memp)} g/mol` });
+    let mol = null, k = null;
+    if (!vacia(sc.M)) {
+      const M = leeNum(sc.M);
+      if (!(M > 0)) throw new Error('La masa molar tiene que ser un número positivo');
+      k = Math.round(M / Memp);
+      if (k < 1 || Math.abs(M / Memp - k) > 0.08 * k) throw new Error(`La masa molar (${num(M)} g/mol) no es un múltiplo de la de la fórmula empírica (${num(Memp)} g/mol)`);
+      mol = formula(k);
+      pasos.push({ t: 'Fórmula molecular', html: `n = M / M<sub>empírica</sub> = ${num(M)} / ${num(Memp)} = ${num(M / Memp, 3)} ≈ ${k} ⇒ <b class="formula">${html(mol, 0)}</b>` });
+    }
+    return { gramos, moles: n, relacion: rel, factor: fac, subindices: sub, empirica: emp, Mempirica: Memp, molecular: mol, k, pasos, html: (f) => html(f, 0) };
+  }
+
+  // número con coma decimal y 4 cifras significativas (notación científica si es muy grande o pequeño)
+  function num(x, cifras = 4) {
+    if (!isFinite(x)) return '—';
+    if (x === 0) return '0';
+    const a = Math.abs(x);
+    if (a >= 1e6 || a < 1e-3) {
+      const [m, e] = x.toExponential(cifras - 1).split('e');
+      return `${String(+m).replace('.', ',').replace('-', '−')}·10<sup>${(+e).toString().replace('-', '−')}</sup>`;
+    }
+    return String(+x.toPrecision(cifras)).replace('.', ',').replace('-', '−');
+  }
+
+  const ejemplos = [
+    { clave: 'propano', nombre: 'Combustión del propano', ecuacion: 'C3H8 + O2 -> CO2 + H2O', cantidades: [{ valor: 44, unidad: 'g' }, { valor: 100, unidad: 'g' }] },
+    { clave: 'alto-horno', nombre: 'Alto horno: óxido de hierro y CO', ecuacion: 'Fe2O3 + CO -> Fe + CO2', cantidades: [{ valor: 1000, unidad: 'g' }, null] },
+    { clave: 'aluminio', nombre: 'Aluminio con ácido clorhídrico', ecuacion: 'Al + HCl -> AlCl3 + H2', cantidades: [{ valor: 5.4, unidad: 'g' }, { valor: 0.5, unidad: 'mol' }] },
+    { clave: 'permanganato', nombre: 'Permanganato con ácido clorhídrico', ecuacion: 'KMnO4 + HCl -> KCl + MnCl2 + Cl2 + H2O', cantidades: [{ valor: 15.8, unidad: 'g' }, { valor: 100, unidad: 'g' }] },
+    { clave: 'cobre-nitrico', nombre: 'Cobre con ácido nítrico', ecuacion: 'Cu + HNO3 -> Cu(NO3)2 + NO + H2O', cantidades: [{ valor: 6.35, unidad: 'g' }, { valor: 0.5, unidad: 'mol' }] },
+    { clave: 'redox-ionica', nombre: 'Redox iónica: permanganato y hierro(II)', ecuacion: 'MnO4^- + Fe^2+ + H^+ -> Mn^2+ + Fe^3+ + H2O', cantidades: [{ valor: 0.02, unidad: 'mol' }, { valor: 0.05, unidad: 'mol' }, { valor: 1, unidad: 'mol' }] },
+  ];
+
+  return { leer, masaMolar, ajustar, estequiometria, empirica, num, masaDe, ejemplos, NA, VM, R, vm };
+})();
+
+/* =====================================================================
    pH y valoraciones (sin DOM): ácidos y bases fuertes y débiles, mezclas
    de un ácido fuerte con una base fuerte, disoluciones reguladoras
    (Henderson-Hasselbalch, también al añadirles ácido o base) y curvas de
@@ -719,7 +1252,16 @@ const PH = (() => {
     if (cero ? v < 0 : v <= 0) throw new Error(`${Mayus(nom)} debe ser ${cero ? 'positivo o cero' : 'mayor que 0'}`);
     return v;
   }
-  const KW = 1e-14, lg = Math.log10;
+  // K_w y pK_w: 10⁻¹⁴ y 14 a 25 °C; a otra temperatura, de la tabla (resolver() los fija para cada cálculo)
+  let KW = 1e-14, PKW = 14;
+  const lg = Math.log10;
+  const KW_T = [[0, 0.114], [10, 0.293], [20, 0.681], [25, 1.0], [30, 1.47], [40, 2.92], [50, 5.47], [60, 9.61], [70, 15.8], [80, 25.1], [90, 38.0], [100, 56.0]];
+  const kwDe = (T) => {
+    if (Math.abs(T - 25) < 1e-9) return 1e-14;
+    const t = Math.max(0, Math.min(100, T)), i = KW_T.findIndex(([x]) => x >= t), [x1, y1] = KW_T[Math.max(1, i)], [x0, y0] = KW_T[Math.max(1, i) - 1];
+    return 1e-14 * 10 ** (lg(y0) + ((lg(y1) - lg(y0)) * (t - x0)) / (x1 - x0));
+  };
+  const p14 = () => (PKW === 14 ? '14' : f2(PKW));
   // la constante: K o pK, la que se haya escrito
   function leeK(sc, nom) {
     if (!vacio(sc.K)) return lee(sc, 'K', nom);
@@ -729,9 +1271,12 @@ const PH = (() => {
 
   /* ---------- pH exacto por el balance de cargas ---------- */
   // c: { na (catión de base fuerte), cl (anión de ácido fuerte), ca + Ka (ácido débil), cb + Kb (base débil) }
+  //    y cp + Kas = [Ka1, Ka2, …] (ácido poliprótico)
+  // carga media de las especies de un poliprótico H_nA: Σ i·[H_(n−i)A^(i−)] / C
+  const cargaMedia = (h, Kas) => { let t = 1, num = 0, den = 1; Kas.forEach((K, i) => { t *= K / h; den += t; num += (i + 1) * t; }); return num / den; };
   function exacto(c) {
     const Ka = c.Ka || 1, Kbh = c.Kb ? KW / c.Kb : 1;
-    const g = (h) => h + (c.na || 0) + ((c.cb || 0) * h) / (h + Kbh) - KW / h - (c.cl || 0) - ((c.ca || 0) * Ka) / (Ka + h);
+    const g = (h) => h + (c.na || 0) + ((c.cb || 0) * h) / (h + Kbh) - KW / h - (c.cl || 0) - ((c.ca || 0) * Ka) / (Ka + h) - (c.cp ? c.cp * cargaMedia(h, c.Kas) : 0);
     let lo = -16, hi = 2; // log10 de [H3O+]
     for (let i = 0; i < 80; i++) { const m = (lo + hi) / 2; if (g(10 ** m) > 0) hi = m; else lo = m; }
     return -(lo + hi) / 2;
@@ -739,11 +1284,11 @@ const PH = (() => {
 
   const INDICADORES = [['naranja de metilo', 3.1, 4.4, 'rojo', 'amarillo'], ['rojo de metilo', 4.2, 6.3, 'rojo', 'amarillo'], ['azul de bromotimol', 6.0, 7.6, 'amarillo', 'azul'], ['fenolftaleína', 8.2, 10.0, 'incoloro', 'rosa'], ['timolftaleína', 9.3, 10.5, 'incoloro', 'azul']];
   const indicador = (pH) => INDICADORES.reduce((a, b) => (Math.abs((b[1] + b[2]) / 2 - pH) < Math.abs((a[1] + a[2]) / 2 - pH) ? b : a));
-  const caracter = (pH) => (pH < 6.995 ? 'ácida' : pH > 7.005 ? 'básica' : 'neutra');
+  const caracter = (pH) => (pH < PKW / 2 - 0.005 ? 'ácida' : pH > PKW / 2 + 0.005 ? 'básica' : 'neutra');
   const finPH = (pH) => `$pH = ${f2(pH)}$: disolución ${caracter(pH)}.`;
   // pH a partir de [H3O+] o de [OH−], escrito como en clase
   const desdeH = (h) => `$pH = −log [H_{3}O^{+}] = −log ${f(h)}$ = <b>${f2(-lg(h))}</b>`;
-  const desdeOH = (oh) => `$pOH = −log [OH^{−}] = −log ${f(oh)} = ${f2(-lg(oh))}$, &ensp; $pH = 14 − pOH$ = <b>${f2(14 + lg(oh))}</b>`;
+  const desdeOH = (oh) => `$pOH = −log [OH^{−}] = −log ${f(oh)} = ${f2(-lg(oh))}$, &ensp; $pH = ${p14()} − pOH$ = <b>${f2(PKW + lg(oh))}</b>`;
   // x de x²/(C − x) = K
   const raiz = (K, C) => (-K + Math.sqrt(K * K + 4 * K * C)) / 2;
 
@@ -757,14 +1302,14 @@ const PH = (() => {
     if (c < 1e-6) {
       // muy diluido: cuenta también el agua
       const x = (c + Math.sqrt(c * c + 4 * KW)) / 2;
-      pH = base ? 14 + lg(x) : -lg(x);
-      pasos.push({ t: 'Muy diluido: cuenta el agua', html: `Con tan poca concentración los iones del agua no son despreciables. Con $[${ion}] = c + [${base ? 'H_{3}O^{+}' : 'OH^{−}'}]$ y $K_w = [H_{3}O^{+}][OH^{−}] = 10^{−14}$ queda $x^2 − c x − K_w = 0$, $x = ${f(x)}$ M` });
+      pH = base ? PKW + lg(x) : -lg(x);
+      pasos.push({ t: 'Muy diluido: cuenta el agua', html: `Con tan poca concentración los iones del agua no son despreciables. Con $[${ion}] = c + [${base ? 'H_{3}O^{+}' : 'OH^{−}'}]$ y $K_w = [H_{3}O^{+}][OH^{−}] = ${PKW === 14 ? '10^{−14}' : f(KW)}$ queda $x^2 − c x − K_w = 0$, $x = ${f(x)}$ M` });
       pasos.push({ t: 'pH', html: base ? desdeOH(x) : desdeH(x) });
     } else {
-      pH = base ? 14 + lg(c) : -lg(c);
+      pH = base ? PKW + lg(c) : -lg(c);
       pasos.push({ t: 'pH', html: base ? desdeOH(c) : desdeH(c) });
     }
-    pasos.push({ t: 'Concentraciones en el equilibrio', html: `$[H_{3}O^{+}] = ${f(10 ** -pH)}$ M, &ensp; $[OH^{−}] = ${f(10 ** (pH - 14))}$ M. ${finPH(pH)}` });
+    pasos.push({ t: 'Concentraciones en el equilibrio', html: `$[H_{3}O^{+}] = ${f(10 ** -pH)}$ M, &ensp; $[OH^{−}] = ${f(10 ** (pH - PKW))}$ M. ${finPH(pH)}` });
     return { modo: 'fuerte', base, C, n, pH, h: 10 ** -pH, pasos };
   }
 
@@ -781,7 +1326,7 @@ const PH = (() => {
       { t: 'Grado de disociación', html: `$α = x/C = ${f(x)}/${f(C)}$ = <b>${f(alfa)}</b> (${f(100 * alfa)} %)` },
       { t: 'Con la aproximación', html: `Si se desprecia x frente a C: $x ≈ √(${Kn} C) = √(${f(K)} · ${f(C)}) = ${f(aprox)}$ M, ${alfa < 0.05 ? `que vale porque α < 5 % (error del ${f((100 * (aprox - x)) / x, 2)} %)` : `pero aquí α > 5 % y la aproximación da un error del ${f((100 * (aprox - x)) / x, 2)} %: hay que resolver la ecuación de segundo grado`}.` },
     ];
-    const pH = base ? 14 + lg(x) : -lg(x);
+    const pH = base ? PKW + lg(x) : -lg(x);
     pasos.push({ t: 'Resultado', html: finPH(pH) });
     return { modo: 'debil', base, C, K, pK: -lg(K), x, alfa, pH, h: 10 ** -pH, pasos };
   }
@@ -792,11 +1337,11 @@ const PH = (() => {
   function tampon(sc) {
     const base = sc.especie === 'base', K = leeK(sc, base ? 'Kb' : 'Ka');
     const Cd = lee(sc, 'Cd', base ? 'la concentración de la base' : 'la concentración del ácido'), Cs = lee(sc, 'Cs', 'la concentración de la sal');
-    const pKa = base ? 14 + lg(K) : -lg(K); // del ácido del par
+    const pKa = base ? PKW + lg(K) : -lg(K); // del ácido del par
     // forma ácida y forma básica del par
     const cAc = base ? Cs : Cd, cBa = base ? Cd : Cs, Ac = base ? 'BH^{+}' : 'HA', Ba = base ? 'B' : 'A^{−}';
     const pH0 = pKa + lg(cBa / cAc);
-    const pasos = [{ t: 'Ecuación de Henderson-Hasselbalch', html: `${base ? `El par es $B/BH^{+}$: $pK_a = 14 − pK_b = 14 − ${f2(-lg(K))} = ${f2(pKa)}$.` : `$pK_a = −log ${f(K)} = ${f2(pKa)}$.`}<br>$pH = pK_a + log {[${Ba}]}/{[${Ac}]} = ${f2(pKa)} + log {${f(cBa)}}/{${f(cAc)}}$ = <b>${f2(pH0)}</b>` }];
+    const pasos = [{ t: 'Ecuación de Henderson-Hasselbalch', html: `${base ? `El par es $B/BH^{+}$: $pK_a = ${p14()} − pK_b = ${p14()} − ${f2(-lg(K))} = ${f2(pKa)}$.` : `$pK_a = −log ${f(K)} = ${f2(pKa)}$.`}<br>$pH = pK_a + log {[${Ba}]}/{[${Ac}]} = ${f2(pKa)} + log {${f(cBa)}}/{${f(cAc)}}$ = <b>${f2(pH0)}</b>` }];
     let pH = pH0, pHagua = null, nAc = null, nBa = null;
     const anade = sc.anade === 'acido' || sc.anade === 'base' ? sc.anade : 'nada';
     if (anade !== 'nada') {
@@ -815,8 +1360,8 @@ const PH = (() => {
         pasos.push({ t: anade === 'acido' ? 'El ácido reacciona con la forma básica' : 'La base reacciona con la forma ácida', html: `${anade === 'acido' ? `$${Ba} + H_{3}O^{+} → ${Ac}$` : `$${Ac} + OH^{−} → ${Ba}$`}: quedan $n(${Ac}) = ${f(nAc)}$ mol y $n(${Ba}) = ${f(nBa)}$ mol. El volumen es el mismo para los dos, así que se puede usar el cociente de moles:<br>$pH = ${f2(pKa)} + log {${f(nBa)}}/{${f(nAc)}}$ = <b>${f2(pH)}</b>` });
       }
       const c = n / Vt;
-      pHagua = anade === 'acido' ? -lg((c + Math.sqrt(c * c + 4 * KW)) / 2) : 14 + lg((c + Math.sqrt(c * c + 4 * KW)) / 2);
-      pasos.push({ t: 'Comparado con agua pura', html: `El pH cambia en ${f2(Math.abs(pH - pH0))} unidades. Si lo mismo se echara en ${f(V)} mL de agua pura, el pH pasaría de 7 a ${f2(pHagua)}.` });
+      pHagua = anade === 'acido' ? -lg((c + Math.sqrt(c * c + 4 * KW)) / 2) : PKW + lg((c + Math.sqrt(c * c + 4 * KW)) / 2);
+      pasos.push({ t: 'Comparado con agua pura', html: `El pH cambia en ${f2(Math.abs(pH - pH0))} unidades. Si lo mismo se echara en ${f(V)} mL de agua pura, el pH pasaría de ${f2(PKW / 2)} a ${f2(pHagua)}.` });
     }
     pasos.push({ t: 'Concentración de H₃O⁺', html: `$[H_{3}O^{+}] = 10^{−pH} = ${f(10 ** -pH)}$ M` });
     pasos.push({ t: 'Capacidad reguladora', html: `Amortiguan bien entre $pH = pK_a ± 1$, de ${f2(pKa - 1)} a ${f2(pKa + 1)}, y mejor cuanto más concentradas estén las dos formas.` });
@@ -826,6 +1371,7 @@ const PH = (() => {
   /* ---------- Mezcla de ácido fuerte y base fuerte ---------- */
   // sc: { Ca, Va, Cb, Vb } (volúmenes en mL)
   function mezcla(sc) {
+    if (sc.tipo === 'df' || sc.tipo === 'fd') return mezclaDebil(sc);
     const Ca = lee(sc, 'Ca', 'la concentración del ácido'), Va = lee(sc, 'Va', 'el volumen del ácido'), Cb = lee(sc, 'Cb', 'la concentración de la base'), Vb = lee(sc, 'Vb', 'el volumen de la base');
     const na = (Ca * Va) / 1000, nb = (Cb * Vb) / 1000, Vt = (Va + Vb) / 1000, d = na - nb;
     const pasos = [
@@ -833,20 +1379,172 @@ const PH = (() => {
       { t: 'Neutralización', html: `$H_{3}O^{+} + OH^{−} → 2 H_{2}O$. ${Math.abs(d) < 1e-12 * Math.max(na, nb) ? 'Hay los mismos moles de los dos: se neutralizan del todo.' : `Sobran ${f(Math.abs(d))} mol de ${d > 0 ? 'H₃O⁺' : 'OH⁻'} en $V = ${f(Va)} + ${f(Vb)} = ${f(Va + Vb)}$ mL.`}` },
     ];
     let pH;
-    if (Math.abs(d) < 1e-12 * Math.max(na, nb)) { pH = 7; pasos.push({ t: 'pH', html: 'Solo queda agua y una sal que no se hidroliza: <b>pH = 7</b>.' }); } else {
+    if (Math.abs(d) < 1e-12 * Math.max(na, nb)) { pH = PKW / 2; pasos.push({ t: 'pH', html: `Solo queda agua y una sal que no se hidroliza: <b>pH = ${f2(PKW / 2)}</b>${PKW === 14 ? '' : ', el neutro a esta temperatura'}.` }); } else {
       const c = Math.abs(d) / Vt;
       pasos.push({ t: 'Concentración del que sobra', html: `$[${d > 0 ? 'H_{3}O^{+}' : 'OH^{−}'}] = ${f(Math.abs(d))}/${f(Vt)}$ = ${f(c)} M` });
-      pH = d > 0 ? -lg(c) : 14 + lg(c);
+      pH = d > 0 ? -lg(c) : PKW + lg(c);
       pasos.push({ t: 'pH', html: d > 0 ? desdeH(c) : desdeOH(c) });
     }
     pasos.push({ t: 'Resultado', html: finPH(pH) });
     return { modo: 'mezcla', Ca, Va, Cb, Vb, na, nb, pH, h: 10 ** -pH, pasos };
   }
 
+  // el pH de clase si coincide con el exacto; si no, el exacto y por qué
+  const contrasta = (pH, sp, pasos, porque) => {
+    const ex = exacto(sp);
+    if (Math.abs(ex - pH) <= 0.02) return pH;
+    pasos.push({ t: 'Comprobación con el equilibrio entero', html: `${porque} Resolviendo el balance de cargas completo sale <b>pH = ${f2(ex)}</b> (la cuenta de clase daba ${f2(pH)}).` });
+    return ex;
+  };
+
+  /* ---------- Mezcla de un débil con un fuerte ---------- */
+  // sc: { tipo: 'df' (ácido débil HA + base fuerte) | 'fd' (base débil B + ácido fuerte), Ca, Va, Cb, Vb, K o pK del débil }
+  function mezclaDebil(sc) {
+    const df = sc.tipo === 'df', K = leeK(sc, df ? 'Ka' : 'Kb');
+    const Ca = lee(sc, 'Ca', `la concentración del ácido${df ? ' débil' : ''}`), Va = lee(sc, 'Va', 'el volumen del ácido'), Cb = lee(sc, 'Cb', `la concentración de la base${df ? '' : ' débil'}`), Vb = lee(sc, 'Vb', 'el volumen de la base');
+    const na = (Ca * Va) / 1000, nb = (Cb * Vb) / 1000, Vt = (Va + Vb) / 1000;
+    const nD = df ? na : nb, nF = df ? nb : na; // moles del débil y del fuerte
+    const D = df ? 'HA' : 'B', C = df ? 'A^{−}' : 'BH^{+}', F = df ? 'OH^{−}' : 'H_{3}O^{+}';
+    const pKa = df ? -lg(K) : PKW + lg(K);
+    const pasos = [
+      { t: 'Moles de cada uno', html: `$n(${D}) = ${f(df ? Ca : Cb)} · ${f((df ? Va : Vb) / 1000)} = ${f(nD)}$ mol, &ensp; $n(${F}) = ${f(df ? Cb : Ca)} · ${f((df ? Vb : Va) / 1000)} = ${f(nF)}$ mol` },
+      { t: 'Reacción', html: `El fuerte reacciona entero con el débil: $${D} + ${F} → ${C}${df ? ' + H_{2}O' : ' + H_{2}O'}$. ${Math.abs(nD - nF) < 1e-12 * nD ? 'Hay los mismos moles: solo queda la sal.' : nF < nD ? `Se forman ${f(nF)} mol de ${df ? 'A⁻' : 'BH⁺'} y quedan ${f(nD - nF)} mol de ${D}.` : `Se gasta todo el ${D} y sobran ${f(nF - nD)} mol de ${df ? 'OH⁻' : 'H₃O⁺'}.`}` },
+    ];
+    const sp = df ? { ca: na / Vt, Ka: K, na: nb / Vt } : { cb: nb / Vt, Kb: K, cl: na / Vt };
+    let pH, caso;
+    if (Math.abs(nD - nF) < 1e-12 * nD) {
+      caso = 'sal';
+      const cs = nD / Vt, Kh = KW / K, x = raiz(Kh, cs);
+      pH = df ? PKW + lg(x) : -lg(x);
+      pasos.push({ t: 'Hidrólisis de la sal', html: `$[${C}] = ${f(nD)}/${f(Vt)} = ${f(cs)}$ M, que se hidroliza con $${df ? 'K_b' : 'K_a'} = K_w/${df ? 'K_a' : 'K_b'} = ${f(Kh)}$: $x = ${f(x)}$ M de ${df ? 'OH⁻' : 'H₃O⁺'} y <b>pH = ${f2(pH)}</b>` });
+    } else if (nF < nD) {
+      caso = 'tampon';
+      pH = pKa + lg(df ? nF / (nD - nF) : (nD - nF) / nF);
+      pasos.push({ t: 'Queda una disolución reguladora', html: `${df ? '' : `$pK_a = ${p14()} − pK_b = ${f2(pKa)}$. `}$pH = pK_a + log {n(${df ? 'A^{−}' : 'B'})}/{n(${df ? 'HA' : 'BH^{+}'})} = ${f2(pKa)} + log {${f(df ? nF : nD - nF)}}/{${f(df ? nD - nF : nF)}}$ = <b>${f2(pH)}</b>` });
+      pH = contrasta(pH, sp, pasos, 'Una de las dos formas es muy escasa y Henderson-Hasselbalch no vale.');
+    } else {
+      caso = 'exceso';
+      const c = (nF - nD) / Vt;
+      pH = df ? PKW + lg(c) : -lg(c);
+      pasos.push({ t: 'Manda el fuerte que sobra', html: `$[${F}] = ${f(nF - nD)}/${f(Vt)} = ${f(c)}$ M (la hidrólisis de la sal es despreciable frente a él): ${df ? desdeOH(c) : desdeH(c)}` });
+      pH = contrasta(pH, sp, pasos, 'Sobra tan poco que la hidrólisis de la sal ya no es despreciable.');
+    }
+    pasos.push({ t: 'Resultado', html: finPH(pH) });
+    return { modo: 'mezcla', tipo: sc.tipo, caso, K, pKa, Ca, Va, Cb, Vb, na, nb, pH, h: 10 ** -pH, pasos };
+  }
+
+  /* ---------- Hidrólisis de una sal ---------- */
+  // sc: { tipo: 'basica' (sal de ácido débil, A⁻: K = Ka del ácido) | 'acida' (sal de base débil, BH⁺: K = Kb de la base) | 'neutra', C, K o pK }
+  function sal(sc) {
+    const tipo = ['basica', 'acida', 'neutra'].includes(sc.tipo) ? sc.tipo : 'basica', C = lee(sc, 'C', 'la concentración de la sal'), pasos = [];
+    if (tipo === 'neutra') {
+      pasos.push({ t: 'Sal de ácido fuerte y base fuerte', html: `Sus iones (como Na⁺ y Cl⁻) son conjugados de un ácido y una base fuertes: son tan débiles que no reaccionan con el agua. La disolución tiene el pH del agua: <b>pH = ${f2(PKW / 2)}</b>.` });
+      return { modo: 'sal', tipo, C, pH: PKW / 2, h: 10 ** (-PKW / 2), pasos };
+    }
+    const bas = tipo === 'basica', K = leeK(sc, bas ? 'Ka' : 'Kb'), Kh = KW / K, x = raiz(Kh, C), pH = bas ? PKW + lg(x) : -lg(x);
+    pasos.push({ t: 'Qué ion se hidroliza', html: bas ? `El anión A⁻ es la base conjugada de un ácido débil y reacciona con el agua: $A^{−} + H_{2}O ⇌ HA + OH^{−}$. El catión (Na⁺, K⁺) no se hidroliza.` : `El catión BH⁺ (como el NH₄⁺) es el ácido conjugado de una base débil: $BH^{+} + H_{2}O ⇌ B + H_{3}O^{+}$. El anión (Cl⁻, NO₃⁻) no se hidroliza.` });
+    pasos.push({ t: 'Constante de hidrólisis', html: `$${bas ? 'K_b' : 'K_a'} = {K_w}/{${bas ? 'K_a' : 'K_b'}} = {${PKW === 14 ? '10^{−14}' : f(KW)}}/{${f(K)}} = ${f(Kh)}$` });
+    pasos.push({ t: 'Equilibrio', html: `$${f(Kh)} = {x^2}/{${f(C)} − x}$ → $x = ${f(x)}$ M = $[${bas ? 'OH^{−}' : 'H_{3}O^{+}'}]$ (grado de hidrólisis ${f((100 * x) / C)} %)` });
+    pasos.push({ t: 'pH', html: bas ? desdeOH(x) : desdeH(x) });
+    pasos.push({ t: 'Resultado', html: finPH(pH) });
+    return { modo: 'sal', tipo, C, K, Kh, x, alfa: x / C, pH, h: 10 ** -pH, pasos };
+  }
+
+  /* ---------- Al revés: la constante o la concentración a partir del pH ---------- */
+  // sc: { especie: 'acido' | 'base', fuerza: 'debil' | 'fuerte', busca: 'K' | 'C', pHm (pH medido), C (si busca K), K o pK (si busca C), n (H⁺ u OH⁻ por fórmula, fuerte) }
+  function inverso(sc) {
+    const base = sc.especie === 'base', pHm = lee(sc, 'pHm', 'el pH', { cero: true }), ion = base ? 'OH^{−}' : 'H_{3}O^{+}';
+    if (pHm > PKW) throw new Error(`El pH tiene que estar entre 0 y ${p14()}`);
+    if (base ? pHm <= PKW / 2 : pHm >= PKW / 2) throw new Error(`Con pH ${f2(pHm)} la disolución no es ${base ? 'básica' : 'ácida'}`);
+    const x = base ? 10 ** (pHm - PKW) : 10 ** -pHm, pasos = [];
+    pasos.push({ t: `La concentración de ${base ? 'OH⁻' : 'H₃O⁺'}`, html: base ? `$pOH = ${p14()} − ${f2(pHm)} = ${f2(PKW - pHm)}$, &ensp; $[OH^{−}] = 10^{−pOH} = ${f(x)}$ M` : `$[H_{3}O^{+}] = 10^{−pH} = 10^{−${f2(pHm)}} = ${f(x)}$ M` });
+    if (sc.fuerza === 'fuerte') {
+      const n = lee(sc, 'n', 'el número de H⁺ u OH⁻', { opcional: true }) ?? 1, C = x / n;
+      pasos.push({ t: 'Concentración', html: `Se disocia del todo${n > 1 ? ` y da ${f(n)} iones por fórmula` : ''}: $C = [${ion}]${n > 1 ? `/${f(n)}` : ''}$ = <b>${f(C)} M</b>` });
+      return { modo: 'inverso', base, pH: pHm, x, C, h: 10 ** -pHm, pasos };
+    }
+    const Kn = base ? 'K_b' : 'K_a';
+    if (sc.busca === 'C') {
+      const K = leeK(sc, base ? 'Kb' : 'Ka'), C = (x * x) / K + x;
+      pasos.push({ t: 'Concentración inicial', html: `De $${Kn} = {x^2}/{C − x}$: $C = {x^2}/{${Kn}} + x = {(${f(x)})^2}/{${f(K)}} + ${f(x)}$ = <b>${f(C)} M</b>` });
+      pasos.push({ t: 'Grado de disociación', html: `$α = x/C = ${f(x / C)}$ (${f((100 * x) / C)} %)` });
+      return { modo: 'inverso', base, pH: pHm, x, C, K, alfa: x / C, h: 10 ** -pHm, pasos };
+    }
+    const C = lee(sc, 'C', 'la concentración inicial');
+    if (!(x < C)) throw new Error(`Con ${f(C)} M no puede haber ${f(x)} M de ${base ? 'OH⁻' : 'H₃O⁺'}: o es fuerte o falla un dato`);
+    const K = (x * x) / (C - x);
+    pasos.push({ t: 'Equilibrio', html: base ? `$B + H_{2}O ⇌ BH^{+} + OH^{−}$: en el equilibrio $[BH^{+}] = [OH^{−}] = x$ y $[B] = C − x$` : `$HA + H_{2}O ⇌ A^{−} + H_{3}O^{+}$: en el equilibrio $[A^{−}] = [H_{3}O^{+}] = x$ y $[HA] = C − x$` });
+    pasos.push({ t: 'Constante', html: `$${Kn} = {x^2}/{C − x} = {(${f(x)})^2}/{${f(C)} − ${f(x)}}$ = <b>${f(K)}</b>, &ensp; $p${Kn} = ${f2(-lg(K))}$` });
+    pasos.push({ t: 'Grado de disociación', html: `$α = x/C = ${f(x)}/${f(C)}$ = <b>${f(x / C)}</b> (${f((100 * x) / C)} %)` });
+    return { modo: 'inverso', base, pH: pHm, x, C, K, pK: -lg(K), alfa: x / C, h: 10 ** -pHm, pasos };
+  }
+
+  /* ---------- Preparar un tampón ---------- */
+  // sc: { especie: 'acido' | 'base', K o pK, pHo (pH que se quiere), Cd (concentración de la forma débil), V (mL), sal (fórmula, opcional) }
+  function preparar(sc) {
+    const base = sc.especie === 'base', K = leeK(sc, base ? 'Kb' : 'Ka'), pHo = lee(sc, 'pHo', 'el pH que se quiere', { cero: true });
+    const Cd = lee(sc, 'Cd', base ? 'la concentración de la base' : 'la concentración del ácido'), V = lee(sc, 'V', 'el volumen que se prepara');
+    const pKa = base ? PKW + lg(K) : -lg(K), r = 10 ** (pHo - pKa); // [forma básica]/[forma ácida]
+    const Cs = base ? Cd / r : Cd * r, ns = (Cs * V) / 1000, pasos = [];
+    const Ac = base ? 'BH^{+}' : 'HA', Ba = base ? 'B' : 'A^{−}';
+    pasos.push({ t: 'Cociente de las dos formas', html: `${base ? `$pK_a = ${p14()} − pK_b = ${f2(pKa)}$. ` : `$pK_a = ${f2(pKa)}$. `}De Henderson-Hasselbalch, $log {[${Ba}]}/{[${Ac}]} = pH − pK_a = ${f2(pHo)} − ${f2(pKa)} = ${f2(pHo - pKa)}$ → ${'$'}{[${Ba}]}/{[${Ac}]} = 10^{${f2(pHo - pKa)}}$ = <b>${f(r)}</b>` });
+    pasos.push({ t: 'Concentración de la sal', html: `$[${base ? 'BH^{+}' : 'A^{−}'}] = ${base ? `${f(Cd)}/${f(r)}` : `${f(r)} · ${f(Cd)}`}$ = <b>${f(Cs)} M</b>; en ${f(V)} mL son $n = ${f(Cs)} · ${f(V / 1000)}$ = <b>${f(ns)} mol</b>` });
+    let masa = null, M = null;
+    if (!vacio(sc.sal) && typeof Formulas !== 'undefined') {
+      try { M = Formulas.masaMolar(sc.sal).M; } catch (e) { throw new Error(`La sal: ${e.message}`); }
+      masa = ns * M;
+      pasos.push({ t: 'Masa de sal', html: `M(${Formulas.leer(sc.sal).html}) = ${f(M, 4)} g/mol → m = ${f(ns)} · ${f(M, 4)}$ = <b>${f(masa)} g</b>`.replace('$ = <b>', ' = <b>') });
+    }
+    if (Math.abs(pHo - pKa) > 1) pasos.push({ t: 'Aviso', html: `El pH pedido está a más de una unidad del pK<sub>a</sub> (${f2(pKa)}): una de las dos formas es mucho más abundante y el tampón amortiguará mal. Conviene un par con pK<sub>a</sub> más cercano.` });
+    pasos.push({ t: 'Cómo se prepara', html: `En un matraz de ${f(V)} mL: ${base ? 'la base' : 'el ácido'} hasta ${f(Cd)} M y ${masa !== null ? `${f(masa)} g de la sal` : `${f(ns)} mol de la sal`}, y se enrasa con agua.` });
+    return { modo: 'preparar', base, K, pKa, pH: pHo, cociente: r, Cs, ns, masa, M, h: 10 ** -pHo, pasos };
+  }
+
+  /* ---------- Ácido poliprótico ---------- */
+  // sc: { C, K1, K2, K3 (opcional) } (Ka1 grande, como 1e3, para una primera disociación completa: H₂SO₄)
+  const leeKas = (sc) => {
+    const Kas = [lee(sc, 'K1', 'Ka₁'), lee(sc, 'K2', 'Ka₂')], K3 = lee(sc, 'K3', 'Ka₃', { opcional: true });
+    if (K3 !== null) Kas.push(K3);
+    if (Kas.some((K, i) => i && K >= Kas[i - 1])) throw new Error('Las constantes tienen que ir de mayor a menor: Ka₁ > Ka₂ > Ka₃');
+    return Kas;
+  };
+  function poliprotico(sc) {
+    const C = lee(sc, 'C', 'la concentración'), Kas = leeKas(sc), pasos = [];
+    const x1 = raiz(Kas[0], C), pH1 = -lg(x1), pH = exacto({ cp: C, Kas });
+    const nom = Kas.length === 2 ? ['H_{2}A', 'HA^{−}', 'A^{2−}'] : ['H_{3}A', 'H_{2}A^{−}', 'HA^{2−}', 'A^{3−}'];
+    pasos.push({ t: 'Primera disociación', html: `$${nom[0]} + H_{2}O ⇌ ${nom[1]} + H_{3}O^{+}$, &ensp; $K_{a1} = ${f(Kas[0])}$. Como las demás constantes son mucho menores, casi todo el H₃O⁺ sale de aquí: $x = {−K_{a1} + √(K_{a1}^2 + 4 K_{a1} C)}/{2} = ${f(x1)}$ M, $pH ≈ ${f2(pH1)}$` });
+    pasos.push({ t: 'Segunda disociación', html: `$${nom[1]} ⇌ ${nom[2]} + H_{3}O^{+}$. Con $[${nom[1]}] ≈ [H_{3}O^{+}]$, queda $[${nom[2]}] ≈ K_{a2} = ${f(Kas[1])}$ M: aporta muy poco H₃O⁺${Kas[1] / x1 > 0.05 ? ' (aquí no tan poco, porque Ka₂ no es tan pequeña: por eso el pH exacto cambia)' : ''}.` });
+    // concentraciones de cada especie con el pH exacto
+    const h = 10 ** -pH, t = [1]; Kas.forEach((K, i) => t.push((t[i] * K) / h)); const den = t.reduce((a, b) => a + b, 0);
+    const conc = t.map((v) => (C * v) / den);
+    pasos.push({ t: 'Con el balance de cargas completo', html: `<b>pH = ${f2(pH)}</b>. Concentraciones: ${conc.map((c, i) => `$[${nom[i]}] = ${f(c)}$ M`).join(', ')}.` });
+    pasos.push({ t: 'Resultado', html: finPH(pH) });
+    return { modo: 'poliprotico', C, Kas, pH, pH1, conc, h, pasos };
+  }
+
   /* ---------- Valoración ---------- */
   // sc: { tipo: 'af-bf' | 'ad-bf' | 'bf-af' | 'bd-af', C (valorado), V (mL), Ct (valorante), K o pK (si es débil), Vt (mL añadidos, opcional) }
   const TIPOS = { 'af-bf': ['ácido fuerte', 'base fuerte', false, false], 'ad-bf': ['ácido débil', 'base fuerte', true, false], 'bf-af': ['base fuerte', 'ácido fuerte', false, true], 'bd-af': ['base débil', 'ácido fuerte', true, true] };
+  // poliprótico con base fuerte: tantas equivalencias como protones
+  function valoracionPoli(sc) {
+    const C = lee(sc, 'C', 'la concentración del ácido'), V = lee(sc, 'V', 'el volumen valorado'), Ct = lee(sc, 'Ct', 'la concentración del valorante'), Kas = leeKas(sc);
+    const np = Kas.length, n0 = (C * V) / 1000, Veq = (C * V) / Ct;
+    const ph = (v) => { const Vt = (V + v) / 1000; return exacto({ cp: n0 / Vt, Kas, na: (Ct * v) / 1000 / Vt }); };
+    const curva = []; for (let i = 0; i <= 240; i++) { const v = ((np + 1) * Veq * i) / 240; curva.push([v, ph(v)]); }
+    const pK = Kas.map((K) => -lg(K)), pasos = [];
+    pasos.push({ t: 'Puntos de equivalencia', html: `Cada protón da una equivalencia: $V_{eq,1} = {C V}/{C_t} = {${f(C)} · ${f(V)}}/{${f(Ct)}}$ = <b>${f(Veq)} mL</b>${Kas.slice(1).map((_, i) => `, $V_{eq,${i + 2}} = ${i + 2} V_{eq,1}$ = <b>${f((i + 2) * Veq)} mL</b>`).join('')}` });
+    pasos.push({ t: 'A mitad de cada tramo', html: pK.map((p, i) => `con ${f((i + 0.5) * Veq)} mL, $pH ≈ pK_{a${i + 1}} = ${f2(p)}$ (exacto: ${f2(ph((i + 0.5) * Veq))})`).join('; ') + '. Cuanto más pequeña es la constante, peor funciona la aproximación.' });
+    const eqs = Kas.slice(0, -1).map((_, i) => (pK[i] + pK[i + 1]) / 2);
+    if (eqs.length) pasos.push({ t: 'Equivalencias intermedias', html: eqs.map((p, i) => `en la ${i + 1}.ª queda el anfótero y $pH ≈ (pK_{a${i + 1}} + pK_{a${i + 2}})/2 = ${f2(p)}$ (exacto: ${f2(ph((i + 1) * Veq))})`).join('; ') + '.' });
+    const pHeq = ph(np * Veq), ind = indicador(pHeq);
+    pasos.push({ t: 'Última equivalencia', html: `Queda el anión $A^{${np}−}$, que se hidroliza: <b>pH = ${f2(pHeq)}</b>. Indicador: ${ind[0]}, de ${ind[3]} a ${ind[4]} entre ${f(ind[1])} y ${f(ind[2])}.` });
+    const v = lee(sc, 'Vt', 'el volumen añadido', { opcional: true, cero: true });
+    const pHv = v === null ? null : ph(v);
+    if (v !== null) pasos.push({ t: `Con ${f(v)} mL añadidos`, html: `Con el balance de cargas: <b>pH = ${f2(pHv)}</b>` });
+    return { modo: 'valoracion', tipo: 'ap-bf', poli: true, nomV: 'ácido poliprótico', nomT: 'base fuerte', debilV: true, esBase: false, C, V, Ct, Kas, pKa: pK[0], pKs: pK, Veq, Veqs: Kas.map((_, i) => (i + 1) * Veq), pHeq, ind, v, pHv, curva, pH: pHv ?? curva[0][1], ph, pasos };
+  }
   function valoracion(sc) {
+    if (sc.tipo === 'ap-bf') return valoracionPoli(sc);
     const tipo = TIPOS[sc.tipo] ? sc.tipo : 'af-bf', [nomV, nomT, debilV, esBase] = TIPOS[tipo];
     const C = lee(sc, 'C', `la concentración del ${nomV.split(' ')[0]}`), V = lee(sc, 'V', 'el volumen valorado'), Ct = lee(sc, 'Ct', 'la concentración del valorante');
     const K = debilV ? leeK(sc, esBase ? 'Kb' : 'Ka') : null;
@@ -862,15 +1560,15 @@ const PH = (() => {
     const curva = [];
     for (let i = 0; i <= 240; i++) { const v = (2 * Veq * i) / 240; curva.push([v, ph(v)]); }
     const pasos = [{ t: 'Punto de equivalencia', html: `Cuando los moles de valorante igualan a los del ${nomV}: $C V = C_t V_{eq}$, $V_{eq} = {C V}/{C_t} = {${f(C)} · ${f(V)}}/{${f(Ct)}}$ = <b>${f(Veq)} mL</b>` }];
-    const pKa = debilV ? (esBase ? 14 + lg(K) : -lg(K)) : null;
+    const pKa = debilV ? (esBase ? PKW + lg(K) : -lg(K)) : null;
     // pH en la equivalencia, como en clase
     let pHeq;
     if (!debilV) {
-      pHeq = 7;
-      pasos.push({ t: 'pH en la equivalencia', html: 'Se forma una sal de ácido fuerte y base fuerte, que no se hidroliza: <b>pH = 7</b>.' });
+      pHeq = PKW / 2;
+      pasos.push({ t: 'pH en la equivalencia', html: `Se forma una sal de ácido fuerte y base fuerte, que no se hidroliza: <b>pH = ${f2(pHeq)}</b>.` });
     } else {
       const cs = n0 / ((V + Veq) / 1000), Kh = KW / K, x = raiz(Kh, cs);
-      pHeq = esBase ? -lg(x) : 14 + lg(x);
+      pHeq = esBase ? -lg(x) : PKW + lg(x);
       pasos.push({ t: 'pH en la equivalencia', html: `Todo el ${nomV} se ha convertido en su ${esBase ? 'ácido conjugado, $BH^{+}$' : 'base conjugada, $A^{−}$'}, con $c = ${f(n0)}/${f((V + Veq) / 1000)} = ${f(cs)}$ M, que se hidroliza con $${esBase ? 'K_a' : 'K_b'} = K_w/${esBase ? 'K_b' : 'K_a'} = ${f(Kh)}$: $x = ${f(x)}$ M de ${esBase ? 'H₃O⁺' : 'OH⁻'}, y <b>pH = ${f2(pHeq)}</b>, ${esBase ? 'ácido' : 'básico'}.` });
     }
     const ind = indicador(pHeq);
@@ -882,7 +1580,7 @@ const PH = (() => {
       const Vtot = (V + v) / 1000, nt = (Ct * v) / 1000, d = n0 - nt, ionV = esBase ? 'OH^{−}' : 'H_{3}O^{+}', ionT = esBase ? 'H_{3}O^{+}' : 'OH^{−}';
       let html;
       if (v === 0) {
-        if (debilV) { const x = raiz(K, C); pHv = esBase ? 14 + lg(x) : -lg(x); html = `Antes de añadir nada es ${esBase ? 'una base débil' : 'un ácido débil'}: $x = ${f(x)}$ M y <b>pH = ${f2(pHv)}</b>`; } else { pHv = esBase ? 14 + lg(C) : -lg(C); html = `Antes de añadir nada: $[${ionV}] = ${f(C)}$ M y <b>pH = ${f2(pHv)}</b>`; }
+        if (debilV) { const x = raiz(K, C); pHv = esBase ? PKW + lg(x) : -lg(x); html = `Antes de añadir nada es ${esBase ? 'una base débil' : 'un ácido débil'}: $x = ${f(x)}$ M y <b>pH = ${f2(pHv)}</b>`; } else { pHv = esBase ? PKW + lg(C) : -lg(C); html = `Antes de añadir nada: $[${ionV}] = ${f(C)}$ M y <b>pH = ${f2(pHv)}</b>`; }
       } else if (Math.abs(d) < 1e-9 * n0) {
         pHv = pHeq; html = `Es el punto de equivalencia: <b>pH = ${f2(pHeq)}</b>`;
       } else if (d > 0) {
@@ -896,11 +1594,11 @@ const PH = (() => {
             html += ` = ${f2(hh)}. Pero aquí una de las dos formas es tan escasa que la ${esBase ? 'protonación de la base' : 'disociación del ácido'} (o la hidrólisis de su conjugado) la cambia mucho, y Henderson-Hasselbalch ya no vale. Resolviendo el equilibrio entero con el balance de cargas sale <b>pH = ${f2(pHv)}</b>`;
           } else html += ` = <b>${f2(pHv)}</b>`;
         } else {
-          const c = d / Vtot; pHv = esBase ? 14 + lg(c) : -lg(c);
+          const c = d / Vtot; pHv = esBase ? PKW + lg(c) : -lg(c);
           html = `Quedan $${f(n0)} − ${f(nt)} = ${f(d)}$ mol de ${esBase ? 'OH⁻' : 'H₃O⁺'} en ${f(V + v)} mL: $[${ionV}] = ${f(c)}$ M y <b>pH = ${f2(pHv)}</b>`;
         }
       } else {
-        const c = -d / Vtot; pHv = esBase ? -lg(c) : 14 + lg(c);
+        const c = -d / Vtot; pHv = esBase ? -lg(c) : PKW + lg(c);
         html = `Ya se ha pasado la equivalencia: sobran $${f(nt)} − ${f(n0)} = ${f(-d)}$ mol de ${esBase ? 'H₃O⁺' : 'OH⁻'} en ${f(V + v)} mL, $[${ionT}] = ${f(c)}$ M y <b>pH = ${f2(pHv)}</b>`;
       }
       pasos.push({ t: `Con ${f(v)} mL añadidos`, html });
@@ -909,6 +1607,19 @@ const PH = (() => {
   }
 
   function resolver(sc) {
+    // K_w de la temperatura (vacía o 25 °C: 10⁻¹⁴)
+    const T = vacio(sc.T) ? 25 : leeNum(sc.T);
+    if (!isFinite(T) || T < 0 || T > 100) throw new Error('La temperatura tiene que estar entre 0 y 100 °C');
+    KW = kwDe(T); PKW = KW === 1e-14 ? 14 : -lg(KW);
+    const r = elige(sc);
+    if (PKW !== 14) r.pasos.unshift({ t: `Agua a ${f(T)} °C`, html: `$K_w = ${f(KW)}$, &ensp; $pK_w = ${f2(PKW)}$: la disolución neutra tiene pH = ${f2(PKW / 2)} y pH + pOH = ${f2(PKW)}.` });
+    return { ...r, pKw: PKW, Kw: KW, T };
+  }
+  function elige(sc) {
+    if (sc.modo === 'sal') return sal(sc);
+    if (sc.modo === 'inverso') return inverso(sc);
+    if (sc.modo === 'preparar') return preparar(sc);
+    if (sc.modo === 'poliprotico') return poliprotico(sc);
     if (sc.modo === 'debil') return debil(sc);
     if (sc.modo === 'tampon') return tampon(sc);
     if (sc.modo === 'mezcla') return mezcla(sc);
@@ -926,13 +1637,24 @@ const PH = (() => {
     { clave: 'tampon-acetato', nombre: 'Tampón acético/acetato', sc: { modo: 'tampon', especie: 'acido', K: '1.8e-5', pK: '', Cd: '0.1', Cs: '0.1', anade: 'nada' } },
     { clave: 'tampon-hcl', nombre: 'Tampón acetato al añadir HCl', sc: { modo: 'tampon', especie: 'acido', K: '1.8e-5', pK: '', Cd: '0.1', Cs: '0.1', V: '100', anade: 'acido', Cad: '0.1', Vad: '10' } },
     { clave: 'tampon-amonio', nombre: 'Tampón amoniaco/amonio', sc: { modo: 'tampon', especie: 'base', K: '1.8e-5', pK: '', Cd: '0.15', Cs: '0.1', anade: 'nada' } },
-    { clave: 'mezcla', nombre: 'Mezcla de HCl y NaOH', sc: { modo: 'mezcla', Ca: '0.1', Va: '50', Cb: '0.2', Vb: '30' } },
+    { clave: 'mezcla', nombre: 'Mezcla de HCl y NaOH', sc: { modo: 'mezcla', tipo: 'ff', Ca: '0.1', Va: '50', Cb: '0.2', Vb: '30' } },
+    { clave: 'mezcla-debil', nombre: 'Mezcla de ácido acético y NaOH', sc: { modo: 'mezcla', tipo: 'df', Ca: '0.2', Va: '50', Cb: '0.1', Vb: '50', K: '1.8e-5', pK: '' } },
+    { clave: 'mezcla-amoniaco', nombre: 'Mezcla de amoniaco y HCl (todo sal)', sc: { modo: 'mezcla', tipo: 'fd', Ca: '0.1', Va: '50', Cb: '0.1', Vb: '50', K: '1.8e-5', pK: '' } },
+    { clave: 'sal-acetato', nombre: 'Hidrólisis: acetato de sodio 0,1 M', sc: { modo: 'sal', tipo: 'basica', C: '0.1', K: '1.8e-5', pK: '' } },
+    { clave: 'sal-amonio', nombre: 'Hidrólisis: cloruro de amonio 0,1 M', sc: { modo: 'sal', tipo: 'acida', C: '0.1', K: '1.8e-5', pK: '' } },
+    { clave: 'ka-ph', nombre: 'Ka a partir del pH (ácido 0,1 M con pH 2,87)', sc: { modo: 'inverso', especie: 'acido', fuerza: 'debil', busca: 'K', pHm: '2.87', C: '0.1' } },
+    { clave: 'c-ph', nombre: 'Concentración de amoniaco para pH 11', sc: { modo: 'inverso', especie: 'base', fuerza: 'debil', busca: 'C', pHm: '11', K: '1.8e-5', pK: '' } },
+    { clave: 'preparar-acetato', nombre: 'Preparar un tampón acetato de pH 5', sc: { modo: 'preparar', especie: 'acido', K: '1.8e-5', pK: '', pHo: '5', Cd: '0.1', V: '500', sal: 'CH3COONa' } },
+    { clave: 'carbonico', nombre: 'Ácido carbónico 0,05 M (diprótico)', sc: { modo: 'poliprotico', C: '0.05', K1: '4.3e-7', K2: '4.8e-11', K3: '' } },
+    { clave: 'sulfurico', nombre: 'Ácido sulfúrico 0,01 M con su Ka₂', sc: { modo: 'poliprotico', C: '0.01', K1: '1e3', K2: '1.2e-2', K3: '' } },
+    { clave: 'agua-50', nombre: 'Agua pura a 50 °C (¿neutra con pH 6,6?)', sc: { modo: 'fuerte', especie: 'acido', C: '1e-12', n: '1', T: '50' } },
     { clave: 'val-fuerte', nombre: 'Valoración de HCl con NaOH', sc: { modo: 'valoracion', tipo: 'af-bf', C: '0.1', V: '25', Ct: '0.1', Vt: '20' } },
     { clave: 'val-acetico', nombre: 'Valoración de ácido acético con NaOH', sc: { modo: 'valoracion', tipo: 'ad-bf', C: '0.1', V: '25', Ct: '0.1', K: '1.8e-5', pK: '', Vt: '12.5' } },
+    { clave: 'val-fosforico', nombre: 'Valoración de ácido fosfórico con NaOH', sc: { modo: 'valoracion', tipo: 'ap-bf', C: '0.1', V: '20', Ct: '0.1', K1: '7.5e-3', K2: '6.2e-8', K3: '4.8e-13', Vt: '' } },
     { clave: 'val-amoniaco', nombre: 'Valoración de amoniaco con HCl', sc: { modo: 'valoracion', tipo: 'bd-af', C: '0.1', V: '20', Ct: '0.1', K: '1.8e-5', pK: '', Vt: '30' } },
   ];
 
-  return { resolver, fuerte, debil, tampon, mezcla, valoracion, exacto, ejemplos, INDICADORES, f, f2 };
+  return { resolver, fuerte, debil, tampon, mezcla, valoracion, sal, inverso, preparar, poliprotico, exacto, kwDe, ejemplos, INDICADORES, f, f2 };
 })();
 
 /* =====================================================================
@@ -943,7 +1665,7 @@ const PH = (() => {
 (() => {
   const { $, esc, copia, txt } = Herramienta;
   const P = PH, f = P.f, f2 = P.f2, CLAVE = 'ph-v1';
-  const MODOS = [['fuerte', 'Ácido o base fuerte'], ['debil', 'Ácido o base débil'], ['tampon', 'Disolución reguladora (tampón)'], ['mezcla', 'Mezcla de ácido y base fuertes'], ['valoracion', 'Valoración']];
+  const MODOS = [['fuerte', 'Ácido o base fuerte'], ['debil', 'Ácido o base débil'], ['sal', 'Hidrólisis de una sal'], ['inverso', 'Ka, Kb o C a partir del pH'], ['tampon', 'Disolución reguladora (tampón)'], ['preparar', 'Preparar un tampón'], ['mezcla', 'Mezcla de un ácido y una base'], ['poliprotico', 'Ácido poliprótico'], ['valoracion', 'Valoración']];
 
   let sc = copia(P.ejemplos[0].sc);
   try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && MODOS.some(([k]) => k === g.modo)) sc = g; } catch (e) { /* sin almacenamiento */ }
@@ -960,7 +1682,11 @@ const PH = (() => {
     fuerte: 'Pon 2 en H⁺ u OH⁻ por fórmula para H₂SO₄ (tomando las dos disociaciones completas) o Ba(OH)₂. Se admite 1e-8 o 1·10^-8.',
     debil: 'Escribe la constante o su pK, una de las dos. Para una base, Kb (amoniaco 1,8·10^-5).',
     tampon: 'La constante es la del ácido débil (HA/A⁻) o la de la base débil (B/BH⁺). Para ver cómo amortigua, añade un ácido o una base fuerte.',
-    mezcla: 'Ácido fuerte monoprótico y base fuerte con un OH⁻; para otros, multiplica la concentración por los H⁺ u OH⁻ que dan.',
+    mezcla: 'Para un ácido con varios H⁺ o una base con varios OH⁻, multiplica la concentración por los que da. Con un débil, su constante.',
+    sal: 'La constante es la del ácido débil del que viene el anión (acetato: Ka del acético) o la de la base débil de la que viene el catión (amonio: Kb del amoniaco).',
+    inverso: 'Escribe el pH medido. Para un débil, con la concentración sale la constante y con la constante, la concentración que hace falta.',
+    preparar: 'La fórmula de la sal es opcional: con ella se calculan los gramos que hay que pesar (CH3COONa, NH4Cl…).',
+    poliprotico: 'Las constantes de mayor a menor. Ka₃ es opcional. Para una primera disociación completa (H₂SO₄) pon una Ka₁ grande, como 1e3.',
     valoracion: 'La gráfica es la curva de valoración. El volumen añadido es opcional: con él se calcula el pH en ese punto.',
   };
   function formulario() {
@@ -976,12 +1702,25 @@ const PH = (() => {
       h += sep('Añadir') + elige('anade', 'Se añade', [['nada', 'Nada'], ['acido', 'Un ácido fuerte'], ['base', 'Una base fuerte']]);
       if (sc.anade === 'acido' || sc.anade === 'base') h += fila('V', 'Volumen del tampón', 'mL') + fila('Cad', 'Concentración de lo añadido', 'mol/L') + fila('Vad', 'Volumen añadido', 'mL');
     } else if (sc.modo === 'mezcla') {
-      h += fila('Ca', 'Concentración del ácido', 'mol/L') + fila('Va', 'Volumen del ácido', 'mL') + fila('Cb', 'Concentración de la base', 'mol/L') + fila('Vb', 'Volumen de la base', 'mL');
+      h += elige('tipo', 'Qué se mezcla', [['ff', 'Ácido fuerte y base fuerte'], ['df', 'Ácido débil y base fuerte'], ['fd', 'Ácido fuerte y base débil']]);
+      h += fila('Ca', 'Concentración del ácido', 'mol/L') + fila('Va', 'Volumen del ácido', 'mL') + fila('Cb', 'Concentración de la base', 'mol/L') + fila('Vb', 'Volumen de la base', 'mL') + (sc.tipo === 'df' || sc.tipo === 'fd' ? kk(sc.tipo === 'fd') : '');
+    } else if (sc.modo === 'sal') {
+      h += elige('tipo', 'Qué sal', [['basica', 'De ácido débil (acetato de sodio)'], ['acida', 'De base débil (cloruro de amonio)'], ['neutra', 'De ácido y base fuertes (NaCl)']]) + fila('C', 'Concentración de la sal', 'mol/L') + (sc.tipo === 'neutra' ? '' : kk(sc.tipo === 'acida'));
+    } else if (sc.modo === 'inverso') {
+      h += elige('fuerza', 'Qué es', [['debil', 'Débil'], ['fuerte', 'Fuerte']]) + especie([['acido', 'Un ácido'], ['base', 'Una base']]) + fila('pHm', 'pH medido');
+      if (sc.fuerza === 'fuerte') h += fila('n', sc.especie === 'base' ? 'OH⁻ por fórmula' : 'H⁺ por fórmula');
+      else { h += elige('busca', 'Qué se busca', [['K', 'La constante'], ['C', 'La concentración']]); h += sc.busca === 'C' ? kk(sc.especie === 'base') : fila('C', 'Concentración inicial', 'mol/L'); }
+    } else if (sc.modo === 'preparar') {
+      const b = sc.especie === 'base';
+      h += especie([['acido', 'Ácido débil y su sal (HA/A⁻)'], ['base', 'Base débil y su sal (B/BH⁺)']]) + kk(b) + fila('pHo', 'pH que se quiere') + fila('Cd', b ? 'Concentración de la base' : 'Concentración del ácido', 'mol/L') + fila('V', 'Volumen que se prepara', 'mL') + `<label for="f-sal">Fórmula de la sal <small>opcional</small></label><input id="f-sal" class="in" data-k="sal" value="${esc(sc.sal ?? '')}" autocomplete="off" spellcheck="false">`;
+    } else if (sc.modo === 'poliprotico') {
+      h += fila('C', 'Concentración', 'mol/L') + fila('K1', 'Ka₁') + fila('K2', 'Ka₂') + fila('K3', 'Ka₃', 'opcional');
     } else {
-      h += elige('tipo', 'Qué se valora', [['af-bf', 'Ácido fuerte con base fuerte'], ['ad-bf', 'Ácido débil con base fuerte'], ['bf-af', 'Base fuerte con ácido fuerte'], ['bd-af', 'Base débil con ácido fuerte']]);
+      h += elige('tipo', 'Qué se valora', [['af-bf', 'Ácido fuerte con base fuerte'], ['ad-bf', 'Ácido débil con base fuerte'], ['bf-af', 'Base fuerte con ácido fuerte'], ['bd-af', 'Base débil con ácido fuerte'], ['ap-bf', 'Ácido poliprótico con base fuerte']]);
       const debil = sc.tipo === 'ad-bf' || sc.tipo === 'bd-af', b = sc.tipo === 'bf-af' || sc.tipo === 'bd-af';
-      h += fila('C', `Concentración ${b ? 'de la base' : 'del ácido'}`, 'mol/L') + fila('V', 'Volumen que se valora', 'mL') + fila('Ct', 'Concentración del valorante', 'mol/L') + (debil ? kk(b) : '') + sep('Opcional') + fila('Vt', 'Volumen de valorante añadido', 'mL');
+      h += fila('C', `Concentración ${b ? 'de la base' : 'del ácido'}`, 'mol/L') + fila('V', 'Volumen que se valora', 'mL') + fila('Ct', 'Concentración del valorante', 'mol/L') + (debil ? kk(b) : '') + (sc.tipo === 'ap-bf' ? fila('K1', 'Ka₁') + fila('K2', 'Ka₂') + fila('K3', 'Ka₃', 'opcional') : '') + sep('Opcional') + fila('Vt', 'Volumen de valorante añadido', 'mL');
     }
+    h += sep('Temperatura') + fila('T', 'Temperatura del agua', '°C, vacía = 25');
     $('#campos').innerHTML = h;
     $('#nota').textContent = NOTAS[sc.modo];
   }
@@ -998,6 +1737,7 @@ const PH = (() => {
     if (t.tagName !== 'SELECT') return;
     sc[t.dataset.k] = t.value;
     if (t.dataset.k === 'modo') sc = copia(P.ejemplos.find((x) => x.sc.modo === t.value).sc);
+    else if (t.dataset.k === 'tipo' && t.value === 'ap-bf') sc = copia(P.ejemplos.find((x) => x.sc.tipo === 'ap-bf').sc);
     else { const ej = P.ejemplos.find((x) => x.sc.modo === sc.modo && x.sc[t.dataset.k] === t.value); if (ej) for (const [k, v] of Object.entries(ej.sc)) if (vacioC(sc[k])) sc[k] = v; if (t.dataset.k === 'tipo' && vacioC(sc.K) && vacioC(sc.pK)) sc.K = '1.8e-5'; if (t.dataset.k === 'anade' && vacioC(sc.V)) Object.assign(sc, { V: '100', Cad: '0.1', Vad: '10' }); }
     $('#ejemplos').value = ''; formulario(); calcula();
   });
@@ -1024,10 +1764,18 @@ const PH = (() => {
     }
     err.hidden = true; guarda();
     let h = '', ley = 'El color es el que tomaría el indicador universal. En rojo los H₃O⁺ y en azul los OH⁻ (no a escala: cada unidad de pH es diez veces más).';
-    if (sol.modo === 'fuerte') h = dato('pH', `pH = ${f2(sol.pH)}`) + dato('pOH', `pOH = ${f2(14 - sol.pH)}`) + dato('[H₃O⁺]', `${f(sol.h)} M`);
+    if (sol.modo === 'fuerte') h = dato('pH', `pH = ${f2(sol.pH)}`) + dato('pOH', `pOH = ${f2(sol.pKw - sol.pH)}`) + dato('[H₃O⁺]', `${f(sol.h)} M`);
     else if (sol.modo === 'debil') { h = dato('pH', `pH = ${f2(sol.pH)}`) + dato(sol.base ? '[OH⁻]' : '[H₃O⁺]', `${f(sol.x)} M`) + dato('Grado de disociación', `α = ${f(100 * sol.alfa)} %`); ley += sol.base ? ' En gris las moléculas de B sin reaccionar y en verde los BH⁺.' : ' En gris las moléculas de HA sin disociar y en verde los A⁻.'; }
     else if (sol.modo === 'tampon') { h = dato('pH del tampón', `pH = ${f2(sol.pH0)}`) + (sol.anade !== 'nada' ? dato('Tras añadir', `pH = ${f2(sol.pH)}`) + dato('En agua pura sería', `pH = ${f2(sol.pHagua)}`) : '') + dato('pKa del par', `pK<sub>a</sub> = ${f2(sol.pKa)}`); ley += ' En gris la forma ácida del par y en verde la básica.'; }
     else if (sol.modo === 'mezcla') h = dato('pH', `pH = ${f2(sol.pH)}`) + dato('Moles de ácido', `${f(sol.na)} mol`) + dato('Moles de base', `${f(sol.nb)} mol`);
+    else if (sol.modo === 'sal') h = dato('pH', `pH = ${f2(sol.pH)}`) + (sol.Kh ? dato('Constante de hidrólisis', `${f(sol.Kh)}`) + dato('Grado de hidrólisis', `${f(100 * sol.alfa)} %`) : '');
+    else if (sol.modo === 'inverso') h = (sol.K ? dato(sol.base ? 'Kb' : 'Ka', `${f(sol.K)}`) + dato(sol.base ? 'pKb' : 'pKa', `${f2(-Math.log10(sol.K))}`) : '') + dato('Concentración', `${f(sol.C)} M`) + (sol.alfa ? dato('Grado de disociación', `α = ${f(100 * sol.alfa)} %`) : '');
+    else if (sol.modo === 'preparar') h = dato('Cociente base/ácido', `${f(sol.cociente)}`) + dato('Concentración de la sal', `${f(sol.Cs)} M`) + (sol.masa !== null ? dato('Masa de sal', `${f(sol.masa)} g`) : dato('Moles de sal', `${f(sol.ns)} mol`));
+    else if (sol.modo === 'poliprotico') h = dato('pH', `pH = ${f2(sol.pH)}`) + dato('Solo con Ka₁', `pH = ${f2(sol.pH1)}`) + dato('[A²⁻]', `${f(sol.conc[2])} M`);
+    else if (sol.poli) {
+      h = sol.Veqs.map((v, i) => dato(`${i + 1}.ª equivalencia`, `${f(v)} mL`)).join('') + dato('pH en la última', `pH = ${f2(sol.pHeq)}`) + dato('Indicador', sol.ind[0]) + (sol.pHv !== null ? dato(`Con ${txt(f(sol.v))} mL`, `pH = ${f2(sol.pHv)}`) : '');
+      ley = `Se va añadiendo base fuerte con la bureta: hay un salto de pH en cada equivalencia. La curva es la exacta; el punto naranja es el volumen que has pedido.`;
+    }
     else {
       h = dato('Volumen de equivalencia', `V<sub>eq</sub> = ${f(sol.Veq)} mL`) + dato('pH en la equivalencia', `pH = ${f2(sol.pHeq)}`) + (sol.debilV ? dato('A mitad', `pH = pK<sub>a</sub> = ${f2(sol.pKa)}`) : '') + dato('Indicador', sol.ind[0]) + (sol.pHv !== null ? dato(`Con ${txt(f(sol.v))} mL`, `pH = ${f2(sol.pHv)}`) : '');
       ley = `Se va añadiendo ${sol.nomT} con la bureta y el ${sol.ind[0]} cambia de color al llegar a la equivalencia. La curva es la exacta; el punto naranja es el volumen que has pedido.`;
@@ -1085,7 +1833,8 @@ const PH = (() => {
     }
   }
   // volumen añadido en la animación de la valoración: de 0 a 2·Veq y una pausa
-  const vAnim = (t) => { const ciclo = 11, s = (t % ciclo) / 9.5; return Math.min(1, s) * 2 * sol.Veq; };
+  const vMax = () => (sol.poli ? (sol.Kas.length + 1) * sol.Veq : 2 * sol.Veq);
+  const vAnim = (t) => { const ciclo = 11, s = (t % ciclo) / 9.5; return Math.min(1, s) * vMax(); };
 
   function lienzo(c) {
     if (!c.clientWidth || !c.clientHeight) return null;
@@ -1129,7 +1878,7 @@ const PH = (() => {
     }
     // valoración: bureta y matraz
     const v = vAnim(tA), pH = sol.ph(v), cx = w * 0.3, top = 10, bH = h * 0.42, bW = 16;
-    const lleno = 1 - v / (2.4 * sol.Veq);
+    const lleno = 1 - v / (1.2 * vMax());
     g.strokeStyle = col['--suelo']; g.lineWidth = 2; g.strokeRect(cx - bW / 2, top, bW, bH);
     g.fillStyle = rgba(agua, 0.9); g.fillRect(cx - bW / 2 + 2, top + bH * (1 - lleno), bW - 4, bH * lleno - 2);
     for (let k = 1; k < 10; k++) { g.beginPath(); g.moveTo(cx - bW / 2, top + (bH * k) / 10); g.lineTo(cx - bW / 2 + 5, top + (bH * k) / 10); g.stroke(); }
@@ -1140,12 +1889,13 @@ const PH = (() => {
     const yl = yf + fh * 0.5, al = 12 + (fw / 2 - 12) * (0.2 / 0.7); // nivel del líquido y su semiancho en el cono
     g.fillStyle = rgba(cMat, 0.75);
     g.beginPath(); g.moveTo(cx - al, yl); g.lineTo(cx - fw / 2, yf + fh); g.lineTo(cx + fw / 2, yf + fh); g.lineTo(cx + al, yl); g.closePath(); g.fill();
-    if (anda && v < 2 * sol.Veq) { const yd = top + bH + 18 + ((tA * 3) % 1) * (yl - top - bH - 18); punto(g, cx, yd, 3, rgba(agua)); }
+    if (anda && v < vMax()) { const yd = top + bH + 18 + ((tA * 3) % 1) * (yl - top - bH - 18); punto(g, cx, yd, 3, rgba(agua)); }
     g.strokeStyle = col['--suelo']; g.lineWidth = 3; g.beginPath(); g.moveTo(cx - 12, yf); g.lineTo(cx - 12, yf + fh * 0.3); g.lineTo(cx - fw / 2, yf + fh); g.lineTo(cx + fw / 2, yf + fh); g.lineTo(cx + 12, yf + fh * 0.3); g.lineTo(cx + 12, yf); g.stroke();
     texto(g, cx + fw / 2 + 12, yf + fh * 0.7, `${sol.nomV} + ${sol.ind[0]}`, col['--muted'], 'left');
     texto(g, w * 0.58, h * 0.25, `V = ${txt(f(v))} mL`, col['--ink'], 'left', '600 ');
     texto(g, w * 0.58, h * 0.25 + 22, `pH = ${txt(f2(pH))}`, col['--ink'], 'left', '600 ');
-    texto(g, w * 0.58, h * 0.25 + 44, v < sol.Veq * 0.98 ? 'antes de la equivalencia' : v <= sol.Veq * 1.02 ? 'punto de equivalencia' : 'pasada la equivalencia', col['--muted'], 'left');
+    const eqs = sol.Veqs || [sol.Veq], k = eqs.findIndex((e) => Math.abs(v - e) <= 0.02 * sol.Veq), antes = eqs.filter((e) => v > e * 1.02).length;
+    texto(g, w * 0.58, h * 0.25 + 44, k >= 0 ? `${eqs.length > 1 ? `${k + 1}.º ` : ''}punto de equivalencia` : antes === 0 ? 'antes de la equivalencia' : antes === eqs.length ? 'pasada la equivalencia' : `pasada la ${antes}.ª equivalencia`, col['--muted'], 'left');
   }
 
   /* ---------- Curva de valoración ---------- */
@@ -1155,20 +1905,23 @@ const PH = (() => {
     const L = lienzo(c); if (!L) return;
     const { g, w, h } = L;
     if (!col['--ink']) colores();
-    const ml = 40, mr = 14, mt = 14, mb = 30, Vm = 2 * sol.Veq;
+    const ml = 40, mr = 14, mt = 14, mb = 30, Vm = vMax();
     const X = (v) => ml + (v / Vm) * (w - ml - mr), Y = (p) => mt + ((14 - p) / 14) * (h - mt - mb);
     // franja de viraje del indicador
     g.fillStyle = col['--line']; g.globalAlpha = 0.5; g.fillRect(ml, Y(sol.ind[2]), w - ml - mr, Y(sol.ind[1]) - Y(sol.ind[2])); g.globalAlpha = 1;
     g.strokeStyle = col['--line']; g.lineWidth = 1;
     for (let p = 0; p <= 14; p += 2) { g.beginPath(); g.moveTo(ml, Y(p)); g.lineTo(w - mr, Y(p)); g.stroke(); texto(g, ml - 6, Y(p), String(p), col['--muted'], 'right'); }
-    g.strokeStyle = col['--muted']; g.setLineDash([4, 4]); g.beginPath(); g.moveTo(X(sol.Veq), mt); g.lineTo(X(sol.Veq), h - mb); g.stroke(); g.setLineDash([]);
-    texto(g, X(sol.Veq), h - 12, `V_eq = ${txt(f(sol.Veq))} mL`.replace('V_eq', 'Veq'), col['--muted']);
+    g.strokeStyle = col['--muted']; g.setLineDash([4, 4]);
+    for (const e of sol.Veqs || [sol.Veq]) { g.beginPath(); g.moveTo(X(e), mt); g.lineTo(X(e), h - mb); g.stroke(); }
+    g.setLineDash([]);
+    if (sol.Veqs) sol.Veqs.forEach((e) => texto(g, X(e), h - 12, `${txt(f(e))} mL`, col['--muted']));
+    else texto(g, X(sol.Veq), h - 12, `Veq = ${txt(f(sol.Veq))} mL`, col['--muted']);
     texto(g, X(0), h - 12, '0', col['--muted'], 'left'); texto(g, X(Vm), h - 12, `${txt(f(Vm))} mL`, col['--muted'], 'right');
     texto(g, w - mr, Y(sol.ind[2]) - 8, sol.ind[0], col['--muted'], 'right');
     g.strokeStyle = col['--accent']; g.lineWidth = 2.4; g.beginPath();
     sol.curva.forEach(([v, p], i) => (i ? g.lineTo(X(v), Y(p)) : g.moveTo(X(v), Y(p))));
     g.stroke();
-    punto(g, X(sol.Veq), Y(sol.pHeq), 4, col['--ink']);
+    for (const e of sol.Veqs || [sol.Veq]) punto(g, X(e), Y(sol.ph(e)), 4, col['--ink']);
     if (sol.pHv !== null && sol.v <= Vm) punto(g, X(sol.v), Y(sol.pHv), 5.5, col['--roz']);
     const v = vAnim(tA); punto(g, X(v), Y(sol.ph(v)), 4.5, col['--peso']);
     texto(g, ml + 4, 6, 'pH', col['--muted'], 'left');

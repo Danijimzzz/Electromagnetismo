@@ -6,7 +6,7 @@
 (() => {
   const { $, esc, copia, txt } = Herramienta;
   const P = PH, f = P.f, f2 = P.f2, CLAVE = 'ph-v1';
-  const MODOS = [['fuerte', 'Ácido o base fuerte'], ['debil', 'Ácido o base débil'], ['tampon', 'Disolución reguladora (tampón)'], ['mezcla', 'Mezcla de ácido y base fuertes'], ['valoracion', 'Valoración']];
+  const MODOS = [['fuerte', 'Ácido o base fuerte'], ['debil', 'Ácido o base débil'], ['sal', 'Hidrólisis de una sal'], ['inverso', 'Ka, Kb o C a partir del pH'], ['tampon', 'Disolución reguladora (tampón)'], ['preparar', 'Preparar un tampón'], ['mezcla', 'Mezcla de un ácido y una base'], ['poliprotico', 'Ácido poliprótico'], ['valoracion', 'Valoración']];
 
   let sc = copia(P.ejemplos[0].sc);
   try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && MODOS.some(([k]) => k === g.modo)) sc = g; } catch (e) { /* sin almacenamiento */ }
@@ -23,7 +23,11 @@
     fuerte: 'Pon 2 en H⁺ u OH⁻ por fórmula para H₂SO₄ (tomando las dos disociaciones completas) o Ba(OH)₂. Se admite 1e-8 o 1·10^-8.',
     debil: 'Escribe la constante o su pK, una de las dos. Para una base, Kb (amoniaco 1,8·10^-5).',
     tampon: 'La constante es la del ácido débil (HA/A⁻) o la de la base débil (B/BH⁺). Para ver cómo amortigua, añade un ácido o una base fuerte.',
-    mezcla: 'Ácido fuerte monoprótico y base fuerte con un OH⁻; para otros, multiplica la concentración por los H⁺ u OH⁻ que dan.',
+    mezcla: 'Para un ácido con varios H⁺ o una base con varios OH⁻, multiplica la concentración por los que da. Con un débil, su constante.',
+    sal: 'La constante es la del ácido débil del que viene el anión (acetato: Ka del acético) o la de la base débil de la que viene el catión (amonio: Kb del amoniaco).',
+    inverso: 'Escribe el pH medido. Para un débil, con la concentración sale la constante y con la constante, la concentración que hace falta.',
+    preparar: 'La fórmula de la sal es opcional: con ella se calculan los gramos que hay que pesar (CH3COONa, NH4Cl…).',
+    poliprotico: 'Las constantes de mayor a menor. Ka₃ es opcional. Para una primera disociación completa (H₂SO₄) pon una Ka₁ grande, como 1e3.',
     valoracion: 'La gráfica es la curva de valoración. El volumen añadido es opcional: con él se calcula el pH en ese punto.',
   };
   function formulario() {
@@ -39,12 +43,25 @@
       h += sep('Añadir') + elige('anade', 'Se añade', [['nada', 'Nada'], ['acido', 'Un ácido fuerte'], ['base', 'Una base fuerte']]);
       if (sc.anade === 'acido' || sc.anade === 'base') h += fila('V', 'Volumen del tampón', 'mL') + fila('Cad', 'Concentración de lo añadido', 'mol/L') + fila('Vad', 'Volumen añadido', 'mL');
     } else if (sc.modo === 'mezcla') {
-      h += fila('Ca', 'Concentración del ácido', 'mol/L') + fila('Va', 'Volumen del ácido', 'mL') + fila('Cb', 'Concentración de la base', 'mol/L') + fila('Vb', 'Volumen de la base', 'mL');
+      h += elige('tipo', 'Qué se mezcla', [['ff', 'Ácido fuerte y base fuerte'], ['df', 'Ácido débil y base fuerte'], ['fd', 'Ácido fuerte y base débil']]);
+      h += fila('Ca', 'Concentración del ácido', 'mol/L') + fila('Va', 'Volumen del ácido', 'mL') + fila('Cb', 'Concentración de la base', 'mol/L') + fila('Vb', 'Volumen de la base', 'mL') + (sc.tipo === 'df' || sc.tipo === 'fd' ? kk(sc.tipo === 'fd') : '');
+    } else if (sc.modo === 'sal') {
+      h += elige('tipo', 'Qué sal', [['basica', 'De ácido débil (acetato de sodio)'], ['acida', 'De base débil (cloruro de amonio)'], ['neutra', 'De ácido y base fuertes (NaCl)']]) + fila('C', 'Concentración de la sal', 'mol/L') + (sc.tipo === 'neutra' ? '' : kk(sc.tipo === 'acida'));
+    } else if (sc.modo === 'inverso') {
+      h += elige('fuerza', 'Qué es', [['debil', 'Débil'], ['fuerte', 'Fuerte']]) + especie([['acido', 'Un ácido'], ['base', 'Una base']]) + fila('pHm', 'pH medido');
+      if (sc.fuerza === 'fuerte') h += fila('n', sc.especie === 'base' ? 'OH⁻ por fórmula' : 'H⁺ por fórmula');
+      else { h += elige('busca', 'Qué se busca', [['K', 'La constante'], ['C', 'La concentración']]); h += sc.busca === 'C' ? kk(sc.especie === 'base') : fila('C', 'Concentración inicial', 'mol/L'); }
+    } else if (sc.modo === 'preparar') {
+      const b = sc.especie === 'base';
+      h += especie([['acido', 'Ácido débil y su sal (HA/A⁻)'], ['base', 'Base débil y su sal (B/BH⁺)']]) + kk(b) + fila('pHo', 'pH que se quiere') + fila('Cd', b ? 'Concentración de la base' : 'Concentración del ácido', 'mol/L') + fila('V', 'Volumen que se prepara', 'mL') + `<label for="f-sal">Fórmula de la sal <small>opcional</small></label><input id="f-sal" class="in" data-k="sal" value="${esc(sc.sal ?? '')}" autocomplete="off" spellcheck="false">`;
+    } else if (sc.modo === 'poliprotico') {
+      h += fila('C', 'Concentración', 'mol/L') + fila('K1', 'Ka₁') + fila('K2', 'Ka₂') + fila('K3', 'Ka₃', 'opcional');
     } else {
-      h += elige('tipo', 'Qué se valora', [['af-bf', 'Ácido fuerte con base fuerte'], ['ad-bf', 'Ácido débil con base fuerte'], ['bf-af', 'Base fuerte con ácido fuerte'], ['bd-af', 'Base débil con ácido fuerte']]);
+      h += elige('tipo', 'Qué se valora', [['af-bf', 'Ácido fuerte con base fuerte'], ['ad-bf', 'Ácido débil con base fuerte'], ['bf-af', 'Base fuerte con ácido fuerte'], ['bd-af', 'Base débil con ácido fuerte'], ['ap-bf', 'Ácido poliprótico con base fuerte']]);
       const debil = sc.tipo === 'ad-bf' || sc.tipo === 'bd-af', b = sc.tipo === 'bf-af' || sc.tipo === 'bd-af';
-      h += fila('C', `Concentración ${b ? 'de la base' : 'del ácido'}`, 'mol/L') + fila('V', 'Volumen que se valora', 'mL') + fila('Ct', 'Concentración del valorante', 'mol/L') + (debil ? kk(b) : '') + sep('Opcional') + fila('Vt', 'Volumen de valorante añadido', 'mL');
+      h += fila('C', `Concentración ${b ? 'de la base' : 'del ácido'}`, 'mol/L') + fila('V', 'Volumen que se valora', 'mL') + fila('Ct', 'Concentración del valorante', 'mol/L') + (debil ? kk(b) : '') + (sc.tipo === 'ap-bf' ? fila('K1', 'Ka₁') + fila('K2', 'Ka₂') + fila('K3', 'Ka₃', 'opcional') : '') + sep('Opcional') + fila('Vt', 'Volumen de valorante añadido', 'mL');
     }
+    h += sep('Temperatura') + fila('T', 'Temperatura del agua', '°C, vacía = 25');
     $('#campos').innerHTML = h;
     $('#nota').textContent = NOTAS[sc.modo];
   }
@@ -61,6 +78,7 @@
     if (t.tagName !== 'SELECT') return;
     sc[t.dataset.k] = t.value;
     if (t.dataset.k === 'modo') sc = copia(P.ejemplos.find((x) => x.sc.modo === t.value).sc);
+    else if (t.dataset.k === 'tipo' && t.value === 'ap-bf') sc = copia(P.ejemplos.find((x) => x.sc.tipo === 'ap-bf').sc);
     else { const ej = P.ejemplos.find((x) => x.sc.modo === sc.modo && x.sc[t.dataset.k] === t.value); if (ej) for (const [k, v] of Object.entries(ej.sc)) if (vacioC(sc[k])) sc[k] = v; if (t.dataset.k === 'tipo' && vacioC(sc.K) && vacioC(sc.pK)) sc.K = '1.8e-5'; if (t.dataset.k === 'anade' && vacioC(sc.V)) Object.assign(sc, { V: '100', Cad: '0.1', Vad: '10' }); }
     $('#ejemplos').value = ''; formulario(); calcula();
   });
@@ -87,10 +105,18 @@
     }
     err.hidden = true; guarda();
     let h = '', ley = 'El color es el que tomaría el indicador universal. En rojo los H₃O⁺ y en azul los OH⁻ (no a escala: cada unidad de pH es diez veces más).';
-    if (sol.modo === 'fuerte') h = dato('pH', `pH = ${f2(sol.pH)}`) + dato('pOH', `pOH = ${f2(14 - sol.pH)}`) + dato('[H₃O⁺]', `${f(sol.h)} M`);
+    if (sol.modo === 'fuerte') h = dato('pH', `pH = ${f2(sol.pH)}`) + dato('pOH', `pOH = ${f2(sol.pKw - sol.pH)}`) + dato('[H₃O⁺]', `${f(sol.h)} M`);
     else if (sol.modo === 'debil') { h = dato('pH', `pH = ${f2(sol.pH)}`) + dato(sol.base ? '[OH⁻]' : '[H₃O⁺]', `${f(sol.x)} M`) + dato('Grado de disociación', `α = ${f(100 * sol.alfa)} %`); ley += sol.base ? ' En gris las moléculas de B sin reaccionar y en verde los BH⁺.' : ' En gris las moléculas de HA sin disociar y en verde los A⁻.'; }
     else if (sol.modo === 'tampon') { h = dato('pH del tampón', `pH = ${f2(sol.pH0)}`) + (sol.anade !== 'nada' ? dato('Tras añadir', `pH = ${f2(sol.pH)}`) + dato('En agua pura sería', `pH = ${f2(sol.pHagua)}`) : '') + dato('pKa del par', `pK<sub>a</sub> = ${f2(sol.pKa)}`); ley += ' En gris la forma ácida del par y en verde la básica.'; }
     else if (sol.modo === 'mezcla') h = dato('pH', `pH = ${f2(sol.pH)}`) + dato('Moles de ácido', `${f(sol.na)} mol`) + dato('Moles de base', `${f(sol.nb)} mol`);
+    else if (sol.modo === 'sal') h = dato('pH', `pH = ${f2(sol.pH)}`) + (sol.Kh ? dato('Constante de hidrólisis', `${f(sol.Kh)}`) + dato('Grado de hidrólisis', `${f(100 * sol.alfa)} %`) : '');
+    else if (sol.modo === 'inverso') h = (sol.K ? dato(sol.base ? 'Kb' : 'Ka', `${f(sol.K)}`) + dato(sol.base ? 'pKb' : 'pKa', `${f2(-Math.log10(sol.K))}`) : '') + dato('Concentración', `${f(sol.C)} M`) + (sol.alfa ? dato('Grado de disociación', `α = ${f(100 * sol.alfa)} %`) : '');
+    else if (sol.modo === 'preparar') h = dato('Cociente base/ácido', `${f(sol.cociente)}`) + dato('Concentración de la sal', `${f(sol.Cs)} M`) + (sol.masa !== null ? dato('Masa de sal', `${f(sol.masa)} g`) : dato('Moles de sal', `${f(sol.ns)} mol`));
+    else if (sol.modo === 'poliprotico') h = dato('pH', `pH = ${f2(sol.pH)}`) + dato('Solo con Ka₁', `pH = ${f2(sol.pH1)}`) + dato('[A²⁻]', `${f(sol.conc[2])} M`);
+    else if (sol.poli) {
+      h = sol.Veqs.map((v, i) => dato(`${i + 1}.ª equivalencia`, `${f(v)} mL`)).join('') + dato('pH en la última', `pH = ${f2(sol.pHeq)}`) + dato('Indicador', sol.ind[0]) + (sol.pHv !== null ? dato(`Con ${txt(f(sol.v))} mL`, `pH = ${f2(sol.pHv)}`) : '');
+      ley = `Se va añadiendo base fuerte con la bureta: hay un salto de pH en cada equivalencia. La curva es la exacta; el punto naranja es el volumen que has pedido.`;
+    }
     else {
       h = dato('Volumen de equivalencia', `V<sub>eq</sub> = ${f(sol.Veq)} mL`) + dato('pH en la equivalencia', `pH = ${f2(sol.pHeq)}`) + (sol.debilV ? dato('A mitad', `pH = pK<sub>a</sub> = ${f2(sol.pKa)}`) : '') + dato('Indicador', sol.ind[0]) + (sol.pHv !== null ? dato(`Con ${txt(f(sol.v))} mL`, `pH = ${f2(sol.pHv)}`) : '');
       ley = `Se va añadiendo ${sol.nomT} con la bureta y el ${sol.ind[0]} cambia de color al llegar a la equivalencia. La curva es la exacta; el punto naranja es el volumen que has pedido.`;
@@ -148,7 +174,8 @@
     }
   }
   // volumen añadido en la animación de la valoración: de 0 a 2·Veq y una pausa
-  const vAnim = (t) => { const ciclo = 11, s = (t % ciclo) / 9.5; return Math.min(1, s) * 2 * sol.Veq; };
+  const vMax = () => (sol.poli ? (sol.Kas.length + 1) * sol.Veq : 2 * sol.Veq);
+  const vAnim = (t) => { const ciclo = 11, s = (t % ciclo) / 9.5; return Math.min(1, s) * vMax(); };
 
   function lienzo(c) {
     if (!c.clientWidth || !c.clientHeight) return null;
@@ -192,7 +219,7 @@
     }
     // valoración: bureta y matraz
     const v = vAnim(tA), pH = sol.ph(v), cx = w * 0.3, top = 10, bH = h * 0.42, bW = 16;
-    const lleno = 1 - v / (2.4 * sol.Veq);
+    const lleno = 1 - v / (1.2 * vMax());
     g.strokeStyle = col['--suelo']; g.lineWidth = 2; g.strokeRect(cx - bW / 2, top, bW, bH);
     g.fillStyle = rgba(agua, 0.9); g.fillRect(cx - bW / 2 + 2, top + bH * (1 - lleno), bW - 4, bH * lleno - 2);
     for (let k = 1; k < 10; k++) { g.beginPath(); g.moveTo(cx - bW / 2, top + (bH * k) / 10); g.lineTo(cx - bW / 2 + 5, top + (bH * k) / 10); g.stroke(); }
@@ -203,12 +230,13 @@
     const yl = yf + fh * 0.5, al = 12 + (fw / 2 - 12) * (0.2 / 0.7); // nivel del líquido y su semiancho en el cono
     g.fillStyle = rgba(cMat, 0.75);
     g.beginPath(); g.moveTo(cx - al, yl); g.lineTo(cx - fw / 2, yf + fh); g.lineTo(cx + fw / 2, yf + fh); g.lineTo(cx + al, yl); g.closePath(); g.fill();
-    if (anda && v < 2 * sol.Veq) { const yd = top + bH + 18 + ((tA * 3) % 1) * (yl - top - bH - 18); punto(g, cx, yd, 3, rgba(agua)); }
+    if (anda && v < vMax()) { const yd = top + bH + 18 + ((tA * 3) % 1) * (yl - top - bH - 18); punto(g, cx, yd, 3, rgba(agua)); }
     g.strokeStyle = col['--suelo']; g.lineWidth = 3; g.beginPath(); g.moveTo(cx - 12, yf); g.lineTo(cx - 12, yf + fh * 0.3); g.lineTo(cx - fw / 2, yf + fh); g.lineTo(cx + fw / 2, yf + fh); g.lineTo(cx + 12, yf + fh * 0.3); g.lineTo(cx + 12, yf); g.stroke();
     texto(g, cx + fw / 2 + 12, yf + fh * 0.7, `${sol.nomV} + ${sol.ind[0]}`, col['--muted'], 'left');
     texto(g, w * 0.58, h * 0.25, `V = ${txt(f(v))} mL`, col['--ink'], 'left', '600 ');
     texto(g, w * 0.58, h * 0.25 + 22, `pH = ${txt(f2(pH))}`, col['--ink'], 'left', '600 ');
-    texto(g, w * 0.58, h * 0.25 + 44, v < sol.Veq * 0.98 ? 'antes de la equivalencia' : v <= sol.Veq * 1.02 ? 'punto de equivalencia' : 'pasada la equivalencia', col['--muted'], 'left');
+    const eqs = sol.Veqs || [sol.Veq], k = eqs.findIndex((e) => Math.abs(v - e) <= 0.02 * sol.Veq), antes = eqs.filter((e) => v > e * 1.02).length;
+    texto(g, w * 0.58, h * 0.25 + 44, k >= 0 ? `${eqs.length > 1 ? `${k + 1}.º ` : ''}punto de equivalencia` : antes === 0 ? 'antes de la equivalencia' : antes === eqs.length ? 'pasada la equivalencia' : `pasada la ${antes}.ª equivalencia`, col['--muted'], 'left');
   }
 
   /* ---------- Curva de valoración ---------- */
@@ -218,20 +246,23 @@
     const L = lienzo(c); if (!L) return;
     const { g, w, h } = L;
     if (!col['--ink']) colores();
-    const ml = 40, mr = 14, mt = 14, mb = 30, Vm = 2 * sol.Veq;
+    const ml = 40, mr = 14, mt = 14, mb = 30, Vm = vMax();
     const X = (v) => ml + (v / Vm) * (w - ml - mr), Y = (p) => mt + ((14 - p) / 14) * (h - mt - mb);
     // franja de viraje del indicador
     g.fillStyle = col['--line']; g.globalAlpha = 0.5; g.fillRect(ml, Y(sol.ind[2]), w - ml - mr, Y(sol.ind[1]) - Y(sol.ind[2])); g.globalAlpha = 1;
     g.strokeStyle = col['--line']; g.lineWidth = 1;
     for (let p = 0; p <= 14; p += 2) { g.beginPath(); g.moveTo(ml, Y(p)); g.lineTo(w - mr, Y(p)); g.stroke(); texto(g, ml - 6, Y(p), String(p), col['--muted'], 'right'); }
-    g.strokeStyle = col['--muted']; g.setLineDash([4, 4]); g.beginPath(); g.moveTo(X(sol.Veq), mt); g.lineTo(X(sol.Veq), h - mb); g.stroke(); g.setLineDash([]);
-    texto(g, X(sol.Veq), h - 12, `V_eq = ${txt(f(sol.Veq))} mL`.replace('V_eq', 'Veq'), col['--muted']);
+    g.strokeStyle = col['--muted']; g.setLineDash([4, 4]);
+    for (const e of sol.Veqs || [sol.Veq]) { g.beginPath(); g.moveTo(X(e), mt); g.lineTo(X(e), h - mb); g.stroke(); }
+    g.setLineDash([]);
+    if (sol.Veqs) sol.Veqs.forEach((e) => texto(g, X(e), h - 12, `${txt(f(e))} mL`, col['--muted']));
+    else texto(g, X(sol.Veq), h - 12, `Veq = ${txt(f(sol.Veq))} mL`, col['--muted']);
     texto(g, X(0), h - 12, '0', col['--muted'], 'left'); texto(g, X(Vm), h - 12, `${txt(f(Vm))} mL`, col['--muted'], 'right');
     texto(g, w - mr, Y(sol.ind[2]) - 8, sol.ind[0], col['--muted'], 'right');
     g.strokeStyle = col['--accent']; g.lineWidth = 2.4; g.beginPath();
     sol.curva.forEach(([v, p], i) => (i ? g.lineTo(X(v), Y(p)) : g.moveTo(X(v), Y(p))));
     g.stroke();
-    punto(g, X(sol.Veq), Y(sol.pHeq), 4, col['--ink']);
+    for (const e of sol.Veqs || [sol.Veq]) punto(g, X(e), Y(sol.ph(e)), 4, col['--ink']);
     if (sol.pHv !== null && sol.v <= Vm) punto(g, X(sol.v), Y(sol.pHv), 5.5, col['--roz']);
     const v = vAnim(tA); punto(g, X(v), Y(sol.ph(v)), 4.5, col['--peso']);
     texto(g, ml + 4, 6, 'pH', col['--muted'], 'left');
