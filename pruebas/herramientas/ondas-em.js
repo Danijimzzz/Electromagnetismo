@@ -17,11 +17,21 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     cerca(r('bombilla').I, 100 / (4 * Math.PI * 4), 1e-12, 'I de una fuente puntual'); cerca(r('sol').E0, Math.sqrt(2 * 376.730313 * 1361), 1e-6, 'E₀ del Sol');
     const cu = r('cobre'); cerca(cu.delta, 1 / Math.sqrt(Math.PI * 1e6 * 1.25663706212e-6 * 5.8e7), 1e-6, 'profundidad de penetración del cobre'); cerca(cu.th, Math.PI / 4, 1e-6, 'fase de η en un buen conductor');
     const ba = r('baquelita'); cerca(ba.alfa, (1e-6 / 2) * Math.sqrt(1.25663706212e-6 / (4.9 * 8.8541878128e-12)), 1e-3, 'α con pocas pérdidas');
-    for (const [q, sc] of [['E paralelo a k', { modo: 'onda', dato: 'f', valor: '1e6', E0: '1', prop: '+z', pol: '-z' }], ['frecuencia negativa', { modo: 'onda', dato: 'f', valor: '-5', E0: '1', prop: '+z', pol: '+x' }], ['E₀ vacía', { modo: 'onda', dato: 'f', valor: '1e6', E0: '', prop: '+z', pol: '+x' }], ['σ que no es un número', { modo: 'perdidas', er: '1', sigma: 'abc', valor: '1e6' }]]) {
+    const dg = r('diagonal'), k3 = (2 * Math.PI * 3e9) / c0; cerca(dg.F.k, k3, 1e-9, 'k en diagonal'); if (!dg.Eexp.includes(OeC.f(k3 / Math.SQRT2) + 'x + ' + OeC.f(k3 / Math.SQRT2) + 'y') || !dg.Eexp.includes('+ 1,047')) mal(`Ondas EM: la fase de la onda en diagonal no sale: ${dg.Eexp}`);
+    if (Math.abs(dg.Bv[0] - Math.SQRT1_2) > 1e-12 || Math.abs(dg.Bv[1] + Math.SQRT1_2) > 1e-12) mal('Ondas EM: B̂ de la onda en diagonal no es (î − ĵ)/√2');
+    cerca(r('circular').I, (2 * 400) / (2 * 376.730313), 1e-6, 'intensidad con polarización circular'); cerca(r('eliptica').I, (900 + 225) / (2 * 376.730313), 1e-6, 'intensidad con polarización elíptica');
+    if (!r('circular').pasos.some((p) => /antihorario/.test(p.html)) || !r('eliptica').pasos.some((p) => /elipse/.test(p.html) && /horario/.test(p.html))) mal('Ondas EM: la polarización no dice la forma o el sentido de giro');
+    if (r('fm').pasos.some((p) => /\(k̂\)|\(î\)/.test(p.html))) mal('Ondas EM: siguen saliendo paréntesis alrededor de k̂ o î');
+    const xe = r('expr-E'); if (xe.Bv.join() !== '-1,0,0' || xe.K.v.join() !== '0,-1,0' || xe.M.vacioM !== true) mal('Ondas EM: la expresión de E no da la dirección o el medio'); cerca(xe.F.w, 6.283e8, 1e-9, 'ω leída');
+    const xb = r('expr-B'); cerca(xb.M.n, 299792458 / 2e8, 1e-6, 'índice desde la expresión de B'); cerca(xb.E0, 2e-7 * 2e8, 1e-6, 'E₀ = v B₀'); if (xb.Ed.v.join() !== '1,0,0') mal('Ondas EM: desde B según ĵ y k̂ = +z, E no sale según î');
+    const L = OeC.leeExpresion('E = 5 sin(3x - 9e8 t + π/4) (0, 1, 1)'); if (L.func !== 'sen' || L.c.x !== 3 || L.c.t !== -9e8 || Math.abs(L.c[''] - Math.PI / 4) > 1e-12 || L.dv.join() !== '0,1,1') mal(`Ondas EM: no lee bien la expresión: ${JSON.stringify(L)}`);
+    const co = r('conductor'); if (co.r !== -1 || co.R !== 1) mal('Ondas EM: un conductor perfecto no refleja todo'); cerca(co.K, (2 * 50) / (299792458 * 1.25663706212e-6), 1e-6, 'corriente superficial');
+    const vi = r('vidrio'); cerca(vi.r, -0.2, 1e-9, 'r aire-vidrio'); cerca(vi.R + vi.T, 1, 1e-12, 'R + T'); cerca(vi.R, 0.04, 1e-9, 'R aire-vidrio');
+    for (const [q, sc] of [['una expresión más rápida que la luz', { modo: 'expresion', campo: 'E', expr: '1 cos(z - 1e9t) i' }], ['una expresión sin t', { modo: 'expresion', campo: 'E', expr: '1 cos(2z) i' }], ['E no perpendicular en la expresión', { modo: 'expresion', campo: 'E', expr: '1 cos(2z - 6e8t) k' }], ['E en otra dirección no perpendicular', { modo: 'onda', dato: 'f', valor: '1e6', E0: '1', prop: 'otra', kx: '1', ky: '1', kz: '0', pol: '+x' }], ['E paralelo a k', { modo: 'onda', dato: 'f', valor: '1e6', E0: '1', prop: '+z', pol: '-z' }], ['frecuencia negativa', { modo: 'onda', dato: 'f', valor: '-5', E0: '1', prop: '+z', pol: '+x' }], ['E₀ vacía', { modo: 'onda', dato: 'f', valor: '1e6', E0: '', prop: '+z', pol: '+x' }], ['σ que no es un número', { modo: 'perdidas', er: '1', sigma: 'abc', valor: '1e6' }]]) {
       let ok = false; try { OeC.resolver(sc); } catch (e) { ok = true; }
       if (!ok) mal(`Ondas EM: ${q} no da error`);
     }
-    if (fallos === antes) console.log(`  ✓ Ondas EM planas: ${OeC.ejemplos.length} ejemplos, λ, k, B₀, dirección de B, fase, índice, espectro, intensidad, fuente puntual, profundidad de penetración y errores`);
+    if (fallos === antes) console.log(`  ✓ Ondas EM planas: ${OeC.ejemplos.length} ejemplos, λ, k, B₀, dirección de B, fase, índice, espectro, intensidad, fuente puntual, profundidad de penetración, dirección cualquiera, polarización, expresiones, incidencia normal y errores`);
   }
 
   return async (browser) => {

@@ -1,9 +1,12 @@
 /* =====================================================================
    Ondas electromagnéticas planas (sin DOM): onda plana armónica en el
-   vacío o en un medio (εr, μr) con su frecuencia, longitud de onda,
+   vacío o en un medio (εr, μr), en cualquier dirección y con fase, con
+   polarización lineal, circular o elíptica: frecuencia, longitud de onda,
    número de onda, el campo B con su dirección (k̂ × Ê), la expresión de
    E(r, t) y B(r, t), la impedancia, la intensidad y la presión de
-   radiación; intensidad de una fuente puntual; y medios con pérdidas
+   radiación; la onda a partir de su expresión E(r, t) o B(r, t);
+   incidencia normal sobre un conductor perfecto (onda estacionaria) o un
+   dieléctrico; intensidad de una fuente puntual; y medios con pérdidas
    (conductividad σ): atenuación, profundidad de penetración e impedancia
    compleja. Unidades del SI.
    ===================================================================== */
@@ -33,8 +36,22 @@ const OndasEM = (() => {
   const dir = (s) => { const m = /^([+-]?)([xyz])$/.exec(s || ''); if (!m) throw new Error('Dirección no válida'); const e = EJES[m[2]].map((c) => (m[1] === '-' ? -c : c)); return { v: e, eje: m[2], signo: m[1] === '-' ? -1 : 1 }; };
   const cruz = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
   const nomDir = (v) => { const i = v.findIndex((c) => Math.abs(c) > 0.5); return `${v[i] < 0 ? '−' : ''}${GORRO['xyz'[i]]}`; };
-  const dirExp = (v) => { const t = nomDir(v); return t[0] === '−' ? `(${t})` : t; };
-  const dirTxt = (v) => { const i = v.findIndex((c) => Math.abs(c) > 0.5); return `${v[i] < 0 ? '−' : '+'}${'xyz'[i]}`; };
+  const unit = (v) => { const n = Math.hypot(...v); return v.map((c) => (Math.abs(c / n) < 1e-12 ? 0 : c / n)); };
+  const enEje = (v) => v.filter((c) => Math.abs(c) > 1e-12).length === 1;
+  // vector unitario: î, −k̂ o (0,6 î + 0,8 ĵ)
+  const vecTxt = (v) => (enEje(v) ? nomDir(v) : `(${v.map((c, i) => (Math.abs(c) < 1e-12 ? '' : `${c < 0 ? '− ' : '+ '}${f(Math.abs(c))} ${GORRO['xyz'[i]]}`)).filter(Boolean).join(' ').replace(/^\+ /, '').replace(/^− /, '−')})`);
+  const dirExp = (v) => { const t = vecTxt(v); return t[0] === '−' ? `(${t})` : t; };
+  const dirTxt = (v) => (enEje(v) ? (() => { const i = v.findIndex((c) => Math.abs(c) > 0.5); return `${v[i] < 0 ? '−' : '+'}${'xyz'[i]}`; })() : vecTxt(v));
+  // dirección elegida en la lista (+x…−z) o escrita por componentes
+  function vecDe(sc, k, p, nom) {
+    if (sc[k] !== 'otra') { const d = dir(sc[k]); return { v: d.v, eje: d.eje, signo: d.signo }; }
+    const v = ['x', 'y', 'z'].map((e) => { const x = leeNum(vacio(sc[p + e]) ? '0' : sc[p + e]); if (!isFinite(x)) throw new Error(`La componente ${e} de ${nom} debe ser un número`); return x; });
+    if (!(Math.hypot(...v) > 0)) throw new Error(`Escribe alguna componente de ${nom}`);
+    const u = unit(v), i = u.findIndex((c) => Math.abs(c) > 1 - 1e-12);
+    return { v: u, eje: i >= 0 ? 'xyz'[i] : null, signo: i >= 0 ? Math.sign(u[i]) : 1 };
+  }
+  // k·r con las componentes de k: 2,094z o 1,481x + 1,481y
+  const kr = (kv, k) => kv.map((c, i) => (Math.abs(c) < 1e-12 ? '' : `${c < 0 ? '− ' : '+ '}${f(Math.abs(c * k))}${'xyz'[i]}`)).filter(Boolean).join(' ').replace(/^\+ /, '').replace(/^− /, '−');
 
   /* ---------- Espectro ---------- */
   const COLORES = [[380, 'violeta'], [450, 'azul'], [495, 'verde'], [570, 'amarillo'], [590, 'naranja'], [620, 'rojo'], [750, '']];
@@ -68,21 +85,122 @@ const OndasEM = (() => {
 
   /* ---------- Onda plana ---------- */
   function onda(sc) {
-    const M = medio(sc), F = frecuencia(sc, M.v), E0 = lee(sc, 'E0', 'la amplitud E₀'), pasos = [];
-    const K = dir(sc.prop || '+z'), Ed = dir(sc.pol || '+x');
-    if (K.eje === Ed.eje) throw new Error('E tiene que ser perpendicular a la dirección de propagación (la onda es transversal)');
-    const Bv = cruz(K.v, Ed.v), B0 = E0 / M.v;
-    pasos.push({ t: 'Medio', html: medioTxt(M) });
+    const M = medio(sc), F = frecuencia(sc, M.v), E0 = lee(sc, 'E0', 'la amplitud E₀'), pasos = [...(sc.previos || [])];
+    const K = vecDe({ prop: '+z', ...sc }, 'prop', 'k', 'la dirección de propagación'), Ed = vecDe({ pol: '+x', ...sc }, 'pol', 'e', 'la dirección de E');
+    if (Math.abs(K.v[0] * Ed.v[0] + K.v[1] * Ed.v[1] + K.v[2] * Ed.v[2]) > 1e-9) throw new Error('E tiene que ser perpendicular a la dirección de propagación (la onda es transversal)');
+    const Bv = cruz(K.v, Ed.v).map((c) => (Math.abs(c) < 1e-12 ? 0 : c)), B0 = E0 / M.v;
+    const phiG = vacio(sc.fase) ? 0 : leeNum(sc.fase), phi = (phiG * Math.PI) / 180;
+    if (!isFinite(phi)) throw new Error('La fase debe ser un número (en grados)');
+    const tp = ['circular', 'eliptica'].includes(sc.tipoPol) ? sc.tipoPol : 'lineal';
+    const E02 = tp === 'circular' ? E0 : tp === 'eliptica' ? lee(sc, 'E02', 'la segunda amplitud E₀₂', { cero: true }) : 0;
+    const dG = tp === 'circular' ? (sc.giro === 'horario' ? -90 : 90) : tp === 'eliptica' ? leeNum(vacio(sc.delta) ? '90' : sc.delta) : 0, dl = (dG * Math.PI) / 180;
+    if (!isFinite(dl)) throw new Error('El desfase δ debe ser un número (en grados)');
+    if (!sc.previos) pasos.push({ t: 'Medio', html: medioTxt(M) });
     const fTxt = { f: `f = ${f(F.fr)} Hz ⇒ ω = 2πf = ${f(F.w)} rad/s`, lambda: `λ = ${f(F.x)} m ⇒ f = v/λ = ${f(M.v)}/${f(F.x)} = ${f(F.fr)} Hz, ω = 2πf = ${f(F.w)} rad/s`, omega: `ω = ${f(F.w)} rad/s ⇒ f = ω/(2π) = ${f(F.fr)} Hz`, k: `k = ${f(F.x)} rad/m ⇒ ω = kv = ${f(F.w)} rad/s, f = ${f(F.fr)} Hz` }[F.dato];
     pasos.push({ t: 'Frecuencia, longitud de onda y número de onda', html: `${fTxt}<br>λ = v/f = <b>${f(F.lam)} m</b>, &ensp; k = 2π/λ = ω/v = <b>${f(F.k)} rad/m</b>, &ensp; T = 1/f = ${f(F.T)} s${M.vacioM ? '' : `<br>En el vacío tendría λ<sub>0</sub> = c/f = ${f(C0 / F.fr)} m: dentro del medio λ = λ<sub>0</sub>/n.`}<br>Zona del espectro: ${banda(F.fr)}` });
-    const ar = K.eje, s = K.signo > 0 ? '−' : '+', fase = `${f(F.k)}${ar} ${s} ${f(F.w)}t`;
-    const Eexp = `E(${ar}, t) = ${f(E0)} cos(${fase}) ${dirExp(Ed.v)} V/m`, Bexp = `B(${ar}, t) = ${f(B0)} cos(${fase}) ${dirExp(Bv)} T`;
-    pasos.push({ t: 'Campo magnético', html: `En una onda plana E, B y la dirección de propagación son perpendiculares entre sí y B<sub>0</sub> = E<sub>0</sub>/v = ${f(E0)}/${f(M.v)} = <b>${f(B0)} T</b><br>La dirección de B sale de k̂ = Ê × B̂, es decir B̂ = k̂ × Ê = (${nomDir(K.v)}) × (${nomDir(Ed.v)}) = <b>${nomDir(Bv)}</b>` });
-    pasos.push({ t: 'Expresiones', html: `Con la forma cos(k·r − ωt), que avanza hacia ${dirTxt(K.v)}:<br>${Eexp}<br>${Bexp}` });
-    const I = (E0 * E0) / (2 * M.eta), u = 0.5 * M.eps * E0 * E0;
-    pasos.push({ t: 'Energía e intensidad', html: `Vector de Poynting S = (E × B)/μ, en la dirección ${nomDir(K.v)}. Su valor medio es la intensidad:<br>I = E<sub>0</sub><sup>2</sup>/(2η) = ${f(E0)}<sup>2</sup>/(2·${f(M.eta)}) = <b>${f(I)} W/m<sup>2</sup></b><br>Densidad media de energía u = ½εE<sub>0</sub><sup>2</sup> = ${f(u)} J/m<sup>3</sup> (la mitad en E y la mitad en B), y I = u·v.<br>Valores eficaces: E<sub>ef</sub> = E<sub>0</sub>/√2 = ${f(E0 / Math.SQRT2)} V/m, B<sub>ef</sub> = ${f(B0 / Math.SQRT2)} T` });
+    // con un eje se escribe kz + ωt; en otra dirección, k·r − ωt con las componentes de k
+    const ar = K.eje ? K.eje : 'r', fTxt2 = phi ? ` ${phi < 0 ? '−' : '+'} ${f(Math.abs(phi))}` : '';
+    const fase = K.eje ? `${f(F.k)}${ar} ${K.signo > 0 ? '−' : '+'} ${f(F.w)}t${fTxt2}` : `${kr(K.v, F.k)} − ${f(F.w)}t${fTxt2}`;
+    const fase2 = (d) => (d ? `${fase} ${d < 0 ? '−' : '+'} ${f(Math.abs(d))}` : fase), menosE1 = Ed.v.map((c) => (c ? -c : 0));
+    const Eexp = tp === 'lineal' ? `E(${ar}, t) = ${f(E0)} cos(${fase}) ${dirExp(Ed.v)} V/m` : `E(${ar}, t) = ${f(E0)} cos(${fase}) ${dirExp(Ed.v)} + ${f(E02)} cos(${fase2(dl)}) ${dirExp(Bv)} V/m`;
+    const Bexp = tp === 'lineal' ? `B(${ar}, t) = ${f(B0)} cos(${fase}) ${dirExp(Bv)} T` : `B(${ar}, t) = ${f(B0)} cos(${fase}) ${dirExp(Bv)} + ${f(E02 / M.v)} cos(${fase2(dl)}) ${dirExp(menosE1)} T`;
+    const ek = (v) => (vecTxt(v)[0] === '−' ? `(${vecTxt(v)})` : vecTxt(v));
+    pasos.push({ t: 'Campo magnético', html: `En una onda plana E, B y la dirección de propagación son perpendiculares entre sí y B<sub>0</sub> = E<sub>0</sub>/v = ${f(E0)}/${f(M.v)} = <b>${f(B0)} T</b><br>La dirección de B sale de k̂ = Ê × B̂, es decir B̂ = k̂ × Ê = ${ek(K.v)} × ${ek(Ed.v)} = <b>${vecTxt(Bv)}</b>` });
+    if (tp !== 'lineal') {
+      const forma = tp === 'circular' || (Math.abs(E02 - E0) < 1e-12 * E0 && Math.abs(Math.abs(dG) - 90) < 1e-9) ? 'circular' : Math.abs(Math.sin(dl)) < 1e-12 || E02 === 0 ? 'lineal' : 'elíptica', gira = Math.sin(dl) > 0 ? 'antihorario' : 'horario';
+      pasos.push({ t: 'Polarización', html: `E es la suma de dos ondas perpendiculares: E<sub>01</sub> = ${f(E0)} V/m según ${vecTxt(Ed.v)} y E<sub>02</sub> = ${f(E02)} V/m según k̂ × Ê = ${vecTxt(Bv)}, desfasadas δ = ${f(dG)}°. ${forma === 'lineal' ? 'Con δ = 0° o 180° siguen en fase y la polarización sigue siendo <b>lineal</b>, inclinada.' : `En un punto fijo la punta de E describe una ${forma === 'circular' ? '<b>circunferencia</b> (polarización circular: E<sub>01</sub> = E<sub>02</sub> y δ = ±90°)' : '<b>elipse</b> (polarización elíptica)'} y gira en sentido <b>${gira}</b> visto por quien recibe la onda (mirando hacia la fuente).`}${forma === 'circular' ? ` |E| es constante, ${f(E0)} V/m.` : ''}` });
+    }
+    const pref = phi ? `, con fase inicial φ = ${f(phiG)}° = ${f(phi)} rad` : '';
+    pasos.push({ t: 'Expresiones', html: `Con la forma cos(k·r − ωt + φ), que avanza hacia ${dirTxt(K.v)}${K.eje ? '' : ` (k = k k̂ = ${kr(K.v, F.k).replace(/([xyz])/g, (m) => ` ${GORRO[m]}`)} rad/m)`}${pref}:<br>${Eexp}<br>${Bexp}` });
+    const I = (E0 * E0 + E02 * E02) / (2 * M.eta), u = 0.5 * M.eps * (E0 * E0 + E02 * E02);
+    pasos.push({ t: 'Energía e intensidad', html: `Vector de Poynting S = (E × B)/μ, en la dirección ${vecTxt(K.v)}. Su valor medio es la intensidad:<br>${tp === 'lineal' ? `I = E<sub>0</sub><sup>2</sup>/(2η) = ${f(E0)}<sup>2</sup>/(2·${f(M.eta)})` : `I = (E<sub>01</sub><sup>2</sup> + E<sub>02</sub><sup>2</sup>)/(2η) = (${f(E0)}<sup>2</sup> + ${f(E02)}<sup>2</sup>)/(2·${f(M.eta)})`} = <b>${f(I)} W/m<sup>2</sup></b><br>Densidad media de energía u = ½εE<sub>0</sub><sup>2</sup> = ${f(u)} J/m<sup>3</sup> (la mitad en E y la mitad en B), y I = u·v.<br>Valores eficaces: E<sub>ef</sub> = E<sub>0</sub>/√2 = ${f(E0 / Math.SQRT2)} V/m, B<sub>ef</sub> = ${f(B0 / Math.SQRT2)} T` });
     pasos.push({ t: 'Presión de radiación', html: `Sobre una superficie que la absorbe, p = I/v = ${f(I / M.v)} Pa; si la refleja del todo, p = 2I/v = ${f((2 * I) / M.v)} Pa.` });
-    return { modo: 'onda', M, F, E0, B0, K, Ed, Bv, I, u, Eexp, Bexp, fase, pa: I / M.v, alfa: 0, pasos };
+    return { modo: 'onda', M, F, E0, B0, K, Ed, Bv, I, u, Eexp, Bexp, fase, phi, tp, E02, dl, pa: I / M.v, alfa: 0, pasos };
+  }
+
+  /* ---------- Onda a partir de su expresión ---------- */
+  // un número con π: 2π, π/2, −1,5e8, 3·10^8
+  function numPi(t) {
+    let s = t.replace(/\s/g, ''), m = 1;
+    if (/π|pi/.test(s)) { m = Math.PI; s = s.replace(/·?(π|pi)/, ''); if (s === '' || s === '+') s = '1'; if (s === '-' || s === '−') s = '-1'; if (/^[+\-−]?\//.test(s)) s = s.replace(/^([+\-−]?)\//, '$11/'); }
+    const fr = /^(.*)\/(.*)$/.exec(s);
+    if (fr) { const a = numPi(fr[1] || '1'), b = numPi(fr[2]); return (a * m) / b; }
+    const v = leeNum(s);
+    return v * m;
+  }
+  // E0 cos(kx·x + ky·y + kz·z − ωt + φ) dirección, con sen o cos
+  function leeExpresion(texto) {
+    let s = String(texto || '').trim().replace(/\s+/g, ' ').replace(/^[EB]\s*\([^)]*\)\s*=\s*/i, '').replace(/^[EB]\s*=\s*/i, '').replace(/[−–]/g, '-').replace(/sin/gi, 'sen');
+    const m0 = /^(.*?)(cos|sen)\s*\(/i.exec(s);
+    let fin = -1;
+    if (m0) for (let i = m0[0].length, n = 1; i < s.length; i++) { if (s[i] === '(') n++; else if (s[i] === ')' && !--n) { fin = i; break; } }
+    if (fin < 0) throw new Error('Escribe la onda como E₀ cos(k·r − ωt + φ) y su dirección, p. ej. 30 cos(2,09y + 6,28e8t) k');
+    const m = [s, m0[1], m0[2], s.slice(m0[0].length, fin), s.slice(fin + 1).trim()];
+    let amp = m[1].replace(/[·*×\s]/g, '') || '1'; if (amp === '-') amp = '-1'; if (amp === '+') amp = '1';
+    const A = numPi(amp);
+    if (!isFinite(A) || A === 0) throw new Error('No entiendo la amplitud de la expresión');
+    const c = { x: 0, y: 0, z: 0, t: 0, '': 0 };
+    const arg = m[3].replace(/\s/g, '').replace(/(\d)([eE])([+\-]?\d)/g, '$1E$3');
+    const terms = arg.match(/[+\-]?[^+\-]+(?:E[+\-]?\d+[^+\-]*)?/g) || [];
+    for (const t0 of terms) {
+      const t = t0.replace(/E/g, 'e'), v = /([xyzt])$/.exec(t), var_ = v ? v[1] : '', num = var_ ? t.slice(0, -1).replace(/[·*]$/, '') : t;
+      const x = numPi(num === '' || num === '+' ? '1' : num === '-' ? '-1' : num);
+      if (!isFinite(x)) throw new Error(`No entiendo el término «${t0}» de la fase`);
+      c[var_] += x;
+    }
+    // dirección: î ĵ k̂, i j k, x y z, ux…, o (a, b, c)
+    let d = m[4].replace(/\s/g, '').replace(/V\/m|T$/i, ''), sg = 1;
+    if (d[0] === '-') { sg = -1; d = d.slice(1); }
+    let dv;
+    const vec = /^\(([^,]+),([^,]+),([^,]+)\)$/.exec(d.replace(/;/g, ','));
+    if (vec) dv = vec.slice(1).map((x) => numPi(x));
+    else { const e = { 'î': 'x', 'ĵ': 'y', 'k̂': 'z', i: 'x', j: 'y', k: 'z', x: 'x', y: 'y', z: 'z', ux: 'x', uy: 'y', uz: 'z', u_x: 'x', u_y: 'y', u_z: 'z' }[d.normalize('NFC')] || { 'x̂': 'x', 'ŷ': 'y', 'ẑ': 'z' }[d]; if (!e) throw new Error('Falta la dirección del campo al final: î, ĵ, k̂ o un vector (a, b, c)'); dv = EJES[e].slice(); }
+    if (dv.some((x) => !isFinite(x)) || !(Math.hypot(...dv) > 0)) throw new Error('La dirección del campo no es válida');
+    return { A: A * sg, c, dv, func: m[2].toLowerCase() };
+  }
+  function expresion(sc) {
+    const campo = sc.campo === 'B' ? 'B' : 'E', X = leeExpresion(sc.expr), pasos = [];
+    let kv = [X.c.x, X.c.y, X.c.z], w = -X.c.t, phi = X.c[''];
+    if (X.func === 'sen') phi -= Math.PI / 2;
+    if (!(Math.hypot(...kv) > 0)) throw new Error('Falta la parte espacial de la fase (términos en x, y o z)');
+    if (!w) throw new Error('Falta el término en t de la fase');
+    let nota = '';
+    if (w < 0) { kv = kv.map((c) => -c); w = -w; phi = -phi; nota = ' Como el coseno es par, cos(k·r + ωt + φ) = cos(−k·r − ωt − φ): la onda va en el sentido de −k.'; }
+    const k = Math.hypot(...kv), v = w / k, n = C0 / v, amp = Math.abs(X.A) * Math.hypot(...X.dv), dv = unit(X.dv).map((c) => c * Math.sign(X.A)), kh = unit(kv);
+    pasos.push({ t: 'Lectura de la expresión', html: `${X.func === 'sen' ? 'sen θ = cos(θ − π/2). ' : ''}Comparando con ${campo}<sub>0</sub> cos(k·r − ωt + φ): amplitud ${campo}<sub>0</sub> = <b>${f(amp)} ${campo === 'E' ? 'V/m' : 'T'}</b> según ${vecTxt(dv)}, k = (${kv.map((c) => f(c)).join(', ')}) rad/m, de módulo k = <b>${f(k)} rad/m</b>, ω = <b>${f(w)} rad/s</b>${phi ? ` y φ = ${f(phi)} rad` : ''}.${nota} Se propaga hacia ${vecTxt(kh)}.` });
+    if (n < 1 - 1e-3) throw new Error(`Con esos k y ω la onda iría a ω/k = ${f(v).replace(/<[^>]+>/g, '')} m/s, más deprisa que la luz: revisa la expresión`);
+    const enVacio = Math.abs(n - 1) < 2e-3;
+    pasos.push({ t: 'Velocidad y medio', html: `v = ω/k = ${f(w)}/${f(k)} = <b>${f(v)} m/s</b>${enVacio ? ': es c, así que la onda va por el vacío (o el aire).' : `, menor que c: va por un medio de índice n = c/v = <b>${f(n)}</b> (si μ<sub>r</sub> = 1, ε<sub>r</sub> = n<sup>2</sup> = ${f(n * n)}).`}` });
+    if (Math.abs(kh[0] * dv[0] + kh[1] * dv[1] + kh[2] * dv[2]) > 1e-6) throw new Error(`El campo ${campo} no es perpendicular a k: no es una onda plana transversal`);
+    let ev = dv, E0 = amp;
+    const vMedio = enVacio ? C0 : v;
+    if (campo === 'B') { ev = cruz(dv, kh); E0 = amp * vMedio; pasos.push({ t: 'Campo eléctrico', html: `E<sub>0</sub> = v B<sub>0</sub> = ${f(vMedio)}·${f(amp)} = <b>${f(E0)} V/m</b>, y como B̂ = k̂ × Ê, la dirección de E es Ê = B̂ × k̂ = ${vecTxt(unit(ev))}.` }); }
+    const e = unit(ev), num = (x) => String(+x.toPrecision(12));
+    const sc2 = { modo: 'onda', medio: enVacio ? 'vacio' : 'medio', er: num(n * n), mr: '1', dato: 'omega', valor: num(w), E0: num(E0), prop: 'otra', kx: num(kh[0]), ky: num(kh[1]), kz: num(kh[2]), pol: 'otra', ex: num(e[0]), ey: num(e[1]), ez: num(e[2]), fase: num((phi * 180) / Math.PI), previos: pasos };
+    const r = onda(sc2);
+    return { ...r, modo: 'expresion', campo, leido: { k, w, phi, amp } };
+  }
+
+  /* ---------- Incidencia normal ---------- */
+  // sc: { medio, er, mr (medio 1), destino: 'conductor'|'dielectrico', er2, mr2, dato, valor, E0 }
+  function incidencia(sc) {
+    const M = medio(sc), F = frecuencia(sc, M.v), E0 = lee(sc, 'E0', 'la amplitud E₀ de la onda incidente'), pasos = [], cond = sc.destino !== 'dielectrico';
+    const I0 = (E0 * E0) / (2 * M.eta), B0 = E0 / M.v;
+    pasos.push({ t: 'Medio de llegada', html: `${medioTxt(M)}<br>λ = ${f(F.lam)} m, k = ${f(F.k)} rad/m. La onda llega por z < 0 hacia +z: E<sub>i</sub> = ${f(E0)} cos(kz − ωt) î V/m, con I<sub>i</sub> = E<sub>0</sub><sup>2</sup>/(2η) = ${f(I0)} W/m<sup>2</sup>.` });
+    if (cond) {
+      const K = (2 * B0) / M.mu;
+      pasos.push({ t: 'Onda reflejada', html: 'Dentro de un conductor perfecto E = 0 y, como E tangente es continuo, E = 0 en la superficie z = 0. Eso exige una onda reflejada E<sub>r</sub> = −E<sub>0</sub> cos(kz + ωt) î: el coeficiente de reflexión es <b>r = −1</b> y se refleja toda la energía.' });
+      pasos.push({ t: 'Onda estacionaria', html: `Sumando: E = E<sub>0</sub>[cos(kz − ωt) − cos(kz + ωt)] = <b>2E<sub>0</sub> sen(kz) sen(ωt) î</b> = ${f(2 * E0)} sen(${f(F.k)}z) sen(${f(F.w)}t) î V/m<br>B = (E<sub>0</sub>/v)[cos(kz − ωt) + cos(kz + ωt)] = <b>2B<sub>0</sub> cos(kz) cos(ωt) ĵ</b> = ${f(2 * B0)} cos(${f(F.k)}z) cos(${f(F.w)}t) ĵ T<br>Ya no avanza: cada punto oscila en su sitio, y E y B van desfasados un cuarto de periodo en el tiempo y un cuarto de λ en el espacio.` });
+      pasos.push({ t: 'Nodos y vientres', html: `E es nulo siempre en los planos z = −nλ/2 = 0, −${f(F.lam / 2)}, −${f(F.lam)} m… (nodos de E, donde B es máximo) y tiene amplitud máxima 2E<sub>0</sub> = ${f(2 * E0)} V/m en z = −λ/4, −3λ/4… = −${f(F.lam / 4)}, −${f((3 * F.lam) / 4)} m… La distancia entre dos nodos es λ/2 = <b>${f(F.lam / 2)} m</b>.` });
+      pasos.push({ t: 'Energía, presión y corriente en la superficie', html: `El vector de Poynting medio es 0: la energía no viaja, va y viene entre E y B. La presión de radiación sobre el conductor es p = 2I<sub>i</sub>/v = <b>${f((2 * I0) / M.v)} Pa</b>. En la superficie B = 2B<sub>0</sub> cos(ωt), y ese salto de B lo produce una corriente superficial K = B/μ = <b>${f(K)} cos(ωt) A/m</b> (según î).` });
+      return { modo: 'incidencia', cond, M, F, E0, B0, I0, r: -1, t: 0, R: 1, T: 0, K, pasos };
+    }
+    const er2 = lee(sc, 'er2', 'la permitividad relativa ε₂ del segundo medio'), mr2 = vacio(sc.mr2) ? 1 : lee(sc, 'mr2', 'la permeabilidad relativa μ₂'), M2 = medio({ medio: 'medio', er: er2, mr: mr2 });
+    const r = (M2.eta - M.eta) / (M2.eta + M.eta), t = 1 + r, Rr = r * r, T = (M.eta / M2.eta) * t * t, swr = (1 + Math.abs(r)) / (1 - Math.abs(r));
+    pasos.push({ t: 'Segundo medio', html: `ε<sub>r</sub> = ${f(er2)}${mr2 !== 1 ? `, μ<sub>r</sub> = ${f(mr2)}` : ''}: n<sub>2</sub> = ${f(M2.n)}, v<sub>2</sub> = ${f(M2.v)} m/s, η<sub>2</sub> = ${f(M2.eta)} Ω, λ<sub>2</sub> = ${f(M2.v / F.fr)} m.` });
+    pasos.push({ t: 'Coeficientes de Fresnel', html: `Con E y H tangentes continuos en z = 0: r = (η<sub>2</sub> − η<sub>1</sub>)/(η<sub>2</sub> + η<sub>1</sub>) = <b>${f(r)}</b> y t = 2η<sub>2</sub>/(η<sub>1</sub> + η<sub>2</sub>) = 1 + r = <b>${f(t)}</b>${mr2 === 1 && M.mr === 1 ? ` (con μ = μ<sub>0</sub>, r = (n<sub>1</sub> − n<sub>2</sub>)/(n<sub>1</sub> + n<sub>2</sub>))` : ''}.<br>E<sub>r</sub> = r E<sub>0</sub> = ${f(r * E0)} V/m${r < 0 ? ' (la reflejada se invierte: cambio de fase de 180°)' : ''} y E<sub>t</sub> = t E<sub>0</sub> = ${f(t * E0)} V/m.` });
+    pasos.push({ t: 'Energía', html: `R = r<sup>2</sup> = <b>${f(100 * Rr, 3)} %</b> se refleja y T = (η<sub>1</sub>/η<sub>2</sub>) t<sup>2</sup> = <b>${f(100 * T, 3)} %</b> se transmite (R + T = 1). En el primer medio la suma de la incidente y la reflejada es una onda parcialmente estacionaria: |E| oscila entre ${f(E0 * (1 - Math.abs(r)))} y ${f(E0 * (1 + Math.abs(r)))} V/m (razón de onda estacionaria ${f(swr)}).` });
+    return { modo: 'incidencia', cond, M, M2, F, E0, B0, I0, r, t, R: Rr, T, swr, pasos };
   }
 
   /* ---------- Intensidad ---------- */
@@ -130,7 +248,7 @@ const OndasEM = (() => {
     return { modo: 'perdidas', er, mr, sg, fr, w, tg, tipo, alfa, beta, delta, etaM, th, vf, lam, E0, d, Ed, M: { eps, mu, v: vf, eta: etaM }, F: { fr, w, k: beta, lam }, pasos };
   }
 
-  const MODOS = { onda, intensidad, perdidas };
+  const MODOS = { onda, expresion, incidencia, intensidad, perdidas };
   function resolver(sc) { return MODOS[sc.modo] ? MODOS[sc.modo](sc) : onda(sc); }
 
   const ejemplos = [
@@ -139,6 +257,13 @@ const OndasEM = (() => {
     { clave: 'agua', nombre: 'Luz que entra en el agua', sc: { modo: 'onda', medio: 'medio', dato: 'f', valor: '5e14', E0: '200', prop: '+z', pol: '+y', er: '1,77', mr: '1' } },
     { clave: 'expresion', nombre: 'Desde k: E = 30 cos(2,09y + ωt) k̂', sc: { modo: 'onda', medio: 'vacio', dato: 'k', valor: '2,094', E0: '30', prop: '-y', pol: '+z', er: '', mr: '' } },
     { clave: 'dielectrico', nombre: 'Microondas en un dieléctrico (εr = 4)', sc: { modo: 'onda', medio: 'medio', dato: 'f', valor: '2,45e9', E0: '100', prop: '+z', pol: '+x', er: '4', mr: '1' } },
+    { clave: 'diagonal', nombre: 'Onda en diagonal con fase inicial', sc: { modo: 'onda', medio: 'vacio', dato: 'f', valor: '3e9', E0: '10', prop: 'otra', kx: '1', ky: '1', kz: '0', pol: '+z', er: '', mr: '', fase: '60' } },
+    { clave: 'circular', nombre: 'Polarización circular', sc: { modo: 'onda', medio: 'vacio', dato: 'lambda', valor: '0,03', E0: '20', prop: '+z', pol: '+x', er: '', mr: '', tipoPol: 'circular', giro: 'antihorario' } },
+    { clave: 'eliptica', nombre: 'Polarización elíptica', sc: { modo: 'onda', medio: 'vacio', dato: 'f', valor: '1e9', E0: '30', prop: '+x', pol: '+y', er: '', mr: '', tipoPol: 'eliptica', E02: '15', delta: '-90' } },
+    { clave: 'expr-E', nombre: 'Desde E(r, t) = 30 cos(2,094y + 6,283·10⁸t) k̂', sc: { modo: 'expresion', campo: 'E', expr: '30 cos(2,094y + 6,283e8t) k' } },
+    { clave: 'expr-B', nombre: 'Desde B(r, t) en un vidrio', sc: { modo: 'expresion', campo: 'B', expr: '2e-7 sen(1,5e7z - 3e15t) j' } },
+    { clave: 'conductor', nombre: 'Onda estacionaria ante un conductor', sc: { modo: 'incidencia', destino: 'conductor', medio: 'vacio', dato: 'f', valor: '1e9', E0: '50', er: '', mr: '', er2: '', mr2: '' } },
+    { clave: 'vidrio', nombre: 'Luz que llega del aire al vidrio', sc: { modo: 'incidencia', destino: 'dielectrico', medio: 'vacio', dato: 'lambda', valor: '600e-9', E0: '100', er: '', mr: '', er2: '2,25', mr2: '' } },
     { clave: 'sol', nombre: 'Luz del Sol en la Tierra', sc: { modo: 'intensidad', medio: 'vacio', de: 'I', I: '1361', P: '', r: '', E0: '', A: '1' } },
     { clave: 'bombilla', nombre: 'Bombilla de 100 W a 2 m', sc: { modo: 'intensidad', medio: 'vacio', de: 'fuente', P: '100', r: '2', I: '', E0: '', A: '' } },
     { clave: 'antena', nombre: 'Antena de 50 kW a 10 km', sc: { modo: 'intensidad', medio: 'vacio', de: 'fuente', P: '50000', r: '10000', I: '', E0: '', A: '' } },
@@ -148,6 +273,6 @@ const OndasEM = (() => {
     { clave: 'tierra', nombre: 'Tierra húmeda a 1 MHz', sc: { modo: 'perdidas', er: '10', mr: '1', sigma: '0,01', valor: '1e6', E0: '10', d: '5' } },
     { clave: 'baquelita', nombre: 'Dieléctrico con pocas pérdidas', sc: { modo: 'perdidas', er: '4,9', mr: '1', sigma: '1e-6', valor: '1e8', E0: '5', d: '100' } },
   ];
-  return { resolver, onda, intensidad, perdidas, banda, ejemplos, f, C0, MU0, EPS0 };
+  return { resolver, onda, expresion, incidencia, intensidad, perdidas, leeExpresion, banda, ejemplos, f, C0, MU0, EPS0 };
 })();
 if (typeof module !== 'undefined') module.exports = OndasEM;
