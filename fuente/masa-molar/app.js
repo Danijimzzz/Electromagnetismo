@@ -23,6 +23,8 @@
   let st = { tab: 'masa', formula: 'CuSO4·5H2O', ecuacion: F.ejemplos[0].ecuacion, cantidades: F.ejemplos[0].cantidades, modo: 'iupac', rendimiento: '100', gramos: '', T: '0', P: '1', realMasa: '', realI: '',
     emp: { tipo: 'composicion', texto: 'C 40; H 6,7; O 53,3', m: '', co2: '', h2o: '', M: '180' } };
   try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && typeof g === 'object') st = { ...st, ...g }; } catch (e) {}
+  // #Fe en la dirección (lo usa el botón de la tabla periódica), y se quita para que al recargar mande lo guardado: masa molar de esa fórmula
+  if (location.hash.length > 1) { st.formula = decodeURIComponent(location.hash.slice(1)); st.tab = 'masa'; try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* file:// */ } }
   const guarda = () => { try { localStorage.setItem(CLAVE, JSON.stringify(st)); } catch (e) {} };
 
   /* ---------- Pestañas y modo de masas ---------- */

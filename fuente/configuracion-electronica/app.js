@@ -14,7 +14,8 @@
   // estado: la pestaña y lo escrito en cada una (antes solo se guardaba el texto del elemento)
   let st = { tab: 'el', entrada: 'Fe', conf: '[Ar] 4s2 3d5', nq: { n: '3', l: '2', ml: '-2', ms: '+1/2' } };
   try { const g = localStorage.getItem(CLAVE); if (g) { let o = null; try { o = JSON.parse(g); } catch (e) {} st = o && typeof o === 'object' ? { ...st, ...o } : { ...st, entrada: g }; } } catch (e) {}
-  if (location.hash.length > 1) st.entrada = decodeURIComponent(location.hash.slice(1));
+  // #Fe en la dirección (lo usa el botón de la tabla periódica), y se quita para que al recargar mande lo guardado: abre ese elemento
+  if (location.hash.length > 1) { st.entrada = decodeURIComponent(location.hash.slice(1)); st.tab = 'el'; try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* file:// */ } }
   const guarda = () => { try { localStorage.setItem(CLAVE, JSON.stringify(st)); } catch (e) {} };
   entrada.value = st.entrada;
   const sel = $('#ejemplos');

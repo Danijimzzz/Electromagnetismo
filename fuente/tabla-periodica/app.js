@@ -1,6 +1,9 @@
 /* =====================================================================
    Tabla periódica interactiva: rejilla de 18 grupos, colores por categoría
-   o por propiedad, buscador y ficha del elemento elegido (#Fe en la dirección).
+   o por propiedad, buscador, ficha del elemento elegido (#Fe en la
+   dirección) con enlaces a Configuración electrónica y Masa molar,
+   comparación de hasta tres elementos y preguntas para practicar.
+   Los datos están en quimica/elementos.js.
    ===================================================================== */
 (() => {
   const E = Elementos, $ = (s) => document.querySelector(s);
@@ -11,6 +14,10 @@
     ei: { nombre: '1.ª energía de ionización', v: (e) => e.ei, f: (x) => coma(x), u: 'kJ/mol' },
     radio: { nombre: 'Radio atómico', v: (e) => e.radio, f: (x) => coma(x), u: 'pm' },
     masa: { nombre: 'Masa atómica', v: (e) => e.masa, f: (x) => coma(x), u: 'u' },
+    ae: { nombre: 'Afinidad electrónica', v: (e) => e.ae, f: (x) => coma(x), u: 'kJ/mol' },
+    densidad: { nombre: 'Densidad', v: (e) => e.densidad, f: (x) => coma(+x.toPrecision(3)), u: 'g/cm³' },
+    fusion: { nombre: 'Punto de fusión', v: (e) => e.fusion, f: (x) => coma(Math.round(x)), u: '°C' },
+    ebullicion: { nombre: 'Punto de ebullición', v: (e) => e.ebullicion, f: (x) => coma(Math.round(x)), u: '°C' },
   };
   const BLOQUES = { s: '#e07a5f', p: '#3d8bbd', d: '#d9a441', f: '#8e6fc1' };
   const ESTADOS = { gas: '#5aa9e6', 'líquido': '#2bb39a', 'sólido': '#9aa5ad' };
@@ -81,10 +88,85 @@
         <dt>Electronegatividad</dt><dd>${coma(e.en, e.en == null ? null : 2)}</dd>
         <dt>1.ª ionización</dt><dd>${e.ei == null ? '—' : coma(e.ei) + ' kJ/mol'}</dd>
         <dt>Radio atómico</dt><dd>${e.radio == null ? '—' : coma(e.radio) + ' pm'}</dd>
+        <dt>Afinidad electrónica</dt><dd>${e.aeInestable ? 'no forma un anión estable' : e.ae == null ? '—' : coma(e.ae) + ' kJ/mol'}</dd>
+        <dt>Estados de oxidación</dt><dd>${e.oxidacion || '—'}</dd>
         <dt>Estado a 25 °C</dt><dd>${e.estado || 'desconocido'}</dd>
+        <dt>Densidad</dt><dd>${dens(e)}</dd>
+        <dt>Punto de fusión</dt><dd>${temp(e.fusion)}</dd>
+        <dt>Punto de ebullición</dt><dd>${temp(e.ebullicion)}</dd>
       </dl>
-      ${e.Z > 100 ? '<p class="nota">Elemento sintético de vida muy corta: la configuración es la prevista y casi no hay propiedades medidas.</p>' : ''}`;
+      ${NOTA_F[e.Z] ? `<p class="nota">${NOTA_F[e.Z]}</p>` : ''}
+      ${e.Z > 100 ? '<p class="nota">Elemento sintético de vida muy corta: la configuración es la prevista y casi no hay propiedades medidas.</p>' : ''}
+      <div class="acciones"><a class="btn" href="../configuracion-electronica/#${e.simbolo}">Configuración y Zef</a><a class="btn" href="../masa-molar/#${e.simbolo}">Masa molar</a><button class="btn" type="button" id="comparar"${comp.includes(e.Z) ? ' disabled' : ''}>${comp.includes(e.Z) ? 'Ya en la comparación' : comp.length >= 3 ? 'Comparar (cambia el primero)' : 'Comparar'}</button></div>`;
+    $('#comparar').addEventListener('click', () => compara(e.Z));
   }
+  const dens = (e) => (e.densidad == null ? '—' : e.estado === 'gas' ? `${coma(+(e.densidad * 1000).toPrecision(4))} g/L (gas, a 0 °C y 1 atm)` : `${coma(+e.densidad.toPrecision(4))} g/cm³`);
+  const temp = (t) => (t == null ? '—' : `${coma(t).replace('-', '−')} °C (${coma(+(t + 273.15).toFixed(t % 1 ? 2 : 0))} K)`);
+  // lantano, actinio, lutecio y laurencio: dónde va el grupo 3 se ha discutido
+  const NOTA_F = {
+    57: 'Aquí el lantano va en el bloque f, con los lantánidos. Según la recomendación de la IUPAC el grupo 3 es Sc, Y, Lu, Lr; muchos libros ponen La y Ac en su lugar. Su configuración, [Xe] 5d¹ 6s², no tiene electrones 4f.',
+    89: 'Aquí el actinio va en el bloque f, con los actínidos. Según la recomendación de la IUPAC el grupo 3 es Sc, Y, Lu, Lr; muchos libros ponen La y Ac en su lugar.',
+    71: 'El lutecio cierra los lantánidos con la 4f llena ([Xe] 4f¹⁴ 5d¹ 6s²). Por eso la IUPAC lo pone en el grupo 3, debajo del itrio; muchos libros ponen ahí el lantano.',
+    103: 'El laurencio cierra los actínidos. Como el lutecio, la IUPAC lo pone en el grupo 3; muchos libros ponen ahí el actinio.',
+  };
+
+  /* ---------- Comparar hasta tres elementos ---------- */
+  let comp = [];
+  const FILAS_C = [
+    ['Número atómico', (e) => e.Z], ['Masa atómica (u)', (e) => e.masa], ['Electronegatividad', (e) => e.en], ['1.ª ionización (kJ/mol)', (e) => e.ei],
+    ['Afinidad electrónica (kJ/mol)', (e) => (e.aeInestable ? null : e.ae)], ['Radio atómico (pm)', (e) => e.radio], ['Densidad (g/cm³)', (e) => e.densidad],
+    ['Punto de fusión (°C)', (e) => e.fusion], ['Punto de ebullición (°C)', (e) => e.ebullicion],
+  ];
+  function compara(Z) { if (comp.includes(Z)) return; comp.push(Z); if (comp.length > 3) comp.shift(); muestraComp(); ficha(E.lista[Z - 1]); }
+  function muestraComp() {
+    const c = $('#comparacion');
+    c.hidden = !comp.length;
+    if (!comp.length) return;
+    const els = comp.map((z) => E.lista[z - 1]), num = (x) => (x == null ? '—' : coma(+x.toPrecision(4)).replace('-', '−'));
+    c.innerHTML = `<h2>Comparación</h2><div class="tablawrap"><table><thead><tr><th></th>${els.map((e) => `<th>${e.simbolo} · ${esc(e.nombre)} <button class="quita" type="button" data-quita="${e.Z}" aria-label="Quitar ${esc(e.nombre)}">×</button></th>`).join('')}</tr></thead><tbody>
+      ${FILAS_C.map(([n, v]) => { const xs = els.map(v), ok = xs.filter((x) => x != null), mx = ok.length > 1 ? Math.max(...ok) : null; return `<tr><td>${n}</td>${xs.map((x) => `<td${x != null && x === mx ? ' class="max"' : ''}>${num(x)}</td>`).join('')}</tr>`; }).join('')}
+      <tr><td>Configuración</td>${els.map((e) => `<td class="conf">${E.abreviada(e.Z)}</td>`).join('')}</tr>
+      <tr><td>Estados de oxidación</td>${els.map((e) => `<td>${e.oxidacion || '—'}</td>`).join('')}</tr></tbody></table></div>
+      <p class="nota">En negrita, el mayor de cada fila.${comp.length < 3 ? ' Elige otro elemento y pulsa «Comparar» para añadirlo.' : ''}</p>`;
+    c.querySelectorAll('[data-quita]').forEach((b) => b.addEventListener('click', () => { comp = comp.filter((z) => z !== +b.dataset.quita); muestraComp(); if (sel) ficha(E.lista[sel - 1]); }));
+  }
+
+  /* ---------- Preguntas para practicar ---------- */
+  const SUPN = { '⁰': 0, '¹': 1, '²': 2, '³': 3, '⁴': 4, '⁵': 5, '⁶': 6, '⁷': 7, '⁸': 8, '⁹': 9 };
+  // una configuración en un conjunto ordenado de orbitales: «[Ar] 4s2 3d6» = «[Ar] 3d⁶ 4s²»
+  const confNorm = (t) => { const x = String(t).replace(/[⁰-⁹¹²³]/g, (c) => SUPN[c]).replace(/\s+/g, ''), core = (/^\[(\w+)\]/.exec(x) || [])[1] || ''; return core.toLowerCase() + '|' + [...x.replace(/^\[\w+\]/, '').matchAll(/(\d[spdf])(\d+)/gi)].map((m) => m[1].toLowerCase() + m[2]).sort().join(' '); };
+  const valencia = (e) => (e.grupo === 18 ? (e.Z === 2 ? 2 : 8) : e.grupo <= 2 ? e.grupo : e.grupo - 10);
+  let preg = null;
+  function pregunta() {
+    const azar = (xs) => xs[Math.floor(Math.random() * xs.length)], hasta = (n) => E.lista.filter((e) => e.Z <= n);
+    const princ = hasta(56).filter((e) => e.grupo && (e.grupo <= 2 || e.grupo >= 13));
+    const tipos = [
+      () => { const e = azar(hasta(56)); return { t: `¿Cómo se llama el elemento de símbolo <b>${e.simbolo}</b>?`, ok: (r) => norm(r) === norm(e.nombre), sol: e.nombre, Z: e.Z }; },
+      () => { const e = azar(hasta(56)); return { t: `¿Cuál es el símbolo del <b>${e.nombre.toLowerCase()}</b>?`, ok: (r) => r.trim() === e.simbolo, sol: e.simbolo, Z: e.Z }; },
+      () => { const e = azar(hasta(86).filter((x) => x.grupo)); return { t: `¿En qué grupo y periodo está el <b>${e.nombre.toLowerCase()}</b> (${e.simbolo})? Escribe los dos números, por ejemplo 8 y 4.`, ok: (r) => { const n = (r.match(/\d+/g) || []).map(Number); return n[0] === e.grupo && n[1] === e.periodo; }, sol: `grupo ${e.grupo}, periodo ${e.periodo}`, Z: e.Z }; },
+      () => { const e = azar(hasta(36).filter((x) => x.Z > 2)); return { t: `Escribe la configuración electrónica abreviada del <b>${e.nombre.toLowerCase()}</b> (${e.simbolo}), por ejemplo [Ne] 3s2 3p4.`, ok: (r) => confNorm(r) === confNorm(E.abreviada(e.Z)), sol: E.abreviada(e.Z), Z: e.Z }; },
+      () => { const e = azar(princ); return { t: `¿Cuántos electrones de valencia tiene el <b>${e.nombre.toLowerCase()}</b> (${e.simbolo})?`, ok: (r) => +r.trim() === valencia(e), sol: String(valencia(e)), Z: e.Z }; },
+      () => {
+        const [k, nom, mas] = azar([['en', 'electronegatividad', 'más'], ['ei', 'energía de ionización', 'más'], ['radio', 'radio atómico', 'más']]);
+        const a = azar(princ.filter((x) => x[k] != null)), vec = princ.filter((x) => x !== a && x[k] != null && x[k] !== a[k] && (x.grupo === a.grupo || x.periodo === a.periodo));
+        if (!vec.length) return null;
+        const b = azar(vec), g = a[k] > b[k] ? a : b;
+        return { t: `¿Cuál tiene ${mas} ${nom}, el <b>${a.simbolo}</b> o el <b>${b.simbolo}</b>? Escribe el símbolo.`, ok: (r) => r.trim() === g.simbolo, sol: `${g.simbolo} (${a.simbolo}: ${PROPS[k].f(a[k])}, ${b.simbolo}: ${PROPS[k].f(b[k])} ${PROPS[k].u})`.replace(/ \)/, ')'), Z: g.Z };
+      },
+    ];
+    do preg = azar(tipos)(); while (!preg);
+    $('#q-texto').innerHTML = preg.t; $('#q-resp').value = ''; $('#q-res').textContent = ''; $('#q-res').className = 'q-res';
+  }
+  function corrige() {
+    if (!preg) return;
+    const r = $('#q-resp').value, bien = !!r.trim() && preg.ok(r);
+    $('#q-res').textContent = bien ? '¡Bien!' : r.trim() ? 'No es eso. Prueba otra vez o mira la solución.' : 'Escribe una respuesta.';
+    $('#q-res').className = 'q-res ' + (bien ? 'bien' : 'mal');
+  }
+  $('#q-otra').addEventListener('click', pregunta);
+  $('#q-comprobar').addEventListener('click', corrige);
+  $('#q-resp').addEventListener('keydown', (ev) => { if (ev.key === 'Enter') corrige(); });
+  $('#q-sol').addEventListener('click', () => { if (!preg) return; $('#q-res').textContent = 'Solución: ' + preg.sol; $('#q-res').className = 'q-res'; elige(preg.Z); });
   function elige(Z, conHash = true) {
     if (sel) celdas[sel].classList.remove('sel');
     sel = Z; celdas[Z].classList.add('sel');
@@ -117,5 +199,6 @@
   pinta();
   const h = decodeURIComponent(location.hash.slice(1));
   elige((E.porSimbolo[h] || E.lista[25]).Z, false);
-  window.TablaApp = { elige, get modo() { return modo; }, colorea: (m) => { sc.value = m; sc.dispatchEvent(new Event('change')); } };
+  pregunta();
+  window.TablaApp = { elige, compara, get comparando() { return [...comp]; }, pregunta: () => { pregunta(); return { texto: preg.t, solucion: preg.sol }; }, responde: (r) => { $('#q-resp').value = r; corrige(); return $('#q-res').classList.contains('bien'); }, get modo() { return modo; }, colorea: (m) => { sc.value = m; sc.dispatchEvent(new Event('change')); } };
 })();
