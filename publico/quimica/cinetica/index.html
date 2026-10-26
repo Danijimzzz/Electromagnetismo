@@ -182,7 +182,9 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 #grafica { height: clamp(240px, 32vw, 330px) }
 .exps { display: grid; gap: 5px }
 .exp { display: grid; grid-template-columns: 28px repeat(3, minmax(0, 1fr)) 30px; gap: 5px; align-items: center; font-size: 13px }
-.exp.sinB { grid-template-columns: 28px repeat(2, minmax(0, 1fr)) 30px }
+.exp.r1 { grid-template-columns: 28px repeat(2, minmax(0, 1fr)) 30px }
+.exp.r3 { grid-template-columns: 24px repeat(4, minmax(0, 1fr)) 30px }
+#resumen .aviso b { font: 400 13.5px/1.45 var(--f-ui); color: var(--ink) }
 .exp.cab { color: var(--muted); font-size: 12px } .exp.cab small { font-size: 10.5px }
 .exp .quita { padding: 3px 8px }
 .vistas { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap }
@@ -215,18 +217,22 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 <section class="teoria">
   <h2>Velocidad de reacción y orden</h2>
   <p class="m">Para una reacción $aA + bB → productos$, la velocidad es lo que cambia la concentración por unidad de tiempo, $v = −{1}/{a} {d[A]}/{dt}$, y la ley de velocidad se escribe $v = k [A]^m [B]^n$. Los órdenes m y n se miden en el laboratorio: no tienen por qué coincidir con los coeficientes de la reacción. El orden total es m + n, y las unidades de k dependen de él.</p>
+  <p class="m">Ojo con el coeficiente: si la reacción es $2A → productos$ y $v = k [A]^n$, A desaparece el doble de rápido, $−{d[A]}/{dt} = 2k [A]^n$, y en las leyes integradas va $k_A = 2k$. Muchos libros y problemas llaman k directamente a $k_A$: hay que mirar cómo está definida.</p>
   <h2>Leyes integradas</h2>
   <ul>
     <li class="m">Orden 0: $[A] = [A]_0 − k t$, recta de [A] frente a t, y $t_{1/2} = [A]_0/(2k)$.</li>
     <li class="m">Orden 1: $ln [A] = ln [A]_0 − k t$, o $[A] = [A]_0 e^{−kt}$; recta de ln [A] frente a t, y $t_{1/2} = {ln 2}/{k}$, que no depende de la concentración.</li>
     <li class="m">Orden 2: ${1}/{[A]} = {1}/{[A]_0} + k t$, recta de 1/[A] frente a t, y $t_{1/2} = {1}/{k [A]_0}$.</li>
   </ul>
-  <p>Por eso, con una tabla de concentraciones frente al tiempo, se prueba cuál de las tres gráficas sale recta: esa da el orden, y su pendiente, la constante.</p>
+  <p>Por eso, con una tabla de concentraciones frente al tiempo, se prueba cuál de las tres gráficas sale recta: esa da el orden, y su pendiente, la constante. Si las medidas solo llegan hasta que ha reaccionado poco, las tres rectas se parecen mucho y el R² no basta para decidir.</p>
+  <p class="m">La constante también sale de la vida media (en orden 1, $k = {ln 2}/{t_{1/2}}$), del porcentaje que ha reaccionado en un tiempo o de dos medidas cualesquiera, despejándola de la ley integrada.</p>
   <h2>Método de las velocidades iniciales</h2>
   <p class="m">Se hacen varios experimentos cambiando la concentración de un reactivo y dejando las demás iguales. Al dividir sus velocidades se va k: si al doblar [A] la velocidad se multiplica por 4, $4 = 2^m$ y $m = 2$.</p>
   <h2>Ecuación de Arrhenius</h2>
   <p class="f m">$k = A e^{−E_a/(RT)}$, &ensp; $ln {k_2}/{k_1} = −{E_a}/{R} ({1}/{T_2} − {1}/{T_1})$</p>
-  <p>La energía de activación Eₐ es la barrera que tienen que superar las moléculas al chocar, y A, el factor de frecuencia, tiene que ver con cuántos choques hay y con qué orientación. Al calentar hay muchas más moléculas con energía suficiente y k crece muy deprisa; un catalizador baja Eₐ. Para el equilibrio y el pH de las disoluciones usa <a href="../ph/">pH y valoraciones</a>.</p>
+  <p>La energía de activación Eₐ es la barrera que tienen que superar las moléculas al chocar, y A, el factor de frecuencia, tiene que ver con cuántos choques hay y con qué orientación. Al calentar hay muchas más moléculas con energía suficiente y k crece muy deprisa; un catalizador baja Eₐ. Con varias temperaturas, ln k frente a 1/T es una recta de pendiente −Eₐ/R y ordenada ln A, y se ajusta por mínimos cuadrados.</p>
+  <h2>Diagrama de energía y catalizadores</h2>
+  <p class="m">El diagrama de energía va de los reactivos a los productos pasando por el estado de transición: la altura del pico sobre los reactivos es Eₐ y la diferencia entre productos y reactivos, ΔH. La reacción inversa tiene que subir desde los productos: $E_{a,inv} = E_a − ΔH$. Un catalizador abre otro camino con un pico más bajo; si A no cambia, $k_{cat}/k = e^{(E_a − E_{a,cat})/(RT)}$. No cambia ΔH ni la constante de equilibrio. Para el equilibrio y el pH de las disoluciones usa <a href="../ph/">pH y valoraciones</a>.</p>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Cinética química <span id="ver"></span> (beta)</footer>
@@ -390,6 +396,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: gradiente, derivada direccional y laplaciano de un campo escalar, con su mapa de color y las curvas de nivel.', 'Divergencia y rotacional de un campo vectorial en el plano o en el espacio y, si es conservativo, su potencial.', 'Integral de línea (trabajo) a lo largo de una curva r(t), comparada con la diferencia de potencial cuando el campo es conservativo.', 'Teorema de Green en un círculo o un rectángulo: circulación y flujo por el borde frente a las integrales dobles.', 'Gráfica con partículas que siguen el campo y un molinillo que gira con el rotacional; tocándola se mueve el punto.'] },
     ],
     cinetica: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Coeficiente de A en la reacción (2 A → productos), con las dos formas de definir k explicadas.', 'La constante también sale de la vida media, del porcentaje que ha reaccionado en un tiempo o de dos medidas.', 'Arrhenius con tres o más temperaturas: recta de ajuste de ln k frente a 1/T con su R².', 'Diagrama de energía con Eₐ, ΔH y la Eₐ de la reacción inversa.', 'Catalizador: cuánto se multiplica k al bajar la energía de activación.', 'Aviso cuando dos rectas se ajustan casi igual y los datos no bastan para decidir el orden.', 'Velocidades iniciales con tres reactivos.', 'Tiempo también en días y en años.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: leyes integradas de orden 0, 1 y 2 con la concentración a cualquier tiempo, la vida media y cuánto se tarda en llegar a una concentración.', 'Orden y constante a partir de una tabla de concentraciones frente al tiempo, con las tres rectas ([A], ln [A] y 1/[A]) y su R².', 'Método de las velocidades iniciales con uno o dos reactivos: órdenes, constante con sus unidades y ley de velocidad.', 'Ecuación de Arrhenius: energía de activación con dos temperaturas o la constante a otra temperatura, con la gráfica de ln k frente a 1/T.', 'Vaso animado en el que las moléculas de reactivo se convierten en producto.'] },
     ],
     edos: [
@@ -695,13 +702,15 @@ const Mates = (() => {
 
 /* =====================================================================
    Cinética química (sin DOM):
-   · leyes integradas de orden 0, 1 y 2 para A → productos: [A](t), vida
-     media y tiempo para llegar a una concentración;
-   · orden y constante a partir de datos [A] frente a t (las tres rectas
-     [A], ln[A] y 1/[A] frente a t, con su coeficiente R²);
-   · método de las velocidades iniciales, v = k [A]^m [B]^n;
-   · ecuación de Arrhenius: energía de activación con dos temperaturas, o
-     la constante a otra temperatura.
+   · leyes integradas de orden 0, 1 y 2 para a A → productos: [A](t), vida
+     media y tiempo para llegar a una concentración; k dada o sacada de la
+     vida media, de un porcentaje que ha reaccionado o de dos medidas;
+   · orden y constante a partir de datos [A] frente a t (avisa si dos rectas
+     se ajustan casi igual);
+   · método de las velocidades iniciales, v = k [A]^m [B]^n [C]^p;
+   · ecuación de Arrhenius: energía de activación con dos temperaturas o
+     ajustada a varias, la constante a otra temperatura, el efecto de un
+     catalizador y los datos del diagrama de energía (Eₐ, ΔH, Eₐ inversa).
    Concentraciones en mol/L; el tiempo en la unidad que se elija.
    ===================================================================== */
 const Cinetica = (() => {
@@ -725,7 +734,7 @@ const Cinetica = (() => {
     if (!negativo && (cero ? v < 0 : v <= 0)) throw new Error(`${Mayus(nom)} debe ser ${cero ? 'positivo o cero' : 'mayor que 0'}`);
     return v;
   }
-  const UT = { s: 's', min: 'min', h: 'h' };
+  const UT = { s: 's', min: 'min', h: 'h', d: 'd', a: 'año' };
   const ut = (sc) => UT[sc.ut] || 's';
   // unidades de k según el orden (n puede ser cualquier suma de órdenes)
   const sup = (v) => String(+v.toFixed(2)).replace('.', ',').replace('-', '−').replace(/[\d−]/g, (c) => (c === '−' ? '⁻' : '⁰¹²³⁴⁵⁶⁷⁸⁹'[c]));
@@ -748,28 +757,55 @@ const Cinetica = (() => {
     { dif: 'v = −{d[A]}/{dt} = k [A]^2', int: '{1}/{[A]} = {1}/{[A]_0} + k t', recta: '1/[A]', t12: 't_{1/2} = {1}/{k [A]_0}' },
   ];
 
-  // sc: { n: '0'|'1'|'2', k, A0, t, C (opcional), ut }
+  // constante de desaparición de A a partir de dos puntos (t1, A1) y (t2, A2)
+  const kDos = (n, t1, A1, t2, A2) => (n === 0 ? (A1 - A2) / (t2 - t1) : n === 1 ? Math.log(A1 / A2) / (t2 - t1) : (1 / A2 - 1 / A1) / (t2 - t1));
+  const DOS = [(a, b, ta, tb) => `{${a} − ${b}}/{${tb}}`, (a, b, ta, tb) => `{ln({${a}}/{${b}})}/{${tb}}`, (a, b, ta, tb) => `{{1}/{${b}} − {1}/{${a}}}/{${tb}}`];
+  // sc: { n: '0'|'1'|'2', a (coeficiente de A, 1 si vacío), kde: 'k'|'t12'|'pct'|'med', k | t12 | pct+tp | t1+A1+t2+A2, A0, t, C (opcional), ut }
   function orden(sc) {
     const n = Math.round(leeNum(sc.n));
     if (![0, 1, 2].includes(n)) throw new Error('El orden tiene que ser 0, 1 o 2');
-    const u = ut(sc), k = lee(sc, 'k', 'la constante k'), A0 = lee(sc, 'A0', 'la concentración inicial'), t = lee(sc, 't', 'el tiempo', { cero: true });
+    const u = ut(sc), A0 = lee(sc, 'A0', 'la concentración inicial'), t = lee(sc, 't', 'el tiempo', { cero: true });
+    const a = vacio(sc.a) ? 1 : lee(sc, 'a', 'el coeficiente de A'), kde = ['t12', 'pct', 'med'].includes(sc.kde) ? sc.kde : 'k';
     const C = lee(sc, 'C', 'la concentración final', { opcional: true });
     if (C !== null && !(C < A0)) throw new Error('La concentración que se quiere alcanzar tiene que ser menor que la inicial');
-    const A = conc(n, k, A0, t), t12 = vidaMedia(n, k, A0), L = LEY[n], pasos = [];
-    pasos.push({ t: 'Ley de velocidad', html: `Para una reacción de ${ORD[n]}, $${L.dif}$, con $k = ${m(k)}$ ${unidK(n, u)}. Integrando entre 0 y t: $${L.int}$` });
-    const sust = n === 0 ? `$[A] = ${m(A0)} − ${m(k)} · ${m(t)}$` : n === 1 ? `$[A] = [A]_0 e^{−kt} = ${m(A0)} · e^{−${m(k)} · ${m(t)}}$` : `$${'{1}/{[A]}'} = {1}/{${m(A0)}} + ${m(k)} · ${m(t)} = ${m(1 / A)}$`;
-    const agot = n === 0 && A0 - k * t <= 0;
-    pasos.push({ t: `Concentración a t = ${f(t)} ${u}`, html: `${sust}${agot ? `, que saldría negativa: el reactivo se acaba en $t = [A]_0/k = ${m(A0 / k)}$ ${u}, así que` : ''} → $[A] = ${m(A, 4)}$ mol/L (queda el ${f((100 * A) / A0, 3)} %)` });
-    pasos.push({ t: 'Vida media', html: `Es el tiempo en el que [A] baja a la mitad: $${L.t12} = ${m(t12, 4)}$ ${u}. ${n === 1 ? 'En orden 1 no depende de la concentración: cada vida media se reduce a la mitad lo que quede.' : n === 0 ? 'En orden 0 es proporcional a [A]₀: cada vida media es la mitad de la anterior.' : 'En orden 2 es inversamente proporcional a [A]₀: cada vida media dura el doble que la anterior.'}` });
+    const pasos = [], kS = a === 1 ? 'k' : 'k_A', L = LEY[n], conK = (x) => x.replace(/\bk\b/g, kS);
+    let kA, k, pasoK = null;
+    if (kde === 'k') { k = lee(sc, 'k', 'la constante k'); kA = a * k; }
+    else if (kde === 't12') {
+      const h = lee(sc, 't12', 'la vida media');
+      kA = n === 0 ? A0 / (2 * h) : n === 1 ? Math.LN2 / h : 1 / (h * A0);
+      pasoK = `Despejando de la vida media: $${kS} = ${['{[A]_0}/{2 t_{1/2}}', '{ln 2}/{t_{1/2}}', '{1}/{t_{1/2} [A]_0}'][n]} = ${[`{${m(A0)}}/{2 · ${m(h)}}`, `{0,693}/{${m(h)}}`, `{1}/{${m(h)} · ${m(A0)}}`][n]} = ${m(kA, 4)}$ ${unidK(n, u)}`;
+    } else if (kde === 'pct') {
+      const p = lee(sc, 'pct', 'el porcentaje que ha reaccionado'), tp = lee(sc, 'tp', 'el tiempo de ese porcentaje');
+      if (p >= 100) throw new Error('El porcentaje que ha reaccionado tiene que ser menor que 100');
+      const Cp = A0 * (1 - p / 100);
+      kA = kDos(n, 0, A0, tp, Cp);
+      pasoK = `Si ha reaccionado el ${f(p)} % en ${f(tp)} ${u}, queda $[A] = ${m(A0)} · ${m(1 - p / 100)} = ${m(Cp, 4)}$ mol/L, y de la ley integrada $${kS} = ${DOS[n](m(A0), m(Cp, 4), '0', m(tp))} = ${m(kA, 4)}$ ${unidK(n, u)}${n === 1 ? '. En orden 1 no hace falta [A]₀: solo cuenta la fracción que queda' : ''}`;
+    } else {
+      const t1 = lee(sc, 't1', 'el tiempo de la primera medida', { cero: true }), A1 = lee(sc, 'A1', 'la primera concentración'), t2 = lee(sc, 't2', 'el tiempo de la segunda medida'), A2 = lee(sc, 'A2', 'la segunda concentración');
+      if (!(t2 > t1)) throw new Error('La segunda medida tiene que ser posterior a la primera');
+      if (!(A2 < A1)) throw new Error('En la segunda medida tiene que quedar menos A que en la primera');
+      kA = kDos(n, t1, A1, t2, A2);
+      pasoK = `Con las dos medidas, la ley integrada entre $t_1$ y $t_2$ da $${kS} = ${DOS[n](m(A1), m(A2), m(t1), m(t2 - t1))} = ${m(kA, 4)}$ ${unidK(n, u)}`;
+    }
+    if (kde !== 'k') k = kA / a;
+    if (pasoK) pasos.push({ t: 'La constante', html: pasoK + (a === 1 ? '.' : `, y la de la reacción, $k = k_A/${f(a)} = ${m(k, 4)}$.`) });
+    if (a !== 1) pasos.push({ t: 'Coeficiente de A', html: `En $${f(a)} A → productos$ la velocidad de reacción es $v = −{1}/{${f(a)}} {d[A]}/{dt} = k [A]^{${n}}$, así que A desaparece con $−{d[A]}/{dt} = ${f(a)} k [A]^{${n}}$: en las leyes integradas va $k_A = a k = ${m(kA, 4)}$ ${unidK(n, u)}. Hay libros que llaman k directamente a $k_A$; si tu dato ya es la constante de desaparición de A, deja a = 1.` });
+    const A = conc(n, kA, A0, t), t12 = vidaMedia(n, kA, A0);
+    pasos.push({ t: 'Ley de velocidad', html: `Para una reacción de ${ORD[n]}, $${a === 1 ? L.dif : conK(L.dif).replace(/^v = /, '')}$, con $${kS} = ${m(kA)}$ ${unidK(n, u)}. Integrando entre 0 y t: $${conK(L.int)}$` });
+    const sust = n === 0 ? `$[A] = ${m(A0)} − ${m(kA)} · ${m(t)}$` : n === 1 ? `$[A] = [A]_0 e^{−${kS} t} = ${m(A0)} · e^{−${m(kA)} · ${m(t)}}$` : `$${'{1}/{[A]}'} = {1}/{${m(A0)}} + ${m(kA)} · ${m(t)} = ${m(1 / A)}$`;
+    const agot = n === 0 && A0 - kA * t <= 0;
+    pasos.push({ t: `Concentración a t = ${f(t)} ${u}`, html: `${sust}${agot ? `, que saldría negativa: el reactivo se acaba en $t = [A]_0/${kS} = ${m(A0 / kA)}$ ${u}, así que` : ''} → $[A] = ${m(A, 4)}$ mol/L (queda el ${f((100 * A) / A0, 3)} %)` });
+    pasos.push({ t: 'Vida media', html: `Es el tiempo en el que [A] baja a la mitad: $${conK(L.t12)} = ${m(t12, 4)}$ ${u}. ${n === 1 ? 'En orden 1 no depende de la concentración: cada vida media se reduce a la mitad lo que quede.' : n === 0 ? 'En orden 0 es proporcional a [A]₀: cada vida media es la mitad de la anterior.' : 'En orden 2 es inversamente proporcional a [A]₀: cada vida media dura el doble que la anterior.'}` });
     let tC = null;
     if (C !== null) {
-      tC = tiempo(n, k, A0, C);
-      const d = n === 0 ? `$t = {[A]_0 − [A]}/{k} = {${m(A0)} − ${m(C)}}/{${m(k)}}$` : n === 1 ? `$t = {ln([A]_0/[A])}/{k} = {ln {${m(A0)}}/{${m(C)}}}/{${m(k)}}$` : `$t = {1/[A] − 1/[A]_0}/{k} = {{1}/{${m(C)}} − {1}/{${m(A0)}}}/{${m(k)}}$`;
+      tC = tiempo(n, kA, A0, C);
+      const d = n === 0 ? `$t = {[A]_0 − [A]}/{${kS}} = {${m(A0)} − ${m(C)}}/{${m(kA)}}$` : n === 1 ? `$t = {ln([A]_0/[A])}/{${kS}} = {ln {${m(A0)}}/{${m(C)}}}/{${m(kA)}}$` : `$t = {1/[A] − 1/[A]_0}/{${kS}} = {{1}/{${m(C)}} − {1}/{${m(A0)}}}/{${m(kA)}}$`;
       pasos.push({ t: `Tiempo hasta [A] = ${f(C)} mol/L`, html: `Despejando de la ley integrada: ${d} = <b>${f(tC, 4)} ${u}</b>` });
     }
     const v0 = k * A0 ** n, v = A > 0 ? k * A ** n : 0;
     pasos.push({ t: 'Velocidad', html: `Al principio $v_0 = k${n ? ` [A]_0${n === 2 ? '^2' : ''}` : ''} = ${m(v0)}$ mol·L⁻¹·${u}⁻¹ y a t = ${f(t)} ${u}, $v = ${m(v)}$ mol·L⁻¹·${u}⁻¹. La gráfica que da una recta es ${L.recta} frente a t.` });
-    return { modo: 'orden', n, k, A0, t, A, t12, C, tC, v0, v, u, unidad: unidK(n, u), c: (x) => conc(n, k, A0, x), pasos };
+    return { modo: 'orden', n, k, kA, a, kde, A0, t, A, t12, C, tC, v0, v, u, unidad: unidK(n, u), c: (x) => conc(n, kA, A0, x), pasos };
   }
 
   /* ---------- Orden a partir de datos ---------- */
@@ -798,15 +834,20 @@ const Cinetica = (() => {
     const k = n === 2 ? F.b : -F.b, A0 = n === 0 ? F.a : n === 1 ? Math.exp(F.a) : 1 / F.a;
     const pasos = [];
     pasos.push({ t: 'Las tres rectas', html: `Cada orden da una recta distinta frente al tiempo: [A] en orden 0, ln [A] en orden 1 y 1/[A] en orden 2. Ajustando las tres por mínimos cuadrados:<br>${fits.map((q, i) => `${ORD[i]}: $${['[A]', 'ln [A]', '1/[A]'][i]} = ${m(q.a, 4)} ${q.b < 0 ? '−' : '+'} ${m(Math.abs(q.b), 4)} t$, &ensp; $R^2 = ${q.r2.toFixed(5).replace('.', ',')}$`).join('<br>')}` });
-    pasos.push({ t: 'El orden', html: `La que mejor se ajusta a una recta (R² más cercano a 1) es la de ${['[A]', 'ln [A]', '1/[A]'][n]}: la reacción es de <b>${ORD[n]}</b>.` });
+    // si la segunda mejor recta se ajusta casi igual, los datos no deciden
+    const seg = [0, 1, 2].filter((i) => i !== n).reduce((a, i) => (fits[i].r2 > fits[a].r2 ? i : a), n === 0 ? 1 : 0);
+    const aviso = F.r2 - fits[seg].r2 < 0.002 ? `Las rectas de ${['[A]', 'ln [A]', '1/[A]'][n]} y de ${['[A]', 'ln [A]', '1/[A]'][seg]} se ajustan casi igual de bien (R² = ${F.r2.toFixed(4).replace('.', ',')} y ${fits[seg].r2.toFixed(4).replace('.', ',')}): con tan poco avance de la reacción no se distinguen los órdenes. Hacen falta medidas hasta que [A] baje bastante más, o mirar los residuos.` : null;
+    pasos.push({ t: 'El orden', html: `La que mejor se ajusta a una recta (R² más cercano a 1) es la de ${['[A]', 'ln [A]', '1/[A]'][n]}: la reacción es de <b>${ORD[n]}</b>.${aviso ? ` <b>Ojo:</b> ${aviso}` : ''}` });
     pasos.push({ t: 'La constante', html: `${n === 2 ? 'La pendiente es +k' : 'La pendiente es −k'}: $k = ${m(k, 4)}$ ${unidK(n, u)}, y la ordenada en el origen da $[A]_0 ≈ ${m(A0, 4)}$ mol/L.` });
     const t12 = vidaMedia(n, k, A0);
     pasos.push({ t: 'Vida media', html: `$${LEY[n].t12} = ${m(t12, 4)}$ ${u}${n === 1 ? ', la misma empiece donde empiece' : ` (con [A]₀ = ${f(A0, 4)} mol/L)`}.` });
-    return { modo: 'datos', n, k, A0, t12, fits, ts, As, u, unidad: unidK(n, u), c: (x) => conc(n, k, A0, x), pasos };
+    return { modo: 'datos', n, k, A0, t12, fits, aviso, ts, As, u, unidad: unidK(n, u), c: (x) => conc(n, k, A0, x), pasos };
   }
 
   /* ---------- Velocidades iniciales ---------- */
-  // sc: { exps: [{ A, B, v }], conB: true|false, ut }
+  // sc: { exps: [{ A, B, C, v }], nr: '1'|'2'|'3' (o conB: true|false, de antes), ut }
+  const LETRAS = ['A', 'B', 'C'], EXPO = ['m', 'n', 'p'];
+  const numReactivos = (sc) => { const r = Math.round(leeNum(sc.nr)); return [1, 2, 3].includes(r) ? r : sc.conB ? 2 : 1; };
   function resuelveN(M, y) {
     const n = y.length, a = M.map((r, i) => [...r, y[i]]);
     for (let c = 0; c < n; c++) {
@@ -819,56 +860,95 @@ const Cinetica = (() => {
   }
   const redondea = (o) => { const h = Math.round(o * 2) / 2; return Math.abs(o - h) < 0.08 ? h : +o.toFixed(2); };
   const oTxt = (o) => String(o).replace('.', ',').replace('-', '−');
+  const pot = (L, o) => (o ? ` [${L}]${o === 1 ? '' : `^{${oTxt(o)}}`}` : '');
   function iniciales(sc) {
-    const u = ut(sc), conB = !!sc.conB, filas = (sc.exps || []).filter((e) => !vacio(e.A) || !vacio(e.v) || (conB && !vacio(e.B)));
-    if (filas.length < (conB ? 3 : 2)) throw new Error(`Hacen falta al menos ${conB ? 'tres experimentos (dos reactivos)' : 'dos experimentos'}`);
-    const E = filas.map((e, i) => ({ A: lee(e, 'A', `[A] del experimento ${i + 1}`), B: conB ? lee(e, 'B', `[B] del experimento ${i + 1}`) : 1, v: lee(e, 'v', `la velocidad del experimento ${i + 1}`) }));
-    // mínimos cuadrados en logaritmos: ln v = ln k + m ln[A] + n ln[B]
-    const X = E.map((e) => (conB ? [1, Math.log(e.A), Math.log(e.B)] : [1, Math.log(e.A)])), Y = E.map((e) => Math.log(e.v)), p = X[0].length;
-    const XtX = Array.from({ length: p }, (_, i) => Array.from({ length: p }, (_, j) => X.reduce((s, r) => s + r[i] * r[j], 0))), XtY = Array.from({ length: p }, (_, i) => X.reduce((s, r, k) => s + r[i] * Y[k], 0));
+    const u = ut(sc), nr = numReactivos(sc), Ls = LETRAS.slice(0, nr);
+    const filas = (sc.exps || []).filter((e) => !vacio(e.v) || Ls.some((L) => !vacio(e[L])));
+    const nom = ['dos experimentos', 'tres experimentos (dos reactivos)', 'cuatro experimentos (tres reactivos)'][nr - 1];
+    if (filas.length < nr + 1) throw new Error(`Hacen falta al menos ${nom}`);
+    const E = filas.map((e, i) => { const x = { v: 0 }; for (const L of LETRAS) x[L] = Ls.includes(L) ? lee(e, L, `[${L}] del experimento ${i + 1}`) : 1; x.v = lee(e, 'v', `la velocidad del experimento ${i + 1}`); return x; });
+    // mínimos cuadrados en logaritmos: ln v = ln k + m ln[A] + n ln[B] + p ln[C]
+    const X = E.map((e) => [1, ...Ls.map((L) => Math.log(e[L]))]), Y = E.map((e) => Math.log(e.v)), q = X[0].length;
+    const XtX = Array.from({ length: q }, (_, i) => Array.from({ length: q }, (_, j) => X.reduce((s, r) => s + r[i] * r[j], 0))), XtY = Array.from({ length: q }, (_, i) => X.reduce((s, r, k) => s + r[i] * Y[k], 0));
     const sol = resuelveN(XtX, XtY);
-    if (!sol) throw new Error(conB ? 'Con estos experimentos no se pueden separar los dos órdenes: cambia [A] y [B] por separado en alguno' : 'Las concentraciones de A tienen que ser distintas');
-    const oA = redondea(sol[1]), oB = conB ? redondea(sol[2]) : 0;
+    if (!sol) throw new Error(nr > 1 ? `Con estos experimentos no se pueden separar los ${nr === 2 ? 'dos' : 'tres'} órdenes: cambia cada reactivo por separado en alguno` : 'Las concentraciones de A tienen que ser distintas');
+    const o = { A: 0, B: 0, C: 0 }; Ls.forEach((L, i) => { o[L] = redondea(sol[i + 1]); });
     const pasos = [];
-    pasos.push({ t: 'Ley de velocidad', html: `Se escribe $v = k [A]^m${conB ? ' [B]^n' : ''}$ y se comparan experimentos en los que ${conB ? 'solo cambia un reactivo' : 'cambia [A]'}: al dividir sus velocidades se va k.` });
-    const par = (cambia, fija) => { for (let i = 0; i < E.length; i++) for (let j = i + 1; j < E.length; j++) if (Math.abs(E[i][cambia] - E[j][cambia]) > 1e-12 * E[i][cambia] && (!fija || Math.abs(E[i][fija] - E[j][fija]) <= 1e-9 * E[i][fija])) return [i, j]; return null; };
-    const paso = (L, o, cambia, fija, letra) => {
-      const q = par(cambia, fija);
-      if (!q) return `Ningún par de experimentos deja ${fija === 'B' ? '[B]' : '[A]'} fija, así que $${letra}$ sale del ajuste de todos a la vez: $${letra} ≈ ${oTxt(o)}$.`;
-      const [i, j] = q, a = E[j][cambia] / E[i][cambia], b = E[j].v / E[i].v, ex = Math.log(b) / Math.log(a);
-      return `Experimentos ${i + 1} y ${j + 1}${fija ? ` ([${fija}] igual)` : ''}: $${'{v_' + (j + 1) + '}/{v_' + (i + 1) + '}'} = ({[${L}]_${j + 1}}/{[${L}]_${i + 1}})^${letra}$, &ensp; $${m(b, 4)} = ${m(a, 4)}^${letra}$, &ensp; $${letra} = {ln ${m(b, 4)}}/{ln ${m(a, 4)}} = ${m(ex, 3)}$ → <b>${letra} = ${oTxt(o)}</b>`;
+    pasos.push({ t: 'Ley de velocidad', html: `Se escribe $v = k${Ls.map((L, i) => ` [${L}]^${EXPO[i]}`).join('')}$ y se comparan experimentos en los que ${nr > 1 ? 'solo cambia un reactivo' : 'cambia [A]'}: al dividir sus velocidades se va k.` });
+    const igual = (x, y) => Math.abs(x - y) <= 1e-9 * Math.abs(x);
+    const par = (cambia, fijas) => { for (let i = 0; i < E.length; i++) for (let j = i + 1; j < E.length; j++) if (!igual(E[i][cambia], E[j][cambia]) && fijas.every((F) => igual(E[i][F], E[j][F]))) return [i, j]; return null; };
+    const paso = (L, letra) => {
+      const fijas = Ls.filter((x) => x !== L), q = par(L, fijas), fT = fijas.map((F) => `[${F}]`).join(' y ');
+      if (!q) return `Ningún par de experimentos deja ${fT} igual, así que $${letra}$ sale del ajuste de todos a la vez: $${letra} ≈ ${oTxt(o[L])}$.`;
+      const [i, j] = q, a = E[j][L] / E[i][L], b = E[j].v / E[i].v, ex = Math.log(b) / Math.log(a);
+      return `Experimentos ${i + 1} y ${j + 1}${fijas.length ? ` (${fT} igual${fijas.length > 1 ? 'es' : ''})` : ''}: $${'{v_' + (j + 1) + '}/{v_' + (i + 1) + '}'} = ({[${L}]_${j + 1}}/{[${L}]_${i + 1}})^${letra}$, &ensp; $${m(b, 4)} = ${m(a, 4)}^${letra}$, &ensp; $${letra} = {ln ${m(b, 4)}}/{ln ${m(a, 4)}} = ${m(ex, 3)}$ → <b>${letra} = ${oTxt(o[L])}</b>`;
     };
-    pasos.push({ t: 'Orden respecto de A', html: paso('A', oA, 'A', conB ? 'B' : null, 'm') });
-    if (conB) pasos.push({ t: 'Orden respecto de B', html: paso('B', oB, 'B', 'A', 'n') });
-    const ks = E.map((e) => e.v / (e.A ** oA * e.B ** oB)), k = ks.reduce((a, b) => a + b, 0) / ks.length, tot = oA + oB;
-    pasos.push({ t: 'La constante', html: `Con cada experimento, $k = v/(${oA === 1 ? '[A]' : `[A]^{${oTxt(oA)}}`}${conB ? (oB === 1 ? ' [B]' : ` [B]^{${oTxt(oB)}}`) : ''})$: ${ks.map((q) => m(q, 4)).join('; ')}. La media es $k = ${m(k, 4)}$ ${unidK(tot, u)}.` });
-    const ley = `v = ${m(k, 4)} ${oA ? `[A]${oA === 1 ? '' : `^{${oTxt(oA)}}`}` : ''}${oB ? ` [B]${oB === 1 ? '' : `^{${oTxt(oB)}}`}` : ''}`.replace(/ $/, '');
-    pasos.push({ t: 'Resultado', html: `$${ley}$: orden ${oTxt(oA)} respecto de A${conB ? `, ${oTxt(oB)} respecto de B` : ''} y orden total ${oTxt(tot)}.` });
-    return { modo: 'iniciales', E, conB, oA, oB, tot, k, ks, ley, u, unidad: unidK(tot, u), pasos };
+    Ls.forEach((L, i) => pasos.push({ t: `Orden respecto de ${L}`, html: paso(L, EXPO[i]) }));
+    const vLey = (e) => e.A ** o.A * e.B ** o.B * e.C ** o.C, ks = E.map((e) => e.v / vLey(e)), k = ks.reduce((a, b) => a + b, 0) / ks.length, tot = o.A + o.B + o.C;
+    const den = Ls.map((L) => (o[L] === 1 ? `[${L}]` : `[${L}]^{${oTxt(o[L])}}`)).join(' ');
+    pasos.push({ t: 'La constante', html: `Con cada experimento, $k = v/(${den})$: ${ks.map((q) => m(q, 4)).join('; ')}. La media es $k = ${m(k, 4)}$ ${unidK(tot, u)}.` });
+    const ley = `v = ${m(k, 4)}${Ls.map((L) => pot(L, o[L])).join('')}`;
+    pasos.push({ t: 'Resultado', html: `$${ley}$: orden ${Ls.map((L) => `${oTxt(o[L])} respecto de ${L}`).join(', ')}${nr > 1 ? ` y orden total ${oTxt(tot)}` : ''}.` });
+    return { modo: 'iniciales', E, nr, conB: nr > 1, oA: o.A, oB: o.B, oC: o.C, tot, k, ks, ley, vLey: (e) => k * vLey(e), u, unidad: unidK(tot, u), pasos };
   }
 
   /* ---------- Arrhenius ---------- */
-  // sc: { tipo: 'ea' (k1, T1, k2, T2) | 'k2' (Ea, k1, T1, T2), uT: 'K'|'C', ... }
+  // sc: { tipo: 'ea' (k1, T1, k2, T2) | 'k2' (Ea, k1, T1, T2) | 'ajuste' (Ts, ks), uT: 'K'|'C',
+  //       dH (kJ/mol, opcional: diagrama de energía), Eac (kJ/mol, opcional: con catalizador) }
   function arrhenius(sc) {
-    const C = sc.uT === 'C', T = (k, nom) => { const v = lee(sc, k, nom, { negativo: C }); const K = C ? v + 273.15 : v; if (!(K > 0)) throw new Error(`${Mayus(nom)} tiene que estar por encima del cero absoluto`); return K; };
-    const k1 = lee(sc, 'k1', 'la constante k₁'), T1 = T('T1', 'la temperatura T₁'), T2 = T('T2', 'la temperatura T₂');
-    if (Math.abs(T1 - T2) < 1e-9) throw new Error('Las dos temperaturas tienen que ser distintas');
+    const C = sc.uT === 'C', aK = (v, nom) => { const K = C ? v + 273.15 : v; if (!(K > 0)) throw new Error(`${Mayus(nom)} tiene que estar por encima del cero absoluto`); return K; };
+    const T = (k, nom) => aK(lee(sc, k, nom, { negativo: C }), nom), tipo = ['k2', 'ajuste'].includes(sc.tipo) ? sc.tipo : 'ea';
     const pasos = [], tK = (v) => `${m(v, 5)} K`;
-    pasos.push({ t: 'Ecuación de Arrhenius', html: `$k = A e^{−E_a/(RT)}$, y dividiendo para dos temperaturas: $ln {k_2}/{k_1} = −{E_a}/{R} ({1}/{T_2} − {1}/{T_1})$, con $R = 8,314$ J/(mol·K)${C ? '. Las temperaturas pasan a kelvin: ' + `$T_1 = ${tK(T1)}$, $T_2 = ${tK(T2)}$` : ''}.` });
-    let Ea, k2;
-    if (sc.tipo === 'k2') {
-      Ea = lee(sc, 'Ea', 'la energía de activación') * 1000;
-      k2 = k1 * Math.exp((-Ea / R) * (1 / T2 - 1 / T1));
-      pasos.push({ t: 'Constante a T₂', html: `$ln {k_2}/{${m(k1)}} = −{${m(Ea, 4)}}/{8,314} ({1}/{${m(T2, 5)}} − {1}/{${m(T1, 5)}}) = ${m(Math.log(k2 / k1), 4)}$ → $k_2 = ${m(k1)} · e^{${m(Math.log(k2 / k1), 4)}}$ = <b>${f(k2, 4)}</b>` });
+    let Ea, k1, k2, T1, T2, A, pts = null, r2 = null;
+    if (tipo === 'ajuste') {
+      const Ts = leeLista(sc.Ts, 'las temperaturas').map((v, i) => aK(v, `la temperatura ${i + 1}`)), ks = leeLista(sc.ks, 'las constantes');
+      if (Ts.length !== ks.length) throw new Error(`Hay ${Ts.length} temperaturas y ${ks.length} constantes: tienen que ser las mismas`);
+      if (Ts.length < 3) throw new Error('Hacen falta al menos tres temperaturas (con dos, elige «La energía de activación»)');
+      if (Ts.length > 20) throw new Error('Como mucho 20 medidas');
+      if (ks.some((v) => v <= 0)) throw new Error('Las constantes tienen que ser mayores que 0');
+      if (new Set(Ts.map((v) => v.toFixed(6))).size !== Ts.length) throw new Error('Hay temperaturas repetidas');
+      const F = recta(Ts.map((v) => 1 / v), ks.map(Math.log));
+      Ea = -F.b * R; A = Math.exp(F.a); r2 = F.r2;
+      pts = Ts.map((v, i) => ({ T: v, k: ks[i] }));
+      const ord = [...pts].sort((a, b) => a.T - b.T); [T1, k1, T2, k2] = [ord[0].T, ord[0].k, ord[ord.length - 1].T, ord[ord.length - 1].k];
+      pasos.push({ t: 'Ecuación de Arrhenius', html: `Tomando logaritmos, $ln k = ln A − {E_a}/{R} · {1}/{T}$: ln k frente a 1/T es una recta de pendiente $−E_a/R$, con $R = 8,314$ J/(mol·K)${C ? '. Las temperaturas pasan a kelvin sumando 273,15' : ''}.` });
+      pasos.push({ t: 'Tabla', html: `<table class="tabla"><tr><th>T (K)</th><th>1/T (K⁻¹)</th><th>ln k</th></tr>${pts.map((q) => `<tr><td>${f(q.T, 5)}</td><td>${f(1 / q.T, 4)}</td><td>${f(Math.log(q.k), 4)}</td></tr>`).join('')}</table>` });
+      pasos.push({ t: 'Recta de mínimos cuadrados', html: `$ln k = ${m(F.a, 4)} ${F.b < 0 ? '−' : '+'} ${m(Math.abs(F.b), 4)} · {1}/{T}$, &ensp; $R^2 = ${F.r2.toFixed(5).replace('.', ',')}$${F.r2 < 0.98 ? ' (los puntos se alejan bastante de la recta: revisa las medidas)' : ''}.` });
+      pasos.push({ t: 'Energía de activación', html: `$E_a = −R · pendiente = 8,314 · ${m(-F.b, 4)} = ${m(Ea, 4)}$ J/mol = <b>${f(Ea / 1000, 4)} kJ/mol</b>${Ea < 0 ? '. Sale negativa: la constante baja al calentar, algo raro en una reacción elemental' : ''}` });
+      pasos.push({ t: 'Factor de frecuencia', html: `$A = e^{ordenada} = e^{${m(F.a, 4)}} = ${m(A, 4)}$ (mismas unidades que k).` });
     } else {
-      k2 = lee(sc, 'k2', 'la constante k₂');
-      Ea = (-R * Math.log(k2 / k1)) / (1 / T2 - 1 / T1);
-      pasos.push({ t: 'Energía de activación', html: `$E_a = {−R ln(k_2/k_1)}/{1/T_2 − 1/T_1} = {−8,314 · ln {${m(k2)}}/{${m(k1)}}}/{{1}/{${m(T2, 5)}} − {1}/{${m(T1, 5)}}} = ${m(Ea, 4)}$ J/mol = <b>${f(Ea / 1000, 4)} kJ/mol</b>${Ea < 0 ? '. Sale negativa: la constante baja al calentar, algo raro en una reacción elemental' : ''}` });
+      k1 = lee(sc, 'k1', 'la constante k₁'); T1 = T('T1', 'la temperatura T₁'); T2 = T('T2', 'la temperatura T₂');
+      if (Math.abs(T1 - T2) < 1e-9) throw new Error('Las dos temperaturas tienen que ser distintas');
+      pasos.push({ t: 'Ecuación de Arrhenius', html: `$k = A e^{−E_a/(RT)}$, y dividiendo para dos temperaturas: $ln {k_2}/{k_1} = −{E_a}/{R} ({1}/{T_2} − {1}/{T_1})$, con $R = 8,314$ J/(mol·K)${C ? '. Las temperaturas pasan a kelvin: ' + `$T_1 = ${tK(T1)}$, $T_2 = ${tK(T2)}$` : ''}.` });
+      if (tipo === 'k2') {
+        Ea = lee(sc, 'Ea', 'la energía de activación') * 1000;
+        k2 = k1 * Math.exp((-Ea / R) * (1 / T2 - 1 / T1));
+        pasos.push({ t: 'Constante a T₂', html: `$ln {k_2}/{${m(k1)}} = −{${m(Ea, 4)}}/{8,314} ({1}/{${m(T2, 5)}} − {1}/{${m(T1, 5)}}) = ${m(Math.log(k2 / k1), 4)}$ → $k_2 = ${m(k1)} · e^{${m(Math.log(k2 / k1), 4)}}$ = <b>${f(k2, 4)}</b>` });
+      } else {
+        k2 = lee(sc, 'k2', 'la constante k₂');
+        Ea = (-R * Math.log(k2 / k1)) / (1 / T2 - 1 / T1);
+        pasos.push({ t: 'Energía de activación', html: `$E_a = {−R ln(k_2/k_1)}/{1/T_2 − 1/T_1} = {−8,314 · ln {${m(k2)}}/{${m(k1)}}}/{{1}/{${m(T2, 5)}} − {1}/{${m(T1, 5)}}} = ${m(Ea, 4)}$ J/mol = <b>${f(Ea / 1000, 4)} kJ/mol</b>${Ea < 0 ? '. Sale negativa: la constante baja al calentar, algo raro en una reacción elemental' : ''}` });
+      }
+      A = k1 / Math.exp(-Ea / (R * T1));
+      pasos.push({ t: 'Factor de frecuencia', html: `$A = k_1 e^{E_a/(R T_1)} = ${m(A, 4)}$ (mismas unidades que k).` });
     }
-    const A = k1 / Math.exp(-Ea / (R * T1)), r = k2 / k1;
-    pasos.push({ t: 'Factor de frecuencia', html: `$A = k_1 e^{E_a/(R T_1)} = ${m(A, 4)}$ (mismas unidades que k).` });
-    pasos.push({ t: 'Cuánto cambia', html: `De ${f(C ? T1 - 273.15 : T1, 4)} ${C ? '°C' : 'K'} a ${f(C ? T2 - 273.15 : T2, 4)} ${C ? '°C' : 'K'} la constante se multiplica por ${f(r, 4)}. En la gráfica de ln k frente a 1/T sale una recta de pendiente $−E_a/R = ${m(-Ea / R, 4)}$ K.` });
-    return { modo: 'arrhenius', tipo: sc.tipo === 'k2' ? 'k2' : 'ea', k1, k2, T1, T2, Ea, A, r, uT: C ? 'C' : 'K', k: (T) => A * Math.exp(-Ea / (R * T)), pasos };
+    const r = k2 / k1, tC = (v) => `${f(C ? v - 273.15 : v, 4)} ${C ? '°C' : 'K'}`;
+    pasos.push({ t: 'Cuánto cambia', html: `De ${tC(T1)} a ${tC(T2)} la constante se multiplica por ${f(r, 4)}. En la gráfica de ln k frente a 1/T sale una recta de pendiente $−E_a/R = ${m(-Ea / R, 4)}$ K.` });
+    // catalizador: misma A, menor Eₐ
+    const Eac = lee(sc, 'Eac', 'la energía de activación con catalizador', { opcional: true });
+    let fcat = null;
+    if (Eac !== null) {
+      if (!(Eac * 1000 < Ea)) throw new Error('Con catalizador la energía de activación tiene que ser menor que sin él');
+      fcat = Math.exp((Ea - Eac * 1000) / (R * T1));
+      pasos.push({ t: 'Con catalizador', html: `El catalizador abre otro camino con menor barrera y, si A no cambia, $${'{k_{cat}}/{k}'} = e^{(E_a − E_{a,cat})/(R T)} = e^{${m(Ea - Eac * 1000, 4)}/(8,314 · ${m(T1, 5)})}$ = <b>${f(fcat, 4)}</b> a ${tC(T1)}. No cambia ΔH ni el equilibrio: acelera igual la reacción directa y la inversa.` });
+    }
+    const dH = lee(sc, 'dH', 'la entalpía de reacción', { opcional: true, negativo: true });
+    if (dH !== null) {
+      const Ei = Ea / 1000 - dH;
+      pasos.push({ t: 'Diagrama de energía', html: `Los productos quedan ${f(Math.abs(dH), 4)} kJ/mol ${dH < 0 ? 'por debajo' : 'por encima'} de los reactivos (reacción ${dH < 0 ? 'exotérmica' : dH > 0 ? 'endotérmica' : 'sin calor de reacción'}). La reacción inversa tiene que subir desde los productos: $E_{a,inv} = E_a − ΔH = ${m(Ea / 1000, 4)} − (${m(dH, 4)}) = ${m(Ei, 4)}$ kJ/mol${Ei <= 0 ? '. Sale menor o igual que 0: ΔH no puede ser mayor que Eₐ' : ''}.` });
+      if (Ei <= 0) throw new Error('La entalpía de reacción no puede ser mayor que la energía de activación');
+    }
+    return { modo: 'arrhenius', tipo, k1, k2, T1, T2, Ea, A, r, r2, pts, Eac: Eac === null ? null : Eac * 1000, fcat, dH, uT: C ? 'C' : 'K', k: (T) => A * Math.exp(-Ea / (R * T)), pasos };
   }
 
   function resolver(sc) {
@@ -885,22 +965,30 @@ const Cinetica = (() => {
     { clave: 'farmaco', nombre: 'Orden 1 con el tiempo en horas', sc: { modo: 'orden', n: '1', k: '0,173', A0: '20', t: '8', C: '2', ut: 'h' } },
     { clave: 'datos-1', nombre: 'Datos: H₂O₂ que se descompone', sc: { modo: 'datos', ts: '0 10 20 30 40 50', As: '1 0,707 0,5 0,354 0,25 0,177', ut: 'min' } },
     { clave: 'datos-2', nombre: 'Datos: reacción de segundo orden', sc: { modo: 'datos', ts: '0 50 100 150 200 300', As: '0,1 0,0667 0,05 0,04 0,0333 0,025', ut: 's' } },
+    { clave: 'coef-2', nombre: 'Orden 2 con 2 A → productos', sc: { modo: 'orden', n: '2', a: '2', k: '0,27', A0: '0,05', t: '60', C: '0,01', ut: 's' } },
+    { clave: 'k-vida-media', nombre: 'k a partir de la vida media (C-14)', sc: { modo: 'orden', n: '1', kde: 't12', t12: '5730', A0: '100', t: '10000', C: '25', ut: 'a' } },
+    { clave: 'k-porcentaje', nombre: 'k a partir de un 75 % reaccionado', sc: { modo: 'orden', n: '1', kde: 'pct', pct: '75', tp: '40', A0: '0,2', t: '60', C: '', ut: 'min' } },
+    { clave: 'k-dos-medidas', nombre: 'k a partir de dos medidas (orden 2)', sc: { modo: 'orden', n: '2', kde: 'med', t1: '10', A1: '0,08', t2: '50', A2: '0,04', A0: '0,1', t: '100', C: '', ut: 's' } },
     { clave: 'datos-0', nombre: 'Datos: orden 0', sc: { modo: 'datos', ts: '0 5 10 15 20', As: '0,8 0,7 0,6 0,5 0,4', ut: 'min' } },
     { clave: 'iniciales-2', nombre: 'Velocidades iniciales: 2 NO + O₂', sc: { modo: 'iniciales', conB: true, ut: 's', exps: [{ A: '0,01', B: '0,01', v: '2,5e-5' }, { A: '0,02', B: '0,01', v: '1e-4' }, { A: '0,01', B: '0,02', v: '5e-5' }] } },
+    { clave: 'iniciales-abc', nombre: 'Velocidades iniciales con tres reactivos', sc: { modo: 'iniciales', nr: '3', ut: 's', exps: [{ A: '0,1', B: '0,1', C: '0,1', v: '2e-3' }, { A: '0,2', B: '0,1', C: '0,1', v: '4e-3' }, { A: '0,1', B: '0,2', C: '0,1', v: '8e-3' }, { A: '0,1', B: '0,1', C: '0,2', v: '2e-3' }] } },
     { clave: 'iniciales-1', nombre: 'Velocidades iniciales con un reactivo', sc: { modo: 'iniciales', conB: false, ut: 's', exps: [{ A: '0,1', v: '0,004' }, { A: '0,2', v: '0,008' }, { A: '0,4', v: '0,016' }] } },
     { clave: 'iniciales-3', nombre: 'Velocidades iniciales: orden 1 y 2', sc: { modo: 'iniciales', conB: true, ut: 's', exps: [{ A: '0,1', B: '0,1', v: '0,02' }, { A: '0,2', B: '0,1', v: '0,04' }, { A: '0,1', B: '0,2', v: '0,08' }, { A: '0,3', B: '0,3', v: '0,54' }] } },
     { clave: 'arrhenius-ea', nombre: 'Arrhenius: energía de activación', sc: { modo: 'arrhenius', tipo: 'ea', uT: 'K', k1: '3,46e-5', T1: '298', k2: '9,63e-4', T2: '328' } },
     { clave: 'arrhenius-k2', nombre: 'Arrhenius: k a otra temperatura', sc: { modo: 'arrhenius', tipo: 'k2', uT: 'C', Ea: '50', k1: '0,01', T1: '25', T2: '35' } },
+    { clave: 'arrhenius-ajuste', nombre: 'Arrhenius: ajuste a cinco temperaturas', sc: { modo: 'arrhenius', tipo: 'ajuste', uT: 'K', Ts: '300 310 320 330 340', ks: '7,9e-4 2,1e-3 5,3e-3 1,25e-2 2,8e-2' } },
+    { clave: 'arrhenius-cat', nombre: 'Arrhenius: catalizador y diagrama de energía', sc: { modo: 'arrhenius', tipo: 'k2', uT: 'K', Ea: '75', k1: '2e-4', T1: '298', T2: '318', Eac: '50', dH: '-40' } },
   ];
 
-  return { resolver, orden, datos, iniciales, arrhenius, conc, vidaMedia, tiempo, recta, ejemplos, f, unidK, R };
+  return { resolver, orden, datos, iniciales, arrhenius, conc, vidaMedia, tiempo, recta, ejemplos, f, unidK, unidT: (u) => UT[u] || 's', R };
 })();
 
 /* =====================================================================
    Cinética química: interfaz (cuatro modos: leyes integradas, orden a
    partir de datos, velocidades iniciales y Arrhenius; un vaso en el que
-   las moléculas de A se van convirtiendo en producto con el tiempo, la
-   gráfica de cada modo y el desarrollo). El cálculo está en
+   las moléculas de A se van convirtiendo en producto con el tiempo, el
+   diagrama de energía en Arrhenius, la gráfica de cada modo y el
+   desarrollo). El cálculo está en
    cinetica/calculo.js (Cinetica).
    ===================================================================== */
 (() => {
@@ -917,24 +1005,37 @@ const Cinetica = (() => {
   const fila = (k, nom, un, modo = 'decimal') => `<label for="f-${k}">${nom}${un ? ` <small>${un}</small>` : ''}</label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc[k] ?? '')}" inputmode="${modo}" autocomplete="off" spellcheck="false">`;
   const opciones = (k, lista) => lista.map(([v, t]) => `<option value="${v}"${String(sc[k]) === v ? ' selected' : ''}>${t}</option>`).join('');
   const elige = (k, nom, lista) => `<label for="f-${k}">${nom}</label><select id="f-${k}" class="in" data-k="${k}">${opciones(k, lista)}</select>`;
-  const unidT = () => elige('ut', 'Unidad de tiempo', [['s', 'segundos (s)'], ['min', 'minutos (min)'], ['h', 'horas (h)']]);
+  const unidT = () => elige('ut', 'Unidad de tiempo', [['s', 'segundos (s)'], ['min', 'minutos (min)'], ['h', 'horas (h)'], ['d', 'días (d)'], ['a', 'años']]);
+  const sep = (t) => `<div class="sep">${t}</div>`;
+  const ancho = (k, nom, un) => `<label for="f-${k}" class="ancho">${nom}${un ? ` <small>${un}</small>` : ''}</label><input id="f-${k}" class="in ancho" data-k="${k}" value="${esc(sc[k] ?? '')}" autocomplete="off" spellcheck="false">`;
+  const nr = () => (['1', '2', '3'].includes(String(sc.nr)) ? +sc.nr : sc.conB ? 2 : 1);
+  const LETRAS = ['A', 'B', 'C'];
   const NOTAS = {
-    orden: 'La concentración final es opcional: con ella se calcula cuánto tarda en llegar. Se admite 5,1e-4 o 5,1·10^-4.',
+    orden: 'La concentración final es opcional: con ella se calcula cuánto tarda en llegar. El coeficiente a es el de A en la reacción (vacío = 1). Se admite 5,1e-4 o 5,1·10^-4.',
     datos: 'Escribe los tiempos y las concentraciones separados por espacios o por punto y coma, en el mismo orden.',
-    iniciales: 'Cada experimento es una fila con las concentraciones iniciales y la velocidad inicial medida. Para ver un orden, cambia un reactivo y deja el otro igual.',
-    arrhenius: 'Con dos constantes a dos temperaturas sale la energía de activación; con ella y una constante, la de otra temperatura.',
+    iniciales: 'Cada experimento es una fila con las concentraciones iniciales y la velocidad inicial medida. Para ver un orden, cambia un reactivo y deja los demás igual.',
+    arrhenius: 'Con dos constantes a dos temperaturas sale la energía de activación; con ella y una constante, la de otra temperatura; con tres o más, la recta de ajuste. ΔH y el catalizador son opcionales.',
   };
   function formulario() {
     let h = elige('modo', 'Qué calcular', MODOS);
-    if (sc.modo === 'orden') h += elige('n', 'Orden de la reacción', [['0', 'Orden 0'], ['1', 'Orden 1'], ['2', 'Orden 2']]) + fila('k', 'Constante k') + fila('A0', 'Concentración inicial [A]₀', 'mol/L') + fila('t', 'Tiempo t') + fila('C', 'Concentración a alcanzar', '(opcional)') + unidT();
+    if (sc.modo === 'orden') {
+      const kde = sc.kde || 'k';
+      h += elige('n', 'Orden de la reacción', [['0', 'Orden 0'], ['1', 'Orden 1'], ['2', 'Orden 2']]) + fila('a', 'Coeficiente de A', 'a A → productos') + elige('kde', 'La constante', [['k', 'La sé: k'], ['t12', 'Sale de la vida media'], ['pct', 'Sale de un % que ha reaccionado'], ['med', 'Sale de dos medidas']]);
+      h += kde === 't12' ? fila('t12', 'Vida media t₁/₂') : kde === 'pct' ? fila('pct', 'Ha reaccionado', '%') + fila('tp', 'en un tiempo') : kde === 'med' ? fila('t1', 'Tiempo t₁') + fila('A1', '[A] en t₁', 'mol/L') + fila('t2', 'Tiempo t₂') + fila('A2', '[A] en t₂', 'mol/L') : fila('k', 'Constante k');
+      h += fila('A0', 'Concentración inicial [A]₀', 'mol/L') + fila('t', 'Tiempo t') + fila('C', 'Concentración a alcanzar', '(opcional)') + unidT();
+    }
     else if (sc.modo === 'datos') h += `<label for="f-ts" class="ancho">Tiempos</label><input id="f-ts" class="in ancho" data-k="ts" value="${esc(sc.ts)}" autocomplete="off" spellcheck="false"><label for="f-As" class="ancho">Concentraciones [A] <small>mol/L</small></label><input id="f-As" class="in ancho" data-k="As" value="${esc(sc.As)}" autocomplete="off" spellcheck="false">` + unidT();
     else if (sc.modo === 'iniciales') {
-      h += `<label for="f-conB">Reactivos</label><select id="f-conB" class="in" data-k="conB"><option value="0"${sc.conB ? '' : ' selected'}>Solo A</option><option value="1"${sc.conB ? ' selected' : ''}>A y B</option></select>` + unidT();
-      h += `<div class="exps ancho"><div class="exp cab${sc.conB ? '' : ' sinB'}"><span>N.º</span><span>[A]₀</span>${sc.conB ? '<span>[B]₀</span>' : ''}<span>v₀ <small>mol·L⁻¹·${esc(sc.ut || 's')}⁻¹</small></span><span></span></div>${sc.exps.map((e, i) => `<div class="exp${sc.conB ? '' : ' sinB'}"><span>${i + 1}</span>${['A', ...(sc.conB ? ['B'] : []), 'v'].map((c) => `<input class="in" data-i="${i}" data-c="${c}" value="${esc(e[c] ?? '')}" inputmode="decimal" autocomplete="off" aria-label="${c === 'v' ? 'Velocidad' : `[${c}]`} del experimento ${i + 1}">`).join('')}${sc.exps.length > 2 ? `<button class="btn quita" type="button" data-quita="${i}" aria-label="Quitar el experimento ${i + 1}">×</button>` : '<span></span>'}</div>`).join('')}</div>${sc.exps.length < MAXE ? '<button class="btn ancho" id="mas" type="button">+ Añadir experimento</button>' : ''}`;
+      const r = nr(), Ls = LETRAS.slice(0, r), cl = `exp r${r}`;
+      sc.nr = String(r); delete sc.conB;
+      h += elige('nr', 'Reactivos', [['1', 'Solo A'], ['2', 'A y B'], ['3', 'A, B y C']]) + unidT();
+      h += `<div class="exps ancho"><div class="${cl} cab"><span>N.º</span>${Ls.map((L) => `<span>[${L}]₀</span>`).join('')}<span>v₀ <small>mol·L⁻¹·${esc(K.unidT(sc.ut))}⁻¹</small></span><span></span></div>${sc.exps.map((e, i) => `<div class="${cl}"><span>${i + 1}</span>${[...Ls, 'v'].map((c) => `<input class="in" data-i="${i}" data-c="${c}" value="${esc(e[c] ?? '')}" inputmode="decimal" autocomplete="off" aria-label="${c === 'v' ? 'Velocidad' : `[${c}]`} del experimento ${i + 1}">`).join('')}${sc.exps.length > r + 1 ? `<button class="btn quita" type="button" data-quita="${i}" aria-label="Quitar el experimento ${i + 1}">×</button>` : '<span></span>'}</div>`).join('')}</div>${sc.exps.length < MAXE ? '<button class="btn ancho" id="mas" type="button">+ Añadir experimento</button>' : ''}`;
     } else {
       const k2 = sc.tipo === 'k2';
-      h += elige('tipo', 'Qué se busca', [['ea', 'La energía de activación'], ['k2', 'La constante a otra temperatura']]) + elige('uT', 'Temperaturas en', [['K', 'kelvin (K)'], ['C', 'grados Celsius (°C)']]);
-      h += (k2 ? fila('Ea', 'Energía de activación Eₐ', 'kJ/mol') : '') + fila('k1', 'Constante k₁') + fila('T1', 'Temperatura T₁') + (k2 ? '' : fila('k2', 'Constante k₂')) + fila('T2', 'Temperatura T₂');
+      h += elige('tipo', 'Qué se busca', [['ea', 'La energía de activación'], ['k2', 'La constante a otra temperatura'], ['ajuste', 'Eₐ con varias temperaturas']]) + elige('uT', 'Temperaturas en', [['K', 'kelvin (K)'], ['C', 'grados Celsius (°C)']]);
+      if (sc.tipo === 'ajuste') h += ancho('Ts', 'Temperaturas') + ancho('ks', 'Constantes k', 'en el mismo orden');
+      else h += (k2 ? fila('Ea', 'Energía de activación Eₐ', 'kJ/mol') : '') + fila('k1', 'Constante k₁') + fila('T1', 'Temperatura T₁') + (k2 ? '' : fila('k2', 'Constante k₂')) + fila('T2', 'Temperatura T₂');
+      h += sep('Opcional') + fila('dH', 'Entalpía de reacción ΔH', 'kJ/mol') + fila('Eac', 'Eₐ con catalizador', 'kJ/mol');
     }
     $('#campos').innerHTML = h;
     $('#nota').textContent = NOTAS[sc.modo];
@@ -949,14 +1050,15 @@ const Cinetica = (() => {
     const t = e.target; if (t.tagName !== 'SELECT') return;
     const k = t.dataset.k;
     if (k === 'modo') sc = copia(K.ejemplos.find((x) => x.sc.modo === t.value).sc);
-    else if (k === 'conB') { sc.conB = t.value === '1'; if (sc.conB) for (const x of sc.exps) if (vacio(x.B)) x.B = '0,1'; }
-    else { sc[k] = t.value; if (k === 'tipo' && t.value === 'k2' && vacio(sc.Ea)) sc.Ea = '50'; if (k === 'tipo' && t.value === 'ea' && vacio(sc.k2)) sc.k2 = '0,05'; }
+    else if (k === 'nr') { sc.nr = t.value; delete sc.conB; const r = +t.value; for (const x of sc.exps) for (const L of LETRAS.slice(0, r)) if (vacio(x[L])) x[L] = '0,1'; while (sc.exps.length < r + 1) sc.exps.push(Object.fromEntries([...LETRAS.slice(0, r).map((L) => [L, '0,1']), ['v', '']])); }
+    else if (k === 'kde') { sc.kde = t.value; const d = { t12: { t12: '100' }, pct: { pct: '50', tp: '60' }, med: { t1: '0', A1: sc.A0 || '0,1', t2: '60', A2: '' } }[t.value] || {}; for (const [c, v] of Object.entries(d)) if (vacio(sc[c])) sc[c] = v; if (t.value === 'k' && vacio(sc.k)) sc.k = '0,01'; }
+    else { sc[k] = t.value; if (k === 'tipo' && t.value === 'k2' && vacio(sc.Ea)) sc.Ea = '50'; if (k === 'tipo' && t.value === 'ea' && vacio(sc.k2)) sc.k2 = '0,05'; if (k === 'tipo' && t.value === 'ajuste') { if (vacio(sc.Ts)) sc.Ts = '300 310 320 330'; if (vacio(sc.ks)) sc.ks = '0,001 0,0026 0,0063 0,014'; } }
     formulario(); cambia();
   });
   $('#campos').addEventListener('click', (e) => {
     const q = e.target.closest('[data-quita]');
     if (q) { sc.exps.splice(+q.dataset.quita, 1); formulario(); cambia(); return; }
-    if (e.target.id === 'mas') { sc.exps.push({ A: '', B: sc.conB ? '' : undefined, v: '' }); formulario(); cambia(); $(`#campos [data-i="${sc.exps.length - 1}"][data-c="A"]`).focus(); }
+    if (e.target.id === 'mas') { sc.exps.push({ A: '', v: '' }); formulario(); cambia(); $(`#campos [data-i="${sc.exps.length - 1}"][data-c="A"]`).focus(); }
   });
 
   /* ---------- Ejemplos ---------- */
@@ -975,19 +1077,27 @@ const Cinetica = (() => {
     const tipos = [
       () => { const n = ent(0, 2), A0 = toma([0.1, 0.2, 0.5, 1, 0.05]), k = n === 0 ? A0 / toma([100, 200, 500]) : n === 1 ? toma([0.01, 0.002, 0.05, 1e-3]) : toma([0.5, 1, 2, 0.1]); return { modo: 'orden', n: String(n), k: c(k), A0: c(A0), t: String(toma([10, 30, 60, 100, 120])), C: c(A0 / toma([2, 4, 5])), ut: 's' }; },
       () => { const n = ent(0, 2), A0 = toma([0.5, 1, 0.2]), dt = toma([5, 10, 20]), N = 6, k = n === 0 ? (A0 * 0.8) / (dt * (N - 1)) : n === 1 ? toma([0.02, 0.05, 0.03]) : toma([0.2, 0.5, 1]) / A0 / 10; const ts = Array.from({ length: N }, (_, i) => i * dt); return { modo: 'datos', ts: ts.join(' '), As: ts.map((t) => c(K.conc(n, k, A0, t))).join(' '), ut: 'min' }; },
-      () => { const m = ent(0, 2), n = ent(0, 2), k = toma([0.5, 2, 10, 25]), A = toma([0.01, 0.1, 0.05]), B = toma([0.01, 0.1, 0.02]), v = (a, b) => c(k * a ** m * b ** n); return { modo: 'iniciales', conB: true, ut: 's', exps: [{ A: c(A), B: c(B), v: v(A, B) }, { A: c(2 * A), B: c(B), v: v(2 * A, B) }, { A: c(A), B: c(3 * B), v: v(A, 3 * B) }] }; },
-      () => { const Ea = toma([40, 50, 60, 75, 90]), T1 = toma([298, 300, 310]), T2 = T1 + toma([10, 20, 30]), k1 = toma([1e-3, 0.01, 2e-4]); return ent(0, 1) ? { modo: 'arrhenius', tipo: 'k2', uT: 'K', Ea: String(Ea), k1: c(k1), T1: String(T1), T2: String(T2) } : { modo: 'arrhenius', tipo: 'ea', uT: 'K', k1: c(k1), T1: String(T1), k2: c(k1 * Math.exp((-Ea * 1000 / K.R) * (1 / T2 - 1 / T1))), T2: String(T2) }; },
+      () => { const m = ent(0, 2), n = ent(0, 2), k = toma([0.5, 2, 10, 25]), A = toma([0.01, 0.1, 0.05]), B = toma([0.01, 0.1, 0.02]), v = (a, b, cc = 1) => c(k * a ** m * b ** n * cc ** p), p = ent(0, 2), C = toma([0.05, 0.1, 0.2]);
+        return ent(0, 2) ? { modo: 'iniciales', nr: '2', ut: 's', exps: [{ A: c(A), B: c(B), v: v(A, B) }, { A: c(2 * A), B: c(B), v: v(2 * A, B) }, { A: c(A), B: c(3 * B), v: v(A, 3 * B) }] } : { modo: 'iniciales', nr: '3', ut: 's', exps: [{ A: c(A), B: c(B), C: c(C), v: v(A, B, C) }, { A: c(2 * A), B: c(B), C: c(C), v: v(2 * A, B, C) }, { A: c(A), B: c(2 * B), C: c(C), v: v(A, 2 * B, C) }, { A: c(A), B: c(B), C: c(2 * C), v: v(A, B, 2 * C) }] }; },
+      () => { const n = ent(0, 2), A0 = toma([0.1, 0.2, 0.5]), h = toma([20, 30, 50, 100]), kde = toma(['t12', 'pct']); return { modo: 'orden', n: String(n), kde, t12: String(h), pct: String(toma([25, 50, 75, 90])), tp: String(toma([20, 40, 60])), A0: c(A0), t: String(toma([30, 60, 100])), C: '', ut: 'min' }; },
+      () => { const Ea = toma([40, 50, 60, 75, 90]), T1 = toma([298, 300, 310]), T2 = T1 + toma([10, 20, 30]), k1 = toma([1e-3, 0.01, 2e-4]); if (!ent(0, 2)) return { modo: 'arrhenius', tipo: 'k2', uT: 'K', Ea: String(Ea), k1: c(k1), T1: String(T1), T2: String(T2), Eac: String(Ea - toma([10, 20, 30])), dH: String(toma([-60, -30, 20])) }; return ent(0, 1) ? { modo: 'arrhenius', tipo: 'k2', uT: 'K', Ea: String(Ea), k1: c(k1), T1: String(T1), T2: String(T2) } : { modo: 'arrhenius', tipo: 'ea', uT: 'K', k1: c(k1), T1: String(T1), k2: c(k1 * Math.exp((-Ea * 1000 / K.R) * (1 / T2 - 1 / T1))), T2: String(T2) }; },
     ];
     sc = toma(tipos)();
     formulario(); calcula(); sel.value = '';
   }
   const enunciado = () => {
-    const u = sc.ut || 's';
-    if (sc.modo === 'orden') return `Una reacción A → productos es de <b>orden ${esc(sc.n)}</b> con k = ${esc(sc.k)} y [A]₀ = ${esc(sc.A0)} mol/L. Calcula [A] a los ${esc(sc.t)} ${u}, la vida media${vacio(sc.C) ? '' : ` y cuánto tarda en llegar a ${esc(sc.C)} mol/L`}.`;
+    const u = K.unidT(sc.ut), gC = sc.uT === 'C' ? '°C' : 'K';
+    if (sc.modo === 'orden') {
+      const a = vacio(sc.a) || leeA() === 1 ? '' : `${esc(sc.a)} `, kd = sc.kde === 't12' ? `vida media ${esc(sc.t12)} ${u}` : sc.kde === 'pct' ? `un ${esc(sc.pct)} % de A que reacciona en ${esc(sc.tp)} ${u}` : sc.kde === 'med' ? `[A] = ${esc(sc.A1)} mol/L a los ${esc(sc.t1)} ${u} y ${esc(sc.A2)} mol/L a los ${esc(sc.t2)} ${u}` : `k = ${esc(sc.k)}`;
+      return `Una reacción ${a}A → productos es de <b>orden ${esc(sc.n)}</b> con ${kd} y [A]₀ = ${esc(sc.A0)} mol/L. ${sc.kde && sc.kde !== 'k' ? 'Calcula k, ' : 'Calcula '}[A] a los ${esc(sc.t)} ${u}, la vida media${vacio(sc.C) ? '' : ` y cuánto tarda en llegar a ${esc(sc.C)} mol/L`}.`;
+    }
     if (sc.modo === 'datos') return `Con estas medidas (t en ${u}: ${esc(sc.ts)}; [A] en mol/L: ${esc(sc.As)}), averigua el <b>orden</b> de la reacción, la constante k y la vida media.`;
     if (sc.modo === 'iniciales') return `Con las velocidades iniciales de la tabla, halla los <b>órdenes</b> de reacción, la constante k y la ley de velocidad.`;
-    return sc.tipo === 'k2' ? `Una reacción tiene Eₐ = ${esc(sc.Ea)} kJ/mol y k = ${esc(sc.k1)} a ${esc(sc.T1)} ${sc.uT === 'C' ? '°C' : 'K'}. ¿Cuánto vale <b>k a ${esc(sc.T2)} ${sc.uT === 'C' ? '°C' : 'K'}</b>?` : `La constante vale ${esc(sc.k1)} a ${esc(sc.T1)} ${sc.uT === 'C' ? '°C' : 'K'} y ${esc(sc.k2)} a ${esc(sc.T2)} ${sc.uT === 'C' ? '°C' : 'K'}. Calcula la <b>energía de activación</b> y el factor de frecuencia.`;
+    const extra = `${vacio(sc.Eac) ? '' : ` Con un catalizador Eₐ baja a ${esc(sc.Eac)} kJ/mol: ¿por cuánto se multiplica k a ${esc(sc.T1 ?? '')} ${gC}?`}${vacio(sc.dH) ? '' : ` Si ΔH = ${esc(sc.dH)} kJ/mol, ¿cuál es la Eₐ de la reacción inversa?`}`;
+    if (sc.tipo === 'ajuste') return `Con estas constantes (T en ${gC}: ${esc(sc.Ts)}; k: ${esc(sc.ks)}), calcula la <b>energía de activación</b> y el factor de frecuencia con la gráfica de Arrhenius.${extra}`;
+    return (sc.tipo === 'k2' ? `Una reacción tiene Eₐ = ${esc(sc.Ea)} kJ/mol y k = ${esc(sc.k1)} a ${esc(sc.T1)} ${gC}. ¿Cuánto vale <b>k a ${esc(sc.T2)} ${gC}</b>?` : `La constante vale ${esc(sc.k1)} a ${esc(sc.T1)} ${sc.uT === 'C' ? '°C' : 'K'} y ${esc(sc.k2)} a ${esc(sc.T2)} ${sc.uT === 'C' ? '°C' : 'K'}. Calcula la <b>energía de activación</b> y el factor de frecuencia.`) + extra;
   };
+  const leeA = () => +String(sc.a).replace(',', '.');
 
   /* ---------- Cálculo ---------- */
   const dato = (t, v, cl = 'num') => `<div${cl ? ` class="${cl}"` : ''}><span>${t}</span><b>${v}</b></div>`;
@@ -1001,23 +1111,23 @@ const Cinetica = (() => {
     err.hidden = true; guarda();
     let h = '', ley = '';
     if (sol.modo === 'orden') {
-      h = dato(`[A] a t = ${f(sol.t)} ${sol.u}`, `${f(sol.A, 4)} mol/L`) + dato('Vida media', `t<sub>1/2</sub> = ${f(sol.t12, 4)} ${sol.u}`) + (sol.tC !== null ? dato(`Tiempo hasta ${f(sol.C)} mol/L`, `${f(sol.tC, 4)} ${sol.u}`) : '') + dato('Velocidad inicial', `${f(sol.v0)} mol·L⁻¹·${sol.u}⁻¹`);
+      h = (sol.kde !== 'k' || sol.a !== 1 ? dato(sol.a !== 1 && sol.kde === 'k' ? 'Constante de A' : 'Constante', sol.a !== 1 ? `k<sub>A</sub> = ${f(sol.kA, 4)} ${sol.unidad}` : `k = ${f(sol.k, 4)} ${sol.unidad}`) : '') + dato(`[A] a t = ${f(sol.t)} ${sol.u}`, `${f(sol.A, 4)} mol/L`) + dato('Vida media', `t<sub>1/2</sub> = ${f(sol.t12, 4)} ${sol.u}`) + (sol.tC !== null ? dato(`Tiempo hasta ${f(sol.C)} mol/L`, `${f(sol.tC, 4)} ${sol.u}`) : '') + dato('Velocidad inicial', `${f(sol.v0)} mol·L⁻¹·${sol.u}⁻¹`);
       ley = `[A] frente a t. Las líneas de puntos marcan cada vida media${sol.n === 1 ? ', todas iguales' : ''}; el punto es el tiempo que has pedido.`;
     } else if (sol.modo === 'datos') {
-      h = dato('Orden', `orden ${sol.n}`, '') + dato('Constante', `k = ${f(sol.k, 4)} ${sol.unidad}`) + dato('Vida media', `t<sub>1/2</sub> = ${f(sol.t12, 4)} ${sol.u}`) + dato('R² de la recta', sol.fits[sol.n].r2.toFixed(5).replace('.', ','), '');
+      h = dato('Orden', `orden ${sol.n}`, '') + dato('Constante', `k = ${f(sol.k, 4)} ${sol.unidad}`) + dato('Vida media', `t<sub>1/2</sub> = ${f(sol.t12, 4)} ${sol.u}`) + dato('R² de la recta', sol.fits[sol.n].r2.toFixed(5).replace('.', ','), '') + (sol.aviso ? dato('Ojo', sol.aviso, 'ancho aviso') : '');
       ley = 'Los puntos son las medidas y la línea, la recta de mínimos cuadrados. Cambia de gráfica para ver que solo una de las tres sale recta.';
     } else if (sol.modo === 'iniciales') {
-      h = dato('Ley de velocidad', Mates.html(`$${sol.ley}$`), 'ancho') + dato('Orden respecto de A', String(sol.oA).replace('.', ',')) + (sol.conB ? dato('Orden respecto de B', String(sol.oB).replace('.', ',')) : '') + dato('Constante', `k = ${f(sol.k, 4)} ${sol.unidad}`);
+      h = dato('Ley de velocidad', Mates.html(`$${sol.ley}$`), 'ancho') + dato('Orden respecto de A', String(sol.oA).replace('.', ',')) + (sol.nr > 1 ? dato('Orden respecto de B', String(sol.oB).replace('.', ',')) : '') + (sol.nr > 2 ? dato('Orden respecto de C', String(sol.oC).replace('.', ',')) : '') + dato('Constante', `k = ${f(sol.k, 4)} ${sol.unidad}`);
       ley = 'Velocidad inicial de cada experimento: la barra es la medida y el punto, la que da la ley de velocidad.';
     } else {
-      h = (sol.tipo === 'ea' ? dato('Energía de activación', `E<sub>a</sub> = ${f(sol.Ea / 1000, 4)} kJ/mol`) : dato(`k a ${f(sol.uT === 'C' ? sol.T2 - 273.15 : sol.T2, 4)} ${sol.uT === 'C' ? '°C' : 'K'}`, `k₂ = ${f(sol.k2, 4)}`)) + dato('Factor de frecuencia', `A = ${f(sol.A, 4)}`) + dato('k₂/k₁', f(sol.r, 4));
-      ley = 'Gráfica de Arrhenius: ln k frente a 1/T es una recta de pendiente −Eₐ/R. Cuanto más empinada, más sube k al calentar.';
+      h = (sol.tipo !== 'k2' ? dato('Energía de activación', `E<sub>a</sub> = ${f(sol.Ea / 1000, 4)} kJ/mol`) : dato(`k a ${f(sol.uT === 'C' ? sol.T2 - 273.15 : sol.T2, 4)} ${sol.uT === 'C' ? '°C' : 'K'}`, `k₂ = ${f(sol.k2, 4)}`)) + dato('Factor de frecuencia', `A = ${f(sol.A, 4)}`) + (sol.tipo === 'ajuste' ? dato('R² de la recta', sol.r2.toFixed(5).replace('.', ','), '') : dato('k₂/k₁', f(sol.r, 4))) + (sol.fcat !== null ? dato('Con catalizador', `k × ${f(sol.fcat, 4)}`) : '') + (sol.dH !== null ? dato('Eₐ de la inversa', `${f(sol.Ea / 1000 - sol.dH, 4)} kJ/mol`) : '');
+      ley = `Arriba, el diagrama de energía${sol.dH === null ? ' (pon ΔH para situar los productos)' : ''}${sol.Eac !== null ? ', con el camino del catalizador en discontinua' : ''}. Abajo, ln k frente a 1/T: una recta de pendiente −Eₐ/R. Cuanto más empinada, más sube k al calentar.`;
     }
     $('#resumen').innerHTML = h; $('#leyenda').textContent = ley;
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
     $('#vistas').hidden = sol.modo !== 'datos';
     if (sol.modo === 'datos') { vista = sol.n; marcaVista(); }
-    $('#escena').hidden = $('#play').hidden = !(sol.modo === 'orden' || sol.modo === 'datos');
+    $('#escena').hidden = sol.modo === 'iniciales'; $('#play').hidden = !(sol.modo === 'orden' || sol.modo === 'datos');
     tA = 0; particulas(); dibuja(); grafica();
   }
   const marcaVista = () => { for (const b of document.querySelectorAll('#vistas button')) b.setAttribute('aria-pressed', String(+b.dataset.v === vista)); };
@@ -1033,7 +1143,7 @@ const Cinetica = (() => {
     parts.sort(() => Math.random() - 0.5);
   }
   // hasta qué tiempo se dibuja y se anima
-  const tMax = () => (sol.modo === 'datos' ? sol.ts[sol.ts.length - 1] : Math.max(sol.t, sol.tC || 0, (sol.n === 0 ? 1.1 * sol.A0 / sol.k : 3 * sol.t12)));
+  const tMax = () => (sol.modo === 'datos' ? sol.ts[sol.ts.length - 1] : Math.max(sol.t, sol.tC || 0, (sol.n === 0 ? 1.1 * sol.A0 / (sol.kA ?? sol.k) : 3 * sol.t12)));
   const tDe = () => { const T = tMax(), ciclo = 9; return Math.min(1, (tA % ciclo) / 7.5) * T; };
   function lienzo(c) {
     if (!c.clientWidth || !c.clientHeight) return null;
@@ -1056,6 +1166,7 @@ const Cinetica = (() => {
     const L = lienzo(c); if (!L) return;
     const { g, w, h } = L;
     if (!col['--ink']) colores();
+    if (sol.modo === 'arrhenius') { energia(g, w, h); return; }
     const t = tDe(), fr = Math.max(0, sol.c(t) / sol.c(0));
     const bw = Math.min(w * 0.46, 320), bx = w * 0.06, by = 14, bh = h - 34;
     g.fillStyle = col['--line']; g.globalAlpha = 0.45; g.fillRect(bx, by + bh * 0.12, bw, bh * 0.88); g.globalAlpha = 1;
@@ -1071,6 +1182,41 @@ const Cinetica = (() => {
     texto(g, tx, by + 80, `t = ${txt(f(t, 3))} ${sol.u}`, col['--ink'], 'left', '600 ');
     texto(g, tx, by + 102, `[A] = ${txt(f(sol.c(t), 3))} mol/L`, col['--ink'], 'left', '600 ');
     texto(g, tx, by + 124, `queda el ${txt(f(100 * fr, 3))} % (${nA} de ${NP})`, col['--muted'], 'left');
+  }
+
+  /* ---------- Diagrama de energía (Arrhenius) ---------- */
+  // E(u) = ΔH·s(u) + H·sen²(πu), con s el paso suave de 0 a 1: en u = 1/2 vale ΔH/2 + H = Eₐ
+  function energia(g, w, h) {
+    const Ea = sol.Ea / 1000, dH = sol.dH ?? 0, Ec = sol.Eac === null ? null : sol.Eac / 1000;
+    if (!(Ea > 0)) { texto(g, w / 2, h / 2, 'Con Eₐ negativa no hay barrera que dibujar', col['--muted']); return; }
+    const estrecho = w < 520, top = Math.max(Ea, dH) * 1.12, bot = Math.min(0, dH) - 0.12 * Ea, mL = estrecho ? 12 : 46, mR = estrecho ? 84 : Math.min(150, w * 0.3), mT = 12, mB = 16;
+    const X = (u) => mL + (estrecho ? 62 : 30) + u * (w - mL - mR - (estrecho ? 70 : 60)), Y = (E) => mT + ((top - E) / (top - bot)) * (h - mT - mB);
+    const curva = (H, u) => { const v = Math.min(1, Math.max(0, (u - 0.2) / 0.6)); return dH * v * v * (3 - 2 * v) + H * Math.sin(Math.PI * v) ** 2; };
+    const traza = (H, color, rayas) => { let um = 0, Em = -Infinity; g.strokeStyle = color; g.lineWidth = 2.4; g.setLineDash(rayas ? [6, 4] : []); g.beginPath(); for (let i = 0; i <= 300; i++) { const u = i / 300, E = curva(H, u); if (E > Em) { Em = E; um = u; } i ? g.lineTo(X(u), Y(E)) : g.moveTo(X(u), Y(E)); } g.stroke(); g.setLineDash([]); return { um, Em }; };
+    // eje de energía
+    g.strokeStyle = col['--muted']; g.lineWidth = 1; g.beginPath(); g.moveTo(mL, h - mB); g.lineTo(mL, mT); g.lineTo(mL - 4, mT + 7); g.moveTo(mL, mT); g.lineTo(mL + 4, mT + 7); g.stroke();
+    if (!estrecho) { g.save(); g.translate(mL - 12, (h - mB + mT) / 2); g.rotate(-Math.PI / 2); texto(g, 0, 0, 'Energía', col['--muted']); g.restore(); }
+    texto(g, X(0.5), h - 6, 'avance de la reacción →', col['--muted']);
+    // niveles de reactivos y productos
+    g.strokeStyle = col['--line']; g.setLineDash([3, 3]); g.beginPath(); g.moveTo(X(0), Y(0)); g.lineTo(X(1) + 40, Y(0)); g.stroke(); g.setLineDash([]);
+    if (Ec !== null) traza(Ec - dH / 2, col['--tension'], true);
+    const P = traza(Ea - dH / 2, col['--accent'], false);
+    texto(g, X(0.08), Y(0) - 10, 'reactivos', col['--ink'], 'center', '600 ');
+    texto(g, X(0.92), Y(dH) + (dH < 0 ? 12 : -10), sol.dH === null ? 'productos' : 'productos', col['--ink'], 'center', '600 ');
+    // flecha de Eₐ
+    const flecha = (x, y1, y2, color) => { g.strokeStyle = color; g.fillStyle = color; g.lineWidth = 1.6; g.beginPath(); g.moveTo(x, y1); g.lineTo(x, y2); g.stroke(); const d = y2 < y1 ? 1 : -1; g.beginPath(); g.moveTo(x, y2); g.lineTo(x - 4, y2 + 7 * d); g.lineTo(x + 4, y2 + 7 * d); g.fill(); };
+    // la flecha de Eₐ va a la izquierda del pico, con una línea de puntos hasta su altura
+    const xa = X(0.24);
+    g.strokeStyle = col['--line']; g.setLineDash([3, 3]); g.beginPath(); g.moveTo(xa - 6, Y(P.Em)); g.lineTo(X(P.um), Y(P.Em)); g.stroke(); g.setLineDash([]);
+    flecha(xa, Y(0), Y(P.Em), col['--peso']);
+    // en el móvil las etiquetas van en dos líneas
+    const etiqueta = (x, y, nom, v, color, al) => { if (estrecho) { texto(g, x, y - 8, `${nom} =`, color, al, '600 '); texto(g, x, y + 8, `${v} kJ/mol`, color, al, '600 '); } else texto(g, x, y, `${nom} = ${v} kJ/mol`, color, al, '600 '); };
+    etiqueta(xa - 6, (Y(0) + Y(P.Em)) / 2, 'Eₐ', txt(f(Ea, 3)), col['--peso'], 'right');
+    if (Ec !== null) texto(g, X(0.66), Y(Ec), `${estrecho ? 'catalizador' : 'con catalizador'}: ${txt(f(Ec, 3))} kJ/mol`, col['--tension'], 'left');
+    if (sol.dH !== null && Math.abs(dH) > 1e-9) {
+      const xd = X(1) + (estrecho ? 10 : 26); g.strokeStyle = col['--line']; g.setLineDash([3, 3]); g.beginPath(); g.moveTo(X(0.8), Y(dH)); g.lineTo(xd + 6, Y(dH)); g.stroke(); g.setLineDash([]);
+      flecha(xd, Y(0), Y(dH), col['--roz']); etiqueta(xd + 8, (Y(0) + Y(dH)) / 2, 'ΔH', txt(f(dH, 3)), col['--roz'], 'left');
+    }
   }
 
   /* ---------- Gráficas ---------- */
@@ -1093,7 +1239,7 @@ const Cinetica = (() => {
       ejes(g, w, h, V, X, Y, `t (${sol.u})`, '[A] (mol/L)');
       g.strokeStyle = col['--muted']; g.setLineDash([4, 4]);
       let tt = 0, Ah = sol.A0;
-      for (let i = 0; i < 6; i++) { const t12 = K.vidaMedia(sol.n, sol.k, Ah); tt += t12; Ah /= 2; if (tt > T) break; g.beginPath(); g.moveTo(X(tt), Y(0)); g.lineTo(X(tt), Y(Ah)); g.lineTo(X(0), Y(Ah)); g.stroke(); }
+      for (let i = 0; i < 6; i++) { const t12 = K.vidaMedia(sol.n, sol.kA ?? sol.k, Ah); tt += t12; Ah /= 2; if (tt > T) break; g.beginPath(); g.moveTo(X(tt), Y(0)); g.lineTo(X(tt), Y(Ah)); g.lineTo(X(0), Y(Ah)); g.stroke(); }
       g.setLineDash([]);
       g.strokeStyle = col['--accent']; g.lineWidth = 2.4; g.beginPath();
       for (let i = 0; i <= 400; i++) { const t = (T * i) / 400; i ? g.lineTo(X(t), Y(sol.c(t))) : g.moveTo(X(t), Y(sol.c(t))); }
@@ -1113,24 +1259,24 @@ const Cinetica = (() => {
       texto(g, w - V.mR - 6, V.mT + 10, `R² = ${F.r2.toFixed(5).replace('.', ',')}`, vista === sol.n ? col['--accent'] : col['--muted'], 'right', '600 ');
       if (vista === 0) { const t = tDe(); punto(g, X(t), Y(sol.c(t)), 4, col['--peso']); }
     } else if (sol.modo === 'iniciales') {
-      const vs = sol.E.map((e) => e.v), mx = Math.max(...vs, ...sol.E.map((e) => sol.k * e.A ** sol.oA * e.B ** sol.oB)) * 1.1, n = sol.E.length;
+      const vs = sol.E.map((e) => e.v), mx = Math.max(...vs, ...sol.E.map(sol.vLey)) * 1.1, n = sol.E.length;
       const [, Y] = marco(0, n, 0, mx), ancho = (w - V.mL - V.mR) / n;
       ejes(g, w, h, { ...V, x1: 0, x2: 0 }, () => -99, Y, '', `v₀ (mol·L⁻¹·${sol.u}⁻¹)`);
       sol.E.forEach((e, i) => {
         const x = V.mL + i * ancho + ancho * 0.25;
         g.fillStyle = col['--accent']; g.globalAlpha = 0.75; g.fillRect(x, Y(e.v), ancho * 0.5, Y(0) - Y(e.v)); g.globalAlpha = 1;
-        punto(g, x + ancho * 0.25, Y(sol.k * e.A ** sol.oA * e.B ** sol.oB), 5, col['--ink']);
+        punto(g, x + ancho * 0.25, Y(sol.vLey(e)), 5, col['--ink']);
         texto(g, x + ancho * 0.25, h - V.mB + 12, `exp. ${i + 1}`, col['--muted']);
       });
     } else {
       // ln k frente a 1/T, en 1000/T
-      const xs = [1000 / sol.T1, 1000 / sol.T2], ys = [Math.log(sol.k1), Math.log(sol.k2)];
+      const P = sol.pts || [{ T: sol.T1, k: sol.k1, e: 'T₁' }, { T: sol.T2, k: sol.k2, e: 'T₂' }], xs = P.map((q) => 1000 / q.T), ys = P.map((q) => Math.log(q.k));
       const x1 = Math.min(...xs), x2 = Math.max(...xs), dx = (x2 - x1) * 0.35, y1 = Math.min(...ys), y2 = Math.max(...ys), dy = (y2 - y1) * 0.35 || 1;
       const [X, Y] = marco(x1 - dx, x2 + dx, y1 - dy, y2 + dy);
       ejes(g, w, h, V, X, Y, '1000/T (K⁻¹)', 'ln k', (v) => v.toFixed(3).replace('.', ','), (v) => v.toFixed(2).replace('.', ',').replace('-', '−'));
       const lk = (x) => Math.log(sol.A) - (sol.Ea / K.R) * (x / 1000);
       g.strokeStyle = col['--accent']; g.lineWidth = 2.4; g.beginPath(); g.moveTo(X(x1 - dx), Y(lk(x1 - dx))); g.lineTo(X(x2 + dx), Y(lk(x2 + dx))); g.stroke();
-      [[xs[0], ys[0], 'T₁'], [xs[1], ys[1], 'T₂']].forEach(([x, y, e]) => { punto(g, X(x), Y(y), 5, col['--ink']); texto(g, X(x) + 9, Y(y) - 10, e, col['--ink'], 'left', '600 '); });
+      P.forEach((q, i) => { punto(g, X(xs[i]), Y(ys[i]), 5, col['--ink']); if (q.e) texto(g, X(xs[i]) + 9, Y(ys[i]) - 10, q.e, col['--ink'], 'left', '600 '); });
     }
   }
   let ultimo = performance.now();
@@ -1144,7 +1290,7 @@ const Cinetica = (() => {
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('cinetica').current;
   formulario(); colores(); calcula(); requestAnimationFrame(bucle);
-  window.CineticaApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { modo: sol.modo, n: sol.n, k: sol.k, A: sol.A, t12: sol.t12, oA: sol.oA, oB: sol.oB, Ea: sol.Ea, k2: sol.k2 }, estado: () => copia(sc), vista: (v) => { vista = v; marcaVista(); grafica(); }, pausa: () => { anda = false; } };
+  window.CineticaApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { modo: sol.modo, n: sol.n, k: sol.k, A: sol.A, t12: sol.t12, oA: sol.oA, oB: sol.oB, oC: sol.oC, Ea: sol.Ea, k2: sol.k2, fcat: sol.fcat }, estado: () => copia(sc), vista: (v) => { vista = v; marcaVista(); grafica(); }, pausa: () => { anda = false; } };
 })();
 
 /* =====================================================================
