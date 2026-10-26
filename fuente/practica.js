@@ -53,6 +53,8 @@ const Practica = (() => {
     doppler: { datos: null, items: '#resumen > div', genera: () => window.DopplerApp?.azar(), enunciado: () => window.DopplerApp?.enunciado() },
     // ciclos: un Carnot, un Otto, un Diesel, un Brayton, un Stirling, un ciclo propio o una máquina
     ciclos: { datos: null, items: '#resumen > div', genera: () => window.CiclosApp?.azar(), enunciado: () => window.CiclosApp?.enunciado() },
+    // fluidos: una presión, un tubo en U, una prensa, un empuje, una tubería, un chorro, una viscosidad, un medidor, una presa o un capilar
+    fluidos: { datos: null, items: '#resumen > div', genera: () => window.FluidosApp?.azar(), enunciado: () => window.FluidosApp?.enunciado() },
     // dinamica: un bloque en un plano, dos bloques, Atwood, una curva, un péndulo cónico o un muelle
     dinamica: { datos: null, items: '#res > div', genera: () => window.DinamicaApp?.azar(), enunciado: () => window.DinamicaApp?.enunciado() },
     // interferencia: Young, una rendija, una red o una lámina delgada
