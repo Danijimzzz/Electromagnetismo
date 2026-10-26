@@ -7,7 +7,7 @@
   const { $, esc, copia } = Herramienta;
   const F = Faraday, f = F.f, CLAVE = 'faraday-v1';
   const txt = (h) => String(h).replace(/<sup>/g, '^').replace(/<[^>]+>/g, '');
-  const MODOS = [['barra', 'Barra sobre raíles'], ['giratoria', 'Bobina que gira (alternador)'], ['flujo', 'Flujo que cambia en un tiempo'], ['cruza', 'Espira que atraviesa un campo']];
+  const MODOS = [['barra', 'Barra sobre raíles'], ['giratoria', 'Bobina que gira (alternador)'], ['flujo', 'Flujo que cambia en un tiempo'], ['cruza', 'Espira que atraviesa un campo'], ['hilo', 'Hilo recto y espira rectangular'], ['funcion', 'Campo B(t) que cambia con el tiempo'], ['dinamica', 'Barra con masa: velocidad límite'], ['gira', 'Varilla o disco que gira']];
 
   let sc = copia(F.ejemplos[0].sc);
   try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && MODOS.some(([k]) => k === g.modo)) sc = g; } catch (e) {}
@@ -32,6 +32,19 @@
     } else if (sc.modo === 'flujo') {
       h += fila('N', 'Número de espiras N', '') + forma() + sentidoB() + sep('Antes y después') + fila('B1', 'Campo inicial B₁', 'T') + fila('B2', 'Campo final B₂', 'T') + fila('th1', 'Ángulo inicial θ₁', '°') + fila('th2', 'Ángulo final θ₂', '°') + fila('dt', 'Tiempo que tarda Δt', 's') + fila('R', 'Resistencia R (opcional)', 'Ω');
       $('#nota').textContent = 'θ es el ángulo entre B y la normal a la espira. Si B₂ o θ₂ se dejan vacíos, no cambian.';
+    } else if (sc.modo === 'hilo') {
+      h += fila('I', 'Corriente del hilo I', 'A') + elige('sentidoI', 'Sentido de I', [['arriba', '↑ Hacia arriba'], ['abajo', '↓ Hacia abajo']]) + fila('d', 'Distancia del hilo al lado cercano d', 'm') + fila('w', 'Ancho de la espira w', 'm') + fila('h', 'Alto de la espira h (paralelo al hilo)', 'm') + fila('N', 'Número de espiras N', '') + sep('Qué cambia') + fila('v', 'Velocidad de la espira v', 'm/s') + fila('dIdt', 'Ritmo de cambio dI/dt', 'A/s') + fila('R', 'Resistencia R (opcional)', 'Ω');
+      $('#nota').textContent = 'El hilo es vertical, a la izquierda de la espira y en su mismo plano. v positiva si la espira se aleja del hilo; puedes dar v, dI/dt o los dos.';
+    } else if (sc.modo === 'funcion') {
+      const t = sc.tipoB || 'lineal';
+      h += fila('N', 'Número de espiras N', '') + forma() + sentidoB() + elige('tipoB', 'Cómo cambia B', Object.entries(F.FUNCB).map(([k, v]) => [k, v.nombre])) + fila('B0', 'B₀', 'T') + (t === 'lineal' || t === 'cuadratica' ? fila('k', 'Constante k', t === 'lineal' ? 'T/s' : 'T/s²') : '') + (t === 'seno' ? fila('w', 'Frecuencia angular ω', 'rad/s') : '') + (t === 'exp' ? fila('tau', 'Constante de tiempo τ', 's') : '') + fila('th', 'Ángulo entre B y la normal θ', '°') + fila('t', 'Instante t', 's') + fila('R', 'Resistencia R (opcional)', 'Ω');
+      $('#nota').textContent = 'El sentido de B es el de los valores positivos de B(t). Se calcula la fem en el instante t y se dibujan B(t) y ε(t).';
+    } else if (sc.modo === 'dinamica') {
+      h += elige('caso', 'Situación', [['fuerza', 'Se tira con una fuerza constante F'], ['cae', 'Cae por raíles verticales'], ['lanzada', 'Se lanza con v₀ y se suelta']]) + fila('B', 'Campo B', 'T') + fila('L', 'Longitud de la barra L', 'm') + fila('R', 'Resistencia R', 'Ω') + fila('m', 'Masa de la barra m', 'kg') + (sc.caso === 'fuerza' ? fila('F', 'Fuerza F', 'N') : sc.caso === 'lanzada' ? fila('v0', 'Velocidad inicial v₀', 'm/s') : '') + sep('Opcional') + fila('t', 'Instante t', 's');
+      $('#nota').textContent = sc.caso === 'cae' ? 'La barra parte del reposo y cae deslizando sin rozamiento, con g = 9,8 m/s².' : 'Sin rozamiento; la barra parte ' + (sc.caso === 'fuerza' ? 'del reposo.' : 'con v₀ y nadie la empuja.');
+    } else if (sc.modo === 'gira') {
+      h += elige('cuerpo', 'Qué gira', [['varilla', 'Varilla que gira por un extremo'], ['disco', 'Disco conductor (disco de Faraday)']]) + fila('B', 'Campo B (perpendicular)', 'T') + sentidoB() + fila('L', sc.cuerpo === 'disco' ? 'Radio del disco R' : 'Longitud de la varilla L', 'm') + fila('w', 'Velocidad de giro', '') + elige('uw', 'Unidad', [['rad/s', 'rad/s'], ['rpm', 'rpm'], ['Hz', 'Hz (vueltas por segundo)']]) + fila('R', 'Resistencia del circuito (opcional)', 'Ω');
+      $('#nota').textContent = 'B es perpendicular al plano en el que gira. La fem sale entre el eje y el extremo.';
     } else {
       h += fila('N', 'Número de espiras N', '') + fila('a', 'Lado de la espira cuadrada a', 'm') + fila('D', 'Anchura de la región con campo D', 'm') + fila('v', 'Velocidad v', 'm/s') + fila('B', 'Campo B', 'T') + sentidoB() + fila('R', 'Resistencia R (opcional)', 'Ω');
       $('#nota').textContent = 'La espira avanza hacia la derecha con velocidad constante y entra por el borde izquierdo de la región.';
@@ -45,6 +58,8 @@
     if (t.tagName !== 'SELECT') return;
     sc[t.dataset.k] = t.value;
     if (t.dataset.k === 'modo') sc = copia(F.ejemplos.find((x) => x.sc.modo === t.value).sc);
+    if (t.dataset.k === 'tipoB') { const d = { lineal: { k: '0.5' }, cuadratica: { k: '0.4' }, seno: { w: '314', B0: '0.05' }, exp: { tau: '0.5', B0: '1' } }[t.value]; for (const [k, v] of Object.entries(d)) if (vacioC(sc[k])) sc[k] = v; }
+    if (t.dataset.k === 'caso') { const d = { fuerza: { F: '0.5' }, lanzada: { v0: '5' }, cae: {} }[t.value]; for (const [k, v] of Object.entries(d)) if (vacioC(sc[k])) sc[k] = v; }
     if (t.dataset.k === 'forma') { const d = { circulo: { r: '0.05' }, rectangulo: { a: '0.1', b: '0.2' }, area: { S: '0.01' } }[t.value]; for (const [k, v] of Object.entries(d)) if (vacioC(sc[k])) sc[k] = v; }
     $('#ejemplos').value = ''; formulario(); calcula();
   });
@@ -71,11 +86,23 @@
       h = dato('Fem inducida', `ε = <b>${f(sol.eps)} V</b>`) + dato('Sentido de la corriente', `<b>${sol.sentido}</b>`) + (sol.I !== null ? dato('Corriente', `I = <b>${f(sol.I)} A</b>`) + dato('Fuerza que frena la barra', `F = ${f(sol.F)} N`) : '');
       ley = 'Flechas rojas: corriente inducida. Verde: velocidad de la barra; naranja: fuerza magnética sobre ella.';
     } else if (sol.modo === 'giratoria') {
-      h = dato('Fem máxima', `ε<sub>máx</sub> = <b>${f(sol.em)} V</b>`) + dato('Fem eficaz', `ε<sub>ef</sub> = ${f(sol.ef)} V`) + dato('Flujo máximo', `Φ<sub>máx</sub> = ${f(sol.Fm)} Wb`) + (sol.Im !== null ? dato('Corriente máxima', `I<sub>máx</sub> = ${f(sol.Im)} A`) : '') + (sol.et !== null ? dato(`ε en t = ${f(sol.t)} s`, `${f(sol.et)} V`) : '');
+      h = dato('Fem máxima', `ε<sub>máx</sub> = <b>${f(sol.em)} V</b>`) + dato('Fem eficaz', `ε<sub>ef</sub> = ${f(sol.ef)} V`) + dato('Flujo máximo', `Φ<sub>máx</sub> = ${f(sol.Fm)} Wb`) + (sol.Im !== null ? dato('Corriente máxima', `I<sub>máx</sub> = ${f(sol.Im)} A`) + dato('Par medio', `M = ${f(sol.par)} N·m`) : '') + (sol.et !== null ? dato(`ε en t = ${f(sol.t)} s`, `${f(sol.et)} V`) : '');
       ley = 'A cámara lenta: una vuelta dura 3 s. Abajo, Φ(t) en azul y ε(t) en rojo: la fem es máxima cuando el flujo pasa por 0.';
     } else if (sol.modo === 'flujo') {
       h = dato('Variación del flujo', `ΔΦ = ${f(sol.dF)} Wb`) + dato('Fem media', `ε = <b>${f(sol.em)} V</b>`) + dato('Sentido de la corriente', `<b>${sol.sentido}</b>`) + (sol.I !== null ? dato('Corriente y carga', `I = ${f(sol.I)} A, q = ${f(sol.q)} C`) : '');
       ley = 'El tamaño de los símbolos indica la intensidad del campo; la espira se ve inclinada si cambia el ángulo. A la derecha, Φ(t).';
+    } else if (sol.modo === 'hilo') {
+      h = dato('Flujo en la espira', `Φ = ${f(sol.Phi)} Wb`) + dato('Fem inducida', `|ε| = <b>${f(sol.eps)} V</b>`) + dato('Sentido de la corriente', `<b>${sol.sentido}</b>`) + (sol.Ii !== null ? dato('Corriente inducida', `I = ${f(sol.Ii)} A`) + dato('Fuerza sobre la espira', `F = ${f(sol.F)} N`) : '');
+      ley = `El campo del hilo es ${sol.sentidoB} en la espira y se hace más débil al alejarse (símbolos más pequeños). Flechas rojas: corriente inducida.`;
+    } else if (sol.modo === 'funcion') {
+      h = dato(`B en t = ${f(sol.t)} s`, `B = ${f(sol.Bt)} T`) + dato('Flujo', `Φ = ${f(sol.Phi)} Wb`) + dato('Fem', `ε = <b>${f(sol.eps)} V</b>`) + (sol.sentido ? dato('Sentido', `<b>${sol.sentido}</b>`) : '') + (sol.I !== null ? dato('Corriente', `I = ${f(sol.I)} A`) : '');
+      ley = 'Arriba, la espira con el campo que cambia. Abajo, B(t) en azul y ε(t) en rojo; la línea vertical marca el instante t.';
+    } else if (sol.modo === 'dinamica') {
+      h = dato('Constante de tiempo', `τ = <b>${f(sol.tau)} s</b>`) + (sol.caso !== 'lanzada' ? dato('Velocidad límite', `v<sub>L</sub> = <b>${f(sol.vL)} m/s</b>`) : dato('Distancia hasta pararse', `x = <b>${f(sol.v0 * sol.tau)} m</b>`)) + (sol.vt !== null ? dato(`En t = ${f(sol.t)} s`, `v = ${f(sol.vt)} m/s, I = ${f(sol.It)} A`) : '');
+      ley = 'La barra acelera (o frena) hasta que la fuerza magnética equilibra a la que la mueve. Abajo, v(t) con la asíntota de la velocidad límite.';
+    } else if (sol.modo === 'gira') {
+      h = dato('Fem entre el eje y el extremo', `ε = <b>${f(sol.eps)} V</b>`) + dato('Velocidad angular', `ω = ${f(sol.w)} rad/s`) + (sol.I !== null ? dato('Corriente', `I = ${f(sol.I)} A`) + dato('Potencia', `P = ${f(sol.P)} W`) : '');
+      ley = `${sol.cuerpo === 'disco' ? 'El disco' : 'La varilla'} gira en un campo uniforme; la zona sombreada es el área barrida, que hace crecer el flujo a ritmo ½BωL².`;
     } else {
       h = dato('Fem al entrar y al salir', `|ε| = <b>${f(sol.eps)} V</b>`) + dato('Sentido', `entra: <b>${sol.tramos[0].sentido}</b>, sale: <b>${sol.tramos[2].sentido}</b>`) + (sol.I !== null ? dato('Corriente', `I = ${f(sol.I)} A`) + dato('Calor disipado', `Q = ${f(sol.Q)} J`) : '');
       ley = 'Abajo, Φ(t) en azul y ε(t) en rojo: solo hay fem mientras cambia la parte de la espira que está dentro del campo.';
@@ -87,7 +114,7 @@
   $('#play').addEventListener('click', () => { anda = !anda; $('#play').textContent = anda ? '⏸ Pausa' : '▶ Seguir'; if (anda) { ultimo = performance.now(); bucle(); } });
 
   /* ---------- Dibujo ---------- */
-  function colores() { const cs = getComputedStyle(document.documentElement); for (const k of ['--ink', '--muted', '--line', '--accent', '--bg', '--peso', '--normal', '--roz', '--cuerpo', '--suelo']) col[k] = cs.getPropertyValue(k).trim(); }
+  function colores() { const cs = getComputedStyle(document.documentElement); for (const k of ['--ink', '--muted', '--line', '--accent', '--bg', '--peso', '--normal', '--roz', '--tension', '--cuerpo', '--suelo']) col[k] = cs.getPropertyValue(k).trim(); }
   function texto(g, x, y, t, color = col['--ink'], al = 'center', peso = '') { g.font = `${peso}12px "IBM Plex Sans", system-ui, sans-serif`; g.fillStyle = color; g.textAlign = al; g.textBaseline = 'middle'; g.fillText(t, x, y); }
   function flecha(g, x1, y1, x2, y2, color, ancho = 2) {
     const a = Math.atan2(y2 - y1, x2 - x1);
@@ -152,7 +179,7 @@
       texto(g, w / 2, h - 14, `ε = ${txt(f(sol.eps))} V${sol.I !== null ? ` · I = ${txt(f(sol.I))} A` : ''} · sentido ${sol.sentido}`, col['--ink'], 'center', '600 ');
     } else if (sol.modo === 'giratoria') {
       const hs = h * 0.56, T = 3, th = 2 * Math.PI * (tAnim / T), cx = w / 2, cy = hs / 2, W = Math.min(w * 0.18, 110), H = hs * 0.62;
-      g.fillStyle = rojo; g.fillRect(14, cy - hs * 0.36, 34, hs * 0.72); g.fillStyle = col['--accent']; g.fillRect(w - 48, cy - hs * 0.36, 34, hs * 0.72);
+      g.fillStyle = rojo; g.fillRect(14, cy - hs * 0.36, 34, hs * 0.72); g.fillStyle = col['--tension']; g.fillRect(w - 48, cy - hs * 0.36, 34, hs * 0.72);
       texto(g, 31, cy, 'N', '#fff', 'center', '600 '); texto(g, w - 31, cy, 'S', '#fff', 'center', '600 ');
       g.strokeStyle = col['--line']; g.lineWidth = 1;
       for (let k = -2; k <= 2; k++) { const y = cy + k * hs * 0.15; g.beginPath(); g.moveTo(56, y); g.lineTo(w - 56, y); g.stroke(); punta(g, w * 0.25, y, 0, col['--line']); punta(g, w * 0.75, y, 0, col['--line']); }
@@ -162,7 +189,7 @@
       g.strokeStyle = col['--roz']; g.lineWidth = 3; g.strokeRect(cx - Math.abs(ww), cy - H / 2, 2 * Math.abs(ww), H);
       g.strokeStyle = col['--muted']; g.lineWidth = 1; g.setLineDash([4, 4]); g.beginPath(); g.moveTo(cx, cy - H / 2 - 16); g.lineTo(cx, cy + H / 2 + 16); g.stroke(); g.setLineDash([]);
       const tf = 2 / sol.fr, pts = (fn) => Array.from({ length: 241 }, (_, i) => { const t = (tf * i) / 240; return [t, fn(t)]; });
-      grafica(g, 20, hs + 8, w - 40, h - hs - 16, tf, [{ pts: pts((t) => Math.cos(sol.w * t)), color: col['--accent'], nombre: `Φ (máx ${txt(f(sol.Fm))} Wb)` }, { pts: pts((t) => Math.sin(sol.w * t)), color: rojo, nombre: `ε (máx ${txt(f(sol.em))} V)` }], ((tAnim / T) % 2) * (1 / sol.fr));
+      grafica(g, 20, hs + 8, w - 40, h - hs - 16, tf, [{ pts: pts((t) => Math.cos(sol.w * t)), color: col['--tension'], nombre: `Φ (máx ${txt(f(sol.Fm))} Wb)` }, { pts: pts((t) => Math.sin(sol.w * t)), color: rojo, nombre: `ε (máx ${txt(f(sol.em))} V)` }], ((tAnim / T) % 2) * (1 / sol.fr));
     } else if (sol.modo === 'flujo') {
       const T = 3, ciclo = (tAnim % (T + 1.2)) / T, s = Math.min(1, ciclo), B = sol.B1 + (sol.B2 - sol.B1) * s, th = sol.th1 + (sol.th2 - sol.th1) * s;
       const Bmax = Math.max(Math.abs(sol.B1), Math.abs(sol.B2)) || 1, wl = w * 0.56, cx = wl / 2, cy = h / 2;
@@ -179,14 +206,60 @@
       // eje del flujo desde 0 para que se vea si crece o decrece
       const gx = wl + 20, gw = w - wl - 34, gy = 30, gh = h - 70, max = Math.max(...pts.map((p) => Math.abs(p[1]))) || 1, X = (t) => gx + (t / tf) * gw, Y = (y) => gy + gh / 2 - (y / max) * (gh / 2 - 6);
       g.strokeStyle = col['--line']; g.lineWidth = 1; g.beginPath(); g.moveTo(gx, gy); g.lineTo(gx, gy + gh); g.moveTo(gx, Y(0)); g.lineTo(gx + gw, Y(0)); g.stroke();
-      g.strokeStyle = col['--accent']; g.lineWidth = 2.2; g.beginPath(); pts.forEach(([t, y], i) => (i ? g.lineTo(X(t), Y(y)) : g.moveTo(X(t), Y(y)))); g.stroke();
-      texto(g, gx + 4, gy - 12, 'Φ(t)', col['--accent'], 'left', '600 '); texto(g, X(sol.dt), Y(0) + 14, `Δt = ${txt(f(sol.dt))} s`, col['--muted']);
+      g.strokeStyle = col['--tension']; g.lineWidth = 2.2; g.beginPath(); pts.forEach(([t, y], i) => (i ? g.lineTo(X(t), Y(y)) : g.moveTo(X(t), Y(y)))); g.stroke();
+      texto(g, gx + 4, gy - 12, 'Φ(t)', col['--tension'], 'left', '600 '); texto(g, X(sol.dt), Y(0) + 14, `Δt = ${txt(f(sol.dt))} s`, col['--muted']);
       const tc = s * sol.dt + Math.max(0, ciclo - 1) * T * (sol.dt / T);
       g.strokeStyle = col['--ink']; g.globalAlpha = 0.5; g.beginPath(); g.moveTo(X(Math.min(tf, tc)), gy); g.lineTo(X(Math.min(tf, tc)), gy + gh); g.stroke(); g.globalAlpha = 1;
+    } else if (sol.modo === 'hilo') {
+      const xh = w * 0.14, dmax = sol.d + sol.w, esc = (w * 0.7) / (dmax * (sol.v > 0 ? 1.6 : 1.1)), T = 4, s = sol.v ? (tAnim % T) / T : 0, d = sol.d * (1 + (sol.v > 0 ? 0.5 : -0.4) * s * Math.sign(sol.v));
+      const x0 = xh + d * esc, x1 = x0 + sol.w * esc, hh = Math.min(h * 0.6, sol.h * esc), y0 = h / 2 - hh / 2, y1 = h / 2 + hh / 2, ent = sol.sentidoB === 'entrante';
+      for (let x = xh + 26; x < w; x += 30) campo(g, x - 15, 0, x + 15, h - 30, ent, Math.min(1.3, Math.max(0.25, (w * 0.12) / (x - xh))), 30);
+      g.strokeStyle = col['--tension']; g.lineWidth = 4; g.beginPath(); g.moveTo(xh, 10); g.lineTo(xh, h - 30); g.stroke();
+      punta(g, xh, h / 2 - 40, (sc.sentidoI === 'abajo') === (sol.I >= 0) ? Math.PI / 2 : -Math.PI / 2, col['--tension']); texto(g, xh - 8, 20, `I = ${txt(f(Math.abs(sol.I)))} A`, col['--tension'], 'right', '600 ');
+      g.strokeStyle = col['--roz']; g.lineWidth = 3.5; g.strokeRect(x0, y0, x1 - x0, y1 - y0);
+      corrienteRect(g, x0, y0, x1, y1, sol.sentido === 'horario', rojo);
+      if (sol.v) flecha(g, x1 + 6, h / 2, x1 + 6 + 50 * Math.sign(sol.v), h / 2, col['--normal'], 2.4);
+      texto(g, (xh + x0) / 2, y1 + 14, 'd', col['--muted']); texto(g, (x0 + x1) / 2, y0 - 10, 'w', col['--muted']); texto(g, x1 + 10, y1 - 10, 'h', col['--muted'], 'left');
+      texto(g, w / 2, h - 12, `|ε| = ${txt(f(sol.eps))} V · sentido ${sol.sentido}`, col['--ink'], 'center', '600 ');
+    } else if (sol.modo === 'funcion') {
+      const hs = h * 0.5, tf = Math.max(sol.t * 1.6, sol.tipo === 'seno' ? (4 * Math.PI) / sol.p.w : sol.tipo === 'exp' ? 4 * sol.p.tau : 1), T = 5, tc = ((tAnim % T) / T) * tf, B = sol.Bf(tc);
+      const Bmax = Math.max(...Array.from({ length: 81 }, (_, i) => Math.abs(sol.Bf((tf * i) / 80)))) || 1, cx = w / 2, cy = hs / 2, R = hs * 0.36;
+      campo(g, 0, 0, w, hs, (B >= 0) === (sol.sentidoB === 'entrante'), Math.abs(B) / Bmax);
+      g.strokeStyle = col['--roz']; g.lineWidth = 3.5;
+      if (sol.forma === 'circulo') { g.beginPath(); g.arc(cx, cy, R, 0, 2 * Math.PI); g.stroke(); } else g.strokeRect(cx - R * 1.3, cy - R, 2.6 * R, 2 * R);
+      texto(g, cx, hs - 8, `t = ${txt(f(tc, 3))} s · B = ${txt(f(B, 3))} T`, col['--ink'], 'center', '600 ');
+      const pts = (fn) => Array.from({ length: 241 }, (_, i) => { const t = (tf * i) / 240; return [t, fn(t)]; });
+      grafica(g, 20, hs + 8, w - 40, h - hs - 16, tf, [{ pts: pts(sol.Bf), color: col['--tension'], nombre: 'B(t)' }, { pts: pts(sol.Ef), color: rojo, nombre: 'ε(t)' }], sol.t);
+    } else if (sol.modo === 'dinamica') {
+      const hs = h * 0.5, tf = 5 * sol.tau, T = 5, tc = ((tAnim % T) / T) * tf, cae = sol.caso === 'cae';
+      // la barra recorre el dibujo según la distancia recorrida, que se repite cuando llega al final
+      const x = sol.vL * tc + (sol.v0 - sol.vL) * sol.tau * (1 - Math.exp(-tc / sol.tau)), xmax = Math.max(sol.vL * tf, sol.v0 * sol.tau) || 1, u = (x / xmax) % 1;
+      if (cae) {
+        const xA = w * 0.36, xB = w * 0.64, y = 30 + u * (hs - 60);
+        campo(g, xA - 30, 0, xB + 30, hs, true, 0.8);
+        g.strokeStyle = col['--suelo']; g.lineWidth = 4; g.beginPath(); g.moveTo(xA, 14); g.lineTo(xA, hs - 6); g.moveTo(xB, 14); g.lineTo(xB, hs - 6); g.moveTo(xA, 14); g.lineTo(xB, 14); g.stroke();
+        g.fillStyle = col['--roz']; g.fillRect(xA - 8, y - 4, xB - xA + 16, 8); flecha(g, w / 2, y + 6, w / 2, y + 40, col['--peso'], 2.4); texto(g, w / 2 + 8, y + 30, 'mg', col['--peso'], 'left');
+      } else {
+        const yA = hs * 0.25, yB = hs * 0.8, xR = 30, xb = xR + 30 + u * (w - 90);
+        campo(g, 0, 0, w, hs, true, 0.8);
+        g.strokeStyle = col['--suelo']; g.lineWidth = 4; g.beginPath(); g.moveTo(xR, yA); g.lineTo(w - 10, yA); g.moveTo(xR, yB); g.lineTo(w - 10, yB); g.moveTo(xR, yA); g.lineTo(xR, yB); g.stroke();
+        g.fillStyle = col['--roz']; g.fillRect(xb - 4, yA - 8, 8, yB - yA + 16);
+        if (sol.caso === 'fuerza') flecha(g, xb + 6, (yA + yB) / 2, xb + 50, (yA + yB) / 2, col['--normal'], 2.4);
+      }
+      const pts = Array.from({ length: 201 }, (_, i) => { const t = (tf * i) / 200; return [t, sol.vf(t)]; });
+      grafica(g, 20, hs + 8, w - 40, h - hs - 16, tf, [{ pts, color: col['--tension'], nombre: sol.caso === 'lanzada' ? `v(t), v₀ = ${txt(f(sol.v0))} m/s` : `v(t) → v límite = ${txt(f(sol.vL))} m/s` }], tc);
+    } else if (sol.modo === 'gira') {
+      const cx = w / 2, cy = h / 2 - 8, R = Math.min(w, h) * 0.36, a = (tAnim * 1.2) % (2 * Math.PI), disco = sol.cuerpo === 'disco';
+      campo(g, 0, 0, w, h - 24, sol.sentidoB !== 'saliente', 0.8);
+      g.fillStyle = col['--tension']; g.globalAlpha = 0.14; g.beginPath(); g.moveTo(cx, cy); g.arc(cx, cy, R, a - 0.9, a); g.closePath(); g.fill(); g.globalAlpha = 1;
+      if (disco) { g.strokeStyle = col['--roz']; g.lineWidth = 3; g.beginPath(); g.arc(cx, cy, R, 0, 2 * Math.PI); g.stroke(); }
+      g.strokeStyle = col['--roz']; g.lineWidth = disco ? 2 : 6; g.beginPath(); g.moveTo(cx, cy); g.lineTo(cx + R * Math.cos(a), cy + R * Math.sin(a)); g.stroke();
+      g.fillStyle = col['--ink']; g.beginPath(); g.arc(cx, cy, 5, 0, 2 * Math.PI); g.fill();
+      texto(g, w / 2, h - 12, `ε = ½ B ω ${disco ? 'R' : 'L'}² = ${txt(f(sol.eps))} V`, col['--ink'], 'center', '600 ');
     } else {
       const hs = h * 0.56, T = 6, t0 = -0.15 * sol.t3, t1 = 1.15 * sol.t3, t = t0 + ((tAnim % T) / T) * (t1 - t0);
       const xmin = -sol.a * 1.3, xmax = sol.D + sol.a * 1.3, m = 16, X = (x) => m + ((x - xmin) / (xmax - xmin)) * (w - 2 * m), sx = (w - 2 * m) / (xmax - xmin);
-      g.fillStyle = col['--accent']; g.globalAlpha = 0.07; g.fillRect(X(0), 10, X(sol.D) - X(0), hs - 20); g.globalAlpha = 1;
+      g.fillStyle = col['--tension']; g.globalAlpha = 0.07; g.fillRect(X(0), 10, X(sol.D) - X(0), hs - 20); g.globalAlpha = 1;
       campo(g, X(0), 10, X(sol.D), hs - 10, ent, 1, Math.max(20, Math.min(34, (X(sol.D) - X(0)) / 3)));
       g.strokeStyle = col['--muted']; g.lineWidth = 1; g.setLineDash([4, 4]); g.beginPath(); g.moveTo(X(0), 6); g.lineTo(X(0), hs - 6); g.moveTo(X(sol.D), 6); g.lineTo(X(sol.D), hs - 6); g.stroke(); g.setLineDash([]);
       const lado = Math.min(sol.a * sx, hs * 0.6), xf = sol.v * t, cy = hs / 2;
@@ -196,7 +269,7 @@
       texto(g, X(sol.D / 2), hs - 1, `D = ${txt(f(sol.D))} m`, col['--muted']);
       const pts = (fn) => Array.from({ length: 301 }, (_, i) => { const tt = t0 + ((t1 - t0) * i) / 300; return [tt - t0, fn(tt)]; });
       const fi = (tt) => { const x = sol.v * tt; return Math.max(0, Math.min(x, sol.D) - Math.max(x - sol.a, 0)); }, ep = (tt) => { const q = sol.tramos.find((r) => tt >= r.t0 && tt < r.t1); return q ? -q.eps : 0; };
-      grafica(g, 20, hs + 8, w - 40, h - hs - 16, t1 - t0, [{ pts: pts(fi), color: col['--accent'], nombre: `Φ (máx ${txt(f(sol.N * sol.B * sol.a * Math.min(sol.a, sol.D)))} Wb)` }, { pts: pts(ep), color: rojo, nombre: `ε = −dΦ/dt (±${txt(f(sol.eps))} V)` }], t - t0);
+      grafica(g, 20, hs + 8, w - 40, h - hs - 16, t1 - t0, [{ pts: pts(fi), color: col['--tension'], nombre: `Φ (máx ${txt(f(sol.N * sol.B * sol.a * Math.min(sol.a, sol.D)))} Wb)` }, { pts: pts(ep), color: rojo, nombre: `ε = −dΦ/dt (±${txt(f(sol.eps))} V)` }], t - t0);
     }
   }
   let ultimo = performance.now();
@@ -211,5 +284,5 @@
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('faraday').current;
   formulario(); colores(); calcula(); requestAnimationFrame(bucle);
-  window.FaradayApp = { abrirEjemplo, resultado: () => sol && { modo: sol.modo, eps: sol.eps, em: sol.em, I: sol.I, sentido: sol.sentido }, estado: () => copia(sc), pausa: () => { anda = false; } };
+  window.FaradayApp = { abrirEjemplo, resultado: () => sol && { modo: sol.modo, eps: sol.eps, em: sol.em, I: sol.I, sentido: sol.sentido, vL: sol.vL, tau: sol.tau }, estado: () => copia(sc), pausa: () => { anda = false; } };
 })();
