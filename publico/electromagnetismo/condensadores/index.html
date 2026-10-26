@@ -179,9 +179,10 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
   --pos: #f07a6a; --neg: #74a2f2; --capa: #5a4a26; --capa2: #2f4a33; --capa3: #3e3558; --campo: #94a0ac } }
 :root[data-theme="dark"] {
   --pos: #f07a6a; --neg: #74a2f2; --capa: #5a4a26; --capa2: #2f4a33; --capa3: #3e3558; --campo: #94a0ac }
-.capa { grid-column: 1 / -1; display: grid; grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr) auto; gap: 6px; align-items: center; font-size: 13px }
+.capa { grid-column: 1 / -1; display: grid; grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) auto; gap: 6px; align-items: center; font-size: 13px }
 .capa b { width: 14px; height: 14px; border-radius: 3px; display: inline-block; border: 1px solid var(--line) }
 .btn.mini { padding: 2px 8px }
+.capa-c { display: flex; gap: 6px; align-items: center } .capa-c .in { flex: 1; min-width: 0 }
 .radios { grid-column: 1 / -1; display: flex; gap: 14px; flex-wrap: wrap; font-size: 13.5px } .radios label { display: inline-flex; gap: 5px; align-items: center }
 #dibujo { height: clamp(220px, 40vw, 320px) } #grafica { height: 190px; margin-top: 10px }
 #resumen { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 12px }
@@ -228,6 +229,14 @@ th { color: var(--muted); font-weight: 500 }
     <li><b>Con la batería</b>, V se mantiene: al meter el dieléctrico la carga y la energía suben. La batería hace un trabajo ΔQ·V, el doble de lo que sube la energía; la otra mitad es el trabajo que hace el campo al tirar del dieléctrico hacia dentro.</li>
     <li><b>Aislado</b>, Q se mantiene: la tensión y la energía bajan. La energía que falta es el trabajo del campo sobre el dieléctrico.</li>
   </ul>
+  <h2>Sectores en cilindros y esferas</h2>
+  <p class="m">Si el dieléctrico ocupa una parte del ángulo (por ejemplo, media esfera con $ε_{r1}$ y la otra media con $ε_{r2}$), cada parte va de una armadura a la otra y todas están a la misma tensión: son condensadores en paralelo. E no depende del dieléctrico, solo D y la carga libre: $C = 4π ε_0 {a b}/{b − a} · (f_1 ε_{r1} + f_2 ε_{r2})$, con $f_i$ la fracción de la superficie.</p>
+  <h2>Permitividad que cambia</h2>
+  <p class="m">Con $ε_r(x)$ variable, D sigue saliendo de Gauss y $1/C = ∫ dx/(ε_0 ε_r(x) S)$. En el plano con $ε_r$ lineal entre $ε_1$ y $ε_2$: $C = {ε_0 S (ε_2 − ε_1)}/{d ln(ε_2/ε_1)}$. Como P no es uniforme, además de las cargas de polarización de las caras aparece carga en volumen, $ρ_p = −∇·P$.</p>
+  <h2>Fuerzas y rigidez</h2>
+  <p class="m">Las armaduras se atraen con $F = Q^2/(2 ε_0 S)$. Un dieléctrico a medio meter es empujado hacia dentro con $F = 1/2 V^2 {dC}/{dx}$. Cada material aguanta un campo máximo, su rigidez dieléctrica (unos 3 kV/mm el aire): la tensión máxima es la que lleva a ese límite la región con más campo respecto a su rigidez.</p>
+  <h2>Asociaciones</h2>
+  <p class="m">En serie todos tienen la misma carga y $1/C_eq = Σ 1/C_i$; en paralelo, la misma tensión y $C_eq = Σ C_i$. Al conectar dos condensadores cargados la carga se conserva y se reparte hasta igualar la tensión, pero se pierde energía en la conexión.</p>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Condensadores <span id="ver"></span> (beta)</footer>
@@ -335,6 +344,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: configuración electrónica de cualquier elemento o ion por orden de llenado, abreviada y por capas, con el diagrama de Moeller, el diagrama de orbitales con la regla de Hund, los electrones desapareados y los números cuánticos del electrón diferenciador.', 'Avisa de las excepciones como el cromo o el cobre, y en los cationes quita primero los electrones de la capa más externa.'] },
     ],
     condensadores: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Cilíndricos y esféricos con el dieléctrico por sectores, en paralelo: por ejemplo, media esfera con un material y la otra media con otro.', 'Permitividad que cambia con la posición, de ε₁ en una armadura a ε₂ en la otra, con las cargas de polarización de las caras y del volumen.', 'Fuerza entre las armaduras y fuerza que mete un dieléctrico a medio introducir.', 'Rigidez dieléctrica: escribe la de cada capa y sale la tensión máxima antes de la ruptura.', 'Asociaciones de condensadores en serie, en paralelo y mixtas, con la carga, la tensión y la energía de cada uno, y dos condensadores cargados que se conectan, con la energía que se pierde.', 'La carga libre de cada armadura en el desarrollo.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: condensadores planos, cilíndricos y esféricos con capas de dieléctrico en serie o, en el plano, ocupando parte del área. Capacidad, carga, tensión y energía; campos E, D y P en cada capa y cargas de polarización, con el desarrollo paso a paso.', 'Compara con el condensador vacío: qué pasa al meter el dieléctrico con la batería conectada o con el condensador aislado.', 'Dibujo del corte con las líneas de campo y gráfica de E a lo largo del condensador.'] },
     ],
@@ -771,9 +781,19 @@ const Condensador = (() => {
       if (!(g.a > 0) || !(g.b > g.a)) throw new Error('El radio exterior debe ser mayor que el interior, y los dos positivos');
       if (sc.geo === 'cilindro') { g.L = leer(sc.L, 'cm', 'La longitud'); if (!(g.L > 0)) throw new Error('La longitud debe ser positiva'); }
     }
-    g.disposicion = sc.geo === 'plano' && sc.disposicion === 'paralelo' ? 'paralelo' : 'serie';
+    g.disposicion = sc.disposicion === 'paralelo' ? 'paralelo' : sc.disposicion === 'variable' ? 'variable' : 'serie';
     const capas = (sc.capas || []).filter((c) => c && String(c.er ?? '').trim() !== '');
     const regiones = [];
+    const rigidez = (c, i) => { const v = String(c.rig ?? '').trim(); if (!v) return null; const k = +v.replace(',', '.'); if (!(k > 0)) throw new Error(`Capa ${i + 1}: la rigidez dieléctrica debe ser un número positivo (kV/mm)`); return k * 1e6; };
+    if (g.disposicion === 'variable') {
+      // ε_r cambia de forma lineal entre las dos armaduras: er1 en la positiva (x = 0 o r = a) y er2 en la negativa
+      const e1 = +String(sc.er1 ?? '').replace(',', '.'), e2 = +String(sc.er2 ?? '').replace(',', '.');
+      if (!(e1 >= 1) || !(e2 >= 1)) throw new Error('Las permitividades relativas de los extremos deben ser al menos 1');
+      const x0 = sc.geo === 'plano' ? 0 : g.a, x1 = sc.geo === 'plano' ? g.d : g.b;
+      g.er1 = e1; g.er2 = e2; g.erx = (x) => e1 + ((e2 - e1) * (x - x0)) / (x1 - x0);
+      g.regiones = [{ desde: x0, hasta: x1, er: (e1 + e2) / 2, vacio: false, variable: true }];
+      return g;
+    }
     if (g.disposicion === 'serie') {
       let x = sc.geo === 'plano' ? 0 : g.a;
       const fin = sc.geo === 'plano' ? g.d : g.b;
@@ -783,7 +803,7 @@ const Condensador = (() => {
         const hasta = sc.geo === 'plano' ? x + leer(c.t, 'mm', `Capa ${i + 1}`) : leer(c.t, 'cm', `Capa ${i + 1}`);
         if (!(hasta > x + 1e-15)) throw new Error(`Capa ${i + 1}: ${sc.geo === 'plano' ? 'el espesor debe ser positivo' : 'su radio exterior debe ser mayor que el de la capa anterior'}`);
         if (hasta > fin * (1 + 1e-9)) throw new Error(`Capa ${i + 1}: no cabe entre las armaduras`);
-        regiones.push({ desde: x, hasta: Math.min(hasta, fin), er, vacio: false });
+        regiones.push({ desde: x, hasta: Math.min(hasta, fin), er, vacio: false, rig: rigidez(c, i) });
         x = Math.min(hasta, fin);
       }
       if (x < fin * (1 - 1e-12)) regiones.push({ desde: x, hasta: fin, er: 1, vacio: true });
@@ -792,9 +812,9 @@ const Condensador = (() => {
       for (const [i, c] of capas.entries()) {
         const er = +String(c.er).replace(',', '.'), p = +String(c.t).replace(',', '.').replace('%', '') / 100;
         if (!(er >= 1)) throw new Error(`Capa ${i + 1}: la permitividad relativa εr debe ser al menos 1`);
-        if (!(p > 0)) throw new Error(`Capa ${i + 1}: escribe el porcentaje del área que ocupa`);
-        if (f + p > 1 + 1e-9) throw new Error('Las capas ocupan más del 100 % del área');
-        regiones.push({ fraccion: Math.min(p, 1 - f), er, vacio: false });
+        if (!(p > 0)) throw new Error(`Capa ${i + 1}: escribe el porcentaje ${sc.geo === 'plano' ? 'del área' : 'de la superficie (del ángulo)'} que ocupa`);
+        if (f + p > 1 + 1e-9) throw new Error(`Las capas ocupan más del 100 % ${sc.geo === 'plano' ? 'del área' : 'de la superficie'}`);
+        regiones.push({ fraccion: Math.min(p, 1 - f), er, vacio: false, rig: rigidez(c, i) });
         f += p;
       }
       if (f < 1 - 1e-12) regiones.push({ fraccion: 1 - f, er: 1, vacio: true });
@@ -805,10 +825,28 @@ const Condensador = (() => {
 
   // capacidad de una región y su fórmula
   function capRegion(g, r) {
-    if (g.disposicion === 'paralelo') return { C: (E0 * r.er * g.S * r.fraccion) / g.d, f: `ε<sub>0</sub>${r.er !== 1 ? ' ε<sub>r</sub>' : ''} S<sub>i</sub> / d` };
-    if (g.geo === 'plano') return { C: (E0 * r.er * g.S) / (r.hasta - r.desde), f: `ε<sub>0</sub>${r.er !== 1 ? ' ε<sub>r</sub>' : ''} S / t` };
+    const er = r.er !== 1 ? ' ε<sub>r</sub>' : '';
+    if (g.disposicion === 'paralelo') {
+      const p = r.fraccion, fr = p === 1 ? '' : ` · ${num(p)}`;
+      if (g.geo === 'plano') return { C: (E0 * r.er * g.S * p) / g.d, f: `ε<sub>0</sub>${er} S<sub>i</sub> / d` };
+      if (g.geo === 'cilindro') return { C: (p * 2 * PI * E0 * r.er * g.L) / Math.log(g.b / g.a), f: `2π ε<sub>0</sub>${er} L / ln(b/a)${fr}` };
+      return { C: (p * 4 * PI * E0 * r.er * g.a * g.b) / (g.b - g.a), f: `4π ε<sub>0</sub>${er} a b / (b − a)${fr}` };
+    }
+    if (r.variable) return capVariable(g);
+    if (g.geo === 'plano') return { C: (E0 * r.er * g.S) / (r.hasta - r.desde), f: g.regiones.length === 1 ? `ε<sub>0</sub>${er} S / d` : `ε<sub>0</sub>${er} S / t<sub>i</sub>` };
     if (g.geo === 'cilindro') return { C: (2 * PI * E0 * r.er * g.L) / Math.log(r.hasta / r.desde), f: `2π ε<sub>0</sub>${r.er !== 1 ? ' ε<sub>r</sub>' : ''} L / ln(r<sub>2</sub>/r<sub>1</sub>)` };
     return { C: (4 * PI * E0 * r.er) / (1 / r.desde - 1 / r.hasta), f: `4π ε<sub>0</sub>${r.er !== 1 ? ' ε<sub>r</sub>' : ''} / (1/r<sub>1</sub> − 1/r<sub>2</sub>)` };
+  }
+  // ε_r(x) lineal: 1/C = ∫ dx / (ε₀ ε_r(x) A(x)); en el plano sale cerrada y en los demás se integra (Simpson)
+  function integra(fn, a, b, n = 2000) { const h = (b - a) / n; let s = fn(a) + fn(b); for (let i = 1; i < n; i++) s += (i % 2 ? 4 : 2) * fn(a + i * h); return (s * h) / 3; }
+  function capVariable(g) {
+    const e1 = g.er1, e2 = g.er2, x0 = g.geo === 'plano' ? 0 : g.a, x1 = g.geo === 'plano' ? g.d : g.b;
+    if (g.geo === 'plano') {
+      if (Math.abs(e2 - e1) < 1e-12) return { C: (E0 * e1 * g.S) / g.d, f: 'ε<sub>0</sub> ε<sub>r</sub> S / d' };
+      return { C: (E0 * g.S * (e2 - e1)) / (g.d * Math.log(e2 / e1)), f: '1/C = ∫<sub>0</sub><sup>d</sup> dx / (ε<sub>0</sub> ε<sub>r</sub>(x) S) ⇒ C = ε<sub>0</sub> S (ε<sub>2</sub> − ε<sub>1</sub>) / (d ln(ε<sub>2</sub>/ε<sub>1</sub>))' };
+    }
+    const inv = integra((x) => 1 / (E0 * g.erx(x) * area(g, x)), x0, x1);
+    return { C: 1 / inv, f: `1/C = ∫<sub>a</sub><sup>b</sup> dr / (ε<sub>0</sub> ε<sub>r</sub>(r) ${g.geo === 'cilindro' ? '2π r L' : '4π r<sup>2</sup>'}) (integral numérica)` };
   }
   function capacidad(g) {
     const cs = g.regiones.map((r) => capRegion(g, r));
@@ -820,16 +858,18 @@ const Condensador = (() => {
 
   /* ---------- Resolución ---------- */
   function resolver(sc) {
+    if (sc.tipo === 'asociacion') return asociacion(sc);
+    if (sc.tipo === 'conectar') return conectar(sc);
     const g = geometria(sc);
     const { C, cs } = capacidad(g);
-    const vacioG = { ...g, regiones: g.disposicion === 'paralelo' ? [{ fraccion: 1, er: 1, vacio: true }] : [{ desde: g.geo === 'plano' ? 0 : g.a, hasta: g.geo === 'plano' ? g.d : g.b, er: 1, vacio: true }] };
+    const vacioG = { ...g, disposicion: g.disposicion === 'variable' ? 'serie' : g.disposicion, regiones: g.disposicion === 'paralelo' ? [{ fraccion: 1, er: 1, vacio: true }] : [{ desde: g.geo === 'plano' ? 0 : g.a, hasta: g.geo === 'plano' ? g.d : g.b, er: 1, vacio: true }] };
     const C0 = capacidad(vacioG).C;
     let V, Q;
     if (sc.fuente === 'Q') { Q = leer(sc.Q, 'nC', 'La carga'); V = Q / C; }
     else { V = leer(sc.V, 'V', 'La tensión'); Q = C * V; }
     const U = 0.5 * Q * V;
     const pasos = [];
-    const nombres = g.regiones.map((r, i) => (r.vacio ? 'vacío' : `capa ${i + 1} (ε<sub>r</sub> = ${num(r.er)})`));
+    const nombres = g.regiones.map((r, i) => (r.vacio ? 'vacío' : r.variable ? `dieléctrico (ε<sub>r</sub> de ${num(g.er1)} a ${num(g.er2)})` : `capa ${i + 1} (ε<sub>r</sub> = ${num(r.er)})`));
     // capacidad
     if (g.regiones.length === 1) pasos.push({ t: 'Capacidad', html: `C = ${cs[0].f} = <b>${conUnidad(C, 'F')}</b>` });
     else {
@@ -845,7 +885,15 @@ const Condensador = (() => {
     const regiones = g.regiones.map((r, i) => {
       const o = { ...r, nombre: nombres[i], C: cs[i].C };
       if (g.disposicion === 'paralelo') {
-        o.E1 = o.E2 = V / g.d; o.D1 = o.D2 = E0 * r.er * o.E1; o.Q = o.D1 * g.S * r.fraccion; o.V = V;
+        // el campo no depende del dieléctrico: E(a) y E(b) con la tensión común
+        const Ea = g.geo === 'plano' ? V / g.d : g.geo === 'cilindro' ? V / (g.a * Math.log(g.b / g.a)) : (V * g.b) / (g.a * (g.b - g.a));
+        const Eb = g.geo === 'plano' ? Ea : g.geo === 'cilindro' ? (Ea * g.a) / g.b : (Ea * g.a * g.a) / (g.b * g.b);
+        o.E1 = Ea; o.E2 = Eb; o.D1 = E0 * r.er * Ea; o.D2 = E0 * r.er * Eb; o.Q = o.C * V; o.V = V;
+      } else if (r.variable) {
+        o.V = V; o.D1 = Q / area(g, r.desde); o.D2 = Q / area(g, r.hasta); o.E1 = o.D1 / (E0 * g.er1); o.E2 = o.D2 / (E0 * g.er2);
+        o.P1 = o.D1 * (1 - 1 / g.er1); o.P2 = o.D2 * (1 - 1 / g.er2);
+        o.Qp = o.P1 * area(g, r.desde);
+        return o;
       } else {
         o.V = Q / cs[i].C;
         o.D1 = Q / area(g, r.desde); o.D2 = Q / area(g, r.hasta);
@@ -853,17 +901,51 @@ const Condensador = (() => {
       }
       o.P1 = o.D1 * (1 - 1 / r.er); o.P2 = o.D2 * (1 - 1 / r.er);
       // carga de polarización en las caras: −P en la cara del lado positivo, +P en la del negativo
-      o.Qp = r.vacio ? 0 : g.disposicion === 'paralelo' ? o.P1 * g.S * r.fraccion : o.P1 * area(g, r.desde);
+      o.Qp = r.vacio ? 0 : g.disposicion === 'paralelo' ? o.P1 * (g.geo === 'plano' ? g.S : area(g, g.a)) * r.fraccion : o.P1 * area(g, r.desde);
       return o;
     });
-    if (g.disposicion === 'serie') {
+    if (g.disposicion === 'variable') {
+      const Pm = (x) => (Q / area(g, x)) * (1 - 1 / g.erx(x)), x0 = g.regiones[0].desde, x1 = g.regiones[0].hasta, Qv = Pm(x1) * area(g, x1) - Pm(x0) * area(g, x0);
+      pasos.push({ t: 'Permitividad variable', html: `ε<sub>r</sub>(${g.geo === 'plano' ? 'x' : 'r'}) = ${num(g.er1)} + (${num(g.er2)} − ${num(g.er1)}) · (${g.geo === 'plano' ? 'x/d' : '(r − a)/(b − a)'}): ${num(g.er1)} junto a la armadura positiva y ${num(g.er2)} junto a la negativa.` });
+      pasos.push({ t: 'D, E y P', html: `Por Gauss para D, ${g.geo === 'plano' ? 'D = Q / S' : g.geo === 'cilindro' ? 'D(r) = Q / (2π r L)' : 'D(r) = Q / (4π r<sup>2</sup>)'}, sin saltos. E = D / (ε<sub>0</sub> ε<sub>r</sub>) cambia de ${conUnidad(regiones[0].E1, 'V/m')} a ${conUnidad(regiones[0].E2, 'V/m')} y P = (1 − 1/ε<sub>r</sub>) D de ${conUnidad(regiones[0].P1, 'C/m²')} a ${conUnidad(regiones[0].P2, 'C/m²')}.` });
+      pasos.push({ t: 'Cargas de polarización', html: `En las caras: σ<sub>p</sub> = −P = ${conUnidad(-regiones[0].P1, 'C/m²')} junto a la armadura positiva y +P = ${conUnidad(regiones[0].P2, 'C/m²')} junto a la negativa. Como P no es uniforme, también hay carga de polarización en volumen, ρ<sub>p</sub> = −∇·P, que en total suma ${conUnidad(-Qv, 'C')}: con las de las caras, la carga de polarización total es 0.` });
+    } else if (g.disposicion === 'serie') {
       pasos.push({ t: 'Desplazamiento eléctrico D', html: `Por el teorema de Gauss para D, que solo ve la carga libre: ${g.geo === 'plano' ? 'D = Q / S' : g.geo === 'cilindro' ? 'D(r) = Q / (2π r L)' : 'D(r) = Q / (4π r<sup>2</sup>)'}${g.geo === 'plano' ? ` = <b>${conUnidad(regiones[0].D1, 'C/m²')}</b>, el mismo en todas las capas` : ', continuo al pasar de una capa a otra'}.` });
       pasos.push({ t: 'Campo y polarización en cada capa', html: regiones.map((o, i) => `${o.nombre}: E = D / (ε<sub>0</sub> ε<sub>r</sub>) = ${g.geo === 'plano' ? conUnidad(o.E1, 'V/m') : `${conUnidad(o.E1, 'V/m')} → ${conUnidad(o.E2, 'V/m')}`}${o.vacio ? '' : `, P = (1 − 1/ε<sub>r</sub>) D = ${g.geo === 'plano' ? conUnidad(o.P1, 'C/m²') : `${conUnidad(o.P1, 'C/m²')} → ${conUnidad(o.P2, 'C/m²')}`}`}, ΔV = ${conUnidad(o.V, 'V')}`).join('<br>') });
     } else {
-      pasos.push({ t: 'Campo en cada parte', html: `Todas las partes están a la misma tensión, así que E = V / d = <b>${conUnidad(V / g.d, 'V/m')}</b> en todas. Cambia la carga libre: σ = D = ε<sub>0</sub> ε<sub>r</sub> E.<br>` + regiones.map((o) => `${o.nombre}: σ = ${conUnidad(o.D1, 'C/m²')}, Q = ${conUnidad(o.Q, 'C')}${o.vacio ? '' : `, P = ${conUnidad(o.P1, 'C/m²')}`}`).join('<br>') });
+      const Etx = g.geo === 'plano' ? `E = V / d = <b>${conUnidad(V / g.d, 'V/m')}</b>` : g.geo === 'cilindro' ? `E(r) = V / (r ln(b/a)), de ${conUnidad(regiones[0].E1, 'V/m')} en r = a a ${conUnidad(regiones[0].E2, 'V/m')} en r = b,` : `E(r) = V a b / ((b − a) r<sup>2</sup>), de ${conUnidad(regiones[0].E1, 'V/m')} en r = a a ${conUnidad(regiones[0].E2, 'V/m')} en r = b,`;
+      pasos.push({ t: 'Campo en cada parte', html: `Todas las partes están a la misma tensión y E es tangente a la frontera entre dieléctricos (que es continuo), así que ${Etx} igual en todas. Cambia la carga libre: σ = D = ε<sub>0</sub> ε<sub>r</sub> E${g.geo === 'plano' ? '' : ' (en la armadura interior)'}.<br>` + regiones.map((o) => `${o.nombre}: σ = ${conUnidad(o.D1, 'C/m²')}, Q = ${conUnidad(o.Q, 'C')}${o.vacio ? '' : `, P = ${conUnidad(o.P1, 'C/m²')}`}`).join('<br>') });
     }
     const hayDiel = g.regiones.some((r) => !r.vacio);
-    if (hayDiel) pasos.push({ t: 'Cargas de polarización', html: `En cada cara del dieléctrico aparece σ<sub>p</sub> = ±P: negativa en la cara junto a la armadura positiva y positiva en la otra. ` + regiones.filter((o) => !o.vacio).map((o) => `${o.nombre}: Q<sub>p</sub> = ${conUnidad(o.Qp, 'C')}${g.geo === 'plano' ? ` (σ<sub>p</sub> = ${conUnidad(o.P1, 'C/m²')})` : ''}`).join(' · ') });
+    if (hayDiel && g.disposicion !== 'variable') pasos.push({ t: 'Cargas de polarización', html: `En cada cara del dieléctrico aparece σ<sub>p</sub> = ±P: negativa en la cara junto a la armadura positiva y positiva en la otra. ` + regiones.filter((o) => !o.vacio).map((o) => `${o.nombre}: Q<sub>p</sub> = ${conUnidad(o.Qp, 'C')}${g.geo === 'plano' ? ` (σ<sub>p</sub> = ${conUnidad(o.P1, 'C/m²')})` : ''}`).join(' · ') });
+    // carga libre en las armaduras
+    const sigma = g.disposicion === 'paralelo' ? null : Q / (g.geo === 'plano' ? g.S : area(g, g.a));
+    if (sigma !== null) pasos.push({ t: 'Carga libre en las armaduras', html: g.geo === 'plano' ? `σ = Q / S = <b>${conUnidad(sigma, 'C/m²')}</b> en la positiva y −σ en la negativa.` : `En la interior σ<sub>a</sub> = Q / ${g.geo === 'cilindro' ? '(2π a L)' : '(4π a<sup>2</sup>)'} = <b>${conUnidad(sigma, 'C/m²')}</b>; en la exterior σ<sub>b</sub> = −Q / ${g.geo === 'cilindro' ? '(2π b L)' : '(4π b<sup>2</sup>)'} = ${conUnidad(-Q / area(g, g.b), 'C/m²')}.` });
+    // fuerzas (solo en el plano)
+    let fuerza = null;
+    if (g.geo === 'plano') {
+      const Fp = (Q * Q) / (2 * E0 * g.S), lado = Math.sqrt(g.S);
+      fuerza = { placas: Fp };
+      pasos.push({ t: 'Fuerza entre las armaduras', html: `Con la carga fija, F = −dU/dx = Q<sup>2</sup> / (2 ε<sub>0</sub> S) = <b>${conUnidad(Fp, 'N')}</b>, de atracción (la presión electrostática es σ<sup>2</sup>/(2ε<sub>0</sub>) = ${conUnidad(Fp / g.S, 'Pa')}). Vale así si junto a las armaduras hay vacío o aire.` });
+      if (g.disposicion === 'paralelo' && g.regiones.length > 1) {
+        const r1 = g.regiones[0], Fd = 0.5 * V * V * E0 * (r1.er - 1) * lado / g.d;
+        fuerza.dielectrico = Fd;
+        pasos.push({ t: 'Fuerza que mete el dieléctrico', html: `Si la capa 1 entra deslizando por un lado (armaduras cuadradas de lado ℓ = √S = ${conUnidad(lado, 'm')}), C crece con lo que ha entrado, x: dC/dx = ε<sub>0</sub> (ε<sub>r</sub> − 1) ℓ / d. La fuerza que tira de ella hacia dentro es F = ½ V<sup>2</sup> dC/dx = <b>${conUnidad(Fd, 'N')}</b>, ${sc.fuente === 'Q' ? 'que con la carga fija va bajando a medida que entra (porque V baja)' : 'constante mientras la batería mantiene V'}.` });
+      }
+    }
+    // rigidez dieléctrica: tensión máxima antes de la ruptura
+    let Vmax = null;
+    if (g.regiones.some((r) => r.rig)) {
+      const lista = g.regiones.map((r, i) => {
+        const k = r.rig ?? (r.vacio ? 3e6 : null);
+        if (!k) return null;
+        const o = regiones[i], Emx = Math.max(o.E1, o.E2);
+        return { nombre: o.nombre, k, Vm: (V * k) / Emx };
+      }).filter(Boolean);
+      const peor = lista.reduce((a, b) => (b.Vm < a.Vm ? b : a));
+      Vmax = peor.Vm;
+      pasos.push({ t: 'Rigidez dieléctrica', html: `El dieléctrico se rompe si el campo supera su rigidez. Como todos los campos son proporcionales a V, la tensión máxima es la que lleva el campo de la región más justa a su límite:<br>` + lista.map((x) => `${x.nombre}: rigidez ${num(x.k / 1e6)} kV/mm${x.nombre === 'vacío' ? ' (aire)' : ''} ⇒ V<sub>máx</sub> = ${conUnidad(x.Vm, 'V')}`).join('<br>') + `<br>La primera en romperse es ${peor.nombre}: <b>V<sub>máx</sub> = ${conUnidad(Vmax, 'V')}</b>${V > Vmax ? ' (¡la tensión actual ya la supera!)' : ''}.` });
+    }
     // comparación con el condensador vacío
     let comp = null;
     if (hayDiel) {
@@ -877,13 +959,66 @@ const Condensador = (() => {
         pasos.push({ t: 'Al meter el dieléctrico (con la batería)', html: `Sin dieléctrico C<sub>0</sub> = ${conUnidad(C0, 'F')}, Q<sub>0</sub> = ${conUnidad(Q0, 'C')}, U<sub>0</sub> = ${conUnidad(U0, 'J')}. La tensión no cambia: la batería aporta ΔQ = ${conUnidad(Q - Q0, 'C')} y un trabajo W = ΔQ · V = ${conUnidad((Q - Q0) * V, 'J')}; la energía sube ΔU = <b>${conUnidad(U - U0, 'J')}</b>, la mitad de ese trabajo.` });
       }
     }
-    return { g, C, C0, Q, V, U, regiones, pasos, comp, fuente: sc.fuente === 'Q' ? 'Q' : 'V' };
+    return { tipo: 'condensador', g, C, C0, Q, V, U, sigma, fuerza, Vmax, regiones, pasos, comp, fuente: sc.fuente === 'Q' ? 'Q' : 'V' };
+  }
+
+  /* ---------- Asociaciones de condensadores ---------- */
+  // sc: { tipo: 'asociacion', red: 'serie'|'paralelo'|'serie-par'|'par-serie', cs: ['2', '3', '6'] (µF), V }
+  // serie-par: C1 en serie con (C2 ∥ C3 ∥ …); par-serie: C1 en paralelo con (C2, C3… en serie)
+  const REDES = { serie: 'Todos en serie', paralelo: 'Todos en paralelo', 'serie-par': 'C₁ en serie con (C₂ ∥ C₃ ∥ …)', 'par-serie': 'C₁ en paralelo con (C₂, C₃… en serie)' };
+  const sub = (i) => `C<sub>${i + 1}</sub>`;
+  function asociacion(sc) {
+    const red = REDES[sc.red] ? sc.red : 'serie', cs = (sc.cs || []).filter((c) => String(c ?? '').trim() !== '').map((c, i) => { const v = +String(c).replace(',', '.') * 1e-6; if (!(v > 0)) throw new Error(`${sub(i).replace(/<[^>]+>/g, '')} debe ser un número positivo (en µF)`); return v; });
+    if (cs.length < 2) throw new Error('Escribe al menos dos condensadores');
+    if ((red === 'serie-par' || red === 'par-serie') && cs.length < 3) throw new Error('Para esta asociación hacen falta al menos tres condensadores');
+    const V = leer(sc.V, 'V', 'La tensión'), pasos = [], q = cs.map(() => 0), v = cs.map(() => 0);
+    const serie = (xs) => 1 / xs.reduce((s, c) => s + 1 / c, 0), par = (xs) => xs.reduce((s, c) => s + c, 0), nom = (is, op) => is.map(sub).join(op);
+    let Ceq;
+    if (red === 'serie') {
+      Ceq = serie(cs); const Q = Ceq * V; cs.forEach((c, i) => { q[i] = Q; v[i] = Q / c; });
+      pasos.push({ t: 'Capacidad equivalente', html: `En serie se suman las inversas: 1/C<sub>eq</sub> = ${cs.map((_, i) => `1/${sub(i)}`).join(' + ')} ⇒ <b>C<sub>eq</sub> = ${conUnidad(Ceq, 'F')}</b>` });
+      pasos.push({ t: 'Carga y tensiones', html: `Todos tienen la misma carga, Q = C<sub>eq</sub> V = <b>${conUnidad(Q, 'C')}</b>, y la tensión se reparte: ` + cs.map((c, i) => `V<sub>${i + 1}</sub> = Q/${sub(i)} = ${conUnidad(v[i], 'V')}`).join(', ') + '. El más pequeño se lleva más tensión.' });
+    } else if (red === 'paralelo') {
+      Ceq = par(cs); cs.forEach((c, i) => { v[i] = V; q[i] = c * V; });
+      pasos.push({ t: 'Capacidad equivalente', html: `En paralelo se suman: C<sub>eq</sub> = ${nom(cs.map((_, i) => i), ' + ')} = <b>${conUnidad(Ceq, 'F')}</b>` });
+      pasos.push({ t: 'Cargas', html: `Todos tienen la tensión V = ${conUnidad(V, 'V')}: ` + cs.map((c, i) => `Q<sub>${i + 1}</sub> = ${sub(i)} V = ${conUnidad(q[i], 'C')}`).join(', ') + `; en total Q = ${conUnidad(Ceq * V, 'C')}.` });
+    } else if (red === 'serie-par') {
+      const resto = cs.slice(1), Cp = par(resto); Ceq = serie([cs[0], Cp]); const Q = Ceq * V, Vp = Q / Cp;
+      q[0] = Q; v[0] = Q / cs[0]; resto.forEach((c, j) => { v[j + 1] = Vp; q[j + 1] = c * Vp; });
+      pasos.push({ t: 'Primero el paralelo', html: `C<sub>p</sub> = ${nom(resto.map((_, j) => j + 1), ' + ')} = ${conUnidad(Cp, 'F')}` });
+      pasos.push({ t: 'Luego la serie', html: `1/C<sub>eq</sub> = 1/C<sub>1</sub> + 1/C<sub>p</sub> ⇒ <b>C<sub>eq</sub> = ${conUnidad(Ceq, 'F')}</b>; Q = C<sub>eq</sub> V = ${conUnidad(Q, 'C')}` });
+      pasos.push({ t: 'Cada condensador', html: `C<sub>1</sub> lleva toda la carga: V<sub>1</sub> = Q/C<sub>1</sub> = ${conUnidad(v[0], 'V')}. El paralelo queda a V<sub>p</sub> = Q/C<sub>p</sub> = ${conUnidad(Vp, 'V')}: ` + resto.map((c, j) => `Q<sub>${j + 2}</sub> = ${conUnidad(q[j + 1], 'C')}`).join(', ') + '.' });
+    } else {
+      const resto = cs.slice(1), Cs = serie(resto); Ceq = cs[0] + Cs; const Qs = Cs * V;
+      q[0] = cs[0] * V; v[0] = V; resto.forEach((c, j) => { q[j + 1] = Qs; v[j + 1] = Qs / c; });
+      pasos.push({ t: 'Primero la serie', html: `1/C<sub>s</sub> = ${resto.map((_, j) => `1/${sub(j + 1)}`).join(' + ')} ⇒ C<sub>s</sub> = ${conUnidad(Cs, 'F')}` });
+      pasos.push({ t: 'Luego el paralelo', html: `<b>C<sub>eq</sub> = C<sub>1</sub> + C<sub>s</sub> = ${conUnidad(Ceq, 'F')}</b>` });
+      pasos.push({ t: 'Cada condensador', html: `C<sub>1</sub> está a V: Q<sub>1</sub> = ${conUnidad(q[0], 'C')}. La rama en serie lleva Q<sub>s</sub> = C<sub>s</sub> V = ${conUnidad(Qs, 'C')} en cada uno: ` + resto.map((c, j) => `V<sub>${j + 2}</sub> = ${conUnidad(v[j + 1], 'V')}`).join(', ') + '.' });
+    }
+    const u = cs.map((c, i) => 0.5 * c * v[i] * v[i]), U = 0.5 * Ceq * V * V;
+    pasos.push({ t: 'Energía', html: `U = ½ C<sub>eq</sub> V<sup>2</sup> = <b>${conUnidad(U, 'J')}</b>, que es la suma de la de cada uno (½ C<sub>i</sub> V<sub>i</sub><sup>2</sup>).` });
+    return { tipo: 'asociacion', red, cs, V, Ceq, Q: Ceq * V, q, v, u, U, pasos };
+  }
+
+  /* ---------- Dos condensadores cargados que se conectan ---------- */
+  // sc: { tipo: 'conectar', C1, V1, C2, V2 (µF y V), union: 'igual'|'opuesta' }
+  function conectar(sc) {
+    const uF = (v, n) => { const x = +String(v ?? '').trim().replace(',', '.'); if (!(x > 0)) throw new Error(`${n} debe ser un número positivo (en µF)`); return x * 1e-6; }, C1 = uF(sc.C1, 'C₁'), C2 = uF(sc.C2, 'C₂'), V1 = leer(sc.V1, 'V', 'V₁'), V2 = leer(sc.V2, 'V', 'V₂');
+    const op = sc.union === 'opuesta', Q1 = C1 * V1, Q2 = C2 * V2, Qt = op ? Q1 - Q2 : Q1 + Q2, Vf = Qt / (C1 + C2), U0 = 0.5 * C1 * V1 * V1 + 0.5 * C2 * V2 * V2, Uf = (0.5 * Qt * Qt) / (C1 + C2);
+    const pasos = [
+      { t: 'Cargas antes de conectar', html: `Q<sub>1</sub> = C<sub>1</sub> V<sub>1</sub> = ${conUnidad(Q1, 'C')}, Q<sub>2</sub> = C<sub>2</sub> V<sub>2</sub> = ${conUnidad(Q2, 'C')}; energía U<sub>0</sub> = ½C<sub>1</sub>V<sub>1</sub><sup>2</sup> + ½C<sub>2</sub>V<sub>2</sub><sup>2</sup> = ${conUnidad(U0, 'J')}` },
+      { t: 'Al conectarlos', html: `${op ? 'Unidas las placas de signo contrario, las cargas se compensan en parte' : 'Unidas las placas del mismo signo, la carga se reparte'} hasta que los dos quedan a la misma tensión (en paralelo). La carga se conserva: Q = ${op ? '|Q<sub>1</sub> − Q<sub>2</sub>|' : 'Q<sub>1</sub> + Q<sub>2</sub>'} = ${conUnidad(Math.abs(Qt), 'C')}` },
+      { t: 'Tensión final', html: `V = Q / (C<sub>1</sub> + C<sub>2</sub>) = <b>${conUnidad(Math.abs(Vf), 'V')}</b>; Q<sub>1</sub>′ = ${conUnidad(Math.abs(C1 * Vf), 'C')} y Q<sub>2</sub>′ = ${conUnidad(Math.abs(C2 * Vf), 'C')}` },
+      { t: 'Energía', html: `U = Q<sup>2</sup> / (2(C<sub>1</sub> + C<sub>2</sub>)) = ${conUnidad(Uf, 'J')}: se pierden <b>${conUnidad(U0 - Uf, 'J')}</b> (${num((100 * (U0 - Uf)) / U0, 3)} %), que se van en calor por los cables y en radiación durante la conexión.` },
+    ];
+    return { tipo: 'conectar', C1, C2, V1, V2, op, Q1, Q2, Qt, Vf: Math.abs(Vf), U0, Uf, perdida: U0 - Uf, pasos };
   }
 
   // campo E en una posición x (plano, desde la armadura positiva) o r (cilindro y esfera), para la gráfica
   function campo(sol, x) {
     const { g, Q } = sol;
-    if (g.disposicion === 'paralelo') return sol.V / g.d;
+    if (g.disposicion === 'paralelo') return g.geo === 'plano' ? sol.V / g.d : g.geo === 'cilindro' ? sol.V / (x * Math.log(g.b / g.a)) : (sol.V * g.a * g.b) / ((g.b - g.a) * x * x);
+    if (g.disposicion === 'variable') return Q / area(g, x) / (E0 * g.erx(x));
     const r = sol.regiones.find((o) => x >= o.desde - 1e-15 && x <= o.hasta + 1e-15) || sol.regiones[sol.regiones.length - 1];
     return Q / area(g, x) / (E0 * r.er);
   }
@@ -895,9 +1030,18 @@ const Condensador = (() => {
     { clave: 'dos-capas', nombre: 'Plano con dos dieléctricos en serie', sc: { geo: 'plano', S: '50', d: '3', disposicion: 'serie', capas: [{ t: '1', er: '2' }, { t: '2', er: '6' }], fuente: 'V', V: '200' } },
     { clave: 'coaxial', nombre: 'Cable coaxial con polietileno', sc: { geo: 'cilindro', a: '0.1', b: '0.35', L: '100', capas: [{ t: '0.35', er: '2.3' }], fuente: 'V', V: '1000' } },
     { clave: 'esferico', nombre: 'Esférico con una corteza de dieléctrico', sc: { geo: 'esfera', a: '5', b: '10', capas: [{ t: '7', er: '3' }], fuente: 'Q', Q: '20' } },
+    { clave: 'esfera-mitades', nombre: 'Esférico con dos mitades de dieléctrico', sc: { geo: 'esfera', a: '5', b: '10', disposicion: 'paralelo', capas: [{ t: '50', er: '2' }, { t: '50', er: '4' }], fuente: 'V', V: '1000' } },
+    { clave: 'cilindro-sector', nombre: 'Coaxial con un cuarto lleno de dieléctrico', sc: { geo: 'cilindro', a: '1', b: '3', L: '100', disposicion: 'paralelo', capas: [{ t: '25', er: '5' }], fuente: 'V', V: '500' } },
+    { clave: 'eps-variable', nombre: 'Plano con ε que crece de 2 a 6', sc: { geo: 'plano', S: '100', d: '2', disposicion: 'variable', er1: '2', er2: '6', capas: [], fuente: 'V', V: '100' } },
+    { clave: 'esfera-variable', nombre: 'Esférico con ε que cambia con r', sc: { geo: 'esfera', a: '5', b: '10', disposicion: 'variable', er1: '4', er2: '2', capas: [], fuente: 'Q', Q: '20' } },
+    { clave: 'rigidez', nombre: 'Tensión máxima con mica y aire', sc: { geo: 'plano', S: '50', d: '1', disposicion: 'serie', capas: [{ t: '0.5', er: '6', rig: '100' }], fuente: 'V', V: '1000' } },
+    { clave: 'meter-lamina', nombre: 'Dieléctrico metido hasta la mitad', sc: { geo: 'plano', S: '100', d: '1', disposicion: 'paralelo', capas: [{ t: '50', er: '4' }], fuente: 'V', V: '200' } },
+    { clave: 'asoc-serie', nombre: 'Tres condensadores en serie', sc: { tipo: 'asociacion', red: 'serie', cs: ['2', '3', '6'], V: '12' } },
+    { clave: 'asoc-mixta', nombre: 'Uno en serie con dos en paralelo', sc: { tipo: 'asociacion', red: 'serie-par', cs: ['6', '2', '4'], V: '24' } },
+    { clave: 'conectar', nombre: 'Dos condensadores cargados que se conectan', sc: { tipo: 'conectar', C1: '4', V1: '100', C2: '6', V2: '0', union: 'igual' } },
   ];
 
-  return { resolver, campo, leer, num, conUnidad, ejemplos, E0 };
+  return { resolver, campo, leer, num, conUnidad, asociacion, conectar, REDES, ejemplos, E0 };
 })();
 
 /* =====================================================================
@@ -912,30 +1056,53 @@ const Condensador = (() => {
   const texto = (h) => h.replace(/<sub>(.*?)<\/sub>/g, '$1').replace(/<sup>(.*?)<\/sup>/g, '^$1').replace(/<[^>]+>/g, '');
 
   let sc = JSON.parse(JSON.stringify(K.ejemplos[0].sc));
-  try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && g.geo) sc = g; } catch (e) {}
+  try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && (g.geo || g.tipo)) sc = g; } catch (e) {}
   let sol = null, col = {};
 
   /* ---------- Formulario ---------- */
   const campos = $('#campos');
+  const TIPOS = [['condensador', 'Un condensador con dieléctricos'], ['asociacion', 'Asociación de condensadores'], ['conectar', 'Dos condensadores cargados que se conectan']];
+  const opc = (lista, v) => lista.map(([k, t]) => `<option value="${k}"${k === v ? ' selected' : ''}>${t}</option>`).join('');
   function formulario() {
-    const plano = sc.geo === 'plano', serie = !plano || sc.disposicion !== 'paralelo';
-    let h = `<label for="f-geo">Forma</label><select id="f-geo" class="in" data-k="geo"><option value="plano">Plano</option><option value="cilindro">Cilíndrico</option><option value="esfera">Esférico</option></select>`;
-    if (plano) h += fila('S', 'Área de las armaduras', 'cm²') + fila('d', 'Separación', 'mm') + `<label for="f-disp">Dieléctrico</label><select id="f-disp" class="in" data-k="disposicion"><option value="serie">En láminas (serie)</option><option value="paralelo">Ocupando parte del área (paralelo)</option></select>`;
+    const tipo = sc.tipo || 'condensador';
+    let h = `<label for="f-tipo">Qué calculas</label><select id="f-tipo" class="in" data-k="tipo">${opc(TIPOS, tipo)}</select>`;
+    if (tipo === 'asociacion') {
+      h += `<label for="f-red">Cómo están</label><select id="f-red" class="in" data-k="red">${opc(Object.entries(K.REDES), sc.red)}</select>`;
+      h += (sc.cs || []).map((c, i) => `<label for="f-c${i}">C<sub>${i + 1}</sub> <small>(µF)</small></label><div class="capa-c"><input id="f-c${i}" class="in" data-cs="${i}" value="${esc(c)}" inputmode="decimal" autocomplete="off">${sc.cs.length > 2 ? `<button class="btn mini" type="button" data-quitac="${i}" aria-label="Quitar C${i + 1}">✕</button>` : ''}</div>`).join('');
+      h += `<div style="grid-column:1/-1">${(sc.cs || []).length < 6 ? '<button class="btn" type="button" id="anadec">+ Añadir condensador</button>' : ''}</div>` + fila('V', 'Tensión aplicada', 'V');
+      campos.innerHTML = h; return;
+    }
+    if (tipo === 'conectar') {
+      h += fila('C1', 'C₁', 'µF') + fila('V1', 'Cargado a V₁', 'V') + fila('C2', 'C₂', 'µF') + fila('V2', 'Cargado a V₂', 'V') + `<label for="f-union">Se unen las placas</label><select id="f-union" class="in" data-k="union">${opc([['igual', 'del mismo signo (+ con +)'], ['opuesta', 'de signo contrario (+ con −)']], sc.union)}</select>`;
+      campos.innerHTML = h; return;
+    }
+    const plano = sc.geo === 'plano', disp = ['paralelo', 'variable'].includes(sc.disposicion) ? sc.disposicion : 'serie', serie = disp === 'serie';
+    h += `<label for="f-geo">Forma</label><select id="f-geo" class="in" data-k="geo"><option value="plano">Plano</option><option value="cilindro">Cilíndrico</option><option value="esfera">Esférico</option></select>`;
+    if (plano) h += fila('S', 'Área de las armaduras', 'cm²') + fila('d', 'Separación', 'mm');
     else h += fila('a', 'Radio interior a', 'cm') + fila('b', 'Radio exterior b', 'cm') + (sc.geo === 'cilindro' ? fila('L', 'Longitud', 'cm') : '');
-    h += `<div class="sep">Capas de dieléctrico ${plano ? (serie ? '(desde la armadura +)' : '') : '(desde el radio interior)'}</div>`;
-    h += (sc.capas || []).map((c, i) => `<div class="capa" data-i="${i}"><b style="background:var(${COLCAPA[i % 3]})"></b><input class="in" data-c="t" value="${esc(c.t)}" aria-label="Capa ${i + 1}: ${serie ? (plano ? 'espesor en mm' : 'radio exterior en cm') : 'porcentaje del área'}" placeholder="${serie ? (plano ? 'espesor (mm)' : 'hasta r (cm)') : '% del área'}"><input class="in" data-c="er" value="${esc(c.er)}" aria-label="Capa ${i + 1}: εr" placeholder="εr"><button class="btn mini" type="button" data-quita="${i}" aria-label="Quitar la capa ${i + 1}">✕</button></div>`).join('');
-    h += `<div style="grid-column:1/-1"><button class="btn" type="button" id="anade">+ Añadir capa</button> <span class="nota">${serie ? (plano ? 'espesor en mm' : 'radio exterior en cm') : '% del área'} · ε<sub>r</sub></span></div>`;
-    h += `<div class="sep">Circuito</div><div class="radios"><label><input type="radio" name="fuente" value="V"${sc.fuente !== 'Q' ? ' checked' : ''}> Conectado a una batería</label><label><input type="radio" name="fuente" value="Q"${sc.fuente === 'Q' ? ' checked' : ''}> Aislado con carga</label></div>`;
-    h += sc.fuente === 'Q' ? fila('Q', 'Carga', 'nC') : fila('V', 'Tensión de la batería', 'V');
+    h += `<label for="f-disp">Dieléctrico</label><select id="f-disp" class="in" data-k="disposicion"><option value="serie">${plano ? 'En láminas (serie)' : 'En capas (serie)'}</option><option value="paralelo">${plano ? 'Ocupando parte del área (paralelo)' : 'Por sectores (paralelo)'}</option><option value="variable">ε<sub>r</sub> que cambia con la posición</option></select>`;
+    if (disp === 'variable') {
+      h += `<div class="sep">ε<sub>r</sub> lineal entre las armaduras</div>` + fila('er1', 'ε<sub>r</sub> junto a la armadura +', plano ? 'x = 0' : 'r = a') + fila('er2', 'ε<sub>r</sub> junto a la armadura −', plano ? 'x = d' : 'r = b');
+      h += circuito(); campos.innerHTML = h; $('#f-geo').value = sc.geo; $('#f-disp').value = disp; return;
+    }
+    h += `<div class="sep">Capas de dieléctrico ${serie ? (plano ? '(desde la armadura +)' : '(desde el radio interior)') : plano ? '(% del área)' : '(% de la superficie, por ángulos)'}</div>`;
+    h += (sc.capas || []).map((c, i) => `<div class="capa" data-i="${i}"><b style="background:var(${COLCAPA[i % 3]})"></b><input class="in" data-c="t" value="${esc(c.t)}" aria-label="Capa ${i + 1}: ${serie ? (plano ? 'espesor en mm' : 'radio exterior en cm') : 'porcentaje del área'}" placeholder="${serie ? (plano ? 'espesor (mm)' : 'hasta r (cm)') : '% del área'}"><input class="in" data-c="er" value="${esc(c.er)}" aria-label="Capa ${i + 1}: εr" placeholder="εr"><input class="in" data-c="rig" value="${esc(c.rig ?? '')}" aria-label="Capa ${i + 1}: rigidez dieléctrica en kV/mm (opcional)" placeholder="rigidez kV/mm"><button class="btn mini" type="button" data-quita="${i}" aria-label="Quitar la capa ${i + 1}">✕</button></div>`).join('');
+    h += `<div style="grid-column:1/-1"><button class="btn" type="button" id="anade">+ Añadir capa</button> <span class="nota">${serie ? (plano ? 'espesor en mm' : 'radio exterior en cm') : plano ? '% del área' : '% de la superficie'} · ε<sub>r</sub> · rigidez (opcional, para la tensión máxima)</span></div>`;
+    h += circuito();
     campos.innerHTML = h;
     $('#f-geo').value = sc.geo;
-    if (plano) $('#f-disp').value = sc.disposicion === 'paralelo' ? 'paralelo' : 'serie';
+    $('#f-disp').value = disp;
+  }
+  function circuito() {
+    let h = `<div class="sep">Circuito</div><div class="radios"><label><input type="radio" name="fuente" value="V"${sc.fuente !== 'Q' ? ' checked' : ''}> Conectado a una batería</label><label><input type="radio" name="fuente" value="Q"${sc.fuente === 'Q' ? ' checked' : ''}> Aislado con carga</label></div>`;
+    return h + (sc.fuente === 'Q' ? fila('Q', 'Carga', 'nC') : fila('V', 'Tensión de la batería', 'V'));
   }
   const fila = (k, nom, u) => `<label for="f-${k}">${nom} <small>(${u})</small></label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc[k] ?? '')}" inputmode="decimal" autocomplete="off">`;
 
   campos.addEventListener('input', (e) => {
     const t = e.target;
     if (t.dataset.k && t.tagName === 'INPUT') sc[t.dataset.k] = t.value;
+    else if (t.dataset.cs !== undefined) sc.cs[+t.dataset.cs] = t.value;
     else if (t.dataset.c) sc.capas[+t.closest('.capa').dataset.i][t.dataset.c] = t.value;
     else if (t.name === 'fuente') { sc.fuente = t.value; if (sc.fuente === 'Q' && !sc.Q) sc.Q = '10'; if (sc.fuente === 'V' && !sc.V) sc.V = '100'; formulario(); }
     $('#ejemplos').value = '';
@@ -945,6 +1112,8 @@ const Condensador = (() => {
     const t = e.target;
     if (t.tagName !== 'SELECT') return;
     sc[t.dataset.k] = t.value;
+    if (t.dataset.k === 'tipo') { const e = K.ejemplos.find((x) => (x.sc.tipo || 'condensador') === t.value); sc = JSON.parse(JSON.stringify(e.sc)); }
+    if (t.dataset.k === 'disposicion' && t.value === 'variable') { if (!sc.er1) sc.er1 = '2'; if (!sc.er2) sc.er2 = '5'; }
     if (t.dataset.k === 'geo') {
       const def = { plano: { S: '100', d: '2' }, cilindro: { a: '1', b: '2', L: '100' }, esfera: { a: '5', b: '10' } }[t.value];
       for (const [k, v] of Object.entries(def)) if (!sc[k]) sc[k] = v;
@@ -955,6 +1124,8 @@ const Condensador = (() => {
     formulario(); calcula();
   });
   campos.addEventListener('click', (e) => {
+    if (e.target.id === 'anadec') { sc.cs.push('1'); formulario(); calcula(); }
+    if (e.target.dataset.quitac !== undefined) { sc.cs.splice(+e.target.dataset.quitac, 1); formulario(); calcula(); }
     if (e.target.id === 'anade') { (sc.capas = sc.capas || []).push({ t: '', er: '2' }); formulario(); calcula(); }
     const q = e.target.dataset.quita;
     if (q !== undefined) { sc.capas.splice(+q, 1); formulario(); calcula(); }
@@ -974,15 +1145,25 @@ const Condensador = (() => {
     try { sol = K.resolver(sc); } catch (e) { err.textContent = e.message; err.hidden = false; return; }
     err.hidden = true;
     try { localStorage.setItem(CLAVE, JSON.stringify(sc)); } catch (e) {}
-    const c = sol.comp;
     const caja = (n, v, extra) => `<div><span>${n}</span><b>${v}</b>${extra ? `<small>${extra}</small>` : ''}</div>`;
+    $('#grafica').hidden = sol.tipo !== 'condensador';
+    if (sol.tipo === 'asociacion') {
+      $('#resumen').innerHTML = caja('Capacidad equivalente', cu(sol.Ceq, 'F')) + caja('Carga total', cu(sol.Q, 'C')) + caja('Tensión', cu(sol.V, 'V')) + caja('Energía', cu(sol.U, 'J'));
+      $('#regiones').innerHTML = `<thead><tr><th>Condensador</th><th>C</th><th>Q</th><th>V</th><th>U</th></tr></thead><tbody>${sol.cs.map((c, i) => `<tr><td>C<sub>${i + 1}</sub></td><td>${cu(c, 'F')}</td><td>${cu(sol.q[i], 'C')}</td><td>${cu(sol.v[i], 'V')}</td><td>${cu(sol.u[i], 'J')}</td></tr>`).join('')}</tbody>`;
+    } else if (sol.tipo === 'conectar') {
+      $('#resumen').innerHTML = caja('Tensión final', cu(sol.Vf, 'V')) + caja('Carga total', cu(Math.abs(sol.Qt), 'C')) + caja('Energía antes', cu(sol.U0, 'J')) + caja('Energía perdida', cu(sol.perdida, 'J'), `queda ${cu(sol.Uf, 'J')}`);
+      $('#regiones').innerHTML = `<thead><tr><th></th><th>C</th><th>Q antes</th><th>V antes</th><th>Q después</th><th>V después</th></tr></thead><tbody>${[[sol.C1, sol.Q1, sol.V1], [sol.C2, sol.Q2, sol.V2]].map(([c, q, v], i) => `<tr><td>C<sub>${i + 1}</sub></td><td>${cu(c, 'F')}</td><td>${cu(q, 'C')}</td><td>${cu(v, 'V')}</td><td>${cu(c * sol.Vf, 'C')}</td><td>${cu(sol.Vf, 'V')}</td></tr>`).join('')}</tbody>`;
+    }
+    if (sol.tipo !== 'condensador') { $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join(''); dibuja(); return; }
+    const c = sol.comp;
     $('#resumen').innerHTML = caja('Capacidad', cu(sol.C, 'F'), c ? `vacío: ${cu(c.C0, 'F')} (×${K.num(sol.C / c.C0, 3)})` : '') +
       caja('Carga', cu(sol.Q, 'C'), c && sol.fuente === 'V' ? `vacío: ${cu(c.Q0, 'C')}` : '') +
       caja('Tensión', cu(sol.V, 'V'), c && sol.fuente === 'Q' ? `vacío: ${cu(c.V0, 'V')}` : '') +
-      caja('Energía', cu(sol.U, 'J'), c ? `vacío: ${cu(c.U0, 'J')}` : '');
-    const serie = sol.g.disposicion === 'serie', plano = sol.g.geo === 'plano';
+      caja('Energía', cu(sol.U, 'J'), c ? `vacío: ${cu(c.U0, 'J')}` : '') +
+      (sol.Vmax ? caja('Tensión máxima', cu(sol.Vmax, 'V'), 'antes de la ruptura') : '');
+    const serie = sol.g.disposicion !== 'paralelo', plano = sol.g.geo === 'plano';
     const rango = (a, b, u) => (Math.abs(a - b) <= 1e-9 * Math.abs(a) ? cu(a, u) : `${cu(a, u)} → ${cu(b, u)}`);
-    $('#regiones').innerHTML = `<thead><tr><th>Región</th><th>${serie ? (plano ? 'Espesor' : 'Radios') : 'Área'}</th><th>E</th><th>D</th><th>P</th><th>${serie ? 'ΔV' : 'Carga libre'}</th><th>Q polarización</th></tr></thead><tbody>${sol.regiones.map((o) => `<tr><td>${o.nombre}</td>
+    $('#regiones').innerHTML = `<thead><tr><th>Región</th><th>${serie ? (plano ? 'Espesor' : 'Radios') : plano ? 'Área' : 'Superficie'}</th><th>E</th><th>D</th><th>P</th><th>${serie ? 'ΔV' : 'Carga libre'}</th><th>Q polarización</th></tr></thead><tbody>${sol.regiones.map((o) => `<tr><td>${o.nombre}</td>
       <td>${serie ? (plano ? cu(o.hasta - o.desde, 'm') : `${K.num(o.desde * 100)}–${K.num(o.hasta * 100)} cm`) : `${K.num(o.fraccion * 100)} %`}</td>
       <td>${rango(o.E1, o.E2, 'V/m')}</td><td>${rango(o.D1, o.D2, 'C/m²')}</td><td>${o.vacio ? '0' : rango(o.P1, o.P2, 'C/m²')}</td><td>${serie ? cu(o.V, 'V') : cu(o.Q, 'C')}</td><td>${o.vacio ? '—' : '±' + cu(o.Qp, 'C')}</td></tr>`).join('')}</tbody>`;
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('');
@@ -1000,9 +1181,36 @@ const Condensador = (() => {
     g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.stroke();
     g.beginPath(); g.moveTo(x2, y2); g.lineTo(x2 - s * Math.cos(a - 0.45), y2 - s * Math.sin(a - 0.45)); g.lineTo(x2 - s * Math.cos(a + 0.45), y2 - s * Math.sin(a + 0.45)); g.closePath(); g.fill();
   };
+  // esquema de condensadores: placas de un condensador en (x, y), vertical
+  function placas(g, x, y, nombre, carga) {
+    g.strokeStyle = col['--ink']; g.lineWidth = 3; g.beginPath(); g.moveTo(x - 5, y - 16); g.lineTo(x - 5, y + 16); g.moveTo(x + 5, y - 16); g.lineTo(x + 5, y + 16); g.stroke();
+    g.fillStyle = col['--ink']; g.fillText(nombre, x, y - 26); if (carga) { g.fillStyle = col['--muted']; g.fillText(carga, x, y + 28); }
+  }
+  function esquema(g, w, h) {
+    const lin = (pts) => { g.strokeStyle = col['--ink']; g.lineWidth = 1.6; g.beginPath(); pts.forEach(([x, y], i) => (i ? g.lineTo(x, y) : g.moveTo(x, y))); g.stroke(); }, t = (x) => texto(cu(x, 'V'));
+    if (sol.tipo === 'conectar') {
+      const y = h / 2, x1 = w * 0.35, x2 = w * 0.65;
+      lin([[x1, y - 40], [x2, y - 40]]); lin([[x1, y + 40], [x2, y + 40]]); lin([[x1, y - 40], [x1, y - 16]]); lin([[x1, y + 16], [x1, y + 40]]); lin([[x2, y - 40], [x2, y - 16]]); lin([[x2, y + 16], [x2, y + 40]]);
+      g.save(); g.translate(x1, y); g.rotate(Math.PI / 2); placas(g, 0, 0, '', ''); g.restore(); g.save(); g.translate(x2, y); g.rotate(Math.PI / 2); placas(g, 0, 0, '', ''); g.restore();
+      g.fillStyle = col['--ink']; g.fillText('C₁', x1 - 30, y); g.fillText('C₂', x2 + 30, y);
+      g.fillStyle = col['--muted']; g.fillText(`${sol.op ? '+ con −' : '+ con +'} · V final = ${t(sol.Vf)}`, w / 2, h - 16);
+      return;
+    }
+    const n = sol.cs.length, y = h / 2, xa = 40, xb = w - 40, nombre = (i) => `C${'₁₂₃₄₅₆'[i]}`;
+    const fila = (is, x0, x1, yy) => { const paso = (x1 - x0) / is.length; is.forEach((i, j) => { const xc = x0 + paso * (j + 0.5); lin([[x0 + paso * j, yy], [xc - 5, yy]]); lin([[xc + 5, yy], [x0 + paso * (j + 1), yy]]); placas(g, xc, yy, nombre(i), t(sol.v[i])); }); };
+    const columna = (is, x0, x1, y0, y1) => { const sep = Math.min(84, (h - 40) / Math.max(1, is.length - 1)), ym = (y0 + y1) / 2; y0 = ym - (sep * (is.length - 1)) / 2; y1 = ym + (sep * (is.length - 1)) / 2; const paso = is.length > 1 ? (y1 - y0) / (is.length - 1) : 0; lin([[x0, y0], [x0, y1]]); lin([[x1, y0], [x1, y1]]); is.forEach((i, j) => fila([i], x0, x1, y0 + paso * j)); };
+    const todos = sol.cs.map((_, i) => i), resto = todos.slice(1);
+    if (sol.red === 'serie') fila(todos, xa, xb, y);
+    else if (sol.red === 'paralelo') columna(todos, xa, xb, y - (n - 1) * 30, y + (n - 1) * 30);
+    else if (sol.red === 'serie-par') { const xm = xa + (xb - xa) * 0.35; fila([0], xa, xm, y); columna(resto, xm, xb, y - (resto.length - 1) * 30, y + (resto.length - 1) * 30); }
+    else { columna([0], xa, xb, y - 40, y - 40); lin([[xa, y - 40], [xa, y + 40]]); lin([[xb, y - 40], [xb, y + 40]]); fila(resto, xa, xb, y + 40); }
+    g.fillStyle = col['--pos']; g.font = '600 15px "IBM Plex Sans", system-ui, sans-serif'; g.fillText('+', xa - 14, y); g.fillStyle = col['--neg']; g.fillText('−', xb + 14, y);
+    g.font = '12px "IBM Plex Sans", system-ui, sans-serif'; g.fillStyle = col['--muted']; g.fillText(`V = ${t(sol.V)} · C_eq = ${texto(cu(sol.Ceq, 'F'))}`.replace('C_eq', 'Ceq'), w / 2, h - 12);
+  }
   function dibuja() {
     if (!sol) return;
     const { g, w, h } = lienzo($('#dibujo'));
+    if (sol.tipo !== 'condensador') { g.font = '12px "IBM Plex Sans", system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; esquema(g, w, h); return; }
     const G = sol.g, Emax = Math.max(...sol.regiones.map((o) => Math.max(o.E1, o.E2)));
     g.font = '12px "IBM Plex Sans", system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
     if (G.geo === 'plano') {
@@ -1011,12 +1219,13 @@ const Condensador = (() => {
       sol.regiones.forEach((o, i) => {
         if (o.vacio) return;
         g.fillStyle = col[COLCAPA[i % 3]];
-        if (G.disposicion === 'serie') g.fillRect(X(o.desde), y0, X(o.hasta) - X(o.desde), y1 - y0);
+        if (o.variable) { const gr = g.createLinearGradient(x0, 0, x1, 0); gr.addColorStop(0, col['--capa']); gr.addColorStop(1, col['--capa3']); g.fillStyle = gr; g.globalAlpha = 0.35 + 0.5 * Math.min(1, G.er1 / Math.max(G.er1, G.er2)); g.fillRect(x0, y0, x1 - x0, y1 - y0); g.globalAlpha = 1; }
+        else if (G.disposicion === 'serie') g.fillRect(X(o.desde), y0, X(o.hasta) - X(o.desde), y1 - y0);
         else { const f0 = sol.regiones.slice(0, i).reduce((s, r) => s + r.fraccion, 0); g.fillRect(x0, y0 + f0 * (y1 - y0), x1 - x0, o.fraccion * (y1 - y0)); }
       });
       // líneas de campo: más juntas donde E es mayor
       g.strokeStyle = col['--campo']; g.fillStyle = col['--campo']; g.lineWidth = 1.2;
-      if (G.disposicion === 'serie') {
+      if (G.disposicion !== 'paralelo') {
         for (const o of sol.regiones) {
           const n = Math.max(2, Math.round((o.E1 / Emax) * 12));
           for (let k = 0; k < n; k++) { const y = y0 + ((k + 0.5) / n) * (y1 - y0); flecha(g, X(o.desde) + 3, y, X(o.hasta) - 3, y, 5); }
@@ -1038,12 +1247,20 @@ const Condensador = (() => {
       g.font = '12px "IBM Plex Sans", system-ui, sans-serif'; g.fillStyle = col['--ink'];
       sol.regiones.forEach((o, i) => {
         if (o.vacio) return;
-        if (G.disposicion === 'serie') { g.fillText(`εr = ${K.num(o.er).replace(/<[^>]+>/g, '')}`, (X(o.desde) + X(o.hasta)) / 2, y0 - 12); }
+        if (o.variable) g.fillText(`εr: ${texto(K.num(G.er1))} → ${texto(K.num(G.er2))}`, (x0 + x1) / 2, y0 - 12);
+        else if (G.disposicion === 'serie') { g.fillText(`εr = ${K.num(o.er).replace(/<[^>]+>/g, '')}`, (X(o.desde) + X(o.hasta)) / 2, y0 - 12); }
         else { const f0 = sol.regiones.slice(0, i).reduce((s, r) => s + r.fraccion, 0); g.fillText(`εr = ${K.num(o.er)}`, (x0 + x1) / 2, y0 + (f0 + o.fraccion / 2) * (y1 - y0)); }
       });
     } else {
       const cx = w / 2, cy = h / 2, R = Math.min(w, h) / 2 - 18, k = R / G.b;
-      sol.regiones.slice().reverse().forEach((o) => {
+      if (G.disposicion === 'paralelo') {
+        // sectores: cada capa ocupa una fracción del ángulo, empezando arriba
+        let a0 = -Math.PI / 2;
+        sol.regiones.forEach((o, i) => { const a1 = a0 + o.fraccion * 2 * Math.PI; g.fillStyle = o.vacio ? col['--bg'] : col[COLCAPA[i % 3]]; g.beginPath(); g.moveTo(cx, cy); g.arc(cx, cy, G.b * k, a0, a1); g.closePath(); g.fill(); if (!o.vacio) { g.fillStyle = col['--ink']; g.fillText(`εr = ${texto(K.num(o.er))}`, cx + Math.cos((a0 + a1) / 2) * (G.a + G.b) * 0.5 * k, cy + Math.sin((a0 + a1) / 2) * (G.a + G.b) * 0.5 * k); } a0 = a1; });
+      } else if (G.disposicion === 'variable') {
+        const gr = g.createRadialGradient(cx, cy, G.a * k, cx, cy, G.b * k); gr.addColorStop(0, col[G.er1 >= G.er2 ? '--capa3' : '--capa']); gr.addColorStop(1, col[G.er1 >= G.er2 ? '--capa' : '--capa3']);
+        g.fillStyle = gr; g.beginPath(); g.arc(cx, cy, G.b * k, 0, 2 * Math.PI); g.fill();
+      } else sol.regiones.slice().reverse().forEach((o) => {
         const i = sol.regiones.indexOf(o);
         g.fillStyle = o.vacio ? col['--bg'] : col[COLCAPA[i % 3]];
         g.beginPath(); g.arc(cx, cy, o.hasta * k, 0, 2 * Math.PI); g.fill();
@@ -1055,13 +1272,15 @@ const Condensador = (() => {
       for (let j = 0; j < n; j++) { const a = (j / n) * 2 * Math.PI; flecha(g, cx + Math.cos(a) * (G.a * k + 4), cy + Math.sin(a) * (G.a * k + 4), cx + Math.cos(a) * (G.b * k - 4), cy + Math.sin(a) * (G.b * k - 4), 5); }
       g.fillStyle = col['--panel']; g.font = '600 15px "IBM Plex Sans", system-ui, sans-serif'; g.fillText('+', cx, cy);
       g.font = '12px "IBM Plex Sans", system-ui, sans-serif'; g.fillStyle = col['--ink'];
-      sol.regiones.forEach((o) => { if (!o.vacio) g.fillText(`εr = ${K.num(o.er)}`, cx, cy - ((o.desde + o.hasta) / 2) * k); });
+      if (G.disposicion === 'serie') sol.regiones.forEach((o) => { if (!o.vacio) g.fillText(`εr = ${texto(K.num(o.er))}`, cx, cy - ((o.desde + o.hasta) / 2) * k); });
+      if (G.disposicion === 'variable') g.fillText(`εr: ${texto(K.num(G.er1))} → ${texto(K.num(G.er2))}`, cx, cy - ((G.a + G.b) / 2) * k);
       g.fillStyle = col['--muted']; g.textAlign = 'left'; g.fillText(G.geo === 'cilindro' ? 'corte perpendicular al eje' : 'corte por el centro', 8, h - 10);
     }
     grafica();
   }
 
   function grafica() {
+    if (sol.tipo !== 'condensador') return;
     const { g, w, h } = lienzo($('#grafica'));
     const G = sol.g, ini = G.geo === 'plano' ? 0 : G.a, fin = G.geo === 'plano' ? G.d : G.b;
     const l = 84, r = 26, top = 14, b = 26;
