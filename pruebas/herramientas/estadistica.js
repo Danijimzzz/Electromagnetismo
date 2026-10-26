@@ -29,6 +29,21 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     // el cuantil de la binomial no pisa la p de éxito (antes las dos iban en «p»)
     const bq = Es.calcular({ dist: 'binomial', n: '10', p: '0.5', tipo: 'cuantil', q: '0.9' });
     if (bq.P.p !== 0.5 || bq.x !== 7) mal(`Estadística: el cuantil 0,9 de B(10; 0,5) da k = ${bq.x} con p = ${bq.P.p}, se esperaba k = 7 con p = 0,5`);
+    // lo nuevo de la 0.2: F, uniforme, geométrica, hipergeométrica, críticos, μ o σ, colas lejanas y aproximaciones
+    const esp2 = { 'chi2-critico': [R['chi2-critico'].c1, 3.246973], 'chi2-critico c₂': [R['chi2-critico'].c, 20.483177], 'f-critico': [R['f-critico'].c, 3.325835], 'z-unilateral': [R['z-unilateral'].c, 1.644854],
+      'normal-inverso': [R['normal-inverso'].valor, 10 / 1.644854], 'normal-centro': [R['normal-centro'].p, 0.682689], uniforme: [R.uniforme.p, 0.3], geometrica: [R.geometrica.p, 0.8 ** 3 * 0.2], hipergeometrica: [R.hipergeometrica.p, (10 * 105) / 4845] };
+    for (const [k, [v, e]] of Object.entries(esp2)) if (!cerca(v, e, 2e-6)) mal(`Estadística · ${k}: ${v}, se esperaba ${e}`);
+    const fbi = Es.calcular({ dist: 'f', d1: '5', d2: '10', tipo: 'critico', alfa: '0.05' });
+    if (!cerca(fbi.c1, 1 / Es.cuantil(Es.DIST.f, { d1: 10, d2: 5 }, 0.975), 1e-9) || !cerca(fbi.c, 4.236085, 2e-6)) mal(`Estadística: F(5, 10) bilateral da ${fbi.c1} y ${fbi.c}`);
+    const cola = Es.calcular({ dist: 'normal', mu: '0', sigma: '1', tipo: 'mayor', a: '8' });
+    if (Math.abs(cola.p / 6.220961e-16 - 1) > 1e-5 || !cola.res.includes('10<sup>−16</sup>')) mal(`Estadística: P(Z ≥ 8) da ${cola.p} («${cola.res}»)`);
+    if (!cerca(Es.calcular({ dist: 'binomial', n: '30', p: '0.5', tipo: 'mayor', a: '28' }).p, (435 + 30 + 1) / 2 ** 30, 1e-15)) mal('Estadística: la cola P(X ≥ 28) de B(30; 0,5) no es exacta');
+    for (const [d, P] of [['f', { d1: 4, d2: 9 }], ['uniforme', { lo: 2, hi: 5 }]]) for (const p of [0.1, 0.7]) if (!cerca(Es.DIST[d].cdf(P, Es.cuantil(Es.DIST[d], P, p)), p, 1e-9)) mal(`Estadística · ${d}: cuantil(${p}) no es inverso`);
+    for (const [d, P] of [['geometrica', { p: 0.3 }], ['hipergeometrica', { N: 20, K: 7, n: 6 }]]) { let s = 0; for (let k = 0; k <= 12; k++) { s += Es.DIST[d].pmf(P, k); if (!cerca(Es.DIST[d].cdf(P, k), s, 1e-12)) mal(`Estadística · ${d}: F(${k}) no coincide con la suma`); } }
+    if (!R['binomial-poisson'].pasos.some((q) => q.t.includes('Poisson')) || !R['poisson-normal'].pasos.some((q) => q.t.includes('normal'))) mal('Estadística: faltan las aproximaciones de Poisson o de la normal');
+    if (!R['binomial-igual'].pasos.some((q) => q.t === 'Tabla de valores')) mal('Estadística: la binomial no trae la tabla de valores');
+    for (let i = 0; i < 200; i++) { const e = Es.ejercicio(); try { Es.calcular(e.sc); } catch (err) { mal(`Estadística: el ejercicio al azar «${e.enunciado}» da un error: ${err.message}`); break; } }
+    for (const m of [{ dist: 'normal', mu: '70', sigma: '5', tipo: 'inverso', incog: 'sigma', cola: 'mayor', a: '60', q: '0.05' }, { dist: 'uniforme', lo: '5', hi: '2', tipo: 'menor', a: '3' }, { dist: 'hipergeometrica', N: '5', K: '7', n: '2', tipo: 'igual', a: '1' }, { dist: 't', nu: '1', tipo: 'centro', cc: '1' }]) malas.push(m);
     for (const m of malas) { let ok = false; try { Es.calcular(m); } catch (e) { ok = true; } if (!ok) mal(`Estadística: ${JSON.stringify(m)} debería dar un error`); }
     if (fallos === antes) console.log(`  ✓ Estadística: tabla de Φ, ${Es.ejemplos.length} ejemplos con el valor esperado, binomial y Poisson acumuladas, cuantiles inversos y errores`);
   }
@@ -49,6 +64,17 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       if (!(await page.locator('#res').textContent()).includes('0,6554')) mal('Estadística: N(50, 5) no da 0,6554 en la página');
       await page.selectOption('#f-dist', 'binomial');
       if ((await page.locator('#f-n').count()) !== 1 || !(await page.locator('#error').isHidden())) mal('Estadística: al cambiar a binomial no aparecen n y p');
+      // arrastrar a sobre la gráfica, la μ o σ de una normal y la tabla de valores
+      await page.evaluate(() => EstadisticaApp.abrirEjemplo('normal-menor'));
+      const bx = await page.locator('#grafica').boundingBox();
+      await page.mouse.move(bx.x + bx.width * 0.8, bx.y + bx.height / 2); await page.mouse.down(); await page.mouse.move(bx.x + bx.width * 0.85, bx.y + bx.height / 2); await page.mouse.up();
+      const tras = await page.evaluate(() => EstadisticaApp.estado().a);
+      if (!(+tras > 55) || (await page.locator('#f-a').inputValue()) !== tras) mal(`Estadística: al arrastrar sobre la gráfica a vale «${tras}»`);
+      await page.evaluate(() => EstadisticaApp.abrirEjemplo('normal-inverso'));
+      if ((await page.locator('#f-sigma').count()) || !(await page.locator('#res').textContent()).includes('6,08')) mal('Estadística: hallar σ no oculta σ o no da 6,08');
+      await page.evaluate(() => EstadisticaApp.abrirEjemplo('binomial-igual'));
+      if ((await page.locator('#pasos table.tabla tr').count()) < 5 || !(await page.locator('[data-copiar]').count())) mal('Estadística: falta la tabla de valores con el botón de copiar');
+      await page.selectOption('#f-dist', 'binomial');
       await page.fill('#f-p', '2');
       if (await page.locator('#error').isHidden()) mal('Estadística: p = 2 no muestra el error');
       await page.close();

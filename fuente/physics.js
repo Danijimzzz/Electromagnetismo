@@ -13,6 +13,61 @@ const Physics = (() => {
   const vecE = (sub) => `<span class="vv">E</span>${sub ? `<sub>${sub}</sub>` : ''}`;
   const eps = 'ε<sub>0</sub>';
 
+  /* --------- densidades no uniformes: ρ(r) = ρ₀ Σ cₙ (r/R)ⁿ --------- */
+  const PERFILES = {
+    uniforme: { t: [[0, 1]], txt: 'ρ' },
+    lineal: { t: [[1, 1]], txt: 'ρ<sub>0</sub> r/R' },
+    inversa: { t: [[-1, 1]], txt: 'ρ<sub>0</sub> R/r' },
+    resta: { t: [[0, 1], [1, -1]], txt: 'ρ<sub>0</sub>(1 − r/R)' },
+    parabola: { t: [[0, 1], [2, -1]], txt: 'ρ<sub>0</sub>(1 − r<sup>2</sup>/R<sup>2</sup>)' },
+  };
+  const PERF_OPC = [['uniforme', 'uniforme'], ['lineal', 'ρ₀·r/R (crece)'], ['inversa', 'ρ₀·R/r'], ['resta', 'ρ₀·(1 − r/R)'], ['parabola', 'ρ₀·(1 − r²/R²)']];
+  const perfil = (src) => PERFILES[src.perfil] || PERFILES.uniforme;
+  // ∫_{R1}^{r} rʹ^(n+k−1) dr / R^n para cada término (k = 3 en esferas, 2 en cilindros)
+  const momento = (pf, R, R1, r, k) => pf.t.reduce((acc, [n, c]) => acc + (c * (r ** (n + k) - R1 ** (n + k))) / ((n + k) * R ** n), 0);
+  // inducción en una corteza conductora: si una fuente con carga total Q está dentro del hueco, su efecto fuera del
+  // hueco es el de una corteza de carga Q en el radio exterior (−Q en la cara interior, +Q en la exterior)
+  function conInduccion(def, ind) {
+    const d = Object.create(def);
+    const dentro = (X) => V3.norm(V3.sub(X, ind.pos));
+    d.E = function (g, X) {
+      const r = dentro(X);
+      if (r < ind.R1 - 1e-12) return def.E.call(this, g, X);
+      if (r < ind.R2 - 1e-12) return [0, 0, 0];
+      return V3.sc(V3.sub(X, ind.pos), ind.Q / (4 * PI * r ** 3));
+    };
+    d.V = function (g, X) {
+      const r = dentro(X);
+      if (r < ind.R1 - 1e-12) { const v = def.V.call(this, g, X); return v && v.add(new Ex(-ind.Q / (4 * PI * ind.R1) + ind.Q / (4 * PI * ind.R2))); }
+      return new Ex(ind.Q / (4 * PI * Math.max(r, ind.R2)));
+    };
+    d.explainE = function (g, X, nm) {
+      const r = dentro(X), L = r < ind.R1 - 1e-12 ? def.explainE.call(this, g, X, nm) : [];
+      L.push(r < ind.R1 - 1e-12 ? `Está dentro del hueco de la corteza conductora: la carga inducida en su cara interior (−Q) no crea campo en el hueco porque la carga está centrada.`
+        : r < ind.R2 - 1e-12 ? `P está dentro del conductor: la carga −Q inducida en la cara interior anula el campo de ${nm} (E = 0).`
+          : `Fuera de la corteza conductora, ${nm} y la carga −Q inducida en la cara interior se anulan; queda la +Q de la cara exterior: ${vecE()} = ${F.frac('Q', `4π${eps}r<sup>2</sup>`)} û<sub>r</sub>, con Q = ${F.num(ind.Q / (ind.Q || 1))}·(carga de ${nm}).`);
+      return L;
+    };
+    return d;
+  }
+  // campo y potencial de una curva cargada (λ(s) ds) por cuadratura de Gauss-Legendre por tramos
+  function curva(pt, lam, s0, s1, X, tramos = 16) {
+    const { x, w } = Engine.gl(24);
+    let E = [0, 0, 0], V = 0;
+    for (let k = 0; k < tramos; k++) {
+      const a = s0 + ((s1 - s0) * k) / tramos, b = s0 + ((s1 - s0) * (k + 1)) / tramos;
+      for (let i = 0; i < x.length; i++) {
+        const t = (a + b) / 2 + ((b - a) / 2) * x[i], wt = ((b - a) / 2) * w[i] * lam(t);
+        const r = V3.sub(X, pt.p(t)), n = V3.norm(r);
+        if (n < 1e-9) return null;
+        E = V3.add(E, V3.sc(r, (wt * pt.ds(t)) / (4 * PI * n ** 3))); V += (wt * pt.ds(t)) / (4 * PI * n);
+      }
+    }
+    // los ceros por simetría salen como 1e-17: se limpian para que el resultado sea exacto
+    const m = V3.norm(E);
+    return { E: E.map((c) => (Math.abs(c) < 1e-11 * m ? 0 : c)), V };
+  }
+
   /* --------------------------- FUENTES --------------------------- */
   const SOURCES = {
     point: {
@@ -42,27 +97,48 @@ const Physics = (() => {
       fields: [
         { k: 'pos', t: 'vec3', label: 'Pasa por' },
         { k: 'dir', t: 'select', label: 'Paralelo a', options: [['z', 'eje Z'], ['y', 'eje Y'], ['x', 'eje X']] },
-        { k: 'mode', t: 'select', label: 'Carga', structural: true, options: [['lambda', 'lineal λ (hilo fino)'], ['rho', 'volumétrica ρ (cilindro de radio R)']] },
-        { k: 'R', t: 'expr', label: 'Radio R', show: (s) => s.mode === 'rho' },
+        { k: 'mode', t: 'select', label: 'Carga', structural: true, options: [['lambda', 'lineal λ (hilo fino)'], ['rho', 'volumétrica ρ (cilindro de radio R)'], ['sigma', 'superficial σ (tubo de radio R)']] },
+        { k: 'R', t: 'expr', label: 'Radio R', show: (s) => s.mode === 'rho' || s.mode === 'sigma' },
+        { k: 'R1', t: 'expr', label: 'Radio interior (0 = macizo)', show: (s) => s.mode === 'rho', optional: true },
+        { k: 'perfil', t: 'select', label: 'Densidad', options: PERF_OPC, show: (s) => s.mode === 'rho' },
       ],
       defaults: () => ({ pos: ['0', '0', '0'], dir: 'z', mode: 'lambda', R: '1', s: { c: '1', sym: 'lambda' } }),
-      kindOf: (src) => (src.mode === 'rho' ? 'rho' : 'lambda'),
-      geom: (src, P) => ({ pos: src.pos.map(P), u: AX[src.dir], dir: src.dir, mode: src.mode, R: src.mode === 'rho' ? P(src.R) : 0 }),
+      kindOf: (src) => (src.mode === 'rho' ? 'rho' : src.mode === 'sigma' ? 'sigma' : 'lambda'),
+      geom(src, P) {
+        const g = { pos: src.pos.map(P), u: AX[src.dir], dir: src.dir, mode: src.mode, R: src.mode === 'rho' || src.mode === 'sigma' ? P(src.R) : 0, R1: src.mode === 'rho' && String(src.R1 ?? '').trim() ? P(src.R1) : 0, pf: perfil(src) };
+        if (g.R1 >= g.R && g.R1 > 0) throw new Error('el radio interior debe ser menor que R');
+        return g;
+      },
+      // carga por unidad de longitud dentro de un radio d (ρ = 1 o σ = 1)
+      lam(g, d) { return g.mode === 'sigma' ? (d >= g.R ? 2 * PI * g.R : 0) : 2 * PI * momento(g.pf, g.R, g.R1, Math.min(Math.max(d, g.R1), g.R), 2); },
       perp(g, X) { const w = V3.sub(X, g.pos); return V3.sub(w, V3.sc(g.u, V3.dot(w, g.u))); },
       E(g, X) {
         const pv = this.perp(g, X), d = V3.norm(pv);
-        if (g.mode === 'rho') {
-          if (d <= g.R) return V3.sc(pv, 0.5);
-          return V3.sc(pv, (g.R * g.R) / (2 * d * d));
+        if (g.mode === 'rho' || g.mode === 'sigma') {
+          if (g.mode === 'sigma' && Math.abs(d - g.R) < 1e-9) return null;
+          if (d < 1e-12) return [0, 0, 0];
+          return V3.sc(pv, this.lam(g, d) / (2 * PI * d * d));
         }
         if (d < 1e-9) return null;
         return V3.sc(pv, 1 / (2 * PI * d * d));
       },
       V(g, X) {
         const d = V3.norm(this.perp(g, X));
-        if (g.mode === 'rho') {
+        if (g.mode === 'sigma') return d <= g.R ? new Ex(0) : Ex.ln(-g.R, d / g.R);
+        if (g.mode === 'rho' && g.pf === PERFILES.uniforme && g.R1 === 0) {
           if (d <= g.R) return new Ex(-d * d / 4);
           return new Ex(-g.R * g.R / 4).add(Ex.ln(-g.R * g.R / 2, d / g.R));
+        }
+        if (g.mode === 'rho') {
+          // V(d) = −∫ E dd con V = 0 en el eje (o en R₁): para cada término ρ₀ cₙ (r/R)ⁿ
+          const Vin = (x) => {
+            let v = new Ex(0);
+            for (const [n, c] of g.pf.t) { const k = c / ((n + 2) * g.R ** n); v = v.add(new Ex((-k * (x ** (n + 2) - g.R1 ** (n + 2))) / (n + 2))); if (g.R1 > 0) v = v.add(Ex.ln(k * g.R1 ** (n + 2), x / g.R1)); }
+            return v;
+          };
+          if (d <= g.R1) return new Ex(0);
+          if (d <= g.R) return Vin(d);
+          return Vin(g.R).add(Ex.ln(-this.lam(g, g.R) / (2 * PI), d / g.R));
         }
         if (d < 1e-9) return null;
         return Ex.ln(-1 / (2 * PI), d);
@@ -70,7 +146,14 @@ const Physics = (() => {
       explainE(g, X) {
         const pv = this.perp(g, X), d = V3.norm(pv);
         const L = [`Distancia perpendicular al eje: <span class="vv">d</span> = ${F.vecNum(pv)}, &nbsp;d = ${F.num(d)}`];
-        if (g.mode === 'rho') {
+        if (g.mode === 'sigma') {
+          L.push(d < g.R ? `P está dentro del tubo (d &lt; R = ${F.num(g.R)}): el cilindro de Gauss no encierra carga, ${vecE()} = 0`
+            : `P está fuera del tubo (d &gt; R = ${F.num(g.R)}). Gauss: λ = 2πRσ y ${vecE()} = ${F.frac('σ R', `${eps}d`)} û<sub>d</sub>`);
+        } else if (g.mode === 'rho' && (g.pf !== PERFILES.uniforme || g.R1 > 0)) {
+          const zona = d < g.R1 ? 'en el hueco' : d <= g.R ? 'dentro del cilindro' : 'fuera del cilindro';
+          L.push(`ρ(r) = ${g.pf.txt}${g.R1 ? `, entre R<sub>1</sub> = ${F.num(g.R1)} y R = ${F.num(g.R)}` : ''}. P está ${zona} (d = ${F.num(d)}).`);
+          L.push(`Gauss en un cilindro de radio d y altura h: ${vecE()} 2π d h = ${F.frac('h', eps)} ∫ ρ(r) 2π r dr ⇒ λ<sub>enc</sub> = ${F.num(this.lam(g, d) / PI)}π (por unidad de ρ<sub>0</sub>) y ${vecE()} = ${F.frac('λ<sub>enc</sub>', `2π${eps}d`)} û<sub>d</sub>`);
+        } else if (g.mode === 'rho') {
           L.push(d <= g.R
             ? `P está dentro del cilindro (d ≤ R = ${F.num(g.R)}). Gauss: ${vecE()} = ${F.frac('ρ d', `2${eps}`)} û<sub>d</sub>`
             : `P está fuera del cilindro (d &gt; R = ${F.num(g.R)}). Gauss: ${vecE()} = ${F.frac('ρ R<sup>2</sup>', `2${eps}d`)} û<sub>d</sub>`);
@@ -80,7 +163,8 @@ const Physics = (() => {
       explainV(g, A, B) {
         const dA = V3.norm(this.perp(g, A)), dB = V3.norm(this.perp(g, B));
         const ds = `d<sub>A</sub> = ${F.num(dA)}, d<sub>B</sub> = ${F.num(dB)}`;
-        if (g.mode === 'rho') return `Integrando ${vecE()} de A a B (dentro: ${F.frac('ρd', `2${eps}`)}, fuera: ${F.frac('ρR<sup>2</sup>', `2${eps}d`)}); ${ds}`;
+        if (g.mode === 'sigma') return `V constante dentro del tubo y V<sub>B</sub> − V<sub>A</sub> = −${F.frac('σR', eps)} ln${F.frac('d<sub>B</sub>', 'd<sub>A</sub>')} fuera; ${ds}`;
+        if (g.mode === 'rho') return `Integrando ${vecE()} de A a B (${g.pf === PERFILES.uniforme && !g.R1 ? `dentro: ${F.frac('ρd', `2${eps}`)}, fuera: ${F.frac('ρR<sup>2</sup>', `2${eps}d`)}` : `con ρ(r) = ${g.pf.txt}`}); ${ds}`;
         return `V<sub>B</sub> − V<sub>A</sub> = −${F.frac('λ', `2π${eps}`)} ln${F.frac('d<sub>B</sub>', 'd<sub>A</sub>')}, &nbsp; ${ds}`;
       },
       anchors: (src, g) => [{ path: ['pos'], at: g.pos }],
@@ -148,10 +232,11 @@ const Physics = (() => {
         { k: 'pos', t: 'vec3', label: 'Centro' },
         { k: 'R1', t: 'expr', label: 'Radio interior (0 = maciza)' },
         { k: 'R2', t: 'expr', label: 'Radio exterior' },
+        { k: 'perfil', t: 'select', label: 'Densidad', options: PERF_OPC },
       ],
-      defaults: () => ({ pos: ['0', '0', '0'], R1: '0', R2: '1', s: { c: '1', sym: 'rho' } }),
-      geom: (src, P) => ({ pos: src.pos.map(P), R1: P(src.R1), R2: P(src.R2) }),
-      Q: (g, r) => (4 * PI / 3) * (Math.min(Math.max(r, g.R1), g.R2) ** 3 - g.R1 ** 3),
+      defaults: () => ({ pos: ['0', '0', '0'], R1: '0', R2: '1', perfil: 'uniforme', s: { c: '1', sym: 'rho' } }),
+      geom: (src, P) => ({ pos: src.pos.map(P), R1: P(src.R1), R2: P(src.R2), pf: perfil(src) }),
+      Q: (g, r) => 4 * PI * momento(g.pf, g.R2, g.R1, Math.min(Math.max(r, g.R1), g.R2), 3),
       E(g, X) {
         const rv = V3.sub(X, g.pos), r = V3.norm(rv);
         if (r < 1e-12) return [0, 0, 0];
@@ -161,13 +246,16 @@ const Physics = (() => {
         const r = Math.max(V3.norm(V3.sub(X, g.pos)), g.R1);
         const Qt = this.Q(g, g.R2);
         if (r >= g.R2) return new Ex(Qt / (4 * PI * r));
-        return new Ex(Qt / (4 * PI * g.R2) + ((g.R2 ** 2 - r * r) / 2 + g.R1 ** 3 * (1 / g.R2 - 1 / r)) / 3);
+        // V(r) = V(R₂) + ∫_r^{R₂} Q(rʹ)/(4π rʹ²) drʹ, término a término
+        const sum = g.pf.t.reduce((acc, [n, c]) => acc + (c / ((n + 3) * g.R2 ** n)) * ((g.R2 ** (n + 2) - r ** (n + 2)) / (n + 2) + (g.R1 > 0 ? g.R1 ** (n + 3) * (1 / g.R2 - 1 / r) : 0)), 0);
+        return new Ex(Qt / (4 * PI * g.R2) + sum);
       },
       explainE(g, X) {
         const r = V3.norm(V3.sub(X, g.pos));
         const zone = r >= g.R2 ? 'exterior' : r >= g.R1 ? (g.R1 ? 'dentro de la corona' : 'interior') : 'hueco interior';
         return [`r = |P − C| = ${F.num(r)} → región: ${zone}`,
-          `Gauss: ${vecE()} = ${F.frac('Q<sub>enc</sub>(r)', `4π${eps}r<sup>2</sup>`)} û<sub>r</sub>, &nbsp;Q<sub>enc</sub> = ρ·${F.frac('4π', '3')}(r<sub>c</sub><sup>3</sup> − R<sub>1</sub><sup>3</sup>) = ${F.num(this.Q(g, r) / PI)}π ρ`];
+          g.pf === PERFILES.uniforme ? `Gauss: ${vecE()} = ${F.frac('Q<sub>enc</sub>(r)', `4π${eps}r<sup>2</sup>`)} û<sub>r</sub>, &nbsp;Q<sub>enc</sub> = ρ·${F.frac('4π', '3')}(r<sub>c</sub><sup>3</sup> − R<sub>1</sub><sup>3</sup>) = ${F.num(this.Q(g, r) / PI)}π ρ`
+            : `Densidad no uniforme ρ(r) = ${g.pf.txt.replace(/R/g, 'R<sub>2</sub>')}. Gauss: ${vecE()} = ${F.frac('Q<sub>enc</sub>(r)', `4π${eps}r<sup>2</sup>`)} û<sub>r</sub>, &nbsp;Q<sub>enc</sub> = ∫ ρ(rʹ) 4π rʹ<sup>2</sup> drʹ = ${F.num(this.Q(g, r) / PI)}π ρ<sub>0</sub>`];
       },
       explainV(g, A, B) {
         return `V(r) por Gauss (V(∞) = 0), &nbsp; r<sub>A</sub> = ${F.num(V3.norm(V3.sub(A, g.pos)))}, r<sub>B</sub> = ${F.num(V3.norm(V3.sub(B, g.pos)))}`;
@@ -253,11 +341,17 @@ const Physics = (() => {
 
     rod: {
       label: 'Varilla finita', short: 'Varilla', kind: 'lambda', prefix: 'λ', absV: true,
-      fields: [{ k: 'A', t: 'vec3', label: 'Extremo 1' }, { k: 'B', t: 'vec3', label: 'Extremo 2' }],
-      defaults: () => ({ A: ['0', '0', '0'], B: ['0', '1', '0'], s: { c: '1', sym: 'lambda' } }),
+      fields: [{ k: 'A', t: 'vec3', label: 'Extremo 1' }, { k: 'B', t: 'vec3', label: 'Extremo 2' }, { k: 'perfil', t: 'select', label: 'Densidad', options: [['uniforme', 'uniforme λ'], ['lineal', 'λ₀·s/L (0 en el extremo 1)'], ['resta', 'λ₀·(1 − s/L)']] }],
+      defaults: () => ({ A: ['0', '0', '0'], B: ['0', '1', '0'], perfil: 'uniforme', s: { c: '1', sym: 'lambda' } }),
       geom(src, P) {
-        const A = src.A.map(P), B = src.B.map(P), L = V3.norm(V3.sub(B, A));
-        return { A, B, L, u: V3.unit(V3.sub(B, A)) };
+        const A = src.A.map(P), B = src.B.map(P), L = V3.norm(V3.sub(B, A)), perfil = ['lineal', 'resta'].includes(src.perfil) ? src.perfil : 'uniforme';
+        return { A, B, L, u: V3.unit(V3.sub(B, A)), perfil };
+      },
+      Qtot: (g) => (g.perfil === 'uniforme' ? g.L : g.L / 2),
+      // densidad no uniforme: se integra a lo largo de la varilla
+      noUni(g, X) {
+        const lam = g.perfil === 'lineal' ? (t) => t / g.L : (t) => 1 - t / g.L;
+        return curva({ p: (t) => V3.add(g.A, V3.sc(g.u, t)), ds: () => 1 }, lam, 0, g.L, X);
       },
       loc(g, X) {
         const w = V3.sub(X, g.A), s = V3.dot(w, g.u), pv = V3.sub(w, V3.sc(g.u, s));
@@ -266,6 +360,7 @@ const Physics = (() => {
       E(g, X) {
         const { s, pv, d, rA, rB } = this.loc(g, X);
         if (rA < 1e-9 || rB < 1e-9 || (d < 1e-9 && s >= 0 && s <= g.L)) return null;
+        if (g.perfil !== 'uniforme') { const c = this.noUni(g, X); return c && c.E; }
         let E = V3.sc(g.u, 1 / rB - 1 / rA);
         if (d > 1e-12) E = V3.add(E, V3.sc(pv, (s / rA - (s - g.L) / rB) / (d * d)));
         return V3.sc(E, 1 / (4 * PI));
@@ -273,17 +368,64 @@ const Physics = (() => {
       V(g, X) {
         const { s, d, rA, rB } = this.loc(g, X);
         if (d < 1e-9 && s >= 0 && s <= g.L) return null;
+        if (g.perfil !== 'uniforme') { const c = this.noUni(g, X); return c && new Ex(c.V); }
         let n = rA + s, m = rB + s - g.L;
         if (n < 1e-9 || m < 1e-9) { n = rB - s + g.L; m = rA - s; }
         return Ex.ln(1 / (4 * PI), n / m);
       },
       explainE(g, X) {
+        if (g.perfil !== 'uniforme') return [`Densidad no uniforme λ(s) = ${g.perfil === 'lineal' ? 'λ<sub>0</sub> s/L' : 'λ<sub>0</sub>(1 − s/L)'}, con s medido desde el extremo 1 (L = ${F.num(g.L)}).`, `d<span class="vv">E</span> = ${F.frac('λ(s) ds', `4π${eps}r<sup>2</sup>`)} û<sub>r</sub>: se integra a lo largo de la varilla (con λ(s) lineal, cada componente es una integral elemental; aquí se hace numéricamente).`];
+        
         const { s, d, rA, rB } = this.loc(g, X);
         return [`Longitud L = ${F.num(g.L)}; proyección de P sobre la varilla s = ${F.num(s)}, distancia d = ${F.num(d)}, r<sub>1</sub> = ${F.num(rA)}, r<sub>2</sub> = ${F.num(rB)}`,
           `Integrando d<span class="vv">E</span> = ${F.frac('λ dl', `4π${eps}r<sup>2</sup>`)}: E<sub>∥</sub> = ${F.frac('λ', `4π${eps}`)}(${F.frac(1, 'r<sub>2</sub>')} − ${F.frac(1, 'r<sub>1</sub>')}), E<sub>⊥</sub> = ${F.frac('λ', `4π${eps}d`)}(${F.frac('s', 'r<sub>1</sub>')} − ${F.frac('s − L', 'r<sub>2</sub>')})`];
       },
-      explainV(g) { return `V = ${F.frac('λ', `4π${eps}`)} ln${F.frac('r<sub>1</sub> + s', 'r<sub>2</sub> + s − L')}`; },
+      explainV(g) { return g.perfil !== 'uniforme' ? `V = ∫ ${F.frac('λ(s) ds', `4π${eps}r`)} con λ(s) = ${g.perfil === 'lineal' ? 'λ<sub>0</sub> s/L' : 'λ<sub>0</sub>(1 − s/L)'} (integral numérica)` : `V = ${F.frac('λ', `4π${eps}`)} ln${F.frac('r<sub>1</sub> + s', 'r<sub>2</sub> + s − L')}`; },
       anchors: (src, g) => [{ path: ['A'], at: g.A }, { path: ['B'], at: g.B }],
+    },
+
+    arc: {
+      label: 'Arco (λ)', short: 'Arco', kind: 'lambda', prefix: 'λ', absV: true,
+      fields: [{ k: 'pos', t: 'vec3', label: 'Centro' }, { k: 'axis', t: 'select', label: 'Perpendicular a', options: [['z', 'eje Z (en el plano XY)'], ['y', 'eje Y (en el plano ZX)'], ['x', 'eje X (en el plano YZ)']] }, { k: 'R', t: 'expr', label: 'Radio R' }, { k: 't1', t: 'expr', label: 'Desde el ángulo (°)' }, { k: 't2', t: 'expr', label: 'Hasta el ángulo (°)' }],
+      defaults: () => ({ pos: ['0', '0', '0'], axis: 'z', R: '1', t1: '0', t2: '180', s: { c: '1', sym: 'lambda' } }),
+      geom(src, P) {
+        const base = { z: [[1, 0, 0], [0, 1, 0]], y: [[0, 0, 1], [1, 0, 0]], x: [[0, 1, 0], [0, 0, 1]] }[src.axis] || [[1, 0, 0], [0, 1, 0]];
+        const t1 = (+String(src.t1).replace(',', '.') * PI) / 180, t2 = (+String(src.t2).replace(',', '.') * PI) / 180;
+        if (!isFinite(t1) || !isFinite(t2) || Math.abs(t2 - t1) < 1e-9) throw new Error('los ángulos del arco deben ser números distintos');
+        return { pos: src.pos.map(P), axis: src.axis, n: AX[src.axis], e1: base[0], e2: base[1], R: P(src.R), t1: Math.min(t1, t2), t2: Math.max(t1, t2) };
+      },
+      Qtot: (g) => g.R * (g.t2 - g.t1),
+      at(g, X) { return curva({ p: (t) => V3.add(g.pos, V3.add(V3.sc(g.e1, g.R * Math.cos(t)), V3.sc(g.e2, g.R * Math.sin(t)))), ds: () => g.R }, () => 1, g.t1, g.t2, X); },
+      E(g, X) { const c = this.at(g, X); return c && c.E; },
+      V(g, X) { const c = this.at(g, X); return c && new Ex(c.V); },
+      explainE(g, X) {
+        const dc = V3.norm(V3.sub(X, g.pos)), ang = F.num(((g.t2 - g.t1) * 180) / PI);
+        return dc < 1e-9 ? [`Arco de radio R = ${F.num(g.R)} y ${ang}°; P está en el centro: todos los dl están a la misma distancia R.`, `d<span class="vv">E</span> = ${F.frac('λ R dθ', `4π${eps}R<sup>2</sup>`)}(−û<sub>r</sub>) ⇒ ${vecE()} = ${F.frac('λ', `4π${eps}R`)} ∫(−cos θ, −sen θ) dθ entre ${F.num((g.t1 * 180) / PI)}° y ${F.num((g.t2 * 180) / PI)}°`]
+          : [`Arco de radio R = ${F.num(g.R)} y ${ang}°: se suman las contribuciones d<span class="vv">E</span> = ${F.frac('λ dl', `4π${eps}r<sup>2</sup>`)} û<sub>r</sub> a lo largo del arco (integral numérica).`];
+      },
+      explainV(g) { return `V = ∫ ${F.frac('λ dl', `4π${eps}r`)}; en el centro, V = ${F.frac('λ θ', `4π${eps}`)} con θ = ${F.num(g.t2 - g.t1)} rad`; },
+      anchors: (src, g) => [{ path: ['pos'], at: g.pos }],
+    },
+
+    hollow: {
+      label: 'Corteza conductora (R₁–R₂)', short: 'Corteza', kind: 'q', prefix: 'Q', absV: true,
+      fields: [{ k: 'pos', t: 'vec3', label: 'Centro' }, { k: 'R1', t: 'expr', label: 'Radio interior R₁' }, { k: 'R2', t: 'expr', label: 'Radio exterior R₂' }],
+      defaults: () => ({ pos: ['0', '0', '0'], R1: '1', R2: '2', s: { c: '1', sym: 'q' } }),
+      geom(src, P) { const g = { pos: src.pos.map(P), R1: P(src.R1), R2: P(src.R2) }; if (!(g.R2 > g.R1 && g.R1 > 0)) throw new Error('debe ser 0 < R₁ < R₂'); return g; },
+      Qtot: () => 1,
+      E(g, X) {
+        const rv = V3.sub(X, g.pos), r = V3.norm(rv);
+        if (r < g.R2 - 1e-12) return [0, 0, 0];
+        return V3.sc(rv, 1 / (4 * PI * r ** 3));
+      },
+      V(g, X) { const r = V3.norm(V3.sub(X, g.pos)); return new Ex(1 / (4 * PI * Math.max(r, g.R2))); },
+      explainE(g, X) {
+        const r = V3.norm(V3.sub(X, g.pos));
+        return [`Corteza conductora en equilibrio: su carga neta Q va a la cara exterior (R<sub>2</sub> = ${F.num(g.R2)}); en la interior (R<sub>1</sub> = ${F.num(g.R1)}) solo aparece la carga inducida por lo que haya en el hueco.`,
+          r < g.R2 ? `r = ${F.num(r)} &lt; R<sub>2</sub> → la carga neta de la cara exterior no crea campo dentro` : `r = ${F.num(r)} ≥ R<sub>2</sub> → ${vecE()} = ${F.frac('Q', `4π${eps}r<sup>2</sup>`)} û<sub>r</sub>`];
+      },
+      explainV() { return `V = ${F.frac('Q', `4π${eps}r`)} fuera; V = ${F.frac('Q', `4π${eps}R<sub>2</sub>`)} en el conductor y en el hueco (por su carga neta)`; },
+      anchors: (src, g) => [{ path: ['pos'], at: g.pos }],
     },
 
     dipole: {
@@ -379,6 +521,18 @@ const Physics = (() => {
       }
       return o;
     });
+    // fuentes dentro del hueco de una corteza conductora: su carga se induce en las caras
+    for (const h of sources.filter((o) => o.src.type === 'hollow' && o.g)) {
+      for (const o of sources) {
+        if (o === h || !o.g || !o.g.pos) continue;
+        const t = o.src.type, dc = V3.norm(V3.sub(o.g.pos, h.g.pos)), Rs = t === 'sphere' ? o.g.R2 : t === 'point' ? 0 : o.g.R;
+        if (!['point', 'sphere', 'shell', 'conductor'].includes(t) || !(dc + Rs < h.g.R1 + 1e-9)) continue;
+        if (dc > 1e-9) { errors.push(`${o.name}: dentro de la corteza ${h.name} solo se resuelven cargas centradas (la carga inducida no sería uniforme)`); continue; }
+        const Q = t === 'point' ? 1 : t === 'sphere' ? o.def.Q(o.g, o.g.R2) : o.def.Qtot(o.g);
+        o.def = conInduccion(o.def, { pos: h.g.pos, R1: h.g.R1, R2: h.g.R2, Q });
+        o.inducida = h;
+      }
+    }
     for (const an of scen.analyses) {
       if (an.Q?.sym && !(an.Q.sym in kinds)) kinds[an.Q.sym] = 'q';
       if (an.sym && !(an.sym in kinds)) kinds[an.sym] = 'p';
@@ -621,11 +775,17 @@ const Physics = (() => {
   }
   function qencExact(s, surf) {
     const g = s.g, t = s.src.type;
+    if (s.inducida) return null;
+    if (t === 'hollow') {
+      if (surf.shape !== 'sphere') return null;
+      const dc = V3.norm(V3.sub(g.pos, surf.C));
+      return dc + g.R2 < surf.R - 1e-9 ? new Ex(1) : dc > surf.R + g.R2 + 1e-9 ? new Ex(0) : dc < 1e-12 && surf.R < g.R2 ? new Ex(0) : null;
+    }
     if (t === 'point') { const k = insideSurf(surf, g.pos); return k === null ? null : new Ex(k); }
     if (t === 'dipole') return insideSurf(surf, g.pos) !== null ? new Ex(0) : null;
     if (['sphere', 'shell', 'conductor', 'ring', 'disk'].includes(t)) {
       const Rs = t === 'sphere' ? g.R2 : g.R;
-      const Qt = t === 'sphere' ? (4 * PI / 3) * (g.R2 ** 3 - g.R1 ** 3) : s.def.Qtot(g);
+      const Qt = t === 'sphere' ? s.def.Q(g, g.R2) : s.def.Qtot(g);
       if (surf.shape === 'sphere') {
         const dc = V3.norm(V3.sub(g.pos, surf.C));
         if (dc + Rs < surf.R - 1e-9) return new Ex(Qt);
@@ -634,6 +794,7 @@ const Physics = (() => {
       }
       return null;
     }
+    if (t === 'arc') return null;
     if (t === 'line' && g.mode === 'lambda') {
       const w = V3.sub(surf.C, g.pos), dpar = V3.dot(w, g.u), dist = V3.norm(V3.sub(w, V3.sc(g.u, dpar)));
       if (surf.shape === 'sphere') return new Ex(dist < surf.R ? 2 * Math.sqrt(surf.R ** 2 - dist ** 2) : 0);

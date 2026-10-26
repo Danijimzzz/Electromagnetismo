@@ -38,15 +38,21 @@ dl.datos dt { color: var(--muted) } dl.datos dd { margin: 0 } dl.datos dd.m { fo
 .subnivel small { font: 12.5px var(--f-math); color: var(--muted) }
 .cuanticos { display: flex; gap: 10px; flex-wrap: wrap } .cuanticos div { background: var(--bg); border-radius: 8px; padding: 8px 12px; text-align: center; min-width: 64px }
 .cuanticos div b { display: block; font: 600 20px var(--f-math) } .cuanticos div span { font-size: 12px; color: var(--muted) }
+.dos + .dos { margin-top: 14px }
+#iso { display: flex; flex-wrap: wrap; gap: 6px } #iso span { font: 15px var(--f-math); background: var(--bg); border-radius: 6px; padding: 3px 8px } #iso span.yo { background: var(--accent-soft); font-weight: 600 }
+#iso small { font: 11px var(--f-mono); color: var(--muted); margin-left: 4px }
+#tabla-nq { width: 100% } #tabla-nq td, #tabla-nq th { text-align: center } #tabla-nq td:first-child { font-family: var(--f-math) }
 </style>
 <body>
 <header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Química</a> / Configuración electrónica</span></header>
 <div class="wrap">
 <h1>Configuración electrónica</h1>
 <p class="lead">Escribe un elemento o un ion para ver cómo se reparten sus electrones: orden de llenado, diagrama de Moeller, orbitales con la regla de Hund y los números cuánticos del último electrón.</p>
+<div class="modos" role="tablist" style="margin-bottom:12px"><button role="tab" id="tab-el" aria-selected="true">Elemento o ion</button><button role="tab" id="tab-conf" aria-selected="false">¿Qué elemento es?</button><button role="tab" id="tab-nq" aria-selected="false">Números cuánticos</button></div>
+<section id="s-el">
 <div class="card">
-  <div class="fila"><input id="entrada" class="in ancho" value="Fe" placeholder="Fe, hierro, 26, Fe^2+, Cl-…" aria-label="Elemento o ion" autocomplete="off" spellcheck="false"></div>
-  <div class="chips" id="chips"></div>
+  <div class="fila"><input id="entrada" class="in ancho" value="Fe" placeholder="Fe, hierro, 26, Fe^2+, Cl-…" aria-label="Elemento o ion" autocomplete="off" spellcheck="false">
+    <select id="ejemplos" class="in" aria-label="Ejemplos"></select></div>
   <p class="error" id="error" hidden></p>
 </div>
 <div id="res">
@@ -57,7 +63,9 @@ dl.datos dt { color: var(--muted) } dl.datos dd { margin: 0 } dl.datos dd.m { fo
       <dt>Abreviada</dt><dd class="m" id="abreviada"></dd>
       <dt>Ordenada por capas</dt><dd class="m" id="capas-txt"></dd>
       <dt>Electrones por capa</dt><dd id="capas"></dd>
+      <dt>Electrones de valencia</dt><dd id="val-e"></dd>
       <dt>Capa más externa</dt><dd id="valencia"></dd>
+      <dt>Carga nuclear efectiva</dt><dd id="zef"></dd>
       <dt>Desapareados</dt><dd id="desap"></dd>
     </dl>
     <div class="aviso" id="excepcion" hidden></div>
@@ -69,7 +77,39 @@ dl.datos dt { color: var(--muted) } dl.datos dd { margin: 0 } dl.datos dd.m { fo
       <h2 style="margin-top:16px">Números cuánticos del electrón diferenciador</h2><div class="cuanticos" id="cuanticos"></div>
       <p class="nota">El último electrón que entra según el orden de llenado. Convenio: los orbitales de un subnivel se llenan de m<sub>l</sub> = −l a +l, primero con s = +½ (regla de Hund) y después con −½. Algunos libros usan el orden contrario.</p></div>
   </div>
+  <div class="dos">
+    <div class="card"><h2>Números cuánticos de los electrones de valencia</h2><div class="tabla-scroll"><table class="tabla" id="tabla-nq"></table></div></div>
+    <div class="card"><h2>Carga nuclear efectiva (Slater)</h2><p id="slater" class="nota" style="color:var(--ink)"></p>
+      <h2 style="margin-top:16px">Especies isoelectrónicas</h2><div id="iso"></div>
+      <p class="nota">Todas tienen los mismos electrones. Con más protones, la carga nuclear efectiva es mayor y atrae más a los electrones: el radio es menor. Van ordenadas de mayor a menor radio.</p></div>
+  </div>
 </div>
+</section>
+
+<section id="s-conf" hidden>
+<div class="card">
+  <div class="fila"><input id="conf-txt" class="in ancho" placeholder="1s2 2s2 2p6 3s1 o [Ar] 4s2 3d5" aria-label="Configuración electrónica" autocomplete="off" spellcheck="false"></div>
+  <p class="nota">Escribe cada subnivel con sus electrones (3d6 o 3d⁶), y si quieres empieza por el gas noble entre corchetes. Dice de qué elemento es, si es el estado fundamental, uno excitado o una configuración imposible.</p>
+  <p class="error" id="error-conf" hidden></p>
+  <div class="resumen" id="resumen-conf"></div>
+  <p id="conf-exp" style="margin:10px 0 0"></p>
+</div>
+</section>
+
+<section id="s-nq" hidden>
+<div class="card">
+  <div class="campos" style="--ancho-valor: 110px">
+    <label for="nq-n">n <small>principal</small></label><input id="nq-n" class="in" inputmode="numeric">
+    <label for="nq-l">l <small>secundario</small></label><input id="nq-l" class="in" inputmode="numeric">
+    <label for="nq-ml">m<sub>l</sub> <small>magnético</small></label><input id="nq-ml" class="in" inputmode="numeric">
+    <label for="nq-ms">s <small>espín</small></label><input id="nq-ms" class="in" placeholder="+1/2 o −1/2">
+  </div>
+  <p class="error" id="error-nq" hidden></p>
+  <div class="resumen" id="resumen-nq" style="margin-top:12px"></div>
+  <p id="nq-exp" style="margin:10px 0 0"></p>
+  <p class="nota">Reglas: n = 1, 2, 3…; l de 0 a n − 1 (s, p, d, f); m<sub>l</sub> de −l a +l; s = +½ o −½. En la capa n caben 2n² electrones.</p>
+</div>
+</section>
 <section class="teoria">
   <h2>Cómo se escribe la configuración electrónica</h2>
   <ul>
@@ -79,6 +119,10 @@ dl.datos dt { color: var(--muted) } dl.datos dd { margin: 0 } dl.datos dd.m { fo
   </ul>
   <h2>Excepciones</h2>
   <p>Algunos elementos se apartan del orden de llenado porque un subnivel d o f lleno o semilleno es especialmente estable. Los más preguntados son el cromo, [Ar] 3d⁵ 4s¹ en lugar de 3d⁴ 4s², y el cobre, [Ar] 3d¹⁰ 4s¹ en lugar de 3d⁹ 4s². Pasa lo mismo en Mo, Ag y Au.</p>
+  <h2>Electrones de valencia y carga nuclear efectiva</h2>
+  <p>Los electrones de valencia son los de los subniveles que intervienen en los enlaces: ns y np en los elementos de los grupos principales, ns y (n − 1)d en los de transición (el Fe tiene 4s² 3d⁶, ocho) y además (n − 2)f en los lantánidos y actínidos. La carga nuclear efectiva Z<sub>ef</sub> = Z − S es la que nota el electrón más externo: con las reglas de Slater, cada electrón del mismo grupo apantalla 0,35 (0,30 en 1s), cada uno de la capa n − 1, 0,85, y los más internos, 1. Para un electrón d o f, todos los de su izquierda apantallan 1.</p>
+  <h2>Números cuánticos</h2>
+  <p>Cada electrón tiene cuatro: n (la capa, 1, 2, 3…), l (el tipo de subnivel, de 0 a n − 1: s, p, d, f), m<sub>l</sub> (el orbital, de −l a +l) y s (el espín, +½ o −½). Por el principio de exclusión de Pauli no hay dos electrones de un átomo con los cuatro iguales. Una configuración es excitada si un electrón está en un subnivel más alto habiendo huecos por debajo, e imposible si un subnivel no existe (2d) o tiene más electrones de los que caben (2p⁷).</p>
   <h2>Iones</h2>
   <p>Un anión gana electrones en el siguiente hueco libre. Un catión pierde primero los electrones de la capa más externa: en los metales de transición salen los 4s antes que los 3d, así que el Fe<sup>2+</sup> es [Ar] 3d⁶ y no [Ar] 4s² 3d⁴.</p>
 </section>

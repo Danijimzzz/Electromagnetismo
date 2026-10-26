@@ -1,5 +1,7 @@
 /* =====================================================================
-   Disoluciones y concentraciones: interfaz. El cálculo está en
+   Disoluciones y concentraciones: interfaz (cuatro pestañas:
+   concentración, preparar, diluir y mezclar, y propiedades coligativas).
+   El cálculo está en
    quimica/disoluciones.js (Disoluciones), con las masas molares de
    quimica/formulas.js.
    ===================================================================== */
@@ -7,13 +9,15 @@
   const $ = (q) => document.querySelector(q);
   const D = Disoluciones, f = D.f;
   const CLAVE = 'disoluciones-v1';
-  const ORDEN = ['M', 'm', 'mm', 'x', 'gL', 'mv', 'ppm'];
-  const NOMBRES = { M: 'Molaridad', m: 'Molalidad', mm: '% en masa', x: 'Fracción molar del soluto', gL: 'Concentración en masa', mv: '% masa/volumen', ppm: 'Partes por millón' };
+  const ORDEN = ['M', 'm', 'mm', 'x', 'gL', 'mv', 'ppm', 'N'];
+  const NOMBRES = { M: 'Molaridad', m: 'Molalidad', mm: '% en masa', x: 'Fracción molar del soluto', gL: 'Concentración en masa', mv: '% masa/volumen', ppm: 'Partes por millón', N: 'Normalidad' };
+  const TABS = ['conc', 'prep', 'dil', 'col'];
 
   let st = {
     tab: 'conc', modo: 'iupac',
     conc: { ...D.ejemplos[0].sc }, prep: { ...D.ejemplosPreparar[0].sc },
     dil: { C1: '12', V1: '', C2: '0.5', V2: '250' }, mez: { C1: '1', V1: '100', C2: '0.25', V2: '300', Va: '' },
+    col: { ...D.ejemplosColig[0].sc },
   };
   try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && g.conc && g.prep && g.dil && g.mez) st = { ...st, ...g }; } catch (e) {}
   const guarda = () => { try { localStorage.setItem(CLAVE, JSON.stringify(st)); } catch (e) {} };
@@ -23,11 +27,12 @@
   /* ---------- Pestañas ---------- */
   function pestana(t) {
     st.tab = t; guarda();
-    for (const [b, s] of [['conc', 'conc'], ['prep', 'prep'], ['dil', 'dil']]) { $('#tab-' + b).setAttribute('aria-selected', t === s); $('#' + s).hidden = t !== s; }
+    if (!TABS.includes(t)) t = st.tab = 'conc';
+    for (const s of TABS) { $('#tab-' + s).setAttribute('aria-selected', t === s); $('#' + s).hidden = t !== s; }
   }
-  for (const t of ['conc', 'prep', 'dil']) $('#tab-' + t).addEventListener('click', () => pestana(t));
+  for (const t of TABS) $('#tab-' + t).addEventListener('click', () => pestana(t));
   $('#modo').value = st.modo;
-  $('#modo').addEventListener('change', () => { st.modo = $('#modo').value; guarda(); conc(); prep(); });
+  $('#modo').addEventListener('change', () => { st.modo = $('#modo').value; guarda(); conc(); prep(); col(); });
 
   // enlaza los campos con prefijo pre- a st[obj]
   function enlaza(pre, obj, alCambiar) {
@@ -78,15 +83,20 @@
   enlaza('p', 'prep', () => { selP.value = ''; prep(); });
 
   function prep() {
-    const o = st.prep.origen === 'comercial' ? 'comercial' : 'solido';
+    const o = st.prep.origen === 'comercial' ? 'comercial' : 'solido', obj = D.OBJ[st.prep.obj] ? st.prep.obj : 'M', O = D.OBJ[obj];
     document.querySelectorAll('#prep [data-o]').forEach((n) => { n.hidden = n.dataset.o !== o; });
+    document.querySelectorAll('#prep [data-obj]').forEach((n) => { n.hidden = n.dataset.obj !== obj; });
+    $('#et-pM').innerHTML = `${O.nom[0].toUpperCase() + O.nom.slice(1)} <small>(${O.u})</small>`;
+    $('#et-pV').innerHTML = O.q === 'V' ? 'Volumen <small>(mL)</small>' : O.q === 'masa' ? 'Masa de disolución <small>(g)</small>' : 'Masa de agua <small>(g)</small>';
     let r;
     try { r = D.preparar({ ...st.prep, modo: st.modo }); } catch (e) { err('#error-prep', e); $('#valores-prep').innerHTML = ''; $('#instr').hidden = true; $('#pasos-prep').innerHTML = ''; return; }
     err('#error-prep', null);
     const t = [['Moles de soluto', `${f(r.n)} mol`], ['Soluto puro', `${f(r.mPuro)} g`]];
     if (r.mPesar !== undefined) t.push(['Hay que pesar', `${f(r.mPesar)} g`]);
     if (r.Vcomercial !== undefined) t.push(['Reactivo comercial', `${f(r.mComercial)} g`], ['Hay que medir', `${f(r.Vcomercial)} mL`], ['Molaridad del comercial', `${f(r.Mcomercial)} mol/L`]);
-    $('#valores-prep').innerHTML = t.map(([a, b], i) => `<div class="valor${i === t.length - (r.Vcomercial !== undefined ? 2 : 1) ? ' dato' : ''}"><span>${a}</span><b>${b}</b></div>`).join('');
+    if (r.agua !== undefined) t.push(['Agua que se añade', `${f(r.agua)} g`]);
+    const clave = r.Vcomercial !== undefined ? 'Hay que medir' : 'Hay que pesar';
+    $('#valores-prep').innerHTML = t.map(([a, b]) => `<div class="valor${a === clave ? ' dato' : ''}"><span>${a}</span><b>${b}</b></div>`).join('');
     $('#instr').hidden = false; $('#instr').textContent = r.instrucciones;
     $('#pasos-prep').innerHTML = r.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('');
   }
@@ -99,7 +109,7 @@
     let r;
     try { r = D.diluir(st.dil); } catch (e) { err('#error-dil', e); $('#res-dil').innerHTML = ''; $('#pasos-dil').innerHTML = ''; return; }
     err('#error-dil', null);
-    $('#res-dil').innerHTML = `${NOM[r.calculado]} = ${f(r[r.calculado])}`;
+    $('#res-dil').innerHTML = `${NOM[r.calculado]} = ${f(r[r.calculado])} ${r.unidad}`;
     $('#pasos-dil').innerHTML = r.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('');
   }
   function mez() {
@@ -110,8 +120,25 @@
     $('#pasos-mez').innerHTML = r.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('');
   }
 
+  /* ---------- Propiedades coligativas ---------- */
+  const selG = $('#ejemplos-col');
+  selG.innerHTML = '<option value="">Ejemplos…</option>' + D.ejemplosColig.map((e) => `<option value="${e.clave}">${e.nombre}</option>`).join('');
+  selG.addEventListener('change', () => { if (selG.value) abrirEjemploG(selG.value); });
+  function abrirEjemploG(clave) { const e = D.ejemplosColig.find((x) => x.clave === clave); if (!e) return; st.col = { ...e.sc }; rellena('g', 'col'); selG.value = clave; pestana('col'); col(); guarda(); }
+  enlaza('g', 'col', () => { selG.value = ''; col(); });
+  function col() {
+    const b = st.col.busca === 'M' ? 'M' : 'prop';
+    document.querySelectorAll('#col [data-b]').forEach((n) => { n.hidden = n.dataset.b !== b; });
+    let r;
+    try { r = D.coligativas({ ...st.col, modo: st.modo }); } catch (e) { err('#error-col', e); $('#valores-col').innerHTML = ''; $('#pasos-col').innerHTML = ''; return; }
+    err('#error-col', null);
+    const t = r.busca === 'M' ? [['Masa molar del soluto', `${f(r.M)} g/mol`, true], ["Factor de van 't Hoff", `i = ${f(r.i)}`]] : [['Molalidad', `${f(r.molal)} mol/kg`], ['Congela a', `${f(r.Tc)} °C`, true], ['Descenso crioscópico', `${f(r.dTc)} K`], ['Hierve a', `${f(r.Te)} °C`, true], ['Aumento ebulloscópico', `${f(r.dTe)} K`], ['Presión osmótica', `${f(r.pi)} atm`], ...(r.P !== null ? [['Presión de vapor', `${f(r.P)} mmHg`]] : []), ["Factor de van 't Hoff", `i = ${f(r.i)}`]];
+    $('#valores-col').innerHTML = t.map(([a, v, d]) => `<div class="valor${d ? ' dato' : ''}"><span>${a}</span><b>${v}</b></div>`).join('');
+    $('#pasos-col').innerHTML = r.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('');
+  }
+
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('disoluciones').current;
-  rellena('c', 'conc'); rellena('p', 'prep'); rellena('d', 'dil'); rellena('m', 'mez');
-  conc(); prep(); dil(); mez(); pestana(st.tab);
-  window.DisolApp = { abrirEjemplo, abrirEjemploP, pestana, estado: () => JSON.parse(JSON.stringify(st)) };
+  rellena('c', 'conc'); rellena('p', 'prep'); rellena('d', 'dil'); rellena('m', 'mez'); rellena('g', 'col');
+  conc(); prep(); dil(); mez(); col(); pestana(st.tab);
+  window.DisolApp = { abrirEjemplo, abrirEjemploP, abrirEjemploG, pestana, estado: () => JSON.parse(JSON.stringify(st)) };
 })();

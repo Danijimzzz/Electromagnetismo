@@ -89,6 +89,66 @@ const MagEjemplos = (() => {
         vista: { plano: 'xy', corte: '0' },
       }),
     },
+    {
+      clave: 'cilindro', titulo: 'Cilindro macizo con corriente',
+      enunciado: 'Un conductor cilíndrico macizo e indefinido de radio 2a, con el eje en el eje Z, lleva una corriente I hacia +Z repartida uniformemente en su sección. Calcular el campo magnético en (a, 0, 0) y en (3a, 0, 0), y dibujar cómo varía |B| con la distancia al eje.',
+      escena: () => ({
+        fuentes: [{ tipo: 'cilindro', nombre: 'Cilindro', I: '1', s: 'I', C: v(0, 0, 0), u: v(0, 0, 1), R1: '0', R2: '2', perfil: 'uniforme' }],
+        preguntas: [{ tipo: 'B', P: v(1, 0, 0) }, { tipo: 'B', P: v(3, 0, 0) }, { tipo: 'perfil', P: v(0, 0, 0), Q: v(5, 0, 0) }],
+        vista: { plano: 'xy', corte: '0', mapa: true },
+      }),
+    },
+    {
+      clave: 'coaxial', titulo: 'Cable coaxial',
+      enunciado: 'Un cable coaxial indefinido, con el eje en el eje Z, tiene un conductor interior macizo de radio a por el que va una corriente I hacia +Z, y un conductor exterior de radios 2a y 3a por el que vuelve la misma corriente. Las corrientes están repartidas uniformemente. Calcular el campo magnético en (a/2, 0, 0), en (5a/2, 0, 0) y en (4a, 0, 0).',
+      escena: () => ({
+        fuentes: [
+          { tipo: 'cilindro', nombre: 'Interior', I: '1', s: 'I', C: v(0, 0, 0), u: v(0, 0, 1), R1: '0', R2: '1', perfil: 'uniforme' },
+          { tipo: 'cilindro', nombre: 'Exterior', I: '-1', s: 'I', C: v(0, 0, 0), u: v(0, 0, 1), R1: '2', R2: '3', perfil: 'uniforme' },
+        ],
+        preguntas: [{ tipo: 'B', P: v('1/2', 0, 0) }, { tipo: 'B', P: v('5/2', 0, 0) }, { tipo: 'B', P: v(4, 0, 0) }, { tipo: 'perfil', P: v(0, 0, 0), Q: v(4, 0, 0) }],
+        vista: { plano: 'xy', corte: '0', mapa: true },
+      }),
+    },
+    {
+      clave: 'cilindro-J', titulo: 'Cilindro con J proporcional a r',
+      enunciado: 'Un hilo grueso de radio a, con el eje en el eje Z, lleva una corriente total I hacia +Z con una densidad de corriente que crece linealmente con la distancia al eje, J = J₀ r/a. Calcular el campo magnético en (a/2, 0, 0) y en (0, 2a, 0).',
+      escena: () => ({
+        fuentes: [{ tipo: 'cilindro', nombre: 'Hilo grueso', I: '1', s: 'I', C: v(0, 0, 0), u: v(0, 0, 1), R1: '0', R2: '1', perfil: 'lineal' }],
+        preguntas: [{ tipo: 'B', P: v('1/2', 0, 0) }, { tipo: 'B', P: v(0, 2, 0) }],
+        vista: { plano: 'xy', corte: '0' },
+      }),
+    },
+    {
+      clave: 'laminas', titulo: 'Dos láminas de corriente',
+      enunciado: 'El plano z = 0 lleva una densidad superficial de corriente K hacia +X, y el plano z = 2a, otra de la misma intensidad hacia −X. Calcular el campo magnético en (0, 0, a), entre las dos láminas, y en (0, 0, 3a).',
+      escena: () => ({
+        fuentes: [
+          { tipo: 'lamina', nombre: 'Lámina z = 0', I: '1', s: 'K', C: v(0, 0, 0), eje: 'z', u: v(1, 0, 0) },
+          { tipo: 'lamina', nombre: 'Lámina z = 2a', I: '1', s: 'K', C: v(0, 0, 2), eje: 'z', u: v(-1, 0, 0) },
+        ],
+        preguntas: [{ tipo: 'B', P: v(0, 0, 1) }, { tipo: 'B', P: v(0, 0, 3) }],
+        vista: { plano: 'yz', corte: '0' },
+      }),
+    },
+    {
+      clave: 'rectangular', titulo: 'Espira rectangular',
+      enunciado: 'Una espira rectangular de lados 2a (paralelo al eje X) y 4a (paralelo al eje Y), centrada en el origen en el plano XY, lleva una corriente I en sentido antihorario visto desde +Z. Calcular el campo magnético en el centro y en (0, 0, 2a).',
+      escena: () => ({
+        fuentes: [{ tipo: 'rectangular', nombre: 'Espira', I: '1', s: 'I', C: v(0, 0, 0), plano: 'xy', a: '2', b: '4', sentido: 1 }],
+        preguntas: [{ tipo: 'B', P: v(0, 0, 0) }, { tipo: 'B', P: v(0, 0, 2) }],
+        vista: { plano: 'xy', corte: '0' },
+      }),
+    },
+    {
+      clave: 'disco', titulo: 'Disco cargado que gira',
+      enunciado: 'Un disco de radio a con densidad superficial de carga σ gira con velocidad angular ω alrededor de su eje, el eje Z, en sentido antihorario visto desde +Z. Calcular el campo magnético en el centro y en el punto (0, 0, a) del eje.',
+      escena: () => ({
+        fuentes: [{ tipo: 'disco', nombre: 'Disco', I: '1', s: 'sigma*omega', C: v(0, 0, 0), plano: 'xy', R: '1', sentido: 1 }],
+        preguntas: [{ tipo: 'B', P: v(0, 0, 0) }, { tipo: 'B', P: v(0, 0, 1) }, { tipo: 'perfil', P: v(0, 0, -3), Q: v(0, 0, 3) }],
+        vista: { plano: 'xz', corte: '0', lineas: true },
+      }),
+    },
   ];
   return { lista };
 })();

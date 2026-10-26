@@ -1,11 +1,11 @@
 /* =====================================================================
-   Fluidos: interfaz (modo, datos, resultados, animación de cada caso y
-   desarrollo). El cálculo está en fluidos/fisica.js (Fluidos).
+   Fluidos: interfaz (modo, datos, resultados, animación de cada caso,
+   modo práctica con enunciado y desarrollo). El cálculo está en fluidos/fisica.js (Fluidos).
    ===================================================================== */
 (() => {
   const { $, esc, copia, txt } = Herramienta;
   const F = Fluidos, f = F.f, CLAVE = 'fluidos-v1';
-  const MODOS = [['presion', 'Presión a una profundidad'], ['tuboU', 'Tubo en U con dos líquidos'], ['prensa', 'Prensa hidráulica (Pascal)'], ['empuje', 'Empuje (Arquímedes)'], ['bernoulli', 'Tubería: continuidad y Bernoulli'], ['torricelli', 'Chorro de un depósito (Torricelli)']];
+  const MODOS = [['presion', 'Presión a una profundidad'], ['tuboU', 'Tubo en U con dos líquidos'], ['prensa', 'Prensa hidráulica (Pascal)'], ['empuje', 'Empuje (Arquímedes)'], ['bernoulli', 'Tubería: continuidad y Bernoulli'], ['torricelli', 'Chorro de un depósito (Torricelli)'], ['viscosidad', 'Viscosidad (Poiseuille y Stokes)'], ['medidor', 'Tubo de Pitot y medidor de Venturi'], ['pared', 'Fuerza sobre una pared o compuerta'], ['capilar', 'Capilaridad (ley de Jurin)']];
 
   let sc = copia(F.ejemplos[0].sc);
   try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && MODOS.some(([k]) => k === g.modo)) sc = g; } catch (e) { /* sin almacenamiento */ }
@@ -23,6 +23,10 @@
     prensa: 'Los diámetros de los émbolos van en centímetros, como el recorrido.',
     empuje: 'Densidades del agua 1000 kg/m³, del agua de mar 1025 kg/m³. El volumen va en m³: se admite 2e-3 o 2·10^-3.',
     bernoulli: 'Los diámetros van en centímetros y el caudal en litros por segundo. La presión puede ser absoluta o manométrica: p₂ sale del mismo tipo.',
+    viscosidad: 'Viscosidad del agua 10⁻³ Pa·s, de la sangre unos 4·10⁻³ Pa·s, de la glicerina 1,5 Pa·s. En Poiseuille el diámetro interior va en mm y el caudal en mL/s; en Stokes, el radio de la esfera en mm.',
+    medidor: 'El desnivel del manómetro va en cm. En el Venturi, deja vacía la densidad del manómetro si son dos tubos verticales abiertos con el mismo fluido.',
+    pared: 'Para una presa o la pared de un depósito deja vacía la profundidad del borde de arriba: la pared está mojada desde la superficie. Para una compuerta sumergida, da a qué profundidad empieza.',
+    capilar: 'Tensión superficial del agua 0,073 N/m (ángulo 0°), del mercurio 0,49 N/m (unos 140°). El radio del tubo va en mm.',
     torricelli: 'H es la altura del líquido por encima del agujero. El resto es opcional: con la altura del agujero sale el alcance, con su diámetro el caudal y con el del depósito el tiempo de vaciado.',
   };
   function formulario() {
@@ -42,6 +46,17 @@
     } else if (sc.modo === 'bernoulli') {
       h += elige('datos', 'Datos', [['v1', 'Conozco la velocidad en 1'], ['Q', 'Conozco el caudal']]);
       h += fila('rho', 'Densidad del fluido', 'kg/m³') + fila('d1', 'Diámetro en 1', 'cm') + fila('d2', 'Diámetro en 2', 'cm') + (sc.datos === 'Q' ? fila('Q', 'Caudal', 'L/s') : fila('v1', 'Velocidad en 1', 'm/s')) + fila('p1', 'Presión en 1', 'Pa') + sep('Opcional') + fila('h1', 'Altura de 1', 'm') + fila('h2', 'Altura de 2', 'm') + fila('g', 'Gravedad', 'm/s²');
+    } else if (sc.modo === 'viscosidad') {
+      h += elige('tipo', 'Caso', [['poiseuille', 'Un fluido por un tubo (Poiseuille)'], ['stokes', 'Una esfera que cae (Stokes)']]);
+      if (sc.tipo === 'stokes') h += elige('datos', 'Qué buscas', [['eta', 'La velocidad límite'], ['v', 'La viscosidad (mido la velocidad)']]) + fila('r', 'Radio de la esfera', 'mm') + fila('rhoE', 'Densidad de la esfera', 'kg/m³') + fila('rhoF', 'Densidad del fluido', 'kg/m³') + (sc.datos === 'v' ? fila('v', 'Velocidad límite medida', 'm/s') : fila('eta', 'Viscosidad η', 'Pa·s')) + gr;
+      else h += elige('datos', 'Qué buscas', [['dp', 'El caudal'], ['Q', 'La diferencia de presión']]) + fila('eta', 'Viscosidad η', 'Pa·s') + fila('L', 'Longitud del tubo', 'm') + fila('d', 'Diámetro interior', 'mm') + (sc.datos === 'Q' ? fila('Q', 'Caudal', 'mL/s') : fila('dp', 'Diferencia de presión Δp', 'Pa')) + sep('Opcional') + fila('rho', 'Densidad (para el número de Reynolds)', 'kg/m³');
+    } else if (sc.modo === 'medidor') {
+      h += elige('tipo', 'Aparato', [['pitot', 'Tubo de Pitot'], ['venturi', 'Medidor de Venturi']]) + fila('rhoF', 'Densidad del fluido que se mide', 'kg/m³') + fila('dh', 'Desnivel en el manómetro Δh', 'cm');
+      h += sc.tipo === 'venturi' ? fila('d1', 'Diámetro de la tubería', 'cm') + fila('d2', 'Diámetro del estrechamiento', 'cm') + sep('Opcional') + fila('rhoM', 'Densidad del líquido del manómetro', 'kg/m³') + fila('g', 'Gravedad', 'm/s²') : fila('rhoM', 'Densidad del líquido del manómetro', 'kg/m³') + gr;
+    } else if (sc.modo === 'pared') {
+      h += fila('rho', 'Densidad del líquido', 'kg/m³') + fila('b', 'Anchura de la pared o compuerta', 'm') + fila('hc', 'Altura mojada (o de la compuerta)', 'm') + sep('Opcional') + fila('h0', 'Profundidad del borde de arriba', 'm') + fila('g', 'Gravedad', 'm/s²');
+    } else if (sc.modo === 'capilar') {
+      h += fila('gamma', 'Tensión superficial γ', 'N/m') + fila('r', 'Radio del tubo', 'mm') + fila('rho', 'Densidad del líquido', 'kg/m³') + sep('Opcional') + fila('theta', 'Ángulo de contacto θ', '°') + fila('g', 'Gravedad', 'm/s²');
     } else {
       h += fila('H', 'Altura del líquido sobre el agujero H', 'm') + sep('Opcional') + fila('y', 'Altura del agujero sobre el suelo', 'm') + fila('d', 'Diámetro del agujero', 'cm') + fila('D', 'Diámetro del depósito', 'm') + fila('g', 'Gravedad', 'm/s²');
     }
@@ -101,13 +116,25 @@
     } else if (sol.modo === 'bernoulli') {
       h = dato('Velocidad en 2', `v₂ = ${f(sol.v2)} m/s`) + dato('Presión en 2', `p₂ = ${f(sol.p2)} Pa`) + dato('Caudal', `Q = ${f(sol.Q * 1000)} L/s`) + (sol.datos === 'Q' ? dato('Velocidad en 1', `v₁ = ${f(sol.v1)} m/s`) : '');
       ley = 'Cada punto es una gota de fluido: va más deprisa donde el tubo es estrecho. La altura de los tubos de arriba indica la presión.';
+    } else if (sol.modo === 'viscosidad') {
+      if (sol.tipo === 'stokes') { h = (sol.datos === 'v' ? dato('Viscosidad', `η = ${f(sol.eta)} Pa·s`) : dato('Velocidad límite', `v = ${f(sol.v)} m/s`)) + dato('Número de Reynolds', `Re = ${f(sol.Re)}`) + dato('Tiempo característico', `τ = ${f(sol.tau)} s`); ley = 'La esfera acelera y se frena hasta su velocidad límite: en rojo el peso, en verde el empuje y en naranja el rozamiento viscoso, que crece con la velocidad.'; }
+      else { h = (sol.datos === 'Q' ? dato('Diferencia de presión', `Δp = ${f(sol.dp)} Pa`) : dato('Caudal', `Q = ${f(sol.Q * 1e6)} mL/s`)) + dato('Velocidad media', `v̄ = ${f(sol.vm)} m/s`) + dato('Velocidad en el centro', `v<sub>máx</sub> = ${f(sol.vmax)} m/s`) + dato('Número de Reynolds', `Re = ${f(sol.Re)}`); ley = 'Perfil parabólico: el fluido va más deprisa en el centro y está quieto junto a la pared. Las flechas son la velocidad de cada capa.'; }
+    } else if (sol.modo === 'medidor') {
+      h = dato('Diferencia de presión', `Δp = ${f(sol.dp)} Pa`) + (sol.tipo === 'venturi' ? dato('Velocidad en la tubería', `v₁ = ${f(sol.v1)} m/s`) + dato('Caudal', `Q = ${f(sol.Q * 1000)} L/s`) : dato('Velocidad del fluido', `v = ${f(sol.v)} m/s = ${f(sol.v * 3.6)} km/h`));
+      ley = sol.tipo === 'venturi' ? 'En el estrechamiento el fluido va más deprisa y la presión baja: el manómetro mide esa diferencia y de ella sale el caudal.' : 'La boca del tubo frena el fluido (presión total) y la toma lateral mide la presión estática: el desnivel da la velocidad.';
+    } else if (sol.modo === 'pared') {
+      h = dato('Fuerza del líquido', `F = ${f(sol.F)} N`) + dato('Centro de presiones', `a ${f(sol.yc)} m de profundidad`) + dato('Momento en el borde de abajo', `M = ${f(sol.M)} N·m`);
+      ley = 'Las flechas son la presión, que crece con la profundidad. La resultante actúa en el centro de presiones, por debajo del centro de la pared.';
+    } else if (sol.modo === 'capilar') {
+      h = dato(sol.h >= 0 ? 'Sube' : 'Baja', `h = ${f(Math.abs(sol.h) * 1000)} mm`) + dato('Presión bajo el menisco', `Δp = ${f(sol.dp)} Pa`);
+      ley = sol.h >= 0 ? 'El líquido moja el tubo, el menisco es cóncavo y la tensión superficial lo sube.' : 'El líquido no moja el tubo, el menisco es convexo y queda por debajo del nivel de fuera.';
     } else {
       h = dato('Velocidad de salida', `v = ${f(sol.v)} m/s`) + (sol.x !== null ? dato('Alcance', `x = ${f(sol.x)} m`) : '') + (sol.Q ? dato('Caudal', `Q = ${f(sol.Q * 1000)} L/s`) : '') + (sol.tv ? dato('Tiempo de vaciado', `t = ${f(sol.tv)} s`) : '');
       ley = 'El chorro sale horizontal con la velocidad de caída libre desde la superficie y luego cae como un tiro horizontal.';
     }
     $('#resumen').innerHTML = h; $('#leyenda').textContent = ley;
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html, true)}</li>`).join('');
-    tA = 0; gotas = null; dibuja();
+    tA = 0; gotas = null; bernoulliPaso = null; dibuja();
   }
 
   /* ---------- Animación ---------- */
@@ -256,6 +283,70 @@
       texto(g, (xa + xm1) / 2, cyA + r1 + 16, `v₁ = ${txt(f(sol.v1))} m/s`, col['--ink']);
       texto(g, (xm2 + xb) / 2, cyB + r2 + 16, `v₂ = ${txt(f(sol.v2))} m/s`, col['--ink']);
       texto(g, 14, 16, `Q = ${txt(f(sol.Q * 1000))} L/s`, col['--ink'], 'left', '600 ');
+    } else if (sol.modo === 'viscosidad') {
+      if (sol.tipo === 'stokes') {
+        const x1 = w * 0.3, x2 = w * 0.62, yS = 30, yF = h - 20, xc = (x1 + x2) / 2, R0 = 14, T = 4.5;
+        g.fillStyle = col['--suelo']; g.fillRect(x1 - 4, 14, 4, yF - 10); g.fillRect(x2, 14, 4, yF - 10); g.fillRect(x1 - 4, yF, x2 - x1 + 8, 4);
+        liquido(g, x1, x2, yS, yF, col['--aceite'], t, 1);
+        // y(t) con la velocidad acercándose a la límite: v = v_lím (1 − e^(−t/τ)), en un tiempo de animación T
+        const u = t % T, tauA = 0.6, pos = u - tauA * (1 - Math.exp(-u / tauA)), posMax = T - tauA * (1 - Math.exp(-T / tauA)), y = yS + R0 + (pos / posMax) * (yF - yS - 2 * R0), fr = 1 - Math.exp(-u / tauA);
+        punto(g, xc, y, R0, col['--ink']);
+        const k = 50;
+        flecha(g, xc, y, 0, k, col['--peso']); flecha(g, xc - 22, y, 0, -k * (sol.rhoF / sol.rhoE), col['--normal']); flecha(g, xc + 22, y, 0, -k * (1 - sol.rhoF / sol.rhoE) * fr, col['--roz']);
+        texto(g, x2 + 14, h * 0.4, `v = ${txt(f(sol.v * fr))} m/s`, col['--ink'], 'left', '600 ');
+        texto(g, x2 + 14, h * 0.4 + 20, `v límite ${txt(f(sol.v))} m/s`, col['--muted'], 'left');
+      } else {
+        const xa = 20, xb = w - 20, cy = h * 0.5, R0 = Math.min(h * 0.32, 90);
+        g.fillStyle = col['--agua']; g.fillRect(xa, cy - R0, xb - xa, 2 * R0);
+        g.fillStyle = col['--suelo']; g.fillRect(xa, cy - R0 - 4, xb - xa, 4); g.fillRect(xa, cy + R0, xb - xa, 4);
+        // perfil parabólico de velocidades
+        const xp = w * 0.3, L = Math.min(w * 0.3, 220);
+        g.strokeStyle = col['--ink']; g.lineWidth = 1; g.beginPath(); g.moveTo(xp, cy - R0); g.lineTo(xp, cy + R0); g.stroke();
+        for (let k = -8; k <= 8; k++) { const yy = (k / 9) * R0, vv = 1 - (k / 9) ** 2; flecha(g, xp, cy + yy, vv * L, 0, col['--accent']); }
+        g.strokeStyle = col['--accent']; g.lineWidth = 1.5; g.beginPath(); for (let k = -20; k <= 20; k++) { const yy = (k / 20) * R0, vv = 1 - (k / 20) ** 2; k === -20 ? g.moveTo(xp + vv * L, cy + yy) : g.lineTo(xp + vv * L, cy + yy); } g.stroke();
+        if (!gotas) { gotas = []; for (let k = 0; k < 70; k++) gotas.push({ x: xa + Math.random() * (xb - xa), s: Math.random() * 1.9 - 0.95 }); }
+        for (const q of gotas) punto(g, q.x, cy + q.s * R0, 2, col['--ink']);
+        bernoulliPaso = (dt) => { for (const q of gotas) { q.x += (1 - q.s * q.s) * 0.25 * w * dt; if (q.x > xb) q.x = xa + (q.x - xb) % 20; } };
+        texto(g, 14, 16, `v̄ = ${txt(f(sol.vm))} m/s · centro ${txt(f(sol.vmax))} m/s · Re = ${txt(f(sol.Re, 3))}`, col['--ink'], 'left', '600 ');
+        texto(g, w - 14, h - 10, `Δp = ${txt(f(sol.dp))} Pa en ${txt(f(sol.L))} m`, col['--muted'], 'right');
+      }
+    } else if (sol.modo === 'medidor') {
+      const xa = 20, xb = w - 20, cy = h * 0.32, R1 = Math.min(h * 0.14, 40), R2 = sol.tipo === 'venturi' ? R1 * (sol.d2 / sol.d1) : R1, xm1 = w * 0.42, xm2 = w * 0.56;
+      const rad = (x) => (x <= xm1 ? R1 : x >= xm2 ? R1 : R2 + (R1 - R2) * Math.abs((x - (xm1 + xm2) / 2) / ((xm2 - xm1) / 2)) ** 2);
+      g.fillStyle = sol.rhoF < 50 ? col['--line'] : col['--agua']; g.beginPath(); for (let x = xa; x <= xb; x += 4) g.lineTo(x, cy - rad(x)); for (let x = xb; x >= xa; x -= 4) g.lineTo(x, cy + rad(x)); g.closePath(); g.fill();
+      g.strokeStyle = col['--suelo']; g.lineWidth = 3; for (const sg of [-1, 1]) { g.beginPath(); for (let x = xa; x <= xb; x += 4) (x === xa ? g.moveTo(x, cy + sg * rad(x)) : g.lineTo(x, cy + sg * rad(x))); g.stroke(); }
+      if (!gotas) { gotas = []; for (let k = 0; k < 60; k++) gotas.push({ x: xa + Math.random() * (xb - xa), s: Math.random() * 1.6 - 0.8 }); }
+      for (const q of gotas) punto(g, q.x, cy + q.s * rad(q.x), 2, col['--ink']);
+      bernoulliPaso = (dt) => { for (const q of gotas) { q.x += 0.15 * w * dt * (R1 / rad(q.x)) ** 2; if (q.x > xb) q.x = xa + (q.x - xb) % 20; } };
+      // manómetro en U bajo el tubo
+      const pA = sol.tipo === 'venturi' ? (xa + xm1) / 2 : w * 0.3, pB = sol.tipo === 'venturi' ? (xm1 + xm2) / 2 : w * 0.3 + 60, yU = h - 30, dhp = Math.min(h * 0.28, 30 + sol.dh * 200), base = h * 0.72;
+      g.strokeStyle = col['--suelo']; g.lineWidth = 2; g.beginPath(); g.moveTo(pA, cy + rad(pA)); g.lineTo(pA, yU); g.lineTo(pB, yU); g.lineTo(pB, cy + rad(pB)); g.stroke();
+      if (sol.tipo === 'pitot') { g.beginPath(); g.moveTo(pB, cy); g.lineTo(pB - 40, cy); g.stroke(); }
+      g.strokeStyle = sol.rhoM ? col['--aceite'] : col['--agua']; g.lineWidth = 6; const sg = sol.tipo === 'pitot' ? -1 : 1; g.beginPath(); g.moveTo(pA, base + sg * dhp / 2); g.lineTo(pA, yU); g.lineTo(pB, yU); g.lineTo(pB, base - sg * dhp / 2); g.stroke();
+      cota(g, pB + 14, base - dhp / 2, base + dhp / 2, `Δh = ${txt(f(sol.dh * 100))} cm`);
+      texto(g, 14, h - 10, sol.tipo === 'venturi' ? `Q = ${txt(f(sol.Q * 1000))} L/s` : `v = ${txt(f(sol.v))} m/s`, col['--ink'], 'left', '600 ');
+    } else if (sol.modo === 'pared') {
+      const xw = w * 0.6, yS = 26, H = sol.h0 + sol.hc, esc = (h - 46) / H, yF = yS + H * esc, yA = yS + sol.h0 * esc, x1 = 20;
+      liquido(g, x1, xw, yS, yF, col['--agua'], t, 1.5);
+      g.fillStyle = col['--suelo']; g.fillRect(xw, yS - 10, 14, yF - yS + 14); g.fillRect(x1, yF, xw - x1 + 14, 4);
+      if (sol.h0) { g.fillStyle = col['--ink']; g.fillRect(xw - 2, yA, 6, sol.hc * esc); }
+      // flechas de presión (triángulo) y resultante
+      const k = Math.min(xw - x1 - 30, 160) / H;
+      g.strokeStyle = col['--peso']; g.lineWidth = 1; g.beginPath(); g.moveTo(xw, yA); g.lineTo(xw - k * sol.h0, yA); g.lineTo(xw - k * H, yF); g.lineTo(xw, yF); g.stroke();
+      for (let i = 0; i <= 8; i++) { const yy = yA + (i / 8) * sol.hc * esc, pr = (yy - yS) / esc; flecha(g, xw - k * pr, yy, k * pr - 2, 0, col['--peso']); }
+      const yP = yS + sol.yc * esc; flecha(g, xw - 90, yP, 86, 0, col['--ink']);
+      texto(g, xw - 96, yP, `F = ${txt(f(sol.F))} N`, col['--ink'], 'right', '600 ');
+      cota(g, xw + 26, yS, yP, `y_P = ${txt(f(sol.yc))} m`.replace('y_P', 'yP'));
+      cota(g, xw + 110, yS, yF, `${txt(f(H))} m`);
+    } else if (sol.modo === 'capilar') {
+      const yN = h * 0.62, x1 = 30, x2 = w - 30, xc = w * 0.45, rr = Math.max(6, Math.min(30, sol.r * 1000 * 12)), dh = Math.max(-h * 0.35, Math.min(h * 0.45, sol.h * 1000 * 8)), s = suave((t % 5) / 2), yT = yN - dh * s;
+      liquido(g, x1, x2, yN, h - 10, col['--agua'], t, 1);
+      g.fillStyle = col['--bg']; g.fillRect(xc - rr, 10, 2 * rr, h - 30);
+      g.fillStyle = col['--agua']; g.beginPath(); g.moveTo(xc - rr, h - 20); g.lineTo(xc - rr, yT); g.quadraticCurveTo(xc, yT + (sol.c > 0 ? 1 : -1) * rr * 0.8 * Math.abs(sol.c), xc + rr, yT); g.lineTo(xc + rr, h - 20); g.closePath(); g.fill();
+      g.fillStyle = col['--suelo']; g.fillRect(xc - rr - 3, 10, 3, h - 30); g.fillRect(xc + rr, 10, 3, h - 30);
+      g.strokeStyle = col['--ink']; g.setLineDash([4, 4]); g.lineWidth = 1; g.beginPath(); g.moveTo(x1, yN); g.lineTo(x2, yN); g.stroke(); g.setLineDash([]);
+      cota(g, xc + rr + 30, yN, yT, `h = ${txt(f(sol.h * 1000 * s))} mm`);
+      texto(g, 14, 16, `r = ${txt(f(sol.r * 1000))} mm · θ = ${txt(f(sol.th))}° (tubo no a escala)`, col['--ink'], 'left', '600 ');
     } else {
       const yv = sol.y ?? sol.H / 2, alto = sol.H + yv, rango = 2 * Math.sqrt(sol.H * yv), tw = Math.min(w * 0.22, 150);
       const s = Math.min((h - 50) / alto, (w - tw - 60) / Math.max(rango, 0.1)), yS = h - 18, xo = 20 + tw, yo = yS - yv * s, ySup = yo - sol.H * s;
@@ -282,14 +373,52 @@
   let ultimo = performance.now();
   function bucle() {
     const ahora = performance.now(), dt = Math.min(0.1, (ahora - ultimo) / 1000); ultimo = ahora;
-    if (anda && sol) { tA += dt; if (sol.modo === 'bernoulli' && bernoulliPaso) bernoulliPaso(dt); dibuja(); }
+    if (anda && sol) { tA += dt; if (['bernoulli', 'viscosidad', 'medidor'].includes(sol.modo) && bernoulliPaso) bernoulliPaso(dt); dibuja(); }
     requestAnimationFrame(bucle);
   }
   window.addEventListener('resize', () => { gotas = null; dibuja(); });
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { colores(); dibuja(); });
 
-  // un ejercicio al azar: un ejemplo con sus números cambiados lo hace el modo práctica
+  /* ---------- Modo práctica: un ejercicio con enunciado ---------- */
+  function azar() {
+    const ent = (a, b) => a + Math.floor(Math.random() * (b - a + 1)), de = (l) => l[ent(0, l.length - 1)], c = (x) => String(x).replace('.', ',');
+    const tipos = [
+      () => ({ modo: 'presion', rho: de(['1000', '1025']), h: String(ent(2, 60)), p0: '', A: Math.random() < 0.5 ? '' : String(ent(2, 50)), g: '9,8' }),
+      () => ({ modo: 'tuboU', buscar: 'altura', rho1: de(['1000', '13600']), rho2: de(['800', '850', '900']), h2: c(ent(5, 20) / 100) }),
+      () => ({ modo: 'prensa', datos: 'masa', m: String(ent(5, 30) * 100), d1: String(ent(2, 5)), d2: String(ent(20, 50)), x1: String(ent(10, 30)), g: '9,8' }),
+      () => ({ modo: 'empuje', datos: 'cuerpo', rhoC: de(['500', '600', '700', '917', '2700', '7870']), V: c(de([0.001, 0.002, 0.005, 0.01])), rhoF: de(['1000', '1025']), g: '9,8' }),
+      () => ({ modo: 'empuje', datos: 'pesadas', P: String(ent(5, 20)), Pa: '', rhoF: '1000', g: '9,8' }),
+      () => ({ modo: 'bernoulli', datos: 'v1', rho: '1000', d1: String(ent(6, 12)), d2: String(ent(2, 5)), v1: c(ent(5, 30) / 10), p1: c(ent(15, 40) * 1e4), h1: '', h2: '', g: '9,8' }),
+      () => ({ modo: 'torricelli', H: c(ent(5, 40) / 10), y: c(ent(5, 20) / 10), d: String(ent(1, 4)), D: '', g: '9,8' }),
+      () => ({ modo: 'viscosidad', tipo: 'poiseuille', datos: 'dp', eta: de(['1e-3', '4e-3']), L: c(de([0.05, 0.1, 0.5, 1])), d: String(ent(1, 6)), dp: String(ent(1, 20) * 10), Q: '', rho: '1000' }),
+      () => ({ modo: 'viscosidad', tipo: 'stokes', datos: 'eta', r: c(de([0.5, 1, 1.5, 2])), rhoE: de(['2700', '7800']), rhoF: de(['900', '1260']), eta: c(de([0.3, 0.8, 1.5])), v: '', g: '9,8' }),
+      () => ({ modo: 'medidor', tipo: 'pitot', rhoF: '1,2', rhoM: '1000', dh: String(ent(2, 30)), d1: '', d2: '', g: '9,8' }),
+      () => ({ modo: 'medidor', tipo: 'venturi', rhoF: '1000', rhoM: '13600', dh: String(ent(1, 10)), d1: String(ent(8, 15)), d2: String(ent(3, 6)), g: '9,8' }),
+      () => ({ modo: 'pared', rho: '1000', b: String(ent(2, 60)), hc: String(ent(2, 30)), h0: '', g: '9,8' }),
+      () => ({ modo: 'capilar', gamma: '0,073', r: c(de([0.1, 0.2, 0.5, 1])), rho: '1000', theta: '0', g: '9,8' }),
+    ];
+    sc = de(tipos)();
+    if (sc.modo === 'empuje' && sc.datos === 'pesadas') sc.Pa = c(+(sc.P * (1 - de([0.052, 0.1, 0.13, 0.37]))).toFixed(2));
+    formulario(); sel.value = ''; calcula();
+  }
+  const enunciado = () => {
+    const e = (x) => esc(String(x ?? '').replace('.', ','));
+    switch (sc.modo) {
+      case 'presion': return `Calcula la presión manométrica y la absoluta a ${e(sc.h)} m de profundidad en un líquido de ${e(sc.rho)} kg/m³${sc.A ? `, y la fuerza del líquido sobre un fondo de ${e(sc.A)} m²` : ''}.`;
+      case 'tuboU': return `En un tubo en U con un líquido de ${e(sc.rho1)} kg/m³ se echa por una rama una columna de ${e(sc.h2)} m de otro de ${e(sc.rho2)} kg/m³ que no se mezcla. ¿Cuánto sube el primero por la otra rama y qué desnivel queda?`;
+      case 'prensa': return `Un elevador hidráulico tiene émbolos de ${e(sc.d1)} cm y ${e(sc.d2)} cm de diámetro. ¿Qué fuerza hay que hacer para levantar ${e(sc.m)} kg y cuánto sube la carga si el émbolo pequeño baja ${e(sc.x1)} cm?`;
+      case 'empuje': return sc.datos === 'pesadas' ? `Un cuerpo pesa ${e(sc.P)} N en el aire y ${e(sc.Pa)} N sumergido en agua. Calcula el empuje, su volumen y su densidad.` : `Un cuerpo de ${e(sc.rhoC)} kg/m³ y ${e(sc.V)} m³ se mete en un fluido de ${e(sc.rhoF)} kg/m³. ¿Flota o se hunde? Calcula su peso, el empuje y la parte sumergida o el peso aparente.`;
+      case 'bernoulli': return `Por una tubería horizontal de ${e(sc.d1)} cm de diámetro circula agua a ${e(sc.v1)} m/s con una presión de ${e(sc.p1)} Pa. Se estrecha hasta ${e(sc.d2)} cm: calcula la velocidad, la presión en el estrechamiento y el caudal.`;
+      case 'torricelli': return `Un depósito abierto tiene un agujero de ${e(sc.d)} cm a ${e(sc.H)} m por debajo de la superficie y a ${e(sc.y)} m del suelo. Calcula la velocidad de salida, el alcance del chorro y el caudal.`;
+      case 'viscosidad': return sc.tipo === 'stokes' ? `Una esfera de ${e(sc.r)} mm de radio y ${e(sc.rhoE)} kg/m³ cae en un líquido de ${e(sc.rhoF)} kg/m³ y viscosidad ${e(sc.eta)} Pa·s. Calcula su velocidad límite y comprueba si vale la ley de Stokes.` : `Un fluido de viscosidad ${e(sc.eta)} Pa·s circula por un tubo de ${e(sc.d)} mm de diámetro interior y ${e(sc.L)} m de largo con una diferencia de presión de ${e(sc.dp)} Pa. Calcula el caudal, las velocidades media y máxima y el número de Reynolds.`;
+      case 'medidor': return sc.tipo === 'venturi' ? `Un medidor de Venturi en una tubería de agua de ${e(sc.d1)} cm se estrecha hasta ${e(sc.d2)} cm. Su manómetro de mercurio marca ${e(sc.dh)} cm de desnivel. Calcula la velocidad del agua y el caudal.` : `El tubo de Pitot de una avioneta (aire de ${e(sc.rhoF)} kg/m³) tiene un manómetro de agua que marca ${e(sc.dh)} cm. ¿A qué velocidad vuela respecto al aire?`;
+      case 'pared': return `Una presa de ${e(sc.b)} m de anchura retiene agua hasta ${e(sc.hc)} m de altura. Calcula la fuerza del agua, a qué profundidad actúa y el momento respecto a la base.`;
+      case 'capilar': return `¿Cuánto sube el agua (γ = ${e(sc.gamma)} N/m, ángulo de contacto ${e(sc.theta)}°) por un tubo capilar de ${e(sc.r)} mm de radio?`;
+      default: return 'Resuelve el problema.';
+    }
+  };
+
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('fluidos').current;
   formulario(); colores(); calcula(); requestAnimationFrame(bucle);
-  window.FluidosApp = { abrirEjemplo, resultado: () => sol && Object.fromEntries(Object.entries(sol).filter(([, v]) => typeof v === 'number' || typeof v === 'boolean' || v === null)), estado: () => copia(sc), pausa: () => { anda = false; } };
+  window.FluidosApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && Object.fromEntries(Object.entries(sol).filter(([, v]) => typeof v === 'number' || typeof v === 'boolean' || v === null)), estado: () => copia(sc), pausa: () => { anda = false; } };
 })();

@@ -2,9 +2,13 @@
    Fluidos (sin DOM): presión hidrostática, tubo en U con dos líquidos,
    prensa hidráulica (Pascal), empuje de Arquímedes (si flota o se hunde,
    y la densidad a partir de dos pesadas), continuidad y Bernoulli en una
-   tubería, y el chorro de Torricelli con su alcance y el tiempo de vaciado.
+   tubería, el chorro de Torricelli con su alcance y el tiempo de vaciado,
+   viscosidad (Poiseuille y Stokes), tubo de Pitot y medidor de Venturi,
+   fuerza y centro de presiones sobre una pared o compuerta, y capilaridad.
    Unidades del SI, salvo los diámetros de émbolos, tuberías y orificios
-   (en cm) y el caudal (en L/s), que es como vienen en los enunciados.
+   (en cm), el caudal (en L/s), los radios de capilares y esferas (en mm)
+   y los desniveles de los manómetros (en cm), que es como vienen en los
+   enunciados.
    ===================================================================== */
 const Fluidos = (() => {
   const f = (x, d = 4) => {
@@ -191,7 +195,97 @@ const Fluidos = (() => {
     return { modo: 'torricelli', H, y, d, D, g, v, x, tc, A, Q, tv, pasos };
   }
 
+  /* ---------- Viscosidad: Poiseuille y Stokes ---------- */
+  // Poiseuille: { tipo: 'poiseuille', eta, L, d (mm), datos: 'dp' | 'Q', dp (Pa) o Q (mL/s), rho (opcional) }
+  // Stokes: { tipo: 'stokes', r (mm), rhoE, rhoF, datos: 'eta' | 'v', eta o v (m/s), g }
+  function viscosidad(sc) {
+    const pasos = [], g = gDe(sc);
+    if (sc.tipo === 'stokes') {
+      const r = lee(sc, 'r', 'el radio de la esfera') / 1000, rhoE = lee(sc, 'rhoE', 'la densidad de la esfera'), rhoF = lee(sc, 'rhoF', 'la densidad del fluido');
+      if (rhoE <= rhoF) throw new Error('La esfera tiene que ser más densa que el fluido para caer');
+      let eta, v;
+      pasos.push({ t: 'Fuerzas sobre la esfera', html: `Cae con su peso $ρ_e V g$, el empuje la frena con $ρ_f V g$ y el rozamiento viscoso de Stokes, $F_v = 6 π η r v$, crece con la velocidad. Llega a la velocidad límite cuando se equilibran: $6 π η r v = (ρ_e − ρ_f) {4}/{3} π r^3 g$.` });
+      if (sc.datos === 'v') {
+        v = lee(sc, 'v', 'la velocidad límite medida'); eta = (2 * r * r * (rhoE - rhoF) * g) / (9 * v);
+        pasos.push({ t: 'Viscosidad (viscosímetro de bola)', html: `$η = {2 r^2 (ρ_e − ρ_f) g}/{9 v} = {2 · (${f(r)})^2 · (${f(rhoE)} − ${f(rhoF)}) · ${f(g)}}/{9 · ${f(v)}}$ = <b>${f(eta)} Pa·s</b>` });
+      } else {
+        eta = lee(sc, 'eta', 'la viscosidad'); v = (2 * r * r * (rhoE - rhoF) * g) / (9 * eta);
+        pasos.push({ t: 'Velocidad límite', html: `$v_{lím} = {2 r^2 (ρ_e − ρ_f) g}/{9 η} = {2 · (${f(r)})^2 · (${f(rhoE)} − ${f(rhoF)}) · ${f(g)}}/{9 · ${f(eta)}}$ = <b>${f(v)} m/s</b>` });
+      }
+      const Re = (rhoF * v * 2 * r) / eta, tau = (2 * rhoE * r * r) / (9 * eta);
+      pasos.push({ t: '¿Vale la ley de Stokes?', html: `Número de Reynolds $Re = ρ_f v (2r)/η = ${f(Re)}$: ${Re < 1 ? 'mucho menor que 1, el flujo alrededor de la esfera es laminar y la ley vale.' : 'no es pequeño frente a 1, así que el resultado es solo aproximado (aparece estela y la fuerza crece más deprisa).'} Llega casi a la velocidad límite en unos pocos $τ = {2 ρ_e r^2}/{9 η} = ${f(tau)}$ s.` });
+      return { modo: 'viscosidad', tipo: 'stokes', datos: sc.datos === 'v' ? 'v' : 'eta', r, rhoE, rhoF, eta, v, Re, tau, g, pasos };
+    }
+    const eta = lee(sc, 'eta', 'la viscosidad'), L = lee(sc, 'L', 'la longitud del tubo'), d = lee(sc, 'd', 'el diámetro interior') / 1000, r = d / 2;
+    const Rh = (8 * eta * L) / (Math.PI * r ** 4);
+    pasos.push({ t: 'Ley de Poiseuille', html: `En un tubo de radio r y longitud L, un fluido viscoso en régimen laminar tiene un perfil de velocidades parabólico y el caudal es $Q = {π r^4 Δp}/{8 η L}$. La resistencia del tubo es $R = {8 η L}/{π r^4} = {8 · ${f(eta)} · ${f(L)}}/{π · (${f(r)})^4}$ = ${f(Rh)} Pa·s/m³: al reducir el radio a la mitad, el caudal baja 16 veces.` });
+    let Q, dp;
+    if (sc.datos === 'Q') {
+      Q = lee(sc, 'Q', 'el caudal') / 1e6; dp = Q * Rh;
+      pasos.push({ t: 'Diferencia de presión necesaria', html: `$Δp = Q R = ${f(Q)} · ${f(Rh)}$ = <b>${f(dp)} Pa</b> (${f(dp / 133.32)} mmHg)` });
+    } else {
+      dp = lee(sc, 'dp', 'la diferencia de presión'); Q = dp / Rh;
+      pasos.push({ t: 'Caudal', html: `$Q = Δp/R = ${f(dp)}/${f(Rh)}$ = <b>${f(Q)} m³/s</b> = ${f(Q * 1e6)} mL/s` });
+    }
+    const A = Math.PI * r * r, vm = Q / A, vmax = 2 * vm, rho = lee(sc, 'rho', 'la densidad del fluido', { opcional: true }) ?? 1000, Re = (rho * vm * d) / eta;
+    pasos.push({ t: 'Velocidades', html: `Velocidad media $v̄ = Q/(π r^2) = ${f(vm)}$ m/s; en el centro va el doble, $v_{máx} = 2 v̄ = ${f(vmax)}$ m/s, y junto a la pared, 0.` });
+    pasos.push({ t: '¿Es laminar?', html: `$Re = ρ v̄ d/η = {${f(rho)} · ${f(vm)} · ${f(d)}}/${'{'}${f(eta)}}$ = ${f(Re)}: ${Re < 2000 ? 'menor que unos 2000, régimen laminar y la ley de Poiseuille vale.' : Re < 4000 ? 'entre 2000 y 4000, zona de transición: la ley de Poiseuille deja de ser fiable.' : 'mayor que 4000, el flujo es turbulento y la ley de Poiseuille no vale.'}` });
+    return { modo: 'viscosidad', tipo: 'poiseuille', datos: sc.datos === 'Q' ? 'Q' : 'dp', eta, L, d, r, Rh, Q, dp, vm, vmax, rho, Re, pasos };
+  }
+
+  /* ---------- Tubo de Pitot y medidor de Venturi ---------- */
+  // { tipo: 'pitot' | 'venturi', rhoF (fluido), rhoM (líquido del manómetro; vacío en el Venturi = tubos piezométricos), dh (cm), d1, d2 (cm, Venturi), g }
+  function medidor(sc) {
+    const rhoF = lee(sc, 'rhoF', 'la densidad del fluido'), dh = lee(sc, 'dh', 'el desnivel del manómetro') / 100, g = gDe(sc), pasos = [];
+    const rhoM = lee(sc, 'rhoM', 'la densidad del líquido del manómetro', { opcional: true });
+    if (rhoM !== null && rhoM <= rhoF) throw new Error('El líquido del manómetro tiene que ser más denso que el fluido que se mide');
+    const dp = rhoM === null ? rhoF * g * dh : (rhoM - rhoF) * g * dh;
+    pasos.push({ t: 'Diferencia de presión', html: rhoM === null ? `Con dos tubos verticales abiertos, el líquido sube hasta donde su peso equilibra la presión: $Δp = ρ g Δh = ${f(rhoF)} · ${f(g)} · ${f(dh)}$ = <b>${f(dp)} Pa</b>` : `En el manómetro en U, a la altura de la superficie más baja la presión es igual en las dos ramas: $Δp = (ρ_m − ρ) g Δh = (${f(rhoM)} − ${f(rhoF)}) · ${f(g)} · ${f(dh)}$ = <b>${f(dp)} Pa</b>` });
+    if (sc.tipo === 'venturi') {
+      const d1 = lee(sc, 'd1', 'el diámetro de la tubería'), d2 = lee(sc, 'd2', 'el diámetro del estrechamiento');
+      if (d2 >= d1) throw new Error('El estrechamiento tiene que ser más estrecho que la tubería');
+      const A1 = circulo(d1), A2 = circulo(d2), k = (A1 / A2) ** 2 - 1, v1 = Math.sqrt((2 * dp) / (rhoF * k)), v2 = (v1 * A1) / A2, Q = A1 * v1;
+      pasos.push({ t: 'Continuidad y Bernoulli', html: `$v_2 = v_1 A_1/A_2$ y $p_1 − p_2 = {1}/{2} ρ (v_2^2 − v_1^2) = {1}/{2} ρ v_1^2 ((A_1/A_2)^2 − 1)$, con $(A_1/A_2)^2 = (d_1/d_2)^4 = ${f(k + 1)}$` });
+      pasos.push({ t: 'Velocidad y caudal', html: `$v_1 = √({2 Δp}/{ρ ((A_1/A_2)^2 − 1)}) = √({2 · ${f(dp)}}/{${f(rhoF)} · ${f(k)}})$ = <b>${f(v1)} m/s</b>, $v_2$ = ${f(v2)} m/s<br>$Q = A_1 v_1 = ${f(A1)} · ${f(v1)}$ = <b>${f(Q)} m³/s</b> = ${f(Q * 1000)} L/s` });
+      return { modo: 'medidor', tipo: 'venturi', rhoF, rhoM, dh, dp, d1, d2, A1, A2, v1, v2, Q, g, pasos };
+    }
+    const v = Math.sqrt((2 * dp) / rhoF);
+    pasos.unshift({ t: 'Cómo funciona', html: 'El tubo tiene una boca de frente a la corriente, donde el fluido se queda quieto, y una toma en el costado, por donde pasa con su velocidad. Bernoulli entre las dos, a la misma altura: $p_{total} = p + {1}/{2} ρ v^2$, así que el manómetro que las une mide la presión dinámica ${1}/{2} ρ v^2$.' });
+    pasos.push({ t: 'Velocidad del fluido', html: `En la boca del tubo de Pitot el fluido se para (presión de estancamiento) y en la toma lateral pasa con su velocidad: $Δp = {1}/{2} ρ v^2$, así que $v = √({2 Δp}/{ρ}) = √({2 · ${f(dp)}}/{${f(rhoF)}})$ = <b>${f(v)} m/s</b> (${f(v * 3.6)} km/h). Así miden los aviones su velocidad respecto al aire.` });
+    return { modo: 'medidor', tipo: 'pitot', rhoF, rhoM, dh, dp, v, g, pasos };
+  }
+
+  /* ---------- Fuerza sobre una pared o compuerta ---------- */
+  // { rho, b (anchura, m), hc (altura de la compuerta, m), h0 (profundidad de su borde de arriba, opcional), g }
+  function pared(sc) {
+    const rho = lee(sc, 'rho', 'la densidad del líquido'), b = lee(sc, 'b', 'la anchura'), hc = lee(sc, 'hc', 'la altura mojada'), g = gDe(sc);
+    const h0 = lee(sc, 'h0', 'la profundidad del borde de arriba', { opcional: true, cero: true }) ?? 0;
+    const hg = h0 + hc / 2, A = b * hc, F = rho * g * hg * A, yc = hg + (hc * hc) / (12 * hg), M = F * (h0 + hc - yc);
+    const pasos = [{ t: 'Presión sobre la pared', html: `La presión del líquido crece con la profundidad, $p = ρ g y$, así que empuja más abajo que arriba. ${h0 ? `La compuerta va de $y = ${f(h0)}$ m a $y = ${f(h0 + hc)}$ m.` : `La pared está mojada hasta $H = ${f(hc)}$ m.`}` }];
+    pasos.push({ t: 'Fuerza resultante', html: `Es la presión en el centro de la superficie por su área: $F = ρ g h_G A = ${f(rho)} · ${f(g)} · ${f(hg)} · (${f(b)} · ${f(hc)})$ = <b>${f(F)} N</b>${h0 ? '' : `, es decir, $F = {1}/{2} ρ g b H^2$`}` });
+    pasos.push({ t: 'Centro de presiones', html: `Como empuja más abajo, la fuerza no actúa en el centro sino más abajo: $y_P = h_G + {I_G}/{h_G A} = h_G + {h_c^2}/{12 h_G} = ${f(hg)} + {${f(hc)}^2}/{12 · ${f(hg)}}$ = <b>${f(yc)} m</b> de profundidad${h0 ? '' : ', a dos tercios de la altura (a H/3 del fondo)'}.` });
+    pasos.push({ t: 'Momento respecto al borde de abajo', html: `$M = F (h_0 + h_c − y_P) = ${f(F)} · ${f(h0 + hc - yc)}$ = <b>${f(M)} N·m</b>: es lo que tienen que aguantar la presa o las bisagras de abajo para que no vuelque.` });
+    return { modo: 'pared', rho, b, hc, h0, hg, A, F, yc, M, g, pasos };
+  }
+
+  /* ---------- Tensión superficial y capilaridad ---------- */
+  // { gamma (N/m), r (mm, radio del tubo), rho, theta (grados, opcional), g }
+  function capilar(sc) {
+    const ga = lee(sc, 'gamma', 'la tensión superficial'), r = lee(sc, 'r', 'el radio del tubo') / 1000, rho = lee(sc, 'rho', 'la densidad del líquido'), g = gDe(sc);
+    const th = lee(sc, 'theta', 'el ángulo de contacto', { opcional: true, cero: true }) ?? 0;
+    if (th > 180) throw new Error('El ángulo de contacto va de 0° a 180°');
+    const c = Math.abs(th - 90) < 1e-9 ? 0 : Math.cos((th * Math.PI) / 180), h = (2 * ga * c) / (rho * g * r), dp = (2 * ga * c) / r;
+    const pasos = [{ t: 'Por qué sube (o baja)', html: `La tensión superficial tira del borde del menisco a lo largo de todo el perímetro, $2πr$, con un ángulo de contacto θ = ${f(th)}°: la fuerza vertical es $2 π r γ cos θ$. ${c > 0 ? 'El líquido moja el vidrio y sube' : c < 0 ? 'El líquido no moja (como el mercurio) y baja' : 'Con θ = 90° ni sube ni baja'}.` }];
+    pasos.push({ t: 'Ley de Jurin', html: `La columna sube hasta que su peso, $ρ π r^2 h g$, iguala esa fuerza: $h = {2 γ cos θ}/{ρ g r} = {2 · ${f(ga)} · ${f(c)}}/{${f(rho)} · ${f(g)} · ${f(r)}}$ = <b>${f(h * 1000)} mm</b>${h < 0 ? ' (por debajo del nivel de fuera)' : ''}. Cuanto más fino el tubo, más sube: así suben el agua por el papel y la savia por las plantas.` });
+    pasos.push({ t: 'Presión bajo el menisco', html: `La superficie curva hace que debajo del menisco la presión sea $Δp = {2 γ cos θ}/{r} = ${f(dp)}$ Pa ${dp >= 0 ? 'menor' : 'mayor'} que la atmosférica (ley de Laplace), justo lo que compensa la columna: $ρ g h = ${f(rho * g * h)}$ Pa.` });
+    return { modo: 'capilar', ga, r, rho, th, c, h, dp, g, pasos };
+  }
+
   function resolver(sc) {
+    if (sc.modo === 'viscosidad') return viscosidad(sc);
+    if (sc.modo === 'medidor') return medidor(sc);
+    if (sc.modo === 'pared') return pared(sc);
+    if (sc.modo === 'capilar') return capilar(sc);
     if (sc.modo === 'tuboU') return tuboU(sc);
     if (sc.modo === 'prensa') return prensa(sc);
     if (sc.modo === 'empuje') return empuje(sc);
@@ -201,22 +295,32 @@ const Fluidos = (() => {
   }
 
   const ejemplos = [
-    { clave: 'buceo', nombre: 'Presión sobre un buceador a 20 m', sc: { modo: 'presion', rho: '1025', h: '20', p0: '', A: '', g: '9.8' } },
-    { clave: 'piscina', nombre: 'Fuerza sobre el fondo de una piscina', sc: { modo: 'presion', rho: '1000', h: '2', p0: '', A: '50', g: '9.8' } },
-    { clave: 'barometro', nombre: 'Barómetro de mercurio de Torricelli', sc: { modo: 'presion', rho: '13600', h: '0.76', p0: '0', A: '', g: '9.8' } },
-    { clave: 'tubo-aceite', nombre: 'Aceite y agua en un tubo en U', sc: { modo: 'tuboU', buscar: 'altura', rho1: '1000', rho2: '800', h2: '0.1' } },
-    { clave: 'tubo-densidad', nombre: 'Densidad de un líquido con un tubo en U', sc: { modo: 'tuboU', buscar: 'densidad', rho1: '1000', h1: '0.068', h2: '0.08' } },
-    { clave: 'elevador', nombre: 'Elevador hidráulico de un taller', sc: { modo: 'prensa', datos: 'masa', m: '1500', d1: '4', d2: '40', x1: '20', g: '9.8' } },
-    { clave: 'prensa', nombre: 'Prensa hidráulica', sc: { modo: 'prensa', datos: 'fuerza', F1: '200', d1: '2', d2: '30', x1: '', g: '9.8' } },
-    { clave: 'madera', nombre: 'Bloque de madera en agua', sc: { modo: 'empuje', datos: 'cuerpo', rhoC: '600', V: '0.002', rhoF: '1000', g: '9.8' } },
-    { clave: 'iceberg', nombre: 'Parte visible de un iceberg', sc: { modo: 'empuje', datos: 'cuerpo', rhoC: '917', V: '1000', rhoF: '1025', g: '9.8' } },
-    { clave: 'hierro', nombre: 'Pieza de hierro sumergida en agua', sc: { modo: 'empuje', datos: 'cuerpo', rhoC: '7870', V: '1e-4', rhoF: '1000', g: '9.8' } },
-    { clave: 'corona', nombre: 'La corona de Arquímedes: ¿es de oro?', sc: { modo: 'empuje', datos: 'pesadas', P: '10', Pa: '9.4', rhoF: '1000', g: '9.8' } },
-    { clave: 'venturi', nombre: 'Tubo de Venturi', sc: { modo: 'bernoulli', datos: 'v1', rho: '1000', d1: '10', d2: '5', v1: '2', p1: '1.5e5', h1: '', h2: '', g: '9.8' } },
-    { clave: 'casa', nombre: 'Agua que sube a un segundo piso', sc: { modo: 'bernoulli', datos: 'Q', rho: '1000', d1: '4', d2: '2', Q: '1.5', p1: '4e5', h1: '0', h2: '6', g: '9.8' } },
-    { clave: 'deposito', nombre: 'Chorro de un depósito con un agujero', sc: { modo: 'torricelli', H: '2', y: '1', d: '2', D: '1', g: '9.8' } },
+    { clave: 'buceo', nombre: 'Presión sobre un buceador a 20 m', sc: { modo: 'presion', rho: '1025', h: '20', p0: '', A: '', g: '9,8' } },
+    { clave: 'piscina', nombre: 'Fuerza sobre el fondo de una piscina', sc: { modo: 'presion', rho: '1000', h: '2', p0: '', A: '50', g: '9,8' } },
+    { clave: 'barometro', nombre: 'Barómetro de mercurio de Torricelli', sc: { modo: 'presion', rho: '13600', h: '0,76', p0: '0', A: '', g: '9,8' } },
+    { clave: 'tubo-aceite', nombre: 'Aceite y agua en un tubo en U', sc: { modo: 'tuboU', buscar: 'altura', rho1: '1000', rho2: '800', h2: '0,1' } },
+    { clave: 'tubo-densidad', nombre: 'Densidad de un líquido con un tubo en U', sc: { modo: 'tuboU', buscar: 'densidad', rho1: '1000', h1: '0,068', h2: '0,08' } },
+    { clave: 'elevador', nombre: 'Elevador hidráulico de un taller', sc: { modo: 'prensa', datos: 'masa', m: '1500', d1: '4', d2: '40', x1: '20', g: '9,8' } },
+    { clave: 'prensa', nombre: 'Prensa hidráulica', sc: { modo: 'prensa', datos: 'fuerza', F1: '200', d1: '2', d2: '30', x1: '', g: '9,8' } },
+    { clave: 'madera', nombre: 'Bloque de madera en agua', sc: { modo: 'empuje', datos: 'cuerpo', rhoC: '600', V: '0,002', rhoF: '1000', g: '9,8' } },
+    { clave: 'iceberg', nombre: 'Parte visible de un iceberg', sc: { modo: 'empuje', datos: 'cuerpo', rhoC: '917', V: '1000', rhoF: '1025', g: '9,8' } },
+    { clave: 'hierro', nombre: 'Pieza de hierro sumergida en agua', sc: { modo: 'empuje', datos: 'cuerpo', rhoC: '7870', V: '1e-4', rhoF: '1000', g: '9,8' } },
+    { clave: 'corona', nombre: 'La corona de Arquímedes: ¿es de oro?', sc: { modo: 'empuje', datos: 'pesadas', P: '10', Pa: '9,4', rhoF: '1000', g: '9,8' } },
+    { clave: 'venturi', nombre: 'Tubo de Venturi', sc: { modo: 'bernoulli', datos: 'v1', rho: '1000', d1: '10', d2: '5', v1: '2', p1: '1,5e5', h1: '', h2: '', g: '9,8' } },
+    { clave: 'casa', nombre: 'Agua que sube a un segundo piso', sc: { modo: 'bernoulli', datos: 'Q', rho: '1000', d1: '4', d2: '2', Q: '1,5', p1: '4e5', h1: '0', h2: '6', g: '9,8' } },
+    { clave: 'deposito', nombre: 'Chorro de un depósito con un agujero', sc: { modo: 'torricelli', H: '2', y: '1', d: '2', D: '1', g: '9,8' } },
+    { clave: 'sangre', nombre: 'Sangre por una arteria (Poiseuille)', sc: { modo: 'viscosidad', tipo: 'poiseuille', datos: 'dp', eta: '4e-3', L: '0,1', d: '4', dp: '400', Q: '', rho: '1060' } },
+    { clave: 'jeringa', nombre: 'Presión para pasar agua por una aguja', sc: { modo: 'viscosidad', tipo: 'poiseuille', datos: 'Q', eta: '1e-3', L: '0,04', d: '0,5', dp: '', Q: '0,5', rho: '1000' } },
+    { clave: 'glicerina', nombre: 'Bola de acero cayendo en glicerina (Stokes)', sc: { modo: 'viscosidad', tipo: 'stokes', datos: 'eta', r: '1', rhoE: '7800', rhoF: '1260', eta: '1,5', v: '', g: '9,8' } },
+    { clave: 'viscosimetro', nombre: 'Viscosidad de un aceite con una bola que cae', sc: { modo: 'viscosidad', tipo: 'stokes', datos: 'v', r: '1,5', rhoE: '7800', rhoF: '900', eta: '', v: '0,12', g: '9,8' } },
+    { clave: 'pitot', nombre: 'Velocidad de un avión con un tubo de Pitot', sc: { modo: 'medidor', tipo: 'pitot', rhoF: '1,2', rhoM: '1000', dh: '25', d1: '', d2: '', g: '9,8' } },
+    { clave: 'venturimetro', nombre: 'Caudal con un medidor de Venturi y mercurio', sc: { modo: 'medidor', tipo: 'venturi', rhoF: '1000', rhoM: '13600', dh: '4', d1: '10', d2: '5', g: '9,8' } },
+    { clave: 'presa', nombre: 'Fuerza del agua sobre una presa', sc: { modo: 'pared', rho: '1000', b: '50', hc: '20', h0: '', g: '9,8' } },
+    { clave: 'compuerta', nombre: 'Compuerta sumergida en un depósito', sc: { modo: 'pared', rho: '1000', b: '1,5', hc: '2', h0: '3', g: '9,8' } },
+    { clave: 'capilar', nombre: 'Agua que sube por un tubo capilar', sc: { modo: 'capilar', gamma: '0,073', r: '0,5', rho: '1000', theta: '0', g: '9,8' } },
+    { clave: 'mercurio', nombre: 'Mercurio que baja en un capilar', sc: { modo: 'capilar', gamma: '0,49', r: '1', rho: '13600', theta: '140', g: '9,8' } },
   ];
 
-  return { resolver, presion, tuboU, prensa, empuje, bernoulli, torricelli, ejemplos, f, ATM };
+  return { resolver, presion, tuboU, prensa, empuje, bernoulli, torricelli, viscosidad, medidor, pared, capilar, ejemplos, f, ATM };
 })();
 if (typeof module !== 'undefined') module.exports = Fluidos;

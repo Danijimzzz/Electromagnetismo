@@ -2,13 +2,15 @@
    Interferencia y difracción: interfaz (formulario por montaje,
    resultado, dibujo del montaje con las ondas que salen de las rendijas,
    patrón de intensidad en la pantalla con el color de la luz, órdenes de
-   una red y la luz que refleja una lámina delgada, y el desarrollo).
+   una red, la luz que refleja una lámina delgada, el disco de Airy, la
+   cuña de aire y los anillos de Newton, un cursor para leer la intensidad
+   en la pantalla y el desarrollo).
    El cálculo está en interferencia/fisica.js (Interferencia).
    ===================================================================== */
 (() => {
   const { $, esc, copia, txt } = Herramienta;
   const IF = Interferencia, f = IF.f, CLAVE = 'interferencia-v1';
-  const MODOS = [['young', 'Doble rendija de Young'], ['rendija', 'Rendija simple (difracción)'], ['red', 'Red de difracción'], ['lamina', 'Lámina delgada']];
+  const MODOS = [['young', 'Doble rendija de Young'], ['rendija', 'Rendija simple (difracción)'], ['circular', 'Abertura circular (criterio de Rayleigh)'], ['red', 'Red de difracción'], ['lamina', 'Lámina delgada'], ['cuna', 'Cuña de aire'], ['anillos', 'Anillos de Newton']];
 
   let sc = copia(IF.ejemplos[0].sc);
   try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && MODOS.some(([k]) => k === g.modo)) sc = g; } catch (e) { /* sin almacenamiento */ }
@@ -24,12 +26,18 @@
     rendija: 'La rendija tiene que ser estrecha, del orden de la longitud de onda (décimas o centésimas de mm), para que la difracción se note.',
     red: 'Una red se suele dar por sus líneas por milímetro: d = 1/N. La anchura iluminada sirve para el poder de resolución.',
     lamina: 'Luz que llega perpendicular a una lámina de espesor t, como una pompa de jabón, una mancha de aceite o una capa antirreflectante.',
+    circular: 'La pupila del ojo mide unos 2–8 mm; un telescopio, lo que su espejo o lente. La pantalla es opcional (o la distancia focal) y con la distancia a dos objetos y su separación se decide si se distinguen.',
+    cuna: 'Dos vidrios planos que se tocan en un extremo y en el otro los separa un papel o un pelo. Da el espesor del separador o la interfranja que mides para sacar el espesor.',
+    anillos: 'Una lente apoyada en un vidrio plano e iluminada desde arriba. Da el radio de curvatura de la lente o el radio que mides de un anillo oscuro para sacar R.',
   };
   function formulario() {
     let h = elige('modo', 'Montaje', MODOS);
     if (sc.modo === 'young') h += fila('lambda', 'Longitud de onda λ', 'nm') + fila('d', 'Separación entre rendijas d', 'mm') + fila('L', 'Distancia a la pantalla L', 'm') + sep('Opcional') + fila('m', 'Orden m del máximo') + fila('y', 'Posición y en la pantalla', 'mm') + fila('a', 'Anchura de cada rendija a', 'mm') + fila('n', 'Índice del medio n');
     else if (sc.modo === 'rendija') h += fila('lambda', 'Longitud de onda λ', 'nm') + fila('a', 'Anchura de la rendija a', 'mm') + fila('L', 'Distancia a la pantalla L', 'm') + fila('m', 'Orden m del mínimo') + sep('Opcional') + fila('y', 'Posición y en la pantalla', 'mm') + fila('n', 'Índice del medio n');
     else if (sc.modo === 'red') h += fila('lambda', 'Longitud de onda λ', 'nm') + fila('N', 'Líneas por milímetro N') + sep('Opcional') + fila('L', 'Distancia a la pantalla L', 'm') + fila('lambda2', 'Otra longitud de onda λ₂', 'nm') + fila('W', 'Anchura iluminada de la red', 'mm');
+    else if (sc.modo === 'circular') h += fila('lambda', 'Longitud de onda λ', 'nm') + fila('D', 'Diámetro de la abertura D', 'mm') + sep('Opcional') + fila('L', 'Distancia a la pantalla o focal L', 'm') + fila('dist', 'Distancia a los objetos', 'm') + fila('sep', 'Separación entre los dos objetos', 'mm') + fila('n', 'Índice del medio n');
+    else if (sc.modo === 'cuna') h += fila('lambda', 'Longitud de onda λ', 'nm') + fila('Lc', 'Longitud de las placas L', 'cm') + sep('Uno de los dos') + fila('h', 'Espesor del separador h', 'µm') + fila('dx', 'Interfranja medida Δx', 'mm') + sep('Opcional') + fila('n', 'Índice de lo que llena la cuña n');
+    else if (sc.modo === 'anillos') h += fila('lambda', 'Longitud de onda λ', 'nm') + fila('m', 'Número del anillo oscuro m') + sep('Uno de los dos') + fila('R', 'Radio de curvatura de la lente R', 'm') + fila('rm', 'Radio medido del anillo m', 'mm') + sep('Opcional') + fila('n', 'Índice de lo que hay entre los vidrios n');
     else h += fila('nl', 'Índice de la lámina n') + fila('n1', 'Índice del medio de arriba n₁') + fila('n2', 'Índice del medio de abajo n₂') + fila('t', 'Espesor t', 'nm') + fila('lambda', 'Longitud de onda λ', 'nm');
     $('#campos').innerHTML = h;
     $('#nota').textContent = NOTAS[sc.modo];
@@ -56,6 +64,11 @@
       () => ({ modo: 'rendija', lambda: lam, a: c(de([0.02, 0.05, 0.1, 0.2])), L: c(de([1, 1.5, 2])), n: '', m: String(ent(1, 3)), y: '' }),
       () => ({ modo: 'red', lambda: lam, N: String(de([100, 200, 300, 500, 600, 800])), L: Math.random() < 0.5 ? '' : c(de([0.5, 1, 2])), lambda2: '', W: '' }),
       () => ({ modo: 'lamina', nl: c(de([1.33, 1.38, 1.45, 1.5])), n1: '1', n2: c(de([1, 1, 1.33, 1.52])), t: String(de([100, 200, 300, 400, 500])), lambda: Math.random() < 0.5 ? '' : lam }),
+      () => ({ modo: 'circular', lambda: lam, D: c(de([2, 3, 5, 8])), L: '', dist: String(de([500, 1000, 5000, 10000])), sep: '', n: '' }),
+      () => ({ modo: 'circular', lambda: lam, D: String(de([50, 100, 200, 2400])), L: c(de([0.5, 1, 2])), dist: '', sep: '', n: '' }),
+      () => ({ modo: 'cuna', lambda: lam, Lc: String(ent(5, 15)), h: String(ent(2, 10) * 10), dx: '', n: '' }),
+      () => ({ modo: 'cuna', lambda: lam, Lc: String(ent(5, 15)), h: '', dx: c(de([0.2, 0.4, 0.5, 0.8, 1])), n: '' }),
+      () => ({ modo: 'anillos', lambda: lam, R: c(de([0.5, 1, 1.5, 2, 3])), m: String(ent(1, 10)), rm: '', n: '' }),
     ];
     sc = de(tipos)();
     formulario(); calcula(); sel.value = '';
@@ -63,6 +76,11 @@
   const enunciado = () => {
     if (sc.modo === 'young') return `En un experimento de Young con luz de ${esc(sc.lambda)} nm, las rendijas están separadas ${esc(sc.d)} mm y la pantalla a ${esc(sc.L)} m. Calcula la interfranja${sc.m ? `, la posición del máximo de orden ${esc(sc.m)}` : ''}${sc.y ? ` y la intensidad relativa a ${esc(sc.y)} mm del centro` : ''}.`;
     if (sc.modo === 'rendija') return `Luz de ${esc(sc.lambda)} nm pasa por una rendija de ${esc(sc.a)} mm y llega a una pantalla a ${esc(sc.L)} m. Calcula el ángulo y la posición del mínimo de orden ${esc(sc.m || 1)} y la anchura del máximo central.`;
+    if (sc.modo === 'circular' && sc.dist) return `Con luz de ${esc(sc.lambda)} nm, ¿qué separación mínima entre dos puntos a ${esc(sc.dist)} m distingue una abertura (pupila o lente) de ${esc(sc.D)} mm de diámetro? Calcula también el ángulo límite de Rayleigh.`;
+    if (sc.modo === 'circular') return `Un telescopio de ${esc(sc.D)} mm de diámetro observa con luz de ${esc(sc.lambda)} nm. Calcula su límite de resolución angular y el radio del disco de Airy a ${esc(sc.L)} m.`;
+    if (sc.modo === 'cuna' && sc.dx) return `Dos placas de vidrio de ${esc(sc.Lc)} cm se tocan en un extremo y un pelo las separa en el otro. Con luz de ${esc(sc.lambda)} nm las franjas están separadas ${esc(sc.dx)} mm. ¿Qué grosor tiene el pelo y cuántas franjas oscuras se ven?`;
+    if (sc.modo === 'cuna') return `Dos placas de vidrio de ${esc(sc.Lc)} cm se tocan en un extremo y en el otro las separa un papel de ${esc(sc.h)} µm. Con luz de ${esc(sc.lambda)} nm, ¿cada cuánto sale una franja oscura y cuántas se ven?`;
+    if (sc.modo === 'anillos') return `Una lente de ${esc(sc.R)} m de radio de curvatura está apoyada sobre un vidrio plano e iluminada con luz de ${esc(sc.lambda)} nm. Calcula el radio del anillo oscuro número ${esc(sc.m)} y del brillante anterior.`;
     if (sc.modo === 'red') return `Una red de difracción de ${esc(sc.N)} líneas/mm se ilumina con luz de ${esc(sc.lambda)} nm. Calcula los ángulos de los máximos y el orden máximo que se observa.`;
     return `Una lámina de índice ${esc(sc.nl)}${sc.t ? ` y espesor ${esc(sc.t)} nm` : ''} está entre un medio de índice ${esc(sc.n1 || 1)} y otro de índice ${esc(sc.n2 || 1)}. ${sc.t ? '¿Qué colores visibles se refuerzan y cuáles se anulan en la luz reflejada?' : ''}${sc.lambda ? ` ¿Qué espesor mínimo refuerza y cuál anula la reflexión de ${esc(sc.lambda)} nm?` : ''}`;
   };
@@ -84,14 +102,24 @@
     } else if (sol.modo === 'red') {
       h = dato('Paso de la red', `d = ${f(sol.d * 1e9)} nm`) + dato('Orden máximo', `m<sub>máx</sub> = <b>${sol.mmax}</b>`) + sol.ords.slice(0, 4).map((o) => dato(`Ángulo del orden ${o.m}`, `θ = <b>${f((o.th * 180) / Math.PI)}°</b>`)).join('');
       if (sol.sep !== null) h += dato('Separación de λ y λ₂ (orden 1)', `Δθ = ${f(Math.abs(sol.sep))}°`);
+      if (sol.dlmin !== null) h += dato('Δλ mínima que separa (orden 1)', `<b>${f(sol.dlmin, 3)} nm</b>`);
+    } else if (sol.modo === 'circular') {
+      h = dato('Límite de Rayleigh', `θ<sub>mín</sub> = <b>${f(sol.thR)} rad</b>`);
+      if (sol.r !== null) h += dato('Radio del disco de Airy', `r = <b>${f(sol.r * 1e3)} mm</b>`);
+      if (sol.smin !== null) h += dato('Separación mínima que se distingue', `s = <b>${f(sol.smin * 1e3)} mm</b>`);
+      if (sol.res !== null) h += dato('Los dos objetos', `<b>${sol.res ? 'se distinguen' : 'no se distinguen'}</b>`);
+    } else if (sol.modo === 'cuna') {
+      h = dato('Interfranja', `Δx = <b>${f(sol.dx * 1e3)} mm</b>`) + dato('Espesor del separador', `h = <b>${f(sol.h * 1e6)} µm</b>`) + dato('Franjas oscuras', `<b>${sol.N}</b>`);
+    } else if (sol.modo === 'anillos') {
+      h = dato(`Anillo oscuro m = ${sol.m}`, `r = <b>${f(sol.ro * 1e3)} mm</b>`) + dato('Brillante anterior', `r = <b>${f(sol.rb * 1e3)} mm</b>`) + dato('Radio de la lente', `R = <b>${f(sol.R)} m</b>`);
     } else {
       h = dato('Desfase extra al reflejarse', `<b>${sol.medio ? 'sí, λ/2' : 'no'}</b>`);
       if (sol.t !== null) h += dato('Se refuerzan', sol.refuerzan.length ? sol.refuerzan.map((l) => `<b>${f(l)} nm</b>`).join(', ') : 'ninguna visible') + dato('Se anulan', sol.anulan.length ? sol.anulan.map((l) => `${f(l)} nm`).join(', ') : 'ninguna visible');
       if (sol.tmin !== null) h += dato('Espesor mínimo con refuerzo', `t = <b>${f(sol.tmin)} nm</b>`) + dato('Espesor mínimo que anula', `t = <b>${f(sol.tmin2)} nm</b>`);
     }
     $('#res').innerHTML = h;
-    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('');
-    $('#leyenda').textContent = sol.modo === 'lamina' ? 'Arriba, los dos rayos reflejados que interfieren. Abajo, cuánto se refleja cada color y el color que se ve.' : sol.modo === 'red' ? 'Arriba, la red y los haces de cada orden. Abajo, dónde salen los máximos (sen θ).' : 'Arriba, las ondas que salen de las rendijas (no a escala). Abajo, la intensidad en la pantalla y cómo se ven las franjas.';
+    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html, true)}</li>`).join('');
+    $('#leyenda').textContent = sol.modo === 'circular' ? `Arriba, la imagen de ${sol.res !== null ? 'los dos puntos' : 'un punto'} a través de la abertura (discos de Airy, más brillantes de lo real para que se vean los anillos). Abajo, su intensidad: pasa el dedo o el ratón para leerla.` : sol.modo === 'cuna' ? 'Arriba, la cuña vista de lado (el ángulo exagerado) y las franjas vistas desde arriba. Abajo, la intensidad reflejada a lo largo de la cuña.' : sol.modo === 'anillos' ? 'Arriba, la lente sobre el vidrio y los anillos vistos desde arriba. Abajo, la intensidad a lo largo de un radio: pasa el dedo o el ratón para leerla.' : sol.modo === 'lamina' ? 'Arriba, los dos rayos reflejados que interfieren. Abajo, cuánto se refleja cada color y el color que se ve.' : sol.modo === 'red' ? 'Arriba, la red y los haces de cada orden. Abajo, dónde salen los máximos (sen θ).' : 'Arriba, las ondas que salen de las rendijas (no a escala). Abajo, la intensidad en la pantalla y cómo se ven las franjas: pasa el dedo o el ratón para leerla.';
     dibuja();
   }
 
@@ -109,6 +137,8 @@
     const nm = luz(), paso = 16, avance = (tA * 30) % paso;
     g.font = `12px ${FU}`;
     if (sol.modo === 'lamina') return lamina(g, w, h, avance);
+    if (sol.modo === 'circular' || sol.modo === 'anillos') return imagen(g, w, h);
+    if (sol.modo === 'cuna') return cunaVista(g, w, h);
     const xb = w * 0.32, xs = w - 40, yc = h / 2;
     // ondas planas que llegan
     g.lineWidth = 1.5;
@@ -155,6 +185,54 @@
     const [r, gg, b] = visto(); g.fillStyle = `rgb(${r},${gg},${b})`; g.fillRect(w * 0.62, 14, 46, 46); g.strokeStyle = col['--line']; g.strokeRect(w * 0.62, 14, 46, 46);
     g.fillStyle = col['--muted']; g.textAlign = 'left'; g.textBaseline = 'middle'; g.fillText('color reflejado', w * 0.62 + 54, 37);
   }
+  // imagen 2D (disco de Airy o anillos de Newton), calculada una vez por solución
+  let cache = null;
+  function imagen(g, w, h) {
+    const nm = sol.l0, lado = Math.min(h - 16, w * 0.5), x0 = w - lado - 20, y0 = (h - lado) / 2;
+    if (!cache || cache.sol !== sol || cache.lado !== lado) {
+      const c = document.createElement('canvas'), N = Math.max(60, Math.round(lado)), k = c.getContext('2d');
+      c.width = c.height = N;
+      const im = k.createImageData(N, N), [r, gg, b] = IF.color(nm), Y0 = sol.ancho;
+      // los discos de Airy se ven con la intensidad elevada a 0,3 para que se noten los anillos
+      for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
+        const x = ((i + 0.5) / N - 0.5) * Y0, y = ((j + 0.5) / N - 0.5) * Y0, rr = Math.hypot(x, y);
+        let v;
+        if (sol.modo === 'anillos') v = sol.I(rr);
+        else { const ang = (q) => Math.atan(q / (sol.L ?? 1)); v = sol.s2 === null ? sol.Iuno(rr) : Math.min(1, sol.Iuno((sol.L ?? 1) * Math.tan(Math.hypot(ang(x) - sol.s2, ang(y)))) + sol.Iuno((sol.L ?? 1) * Math.tan(Math.hypot(ang(x) + sol.s2, ang(y))))); v = v ** 0.3; }
+        const p = 4 * (j * N + i); im.data[p] = r * v; im.data[p + 1] = gg * v; im.data[p + 2] = b * v; im.data[p + 3] = 255;
+      }
+      k.putImageData(im, 0, 0); cache = { sol, lado, c };
+    }
+    g.drawImage(cache.c, x0, y0, lado, lado);
+    g.strokeStyle = col['--line']; g.strokeRect(x0, y0, lado, lado);
+    g.fillStyle = col['--muted']; g.textAlign = 'left'; g.textBaseline = 'middle';
+    if (sol.modo === 'circular') {
+      const cx = w * 0.18, cy = h / 2, R = Math.min(h * 0.32, 60);
+      g.fillStyle = col['--ink']; g.fillRect(cx - R - 14, cy - R - 14, 2 * R + 28, 2 * R + 28);
+      g.fillStyle = col['--bg']; g.beginPath(); g.arc(cx, cy, R, 0, 2 * Math.PI); g.fill();
+      g.fillStyle = col['--muted']; g.textAlign = 'center'; g.fillText(`D = ${txt(f(sol.D * 1e3))} mm`, cx, cy + R + 26);
+      g.textAlign = 'left'; g.fillText(sol.res === null ? 'imagen de un punto' : sol.res ? 'se distinguen' : 'no se distinguen', x0 - 6 - 110, y0 + 10);
+    } else {
+      // lente sobre el vidrio, de lado (la curvatura exagerada)
+      const xa = 20, xb = x0 - 30, yv = h * 0.62, cx = (xa + xb) / 2, an = (xb - xa) / 2;
+      g.fillStyle = col['--line']; g.fillRect(xa, yv, xb - xa, 16);
+      g.strokeStyle = col['--ink']; g.lineWidth = 1.5; g.beginPath(); g.moveTo(xa, yv - 40); for (let x = xa; x <= xb; x += 2) { const u = (x - cx) / an; g.lineTo(x, yv - 1 - 28 * u * u); } g.lineTo(xb, yv - 40); g.closePath(); g.stroke();
+      g.fillStyle = col['--muted']; g.textAlign = 'center'; g.fillText(`R = ${txt(f(sol.R))} m`, cx, yv - 52); g.fillText('vidrio plano', cx, yv + 30);
+    }
+  }
+  function cunaVista(g, w, h) {
+    const nm = sol.l0, xa = 20, xb = w - 20, ya = h * 0.38, alto = 26, Lx = xb - xa, X = (x) => xa + (x / sol.ancho) * Lx;
+    // de lado: la placa de arriba inclinada (exagerado)
+    g.fillStyle = col['--line']; g.fillRect(xa, ya, Lx, 8);
+    g.save(); g.translate(xa, ya); g.rotate(-0.08); g.fillRect(0, -8, Lx + 4, 8); g.restore();
+    g.fillStyle = col['--muted']; g.textAlign = 'left'; g.textBaseline = 'top'; g.font = `12px ${FU}`;
+    g.fillText(`contacto · ${sol.ancho < sol.Lc ? `primeros ${txt(f(sol.ancho * 100, 2))} cm de ${txt(f(sol.Lc * 100))}` : `L = ${txt(f(sol.Lc * 100))} cm`} · h = ${txt(f(sol.h * 1e6))} µm al final`, xa, ya + 14);
+    // desde arriba: las franjas
+    const yf = h * 0.6;
+    for (let x = xa; x < xb; x++) { g.fillStyle = rgb(nm, sol.I(((x - xa) / Lx) * sol.ancho)); g.fillRect(x, yf, 1.5, alto * 1.6); }
+    g.strokeStyle = col['--muted']; g.strokeRect(xa, yf, Lx, alto * 1.6);
+    g.textBaseline = 'top'; g.fillText(`Δx = ${txt(f(sol.dx * 1e3))} mm`, X(0), yf + alto * 1.6 + 6);
+  }
   // color de la luz blanca reflejada: suma de los colores pesada por la reflexión
   function visto() {
     if (sol.t === null) return IF.color(sol.l0);
@@ -187,20 +265,35 @@
       for (const s of [-0.5, 0, 0.5]) g.fillText(`sen θ = ${txt(f(s))}`, X(s), h - mB + 22);
       return;
     }
-    const Y0 = sol.modo === 'young' ? sol.ancho : sol.anchoV, X = (y) => mL + ((y / Y0) + 0.5) * (w - mL - mR), Yc = (i) => mT + (1 - i) * (h - mT - mB - 22);
+    // eje horizontal: de −Y0/2 a Y0/2 (o de 0 a Y0 en la cuña); y en metros, se rotula en mm
+    const Y0 = sol.modo === 'rendija' ? sol.anchoV : sol.ancho, o = sol.desde0 ? 0 : 0.5, X = (y) => mL + ((y / Y0) + o) * (w - mL - mR), deX = (x) => ((x - mL) / (w - mL - mR) - o) * Y0, Yc = (i) => mT + (1 - i) * (h - mT - mB - 22);
     // franjas como se verían
-    for (let x = mL; x < w - mR; x++) { const y = ((x - mL) / (w - mL - mR) - 0.5) * Y0; g.fillStyle = rgb(sol.l0, sol.I(y)); g.fillRect(x, h - mB - 18, 1.5, 16); }
+    for (let x = mL; x < w - mR; x++) { g.fillStyle = rgb(sol.l0, sol.I(deX(x))); g.fillRect(x, h - mB - 18, 1.5, 16); }
     g.strokeStyle = col['--line']; g.lineWidth = 1; g.beginPath(); g.moveTo(mL, Yc(0)); g.lineTo(w - mR, Yc(0)); g.stroke();
-    g.strokeStyle = col['--accent']; g.lineWidth = 2.2; g.beginPath(); for (let x = mL; x <= w - mR; x++) { const y = ((x - mL) / (w - mL - mR) - 0.5) * Y0, v = Yc(sol.I(y)); x === mL ? g.moveTo(x, v) : g.lineTo(x, v); } g.stroke();
+    if (sol.modo === 'circular' && sol.s2 !== null) { g.strokeStyle = col['--muted']; g.lineWidth = 1; g.setLineDash([4, 4]); for (const sg of [1, -1]) { g.beginPath(); for (let x = mL; x <= w - mR; x++) { const q = sol.L ?? 1, v = Yc(sol.Iuno(q * Math.tan(Math.atan(deX(x) / q) + sg * sol.s2))); x === mL ? g.moveTo(x, v) : g.lineTo(x, v); } g.stroke(); } g.setLineDash([]); }
+    g.strokeStyle = col['--accent']; g.lineWidth = 2.2; g.beginPath(); for (let x = mL; x <= w - mR; x++) { const v = Yc(sol.I(deX(x))); x === mL ? g.moveTo(x, v) : g.lineTo(x, v); } g.stroke();
     // marcas en mm
     const p0 = (Y0 * 1e3) / 8, e = 10 ** Math.floor(Math.log10(p0)), st = [1, 2, 2.5, 5, 10].map((q) => q * e).find((q) => q >= p0);
     g.fillStyle = col['--muted']; g.textAlign = 'center'; g.textBaseline = 'top';
-    for (let v = Math.ceil((-Y0 * 500) / st) * st; v <= Y0 * 500; v += st) g.fillText(txt(f(Math.abs(v) < st * 1e-6 ? 0 : v)), X(v / 1e3), h - mB + 4);
-    g.fillText('y (mm)', w - mR - 16, h - mB + 22);
+    for (let v = Math.ceil((-Y0 * 1e3 * o) / st) * st; v <= Y0 * 1e3 * (1 - o) + 1e-9; v += st) g.fillText(txt(f(Math.abs(v) < st * 1e-6 ? 0 : v)), X(v / 1e3), h - mB + 4);
+    g.textAlign = 'right'; g.fillText(sol.eje || 'y (mm)', w - mR, h - mB + 22);
     g.textAlign = 'right'; g.textBaseline = 'middle'; g.fillText('I', mL - 8, Yc(1)); g.fillText('0', mL - 8, Yc(0));
     const marca = (yv, c) => { if (yv === null || Math.abs(yv) > Y0 / 2) return; g.fillStyle = c; g.beginPath(); g.arc(X(yv), Yc(sol.I(yv)), 5, 0, 2 * Math.PI); g.fill(); };
     if (sol.ym !== null) marca(sol.ym, col['--ink']); if (sol.y !== null) marca(sol.y * 1e-3, col['--accent']);
+    // cursor: intensidad donde está el ratón o el dedo
+    if (cursorX !== null && cursorX >= mL && cursorX <= w - mR) {
+      const y = deX(cursorX), I = sol.I(y), ex = (sol.eje || 'y (mm)').split(' ')[0];
+      g.strokeStyle = col['--ink']; g.lineWidth = 1; g.setLineDash([3, 3]); g.beginPath(); g.moveTo(cursorX, mT); g.lineTo(cursorX, h - mB); g.stroke(); g.setLineDash([]);
+      g.fillStyle = col['--ink']; g.beginPath(); g.arc(cursorX, Yc(I), 4, 0, 2 * Math.PI); g.fill();
+      g.font = `600 12px ${FU}`; g.textBaseline = 'top'; g.textAlign = cursorX > w / 2 ? 'right' : 'left';
+      const t = `${ex} = ${txt(f(y * 1e3, 3))} · I/I₀ = ${txt(f(I, 3))}`, an = g.measureText(t).width, xt = cursorX + (cursorX > w / 2 ? -8 - an : 8);
+      g.fillStyle = col['--panel']; g.fillRect(xt - 4, mT - 2, an + 8, 18); g.fillStyle = col['--ink']; g.textAlign = 'left'; g.fillText(t, xt, mT);
+    }
   }
+  let cursorX = null;
+  const lienzoP = $('#patron');
+  lienzoP.addEventListener('pointermove', (e) => { cursorX = e.clientX - lienzoP.getBoundingClientRect().left; patron(); });
+  lienzoP.addEventListener('pointerleave', () => { cursorX = null; patron(); });
 
   $('#play').addEventListener('click', () => { anda = !anda; $('#play').textContent = anda ? '⏸ Pausa' : '▶ Seguir'; });
   let ultimo = performance.now();
@@ -214,5 +307,5 @@
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('interferencia').current;
   formulario(); colores(); calcula(); requestAnimationFrame(bucle);
-  window.InterferenciaApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { modo: sol.modo, dy: sol.dy, ym: sol.ym, mmax: sol.mmax }, estado: () => copia(sc) };
+  window.InterferenciaApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { modo: sol.modo, dy: sol.dy, ym: sol.ym, mmax: sol.mmax, thR: sol.thR, dx: sol.dx, ro: sol.ro }, cursor: (x) => { cursorX = x; patron(); }, estado: () => copia(sc) };
 })();

@@ -6,7 +6,7 @@
 (() => {
   const { $, esc, copia, txt } = Herramienta;
   const D = Doppler, f = D.f, fq = D.fq, CLAVE = 'doppler-v1';
-  const MODOS = [['recta', 'Fuente y observador en línea'], ['paso', 'Una fuente que pasa de largo'], ['eco', 'Eco en un obstáculo que se mueve'], ['choque', 'Onda de choque (cono de Mach)']];
+  const MODOS = [['recta', 'Fuente y observador en línea'], ['paso', 'Una fuente que pasa de largo'], ['eco', 'Eco en un obstáculo que se mueve'], ['choque', 'Onda de choque (cono de Mach)'], ['luz', 'Luz (Doppler relativista)']];
 
   let sc = copia(D.ejemplos[0].sc);
   try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && MODOS.some(([k]) => k === g.modo)) sc = g; } catch (e) { /* sin almacenamiento */ }
@@ -23,11 +23,12 @@
     paso: 'La distancia a la carretera es opcional: con ella se ve cómo cambia el tono poco a poco al pasar.',
     eco: 'Para un radar o una ecografía la onda es electromagnética o ultrasonido: pon su velocidad (3·10^8 m/s, 1540 m/s en los tejidos). Se admite 24e9 o 24·10^9.',
     choque: 'La altura es opcional: con ella se calcula cuándo y dónde se oye el estampido.',
+    luz: 'β = v/c es positiva si la fuente se aleja (corrimiento al rojo) y negativa si se acerca. Las longitudes de onda van en nanómetros: la línea Hα del hidrógeno está en 656,3 nm.',
   };
   function formulario() {
     let h = elige('modo', 'Qué calcular', MODOS);
     if (sc.modo === 'recta') {
-      h += fila('f', 'Frecuencia que emite la fuente', 'Hz') + fila('v', 'Velocidad del sonido', 'm/s') + fila('vF', 'Velocidad de la fuente', 'm/s') + fila('vO', 'Velocidad del observador', 'm/s') + sep('Opcional') + fila('w', 'Velocidad del viento', 'm/s');
+      h += fila('f', 'Frecuencia que emite la fuente', 'Hz') + fila('v', 'Velocidad del sonido', 'm/s') + fila('vF', 'Velocidad de la fuente', 'm/s') + fila('vO', 'Velocidad del observador', 'm/s') + sep('Opcional') + fila('w', 'Velocidad del viento', 'm/s') + fila('aF', 'Ángulo de la velocidad de la fuente con la recta que los une', '°') + fila('aO', 'Ángulo de la velocidad del observador', '°');
     } else if (sc.modo === 'paso') {
       h += elige('datos', 'Datos', [['fuente', 'Conozco la fuente y su velocidad'], ['oidas', 'Conozco lo que se oye antes y después']]);
       h += sc.datos === 'oidas' ? fila('f1', 'Frecuencia al acercarse f₁', 'Hz') + fila('f2', 'Frecuencia al alejarse f₂', 'Hz') + fila('v', 'Velocidad del sonido', 'm/s')
@@ -36,6 +37,10 @@
       h += elige('buscar', 'Qué buscas', [['frecuencia', 'La frecuencia del eco'], ['velocidad', 'La velocidad del obstáculo']]);
       h += fila('f', 'Frecuencia emitida', 'Hz') + fila('v', 'Velocidad de la onda', 'm/s') + fila('vE', 'Velocidad del emisor', 'm/s');
       h += sc.buscar === 'velocidad' ? fila('df', 'Diferencia medida f″ − f', 'Hz') : fila('u', 'Velocidad del obstáculo', 'm/s');
+    } else if (sc.modo === 'luz') {
+      h += elige('dato', 'Qué conozco', [['fuente', 'La velocidad de la fuente'], ['observado', 'La longitud de onda que llega']]);
+      h += fila('lam', 'Longitud de onda emitida λ', 'nm');
+      h += sc.dato === 'observado' ? fila('lamO', 'Longitud de onda observada λ′', 'nm') : elige('geo', 'Cómo se mueve', [['radial', 'Por la visual (acercándose o alejándose)'], ['transversal', 'Perpendicular a la visual']]) + fila('beta', 'β = v/c', '');
     } else {
       h += fila('v', 'Velocidad del sonido', 'm/s') + fila('vF', 'Velocidad de la fuente', 'm/s') + sep('Opcional') + fila('h', 'Altura de vuelo', 'm');
     }
@@ -81,10 +86,13 @@
       ley = 'Cada círculo es un frente de onda, con centro donde estaba la fuente al emitirlo. Delante de la fuente se apelotonan: llegan más a menudo y se oye más agudo.';
     } else if (sol.modo === 'paso') {
       h = (sol.datos === 'oidas' ? dato('Velocidad de la fuente', kmh(sol.u)) + dato('Frecuencia que emite', `f = ${fq(sol.fr)} Hz`) : dato('Al acercarse', `f₁ = ${fq(sol.f1)} Hz`) + dato('Al alejarse', `f₂ = ${fq(sol.f2)} Hz`)) + dato('Salto al pasar', `Δf = ${fq(sol.salto)} Hz`);
-      ley = sol.curva ? 'Vista desde arriba: la fuente pasa por la carretera y el observador está a un lado. La gráfica muestra la frecuencia que le llega según dónde estaba la fuente.' : 'Vista desde arriba: la fuente pasa por delante del observador. Antes se oye f₁ y después f₂.';
+      ley = sol.curva ? 'Vista desde arriba: la fuente pasa por la carretera y el observador está a un lado. La gráfica muestra la frecuencia que oye en cada instante (t = 0 cuando la fuente pasa enfrente).' : 'Vista desde arriba: la fuente pasa por delante del observador. Antes se oye f₁ y después f₂.';
     } else if (sol.modo === 'eco') {
       h = (sol.buscar === 'velocidad' ? dato('Velocidad del obstáculo', kmh(sol.u)) : dato('Frecuencia del eco', `f″ = ${fq(sol.fpp)} Hz`)) + dato('Recibe el obstáculo', `f<sub>R</sub> = ${fq(sol.fR)} Hz`) + dato('Pulsaciones', `Δf = ${fq(sol.df)} Hz`);
       ley = sol.u + sol.vE === 0 ? 'En azul la onda que sale del emisor y en naranja el eco.' : `En azul la onda que sale del emisor y en naranja el eco.${Math.abs(sol.u) + Math.abs(sol.vE) < 0.001 * sol.v ? ' Las velocidades son tan pequeñas frente a la de la onda que el movimiento no se ve a esta escala.' : ''}`;
+    } else if (sol.modo === 'luz') {
+      h = (sol.dato === 'observado' ? dato('Velocidad de la fuente', `β = ${f(sol.beta)} · v = ${f(sol.beta * D.C)} m/s`) : dato('Longitud de onda que llega', `λ′ = ${f(sol.lamO)} nm`)) + dato('Corrimiento', `z = ${f(sol.z)} (${sol.z > 0 ? 'al rojo' : sol.z < 0 ? 'al azul' : 'ninguno'})`) + dato('Factor de Lorentz', `γ = ${f(sol.g, 6)}`);
+      ley = 'El espectro visible con la línea que emite la fuente (arriba) y la que llega al observador (abajo). Fuera de 380–750 nm la luz ya no se ve.';
     } else {
       h = dato('Número de Mach', `M = ${f(sol.M)}`) + dato('Semiángulo del cono', `θ = ${f(sol.gr)}°`) + (sol.h ? dato('Se oye el estampido', `${f(sol.t)} s después de pasar`) + dato('Distancia horizontal', `x = ${f(sol.x)} m`) : '');
       ley = 'La fuente va más deprisa que sus frentes de onda: se acumulan en el cono de Mach, que al llegar al observador se oye como un estampido.';
@@ -172,8 +180,10 @@
       frentes(g, Math.floor(t / TE), (k) => [xs(k * TE) + bW * cv * (t - k * TE), cy], (k) => cv * (t - k * TE), col['--accent'], w * 1.2);
       punto(g, xs(t), cy, 7, col['--peso']); texto(g, xs(t), cy + 22, `fuente · ${txt(fq(sol.fr))} Hz`, col['--peso']);
       punto(g, xo(t), cy, 7, col['--normal']); texto(g, xo(t), cy + 22, `observador · ${txt(fq(sol.fp))} Hz`, col['--normal']);
-      if (bF) flecha(g, xs(t), cy - 16, Math.sign(bF) * Math.min(60, 14 + Math.abs(bF) * 160), 0, col['--peso']);
-      if (bO) flecha(g, xo(t), cy - 16, -Math.sign(bO) * Math.min(60, 14 + Math.abs(bO) * 160), 0, col['--normal']);
+      // flechas con la velocidad entera, inclinadas si va en ángulo (la animación solo mueve la componente que cuenta)
+      const largo = (x) => Math.min(60, 14 + Math.abs(x / sol.v) * 160), rad = (a) => (a * Math.PI) / 180;
+      if (sol.vF0) flecha(g, xs(t), cy - 16, Math.sign(sol.vF0) * largo(sol.vF0) * Math.cos(rad(sol.aF)), -largo(sol.vF0) * Math.sin(rad(sol.aF)), col['--peso']);
+      if (sol.vO0) flecha(g, xo(t), cy - 16, -Math.sign(sol.vO0) * largo(sol.vO0) * Math.cos(rad(sol.aO)), -largo(sol.vO0) * Math.sin(rad(sol.aO)), col['--normal']);
       if (bW) { texto(g, 14, 18, `viento ${txt(f(Math.abs(sol.w)))} m/s`, col['--muted'], 'left'); flecha(g, bW > 0 ? 130 : 180, 18, bW > 0 ? 50 : -50, 0, col['--muted']); }
     } else if (sol.modo === 'paso') {
       const b = sol.u / sol.v, carretera = h * 0.3, L = sol.curva ? sol.curva.L : 1;
@@ -207,7 +217,7 @@
       punto(g, xe(t), cy, 7, col['--peso']); texto(g, xe(t), cy + 22, 'emisor', col['--peso']);
       if (bE) flecha(g, xe(t), cy - 18, Math.sign(bE) * 40, 0, col['--peso']);
       texto(g, 14, 16, `emite ${txt(fq(sol.fr))} Hz · eco ${txt(fq(sol.fpp))} Hz`, col['--ink'], 'left', '600 ');
-    } else {
+    } else if (sol.modo === 'choque') {
       const suelo = h - 26, y0 = h * 0.26, vP = w / 4, c2 = vP / sol.M, xs = (tt) => 20 + vP * tt, xo = w * 0.42;
       if (xs(t) > w + 220) { tA = t = 0; conoAntes = null; }
       g.fillStyle = col['--suelo']; g.fillRect(0, suelo, w, 3);
@@ -223,10 +233,34 @@
       punto(g, xo, suelo - 6, 6, col['--normal']); texto(g, xo, suelo + 14, 'observador', col['--normal']);
       if (bum > 0) texto(g, xo, suelo - 28, '¡BUM!', col['--peso'], 'center', '700 ');
       texto(g, 14, 16, `M = ${txt(f(sol.M))} · θ = ${txt(f(sol.gr))}°`, col['--ink'], 'left', '600 ');
-    }
+    } else if (sol.modo === 'luz') espectro(g, w, h);
+  }
+  /* ---------- Espectro visible con la línea emitida y la observada ---------- */
+  // color aproximado de una longitud de onda visible (nm)
+  function rgb(nm) {
+    let r = 0, gg = 0, b = 0;
+    if (nm >= 380 && nm < 440) { r = (440 - nm) / 60; b = 1; } else if (nm < 490) { gg = (nm - 440) / 50; b = 1; } else if (nm < 510) { gg = 1; b = (510 - nm) / 20; } else if (nm < 580) { r = (nm - 510) / 70; gg = 1; } else if (nm < 645) { r = 1; gg = (645 - nm) / 65; } else if (nm <= 750) r = 1;
+    const k = nm < 420 ? 0.3 + (0.7 * (nm - 380)) / 40 : nm > 700 ? 0.3 + (0.7 * (750 - nm)) / 50 : 1;
+    return `rgb(${[r, gg, b].map((c) => Math.round(255 * (c * k) ** 0.8)).join(',')})`;
+  }
+  function espectro(g, w, h) {
+    const a = Math.min(330, sol.lam, sol.lamO) - 20, z = Math.max(800, sol.lam, sol.lamO) + 20, ml = 20, mr = 20;
+    const X = (nm) => ml + ((nm - a) / (z - a)) * (w - ml - mr), y1 = h * 0.22, y2 = h * 0.58, alto = h * 0.2;
+    const banda = (y) => {
+      g.fillStyle = col['--line']; g.fillRect(ml, y, w - ml - mr, alto);
+      for (let nm = 380; nm < 750; nm += 2) { g.fillStyle = rgb(nm); g.fillRect(X(nm), y, X(nm + 2) - X(nm) + 0.5, alto); }
+    };
+    const linea = (y, nm, t) => {
+      g.strokeStyle = col['--ink']; g.lineWidth = 3; g.beginPath(); g.moveTo(X(nm), y - 4); g.lineTo(X(nm), y + alto + 4); g.stroke();
+      texto(g, X(nm), y - 12, t, col['--ink'], 'center', '600 ');
+    };
+    banda(y1); banda(y2);
+    linea(y1, sol.lam, `emitida ${txt(f(sol.lam))} nm`); linea(y2, sol.lamO, `llega ${txt(f(sol.lamO))} nm`);
+    flecha(g, X(sol.lam), y1 + alto + 8, X(sol.lamO) - X(sol.lam), y2 - y1 - alto - 34, col['--peso']);
+    for (const nm of [400, 500, 600, 700]) if (nm > a && nm < z) texto(g, X(nm), h - 14, `${nm} nm`, col['--muted']);
   }
   let cursor = null;
-  /* ---------- Gráfica f′(x) al pasar ---------- */
+  /* ---------- Gráfica f′(t) al pasar ---------- */
   function grafica() {
     const c = $('#grafica');
     if (c.hidden || !sol || !sol.curva) return;
@@ -235,18 +269,20 @@
     if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
     const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
     if (!col['--ink']) colores();
-    const pts = sol.curva.puntos, L = sol.curva.L, ml = 58, mr = 14, mt = 14, mb = 30;
+    // eje horizontal: instante en que se oye cada frecuencia, con t = 0 cuando la fuente pasa enfrente
+    const pts = sol.curva.puntos, ml = 58, mr = 14, mt = 14, mb = 30, t0 = pts[0].tr, t1 = pts[pts.length - 1].tr, d0 = sol.d / sol.v;
     const lo = sol.f2 - 0.08 * sol.salto, hi = sol.f1 + 0.08 * sol.salto;
-    const X = (x) => ml + ((x + L) / (2 * L)) * (w - ml - mr), Y = (fr) => mt + ((hi - fr) / (hi - lo)) * (h - mt - mb);
+    const X = (tt) => ml + ((tt - t0) / (t1 - t0)) * (w - ml - mr), Y = (fr) => mt + ((hi - fr) / (hi - lo)) * (h - mt - mb);
     g.strokeStyle = col['--line']; g.lineWidth = 1;
     for (const fr of [sol.f1, sol.fr, sol.f2]) { g.beginPath(); g.moveTo(ml, Y(fr)); g.lineTo(w - mr, Y(fr)); g.stroke(); texto(g, ml - 6, Y(fr), `${txt(fq(fr))}`, col['--muted'], 'right'); }
     g.beginPath(); g.moveTo(X(0), mt); g.lineTo(X(0), h - mb); g.stroke();
-    texto(g, X(-L), h - 12, `${txt(f(-L))} m`, col['--muted'], 'left'); texto(g, X(0), h - 12, 'enfrente', col['--muted']); texto(g, X(L), h - 12, `${txt(f(L))} m`, col['--muted'], 'right');
+    g.setLineDash([4, 4]); g.beginPath(); g.moveTo(X(d0), mt); g.lineTo(X(d0), h - mb); g.stroke(); g.setLineDash([]);
+    texto(g, X(t0), h - 12, `${txt(f(t0, 3))} s`, col['--muted'], 'left'); if (X(d0) - X(0) > 120) { texto(g, X(0), h - 12, 'pasa enfrente', col['--muted'], 'right'); texto(g, X(d0), h - 12, `se oye (+${txt(f(d0, 3))} s)`, col['--muted'], 'left'); } else texto(g, X(0), h - 12, `pasa enfrente (se oye ${txt(f(d0, 3))} s después)`, col['--muted']); texto(g, X(t1), h - 12, `${txt(f(t1, 3))} s`, col['--muted'], 'right');
     g.strokeStyle = col['--accent']; g.lineWidth = 2.4; g.beginPath();
-    pts.forEach((q, i) => (i ? g.lineTo(X(q.x), Y(q.fp)) : g.moveTo(X(q.x), Y(q.fp))));
+    pts.forEach((q, i) => (i ? g.lineTo(X(q.tr), Y(q.fp)) : g.moveTo(X(q.tr), Y(q.fp))));
     g.stroke();
-    if (cursor !== null && Math.abs(cursor) <= L) { const ca = -cursor / Math.hypot(cursor, sol.d), fo = (sol.fr * sol.v) / (sol.v - sol.u * ca); punto(g, X(cursor), Y(fo), 5, col['--peso']); }
-    texto(g, ml, 6, 'f′ (Hz) según la posición de la fuente', col['--muted'], 'left');
+    if (cursor !== null && Math.abs(cursor) <= sol.curva.L) { const ca = -cursor / Math.hypot(cursor, sol.d), fo = (sol.fr * sol.v) / (sol.v - sol.u * ca); punto(g, X(cursor / sol.u + Math.hypot(cursor, sol.d) / sol.v), Y(fo), 5, col['--peso']); }
+    texto(g, ml, 6, 'f′ (Hz) que se oye en cada instante', col['--muted'], 'left');
   }
   let ultimo = performance.now();
   function bucle() {
@@ -258,6 +294,35 @@
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { colores(); dibuja(); grafica(); });
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('doppler').current;
+  /* ---------- Modo práctica: un ejercicio con enunciado ---------- */
+  function azar() {
+    const ent = (a, b) => a + Math.floor(Math.random() * (b - a + 1)), de = (l) => l[ent(0, l.length - 1)], c = (x) => String(x).replace('.', ',');
+    const tipos = [
+      () => ({ modo: 'recta', f: String(ent(4, 12) * 50), v: '340', vF: String(de([-30, -20, -15, 15, 20, 25, 30])), vO: String(de([0, 0, -10, 5, 10])), w: '' }),
+      () => ({ modo: 'recta', f: String(ent(4, 12) * 50), v: '340', vF: String(ent(2, 6) * 5), vO: '0', w: '', aF: String(de([30, 45, 60])), aO: '' }),
+      () => ({ modo: 'paso', datos: 'fuente', f: String(ent(3, 9) * 50), v: '340', vF: String(ent(4, 12) * 5), d: '' }),
+      () => ({ modo: 'paso', datos: 'oidas', f1: String(ent(45, 60) * 10), f2: String(ent(36, 44) * 10), v: '340' }),
+      () => ({ modo: 'eco', buscar: 'frecuencia', f: String(ent(20, 60) * 1000), v: '340', vE: String(ent(2, 8)), u: '0' }),
+      () => ({ modo: 'choque', v: '340', vF: String(ent(41, 100) * 10), h: String(ent(3, 12) * 1000) }),
+      () => ({ modo: 'luz', dato: 'fuente', geo: 'radial', lam: c(de([486.1, 500, 589, 656.3])), beta: c(de([-0.2, -0.1, -0.05, 0.05, 0.1, 0.3])) }),
+      () => ({ modo: 'luz', dato: 'observado', lam: '656,3', lamO: c(+(656.3 * (1 + ent(2, 30) / 100)).toFixed(1)) }),
+    ];
+    sc = de(tipos)();
+    formulario(); sel.value = ''; calcula();
+  }
+  const enunciado = () => {
+    const e = (x) => esc(String(x ?? '').replace('.', ',')), mod = (x) => e(String(x).replace('-', ''));
+    const mueve = (v, quien, hacia) => (+v > 0 ? `${quien} va hacia ${hacia} a ${mod(v)} m/s` : +v < 0 ? `${quien} se aleja ${hacia === 'el observador' ? 'del observador' : 'de la fuente'} a ${mod(v)} m/s` : `${quien} está quieto`);
+    if (sc.modo === 'recta') return sc.aF ? `Un coche con una bocina de ${e(sc.f)} Hz va a ${e(sc.vF)} m/s en una dirección que forma ${e(sc.aF)}° con la recta que lo une a un peatón quieto (v = ${e(sc.v)} m/s). ¿Qué frecuencia oye el peatón?` : `Una fuente emite ${e(sc.f)} Hz (v = ${e(sc.v)} m/s): ${mueve(sc.vF, 'la fuente', 'el observador')} y ${mueve(sc.vO, 'el observador', 'la fuente')}. Calcula la frecuencia que se oye y la longitud de onda entre los dos.`;
+    if (sc.modo === 'paso' && sc.datos === 'oidas') return `Una moto pasa por delante de ti: al acercarse suena a ${e(sc.f1)} Hz y al alejarse a ${e(sc.f2)} Hz (v = ${e(sc.v)} m/s). ¿A qué velocidad va y qué frecuencia emite?`;
+    if (sc.modo === 'paso') return `Un tren pita a ${e(sc.f)} Hz y pasa por una estación a ${e(sc.vF)} m/s (v = ${e(sc.v)} m/s). Calcula la frecuencia que se oye al acercarse, al alejarse y el salto al pasar.`;
+    if (sc.modo === 'eco') return `Un murciélago emite a ${e(sc.f)} Hz y vuela a ${e(sc.vE)} m/s hacia una pared (v = ${e(sc.v)} m/s). Calcula la frecuencia que recibe la pared, la del eco y las pulsaciones.`;
+    if (sc.modo === 'choque') return `Un avión vuela a ${e(sc.vF)} m/s a ${e(sc.h)} m de altura (v = ${e(sc.v)} m/s). Calcula el número de Mach, el semiángulo del cono y cuánto después de pasar sobre ti se oye el estampido.`;
+    if (sc.modo === 'luz' && sc.dato === 'observado') return `La línea Hα del hidrógeno (${e(sc.lam)} nm) llega desde una galaxia a ${e(sc.lamO)} nm. ¿A qué velocidad se aleja? Calcula también el corrimiento z.`;
+    if (sc.modo === 'luz') return `Una estrella ${+String(sc.beta).replace(',', '.') > 0 ? 'se aleja' : 'se acerca'} a ${mod(sc.beta)}c y emite luz de ${e(sc.lam)} nm. ¿Qué longitud de onda llega? Calcula el corrimiento z y el factor de Lorentz.`;
+    return 'Calcula la frecuencia que se oye.';
+  };
+
   formulario(); colores(); calcula(); requestAnimationFrame(bucle);
-  window.DopplerApp = { abrirEjemplo, resultado: () => sol && { modo: sol.modo, fp: sol.fp, f1: sol.f1, f2: sol.f2, u: sol.u, fpp: sol.fpp, M: sol.M }, estado: () => copia(sc), pausa: () => { anda = false; }, tonos };
+  window.DopplerApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { modo: sol.modo, fp: sol.fp, f1: sol.f1, f2: sol.f2, u: sol.u, fpp: sol.fpp, M: sol.M, lamO: sol.lamO, beta: sol.beta }, estado: () => copia(sc), pausa: () => { anda = false; }, tonos };
 })();

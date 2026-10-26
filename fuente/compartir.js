@@ -1,18 +1,23 @@
 /* =====================================================================
-   Compartir, copiar e imprimir (herramientas de Matemáticas):
+   Compartir, copiar e imprimir (Matemáticas y Electromagnetismo; se pone
+   con 'compartir.js' en los scripts de la herramienta en catalogo.js):
    · un enlace con los datos del ejercicio en la dirección (#d=…): al
      abrirlo, los datos se dejan donde la herramienta guarda los suyos
-     (localStorage, «<herramienta>-v1») antes de que arranque, así que se
+     (localStorage, la clave guarda de la página, que herramientas.js deja
+     en Pagina.guarda) antes de que arranque, así que se
      abre con ellos sin que la herramienta tenga que saber nada;
    · copiar los resultados y el desarrollo como texto o como LaTeX (las
      fórmulas salen de su fuente, que Mates deja en data-src);
-   · imprimir (o guardar en PDF) solo el ejercicio, sin menús ni teoría;
+   · imprimir (o guardar en PDF) solo el ejercicio, sin menús ni teoría.
+   Lee los resultados de #resumen o #res y el desarrollo de #pasos; en
+   Magnetostática, cada pregunta con su resultado ([data-res]) y su
+   desarrollo ([data-steps]);
    · un aviso de que log es el logaritmo decimal.
    Tiene que ir antes que el app.js de la herramienta.
    ===================================================================== */
 const Compartir = (() => {
   const partes = () => (typeof location === 'undefined' ? '/herramienta/' : location.pathname).split('/').filter((q) => q && !/\.html?$/.test(q));
-  const CLAVE = `${partes().pop()}-v1`;
+  const CLAVE = (typeof Pagina !== 'undefined' && Pagina.guarda) || `${partes().pop()}-v1`;
   const b64 = (s) => btoa(unescape(encodeURIComponent(s))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
   const deB64 = (s) => decodeURIComponent(escape(atob(s.replace(/-/g, '+').replace(/_/g, '/'))));
 
@@ -127,6 +132,7 @@ const Compartir = (() => {
       if (tag === 'br') { out += '\n'; continue; }
       const dentro = lee(n, tex);
       if (tex && (tag === 'b' || tag === 'strong')) out += `\\textbf{${dentro}}`;
+      else if (tag === 'small') out += ` (${dentro.trim()})`;
       else if (tag === 'tr') out += '\n' + [...n.children].map((c) => lee(c, tex).trim()).join(tex ? ' & ' : ' | ');
       else if (['div', 'p', 'li', 'table', 'ol', 'ul'].includes(tag)) out += `\n${dentro}\n`;
       else out += dentro;
@@ -134,13 +140,22 @@ const Compartir = (() => {
     return out;
   }
   const limpia = (s) => s.replace(/[ \t]+/g, ' ').replace(/ *\n */g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+  // cada fila de resultados «<span>nombre</span> valor» sale como «nombre: valor»
+  const fila = (d, tex) => { const sp = d.querySelector(':scope > span'); if (!sp) return limpia(lee(d, tex)); const c = d.cloneNode(true); c.querySelector(':scope > span').remove(); return `${limpia(lee(sp, tex))}: ${limpia(lee(c, tex))}`; };
+  const filas = (res, tex) => { const ds = [...res.children].filter((d) => !d.hidden && d.tagName === 'DIV' && d.querySelector(':scope > span')); return ds.length ? ds.map((d) => fila(d, tex)) : [limpia(lee(res, tex))].filter(Boolean); };
+  // bloques { titulo, items, pasos }: uno en las herramientas normales y uno por pregunta en Magnetostática
+  function bloques(tex) {
+    const preguntas = [...document.querySelectorAll('[data-res]')];
+    if (preguntas.length) return preguntas.map((r, i) => { const p = r.closest('.pieza'), nom = p && p.querySelector('.badge'), st = document.querySelector(`[data-steps="${r.dataset.res}"] ol`); return { titulo: nom ? nom.textContent : `Pregunta ${i + 1}`, items: [limpia(lee(r, tex))], pasos: st ? [...st.children] : [] }; });
+    const res = document.querySelector('#resumen') || document.querySelector('#res');
+    return [{ titulo: '', items: res ? filas(res, tex) : [], pasos: [...document.querySelectorAll('#pasos > li')] }];
+  }
   function ejercicio(tex) {
     const tit = (document.querySelector('h1') || {}).textContent || document.title;
-    const res = document.querySelector('#resumen') || document.querySelector('#res'), pasos = [...document.querySelectorAll('#pasos > li')];
-    const items = res ? (res.id === 'resumen' ? [...res.children].filter((d) => !d.hidden).map((d) => { const sp = d.querySelector('span'), b = d.querySelector('b'); return sp && b ? `${limpia(lee(sp, tex))}: ${limpia(lee(b, tex))}` : limpia(lee(d, tex)); }) : [limpia(lee(res, tex))]) : [];
-    const paso = (li) => { const t = li.querySelector('strong'), c = li.cloneNode(true), ct = c.querySelector('strong'); if (ct) ct.remove(); return { t: t ? limpia(lee(t, tex)) : '', c: limpia(lee(c, tex)).replace(/\n+/g, tex ? ' \\\\ ' : '\n   ') }; };
-    if (!tex) return [tit, '', 'Resultados', ...items.map((q) => `· ${q.replace(/\n+/g, ' ')}`), '', 'Desarrollo', ...pasos.map((li, i) => { const q = paso(li); return `${i + 1}. ${q.t}${q.t ? ': ' : ''}${q.c}`; }), '', enlace()].join('\n');
-    return [`% ${tit} · SimulaCiencia`, `% ${enlace()}`, '\\section*{Resultados}', '\\begin{itemize}', ...items.map((q) => `  \\item ${q.replace(/\n+/g, ' ')}`), '\\end{itemize}', '\\section*{Desarrollo}', '\\begin{enumerate}', ...pasos.map((li) => { const q = paso(li); return `  \\item ${q.t ? `\\textbf{${q.t}.} ` : ''}${q.c}`; }), '\\end{enumerate}'].join('\n');
+    const paso = (li) => { const t = li.querySelector('strong, .st-h'), c = li.cloneNode(true), ct = c.querySelector('strong, .st-h'); if (ct) ct.remove(); return { t: t ? limpia(lee(t, tex)) : '', c: limpia(lee(c, tex)).replace(/\n+/g, tex ? ' \\\\ ' : '\n   ') }; };
+    const bs = bloques(tex);
+    if (!tex) return [tit, ...bs.flatMap((b) => ['', ...(b.titulo ? [b.titulo] : []), 'Resultados', ...b.items.map((q) => `· ${q.replace(/\n+/g, '; ')}`), ...(b.pasos.length ? ['', 'Desarrollo', ...b.pasos.map((li, i) => { const q = paso(li); return `${i + 1}. ${q.t}${q.t ? ': ' : ''}${q.c}`; })] : [])]), '', enlace()].join('\n');
+    return [`% ${tit} · SimulaCiencia`, `% ${enlace()}`, ...bs.flatMap((b) => { const sec = b.titulo ? '\\subsection*' : '\\section*'; return [...(b.titulo ? [`\\section*{${escTex(b.titulo)}}`] : []), `${sec}{Resultados}`, '\\begin{itemize}', ...b.items.map((q) => `  \\item ${q.replace(/\n+/g, '; ')}`), '\\end{itemize}', ...(b.pasos.length ? [`${sec}{Desarrollo}`, '\\begin{enumerate}', ...b.pasos.map((li) => { const q = paso(li); return `  \\item ${q.t ? `\\textbf{${q.t}.} ` : ''}${q.c}`; }), '\\end{enumerate}'] : [])]; })].join('\n');
   }
 
   /* ---------- Botones ---------- */
@@ -153,7 +168,8 @@ const Compartir = (() => {
   }
   function botones() {
     if (typeof document === 'undefined') return;
-    const card = document.querySelector('#pasos') && document.querySelector('#pasos').closest('.card');
+    // en la tarjeta del desarrollo (en Magnetostática, en la de las preguntas)
+    const card = document.querySelector('#pasos') ? document.querySelector('#pasos').closest('.card') : document.querySelector('#preguntas') && document.querySelector('#preguntas').closest('.panel');
     if (!card || card.querySelector('.compartir')) return;
     const caja = document.createElement('div');
     caja.className = 'controles compartir';
@@ -169,11 +185,12 @@ const Compartir = (() => {
     });
     // al imprimir: solo el ejercicio, en claro
     const css = document.createElement('style');
-    css.textContent = '@media print { .top, .miga, .bib, .bib-scrim, footer, .teoria, .compartir, #ejemplos, .controles, .nota:empty, .error[hidden] { display: none !important } html, body { background: #fff !important } .wrap { max-width: none; padding: 0 } .layout { display: block !important } .card { break-inside: avoid; box-shadow: none !important } .pasos li { break-inside: avoid } canvas { max-height: 9cm; object-fit: contain } }';
+    css.textContent = '@media print { .top, .miga, .bib, .bib-scrim, footer, .teoria, .compartir, #ejemplos, .controles, .nota:empty, .error[hidden] { display: none !important } html, body { background: #fff !important } .wrap { max-width: none; padding: 0 } .layout { display: block !important } .card { break-inside: avoid; box-shadow: none !important } .pasos li { break-inside: avoid } canvas { max-height: 9cm; object-fit: contain } .chips, .stage-bar, .x, .tools { display: none !important } .cvwrap { height: 9cm !important; min-height: 0 !important } }';
     document.head.appendChild(css);
-    let tema = null;
-    addEventListener('beforeprint', () => { tema = document.documentElement.getAttribute('data-theme'); document.documentElement.setAttribute('data-theme', 'light'); dispatchEvent(new Event('resize')); });
-    addEventListener('afterprint', () => { if (tema === null) document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', tema); dispatchEvent(new Event('resize')); });
+    // en claro y con los desarrollos plegados abiertos
+    let tema = null, cerrados = [];
+    addEventListener('beforeprint', () => { tema = document.documentElement.getAttribute('data-theme'); document.documentElement.setAttribute('data-theme', 'light'); cerrados = [...document.querySelectorAll('details:not([open])')]; cerrados.forEach((d) => { d.open = true; }); dispatchEvent(new Event('resize')); });
+    addEventListener('afterprint', () => { if (tema === null) document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', tema); cerrados.forEach((d) => { d.open = false; }); dispatchEvent(new Event('resize')); });
     // log es el decimal
     const err = document.querySelector('#error');
     if (err && ['taylor', 'fourier', 'edos', 'laplace', 'derivadas', 'campos'].includes(CLAVE.slice(0, -3))) { const q = document.createElement('p'); q.className = 'nota'; q.id = 'nota-log'; q.textContent = 'ln es el logaritmo neperiano y log, el decimal (log₁₀).'; err.before(q); }

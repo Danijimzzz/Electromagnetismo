@@ -1,5 +1,5 @@
-<title>Intervalos de confianza: media, proporción, varianza y tamaño de muestra · SimulaCiencia</title>
-<meta name="description" content="Calculadora de intervalos de confianza en español: media con σ conocida o desconocida (t de Student), proporción, varianza con la χ², diferencia de medias y de proporciones y tamaño de la muestra, con el valor crítico, el error máximo, el desarrollo paso a paso y una simulación de 100 muestras.">
+<title>Intervalos de confianza: media, proporción, varianza, datos apareados y tamaño de muestra · SimulaCiencia</title>
+<meta name="description" content="Calculadora de intervalos de confianza en español: media con σ conocida o desconocida (t de Student), proporción, varianza con la χ², diferencia de medias y de proporciones, datos apareados, cociente de varianzas con la F, cotas unilaterales, población finita, contraste con el intervalo y tamaño de la muestra, con el valor crítico, el error máximo, el desarrollo paso a paso y una simulación de 100 muestras.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
@@ -19,7 +19,7 @@ textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 90px }
 <header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Estadística</a> / Intervalos de confianza</span></header>
 <div class="wrap">
 <h1>Intervalos de confianza</h1>
-<p class="lead">Calcula el intervalo de confianza de una media (con σ conocida o con la t de Student), una proporción, una varianza o la diferencia entre dos muestras, y el tamaño de muestra para un error dado, con el valor crítico, el error máximo y el desarrollo. La simulación saca 100 muestras para ver qué significa «confianza del 95 %».</p>
+<p class="lead">Calcula el intervalo de confianza de una media (con σ conocida o con la t de Student), una proporción, una varianza, la diferencia entre dos muestras, datos apareados o el cociente de dos varianzas, bilateral o como cota, y el tamaño de muestra para un error dado, con el valor crítico, el error máximo y el desarrollo. La simulación saca 100 muestras para ver qué significa «confianza del 95 %».</p>
 <div class="layout">
   <div class="card">
     <h2>Datos</h2>
@@ -52,8 +52,21 @@ textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 90px }
   <p>(n − 1)s<sup>2</sup>/σ<sup>2</sup> sigue una χ<sup>2</sup> con n − 1 grados de libertad. Como no es simétrica, el intervalo usa dos valores críticos distintos:</p>
   <p class="f">IC<sub>1−α</sub>(σ<sup>2</sup>) = ((n − 1)s<sup>2</sup>/χ<sup>2</sup><sub>α/2</sub>, &ensp; (n − 1)s<sup>2</sup>/χ<sup>2</sup><sub>1−α/2</sub>)</p>
   <p>El de la desviación típica σ se obtiene con la raíz de los dos extremos.</p>
+  <h2>Datos apareados</h2>
+  <p>Si las dos medidas se hacen sobre los mismos individuos (antes y después, dos aparatos sobre la misma pieza), no son muestras independientes. Se calculan las diferencias d<sub>i</sub> = x<sub>1i</sub> − x<sub>2i</sub> y se trata como una sola muestra con la t de Student de n − 1 grados de libertad:</p>
+  <p class="f">IC<sub>1−α</sub>(μ<sub>d</sub>) = (d̄ − t<sub>n−1; α/2</sub>·s<sub>d</sub>/√n, &ensp; d̄ + t<sub>n−1; α/2</sub>·s<sub>d</sub>/√n)</p>
+  <h2>Cociente de varianzas</h2>
+  <p>Con dos poblaciones normales, (s₁<sup>2</sup>/σ₁<sup>2</sup>)/(s₂<sup>2</sup>/σ₂<sup>2</sup>) sigue una F de Snedecor con (n₁ − 1, n₂ − 1) grados de libertad, que tampoco es simétrica:</p>
+  <p class="f">IC<sub>1−α</sub>(σ₁<sup>2</sup>/σ₂<sup>2</sup>) = ((s₁<sup>2</sup>/s₂<sup>2</sup>)/F<sub>α/2</sub>, &ensp; (s₁<sup>2</sup>/s₂<sup>2</sup>)/F<sub>1−α/2</sub>), &ensp; F<sub>1−α/2</sub>(n₁ − 1, n₂ − 1) = 1/F<sub>α/2</sub>(n₂ − 1, n₁ − 1)</p>
+  <p>Si el intervalo contiene el 1, se pueden suponer varianzas iguales en la diferencia de medias.</p>
+  <h2>Cotas: intervalos unilaterales</h2>
+  <p>Cuando solo interesa un mínimo (la duración de una bombilla) o un máximo (la proporción de piezas defectuosas), toda α va a una cola: la cota inferior de una media es x̄ − z<sub>α</sub>·σ/√n y el intervalo es (x̄ − z<sub>α</sub>·σ/√n; +∞). Con la misma confianza, la cota queda más cerca de la estimación que el extremo del intervalo bilateral, porque z<sub>α</sub> es menor que z<sub>α/2</sub>.</p>
+  <h2>Población finita</h2>
+  <p>Si la muestra se saca sin reemplazamiento de una población de N elementos y no es pequeña frente a ella (más de un 5 %), el error se multiplica por el factor de corrección √((N − n)/(N − 1)). En el tamaño de la muestra, n = n₀/(1 + (n₀ − 1)/N), donde n₀ es el que saldría con una población infinita.</p>
+  <h2>Contraste con el intervalo</h2>
+  <p>Un contraste bilateral de H₀: θ = θ₀ con nivel de significación α se rechaza justo cuando θ₀ queda fuera del intervalo de confianza 1 − α. Con una cota inferior se contrasta H₁: θ &gt; θ₀, y con una superior H₁: θ &lt; θ₀.</p>
   <h2>Error máximo y tamaño de la muestra</h2>
-  <p>El error máximo E es la mitad de la anchura del intervalo. Despejando n de E = z<sub>α/2</sub>·σ/√n sale n = (z<sub>α/2</sub>·σ/E)<sup>2</sup>, y para una proporción n = z<sub>α/2</sub><sup>2</sup>·pq/E<sup>2</sup>, con p = 0,5 si no hay una estimación previa. Siempre se redondea hacia arriba. Para reducir el error a la mitad hace falta cuatro veces más muestra.</p>
+  <p>El error máximo E es la mitad de la anchura del intervalo. Despejando n de E = z<sub>α/2</sub>·σ/√n sale n = (z<sub>α/2</sub>·σ/E)<sup>2</sup>, y para una proporción n = z<sub>α/2</sub><sup>2</sup>·pq/E<sup>2</sup>, con p = 0,5 si no hay una estimación previa. Para comparar dos medias con muestras del mismo tamaño, n = z<sub>α/2</sub><sup>2</sup>(σ₁<sup>2</sup> + σ₂<sup>2</sup>)/E<sup>2</sup> en cada una. Siempre se redondea hacia arriba. Para reducir el error a la mitad hace falta cuatro veces más muestra.</p>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Intervalos de confianza <span id="ver"></span> (beta)</footer>

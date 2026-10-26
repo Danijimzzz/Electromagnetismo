@@ -26,12 +26,22 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     cerca(DopplerF.eco({ buscar: 'frecuencia', f: '5e6', v: '1540', vE: '0', u: String(eco.u) }).df, 1300, 1e-6, 'velocidad de la sangre (ida y vuelta)');
     const av = r('avion');
     cerca(av.gr, 30, 1e-9, 'semiángulo del cono con M = 2'); cerca(av.x, 8000 * Math.sqrt(3), 1e-6, 'distancia del estampido'); cerca(av.t, (8000 * Math.sqrt(3)) / 680, 1e-9, 'tiempo del estampido');
+    // velocidad en ángulo: solo cuenta la componente 30·cos 60° = 15 m/s
+    cerca(r('cruce').fp, (600 * 340) / 325, 1e-9, 'fuente en ángulo');
+    // luz: Hα 656,3 → 721,9 nm, R = 1,09995, β = (R² − 1)/(R² + 1) ≈ 0,09498; ida y vuelta
+    const gal = r('galaxia');
+    cerca(gal.beta, ((721.9 / 656.3) ** 2 - 1) / ((721.9 / 656.3) ** 2 + 1), 1e-12, 'β de la galaxia');
+    cerca(DopplerF.luz({ dato: 'fuente', geo: 'radial', lam: '656,3', beta: String(gal.beta) }).lamO, 721.9, 1e-9, 'λ′ de vuelta');
+    cerca(r('estrella').lamO, 500 * Math.sqrt(0.9 / 1.1), 1e-9, 'estrella que se acerca a 0,1c');
+    cerca(r('transversal').lamO, 625, 1e-9, 'Doppler transversal con γ = 1,25'); cerca(r('transversal').z, 0.25, 1e-12, 'z transversal');
+    // la gráfica del paso usa el instante en que se oye: enfrente (x = 0) se oye d/v después
+    cerca(tren.curva.puntos[100].tr, 15 / 343, 1e-12, 'retraso del sonido enfrente');
     if (DopplerF.fq(24000005280) !== '2,400000528·10<sup>10</sup>') mal(`Doppler: la frecuencia del radar sale «${DopplerF.fq(24000005280)}»`);
-    for (const [sc, q] of [[{ modo: 'recta', f: '500', v: '340', vF: '340' }, 'fuente a la velocidad del sonido'], [{ modo: 'recta', f: '500', v: '340', w: '-340' }, 'viento en contra igual al sonido'], [{ modo: 'paso', datos: 'oidas', f1: '400', f2: '450', v: '340' }, 'f₂ mayor que f₁'], [{ modo: 'choque', v: '340', vF: '300' }, 'onda de choque subsónica'], [{ modo: 'eco', f: '100', v: '340', u: '400' }, 'obstáculo supersónico']]) {
+    for (const [sc, q] of [[{ modo: 'recta', f: '500', v: '340', vF: '340' }, 'fuente a la velocidad del sonido'], [{ modo: 'recta', f: '500', v: '340', w: '-340' }, 'viento en contra igual al sonido'], [{ modo: 'paso', datos: 'oidas', f1: '400', f2: '450', v: '340' }, 'f₂ mayor que f₁'], [{ modo: 'choque', v: '340', vF: '300' }, 'onda de choque subsónica'], [{ modo: 'eco', f: '100', v: '340', u: '400' }, 'obstáculo supersónico'], [{ modo: 'luz', dato: 'fuente', lam: '500', beta: '1' }, 'luz con β = 1']]) {
       let ok = false; try { DopplerF.resolver(sc); } catch (e) { ok = true; }
       if (!ok) mal(`Doppler: ${q} no da error`);
     }
-    if (fallos === antes) console.log(`  ✓ Efecto Doppler: ${DopplerF.ejemplos.length} ejemplos, viento, fuente que pasa y al revés, eco, cono de Mach y errores`);
+    if (fallos === antes) console.log(`  ✓ Efecto Doppler: ${DopplerF.ejemplos.length} ejemplos, viento, fuente que pasa y al revés, eco, cono de Mach, ángulo, luz relativista y errores`);
   }
 
   return async (browser) => {
@@ -63,10 +73,18 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       await page.selectOption('#f-modo', 'choque');
       await page.fill('#f-vF', '200');
       if (await page.locator('#error').isHidden()) mal('Doppler: una onda de choque subsónica no muestra el error');
+      await page.selectOption('#f-modo', 'luz');
+      await page.selectOption('#f-dato', 'fuente');
+      if ((await page.locator('#f-beta').count()) !== 1 || !(await page.locator('#error').isHidden())) mal('Doppler: la pestaña de la luz no pide β o da error');
+      // modo práctica: ejercicios al azar con enunciado, sin errores
+      for (let i = 0; i < 12; i++) {
+        const q = await page.evaluate(() => { DopplerApp.azar(); return { err: !document.querySelector('#error').hidden, en: DopplerApp.enunciado(), res: document.querySelectorAll('#resumen > div').length }; });
+        if (q.err || q.res < 2 || q.en.length < 40 || /undefined|NaN/.test(q.en)) mal(`Doppler: el ejercicio al azar falla («${q.en}»)`);
+      }
       await page.click('#play');
       await page.close();
       if (consola.length) mal('Doppler: consola del navegador:\n      ' + consola.join('\n      '));
-      if (fallos === antes) console.log(`  ✓ Efecto Doppler: ${DopplerF.ejemplos.length} ejemplos con MathML, gráfica del paso, sonido solo si se oye, cambio de datos y errores sin errores de consola`);
+      if (fallos === antes) console.log(`  ✓ Efecto Doppler: ${DopplerF.ejemplos.length} ejemplos con MathML, gráfica del paso, pestaña de la luz, práctica al azar, sonido solo si se oye, cambio de datos y errores sin errores de consola`);
     }
   };
 };

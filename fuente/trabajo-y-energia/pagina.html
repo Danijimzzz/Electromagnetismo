@@ -23,26 +23,29 @@
 .barra .tubo { width: 100%; max-width: 70px; height: 140px; background: var(--bg); border-radius: 6px; position: relative; overflow: hidden }
 .barra .tubo i { position: absolute; left: 0; right: 0; bottom: 0; border-radius: 6px 6px 0 0; transition: none }
 .barra b { font: 500 12.5px var(--f-mono) } .barra span { color: var(--muted) }
-.pasos { margin-top: 16px }  
+.pasos { margin-top: 16px }
+.campos .ancho-texto { font-family: var(--f-mono); font-size: 13px }  
 
 
 </style>
 <body>
 <header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física general</a> / Trabajo y energía</span></header>
 <div class="wrap">
-<h1>Trabajo y energía: rampa, rozamiento y muelle</h1>
-<p class="lead">Un bloque baja por una rampa, recorre un tramo horizontal y choca con un muelle. Cambia los datos y mira cómo la energía potencial se convierte en cinética, en elástica y en calor por el rozamiento. Abajo tienes el desarrollo paso a paso.</p>
+<h1>Trabajo y energía</h1>
+<p class="lead">Un bloque que baja por una rampa con rozamiento y choca con un muelle, un rizo, un péndulo, una montaña rusa y el trabajo de una fuerza variable. Mira cómo la energía potencial se convierte en cinética, en elástica y en calor, con el desarrollo paso a paso.</p>
 <div class="layout">
   <div class="card">
     <h2>Datos</h2>
+    <div class="modos" id="modos" role="tablist" aria-label="Problema"></div>
     <div class="btns" style="margin-bottom:12px"><select id="ejemplos" class="in" aria-label="Ejemplos"></select></div>
     <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
     <p class="error" id="error" hidden></p>
   </div>
   <div>
     <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
     <div class="card escena">
-      <canvas id="lienzo" aria-label="Animación del bloque"></canvas>
+      <canvas id="lienzo" aria-label="Animación del movimiento"></canvas>
       <div class="controles">
         <button class="btn pri" id="play" type="button">▶ Reproducir</button>
         <button class="btn" id="reinicio" type="button">↺</button>
@@ -64,6 +67,10 @@
   <p class="m">En la rampa la normal es $N = m g cos θ$, y el recorrido es $L = h/{sen θ}$, así que $W_roz = −{μ m g h}/{tg θ}$. En el tramo horizontal $N = m g$. El trabajo del rozamiento se convierte en calor: la barra gris de la animación.</p>
   <h2>Muelle</h2>
   <p class="m">Un muelle comprimido una distancia x guarda $E_e = 1/2 k x^2$. Si también hay rozamiento bajo el muelle, la compresión máxima sale de $1/2 m v_C^2 = 1/2 k x^2 + μ m g x$. Después el muelle devuelve el bloque si su fuerza $k x$ supera el rozamiento estático.</p>
+  <h2>Rizo y péndulo</h2>
+  <p class="m">En lo alto de un rizo de radio R el peso y la normal apuntan al centro: $m g + N = m v^2/R$. Como N no puede ser negativa, hace falta $v^2 ≥ g R$ arriba, y sin rozamiento eso pide salir desde $h ≥ 5R/2$. Si no llega, se despega donde N se anula y cae como un proyectil. Un péndulo es lo mismo con la tensión del hilo en lugar de la normal: $T = m (v^2/L + g cos θ)$.</p>
+  <h2>Trabajo de una fuerza variable y potencia</h2>
+  <p class="m">Si la fuerza cambia con la posición, el trabajo es el área bajo la gráfica F(x): $W = ∫ F dx$. Si es la única que trabaja, $W = ΔE_c$. La potencia es el trabajo por unidad de tiempo: media $P_m = W/t$ e instantánea $P = F v$.</p>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Trabajo y energía <span id="ver"></span> (beta)</footer>

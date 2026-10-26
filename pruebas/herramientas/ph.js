@@ -28,6 +28,16 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     // Henderson-Hasselbalch no vale con casi nada de valorante: el pH sale del equilibrio entero
     const vi = PHC.valoracion({ ...PHC.ejemplos.find((e) => e.clave === 'val-acetico').sc, Vt: '0.05' });
     cerca(vi.pHv, vi.ph(0.05), 1e-9, 'valoración débil con 0,05 mL'); if (!(vi.pHv > r('acetico').pH)) mal('pH: al empezar a valorar el acético el pH no puede bajar');
+    // modos nuevos, calculados a mano
+    cerca(r('sal-acetato').pH, 14 + lg((-(1e-14 / 1.8e-5) + Math.sqrt((1e-14 / 1.8e-5) ** 2 + 4 * (1e-14 / 1.8e-5) * 0.1)) / 2), 1e-12, 'hidrólisis del acetato');
+    cerca(r('sal-amonio').pH, -lg((-(1e-14 / 1.8e-5) + Math.sqrt((1e-14 / 1.8e-5) ** 2 + 4 * (1e-14 / 1.8e-5) * 0.1)) / 2), 1e-12, 'hidrólisis del amonio');
+    cerca(r('ka-ph').K, 10 ** -5.74 / (0.1 - 10 ** -2.87), 1e-15, 'Ka a partir del pH');
+    cerca(r('c-ph').C, 1e-6 / 1.8e-5 + 1e-3, 1e-12, 'concentración de amoniaco para pH 11');
+    cerca(r('preparar-acetato').Cs, 0.1 * 10 ** (5 - pKa), 1e-12, 'sal para un tampón de pH 5');
+    cerca(r('mezcla-debil').pH, pKa, 1e-12, 'acético a medio neutralizar'); { const Kh = 1e-14 / 1.8e-5; cerca(r('mezcla-amoniaco').pH, -lg((-Kh + Math.sqrt(Kh * Kh + 4 * Kh * 0.05)) / 2), 1e-6, 'amoniaco y HCl a partes iguales'); }
+    cerca(r('sulfurico').pH, -lg(0.01 + (-(0.01 + 0.012) + Math.sqrt((0.01 + 0.012) ** 2 + 4 * 0.012 * 0.01)) / 2), 2e-3, 'H₂SO₄ con su Ka₂');
+    cerca(r('agua-50').pH, -lg(Math.sqrt(PHC.kwDe(50))), 1e-3, 'agua neutra a 50 °C'); cerca(r('agua-50').pKw, 13.262, 0.01, 'pKw a 50 °C');
+    { const vp = r('val-fosforico'); if (vp.Veqs.join() !== '20,40,60') mal(`pH: equivalencias del fosfórico ${vp.Veqs}`); cerca(vp.ph(20), (-lg(7.5e-3) - lg(6.2e-8)) / 2, 0.1, 'primera equivalencia del fosfórico'); }
     if (va.ind[0] !== 'fenolftaleína') mal(`pH: para el acético con NaOH sale ${va.ind[0]}`);
     if (va.curva.some((q, i) => i && q[1] < va.curva[i - 1][1] - 1e-9)) mal('pH: la curva de valoración de un ácido no sube siempre');
     const vb = r('val-amoniaco');

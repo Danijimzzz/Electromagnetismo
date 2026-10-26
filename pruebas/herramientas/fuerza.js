@@ -25,11 +25,19 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     const hi = r('hilo'); cerca(hi.F, 1, 1e-12, 'F sobre el hilo'); if (hi.arriba !== true || r('hilo-flota').arriba !== true || FzC.hilo({ ...r0('hilo'), sentidoI: 'izquierda' }).arriba !== false) mal('Fuerza magnética: el sentido de la fuerza sobre el hilo no cuadra');
     cerca(r('hilo-flota').Iflota, (0.01 * 9.8) / (0.2 * 0.5), 1e-12, 'corriente para que flote');
     const pa = r('paralelos'); cerca(pa.FL, 1e-4, 1e-9, 'F/L entre hilos'); if (!pa.mismo || r('antiparalelos').mismo) mal('Fuerza magnética: atracción y repulsión al revés');
-    for (const [q, sc] of [['una B vacía', { ...p0(), B: '' }], ['una velocidad que no es un número', { ...p0(), v: 'abc' }], ['un ángulo de 200°', { ...p0(), th: '200' }], ['una carga 0', { ...p0(), part: 'otra', q: '0', m: '1e-27' }], ['vectores sin B', { ...r0('vec-proton'), Bx: '', By: '', Bz: '' }], ['un selector sin E', { ...r0('selector'), E: '' }], ['dos hilos a distancia 0', { ...r0('paralelos'), d: '0' }]]) {
+    const u = 1.66053907e-27, iso = r('isotopos'); cerca(iso.sepa, (2 * 4e5 * Math.abs(13 * u - 1.993e-26)) / (1.602e-19 * 0.5), 1e-9, 'separación de isótopos');
+    const fc = r('franja-cruza'), rc = (mp * 1e6) / (e * 0.2); cerca(fc.alfa, (Math.asin(0.03 / rc) * 180) / Math.PI, 1e-9, 'ángulo al salir de la franja'); cerca(fc.y, rc * (1 - Math.sqrt(1 - (0.03 / rc) ** 2)), 1e-9, 'desplazamiento al salir'); if (!fc.cruza || fc.hacia !== 'arriba') mal('Fuerza magnética: el protón debería cruzar la franja hacia arriba');
+    const fv = r('franja-vuelve'); if (fv.cruza || fv.hacia !== 'abajo') mal('Fuerza magnética: el electrón no debería cruzar la franja y debería curvarse hacia abajo'); cerca(fv.y, (2 * me * Math.sqrt((2 * 500 * e) / me)) / (e * 0.002), 1e-9, '2r del electrón en la franja');
+    const cy = r('cicloide'); cerca(cy.vd, 1e5, 1e-12, 'velocidad de deriva'); cerca(cy.h, (2 * mp * 1000) / (e * 0.01 ** 2), 1e-9, 'altura de la cicloide'); cerca(cy.vmax, 2e5, 1e-12, 'rapidez máxima en la cicloide'); if (!cy.sube) mal('Fuerza magnética: el protón en reposo debería subir hacia E');
+    const tr = r('trocoide'); cerca(tr.R, (me * 3e6) / (e * 0.001), 1e-9, 'radio de la trocoide'); if (FzC.cruzados({ ...r0('cicloide'), v0: '1e5' }).R !== 0) mal('Fuerza magnética: con v0 = E/B debería ir recta');
+    const hc = r('hall-cobre'); cerca(hc.VH, (20 * 1.5) / (8.5e28 * e * 1e-4), 1e-12, 'tensión Hall'); if (hc.alta !== 'de abajo' || r('hall-semi').alta !== 'de arriba') mal('Fuerza magnética: la cara a más potencial del efecto Hall no cuadra');
+    cerca(r('hall-semi').n, (0.01 * 0.5) / (e * 1e-3 * 3e-3), 1e-12, 'densidad de huecos');
+    const er = r('espira-rect'); cerca(er.tau, 50 * 2 * 0.005 * 0.4 * 0.5, 1e-12, 'par sobre la bobina'); cerca(er.U, -0.2 * Math.cos(Math.PI / 6), 1e-12, 'energía de la bobina'); cerca(r('espira-circ').tau, 5 * Math.PI * 0.01 * 0.2, 1e-12, 'par sobre la espira circular');
+    for (const [q, sc] of [['dos isótopos sin B′', { ...r0('isotopos'), B2: '' }], ['una franja de anchura 0', { ...r0('franja-cruza'), d: '0' }], ['un efecto Hall sin grosor', { ...r0('hall-cobre'), t: '' }], ['una espira de 200°', { ...r0('espira-rect'), th: '200' }], ['una B vacía', { ...p0(), B: '' }], ['una velocidad que no es un número', { ...p0(), v: 'abc' }], ['un ángulo de 200°', { ...p0(), th: '200' }], ['una carga 0', { ...p0(), part: 'otra', q: '0', m: '1e-27' }], ['vectores sin B', { ...r0('vec-proton'), Bx: '', By: '', Bz: '' }], ['un selector sin E', { ...r0('selector'), E: '' }], ['dos hilos a distancia 0', { ...r0('paralelos'), d: '0' }]]) {
       let ok = false; try { FzC.resolver(sc); } catch (err) { ok = true; }
       if (!ok) mal(`Fuerza magnética: ${q} no da error`);
     }
-    if (fallos === antes) console.log(`  ✓ Fuerza magnética: ${FzC.ejemplos.length} ejemplos, radio, periodo, hélice, sentido de giro, v × B, selector, espectrómetro, ciclotrón, hilos y errores`);
+    if (fallos === antes) console.log(`  ✓ Fuerza magnética: ${FzC.ejemplos.length} ejemplos, radio, periodo, hélice, sentido de giro, v × B, selector, espectrómetro e isótopos, ciclotrón, franja, cicloide, Hall, espira, hilos y errores`);
   }
 
   return async (browser) => {
@@ -66,6 +74,8 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       await page.click('#play');
       if ((await page.locator('#play').textContent()).trim() !== '▶ Seguir') mal('Fuerza magnética: el botón de pausa no cambia');
       for (let i = 0; i < 12; i++) { await page.evaluate(() => FuerzaApp.azar()); if (!(await page.locator('#error').isHidden())) mal(`Fuerza magnética: un ejercicio al azar da error: ${JSON.stringify(await page.evaluate(() => FuerzaApp.estado()))}`); }
+      // copiar la solución como texto o LaTeX e imprimirla (compartir.js)
+      if ((await page.locator('.compartir button').count()) !== 4 || !/Resultados[\s\S]*Desarrollo/.test(await page.evaluate(() => Compartir.ejercicio(false)))) mal('Fuerza magnética: faltan los botones para copiar o imprimir la solución');
       await page.close();
       if (consola.length) mal('Fuerza magnética: consola del navegador:\n      ' + consola.join('\n      '));
       if (fallos === antes) console.log(`  ✓ Fuerza magnética: ${FzC.ejemplos.length} ejemplos, cambio de campo y de partícula, sentido de giro, ddp, errores, vectores con E y ejercicios al azar sin errores de consola`);

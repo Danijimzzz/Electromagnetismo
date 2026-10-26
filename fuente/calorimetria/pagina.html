@@ -1,5 +1,5 @@
 <title>Calorimetría y cambios de fase: temperatura de equilibrio · SimulaCiencia</title>
-<meta name="description" content="Calculadora de calorimetría en español: temperatura de equilibrio al mezclar agua, hielo, vapor y metales, con cambios de fase, calorímetro y el desarrollo paso a paso, y la curva de calentamiento de cada cuerpo.">
+<meta name="description" content="Calculadora de calorimetría en español: temperatura de equilibrio al mezclar agua, hielo, vapor y metales, con cambios de fase, calorímetro, calentador, problemas al revés (calor específico, masa o tiempo) y dilatación térmica, con el desarrollo paso a paso y la curva de calentamiento de cada cuerpo.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
@@ -33,18 +33,23 @@
 table { border-collapse: collapse; width: 100%; font-size: 13.5px; font-variant-numeric: tabular-nums }
 th, td { text-align: right; padding: 6px 8px; border-bottom: 1px solid var(--line) } th:first-child, td:first-child { text-align: left } th { color: var(--muted); font-weight: 500 }
 .balance { display: flex; height: 16px; border-radius: 4px; overflow: hidden; margin-top: 10px } .balance span { height: 100% }
-#curvas { height: 260px; margin-top: 10px }
+#curvas { height: 260px; margin-top: 10px } #barra { height: 200px }
+.tfin { display: grid; grid-template-columns: minmax(0, 1fr) 120px; gap: 6px 10px; align-items: center; margin-bottom: 10px; font-size: 14px }
+.campos select.ancho { margin-top: -3px }
 #ley-calor, #ley-curvas { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12.5px; color: var(--muted); margin-top: 6px } #ley-calor i, #ley-curvas i { display: inline-block; width: 14px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 5px }
 </style>
 <body>
 <header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física general</a> / Calorimetría</span></header>
 <div class="wrap">
 <h1>Calorimetría y cambios de fase</h1>
-<p class="lead">Mezcla agua, hielo, vapor, metales o un calorímetro y obtén la temperatura de equilibrio. Si el hielo no llega a fundirse entero o el vapor a condensarse, te dice cuánto queda de cada fase. Debajo tienes el calor de cada cuerpo, etapa por etapa.</p>
+<p class="lead">Mezcla agua, hielo, vapor, metales o un calorímetro y obtén la temperatura de equilibrio. Si el hielo no llega a fundirse entero o el vapor a condensarse, te dice cuánto queda de cada fase. Debajo tienes el calor de cada cuerpo, etapa por etapa. Para un problema al revés escribe <b>?</b> en el dato que no conoces y pon la temperatura final. En la otra pestaña está la dilatación térmica.</p>
+<div class="modos" role="tablist"><button role="tab" id="tab-mezcla" aria-selected="true">Mezclas y equilibrio</button><button role="tab" id="tab-dilatacion" aria-selected="false">Dilatación</button></div>
+<div id="panel-mezcla" role="tabpanel">
 <div class="layout">
   <div class="card">
     <h2>Cuerpos</h2>
     <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="tfin"><label for="tfin">Temperatura final <small>(°C, solo si un dato es «?»)</small></label><input id="tfin" class="in" inputmode="decimal" autocomplete="off"></div>
     <div id="cuerpos"></div>
     <button class="btn" id="anade" type="button">+ Añadir cuerpo</button>
     <p class="error" id="error" hidden></p>
@@ -66,6 +71,22 @@ th, td { text-align: right; padding: 6px 8px; border-bottom: 1px solid var(--lin
     <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
   </div>
 </div>
+</div>
+<div id="panel-dilatacion" role="tabpanel" hidden>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos-d" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos-d"></div>
+    <p class="error" id="error-d" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen-d"></div></div>
+    <div class="card"><canvas id="barra" aria-label="Medida antes y después de calentar"></canvas></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos-d"></ol></div>
+  </div>
+</div>
+</div>
 <section class="teoria">
   <h2>Calor sensible y calor latente</h2>
   <p>Para cambiar la temperatura de un cuerpo de masa m hace falta un calor proporcional a ΔT; para cambiar de fase a temperatura constante, uno proporcional a la masa que cambia:</p>
@@ -75,6 +96,11 @@ th, td { text-align: right; padding: 6px 8px; border-bottom: 1px solid var(--lin
   <p>En un recipiente aislado el calor que ceden los cuerpos calientes lo absorben los fríos, así que la suma de todos los calores es cero:</p>
   <p class="f m">$Σ Q_i = 0$ &ensp; (calor cedido = calor absorbido)</p>
   <p>Con cambios de fase hay que comprobar primero si la energía disponible llega para completarlos. Si no llega, la temperatura final es la del cambio de fase (0 °C con hielo y agua) y solo cambia de fase una parte de la masa.</p>
+  <h2>Calentador y problemas al revés</h2>
+  <p class="m">Un calentador de potencia P que funciona un tiempo t con rendimiento η aporta $Q = η P t$, que se reparte entre los cuerpos. Si lo que no conoces es una masa, un calor específico, una temperatura inicial o el tiempo, se plantea la misma ecuación $Σ Q = Q_aportado$ con la temperatura final conocida y se despeja el dato.</p>
+  <h2>Dilatación térmica</h2>
+  <p class="f m">$ΔL = α L_0 ΔT$ &emsp; $ΔS = 2α S_0 ΔT$ &emsp; $ΔV = 3α V_0 ΔT$</p>
+  <p class="m">α es el coeficiente de dilatación lineal del sólido. Los líquidos solo tienen coeficiente de volumen β. Si un recipiente lleno se calienta, se dilatan los dos y rebosa $ΔV = (β − 3α_r) V_0 ΔT$.</p>
   <h2>Curva de calentamiento</h2>
   <p class="m">En la gráfica cada cuerpo parte de su temperatura inicial y avanza hacia la derecha si absorbe calor o hacia la izquierda si lo cede. Los tramos horizontales son los cambios de fase; la pendiente de los inclinados es $1/(m c)$.</p>
 </section>

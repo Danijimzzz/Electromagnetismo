@@ -1,5 +1,5 @@
 <title>Sólido rígido: momento de inercia, Steiner, rodadura y momento angular · SimulaCiencia</title>
-<meta name="description" content="Calculadora de sólido rígido en español: momentos de inercia con el teorema de Steiner, rodadura sin deslizar por un plano inclinado, polea con masa y conservación del momento angular, paso a paso.">
+<meta name="description" content="Calculadora de sólido rígido en español: momentos de inercia con el teorema de Steiner, rodadura sin deslizar por un plano inclinado, cuerpos compuestos, polea con masa, conservación del momento angular, choques que hacen girar, péndulo físico, varilla que cae y equilibrio estático de escaleras y vigas, paso a paso y con animación.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
@@ -10,12 +10,14 @@
   --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784 } }
 :root[data-theme="dark"] {
   --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784 }
+.campos textarea.in { font: 13px var(--f-mono); resize: vertical }
+#nota code { font: 12px var(--f-mono) }
 </style>
 <body>
 <header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física general</a> / Sólido rígido</span></header>
 <div class="wrap">
 <h1>Sólido rígido</h1>
-<p class="lead">Calcula momentos de inercia con el teorema de Steiner, cuerpos que ruedan por un plano inclinado (y si el rozamiento basta para que no deslicen), poleas con masa y la conservación del momento angular, con el desarrollo paso a paso.</p>
+<p class="lead">Calcula momentos de inercia con el teorema de Steiner, cuerpos que ruedan por un plano inclinado (y si el rozamiento basta para que no deslicen), cuerpos compuestos, poleas con masa, la conservación del momento angular, choques que hacen girar, el péndulo físico y el equilibrio de escaleras y vigas, con el desarrollo paso a paso.</p>
 <div class="layout">
   <div class="card">
     <h2>Datos</h2>
@@ -27,7 +29,7 @@
   <div>
     <div class="card"><h2>Resultado</h2><div class="res" id="res"></div>
       <canvas id="escena" aria-label="Dibujo del problema"></canvas>
-      <p class="leyenda" id="leyenda"></p></div>
+      <div class="controles"><button class="btn" id="play" type="button">⏸ Pausa</button><p class="leyenda" id="leyenda"></p></div></div>
     <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
   </div>
 </div>
@@ -38,8 +40,12 @@
   <h2>Dinámica de rotación y rodadura</h2>
   <p>La segunda ley de Newton para la rotación es Στ = Iα. En la rodadura sin deslizamiento el punto de contacto está en reposo, así que v = ωR y a = αR, y el rozamiento estático no hace trabajo. La energía cinética tiene una parte de traslación y otra de rotación:</p>
   <p class="f m">$K = 1/2 M v^2 + 1/2 I_cm ω^2$, &ensp; $a = {g sen θ}/(1 + I/(M R^2))$</p>
+  <h2>Péndulo físico</h2>
+  <p class="m">Un sólido que oscila colgado de un pivote a una distancia d de su centro de masas cumple $−M g d sen θ = I α$. Para ángulos pequeños es un movimiento armónico simple de periodo $T = 2π √(I/(M g d))$, como un péndulo simple de longitud $L_eq = I/(M d)$.</p>
+  <h2>Equilibrio estático</h2>
+  <p class="m">Un sólido está en equilibrio si la suma de fuerzas y la suma de momentos (respecto a cualquier punto) son cero: $Σ F = 0$ y $Σ τ = 0$. Conviene tomar momentos respecto al punto donde hay más incógnitas, como el pie de la escalera o uno de los apoyos de la viga.</p>
   <h2>Momento angular</h2>
-  <p>El momento angular de un sólido que gira alrededor de un eje fijo es L = Iω. Si el momento de las fuerzas exteriores es cero, L se conserva: al reducir I (encoger los brazos), ω aumenta. La energía cinética de rotación, en cambio, no se conserva.</p>
+  <p>El momento angular de un sólido que gira alrededor de un eje fijo es L = Iω. Si el momento de las fuerzas exteriores es cero, L se conserva: al reducir I (encoger los brazos), ω aumenta. La energía cinética de rotación, en cambio, no se conserva. En un choque con un eje fijo, como una bala que se incrusta en una varilla colgada, el pivote ejerce fuerza pero no momento respecto a sí mismo: se conserva el momento angular respecto al pivote, aunque no la cantidad de movimiento.</p>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Sólido rígido <span id="ver"></span> (beta)</footer>

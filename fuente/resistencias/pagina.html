@@ -1,5 +1,5 @@
 <title>Código de colores de resistencias: calculadora de 4, 5 y 6 bandas · SimulaCiencia</title>
-<meta name="description" content="Calculadora del código de colores de resistencias en español: de los colores al valor con 3, 4, 5 y 6 bandas, tolerancia y coeficiente de temperatura; del valor a los colores con el valor normalizado más cercano de las series E6, E12, E24, E48 y E96; y códigos SMD de 3 y 4 cifras, con R y EIA-96, paso a paso.">
+<meta name="description" content="Calculadora del código de colores de resistencias en español: de los colores al valor con 3, 4, 5 y 6 bandas, tolerancia y coeficiente de temperatura; del valor a los colores con el valor normalizado más cercano de las series E6, E12, E24, E48 y E96; códigos SMD de 3 y 4 cifras, con R y EIA-96; código de colores de bobinas e impreso de condensadores; asociación en serie y en paralelo; la mejor pareja de normalizadas; la resistencia de un LED y el divisor de tensión, paso a paso.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
@@ -18,7 +18,8 @@
 .chip:hover { border-color: var(--accent) } .chip.sel { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); font-weight: 600 }
 
 #dibujo svg { display: block; width: 100%; max-width: 460px; margin: 12px auto 0 }
-#colores-res p { margin: 10px 0 0 }
+#colores-res p { margin: 10px 0 0 } #colores-res p.aviso { border-left: 3px solid var(--error); padding: 4px 10px }
+.resumen small { font: 500 12px var(--f-ui); color: var(--muted); margin-left: 4px }
 .mini { display: inline-block; width: 12px; height: 12px; border-radius: 3px; background: var(--c); border: 1px solid var(--borde-color); vertical-align: -1px; margin: 0 3px 0 6px }
 .tabla { border-collapse: collapse; font-size: 14px; margin: 8px 0; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; display: block; overflow-x: auto; max-width: 100% }
 .tabla th, .tabla td { padding: 5px 10px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap } .tabla th { font-weight: 600; background: var(--bg) }
@@ -27,7 +28,7 @@
 <header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Circuitos</a> / Código de colores de resistencias</span></header>
 <div class="wrap">
 <h1>Código de colores de resistencias</h1>
-<p class="lead">Elige los colores de las bandas y obtén el valor, la tolerancia y el margen en el que está la resistencia real. También al revés: escribe un valor y te dice sus colores y el valor normalizado más cercano. Y para las resistencias SMD, el código impreso de 3 o 4 cifras, con R o EIA-96.</p>
+<p class="lead">Elige los colores de las bandas y obtén el valor, la tolerancia y el margen en el que está la resistencia real. También al revés: escribe un valor y te dice sus colores y el valor normalizado más cercano. Y para las resistencias SMD, el código impreso de 3 o 4 cifras, con R o EIA-96. Además: los colores de las bobinas, el código de los condensadores, asociaciones en serie y en paralelo, cómo conseguir un valor con dos normalizadas, la resistencia de un LED y un divisor de tensión.</p>
 <div class="layout">
   <div class="card">
     <h2>Datos</h2>
@@ -77,6 +78,12 @@
   <p>E12: 10, 12, 15, 18, 22, 27, 33, 39, 47, 56, 68 y 82, multiplicados por la potencia de 10 que toque (1,2 Ω, 120 Ω, 12 kΩ…).</p>
   <h2>Resistencias SMD</h2>
   <p>Las de montaje superficial llevan el valor impreso. Con 3 cifras (5 %), las dos primeras son las cifras y la tercera el número de ceros: 472 = 47 × 10² = 4,7 kΩ. Con 4 cifras (1 %) son tres cifras y los ceros: 1002 = 10 kΩ. La R hace de coma: 4R7 = 4,7 Ω. En el código EIA-96, dos cifras dan la posición en la serie E96 y una letra el multiplicador: 01C = 100 × 100 = 10 kΩ.</p>
+  <h2>Bobinas y condensadores</h2>
+  <p>Las bobinas pequeñas usan los mismos colores que las resistencias, con el valor en microhenrios: marrón, negro, negro y plata son 10 μH ±10 %. Los condensadores cerámicos llevan un código de 3 cifras en picofaradios: 104 = 10 × 10<sup>4</sup> pF = 100 nF. Detrás puede ir una letra de tolerancia (J ±5 %, K ±10 %, M ±20 %) y un código de tensión máxima (1H = 50 V, 2A = 100 V). También se escribe la letra del prefijo en lugar de la coma: 4n7 = 4,7 nF.</p>
+  <h2>Serie, paralelo y valores que no existen</h2>
+  <p class="m">En serie las resistencias se suman, $R = R_1 + R_2$; en paralelo se suman las inversas, $1/R = 1/R_1 + 1/R_2$, que con dos es el producto partido por la suma. Así se consigue un valor que no está en la serie: 5 kΩ no es de la E12, pero dos de 10 kΩ en paralelo lo dan exacto.</p>
+  <h2>LED y divisor de tensión</h2>
+  <p class="m">A un LED le sobra la tensión que no cae en él, y la resistencia la limita: $R = (V_s − V_{LED})/I$, redondeando al normalizado de arriba para no pasar de la corriente. En un divisor, $V_{out} = V_{in} R_2/(R_1 + R_2)$; si se le conecta una carga, queda en paralelo con R<sub>2</sub> y la salida baja, salvo que la carga sea mucho mayor que R<sub>2</sub>.</p>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Código de colores <span id="ver"></span> (beta)</footer>

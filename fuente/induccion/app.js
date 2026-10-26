@@ -1,6 +1,7 @@
 /* =====================================================================
    Autoinducción e inducción mutua: interfaz (pestañas L, M y RL, datos,
-   esquema de la geometría o gráfica del transitorio, resumen y desarrollo).
+   esquema de la geometría o gráfica del transitorio, también con la fuente
+   que se conecta y desconecta, resumen y desarrollo).
    El cálculo está en fisica.js (Induccion).
    ===================================================================== */
 (() => {
@@ -23,9 +24,10 @@
     let h = '', nota = '';
     if (st.tab === 'RL') {
       h = fila('E', 'Fem de la fuente ε', 'V') + fila('R', 'Resistencia R', 'Ω') + fila('L', 'Autoinducción L', 'mH') +
-        selector('modo', 'Qué pasa', [['carga', 'Cerrar el circuito'], ['descarga', 'Quitar la fuente']]) +
+        selector('modo', 'Qué pasa', [['carga', 'Cerrar el circuito'], ['descarga', 'Quitar la fuente'], ['pulsos', 'Conectar y desconectar una y otra vez']]) +
+        (s.modo === 'pulsos' ? fila('ton', 'Tiempo conectada t<sub>on</sub>', 'ms') + fila('toff', 'Tiempo desconectada t<sub>off</sub>', 'ms') : '') +
         '<div class="sep">En un instante</div>' + fila('t', 'Tiempo t', 'ms');
-      nota = 'Deja el tiempo en blanco si solo quieres τ y la gráfica.';
+      nota = s.modo === 'pulsos' ? 'Al desconectar, la bobina se descarga por la misma resistencia. Con t sale el valor en ese instante.' : 'Deja el tiempo en blanco si solo quieres τ y la gráfica. Con t sale también el balance de energía.';
     } else {
       const G = GEOS[st.tab][s.geo] || Object.values(GEOS[st.tab])[0];
       h = selector('geo', st.tab === 'L' ? 'Circuito' : 'Pareja de circuitos', Object.entries(GEOS[st.tab]).map(([k, g]) => [k, g.nombre]));
@@ -52,6 +54,7 @@
     const t = e.target;
     if (t.tagName !== 'SELECT') return;
     sc()[t.dataset.k] = t.value;
+    if (t.dataset.k === 'modo' && t.value === 'pulsos' && !sc().ton) Object.assign(sc(), { ton: '5', toff: '5' });
     if (t.dataset.k === 'geo') {
       // al cambiar de geometría, rellena los datos que falten con los de su ejemplo
       const ej = I.ejemplos[st.tab].find((x) => x.sc.geo === t.value);
@@ -99,14 +102,22 @@
       h += r.L1 !== undefined ? caja('L₁ · L₂', `${u(r.L1, 'H', 3)}`, `L₂ = ${u(r.L2, 'H', 3)}`) : caja('Flujo Φ₂₁', r.flujo !== undefined ? u(r.flujo, 'Wb') : '—', r.flujo === undefined ? 'falta I₁' : '');
       h += caja('Fem en el circuito 2', r.fem !== undefined ? `${f(r.fem)} V` : '—', r.fem === undefined ? 'falta dI₁/dt' : '');
       h += r.L1 !== undefined ? caja('Energía U', r.U !== undefined ? u(r.U, 'J') : '—', r.U === undefined ? 'faltan I₁ e I₂' : '') : '';
+      if (r.Ls !== undefined) h += caja('En serie', u(r.Ls, 'H'), `flujos opuestos: ${u(r.Lso, 'H')}`) + caja('En paralelo', u(r.Lp, 'H'), `flujos opuestos: ${u(r.Lpo, 'H')}`);
+    } else if (sol.p.pulsos) {
+      h = caja('Constante de tiempo τ', u(r.tau, 's'), `periodo T = ${u(sol.p.ton + sol.p.toff, 's')}`);
+      h += caja('Entre', `${u(r.Imin, 'A', 3)} y ${u(r.Imax, 'A', 3)}`, 'en régimen permanente');
+      h += caja('Corriente media', u(r.Imed, 'A'), `rizado ${u(r.Imax - r.Imin, 'A', 3)}`);
+      h += caja('I(t)', r.It !== undefined ? u(r.It, 'A') : '—', r.It === undefined ? 'falta t' : `V<sub>L</sub> = ${u(r.VLt, 'V')}`);
     } else {
       h = caja('Constante de tiempo τ', u(r.tau, 's'), `τ ln 2 = ${u(r.tau * Math.LN2, 's')}`);
       h += caja(sol.p.carga ? 'Corriente final' : 'Corriente inicial', u(r.I0, 'A'), `U = ${u(0.5 * sol.p.L * r.I0 * r.I0, 'J')}`);
       h += caja('I(t)', r.It !== undefined ? u(r.It, 'A') : '—', r.It !== undefined ? `${f((100 * r.It) / r.I0, 3)} % de ε/R` : 'falta t');
       h += caja('V<sub>L</sub>(t)', r.VLt !== undefined ? u(r.VLt, 'V') : '—', r.VRt !== undefined ? `V<sub>R</sub> = ${u(r.VRt, 'V')}` : '');
+      if (r.WR !== undefined) h += caja('Disipada en R hasta t', u(r.WR, 'J'), r.Wf !== undefined ? `la fuente dio ${u(r.Wf, 'J')}` : `de ${u(0.5 * sol.p.L * r.I0 * r.I0, 'J')} que tenía`);
     }
+    if (sol.letras) h += `<div class="ancho"><span>En letras</span>${Mates.html(`$${sol.letras}$`)}</div>`;
     $('#resumen').innerHTML = h;
-    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('');
+    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${Mates.html(p.html, true)}</li>`).join('');
     dibuja();
   }
 
@@ -151,14 +162,14 @@
         const rr = Math.min(H / 2, Math.max(14, (lw * p.r) / p.l));
         if (p.mur > 1) { g.fillStyle = col['--nucleo']; g.fillRect(x0, cy - rr, lw, 2 * rr); texto(g, `núcleo μr = ${f(p.mur)}`, cx, cy - rr - 12); }
         bobina(g, x0, x1, cy, rr, Math.min(p.N, 28), col['--cobre']);
-        g.strokeStyle = col['--accent']; g.fillStyle = col['--accent']; flecha(g, x0 + 10, cy, x1 - 10, cy); texto(g, 'B', x1 - 10, cy - 10, col['--accent']);
+        g.strokeStyle = col['--neg']; g.fillStyle = col['--neg']; flecha(g, x0 + 10, cy, x1 - 10, cy); texto(g, 'B', x1 - 10, cy - 10, col['--neg']);
         texto(g, `N = ${f(p.N)}, l = ${f(p.l * 100)} cm, r = ${f(p.r * 100)} cm`, cx, h - 14);
       } else {
         const r2 = Math.min(H / 2, 60), r1 = r2 * Math.min(1, p.r1 / p.r2);
         bobina(g, x0, x1, cy, r2, Math.min(p.N2, 30), col['--cobre']);
-        bobina(g, x0 + 6, x1 - 6, cy, r1, Math.min(p.N1, 22), col['--accent']);
+        bobina(g, x0 + 6, x1 - 6, cy, r1, Math.min(p.N1, 22), col['--neg']);
         texto(g, `exterior: N₂ = ${f(p.N2)}, r₂ = ${f(p.r2 * 100)} cm`, cx, cy - r2 - 12, col['--cobre']);
-        texto(g, `interior: N₁ = ${f(p.N1)}, r₁ = ${f(p.r1 * 100)} cm · l = ${f(p.l * 100)} cm`, cx, h - 14, col['--accent']);
+        texto(g, `interior: N₁ = ${f(p.N1)}, r₁ = ${f(p.r1 * 100)} cm · l = ${f(p.l * 100)} cm`, cx, h - 14, col['--neg']);
       }
     } else if (geo === 'toroide-rect' || geo === 'toroide-circ' || geo === 'toroide-bobina') {
       const rmax = H / 2;
@@ -166,60 +177,86 @@
       if (geo === 'toroide-circ') { rb = rmax; ra = rmax * Math.max(0.15, (p.R - p.r) / (p.R + p.r)); } else { rb = rmax; ra = rmax * Math.max(0.15, p.a / p.b); }
       toroide(g, cx, cy, ra, rb, Math.min(geo === 'toroide-bobina' ? p.N1 : p.N, 36), col['--cobre']);
       if (geo === 'toroide-bobina') {
-        g.strokeStyle = col['--accent']; g.lineWidth = 2.4;
+        g.strokeStyle = col['--neg']; g.lineWidth = 2.4;
         for (let i = 0; i < 6; i++) { const a = -0.35 + i * 0.14; g.beginPath(); g.moveTo(cx + (ra - 5) * Math.cos(a), cy + (ra - 5) * Math.sin(a)); g.lineTo(cx + (rb + 5) * Math.cos(a), cy + (rb + 5) * Math.sin(a)); g.stroke(); }
-        g.lineWidth = 1; texto(g, `N₂ = ${f(p.N2)}`, cx + rb + 14, cy, col['--accent'], 'left');
+        g.lineWidth = 1; texto(g, `N₂ = ${f(p.N2)}`, cx + rb + 14, cy, col['--neg'], 'left');
       }
-      g.strokeStyle = col['--accent']; g.fillStyle = col['--accent'];
+      g.strokeStyle = col['--neg']; g.fillStyle = col['--neg'];
       g.beginPath(); g.arc(cx, cy, (ra + rb) / 2, -2.4, -0.9); g.stroke(); const a = -0.9, rm = (ra + rb) / 2; flecha(g, cx + rm * Math.cos(a - 0.05), cy + rm * Math.sin(a - 0.05), cx + rm * Math.cos(a), cy + rm * Math.sin(a));
       texto(g, geo === 'toroide-circ' ? `N = ${f(p.N)}, R = ${f(p.R * 100)} cm, r = ${f(p.r * 100)} cm` : `a = ${f(p.a * 100)} cm, b = ${f(p.b * 100)} cm, h = ${f(p.h * 100)} cm`, 12, 14, col['--muted'], 'left');
+    } else if (geo === 'entrehierro') {
+      const rb = H / 2, ra = rb * 0.62, gap = Math.max(0.05, Math.min(0.4, p.g / p.R)) / 2;
+      g.fillStyle = col['--nucleo']; g.beginPath(); g.arc(cx, cy, rb, gap, 2 * Math.PI - gap); g.arc(cx, cy, ra, 2 * Math.PI - gap, gap, true); g.closePath(); g.fill();
+      g.strokeStyle = col['--cobre']; g.lineWidth = 1.6;
+      for (let i = 0; i < Math.min(p.N, 30); i++) { const a = gap + 0.25 + ((2 * Math.PI - 2 * gap - 0.5) * i) / Math.max(1, Math.min(p.N, 30) - 1); g.beginPath(); g.moveTo(cx + (ra - 3) * Math.cos(a), cy + (ra - 3) * Math.sin(a)); g.lineTo(cx + (rb + 3) * Math.cos(a), cy + (rb + 3) * Math.sin(a)); g.stroke(); }
+      g.lineWidth = 1; g.strokeStyle = col['--neg']; g.fillStyle = col['--neg'];
+      g.beginPath(); g.arc(cx, cy, (ra + rb) / 2, -2.4, -0.9); g.stroke(); const rm = (ra + rb) / 2; flecha(g, cx + rm * Math.cos(-0.95), cy + rm * Math.sin(-0.95), cx + rm * Math.cos(-0.9), cy + rm * Math.sin(-0.9));
+      texto(g, `g = ${f(p.g * 1000)} mm`, cx + rb + 8, cy, col['--ink'], 'left');
+      texto(g, `μr = ${f(p.mur)}, R = ${f(p.R * 100)} cm, S = ${f(p.S * 1e4)} cm²`, 12, 14, col['--muted'], 'left');
+    } else if (geo === 'espiras-coaxiales') {
+      const esc2 = Math.min((w * 0.6) / Math.max(p.z, 1e-9), (H * 0.45) / p.R), R1 = p.R * esc2, r2 = Math.max(5, p.r * esc2), zz = Math.min(p.z * esc2, w * 0.6), x1 = cx - zz / 2, x2 = cx + zz / 2;
+      g.strokeStyle = col['--muted']; g.setLineDash([4, 4]); g.beginPath(); g.moveTo(16, cy); g.lineTo(w - 16, cy); g.stroke(); g.setLineDash([]);
+      g.lineWidth = 2.4; g.strokeStyle = col['--cobre']; g.beginPath(); g.ellipse(x1, cy, Math.max(4, R1 * 0.22), R1, 0, 0, 2 * Math.PI); g.stroke();
+      g.strokeStyle = col['--neg']; g.beginPath(); g.ellipse(x2, cy, Math.max(3, r2 * 0.22), r2, 0, 0, 2 * Math.PI); g.stroke(); g.lineWidth = 1;
+      texto(g, `R = ${f(p.R * 100)} cm, N₁ = ${f(p.N1)}`, x1, cy - R1 - 10, col['--cobre']); texto(g, `r = ${f(p.r * 100)} cm`, x2, cy - r2 - 12, col['--neg']);
+      g.strokeStyle = col['--muted']; g.beginPath(); g.moveTo(x1, cy + R1 + 10); g.lineTo(x2, cy + R1 + 10); g.stroke(); texto(g, `z = ${f(p.z * 100)} cm`, cx, cy + R1 + 22);
+    } else if (geo === 'espira-solenoide') {
+      const lw = Math.min(w * 0.7, 520), x0 = cx - lw / 2, x1 = cx + lw / 2, rr = Math.min(H / 2, 70), th = (p.th * Math.PI) / 180, rb = rr * 0.55;
+      bobina(g, x0, x1, cy, rr, Math.min(p.N1, 30), col['--cobre']);
+      g.strokeStyle = col['--campo']; g.fillStyle = col['--campo']; flecha(g, x0 + 10, cy - rr * 0.8, x0 + 70, cy - rr * 0.8); texto(g, 'B', x0 + 80, cy - rr * 0.8, col['--campo'], 'left');
+      // la bobina pequeña vista de lado, con su normal girada θ respecto al eje
+      g.strokeStyle = col['--neg']; g.lineWidth = 2.4; g.beginPath(); g.ellipse(cx, cy, rb * 0.25, rb, -th, 0, 2 * Math.PI); g.stroke(); g.lineWidth = 1;
+      g.fillStyle = col['--neg']; flecha(g, cx, cy, cx + 50 * Math.cos(th), cy - 50 * Math.sin(th)); texto(g, `θ = ${f(p.th)}°`, cx + 56 * Math.cos(th) + 6, cy - 56 * Math.sin(th), col['--neg'], 'left');
+      texto(g, `N₁ = ${f(p.N1)}, l = ${f(p.l * 100)} cm · bobina: N₂ = ${f(p.N2)}, r = ${f(p.r * 100)} cm`, cx, h - 14);
     } else if (geo === 'coaxial') {
       const rb = H / 2, ra = rb * Math.max(0.08, p.a / p.b);
       circulo(g, cx, cy, rb + 6, col['--cobre']); circulo(g, cx, cy, rb, col['--bg']);
       circulo(g, cx, cy, ra, p.macizo ? col['--cobre'] : null, col['--cobre']);
-      g.strokeStyle = col['--accent']; g.fillStyle = col['--accent'];
+      g.strokeStyle = col['--neg']; g.fillStyle = col['--neg'];
       for (const rr of [ra + (rb - ra) * 0.3, ra + (rb - ra) * 0.7]) { g.beginPath(); g.arc(cx, cy, rr, 0, 2 * Math.PI); g.setLineDash([4, 4]); g.stroke(); g.setLineDash([]); flecha(g, cx + rr, cy + 1, cx + rr, cy - 1); }
-      texto(g, `a = ${f(p.a * 1000)} mm, b = ${f(p.b * 1000)} mm`, 12, 14, col['--muted'], 'left'); texto(g, 'B entre los conductores', cx, h - 10, col['--accent']);
+      texto(g, `a = ${f(p.a * 1000)} mm, b = ${f(p.b * 1000)} mm`, 12, 14, col['--muted'], 'left'); texto(g, 'B entre los conductores', cx, h - 10, col['--neg']);
     } else if (geo === 'bifilar') {
       const sep = Math.min(w * 0.6, 360), ra = Math.max(6, Math.min(40, (sep * p.a) / p.d));
       for (const [x, s] of [[cx - sep / 2, '⊙'], [cx + sep / 2, '⊗']]) { circulo(g, x, cy, ra, col['--cobre']); g.font = '15px system-ui'; texto(g, s, x, cy, col['--panel']); g.font = '12px "IBM Plex Sans", system-ui, sans-serif'; }
-      g.strokeStyle = col['--accent']; g.fillStyle = col['--accent']; flecha(g, cx, cy + 30, cx, cy - 30); texto(g, 'B', cx + 12, cy - 30, col['--accent']);
+      g.strokeStyle = col['--neg']; g.fillStyle = col['--neg']; flecha(g, cx, cy + 30, cx, cy - 30); texto(g, 'B', cx + 12, cy - 30, col['--neg']);
       g.strokeStyle = col['--muted']; g.beginPath(); g.moveTo(cx - sep / 2, cy + ra + 18); g.lineTo(cx + sep / 2, cy + ra + 18); g.stroke(); texto(g, `d = ${f(p.d * 1000)} mm`, cx, cy + ra + 30);
     } else if (geo === 'espiras') {
       const R = H / 2, r = Math.max(6, R * Math.min(0.6, p.r / p.R));
-      circulo(g, cx, cy, R, null, col['--cobre']); circulo(g, cx, cy, r, null, col['--accent']);
-      texto(g, `R = ${f(p.R * 100)} cm, N₁ = ${f(p.N1)}`, cx, cy - R - 10, col['--cobre']); texto(g, `r = ${f(p.r * 100)} cm`, cx, cy + r + 12, col['--accent']);
+      circulo(g, cx, cy, R, null, col['--cobre']); circulo(g, cx, cy, r, null, col['--neg']);
+      texto(g, `R = ${f(p.R * 100)} cm, N₁ = ${f(p.N1)}`, cx, cy - R - 10, col['--cobre']); texto(g, `r = ${f(p.r * 100)} cm`, cx, cy + r + 12, col['--neg']);
     } else if (geo === 'hilo-espira') {
       const esc2 = Math.min((w * 0.7) / (p.d + p.w), (H * 0.9) / p.h), x0 = cx - ((p.d + p.w) * esc2) / 2, xd = x0 + p.d * esc2, xw = xd + p.w * esc2, hh = p.h * esc2;
       g.strokeStyle = col['--cobre']; g.lineWidth = 3; g.beginPath(); g.moveTo(x0, 14); g.lineTo(x0, h - 14); g.stroke(); g.lineWidth = 1;
       g.fillStyle = col['--cobre']; flecha(g, x0, cy + 20, x0, cy - 20, 8); texto(g, 'I₁', x0 - 12, cy, col['--cobre']);
-      g.strokeStyle = col['--accent']; g.lineWidth = 2; g.strokeRect(xd, cy - hh / 2, xw - xd, hh); g.lineWidth = 1;
+      g.strokeStyle = col['--neg']; g.lineWidth = 2; g.strokeRect(xd, cy - hh / 2, xw - xd, hh); g.lineWidth = 1;
       g.font = '13px system-ui'; for (let i = 1; i < 4; i++) texto(g, '⊗', xd + ((xw - xd) * i) / 4, cy, col['--muted']); g.font = '12px "IBM Plex Sans", system-ui, sans-serif';
       texto(g, `d = ${f(p.d * 100)} cm`, (x0 + xd) / 2, cy + hh / 2 + 12); texto(g, `w = ${f(p.w * 100)} cm`, (xd + xw) / 2, cy + hh / 2 + 12);
       texto(g, `h = ${f(p.h * 100)} cm`, xw + 8, cy, col['--muted'], 'left');
     } else {
       const lw = Math.min(w * 0.32, 200);
-      bobina(g, cx - lw - 20, cx - 20, cy, 40, 10, col['--cobre']); bobina(g, cx + 20, cx + lw + 20, cy, 40, 10, col['--accent']);
-      texto(g, `L₁ = ${u(p.L1, 'H')}`, cx - lw / 2 - 20, cy + 58, col['--cobre']); texto(g, `L₂ = ${u(p.L2, 'H')}`, cx + lw / 2 + 20, cy + 58, col['--accent']);
+      bobina(g, cx - lw - 20, cx - 20, cy, 40, 10, col['--cobre']); bobina(g, cx + 20, cx + lw + 20, cy, 40, 10, col['--neg']);
+      texto(g, `L₁ = ${u(p.L1, 'H')}`, cx - lw / 2 - 20, cy + 58, col['--cobre']); texto(g, `L₂ = ${u(p.L2, 'H')}`, cx + lw / 2 + 20, cy + 58, col['--neg']);
       texto(g, `k = ${f(p.k)}`, cx, cy - 58, col['--ink']);
     }
   }
   // transitorio RL: I(t) a la izquierda en A, V_L(t) a la derecha en V
   function grafica(g, w, h) {
-    const { p, tau, res } = sol, T = 5 * tau, m = { l: 52, r: 52, t: 16, b: 34 };
+    const { p, tau, res } = sol, T = p.pulsos ? Math.min(Math.max(5 * tau, 4 * (p.ton + p.toff)), 12 * (p.ton + p.toff)) : 5 * tau, m = { l: 52, r: 52, t: 16, b: 34 };
     const X = (t) => m.l + (t / T) * (w - m.l - m.r), Yi = (i) => h - m.b - (i / res.I0) * (h - m.t - m.b);
-    const Vmax = p.E, Yv = (v) => h - m.b - ((v + (p.carga ? 0 : Vmax)) / Vmax) * (h - m.t - m.b);
+    const Vmax = p.E, Yv = p.pulsos ? (v) => h - m.b - ((v + Vmax) / (2 * Vmax)) * (h - m.t - m.b) : (v) => h - m.b - ((v + (p.carga ? 0 : Vmax)) / Vmax) * (h - m.t - m.b);
     g.strokeStyle = col['--line']; g.beginPath(); g.moveTo(m.l, m.t); g.lineTo(m.l, h - m.b); g.lineTo(w - m.r, h - m.b); g.lineTo(w - m.r, m.t); g.stroke();
-    for (let k = 1; k <= 5; k++) { g.setLineDash([3, 4]); g.beginPath(); g.moveTo(X(k * tau), m.t); g.lineTo(X(k * tau), h - m.b); g.stroke(); g.setLineDash([]); texto(g, `${k}τ`, X(k * tau), h - m.b + 12); }
+    if (p.pulsos) { for (let s = p.ton; s < T; s += p.ton + p.toff) { g.fillStyle = col['--nucleo']; g.fillRect(X(s), m.t, Math.min(X(s + p.toff), w - m.r) - X(s), h - m.t - m.b); } texto(g, 'sombreado: desconectada', w - m.r - 4, h - m.b - 10, col['--muted'], 'right'); }
+    else for (let k = 1; k <= 5; k++) { g.setLineDash([3, 4]); g.beginPath(); g.moveTo(X(k * tau), m.t); g.lineTo(X(k * tau), h - m.b); g.stroke(); g.setLineDash([]); texto(g, `${k}τ`, X(k * tau), h - m.b + 12); }
     texto(g, 't', w - m.r + 10, h - m.b + 12);
-    texto(g, u(res.I0, 'A', 3), m.l - 6, m.t, col['--accent'], 'right'); texto(g, '0', m.l - 6, h - m.b, col['--accent'], 'right');
-    texto(g, `${p.carga ? '' : '−'}${u(Vmax, 'V', 3)}`, w - m.r + 6, p.carga ? m.t : h - m.b, col['--pos'], 'left'); texto(g, '0', w - m.r + 6, p.carga ? h - m.b : m.t, col['--pos'], 'left');
-    const linea = (fn, Y, c) => { g.strokeStyle = c; g.lineWidth = 2; g.beginPath(); for (let i = 0; i <= 200; i++) { const t = (T * i) / 200, x = X(t), y = Y(fn(t)); i ? g.lineTo(x, y) : g.moveTo(x, y); } g.stroke(); g.lineWidth = 1; };
-    linea(sol.I, Yi, col['--accent']); linea(sol.VL, Yv, col['--pos']);
-    texto(g, 'I(t)', m.l + 8, m.t + 6, col['--accent'], 'left'); texto(g, 'tensión en la bobina', m.l + 50, m.t + 6, col['--pos'], 'left');
+    texto(g, u(res.I0, 'A', 3), m.l - 6, m.t, col['--neg'], 'right'); texto(g, '0', m.l - 6, h - m.b, col['--neg'], 'right');
+    if (p.pulsos) { texto(g, u(Vmax, 'V', 3), w - m.r + 6, m.t, col['--pos'], 'left'); texto(g, `−${u(Vmax, 'V', 3)}`, w - m.r + 6, h - m.b, col['--pos'], 'left'); texto(g, `${f(T * 1000, 3)} ms`, w - m.r, h - m.b + 24); }
+    else { texto(g, `${p.carga ? '' : '−'}${u(Vmax, 'V', 3)}`, w - m.r + 6, p.carga ? m.t : h - m.b, col['--pos'], 'left'); texto(g, '0', w - m.r + 6, p.carga ? h - m.b : m.t, col['--pos'], 'left'); }
+    const linea = (fn, Y, c) => { g.strokeStyle = c; g.lineWidth = 2; g.beginPath(); for (let i = 0; i <= 600; i++) { const t = (T * i) / 600, x = X(t), y = Y(fn(t)); i ? g.lineTo(x, y) : g.moveTo(x, y); } g.stroke(); g.lineWidth = 1; };
+    linea(sol.I, Yi, col['--neg']); linea(sol.VL, Yv, col['--pos']);
+    texto(g, 'I(t)', m.l + 8, m.t + 6, col['--neg'], 'left'); texto(g, 'tensión en la bobina', m.l + 50, m.t + 6, col['--pos'], 'left');
     if (p.t !== null && p.t * 1e-3 <= T) {
       const s = p.t * 1e-3;
-      circulo(g, X(s), Yi(sol.I(s)), 4, col['--accent']); circulo(g, X(s), Yv(sol.VL(s)), 4, col['--pos']);
+      circulo(g, X(s), Yi(sol.I(s)), 4, col['--neg']); circulo(g, X(s), Yv(sol.VL(s)), 4, col['--pos']);
       texto(g, `t = ${f(p.t)} ms`, X(s), h - m.b + 24, col['--ink']);
     }
   }

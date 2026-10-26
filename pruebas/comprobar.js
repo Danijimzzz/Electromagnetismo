@@ -153,7 +153,7 @@ if (!solo) {
     const antes = fallos;
     const Ma = require(path.join(fuente, 'mates.js'));
     global.Mates = Ma;
-    const Co = require(path.join(fuente, 'matematicas', 'compartir.js'));
+    const Co = require(path.join(fuente, 'compartir.js'));
     for (const [src, tex, txt] of [['{x^{2}}/{2} + K', '\\frac{x^{2}}{2} + K', 'x^2/2 + K'], ['√(1 − x^{2})', '\\sqrt{1 - x^{2}}', '√(1 − x^2)'], ['∫_{0}^{π} sen x dx', '\\int_{0}^{\\pi} \\operatorname{sen} x \\, dx', '∫_0^π sen x dx'], ['{1}/{s^{2} + 1}', '\\frac{1}{s^{2} + 1}', '1/(s^2 + 1)'], ['e^{x^{2}}', 'e^{x^{2}}', 'e^(x^2)']]) {
       if (Co.latex(src) !== tex) mal(`Compartir: «${src}» en LaTeX sale «${Co.latex(src)}» en vez de «${tex}»`);
       if (Co.texto(src) !== txt) mal(`Compartir: «${src}» en texto sale «${Co.texto(src)}» en vez de «${txt}»`);

@@ -1,14 +1,15 @@
 /* =====================================================================
-   Fuerza magnética: interfaz (seis situaciones: carga en un campo,
-   fuerza de Lorentz con vectores, selector de velocidades y
-   espectrómetro, ciclotrón, hilo en un campo y dos hilos paralelos; el
-   resultado, una animación de cada una y el desarrollo). El cálculo está
+   Fuerza magnética: interfaz (diez situaciones: carga en un campo,
+   carga que cruza una franja de campo, fuerza de Lorentz con vectores,
+   E y B cruzados, selector de velocidades y espectrómetro, ciclotrón,
+   efecto Hall, hilo en un campo, par sobre una espira y dos hilos
+   paralelos; el resultado, una animación de cada una y el desarrollo). El cálculo está
    en fuerza/fisica.js (Fuerza).
    ===================================================================== */
 (() => {
   const { $, esc, copia, txt } = Herramienta;
   const F = Fuerza, f = F.f, CLAVE = 'fuerza-v1';
-  const MODOS = [['carga', 'Carga en un campo B (circunferencia o hélice)'], ['vectorial', 'Fuerza de Lorentz con vectores'], ['selector', 'Selector de velocidades y espectrómetro'], ['ciclotron', 'Ciclotrón'], ['hilo', 'Fuerza sobre un hilo'], ['paralelos', 'Fuerza entre dos hilos paralelos']];
+  const MODOS = [['carga', 'Carga en un campo B (circunferencia o hélice)'], ['franja', 'Carga que entra en una franja de campo'], ['vectorial', 'Fuerza de Lorentz con vectores'], ['cruzados', 'Campos E y B cruzados (cicloide)'], ['selector', 'Selector de velocidades y espectrómetro'], ['ciclotron', 'Ciclotrón'], ['hall', 'Efecto Hall'], ['hilo', 'Fuerza sobre un hilo'], ['espira', 'Par sobre una espira'], ['paralelos', 'Fuerza entre dos hilos paralelos']];
   const PARTS = [['proton', 'Protón'], ['electron', 'Electrón'], ['alfa', 'Partícula α'], ['deuteron', 'Deuterón'], ['otra', 'Otra (escribo q y m)']];
 
   let sc = copia(F.ejemplos[0].sc);
@@ -27,7 +28,11 @@
   const NOTAS = {
     carga: 'θ es el ángulo entre v y B: con 90° la trayectoria es una circunferencia y con otro ángulo, una hélice. Se admite 2e6 o 2·10^6.',
     vectorial: 'Escribe las componentes en el SI. E es opcional: con E sale la fuerza de Lorentz completa F = q(E + v × B).',
-    selector: 'Placa positiva arriba (E hacia abajo) y B entrante. Si dejas v vacía se toma la que pasa sin desviarse; B′ es el campo del espectrómetro, opcional.',
+    franja: 'La partícula entra perpendicular al borde de una franja de anchura d con B uniforme; fuera de ella no hay campo.',
+    cruzados: 'E hacia arriba y B saliente (⊙), perpendiculares. La velocidad inicial va hacia la derecha; vacía o 0, parte del reposo.',
+    selector: 'Placa positiva arriba (E hacia abajo) y B entrante. Si dejas v vacía se toma la que pasa sin desviarse; B′ es el campo del espectrómetro, opcional. Con la masa de un segundo isótopo (en u, misma carga) sale la separación de los impactos.',
+    hall: 'Lámina con la corriente hacia la derecha y B perpendicular a ella. t es el grosor en la dirección de B y w la anchura, donde se mide V_H (opcional).',
+    espira: 'θ es el ángulo entre la normal a la espira (el momento magnético) y B: con 90° el par es máximo.',
     ciclotron: 'R es el radio de las des, donde sale la partícula. Con la ddp entre las des se calculan las vueltas.',
     hilo: 'θ es el ángulo entre el hilo y B (90° si es perpendicular). Con la masa del hilo se calcula la corriente para que flote.',
     paralelos: 'Hilos rectos, largos y paralelos separados una distancia d. Sin L se da la fuerza por metro.',
@@ -36,8 +41,12 @@
     let h = elige('modo', 'Situación', MODOS);
     if (sc.modo === 'carga') h += particula() + veloc() + fila('B', 'Campo B', 'T') + sentidoB() + fila('th', 'Ángulo entre v y B θ', '°');
     else if (sc.modo === 'vectorial') h += particula(false) + tres('v', 'Velocidad v', 'm/s') + tres('B', 'Campo B', 'T') + sep('Opcional') + tres('E', 'Campo eléctrico E', 'V/m');
-    else if (sc.modo === 'selector') h += particula() + fila('E', 'Campo eléctrico E', 'V/m') + fila('B', 'Campo B del selector', 'T') + sep('Opcional') + veloc(true) + fila('B2', 'Campo B′ del espectrómetro', 'T');
+    else if (sc.modo === 'selector') h += particula() + fila('E', 'Campo eléctrico E', 'V/m') + fila('B', 'Campo B del selector', 'T') + sep('Opcional') + veloc(true) + fila('B2', 'Campo B′ del espectrómetro', 'T') + fila('m2', 'Masa de un segundo isótopo', 'u');
     else if (sc.modo === 'ciclotron') h += particula() + fila('B', 'Campo B', 'T') + fila('R', 'Radio de las des R', 'm') + fila('V', 'Ddp entre las des (opcional)', 'V');
+    else if (sc.modo === 'franja') h += particula() + veloc() + fila('B', 'Campo B', 'T') + sentidoB() + fila('d', 'Anchura de la franja d', 'm');
+    else if (sc.modo === 'cruzados') h += particula() + fila('E', 'Campo eléctrico E (↑)', 'V/m') + fila('B', 'Campo B (⊙)', 'T') + fila('v0', 'Velocidad inicial (→, opcional)', 'm/s');
+    else if (sc.modo === 'hall') h += elige('portador', 'Portadores', [['electrones', 'Electrones (metal, tipo n)'], ['huecos', 'Huecos (tipo p)']]) + fila('I', 'Corriente I', 'A') + fila('B', 'Campo B', 'T') + sentidoB() + fila('t', 'Grosor t (en la dirección de B)', 'm') + fila('w', 'Anchura w (opcional)', 'm') + elige('dato', 'Doy', [['n', 'la densidad de portadores n'], ['VH', 'la tensión Hall medida']]) + (sc.dato === 'VH' ? fila('VH', 'Tensión Hall V_H', 'V') : fila('n', 'Densidad de portadores n', 'm⁻³'));
+    else if (sc.modo === 'espira') h += fila('N', 'Vueltas N', '') + fila('I', 'Corriente I', 'A') + elige('forma', 'Forma', [['rect', 'Rectangular (a × b)'], ['circ', 'Circular (radio R)']]) + (sc.forma === 'circ' ? fila('R', 'Radio R', 'm') : fila('a', 'Lado a (perpendicular a B)', 'm') + fila('b', 'Lado b', 'm')) + fila('B', 'Campo B', 'T') + fila('th', 'Ángulo entre la normal y B θ', '°');
     else if (sc.modo === 'hilo') h += fila('I', 'Corriente I', 'A') + elige('sentidoI', 'Sentido de I', [['derecha', '→ Hacia la derecha'], ['izquierda', '← Hacia la izquierda']]) + fila('L', 'Longitud L', 'm') + fila('B', 'Campo B', 'T') + sentidoB() + fila('th', 'Ángulo entre el hilo y B θ', '°') + fila('m', 'Masa del hilo (opcional)', 'kg');
     else h += fila('I1', 'Corriente I₁', 'A') + fila('I2', 'Corriente I₂', 'A') + elige('sentido', 'Sentidos', [['mismo', 'El mismo sentido'], ['opuesto', 'Sentidos contrarios']]) + fila('d', 'Distancia d', 'm') + fila('L', 'Longitud L (opcional)', 'm');
     $('#campos').innerHTML = h;
@@ -53,6 +62,8 @@
       sc[k] = t.value;
       if (k === 'part' && t.value === 'otra' && !sc.q) { sc.q = '1,6e-19'; sc.m = sc.modo === 'vectorial' ? '' : '1,67e-27'; }
       if (k === 'uv' && sc.v) sc.v = { ms: '1e6', eV: '1000', V: '1000' }[t.value];
+      if (k === 'forma') { if (t.value === 'circ' && !sc.R) sc.R = '0,1'; if (t.value === 'rect' && !sc.a) { sc.a = '0,1'; sc.b = '0,05'; } }
+      if (k === 'dato') { if (t.value === 'VH' && !sc.VH) sc.VH = '1e-5'; if (t.value === 'n' && !sc.n) sc.n = '8,5e28'; }
     }
     formulario(); cambia();
   });
@@ -77,6 +88,10 @@
       () => { const B = dec(1, 5); return { modo: 'selector', part: de(['proton', 'deuteron', 'alfa']), ...P0, uv: 'ms', v: '', E: `${ent(1, 9)}e4`, B, B2: dec(2, 10) }; },
       () => ({ modo: 'ciclotron', part: de(['proton', 'deuteron', 'alfa']), ...P0, B: dec(5, 20), R: dec(3, 10), V: `${ent(1, 9)}e4` }),
       () => ({ modo: 'hilo', I: String(ent(1, 10)), sentidoI: de(['derecha', 'izquierda']), L: dec(1, 10), B: dec(1, 10), th: de(['90', '90', '30', '60']), sentidoB: de(['entrante', 'saliente']), m: '' }),
+      () => ({ modo: 'franja', part: de(['proton', 'electron', 'alfa']), ...P0, uv: 'ms', v: `${ent(1, 9)}e${de(['5', '6'])}`, B: dec(1, 10), sentidoB: de(['entrante', 'saliente']), d: String(ent(1, 10) / 100).replace('.', ',') }),
+      () => ({ modo: 'cruzados', part: de(['proton', 'electron']), ...P0, E: String(ent(1, 20) * 100), B: dec(1, 5), v0: '' }),
+      () => ({ modo: 'hall', portador: de(['electrones', 'huecos']), I: String(ent(1, 20)), B: dec(1, 20), sentidoB: de(['entrante', 'saliente']), t: `${ent(1, 9)}e-4`, w: String(ent(1, 5) / 100).replace('.', ','), dato: 'n', n: `${ent(1, 9)}e${de(['22', '28'])}`, VH: '' }),
+      () => ({ modo: 'espira', N: String(de([1, 10, 20, 50, 100])), I: String(ent(1, 10)), forma: 'rect', a: dec(1, 3), b: dec(1, 3), R: '', B: dec(1, 10), th: de(['30', '45', '60', '90']) }),
       () => ({ modo: 'paralelos', I1: String(ent(1, 20)), I2: String(ent(1, 20)), sentido: de(['mismo', 'opuesto']), d: String(ent(1, 20) / 100).replace('.', ','), L: de(['', '1', '2']) }),
     ];
     sc = de(tipos)();
@@ -91,6 +106,10 @@
     if (sc.modo === 'vectorial') return `Calcula la fuerza sobre ${p} con v = ${vec('v')} m/s en B = ${vec('B')} T${['x', 'y', 'z'].some((e) => sc['E' + e]) ? ` y E = ${vec('E')} V/m` : ''}.`;
     if (sc.modo === 'selector') return `En un selector de velocidades con E = ${esc(sc.E)} V/m y B = ${esc(sc.B)} T, ¿qué velocidad pasa sin desviarse?${sc.B2 ? ` Si ${p} sale y entra en B′ = ${esc(sc.B2)} T, ¿qué radio describe?` : ''}`;
     if (sc.modo === 'ciclotron') return `Un ciclotrón acelera ${p} con B = ${esc(sc.B)} T y des de radio ${esc(sc.R)} m. Calcula la frecuencia, la velocidad y la energía de salida${sc.V ? ` y las vueltas con ${esc(sc.V)} V entre las des` : ''}.`;
+    if (sc.modo === 'franja') return `${p[0].toUpperCase() + p.slice(1)} entra ${vel()} perpendicular al borde de una franja de anchura ${esc(sc.d)} m con un campo B = ${esc(sc.B)} T. ¿Atraviesa la franja? Calcula el radio, el ángulo de salida y el tiempo dentro.`;
+    if (sc.modo === 'cruzados') return `${p[0].toUpperCase() + p.slice(1)} está ${sc.v0 && +String(sc.v0).replace(',', '.') ? `moviéndose a ${esc(sc.v0)} m/s` : 'en reposo'} en una región con E = ${esc(sc.E)} V/m y B = ${esc(sc.B)} T perpendiculares. Calcula la velocidad de deriva, cuánto se aleja de la recta inicial y su rapidez máxima.`;
+    if (sc.modo === 'hall') return `Una lámina de grosor ${esc(sc.t)} m${sc.w ? ` y anchura ${esc(sc.w)} m` : ''}, con ${sc.portador === 'huecos' ? 'huecos' : 'electrones'} como portadores, lleva ${esc(sc.I)} A en un campo de ${esc(sc.B)} T. ${sc.dato === 'VH' ? `Se mide una tensión Hall de ${esc(sc.VH)} V: calcula la densidad de portadores.` : `Con n = ${esc(sc.n)} m⁻³, calcula la tensión Hall.`}`;
+    if (sc.modo === 'espira') return `Una ${sc.forma === 'circ' ? `espira circular de radio ${esc(sc.R)} m` : `espira rectangular de ${esc(sc.a)} × ${esc(sc.b)} m`}${sc.N && sc.N !== '1' ? ` con ${esc(sc.N)} vueltas` : ''} lleva ${esc(sc.I)} A en un campo B = ${esc(sc.B)} T cuya dirección forma ${esc(sc.th || '90')}° con la normal. Calcula el momento magnético, el par y la energía.`;
     if (sc.modo === 'hilo') return `Un hilo de ${esc(sc.L)} m con ${esc(sc.I)} A está en un campo B = ${esc(sc.B)} T a ${esc(sc.th || '90')}° del hilo. Calcula la fuerza sobre él.`;
     return `Dos hilos paralelos separados ${esc(sc.d)} m llevan ${esc(sc.I1)} A y ${esc(sc.I2)} A en ${sc.sentido === 'opuesto' ? 'sentidos contrarios' : 'el mismo sentido'}. Calcula la fuerza ${sc.L ? `en ${esc(sc.L)} m` : 'por metro'} y si se atraen o se repelen.`;
   };
@@ -116,10 +135,23 @@
       h = dato('Velocidad que pasa', `v = E/B = <b>${f(sol.vs)} m/s</b>`);
       if (sol.dado) h += dato('Esta partícula', sol.des === 'si' ? `se desvía hacia <b>${sol.hacia}</b>` : '<b>pasa sin desviarse</b>');
       if (sol.r2 !== null) h += dato('Radio en el espectrómetro', `r = <b>${f(sol.r2)} m</b>`) + dato('Distancia a la rendija (2r)', `${f(2 * sol.r2)} m`);
+      if (sol.sepa !== null) h += dato('Radio del segundo isótopo', `r′ = ${f(sol.rb)} m`) + dato('Separación de los impactos', `Δx = <b>${f(sol.sepa)} m</b>`);
       ley = 'Placa positiva arriba (E hacia abajo) y B entrante. Rojo: fuerza eléctrica; morado: magnética. La desviación está exagerada para que se vea.';
     } else if (sol.modo === 'ciclotron') {
       h = dato('Frecuencia', `f = <b>${f(sol.fr)} Hz</b>`) + dato('Velocidad de salida', `v = <b>${f(sol.vmax)} m/s</b>`) + dato('Energía de salida', `E<sub>c</sub> = <b>${f(sol.Ec)} J</b>`) + dato('En MeV', `${f(sol.Ec / F.E0 / 1e6)} MeV`) + (sol.n !== null ? dato('Vueltas', `n = <b>${f(sol.n)}</b>`) + dato('Tiempo', `t = ${f(sol.t)} s`) : '');
       ley = `Las dos des con B entrante; en el hueco, la tensión alterna la acelera cada media vuelta y el radio crece. ${sol.n !== null && sol.n > 6 ? `Se dibujan solo unas pocas de las ${f(sol.n, 3)} vueltas.` : ''}`;
+    } else if (sol.modo === 'franja') {
+      h = dato('Radio', `r = <b>${f(sol.r)} m</b>`) + (sol.cruza ? dato('Atraviesa la franja', `desviada <b>α = ${f(sol.alfa)}°</b>`) + dato('Desplazamiento al salir', `y = ${f(sol.y)} m hacia ${sol.hacia}`) : dato('No la atraviesa', `sale por donde entró, a <b>2r = ${f(sol.y)} m</b>`)) + dato('Tiempo dentro', `t = <b>${f(sol.t)} s</b>`) + (sc.uv && sc.uv !== 'ms' ? dato('Velocidad', `v = ${f(sol.v)} m/s`) : '');
+      ley = 'La franja sombreada tiene el campo; fuera no hay. Verde: velocidad; rojo: fuerza magnética.';
+    } else if (sol.modo === 'cruzados') {
+      h = dato('Velocidad de deriva', `v<sub>d</sub> = E/B = <b>${f(sol.vd)} m/s</b>`) + (sol.R ? dato('Radio en el sistema que avanza', `R = ${f(sol.R)} m`) + dato('Máxima separación', `h = 2R = <b>${f(sol.h)} m</b>`) + dato('Rapidez máxima', `v<sub>máx</sub> = <b>${f(sol.vmax)} m/s</b>`) + dato('Periodo', `T = ${f(sol.T)} s`) + dato('Avance por periodo', `${f(sol.avance)} m`) : dato('Trayectoria', '<b>recta</b>: v = E/B'));
+      ley = 'E hacia arriba y B saliente (⊙). Morado: fuerza eléctrica; rojo: magnética; verde: velocidad. El punto gris avanza con la deriva E/B.';
+    } else if (sol.modo === 'hall') {
+      h = (sc.dato === 'VH' ? dato('Densidad de portadores', `n = <b>${f(sol.n)} m<sup>−3</sup></b>`) : dato('Tensión Hall', `V<sub>H</sub> = <b>${f(sol.VH)} V</b>`)) + dato('Coeficiente de Hall', `R<sub>H</sub> = ${f(sol.RH)} m<sup>3</sup>/C`) + (sol.vd !== null ? dato('Velocidad de arrastre', `v<sub>d</sub> = ${f(sol.vd)} m/s`) + dato('Campo Hall', `E<sub>H</sub> = ${f(sol.EH)} V/m`) : '') + dato('Cara a más potencial', `la <b>${sol.alta}</b>`);
+      ley = `Corriente hacia la derecha. Los portadores (${sol.huecos ? 'huecos, +' : 'electrones, −'}) se desvían y se acumulan en una cara hasta que el campo Hall equilibra la fuerza magnética.`;
+    } else if (sol.modo === 'espira') {
+      h = dato('Momento magnético', `m = N I S = <b>${f(sol.m)} A·m<sup>2</sup></b>`) + dato('Par', `τ = <b>${f(sol.tau)} N·m</b>`) + dato('Energía', `U = −m B cos θ = <b>${f(sol.U)} J</b>`) + dato('Trabajo desde θ = 0°', `W = ${f(sol.W)} J`);
+      ley = 'Vista de lado, con B hacia la derecha: el par hace girar la espira hacia θ = 0, con m paralelo a B, y oscila alrededor (sin rozamiento). Azul: B; morado: m.';
     } else if (sol.modo === 'hilo') {
       h = dato('Fuerza', `F = <b>${f(sol.F)} N</b>`) + dato('Por metro', `F/L = ${f(sol.F / sol.L)} N/m`) + (sol.arriba !== null ? dato('Sentido', `hacia <b>${sol.arriba ? 'arriba' : 'abajo'}</b>`) : '') + (sol.Iflota !== null ? dato('Corriente para que flote', `I = <b>${f(sol.Iflota)} A</b>`) : '');
       ley = `Los puntos que se mueven son las cargas de la corriente. Morado: fuerza magnética${sol.m !== null ? '; rojo: peso' : ''}.`;
@@ -128,13 +160,13 @@
       ley = 'Las circunferencias son las líneas del campo del hilo 1. Morado: la fuerza sobre cada hilo.';
     }
     $('#res').innerHTML = h;
-    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('');
+    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${Mates.html(p.html, true)}</li>`).join('');
     $('#leyenda').textContent = ley;
     dibuja();
   }
 
   /* ---------- Animación ---------- */
-  function colores() { const cs = getComputedStyle(document.documentElement); for (const c of ['--ink', '--muted', '--line', '--accent', '--accent-soft', '--panel', '--bg', '--peso', '--normal', '--fuerza', '--z1', '--z2']) col[c] = cs.getPropertyValue(c).trim(); }
+  function colores() { const cs = getComputedStyle(document.documentElement); for (const c of ['--ink', '--muted', '--line', '--accent', '--accent-soft', '--tension', '--cuerpo', '--panel', '--bg', '--peso', '--normal', '--fuerza', '--z1', '--z2']) col[c] = cs.getPropertyValue(c).trim(); }
   const lienzo = () => Herramienta.lienzo('#escena');
   const flecha = (g, x, y, dx, dy, L, color, lw = 2.4, et = '') => {
     const n = Math.hypot(dx, dy); if (!(n > 0) || !isFinite(n) || !(L > 0)) return;
@@ -164,6 +196,10 @@
     else if (sol.modo === 'vectorial') escVectores(g, w, h, t);
     else if (sol.modo === 'selector') escSelector(g, w, h, t);
     else if (sol.modo === 'ciclotron') escCiclotron(g, w, h, t);
+    else if (sol.modo === 'franja') escFranja(g, w, h, t);
+    else if (sol.modo === 'cruzados') escCruzados(g, w, h, t);
+    else if (sol.modo === 'hall') escHall(g, w, h, t);
+    else if (sol.modo === 'espira') escEspira(g, w, h, t);
     else if (sol.modo === 'hilo') escHilo(g, w, h, t);
     else escParalelos(g, w, h, t);
   }
@@ -171,11 +207,11 @@
     const q = sol.P.q;
     if (sol.F === 0) {
       // v paralela a B: recta
-      g.strokeStyle = col['--accent']; g.globalAlpha = 0.5; g.lineWidth = 1.5;
-      for (let y = 30; y < h; y += 46) { flecha(g, 20, y, 1, 0, w - 40, col['--accent'], 1.3); } g.globalAlpha = 1;
+      g.globalAlpha = 0.5;
+      for (let y = 30; y < h; y += 46) { flecha(g, 20, y, 1, 0, w - 40, col['--tension'], 1.3); } g.globalAlpha = 1;
       const dir = sol.th === 0 ? 1 : -1, x = dir > 0 ? 40 + ((t * 80) % (w - 80)) : w - 40 - ((t * 80) % (w - 80));
       bola(g, x, h / 2, 9, q); flecha(g, x + dir * 12, h / 2, dir, 0, 40, col['--normal'], 2.6, 'v');
-      etiqueta(g, 'B', 24, 12, 'left', col['--accent']);
+      etiqueta(g, 'B', 24, 12, 'left', col['--tension']);
       return;
     }
     if (sol.th === 90) {
@@ -194,8 +230,8 @@
       return;
     }
     // hélice vista de lado: B hacia la derecha
-    g.globalAlpha = 0.35; for (let y = 24; y < h; y += 44) flecha(g, 8, y, 1, 0, w - 16, col['--accent'], 1.2); g.globalAlpha = 1;
-    etiqueta(g, 'B', 12, 4, 'left', col['--accent']);
+    g.globalAlpha = 0.35; for (let y = 24; y < h; y += 44) flecha(g, 8, y, 1, 0, w - 16, col['--tension'], 1.2); g.globalAlpha = 1;
+    etiqueta(g, 'B', 12, 4, 'left', col['--tension']);
     const relP = sol.paso / sol.r, R = Math.min(h * 0.3, (w * 0.22) / Math.max(relP, 0.3)), pp = relP * R, dir = sol.va >= 0 ? 1 : -1, cy = h / 2;
     const vueltas = (w - 60) / pp, Tv = 3, u = (t / Tv) % Math.max(1, vueltas), x0 = dir > 0 ? 30 : w - 30, sg = q > 0 ? 1 : -1;
     const pos = (k) => [x0 + dir * k * pp, cy - R * Math.sin(sg * 2 * Math.PI * k), Math.cos(2 * Math.PI * k)];
@@ -212,7 +248,7 @@
     for (const [e, v] of [['x', [1, 0, 0]], ['y', [0, 1, 0]], ['z', [0, 0, 1]]]) { const a = pr(v.map((c) => -c * 0.6)), b = pr(v.map((c) => c * 1.15)); g.globalAlpha = 0.6; g.beginPath(); g.moveTo(...a); g.lineTo(...b); g.stroke(); g.globalAlpha = 1; const c = pr(v.map((c) => c * 1.25)); g.fillText(e, c[0], c[1]); }
     const o = pr([0, 0, 0]);
     const dib = (u, c, et) => { const m = Math.hypot(...u); if (!(m > 0)) return; const p = pr(u.map((x) => (x / m) * 0.85)); flecha(g, o[0], o[1], p[0] - o[0], p[1] - o[1], Math.hypot(p[0] - o[0], p[1] - o[1]), c, 2.8, et); };
-    dib(sol.v, col['--normal'], 'v'); dib(sol.B, col['--accent'], 'B'); if (sol.hayE) dib(sol.E, col['--fuerza'], 'E'); dib(sol.F, col['--peso'], 'F');
+    dib(sol.v, col['--normal'], 'v'); dib(sol.B, col['--tension'], 'B'); if (sol.hayE) dib(sol.E, col['--fuerza'], 'E'); dib(sol.F, col['--peso'], 'F');
     bola(g, o[0], o[1], 7, sol.P.q);
   }
   function escSelector(g, w, h, t) {
@@ -242,6 +278,14 @@
       g.strokeStyle = col['--ink']; g.lineWidth = 3; g.beginPath(); g.moveTo(x2, 4); g.lineTo(x2, cy - 10); g.moveTo(x2, cy + 10); g.lineTo(x2, h - 4); g.stroke();
       etiqueta(g, `B′  ·  2r = ${txt(f(2 * sol.r2, 3))} m`, x2 + 8, h - 18);
       g.strokeStyle = col['--muted']; g.globalAlpha = 0.4; g.setLineDash([4, 4]); g.beginPath(); g.arc(x2, cy - Math.sign(q) * R, R, -Math.PI / 2, Math.PI / 2); g.stroke(); g.setLineDash([]); g.globalAlpha = 1;
+      if (sol.rb !== null) {
+        // el segundo isótopo, con su propio radio
+        const Rb = R * sol.rb / sol.r2, yb = cy - Math.sign(q) * 2 * Rb;
+        g.strokeStyle = col['--fuerza']; g.lineWidth = 2; g.globalAlpha = 0.8; g.setLineDash([6, 4]); g.beginPath(); g.arc(x2, cy - Math.sign(q) * Rb, Rb, -Math.PI / 2, Math.PI / 2, q < 0); g.stroke(); g.setLineDash([]); g.globalAlpha = 1;
+        g.fillStyle = col['--fuerza']; g.beginPath(); g.arc(x2, yb, 4, 0, 2 * Math.PI); g.fill();
+        etiqueta(g, `${txt(f(sol.m2, 3))} u`, x2 - 6, yb - 7, 'right', col['--fuerza']);
+        etiqueta(g, `Δx = ${txt(f(sol.sepa, 3))} m`, x2 + 8, h - 38, 'left', col['--fuerza']);
+      }
     }
     g.strokeStyle = q > 0 ? col['--peso'] : col['--z1']; g.lineWidth = 2.4; g.beginPath(); recorrido.forEach((p, i) => (i ? g.lineTo(...p) : g.moveTo(...p))); g.stroke();
     const p = recorrido[recorrido.length - 1] || [x1 - 30, cy];
@@ -270,6 +314,89 @@
     etiqueta(g, `f = ${txt(f(sol.fr, 3))} Hz`, 10, 8);
     const signo = Math.floor(u / Th) % 2 ? '←' : '→'; etiqueta(g, `E ${signo}`, cx, cy - 8, 'center', col['--fuerza']);
   }
+  function escFranja(g, w, h, t) {
+    const q = sol.P.q, sg = sol.hacia === 'arriba' ? -1 : 1, xa = w * 0.3;
+    const s = sol.cruza ? Math.min((w * 0.45) / sol.d, (h * 0.5) / Math.max(sol.y, sol.d * 0.15)) : Math.min((h * 0.4) / sol.r, (w * 0.55) / sol.d), rs = sol.r * s, ds = sol.d * s;
+    const y0 = sol.cruza ? (sg < 0 ? h * 0.78 : h * 0.22) : h / 2 - sg * rs;
+    g.fillStyle = col['--tension']; g.globalAlpha = 0.07; g.fillRect(xa, 0, Math.min(ds, w - xa), h); g.globalAlpha = 1;
+    simbolos(g, xa, 0, Math.min(xa + ds, w), h, sol.sentidoB !== 'saliente', 32);
+    g.strokeStyle = col['--muted']; g.lineWidth = 1.2; g.setLineDash([5, 4]); g.beginPath(); g.moveTo(xa, 0); g.lineTo(xa, h); if (xa + ds < w) { g.moveTo(xa + ds, 0); g.lineTo(xa + ds, h); } g.stroke(); g.setLineDash([]);
+    if (xa + ds < w) etiqueta(g, `d = ${txt(f(sol.d, 3))} m`, xa + ds / 2, h - 18, 'center');
+    const fin = sol.cruza ? (sol.alfa * Math.PI) / 180 : Math.PI, L1 = xa - 20, L2 = rs * fin, L3 = w * 0.6;
+    const pos = (u) => {
+      if (u < L1) return [20 + u, y0, 0];
+      if (u < L1 + L2) { const ph = (u - L1) / rs; return [xa + rs * Math.sin(ph), y0 + sg * rs * (1 - Math.cos(ph)), ph]; }
+      const e = (u - L1 - L2), x = xa + rs * Math.sin(fin), y = y0 + sg * rs * (1 - Math.cos(fin));
+      return [x + e * Math.cos(fin), y + sg * e * Math.sin(fin), fin];
+    };
+    const tot = L1 + L2 + L3, u = (t * w * 0.35) % tot, pts = [];
+    g.strokeStyle = col['--muted']; g.globalAlpha = 0.35; g.lineWidth = 1.4; g.setLineDash([4, 4]); g.beginPath();
+    for (let k = 0; k <= 200; k++) { const p = pos((k / 200) * tot); k ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1]); } g.stroke(); g.setLineDash([]); g.globalAlpha = 1;
+    for (let k = 0; k <= 120; k++) pts.push(pos((k / 120) * u));
+    g.strokeStyle = q > 0 ? col['--peso'] : col['--z1']; g.lineWidth = 2.4; g.beginPath(); pts.forEach((p, i) => (i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1]))); g.stroke();
+    const [x, y, ph] = pos(u);
+    flecha(g, x, y, Math.cos(ph), sg * Math.sin(ph), 44, col['--normal'], 2.4, 'v');
+    if (u > L1 && u < L1 + L2) flecha(g, x, y, -Math.sin(ph), sg * Math.cos(ph), 36, col['--peso'], 2.4, 'F');
+    bola(g, x, y, 8, q);
+    etiqueta(g, sol.cruza ? `α = ${txt(f(sol.alfa, 3))}°` : `2r = ${txt(f(2 * sol.r, 3))} m`, 10, 8);
+  }
+  function escCruzados(g, w, h, t) {
+    const q = sol.P.q, ws = Math.sign(q) * sol.w, T = sol.T, ext = Math.max(sol.avance * 2, 1e-30);
+    const s = Math.min((w - 70 - 2 * sol.R * 0) / (ext + 2 * sol.R), sol.h ? (h * 0.62) / sol.h : Infinity), x0 = 30 + sol.R * s, y0 = sol.sube ? h * 0.82 : h * 0.18;
+    simbolos(g, 0, 0, w, h, false, 40);
+    for (let y = 40; y < h; y += 90) flecha(g, 14, y + 30, 0, -1, 30, col['--fuerza'], 1.6);
+    etiqueta(g, 'E ↑   B ⊙', 30, 8);
+    const X = (tt) => sol.vd * tt + (sol.u / ws) * Math.sin(ws * tt), Y = (tt) => (sol.u / ws) * (Math.cos(ws * tt) - 1);
+    const per = 2, tt = ((t / 2.4) % per) * T;
+    g.strokeStyle = col['--muted']; g.globalAlpha = 0.3; g.lineWidth = 1; g.setLineDash([4, 4]); g.beginPath(); g.moveTo(20, y0); g.lineTo(w - 10, y0); g.stroke(); g.setLineDash([]); g.globalAlpha = 1;
+    g.strokeStyle = q > 0 ? col['--peso'] : col['--z1']; g.lineWidth = 2.4; g.beginPath();
+    for (let k = 0; k <= 240; k++) { const a = (k / 240) * tt, px = x0 + X(a) * s, py = y0 - Y(a) * s; k ? g.lineTo(px, py) : g.moveTo(px, py); } g.stroke();
+    const px = x0 + X(tt) * s, py = y0 - Y(tt) * s, vx = sol.vd + sol.u * Math.cos(ws * tt), vy = -sol.u * Math.sin(ws * tt);
+    g.fillStyle = col['--muted']; g.globalAlpha = 0.6; g.beginPath(); g.arc(x0 + sol.vd * tt * s, y0, 4, 0, 2 * Math.PI); g.fill(); g.globalAlpha = 1;
+    const Fe = q * sol.E, Fmx = q * vy * sol.B, Fmy = -q * vx * sol.B, ref = Math.max(Math.abs(Fe), Math.abs(q) * sol.vmax * sol.B) || 1;
+    flecha(g, px, py, 0, -Math.sign(Fe), 42 * Math.abs(Fe) / ref, col['--fuerza'], 2.4);
+    flecha(g, px, py, Fmx, -Fmy, 42 * Math.hypot(Fmx, Fmy) / ref, col['--peso'], 2.4);
+    flecha(g, px, py, vx, -vy, 46 * Math.hypot(vx, vy) / (sol.vmax || 1), col['--normal'], 2.4, 'v');
+    bola(g, px, py, 8, q);
+    etiqueta(g, `v_d = E/B = ${txt(f(sol.vd, 3))} m/s${sol.h ? `  ·  h = ${txt(f(sol.h, 3))} m` : ''}`, w - 10, h - 20, 'right');
+  }
+  function escHall(g, w, h, t) {
+    const x1 = w * 0.1, x2 = w * 0.84, y1 = h * 0.28, y2 = h * 0.72, hu = sol.huecos, sube = sol.arriba;
+    g.fillStyle = col['--cuerpo']; g.globalAlpha = 0.6; g.fillRect(x1, y1, x2 - x1, y2 - y1); g.globalAlpha = 1;
+    g.strokeStyle = col['--ink']; g.lineWidth = 1.5; g.strokeRect(x1, y1, x2 - x1, y2 - y1);
+    simbolos(g, x1, y1, x2, y2, sol.sentidoB !== 'saliente', 44);
+    flecha(g, x1 - 40, (y1 + y2) / 2, 1, 0, 34, col['--z2'], 2.6, ''); etiqueta(g, 'I', x1 - 30, (y1 + y2) / 2 - 22);
+    // cargas acumuladas en las caras
+    const arriba = hu === sube ? '+' : '−', abajo = arriba === '+' ? '−' : '+';
+    g.font = '600 15px system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    for (let x = x1 + 18; x < x2; x += 30) { g.fillStyle = arriba === '+' ? col['--peso'] : col['--z1']; g.fillText(arriba, x, y1 - 10); g.fillStyle = abajo === '+' ? col['--peso'] : col['--z1']; g.fillText(abajo, x, y2 + 11); }
+    // portadores que avanzan y se desvían
+    const dir = hu ? 1 : -1, ancho = x2 - x1;
+    for (let k = 0; k < 14; k++) {
+      const fase = ((t * 0.35 + k / 14) % 1), x = dir > 0 ? x1 + fase * ancho : x2 - fase * ancho, dy = (y2 - y1) * 0.36 * Math.min(1, fase * 1.6), y = (y1 + y2) / 2 + ((k % 3) - 1) * 18 + (sube ? -dy : dy);
+      g.fillStyle = hu ? col['--peso'] : col['--z1']; g.beginPath(); g.arc(x, Math.max(y1 + 6, Math.min(y2 - 6, y)), 4, 0, 2 * Math.PI); g.fill();
+    }
+    g.strokeStyle = col['--fuerza']; g.lineWidth = 1.6; g.beginPath(); g.moveTo(x2 + 22, y1); g.lineTo(x2 + 22, y2); g.stroke();
+    etiqueta(g, 'V_H', x2 + 28, (y1 + y2) / 2 - 7, 'left', col['--fuerza']);
+    etiqueta(g, 'más potencial', x2 - 4, sol.alta === 'de arriba' ? y1 - 34 : y2 + 24, 'right', col['--ink']);
+    etiqueta(g, `V_H = ${txt(f(sol.VH, 3))} V`, x1, h - 20);
+  }
+  function escEspira(g, w, h, t) {
+    const cx = w / 2, cy = h / 2, L = Math.min(w, h) * 0.32, th0 = (sol.th * Math.PI) / 180, th = sol.tau ? th0 * Math.cos(t * 1.6) : th0;
+    g.globalAlpha = 0.35; for (let y = 22; y < h; y += 44) flecha(g, 8, y, 1, 0, w - 16, col['--tension'], 1.2); g.globalAlpha = 1;
+    etiqueta(g, 'B', 12, 4, 'left', col['--tension']);
+    const nx = Math.cos(th), ny = -Math.sin(th);
+    g.strokeStyle = col['--ink']; g.lineWidth = 3; g.fillStyle = col['--accent-soft']; g.globalAlpha = 0.7;
+    g.beginPath(); g.ellipse(cx, cy, L * 0.22, L, Math.atan2(ny, nx), 0, 2 * Math.PI); g.fill(); g.globalAlpha = 1; g.stroke();
+    // corriente: entra por arriba (⊗) y sale por abajo (⊙) en la vista de lado
+    const ax = cx - ny * L, ay = cy + nx * L, bx = cx + ny * L, by = cy - nx * L;
+    g.fillStyle = col['--panel']; for (const [x, y] of [[ax, ay], [bx, by]]) { g.beginPath(); g.arc(x, y, 8, 0, 2 * Math.PI); g.fill(); g.stroke(); }
+    g.lineWidth = 1.6; g.beginPath(); g.moveTo(ax - 4, ay - 4); g.lineTo(ax + 4, ay + 4); g.moveTo(ax + 4, ay - 4); g.lineTo(ax - 4, ay + 4); g.stroke();
+    g.fillStyle = col['--ink']; g.beginPath(); g.arc(bx, by, 2.5, 0, 2 * Math.PI); g.fill();
+    flecha(g, cx, cy, nx, ny, L * 0.9, col['--fuerza'], 3, 'm');
+    if (Math.abs(th) > 0.05) { g.strokeStyle = col['--muted']; g.lineWidth = 1.2; g.beginPath(); g.arc(cx, cy, 30, Math.min(0, -th), Math.max(0, -th)); g.stroke(); etiqueta(g, 'θ', cx + 34 * Math.cos(th / 2), cy - 34 * Math.sin(th / 2) - 6); }
+    etiqueta(g, `τ = ${txt(f(sol.tau, 3))} N·m con θ = ${txt(f(sol.th, 3))}°`, w - 10, h - 20, 'right');
+  }
   function escHilo(g, w, h, t) {
     simbolos(g, 0, 0, w, h, sol.sentidoB !== 'saliente');
     const cy = h / 2, dir = sol.sentidoI === 'izquierda' ? -1 : 1;
@@ -282,7 +409,7 @@
   }
   function escParalelos(g, w, h, t) {
     const d = Math.min(w * 0.3, 160), osc = Math.sin(t * 3) * 2 * (sol.mismo ? -1 : 1), x1 = w / 2 - d / 2 - osc, x2 = w / 2 + d / 2 + osc;
-    g.strokeStyle = col['--accent']; g.globalAlpha = 0.35; g.lineWidth = 1.2;
+    g.strokeStyle = col['--tension']; g.globalAlpha = 0.35; g.lineWidth = 1.2;
     for (const r of [d * 0.35, d * 0.7, d, d * 1.4]) { g.beginPath(); g.ellipse(x1, h / 2, r, r * 0.28, 0, 0, 2 * Math.PI); g.stroke(); }
     g.globalAlpha = 1;
     for (const [x, sg, et] of [[x1, -1, 'I₁'], [x2, sol.mismo ? -1 : 1, 'I₂']]) {
@@ -308,5 +435,5 @@
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('fuerza').current;
   formulario(); colores(); calcula(); requestAnimationFrame(bucle);
-  window.FuerzaApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { modo: sol.modo, F: sol.F, Fmod: sol.Fmod, r: sol.r, vs: sol.vs, r2: sol.r2, fr: sol.fr, n: sol.n, FL: sol.FL }, estado: () => copia(sc) };
+  window.FuerzaApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { modo: sol.modo, F: sol.F, Fmod: sol.Fmod, r: sol.r, vs: sol.vs, r2: sol.r2, sepa: sol.sepa, fr: sol.fr, n: sol.n, FL: sol.FL, alfa: sol.alfa, vd: sol.vd, h: sol.h, VH: sol.VH, tau: sol.tau }, estado: () => copia(sc) };
 })();

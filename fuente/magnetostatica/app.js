@@ -1,6 +1,7 @@
 /* =====================================================================
    Interfaz de la calculadora de magnetostática: editor de fuentes y
-   preguntas, dibujo del campo en un plano, ejemplos y archivos .json.
+   preguntas, dibujo del campo en un plano (flechas, mapa de color de |B| y
+   líneas de campo), ejemplos y archivos .json.
    ===================================================================== */
 (() => {
   const { SOURCES, ANALYSES, PLANOS } = Magneto;
@@ -25,11 +26,11 @@
   };
   let uid = 0;
   const newId = () => 'm' + Date.now().toString(36) + (uid++).toString(36);
-  const vacia = () => ({ titulo: '', enunciado: '', modo: 'sym', vista: { plano: 'xy', corte: '0', flechas: true }, fuentes: [], preguntas: [] });
+  const vacia = () => ({ titulo: '', enunciado: '', modo: 'sym', vista: { plano: 'xy', corte: '0', flechas: true, mapa: false, lineas: false }, fuentes: [], preguntas: [] });
   function valida(s) {
     const o = { ...vacia(), ...s, vista: { ...vacia().vista, ...(s.vista || {}) } };
     o.modo = s.modo === 'si' ? 'si' : 'sym';
-    o.fuentes = (s.fuentes || []).filter((f) => SOURCES[f.tipo]).map((f) => ({ ...SOURCES[f.tipo].def(), I: '1', s: 'I', ...f, id: f.id || newId() }));
+    o.fuentes = (s.fuentes || []).filter((f) => SOURCES[f.tipo]).map((f) => ({ I: '1', s: 'I', ...SOURCES[f.tipo].def(), ...f, id: f.id || newId() }));
     o.preguntas = (s.preguntas || []).filter((q) => ANALYSES[q.tipo]).map((q) => ({ ...ANALYSES[q.tipo].def(o.fuentes), ...q, id: q.id || newId() }));
     return o;
   }
@@ -58,23 +59,25 @@
     }
     if (tipo === 'salida') return fila(lab, sel(f[k], [['1', 'sale de A'], ['-1', 'llega a A']], (v) => { f[k] = +v; ch(); }, lab));
     if (tipo === 'bool') return fila(lab, h('input', { type: 'checkbox', checked: !!f[k], onchange: (e) => { f[k] = e.target.checked; ch(); } }));
+    if (tipo === 'perfil') return fila(lab, sel(f[k], [['uniforme', 'uniforme'], ['lineal', 'J proporcional a r']], (v) => { f[k] = v; ch(); }, lab));
     return null;
   }
   function tarjetaFuente(f) {
     const T = SOURCES[f.tipo];
     const corriente = esc.modo === 'si'
-      ? h('div', { class: 'cur' }, h('input', { class: 'in', value: f.I, 'aria-label': 'Corriente', oninput: (e) => { f.I = e.target.value; recalcula(); } }), h('span', {}, 'A'))
-      : h('div', { class: 'cur' }, h('input', { class: 'in', value: f.I, 'aria-label': 'Coeficiente de la corriente', oninput: (e) => { f.I = e.target.value; recalcula(); } }), h('span', {}, '×'), h('input', { class: 'in', value: f.s, 'aria-label': 'Símbolo de la corriente', oninput: (e) => { f.s = e.target.value.replace(/[^A-Za-z0-9_]/g, ''); recalcula(); } }));
+      ? h('div', { class: 'cur' }, h('input', { class: 'in', value: f.I, 'aria-label': 'Corriente', oninput: (e) => { f.I = e.target.value; recalcula(); } }), h('span', {}, { lamina: 'A/m', disco: 'C/(m²·s)' }[f.tipo] || 'A'))
+      : h('div', { class: 'cur' }, h('input', { class: 'in', value: f.I, 'aria-label': 'Coeficiente de la corriente', oninput: (e) => { f.I = e.target.value; recalcula(); } }), h('span', {}, '×'), h('input', { class: 'in', value: f.s, 'aria-label': 'Símbolo de la corriente', oninput: (e) => { f.s = e.target.value.replace(/[^A-Za-z0-9_*]/g, ''); recalcula(); } }));
     return h('div', { class: 'pieza' },
       h('div', { class: 'card-h' }, h('span', { class: 'badge' }, T.label), h('input', { class: 'in nom', value: f.nombre || '', placeholder: 'nombre', 'aria-label': 'Nombre', oninput: (e) => { f.nombre = e.target.value; recalcula(false); } }),
         h('button', { class: 'x', title: 'Quitar', 'aria-label': 'Quitar', onclick: () => { esc.fuentes = esc.fuentes.filter((x) => x !== f); editor(); recalcula(); } }, '×')),
-      fila(f.tipo === 'toroide' || f.tipo === 'solenoide' ? 'Corriente por espira' : 'Corriente', corriente),
+      fila({ toroide: 'Corriente por espira', solenoide: 'Corriente por espira', lamina: 'Densidad K', disco: 'σω (carga × giro)', cilindro: 'Corriente total' }[f.tipo] || 'Corriente', corriente),
       ...T.campos.map((c) => campoFuente(f, c)));
   }
   function tarjetaPregunta(q, i) {
     const A = ANALYSES[q.tipo], ch = () => recalcula();
     const campos = [];
-    if (q.P) campos.push(fila('Punto P', vecIn(q.P, ch)));
+    if (q.P) campos.push(fila(q.tipo === 'perfil' ? 'Desde P' : 'Punto P', vecIn(q.P, ch)));
+    if (q.Q) campos.push(fila('Hasta Q', vecIn(q.Q, ch)));
     if (q.tipo === 'Fq') {
       campos.push(fila('Carga', esc.modo === 'si' ? h('div', { class: 'cur' }, h('input', { class: 'in', value: q.q, oninput: (e) => { q.q = e.target.value; ch(); } }), h('span', {}, 'C'))
         : h('div', { class: 'cur' }, h('input', { class: 'in', value: q.q, oninput: (e) => { q.q = e.target.value; ch(); } }), h('span', {}, '×'), h('input', { class: 'in', value: q.qs, oninput: (e) => { q.qs = e.target.value.replace(/[^A-Za-z0-9_]/g, ''); ch(); } }))));
@@ -94,13 +97,13 @@
     $('#titulo').textContent = esc.titulo || 'Magnetostática: campo magnético y Biot-Savart';
     $('#enunciado').value = esc.enunciado || '';
     $('#modo').value = esc.modo;
-    $('#plano').value = esc.vista.plano; $('#corte').value = esc.vista.corte; $('#flechas').checked = esc.vista.flechas !== false;
+    $('#plano').value = esc.vista.plano; $('#corte').value = esc.vista.corte; $('#flechas').checked = esc.vista.flechas !== false; $('#mapa').checked = !!esc.vista.mapa; $('#lineas').checked = !!esc.vista.lineas;
     $('#corte-l').textContent = { xy: 'z', xz: 'y', yz: 'x' }[esc.vista.plano];
     $('#hint-unid').textContent = esc.modo === 'si' ? 'Longitudes en metros (admite cm y mm, p. ej. 5 cm) y corrientes en amperios.' : 'Longitudes en unidades de a; admite 1/2, sqrt(3), √2. Corriente = coeficiente × símbolo.';
     $('#fuentes').replaceChildren(...esc.fuentes.map(tarjetaFuente));
     $('#preguntas').replaceChildren(...esc.preguntas.map(tarjetaPregunta));
     if (!esc.fuentes.length) $('#fuentes').append(h('p', { class: 'hint' }, 'Añade una fuente con los botones de arriba.'));
-    if (!esc.preguntas.length) $('#preguntas').append(h('p', { class: 'hint' }, 'Añade una pregunta: campo en un punto, fuerza sobre una carga o sobre un hilo.'));
+    if (!esc.preguntas.length) $('#preguntas').append(h('p', { class: 'hint' }, 'Añade una pregunta: campo en un punto, fuerza sobre una carga o sobre un hilo, o el perfil de |B| a lo largo de una recta.'));
   }
 
   /* ---------------- cálculo ---------------- */
@@ -142,11 +145,11 @@
     const [i, j] = ejes(), pts = [];
     for (const f of out.fuentes) {
       for (const k of ['A', 'B', 'C']) if (f[k]) pts.push(f[k]);
-      const R = f.R2 || f.R || (f.L ? f.L / 2 : 0);
+      const R = f.R2 || f.R || (f.L ? f.L / 2 : 0) || Math.max(f.a || 0, f.b || 0) / 2 || (f.tipo === 'lamina' ? 2 : 0);
       if (f.C && R) for (const d of [[R, 0, 0], [0, R, 0], [0, 0, R], [-R, 0, 0], [0, -R, 0], [0, 0, -R]]) pts.push(V3.add(f.C, d));
       if (f.tipo === 'solenoide') { const n = Magneto.EJES[f.eje]; pts.push(V3.add(f.C, V3.sc(n, f.L / 2)), V3.add(f.C, V3.sc(n, -f.L / 2))); }
     }
-    for (const r of out.results) if (r.P) pts.push(r.P);
+    for (const r of out.results) { if (r.P) pts.push(r.P); if (r.Q) pts.push(r.Q); }
     if (!pts.length) pts.push([0, 0, 0]);
     let x0 = Math.min(...pts.map((p) => p[i])), x1 = Math.max(...pts.map((p) => p[i])), y0 = Math.min(...pts.map((p) => p[j])), y1 = Math.max(...pts.map((p) => p[j]));
     const m = Math.max(x1 - x0, y1 - y0, esc.modo === 'si' ? 0.02 : 2) * 0.35;
@@ -225,11 +228,119 @@
       const n = Magneto.EJES[f.eje], pl = PLANOS[Magneto.PLANO_DE_EJE[f.eje]], vueltas = Math.min(Math.round(f.N), 24), pts = [];
       for (let k = 0; k <= vueltas * 48; k++) { const t = k / 48; pts.push(V3.add(V3.add(f.C, V3.sc(n, -f.L / 2 + (f.L * t) / vueltas)), V3.add(V3.sc(pl.e1, f.R * Math.cos(2 * Math.PI * t * f.sentido)), V3.sc(pl.e2, f.R * Math.sin(2 * Math.PI * t * f.sentido))))); }
       ctx.globalAlpha = 0.8; polilinea(pts, color, 1.2, false); ctx.globalAlpha = 1;
+    } else if (f.tipo === 'rectangular') {
+      const v = Magneto.esquinas(f), pts = [];
+      for (let q = 0; q < 4; q++) for (let k = 0; k <= 20; k++) pts.push(V3.add(v[q], V3.sc(V3.sub(v[(q + 1) % 4], v[q]), k / 20)));
+      polilinea(f.k >= 0 ? pts : pts.reverse(), color);
+    } else if (f.tipo === 'cilindro') {
+      const uh = V3.unit(f.u);
+      if (V3.norm(V3.cross(uh, nrm)) < 1e-9) {
+        // corte transversal: anillo o círculo relleno, con ⊙ o ⊗ en el centro de la parte con corriente
+        const [x, y] = aPant(f.C), r2 = f.R2 * vista.s, r1 = f.R1 * vista.s, sal = V3.dot(uh, fuera()) * f.k > 0;
+        ctx.fillStyle = color; ctx.globalAlpha = 0.16; ctx.beginPath(); ctx.arc(x, y, r2, 0, 2 * Math.PI); if (r1 > 0) { ctx.moveTo(x + r1, y); ctx.arc(x, y, r1, 0, 2 * Math.PI); } ctx.fill('evenodd'); ctx.globalAlpha = 1;
+        ctx.strokeStyle = color; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, y, r2, 0, 2 * Math.PI); ctx.stroke(); if (r1 > 0) { ctx.beginPath(); ctx.arc(x, y, r1, 0, 2 * Math.PI); ctx.stroke(); }
+        if (r1 > 0) for (const a of [0, Math.PI / 2, Math.PI, 1.5 * Math.PI]) simboloNormal(x + ((r1 + r2) / 2) * Math.cos(a), y + ((r1 + r2) / 2) * Math.sin(a), sal, 6, color, 1.5);
+        else simboloNormal(x, y, sal, 8, color, 2);
+      } else {
+        // de lado: banda con la corriente a lo largo del eje
+        const lat = V3.unit(V3.cross(nrm, uh));
+        for (const sg of [1, -1]) for (const R of [f.R1, f.R2]) if (R > 0) { const o = V3.sc(lat, sg * R); polilinea([V3.add(f.C, V3.add(o, V3.sc(uh, -lejos))), V3.add(f.C, V3.add(o, V3.sc(uh, lejos)))], color, 1.2, false); }
+        recta(f.C, f.u, -lejos, lejos);
+      }
+    } else if (f.tipo === 'lamina') {
+      const n = Magneto.EJES[f.eje];
+      if (V3.norm(V3.cross(n, nrm)) < 1e-9) {
+        // la lámina es el plano de la vista: sombreado con flechas de K
+        ctx.fillStyle = color; ctx.globalAlpha = 0.08; ctx.fillRect(0, 0, W, H); ctx.globalAlpha = 1;
+        const [i, j] = ejes(), a = Math.atan2(f.u[j], f.u[i]);
+        for (let y = 40; y < H; y += 80) for (let x = 40; x < W; x += 110) flecha(x, y, a, 26, color, 1.6);
+      } else {
+        const t = V3.unit(V3.cross(n, nrm)), uh = V3.unit(V3.sub(f.u, V3.sc(n, V3.dot(f.u, n))));
+        ctx.lineWidth = 3; polilinea([V3.add(f.C, V3.sc(t, -lejos)), V3.add(f.C, V3.sc(t, lejos))], color, 3, false);
+        if (Math.abs(V3.dot(uh, t)) > 0.5) recta(f.C, V3.sc(t, Math.sign(V3.dot(uh, t))), -lejos, lejos);
+        else { const sal = V3.dot(uh, fuera()) * f.k > 0; for (let k = -6; k <= 6; k++) { const [x, y] = aPant(V3.add(f.C, V3.sc(t, (k * 70) / vista.s))); simboloNormal(x, y, sal, 6, color, 1.5); } }
+      }
+    } else if (f.tipo === 'disco') {
+      const pl = PLANOS[f.plano];
+      ctx.fillStyle = color; ctx.globalAlpha = 0.12; const pts = circ(f.C, pl, f.R, 0, 2 * Math.PI).map(aPant); ctx.beginPath(); pts.forEach((p, k) => (k ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]))); ctx.fill(); ctx.globalAlpha = 1;
+      polilinea(circ(f.C, pl, f.R, 0, 2 * Math.PI * f.sentido * Math.sign(f.k || 1)), color, 1.6, true);
+      polilinea(circ(f.C, pl, f.R * 0.55, 0, 2 * Math.PI * f.sentido * Math.sign(f.k || 1)), color, 1, true);
     } else if (f.tipo === 'toroide') {
       const pl = PLANOS[f.plano];
       for (const R of [f.R1, f.R2]) polilinea(circ(f.C, pl, R, 0, 2 * Math.PI), color, 1.5, false);
       polilinea(circ(f.C, pl, (f.R1 + f.R2) / 2, 0, 2 * Math.PI * f.sentido), color, 1, true);
     }
+  }
+  // campo en una rejilla de la pantalla (se reutiliza mientras no cambie nada)
+  let cacheR = null;
+  function rejilla() {
+    const gs = 10, nx = Math.ceil(W / gs) + 1, ny = Math.ceil(H / gs) + 1, clave = JSON.stringify([out.fuentes, esc.vista.plano, corte(), W, H, vista]);
+    if (cacheR && cacheR.clave === clave) return cacheR;
+    const [i, j] = ejes(), bx = new Float32Array(nx * ny), by = new Float32Array(nx * ny), m = new Float32Array(nx * ny);
+    for (let iy = 0; iy < ny; iy++) for (let ix = 0; ix < nx; ix++) {
+      const B = Magneto.campoRapido(out.fuentes, aMundo(ix * gs, iy * gs)), k = iy * nx + ix, M = V3.norm(B);
+      if (!isFinite(M)) continue;
+      bx[k] = B[i]; by[k] = B[j]; m[k] = M;
+    }
+    cacheR = { clave, gs, nx, ny, bx, by, m };
+    return cacheR;
+  }
+  const rgb = (c) => { const g = document.createElement('canvas').getContext('2d'); g.fillStyle = c; const x = g.fillStyle; return x[0] === '#' ? [1, 3, 5].map((k) => parseInt(x.slice(k, k + 2), 16)) : (x.match(/\d+/g) || [0, 0, 0]).slice(0, 3).map(Number); };
+  // mapa de color de |B| en escala logarítmica
+  function mapaColor(R, color) {
+    const val = Array.from(R.m).filter((x) => x > 0).sort((a, b) => a - b);
+    if (!val.length) return;
+    const lo = Math.log(val[Math.floor(val.length * 0.05)]), hi = Math.log(val[Math.floor(val.length * 0.98)]), [r, g, b] = rgb(color);
+    const off = document.createElement('canvas'); off.width = R.nx; off.height = R.ny;
+    const oc = off.getContext('2d'), img = oc.createImageData(R.nx, R.ny);
+    for (let k = 0; k < R.m.length; k++) {
+      const t = R.m[k] > 0 && hi > lo ? Math.min(1, Math.max(0, (Math.log(R.m[k]) - lo) / (hi - lo))) : 0;
+      img.data[4 * k] = r; img.data[4 * k + 1] = g; img.data[4 * k + 2] = b; img.data[4 * k + 3] = Math.round(150 * t);
+    }
+    oc.putImageData(img, 0, 0);
+    ctx.imageSmoothingEnabled = true; ctx.drawImage(off, -R.gs / 2, -R.gs / 2, R.nx * R.gs, R.ny * R.gs);
+  }
+  // dirección del campo en el plano por interpolación bilineal en la rejilla
+  function dirEn(R, x, y) {
+    const fx = x / R.gs, fy = y / R.gs, ix = Math.floor(fx), iy = Math.floor(fy);
+    if (ix < 0 || iy < 0 || ix >= R.nx - 1 || iy >= R.ny - 1) return null;
+    const tx = fx - ix, ty = fy - iy, k = iy * R.nx + ix, w = [(1 - tx) * (1 - ty), tx * (1 - ty), (1 - tx) * ty, tx * ty], ks = [k, k + 1, k + R.nx, k + R.nx + 1];
+    let bx = 0, by = 0, M = 0;
+    ks.forEach((q, n) => { bx += w[n] * R.bx[q]; by += w[n] * R.by[q]; M += w[n] * R.m[q]; });
+    const p = Math.hypot(bx, by);
+    // sin campo en el plano (perpendicular a la vista o nulo): la línea se corta
+    if (!(p > 0.25 * M) || !(p > 0)) return null;
+    return [bx / p, -by / p];
+  }
+  // líneas de campo repartidas con separación parecida (proyección en el plano de la vista)
+  function lineasCampo(R, color) {
+    const sep = 26, cw = sep / 2, cx = Math.ceil(W / cw), cy = Math.ceil(H / cw), ocup = new Uint8Array(cx * cy), paso = 2.5;
+    const celda = (x, y) => (x < 0 || y < 0 || x >= W || y >= H ? -1 : Math.floor(y / cw) * cx + Math.floor(x / cw));
+    const libre = (x, y) => { const c = celda(x, y); if (c < 0) return false; const gx = c % cx, gy = Math.floor(c / cx); for (let a = -1; a <= 1; a++) for (let b = -1; b <= 1; b++) { const X = gx + a, Y = gy + b; if (X >= 0 && Y >= 0 && X < cx && Y < cy && ocup[Y * cx + X]) return false; } return true; };
+    const sigue = (x0, y0, sg) => {
+      const pts = []; let x = x0, y = y0;
+      for (let n = 0; n < 900; n++) {
+        const d1 = dirEn(R, x, y); if (!d1) break;
+        const xm = x + sg * d1[0] * paso / 2, ym = y + sg * d1[1] * paso / 2, d2 = dirEn(R, xm, ym); if (!d2) break;
+        x += sg * d2[0] * paso; y += sg * d2[1] * paso;
+        if (n > 4 && !libre(x, y)) break;
+        pts.push([x, y]);
+        if (n > 30 && Math.hypot(x - x0, y - y0) < paso * 1.5) { pts.push([x0, y0]); break; }
+      }
+      return pts;
+    };
+    ctx.strokeStyle = ctx.fillStyle = color; ctx.lineWidth = 1.3; ctx.globalAlpha = 0.85;
+    for (let gy = 0; gy < cy; gy += 2) for (let gx = 0; gx < cx; gx += 2) {
+      const x0 = (gx + 1) * cw, y0 = (gy + 1) * cw;
+      if (!libre(x0, y0) || !dirEn(R, x0, y0)) continue;
+      const atras = sigue(x0, y0, -1).reverse(), linea = [...atras, [x0, y0], ...sigue(x0, y0, 1)];
+      if (linea.length < 8) continue;
+      for (const [x, y] of linea) { const c = celda(x, y); if (c >= 0) ocup[c] = 1; }
+      ctx.beginPath(); linea.forEach(([x, y], k) => (k ? ctx.lineTo(x, y) : ctx.moveTo(x, y))); ctx.stroke();
+      const k = Math.floor(linea.length / 2), [xa, ya] = linea[k - 1], [xb, yb] = linea[k + 1] || linea[k];
+      flecha(xa, ya, Math.atan2(-(yb - ya), xb - xa), 8, color, 1.3, 6);
+    }
+    ctx.globalAlpha = 1;
   }
   function dibuja() {
     if (!W) return;
@@ -247,6 +358,11 @@
     ctx.fillStyle = C.muted; ctx.font = 'italic 13px "STIX Two Text", serif';
     ctx.fillText('xyz'[i].toUpperCase(), W - 14, oy - 6); ctx.fillText('xyz'[j].toUpperCase(), ox + 6, 14);
     if (!out) return;
+    if ((esc.vista.mapa || esc.vista.lineas) && out.fuentes.length) {
+      const R = rejilla();
+      if (esc.vista.mapa) mapaColor(R, C.neg);
+      if (esc.vista.lineas) lineasCampo(R, C.field);
+    }
     // campo: flechas normalizadas, más opacas donde el campo es más intenso
     if (esc.vista.flechas !== false && out.fuentes.length) {
       const n = Math.max(14, Math.min(34, Math.round(W / 34))), dx = W / n, mags = [], arr = [], sal = fuera();
@@ -271,6 +387,7 @@
     marcas = [];
     out.results.forEach((r, k) => {
       if (!r.P) return;
+      if (r.Q) { const [x1, y1] = aPant(r.P), [x2, y2] = aPant(r.Q); ctx.strokeStyle = C.mark; ctx.lineWidth = 1.5; ctx.setLineDash([6, 4]); ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle = C.mark; ctx.beginPath(); ctx.arc(x2, y2, 4, 0, 2 * Math.PI); ctx.fill(); ctx.font = '600 12px "IBM Plex Sans", sans-serif'; ctx.fillText('Q', x2 + 8, y2 + 16); }
       const [x, y] = aPant(r.P);
       const B = Object.values(r.vp || {}).reduce((a, b) => V3.add(a, b), [0, 0, 0]), m = Math.hypot(B[i], B[j]);
       const normal = !(m > 0.3 * V3.norm(B)) && V3.norm(B) > 0;
@@ -309,6 +426,8 @@
   $('#plano').addEventListener('change', (e) => { esc.vista.plano = e.target.value; editor(); encuadra(); recalcula(); });
   $('#corte').addEventListener('input', (e) => { esc.vista.corte = e.target.value; recalcula(); });
   $('#flechas').addEventListener('change', (e) => { esc.vista.flechas = e.target.checked; recalcula(); });
+  $('#mapa').addEventListener('change', (e) => { esc.vista.mapa = e.target.checked; recalcula(); });
+  $('#lineas').addEventListener('change', (e) => { esc.vista.lineas = e.target.checked; recalcula(); });
   $('#nuevo').addEventListener('click', () => { esc = vacia(); esc.fuentes.push(valida({ fuentes: [{ tipo: 'hilo' }] }).fuentes[0]); esc.preguntas.push({ id: newId(), tipo: 'B', P: ['1', '0', '0'] }); editor(); encuadra(); recalcula(); });
   $('#guardar').addEventListener('click', () => {
     const datos = { formato: FORMATO, version: 1, problema: esc };

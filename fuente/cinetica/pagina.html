@@ -14,7 +14,9 @@
 #grafica { height: clamp(240px, 32vw, 330px) }
 .exps { display: grid; gap: 5px }
 .exp { display: grid; grid-template-columns: 28px repeat(3, minmax(0, 1fr)) 30px; gap: 5px; align-items: center; font-size: 13px }
-.exp.sinB { grid-template-columns: 28px repeat(2, minmax(0, 1fr)) 30px }
+.exp.r1 { grid-template-columns: 28px repeat(2, minmax(0, 1fr)) 30px }
+.exp.r3 { grid-template-columns: 24px repeat(4, minmax(0, 1fr)) 30px }
+#resumen .aviso b { font: 400 13.5px/1.45 var(--f-ui); color: var(--ink) }
 .exp.cab { color: var(--muted); font-size: 12px } .exp.cab small { font-size: 10.5px }
 .exp .quita { padding: 3px 8px }
 .vistas { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap }
@@ -46,18 +48,22 @@
 <section class="teoria">
   <h2>Velocidad de reacción y orden</h2>
   <p class="m">Para una reacción $aA + bB → productos$, la velocidad es lo que cambia la concentración por unidad de tiempo, $v = −{1}/{a} {d[A]}/{dt}$, y la ley de velocidad se escribe $v = k [A]^m [B]^n$. Los órdenes m y n se miden en el laboratorio: no tienen por qué coincidir con los coeficientes de la reacción. El orden total es m + n, y las unidades de k dependen de él.</p>
+  <p class="m">Ojo con el coeficiente: si la reacción es $2A → productos$ y $v = k [A]^n$, A desaparece el doble de rápido, $−{d[A]}/{dt} = 2k [A]^n$, y en las leyes integradas va $k_A = 2k$. Muchos libros y problemas llaman k directamente a $k_A$: hay que mirar cómo está definida.</p>
   <h2>Leyes integradas</h2>
   <ul>
     <li class="m">Orden 0: $[A] = [A]_0 − k t$, recta de [A] frente a t, y $t_{1/2} = [A]_0/(2k)$.</li>
     <li class="m">Orden 1: $ln [A] = ln [A]_0 − k t$, o $[A] = [A]_0 e^{−kt}$; recta de ln [A] frente a t, y $t_{1/2} = {ln 2}/{k}$, que no depende de la concentración.</li>
     <li class="m">Orden 2: ${1}/{[A]} = {1}/{[A]_0} + k t$, recta de 1/[A] frente a t, y $t_{1/2} = {1}/{k [A]_0}$.</li>
   </ul>
-  <p>Por eso, con una tabla de concentraciones frente al tiempo, se prueba cuál de las tres gráficas sale recta: esa da el orden, y su pendiente, la constante.</p>
+  <p>Por eso, con una tabla de concentraciones frente al tiempo, se prueba cuál de las tres gráficas sale recta: esa da el orden, y su pendiente, la constante. Si las medidas solo llegan hasta que ha reaccionado poco, las tres rectas se parecen mucho y el R² no basta para decidir.</p>
+  <p class="m">La constante también sale de la vida media (en orden 1, $k = {ln 2}/{t_{1/2}}$), del porcentaje que ha reaccionado en un tiempo o de dos medidas cualesquiera, despejándola de la ley integrada.</p>
   <h2>Método de las velocidades iniciales</h2>
   <p class="m">Se hacen varios experimentos cambiando la concentración de un reactivo y dejando las demás iguales. Al dividir sus velocidades se va k: si al doblar [A] la velocidad se multiplica por 4, $4 = 2^m$ y $m = 2$.</p>
   <h2>Ecuación de Arrhenius</h2>
   <p class="f m">$k = A e^{−E_a/(RT)}$, &ensp; $ln {k_2}/{k_1} = −{E_a}/{R} ({1}/{T_2} − {1}/{T_1})$</p>
-  <p>La energía de activación Eₐ es la barrera que tienen que superar las moléculas al chocar, y A, el factor de frecuencia, tiene que ver con cuántos choques hay y con qué orientación. Al calentar hay muchas más moléculas con energía suficiente y k crece muy deprisa; un catalizador baja Eₐ. Para el equilibrio y el pH de las disoluciones usa <a href="../ph/">pH y valoraciones</a>.</p>
+  <p>La energía de activación Eₐ es la barrera que tienen que superar las moléculas al chocar, y A, el factor de frecuencia, tiene que ver con cuántos choques hay y con qué orientación. Al calentar hay muchas más moléculas con energía suficiente y k crece muy deprisa; un catalizador baja Eₐ. Con varias temperaturas, ln k frente a 1/T es una recta de pendiente −Eₐ/R y ordenada ln A, y se ajusta por mínimos cuadrados.</p>
+  <h2>Diagrama de energía y catalizadores</h2>
+  <p class="m">El diagrama de energía va de los reactivos a los productos pasando por el estado de transición: la altura del pico sobre los reactivos es Eₐ y la diferencia entre productos y reactivos, ΔH. La reacción inversa tiene que subir desde los productos: $E_{a,inv} = E_a − ΔH$. Un catalizador abre otro camino con un pico más bajo; si A no cambia, $k_{cat}/k = e^{(E_a − E_{a,cat})/(RT)}$. No cambia ΔH ni la constante de equilibrio. Para el equilibrio y el pH de las disoluciones usa <a href="../ph/">pH y valoraciones</a>.</p>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Cinética química <span id="ver"></span> (beta)</footer>

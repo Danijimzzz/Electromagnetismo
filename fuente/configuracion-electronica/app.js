@@ -11,13 +11,25 @@
   const cargaTxt = (q) => (q ? `<sup>${Math.abs(q) > 1 ? Math.abs(q) : ''}${q > 0 ? '+' : '−'}</sup>` : '');
 
   const entrada = $('#entrada');
-  let inicial = 'Fe';
-  try { inicial = localStorage.getItem(CLAVE) || inicial; } catch (e) {}
-  if (location.hash.length > 1) inicial = decodeURIComponent(location.hash.slice(1));
-  entrada.value = inicial;
-  $('#chips').innerHTML = C.ejemplos.map((x) => `<button class="chip" type="button" data-x="${esc(x)}">${esc(x)}</button>`).join('');
-  $('#chips').addEventListener('click', (e) => { const b = e.target.closest('.chip'); if (b) { entrada.value = b.dataset.x; muestra(); } });
-  entrada.addEventListener('input', muestra);
+  // estado: la pestaña y lo escrito en cada una (antes solo se guardaba el texto del elemento)
+  let st = { tab: 'el', entrada: 'Fe', conf: '[Ar] 4s2 3d5', nq: { n: '3', l: '2', ml: '-2', ms: '+1/2' } };
+  try { const g = localStorage.getItem(CLAVE); if (g) { let o = null; try { o = JSON.parse(g); } catch (e) {} st = o && typeof o === 'object' ? { ...st, ...o } : { ...st, entrada: g }; } } catch (e) {}
+  // #Fe en la dirección (lo usa el botón de la tabla periódica), y se quita para que al recargar mande lo guardado: abre ese elemento
+  if (location.hash.length > 1) { st.entrada = decodeURIComponent(location.hash.slice(1)); st.tab = 'el'; try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* file:// */ } }
+  const guarda = () => { try { localStorage.setItem(CLAVE, JSON.stringify(st)); } catch (e) {} };
+  entrada.value = st.entrada;
+  const sel = $('#ejemplos');
+  sel.innerHTML = '<option value="">Ejemplos…</option>' + C.ejemplos.map((x) => `<option value="${esc(x)}">${esc(x)}</option>`).join('');
+  sel.addEventListener('change', () => { if (sel.value) { pestana('el'); entrada.value = sel.value; muestra(); } });
+  entrada.addEventListener('input', () => { sel.value = ''; muestra(); });
+
+  /* ---------- Pestañas ---------- */
+  function pestana(t) {
+    st.tab = t;
+    for (const k of ['el', 'conf', 'nq']) { $('#tab-' + k).setAttribute('aria-selected', t === k); $('#s-' + k).hidden = t !== k; }
+    guarda();
+  }
+  for (const k of ['el', 'conf', 'nq']) $('#tab-' + k).addEventListener('click', () => pestana(k));
   addEventListener('hashchange', () => { if (location.hash.length > 1) { entrada.value = decodeURIComponent(location.hash.slice(1)); muestra(); } });
 
   function muestra() {
@@ -25,7 +37,7 @@
     let r;
     try { r = C.analizar(entrada.value); } catch (e) { err.textContent = e.message; err.hidden = false; return; }
     err.hidden = true;
-    try { localStorage.setItem(CLAVE, entrada.value); } catch (e) {}
+    st.entrada = entrada.value; guarda();
     history.replaceState(null, '', '#' + encodeURIComponent(entrada.value.trim()));
     const el = r.el, q = r.carga;
     $('#z').textContent = el.Z;
@@ -38,6 +50,12 @@
     $('#capas').textContent = r.capas.map((k, i) => `${CAPAS[i]} (n = ${i + 1}): ${k}`).join(' · ');
     $('#valencia').textContent = `n = ${r.capaValencia}, con ${r.electronesValencia} electr${r.electronesValencia === 1 ? 'ón' : 'ones'}`;
     $('#desap').textContent = `${r.desapareados} · ${r.magnetismo}`;
+    $('#val-e').textContent = `${r.valencia.n} (${r.valencia.texto})`;
+    const sl = r.slater, coma = (x) => String(+x.toFixed(2)).replace('.', ',');
+    $('#zef').innerHTML = sl ? `Z<sub>ef</sub> = ${coma(sl.Zef)} para un electrón ${sl.orbital}` : '—';
+    $('#slater').innerHTML = sl ? `Para un electrón ${sl.orbital}: S = ${sl.partes.join(' + ') || '0'} = ${coma(sl.S)}, &nbsp; Z<sub>ef</sub> = Z − S = ${el.Z} − ${coma(sl.S)} = <b>${coma(sl.Zef)}</b>` : '';
+    $('#iso').innerHTML = [...r.isoelectronicos].sort((a, b) => a.Z - b.Z).map((x) => `<span class="${x.Z === el.Z && x.carga === q ? 'yo' : ''}">${x.simbolo}${cargaTxt(x.carga)}<small>Z<sub>ef</sub> ${coma(x.zef)}</small></span>`).join('');
+    $('#tabla-nq').innerHTML = r.cuanticos.length ? `<thead><tr><th>Orbital</th><th>n</th><th>l</th><th>m<sub>l</sub></th><th>s</th></tr></thead><tbody>${r.cuanticos.map((c) => `<tr><td>${c.orbital}</td><td>${c.n}</td><td>${c.l}</td><td>${String(c.ml).replace('-', '−')}</td><td>${c.ms}</td></tr>`).join('')}</tbody>` : '<tbody><tr><td>Sin electrones de valencia</td></tr></tbody>';
     const ex = $('#excepcion');
     ex.hidden = !r.excepcion;
     if (r.excepcion) ex.innerHTML = `<b>Excepción al orden de llenado.</b> Por la regla se esperaría ${esc(r.cambio.esperada)}, pero tiene ${esc(r.cambio.real)}: ${/d[⁵]|d¹⁰|f⁷|f¹⁴/.test(r.cambio.real) ? 'un subnivel lleno o semilleno es más estable' : 'los dos subniveles tienen energías muy parecidas y la repulsión entre electrones decide el reparto'}.`;
@@ -78,7 +96,51 @@
     $('#cuanticos').innerHTML = d ? [['n', d.n, 'principal'], ['l', d.l, `secundario (${LETRA[d.l]})`], ['m<sub>l</sub>', String(d.ml).replace('-', '−'), 'magnético'], ['s', d.ms, 'espín']].map(([a, b, c]) => `<div><span>${a}</span><b>${b}</b><span>${c}</span></div>`).join('') : '';
   }
 
+  /* ---------- ¿Qué elemento es? ---------- */
+  const confTxt = $('#conf-txt');
+  confTxt.value = st.conf;
+  confTxt.addEventListener('input', () => { st.conf = confTxt.value; guarda(); identifica(); });
+  function identifica() {
+    const err = $('#error-conf');
+    let r;
+    try { r = C.identificar(confTxt.value); } catch (e) { err.textContent = e.message; err.hidden = false; $('#resumen-conf').innerHTML = ''; $('#conf-exp').innerHTML = ''; return; }
+    err.hidden = true;
+    const TIPO = { fundamental: 'Estado fundamental', excitada: 'Estado excitado', imposible: 'Imposible' };
+    $('#resumen-conf').innerHTML = `<div><span>Electrones</span><b>${r.ne}</b></div><div><span>Es</span><b>${TIPO[r.tipo]}</b></div>${r.el ? `<div><span>Elemento neutro</span><b>${r.el.nombre} (${r.el.simbolo}, Z = ${r.el.Z})</b></div>` : ''}`;
+    let h;
+    if (r.tipo === 'imposible') h = `No puede ser: ${r.problemas.join('; ')}.`;
+    else {
+      h = `Con ${r.ne} electrones, si el átomo es neutro es el <b>${r.el.nombre.toLowerCase()}</b>. `;
+      h += r.tipo === 'fundamental' ? 'Es su configuración en el estado fundamental.' : `No es su estado fundamental, ${esc(r.fundamental)}: hay electrones en subniveles más altos con huecos por debajo, así que es un <b>estado excitado</b> (se llega a él absorbiendo energía).`;
+      if (r.iones.length) h += ` La misma configuración la tiene${r.iones.length > 1 ? 'n' : ''}, en su estado fundamental, ${r.iones.map((x) => `el ion ${x.simbolo}${cargaTxt(x.carga)}`).join(', ')}.`;
+    }
+    $('#conf-exp').innerHTML = h;
+  }
+
+  /* ---------- Números cuánticos ---------- */
+  for (const k of ['n', 'l', 'ml', 'ms']) { const x = $('#nq-' + k); x.value = st.nq[k] ?? ''; x.addEventListener('input', () => { st.nq[k] = x.value; guarda(); nq(); }); }
+  function nq() {
+    const r = C.cuanticos(st.nq);
+    $('#error-nq').hidden = true;
+    $('#resumen-nq').innerHTML = `<div><span>¿Está permitido?</span><b>${r.valido ? 'Sí' : 'No'}</b></div>${r.valido ? `<div><span>Orbital</span><b>${r.orbital}</b></div>` : ''}${r.maximo ? `<div><span>Electrones en la capa n = ${r.n}</span><b>${r.maximo}</b></div>` : ''}`;
+    $('#nq-exp').innerHTML = r.valido ? `Es un electrón de un orbital ${r.orbital} (n = ${r.n}, l = ${r.l}: subnivel ${'spdfghik'[r.l]}), en el orbital de m<sub>l</sub> = ${String(r.ml).replace('-', '−')} y con espín ${r.ms > 0 ? '+½' : '−½'}. El subnivel tiene ${2 * r.l + 1} orbital${r.l ? 'es' : ''} y caben ${2 * (2 * r.l + 1)} electrones.` : `No es posible: ${r.fallos.join('; ')}.`;
+  }
+
+  /* ---------- Modo práctica ---------- */
+  const toma = (xs) => xs[Math.floor(Math.random() * xs.length)];
+  function azar() {
+    if (st.tab === 'conf') {
+      const Z = 3 + Math.floor(Math.random() * 34), c = Elementos.configuracion(Z).map((o) => ({ ...o }));
+      // a veces un estado excitado: un electrón del último subnivel sube al siguiente
+      if (Math.random() < 0.4) { const u = c[c.length - 1]; u.e--; c.push({ nombre: C.ORDEN[C.ORDEN.indexOf(u.nombre) + 1], e: 1 }); }
+      confTxt.value = st.conf = c.filter((o) => o.e > 0).map((o) => o.nombre + o.e).join(' '); guarda(); identifica(); return;
+    }
+    if (st.tab === 'nq') return; // sin números que calcular
+    pestana('el'); entrada.value = String(1 + Math.floor(Math.random() * 56)); muestra();
+  }
+  const enunciado = () => (st.tab === 'conf' ? `¿Cuántos electrones tiene la configuración <b>${esc(confTxt.value)}</b> y de qué elemento neutro es? ¿Es su estado fundamental?` : null);
+
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('configuracion-electronica').current;
-  muestra();
-  window.ConfigApp = { muestra: (x) => { entrada.value = x; muestra(); } };
+  muestra(); identifica(); nq(); pestana(st.tab);
+  window.ConfigApp = { muestra: (x) => { pestana('el'); entrada.value = x; muestra(); }, identifica: (x) => { pestana('conf'); confTxt.value = st.conf = x; identifica(); }, cuanticos: (o) => { pestana('nq'); Object.assign(st.nq, o); for (const k of ['n', 'l', 'ml', 'ms']) $('#nq-' + k).value = st.nq[k]; nq(); }, pestana, azar, enunciado, estado: () => st };
 })();

@@ -36,12 +36,23 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     cerca(ca.p2, 4e5 + 500 * (v1 * v1 - 16 * v1 * v1) - 1000 * 9.8 * 6, 1e-6, 'Bernoulli subiendo 6 m');
     const de = r('deposito');
     cerca(de.v, Math.sqrt(2 * 9.8 * 2), 1e-12, 'Torricelli: velocidad'); cerca(de.x, 2 * Math.sqrt(2), 1e-12, 'Torricelli: alcance'); cerca(de.tv, 2500 * Math.sqrt(4 / 9.8), 1e-9, 'Torricelli: tiempo de vaciado');
+    // viscosidad: Poiseuille Q = π r⁴ Δp/(8ηL) y Stokes v = 2r²Δρg/(9η)
+    cerca(r('sangre').Q, (Math.PI * 2e-3 ** 4 * 400) / (8 * 4e-3 * 0.1), 1e-15, 'caudal de Poiseuille'); cerca(r('sangre').vmax, 2 * r('sangre').vm, 1e-15, 'v máx = 2 v media');
+    cerca(r('jeringa').dp, (0.5e-6 * 8 * 1e-3 * 0.04) / (Math.PI * 2.5e-4 ** 4), 1e-6, 'Δp en la aguja');
+    cerca(r('glicerina').v, (2 * 1e-6 * 6540 * 9.8) / (9 * 1.5), 1e-12, 'velocidad límite de Stokes'); cerca(r('viscosimetro').eta, (2 * 2.25e-6 * 6900 * 9.8) / (9 * 0.12), 1e-12, 'viscosidad con la bola');
+    // Pitot: Δp = (1000 − 1,2)·9,8·0,25; Venturi con mercurio: Δp = 12600·9,8·0,04, (A₁/A₂)² = 16
+    cerca(r('pitot').v, Math.sqrt((2 * 998.8 * 9.8 * 0.25) / 1.2), 1e-9, 'velocidad del Pitot');
+    cerca(r('venturimetro').v1, Math.sqrt((2 * 12600 * 9.8 * 0.04) / (1000 * 15)), 1e-12, 'velocidad en el Venturi');
+    // presa: F = ½ρgbH², a 2H/3; compuerta de 2 m desde 3 m: F = ρg·4·3, y_P = 4 + 4/48
+    const pr = r('presa'); cerca(pr.F, 0.5 * 1000 * 9.8 * 50 * 400, 1e-6, 'fuerza sobre la presa'); cerca(pr.yc, 40 / 3, 1e-12, 'centro de presiones de la presa'); cerca(pr.M, pr.F * 20 / 3, 1e-3, 'momento en la base');
+    cerca(r('compuerta').F, 1000 * 9.8 * 4 * 3, 1e-6, 'fuerza sobre la compuerta'); cerca(r('compuerta').yc, 4 + 4 / 48, 1e-12, 'centro de presiones de la compuerta');
+    cerca(r('capilar').h, (2 * 0.073) / (1000 * 9.8 * 5e-4), 1e-12, 'ley de Jurin'); if (!(r('mercurio').h < 0)) mal('Fluidos: el mercurio no baja en el capilar');
     if (FluidosF.f(302225) !== '3,022·10<sup>5</sup>') mal(`Fluidos: 302225 Pa sale «${FluidosF.f(302225)}»`);
-    for (const [sc, q] of [[{ modo: 'tuboU', rho1: '1000', rho2: '13600', h2: '0.1' }, 'líquido añadido más denso'], [{ modo: 'tuboU', buscar: 'densidad', rho1: '1000', h1: '0.2', h2: '0.1' }, 'columna añadida más baja'], [{ modo: 'prensa', F1: '10', d1: '20', d2: '5' }, 'émbolo grande más estrecho'], [{ modo: 'empuje', datos: 'pesadas', P: '5', Pa: '6', rhoF: '1000' }, 'pesa más dentro del agua'], [{ modo: 'torricelli', H: '2', D: '1' }, 'depósito sin agujero'], [{ modo: 'presion', rho: '1000', h: '-3' }, 'profundidad negativa'], [{ modo: 'bernoulli', rho: '1000', d1: '10', d2: '5', v1: '2' }, 'sin la presión en 1']]) {
+    for (const [sc, q] of [[{ modo: 'tuboU', rho1: '1000', rho2: '13600', h2: '0.1' }, 'líquido añadido más denso'], [{ modo: 'tuboU', buscar: 'densidad', rho1: '1000', h1: '0.2', h2: '0.1' }, 'columna añadida más baja'], [{ modo: 'prensa', F1: '10', d1: '20', d2: '5' }, 'émbolo grande más estrecho'], [{ modo: 'empuje', datos: 'pesadas', P: '5', Pa: '6', rhoF: '1000' }, 'pesa más dentro del agua'], [{ modo: 'torricelli', H: '2', D: '1' }, 'depósito sin agujero'], [{ modo: 'presion', rho: '1000', h: '-3' }, 'profundidad negativa'], [{ modo: 'bernoulli', rho: '1000', d1: '10', d2: '5', v1: '2' }, 'sin la presión en 1'], [{ modo: 'viscosidad', tipo: 'stokes', r: '1', rhoE: '800', rhoF: '1000', eta: '1' }, 'esfera menos densa que el fluido'], [{ modo: 'medidor', tipo: 'venturi', rhoF: '1000', rhoM: '13600', dh: '4', d1: '5', d2: '10' }, 'Venturi que se ensancha'], [{ modo: 'medidor', tipo: 'pitot', rhoF: '1000', rhoM: '800', dh: '4' }, 'manómetro menos denso'], [{ modo: 'capilar', gamma: '0,07', r: '1', rho: '1000', theta: '200' }, 'ángulo de contacto mayor que 180°']]) {
       let ok = false; try { FluidosF.resolver(sc); } catch (e) { ok = true; }
       if (!ok) mal(`Fluidos: ${q} no da error`);
     }
-    if (fallos === antes) console.log(`  ✓ Fluidos: ${FluidosF.ejemplos.length} ejemplos, presión, tubo en U, prensa, Arquímedes, Bernoulli, Torricelli y errores`);
+    if (fallos === antes) console.log(`  ✓ Fluidos: ${FluidosF.ejemplos.length} ejemplos, presión, tubo en U, prensa, Arquímedes, Bernoulli, Torricelli, Poiseuille, Stokes, Pitot, Venturi, presas, capilaridad y errores`);
   }
 
   return async (browser) => {
@@ -67,12 +78,16 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       await page.selectOption('#f-modo', 'empuje');
       await page.selectOption('#f-datos', 'pesadas');
       if ((await page.locator('#f-Pa').count()) !== 1 || !(await page.locator('#error').isHidden())) mal('Fluidos: al elegir las pesadas no pide el peso en el fluido o da error');
+      for (let i = 0; i < 14; i++) {
+        const q = await page.evaluate(() => { FluidosApp.azar(); return { err: !document.querySelector('#error').hidden, msg: document.querySelector('#error').textContent, en: FluidosApp.enunciado(), res: document.querySelectorAll('#resumen > div').length }; });
+        if (q.err || q.res < 2 || /undefined|NaN/.test(q.en)) mal(`Fluidos: el ejercicio al azar falla («${q.en}» ${q.msg})`);
+      }
       await page.selectOption('#f-modo', 'bernoulli');
       await page.waitForTimeout(300);
       await page.click('#play');
       await page.close();
       if (consola.length) mal('Fluidos: consola del navegador:\n      ' + consola.join('\n      '));
-      if (fallos === antes) console.log(`  ✓ Fluidos: ${FluidosF.ejemplos.length} ejemplos con MathML, cambio de datos y errores sin errores de consola`);
+      if (fallos === antes) console.log(`  ✓ Fluidos: ${FluidosF.ejemplos.length} ejemplos con MathML, práctica al azar, cambio de datos y errores sin errores de consola`);
     }
   };
 };

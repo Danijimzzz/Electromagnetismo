@@ -24,15 +24,28 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     const i2 = r('iniciales-2'); if (i2.oA !== 2 || i2.oB !== 1 || i2.ley !== 'v = 25 [A]^{2} [B]') mal(`Cinética: 2 NO + O₂ sale «${i2.ley}»`); cerca(i2.k, 25, 1e-9, 'k de 2 NO + O₂');
     const i3 = r('iniciales-3'); if (i3.oA !== 1 || i3.oB !== 2) mal('Cinética: el ejemplo de órdenes 1 y 2 no sale'); if (r('iniciales-1').oA !== 1) mal('Cinética: el ejemplo de un reactivo no sale de orden 1');
     if (i2.unidad !== 'L²·mol⁻²·s⁻¹') mal(`Cinética: unidades de k de orden 3 «${i2.unidad}»`);
+    // coeficiente de A y k a partir de otros datos
+    const c2 = r('coef-2'); cerca(c2.kA, 0.54, 1e-12, 'k_A = 2k'); cerca(c2.A, p2.A, 1e-12, '2 A con k = 0,27 igual que A con 0,54');
+    const kv = r('k-vida-media'); cerca(kv.k, Math.LN2 / 5730, 1e-12, 'k del C-14'); cerca(kv.A, 100 * Math.exp((-Math.LN2 / 5730) * 10000), 1e-12, 'C-14 a los 10 000 años'); cerca(kv.tC, 2 * 5730, 1e-12, 'dos vidas medias hasta el 25 %');
+    const kp = r('k-porcentaje'); cerca(kp.k, Math.log(4) / 40, 1e-12, 'k con un 75 % en 40 min'); cerca(kp.t12, 20, 1e-12, 't½ = 20 min');
+    const km = r('k-dos-medidas'); cerca(km.k, (1 / 0.04 - 1 / 0.08) / 40, 1e-12, 'k de orden 2 con dos medidas');
+    for (const n of [0, 1, 2]) { const x = CinC.orden({ n: String(n), kde: 't12', t12: '30', A0: '0,4', t: '30' }); cerca(x.A, 0.2, 1e-12, `t½ dada en orden ${n}`); }
+    // tres reactivos
+    const i4 = r('iniciales-abc'); if (i4.oA !== 1 || i4.oB !== 2 || i4.oC !== 0 || i4.ley !== 'v = 2 [A] [B]^{2}') mal(`Cinética: tres reactivos sale «${i4.ley}»`); cerca(i4.k, 2, 1e-9, 'k con tres reactivos');
+    // aviso de R² parecidos
+    if (r('datos-1').aviso) mal('Cinética: datos-1 avisa sin motivo'); if (!CinC.datos({ ts: '0 1 2 3', As: '1 0,99 0,98 0,97' }).aviso) mal('Cinética: con poco avance no avisa');
+    // Arrhenius: ajuste a varias temperaturas con datos exactos
+    { const Ts = [290, 300, 315, 330], ks = Ts.map((T) => 1e10 * Math.exp(-80000 / (8.314 * T))), x = CinC.arrhenius({ tipo: 'ajuste', uT: 'K', Ts: Ts.join(' '), ks: ks.join(' ') }); cerca(x.Ea, 80000, 1e-9, 'Ea ajustada'); cerca(x.A, 1e10, 1e-9, 'A ajustado'); cerca(x.r2, 1, 1e-12, 'R² exacto'); }
+    { const x = r('arrhenius-cat'); cerca(x.fcat, Math.exp(25000 / (8.314 * 298)), 1e-12, 'factor del catalizador'); cerca(x.Ea / 1000 - x.dH, 115, 1e-12, 'Ea inversa'); }
     // Arrhenius: Ea con dos temperaturas y vuelta atrás
     const a1 = r('arrhenius-ea'); cerca(a1.Ea, (-8.314 * Math.log(9.63e-4 / 3.46e-5)) / (1 / 328 - 1 / 298), 1e-12, 'Ea');
     const a2 = CinC.arrhenius({ tipo: 'k2', uT: 'K', Ea: String(a1.Ea / 1000), k1: '3,46e-5', T1: '298', T2: '328' }); cerca(a2.k2, 9.63e-4, 1e-9, 'k₂ de vuelta');
     const a3 = r('arrhenius-k2'); cerca(a3.k2, 0.01 * Math.exp((-50000 / 8.314) * (1 / 308.15 - 1 / 298.15)), 1e-12, 'k₂ con °C');
-    for (const [sc, q] of [[{ modo: 'orden', n: '3', k: '1', A0: '1', t: '1' }, 'orden 3'], [{ modo: 'orden', n: '1', k: '', A0: '1', t: '1' }, 'sin k'], [{ modo: 'orden', n: '1', k: '1', A0: '0,5', t: '1', C: '0,8' }, 'concentración final mayor'], [{ modo: 'datos', ts: '0 1 2', As: '1 0,5' }, 'listas de distinto tamaño'], [{ modo: 'datos', ts: '0 2 1', As: '1 0,5 0,7' }, 'tiempos desordenados'], [{ modo: 'datos', ts: '0 1 2', As: '1 0 0,5' }, 'concentración 0'], [{ modo: 'iniciales', conB: true, exps: [{ A: '0,1', B: '0,1', v: '1' }, { A: '0,2', B: '0,2', v: '4' }, { A: '0,3', B: '0,3', v: '9' }] }, 'A y B que cambian a la vez'], [{ modo: 'arrhenius', tipo: 'ea', uT: 'K', k1: '1', T1: '300', k2: '2', T2: '300' }, 'misma temperatura'], [{ modo: 'arrhenius', tipo: 'ea', uT: 'C', k1: '1', T1: '-300', k2: '2', T2: '30' }, 'bajo el cero absoluto']]) {
+    for (const [sc, q] of [[{ modo: 'orden', n: '3', k: '1', A0: '1', t: '1' }, 'orden 3'], [{ modo: 'orden', n: '1', k: '', A0: '1', t: '1' }, 'sin k'], [{ modo: 'orden', n: '1', k: '1', A0: '0,5', t: '1', C: '0,8' }, 'concentración final mayor'], [{ modo: 'datos', ts: '0 1 2', As: '1 0,5' }, 'listas de distinto tamaño'], [{ modo: 'datos', ts: '0 2 1', As: '1 0,5 0,7' }, 'tiempos desordenados'], [{ modo: 'datos', ts: '0 1 2', As: '1 0 0,5' }, 'concentración 0'], [{ modo: 'iniciales', conB: true, exps: [{ A: '0,1', B: '0,1', v: '1' }, { A: '0,2', B: '0,2', v: '4' }, { A: '0,3', B: '0,3', v: '9' }] }, 'A y B que cambian a la vez'], [{ modo: 'arrhenius', tipo: 'ea', uT: 'K', k1: '1', T1: '300', k2: '2', T2: '300' }, 'misma temperatura'], [{ modo: 'arrhenius', tipo: 'k2', uT: 'K', Ea: '50', k1: '1', T1: '300', T2: '310', Eac: '60' }, 'catalizador que sube Eₐ'], [{ modo: 'arrhenius', tipo: 'ajuste', uT: 'K', Ts: '300 310', ks: '1 2' }, 'ajuste con dos puntos'], [{ modo: 'orden', n: '1', kde: 'pct', pct: '100', tp: '10', A0: '1', t: '1' }, 'reacciona el 100 %'], [{ modo: 'orden', n: '1', kde: 'med', t1: '10', A1: '0,5', t2: '5', A2: '0,4', A0: '1', t: '1' }, 'medidas al revés'], [{ modo: 'iniciales', nr: '3', exps: [{ A: '1', B: '1', C: '1', v: '1' }, { A: '2', B: '1', C: '1', v: '2' }, { A: '1', B: '2', C: '1', v: '2' }] }, 'tres reactivos con tres experimentos'], [{ modo: 'arrhenius', tipo: 'ea', uT: 'C', k1: '1', T1: '-300', k2: '2', T2: '30' }, 'bajo el cero absoluto']]) {
       let ok = false; try { CinC.resolver(sc); } catch (e) { ok = true; }
       if (!ok) mal(`Cinética: ${q} no da error`);
     }
-    if (fallos === antes) console.log(`  ✓ Cinética química: ${CinC.ejemplos.length} ejemplos, leyes integradas y vidas medias a mano, unidades de k, orden a partir de datos, velocidades iniciales, Arrhenius de ida y vuelta y errores`);
+    if (fallos === antes) console.log(`  ✓ Cinética química: ${CinC.ejemplos.length} ejemplos, leyes integradas y vidas medias a mano, unidades de k, coeficiente de A, k de la vida media, de un % o de dos medidas, orden a partir de datos con aviso, velocidades iniciales con tres reactivos, Arrhenius de ida y vuelta, ajustado y con catalizador, y errores`);
   }
 
   return async (browser) => {
@@ -48,7 +61,7 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
         const r = await page.evaluate(() => ({ err: !document.querySelector('#error').hidden, pasos: document.querySelectorAll('#pasos li').length, mathml: document.querySelectorAll('#pasos math').length, dolar: /\$/.test(document.querySelector('#pasos').textContent + document.querySelector('#resumen').textContent), res: document.querySelectorAll('#resumen > div.num').length, modo: document.querySelector('#f-modo').value, vaso: !document.querySelector('#escena').hidden }));
         if (r.err || r.pasos < 3 || r.res < 1) mal(`Cinética · ${e.clave}: falta el resultado o el desarrollo`);
         if (!r.mathml || r.dolar) mal(`Cinética · ${e.clave}: el desarrollo no sale en MathML`);
-        if (r.modo !== e.sc.modo || r.vaso !== (e.sc.modo === 'orden' || e.sc.modo === 'datos')) mal(`Cinética · ${e.clave}: el modo o el vaso no cuadran`);
+        if (r.modo !== e.sc.modo || r.vaso !== (e.sc.modo !== 'iniciales')) mal(`Cinética · ${e.clave}: el modo o el vaso no cuadran`);
       }
       await page.evaluate(() => CineticaApp.abrirEjemplo('primer-orden'));
       if (!(await page.locator('#resumen').textContent()).includes('1359')) mal('Cinética: la vida media del N₂O₅ (1359 s) no sale en la página');
@@ -68,15 +81,25 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       if (!(await page.locator('#error').isHidden())) mal('Cinética: con el cuarto experimento bien escrito da error');
       await page.click('#campos [data-quita="3"]');
       if ((await page.locator('#campos [data-c="A"]').count()) !== 3) mal('Cinética: quitar un experimento no lo quita');
-      await page.selectOption('#f-conB', '1');
+      await page.selectOption('#f-nr', '2');
       if ((await page.locator('#campos [data-c="B"]').count()) !== 3) mal('Cinética: al pasar a dos reactivos no sale la columna de [B]');
+      await page.selectOption('#f-nr', '3');
+      if ((await page.locator('#campos [data-c="C"]').count()) !== 4) mal('Cinética: al pasar a tres reactivos no sale la columna de [C] con cuatro experimentos');
+      await page.evaluate(() => CineticaApp.abrirEjemplo('primer-orden'));
+      await page.selectOption('#f-kde', 't12'); await page.fill('#f-t12', '1359,1');
+      if (!(await page.locator('#error').isHidden()) || !(await page.locator('#resumen').textContent()).includes('5,1')) mal('Cinética: k a partir de la vida media no sale en la página');
+      await page.evaluate(() => CineticaApp.abrirEjemplo('datos-1'));
+      await page.fill('#f-ts', '0 1 2 3'); await page.fill('#f-As', '1 0,99 0,98 0,97');
+      if ((await page.locator('#resumen .aviso').count()) !== 1) mal('Cinética: con poco avance no avisa de que dos rectas se ajustan igual');
+      await page.evaluate(() => CineticaApp.abrirEjemplo('arrhenius-cat'));
+      if (!(await page.locator('#resumen').textContent()).includes('Con catalizador') || (await page.locator('#escena').isHidden())) mal('Cinética: el catalizador o el diagrama de energía no salen');
       await page.selectOption('#f-modo', 'arrhenius');
       await page.selectOption('#f-tipo', 'k2');
       if ((await page.locator('#f-Ea').count()) !== 1 || !(await page.locator('#error').isHidden())) mal('Cinética: al pedir k₂ no sale el campo de Eₐ o da error');
       for (let i = 0; i < 10; i++) { await page.evaluate(() => CineticaApp.azar()); if (!(await page.locator('#error').isHidden())) mal(`Cinética: un ejercicio al azar da error: ${JSON.stringify(await page.evaluate(() => CineticaApp.estado()))}`); }
       await page.close();
       if (consola.length) mal('Cinética: consola del navegador:\n      ' + consola.join('\n      '));
-      if (fallos === antes) console.log(`  ✓ Cinética química: ${CinC.ejemplos.length} ejemplos con MathML, cambio de orden, errores, las tres rectas, experimentos que se añaden y quitan, Arrhenius y ejercicios al azar sin errores de consola`);
+      if (fallos === antes) console.log(`  ✓ Cinética química: ${CinC.ejemplos.length} ejemplos con MathML, cambio de orden, errores, las tres rectas, experimentos que se añaden y quitan, tres reactivos, k de la vida media, aviso de R², catalizador y diagrama de energía, Arrhenius y ejercicios al azar sin errores de consola`);
     }
   };
 };

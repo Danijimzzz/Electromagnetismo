@@ -8,7 +8,7 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
   {
     // equilibrios resueltos a mano (c agua 4180, hielo 2090, vapor 2010; Lf 334 kJ/kg; Lv 2257 kJ/kg) y Σ Q = 0
     const antes = fallos, cerca = (a, b, tol = 1e-6) => Math.abs(a - b) <= tol * Math.max(1, Math.abs(b));
-    const R = Object.fromEntries(Calor.ejemplos.map((e) => [e.clave, Calor.equilibrio(e)]));
+    const R = Object.fromEntries(Calor.ejemplos.map((e) => [e.clave, Calor.resolver(e)]));
     const ESP = {
       'hielo-agua': (0.2 * 4180 * 40 - 0.05 * 2090 * 10 - 0.05 * 334e3) / (0.25 * 4180),
       'sobra-hielo': 0,
@@ -34,7 +34,27 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       { cuerpos: [{ sustancia: 'agua', m: '10', T0: '50', estado: 'solido' }, { sustancia: 'agua', m: '1', T0: '0' }] }, { cuerpos: [{ sustancia: 'agua', m: '10', T0: '-300' }, { sustancia: 'agua', m: '1', T0: '0' }] },
       { cuerpos: [{ sustancia: 'calorimetro', C: '100', T0: '20' }, { sustancia: 'calorimetro', C: '10', T0: '50' }] }];
     for (const m of malas) { let ok = false; try { Calor.equilibrio(m); } catch (e) { ok = true; } if (!ok) mal(`Calorimetría: ${JSON.stringify(m.cuerpos)} debería dar un error`); }
-    if (fallos === antes) console.log(`  ✓ Calorimetría: ${Calor.ejemplos.length} equilibrios con la temperatura esperada, Σ Q = 0, fases parciales y errores`);
+    // problemas al revés y calentador, resueltos a mano
+    const I = Object.fromEntries(Calor.ejemplos.filter((e) => e.Tfin || e.cuerpos.some((c) => c.sustancia === 'calentador')).map((e) => [e.clave, Calor.resolver(e)]));
+    const INV = {
+      'calor-especifico': (0.2 * 4180 * 4) / (0.12 * 76),
+      'cuanto-hielo': (1000 * 0.33 * 4180 * 20) / (2090 * 18 + 334e3 + 4180 * 5),
+      equivalente: (1000 * ((0.1 * 4180 * 35 - 0.2 * 4180 * 15) / 15)) / 4180,
+      hervidor: (4180 * 80) / (0.9 * 2000),
+    };
+    for (const [k, v] of Object.entries(INV)) if (!I[k].incognita || !cerca(I[k].incognita.valor, v, 1e-7)) mal(`Calorimetría · ${k}: sale ${I[k].incognita && I[k].incognita.valor}, se esperaba ${v}`);
+    if (!cerca(I.calentador.Te, (300e3 / 0.5 - 2090 * 10 - 334e3) / 4180)) mal(`Calorimetría · calentador: T_e = ${I.calentador.Te}`);
+    for (const r of Object.values(I)) if (Math.abs(r.cuerpos.reduce((s, c) => s + c.Q, 0)) > 1e-6 * r.absorbido) mal('Calorimetría: con calentador o al revés Σ Q no es 0');
+    for (const m of [{ Tfin: '20', cuerpos: [{ sustancia: 'agua', m: '?', T0: '?' }, { sustancia: 'agua', m: '1', T0: '0' }] }, { cuerpos: [{ sustancia: 'agua', m: '?', T0: '10' }, { sustancia: 'agua', m: '1', T0: '0' }] }, { Tfin: '90', cuerpos: [{ sustancia: 'agua', m: '?', T0: '10' }, { sustancia: 'agua', m: '100', T0: '50' }] }]) {
+      let ok = false; try { Calor.resolver(m); } catch (e) { ok = true; } if (!ok) mal(`Calorimetría al revés: ${JSON.stringify(m)} debería dar un error`);
+    }
+    // dilatación
+    const D = Object.fromEntries(Calor.ejemplosDil.map((e) => [e.clave, Calor.dilatacion(e.sc).res]));
+    if (!cerca(D.rail.dX, 12e-6 * 25 * 50)) mal(`Dilatación · raíl: ΔL = ${D.rail.dX}`);
+    if (!cerca(D.anillo.Tobjetivo, 20 + 0.0001 / (19e-6 * 0.0499))) mal(`Dilatación · anillo: T = ${D.anillo.Tobjetivo}`);
+    if (!cerca(D.chapa.dX, 2 * 23e-6 * 2 * 80) || !cerca(D.cubo.dX, 3 * 17e-6 * 200)) mal('Dilatación: la superficial usa 2α y la de volumen 3α');
+    if (!cerca(D.rebose.dX, (1.82e-4 - 3 * 9e-6) * 60)) mal(`Dilatación · rebose: ΔV = ${D.rebose.dX}`);
+    if (fallos === antes) console.log(`  ✓ Calorimetría: ${Calor.ejemplos.length} equilibrios con la temperatura esperada, Σ Q = 0, fases parciales, problemas al revés, calentador, dilatación y errores`);
   }
 
   return async (browser) => {
@@ -51,6 +71,18 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       }
       await page.evaluate(() => CalorApp.abrirEjemplo('hielo-agua'));
       if (!(await page.locator('#te').textContent()).includes('15,02')) mal('Calorimetría: hielo y agua no dan 15,02 °C en la página');
+      await page.evaluate(() => CalorApp.abrirEjemplo('calor-especifico'));
+      if (!(await page.locator('#te').textContent()).includes('366,7')) mal('Calorimetría: el calor específico del metal no sale 366,7 en la página');
+      for (const e of Calor.ejemplosDil) {
+        await page.evaluate((c) => CalorApp.abrirEjemploD(c), e.clave);
+        if ((await page.locator('#pasos-d li').count()) < 1 || !(await page.locator('#error-d').isHidden()) || (await page.locator('#panel-dilatacion').isHidden())) mal(`Dilatación · ${e.clave}: no aparece el desarrollo`);
+      }
+      for (let i = 0; i < 10; i++) {
+        await page.evaluate(() => CalorApp.azar());
+        const en = await page.evaluate(() => CalorApp.enunciado());
+        if (!(await page.locator('#error').isHidden()) || !(await page.locator('#error-d').isHidden()) || /undefined|NaN/.test(en)) mal(`Calorimetría · práctica: ejercicio al azar con error o sin enunciado: ${en}`);
+      }
+      await page.evaluate(() => CalorApp.abrirEjemplo('hielo-agua'));
       await page.click('#anade');
       await page.selectOption('#c2-sustancia', 'otra');
       await page.fill('#c2-cl', '1000'); await page.fill('#c2-m', '100'); await page.fill('#c2-T0', '60');

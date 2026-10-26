@@ -1,16 +1,16 @@
 <title>Fuerza magnética: Lorentz, ciclotrón, selector e hilos · SimulaCiencia</title>
-<meta name="description" content="Calculadora de la fuerza magnética en español: fuerza de Lorentz F = q v × B con vectores, radio, periodo y hélice de una carga en un campo, selector de velocidades, espectrómetro de masas, ciclotrón, fuerza sobre un hilo y entre dos hilos paralelos, con animación y paso a paso.">
+<meta name="description" content="Calculadora de la fuerza magnética en español: fuerza de Lorentz F = q v × B con vectores, radio, periodo y hélice de una carga en un campo, selector de velocidades, espectrómetro de masas, ciclotrón, cicloide en E y B cruzados, efecto Hall, par sobre una espira, fuerza sobre un hilo y entre dos hilos paralelos, con animación y paso a paso.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
 <style>
 :root {
   --ancho-valor: 190px;
-  --peso: #c2412a; --normal: #1d7a3e; --roz: #b0700a; --fuerza: #6b3fa0; --tension: #2a5db5; --cuerpo: #c9d3e0; --suelo: #8a96a3 }
+  --peso: #c2412a; --normal: #1d7a3e; --roz: #b0700a; --fuerza: #6b3fa0; --tension: #2a5db5; --cuerpo: #c9d3e0; --suelo: #8a96a3; --z1: #1f7a8c; --z2: #b0700a }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784 } }
+  --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784; --z1: #5cc4d6; --z2: #e6a640 } }
 :root[data-theme="dark"] {
-  --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784 }
+  --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784; --z1: #5cc4d6; --z2: #e6a640 }
 .tres { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px }
 .uv { font-style: normal; font-weight: 600 }
 .det { display: inline-block; vertical-align: middle; border-left: 1.4px solid currentColor; border-right: 1.4px solid currentColor; padding: 0 4px; margin: 2px 2px }
@@ -20,7 +20,7 @@
 <header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Electromagnetismo</a> / Fuerza magnética</span></header>
 <div class="wrap">
 <h1>Fuerza magnética sobre cargas y corrientes</h1>
-<p class="lead">Calcula la fuerza de Lorentz sobre una carga, con vectores o con el ángulo, el radio y el periodo de su trayectoria (circunferencia o hélice), el selector de velocidades y el espectrómetro de masas, el ciclotrón, la fuerza sobre un hilo y entre dos hilos paralelos, con animación y el desarrollo paso a paso.</p>
+<p class="lead">Calcula la fuerza de Lorentz sobre una carga, con vectores o con el ángulo, el radio y el periodo de su trayectoria (circunferencia o hélice), una carga que cruza una franja de campo, los campos E y B cruzados (cicloide), el selector de velocidades y el espectrómetro de masas con dos isótopos, el ciclotrón, el efecto Hall, el par sobre una espira, la fuerza sobre un hilo y entre dos hilos paralelos, con animación y el desarrollo paso a paso.</p>
 <div class="layout">
   <div class="card">
     <h2>Datos</h2>
@@ -43,13 +43,22 @@
   <h2>Movimiento en un campo uniforme</h2>
   <p class="f m">$r = {m v}/{|q| B}$, &ensp; $T = {2π m}/{|q| B}$, &ensp; $ω = {|q| B}/m$</p>
   <p class="m">Si v es perpendicular a B la trayectoria es una circunferencia. Si forma un ángulo θ, la componente $v_∥ = v cos θ$ no cambia y la partícula describe una hélice de radio ${m v sen θ}/{|q| B}$ y paso $p = v_∥ T$. El periodo no depende de la velocidad.</p>
+  <h2>Carga que entra en una franja de campo</h2>
+  <p class="m">Si entra perpendicular al borde de una franja de anchura d, dentro describe un arco de radio r con el centro en el borde. Si $r > d$ la atraviesa desviada un ángulo α con $sen α = d/r$; si $r ≤ d$ da media vuelta y sale por donde entró, a 2r, tras medio periodo.</p>
   <h2>Selector de velocidades y espectrómetro de masas</h2>
-  <p class="m">Con E y B perpendiculares, las fuerzas eléctrica y magnética se anulan solo para $v = E/B$: esas partículas pasan sin desviarse. En el espectrómetro, con un campo B′, describen media circunferencia de radio $r = {m v}/{|q| B′}$, y las de distinta masa caen en sitios distintos.</p>
+  <p class="m">Con E y B perpendiculares, las fuerzas eléctrica y magnética se anulan solo para $v = E/B$: esas partículas pasan sin desviarse. En el espectrómetro, con un campo B′, describen media circunferencia de radio $r = {m v}/{|q| B′}$, y las de distinta masa caen en sitios distintos: dos isótopos quedan separados $Δx = {2 v |m_2 − m_1|}/{|q| B′}$.</p>
+  <h2>Campos E y B cruzados</h2>
+  <p class="m">Visto desde un sistema que avanza con la velocidad de deriva $v_d = E/B$ (en el sentido de E × B) solo queda el campo B, y la partícula gira. Sumando el avance, si parte del reposo describe una cicloide: se aleja $h = {2 m E}/{|q| B^2}$ de la recta inicial y llega a $v_{máx} = 2E/B$.</p>
+  <h2>Efecto Hall</h2>
+  <p class="f m">$V_H = {I B}/{n q t}$, &ensp; $R_H = 1/{n q}$</p>
+  <p class="m">La fuerza magnética desvía los portadores hacia una cara de la lámina hasta que el campo Hall la equilibra ($q E_H = q v_d B$). El signo de $V_H$ dice si los portadores son electrones o huecos, y su valor da la densidad n; t es el grosor en la dirección de B.</p>
   <h2>Ciclotrón</h2>
   <p class="m">Dos des en un campo B y una tensión alterna entre ellas de frecuencia $f = {|q| B}/{2π m}$. Cada media vuelta la partícula se acelera en el hueco; sale por el borde con $E_c = {q^2 B^2 R^2}/{2m}$.</p>
   <h2>Fuerza sobre corrientes</h2>
   <p class="f m">$F = I L × B$, &ensp; $|F| = I L B sen θ$</p>
   <p class="f m">${F}/{L} = {μ_0 I_1 I_2}/{2π d}$</p>
+  <p class="f m">$m = N I S$, &ensp; $τ = m × B$, &ensp; $U = −m · B$</p>
+  <p class="m">Sobre una espira en un campo uniforme la fuerza total es nula, pero hay un par $|τ| = N I S B sen θ$, con θ el ángulo entre la normal y B, que la orienta con m paralelo a B (así funcionan el motor eléctrico y el galvanómetro).</p>
   <p>Dos hilos paralelos se atraen si las corrientes van en el mismo sentido y se repelen si van en sentidos contrarios. Con μ₀ = 4π·10⁻⁷ T·m/A. Para el campo que crean los hilos y las espiras usa <a href="../magnetostatica/">Magnetostática</a>.</p>
 </section>
 </div>

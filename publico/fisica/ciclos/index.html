@@ -5,7 +5,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMwZDZiNjYiLz48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlNmE2NDAiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtZGFzaGFycmF5PSI0IDYuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48cGF0aCBkPSJNMjAgMzJINDQiLz48cGF0aCBkPSJNMjEgMjdDMjcgMTQgMzcgMTQgNDMgMjciLz48cGF0aCBkPSJNMjEgMzdDMjcgNTAgMzcgNTAgNDMgMzciLz48cGF0aCBkPSJNMTcgMjRDMjIgNCA0MiA0IDQ3IDI0Ii8+PHBhdGggZD0iTTE3IDQwQzIyIDYwIDQyIDYwIDQ3IDQwIi8+PC9nPjxjaXJjbGUgY3g9IjE3IiBjeT0iMzIiIHI9IjgiIGZpbGw9IiNlZjdhNjIiLz48Y2lyY2xlIGN4PSI0NyIgY3k9IjMyIiByPSI4IiBmaWxsPSIjNzRhMmYyIi8+PHBhdGggZD0iTTEzIDMyaDhNMTcgMjh2OE00MyAzMmg4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K">
 <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
 <meta property="og:title" content="Ciclos termodinámicos">
-<meta property="og:description" content="Calculadora de ciclos termodinámicos con diagrama p-V animado: Carnot, Otto y Diesel con estados, trabajo, calor y rendimiento, y máquinas térmicas, frigoríficos y bombas de calor comparados con Carnot, paso a paso">
+<meta property="og:description" content="Calculadora de ciclos termodinámicos con diagramas p-V y T-S animados: Carnot, Otto, Diesel, Brayton, Stirling y ciclos propios con estados, trabajo, calor y rendimiento, y máquinas térmicas, frigoríficos y bombas de calor comparados con Carnot, paso a paso">
 <meta property="og:image" content="https://electromagnetismo-two.vercel.app/og.png">
 <meta name="twitter:card" content="summary_large_image">
 <script>(() => {
@@ -26,7 +26,7 @@
   });
 })();</script>
 <title>Ciclos termodinámicos: Carnot, Otto, Diesel y máquinas térmicas · SimulaCiencia</title>
-<meta name="description" content="Calculadora de ciclos termodinámicos en español con diagrama p-V animado: Carnot, Otto y Diesel con los estados, el trabajo, el calor y la energía interna de cada tramo y el rendimiento, y máquinas térmicas, frigoríficos y bombas de calor comparados con Carnot, paso a paso.">
+<meta name="description" content="Calculadora de ciclos termodinámicos en español con diagrama p-V animado: Carnot, Otto, Diesel, Brayton, Stirling y un ciclo propio con los estados, el trabajo, el calor y la energía interna de cada tramo, el diagrama T-S, el rendimiento y la potencia del motor, y máquinas térmicas, frigoríficos y bombas de calor comparados con Carnot, paso a paso.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
@@ -178,6 +178,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
   --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784 } }
 :root[data-theme="dark"] {
   --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784 }
+#ts { height: 220px; margin-top: 8px }
 .tabla { overflow-x: auto; margin-bottom: 10px } table { border-collapse: collapse; font: 13.5px var(--f-ui); font-variant-numeric: tabular-nums; min-width: 100% } th, td { padding: 4px 10px; border-bottom: 1px solid var(--line); text-align: right } th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align: left } th { color: var(--muted); font-weight: 500 } tr.tot td { font-weight: 600 }
 </style>
 <body>
@@ -185,7 +186,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 <div class="wrap">
 <nav class="miga" aria-label="Estás en"><span class="miga-izq"></span><span class="miga-ico" aria-hidden="true">F</span><a href="../">Física general</a><span aria-hidden="true">›</span><span>Ciclos termodinámicos</span><span class="miga-der"></span></nav>
 <h1>Ciclos termodinámicos y máquinas térmicas</h1>
-<p class="lead">Resuelve los ciclos de Carnot, Otto y Diesel con un gas ideal: los estados, el trabajo, el calor y la variación de energía interna de cada tramo y el rendimiento, con el diagrama p-V animado y el cilindro. Y comprueba si una máquina térmica, un frigorífico o una bomba de calor son posibles comparándolos con Carnot.</p>
+<p class="lead">Resuelve los ciclos de Carnot, Otto, Diesel, Brayton, Stirling o uno propio con un gas ideal: los estados, el trabajo, el calor y la variación de energía interna de cada tramo y el rendimiento, con los diagramas p-V y T-S animados y el cilindro. Y comprueba si una máquina térmica, un frigorífico o una bomba de calor son posibles comparándolos con Carnot.</p>
 <div class="layout">
   <div class="card">
     <h2>Datos</h2>
@@ -198,6 +199,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
     <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
     <div class="card"><h2>Diagrama</h2>
       <canvas id="escena" aria-label="Diagrama p-V del ciclo con el cilindro, o esquema de la máquina"></canvas>
+      <canvas id="ts" aria-label="Diagrama T-S del ciclo"></canvas>
       <div class="controles"><button class="btn" id="play" type="button">⏸ Pausa</button><span class="nota" id="leyenda" style="margin:0"></span></div></div>
     <div class="card" id="tablas"><h2>Estados y tramos</h2><div class="tabla"><table id="estados"></table></div><div class="tabla"><table id="tramos"></table></div></div>
     <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
@@ -220,6 +222,13 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
   <h2>Ciclos Otto y Diesel</h2>
   <p class="m">El Otto (motor de gasolina) tiene dos adiabáticas y dos isocoras; su rendimiento solo depende de la relación de compresión $r = V_1/V_2$: $η = 1 − r^{1 − γ}$. En el Diesel la combustión es a presión constante, con relación de corte $r_c = V_3/V_2$, y permite relaciones de compresión mucho mayores.</p>
   <p class="f m">$η_{Diesel} = 1 − {r_c^γ − 1}/{γ r^{γ − 1} (r_c − 1)}$</p>
+  <h2>Ciclos Brayton y Stirling</h2>
+  <p class="m">El Brayton (turbinas de gas y aviones) tiene dos adiabáticas y dos isobaras: el compresor sube la presión en una relación $r_p = P_2/P_1$ y $η = 1 − r_p^{−(γ − 1)/γ}$. El Stirling tiene dos isotermas y dos isocoras; con un regenerador que guarda el calor de una isocora y lo devuelve en la otra, alcanza el rendimiento de Carnot.</p>
+  <h2>Diagrama T-S</h2>
+  <p class="m">La entropía de un gas ideal cambia en $ΔS = n C_v ln {T_b}/{T_a} + n R ln {V_b}/{V_a}$. En el diagrama T-S las adiabáticas reversibles son verticales y las isotermas, horizontales: el Carnot es un rectángulo. El calor de un tramo es el área bajo la curva, $Q = ∫ T dS$, y el área encerrada es el trabajo neto.</p>
+  <h2>Potencia de un motor</h2>
+  <p class="m">En un motor de cuatro tiempos cada cilindro completa un ciclo cada dos vueltas del cigüeñal, así que $P = N_{cil} · W · rpm/120$, con W el trabajo de un ciclo en julios.</p>
+  <p>Para encadenar transformaciones a partir de un estado (y la teoría cinética de los gases), abre <a href="../gases/">Gases ideales</a>.</p>
   <h2>Frigoríficos y bombas de calor</h2>
   <p class="m">Usan trabajo para llevar calor del foco frío al caliente. Su eficiencia es $COP = Q_f/W$ para un frigorífico y $COP = Q_c/W$ para una bomba de calor, como mucho ${T_f}/{T_c − T_f}$ y ${T_c}/{T_c − T_f}$. Ninguna máquina puede superar a la de Carnot: si lo hiciera, la entropía del universo disminuiría (segundo principio).</p>
 </section>
@@ -227,6 +236,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Ciclos termodinámicos <span id="ver"></span> (beta)</footer>
 </body>
 <script>
+const Pagina = { carpeta: 'ciclos', guarda: 'ciclos-v1' };
 /* =====================================================================
    Versiones y novedades: la web (portada, asignaturas, buscador) tiene su número y cada
    herramienta el suyo. Hasta el lanzamiento se numera 0.x (beta); la 1.0 de una herramienta
@@ -240,6 +250,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 const Version = (() => {
   const registros = {
     web: [
+      { v: '0.49', fecha: '2026-10-26', cambios: ['Circuitos, a fondo: asociación de resistencias escribiendo la expresión, códigos de condensadores y bobinas, fuentes dependientes, Thévenin y Norton entre dos nudos cualesquiera, superposición y mallas; redes de alterna por nudos con fasores y sistemas trifásicos; transitorios de cualquier circuito de primer orden y RLC en paralelo.', 'Química, a fondo: la tabla periódica con más datos, comparación de elementos y preguntas para ponerte a prueba; fórmula empírica y molecular, reactivos impuros y gases en la estequiometría; Slater, números cuánticos y «¿qué elemento es?»; hidrólisis, tampones y polipróticos en pH; propiedades coligativas en disoluciones, y más formas de hallar k en cinética.', 'Estadística, a fondo: F de Snedecor, uniforme, geométrica e hipergeométrica; intervalos con datos apareados, cociente de varianzas, cotas y población finita; errores de la pendiente, bandas de confianza, residuos y más ajustes en regresión. Además, cuatro herramientas más en camino: estadística descriptiva, probabilidad, contrastes de hipótesis y χ².', 'Física general, a fondo: rizos, péndulos y fuerzas variables; movimiento circular y encuentros; dilatación térmica y calentadores; bloques juntos, curvas peraltadas y muelles; equilibrio estático y choques que hacen girar; pulsaciones y ondas entre dos cuerdas; Doppler de la luz; anillos de Newton y criterio de Rayleigh; ciclos Brayton, Stirling y propios; viscosidad, Venturi y capilaridad; mezclas de gases y Van der Waals. Todas con modo práctica con enunciado y fórmulas bien escritas.', 'Electromagnetismo, a fondo: en Electrostática, cilindros huecos y coaxiales, densidades que no son uniformes, arcos y cortezas conductoras; nuevas fuentes y mapa de |B| en Magnetostática; dieléctricos por sectores, rigidez y asociaciones de condensadores; entrehierros y bobinas acopladas; espiras junto a un hilo, campos que cambian con el tiempo y barras con masa en Faraday; efecto Hall, campos cruzados y par sobre espiras; ondas en cualquier dirección, polarización y reflexión. Además, enlace para compartir el ejercicio, copiar la solución en texto o LaTeX e imprimirla.'] },
       { v: '0.48', fecha: '2026-10-25', cambios: ['Todas las herramientas comparten ahora la misma hoja de estilos, así que tarjetas, campos, botones, resultados y desarrollo se ven exactamente igual en todas, y los pasos del desarrollo van numerados.', 'Matemáticas, a fondo: matrices con parámetro, LU y ecuaciones matriciales; sistemas discutidos según un parámetro y escritos como texto; integrales impropias, L’Hôpital y volúmenes de revolución; Laplace con escalón, delta y convolución; nuevas EDOs exactas, de Bernoulli y de Cauchy-Euler; Taylor, Fourier, complejos y campos vectoriales con muchos casos nuevos. Además, enlace para compartir el ejercicio, copiarlo en texto o LaTeX e imprimirlo.', 'Circuitos: los valores admiten prefijos del SI y unidades, como 4k7, 1,5 kΩ, 100n o 10 µF.', 'Arreglos en Circuitos (una resistencia de 0 Ω en paralelo, Thévenin con Rth = 0), Química (pH al empezar y al acabar una valoración débil, aviso de excepción solo en átomos neutros), Estadística (cuantil de la binomial, ajustes con años, proporción con 0 éxitos), Física general y Electromagnetismo (fórmulas largas que se cortaban en el móvil, etiqueta tapada en Dinámica, fórmulas de la teoría de Ondas EM).', 'Los mensajes de error se leen mejor en modo oscuro, en Configuración electrónica el nombre del elemento vuelve a verse grande y en el móvil Trabajo y energía ya no se sale de la pantalla.'] },
       { v: '0.47', fecha: '2026-10-25', cambios: ['Nueva asignatura: Economía, en la portada y en la barra de asignaturas. Trae 23 herramientas en camino, como «Próximamente»: oferta y demanda, elasticidades, IS-LM, interés compuesto, préstamos, VAN y TIR, punto muerto, ratios financieros o el índice de Gini, entre otras.'] },
       { v: '0.46', fecha: '2026-10-25', cambios: ['Nuevo apartado Foro en la barra superior. De momento está en construcción: muy pronto podrás preguntar dudas y compartir ejercicios.', 'La portada y cada asignatura muestran ya las herramientas que vienen después, como «Próximamente»: 30 más, desde la ley de Ampère y las ecuaciones de Maxwell hasta la propagación de errores y los diagramas de Bode.'] },
@@ -297,6 +308,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-23', cambios: ['Portada para elegir asignatura y herramienta: Electromagnetismo, Física general, Química, Matemáticas y Laboratorio, con buscador. Las herramientas que vienen después aparecen como «Próximamente».', 'Nueva herramienta: Magnetostática, en Electromagnetismo.'] },
     ],
     electrostatica: [
+      { v: '0.6', fecha: '2026-10-26', cambios: ['Tubo cilíndrico con carga superficial σ y cilindros huecos (con radio interior), para resolver cables coaxiales.', 'Densidades que no son uniformes en esferas y cilindros (ρ₀·r/R, ρ₀·R/r, ρ₀(1 − r/R) y ρ₀(1 − r²/R²)) y en varillas (λ que crece o decrece a lo largo), con Gauss y la carga encerrada.', 'Arcos cargados: semicircunferencias, cuartos de anillo o cualquier ángulo, con el campo y el potencial en el centro.', 'Corteza esférica conductora con radio interior y exterior: si dentro hay una carga centrada, se induce −q en la cara interior y +q en la exterior.', 'Seis ejercicios de ejemplo nuevos con todo esto.', 'La guía enlaza con la herramienta de Condensadores.'] },
       { v: '0.5.1', fecha: '2026-10-23', cambios: ['El simulador tiene ahora su propia dirección, /electromagnetismo/electrostatica/. Tus problemas guardados siguen ahí. El botón «Todas las herramientas» de la barra lateral vuelve a la portada.'] },
     { v: '0.5', fecha: '2026-10-23', cambios: ['Doce ejercicios de ejemplo con enunciados propios: los mismos tipos de pregunta que en clase, con otras figuras y otros números. La guía de uso tiene capturas nuevas hechas con ellos.', 'La web tiene icono propio: un dipolo con sus líneas de campo, en la pestaña del navegador, en la pantalla de inicio del móvil y en la vista previa al compartir el enlace.', 'Páginas de aviso legal, privacidad, cookies y contacto, enlazadas al pie de la barra lateral.'] },
     { v: '0.4', fecha: '2026-10-22', cambios: ['Número de versión visible y este apartado de novedades.', 'Arreglo: en la vista 3D los cilindros se dibujan con su radio real, aparecen las superficies de Gauss, y las esferas, cascarones y conductores tienen volumen en lugar de parecer círculos planos.'] },
@@ -305,44 +317,54 @@ const Version = (() => {
     { v: '0.1', fecha: '2026-10-22', cambios: ['Primera versión: cargas, hilos, planos y esferas con el desarrollo paso a paso y 12 ejercicios resueltos.', 'Barra lateral con tus problemas, los importados y los ejercicios; título y enunciado editables; archivos .emsim.json.'] },
     ],
     magnetostatica: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Nuevas fuentes: cilindro con corriente (macizo, hueco o con J proporcional a r, para cables coaxiales), lámina de corriente K, espira rectangular de una pieza y disco cargado que gira.', 'Nueva pregunta «Perfil de |B|»: la gráfica del módulo del campo a lo largo de una recta entre dos puntos.', 'Mapa de color de |B| y líneas de campo continuas en el dibujo.', 'Seis ejercicios de ejemplo nuevos con todo esto.', 'Los números decimales se escriben con coma.', 'Botones para copiar el enlace del ejercicio, copiar la solución de cada pregunta como texto o en LaTeX e imprimirla o guardarla en PDF.'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['Arreglo: el ejemplo resuelto de la teoría explica dónde abrirlo ahora, en «Ejercicios de ejemplo» de la barra Mis ejercicios.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: campo magnético de hilos, segmentos, hilos semiinfinitos, espiras, arcos, solenoides y toroides con Biot-Savart, y fuerza sobre cargas en movimiento y sobre conductores, con el desarrollo paso a paso en la forma μ₀I/(πa) o en unidades del SI.', 'Dibujo del campo B en el plano XY, XZ o YZ, con puntos que se pueden arrastrar y ocho ejemplos resueltos.'] },
     ],
     'tabla-periodica': [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Más datos en la ficha: afinidad electrónica, estados de oxidación, densidad y puntos de fusión y ebullición, y la tabla se puede colorear por ellos.', 'Botones para abrir el elemento en Configuración electrónica (con la Zef) y en Masa molar.', 'Compara hasta tres elementos en una tabla, con el mayor de cada propiedad marcado.', 'Ponte a prueba: preguntas al azar de nombres y símbolos, grupo y periodo, configuración, electrones de valencia y tendencias.', 'En el móvil las casillas muestran solo el número y el símbolo, y la tabla ocupa menos.', 'Nota sobre el grupo 3: dónde van La, Ac, Lu y Lr según la IUPAC.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: cada elemento tiene su ficha con la masa atómica y molar, el grupo, el periodo, el bloque, la configuración electrónica (abreviada, completa y por capas), la electronegatividad, la energía de ionización, el radio y el estado.', 'La tabla se puede colorear por categoría, electronegatividad, energía de ionización, radio, masa, bloque o estado, y tiene un buscador por nombre, símbolo o número atómico.'] },
     ],
     'trabajo-y-energia': [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Nuevos problemas: rizo (altura mínima para dar la vuelta, velocidad y normal arriba, o dónde se despega), péndulo (velocidad y tensión en cada ángulo, si da la vuelta o se afloja el hilo), montaña rusa sin rozamiento por varios puntos y trabajo de una fuerza variable con la gráfica F(x), su área y la potencia.', 'En la rampa, los problemas al revés: altura mínima para llegar al muelle, rozamiento del llano para que se pare justo antes y constante del muelle para una compresión dada.', 'Modo práctica con enunciado escrito para cada tipo de problema.'] },
       { v: '0.1.3', fecha: '2026-10-25', cambios: ['Arreglo: en el móvil, las fórmulas largas del desarrollo se cortaban por la derecha; ahora bajan de línea en cada igual.'] },
       { v: '0.1.2', fecha: '2026-10-24', cambios: ['Las fórmulas del desarrollo y de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Los resultados salen arriba, en una tarjeta destacada, y la lectura de t y v tiene ancho fijo: ya no mueve la barra de tiempo al reproducir.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: un bloque baja por una rampa con rozamiento, recorre un tramo horizontal y comprime un muelle. Animación con barras de energía cinética, gravitatoria, elástica y calor, gráfica de las energías en el tiempo y el desarrollo paso a paso con la velocidad al pie de la rampa, al llegar al muelle y la compresión máxima.', 'Seis ejemplos: sin rozamiento, se para antes del muelle, el rozamiento lo sujeta, con empujón inicial y muelle duro.'] },
     ],
     'masa-molar': [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Nueva pestaña «Fórmula empírica»: de la composición centesimal, de los gramos de cada elemento o de un análisis por combustión a la fórmula empírica y, con la masa molar, a la molecular, paso a paso.', 'Reactivos impuros (con su pureza) y en disolución (con su molaridad y su volumen) en la estequiometría.', 'Gases a cualquier temperatura y presión con PV = nRT, y el volumen de los productos que lleven (g).', 'Rendimiento al revés: escribe la masa obtenida de verdad y calcula el rendimiento.', 'Acepta los estados (s), (l), (g) y (aq), las cargas sin ^ (Fe3+, NO3-, SO42-), el + sin espacios, la doble flecha ⇌ y los electrones de las semirreacciones.', 'Tabla de moles al principio, lo que cambia y al final, y un resumen con el limitante, lo que se forma y lo que sobra.', 'Modo práctica también para la estequiometría y la fórmula empírica.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: masa molar y composición centesimal de cualquier fórmula, con paréntesis, hidratos e iones, y conversor entre gramos, moles, partículas y litros de gas.', 'Estequiometría: ajusta la reacción sola (también las iónicas), calcula el reactivo limitante, lo que se forma con el rendimiento que digas y lo que sobra, paso a paso.', 'Masas atómicas de la IUPAC o redondeadas como en clase.'] },
     ],
     'configuracion-electronica': [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Electrones de valencia como en clase (el Fe tiene 4s² 3d⁶, ocho), no solo los de la capa más externa.', 'Nueva pestaña «¿Qué elemento es?»: escribe una configuración y dice de qué elemento es y si es el estado fundamental, uno excitado o una configuración imposible (2p⁷, 2d¹).', 'Nueva pestaña «Números cuánticos»: comprueba si un conjunto (n, l, m_l, s) está permitido y a qué orbital corresponde.', 'Tabla con los cuatro números cuánticos de cada electrón de valencia.', 'Carga nuclear efectiva con las reglas de Slater, paso a paso.', 'Especies isoelectrónicas (Na⁺, Mg²⁺, F⁻…) ordenadas de mayor a menor radio.', 'Los ejemplos están ahora en la barra lateral, con Mis ejercicios.'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['El aviso de excepción al orden de llenado sale solo en los átomos neutros, no en sus iones, y muestra justo los subniveles que cambian (Pt: se esperaría 6s² 5d⁸ y tiene 6s¹ 5d⁹).'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: configuración electrónica de cualquier elemento o ion por orden de llenado, abreviada y por capas, con el diagrama de Moeller, el diagrama de orbitales con la regla de Hund, los electrones desapareados y los números cuánticos del electrón diferenciador.', 'Avisa de las excepciones como el cromo o el cobre, y en los cationes quita primero los electrones de la capa más externa.'] },
     ],
     condensadores: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Cilíndricos y esféricos con el dieléctrico por sectores, en paralelo: por ejemplo, media esfera con un material y la otra media con otro.', 'Permitividad que cambia con la posición, de ε₁ en una armadura a ε₂ en la otra, con las cargas de polarización de las caras y del volumen.', 'Fuerza entre las armaduras y fuerza que mete un dieléctrico a medio introducir.', 'Rigidez dieléctrica: escribe la de cada capa y sale la tensión máxima antes de la ruptura.', 'Asociaciones de condensadores en serie, en paralelo y mixtas, con la carga, la tensión y la energía de cada uno, y dos condensadores cargados que se conectan, con la energía que se pierde.', 'La carga libre de cada armadura en el desarrollo.', 'Botones para copiar el enlace del ejercicio, copiar la solución como texto o en LaTeX e imprimirla o guardarla en PDF.', 'El desarrollo paso a paso escribe las fórmulas como en los libros: fracciones, raíces, exponentes y subíndices de verdad.', 'La capacidad sale también en letras, como en los apuntes (por ejemplo C = 4πε₀εᵣab/(b − a), o la suma de cada capa en serie).', 'Enlace al simulador de Electrostática desde la teoría.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: condensadores planos, cilíndricos y esféricos con capas de dieléctrico en serie o, en el plano, ocupando parte del área. Capacidad, carga, tensión y energía; campos E, D y P en cada capa y cargas de polarización, con el desarrollo paso a paso.', 'Compara con el condensador vacío: qué pasa al meter el dieléctrico con la batería conectada o con el condensador aislado.', 'Dibujo del corte con las líneas de campo y gráfica de E a lo largo del condensador.'] },
     ],
     'tiro-parabolico': [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Ángulo de alcance máximo cuando se lanza desde otra altura, con su desarrollo.', 'Blanco: además de los ángulos para acertar, la velocidad que hace falta con el ángulo dado.', 'Opción para dibujar varios tiros con la misma velocidad y la parábola de seguridad.', 'Movimiento rectilíneo con un segundo móvil: cuándo y dónde se encuentran (persecuciones y cruces).', 'Nueva pestaña de movimiento circular (MCU y MCUA): velocidad angular, periodo, aceleraciones normal y tangencial, cuándo se para o da n vueltas, con animación y gráficas θ(t) y ω(t).', 'Modo práctica con enunciado: tiros, blancos, frenadas, encuentros y giros.'] },
       { v: '0.1.3', fecha: '2026-10-25', cambios: ['Arreglo: en el móvil, las fórmulas largas del desarrollo se cortaban por la derecha; ahora bajan de línea en cada igual.'] },
       { v: '0.1.2', fecha: '2026-10-24', cambios: ['Las fórmulas del desarrollo y de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Los resultados salen arriba, en una tarjeta destacada, y la lectura de t, x, y y v tiene ancho fijo: ya no se mueve al reproducir.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: tiro parabólico desde cualquier altura hasta cualquier altura, con el tiempo de vuelo, la altura máxima, el alcance y la velocidad al caer, y el desarrollo paso a paso. Trayectoria animada con los vectores de velocidad y gráficas de posición, velocidad y aceleración frente al tiempo.', 'Rozamiento del aire lineal o cuadrático, comparado con la trayectoria sin rozamiento.', 'Blanco: dice si el proyectil pasa por un punto y con qué dos ángulos se acierta.', 'Movimiento rectilíneo (MRU y MRUA): posición y velocidad en un instante, cuándo pasa por un punto y cuándo se para, con las gráficas x(t), v(t) y a(t).'] },
     ],
     disoluciones: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Propiedades coligativas: descenso crioscópico, aumento ebulloscópico, presión osmótica y presión de vapor (Raoult) en agua y otros seis disolventes, con el factor de van \'t Hoff deducido de la fórmula.', 'La masa molar de un soluto a partir de la crioscopía, la ebulloscopía o la presión osmótica.', 'Preparar una disolución también en g/L, % m/v, % en masa, molalidad o normalidad, con el agua que hay que añadir.', 'Normalidad, con los equivalentes por mol sacados de la fórmula del ácido o la base.', 'Diluir con la unidad que quieras en cada dato (mol/L, mmol/L, g/L, mg/L, % m/v; L, mL o µL).', 'Aviso de seguridad al diluir cualquier ácido concentrado (siempre el ácido sobre el agua) y al disolver sosa o potasa.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: da la concentración de una disolución como molaridad, molalidad, fracción molar, % en masa, % masa/volumen, g/L o ppm y obtén todas las demás, con la densidad para pasar de masa a volumen y el desarrollo con su base de cálculo.', 'Preparar una disolución: los gramos de sólido (con su pureza) o los mililitros de reactivo comercial (con su riqueza y densidad) que hay que medir.', 'Diluciones con C₁V₁ = C₂V₂, despejando el dato que falte, y mezcla de dos disoluciones del mismo soluto.'] },
     ],
     calorimetria: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Problemas al revés: escribe ? en el dato que no conoces (masa, temperatura inicial, calor específico, capacidad del calorímetro o tiempo) y pon la temperatura final.', 'Calorímetro por su equivalente en agua.', 'Calentador con potencia, tiempo y rendimiento (Q = η P t), por ejemplo un hervidor.', 'Más sustancias: plata, oro, mercurio, latón y aceite de oliva.', 'Nueva pestaña de dilatación térmica: lineal, superficial, de volumen y líquido que rebosa del recipiente, con la temperatura a la que se alcanza una medida.', 'Modo práctica con enunciado: mezclas, problemas al revés, hervidores y dilataciones.'] },
       { v: '0.1.2', fecha: '2026-10-24', cambios: ['Las fórmulas del desarrollo y de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['La temperatura de equilibrio sale en una tarjeta destacada, separada de la tabla de calores.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: temperatura de equilibrio al mezclar hasta cinco cuerpos de agua, hielo, vapor, metales, etanol, vidrio, un calorímetro o una sustancia con tus datos, con los cambios de fase que hagan falta.', 'Si la energía no llega para fundir todo el hielo o condensar todo el vapor, dice cuántos gramos quedan de cada fase.', 'Tabla con el calor de cada cuerpo, el desarrollo etapa por etapa (m c ΔT y m L) y la curva de calentamiento de cada uno.'] },
     ],
     induccion: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Toroide con entrehierro: reluctancia del núcleo y del hueco de aire y la autoinducción que queda.', 'Inducción mutua de dos espiras coaxiales a una distancia y de una bobina girada dentro de un solenoide.', 'Bobinas acopladas en serie y en paralelo, con los flujos que se suman o que se oponen.', 'Circuito RL: balance de energía (lo que da la fuente, lo que guarda la bobina y lo que se disipa en la resistencia) y una fuente que se conecta y desconecta una y otra vez, con la corriente máxima, mínima y media.', 'Los dibujos usan azul para el campo y el segundo circuito, y la gráfica del RL distingue corriente y tensión.', 'Botones para copiar el enlace del ejercicio, copiar la solución como texto o en LaTeX e imprimirla o guardarla en PDF.', 'El desarrollo paso a paso escribe las fórmulas como en los libros: fracciones, raíces, exponentes y subíndices de verdad.', 'El resultado sale también en letras, como en los apuntes (por ejemplo L = μ₀N²h ln(b/a)/(2π) o la corriente del circuito RL).', 'Enlace a Faraday y Lenz desde la teoría.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: coeficiente de autoinducción de solenoides (con núcleo), toroides de sección rectangular y circular, cables coaxiales y líneas bifilares, con el desarrollo desde la ley de Ampère.', 'Inducción mutua entre dos solenoides, dos espiras, un hilo y una espira, y una bobina sobre un toroide, o a partir de L₁, L₂ y k, con el coeficiente de acoplamiento.', 'Flujo, energía magnética y fem inducida si das la corriente o cómo cambia.', 'Circuito RL al cerrar el interruptor o al quitar la fuente: constante de tiempo, corriente y tensión en la bobina en cualquier instante y su gráfica.'] },
     ],
@@ -360,21 +382,26 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: transformada directa de sumas de términos c·tⁿ·e^(at)·sen(bt) o cos(bt), senh y cosh, con la fila de la tabla y la propiedad que usa cada término, y F(s) con denominador común.', 'Inversa por fracciones simples: polos simples, múltiples y complejos (también dobles), con los coeficientes, la fila de la tabla y los valores inicial y final.', 'Ecuaciones diferenciales de primer y segundo orden con condiciones iniciales: transformar, despejar Y(s) y volver.', 'Plano s con los polos y los ceros, y gráfica animada de f(t) con cada término por separado.'] },
     ],
     interferencia: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Nuevo montaje «Abertura circular»: disco de Airy y criterio de Rayleigh, con el límite de resolución de un ojo o un telescopio y si dos objetos se distinguen.', 'Red de difracción: poder de resolución en cada orden y la mínima diferencia de longitudes de onda que separa.', 'Nuevos montajes «Cuña de aire» y «Anillos de Newton», también al revés: el grosor de un pelo o el radio de una lente a partir de lo que se mide.', 'Cursor en la gráfica de intensidad: pasa el ratón o el dedo para leer la intensidad en cualquier punto de la pantalla.', 'El desarrollo se ve con fórmulas bien escritas.', 'Más tipos de ejercicio en el modo práctica.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: doble rendija de Young con la interfranja, la posición y el ángulo de cada máximo, la intensidad en un punto y la envolvente de difracción si das la anchura de las rendijas.', 'Rendija simple: mínimos, anchura del máximo central e intensidad.', 'Red de difracción: ángulos de cada orden, orden máximo y separación de dos longitudes de onda con el poder de resolución.', 'Láminas delgadas: colores que se refuerzan y se anulan y espesores para reforzar o quitar el reflejo.', 'Ondas que salen de las rendijas animadas y el patrón en la pantalla con el color de la luz.'] },
     ],
     'ondas-em': [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['La onda puede ir en cualquier dirección (escribiendo las componentes de k y de E) y tener una fase inicial.', 'Polarización circular y elíptica, con el sentido de giro y la expresión de E y B con sus dos componentes.', 'Nuevo cálculo: la onda a partir de su expresión E(r, t) o B(r, t), por ejemplo 30 cos(2,094y + 6,283e8t) k: dirección de propagación, velocidad, medio y el otro campo.', 'Nuevo cálculo: incidencia normal sobre un conductor perfecto (onda estacionaria, nodos, presión y corriente superficial) o sobre otro medio (coeficientes de reflexión y transmisión).', 'En el desarrollo, B̂ = k̂ × Ê ya no escribe paréntesis de más alrededor de los vectores unitarios.', 'Botones para copiar el enlace del ejercicio, copiar la solución como texto o en LaTeX e imprimirla o guardarla en PDF.', 'El desarrollo paso a paso escribe las fórmulas como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: onda plana en el vacío o en un material a partir de f, λ, ω o k, con λ, k, el campo B y su dirección (B̂ = k̂ × Ê) y las expresiones de E(r, t) y B(r, t).', 'Intensidad, densidad de energía y presión de radiación, también de una fuente puntual a una distancia.', 'Medios con pérdidas: tangente de pérdidas, atenuación, profundidad de penetración e impedancia compleja.', 'La onda dibujada en 3D con E y B moviéndose.'] },
     ],
     intervalos: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Datos apareados (antes y después, o dos medidas del mismo individuo): intervalo de la media de las diferencias, a partir de las dos listas o de d̄ y s_d.', 'Cociente de varianzas σ₁²/σ₂² con la F de Snedecor, y el de las desviaciones σ₁/σ₂, para saber si se pueden suponer varianzas iguales.', 'Cotas: cualquier intervalo puede ser bilateral, una cota inferior (a; +∞) o una cota superior (−∞; b), con toda α en una cola.', 'Población finita: da su tamaño N y se aplica el factor de corrección, también en el tamaño de la muestra.', 'Contraste con el intervalo: escribe un valor y te dice si se rechaza H₀ con ese nivel de significación.', 'Tamaño de muestra también para comparar dos medias o dos proporciones.', 'La gráfica muestra la F y las cotas con α en una sola cola, y en Welch se ven los grados de libertad sin redondear.', 'Nuevos ejercicios en el modo práctica: cotas de una media y datos apareados.'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['Una proporción con 0 éxitos, o con todos, ya no da un intervalo de un solo punto: se usa el intervalo de Wilson. Con pocos éxitos o fracasos también se muestra el de Wilson al lado del de siempre.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: intervalo de confianza de una media con σ conocida (z) o desconocida (t de Student), a partir de x̄, s y n o de la lista de datos, también si te dan la desviación con n.', 'Intervalos de una proporción, de la varianza y la desviación típica (con la χ²), de la diferencia de medias (σ conocidas, iguales o Welch) y de la diferencia de proporciones.', 'Tamaño de muestra para un error máximo en una media o una proporción.', 'Gráfica de la distribución con el área de confianza y simulación de 100 muestras que muestra cuántos intervalos aciertan.'] },
     ],
     transitorios: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Nuevo modo «Circuito cualquiera de primer orden»: escribe el circuito como lista de elementos, marca qué se conecta o desconecta en t = 0 y sale por el método de los tres valores (valor inicial, final y resistencia de Thévenin que ve el condensador o la bobina).', 'Conmutación en t₁: un condensador que se carga por R y se descarga por R₂, y una bobina que se abre con el pico de tensión que hace saltar la chispa.', 'Nuevo circuito RLC en paralelo con una fuente de corriente, con su tipo de amortiguamiento y la corriente de la bobina.', 'Tiempo hasta un valor también en el RLC, corriente inicial en la bobina y descarga por otra resistencia R₂.', 'Pasa el ratón o el dedo por la gráfica para leer la tensión y la corriente en cada instante; un clic deja el cursor fijo.'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['Los valores admiten prefijos del SI y unidades: 4k7, 1,5 kΩ, 100n, 10 µF o 5 ms. Un número solo sigue en la unidad del campo (mH, μF).'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: carga y descarga de un condensador en un circuito RC (también si ya tenía carga), con τ = RC, la tensión y la corriente en un instante y el tiempo hasta una tensión.', 'Corriente que sube o baja en una bobina en un circuito RL, con τ = L/R y la tensión de la bobina.', 'Circuito RLC en serie: dice si es subamortiguado, crítico o sobreamortiguado y da la tensión del condensador frente al tiempo, también con carga o corriente al empezar.', 'Esquema del circuito con la corriente que circula y la gráfica de V e i frente a t animadas.'] },
     ],
     fuerza: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Carga que entra en una franja de campo: si la atraviesa, el ángulo con el que sale y cuánto se ha desplazado; si no, dónde vuelve a salir.', 'Campos E y B cruzados: velocidad de deriva E/B y la cicloide animada, también con velocidad inicial (cicloide acortada o con bucles).', 'Efecto Hall: tensión Hall, densidad de portadores, coeficiente de Hall y qué cara queda a más potencial.', 'Par sobre una espira o bobina: momento magnético, par, energía y trabajo para girarla.', 'Espectrómetro de masas con dos isótopos: la separación entre los impactos.', 'El campo B se dibuja en azul en todas las animaciones.', 'Botones para copiar el enlace del ejercicio, copiar la solución como texto o en LaTeX e imprimirla o guardarla en PDF.', 'El desarrollo paso a paso escribe las fórmulas como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: fuerza sobre una carga en un campo uniforme, con el radio, el periodo y el sentido de giro, o la hélice si v no es perpendicular a B. La velocidad se puede dar en m/s, por su energía en eV o por la ddp que la acelera.', 'Fuerza de Lorentz con vectores: v × B con su determinante y F = q(E + v × B).', 'Selector de velocidades y espectrómetro de masas, ciclotrón con la frecuencia, la energía de salida y las vueltas.', 'Fuerza sobre un hilo (y la corriente para que flote) y entre dos hilos paralelos.', 'Animación de cada situación.'] },
     ],
     campos: [
@@ -382,6 +409,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: gradiente, derivada direccional y laplaciano de un campo escalar, con su mapa de color y las curvas de nivel.', 'Divergencia y rotacional de un campo vectorial en el plano o en el espacio y, si es conservativo, su potencial.', 'Integral de línea (trabajo) a lo largo de una curva r(t), comparada con la diferencia de potencial cuando el campo es conservativo.', 'Teorema de Green en un círculo o un rectángulo: circulación y flujo por el borde frente a las integrales dobles.', 'Gráfica con partículas que siguen el campo y un molinillo que gira con el rotacional; tocándola se mueve el punto.'] },
     ],
     cinetica: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Coeficiente de A en la reacción (2 A → productos), con las dos formas de definir k explicadas.', 'La constante también sale de la vida media, del porcentaje que ha reaccionado en un tiempo o de dos medidas.', 'Arrhenius con tres o más temperaturas: recta de ajuste de ln k frente a 1/T con su R².', 'Diagrama de energía con Eₐ, ΔH y la Eₐ de la reacción inversa.', 'Catalizador: cuánto se multiplica k al bajar la energía de activación.', 'Aviso cuando dos rectas se ajustan casi igual y los datos no bastan para decidir el orden.', 'Velocidades iniciales con tres reactivos.', 'Tiempo también en días y en años.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: leyes integradas de orden 0, 1 y 2 con la concentración a cualquier tiempo, la vida media y cuánto se tarda en llegar a una concentración.', 'Orden y constante a partir de una tabla de concentraciones frente al tiempo, con las tres rectas ([A], ln [A] y 1/[A]) y su R².', 'Método de las velocidades iniciales con uno o dos reactivos: órdenes, constante con sus unidades y ley de velocidad.', 'Ecuación de Arrhenius: energía de activación con dos temperaturas o la constante a otra temperatura, con la gráfica de ln k frente a 1/T.', 'Vaso animado en el que las moléculas de reactivo se convierten en producto.'] },
     ],
     edos: [
@@ -407,64 +435,78 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: hasta seis ecuaciones con seis incógnitas. Dice si el sistema es compatible determinado, indeterminado o incompatible con el teorema de Rouché-Frobenius y lo resuelve por Gauss con sustitución hacia atrás, por Gauss-Jordan, por la regla de Cramer o con la matriz inversa.', 'Si tiene infinitas soluciones, las da en forma paramétrica (λ, μ…).', 'Coeficientes con fracciones exactas, decimales o números complejos, como las mallas de un circuito de alterna, y nombres propios para las incógnitas (I1, I2…).', 'Comprobación de la solución sustituyendo en cada ecuación.'] },
     ],
     regresion: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Error de la pendiente y de la ordenada, con su intervalo de confianza, para los informes de prácticas, y banda de confianza de la recta en la gráfica.', 'Intervalos de confianza de la media de y y de predicción de un valor nuevo para la x que elijas.', 'Nuevos ajustes: recta por el origen (y = bx, con su incertidumbre) e hiperbólica (y = a + b/x).', 'Comparación de todos los ajustes ordenados por R², para ver cuál es mejor.', 'Gráfica de residuos y aviso de los puntos atípicos (residuo mayor que dos veces el error típico).', 'Coeficiente de correlación de Spearman, la relación b·b′ = r² y el ángulo entre las dos rectas.', 'Datos en una tabla de doble entrada, como en los ejercicios de clase.', 'Puedes elegir si las varianzas y la covarianza se dividen entre n o entre n − 1.'] },
       { v: '0.1.2', fecha: '2026-10-25', cambios: ['El ajuste parabólico funciona con x grandes, como los años (2015, 2016…): antes decía que faltaban valores de x distintos.', 'En los ajustes exponencial y potencial, una a muy pequeña se escribe en notación científica en vez de 0.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas dentro del texto de la teoría se ven bien escritas, no con símbolos $.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: escribe o pega tus datos (x, y), con frecuencias si las tienes, y obtén medias, varianzas, covarianza, el coeficiente de correlación con su contraste y las dos rectas de regresión, con la tabla de cálculos y la nube de puntos.', 'Ajustes exponencial, potencial, logarítmico y parabólico, con R² para compararlos con la recta, y los residuos.', 'Estimaciones de y a partir de x y de x a partir de y, avisando si es una extrapolación.', 'Añade puntos pulsando en la gráfica.'] },
     ],
     estadistica: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Nuevas distribuciones: F de Snedecor, uniforme continua, geométrica e hipergeométrica.', 'Valores críticos unilaterales y bilaterales, con los dos valores de la χ² y de la F.', 'Hallar μ o σ de una normal a partir de una probabilidad, como en los ejercicios de «¿qué media hace falta para que…?».', 'P(|X − μ| ≤ c), a una distancia c de la media, con la cota de Chebyshev al lado.', 'Aproximaciones de la binomial por la Poisson y de la Poisson por la normal, además de la binomial por la normal.', 'Las colas muy lejanas ya no salen como 0: se escriben en notación científica.', 'Tabla de valores de las discretas con un botón para copiarla.', 'Arrastra los valores sobre la gráfica para mover el área.', 'Modo práctica con ejercicios al azar de todas las distribuciones.'] },
       { v: '0.1.2', fecha: '2026-10-25', cambios: ['En la binomial, al calcular un cuantil, la probabilidad del cuantil ya no cambia la probabilidad de éxito p.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: normal, t de Student, chi cuadrado, exponencial, binomial y Poisson, con su media y su varianza.', 'Probabilidades P(X ≤ a), P(X ≥ a), entre dos valores y, en las discretas, P(X = k) y con desigualdad estricta; cuantiles y valores críticos bilaterales.', 'Gráfica con el área (o las barras) que se pide sombreada.', 'Desarrollo como en clase: tipificación Z = (X − μ)/σ y Φ(z), fórmula de la binomial y de la Poisson término a término, y aproximación de la binomial por la normal con corrección de continuidad.'] },
     ],
     alterna: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Redes de alterna cualesquiera por el método de los nudos con fasores: resistencias, bobinas, condensadores y fuentes de tensión o de corriente con su fase, con el sistema en complejos y el balance de potencias de Boucherot.', 'Sistemas trifásicos equilibrados en estrella y en triángulo: tensiones y corrientes de fase y de línea, fasores de las tres fases, potencias y la batería de condensadores para corregir el factor de potencia.', 'Triángulo de potencias y curva de resonancia (la corriente frente a la frecuencia, con f₀ y el ancho de banda) en el circuito RLC.', 'La fuente se puede dar con su valor de pico o eficaz, con fase inicial y con ω en lugar de f, y el resultado escribe v(t) e i(t).', 'Corrección del factor de potencia a partir de P, S, I o Q, y también de cargas capacitivas (con una bobina).'] },
       { v: '0.1.2', fecha: '2026-10-25', cambios: ['Los valores admiten prefijos del SI y unidades: 4k7, 1,5 kΩ, 100n, 10 µF o 5 ms. Un número solo sigue en la unidad del campo (mH, μF, kW).', 'Arreglo: en paralelo, una resistencia de 0 Ω se ignoraba como si no estuviera; ahora avisa de que cortocircuita la fuente.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: circuitos RLC en serie y en paralelo (o solo con algunos de los elementos) con impedancias complejas en forma binómica y polar, la corriente, la tensión o la corriente de cada elemento, las potencias activa, reactiva y aparente y el factor de potencia, con el desarrollo paso a paso.', 'Diagrama de fasores y ondas v(t) e i(t) desfasadas.', 'Resonancia: frecuencia de resonancia, factor de calidad y ancho de banda.', 'Corrección del factor de potencia: el condensador que hay que poner en paralelo y cuánto baja la corriente de la línea.'] },
     ],
     dinamica: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Bloques lanzados con velocidad inicial: frenan, se paran y se quedan quietos o vuelven, con la distancia y el tiempo de frenada.', 'Nuevos problemas: dos bloques en contacto o unidos por una cuerda, con la fuerza entre ellos; curvas con y sin peralte (velocidades máxima y mínima y si derrapa); péndulo cónico; loma y hondonada, y muelles (ley de Hooke, serie y paralelo, equilibrio en un plano y periodo de oscilación).', 'Fuerza mínima para que un bloque empiece a subir y el ángulo con el que menos cuesta, y el coeficiente de rozamiento a partir de una aceleración medida.', 'El dibujo se anima: el bloque se mueve, frena y vuelve, las masas de Atwood suben y bajan, el péndulo cónico gira y el muelle oscila. Se puede pausar.', 'Las fórmulas del desarrollo se ven como en los libros, y los ejemplos usan coma decimal.', 'Modo práctica con enunciado escrito para cada tipo de problema.'] },
       { v: '0.1.2', fecha: '2026-10-25', cambios: ['Arreglo: en el diagrama de fuerzas, el nombre del bloque ya no queda tapado por las flechas, el bloque se ve más grande y la flecha de la aceleración no cruza la normal.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: bloque en un plano horizontal o inclinado con rozamiento estático y dinámico, una fuerza aplicada con ángulo y, si quieres, una masa colgando de una polea. Dice si el bloque se mueve o el rozamiento lo sujeta y da la normal, el rozamiento, la aceleración y la tensión, con el desarrollo paso a paso.', 'Máquina de Atwood, también con una polea con masa.', 'Dibujo con el diagrama de fuerzas a escala y la aceleración, y la velocidad y el tiempo al recorrer una distancia.'] },
     ],
     circuitos: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Fuentes dependientes: de tensión o de corriente, controladas por una tensión entre dos nudos o por la corriente de otro elemento, también en el equivalente de Thévenin.', 'Condensadores y bobinas en régimen permanente (abierto y cortocircuito), con la carga y la energía que guardan.', 'Equivalente de Thévenin y de Norton entre dos nudos cualesquiera, no solo visto por una resistencia.', 'Superposición paso a paso: lo que da cada fuente sola y la suma, en una tabla.', 'Método de las mallas como segundo desarrollo, con las ecuaciones de cada malla y la comprobación con el de los nudos.', 'Esquema más claro: los nudos se colocan para que los elementos no se crucen, y se pueden mover arrastrándolos.', 'Editor visual: en el modo Dibujar, arrastra de un nudo a otro (o a un sitio vacío) para añadir un elemento.'] },
       { v: '0.1.2', fecha: '2026-10-25', cambios: ['Los valores admiten prefijos del SI: 4k7, 1,5k, 2M2 o 100m. Antes «1k» daba error.', 'Arreglo: si la carga está en paralelo con una fuente de tensión ideal (Rth = 0), en vez de «—» explica que no hay equivalente de Norton ni máxima transferencia de potencia.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: escribe el circuito como una lista de resistencias, fuentes de tensión y fuentes de corriente entre nudos, y obtén los potenciales, la corriente y la potencia de cada elemento por el método de los nudos, con las ecuaciones de Kirchhoff, el sistema en forma matricial y el balance de potencias.', 'Equivalente de Thévenin y de Norton visto por la resistencia que elijas, y máxima transferencia de potencia.', 'Esquema del circuito con el potencial de cada nudo y el sentido de cada corriente.'] },
     ],
     'solido-rigido': [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Rodadura, polea y péndulo animados: se ve la rueda girar mientras baja.', 'Momento de inercia de un cuerpo compuesto: varias piezas (varillas, discos, esferas, masas puntuales…) cada una a su distancia del eje.', 'Choques que hacen girar: bala que se incrusta en una varilla colgada (y hasta dónde sube) y persona que salta a una plataforma.', 'Péndulo físico (periodo y longitud equivalente) y varilla que cae girando por su base.', 'Equilibrio estático: escalera apoyada en una pared (¿resbala?, ¿hasta dónde se puede subir?) y viga sobre dos apoyos con cargas.', 'Fórmulas del desarrollo bien escritas y ejemplos con coma decimal.', 'Modo práctica con enunciado.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: momentos de inercia de esferas, cilindros, aros, varillas, discos y placas, con el teorema de Steiner y el radio de giro.', 'Rodadura por un plano inclinado: aceleración, velocidad al final, rozamiento necesario para que no deslice y qué pasa si no basta; comparación del tiempo que tarda cada cuerpo.', 'Polea con masa de la que cuelga un cuerpo: aceleración, tensión y balance de energía.', 'Conservación del momento angular, como la patinadora que encoge los brazos, con la variación de la energía cinética.'] },
     ],
     ondas: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Superposición: pulsaciones de dos frecuencias cercanas, con la envolvente, y dos ondas desfasadas (por la diferencia de caminos o por el desfase).', 'Energía y potencia que transporta una onda en una cuerda.', 'Reflexión y transmisión entre dos cuerdas: coeficientes, amplitudes, reparto de la potencia y animación del pulso.', 'Enlace a Efecto Doppler para los casos con viento, ángulo o cono de Mach.', 'Fórmulas del desarrollo bien escritas y ejemplos con coma decimal.', 'Modo práctica con enunciado.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ecuación de una onda armónica con ω y k en múltiplos de π, posición, velocidad y aceleración de un punto del medio y desfase entre dos puntos.', 'Ondas estacionarias en cuerdas y en tubos abiertos o cerrados: frecuencia de cada armónico, nodos y vientres, y velocidad en la cuerda con √(T/μ).', 'Efecto Doppler con la fuente y el observador moviéndose, y nivel sonoro en decibelios a distintas distancias y con varias fuentes.', 'Animación de la onda, de la onda estacionaria y de los frentes de onda del Doppler.'] },
     ],
     gases: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Mezclas de gases con la ley de Dalton: presiones parciales, fracciones molares, masa molar media y densidad, con un gráfico de barras.', 'Gases reales con la ecuación de Van der Waals: presión, factor de compresibilidad Z, comparación con el gas ideal, punto crítico y la isoterma dibujada.', 'Teoría cinética con el recorrido libre medio, el número de choques por segundo y la densidad de moléculas.', 'Caja de partículas animada que se mueve más rápido o más despacio según la temperatura.', 'Las fórmulas del desarrollo y de la teoría se ven como en los apuntes.', 'Los ejemplos usan coma decimal.', 'Modo práctica con enunciado escrito.', 'Enlace a Ciclos termodinámicos para Otto, Diesel, Brayton y Stirling.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ecuación de estado PV = nRT con P, V, T y n en varias unidades, los moles a partir de la masa y la densidad del gas.', 'Transformaciones isoterma, isobara, isocora y adiabática encadenadas, con el trabajo, el calor y la variación de energía interna de cada tramo, y ciclos con su rendimiento comparado con el de Carnot.', 'Diagrama P-V con las isotermas y el área del ciclo.', 'Teoría cinética: velocidades cuadrática media, media y más probable, energía cinética media y la distribución de Maxwell.'] },
     ],
     ciclos: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Nuevos ciclos Brayton (turbina de gas) y Stirling, este con y sin regenerador.', 'Ciclo propio: das la presión y el volumen de tres o cuatro estados y el tipo de cada tramo (isocora, isobara, recta, isoterma o adiabática).', 'Diagrama T-S animado junto al p-V y la variación de entropía de cada tramo en la tabla y en el desarrollo.', 'Potencia de un motor Otto o Diesel a partir de las revoluciones por minuto y el número de cilindros.', 'Modo práctica con enunciado: ejercicios al azar de cada ciclo y de máquinas térmicas.', 'Enlace a Gases ideales para encadenar transformaciones.'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['Arreglo: en el móvil, las fórmulas largas del desarrollo se cortaban por la derecha; ahora bajan de línea en cada igual.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ciclos de Carnot, Otto y Diesel con un gas ideal, con la tabla de estados, el trabajo, el calor y la energía interna de cada tramo y el rendimiento comparado con su fórmula y con Carnot.', 'Máquinas térmicas, frigoríficos y bombas de calor: el dato que falta, el rendimiento o la eficiencia, el límite de Carnot y si la máquina es posible, con la entropía del universo.', 'Diagrama p-V con un punto que recorre el ciclo y el cilindro con el émbolo, y el esquema de flujos de energía de las máquinas.'] },
     ],
     ph: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Hidrólisis de sales: pH del acetato de sodio, del cloruro de amonio o de una sal neutra, con la constante de hidrólisis.', 'Al revés: Ka o Kb a partir del pH medido, y la concentración que hace falta para un pH.', 'Preparar un tampón: el cociente sal/ácido y los gramos de sal para un pH dado.', 'Ácidos polipróticos (carbónico, fosfórico, sulfúrico con su segunda constante) y su valoración con una equivalencia por protón.', 'Mezclas de un ácido débil con una base fuerte, o al revés, como modo propio.', 'Agua a otra temperatura: Kw y el pH neutro cambian (6,63 a 50 °C).'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['Valoraciones de un ácido o una base débil: con muy poco valorante añadido, o muy cerca del punto de equivalencia, el pH ya sale bien. Antes se usaba Henderson-Hasselbalch también ahí y daba un pH equivocado (por ejemplo 2,05 en vez de 2,91 al empezar a valorar el ácido acético).'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: pH de ácidos y bases fuertes (también muy diluidos) y débiles, con el grado de disociación y la aproximación comprobada.', 'Mezclas de un ácido fuerte con una base fuerte y disoluciones reguladoras con Henderson-Hasselbalch, también al añadirles ácido o base.', 'Valoraciones de ácidos y bases fuertes y débiles: volumen y pH de equivalencia, pH a mitad, el pH con el volumen que pidas, el indicador adecuado y la curva.', 'Vaso con el color del indicador universal y las partículas, y una bureta que valora mientras se dibuja la curva.'] },
     ],
     fluidos: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Viscosidad: ley de Poiseuille en un tubo (caudal o diferencia de presión, perfil de velocidades y número de Reynolds) y ley de Stokes para una esfera que cae (velocidad límite o viscosidad a partir de ella).', 'Tubo de Pitot y medidor de Venturi con manómetro: la velocidad o el caudal a partir del desnivel.', 'Fuerza y centro de presiones sobre una presa o una compuerta sumergida, con el momento en la base.', 'Tensión superficial y capilaridad con la ley de Jurin, también para líquidos que no mojan como el mercurio.', 'Los ejemplos escriben los decimales con coma.', 'Modo práctica con enunciado: ejercicios al azar de cada tipo.'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['Arreglo: en el móvil, las fórmulas largas del desarrollo se cortaban por la derecha; ahora bajan de línea en cada igual.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: presión manométrica y absoluta a una profundidad, con la fuerza sobre el fondo, y alturas o densidades en un tubo en U con dos líquidos.', 'Prensa hidráulica: la fuerza que se consigue o la que hace falta para levantar una masa, con los recorridos de los émbolos.', 'Empuje de Arquímedes: si un cuerpo flota (y cuánto se sumerge) o se hunde (peso aparente y aceleración), y la densidad a partir del peso en el aire y dentro del fluido.', 'Tuberías con la ecuación de continuidad y Bernoulli, y el chorro de un depósito con Torricelli: velocidad, alcance, caudal y tiempo de vaciado.', 'Una animación de cada caso.'] },
     ],
     doppler: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Velocidades en ángulo: la fuente y el observador pueden moverse en cualquier dirección y solo cuenta la componente a lo largo de la recta que los une.', 'Nueva pestaña «Luz»: Doppler relativista con corrimiento al rojo o al azul, la velocidad de una galaxia a partir de la longitud de onda que llega, el Doppler transversal y la comparación con la fórmula clásica, sobre el espectro visible.', 'La gráfica de la fuente que pasa muestra la frecuencia que se oye en cada instante, con el retraso del sonido.', 'Modo práctica con enunciado: ejercicios al azar de cada tipo.'] },
       { v: '0.1.2', fecha: '2026-10-25', cambios: ['Arreglo: en el móvil, las fórmulas largas del desarrollo se cortaban por la derecha; ahora bajan de línea en cada igual.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas dentro del texto de la teoría se ven bien escritas, no con símbolos $.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: frecuencia que se oye con la fuente, el observador y el viento moviéndose, con la longitud de onda delante de la fuente.', 'Una fuente que pasa de largo: lo que se oye antes y después, el salto en hercios y semitonos y, al revés, su velocidad a partir de las dos frecuencias. Con el observador a un lado de la carretera, la gráfica del cambio gradual.', 'Eco en un obstáculo que se mueve (radar de tráfico, murciélago, ecografía Doppler): la frecuencia del eco y las pulsaciones, o la velocidad del obstáculo a partir de ellas.', 'Onda de choque: número de Mach, semiángulo del cono y cuándo se oye el estampido.', 'Animación de los frentes de onda y botón para escuchar la diferencia.'] },
     ],
     resistencias: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Nuevo modo de asociación: escribe 100 + (220 ‖ 330) y sale la resistencia equivalente paso a paso, y con una tensión, la corriente y la potencia.', 'Nuevo modo para conseguir un valor que no existe con dos normalizadas en serie o en paralelo (5 kΩ = 10 kΩ ‖ 10 kΩ).', 'Nuevos modos de resistencia para un LED, con el valor normalizado y la potencia que debe aguantar, y de divisor de tensión con normalizadas, también con carga.', 'Código impreso de los condensadores (104, 472J, 104K 2A, 4n7) con la tolerancia y la tensión, y el código de colores de las bobinas en μH.', 'Avisa si parece que estás leyendo la resistencia al revés y te dice qué valor saldría desde el otro extremo.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas dentro del texto de la teoría se ven bien escritas, no con símbolos $.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: elige los colores de una resistencia de 3, 4, 5 o 6 bandas y obtén el valor, la tolerancia, el margen del valor real y el coeficiente de temperatura, con el dibujo de la resistencia.', 'Del valor a los colores: escribe 4k7, 2M2 o 470R y te da las bandas y el valor normalizado más cercano de las series E6 a E96.', 'Códigos SMD de 3 y 4 cifras, con R y EIA-96.'] },
     ],
     faraday: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Hilo recto y espira rectangular: la espira se aleja o se acerca, o la corriente del hilo cambia, con el flujo integrado, la fem, el sentido y la fuerza sobre la espira.', 'Campo que cambia con una función del tiempo (B₀ + kt, B₀ + kt², B₀ sen ωt o B₀ e^(−t/τ)): fem en cualquier instante y gráficas de B(t) y ε(t).', 'Barra con masa: velocidad límite al tirar de ella o al caer por raíles verticales, y la distancia que recorre una barra lanzada hasta pararse, con v(t).', 'Varilla que gira por un extremo y disco de Faraday: ε = ½BωL².', 'Alternador: el par que hay que hacer para mantener el giro y la energía de cada vuelta.', 'Botones para copiar el enlace del ejercicio, copiar la solución como texto o en LaTeX e imprimirla o guardarla en PDF.', 'El desarrollo paso a paso escribe las fórmulas como en los libros: fracciones, raíces, exponentes y subíndices de verdad.', 'Enlace a Autoinducción e inducción mutua desde la teoría.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: fem y corriente inducidas en una barra que se desliza sobre unos raíles, con la fuerza que la frena y la potencia.', 'Bobina que gira en un campo (alternador): flujo y fem en función del tiempo, valores máximo y eficaz.', 'Flujo que cambia en un tiempo porque cambia el campo o el ángulo: fem media, corriente y carga.', 'Espira que atraviesa una región con campo: fem al entrar y al salir, fuerza y calor.', 'Sentido de la corriente por la ley de Lenz y animación con la gráfica de Φ y ε.'] },
     ],
@@ -683,8 +725,10 @@ const Mates = (() => {
 
 /* =====================================================================
    Ciclos termodinámicos y máquinas térmicas (sin DOM): los ciclos de
-   Carnot, Otto y Diesel con un gas ideal (estados, trabajo, calor y
-   variación de energía interna de cada tramo y el rendimiento), y las
+   Carnot, Otto, Diesel, Brayton, Stirling y uno propio dado por sus
+   estados, con un gas ideal (estados, trabajo, calor, variación de energía
+   interna y de entropía de cada tramo, el rendimiento y la potencia de un
+   motor a partir de las revoluciones), y las
    máquinas térmicas, frigoríficos y bombas de calor con el límite de
    Carnot y la variación de entropía del universo.
    Presiones en kPa, volúmenes en L, temperaturas en K y energías en J.
@@ -730,22 +774,39 @@ const Ciclos = (() => {
     } else if (tipo === 'isocora') {
       W = 0; Q = U;
       html = `Isocora: $W = 0$ y $Q = ΔU = n C_v (T_${hasta} − T_${de}) = ${f(n)} · ${f(G.Cv)} · (${f(b.T)} − ${f(a.T)})$ = <b>${f(Q)} J</b>`;
+    } else if (tipo === 'recta') {
+      W = ((a.P + b.P) / 2) * (b.V - a.V); Q = U + W;
+      html = `Recta en el diagrama p-V: el trabajo es el área del trapecio, $W = {P_${de} + P_${hasta}}/2 · (V_${hasta} − V_${de}) = {${f(a.P)} + ${f(b.P)}}/2 · (${f(b.V)} − ${f(a.V)})$ = ${f(W)} J, $ΔU = n C_v ΔT = ${f(U)}$ J y $Q = ΔU + W$ = <b>${f(Q)} J</b>`;
     } else {
       W = a.P * (b.V - a.V); Q = n * G.Cp * (b.T - a.T);
       html = `Isobara a ${f(a.P / 1000)} kPa: $W = P ΔV = ${f(a.P)} · (${f(b.V)} − ${f(a.V)})$ = ${f(W)} J, $Q = n C_p ΔT = ${f(n)} · ${f(G.Cp)} · (${f(b.T)} − ${f(a.T)})$ = <b>${f(Q)} J</b>, $ΔU = Q − W$ = ${f(U)} J`;
     }
-    return { de, a: hasta, nom, tipo, W, Q, U, html };
+    // variación de entropía del gas: ΔS = n C_v ln(T_b/T_a) + n R ln(V_b/V_a)
+    const S = tipo === 'adiabatica' ? 0 : n * G.Cv * Math.log(b.T / a.T) + n * R * Math.log(b.V / a.V);
+    // en una recta de p-V la temperatura puede pasar por un máximo entre los dos estados
+    let Tpico = Math.max(a.T, b.T);
+    if (tipo === 'recta') { const dP = b.P - a.P, dV = b.V - a.V, s0 = -(a.P * dV + a.V * dP) / (2 * dP * dV); if (s0 > 0 && s0 < 1) Tpico = Math.max(Tpico, ((a.P + dP * s0) * (a.V + dV * s0)) / (n * R)); }
+    return { de, a: hasta, nom, tipo, W, Q, U, S, Tpico, html };
   }
-  const NOMBRE = { isoterma: 'isoterma', adiabatica: 'adiabática', isocora: 'isocora', isobara: 'isobara' };
+  const NOMBRE = { isoterma: 'isoterma', adiabatica: 'adiabática', isocora: 'isocora', isobara: 'isobara', recta: 'recta en p-V' };
 
   // balance común de un ciclo
   function balance(est, tramos, pasos, formula) {
     const W = tramos.reduce((s, t) => s + t.W, 0), Qabs = tramos.reduce((s, t) => s + Math.max(0, t.Q), 0), Qced = tramos.reduce((s, t) => s + Math.min(0, t.Q), 0);
-    const eta = W / Qabs, Tmax = Math.max(...est.map((e) => e.T)), Tmin = Math.min(...est.map((e) => e.T)), etaC = 1 - Tmin / Tmax;
+    const eta = W / Qabs, Tmax = Math.max(...est.map((e) => e.T), ...tramos.map((t) => t.Tpico)), Tmin = Math.min(...est.map((e) => e.T)), etaC = 1 - Tmin / Tmax;
     pasos.push({ t: 'Balance del ciclo', html: `Vuelve al estado inicial, así que $ΔU = 0$ y $W_{neto} = Q_{neto}$ = <b>${f(W)} J</b><br>Calor absorbido $Q_{abs} = ${f(Qabs)}$ J, cedido $Q_{ced} = ${f(Qced)}$ J` });
     pasos.push({ t: 'Rendimiento', html: `$η = {W_{neto}}/{Q_{abs}} = {${f(W)}}/{${f(Qabs)}}$ = <b>${f(100 * eta, 3)} %</b>${formula ? `<br>${formula}` : ''}` });
     pasos.push({ t: 'Comparado con Carnot', html: `Una máquina de Carnot entre la temperatura más alta y la más baja del ciclo tendría $η_C = 1 − T_{mín}/T_{máx} = 1 − ${f(Tmin)}/${f(Tmax)}$ = ${f(100 * etaC, 3)} %, el máximo posible entre esas temperaturas.` });
+    pasos.push({ t: 'Entropía de cada tramo (diagrama T-S)', html: `En un gas ideal $ΔS = n C_v ln {T_b}/{T_a} + n R ln {V_b}/{V_a}$ (0 en las adiabáticas reversibles): ${tramos.map((t) => `${t.nom}: ${f(t.S)} J/K`).join(', ')}. La suma es 0 porque S es función de estado. En el diagrama T-S el área encerrada también es el trabajo neto.` });
     return { W, Qabs, Qced, eta, Tmax, Tmin, etaC };
+  }
+  // potencia de un motor de cuatro tiempos: un ciclo cada dos vueltas en cada cilindro
+  function potencia(sc, W, pasos) {
+    const rpm = lee(sc, 'rpm', 'las revoluciones por minuto', { opcional: true });
+    if (rpm === null) return null;
+    const cil = lee(sc, 'cil', 'el número de cilindros', { opcional: true }) ?? 1, P = (cil * W * rpm) / 120;
+    pasos.push({ t: 'Potencia del motor', html: `En un motor de cuatro tiempos cada cilindro hace un ciclo cada dos vueltas: $P = {N_{cil} · W · rpm}/{2 · 60} = {${f(cil)} · ${f(W)} · ${f(rpm)}}/{120}$ = <b>${f(P / 1000)} kW</b> (${f(P / 735.5)} CV). Es la potencia del ciclo ideal; la de un motor real es bastante menor.` });
+    return P;
   }
   // estado en unidades de clase, para la tabla
   const estado = (nom, P, V, T) => ({ nom, P, V, T });
@@ -798,7 +859,8 @@ const Ciclos = (() => {
     const tramos = ['adiabatica', 'isocora', 'adiabatica', 'isocora'].map((t, i) => tramo(t, est[i], est[(i + 1) % 4], n, G, est[i].nom, est[(i + 1) % 4].nom));
     for (const t of tramos) pasos.push({ t: `Tramo ${t.nom} (${NOMBRE[t.tipo]})`, html: t.html });
     const b = balance(est, tramos, pasos, `Con la fórmula del ciclo Otto: $η = 1 − r^{1 − γ} = 1 − ${f(r)}^{${f(1 - G.gam)}} = ${f(100 * (1 - r ** (1 - G.gam)), 3)}$ %: solo depende de la relación de compresión.`);
-    return { modo: 'otto', G, n, r, est, tramos, ...b, pasos };
+    const Pot = potencia(sc, b.W, pasos);
+    return { modo: 'otto', G, n, r, est, tramos, ...b, Pot, pasos };
   }
 
   /* ---------- Ciclo Diesel ---------- */
@@ -818,8 +880,71 @@ const Ciclos = (() => {
     for (const t of tramos) pasos.push({ t: `Tramo ${t.nom} (${NOMBRE[t.tipo]})`, html: t.html });
     const etaF = 1 - (rc ** G.gam - 1) / (G.gam * r ** (G.gam - 1) * (rc - 1));
     const b = balance(est, tramos, pasos, `Con la fórmula del ciclo Diesel: $η = 1 − {r_c^γ − 1}/{γ r^{γ − 1} (r_c − 1)} = ${f(100 * etaF, 3)}$ %. Un Otto con la misma r tendría ${f(100 * (1 - r ** (1 - G.gam)), 3)} %.`);
-    return { modo: 'diesel', G, n, r, rc, est, tramos, ...b, pasos };
+    const Pot = potencia(sc, b.W, pasos);
+    return { modo: 'diesel', G, n, r, rc, est, tramos, ...b, Pot, pasos };
   }
+
+  /* ---------- Ciclo Brayton (turbina de gas) ---------- */
+  // sc: { gas, rp (P2/P1), T1, P1 (kPa), V1 (L), T3 (entrada de la turbina) }
+  function brayton(sc) {
+    const G = gasDe(sc), rp = lee(sc, 'rp', 'la relación de presiones');
+    if (rp <= 1) throw new Error('La relación de presiones tiene que ser mayor que 1');
+    const I = inicial(sc, G), { T1, P1, V1, n } = I, e = (G.gam - 1) / G.gam;
+    const T2 = T1 * rp ** e, P2 = P1 * rp, V2 = V1 * rp ** (-1 / G.gam), T3 = lee(sc, 'T3', 'la temperatura a la entrada de la turbina');
+    if (T3 <= T2) throw new Error(`La temperatura a la entrada de la turbina tiene que ser mayor que la de salida del compresor (${f(T2)} K)`);
+    const V3 = (V2 * T3) / T2, T4 = T3 * rp ** -e, V4 = (V1 * T4) / T1;
+    const pasos = [I.paso,
+      { t: '1→2: compresor (adiabática)', html: `$P_2 = r_p P_1 = ${f(P2 / 1000)}$ kPa, $T_2 = T_1 r_p^{(γ − 1)/γ} = ${f(T1)} · ${f(rp)}^{${f(e)}}$ = ${f(T2)} K, $V_2 = V_1 r_p^{−1/γ}$ = ${f(V2 * 1000)} L` },
+      { t: '2→3: cámara de combustión (isobara)', html: `Llega a $T_3 = ${f(T3)}$ K a presión constante: $V_3 = V_2 T_3/T_2$ = ${f(V3 * 1000)} L` },
+      { t: '3→4: turbina (adiabática)', html: `$T_4 = T_3 r_p^{−(γ − 1)/γ}$ = ${f(T4)} K, $P_4 = P_1$, $V_4 = V_1 T_4/T_1$ = ${f(V4 * 1000)} L` }];
+    const est = [estado('1', P1, V1, T1), estado('2', P2, V2, T2), estado('3', P2, V3, T3), estado('4', P1, V4, T4)];
+    const tramos = ['adiabatica', 'isobara', 'adiabatica', 'isobara'].map((t, i) => tramo(t, est[i], est[(i + 1) % 4], n, G, est[i].nom, est[(i + 1) % 4].nom));
+    for (const t of tramos) pasos.push({ t: `Tramo ${t.nom} (${NOMBRE[t.tipo]})`, html: t.html });
+    const b = balance(est, tramos, pasos, `Con la fórmula del ciclo Brayton: $η = 1 − r_p^{−(γ − 1)/γ} = 1 − ${f(rp)}^{−${f(e)}} = ${f(100 * (1 - rp ** -e), 3)}$ %: solo depende de la relación de presiones.`);
+    return { modo: 'brayton', G, n, rp, est, tramos, ...b, pasos };
+  }
+
+  /* ---------- Ciclo Stirling ---------- */
+  // sc: { gas, n, Tc, Tf, V1 (mínimo), V2 (máximo) }: isoterma caliente, isocora, isoterma fría, isocora
+  function stirling(sc) {
+    const G = gasDe(sc), Tc = lee(sc, 'Tc', 'la temperatura del foco caliente'), Tf = lee(sc, 'Tf', 'la temperatura del foco frío');
+    if (Tf >= Tc) throw new Error('El foco frío tiene que estar a menos temperatura que el caliente');
+    const n = lee(sc, 'n', 'el número de moles'), V1 = lee(sc, 'V1', 'el volumen mínimo') / 1000, V2 = lee(sc, 'V2', 'el volumen máximo') / 1000;
+    if (V2 <= V1) throw new Error('El volumen máximo tiene que ser mayor que el mínimo');
+    const P = (V, T) => (n * R * T) / V;
+    const est = [estado('1', P(V1, Tc), V1, Tc), estado('2', P(V2, Tc), V2, Tc), estado('3', P(V2, Tf), V2, Tf), estado('4', P(V1, Tf), V1, Tf)];
+    const pasos = [{ t: 'Gas y estados', html: `Gas ideal ${G.nom}: $${G.frac} = ${f(G.Cv)}$ J/(mol·K), con n = ${f(n)} mol. Dos isotermas, a $T_c = ${f(Tc)}$ K y $T_f = ${f(Tf)}$ K, unidas por dos isocoras entre $V_1 = ${f(V1 * 1000)}$ L y $V_2 = ${f(V2 * 1000)}$ L. Las presiones salen de $P = nRT/V$.` }];
+    const tramos = ['isoterma', 'isocora', 'isoterma', 'isocora'].map((t, i) => tramo(t, est[i], est[(i + 1) % 4], n, G, est[i].nom, est[(i + 1) % 4].nom));
+    for (const t of tramos) pasos.push({ t: `Tramo ${t.nom} (${NOMBRE[t.tipo]})`, html: t.html });
+    const Wn = tramos.reduce((s2, t) => s2 + t.W, 0), etaReg = Wn / tramos[0].Q;
+    const b = balance(est, tramos, pasos, `Con un regenerador ideal, el calor que suelta el gas en la isocora 2→3 se guarda y se le devuelve en la 4→1; entonces solo se absorbe en la isoterma caliente y $η = W/Q_{12} = ${f(Wn)}/${f(tramos[0].Q)} = ${f(100 * etaReg, 3)}$ %, igual que Carnot.`);
+    return { modo: 'stirling', G, n, est, tramos, ...b, etaReg, pasos };
+  }
+
+  /* ---------- Ciclo propio: estados y tipo de cada tramo ---------- */
+  // sc: { gas, n, P1..P4 (kPa), V1..V4 (L; el 4 opcional), t12, t23, t34, tfin (el que vuelve al 1): 'auto' | 'isoterma' | 'adiabatica' }
+  function propio(sc) {
+    const G = gasDe(sc), n = lee(sc, 'n', 'el número de moles'), est = [];
+    for (let i = 1; i <= 4; i++) {
+      const P = lee(sc, `P${i}`, `la presión del estado ${i}`, { opcional: i === 4 }), V = lee(sc, `V${i}`, `el volumen del estado ${i}`, { opcional: i === 4 });
+      if (i === 4 && (P === null) !== (V === null)) throw new Error('Para el estado 4 hacen falta la presión y el volumen (o ninguno, para un ciclo de tres tramos)');
+      if (P !== null) est.push(estado(String(i), P * 1000, V / 1000, (P * V) / (n * R)));
+    }
+    const N = est.length, pasos = [{ t: 'Estados', html: `Gas ideal ${G.nom}, n = ${f(n)} mol. Cada temperatura sale de $T = PV/(nR)$: ${est.map((e) => `$T_${e.nom} = ${f(e.T)}$ K`).join(', ')}.` }];
+    const tramos = [];
+    for (let i = 0; i < N; i++) {
+      const a = est[i], b = est[(i + 1) % N], k = i === N - 1 ? 'tfin' : `t${a.nom}${b.nom}`, pedido = sc[k] || 'auto', cerca = (x, y) => Math.abs(x - y) <= 1e-6 * Math.max(Math.abs(x), Math.abs(y));
+      if (cerca(a.P, b.P) && cerca(a.V, b.V)) throw new Error(`Los estados ${a.nom} y ${b.nom} son el mismo`);
+      let tipo = cerca(a.V, b.V) ? 'isocora' : cerca(a.P, b.P) ? 'isobara' : 'recta';
+      if (pedido === 'isoterma') { if (Math.abs(a.P * a.V - b.P * b.V) > 0.01 * a.P * a.V) throw new Error(`El tramo ${a.nom}→${b.nom} no puede ser una isoterma: PV pasa de ${f(a.P * a.V)} a ${f(b.P * b.V)} J (tendría que ser igual)`); tipo = 'isoterma'; }
+      if (pedido === 'adiabatica') { if (Math.abs(a.P * a.V ** G.gam - b.P * b.V ** G.gam) > 0.01 * a.P * a.V ** G.gam) throw new Error(`El tramo ${a.nom}→${b.nom} no puede ser una adiabática: PV^γ no se conserva entre esos estados`); tipo = 'adiabatica'; }
+      tramos.push(tramo(tipo, a, b, n, G, a.nom, b.nom));
+    }
+    for (const t of tramos) pasos.push({ t: `Tramo ${t.nom} (${NOMBRE[t.tipo]})`, html: t.html });
+    const b = balance(est, tramos, pasos, W0(tramos) < 0 ? 'El trabajo neto sale negativo: el ciclo va en sentido antihorario en el diagrama p-V, así que no es un motor sino un frigorífico (o una bomba de calor).' : '');
+    return { modo: 'propio', G, n, est, tramos, ...b, pasos };
+  }
+  const W0 = (tramos) => tramos.reduce((s2, t) => s2 + t.W, 0);
 
   /* ---------- Máquina, frigorífico o bomba de calor ---------- */
   // sc: { tipo: 'motor' | 'frigorifico' | 'bomba', Qc, Qf, W (J, dos de los tres), Tc, Tf (K, opcionales) }
@@ -856,34 +981,42 @@ const Ciclos = (() => {
     if (sc.modo === 'otto') return otto(sc);
     if (sc.modo === 'diesel') return diesel(sc);
     if (sc.modo === 'maquina') return maquina(sc);
+    if (sc.modo === 'brayton') return brayton(sc);
+    if (sc.modo === 'stirling') return stirling(sc);
+    if (sc.modo === 'propio') return propio(sc);
     return carnot(sc);
   }
 
   const ejemplos = [
     { clave: 'carnot', nombre: 'Ciclo de Carnot entre 600 K y 300 K', sc: { modo: 'carnot', gas: 'di', Tc: '600', Tf: '300', n: '1', V1: '10', V2: '20' } },
-    { clave: 'carnot-mono', nombre: 'Carnot con un gas monoatómico', sc: { modo: 'carnot', gas: 'mono', Tc: '500', Tf: '350', n: '0.5', V1: '5', V2: '15' } },
-    { clave: 'otto', nombre: 'Motor de gasolina (ciclo Otto)', sc: { modo: 'otto', gas: 'di', r: '8', T1: '300', P1: '100', V1: '0.5', datos: 'T3', T3: '1800' } },
-    { clave: 'otto-calor', nombre: 'Ciclo Otto con el calor de la combustión', sc: { modo: 'otto', gas: 'di', r: '10', T1: '290', P1: '95', V1: '0.6', datos: 'Q', Q: '800' } },
-    { clave: 'diesel', nombre: 'Motor diésel', sc: { modo: 'diesel', gas: 'di', r: '18', rc: '2', T1: '300', P1: '100', V1: '1' } },
+    { clave: 'carnot-mono', nombre: 'Carnot con un gas monoatómico', sc: { modo: 'carnot', gas: 'mono', Tc: '500', Tf: '350', n: '0,5', V1: '5', V2: '15' } },
+    { clave: 'otto', nombre: 'Motor de gasolina (ciclo Otto)', sc: { modo: 'otto', gas: 'di', r: '8', T1: '300', P1: '100', V1: '0,5', datos: 'T3', T3: '1800', rpm: '', cil: '' } },
+    { clave: 'otto-calor', nombre: 'Ciclo Otto con el calor de la combustión', sc: { modo: 'otto', gas: 'di', r: '10', T1: '290', P1: '95', V1: '0,6', datos: 'Q', Q: '800', rpm: '', cil: '' } },
+    { clave: 'otto-potencia', nombre: 'Potencia de un motor de 4 cilindros a 3000 rpm', sc: { modo: 'otto', gas: 'di', r: '9', T1: '300', P1: '100', V1: '0,4', datos: 'T3', T3: '2000', rpm: '3000', cil: '4' } },
+    { clave: 'diesel', nombre: 'Motor diésel', sc: { modo: 'diesel', gas: 'di', r: '18', rc: '2', T1: '300', P1: '100', V1: '1', rpm: '', cil: '' } },
+    { clave: 'brayton', nombre: 'Turbina de gas (ciclo Brayton)', sc: { modo: 'brayton', gas: 'di', rp: '10', T1: '300', P1: '100', V1: '1', T3: '1400' } },
+    { clave: 'stirling', nombre: 'Motor Stirling', sc: { modo: 'stirling', gas: 'mono', Tc: '700', Tf: '300', n: '1', V1: '1', V2: '3' } },
+    { clave: 'rectangulo', nombre: 'Ciclo rectangular (dos isobaras y dos isocoras)', sc: { modo: 'propio', gas: 'mono', n: '1', P1: '100', V1: '10', P2: '300', V2: '10', P3: '300', V3: '30', P4: '100', V4: '30', t12: 'auto', t23: 'auto', t34: 'auto', tfin: 'auto' } },
+    { clave: 'triangulo', nombre: 'Ciclo triangular con una recta en p-V', sc: { modo: 'propio', gas: 'di', n: '0,5', P1: '100', V1: '10', P2: '300', V2: '10', P3: '100', V3: '30', P4: '', V4: '', t12: 'auto', t23: 'auto', t34: 'auto', tfin: 'auto' } },
     { clave: 'motor', nombre: 'Máquina térmica: ¿es posible?', sc: { modo: 'maquina', tipo: 'motor', Qc: '1000', Qf: '', W: '350', Tc: '500', Tf: '300' } },
     { clave: 'imposible', nombre: 'Un inventor promete un 60 %', sc: { modo: 'maquina', tipo: 'motor', Qc: '1000', Qf: '400', W: '', Tc: '600', Tf: '300' } },
     { clave: 'frigorifico', nombre: 'Frigorífico doméstico', sc: { modo: 'maquina', tipo: 'frigorifico', Qc: '', Qf: '300', W: '100', Tc: '298', Tf: '268' } },
     { clave: 'bomba', nombre: 'Bomba de calor para calefacción', sc: { modo: 'maquina', tipo: 'bomba', Qc: '3500', Qf: '', W: '1000', Tc: '308', Tf: '278' } },
   ];
 
-  return { resolver, carnot, otto, diesel, maquina, ejemplos, f, R, GASES };
+  return { resolver, carnot, otto, diesel, brayton, stirling, propio, maquina, ejemplos, f, R, GASES };
 })();
 
 /* =====================================================================
    Ciclos termodinámicos: interfaz (modo, datos, resultados, tabla de
-   estados y tramos, diagrama p-V con un punto que recorre el ciclo y el
-   cilindro con el émbolo, o el esquema de flujos de una máquina, y
+   estados y tramos, diagramas p-V y T-S con un punto que recorre el ciclo
+   y el cilindro con el émbolo, o el esquema de flujos de una máquina, y
    desarrollo). El cálculo está en ciclos/fisica.js (Ciclos).
    ===================================================================== */
 (() => {
   const { $, esc, copia, txt } = Herramienta;
   const C = Ciclos, f = C.f, CLAVE = 'ciclos-v1';
-  const MODOS = [['carnot', 'Ciclo de Carnot'], ['otto', 'Ciclo Otto (gasolina)'], ['diesel', 'Ciclo Diesel'], ['maquina', 'Máquina, frigorífico o bomba de calor']];
+  const MODOS = [['carnot', 'Ciclo de Carnot'], ['otto', 'Ciclo Otto (gasolina)'], ['diesel', 'Ciclo Diesel'], ['brayton', 'Ciclo Brayton (turbina de gas)'], ['stirling', 'Ciclo Stirling'], ['propio', 'Ciclo propio (estados en p-V)'], ['maquina', 'Máquina, frigorífico o bomba de calor']];
 
   let sc = copia(C.ejemplos[0].sc);
   try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && MODOS.some(([k]) => k === g.modo)) sc = g; } catch (e) { /* sin almacenamiento */ }
@@ -900,6 +1033,9 @@ const Ciclos = (() => {
     carnot: 'El ciclo empieza en el estado 1 con una expansión isoterma a la temperatura del foco caliente, de V₁ a V₂.',
     otto: 'La relación de compresión es r = V₁/V₂. La combustión se da con la temperatura que alcanza el gas o con el calor que recibe.',
     diesel: 'La relación de corte es V₃/V₂: cuánto se expande el gas mientras se inyecta el combustible.',
+    brayton: 'La relación de presiones es r_p = P₂/P₁: la que da el compresor. T₃ es la temperatura de los gases a la entrada de la turbina.',
+    stirling: 'Dos isotermas y dos isocoras entre el volumen mínimo V₁ y el máximo V₂. El ciclo empieza en el estado 1 con una expansión isoterma a la temperatura caliente.',
+    propio: 'Da la presión y el volumen de cada estado, en orden; el cuarto es opcional (ciclo de tres tramos). Entre dos estados con el mismo V o la misma P el tramo es isocora o isobara; si no, es una recta en p-V, salvo que digas que es una isoterma o una adiabática. Para encadenar transformaciones a partir de un estado, abre Gases ideales.',
     maquina: 'Escribe dos de los tres (Q del foco caliente, Q del foco frío y W) y deja el otro vacío. Con las temperaturas de los focos se compara con Carnot.',
   };
   function formulario() {
@@ -908,14 +1044,23 @@ const Ciclos = (() => {
     else if (sc.modo === 'otto') {
       h += gas() + fila('r', 'Relación de compresión r') + fila('T1', 'Temperatura inicial', 'K') + fila('P1', 'Presión inicial', 'kPa') + fila('V1', 'Volumen inicial (cilindrada)', 'L');
       h += elige('datos', 'Combustión', [['T3', 'Conozco la temperatura máxima'], ['Q', 'Conozco el calor que recibe']]) + (sc.datos === 'Q' ? fila('Q', 'Calor de la combustión', 'J') : fila('T3', 'Temperatura máxima T₃', 'K'));
-    } else if (sc.modo === 'diesel') h += gas() + fila('r', 'Relación de compresión r') + fila('rc', 'Relación de corte r<sub>c</sub>') + fila('T1', 'Temperatura inicial', 'K') + fila('P1', 'Presión inicial', 'kPa') + fila('V1', 'Volumen inicial', 'L');
-    else {
+      h += motorF();
+    } else if (sc.modo === 'diesel') h += gas() + fila('r', 'Relación de compresión r') + fila('rc', 'Relación de corte r<sub>c</sub>') + fila('T1', 'Temperatura inicial', 'K') + fila('P1', 'Presión inicial', 'kPa') + fila('V1', 'Volumen inicial', 'L') + motorF();
+    else if (sc.modo === 'brayton') h += gas() + fila('rp', 'Relación de presiones r<sub>p</sub>') + fila('T1', 'Temperatura del aire que entra', 'K') + fila('P1', 'Presión del aire que entra', 'kPa') + fila('V1', 'Volumen inicial', 'L') + fila('T3', 'Temperatura a la entrada de la turbina T₃', 'K');
+    else if (sc.modo === 'stirling') h += gas() + fila('Tc', 'Temperatura del foco caliente', 'K') + fila('Tf', 'Temperatura del foco frío', 'K') + fila('n', 'Moles de gas', 'mol') + fila('V1', 'Volumen mínimo V₁', 'L') + fila('V2', 'Volumen máximo V₂', 'L');
+    else if (sc.modo === 'propio') {
+      const tipoT = (k, nom) => elige(k, nom, [['auto', 'Isocora, isobara o recta'], ['isoterma', 'Isoterma'], ['adiabatica', 'Adiabática']]);
+      h += gas() + fila('n', 'Moles de gas', 'mol');
+      for (let i = 1; i <= 4; i++) h += sep(`Estado ${i}${i === 4 ? ' (opcional)' : ''}`) + fila(`P${i}`, `Presión P${'₁₂₃₄'[i - 1]}`, 'kPa') + fila(`V${i}`, `Volumen V${'₁₂₃₄'[i - 1]}`, 'L');
+      h += sep('Tramos') + tipoT('t12', 'Tramo 1→2') + tipoT('t23', 'Tramo 2→3') + tipoT('t34', 'Tramo 3→4') + tipoT('tfin', 'Tramo que vuelve al 1');
+    } else {
       h += elige('tipo', 'Qué es', [['motor', 'Una máquina térmica (motor)'], ['frigorifico', 'Un frigorífico'], ['bomba', 'Una bomba de calor']]);
       h += fila('Qc', 'Calor del foco caliente Q<sub>c</sub>', 'J') + fila('Qf', 'Calor del foco frío Q<sub>f</sub>', 'J') + fila('W', 'Trabajo W', 'J') + sep('Opcional') + fila('Tc', 'Temperatura del foco caliente', 'K') + fila('Tf', 'Temperatura del foco frío', 'K');
     }
     $('#campos').innerHTML = h;
     $('#nota').textContent = NOTAS[sc.modo];
   }
+  function motorF() { return sep('Opcional: potencia del motor') + fila('rpm', 'Revoluciones por minuto', 'rpm') + fila('cil', 'Número de cilindros'); }
   const vacioC = (v) => v === undefined || v === null || String(v).trim() === '';
   $('#campos').addEventListener('input', (e) => { const t = e.target; if (t.tagName !== 'INPUT') return; sc[t.dataset.k] = t.value; $('#ejemplos').value = ''; calcula(); });
   $('#campos').addEventListener('change', (e) => {
@@ -940,7 +1085,7 @@ const Ciclos = (() => {
 
   /* ---------- Cálculo ---------- */
   const dato = (t, v) => `<div><span>${t}</span><b>${v}</b></div>`;
-  const NOMT = { isoterma: 'isoterma', adiabatica: 'adiabática', isocora: 'isocora', isobara: 'isobara' };
+  const NOMT = { isoterma: 'isoterma', adiabatica: 'adiabática', isocora: 'isocora', isobara: 'isobara', recta: 'recta' };
   function calcula() {
     const err = $('#error');
     try { sol = C.resolver(sc); } catch (e) {
@@ -955,10 +1100,10 @@ const Ciclos = (() => {
       ley = 'El grosor de cada flecha es proporcional a la energía que pasa en cada ciclo.';
       $('#tablas').hidden = true;
     } else {
-      h = dato('Rendimiento', `η = ${f(100 * sol.eta, 3)} %`) + dato('Trabajo neto', `W = ${f(sol.W)} J`) + dato('Calor absorbido', `Q<sub>abs</sub> = ${f(sol.Qabs)} J`) + dato('Calor cedido', `Q<sub>ced</sub> = ${f(sol.Qced)} J`) + dato('Carnot entre T<sub>máx</sub> y T<sub>mín</sub>', `η<sub>C</sub> = ${f(100 * sol.etaC, 3)} %`);
-      ley = 'El punto recorre el ciclo y el cilindro muestra el émbolo y la temperatura del gas. El área encerrada es el trabajo neto.';
+      h = dato('Rendimiento', `η = ${f(100 * sol.eta, 3)} %`) + (sol.Pot ? dato('Potencia del motor', `P = ${f(sol.Pot / 1000)} kW`) : '') + (sol.etaReg ? dato('Con regenerador ideal', `η = ${f(100 * sol.etaReg, 3)} %`) : '') + dato('Trabajo neto', `W = ${f(sol.W)} J`) + dato('Calor absorbido', `Q<sub>abs</sub> = ${f(sol.Qabs)} J`) + dato('Calor cedido', `Q<sub>ced</sub> = ${f(sol.Qced)} J`) + dato('Carnot entre T<sub>máx</sub> y T<sub>mín</sub>', `η<sub>C</sub> = ${f(100 * sol.etaC, 3)} %`);
+      ley = 'El punto recorre el ciclo y el cilindro muestra el émbolo y la temperatura del gas. Abajo, el mismo ciclo en el diagrama T-S. En los dos, el área encerrada es el trabajo neto.';
       $('#estados').innerHTML = '<tr><th>Estado</th><th>P (kPa)</th><th>V (L)</th><th>T (K)</th></tr>' + sol.est.map((e) => `<tr><td>${e.nom}</td><td>${f(e.P / 1000)}</td><td>${f(e.V * 1000)}</td><td>${f(e.T)}</td></tr>`).join('');
-      $('#tramos').innerHTML = '<tr><th>Tramo</th><th>Proceso</th><th>W (J)</th><th>Q (J)</th><th>ΔU (J)</th></tr>' + sol.tramos.map((t) => `<tr><td>${t.nom}</td><td>${NOMT[t.tipo]}</td><td>${f(t.W)}</td><td>${f(t.Q)}</td><td>${f(t.U)}</td></tr>`).join('') + `<tr class="tot"><td>Ciclo</td><td></td><td>${f(sol.W)}</td><td>${f(sol.W)}</td><td>0</td></tr>`;
+      $('#tramos').innerHTML = '<tr><th>Tramo</th><th>Proceso</th><th>W (J)</th><th>Q (J)</th><th>ΔU (J)</th><th>ΔS (J/K)</th></tr>' + sol.tramos.map((t) => `<tr><td>${t.nom}</td><td>${NOMT[t.tipo]}</td><td>${f(t.W)}</td><td>${f(t.Q)}</td><td>${f(t.U)}</td><td>${f(t.S)}</td></tr>`).join('') + `<tr class="tot"><td>Ciclo</td><td></td><td>${f(sol.W)}</td><td>${f(sol.W)}</td><td>0</td><td>0</td></tr>`;
       $('#tablas').hidden = false;
     }
     $('#resumen').innerHTML = h; $('#leyenda').textContent = ley;
@@ -984,6 +1129,7 @@ const Ciclos = (() => {
     if (t.tipo === 'isocora') return { V: a.V, P: a.P + (b.P - a.P) * s };
     const V = a.V + (b.V - a.V) * s;
     if (t.tipo === 'isobara') return { V, P: a.P };
+    if (t.tipo === 'recta') return { V, P: a.P + (b.P - a.P) * s };
     if (t.tipo === 'isoterma') return { V, P: (a.P * a.V) / V };
     return { V, P: a.P * (a.V / V) ** sol.G.gam };
   }
@@ -997,6 +1143,7 @@ const Ciclos = (() => {
     const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h); g.lineCap = 'round'; g.lineJoin = 'round';
     if (!sol) return;
     if (!col['--ink']) colores();
+    $('#ts').hidden = sol.modo === 'maquina';
     if (sol.modo === 'maquina') return flujos(g, w, h);
     // diagrama p-V
     const ml = 56, mt = 18, mb = 34, wd = Math.min(w * 0.66, w - 150), mr = w - wd;
@@ -1029,6 +1176,26 @@ const Ciclos = (() => {
     else if (t.Q < -1e-9) { flecha(g, cx + cw + 4, cb - alto / 2, 26, 0, col['--tension'], 3); texto(g, cx + cw + 8, cb - alto / 2 - 14, 'sale Q', col['--tension'], 'left'); }
     else texto(g, cx + cw + 8, cb - 10, 'aislado', col['--muted'], 'left');
     texto(g, cx, mt, `${t.nom}: ${NOMT[t.tipo]}`, col['--ink'], 'left', '600 ');
+    diagramaTS(t, u - i);
+  }
+  /* ---------- Diagrama T-S ---------- */
+  // entropía respecto al estado 1: S = n C_v ln(T/T₁) + n R ln(V/V₁)
+  const entropia = (q) => { const e1 = sol.est[0], T = (q.P * q.V) / (sol.n * C.R); return { T, S: sol.n * sol.G.Cv * Math.log(T / e1.T) + sol.n * C.R * Math.log(q.V / e1.V) }; };
+  function diagramaTS(tAct, sAct) {
+    const { g, w, h } = Herramienta.lienzo('#ts');
+    if (!w || !sol || sol.modo === 'maquina') return;
+    const pts = sol.tramos.map((t) => Array.from({ length: 41 }, (_, k) => entropia(enTramo(t, k / 40))));
+    const todos = pts.flat(), Smin = Math.min(...todos.map((p) => p.S)), Smax = Math.max(...todos.map((p) => p.S)), Tmax = Math.max(...todos.map((p) => p.T)) * 1.06, Tmin0 = Math.min(...todos.map((p) => p.T)) * 0.85;
+    const ml = 56, mt = 18, mb = 34, mr = 16, dS = Smax - Smin || 1;
+    const X = (S) => ml + ((S - Smin + 0.06 * dS) / (1.12 * dS)) * (w - ml - mr), Y = (T) => mt + (1 - (T - Tmin0) / (Tmax - Tmin0)) * (h - mt - mb);
+    g.strokeStyle = col['--muted']; g.lineWidth = 1; g.beginPath(); g.moveTo(ml, mt); g.lineTo(ml, h - mb); g.lineTo(w - mr, h - mb); g.stroke();
+    texto(g, ml - 8, mt, 'T (K)', col['--muted'], 'right'); texto(g, w - mr, h - mb - 10, 'S − S₁ (J/K)', col['--muted'], 'right');
+    for (const T of [sol.Tmin, sol.Tmax]) texto(g, ml - 6, Y(T), txt(f(T, 3)), col['--muted'], 'right');
+    for (const S of [Smin, Smax]) texto(g, X(S), h - mb + 14, txt(f(S, 3)), col['--muted']);
+    g.beginPath(); pts.flat().forEach((p, k) => (k ? g.lineTo(X(p.S), Y(p.T)) : g.moveTo(X(p.S), Y(p.T)))); g.closePath(); g.fillStyle = col['--accent']; g.globalAlpha = 0.12; g.fill(); g.globalAlpha = 1;
+    sol.tramos.forEach((t, i) => { g.strokeStyle = t.Q > 1e-9 ? col['--peso'] : t.Q < -1e-9 ? col['--tension'] : col['--ink']; g.lineWidth = 2.4; g.beginPath(); pts[i].forEach((p, k) => (k ? g.lineTo(X(p.S), Y(p.T)) : g.moveTo(X(p.S), Y(p.T)))); g.stroke(); });
+    sol.est.forEach((e, i) => { const p = pts[i][0]; punto(g, X(p.S), Y(p.T), 4, col['--ink']); texto(g, X(p.S) + 10, Y(p.T) - 10, e.nom, col['--ink'], 'left', '600 '); });
+    const q = entropia(enTramo(tAct, sAct)); punto(g, X(q.S), Y(q.T), 6.5, colorT(q.T));
   }
   // máquina: focos y flechas de energía
   function flujos(g, w, h) {
@@ -1062,8 +1229,38 @@ const Ciclos = (() => {
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { colores(); dibuja(); });
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('ciclos').current;
+  /* ---------- Modo práctica: un ejercicio con enunciado ---------- */
+  function azar() {
+    const ent = (a, b) => a + Math.floor(Math.random() * (b - a + 1)), de = (l) => l[ent(0, l.length - 1)], c = (x) => String(x).replace('.', ',');
+    const tipos = [
+      () => ({ modo: 'carnot', gas: de(['di', 'mono']), Tc: String(ent(5, 9) * 100), Tf: String(ent(25, 40) * 10), n: c(de([0.5, 1, 2])), V1: String(ent(2, 10)), V2: '' }),
+      () => ({ modo: 'otto', gas: 'di', r: String(ent(7, 11)), T1: '300', P1: '100', V1: c(de([0.4, 0.5, 0.6])), datos: 'T3', T3: String(ent(15, 22) * 100), rpm: Math.random() < 0.5 ? '' : String(ent(2, 6) * 1000), cil: '4' }),
+      () => ({ modo: 'diesel', gas: 'di', r: String(ent(15, 22)), rc: c(de([1.5, 2, 2.5, 3])), T1: '300', P1: '100', V1: c(de([0.5, 1])), rpm: '', cil: '' }),
+      () => ({ modo: 'brayton', gas: 'di', rp: String(ent(6, 16)), T1: '300', P1: '100', V1: '1', T3: String(ent(11, 16) * 100) }),
+      () => ({ modo: 'stirling', gas: de(['mono', 'di']), Tc: String(ent(5, 9) * 100), Tf: '300', n: '1', V1: '1', V2: String(ent(2, 4)) }),
+      () => ({ modo: 'propio', gas: de(['mono', 'di']), n: '1', P1: '100', V1: '10', P2: String(ent(2, 4) * 100), V2: '10', P3: '', V3: String(ent(2, 4) * 10), P4: '100', V4: '', t12: 'auto', t23: 'auto', t34: 'auto', tfin: 'auto' }),
+      () => ({ modo: 'maquina', tipo: de(['motor', 'frigorifico', 'bomba']), Qc: '', Qf: String(ent(3, 9) * 100), W: String(ent(1, 4) * 100), Tc: String(ent(29, 60) * 10), Tf: String(ent(26, 28) * 10) }),
+    ];
+    sc = de(tipos)();
+    if (sc.modo === 'carnot') sc.V2 = String(+sc.V1 * ent(2, 3));
+    if (sc.modo === 'propio') { sc.P3 = sc.P2; sc.V4 = sc.V3; }
+    formulario(); sel.value = ''; calcula();
+  }
+  const enunciado = () => {
+    const e = (x) => esc(String(x ?? '').replace('.', ',')), g = sc.gas === 'mono' ? 'un gas ideal monoatómico' : 'aire (gas ideal diatómico)';
+    const mot = sc.rpm ? ` Si el motor tiene ${e(sc.cil || 1)} cilindros como este y gira a ${e(sc.rpm)} rpm, ¿qué potencia da?` : '';
+    if (sc.modo === 'carnot') return `${e(sc.n)} mol de ${g} recorren un ciclo de Carnot entre ${e(sc.Tc)} K y ${e(sc.Tf)} K. La expansión isoterma va de ${e(sc.V1)} L a ${e(sc.V2)} L. Calcula los estados, el calor y el trabajo de cada tramo y el rendimiento.`;
+    if (sc.modo === 'otto') return `Un ciclo Otto con ${g} tiene una relación de compresión ${e(sc.r)}. Al empezar la compresión el gas está a ${e(sc.T1)} K y ${e(sc.P1)} kPa en ${e(sc.V1)} L, y tras la combustión llega a ${e(sc.T3)} K. Calcula los estados, el trabajo neto y el rendimiento.${mot}`;
+    if (sc.modo === 'diesel') return `Un ciclo Diesel con ${g} tiene una relación de compresión ${e(sc.r)} y de corte ${e(sc.rc)}. Al empezar, el gas está a ${e(sc.T1)} K y ${e(sc.P1)} kPa en ${e(sc.V1)} L. Calcula los estados, el trabajo neto y el rendimiento.${mot}`;
+    if (sc.modo === 'brayton') return `Una turbina de gas funciona con un ciclo Brayton de relación de presiones ${e(sc.rp)}. Entra aire a ${e(sc.T1)} K y ${e(sc.P1)} kPa (${e(sc.V1)} L) y los gases llegan a la turbina a ${e(sc.T3)} K. Calcula las temperaturas, el trabajo neto y el rendimiento.`;
+    if (sc.modo === 'stirling') return `${e(sc.n)} mol de ${g} recorren un ciclo Stirling entre ${e(sc.Tc)} K y ${e(sc.Tf)} K, con volúmenes de ${e(sc.V1)} L y ${e(sc.V2)} L. Calcula el trabajo neto y el rendimiento, sin regenerador y con un regenerador ideal.`;
+    if (sc.modo === 'propio') return `${e(sc.n)} mol de ${g} recorren un ciclo de cuatro tramos por los estados (${e(sc.P1)} kPa, ${e(sc.V1)} L), (${e(sc.P2)} kPa, ${e(sc.V2)} L), (${e(sc.P3)} kPa, ${e(sc.V3)} L) y (${e(sc.P4)} kPa, ${e(sc.V4)} L), unidos por isocoras e isobaras. Calcula W, Q, ΔU y ΔS de cada tramo y el rendimiento.`;
+    const que = sc.tipo === 'motor' ? 'Una máquina térmica cede' : sc.tipo === 'frigorifico' ? 'Un frigorífico saca' : 'Una bomba de calor saca';
+    return `${que} ${e(sc.Qf)} J ${sc.tipo === 'motor' ? 'al foco frío' : 'del foco frío'} por ciclo con un trabajo de ${e(sc.W)} J, entre focos a ${e(sc.Tc)} K y ${e(sc.Tf)} K. Calcula el calor del foco caliente, ${sc.tipo === 'motor' ? 'el rendimiento' : 'la eficiencia'} y si es posible comparándola con Carnot.`;
+  };
+
   formulario(); colores(); calcula(); requestAnimationFrame(bucle);
-  window.CiclosApp = { abrirEjemplo, resultado: () => sol && { modo: sol.modo, eta: sol.eta, W: sol.W, ef: sol.ef, posible: sol.posible }, estado: () => copia(sc), pausa: () => { anda = false; } };
+  window.CiclosApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { modo: sol.modo, eta: sol.eta, W: sol.W, ef: sol.ef, posible: sol.posible, Pot: sol.Pot }, estado: () => copia(sc), pausa: () => { anda = false; } };
 })();
 
 /* =====================================================================
@@ -1357,8 +1554,10 @@ const Practica = (() => {
 
   // lo que cambia de una herramienta a otra; lo demás sale de la estructura común de las páginas
   const CONF = {
-    calorimetria: { items: '#te' },
-    disoluciones: { items: '#valores > .valor:not(.dato)' },
+    // calorimetría: una mezcla, un problema al revés, un calentador o una dilatación
+    calorimetria: { datos: null, items: '#te, #resumen-d > div', genera: () => window.CalorApp?.azar(), enunciado: () => window.CalorApp?.enunciado() },
+    // disoluciones: lo que se pide depende de la pestaña abierta (solo cuentan los que se ven)
+    disoluciones: { items: '#valores > .valor:not(.dato), #valores-prep > .valor, #valores-col > .valor, #res-dil, #res-mez' },
     matrices: { items: '#res' },
     // solo sistemas compatibles determinados: la solución paramétrica no se pregunta por huecos
     // complejos: una operación al azar con números pequeños (los datos son textos como 3 − 2i)
@@ -1380,6 +1579,24 @@ const Practica = (() => {
     intervalos: { datos: null, items: '#res > div', genera: () => window.IntervalosApp?.azar(), enunciado: () => window.IntervalosApp?.enunciado() },
     // ondasem: una onda plana, una intensidad o un medio con pérdidas
     'ondas-em': { datos: null, items: '#res > div', genera: () => window.OndasEMApp?.azar(), enunciado: () => window.OndasEMApp?.enunciado() },
+    // trabajo y energía: una rampa con muelle, un rizo, un péndulo, una montaña rusa o una fuerza variable
+    'trabajo-y-energia': { datos: null, items: '#resumen > div', genera: () => window.EnergiaApp?.azar(), enunciado: () => window.EnergiaApp?.enunciado() },
+    // tiro parabólico: un tiro, un blanco, una frenada, un encuentro o un giro (cuentan los resultados de la pestaña abierta)
+    'tiro-parabolico': { datos: null, items: '#resumen > div, #resumen-r > div, #resumen-c > div', genera: () => window.TiroApp?.azar(), enunciado: () => window.TiroApp?.enunciado() },
+    // sólido rígido: un momento de inercia, una rodadura, una polea, una patinadora, un choque, un péndulo o una escalera
+    'solido-rigido': { datos: null, items: '#res > div', genera: () => window.SolidoApp?.azar(), enunciado: () => window.SolidoApp?.enunciado() },
+    // ondas: una cuerda, un tubo, un Doppler, un nivel sonoro, unas pulsaciones, una potencia o una reflexión
+    ondas: { datos: null, items: '#res > div', genera: () => window.OndasApp?.azar(), enunciado: () => window.OndasApp?.enunciado() },
+    // doppler: una fuente en línea o en ángulo, una que pasa, un eco, un cono de Mach o una luz que se corre al rojo
+    doppler: { datos: null, items: '#resumen > div', genera: () => window.DopplerApp?.azar(), enunciado: () => window.DopplerApp?.enunciado() },
+    // ciclos: un Carnot, un Otto, un Diesel, un Brayton, un Stirling, un ciclo propio o una máquina
+    ciclos: { datos: null, items: '#resumen > div', genera: () => window.CiclosApp?.azar(), enunciado: () => window.CiclosApp?.enunciado() },
+    // fluidos: una presión, un tubo en U, una prensa, un empuje, una tubería, un chorro, una viscosidad, un medidor, una presa o un capilar
+    // gases: un estado, una transformación, una mezcla, un gas real o una velocidad molecular
+    gases: { datos: null, items: '#res > div', genera: () => window.GasesApp?.azar(), enunciado: () => window.GasesApp?.enunciado() },
+    fluidos: { datos: null, items: '#resumen > div', genera: () => window.FluidosApp?.azar(), enunciado: () => window.FluidosApp?.enunciado() },
+    // dinamica: un bloque en un plano, dos bloques, Atwood, una curva, un péndulo cónico o un muelle
+    dinamica: { datos: null, items: '#res > div', genera: () => window.DinamicaApp?.azar(), enunciado: () => window.DinamicaApp?.enunciado() },
     // interferencia: Young, una rendija, una red o una lámina delgada
     interferencia: { datos: null, items: '#res > div', genera: () => window.InterferenciaApp?.azar(), enunciado: () => window.InterferenciaApp?.enunciado() },
     // laplace: una transformada, una inversa por fracciones simples o una EDO; se preguntan los valores numéricos
@@ -1388,7 +1605,8 @@ const Practica = (() => {
     derivadas: { datos: null, items: '#resumen > div.num', genera: () => window.DerivadasApp?.azar(), enunciado: () => window.DerivadasApp?.enunciado() },
     complejos: { datos: null, genera: () => window.ComplejosApp?.azar(), enunciado: () => window.ComplejosApp?.enunciado() },
     sistemas: { items: '#res', valido: () => !/[λμ]|incompatible|no tiene/i.test(document.querySelector('#res')?.textContent + document.querySelector('#tipo')?.textContent) },
-    estadistica: { items: '#res' },
+    // distribuciones: un ejercicio con enunciado (normal, binomial, Poisson, valores críticos…)
+    estadistica: { datos: null, items: '#res', genera: () => window.EstadisticaApp?.azar(), enunciado: () => window.EstadisticaApp?.enunciado() },
     // regresión: una tabla de datos al azar alrededor de una recta (están en un textarea, no en campos numéricos)
     regresion: { datos: null, genera: () => window.RegresionApp?.azar(), enunciado: () => 'Con los datos de la tabla, calcula la recta de regresión de Y sobre X, la de X sobre Y, el coeficiente de correlación, las medias, la covarianza y la estimación de y que se pide.' },
     // resistencias: unos colores al azar (no hay números que cambiar en los datos)
@@ -1397,14 +1615,16 @@ const Practica = (() => {
       // el enunciado del ejemplo ya no vale con los datos nuevos
       despues: () => pon(document.querySelector('#enunciado'), 'Ejercicio de práctica: calcula el campo magnético en los puntos de las preguntas con las fuentes de la izquierda.'),
       antes: () => { const m = document.querySelector('#modo'); if (m && m.value !== 'si') { m.value = 'si'; m.dispatchEvent(new Event('change', { bubbles: true })); } } },
+    // masa-molar: según la pestaña, una masa molar, una estequiometría con su limitante o una fórmula empírica
     'masa-molar': {
-      items: '#res-masa .grande', quitar: '', tapa: '#res-masa, #conv-card', datos: null,
-      genera: () => pon(document.querySelector('#formula'), toma(['H2O', 'CO2', 'NaCl', 'H2SO4', 'HNO3', 'NaOH', 'NH3', 'CaCO3', 'C6H12O6', 'C2H5OH', 'Ca(OH)2', 'Al2(SO4)3', 'KMnO4', 'Fe2O3', 'Mg3(PO4)2', 'CuSO4·5H2O', 'Na2CO3', 'K2Cr2O7', 'CH4', 'C3H8', 'HCl', 'Ba(NO3)2', 'NH4Cl', 'MgCl2·6H2O'])),
-      enunciado: () => `Calcula la masa molar de <b>${esc(document.querySelector('#formula').value)}</b>.`,
+      items: '#res-masa .grande, #resumen-este > div, #resumen-emp > div', quitar: '', datos: null,
+      tapa: '#res-masa, #conv-card, #tabla-este td.n, #tabla-este td.m, #tabla-este td.s, #resumen-este, #este .pasos, #resumen-emp, #emp .pasos',
+      genera: () => window.MasaApp?.azar(), enunciado: () => window.MasaApp?.enunciado(),
+      get textos() { return document.querySelector('#tab-emp')?.getAttribute('aria-selected') === 'true' ? [{ et: 'Fórmula empírica', sel: '#resumen-emp .formula' }] : []; },
     },
     'configuracion-electronica': {
       items: null, tapa: '#res', datos: null,
-      genera: () => pon(document.querySelector('#entrada'), String(entero(1, 56))),
+      genera: () => { window.ConfigApp?.pestana('el'); pon(document.querySelector('#entrada'), String(entero(1, 56))); },
       enunciado: () => { const g = (s) => document.querySelector(s)?.textContent.trim() || ''; return `Escribe la configuración electrónica del <b>${esc(g('#nombre').toLowerCase())}</b> (${esc(g('#sim'))}, Z = ${esc(g('#z'))}) en orden de llenado y cuántos electrones desapareados tiene.`; },
       textos: [{ et: 'Configuración electrónica', sel: '#llenado', otros: ['#abreviada', '#capas-txt'] }],
       numeros: [{ et: 'Electrones desapareados', sel: '#desap' }],

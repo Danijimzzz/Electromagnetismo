@@ -5,7 +5,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMwZDZiNjYiLz48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlNmE2NDAiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtZGFzaGFycmF5PSI0IDYuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48cGF0aCBkPSJNMjAgMzJINDQiLz48cGF0aCBkPSJNMjEgMjdDMjcgMTQgMzcgMTQgNDMgMjciLz48cGF0aCBkPSJNMjEgMzdDMjcgNTAgMzcgNTAgNDMgMzciLz48cGF0aCBkPSJNMTcgMjRDMjIgNCA0MiA0IDQ3IDI0Ii8+PHBhdGggZD0iTTE3IDQwQzIyIDYwIDQyIDYwIDQ3IDQwIi8+PC9nPjxjaXJjbGUgY3g9IjE3IiBjeT0iMzIiIHI9IjgiIGZpbGw9IiNlZjdhNjIiLz48Y2lyY2xlIGN4PSI0NyIgY3k9IjMyIiByPSI4IiBmaWxsPSIjNzRhMmYyIi8+PHBhdGggZD0iTTEzIDMyaDhNMTcgMjh2OE00MyAzMmg4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K">
 <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
 <meta property="og:title" content="Tiro parabólico y cinemática">
-<meta property="og:description" content="Simulador de tiro parabólico con y sin rozamiento: alcance, altura máxima, tiempo de vuelo, gráficas x(t), v(t), a(t) y MRU y MRUA paso a paso">
+<meta property="og:description" content="Simulador de tiro parabólico con y sin rozamiento: alcance, altura máxima, ángulo de alcance máximo, blanco, gráficas x(t), v(t), a(t), MRU y MRUA con encuentros y movimiento circular paso a paso">
 <meta property="og:image" content="https://electromagnetismo-two.vercel.app/og.png">
 <meta name="twitter:card" content="summary_large_image">
 <script>(() => {
@@ -26,7 +26,7 @@
   });
 })();</script>
 <title>Tiro parabólico y cinemática: alcance, altura máxima y gráficas · SimulaCiencia</title>
-<meta name="description" content="Simulador de tiro parabólico en español: trayectoria, alcance, altura máxima, tiempo de vuelo y velocidad al caer, con y sin rozamiento del aire, gráficas x(t), v(t), a(t) y MRU y MRUA, con el desarrollo paso a paso.">
+<meta name="description" content="Simulador de tiro parabólico en español: trayectoria, alcance, altura máxima, tiempo de vuelo y velocidad al caer, con y sin rozamiento del aire, ángulo de alcance máximo, blanco, gráficas x(t), v(t), a(t), MRU y MRUA con encuentros y movimiento circular (MCU y MCUA), con el desarrollo paso a paso.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
@@ -183,11 +183,11 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 .campos .nota { grid-column: 1 / -1; font-size: 12.5px; color: var(--muted); margin: -2px 0 0 }
 .btn.pri { background: var(--accent); border-color: var(--accent); color: var(--panel) }
 #lienzo { height: 300px } #grafica { height: 200px; margin-top: 10px }
-#pista { height: 90px } .g3 { height: 130px; margin-top: 8px }
+#pista { height: 110px } #rueda { height: 280px } .g3 { height: 130px; margin-top: 8px }
 .card .controles { font-size: 13px; color: var(--muted) }
 .controles input[type=range] { flex: 1; min-width: 140px; accent-color: var(--accent) }
 .lectura { font: 13px var(--f-mono); color: var(--ink); font-variant-numeric: tabular-nums } .lectura span { white-space: pre } .controles .lectura { flex-basis: 100%; order: 9 }
-#leyenda { display: flex; gap: 4px 14px; flex-wrap: wrap; font-size: 12.5px; color: var(--muted); margin-top: 6px } #leyenda i { display: inline-block; width: 14px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 5px }
+#leyenda, #leyenda-c { display: flex; gap: 4px 14px; flex-wrap: wrap; font-size: 12.5px; color: var(--muted); margin-top: 6px } #leyenda i, #leyenda-c i { display: inline-block; width: 14px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 5px }
 .pasos { margin-top: 16px }
 
 </style>
@@ -196,8 +196,8 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 <div class="wrap">
 <nav class="miga" aria-label="Estás en"><span class="miga-izq"></span><span class="miga-ico" aria-hidden="true">F</span><a href="../">Física general</a><span aria-hidden="true">›</span><span>Tiro parabólico</span><span class="miga-der"></span></nav>
 <h1>Tiro parabólico y cinemática</h1>
-<p class="lead">Lanza un proyectil y obtén el tiempo de vuelo, la altura máxima, el alcance y la velocidad al caer, con o sin rozamiento del aire. En la otra pestaña tienes el movimiento rectilíneo (MRU y MRUA). Debajo de cada resultado está el desarrollo.</p>
-<div class="modos" role="tablist"><button role="tab" id="tab-tiro" aria-selected="true">Tiro parabólico</button><button role="tab" id="tab-recta" aria-selected="false">Movimiento rectilíneo</button></div>
+<p class="lead">Lanza un proyectil y obtén el tiempo de vuelo, la altura máxima, el alcance y la velocidad al caer, con o sin rozamiento del aire. También el ángulo de alcance máximo, cómo acertar a un blanco y varios tiros a la vez. En las otras pestañas tienes el movimiento rectilíneo (MRU y MRUA, con un segundo móvil para encuentros y persecuciones) y el movimiento circular (MCU y MCUA). Debajo de cada resultado está el desarrollo.</p>
+<div class="modos" role="tablist"><button role="tab" id="tab-tiro" aria-selected="true">Tiro parabólico</button><button role="tab" id="tab-recta" aria-selected="false">Movimiento rectilíneo</button><button role="tab" id="tab-circ" aria-selected="false">Movimiento circular</button></div>
 
 <div id="panel-tiro" role="tabpanel">
 <div class="layout">
@@ -256,22 +256,55 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 </div>
 </div>
 
+<div id="panel-circ" role="tabpanel" hidden>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos-c" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos-circ"></div>
+    <p class="error" id="error-c" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen-c"></div></div>
+    <div class="card">
+      <canvas id="rueda" aria-label="Móvil en la circunferencia con su velocidad y su aceleración"></canvas>
+      <div class="leyenda" id="leyenda-c"></div>
+      <div class="controles">
+        <button class="btn pri" id="play-c" type="button">▶ Girar</button>
+        <button class="btn" id="reinicio-c" type="button" aria-label="Volver al inicio">↺</button>
+        <input type="range" id="tiempo-c" min="0" max="1000" value="0" aria-label="Tiempo">
+        <span class="lectura" id="lectura-c"></span>
+      </div>
+      <canvas class="g3" id="g-th" aria-label="Ángulo girado frente al tiempo"></canvas>
+      <canvas class="g3" id="g-w" aria-label="Velocidad angular frente al tiempo"></canvas>
+    </div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos-c"></ol></div>
+  </div>
+</div>
+</div>
+
 <section class="teoria">
   <h2>Ecuaciones del tiro parabólico</h2>
   <p class="m">Sin rozamiento el movimiento se separa en dos: en horizontal es uniforme (MRU) y en vertical uniformemente acelerado con $a = −g$ (MRUA).</p>
   <p class="f m">$x = v_0 cos α · t$ &emsp; $y = y_0 + v_0 sen α · t − 1/2 g t^2$</p>
   <p class="m">La altura máxima se alcanza cuando $v_y = 0$, en $t = {v_0 sen α}/g$, y vale $y_0 + {v_0^2 sen^2 α}/{2g}$. Si sale y cae a la misma altura, el alcance es $R = {v_0^2 sen 2α}/g$, máximo a 45°. Eliminando t sale la ecuación de la trayectoria, una parábola:</p>
   <p class="f m">$y = y_0 + x tg α − {g x^2}/{2 v_0^2 cos^2 α}$</p>
+  <p class="m">Si sale desde una altura $h$ por encima del suelo, el ángulo de alcance máximo es algo menor que 45°: $tg α = v_0/√(v_0^2 + 2gh)$. Con la misma $v_0$ y todos los ángulos posibles, ninguna trayectoria pasa por encima de la <i>parábola de seguridad</i> $y = y_0 + v_0^2/(2g) − {g x^2}/{2 v_0^2}$. Despejando $v_0$ de la ecuación de la trayectoria sale la velocidad necesaria para acertar a un blanco con un ángulo dado.</p>
   <h2>Con rozamiento del aire</h2>
   <p class="m">Con una fuerza de rozamiento proporcional a la velocidad, $a = −g ĵ − (b/m) v$, las ecuaciones siguen teniendo solución exacta con exponenciales y la velocidad de caída tiende a $v_L = {m g}/b$. Con rozamiento cuadrático, $a = −g ĵ − (c/m) |v| v$, que es lo que pasa con una pelota real, hay que integrar numéricamente. En los dos casos la trayectoria deja de ser simétrica: baja más empinada de lo que sube.</p>
   <h2>MRU y MRUA</h2>
   <p class="f m">$x = x_0 + v_0 t + 1/2 a t^2$ &emsp; $v = v_0 + a t$ &emsp; $v^2 = v_0^2 + 2a(x − x_0)$</p>
   <p>En la gráfica x(t) la pendiente es la velocidad, y en v(t) la pendiente es la aceleración y el área bajo la curva es el desplazamiento.</p>
+  <p class="m">Dos móviles en la misma recta se encuentran cuando están en el mismo sitio a la vez: $x_A(t) = x_B(t)$, una ecuación de primer o segundo grado en t.</p>
+  <h2>Movimiento circular</h2>
+  <p class="m">En el MCU la velocidad angular es constante: $θ = ω t$, $v = ω R$, $T = 2π/ω$ y $f = 1/T$. Aunque el módulo de la velocidad no cambia, su dirección sí, y hay una aceleración hacia el centro, la centrípeta: $a_n = ω^2 R = v^2/R$.</p>
+  <p class="m">En el MCUA la aceleración angular α es constante: $ω = ω_0 + α t$ y $θ = ω_0 t + 1/2 α t^2$, igual que el MRUA cambiando x por θ. Aparece además una aceleración tangencial $a_t = α R$, y la total es $|a| = √(a_n^2 + a_t^2)$.</p>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Tiro parabólico <span id="ver"></span> (beta)</footer>
 </body>
 <script>
+const Pagina = { carpeta: 'tiro-parabolico', guarda: 'tiro-v1' };
 /* =====================================================================
    Versiones y novedades: la web (portada, asignaturas, buscador) tiene su número y cada
    herramienta el suyo. Hasta el lanzamiento se numera 0.x (beta); la 1.0 de una herramienta
@@ -285,6 +318,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 const Version = (() => {
   const registros = {
     web: [
+      { v: '0.49', fecha: '2026-10-26', cambios: ['Circuitos, a fondo: asociación de resistencias escribiendo la expresión, códigos de condensadores y bobinas, fuentes dependientes, Thévenin y Norton entre dos nudos cualesquiera, superposición y mallas; redes de alterna por nudos con fasores y sistemas trifásicos; transitorios de cualquier circuito de primer orden y RLC en paralelo.', 'Química, a fondo: la tabla periódica con más datos, comparación de elementos y preguntas para ponerte a prueba; fórmula empírica y molecular, reactivos impuros y gases en la estequiometría; Slater, números cuánticos y «¿qué elemento es?»; hidrólisis, tampones y polipróticos en pH; propiedades coligativas en disoluciones, y más formas de hallar k en cinética.', 'Estadística, a fondo: F de Snedecor, uniforme, geométrica e hipergeométrica; intervalos con datos apareados, cociente de varianzas, cotas y población finita; errores de la pendiente, bandas de confianza, residuos y más ajustes en regresión. Además, cuatro herramientas más en camino: estadística descriptiva, probabilidad, contrastes de hipótesis y χ².', 'Física general, a fondo: rizos, péndulos y fuerzas variables; movimiento circular y encuentros; dilatación térmica y calentadores; bloques juntos, curvas peraltadas y muelles; equilibrio estático y choques que hacen girar; pulsaciones y ondas entre dos cuerdas; Doppler de la luz; anillos de Newton y criterio de Rayleigh; ciclos Brayton, Stirling y propios; viscosidad, Venturi y capilaridad; mezclas de gases y Van der Waals. Todas con modo práctica con enunciado y fórmulas bien escritas.', 'Electromagnetismo, a fondo: en Electrostática, cilindros huecos y coaxiales, densidades que no son uniformes, arcos y cortezas conductoras; nuevas fuentes y mapa de |B| en Magnetostática; dieléctricos por sectores, rigidez y asociaciones de condensadores; entrehierros y bobinas acopladas; espiras junto a un hilo, campos que cambian con el tiempo y barras con masa en Faraday; efecto Hall, campos cruzados y par sobre espiras; ondas en cualquier dirección, polarización y reflexión. Además, enlace para compartir el ejercicio, copiar la solución en texto o LaTeX e imprimirla.'] },
       { v: '0.48', fecha: '2026-10-25', cambios: ['Todas las herramientas comparten ahora la misma hoja de estilos, así que tarjetas, campos, botones, resultados y desarrollo se ven exactamente igual en todas, y los pasos del desarrollo van numerados.', 'Matemáticas, a fondo: matrices con parámetro, LU y ecuaciones matriciales; sistemas discutidos según un parámetro y escritos como texto; integrales impropias, L’Hôpital y volúmenes de revolución; Laplace con escalón, delta y convolución; nuevas EDOs exactas, de Bernoulli y de Cauchy-Euler; Taylor, Fourier, complejos y campos vectoriales con muchos casos nuevos. Además, enlace para compartir el ejercicio, copiarlo en texto o LaTeX e imprimirlo.', 'Circuitos: los valores admiten prefijos del SI y unidades, como 4k7, 1,5 kΩ, 100n o 10 µF.', 'Arreglos en Circuitos (una resistencia de 0 Ω en paralelo, Thévenin con Rth = 0), Química (pH al empezar y al acabar una valoración débil, aviso de excepción solo en átomos neutros), Estadística (cuantil de la binomial, ajustes con años, proporción con 0 éxitos), Física general y Electromagnetismo (fórmulas largas que se cortaban en el móvil, etiqueta tapada en Dinámica, fórmulas de la teoría de Ondas EM).', 'Los mensajes de error se leen mejor en modo oscuro, en Configuración electrónica el nombre del elemento vuelve a verse grande y en el móvil Trabajo y energía ya no se sale de la pantalla.'] },
       { v: '0.47', fecha: '2026-10-25', cambios: ['Nueva asignatura: Economía, en la portada y en la barra de asignaturas. Trae 23 herramientas en camino, como «Próximamente»: oferta y demanda, elasticidades, IS-LM, interés compuesto, préstamos, VAN y TIR, punto muerto, ratios financieros o el índice de Gini, entre otras.'] },
       { v: '0.46', fecha: '2026-10-25', cambios: ['Nuevo apartado Foro en la barra superior. De momento está en construcción: muy pronto podrás preguntar dudas y compartir ejercicios.', 'La portada y cada asignatura muestran ya las herramientas que vienen después, como «Próximamente»: 30 más, desde la ley de Ampère y las ecuaciones de Maxwell hasta la propagación de errores y los diagramas de Bode.'] },
@@ -342,6 +376,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-23', cambios: ['Portada para elegir asignatura y herramienta: Electromagnetismo, Física general, Química, Matemáticas y Laboratorio, con buscador. Las herramientas que vienen después aparecen como «Próximamente».', 'Nueva herramienta: Magnetostática, en Electromagnetismo.'] },
     ],
     electrostatica: [
+      { v: '0.6', fecha: '2026-10-26', cambios: ['Tubo cilíndrico con carga superficial σ y cilindros huecos (con radio interior), para resolver cables coaxiales.', 'Densidades que no son uniformes en esferas y cilindros (ρ₀·r/R, ρ₀·R/r, ρ₀(1 − r/R) y ρ₀(1 − r²/R²)) y en varillas (λ que crece o decrece a lo largo), con Gauss y la carga encerrada.', 'Arcos cargados: semicircunferencias, cuartos de anillo o cualquier ángulo, con el campo y el potencial en el centro.', 'Corteza esférica conductora con radio interior y exterior: si dentro hay una carga centrada, se induce −q en la cara interior y +q en la exterior.', 'Seis ejercicios de ejemplo nuevos con todo esto.', 'La guía enlaza con la herramienta de Condensadores.'] },
       { v: '0.5.1', fecha: '2026-10-23', cambios: ['El simulador tiene ahora su propia dirección, /electromagnetismo/electrostatica/. Tus problemas guardados siguen ahí. El botón «Todas las herramientas» de la barra lateral vuelve a la portada.'] },
     { v: '0.5', fecha: '2026-10-23', cambios: ['Doce ejercicios de ejemplo con enunciados propios: los mismos tipos de pregunta que en clase, con otras figuras y otros números. La guía de uso tiene capturas nuevas hechas con ellos.', 'La web tiene icono propio: un dipolo con sus líneas de campo, en la pestaña del navegador, en la pantalla de inicio del móvil y en la vista previa al compartir el enlace.', 'Páginas de aviso legal, privacidad, cookies y contacto, enlazadas al pie de la barra lateral.'] },
     { v: '0.4', fecha: '2026-10-22', cambios: ['Número de versión visible y este apartado de novedades.', 'Arreglo: en la vista 3D los cilindros se dibujan con su radio real, aparecen las superficies de Gauss, y las esferas, cascarones y conductores tienen volumen en lugar de parecer círculos planos.'] },
@@ -350,44 +385,54 @@ const Version = (() => {
     { v: '0.1', fecha: '2026-10-22', cambios: ['Primera versión: cargas, hilos, planos y esferas con el desarrollo paso a paso y 12 ejercicios resueltos.', 'Barra lateral con tus problemas, los importados y los ejercicios; título y enunciado editables; archivos .emsim.json.'] },
     ],
     magnetostatica: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Nuevas fuentes: cilindro con corriente (macizo, hueco o con J proporcional a r, para cables coaxiales), lámina de corriente K, espira rectangular de una pieza y disco cargado que gira.', 'Nueva pregunta «Perfil de |B|»: la gráfica del módulo del campo a lo largo de una recta entre dos puntos.', 'Mapa de color de |B| y líneas de campo continuas en el dibujo.', 'Seis ejercicios de ejemplo nuevos con todo esto.', 'Los números decimales se escriben con coma.', 'Botones para copiar el enlace del ejercicio, copiar la solución de cada pregunta como texto o en LaTeX e imprimirla o guardarla en PDF.'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['Arreglo: el ejemplo resuelto de la teoría explica dónde abrirlo ahora, en «Ejercicios de ejemplo» de la barra Mis ejercicios.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: campo magnético de hilos, segmentos, hilos semiinfinitos, espiras, arcos, solenoides y toroides con Biot-Savart, y fuerza sobre cargas en movimiento y sobre conductores, con el desarrollo paso a paso en la forma μ₀I/(πa) o en unidades del SI.', 'Dibujo del campo B en el plano XY, XZ o YZ, con puntos que se pueden arrastrar y ocho ejemplos resueltos.'] },
     ],
     'tabla-periodica': [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Más datos en la ficha: afinidad electrónica, estados de oxidación, densidad y puntos de fusión y ebullición, y la tabla se puede colorear por ellos.', 'Botones para abrir el elemento en Configuración electrónica (con la Zef) y en Masa molar.', 'Compara hasta tres elementos en una tabla, con el mayor de cada propiedad marcado.', 'Ponte a prueba: preguntas al azar de nombres y símbolos, grupo y periodo, configuración, electrones de valencia y tendencias.', 'En el móvil las casillas muestran solo el número y el símbolo, y la tabla ocupa menos.', 'Nota sobre el grupo 3: dónde van La, Ac, Lu y Lr según la IUPAC.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: cada elemento tiene su ficha con la masa atómica y molar, el grupo, el periodo, el bloque, la configuración electrónica (abreviada, completa y por capas), la electronegatividad, la energía de ionización, el radio y el estado.', 'La tabla se puede colorear por categoría, electronegatividad, energía de ionización, radio, masa, bloque o estado, y tiene un buscador por nombre, símbolo o número atómico.'] },
     ],
     'trabajo-y-energia': [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Nuevos problemas: rizo (altura mínima para dar la vuelta, velocidad y normal arriba, o dónde se despega), péndulo (velocidad y tensión en cada ángulo, si da la vuelta o se afloja el hilo), montaña rusa sin rozamiento por varios puntos y trabajo de una fuerza variable con la gráfica F(x), su área y la potencia.', 'En la rampa, los problemas al revés: altura mínima para llegar al muelle, rozamiento del llano para que se pare justo antes y constante del muelle para una compresión dada.', 'Modo práctica con enunciado escrito para cada tipo de problema.'] },
       { v: '0.1.3', fecha: '2026-10-25', cambios: ['Arreglo: en el móvil, las fórmulas largas del desarrollo se cortaban por la derecha; ahora bajan de línea en cada igual.'] },
       { v: '0.1.2', fecha: '2026-10-24', cambios: ['Las fórmulas del desarrollo y de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Los resultados salen arriba, en una tarjeta destacada, y la lectura de t y v tiene ancho fijo: ya no mueve la barra de tiempo al reproducir.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: un bloque baja por una rampa con rozamiento, recorre un tramo horizontal y comprime un muelle. Animación con barras de energía cinética, gravitatoria, elástica y calor, gráfica de las energías en el tiempo y el desarrollo paso a paso con la velocidad al pie de la rampa, al llegar al muelle y la compresión máxima.', 'Seis ejemplos: sin rozamiento, se para antes del muelle, el rozamiento lo sujeta, con empujón inicial y muelle duro.'] },
     ],
     'masa-molar': [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Nueva pestaña «Fórmula empírica»: de la composición centesimal, de los gramos de cada elemento o de un análisis por combustión a la fórmula empírica y, con la masa molar, a la molecular, paso a paso.', 'Reactivos impuros (con su pureza) y en disolución (con su molaridad y su volumen) en la estequiometría.', 'Gases a cualquier temperatura y presión con PV = nRT, y el volumen de los productos que lleven (g).', 'Rendimiento al revés: escribe la masa obtenida de verdad y calcula el rendimiento.', 'Acepta los estados (s), (l), (g) y (aq), las cargas sin ^ (Fe3+, NO3-, SO42-), el + sin espacios, la doble flecha ⇌ y los electrones de las semirreacciones.', 'Tabla de moles al principio, lo que cambia y al final, y un resumen con el limitante, lo que se forma y lo que sobra.', 'Modo práctica también para la estequiometría y la fórmula empírica.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: masa molar y composición centesimal de cualquier fórmula, con paréntesis, hidratos e iones, y conversor entre gramos, moles, partículas y litros de gas.', 'Estequiometría: ajusta la reacción sola (también las iónicas), calcula el reactivo limitante, lo que se forma con el rendimiento que digas y lo que sobra, paso a paso.', 'Masas atómicas de la IUPAC o redondeadas como en clase.'] },
     ],
     'configuracion-electronica': [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Electrones de valencia como en clase (el Fe tiene 4s² 3d⁶, ocho), no solo los de la capa más externa.', 'Nueva pestaña «¿Qué elemento es?»: escribe una configuración y dice de qué elemento es y si es el estado fundamental, uno excitado o una configuración imposible (2p⁷, 2d¹).', 'Nueva pestaña «Números cuánticos»: comprueba si un conjunto (n, l, m_l, s) está permitido y a qué orbital corresponde.', 'Tabla con los cuatro números cuánticos de cada electrón de valencia.', 'Carga nuclear efectiva con las reglas de Slater, paso a paso.', 'Especies isoelectrónicas (Na⁺, Mg²⁺, F⁻…) ordenadas de mayor a menor radio.', 'Los ejemplos están ahora en la barra lateral, con Mis ejercicios.'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['El aviso de excepción al orden de llenado sale solo en los átomos neutros, no en sus iones, y muestra justo los subniveles que cambian (Pt: se esperaría 6s² 5d⁸ y tiene 6s¹ 5d⁹).'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: configuración electrónica de cualquier elemento o ion por orden de llenado, abreviada y por capas, con el diagrama de Moeller, el diagrama de orbitales con la regla de Hund, los electrones desapareados y los números cuánticos del electrón diferenciador.', 'Avisa de las excepciones como el cromo o el cobre, y en los cationes quita primero los electrones de la capa más externa.'] },
     ],
     condensadores: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Cilíndricos y esféricos con el dieléctrico por sectores, en paralelo: por ejemplo, media esfera con un material y la otra media con otro.', 'Permitividad que cambia con la posición, de ε₁ en una armadura a ε₂ en la otra, con las cargas de polarización de las caras y del volumen.', 'Fuerza entre las armaduras y fuerza que mete un dieléctrico a medio introducir.', 'Rigidez dieléctrica: escribe la de cada capa y sale la tensión máxima antes de la ruptura.', 'Asociaciones de condensadores en serie, en paralelo y mixtas, con la carga, la tensión y la energía de cada uno, y dos condensadores cargados que se conectan, con la energía que se pierde.', 'La carga libre de cada armadura en el desarrollo.', 'Botones para copiar el enlace del ejercicio, copiar la solución como texto o en LaTeX e imprimirla o guardarla en PDF.', 'El desarrollo paso a paso escribe las fórmulas como en los libros: fracciones, raíces, exponentes y subíndices de verdad.', 'La capacidad sale también en letras, como en los apuntes (por ejemplo C = 4πε₀εᵣab/(b − a), o la suma de cada capa en serie).', 'Enlace al simulador de Electrostática desde la teoría.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: condensadores planos, cilíndricos y esféricos con capas de dieléctrico en serie o, en el plano, ocupando parte del área. Capacidad, carga, tensión y energía; campos E, D y P en cada capa y cargas de polarización, con el desarrollo paso a paso.', 'Compara con el condensador vacío: qué pasa al meter el dieléctrico con la batería conectada o con el condensador aislado.', 'Dibujo del corte con las líneas de campo y gráfica de E a lo largo del condensador.'] },
     ],
     'tiro-parabolico': [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Ángulo de alcance máximo cuando se lanza desde otra altura, con su desarrollo.', 'Blanco: además de los ángulos para acertar, la velocidad que hace falta con el ángulo dado.', 'Opción para dibujar varios tiros con la misma velocidad y la parábola de seguridad.', 'Movimiento rectilíneo con un segundo móvil: cuándo y dónde se encuentran (persecuciones y cruces).', 'Nueva pestaña de movimiento circular (MCU y MCUA): velocidad angular, periodo, aceleraciones normal y tangencial, cuándo se para o da n vueltas, con animación y gráficas θ(t) y ω(t).', 'Modo práctica con enunciado: tiros, blancos, frenadas, encuentros y giros.'] },
       { v: '0.1.3', fecha: '2026-10-25', cambios: ['Arreglo: en el móvil, las fórmulas largas del desarrollo se cortaban por la derecha; ahora bajan de línea en cada igual.'] },
       { v: '0.1.2', fecha: '2026-10-24', cambios: ['Las fórmulas del desarrollo y de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Los resultados salen arriba, en una tarjeta destacada, y la lectura de t, x, y y v tiene ancho fijo: ya no se mueve al reproducir.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: tiro parabólico desde cualquier altura hasta cualquier altura, con el tiempo de vuelo, la altura máxima, el alcance y la velocidad al caer, y el desarrollo paso a paso. Trayectoria animada con los vectores de velocidad y gráficas de posición, velocidad y aceleración frente al tiempo.', 'Rozamiento del aire lineal o cuadrático, comparado con la trayectoria sin rozamiento.', 'Blanco: dice si el proyectil pasa por un punto y con qué dos ángulos se acierta.', 'Movimiento rectilíneo (MRU y MRUA): posición y velocidad en un instante, cuándo pasa por un punto y cuándo se para, con las gráficas x(t), v(t) y a(t).'] },
     ],
     disoluciones: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Propiedades coligativas: descenso crioscópico, aumento ebulloscópico, presión osmótica y presión de vapor (Raoult) en agua y otros seis disolventes, con el factor de van \'t Hoff deducido de la fórmula.', 'La masa molar de un soluto a partir de la crioscopía, la ebulloscopía o la presión osmótica.', 'Preparar una disolución también en g/L, % m/v, % en masa, molalidad o normalidad, con el agua que hay que añadir.', 'Normalidad, con los equivalentes por mol sacados de la fórmula del ácido o la base.', 'Diluir con la unidad que quieras en cada dato (mol/L, mmol/L, g/L, mg/L, % m/v; L, mL o µL).', 'Aviso de seguridad al diluir cualquier ácido concentrado (siempre el ácido sobre el agua) y al disolver sosa o potasa.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: da la concentración de una disolución como molaridad, molalidad, fracción molar, % en masa, % masa/volumen, g/L o ppm y obtén todas las demás, con la densidad para pasar de masa a volumen y el desarrollo con su base de cálculo.', 'Preparar una disolución: los gramos de sólido (con su pureza) o los mililitros de reactivo comercial (con su riqueza y densidad) que hay que medir.', 'Diluciones con C₁V₁ = C₂V₂, despejando el dato que falte, y mezcla de dos disoluciones del mismo soluto.'] },
     ],
     calorimetria: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Problemas al revés: escribe ? en el dato que no conoces (masa, temperatura inicial, calor específico, capacidad del calorímetro o tiempo) y pon la temperatura final.', 'Calorímetro por su equivalente en agua.', 'Calentador con potencia, tiempo y rendimiento (Q = η P t), por ejemplo un hervidor.', 'Más sustancias: plata, oro, mercurio, latón y aceite de oliva.', 'Nueva pestaña de dilatación térmica: lineal, superficial, de volumen y líquido que rebosa del recipiente, con la temperatura a la que se alcanza una medida.', 'Modo práctica con enunciado: mezclas, problemas al revés, hervidores y dilataciones.'] },
       { v: '0.1.2', fecha: '2026-10-24', cambios: ['Las fórmulas del desarrollo y de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['La temperatura de equilibrio sale en una tarjeta destacada, separada de la tabla de calores.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: temperatura de equilibrio al mezclar hasta cinco cuerpos de agua, hielo, vapor, metales, etanol, vidrio, un calorímetro o una sustancia con tus datos, con los cambios de fase que hagan falta.', 'Si la energía no llega para fundir todo el hielo o condensar todo el vapor, dice cuántos gramos quedan de cada fase.', 'Tabla con el calor de cada cuerpo, el desarrollo etapa por etapa (m c ΔT y m L) y la curva de calentamiento de cada uno.'] },
     ],
     induccion: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Toroide con entrehierro: reluctancia del núcleo y del hueco de aire y la autoinducción que queda.', 'Inducción mutua de dos espiras coaxiales a una distancia y de una bobina girada dentro de un solenoide.', 'Bobinas acopladas en serie y en paralelo, con los flujos que se suman o que se oponen.', 'Circuito RL: balance de energía (lo que da la fuente, lo que guarda la bobina y lo que se disipa en la resistencia) y una fuente que se conecta y desconecta una y otra vez, con la corriente máxima, mínima y media.', 'Los dibujos usan azul para el campo y el segundo circuito, y la gráfica del RL distingue corriente y tensión.', 'Botones para copiar el enlace del ejercicio, copiar la solución como texto o en LaTeX e imprimirla o guardarla en PDF.', 'El desarrollo paso a paso escribe las fórmulas como en los libros: fracciones, raíces, exponentes y subíndices de verdad.', 'El resultado sale también en letras, como en los apuntes (por ejemplo L = μ₀N²h ln(b/a)/(2π) o la corriente del circuito RL).', 'Enlace a Faraday y Lenz desde la teoría.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: coeficiente de autoinducción de solenoides (con núcleo), toroides de sección rectangular y circular, cables coaxiales y líneas bifilares, con el desarrollo desde la ley de Ampère.', 'Inducción mutua entre dos solenoides, dos espiras, un hilo y una espira, y una bobina sobre un toroide, o a partir de L₁, L₂ y k, con el coeficiente de acoplamiento.', 'Flujo, energía magnética y fem inducida si das la corriente o cómo cambia.', 'Circuito RL al cerrar el interruptor o al quitar la fuente: constante de tiempo, corriente y tensión en la bobina en cualquier instante y su gráfica.'] },
     ],
@@ -405,21 +450,26 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: transformada directa de sumas de términos c·tⁿ·e^(at)·sen(bt) o cos(bt), senh y cosh, con la fila de la tabla y la propiedad que usa cada término, y F(s) con denominador común.', 'Inversa por fracciones simples: polos simples, múltiples y complejos (también dobles), con los coeficientes, la fila de la tabla y los valores inicial y final.', 'Ecuaciones diferenciales de primer y segundo orden con condiciones iniciales: transformar, despejar Y(s) y volver.', 'Plano s con los polos y los ceros, y gráfica animada de f(t) con cada término por separado.'] },
     ],
     interferencia: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Nuevo montaje «Abertura circular»: disco de Airy y criterio de Rayleigh, con el límite de resolución de un ojo o un telescopio y si dos objetos se distinguen.', 'Red de difracción: poder de resolución en cada orden y la mínima diferencia de longitudes de onda que separa.', 'Nuevos montajes «Cuña de aire» y «Anillos de Newton», también al revés: el grosor de un pelo o el radio de una lente a partir de lo que se mide.', 'Cursor en la gráfica de intensidad: pasa el ratón o el dedo para leer la intensidad en cualquier punto de la pantalla.', 'El desarrollo se ve con fórmulas bien escritas.', 'Más tipos de ejercicio en el modo práctica.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: doble rendija de Young con la interfranja, la posición y el ángulo de cada máximo, la intensidad en un punto y la envolvente de difracción si das la anchura de las rendijas.', 'Rendija simple: mínimos, anchura del máximo central e intensidad.', 'Red de difracción: ángulos de cada orden, orden máximo y separación de dos longitudes de onda con el poder de resolución.', 'Láminas delgadas: colores que se refuerzan y se anulan y espesores para reforzar o quitar el reflejo.', 'Ondas que salen de las rendijas animadas y el patrón en la pantalla con el color de la luz.'] },
     ],
     'ondas-em': [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['La onda puede ir en cualquier dirección (escribiendo las componentes de k y de E) y tener una fase inicial.', 'Polarización circular y elíptica, con el sentido de giro y la expresión de E y B con sus dos componentes.', 'Nuevo cálculo: la onda a partir de su expresión E(r, t) o B(r, t), por ejemplo 30 cos(2,094y + 6,283e8t) k: dirección de propagación, velocidad, medio y el otro campo.', 'Nuevo cálculo: incidencia normal sobre un conductor perfecto (onda estacionaria, nodos, presión y corriente superficial) o sobre otro medio (coeficientes de reflexión y transmisión).', 'En el desarrollo, B̂ = k̂ × Ê ya no escribe paréntesis de más alrededor de los vectores unitarios.', 'Botones para copiar el enlace del ejercicio, copiar la solución como texto o en LaTeX e imprimirla o guardarla en PDF.', 'El desarrollo paso a paso escribe las fórmulas como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: onda plana en el vacío o en un material a partir de f, λ, ω o k, con λ, k, el campo B y su dirección (B̂ = k̂ × Ê) y las expresiones de E(r, t) y B(r, t).', 'Intensidad, densidad de energía y presión de radiación, también de una fuente puntual a una distancia.', 'Medios con pérdidas: tangente de pérdidas, atenuación, profundidad de penetración e impedancia compleja.', 'La onda dibujada en 3D con E y B moviéndose.'] },
     ],
     intervalos: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Datos apareados (antes y después, o dos medidas del mismo individuo): intervalo de la media de las diferencias, a partir de las dos listas o de d̄ y s_d.', 'Cociente de varianzas σ₁²/σ₂² con la F de Snedecor, y el de las desviaciones σ₁/σ₂, para saber si se pueden suponer varianzas iguales.', 'Cotas: cualquier intervalo puede ser bilateral, una cota inferior (a; +∞) o una cota superior (−∞; b), con toda α en una cola.', 'Población finita: da su tamaño N y se aplica el factor de corrección, también en el tamaño de la muestra.', 'Contraste con el intervalo: escribe un valor y te dice si se rechaza H₀ con ese nivel de significación.', 'Tamaño de muestra también para comparar dos medias o dos proporciones.', 'La gráfica muestra la F y las cotas con α en una sola cola, y en Welch se ven los grados de libertad sin redondear.', 'Nuevos ejercicios en el modo práctica: cotas de una media y datos apareados.'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['Una proporción con 0 éxitos, o con todos, ya no da un intervalo de un solo punto: se usa el intervalo de Wilson. Con pocos éxitos o fracasos también se muestra el de Wilson al lado del de siempre.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: intervalo de confianza de una media con σ conocida (z) o desconocida (t de Student), a partir de x̄, s y n o de la lista de datos, también si te dan la desviación con n.', 'Intervalos de una proporción, de la varianza y la desviación típica (con la χ²), de la diferencia de medias (σ conocidas, iguales o Welch) y de la diferencia de proporciones.', 'Tamaño de muestra para un error máximo en una media o una proporción.', 'Gráfica de la distribución con el área de confianza y simulación de 100 muestras que muestra cuántos intervalos aciertan.'] },
     ],
     transitorios: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Nuevo modo «Circuito cualquiera de primer orden»: escribe el circuito como lista de elementos, marca qué se conecta o desconecta en t = 0 y sale por el método de los tres valores (valor inicial, final y resistencia de Thévenin que ve el condensador o la bobina).', 'Conmutación en t₁: un condensador que se carga por R y se descarga por R₂, y una bobina que se abre con el pico de tensión que hace saltar la chispa.', 'Nuevo circuito RLC en paralelo con una fuente de corriente, con su tipo de amortiguamiento y la corriente de la bobina.', 'Tiempo hasta un valor también en el RLC, corriente inicial en la bobina y descarga por otra resistencia R₂.', 'Pasa el ratón o el dedo por la gráfica para leer la tensión y la corriente en cada instante; un clic deja el cursor fijo.'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['Los valores admiten prefijos del SI y unidades: 4k7, 1,5 kΩ, 100n, 10 µF o 5 ms. Un número solo sigue en la unidad del campo (mH, μF).'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: carga y descarga de un condensador en un circuito RC (también si ya tenía carga), con τ = RC, la tensión y la corriente en un instante y el tiempo hasta una tensión.', 'Corriente que sube o baja en una bobina en un circuito RL, con τ = L/R y la tensión de la bobina.', 'Circuito RLC en serie: dice si es subamortiguado, crítico o sobreamortiguado y da la tensión del condensador frente al tiempo, también con carga o corriente al empezar.', 'Esquema del circuito con la corriente que circula y la gráfica de V e i frente a t animadas.'] },
     ],
     fuerza: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Carga que entra en una franja de campo: si la atraviesa, el ángulo con el que sale y cuánto se ha desplazado; si no, dónde vuelve a salir.', 'Campos E y B cruzados: velocidad de deriva E/B y la cicloide animada, también con velocidad inicial (cicloide acortada o con bucles).', 'Efecto Hall: tensión Hall, densidad de portadores, coeficiente de Hall y qué cara queda a más potencial.', 'Par sobre una espira o bobina: momento magnético, par, energía y trabajo para girarla.', 'Espectrómetro de masas con dos isótopos: la separación entre los impactos.', 'El campo B se dibuja en azul en todas las animaciones.', 'Botones para copiar el enlace del ejercicio, copiar la solución como texto o en LaTeX e imprimirla o guardarla en PDF.', 'El desarrollo paso a paso escribe las fórmulas como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: fuerza sobre una carga en un campo uniforme, con el radio, el periodo y el sentido de giro, o la hélice si v no es perpendicular a B. La velocidad se puede dar en m/s, por su energía en eV o por la ddp que la acelera.', 'Fuerza de Lorentz con vectores: v × B con su determinante y F = q(E + v × B).', 'Selector de velocidades y espectrómetro de masas, ciclotrón con la frecuencia, la energía de salida y las vueltas.', 'Fuerza sobre un hilo (y la corriente para que flote) y entre dos hilos paralelos.', 'Animación de cada situación.'] },
     ],
     campos: [
@@ -427,6 +477,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: gradiente, derivada direccional y laplaciano de un campo escalar, con su mapa de color y las curvas de nivel.', 'Divergencia y rotacional de un campo vectorial en el plano o en el espacio y, si es conservativo, su potencial.', 'Integral de línea (trabajo) a lo largo de una curva r(t), comparada con la diferencia de potencial cuando el campo es conservativo.', 'Teorema de Green en un círculo o un rectángulo: circulación y flujo por el borde frente a las integrales dobles.', 'Gráfica con partículas que siguen el campo y un molinillo que gira con el rotacional; tocándola se mueve el punto.'] },
     ],
     cinetica: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Coeficiente de A en la reacción (2 A → productos), con las dos formas de definir k explicadas.', 'La constante también sale de la vida media, del porcentaje que ha reaccionado en un tiempo o de dos medidas.', 'Arrhenius con tres o más temperaturas: recta de ajuste de ln k frente a 1/T con su R².', 'Diagrama de energía con Eₐ, ΔH y la Eₐ de la reacción inversa.', 'Catalizador: cuánto se multiplica k al bajar la energía de activación.', 'Aviso cuando dos rectas se ajustan casi igual y los datos no bastan para decidir el orden.', 'Velocidades iniciales con tres reactivos.', 'Tiempo también en días y en años.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: leyes integradas de orden 0, 1 y 2 con la concentración a cualquier tiempo, la vida media y cuánto se tarda en llegar a una concentración.', 'Orden y constante a partir de una tabla de concentraciones frente al tiempo, con las tres rectas ([A], ln [A] y 1/[A]) y su R².', 'Método de las velocidades iniciales con uno o dos reactivos: órdenes, constante con sus unidades y ley de velocidad.', 'Ecuación de Arrhenius: energía de activación con dos temperaturas o la constante a otra temperatura, con la gráfica de ln k frente a 1/T.', 'Vaso animado en el que las moléculas de reactivo se convierten en producto.'] },
     ],
     edos: [
@@ -452,64 +503,78 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: hasta seis ecuaciones con seis incógnitas. Dice si el sistema es compatible determinado, indeterminado o incompatible con el teorema de Rouché-Frobenius y lo resuelve por Gauss con sustitución hacia atrás, por Gauss-Jordan, por la regla de Cramer o con la matriz inversa.', 'Si tiene infinitas soluciones, las da en forma paramétrica (λ, μ…).', 'Coeficientes con fracciones exactas, decimales o números complejos, como las mallas de un circuito de alterna, y nombres propios para las incógnitas (I1, I2…).', 'Comprobación de la solución sustituyendo en cada ecuación.'] },
     ],
     regresion: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Error de la pendiente y de la ordenada, con su intervalo de confianza, para los informes de prácticas, y banda de confianza de la recta en la gráfica.', 'Intervalos de confianza de la media de y y de predicción de un valor nuevo para la x que elijas.', 'Nuevos ajustes: recta por el origen (y = bx, con su incertidumbre) e hiperbólica (y = a + b/x).', 'Comparación de todos los ajustes ordenados por R², para ver cuál es mejor.', 'Gráfica de residuos y aviso de los puntos atípicos (residuo mayor que dos veces el error típico).', 'Coeficiente de correlación de Spearman, la relación b·b′ = r² y el ángulo entre las dos rectas.', 'Datos en una tabla de doble entrada, como en los ejercicios de clase.', 'Puedes elegir si las varianzas y la covarianza se dividen entre n o entre n − 1.'] },
       { v: '0.1.2', fecha: '2026-10-25', cambios: ['El ajuste parabólico funciona con x grandes, como los años (2015, 2016…): antes decía que faltaban valores de x distintos.', 'En los ajustes exponencial y potencial, una a muy pequeña se escribe en notación científica en vez de 0.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas dentro del texto de la teoría se ven bien escritas, no con símbolos $.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: escribe o pega tus datos (x, y), con frecuencias si las tienes, y obtén medias, varianzas, covarianza, el coeficiente de correlación con su contraste y las dos rectas de regresión, con la tabla de cálculos y la nube de puntos.', 'Ajustes exponencial, potencial, logarítmico y parabólico, con R² para compararlos con la recta, y los residuos.', 'Estimaciones de y a partir de x y de x a partir de y, avisando si es una extrapolación.', 'Añade puntos pulsando en la gráfica.'] },
     ],
     estadistica: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Nuevas distribuciones: F de Snedecor, uniforme continua, geométrica e hipergeométrica.', 'Valores críticos unilaterales y bilaterales, con los dos valores de la χ² y de la F.', 'Hallar μ o σ de una normal a partir de una probabilidad, como en los ejercicios de «¿qué media hace falta para que…?».', 'P(|X − μ| ≤ c), a una distancia c de la media, con la cota de Chebyshev al lado.', 'Aproximaciones de la binomial por la Poisson y de la Poisson por la normal, además de la binomial por la normal.', 'Las colas muy lejanas ya no salen como 0: se escriben en notación científica.', 'Tabla de valores de las discretas con un botón para copiarla.', 'Arrastra los valores sobre la gráfica para mover el área.', 'Modo práctica con ejercicios al azar de todas las distribuciones.'] },
       { v: '0.1.2', fecha: '2026-10-25', cambios: ['En la binomial, al calcular un cuantil, la probabilidad del cuantil ya no cambia la probabilidad de éxito p.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: normal, t de Student, chi cuadrado, exponencial, binomial y Poisson, con su media y su varianza.', 'Probabilidades P(X ≤ a), P(X ≥ a), entre dos valores y, en las discretas, P(X = k) y con desigualdad estricta; cuantiles y valores críticos bilaterales.', 'Gráfica con el área (o las barras) que se pide sombreada.', 'Desarrollo como en clase: tipificación Z = (X − μ)/σ y Φ(z), fórmula de la binomial y de la Poisson término a término, y aproximación de la binomial por la normal con corrección de continuidad.'] },
     ],
     alterna: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Redes de alterna cualesquiera por el método de los nudos con fasores: resistencias, bobinas, condensadores y fuentes de tensión o de corriente con su fase, con el sistema en complejos y el balance de potencias de Boucherot.', 'Sistemas trifásicos equilibrados en estrella y en triángulo: tensiones y corrientes de fase y de línea, fasores de las tres fases, potencias y la batería de condensadores para corregir el factor de potencia.', 'Triángulo de potencias y curva de resonancia (la corriente frente a la frecuencia, con f₀ y el ancho de banda) en el circuito RLC.', 'La fuente se puede dar con su valor de pico o eficaz, con fase inicial y con ω en lugar de f, y el resultado escribe v(t) e i(t).', 'Corrección del factor de potencia a partir de P, S, I o Q, y también de cargas capacitivas (con una bobina).'] },
       { v: '0.1.2', fecha: '2026-10-25', cambios: ['Los valores admiten prefijos del SI y unidades: 4k7, 1,5 kΩ, 100n, 10 µF o 5 ms. Un número solo sigue en la unidad del campo (mH, μF, kW).', 'Arreglo: en paralelo, una resistencia de 0 Ω se ignoraba como si no estuviera; ahora avisa de que cortocircuita la fuente.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: circuitos RLC en serie y en paralelo (o solo con algunos de los elementos) con impedancias complejas en forma binómica y polar, la corriente, la tensión o la corriente de cada elemento, las potencias activa, reactiva y aparente y el factor de potencia, con el desarrollo paso a paso.', 'Diagrama de fasores y ondas v(t) e i(t) desfasadas.', 'Resonancia: frecuencia de resonancia, factor de calidad y ancho de banda.', 'Corrección del factor de potencia: el condensador que hay que poner en paralelo y cuánto baja la corriente de la línea.'] },
     ],
     dinamica: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Bloques lanzados con velocidad inicial: frenan, se paran y se quedan quietos o vuelven, con la distancia y el tiempo de frenada.', 'Nuevos problemas: dos bloques en contacto o unidos por una cuerda, con la fuerza entre ellos; curvas con y sin peralte (velocidades máxima y mínima y si derrapa); péndulo cónico; loma y hondonada, y muelles (ley de Hooke, serie y paralelo, equilibrio en un plano y periodo de oscilación).', 'Fuerza mínima para que un bloque empiece a subir y el ángulo con el que menos cuesta, y el coeficiente de rozamiento a partir de una aceleración medida.', 'El dibujo se anima: el bloque se mueve, frena y vuelve, las masas de Atwood suben y bajan, el péndulo cónico gira y el muelle oscila. Se puede pausar.', 'Las fórmulas del desarrollo se ven como en los libros, y los ejemplos usan coma decimal.', 'Modo práctica con enunciado escrito para cada tipo de problema.'] },
       { v: '0.1.2', fecha: '2026-10-25', cambios: ['Arreglo: en el diagrama de fuerzas, el nombre del bloque ya no queda tapado por las flechas, el bloque se ve más grande y la flecha de la aceleración no cruza la normal.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: bloque en un plano horizontal o inclinado con rozamiento estático y dinámico, una fuerza aplicada con ángulo y, si quieres, una masa colgando de una polea. Dice si el bloque se mueve o el rozamiento lo sujeta y da la normal, el rozamiento, la aceleración y la tensión, con el desarrollo paso a paso.', 'Máquina de Atwood, también con una polea con masa.', 'Dibujo con el diagrama de fuerzas a escala y la aceleración, y la velocidad y el tiempo al recorrer una distancia.'] },
     ],
     circuitos: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Fuentes dependientes: de tensión o de corriente, controladas por una tensión entre dos nudos o por la corriente de otro elemento, también en el equivalente de Thévenin.', 'Condensadores y bobinas en régimen permanente (abierto y cortocircuito), con la carga y la energía que guardan.', 'Equivalente de Thévenin y de Norton entre dos nudos cualesquiera, no solo visto por una resistencia.', 'Superposición paso a paso: lo que da cada fuente sola y la suma, en una tabla.', 'Método de las mallas como segundo desarrollo, con las ecuaciones de cada malla y la comprobación con el de los nudos.', 'Esquema más claro: los nudos se colocan para que los elementos no se crucen, y se pueden mover arrastrándolos.', 'Editor visual: en el modo Dibujar, arrastra de un nudo a otro (o a un sitio vacío) para añadir un elemento.'] },
       { v: '0.1.2', fecha: '2026-10-25', cambios: ['Los valores admiten prefijos del SI: 4k7, 1,5k, 2M2 o 100m. Antes «1k» daba error.', 'Arreglo: si la carga está en paralelo con una fuente de tensión ideal (Rth = 0), en vez de «—» explica que no hay equivalente de Norton ni máxima transferencia de potencia.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: escribe el circuito como una lista de resistencias, fuentes de tensión y fuentes de corriente entre nudos, y obtén los potenciales, la corriente y la potencia de cada elemento por el método de los nudos, con las ecuaciones de Kirchhoff, el sistema en forma matricial y el balance de potencias.', 'Equivalente de Thévenin y de Norton visto por la resistencia que elijas, y máxima transferencia de potencia.', 'Esquema del circuito con el potencial de cada nudo y el sentido de cada corriente.'] },
     ],
     'solido-rigido': [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Rodadura, polea y péndulo animados: se ve la rueda girar mientras baja.', 'Momento de inercia de un cuerpo compuesto: varias piezas (varillas, discos, esferas, masas puntuales…) cada una a su distancia del eje.', 'Choques que hacen girar: bala que se incrusta en una varilla colgada (y hasta dónde sube) y persona que salta a una plataforma.', 'Péndulo físico (periodo y longitud equivalente) y varilla que cae girando por su base.', 'Equilibrio estático: escalera apoyada en una pared (¿resbala?, ¿hasta dónde se puede subir?) y viga sobre dos apoyos con cargas.', 'Fórmulas del desarrollo bien escritas y ejemplos con coma decimal.', 'Modo práctica con enunciado.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: momentos de inercia de esferas, cilindros, aros, varillas, discos y placas, con el teorema de Steiner y el radio de giro.', 'Rodadura por un plano inclinado: aceleración, velocidad al final, rozamiento necesario para que no deslice y qué pasa si no basta; comparación del tiempo que tarda cada cuerpo.', 'Polea con masa de la que cuelga un cuerpo: aceleración, tensión y balance de energía.', 'Conservación del momento angular, como la patinadora que encoge los brazos, con la variación de la energía cinética.'] },
     ],
     ondas: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Superposición: pulsaciones de dos frecuencias cercanas, con la envolvente, y dos ondas desfasadas (por la diferencia de caminos o por el desfase).', 'Energía y potencia que transporta una onda en una cuerda.', 'Reflexión y transmisión entre dos cuerdas: coeficientes, amplitudes, reparto de la potencia y animación del pulso.', 'Enlace a Efecto Doppler para los casos con viento, ángulo o cono de Mach.', 'Fórmulas del desarrollo bien escritas y ejemplos con coma decimal.', 'Modo práctica con enunciado.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ecuación de una onda armónica con ω y k en múltiplos de π, posición, velocidad y aceleración de un punto del medio y desfase entre dos puntos.', 'Ondas estacionarias en cuerdas y en tubos abiertos o cerrados: frecuencia de cada armónico, nodos y vientres, y velocidad en la cuerda con √(T/μ).', 'Efecto Doppler con la fuente y el observador moviéndose, y nivel sonoro en decibelios a distintas distancias y con varias fuentes.', 'Animación de la onda, de la onda estacionaria y de los frentes de onda del Doppler.'] },
     ],
     gases: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Mezclas de gases con la ley de Dalton: presiones parciales, fracciones molares, masa molar media y densidad, con un gráfico de barras.', 'Gases reales con la ecuación de Van der Waals: presión, factor de compresibilidad Z, comparación con el gas ideal, punto crítico y la isoterma dibujada.', 'Teoría cinética con el recorrido libre medio, el número de choques por segundo y la densidad de moléculas.', 'Caja de partículas animada que se mueve más rápido o más despacio según la temperatura.', 'Las fórmulas del desarrollo y de la teoría se ven como en los apuntes.', 'Los ejemplos usan coma decimal.', 'Modo práctica con enunciado escrito.', 'Enlace a Ciclos termodinámicos para Otto, Diesel, Brayton y Stirling.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ecuación de estado PV = nRT con P, V, T y n en varias unidades, los moles a partir de la masa y la densidad del gas.', 'Transformaciones isoterma, isobara, isocora y adiabática encadenadas, con el trabajo, el calor y la variación de energía interna de cada tramo, y ciclos con su rendimiento comparado con el de Carnot.', 'Diagrama P-V con las isotermas y el área del ciclo.', 'Teoría cinética: velocidades cuadrática media, media y más probable, energía cinética media y la distribución de Maxwell.'] },
     ],
     ciclos: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Nuevos ciclos Brayton (turbina de gas) y Stirling, este con y sin regenerador.', 'Ciclo propio: das la presión y el volumen de tres o cuatro estados y el tipo de cada tramo (isocora, isobara, recta, isoterma o adiabática).', 'Diagrama T-S animado junto al p-V y la variación de entropía de cada tramo en la tabla y en el desarrollo.', 'Potencia de un motor Otto o Diesel a partir de las revoluciones por minuto y el número de cilindros.', 'Modo práctica con enunciado: ejercicios al azar de cada ciclo y de máquinas térmicas.', 'Enlace a Gases ideales para encadenar transformaciones.'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['Arreglo: en el móvil, las fórmulas largas del desarrollo se cortaban por la derecha; ahora bajan de línea en cada igual.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ciclos de Carnot, Otto y Diesel con un gas ideal, con la tabla de estados, el trabajo, el calor y la energía interna de cada tramo y el rendimiento comparado con su fórmula y con Carnot.', 'Máquinas térmicas, frigoríficos y bombas de calor: el dato que falta, el rendimiento o la eficiencia, el límite de Carnot y si la máquina es posible, con la entropía del universo.', 'Diagrama p-V con un punto que recorre el ciclo y el cilindro con el émbolo, y el esquema de flujos de energía de las máquinas.'] },
     ],
     ph: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Hidrólisis de sales: pH del acetato de sodio, del cloruro de amonio o de una sal neutra, con la constante de hidrólisis.', 'Al revés: Ka o Kb a partir del pH medido, y la concentración que hace falta para un pH.', 'Preparar un tampón: el cociente sal/ácido y los gramos de sal para un pH dado.', 'Ácidos polipróticos (carbónico, fosfórico, sulfúrico con su segunda constante) y su valoración con una equivalencia por protón.', 'Mezclas de un ácido débil con una base fuerte, o al revés, como modo propio.', 'Agua a otra temperatura: Kw y el pH neutro cambian (6,63 a 50 °C).'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['Valoraciones de un ácido o una base débil: con muy poco valorante añadido, o muy cerca del punto de equivalencia, el pH ya sale bien. Antes se usaba Henderson-Hasselbalch también ahí y daba un pH equivocado (por ejemplo 2,05 en vez de 2,91 al empezar a valorar el ácido acético).'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: pH de ácidos y bases fuertes (también muy diluidos) y débiles, con el grado de disociación y la aproximación comprobada.', 'Mezclas de un ácido fuerte con una base fuerte y disoluciones reguladoras con Henderson-Hasselbalch, también al añadirles ácido o base.', 'Valoraciones de ácidos y bases fuertes y débiles: volumen y pH de equivalencia, pH a mitad, el pH con el volumen que pidas, el indicador adecuado y la curva.', 'Vaso con el color del indicador universal y las partículas, y una bureta que valora mientras se dibuja la curva.'] },
     ],
     fluidos: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Viscosidad: ley de Poiseuille en un tubo (caudal o diferencia de presión, perfil de velocidades y número de Reynolds) y ley de Stokes para una esfera que cae (velocidad límite o viscosidad a partir de ella).', 'Tubo de Pitot y medidor de Venturi con manómetro: la velocidad o el caudal a partir del desnivel.', 'Fuerza y centro de presiones sobre una presa o una compuerta sumergida, con el momento en la base.', 'Tensión superficial y capilaridad con la ley de Jurin, también para líquidos que no mojan como el mercurio.', 'Los ejemplos escriben los decimales con coma.', 'Modo práctica con enunciado: ejercicios al azar de cada tipo.'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['Arreglo: en el móvil, las fórmulas largas del desarrollo se cortaban por la derecha; ahora bajan de línea en cada igual.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: presión manométrica y absoluta a una profundidad, con la fuerza sobre el fondo, y alturas o densidades en un tubo en U con dos líquidos.', 'Prensa hidráulica: la fuerza que se consigue o la que hace falta para levantar una masa, con los recorridos de los émbolos.', 'Empuje de Arquímedes: si un cuerpo flota (y cuánto se sumerge) o se hunde (peso aparente y aceleración), y la densidad a partir del peso en el aire y dentro del fluido.', 'Tuberías con la ecuación de continuidad y Bernoulli, y el chorro de un depósito con Torricelli: velocidad, alcance, caudal y tiempo de vaciado.', 'Una animación de cada caso.'] },
     ],
     doppler: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Velocidades en ángulo: la fuente y el observador pueden moverse en cualquier dirección y solo cuenta la componente a lo largo de la recta que los une.', 'Nueva pestaña «Luz»: Doppler relativista con corrimiento al rojo o al azul, la velocidad de una galaxia a partir de la longitud de onda que llega, el Doppler transversal y la comparación con la fórmula clásica, sobre el espectro visible.', 'La gráfica de la fuente que pasa muestra la frecuencia que se oye en cada instante, con el retraso del sonido.', 'Modo práctica con enunciado: ejercicios al azar de cada tipo.'] },
       { v: '0.1.2', fecha: '2026-10-25', cambios: ['Arreglo: en el móvil, las fórmulas largas del desarrollo se cortaban por la derecha; ahora bajan de línea en cada igual.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas dentro del texto de la teoría se ven bien escritas, no con símbolos $.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: frecuencia que se oye con la fuente, el observador y el viento moviéndose, con la longitud de onda delante de la fuente.', 'Una fuente que pasa de largo: lo que se oye antes y después, el salto en hercios y semitonos y, al revés, su velocidad a partir de las dos frecuencias. Con el observador a un lado de la carretera, la gráfica del cambio gradual.', 'Eco en un obstáculo que se mueve (radar de tráfico, murciélago, ecografía Doppler): la frecuencia del eco y las pulsaciones, o la velocidad del obstáculo a partir de ellas.', 'Onda de choque: número de Mach, semiángulo del cono y cuándo se oye el estampido.', 'Animación de los frentes de onda y botón para escuchar la diferencia.'] },
     ],
     resistencias: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Nuevo modo de asociación: escribe 100 + (220 ‖ 330) y sale la resistencia equivalente paso a paso, y con una tensión, la corriente y la potencia.', 'Nuevo modo para conseguir un valor que no existe con dos normalizadas en serie o en paralelo (5 kΩ = 10 kΩ ‖ 10 kΩ).', 'Nuevos modos de resistencia para un LED, con el valor normalizado y la potencia que debe aguantar, y de divisor de tensión con normalizadas, también con carga.', 'Código impreso de los condensadores (104, 472J, 104K 2A, 4n7) con la tolerancia y la tensión, y el código de colores de las bobinas en μH.', 'Avisa si parece que estás leyendo la resistencia al revés y te dice qué valor saldría desde el otro extremo.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas dentro del texto de la teoría se ven bien escritas, no con símbolos $.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: elige los colores de una resistencia de 3, 4, 5 o 6 bandas y obtén el valor, la tolerancia, el margen del valor real y el coeficiente de temperatura, con el dibujo de la resistencia.', 'Del valor a los colores: escribe 4k7, 2M2 o 470R y te da las bandas y el valor normalizado más cercano de las series E6 a E96.', 'Códigos SMD de 3 y 4 cifras, con R y EIA-96.'] },
     ],
     faraday: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Hilo recto y espira rectangular: la espira se aleja o se acerca, o la corriente del hilo cambia, con el flujo integrado, la fem, el sentido y la fuerza sobre la espira.', 'Campo que cambia con una función del tiempo (B₀ + kt, B₀ + kt², B₀ sen ωt o B₀ e^(−t/τ)): fem en cualquier instante y gráficas de B(t) y ε(t).', 'Barra con masa: velocidad límite al tirar de ella o al caer por raíles verticales, y la distancia que recorre una barra lanzada hasta pararse, con v(t).', 'Varilla que gira por un extremo y disco de Faraday: ε = ½BωL².', 'Alternador: el par que hay que hacer para mantener el giro y la energía de cada vuelta.', 'Botones para copiar el enlace del ejercicio, copiar la solución como texto o en LaTeX e imprimirla o guardarla en PDF.', 'El desarrollo paso a paso escribe las fórmulas como en los libros: fracciones, raíces, exponentes y subíndices de verdad.', 'Enlace a Autoinducción e inducción mutua desde la teoría.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: fem y corriente inducidas en una barra que se desliza sobre unos raíles, con la fuerza que la frena y la potencia.', 'Bobina que gira en un campo (alternador): flujo y fem en función del tiempo, valores máximo y eficaz.', 'Flujo que cambia en un tiempo porque cambia el campo o el ángulo: fem media, corriente y carga.', 'Espira que atraviesa una región con campo: fem al entrar y al salir, fuerza y calor.', 'Sentido de la corriente por la ley de Lenz y animación con la gráfica de Φ y ε.'] },
     ],
@@ -732,7 +797,10 @@ const Mates = (() => {
    hasta que cae a la altura yf. Sin rozamiento y con rozamiento lineal
    (a = −b v) la solución es analítica; con rozamiento cuadrático
    (a = −c |v| v) se integra con RK4. Desarrollo paso a paso.
-   rectilineo: MRU y MRUA en una dimensión. Unidades del SI.
+   También: ángulo de alcance máximo, v0 para acertar a un blanco con el
+   ángulo dado y la familia de tiros con la parábola de seguridad.
+   rectilineo: MRU y MRUA en una dimensión, con un segundo móvil y sus
+   encuentros. circular: MCU y MCUA. Unidades del SI.
    ===================================================================== */
 const Cinematica = (() => {
   const rad = (g) => (g * Math.PI) / 180, gra = (r) => (r * 180) / Math.PI;
@@ -761,7 +829,7 @@ const Cinematica = (() => {
     const p = {
       v0: n(sc, 'v0', 'la velocidad inicial', { min: 0 }), ang: n(sc, 'ang', 'el ángulo'), y0: n(sc, 'y0', 'la altura inicial'),
       yf: vacio(sc.yf) ? 0 : n(sc, 'yf', 'la altura del suelo'), g: n(sc, 'g', 'la gravedad', { min: 0, estricto: true }),
-      modelo: ['lineal', 'cuadratico'].includes(sc.modelo) ? sc.modelo : 'ninguno',
+      modelo: ['lineal', 'cuadratico'].includes(sc.modelo) ? sc.modelo : 'ninguno', familia: sc.familia === 'si',
       tq: n(sc, 'tq', 'el instante', { min: 0, opcional: true }), xb: n(sc, 'xb', 'la x del blanco', { min: 0, estricto: true, opcional: true }), yb: null,
     };
     if (p.ang < -90 || p.ang > 90) throw new Error('El ángulo debe estar entre −90° y 90°');
@@ -849,6 +917,14 @@ const Cinematica = (() => {
       const ec = `$${f(y0)}${mas(vy0)} t − ${f(g / 2)} t^2 = ${f(yf)}$`;
       pasos.push({ t: 'Tiempo de vuelo', html: `Cae cuando y(t) = ${f(yf)} m: ${ec} ⇒ $t = {v_0y + √(v_0y^2 + 2g(y_0 − y_f))}/g$ = <b>${f(tv)} s</b>${y0 === yf && vy0 > 0 ? ' ($= 2t_s$, la trayectoria es simétrica)' : ''}.` });
       pasos.push({ t: 'Alcance', html: `$x = v_0x t_v = ${f(vx0)} · ${f(tv)}$ = <b>${f(res.alcance)} m</b>${y0 === yf ? `. Al mismo nivel también vale $R = {v_0^2 sen 2α}/g$ = ${f((v0 * v0 * Math.sin(rad(2 * ang))) / g)} m` : ''}.` });
+      const op = optimo(p);
+      if (op) {
+        Object.assign(res, op);
+        pasos.push({ t: 'Ángulo de alcance máximo', html: y0 === yf
+          ? `Al mismo nivel $R = {v_0^2 sen 2α}/g$ es máximo con $sen 2α = 1 ⇒ α = 45°$: $R_máx = v_0^2/g$ = <b>${f(op.Rmax)} m</b>.`
+          : `Con desnivel $h = y_0 − y_f = ${f(y0 - yf)} "m"$ el mejor ángulo ya no es 45°: $tg α = v_0/√(v_0^2 + 2g h)$ ⇒ <b>α = ${f(op.angOpt)}°</b> ⇒ $R_máx = {v_0 √(v_0^2 + 2g h)}/g$ = <b>${f(op.Rmax)} m</b>.` });
+      }
+      if (p.familia) pasos.push({ t: 'Parábola de seguridad', html: `Con $v_0 = ${f(v0)} "m/s"$ y cualquier ángulo, ningún tiro pasa por encima de $y = y_0 + v_0^2/(2g) − {g x^2}/{2 v_0^2} = ${f(y0 + (v0 * v0) / (2 * g))} − ${f(g / (2 * v0 * v0))} x^2$, la envolvente de todas las trayectorias (a trazos en el dibujo).` });
     } else if (modelo === 'lineal') {
       const { b } = p, vt = g / b;
       pasos.push({ t: 'Ecuaciones con rozamiento lineal', html: `$a = −g ĵ − (b/m) v$, con $b/m = ${f(b)} "s"^−1$. Velocidad límite $v_L = g/(b/m)$ = <b>${f(vt)} m/s</b>.<br>$v_x(t) = v_0x e^{−bt/m}$ &nbsp; $x(t) = {v_0x m}/b (1 − e^{−bt/m})$, que tiende a ${f(vx0 / b)} m<br>$v_y(t) = (v_0y + v_L) e^{−bt/m} − v_L$ &nbsp; $y(t) = y_0 + (v_0y + v_L) m/b (1 − e^{−bt/m}) − v_L t$` });
@@ -879,9 +955,16 @@ const Cinematica = (() => {
     return { p, pasos, res };
   }
 
-  // ¿pasa por el blanco (xb, yb)? y, sin rozamiento, con qué ángulos se acierta
+  // ángulo de alcance máximo sin rozamiento desde y0 hasta yf: tg α = v0 / √(v0² + 2g h)
+  function optimo({ v0, g, y0, yf }) {
+    const D = v0 * v0 + 2 * g * (y0 - yf);
+    if (!(v0 > 0) || D <= 0) return null;
+    return { angOpt: gra(Math.atan(v0 / Math.sqrt(D))), Rmax: (v0 * Math.sqrt(D)) / g };
+  }
+
+  // ¿pasa por el blanco (xb, yb)? y, sin rozamiento, con qué ángulos se acierta y qué v0 hace falta con el ángulo dado
   function blanco(p, mov, pasos) {
-    const { xb, yb, v0, g, y0, vx0 } = p, out = {};
+    const { xb, yb, v0, g, y0, vx0, ang } = p, out = {};
     const fin = mov.estado(mov.tv);
     let texto;
     if (vx0 <= 0 || xb > fin.x) texto = `El proyectil cae antes de llegar a x = ${f(xb)} m.`;
@@ -906,6 +989,12 @@ const Cinematica = (() => {
         out.angulos = D === 0 ? [a1] : [a1, a2];
         texto += `<br>Para acertar con $v_0 = ${f(v0)} "m/s"$: $y_b − y_0 = x tg α − {g x^2 (1 + tg^2 α)}/{2 v_0^2} ⇒ ${f(A)} tg^2 α − ${f(xb)} tg α + ${f(A + Y)} = 0$ ⇒ <b>α = ${out.angulos.map((a) => f(a) + '°').join(' o α = ')}</b>${out.angulos.length > 1 ? ' (tiro tenso y tiro por elevación)' : ''}.`;
       }
+      // con el ángulo fijo: y_b − y0 = x tg α − g x² / (2 v0² cos² α) ⇒ v0
+      const ca = Math.cos(rad(ang)), den = xb * Math.tan(rad(ang)) - Y;
+      if (ca > 1e-9 && den > 0) {
+        out.v0nec = Math.sqrt((g * xb * xb) / (2 * ca * ca * den));
+        texto += `<br>Para acertar con $α = ${f(ang)}°$: $v_0 = √({g x^2}/{2 cos^2 α (x tg α − Δy)})$ = <b>${f(out.v0nec)} m/s</b>.`;
+      } else texto += `<br>Con $α = ${f(ang)}°$ no se acierta con ninguna velocidad: el blanco queda por encima de la recta de lanzamiento.`;
     }
     pasos.push({ t: `Blanco en (${f(xb)}, ${f(yb)}) m`, html: texto });
     return out;
@@ -921,11 +1010,26 @@ const Cinematica = (() => {
       const s = ideal(p);
       if (s.tv) { ideal_ = []; for (let i = 0; i <= N; i++) ideal_.push(s.estado((s.tv * i) / N)); }
     }
-    return { p, puntos, ideal: ideal_, tv: T, tc: mov.tc, estado: mov.estado };
+    // familia de tiros con la misma v0 (sin rozamiento) y su envolvente, la parábola de seguridad
+    let familia = null, envolvente = null;
+    if (p.familia && p.v0 > 0) {
+      const op = optimo(p), angs = [15, 30, 45, 60, 75];
+      if (op && Math.abs(op.angOpt - 45) > 0.5) angs.push(op.angOpt);
+      familia = [];
+      for (const a of angs.sort((u, v) => u - v)) {
+        const q = { ...p, ang: a, vx0: p.v0 * Math.cos(rad(a)), vy0: p.v0 * Math.sin(rad(a)) }, s = ideal(q);
+        if (!s.tv) continue;
+        const P = []; for (let i = 0; i <= 120; i++) P.push(s.estado((s.tv * i) / 120));
+        familia.push({ ang: a, optimo: op && a === op.angOpt, puntos: P });
+      }
+      const k = p.g / (2 * p.v0 * p.v0), y = (x) => p.y0 + 1 / (4 * k) - k * x * x, xf = Math.sqrt(Math.max(0, (p.y0 + 1 / (4 * k) - p.yf) / k));
+      envolvente = []; for (let i = 0; i <= 120; i++) { const x = (xf * i) / 120; envolvente.push({ x, y: y(x) }); }
+    }
+    return { p, puntos, ideal: ideal_, tv: T, tc: mov.tc, estado: mov.estado, familia, envolvente };
   }
 
   /* =================== Movimiento rectilíneo =================== */
-  // escena: { x0, v0, a, tq, xq }
+  // escena: { x0, v0, a, tq, xq, x0b, v0b, ab } (los tres últimos, el segundo móvil B, opcionales)
   function rectilineo(sc) {
     const x0 = n(sc, 'x0', 'la posición inicial'), v0 = n(sc, 'v0', 'la velocidad inicial'), a = n(sc, 'a', 'la aceleración');
     const tq = n(sc, 'tq', 'el instante', { min: 0, opcional: true }), xq = n(sc, 'xq', 'la posición buscada', { opcional: true });
@@ -954,10 +1058,71 @@ const Cinematica = (() => {
       const ec = a === 0 ? `$${f(x0)}${mas(v0)} t = ${f(xq)}$` : `$${f(a / 2)} t^2${mas(v0)} t${mas(x0 - xq)} = 0$`;
       pasos.push({ t: `¿Cuándo pasa por x = ${f(xq)} m?`, html: `${ec} ⇒ ${ts.length ? ts.map((t) => `<b>t = ${f(t)} s</b> (v = ${f(v(t))} m/s)`).join(' y ') : '<b>nunca</b> (con t ≥ 0)'}.` });
     }
+    // segundo móvil B y sus encuentros con A: x_A(t) = x_B(t)
+    let b = null, xB = null, vB = null;
+    if (!vacio(sc.x0b) || !vacio(sc.v0b) || !vacio(sc.ab)) {
+      b = { x0: vacio(sc.x0b) ? 0 : n(sc, 'x0b', 'la posición inicial de B'), v0: vacio(sc.v0b) ? 0 : n(sc, 'v0b', 'la velocidad de B'), a: vacio(sc.ab) ? 0 : n(sc, 'ab', 'la aceleración de B') };
+      xB = (t) => b.x0 + b.v0 * t + 0.5 * b.a * t * t; vB = (t) => b.v0 + b.a * t;
+      pasos.push({ t: 'Segundo móvil B', html: `$x_B(t) = ${f(b.x0)}${mas(b.v0)} t${b.a ? `${mas(b.a / 2)} t^2` : ''}$ &nbsp; $v_B(t) = ${f(b.v0)}${b.a ? `${mas(b.a)} t` : ''}$` });
+      // (x0 − x0b) + (v0 − v0b) t + ½ (a − ab) t² = 0
+      const c0 = x0 - b.x0, c1 = v0 - b.v0, c2 = (a - b.a) / 2;
+      let ts;
+      if (Math.abs(c2) < 1e-12) ts = Math.abs(c1) < 1e-12 ? [] : [-c0 / c1];
+      else { const D = c1 * c1 - 4 * c2 * c0; ts = D < 0 ? [] : [...new Set([(-c1 - Math.sqrt(D)) / (2 * c2), (-c1 + Math.sqrt(D)) / (2 * c2)])]; }
+      ts = ts.filter((t) => t > 1e-9).sort((u, w) => u - w);
+      res.encuentros = ts.map((t) => ({ t, x: x(t) }));
+      const ec = Math.abs(c2) < 1e-12 ? `$${f(c1)} t${mas(c0)} = 0$` : `$${f(c2)} t^2${mas(c1)} t${mas(c0)} = 0$`;
+      pasos.push({ t: 'Encuentro', html: `Se encuentran cuando $x_A(t) = x_B(t)$: ${ec} ⇒ ${ts.length ? res.encuentros.map((e) => `<b>t = ${f(e.t)} s</b>, en <b>x = ${f(e.x)} m</b>`).join(' y ') : `<b>nunca</b> (con t > 0)${Math.abs(c0) < 1e-12 ? ', solo salen juntos' : ''}`}.` });
+    }
     // duración de la gráfica
-    const marcas = [tq, ...(res.tEnX || []), res.tParada !== undefined ? 2 * res.tParada : null].filter((t) => t !== null && t > 0);
+    const marcas = [tq, ...(res.tEnX || []), ...(res.encuentros || []).map((e) => e.t), res.tParada !== undefined ? 2 * res.tParada : null].filter((t) => t !== null && t > 0);
     const T = marcas.length ? Math.max(...marcas) * 1.15 : 10;
-    return { p: { x0, v0, a, tq, xq }, pasos, res, x, v, T };
+    return { p: { x0, v0, a, tq, xq }, b, pasos, res, x, v, xB, vB, T };
+  }
+
+  /* =================== Movimiento circular =================== */
+  // escena: { R, dato: 'v'|'w'|'T'|'rpm', val, alfa, tq, nv }
+  const DATOS_C = { v: 'la velocidad lineal', w: 'la velocidad angular', T: 'el periodo', rpm: 'las revoluciones por minuto' };
+  function circular(sc) {
+    const R = n(sc, 'R', 'el radio', { min: 0, estricto: true }), dato = DATOS_C[sc.dato] ? sc.dato : 'w';
+    const val = n(sc, 'val', DATOS_C[dato], dato === 'T' ? { min: 0, estricto: true } : {});
+    const al = vacio(sc.alfa) ? 0 : n(sc, 'alfa', 'la aceleración angular');
+    const tq = n(sc, 'tq', 'el instante', { min: 0, opcional: true }), nv = n(sc, 'nv', 'el número de vueltas', { min: 0, estricto: true, opcional: true });
+    const w0 = dato === 'v' ? val / R : dato === 'T' ? (2 * Math.PI) / val : dato === 'rpm' ? (2 * Math.PI * val) / 60 : val;
+    if (w0 === 0 && al === 0) throw new Error('Con velocidad y aceleración angular nulas no se mueve');
+    const w = (t) => w0 + al * t, th = (t) => w0 * t + 0.5 * al * t * t;
+    const pasos = [], res = { tipo: al === 0 ? 'MCU' : 'MCUA', w0, v0: w0 * R };
+    const deDato = { v: `$ω = v/R = ${f(val)}/${f(R)}$`, w: '$ω$', T: `$ω = 2π/T = 2π/${f(val)}$`, rpm: `$ω = 2π n/60 = 2π · ${f(val)}/60$` }[dato];
+    pasos.push({ t: 'Velocidad angular', html: `${deDato} = <b>${f(w0)} rad/s</b> &nbsp; $v = ω R = ${f(w0)} · ${f(R)}$ = <b>${f(w0 * R)} m/s</b>` });
+    if (al === 0) {
+      Object.assign(res, { periodo: (2 * Math.PI) / Math.abs(w0), frec: Math.abs(w0) / (2 * Math.PI), ac: w0 * w0 * R });
+      pasos.push({ t: 'Periodo y frecuencia', html: `$T = 2π/ω$ = <b>${f(res.periodo)} s</b> &nbsp; $f = 1/T$ = <b>${f(res.frec)} Hz</b> (${f(60 * res.frec)} rpm)` });
+      pasos.push({ t: 'Aceleración centrípeta', html: `En el MCU solo hay aceleración normal, hacia el centro: $a_c = ω^2 R = v^2/R$ = <b>${f(res.ac)} m/s²</b>.` });
+    } else {
+      res.at = al * R; res.an0 = w0 * w0 * R;
+      pasos.push({ t: 'Ecuaciones del MCUA', html: `$ω(t) = ω_0 + α t = ${f(w0)}${mas(al)} t$ &nbsp; $θ(t) = ω_0 t + 1/2 α t^2 = ${f(w0)} t${mas(al / 2)} t^2$<br>Aceleración tangencial constante $a_t = α R = ${f(al)} · ${f(R)}$ = <b>${f(res.at)} m/s²</b>; la normal $a_n = ω^2 R$ cambia (al principio ${f(res.an0)} m/s²).` });
+      if (w0 * al < 0) {
+        res.tParada = -w0 / al; res.thParada = Math.abs(th(res.tParada)); res.vueltasParada = res.thParada / (2 * Math.PI);
+        pasos.push({ t: 'Se para', html: `$ω = 0 ⇒ t = −ω_0/α$ = <b>${f(res.tParada)} s</b>, tras girar $θ = ω_0^2/(2|α|)$ = ${f(res.thParada)} rad = <b>${f(res.vueltasParada)} vueltas</b>.` });
+      }
+    }
+    if (nv !== null) {
+      const ang = 2 * Math.PI * nv;
+      let t = null;
+      if (al === 0) t = ang / Math.abs(w0);
+      else { const D = w0 * w0 + 2 * Math.sign(w0 || al) * al * ang; if (D >= 0) { const wf = Math.sqrt(D); t = (wf - Math.abs(w0)) / (Math.sign(w0 || al) * al); } }
+      res.tVueltas = t !== null && t >= 0 ? t : null;
+      pasos.push({ t: `¿Cuándo da ${f(nv)} vueltas?`, html: res.tVueltas === null ? `<b>Nunca</b>: se para antes (${f(res.vueltasParada)} vueltas).`
+        : `$θ = 2π · ${f(nv)} = ${f(ang)} "rad"$ ⇒ ${al === 0 ? `$t = θ/ω$` : `$${f(Math.abs(al) / 2)} t^2${mas(Math.abs(w0) * Math.sign(al * (w0 || al)))} t − ${f(ang)} = 0$ ⇒`} <b>t = ${f(res.tVueltas)} s</b>${al ? `, con ω = ${f(w(res.tVueltas))} rad/s` : ''}.` });
+    }
+    if (tq !== null) {
+      const wt = w(tq), an = wt * wt * R, at = al * R;
+      Object.assign(res, { wEnT: wt, vEnT: wt * R, thEnT: th(tq), anEnT: an, aEnT: Math.hypot(an, at) });
+      pasos.push({ t: `En t = ${f(tq)} s`, html: `$ω = ${f(wt)} "rad/s"$, $v = ${f(wt * R)} "m/s"$, $θ = ${f(res.thEnT)} "rad"$ (${f(Math.abs(res.thEnT) / (2 * Math.PI))} vueltas)<br>$a_n = ω^2 R = ${f(an)} "m/s²"$${al ? `, $a_t = ${f(at)} "m/s²" ⇒ |a| = √(a_n^2 + a_t^2)$` : ' ⇒ |a|'} = <b>${f(res.aEnT)} m/s²</b>` });
+    }
+    const marcas = [tq, res.tVueltas, res.tParada].filter((t) => t !== null && t !== undefined && t > 0);
+    const T = marcas.length ? Math.max(...marcas) * (res.tParada && Math.max(...marcas) === res.tParada ? 1 : 1.1) : al === 0 ? 2 * res.periodo : 4;
+    return { p: { R, w0, al, tq, nv }, pasos, res, w, th, T };
   }
 
   const ejemplos = [
@@ -975,15 +1140,25 @@ const Cinematica = (() => {
     { clave: 'arranque', nombre: 'Arranque: ¿cuándo llega a 100 m?', sc: { x0: 0, v0: 0, a: 2, xq: 100 } },
     { clave: 'mru', nombre: 'Velocidad constante', sc: { x0: 10, v0: 12, a: 0, tq: 5 } },
     { clave: 'vertical', nombre: 'Lanzamiento vertical hacia arriba', sc: { x0: 0, v0: 20, a: -9.81, xq: 0 } },
+    { clave: 'persecucion', nombre: 'Persecución: arranca cuando pasa el otro', sc: { x0: 0, v0: 20, a: 0, x0b: 0, v0b: 0, ab: 3 } },
+    { clave: 'cruce', nombre: 'Dos trenes de frente: ¿dónde se cruzan?', sc: { x0: 0, v0: 20, a: 0, x0b: 1000, v0b: -30, ab: 0 } },
+  ];
+  const ejemplosCirculo = [
+    { clave: 'tiovivo', nombre: 'Tiovivo: una vuelta cada 8 s', sc: { R: 4, dato: 'T', val: 8 } },
+    { clave: 'centrifugadora', nombre: 'Centrifugadora a 1200 rpm', sc: { R: 0.25, dato: 'rpm', val: 1200 } },
+    { clave: 'curva', nombre: 'Coche en una curva a 72 km/h', sc: { R: 50, dato: 'v', val: 20, tq: 1 } },
+    { clave: 'frena', nombre: 'Rueda que frena hasta pararse', sc: { R: 0.3, dato: 'w', val: 30, alfa: -2, tq: 5 } },
+    { clave: 'arranca', nombre: 'Arranca desde el reposo: ¿cuándo da 10 vueltas?', sc: { R: 0.15, dato: 'w', val: 0, alfa: 4, nv: 10 } },
   ];
 
-  return { leer, resolver, trayectoria, rectilineo, ejemplos, ejemplosRecta, f };
+  return { leer, resolver, trayectoria, rectilineo, circular, ejemplos, ejemplosRecta, ejemplosCirculo, f };
 })();
 
 /* =====================================================================
    Tiro parabólico y cinemática: interfaz (datos, trayectoria animada,
-   gráficas frente al tiempo y desarrollo). El cálculo está en fisica.js
-   (Cinematica).
+   gráficas frente al tiempo y desarrollo), con tres pestañas: tiro
+   parabólico, movimiento rectilíneo (uno o dos móviles) y movimiento
+   circular. El cálculo está en fisica.js (Cinematica).
    ===================================================================== */
 (() => {
   const { $ } = Herramienta;
@@ -1002,6 +1177,8 @@ const Cinematica = (() => {
     { k: 'modelo', nom: 'Modelo', sel: [['ninguno', 'Sin rozamiento'], ['lineal', 'Lineal −(b/m) v'], ['cuadratico', 'Cuadrático −(c/m)|v| v']] },
     { k: 'b', nom: 'b/m', u: '1/s', si: 'lineal' },
     { k: 'c', nom: 'c/m', u: '1/m', si: 'cuadratico' },
+    { sep: 'Dibujo' },
+    { k: 'familia', nom: 'Trayectorias', sel: [['no', 'Solo este tiro'], ['si', 'Varios ángulos con la misma v₀']] },
     { sep: 'Preguntas (opcional)' },
     { k: 'tq', nom: 'Estado en el instante t', u: 's' },
     { k: 'xb', nom: 'Blanco en x', u: 'm' },
@@ -1015,12 +1192,28 @@ const Cinematica = (() => {
     { sep: 'Preguntas (opcional)' },
     { k: 'tq', nom: 'Posición y velocidad en t', u: 's' },
     { k: 'xq', nom: '¿Cuándo pasa por x?', u: 'm' },
+    { sep: 'Segundo móvil B (opcional)' },
+    { k: 'x0b', nom: 'Posición inicial de B', u: 'm' },
+    { k: 'v0b', nom: 'Velocidad inicial de B', u: 'm/s' },
+    { k: 'ab', nom: 'Aceleración de B', u: 'm/s²' },
   ];
-  const BASE = { v0: '', ang: '', y0: '0', yf: '0', g: '9.81', modelo: 'ninguno', b: '0.1', c: '0.005', tq: '', xb: '', yb: '' };
-  const BASE_R = { x0: '0', v0: '', a: '', tq: '', xq: '' };
+  const CAMPOS_C = [
+    { sep: 'Giro' },
+    { k: 'R', nom: 'Radio R', u: 'm' },
+    { k: 'dato', nom: 'Dato', sel: [['w', 'Velocidad angular ω (rad/s)'], ['v', 'Velocidad lineal v (m/s)'], ['T', 'Periodo T (s)'], ['rpm', 'Revoluciones por minuto']] },
+    { k: 'val', nom: 'Valor del dato', u: '' },
+    { k: 'alfa', nom: 'Aceleración angular α (0 = MCU)', u: 'rad/s²' },
+    { sep: 'Preguntas (opcional)' },
+    { k: 'tq', nom: 'Estado en el instante t', u: 's' },
+    { k: 'nv', nom: '¿Cuándo da n vueltas?', u: 'vueltas' },
+  ];
+  const BASE = { v0: '', ang: '', y0: '0', yf: '0', g: '9.81', modelo: 'ninguno', b: '0.1', c: '0.005', familia: 'no', tq: '', xb: '', yb: '' };
+  const BASE_R = { x0: '0', v0: '', a: '', tq: '', xq: '', x0b: '', v0b: '', ab: '' };
+  const BASE_C = { R: '', dato: 'w', val: '', alfa: '0', tq: '', nv: '' };
+  const TABS = ['tiro', 'recta', 'circ'];
 
-  let st = { tab: 'tiro', sc: { ...BASE, ...C.ejemplos[0].sc }, r: { ...BASE_R, ...C.ejemplosRecta[0].sc } };
-  try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && g.sc && g.r) st = { tab: g.tab === 'recta' ? 'recta' : 'tiro', sc: { ...BASE, ...g.sc }, r: { ...BASE_R, ...g.r } }; } catch (e) {}
+  let st = { tab: 'tiro', sc: { ...BASE, ...C.ejemplos[0].sc }, r: { ...BASE_R, ...C.ejemplosRecta[0].sc }, c: { ...BASE_C, ...C.ejemplosCirculo[0].sc } };
+  try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && g.sc && g.r) st = { tab: TABS.includes(g.tab) ? g.tab : 'tiro', sc: { ...BASE, ...g.sc }, r: { ...BASE_R, ...g.r }, c: { ...BASE_C, ...C.ejemplosCirculo[0].sc, ...g.c } }; } catch (e) {}
   const guarda = () => { try { localStorage.setItem(CLAVE, JSON.stringify(st)); } catch (e) {} };
   const col = {};
   function colores() {
@@ -1064,13 +1257,11 @@ const Cinematica = (() => {
   /* ---------- Pestañas ---------- */
   function pestana(t) {
     st.tab = t; guarda();
-    $('#tab-tiro').setAttribute('aria-selected', t === 'tiro'); $('#tab-recta').setAttribute('aria-selected', t === 'recta');
-    $('#panel-tiro').hidden = t !== 'tiro'; $('#panel-recta').hidden = t !== 'recta';
-    paraT(); paraR();
-    if (t === 'tiro') dibujaT(); else dibujaR();
+    for (const k of TABS) { $('#tab-' + k).setAttribute('aria-selected', t === k); $('#panel-' + k).hidden = t !== k; }
+    paraT(); paraR(); paraC();
+    if (t === 'tiro') dibujaT(); else if (t === 'recta') dibujaR(); else dibujaC();
   }
-  $('#tab-tiro').addEventListener('click', () => pestana('tiro'));
-  $('#tab-recta').addEventListener('click', () => pestana('recta'));
+  for (const k of TABS) $('#tab-' + k).addEventListener('click', () => pestana(k));
 
   function formulario(cont, campos, datos, alCambiar) {
     for (const c of campos) {
@@ -1115,16 +1306,18 @@ const Cinematica = (() => {
     t = Math.min(t, tray.tv);
     const P = tray.puntos; anchos = { t: anchoDe([tray.tv], 2), x: anchoDe(P.map((q) => q.x), 2), y: anchoDe(P.map((q) => q.y), 2), v: anchoDe(P.map((q) => Math.hypot(q.vx, q.vy)), 2) };
     const r = sol.res, filas = [['Tiempo de vuelo', f(r.tv) + ' s'], ['Altura máxima', f(r.hmax) + ' m'], ['Alcance', f(r.alcance) + ' m'], ['Velocidad al caer', `${f(r.vf)} m/s a ${f(Math.abs(r.angf))}°`]];
+    if (r.Rmax !== undefined) filas.push([`Alcance máximo (α = ${f(r.angOpt)}°)`, f(r.Rmax) + ' m']);
     if (r.blanco && r.blanco.angulos) filas.push(['Ángulos para el blanco', r.blanco.angulos.map((a) => f(a) + '°').join(' y ')]);
+    if (r.blanco && r.blanco.v0nec) filas.push([`v<sub>0</sub> para el blanco a ${f(tray.p.ang)}°`, f(r.blanco.v0nec) + ' m/s']);
     $('#resumen').innerHTML = filas.map(([a, b]) => `<div><span>${a}</span><b>${b}</b></div>`).join('');
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html, true)}</li>`).join('');
     dibujaT();
   }
 
   function dibujaEscena(e) {
-    const c = $('#lienzo'), P = tray.puntos, p = tray.p, I = tray.ideal || [];
+    const c = $('#lienzo'), P = tray.puntos, p = tray.p, I = tray.ideal || [], F = tray.familia || [], E = tray.envolvente || [];
     let x0 = 0, x1 = 0, y0 = Math.min(0, p.y0, p.yf), y1 = Math.max(p.y0, p.yf);
-    for (const q of [...P, ...I]) { x1 = Math.max(x1, q.x); y1 = Math.max(y1, q.y); }
+    for (const q of [...P, ...I, ...F.flatMap((u) => u.puntos), ...E]) { x1 = Math.max(x1, q.x); y1 = Math.max(y1, q.y); }
     if (p.xb !== null) { x1 = Math.max(x1, p.xb); y1 = Math.max(y1, p.yb); y0 = Math.min(y0, p.yb); }
     if (x1 - x0 < 1e-6) { x0 = -Math.max(1, (y1 - y0) * 0.4); x1 = -x0; }
     const pad = 14, izq = 44, abajo = 24;
@@ -1166,11 +1359,19 @@ const Cinematica = (() => {
     // sin rozamiento, a trazos
     const linea = (Q, hasta) => { g.beginPath(); let k = 0; for (const q of Q) { if (hasta !== undefined && q.t > hasta) break; k++ ? g.lineTo(X(q.x), Y(q.y)) : g.moveTo(X(q.x), Y(q.y)); } if (hasta !== undefined) g.lineTo(X(e.x), Y(e.y)); g.stroke(); };
     if (I.length) { g.strokeStyle = col['--muted']; g.lineWidth = 1.2; g.setLineDash([5, 4]); linea(I); g.setLineDash([]); }
+    // familia de tiros con la misma v0: cada uno con su ángulo en la cima, y la parábola de seguridad
+    if (E.length) { g.strokeStyle = col['--c-a']; g.lineWidth = 1.4; g.setLineDash([6, 4]); linea(E); g.setLineDash([]); }
+    for (const u of F) {
+      g.strokeStyle = u.optimo ? col['--c-y'] : col['--muted']; g.lineWidth = u.optimo ? 1.8 : 1; g.globalAlpha = u.optimo ? 1 : 0.7; linea(u.puntos); g.globalAlpha = 1;
+      const cima = u.puntos.reduce((m, q) => (q.y > m.y ? q : m), u.puntos[0]);
+      g.font = '11px "IBM Plex Sans", system-ui, sans-serif'; g.fillStyle = u.optimo ? col['--c-y'] : col['--muted']; g.textAlign = 'center'; g.textBaseline = 'bottom';
+      g.fillText(`${txt(f(u.ang, 2))}°`, X(cima.x), Y(cima.y) - 3);
+    }
     g.strokeStyle = col['--line']; g.lineWidth = 1.5; linea(P);
     g.strokeStyle = col['--accent']; g.lineWidth = 2.2; linea(P, e.t);
     // cima y alcance
     const r = sol.res;
-    if (r.tc > 0) {
+    if (r.tc > 0 && !F.length) {
       g.strokeStyle = col['--muted']; g.lineWidth = 1; g.setLineDash([2, 3]); g.beginPath(); g.moveTo(X(r.xc), Y(r.hmax)); g.lineTo(X(r.xc), Y(Math.min(p.y0, p.yf))); g.stroke(); g.setLineDash([]);
       etiqueta(`y máx = ${txt(f(r.hmax))} m`, X(r.xc), Y(r.hmax) - 8, 'center', 'bottom');
     }
@@ -1201,7 +1402,7 @@ const Cinematica = (() => {
       : q === 'vel' ? [{ nom: 'v<sub>x</sub>(t)', col: '--c-x', v: (p) => p.vx }, { nom: 'v<sub>y</sub>(t)', col: '--c-y', v: (p) => p.vy }, { nom: '|v|(t)', col: '--c-v', v: (p) => Math.hypot(p.vx, p.vy) }]
       : [{ nom: 'a<sub>x</sub>(t)', col: '--c-x', v: (p) => p.ax }, { nom: 'a<sub>y</sub>(t)', col: '--c-y', v: (p) => p.ay }];
     grafica($('#grafica'), tray.puntos, tray.tv, series, Math.min(t, tray.tv), q === 'pos' ? 'm' : q === 'vel' ? 'm/s' : 'm/s²');
-    $('#leyenda').innerHTML = series.map((s) => `<span><i style="background:var(${s.col})"></i>${s.nom}</span>`).join('') + (I ? '<span>· a trazos en el dibujo: sin rozamiento</span>' : '');
+    $('#leyenda').innerHTML = series.map((s) => `<span><i style="background:var(${s.col})"></i>${s.nom}</span>`).join('') + (I ? '<span>· a trazos en el dibujo: sin rozamiento</span>' : '') + (tray.familia ? '<span>· a trazos en el dibujo: parábola de seguridad; en verde, el tiro de alcance máximo</span>' : '');
     lee($('#lectura'), `t = ${fijo(e.t, 2, anchos.t)} s · x = ${fijo(e.x, 2, anchos.x)} m · y = ${fijo(e.y, 2, anchos.y)} m · v = ${fijo(Math.hypot(e.vx, e.vy), 2, anchos.v)} m/s`);
     $('#tiempo').value = String(Math.round((t / Math.max(tray.tv, 1e-9)) * 1000));
   }
@@ -1238,12 +1439,14 @@ const Cinematica = (() => {
     try { rec = C.rectilineo(st.r); } catch (e) { err.textContent = e.message; err.hidden = false; rec = null; dibujaR(); return; }
     err.hidden = true;
     if (guardar) guarda();
-    puntosR = Array.from({ length: 301 }, (_, i) => { const tt = (rec.T * i) / 300; return { t: tt, x: rec.x(tt), v: rec.v(tt), a: rec.p.a }; });
+    const B = rec.b;
+    puntosR = Array.from({ length: 301 }, (_, i) => { const tt = (rec.T * i) / 300; return { t: tt, x: rec.x(tt), v: rec.v(tt), a: rec.p.a, ...(B ? { xb: rec.xB(tt), vb: rec.vB(tt), ab: B.a } : {}) }; });
     tr = Math.min(tr, rec.T);
     const r = rec.res, filas = [['Tipo', r.tipo]];
     if (r.tParada !== undefined) filas.push(['Se para en', `t = ${f(r.tParada)} s, x = ${f(r.xParada)} m`]);
     if (r.xEnT !== undefined) filas.push([`En t = ${f(rec.p.tq)} s`, `x = ${f(r.xEnT)} m, v = ${f(r.vEnT)} m/s`]);
     if (r.tEnX) filas.push([`Pasa por x = ${f(rec.p.xq)} m`, r.tEnX.length ? r.tEnX.map((x) => `t = ${f(x)} s`).join(' y ') : 'nunca']);
+    if (r.encuentros) filas.push(['A y B se encuentran', r.encuentros.length ? r.encuentros.map((e) => `t = ${f(e.t)} s, x = ${f(e.x)} m`).join(' y ') : 'nunca']);
     $('#resumen-r').innerHTML = filas.map(([a, b]) => `<div><span>${a}</span><b>${b}</b></div>`).join('');
     $('#pasos-r').innerHTML = rec.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html, true)}</li>`).join('');
     dibujaR();
@@ -1252,7 +1455,8 @@ const Cinematica = (() => {
     if (!rec) { for (const id of ['#pista', '#g-x', '#g-v', '#g-a']) lienzo($(id)); $('#lectura-r').textContent = ''; return; }
     if ($('#panel-recta').hidden) return;
     const { g, w, h } = lienzo($('#pista'));
-    let lo = Math.min(...puntosR.map((q) => q.x)), hi = Math.max(...puntosR.map((q) => q.x));
+    const B = rec.b, xs = puntosR.flatMap((q) => (B ? [q.x, q.xb] : [q.x]));
+    let lo = Math.min(...xs), hi = Math.max(...xs);
     if (rec.p.xq !== null) { lo = Math.min(lo, rec.p.xq); hi = Math.max(hi, rec.p.xq); }
     if (hi - lo < 1e-9) { lo -= 1; hi += 1; }
     const l = 24, r = 24, X = (x) => l + ((x - lo) / (hi - lo)) * (w - l - r), yb = h * 0.62;
@@ -1261,14 +1465,22 @@ const Cinematica = (() => {
     const sp = paso(hi - lo, 6);
     for (let x = Math.ceil(lo / sp) * sp; x <= hi + 1e-9; x += sp) { g.beginPath(); g.moveTo(X(x), yb - 4); g.lineTo(X(x), yb + 4); g.stroke(); g.fillText(txt(f(x, 2)), X(x), yb + 7); }
     if (rec.p.xq !== null) { g.strokeStyle = col['--blanco']; g.lineWidth = 2; g.beginPath(); g.moveTo(X(rec.p.xq), yb - 16); g.lineTo(X(rec.p.xq), yb + 4); g.stroke(); }
-    const x = rec.x(tr), v = rec.v(tr), vmax = Math.max(...puntosR.map((q) => Math.abs(q.v)), 1e-9);
-    flecha(g, X(x), yb - 22, X(x) + (v / vmax) * 60, yb - 22, col['--c-v']);
-    g.fillStyle = col['--bola']; g.strokeStyle = col['--ink']; g.lineWidth = 1.2;
-    g.beginPath(); g.roundRect ? g.roundRect(X(x) - 11, yb - 14, 22, 12, 3) : g.rect(X(x) - 11, yb - 14, 22, 12); g.fill(); g.stroke();
-    grafica($('#g-x'), puntosR, rec.T, [{ col: '--c-x', v: (q) => q.x }], tr, 'x (m)');
-    grafica($('#g-v'), puntosR, rec.T, [{ col: '--c-v', v: (q) => q.v }], tr, 'v (m/s)');
-    grafica($('#g-a'), puntosR, rec.T, [{ col: '--c-a', v: (q) => q.a }], tr, 'a (m/s²)');
-    lee($('#lectura-r'), `t = ${fijo(tr, 2, anchoDe([rec.T], 2))} s · x = ${fijo(x, 2, anchoDe(puntosR.map((q) => q.x), 2))} m · v = ${fijo(v, 2, anchoDe(puntosR.map((q) => q.v), 2))} m/s`);
+    const x = rec.x(tr), v = rec.v(tr), vmax = Math.max(...puntosR.flatMap((q) => (B ? [Math.abs(q.v), Math.abs(q.vb)] : [Math.abs(q.v)])), 1e-9);
+    // móvil: un rectángulo con su velocidad encima; B va en un carril por encima de A
+    const movil = (xx, vv, y, relleno, letra) => {
+      flecha(g, X(xx), y - 8, X(xx) + (vv / vmax) * 60, y - 8, col['--c-v']);
+      g.fillStyle = relleno; g.strokeStyle = col['--ink']; g.lineWidth = 1.2;
+      g.beginPath(); g.roundRect ? g.roundRect(X(xx) - 11, y, 22, 12, 3) : g.rect(X(xx) - 11, y, 22, 12); g.fill(); g.stroke();
+      if (letra) { g.fillStyle = col['--ink']; g.font = '600 10px "IBM Plex Sans", system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(letra, X(xx), y + 6.5); }
+    };
+    if (B) for (const e of rec.res.encuentros) { g.strokeStyle = col['--c-a']; g.lineWidth = 1.5; g.setLineDash([3, 3]); g.beginPath(); g.moveTo(X(e.x), 6); g.lineTo(X(e.x), yb); g.stroke(); g.setLineDash([]); }
+    movil(x, v, yb - 14, col['--bola'], B ? 'A' : '');
+    if (B) movil(rec.xB(tr), rec.vB(tr), yb - 40, col['--c-y'], 'B');
+    const conB = (s, k) => (B ? [s, { col: s.col, trazo: [6, 4], v: (q) => q[k] }] : [s]);
+    grafica($('#g-x'), puntosR, rec.T, conB({ col: '--c-x', v: (q) => q.x }, 'xb'), tr, B ? 'x (m) · B a trazos' : 'x (m)');
+    grafica($('#g-v'), puntosR, rec.T, conB({ col: '--c-v', v: (q) => q.v }, 'vb'), tr, 'v (m/s)');
+    grafica($('#g-a'), puntosR, rec.T, conB({ col: '--c-a', v: (q) => q.a }, 'ab'), tr, 'a (m/s²)');
+    lee($('#lectura-r'), `t = ${fijo(tr, 2, anchoDe([rec.T], 2))} s · ${B ? 'x<sub>A</sub>' : 'x'} = ${fijo(x, 2, anchoDe(puntosR.map((q) => q.x), 2))} m · v = ${fijo(v, 2, anchoDe(puntosR.map((q) => q.v), 2))} m/s${B ? ` · x<sub>B</sub> = ${fijo(rec.xB(tr), 2, anchoDe(puntosR.map((q) => q.xb), 2))} m` : ''}`);
     $('#tiempo-r').value = String(Math.round((tr / rec.T) * 1000));
   }
   function paraR() { jugandoR = false; $('#play-r').textContent = '▶ Reproducir'; }
@@ -1287,13 +1499,123 @@ const Cinematica = (() => {
   $('#reinicio-r').addEventListener('click', () => { paraR(); tr = 0; dibujaR(); });
   $('#tiempo-r').addEventListener('input', (e) => { if (!rec) return; paraR(); tr = (+e.target.value / 1000) * rec.T; dibujaR(); });
 
-  addEventListener('resize', () => { dibujaT(); dibujaR(); });
-  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { colores(); dibujaT(); dibujaR(); });
+  /* =================== Movimiento circular =================== */
+  let cir = null, tc_ = 0, jugandoC = false, ultimoC = 0, puntosC = [];
+  const rellenaC = formulario($('#campos-circ'), CAMPOS_C, () => st.c, () => { $('#ejemplos-c').value = ''; calculaC(true); });
+  const selC = $('#ejemplos-c');
+  selC.innerHTML = '<option value="">Ejemplos…</option>' + C.ejemplosCirculo.map((e) => `<option value="${e.clave}">${e.nombre}</option>`).join('');
+  selC.addEventListener('change', () => { if (selC.value) abrirEjemploC(selC.value); });
+  function abrirEjemploC(clave) {
+    const e = C.ejemplosCirculo.find((x) => x.clave === clave); if (!e) return;
+    st.c = { ...BASE_C, ...e.sc }; rellenaC(); selC.value = clave; pestana('circ'); calculaC(true); paraC(); tc_ = 0; dibujaC();
+  }
+  function calculaC(guardar) {
+    const err = $('#error-c');
+    try { cir = C.circular(st.c); } catch (e) { err.textContent = e.message; err.hidden = false; cir = null; dibujaC(); return; }
+    err.hidden = true;
+    if (guardar) guarda();
+    const al = cir.p.al;
+    puntosC = Array.from({ length: 301 }, (_, i) => { const tt = (cir.T * i) / 300; return { t: tt, th: cir.th(tt), w: cir.w(tt), al }; });
+    tc_ = Math.min(tc_, cir.T);
+    const r = cir.res, filas = [['Tipo', r.tipo], ['Velocidad angular inicial', f(r.w0) + ' rad/s'], ['Velocidad lineal inicial', f(r.v0) + ' m/s']];
+    if (r.periodo !== undefined) filas.push(['Periodo', f(r.periodo) + ' s'], ['Frecuencia', f(r.frec) + ' Hz'], ['Aceleración centrípeta', f(r.ac) + ' m/s²']);
+    if (r.at !== undefined) filas.push(['Aceleración tangencial', f(r.at) + ' m/s²']);
+    if (r.tParada !== undefined) filas.push(['Se para en', `t = ${f(r.tParada)} s, tras ${f(r.vueltasParada)} vueltas`]);
+    if (r.tVueltas !== undefined) filas.push([`Da ${f(cir.p.nv)} vueltas en`, r.tVueltas === null ? 'nunca' : `t = ${f(r.tVueltas)} s`]);
+    if (r.wEnT !== undefined) filas.push([`En t = ${f(cir.p.tq)} s`, `ω = ${f(r.wEnT)} rad/s, |a| = ${f(r.aEnT)} m/s²`]);
+    $('#resumen-c').innerHTML = filas.map(([a, b]) => `<div><span>${a}</span><b>${b}</b></div>`).join('');
+    $('#pasos-c').innerHTML = cir.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html, true)}</li>`).join('');
+    dibujaC();
+  }
+  function dibujaC() {
+    if (!cir) { for (const id of ['#rueda', '#g-th', '#g-w']) lienzo($(id)); $('#lectura-c').textContent = ''; return; }
+    if ($('#panel-circ').hidden) return;
+    const { g, w, h } = lienzo($('#rueda'));
+    const R = cir.p.R, rp = Math.min(w, h) / 2 - 34, cx = w / 2, cy = h / 2;
+    const th = cir.th(tc_), om = cir.w(tc_), al = cir.p.al;
+    // circunferencia, el ángulo barrido en la última vuelta y el radio hasta el móvil
+    g.strokeStyle = col['--line']; g.lineWidth = 2; g.beginPath(); g.arc(cx, cy, rp, 0, 2 * Math.PI); g.stroke();
+    g.fillStyle = col['--muted']; g.beginPath(); g.arc(cx, cy, 3, 0, 2 * Math.PI); g.fill();
+    const vueltas = Math.abs(th) / (2 * Math.PI), resto = (Math.abs(th) % (2 * Math.PI)) * Math.sign(th);
+    g.strokeStyle = col['--accent']; g.lineWidth = 3; g.beginPath(); g.arc(cx, cy, rp, 0, -resto, resto > 0); g.stroke();
+    const px = cx + rp * Math.cos(th), py = cy - rp * Math.sin(th);
+    g.strokeStyle = col['--muted']; g.lineWidth = 1; g.setLineDash([4, 3]); g.beginPath(); g.moveTo(cx, cy); g.lineTo(px, py); g.stroke(); g.setLineDash([]);
+    // vectores: v tangente, a_n hacia el centro y a_t tangente (con el signo de α)
+    const ut = [-Math.sin(th), -Math.cos(th)], un = [cx - px, cy - py].map((u) => u / rp);
+    const vmax = Math.max(...puntosC.map((q) => Math.abs(q.w)), 1e-9) * R, v = om * R;
+    const an = om * om * R, at = al * R, amax = Math.max(...puntosC.map((q) => Math.hypot(q.w * q.w * R, al * R)), 1e-9);
+    const L = Math.min(70, rp * 0.6);
+    flecha(g, px, py, px + ut[0] * (v / vmax) * L, py + ut[1] * (v / vmax) * L, col['--c-v']);
+    flecha(g, px, py, px + un[0] * (an / amax) * L, py + un[1] * (an / amax) * L, col['--c-a']);
+    if (al) flecha(g, px, py, px + ut[0] * (at / amax) * L, py + ut[1] * (at / amax) * L, col['--c-y']);
+    g.fillStyle = col['--bola']; g.strokeStyle = col['--ink']; g.lineWidth = 1.2; g.beginPath(); g.arc(px, py, 7, 0, 2 * Math.PI); g.fill(); g.stroke();
+    g.font = '12px "IBM Plex Sans", system-ui, sans-serif'; g.fillStyle = col['--muted']; g.textAlign = 'left'; g.textBaseline = 'top';
+    g.fillText(`R = ${txt(f(R))} m`, 8, 8); g.fillText(`${txt(f(vueltas, 2))} vueltas`, 8, 26);
+    grafica($('#g-th'), puntosC, cir.T, [{ col: '--c-x', v: (q) => q.th }], tc_, 'θ (rad)');
+    grafica($('#g-w'), puntosC, cir.T, [{ col: '--c-v', v: (q) => q.w }], tc_, 'ω (rad/s)');
+    $('#leyenda-c').innerHTML = `<span><i style="background:var(--c-v)"></i>velocidad v</span><span><i style="background:var(--c-a)"></i>aceleración normal a<sub>n</sub></span>${al ? '<span><i style="background:var(--c-y)"></i>aceleración tangencial a<sub>t</sub></span>' : ''}`;
+    lee($('#lectura-c'), `t = ${fijo(tc_, 3, anchoDe([cir.T], 3))} s · θ = ${fijo(th, 2, anchoDe(puntosC.map((q) => q.th), 2))} rad · ω = ${fijo(om, 2, anchoDe(puntosC.map((q) => q.w), 2))} rad/s · v = ${fijo(v, 2, anchoDe(puntosC.map((q) => q.w * R), 2))} m/s`);
+    $('#tiempo-c').value = String(Math.round((tc_ / cir.T) * 1000));
+  }
+  function paraC() { jugandoC = false; $('#play-c').textContent = '▶ Girar'; }
+  function bucleC(ahora) {
+    if (!jugandoC || !cir) return;
+    // la animación dura unos 6 s sea cual sea la escala de tiempos (cámara lenta si gira muy deprisa)
+    tc_ += Math.min(0.05, (ahora - ultimoC) / 1000) * (cir.T / 6); ultimoC = ahora;
+    if (tc_ >= cir.T) { tc_ = cir.T; dibujaC(); paraC(); return; }
+    dibujaC(); requestAnimationFrame(bucleC);
+  }
+  $('#play-c').addEventListener('click', () => {
+    if (jugandoC) { paraC(); return; }
+    if (!cir) return;
+    if (tc_ >= cir.T) tc_ = 0;
+    jugandoC = true; $('#play-c').textContent = '❚❚ Pausa'; ultimoC = performance.now(); requestAnimationFrame(bucleC);
+  });
+  $('#reinicio-c').addEventListener('click', () => { paraC(); tc_ = 0; dibujaC(); });
+  $('#tiempo-c').addEventListener('input', (e) => { if (!cir) return; paraC(); tc_ = (+e.target.value / 1000) * cir.T; dibujaC(); });
+
+  /* ---------- Modo práctica: un ejercicio con enunciado en una de las tres pestañas ---------- */
+  function azar() {
+    const ent = (a, b) => a + Math.floor(Math.random() * (b - a + 1)), de = (l) => l[ent(0, l.length - 1)];
+    const tipos = [
+      () => ['tiro', { ...BASE, v0: String(ent(10, 30)), ang: String(de([30, 37, 45, 53, 60])), y0: '0', g: '9.8' }],
+      () => ['tiro', { ...BASE, v0: String(ent(5, 20)), ang: '0', y0: String(ent(10, 60)), g: '9.8' }],
+      () => ['tiro', { ...BASE, v0: String(ent(15, 30)), ang: String(de([20, 30, 37, 45])), y0: String(ent(5, 40)), g: '9.8' }],
+      () => ['tiro', { ...BASE, v0: String(ent(20, 35)), ang: String(de([30, 37, 45])), y0: '0', g: '9.8', xb: String(ent(25, 60)), yb: String(ent(0, 8)) }],
+      () => ['recta', { ...BASE_R, x0: '0', v0: String(ent(15, 30)), a: '-' + ent(2, 6) }],
+      () => ['recta', { ...BASE_R, x0: '0', v0: String(ent(10, 25)), a: '0', x0b: '0', v0b: '0', ab: String(ent(2, 5)) }],
+      () => ['recta', { ...BASE_R, x0: '0', v0: String(ent(10, 25)), a: '0', x0b: String(ent(3, 10) * 100), v0b: '-' + ent(10, 30), ab: '0' }],
+      () => ['circ', { ...BASE_C, R: String(de([0.2, 0.5, 2, 5])).replace('.', ','), dato: 'rpm', val: String(de([30, 60, 120, 300, 600])), alfa: '0' }],
+      () => ['circ', { ...BASE_C, R: String(de([0.2, 0.3, 0.5])).replace('.', ','), dato: 'w', val: String(ent(10, 40)), alfa: '-' + ent(1, 5), tq: String(ent(1, 4)) }],
+    ];
+    const [tab, d] = de(tipos)();
+    if (tab === 'tiro') { st.sc = d; rellena(); sel.value = ''; pestana('tiro'); calculaT(true); }
+    else if (tab === 'recta') { st.r = d; rellenaR(); selR.value = ''; pestana('recta'); calculaR(true); }
+    else { st.c = d; rellenaC(); selC.value = ''; pestana('circ'); calculaC(true); }
+  }
+  const enunciado = () => {
+    const e = (x) => Herramienta.esc(String(x).replace('.', ',')), d = st.tab === 'tiro' ? st.sc : st.tab === 'recta' ? st.r : st.c;
+    if (st.tab === 'tiro') {
+      const desde = +d.y0 ? `desde ${e(d.y0)} m de altura` : 'desde el suelo';
+      const como = +d.ang ? `con una velocidad de ${e(d.v0)} m/s a ${e(d.ang)}° sobre la horizontal` : `horizontalmente a ${e(d.v0)} m/s`;
+      return `Se lanza un proyectil ${desde} ${como}, sin rozamiento (g = ${e(d.g)} m/s²). Calcula el tiempo de vuelo, la altura máxima, el alcance, la velocidad al llegar al suelo y el alcance máximo que se lograría con la misma velocidad${d.xb ? `. Hay un blanco en (${e(d.xb)}, ${e(d.yb || 0)}) m: ¿con qué ángulos se acierta y qué velocidad haría falta con el ángulo dado?` : ''}.`;
+    }
+    if (st.tab === 'recta') {
+      if (d.x0b !== '') return +d.x0b ? `Dos trenes van por la misma vía, uno hacia el otro: A sale de x = 0 a ${e(d.v0)} m/s y B de x = ${e(d.x0b)} m a ${e(String(d.v0b).replace('-', ''))} m/s. ¿Cuándo y dónde se cruzan?`
+        : `Un coche pasa a ${e(d.v0)} m/s junto a una moto parada, que en ese instante arranca con una aceleración de ${e(d.ab)} m/s². ¿Cuándo y dónde lo alcanza?`;
+      return `Un coche que va a ${e(d.v0)} m/s frena con una aceleración de ${e(d.a)} m/s². ¿Cuánto tarda en pararse y qué distancia recorre?`;
+    }
+    if (+d.alfa) return `Una rueda de ${e(d.R)} m de radio gira a ${e(d.val)} rad/s y frena con una aceleración angular de ${e(d.alfa)} rad/s². Calcula la aceleración tangencial, cuándo se para y cuántas vueltas da, y su velocidad angular y aceleración total a los ${e(d.tq)} s.`;
+    return `Un punto a ${e(d.R)} m del eje gira a ${e(d.val)} rpm. Calcula su velocidad angular y lineal, el periodo, la frecuencia y la aceleración centrípeta.`;
+  };
+
+  addEventListener('resize', () => { dibujaT(); dibujaR(); dibujaC(); });
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { colores(); dibujaT(); dibujaR(); dibujaC(); });
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('tiro-parabolico').current;
-  colores(); rellena(); rellenaR(); calculaT(false); calculaR(false); pestana(st.tab);
+  colores(); rellena(); rellenaR(); rellenaC(); calculaT(false); calculaR(false); calculaC(false); pestana(st.tab);
   window.TiroApp = {
-    abrirEjemplo, abrirEjemploR, pestana, sol: () => sol, rec: () => rec,
+    abrirEjemplo, abrirEjemploR, abrirEjemploC, pestana, azar, enunciado, sol: () => sol, rec: () => rec, cir: () => cir,
     ir: (tt) => { paraT(); if (tray) t = Math.max(0, Math.min(tray.tv, tt)); dibujaT(); }, fin: () => (tray ? tray.tv : 0),
   };
 })();
@@ -1589,8 +1911,10 @@ const Practica = (() => {
 
   // lo que cambia de una herramienta a otra; lo demás sale de la estructura común de las páginas
   const CONF = {
-    calorimetria: { items: '#te' },
-    disoluciones: { items: '#valores > .valor:not(.dato)' },
+    // calorimetría: una mezcla, un problema al revés, un calentador o una dilatación
+    calorimetria: { datos: null, items: '#te, #resumen-d > div', genera: () => window.CalorApp?.azar(), enunciado: () => window.CalorApp?.enunciado() },
+    // disoluciones: lo que se pide depende de la pestaña abierta (solo cuentan los que se ven)
+    disoluciones: { items: '#valores > .valor:not(.dato), #valores-prep > .valor, #valores-col > .valor, #res-dil, #res-mez' },
     matrices: { items: '#res' },
     // solo sistemas compatibles determinados: la solución paramétrica no se pregunta por huecos
     // complejos: una operación al azar con números pequeños (los datos son textos como 3 − 2i)
@@ -1612,6 +1936,24 @@ const Practica = (() => {
     intervalos: { datos: null, items: '#res > div', genera: () => window.IntervalosApp?.azar(), enunciado: () => window.IntervalosApp?.enunciado() },
     // ondasem: una onda plana, una intensidad o un medio con pérdidas
     'ondas-em': { datos: null, items: '#res > div', genera: () => window.OndasEMApp?.azar(), enunciado: () => window.OndasEMApp?.enunciado() },
+    // trabajo y energía: una rampa con muelle, un rizo, un péndulo, una montaña rusa o una fuerza variable
+    'trabajo-y-energia': { datos: null, items: '#resumen > div', genera: () => window.EnergiaApp?.azar(), enunciado: () => window.EnergiaApp?.enunciado() },
+    // tiro parabólico: un tiro, un blanco, una frenada, un encuentro o un giro (cuentan los resultados de la pestaña abierta)
+    'tiro-parabolico': { datos: null, items: '#resumen > div, #resumen-r > div, #resumen-c > div', genera: () => window.TiroApp?.azar(), enunciado: () => window.TiroApp?.enunciado() },
+    // sólido rígido: un momento de inercia, una rodadura, una polea, una patinadora, un choque, un péndulo o una escalera
+    'solido-rigido': { datos: null, items: '#res > div', genera: () => window.SolidoApp?.azar(), enunciado: () => window.SolidoApp?.enunciado() },
+    // ondas: una cuerda, un tubo, un Doppler, un nivel sonoro, unas pulsaciones, una potencia o una reflexión
+    ondas: { datos: null, items: '#res > div', genera: () => window.OndasApp?.azar(), enunciado: () => window.OndasApp?.enunciado() },
+    // doppler: una fuente en línea o en ángulo, una que pasa, un eco, un cono de Mach o una luz que se corre al rojo
+    doppler: { datos: null, items: '#resumen > div', genera: () => window.DopplerApp?.azar(), enunciado: () => window.DopplerApp?.enunciado() },
+    // ciclos: un Carnot, un Otto, un Diesel, un Brayton, un Stirling, un ciclo propio o una máquina
+    ciclos: { datos: null, items: '#resumen > div', genera: () => window.CiclosApp?.azar(), enunciado: () => window.CiclosApp?.enunciado() },
+    // fluidos: una presión, un tubo en U, una prensa, un empuje, una tubería, un chorro, una viscosidad, un medidor, una presa o un capilar
+    // gases: un estado, una transformación, una mezcla, un gas real o una velocidad molecular
+    gases: { datos: null, items: '#res > div', genera: () => window.GasesApp?.azar(), enunciado: () => window.GasesApp?.enunciado() },
+    fluidos: { datos: null, items: '#resumen > div', genera: () => window.FluidosApp?.azar(), enunciado: () => window.FluidosApp?.enunciado() },
+    // dinamica: un bloque en un plano, dos bloques, Atwood, una curva, un péndulo cónico o un muelle
+    dinamica: { datos: null, items: '#res > div', genera: () => window.DinamicaApp?.azar(), enunciado: () => window.DinamicaApp?.enunciado() },
     // interferencia: Young, una rendija, una red o una lámina delgada
     interferencia: { datos: null, items: '#res > div', genera: () => window.InterferenciaApp?.azar(), enunciado: () => window.InterferenciaApp?.enunciado() },
     // laplace: una transformada, una inversa por fracciones simples o una EDO; se preguntan los valores numéricos
@@ -1620,7 +1962,8 @@ const Practica = (() => {
     derivadas: { datos: null, items: '#resumen > div.num', genera: () => window.DerivadasApp?.azar(), enunciado: () => window.DerivadasApp?.enunciado() },
     complejos: { datos: null, genera: () => window.ComplejosApp?.azar(), enunciado: () => window.ComplejosApp?.enunciado() },
     sistemas: { items: '#res', valido: () => !/[λμ]|incompatible|no tiene/i.test(document.querySelector('#res')?.textContent + document.querySelector('#tipo')?.textContent) },
-    estadistica: { items: '#res' },
+    // distribuciones: un ejercicio con enunciado (normal, binomial, Poisson, valores críticos…)
+    estadistica: { datos: null, items: '#res', genera: () => window.EstadisticaApp?.azar(), enunciado: () => window.EstadisticaApp?.enunciado() },
     // regresión: una tabla de datos al azar alrededor de una recta (están en un textarea, no en campos numéricos)
     regresion: { datos: null, genera: () => window.RegresionApp?.azar(), enunciado: () => 'Con los datos de la tabla, calcula la recta de regresión de Y sobre X, la de X sobre Y, el coeficiente de correlación, las medias, la covarianza y la estimación de y que se pide.' },
     // resistencias: unos colores al azar (no hay números que cambiar en los datos)
@@ -1629,14 +1972,16 @@ const Practica = (() => {
       // el enunciado del ejemplo ya no vale con los datos nuevos
       despues: () => pon(document.querySelector('#enunciado'), 'Ejercicio de práctica: calcula el campo magnético en los puntos de las preguntas con las fuentes de la izquierda.'),
       antes: () => { const m = document.querySelector('#modo'); if (m && m.value !== 'si') { m.value = 'si'; m.dispatchEvent(new Event('change', { bubbles: true })); } } },
+    // masa-molar: según la pestaña, una masa molar, una estequiometría con su limitante o una fórmula empírica
     'masa-molar': {
-      items: '#res-masa .grande', quitar: '', tapa: '#res-masa, #conv-card', datos: null,
-      genera: () => pon(document.querySelector('#formula'), toma(['H2O', 'CO2', 'NaCl', 'H2SO4', 'HNO3', 'NaOH', 'NH3', 'CaCO3', 'C6H12O6', 'C2H5OH', 'Ca(OH)2', 'Al2(SO4)3', 'KMnO4', 'Fe2O3', 'Mg3(PO4)2', 'CuSO4·5H2O', 'Na2CO3', 'K2Cr2O7', 'CH4', 'C3H8', 'HCl', 'Ba(NO3)2', 'NH4Cl', 'MgCl2·6H2O'])),
-      enunciado: () => `Calcula la masa molar de <b>${esc(document.querySelector('#formula').value)}</b>.`,
+      items: '#res-masa .grande, #resumen-este > div, #resumen-emp > div', quitar: '', datos: null,
+      tapa: '#res-masa, #conv-card, #tabla-este td.n, #tabla-este td.m, #tabla-este td.s, #resumen-este, #este .pasos, #resumen-emp, #emp .pasos',
+      genera: () => window.MasaApp?.azar(), enunciado: () => window.MasaApp?.enunciado(),
+      get textos() { return document.querySelector('#tab-emp')?.getAttribute('aria-selected') === 'true' ? [{ et: 'Fórmula empírica', sel: '#resumen-emp .formula' }] : []; },
     },
     'configuracion-electronica': {
       items: null, tapa: '#res', datos: null,
-      genera: () => pon(document.querySelector('#entrada'), String(entero(1, 56))),
+      genera: () => { window.ConfigApp?.pestana('el'); pon(document.querySelector('#entrada'), String(entero(1, 56))); },
       enunciado: () => { const g = (s) => document.querySelector(s)?.textContent.trim() || ''; return `Escribe la configuración electrónica del <b>${esc(g('#nombre').toLowerCase())}</b> (${esc(g('#sim'))}, Z = ${esc(g('#z'))}) en orden de llenado y cuántos electrones desapareados tiene.`; },
       textos: [{ et: 'Configuración electrónica', sel: '#llenado', otros: ['#abreviada', '#capas-txt'] }],
       numeros: [{ et: 'Electrones desapareados', sel: '#desap' }],

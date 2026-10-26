@@ -1,5 +1,5 @@
 <title>Regresión lineal y correlación: recta de regresión, r de Pearson y ajustes · SimulaCiencia</title>
-<meta name="description" content="Calculadora de regresión y correlación en español: medias, varianzas, covarianza, coeficiente de correlación de Pearson con su contraste, rectas de regresión de Y sobre X y de X sobre Y, ajustes exponencial, potencial, logarítmico y parabólico, residuos y estimaciones, con la nube de puntos y paso a paso.">
+<meta name="description" content="Calculadora de regresión y correlación en español: medias, varianzas, covarianza, coeficiente de correlación de Pearson con su contraste, rectas de regresión de Y sobre X y de X sobre Y, recta por el origen y ajustes exponencial, potencial, logarítmico, hiperbólico y parabólico comparados, Spearman, residuos con puntos atípicos, error de la pendiente y la ordenada para las prácticas y estimaciones con su intervalo, también desde una tabla de doble entrada, con la nube de puntos y paso a paso.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
@@ -11,7 +11,7 @@
 :root[data-theme="dark"] {
   --punto: #74a2f2; --otra: #6b7784; --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784 }
 textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 120px }
-#grafica { height: clamp(260px, 38vw, 400px) } #grafica.marcando { cursor: crosshair }
+#grafica { height: clamp(260px, 38vw, 400px) } #grafica.marcando { cursor: crosshair } #residuos { height: 170px }
 .tabla-reg { border-collapse: collapse; font: 13.5px var(--f-ui); margin: 6px 0 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; display: block; overflow-x: auto; max-width: 100%; font-variant-numeric: tabular-nums }
 .tabla-reg th, .tabla-reg td { padding: 4px 10px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap } .tabla-reg th { font-weight: 600; background: var(--bg) } .tabla-reg tfoot td { font-weight: 600; background: var(--accent-soft) }
 </style>
@@ -19,7 +19,7 @@ textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 120px 
 <header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Estadística</a> / Regresión y correlación</span></header>
 <div class="wrap">
 <h1>Regresión y correlación</h1>
-<p class="lead">Escribe o pega tus datos (x, y), con frecuencias si las tienes, y obtén la covarianza, el coeficiente de correlación, las dos rectas de regresión o un ajuste exponencial, potencial, logarítmico o parabólico, con la nube de puntos, la tabla de cálculos y el desarrollo como en clase.</p>
+<p class="lead">Escribe o pega tus datos (x, y), con frecuencias o en una tabla de doble entrada, y obtén la covarianza, el coeficiente de correlación, las dos rectas de regresión o un ajuste por el origen, exponencial, potencial, logarítmico, hiperbólico o parabólico, comparados entre sí, con la nube de puntos, los residuos, el error de la pendiente para las prácticas y el desarrollo como en clase.</p>
 <div class="layout">
   <div class="card">
     <h2>Datos</h2>
@@ -33,6 +33,7 @@ textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 120px 
     <div class="card"><h2>Nube de puntos</h2>
       <canvas id="grafica" aria-label="Nube de puntos con la recta o la curva ajustada"></canvas>
       <div class="controles"><button class="btn" id="marcar" type="button" aria-pressed="false">✚ Añadir puntos</button><button class="btn" id="vaciar" type="button">Vaciar</button><span class="nota" id="leyenda" style="margin:0"></span></div></div>
+    <div class="card"><h2>Residuos</h2><canvas id="residuos" aria-label="Gráfica de los residuos frente a x"></canvas><p class="nota">Si el ajuste es bueno, los residuos se reparten al azar alrededor de 0. Las líneas a trazos marcan ±2 veces su desviación típica: lo que queda fuera puede ser un punto atípico.</p></div>
     <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
   </div>
 </div>
@@ -60,8 +61,22 @@ textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 120px 
     <li class="m">Exponencial, $y = a e^{bx}$: tomando logaritmos, $ln y = ln a + b x$, una recta entre x y ln y.</li>
     <li class="m">Potencial, $y = a x^b$: $ln y = ln a + b ln x$, una recta entre ln x y ln y.</li>
     <li class="m">Logarítmico, $y = a + b ln x$: una recta entre ln x e y.</li>
+    <li class="m">Hiperbólico, $y = a + b/x$: una recta entre 1/x e y (por ejemplo, la ley de Boyle).</li>
+    <li class="m">Recta por el origen, $y = bx$: cuando la teoría dice que y = 0 si x = 0, se ajusta solo $b = {∑ x_i y_i}/{∑ x_i^2}$.</li>
   </ul>
   <p class="m">La parábola $y = a + bx + cx^2$ se ajusta directamente por mínimos cuadrados: se resuelve un sistema de tres ecuaciones (las ecuaciones normales). Para comparar ajustes se usa $R^2 = 1 − {∑ (y_i − ŷ_i)^2}/{∑ (y_i − ȳ)^2}$ en las y originales.</p>
+  <h2>Con N o con N − 1</h2>
+  <p class="m">En bachillerato las varianzas y la covarianza se dividen entre N; en la carrera, muchas veces entre N − 1 (cuasivarianzas, $s_x^2$ y $s_{xy}$), porque estiman mejor las de la población. El coeficiente de correlación y las rectas salen iguales con unas o con otras.</p>
+  <h2>Tabla de doble entrada</h2>
+  <p>Cuando hay muchos datos repetidos se dan en una tabla: los valores de x en las filas, los de y en las columnas y en cada casilla cuántas veces aparece ese par. Cada casilla con frecuencia es un punto con su peso n<sub>i</sub>.</p>
+  <h2>Correlación de Spearman</h2>
+  <p class="m">Se cambia cada valor por su puesto de menor a mayor (su rango) y se calcula r con los rangos. Vale 1 si y crece siempre que crece x, aunque no sea en línea recta, y le afectan menos los puntos atípicos. Sin empates, $r_s = 1 − {6 ∑ d_i^2}/{n (n^2 − 1)}$, con $d_i$ la diferencia de rangos.</p>
+  <h2>Error de la pendiente y de la ordenada</h2>
+  <p class="m">En las prácticas se da cada parámetro con su incertidumbre. Con $s_e = √({∑ (y_i − ŷ_i)^2}/{N − 2})$ y $S_{xx} = ∑ (x_i − x̄)^2$:</p>
+  <p class="f m">$s_b = s_e/√S_{xx}$, &ensp; $s_a = s_e √(1/N + x̄^2/S_{xx})$</p>
+  <p>El error se redondea a una cifra significativa (dos si empieza por 1) y el valor, a los mismos decimales: b = 0,0398 ± 0,0008. Con la t de Student de N − 2 grados de libertad salen los intervalos de confianza de la pendiente, de la ordenada y de una estimación.</p>
+  <h2>Residuos y puntos atípicos</h2>
+  <p class="m">Si el modelo es el adecuado, los residuos $e_i = y_i − ŷ_i$ se reparten al azar alrededor de 0. Si forman una curva, hace falta otro ajuste. Un punto con un residuo de más de dos veces su desviación típica puede ser un error al medir o al copiar el dato.</p>
   <h2>¿Es significativa la correlación?</h2>
   <p>Con pocos datos puede salir un r alto por casualidad. Para contrastar si la correlación de la población ρ es distinta de cero se usa</p>
   <p class="f m">$t = r √(N − 2)/√(1 − r^2)$</p>

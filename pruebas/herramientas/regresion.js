@@ -17,6 +17,19 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     { const fila = (x0) => [...Array(10)].map((_, i) => `${x0 + i} ${100 + 3 * i + ((i * 7) % 5)}`).join('\n'), pa = RegresionC.resolver({ modelo: 'parabolica', datos: fila(2015) }), pb = RegresionC.resolver({ modelo: 'parabolica', datos: fila(0) });
       cerca(pa.pred(2020), pb.pred(5), 1e-6, 'parábola con años'); cerca(pa.R2, pb.R2, 1e-9, 'R² de la parábola con años');
       if (!/10<sup>−22<\/sup>/.test(RegresionC.resolver({ modelo: 'exponencial', datos: fila(2015) }).ecuacion)) mal('Regresión: la a muy pequeña de la exponencial no sale en notación científica'); }
+    // lo nuevo de la 0.2: N − 1, doble entrada, por el origen, hiperbólica, Spearman, atípicos, errores, ángulo y comparación
+    { const lista = r('notas'), cu = RegresionC.resolver({ ...RegresionC.ejemplos.find((e) => e.clave === 'notas').sc, div: 'n1' });
+      cerca(cu.cov, lista.m.cxy * 7 / 6, 1e-12, 'cuasicovarianza'); cerca(cu.lineal.b, lista.lineal.b, 1e-12, 'la pendiente no cambia con N − 1'); cerca(cu.r, lista.r, 1e-12, 'r no cambia con N − 1'); }
+    { const d = r('doble'), l = RegresionC.resolver({ modelo: 'lineal', datos: d.pts.map((q) => `${q.x} ${q.y} ${q.n}`).join('\n') });
+      cerca(d.m.N, 34, 1e-12, 'N de la tabla de doble entrada'); cerca(d.r, l.r, 1e-12, 'doble entrada igual que la lista con frecuencias'); }
+    { const h = r('hooke-origen'); cerca(h.coef.b, (50 * 2.1 + 100 * 4 + 150 * 6.2 + 200 * 7.9 + 250 * 10.1) / (50 ** 2 + 100 ** 2 + 150 ** 2 + 200 ** 2 + 250 ** 2), 1e-12, 'pendiente por el origen'); }
+    { const h = RegresionC.resolver({ modelo: 'hiperbolica', datos: '1 7\n2 5\n4 4\n5 3,8' }); cerca(h.coef.a, 3, 1e-9, 'a de y = 3 + 4/x'); cerca(h.coef.b, 4, 1e-9, 'b de y = 3 + 4/x'); }
+    { const sp = RegresionC.resolver({ modelo: 'lineal', datos: '1 1\n2 4\n3 9\n4 16\n5 25' }); cerca(sp.rs, 1, 1e-12, 'Spearman de una relación creciente'); if (sp.r >= 1 - 1e-9) mal('Regresión: x² no debería dar r = 1'); }
+    { const at = r('atipico'); if (at.atipicos.length !== 1 || at.atipicos[0].x !== 5) mal(`Regresión: el punto atípico (5, 19) no se detecta: ${JSON.stringify(at.atipicos.map((q) => q.x))}`); }
+    { const ho = r('hooke'), sb = ho.inc.se / Math.sqrt(5 * ho.m.vx); cerca(ho.inc.sb, sb, 1e-15, 'error de la pendiente'); if (RegresionC.conError(ho.lineal.b, ho.inc.sb) !== '0,0398 ± 0,0008') mal(`Regresión: b con su error da «${RegresionC.conError(ho.lineal.b, ho.inc.sb)}»`);
+      if (RegresionC.conError(12.345, 0.0156) !== '12,345 ± 0,016' || RegresionC.conError(1234, 56) !== '1230 ± 60') mal('Regresión: el redondeo valor ± error no es el del laboratorio');
+      if (!(ho.icPred[0] < ho.icMedia[0] && ho.icMedia[1] < ho.icPred[1])) mal('Regresión: el intervalo de predicción no es más ancho que el de la media'); }
+    { const d = r('debil'); if (!(d.angulo > 45)) mal('Regresión: con r ≈ −0,27 las rectas deberían cortarse con mucho ángulo'); cerca(r('notas').comparacion.length, 7, 0, 'ajustes comparados'); }
     if (r('inversa').r >= -0.9) mal('Regresión: el ejemplo inverso no da una correlación negativa fuerte');
     if (r('frecuencias').m.N !== 24) mal('Regresión: la tabla con frecuencias no suma N = 24');
     if (!(r('debil').pval > 0.05)) mal('Regresión: los datos sin relación salen significativos');
@@ -59,6 +72,11 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       if (await page.locator('#error').isHidden()) mal('Regresión: unos datos sin sentido no muestran el error');
       await page.evaluate(() => RegresionApp.azar());
       if (!(await page.locator('#error').isHidden()) || !(await page.inputValue('#f-datos')).includes('\n')) mal('Regresión: los datos al azar dan error');
+      // tabla de doble entrada y gráfica de residuos
+      await page.evaluate(() => RegresionApp.abrirEjemplo('cuasi'));
+      await page.selectOption('#f-formato', 'doble');
+      if (!(await page.locator('#f-doble').count()) || !(await page.locator('#error').isHidden()) || !(await page.locator('#marcar').isHidden())) mal('Regresión: al pasar a tabla de doble entrada no aparece la tabla o da error');
+      if (!(await page.evaluate(() => { const c = document.querySelector('#residuos'); return c.width > 0 && c.getContext('2d').getImageData(0, 0, c.width, c.height).data.some((v) => v); }))) mal('Regresión: la gráfica de residuos está vacía');
       await page.close();
       if (consola.length) mal('Regresión: consola del navegador:\n      ' + consola.join('\n      '));
       if (fallos === antes) console.log(`  ✓ Regresión: ${RegresionC.ejemplos.length} ejemplos con tablas y MathML, datos a mano, puntos con el ratón, parábola, datos al azar y errores sin errores de consola`);

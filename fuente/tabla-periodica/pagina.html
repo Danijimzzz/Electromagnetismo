@@ -42,17 +42,32 @@
 .ficha h2 { font: 600 20px var(--f-ui); margin: 0 } .ficha .cat { color: var(--muted); font-size: 13px }
 .ficha dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 12px; margin: 14px 0 0; font-size: 13.5px }
 .ficha dt { color: var(--muted) } .ficha dd { margin: 0; font-variant-numeric: tabular-nums } .ficha dd.conf { font-family: var(--f-math); font-size: 15px }
+.ficha .acciones { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px } .ficha .acciones .btn { text-decoration: none }
+#comparacion, #quiz { margin-top: 14px }
+#comparacion table { border-collapse: collapse; width: 100%; font-size: 13px; font-variant-numeric: tabular-nums }
+#comparacion th, #comparacion td { text-align: right; padding: 5px 8px; border-bottom: 1px solid var(--line); white-space: nowrap } #comparacion th:first-child, #comparacion td:first-child { text-align: left; color: var(--muted) }
+#comparacion td.max { font-weight: 600; color: var(--accent) } #comparacion td.conf { font-family: var(--f-math); font-size: 14px }
+#comparacion .quita { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 15px }
+#quiz .primario { background: var(--accent); border-color: var(--accent); color: var(--panel) }
+.q-fila { display: flex; flex-wrap: wrap; gap: 6px; align-items: center } .q-fila .in { flex: 1; min-width: 160px; width: auto }
+.q-res { min-height: 1.4em; margin: 8px 0 0 } .q-res.bien { color: var(--accent); font-weight: 600 } .q-res.mal { color: var(--error) }
+@media (max-width: 700px) {
+  .tabla { grid-template-columns: repeat(18, minmax(26px, 1fr)); min-width: 520px; gap: 2px }
+  .el { min-height: 30px; aspect-ratio: auto; padding: 1px 2px }
+  .el .v { display: none } .el .z { font-size: 8px } .el .s { font-size: 12px }
+  .grupo-h { font-size: 9px }
+}
 .capas { display: flex; gap: 4px; flex-wrap: wrap } .capas span { font: 12px var(--f-mono); background: var(--bg); border-radius: 4px; padding: 1px 6px }
 </style>
 <body>
 <header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Química</a> / Tabla periódica</span></header>
 <div class="wrap">
 <h1>Tabla periódica interactiva</h1>
-<p class="lead">Pulsa un elemento para ver su ficha: masa atómica, configuración electrónica, electronegatividad, energía de ionización y radio. Colorea la tabla por una propiedad para ver cómo varía a lo largo de grupos y periodos.</p>
+<p class="lead">Pulsa un elemento para ver su ficha: masa atómica, configuración electrónica, electronegatividad, energía de ionización, radio, afinidad electrónica, estados de oxidación, densidad y puntos de fusión y ebullición. Colorea la tabla por una propiedad para ver cómo varía a lo largo de grupos y periodos, compara hasta tres elementos y ponte a prueba con preguntas.</p>
 <div class="tools">
   <label>Colorear por <select id="color" class="in">
     <option value="cat">Categoría</option><option value="en">Electronegatividad</option><option value="ei">Energía de ionización</option>
-    <option value="radio">Radio atómico</option><option value="masa">Masa atómica</option><option value="bloque">Bloque (s, p, d, f)</option><option value="estado">Estado a 25 °C</option>
+    <option value="radio">Radio atómico</option><option value="ae">Afinidad electrónica</option><option value="masa">Masa atómica</option><option value="densidad">Densidad</option><option value="fusion">Punto de fusión</option><option value="ebullicion">Punto de ebullición</option><option value="bloque">Bloque (s, p, d, f)</option><option value="estado">Estado a 25 °C</option>
   </select></label>
   <input type="search" id="buscar" class="in" placeholder="Buscar: Fe, hierro, 26…" aria-label="Buscar elemento" autocomplete="off">
 </div>
@@ -60,6 +75,13 @@
   <div>
     <div class="tablawrap"><div class="tabla" id="tabla" role="grid" aria-label="Tabla periódica"></div></div>
     <div class="leyenda" id="leyenda"></div>
+    <div class="card" id="comparacion" hidden></div>
+    <div class="card" id="quiz">
+      <h2>Ponte a prueba</h2>
+      <p id="q-texto"></p>
+      <div class="q-fila"><input id="q-resp" class="in" autocomplete="off" spellcheck="false" aria-label="Tu respuesta"><button class="btn primario" type="button" id="q-comprobar">Comprobar</button><button class="btn" type="button" id="q-sol">Ver la solución</button><button class="btn" type="button" id="q-otra">Otra pregunta</button></div>
+      <p class="q-res" id="q-res" aria-live="polite"></p>
+    </div>
   </div>
   <aside class="ficha" id="ficha" aria-live="polite"></aside>
 </div>
@@ -71,8 +93,11 @@
     <li><b>Radio atómico</b>: aumenta al bajar en un grupo, porque se añaden capas, y disminuye hacia la derecha en un periodo, porque crece la carga nuclear efectiva.</li>
     <li><b>Energía de ionización</b>: la energía para arrancar el electrón más externo. Sigue la tendencia contraria al radio: crece hacia arriba y hacia la derecha, con el máximo en los gases nobles.</li>
     <li><b>Electronegatividad</b>: la tendencia a atraer los electrones de un enlace. Crece hacia arriba y a la derecha; el flúor es el más electronegativo (3,98 en la escala de Pauling).</li>
+    <li><b>Afinidad electrónica</b>: la energía que se desprende al captar un electrón. Es grande en los halógenos (el cloro, 349 kJ/mol, más que el flúor) y los gases nobles y los alcalinotérreos no forman aniones estables.</li>
     <li><b>Carácter metálico</b>: crece hacia abajo y a la izquierda. Los metaloides forman la frontera entre metales y no metales.</li>
   </ul>
+  <h2>El grupo 3 y el bloque f</h2>
+  <p>Durante años se discutió si debajo del itrio van el lantano y el actinio o el lutecio y el laurencio. La IUPAC recomienda (informe de 2021) Sc, Y, Lu y Lr en el grupo 3, con La–Yb y Ac–No en el bloque f, que así tiene 14 columnas. Aquí se dibujan los 15 lantánidos y los 15 actínidos en sus filas aparte, como en muchos libros; la ficha de La, Ac, Lu y Lr lo recuerda.</p>
   <h2>Configuración electrónica</h2>
   <p>La ficha muestra la configuración del estado fundamental según la regla de Madelung (orden de llenado por <i>n</i> + <i>l</i>), con las excepciones conocidas como el cromo ([Ar] 3d⁵ 4s¹) o el cobre ([Ar] 3d¹⁰ 4s¹), y el reparto de electrones por capas.</p>
   <p class="nota">Masas atómicas: valores abreviados de la IUPAC; entre corchetes, el número másico del isótopo más estable. Radios: calculados por Clementi y Raimondi (1967). Los elementos más pesados no tienen propiedades medidas.</p>

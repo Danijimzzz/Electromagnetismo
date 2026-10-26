@@ -5,7 +5,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMwZDZiNjYiLz48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlNmE2NDAiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtZGFzaGFycmF5PSI0IDYuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48cGF0aCBkPSJNMjAgMzJINDQiLz48cGF0aCBkPSJNMjEgMjdDMjcgMTQgMzcgMTQgNDMgMjciLz48cGF0aCBkPSJNMjEgMzdDMjcgNTAgMzcgNTAgNDMgMzciLz48cGF0aCBkPSJNMTcgMjRDMjIgNCA0MiA0IDQ3IDI0Ii8+PHBhdGggZD0iTTE3IDQwQzIyIDYwIDQyIDYwIDQ3IDQwIi8+PC9nPjxjaXJjbGUgY3g9IjE3IiBjeT0iMzIiIHI9IjgiIGZpbGw9IiNlZjdhNjIiLz48Y2lyY2xlIGN4PSI0NyIgY3k9IjMyIiByPSI4IiBmaWxsPSIjNzRhMmYyIi8+PHBhdGggZD0iTTEzIDMyaDhNMTcgMjh2OE00MyAzMmg4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K">
 <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
 <meta property="og:title" content="Transitorios RC, RL y RLC">
-<meta property="og:description" content="Calculadora de transitorios: carga y descarga de un condensador en un circuito RC, corriente en una bobina en un circuito RL y respuesta de un RLC en serie, con la constante de tiempo y la gráfica">
+<meta property="og:description" content="Calculadora de transitorios: carga y descarga de un condensador en un circuito RC, corriente en una bobina en un circuito RL, RLC en serie y en paralelo y cualquier circuito de primer orden por el método de los tres valores, con la constante de tiempo y la gráfica">
 <meta property="og:image" content="https://electromagnetismo-two.vercel.app/og.png">
 <meta name="twitter:card" content="summary_large_image">
 <script>(() => {
@@ -26,7 +26,7 @@
   });
 })();</script>
 <title>Transitorios RC, RL y RLC: carga y descarga paso a paso · SimulaCiencia</title>
-<meta name="description" content="Calculadora de transitorios en español: carga y descarga de un condensador en un circuito RC, corriente en una bobina en un circuito RL y respuesta de un RLC en serie (subamortiguado, crítico o sobreamortiguado), con la constante de tiempo, la gráfica y el desarrollo paso a paso.">
+<meta name="description" content="Calculadora de transitorios en español: carga y descarga de un condensador en un circuito RC, corriente en una bobina en un circuito RL, RLC en serie y en paralelo (subamortiguado, crítico o sobreamortiguado) y cualquier circuito de primer orden por el método de los tres valores, con la constante de tiempo, la gráfica y el desarrollo paso a paso.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
@@ -180,13 +180,21 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 :root[data-theme="dark"] {
   --v: #ef7a62; --i: #74a2f2; --x: #5fcf8a }
 #circuito { height: 230px }
+#grafica { cursor: crosshair }
+#lectura { display: block; min-height: 1.4em; margin-top: 4px; font-size: 13px }
+.lista { display: grid; grid-template-columns: 26px minmax(0, .8fr) minmax(0, .8fr) minmax(0, 1.4fr) minmax(0, 1.5fr) 16px; gap: 5px 5px; align-items: center }
+.lista .cab { font-size: 12px; color: var(--muted) } .lista b { font: 600 13.5px var(--f-math) }
+.lista .valor { display: flex; gap: 3px; align-items: center } .lista .valor small { color: var(--muted) }
+.lista .in { min-width: 0; padding-left: 4px; padding-right: 4px }
+.lista .x { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 16px; padding: 0 } .lista .x:hover { color: var(--error) }
+.botones { display: flex; gap: 6px; flex-wrap: wrap }
 </style>
 <body>
 <header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><nav aria-label="Asignaturas"><a href="../../">Inicio</a><a href="../../electromagnetismo/">Electromagnetismo</a><a href="../../fisica/">Física general</a><a href="../../quimica/">Química</a><a href="../../matematicas/">Matemáticas</a><a href="../../estadistica/">Estadística</a><a href="../../circuitos/" aria-current="page">Circuitos</a><a href="../../economia/">Economía</a></nav><a class="foro" href="../../foro/"><span aria-hidden="true">💬</span>Foro</a><form action="../../" role="search"><input class="buscar" type="search" name="q" placeholder="Buscar: Biot-Savart, molaridad…" aria-label="Buscar herramientas"></form><button class="tema" type="button" title="Cambiar de modo claro u oscuro" aria-label="Cambiar de modo claro u oscuro"><svg class="luna" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11z"/></svg><svg class="sol" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button></header>
 <div class="wrap">
 <nav class="miga" aria-label="Estás en"><span class="miga-izq"></span><span class="miga-ico" aria-hidden="true">Ω</span><a href="../">Circuitos</a><span aria-hidden="true">›</span><span>Transitorios RC, RL y RLC</span><span class="miga-der"></span></nav>
 <h1>Transitorios RC, RL y RLC</h1>
-<p class="lead">Qué pasa justo después de cerrar el interruptor: la carga y la descarga de un condensador, la corriente que sube o baja en una bobina y la respuesta de un RLC en serie, con la constante de tiempo, los valores en un instante, el tiempo hasta un valor y la gráfica animada.</p>
+<p class="lead">Qué pasa justo después de cerrar el interruptor: la carga y la descarga de un condensador, la corriente que sube o baja en una bobina y la respuesta de un RLC en serie o en paralelo, y cualquier circuito de primer orden que escribas, con la constante de tiempo, los valores en un instante, el tiempo hasta un valor y la gráfica animada.</p>
 <div class="layout">
   <div class="card">
     <h2>Datos</h2>
@@ -199,7 +207,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
     <div class="card"><h2>Resultado</h2><div class="res" id="res"></div>
       <canvas id="circuito" aria-label="Esquema del circuito con la corriente"></canvas>
       <canvas id="grafica" aria-label="Tensión y corriente frente al tiempo"></canvas>
-      <div class="controles"><button class="btn" id="play" type="button">⏸ Pausa</button><span class="leyenda" id="leyenda" style="margin:0"></span></div></div>
+      <div class="controles"><button class="btn" id="play" type="button">⏸ Pausa</button><span class="leyenda" id="leyenda" style="margin:0"></span></div><span class="leyenda" id="lectura" aria-live="polite"></span></div>
     <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
   </div>
 </div>
@@ -216,10 +224,19 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
   <p>Con los tres elementos la tensión del condensador cumple una ecuación de segundo orden, LC V<sub>C</sub>″ + RC V<sub>C</sub>′ + V<sub>C</sub> = V. Su comportamiento depende de α = R/(2L) frente a ω<sub>0</sub> = 1/√(LC):</p>
   <p class="f">α &gt; ω<sub>0</sub>: sobreamortiguado, &ensp; α = ω<sub>0</sub>: crítico, &ensp; α &lt; ω<sub>0</sub>: subamortiguado, con ω<sub>d</sub> = √(ω<sub>0</sub><sup>2</sup> − α<sup>2</sup>)</p>
   <p>En el caso subamortiguado la tensión oscila alrededor del valor final con una envolvente e<sup>−αt</sup>. La resistencia crítica, la que separa los dos comportamientos, es R<sub>c</sub> = 2√(L/C).</p>
+  <h2>Circuito RLC en paralelo</h2>
+  <p>Con una fuente de corriente I y R, L y C en paralelo, los tres comparten la tensión v y la corriente de la bobina cumple LC i<sub>L</sub>″ + (L/R) i<sub>L</sub>′ + i<sub>L</sub> = I. Es la misma ecuación que en serie, pero con α = 1/(2RC): aquí una resistencia grande amortigua poco. La resistencia crítica es R<sub>c</sub> = ½√(L/C); por encima oscila y por debajo no.</p>
+  <h2>Cualquier circuito de primer orden: los tres valores</h2>
+  <p>Si el circuito tiene un solo condensador (o una sola bobina), cualquier tensión o corriente sigue la misma forma, y basta con tres números:</p>
+  <p class="f">x(t) = x(∞) + [x(0<sup>+</sup>) − x(∞)] e<sup>−t/τ</sup>, &ensp; τ = R<sub>th</sub> C &ensp;o&ensp; τ = L/R<sub>th</sub></p>
+  <p>x(0<sup>+</sup>) sale del circuito de antes del interruptor en régimen permanente (el condensador abierto, la bobina en cortocircuito), porque la tensión de un condensador y la corriente de una bobina no saltan. x(∞) sale igual con el circuito de después. R<sub>th</sub> es la resistencia que ve el condensador o la bobina con las fuentes apagadas.</p>
+  <h2>Conmutar dos veces</h2>
+  <p>Si el interruptor cambia otra vez en t<sub>1</sub>, el valor en t<sub>1</sub> es el valor inicial del segundo tramo, que tiene su propia constante de tiempo. Al abrir el circuito de una bobina la corriente sigue siendo la misma, así que si se descarga por una resistencia grande R<sub>2</sub> la tensión salta a −i·R<sub>2</sub>: es la chispa de los interruptores y la razón de los diodos de protección.</p>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Transitorios <span id="ver"></span> (beta)</footer>
 </body><script>
+const Pagina = { carpeta: 'transitorios', guarda: 'transitorios-v1' };
 /* =====================================================================
    Versiones y novedades: la web (portada, asignaturas, buscador) tiene su número y cada
    herramienta el suyo. Hasta el lanzamiento se numera 0.x (beta); la 1.0 de una herramienta
@@ -233,6 +250,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 const Version = (() => {
   const registros = {
     web: [
+      { v: '0.49', fecha: '2026-10-26', cambios: ['Circuitos, a fondo: asociación de resistencias escribiendo la expresión, códigos de condensadores y bobinas, fuentes dependientes, Thévenin y Norton entre dos nudos cualesquiera, superposición y mallas; redes de alterna por nudos con fasores y sistemas trifásicos; transitorios de cualquier circuito de primer orden y RLC en paralelo.', 'Química, a fondo: la tabla periódica con más datos, comparación de elementos y preguntas para ponerte a prueba; fórmula empírica y molecular, reactivos impuros y gases en la estequiometría; Slater, números cuánticos y «¿qué elemento es?»; hidrólisis, tampones y polipróticos en pH; propiedades coligativas en disoluciones, y más formas de hallar k en cinética.', 'Estadística, a fondo: F de Snedecor, uniforme, geométrica e hipergeométrica; intervalos con datos apareados, cociente de varianzas, cotas y población finita; errores de la pendiente, bandas de confianza, residuos y más ajustes en regresión. Además, cuatro herramientas más en camino: estadística descriptiva, probabilidad, contrastes de hipótesis y χ².', 'Física general, a fondo: rizos, péndulos y fuerzas variables; movimiento circular y encuentros; dilatación térmica y calentadores; bloques juntos, curvas peraltadas y muelles; equilibrio estático y choques que hacen girar; pulsaciones y ondas entre dos cuerdas; Doppler de la luz; anillos de Newton y criterio de Rayleigh; ciclos Brayton, Stirling y propios; viscosidad, Venturi y capilaridad; mezclas de gases y Van der Waals. Todas con modo práctica con enunciado y fórmulas bien escritas.', 'Electromagnetismo, a fondo: en Electrostática, cilindros huecos y coaxiales, densidades que no son uniformes, arcos y cortezas conductoras; nuevas fuentes y mapa de |B| en Magnetostática; dieléctricos por sectores, rigidez y asociaciones de condensadores; entrehierros y bobinas acopladas; espiras junto a un hilo, campos que cambian con el tiempo y barras con masa en Faraday; efecto Hall, campos cruzados y par sobre espiras; ondas en cualquier dirección, polarización y reflexión. Además, enlace para compartir el ejercicio, copiar la solución en texto o LaTeX e imprimirla.'] },
       { v: '0.48', fecha: '2026-10-25', cambios: ['Todas las herramientas comparten ahora la misma hoja de estilos, así que tarjetas, campos, botones, resultados y desarrollo se ven exactamente igual en todas, y los pasos del desarrollo van numerados.', 'Matemáticas, a fondo: matrices con parámetro, LU y ecuaciones matriciales; sistemas discutidos según un parámetro y escritos como texto; integrales impropias, L’Hôpital y volúmenes de revolución; Laplace con escalón, delta y convolución; nuevas EDOs exactas, de Bernoulli y de Cauchy-Euler; Taylor, Fourier, complejos y campos vectoriales con muchos casos nuevos. Además, enlace para compartir el ejercicio, copiarlo en texto o LaTeX e imprimirlo.', 'Circuitos: los valores admiten prefijos del SI y unidades, como 4k7, 1,5 kΩ, 100n o 10 µF.', 'Arreglos en Circuitos (una resistencia de 0 Ω en paralelo, Thévenin con Rth = 0), Química (pH al empezar y al acabar una valoración débil, aviso de excepción solo en átomos neutros), Estadística (cuantil de la binomial, ajustes con años, proporción con 0 éxitos), Física general y Electromagnetismo (fórmulas largas que se cortaban en el móvil, etiqueta tapada en Dinámica, fórmulas de la teoría de Ondas EM).', 'Los mensajes de error se leen mejor en modo oscuro, en Configuración electrónica el nombre del elemento vuelve a verse grande y en el móvil Trabajo y energía ya no se sale de la pantalla.'] },
       { v: '0.47', fecha: '2026-10-25', cambios: ['Nueva asignatura: Economía, en la portada y en la barra de asignaturas. Trae 23 herramientas en camino, como «Próximamente»: oferta y demanda, elasticidades, IS-LM, interés compuesto, préstamos, VAN y TIR, punto muerto, ratios financieros o el índice de Gini, entre otras.'] },
       { v: '0.46', fecha: '2026-10-25', cambios: ['Nuevo apartado Foro en la barra superior. De momento está en construcción: muy pronto podrás preguntar dudas y compartir ejercicios.', 'La portada y cada asignatura muestran ya las herramientas que vienen después, como «Próximamente»: 30 más, desde la ley de Ampère y las ecuaciones de Maxwell hasta la propagación de errores y los diagramas de Bode.'] },
@@ -290,6 +308,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-23', cambios: ['Portada para elegir asignatura y herramienta: Electromagnetismo, Física general, Química, Matemáticas y Laboratorio, con buscador. Las herramientas que vienen después aparecen como «Próximamente».', 'Nueva herramienta: Magnetostática, en Electromagnetismo.'] },
     ],
     electrostatica: [
+      { v: '0.6', fecha: '2026-10-26', cambios: ['Tubo cilíndrico con carga superficial σ y cilindros huecos (con radio interior), para resolver cables coaxiales.', 'Densidades que no son uniformes en esferas y cilindros (ρ₀·r/R, ρ₀·R/r, ρ₀(1 − r/R) y ρ₀(1 − r²/R²)) y en varillas (λ que crece o decrece a lo largo), con Gauss y la carga encerrada.', 'Arcos cargados: semicircunferencias, cuartos de anillo o cualquier ángulo, con el campo y el potencial en el centro.', 'Corteza esférica conductora con radio interior y exterior: si dentro hay una carga centrada, se induce −q en la cara interior y +q en la exterior.', 'Seis ejercicios de ejemplo nuevos con todo esto.', 'La guía enlaza con la herramienta de Condensadores.'] },
       { v: '0.5.1', fecha: '2026-10-23', cambios: ['El simulador tiene ahora su propia dirección, /electromagnetismo/electrostatica/. Tus problemas guardados siguen ahí. El botón «Todas las herramientas» de la barra lateral vuelve a la portada.'] },
     { v: '0.5', fecha: '2026-10-23', cambios: ['Doce ejercicios de ejemplo con enunciados propios: los mismos tipos de pregunta que en clase, con otras figuras y otros números. La guía de uso tiene capturas nuevas hechas con ellos.', 'La web tiene icono propio: un dipolo con sus líneas de campo, en la pestaña del navegador, en la pantalla de inicio del móvil y en la vista previa al compartir el enlace.', 'Páginas de aviso legal, privacidad, cookies y contacto, enlazadas al pie de la barra lateral.'] },
     { v: '0.4', fecha: '2026-10-22', cambios: ['Número de versión visible y este apartado de novedades.', 'Arreglo: en la vista 3D los cilindros se dibujan con su radio real, aparecen las superficies de Gauss, y las esferas, cascarones y conductores tienen volumen en lugar de parecer círculos planos.'] },
@@ -298,44 +317,54 @@ const Version = (() => {
     { v: '0.1', fecha: '2026-10-22', cambios: ['Primera versión: cargas, hilos, planos y esferas con el desarrollo paso a paso y 12 ejercicios resueltos.', 'Barra lateral con tus problemas, los importados y los ejercicios; título y enunciado editables; archivos .emsim.json.'] },
     ],
     magnetostatica: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Nuevas fuentes: cilindro con corriente (macizo, hueco o con J proporcional a r, para cables coaxiales), lámina de corriente K, espira rectangular de una pieza y disco cargado que gira.', 'Nueva pregunta «Perfil de |B|»: la gráfica del módulo del campo a lo largo de una recta entre dos puntos.', 'Mapa de color de |B| y líneas de campo continuas en el dibujo.', 'Seis ejercicios de ejemplo nuevos con todo esto.', 'Los números decimales se escriben con coma.', 'Botones para copiar el enlace del ejercicio, copiar la solución de cada pregunta como texto o en LaTeX e imprimirla o guardarla en PDF.'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['Arreglo: el ejemplo resuelto de la teoría explica dónde abrirlo ahora, en «Ejercicios de ejemplo» de la barra Mis ejercicios.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: campo magnético de hilos, segmentos, hilos semiinfinitos, espiras, arcos, solenoides y toroides con Biot-Savart, y fuerza sobre cargas en movimiento y sobre conductores, con el desarrollo paso a paso en la forma μ₀I/(πa) o en unidades del SI.', 'Dibujo del campo B en el plano XY, XZ o YZ, con puntos que se pueden arrastrar y ocho ejemplos resueltos.'] },
     ],
     'tabla-periodica': [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Más datos en la ficha: afinidad electrónica, estados de oxidación, densidad y puntos de fusión y ebullición, y la tabla se puede colorear por ellos.', 'Botones para abrir el elemento en Configuración electrónica (con la Zef) y en Masa molar.', 'Compara hasta tres elementos en una tabla, con el mayor de cada propiedad marcado.', 'Ponte a prueba: preguntas al azar de nombres y símbolos, grupo y periodo, configuración, electrones de valencia y tendencias.', 'En el móvil las casillas muestran solo el número y el símbolo, y la tabla ocupa menos.', 'Nota sobre el grupo 3: dónde van La, Ac, Lu y Lr según la IUPAC.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: cada elemento tiene su ficha con la masa atómica y molar, el grupo, el periodo, el bloque, la configuración electrónica (abreviada, completa y por capas), la electronegatividad, la energía de ionización, el radio y el estado.', 'La tabla se puede colorear por categoría, electronegatividad, energía de ionización, radio, masa, bloque o estado, y tiene un buscador por nombre, símbolo o número atómico.'] },
     ],
     'trabajo-y-energia': [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Nuevos problemas: rizo (altura mínima para dar la vuelta, velocidad y normal arriba, o dónde se despega), péndulo (velocidad y tensión en cada ángulo, si da la vuelta o se afloja el hilo), montaña rusa sin rozamiento por varios puntos y trabajo de una fuerza variable con la gráfica F(x), su área y la potencia.', 'En la rampa, los problemas al revés: altura mínima para llegar al muelle, rozamiento del llano para que se pare justo antes y constante del muelle para una compresión dada.', 'Modo práctica con enunciado escrito para cada tipo de problema.'] },
       { v: '0.1.3', fecha: '2026-10-25', cambios: ['Arreglo: en el móvil, las fórmulas largas del desarrollo se cortaban por la derecha; ahora bajan de línea en cada igual.'] },
       { v: '0.1.2', fecha: '2026-10-24', cambios: ['Las fórmulas del desarrollo y de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Los resultados salen arriba, en una tarjeta destacada, y la lectura de t y v tiene ancho fijo: ya no mueve la barra de tiempo al reproducir.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: un bloque baja por una rampa con rozamiento, recorre un tramo horizontal y comprime un muelle. Animación con barras de energía cinética, gravitatoria, elástica y calor, gráfica de las energías en el tiempo y el desarrollo paso a paso con la velocidad al pie de la rampa, al llegar al muelle y la compresión máxima.', 'Seis ejemplos: sin rozamiento, se para antes del muelle, el rozamiento lo sujeta, con empujón inicial y muelle duro.'] },
     ],
     'masa-molar': [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Nueva pestaña «Fórmula empírica»: de la composición centesimal, de los gramos de cada elemento o de un análisis por combustión a la fórmula empírica y, con la masa molar, a la molecular, paso a paso.', 'Reactivos impuros (con su pureza) y en disolución (con su molaridad y su volumen) en la estequiometría.', 'Gases a cualquier temperatura y presión con PV = nRT, y el volumen de los productos que lleven (g).', 'Rendimiento al revés: escribe la masa obtenida de verdad y calcula el rendimiento.', 'Acepta los estados (s), (l), (g) y (aq), las cargas sin ^ (Fe3+, NO3-, SO42-), el + sin espacios, la doble flecha ⇌ y los electrones de las semirreacciones.', 'Tabla de moles al principio, lo que cambia y al final, y un resumen con el limitante, lo que se forma y lo que sobra.', 'Modo práctica también para la estequiometría y la fórmula empírica.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: masa molar y composición centesimal de cualquier fórmula, con paréntesis, hidratos e iones, y conversor entre gramos, moles, partículas y litros de gas.', 'Estequiometría: ajusta la reacción sola (también las iónicas), calcula el reactivo limitante, lo que se forma con el rendimiento que digas y lo que sobra, paso a paso.', 'Masas atómicas de la IUPAC o redondeadas como en clase.'] },
     ],
     'configuracion-electronica': [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Electrones de valencia como en clase (el Fe tiene 4s² 3d⁶, ocho), no solo los de la capa más externa.', 'Nueva pestaña «¿Qué elemento es?»: escribe una configuración y dice de qué elemento es y si es el estado fundamental, uno excitado o una configuración imposible (2p⁷, 2d¹).', 'Nueva pestaña «Números cuánticos»: comprueba si un conjunto (n, l, m_l, s) está permitido y a qué orbital corresponde.', 'Tabla con los cuatro números cuánticos de cada electrón de valencia.', 'Carga nuclear efectiva con las reglas de Slater, paso a paso.', 'Especies isoelectrónicas (Na⁺, Mg²⁺, F⁻…) ordenadas de mayor a menor radio.', 'Los ejemplos están ahora en la barra lateral, con Mis ejercicios.'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['El aviso de excepción al orden de llenado sale solo en los átomos neutros, no en sus iones, y muestra justo los subniveles que cambian (Pt: se esperaría 6s² 5d⁸ y tiene 6s¹ 5d⁹).'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: configuración electrónica de cualquier elemento o ion por orden de llenado, abreviada y por capas, con el diagrama de Moeller, el diagrama de orbitales con la regla de Hund, los electrones desapareados y los números cuánticos del electrón diferenciador.', 'Avisa de las excepciones como el cromo o el cobre, y en los cationes quita primero los electrones de la capa más externa.'] },
     ],
     condensadores: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Cilíndricos y esféricos con el dieléctrico por sectores, en paralelo: por ejemplo, media esfera con un material y la otra media con otro.', 'Permitividad que cambia con la posición, de ε₁ en una armadura a ε₂ en la otra, con las cargas de polarización de las caras y del volumen.', 'Fuerza entre las armaduras y fuerza que mete un dieléctrico a medio introducir.', 'Rigidez dieléctrica: escribe la de cada capa y sale la tensión máxima antes de la ruptura.', 'Asociaciones de condensadores en serie, en paralelo y mixtas, con la carga, la tensión y la energía de cada uno, y dos condensadores cargados que se conectan, con la energía que se pierde.', 'La carga libre de cada armadura en el desarrollo.', 'Botones para copiar el enlace del ejercicio, copiar la solución como texto o en LaTeX e imprimirla o guardarla en PDF.', 'El desarrollo paso a paso escribe las fórmulas como en los libros: fracciones, raíces, exponentes y subíndices de verdad.', 'La capacidad sale también en letras, como en los apuntes (por ejemplo C = 4πε₀εᵣab/(b − a), o la suma de cada capa en serie).', 'Enlace al simulador de Electrostática desde la teoría.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: condensadores planos, cilíndricos y esféricos con capas de dieléctrico en serie o, en el plano, ocupando parte del área. Capacidad, carga, tensión y energía; campos E, D y P en cada capa y cargas de polarización, con el desarrollo paso a paso.', 'Compara con el condensador vacío: qué pasa al meter el dieléctrico con la batería conectada o con el condensador aislado.', 'Dibujo del corte con las líneas de campo y gráfica de E a lo largo del condensador.'] },
     ],
     'tiro-parabolico': [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Ángulo de alcance máximo cuando se lanza desde otra altura, con su desarrollo.', 'Blanco: además de los ángulos para acertar, la velocidad que hace falta con el ángulo dado.', 'Opción para dibujar varios tiros con la misma velocidad y la parábola de seguridad.', 'Movimiento rectilíneo con un segundo móvil: cuándo y dónde se encuentran (persecuciones y cruces).', 'Nueva pestaña de movimiento circular (MCU y MCUA): velocidad angular, periodo, aceleraciones normal y tangencial, cuándo se para o da n vueltas, con animación y gráficas θ(t) y ω(t).', 'Modo práctica con enunciado: tiros, blancos, frenadas, encuentros y giros.'] },
       { v: '0.1.3', fecha: '2026-10-25', cambios: ['Arreglo: en el móvil, las fórmulas largas del desarrollo se cortaban por la derecha; ahora bajan de línea en cada igual.'] },
       { v: '0.1.2', fecha: '2026-10-24', cambios: ['Las fórmulas del desarrollo y de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Los resultados salen arriba, en una tarjeta destacada, y la lectura de t, x, y y v tiene ancho fijo: ya no se mueve al reproducir.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: tiro parabólico desde cualquier altura hasta cualquier altura, con el tiempo de vuelo, la altura máxima, el alcance y la velocidad al caer, y el desarrollo paso a paso. Trayectoria animada con los vectores de velocidad y gráficas de posición, velocidad y aceleración frente al tiempo.', 'Rozamiento del aire lineal o cuadrático, comparado con la trayectoria sin rozamiento.', 'Blanco: dice si el proyectil pasa por un punto y con qué dos ángulos se acierta.', 'Movimiento rectilíneo (MRU y MRUA): posición y velocidad en un instante, cuándo pasa por un punto y cuándo se para, con las gráficas x(t), v(t) y a(t).'] },
     ],
     disoluciones: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Propiedades coligativas: descenso crioscópico, aumento ebulloscópico, presión osmótica y presión de vapor (Raoult) en agua y otros seis disolventes, con el factor de van \'t Hoff deducido de la fórmula.', 'La masa molar de un soluto a partir de la crioscopía, la ebulloscopía o la presión osmótica.', 'Preparar una disolución también en g/L, % m/v, % en masa, molalidad o normalidad, con el agua que hay que añadir.', 'Normalidad, con los equivalentes por mol sacados de la fórmula del ácido o la base.', 'Diluir con la unidad que quieras en cada dato (mol/L, mmol/L, g/L, mg/L, % m/v; L, mL o µL).', 'Aviso de seguridad al diluir cualquier ácido concentrado (siempre el ácido sobre el agua) y al disolver sosa o potasa.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: da la concentración de una disolución como molaridad, molalidad, fracción molar, % en masa, % masa/volumen, g/L o ppm y obtén todas las demás, con la densidad para pasar de masa a volumen y el desarrollo con su base de cálculo.', 'Preparar una disolución: los gramos de sólido (con su pureza) o los mililitros de reactivo comercial (con su riqueza y densidad) que hay que medir.', 'Diluciones con C₁V₁ = C₂V₂, despejando el dato que falte, y mezcla de dos disoluciones del mismo soluto.'] },
     ],
     calorimetria: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Problemas al revés: escribe ? en el dato que no conoces (masa, temperatura inicial, calor específico, capacidad del calorímetro o tiempo) y pon la temperatura final.', 'Calorímetro por su equivalente en agua.', 'Calentador con potencia, tiempo y rendimiento (Q = η P t), por ejemplo un hervidor.', 'Más sustancias: plata, oro, mercurio, latón y aceite de oliva.', 'Nueva pestaña de dilatación térmica: lineal, superficial, de volumen y líquido que rebosa del recipiente, con la temperatura a la que se alcanza una medida.', 'Modo práctica con enunciado: mezclas, problemas al revés, hervidores y dilataciones.'] },
       { v: '0.1.2', fecha: '2026-10-24', cambios: ['Las fórmulas del desarrollo y de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['La temperatura de equilibrio sale en una tarjeta destacada, separada de la tabla de calores.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: temperatura de equilibrio al mezclar hasta cinco cuerpos de agua, hielo, vapor, metales, etanol, vidrio, un calorímetro o una sustancia con tus datos, con los cambios de fase que hagan falta.', 'Si la energía no llega para fundir todo el hielo o condensar todo el vapor, dice cuántos gramos quedan de cada fase.', 'Tabla con el calor de cada cuerpo, el desarrollo etapa por etapa (m c ΔT y m L) y la curva de calentamiento de cada uno.'] },
     ],
     induccion: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Toroide con entrehierro: reluctancia del núcleo y del hueco de aire y la autoinducción que queda.', 'Inducción mutua de dos espiras coaxiales a una distancia y de una bobina girada dentro de un solenoide.', 'Bobinas acopladas en serie y en paralelo, con los flujos que se suman o que se oponen.', 'Circuito RL: balance de energía (lo que da la fuente, lo que guarda la bobina y lo que se disipa en la resistencia) y una fuente que se conecta y desconecta una y otra vez, con la corriente máxima, mínima y media.', 'Los dibujos usan azul para el campo y el segundo circuito, y la gráfica del RL distingue corriente y tensión.', 'Botones para copiar el enlace del ejercicio, copiar la solución como texto o en LaTeX e imprimirla o guardarla en PDF.', 'El desarrollo paso a paso escribe las fórmulas como en los libros: fracciones, raíces, exponentes y subíndices de verdad.', 'El resultado sale también en letras, como en los apuntes (por ejemplo L = μ₀N²h ln(b/a)/(2π) o la corriente del circuito RL).', 'Enlace a Faraday y Lenz desde la teoría.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: coeficiente de autoinducción de solenoides (con núcleo), toroides de sección rectangular y circular, cables coaxiales y líneas bifilares, con el desarrollo desde la ley de Ampère.', 'Inducción mutua entre dos solenoides, dos espiras, un hilo y una espira, y una bobina sobre un toroide, o a partir de L₁, L₂ y k, con el coeficiente de acoplamiento.', 'Flujo, energía magnética y fem inducida si das la corriente o cómo cambia.', 'Circuito RL al cerrar el interruptor o al quitar la fuente: constante de tiempo, corriente y tensión en la bobina en cualquier instante y su gráfica.'] },
     ],
@@ -353,21 +382,26 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: transformada directa de sumas de términos c·tⁿ·e^(at)·sen(bt) o cos(bt), senh y cosh, con la fila de la tabla y la propiedad que usa cada término, y F(s) con denominador común.', 'Inversa por fracciones simples: polos simples, múltiples y complejos (también dobles), con los coeficientes, la fila de la tabla y los valores inicial y final.', 'Ecuaciones diferenciales de primer y segundo orden con condiciones iniciales: transformar, despejar Y(s) y volver.', 'Plano s con los polos y los ceros, y gráfica animada de f(t) con cada término por separado.'] },
     ],
     interferencia: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Nuevo montaje «Abertura circular»: disco de Airy y criterio de Rayleigh, con el límite de resolución de un ojo o un telescopio y si dos objetos se distinguen.', 'Red de difracción: poder de resolución en cada orden y la mínima diferencia de longitudes de onda que separa.', 'Nuevos montajes «Cuña de aire» y «Anillos de Newton», también al revés: el grosor de un pelo o el radio de una lente a partir de lo que se mide.', 'Cursor en la gráfica de intensidad: pasa el ratón o el dedo para leer la intensidad en cualquier punto de la pantalla.', 'El desarrollo se ve con fórmulas bien escritas.', 'Más tipos de ejercicio en el modo práctica.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: doble rendija de Young con la interfranja, la posición y el ángulo de cada máximo, la intensidad en un punto y la envolvente de difracción si das la anchura de las rendijas.', 'Rendija simple: mínimos, anchura del máximo central e intensidad.', 'Red de difracción: ángulos de cada orden, orden máximo y separación de dos longitudes de onda con el poder de resolución.', 'Láminas delgadas: colores que se refuerzan y se anulan y espesores para reforzar o quitar el reflejo.', 'Ondas que salen de las rendijas animadas y el patrón en la pantalla con el color de la luz.'] },
     ],
     'ondas-em': [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['La onda puede ir en cualquier dirección (escribiendo las componentes de k y de E) y tener una fase inicial.', 'Polarización circular y elíptica, con el sentido de giro y la expresión de E y B con sus dos componentes.', 'Nuevo cálculo: la onda a partir de su expresión E(r, t) o B(r, t), por ejemplo 30 cos(2,094y + 6,283e8t) k: dirección de propagación, velocidad, medio y el otro campo.', 'Nuevo cálculo: incidencia normal sobre un conductor perfecto (onda estacionaria, nodos, presión y corriente superficial) o sobre otro medio (coeficientes de reflexión y transmisión).', 'En el desarrollo, B̂ = k̂ × Ê ya no escribe paréntesis de más alrededor de los vectores unitarios.', 'Botones para copiar el enlace del ejercicio, copiar la solución como texto o en LaTeX e imprimirla o guardarla en PDF.', 'El desarrollo paso a paso escribe las fórmulas como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: onda plana en el vacío o en un material a partir de f, λ, ω o k, con λ, k, el campo B y su dirección (B̂ = k̂ × Ê) y las expresiones de E(r, t) y B(r, t).', 'Intensidad, densidad de energía y presión de radiación, también de una fuente puntual a una distancia.', 'Medios con pérdidas: tangente de pérdidas, atenuación, profundidad de penetración e impedancia compleja.', 'La onda dibujada en 3D con E y B moviéndose.'] },
     ],
     intervalos: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Datos apareados (antes y después, o dos medidas del mismo individuo): intervalo de la media de las diferencias, a partir de las dos listas o de d̄ y s_d.', 'Cociente de varianzas σ₁²/σ₂² con la F de Snedecor, y el de las desviaciones σ₁/σ₂, para saber si se pueden suponer varianzas iguales.', 'Cotas: cualquier intervalo puede ser bilateral, una cota inferior (a; +∞) o una cota superior (−∞; b), con toda α en una cola.', 'Población finita: da su tamaño N y se aplica el factor de corrección, también en el tamaño de la muestra.', 'Contraste con el intervalo: escribe un valor y te dice si se rechaza H₀ con ese nivel de significación.', 'Tamaño de muestra también para comparar dos medias o dos proporciones.', 'La gráfica muestra la F y las cotas con α en una sola cola, y en Welch se ven los grados de libertad sin redondear.', 'Nuevos ejercicios en el modo práctica: cotas de una media y datos apareados.'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['Una proporción con 0 éxitos, o con todos, ya no da un intervalo de un solo punto: se usa el intervalo de Wilson. Con pocos éxitos o fracasos también se muestra el de Wilson al lado del de siempre.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: intervalo de confianza de una media con σ conocida (z) o desconocida (t de Student), a partir de x̄, s y n o de la lista de datos, también si te dan la desviación con n.', 'Intervalos de una proporción, de la varianza y la desviación típica (con la χ²), de la diferencia de medias (σ conocidas, iguales o Welch) y de la diferencia de proporciones.', 'Tamaño de muestra para un error máximo en una media o una proporción.', 'Gráfica de la distribución con el área de confianza y simulación de 100 muestras que muestra cuántos intervalos aciertan.'] },
     ],
     transitorios: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Nuevo modo «Circuito cualquiera de primer orden»: escribe el circuito como lista de elementos, marca qué se conecta o desconecta en t = 0 y sale por el método de los tres valores (valor inicial, final y resistencia de Thévenin que ve el condensador o la bobina).', 'Conmutación en t₁: un condensador que se carga por R y se descarga por R₂, y una bobina que se abre con el pico de tensión que hace saltar la chispa.', 'Nuevo circuito RLC en paralelo con una fuente de corriente, con su tipo de amortiguamiento y la corriente de la bobina.', 'Tiempo hasta un valor también en el RLC, corriente inicial en la bobina y descarga por otra resistencia R₂.', 'Pasa el ratón o el dedo por la gráfica para leer la tensión y la corriente en cada instante; un clic deja el cursor fijo.'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['Los valores admiten prefijos del SI y unidades: 4k7, 1,5 kΩ, 100n, 10 µF o 5 ms. Un número solo sigue en la unidad del campo (mH, μF).'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: carga y descarga de un condensador en un circuito RC (también si ya tenía carga), con τ = RC, la tensión y la corriente en un instante y el tiempo hasta una tensión.', 'Corriente que sube o baja en una bobina en un circuito RL, con τ = L/R y la tensión de la bobina.', 'Circuito RLC en serie: dice si es subamortiguado, crítico o sobreamortiguado y da la tensión del condensador frente al tiempo, también con carga o corriente al empezar.', 'Esquema del circuito con la corriente que circula y la gráfica de V e i frente a t animadas.'] },
     ],
     fuerza: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Carga que entra en una franja de campo: si la atraviesa, el ángulo con el que sale y cuánto se ha desplazado; si no, dónde vuelve a salir.', 'Campos E y B cruzados: velocidad de deriva E/B y la cicloide animada, también con velocidad inicial (cicloide acortada o con bucles).', 'Efecto Hall: tensión Hall, densidad de portadores, coeficiente de Hall y qué cara queda a más potencial.', 'Par sobre una espira o bobina: momento magnético, par, energía y trabajo para girarla.', 'Espectrómetro de masas con dos isótopos: la separación entre los impactos.', 'El campo B se dibuja en azul en todas las animaciones.', 'Botones para copiar el enlace del ejercicio, copiar la solución como texto o en LaTeX e imprimirla o guardarla en PDF.', 'El desarrollo paso a paso escribe las fórmulas como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: fuerza sobre una carga en un campo uniforme, con el radio, el periodo y el sentido de giro, o la hélice si v no es perpendicular a B. La velocidad se puede dar en m/s, por su energía en eV o por la ddp que la acelera.', 'Fuerza de Lorentz con vectores: v × B con su determinante y F = q(E + v × B).', 'Selector de velocidades y espectrómetro de masas, ciclotrón con la frecuencia, la energía de salida y las vueltas.', 'Fuerza sobre un hilo (y la corriente para que flote) y entre dos hilos paralelos.', 'Animación de cada situación.'] },
     ],
     campos: [
@@ -375,6 +409,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: gradiente, derivada direccional y laplaciano de un campo escalar, con su mapa de color y las curvas de nivel.', 'Divergencia y rotacional de un campo vectorial en el plano o en el espacio y, si es conservativo, su potencial.', 'Integral de línea (trabajo) a lo largo de una curva r(t), comparada con la diferencia de potencial cuando el campo es conservativo.', 'Teorema de Green en un círculo o un rectángulo: circulación y flujo por el borde frente a las integrales dobles.', 'Gráfica con partículas que siguen el campo y un molinillo que gira con el rotacional; tocándola se mueve el punto.'] },
     ],
     cinetica: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Coeficiente de A en la reacción (2 A → productos), con las dos formas de definir k explicadas.', 'La constante también sale de la vida media, del porcentaje que ha reaccionado en un tiempo o de dos medidas.', 'Arrhenius con tres o más temperaturas: recta de ajuste de ln k frente a 1/T con su R².', 'Diagrama de energía con Eₐ, ΔH y la Eₐ de la reacción inversa.', 'Catalizador: cuánto se multiplica k al bajar la energía de activación.', 'Aviso cuando dos rectas se ajustan casi igual y los datos no bastan para decidir el orden.', 'Velocidades iniciales con tres reactivos.', 'Tiempo también en días y en años.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: leyes integradas de orden 0, 1 y 2 con la concentración a cualquier tiempo, la vida media y cuánto se tarda en llegar a una concentración.', 'Orden y constante a partir de una tabla de concentraciones frente al tiempo, con las tres rectas ([A], ln [A] y 1/[A]) y su R².', 'Método de las velocidades iniciales con uno o dos reactivos: órdenes, constante con sus unidades y ley de velocidad.', 'Ecuación de Arrhenius: energía de activación con dos temperaturas o la constante a otra temperatura, con la gráfica de ln k frente a 1/T.', 'Vaso animado en el que las moléculas de reactivo se convierten en producto.'] },
     ],
     edos: [
@@ -400,64 +435,78 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: hasta seis ecuaciones con seis incógnitas. Dice si el sistema es compatible determinado, indeterminado o incompatible con el teorema de Rouché-Frobenius y lo resuelve por Gauss con sustitución hacia atrás, por Gauss-Jordan, por la regla de Cramer o con la matriz inversa.', 'Si tiene infinitas soluciones, las da en forma paramétrica (λ, μ…).', 'Coeficientes con fracciones exactas, decimales o números complejos, como las mallas de un circuito de alterna, y nombres propios para las incógnitas (I1, I2…).', 'Comprobación de la solución sustituyendo en cada ecuación.'] },
     ],
     regresion: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Error de la pendiente y de la ordenada, con su intervalo de confianza, para los informes de prácticas, y banda de confianza de la recta en la gráfica.', 'Intervalos de confianza de la media de y y de predicción de un valor nuevo para la x que elijas.', 'Nuevos ajustes: recta por el origen (y = bx, con su incertidumbre) e hiperbólica (y = a + b/x).', 'Comparación de todos los ajustes ordenados por R², para ver cuál es mejor.', 'Gráfica de residuos y aviso de los puntos atípicos (residuo mayor que dos veces el error típico).', 'Coeficiente de correlación de Spearman, la relación b·b′ = r² y el ángulo entre las dos rectas.', 'Datos en una tabla de doble entrada, como en los ejercicios de clase.', 'Puedes elegir si las varianzas y la covarianza se dividen entre n o entre n − 1.'] },
       { v: '0.1.2', fecha: '2026-10-25', cambios: ['El ajuste parabólico funciona con x grandes, como los años (2015, 2016…): antes decía que faltaban valores de x distintos.', 'En los ajustes exponencial y potencial, una a muy pequeña se escribe en notación científica en vez de 0.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas dentro del texto de la teoría se ven bien escritas, no con símbolos $.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: escribe o pega tus datos (x, y), con frecuencias si las tienes, y obtén medias, varianzas, covarianza, el coeficiente de correlación con su contraste y las dos rectas de regresión, con la tabla de cálculos y la nube de puntos.', 'Ajustes exponencial, potencial, logarítmico y parabólico, con R² para compararlos con la recta, y los residuos.', 'Estimaciones de y a partir de x y de x a partir de y, avisando si es una extrapolación.', 'Añade puntos pulsando en la gráfica.'] },
     ],
     estadistica: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Nuevas distribuciones: F de Snedecor, uniforme continua, geométrica e hipergeométrica.', 'Valores críticos unilaterales y bilaterales, con los dos valores de la χ² y de la F.', 'Hallar μ o σ de una normal a partir de una probabilidad, como en los ejercicios de «¿qué media hace falta para que…?».', 'P(|X − μ| ≤ c), a una distancia c de la media, con la cota de Chebyshev al lado.', 'Aproximaciones de la binomial por la Poisson y de la Poisson por la normal, además de la binomial por la normal.', 'Las colas muy lejanas ya no salen como 0: se escriben en notación científica.', 'Tabla de valores de las discretas con un botón para copiarla.', 'Arrastra los valores sobre la gráfica para mover el área.', 'Modo práctica con ejercicios al azar de todas las distribuciones.'] },
       { v: '0.1.2', fecha: '2026-10-25', cambios: ['En la binomial, al calcular un cuantil, la probabilidad del cuantil ya no cambia la probabilidad de éxito p.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: normal, t de Student, chi cuadrado, exponencial, binomial y Poisson, con su media y su varianza.', 'Probabilidades P(X ≤ a), P(X ≥ a), entre dos valores y, en las discretas, P(X = k) y con desigualdad estricta; cuantiles y valores críticos bilaterales.', 'Gráfica con el área (o las barras) que se pide sombreada.', 'Desarrollo como en clase: tipificación Z = (X − μ)/σ y Φ(z), fórmula de la binomial y de la Poisson término a término, y aproximación de la binomial por la normal con corrección de continuidad.'] },
     ],
     alterna: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Redes de alterna cualesquiera por el método de los nudos con fasores: resistencias, bobinas, condensadores y fuentes de tensión o de corriente con su fase, con el sistema en complejos y el balance de potencias de Boucherot.', 'Sistemas trifásicos equilibrados en estrella y en triángulo: tensiones y corrientes de fase y de línea, fasores de las tres fases, potencias y la batería de condensadores para corregir el factor de potencia.', 'Triángulo de potencias y curva de resonancia (la corriente frente a la frecuencia, con f₀ y el ancho de banda) en el circuito RLC.', 'La fuente se puede dar con su valor de pico o eficaz, con fase inicial y con ω en lugar de f, y el resultado escribe v(t) e i(t).', 'Corrección del factor de potencia a partir de P, S, I o Q, y también de cargas capacitivas (con una bobina).'] },
       { v: '0.1.2', fecha: '2026-10-25', cambios: ['Los valores admiten prefijos del SI y unidades: 4k7, 1,5 kΩ, 100n, 10 µF o 5 ms. Un número solo sigue en la unidad del campo (mH, μF, kW).', 'Arreglo: en paralelo, una resistencia de 0 Ω se ignoraba como si no estuviera; ahora avisa de que cortocircuita la fuente.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: circuitos RLC en serie y en paralelo (o solo con algunos de los elementos) con impedancias complejas en forma binómica y polar, la corriente, la tensión o la corriente de cada elemento, las potencias activa, reactiva y aparente y el factor de potencia, con el desarrollo paso a paso.', 'Diagrama de fasores y ondas v(t) e i(t) desfasadas.', 'Resonancia: frecuencia de resonancia, factor de calidad y ancho de banda.', 'Corrección del factor de potencia: el condensador que hay que poner en paralelo y cuánto baja la corriente de la línea.'] },
     ],
     dinamica: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Bloques lanzados con velocidad inicial: frenan, se paran y se quedan quietos o vuelven, con la distancia y el tiempo de frenada.', 'Nuevos problemas: dos bloques en contacto o unidos por una cuerda, con la fuerza entre ellos; curvas con y sin peralte (velocidades máxima y mínima y si derrapa); péndulo cónico; loma y hondonada, y muelles (ley de Hooke, serie y paralelo, equilibrio en un plano y periodo de oscilación).', 'Fuerza mínima para que un bloque empiece a subir y el ángulo con el que menos cuesta, y el coeficiente de rozamiento a partir de una aceleración medida.', 'El dibujo se anima: el bloque se mueve, frena y vuelve, las masas de Atwood suben y bajan, el péndulo cónico gira y el muelle oscila. Se puede pausar.', 'Las fórmulas del desarrollo se ven como en los libros, y los ejemplos usan coma decimal.', 'Modo práctica con enunciado escrito para cada tipo de problema.'] },
       { v: '0.1.2', fecha: '2026-10-25', cambios: ['Arreglo: en el diagrama de fuerzas, el nombre del bloque ya no queda tapado por las flechas, el bloque se ve más grande y la flecha de la aceleración no cruza la normal.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: bloque en un plano horizontal o inclinado con rozamiento estático y dinámico, una fuerza aplicada con ángulo y, si quieres, una masa colgando de una polea. Dice si el bloque se mueve o el rozamiento lo sujeta y da la normal, el rozamiento, la aceleración y la tensión, con el desarrollo paso a paso.', 'Máquina de Atwood, también con una polea con masa.', 'Dibujo con el diagrama de fuerzas a escala y la aceleración, y la velocidad y el tiempo al recorrer una distancia.'] },
     ],
     circuitos: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Fuentes dependientes: de tensión o de corriente, controladas por una tensión entre dos nudos o por la corriente de otro elemento, también en el equivalente de Thévenin.', 'Condensadores y bobinas en régimen permanente (abierto y cortocircuito), con la carga y la energía que guardan.', 'Equivalente de Thévenin y de Norton entre dos nudos cualesquiera, no solo visto por una resistencia.', 'Superposición paso a paso: lo que da cada fuente sola y la suma, en una tabla.', 'Método de las mallas como segundo desarrollo, con las ecuaciones de cada malla y la comprobación con el de los nudos.', 'Esquema más claro: los nudos se colocan para que los elementos no se crucen, y se pueden mover arrastrándolos.', 'Editor visual: en el modo Dibujar, arrastra de un nudo a otro (o a un sitio vacío) para añadir un elemento.'] },
       { v: '0.1.2', fecha: '2026-10-25', cambios: ['Los valores admiten prefijos del SI: 4k7, 1,5k, 2M2 o 100m. Antes «1k» daba error.', 'Arreglo: si la carga está en paralelo con una fuente de tensión ideal (Rth = 0), en vez de «—» explica que no hay equivalente de Norton ni máxima transferencia de potencia.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: escribe el circuito como una lista de resistencias, fuentes de tensión y fuentes de corriente entre nudos, y obtén los potenciales, la corriente y la potencia de cada elemento por el método de los nudos, con las ecuaciones de Kirchhoff, el sistema en forma matricial y el balance de potencias.', 'Equivalente de Thévenin y de Norton visto por la resistencia que elijas, y máxima transferencia de potencia.', 'Esquema del circuito con el potencial de cada nudo y el sentido de cada corriente.'] },
     ],
     'solido-rigido': [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Rodadura, polea y péndulo animados: se ve la rueda girar mientras baja.', 'Momento de inercia de un cuerpo compuesto: varias piezas (varillas, discos, esferas, masas puntuales…) cada una a su distancia del eje.', 'Choques que hacen girar: bala que se incrusta en una varilla colgada (y hasta dónde sube) y persona que salta a una plataforma.', 'Péndulo físico (periodo y longitud equivalente) y varilla que cae girando por su base.', 'Equilibrio estático: escalera apoyada en una pared (¿resbala?, ¿hasta dónde se puede subir?) y viga sobre dos apoyos con cargas.', 'Fórmulas del desarrollo bien escritas y ejemplos con coma decimal.', 'Modo práctica con enunciado.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: momentos de inercia de esferas, cilindros, aros, varillas, discos y placas, con el teorema de Steiner y el radio de giro.', 'Rodadura por un plano inclinado: aceleración, velocidad al final, rozamiento necesario para que no deslice y qué pasa si no basta; comparación del tiempo que tarda cada cuerpo.', 'Polea con masa de la que cuelga un cuerpo: aceleración, tensión y balance de energía.', 'Conservación del momento angular, como la patinadora que encoge los brazos, con la variación de la energía cinética.'] },
     ],
     ondas: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Superposición: pulsaciones de dos frecuencias cercanas, con la envolvente, y dos ondas desfasadas (por la diferencia de caminos o por el desfase).', 'Energía y potencia que transporta una onda en una cuerda.', 'Reflexión y transmisión entre dos cuerdas: coeficientes, amplitudes, reparto de la potencia y animación del pulso.', 'Enlace a Efecto Doppler para los casos con viento, ángulo o cono de Mach.', 'Fórmulas del desarrollo bien escritas y ejemplos con coma decimal.', 'Modo práctica con enunciado.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ecuación de una onda armónica con ω y k en múltiplos de π, posición, velocidad y aceleración de un punto del medio y desfase entre dos puntos.', 'Ondas estacionarias en cuerdas y en tubos abiertos o cerrados: frecuencia de cada armónico, nodos y vientres, y velocidad en la cuerda con √(T/μ).', 'Efecto Doppler con la fuente y el observador moviéndose, y nivel sonoro en decibelios a distintas distancias y con varias fuentes.', 'Animación de la onda, de la onda estacionaria y de los frentes de onda del Doppler.'] },
     ],
     gases: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Mezclas de gases con la ley de Dalton: presiones parciales, fracciones molares, masa molar media y densidad, con un gráfico de barras.', 'Gases reales con la ecuación de Van der Waals: presión, factor de compresibilidad Z, comparación con el gas ideal, punto crítico y la isoterma dibujada.', 'Teoría cinética con el recorrido libre medio, el número de choques por segundo y la densidad de moléculas.', 'Caja de partículas animada que se mueve más rápido o más despacio según la temperatura.', 'Las fórmulas del desarrollo y de la teoría se ven como en los apuntes.', 'Los ejemplos usan coma decimal.', 'Modo práctica con enunciado escrito.', 'Enlace a Ciclos termodinámicos para Otto, Diesel, Brayton y Stirling.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ecuación de estado PV = nRT con P, V, T y n en varias unidades, los moles a partir de la masa y la densidad del gas.', 'Transformaciones isoterma, isobara, isocora y adiabática encadenadas, con el trabajo, el calor y la variación de energía interna de cada tramo, y ciclos con su rendimiento comparado con el de Carnot.', 'Diagrama P-V con las isotermas y el área del ciclo.', 'Teoría cinética: velocidades cuadrática media, media y más probable, energía cinética media y la distribución de Maxwell.'] },
     ],
     ciclos: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Nuevos ciclos Brayton (turbina de gas) y Stirling, este con y sin regenerador.', 'Ciclo propio: das la presión y el volumen de tres o cuatro estados y el tipo de cada tramo (isocora, isobara, recta, isoterma o adiabática).', 'Diagrama T-S animado junto al p-V y la variación de entropía de cada tramo en la tabla y en el desarrollo.', 'Potencia de un motor Otto o Diesel a partir de las revoluciones por minuto y el número de cilindros.', 'Modo práctica con enunciado: ejercicios al azar de cada ciclo y de máquinas térmicas.', 'Enlace a Gases ideales para encadenar transformaciones.'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['Arreglo: en el móvil, las fórmulas largas del desarrollo se cortaban por la derecha; ahora bajan de línea en cada igual.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ciclos de Carnot, Otto y Diesel con un gas ideal, con la tabla de estados, el trabajo, el calor y la energía interna de cada tramo y el rendimiento comparado con su fórmula y con Carnot.', 'Máquinas térmicas, frigoríficos y bombas de calor: el dato que falta, el rendimiento o la eficiencia, el límite de Carnot y si la máquina es posible, con la entropía del universo.', 'Diagrama p-V con un punto que recorre el ciclo y el cilindro con el émbolo, y el esquema de flujos de energía de las máquinas.'] },
     ],
     ph: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Hidrólisis de sales: pH del acetato de sodio, del cloruro de amonio o de una sal neutra, con la constante de hidrólisis.', 'Al revés: Ka o Kb a partir del pH medido, y la concentración que hace falta para un pH.', 'Preparar un tampón: el cociente sal/ácido y los gramos de sal para un pH dado.', 'Ácidos polipróticos (carbónico, fosfórico, sulfúrico con su segunda constante) y su valoración con una equivalencia por protón.', 'Mezclas de un ácido débil con una base fuerte, o al revés, como modo propio.', 'Agua a otra temperatura: Kw y el pH neutro cambian (6,63 a 50 °C).'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['Valoraciones de un ácido o una base débil: con muy poco valorante añadido, o muy cerca del punto de equivalencia, el pH ya sale bien. Antes se usaba Henderson-Hasselbalch también ahí y daba un pH equivocado (por ejemplo 2,05 en vez de 2,91 al empezar a valorar el ácido acético).'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: pH de ácidos y bases fuertes (también muy diluidos) y débiles, con el grado de disociación y la aproximación comprobada.', 'Mezclas de un ácido fuerte con una base fuerte y disoluciones reguladoras con Henderson-Hasselbalch, también al añadirles ácido o base.', 'Valoraciones de ácidos y bases fuertes y débiles: volumen y pH de equivalencia, pH a mitad, el pH con el volumen que pidas, el indicador adecuado y la curva.', 'Vaso con el color del indicador universal y las partículas, y una bureta que valora mientras se dibuja la curva.'] },
     ],
     fluidos: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Viscosidad: ley de Poiseuille en un tubo (caudal o diferencia de presión, perfil de velocidades y número de Reynolds) y ley de Stokes para una esfera que cae (velocidad límite o viscosidad a partir de ella).', 'Tubo de Pitot y medidor de Venturi con manómetro: la velocidad o el caudal a partir del desnivel.', 'Fuerza y centro de presiones sobre una presa o una compuerta sumergida, con el momento en la base.', 'Tensión superficial y capilaridad con la ley de Jurin, también para líquidos que no mojan como el mercurio.', 'Los ejemplos escriben los decimales con coma.', 'Modo práctica con enunciado: ejercicios al azar de cada tipo.'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['Arreglo: en el móvil, las fórmulas largas del desarrollo se cortaban por la derecha; ahora bajan de línea en cada igual.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: presión manométrica y absoluta a una profundidad, con la fuerza sobre el fondo, y alturas o densidades en un tubo en U con dos líquidos.', 'Prensa hidráulica: la fuerza que se consigue o la que hace falta para levantar una masa, con los recorridos de los émbolos.', 'Empuje de Arquímedes: si un cuerpo flota (y cuánto se sumerge) o se hunde (peso aparente y aceleración), y la densidad a partir del peso en el aire y dentro del fluido.', 'Tuberías con la ecuación de continuidad y Bernoulli, y el chorro de un depósito con Torricelli: velocidad, alcance, caudal y tiempo de vaciado.', 'Una animación de cada caso.'] },
     ],
     doppler: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Velocidades en ángulo: la fuente y el observador pueden moverse en cualquier dirección y solo cuenta la componente a lo largo de la recta que los une.', 'Nueva pestaña «Luz»: Doppler relativista con corrimiento al rojo o al azul, la velocidad de una galaxia a partir de la longitud de onda que llega, el Doppler transversal y la comparación con la fórmula clásica, sobre el espectro visible.', 'La gráfica de la fuente que pasa muestra la frecuencia que se oye en cada instante, con el retraso del sonido.', 'Modo práctica con enunciado: ejercicios al azar de cada tipo.'] },
       { v: '0.1.2', fecha: '2026-10-25', cambios: ['Arreglo: en el móvil, las fórmulas largas del desarrollo se cortaban por la derecha; ahora bajan de línea en cada igual.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas dentro del texto de la teoría se ven bien escritas, no con símbolos $.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: frecuencia que se oye con la fuente, el observador y el viento moviéndose, con la longitud de onda delante de la fuente.', 'Una fuente que pasa de largo: lo que se oye antes y después, el salto en hercios y semitonos y, al revés, su velocidad a partir de las dos frecuencias. Con el observador a un lado de la carretera, la gráfica del cambio gradual.', 'Eco en un obstáculo que se mueve (radar de tráfico, murciélago, ecografía Doppler): la frecuencia del eco y las pulsaciones, o la velocidad del obstáculo a partir de ellas.', 'Onda de choque: número de Mach, semiángulo del cono y cuándo se oye el estampido.', 'Animación de los frentes de onda y botón para escuchar la diferencia.'] },
     ],
     resistencias: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Nuevo modo de asociación: escribe 100 + (220 ‖ 330) y sale la resistencia equivalente paso a paso, y con una tensión, la corriente y la potencia.', 'Nuevo modo para conseguir un valor que no existe con dos normalizadas en serie o en paralelo (5 kΩ = 10 kΩ ‖ 10 kΩ).', 'Nuevos modos de resistencia para un LED, con el valor normalizado y la potencia que debe aguantar, y de divisor de tensión con normalizadas, también con carga.', 'Código impreso de los condensadores (104, 472J, 104K 2A, 4n7) con la tolerancia y la tensión, y el código de colores de las bobinas en μH.', 'Avisa si parece que estás leyendo la resistencia al revés y te dice qué valor saldría desde el otro extremo.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas dentro del texto de la teoría se ven bien escritas, no con símbolos $.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: elige los colores de una resistencia de 3, 4, 5 o 6 bandas y obtén el valor, la tolerancia, el margen del valor real y el coeficiente de temperatura, con el dibujo de la resistencia.', 'Del valor a los colores: escribe 4k7, 2M2 o 470R y te da las bandas y el valor normalizado más cercano de las series E6 a E96.', 'Códigos SMD de 3 y 4 cifras, con R y EIA-96.'] },
     ],
     faraday: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Hilo recto y espira rectangular: la espira se aleja o se acerca, o la corriente del hilo cambia, con el flujo integrado, la fem, el sentido y la fuerza sobre la espira.', 'Campo que cambia con una función del tiempo (B₀ + kt, B₀ + kt², B₀ sen ωt o B₀ e^(−t/τ)): fem en cualquier instante y gráficas de B(t) y ε(t).', 'Barra con masa: velocidad límite al tirar de ella o al caer por raíles verticales, y la distancia que recorre una barra lanzada hasta pararse, con v(t).', 'Varilla que gira por un extremo y disco de Faraday: ε = ½BωL².', 'Alternador: el par que hay que hacer para mantener el giro y la energía de cada vuelta.', 'Botones para copiar el enlace del ejercicio, copiar la solución como texto o en LaTeX e imprimirla o guardarla en PDF.', 'El desarrollo paso a paso escribe las fórmulas como en los libros: fracciones, raíces, exponentes y subíndices de verdad.', 'Enlace a Autoinducción e inducción mutua desde la teoría.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: fem y corriente inducidas en una barra que se desliza sobre unos raíles, con la fuerza que la frena y la potencia.', 'Bobina que gira en un campo (alternador): flujo y fem en función del tiempo, valores máximo y eficaz.', 'Flujo que cambia en un tiempo porque cambia el campo o el ángulo: fem media, corriente y carga.', 'Espira que atraviesa una región con campo: fem al entrar y al salir, fuerza y calor.', 'Sentido de la corriente por la ley de Lenz y animación con la gráfica de Φ y ε.'] },
     ],
@@ -675,11 +724,349 @@ const Mates = (() => {
 })();
 
 /* =====================================================================
+   Circuitos de corriente continua (sin DOM): resistencias, fuentes de
+   tensión y de corriente, fuentes dependientes, y condensadores y bobinas
+   en régimen permanente, entre nudos con nombre. Se resuelve por el método
+   de los nudos (análisis nodal modificado): incógnitas, los potenciales de
+   los nudos y la corriente de cada elemento que fija una tensión (fuentes
+   de tensión y bobinas). Después, corriente y potencia de cada elemento,
+   balance de potencias, el equivalente de Thévenin y de Norton visto por
+   una resistencia o entre dos nudos, superposición y método de las mallas.
+   Convenios: en cada elemento la corriente I va de A a B; en una fuente de
+   tensión A es el borne positivo (V_A − V_B = E); en una fuente de
+   corriente la corriente J va de A a B por dentro de la fuente.
+   Fuentes dependientes: VV (tensión = k·(V_c − V_d)), VI (tensión = r·I_x),
+   IV (corriente = g·(V_c − V_d)) e II (corriente = β·I_x), con I_x la
+   corriente de A a B del elemento que controla.
+   ===================================================================== */
+const Continua = (() => {
+  const f = (x, d = 4) => {
+    if (!isFinite(x)) return '—';
+    if (Math.abs(x) < 1e-10) return '0';
+    const a = Math.abs(x);
+    const s = a >= 1e6 || a < 1e-3 ? x.toExponential(d - 1).replace(/\.?0+e/, 'e').replace('e', '·10^').replace(/\^([+-]?)(\d+)/, (_, sg, e) => `<sup>${sg === '-' ? '−' : ''}${+e}</sup>`) : String(+x.toPrecision(d));
+    return s.replace('.', ',').replace('-', '−');
+  };
+  const p = (x) => (x < -1e-10 ? `(${f(x)})` : f(x));
+  const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
+  const TIPOS = {
+    R: { nombre: 'Resistencia', letra: 'R', un: 'Ω' },
+    V: { nombre: 'Fuente de tensión', letra: 'E', un: 'V' },
+    I: { nombre: 'Fuente de corriente', letra: 'J', un: 'A' },
+    C: { nombre: 'Condensador', letra: 'C', un: 'μF', base: 1e-6 },
+    L: { nombre: 'Bobina', letra: 'L', un: 'mH', base: 1e-3 },
+    VV: { nombre: 'Fuente de tensión controlada por tensión', letra: 'Ed', un: 'V/V', k: 'k', ctrl: 'V' },
+    VI: { nombre: 'Fuente de tensión controlada por corriente', letra: 'Ed', un: 'Ω', k: 'r', ctrl: 'I' },
+    IV: { nombre: 'Fuente de corriente controlada por tensión', letra: 'Jd', un: 'S', k: 'g', ctrl: 'V' },
+    II: { nombre: 'Fuente de corriente controlada por corriente', letra: 'Jd', un: 'A/A', k: 'β', ctrl: 'I' },
+  };
+  const FIJA_TENSION = new Set(['V', 'L', 'VV', 'VI']); // su corriente es una incógnita más
+  const DEPENDIENTE = new Set(['VV', 'VI', 'IV', 'II']);
+  const sub = (n) => n.replace(/^([A-Za-z])(\w+)$/, '$1<sub>$2</sub>');
+  const Vn = (n, ref) => (n === ref ? '0' : `V<sub>${n}</sub>`);
+  const dif = (a, b, ref) => (b === ref ? Vn(a, ref) : a === ref ? `−${Vn(b, ref)}` : `(${Vn(a, ref)} − ${Vn(b, ref)})`);
+  const NUDO = /^[\wÀ-ÿ]{1,8}$/;
+
+  // R1, R2, E1, J1, Ed1… según el orden en la lista
+  function nombres(els) {
+    const c = {};
+    return els.map((e) => { const l = (TIPOS[e.t] || TIPOS.R).letra; c[l] = (c[l] || 0) + 1; return `${l}${c[l]}`; });
+  }
+
+  function leer(sc) {
+    const crudos = sc.elementos || [];
+    if (!crudos.length) throw new Error('Añade al menos un elemento');
+    const nom = nombres(crudos);
+    const els = crudos.map((e, i) => {
+      const q = nom[i], T = TIPOS[e.t];
+      if (!T) throw new Error(`${q}: tipo desconocido`);
+      const a = String(e.a ?? '').trim(), b = String(e.b ?? '').trim();
+      if (!a || !b) throw new Error(`${q}: faltan los nudos`);
+      if (!NUDO.test(a) || !NUDO.test(b)) throw new Error(`${q}: los nudos se nombran con letras o números (hasta 8)`);
+      if (a === b) throw new Error(`${q}: está conectado entre el mismo nudo por los dos lados`);
+      if (vacio(e.v)) throw new Error(`${q}: falta el ${T.k ? `factor ${T.k}` : 'valor'}`);
+      const v = Herramienta.leeSI(e.v, T.base || 1); // admite 4k7, 1,5k, 100m…
+      if (!isFinite(v)) throw new Error(`${q}: el valor debe ser un número`);
+      if ('RCL'.includes(e.t) && v <= 0) throw new Error(`${q}: ${e.t === 'R' ? 'la resistencia' : e.t === 'C' ? 'la capacidad' : 'la inductancia'} debe ser mayor que 0`);
+      const el = { i, t: e.t, n: q, a, b, v };
+      if (T.ctrl === 'V') {
+        el.c = String(e.c ?? '').trim(); el.d = String(e.d ?? '').trim();
+        if (!el.c || !el.d) throw new Error(`${q}: faltan los nudos de la tensión que la controla`);
+        if (!NUDO.test(el.c) || !NUDO.test(el.d)) throw new Error(`${q}: los nudos de control se nombran con letras o números (hasta 8)`);
+        if (el.c === el.d) throw new Error(`${q}: la tensión que la controla es entre el mismo nudo`);
+      } else if (T.ctrl === 'I') {
+        const x = String(e.x ?? '').trim().toUpperCase(), j = nom.findIndex((m) => m.toUpperCase() === x);
+        if (!x) throw new Error(`${q}: falta el elemento cuya corriente la controla`);
+        if (j < 0) throw new Error(`${q}: no hay ningún elemento llamado ${e.x}`);
+        if (j === i) throw new Error(`${q}: no puede controlarla su propia corriente`);
+        el.x = nom[j];
+      }
+      return el;
+    });
+    const nudos = new Set(els.flatMap((e) => [e.a, e.b]));
+    for (const e of els) for (const n of [e.c, e.d]) if (n !== undefined && !nudos.has(n)) throw new Error(`${e.n}: el nudo de control ${n} no está en el circuito`);
+    return els;
+  }
+
+  // Resuelve A x = b por Gauss con pivote parcial; null si es singular
+  function gauss(A, b) {
+    const n = b.length, M = A.map((f, i) => [...f, b[i]]);
+    const escala = Math.max(1e-300, ...A.flat().map(Math.abs));
+    for (let c = 0; c < n; c++) {
+      let piv = c;
+      for (let r = c + 1; r < n; r++) if (Math.abs(M[r][c]) > Math.abs(M[piv][c])) piv = r;
+      if (Math.abs(M[piv][c]) < 1e-12 * escala) return null;
+      [M[c], M[piv]] = [M[piv], M[c]];
+      for (let r = 0; r < n; r++) if (r !== c) { const k = M[r][c] / M[c][c]; if (k) for (let j = c; j <= n; j++) M[r][j] -= k * M[c][j]; }
+    }
+    return M.map((f, i) => f[n] / f[i]);
+  }
+
+  // Análisis nodal modificado: cada corriente y cada tensión es una forma lineal { c, k } de las incógnitas
+  function nodal(els, ref) {
+    const nudos = [];
+    for (const e of els) for (const n of [e.a, e.b]) if (!nudos.includes(n)) nudos.push(n);
+    const inc = nudos.filter((n) => n !== ref), fuentes = els.filter((e) => FIJA_TENSION.has(e.t));
+    const N = inc.length + fuentes.length, porNombre = Object.fromEntries(els.map((e) => [e.n, e]));
+    const forma = (k = 0) => ({ c: Array(N).fill(0), k });
+    const suma = (...ts) => ts.reduce((s, [q, x]) => ({ c: s.c.map((v, j) => v + q * x.c[j]), k: s.k + q * x.k }), forma());
+    const pot = (n) => { const x = forma(); if (n !== ref && inc.includes(n)) x.c[inc.indexOf(n)] = 1; return x; };
+    function corr(e, vistos = []) {
+      if (vistos.includes(e.n)) throw new Error(`${vistos[0]}: las fuentes dependientes se controlan unas a otras en círculo`);
+      if (e.t === 'R') return suma([1 / e.v, pot(e.a)], [-1 / e.v, pot(e.b)]);
+      if (FIJA_TENSION.has(e.t)) { const x = forma(); x.c[inc.length + fuentes.indexOf(e)] = 1; return x; }
+      if (e.t === 'I') return forma(e.v);
+      if (e.t === 'C') return forma();
+      if (e.t === 'IV') return suma([e.v, pot(e.c)], [-e.v, pot(e.d)]);
+      const ctrl = porNombre[e.x];
+      if (!ctrl) throw new Error(`${e.n}: el elemento ${e.x} que la controla no está`);
+      return suma([e.v, corr(ctrl, [...vistos, e.n])]); // II
+    }
+    const A = [], b = [];
+    for (const n of inc) {
+      const x = suma(...els.filter((e) => e.a === n || e.b === n).map((e) => [e.a === n ? 1 : -1, corr(e)]));
+      A.push(x.c); b.push(-x.k);
+    }
+    for (const e of fuentes) {
+      const u = suma([1, pot(e.a)], [-1, pot(e.b)]);
+      const x = e.t === 'V' ? suma([1, u], [1, forma(-e.v)]) : e.t === 'L' ? u : e.t === 'VV' ? suma([1, u], [-e.v, pot(e.c)], [e.v, pot(e.d)]) : suma([1, u], [-e.v, corr(porNombre[e.x] || (() => { throw new Error(`${e.n}: el elemento ${e.x} que la controla no está`); })(), [e.n])]);
+      A.push(x.c); b.push(-x.k);
+    }
+    const x = N ? gauss(A, b) : [];
+    if (!x) return null;
+    const val = (q) => q.c.reduce((s, v, j) => s + v * x[j], q.k);
+    const V = Object.fromEntries(nudos.map((n) => [n, n === ref ? 0 : x[inc.indexOf(n)]]));
+    const I = Object.fromEntries(els.map((e) => [e.n, val(corr(e))]));
+    return { nudos, inc, fuentes, A, b, x, V, I };
+  }
+
+  // Nudos que no están unidos al primero
+  function conectado(els) {
+    const ady = {};
+    for (const e of els) { (ady[e.a] ||= []).push(e.b); (ady[e.b] ||= []).push(e.a); }
+    const nudos = Object.keys(ady), visto = new Set([nudos[0]]), pila = [nudos[0]];
+    while (pila.length) for (const m of ady[pila.pop()]) if (!visto.has(m)) { visto.add(m); pila.push(m); }
+    return nudos.filter((n) => !visto.has(n));
+  }
+
+  const matHtml = (M) => `<span class="mat"><span class="mat-in" style="grid-template-columns:repeat(${M[0].length}, auto)">${M.flat().map((v) => `<span>${v}</span>`).join('')}</span></span>`;
+  const SINGULAR = 'El sistema no tiene solución única: revisa que no haya fuentes de tensión (o bobinas) en paralelo o formando un lazo, fuentes de corriente (o condensadores) en serie, o un nudo al que solo llegan fuentes de corriente o condensadores';
+
+  // Texto de la ley de los nudos para el término de un elemento en el nudo n (corriente que sale)
+  function termino(e, n, ref) {
+    const s = e.a === n ? '+' : '−', otro = e.a === n ? e.b : e.a;
+    if (e.t === 'R') return `${s} ${otro === ref ? Vn(n, ref) : `(${Vn(n, ref)} − ${Vn(otro, ref)})`}/${f(e.v)}`;
+    if (FIJA_TENSION.has(e.t)) return `${s} I<sub>${e.n}</sub>`;
+    if (e.t === 'IV') return `${s} ${f(e.v)}·${dif(e.c, e.d, ref)}`;
+    if (e.t === 'II') return `${s} ${f(e.v)}·I<sub>${e.x}</sub>`;
+    return null;
+  }
+  const junta = (ts) => ts.join(' ').replace(/^\+ /, '').replace(/^− /, '−') || '0';
+
+  // Equivalente de Thévenin entre a y b; si hay carga, sin ella
+  function thevenin(els, a, b, ref, L) {
+    const resto = L ? els.filter((e) => e !== L) : els, quien = L ? `Al quitar ${L.n}` : 'Entre esos nudos';
+    if (L) {
+      const dep = resto.find((e) => e.x === L.n);
+      if (dep) throw new Error(`${dep.n} depende de la corriente de ${L.n}: no se puede quitar para el equivalente de Thévenin`);
+      if (!resto.length || conectado(resto).length || ![a, b].every((n) => resto.some((e) => e.a === n || e.b === n))) throw new Error(`Al quitar ${L.n} el circuito queda partido: no hay equivalente de Thévenin entre ${a} y ${b}`);
+    }
+    const r = resto.some((e) => e.a === ref || e.b === ref) ? ref : a;
+    const ab = nodal(resto, r);
+    if (!ab) throw new Error(`${quien} el sistema no tiene solución única`);
+    const Vth = ab.V[a] - ab.V[b];
+    // fuentes independientes apagadas (tensión → cortocircuito, corriente → abierto) y 1 A inyectado de b a a por fuera
+    const apagado = resto.map((e) => (e.t === 'V' || e.t === 'I' ? { ...e, v: 0 } : e)).concat([{ t: 'I', n: 'Jp', a: b, b: a, v: 1 }]);
+    const pr = nodal(apagado, r);
+    if (!pr) throw new Error(`Con las fuentes apagadas no se puede calcular la resistencia de Thévenin entre ${a} y ${b}`);
+    const Rmax = Math.max(1, ...resto.filter((e) => e.t === 'R').map((e) => e.v), L ? L.v : 0), ideal = Math.abs(pr.V[a] - pr.V[b]) < 1e-9 * Rmax;
+    const Rth = ideal ? 0 : pr.V[a] - pr.V[b], IN = ideal ? Infinity : Vth / Rth, Pmax = ideal || Rth < 0 ? Infinity : (Vth * Vth) / (4 * Rth);
+    return { a, b, Vth, Rth, IN, Pmax, ideal, dep: resto.some((e) => DEPENDIENTE.has(e.t)) };
+  }
+
+  // Método de las mallas con lazos independientes: árbol con las fuentes de tensión y las bobinas, y una malla por cada eslabón
+  function mallas(els, sol) {
+    if (els.some((e) => DEPENDIENTE.has(e.t))) return { nota: 'Con fuentes dependientes el desarrollo se hace solo por el método de los nudos.' };
+    const padre = {}, raiz = (n) => (padre[n] === undefined || padre[n] === n ? n : (padre[n] = raiz(padre[n])));
+    const orden = (e) => ({ V: 0, L: 0, R: 1, C: 2, I: 2 }[e.t]), arbol = [], eslabones = [];
+    for (const e of [...els].sort((x, y) => orden(x) - orden(y) || x.i - y.i)) {
+      const ra = raiz(e.a), rb = raiz(e.b);
+      if (ra !== rb) { padre[ra] = rb; arbol.push(e); } else eslabones.push(e);
+    }
+    if (arbol.some((e) => e.t === 'I' || e.t === 'C')) return { nota: 'Aquí no se puede plantear por mallas: hay nudos a los que solo llegan fuentes de corriente o condensadores.' };
+    eslabones.sort((x, y) => x.i - y.i);
+    // camino por el árbol de u a w: lista de [elemento, sentido]
+    const camino = (u, w) => {
+      const prev = { [u]: null }, cola = [u];
+      while (cola.length) { const n = cola.shift(); if (n === w) break; for (const e of arbol) for (const [x, y, s] of [[e.a, e.b, 1], [e.b, e.a, -1]]) if (x === n && !(y in prev)) { prev[y] = [e, s, n]; cola.push(y); } }
+      const out = []; for (let n = w; prev[n]; n = prev[n][2]) out.unshift([prev[n][0], prev[n][1]]);
+      return out;
+    };
+    const lazos = eslabones.map((l) => [[l, 1], ...camino(l.b, l.a)]);
+    const conocida = eslabones.map((l) => (l.t === 'I' ? l.v : l.t === 'C' ? 0 : null));
+    const inc = lazos.map((_, k) => k).filter((k) => conocida[k] === null);
+    const sentido = (lz, e) => (lz.find(([x]) => x === e) || [null, 0])[1];
+    const A = [], b = [], ecs = [];
+    for (const m of inc) {
+      const fila = inc.map((k) => lazos[m].filter(([e]) => e.t === 'R').reduce((s, [e, sm]) => s + sm * sentido(lazos[k], e) * e.v, 0));
+      let rhs = -lazos[m].filter(([e]) => e.t === 'V').reduce((s, [e, sm]) => s + sm * e.v, 0);
+      lazos.forEach((lz, k) => { if (conocida[k] !== null) rhs -= lazos[m].filter(([e]) => e.t === 'R').reduce((s, [e, sm]) => s + sm * sentido(lz, e) * e.v, 0) * conocida[k]; });
+      A.push(fila); b.push(rhs);
+      const izq = fila.map((v, j) => (Math.abs(v) < 1e-12 ? '' : `${v < 0 ? '−' : '+'} ${Math.abs(Math.abs(v) - 1) < 1e-12 ? '' : `${f(Math.abs(v))}·`}I<sub>${inc[j] + 1}</sub>`)).filter(Boolean);
+      ecs.push(`Malla ${m + 1} (${lazos[m].map(([e]) => sub(e.n)).join(' → ')}): ${junta(izq)} = ${f(rhs)}`);
+    }
+    const x = inc.length ? gauss(A, b) : [];
+    if (!x) return { nota: 'El sistema de mallas no tiene solución única.' };
+    const Im = lazos.map((_, k) => (conocida[k] !== null ? conocida[k] : x[inc.indexOf(k)]));
+    const rama = Object.fromEntries(els.map((e) => [e.n, lazos.reduce((s, lz, k) => s + sentido(lz, e) * Im[k], 0)]));
+    const ok = els.every((e) => Math.abs(rama[e.n] - sol.I[e.n]) <= 1e-7 * Math.max(1, Math.abs(sol.I[e.n])));
+    return { lazos, conocida, inc, A, b, Im, rama, ok, ecs, ramas: els.length, nudos: sol.nudos.length };
+  }
+
+  function resolver(sc) {
+    const els = leer(sc);
+    const todos = [...new Set(els.flatMap((e) => [e.a, e.b]))];
+    const ref = todos.includes('0') ? '0' : todos.includes('tierra') ? 'tierra' : todos[0];
+    const sueltos = conectado(els);
+    if (sueltos.length) throw new Error(`El circuito está partido: ${sueltos.join(', ')} no están unidos al resto`);
+    const sol = nodal(els, ref);
+    if (!sol) throw new Error(SINGULAR);
+    const { V, inc, fuentes } = sol, deps = els.filter((e) => DEPENDIENTE.has(e.t));
+    const pasos = [];
+    pasos.push({ t: 'Nudos y referencia', html: `Nudos: ${sol.nudos.map((n) => `<b>${n}</b>`).join(', ')}. Tomamos <b>${ref}</b> como referencia (V = 0)${ref !== '0' ? ' porque no hay ningún nudo llamado 0' : ''}.<br>Incógnitas: ${[...inc.map((n) => `V<sub>${n}</sub>`), ...fuentes.map((e) => `I<sub>${e.n}</sub> (corriente por ${sub(e.n)}, de ${e.a} a ${e.b}${e.t === 'L' ? '' : ', del borne + al −, por dentro'})`)].join(', ') || 'ninguna'}.${els.some((e) => e.t === 'C' || e.t === 'L') ? '<br>En régimen permanente de continua un condensador es un circuito abierto (no pasa corriente) y una bobina, un cortocircuito (tensión 0).' : ''}` });
+    if (deps.length) pasos.push({ t: 'Fuentes dependientes', html: deps.map((e) => `${sub(e.n)}: ${e.t[0] === 'V' ? `V<sub>${e.a}</sub> − V<sub>${e.b}</sub>` : `corriente de ${e.a} a ${e.b}`} = ${f(e.v)}·${e.t[1] === 'V' ? `(V<sub>${e.c}</sub> − V<sub>${e.d}</sub>)` : `I<sub>${e.x}</sub>`}`).join('<br>') + (deps.some((e) => e.x) ? '<br>' + [...new Set(deps.filter((e) => e.x).map((e) => e.x))].map((n) => { const c = els.find((e) => e.n === n); return `I<sub>${n}</sub> = ${c.t === 'R' ? `${dif(c.a, c.b, ref)}/${f(c.v)}` : FIJA_TENSION.has(c.t) ? `I<sub>${n}</sub> (es una incógnita)` : c.t === 'I' ? f(c.v) : c.t === 'C' ? '0' : `la de ${sub(n)}`}`; }).join('<br>') : '') + '<br>Las fuentes dependientes no se apagan nunca: ni en Thévenin ni en superposición.' });
+    // ecuaciones de nudos: corrientes que salen = lo que inyectan las fuentes de corriente independientes
+    const ecs = inc.map((n) => {
+      const t = [], rhs = [];
+      for (const e of els) {
+        if (e.a !== n && e.b !== n) continue;
+        if (e.t === 'I') rhs.push(`${e.a === n ? '−' : '+'} ${f(e.v)}`);
+        else { const q = termino(e, n, ref); if (q) t.push(q); }
+      }
+      return `Nudo ${n}: ${junta(t)} = ${junta(rhs)}`;
+    });
+    const ecV = fuentes.map((e) => `${sub(e.n)}: ${Vn(e.a, ref)} − ${Vn(e.b, ref)} = ${e.t === 'V' ? f(e.v) : e.t === 'L' ? '0 (cortocircuito)' : e.t === 'VV' ? `${f(e.v)}·${dif(e.c, e.d, ref)}` : `${f(e.v)}·I<sub>${e.x}</sub>`}`.replace(/ − 0 =/, ' =').replace(/^([^:]+): 0 − /, '$1: −'));
+    pasos.push({ t: 'Primera ley de Kirchhoff en cada nudo: las corrientes que salen suman lo que inyectan las fuentes de corriente', html: ecs.join('<br>') + (ecV.length ? `<br><br>Cada fuente de tensión${fuentes.some((e) => e.t === 'L') ? ' y cada bobina' : ''} fija la diferencia de potencial entre sus bornes:<br>${ecV.join('<br>')}` : '') });
+    if (sol.A.length) {
+      const incTxt = [...inc.map((n) => `V<sub>${n}</sub>`), ...fuentes.map((e) => `I<sub>${e.n}</sub>`)];
+      pasos.push({ t: 'Sistema en forma matricial', html: `${matHtml(sol.A.map((fi) => fi.map((v) => f(v))))} · ${matHtml(incTxt.map((v) => [v]))} = ${matHtml(sol.b.map((v) => [f(v)]))}` });
+      pasos.push({ t: 'Solución', html: [...inc.map((n) => `V<sub>${n}</sub> = <b>${f(V[n])} V</b>`), ...fuentes.map((e) => `I<sub>${e.n}</sub> = <b>${f(sol.I[e.n])} A</b>`)].join(', &nbsp; ') });
+    }
+    // corriente y potencia de cada elemento (I de A a B; potencia absorbida U·I con U = V_A − V_B)
+    const res = els.map((e) => {
+      const U = V[e.a] - V[e.b], I = sol.I[e.n], P = U * I; // absorbida (negativa = entrega)
+      const W = e.t === 'C' ? 0.5 * e.v * U * U : e.t === 'L' ? 0.5 * e.v * I * I : null;
+      return { ...e, U, I, P, W };
+    });
+    const que = (r) => (r.P < -1e-12 ? 'entrega' : r.P > 1e-12 ? 'consume' : 'ni entrega ni consume');
+    pasos.push({ t: 'Corriente y potencia de cada elemento', html: res.map((r) => {
+      if (r.t === 'R') return `${sub(r.n)}: I = ${dif(r.a, r.b, ref)}/${sub(r.n)} = ${r.b === ref ? p(V[r.a]) : r.a === ref ? `−${p(V[r.b])}` : `(${f(V[r.a])} − ${p(V[r.b])})`}/${f(r.v)} = <b>${f(Math.abs(r.I))} A</b>${Math.abs(r.I) > 1e-12 ? ` de ${r.I > 0 ? r.a : r.b} a ${r.I > 0 ? r.b : r.a}` : ''}; &nbsp; P = I<sup>2</sup>R = <b>${f(r.P)} W</b>`;
+      if (r.t === 'V') return `${sub(r.n)}: I = ${f(r.I)} A ${r.I < -1e-12 ? '(sale por el borne +)' : r.I > 1e-12 ? '(entra por el borne +)' : ''}; &nbsp; P = E·I = <b>${f(Math.abs(r.P))} W</b> (${que(r)})`;
+      if (r.t === 'C') return `${sub(r.n)}: no pasa corriente; tensión U = ${dif(r.a, r.b, ref).replace(/^\((.*)\)$/, '$1')} = ${f(r.U)} V, carga q = CU = <b>${f(r.v * r.U)} C</b> y energía ½CU<sup>2</sup> = <b>${f(r.W)} J</b>`;
+      if (r.t === 'L') return `${sub(r.n)}: tensión 0; I = <b>${f(Math.abs(r.I))} A</b>${Math.abs(r.I) > 1e-12 ? ` de ${r.I > 0 ? r.a : r.b} a ${r.I > 0 ? r.b : r.a}` : ''} y energía ½LI<sup>2</sup> = <b>${f(r.W)} J</b>`;
+      if (r.t === 'VV' || r.t === 'VI') return `${sub(r.n)}: tensión ${f(r.U)} V, I = ${f(r.I)} A (de ${r.a} a ${r.b} por dentro); &nbsp; P = U·I = <b>${f(Math.abs(r.P))} W</b> (${que(r)})`;
+      return `${sub(r.n)}: ${r.t === 'I' ? '' : `corriente ${f(r.I)} A; `}tensión entre sus bornes U = ${Vn(r.a, ref)} − ${Vn(r.b, ref)} = ${f(r.U)} V; &nbsp; P = U·${r.t === 'I' ? 'J' : 'I'} = <b>${f(Math.abs(r.P))} W</b> (${que(r)})`;
+    }).join('<br>') });
+    const ent = -res.filter((r) => r.P < 0).reduce((s, r) => s + r.P, 0), abs = res.filter((r) => r.P > 0).reduce((s, r) => s + r.P, 0);
+    pasos.push({ t: 'Balance de potencias', html: `Entregada: ${f(ent)} W; &nbsp; consumida: ${f(abs)} W. ${Math.abs(ent - abs) <= 1e-9 * Math.max(1, ent) ? 'Coinciden, como debe ser.' : 'No coinciden: revisa los datos.'}` });
+
+    // Thévenin visto por una resistencia de carga o entre dos nudos
+    let thev = null;
+    if (sc.carga === 'nudos') {
+      const a = String(sc.thA ?? '').trim(), b = String(sc.thB ?? '').trim();
+      if (!sol.nudos.includes(a) || !sol.nudos.includes(b)) throw new Error('Elige los dos nudos entre los que quieres el equivalente de Thévenin');
+      if (a === b) throw new Error('El equivalente de Thévenin tiene que ser entre dos nudos distintos');
+      thev = { ...thevenin(els, a, b, ref, null), carga: null };
+      const t = thev;
+      pasos.push({ t: `Equivalente de Thévenin entre ${a} y ${b}`, html: `V<sub>th</sub> = V<sub>${a}</sub> − V<sub>${b}</sub> = ${f(V[a])} − ${p(V[b])} = <b>${f(t.Vth)} V</b> (la tensión en circuito abierto, la del circuito tal cual)<br>Con las fuentes independientes apagadas (las de tensión en cortocircuito y las de corriente abiertas)${t.dep ? ', las dependientes encendidas y 1 A inyectado entre los dos nudos' : ''}, la resistencia entre ${a} y ${b} es R<sub>th</sub> = <b>${f(t.Rth)} Ω</b><br>${t.ideal ? `Con R<sub>th</sub> = 0 entre ${a} y ${b} hay una fuente de tensión ideal: no tiene equivalente de Norton.` : `Norton: I<sub>N</sub> = V<sub>th</sub>/R<sub>th</sub> = <b>${f(t.IN)} A</b>${t.Rth > 0 ? `<br>Una carga entre ${a} y ${b} recibe la máxima potencia si vale R<sub>th</sub> = ${f(t.Rth)} Ω: P<sub>máx</sub> = V<sub>th</sub><sup>2</sup>/(4R<sub>th</sub>) = <b>${f(t.Pmax)} W</b>` : ''}`}` });
+    } else if (!vacio(sc.carga)) {
+      const L = els[+sc.carga];
+      if (!L || L.t !== 'R') throw new Error('La carga para el equivalente de Thévenin tiene que ser una resistencia');
+      const t = thevenin(els, L.a, L.b, ref, L), { Vth, Rth, ideal } = t;
+      const IL = Vth / (Rth + L.v), PL = IL * IL * L.v;
+      thev = { ...t, carga: L.n, RL: L.v, IL, PL };
+      pasos.push({ t: `Equivalente de Thévenin visto por ${L.n} (entre ${L.a} y ${L.b})`, html: `Se quita ${sub(L.n)} y se resuelve igual: V<sub>th</sub> = V<sub>${L.a}</sub> − V<sub>${L.b}</sub> en circuito abierto = <b>${f(Vth)} V</b><br>Con las fuentes ${t.dep ? 'independientes ' : ''}apagadas (las de tensión en cortocircuito y las de corriente abiertas)${t.dep ? ' y las dependientes encendidas' : ''}, la resistencia entre ${L.a} y ${L.b} es R<sub>th</sub> = <b>${f(Rth)} Ω</b><br>${ideal ? `Con R<sub>th</sub> = 0 lo que ve ${sub(L.n)} es una fuente de tensión ideal: no tiene equivalente de Norton, porque I<sub>N</sub> = V<sub>th</sub>/R<sub>th</sub> sería infinita.` : `Norton: I<sub>N</sub> = V<sub>th</sub>/R<sub>th</sub> = <b>${f(t.IN)} A</b>`}` });
+      pasos.push({ t: 'Con la carga puesta y máxima transferencia de potencia', html: `I<sub>${L.n}</sub> = V<sub>th</sub>/(R<sub>th</sub> + ${sub(L.n)}) = ${f(Vth)}/(${f(Rth)} + ${f(L.v)}) = <b>${f(IL)} A</b> (coincide con la del circuito completo); P = <b>${f(PL)} W</b><br>${ideal ? `Con R<sub>th</sub> = 0 la tensión en la carga es siempre V<sub>th</sub> y su potencia V<sub>th</sub><sup>2</sup>/${sub(L.n)} crece sin límite al bajar ${sub(L.n)}: no hay máxima transferencia de potencia.` : Rth < 0 ? 'Con R<sub>th</sub> negativa (por las fuentes dependientes) no hay un valor de la carga que dé la máxima potencia.' : `La potencia en la carga es máxima si ${sub(L.n)} = R<sub>th</sub> = ${f(Rth)} Ω: P<sub>máx</sub> = V<sub>th</sub><sup>2</sup>/(4R<sub>th</sub>) = <b>${f(t.Pmax)} W</b>`}` });
+    }
+
+    // Superposición: cada fuente independiente sola, con las demás apagadas
+    let superposicion = null;
+    const indep = els.filter((e) => e.t === 'V' || e.t === 'I');
+    if (sc.superposicion && indep.length >= 2) {
+      const otros = sol.nudos.filter((n) => n !== ref), rs = els.filter((e) => e.t === 'R');
+      const filas = indep.map((s) => {
+        const parcial = nodal(els.map((e) => (e !== s && (e.t === 'V' || e.t === 'I') ? { ...e, v: 0 } : e)), ref);
+        return { fuente: s.n, V: Object.fromEntries(otros.map((n) => [n, parcial.V[n]])), I: Object.fromEntries(rs.map((e) => [e.n, parcial.I[e.n]])) };
+      });
+      const total = { V: Object.fromEntries(otros.map((n) => [n, filas.reduce((s, q) => s + q.V[n], 0)])), I: Object.fromEntries(rs.map((e) => [e.n, filas.reduce((s, q) => s + q.I[e.n], 0)])) };
+      const ok = otros.every((n) => Math.abs(total.V[n] - V[n]) <= 1e-9 * Math.max(1, Math.abs(V[n])));
+      superposicion = { filas, total, ok };
+      const cab = [...otros.map((n) => `V<sub>${n}</sub> (V)`), ...rs.map((e) => `I<sub>${e.n}</sub> (A)`)];
+      const fila = (t, q) => `<tr><th>${t}</th>${otros.map((n) => `<td>${f(q.V[n])}</td>`).join('')}${rs.map((e) => `<td>${f(q.I[e.n])}</td>`).join('')}</tr>`;
+      pasos.push({ t: 'Superposición: cada fuente independiente por separado', html: `Se deja encendida una sola fuente independiente cada vez (las de tensión apagadas son un cortocircuito y las de corriente, un circuito abierto${deps.length ? '; las dependientes siguen' : ''}) y se suman los resultados. Las corrientes van de A a B de cada resistencia.<div class="tabla-scroll"><table class="tabla"><tr><th>Solo con</th>${cab.map((c) => `<th>${c}</th>`).join('')}</tr>${filas.map((q) => fila(sub(q.fuente), q)).join('')}${fila('Suma', total)}</table></div>${ok ? 'La suma coincide con lo que da el circuito completo.' : 'La suma no coincide: revisa los datos.'} La potencia no se puede sumar así, porque va con el cuadrado de la corriente.` });
+    } else if (sc.superposicion) pasos.push({ t: 'Superposición', html: 'Hace falta más de una fuente independiente para aplicar superposición.' });
+
+    // Método de las mallas
+    let malla = null;
+    if (sc.mallas) {
+      malla = mallas(els, sol);
+      if (malla.nota) pasos.push({ t: 'Método de las mallas', html: malla.nota });
+      else {
+        const m = malla, n = m.lazos.length;
+        const conoc = m.lazos.map((lz, k) => (m.conocida[k] !== null ? `I<sub>${k + 1}</sub> = ${f(m.conocida[k])} A (la fija ${sub(lz[0][0].n)}${lz[0][0].t === 'C' ? ', que no deja pasar corriente' : ''})` : '')).filter(Boolean);
+        pasos.push({ t: 'Método de las mallas: segunda ley de Kirchhoff', html: `Con ${m.ramas} elementos y ${m.nudos} nudos hay ${m.ramas} − ${m.nudos} + 1 = <b>${n}</b> mallas independientes. Cada una sigue el sentido indicado y lleva su corriente de malla I<sub>k</sub>; la corriente de cada elemento es la suma de las de las mallas que lo recorren (con signo). En cada malla, las caídas R·I suman lo que dan las fuentes de tensión:<br>${m.ecs.join('<br>')}${conoc.length ? `<br>${conoc.join('<br>')}` : ''}` });
+        if (m.inc.length) pasos.push({ t: 'Corrientes de malla', html: `${matHtml(m.A.map((fi) => fi.map((v) => f(v))))} · ${matHtml(m.inc.map((k) => [`I<sub>${k + 1}</sub>`]))} = ${matHtml(m.b.map((v) => [f(v)]))} ⇒ ${m.inc.map((k) => `I<sub>${k + 1}</sub> = <b>${f(m.Im[k])} A</b>`).join(', &nbsp; ')}<br>Corriente de cada elemento (de A a B): ${els.map((e) => `I<sub>${e.n}</sub> = ${f(m.rama[e.n])} A`).join(', ')}. ${m.ok ? 'Coinciden con las del método de los nudos.' : 'No coinciden con las del método de los nudos: revisa los datos.'}` });
+      }
+    }
+    return { ref, nudos: sol.nudos, V, els: res, ent, abs, thev, superposicion, malla, pasos };
+  }
+
+  const R = (a, b, v) => ({ t: 'R', a, b, v }), E = (a, b, v) => ({ t: 'V', a, b, v }), J = (a, b, v) => ({ t: 'I', a, b, v });
+  const ejemplos = [
+    { clave: 'divisor', nombre: 'Divisor de tensión', sc: { elementos: [E('a', '0', '12'), R('a', 'b', '1000'), R('b', '0', '2000')], carga: '' } },
+    { clave: 'dos-mallas', nombre: 'Dos mallas con dos fuentes', sc: { elementos: [E('a', '0', '10'), R('a', 'b', '2'), R('b', '0', '4'), R('b', 'c', '3'), E('c', '0', '5')], carga: '', mallas: true, superposicion: true } },
+    { clave: 'wheatstone', nombre: 'Puente de Wheatstone desequilibrado', sc: { elementos: [E('a', '0', '10'), R('a', 'b', '100'), R('a', 'c', '150'), R('b', '0', '200'), R('c', '0', '200'), R('b', 'c', '50')], carga: '' } },
+    { clave: 'corriente', nombre: 'Con una fuente de corriente', sc: { elementos: [J('0', 'a', '2'), R('a', '0', '10'), R('a', 'b', '5'), R('b', '0', '5')], carga: '' } },
+    { clave: 'mixto', nombre: 'Fuente de tensión y de corriente', sc: { elementos: [E('a', '0', '12'), R('a', 'b', '4'), J('0', 'b', '1'), R('b', '0', '6')], carga: '', superposicion: true, mallas: true } },
+    { clave: 'thevenin', nombre: 'Thévenin y máxima potencia', sc: { elementos: [E('a', '0', '24'), R('a', 'b', '6'), R('b', '0', '3'), R('b', '0', '2')], carga: '3' } },
+    { clave: 'thevenin-nudos', nombre: 'Thévenin entre dos nudos', sc: { elementos: [E('a', '0', '10'), R('a', 'b', '100'), R('a', 'c', '150'), R('b', '0', '200'), R('c', '0', '200')], carga: 'nudos', thA: 'b', thB: 'c' } },
+    { clave: 'dependiente', nombre: 'Fuente de tensión dependiente de una tensión', sc: { elementos: [E('a', '0', '10'), R('a', 'b', '2'), R('b', '0', '4'), { t: 'VV', a: 'c', b: '0', v: '3', c: 'b', d: '0' }, R('c', '0', '6')], carga: '' } },
+    { clave: 'dependiente-corriente', nombre: 'Fuente de corriente dependiente y Thévenin', sc: { elementos: [E('a', '0', '12'), R('a', 'b', '4'), { t: 'II', a: '0', b: 'b', v: '2', x: 'R1' }, R('b', '0', '8'), R('b', '0', '10')], carga: '3' } },
+    { clave: 'condensador', nombre: 'Condensador y bobina en régimen permanente', sc: { elementos: [E('a', '0', '12'), R('a', 'b', '4'), { t: 'L', a: 'b', b: 'c', v: '50' }, R('c', '0', '8'), { t: 'C', a: 'b', b: '0', v: '100' }], carga: '' } },
+  ];
+
+  return { resolver, nombres, TIPOS, ejemplos, f };
+})();
+
+/* =====================================================================
    Transitorios en circuitos (sin DOM): carga y descarga de un
-   condensador (RC), subida y bajada de la corriente en una bobina (RL) y
-   circuito RLC en serie con un escalón de tensión (sobreamortiguado,
-   crítico o subamortiguado). El interruptor se cierra en t = 0.
-   Unidades: V, Ω, μF, mH, A y s.
+   condensador (RC), subida y bajada de la corriente en una bobina (RL),
+   las dos también conmutando en t₁ a una descarga por R₂; RLC en serie
+   con un escalón de tensión y RLC en paralelo con uno de corriente
+   (sobreamortiguado, crítico o subamortiguado), y cualquier circuito de
+   primer orden por el método de los tres valores, que se resuelve en
+   continua con Continua (circuitos/fisica.js, va antes en la página).
+   El interruptor actúa en t = 0. Unidades: V, Ω, μF, mH, A y s.
    ===================================================================== */
 const Transitorios = (() => {
   const f = (x, d = 4) => {
@@ -735,20 +1122,53 @@ const Transitorios = (() => {
     return { modo: 'rc', carga, V, V0, R, C, tau, Vc, I, VcTxt, t, Vct: t !== null ? Vc(t) : null, It: t !== null ? I(t) : null, Vo, tObj, I0: (V - V0) / R, Ef: 0.5 * C * V * V, Ed: 0.5 * C * (V - V0) ** 2, T: 5 * tau, pasos };
   }
 
-  /* ---------- RL ---------- */
-  // sc: { proceso: 'subida'|'bajada', V, R, L (mH), t, Iobj }; en la bajada la corriente inicial es V/R
-  function rl(sc) {
-    const sube = sc.proceso !== 'bajada', V = lee(sc, 'V', 'la tensión de la fuente'), R = lee(sc, 'R', 'la resistencia'), L = lee(sc, 'L', 'la inductancia', { base: 1e-3 }), tau = L / R, Inf = V / R, pasos = [];
-    const I0 = sube ? 0 : Inf, Ifin = sube ? Inf : 0;
-    const I = (t) => Ifin + (I0 - Ifin) * Math.exp(-t / tau), VL = (t) => (sube ? V : -V) * Math.exp(-t / tau);
-    pasos.push({ t: 'Constante de tiempo', html: `τ = L/R = ${u(L, 'H')} / ${u(R, 'Ω')} = <b>${u(tau, 's')}</b>` });
-    const ITxt = sube ? `${f(Inf)}·(1 − ${ex(tau)})` : `${f(Inf)}·${ex(tau)}`;
-    pasos.push({ t: sube ? 'La corriente sube' : 'La corriente baja', html: sube ? `Al cerrar, la bobina se opone al cambio y la corriente crece poco a poco hasta I<sub>∞</sub> = V/R = ${u(Inf, 'A')}: i(t) = (V/R)·(1 − e<sup>−t/τ</sup>) ⇒ <b>i(t) = ${ITxt} A</b>` : `Se quita la fuente y el circuito se cierra por R: la corriente, que era V/R = ${u(Inf, 'A')}, no cae de golpe: i(t) = I<sub>0</sub>·e<sup>−t/τ</sup> ⇒ <b>i(t) = ${ITxt} A</b>` });
-    pasos.push({ t: 'Tensión en la bobina', html: `V<sub>L</sub> = L di/dt = <b>${f(sube ? V : -V)}·${ex(tau)} V</b>. ${sube ? 'Al principio toda la tensión está en la bobina (se comporta como un circuito abierto) y al final nada (como un cable).' : 'Cambia de signo: la bobina hace de fuente y mantiene la corriente mientras gasta su energía.'}` });
-    pasos.push({ t: 'Energía', html: `${sube ? 'Al final' : 'Al principio'} la bobina guarda ½ L I<sup>2</sup> = ½·${u(L, 'H')}·(${u(Inf, 'A')})<sup>2</sup> = <b>${u(0.5 * L * Inf * Inf, 'J')}</b>${sube ? '' : ', que acaba disipada en la resistencia'}.` });
+  /* ---------- RC que conmuta: carga por R y, en t₁, descarga por R₂ ---------- */
+  function rcConmuta(sc) {
+    const R = lee(sc, 'R', 'la resistencia de carga R'), R2 = lee(sc, 'R2', 'la resistencia de descarga R₂'), C = lee(sc, 'C', 'la capacidad', { base: 1e-6 }), t1 = lee(sc, 't1', 'el instante t₁ en que conmuta');
+    const V = lee(sc, 'V', 'la tensión de la fuente', { cero: true }), V0 = lee(sc, 'V0', 'la tensión inicial del condensador', { opcional: true, signo: true }) ?? 0;
+    const tau = R * C, tau2 = R2 * C, V1 = V + (V0 - V) * Math.exp(-t1 / tau);
+    const Vc = (t) => (t < t1 ? V + (V0 - V) * Math.exp(-t / tau) : V1 * Math.exp(-(t - t1) / tau2));
+    const I = (t) => (t < t1 ? ((V - V0) / R) * Math.exp(-t / tau) : (-V1 / R2) * Math.exp(-(t - t1) / tau2));
+    const VcTxt = `${t1 > 0 ? `${V0 === 0 ? `${f(V)}·(1 − ${ex(tau)})` : `${f(V)} ${sgn(V0 - V)} ${f(Math.abs(V0 - V))}·${ex(tau)}`} hasta t₁; después ` : ''}${f(V1)}·e<sup>−(t − ${f(t1)})/${f(tau2)}</sup>`;
+    const pasos = [
+      { t: 'Hasta t₁: carga por R', html: `τ<sub>1</sub> = R C = ${u(R, 'Ω')}·${u(C, 'F')} = <b>${u(tau, 's')}</b>; V<sub>C</sub>(t) = V + (V<sub>0</sub> − V)·e<sup>−t/τ₁</sup>. En t<sub>1</sub> = ${u(t1, 's')} (${f(t1 / tau)} τ<sub>1</sub>) llega a V<sub>C</sub>(t<sub>1</sub>) = <b>${f(V1)} V</b>` },
+      { t: 'Desde t₁: descarga por R₂', html: `Se quita la fuente y el condensador se descarga por R<sub>2</sub>: τ<sub>2</sub> = R<sub>2</sub> C = <b>${u(tau2, 's')}</b>. La tensión no salta, pero la corriente sí: pasa de ${u((V - V1) / R, 'A')} a <b>${u(-V1 / R2, 'A')}</b> (al revés y con R<sub>2</sub>). V<sub>C</sub>(t) = ${f(V1)}·e<sup>−(t − t₁)/τ₂</sup>` },
+      { t: 'Energía', html: `En t<sub>1</sub> el condensador guarda ½CV<sub>C</sub><sup>2</sup> = ${u(0.5 * C * V1 * V1, 'J')}, que acaba disipada en R<sub>2</sub>.` },
+    ];
     const t = lee(sc, 't', 'el instante t', { opcional: true, cero: true });
-    if (t !== null) pasos.push({ t: `En t = ${u(t, 's')}`, html: `t/τ = ${f(t / tau)}: i = <b>${u(I(t), 'A')}</b>, V<sub>L</sub> = <b>${f(VL(t))} V</b>, V<sub>R</sub> = R i = ${f(R * I(t))} V.` });
-    const Io = lee(sc, 'Iobj', 'la corriente que se quiere alcanzar', { opcional: true, cero: true });
+    if (t !== null) pasos.push({ t: `En t = ${u(t, 's')}`, html: `${t < t1 ? 'Todavía cargando' : 'Ya descargando'}: V<sub>C</sub> = <b>${f(Vc(t))} V</b>, i = <b>${u(I(t), 'A')}</b>` });
+    return { modo: 'rc', conmuta: true, carga: true, V, V0, R, R2, C, tau, tau2, t1, V1, Vc, I, VcTxt, t, Vct: t !== null ? Vc(t) : null, It: t !== null ? I(t) : null, Vo: null, tObj: null, I0: (V - V0) / R, Ef: 0.5 * C * V1 * V1, T: t1 + 5 * tau2, pasos };
+  }
+
+  /* ---------- RL ---------- */
+  // sc: { proceso: 'subida'|'bajada'|'conmuta', V, R, R2 (descarga), I0 (opcional), t1, L (mH), t, Iobj }
+  function rl(sc) {
+    const proceso = ['bajada', 'conmuta'].includes(sc.proceso) ? sc.proceso : 'subida', sube = proceso !== 'bajada';
+    const V = lee(sc, 'V', 'la tensión de la fuente'), R = lee(sc, 'R', 'la resistencia'), L = lee(sc, 'L', 'la inductancia', { base: 1e-3 }), Inf = V / R, pasos = [];
+    if (proceso === 'conmuta') {
+      const R2 = lee(sc, 'R2', 'la resistencia de descarga R₂'), t1 = lee(sc, 't1', 'el instante t₁ en que conmuta'), tau = L / R, tau2 = L / R2, I1 = Inf * (1 - Math.exp(-t1 / tau));
+      const I = (t) => (t < t1 ? Inf * (1 - Math.exp(-t / tau)) : I1 * Math.exp(-(t - t1) / tau2)), VL = (t) => (t < t1 ? V * Math.exp(-t / tau) : -I1 * R2 * Math.exp(-(t - t1) / tau2));
+      pasos.push({ t: 'Hasta t₁: la corriente sube', html: `τ<sub>1</sub> = L/R = <b>${u(tau, 's')}</b>; i(t) = (V/R)(1 − e<sup>−t/τ₁</sup>). En t<sub>1</sub> = ${u(t1, 's')} vale i(t<sub>1</sub>) = <b>${u(I1, 'A')}</b>` });
+      pasos.push({ t: 'Desde t₁: se quita la fuente y se descarga por R₂', html: `La corriente de la bobina no salta: sigue siendo ${u(I1, 'A')}, ahora por R<sub>2</sub>. La tensión de la bobina sí salta, a V<sub>L</sub>(t<sub>1</sub><sup>+</sup>) = −i·R<sub>2</sub> = <b>${f(-I1 * R2)} V</b>${R2 > R ? ` (${f((I1 * R2) / V)} veces la de la fuente: es el pico que hace saltar chispas al abrir un interruptor)` : ''}. τ<sub>2</sub> = L/R<sub>2</sub> = <b>${u(tau2, 's')}</b>; i(t) = ${f(I1)}·e<sup>−(t − t₁)/τ₂</sup>` });
+      pasos.push({ t: 'Energía', html: `En t<sub>1</sub> la bobina guarda ½LI<sup>2</sup> = ${u(0.5 * L * I1 * I1, 'J')}, que se disipa en R<sub>2</sub>.` });
+      const t = lee(sc, 't', 'el instante t', { opcional: true, cero: true });
+      if (t !== null) pasos.push({ t: `En t = ${u(t, 's')}`, html: `i = <b>${u(I(t), 'A')}</b>, V<sub>L</sub> = <b>${f(VL(t))} V</b>` });
+      return { modo: 'rl', conmuta: true, sube: true, V, R, R2, L, tau, tau2, t1, I1, Inf, I0: 0, I, VL, ITxt: `${f(Inf)}·(1 − ${ex(tau)}) hasta t₁; después ${f(I1)}·e<sup>−(t − ${f(t1)})/${f(tau2)}</sup>`, t, It: t !== null ? I(t) : null, VLt: t !== null ? VL(t) : null, Io: null, tObj: null, E: 0.5 * L * I1 * I1, pico: -I1 * R2, T: t1 + 5 * tau2, pasos };
+    }
+    // en la bajada la bobina se descarga por R₂ (si no se da, por la misma R)
+    const R2 = sube ? R : lee(sc, 'R2', 'la resistencia de descarga R₂', { opcional: true }) ?? R, tau = L / (sube ? R : R2);
+    const Ii = lee(sc, 'I0', 'la corriente inicial', { opcional: true, signo: true }), I0 = Ii ?? (sube ? 0 : Inf), Ifin = sube ? Inf : 0;
+    if (I0 === Ifin) throw new Error('La corriente ya está en su valor final: no hay transitorio');
+    const I = (t) => Ifin + (I0 - Ifin) * Math.exp(-t / tau), VL0 = sube ? V - R * I0 : -I0 * R2, VL = (t) => VL0 * Math.exp(-t / tau);
+    pasos.push({ t: 'Constante de tiempo', html: `τ = L/R${sube || R2 === R ? '' : '<sub>2</sub>'} = ${u(L, 'H')} / ${u(sube ? R : R2, 'Ω')} = <b>${u(tau, 's')}</b>` });
+    const ITxt = !I0 ? `${f(Inf)}·(1 − ${ex(tau)})` : !Ifin ? `${f(I0)}·${ex(tau)}` : `${f(Ifin)} ${sgn(I0 - Ifin)} ${f(Math.abs(I0 - Ifin))}·${ex(tau)}`;
+    pasos.push({ t: sube ? 'La corriente sube' : 'La corriente baja', html: sube ? `Al cerrar, la bobina se opone al cambio y la corriente va de ${u(I0, 'A')} a I<sub>∞</sub> = V/R = ${u(Inf, 'A')}: i(t) = I<sub>∞</sub> + (I<sub>0</sub> − I<sub>∞</sub>)·e<sup>−t/τ</sup> ⇒ <b>i(t) = ${ITxt} A</b>` : `Se quita la fuente y el circuito se cierra por ${R2 === R ? 'R' : 'R<sub>2</sub>'}: la corriente, que era ${Ii === null ? `V/R = ${u(Inf, 'A')}` : u(I0, 'A')}, no cae de golpe: i(t) = I<sub>0</sub>·e<sup>−t/τ</sup> ⇒ <b>i(t) = ${ITxt} A</b>` });
+    pasos.push({ t: 'Tensión en la bobina', html: `V<sub>L</sub> = L di/dt = <b>${f(VL0)}·${ex(tau)} V</b>. ${sube ? 'Al principio casi toda la tensión está en la bobina (se comporta como un circuito abierto) y al final nada (como un cable).' : `Cambia de signo: la bobina hace de fuente y mantiene la corriente mientras gasta su energía.${R2 !== R ? ` Justo al abrir vale −I<sub>0</sub>·R<sub>2</sub> = ${f(VL0)} V${R2 > R ? `, ${f(-VL0 / V)} veces la de la fuente` : ''}.` : ''}`}` });
+    const Iw = sube ? Inf : I0;
+    pasos.push({ t: 'Energía', html: `${sube ? 'Al final' : 'Al principio'} la bobina guarda ½ L I<sup>2</sup> = ½·${u(L, 'H')}·(${u(Iw, 'A')})<sup>2</sup> = <b>${u(0.5 * L * Iw * Iw, 'J')}</b>${sube ? '' : ', que acaba disipada en la resistencia'}.` });
+    const t = lee(sc, 't', 'el instante t', { opcional: true, cero: true });
+    if (t !== null) pasos.push({ t: `En t = ${u(t, 's')}`, html: `t/τ = ${f(t / tau)}: i = <b>${u(I(t), 'A')}</b>, V<sub>L</sub> = <b>${f(VL(t))} V</b>, V<sub>R</sub> = R i = ${f((sube ? R : R2) * I(t))} V.` });
+    const Io = lee(sc, 'Iobj', 'la corriente que se quiere alcanzar', { opcional: true, signo: true });
     let tObj = null;
     if (Io !== null) {
       const fr = (Io - Ifin) / (I0 - Ifin);
@@ -756,58 +1176,178 @@ const Transitorios = (() => {
       tObj = -tau * Math.log(fr);
       pasos.push({ t: `Tiempo hasta i = ${f(Io)} A`, html: `${f(Io)} = ${ITxt} ⇒ e<sup>−t/τ</sup> = ${f(fr)} ⇒ t = −τ ln ${f(fr)} = <b>${u(tObj, 's')}</b> (${f(tObj / tau)} τ)` });
     }
-    return { modo: 'rl', sube, V, R, L, tau, Inf, I0, I, VL, ITxt, t, It: t !== null ? I(t) : null, VLt: t !== null ? VL(t) : null, Io, tObj, E: 0.5 * L * Inf * Inf, T: 5 * tau, pasos };
+    return { modo: 'rl', sube, V, R, R2, L, tau, Inf, I0, I, VL, ITxt, t, It: t !== null ? I(t) : null, VLt: t !== null ? VL(t) : null, Io, tObj, E: 0.5 * L * Iw * Iw, T: 5 * tau, pasos };
+  }
+
+  /* ---------- Segundo orden: x″ + 2α x′ + ω₀² x = ω₀² x_f, con x(0) y x′(0) ---------- */
+  function segundo(a, w0, xf, x0, dx0) {
+    const A0 = x0 - xf, rel = (a - w0) / w0, tipo = Math.abs(rel) < 1e-9 ? 'critico' : a > w0 ? 'sobre' : 'sub';
+    let X, dX, txt, s1 = null, s2 = null, wd = null, A, B;
+    if (tipo === 'sub') {
+      wd = Math.sqrt(w0 * w0 - a * a); A = A0; B = (dx0 + a * A) / wd;
+      X = (t) => xf + Math.exp(-a * t) * (A * Math.cos(wd * t) + B * Math.sin(wd * t));
+      dX = (t) => Math.exp(-a * t) * ((-a * A + wd * B) * Math.cos(wd * t) + (-a * B - wd * A) * Math.sin(wd * t));
+      txt = `${xf ? `${f(xf)} + ` : ''}${a ? `e<sup>−${f(a)}t</sup>·` : ''}(${f(A)} cos ${f(wd)}t ${sgn(B)} ${f(Math.abs(B))} sen ${f(wd)}t)`;
+    } else if (tipo === 'critico') {
+      A = A0; B = dx0 + a * A;
+      X = (t) => xf + (A + B * t) * Math.exp(-a * t);
+      dX = (t) => (B - a * (A + B * t)) * Math.exp(-a * t);
+      txt = `${xf ? `${f(xf)} + ` : ''}(${f(A)} ${sgn(B)} ${f(Math.abs(B))} t)·e<sup>−${f(a)}t</sup>`;
+    } else {
+      const r = Math.sqrt(a * a - w0 * w0); s1 = -a + r; s2 = -a - r; A = (dx0 - s2 * A0) / (s1 - s2); B = A0 - A;
+      X = (t) => xf + A * Math.exp(s1 * t) + B * Math.exp(s2 * t);
+      dX = (t) => A * s1 * Math.exp(s1 * t) + B * s2 * Math.exp(s2 * t);
+      txt = `${xf ? `${f(xf)} ` : ''}${xf ? sgn(A) + ' ' : A < 0 ? '−' : ''}${f(Math.abs(A))}·e<sup>${f(s1)}t</sup> ${sgn(B)} ${f(Math.abs(B))}·e<sup>${f(s2)}t</sup>`;
+    }
+    // cuánto dibujar: unas cuantas constantes de tiempo del término más lento
+    const lento = tipo === 'sobre' ? -1 / s1 : 1 / (a || w0 / 20), T = tipo === 'sub' ? Math.min(5 * lento, 12 * (2 * Math.PI) / wd) : 6 * lento;
+    let pico = null;
+    if (tipo === 'sub' && x0 !== xf) {
+      // primer extremo: dX = e^(−αt)(P cos ω_d t + Q sen ω_d t) se anula en ω_d t = δ + π/2 + kπ (con x′(0) = 0 es π/ω_d)
+      const P = -a * A + wd * B, Qs = -a * B - wd * A, d = Math.atan2(Qs, P), per = Math.PI / wd;
+      let tp = (d + Math.PI / 2) / wd; tp -= Math.floor(tp / per) * per; if (tp < 1e-9 * per) tp += per;
+      pico = { t: tp, V: X(tp), sobre: Math.abs((X(tp) - xf) / (x0 - xf)) * 100 };
+    }
+    return { tipo, X, dX, txt, s1, s2, wd, A, B, T, pico };
+  }
+  // primer instante en que x(t) vale obj (null si no llega)
+  function hasta(X, obj, T) {
+    const n = 4000, t1 = 3 * T;
+    let ta = 0, ya = X(0) - obj;
+    if (Math.abs(ya) < 1e-12) return 0;
+    for (let k = 1; k <= n; k++) {
+      const tb = (t1 * k) / n, yb = X(tb) - obj;
+      if (ya * yb <= 0) { let a = ta, b = tb; for (let j = 0; j < 60; j++) { const m = (a + b) / 2; if ((X(a) - obj) * (X(m) - obj) <= 0) b = m; else a = m; } return (a + b) / 2; }
+      ta = tb; ya = yb;
+    }
+    return null;
+  }
+  const TIPO_TXT = { sub: 'Subamortiguado', critico: 'Amortiguamiento crítico', sobre: 'Sobreamortiguado' };
+  function pasoTipo(s, a, w0, R, Rc, serie) {
+    if (s.tipo === 'sub') return { t: TIPO_TXT.sub, html: `α &lt; ω<sub>0</sub> (R = ${u(R, 'Ω')} es ${serie ? 'menor' : 'mayor'} que la resistencia crítica ${serie ? '2√(L/C)' : '½√(L/C)'} = ${u(Rc, 'Ω')}): raíces complejas s = −α ± jω<sub>d</sub>, con ω<sub>d</sub> = √(ω<sub>0</sub><sup>2</sup> − α<sup>2</sup>) = <b>${f(s.wd)} rad/s</b>. Oscila con periodo 2π/ω<sub>d</sub> = ${u((2 * Math.PI) / s.wd, 's')} mientras se amortigua.` };
+    if (s.tipo === 'critico') return { t: TIPO_TXT.critico, html: `α = ω<sub>0</sub> (R = ${serie ? '2√(L/C)' : '½√(L/C)'} = ${u(Rc, 'Ω')}): raíz doble s = −α. Es el caso que llega antes al final sin oscilar.` };
+    return { t: TIPO_TXT.sobre, html: `α > ω<sub>0</sub> (R = ${u(R, 'Ω')} es ${serie ? 'mayor' : 'menor'} que la resistencia crítica ${serie ? '2√(L/C)' : '½√(L/C)'} = ${u(Rc, 'Ω')}): dos raíces reales s = −α ± √(α<sup>2</sup> − ω<sub>0</sub><sup>2</sup>) = <b>${f(s.s1)}</b> y <b>${f(s.s2)} s<sup>−1</sup></b>. Llega al final sin oscilar, despacio.` };
   }
 
   /* ---------- RLC en serie ---------- */
-  // sc: { V (escalón; 0 = respuesta libre), R, L (mH), C (μF), V0 (V del condensador en t = 0), I0, t }
+  // sc: { V (escalón; 0 = respuesta libre), R, L (mH), C (μF), V0 (V del condensador en t = 0), I0, t, Vobj }
   function rlc(sc) {
     const V = lee(sc, 'V', 'la tensión de la fuente', { cero: true }), R = lee(sc, 'R', 'la resistencia', { cero: true }), L = lee(sc, 'L', 'la inductancia', { base: 1e-3 }), C = lee(sc, 'C', 'la capacidad', { base: 1e-6 });
     const V0 = lee(sc, 'V0', 'la tensión inicial del condensador', { opcional: true, signo: true }) ?? 0, I0 = lee(sc, 'I0', 'la corriente inicial', { opcional: true, signo: true }) ?? 0;
     if (V === V0 && I0 === 0) throw new Error('Con el condensador ya a la tensión de la fuente y sin corriente no hay transitorio');
-    const a = R / (2 * L), w0 = 1 / Math.sqrt(L * C), Rc = 2 * Math.sqrt(L / C), A0 = V0 - V, D0 = I0 / C, pasos = [];
-    const rel = (a - w0) / w0, tipo = Math.abs(rel) < 1e-9 ? 'critico' : a > w0 ? 'sobre' : 'sub';
+    const a = R / (2 * L), w0 = 1 / Math.sqrt(L * C), Rc = 2 * Math.sqrt(L / C), D0 = I0 / C, pasos = [];
     pasos.push({ t: 'Ecuación', html: `Por la ley de las mallas, V = R i + L di/dt + V<sub>C</sub> con i = C dV<sub>C</sub>/dt: L C V<sub>C</sub>″ + R C V<sub>C</sub>′ + V<sub>C</sub> = V. La ecuación característica es s<sup>2</sup> + (R/L) s + 1/(LC) = 0, con α = R/(2L) = <b>${f(a)} s<sup>−1</sup></b> y ω<sub>0</sub> = 1/√(LC) = <b>${f(w0)} rad/s</b>.` });
-    let Vc, dV, txt, s1 = null, s2 = null, wd = null, A, B;
-    if (tipo === 'sub') {
-      wd = Math.sqrt(w0 * w0 - a * a); A = A0; B = (D0 + a * A) / wd;
-      Vc = (t) => V + Math.exp(-a * t) * (A * Math.cos(wd * t) + B * Math.sin(wd * t));
-      dV = (t) => Math.exp(-a * t) * ((-a * A + wd * B) * Math.cos(wd * t) + (-a * B - wd * A) * Math.sin(wd * t));
-      txt = `${V ? `${f(V)} + ` : ''}e<sup>−${f(a)}t</sup>·(${f(A)} cos ${f(wd)}t ${sgn(B)} ${f(Math.abs(B))} sen ${f(wd)}t)`;
-      pasos.push({ t: 'Subamortiguado', html: `α &lt; ω<sub>0</sub> (R = ${u(R, 'Ω')} es menor que la resistencia crítica 2√(L/C) = ${u(Rc, 'Ω')}): raíces complejas s = −α ± jω<sub>d</sub>, con ω<sub>d</sub> = √(ω<sub>0</sub><sup>2</sup> − α<sup>2</sup>) = <b>${f(wd)} rad/s</b>. La tensión oscila con periodo 2π/ω<sub>d</sub> = ${u((2 * Math.PI) / wd, 's')} mientras se amortigua.` });
-    } else if (tipo === 'critico') {
-      A = A0; B = D0 + a * A;
-      Vc = (t) => V + (A + B * t) * Math.exp(-a * t);
-      dV = (t) => (B - a * (A + B * t)) * Math.exp(-a * t);
-      txt = `${V ? `${f(V)} + ` : ''}(${f(A)} ${sgn(B)} ${f(Math.abs(B))} t)·e<sup>−${f(a)}t</sup>`;
-      pasos.push({ t: 'Amortiguamiento crítico', html: `α = ω<sub>0</sub> (R = 2√(L/C) = ${u(Rc, 'Ω')}): raíz doble s = −α. Es el caso que llega antes al final sin oscilar.` });
-    } else {
-      const r = Math.sqrt(a * a - w0 * w0); s1 = -a + r; s2 = -a - r; A = (D0 - s2 * A0) / (s1 - s2); B = A0 - A;
-      Vc = (t) => V + A * Math.exp(s1 * t) + B * Math.exp(s2 * t);
-      dV = (t) => A * s1 * Math.exp(s1 * t) + B * s2 * Math.exp(s2 * t);
-      txt = `${V ? `${f(V)} ` : ''}${V ? sgn(A) + ' ' : A < 0 ? '−' : ''}${f(Math.abs(A))}·e<sup>${f(s1)}t</sup> ${sgn(B)} ${f(Math.abs(B))}·e<sup>${f(s2)}t</sup>`;
-      pasos.push({ t: 'Sobreamortiguado', html: `α > ω<sub>0</sub> (R = ${u(R, 'Ω')} es mayor que la resistencia crítica 2√(L/C) = ${u(Rc, 'Ω')}): dos raíces reales s = −α ± √(α<sup>2</sup> − ω<sub>0</sub><sup>2</sup>) = <b>${f(s1)}</b> y <b>${f(s2)} s<sup>−1</sup></b>. Llega al final sin oscilar, despacio.` });
-    }
-    pasos.push({ t: 'Condiciones iniciales', html: `V<sub>C</sub>(0) = ${f(V0)} V y V<sub>C</sub>′(0) = i(0)/C = ${f(D0)} V/s (la tensión del condensador y la corriente de la bobina no pueden saltar). De ahí las constantes: <b>V<sub>C</sub>(t) = ${txt} V</b>` });
-    const I = (t) => C * dV(t), Q = w0 * L / (R || 1e-300);
-    pasos.push({ t: 'Corriente', html: `i(t) = C dV<sub>C</sub>/dt. Al final, V<sub>C</sub> → ${f(V)} V e i → 0. Factor de calidad Q = ω<sub>0</sub>L/R = ${R ? f(Q) : '∞'}${R ? '' : ': sin resistencia la oscilación no se amortigua nunca'}.` });
+    const s = segundo(a, w0, V, V0, D0), Vc = s.X;
+    pasos.push(pasoTipo(s, a, w0, R, Rc, true));
+    pasos.push({ t: 'Condiciones iniciales', html: `V<sub>C</sub>(0) = ${f(V0)} V y V<sub>C</sub>′(0) = i(0)/C = ${f(D0)} V/s (la tensión del condensador y la corriente de la bobina no pueden saltar). De ahí las constantes: <b>V<sub>C</sub>(t) = ${s.txt} V</b>` });
+    const I = (t) => C * s.dX(t), Q = w0 * L / (R || 1e-300);
+    pasos.push({ t: 'Corriente', html: `i(t) = C dV<sub>C</sub>/dt. Al final, V<sub>C</sub> → ${f(V)} V e i → 0. Factor de calidad Q = ω<sub>0</sub>L/R = ${R ? f(Q) : '∞'}${R ? '' : ': sin resistencia la oscilación no se amortigua nunca'}.${s.pico ? ` El primer pico de V<sub>C</sub> llega en t = ${u(s.pico.t, 's')} con ${f(s.pico.V)} V (sobreoscilación del ${f(s.pico.sobre, 3)} %).` : ''}` });
     const t = lee(sc, 't', 'el instante t', { opcional: true, cero: true });
     if (t !== null) pasos.push({ t: `En t = ${u(t, 's')}`, html: `V<sub>C</sub> = <b>${f(Vc(t))} V</b>, i = <b>${u(I(t), 'A')}</b>` });
-    // cuánto dibujar: unas cuantas constantes de tiempo del término más lento
-    const lento = tipo === 'sobre' ? -1 / s1 : 1 / (a || w0 / 20), T = tipo === 'sub' ? Math.min(5 * lento, 12 * (2 * Math.PI) / wd) : 6 * lento;
-    let pico = null;
-    if (tipo === 'sub' && V !== V0) {
-      // primer extremo de V_C: dV = e^(−αt)(P cos ω_d t + Q sen ω_d t) se anula en ω_d t = δ + π/2 + kπ (con i(0) = 0 es π/ω_d)
-      const P = -a * A + wd * B, Qs = -a * B - wd * A, d = Math.atan2(Qs, P), per = Math.PI / wd;
-      let tp = (d + Math.PI / 2) / wd; tp -= Math.floor(tp / per) * per; if (tp < 1e-9 * per) tp += per;
-      pico = { t: tp, V: Vc(tp), sobre: Math.abs((Vc(tp) - V) / (V0 - V)) * 100 };
+    const Vo = lee(sc, 'Vobj', 'la tensión que se quiere alcanzar', { opcional: true, signo: true });
+    let tObj = null;
+    if (Vo !== null) {
+      tObj = hasta(Vc, Vo, s.T);
+      if (tObj === null) throw new Error(`La tensión del condensador no llega a ${f(Vo)} V`);
+      pasos.push({ t: `Tiempo hasta V<sub>C</sub> = ${f(Vo)} V`, html: `La ecuación ${f(Vo)} = ${s.txt} no se despeja a mano${s.tipo === 'sub' ? ' (mezcla exponenciales y senos)' : ''}: se busca numéricamente la primera vez que se cumple, <b>t = ${u(tObj, 's')}</b>.` });
     }
-    return { modo: 'rlc', V, R, L, C, V0, I0, a, w0, wd, s1, s2, Rc, tipo, Vc, I, txt, t, Vct: t !== null ? Vc(t) : null, It: t !== null ? I(t) : null, Q: R ? Q : Infinity, T, pico, pasos };
+    return { modo: 'rlc', V, R, L, C, V0, I0, a, w0, wd: s.wd, s1: s.s1, s2: s.s2, Rc, tipo: s.tipo, Vc, I, txt: s.txt, t, Vct: t !== null ? Vc(t) : null, It: t !== null ? I(t) : null, Q: R ? Q : Infinity, T: s.T, pico: s.pico, Vo, tObj, pasos };
+  }
+
+  /* ---------- RLC en paralelo con una fuente de corriente ---------- */
+  // sc: { I (escalón de corriente; 0 = respuesta libre), R (vacía = sin resistencia), L (mH), C (μF), V0 (tensión común en t = 0), I0 (corriente de la bobina en t = 0), t, Iobj }
+  function rlcp(sc) {
+    const Ig = lee(sc, 'I', 'la corriente de la fuente', { cero: true, signo: true }), R = lee(sc, 'R', 'la resistencia', { opcional: true }), L = lee(sc, 'L', 'la inductancia', { base: 1e-3 }), C = lee(sc, 'C', 'la capacidad', { base: 1e-6 });
+    const V0 = lee(sc, 'V0', 'la tensión inicial del condensador', { opcional: true, signo: true }) ?? 0, I0 = lee(sc, 'I0', 'la corriente inicial de la bobina', { opcional: true, signo: true }) ?? 0;
+    if (Ig === I0 && V0 === 0) throw new Error('Con la bobina ya llevando la corriente de la fuente y el condensador descargado no hay transitorio');
+    const a = R === null ? 0 : 1 / (2 * R * C), w0 = 1 / Math.sqrt(L * C), Rc = 0.5 * Math.sqrt(L / C), pasos = [];
+    pasos.push({ t: 'Ecuación', html: `Los tres elementos comparten la tensión v = L di<sub>L</sub>/dt, y la fuente reparte su corriente: I = v/R + i<sub>L</sub> + C dv/dt. Con i<sub>L</sub> como incógnita: L C i<sub>L</sub>″ + (L/R) i<sub>L</sub>′ + i<sub>L</sub> = I. La ecuación característica es s<sup>2</sup> + s/(RC) + 1/(LC) = 0, con α = 1/(2RC) = <b>${f(a)} s<sup>−1</sup></b> y ω<sub>0</sub> = 1/√(LC) = <b>${f(w0)} rad/s</b>.${R === null ? ' Sin resistencia, α = 0.' : ''}` });
+    const s = segundo(a, w0, Ig, I0, V0 / L), IL = s.X, v = (t) => L * s.dX(t);
+    pasos.push(pasoTipo(s, a, w0, R === null ? Infinity : R, Rc, false));
+    pasos.push({ t: 'Condiciones iniciales', html: `i<sub>L</sub>(0) = ${u(I0, 'A')} e i<sub>L</sub>′(0) = v(0)/L = ${f(V0 / L)} A/s (la corriente de la bobina y la tensión del condensador no pueden saltar). De ahí: <b>i<sub>L</sub>(t) = ${s.txt} A</b>` });
+    pasos.push({ t: 'Tensión', html: `v(t) = L di<sub>L</sub>/dt. Al final, i<sub>L</sub> → ${u(Ig, 'A')} (toda la corriente va por la bobina, que es un cable en continua) y v → 0. Factor de calidad Q = R/(ω<sub>0</sub>L) = ${R === null ? '∞' : f(R / (w0 * L))}.` });
+    const t = lee(sc, 't', 'el instante t', { opcional: true, cero: true });
+    if (t !== null) pasos.push({ t: `En t = ${u(t, 's')}`, html: `i<sub>L</sub> = <b>${u(IL(t), 'A')}</b>, v = <b>${f(v(t))} V</b>` });
+    const Io = lee(sc, 'Iobj', 'la corriente que se quiere alcanzar', { opcional: true, signo: true });
+    let tObj = null;
+    if (Io !== null) {
+      tObj = hasta(IL, Io, s.T);
+      if (tObj === null) throw new Error(`La corriente de la bobina no llega a ${f(Io)} A`);
+      pasos.push({ t: `Tiempo hasta i<sub>L</sub> = ${f(Io)} A`, html: `Se busca numéricamente la primera vez que ${s.txt} = ${f(Io)}: <b>t = ${u(tObj, 's')}</b>.` });
+    }
+    return { modo: 'rlcp', I: IL, Ig, R, L, C, V0, I0, a, w0, wd: s.wd, s1: s.s1, s2: s.s2, Rc, tipo: s.tipo, v, txt: s.txt, t, ILt: t !== null ? IL(t) : null, vt: t !== null ? v(t) : null, T: s.T, pico: s.pico, Io, tObj, pasos };
+  }
+
+  /* ---------- Primer orden cualquiera: método de los tres valores ---------- */
+  // sc: { elementos: [{ t: 'R'|'V'|'I'|'C'|'L', a, b, v, cuando: 'siempre'|'antes'|'despues' }], x0 (opcional), t, obj }
+  // Un solo condensador o una sola bobina; el interruptor se acciona en t = 0. Se resuelve con Continua (circuitos/fisica.js).
+  function componente(els, n) {
+    const dentro = new Set([n]); let cambia = true;
+    while (cambia) { cambia = false; for (const e of els) if (dentro.has(e.a) !== dentro.has(e.b)) { dentro.add(e.a); dentro.add(e.b); cambia = true; } }
+    return els.filter((e) => dentro.has(e.a));
+  }
+  function primer(sc) {
+    const crudos = (sc.elementos || []).map((e, i) => ({ ...e, i, a: String(e.a ?? '').trim(), b: String(e.b ?? '').trim() }));
+    if (!crudos.length) throw new Error('Añade los elementos del circuito');
+    const nom = Continua.nombres(crudos), alm = crudos.filter((e) => e.t === 'C' || e.t === 'L');
+    if (alm.length !== 1) throw new Error('El circuito tiene que tener un solo condensador o una sola bobina (si no, no es de primer orden)');
+    const S = alm[0], esC = S.t === 'C', nS = nom[S.i];
+    if ((S.cuando || 'siempre') !== 'siempre') throw new Error(`${nS} tiene que estar siempre conectado`);
+    const val = Herramienta.leeSI(S.v, esC ? 1e-6 : 1e-3);
+    if (!(val > 0)) throw new Error(`${nS}: ${esC ? 'la capacidad' : 'la inductancia'} debe ser un número mayor que 0`);
+    const quita = (lista) => lista.map(({ i, cuando, ...e }) => e);
+    // resuelve en continua la parte del circuito unida al elemento y devuelve su tensión (C) o su corriente (L)
+    const estable = (lista, cuando) => {
+      const parte = componente(lista, S.a), k = parte.indexOf(S);
+      if (!parte.some((e) => e.t === 'V' || e.t === 'I')) return { x: 0, nota: 'no hay fuentes, así que todo está a 0' };
+      let sol;
+      try { sol = Continua.resolver({ elementos: quita(parte), carga: '' }); } catch (e) { throw new Error(`${cuando}: ${e.message}`); }
+      return { x: esC ? sol.els[k].U : sol.els[k].I, sol };
+    };
+    const antes = crudos.filter((e) => (e.cuando || 'siempre') !== 'despues'), despues = crudos.filter((e) => (e.cuando || 'siempre') !== 'antes');
+    const xu = esC ? 'V' : 'A', xn = esC ? `V<sub>${nS}</sub>` : `i<sub>${nS}</sub>`, que = esC ? `la tensión de ${nS} (de ${S.a} a ${S.b})` : `la corriente de ${nS} (de ${S.a} a ${S.b})`;
+    const pasos = [], dado = lee(sc, 'x0', 'el valor inicial', { opcional: true, signo: true });
+    const lista = (ls) => ls.map((e) => nom[e.i]).join(', ');
+    let x0;
+    if (dado !== null) { x0 = dado; pasos.push({ t: 'Antes de t = 0', html: `Se da el valor inicial: ${xn}(0<sup>−</sup>) = <b>${f(x0)} ${xu}</b>` }); }
+    else { const r = estable(antes, 'Antes de t = 0'); x0 = r.x; pasos.push({ t: 'Antes de t = 0: régimen permanente', html: `Con ${lista(antes)}, en continua ${esC ? 'el condensador es un circuito abierto' : 'la bobina es un cortocircuito'}${r.nota ? `; ${r.nota}` : ''}. Resolviendo el circuito: ${xn}(0<sup>−</sup>) = <b>${f(x0)} ${xu}</b>` }); }
+    pasos.push({ t: 'Justo después de t = 0', html: `${esC ? 'La tensión de un condensador' : 'La corriente de una bobina'} no puede saltar: ${xn}(0<sup>+</sup>) = ${xn}(0<sup>−</sup>) = <b>${f(x0)} ${xu}</b>` });
+    const fin = estable(despues, 'Después de t = 0'), xf = fin.x;
+    pasos.push({ t: 'Cuando t → ∞: régimen permanente', html: `Con ${lista(despues)} y ${esC ? 'el condensador abierto' : 'la bobina en cortocircuito'}${fin.nota ? `; ${fin.nota}` : ''}: ${xn}(∞) = <b>${f(xf)} ${xu}</b>` });
+    const resto = componente(despues.filter((e) => e !== S), S.a);
+    if (!resto.some((e) => e.a === S.b || e.b === S.b)) throw new Error(`Después de t = 0 no hay ningún camino entre ${S.a} y ${S.b} aparte de ${nS}: no se puede ${esC ? 'cargar ni descargar' : 'cargar ni descargar'}`);
+    let th;
+    try { th = Continua.resolver({ elementos: quita(resto), carga: 'nudos', thA: S.a, thB: S.b }).thev; } catch (e) { throw new Error(`Para la resistencia de Thévenin: ${e.message}`); }
+    const Rth = th.Rth;
+    if (!(Rth > 0)) throw new Error(`La resistencia que ve ${nS} sale ${f(Rth)} Ω: tiene que ser positiva para que haya un transitorio`);
+    const tau = esC ? Rth * val : val / Rth;
+    pasos.push({ t: `Constante de tiempo: la resistencia que ve ${nS}`, html: `Se quita ${nS}, se apagan las fuentes del circuito de después (tensión → cortocircuito, corriente → abierto) y la resistencia entre ${S.a} y ${S.b} es R<sub>th</sub> = <b>${f(Rth)} Ω</b>, así que τ = ${esC ? 'R<sub>th</sub>·C' : 'L/R<sub>th</sub>'} = <b>${u(tau, 's')}</b>` });
+    if (Math.abs(x0 - xf) < 1e-12 * Math.max(1, Math.abs(xf))) throw new Error(`${que[0].toUpperCase() + que.slice(1)} ya vale lo mismo antes y después: no hay transitorio`);
+    const X = (t) => xf + (x0 - xf) * Math.exp(-t / tau), dX = (t) => (-(x0 - xf) / tau) * Math.exp(-t / tau), otra = (t) => val * dX(t);
+    const xTxt = xf ? `${f(xf)} ${sgn(x0 - xf)} ${f(Math.abs(x0 - xf))}·${ex(tau)}` : `${f(x0)}·${ex(tau)}`;
+    pasos.push({ t: 'Método de los tres valores', html: `x(t) = x(∞) + [x(0<sup>+</sup>) − x(∞)]·e<sup>−t/τ</sup> ⇒ <b>${xn}(t) = ${xTxt} ${xu}</b><br>${esC ? `Corriente del condensador: i = C dV/dt = <b>${f(val * (-(x0 - xf) / tau))}·${ex(tau)} A</b>` : `Tensión de la bobina: v = L di/dt = <b>${f(val * (-(x0 - xf) / tau))}·${ex(tau)} V</b>`}` });
+    const t = lee(sc, 't', 'el instante t', { opcional: true, cero: true });
+    if (t !== null) pasos.push({ t: `En t = ${u(t, 's')}`, html: `${xn} = <b>${f(X(t))} ${xu}</b>, ${esC ? `i = ${u(otra(t), 'A')}` : `v = ${f(otra(t))} V`}` });
+    const ob = lee(sc, 'obj', 'el valor que se quiere alcanzar', { opcional: true, signo: true });
+    let tObj = null;
+    if (ob !== null) {
+      const fr = (ob - xf) / (x0 - xf);
+      if (!(fr > 0 && fr <= 1)) throw new Error(`${que[0].toUpperCase() + que.slice(1)} no llega a ${f(ob)} ${xu}: va de ${f(x0)} a ${f(xf)}`);
+      tObj = -tau * Math.log(fr);
+      pasos.push({ t: `Tiempo hasta ${f(ob)} ${xu}`, html: `e<sup>−t/τ</sup> = ${f(fr)} ⇒ t = −τ ln ${f(fr)} = <b>${u(tObj, 's')}</b>` });
+    }
+    // para dibujar: el equivalente de Thévenin que ve el elemento después de t = 0
+    const comun = { modo: 'primer', nombre: nS, esC, x0, xf, Rth, tau, t, tObj, T: 5 * tau, pasos, xTxt, R: Rth };
+    if (esC) return { ...comun, base: 'rc', carga: true, V: xf, V0: x0, C: val, Vc: X, I: otra, VcTxt: xTxt, Vct: t !== null ? X(t) : null, It: t !== null ? otra(t) : null, Vo: ob, I0: otra(0), Ef: 0.5 * val * xf * xf };
+    return { ...comun, base: 'rl', sube: true, V: xf * Rth, L: val, I: X, VL: otra, Inf: xf, I0: x0, ITxt: xTxt, It: t !== null ? X(t) : null, VLt: t !== null ? otra(t) : null, Io: ob, E: 0.5 * val * xf * xf };
   }
 
   function resolver(sc) {
     if (sc.modo === 'rl') return rl(sc);
     if (sc.modo === 'rlc') return rlc(sc);
+    if (sc.modo === 'rlcp') return rlcp(sc);
+    if (sc.modo === 'primer') return primer(sc);
+    if (sc.proceso === 'conmuta') return rcConmuta(sc);
     return rc(sc);
   }
 
@@ -822,54 +1362,108 @@ const Transitorios = (() => {
     { clave: 'rlc-critico', nombre: 'RLC con amortiguamiento crítico', sc: { modo: 'rlc', V: '10', R: '200', L: '100', C: '10', V0: '', I0: '', t: '' } },
     { clave: 'rlc-sobre', nombre: 'RLC sobreamortiguado', sc: { modo: 'rlc', V: '10', R: '1000', L: '100', C: '10', V0: '', I0: '', t: '' } },
     { clave: 'lc', nombre: 'Condensador cargado que se descarga en una bobina', sc: { modo: 'rlc', V: '0', R: '5', L: '50', C: '20', V0: '20', I0: '', t: '0,001' } },
+    { clave: 'rc-conmuta', nombre: 'Se carga por R y se descarga por otra R₂', sc: { modo: 'rc', proceso: 'conmuta', V: '12', V0: '', R: '1000', R2: '4700', C: '100', t1: '0,2', t: '' } },
+    { clave: 'rl-chispa', nombre: 'Pico de tensión al abrir el interruptor de una bobina', sc: { modo: 'rl', proceso: 'conmuta', V: '12', R: '6', R2: '1000', L: '300', t1: '0,2', t: '' } },
+    { clave: 'rl-i0', nombre: 'Bobina que ya llevaba corriente', sc: { modo: 'rl', proceso: 'subida', V: '12', R: '6', L: '300', I0: '0,5', t: '', Iobj: '1,5' } },
+    { clave: 'rlc-tiempo', nombre: 'RLC: cuándo llega el condensador a 12 V', sc: { modo: 'rlc', V: '10', R: '20', L: '100', C: '10', V0: '', I0: '', t: '', Vobj: '12' } },
+    { clave: 'rlcp-sub', nombre: 'RLC en paralelo con una fuente de corriente', sc: { modo: 'rlcp', I: '1', R: '200', L: '100', C: '10', V0: '', I0: '', t: '', Iobj: '' } },
+    { clave: 'rlcp-sobre', nombre: 'RLC en paralelo sobreamortiguado', sc: { modo: 'rlcp', I: '0,5', R: '20', L: '100', C: '10', V0: '', I0: '', t: '', Iobj: '' } },
+    { clave: 'primer-rc', nombre: 'Interruptor que conecta una segunda resistencia (RC)', sc: { modo: 'primer', elementos: [{ t: 'V', a: 'a', b: '0', v: '12', cuando: 'siempre' }, { t: 'R', a: 'a', b: 'b', v: '4k', cuando: 'siempre' }, { t: 'C', a: 'b', b: '0', v: '100', cuando: 'siempre' }, { t: 'R', a: 'b', b: '0', v: '4k', cuando: 'despues' }], x0: '', t: '', obj: '' } },
+    { clave: 'primer-rl', nombre: 'Se desconecta la fuente de una bobina (RL)', sc: { modo: 'primer', elementos: [{ t: 'V', a: 'a', b: '0', v: '10', cuando: 'antes' }, { t: 'R', a: 'a', b: '0', v: '10', cuando: 'siempre' }, { t: 'R', a: 'a', b: 'b', v: '2', cuando: 'siempre' }, { t: 'L', a: 'b', b: '0', v: '100', cuando: 'siempre' }], x0: '', t: '', obj: '' } },
   ];
 
-  return { resolver, rc, rl, rlc, ejemplos, f, u };
+  return { resolver, rc, rl, rlc, rlcp, primer, ejemplos, f, u };
 })();
 
 /* =====================================================================
-   Transitorios: interfaz (RC, RL y RLC en serie; esquema del circuito
-   con la corriente que circula y la carga del condensador, gráfica de la
-   tensión y la corriente frente al tiempo con un cursor que avanza, y el
-   desarrollo). El cálculo está en transitorios/fisica.js (Transitorios).
+   Transitorios: interfaz (RC, RL, RLC en serie y en paralelo, y un
+   circuito cualquiera de primer orden escrito como lista de elementos;
+   esquema del circuito con la corriente que circula y la carga del
+   condensador, gráfica de la tensión y la corriente frente al tiempo con
+   un cursor que avanza o que se lleva con el ratón, y el desarrollo).
+   El cálculo está en transitorios/fisica.js (Transitorios); el circuito
+   cualquiera se resuelve con circuitos/fisica.js (Continua).
    ===================================================================== */
 (() => {
   const { $, esc, copia, txt } = Herramienta;
   const T = Transitorios, f = T.f, u = T.u, CLAVE = 'transitorios-v1';
-  const MODOS = [['rc', 'Circuito RC (condensador)'], ['rl', 'Circuito RL (bobina)'], ['rlc', 'Circuito RLC en serie']];
+  const MODOS = [['rc', 'Circuito RC (condensador)'], ['rl', 'Circuito RL (bobina)'], ['rlc', 'Circuito RLC en serie'], ['rlcp', 'Circuito RLC en paralelo'], ['primer', 'Circuito cualquiera de primer orden']];
+  const UN = { R: 'Ω', V: 'V', I: 'A', C: 'μF', L: 'mH' }, VALOR = { R: '1k', V: '10', I: '1', C: '100', L: '100' }, MAX = 12;
+  const NOMBRE = { R: 'Resistencia', V: 'Fuente de tensión', I: 'Fuente de corriente', C: 'Condensador', L: 'Bobina' };
+  const CUANDO = [['siempre', 'Siempre'], ['antes', 'Antes'], ['despues', 'Después']];
 
   let sc = copia(T.ejemplos[0].sc);
   try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && MODOS.some(([k]) => k === g.modo)) sc = g; } catch (e) { /* sin almacenamiento */ }
   const guarda = () => { try { localStorage.setItem(CLAVE, JSON.stringify(sc)); } catch (e) { /* sin almacenamiento */ } };
-  let sol = null, col = {}, anda = true, tA = 0;
+  let sol = null, col = {}, anda = true, tA = 0, tFijo = null, fijo = false, ejeX = null;
+  const md = () => sol.base || sol.modo;
 
   /* ---------- Formulario ---------- */
   const fila = (k, nom, un) => `<label for="f-${k}">${nom}${un ? ` <small>${un}</small>` : ''}</label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc[k] ?? '')}" inputmode="decimal" autocomplete="off" spellcheck="false">`;
   const elige = (k, nom, lista) => `<label for="f-${k}">${nom}</label><select id="f-${k}" class="in" data-k="${k}">${lista.map(([v, t]) => `<option value="${v}"${String(sc[k]) === v ? ' selected' : ''}>${t}</option>`).join('')}</select>`;
   const sep = (t) => `<div class="sep">${t}</div>`;
   const NOTAS = {
-    rc: 'El interruptor se cierra en t = 0. En la descarga no hay fuente: el condensador se descarga a través de R. Se admite 4,7e-3, 4,7·10^-3 y prefijos como 4k7, 100n o 5m.',
-    rl: 'En la subida se conecta la fuente en t = 0; en la bajada se quita y la bobina, que llevaba V/R, se descarga a través de R.',
+    rc: 'El interruptor se cierra en t = 0. En la descarga no hay fuente: el condensador se descarga a través de R. Al conmutar, en t₁ se quita la fuente y se descarga por R₂. Se admite 4,7e-3, 4,7·10^-3 y prefijos como 4k7, 100n o 5m.',
+    rl: 'En la subida se conecta la fuente en t = 0; en la bajada se quita y la bobina, que llevaba V/R (o I₀), se descarga a través de R o de R₂. Al conmutar, sube hasta t₁ y entonces se abre el interruptor.',
     rlc: 'R, L y C en serie con una fuente que se conecta en t = 0 (pon 0 V para la respuesta libre). V₀ e I₀ son la tensión del condensador y la corriente al empezar.',
+    rlcp: 'Una fuente de corriente se conecta en t = 0 a R, L y C en paralelo (deja R vacía si no hay resistencia). V₀ es la tensión común al empezar e I₀, la corriente de la bobina.',
+    primer: 'Escribe el circuito como en Circuitos de continua: cada elemento va del nudo A al nudo B (en una fuente de tensión A es el +; en una de corriente, la corriente va de A a B) y 0 es la referencia. El interruptor actúa en t = 0: lo conectado «Antes» se desconecta y lo conectado «Después» se conecta. Un solo condensador o una sola bobina, siempre conectado.',
   };
+  function lista() {
+    const els = sc.elementos || [], nom = Continua.nombres(els);
+    const campo = (i, k, v, et, extra = '') => `<input class="in" data-i="${i}" data-k="${k}" value="${esc(v ?? '')}" aria-label="${nom[i]}: ${et}" autocomplete="off" spellcheck="false"${extra}>`;
+    return '<div class="lista ancho"><span></span><span class="cab">Nudo A</span><span class="cab">Nudo B</span><span class="cab">Valor</span><span class="cab">Conectado</span><span></span>' + els.map((e, i) => `<b title="${NOMBRE[e.t]}">${nom[i].replace(/^(\w)(\d+)$/, '$1<sub>$2</sub>')}</b>${campo(i, 'a', e.a, 'nudo A')}${campo(i, 'b', e.b, 'nudo B')}<span class="valor">${campo(i, 'v', e.v, `valor en ${UN[e.t]}`, ' inputmode="decimal"')}<small>${UN[e.t]}</small></span><select class="in" data-i="${i}" data-k="cuando" aria-label="${nom[i]}: cuándo está conectado">${CUANDO.map(([v, t]) => `<option value="${v}"${(e.cuando || 'siempre') === v ? ' selected' : ''}>${t}</option>`).join('')}</select><button class="x" type="button" data-quita="${i}" aria-label="Quitar ${nom[i]}">×</button>`).join('') + '</div>'
+      + `<div class="botones ancho">${Object.keys(UN).map((t) => `<button class="btn" type="button" data-add="${t}">+ ${NOMBRE[t]}</button>`).join('')}</div>`;
+  }
   function formulario() {
     let h = elige('modo', 'Circuito', MODOS);
+    const p = sc.proceso;
     if (sc.modo === 'rc') {
-      const carga = sc.proceso !== 'descarga';
-      h += elige('proceso', 'Proceso', [['carga', 'Carga (se conecta la fuente)'], ['descarga', 'Descarga (sin fuente)']]) + (carga ? fila('V', 'Tensión de la fuente V', 'V') : '') + fila('V0', carga ? 'Tensión inicial V₀ (opcional)' : 'Tensión inicial V₀', 'V') + fila('R', 'Resistencia R', 'Ω') + fila('C', 'Capacidad C', 'μF') + sep('Opcional') + fila('t', 'Instante t', 's') + fila('Vobj', 'Tiempo hasta que V<sub>C</sub> valga', 'V');
+      h += elige('proceso', 'Proceso', [['carga', 'Carga (se conecta la fuente)'], ['descarga', 'Descarga (sin fuente)'], ['conmuta', 'Carga y, en t₁, descarga por R₂']]);
+      if (p === 'conmuta') h += fila('V', 'Tensión de la fuente V', 'V') + fila('R', 'Resistencia de carga R', 'Ω') + fila('R2', 'Resistencia de descarga R₂', 'Ω') + fila('C', 'Capacidad C', 'μF') + fila('t1', 'Instante t₁ en que conmuta', 's') + sep('Opcional') + fila('V0', 'Tensión inicial V₀', 'V') + fila('t', 'Instante t', 's');
+      else { const carga = p !== 'descarga'; h += (carga ? fila('V', 'Tensión de la fuente V', 'V') : '') + fila('V0', carga ? 'Tensión inicial V₀ (opcional)' : 'Tensión inicial V₀', 'V') + fila('R', 'Resistencia R', 'Ω') + fila('C', 'Capacidad C', 'μF') + sep('Opcional') + fila('t', 'Instante t', 's') + fila('Vobj', 'Tiempo hasta que V<sub>C</sub> valga', 'V'); }
     } else if (sc.modo === 'rl') {
-      h += elige('proceso', 'Proceso', [['subida', 'Se conecta la fuente'], ['bajada', 'Se quita la fuente']]) + fila('V', 'Tensión de la fuente V', 'V') + fila('R', 'Resistencia R', 'Ω') + fila('L', 'Inductancia L', 'mH') + sep('Opcional') + fila('t', 'Instante t', 's') + fila('Iobj', 'Tiempo hasta que i valga', 'A');
-    } else h += fila('V', 'Tensión de la fuente V', 'V') + fila('R', 'Resistencia R', 'Ω') + fila('L', 'Inductancia L', 'mH') + fila('C', 'Capacidad C', 'μF') + sep('Opcional') + fila('V0', 'Tensión inicial del condensador V₀', 'V') + fila('I0', 'Corriente inicial I₀', 'A') + fila('t', 'Instante t', 's');
+      h += elige('proceso', 'Proceso', [['subida', 'Se conecta la fuente'], ['bajada', 'Se quita la fuente'], ['conmuta', 'Se conecta y, en t₁, se abre']]) + fila('V', 'Tensión de la fuente V', 'V') + fila('R', 'Resistencia R', 'Ω');
+      if (p === 'conmuta') h += fila('R2', 'Resistencia de descarga R₂', 'Ω') + fila('L', 'Inductancia L', 'mH') + fila('t1', 'Instante t₁ en que se abre', 's') + sep('Opcional') + fila('t', 'Instante t', 's');
+      else h += fila('L', 'Inductancia L', 'mH') + sep('Opcional') + (p === 'bajada' ? fila('R2', 'Descarga por R₂ (si no, por R)', 'Ω') : '') + fila('I0', p === 'bajada' ? 'Corriente inicial I₀ (si no, V/R)' : 'Corriente inicial I₀', 'A') + fila('t', 'Instante t', 's') + fila('Iobj', 'Tiempo hasta que i valga', 'A');
+    } else if (sc.modo === 'rlc') h += fila('V', 'Tensión de la fuente V', 'V') + fila('R', 'Resistencia R', 'Ω') + fila('L', 'Inductancia L', 'mH') + fila('C', 'Capacidad C', 'μF') + sep('Opcional') + fila('V0', 'Tensión inicial del condensador V₀', 'V') + fila('I0', 'Corriente inicial I₀', 'A') + fila('t', 'Instante t', 's') + fila('Vobj', 'Tiempo hasta que V<sub>C</sub> valga', 'V');
+    else if (sc.modo === 'rlcp') h += fila('I', 'Corriente de la fuente I', 'A') + fila('R', 'Resistencia R (vacía si no hay)', 'Ω') + fila('L', 'Inductancia L', 'mH') + fila('C', 'Capacidad C', 'μF') + sep('Opcional') + fila('V0', 'Tensión inicial V₀', 'V') + fila('I0', 'Corriente inicial de la bobina I₀', 'A') + fila('t', 'Instante t', 's') + fila('Iobj', 'Tiempo hasta que i<sub>L</sub> valga', 'A');
+    else h += lista() + sep('Opcional') + fila('x0', 'Valor inicial dado (V<sub>C</sub> o i<sub>L</sub>)', 'V o A') + fila('t', 'Instante t', 's') + fila('obj', 'Tiempo hasta que valga', 'V o A');
     $('#campos').innerHTML = h;
     $('#nota').textContent = NOTAS[sc.modo];
   }
   const cambia = () => { $('#ejemplos').value = ''; calcula(); };
-  $('#campos').addEventListener('input', (e) => { const t = e.target; if (t.tagName !== 'INPUT') return; sc[t.dataset.k] = t.value; cambia(); });
+  const ejemploDe = (pred) => copia(T.ejemplos.find((x) => pred(x.sc)).sc);
+  function anade(t) {
+    const els = sc.elementos || (sc.elementos = []);
+    if (els.length >= MAX) return;
+    const ult = els[els.length - 1];
+    els.push({ t, a: ult ? ult.b : 'a', b: '0', v: VALOR[t], cuando: 'siempre' });
+    formulario(); cambia();
+  }
+  $('#campos').addEventListener('input', (e) => {
+    const t = e.target; if (t.tagName !== 'INPUT') return;
+    if (t.dataset.i !== undefined) sc.elementos[+t.dataset.i][t.dataset.k] = t.value; else sc[t.dataset.k] = t.value;
+    cambia();
+  });
   $('#campos').addEventListener('change', (e) => {
     const t = e.target; if (t.tagName !== 'SELECT') return;
-    if (t.dataset.k === 'modo') sc = copia(T.ejemplos.find((x) => x.sc.modo === t.value).sc);
-    else { sc.proceso = t.value; if (t.value === 'descarga' && !sc.V0) sc.V0 = sc.V || '10'; if (t.value === 'carga' && !sc.V) sc.V = sc.V0 || '10'; if (t.value === 'descarga') sc.Vobj = ''; }
+    if (t.dataset.i !== undefined) { sc.elementos[+t.dataset.i].cuando = t.value; cambia(); return; }
+    if (t.dataset.k === 'modo') sc = ejemploDe((x) => x.modo === t.value);
+    else if (t.value === 'conmuta') sc = ejemploDe((x) => x.modo === sc.modo && x.proceso === 'conmuta');
+    else {
+      if (sc.proceso === 'conmuta') sc.t1 = '';
+      sc.proceso = t.value;
+      if (t.value === 'descarga' && !sc.V0) sc.V0 = sc.V || '10';
+      if (t.value === 'carga' && !sc.V) sc.V = sc.V0 || '10';
+      if (t.value === 'descarga') sc.Vobj = '';
+    }
     formulario(); cambia();
+  });
+  $('#campos').addEventListener('click', (e) => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.add) anade(b.dataset.add);
+    else if (b.dataset.quita !== undefined) { sc.elementos.splice(+b.dataset.quita, 1); formulario(); cambia(); }
   });
 
   /* ---------- Ejemplos ---------- */
@@ -887,43 +1481,80 @@ const Transitorios = (() => {
     const tipos = [
       () => { const R = de([100, 220, 470, 1000, 2200, 4700, 10000]), C = de([10, 22, 47, 100, 220, 470, 1000]), tau = (R * C) / 1e6; return { modo: 'rc', proceso: 'carga', V: String(de([5, 9, 10, 12, 24])), V0: '', R: String(R), C: String(C), t: c(+(tau * de([0.5, 1, 2, 3])).toPrecision(3)), Vobj: '' }; },
       () => { const R = de([100, 470, 1000, 2200, 10000]), C = de([10, 47, 100, 470, 1000]), V0 = de([6, 9, 12, 20]); return { modo: 'rc', proceso: 'descarga', V: '', V0: String(V0), R: String(R), C: String(C), t: '', Vobj: c(V0 / de([2, 3, 4])) }; },
+      () => { const R = de([1000, 2200, 4700]), C = de([10, 47, 100]), tau = (R * C) / 1e6; return { modo: 'rc', proceso: 'conmuta', V: String(de([5, 10, 12])), V0: '', R: String(R), R2: String(de([470, 1000, 10000])), C: String(C), t1: c(+(tau * de([1, 2, 3])).toPrecision(3)), t: '' }; },
       () => { const R = de([2, 5, 10, 20, 50]), L = de([10, 50, 100, 200, 500]), tau = L / 1000 / R; return { modo: 'rl', proceso: de(['subida', 'bajada']), V: String(de([6, 10, 12, 24])), R: String(R), L: String(L), t: c(+(tau * de([0.5, 1, 2])).toPrecision(3)), Iobj: '' }; },
-      () => ({ modo: 'rlc', V: String(de([5, 10, 12])), R: String(de([10, 20, 50, 200, 500, 1000])), L: String(de([10, 50, 100])), C: String(de([1, 10, 100])), V0: '', I0: '', t: '' }),
+      () => ({ modo: 'rlc', V: String(de([5, 10, 12])), R: String(de([10, 20, 50, 200, 500, 1000])), L: String(de([10, 50, 100])), C: String(de([1, 10, 100])), V0: '', I0: '', t: '', Vobj: '' }),
+      () => ({ modo: 'rlcp', I: c(de([0.5, 1, 2])), R: String(de([20, 50, 200, 500])), L: String(de([10, 100])), C: String(de([10, 100])), V0: '', I0: '', t: '', Iobj: '' }),
+      () => ({ modo: 'primer', elementos: [{ t: 'V', a: 'a', b: '0', v: String(de([6, 10, 12, 24])), cuando: 'siempre' }, { t: 'R', a: 'a', b: 'b', v: de(['1k', '2k', '4k7', '10k']), cuando: 'siempre' }, { t: 'C', a: 'b', b: '0', v: String(de([10, 47, 100])), cuando: 'siempre' }, { t: 'R', a: 'b', b: '0', v: de(['1k', '3k', '10k']), cuando: de(['antes', 'despues']) }], x0: '', t: '', obj: '' }),
     ];
     sc = de(tipos)();
     formulario(); calcula(); sel.value = '';
   }
   const enunciado = () => {
+    if (sc.modo === 'rc' && sc.proceso === 'conmuta') return `Un condensador de ${esc(sc.C)} μF${sc.V0 ? ` a ${esc(sc.V0)} V` : ' descargado'} se carga con una fuente de ${esc(sc.V)} V a través de ${esc(sc.R)} Ω. En t₁ = ${esc(sc.t1)} s se quita la fuente y se descarga por ${esc(sc.R2)} Ω. Calcula la tensión en t₁ y V<sub>C</sub>(t) en los dos tramos.`;
     if (sc.modo === 'rc') return sc.proceso === 'descarga' ? `Un condensador de ${esc(sc.C)} μF cargado a ${esc(sc.V0)} V se descarga por una resistencia de ${esc(sc.R)} Ω. Calcula la constante de tiempo${sc.Vobj ? ` y cuánto tarda en bajar a ${esc(sc.Vobj)} V` : ''}${sc.t ? ` y la tensión a los ${esc(sc.t)} s` : ''}.` : `Se conecta un condensador de ${esc(sc.C)} μF${sc.V0 ? ` (a ${esc(sc.V0)} V)` : ' descargado'} a una fuente de ${esc(sc.V)} V a través de ${esc(sc.R)} Ω. Calcula τ, la corriente inicial${sc.t ? ` y la tensión y la corriente a los ${esc(sc.t)} s` : ''}${sc.Vobj ? ` y cuánto tarda en llegar a ${esc(sc.Vobj)} V` : ''}.`;
+    if (sc.modo === 'rl' && sc.proceso === 'conmuta') return `Una bobina de ${esc(sc.L)} mH en serie con ${esc(sc.R)} Ω se conecta a ${esc(sc.V)} V y en t₁ = ${esc(sc.t1)} s se abre el interruptor, de modo que se descarga por ${esc(sc.R2)} Ω. Calcula la corriente en t₁ y el pico de tensión de la bobina al abrir.`;
     if (sc.modo === 'rl') return `${sc.proceso === 'bajada' ? `Una bobina de ${esc(sc.L)} mH lleva la corriente que le da una fuente de ${esc(sc.V)} V con ${esc(sc.R)} Ω, y se quita la fuente` : `Se conecta una bobina de ${esc(sc.L)} mH en serie con ${esc(sc.R)} Ω a una fuente de ${esc(sc.V)} V`}. Calcula τ y la corriente final o inicial${sc.t ? `, y la corriente a los ${esc(sc.t)} s` : ''}${sc.Iobj ? `, y cuánto tarda en llegar a ${esc(sc.Iobj)} A` : ''}.`;
+    if (sc.modo === 'rlcp') return `Una fuente de corriente de ${esc(sc.I)} A se conecta en t = 0 a ${sc.R ? `una resistencia de ${esc(sc.R)} Ω, ` : ''}una bobina de ${esc(sc.L)} mH y un condensador de ${esc(sc.C)} μF en paralelo. ¿Es sobreamortiguado, crítico o subamortiguado? Calcula α, ω₀ y la corriente de la bobina.`;
+    if (sc.modo === 'primer') {
+      const els = sc.elementos || [], nom = Continua.nombres(els), q = { antes: ' (solo antes de t = 0)', despues: ' (solo después de t = 0)' };
+      return `En el circuito con ${els.map((e, i) => `${nom[i]} = ${esc(e.v)} ${UN[e.t]} entre ${esc(e.a)} y ${esc(e.b)}${q[e.cuando] || ''}`).join(', ')}, el interruptor actúa en t = 0. Calcula el valor inicial y el final, la constante de tiempo y la expresión frente al tiempo.`;
+    }
     return `Un circuito RLC en serie con R = ${esc(sc.R)} Ω, L = ${esc(sc.L)} mH y C = ${esc(sc.C)} μF se conecta a ${esc(sc.V)} V. ¿Es sobreamortiguado, crítico o subamortiguado? Calcula α, ω₀ y la tensión del condensador.`;
   };
 
   /* ---------- Cálculo ---------- */
   const dato = (t, v, cl = '') => `<div${cl ? ` class="${cl}"` : ''}><span>${t}</span>${v}</div>`;
   const TIPOS = { sub: 'subamortiguado', critico: 'amortiguamiento crítico', sobre: 'sobreamortiguado' };
+  const segundoOrden = () => dato('Tipo', `<b>${TIPOS[sol.tipo]}</b>`) + dato('α', `${f(sol.a)} s<sup>−1</sup>`) + dato('ω<sub>0</sub>', `${f(sol.w0)} rad/s`) + (sol.wd !== null ? dato('ω<sub>d</sub>', `${f(sol.wd)} rad/s`) : '') + dato('Resistencia crítica', `${u(sol.Rc, 'Ω')}`);
+  const hasta = (v, un) => (sol.tObj !== null ? dato(`Tiempo hasta ${f(v)} ${un}`, `t = <b>${u(sol.tObj, 's')}</b>`) : '');
   function calcula() {
     const err = $('#error');
-    try { sol = T.resolver(sc); } catch (e) { sol = null; err.textContent = e.message; err.hidden = false; $('#res').innerHTML = ''; $('#pasos').innerHTML = ''; $('#leyenda').textContent = ''; dibuja(); return; }
+    tFijo = null; fijo = false;
+    try { sol = T.resolver(sc); } catch (e) { sol = null; err.textContent = e.message; err.hidden = false; $('#res').innerHTML = ''; $('#pasos').innerHTML = ''; $('#leyenda').textContent = ''; lectura(); guarda(); dibuja(); return; }
     err.hidden = true; guarda(); tA = 0;
     let h = '';
-    if (sol.modo === 'rc') {
+    const enT = (n, v) => dato(`${n} en t = ${u(sol.t, 's')}`, v);
+    if (sol.modo === 'primer') {
+      const xu = sol.esC ? 'V' : 'A', xn = sol.esC ? `V<sub>${sol.nombre}</sub>` : `i<sub>${sol.nombre}</sub>`;
+      h = dato('Valor inicial', `${xn}(0<sup>+</sup>) = <b>${f(sol.x0)} ${xu}</b>`) + dato('Valor final', `${xn}(∞) = <b>${f(sol.xf)} ${xu}</b>`) + dato(`Resistencia que ve ${sol.nombre}`, `R<sub>th</sub> = ${u(sol.Rth, 'Ω')}`) + dato('Constante de tiempo', `τ = <b>${u(sol.tau, 's')}</b>`) + dato(sol.esC ? 'Tensión del condensador' : 'Corriente de la bobina', `${xn}(t) = <b>${sol.xTxt} ${xu}</b>`, 'ancho');
+      if (sol.t !== null) h += enT(xn, `<b>${f(sol.esC ? sol.Vct : sol.It)} ${xu}</b>`);
+      h += hasta(sol.esC ? sol.Vo : sol.Io, xu);
+    } else if (sol.modo === 'rc' && sol.conmuta) {
+      h = dato('Constantes de tiempo', `τ<sub>1</sub> = RC = <b>${u(sol.tau, 's')}</b>, τ<sub>2</sub> = R<sub>2</sub>C = <b>${u(sol.tau2, 's')}</b>`) + dato('Tensión en t₁', `V<sub>C</sub>(t<sub>1</sub>) = <b>${f(sol.V1)} V</b>`) + dato('Tensión del condensador', `V<sub>C</sub>(t) = <b>${sol.VcTxt} V</b>`, 'ancho');
+      if (sol.t !== null) h += enT('V<sub>C</sub>', `<b>${f(sol.Vct)} V</b>`) + enT('i', u(sol.It, 'A'));
+      h += dato('Energía en t₁', u(sol.Ef, 'J'));
+    } else if (sol.modo === 'rc') {
       h = dato('Constante de tiempo', `τ = RC = <b>${u(sol.tau, 's')}</b>`) + dato('Tensión del condensador', `V<sub>C</sub>(t) = <b>${sol.VcTxt} V</b>`, 'ancho') + dato('Corriente inicial', `i(0) = ${u(sol.I0, 'A')}`);
-      if (sol.t !== null) h += dato(`V<sub>C</sub> en t = ${u(sol.t, 's')}`, `<b>${f(sol.Vct)} V</b>`) + dato(`i en t = ${u(sol.t, 's')}`, `${u(sol.It, 'A')}`);
-      if (sol.tObj !== null) h += dato(`Tiempo hasta ${f(sol.Vo)} V`, `t = <b>${u(sol.tObj, 's')}</b>`);
-      h += dato('Energía final', `${u(sol.Ef, 'J')}`);
+      if (sol.t !== null) h += enT('V<sub>C</sub>', `<b>${f(sol.Vct)} V</b>`) + enT('i', u(sol.It, 'A'));
+      h += hasta(sol.Vo, 'V') + dato('Energía final', u(sol.Ef, 'J'));
+    } else if (sol.modo === 'rl' && sol.conmuta) {
+      h = dato('Constantes de tiempo', `τ<sub>1</sub> = L/R = <b>${u(sol.tau, 's')}</b>, τ<sub>2</sub> = L/R<sub>2</sub> = <b>${u(sol.tau2, 's')}</b>`) + dato('Corriente en t₁', `i(t<sub>1</sub>) = <b>${u(sol.I1, 'A')}</b>`) + dato('Tensión de la bobina al abrir', `V<sub>L</sub> = −i(t<sub>1</sub>)·R<sub>2</sub> = <b>${f(sol.pico)} V</b>`) + dato('Corriente', `i(t) = <b>${sol.ITxt} A</b>`, 'ancho');
+      if (sol.t !== null) h += enT('i', `<b>${u(sol.It, 'A')}</b>`) + enT('V<sub>L</sub>', `${f(sol.VLt)} V`);
+      h += dato('Energía en t₁', u(sol.E, 'J'));
     } else if (sol.modo === 'rl') {
-      h = dato('Constante de tiempo', `τ = L/R = <b>${u(sol.tau, 's')}</b>`) + dato('Corriente', `i(t) = <b>${sol.ITxt} A</b>`, 'ancho') + dato(sol.sube ? 'Corriente final' : 'Corriente inicial', `${u(sol.Inf, 'A')}`);
-      if (sol.t !== null) h += dato(`i en t = ${u(sol.t, 's')}`, `<b>${u(sol.It, 'A')}</b>`) + dato(`V<sub>L</sub> en t = ${u(sol.t, 's')}`, `${f(sol.VLt)} V`);
-      if (sol.tObj !== null) h += dato(`Tiempo hasta ${f(sol.Io)} A`, `t = <b>${u(sol.tObj, 's')}</b>`);
-      h += dato('Energía en la bobina', `${u(sol.E, 'J')}`);
+      const R2 = !sol.sube && sol.R2 !== sol.R;
+      h = dato('Constante de tiempo', `τ = L/R${R2 ? '<sub>2</sub>' : ''} = <b>${u(sol.tau, 's')}</b>`) + dato('Corriente', `i(t) = <b>${sol.ITxt} A</b>`, 'ancho') + dato(sol.sube ? 'Corriente final' : 'Corriente inicial', u(sol.sube ? sol.Inf : sol.I0, 'A'));
+      if (!sol.sube) h += dato('Tensión de la bobina al quitar la fuente', `${f(sol.VL(0))} V`);
+      if (sol.t !== null) h += enT('i', `<b>${u(sol.It, 'A')}</b>`) + enT('V<sub>L</sub>', `${f(sol.VLt)} V`);
+      h += hasta(sol.Io, 'A') + dato('Energía en la bobina', u(sol.E, 'J'));
+    } else if (sol.modo === 'rlcp') {
+      h = segundoOrden() + dato('Corriente de la bobina', `i<sub>L</sub>(t) = <b>${sol.txt} A</b>`, 'ancho');
+      if (sol.t !== null) h += enT('i<sub>L</sub>', `<b>${u(sol.ILt, 'A')}</b>`) + enT('v', `${f(sol.vt)} V`);
+      h += hasta(sol.Io, 'A');
     } else {
-      h = dato('Tipo', `<b>${TIPOS[sol.tipo]}</b>`) + dato('α', `${f(sol.a)} s<sup>−1</sup>`) + dato('ω<sub>0</sub>', `${f(sol.w0)} rad/s`) + (sol.wd !== null ? dato('ω<sub>d</sub>', `${f(sol.wd)} rad/s`) : '') + dato('Resistencia crítica', `${u(sol.Rc, 'Ω')}`) + dato('Tensión del condensador', `V<sub>C</sub>(t) = <b>${sol.txt} V</b>`, 'ancho');
-      if (sol.t !== null) h += dato(`V<sub>C</sub> en t = ${u(sol.t, 's')}`, `<b>${f(sol.Vct)} V</b>`) + dato(`i en t = ${u(sol.t, 's')}`, `${u(sol.It, 'A')}`);
+      h = segundoOrden() + dato('Tensión del condensador', `V<sub>C</sub>(t) = <b>${sol.txt} V</b>`, 'ancho');
+      if (sol.t !== null) h += enT('V<sub>C</sub>', `<b>${f(sol.Vct)} V</b>`) + enT('i', u(sol.It, 'A'));
+      h += hasta(sol.Vo, 'V');
     }
     $('#res').innerHTML = h;
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('');
-    $('#leyenda').innerHTML = sol.modo === 'rl' ? 'Arriba, el circuito: los puntos son la corriente. Abajo, i(t) en azul y V<sub>L</sub>(t) en rojo; la línea discontinua marca τ.' : `Arriba, el circuito: los puntos son la corriente y las cargas del condensador, su tensión. Abajo, V<sub>C</sub>(t) en rojo e i(t) en azul${sol.modo === 'rc' ? '; la línea discontinua marca τ' : ''}.`;
+    const marca = sol.t1 ? 'las discontinuas marcan τ y t₁' : 'la línea discontinua marca τ';
+    $('#leyenda').innerHTML = (sol.modo === 'rlcp' ? `Arriba, el circuito: los puntos son la corriente de cada rama. Abajo, la tensión común v(t) en rojo y la corriente de la bobina i<sub>L</sub>(t) en azul.`
+      : sol.modo === 'primer' ? `Arriba, el equivalente de Thévenin que ve ${sol.nombre} después de t = 0. Abajo, ${sol.esC ? `V<sub>${sol.nombre}</sub>(t) en rojo e i(t) en azul` : `i<sub>${sol.nombre}</sub>(t) en azul y v(t) en rojo`}; ${marca}.`
+      : md() === 'rl' ? `Arriba, el circuito: los puntos son la corriente. Abajo, i(t) en azul y V<sub>L</sub>(t) en rojo; ${marca}.`
+      : `Arriba, el circuito: los puntos son la corriente y las cargas del condensador, su tensión. Abajo, V<sub>C</sub>(t) en rojo e i(t) en azul${sol.modo === 'rc' ? `; ${marca}` : ''}.`) + ' Pasa el ratón (o el dedo) por la gráfica para leer los valores en cada instante; un clic lo deja fijo.';
+    lectura();
     dibuja();
   }
 
@@ -931,65 +1562,104 @@ const Transitorios = (() => {
   function colores() { const cs = getComputedStyle(document.documentElement); for (const c of ['--ink', '--muted', '--line', '--accent', '--accent-soft', '--panel', '--bg', '--v', '--i']) col[c] = cs.getPropertyValue(c).trim(); }
   const lienzo = (s) => Herramienta.lienzo(s);
   const DUR = 6, PAUSA = 1.2;
-  const tiempo = () => { const k = tA % (DUR + PAUSA); return Math.min(1, k / DUR) * sol.T; };
-  const fuente = () => (sol.modo === 'rc' ? sol.carga : sol.modo === 'rl' ? sol.sube : sol.V > 0);
+  const tiempo = () => { if (tFijo !== null) return Math.min(tFijo, sol.T); const k = tA % (DUR + PAUSA); return Math.min(1, k / DUR) * sol.T; };
+  // la fuente está conectada en el instante t
+  const fuente = (t) => {
+    if (sol.modo === 'primer') return sol.V !== 0;
+    if (sol.conmuta) return t < sol.t1;
+    return sol.modo === 'rc' ? sol.carga : sol.modo === 'rl' ? sol.sube : sol.V > 0;
+  };
+  // la tensión (rojo) y la corriente (azul) que se dibujan
+  const curvas = () => (sol.modo === 'rlcp' ? [sol.v, sol.I, 'v (V)', 'iʟ (A)'] : md() === 'rl' ? [sol.VL, sol.I, 'Vʟ (V)', 'i (A)'] : [sol.Vc, sol.I, 'V꜀ (V)', 'i (A)']);
   const marcas = (a, b, n = 5) => Herramienta.marcas(a, b, n);
+  const maxAbs = (fn) => Math.max(1e-30, ...Array.from({ length: 81 }, (_, k) => Math.abs(fn((k / 80) * sol.T))));
   function dibuja() { circuito(); grafica(); }
+  const avance = {};
+  // puntos que recorren un camino (lista de puntos) con velocidad proporcional a la corriente
+  function puntos(g, clave, camino, i, imax) {
+    const lon = camino.slice(1).reduce((s, p, k) => s + Math.hypot(p[0] - camino[k][0], p[1] - camino[k][1]), 0);
+    avance[clave] = (avance[clave] || 0) + (anda && tFijo === null ? 1 : 0) * (i / imax) * 2.2;
+    const pos = (s) => { s = ((s % lon) + lon) % lon; for (let k = 1; k < camino.length; k++) { const [a, b] = [camino[k - 1], camino[k]], d = Math.hypot(b[0] - a[0], b[1] - a[1]); if (s <= d) return [a[0] + ((b[0] - a[0]) * s) / d, a[1] + ((b[1] - a[1]) * s) / d]; s -= d; } return camino[0]; };
+    g.fillStyle = col['--accent']; g.globalAlpha = Math.min(1, 0.25 + Math.abs(i) / imax);
+    for (let k = 0; k < lon - 4; k += 28) { const p = pos(k + avance[clave]); g.beginPath(); g.arc(p[0], p[1], 3.2, 0, 2 * Math.PI); g.fill(); }
+    g.globalAlpha = 1;
+  }
+  const letra = (g, c, al = 'center', base = 'middle') => { g.fillStyle = c; g.font = '12px "IBM Plex Sans", system-ui, sans-serif'; g.textAlign = al; g.textBaseline = base; };
   // esquema: fuente (o un cable si no hay) a la izquierda, interruptor y R arriba, C y/o L a la derecha
   function circuito() {
     const { g, w, h } = lienzo('#circuito');
     if (!sol) return;
     if (!col['--ink']) colores();
-    const t = tiempo(), x1 = Math.max(50, w * 0.2), x2 = Math.min(w - 50, w * 0.8), y1 = 34, y2 = h - 30, ink = col['--ink'];
+    if (sol.modo === 'rlcp') return paralelo(g, w, h);
+    const t = tiempo(), m = md(), x1 = Math.max(50, w * 0.2), x2 = Math.min(w - 78, w * 0.8), y1 = 34, y2 = h - 30, ink = col['--ink'];
     g.strokeStyle = ink; g.lineWidth = 2; g.lineCap = 'round';
     const linea = (a, b, c, d) => { g.beginPath(); g.moveTo(a, b); g.lineTo(c, d); g.stroke(); };
-    const xm = (x1 + x2) / 2, ym = (y1 + y2) / 2;
+    const xm = (x1 + x2) / 2, ym = (y1 + y2) / 2, conFuente = fuente(t);
     // lado izquierdo: fuente
-    if (fuente()) { linea(x1, y1, x1, ym - 8); linea(x1, ym + 8, x1, y2); g.lineWidth = 3; linea(x1 - 16, ym - 8, x1 + 16, ym - 8); g.lineWidth = 5; linea(x1 - 8, ym + 8, x1 + 8, ym + 8); g.lineWidth = 2; g.fillStyle = col['--muted']; g.font = '12px "IBM Plex Sans", system-ui, sans-serif'; g.textAlign = 'right'; g.textBaseline = 'middle'; g.fillText(`${f(sol.V, 3)} V`, x1 - 22, ym); }
+    if (conFuente) { linea(x1, y1, x1, ym - 8); linea(x1, ym + 8, x1, y2); g.lineWidth = 3; linea(x1 - 16, ym - 8, x1 + 16, ym - 8); g.lineWidth = 5; linea(x1 - 8, ym + 8, x1 + 8, ym + 8); g.lineWidth = 2; letra(g, col['--muted'], 'right'); g.fillText(`${sol.modo === 'primer' ? 'Vₜₕ = ' : ''}${f(sol.V, 3)} V`, x1 - 22, ym); }
     else linea(x1, y1, x1, y2);
     // arriba: interruptor (cerrado) y resistencia
     const xs = x1 + (xm - x1) * 0.35; linea(x1, y1, xs - 10, y1); g.fillStyle = ink; g.beginPath(); g.arc(xs - 10, y1, 3, 0, 2 * Math.PI); g.fill(); linea(xs - 10, y1, xs + 12, y1); g.beginPath(); g.arc(xs + 12, y1, 3, 0, 2 * Math.PI); g.fill();
     const r1 = xm - 24, r2 = xm + 24; linea(xs + 12, y1, r1, y1); g.beginPath(); g.moveTo(r1, y1); for (let k = 1; k <= 6; k++) g.lineTo(r1 + (k * (r2 - r1)) / 6 - (r2 - r1) / 12, y1 + (k % 2 ? -7 : 7)); g.lineTo(r2, y1); g.stroke(); linea(r2, y1, x2, y1);
-    g.fillStyle = col['--muted']; g.textAlign = 'center'; g.textBaseline = 'bottom'; g.fillText(`R = ${txt(u(sol.R, 'Ω', 3))}`, xm, y1 - 10);
+    const conR2 = sol.R2 !== undefined && sol.R2 !== sol.R && !conFuente;
+    letra(g, col['--muted'], 'center', 'bottom'); g.fillText(`${sol.modo === 'primer' ? 'Rₜₕ' : conR2 ? 'R₂' : 'R'} = ${txt(u(conR2 ? sol.R2 : sol.R, 'Ω', 3))}`, xm, y1 - 10);
     // derecha: C, L o los dos
-    const hayL = sol.modo !== 'rc', hayC = sol.modo !== 'rl';
-    const bobina = (ya, yb) => { linea(x2, y1, x2, ya); g.beginPath(); const n = 4, hh = (yb - ya) / n; for (let k = 0; k < n; k++) g.arc(x2, ya + hh * (k + 0.5), hh / 2, -Math.PI / 2, Math.PI / 2); g.stroke(); g.fillStyle = col['--muted']; g.textAlign = 'left'; g.textBaseline = 'middle'; g.fillText(`L = ${txt(u(sol.L, 'H', 3))}`, x2 + 16, (ya + yb) / 2); };
+    const hayL = m !== 'rc', hayC = m !== 'rl', nom = sol.modo === 'primer' ? sol.nombre : null;
+    const bobina = (ya, yb) => { linea(x2, y1, x2, ya); g.beginPath(); const n = 4, hh = (yb - ya) / n; for (let k = 0; k < n; k++) g.arc(x2, ya + hh * (k + 0.5), hh / 2, -Math.PI / 2, Math.PI / 2); g.stroke(); letra(g, col['--muted'], 'left'); g.fillText(`${nom || 'L'} = ${txt(u(sol.L, 'H', 3))}`, x2 + 16, (ya + yb) / 2); };
     let Vc = 0, I = 0, Imax = 1;
-    if (sol.modo === 'rc') { Vc = sol.Vc(t); I = sol.I(t); Imax = Math.abs(sol.I0) || 1; }
-    else if (sol.modo === 'rl') { I = sol.I(t); Imax = sol.Inf || 1; }
-    else { Vc = sol.Vc(t); I = sol.I(t); Imax = Math.max(1e-30, ...Array.from({ length: 60 }, (_, k) => Math.abs(sol.I((k / 60) * sol.T)))); }
+    if (m === 'rc') { Vc = sol.Vc(t); I = sol.I(t); Imax = maxAbs(sol.I); }
+    else if (m === 'rl') { I = sol.I(t); Imax = maxAbs(sol.I); }
+    else { Vc = sol.Vc(t); I = sol.I(t); Imax = maxAbs(sol.I); }
     const cond = (yc) => {
-      linea(x2, yc - 6, x2, yc - 6); g.lineWidth = 3; linea(x2 - 22, yc - 6, x2 + 22, yc - 6); linea(x2 - 22, yc + 6, x2 + 22, yc + 6); g.lineWidth = 2;
-      const Vm = Math.max(Math.abs(sol.V), Math.abs(sol.V0 || 0), 1e-30), n = Math.round((6 * Math.abs(Vc)) / Vm), arriba = Vc >= 0;
+      g.lineWidth = 3; linea(x2 - 22, yc - 6, x2 + 22, yc - 6); linea(x2 - 22, yc + 6, x2 + 22, yc + 6); g.lineWidth = 2;
+      const Vm = Math.max(Math.abs(sol.V), Math.abs(sol.V0 || 0), Math.abs(sol.V1 || 0), 1e-30), n = Math.round((6 * Math.abs(Vc)) / Vm), arriba = Vc >= 0;
       g.font = '600 11px system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
       for (let k = 0; k < n; k++) { const xx = x2 + (k - (n - 1) / 2) * 7.5; g.fillStyle = col['--v']; g.fillText(arriba ? '+' : '−', xx, yc - 14); g.fillStyle = col['--i']; g.fillText(arriba ? '−' : '+', xx, yc + 14); }
-      g.fillStyle = col['--muted']; g.font = '12px "IBM Plex Sans", system-ui, sans-serif'; g.textAlign = 'left'; g.fillText(`C = ${txt(u(sol.C, 'F', 3))}`, x2 + 30, yc); g.fillStyle = col['--v']; g.fillText(`V꜀ = ${txt(f(Vc, 3))} V`, x2 + 30, yc + 16);
+      letra(g, col['--muted'], 'left'); g.fillText(`${nom || 'C'} = ${txt(u(sol.C, 'F', 3))}`, x2 + 30, yc); g.fillStyle = col['--v']; g.fillText(`V꜀ = ${txt(f(Vc, 3))} V`, x2 + 30, yc + 16);
     };
     if (hayC && hayL) { bobina(y1 + 14, ym - 6); linea(x2, ym - 6, x2, ym + 18); cond(ym + 24); linea(x2, ym + 30, x2, y2); }
     else if (hayC) { linea(x2, y1, x2, ym - 6); cond(ym); linea(x2, ym + 6, x2, y2); }
     else { bobina(ym - 40, ym + 40); linea(x2, ym + 40, x2, y2); }
     linea(x1, y2, x2, y2);
     // la corriente: puntos que recorren el circuito con velocidad proporcional a i
-    const per = 2 * (x2 - x1 + y2 - y1), pos = (s) => { s = ((s % per) + per) % per; if (s < x2 - x1) return [x1 + s, y1]; s -= x2 - x1; if (s < y2 - y1) return [x2, y1 + s]; s -= y2 - y1; if (s < x2 - x1) return [x2 - s, y2]; s -= x2 - x1; return [x1, y2 - s]; };
-    avance += (anda ? 1 : 0) * (I / Imax) * 2.2;
-    g.fillStyle = col['--accent']; g.globalAlpha = Math.min(1, 0.25 + Math.abs(I) / Imax);
-    for (let k = 0; k < per; k += 28) { const p = pos(k + avance); g.beginPath(); g.arc(p[0], p[1], 3.2, 0, 2 * Math.PI); g.fill(); }
-    g.globalAlpha = 1;
-    g.fillStyle = col['--i']; g.font = '12px "IBM Plex Sans", system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'top'; g.fillText(`i = ${txt(u(I, 'A', 3))}  ·  t = ${txt(u(t, 's', 3))}`, xm, y2 + 8);
+    puntos(g, 'serie', [[x1, y1], [x2, y1], [x2, y2], [x1, y2], [x1, y1]], I, Imax);
+    letra(g, col['--i'], 'center', 'top'); g.fillText(`i = ${txt(u(I, 'A', 3))}  ·  t = ${txt(u(t, 's', 3))}`, xm, y2 + 8);
   }
-  let avance = 0;
+  // RLC en paralelo: la fuente de corriente y las ramas R, L y C entre dos barras
+  function paralelo(g, w, h) {
+    const t = tiempo(), v = sol.v(t), iL = sol.I(t), iR = sol.R === null ? 0 : v / sol.R, iC = sol.Ig - iR - iL;
+    const ramas = [['I', sol.Ig], ...(sol.R === null ? [] : [['R', iR]]), ['L', iL], ['C', iC]];
+    const xa = Math.max(46, w * 0.14), xb = Math.min(w - 70, w * 0.8), y1 = 26, y2 = h - 34, ym = (y1 + y2) / 2, paso = (xb - xa) / (ramas.length - 1);
+    const linea = (a, b, c, d) => { g.beginPath(); g.moveTo(a, b); g.lineTo(c, d); g.stroke(); };
+    g.strokeStyle = col['--ink']; g.lineWidth = 2; g.lineCap = 'round';
+    linea(xa, y1, xb, y1); linea(xa, y2, xb, y2);
+    const imax = Math.max(Math.abs(sol.Ig), maxAbs(sol.I), sol.R === null ? 0 : maxAbs(sol.v) / sol.R, 1e-30);
+    ramas.forEach(([tipo, i], k) => {
+      const x = xa + k * paso;
+      g.strokeStyle = col['--ink'];
+      if (tipo === 'I') { linea(x, y1, x, ym - 16); linea(x, ym + 16, x, y2); g.beginPath(); g.arc(x, ym, 16, 0, 2 * Math.PI); g.stroke(); linea(x, ym + 9, x, ym - 9); linea(x - 5, ym - 3, x, ym - 9); linea(x + 5, ym - 3, x, ym - 9); letra(g, col['--muted'], 'right'); g.fillText(`${f(sol.Ig, 3)} A`, x - 22, ym); }
+      if (tipo === 'R') { linea(x, y1, x, ym - 24); g.beginPath(); g.moveTo(x, ym - 24); for (let j = 1; j <= 6; j++) g.lineTo(x + (j % 2 ? -7 : 7), ym - 24 + j * 8 - 4); g.lineTo(x, ym + 24); g.stroke(); linea(x, ym + 24, x, y2); letra(g, col['--muted'], 'left'); g.fillText(`R = ${txt(u(sol.R, 'Ω', 3))}`, x + 12, ym); }
+      if (tipo === 'L') { linea(x, y1, x, ym - 26); g.beginPath(); for (let j = 0; j < 4; j++) g.arc(x, ym - 26 + 13 * (j + 0.5), 6.5, -Math.PI / 2, Math.PI / 2); g.stroke(); linea(x, ym + 26, x, y2); letra(g, col['--muted'], 'left'); g.fillText(`L = ${txt(u(sol.L, 'H', 3))}`, x + 12, ym); }
+      if (tipo === 'C') { linea(x, y1, x, ym - 6); linea(x, ym + 6, x, y2); g.lineWidth = 3; linea(x - 16, ym - 6, x + 16, ym - 6); linea(x - 16, ym + 6, x + 16, ym + 6); g.lineWidth = 2; letra(g, col['--muted'], 'left'); g.fillText(`C = ${txt(u(sol.C, 'F', 3))}`, x + 20, ym); }
+      // por la fuente la corriente sube; por las ramas, baja
+      puntos(g, 'p' + tipo, tipo === 'I' ? [[x, y2], [x, y1]] : [[x, y1], [x, y2]], i, imax);
+    });
+    letra(g, col['--v'], 'center', 'top'); g.fillText(`v = ${txt(f(v, 3))} V`, (xa + xb) / 2 - 70, y2 + 8);
+    g.fillStyle = col['--i']; g.fillText(`iʟ = ${txt(u(iL, 'A', 3))}  ·  t = ${txt(u(t, 's', 3))}`, (xa + xb) / 2 + 50, y2 + 8);
+  }
   // V (rojo, eje izquierdo) e i (azul, eje derecho) frente a t
   function grafica() {
     const { g, w, h } = lienzo('#grafica');
     if (!sol) return;
     const mL = 48, mR = 54, mT = 14, mB = 28, N = 400, t1 = sol.T;
-    const fV = sol.modo === 'rl' ? sol.VL : sol.Vc, fI = sol.I;
+    const [fV, fI, nV, nI] = curvas();
     const ts = Array.from({ length: N + 1 }, (_, k) => (k / N) * t1), vs = ts.map(fV), is = ts.map(fI);
     // los dos ejes con el cero a la misma altura: se escala cada curva por su máximo
     const ext = (xs) => { const b = Math.max(0, ...xs), a = -Math.min(0, ...xs), m = Math.max(a, b) || 1; return [a / m, b / m, m]; };
     const [vn, vp, vm] = ext(vs), [in_, ip, im] = ext(is), bajo = Math.max(vn, in_), alto = Math.max(vp, ip), pd = (alto + bajo) * 0.08;
     const v1 = -(bajo + pd) * vm, v2 = (alto + pd) * vm, i1 = -(bajo + pd) * im, i2 = (alto + pd) * im;
     const X = (t) => mL + (t / t1) * (w - mL - mR), YV = (v) => mT + ((v2 - v) / (v2 - v1)) * (h - mT - mB), YI = (i) => mT + ((i2 - i) / (i2 - i1)) * (h - mT - mB);
+    ejeX = { a: mL, b: w - mR };
     g.font = '11px "IBM Plex Sans", system-ui, sans-serif'; g.lineWidth = 1;
     g.strokeStyle = col['--line']; g.fillStyle = col['--muted']; g.textAlign = 'center'; g.textBaseline = 'top';
     for (const t of marcas(0, t1, Math.max(4, Math.round(w / 90)))) { g.beginPath(); g.moveTo(X(t), mT); g.lineTo(X(t), h - mB); g.stroke(); g.fillText(txt(u(t, 's', 3)), X(t), h - mB + 5); }
@@ -997,20 +1667,35 @@ const Transitorios = (() => {
     for (const v of marcas(v1, v2, 5)) { g.strokeStyle = col['--line']; g.beginPath(); g.moveTo(mL, YV(v)); g.lineTo(w - mR, YV(v)); g.stroke(); g.fillText(txt(f(v, 3)), mL - 5, YV(v)); }
     g.textAlign = 'left'; g.fillStyle = col['--i']; for (const i of marcas(i1, i2, 5)) g.fillText(txt(u(i, 'A', 3)), w - mR + 5, YI(i));
     g.strokeStyle = col['--muted']; g.lineWidth = 1.2; g.beginPath(); g.moveTo(mL, YV(0)); g.lineTo(w - mR, YV(0)); g.stroke();
-    if (sol.tau) { g.setLineDash([5, 4]); g.strokeStyle = col['--muted']; g.beginPath(); g.moveTo(X(sol.tau), mT); g.lineTo(X(sol.tau), h - mB); g.stroke(); g.setLineDash([]); g.fillStyle = col['--muted']; g.textAlign = 'left'; g.textBaseline = 'top'; g.fillText('τ', X(sol.tau) + 4, mT + 2); }
-    if (sol.tObj !== null && sol.tObj !== undefined && sol.tObj <= t1) { g.fillStyle = col['--accent']; g.beginPath(); const y = sol.modo === 'rl' ? YI(sol.Io) : YV(sol.Vo); g.arc(X(sol.tObj), y, 5, 0, 2 * Math.PI); g.fill(); }
+    const vertical = (x, et) => { g.setLineDash([5, 4]); g.strokeStyle = col['--muted']; g.beginPath(); g.moveTo(X(x), mT); g.lineTo(X(x), h - mB); g.stroke(); g.setLineDash([]); g.fillStyle = col['--muted']; g.textAlign = 'left'; g.textBaseline = 'top'; g.fillText(et, X(x) + 4, mT + 2); };
+    if (sol.tau && sol.tau < t1) vertical(sol.tau, 'τ');
+    if (sol.t1) vertical(sol.t1, 't₁');
+    if (sol.tObj !== null && sol.tObj !== undefined && sol.tObj <= t1) { g.fillStyle = col['--accent']; g.beginPath(); const y = md() === 'rl' || sol.modo === 'rlcp' ? YI(sol.Io) : YV(sol.Vo); g.arc(X(sol.tObj), y, 5, 0, 2 * Math.PI); g.fill(); }
     const curva = (ys, Y, c) => { g.strokeStyle = c; g.lineWidth = 2.4; g.beginPath(); ys.forEach((y, k) => (k ? g.lineTo(X(ts[k]), Y(y)) : g.moveTo(X(ts[k]), Y(y)))); g.stroke(); };
     curva(vs, YV, col['--v']); curva(is, YI, col['--i']);
-    const t = tiempo(); g.strokeStyle = col['--ink']; g.globalAlpha = 0.5; g.beginPath(); g.moveTo(X(t), mT); g.lineTo(X(t), h - mB); g.stroke(); g.globalAlpha = 1;
+    const t = tiempo(); g.strokeStyle = col['--ink']; g.globalAlpha = tFijo === null ? 0.5 : 0.9; g.beginPath(); g.moveTo(X(t), mT); g.lineTo(X(t), h - mB); g.stroke(); g.globalAlpha = 1;
     g.fillStyle = col['--v']; g.beginPath(); g.arc(X(t), YV(fV(t)), 4.5, 0, 2 * Math.PI); g.fill(); g.fillStyle = col['--i']; g.beginPath(); g.arc(X(t), YI(fI(t)), 4.5, 0, 2 * Math.PI); g.fill();
-    g.font = '600 12px "IBM Plex Sans", system-ui, sans-serif'; g.textBaseline = 'top'; g.textAlign = 'left'; g.fillStyle = col['--v']; g.fillText(sol.modo === 'rl' ? 'Vʟ (V)' : 'V꜀ (V)', mL + 6, mT + 2); g.textAlign = 'right'; g.fillStyle = col['--i']; g.fillText('i (A)', w - mR - 6, mT + 2);
+    g.font = '600 12px "IBM Plex Sans", system-ui, sans-serif'; g.textBaseline = 'top'; g.textAlign = 'left'; g.fillStyle = col['--v']; g.fillText(nV, mL + 6, mT + 2); g.textAlign = 'right'; g.fillStyle = col['--i']; g.fillText(nI, w - mR - 6, mT + 2);
   }
+  // valores en el instante del cursor (cuando se lleva con el ratón o se deja fijo)
+  function lectura() {
+    const el = $('#lectura');
+    if (!sol || tFijo === null) { el.textContent = ''; return; }
+    const t = tiempo(), [fV, fI, nV, nI] = curvas();
+    el.innerHTML = `t = <b>${u(t, 's')}</b>: ${nV.split(' ')[0]} = <b>${f(fV(t))} V</b>, ${nI.split(' ')[0]} = <b>${u(fI(t), 'A')}</b>${fijo ? ' (fijo)' : ''}`;
+  }
+  const lienzoG = $('#grafica');
+  const instante = (e) => { const r = lienzoG.getBoundingClientRect(); return Math.min(1, Math.max(0, (e.clientX - r.left - ejeX.a) / (ejeX.b - ejeX.a))) * sol.T; };
+  const apunta = (t) => { tFijo = t; lectura(); dibuja(); };
+  lienzoG.addEventListener('pointermove', (e) => { if (sol && ejeX && !fijo) apunta(instante(e)); });
+  lienzoG.addEventListener('pointerleave', () => { if (!fijo) apunta(null); });
+  lienzoG.addEventListener('click', (e) => { if (!sol || !ejeX) return; fijo = !fijo; apunta(fijo ? instante(e) : null); });
 
   $('#play').addEventListener('click', () => { anda = !anda; $('#play').textContent = anda ? '⏸ Pausa' : '▶ Seguir'; });
   let ultimo = performance.now();
   function bucle() {
     const ahora = performance.now(), dt = Math.min(0.1, (ahora - ultimo) / 1000); ultimo = ahora;
-    if (anda && sol) { tA += dt; dibuja(); }
+    if (anda && sol) { if (tFijo === null) tA += dt; dibuja(); }
     requestAnimationFrame(bucle);
   }
   window.addEventListener('resize', dibuja);
@@ -1018,7 +1703,7 @@ const Transitorios = (() => {
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('transitorios').current;
   formulario(); colores(); calcula(); requestAnimationFrame(bucle);
-  window.TransitoriosApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { modo: sol.modo, tau: sol.tau, tipo: sol.tipo, Vct: sol.Vct, It: sol.It, tObj: sol.tObj }, estado: () => copia(sc) };
+  window.TransitoriosApp = { abrirEjemplo, azar, enunciado, anade, cursor: (t) => { fijo = t !== null; apunta(t); }, resultado: () => sol && { modo: sol.modo, tau: sol.tau, tipo: sol.tipo, Vct: sol.Vct, It: sol.It, tObj: sol.tObj, x0: sol.x0, xf: sol.xf, Rth: sol.Rth, V1: sol.V1, I1: sol.I1, pico: sol.pico }, estado: () => copia(sc) };
 })();
 
 /* =====================================================================
@@ -1312,8 +1997,10 @@ const Practica = (() => {
 
   // lo que cambia de una herramienta a otra; lo demás sale de la estructura común de las páginas
   const CONF = {
-    calorimetria: { items: '#te' },
-    disoluciones: { items: '#valores > .valor:not(.dato)' },
+    // calorimetría: una mezcla, un problema al revés, un calentador o una dilatación
+    calorimetria: { datos: null, items: '#te, #resumen-d > div', genera: () => window.CalorApp?.azar(), enunciado: () => window.CalorApp?.enunciado() },
+    // disoluciones: lo que se pide depende de la pestaña abierta (solo cuentan los que se ven)
+    disoluciones: { items: '#valores > .valor:not(.dato), #valores-prep > .valor, #valores-col > .valor, #res-dil, #res-mez' },
     matrices: { items: '#res' },
     // solo sistemas compatibles determinados: la solución paramétrica no se pregunta por huecos
     // complejos: una operación al azar con números pequeños (los datos son textos como 3 − 2i)
@@ -1335,6 +2022,24 @@ const Practica = (() => {
     intervalos: { datos: null, items: '#res > div', genera: () => window.IntervalosApp?.azar(), enunciado: () => window.IntervalosApp?.enunciado() },
     // ondasem: una onda plana, una intensidad o un medio con pérdidas
     'ondas-em': { datos: null, items: '#res > div', genera: () => window.OndasEMApp?.azar(), enunciado: () => window.OndasEMApp?.enunciado() },
+    // trabajo y energía: una rampa con muelle, un rizo, un péndulo, una montaña rusa o una fuerza variable
+    'trabajo-y-energia': { datos: null, items: '#resumen > div', genera: () => window.EnergiaApp?.azar(), enunciado: () => window.EnergiaApp?.enunciado() },
+    // tiro parabólico: un tiro, un blanco, una frenada, un encuentro o un giro (cuentan los resultados de la pestaña abierta)
+    'tiro-parabolico': { datos: null, items: '#resumen > div, #resumen-r > div, #resumen-c > div', genera: () => window.TiroApp?.azar(), enunciado: () => window.TiroApp?.enunciado() },
+    // sólido rígido: un momento de inercia, una rodadura, una polea, una patinadora, un choque, un péndulo o una escalera
+    'solido-rigido': { datos: null, items: '#res > div', genera: () => window.SolidoApp?.azar(), enunciado: () => window.SolidoApp?.enunciado() },
+    // ondas: una cuerda, un tubo, un Doppler, un nivel sonoro, unas pulsaciones, una potencia o una reflexión
+    ondas: { datos: null, items: '#res > div', genera: () => window.OndasApp?.azar(), enunciado: () => window.OndasApp?.enunciado() },
+    // doppler: una fuente en línea o en ángulo, una que pasa, un eco, un cono de Mach o una luz que se corre al rojo
+    doppler: { datos: null, items: '#resumen > div', genera: () => window.DopplerApp?.azar(), enunciado: () => window.DopplerApp?.enunciado() },
+    // ciclos: un Carnot, un Otto, un Diesel, un Brayton, un Stirling, un ciclo propio o una máquina
+    ciclos: { datos: null, items: '#resumen > div', genera: () => window.CiclosApp?.azar(), enunciado: () => window.CiclosApp?.enunciado() },
+    // fluidos: una presión, un tubo en U, una prensa, un empuje, una tubería, un chorro, una viscosidad, un medidor, una presa o un capilar
+    // gases: un estado, una transformación, una mezcla, un gas real o una velocidad molecular
+    gases: { datos: null, items: '#res > div', genera: () => window.GasesApp?.azar(), enunciado: () => window.GasesApp?.enunciado() },
+    fluidos: { datos: null, items: '#resumen > div', genera: () => window.FluidosApp?.azar(), enunciado: () => window.FluidosApp?.enunciado() },
+    // dinamica: un bloque en un plano, dos bloques, Atwood, una curva, un péndulo cónico o un muelle
+    dinamica: { datos: null, items: '#res > div', genera: () => window.DinamicaApp?.azar(), enunciado: () => window.DinamicaApp?.enunciado() },
     // interferencia: Young, una rendija, una red o una lámina delgada
     interferencia: { datos: null, items: '#res > div', genera: () => window.InterferenciaApp?.azar(), enunciado: () => window.InterferenciaApp?.enunciado() },
     // laplace: una transformada, una inversa por fracciones simples o una EDO; se preguntan los valores numéricos
@@ -1343,7 +2048,8 @@ const Practica = (() => {
     derivadas: { datos: null, items: '#resumen > div.num', genera: () => window.DerivadasApp?.azar(), enunciado: () => window.DerivadasApp?.enunciado() },
     complejos: { datos: null, genera: () => window.ComplejosApp?.azar(), enunciado: () => window.ComplejosApp?.enunciado() },
     sistemas: { items: '#res', valido: () => !/[λμ]|incompatible|no tiene/i.test(document.querySelector('#res')?.textContent + document.querySelector('#tipo')?.textContent) },
-    estadistica: { items: '#res' },
+    // distribuciones: un ejercicio con enunciado (normal, binomial, Poisson, valores críticos…)
+    estadistica: { datos: null, items: '#res', genera: () => window.EstadisticaApp?.azar(), enunciado: () => window.EstadisticaApp?.enunciado() },
     // regresión: una tabla de datos al azar alrededor de una recta (están en un textarea, no en campos numéricos)
     regresion: { datos: null, genera: () => window.RegresionApp?.azar(), enunciado: () => 'Con los datos de la tabla, calcula la recta de regresión de Y sobre X, la de X sobre Y, el coeficiente de correlación, las medias, la covarianza y la estimación de y que se pide.' },
     // resistencias: unos colores al azar (no hay números que cambiar en los datos)
@@ -1352,14 +2058,16 @@ const Practica = (() => {
       // el enunciado del ejemplo ya no vale con los datos nuevos
       despues: () => pon(document.querySelector('#enunciado'), 'Ejercicio de práctica: calcula el campo magnético en los puntos de las preguntas con las fuentes de la izquierda.'),
       antes: () => { const m = document.querySelector('#modo'); if (m && m.value !== 'si') { m.value = 'si'; m.dispatchEvent(new Event('change', { bubbles: true })); } } },
+    // masa-molar: según la pestaña, una masa molar, una estequiometría con su limitante o una fórmula empírica
     'masa-molar': {
-      items: '#res-masa .grande', quitar: '', tapa: '#res-masa, #conv-card', datos: null,
-      genera: () => pon(document.querySelector('#formula'), toma(['H2O', 'CO2', 'NaCl', 'H2SO4', 'HNO3', 'NaOH', 'NH3', 'CaCO3', 'C6H12O6', 'C2H5OH', 'Ca(OH)2', 'Al2(SO4)3', 'KMnO4', 'Fe2O3', 'Mg3(PO4)2', 'CuSO4·5H2O', 'Na2CO3', 'K2Cr2O7', 'CH4', 'C3H8', 'HCl', 'Ba(NO3)2', 'NH4Cl', 'MgCl2·6H2O'])),
-      enunciado: () => `Calcula la masa molar de <b>${esc(document.querySelector('#formula').value)}</b>.`,
+      items: '#res-masa .grande, #resumen-este > div, #resumen-emp > div', quitar: '', datos: null,
+      tapa: '#res-masa, #conv-card, #tabla-este td.n, #tabla-este td.m, #tabla-este td.s, #resumen-este, #este .pasos, #resumen-emp, #emp .pasos',
+      genera: () => window.MasaApp?.azar(), enunciado: () => window.MasaApp?.enunciado(),
+      get textos() { return document.querySelector('#tab-emp')?.getAttribute('aria-selected') === 'true' ? [{ et: 'Fórmula empírica', sel: '#resumen-emp .formula' }] : []; },
     },
     'configuracion-electronica': {
       items: null, tapa: '#res', datos: null,
-      genera: () => pon(document.querySelector('#entrada'), String(entero(1, 56))),
+      genera: () => { window.ConfigApp?.pestana('el'); pon(document.querySelector('#entrada'), String(entero(1, 56))); },
       enunciado: () => { const g = (s) => document.querySelector(s)?.textContent.trim() || ''; return `Escribe la configuración electrónica del <b>${esc(g('#nombre').toLowerCase())}</b> (${esc(g('#sim'))}, Z = ${esc(g('#z'))}) en orden de llenado y cuántos electrones desapareados tiene.`; },
       textos: [{ et: 'Configuración electrónica', sel: '#llenado', otros: ['#abreviada', '#capas-txt'] }],
       numeros: [{ et: 'Electrones desapareados', sel: '#desap' }],

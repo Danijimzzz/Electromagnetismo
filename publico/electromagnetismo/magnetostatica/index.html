@@ -26,7 +26,7 @@
   });
 })();</script>
 <title>Calculadora de campo magnético (Biot-Savart) · SimulaCiencia</title>
-<meta name="description" content="Campo magnético de hilos, espiras, arcos, solenoides y toroides con la ley de Biot-Savart, y fuerza sobre cargas y conductores, con el desarrollo paso a paso.">
+<meta name="description" content="Campo magnético de hilos, espiras circulares y rectangulares, arcos, solenoides, toroides, cilindros y cables coaxiales, láminas de corriente y discos que giran, con Biot-Savart y Ampère; fuerza sobre cargas y conductores, perfil de |B|, mapa de color y líneas de campo, paso a paso.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap">
@@ -229,6 +229,7 @@ textarea.in { font: 15px/1.5 var(--f-math); resize: vertical; min-height: 54px }
 .unit { font: 500 .78em var(--f-ui); color: var(--muted); margin-left: .15em }
 .result sub, .steps sub { font-size: .7em }
 .teoria .eq { font-family: var(--f-math); font-size: 17px; margin: 6px 0 6px 12px; overflow-x: auto }
+svg.perfil { display: block; width: 100%; max-width: 440px; height: auto; margin: 4px 0; font-family: var(--f-ui) }
 #flash { position: fixed; left: 50%; transform: translateX(-50%); bottom: 18px; background: var(--ink); color: var(--bg); padding: 7px 14px; border-radius: 8px; font-size: 13px; z-index: 20 }
 </style>
 <body>
@@ -236,7 +237,7 @@ textarea.in { font: 15px/1.5 var(--f-math); resize: vertical; min-height: 54px }
 <div class="wrap" id="principal">
 <nav class="miga" aria-label="Estás en"><span class="miga-izq"></span><span class="miga-ico" aria-hidden="true">E</span><a href="../">Electromagnetismo</a><span aria-hidden="true">›</span><span>Magnetostática</span><span class="miga-der"></span></nav>
 <h1 id="titulo">Magnetostática: campo magnético y Biot-Savart</h1>
-<p class="lead">Coloca hilos, espiras, arcos, solenoides y toroides, elige un punto y obtén el campo <span class="vv">B</span> con el desarrollo paso a paso, en la forma μ<sub>0</sub><i>I</i>/(π<i>a</i>) de los apuntes o en unidades del SI.</p>
+<p class="lead">Coloca hilos, espiras, arcos, solenoides, toroides, cilindros con corriente, láminas y discos que giran, elige un punto y obtén el campo <span class="vv">B</span> con el desarrollo paso a paso, en la forma μ<sub>0</sub><i>I</i>/(π<i>a</i>) de los apuntes o en unidades del SI.</p>
 <div class="tools">
   <select id="ejemplo" class="in" aria-label="Ejemplos"></select>
   <select id="modo" class="in" aria-label="Modo"><option value="sym">Simbólico (a, I)</option><option value="si">Numérico SI (m, A)</option></select>
@@ -256,11 +257,13 @@ textarea.in { font: 15px/1.5 var(--f-math); resize: vertical; min-height: 54px }
       <div class="stage-bar">
         <label>Vista <select id="plano" class="in" style="width:auto"><option value="xy">plano XY</option><option value="xz">plano XZ</option><option value="yz">plano YZ</option></select></label>
         <label><span id="corte-l">z</span> = <input id="corte" class="in" value="0"></label>
-        <label><input type="checkbox" id="flechas" checked> campo B</label>
+        <label><input type="checkbox" id="flechas" checked> flechas</label>
+        <label><input type="checkbox" id="mapa"> mapa de |B|</label>
+        <label><input type="checkbox" id="lineas"> líneas de campo</label>
         <span style="margin-left:auto">Arrastra los puntos P</span>
       </div>
       <div class="cvwrap"><canvas id="cv" aria-label="Dibujo de las fuentes y del campo magnético"></canvas></div>
-      <div class="legend"><span>⊙ corriente hacia ti · ⊗ hacia dentro</span><span>— conductor con su sentido</span><span>flechas: dirección de <i>B</i> en el plano; ⊙ ⊗ si <i>B</i> es perpendicular (más oscuro, más intenso)</span></div>
+      <div class="legend"><span>⊙ corriente hacia ti · ⊗ hacia dentro</span><span>— conductor con su sentido</span><span>flechas: dirección de <i>B</i> en el plano; ⊙ ⊗ si <i>B</i> es perpendicular (más oscuro, más intenso)</span><span>mapa: más color, más |<i>B</i>| (escala logarítmica); las líneas son la proyección del campo en el plano</span></div>
     </section>
     <section class="panel"><h2>Preguntas</h2><div class="chips" id="add-pregunta"></div><div id="preguntas" class="col"></div></section>
   </div>
@@ -277,18 +280,24 @@ textarea.in { font: 15px/1.5 var(--f-math); resize: vertical; min-height: 54px }
     <li><b>Arco</b> de ángulo θ, en su centro: <i>B</i> = μ<sub>0</sub><i>I</i>θ/(4π<i>R</i>).</li>
     <li><b>Solenoide</b> de <i>N</i> espiras y longitud <i>L</i>, en el eje: <i>B</i> = μ<sub>0</sub><i>NI</i>/(2<i>L</i>)·(cos β<sub>1</sub> − cos β<sub>2</sub>). Si es muy largo (ideal), <i>B</i> = μ<sub>0</sub><i>NI</i>/<i>L</i> dentro y 0 fuera.</li>
     <li><b>Toroide</b> de <i>N</i> espiras, dentro del núcleo a distancia <i>r</i> del centro (ley de Ampère): <i>B</i> = μ<sub>0</sub><i>NI</i>/(2π<i>r</i>), y 0 fuera.</li>
+    <li><b>Espira rectangular</b> de lados <i>a</i> y <i>b</i>: la suma de sus cuatro lados; en el centro, <i>B</i> = 2μ<sub>0</sub><i>I</i>√(<i>a</i><sup>2</sup> + <i>b</i><sup>2</sup>)/(π<i>ab</i>).</li>
+    <li><b>Cilindro con corriente</b> (macizo, hueco o de un cable coaxial), con la ley de Ampère: <i>B</i> = μ<sub>0</sub><i>I</i><sub>enc</sub>/(2π<i>r</i>). Con <i>J</i> uniforme, dentro de un cilindro macizo de radio <i>R</i>, <i>I</i><sub>enc</sub> = <i>I r</i><sup>2</sup>/<i>R</i><sup>2</sup>; con <i>J</i> ∝ <i>r</i>, <i>I</i><sub>enc</sub> = <i>I r</i><sup>3</sup>/<i>R</i><sup>3</sup>. En un coaxial, fuera del todo <i>B</i> = 0.</li>
+    <li><b>Lámina de corriente</b> indefinida con densidad <i>K</i> (A/m): <i>B</i> = μ<sub>0</sub><i>K</i>/2 a cada lado, paralelo a la lámina, perpendicular a <i>K</i> y con sentidos opuestos. Entre dos láminas con corrientes opuestas, <i>B</i> = μ<sub>0</sub><i>K</i>, y fuera, 0.</li>
+    <li><b>Disco cargado que gira</b> con densidad σ y velocidad angular ω: cada anillo lleva d<i>I</i> = σω<i>r</i> d<i>r</i>; en el centro, <i>B</i> = μ<sub>0</sub>σω<i>R</i>/2.</li>
   </ul>
   <p>El campo de varias fuentes es la suma vectorial de los campos de cada una (superposición). Con <span class="vv">B</span> se obtiene la fuerza de Lorentz sobre una carga, <span class="vv">F</span> = <i>q</i> <span class="vv">v</span> × <span class="vv">B</span>, y la fuerza sobre un conductor, <span class="vv">F</span> = ∫ <i>I</i> d<span class="vv">l</span> × <span class="vv">B</span>.</p>
   <h2>Ejemplo resuelto: dos hilos paralelos</h2>
   <p>Dos hilos indefinidos paralelos al eje Z pasan por (−<i>a</i>, 0) y (<i>a</i>, 0) con la misma corriente <i>I</i> en sentidos opuestos. En el origen cada hilo está a distancia <i>a</i> y crea <i>B</i> = μ<sub>0</sub><i>I</i>/(2π<i>a</i>); los dos campos apuntan en +Y, así que se suman:</p>
   <p class="eq"><span class="vv">B</span>(0) = <span class="fr"><span class="nu">μ<sub>0</sub><i>I</i></span><span class="de">π<i>a</i></span></span> <span class="uv">u</span><sub>y</sub></p>
   <p>La fuerza por unidad de longitud entre ellos es <i>F</i>/<i>L</i> = μ<sub>0</sub><i>I</i><sup>2</sup>/(2π·2<i>a</i>) = μ<sub>0</sub><i>I</i><sup>2</sup>/(4π<i>a</i>), repulsiva porque las corrientes son opuestas. Ábrelo en «Ejercicios de ejemplo», en la barra de Mis ejercicios, para ver el desarrollo completo.</p>
+  <p>Para ver cómo cambia el campo, añade la pregunta «Perfil de |B|» con dos puntos P y Q: sale la gráfica de |<i>B</i>| a lo largo de la recta. La fuerza sobre cargas y corrientes, con radios, ciclotrón o efecto Hall, está en <a href="../fuerza/">Fuerza magnética</a>.</p>
 </section>
 </div>
 <footer data-solo-web><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Magnetostática <span id="ver"></span> (beta)</footer>
 <div id="flash" hidden></div>
 </body>
 <script>
+const Pagina = { carpeta: 'magnetostatica', guarda: 'magneto-cur-v1' };
 /* =====================================================================
    Versiones y novedades: la web (portada, asignaturas, buscador) tiene su número y cada
    herramienta el suyo. Hasta el lanzamiento se numera 0.x (beta); la 1.0 de una herramienta
@@ -302,6 +311,7 @@ textarea.in { font: 15px/1.5 var(--f-math); resize: vertical; min-height: 54px }
 const Version = (() => {
   const registros = {
     web: [
+      { v: '0.49', fecha: '2026-10-26', cambios: ['Circuitos, a fondo: asociación de resistencias escribiendo la expresión, códigos de condensadores y bobinas, fuentes dependientes, Thévenin y Norton entre dos nudos cualesquiera, superposición y mallas; redes de alterna por nudos con fasores y sistemas trifásicos; transitorios de cualquier circuito de primer orden y RLC en paralelo.', 'Química, a fondo: la tabla periódica con más datos, comparación de elementos y preguntas para ponerte a prueba; fórmula empírica y molecular, reactivos impuros y gases en la estequiometría; Slater, números cuánticos y «¿qué elemento es?»; hidrólisis, tampones y polipróticos en pH; propiedades coligativas en disoluciones, y más formas de hallar k en cinética.', 'Estadística, a fondo: F de Snedecor, uniforme, geométrica e hipergeométrica; intervalos con datos apareados, cociente de varianzas, cotas y población finita; errores de la pendiente, bandas de confianza, residuos y más ajustes en regresión. Además, cuatro herramientas más en camino: estadística descriptiva, probabilidad, contrastes de hipótesis y χ².', 'Física general, a fondo: rizos, péndulos y fuerzas variables; movimiento circular y encuentros; dilatación térmica y calentadores; bloques juntos, curvas peraltadas y muelles; equilibrio estático y choques que hacen girar; pulsaciones y ondas entre dos cuerdas; Doppler de la luz; anillos de Newton y criterio de Rayleigh; ciclos Brayton, Stirling y propios; viscosidad, Venturi y capilaridad; mezclas de gases y Van der Waals. Todas con modo práctica con enunciado y fórmulas bien escritas.', 'Electromagnetismo, a fondo: en Electrostática, cilindros huecos y coaxiales, densidades que no son uniformes, arcos y cortezas conductoras; nuevas fuentes y mapa de |B| en Magnetostática; dieléctricos por sectores, rigidez y asociaciones de condensadores; entrehierros y bobinas acopladas; espiras junto a un hilo, campos que cambian con el tiempo y barras con masa en Faraday; efecto Hall, campos cruzados y par sobre espiras; ondas en cualquier dirección, polarización y reflexión. Además, enlace para compartir el ejercicio, copiar la solución en texto o LaTeX e imprimirla.'] },
       { v: '0.48', fecha: '2026-10-25', cambios: ['Todas las herramientas comparten ahora la misma hoja de estilos, así que tarjetas, campos, botones, resultados y desarrollo se ven exactamente igual en todas, y los pasos del desarrollo van numerados.', 'Matemáticas, a fondo: matrices con parámetro, LU y ecuaciones matriciales; sistemas discutidos según un parámetro y escritos como texto; integrales impropias, L’Hôpital y volúmenes de revolución; Laplace con escalón, delta y convolución; nuevas EDOs exactas, de Bernoulli y de Cauchy-Euler; Taylor, Fourier, complejos y campos vectoriales con muchos casos nuevos. Además, enlace para compartir el ejercicio, copiarlo en texto o LaTeX e imprimirlo.', 'Circuitos: los valores admiten prefijos del SI y unidades, como 4k7, 1,5 kΩ, 100n o 10 µF.', 'Arreglos en Circuitos (una resistencia de 0 Ω en paralelo, Thévenin con Rth = 0), Química (pH al empezar y al acabar una valoración débil, aviso de excepción solo en átomos neutros), Estadística (cuantil de la binomial, ajustes con años, proporción con 0 éxitos), Física general y Electromagnetismo (fórmulas largas que se cortaban en el móvil, etiqueta tapada en Dinámica, fórmulas de la teoría de Ondas EM).', 'Los mensajes de error se leen mejor en modo oscuro, en Configuración electrónica el nombre del elemento vuelve a verse grande y en el móvil Trabajo y energía ya no se sale de la pantalla.'] },
       { v: '0.47', fecha: '2026-10-25', cambios: ['Nueva asignatura: Economía, en la portada y en la barra de asignaturas. Trae 23 herramientas en camino, como «Próximamente»: oferta y demanda, elasticidades, IS-LM, interés compuesto, préstamos, VAN y TIR, punto muerto, ratios financieros o el índice de Gini, entre otras.'] },
       { v: '0.46', fecha: '2026-10-25', cambios: ['Nuevo apartado Foro en la barra superior. De momento está en construcción: muy pronto podrás preguntar dudas y compartir ejercicios.', 'La portada y cada asignatura muestran ya las herramientas que vienen después, como «Próximamente»: 30 más, desde la ley de Ampère y las ecuaciones de Maxwell hasta la propagación de errores y los diagramas de Bode.'] },
@@ -359,6 +369,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-23', cambios: ['Portada para elegir asignatura y herramienta: Electromagnetismo, Física general, Química, Matemáticas y Laboratorio, con buscador. Las herramientas que vienen después aparecen como «Próximamente».', 'Nueva herramienta: Magnetostática, en Electromagnetismo.'] },
     ],
     electrostatica: [
+      { v: '0.6', fecha: '2026-10-26', cambios: ['Tubo cilíndrico con carga superficial σ y cilindros huecos (con radio interior), para resolver cables coaxiales.', 'Densidades que no son uniformes en esferas y cilindros (ρ₀·r/R, ρ₀·R/r, ρ₀(1 − r/R) y ρ₀(1 − r²/R²)) y en varillas (λ que crece o decrece a lo largo), con Gauss y la carga encerrada.', 'Arcos cargados: semicircunferencias, cuartos de anillo o cualquier ángulo, con el campo y el potencial en el centro.', 'Corteza esférica conductora con radio interior y exterior: si dentro hay una carga centrada, se induce −q en la cara interior y +q en la exterior.', 'Seis ejercicios de ejemplo nuevos con todo esto.', 'La guía enlaza con la herramienta de Condensadores.'] },
       { v: '0.5.1', fecha: '2026-10-23', cambios: ['El simulador tiene ahora su propia dirección, /electromagnetismo/electrostatica/. Tus problemas guardados siguen ahí. El botón «Todas las herramientas» de la barra lateral vuelve a la portada.'] },
     { v: '0.5', fecha: '2026-10-23', cambios: ['Doce ejercicios de ejemplo con enunciados propios: los mismos tipos de pregunta que en clase, con otras figuras y otros números. La guía de uso tiene capturas nuevas hechas con ellos.', 'La web tiene icono propio: un dipolo con sus líneas de campo, en la pestaña del navegador, en la pantalla de inicio del móvil y en la vista previa al compartir el enlace.', 'Páginas de aviso legal, privacidad, cookies y contacto, enlazadas al pie de la barra lateral.'] },
     { v: '0.4', fecha: '2026-10-22', cambios: ['Número de versión visible y este apartado de novedades.', 'Arreglo: en la vista 3D los cilindros se dibujan con su radio real, aparecen las superficies de Gauss, y las esferas, cascarones y conductores tienen volumen en lugar de parecer círculos planos.'] },
@@ -367,44 +378,54 @@ const Version = (() => {
     { v: '0.1', fecha: '2026-10-22', cambios: ['Primera versión: cargas, hilos, planos y esferas con el desarrollo paso a paso y 12 ejercicios resueltos.', 'Barra lateral con tus problemas, los importados y los ejercicios; título y enunciado editables; archivos .emsim.json.'] },
     ],
     magnetostatica: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Nuevas fuentes: cilindro con corriente (macizo, hueco o con J proporcional a r, para cables coaxiales), lámina de corriente K, espira rectangular de una pieza y disco cargado que gira.', 'Nueva pregunta «Perfil de |B|»: la gráfica del módulo del campo a lo largo de una recta entre dos puntos.', 'Mapa de color de |B| y líneas de campo continuas en el dibujo.', 'Seis ejercicios de ejemplo nuevos con todo esto.', 'Los números decimales se escriben con coma.', 'Botones para copiar el enlace del ejercicio, copiar la solución de cada pregunta como texto o en LaTeX e imprimirla o guardarla en PDF.'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['Arreglo: el ejemplo resuelto de la teoría explica dónde abrirlo ahora, en «Ejercicios de ejemplo» de la barra Mis ejercicios.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: campo magnético de hilos, segmentos, hilos semiinfinitos, espiras, arcos, solenoides y toroides con Biot-Savart, y fuerza sobre cargas en movimiento y sobre conductores, con el desarrollo paso a paso en la forma μ₀I/(πa) o en unidades del SI.', 'Dibujo del campo B en el plano XY, XZ o YZ, con puntos que se pueden arrastrar y ocho ejemplos resueltos.'] },
     ],
     'tabla-periodica': [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Más datos en la ficha: afinidad electrónica, estados de oxidación, densidad y puntos de fusión y ebullición, y la tabla se puede colorear por ellos.', 'Botones para abrir el elemento en Configuración electrónica (con la Zef) y en Masa molar.', 'Compara hasta tres elementos en una tabla, con el mayor de cada propiedad marcado.', 'Ponte a prueba: preguntas al azar de nombres y símbolos, grupo y periodo, configuración, electrones de valencia y tendencias.', 'En el móvil las casillas muestran solo el número y el símbolo, y la tabla ocupa menos.', 'Nota sobre el grupo 3: dónde van La, Ac, Lu y Lr según la IUPAC.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: cada elemento tiene su ficha con la masa atómica y molar, el grupo, el periodo, el bloque, la configuración electrónica (abreviada, completa y por capas), la electronegatividad, la energía de ionización, el radio y el estado.', 'La tabla se puede colorear por categoría, electronegatividad, energía de ionización, radio, masa, bloque o estado, y tiene un buscador por nombre, símbolo o número atómico.'] },
     ],
     'trabajo-y-energia': [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Nuevos problemas: rizo (altura mínima para dar la vuelta, velocidad y normal arriba, o dónde se despega), péndulo (velocidad y tensión en cada ángulo, si da la vuelta o se afloja el hilo), montaña rusa sin rozamiento por varios puntos y trabajo de una fuerza variable con la gráfica F(x), su área y la potencia.', 'En la rampa, los problemas al revés: altura mínima para llegar al muelle, rozamiento del llano para que se pare justo antes y constante del muelle para una compresión dada.', 'Modo práctica con enunciado escrito para cada tipo de problema.'] },
       { v: '0.1.3', fecha: '2026-10-25', cambios: ['Arreglo: en el móvil, las fórmulas largas del desarrollo se cortaban por la derecha; ahora bajan de línea en cada igual.'] },
       { v: '0.1.2', fecha: '2026-10-24', cambios: ['Las fórmulas del desarrollo y de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Los resultados salen arriba, en una tarjeta destacada, y la lectura de t y v tiene ancho fijo: ya no mueve la barra de tiempo al reproducir.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: un bloque baja por una rampa con rozamiento, recorre un tramo horizontal y comprime un muelle. Animación con barras de energía cinética, gravitatoria, elástica y calor, gráfica de las energías en el tiempo y el desarrollo paso a paso con la velocidad al pie de la rampa, al llegar al muelle y la compresión máxima.', 'Seis ejemplos: sin rozamiento, se para antes del muelle, el rozamiento lo sujeta, con empujón inicial y muelle duro.'] },
     ],
     'masa-molar': [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Nueva pestaña «Fórmula empírica»: de la composición centesimal, de los gramos de cada elemento o de un análisis por combustión a la fórmula empírica y, con la masa molar, a la molecular, paso a paso.', 'Reactivos impuros (con su pureza) y en disolución (con su molaridad y su volumen) en la estequiometría.', 'Gases a cualquier temperatura y presión con PV = nRT, y el volumen de los productos que lleven (g).', 'Rendimiento al revés: escribe la masa obtenida de verdad y calcula el rendimiento.', 'Acepta los estados (s), (l), (g) y (aq), las cargas sin ^ (Fe3+, NO3-, SO42-), el + sin espacios, la doble flecha ⇌ y los electrones de las semirreacciones.', 'Tabla de moles al principio, lo que cambia y al final, y un resumen con el limitante, lo que se forma y lo que sobra.', 'Modo práctica también para la estequiometría y la fórmula empírica.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: masa molar y composición centesimal de cualquier fórmula, con paréntesis, hidratos e iones, y conversor entre gramos, moles, partículas y litros de gas.', 'Estequiometría: ajusta la reacción sola (también las iónicas), calcula el reactivo limitante, lo que se forma con el rendimiento que digas y lo que sobra, paso a paso.', 'Masas atómicas de la IUPAC o redondeadas como en clase.'] },
     ],
     'configuracion-electronica': [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Electrones de valencia como en clase (el Fe tiene 4s² 3d⁶, ocho), no solo los de la capa más externa.', 'Nueva pestaña «¿Qué elemento es?»: escribe una configuración y dice de qué elemento es y si es el estado fundamental, uno excitado o una configuración imposible (2p⁷, 2d¹).', 'Nueva pestaña «Números cuánticos»: comprueba si un conjunto (n, l, m_l, s) está permitido y a qué orbital corresponde.', 'Tabla con los cuatro números cuánticos de cada electrón de valencia.', 'Carga nuclear efectiva con las reglas de Slater, paso a paso.', 'Especies isoelectrónicas (Na⁺, Mg²⁺, F⁻…) ordenadas de mayor a menor radio.', 'Los ejemplos están ahora en la barra lateral, con Mis ejercicios.'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['El aviso de excepción al orden de llenado sale solo en los átomos neutros, no en sus iones, y muestra justo los subniveles que cambian (Pt: se esperaría 6s² 5d⁸ y tiene 6s¹ 5d⁹).'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: configuración electrónica de cualquier elemento o ion por orden de llenado, abreviada y por capas, con el diagrama de Moeller, el diagrama de orbitales con la regla de Hund, los electrones desapareados y los números cuánticos del electrón diferenciador.', 'Avisa de las excepciones como el cromo o el cobre, y en los cationes quita primero los electrones de la capa más externa.'] },
     ],
     condensadores: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Cilíndricos y esféricos con el dieléctrico por sectores, en paralelo: por ejemplo, media esfera con un material y la otra media con otro.', 'Permitividad que cambia con la posición, de ε₁ en una armadura a ε₂ en la otra, con las cargas de polarización de las caras y del volumen.', 'Fuerza entre las armaduras y fuerza que mete un dieléctrico a medio introducir.', 'Rigidez dieléctrica: escribe la de cada capa y sale la tensión máxima antes de la ruptura.', 'Asociaciones de condensadores en serie, en paralelo y mixtas, con la carga, la tensión y la energía de cada uno, y dos condensadores cargados que se conectan, con la energía que se pierde.', 'La carga libre de cada armadura en el desarrollo.', 'Botones para copiar el enlace del ejercicio, copiar la solución como texto o en LaTeX e imprimirla o guardarla en PDF.', 'El desarrollo paso a paso escribe las fórmulas como en los libros: fracciones, raíces, exponentes y subíndices de verdad.', 'La capacidad sale también en letras, como en los apuntes (por ejemplo C = 4πε₀εᵣab/(b − a), o la suma de cada capa en serie).', 'Enlace al simulador de Electrostática desde la teoría.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: condensadores planos, cilíndricos y esféricos con capas de dieléctrico en serie o, en el plano, ocupando parte del área. Capacidad, carga, tensión y energía; campos E, D y P en cada capa y cargas de polarización, con el desarrollo paso a paso.', 'Compara con el condensador vacío: qué pasa al meter el dieléctrico con la batería conectada o con el condensador aislado.', 'Dibujo del corte con las líneas de campo y gráfica de E a lo largo del condensador.'] },
     ],
     'tiro-parabolico': [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Ángulo de alcance máximo cuando se lanza desde otra altura, con su desarrollo.', 'Blanco: además de los ángulos para acertar, la velocidad que hace falta con el ángulo dado.', 'Opción para dibujar varios tiros con la misma velocidad y la parábola de seguridad.', 'Movimiento rectilíneo con un segundo móvil: cuándo y dónde se encuentran (persecuciones y cruces).', 'Nueva pestaña de movimiento circular (MCU y MCUA): velocidad angular, periodo, aceleraciones normal y tangencial, cuándo se para o da n vueltas, con animación y gráficas θ(t) y ω(t).', 'Modo práctica con enunciado: tiros, blancos, frenadas, encuentros y giros.'] },
       { v: '0.1.3', fecha: '2026-10-25', cambios: ['Arreglo: en el móvil, las fórmulas largas del desarrollo se cortaban por la derecha; ahora bajan de línea en cada igual.'] },
       { v: '0.1.2', fecha: '2026-10-24', cambios: ['Las fórmulas del desarrollo y de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Los resultados salen arriba, en una tarjeta destacada, y la lectura de t, x, y y v tiene ancho fijo: ya no se mueve al reproducir.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: tiro parabólico desde cualquier altura hasta cualquier altura, con el tiempo de vuelo, la altura máxima, el alcance y la velocidad al caer, y el desarrollo paso a paso. Trayectoria animada con los vectores de velocidad y gráficas de posición, velocidad y aceleración frente al tiempo.', 'Rozamiento del aire lineal o cuadrático, comparado con la trayectoria sin rozamiento.', 'Blanco: dice si el proyectil pasa por un punto y con qué dos ángulos se acierta.', 'Movimiento rectilíneo (MRU y MRUA): posición y velocidad en un instante, cuándo pasa por un punto y cuándo se para, con las gráficas x(t), v(t) y a(t).'] },
     ],
     disoluciones: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Propiedades coligativas: descenso crioscópico, aumento ebulloscópico, presión osmótica y presión de vapor (Raoult) en agua y otros seis disolventes, con el factor de van \'t Hoff deducido de la fórmula.', 'La masa molar de un soluto a partir de la crioscopía, la ebulloscopía o la presión osmótica.', 'Preparar una disolución también en g/L, % m/v, % en masa, molalidad o normalidad, con el agua que hay que añadir.', 'Normalidad, con los equivalentes por mol sacados de la fórmula del ácido o la base.', 'Diluir con la unidad que quieras en cada dato (mol/L, mmol/L, g/L, mg/L, % m/v; L, mL o µL).', 'Aviso de seguridad al diluir cualquier ácido concentrado (siempre el ácido sobre el agua) y al disolver sosa o potasa.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: da la concentración de una disolución como molaridad, molalidad, fracción molar, % en masa, % masa/volumen, g/L o ppm y obtén todas las demás, con la densidad para pasar de masa a volumen y el desarrollo con su base de cálculo.', 'Preparar una disolución: los gramos de sólido (con su pureza) o los mililitros de reactivo comercial (con su riqueza y densidad) que hay que medir.', 'Diluciones con C₁V₁ = C₂V₂, despejando el dato que falte, y mezcla de dos disoluciones del mismo soluto.'] },
     ],
     calorimetria: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Problemas al revés: escribe ? en el dato que no conoces (masa, temperatura inicial, calor específico, capacidad del calorímetro o tiempo) y pon la temperatura final.', 'Calorímetro por su equivalente en agua.', 'Calentador con potencia, tiempo y rendimiento (Q = η P t), por ejemplo un hervidor.', 'Más sustancias: plata, oro, mercurio, latón y aceite de oliva.', 'Nueva pestaña de dilatación térmica: lineal, superficial, de volumen y líquido que rebosa del recipiente, con la temperatura a la que se alcanza una medida.', 'Modo práctica con enunciado: mezclas, problemas al revés, hervidores y dilataciones.'] },
       { v: '0.1.2', fecha: '2026-10-24', cambios: ['Las fórmulas del desarrollo y de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['La temperatura de equilibrio sale en una tarjeta destacada, separada de la tabla de calores.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: temperatura de equilibrio al mezclar hasta cinco cuerpos de agua, hielo, vapor, metales, etanol, vidrio, un calorímetro o una sustancia con tus datos, con los cambios de fase que hagan falta.', 'Si la energía no llega para fundir todo el hielo o condensar todo el vapor, dice cuántos gramos quedan de cada fase.', 'Tabla con el calor de cada cuerpo, el desarrollo etapa por etapa (m c ΔT y m L) y la curva de calentamiento de cada uno.'] },
     ],
     induccion: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Toroide con entrehierro: reluctancia del núcleo y del hueco de aire y la autoinducción que queda.', 'Inducción mutua de dos espiras coaxiales a una distancia y de una bobina girada dentro de un solenoide.', 'Bobinas acopladas en serie y en paralelo, con los flujos que se suman o que se oponen.', 'Circuito RL: balance de energía (lo que da la fuente, lo que guarda la bobina y lo que se disipa en la resistencia) y una fuente que se conecta y desconecta una y otra vez, con la corriente máxima, mínima y media.', 'Los dibujos usan azul para el campo y el segundo circuito, y la gráfica del RL distingue corriente y tensión.', 'Botones para copiar el enlace del ejercicio, copiar la solución como texto o en LaTeX e imprimirla o guardarla en PDF.', 'El desarrollo paso a paso escribe las fórmulas como en los libros: fracciones, raíces, exponentes y subíndices de verdad.', 'El resultado sale también en letras, como en los apuntes (por ejemplo L = μ₀N²h ln(b/a)/(2π) o la corriente del circuito RL).', 'Enlace a Faraday y Lenz desde la teoría.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: coeficiente de autoinducción de solenoides (con núcleo), toroides de sección rectangular y circular, cables coaxiales y líneas bifilares, con el desarrollo desde la ley de Ampère.', 'Inducción mutua entre dos solenoides, dos espiras, un hilo y una espira, y una bobina sobre un toroide, o a partir de L₁, L₂ y k, con el coeficiente de acoplamiento.', 'Flujo, energía magnética y fem inducida si das la corriente o cómo cambia.', 'Circuito RL al cerrar el interruptor o al quitar la fuente: constante de tiempo, corriente y tensión en la bobina en cualquier instante y su gráfica.'] },
     ],
@@ -422,21 +443,26 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: transformada directa de sumas de términos c·tⁿ·e^(at)·sen(bt) o cos(bt), senh y cosh, con la fila de la tabla y la propiedad que usa cada término, y F(s) con denominador común.', 'Inversa por fracciones simples: polos simples, múltiples y complejos (también dobles), con los coeficientes, la fila de la tabla y los valores inicial y final.', 'Ecuaciones diferenciales de primer y segundo orden con condiciones iniciales: transformar, despejar Y(s) y volver.', 'Plano s con los polos y los ceros, y gráfica animada de f(t) con cada término por separado.'] },
     ],
     interferencia: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Nuevo montaje «Abertura circular»: disco de Airy y criterio de Rayleigh, con el límite de resolución de un ojo o un telescopio y si dos objetos se distinguen.', 'Red de difracción: poder de resolución en cada orden y la mínima diferencia de longitudes de onda que separa.', 'Nuevos montajes «Cuña de aire» y «Anillos de Newton», también al revés: el grosor de un pelo o el radio de una lente a partir de lo que se mide.', 'Cursor en la gráfica de intensidad: pasa el ratón o el dedo para leer la intensidad en cualquier punto de la pantalla.', 'El desarrollo se ve con fórmulas bien escritas.', 'Más tipos de ejercicio en el modo práctica.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: doble rendija de Young con la interfranja, la posición y el ángulo de cada máximo, la intensidad en un punto y la envolvente de difracción si das la anchura de las rendijas.', 'Rendija simple: mínimos, anchura del máximo central e intensidad.', 'Red de difracción: ángulos de cada orden, orden máximo y separación de dos longitudes de onda con el poder de resolución.', 'Láminas delgadas: colores que se refuerzan y se anulan y espesores para reforzar o quitar el reflejo.', 'Ondas que salen de las rendijas animadas y el patrón en la pantalla con el color de la luz.'] },
     ],
     'ondas-em': [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['La onda puede ir en cualquier dirección (escribiendo las componentes de k y de E) y tener una fase inicial.', 'Polarización circular y elíptica, con el sentido de giro y la expresión de E y B con sus dos componentes.', 'Nuevo cálculo: la onda a partir de su expresión E(r, t) o B(r, t), por ejemplo 30 cos(2,094y + 6,283e8t) k: dirección de propagación, velocidad, medio y el otro campo.', 'Nuevo cálculo: incidencia normal sobre un conductor perfecto (onda estacionaria, nodos, presión y corriente superficial) o sobre otro medio (coeficientes de reflexión y transmisión).', 'En el desarrollo, B̂ = k̂ × Ê ya no escribe paréntesis de más alrededor de los vectores unitarios.', 'Botones para copiar el enlace del ejercicio, copiar la solución como texto o en LaTeX e imprimirla o guardarla en PDF.', 'El desarrollo paso a paso escribe las fórmulas como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: onda plana en el vacío o en un material a partir de f, λ, ω o k, con λ, k, el campo B y su dirección (B̂ = k̂ × Ê) y las expresiones de E(r, t) y B(r, t).', 'Intensidad, densidad de energía y presión de radiación, también de una fuente puntual a una distancia.', 'Medios con pérdidas: tangente de pérdidas, atenuación, profundidad de penetración e impedancia compleja.', 'La onda dibujada en 3D con E y B moviéndose.'] },
     ],
     intervalos: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Datos apareados (antes y después, o dos medidas del mismo individuo): intervalo de la media de las diferencias, a partir de las dos listas o de d̄ y s_d.', 'Cociente de varianzas σ₁²/σ₂² con la F de Snedecor, y el de las desviaciones σ₁/σ₂, para saber si se pueden suponer varianzas iguales.', 'Cotas: cualquier intervalo puede ser bilateral, una cota inferior (a; +∞) o una cota superior (−∞; b), con toda α en una cola.', 'Población finita: da su tamaño N y se aplica el factor de corrección, también en el tamaño de la muestra.', 'Contraste con el intervalo: escribe un valor y te dice si se rechaza H₀ con ese nivel de significación.', 'Tamaño de muestra también para comparar dos medias o dos proporciones.', 'La gráfica muestra la F y las cotas con α en una sola cola, y en Welch se ven los grados de libertad sin redondear.', 'Nuevos ejercicios en el modo práctica: cotas de una media y datos apareados.'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['Una proporción con 0 éxitos, o con todos, ya no da un intervalo de un solo punto: se usa el intervalo de Wilson. Con pocos éxitos o fracasos también se muestra el de Wilson al lado del de siempre.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: intervalo de confianza de una media con σ conocida (z) o desconocida (t de Student), a partir de x̄, s y n o de la lista de datos, también si te dan la desviación con n.', 'Intervalos de una proporción, de la varianza y la desviación típica (con la χ²), de la diferencia de medias (σ conocidas, iguales o Welch) y de la diferencia de proporciones.', 'Tamaño de muestra para un error máximo en una media o una proporción.', 'Gráfica de la distribución con el área de confianza y simulación de 100 muestras que muestra cuántos intervalos aciertan.'] },
     ],
     transitorios: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Nuevo modo «Circuito cualquiera de primer orden»: escribe el circuito como lista de elementos, marca qué se conecta o desconecta en t = 0 y sale por el método de los tres valores (valor inicial, final y resistencia de Thévenin que ve el condensador o la bobina).', 'Conmutación en t₁: un condensador que se carga por R y se descarga por R₂, y una bobina que se abre con el pico de tensión que hace saltar la chispa.', 'Nuevo circuito RLC en paralelo con una fuente de corriente, con su tipo de amortiguamiento y la corriente de la bobina.', 'Tiempo hasta un valor también en el RLC, corriente inicial en la bobina y descarga por otra resistencia R₂.', 'Pasa el ratón o el dedo por la gráfica para leer la tensión y la corriente en cada instante; un clic deja el cursor fijo.'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['Los valores admiten prefijos del SI y unidades: 4k7, 1,5 kΩ, 100n, 10 µF o 5 ms. Un número solo sigue en la unidad del campo (mH, μF).'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: carga y descarga de un condensador en un circuito RC (también si ya tenía carga), con τ = RC, la tensión y la corriente en un instante y el tiempo hasta una tensión.', 'Corriente que sube o baja en una bobina en un circuito RL, con τ = L/R y la tensión de la bobina.', 'Circuito RLC en serie: dice si es subamortiguado, crítico o sobreamortiguado y da la tensión del condensador frente al tiempo, también con carga o corriente al empezar.', 'Esquema del circuito con la corriente que circula y la gráfica de V e i frente a t animadas.'] },
     ],
     fuerza: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Carga que entra en una franja de campo: si la atraviesa, el ángulo con el que sale y cuánto se ha desplazado; si no, dónde vuelve a salir.', 'Campos E y B cruzados: velocidad de deriva E/B y la cicloide animada, también con velocidad inicial (cicloide acortada o con bucles).', 'Efecto Hall: tensión Hall, densidad de portadores, coeficiente de Hall y qué cara queda a más potencial.', 'Par sobre una espira o bobina: momento magnético, par, energía y trabajo para girarla.', 'Espectrómetro de masas con dos isótopos: la separación entre los impactos.', 'El campo B se dibuja en azul en todas las animaciones.', 'Botones para copiar el enlace del ejercicio, copiar la solución como texto o en LaTeX e imprimirla o guardarla en PDF.', 'El desarrollo paso a paso escribe las fórmulas como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: fuerza sobre una carga en un campo uniforme, con el radio, el periodo y el sentido de giro, o la hélice si v no es perpendicular a B. La velocidad se puede dar en m/s, por su energía en eV o por la ddp que la acelera.', 'Fuerza de Lorentz con vectores: v × B con su determinante y F = q(E + v × B).', 'Selector de velocidades y espectrómetro de masas, ciclotrón con la frecuencia, la energía de salida y las vueltas.', 'Fuerza sobre un hilo (y la corriente para que flote) y entre dos hilos paralelos.', 'Animación de cada situación.'] },
     ],
     campos: [
@@ -444,6 +470,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: gradiente, derivada direccional y laplaciano de un campo escalar, con su mapa de color y las curvas de nivel.', 'Divergencia y rotacional de un campo vectorial en el plano o en el espacio y, si es conservativo, su potencial.', 'Integral de línea (trabajo) a lo largo de una curva r(t), comparada con la diferencia de potencial cuando el campo es conservativo.', 'Teorema de Green en un círculo o un rectángulo: circulación y flujo por el borde frente a las integrales dobles.', 'Gráfica con partículas que siguen el campo y un molinillo que gira con el rotacional; tocándola se mueve el punto.'] },
     ],
     cinetica: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Coeficiente de A en la reacción (2 A → productos), con las dos formas de definir k explicadas.', 'La constante también sale de la vida media, del porcentaje que ha reaccionado en un tiempo o de dos medidas.', 'Arrhenius con tres o más temperaturas: recta de ajuste de ln k frente a 1/T con su R².', 'Diagrama de energía con Eₐ, ΔH y la Eₐ de la reacción inversa.', 'Catalizador: cuánto se multiplica k al bajar la energía de activación.', 'Aviso cuando dos rectas se ajustan casi igual y los datos no bastan para decidir el orden.', 'Velocidades iniciales con tres reactivos.', 'Tiempo también en días y en años.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: leyes integradas de orden 0, 1 y 2 con la concentración a cualquier tiempo, la vida media y cuánto se tarda en llegar a una concentración.', 'Orden y constante a partir de una tabla de concentraciones frente al tiempo, con las tres rectas ([A], ln [A] y 1/[A]) y su R².', 'Método de las velocidades iniciales con uno o dos reactivos: órdenes, constante con sus unidades y ley de velocidad.', 'Ecuación de Arrhenius: energía de activación con dos temperaturas o la constante a otra temperatura, con la gráfica de ln k frente a 1/T.', 'Vaso animado en el que las moléculas de reactivo se convierten en producto.'] },
     ],
     edos: [
@@ -469,64 +496,78 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: hasta seis ecuaciones con seis incógnitas. Dice si el sistema es compatible determinado, indeterminado o incompatible con el teorema de Rouché-Frobenius y lo resuelve por Gauss con sustitución hacia atrás, por Gauss-Jordan, por la regla de Cramer o con la matriz inversa.', 'Si tiene infinitas soluciones, las da en forma paramétrica (λ, μ…).', 'Coeficientes con fracciones exactas, decimales o números complejos, como las mallas de un circuito de alterna, y nombres propios para las incógnitas (I1, I2…).', 'Comprobación de la solución sustituyendo en cada ecuación.'] },
     ],
     regresion: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Error de la pendiente y de la ordenada, con su intervalo de confianza, para los informes de prácticas, y banda de confianza de la recta en la gráfica.', 'Intervalos de confianza de la media de y y de predicción de un valor nuevo para la x que elijas.', 'Nuevos ajustes: recta por el origen (y = bx, con su incertidumbre) e hiperbólica (y = a + b/x).', 'Comparación de todos los ajustes ordenados por R², para ver cuál es mejor.', 'Gráfica de residuos y aviso de los puntos atípicos (residuo mayor que dos veces el error típico).', 'Coeficiente de correlación de Spearman, la relación b·b′ = r² y el ángulo entre las dos rectas.', 'Datos en una tabla de doble entrada, como en los ejercicios de clase.', 'Puedes elegir si las varianzas y la covarianza se dividen entre n o entre n − 1.'] },
       { v: '0.1.2', fecha: '2026-10-25', cambios: ['El ajuste parabólico funciona con x grandes, como los años (2015, 2016…): antes decía que faltaban valores de x distintos.', 'En los ajustes exponencial y potencial, una a muy pequeña se escribe en notación científica en vez de 0.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas dentro del texto de la teoría se ven bien escritas, no con símbolos $.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: escribe o pega tus datos (x, y), con frecuencias si las tienes, y obtén medias, varianzas, covarianza, el coeficiente de correlación con su contraste y las dos rectas de regresión, con la tabla de cálculos y la nube de puntos.', 'Ajustes exponencial, potencial, logarítmico y parabólico, con R² para compararlos con la recta, y los residuos.', 'Estimaciones de y a partir de x y de x a partir de y, avisando si es una extrapolación.', 'Añade puntos pulsando en la gráfica.'] },
     ],
     estadistica: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Nuevas distribuciones: F de Snedecor, uniforme continua, geométrica e hipergeométrica.', 'Valores críticos unilaterales y bilaterales, con los dos valores de la χ² y de la F.', 'Hallar μ o σ de una normal a partir de una probabilidad, como en los ejercicios de «¿qué media hace falta para que…?».', 'P(|X − μ| ≤ c), a una distancia c de la media, con la cota de Chebyshev al lado.', 'Aproximaciones de la binomial por la Poisson y de la Poisson por la normal, además de la binomial por la normal.', 'Las colas muy lejanas ya no salen como 0: se escriben en notación científica.', 'Tabla de valores de las discretas con un botón para copiarla.', 'Arrastra los valores sobre la gráfica para mover el área.', 'Modo práctica con ejercicios al azar de todas las distribuciones.'] },
       { v: '0.1.2', fecha: '2026-10-25', cambios: ['En la binomial, al calcular un cuantil, la probabilidad del cuantil ya no cambia la probabilidad de éxito p.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: normal, t de Student, chi cuadrado, exponencial, binomial y Poisson, con su media y su varianza.', 'Probabilidades P(X ≤ a), P(X ≥ a), entre dos valores y, en las discretas, P(X = k) y con desigualdad estricta; cuantiles y valores críticos bilaterales.', 'Gráfica con el área (o las barras) que se pide sombreada.', 'Desarrollo como en clase: tipificación Z = (X − μ)/σ y Φ(z), fórmula de la binomial y de la Poisson término a término, y aproximación de la binomial por la normal con corrección de continuidad.'] },
     ],
     alterna: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Redes de alterna cualesquiera por el método de los nudos con fasores: resistencias, bobinas, condensadores y fuentes de tensión o de corriente con su fase, con el sistema en complejos y el balance de potencias de Boucherot.', 'Sistemas trifásicos equilibrados en estrella y en triángulo: tensiones y corrientes de fase y de línea, fasores de las tres fases, potencias y la batería de condensadores para corregir el factor de potencia.', 'Triángulo de potencias y curva de resonancia (la corriente frente a la frecuencia, con f₀ y el ancho de banda) en el circuito RLC.', 'La fuente se puede dar con su valor de pico o eficaz, con fase inicial y con ω en lugar de f, y el resultado escribe v(t) e i(t).', 'Corrección del factor de potencia a partir de P, S, I o Q, y también de cargas capacitivas (con una bobina).'] },
       { v: '0.1.2', fecha: '2026-10-25', cambios: ['Los valores admiten prefijos del SI y unidades: 4k7, 1,5 kΩ, 100n, 10 µF o 5 ms. Un número solo sigue en la unidad del campo (mH, μF, kW).', 'Arreglo: en paralelo, una resistencia de 0 Ω se ignoraba como si no estuviera; ahora avisa de que cortocircuita la fuente.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: circuitos RLC en serie y en paralelo (o solo con algunos de los elementos) con impedancias complejas en forma binómica y polar, la corriente, la tensión o la corriente de cada elemento, las potencias activa, reactiva y aparente y el factor de potencia, con el desarrollo paso a paso.', 'Diagrama de fasores y ondas v(t) e i(t) desfasadas.', 'Resonancia: frecuencia de resonancia, factor de calidad y ancho de banda.', 'Corrección del factor de potencia: el condensador que hay que poner en paralelo y cuánto baja la corriente de la línea.'] },
     ],
     dinamica: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Bloques lanzados con velocidad inicial: frenan, se paran y se quedan quietos o vuelven, con la distancia y el tiempo de frenada.', 'Nuevos problemas: dos bloques en contacto o unidos por una cuerda, con la fuerza entre ellos; curvas con y sin peralte (velocidades máxima y mínima y si derrapa); péndulo cónico; loma y hondonada, y muelles (ley de Hooke, serie y paralelo, equilibrio en un plano y periodo de oscilación).', 'Fuerza mínima para que un bloque empiece a subir y el ángulo con el que menos cuesta, y el coeficiente de rozamiento a partir de una aceleración medida.', 'El dibujo se anima: el bloque se mueve, frena y vuelve, las masas de Atwood suben y bajan, el péndulo cónico gira y el muelle oscila. Se puede pausar.', 'Las fórmulas del desarrollo se ven como en los libros, y los ejemplos usan coma decimal.', 'Modo práctica con enunciado escrito para cada tipo de problema.'] },
       { v: '0.1.2', fecha: '2026-10-25', cambios: ['Arreglo: en el diagrama de fuerzas, el nombre del bloque ya no queda tapado por las flechas, el bloque se ve más grande y la flecha de la aceleración no cruza la normal.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: bloque en un plano horizontal o inclinado con rozamiento estático y dinámico, una fuerza aplicada con ángulo y, si quieres, una masa colgando de una polea. Dice si el bloque se mueve o el rozamiento lo sujeta y da la normal, el rozamiento, la aceleración y la tensión, con el desarrollo paso a paso.', 'Máquina de Atwood, también con una polea con masa.', 'Dibujo con el diagrama de fuerzas a escala y la aceleración, y la velocidad y el tiempo al recorrer una distancia.'] },
     ],
     circuitos: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Fuentes dependientes: de tensión o de corriente, controladas por una tensión entre dos nudos o por la corriente de otro elemento, también en el equivalente de Thévenin.', 'Condensadores y bobinas en régimen permanente (abierto y cortocircuito), con la carga y la energía que guardan.', 'Equivalente de Thévenin y de Norton entre dos nudos cualesquiera, no solo visto por una resistencia.', 'Superposición paso a paso: lo que da cada fuente sola y la suma, en una tabla.', 'Método de las mallas como segundo desarrollo, con las ecuaciones de cada malla y la comprobación con el de los nudos.', 'Esquema más claro: los nudos se colocan para que los elementos no se crucen, y se pueden mover arrastrándolos.', 'Editor visual: en el modo Dibujar, arrastra de un nudo a otro (o a un sitio vacío) para añadir un elemento.'] },
       { v: '0.1.2', fecha: '2026-10-25', cambios: ['Los valores admiten prefijos del SI: 4k7, 1,5k, 2M2 o 100m. Antes «1k» daba error.', 'Arreglo: si la carga está en paralelo con una fuente de tensión ideal (Rth = 0), en vez de «—» explica que no hay equivalente de Norton ni máxima transferencia de potencia.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: escribe el circuito como una lista de resistencias, fuentes de tensión y fuentes de corriente entre nudos, y obtén los potenciales, la corriente y la potencia de cada elemento por el método de los nudos, con las ecuaciones de Kirchhoff, el sistema en forma matricial y el balance de potencias.', 'Equivalente de Thévenin y de Norton visto por la resistencia que elijas, y máxima transferencia de potencia.', 'Esquema del circuito con el potencial de cada nudo y el sentido de cada corriente.'] },
     ],
     'solido-rigido': [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Rodadura, polea y péndulo animados: se ve la rueda girar mientras baja.', 'Momento de inercia de un cuerpo compuesto: varias piezas (varillas, discos, esferas, masas puntuales…) cada una a su distancia del eje.', 'Choques que hacen girar: bala que se incrusta en una varilla colgada (y hasta dónde sube) y persona que salta a una plataforma.', 'Péndulo físico (periodo y longitud equivalente) y varilla que cae girando por su base.', 'Equilibrio estático: escalera apoyada en una pared (¿resbala?, ¿hasta dónde se puede subir?) y viga sobre dos apoyos con cargas.', 'Fórmulas del desarrollo bien escritas y ejemplos con coma decimal.', 'Modo práctica con enunciado.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: momentos de inercia de esferas, cilindros, aros, varillas, discos y placas, con el teorema de Steiner y el radio de giro.', 'Rodadura por un plano inclinado: aceleración, velocidad al final, rozamiento necesario para que no deslice y qué pasa si no basta; comparación del tiempo que tarda cada cuerpo.', 'Polea con masa de la que cuelga un cuerpo: aceleración, tensión y balance de energía.', 'Conservación del momento angular, como la patinadora que encoge los brazos, con la variación de la energía cinética.'] },
     ],
     ondas: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Superposición: pulsaciones de dos frecuencias cercanas, con la envolvente, y dos ondas desfasadas (por la diferencia de caminos o por el desfase).', 'Energía y potencia que transporta una onda en una cuerda.', 'Reflexión y transmisión entre dos cuerdas: coeficientes, amplitudes, reparto de la potencia y animación del pulso.', 'Enlace a Efecto Doppler para los casos con viento, ángulo o cono de Mach.', 'Fórmulas del desarrollo bien escritas y ejemplos con coma decimal.', 'Modo práctica con enunciado.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ecuación de una onda armónica con ω y k en múltiplos de π, posición, velocidad y aceleración de un punto del medio y desfase entre dos puntos.', 'Ondas estacionarias en cuerdas y en tubos abiertos o cerrados: frecuencia de cada armónico, nodos y vientres, y velocidad en la cuerda con √(T/μ).', 'Efecto Doppler con la fuente y el observador moviéndose, y nivel sonoro en decibelios a distintas distancias y con varias fuentes.', 'Animación de la onda, de la onda estacionaria y de los frentes de onda del Doppler.'] },
     ],
     gases: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Mezclas de gases con la ley de Dalton: presiones parciales, fracciones molares, masa molar media y densidad, con un gráfico de barras.', 'Gases reales con la ecuación de Van der Waals: presión, factor de compresibilidad Z, comparación con el gas ideal, punto crítico y la isoterma dibujada.', 'Teoría cinética con el recorrido libre medio, el número de choques por segundo y la densidad de moléculas.', 'Caja de partículas animada que se mueve más rápido o más despacio según la temperatura.', 'Las fórmulas del desarrollo y de la teoría se ven como en los apuntes.', 'Los ejemplos usan coma decimal.', 'Modo práctica con enunciado escrito.', 'Enlace a Ciclos termodinámicos para Otto, Diesel, Brayton y Stirling.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ecuación de estado PV = nRT con P, V, T y n en varias unidades, los moles a partir de la masa y la densidad del gas.', 'Transformaciones isoterma, isobara, isocora y adiabática encadenadas, con el trabajo, el calor y la variación de energía interna de cada tramo, y ciclos con su rendimiento comparado con el de Carnot.', 'Diagrama P-V con las isotermas y el área del ciclo.', 'Teoría cinética: velocidades cuadrática media, media y más probable, energía cinética media y la distribución de Maxwell.'] },
     ],
     ciclos: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Nuevos ciclos Brayton (turbina de gas) y Stirling, este con y sin regenerador.', 'Ciclo propio: das la presión y el volumen de tres o cuatro estados y el tipo de cada tramo (isocora, isobara, recta, isoterma o adiabática).', 'Diagrama T-S animado junto al p-V y la variación de entropía de cada tramo en la tabla y en el desarrollo.', 'Potencia de un motor Otto o Diesel a partir de las revoluciones por minuto y el número de cilindros.', 'Modo práctica con enunciado: ejercicios al azar de cada ciclo y de máquinas térmicas.', 'Enlace a Gases ideales para encadenar transformaciones.'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['Arreglo: en el móvil, las fórmulas largas del desarrollo se cortaban por la derecha; ahora bajan de línea en cada igual.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ciclos de Carnot, Otto y Diesel con un gas ideal, con la tabla de estados, el trabajo, el calor y la energía interna de cada tramo y el rendimiento comparado con su fórmula y con Carnot.', 'Máquinas térmicas, frigoríficos y bombas de calor: el dato que falta, el rendimiento o la eficiencia, el límite de Carnot y si la máquina es posible, con la entropía del universo.', 'Diagrama p-V con un punto que recorre el ciclo y el cilindro con el émbolo, y el esquema de flujos de energía de las máquinas.'] },
     ],
     ph: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Hidrólisis de sales: pH del acetato de sodio, del cloruro de amonio o de una sal neutra, con la constante de hidrólisis.', 'Al revés: Ka o Kb a partir del pH medido, y la concentración que hace falta para un pH.', 'Preparar un tampón: el cociente sal/ácido y los gramos de sal para un pH dado.', 'Ácidos polipróticos (carbónico, fosfórico, sulfúrico con su segunda constante) y su valoración con una equivalencia por protón.', 'Mezclas de un ácido débil con una base fuerte, o al revés, como modo propio.', 'Agua a otra temperatura: Kw y el pH neutro cambian (6,63 a 50 °C).'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['Valoraciones de un ácido o una base débil: con muy poco valorante añadido, o muy cerca del punto de equivalencia, el pH ya sale bien. Antes se usaba Henderson-Hasselbalch también ahí y daba un pH equivocado (por ejemplo 2,05 en vez de 2,91 al empezar a valorar el ácido acético).'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: pH de ácidos y bases fuertes (también muy diluidos) y débiles, con el grado de disociación y la aproximación comprobada.', 'Mezclas de un ácido fuerte con una base fuerte y disoluciones reguladoras con Henderson-Hasselbalch, también al añadirles ácido o base.', 'Valoraciones de ácidos y bases fuertes y débiles: volumen y pH de equivalencia, pH a mitad, el pH con el volumen que pidas, el indicador adecuado y la curva.', 'Vaso con el color del indicador universal y las partículas, y una bureta que valora mientras se dibuja la curva.'] },
     ],
     fluidos: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Viscosidad: ley de Poiseuille en un tubo (caudal o diferencia de presión, perfil de velocidades y número de Reynolds) y ley de Stokes para una esfera que cae (velocidad límite o viscosidad a partir de ella).', 'Tubo de Pitot y medidor de Venturi con manómetro: la velocidad o el caudal a partir del desnivel.', 'Fuerza y centro de presiones sobre una presa o una compuerta sumergida, con el momento en la base.', 'Tensión superficial y capilaridad con la ley de Jurin, también para líquidos que no mojan como el mercurio.', 'Los ejemplos escriben los decimales con coma.', 'Modo práctica con enunciado: ejercicios al azar de cada tipo.'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['Arreglo: en el móvil, las fórmulas largas del desarrollo se cortaban por la derecha; ahora bajan de línea en cada igual.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: presión manométrica y absoluta a una profundidad, con la fuerza sobre el fondo, y alturas o densidades en un tubo en U con dos líquidos.', 'Prensa hidráulica: la fuerza que se consigue o la que hace falta para levantar una masa, con los recorridos de los émbolos.', 'Empuje de Arquímedes: si un cuerpo flota (y cuánto se sumerge) o se hunde (peso aparente y aceleración), y la densidad a partir del peso en el aire y dentro del fluido.', 'Tuberías con la ecuación de continuidad y Bernoulli, y el chorro de un depósito con Torricelli: velocidad, alcance, caudal y tiempo de vaciado.', 'Una animación de cada caso.'] },
     ],
     doppler: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Velocidades en ángulo: la fuente y el observador pueden moverse en cualquier dirección y solo cuenta la componente a lo largo de la recta que los une.', 'Nueva pestaña «Luz»: Doppler relativista con corrimiento al rojo o al azul, la velocidad de una galaxia a partir de la longitud de onda que llega, el Doppler transversal y la comparación con la fórmula clásica, sobre el espectro visible.', 'La gráfica de la fuente que pasa muestra la frecuencia que se oye en cada instante, con el retraso del sonido.', 'Modo práctica con enunciado: ejercicios al azar de cada tipo.'] },
       { v: '0.1.2', fecha: '2026-10-25', cambios: ['Arreglo: en el móvil, las fórmulas largas del desarrollo se cortaban por la derecha; ahora bajan de línea en cada igual.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas dentro del texto de la teoría se ven bien escritas, no con símbolos $.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: frecuencia que se oye con la fuente, el observador y el viento moviéndose, con la longitud de onda delante de la fuente.', 'Una fuente que pasa de largo: lo que se oye antes y después, el salto en hercios y semitonos y, al revés, su velocidad a partir de las dos frecuencias. Con el observador a un lado de la carretera, la gráfica del cambio gradual.', 'Eco en un obstáculo que se mueve (radar de tráfico, murciélago, ecografía Doppler): la frecuencia del eco y las pulsaciones, o la velocidad del obstáculo a partir de ellas.', 'Onda de choque: número de Mach, semiángulo del cono y cuándo se oye el estampido.', 'Animación de los frentes de onda y botón para escuchar la diferencia.'] },
     ],
     resistencias: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Nuevo modo de asociación: escribe 100 + (220 ‖ 330) y sale la resistencia equivalente paso a paso, y con una tensión, la corriente y la potencia.', 'Nuevo modo para conseguir un valor que no existe con dos normalizadas en serie o en paralelo (5 kΩ = 10 kΩ ‖ 10 kΩ).', 'Nuevos modos de resistencia para un LED, con el valor normalizado y la potencia que debe aguantar, y de divisor de tensión con normalizadas, también con carga.', 'Código impreso de los condensadores (104, 472J, 104K 2A, 4n7) con la tolerancia y la tensión, y el código de colores de las bobinas en μH.', 'Avisa si parece que estás leyendo la resistencia al revés y te dice qué valor saldría desde el otro extremo.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas dentro del texto de la teoría se ven bien escritas, no con símbolos $.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: elige los colores de una resistencia de 3, 4, 5 o 6 bandas y obtén el valor, la tolerancia, el margen del valor real y el coeficiente de temperatura, con el dibujo de la resistencia.', 'Del valor a los colores: escribe 4k7, 2M2 o 470R y te da las bandas y el valor normalizado más cercano de las series E6 a E96.', 'Códigos SMD de 3 y 4 cifras, con R y EIA-96.'] },
     ],
     faraday: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Hilo recto y espira rectangular: la espira se aleja o se acerca, o la corriente del hilo cambia, con el flujo integrado, la fem, el sentido y la fuerza sobre la espira.', 'Campo que cambia con una función del tiempo (B₀ + kt, B₀ + kt², B₀ sen ωt o B₀ e^(−t/τ)): fem en cualquier instante y gráficas de B(t) y ε(t).', 'Barra con masa: velocidad límite al tirar de ella o al caer por raíles verticales, y la distancia que recorre una barra lanzada hasta pararse, con v(t).', 'Varilla que gira por un extremo y disco de Faraday: ε = ½BωL².', 'Alternador: el par que hay que hacer para mantener el giro y la energía de cada vuelta.', 'Botones para copiar el enlace del ejercicio, copiar la solución como texto o en LaTeX e imprimirla o guardarla en PDF.', 'El desarrollo paso a paso escribe las fórmulas como en los libros: fracciones, raíces, exponentes y subíndices de verdad.', 'Enlace a Autoinducción e inducción mutua desde la teoría.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: fem y corriente inducidas en una barra que se desliza sobre unos raíles, con la fuerza que la frena y la potencia.', 'Bobina que gira en un campo (alternador): flujo y fem en función del tiempo, valores máximo y eficaz.', 'Flujo que cambia en un tiempo porque cambia el campo o el ángulo: fem media, corriente y carga.', 'Espira que atraviesa una región con campo: fem al entrar y al salir, fuerza y calor.', 'Sentido de la corriente por la ley de Lenz y animación con la gráfica de Φ y ε.'] },
     ],
@@ -863,8 +904,12 @@ const Engine = (() => {
 })();
 
 /* =====================================================================
-   Magnetostática (sin DOM): campo B de hilos, segmentos, espiras, arcos,
-   solenoides y toroides por Biot-Savart, y fuerzas magnéticas.
+   Magnetostática (sin DOM): campo B de hilos, segmentos, espiras (circulares
+   y rectangulares), arcos, solenoides, toroides, cilindros con corriente,
+   láminas de corriente y discos cargados que giran, por Biot-Savart y
+   Ampère; fuerzas magnéticas y el perfil de |B| a lo largo de una recta.
+   Los símbolos «~a» de una clave son potencias de a que lleva la fuente
+   (la lámina K y el disco σω no tienen las dimensiones de una corriente).
    Unidades internas: μ₀ = 1 y longitudes en unidades de "a"; en modo simbólico
    los resultados se escriben como coef·μ₀·símbolos/(π aⁿ). En modo SI las
    longitudes van en metros (admite cm y mm) y las corrientes en amperios.
@@ -1037,7 +1082,75 @@ const Magneto = (() => {
       },
       formula: (i) => (i.dentro ? 'Dentro del toroide (Ampère): B = <span class="fr"><span class="nu">μ<sub>0</sub><i>N I</i></span><span class="de">2π<i>r</i></span></span>' : 'Fuera del núcleo del toroide: B = 0'),
     },
+    rectangular: {
+      label: 'Espira rectangular', icon: '▭',
+      campos: [['C', 'Centro', 'vec'], ['plano', 'Plano', 'plano'], ['a', 'Lado a (en el primer eje)', 'num'], ['b', 'Lado b (en el segundo eje)', 'num'], ['sentido', 'Sentido', 'sentido']],
+      def: () => ({ C: ['0', '0', '0'], plano: 'xy', a: '2', b: '2', sentido: 1 }),
+      campo(f, P) {
+        const pl = PLANOS[f.plano], v = esquinas(f), B = [0, 0, 0];
+        for (let k = 0; k < 4; k++) {
+          const A = v[k], Bp = v[(k + 1) % 4], r = rectaNum(P, A, V3.sub(Bp, A), Bp, 'segmento');
+          if (r.sobre) return { error: 'el punto está sobre la espira' };
+          B[0] += r.B[0]; B[1] += r.B[1]; B[2] += r.B[2];
+        }
+        const CP = V3.sub(P, f.C), z = V3.dot(CP, pl.n), centro = V3.norm(V3.sub(CP, V3.sc(pl.n, z))) < 1e-12;
+        return { B, info: { rect: true, centro: centro && Math.abs(z) < 1e-12, eje: centro, z } };
+      },
+      formula: (i) => (i.centro ? 'En el centro, sumando los cuatro lados: B = <span class="fr"><span class="nu">2μ<sub>0</sub><i>I</i>√(<i>a</i><sup>2</sup> + <i>b</i><sup>2</sup>)</span><span class="de">π<i>a b</i></span></span>' : 'Suma de los cuatro lados, cada uno con B = <span class="fr"><span class="nu">μ<sub>0</sub><i>I</i></span><span class="de">4π<i>d</i></span></span>(cos α<sub>1</sub> − cos α<sub>2</sub>)'),
+    },
+    cilindro: {
+      label: 'Cilindro con corriente', icon: '◉',
+      campos: [['C', 'Punto del eje', 'vec'], ['u', 'Dirección de la corriente', 'vec'], ['R1', 'Radio interior (0 si es macizo)', 'num'], ['R2', 'Radio exterior', 'num'], ['perfil', 'Densidad de corriente', 'perfil']],
+      def: () => ({ C: ['0', '0', '0'], u: ['0', '0', '1'], R1: '0', R2: '1', perfil: 'uniforme' }),
+      campo(f, P) {
+        if (!(f.R2 > f.R1 && f.R1 >= 0)) return { error: 'el radio exterior debe ser mayor que el interior' };
+        const uh = V3.unit(f.u), CP = V3.sub(P, f.C), rho = V3.sub(CP, V3.sc(uh, V3.dot(CP, uh))), r = V3.norm(rho);
+        if (r < 1e-12) return { B: [0, 0, 0], info: { cil: true, r: 0, fr: 0, zona: f.R1 > 0 ? 'hueco' : 'dentro', perfil: f.perfil } };
+        const p = f.perfil === 'lineal' ? 3 : 2, fr = r <= f.R1 ? 0 : r >= f.R2 ? 1 : (r ** p - f.R1 ** p) / (f.R2 ** p - f.R1 ** p);
+        return { B: V3.sc(V3.cross(uh, V3.sc(rho, 1 / r)), fr / (2 * PI * r)), info: { cil: true, r, fr, zona: r <= f.R1 ? 'hueco' : r >= f.R2 ? 'fuera' : 'dentro', perfil: f.perfil, hueco: f.R1 > 0 } };
+      },
+      formula: (i) => (i.zona === 'hueco' ? 'Dentro del hueco no hay corriente encerrada (Ampère): B = 0' : `Ley de Ampère con una circunferencia de radio <i>r</i>: B·2π<i>r</i> = μ<sub>0</sub><i>I</i><sub>enc</sub>, con <i>I</i><sub>enc</sub>/<i>I</i> = ${i.zona === 'fuera' ? '1 (fuera se encierra toda)' : i.perfil === 'lineal' ? (i.hueco ? '(<i>r</i><sup>3</sup> − <i>R</i><sub>1</sub><sup>3</sup>)/(<i>R</i><sub>2</sub><sup>3</sup> − <i>R</i><sub>1</sub><sup>3</sup>) con <i>J</i> ∝ <i>r</i>' : '<i>r</i><sup>3</sup>/<i>R</i><sup>3</sup> con <i>J</i> ∝ <i>r</i>') : (i.hueco ? '(<i>r</i><sup>2</sup> − <i>R</i><sub>1</sub><sup>2</sup>)/(<i>R</i><sub>2</sub><sup>2</sup> − <i>R</i><sub>1</sub><sup>2</sup>)' : '<i>r</i><sup>2</sup>/<i>R</i><sup>2</sup>')}`),
+    },
+    lamina: {
+      label: 'Lámina de corriente', icon: '▤', unidad: 'A/m', simbolo: 'K', escala: 1,
+      campos: [['C', 'Punto de la lámina', 'vec'], ['eje', 'Normal a la lámina', 'eje'], ['u', 'Dirección de K', 'vec']],
+      def: () => ({ C: ['0', '0', '0'], eje: 'z', u: ['1', '0', '0'], s: 'K' }),
+      campo(f, P) {
+        const n = EJES[f.eje], k = V3.sub(f.u, V3.sc(n, V3.dot(f.u, n)));
+        if (V3.norm(k) < 1e-12) return { error: 'K tiene que ir a lo largo de la lámina' };
+        const z = V3.dot(V3.sub(P, f.C), n);
+        if (Math.abs(z) < 1e-12) return { error: 'el punto está sobre la lámina' };
+        return { B: V3.sc(V3.cross(V3.unit(k), n), Math.sign(z) / 2), info: { lamina: true } };
+      },
+      formula: () => 'Lámina indefinida (Ampère): B = <span class="fr"><span class="nu">μ<sub>0</sub><i>K</i></span><span class="de">2</span></span>, paralelo a la lámina y perpendicular a <span class="vv">K</span>, con sentidos opuestos a cada lado (<span class="vv">B</span> = <span class="fr"><span class="nu">μ<sub>0</sub></span><span class="de">2</span></span> <span class="vv">K</span> × <span class="uv">n</span>)',
+    },
+    disco: {
+      label: 'Disco cargado que gira', icon: '◍', simbolo: 'sigma*omega', escala: 2,
+      campos: [['C', 'Centro', 'vec'], ['plano', 'Plano', 'plano'], ['R', 'Radio', 'num'], ['sentido', 'Giro', 'sentido']],
+      def: () => ({ C: ['0', '0', '0'], plano: 'xy', R: '1', sentido: 1, s: 'sigma*omega' }),
+      campo(f, P, fino) {
+        const pl = PLANOS[f.plano], CP = V3.sub(P, f.C), z = V3.dot(CP, pl.n), rho = V3.norm(V3.sub(CP, V3.sc(pl.n, z))), R = f.R;
+        if (rho < 1e-12 * R) {
+          // anillos de corriente dI = σω r dr: B = μ₀σω/2 · ((2z² + R²)/√(R² + z²) − 2|z|)
+          return { B: V3.sc(pl.n, (((2 * z * z + R * R) / Math.hypot(R, z) - 2 * Math.abs(z)) / 2) * f.sentido), info: { eje: true, z } };
+        }
+        if (Math.abs(z) < 1e-9 && rho <= R) return { error: 'el punto está sobre el disco' };
+        const g = gl(fino ? 16 : 6), pan = fino ? 6 : 2, h = R / pan, B = [0, 0, 0];
+        for (let p = 0; p < pan; p++) for (let i = 0; i < g.x.length; i++) {
+          const r = h * (p + (g.x[i] + 1) / 2), w = ((g.w[i] * h) / 2) * r * f.sentido, b = arcoNum(P, f.C, pl, r, 0, 2 * PI, false);
+          B[0] += w * b[0]; B[1] += w * b[1]; B[2] += w * b[2];
+        }
+        return { B, info: { eje: false } };
+      },
+      formula: (i) => (i.eje ? 'Cada anillo de radio <i>r</i> lleva d<i>I</i> = σω<i>r</i> d<i>r</i>; integrando en el eje: B = <span class="fr"><span class="nu">μ<sub>0</sub>σω</span><span class="de">2</span></span>(<span class="fr"><span class="nu">2<i>z</i><sup>2</sup> + <i>R</i><sup>2</sup></span><span class="de">√(<i>R</i><sup>2</sup> + <i>z</i><sup>2</sup>)</span></span> − 2|<i>z</i>|)' : 'Suma de anillos de corriente d<i>I</i> = σω<i>r</i> d<i>r</i>, resuelta numéricamente'),
+    },
   };
+  // vértices de la espira rectangular, en el sentido de la corriente
+  function esquinas(f) {
+    const pl = PLANOS[f.plano], s = f.sentido < 0 ? -1 : 1, q = [[1, -1], [1, 1], [-1, 1], [-1, -1]];
+    const v = q.map(([x, y]) => V3.add(f.C, V3.add(V3.sc(pl.e1, (x * f.a) / 2), V3.sc(pl.e2, (y * f.b) / 2))));
+    return s > 0 ? v : v.reverse();
+  }
 
   /* ---------- Lectura de la escena ---------- */
   function lector(modo) {
@@ -1053,11 +1166,15 @@ const Magneto = (() => {
       if (tipo === 'vec') o[k] = f[k].map((x, j) => leer(x, `${nom}, ${lab} (${'xyz'[j]})`));
       else if (tipo === 'num') o[k] = leer(f[k], `${nom}, ${lab}`);
       else if (tipo === 'sentido' || tipo === 'salida') o[k] = f[k] < 0 ? -1 : 1;
+      else if (tipo === 'perfil') o[k] = f[k] === 'lineal' ? 'lineal' : 'uniforme';
     }
     if (T.campos.some(([k, , t]) => k === 'u' && t === 'vec') && V3.norm(o.u) < 1e-12) throw new Error(`${nom}: la dirección no puede ser nula`);
-    for (const k of ['R', 'L', 'N']) if (k in o && !(o[k] > 0)) throw new Error(`${nom}: ${k} debe ser positivo`);
+    for (const k of ['R', 'L', 'N', 'a', 'b', 'R2']) if (k in o && !(o[k] > 0)) throw new Error(`${nom}: ${k} debe ser positivo`);
+    if ('R1' in o && f.tipo === 'cilindro' && !(o.R1 >= 0 && o.R1 < o.R2)) throw new Error(`${nom}: el radio interior tiene que estar entre 0 y el exterior`);
     o.k = leer(f.I ?? '1', `${nom}, corriente`);
     o.s = f.s || '';
+    // la lámina (K) y el disco (σω) llevan potencias de a para que el resultado tenga las dimensiones de B
+    if (T.escala) o.s = key(o.s, ...Array(T.escala).fill('~a'));
     return o;
   }
 
@@ -1095,7 +1212,7 @@ const Magneto = (() => {
   }
 
   /* ---------- Formato ---------- */
-  const GREEK = { mu: 'μ', lambda: 'λ', alpha: 'α', beta: 'β', omega: 'ω', phi: 'φ', theta: 'θ' };
+  const GREEK = { mu: 'μ', lambda: 'λ', alpha: 'α', beta: 'β', omega: 'ω', phi: 'φ', theta: 'θ', sigma: 'σ' };
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   function sym(name) {
     const m = String(name).match(/^([A-Za-z]+?)_?(\d*)$/);
@@ -1103,10 +1220,12 @@ const Magneto = (() => {
     return `<i>${esc(GREEK[m[1].toLowerCase()] || m[1])}</i>${m[2] ? `<sub>${m[2]}</sub>` : ''}`;
   }
   const sup = (n) => (n === 1 ? '' : `<sup>${n}</sup>`);
+  const potA = (k) => (k ? k.split('*').filter((s) => s === '~a').length : 0);
   function mono(k) {
     const cnt = {};
-    for (const s of k ? k.split('*') : []) cnt[s] = (cnt[s] || 0) + 1;
-    return Object.keys(cnt).map((s) => sym(s) + sup(cnt[s])).join('');
+    for (const s of k ? k.split('*') : []) if (s !== '~a') cnt[s] = (cnt[s] || 0) + 1;
+    // σ delante de ω, como en los libros (σω)
+    return Object.keys(cnt).sort((x, y) => (y === 'sigma') - (x === 'sigma')).map((s) => sym(s) + sup(cnt[s])).join('');
   }
   const frac = (n, d) => (d ? `<span class="fr"><span class="nu">${n || '1'}</span><span class="de">${d}</span></span>` : n || '1');
   const uv = (c) => `<span class="uv">u</span><sub>${c}</sub>`;
@@ -1116,7 +1235,7 @@ const Magneto = (() => {
     const a = Math.abs(x);
     let s = a >= 1e4 || a < 1e-3 ? x.toExponential(3).replace(/\.?0+e/, 'e').replace('e', '·10^') : String(+x.toPrecision(4));
     s = s.replace(/·10\^([+-]?\d+)/, (_, e) => `·10<sup>${+e}</sup>`);
-    return s.replace('-', MINUS);
+    return s.replace('.', ',').replace('-', MINUS);
   }
   // número geométrico en línea: √2, 3/4, 0.4142
   function num(x) {
@@ -1128,6 +1247,7 @@ const Magneto = (() => {
   const pt = (v) => `(${v.map(num).join(', ')})`;
   // contexto de formato: n = potencia de a (negativa en el denominador)
   function cola(k, n, conPi) {
+    n += potA(k);
     const syms = 'μ<sub>0</sub>' + mono(k) + (n > 0 ? `<i>a</i>${sup(n)}` : '');
     const den = (conPi ? 'π' : '') + (n < 0 ? `<i>a</i>${sup(-n)}` : '');
     return { syms, den };
@@ -1305,6 +1425,40 @@ const Magneto = (() => {
     },
   };
 
+  /* ---------- Perfil de |B| a lo largo de una recta ---------- */
+  function perfilB(q, fs, leer, modo) {
+    const P = q.P.map((x, j) => leer(x, `Desde (${'xyz'[j]})`)), Q = q.Q.map((x, j) => leer(x, `Hasta (${'xyz'[j]})`)), d = V3.sub(Q, P), L = V3.norm(d);
+    if (!(L > 0)) throw new Error('los dos extremos de la recta coinciden');
+    const n = 160, xs = [], ys = [], esc2 = modo === 'si' ? MU0 : 1;
+    for (let k = 0; k <= n; k++) {
+      let m = null;
+      try { const { vp } = campoTotal(fs, V3.add(P, V3.sc(d, k / n)), false); m = V3.norm(Object.values(vp).reduce((a, b) => V3.add(a, b), [0, 0, 0])) * esc2; } catch (e) { m = null; }
+      xs.push((L * k) / n); ys.push(m !== null && isFinite(m) ? m : null);
+    }
+    const val = ys.filter((y) => y !== null).sort((a, b) => a - b);
+    if (!val.length) throw new Error('la recta pasa por encima de las fuentes en todos sus puntos');
+    const top = Math.max(val[Math.floor(0.97 * (val.length - 1))] * 1.15, 1e-300), iMax = ys.reduce((im, y, k) => (y !== null && (im < 0 || y > ys[im]) ? k : im), -1);
+    const w = 320, h = 150, ml = 8, mb = 22, mt = 10, X = (x) => ml + ((w - 2 * ml) * x) / L, Y = (y) => h - mb - ((h - mb - mt) * Math.min(y, top)) / top;
+    let trazo = '', pen = false;
+    ys.forEach((y, k) => { if (y === null) { pen = false; return; } trazo += `${pen ? 'L' : 'M'}${X(xs[k]).toFixed(1)} ${Y(y).toFixed(1)} `; pen = true; });
+    const uL = (x) => (modo === 'si' ? `${dec(x)} m` : `${num(x) === '1' ? '' : num(x)}a`), uB = modo === 'si' ? 'T' : 'μ₀/a por unidad de corriente';
+    const svg = `<svg class="perfil" viewBox="0 0 ${w} ${h}" role="img" aria-label="Perfil de |B| a lo largo de la recta">`
+      + `<line x1="${ml}" y1="${h - mb}" x2="${w - ml}" y2="${h - mb}" stroke="var(--line)"/>`
+      + `<path d="${trazo}" fill="none" stroke="var(--neg)" stroke-width="2"/>`
+      + `<circle cx="${X(xs[iMax]).toFixed(1)}" cy="${Y(ys[iMax]).toFixed(1)}" r="3.5" fill="var(--mark)"/>`
+      + `<text x="${ml}" y="${h - 6}" font-size="11" fill="var(--muted)">P</text><text x="${w - ml}" y="${h - 6}" font-size="11" fill="var(--muted)" text-anchor="end">Q · ${uL(L)}</text>`
+      + `<text x="${ml + 4}" y="${mt + 8}" font-size="11" fill="var(--muted)">|B| (${uB})</text></svg>`;
+    const huecos = ys.some((y) => y === null), claves = [...new Set(fs.map((f) => f.s))];
+    const maxHtml = modo === 'si' ? `${dec(ys[iMax])} <span class="unit">T</span>` : claves.length === 1 ? term(ys[iMax], claves[0], -1).html : `${dec(ys[iMax])}·μ<sub>0</sub>/<i>a</i>`;
+    return {
+      P, Q, vp: {}, perfil: { xs, ys },
+      res: `${svg}<span class="sub">Máximo |<span class="vv">B</span>| = ${maxHtml} a una distancia ${uL(xs[iMax])} de P${huecos ? ' · los huecos son puntos sobre un conductor' : ''}</span>`,
+      steps: [{ texto: 'Recta de P a Q', html: `Se calcula <span class="vv">B</span> por superposición en ${n + 1} puntos entre P = ${pt(P)} y Q = ${pt(Q)}${modo === 'si' ? '' : ', con todas las corrientes iguales a 1 (el resultado va en unidades de μ<sub>0</sub>/<i>a</i> por unidad de corriente)'}.` }],
+      final: 'Módulo del campo total en cada punto de la recta',
+    };
+  }
+  ANALYSES.perfil = { label: 'Perfil de |B|', titulo: 'Perfil de |B| a lo largo de una recta', def: () => ({ P: ['-3', '0', '0'], Q: ['3', '0', '0'] }), run: perfilB };
+
   /* ---------- Desarrollo de cada fuente ---------- */
   function datos(f, info, modo) {
     const L = (x) => { if (modo === 'si') return `${dec(x)} m`; const t = num(x); return t === '1' ? '<i>a</i>' : t === MINUS + '1' ? MINUS + '<i>a</i>' : t === '0' ? '0' : `${t}<i>a</i>`; };
@@ -1315,6 +1469,7 @@ const Magneto = (() => {
     if (info.eje && info.z !== undefined) out.push(`<i>z</i> = ${L(info.z)}`);
     if (info.th !== undefined) { const t = num(info.th / PI); out.push(`θ = ${t === '1' ? '' : t === MINUS + '1' ? MINUS : t}π`); }
     if (info.r !== undefined) out.push(`<i>r</i> = ${L(info.r)}`);
+    if (info.fr !== undefined && info.zona !== 'hueco') out.push(`<i>I</i><sub>enc</sub> = ${num(info.fr)}·<i>I</i>`);
     return out.join(' · ');
   }
 
@@ -1335,7 +1490,7 @@ const Magneto = (() => {
     return { modo, fuentes: fs, errors, results };
   }
 
-  return { SOURCES, ANALYSES, PLANOS, EJES, PLANO_DE_EJE, run, campoRapido, MU0, num, dec, sym };
+  return { SOURCES, ANALYSES, PLANOS, EJES, PLANO_DE_EJE, run, campoRapido, esquinas, MU0, num, dec, sym };
 })();
 
 /* =====================================================================
@@ -1429,13 +1584,275 @@ const MagEjemplos = (() => {
         vista: { plano: 'xy', corte: '0' },
       }),
     },
+    {
+      clave: 'cilindro', titulo: 'Cilindro macizo con corriente',
+      enunciado: 'Un conductor cilíndrico macizo e indefinido de radio 2a, con el eje en el eje Z, lleva una corriente I hacia +Z repartida uniformemente en su sección. Calcular el campo magnético en (a, 0, 0) y en (3a, 0, 0), y dibujar cómo varía |B| con la distancia al eje.',
+      escena: () => ({
+        fuentes: [{ tipo: 'cilindro', nombre: 'Cilindro', I: '1', s: 'I', C: v(0, 0, 0), u: v(0, 0, 1), R1: '0', R2: '2', perfil: 'uniforme' }],
+        preguntas: [{ tipo: 'B', P: v(1, 0, 0) }, { tipo: 'B', P: v(3, 0, 0) }, { tipo: 'perfil', P: v(0, 0, 0), Q: v(5, 0, 0) }],
+        vista: { plano: 'xy', corte: '0', mapa: true },
+      }),
+    },
+    {
+      clave: 'coaxial', titulo: 'Cable coaxial',
+      enunciado: 'Un cable coaxial indefinido, con el eje en el eje Z, tiene un conductor interior macizo de radio a por el que va una corriente I hacia +Z, y un conductor exterior de radios 2a y 3a por el que vuelve la misma corriente. Las corrientes están repartidas uniformemente. Calcular el campo magnético en (a/2, 0, 0), en (5a/2, 0, 0) y en (4a, 0, 0).',
+      escena: () => ({
+        fuentes: [
+          { tipo: 'cilindro', nombre: 'Interior', I: '1', s: 'I', C: v(0, 0, 0), u: v(0, 0, 1), R1: '0', R2: '1', perfil: 'uniforme' },
+          { tipo: 'cilindro', nombre: 'Exterior', I: '-1', s: 'I', C: v(0, 0, 0), u: v(0, 0, 1), R1: '2', R2: '3', perfil: 'uniforme' },
+        ],
+        preguntas: [{ tipo: 'B', P: v('1/2', 0, 0) }, { tipo: 'B', P: v('5/2', 0, 0) }, { tipo: 'B', P: v(4, 0, 0) }, { tipo: 'perfil', P: v(0, 0, 0), Q: v(4, 0, 0) }],
+        vista: { plano: 'xy', corte: '0', mapa: true },
+      }),
+    },
+    {
+      clave: 'cilindro-J', titulo: 'Cilindro con J proporcional a r',
+      enunciado: 'Un hilo grueso de radio a, con el eje en el eje Z, lleva una corriente total I hacia +Z con una densidad de corriente que crece linealmente con la distancia al eje, J = J₀ r/a. Calcular el campo magnético en (a/2, 0, 0) y en (0, 2a, 0).',
+      escena: () => ({
+        fuentes: [{ tipo: 'cilindro', nombre: 'Hilo grueso', I: '1', s: 'I', C: v(0, 0, 0), u: v(0, 0, 1), R1: '0', R2: '1', perfil: 'lineal' }],
+        preguntas: [{ tipo: 'B', P: v('1/2', 0, 0) }, { tipo: 'B', P: v(0, 2, 0) }],
+        vista: { plano: 'xy', corte: '0' },
+      }),
+    },
+    {
+      clave: 'laminas', titulo: 'Dos láminas de corriente',
+      enunciado: 'El plano z = 0 lleva una densidad superficial de corriente K hacia +X, y el plano z = 2a, otra de la misma intensidad hacia −X. Calcular el campo magnético en (0, 0, a), entre las dos láminas, y en (0, 0, 3a).',
+      escena: () => ({
+        fuentes: [
+          { tipo: 'lamina', nombre: 'Lámina z = 0', I: '1', s: 'K', C: v(0, 0, 0), eje: 'z', u: v(1, 0, 0) },
+          { tipo: 'lamina', nombre: 'Lámina z = 2a', I: '1', s: 'K', C: v(0, 0, 2), eje: 'z', u: v(-1, 0, 0) },
+        ],
+        preguntas: [{ tipo: 'B', P: v(0, 0, 1) }, { tipo: 'B', P: v(0, 0, 3) }],
+        vista: { plano: 'yz', corte: '0' },
+      }),
+    },
+    {
+      clave: 'rectangular', titulo: 'Espira rectangular',
+      enunciado: 'Una espira rectangular de lados 2a (paralelo al eje X) y 4a (paralelo al eje Y), centrada en el origen en el plano XY, lleva una corriente I en sentido antihorario visto desde +Z. Calcular el campo magnético en el centro y en (0, 0, 2a).',
+      escena: () => ({
+        fuentes: [{ tipo: 'rectangular', nombre: 'Espira', I: '1', s: 'I', C: v(0, 0, 0), plano: 'xy', a: '2', b: '4', sentido: 1 }],
+        preguntas: [{ tipo: 'B', P: v(0, 0, 0) }, { tipo: 'B', P: v(0, 0, 2) }],
+        vista: { plano: 'xy', corte: '0' },
+      }),
+    },
+    {
+      clave: 'disco', titulo: 'Disco cargado que gira',
+      enunciado: 'Un disco de radio a con densidad superficial de carga σ gira con velocidad angular ω alrededor de su eje, el eje Z, en sentido antihorario visto desde +Z. Calcular el campo magnético en el centro y en el punto (0, 0, a) del eje.',
+      escena: () => ({
+        fuentes: [{ tipo: 'disco', nombre: 'Disco', I: '1', s: 'sigma*omega', C: v(0, 0, 0), plano: 'xy', R: '1', sentido: 1 }],
+        preguntas: [{ tipo: 'B', P: v(0, 0, 0) }, { tipo: 'B', P: v(0, 0, 1) }, { tipo: 'perfil', P: v(0, 0, -3), Q: v(0, 0, 3) }],
+        vista: { plano: 'xz', corte: '0', lineas: true },
+      }),
+    },
   ];
   return { lista };
 })();
 
 /* =====================================================================
+   Compartir, copiar e imprimir (Matemáticas y Electromagnetismo; se pone
+   con 'compartir.js' en los scripts de la herramienta en catalogo.js):
+   · un enlace con los datos del ejercicio en la dirección (#d=…): al
+     abrirlo, los datos se dejan donde la herramienta guarda los suyos
+     (localStorage, la clave guarda de la página, que herramientas.js deja
+     en Pagina.guarda) antes de que arranque, así que se
+     abre con ellos sin que la herramienta tenga que saber nada;
+   · copiar los resultados y el desarrollo como texto o como LaTeX (las
+     fórmulas salen de su fuente, que Mates deja en data-src);
+   · imprimir (o guardar en PDF) solo el ejercicio, sin menús ni teoría.
+   Lee los resultados de #resumen o #res y el desarrollo de #pasos; en
+   Magnetostática, cada pregunta con su resultado ([data-res]) y su
+   desarrollo ([data-steps]);
+   · un aviso de que log es el logaritmo decimal.
+   Tiene que ir antes que el app.js de la herramienta.
+   ===================================================================== */
+const Compartir = (() => {
+  const partes = () => (typeof location === 'undefined' ? '/herramienta/' : location.pathname).split('/').filter((q) => q && !/\.html?$/.test(q));
+  const CLAVE = (typeof Pagina !== 'undefined' && Pagina.guarda) || `${partes().pop()}-v1`;
+  const b64 = (s) => btoa(unescape(encodeURIComponent(s))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  const deB64 = (s) => decodeURIComponent(escape(atob(s.replace(/-/g, '+').replace(/_/g, '/'))));
+
+  // los datos de un enlace compartido pasan a donde la herramienta los lee al arrancar
+  if (typeof location !== 'undefined') {
+    const m = /[#&]d=([A-Za-z0-9_-]+)/.exec(location.hash);
+    if (m) {
+      try { const json = deB64(m[1]); JSON.parse(json); localStorage.setItem(CLAVE, json); } catch (e) { /* enlace roto o sin almacenamiento */ }
+      try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* file:// */ }
+    }
+  }
+  const enlace = () => { let d = null; try { d = localStorage.getItem(CLAVE); } catch (e) { /* sin almacenamiento */ } return location.href.split('#')[0] + (d ? `#d=${b64(d)}` : ''); };
+
+  /* ---------- De la sintaxis de Mates a LaTeX y a texto ---------- */
+  const FUNC = { sen: '\\operatorname{sen}', cos: '\\cos', tg: '\\operatorname{tg}', tan: '\\tan', ln: '\\ln', log: '\\log', exp: '\\exp', arcsen: '\\operatorname{arcsen}', arccos: '\\arccos', arctg: '\\operatorname{arctg}', 'máx': '\\max', 'mín': '\\min', 'lím': '\\lim', senh: '\\operatorname{senh}', cosh: '\\cosh', tgh: '\\operatorname{tgh}', cotg: '\\operatorname{cotg}', sec: '\\sec' };
+  const SIM = { '·': '\\cdot', '×': '\\times', '÷': '\\div', '−': '-', '≤': '\\le', '≥': '\\ge', '≠': '\\ne', '≈': '\\approx', '±': '\\pm', '∓': '\\mp', '→': '\\to', '←': '\\leftarrow', '⇒': '\\Rightarrow', '⇔': '\\Leftrightarrow', '↔': '\\leftrightarrow', '∞': '\\infty', '∫': '\\int', '∬': '\\iint', '∭': '\\iiint', '∮': '\\oint', '∯': '\\oiint', '∑': '\\sum', '∏': '\\prod', '∂': '\\partial', '∇': '\\nabla', '∈': '\\in', '∝': '\\propto', '⊥': '\\perp', '∥': '\\parallel', '≡': '\\equiv', '∼': '\\sim', '°': '^{\\circ}', '%': '\\%', '′': "'", '″': "''", '|': '|', '\\{': '\\{', '\\}': '\\}', 'ℒ': '\\mathcal{L}', '∅': '\\emptyset', '∪': '\\cup', '∩': '\\cap' };
+  const GRIEGO = { α: 'alpha', β: 'beta', γ: 'gamma', δ: 'delta', ε: 'varepsilon', ζ: 'zeta', η: 'eta', θ: 'theta', ι: 'iota', κ: 'kappa', λ: 'lambda', μ: 'mu', ν: 'nu', ξ: 'xi', π: 'pi', ρ: 'rho', σ: 'sigma', τ: 'tau', υ: 'upsilon', φ: 'varphi', χ: 'chi', ψ: 'psi', ω: 'omega', Γ: 'Gamma', Δ: 'Delta', Θ: 'Theta', Λ: 'Lambda', Ξ: 'Xi', Π: 'Pi', Σ: 'Sigma', Φ: 'Phi', Ψ: 'Psi', Ω: 'Omega' };
+  const SUB = { '₀': '0', '₁': '1', '₂': '2', '₃': '3', '₄': '4', '₅': '5', '₆': '6', '₇': '7', '₈': '8', '₉': '9' }, SUP = { '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9', '⁻': '-' };
+  function latex(src) {
+    const tk = Mates.tokens(src);
+    let p = 0;
+    const es = (v) => tk[p] && tk[p].t === 's' && tk[p].v === v;
+    // quita los paréntesis o las llaves de fuera si envuelven todo
+    const quita = (s) => {
+      let m = /^\\left\((.*)\\right\)$/.exec(s);
+      if (m) return m[1];
+      if (s[0] === '{' && s.endsWith('}')) { let d = 0; for (let i = 0; i < s.length; i++) { if (s[i] === '{' && s[i - 1] !== '\\') d++; else if (s[i] === '}' && s[i - 1] !== '\\') d--; if (d === 0 && i < s.length - 1) return s; } return s.slice(1, -1); }
+      return s;
+    };
+    const palabra = (w) => {
+      if (FUNC[w]) return FUNC[w] + ' ';
+      return [...w].map((c) => (GRIEGO[c] ? `\\${GRIEGO[c]} ` : SUB[c] ? `_{${SUB[c]}}` : SUP[c] ? `^{${SUP[c]}}` : SIM[c] || c)).join('');
+    };
+    function secuencia(cierre) {
+      const xs = [];
+      while (p < tk.length && !(cierre && es(cierre))) {
+        if (es(')') || es('}') || es(']')) { p++; continue; }
+        xs.push(fraccion());
+      }
+      return xs.join(' ').replace(/\s+/g, ' ').trim();
+    }
+    function fraccion() {
+      let a = guiones();
+      while (es('/')) { p++; const b = guiones(); a = `\\frac{${quita(a)}}{${quita(b)}}`; }
+      return a;
+    }
+    function argumento() {
+      if (es('{')) { p++; const s = secuencia('}'); p++; return `{${s}}`; }
+      if (es('-') || es('−')) { p++; return `{-${argumento().replace(/^\{|\}$/g, '')}}`; }
+      if (es('(')) return `{${atomo()}}`;
+      const k = tk[p];
+      if (!k) return '{}';
+      p++;
+      if (k.t === 's') return `{${SIM[k.v] || k.v}}`;
+      let v = k.v;
+      while (tk[p] && !tk[p].sp && (tk[p].t === 'n' || tk[p].t === 'w')) { v += tk[p].v; p++; }
+      return `{${palabra(v).trim()}}`;
+    }
+    function guiones() {
+      let b = atomo();
+      for (;;) {
+        if (es('_')) { p++; b += `_${argumento()}`; } else if (es('^')) { p++; b += `^${argumento()}`; } else break;
+      }
+      return b;
+    }
+    function atomo() {
+      const k = tk[p];
+      if (!k) return '';
+      p++;
+      if (k.t === 'n') return k.v.replace(',', '{,}');
+      if (k.t === 'x') return `\\text{${k.v}}`;
+      if (k.t === 'w') return k.sp && p > 1 && /^d[a-zA-Zθφρ]$/.test(k.v) ? `\\, d${palabra(k.v[1])}` : palabra(k.v);
+      const v = k.v;
+      if (v === '(' || v === '[') { const c = v === '(' ? ')' : ']', s = secuencia(c); if (es(c)) p++; return v === '(' ? `\\left(${s}\\right)` : `\\left[${s}\\right]`; }
+      if (v === '{') { const s = secuencia('}'); if (es('}')) p++; return `{${s}}`; }
+      if (v === '√') return `\\sqrt{${quita(guiones()).replace(/^\{(.*)\}$/, '$1')}}`;
+      if (v === '∛') return `\\sqrt[3]{${quita(guiones()).replace(/^\{(.*)\}$/, '$1')}}`;
+      return SIM[v] || v;
+    }
+    return secuencia(null);
+  }
+  // texto plano: la fuente sin las llaves de agrupar
+  function texto(src) {
+    let s = String(src).replace(/<sup>(.*?)<\/sup>/g, '^($1)').replace(/<sub>(.*?)<\/sub>/g, '_$1').replace(/<[^>]+>/g, '').replace(/"/g, '').replace(/\\\{/g, '\u0001').replace(/\\\}/g, '\u0002');
+    const simple = (a) => /^[\w.,′α-ωπ∂^−-]+$/.test(a) || /^\([^()]*\)$/.test(a);
+    for (let i = 0, antes = ''; i < 12 && antes !== s; i++) {
+      antes = s;
+      s = s.replace(/([\^_])\{([^{}]*)\}/g, (_, o, a) => (/^[\w.,′α-ωπ−-]+$/.test(a) && a.length <= 3 ? `${o}${a}` : `${o}(${a})`));
+      s = s.replace(/\{([^{}]*)\}\/\{([^{}]*)\}/g, (_, a, b) => `${simple(a) ? a : `(${a})`}/${simple(b) ? b : `(${b})`}`);
+    }
+    return s.replace(/[{}]/g, '').replace(/\u0001/g, '{').replace(/\u0002/g, '}');
+  }
+
+  /* ---------- El ejercicio como texto o como LaTeX ---------- */
+  const escTex = (s) => s.replace(/\\/g, '\\textbackslash{}').replace(/([%#&_$])/g, '\\$1').replace(/[{}]/g, (c) => `\\${c}`);
+  function lee(nodo, tex) {
+    let out = '';
+    for (const n of nodo.childNodes) {
+      if (n.nodeType === 3) { out += tex ? escTex(n.nodeValue) : n.nodeValue; continue; }
+      if (n.nodeType !== 1 || n.hidden) continue;
+      const tag = n.tagName.toLowerCase();
+      if (tag === 'math') { const s = n.getAttribute('data-src'); out += s ? (tex ? `$${latex(s)}$` : texto(s)) : n.textContent; continue; }
+      if (tag === 'canvas' || tag === 'svg' || tag === 'button' || tag === 'select' || tag === 'input') continue;
+      if (n.classList.contains('mat')) {
+        const filas = [...n.querySelectorAll('tr')].map((tr) => [...tr.children].map((td) => lee(td, tex).trim()));
+        const env = n.classList.contains('det') ? 'vmatrix' : 'pmatrix';
+        out += tex ? `$\\begin{${env}} ${filas.map((f) => f.join(' & ').replace(/\$/g, '')).join(' \\\\ ')} \\end{${env}}$` : `${env === 'vmatrix' ? '|' : '['}${filas.map((f) => f.join('  ')).join('; ')}${env === 'vmatrix' ? '|' : ']'}`;
+        continue;
+      }
+      if (n.classList.contains('fr') && n.children.length === 2) { const [a, b] = [...n.children].map((c) => lee(c, tex).trim().replace(/\$/g, '')); out += tex ? `$\\frac{${a}}{${b}}$` : `${/^[\w.,√−-]+$/.test(a) ? a : `(${a})`}/${/^[\w.,√−-]+$/.test(b) ? b : `(${b})`}`; continue; }
+      if (tag === 'sup' || tag === 'sub') { const a = lee(n, tex).trim().replace(/\$/g, ''), o = tag === 'sup' ? '^' : '_'; out += tex ? `$${o}{${a}}$` : a.length > 1 ? `${o}(${a})` : `${o}${a}`; continue; }
+      if (tag === 'br') { out += '\n'; continue; }
+      const dentro = lee(n, tex);
+      if (tex && (tag === 'b' || tag === 'strong')) out += `\\textbf{${dentro}}`;
+      else if (tag === 'small') out += ` (${dentro.trim()})`;
+      else if (tag === 'tr') out += '\n' + [...n.children].map((c) => lee(c, tex).trim()).join(tex ? ' & ' : ' | ');
+      else if (['div', 'p', 'li', 'table', 'ol', 'ul'].includes(tag)) out += `\n${dentro}\n`;
+      else out += dentro;
+    }
+    return out;
+  }
+  const limpia = (s) => s.replace(/[ \t]+/g, ' ').replace(/ *\n */g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+  // cada fila de resultados «<span>nombre</span> valor» sale como «nombre: valor»
+  const fila = (d, tex) => { const sp = d.querySelector(':scope > span'); if (!sp) return limpia(lee(d, tex)); const c = d.cloneNode(true); c.querySelector(':scope > span').remove(); return `${limpia(lee(sp, tex))}: ${limpia(lee(c, tex))}`; };
+  const filas = (res, tex) => { const ds = [...res.children].filter((d) => !d.hidden && d.tagName === 'DIV' && d.querySelector(':scope > span')); return ds.length ? ds.map((d) => fila(d, tex)) : [limpia(lee(res, tex))].filter(Boolean); };
+  // bloques { titulo, items, pasos }: uno en las herramientas normales y uno por pregunta en Magnetostática
+  function bloques(tex) {
+    const preguntas = [...document.querySelectorAll('[data-res]')];
+    if (preguntas.length) return preguntas.map((r, i) => { const p = r.closest('.pieza'), nom = p && p.querySelector('.badge'), st = document.querySelector(`[data-steps="${r.dataset.res}"] ol`); return { titulo: nom ? nom.textContent : `Pregunta ${i + 1}`, items: [limpia(lee(r, tex))], pasos: st ? [...st.children] : [] }; });
+    const res = document.querySelector('#resumen') || document.querySelector('#res');
+    return [{ titulo: '', items: res ? filas(res, tex) : [], pasos: [...document.querySelectorAll('#pasos > li')] }];
+  }
+  function ejercicio(tex) {
+    const tit = (document.querySelector('h1') || {}).textContent || document.title;
+    const paso = (li) => { const t = li.querySelector('strong, .st-h'), c = li.cloneNode(true), ct = c.querySelector('strong, .st-h'); if (ct) ct.remove(); return { t: t ? limpia(lee(t, tex)) : '', c: limpia(lee(c, tex)).replace(/\n+/g, tex ? ' \\\\ ' : '\n   ') }; };
+    const bs = bloques(tex);
+    if (!tex) return [tit, ...bs.flatMap((b) => ['', ...(b.titulo ? [b.titulo] : []), 'Resultados', ...b.items.map((q) => `· ${q.replace(/\n+/g, '; ')}`), ...(b.pasos.length ? ['', 'Desarrollo', ...b.pasos.map((li, i) => { const q = paso(li); return `${i + 1}. ${q.t}${q.t ? ': ' : ''}${q.c}`; })] : [])]), '', enlace()].join('\n');
+    return [`% ${tit} · SimulaCiencia`, `% ${enlace()}`, ...bs.flatMap((b) => { const sec = b.titulo ? '\\subsection*' : '\\section*'; return [...(b.titulo ? [`\\section*{${escTex(b.titulo)}}`] : []), `${sec}{Resultados}`, '\\begin{itemize}', ...b.items.map((q) => `  \\item ${q.replace(/\n+/g, '; ')}`), '\\end{itemize}', ...(b.pasos.length ? [`${sec}{Desarrollo}`, '\\begin{enumerate}', ...b.pasos.map((li) => { const q = paso(li); return `  \\item ${q.t ? `\\textbf{${q.t}.} ` : ''}${q.c}`; }), '\\end{enumerate}'] : [])]; })].join('\n');
+  }
+
+  /* ---------- Botones ---------- */
+  async function copia(s) {
+    try { await navigator.clipboard.writeText(s); return true; } catch (e) {
+      const t = document.createElement('textarea'); t.value = s; t.style.position = 'fixed'; t.style.opacity = '0'; document.body.appendChild(t); t.select();
+      let ok = false; try { ok = document.execCommand('copy'); } catch (e2) { /* sin portapapeles */ }
+      t.remove(); return ok;
+    }
+  }
+  function botones() {
+    if (typeof document === 'undefined') return;
+    // en la tarjeta del desarrollo (en Magnetostática, en la de las preguntas)
+    const card = document.querySelector('#pasos') ? document.querySelector('#pasos').closest('.card') : document.querySelector('#preguntas') && document.querySelector('#preguntas').closest('.panel');
+    if (!card || card.querySelector('.compartir')) return;
+    const caja = document.createElement('div');
+    caja.className = 'controles compartir';
+    caja.innerHTML = '<button class="btn" type="button" data-a="enlace">Copiar enlace</button><button class="btn" type="button" data-a="texto">Copiar como texto</button><button class="btn" type="button" data-a="latex">Copiar en LaTeX</button><button class="btn" type="button" data-a="imprimir">Imprimir o PDF</button>';
+    caja.style.margin = '0 0 10px';
+    card.querySelector('h2').after(caja);
+    caja.addEventListener('click', async (e) => {
+      const b = e.target.closest('button'); if (!b) return;
+      const a = b.dataset.a;
+      if (a === 'imprimir') { window.print(); return; }
+      const ok = await copia(a === 'enlace' ? enlace() : ejercicio(a === 'latex'));
+      const antes = b.textContent; b.textContent = ok ? '¡Copiado!' : 'No se ha podido copiar'; setTimeout(() => { b.textContent = antes; }, 1600);
+    });
+    // al imprimir: solo el ejercicio, en claro
+    const css = document.createElement('style');
+    css.textContent = '@media print { .top, .miga, .bib, .bib-scrim, footer, .teoria, .compartir, #ejemplos, .controles, .nota:empty, .error[hidden] { display: none !important } html, body { background: #fff !important } .wrap { max-width: none; padding: 0 } .layout { display: block !important } .card { break-inside: avoid; box-shadow: none !important } .pasos li { break-inside: avoid } canvas { max-height: 9cm; object-fit: contain } .chips, .stage-bar, .x, .tools { display: none !important } .cvwrap { height: 9cm !important; min-height: 0 !important } }';
+    document.head.appendChild(css);
+    // en claro y con los desarrollos plegados abiertos
+    let tema = null, cerrados = [];
+    addEventListener('beforeprint', () => { tema = document.documentElement.getAttribute('data-theme'); document.documentElement.setAttribute('data-theme', 'light'); cerrados = [...document.querySelectorAll('details:not([open])')]; cerrados.forEach((d) => { d.open = true; }); dispatchEvent(new Event('resize')); });
+    addEventListener('afterprint', () => { if (tema === null) document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', tema); cerrados.forEach((d) => { d.open = false; }); dispatchEvent(new Event('resize')); });
+    // log es el decimal
+    const err = document.querySelector('#error');
+    if (err && ['taylor', 'fourier', 'edos', 'laplace', 'derivadas', 'campos'].includes(CLAVE.slice(0, -3))) { const q = document.createElement('p'); q.className = 'nota'; q.id = 'nota-log'; q.textContent = 'ln es el logaritmo neperiano y log, el decimal (log₁₀).'; err.before(q); }
+  }
+  botones();
+  return { enlace, ejercicio, latex, texto, CLAVE };
+})();
+
+/* =====================================================================
    Interfaz de la calculadora de magnetostática: editor de fuentes y
-   preguntas, dibujo del campo en un plano, ejemplos y archivos .json.
+   preguntas, dibujo del campo en un plano (flechas, mapa de color de |B| y
+   líneas de campo), ejemplos y archivos .json.
    ===================================================================== */
 (() => {
   const { SOURCES, ANALYSES, PLANOS } = Magneto;
@@ -1460,11 +1877,11 @@ const MagEjemplos = (() => {
   };
   let uid = 0;
   const newId = () => 'm' + Date.now().toString(36) + (uid++).toString(36);
-  const vacia = () => ({ titulo: '', enunciado: '', modo: 'sym', vista: { plano: 'xy', corte: '0', flechas: true }, fuentes: [], preguntas: [] });
+  const vacia = () => ({ titulo: '', enunciado: '', modo: 'sym', vista: { plano: 'xy', corte: '0', flechas: true, mapa: false, lineas: false }, fuentes: [], preguntas: [] });
   function valida(s) {
     const o = { ...vacia(), ...s, vista: { ...vacia().vista, ...(s.vista || {}) } };
     o.modo = s.modo === 'si' ? 'si' : 'sym';
-    o.fuentes = (s.fuentes || []).filter((f) => SOURCES[f.tipo]).map((f) => ({ ...SOURCES[f.tipo].def(), I: '1', s: 'I', ...f, id: f.id || newId() }));
+    o.fuentes = (s.fuentes || []).filter((f) => SOURCES[f.tipo]).map((f) => ({ I: '1', s: 'I', ...SOURCES[f.tipo].def(), ...f, id: f.id || newId() }));
     o.preguntas = (s.preguntas || []).filter((q) => ANALYSES[q.tipo]).map((q) => ({ ...ANALYSES[q.tipo].def(o.fuentes), ...q, id: q.id || newId() }));
     return o;
   }
@@ -1493,23 +1910,25 @@ const MagEjemplos = (() => {
     }
     if (tipo === 'salida') return fila(lab, sel(f[k], [['1', 'sale de A'], ['-1', 'llega a A']], (v) => { f[k] = +v; ch(); }, lab));
     if (tipo === 'bool') return fila(lab, h('input', { type: 'checkbox', checked: !!f[k], onchange: (e) => { f[k] = e.target.checked; ch(); } }));
+    if (tipo === 'perfil') return fila(lab, sel(f[k], [['uniforme', 'uniforme'], ['lineal', 'J proporcional a r']], (v) => { f[k] = v; ch(); }, lab));
     return null;
   }
   function tarjetaFuente(f) {
     const T = SOURCES[f.tipo];
     const corriente = esc.modo === 'si'
-      ? h('div', { class: 'cur' }, h('input', { class: 'in', value: f.I, 'aria-label': 'Corriente', oninput: (e) => { f.I = e.target.value; recalcula(); } }), h('span', {}, 'A'))
-      : h('div', { class: 'cur' }, h('input', { class: 'in', value: f.I, 'aria-label': 'Coeficiente de la corriente', oninput: (e) => { f.I = e.target.value; recalcula(); } }), h('span', {}, '×'), h('input', { class: 'in', value: f.s, 'aria-label': 'Símbolo de la corriente', oninput: (e) => { f.s = e.target.value.replace(/[^A-Za-z0-9_]/g, ''); recalcula(); } }));
+      ? h('div', { class: 'cur' }, h('input', { class: 'in', value: f.I, 'aria-label': 'Corriente', oninput: (e) => { f.I = e.target.value; recalcula(); } }), h('span', {}, { lamina: 'A/m', disco: 'C/(m²·s)' }[f.tipo] || 'A'))
+      : h('div', { class: 'cur' }, h('input', { class: 'in', value: f.I, 'aria-label': 'Coeficiente de la corriente', oninput: (e) => { f.I = e.target.value; recalcula(); } }), h('span', {}, '×'), h('input', { class: 'in', value: f.s, 'aria-label': 'Símbolo de la corriente', oninput: (e) => { f.s = e.target.value.replace(/[^A-Za-z0-9_*]/g, ''); recalcula(); } }));
     return h('div', { class: 'pieza' },
       h('div', { class: 'card-h' }, h('span', { class: 'badge' }, T.label), h('input', { class: 'in nom', value: f.nombre || '', placeholder: 'nombre', 'aria-label': 'Nombre', oninput: (e) => { f.nombre = e.target.value; recalcula(false); } }),
         h('button', { class: 'x', title: 'Quitar', 'aria-label': 'Quitar', onclick: () => { esc.fuentes = esc.fuentes.filter((x) => x !== f); editor(); recalcula(); } }, '×')),
-      fila(f.tipo === 'toroide' || f.tipo === 'solenoide' ? 'Corriente por espira' : 'Corriente', corriente),
+      fila({ toroide: 'Corriente por espira', solenoide: 'Corriente por espira', lamina: 'Densidad K', disco: 'σω (carga × giro)', cilindro: 'Corriente total' }[f.tipo] || 'Corriente', corriente),
       ...T.campos.map((c) => campoFuente(f, c)));
   }
   function tarjetaPregunta(q, i) {
     const A = ANALYSES[q.tipo], ch = () => recalcula();
     const campos = [];
-    if (q.P) campos.push(fila('Punto P', vecIn(q.P, ch)));
+    if (q.P) campos.push(fila(q.tipo === 'perfil' ? 'Desde P' : 'Punto P', vecIn(q.P, ch)));
+    if (q.Q) campos.push(fila('Hasta Q', vecIn(q.Q, ch)));
     if (q.tipo === 'Fq') {
       campos.push(fila('Carga', esc.modo === 'si' ? h('div', { class: 'cur' }, h('input', { class: 'in', value: q.q, oninput: (e) => { q.q = e.target.value; ch(); } }), h('span', {}, 'C'))
         : h('div', { class: 'cur' }, h('input', { class: 'in', value: q.q, oninput: (e) => { q.q = e.target.value; ch(); } }), h('span', {}, '×'), h('input', { class: 'in', value: q.qs, oninput: (e) => { q.qs = e.target.value.replace(/[^A-Za-z0-9_]/g, ''); ch(); } }))));
@@ -1529,13 +1948,13 @@ const MagEjemplos = (() => {
     $('#titulo').textContent = esc.titulo || 'Magnetostática: campo magnético y Biot-Savart';
     $('#enunciado').value = esc.enunciado || '';
     $('#modo').value = esc.modo;
-    $('#plano').value = esc.vista.plano; $('#corte').value = esc.vista.corte; $('#flechas').checked = esc.vista.flechas !== false;
+    $('#plano').value = esc.vista.plano; $('#corte').value = esc.vista.corte; $('#flechas').checked = esc.vista.flechas !== false; $('#mapa').checked = !!esc.vista.mapa; $('#lineas').checked = !!esc.vista.lineas;
     $('#corte-l').textContent = { xy: 'z', xz: 'y', yz: 'x' }[esc.vista.plano];
     $('#hint-unid').textContent = esc.modo === 'si' ? 'Longitudes en metros (admite cm y mm, p. ej. 5 cm) y corrientes en amperios.' : 'Longitudes en unidades de a; admite 1/2, sqrt(3), √2. Corriente = coeficiente × símbolo.';
     $('#fuentes').replaceChildren(...esc.fuentes.map(tarjetaFuente));
     $('#preguntas').replaceChildren(...esc.preguntas.map(tarjetaPregunta));
     if (!esc.fuentes.length) $('#fuentes').append(h('p', { class: 'hint' }, 'Añade una fuente con los botones de arriba.'));
-    if (!esc.preguntas.length) $('#preguntas').append(h('p', { class: 'hint' }, 'Añade una pregunta: campo en un punto, fuerza sobre una carga o sobre un hilo.'));
+    if (!esc.preguntas.length) $('#preguntas').append(h('p', { class: 'hint' }, 'Añade una pregunta: campo en un punto, fuerza sobre una carga o sobre un hilo, o el perfil de |B| a lo largo de una recta.'));
   }
 
   /* ---------------- cálculo ---------------- */
@@ -1577,11 +1996,11 @@ const MagEjemplos = (() => {
     const [i, j] = ejes(), pts = [];
     for (const f of out.fuentes) {
       for (const k of ['A', 'B', 'C']) if (f[k]) pts.push(f[k]);
-      const R = f.R2 || f.R || (f.L ? f.L / 2 : 0);
+      const R = f.R2 || f.R || (f.L ? f.L / 2 : 0) || Math.max(f.a || 0, f.b || 0) / 2 || (f.tipo === 'lamina' ? 2 : 0);
       if (f.C && R) for (const d of [[R, 0, 0], [0, R, 0], [0, 0, R], [-R, 0, 0], [0, -R, 0], [0, 0, -R]]) pts.push(V3.add(f.C, d));
       if (f.tipo === 'solenoide') { const n = Magneto.EJES[f.eje]; pts.push(V3.add(f.C, V3.sc(n, f.L / 2)), V3.add(f.C, V3.sc(n, -f.L / 2))); }
     }
-    for (const r of out.results) if (r.P) pts.push(r.P);
+    for (const r of out.results) { if (r.P) pts.push(r.P); if (r.Q) pts.push(r.Q); }
     if (!pts.length) pts.push([0, 0, 0]);
     let x0 = Math.min(...pts.map((p) => p[i])), x1 = Math.max(...pts.map((p) => p[i])), y0 = Math.min(...pts.map((p) => p[j])), y1 = Math.max(...pts.map((p) => p[j]));
     const m = Math.max(x1 - x0, y1 - y0, esc.modo === 'si' ? 0.02 : 2) * 0.35;
@@ -1660,11 +2079,119 @@ const MagEjemplos = (() => {
       const n = Magneto.EJES[f.eje], pl = PLANOS[Magneto.PLANO_DE_EJE[f.eje]], vueltas = Math.min(Math.round(f.N), 24), pts = [];
       for (let k = 0; k <= vueltas * 48; k++) { const t = k / 48; pts.push(V3.add(V3.add(f.C, V3.sc(n, -f.L / 2 + (f.L * t) / vueltas)), V3.add(V3.sc(pl.e1, f.R * Math.cos(2 * Math.PI * t * f.sentido)), V3.sc(pl.e2, f.R * Math.sin(2 * Math.PI * t * f.sentido))))); }
       ctx.globalAlpha = 0.8; polilinea(pts, color, 1.2, false); ctx.globalAlpha = 1;
+    } else if (f.tipo === 'rectangular') {
+      const v = Magneto.esquinas(f), pts = [];
+      for (let q = 0; q < 4; q++) for (let k = 0; k <= 20; k++) pts.push(V3.add(v[q], V3.sc(V3.sub(v[(q + 1) % 4], v[q]), k / 20)));
+      polilinea(f.k >= 0 ? pts : pts.reverse(), color);
+    } else if (f.tipo === 'cilindro') {
+      const uh = V3.unit(f.u);
+      if (V3.norm(V3.cross(uh, nrm)) < 1e-9) {
+        // corte transversal: anillo o círculo relleno, con ⊙ o ⊗ en el centro de la parte con corriente
+        const [x, y] = aPant(f.C), r2 = f.R2 * vista.s, r1 = f.R1 * vista.s, sal = V3.dot(uh, fuera()) * f.k > 0;
+        ctx.fillStyle = color; ctx.globalAlpha = 0.16; ctx.beginPath(); ctx.arc(x, y, r2, 0, 2 * Math.PI); if (r1 > 0) { ctx.moveTo(x + r1, y); ctx.arc(x, y, r1, 0, 2 * Math.PI); } ctx.fill('evenodd'); ctx.globalAlpha = 1;
+        ctx.strokeStyle = color; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, y, r2, 0, 2 * Math.PI); ctx.stroke(); if (r1 > 0) { ctx.beginPath(); ctx.arc(x, y, r1, 0, 2 * Math.PI); ctx.stroke(); }
+        if (r1 > 0) for (const a of [0, Math.PI / 2, Math.PI, 1.5 * Math.PI]) simboloNormal(x + ((r1 + r2) / 2) * Math.cos(a), y + ((r1 + r2) / 2) * Math.sin(a), sal, 6, color, 1.5);
+        else simboloNormal(x, y, sal, 8, color, 2);
+      } else {
+        // de lado: banda con la corriente a lo largo del eje
+        const lat = V3.unit(V3.cross(nrm, uh));
+        for (const sg of [1, -1]) for (const R of [f.R1, f.R2]) if (R > 0) { const o = V3.sc(lat, sg * R); polilinea([V3.add(f.C, V3.add(o, V3.sc(uh, -lejos))), V3.add(f.C, V3.add(o, V3.sc(uh, lejos)))], color, 1.2, false); }
+        recta(f.C, f.u, -lejos, lejos);
+      }
+    } else if (f.tipo === 'lamina') {
+      const n = Magneto.EJES[f.eje];
+      if (V3.norm(V3.cross(n, nrm)) < 1e-9) {
+        // la lámina es el plano de la vista: sombreado con flechas de K
+        ctx.fillStyle = color; ctx.globalAlpha = 0.08; ctx.fillRect(0, 0, W, H); ctx.globalAlpha = 1;
+        const [i, j] = ejes(), a = Math.atan2(f.u[j], f.u[i]);
+        for (let y = 40; y < H; y += 80) for (let x = 40; x < W; x += 110) flecha(x, y, a, 26, color, 1.6);
+      } else {
+        const t = V3.unit(V3.cross(n, nrm)), uh = V3.unit(V3.sub(f.u, V3.sc(n, V3.dot(f.u, n))));
+        ctx.lineWidth = 3; polilinea([V3.add(f.C, V3.sc(t, -lejos)), V3.add(f.C, V3.sc(t, lejos))], color, 3, false);
+        if (Math.abs(V3.dot(uh, t)) > 0.5) recta(f.C, V3.sc(t, Math.sign(V3.dot(uh, t))), -lejos, lejos);
+        else { const sal = V3.dot(uh, fuera()) * f.k > 0; for (let k = -6; k <= 6; k++) { const [x, y] = aPant(V3.add(f.C, V3.sc(t, (k * 70) / vista.s))); simboloNormal(x, y, sal, 6, color, 1.5); } }
+      }
+    } else if (f.tipo === 'disco') {
+      const pl = PLANOS[f.plano];
+      ctx.fillStyle = color; ctx.globalAlpha = 0.12; const pts = circ(f.C, pl, f.R, 0, 2 * Math.PI).map(aPant); ctx.beginPath(); pts.forEach((p, k) => (k ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]))); ctx.fill(); ctx.globalAlpha = 1;
+      polilinea(circ(f.C, pl, f.R, 0, 2 * Math.PI * f.sentido * Math.sign(f.k || 1)), color, 1.6, true);
+      polilinea(circ(f.C, pl, f.R * 0.55, 0, 2 * Math.PI * f.sentido * Math.sign(f.k || 1)), color, 1, true);
     } else if (f.tipo === 'toroide') {
       const pl = PLANOS[f.plano];
       for (const R of [f.R1, f.R2]) polilinea(circ(f.C, pl, R, 0, 2 * Math.PI), color, 1.5, false);
       polilinea(circ(f.C, pl, (f.R1 + f.R2) / 2, 0, 2 * Math.PI * f.sentido), color, 1, true);
     }
+  }
+  // campo en una rejilla de la pantalla (se reutiliza mientras no cambie nada)
+  let cacheR = null;
+  function rejilla() {
+    const gs = 10, nx = Math.ceil(W / gs) + 1, ny = Math.ceil(H / gs) + 1, clave = JSON.stringify([out.fuentes, esc.vista.plano, corte(), W, H, vista]);
+    if (cacheR && cacheR.clave === clave) return cacheR;
+    const [i, j] = ejes(), bx = new Float32Array(nx * ny), by = new Float32Array(nx * ny), m = new Float32Array(nx * ny);
+    for (let iy = 0; iy < ny; iy++) for (let ix = 0; ix < nx; ix++) {
+      const B = Magneto.campoRapido(out.fuentes, aMundo(ix * gs, iy * gs)), k = iy * nx + ix, M = V3.norm(B);
+      if (!isFinite(M)) continue;
+      bx[k] = B[i]; by[k] = B[j]; m[k] = M;
+    }
+    cacheR = { clave, gs, nx, ny, bx, by, m };
+    return cacheR;
+  }
+  const rgb = (c) => { const g = document.createElement('canvas').getContext('2d'); g.fillStyle = c; const x = g.fillStyle; return x[0] === '#' ? [1, 3, 5].map((k) => parseInt(x.slice(k, k + 2), 16)) : (x.match(/\d+/g) || [0, 0, 0]).slice(0, 3).map(Number); };
+  // mapa de color de |B| en escala logarítmica
+  function mapaColor(R, color) {
+    const val = Array.from(R.m).filter((x) => x > 0).sort((a, b) => a - b);
+    if (!val.length) return;
+    const lo = Math.log(val[Math.floor(val.length * 0.05)]), hi = Math.log(val[Math.floor(val.length * 0.98)]), [r, g, b] = rgb(color);
+    const off = document.createElement('canvas'); off.width = R.nx; off.height = R.ny;
+    const oc = off.getContext('2d'), img = oc.createImageData(R.nx, R.ny);
+    for (let k = 0; k < R.m.length; k++) {
+      const t = R.m[k] > 0 && hi > lo ? Math.min(1, Math.max(0, (Math.log(R.m[k]) - lo) / (hi - lo))) : 0;
+      img.data[4 * k] = r; img.data[4 * k + 1] = g; img.data[4 * k + 2] = b; img.data[4 * k + 3] = Math.round(150 * t);
+    }
+    oc.putImageData(img, 0, 0);
+    ctx.imageSmoothingEnabled = true; ctx.drawImage(off, -R.gs / 2, -R.gs / 2, R.nx * R.gs, R.ny * R.gs);
+  }
+  // dirección del campo en el plano por interpolación bilineal en la rejilla
+  function dirEn(R, x, y) {
+    const fx = x / R.gs, fy = y / R.gs, ix = Math.floor(fx), iy = Math.floor(fy);
+    if (ix < 0 || iy < 0 || ix >= R.nx - 1 || iy >= R.ny - 1) return null;
+    const tx = fx - ix, ty = fy - iy, k = iy * R.nx + ix, w = [(1 - tx) * (1 - ty), tx * (1 - ty), (1 - tx) * ty, tx * ty], ks = [k, k + 1, k + R.nx, k + R.nx + 1];
+    let bx = 0, by = 0, M = 0;
+    ks.forEach((q, n) => { bx += w[n] * R.bx[q]; by += w[n] * R.by[q]; M += w[n] * R.m[q]; });
+    const p = Math.hypot(bx, by);
+    // sin campo en el plano (perpendicular a la vista o nulo): la línea se corta
+    if (!(p > 0.25 * M) || !(p > 0)) return null;
+    return [bx / p, -by / p];
+  }
+  // líneas de campo repartidas con separación parecida (proyección en el plano de la vista)
+  function lineasCampo(R, color) {
+    const sep = 26, cw = sep / 2, cx = Math.ceil(W / cw), cy = Math.ceil(H / cw), ocup = new Uint8Array(cx * cy), paso = 2.5;
+    const celda = (x, y) => (x < 0 || y < 0 || x >= W || y >= H ? -1 : Math.floor(y / cw) * cx + Math.floor(x / cw));
+    const libre = (x, y) => { const c = celda(x, y); if (c < 0) return false; const gx = c % cx, gy = Math.floor(c / cx); for (let a = -1; a <= 1; a++) for (let b = -1; b <= 1; b++) { const X = gx + a, Y = gy + b; if (X >= 0 && Y >= 0 && X < cx && Y < cy && ocup[Y * cx + X]) return false; } return true; };
+    const sigue = (x0, y0, sg) => {
+      const pts = []; let x = x0, y = y0;
+      for (let n = 0; n < 900; n++) {
+        const d1 = dirEn(R, x, y); if (!d1) break;
+        const xm = x + sg * d1[0] * paso / 2, ym = y + sg * d1[1] * paso / 2, d2 = dirEn(R, xm, ym); if (!d2) break;
+        x += sg * d2[0] * paso; y += sg * d2[1] * paso;
+        if (n > 4 && !libre(x, y)) break;
+        pts.push([x, y]);
+        if (n > 30 && Math.hypot(x - x0, y - y0) < paso * 1.5) { pts.push([x0, y0]); break; }
+      }
+      return pts;
+    };
+    ctx.strokeStyle = ctx.fillStyle = color; ctx.lineWidth = 1.3; ctx.globalAlpha = 0.85;
+    for (let gy = 0; gy < cy; gy += 2) for (let gx = 0; gx < cx; gx += 2) {
+      const x0 = (gx + 1) * cw, y0 = (gy + 1) * cw;
+      if (!libre(x0, y0) || !dirEn(R, x0, y0)) continue;
+      const atras = sigue(x0, y0, -1).reverse(), linea = [...atras, [x0, y0], ...sigue(x0, y0, 1)];
+      if (linea.length < 8) continue;
+      for (const [x, y] of linea) { const c = celda(x, y); if (c >= 0) ocup[c] = 1; }
+      ctx.beginPath(); linea.forEach(([x, y], k) => (k ? ctx.lineTo(x, y) : ctx.moveTo(x, y))); ctx.stroke();
+      const k = Math.floor(linea.length / 2), [xa, ya] = linea[k - 1], [xb, yb] = linea[k + 1] || linea[k];
+      flecha(xa, ya, Math.atan2(-(yb - ya), xb - xa), 8, color, 1.3, 6);
+    }
+    ctx.globalAlpha = 1;
   }
   function dibuja() {
     if (!W) return;
@@ -1682,6 +2209,11 @@ const MagEjemplos = (() => {
     ctx.fillStyle = C.muted; ctx.font = 'italic 13px "STIX Two Text", serif';
     ctx.fillText('xyz'[i].toUpperCase(), W - 14, oy - 6); ctx.fillText('xyz'[j].toUpperCase(), ox + 6, 14);
     if (!out) return;
+    if ((esc.vista.mapa || esc.vista.lineas) && out.fuentes.length) {
+      const R = rejilla();
+      if (esc.vista.mapa) mapaColor(R, C.neg);
+      if (esc.vista.lineas) lineasCampo(R, C.field);
+    }
     // campo: flechas normalizadas, más opacas donde el campo es más intenso
     if (esc.vista.flechas !== false && out.fuentes.length) {
       const n = Math.max(14, Math.min(34, Math.round(W / 34))), dx = W / n, mags = [], arr = [], sal = fuera();
@@ -1706,6 +2238,7 @@ const MagEjemplos = (() => {
     marcas = [];
     out.results.forEach((r, k) => {
       if (!r.P) return;
+      if (r.Q) { const [x1, y1] = aPant(r.P), [x2, y2] = aPant(r.Q); ctx.strokeStyle = C.mark; ctx.lineWidth = 1.5; ctx.setLineDash([6, 4]); ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle = C.mark; ctx.beginPath(); ctx.arc(x2, y2, 4, 0, 2 * Math.PI); ctx.fill(); ctx.font = '600 12px "IBM Plex Sans", sans-serif'; ctx.fillText('Q', x2 + 8, y2 + 16); }
       const [x, y] = aPant(r.P);
       const B = Object.values(r.vp || {}).reduce((a, b) => V3.add(a, b), [0, 0, 0]), m = Math.hypot(B[i], B[j]);
       const normal = !(m > 0.3 * V3.norm(B)) && V3.norm(B) > 0;
@@ -1744,6 +2277,8 @@ const MagEjemplos = (() => {
   $('#plano').addEventListener('change', (e) => { esc.vista.plano = e.target.value; editor(); encuadra(); recalcula(); });
   $('#corte').addEventListener('input', (e) => { esc.vista.corte = e.target.value; recalcula(); });
   $('#flechas').addEventListener('change', (e) => { esc.vista.flechas = e.target.checked; recalcula(); });
+  $('#mapa').addEventListener('change', (e) => { esc.vista.mapa = e.target.checked; recalcula(); });
+  $('#lineas').addEventListener('change', (e) => { esc.vista.lineas = e.target.checked; recalcula(); });
   $('#nuevo').addEventListener('click', () => { esc = vacia(); esc.fuentes.push(valida({ fuentes: [{ tipo: 'hilo' }] }).fuentes[0]); esc.preguntas.push({ id: newId(), tipo: 'B', P: ['1', '0', '0'] }); editor(); encuadra(); recalcula(); });
   $('#guardar').addEventListener('click', () => {
     const datos = { formato: FORMATO, version: 1, problema: esc };
@@ -2061,8 +2596,10 @@ const Practica = (() => {
 
   // lo que cambia de una herramienta a otra; lo demás sale de la estructura común de las páginas
   const CONF = {
-    calorimetria: { items: '#te' },
-    disoluciones: { items: '#valores > .valor:not(.dato)' },
+    // calorimetría: una mezcla, un problema al revés, un calentador o una dilatación
+    calorimetria: { datos: null, items: '#te, #resumen-d > div', genera: () => window.CalorApp?.azar(), enunciado: () => window.CalorApp?.enunciado() },
+    // disoluciones: lo que se pide depende de la pestaña abierta (solo cuentan los que se ven)
+    disoluciones: { items: '#valores > .valor:not(.dato), #valores-prep > .valor, #valores-col > .valor, #res-dil, #res-mez' },
     matrices: { items: '#res' },
     // solo sistemas compatibles determinados: la solución paramétrica no se pregunta por huecos
     // complejos: una operación al azar con números pequeños (los datos son textos como 3 − 2i)
@@ -2084,6 +2621,24 @@ const Practica = (() => {
     intervalos: { datos: null, items: '#res > div', genera: () => window.IntervalosApp?.azar(), enunciado: () => window.IntervalosApp?.enunciado() },
     // ondasem: una onda plana, una intensidad o un medio con pérdidas
     'ondas-em': { datos: null, items: '#res > div', genera: () => window.OndasEMApp?.azar(), enunciado: () => window.OndasEMApp?.enunciado() },
+    // trabajo y energía: una rampa con muelle, un rizo, un péndulo, una montaña rusa o una fuerza variable
+    'trabajo-y-energia': { datos: null, items: '#resumen > div', genera: () => window.EnergiaApp?.azar(), enunciado: () => window.EnergiaApp?.enunciado() },
+    // tiro parabólico: un tiro, un blanco, una frenada, un encuentro o un giro (cuentan los resultados de la pestaña abierta)
+    'tiro-parabolico': { datos: null, items: '#resumen > div, #resumen-r > div, #resumen-c > div', genera: () => window.TiroApp?.azar(), enunciado: () => window.TiroApp?.enunciado() },
+    // sólido rígido: un momento de inercia, una rodadura, una polea, una patinadora, un choque, un péndulo o una escalera
+    'solido-rigido': { datos: null, items: '#res > div', genera: () => window.SolidoApp?.azar(), enunciado: () => window.SolidoApp?.enunciado() },
+    // ondas: una cuerda, un tubo, un Doppler, un nivel sonoro, unas pulsaciones, una potencia o una reflexión
+    ondas: { datos: null, items: '#res > div', genera: () => window.OndasApp?.azar(), enunciado: () => window.OndasApp?.enunciado() },
+    // doppler: una fuente en línea o en ángulo, una que pasa, un eco, un cono de Mach o una luz que se corre al rojo
+    doppler: { datos: null, items: '#resumen > div', genera: () => window.DopplerApp?.azar(), enunciado: () => window.DopplerApp?.enunciado() },
+    // ciclos: un Carnot, un Otto, un Diesel, un Brayton, un Stirling, un ciclo propio o una máquina
+    ciclos: { datos: null, items: '#resumen > div', genera: () => window.CiclosApp?.azar(), enunciado: () => window.CiclosApp?.enunciado() },
+    // fluidos: una presión, un tubo en U, una prensa, un empuje, una tubería, un chorro, una viscosidad, un medidor, una presa o un capilar
+    // gases: un estado, una transformación, una mezcla, un gas real o una velocidad molecular
+    gases: { datos: null, items: '#res > div', genera: () => window.GasesApp?.azar(), enunciado: () => window.GasesApp?.enunciado() },
+    fluidos: { datos: null, items: '#resumen > div', genera: () => window.FluidosApp?.azar(), enunciado: () => window.FluidosApp?.enunciado() },
+    // dinamica: un bloque en un plano, dos bloques, Atwood, una curva, un péndulo cónico o un muelle
+    dinamica: { datos: null, items: '#res > div', genera: () => window.DinamicaApp?.azar(), enunciado: () => window.DinamicaApp?.enunciado() },
     // interferencia: Young, una rendija, una red o una lámina delgada
     interferencia: { datos: null, items: '#res > div', genera: () => window.InterferenciaApp?.azar(), enunciado: () => window.InterferenciaApp?.enunciado() },
     // laplace: una transformada, una inversa por fracciones simples o una EDO; se preguntan los valores numéricos
@@ -2092,7 +2647,8 @@ const Practica = (() => {
     derivadas: { datos: null, items: '#resumen > div.num', genera: () => window.DerivadasApp?.azar(), enunciado: () => window.DerivadasApp?.enunciado() },
     complejos: { datos: null, genera: () => window.ComplejosApp?.azar(), enunciado: () => window.ComplejosApp?.enunciado() },
     sistemas: { items: '#res', valido: () => !/[λμ]|incompatible|no tiene/i.test(document.querySelector('#res')?.textContent + document.querySelector('#tipo')?.textContent) },
-    estadistica: { items: '#res' },
+    // distribuciones: un ejercicio con enunciado (normal, binomial, Poisson, valores críticos…)
+    estadistica: { datos: null, items: '#res', genera: () => window.EstadisticaApp?.azar(), enunciado: () => window.EstadisticaApp?.enunciado() },
     // regresión: una tabla de datos al azar alrededor de una recta (están en un textarea, no en campos numéricos)
     regresion: { datos: null, genera: () => window.RegresionApp?.azar(), enunciado: () => 'Con los datos de la tabla, calcula la recta de regresión de Y sobre X, la de X sobre Y, el coeficiente de correlación, las medias, la covarianza y la estimación de y que se pide.' },
     // resistencias: unos colores al azar (no hay números que cambiar en los datos)
@@ -2101,14 +2657,16 @@ const Practica = (() => {
       // el enunciado del ejemplo ya no vale con los datos nuevos
       despues: () => pon(document.querySelector('#enunciado'), 'Ejercicio de práctica: calcula el campo magnético en los puntos de las preguntas con las fuentes de la izquierda.'),
       antes: () => { const m = document.querySelector('#modo'); if (m && m.value !== 'si') { m.value = 'si'; m.dispatchEvent(new Event('change', { bubbles: true })); } } },
+    // masa-molar: según la pestaña, una masa molar, una estequiometría con su limitante o una fórmula empírica
     'masa-molar': {
-      items: '#res-masa .grande', quitar: '', tapa: '#res-masa, #conv-card', datos: null,
-      genera: () => pon(document.querySelector('#formula'), toma(['H2O', 'CO2', 'NaCl', 'H2SO4', 'HNO3', 'NaOH', 'NH3', 'CaCO3', 'C6H12O6', 'C2H5OH', 'Ca(OH)2', 'Al2(SO4)3', 'KMnO4', 'Fe2O3', 'Mg3(PO4)2', 'CuSO4·5H2O', 'Na2CO3', 'K2Cr2O7', 'CH4', 'C3H8', 'HCl', 'Ba(NO3)2', 'NH4Cl', 'MgCl2·6H2O'])),
-      enunciado: () => `Calcula la masa molar de <b>${esc(document.querySelector('#formula').value)}</b>.`,
+      items: '#res-masa .grande, #resumen-este > div, #resumen-emp > div', quitar: '', datos: null,
+      tapa: '#res-masa, #conv-card, #tabla-este td.n, #tabla-este td.m, #tabla-este td.s, #resumen-este, #este .pasos, #resumen-emp, #emp .pasos',
+      genera: () => window.MasaApp?.azar(), enunciado: () => window.MasaApp?.enunciado(),
+      get textos() { return document.querySelector('#tab-emp')?.getAttribute('aria-selected') === 'true' ? [{ et: 'Fórmula empírica', sel: '#resumen-emp .formula' }] : []; },
     },
     'configuracion-electronica': {
       items: null, tapa: '#res', datos: null,
-      genera: () => pon(document.querySelector('#entrada'), String(entero(1, 56))),
+      genera: () => { window.ConfigApp?.pestana('el'); pon(document.querySelector('#entrada'), String(entero(1, 56))); },
       enunciado: () => { const g = (s) => document.querySelector(s)?.textContent.trim() || ''; return `Escribe la configuración electrónica del <b>${esc(g('#nombre').toLowerCase())}</b> (${esc(g('#sim'))}, Z = ${esc(g('#z'))}) en orden de llenado y cuántos electrones desapareados tiene.`; },
       textos: [{ et: 'Configuración electrónica', sel: '#llenado', otros: ['#abreviada', '#capas-txt'] }],
       numeros: [{ et: 'Electrones desapareados', sel: '#desap' }],
