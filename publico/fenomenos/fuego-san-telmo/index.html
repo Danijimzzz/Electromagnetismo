@@ -151,10 +151,10 @@ canvas { display: block; width: 100%; height: var(--alto-grafica); border-radius
 :root[data-theme="dark"] { --accent:#b39ff7; --accent-soft:color-mix(in srgb, #b39ff7 16%, #182025); --marca:#4dbcb0 }
 header.top { display:flex; align-items:center; gap:8px 20px; flex-wrap:wrap; padding:12px clamp(16px,3vw,28px); background:var(--panel); border-bottom:1px solid var(--line) }
 header.top .logo { font:600 18px var(--f-math); margin:0; white-space:nowrap; color:var(--ink); text-decoration:none } header.top .logo i { color:var(--marca) }
-header.top nav { display:flex; gap:4px 16px; font-size:14px; overflow-x:auto; max-width:100%; scrollbar-width:none }
+header.top nav { display:flex; gap:4px 14px; font-size:14px; overflow-x:auto; max-width:100%; scrollbar-width:none }
 header.top nav a { white-space:nowrap; padding:2px 0; color:var(--muted); text-decoration:none } header.top nav a:hover { color:var(--ink) }
 header.top nav a[aria-current] { color:var(--ink); font-weight:600; box-shadow:inset 0 -2px 0 var(--accent) }
-header.top form { margin-left:auto; flex:0 1 180px; min-width:150px }
+header.top form { margin-left:auto; flex:0 1 170px; min-width:130px }
 header.top .foro { margin-left:auto; display:inline-flex; align-items:center; gap:6px; white-space:nowrap; font:600 14px var(--f-ui); color:var(--ink); text-decoration:none; border:1px solid var(--line); border-radius:8px; padding:6px 12px } header.top .foro:hover, header.top .foro[aria-current] { border-color:var(--accent); color:var(--accent) } header.top .foro + form { margin-left:0 } header.top > .foro ~ .tema { margin-left:0 }
 @media (min-width:701px) { header.top { flex-wrap:nowrap } header.top nav { min-width:0 } }
 header.top .buscar { font:14px var(--f-ui); color:var(--ink); border:1px solid var(--line); border-radius:8px; padding:7px 12px; width:100%; background:var(--bg) }
@@ -192,16 +192,18 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
    herramienta con la que se relaciona. La maqueta está en fenomenos/<clave>/pagina.html.
    ===================================================================== */
 .fen { max-width: 1100px }
+.fen h1 { font-size: clamp(28px, 4.2vw, 40px); line-height: 1.15; letter-spacing: -.01em; margin: 6px 0 8px }
+.fen .lead { font-size: clamp(16px, 1.6vw, 18.5px); line-height: 1.55; margin-bottom: 16px }
 .fen-escena { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 8px }
 .fen-escena canvas { height: clamp(220px, min(50vh, 70vw), 560px); margin: 0; background: var(--bg) }
 .fen-controles { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 10px 0 0 }
 .fen-controles .btn { font-size: 13.5px; padding: 6px 12px }
 #play { min-width: 104px }
 .fen-puntos { display: flex; gap: 6px; flex-wrap: wrap; margin-left: auto }
-.fen-puntos button { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--line); background: var(--panel); color: var(--muted); font: 600 12.5px var(--f-ui); cursor: pointer; padding: 0; position: relative; overflow: hidden }
-.fen-puntos button[aria-current=step] { border-color: var(--accent); color: var(--accent) }
-.fen-puntos button.hecho { background: var(--accent-soft); color: var(--accent) }
-.fen-puntos button i { position: absolute; left: 0; bottom: 0; height: 3px; width: 0; background: var(--accent) }
+.fen-puntos button { --p: 0; width: 34px; height: 34px; border: 0; border-radius: 50%; padding: 3px; cursor: pointer; background: conic-gradient(var(--accent) calc(var(--p) * 1turn), var(--line) 0) }
+.fen-puntos button span { display: grid; place-items: center; width: 100%; height: 100%; border-radius: 50%; background: var(--panel); color: var(--muted); font: 600 12.5px var(--f-ui) }
+.fen-puntos button[aria-current=step] span { color: var(--accent); font-weight: 700 }
+.fen-puntos button.hecho span { background: var(--accent-soft); color: var(--accent) }
 .fen-texto { max-width: 860px; margin: 16px 0 0; min-height: 132px }
 .fen-texto h2 { font: 600 19px/1.3 var(--f-ui); margin: 0 0 6px }
 .fen-texto h2 small { display: block; font: 600 12px var(--f-ui); color: var(--accent); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 2px }
@@ -775,14 +777,14 @@ const Animacion = (() => {
     let i = 0, inicio = t0, avanza = true, c = {};
     const leeColores = () => { const st = getComputedStyle(document.documentElement); c = {}; for (const k of colores) c[k] = st.getPropertyValue('--' + k).trim(); };
     const dura = (p) => p.dura || 9000, anim = (p) => p.anim || 2500;
-    puntos.innerHTML = pasos.map((p, k) => `<button type="button" title="${esc(p.titulo)}" aria-label="Paso ${k + 1}: ${esc(p.titulo)}">${k + 1}<i></i></button>`).join('');
+    puntos.innerHTML = pasos.map((p, k) => `<button type="button" title="${esc(p.titulo)}" aria-label="Paso ${k + 1}: ${esc(p.titulo)}"><span>${k + 1}</span></button>`).join('');
     const botones = [...puntos.children];
 
     function texto() {
       const p = pasos[i];
       $('#paso-t').innerHTML = `<small>Paso ${i + 1} de ${n}</small>${esc(p.titulo)}`;
       $('#paso-x').innerHTML = p.texto.split(/\n\s*\n/).map((x) => `<p>${Mates.html(x.trim())}</p>`).join('');
-      botones.forEach((b, k) => { b.classList.toggle('hecho', k < i); if (k === i) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current'); b.querySelector('i').style.width = '0'; });
+      botones.forEach((b, k) => { b.classList.toggle('hecho', k < i); if (k === i) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current'); b.style.setProperty('--p', k < i ? 1 : 0); });
       $('#ant').disabled = i === 0; $('#sig').disabled = i === n - 1;
     }
     function ve(k) { i = Math.max(0, Math.min(n - 1, k)); inicio = performance.now(); texto(); }
@@ -805,7 +807,7 @@ const Animacion = (() => {
     function cuadro(ahora) {
       const p = pasos[i], el = ahora - inicio;
       if (avanza && el >= dura(p)) { if (i < n - 1) ve(i + 1); else ponPlay(false); }
-      botones[i].querySelector('i').style.width = avanza ? `${Math.min(100, ((ahora - inicio) / dura(pasos[i])) * 100)}%` : '0';
+      botones[i].style.setProperty('--p', avanza ? Math.min(1, (ahora - inicio) / dura(pasos[i])).toFixed(3) : 0);
       const { g, w, h } = lienzo(cv);
       dibuja(g, { paso: i, t: quieto ? 1 : Math.min(1, Math.max(0, (ahora - inicio) / anim(pasos[i]))), reloj: quieto ? 0 : (ahora - t0) / 1000, w, h, c });
       requestAnimationFrame(cuadro);

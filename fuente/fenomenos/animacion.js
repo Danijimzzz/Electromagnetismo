@@ -25,14 +25,14 @@ const Animacion = (() => {
     let i = 0, inicio = t0, avanza = true, c = {};
     const leeColores = () => { const st = getComputedStyle(document.documentElement); c = {}; for (const k of colores) c[k] = st.getPropertyValue('--' + k).trim(); };
     const dura = (p) => p.dura || 9000, anim = (p) => p.anim || 2500;
-    puntos.innerHTML = pasos.map((p, k) => `<button type="button" title="${esc(p.titulo)}" aria-label="Paso ${k + 1}: ${esc(p.titulo)}">${k + 1}<i></i></button>`).join('');
+    puntos.innerHTML = pasos.map((p, k) => `<button type="button" title="${esc(p.titulo)}" aria-label="Paso ${k + 1}: ${esc(p.titulo)}"><span>${k + 1}</span></button>`).join('');
     const botones = [...puntos.children];
 
     function texto() {
       const p = pasos[i];
       $('#paso-t').innerHTML = `<small>Paso ${i + 1} de ${n}</small>${esc(p.titulo)}`;
       $('#paso-x').innerHTML = p.texto.split(/\n\s*\n/).map((x) => `<p>${Mates.html(x.trim())}</p>`).join('');
-      botones.forEach((b, k) => { b.classList.toggle('hecho', k < i); if (k === i) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current'); b.querySelector('i').style.width = '0'; });
+      botones.forEach((b, k) => { b.classList.toggle('hecho', k < i); if (k === i) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current'); b.style.setProperty('--p', k < i ? 1 : 0); });
       $('#ant').disabled = i === 0; $('#sig').disabled = i === n - 1;
     }
     function ve(k) { i = Math.max(0, Math.min(n - 1, k)); inicio = performance.now(); texto(); }
@@ -55,7 +55,7 @@ const Animacion = (() => {
     function cuadro(ahora) {
       const p = pasos[i], el = ahora - inicio;
       if (avanza && el >= dura(p)) { if (i < n - 1) ve(i + 1); else ponPlay(false); }
-      botones[i].querySelector('i').style.width = avanza ? `${Math.min(100, ((ahora - inicio) / dura(pasos[i])) * 100)}%` : '0';
+      botones[i].style.setProperty('--p', avanza ? Math.min(1, (ahora - inicio) / dura(pasos[i])).toFixed(3) : 0);
       const { g, w, h } = lienzo(cv);
       dibuja(g, { paso: i, t: quieto ? 1 : Math.min(1, Math.max(0, (ahora - inicio) / anim(pasos[i]))), reloj: quieto ? 0 : (ahora - t0) / 1000, w, h, c });
       requestAnimationFrame(cuadro);
