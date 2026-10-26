@@ -40,6 +40,8 @@ const Practica = (() => {
     intervalos: { datos: null, items: '#res > div', genera: () => window.IntervalosApp?.azar(), enunciado: () => window.IntervalosApp?.enunciado() },
     // ondasem: una onda plana, una intensidad o un medio con pérdidas
     'ondas-em': { datos: null, items: '#res > div', genera: () => window.OndasEMApp?.azar(), enunciado: () => window.OndasEMApp?.enunciado() },
+    // dinamica: un bloque en un plano, dos bloques, Atwood, una curva, un péndulo cónico o un muelle
+    dinamica: { datos: null, items: '#res > div', genera: () => window.DinamicaApp?.azar(), enunciado: () => window.DinamicaApp?.enunciado() },
     // interferencia: Young, una rendija, una red o una lámina delgada
     interferencia: { datos: null, items: '#res > div', genera: () => window.InterferenciaApp?.azar(), enunciado: () => window.InterferenciaApp?.enunciado() },
     // laplace: una transformada, una inversa por fracciones simples o una EDO; se preguntan los valores numéricos
