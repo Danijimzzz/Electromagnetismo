@@ -36,6 +36,12 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
         const warn = await page.locator('.result .warn').allTextContents();
         if (warn.length) mal(`Magnetostática · ${k}: ${warn.join(' · ')}`);
       }
+      // perfil de |B|, mapa de color y líneas de campo
+      await page.evaluate(() => MagApp.abrirEjemplo('cilindro'));
+      if ((await page.locator('svg.perfil path').count()) < 1) mal('Magnetostática: el perfil de |B| del cilindro no sale');
+      await page.check('#lineas'); await page.selectOption('#plano', 'xz'); await page.check('#mapa'); await page.uncheck('#flechas');
+      await page.evaluate(() => MagApp.abrirEjemplo('disco')); await page.check('#mapa');
+      if (!(await page.evaluate(() => MagApp.escena.vista.mapa && MagApp.escena.vista.lineas))) mal('Magnetostática: el mapa de color o las líneas de campo no se guardan en la vista');
       const ver = await page.locator('#ver').textContent();
       if (ver !== Version.de('magnetostatica').current) mal(`Magnetostática: la página muestra la versión «${ver}», se esperaba ${Version.de('magnetostatica').current}`);
       await page.close();

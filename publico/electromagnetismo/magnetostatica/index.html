@@ -26,7 +26,7 @@
   });
 })();</script>
 <title>Calculadora de campo magnético (Biot-Savart) · SimulaCiencia</title>
-<meta name="description" content="Campo magnético de hilos, espiras, arcos, solenoides y toroides con la ley de Biot-Savart, y fuerza sobre cargas y conductores, con el desarrollo paso a paso.">
+<meta name="description" content="Campo magnético de hilos, espiras circulares y rectangulares, arcos, solenoides, toroides, cilindros y cables coaxiales, láminas de corriente y discos que giran, con Biot-Savart y Ampère; fuerza sobre cargas y conductores, perfil de |B|, mapa de color y líneas de campo, paso a paso.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap">
@@ -229,6 +229,7 @@ textarea.in { font: 15px/1.5 var(--f-math); resize: vertical; min-height: 54px }
 .unit { font: 500 .78em var(--f-ui); color: var(--muted); margin-left: .15em }
 .result sub, .steps sub { font-size: .7em }
 .teoria .eq { font-family: var(--f-math); font-size: 17px; margin: 6px 0 6px 12px; overflow-x: auto }
+svg.perfil { display: block; width: 100%; max-width: 440px; height: auto; margin: 4px 0; font-family: var(--f-ui) }
 #flash { position: fixed; left: 50%; transform: translateX(-50%); bottom: 18px; background: var(--ink); color: var(--bg); padding: 7px 14px; border-radius: 8px; font-size: 13px; z-index: 20 }
 </style>
 <body>
@@ -236,7 +237,7 @@ textarea.in { font: 15px/1.5 var(--f-math); resize: vertical; min-height: 54px }
 <div class="wrap" id="principal">
 <nav class="miga" aria-label="Estás en"><span class="miga-izq"></span><span class="miga-ico" aria-hidden="true">E</span><a href="../">Electromagnetismo</a><span aria-hidden="true">›</span><span>Magnetostática</span><span class="miga-der"></span></nav>
 <h1 id="titulo">Magnetostática: campo magnético y Biot-Savart</h1>
-<p class="lead">Coloca hilos, espiras, arcos, solenoides y toroides, elige un punto y obtén el campo <span class="vv">B</span> con el desarrollo paso a paso, en la forma μ<sub>0</sub><i>I</i>/(π<i>a</i>) de los apuntes o en unidades del SI.</p>
+<p class="lead">Coloca hilos, espiras, arcos, solenoides, toroides, cilindros con corriente, láminas y discos que giran, elige un punto y obtén el campo <span class="vv">B</span> con el desarrollo paso a paso, en la forma μ<sub>0</sub><i>I</i>/(π<i>a</i>) de los apuntes o en unidades del SI.</p>
 <div class="tools">
   <select id="ejemplo" class="in" aria-label="Ejemplos"></select>
   <select id="modo" class="in" aria-label="Modo"><option value="sym">Simbólico (a, I)</option><option value="si">Numérico SI (m, A)</option></select>
@@ -256,11 +257,13 @@ textarea.in { font: 15px/1.5 var(--f-math); resize: vertical; min-height: 54px }
       <div class="stage-bar">
         <label>Vista <select id="plano" class="in" style="width:auto"><option value="xy">plano XY</option><option value="xz">plano XZ</option><option value="yz">plano YZ</option></select></label>
         <label><span id="corte-l">z</span> = <input id="corte" class="in" value="0"></label>
-        <label><input type="checkbox" id="flechas" checked> campo B</label>
+        <label><input type="checkbox" id="flechas" checked> flechas</label>
+        <label><input type="checkbox" id="mapa"> mapa de |B|</label>
+        <label><input type="checkbox" id="lineas"> líneas de campo</label>
         <span style="margin-left:auto">Arrastra los puntos P</span>
       </div>
       <div class="cvwrap"><canvas id="cv" aria-label="Dibujo de las fuentes y del campo magnético"></canvas></div>
-      <div class="legend"><span>⊙ corriente hacia ti · ⊗ hacia dentro</span><span>— conductor con su sentido</span><span>flechas: dirección de <i>B</i> en el plano; ⊙ ⊗ si <i>B</i> es perpendicular (más oscuro, más intenso)</span></div>
+      <div class="legend"><span>⊙ corriente hacia ti · ⊗ hacia dentro</span><span>— conductor con su sentido</span><span>flechas: dirección de <i>B</i> en el plano; ⊙ ⊗ si <i>B</i> es perpendicular (más oscuro, más intenso)</span><span>mapa: más color, más |<i>B</i>| (escala logarítmica); las líneas son la proyección del campo en el plano</span></div>
     </section>
     <section class="panel"><h2>Preguntas</h2><div class="chips" id="add-pregunta"></div><div id="preguntas" class="col"></div></section>
   </div>
@@ -277,12 +280,17 @@ textarea.in { font: 15px/1.5 var(--f-math); resize: vertical; min-height: 54px }
     <li><b>Arco</b> de ángulo θ, en su centro: <i>B</i> = μ<sub>0</sub><i>I</i>θ/(4π<i>R</i>).</li>
     <li><b>Solenoide</b> de <i>N</i> espiras y longitud <i>L</i>, en el eje: <i>B</i> = μ<sub>0</sub><i>NI</i>/(2<i>L</i>)·(cos β<sub>1</sub> − cos β<sub>2</sub>). Si es muy largo (ideal), <i>B</i> = μ<sub>0</sub><i>NI</i>/<i>L</i> dentro y 0 fuera.</li>
     <li><b>Toroide</b> de <i>N</i> espiras, dentro del núcleo a distancia <i>r</i> del centro (ley de Ampère): <i>B</i> = μ<sub>0</sub><i>NI</i>/(2π<i>r</i>), y 0 fuera.</li>
+    <li><b>Espira rectangular</b> de lados <i>a</i> y <i>b</i>: la suma de sus cuatro lados; en el centro, <i>B</i> = 2μ<sub>0</sub><i>I</i>√(<i>a</i><sup>2</sup> + <i>b</i><sup>2</sup>)/(π<i>ab</i>).</li>
+    <li><b>Cilindro con corriente</b> (macizo, hueco o de un cable coaxial), con la ley de Ampère: <i>B</i> = μ<sub>0</sub><i>I</i><sub>enc</sub>/(2π<i>r</i>). Con <i>J</i> uniforme, dentro de un cilindro macizo de radio <i>R</i>, <i>I</i><sub>enc</sub> = <i>I r</i><sup>2</sup>/<i>R</i><sup>2</sup>; con <i>J</i> ∝ <i>r</i>, <i>I</i><sub>enc</sub> = <i>I r</i><sup>3</sup>/<i>R</i><sup>3</sup>. En un coaxial, fuera del todo <i>B</i> = 0.</li>
+    <li><b>Lámina de corriente</b> indefinida con densidad <i>K</i> (A/m): <i>B</i> = μ<sub>0</sub><i>K</i>/2 a cada lado, paralelo a la lámina, perpendicular a <i>K</i> y con sentidos opuestos. Entre dos láminas con corrientes opuestas, <i>B</i> = μ<sub>0</sub><i>K</i>, y fuera, 0.</li>
+    <li><b>Disco cargado que gira</b> con densidad σ y velocidad angular ω: cada anillo lleva d<i>I</i> = σω<i>r</i> d<i>r</i>; en el centro, <i>B</i> = μ<sub>0</sub>σω<i>R</i>/2.</li>
   </ul>
   <p>El campo de varias fuentes es la suma vectorial de los campos de cada una (superposición). Con <span class="vv">B</span> se obtiene la fuerza de Lorentz sobre una carga, <span class="vv">F</span> = <i>q</i> <span class="vv">v</span> × <span class="vv">B</span>, y la fuerza sobre un conductor, <span class="vv">F</span> = ∫ <i>I</i> d<span class="vv">l</span> × <span class="vv">B</span>.</p>
   <h2>Ejemplo resuelto: dos hilos paralelos</h2>
   <p>Dos hilos indefinidos paralelos al eje Z pasan por (−<i>a</i>, 0) y (<i>a</i>, 0) con la misma corriente <i>I</i> en sentidos opuestos. En el origen cada hilo está a distancia <i>a</i> y crea <i>B</i> = μ<sub>0</sub><i>I</i>/(2π<i>a</i>); los dos campos apuntan en +Y, así que se suman:</p>
   <p class="eq"><span class="vv">B</span>(0) = <span class="fr"><span class="nu">μ<sub>0</sub><i>I</i></span><span class="de">π<i>a</i></span></span> <span class="uv">u</span><sub>y</sub></p>
   <p>La fuerza por unidad de longitud entre ellos es <i>F</i>/<i>L</i> = μ<sub>0</sub><i>I</i><sup>2</sup>/(2π·2<i>a</i>) = μ<sub>0</sub><i>I</i><sup>2</sup>/(4π<i>a</i>), repulsiva porque las corrientes son opuestas. Ábrelo en «Ejercicios de ejemplo», en la barra de Mis ejercicios, para ver el desarrollo completo.</p>
+  <p>Para ver cómo cambia el campo, añade la pregunta «Perfil de |B|» con dos puntos P y Q: sale la gráfica de |<i>B</i>| a lo largo de la recta. La fuerza sobre cargas y corrientes, con radios, ciclotrón o efecto Hall, está en <a href="../fuerza/">Fuerza magnética</a>.</p>
 </section>
 </div>
 <footer data-solo-web><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Magnetostática <span id="ver"></span> (beta)</footer>
@@ -368,6 +376,7 @@ const Version = (() => {
     { v: '0.1', fecha: '2026-10-22', cambios: ['Primera versión: cargas, hilos, planos y esferas con el desarrollo paso a paso y 12 ejercicios resueltos.', 'Barra lateral con tus problemas, los importados y los ejercicios; título y enunciado editables; archivos .emsim.json.'] },
     ],
     magnetostatica: [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Nuevas fuentes: cilindro con corriente (macizo, hueco o con J proporcional a r, para cables coaxiales), lámina de corriente K, espira rectangular de una pieza y disco cargado que gira.', 'Nueva pregunta «Perfil de |B|»: la gráfica del módulo del campo a lo largo de una recta entre dos puntos.', 'Mapa de color de |B| y líneas de campo continuas en el dibujo.', 'Seis ejercicios de ejemplo nuevos con todo esto.', 'Los números decimales se escriben con coma.'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['Arreglo: el ejemplo resuelto de la teoría explica dónde abrirlo ahora, en «Ejercicios de ejemplo» de la barra Mis ejercicios.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: campo magnético de hilos, segmentos, hilos semiinfinitos, espiras, arcos, solenoides y toroides con Biot-Savart, y fuerza sobre cargas en movimiento y sobre conductores, con el desarrollo paso a paso en la forma μ₀I/(πa) o en unidades del SI.', 'Dibujo del campo B en el plano XY, XZ o YZ, con puntos que se pueden arrastrar y ocho ejemplos resueltos.'] },
     ],
@@ -892,8 +901,12 @@ const Engine = (() => {
 })();
 
 /* =====================================================================
-   Magnetostática (sin DOM): campo B de hilos, segmentos, espiras, arcos,
-   solenoides y toroides por Biot-Savart, y fuerzas magnéticas.
+   Magnetostática (sin DOM): campo B de hilos, segmentos, espiras (circulares
+   y rectangulares), arcos, solenoides, toroides, cilindros con corriente,
+   láminas de corriente y discos cargados que giran, por Biot-Savart y
+   Ampère; fuerzas magnéticas y el perfil de |B| a lo largo de una recta.
+   Los símbolos «~a» de una clave son potencias de a que lleva la fuente
+   (la lámina K y el disco σω no tienen las dimensiones de una corriente).
    Unidades internas: μ₀ = 1 y longitudes en unidades de "a"; en modo simbólico
    los resultados se escriben como coef·μ₀·símbolos/(π aⁿ). En modo SI las
    longitudes van en metros (admite cm y mm) y las corrientes en amperios.
@@ -1066,7 +1079,75 @@ const Magneto = (() => {
       },
       formula: (i) => (i.dentro ? 'Dentro del toroide (Ampère): B = <span class="fr"><span class="nu">μ<sub>0</sub><i>N I</i></span><span class="de">2π<i>r</i></span></span>' : 'Fuera del núcleo del toroide: B = 0'),
     },
+    rectangular: {
+      label: 'Espira rectangular', icon: '▭',
+      campos: [['C', 'Centro', 'vec'], ['plano', 'Plano', 'plano'], ['a', 'Lado a (en el primer eje)', 'num'], ['b', 'Lado b (en el segundo eje)', 'num'], ['sentido', 'Sentido', 'sentido']],
+      def: () => ({ C: ['0', '0', '0'], plano: 'xy', a: '2', b: '2', sentido: 1 }),
+      campo(f, P) {
+        const pl = PLANOS[f.plano], v = esquinas(f), B = [0, 0, 0];
+        for (let k = 0; k < 4; k++) {
+          const A = v[k], Bp = v[(k + 1) % 4], r = rectaNum(P, A, V3.sub(Bp, A), Bp, 'segmento');
+          if (r.sobre) return { error: 'el punto está sobre la espira' };
+          B[0] += r.B[0]; B[1] += r.B[1]; B[2] += r.B[2];
+        }
+        const CP = V3.sub(P, f.C), z = V3.dot(CP, pl.n), centro = V3.norm(V3.sub(CP, V3.sc(pl.n, z))) < 1e-12;
+        return { B, info: { rect: true, centro: centro && Math.abs(z) < 1e-12, eje: centro, z } };
+      },
+      formula: (i) => (i.centro ? 'En el centro, sumando los cuatro lados: B = <span class="fr"><span class="nu">2μ<sub>0</sub><i>I</i>√(<i>a</i><sup>2</sup> + <i>b</i><sup>2</sup>)</span><span class="de">π<i>a b</i></span></span>' : 'Suma de los cuatro lados, cada uno con B = <span class="fr"><span class="nu">μ<sub>0</sub><i>I</i></span><span class="de">4π<i>d</i></span></span>(cos α<sub>1</sub> − cos α<sub>2</sub>)'),
+    },
+    cilindro: {
+      label: 'Cilindro con corriente', icon: '◉',
+      campos: [['C', 'Punto del eje', 'vec'], ['u', 'Dirección de la corriente', 'vec'], ['R1', 'Radio interior (0 si es macizo)', 'num'], ['R2', 'Radio exterior', 'num'], ['perfil', 'Densidad de corriente', 'perfil']],
+      def: () => ({ C: ['0', '0', '0'], u: ['0', '0', '1'], R1: '0', R2: '1', perfil: 'uniforme' }),
+      campo(f, P) {
+        if (!(f.R2 > f.R1 && f.R1 >= 0)) return { error: 'el radio exterior debe ser mayor que el interior' };
+        const uh = V3.unit(f.u), CP = V3.sub(P, f.C), rho = V3.sub(CP, V3.sc(uh, V3.dot(CP, uh))), r = V3.norm(rho);
+        if (r < 1e-12) return { B: [0, 0, 0], info: { cil: true, r: 0, fr: 0, zona: f.R1 > 0 ? 'hueco' : 'dentro', perfil: f.perfil } };
+        const p = f.perfil === 'lineal' ? 3 : 2, fr = r <= f.R1 ? 0 : r >= f.R2 ? 1 : (r ** p - f.R1 ** p) / (f.R2 ** p - f.R1 ** p);
+        return { B: V3.sc(V3.cross(uh, V3.sc(rho, 1 / r)), fr / (2 * PI * r)), info: { cil: true, r, fr, zona: r <= f.R1 ? 'hueco' : r >= f.R2 ? 'fuera' : 'dentro', perfil: f.perfil, hueco: f.R1 > 0 } };
+      },
+      formula: (i) => (i.zona === 'hueco' ? 'Dentro del hueco no hay corriente encerrada (Ampère): B = 0' : `Ley de Ampère con una circunferencia de radio <i>r</i>: B·2π<i>r</i> = μ<sub>0</sub><i>I</i><sub>enc</sub>, con <i>I</i><sub>enc</sub>/<i>I</i> = ${i.zona === 'fuera' ? '1 (fuera se encierra toda)' : i.perfil === 'lineal' ? (i.hueco ? '(<i>r</i><sup>3</sup> − <i>R</i><sub>1</sub><sup>3</sup>)/(<i>R</i><sub>2</sub><sup>3</sup> − <i>R</i><sub>1</sub><sup>3</sup>) con <i>J</i> ∝ <i>r</i>' : '<i>r</i><sup>3</sup>/<i>R</i><sup>3</sup> con <i>J</i> ∝ <i>r</i>') : (i.hueco ? '(<i>r</i><sup>2</sup> − <i>R</i><sub>1</sub><sup>2</sup>)/(<i>R</i><sub>2</sub><sup>2</sup> − <i>R</i><sub>1</sub><sup>2</sup>)' : '<i>r</i><sup>2</sup>/<i>R</i><sup>2</sup>')}`),
+    },
+    lamina: {
+      label: 'Lámina de corriente', icon: '▤', unidad: 'A/m', simbolo: 'K', escala: 1,
+      campos: [['C', 'Punto de la lámina', 'vec'], ['eje', 'Normal a la lámina', 'eje'], ['u', 'Dirección de K', 'vec']],
+      def: () => ({ C: ['0', '0', '0'], eje: 'z', u: ['1', '0', '0'], s: 'K' }),
+      campo(f, P) {
+        const n = EJES[f.eje], k = V3.sub(f.u, V3.sc(n, V3.dot(f.u, n)));
+        if (V3.norm(k) < 1e-12) return { error: 'K tiene que ir a lo largo de la lámina' };
+        const z = V3.dot(V3.sub(P, f.C), n);
+        if (Math.abs(z) < 1e-12) return { error: 'el punto está sobre la lámina' };
+        return { B: V3.sc(V3.cross(V3.unit(k), n), Math.sign(z) / 2), info: { lamina: true } };
+      },
+      formula: () => 'Lámina indefinida (Ampère): B = <span class="fr"><span class="nu">μ<sub>0</sub><i>K</i></span><span class="de">2</span></span>, paralelo a la lámina y perpendicular a <span class="vv">K</span>, con sentidos opuestos a cada lado (<span class="vv">B</span> = <span class="fr"><span class="nu">μ<sub>0</sub></span><span class="de">2</span></span> <span class="vv">K</span> × <span class="uv">n</span>)',
+    },
+    disco: {
+      label: 'Disco cargado que gira', icon: '◍', simbolo: 'sigma*omega', escala: 2,
+      campos: [['C', 'Centro', 'vec'], ['plano', 'Plano', 'plano'], ['R', 'Radio', 'num'], ['sentido', 'Giro', 'sentido']],
+      def: () => ({ C: ['0', '0', '0'], plano: 'xy', R: '1', sentido: 1, s: 'sigma*omega' }),
+      campo(f, P, fino) {
+        const pl = PLANOS[f.plano], CP = V3.sub(P, f.C), z = V3.dot(CP, pl.n), rho = V3.norm(V3.sub(CP, V3.sc(pl.n, z))), R = f.R;
+        if (rho < 1e-12 * R) {
+          // anillos de corriente dI = σω r dr: B = μ₀σω/2 · ((2z² + R²)/√(R² + z²) − 2|z|)
+          return { B: V3.sc(pl.n, (((2 * z * z + R * R) / Math.hypot(R, z) - 2 * Math.abs(z)) / 2) * f.sentido), info: { eje: true, z } };
+        }
+        if (Math.abs(z) < 1e-9 && rho <= R) return { error: 'el punto está sobre el disco' };
+        const g = gl(fino ? 16 : 6), pan = fino ? 6 : 2, h = R / pan, B = [0, 0, 0];
+        for (let p = 0; p < pan; p++) for (let i = 0; i < g.x.length; i++) {
+          const r = h * (p + (g.x[i] + 1) / 2), w = ((g.w[i] * h) / 2) * r * f.sentido, b = arcoNum(P, f.C, pl, r, 0, 2 * PI, false);
+          B[0] += w * b[0]; B[1] += w * b[1]; B[2] += w * b[2];
+        }
+        return { B, info: { eje: false } };
+      },
+      formula: (i) => (i.eje ? 'Cada anillo de radio <i>r</i> lleva d<i>I</i> = σω<i>r</i> d<i>r</i>; integrando en el eje: B = <span class="fr"><span class="nu">μ<sub>0</sub>σω</span><span class="de">2</span></span>(<span class="fr"><span class="nu">2<i>z</i><sup>2</sup> + <i>R</i><sup>2</sup></span><span class="de">√(<i>R</i><sup>2</sup> + <i>z</i><sup>2</sup>)</span></span> − 2|<i>z</i>|)' : 'Suma de anillos de corriente d<i>I</i> = σω<i>r</i> d<i>r</i>, resuelta numéricamente'),
+    },
   };
+  // vértices de la espira rectangular, en el sentido de la corriente
+  function esquinas(f) {
+    const pl = PLANOS[f.plano], s = f.sentido < 0 ? -1 : 1, q = [[1, -1], [1, 1], [-1, 1], [-1, -1]];
+    const v = q.map(([x, y]) => V3.add(f.C, V3.add(V3.sc(pl.e1, (x * f.a) / 2), V3.sc(pl.e2, (y * f.b) / 2))));
+    return s > 0 ? v : v.reverse();
+  }
 
   /* ---------- Lectura de la escena ---------- */
   function lector(modo) {
@@ -1082,11 +1163,15 @@ const Magneto = (() => {
       if (tipo === 'vec') o[k] = f[k].map((x, j) => leer(x, `${nom}, ${lab} (${'xyz'[j]})`));
       else if (tipo === 'num') o[k] = leer(f[k], `${nom}, ${lab}`);
       else if (tipo === 'sentido' || tipo === 'salida') o[k] = f[k] < 0 ? -1 : 1;
+      else if (tipo === 'perfil') o[k] = f[k] === 'lineal' ? 'lineal' : 'uniforme';
     }
     if (T.campos.some(([k, , t]) => k === 'u' && t === 'vec') && V3.norm(o.u) < 1e-12) throw new Error(`${nom}: la dirección no puede ser nula`);
-    for (const k of ['R', 'L', 'N']) if (k in o && !(o[k] > 0)) throw new Error(`${nom}: ${k} debe ser positivo`);
+    for (const k of ['R', 'L', 'N', 'a', 'b', 'R2']) if (k in o && !(o[k] > 0)) throw new Error(`${nom}: ${k} debe ser positivo`);
+    if ('R1' in o && f.tipo === 'cilindro' && !(o.R1 >= 0 && o.R1 < o.R2)) throw new Error(`${nom}: el radio interior tiene que estar entre 0 y el exterior`);
     o.k = leer(f.I ?? '1', `${nom}, corriente`);
     o.s = f.s || '';
+    // la lámina (K) y el disco (σω) llevan potencias de a para que el resultado tenga las dimensiones de B
+    if (T.escala) o.s = key(o.s, ...Array(T.escala).fill('~a'));
     return o;
   }
 
@@ -1124,7 +1209,7 @@ const Magneto = (() => {
   }
 
   /* ---------- Formato ---------- */
-  const GREEK = { mu: 'μ', lambda: 'λ', alpha: 'α', beta: 'β', omega: 'ω', phi: 'φ', theta: 'θ' };
+  const GREEK = { mu: 'μ', lambda: 'λ', alpha: 'α', beta: 'β', omega: 'ω', phi: 'φ', theta: 'θ', sigma: 'σ' };
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   function sym(name) {
     const m = String(name).match(/^([A-Za-z]+?)_?(\d*)$/);
@@ -1132,10 +1217,12 @@ const Magneto = (() => {
     return `<i>${esc(GREEK[m[1].toLowerCase()] || m[1])}</i>${m[2] ? `<sub>${m[2]}</sub>` : ''}`;
   }
   const sup = (n) => (n === 1 ? '' : `<sup>${n}</sup>`);
+  const potA = (k) => (k ? k.split('*').filter((s) => s === '~a').length : 0);
   function mono(k) {
     const cnt = {};
-    for (const s of k ? k.split('*') : []) cnt[s] = (cnt[s] || 0) + 1;
-    return Object.keys(cnt).map((s) => sym(s) + sup(cnt[s])).join('');
+    for (const s of k ? k.split('*') : []) if (s !== '~a') cnt[s] = (cnt[s] || 0) + 1;
+    // σ delante de ω, como en los libros (σω)
+    return Object.keys(cnt).sort((x, y) => (y === 'sigma') - (x === 'sigma')).map((s) => sym(s) + sup(cnt[s])).join('');
   }
   const frac = (n, d) => (d ? `<span class="fr"><span class="nu">${n || '1'}</span><span class="de">${d}</span></span>` : n || '1');
   const uv = (c) => `<span class="uv">u</span><sub>${c}</sub>`;
@@ -1145,7 +1232,7 @@ const Magneto = (() => {
     const a = Math.abs(x);
     let s = a >= 1e4 || a < 1e-3 ? x.toExponential(3).replace(/\.?0+e/, 'e').replace('e', '·10^') : String(+x.toPrecision(4));
     s = s.replace(/·10\^([+-]?\d+)/, (_, e) => `·10<sup>${+e}</sup>`);
-    return s.replace('-', MINUS);
+    return s.replace('.', ',').replace('-', MINUS);
   }
   // número geométrico en línea: √2, 3/4, 0.4142
   function num(x) {
@@ -1157,6 +1244,7 @@ const Magneto = (() => {
   const pt = (v) => `(${v.map(num).join(', ')})`;
   // contexto de formato: n = potencia de a (negativa en el denominador)
   function cola(k, n, conPi) {
+    n += potA(k);
     const syms = 'μ<sub>0</sub>' + mono(k) + (n > 0 ? `<i>a</i>${sup(n)}` : '');
     const den = (conPi ? 'π' : '') + (n < 0 ? `<i>a</i>${sup(-n)}` : '');
     return { syms, den };
@@ -1334,6 +1422,40 @@ const Magneto = (() => {
     },
   };
 
+  /* ---------- Perfil de |B| a lo largo de una recta ---------- */
+  function perfilB(q, fs, leer, modo) {
+    const P = q.P.map((x, j) => leer(x, `Desde (${'xyz'[j]})`)), Q = q.Q.map((x, j) => leer(x, `Hasta (${'xyz'[j]})`)), d = V3.sub(Q, P), L = V3.norm(d);
+    if (!(L > 0)) throw new Error('los dos extremos de la recta coinciden');
+    const n = 160, xs = [], ys = [], esc2 = modo === 'si' ? MU0 : 1;
+    for (let k = 0; k <= n; k++) {
+      let m = null;
+      try { const { vp } = campoTotal(fs, V3.add(P, V3.sc(d, k / n)), false); m = V3.norm(Object.values(vp).reduce((a, b) => V3.add(a, b), [0, 0, 0])) * esc2; } catch (e) { m = null; }
+      xs.push((L * k) / n); ys.push(m !== null && isFinite(m) ? m : null);
+    }
+    const val = ys.filter((y) => y !== null).sort((a, b) => a - b);
+    if (!val.length) throw new Error('la recta pasa por encima de las fuentes en todos sus puntos');
+    const top = Math.max(val[Math.floor(0.97 * (val.length - 1))] * 1.15, 1e-300), iMax = ys.reduce((im, y, k) => (y !== null && (im < 0 || y > ys[im]) ? k : im), -1);
+    const w = 320, h = 150, ml = 8, mb = 22, mt = 10, X = (x) => ml + ((w - 2 * ml) * x) / L, Y = (y) => h - mb - ((h - mb - mt) * Math.min(y, top)) / top;
+    let trazo = '', pen = false;
+    ys.forEach((y, k) => { if (y === null) { pen = false; return; } trazo += `${pen ? 'L' : 'M'}${X(xs[k]).toFixed(1)} ${Y(y).toFixed(1)} `; pen = true; });
+    const uL = (x) => (modo === 'si' ? `${dec(x)} m` : `${num(x) === '1' ? '' : num(x)}a`), uB = modo === 'si' ? 'T' : 'μ₀/a por unidad de corriente';
+    const svg = `<svg class="perfil" viewBox="0 0 ${w} ${h}" role="img" aria-label="Perfil de |B| a lo largo de la recta">`
+      + `<line x1="${ml}" y1="${h - mb}" x2="${w - ml}" y2="${h - mb}" stroke="var(--line)"/>`
+      + `<path d="${trazo}" fill="none" stroke="var(--neg)" stroke-width="2"/>`
+      + `<circle cx="${X(xs[iMax]).toFixed(1)}" cy="${Y(ys[iMax]).toFixed(1)}" r="3.5" fill="var(--mark)"/>`
+      + `<text x="${ml}" y="${h - 6}" font-size="11" fill="var(--muted)">P</text><text x="${w - ml}" y="${h - 6}" font-size="11" fill="var(--muted)" text-anchor="end">Q · ${uL(L)}</text>`
+      + `<text x="${ml + 4}" y="${mt + 8}" font-size="11" fill="var(--muted)">|B| (${uB})</text></svg>`;
+    const huecos = ys.some((y) => y === null), claves = [...new Set(fs.map((f) => f.s))];
+    const maxHtml = modo === 'si' ? `${dec(ys[iMax])} <span class="unit">T</span>` : claves.length === 1 ? term(ys[iMax], claves[0], -1).html : `${dec(ys[iMax])}·μ<sub>0</sub>/<i>a</i>`;
+    return {
+      P, Q, vp: {}, perfil: { xs, ys },
+      res: `${svg}<span class="sub">Máximo |<span class="vv">B</span>| = ${maxHtml} a una distancia ${uL(xs[iMax])} de P${huecos ? ' · los huecos son puntos sobre un conductor' : ''}</span>`,
+      steps: [{ texto: 'Recta de P a Q', html: `Se calcula <span class="vv">B</span> por superposición en ${n + 1} puntos entre P = ${pt(P)} y Q = ${pt(Q)}${modo === 'si' ? '' : ', con todas las corrientes iguales a 1 (el resultado va en unidades de μ<sub>0</sub>/<i>a</i> por unidad de corriente)'}.` }],
+      final: 'Módulo del campo total en cada punto de la recta',
+    };
+  }
+  ANALYSES.perfil = { label: 'Perfil de |B|', titulo: 'Perfil de |B| a lo largo de una recta', def: () => ({ P: ['-3', '0', '0'], Q: ['3', '0', '0'] }), run: perfilB };
+
   /* ---------- Desarrollo de cada fuente ---------- */
   function datos(f, info, modo) {
     const L = (x) => { if (modo === 'si') return `${dec(x)} m`; const t = num(x); return t === '1' ? '<i>a</i>' : t === MINUS + '1' ? MINUS + '<i>a</i>' : t === '0' ? '0' : `${t}<i>a</i>`; };
@@ -1344,6 +1466,7 @@ const Magneto = (() => {
     if (info.eje && info.z !== undefined) out.push(`<i>z</i> = ${L(info.z)}`);
     if (info.th !== undefined) { const t = num(info.th / PI); out.push(`θ = ${t === '1' ? '' : t === MINUS + '1' ? MINUS : t}π`); }
     if (info.r !== undefined) out.push(`<i>r</i> = ${L(info.r)}`);
+    if (info.fr !== undefined && info.zona !== 'hueco') out.push(`<i>I</i><sub>enc</sub> = ${num(info.fr)}·<i>I</i>`);
     return out.join(' · ');
   }
 
@@ -1364,7 +1487,7 @@ const Magneto = (() => {
     return { modo, fuentes: fs, errors, results };
   }
 
-  return { SOURCES, ANALYSES, PLANOS, EJES, PLANO_DE_EJE, run, campoRapido, MU0, num, dec, sym };
+  return { SOURCES, ANALYSES, PLANOS, EJES, PLANO_DE_EJE, run, campoRapido, esquinas, MU0, num, dec, sym };
 })();
 
 /* =====================================================================
@@ -1458,13 +1581,74 @@ const MagEjemplos = (() => {
         vista: { plano: 'xy', corte: '0' },
       }),
     },
+    {
+      clave: 'cilindro', titulo: 'Cilindro macizo con corriente',
+      enunciado: 'Un conductor cilíndrico macizo e indefinido de radio 2a, con el eje en el eje Z, lleva una corriente I hacia +Z repartida uniformemente en su sección. Calcular el campo magnético en (a, 0, 0) y en (3a, 0, 0), y dibujar cómo varía |B| con la distancia al eje.',
+      escena: () => ({
+        fuentes: [{ tipo: 'cilindro', nombre: 'Cilindro', I: '1', s: 'I', C: v(0, 0, 0), u: v(0, 0, 1), R1: '0', R2: '2', perfil: 'uniforme' }],
+        preguntas: [{ tipo: 'B', P: v(1, 0, 0) }, { tipo: 'B', P: v(3, 0, 0) }, { tipo: 'perfil', P: v(0, 0, 0), Q: v(5, 0, 0) }],
+        vista: { plano: 'xy', corte: '0', mapa: true },
+      }),
+    },
+    {
+      clave: 'coaxial', titulo: 'Cable coaxial',
+      enunciado: 'Un cable coaxial indefinido, con el eje en el eje Z, tiene un conductor interior macizo de radio a por el que va una corriente I hacia +Z, y un conductor exterior de radios 2a y 3a por el que vuelve la misma corriente. Las corrientes están repartidas uniformemente. Calcular el campo magnético en (a/2, 0, 0), en (5a/2, 0, 0) y en (4a, 0, 0).',
+      escena: () => ({
+        fuentes: [
+          { tipo: 'cilindro', nombre: 'Interior', I: '1', s: 'I', C: v(0, 0, 0), u: v(0, 0, 1), R1: '0', R2: '1', perfil: 'uniforme' },
+          { tipo: 'cilindro', nombre: 'Exterior', I: '-1', s: 'I', C: v(0, 0, 0), u: v(0, 0, 1), R1: '2', R2: '3', perfil: 'uniforme' },
+        ],
+        preguntas: [{ tipo: 'B', P: v('1/2', 0, 0) }, { tipo: 'B', P: v('5/2', 0, 0) }, { tipo: 'B', P: v(4, 0, 0) }, { tipo: 'perfil', P: v(0, 0, 0), Q: v(4, 0, 0) }],
+        vista: { plano: 'xy', corte: '0', mapa: true },
+      }),
+    },
+    {
+      clave: 'cilindro-J', titulo: 'Cilindro con J proporcional a r',
+      enunciado: 'Un hilo grueso de radio a, con el eje en el eje Z, lleva una corriente total I hacia +Z con una densidad de corriente que crece linealmente con la distancia al eje, J = J₀ r/a. Calcular el campo magnético en (a/2, 0, 0) y en (0, 2a, 0).',
+      escena: () => ({
+        fuentes: [{ tipo: 'cilindro', nombre: 'Hilo grueso', I: '1', s: 'I', C: v(0, 0, 0), u: v(0, 0, 1), R1: '0', R2: '1', perfil: 'lineal' }],
+        preguntas: [{ tipo: 'B', P: v('1/2', 0, 0) }, { tipo: 'B', P: v(0, 2, 0) }],
+        vista: { plano: 'xy', corte: '0' },
+      }),
+    },
+    {
+      clave: 'laminas', titulo: 'Dos láminas de corriente',
+      enunciado: 'El plano z = 0 lleva una densidad superficial de corriente K hacia +X, y el plano z = 2a, otra de la misma intensidad hacia −X. Calcular el campo magnético en (0, 0, a), entre las dos láminas, y en (0, 0, 3a).',
+      escena: () => ({
+        fuentes: [
+          { tipo: 'lamina', nombre: 'Lámina z = 0', I: '1', s: 'K', C: v(0, 0, 0), eje: 'z', u: v(1, 0, 0) },
+          { tipo: 'lamina', nombre: 'Lámina z = 2a', I: '1', s: 'K', C: v(0, 0, 2), eje: 'z', u: v(-1, 0, 0) },
+        ],
+        preguntas: [{ tipo: 'B', P: v(0, 0, 1) }, { tipo: 'B', P: v(0, 0, 3) }],
+        vista: { plano: 'yz', corte: '0' },
+      }),
+    },
+    {
+      clave: 'rectangular', titulo: 'Espira rectangular',
+      enunciado: 'Una espira rectangular de lados 2a (paralelo al eje X) y 4a (paralelo al eje Y), centrada en el origen en el plano XY, lleva una corriente I en sentido antihorario visto desde +Z. Calcular el campo magnético en el centro y en (0, 0, 2a).',
+      escena: () => ({
+        fuentes: [{ tipo: 'rectangular', nombre: 'Espira', I: '1', s: 'I', C: v(0, 0, 0), plano: 'xy', a: '2', b: '4', sentido: 1 }],
+        preguntas: [{ tipo: 'B', P: v(0, 0, 0) }, { tipo: 'B', P: v(0, 0, 2) }],
+        vista: { plano: 'xy', corte: '0' },
+      }),
+    },
+    {
+      clave: 'disco', titulo: 'Disco cargado que gira',
+      enunciado: 'Un disco de radio a con densidad superficial de carga σ gira con velocidad angular ω alrededor de su eje, el eje Z, en sentido antihorario visto desde +Z. Calcular el campo magnético en el centro y en el punto (0, 0, a) del eje.',
+      escena: () => ({
+        fuentes: [{ tipo: 'disco', nombre: 'Disco', I: '1', s: 'sigma*omega', C: v(0, 0, 0), plano: 'xy', R: '1', sentido: 1 }],
+        preguntas: [{ tipo: 'B', P: v(0, 0, 0) }, { tipo: 'B', P: v(0, 0, 1) }, { tipo: 'perfil', P: v(0, 0, -3), Q: v(0, 0, 3) }],
+        vista: { plano: 'xz', corte: '0', lineas: true },
+      }),
+    },
   ];
   return { lista };
 })();
 
 /* =====================================================================
    Interfaz de la calculadora de magnetostática: editor de fuentes y
-   preguntas, dibujo del campo en un plano, ejemplos y archivos .json.
+   preguntas, dibujo del campo en un plano (flechas, mapa de color de |B| y
+   líneas de campo), ejemplos y archivos .json.
    ===================================================================== */
 (() => {
   const { SOURCES, ANALYSES, PLANOS } = Magneto;
@@ -1489,11 +1673,11 @@ const MagEjemplos = (() => {
   };
   let uid = 0;
   const newId = () => 'm' + Date.now().toString(36) + (uid++).toString(36);
-  const vacia = () => ({ titulo: '', enunciado: '', modo: 'sym', vista: { plano: 'xy', corte: '0', flechas: true }, fuentes: [], preguntas: [] });
+  const vacia = () => ({ titulo: '', enunciado: '', modo: 'sym', vista: { plano: 'xy', corte: '0', flechas: true, mapa: false, lineas: false }, fuentes: [], preguntas: [] });
   function valida(s) {
     const o = { ...vacia(), ...s, vista: { ...vacia().vista, ...(s.vista || {}) } };
     o.modo = s.modo === 'si' ? 'si' : 'sym';
-    o.fuentes = (s.fuentes || []).filter((f) => SOURCES[f.tipo]).map((f) => ({ ...SOURCES[f.tipo].def(), I: '1', s: 'I', ...f, id: f.id || newId() }));
+    o.fuentes = (s.fuentes || []).filter((f) => SOURCES[f.tipo]).map((f) => ({ I: '1', s: 'I', ...SOURCES[f.tipo].def(), ...f, id: f.id || newId() }));
     o.preguntas = (s.preguntas || []).filter((q) => ANALYSES[q.tipo]).map((q) => ({ ...ANALYSES[q.tipo].def(o.fuentes), ...q, id: q.id || newId() }));
     return o;
   }
@@ -1522,23 +1706,25 @@ const MagEjemplos = (() => {
     }
     if (tipo === 'salida') return fila(lab, sel(f[k], [['1', 'sale de A'], ['-1', 'llega a A']], (v) => { f[k] = +v; ch(); }, lab));
     if (tipo === 'bool') return fila(lab, h('input', { type: 'checkbox', checked: !!f[k], onchange: (e) => { f[k] = e.target.checked; ch(); } }));
+    if (tipo === 'perfil') return fila(lab, sel(f[k], [['uniforme', 'uniforme'], ['lineal', 'J proporcional a r']], (v) => { f[k] = v; ch(); }, lab));
     return null;
   }
   function tarjetaFuente(f) {
     const T = SOURCES[f.tipo];
     const corriente = esc.modo === 'si'
-      ? h('div', { class: 'cur' }, h('input', { class: 'in', value: f.I, 'aria-label': 'Corriente', oninput: (e) => { f.I = e.target.value; recalcula(); } }), h('span', {}, 'A'))
-      : h('div', { class: 'cur' }, h('input', { class: 'in', value: f.I, 'aria-label': 'Coeficiente de la corriente', oninput: (e) => { f.I = e.target.value; recalcula(); } }), h('span', {}, '×'), h('input', { class: 'in', value: f.s, 'aria-label': 'Símbolo de la corriente', oninput: (e) => { f.s = e.target.value.replace(/[^A-Za-z0-9_]/g, ''); recalcula(); } }));
+      ? h('div', { class: 'cur' }, h('input', { class: 'in', value: f.I, 'aria-label': 'Corriente', oninput: (e) => { f.I = e.target.value; recalcula(); } }), h('span', {}, { lamina: 'A/m', disco: 'C/(m²·s)' }[f.tipo] || 'A'))
+      : h('div', { class: 'cur' }, h('input', { class: 'in', value: f.I, 'aria-label': 'Coeficiente de la corriente', oninput: (e) => { f.I = e.target.value; recalcula(); } }), h('span', {}, '×'), h('input', { class: 'in', value: f.s, 'aria-label': 'Símbolo de la corriente', oninput: (e) => { f.s = e.target.value.replace(/[^A-Za-z0-9_*]/g, ''); recalcula(); } }));
     return h('div', { class: 'pieza' },
       h('div', { class: 'card-h' }, h('span', { class: 'badge' }, T.label), h('input', { class: 'in nom', value: f.nombre || '', placeholder: 'nombre', 'aria-label': 'Nombre', oninput: (e) => { f.nombre = e.target.value; recalcula(false); } }),
         h('button', { class: 'x', title: 'Quitar', 'aria-label': 'Quitar', onclick: () => { esc.fuentes = esc.fuentes.filter((x) => x !== f); editor(); recalcula(); } }, '×')),
-      fila(f.tipo === 'toroide' || f.tipo === 'solenoide' ? 'Corriente por espira' : 'Corriente', corriente),
+      fila({ toroide: 'Corriente por espira', solenoide: 'Corriente por espira', lamina: 'Densidad K', disco: 'σω (carga × giro)', cilindro: 'Corriente total' }[f.tipo] || 'Corriente', corriente),
       ...T.campos.map((c) => campoFuente(f, c)));
   }
   function tarjetaPregunta(q, i) {
     const A = ANALYSES[q.tipo], ch = () => recalcula();
     const campos = [];
-    if (q.P) campos.push(fila('Punto P', vecIn(q.P, ch)));
+    if (q.P) campos.push(fila(q.tipo === 'perfil' ? 'Desde P' : 'Punto P', vecIn(q.P, ch)));
+    if (q.Q) campos.push(fila('Hasta Q', vecIn(q.Q, ch)));
     if (q.tipo === 'Fq') {
       campos.push(fila('Carga', esc.modo === 'si' ? h('div', { class: 'cur' }, h('input', { class: 'in', value: q.q, oninput: (e) => { q.q = e.target.value; ch(); } }), h('span', {}, 'C'))
         : h('div', { class: 'cur' }, h('input', { class: 'in', value: q.q, oninput: (e) => { q.q = e.target.value; ch(); } }), h('span', {}, '×'), h('input', { class: 'in', value: q.qs, oninput: (e) => { q.qs = e.target.value.replace(/[^A-Za-z0-9_]/g, ''); ch(); } }))));
@@ -1558,13 +1744,13 @@ const MagEjemplos = (() => {
     $('#titulo').textContent = esc.titulo || 'Magnetostática: campo magnético y Biot-Savart';
     $('#enunciado').value = esc.enunciado || '';
     $('#modo').value = esc.modo;
-    $('#plano').value = esc.vista.plano; $('#corte').value = esc.vista.corte; $('#flechas').checked = esc.vista.flechas !== false;
+    $('#plano').value = esc.vista.plano; $('#corte').value = esc.vista.corte; $('#flechas').checked = esc.vista.flechas !== false; $('#mapa').checked = !!esc.vista.mapa; $('#lineas').checked = !!esc.vista.lineas;
     $('#corte-l').textContent = { xy: 'z', xz: 'y', yz: 'x' }[esc.vista.plano];
     $('#hint-unid').textContent = esc.modo === 'si' ? 'Longitudes en metros (admite cm y mm, p. ej. 5 cm) y corrientes en amperios.' : 'Longitudes en unidades de a; admite 1/2, sqrt(3), √2. Corriente = coeficiente × símbolo.';
     $('#fuentes').replaceChildren(...esc.fuentes.map(tarjetaFuente));
     $('#preguntas').replaceChildren(...esc.preguntas.map(tarjetaPregunta));
     if (!esc.fuentes.length) $('#fuentes').append(h('p', { class: 'hint' }, 'Añade una fuente con los botones de arriba.'));
-    if (!esc.preguntas.length) $('#preguntas').append(h('p', { class: 'hint' }, 'Añade una pregunta: campo en un punto, fuerza sobre una carga o sobre un hilo.'));
+    if (!esc.preguntas.length) $('#preguntas').append(h('p', { class: 'hint' }, 'Añade una pregunta: campo en un punto, fuerza sobre una carga o sobre un hilo, o el perfil de |B| a lo largo de una recta.'));
   }
 
   /* ---------------- cálculo ---------------- */
@@ -1606,11 +1792,11 @@ const MagEjemplos = (() => {
     const [i, j] = ejes(), pts = [];
     for (const f of out.fuentes) {
       for (const k of ['A', 'B', 'C']) if (f[k]) pts.push(f[k]);
-      const R = f.R2 || f.R || (f.L ? f.L / 2 : 0);
+      const R = f.R2 || f.R || (f.L ? f.L / 2 : 0) || Math.max(f.a || 0, f.b || 0) / 2 || (f.tipo === 'lamina' ? 2 : 0);
       if (f.C && R) for (const d of [[R, 0, 0], [0, R, 0], [0, 0, R], [-R, 0, 0], [0, -R, 0], [0, 0, -R]]) pts.push(V3.add(f.C, d));
       if (f.tipo === 'solenoide') { const n = Magneto.EJES[f.eje]; pts.push(V3.add(f.C, V3.sc(n, f.L / 2)), V3.add(f.C, V3.sc(n, -f.L / 2))); }
     }
-    for (const r of out.results) if (r.P) pts.push(r.P);
+    for (const r of out.results) { if (r.P) pts.push(r.P); if (r.Q) pts.push(r.Q); }
     if (!pts.length) pts.push([0, 0, 0]);
     let x0 = Math.min(...pts.map((p) => p[i])), x1 = Math.max(...pts.map((p) => p[i])), y0 = Math.min(...pts.map((p) => p[j])), y1 = Math.max(...pts.map((p) => p[j]));
     const m = Math.max(x1 - x0, y1 - y0, esc.modo === 'si' ? 0.02 : 2) * 0.35;
@@ -1689,11 +1875,119 @@ const MagEjemplos = (() => {
       const n = Magneto.EJES[f.eje], pl = PLANOS[Magneto.PLANO_DE_EJE[f.eje]], vueltas = Math.min(Math.round(f.N), 24), pts = [];
       for (let k = 0; k <= vueltas * 48; k++) { const t = k / 48; pts.push(V3.add(V3.add(f.C, V3.sc(n, -f.L / 2 + (f.L * t) / vueltas)), V3.add(V3.sc(pl.e1, f.R * Math.cos(2 * Math.PI * t * f.sentido)), V3.sc(pl.e2, f.R * Math.sin(2 * Math.PI * t * f.sentido))))); }
       ctx.globalAlpha = 0.8; polilinea(pts, color, 1.2, false); ctx.globalAlpha = 1;
+    } else if (f.tipo === 'rectangular') {
+      const v = Magneto.esquinas(f), pts = [];
+      for (let q = 0; q < 4; q++) for (let k = 0; k <= 20; k++) pts.push(V3.add(v[q], V3.sc(V3.sub(v[(q + 1) % 4], v[q]), k / 20)));
+      polilinea(f.k >= 0 ? pts : pts.reverse(), color);
+    } else if (f.tipo === 'cilindro') {
+      const uh = V3.unit(f.u);
+      if (V3.norm(V3.cross(uh, nrm)) < 1e-9) {
+        // corte transversal: anillo o círculo relleno, con ⊙ o ⊗ en el centro de la parte con corriente
+        const [x, y] = aPant(f.C), r2 = f.R2 * vista.s, r1 = f.R1 * vista.s, sal = V3.dot(uh, fuera()) * f.k > 0;
+        ctx.fillStyle = color; ctx.globalAlpha = 0.16; ctx.beginPath(); ctx.arc(x, y, r2, 0, 2 * Math.PI); if (r1 > 0) { ctx.moveTo(x + r1, y); ctx.arc(x, y, r1, 0, 2 * Math.PI); } ctx.fill('evenodd'); ctx.globalAlpha = 1;
+        ctx.strokeStyle = color; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, y, r2, 0, 2 * Math.PI); ctx.stroke(); if (r1 > 0) { ctx.beginPath(); ctx.arc(x, y, r1, 0, 2 * Math.PI); ctx.stroke(); }
+        if (r1 > 0) for (const a of [0, Math.PI / 2, Math.PI, 1.5 * Math.PI]) simboloNormal(x + ((r1 + r2) / 2) * Math.cos(a), y + ((r1 + r2) / 2) * Math.sin(a), sal, 6, color, 1.5);
+        else simboloNormal(x, y, sal, 8, color, 2);
+      } else {
+        // de lado: banda con la corriente a lo largo del eje
+        const lat = V3.unit(V3.cross(nrm, uh));
+        for (const sg of [1, -1]) for (const R of [f.R1, f.R2]) if (R > 0) { const o = V3.sc(lat, sg * R); polilinea([V3.add(f.C, V3.add(o, V3.sc(uh, -lejos))), V3.add(f.C, V3.add(o, V3.sc(uh, lejos)))], color, 1.2, false); }
+        recta(f.C, f.u, -lejos, lejos);
+      }
+    } else if (f.tipo === 'lamina') {
+      const n = Magneto.EJES[f.eje];
+      if (V3.norm(V3.cross(n, nrm)) < 1e-9) {
+        // la lámina es el plano de la vista: sombreado con flechas de K
+        ctx.fillStyle = color; ctx.globalAlpha = 0.08; ctx.fillRect(0, 0, W, H); ctx.globalAlpha = 1;
+        const [i, j] = ejes(), a = Math.atan2(f.u[j], f.u[i]);
+        for (let y = 40; y < H; y += 80) for (let x = 40; x < W; x += 110) flecha(x, y, a, 26, color, 1.6);
+      } else {
+        const t = V3.unit(V3.cross(n, nrm)), uh = V3.unit(V3.sub(f.u, V3.sc(n, V3.dot(f.u, n))));
+        ctx.lineWidth = 3; polilinea([V3.add(f.C, V3.sc(t, -lejos)), V3.add(f.C, V3.sc(t, lejos))], color, 3, false);
+        if (Math.abs(V3.dot(uh, t)) > 0.5) recta(f.C, V3.sc(t, Math.sign(V3.dot(uh, t))), -lejos, lejos);
+        else { const sal = V3.dot(uh, fuera()) * f.k > 0; for (let k = -6; k <= 6; k++) { const [x, y] = aPant(V3.add(f.C, V3.sc(t, (k * 70) / vista.s))); simboloNormal(x, y, sal, 6, color, 1.5); } }
+      }
+    } else if (f.tipo === 'disco') {
+      const pl = PLANOS[f.plano];
+      ctx.fillStyle = color; ctx.globalAlpha = 0.12; const pts = circ(f.C, pl, f.R, 0, 2 * Math.PI).map(aPant); ctx.beginPath(); pts.forEach((p, k) => (k ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]))); ctx.fill(); ctx.globalAlpha = 1;
+      polilinea(circ(f.C, pl, f.R, 0, 2 * Math.PI * f.sentido * Math.sign(f.k || 1)), color, 1.6, true);
+      polilinea(circ(f.C, pl, f.R * 0.55, 0, 2 * Math.PI * f.sentido * Math.sign(f.k || 1)), color, 1, true);
     } else if (f.tipo === 'toroide') {
       const pl = PLANOS[f.plano];
       for (const R of [f.R1, f.R2]) polilinea(circ(f.C, pl, R, 0, 2 * Math.PI), color, 1.5, false);
       polilinea(circ(f.C, pl, (f.R1 + f.R2) / 2, 0, 2 * Math.PI * f.sentido), color, 1, true);
     }
+  }
+  // campo en una rejilla de la pantalla (se reutiliza mientras no cambie nada)
+  let cacheR = null;
+  function rejilla() {
+    const gs = 10, nx = Math.ceil(W / gs) + 1, ny = Math.ceil(H / gs) + 1, clave = JSON.stringify([out.fuentes, esc.vista.plano, corte(), W, H, vista]);
+    if (cacheR && cacheR.clave === clave) return cacheR;
+    const [i, j] = ejes(), bx = new Float32Array(nx * ny), by = new Float32Array(nx * ny), m = new Float32Array(nx * ny);
+    for (let iy = 0; iy < ny; iy++) for (let ix = 0; ix < nx; ix++) {
+      const B = Magneto.campoRapido(out.fuentes, aMundo(ix * gs, iy * gs)), k = iy * nx + ix, M = V3.norm(B);
+      if (!isFinite(M)) continue;
+      bx[k] = B[i]; by[k] = B[j]; m[k] = M;
+    }
+    cacheR = { clave, gs, nx, ny, bx, by, m };
+    return cacheR;
+  }
+  const rgb = (c) => { const g = document.createElement('canvas').getContext('2d'); g.fillStyle = c; const x = g.fillStyle; return x[0] === '#' ? [1, 3, 5].map((k) => parseInt(x.slice(k, k + 2), 16)) : (x.match(/\d+/g) || [0, 0, 0]).slice(0, 3).map(Number); };
+  // mapa de color de |B| en escala logarítmica
+  function mapaColor(R, color) {
+    const val = Array.from(R.m).filter((x) => x > 0).sort((a, b) => a - b);
+    if (!val.length) return;
+    const lo = Math.log(val[Math.floor(val.length * 0.05)]), hi = Math.log(val[Math.floor(val.length * 0.98)]), [r, g, b] = rgb(color);
+    const off = document.createElement('canvas'); off.width = R.nx; off.height = R.ny;
+    const oc = off.getContext('2d'), img = oc.createImageData(R.nx, R.ny);
+    for (let k = 0; k < R.m.length; k++) {
+      const t = R.m[k] > 0 && hi > lo ? Math.min(1, Math.max(0, (Math.log(R.m[k]) - lo) / (hi - lo))) : 0;
+      img.data[4 * k] = r; img.data[4 * k + 1] = g; img.data[4 * k + 2] = b; img.data[4 * k + 3] = Math.round(150 * t);
+    }
+    oc.putImageData(img, 0, 0);
+    ctx.imageSmoothingEnabled = true; ctx.drawImage(off, -R.gs / 2, -R.gs / 2, R.nx * R.gs, R.ny * R.gs);
+  }
+  // dirección del campo en el plano por interpolación bilineal en la rejilla
+  function dirEn(R, x, y) {
+    const fx = x / R.gs, fy = y / R.gs, ix = Math.floor(fx), iy = Math.floor(fy);
+    if (ix < 0 || iy < 0 || ix >= R.nx - 1 || iy >= R.ny - 1) return null;
+    const tx = fx - ix, ty = fy - iy, k = iy * R.nx + ix, w = [(1 - tx) * (1 - ty), tx * (1 - ty), (1 - tx) * ty, tx * ty], ks = [k, k + 1, k + R.nx, k + R.nx + 1];
+    let bx = 0, by = 0, M = 0;
+    ks.forEach((q, n) => { bx += w[n] * R.bx[q]; by += w[n] * R.by[q]; M += w[n] * R.m[q]; });
+    const p = Math.hypot(bx, by);
+    // sin campo en el plano (perpendicular a la vista o nulo): la línea se corta
+    if (!(p > 0.25 * M) || !(p > 0)) return null;
+    return [bx / p, -by / p];
+  }
+  // líneas de campo repartidas con separación parecida (proyección en el plano de la vista)
+  function lineasCampo(R, color) {
+    const sep = 26, cw = sep / 2, cx = Math.ceil(W / cw), cy = Math.ceil(H / cw), ocup = new Uint8Array(cx * cy), paso = 2.5;
+    const celda = (x, y) => (x < 0 || y < 0 || x >= W || y >= H ? -1 : Math.floor(y / cw) * cx + Math.floor(x / cw));
+    const libre = (x, y) => { const c = celda(x, y); if (c < 0) return false; const gx = c % cx, gy = Math.floor(c / cx); for (let a = -1; a <= 1; a++) for (let b = -1; b <= 1; b++) { const X = gx + a, Y = gy + b; if (X >= 0 && Y >= 0 && X < cx && Y < cy && ocup[Y * cx + X]) return false; } return true; };
+    const sigue = (x0, y0, sg) => {
+      const pts = []; let x = x0, y = y0;
+      for (let n = 0; n < 900; n++) {
+        const d1 = dirEn(R, x, y); if (!d1) break;
+        const xm = x + sg * d1[0] * paso / 2, ym = y + sg * d1[1] * paso / 2, d2 = dirEn(R, xm, ym); if (!d2) break;
+        x += sg * d2[0] * paso; y += sg * d2[1] * paso;
+        if (n > 4 && !libre(x, y)) break;
+        pts.push([x, y]);
+        if (n > 30 && Math.hypot(x - x0, y - y0) < paso * 1.5) { pts.push([x0, y0]); break; }
+      }
+      return pts;
+    };
+    ctx.strokeStyle = ctx.fillStyle = color; ctx.lineWidth = 1.3; ctx.globalAlpha = 0.85;
+    for (let gy = 0; gy < cy; gy += 2) for (let gx = 0; gx < cx; gx += 2) {
+      const x0 = (gx + 1) * cw, y0 = (gy + 1) * cw;
+      if (!libre(x0, y0) || !dirEn(R, x0, y0)) continue;
+      const atras = sigue(x0, y0, -1).reverse(), linea = [...atras, [x0, y0], ...sigue(x0, y0, 1)];
+      if (linea.length < 8) continue;
+      for (const [x, y] of linea) { const c = celda(x, y); if (c >= 0) ocup[c] = 1; }
+      ctx.beginPath(); linea.forEach(([x, y], k) => (k ? ctx.lineTo(x, y) : ctx.moveTo(x, y))); ctx.stroke();
+      const k = Math.floor(linea.length / 2), [xa, ya] = linea[k - 1], [xb, yb] = linea[k + 1] || linea[k];
+      flecha(xa, ya, Math.atan2(-(yb - ya), xb - xa), 8, color, 1.3, 6);
+    }
+    ctx.globalAlpha = 1;
   }
   function dibuja() {
     if (!W) return;
@@ -1711,6 +2005,11 @@ const MagEjemplos = (() => {
     ctx.fillStyle = C.muted; ctx.font = 'italic 13px "STIX Two Text", serif';
     ctx.fillText('xyz'[i].toUpperCase(), W - 14, oy - 6); ctx.fillText('xyz'[j].toUpperCase(), ox + 6, 14);
     if (!out) return;
+    if ((esc.vista.mapa || esc.vista.lineas) && out.fuentes.length) {
+      const R = rejilla();
+      if (esc.vista.mapa) mapaColor(R, C.neg);
+      if (esc.vista.lineas) lineasCampo(R, C.field);
+    }
     // campo: flechas normalizadas, más opacas donde el campo es más intenso
     if (esc.vista.flechas !== false && out.fuentes.length) {
       const n = Math.max(14, Math.min(34, Math.round(W / 34))), dx = W / n, mags = [], arr = [], sal = fuera();
@@ -1735,6 +2034,7 @@ const MagEjemplos = (() => {
     marcas = [];
     out.results.forEach((r, k) => {
       if (!r.P) return;
+      if (r.Q) { const [x1, y1] = aPant(r.P), [x2, y2] = aPant(r.Q); ctx.strokeStyle = C.mark; ctx.lineWidth = 1.5; ctx.setLineDash([6, 4]); ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle = C.mark; ctx.beginPath(); ctx.arc(x2, y2, 4, 0, 2 * Math.PI); ctx.fill(); ctx.font = '600 12px "IBM Plex Sans", sans-serif'; ctx.fillText('Q', x2 + 8, y2 + 16); }
       const [x, y] = aPant(r.P);
       const B = Object.values(r.vp || {}).reduce((a, b) => V3.add(a, b), [0, 0, 0]), m = Math.hypot(B[i], B[j]);
       const normal = !(m > 0.3 * V3.norm(B)) && V3.norm(B) > 0;
@@ -1773,6 +2073,8 @@ const MagEjemplos = (() => {
   $('#plano').addEventListener('change', (e) => { esc.vista.plano = e.target.value; editor(); encuadra(); recalcula(); });
   $('#corte').addEventListener('input', (e) => { esc.vista.corte = e.target.value; recalcula(); });
   $('#flechas').addEventListener('change', (e) => { esc.vista.flechas = e.target.checked; recalcula(); });
+  $('#mapa').addEventListener('change', (e) => { esc.vista.mapa = e.target.checked; recalcula(); });
+  $('#lineas').addEventListener('change', (e) => { esc.vista.lineas = e.target.checked; recalcula(); });
   $('#nuevo').addEventListener('click', () => { esc = vacia(); esc.fuentes.push(valida({ fuentes: [{ tipo: 'hilo' }] }).fuentes[0]); esc.preguntas.push({ id: newId(), tipo: 'B', P: ['1', '0', '0'] }); editor(); encuadra(); recalcula(); });
   $('#guardar').addEventListener('click', () => {
     const datos = { formato: FORMATO, version: 1, problema: esc };

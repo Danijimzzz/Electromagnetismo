@@ -1,6 +1,10 @@
 /* =====================================================================
-   Magnetostática (sin DOM): campo B de hilos, segmentos, espiras, arcos,
-   solenoides y toroides por Biot-Savart, y fuerzas magnéticas.
+   Magnetostática (sin DOM): campo B de hilos, segmentos, espiras (circulares
+   y rectangulares), arcos, solenoides, toroides, cilindros con corriente,
+   láminas de corriente y discos cargados que giran, por Biot-Savart y
+   Ampère; fuerzas magnéticas y el perfil de |B| a lo largo de una recta.
+   Los símbolos «~a» de una clave son potencias de a que lleva la fuente
+   (la lámina K y el disco σω no tienen las dimensiones de una corriente).
    Unidades internas: μ₀ = 1 y longitudes en unidades de "a"; en modo simbólico
    los resultados se escriben como coef·μ₀·símbolos/(π aⁿ). En modo SI las
    longitudes van en metros (admite cm y mm) y las corrientes en amperios.
@@ -173,7 +177,75 @@ const Magneto = (() => {
       },
       formula: (i) => (i.dentro ? 'Dentro del toroide (Ampère): B = <span class="fr"><span class="nu">μ<sub>0</sub><i>N I</i></span><span class="de">2π<i>r</i></span></span>' : 'Fuera del núcleo del toroide: B = 0'),
     },
+    rectangular: {
+      label: 'Espira rectangular', icon: '▭',
+      campos: [['C', 'Centro', 'vec'], ['plano', 'Plano', 'plano'], ['a', 'Lado a (en el primer eje)', 'num'], ['b', 'Lado b (en el segundo eje)', 'num'], ['sentido', 'Sentido', 'sentido']],
+      def: () => ({ C: ['0', '0', '0'], plano: 'xy', a: '2', b: '2', sentido: 1 }),
+      campo(f, P) {
+        const pl = PLANOS[f.plano], v = esquinas(f), B = [0, 0, 0];
+        for (let k = 0; k < 4; k++) {
+          const A = v[k], Bp = v[(k + 1) % 4], r = rectaNum(P, A, V3.sub(Bp, A), Bp, 'segmento');
+          if (r.sobre) return { error: 'el punto está sobre la espira' };
+          B[0] += r.B[0]; B[1] += r.B[1]; B[2] += r.B[2];
+        }
+        const CP = V3.sub(P, f.C), z = V3.dot(CP, pl.n), centro = V3.norm(V3.sub(CP, V3.sc(pl.n, z))) < 1e-12;
+        return { B, info: { rect: true, centro: centro && Math.abs(z) < 1e-12, eje: centro, z } };
+      },
+      formula: (i) => (i.centro ? 'En el centro, sumando los cuatro lados: B = <span class="fr"><span class="nu">2μ<sub>0</sub><i>I</i>√(<i>a</i><sup>2</sup> + <i>b</i><sup>2</sup>)</span><span class="de">π<i>a b</i></span></span>' : 'Suma de los cuatro lados, cada uno con B = <span class="fr"><span class="nu">μ<sub>0</sub><i>I</i></span><span class="de">4π<i>d</i></span></span>(cos α<sub>1</sub> − cos α<sub>2</sub>)'),
+    },
+    cilindro: {
+      label: 'Cilindro con corriente', icon: '◉',
+      campos: [['C', 'Punto del eje', 'vec'], ['u', 'Dirección de la corriente', 'vec'], ['R1', 'Radio interior (0 si es macizo)', 'num'], ['R2', 'Radio exterior', 'num'], ['perfil', 'Densidad de corriente', 'perfil']],
+      def: () => ({ C: ['0', '0', '0'], u: ['0', '0', '1'], R1: '0', R2: '1', perfil: 'uniforme' }),
+      campo(f, P) {
+        if (!(f.R2 > f.R1 && f.R1 >= 0)) return { error: 'el radio exterior debe ser mayor que el interior' };
+        const uh = V3.unit(f.u), CP = V3.sub(P, f.C), rho = V3.sub(CP, V3.sc(uh, V3.dot(CP, uh))), r = V3.norm(rho);
+        if (r < 1e-12) return { B: [0, 0, 0], info: { cil: true, r: 0, fr: 0, zona: f.R1 > 0 ? 'hueco' : 'dentro', perfil: f.perfil } };
+        const p = f.perfil === 'lineal' ? 3 : 2, fr = r <= f.R1 ? 0 : r >= f.R2 ? 1 : (r ** p - f.R1 ** p) / (f.R2 ** p - f.R1 ** p);
+        return { B: V3.sc(V3.cross(uh, V3.sc(rho, 1 / r)), fr / (2 * PI * r)), info: { cil: true, r, fr, zona: r <= f.R1 ? 'hueco' : r >= f.R2 ? 'fuera' : 'dentro', perfil: f.perfil, hueco: f.R1 > 0 } };
+      },
+      formula: (i) => (i.zona === 'hueco' ? 'Dentro del hueco no hay corriente encerrada (Ampère): B = 0' : `Ley de Ampère con una circunferencia de radio <i>r</i>: B·2π<i>r</i> = μ<sub>0</sub><i>I</i><sub>enc</sub>, con <i>I</i><sub>enc</sub>/<i>I</i> = ${i.zona === 'fuera' ? '1 (fuera se encierra toda)' : i.perfil === 'lineal' ? (i.hueco ? '(<i>r</i><sup>3</sup> − <i>R</i><sub>1</sub><sup>3</sup>)/(<i>R</i><sub>2</sub><sup>3</sup> − <i>R</i><sub>1</sub><sup>3</sup>) con <i>J</i> ∝ <i>r</i>' : '<i>r</i><sup>3</sup>/<i>R</i><sup>3</sup> con <i>J</i> ∝ <i>r</i>') : (i.hueco ? '(<i>r</i><sup>2</sup> − <i>R</i><sub>1</sub><sup>2</sup>)/(<i>R</i><sub>2</sub><sup>2</sup> − <i>R</i><sub>1</sub><sup>2</sup>)' : '<i>r</i><sup>2</sup>/<i>R</i><sup>2</sup>')}`),
+    },
+    lamina: {
+      label: 'Lámina de corriente', icon: '▤', unidad: 'A/m', simbolo: 'K', escala: 1,
+      campos: [['C', 'Punto de la lámina', 'vec'], ['eje', 'Normal a la lámina', 'eje'], ['u', 'Dirección de K', 'vec']],
+      def: () => ({ C: ['0', '0', '0'], eje: 'z', u: ['1', '0', '0'], s: 'K' }),
+      campo(f, P) {
+        const n = EJES[f.eje], k = V3.sub(f.u, V3.sc(n, V3.dot(f.u, n)));
+        if (V3.norm(k) < 1e-12) return { error: 'K tiene que ir a lo largo de la lámina' };
+        const z = V3.dot(V3.sub(P, f.C), n);
+        if (Math.abs(z) < 1e-12) return { error: 'el punto está sobre la lámina' };
+        return { B: V3.sc(V3.cross(V3.unit(k), n), Math.sign(z) / 2), info: { lamina: true } };
+      },
+      formula: () => 'Lámina indefinida (Ampère): B = <span class="fr"><span class="nu">μ<sub>0</sub><i>K</i></span><span class="de">2</span></span>, paralelo a la lámina y perpendicular a <span class="vv">K</span>, con sentidos opuestos a cada lado (<span class="vv">B</span> = <span class="fr"><span class="nu">μ<sub>0</sub></span><span class="de">2</span></span> <span class="vv">K</span> × <span class="uv">n</span>)',
+    },
+    disco: {
+      label: 'Disco cargado que gira', icon: '◍', simbolo: 'sigma*omega', escala: 2,
+      campos: [['C', 'Centro', 'vec'], ['plano', 'Plano', 'plano'], ['R', 'Radio', 'num'], ['sentido', 'Giro', 'sentido']],
+      def: () => ({ C: ['0', '0', '0'], plano: 'xy', R: '1', sentido: 1, s: 'sigma*omega' }),
+      campo(f, P, fino) {
+        const pl = PLANOS[f.plano], CP = V3.sub(P, f.C), z = V3.dot(CP, pl.n), rho = V3.norm(V3.sub(CP, V3.sc(pl.n, z))), R = f.R;
+        if (rho < 1e-12 * R) {
+          // anillos de corriente dI = σω r dr: B = μ₀σω/2 · ((2z² + R²)/√(R² + z²) − 2|z|)
+          return { B: V3.sc(pl.n, (((2 * z * z + R * R) / Math.hypot(R, z) - 2 * Math.abs(z)) / 2) * f.sentido), info: { eje: true, z } };
+        }
+        if (Math.abs(z) < 1e-9 && rho <= R) return { error: 'el punto está sobre el disco' };
+        const g = gl(fino ? 16 : 6), pan = fino ? 6 : 2, h = R / pan, B = [0, 0, 0];
+        for (let p = 0; p < pan; p++) for (let i = 0; i < g.x.length; i++) {
+          const r = h * (p + (g.x[i] + 1) / 2), w = ((g.w[i] * h) / 2) * r * f.sentido, b = arcoNum(P, f.C, pl, r, 0, 2 * PI, false);
+          B[0] += w * b[0]; B[1] += w * b[1]; B[2] += w * b[2];
+        }
+        return { B, info: { eje: false } };
+      },
+      formula: (i) => (i.eje ? 'Cada anillo de radio <i>r</i> lleva d<i>I</i> = σω<i>r</i> d<i>r</i>; integrando en el eje: B = <span class="fr"><span class="nu">μ<sub>0</sub>σω</span><span class="de">2</span></span>(<span class="fr"><span class="nu">2<i>z</i><sup>2</sup> + <i>R</i><sup>2</sup></span><span class="de">√(<i>R</i><sup>2</sup> + <i>z</i><sup>2</sup>)</span></span> − 2|<i>z</i>|)' : 'Suma de anillos de corriente d<i>I</i> = σω<i>r</i> d<i>r</i>, resuelta numéricamente'),
+    },
   };
+  // vértices de la espira rectangular, en el sentido de la corriente
+  function esquinas(f) {
+    const pl = PLANOS[f.plano], s = f.sentido < 0 ? -1 : 1, q = [[1, -1], [1, 1], [-1, 1], [-1, -1]];
+    const v = q.map(([x, y]) => V3.add(f.C, V3.add(V3.sc(pl.e1, (x * f.a) / 2), V3.sc(pl.e2, (y * f.b) / 2))));
+    return s > 0 ? v : v.reverse();
+  }
 
   /* ---------- Lectura de la escena ---------- */
   function lector(modo) {
@@ -189,11 +261,15 @@ const Magneto = (() => {
       if (tipo === 'vec') o[k] = f[k].map((x, j) => leer(x, `${nom}, ${lab} (${'xyz'[j]})`));
       else if (tipo === 'num') o[k] = leer(f[k], `${nom}, ${lab}`);
       else if (tipo === 'sentido' || tipo === 'salida') o[k] = f[k] < 0 ? -1 : 1;
+      else if (tipo === 'perfil') o[k] = f[k] === 'lineal' ? 'lineal' : 'uniforme';
     }
     if (T.campos.some(([k, , t]) => k === 'u' && t === 'vec') && V3.norm(o.u) < 1e-12) throw new Error(`${nom}: la dirección no puede ser nula`);
-    for (const k of ['R', 'L', 'N']) if (k in o && !(o[k] > 0)) throw new Error(`${nom}: ${k} debe ser positivo`);
+    for (const k of ['R', 'L', 'N', 'a', 'b', 'R2']) if (k in o && !(o[k] > 0)) throw new Error(`${nom}: ${k} debe ser positivo`);
+    if ('R1' in o && f.tipo === 'cilindro' && !(o.R1 >= 0 && o.R1 < o.R2)) throw new Error(`${nom}: el radio interior tiene que estar entre 0 y el exterior`);
     o.k = leer(f.I ?? '1', `${nom}, corriente`);
     o.s = f.s || '';
+    // la lámina (K) y el disco (σω) llevan potencias de a para que el resultado tenga las dimensiones de B
+    if (T.escala) o.s = key(o.s, ...Array(T.escala).fill('~a'));
     return o;
   }
 
@@ -231,7 +307,7 @@ const Magneto = (() => {
   }
 
   /* ---------- Formato ---------- */
-  const GREEK = { mu: 'μ', lambda: 'λ', alpha: 'α', beta: 'β', omega: 'ω', phi: 'φ', theta: 'θ' };
+  const GREEK = { mu: 'μ', lambda: 'λ', alpha: 'α', beta: 'β', omega: 'ω', phi: 'φ', theta: 'θ', sigma: 'σ' };
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   function sym(name) {
     const m = String(name).match(/^([A-Za-z]+?)_?(\d*)$/);
@@ -239,10 +315,12 @@ const Magneto = (() => {
     return `<i>${esc(GREEK[m[1].toLowerCase()] || m[1])}</i>${m[2] ? `<sub>${m[2]}</sub>` : ''}`;
   }
   const sup = (n) => (n === 1 ? '' : `<sup>${n}</sup>`);
+  const potA = (k) => (k ? k.split('*').filter((s) => s === '~a').length : 0);
   function mono(k) {
     const cnt = {};
-    for (const s of k ? k.split('*') : []) cnt[s] = (cnt[s] || 0) + 1;
-    return Object.keys(cnt).map((s) => sym(s) + sup(cnt[s])).join('');
+    for (const s of k ? k.split('*') : []) if (s !== '~a') cnt[s] = (cnt[s] || 0) + 1;
+    // σ delante de ω, como en los libros (σω)
+    return Object.keys(cnt).sort((x, y) => (y === 'sigma') - (x === 'sigma')).map((s) => sym(s) + sup(cnt[s])).join('');
   }
   const frac = (n, d) => (d ? `<span class="fr"><span class="nu">${n || '1'}</span><span class="de">${d}</span></span>` : n || '1');
   const uv = (c) => `<span class="uv">u</span><sub>${c}</sub>`;
@@ -252,7 +330,7 @@ const Magneto = (() => {
     const a = Math.abs(x);
     let s = a >= 1e4 || a < 1e-3 ? x.toExponential(3).replace(/\.?0+e/, 'e').replace('e', '·10^') : String(+x.toPrecision(4));
     s = s.replace(/·10\^([+-]?\d+)/, (_, e) => `·10<sup>${+e}</sup>`);
-    return s.replace('-', MINUS);
+    return s.replace('.', ',').replace('-', MINUS);
   }
   // número geométrico en línea: √2, 3/4, 0.4142
   function num(x) {
@@ -264,6 +342,7 @@ const Magneto = (() => {
   const pt = (v) => `(${v.map(num).join(', ')})`;
   // contexto de formato: n = potencia de a (negativa en el denominador)
   function cola(k, n, conPi) {
+    n += potA(k);
     const syms = 'μ<sub>0</sub>' + mono(k) + (n > 0 ? `<i>a</i>${sup(n)}` : '');
     const den = (conPi ? 'π' : '') + (n < 0 ? `<i>a</i>${sup(-n)}` : '');
     return { syms, den };
@@ -441,6 +520,40 @@ const Magneto = (() => {
     },
   };
 
+  /* ---------- Perfil de |B| a lo largo de una recta ---------- */
+  function perfilB(q, fs, leer, modo) {
+    const P = q.P.map((x, j) => leer(x, `Desde (${'xyz'[j]})`)), Q = q.Q.map((x, j) => leer(x, `Hasta (${'xyz'[j]})`)), d = V3.sub(Q, P), L = V3.norm(d);
+    if (!(L > 0)) throw new Error('los dos extremos de la recta coinciden');
+    const n = 160, xs = [], ys = [], esc2 = modo === 'si' ? MU0 : 1;
+    for (let k = 0; k <= n; k++) {
+      let m = null;
+      try { const { vp } = campoTotal(fs, V3.add(P, V3.sc(d, k / n)), false); m = V3.norm(Object.values(vp).reduce((a, b) => V3.add(a, b), [0, 0, 0])) * esc2; } catch (e) { m = null; }
+      xs.push((L * k) / n); ys.push(m !== null && isFinite(m) ? m : null);
+    }
+    const val = ys.filter((y) => y !== null).sort((a, b) => a - b);
+    if (!val.length) throw new Error('la recta pasa por encima de las fuentes en todos sus puntos');
+    const top = Math.max(val[Math.floor(0.97 * (val.length - 1))] * 1.15, 1e-300), iMax = ys.reduce((im, y, k) => (y !== null && (im < 0 || y > ys[im]) ? k : im), -1);
+    const w = 320, h = 150, ml = 8, mb = 22, mt = 10, X = (x) => ml + ((w - 2 * ml) * x) / L, Y = (y) => h - mb - ((h - mb - mt) * Math.min(y, top)) / top;
+    let trazo = '', pen = false;
+    ys.forEach((y, k) => { if (y === null) { pen = false; return; } trazo += `${pen ? 'L' : 'M'}${X(xs[k]).toFixed(1)} ${Y(y).toFixed(1)} `; pen = true; });
+    const uL = (x) => (modo === 'si' ? `${dec(x)} m` : `${num(x) === '1' ? '' : num(x)}a`), uB = modo === 'si' ? 'T' : 'μ₀/a por unidad de corriente';
+    const svg = `<svg class="perfil" viewBox="0 0 ${w} ${h}" role="img" aria-label="Perfil de |B| a lo largo de la recta">`
+      + `<line x1="${ml}" y1="${h - mb}" x2="${w - ml}" y2="${h - mb}" stroke="var(--line)"/>`
+      + `<path d="${trazo}" fill="none" stroke="var(--neg)" stroke-width="2"/>`
+      + `<circle cx="${X(xs[iMax]).toFixed(1)}" cy="${Y(ys[iMax]).toFixed(1)}" r="3.5" fill="var(--mark)"/>`
+      + `<text x="${ml}" y="${h - 6}" font-size="11" fill="var(--muted)">P</text><text x="${w - ml}" y="${h - 6}" font-size="11" fill="var(--muted)" text-anchor="end">Q · ${uL(L)}</text>`
+      + `<text x="${ml + 4}" y="${mt + 8}" font-size="11" fill="var(--muted)">|B| (${uB})</text></svg>`;
+    const huecos = ys.some((y) => y === null), claves = [...new Set(fs.map((f) => f.s))];
+    const maxHtml = modo === 'si' ? `${dec(ys[iMax])} <span class="unit">T</span>` : claves.length === 1 ? term(ys[iMax], claves[0], -1).html : `${dec(ys[iMax])}·μ<sub>0</sub>/<i>a</i>`;
+    return {
+      P, Q, vp: {}, perfil: { xs, ys },
+      res: `${svg}<span class="sub">Máximo |<span class="vv">B</span>| = ${maxHtml} a una distancia ${uL(xs[iMax])} de P${huecos ? ' · los huecos son puntos sobre un conductor' : ''}</span>`,
+      steps: [{ texto: 'Recta de P a Q', html: `Se calcula <span class="vv">B</span> por superposición en ${n + 1} puntos entre P = ${pt(P)} y Q = ${pt(Q)}${modo === 'si' ? '' : ', con todas las corrientes iguales a 1 (el resultado va en unidades de μ<sub>0</sub>/<i>a</i> por unidad de corriente)'}.` }],
+      final: 'Módulo del campo total en cada punto de la recta',
+    };
+  }
+  ANALYSES.perfil = { label: 'Perfil de |B|', titulo: 'Perfil de |B| a lo largo de una recta', def: () => ({ P: ['-3', '0', '0'], Q: ['3', '0', '0'] }), run: perfilB };
+
   /* ---------- Desarrollo de cada fuente ---------- */
   function datos(f, info, modo) {
     const L = (x) => { if (modo === 'si') return `${dec(x)} m`; const t = num(x); return t === '1' ? '<i>a</i>' : t === MINUS + '1' ? MINUS + '<i>a</i>' : t === '0' ? '0' : `${t}<i>a</i>`; };
@@ -451,6 +564,7 @@ const Magneto = (() => {
     if (info.eje && info.z !== undefined) out.push(`<i>z</i> = ${L(info.z)}`);
     if (info.th !== undefined) { const t = num(info.th / PI); out.push(`θ = ${t === '1' ? '' : t === MINUS + '1' ? MINUS : t}π`); }
     if (info.r !== undefined) out.push(`<i>r</i> = ${L(info.r)}`);
+    if (info.fr !== undefined && info.zona !== 'hueco') out.push(`<i>I</i><sub>enc</sub> = ${num(info.fr)}·<i>I</i>`);
     return out.join(' · ');
   }
 
@@ -471,6 +585,6 @@ const Magneto = (() => {
     return { modo, fuentes: fs, errors, results };
   }
 
-  return { SOURCES, ANALYSES, PLANOS, EJES, PLANO_DE_EJE, run, campoRapido, MU0, num, dec, sym };
+  return { SOURCES, ANALYSES, PLANOS, EJES, PLANO_DE_EJE, run, campoRapido, esquinas, MU0, num, dec, sym };
 })();
 if (typeof module !== 'undefined') module.exports = Magneto;
