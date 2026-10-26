@@ -27,7 +27,7 @@ const Catalogo = require(path.join(fuente, 'catalogo.js')), Biblioteca = require
 const PUBLICABLES = ['index.html', 'novedades/index.html', 'foro/index.html', 'og.png', 'apple-touch-icon.png', 'legal.css', 'aviso-legal.html', 'privacidad.html', 'cookies.html', 'contacto.html', 'fuentes/stix-two-math.woff2', 'fuentes/OFL-STIX-Two.txt',
   ...Catalogo.asignaturas.flatMap((a) => [`${a.clave}/index.html`, ...a.herramientas.filter((h) => h.disponible).map((h) => `${a.clave}/${h.clave}/index.html`)]),
   // «Física en la vida real»: el índice y una página por fenómeno disponible
-  'fenomenos/index.html', ...Catalogo.fenomenos.lista.filter((f) => f.disponible).map((f) => `fenomenos/${f.clave}/index.html`),
+  'fenomenos/index.html', ...Catalogo.fenomenos.lista.filter((f) => f.disponible).flatMap((f) => [`fenomenos/${f.clave}/index.html`, `fenomenos/${f.clave}/imagen.webp`]),
   // direcciones antiguas: una página que redirige a la nueva y las reglas 301 de Cloudflare
   ...Object.keys(Catalogo.redirecciones).map((v) => `${v}index.html`), '_redirects'];
 const listar = (dir, pre = '') => fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? listar(path.join(dir, e.name), pre + e.name + '/') : [pre + e.name]));
@@ -465,6 +465,9 @@ async function navegador() {
       // una tarjeta por fenómeno (los que faltan, «Próximamente» y sin enlace) y el filtro por asignatura
       const V = Catalogo.fenomenos, pronto = V.lista.filter((x) => !x.disponible).length;
       if ((await page.locator('.cards div.card.off').count()) !== pronto || (await page.locator('.cards a.card').count()) !== V.lista.length - pronto) mal('fenomenos: las tarjetas no coinciden con el catálogo');
+      // los disponibles llevan su imagen (fuente/fenomenos/<clave>/imagen.webp) en vez de la letra
+      const imgs = await page.evaluate(async () => Promise.all([...document.querySelectorAll('.cards a.card')].map(async (a) => { const i = a.querySelector('.img img'); if (!i) return 0; i.loading = 'eager'; await i.decode().catch(() => {}); return i.naturalWidth; })));
+      if (imgs.some((w) => w !== 640)) mal(`fenomenos: hay tarjetas sin imagen o con una imagen que no carga (anchos ${imgs.join(', ')})`);
       await page.click('.filtro button[data-asig="quimica"]');
       const vis = await page.locator('.cards [data-asig]:visible').count(), esp = V.lista.filter((x) => x.asignaturas.includes('quimica')).length;
       if (vis !== esp) mal(`fenomenos: el filtro de Química deja ${vis} fenómenos, se esperaban ${esp}`);

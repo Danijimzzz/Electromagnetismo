@@ -67,6 +67,7 @@ a .t { background:var(--c); color:var(--panel) }
 .card { background:var(--panel); border:1px solid var(--line); border-radius:12px; overflow:hidden; display:flex; flex-direction:column }
 a.card:hover { border-color:var(--c) }
 .card .img { height:110px; background:linear-gradient(135deg,color-mix(in srgb,var(--c) 16%,var(--panel)),var(--panel)); display:grid; place-items:center; font:italic 38px var(--f-math); color:var(--c) }
+.fen-cards .card .img { height:auto; aspect-ratio:16/9 } .card .img img { width:100%; height:100%; object-fit:cover; display:block }
 .card .b { padding:12px 14px 14px; display:flex; flex-direction:column; gap:4px; flex:1 } .card h2 { margin:0; font:600 16px var(--f-ui) } .card p { margin:0; color:var(--muted); font-size:13.5px }
 .card .t { margin:8px 0 0; align-self:flex-start } .card.off { opacity:.65; border-style:dashed; cursor:default }
 .obras { max-width:640px; margin:24px auto 0; text-align:center; background:var(--panel); border:1px dashed var(--line); border-radius:14px; padding:36px 24px }
@@ -227,7 +228,7 @@ ${fen.map((f) => fichaFenomeno(f, '../')).join('\n')}
 <div class="crumb"><a href="../">Inicio</a> / ${esc(a.nombre)}</div>
 <h1>${esc(a.nombre)}</h1>
 <p class="sub">${esc(a.resumen)}</p>
-<div class="cards">
+<div class="cards fen-cards">
 ${cards}
 </div>
 ${vida}<p class="otras">Otras asignaturas: ${otras}</p>
@@ -255,7 +256,7 @@ archivos['foro/index.html'] = pagina({
   const usadas = Catalogo.asignaturas.filter((a) => V.lista.some((f) => f.asignaturas.includes(a.clave)));
   const cards = [...V.lista].sort((x, y) => y.disponible - x.disponible).map((f) => {
     const etq = f.asignaturas.map((k) => `<span style="${estilo(asig(k))}">${esc(asig(k).nombre)}</span>`).join('');
-    const dentro = `<div class="img" aria-hidden="true">${esc(f.icono)}</div><div class="b"><h2>${esc(f.nombre)}</h2><p>${esc(f.desc)}</p><div class="etq">${etq}</div><span class="t">${f.disponible ? 'Ver la explicación' : 'Próximamente'}</span></div>`;
+    const dentro = `<div class="img" aria-hidden="true">${f.disponible ? `<img src="${f.clave}/imagen.webp" alt="" width="640" height="360" loading="lazy">` : esc(f.icono)}</div><div class="b"><h2>${esc(f.nombre)}</h2><p>${esc(f.desc)}</p><div class="etq">${etq}</div><span class="t">${f.disponible ? 'Ver la explicación' : 'Próximamente'}</span></div>`;
     return f.disponible ? `<a class="card" href="${f.clave}/" data-asig="${f.asignaturas.join(' ')}">${dentro}</a>` : `<div class="card off" data-asig="${f.asignaturas.join(' ')}">${dentro}</div>`;
   }).join('\n');
   const FILTRO = `(() => {
@@ -272,7 +273,7 @@ archivos['foro/index.html'] = pagina({
 <h1>${esc(V.nombre)}</h1>
 <p class="sub">${esc(V.resumen)}</p>
 <div class="filtro" role="group" aria-label="Filtrar por asignatura"><button type="button" aria-pressed="true" data-asig="">Todas</button>${usadas.map((a) => `<button type="button" aria-pressed="false" data-asig="${a.clave}">${esc(a.nombre)}</button>`).join('')}</div>
-<div class="cards">
+<div class="cards fen-cards">
 ${cards}
 </div>
 </main>`,

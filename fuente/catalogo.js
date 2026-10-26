@@ -190,20 +190,21 @@ const Catalogo = {
   // animación por pasos y, debajo, la herramienta con la que se calcula. No es una asignatura: portal.js genera su
   // índice en /fenomenos/ y el bloque «En la vida real» de cada asignatura, y diseno.js el de cada herramienta.
   // Cada fenómeno: asignaturas que toca, herramientas ('asignatura/clave') con las que se relaciona y dificultad de
-  // construcción (D1 a D4). Los disponibles llevan además scripts, titulo y descripcion, como las herramientas, y su
-  // carpeta es fuente/fenomenos/<clave>/.
+  // construcción (D1 a D4). Los disponibles llevan además scripts, titulo y descripcion, como las herramientas, su
+  // carpeta es fuente/fenomenos/<clave>/ e «imagen» es el paso (de 1 en adelante) que se fotografía para su tarjeta del
+  // índice: node pruebas/imagenes-fenomenos.js lo guarda en fuente/fenomenos/<clave>/imagen.webp.
   fenomenos: {
     clave: 'fenomenos', nombre: 'Física en la vida real', corto: 'Vida real', icono: '✦', color: '#6a4fc2', colorOscuro: '#b39ff7',
     resumen: 'Fenómenos que has visto alguna vez, como el rayo o el Fuego de San Telmo, explicados paso a paso con una animación y con la herramienta que los calcula.',
     lista: [
-      { clave: 'fuego-san-telmo', nombre: 'El Fuego de San Telmo', icono: 'E', disponible: true, dificultad: 'D2', desc: 'Por qué brillan las puntas de los mástiles en una tormenta: efecto punta y descarga corona.', asignaturas: ['electromagnetismo'], herramientas: ['electromagnetismo/electrostatica'],
+      { clave: 'fuego-san-telmo', nombre: 'El Fuego de San Telmo', icono: 'E', disponible: true, imagen: 6, dificultad: 'D2', desc: 'Por qué brillan las puntas de los mástiles en una tormenta: efecto punta y descarga corona.', asignaturas: ['electromagnetismo'], herramientas: ['electromagnetismo/electrostatica'],
         scripts: ['mates.js', 'fenomenos/animacion.js', 'fenomenos/dibujo.js', 'fenomenos/fuego-san-telmo/escena.js'],
         titulo: 'El Fuego de San Telmo, explicado', descripcion: 'Por qué brillan las puntas de los mástiles durante una tormenta: inducción, efecto punta, campo de ruptura del aire y descarga corona, con una animación paso a paso y el cálculo en el simulador de electrostática' },
-      { clave: 'chispa-pomo', nombre: 'La chispa al tocar el pomo', icono: 'q', disponible: true, dificultad: 'D1', desc: 'El cuerpo como condensador: unos 150 pF a 10 kV y su descarga en nanosegundos.', asignaturas: ['electromagnetismo', 'circuitos'], herramientas: ['circuitos/transitorios', 'electromagnetismo/condensadores'],
+      { clave: 'chispa-pomo', nombre: 'La chispa al tocar el pomo', icono: 'q', disponible: true, imagen: 4, dificultad: 'D1', desc: 'El cuerpo como condensador: unos 150 pF a 10 kV y su descarga en nanosegundos.', asignaturas: ['electromagnetismo', 'circuitos'], herramientas: ['circuitos/transitorios', 'electromagnetismo/condensadores'],
         scripts: ['mates.js', 'fenomenos/animacion.js', 'fenomenos/dibujo.js', 'fenomenos/chispa-pomo/escena.js'],
         titulo: 'La chispa al tocar el pomo, explicada', descripcion: 'Por qué salta una chispa al tocar el pomo de una puerta: efecto triboeléctrico, el cuerpo como condensador de 150 pF, rigidez dieléctrica del aire y descarga RC, con una animación paso a paso y el cálculo en Transitorios' },
       { clave: 'jaula-faraday', nombre: 'La jaula de Faraday', icono: '#', disponible: false, dificultad: 'D1', desc: 'Por qué no pasa nada dentro de un coche alcanzado por un rayo y no hay cobertura en el ascensor.', asignaturas: ['electromagnetismo'], herramientas: ['electromagnetismo/electrostatica', 'electromagnetismo/ondas-em'] },
-      { clave: 'pajaro-cable', nombre: 'El pájaro posado en un cable', icono: 'V', disponible: true, dificultad: 'D1', desc: 'Por qué no se electrocuta: la tensión entre sus patas es casi nula.', asignaturas: ['circuitos'], herramientas: ['circuitos/continua'] ,
+      { clave: 'pajaro-cable', nombre: 'El pájaro posado en un cable', icono: 'V', disponible: true, imagen: 3, dificultad: 'D1', desc: 'Por qué no se electrocuta: la tensión entre sus patas es casi nula.', asignaturas: ['circuitos'], herramientas: ['circuitos/continua'] ,
         scripts: ['mates.js', 'fenomenos/animacion.js', 'fenomenos/dibujo.js', 'fenomenos/pajaro-cable/escena.js'],
         titulo: 'Por qué el pájaro no se electrocuta en el cable', descripcion: 'Por qué un pájaro posado en un cable de alta tensión no se electrocuta: resistencia del cable, ley de Ohm, resistencias en paralelo y diferencia de potencial, con una animación paso a paso y el circuito en Circuitos de continua' },
       { clave: 'transporte-alta-tension', nombre: 'Por qué la luz viaja en alta tensión', icono: 'I²R', disponible: false, dificultad: 'D1', desc: 'Pérdidas en los cables a 400 kV frente a 230 V.', asignaturas: ['circuitos'], herramientas: ['circuitos/alterna', 'circuitos/continua'] },

@@ -58,5 +58,7 @@ if (require.main === module) {
     const out = path.join(publico, h.asignatura, h.clave, 'index.html');
     fs.mkdirSync(path.dirname(out), { recursive: true });
     fs.writeFileSync(out, pagina(h));
+    // la imagen de la tarjeta del fenómeno en el índice /fenomenos/ (pruebas/imagenes-fenomenos.js)
+    if (h.asignatura === 'fenomenos') fs.copyFileSync(path.join(__dirname, h.carpeta, 'imagen.webp'), path.join(path.dirname(out), 'imagen.webp'));
   }
 }

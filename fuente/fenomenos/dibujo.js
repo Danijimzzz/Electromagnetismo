@@ -8,7 +8,8 @@
          quieto) la lleva suave hacia otra cámara. Luego v.X(x) y v.Y(y) pasan a
          px, v.K son los px por unidad y v.x0, v.x1, v.y0 lo que se ve; y dibuja
          rótulos (que se escriben solos con «escribe»), signos + y −, flechas y
-         puntos, siempre en coordenadas del mundo.
+         puntos, siempre en coordenadas del mundo. Con window.FenomenoFoto (pruebas/imagenes-fenomenos.js, la imagen
+         de la tarjeta del índice) no se dibujan los rótulos, que en pequeño no se leen.
    ===================================================================== */
 const Dibujo = (() => {
   const suave = (t) => t * t * (3 - 2 * t);
@@ -34,7 +35,7 @@ const Dibujo = (() => {
     const letra = (px, peso = 500) => `${peso} ${Math.max(11, (px * k) / 40)}px "IBM Plex Sans", system-ui, sans-serif`;
     // rótulo; con «escribe» (0 a 1) aparece letra a letra, como escrito en la pizarra
     v.rotulo = (txt, x, y, { color = c.rotulo, tam = 13, al = 'left', peso = 500, fondo = true, escribe = 1 } = {}) => {
-      if (escribe <= 0) return;
+      if (escribe <= 0 || window.FenomenoFoto) return;
       const letras = [...txt], ver = escribe >= 1 ? txt : letras.slice(0, Math.ceil(letras.length * escribe)).join('');
       g.font = letra(tam, peso); g.textAlign = al; g.textBaseline = 'middle';
       if (fondo) { const m = g.measureText(txt).width, p = 4, x2 = al === 'center' ? v.X(x) - m / 2 : al === 'right' ? v.X(x) - m : v.X(x); g.fillStyle = rgba(c.panel, 0.85); g.fillRect(x2 - p, v.Y(y) - 9 - p, m + 2 * p, 18 + 2 * p); }
