@@ -1,5 +1,5 @@
-<title>Distribuciones de probabilidad: normal, binomial, Poisson, t y χ² · SimulaCiencia</title>
-<meta name="description" content="Calculadora de distribuciones de probabilidad en español con el área sombreada: normal con tipificación, t de Student, chi cuadrado, exponencial, binomial y Poisson; probabilidades, cuantiles y valores críticos paso a paso.">
+<title>Distribuciones de probabilidad: normal, binomial, Poisson, t, χ² y F · SimulaCiencia</title>
+<meta name="description" content="Calculadora de distribuciones de probabilidad en español con el área sombreada: normal con tipificación, t de Student, chi cuadrado, F de Snedecor, exponencial, uniforme, binomial, Poisson, geométrica e hipergeométrica; probabilidades, cuantiles, valores críticos bilaterales y unilaterales y tabla de valores paso a paso.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
@@ -11,13 +11,14 @@
   --area: rgba(184,146,236,.32); --curva: #e3e8ee } }
 :root[data-theme="dark"] {
   --area: rgba(184,146,236,.32); --curva: #e3e8ee }
+#grafica { cursor: ew-resize; touch-action: pan-y }
 #res { display: block; font: 26px var(--f-math); padding: 2px 0 } .res small { font: 14px var(--f-ui); color: var(--muted); margin-left: 10px }
 </style>
 <body>
 <header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Estadística</a> / Distribuciones de probabilidad</span></header>
 <div class="wrap">
 <h1>Distribuciones de probabilidad</h1>
-<p class="lead">Calcula probabilidades, cuantiles y valores críticos de la normal, la t de Student, la χ², la exponencial, la binomial y la Poisson, con el área sombreada en la gráfica y el desarrollo como en clase: tipificación, fórmula de la binomial y aproximación normal.</p>
+<p class="lead">Calcula probabilidades, cuantiles y valores críticos de la normal, la t de Student, la χ², la F, la exponencial, la uniforme, la binomial, la Poisson, la geométrica y la hipergeométrica, con el área sombreada en la gráfica y el desarrollo como en clase: tipificación, fórmulas, aproximaciones y tabla de valores. También halla la μ o la σ de una normal a partir de una probabilidad.</p>
 <div class="layout">
   <div class="card">
     <h2>Datos</h2>
@@ -27,7 +28,7 @@
     <p class="error" id="error" hidden></p>
   </div>
   <div>
-    <div class="card"><h2>Resultado</h2><div class="res" id="res"></div><canvas id="grafica" aria-label="Gráfica de la distribución con el área sombreada"></canvas></div>
+    <div class="card"><h2>Resultado</h2><div class="res" id="res"></div><canvas id="grafica" aria-label="Gráfica de la distribución con el área sombreada"></canvas><p class="nota">Arrastra sobre la gráfica para mover a, b o c.</p></div>
     <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
   </div>
 </div>
@@ -38,11 +39,22 @@
   <h2>Binomial y Poisson</h2>
   <p>La binomial B(n, p) cuenta los éxitos en n pruebas independientes con probabilidad p cada una: media np y varianza npq. La Poisson P(λ) cuenta sucesos raros en un intervalo, con media y varianza λ. En las discretas sí importa si la desigualdad es estricta: P(X &lt; k) = P(X ≤ k − 1).</p>
   <p class="f m">$P(X = k) = binom(n, k) p^k q^{n−k}$, &ensp; $P(X = k) = {e^{−λ} λ^k}/{k!}$</p>
-  <p>Si np ≥ 5 y nq ≥ 5, la binomial se aproxima por N(np, √(npq)), sumando o restando 0,5 a los extremos (corrección de continuidad).</p>
+  <p>Si np ≥ 5 y nq ≥ 5, la binomial se aproxima por N(np, √(npq)), sumando o restando 0,5 a los extremos (corrección de continuidad). Si n es grande y p pequeña (n ≥ 30 y p ≤ 0,1), se aproxima mejor por una Poisson de media λ = np. Y una Poisson con λ ≥ 10 se aproxima por N(λ, √λ).</p>
+  <h2>Geométrica e hipergeométrica</h2>
+  <p>La geométrica G(p) cuenta los fracasos antes del primer éxito: P(X = k) = q<sup>k</sup>p, con media q/p. Algunos libros cuentan las pruebas hasta el primer éxito, que es X + 1. La hipergeométrica es como la binomial pero sacando sin reemplazo: de una población de N elementos con K éxitos se sacan n, y X cuenta los éxitos que salen.</p>
+  <p class="f m">$P(X = k) = {binom(K, k) binom(N − K, n − k)}/{binom(N, n)}$</p>
   <h2>t de Student y χ²</h2>
   <p>La t de Student con ν grados de libertad aparece al estimar una media con la desviación típica de la muestra: es simétrica como la normal pero con colas más gruesas, y se parece a ella cuando ν crece. La χ² con k grados de libertad es la suma de k normales tipificadas al cuadrado y se usa en las pruebas de bondad de ajuste, de independencia y para la varianza.</p>
+  <p>La F de Snedecor con d₁ y d₂ grados de libertad es el cociente de dos χ² divididas por sus grados de libertad. Se usa para comparar dos varianzas y en el análisis de la varianza. Cumple F<sub>d₁, d₂; 1−α</sub> = 1/F<sub>d₂, d₁; α</sub>, que es como se sacan de las tablas los valores de la cola izquierda.</p>
+  <h2>Uniforme y exponencial</h2>
+  <p>En la uniforme U(a, b) todos los tramos de la misma longitud tienen la misma probabilidad: media (a + b)/2 y varianza (b − a)²/12. La exponencial de tasa λ mide el tiempo hasta un suceso; tiene media 1/λ y no tiene memoria.</p>
   <h2>Valores críticos</h2>
-  <p>Para un nivel de significación α, el valor crítico bilateral c deja α/2 en cada cola: P(−c ≤ Z ≤ c) = 1 − α. Con α = 0,05, z<sub>α/2</sub> = 1,96.</p>
+  <p>Para un nivel de significación α, el valor crítico bilateral c deja α/2 en cada cola: P(−c ≤ Z ≤ c) = 1 − α. Con α = 0,05, z<sub>α/2</sub> = 1,96. El unilateral deja toda α en una cola: z<sub>α</sub> = 1,645 para α = 0,05. La χ² y la F no son simétricas, así que en el bilateral hacen falta dos valores distintos.</p>
+  <h2>Hallar μ o σ</h2>
+  <p>Si se sabe una probabilidad, por ejemplo P(X ≥ a) = p, se busca en la tabla el z con Φ(z) = 1 − p y se despeja de (a − μ)/σ = z la media o la desviación típica que falte.</p>
+  <p class="f m">$μ = a − zσ$, &ensp; $σ = {a − μ}/z$</p>
+  <h2>Desigualdad de Chebyshev</h2>
+  <p>Para cualquier distribución con media μ y desviación típica σ, P(|X − μ| ≤ c) ≥ 1 − σ²/c². Es una cota que vale siempre, aunque no se sepa la distribución; con la normal la probabilidad real es bastante mayor.</p>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Estadística <span id="ver"></span> (beta)</footer>

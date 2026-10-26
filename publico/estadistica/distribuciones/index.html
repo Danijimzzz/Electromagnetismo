@@ -25,8 +25,8 @@
     for (const f of oyentes) { try { f.call(mq, { matches: oscuro(), media: mq.media }); } catch (err) { console.error(err); } }
   });
 })();</script>
-<title>Distribuciones de probabilidad: normal, binomial, Poisson, t y χ² · SimulaCiencia</title>
-<meta name="description" content="Calculadora de distribuciones de probabilidad en español con el área sombreada: normal con tipificación, t de Student, chi cuadrado, exponencial, binomial y Poisson; probabilidades, cuantiles y valores críticos paso a paso.">
+<title>Distribuciones de probabilidad: normal, binomial, Poisson, t, χ² y F · SimulaCiencia</title>
+<meta name="description" content="Calculadora de distribuciones de probabilidad en español con el área sombreada: normal con tipificación, t de Student, chi cuadrado, F de Snedecor, exponencial, uniforme, binomial, Poisson, geométrica e hipergeométrica; probabilidades, cuantiles, valores críticos bilaterales y unilaterales y tabla de valores paso a paso.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
@@ -179,6 +179,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
   --area: rgba(184,146,236,.32); --curva: #e3e8ee } }
 :root[data-theme="dark"] {
   --area: rgba(184,146,236,.32); --curva: #e3e8ee }
+#grafica { cursor: ew-resize; touch-action: pan-y }
 #res { display: block; font: 26px var(--f-math); padding: 2px 0 } .res small { font: 14px var(--f-ui); color: var(--muted); margin-left: 10px }
 </style>
 <body>
@@ -186,7 +187,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 <div class="wrap">
 <nav class="miga" aria-label="Estás en"><span class="miga-izq"></span><span class="miga-ico" aria-hidden="true">σ</span><a href="../">Estadística</a><span aria-hidden="true">›</span><span>Distribuciones de probabilidad</span><span class="miga-der"></span></nav>
 <h1>Distribuciones de probabilidad</h1>
-<p class="lead">Calcula probabilidades, cuantiles y valores críticos de la normal, la t de Student, la χ², la exponencial, la binomial y la Poisson, con el área sombreada en la gráfica y el desarrollo como en clase: tipificación, fórmula de la binomial y aproximación normal.</p>
+<p class="lead">Calcula probabilidades, cuantiles y valores críticos de la normal, la t de Student, la χ², la F, la exponencial, la uniforme, la binomial, la Poisson, la geométrica y la hipergeométrica, con el área sombreada en la gráfica y el desarrollo como en clase: tipificación, fórmulas, aproximaciones y tabla de valores. También halla la μ o la σ de una normal a partir de una probabilidad.</p>
 <div class="layout">
   <div class="card">
     <h2>Datos</h2>
@@ -196,7 +197,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
     <p class="error" id="error" hidden></p>
   </div>
   <div>
-    <div class="card"><h2>Resultado</h2><div class="res" id="res"></div><canvas id="grafica" aria-label="Gráfica de la distribución con el área sombreada"></canvas></div>
+    <div class="card"><h2>Resultado</h2><div class="res" id="res"></div><canvas id="grafica" aria-label="Gráfica de la distribución con el área sombreada"></canvas><p class="nota">Arrastra sobre la gráfica para mover a, b o c.</p></div>
     <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
   </div>
 </div>
@@ -207,11 +208,22 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
   <h2>Binomial y Poisson</h2>
   <p>La binomial B(n, p) cuenta los éxitos en n pruebas independientes con probabilidad p cada una: media np y varianza npq. La Poisson P(λ) cuenta sucesos raros en un intervalo, con media y varianza λ. En las discretas sí importa si la desigualdad es estricta: P(X &lt; k) = P(X ≤ k − 1).</p>
   <p class="f m">$P(X = k) = binom(n, k) p^k q^{n−k}$, &ensp; $P(X = k) = {e^{−λ} λ^k}/{k!}$</p>
-  <p>Si np ≥ 5 y nq ≥ 5, la binomial se aproxima por N(np, √(npq)), sumando o restando 0,5 a los extremos (corrección de continuidad).</p>
+  <p>Si np ≥ 5 y nq ≥ 5, la binomial se aproxima por N(np, √(npq)), sumando o restando 0,5 a los extremos (corrección de continuidad). Si n es grande y p pequeña (n ≥ 30 y p ≤ 0,1), se aproxima mejor por una Poisson de media λ = np. Y una Poisson con λ ≥ 10 se aproxima por N(λ, √λ).</p>
+  <h2>Geométrica e hipergeométrica</h2>
+  <p>La geométrica G(p) cuenta los fracasos antes del primer éxito: P(X = k) = q<sup>k</sup>p, con media q/p. Algunos libros cuentan las pruebas hasta el primer éxito, que es X + 1. La hipergeométrica es como la binomial pero sacando sin reemplazo: de una población de N elementos con K éxitos se sacan n, y X cuenta los éxitos que salen.</p>
+  <p class="f m">$P(X = k) = {binom(K, k) binom(N − K, n − k)}/{binom(N, n)}$</p>
   <h2>t de Student y χ²</h2>
   <p>La t de Student con ν grados de libertad aparece al estimar una media con la desviación típica de la muestra: es simétrica como la normal pero con colas más gruesas, y se parece a ella cuando ν crece. La χ² con k grados de libertad es la suma de k normales tipificadas al cuadrado y se usa en las pruebas de bondad de ajuste, de independencia y para la varianza.</p>
+  <p>La F de Snedecor con d₁ y d₂ grados de libertad es el cociente de dos χ² divididas por sus grados de libertad. Se usa para comparar dos varianzas y en el análisis de la varianza. Cumple F<sub>d₁, d₂; 1−α</sub> = 1/F<sub>d₂, d₁; α</sub>, que es como se sacan de las tablas los valores de la cola izquierda.</p>
+  <h2>Uniforme y exponencial</h2>
+  <p>En la uniforme U(a, b) todos los tramos de la misma longitud tienen la misma probabilidad: media (a + b)/2 y varianza (b − a)²/12. La exponencial de tasa λ mide el tiempo hasta un suceso; tiene media 1/λ y no tiene memoria.</p>
   <h2>Valores críticos</h2>
-  <p>Para un nivel de significación α, el valor crítico bilateral c deja α/2 en cada cola: P(−c ≤ Z ≤ c) = 1 − α. Con α = 0,05, z<sub>α/2</sub> = 1,96.</p>
+  <p>Para un nivel de significación α, el valor crítico bilateral c deja α/2 en cada cola: P(−c ≤ Z ≤ c) = 1 − α. Con α = 0,05, z<sub>α/2</sub> = 1,96. El unilateral deja toda α en una cola: z<sub>α</sub> = 1,645 para α = 0,05. La χ² y la F no son simétricas, así que en el bilateral hacen falta dos valores distintos.</p>
+  <h2>Hallar μ o σ</h2>
+  <p>Si se sabe una probabilidad, por ejemplo P(X ≥ a) = p, se busca en la tabla el z con Φ(z) = 1 − p y se despeja de (a − μ)/σ = z la media o la desviación típica que falte.</p>
+  <p class="f m">$μ = a − zσ$, &ensp; $σ = {a − μ}/z$</p>
+  <h2>Desigualdad de Chebyshev</h2>
+  <p>Para cualquier distribución con media μ y desviación típica σ, P(|X − μ| ≤ c) ≥ 1 − σ²/c². Es una cota que vale siempre, aunque no se sepa la distribución; con la normal la probabilidad real es bastante mayor.</p>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Estadística <span id="ver"></span> (beta)</footer>
@@ -682,10 +694,13 @@ const Mates = (() => {
 })();
 
 /* =====================================================================
-   Estadística: distribuciones (sin DOM). Normal, t de Student, χ²,
-   exponencial, binomial y Poisson: probabilidades P(X ≤ a), P(X ≥ a),
-   P(a ≤ X ≤ b), P(X = k), cuantiles y valores críticos, con media,
-   varianza y el desarrollo (tipificación, fórmula de la binomial…).
+   Estadística: distribuciones (sin DOM). Normal, t de Student, χ², F de
+   Snedecor, exponencial, uniforme, binomial, Poisson, geométrica e
+   hipergeométrica: probabilidades P(X ≤ a), P(X ≥ a), P(a ≤ X ≤ b),
+   P(X = k), P(|X − μ| ≤ c), cuantiles, valores críticos bilaterales y
+   unilaterales, la μ o la σ de una normal a partir de una probabilidad,
+   aproximaciones y tabla de valores, con media, varianza y el desarrollo.
+   Ejercicios al azar con enunciado para el modo práctica.
    Funciones especiales con la gamma y la beta incompletas regularizadas.
    ===================================================================== */
 const Estadistica = (() => {
@@ -753,15 +768,16 @@ const Estadistica = (() => {
   const Phi = (z) => (z < 0 ? 0.5 * gammaQ(0.5, (z * z) / 2) : 1 - 0.5 * gammaQ(0.5, (z * z) / 2));
 
   /* ---------- Formato ---------- */
-  const num = (x, d = 4) => {
+  // cero: por debajo se escribe 0 (ruido de redondeo); las probabilidades usan 0 para no perder las colas lejanas
+  const num = (x, d = 4, cero = 1e-15) => {
     if (!isFinite(x)) return x > 0 ? '∞' : x < 0 ? '−∞' : '—';
-    if (Math.abs(x) < 1e-15) return '0';
+    if (x === 0 || Math.abs(x) < cero) return '0';
     const a = Math.abs(x);
     const s = a >= 1e6 || a < 1e-4 ? x.toExponential(d - 1).replace(/\.?0+e/, 'e').replace(/e([+-])(\d+)/, (_, sg, e) => `·10<sup>${sg === '-' ? '−' : ''}${+e}</sup>`) : String(+x.toPrecision(Math.max(d, Math.ceil(Math.log10(a + 1)) + 1)));
     return s.replace('.', ',').replace('-', '−');
   };
   // probabilidad con 4 decimales como en las tablas (y más si es muy pequeña)
-  const prob = (p) => (p !== 0 && Math.abs(p) < 1e-4 ? num(p, 4) : p.toFixed(4).replace('.', ',').replace('-', '−'));
+  const prob = (p) => (p !== 0 && Math.abs(p) < 1e-4 ? num(p, 4, 0) : p.toFixed(4).replace('.', ',').replace('-', '−'));
   const leeNum = (s) => +String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace('−', '-');
   const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
   function lee(sc, k, nom, { entero = false, min = -Infinity, minEx = false, max = Infinity, maxEx = false } = {}) {
@@ -774,16 +790,25 @@ const Estadistica = (() => {
     return v;
   }
 
+
   /* ---------- Distribuciones ---------- */
   // coeficiente binomial exacto con BigInt (para escribirlo) y en coma flotante
   function combBig(n, k) { k = Math.min(k, n - k); let r = 1n; for (let i = 1; i <= k; i++) r = (r * BigInt(n - k + i)) / BigInt(i); return r; }
   const combTxt = (n, k) => { const c = combBig(n, k); return c < 10n ** 15n ? c.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') : num(Number(c)); };
+  const lnC = (n, k) => lnGamma(n + 1) - lnGamma(k + 1) - lnGamma(n - k + 1);
+  // F de Snedecor (también la usa intervalos/calculo.js para el cociente de varianzas)
+  const fCdf = ({ d1, d2 }, x) => (x <= 0 ? 0 : betaI((d1 * x) / (d1 * x + d2), d1 / 2, d2 / 2));
+  // hipergeométrica: valores posibles y suma de la función de probabilidad
+  const hSop = ({ N, K, n }) => [Math.max(0, n - (N - K)), Math.min(n, K)];
+  const hPmf = (P, k) => { const [lo, hi] = hSop(P); return !Number.isInteger(k) || k < lo || k > hi ? 0 : Math.exp(lnC(P.K, k) + lnC(P.N - P.K, P.n - k) - lnC(P.N, P.n)); };
+  const hSuma = (P, a, b) => { const [lo, hi] = hSop(P); let s = 0; for (let k = Math.max(lo, Math.ceil(a)); k <= Math.min(hi, Math.floor(b)); k++) s += hPmf(P, k); return Math.min(1, s); };
 
   const DIST = {
     normal: {
       nombre: 'Normal N(μ, σ)', continua: true, params: [['mu', 'Media μ', {}], ['sigma', 'Desviación típica σ', { min: 0, minEx: true }]],
       pdf: ({ mu, sigma }, x) => Math.exp(-0.5 * ((x - mu) / sigma) ** 2) / (sigma * Math.sqrt(2 * Math.PI)),
       cdf: ({ mu, sigma }, x) => Phi((x - mu) / sigma),
+      sf: ({ mu, sigma }, x) => Phi(-(x - mu) / sigma),
       momentos: ({ mu, sigma }) => ({ media: mu, varianza: sigma * sigma }),
       rango: ({ mu, sigma }) => [mu - 4 * sigma, mu + 4 * sigma],
       simetrica: true, nombreX: 'X', etiqueta: (p) => `N(${num(p.mu)}, ${num(p.sigma)})`,
@@ -792,25 +817,51 @@ const Estadistica = (() => {
       nombre: 't de Student', continua: true, params: [['nu', 'Grados de libertad ν', { min: 0, minEx: true }]],
       pdf: ({ nu }, x) => Math.exp(lnGamma((nu + 1) / 2) - lnGamma(nu / 2) - 0.5 * Math.log(nu * Math.PI) - ((nu + 1) / 2) * Math.log(1 + (x * x) / nu)),
       cdf: ({ nu }, x) => { const c = 0.5 * betaI(nu / (nu + x * x), nu / 2, 0.5); return x > 0 ? 1 - c : c; },
+      sf: ({ nu }, x) => { const c = 0.5 * betaI(nu / (nu + x * x), nu / 2, 0.5); return x > 0 ? c : 1 - c; },
       momentos: ({ nu }) => ({ media: nu > 1 ? 0 : NaN, varianza: nu > 2 ? nu / (nu - 2) : nu > 1 ? Infinity : NaN }),
       rango: ({ nu }) => { const r = nu < 3 ? 8 : 5; return [-r, r]; },
-      simetrica: true, nombreX: 'T', etiqueta: (p) => `t<sub>${num(p.nu)}</sub>`,
+      simetrica: true, nombreX: 'T', critico: (P) => `t<sub>${num(P.nu)}</sub>`, etiqueta: (p) => `t<sub>${num(p.nu)}</sub>`,
     },
     chi2: {
       nombre: 'Chi cuadrado χ²', continua: true, params: [['k', 'Grados de libertad k', { min: 0, minEx: true }]],
       pdf: ({ k }, x) => (x <= 0 ? (x === 0 && k === 2 ? 0.5 : 0) : Math.exp((k / 2 - 1) * Math.log(x) - x / 2 - (k / 2) * Math.LN2 - lnGamma(k / 2))),
       cdf: ({ k }, x) => (x <= 0 ? 0 : gammaP(k / 2, x / 2)),
+      sf: ({ k }, x) => (x <= 0 ? 1 : gammaQ(k / 2, x / 2)),
       momentos: ({ k }) => ({ media: k, varianza: 2 * k }),
       rango: ({ k }) => [0, k + 5 * Math.sqrt(2 * k) + 2],
-      nombreX: 'χ²', etiqueta: (p) => `χ²<sub>${num(p.k)}</sub>`,
+      nombreX: 'χ²', critico: (P) => `χ<sup>2</sup><sub>${num(P.k)}</sub>`, etiqueta: (p) => `χ²<sub>${num(p.k)}</sub>`,
+    },
+    f: {
+      nombre: 'F de Snedecor', continua: true, params: [['d1', 'Grados de libertad del numerador d₁', { min: 0, minEx: true }], ['d2', 'Grados de libertad del denominador d₂', { min: 0, minEx: true }]],
+      pdf: ({ d1, d2 }, x) => (x <= 0 ? 0 : Math.exp(0.5 * (d1 * Math.log(d1 * x) + d2 * Math.log(d2) - (d1 + d2) * Math.log(d1 * x + d2)) - Math.log(x) - (lnGamma(d1 / 2) + lnGamma(d2 / 2) - lnGamma((d1 + d2) / 2)))),
+      cdf: fCdf,
+      sf: ({ d1, d2 }, x) => (x <= 0 ? 1 : betaI(d2 / (d2 + d1 * x), d2 / 2, d1 / 2)),
+      momentos: ({ d1, d2 }) => ({ media: d2 > 2 ? d2 / (d2 - 2) : NaN, varianza: d2 > 4 ? (2 * d2 * d2 * (d1 + d2 - 2)) / (d1 * (d2 - 2) ** 2 * (d2 - 4)) : d2 > 2 ? Infinity : NaN }),
+      rango: (P) => { let hi = 2; while (fCdf(P, hi) < 0.995 && hi < 1e5) hi *= 2; return [0, hi]; },
+      nombreX: 'F', critico: (P) => `F<sub>${num(P.d1)}, ${num(P.d2)}</sub>`, etiqueta: (p) => `F<sub>${num(p.d1)}, ${num(p.d2)}</sub>`,
+      nota: () => 'F = (χ²<sub>d₁</sub>/d₁)/(χ²<sub>d₂</sub>/d₂): es la que se usa para comparar dos varianzas y en el ANOVA.',
     },
     exponencial: {
       nombre: 'Exponencial Exp(λ)', continua: true, params: [['lambda', 'Tasa λ', { min: 0, minEx: true }]],
       pdf: ({ lambda }, x) => (x < 0 ? 0 : lambda * Math.exp(-lambda * x)),
       cdf: ({ lambda }, x) => (x <= 0 ? 0 : -Math.expm1(-lambda * x)),
+      sf: ({ lambda }, x) => (x <= 0 ? 1 : Math.exp(-lambda * x)),
+      inv: ({ lambda }, p) => -Math.log1p(-p) / lambda,
+      invTxt: () => '1 − e<sup>−λa</sup> = p ⇒ a = −ln(1 − p)/λ',
       momentos: ({ lambda }) => ({ media: 1 / lambda, varianza: 1 / (lambda * lambda) }),
       rango: ({ lambda }) => [0, 6 / lambda],
-      nombreX: 'X', etiqueta: (p) => `Exp(${num(p.lambda)})`,
+      nombreX: 'X', etiqueta: (p) => `Exp(${num(p.lambda)})`, nota: () => 'F(x) = 1 − e<sup>−λx</sup>. No tiene memoria: P(X ≥ s + t | X ≥ s) = P(X ≥ t).',
+    },
+    uniforme: {
+      nombre: 'Uniforme continua U(a, b)', continua: true, params: [['lo', 'Mínimo (extremo a)', {}], ['hi', 'Máximo (extremo b)', {}]],
+      valida: ({ lo, hi }) => (hi > lo ? '' : 'El máximo tiene que ser mayor que el mínimo'),
+      pdf: ({ lo, hi }, x) => (x < lo || x > hi ? 0 : 1 / (hi - lo)),
+      cdf: ({ lo, hi }, x) => Math.min(1, Math.max(0, (x - lo) / (hi - lo))),
+      inv: ({ lo, hi }, p) => lo + p * (hi - lo),
+      invTxt: () => '(a − mín)/(máx − mín) = p ⇒ a = mín + p·(máx − mín)',
+      momentos: ({ lo, hi }) => ({ media: (lo + hi) / 2, varianza: (hi - lo) ** 2 / 12 }),
+      rango: ({ lo, hi }) => [lo - 0.15 * (hi - lo), hi + 0.15 * (hi - lo)],
+      nombreX: 'X', etiqueta: (p) => `U(${num(p.lo)}, ${num(p.hi)})`, nota: (P) => `F(x) = (x − ${num(P.lo)})/(${num(P.hi)} − ${num(P.lo)}) entre los dos extremos: la probabilidad es proporcional a la longitud del tramo.`,
     },
     binomial: {
       nombre: 'Binomial B(n, p)', continua: false, params: [['n', 'Número de pruebas n', { entero: true, min: 1, max: 100000 }], ['p', 'Probabilidad de éxito p', { min: 0, max: 1 }]],
@@ -818,9 +869,12 @@ const Estadistica = (() => {
         if (k < 0 || k > n || !Number.isInteger(k)) return 0;
         if (p === 0) return k === 0 ? 1 : 0;
         if (p === 1) return k === n ? 1 : 0;
-        return Math.exp(lnGamma(n + 1) - lnGamma(k + 1) - lnGamma(n - k + 1) + k * Math.log(p) + (n - k) * Math.log1p(-p));
+        return Math.exp(lnC(n, k) + k * Math.log(p) + (n - k) * Math.log1p(-p));
       },
       cdf: (P, k) => { const { n, p } = P; if (k < 0) return 0; if (k >= n) return 1; if (p === 0) return 1; if (p === 1) return 0; return betaI(1 - p, n - Math.floor(k), Math.floor(k) + 1); },
+      // P(X ≥ k) sin restar de 1, para no perder las colas pequeñas
+      cola: ({ n, p }, k) => { k = Math.ceil(k); if (k <= 0) return 1; if (k > n) return 0; if (p === 0) return 0; if (p === 1) return 1; return betaI(p, k, n - k + 1); },
+      soporte: ({ n }) => [0, n],
       momentos: ({ n, p }) => ({ media: n * p, varianza: n * p * (1 - p) }),
       rango: ({ n, p }) => { const m = n * p, s = Math.sqrt(n * p * (1 - p)); return [Math.max(0, Math.floor(m - 5 * s - 1)), Math.min(n, Math.ceil(m + 5 * s + 1))]; },
       nombreX: 'X', etiqueta: (p) => `B(${num(p.n)}, ${num(p.p)})`,
@@ -831,164 +885,289 @@ const Estadistica = (() => {
       nombre: 'Poisson P(λ)', continua: false, params: [['lambda', 'Media λ', { min: 0, minEx: true, max: 1e6 }]],
       pmf: ({ lambda }, k) => (k < 0 || !Number.isInteger(k) ? 0 : Math.exp(-lambda + k * Math.log(lambda) - lnGamma(k + 1))),
       cdf: ({ lambda }, k) => (k < 0 ? 0 : gammaQ(Math.floor(k) + 1, lambda)),
+      cola: ({ lambda }, k) => { k = Math.ceil(k); return k <= 0 ? 1 : gammaP(k, lambda); },
       momentos: ({ lambda }) => ({ media: lambda, varianza: lambda }),
       rango: ({ lambda }) => [Math.max(0, Math.floor(lambda - 5 * Math.sqrt(lambda) - 1)), Math.ceil(lambda + 5 * Math.sqrt(lambda) + 3)],
       nombreX: 'X', etiqueta: (p) => `P(${num(p.lambda)})`,
       formula: ({ lambda }, k) => `P(X = ${k}) = e<sup>−${num(lambda)}</sup>·${num(lambda)}<sup>${k}</sup> / ${k}!`,
       general: () => 'P(X = k) = e<sup>−λ</sup>·λ<sup>k</sup> / k!, para k = 0, 1, 2…',
     },
+    geometrica: {
+      nombre: 'Geométrica G(p)', continua: false, params: [['p', 'Probabilidad de éxito p', { min: 0, minEx: true, max: 1 }]],
+      pmf: ({ p }, k) => (k < 0 || !Number.isInteger(k) ? 0 : p === 1 ? (k === 0 ? 1 : 0) : Math.exp(k * Math.log1p(-p)) * p),
+      cdf: ({ p }, k) => (k < 0 ? 0 : p === 1 ? 1 : -Math.expm1((Math.floor(k) + 1) * Math.log1p(-p))),
+      cola: ({ p }, k) => { k = Math.ceil(k); return k <= 0 ? 1 : p === 1 ? 0 : Math.exp(k * Math.log1p(-p)); },
+      momentos: ({ p }) => ({ media: (1 - p) / p, varianza: (1 - p) / (p * p) }),
+      rango: ({ p }) => [0, p === 1 ? 3 : Math.max(5, Math.ceil(Math.log(0.002) / Math.log1p(-p)))],
+      nombreX: 'X', etiqueta: (p) => `G(${num(p.p)})`,
+      formula: ({ p }, k) => `P(X = ${k}) = ${num(1 - p)}<sup>${k}</sup>·${num(p)}`,
+      general: ({ p }) => `X = número de fracasos antes del primer éxito: P(X = k) = q<sup>k</sup>·p, con q = 1 − p = ${num(1 - p)}, para k = 0, 1, 2… Si se cuentan las pruebas hasta el primer éxito (incluido), Y = X + 1.`,
+    },
+    hipergeometrica: {
+      nombre: 'Hipergeométrica H(N, K, n)', continua: false,
+      params: [['N', 'Tamaño de la población N', { entero: true, min: 1, max: 1e6 }], ['K', 'Éxitos en la población K', { entero: true, min: 0 }], ['n', 'Extracciones sin reemplazo n', { entero: true, min: 1 }]],
+      valida: ({ N, K, n }) => (K > N ? 'Los éxitos K no pueden ser más que la población N' : n > N ? 'No se pueden sacar más elementos (n) de los que hay (N)' : ''),
+      pmf: hPmf,
+      cdf: (P, k) => hSuma(P, -Infinity, k),
+      cola: (P, k) => hSuma(P, k, Infinity),
+      soporte: hSop,
+      momentos: ({ N, K, n }) => ({ media: (n * K) / N, varianza: N > 1 ? n * (K / N) * (1 - K / N) * ((N - n) / (N - 1)) : 0 }),
+      rango: hSop,
+      nombreX: 'X', etiqueta: (p) => `H(${num(p.N)}, ${num(p.K)}, ${num(p.n)})`,
+      formula: ({ N, K, n }, k) => `P(X = ${k}) = C(${K}, ${k})·C(${N - K}, ${n - k}) / C(${N}, ${n}) = ${combTxt(K, k)}·${combTxt(N - K, n - k)} / ${combTxt(N, n)}`,
+      general: () => 'X = número de éxitos al sacar n elementos sin reemplazo de una población de N con K éxitos: P(X = k) = C(K, k)·C(N − K, n − k) / C(N, n)',
+    },
   };
-  const TIPOS_C = [['menor', 'P(X ≤ a)'], ['mayor', 'P(X ≥ a)'], ['entre', 'P(a ≤ X ≤ b)'], ['cuantil', 'Cuantil: a con P(X ≤ a) = p'], ['critico', 'Valor crítico bilateral (α)']];
-  const TIPOS_D = [['igual', 'P(X = k)'], ['menor', 'P(X ≤ k)'], ['menorE', 'P(X < k)'], ['mayor', 'P(X ≥ k)'], ['mayorE', 'P(X > k)'], ['entre', 'P(a ≤ X ≤ b)'], ['cuantil', 'Cuantil: menor k con P(X ≤ k) ≥ p']];
-  const tipos = (d) => (DIST[d].continua ? TIPOS_C.filter(([k]) => k !== 'critico' || DIST[d].simetrica) : TIPOS_D);
+  const CRITICOS = ['normal', 't', 'chi2', 'f'];
+  const TIPOS_C = [['menor', 'P(X ≤ a)'], ['mayor', 'P(X ≥ a)'], ['entre', 'P(a ≤ X ≤ b)'], ['centro', 'P(|X − μ| ≤ c): a una distancia c de la media'], ['cuantil', 'Cuantil: a con P(X ≤ a) = p'], ['critico', 'Valor crítico bilateral (α)'], ['criticoU', 'Valor crítico unilateral (α en la cola derecha)'], ['inverso', 'Hallar μ o σ a partir de una probabilidad']];
+  const TIPOS_D = [['igual', 'P(X = k)'], ['menor', 'P(X ≤ k)'], ['menorE', 'P(X < k)'], ['mayor', 'P(X ≥ k)'], ['mayorE', 'P(X > k)'], ['entre', 'P(a ≤ X ≤ b)'], ['centro', 'P(|X − μ| ≤ c): a una distancia c de la media'], ['cuantil', 'Cuantil: menor k con P(X ≤ k) ≥ p']];
+  const tipos = (d) => (DIST[d].continua ? TIPOS_C.filter(([k]) => (k !== 'critico' && k !== 'criticoU') || CRITICOS.includes(d)).filter(([k]) => k !== 'inverso' || d === 'normal') : TIPOS_D);
 
   // cuantil continuo por bisección
   function cuantil(D, P, p) {
+    if (D.inv) return D.inv(P, p);
     let [lo, hi] = D.rango(P);
     while (D.cdf(P, lo) > p) lo -= Math.max(1, Math.abs(hi - lo));
     while (D.cdf(P, hi) < p) hi += Math.max(1, Math.abs(hi - lo));
     for (let i = 0; i < 200; i++) { const m = (lo + hi) / 2; if (D.cdf(P, m) < p) lo = m; else hi = m; }
     return (lo + hi) / 2;
   }
-
+  const N01 = { mu: 0, sigma: 1 };
   // la probabilidad del cuantil va en «q», para no pisar la p de la binomial (antes era «p»)
   const probCuantil = (sc, D) => lee(vacio(sc.q) && !D.params.some(([k]) => k === 'p') ? { q: sc.p } : sc, 'q', 'la probabilidad p', { min: 0, minEx: true, max: 1, maxEx: true });
 
+  // μ o σ de una normal a partir de P(X ≤ a) o P(X ≥ a)
+  function inverso(sc, P, incog, pasos) {
+    const a = lee(sc, 'a', 'el valor a'), q = probCuantil(sc, DIST.normal), mayor = sc.cola === 'mayor', pIzq = mayor ? 1 - q : q, z = cuantil(DIST.normal, N01, pIzq);
+    const ev = `P(X ${mayor ? '≥' : '≤'} ${num(a)}) = ${num(q)}`;
+    let h = `${ev}${mayor ? ` ⇒ P(X ≤ ${num(a)}) = 1 − ${num(q)} = ${num(pIzq)}` : ''}.<br>Tipificando, Φ((a − μ)/σ) = ${num(pIzq)} ⇒ (a − μ)/σ = z = ${num(z)}.<br>`;
+    if (incog === 'mu') { P.mu = a - z * P.sigma; h += `Despejando, μ = a − zσ = ${num(a)} − ${num(z)}·${num(P.sigma)} = <b>${num(P.mu)}</b>`; }
+    else {
+      if (Math.abs(z) < 1e-12) throw new Error('Con esa probabilidad, a es justo la media: σ puede ser cualquiera');
+      const s = (a - P.mu) / z;
+      if (!(s > 0)) throw new Error(`No hay ninguna σ posible: con ${ev.replace(/<[^>]+>/g, '')}, a tiene que ser ${z > 0 ? 'mayor' : 'menor'} que μ = ${num(P.mu).replace(/<[^>]+>/g, '')}`);
+      P.sigma = s; h += `Despejando, σ = (a − μ)/z = (${num(a)} − ${num(P.mu)})/${num(z)} = <b>${num(s)}</b>`;
+    }
+    pasos.push({ t: `Hallar ${incog === 'mu' ? 'μ' : 'σ'}`, html: h });
+    return { a, q, z, mayor };
+  }
+
+  // tabla de valores de una discreta alrededor de lo pedido (como mucho 41 filas)
+  function tabla(D, P, enEv, centro) {
+    const [r0, r1] = D.rango(P), [s0, s1] = D.soporte ? D.soporte(P) : [0, Infinity];
+    let lo = Math.max(s0, Math.floor(r0)), hi = Math.min(s1, Math.ceil(r1));
+    if (hi - lo > 40) { const c = Math.round(isFinite(centro) ? Math.min(Math.max(centro, lo), hi) : (lo + hi) / 2); lo = Math.max(lo, c - 20); hi = lo + 40; }
+    const G = (k) => (D.cola ? D.cola(P, k) : 1 - D.cdf(P, k - 1));
+    const filas = []; for (let k = lo; k <= hi; k++) { const b = (x) => (enEv(k) ? `<b>${x}</b>` : x); filas.push(`<tr><td>${b(k)}</td><td>${b(prob(D.pmf(P, k)))}</td><td>${prob(D.cdf(P, k))}</td><td>${prob(G(k))}</td></tr>`); }
+    return `<div class="tabla-scroll"><table class="tabla"><thead><tr><th>k</th><th>P(X = k)</th><th>P(X ≤ k)</th><th>P(X ≥ k)</th></tr></thead><tbody>${filas.join('')}</tbody></table></div><button type="button" class="btn" data-copiar>Copiar la tabla</button>`;
+  }
+
+  // probabilidad aproximada de a ≤ X ≤ b por una normal con la corrección de continuidad
+  const porNormal = (m, s, a, b) => (isFinite(b) ? Phi((b + 0.5 - m) / s) : 1) - (isFinite(a) ? Phi((a - 0.5 - m) / s) : 0);
+  const intervalo = (a, b) => `${isFinite(a) ? `${num(a)} ≤ X` : 'X'}${isFinite(b) ? ` ≤ ${num(b)}` : ''}`;
+
   function calcular(sc) {
     const d = DIST[sc.dist] ? sc.dist : 'normal', D = DIST[d];
-    const P = {};
-    for (const [k, nom, op] of D.params) P[k] = lee(sc, k, nom.toLowerCase(), op);
     const lista = tipos(d), tipo = lista.some(([k]) => k === sc.tipo) ? sc.tipo : lista[0][0];
-    const { media, varianza } = D.momentos(P), X = D.nombreX, pasos = [];
+    const incog = tipo === 'inverso' ? (sc.incog === 'sigma' ? 'sigma' : 'mu') : null, P = {}, pasos = [];
+    for (const [k, nom, op] of D.params) if (k !== incog) P[k] = lee(sc, k, nom.toLowerCase(), op);
+    const malo = D.valida?.(P); if (malo) throw new Error(malo);
+    const inv = incog ? inverso(sc, P, incog, pasos) : null;
+    const { media, varianza } = D.momentos(P), X = D.nombreX;
     pasos.push({ t: 'Distribución', html: `${X} ~ ${D.etiqueta(P)}: media ${isNaN(media) ? 'no definida' : num(media)}, varianza ${isNaN(varianza) ? 'no definida' : num(varianza)}${isFinite(varianza) ? `, desviación típica ${num(Math.sqrt(varianza))}` : ''}` });
     const r = { dist: d, tipo, P, media, varianza, pasos };
+    const leeC = () => { if (!isFinite(media)) throw new Error('Esta distribución no tiene media: no se puede medir la distancia a ella'); return lee(sc, 'cc', 'la distancia c', { min: 0 }); };
+    const cheb = (c) => (isFinite(varianza) && c > Math.sqrt(varianza) ? `<br>Para comparar, la desigualdad de Chebyshev asegura al menos 1 − σ²/c² = 1 − ${num(varianza)}/${num(c)}<sup>2</sup> = ${prob(1 - varianza / (c * c))} para cualquier distribución.` : '');
     if (D.continua) {
-      const F = (x) => D.cdf(P, x);
-      const z = (x) => (d === 'normal' ? `<br>Tipificando, Z = (X − μ)/σ = (${num(x)} − ${num(P.mu)})/${num(P.sigma)} = ${num((x - P.mu) / P.sigma)}` : '');
-      if (tipo === 'menor' || tipo === 'mayor') {
+      const F = (x) => D.cdf(P, x), S = (x) => (D.sf ? D.sf(P, x) : 1 - D.cdf(P, x)), nota = D.nota ? ` &nbsp;(${D.nota(P)})` : '';
+      if (inv) {
+        Object.assign(r, { p: inv.q, a: inv.a, incog, valor: P[incog], sombra: inv.mayor ? [inv.a, Infinity] : [-Infinity, inv.a] });
+        pasos.push({ t: 'Comprobación', html: `Con ${incog === 'mu' ? `μ = ${num(P.mu)}` : `σ = ${num(P.sigma)}`}, P(X ${inv.mayor ? '≥' : '≤'} ${num(inv.a)}) = ${prob(inv.mayor ? S(inv.a) : F(inv.a))}` });
+      } else if (tipo === 'menor' || tipo === 'mayor') {
         const a = lee(sc, 'a', 'el valor a');
-        const pa = F(a), res = tipo === 'menor' ? pa : 1 - pa;
+        const pa = F(a), res = tipo === 'menor' ? pa : S(a);
         const zz = d === 'normal' ? (a - P.mu) / P.sigma : null;
         pasos.push({ t: tipo === 'menor' ? `P(${X} ≤ ${num(a)})` : `P(${X} ≥ ${num(a)})`, html: d === 'normal'
-          ? `${z(a).slice(4)}<br>${tipo === 'menor' ? `P(Z ≤ ${num(zz)}) = Φ(${num(zz)})` : `P(Z ≥ ${num(zz)}) = 1 − Φ(${num(zz)})${zz < 0 ? ` = Φ(${num(-zz)})` : ''}`} = <b>${prob(res)}</b>`
-          : `${tipo === 'menor' ? `F(${num(a)})` : `1 − F(${num(a)}) = 1 − ${prob(pa)}`} = <b>${prob(res)}</b>${d === 'exponencial' ? ` &nbsp;(F(x) = 1 − e<sup>−λx</sup>)` : ''}` });
+          ? `Tipificando, Z = (X − μ)/σ = (${num(a)} − ${num(P.mu)})/${num(P.sigma)} = ${num(zz)}<br>${tipo === 'menor' ? `P(Z ≤ ${num(zz)}) = Φ(${num(zz)})` : `P(Z ≥ ${num(zz)}) = 1 − Φ(${num(zz)})${zz < 0 ? ` = Φ(${num(-zz)})` : ''}`} = <b>${prob(res)}</b>`
+          : `${tipo === 'menor' ? `F(${num(a)})` : `1 − F(${num(a)}) = 1 − ${prob(pa)}`} = <b>${prob(res)}</b>${nota}` });
         pasos.push({ t: 'En una distribución continua', html: `P(${X} = a) = 0, así que da igual escribir ≤ o &lt; (y ≥ o &gt;).` });
         Object.assign(r, { p: res, a, sombra: tipo === 'menor' ? [-Infinity, a] : [a, Infinity] });
-      } else if (tipo === 'entre') {
-        const a = lee(sc, 'a', 'el valor a'), b = lee(sc, 'b', 'el valor b');
+      } else if (tipo === 'entre' || tipo === 'centro') {
+        let a, b, c = null;
+        if (tipo === 'centro') { c = leeC(); a = media - c; b = media + c; } else { a = lee(sc, 'a', 'el valor a'); b = lee(sc, 'b', 'el valor b'); }
         if (b < a) throw new Error('b tiene que ser mayor o igual que a');
-        const res = F(b) - F(a);
-        pasos.push({ t: `P(${num(a)} ≤ ${X} ≤ ${num(b)}) = F(${num(b)}) − F(${num(a)})`, html: d === 'normal'
-          ? `Z<sub>a</sub> = ${num((a - P.mu) / P.sigma)}, &nbsp;Z<sub>b</sub> = ${num((b - P.mu) / P.sigma)}<br>Φ(${num((b - P.mu) / P.sigma)}) − Φ(${num((a - P.mu) / P.sigma)}) = ${prob(F(b))} − ${prob(F(a))} = <b>${prob(res)}</b>`
-          : `${prob(F(b))} − ${prob(F(a))} = <b>${prob(res)}</b>` });
-        Object.assign(r, { p: res, a, b, sombra: [a, b] });
+        // en la cola derecha se resta con S para no perder cifras
+        const res = a > media ? S(a) - S(b) : F(b) - F(a), za = d === 'normal' ? (a - P.mu) / P.sigma : 0, zb = d === 'normal' ? (b - P.mu) / P.sigma : 0;
+        const tit = tipo === 'centro' ? `P(|${X} − μ| ≤ ${num(c)}) = P(${num(a)} ≤ ${X} ≤ ${num(b)})` : `P(${num(a)} ≤ ${X} ≤ ${num(b)}) = F(${num(b)}) − F(${num(a)})`;
+        pasos.push({ t: tit, html: (d === 'normal'
+          ? (tipo === 'centro' ? `P(−${num(zb)} ≤ Z ≤ ${num(zb)}) = 2Φ(${num(zb)}) − 1 = 2·${prob(Phi(zb))} − 1 = <b>${prob(res)}</b>` : `Z<sub>a</sub> = ${num(za)}, &nbsp;Z<sub>b</sub> = ${num(zb)}<br>Φ(${num(zb)}) − Φ(${num(za)}) = ${prob(F(b))} − ${prob(F(a))} = <b>${prob(res)}</b>`)
+          : `F(${num(b)}) − F(${num(a)}) = ${prob(F(b))} − ${prob(F(a))} = <b>${prob(res)}</b>${nota}`) + (c !== null ? cheb(c) : '') });
+        Object.assign(r, { p: res, a, b, c, sombra: [a, b] });
       } else if (tipo === 'cuantil') {
-        const p = probCuantil(sc, D);
-        const x = d === 'exponencial' ? -Math.log1p(-p) / P.lambda : cuantil(D, P, p);
+        const p = probCuantil(sc, D), x = cuantil(D, P, p);
         let h = `Se busca a con P(${X} ≤ a) = ${num(p)}`;
-        if (d === 'normal') { const zq = cuantil(DIST.normal, { mu: 0, sigma: 1 }, p); h += `.<br>En la normal tipificada, Φ(z) = ${num(p)} ⇒ z = ${num(zq)}.<br>Destipificando, a = μ + zσ = ${num(P.mu)} + ${num(zq)}·${num(P.sigma)} = <b>${num(x)}</b>`; }
-        else if (d === 'exponencial') h += `: 1 − e<sup>−λa</sup> = ${num(p)} ⇒ a = −ln(1 − p)/λ = <b>${num(x)}</b>`;
+        if (d === 'normal') { const zq = cuantil(DIST.normal, N01, p); h += `.<br>En la normal tipificada, Φ(z) = ${num(p)} ⇒ z = ${num(zq)}.<br>Destipificando, a = μ + zσ = ${num(P.mu)} + ${num(zq)}·${num(P.sigma)} = <b>${num(x)}</b>`; }
+        else if (D.invTxt) h += `: ${D.invTxt()} = <b>${num(x)}</b>`;
         else h += `: a = <b>${num(x)}</b>`;
         pasos.push({ t: 'Cuantil', html: h });
         Object.assign(r, { p, x, sombra: [-Infinity, x] });
       } else {
-        const alfa = lee(sc, 'alfa', 'el nivel de significación α', { min: 0, minEx: true, max: 1, maxEx: true });
-        const c = cuantil(D, d === 'normal' ? { mu: 0, sigma: 1 } : P, 1 - alfa / 2), nombre = d === 'normal' ? 'z' : 't';
-        pasos.push({ t: 'Valor crítico', html: `Se busca c con P(−c ≤ ${d === 'normal' ? 'Z' : 'T'} ≤ c) = 1 − α = ${num(1 - alfa)}: cada cola deja α/2 = ${num(alfa / 2)}, así que P(${d === 'normal' ? 'Z' : 'T'} ≤ c) = ${num(1 - alfa / 2)}.<br>${nombre}<sub>α/2</sub> = <b>±${num(c)}</b>${d === 'normal' && (P.mu !== 0 || P.sigma !== 1) ? `<br>En X: μ ± cσ = ${num(P.mu - c * P.sigma)} y ${num(P.mu + c * P.sigma)}` : ''}` });
-        const k = d === 'normal' ? P.sigma : 1, m0 = d === 'normal' ? P.mu : 0;
-        Object.assign(r, { p: 1 - alfa, alfa, c, sombra: [m0 - c * k, m0 + c * k] });
+        const alfa = lee(sc, 'alfa', 'el nivel de significación α', { min: 0, minEx: true, max: 1, maxEx: true }), bil = tipo === 'critico';
+        const Q = d === 'normal' ? N01 : P, nor = d === 'normal', k = nor ? P.sigma : 1, m0 = nor ? P.mu : 0;
+        const nom = nor ? 'z' : D.critico(P), V = nor ? 'Z' : X, enX = (c) => (nor && (P.mu !== 0 || P.sigma !== 1) ? `<br>En X: μ ${bil ? '±' : '+'} cσ = ${bil ? `${num(P.mu - c * P.sigma)} y ` : ''}${num(P.mu + c * P.sigma)}` : '');
+        if (bil && D.simetrica) {
+          const c = cuantil(D, Q, 1 - alfa / 2);
+          pasos.push({ t: 'Valor crítico bilateral', html: `Se busca c con P(−c ≤ ${V} ≤ c) = 1 − α = ${num(1 - alfa)}: cada cola deja α/2 = ${num(alfa / 2)}, así que P(${V} ≤ c) = ${num(1 - alfa / 2)}.<br>${nor ? 'z' : 't'}<sub>α/2</sub> = <b>±${num(c)}</b>${enX(c)}` });
+          Object.assign(r, { p: 1 - alfa, alfa, c, sombra: [m0 - c * k, m0 + c * k] });
+        } else if (bil) {
+          const c1 = cuantil(D, Q, alfa / 2), c2 = cuantil(D, Q, 1 - alfa / 2);
+          pasos.push({ t: 'Valores críticos bilaterales', html: `${D.nombreX === 'F' ? 'La F' : 'La χ²'} no es simétrica: hacen falta dos valores, uno que deja α/2 = ${num(alfa / 2)} a la izquierda y otro que deja α/2 a la derecha.<br>c₁ = ${nom}<sub>; 1−α/2</sub> = <b>${num(c1)}</b> &nbsp;(P(${X} ≤ c₁) = ${num(alfa / 2)})<br>c₂ = ${nom}<sub>; α/2</sub> = <b>${num(c2)}</b> &nbsp;(P(${X} ≥ c₂) = ${num(alfa / 2)})${d === 'f' ? `<br>Se cumple c₁ = 1/F<sub>${num(P.d2)}, ${num(P.d1)}; α/2</sub>, como en las tablas.` : ''}` });
+          Object.assign(r, { p: 1 - alfa, alfa, c: c2, c1, sombra: [c1, c2] });
+        } else {
+          const c = cuantil(D, Q, 1 - alfa);
+          pasos.push({ t: 'Valor crítico unilateral', html: `Toda α va a la cola derecha: se busca c con P(${V} ≥ c) = α = ${num(alfa)}, es decir P(${V} ≤ c) = ${num(1 - alfa)}.<br>${nom}<sub>${nor ? '' : '; '}α</sub> = <b>${num(c)}</b>${D.simetrica ? `<br>Para la cola izquierda, por simetría: −${num(c)}.` : d === 'f' ? `<br>Para la cola izquierda, F<sub>${num(P.d1)}, ${num(P.d2)}; 1−α</sub> = 1/F<sub>${num(P.d2)}, ${num(P.d1)}; α</sub> = ${num(cuantil(D, P, alfa))}.` : `<br>Para la cola izquierda (P(${X} ≤ c) = α): ${num(cuantil(D, P, alfa))}.`}${enX(c)}` });
+          Object.assign(r, { p: alfa, alfa, c, sombra: [m0 + c * k, Infinity] });
+        }
       }
     } else {
-      const f = (k) => D.pmf(P, k), F = (k) => D.cdf(P, k);
+      const f = (k) => D.pmf(P, k), F = (k) => D.cdf(P, k), G = (k) => (D.cola ? D.cola(P, k) : 1 - F(k - 1));
       pasos.push({ t: 'Función de probabilidad', html: D.general(P) });
-      const entero = (k, nom) => lee(sc, k, nom, { entero: true });
+      const entero = (k, nom) => lee(sc, k, nom, { entero: true }), [s0, s1] = D.soporte ? D.soporte(P) : [0, Infinity];
       const detalle = (k0, k1) => {
         // suma término a término si son pocos
-        if (k1 - k0 > 6) return '';
+        k0 = Math.max(k0, s0); k1 = Math.min(k1, s1);
+        if (k1 - k0 > 6 || k1 < k0) return '';
         return '<br>' + Array.from({ length: k1 - k0 + 1 }, (_, i) => k0 + i).map((k) => `${D.formula(P, k)} = ${prob(f(k))}`).join('<br>');
       };
       let a, b, res, desc;
-      if (tipo === 'igual') { a = b = entero('a', 'el valor k'); res = f(a); desc = `P(X = ${a})`; pasos.push({ t: desc, html: `${a < 0 || a > (P.n ?? Infinity) ? `${desc} = 0, porque X no puede valer ${a}` : `${D.formula(P, a)} = <b>${prob(res)}</b>`}` }); }
-      else if (tipo === 'entre') {
-        a = entero('a', 'el valor a'); b = entero('b', 'el valor b');
-        if (b < a) throw new Error('b tiene que ser mayor o igual que a');
-        res = F(b) - F(a - 1); desc = `P(${a} ≤ X ≤ ${b})`;
-        pasos.push({ t: desc, html: `= P(X ≤ ${b}) − P(X ≤ ${a - 1}) = ${prob(F(b))} − ${prob(F(a - 1))} = <b>${prob(res)}</b>${detalle(Math.max(a, 0), b)}` });
+      if (tipo === 'igual') { a = b = entero('a', 'el valor k'); res = f(a); desc = `P(X = ${a})`; pasos.push({ t: desc, html: `${a < s0 || a > s1 ? `${desc} = 0, porque X no puede valer ${a}` : `${D.formula(P, a)} = <b>${prob(res)}</b>`}` }); }
+      else if (tipo === 'entre' || tipo === 'centro') {
+        if (tipo === 'centro') { const c = leeC(); a = Math.ceil(media - c - 1e-9); b = Math.floor(media + c + 1e-9); r.c = c; desc = `P(|X − μ| ≤ ${num(c)}) = P(${num(media - c)} ≤ X ≤ ${num(media + c)}) = P(${a} ≤ X ≤ ${b})`; }
+        else { a = entero('a', 'el valor a'); b = entero('b', 'el valor b'); desc = `P(${a} ≤ X ≤ ${b})`; }
+        if (b < a) throw new Error(tipo === 'centro' ? 'No hay ningún valor entero a esa distancia de la media' : 'b tiene que ser mayor o igual que a');
+        res = a > media ? G(a) - G(b + 1) : F(b) - F(a - 1);
+        pasos.push({ t: desc, html: `= P(X ≤ ${b}) − P(X ≤ ${a - 1}) = ${prob(F(b))} − ${prob(F(a - 1))} = <b>${prob(res)}</b>${detalle(a, b)}${tipo === 'centro' ? cheb(r.c) : ''}` });
       } else if (tipo === 'cuantil') {
         const p = probCuantil(sc, D);
-        let k = Math.max(0, Math.floor(D.rango(P)[0]));
+        let k = Math.max(s0, Math.floor(D.rango(P)[0]));
         while (F(k) < p && k < 1e7) k++;
-        while (k > 0 && F(k - 1) >= p) k--;
+        while (k > s0 && F(k - 1) >= p) k--;
         pasos.push({ t: 'Cuantil', html: `P(X ≤ ${k - 1}) = ${prob(F(k - 1))} &lt; ${num(p)} y P(X ≤ ${k}) = ${prob(F(k))} ≥ ${num(p)} ⇒ k = <b>${k}</b>` });
+        pasos.push({ t: 'Tabla de valores', html: tabla(D, P, (j) => j <= k, k) });
         Object.assign(r, { p, x: k, sombra: [-Infinity, k], discreta: true });
         return terminar(D, r);
       } else {
         a = entero('a', 'el valor k');
         const T = { menor: [-Infinity, a, `P(X ≤ ${a})`], menorE: [-Infinity, a - 1, `P(X < ${a}) = P(X ≤ ${a - 1})`], mayor: [a, Infinity, `P(X ≥ ${a}) = 1 − P(X ≤ ${a - 1})`], mayorE: [a + 1, Infinity, `P(X > ${a}) = 1 − P(X ≤ ${a})`] }[tipo];
         [a, b, desc] = T;
-        res = isFinite(b) ? F(b) : 1 - F(a - 1);
-        const cuerpo = isFinite(b) ? `${b < 0 ? '' : `= Σ<sub>k=0</sub><sup>${b}</sup> P(X = k) `}= <b>${prob(res)}</b>${b >= 0 ? detalle(0, b) : ''}` : `= 1 − ${prob(F(a - 1))} = <b>${prob(res)}</b>${a - 1 >= 0 ? detalle(0, a - 1) : ''}`;
+        res = isFinite(b) ? F(b) : G(a);
+        const cuerpo = isFinite(b) ? `${b < 0 ? '' : `= Σ<sub>k=${s0}</sub><sup>${b}</sup> P(X = k) `}= <b>${prob(res)}</b>${b >= 0 ? detalle(0, b) : ''}` : `= 1 − ${prob(F(a - 1))} = <b>${prob(res)}</b>${a - 1 >= 0 ? detalle(0, a - 1) : ''}`;
         pasos.push({ t: desc, html: cuerpo });
       }
-      // aproximación normal de la binomial
-      if (d === 'binomial' && P.n * P.p >= 5 && P.n * (1 - P.p) >= 5 && tipo !== 'cuantil') {
-        const s = Math.sqrt(varianza), lo = isFinite(a) ? a - 0.5 : -Infinity, hi = isFinite(b) ? b + 0.5 : Infinity;
-        const ap = (isFinite(hi) ? Phi((hi - media) / s) : 1) - (isFinite(lo) ? Phi((lo - media) / s) : 0);
-        pasos.push({ t: 'Aproximación por la normal (np ≥ 5 y nq ≥ 5)', html: `X ≈ N(np, √(npq)) = N(${num(media)}, ${num(s)}), con la corrección de continuidad (±0,5): ${isFinite(lo) ? `${num(lo)} ≤ X` : 'X'}${isFinite(hi) ? ` ≤ ${num(hi)}` : ''} ⇒ ≈ ${prob(ap)} (exacta: ${prob(res)})` });
+      // aproximaciones de clase
+      const ev = intervalo(a, b);
+      if (d === 'binomial' && P.n * P.p >= 5 && P.n * (1 - P.p) >= 5) {
+        const s = Math.sqrt(varianza);
+        pasos.push({ t: 'Aproximación por la normal (np ≥ 5 y nq ≥ 5)', html: `X ≈ N(np, √(npq)) = N(${num(media)}, ${num(s)}), con la corrección de continuidad (±0,5): ${intervalo(a - 0.5, b + 0.5)} ⇒ ≈ ${prob(porNormal(media, s, a, b))} (exacta: ${prob(res)})` });
       }
+      if (d === 'binomial' && P.n >= 30 && P.p <= 0.1) {
+        const L = { lambda: media }, Po = DIST.poisson, ap = (isFinite(b) ? Po.cdf(L, b) : 1) - (isFinite(a) ? Po.cdf(L, a - 1) : 0);
+        pasos.push({ t: 'Aproximación por la Poisson (n ≥ 30 y p ≤ 0,1)', html: `X ≈ P(λ = np = ${num(media)}): P(${ev}) ≈ ${prob(ap)} (exacta: ${prob(res)})` });
+      }
+      if (d === 'poisson' && P.lambda >= 10) {
+        const s = Math.sqrt(P.lambda);
+        pasos.push({ t: 'Aproximación por la normal (λ ≥ 10)', html: `X ≈ N(λ, √λ) = N(${num(P.lambda)}, ${num(s)}), con la corrección de continuidad (±0,5): ${intervalo(a - 0.5, b + 0.5)} ⇒ ≈ ${prob(porNormal(P.lambda, s, a, b))} (exacta: ${prob(res)})` });
+      }
+      pasos.push({ t: 'Tabla de valores', html: tabla(D, P, (k) => k >= a && k <= b, isFinite(a) ? a : b) });
       Object.assign(r, { p: res, a, b, sombra: [a, b], discreta: true });
     }
     return terminar(D, r);
   }
   function terminar(D, r) {
-    r.res = r.tipo === 'cuantil' ? `${r.discreta ? 'k' : 'a'} = ${num(r.x)}` : r.tipo === 'critico' ? `c = ±${num(r.c)}` : `P = ${prob(r.p)}`;
-    r.pct = r.tipo === 'cuantil' || r.tipo === 'critico' ? '' : `${num(100 * r.p, 4)} %`;
+    r.res = r.tipo === 'inverso' ? `${r.incog === 'mu' ? 'μ' : 'σ'} = ${num(r.valor)}` : r.tipo === 'cuantil' ? `${r.discreta ? 'k' : 'a'} = ${num(r.x)}` : r.tipo === 'critico' ? (r.c1 !== undefined ? `c₁ = ${num(r.c1)}, c₂ = ${num(r.c)}` : `c = ±${num(r.c)}`) : r.tipo === 'criticoU' ? `c = ${num(r.c)}` : `P = ${prob(r.p)}`;
+    r.pct = ['cuantil', 'critico', 'criticoU', 'inverso'].includes(r.tipo) ? '' : `${num(100 * r.p, 4, 0)} %`;
     return r;
   }
 
   const ejemplos = [
     { clave: 'normal-menor', nombre: 'Normal: P(X ≤ 52) con N(50, 5)', sc: { dist: 'normal', mu: '50', sigma: '5', tipo: 'menor', a: '52' } },
     { clave: 'normal-entre', nombre: 'Normal: P(μ − σ ≤ X ≤ μ + σ)', sc: { dist: 'normal', mu: '0', sigma: '1', tipo: 'entre', a: '-1', b: '1' } },
+    { clave: 'normal-centro', nombre: 'Normal: cociente intelectual a menos de 15 puntos de la media', sc: { dist: 'normal', mu: '100', sigma: '15', tipo: 'centro', cc: '15' } },
     { clave: 'normal-cuantil', nombre: 'Normal: nota que supera el 90 %', sc: { dist: 'normal', mu: '6', sigma: '1.5', tipo: 'cuantil', q: '0.9' } },
+    { clave: 'normal-inverso', nombre: 'Normal: qué σ hace que solo el 5 % pase de 80', sc: { dist: 'normal', mu: '70', sigma: '5', tipo: 'inverso', incog: 'sigma', cola: 'mayor', a: '80', q: '0.05' } },
     { clave: 'z-critico', nombre: 'Valor crítico z para α = 0,05', sc: { dist: 'normal', mu: '0', sigma: '1', tipo: 'critico', alfa: '0.05' } },
+    { clave: 'z-unilateral', nombre: 'Valor crítico unilateral z para α = 0,05', sc: { dist: 'normal', mu: '0', sigma: '1', tipo: 'criticoU', alfa: '0.05' } },
     { clave: 't-critico', nombre: 't de Student: valor crítico con 10 g. l.', sc: { dist: 't', nu: '10', tipo: 'critico', alfa: '0.05' } },
     { clave: 'chi2', nombre: 'χ² con 5 g. l.: P(χ² ≥ 11,07)', sc: { dist: 'chi2', k: '5', tipo: 'mayor', a: '11.07' } },
+    { clave: 'chi2-critico', nombre: 'χ² con 10 g. l.: los dos valores críticos', sc: { dist: 'chi2', k: '10', tipo: 'critico', alfa: '0.05' } },
+    { clave: 'f-critico', nombre: 'F de Snedecor: valor crítico F(5, 10)', sc: { dist: 'f', d1: '5', d2: '10', tipo: 'criticoU', alfa: '0.05' } },
     { clave: 'exponencial', nombre: 'Exponencial: dura más de 3 horas', sc: { dist: 'exponencial', lambda: '0.5', tipo: 'mayor', a: '3' } },
+    { clave: 'uniforme', nombre: 'Uniforme: esperar más de 7 minutos entre 0 y 10', sc: { dist: 'uniforme', lo: '0', hi: '10', tipo: 'mayor', a: '7' } },
     { clave: 'binomial-igual', nombre: 'Binomial: 3 caras en 10 lanzamientos', sc: { dist: 'binomial', n: '10', p: '0.5', tipo: 'igual', a: '3' } },
     { clave: 'binomial-menor', nombre: 'Binomial: como mucho 2 defectuosas', sc: { dist: 'binomial', n: '20', p: '0.05', tipo: 'menor', a: '2' } },
     { clave: 'binomial-normal', nombre: 'Binomial grande y su aproximación normal', sc: { dist: 'binomial', n: '100', p: '0.3', tipo: 'entre', a: '25', b: '35' } },
+    { clave: 'binomial-poisson', nombre: 'Binomial con p pequeña y su aproximación de Poisson', sc: { dist: 'binomial', n: '200', p: '0.02', tipo: 'menor', a: '3' } },
     { clave: 'poisson', nombre: 'Poisson: al menos 2 llamadas', sc: { dist: 'poisson', lambda: '3', tipo: 'mayor', a: '2' } },
+    { clave: 'poisson-normal', nombre: 'Poisson con λ grande y su aproximación normal', sc: { dist: 'poisson', lambda: '25', tipo: 'entre', a: '20', b: '30' } },
+    { clave: 'geometrica', nombre: 'Geométrica: 3 fallos antes del primer acierto', sc: { dist: 'geometrica', p: '0.2', tipo: 'igual', a: '3' } },
+    { clave: 'hipergeometrica', nombre: 'Hipergeométrica: 2 defectuosas al sacar 4 de 20', sc: { dist: 'hipergeometrica', N: '20', K: '5', n: '4', tipo: 'igual', a: '2' } },
   ];
 
-  return { DIST, tipos, calcular, ejemplos, Phi, gammaP, betaI, lnGamma, num, prob, cuantil };
+  /* ---------- Ejercicios al azar (modo práctica) ---------- */
+  // devuelve { sc, enunciado } con números de clase; r = generador de números al azar
+  function ejercicio(r = Math.random) {
+    const ent = (a, b) => a + Math.floor(r() * (b - a + 1)), de = (l) => l[ent(0, l.length - 1)], c = (x) => String(+x.toFixed(3)).replace('.', ',');
+    const T = [
+      () => { const mu = ent(5, 7), s = de([1, 1.5, 2]), a = c(mu + de([-1.5, -1, -0.5, 0.5, 1, 1.5, 2])); return { sc: { dist: 'normal', mu: String(mu), sigma: c(s), tipo: 'menor', a }, enunciado: `Las notas de un examen siguen una normal de media ${mu} y desviación típica ${c(s)}. ¿Qué proporción de alumnos saca menos de ${a}?` }; },
+      () => { const mu = ent(20, 60) * 10, s = ent(2, 6) * 5, a = String(mu + ent(1, 4) * 5); return { sc: { dist: 'normal', mu: String(mu), sigma: String(s), tipo: 'mayor', a }, enunciado: `El peso de unas piezas sigue una normal de media ${mu} g y desviación típica ${s} g. ¿Qué probabilidad hay de que una pieza pese más de ${a} g?` }; },
+      () => { const mu = ent(160, 180), s = ent(5, 10), a = mu - ent(2, 10), b = mu + ent(2, 10); return { sc: { dist: 'normal', mu: String(mu), sigma: String(s), tipo: 'entre', a: String(a), b: String(b) }, enunciado: `La estatura de los alumnos sigue una normal N(${mu}, ${s}) en cm. ¿Qué porcentaje mide entre ${a} y ${b} cm?` }; },
+      () => { const mu = ent(5, 7), s = de([1, 1.5, 2]), q = de([0.8, 0.9, 0.95]); return { sc: { dist: 'normal', mu: String(mu), sigma: c(s), tipo: 'cuantil', q: c(q) }, enunciado: `Las notas siguen una normal N(${mu}; ${c(s)}). ¿Qué nota hay que sacar para estar por encima del ${Math.round(100 * q)} % de la clase?` }; },
+      () => { const mu = ent(50, 100) * 10, a = mu + ent(2, 6) * 5, q = de([0.01, 0.02, 0.05]); return { sc: { dist: 'normal', mu: String(mu), sigma: '10', tipo: 'inverso', incog: 'sigma', cola: 'mayor', a: String(a), q: c(q) }, enunciado: `Una máquina llena botellas con una media de ${mu} ml. ¿Qué desviación típica puede tener como mucho para que solo el ${Math.round(100 * q)} % de las botellas pase de ${a} ml?` }; },
+      () => { const p = de([0.05, 0.1, 0.2, 0.25, 0.3]), n = ent(8, 20), k = ent(0, Math.min(4, n)); return { sc: { dist: 'binomial', n: String(n), p: c(p), tipo: 'igual', a: String(k) }, enunciado: `El ${Math.round(100 * p)} % de las piezas de una fábrica es defectuoso. Si se eligen ${n} piezas al azar, ¿qué probabilidad hay de que exactamente ${k} sean defectuosas?` }; },
+      () => { const p = de([0.05, 0.1, 0.2]), n = ent(10, 25), k = ent(1, 3); return { sc: { dist: 'binomial', n: String(n), p: c(p), tipo: 'menor', a: String(k) }, enunciado: `Un examen tipo test tiene ${n} preguntas y la probabilidad de acertar una al azar es ${c(p)}. ¿Qué probabilidad hay de acertar como mucho ${k}?` }; },
+      () => { const l = ent(2, 8), k = ent(1, 4); return { sc: { dist: 'poisson', lambda: String(l), tipo: 'mayor', a: String(k) }, enunciado: `A una centralita llegan de media ${l} llamadas por minuto (Poisson). ¿Qué probabilidad hay de que en un minuto lleguen al menos ${k}?` }; },
+      () => { const m = ent(2, 10), t = ent(1, 12); return { sc: { dist: 'exponencial', lambda: c(1 / m), tipo: 'mayor', a: String(t) }, enunciado: `La duración de una bombilla sigue una exponencial con media ${m} años (λ = 1/${m}). ¿Qué probabilidad hay de que dure más de ${t} años?` }; },
+      () => { const nu = ent(5, 30), a = de([0.01, 0.05, 0.1]); return { sc: { dist: 't', nu: String(nu), tipo: 'critico', alfa: c(a) }, enunciado: `Halla el valor crítico bilateral de la t de Student con ${nu} grados de libertad para α = ${c(a)}.` }; },
+      () => { const k = ent(3, 20), a = de([0.01, 0.05, 0.1]); return { sc: { dist: 'chi2', k: String(k), tipo: 'criticoU', alfa: c(a) }, enunciado: `Halla el valor de la χ² con ${k} grados de libertad que deja ${c(a)} a su derecha.` }; },
+      () => { const N = ent(15, 30), K = ent(3, 8), n = ent(3, 6), k = ent(0, Math.min(2, K)); return { sc: { dist: 'hipergeometrica', N: String(N), K: String(K), n: String(n), tipo: 'igual', a: String(k) }, enunciado: `En una caja hay ${N} bombillas y ${K} están fundidas. Se sacan ${n} sin devolverlas. ¿Qué probabilidad hay de sacar exactamente ${k} fundidas?` }; },
+    ];
+    return de(T)();
+  }
+
+  return { DIST, tipos, calcular, ejemplos, ejercicio, Phi, gammaP, gammaQ, betaI, lnGamma, num, prob, cuantil, fCdf };
 })();
 
 /* =====================================================================
    Distribuciones de probabilidad: interfaz (distribución, parámetros,
-   tipo de cálculo, gráfica con el área sombreada y desarrollo).
+   tipo de cálculo, gráfica con el área sombreada que se puede arrastrar,
+   desarrollo con la tabla de valores y ejercicios para el modo práctica).
    El cálculo está en estadistica/calculo.js (Estadistica).
    ===================================================================== */
 (() => {
   const { $, esc, copia } = Herramienta;
   const E = Estadistica, num = E.num, CLAVE = 'estadistica-v1';
-  const DEF = { mu: '0', sigma: '1', nu: '10', k: '5', lambda: '2', n: '10', p: '0.5', q: '0.5', a: '1', b: '2', alfa: '0.05' };
+  const DEF = { mu: '0', sigma: '1', nu: '10', k: '5', d1: '5', d2: '10', lambda: '2', lo: '0', hi: '10', n: '10', p: '0.5', N: '50', K: '10', q: '0.5', a: '1', b: '2', cc: '1', alfa: '0.05', incog: 'mu', cola: 'menor' };
 
   let sc = copia(E.ejemplos[0].sc);
   try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && E.DIST[g.dist]) sc = g; } catch (e) {}
   const guarda = () => { try { localStorage.setItem(CLAVE, JSON.stringify(sc)); } catch (e) {} };
-  let sol = null, col = {};
+  let sol = null, col = {}, vista = null, arrastra = null, enun = '';
 
   /* ---------- Formulario ---------- */
   const fila = (k, nom) => (sc[k] === undefined && DEF[k] !== undefined && (sc[k] = DEF[k]), `<label for="f-${k}">${nom}</label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc[k] ?? DEF[k] ?? '')}" inputmode="decimal" autocomplete="off">`);
+  const opciones = (k, nom, ops) => (sc[k] = ops.some(([v]) => v === sc[k]) ? sc[k] : ops[0][0], `<label for="f-${k}">${nom}</label><select id="f-${k}" class="in" data-k="${k}">${ops.map(([v, t]) => `<option value="${v}"${v === sc[k] ? ' selected' : ''}>${t}</option>`).join('')}</select>`);
   function formulario() {
     const D = E.DIST[sc.dist], tipos = E.tipos(sc.dist);
     if (!tipos.some(([k]) => k === sc.tipo)) sc.tipo = tipos[0][0];
     let h = `<label for="f-dist">Distribución</label><select id="f-dist" class="in" data-k="dist">${Object.entries(E.DIST).map(([k, d]) => `<option value="${k}"${k === sc.dist ? ' selected' : ''}>${d.nombre}</option>`).join('')}</select>`;
-    h += D.params.map(([k, nom]) => fila(k, nom)).join('');
+    const incog = sc.tipo === 'inverso' ? (sc.incog === 'sigma' ? 'sigma' : 'mu') : null;
+    h += D.params.filter(([k]) => k !== incog).map(([k, nom]) => fila(k, nom)).join('');
     h += `<label for="f-tipo">Qué calcular</label><select id="f-tipo" class="in" data-k="tipo">${tipos.map(([k, t]) => `<option value="${k}"${k === sc.tipo ? ' selected' : ''}>${t.replace('X', D.nombreX)}</option>`).join('')}</select>`;
     const t = sc.tipo;
     if (t === 'cuantil') h += fila('q', 'Probabilidad p');
-    else if (t === 'critico') h += fila('alfa', 'Nivel de significación α');
+    else if (t === 'critico' || t === 'criticoU') h += fila('alfa', 'Nivel de significación α');
+    else if (t === 'centro') h += fila('cc', 'Distancia c a la media');
+    else if (t === 'inverso') h += opciones('incog', 'Incógnita', [['mu', 'La media μ'], ['sigma', 'La desviación típica σ']]) + opciones('cola', 'Se sabe que', [['menor', 'P(X ≤ a) = p'], ['mayor', 'P(X ≥ a) = p']]) + fila('a', 'Valor a') + fila('q', 'Probabilidad p');
     else if (t === 'entre') h += fila('a', 'Valor a') + fila('b', 'Valor b');
     else h += fila('a', D.continua ? 'Valor a' : 'Valor k');
     $('#campos').innerHTML = h;
@@ -1012,6 +1191,9 @@ const Estadistica = (() => {
     sc = { ...sc, ...copia(e.sc) };
     formulario(); calcula(); sel.value = clave;
   }
+  // un ejercicio con enunciado para el modo práctica
+  function azar() { const e = E.ejercicio(); sc = { ...sc, ...e.sc }; enun = e.enunciado; formulario(); calcula(); sel.value = ''; }
+  const enunciado = () => esc(enun);
 
   /* ---------- Cálculo ---------- */
   function calcula() {
@@ -1022,6 +1204,14 @@ const Estadistica = (() => {
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('');
     dibuja();
   }
+  // copiar la tabla de valores (separada por tabuladores, para pegarla en una hoja de cálculo)
+  $('#pasos').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-copiar]');
+    if (!b) return;
+    const t = [...b.previousElementSibling.querySelectorAll('tr')].map((tr) => [...tr.children].map((c) => c.textContent).join('\t')).join('\n');
+    const ok = () => { b.textContent = 'Copiada ✓'; setTimeout(() => { b.textContent = 'Copiar la tabla'; }, 1500); };
+    try { navigator.clipboard.writeText(t).then(ok, () => { b.textContent = 'No se ha podido copiar'; }); } catch (err) { b.textContent = 'No se ha podido copiar'; }
+  });
 
   /* ---------- Gráfica ---------- */
   function colores() { const cs = getComputedStyle(document.documentElement); for (const k of ['--ink', '--muted', '--line', '--accent', '--area', '--curva']) col[k] = cs.getPropertyValue(k).trim(); }
@@ -1029,6 +1219,7 @@ const Estadistica = (() => {
     const c = $('#grafica'), dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
     if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
     const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
+    vista = null;
     if (!sol) return;
     colores();
     const D = E.DIST[sol.dist], P = sol.P, m = { l: 14, r: 14, t: 14, b: 30 };
@@ -1038,6 +1229,7 @@ const Estadistica = (() => {
     for (const v of [s0, s1, sol.x]) if (isFinite(v)) { x0 = Math.min(x0, v - (x1 - x0) * 0.05); x1 = Math.max(x1, v + (x1 - x0) * 0.05); }
     if (!D.continua) { x0 = Math.max(Math.floor(x0), D.rango(P)[0] - 1, 0) - 0.7; x1 = Math.ceil(x1) + 0.7; }
     const X = (x) => m.l + ((x - x0) / (x1 - x0)) * (w - m.l - m.r);
+    vista = { x0, x1, m, w, continua: D.continua };
     const dentro = (x) => x >= s0 - 1e-9 && x <= s1 + 1e-9, critico = sol.tipo === 'critico';
     let ymax = 0;
     g.font = '12px "IBM Plex Sans", system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'top';
@@ -1069,14 +1261,36 @@ const Estadistica = (() => {
     for (const v of marcas) { g.beginPath(); g.moveTo(X(v), h - m.b); g.lineTo(X(v), h - m.b + 5); g.stroke(); g.fillStyle = col['--ink']; g.fillText(num(v, 4).replace(/<[^>]+>/g, ''), X(v), h - m.b + 8); }
     if (D.continua && isFinite(sol.media) && !marcas.some((v) => Math.abs(X(v) - X(sol.media)) < 40)) { g.fillStyle = col['--muted']; g.fillText(`media ${num(sol.media, 4).replace(/<[^>]+>/g, '')}`, X(sol.media), h - m.b + 8); }
     g.textAlign = 'left'; g.fillStyle = col['--accent']; g.font = '600 13px "IBM Plex Sans", system-ui, sans-serif';
-    if (sol.tipo !== 'cuantil') g.fillText(critico ? `α = ${num(sol.alfa)} (α/2 en cada cola)` : `P = ${E.prob(sol.p)}`, m.l + 4, m.t);
+    if (sol.tipo !== 'cuantil') g.fillText(critico ? `α = ${num(sol.alfa)} (α/2 en cada cola)` : sol.tipo === 'criticoU' ? `α = ${num(sol.alfa)} en la cola derecha` : `P = ${E.prob(sol.p)}`, m.l + 4, m.t);
   }
+
+  /* ---------- Arrastrar a, b o c sobre la gráfica ---------- */
+  const lienzo = $('#grafica'), ARRASTRA = ['menor', 'mayor', 'menorE', 'mayorE', 'igual', 'entre', 'centro', 'inverso'];
+  const enX = (e) => { const r = lienzo.getBoundingClientRect(), { x0, x1, m, w } = vista; return x0 + ((e.clientX - r.left - m.l) / (w - m.l - m.r)) * (x1 - x0); };
+  function mueve(e) {
+    if (!vista || !sol) return;
+    let x = enX(e);
+    if (arrastra === 'cc') x = Math.abs(x - sol.media);
+    if (sol.tipo === 'entre') x = arrastra === 'a' ? Math.min(x, sol.b) : Math.max(x, sol.a);
+    const paso = vista.continua ? 10 ** Math.floor(Math.log10((vista.x1 - vista.x0) / 100)) : 1, v = Math.round(x / paso) * paso;
+    sc[arrastra] = String(+v.toFixed(Math.max(0, -Math.floor(Math.log10(paso)))));
+    const inp = $(`#f-${arrastra}`); if (inp) inp.value = sc[arrastra];
+    $('#ejemplos').value = ''; calcula();
+  }
+  lienzo.addEventListener('pointerdown', (e) => {
+    if (!sol || !vista || !ARRASTRA.includes(sol.tipo)) return;
+    const x = enX(e);
+    arrastra = sol.tipo === 'centro' ? 'cc' : sol.tipo === 'entre' && Math.abs(x - sol.b) < Math.abs(x - sol.a) ? 'b' : 'a';
+    lienzo.setPointerCapture(e.pointerId); mueve(e);
+  });
+  lienzo.addEventListener('pointermove', (e) => { if (arrastra) mueve(e); });
+  for (const ev of ['pointerup', 'pointercancel']) lienzo.addEventListener(ev, () => { arrastra = null; });
   window.addEventListener('resize', dibuja);
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', dibuja);
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('estadistica').current;
   formulario(); calcula();
-  window.EstadisticaApp = { abrirEjemplo, resultado: () => sol && { p: sol.p, res: sol.res, x: sol.x, c: sol.c }, estado: () => copia(sc) };
+  window.EstadisticaApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { p: sol.p, res: sol.res, x: sol.x, c: sol.c }, estado: () => copia(sc) };
 })();
 
 /* =====================================================================
@@ -1402,7 +1616,8 @@ const Practica = (() => {
     derivadas: { datos: null, items: '#resumen > div.num', genera: () => window.DerivadasApp?.azar(), enunciado: () => window.DerivadasApp?.enunciado() },
     complejos: { datos: null, genera: () => window.ComplejosApp?.azar(), enunciado: () => window.ComplejosApp?.enunciado() },
     sistemas: { items: '#res', valido: () => !/[λμ]|incompatible|no tiene/i.test(document.querySelector('#res')?.textContent + document.querySelector('#tipo')?.textContent) },
-    estadistica: { items: '#res' },
+    // distribuciones: un ejercicio con enunciado (normal, binomial, Poisson, valores críticos…)
+    estadistica: { datos: null, items: '#res', genera: () => window.EstadisticaApp?.azar(), enunciado: () => window.EstadisticaApp?.enunciado() },
     // regresión: una tabla de datos al azar alrededor de una recta (están en un textarea, no en campos numéricos)
     regresion: { datos: null, genera: () => window.RegresionApp?.azar(), enunciado: () => 'Con los datos de la tabla, calcula la recta de regresión de Y sobre X, la de X sobre Y, el coeficiente de correlación, las medias, la covarianza y la estimación de y que se pide.' },
     // resistencias: unos colores al azar (no hay números que cambiar en los datos)
