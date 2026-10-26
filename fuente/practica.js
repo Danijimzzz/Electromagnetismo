@@ -40,6 +40,8 @@ const Practica = (() => {
     intervalos: { datos: null, items: '#res > div', genera: () => window.IntervalosApp?.azar(), enunciado: () => window.IntervalosApp?.enunciado() },
     // ondasem: una onda plana, una intensidad o un medio con pérdidas
     'ondas-em': { datos: null, items: '#res > div', genera: () => window.OndasEMApp?.azar(), enunciado: () => window.OndasEMApp?.enunciado() },
+    // trabajo y energía: una rampa con muelle, un rizo, un péndulo, una montaña rusa o una fuerza variable
+    'trabajo-y-energia': { datos: null, items: '#resumen > div', genera: () => window.EnergiaApp?.azar(), enunciado: () => window.EnergiaApp?.enunciado() },
     // dinamica: un bloque en un plano, dos bloques, Atwood, una curva, un péndulo cónico o un muelle
     dinamica: { datos: null, items: '#res > div', genera: () => window.DinamicaApp?.azar(), enunciado: () => window.DinamicaApp?.enunciado() },
     // interferencia: Young, una rendija, una red o una lámina delgada

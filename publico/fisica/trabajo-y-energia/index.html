@@ -191,7 +191,8 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 .barra .tubo { width: 100%; max-width: 70px; height: 140px; background: var(--bg); border-radius: 6px; position: relative; overflow: hidden }
 .barra .tubo i { position: absolute; left: 0; right: 0; bottom: 0; border-radius: 6px 6px 0 0; transition: none }
 .barra b { font: 500 12.5px var(--f-mono) } .barra span { color: var(--muted) }
-.pasos { margin-top: 16px }  
+.pasos { margin-top: 16px }
+.campos .ancho-texto { font-family: var(--f-mono); font-size: 13px }  
 
 
 </style>
@@ -199,19 +200,21 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 <header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><nav aria-label="Asignaturas"><a href="../../">Inicio</a><a href="../../electromagnetismo/">Electromagnetismo</a><a href="../../fisica/" aria-current="page">Física general</a><a href="../../quimica/">Química</a><a href="../../matematicas/">Matemáticas</a><a href="../../estadistica/">Estadística</a><a href="../../circuitos/">Circuitos</a><a href="../../economia/">Economía</a></nav><a class="foro" href="../../foro/"><span aria-hidden="true">💬</span>Foro</a><form action="../../" role="search"><input class="buscar" type="search" name="q" placeholder="Buscar: Biot-Savart, molaridad…" aria-label="Buscar herramientas"></form><button class="tema" type="button" title="Cambiar de modo claro u oscuro" aria-label="Cambiar de modo claro u oscuro"><svg class="luna" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11z"/></svg><svg class="sol" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button></header>
 <div class="wrap">
 <nav class="miga" aria-label="Estás en"><span class="miga-izq"></span><span class="miga-ico" aria-hidden="true">F</span><a href="../">Física general</a><span aria-hidden="true">›</span><span>Trabajo y energía</span><span class="miga-der"></span></nav>
-<h1>Trabajo y energía: rampa, rozamiento y muelle</h1>
-<p class="lead">Un bloque baja por una rampa, recorre un tramo horizontal y choca con un muelle. Cambia los datos y mira cómo la energía potencial se convierte en cinética, en elástica y en calor por el rozamiento. Abajo tienes el desarrollo paso a paso.</p>
+<h1>Trabajo y energía</h1>
+<p class="lead">Un bloque que baja por una rampa con rozamiento y choca con un muelle, un rizo, un péndulo, una montaña rusa y el trabajo de una fuerza variable. Mira cómo la energía potencial se convierte en cinética, en elástica y en calor, con el desarrollo paso a paso.</p>
 <div class="layout">
   <div class="card">
     <h2>Datos</h2>
+    <div class="modos" id="modos" role="tablist" aria-label="Problema"></div>
     <div class="btns" style="margin-bottom:12px"><select id="ejemplos" class="in" aria-label="Ejemplos"></select></div>
     <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
     <p class="error" id="error" hidden></p>
   </div>
   <div>
     <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
     <div class="card escena">
-      <canvas id="lienzo" aria-label="Animación del bloque"></canvas>
+      <canvas id="lienzo" aria-label="Animación del movimiento"></canvas>
       <div class="controles">
         <button class="btn pri" id="play" type="button">▶ Reproducir</button>
         <button class="btn" id="reinicio" type="button">↺</button>
@@ -233,6 +236,10 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
   <p class="m">En la rampa la normal es $N = m g cos θ$, y el recorrido es $L = h/{sen θ}$, así que $W_roz = −{μ m g h}/{tg θ}$. En el tramo horizontal $N = m g$. El trabajo del rozamiento se convierte en calor: la barra gris de la animación.</p>
   <h2>Muelle</h2>
   <p class="m">Un muelle comprimido una distancia x guarda $E_e = 1/2 k x^2$. Si también hay rozamiento bajo el muelle, la compresión máxima sale de $1/2 m v_C^2 = 1/2 k x^2 + μ m g x$. Después el muelle devuelve el bloque si su fuerza $k x$ supera el rozamiento estático.</p>
+  <h2>Rizo y péndulo</h2>
+  <p class="m">En lo alto de un rizo de radio R el peso y la normal apuntan al centro: $m g + N = m v^2/R$. Como N no puede ser negativa, hace falta $v^2 ≥ g R$ arriba, y sin rozamiento eso pide salir desde $h ≥ 5R/2$. Si no llega, se despega donde N se anula y cae como un proyectil. Un péndulo es lo mismo con la tensión del hilo en lugar de la normal: $T = m (v^2/L + g cos θ)$.</p>
+  <h2>Trabajo de una fuerza variable y potencia</h2>
+  <p class="m">Si la fuerza cambia con la posición, el trabajo es el área bajo la gráfica F(x): $W = ∫ F dx$. Si es la única que trabaja, $W = ΔE_c$. La potencia es el trabajo por unidad de tiempo: media $P_m = W/t$ e instantánea $P = F v$.</p>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Trabajo y energía <span id="ver"></span> (beta)</footer>
@@ -324,6 +331,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: cada elemento tiene su ficha con la masa atómica y molar, el grupo, el periodo, el bloque, la configuración electrónica (abreviada, completa y por capas), la electronegatividad, la energía de ionización, el radio y el estado.', 'La tabla se puede colorear por categoría, electronegatividad, energía de ionización, radio, masa, bloque o estado, y tiene un buscador por nombre, símbolo o número atómico.'] },
     ],
     'trabajo-y-energia': [
+      { v: '0.2', fecha: '2026-10-26', cambios: ['Nuevos problemas: rizo (altura mínima para dar la vuelta, velocidad y normal arriba, o dónde se despega), péndulo (velocidad y tensión en cada ángulo, si da la vuelta o se afloja el hilo), montaña rusa sin rozamiento por varios puntos y trabajo de una fuerza variable con la gráfica F(x), su área y la potencia.', 'En la rampa, los problemas al revés: altura mínima para llegar al muelle, rozamiento del llano para que se pare justo antes y constante del muelle para una compresión dada.', 'Modo práctica con enunciado escrito para cada tipo de problema.'] },
       { v: '0.1.3', fecha: '2026-10-25', cambios: ['Arreglo: en el móvil, las fórmulas largas del desarrollo se cortaban por la derecha; ahora bajan de línea en cada igual.'] },
       { v: '0.1.2', fecha: '2026-10-24', cambios: ['Las fórmulas del desarrollo y de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Los resultados salen arriba, en una tarjeta destacada, y la lectura de t y v tiene ancho fijo: ya no mueve la barra de tiempo al reproducir.'] },
@@ -707,8 +715,14 @@ const Mates = (() => {
 })();
 
 /* =====================================================================
-   Trabajo y energía (sin DOM): un bloque que baja por una rampa, recorre un
-   tramo horizontal y comprime un muelle, con rozamiento en cada tramo.
+   Trabajo y energía (sin DOM). Cinco modos (sc.modo):
+   - rampa: un bloque que baja por una rampa, recorre un tramo horizontal y
+     comprime un muelle, con rozamiento en cada tramo, y los problemas al
+     revés (altura mínima, μ para que se pare, k para una compresión dada).
+   - rizo: bola o carrito que baja y entra en un rizo (loop) sin rozamiento.
+   - pendulo: péndulo simple, velocidad y tensión en cada ángulo.
+   - montana: montaña rusa sin rozamiento por varios puntos de altura dada.
+   - fuerza: trabajo de una fuerza variable con la gráfica F(x) y potencia.
    Resultados analíticos con el desarrollo paso a paso y una simulación en el
    tiempo para la animación y las barras de energía. Unidades del SI.
    ===================================================================== */
@@ -737,7 +751,7 @@ const Energia = (() => {
   }
 
   /* ---------- Solución analítica con el desarrollo ---------- */
-  function resolver(sc) {
+  function rampaDirecta(sc) {
     const p = leer(sc), { m, g, h, ang, mu1, d, mu2, k, v0, L } = p;
     const pasos = [], res = {};
     const Ei = 0.5 * m * v0 * v0 + m * g * h;
@@ -851,6 +865,233 @@ const Energia = (() => {
     return { p, puntos: out, E0: out[0].K + out[0].Ug };
   }
 
+  /* ---------- Rampa: los problemas al revés ---------- */
+  function rampa(sc) {
+    const r = rampaDirecta(sc), { m, g, h, ang, mu1, d, mu2, k, v0 } = r.p, th = rad(ang);
+    const num = (x) => +String(x ?? '').trim().replace(',', '.');
+    // altura mínima para llegar al muelle: v0² + 2gh(1 − μ1/tg θ) − 2 μ2 g d = 0
+    const fac = 1 - mu1 / Math.tan(th);
+    if (fac > 1e-12) {
+      const hmin = Math.max(0, (2 * mu2 * g * d - v0 * v0) / (2 * g * fac));
+      r.res.hmin = hmin;
+      r.pasos.push({ t: 'Al revés: altura mínima para llegar al muelle', html: `Llega justo con $v_C = 0$: $v_0^2 + 2 g h (1 − μ_1/{tg θ}) − 2 μ_2 g d = 0 ⇒ h_{mín} = {2 μ_2 g d − v_0^2}/{2 g (1 − μ_1/{tg θ})}$ = <b>${f(hmin)} m</b>` });
+    }
+    if (r.res.vB !== undefined && d > 0) {
+      const mu = (r.res.vB * r.res.vB) / (2 * g * d);
+      r.res.mu2Para = mu;
+      r.pasos.push({ t: 'Al revés: rozamiento del llano para que se pare justo al llegar al muelle', html: `$1/2 m v_B^2 = μ_2 m g d ⇒ μ_2 = v_B^2/(2 g d) = ${f(r.res.vB)}^2/(2 · ${f(g)} · ${f(d)})$ = <b>${f(mu)}</b>` });
+    }
+    const xo = num(sc.xobj);
+    if (isFinite(xo) && xo > 0 && r.res.vC !== undefined) {
+      const kn = (m * r.res.vC * r.res.vC - 2 * mu2 * m * g * xo) / (xo * xo);
+      r.res.kPara = kn;
+      r.pasos.push({ t: `Al revés: muelle para que se comprima ${f(xo)} m`, html: kn > 0 ? `$1/2 k x^2 + μ_2 m g x = 1/2 m v_C^2 ⇒ k = {m v_C^2 − 2 μ_2 m g x}/{x^2}$ = <b>${f(kn)} N/m</b>` : `Con ese rozamiento el bloque se para antes de comprimirlo ${f(xo)} m, haga lo que haga el muelle.` });
+    }
+    return r;
+  }
+
+  /* ---------- Movimiento por un camino sin rozamiento (rizo, montaña rusa) ---------- */
+  // camino: { S, at(s) → { x, y, ang } } con ang la pendiente (positiva subiendo); a lo largo, a = −g sen(ang).
+  // La velocidad se corrige con la energía en cada paso; suelta(s, v) dice si se despega (rizo).
+  function porCamino(camino, { m, g, v0, tmax = 20, suelta }) {
+    const E = 0.5 * m * v0 * v0 + m * g * camino.at(0).y, out = [];
+    let s = 0, v = v0, t = 0, siguiente = 0, libre = null;
+    const dt = 1 / 1200;
+    const pon = (x, y, vv) => out.push({ t, s, v: vv, x: 0, px: x, py: y, K: 0.5 * m * vv * vv, Ug: m * g * y, Ue: 0, Q: 0 });
+    while (t < tmax) {
+      if (libre) {
+        // tiro parabólico después de despegarse
+        libre.vy -= g * dt; libre.x += libre.vx * dt; libre.y += libre.vy * dt; t += dt;
+        const vv = Math.hypot(libre.vx, libre.vy);
+        if (t >= siguiente) { pon(libre.x, libre.y, vv); siguiente += 1 / 60; }
+        if (libre.choca(libre)) { pon(libre.x, libre.y, vv); break; }
+        continue;
+      }
+      const a = (q) => -g * Math.sin(camino.at(q).ang);
+      const v1 = v + a(s) * dt, s1 = s + 0.5 * (v + v1) * dt;
+      s = Math.min(Math.max(s1, 0), camino.S);
+      const y = camino.at(s).y, v2 = Math.sqrt(Math.max(0, (2 * (E - m * g * y)) / m));
+      v = Math.sign(v1 || 1) * v2; t += dt;
+      const q = camino.at(s);
+      if (t >= siguiente) { pon(q.x, q.y, Math.abs(v)); siguiente += 1 / 60; }
+      if (s >= camino.S || (s <= 0 && v < 0)) { pon(q.x, q.y, Math.abs(v)); break; }
+      if (suelta) { const o = suelta(s, v); if (o) { libre = { ...o }; } }
+    }
+    return { puntos: out, E0: E };
+  }
+
+  /* ---------- Rizo ---------- */
+  // sc: { m, h (altura de salida sobre el fondo del rizo), R, v0, g }
+  function rizo(sc) {
+    const n = (k, nom, { min = 0, estricto = true } = {}) => { const v = +String(sc[k] ?? '').trim().replace(',', '.'); if (!isFinite(v) || (estricto ? v <= min : v < min)) throw new Error(`${nom} debe ser ${estricto ? 'mayor que' : 'al menos'} ${min}`); return v; };
+    const m = n('m', 'La masa'), g = n('g', 'La gravedad'), h = n('h', 'La altura', { estricto: false }), R = n('R', 'El radio del rizo'), v0 = String(sc.v0 ?? '').trim() === '' ? 0 : n('v0', 'La velocidad inicial', { estricto: false });
+    const pasos = [], res = {};
+    const E = 0.5 * v0 * v0 + g * h; // energía por unidad de masa, con el fondo del rizo como cero
+    res.vAbajo = Math.sqrt(2 * E);
+    pasos.push({ t: 'Abajo, al entrar en el rizo', html: `Sin rozamiento se conserva la energía: $1/2 m v_0^2 + m g h = 1/2 m v_A^2 ⇒ v_A = √(v_0^2 + 2 g h) = √(${f(v0)}^2 + 2 · ${f(g)} · ${f(h)})$ = <b>${f(res.vAbajo)} m/s</b>` });
+    const hmin = Math.max(0, 2.5 * R - (v0 * v0) / (2 * g));
+    res.hmin = hmin;
+    pasos.push({ t: 'Altura mínima para dar la vuelta', html: `Arriba (altura 2R) la normal no puede ser negativa: $m g + N = m v^2/R$ con $N ≥ 0 ⇒ v_{arriba}^2 ≥ g R$. Con la energía: $v_0^2 + 2 g h − 4 g R ≥ g R ⇒ h ≥ 5R/2 − v_0^2/(2g)$ = <b>${f(hmin)} m</b>` });
+    const vt2 = 2 * E - 4 * g * R;
+    if (vt2 >= g * R - 1e-9) {
+      res.completa = true; res.vArriba = Math.sqrt(vt2); res.Narriba = m * (vt2 / R - g); res.Nabajo = m * (2 * E / R + g);
+      pasos.push({ t: 'Arriba del todo', html: `$v_B = √(v_A^2 − 4 g R)$ = <b>${f(res.vArriba)} m/s</b>, &ensp; $N_B = m (v_B^2/R − g)$ = <b>${f(res.Narriba)} N</b> (hacia abajo, hacia el centro): <b>da la vuelta</b>.<br>Abajo, $N_A = m (v_A^2/R + g)$ = ${f(res.Nabajo)} N: ${f(res.Nabajo / (m * g))} veces su peso.` });
+    } else if (E <= g * R) {
+      res.completa = false; res.ymax = E / g;
+      pasos.push({ t: 'No pasa de la mitad', html: `Solo sube hasta $y = v_A^2/(2g)$ = <b>${f(res.ymax)} m</b> ≤ R: ahí se para, siempre apoyado (la normal no se anula por debajo del centro), y vuelve a bajar.` });
+    } else {
+      // se despega donde N = 0: cos φ = (2gR − v_A²)/(3gR), con φ desde el fondo
+      const c = (2 * g * R - 2 * E) / (3 * g * R), y = R * (1 - c), vd = Math.sqrt(2 * E - 2 * g * y);
+      res.completa = false; res.ydesp = y; res.vdesp = vd; res.angDesp = (Math.acos(c) * 180) / Math.PI;
+      pasos.push({ t: 'Se despega antes de llegar arriba', html: `A un ángulo φ desde el fondo: $N = m v^2/R + m g cos φ$ con $v^2 = v_A^2 − 2 g R (1 − cos φ)$. Se anula cuando $cos φ = {2 g R − v_A^2}/{3 g R} = ${f(c)}$ ⇒ φ = ${f(res.angDesp)}°, a la altura $y = R (1 − cos φ)$ = <b>${f(y)} m</b>, con $v$ = ${f(vd)} m/s. Desde ahí cae como un proyectil.` });
+    }
+    // camino: rampa a 40° desde la altura h (o un poco si h es 0), llano corto, rizo y salida
+    const th = rad(40), hh = Math.max(h, 0.05), Li = hh / Math.sin(th), Lx = hh / Math.tan(th), a1 = 0.6 * R, Lr = 2 * Math.PI * R, xc = Lx + a1;
+    const camino = { S: Li + a1 + Lr + 1.5 * R, at: (q) => {
+      if (q < Li) return { x: q * Math.cos(th), y: hh - q * Math.sin(th), ang: -th };
+      if (q < Li + a1) return { x: Lx + (q - Li), y: 0, ang: 0 };
+      if (q < Li + a1 + Lr) { const phi = (q - Li - a1) / R; return { x: xc + R * Math.sin(phi), y: R - R * Math.cos(phi), ang: phi, phi }; }
+      return { x: xc + (q - Li - a1 - Lr), y: 0, ang: 0 };
+    } };
+    const suelta = (q, v) => {
+      const p = camino.at(q);
+      if (p.phi === undefined || p.phi <= Math.PI / 2 || p.phi >= 1.5 * Math.PI) return null;
+      if (v * v / R + g * Math.cos(p.phi) >= 0) return null;
+      // velocidad tangente al rizo en ese punto
+      return { x: p.x, y: p.y, vx: v * Math.cos(p.phi), vy: v * Math.sin(p.phi), choca: (o) => Math.hypot(o.x - xc, o.y - R) >= R || o.y <= 0 };
+    };
+    const sim = porCamino(camino, { m, g, v0, tmax: 15, suelta });
+    sim.p = { modo: 'rizo', m, g, h: hh, R, v0, Lx, xc, ang: 40 };
+    pasos.unshift({ t: 'Energía inicial', html: `$E_0 = 1/2 m v_0^2 + m g h = ${f(0.5 * m * v0 * v0 + m * g * h)} "J"$ (el fondo del rizo es la altura cero)` });
+    return { p: sim.p, pasos, res, Ei: 0.5 * m * v0 * v0 + m * g * h, sim };
+  }
+
+  /* ---------- Péndulo ---------- */
+  // sc: { m, L, th0 (° de amplitud), th (° donde se pregunta, opcional), v0 (m/s en el punto más bajo, opcional), g }
+  function pendulo(sc) {
+    const vac = (k) => String(sc[k] ?? '').trim() === '';
+    const n = (k, nom, { min = 0, estricto = true, max = Infinity } = {}) => { const v = +String(sc[k] ?? '').trim().replace(',', '.'); if (!isFinite(v) || (estricto ? v <= min : v < min) || v > max) throw new Error(`${nom} debe estar entre ${min} y ${max}`); return v; };
+    const m = n('m', 'La masa'), g = n('g', 'La gravedad'), L = n('L', 'La longitud');
+    const pasos = [], res = {};
+    let vb, th0;
+    if (!vac('v0')) {
+      vb = n('v0', 'La velocidad en el punto más bajo', { estricto: false });
+      pasos.push({ t: 'Velocidad abajo', html: `Se lanza desde el punto más bajo con $v_A$ = ${f(vb)} m/s.` });
+      const c = 1 - (vb * vb) / (2 * g * L);
+      th0 = c >= -1 ? Math.acos(c) : null;
+    } else {
+      th0 = rad(n('th0', 'El ángulo inicial', { max: 180 }));
+      vb = Math.sqrt(2 * g * L * (1 - Math.cos(th0)));
+      pasos.push({ t: 'Velocidad en el punto más bajo', html: `Se suelta desde θ<sub>0</sub> = ${f(th0 * 180 / Math.PI)}°, a una altura $h = L (1 − cos θ_0) = ${f(L * (1 - Math.cos(th0)))} "m"$ sobre el punto más bajo:<br>$m g L (1 − cos θ_0) = 1/2 m v_A^2 ⇒ v_A = √(2 g L (1 − cos θ_0))$ = <b>${f(vb)} m/s</b>` });
+    }
+    res.vAbajo = vb; res.Tabajo = m * (g + (vb * vb) / L);
+    pasos.push({ t: 'Tensión en el punto más bajo', html: `$T − m g = m v_A^2/L ⇒ T_A = m (g + v_A^2/L)$ = <b>${f(res.Tabajo)} N</b>${th0 !== null && vac('v0') ? ` ($= m g (3 − 2 cos θ_0)$)` : ''}` });
+    // ¿da la vuelta? con hilo hace falta v_arriba² ≥ g L, es decir v_A² ≥ 5 g L
+    if (vb * vb >= 5 * g * L - 1e-9) {
+      res.vuelta = true; res.vArriba = Math.sqrt(vb * vb - 4 * g * L); res.Tarriba = m * ((res.vArriba ** 2) / L - g);
+      pasos.push({ t: 'Da la vuelta completa', html: `$v_A^2 ≥ 5 g L$ = ${f(5 * g * L)}: arriba $v = √(v_A^2 − 4 g L)$ = <b>${f(res.vArriba)} m/s</b> y $T = m (v^2/L − g)$ = ${f(res.Tarriba)} N.` });
+    } else if (vb * vb > 2 * g * L) {
+      const c = (2 * g * L - vb * vb) / (3 * g * L);
+      res.angAfloja = (Math.acos(-c) * 180) / Math.PI; res.vuelta = false;
+      pasos.push({ t: 'El hilo se afloja', html: `Pasa de la horizontal pero no llega arriba con tensión: $T = m (v^2/L − g cos α)$ se anula a α = ${f(180 - res.angAfloja)}° de la vertical de arriba, es decir a ${f(res.angAfloja)}° desde abajo. Desde ahí cae como un proyectil.` });
+    } else if (th0 !== null) res.amplitud = th0 * 180 / Math.PI;
+    if (!vac('th')) {
+      const a = rad(n('th', 'El ángulo pedido', { estricto: false, max: 180 })), v2 = vb * vb - 2 * g * L * (1 - Math.cos(a));
+      if (v2 < 0) pasos.push({ t: `En θ = ${f(a * 180 / Math.PI)}°`, html: 'No llega a ese ángulo.' });
+      else {
+        res.vEn = Math.sqrt(v2); res.TEn = m * (v2 / L + g * Math.cos(a));
+        pasos.push({ t: `En θ = ${f(a * 180 / Math.PI)}°`, html: `$v = √(v_A^2 − 2 g L (1 − cos θ))$ = <b>${f(res.vEn)} m/s</b>, &ensp; $T = m (v^2/L + g cos θ)$ = <b>${f(res.TEn)} N</b>` });
+      }
+    }
+    if (th0 !== null && th0 < rad(20) && !res.vuelta) pasos.push({ t: 'Periodo (oscilaciones pequeñas)', html: `$T = 2 π √(L/g)$ = <b>${f(2 * Math.PI * Math.sqrt(L / g))} s</b>` });
+    // simulación: θ'' = −(g/L) sen θ, mientras el hilo esté tenso
+    const out = [], dt = 1 / 1200;
+    let th = th0 !== null && vac('v0') ? th0 : 0, w = vac('v0') ? 0 : vb / L, t = 0, sig = 0, libre = null;
+    const tmax = Math.min(12, 2.5 * 2 * Math.PI * Math.sqrt(L / g) * (th0 !== null ? 1 + (th0 * th0) / 16 : 1.5));
+    while (t < tmax) {
+      if (libre) { libre.vy -= g * dt; libre.x += libre.vx * dt; libre.y += libre.vy * dt; t += dt; if (t >= sig) { const vv = Math.hypot(libre.vx, libre.vy); out.push({ t, s: 0, v: vv, x: 0, px: libre.x, py: libre.y, K: 0.5 * m * vv * vv, Ug: m * g * (libre.y + L), Ue: 0, Q: 0, libre: true }); sig += 1 / 60; } if (Math.hypot(libre.x, libre.y) >= L) break; continue; }
+      const f1 = (q) => -(g / L) * Math.sin(q);
+      const k1 = w, l1 = f1(th), k2 = w + 0.5 * dt * l1, l2 = f1(th + 0.5 * dt * k1), k3 = w + 0.5 * dt * l2, l3 = f1(th + 0.5 * dt * k2), k4 = w + dt * l3, l4 = f1(th + dt * k3);
+      th += (dt / 6) * (k1 + 2 * k2 + 2 * k3 + k4); w += (dt / 6) * (l1 + 2 * l2 + 2 * l3 + l4); t += dt;
+      const v = Math.abs(w) * L, y = L * (1 - Math.cos(th));
+      if (t >= sig) { out.push({ t, s: th, v, x: 0, px: L * Math.sin(th), py: -L * Math.cos(th), K: 0.5 * m * v * v, Ug: m * g * y, Ue: 0, Q: 0 }); sig += 1 / 60; }
+      if (w * w * L + g * Math.cos(th) < 0) libre = { x: L * Math.sin(th), y: -L * Math.cos(th), vx: w * L * Math.cos(th), vy: w * L * Math.sin(th) };
+    }
+    const sim = { puntos: out, E0: 0.5 * m * vb * vb, p: { modo: 'pendulo', m, g, L } };
+    return { p: sim.p, pasos, res, Ei: sim.E0, sim };
+  }
+
+  /* ---------- Montaña rusa ---------- */
+  // sc: { m, alturas: '30, 10, 22, 5, 15', sep (m entre puntos), v0, g }
+  function montana(sc) {
+    const n = (k, nom, { min = 0, estricto = true } = {}) => { const v = +String(sc[k] ?? '').trim().replace(',', '.'); if (!isFinite(v) || (estricto ? v <= min : v < min)) throw new Error(`${nom} debe ser ${estricto ? 'mayor que' : 'al menos'} ${min}`); return v; };
+    const m = n('m', 'La masa'), g = n('g', 'La gravedad'), sep = n('sep', 'La distancia entre puntos'), v0 = String(sc.v0 ?? '').trim() === '' ? 0 : n('v0', 'La velocidad inicial', { estricto: false });
+    const hs = String(sc.alturas ?? '').split(/[;\s]+|,\s+/).map((x) => x.trim()).filter(Boolean).map((x) => +x.replace(',', '.'));
+    if (hs.length < 2 || hs.some((x) => !isFinite(x) || x < 0)) throw new Error('Escribe al menos dos alturas, separadas por punto y coma o por espacios (por ejemplo 30; 10; 22)');
+    if (hs.length > 12) throw new Error('Como mucho 12 puntos');
+    const pasos = [], res = { v: [] }, h0 = hs[0], E = 0.5 * v0 * v0 + g * h0;
+    pasos.push({ t: 'Conservación de la energía', html: `Sin rozamiento, en cada punto $1/2 v^2 + g h = 1/2 v_0^2 + g h_1$, así que $v = √(v_0^2 + 2 g (h_1 − h))$. Con $v_0$ = ${f(v0)} m/s y $h_1$ = ${f(h0)} m, puede subir como mucho hasta $h_{máx} = h_1 + v_0^2/(2g)$ = <b>${f(E / g)} m</b>.` });
+    let llega = hs.length;
+    for (let i = 1; i < hs.length; i++) {
+      const v2 = 2 * (E - g * hs[i]);
+      if (v2 < -1e-9) { llega = i; pasos.push({ t: `Punto ${i + 1} (h = ${f(hs[i])} m)`, html: `<b>No llega</b>: haría falta $h ≤ ${f(E / g)} "m"$. Se para antes y vuelve hacia atrás.` }); break; }
+      res.v.push(Math.sqrt(Math.max(0, v2)));
+      pasos.push({ t: `Punto ${i + 1} (h = ${f(hs[i])} m)`, html: `$v_${i + 1} = √(${f(v0)}^2 + 2 · ${f(g)} · (${f(h0)} − ${f(hs[i])}))$ = <b>${f(Math.sqrt(Math.max(0, v2)))} m/s</b> (${f(Math.sqrt(Math.max(0, v2)) * 3.6)} km/h)` });
+    }
+    res.llega = llega; res.vmax = Math.sqrt(2 * (E - g * Math.min(...hs.slice(0, llega))));
+    // camino suave (Catmull-Rom en x) por los puntos, muestreado y con su longitud de arco
+    const xs = hs.map((_, i) => i * sep), pt = [];
+    const cr = (p0, p1, p2, p3, u) => 0.5 * (2 * p1 + (-p0 + p2) * u + (2 * p0 - 5 * p1 + 4 * p2 - p3) * u * u + (-p0 + 3 * p1 - 3 * p2 + p3) * u * u * u);
+    for (let i = 0; i < hs.length - 1; i++) for (let j = 0; j < 40; j++) {
+      const u = j / 40, H = (k) => hs[Math.max(0, Math.min(hs.length - 1, k))];
+      pt.push({ x: xs[i] + u * sep, y: Math.max(0, cr(H(i - 1), H(i), H(i + 1), H(i + 2), u)) });
+    }
+    pt.push({ x: xs[xs.length - 1], y: hs[hs.length - 1] });
+    const sAc = [0]; for (let i = 1; i < pt.length; i++) sAc.push(sAc[i - 1] + Math.hypot(pt[i].x - pt[i - 1].x, pt[i].y - pt[i - 1].y));
+    const camino = { S: sAc[sAc.length - 1], pt, at: (q) => {
+      let i = 1; while (i < sAc.length - 1 && sAc[i] < q) i++;
+      const a = pt[i - 1], b = pt[i], u = (q - sAc[i - 1]) / Math.max(sAc[i] - sAc[i - 1], 1e-12);
+      return { x: a.x + (b.x - a.x) * u, y: a.y + (b.y - a.y) * u, ang: Math.atan2(b.y - a.y, b.x - a.x) };
+    } };
+    const sim = porCamino(camino, { m, g, v0, tmax: 25 });
+    sim.p = { modo: 'montana', m, g, hs, sep, pt };
+    pasos.unshift({ t: 'Energía inicial', html: `$E_0 = 1/2 m v_0^2 + m g h_1 = ${f(0.5 * m * v0 * v0 + m * g * h0)} "J"$` });
+    return { p: sim.p, pasos, res, Ei: 0.5 * m * v0 * v0 + m * g * h0, sim };
+  }
+
+  /* ---------- Fuerza variable: trabajo como área bajo F(x) ---------- */
+  // sc: { puntos: '0, 0; 2, 10; 5, 10; 7, 0' (x en m, F en N), m (opcional), v0 (opcional), t (s, opcional) }
+  function fuerza(sc) {
+    const vac = (k) => String(sc[k] ?? '').trim() === '', num = (k) => +String(sc[k]).trim().replace(',', '.');
+    const pares = String(sc.puntos ?? '').split(';').map((x) => x.trim()).filter(Boolean).map((q) => q.split(/\s+|,\s*(?=[−-]?\d)/).filter(Boolean).map((z) => +z.replace(',', '.').replace('−', '-')));
+    if (pares.length < 2 || pares.some((q) => q.length !== 2 || !q.every(isFinite))) throw new Error('Escribe los puntos de la gráfica como «x F; x F; …» (por ejemplo 0 0; 2 10; 5 10; 7 0)');
+    for (let i = 1; i < pares.length; i++) if (pares[i][0] <= pares[i - 1][0]) throw new Error('Las x de los puntos deben ir de menor a mayor');
+    const pasos = [], res = {};
+    let W = 0; const trozos = [];
+    for (let i = 1; i < pares.length; i++) { const [x1, F1] = pares[i - 1], [x2, F2] = pares[i], a = 0.5 * (F1 + F2) * (x2 - x1); W += a; trozos.push(`½(${f(F1)} + ${f(F2)})·${f(x2 - x1)}`); }
+    res.W = W;
+    pasos.push({ t: 'Trabajo = área bajo la gráfica F(x)', html: `La fuerza cambia con la posición, así que $W = ∫ F dx$: el área entre la gráfica y el eje (negativa donde F < 0). Con tramos rectos, cada uno es un trapecio:<br>W = ${trozos.join(' + ')} = <b>${f(W)} J</b>` });
+    if (!vac('m')) {
+      const m = num('m'), v0 = vac('v0') ? 0 : num('v0');
+      if (!(m > 0)) throw new Error('La masa debe ser mayor que 0');
+      const v2 = v0 * v0 + (2 * W) / m;
+      res.v = v2 >= 0 ? Math.sqrt(v2) : null;
+      pasos.push({ t: 'Teorema de las fuerzas vivas', html: v2 >= 0 ? `Si es la única fuerza que trabaja: $W = 1/2 m v^2 − 1/2 m v_0^2 ⇒ v = √(v_0^2 + 2 W/m) = √(${f(v0)}^2 + 2 · ${f(W)}/${f(m)})$ = <b>${f(res.v)} m/s</b>` : 'El trabajo es negativo y mayor que la energía cinética inicial: el cuerpo se para antes del final.' });
+      if (res.v !== null) { const Ff = pares[pares.length - 1][1]; res.Pfin = Ff * res.v; pasos.push({ t: 'Potencia instantánea al final', html: `$P = F v = ${f(Ff)} · ${f(res.v)}$ = <b>${f(res.Pfin)} W</b>` }); }
+    }
+    if (!vac('t')) { const tt = num('t'); if (!(tt > 0)) throw new Error('El tiempo debe ser mayor que 0'); res.Pmedia = W / tt; pasos.push({ t: 'Potencia media', html: `$P_m = W/t = ${f(W)}/${f(tt)}$ = <b>${f(res.Pmedia)} W</b> (${f(res.Pmedia / 735.5)} CV)` }); }
+    return { p: { modo: 'fuerza', pares }, pasos, res, Ei: 0, sim: null };
+  }
+
+  function resolver(sc) {
+    const modo = sc.modo || 'rampa';
+    if (modo === 'rizo') return rizo(sc);
+    if (modo === 'pendulo') return pendulo(sc);
+    if (modo === 'montana') return montana(sc);
+    if (modo === 'fuerza') return fuerza(sc);
+    return rampa(sc);
+  }
+
   const ejemplos = [
     { clave: 'rampa-muelle', nombre: 'Rampa, llano y muelle', sc: { m: 2, g: 9.8, h: 5, ang: 30, mu1: 0.1, d: 4, mu2: 0.2, k: 200, v0: 0 } },
     { clave: 'sin-rozamiento', nombre: 'Sin rozamiento: oscila para siempre', sc: { m: 1, g: 9.8, h: 2, ang: 45, mu1: 0, d: 3, mu2: 0, k: 100, v0: 0 } },
@@ -858,19 +1099,39 @@ const Energia = (() => {
     { clave: 'no-arranca', nombre: 'El rozamiento lo sujeta en la rampa', sc: { m: 2, g: 9.8, h: 1, ang: 20, mu1: 0.5, d: 4, mu2: 0.2, k: 200, v0: 0 } },
     { clave: 'empujon', nombre: 'Con un empujón inicial', sc: { m: 2, g: 9.8, h: 1, ang: 20, mu1: 0.5, d: 4, mu2: 0.2, k: 200, v0: 3 } },
     { clave: 'muelle-duro', nombre: 'Muelle duro que lo devuelve a la rampa', sc: { m: 0.5, g: 9.8, h: 3, ang: 40, mu1: 0.05, d: 2, mu2: 0.05, k: 800, v0: 0 } },
+    { clave: 'rizo-justo', nombre: 'Rizo: altura mínima para dar la vuelta', sc: { modo: 'rizo', m: '0,5', g: '9,8', h: '6', R: '2', v0: '' } },
+    { clave: 'rizo-despega', nombre: 'Rizo: se despega antes de llegar arriba', sc: { modo: 'rizo', m: '0,5', g: '9,8', h: '4', R: '2', v0: '' } },
+    { clave: 'pendulo', nombre: 'Péndulo soltado desde 60°', sc: { modo: 'pendulo', m: '0,2', g: '9,8', L: '1', th0: '60', th: '30', v0: '' } },
+    { clave: 'pendulo-vuelta', nombre: 'Péndulo lanzado: ¿da la vuelta?', sc: { modo: 'pendulo', m: '0,2', g: '9,8', L: '0,8', th0: '', th: '', v0: '7' } },
+    { clave: 'montana', nombre: 'Montaña rusa sin rozamiento', sc: { modo: 'montana', m: '400', g: '9,8', alturas: '30; 8; 22; 4; 25; 12', sep: '15', v0: '2' } },
+    { clave: 'fuerza-variable', nombre: 'Trabajo de una fuerza variable (gráfica F-x)', sc: { modo: 'fuerza', puntos: '0 0; 2 20; 6 20; 8 0; 10 −10', m: '4', v0: '0', t: '3' } },
   ];
 
   return { resolver, simular, leer, f, ejemplos };
 })();
 
 /* =====================================================================
-   Trabajo y energía: interfaz (datos, animación, barras de energía,
-   gráfica E(t) y desarrollo). El cálculo está en fisica.js (Energia).
+   Trabajo y energía: interfaz (modo, datos, animación, barras de energía,
+   gráfica E(t) o F(x) y desarrollo). El cálculo está en fisica.js (Energia).
    ===================================================================== */
 (() => {
   const { $ } = Herramienta;
   const CLAVE = 'energia-v1';
-  const CAMPOS = [
+  const MODOS = { rampa: 'Rampa y muelle', rizo: 'Rizo', pendulo: 'Péndulo', montana: 'Montaña rusa', fuerza: 'Fuerza variable' };
+  const CAMPOS_DE = {
+    rizo: [{ sep: 'Carrito' }, { k: 'm', nom: 'Masa', u: 'kg' }, { k: 'v0', nom: 'Velocidad inicial', u: 'm/s' }, { k: 'g', nom: 'Gravedad', u: 'm/s²' }, { sep: 'Recorrido' }, { k: 'h', nom: 'Altura de salida', u: 'm' }, { k: 'R', nom: 'Radio del rizo', u: 'm' }],
+    pendulo: [{ k: 'm', nom: 'Masa', u: 'kg' }, { k: 'L', nom: 'Longitud del hilo', u: 'm' }, { k: 'th0', nom: 'Ángulo inicial θ₀', u: '°' }, { k: 'v0', nom: 'O velocidad abajo', u: 'm/s' }, { k: 'th', nom: 'Ángulo pedido θ', u: '°' }, { k: 'g', nom: 'Gravedad', u: 'm/s²' }],
+    montana: [{ k: 'm', nom: 'Masa', u: 'kg' }, { k: 'alturas', nom: 'Alturas de los puntos', u: 'm', texto: true }, { k: 'sep', nom: 'Distancia entre puntos', u: 'm' }, { k: 'v0', nom: 'Velocidad en el primero', u: 'm/s' }, { k: 'g', nom: 'Gravedad', u: 'm/s²' }],
+    fuerza: [{ k: 'puntos', nom: 'Puntos (x F; x F…)', u: 'm, N', texto: true }, { k: 'm', nom: 'Masa', u: 'kg' }, { k: 'v0', nom: 'Velocidad inicial', u: 'm/s' }, { k: 't', nom: 'Tiempo que tarda', u: 's' }],
+  };
+  const NOTAS = {
+    rampa: 'Con la compresión deseada se calcula la constante del muelle que la consigue.',
+    rizo: 'Sin rozamiento. La altura se mide desde el fondo del rizo.',
+    pendulo: 'Da el ángulo desde el que se suelta o la velocidad en el punto más bajo.',
+    montana: 'Sin rozamiento. Escribe las alturas separadas por punto y coma: 30; 8; 22.',
+    fuerza: 'La gráfica F(x) se forma con tramos rectos entre los puntos. Masa, velocidad inicial y tiempo son opcionales.',
+  };
+  const CAMPOS_RAMPA = [
     { sep: 'Bloque' },
     { k: 'm', nom: 'Masa', u: 'kg' },
     { k: 'v0', nom: 'Velocidad inicial', u: 'm/s' },
@@ -883,7 +1144,10 @@ const Energia = (() => {
     { k: 'd', nom: 'Longitud del tramo', u: 'm' },
     { k: 'mu2', nom: 'Rozamiento μ₂', u: '' },
     { k: 'k', nom: 'Constante del muelle', u: 'N/m' },
+    { k: 'xobj', nom: 'Compresión deseada', u: 'm' },
   ];
+  const camposDe = (m) => CAMPOS_DE[m] || CAMPOS_RAMPA;
+  const modo = () => esc.modo || 'rampa';
   const ENERGIAS = [
     { k: 'K', nom: 'Cinética', col: '--e-k' },
     { k: 'Ug', nom: 'Gravitatoria', col: '--e-g' },
@@ -892,7 +1156,7 @@ const Energia = (() => {
   ];
 
   let esc = { ...Energia.ejemplos[0].sc };
-  try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && typeof g === 'object') esc = { ...esc, ...g }; } catch (e) {}
+  try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && typeof g === 'object') esc = g.modo && g.modo !== 'rampa' ? g : { ...esc, ...g }; } catch (e) {}
   let sim = null, sol = null, t = 0, jugando = false, ultimo = 0;
   // número con decimales fijos y relleno a la izquierda, para que la lectura no cambie de ancho mientras avanza el tiempo
   const fijo = (x, d, ancho = 0) => (Math.abs(x) < 0.5 * 10 ** -d ? 0 : x).toFixed(d).replace('.', ',').replace('-', '−').padStart(ancho, ' ');
@@ -904,11 +1168,20 @@ const Energia = (() => {
 
   /* ---------- Formulario ---------- */
   const campos = $('#campos');
-  for (const c of CAMPOS) {
-    if (c.sep) { campos.insertAdjacentHTML('beforeend', `<div class="sep">${c.sep}</div>`); continue; }
-    campos.insertAdjacentHTML('beforeend', `<label for="c-${c.k}">${c.nom}${c.u ? ` <small>(${c.u})</small>` : ''}</label><input id="c-${c.k}" class="in" inputmode="decimal" autocomplete="off">`);
+  function formulario() {
+    campos.innerHTML = camposDe(modo()).map((c) => (c.sep ? `<div class="sep">${c.sep}</div>` : `<label for="c-${c.k}">${c.nom}${c.u ? ` <small>(${c.u})</small>` : ''}</label><input id="c-${c.k}" class="in${c.texto ? ' ancho-texto' : ''}" ${c.texto ? '' : 'inputmode="decimal" '}autocomplete="off">`)).join('');
+    for (const b of document.querySelectorAll('#modos button')) b.setAttribute('aria-selected', String(b.dataset.m === modo()));
+    $('#nota').textContent = NOTAS[modo()];
+    const fz = modo() === 'fuerza';
+    for (const q of ['.controles', '#barras', '#grafica']) $(q).hidden = fz;
   }
-  const rellena = () => { for (const c of CAMPOS) if (c.k) $('#c-' + c.k).value = String(esc[c.k]).replace('.', ','); };
+  const rellena = () => { formulario(); for (const c of camposDe(modo())) if (c.k) $('#c-' + c.k).value = String(esc[c.k] ?? '').replace(/(\d)\.(\d)/g, '$1,$2'); };
+  $('#modos').innerHTML = Object.entries(MODOS).map(([k, t]) => `<button type="button" data-m="${k}">${t}</button>`).join('');
+  $('#modos').addEventListener('click', (e) => {
+    const b = e.target.closest('button'); if (!b || b.dataset.m === modo()) return;
+    const ej = Energia.ejemplos.find((x) => (x.sc.modo || 'rampa') === b.dataset.m);
+    esc = { ...ej.sc }; rellena(); $('#ejemplos').value = ''; calcula(true);
+  });
   campos.addEventListener('input', (e) => {
     const k = e.target.id.slice(2);
     esc[k] = e.target.value;
@@ -916,7 +1189,7 @@ const Energia = (() => {
     calcula(true);
   });
   const sel = $('#ejemplos');
-  sel.innerHTML = '<option value="">Ejemplos…</option>' + Energia.ejemplos.map((e) => `<option value="${e.clave}">${e.nombre}</option>`).join('');
+  sel.innerHTML = '<option value="">Ejemplos…</option>' + Object.entries(MODOS).map(([k, t]) => `<optgroup label="${t}">${Energia.ejemplos.filter((e) => (e.sc.modo || 'rampa') === k).map((e) => `<option value="${e.clave}">${e.nombre}</option>`).join('')}</optgroup>`).join('');
   sel.addEventListener('change', () => { if (sel.value) abrirEjemplo(sel.value); });
   function abrirEjemplo(clave) {
     const e = Energia.ejemplos.find((x) => x.clave === clave);
@@ -929,9 +1202,10 @@ const Energia = (() => {
     const err = $('#error');
     try {
       sol = Energia.resolver(esc);
-      sim = Energia.simular(esc, 20);
+      sim = sol.sim !== undefined ? sol.sim : Energia.simular(esc, 20);
     } catch (e) {
       err.textContent = e.message; err.hidden = false;
+      $('#resumen').innerHTML = ''; $('#pasos').innerHTML = '';
       return;
     }
     err.hidden = true;
@@ -943,7 +1217,29 @@ const Energia = (() => {
 
   function pintaResultados() {
     const f = Energia.f, r = sol.res, filas = [];
-    filas.push(['E₀', f(sol.Ei) + ' J']);
+    const mo = modo();
+    if (mo !== 'fuerza') filas.push(['E₀', f(sol.Ei) + ' J']);
+    if (mo === 'rizo') {
+      filas.push(['v abajo', f(r.vAbajo) + ' m/s'], ['Altura mínima', f(r.hmin) + ' m']);
+      if (r.completa) filas.push(['v arriba', f(r.vArriba) + ' m/s'], ['Normal arriba', f(r.Narriba) + ' N']);
+      else if (r.ydesp !== undefined) filas.push(['Se despega a', f(r.ydesp) + ' m de altura']);
+      else filas.push(['Sube hasta', f(r.ymax) + ' m y vuelve']);
+    } else if (mo === 'pendulo') {
+      filas.push(['v abajo', f(r.vAbajo) + ' m/s'], ['Tensión abajo', f(r.Tabajo) + ' N']);
+      if (r.vEn !== undefined) filas.push(['v en θ', f(r.vEn) + ' m/s'], ['Tensión en θ', f(r.TEn) + ' N']);
+      if (r.vuelta) filas.push(['v arriba', f(r.vArriba) + ' m/s']);
+      if (r.angAfloja !== undefined) filas.push(['El hilo se afloja a', f(r.angAfloja) + '° desde abajo']);
+    } else if (mo === 'montana') {
+      r.v.forEach((v, i) => filas.push([`v en el punto ${i + 2}`, f(v) + ' m/s']));
+      if (r.llega < sim.p.hs.length) filas.push(['No llega al punto', String(r.llega + 1)]);
+    } else if (mo === 'fuerza') {
+      filas.push(['Trabajo', f(r.W) + ' J']);
+      if (r.v !== undefined) filas.push(['Velocidad final', r.v === null ? 'se para antes' : f(r.v) + ' m/s']);
+      if (r.Pmedia !== undefined) filas.push(['Potencia media', f(r.Pmedia) + ' W']);
+      if (r.Pfin !== undefined) filas.push(['Potencia al final', f(r.Pfin) + ' W']);
+    }
+    if (r.hmin !== undefined && mo === 'rampa') filas.push(['Altura mínima para llegar al muelle', f(r.hmin) + ' m']);
+    if (r.kPara !== undefined && r.kPara > 0) filas.push(['k para esa compresión', f(r.kPara) + ' N/m']);
     if (r.quieto) filas.push(['Movimiento', 'no arranca']);
     if (r.vB !== undefined) filas.push(['v al pie de la rampa', f(r.vB) + ' m/s']);
     if (r.paraRampa !== undefined) filas.push(['Se para en la rampa tras', f(r.paraRampa) + ' m']);
@@ -963,10 +1259,11 @@ const Energia = (() => {
     while (hi - lo > 1) { const mid = (lo + hi) >> 1; if (P[mid].t <= tt) lo = mid; else hi = mid; }
     const a = P[lo], b = P[hi], u = b.t > a.t ? (tt - a.t) / (b.t - a.t) : 0;
     const o = { t: tt };
-    for (const k of ['s', 'v', 'K', 'Ug', 'Ue', 'Q', 'x']) o[k] = a[k] + (b[k] - a[k]) * u;
+    for (const k of ['s', 'v', 'K', 'Ug', 'Ue', 'Q', 'x', 'px', 'py']) o[k] = a[k] + (b[k] - a[k]) * u;
+    o.libre = b.libre;
     return o;
   }
-  const tFin = () => sim.puntos[sim.puntos.length - 1].t;
+  const tFin = () => (sim ? sim.puntos[sim.puntos.length - 1].t : 0);
 
   /* ---------- Dibujo ---------- */
   function colores() {
@@ -975,7 +1272,82 @@ const Energia = (() => {
   }
   const lienzo = (c) => Herramienta.lienzo(c);
 
+  // cuerpo (círculo) en (x, y) de pantalla con la flecha de velocidad en la dirección (dx, dy)
+  function bola(g, x, y, r, dx, dy, v, vmax) {
+    g.fillStyle = col['--bloque']; g.strokeStyle = col['--ink']; g.lineWidth = 1.2; g.beginPath(); g.arc(x, y, r, 0, 2 * Math.PI); g.fill(); g.stroke();
+    if (Math.abs(v) > 1e-3 && (dx || dy)) {
+      const L = Math.hypot(dx, dy), lon = (Math.abs(v) / Math.max(vmax, 1e-9)) * 50 + 8, ux = dx / L, uy = dy / L;
+      g.strokeStyle = col['--e-k']; g.fillStyle = col['--e-k']; g.lineWidth = 2.2;
+      g.beginPath(); g.moveTo(x, y); g.lineTo(x + ux * lon, y + uy * lon); g.stroke();
+      g.beginPath(); g.moveTo(x + ux * (lon + 8), y + uy * (lon + 8)); g.lineTo(x + ux * lon - uy * 5, y + uy * lon + ux * 5); g.lineTo(x + ux * lon + uy * 5, y + uy * lon - ux * 5); g.closePath(); g.fill();
+    }
+  }
+  // dirección de movimiento en pantalla a partir del punto anterior de la simulación
+  function rumbo(e) {
+    const P = sim.puntos; let i = 0; while (i < P.length - 1 && P[i].t < e.t) i++;
+    const a = P[Math.max(0, i - 1)], b = P[Math.min(P.length - 1, Math.max(i, 1))];
+    return [b.px - a.px, b.py - a.py];
+  }
+  function cotas(g, t, x, y, al = 'left') { g.fillStyle = col['--muted']; g.font = '12px "IBM Plex Sans", system-ui, sans-serif'; g.textAlign = al; g.textBaseline = 'middle'; g.fillText(t, x, y); }
+  function dibujaRizo(e) {
+    const { g, w, h: H } = lienzo($('#lienzo')), p = sim.p, pad = 20;
+    const ancho = p.xc + p.R * 2.6, alto = Math.max(p.h, 2 * p.R) * 1.08, sx = Math.min((w - 2 * pad) / ancho, (H - 2 * pad) / alto);
+    const X = (x) => pad + x * sx, Y = (y) => H - pad - y * sx;
+    g.strokeStyle = col['--suelo']; g.lineWidth = 5; g.lineCap = 'round';
+    g.beginPath(); g.moveTo(X(0), Y(p.h)); g.lineTo(X(p.Lx), Y(0)); g.lineTo(X(ancho), Y(0)); g.stroke();
+    g.beginPath(); g.arc(X(p.xc), Y(p.R), p.R * sx, 0, 2 * Math.PI); g.stroke();
+    g.setLineDash([4, 4]); g.lineWidth = 1; g.strokeStyle = col['--muted']; const hm = sol.res.hmin; g.beginPath(); g.moveTo(X(0) - 6, Y(hm)); g.lineTo(X(p.Lx * 0.9), Y(hm)); g.stroke(); g.setLineDash([]);
+    cotas(g, `h mín = ${Energia.f(hm)} m`, X(0) + 4, Y(hm) - 9); cotas(g, `R = ${Energia.f(p.R)} m`, X(p.xc), Y(p.R), 'center');
+    const vmax = Math.max(...sim.puntos.map((q) => q.v)), [dx, dy] = rumbo(e);
+    bola(g, X(e.px ?? 0), Y(e.py ?? p.h) - 9, 9, dx, -dy, e.v, vmax);
+  }
+  function dibujaPendulo(e) {
+    const { g, w, h: H } = lienzo($('#lienzo')), p = sim.p, cx = w / 2, cy = H * 0.45, sx = Math.min(H * 0.42, w * 0.4) / p.L;
+    g.strokeStyle = col['--suelo']; g.lineWidth = 4; g.beginPath(); g.moveTo(cx - 40, cy); g.lineTo(cx + 40, cy); g.stroke();
+    g.setLineDash([4, 4]); g.lineWidth = 1; g.strokeStyle = col['--line']; g.beginPath(); g.arc(cx, cy, p.L * sx, 0, 2 * Math.PI); g.stroke(); g.beginPath(); g.moveTo(cx, cy); g.lineTo(cx, cy + p.L * sx); g.stroke(); g.setLineDash([]);
+    const bx = cx + (e.px ?? 0) * sx, by = cy - (e.py ?? -p.L) * sx;
+    if (!e.libre) { g.strokeStyle = col['--ink']; g.lineWidth = 1.3; g.beginPath(); g.moveTo(cx, cy); g.lineTo(bx, by); g.stroke(); }
+    const vmax = Math.max(...sim.puntos.map((q) => q.v)), [dx, dy] = rumbo(e);
+    bola(g, bx, by, 11, dx, -dy, e.v, vmax);
+    cotas(g, `L = ${Energia.f(p.L)} m`, cx + 46, cy - 2);
+  }
+  function dibujaMontana(e) {
+    const { g, w, h: H } = lienzo($('#lienzo')), p = sim.p, pad = 22;
+    const xmax = p.pt[p.pt.length - 1].x, ymax = Math.max(...p.hs) * 1.1 + 1, sx = (w - 2 * pad) / xmax, sy = Math.min((H - 2 * pad) / ymax, sx * 1.5);
+    const X = (x) => pad + x * sx, Y = (y) => H - pad - y * sy;
+    g.fillStyle = col['--suelo']; g.beginPath(); g.moveTo(X(0), Y(0)); p.pt.forEach((q) => g.lineTo(X(q.x), Y(q.y))); g.lineTo(X(xmax), Y(0)); g.closePath(); g.globalAlpha = 0.5; g.fill(); g.globalAlpha = 1;
+    g.strokeStyle = col['--suelo']; g.lineWidth = 4; g.beginPath(); p.pt.forEach((q, i) => (i ? g.lineTo(X(q.x), Y(q.y)) : g.moveTo(X(q.x), Y(q.y)))); g.stroke();
+    // altura máxima a la que puede llegar
+    const hmax = sol.Ei / (p.m * p.g); g.setLineDash([4, 4]); g.lineWidth = 1; g.strokeStyle = col['--e-g']; g.beginPath(); g.moveTo(X(0), Y(hmax)); g.lineTo(X(xmax), Y(hmax)); g.stroke(); g.setLineDash([]);
+    cotas(g, `altura máxima posible ${Energia.f(hmax)} m`, X(xmax), Y(hmax) - 9, 'right');
+    p.hs.forEach((hh, i) => cotas(g, String(i + 1), X(i * p.sep), Y(hh) - 14, 'center'));
+    const vmax = Math.max(...sim.puntos.map((q) => q.v)), [dx, dy] = rumbo(e);
+    bola(g, X(e.px ?? 0), Y(e.py ?? p.hs[0]) - 8, 8, dx * sx, -dy * sy, e.v, vmax);
+  }
+  function dibujaFuerza() {
+    const { g, w, h: H } = lienzo($('#lienzo')), P = sol.p.pares, l = 48, r = 14, top = 14, b = 28;
+    const x0 = Math.min(0, P[0][0]), x1 = P[P.length - 1][0], Fs = P.map((q) => q[1]), Fmin = Math.min(0, ...Fs), Fmax = Math.max(0, ...Fs), dF = Fmax - Fmin || 1;
+    const X = (x) => l + ((x - x0) / (x1 - x0)) * (w - l - r), Y = (F) => H - b - ((F - Fmin) / dF) * (H - top - b);
+    // área: verde donde F > 0 (trabajo positivo), roja donde F < 0
+    for (let i = 1; i < P.length; i++) {
+      const [xa, Fa] = P[i - 1], [xb, Fb] = P[i];
+      const corta = Fa * Fb < 0 ? xa + ((xb - xa) * Fa) / (Fa - Fb) : null;
+      const trozos = corta === null ? [[xa, Fa, xb, Fb]] : [[xa, Fa, corta, 0], [corta, 0, xb, Fb]];
+      for (const [u1, F1, u2, F2] of trozos) { g.fillStyle = F1 + F2 >= 0 ? col['--e-g'] : col['--e-e']; g.globalAlpha = 0.28; g.beginPath(); g.moveTo(X(u1), Y(0)); g.lineTo(X(u1), Y(F1)); g.lineTo(X(u2), Y(F2)); g.lineTo(X(u2), Y(0)); g.closePath(); g.fill(); g.globalAlpha = 1; }
+    }
+    g.strokeStyle = col['--line']; g.lineWidth = 1; g.font = '11px "IBM Plex Mono", monospace'; g.fillStyle = col['--muted'];
+    for (const v of Herramienta.marcas(Fmin, Fmax, 5)) { g.beginPath(); g.moveTo(l, Y(v)); g.lineTo(w - r, Y(v)); g.stroke(); g.textAlign = 'right'; g.textBaseline = 'middle'; g.fillText(Energia.f(v, 2), l - 4, Y(v)); }
+    for (const v of Herramienta.marcas(x0, x1, 6)) { g.textAlign = 'center'; g.textBaseline = 'top'; g.fillText(Energia.f(v, 2), X(v), H - b + 6); }
+    g.strokeStyle = col['--ink']; g.beginPath(); g.moveTo(l, Y(0)); g.lineTo(w - r, Y(0)); g.stroke();
+    g.strokeStyle = col['--e-k']; g.lineWidth = 2.2; g.beginPath(); P.forEach(([x, F], i) => (i ? g.lineTo(X(x), Y(F)) : g.moveTo(X(x), Y(F)))); g.stroke();
+    g.fillStyle = col['--e-k']; for (const [x, F] of P) { g.beginPath(); g.arc(X(x), Y(F), 3.5, 0, 2 * Math.PI); g.fill(); }
+    cotas(g, 'F (N)', l + 4, top + 2); cotas(g, 'x (m)', w - r, Y(0) - 10, 'right');
+    cotas(g, `W = área = ${Herramienta.txt(Energia.f(sol.res.W))} J`, w - r, top + 2, 'right');
+  }
   function dibujaEscena(e) {
+    if (modo() === 'rizo') return dibujaRizo(e);
+    if (modo() === 'pendulo') return dibujaPendulo(e);
+    if (modo() === 'montana') return dibujaMontana(e);
     const { g, w, h: H } = lienzo($('#lienzo'));
     const p = sim.p, th = (p.ang * Math.PI) / 180;
     const Lx = p.h / Math.tan(th);
@@ -1037,7 +1409,7 @@ const Energia = (() => {
     if (cont.children.length !== filas.length) cont.innerHTML = filas.map((q) => `<div class="barra" data-e="${q.k}"><b></b><div class="tubo"><i style="background:var(${q.col})"></i></div><span>${q.nom}</span></div>`).join('');
     filas.forEach((q, i) => {
       const n = cont.children[i];
-      n.querySelector('b').textContent = Energia.f(Math.max(0, q.v)) + ' J';
+      n.querySelector('b').textContent = Herramienta.txt(Energia.f(q.v > 1e-6 * tope ? q.v : 0)) + ' J';
       n.querySelector('i').style.height = `${Math.min(100, (Math.max(0, q.v) / tope) * 100)}%`;
     });
   }
@@ -1049,9 +1421,9 @@ const Energia = (() => {
     const X = (tt) => l + (tt / T) * (w - l - r), Y = (v) => h - b - (v / tope) * (h - top - b);
     g.strokeStyle = col['--line']; g.lineWidth = 1; g.fillStyle = col['--muted']; g.font = '11px "IBM Plex Mono", monospace';
     g.textAlign = 'right'; g.textBaseline = 'middle';
-    for (const u of [0, 0.5, 1]) { g.beginPath(); g.moveTo(l, Y(u * tope)); g.lineTo(w - r, Y(u * tope)); g.stroke(); g.fillText(Energia.f(u * tope, 2), l - 4, Y(u * tope)); }
+    for (const u of [0, 0.5, 1]) { g.beginPath(); g.moveTo(l, Y(u * tope)); g.lineTo(w - r, Y(u * tope)); g.stroke(); g.fillText(Herramienta.txt(Energia.f(u * tope, 2)), l - 4, Y(u * tope)); }
     g.textAlign = 'center'; g.textBaseline = 'top';
-    for (let i = 0; i <= 4; i++) g.fillText(Energia.f((T * i) / 4, 2) + ' s', X((T * i) / 4), h - b + 6);
+    for (let i = 0; i <= 4; i++) g.fillText(Herramienta.txt(Energia.f((T * i) / 4, 2)) + ' s', X((T * i) / 4), h - b + 6);
     g.lineWidth = 1.8;
     for (const q of ENERGIAS) {
       g.strokeStyle = col[q.col]; g.beginPath();
@@ -1063,10 +1435,12 @@ const Energia = (() => {
   }
 
   function dibuja() {
+    if (modo() === 'fuerza') { if (sol) dibujaFuerza(); return; }
     if (!sim) return;
     const e = enT(t);
     dibujaEscena(e); dibujaBarras(e); dibujaGrafica(e);
     const p = sim.p;
+    if (modo() !== 'rampa') { lee($('#lectura'), `t = ${fijo(e.t, 2, 5)} s · v = ${fijo(Math.abs(e.v), 2, 5)} m/s · altura = ${fijo((e.Ug || 0) / (p.m * p.g), 2, 5)} m`); $('#tiempo').value = String(Math.round((t / Math.max(tFin(), 1e-9)) * 1000)); return; }
     if (!anchos || anchos.sim !== sim) { const m = sim.puntos; anchos = { sim, t: anchoDe([tFin()], 2), v: anchoDe(m.map((q) => Math.abs(q.v)), 2), x: anchoDe(m.map((q) => q.x || 0), 3) }; }
     const donde = e.s < p.L ? 'en la rampa' : e.s <= p.L + p.d ? 'en el llano' : `en el muelle, x = ${fijo(e.x, 3, anchos.x)} m`;
     lee($('#lectura'), `t = ${fijo(e.t, 2, anchos.t)} s · v = ${fijo(Math.abs(e.v), 2, anchos.v)} m/s · ${donde}`);
@@ -1093,9 +1467,30 @@ const Energia = (() => {
   addEventListener('resize', dibuja);
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { colores(); dibuja(); });
 
+  /* ---------- Modo práctica: un ejercicio con enunciado ---------- */
+  function azar() {
+    const ent = (a, b) => a + Math.floor(Math.random() * (b - a + 1)), de = (l) => l[ent(0, l.length - 1)], c = (x) => String(x).replace('.', ',');
+    const tipos = [
+      () => ({ m: ent(1, 5), g: 9.8, h: ent(2, 8), ang: de([20, 30, 37, 45]), mu1: de([0, 0.1, 0.15, 0.2]), d: ent(2, 6), mu2: de([0.1, 0.2, 0.3]), k: de([100, 200, 300, 500]), v0: 0 }),
+      () => ({ modo: 'rizo', m: c(de([0.2, 0.5, 1])), g: '9,8', h: String(ent(3, 12)), R: c(de([1, 1.5, 2])), v0: '' }),
+      () => ({ modo: 'pendulo', m: c(de([0.1, 0.2, 0.5])), g: '9,8', L: c(de([0.5, 1, 1.5, 2])), th0: String(de([30, 45, 60, 90])), th: String(de([0, 15, 20, 30])), v0: '' }),
+      () => ({ modo: 'montana', m: String(de([300, 400, 500])), g: '9,8', alturas: [ent(25, 35), ent(2, 10), ent(12, 24), ent(0, 8), ent(10, 20)].join('; '), sep: '15', v0: String(ent(0, 4)) }),
+      () => ({ modo: 'fuerza', puntos: `0 0; ${ent(1, 3)} ${de([10, 20, 30])}; ${ent(4, 6)} ${de([10, 20, 30])}; ${ent(7, 9)} 0`, m: String(ent(2, 10)), v0: '0', t: String(ent(2, 6)) }),
+    ];
+    esc = de(tipos)(); rellena(); sel.value = ''; calcula(true);
+  }
+  const enunciado = () => {
+    const e = Herramienta.esc, mo = modo(), g = `(g = ${e(esc.g)} m/s²)`;
+    if (mo === 'rizo') return `Un carrito de ${e(esc.m)} kg parte del reposo a ${e(esc.h)} m de altura y baja sin rozamiento hasta un rizo de ${e(esc.R)} m de radio ${g}. Calcula la velocidad abajo, la altura mínima para dar la vuelta y, si la da, la velocidad y la normal arriba.`;
+    if (mo === 'pendulo') return `Un péndulo de ${e(esc.L)} m con una masa de ${e(esc.m)} kg se suelta desde ${e(esc.th0)}° ${g}. Calcula la velocidad y la tensión en el punto más bajo${esc.th && +esc.th ? ` y cuando forma ${e(esc.th)}° con la vertical` : ''}.`;
+    if (mo === 'montana') return `Un vagón de ${e(esc.m)} kg recorre sin rozamiento una montaña rusa que pasa por puntos a ${e(esc.alturas).replace(/;/g, ',')} m de altura; en el primero va a ${e(esc.v0)} m/s ${g}. Calcula la velocidad en cada punto.`;
+    if (mo === 'fuerza') return `Sobre un cuerpo de ${e(esc.m)} kg en reposo actúa una fuerza que depende de la posición según la gráfica de puntos (x en m, F en N) ${e(esc.puntos)}, y tarda ${e(esc.t)} s. Calcula el trabajo, la velocidad final y la potencia media.`;
+    return `Un bloque de ${e(esc.m)} kg baja desde ${e(esc.h)} m por una rampa de ${e(esc.ang)}° (μ = ${e(String(esc.mu1).replace('.', ','))}), recorre ${e(esc.d)} m de llano (μ = ${e(String(esc.mu2).replace('.', ','))}) y choca con un muelle de ${e(esc.k)} N/m ${g}. Calcula la velocidad al pie de la rampa, al llegar al muelle y la compresión máxima.`;
+  };
+
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('trabajo-y-energia').current;
   colores(); rellena(); calcula(true);
-  window.EnergiaApp = { escena: () => ({ ...esc }), abrirEjemplo, ir: (tt) => { para(); t = Math.max(0, Math.min(tFin(), tt)); dibuja(); }, estado: () => enT(t), fin: tFin };
+  window.EnergiaApp = { escena: () => ({ ...esc }), abrirEjemplo, azar, enunciado, ir: (tt) => { para(); t = Math.max(0, Math.min(tFin(), tt)); dibuja(); }, estado: () => (sim ? enT(t) : null), fin: tFin };
 })();
 
 /* =====================================================================
@@ -1413,6 +1808,8 @@ const Practica = (() => {
     intervalos: { datos: null, items: '#res > div', genera: () => window.IntervalosApp?.azar(), enunciado: () => window.IntervalosApp?.enunciado() },
     // ondasem: una onda plana, una intensidad o un medio con pérdidas
     'ondas-em': { datos: null, items: '#res > div', genera: () => window.OndasEMApp?.azar(), enunciado: () => window.OndasEMApp?.enunciado() },
+    // trabajo y energía: una rampa con muelle, un rizo, un péndulo, una montaña rusa o una fuerza variable
+    'trabajo-y-energia': { datos: null, items: '#resumen > div', genera: () => window.EnergiaApp?.azar(), enunciado: () => window.EnergiaApp?.enunciado() },
     // dinamica: un bloque en un plano, dos bloques, Atwood, una curva, un péndulo cónico o un muelle
     dinamica: { datos: null, items: '#res > div', genera: () => window.DinamicaApp?.azar(), enunciado: () => window.DinamicaApp?.enunciado() },
     // interferencia: Young, una rendija, una red o una lámina delgada
