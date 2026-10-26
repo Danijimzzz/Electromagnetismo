@@ -1,8 +1,10 @@
 /* =====================================================================
    Fuerza magnética sobre cargas y corrientes (sin DOM): carga en un
    campo uniforme (circunferencia o hélice), fuerza de Lorentz con
-   vectores, selector de velocidades y espectrómetro de masas, ciclotrón,
-   fuerza sobre un hilo y fuerza entre dos hilos paralelos. Todo en el SI.
+   vectores, selector de velocidades y espectrómetro de masas (con dos
+   isótopos), ciclotrón, carga que cruza una franja de campo, campos E y B
+   cruzados (cicloide), efecto Hall, par sobre una espira, fuerza sobre un
+   hilo y fuerza entre dos hilos paralelos. Todo en el SI.
    En los dibujos B entrante es ⊗ (hacia dentro de la pantalla) y
    saliente ⊙; la carga y la corriente van hacia la derecha.
    ===================================================================== */
@@ -24,7 +26,7 @@ const Fuerza = (() => {
     if (!signo && (cero ? v < 0 : v <= 0)) throw new Error(`${may(nom)} debe ser ${cero ? 'positivo o 0' : 'mayor que 0'}`);
     return v;
   }
-  const E0 = 1.602176634e-19, C = 299792458, MU0 = 4 * Math.PI * 1e-7, G = 9.8;
+  const E0 = 1.602176634e-19, U = 1.66053907e-27, C = 299792458, MU0 = 4 * Math.PI * 1e-7, G = 9.8;
   const PART = {
     proton: { nom: 'protón', art: 'el', q: E0, m: 1.67262192e-27 },
     electron: { nom: 'electrón', art: 'el', q: -E0, m: 9.1093837e-31 },
@@ -121,7 +123,14 @@ const Fuerza = (() => {
       r2 = (P.m * v) / (aq * B2);
       pasos.push({ t: 'Espectrómetro de masas', html: `Al salir entra en un campo B′ = ${f(B2)} T sin campo eléctrico y describe media circunferencia de radio r = m v/(|q| B′) = ${f(P.m)}·${f(v)} / (${f(aq)}·${f(B2)}) = <b>${f(r2)} m</b>. Choca con la placa a 2r = <b>${f(2 * r2)} m</b> de la rendija. Como v es la misma para todas las que salen, r es proporcional a m/q: así se separan los isótopos.` });
     }
-    return { modo: 'selector', P, E, B, vs, v, dado: v0 !== null, FE, FB, des, hacia, B2, r2, pasos };
+    const m2 = num(sc, 'm2', 'la masa del segundo isótopo', { opcional: true });
+    let rb = null, sepa = null;
+    if (m2 !== null) {
+      if (B2 === null) throw new Error('Para separar dos isótopos hace falta el campo B′ del espectrómetro');
+      const mb = m2 * U; rb = (mb * vs) / (aq * B2); sepa = 2 * Math.abs(rb - (P.m * vs) / (aq * B2));
+      pasos.push({ t: 'Segundo isótopo', html: `Un isótopo de ${f(m2)} u (m′ = ${f(m2)}·${f(U)} = ${f(mb)} kg) con la misma carga sale del selector con la misma v = ${f(vs)} m/s y describe r′ = m′ v/(|q| B′) = <b>${f(rb)} m</b>. Los impactos quedan separados Δx = 2|r′ − r| = 2 v |m′ − m|/(|q| B′) = <b>${f(sepa)} m</b>.` });
+    }
+    return { modo: 'selector', P, E, B, vs, v, dado: v0 !== null, FE, FB, des, hacia, B2, r2, m2, rb, sepa, pasos };
   }
 
   /* ---------- Ciclotrón ---------- */
@@ -171,10 +180,82 @@ const Fuerza = (() => {
     return { modo: 'paralelos', I1, I2, d, L, B1, B2, FL, F, mismo, pasos };
   }
 
+  /* ---------- Carga que entra en una franja de campo ---------- */
+  // sc: { part, q, m, uv, v, B, sentidoB, d }: entra perpendicular al borde de una franja de anchura d
+  function franja(sc) {
+    const pasos = [], P = particula(sc), v = velocidad(sc, P, pasos), B = num(sc, 'B', 'el campo B'), d = num(sc, 'd', 'la anchura d de la franja'), aq = Math.abs(P.q);
+    if (P.pre) pasos.unshift({ t: 'Datos de la partícula', html: datosP(P) });
+    const r = (P.m * v) / (aq * B), w = (aq * B) / P.m, T = (2 * Math.PI) / w, gi = giro(P.q, sc.sentidoB), hacia = gi === 'antihorario' ? 'arriba' : 'abajo';
+    pasos.push({ t: 'Radio dentro del campo', html: `Dentro de la franja describe un arco de circunferencia de radio r = m v/(|q| B) = ${f(P.m)}·${f(v)} / (${f(aq)}·${f(B)}) = <b>${f(r)} m</b>, que se curva hacia <b>${hacia}</b> (F = q v × B con B ${sc.sentidoB === 'saliente' ? 'saliente' : 'entrante'} y la carga ${P.q > 0 ? 'positiva' : 'negativa'}).` });
+    if (r > d) {
+      const a = Math.asin(d / r), y = r * (1 - Math.cos(a)), t = a / w;
+      pasos.push({ t: 'Sale por el otro lado', html: `Como r > d, la atraviesa. El centro del arco está en el borde de entrada, así que al salir sen α = d/r = ${f(d)} / ${f(r)} = ${f(d / r)} y la velocidad se ha desviado <b>α = ${f((a * 180) / Math.PI)}°</b>.` });
+      pasos.push({ t: 'Desplazamiento y tiempo', html: `Sale ${hacia === 'arriba' ? 'por encima' : 'por debajo'} de donde entró, a y = r (1 − cos α) = <b>${f(y)} m</b>, y tarda t = α/ω = α m/(|q| B) = <b>${f(t)} s</b> en cruzar. Con la misma rapidez: el campo no cambia el módulo de v.` });
+      return { modo: 'franja', P, v, B, d, r, T, cruza: true, alfa: (a * 180) / Math.PI, y, t, hacia, sentidoB: sc.sentidoB, pasos };
+    }
+    pasos.push({ t: 'Vuelve hacia atrás', html: `Como r ≤ d, no llega al otro borde: describe media circunferencia y sale por el mismo borde, en sentido contrario, a 2r = <b>${f(2 * r)} m</b> ${hacia === 'arriba' ? 'por encima' : 'por debajo'} del punto de entrada. Tarda medio periodo, t = π m/(|q| B) = <b>${f(T / 2)} s</b>, y llega a ${f(r)} m del borde.` });
+    return { modo: 'franja', P, v, B, d, r, T, cruza: false, alfa: 180, y: 2 * r, t: T / 2, hacia, sentidoB: sc.sentidoB, pasos };
+  }
+
+  /* ---------- Campos E y B cruzados: cicloide ---------- */
+  // sc: { part, q, m, E, B, v0 }: E hacia arriba, B saliente (⊙), v0 hacia la derecha (0 = parte del reposo)
+  function cruzados(sc) {
+    const pasos = [], P = particula(sc), E = num(sc, 'E', 'el campo eléctrico E'), B = num(sc, 'B', 'el campo B'), v0 = num(sc, 'v0', 'la velocidad inicial', { signo: true, def: 0 }), aq = Math.abs(P.q);
+    if (P.pre) pasos.push({ t: 'Datos de la partícula', html: datosP(P) });
+    const vd = E / B, w = (aq * B) / P.m, T = (2 * Math.PI) / w, u = v0 - vd, R = Math.abs(u) / w, sube = u * P.q < 0;
+    pasos.push({ t: 'Velocidad de deriva', html: `Con E ⊥ B, si la partícula fuera a v<sub>d</sub> = E/B las fuerzas eléctrica y magnética se anularían. Por eso conviene mirarla desde un sistema que avanza con v<sub>d</sub> = ${f(E)} / ${f(B)} = <b>${f(vd)} m/s</b>, en el sentido de E × B (hacia la derecha), sea cual sea el signo de la carga.` });
+    if (Math.abs(u) < 1e-9 * vd) {
+      pasos.push({ t: 'Movimiento', html: `Su velocidad inicial es justo E/B: las dos fuerzas se anulan y sigue en línea recta (es el selector de velocidades).` });
+      return { modo: 'cruzados', P, E, B, v0, vd, w, T, u: 0, R: 0, h: 0, vmax: vd, avance: vd * T, sube, pasos };
+    }
+    pasos.push({ t: 'En el sistema que avanza', html: `Allí la partícula tiene velocidad u = v<sub>0</sub> − v<sub>d</sub> = ${f(u)} m/s y solo nota el campo B: gira en una circunferencia de radio R = m|u|/(|q| B) = <b>${f(R)} m</b> con ω = |q| B/m = ${f(w)} rad/s y periodo T = <b>${f(T)} s</b>.` });
+    const h = 2 * R, vmax = vd + Math.abs(u), avance = vd * T;
+    pasos.push({ t: 'Trayectoria', html: `Sumando el avance, ${Math.abs(Math.abs(u) - vd) < 1e-9 * vd ? `${v0 === 0 ? 'parte del reposo y ' : ''}describe una <b>cicloide</b> (con picos en los que se para)` : Math.abs(u) > vd ? 'describe una <b>trocoide con bucles</b> (a ratos va hacia atrás)' : 'describe una <b>cicloide acortada</b>, ondulada y sin pararse'}: x(t) = v<sub>d</sub> t + (u/ω) sen ωt, y(t) = (u/ω)(cos ωt − 1), con ω = qB/m con su signo. Se aleja como mucho h = 2R = <b>${f(h)} m</b> ${sube ? 'hacia arriba' : 'hacia abajo'} de la recta inicial, avanza ${f(avance)} m en cada periodo y su rapidez máxima es v<sub>d</sub> + |u| = <b>${f(vmax)} m/s</b>.` });
+    if (v0 === 0) pasos.push({ t: 'Comprobación con la energía', html: `En lo más alto ha ganado E<sub>c</sub> = |q| E h = ${f(aq)}·${f(E)}·${f(h)} = ${f(aq * E * h)} J, y ½ m (2E/B)<sup>2</sup> = ${f(0.5 * P.m * vmax * vmax)} J: lo mismo, porque B no hace trabajo.` });
+    return { modo: 'cruzados', P, E, B, v0, vd, w, T, u, R, h, vmax, avance, sube, pasos };
+  }
+
+  /* ---------- Efecto Hall ---------- */
+  // sc: { portador: 'electrones'|'huecos', I, B, sentidoB, t (grosor, en la dirección de B), w (anchura, opcional), dato: 'n'|'VH', n, VH }
+  function hall(sc) {
+    const pasos = [], I = num(sc, 'I', 'la corriente I'), B = num(sc, 'B', 'el campo B'), t = num(sc, 't', 'el grosor t'), w = num(sc, 'w', 'la anchura', { opcional: true }), e = sc.portador === 'huecos';
+    let n, VH;
+    if (sc.dato === 'VH') { VH = num(sc, 'VH', 'la tensión Hall'); n = (I * B) / (E0 * t * VH); pasos.push({ t: 'Densidad de portadores', html: `De V<sub>H</sub> = I B/(n e t) se despeja n = I B/(e t V<sub>H</sub>) = ${f(I)}·${f(B)} / (${f(E0)}·${f(t)}·${f(VH)}) = <b>${f(n)} m<sup>−3</sup></b>.` }); }
+    else { n = num(sc, 'n', 'la densidad de portadores n'); VH = (I * B) / (n * E0 * t); pasos.push({ t: 'Tensión Hall', html: `En equilibrio la fuerza eléctrica del campo Hall anula la magnética: e E<sub>H</sub> = e v<sub>d</sub> B. Con I = n e v<sub>d</sub> w t y V<sub>H</sub> = E<sub>H</sub> w queda V<sub>H</sub> = I B/(n e t) = ${f(I)}·${f(B)} / (${f(n)}·${f(E0)}·${f(t)}) = <b>${f(VH)} V</b>. No depende de la anchura.` }); }
+    const RH = (e ? 1 : -1) / (n * E0);
+    pasos.push({ t: 'Coeficiente de Hall', html: `R<sub>H</sub> = 1/(n q) = <b>${f(RH)} m<sup>3</sup>/C</b>, ${e ? 'positivo porque los portadores son huecos' : 'negativo porque los portadores son electrones'}.` });
+    let vd = null, EH = null;
+    if (w !== null) { vd = I / (n * E0 * w * t); EH = VH / w; pasos.push({ t: 'Velocidad de arrastre y campo Hall', html: `v<sub>d</sub> = I/(n e w t) = <b>${f(vd)} m/s</b> y E<sub>H</sub> = V<sub>H</sub>/w = v<sub>d</sub> B = <b>${f(EH)} V/m</b>.` }); }
+    // corriente hacia la derecha: la fuerza magnética lleva a los portadores arriba con B entrante (sean electrones o huecos)
+    const arriba = sc.sentidoB !== 'saliente', alta = (e === arriba) ? 'de arriba' : 'de abajo';
+    pasos.push({ t: 'Qué cara queda a más potencial', html: `Con la corriente hacia la derecha y B ${arriba ? 'entrante (⊗)' : 'saliente (⊙)'}, F = q v × B lleva a los portadores hacia ${arriba ? 'arriba' : 'abajo'} tanto si son electrones (q < 0 y v hacia la izquierda) como huecos. Allí se acumulan: ${e ? 'los huecos dejan positiva' : 'los electrones dejan negativa'} esa cara, y la cara <b>${alta}</b> queda a más potencial. Así se sabe el signo de los portadores.` });
+    return { modo: 'hall', I, B, t, w, n, VH, RH, vd, EH, huecos: e, arriba, alta, sentidoB: sc.sentidoB, pasos };
+  }
+
+  /* ---------- Par sobre una espira ---------- */
+  // sc: { N, I, forma: 'rect'|'circ', a, b, R, B, th (ángulo entre la normal y B) }
+  function espira(sc) {
+    const pasos = [], N = num(sc, 'N', 'el número de vueltas N', { def: 1 }), I = num(sc, 'I', 'la corriente I'), B = num(sc, 'B', 'el campo B'), th = num(sc, 'th', 'el ángulo entre la normal y B', { cero: true, def: 90 }), circ = sc.forma === 'circ';
+    if (th > 180) throw new Error('El ángulo entre la normal y B tiene que estar entre 0° y 180°');
+    let S, a, b, R;
+    if (circ) { R = num(sc, 'R', 'el radio R'); S = Math.PI * R * R; }
+    else { a = num(sc, 'a', 'el lado a'); b = num(sc, 'b', 'el lado b'); S = a * b; }
+    const rad = (th * Math.PI) / 180, s = Math.abs(Math.sin(rad)) < 1e-12 ? 0 : Math.sin(rad), c = Math.abs(Math.cos(rad)) < 1e-12 ? 0 : Math.cos(rad), m = N * I * S, tau = m * B * s, Ue = -m * B * c, W = m * B * (1 - c);
+    pasos.push({ t: 'Momento magnético', html: `S = ${circ ? `π R<sup>2</sup> = π·${f(R)}<sup>2</sup>` : `a b = ${f(a)}·${f(b)}`} = ${f(S)} m<sup>2</sup> y m = N I S = ${f(N)}·${f(I)}·${f(S)} = <b>${f(m)} A·m<sup>2</sup></b>, perpendicular a la espira (regla de la mano derecha con la corriente).` });
+    if (!circ) pasos.push({ t: 'Fuerzas sobre los lados', html: `Los lados a (perpendiculares a B) sufren F = N I a B = ${f(N * I * a * B)} N, iguales y opuestas: no desplazan la espira, pero forman un par de brazo b sen θ. Las de los lados b se anulan en la misma recta.` });
+    pasos.push({ t: 'Par', html: `τ = m × B, |τ| = m B sen θ = N I S B sen θ = ${f(m)}·${f(B)}${th === 90 ? '' : `·sen ${f(th)}°`} = <b>${f(tau)} N·m</b>. ${s ? 'Tiende a girar la espira para poner m paralelo a B.' : 'Es nulo: m es paralelo (o antiparalelo) a B.'} El par máximo, con la normal perpendicular a B, es ${f(m * B)} N·m.` });
+    pasos.push({ t: 'Energía', html: `U = −m · B = −m B cos θ = <b>${f(Ue)} J</b>. El equilibrio estable es θ = 0° (U = −mB) y el inestable θ = 180°. Para llevarla desde θ = 0° hasta ${f(th)}° hay que hacer W = m B (1 − cos θ) = <b>${f(W)} J</b>.` });
+    return { modo: 'espira', N, I, B, th, circ, a, b, R, S, m, tau, U: Ue, W, pasos };
+  }
+
   function resolver(sc) {
     if (sc.modo === 'vectorial') return vectorial(sc);
     if (sc.modo === 'selector') return selector(sc);
     if (sc.modo === 'ciclotron') return ciclotron(sc);
+    if (sc.modo === 'franja') return franja(sc);
+    if (sc.modo === 'cruzados') return cruzados(sc);
+    if (sc.modo === 'hall') return hall(sc);
+    if (sc.modo === 'espira') return espira(sc);
     if (sc.modo === 'hilo') return hilo(sc);
     if (sc.modo === 'paralelos') return paralelos(sc);
     return carga(sc);
@@ -190,15 +271,24 @@ const Fuerza = (() => {
     { clave: 'vec-electron', nombre: 'Electrón con B en dos direcciones', sc: { modo: 'vectorial', part: 'electron', ...P0, vx: '1e6', vy: '0', vz: '0', Bx: '0', By: '0,2', Bz: '0,3', Ex: '', Ey: '', Ez: '' } },
     { clave: 'vec-lorentz', nombre: 'Fuerza de Lorentz con E y B', sc: { modo: 'vectorial', part: 'otra', q: '2e-6', m: '1e-9', vx: '0', vy: '400', vz: '0', Bx: '0,1', By: '0', Bz: '0', Ex: '0', Ey: '0', Ez: '50' } },
     { clave: 'selector', nombre: 'Selector de velocidades y espectrómetro', sc: { modo: 'selector', part: 'proton', ...P0, uv: 'ms', v: '', E: '1e5', B: '0,2', B2: '0,5' } },
+    { clave: 'isotopos', nombre: 'Espectrómetro: separación de dos isótopos', sc: { modo: 'selector', part: 'otra', q: '1,602e-19', m: '1,993e-26', uv: 'ms', v: '', E: '4e4', B: '0,1', B2: '0,5', m2: '13' } },
     { clave: 'selector-rapido', nombre: 'Electrón demasiado rápido en el selector', sc: { modo: 'selector', part: 'electron', ...P0, uv: 'ms', v: '3e6', E: '2e4', B: '0,01', B2: '' } },
     { clave: 'ciclotron', nombre: 'Ciclotrón de protones', sc: { modo: 'ciclotron', part: 'proton', ...P0, B: '1,5', R: '0,5', V: '5e4' } },
     { clave: 'ciclotron-d', nombre: 'Ciclotrón de deuterones', sc: { modo: 'ciclotron', part: 'deuteron', ...P0, B: '1', R: '0,6', V: '1e4' } },
+    { clave: 'franja-cruza', nombre: 'Protón que cruza una franja de campo', sc: { modo: 'franja', part: 'proton', ...P0, uv: 'ms', v: '1e6', B: '0,2', sentidoB: 'entrante', d: '0,03' } },
+    { clave: 'franja-vuelve', nombre: 'Electrón que no logra cruzar la franja', sc: { modo: 'franja', part: 'electron', ...P0, uv: 'eV', v: '500', B: '0,002', sentidoB: 'entrante', d: '0,05' } },
+    { clave: 'cicloide', nombre: 'Protón en reposo en E y B cruzados: cicloide', sc: { modo: 'cruzados', part: 'proton', ...P0, E: '1000', B: '0,01', v0: '' } },
+    { clave: 'trocoide', nombre: 'Electrón con velocidad inicial en E y B cruzados', sc: { modo: 'cruzados', part: 'electron', ...P0, E: '2000', B: '0,001', v0: '5e6' } },
+    { clave: 'hall-cobre', nombre: 'Tensión Hall en una lámina de cobre', sc: { modo: 'hall', portador: 'electrones', I: '20', B: '1,5', sentidoB: 'entrante', t: '1e-4', w: '0,02', dato: 'n', n: '8,5e28', VH: '' } },
+    { clave: 'hall-semi', nombre: 'Densidad de huecos de un semiconductor', sc: { modo: 'hall', portador: 'huecos', I: '0,01', B: '0,5', sentidoB: 'entrante', t: '1e-3', w: '5e-3', dato: 'VH', n: '', VH: '3e-3' } },
+    { clave: 'espira-rect', nombre: 'Par sobre una bobina rectangular', sc: { modo: 'espira', N: '50', I: '2', forma: 'rect', a: '0,1', b: '0,05', R: '', B: '0,4', th: '30' } },
+    { clave: 'espira-circ', nombre: 'Espira circular con la normal perpendicular a B', sc: { modo: 'espira', N: '1', I: '5', forma: 'circ', a: '', b: '', R: '0,1', B: '0,2', th: '90' } },
     { clave: 'hilo', nombre: 'Hilo con corriente en un campo', sc: { modo: 'hilo', I: '5', L: '0,5', B: '0,4', th: '90', sentidoB: 'entrante', sentidoI: 'derecha', m: '' } },
     { clave: 'hilo-flota', nombre: 'Corriente para que un hilo flote', sc: { modo: 'hilo', I: '2', L: '0,2', B: '0,5', th: '90', sentidoB: 'saliente', sentidoI: 'izquierda', m: '0,01' } },
     { clave: 'paralelos', nombre: 'Dos hilos con corrientes en el mismo sentido', sc: { modo: 'paralelos', I1: '10', I2: '5', d: '0,1', L: '1', sentido: 'mismo' } },
     { clave: 'antiparalelos', nombre: 'Dos hilos con corrientes contrarias', sc: { modo: 'paralelos', I1: '20', I2: '20', d: '0,05', L: '', sentido: 'opuesto' } },
   ];
 
-  return { resolver, carga, vectorial, selector, ciclotron, hilo, paralelos, ejemplos, f, PART, E0, MU0 };
+  return { resolver, carga, vectorial, selector, ciclotron, franja, cruzados, hall, espira, hilo, paralelos, ejemplos, f, PART, E0, U, MU0 };
 })();
 if (typeof module !== 'undefined') module.exports = Fuerza;
