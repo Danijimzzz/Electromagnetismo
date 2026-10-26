@@ -108,7 +108,7 @@
       ley = 'Abajo, Φ(t) en azul y ε(t) en rojo: solo hay fem mientras cambia la parte de la espira que está dentro del campo.';
     }
     $('#res').innerHTML = h; $('#leyenda').textContent = ley;
-    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('');
+    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${Mates.html(p.html, true)}</li>`).join('');
     dibuja();
   }
   $('#play').addEventListener('click', () => { anda = !anda; $('#play').textContent = anda ? '⏸ Pausa' : '▶ Seguir'; if (anda) { ultimo = performance.now(); bucle(); } });

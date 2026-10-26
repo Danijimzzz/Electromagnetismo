@@ -44,6 +44,8 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       if (!(await page.evaluate(() => MagApp.escena.vista.mapa && MagApp.escena.vista.lineas))) mal('Magnetostática: el mapa de color o las líneas de campo no se guardan en la vista');
       const ver = await page.locator('#ver').textContent();
       if (ver !== Version.de('magnetostatica').current) mal(`Magnetostática: la página muestra la versión «${ver}», se esperaba ${Version.de('magnetostatica').current}`);
+      // copiar la solución como texto o LaTeX e imprimirla (compartir.js)
+      if ((await page.locator('.compartir button').count()) !== 4 || !/Resultados[\s\S]*Desarrollo/.test(await page.evaluate(() => Compartir.ejercicio(false)))) mal('Magnetostática: faltan los botones para copiar o imprimir la solución');
       await page.close();
       if (consola.length) mal('Magnetostática: consola del navegador:\n      ' + consola.join('\n      '));
     }

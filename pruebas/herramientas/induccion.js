@@ -61,6 +61,8 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       await page.click('#tab-RL');
       await page.fill('#f-t', '');
       if (!(await page.locator('#error').isHidden())) mal('Inducción: el circuito RL sin tiempo da error');
+      // copiar la solución como texto o LaTeX e imprimirla (compartir.js)
+      if ((await page.locator('.compartir button').count()) !== 4 || !/Resultados[\s\S]*Desarrollo/.test(await page.evaluate(() => Compartir.ejercicio(false)))) mal('Inducción: faltan los botones para copiar o imprimir la solución');
       await page.close();
       if (consola.length) mal('Inducción: consola del navegador:\n      ' + consola.join('\n      '));
       if (fallos === antes) console.log(`  ✓ Inducción: ${Induccion.ejemplos.L.length + Induccion.ejemplos.M.length + Induccion.ejemplos.RL.length} ejemplos, cambio de geometría y errores sin errores de consola`);

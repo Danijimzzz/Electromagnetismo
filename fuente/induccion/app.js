@@ -115,8 +115,9 @@
       h += caja('V<sub>L</sub>(t)', r.VLt !== undefined ? u(r.VLt, 'V') : '—', r.VRt !== undefined ? `V<sub>R</sub> = ${u(r.VRt, 'V')}` : '');
       if (r.WR !== undefined) h += caja('Disipada en R hasta t', u(r.WR, 'J'), r.Wf !== undefined ? `la fuente dio ${u(r.Wf, 'J')}` : `de ${u(0.5 * sol.p.L * r.I0 * r.I0, 'J')} que tenía`);
     }
+    if (sol.letras) h += `<div class="ancho"><span>En letras</span>${Mates.html(`$${sol.letras}$`)}</div>`;
     $('#resumen').innerHTML = h;
-    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('');
+    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${Mates.html(p.html, true)}</li>`).join('');
     dibuja();
   }
 

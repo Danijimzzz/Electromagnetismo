@@ -64,6 +64,8 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       await page.click('#play');
       if ((await page.locator('#play').textContent()).trim() !== '▶ Seguir') mal('Ondas EM: el botón de pausa no cambia');
       for (let i = 0; i < 12; i++) { await page.evaluate(() => OndasEMApp.azar()); if (!(await page.locator('#error').isHidden())) mal(`Ondas EM: un ejercicio al azar da error: ${JSON.stringify(await page.evaluate(() => OndasEMApp.estado()))}`); }
+      // copiar la solución como texto o LaTeX e imprimirla (compartir.js)
+      if ((await page.locator('.compartir button').count()) !== 4 || !/Resultados[\s\S]*Desarrollo/.test(await page.evaluate(() => Compartir.ejercicio(false)))) mal('Ondas EM: faltan los botones para copiar o imprimir la solución');
       await page.close();
       if (consola.length) mal('Ondas EM: consola del navegador:\n      ' + consola.join('\n      '));
       if (fallos === antes) console.log(`  ✓ Ondas EM planas: ${OeC.ejemplos.length} ejemplos, cambio de frecuencia, E perpendicular a k, material, pérdidas, errores y ejercicios al azar sin errores de consola`);

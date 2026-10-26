@@ -160,7 +160,7 @@
       ley = 'Las circunferencias son las líneas del campo del hilo 1. Morado: la fuerza sobre cada hilo.';
     }
     $('#res').innerHTML = h;
-    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('');
+    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${Mates.html(p.html, true)}</li>`).join('');
     $('#leyenda').textContent = ley;
     dibuja();
   }

@@ -20,6 +20,7 @@ Web estática de simuladores y calculadoras de ciencias para la carrera, en espa
 | `fuente/tema.js` | Botón claro/oscuro (`simu-tema`). |
 | `fuente/version.js` | Versiones y novedades: `registros.web` y uno por herramienta. |
 | `fuente/mates.js` | `Mates`: fórmulas `$…$` → MathML. |
+| `fuente/compartir.js` | Copiar enlace, texto o LaTeX e imprimir o PDF la solución (Matemáticas y Electromagnetismo); va en `scripts` antes del app.js. |
 | `fuente/matematicas/` | Común de Matemáticas: `algebra.js` (fracciones, complejos, matrices) y `expresion.js` (expresiones simbólicas). |
 | `fuente/quimica/` | Común de Química: elementos, fórmulas, configuración, disoluciones. |
 | `fuente/<clave>/` | Una carpeta por herramienta (ver abajo). |

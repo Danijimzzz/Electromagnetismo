@@ -3,7 +3,7 @@
    Página de cada herramienta, a partir de catalogo.js (lo llama build.sh):
    publico/<asignatura>/<clave>/index.html con la cabecera (icono y vista previa
    al compartir), fuente/<carpeta>/pagina.html pasada por diseno.js, y en un
-   <script> version.js, herramienta.js, los scripts de la herramienta, biblioteca.js y
+   <script> Pagina = { carpeta, guarda }, version.js, herramienta.js, los scripts de la herramienta, biblioteca.js y
    practica.js, más las llamadas que montan Mis ejercicios y el modo práctica.
    En el catálogo, cada herramienta con página lleva:
      scripts      los suyos en orden, sin version.js (va siempre el primero)
@@ -37,6 +37,8 @@ function pagina(h) {
   // diseño común (diseno.js): cabecera de la portada, color de la asignatura y miga con los botones
   html += execFileSync('node', [path.join(__dirname, 'diseno.js'), h.asignatura], { input: fs.readFileSync(path.join(__dirname, h.carpeta, 'pagina.html')) }).toString();
   html += '<script>\n';
+  // datos de la página para los scripts comunes que arrancan antes que la app (compartir.js)
+  html += `const Pagina = { carpeta: '${h.carpeta}', guarda: ${h.guarda === null ? 'null' : `'${h.guarda}'`} };\n`;
   for (const f of ['version.js', 'herramienta.js', ...h.scripts, 'biblioteca.js', 'practica.js']) html += script(f);
   // barra lateral «Mis ejercicios» y modo práctica (no hacen nada en las herramientas sin datos que guardar o preguntar)
   const guarda = h.guarda === null ? 'null' : `'${h.guarda}'`;

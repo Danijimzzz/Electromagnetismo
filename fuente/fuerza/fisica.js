@@ -49,7 +49,7 @@ const Fuerza = (() => {
     if (x === null) return null;
     if (uv === 'ms') return x;
     const Ec = uv === 'eV' ? x * E0 : Math.abs(P.q) * x, v = Math.sqrt((2 * Ec) / P.m);
-    pasos.push({ t: 'Velocidad', html: `${uv === 'eV' ? `E<sub>c</sub> = ${f(x)} eV = ${f(x)}·${f(E0)} = ${f(Ec)} J` : `Al acelerarse desde el reposo con una ddp de ${f(x)} V gana E<sub>c</sub> = |q| ΔV = ${f(Math.abs(P.q))}·${f(x)} = ${f(Ec)} J`}, así que v = √(2E<sub>c</sub>/m) = √(2·${f(Ec)} / ${f(P.m)}) = <b>${f(v)} m/s</b>${v > 0.1 * C ? `. Es más del 10 % de la velocidad de la luz: el resultado clásico ya no es exacto (habría que usar la relatividad).` : ''}` });
+    pasos.push({ t: 'Velocidad', html: `${uv === 'eV' ? `E<sub>c</sub> = ${f(x)} eV = ${f(x)}·${f(E0)} = ${f(Ec)} J` : `Al acelerarse desde el reposo con una ddp de ${f(x)} V gana $E_c = |q| ΔV = ${f(Math.abs(P.q))}·${f(x)}$ = ${f(Ec)} J`}, así que $v = √({2E_c}/m) = √({2·${f(Ec)}}/{${f(P.m)}})$ = <b>${f(v)} m/s</b>${v > 0.1 * C ? `. Es más del 10 % de la velocidad de la luz: el resultado clásico ya no es exacto (habría que usar la relatividad).` : ''}` });
     return v;
   }
   // giro en la pantalla: con B entrante la carga positiva gira en sentido antihorario
@@ -63,15 +63,15 @@ const Fuerza = (() => {
     const s = Math.abs(Math.sin((th * Math.PI) / 180)) < 1e-12 ? 0 : Math.sin((th * Math.PI) / 180), c = Math.abs(Math.cos((th * Math.PI) / 180)) < 1e-12 ? 0 : Math.cos((th * Math.PI) / 180);
     const aq = Math.abs(P.q), F = aq * v * B * s, vp = v * s, va = v * c, w = (aq * B) / P.m, T = (2 * Math.PI) / w, r = vp / w, paso = va * T, Ec = 0.5 * P.m * v * v;
     if (P.pre) pasos.unshift({ t: 'Datos de la partícula', html: datosP(P) });
-    pasos.push({ t: 'Fuerza de Lorentz', html: `F = |q| v B sen θ = ${f(aq)}·${f(v)}·${f(B)}${th === 90 ? '' : `·sen ${f(th)}°`} = <b>${f(F)} N</b>. Es perpendicular a v y a B, así que no hace trabajo: el módulo de la velocidad y la energía cinética (${f(Ec)} J = ${f(Ec / E0)} eV) no cambian.` });
+    pasos.push({ t: 'Fuerza de Lorentz', html: `$F = |q| v B sen θ = ${f(aq)}·${f(v)}·${f(B)}${th === 90 ? '' : `·sen ${f(th)}°`}$ = <b>${f(F)} N</b>. Es perpendicular a v y a B, así que no hace trabajo: el módulo de la velocidad y la energía cinética (${f(Ec)} J = ${f(Ec / E0)} eV) no cambian.` });
     if (s === 0) {
       pasos.push({ t: 'Movimiento', html: 'La velocidad es paralela al campo: no hay fuerza magnética y la partícula sigue en línea recta con velocidad constante.' });
       return { modo: 'carga', P, v, B, th, F: 0, r: Infinity, T, f: 1 / T, w, paso: Infinity, va, vp: 0, Ec, giro: null, sentidoB: sc.sentidoB, pasos };
     }
-    pasos.push({ t: 'Radio de la trayectoria', html: `La fuerza magnética hace de fuerza centrípeta: |q| v${th === 90 ? '' : '<sub>⊥</sub>'} B = m v${th === 90 ? '' : '<sub>⊥</sub>'}<sup>2</sup>/r, ${th === 90 ? '' : `con v<sub>⊥</sub> = v sen θ = ${f(vp)} m/s, `}de donde r = m v${th === 90 ? '' : '<sub>⊥</sub>'}/(|q| B) = ${f(P.m)}·${f(vp)} / (${f(aq)}·${f(B)}) = <b>${f(r)} m</b>` });
-    pasos.push({ t: 'Periodo y frecuencia', html: `T = 2πr/v${th === 90 ? '' : '<sub>⊥</sub>'} = 2π m/(|q| B) = <b>${f(T)} s</b>; f = 1/T = <b>${f(1 / T)} Hz</b> y ω = |q| B/m = ${f(w)} rad/s. No dependen de la velocidad (en eso se basa el ciclotrón).` });
+    pasos.push({ t: 'Radio de la trayectoria', html: `La fuerza magnética hace de fuerza centrípeta: $|q| v${th === 90 ? '' : '_⊥'} B = {m v${th === 90 ? '' : '_⊥'}^2}/r$, ${th === 90 ? '' : `con $v_⊥ = v sen θ$ = ${f(vp)} m/s, `}de donde $r = {m v${th === 90 ? '' : '_⊥'}}/{|q| B} = {${f(P.m)}·${f(vp)}}/{${f(aq)}·${f(B)}}$ = <b>${f(r)} m</b>` });
+    pasos.push({ t: 'Periodo y frecuencia', html: `$T = {2π r}/{v${th === 90 ? '' : '_⊥'}} = {2π m}/{|q| B}$ = <b>${f(T)} s</b>; $f = 1/T$ = <b>${f(1 / T)} Hz</b> y $ω = {|q| B}/m$ = ${f(w)} rad/s. No dependen de la velocidad (en eso se basa el ciclotrón).` });
     const gi = giro(P.q, th === 90 ? sc.sentidoB : 'entrante');
-    if (th !== 90) pasos.push({ t: 'Hélice', html: `La componente paralela a B, v<sub>∥</sub> = v cos θ = ${f(va)} m/s, no cambia: la partícula avanza a lo largo del campo mientras gira, y describe una hélice de radio ${f(r)} m y paso p = v<sub>∥</sub> T = ${f(Math.abs(va))}·${f(T)} = <b>${f(Math.abs(paso))} m</b>.` });
+    if (th !== 90) pasos.push({ t: 'Hélice', html: `La componente paralela a B, $v_∥ = v cos θ$ = ${f(va)} m/s, no cambia: la partícula avanza a lo largo del campo mientras gira, y describe una hélice de radio ${f(r)} m y paso $p = v_∥ T = ${f(Math.abs(va))}·${f(T)}$ = <b>${f(Math.abs(paso))} m</b>.` });
     pasos.push({ t: 'Sentido de giro', html: th === 90 ? `Con B ${sc.sentidoB === 'saliente' ? 'saliente (⊙)' : 'entrante (⊗)'} y la carga ${P.q > 0 ? 'positiva' : 'negativa'}, F = q v × B apunta hacia el centro y la partícula gira en sentido <b>${gi}</b> en la pantalla.` : `Mirando en el sentido de B, una carga ${P.q > 0 ? 'positiva gira en sentido antihorario' : 'negativa gira en sentido horario'} (F = q v × B).` });
     return { modo: 'carga', P, v, B, th, F, r, T, f: 1 / T, w, paso: Math.abs(paso), va, vp, Ec, giro: gi, sentidoB: sc.sentidoB, pasos };
   }
@@ -88,16 +88,16 @@ const Fuerza = (() => {
     if (P.pre) pasos.push({ t: 'Datos de la partícula', html: datosP(P) });
     const vB = cruz(v, B), Fm = vB.map((x) => P.q * x), Fe = E.map((x) => P.q * x), F = Fm.map((x, i) => x + Fe[i]);
     const det = `<span class="det"><table><tr><td><i class="uv">i</i></td><td><i class="uv">j</i></td><td><i class="uv">k</i></td></tr><tr>${v.map((x) => `<td>${f(x)}</td>`).join('')}</tr><tr>${B.map((x) => `<td>${f(x)}</td>`).join('')}</tr></table></span>`;
-    pasos.push({ t: 'Producto vectorial', html: `v × B = ${det} = ${ijk(vB, 'T·m/s')}<br>Cada componente es un determinante 2×2: (v<sub>y</sub>B<sub>z</sub> − v<sub>z</sub>B<sub>y</sub>, v<sub>z</sub>B<sub>x</sub> − v<sub>x</sub>B<sub>z</sub>, v<sub>x</sub>B<sub>y</sub> − v<sub>y</sub>B<sub>x</sub>).` });
-    pasos.push({ t: 'Fuerza magnética', html: `F<sub>m</sub> = q (v × B) = ${f(P.q)}·${ijk(vB, '')} = <b>${ijk(Fm, 'N')}</b>, de módulo |F<sub>m</sub>| = ${f(mod(Fm))} N.` });
+    pasos.push({ t: 'Producto vectorial', html: `v × B = ${det} = ${ijk(vB, 'T·m/s')}<br>Cada componente es un determinante 2×2: $(v_y B_z − v_z B_y, v_z B_x − v_x B_z, v_x B_y − v_y B_x)$.` });
+    pasos.push({ t: 'Fuerza magnética', html: `$F_m = q (v × B)$ = ${f(P.q)}·${ijk(vB, '')} = <b>${ijk(Fm, 'N')}</b>, de módulo |F<sub>m</sub>| = ${f(mod(Fm))} N.` });
     const cv = mod(v) && mod(B) ? (v[0] * B[0] + v[1] * B[1] + v[2] * B[2]) / (mod(v) * mod(B)) : 1, ang = (Math.acos(Math.max(-1, Math.min(1, cv))) * 180) / Math.PI;
-    if (mod(v) && mod(B)) pasos.push({ t: 'Comprobación', html: `El ángulo entre v y B es ${f(ang)}°, y |q| v B sen θ = ${f(Math.abs(P.q) * mod(v) * mod(B) * Math.sin((ang * Math.PI) / 180))} N, lo mismo. F<sub>m</sub> es perpendicular a v (F<sub>m</sub> · v = 0) y a B.` });
+    if (mod(v) && mod(B)) pasos.push({ t: 'Comprobación', html: `El ángulo entre v y B es ${f(ang)}°, y $|q| v B sen θ$ = ${f(Math.abs(P.q) * mod(v) * mod(B) * Math.sin((ang * Math.PI) / 180))} N, lo mismo. F<sub>m</sub> es perpendicular a v ($F_m · v = 0$) y a B.` });
     if (hayE) {
-      pasos.push({ t: 'Fuerza eléctrica', html: `F<sub>e</sub> = q E = ${f(P.q)}·${ijk(E, 'V/m')} = ${ijk(Fe, 'N')}` });
-      pasos.push({ t: 'Fuerza de Lorentz', html: `F = q (E + v × B) = <b>${ijk(F, 'N')}</b>, de módulo <b>${f(mod(F))} N</b>.` });
+      pasos.push({ t: 'Fuerza eléctrica', html: `$F_e = q E$ = ${f(P.q)}·${ijk(E, 'V/m')} = ${ijk(Fe, 'N')}` });
+      pasos.push({ t: 'Fuerza de Lorentz', html: `$F = q (E + v × B)$ = <b>${ijk(F, 'N')}</b>, de módulo <b>${f(mod(F))} N</b>.` });
     }
     let a = null;
-    if (P.m) { a = F.map((x) => x / P.m); pasos.push({ t: 'Aceleración', html: `a = F/m = ${ijk(a, 'm/s<sup>2</sup>')}, de módulo ${f(mod(a))} m/s<sup>2</sup>.` }); }
+    if (P.m) { a = F.map((x) => x / P.m); pasos.push({ t: 'Aceleración', html: `$a = F/m$ = ${ijk(a, 'm/s<sup>2</sup>')}, de módulo ${f(mod(a))} m/s<sup>2</sup>.` }); }
     return { modo: 'vectorial', P, v, B, E, hayE, vB, Fm, Fe, F, Fmod: mod(F), Fmmod: mod(Fm), ang, a, pasos };
   }
 
@@ -107,28 +107,28 @@ const Fuerza = (() => {
     const pasos = [], P = particula(sc), E = num(sc, 'E', 'el campo eléctrico E'), B = num(sc, 'B', 'el campo B del selector'), vs = E / B, aq = Math.abs(P.q);
     if (P.pre) pasos.push({ t: 'Datos de la partícula', html: datosP(P) });
     const v0 = velocidad(sc, P, pasos, true), v = v0 ?? vs;
-    pasos.push({ t: 'Velocidad que pasa sin desviarse', html: `Dentro del selector la fuerza eléctrica (|q|E) y la magnética (|q|vB) tienen sentidos contrarios. Se anulan si |q| E = |q| v B, es decir, v = E/B = ${f(E)} / ${f(B)} = <b>${f(vs)} m/s</b>, sea cual sea la carga o la masa.` });
+    pasos.push({ t: 'Velocidad que pasa sin desviarse', html: `Dentro del selector la fuerza eléctrica (|q|E) y la magnética (|q|vB) tienen sentidos contrarios. Se anulan si $|q| E = |q| v B$, es decir, $v = E/B = ${f(E)}/${f(B)}$ = <b>${f(vs)} m/s</b>, sea cual sea la carga o la masa.` });
     const FE = aq * E, FB = aq * v * B, rel = (v - vs) / vs;
     let des = 'no', hacia = null;
     if (v0 !== null) {
       if (Math.abs(rel) < 1e-6) pasos.push({ t: 'Esta partícula', html: `Con v = ${f(v)} m/s, F<sub>e</sub> = ${f(FE)} N y F<sub>m</sub> = ${f(FB)} N son iguales: pasa en línea recta.` });
       else {
         des = 'si'; hacia = (v > vs) === (P.q > 0) ? 'arriba' : 'abajo';
-        pasos.push({ t: 'Esta partícula', html: `Con v = ${f(v)} m/s, F<sub>e</sub> = |q| E = ${f(FE)} N y F<sub>m</sub> = |q| v B = ${f(FB)} N. ${v > vs ? 'Va más deprisa de lo necesario y gana la fuerza magnética' : 'Va más despacio de lo necesario y gana la fuerza eléctrica'}: se desvía hacia <b>${hacia}</b> (la placa ${hacia === 'arriba' ? 'positiva' : 'negativa'}) y no sale por la rendija.` });
+        pasos.push({ t: 'Esta partícula', html: `Con v = ${f(v)} m/s, $F_e = |q| E$ = ${f(FE)} N y $F_m = |q| v B$ = ${f(FB)} N. ${v > vs ? 'Va más deprisa de lo necesario y gana la fuerza magnética' : 'Va más despacio de lo necesario y gana la fuerza eléctrica'}: se desvía hacia <b>${hacia}</b> (la placa ${hacia === 'arriba' ? 'positiva' : 'negativa'}) y no sale por la rendija.` });
       }
     }
     const B2 = num(sc, 'B2', 'el campo B del espectrómetro', { opcional: true });
     let r2 = null;
     if (B2 !== null) {
       r2 = (P.m * v) / (aq * B2);
-      pasos.push({ t: 'Espectrómetro de masas', html: `Al salir entra en un campo B′ = ${f(B2)} T sin campo eléctrico y describe media circunferencia de radio r = m v/(|q| B′) = ${f(P.m)}·${f(v)} / (${f(aq)}·${f(B2)}) = <b>${f(r2)} m</b>. Choca con la placa a 2r = <b>${f(2 * r2)} m</b> de la rendija. Como v es la misma para todas las que salen, r es proporcional a m/q: así se separan los isótopos.` });
+      pasos.push({ t: 'Espectrómetro de masas', html: `Al salir entra en un campo B′ = ${f(B2)} T sin campo eléctrico y describe media circunferencia de radio $r = {m v}/{|q| B′} = {${f(P.m)}·${f(v)}}/{${f(aq)}·${f(B2)}}$ = <b>${f(r2)} m</b>. Choca con la placa a 2r = <b>${f(2 * r2)} m</b> de la rendija. Como v es la misma para todas las que salen, r es proporcional a m/q: así se separan los isótopos.` });
     }
     const m2 = num(sc, 'm2', 'la masa del segundo isótopo', { opcional: true });
     let rb = null, sepa = null;
     if (m2 !== null) {
       if (B2 === null) throw new Error('Para separar dos isótopos hace falta el campo B′ del espectrómetro');
       const mb = m2 * U; rb = (mb * vs) / (aq * B2); sepa = 2 * Math.abs(rb - (P.m * vs) / (aq * B2));
-      pasos.push({ t: 'Segundo isótopo', html: `Un isótopo de ${f(m2)} u (m′ = ${f(m2)}·${f(U)} = ${f(mb)} kg) con la misma carga sale del selector con la misma v = ${f(vs)} m/s y describe r′ = m′ v/(|q| B′) = <b>${f(rb)} m</b>. Los impactos quedan separados Δx = 2|r′ − r| = 2 v |m′ − m|/(|q| B′) = <b>${f(sepa)} m</b>.` });
+      pasos.push({ t: 'Segundo isótopo', html: `Un isótopo de ${f(m2)} u (m′ = ${f(m2)}·${f(U)} = ${f(mb)} kg) con la misma carga sale del selector con la misma v = ${f(vs)} m/s y describe $r′ = {m′ v}/{|q| B′}$ = <b>${f(rb)} m</b>. Los impactos quedan separados $Δx = 2|r′ − r| = {2 v |m′ − m|}/{|q| B′}$ = <b>${f(sepa)} m</b>.` });
     }
     return { modo: 'selector', P, E, B, vs, v, dado: v0 !== null, FE, FB, des, hacia, B2, r2, m2, rb, sepa, pasos };
   }
@@ -139,12 +139,12 @@ const Fuerza = (() => {
     const pasos = [], P = particula(sc), B = num(sc, 'B', 'el campo B'), R = num(sc, 'R', 'el radio de las des'), V = num(sc, 'V', 'la diferencia de potencial', { opcional: true }), aq = Math.abs(P.q);
     if (P.pre) pasos.push({ t: 'Datos de la partícula', html: datosP(P) });
     const fr = (aq * B) / (2 * Math.PI * P.m), vmax = (aq * B * R) / P.m, Ec = 0.5 * P.m * vmax * vmax;
-    pasos.push({ t: 'Frecuencia del oscilador', html: `Dentro de las des la partícula da medias vueltas con T = 2π m/(|q| B), que no depende del radio. La tensión entre las des tiene que cambiar de signo con esa frecuencia: f = |q| B/(2π m) = ${f(aq)}·${f(B)} / (2π·${f(P.m)}) = <b>${f(fr)} Hz</b>` });
-    pasos.push({ t: 'Velocidad y energía al salir', html: `Sale cuando su radio es el de las des: R = m v/(|q| B) ⇒ v<sub>máx</sub> = |q| B R/m = <b>${f(vmax)} m/s</b>${vmax > 0.1 * C ? ' (más del 10 % de c: el cálculo clásico ya no es exacto)' : ''}. E<sub>c</sub> = ½ m v<sub>máx</sub><sup>2</sup> = q<sup>2</sup>B<sup>2</sup>R<sup>2</sup>/(2m) = <b>${f(Ec)} J</b> = ${f(Ec / E0 / 1e6)} MeV` });
+    pasos.push({ t: 'Frecuencia del oscilador', html: `Dentro de las des la partícula da medias vueltas con $T = {2π m}/{|q| B}$, que no depende del radio. La tensión entre las des tiene que cambiar de signo con esa frecuencia: $f = {|q| B}/{2π m} = {${f(aq)}·${f(B)}}/{2π·${f(P.m)}}$ = <b>${f(fr)} Hz</b>` });
+    pasos.push({ t: 'Velocidad y energía al salir', html: `Sale cuando su radio es el de las des: $R = {m v}/{|q| B} ⇒ v_máx = {|q| B R}/m$ = <b>${f(vmax)} m/s</b>${vmax > 0.1 * C ? ' (más del 10 % de c: el cálculo clásico ya no es exacto)' : ''}. $E_c = 1/2 m v_máx^2 = {q^2 B^2 R^2}/{2m}$ = <b>${f(Ec)} J</b> = ${f(Ec / E0 / 1e6)} MeV` });
     let n = null, t = null;
     if (V !== null) {
       n = Ec / (2 * aq * V); t = n / fr;
-      pasos.push({ t: 'Vueltas', html: `En cada vuelta cruza dos veces el hueco entre las des y gana 2|q|ΔV = ${f(2 * aq * V)} J. Necesita n = E<sub>c</sub>/(2|q|ΔV) = <b>${f(n)} vueltas</b>, que tarda t = n T = <b>${f(t)} s</b>.` });
+      pasos.push({ t: 'Vueltas', html: `En cada vuelta cruza dos veces el hueco entre las des y gana 2|q|ΔV = ${f(2 * aq * V)} J. Necesita $n = {E_c}/{2|q|ΔV}$ = <b>${f(n)} vueltas</b>, que tarda $t = n T$ = <b>${f(t)} s</b>.` });
     }
     return { modo: 'ciclotron', P, B, R, V, fr, T: 1 / fr, vmax, Ec, n, t, pasos };
   }
@@ -157,14 +157,14 @@ const Fuerza = (() => {
     const s = Math.abs(Math.sin((th * Math.PI) / 180)) < 1e-12 ? 0 : Math.sin((th * Math.PI) / 180), F = I * L * B * s;
     // I a la derecha y B entrante: F hacia arriba
     const arriba = (sc.sentidoI !== 'izquierda') === (sc.sentidoB !== 'saliente'), pasos = [];
-    pasos.push({ t: 'Fuerza sobre el hilo', html: `F = I L B sen θ = ${f(I)}·${f(L)}·${f(B)}${th === 90 ? '' : `·sen ${f(th)}°`} = <b>${f(F)} N</b> (${f(F / L)} N por metro). Es F = I L × B, con L en el sentido de la corriente.` });
+    pasos.push({ t: 'Fuerza sobre el hilo', html: `$F = I L B sen θ = ${f(I)}·${f(L)}·${f(B)}${th === 90 ? '' : `·sen ${f(th)}°`}$ = <b>${f(F)} N</b> (${f(F / L)} N por metro). Es $F = I L × B$, con L en el sentido de la corriente.` });
     if (s) pasos.push({ t: 'Sentido', html: `Con la corriente hacia la ${sc.sentidoI === 'izquierda' ? 'izquierda' : 'derecha'} y B ${sc.sentidoB === 'saliente' ? 'saliente (⊙)' : 'entrante (⊗)'}, L × B apunta hacia <b>${arriba ? 'arriba' : 'abajo'}</b> (regla de la mano derecha: dedos de L a B, el pulgar da F).` });
     else pasos.push({ t: 'Sentido', html: 'El hilo es paralelo al campo: no hay fuerza.' });
     let Iflota = null;
     if (m !== null) {
       const P = m * G;
       if (!s) pasos.push({ t: 'Para que flote', html: 'Paralelo al campo no hay fuerza magnética que equilibre el peso.' });
-      else { Iflota = P / (L * B * s); pasos.push({ t: 'Para que flote', html: `El peso es m g = ${f(m)}·9,8 = ${f(P)} N. La fuerza magnética tiene que ser igual y hacia arriba: I = m g/(L B sen θ) = <b>${f(Iflota)} A</b>${arriba ? '' : ', con la corriente al revés (ahora empuja hacia abajo)'}. ${F >= P - 1e-12 ? (arriba ? `Con ${f(I)} A el hilo sube.` : '') : `Con ${f(I)} A no basta.`}` }); }
+      else { Iflota = P / (L * B * s); pasos.push({ t: 'Para que flote', html: `El peso es $m g = ${f(m)}·9,8$ = ${f(P)} N. La fuerza magnética tiene que ser igual y hacia arriba: $I = {m g}/{L B sen θ}$ = <b>${f(Iflota)} A</b>${arriba ? '' : ', con la corriente al revés (ahora empuja hacia abajo)'}. ${F >= P - 1e-12 ? (arriba ? `Con ${f(I)} A el hilo sube.` : '') : `Con ${f(I)} A no basta.`}` }); }
     }
     return { modo: 'hilo', I, L, B, th, F, arriba: s ? arriba : null, m, Iflota, sentidoB: sc.sentidoB, sentidoI: sc.sentidoI, pasos };
   }
@@ -174,8 +174,8 @@ const Fuerza = (() => {
   function paralelos(sc) {
     const I1 = num(sc, 'I1', 'la corriente I₁'), I2 = num(sc, 'I2', 'la corriente I₂'), d = num(sc, 'd', 'la distancia d'), L = num(sc, 'L', 'la longitud L', { opcional: true }), mismo = sc.sentido !== 'opuesto';
     const B1 = (MU0 * I1) / (2 * Math.PI * d), B2 = (MU0 * I2) / (2 * Math.PI * d), FL = B1 * I2, F = L !== null ? FL * L : null, pasos = [];
-    pasos.push({ t: 'Campo de un hilo en el otro', html: `El hilo 1 crea en el hilo 2 un campo B<sub>1</sub> = μ<sub>0</sub> I<sub>1</sub>/(2π d) = 4π·10<sup>−7</sup>·${f(I1)} / (2π·${f(d)}) = <b>${f(B1)} T</b>, perpendicular al hilo 2 (y el 2 crea en el 1 B<sub>2</sub> = ${f(B2)} T).` });
-    pasos.push({ t: 'Fuerza por unidad de longitud', html: `F/L = I<sub>2</sub> B<sub>1</sub> = μ<sub>0</sub> I<sub>1</sub> I<sub>2</sub>/(2π d) = <b>${f(FL)} N/m</b>, la misma sobre cada hilo (acción y reacción).${F !== null ? ` En ${f(L)} m: F = <b>${f(F)} N</b>.` : ''}` });
+    pasos.push({ t: 'Campo de un hilo en el otro', html: `El hilo 1 crea en el hilo 2 un campo $B_1 = {μ_0 I_1}/{2π d} = {4π·10^{−7}·${f(I1)}}/{2π·${f(d)}}$ = <b>${f(B1)} T</b>, perpendicular al hilo 2 (y el 2 crea en el 1 B<sub>2</sub> = ${f(B2)} T).` });
+    pasos.push({ t: 'Fuerza por unidad de longitud', html: `$F/L = I_2 B_1 = {μ_0 I_1 I_2}/{2π d}$ = <b>${f(FL)} N/m</b>, la misma sobre cada hilo (acción y reacción).${F !== null ? ` En ${f(L)} m: F = <b>${f(F)} N</b>.` : ''}` });
     pasos.push({ t: 'Sentido', html: mismo ? 'Las corrientes van en el mismo sentido: los hilos se <b>atraen</b>.' : 'Las corrientes van en sentidos contrarios: los hilos se <b>repelen</b>.' });
     return { modo: 'paralelos', I1, I2, d, L, B1, B2, FL, F, mismo, pasos };
   }
@@ -186,14 +186,14 @@ const Fuerza = (() => {
     const pasos = [], P = particula(sc), v = velocidad(sc, P, pasos), B = num(sc, 'B', 'el campo B'), d = num(sc, 'd', 'la anchura d de la franja'), aq = Math.abs(P.q);
     if (P.pre) pasos.unshift({ t: 'Datos de la partícula', html: datosP(P) });
     const r = (P.m * v) / (aq * B), w = (aq * B) / P.m, T = (2 * Math.PI) / w, gi = giro(P.q, sc.sentidoB), hacia = gi === 'antihorario' ? 'arriba' : 'abajo';
-    pasos.push({ t: 'Radio dentro del campo', html: `Dentro de la franja describe un arco de circunferencia de radio r = m v/(|q| B) = ${f(P.m)}·${f(v)} / (${f(aq)}·${f(B)}) = <b>${f(r)} m</b>, que se curva hacia <b>${hacia}</b> (F = q v × B con B ${sc.sentidoB === 'saliente' ? 'saliente' : 'entrante'} y la carga ${P.q > 0 ? 'positiva' : 'negativa'}).` });
+    pasos.push({ t: 'Radio dentro del campo', html: `Dentro de la franja describe un arco de circunferencia de radio $r = {m v}/{|q| B} = {${f(P.m)}·${f(v)}}/{${f(aq)}·${f(B)}}$ = <b>${f(r)} m</b>, que se curva hacia <b>${hacia}</b> (F = q v × B con B ${sc.sentidoB === 'saliente' ? 'saliente' : 'entrante'} y la carga ${P.q > 0 ? 'positiva' : 'negativa'}).` });
     if (r > d) {
       const a = Math.asin(d / r), y = r * (1 - Math.cos(a)), t = a / w;
-      pasos.push({ t: 'Sale por el otro lado', html: `Como r > d, la atraviesa. El centro del arco está en el borde de entrada, así que al salir sen α = d/r = ${f(d)} / ${f(r)} = ${f(d / r)} y la velocidad se ha desviado <b>α = ${f((a * 180) / Math.PI)}°</b>.` });
-      pasos.push({ t: 'Desplazamiento y tiempo', html: `Sale ${hacia === 'arriba' ? 'por encima' : 'por debajo'} de donde entró, a y = r (1 − cos α) = <b>${f(y)} m</b>, y tarda t = α/ω = α m/(|q| B) = <b>${f(t)} s</b> en cruzar. Con la misma rapidez: el campo no cambia el módulo de v.` });
+      pasos.push({ t: 'Sale por el otro lado', html: `Como r > d, la atraviesa. El centro del arco está en el borde de entrada, así que al salir $sen α = d/r = ${f(d)}/${f(r)}$ = ${f(d / r)} y la velocidad se ha desviado <b>α = ${f((a * 180) / Math.PI)}°</b>.` });
+      pasos.push({ t: 'Desplazamiento y tiempo', html: `Sale ${hacia === 'arriba' ? 'por encima' : 'por debajo'} de donde entró, a $y = r (1 − cos α)$ = <b>${f(y)} m</b>, y tarda $t = α/ω = {α m}/{|q| B}$ = <b>${f(t)} s</b> en cruzar. Con la misma rapidez: el campo no cambia el módulo de v.` });
       return { modo: 'franja', P, v, B, d, r, T, cruza: true, alfa: (a * 180) / Math.PI, y, t, hacia, sentidoB: sc.sentidoB, pasos };
     }
-    pasos.push({ t: 'Vuelve hacia atrás', html: `Como r ≤ d, no llega al otro borde: describe media circunferencia y sale por el mismo borde, en sentido contrario, a 2r = <b>${f(2 * r)} m</b> ${hacia === 'arriba' ? 'por encima' : 'por debajo'} del punto de entrada. Tarda medio periodo, t = π m/(|q| B) = <b>${f(T / 2)} s</b>, y llega a ${f(r)} m del borde.` });
+    pasos.push({ t: 'Vuelve hacia atrás', html: `Como r ≤ d, no llega al otro borde: describe media circunferencia y sale por el mismo borde, en sentido contrario, a 2r = <b>${f(2 * r)} m</b> ${hacia === 'arriba' ? 'por encima' : 'por debajo'} del punto de entrada. Tarda medio periodo, $t = {π m}/{|q| B}$ = <b>${f(T / 2)} s</b>, y llega a ${f(r)} m del borde.` });
     return { modo: 'franja', P, v, B, d, r, T, cruza: false, alfa: 180, y: 2 * r, t: T / 2, hacia, sentidoB: sc.sentidoB, pasos };
   }
 
@@ -203,15 +203,15 @@ const Fuerza = (() => {
     const pasos = [], P = particula(sc), E = num(sc, 'E', 'el campo eléctrico E'), B = num(sc, 'B', 'el campo B'), v0 = num(sc, 'v0', 'la velocidad inicial', { signo: true, def: 0 }), aq = Math.abs(P.q);
     if (P.pre) pasos.push({ t: 'Datos de la partícula', html: datosP(P) });
     const vd = E / B, w = (aq * B) / P.m, T = (2 * Math.PI) / w, u = v0 - vd, R = Math.abs(u) / w, sube = u * P.q < 0;
-    pasos.push({ t: 'Velocidad de deriva', html: `Con E ⊥ B, si la partícula fuera a v<sub>d</sub> = E/B las fuerzas eléctrica y magnética se anularían. Por eso conviene mirarla desde un sistema que avanza con v<sub>d</sub> = ${f(E)} / ${f(B)} = <b>${f(vd)} m/s</b>, en el sentido de E × B (hacia la derecha), sea cual sea el signo de la carga.` });
+    pasos.push({ t: 'Velocidad de deriva', html: `Con E ⊥ B, si la partícula fuera a $v_d = E/B$ las fuerzas eléctrica y magnética se anularían. Por eso conviene mirarla desde un sistema que avanza con $v_d = ${f(E)}/${f(B)}$ = <b>${f(vd)} m/s</b>, en el sentido de E × B (hacia la derecha), sea cual sea el signo de la carga.` });
     if (Math.abs(u) < 1e-9 * vd) {
       pasos.push({ t: 'Movimiento', html: `Su velocidad inicial es justo E/B: las dos fuerzas se anulan y sigue en línea recta (es el selector de velocidades).` });
       return { modo: 'cruzados', P, E, B, v0, vd, w, T, u: 0, R: 0, h: 0, vmax: vd, avance: vd * T, sube, pasos };
     }
-    pasos.push({ t: 'En el sistema que avanza', html: `Allí la partícula tiene velocidad u = v<sub>0</sub> − v<sub>d</sub> = ${f(u)} m/s y solo nota el campo B: gira en una circunferencia de radio R = m|u|/(|q| B) = <b>${f(R)} m</b> con ω = |q| B/m = ${f(w)} rad/s y periodo T = <b>${f(T)} s</b>.` });
+    pasos.push({ t: 'En el sistema que avanza', html: `Allí la partícula tiene velocidad $u = v_0 − v_d$ = ${f(u)} m/s y solo nota el campo B: gira en una circunferencia de radio $R = {m |u|}/{|q| B}$ = <b>${f(R)} m</b> con $ω = {|q| B}/m$ = ${f(w)} rad/s y periodo T = <b>${f(T)} s</b>.` });
     const h = 2 * R, vmax = vd + Math.abs(u), avance = vd * T;
-    pasos.push({ t: 'Trayectoria', html: `Sumando el avance, ${Math.abs(Math.abs(u) - vd) < 1e-9 * vd ? `${v0 === 0 ? 'parte del reposo y ' : ''}describe una <b>cicloide</b> (con picos en los que se para)` : Math.abs(u) > vd ? 'describe una <b>trocoide con bucles</b> (a ratos va hacia atrás)' : 'describe una <b>cicloide acortada</b>, ondulada y sin pararse'}: x(t) = v<sub>d</sub> t + (u/ω) sen ωt, y(t) = (u/ω)(cos ωt − 1), con ω = qB/m con su signo. Se aleja como mucho h = 2R = <b>${f(h)} m</b> ${sube ? 'hacia arriba' : 'hacia abajo'} de la recta inicial, avanza ${f(avance)} m en cada periodo y su rapidez máxima es v<sub>d</sub> + |u| = <b>${f(vmax)} m/s</b>.` });
-    if (v0 === 0) pasos.push({ t: 'Comprobación con la energía', html: `En lo más alto ha ganado E<sub>c</sub> = |q| E h = ${f(aq)}·${f(E)}·${f(h)} = ${f(aq * E * h)} J, y ½ m (2E/B)<sup>2</sup> = ${f(0.5 * P.m * vmax * vmax)} J: lo mismo, porque B no hace trabajo.` });
+    pasos.push({ t: 'Trayectoria', html: `Sumando el avance, ${Math.abs(Math.abs(u) - vd) < 1e-9 * vd ? `${v0 === 0 ? 'parte del reposo y ' : ''}describe una <b>cicloide</b> (con picos en los que se para)` : Math.abs(u) > vd ? 'describe una <b>trocoide con bucles</b> (a ratos va hacia atrás)' : 'describe una <b>cicloide acortada</b>, ondulada y sin pararse'}: $x(t) = v_d t + u/ω sen(ω t)$, $y(t) = u/ω (cos(ω t) − 1)$, con ω = qB/m con su signo. Se aleja como mucho $h = 2R$ = <b>${f(h)} m</b> ${sube ? 'hacia arriba' : 'hacia abajo'} de la recta inicial, avanza ${f(avance)} m en cada periodo y su rapidez máxima es $v_d + |u|$ = <b>${f(vmax)} m/s</b>.` });
+    if (v0 === 0) pasos.push({ t: 'Comprobación con la energía', html: `En lo más alto ha ganado $E_c = |q| E h = ${f(aq)}·${f(E)}·${f(h)}$ = ${f(aq * E * h)} J, y $1/2 m (2E/B)^2$ = ${f(0.5 * P.m * vmax * vmax)} J: lo mismo, porque B no hace trabajo.` });
     return { modo: 'cruzados', P, E, B, v0, vd, w, T, u, R, h, vmax, avance, sube, pasos };
   }
 
@@ -220,12 +220,12 @@ const Fuerza = (() => {
   function hall(sc) {
     const pasos = [], I = num(sc, 'I', 'la corriente I'), B = num(sc, 'B', 'el campo B'), t = num(sc, 't', 'el grosor t'), w = num(sc, 'w', 'la anchura', { opcional: true }), e = sc.portador === 'huecos';
     let n, VH;
-    if (sc.dato === 'VH') { VH = num(sc, 'VH', 'la tensión Hall'); n = (I * B) / (E0 * t * VH); pasos.push({ t: 'Densidad de portadores', html: `De V<sub>H</sub> = I B/(n e t) se despeja n = I B/(e t V<sub>H</sub>) = ${f(I)}·${f(B)} / (${f(E0)}·${f(t)}·${f(VH)}) = <b>${f(n)} m<sup>−3</sup></b>.` }); }
-    else { n = num(sc, 'n', 'la densidad de portadores n'); VH = (I * B) / (n * E0 * t); pasos.push({ t: 'Tensión Hall', html: `En equilibrio la fuerza eléctrica del campo Hall anula la magnética: e E<sub>H</sub> = e v<sub>d</sub> B. Con I = n e v<sub>d</sub> w t y V<sub>H</sub> = E<sub>H</sub> w queda V<sub>H</sub> = I B/(n e t) = ${f(I)}·${f(B)} / (${f(n)}·${f(E0)}·${f(t)}) = <b>${f(VH)} V</b>. No depende de la anchura.` }); }
+    if (sc.dato === 'VH') { VH = num(sc, 'VH', 'la tensión Hall'); n = (I * B) / (E0 * t * VH); pasos.push({ t: 'Densidad de portadores', html: `De $V_H = {I B}/{n e t}$ se despeja $n = {I B}/{e t V_H} = {${f(I)}·${f(B)}}/{${f(E0)}·${f(t)}·${f(VH)}}$ = <b>${f(n)} m<sup>−3</sup></b>.` }); }
+    else { n = num(sc, 'n', 'la densidad de portadores n'); VH = (I * B) / (n * E0 * t); pasos.push({ t: 'Tensión Hall', html: `En equilibrio la fuerza eléctrica del campo Hall anula la magnética: $e E_H = e v_d B$. Con $I = n e v_d w t$ y $V_H = E_H w$ queda $V_H = {I B}/{n e t} = {${f(I)}·${f(B)}}/{${f(n)}·${f(E0)}·${f(t)}}$ = <b>${f(VH)} V</b>. No depende de la anchura.` }); }
     const RH = (e ? 1 : -1) / (n * E0);
-    pasos.push({ t: 'Coeficiente de Hall', html: `R<sub>H</sub> = 1/(n q) = <b>${f(RH)} m<sup>3</sup>/C</b>, ${e ? 'positivo porque los portadores son huecos' : 'negativo porque los portadores son electrones'}.` });
+    pasos.push({ t: 'Coeficiente de Hall', html: `$R_H = 1/{n q}$ = <b>${f(RH)} m<sup>3</sup>/C</b>, ${e ? 'positivo porque los portadores son huecos' : 'negativo porque los portadores son electrones'}.` });
     let vd = null, EH = null;
-    if (w !== null) { vd = I / (n * E0 * w * t); EH = VH / w; pasos.push({ t: 'Velocidad de arrastre y campo Hall', html: `v<sub>d</sub> = I/(n e w t) = <b>${f(vd)} m/s</b> y E<sub>H</sub> = V<sub>H</sub>/w = v<sub>d</sub> B = <b>${f(EH)} V/m</b>.` }); }
+    if (w !== null) { vd = I / (n * E0 * w * t); EH = VH / w; pasos.push({ t: 'Velocidad de arrastre y campo Hall', html: `$v_d = I/{n e w t}$ = <b>${f(vd)} m/s</b> y $E_H = {V_H}/w = v_d B$ = <b>${f(EH)} V/m</b>.` }); }
     // corriente hacia la derecha: la fuerza magnética lleva a los portadores arriba con B entrante (sean electrones o huecos)
     const arriba = sc.sentidoB !== 'saliente', alta = (e === arriba) ? 'de arriba' : 'de abajo';
     pasos.push({ t: 'Qué cara queda a más potencial', html: `Con la corriente hacia la derecha y B ${arriba ? 'entrante (⊗)' : 'saliente (⊙)'}, F = q v × B lleva a los portadores hacia ${arriba ? 'arriba' : 'abajo'} tanto si son electrones (q < 0 y v hacia la izquierda) como huecos. Allí se acumulan: ${e ? 'los huecos dejan positiva' : 'los electrones dejan negativa'} esa cara, y la cara <b>${alta}</b> queda a más potencial. Así se sabe el signo de los portadores.` });
@@ -241,10 +241,10 @@ const Fuerza = (() => {
     if (circ) { R = num(sc, 'R', 'el radio R'); S = Math.PI * R * R; }
     else { a = num(sc, 'a', 'el lado a'); b = num(sc, 'b', 'el lado b'); S = a * b; }
     const rad = (th * Math.PI) / 180, s = Math.abs(Math.sin(rad)) < 1e-12 ? 0 : Math.sin(rad), c = Math.abs(Math.cos(rad)) < 1e-12 ? 0 : Math.cos(rad), m = N * I * S, tau = m * B * s, Ue = -m * B * c, W = m * B * (1 - c);
-    pasos.push({ t: 'Momento magnético', html: `S = ${circ ? `π R<sup>2</sup> = π·${f(R)}<sup>2</sup>` : `a b = ${f(a)}·${f(b)}`} = ${f(S)} m<sup>2</sup> y m = N I S = ${f(N)}·${f(I)}·${f(S)} = <b>${f(m)} A·m<sup>2</sup></b>, perpendicular a la espira (regla de la mano derecha con la corriente).` });
-    if (!circ) pasos.push({ t: 'Fuerzas sobre los lados', html: `Los lados a (perpendiculares a B) sufren F = N I a B = ${f(N * I * a * B)} N, iguales y opuestas: no desplazan la espira, pero forman un par de brazo b sen θ. Las de los lados b se anulan en la misma recta.` });
-    pasos.push({ t: 'Par', html: `τ = m × B, |τ| = m B sen θ = N I S B sen θ = ${f(m)}·${f(B)}${th === 90 ? '' : `·sen ${f(th)}°`} = <b>${f(tau)} N·m</b>. ${s ? 'Tiende a girar la espira para poner m paralelo a B.' : 'Es nulo: m es paralelo (o antiparalelo) a B.'} El par máximo, con la normal perpendicular a B, es ${f(m * B)} N·m.` });
-    pasos.push({ t: 'Energía', html: `U = −m · B = −m B cos θ = <b>${f(Ue)} J</b>. El equilibrio estable es θ = 0° (U = −mB) y el inestable θ = 180°. Para llevarla desde θ = 0° hasta ${f(th)}° hay que hacer W = m B (1 − cos θ) = <b>${f(W)} J</b>.` });
+    pasos.push({ t: 'Momento magnético', html: `$S = ${circ ? `π R^2 = π·${f(R)}^2` : `a b = ${f(a)}·${f(b)}`}$ = ${f(S)} m<sup>2</sup> y $m = N I S = ${f(N)}·${f(I)}·${f(S)}$ = <b>${f(m)} A·m<sup>2</sup></b>, perpendicular a la espira (regla de la mano derecha con la corriente).` });
+    if (!circ) pasos.push({ t: 'Fuerzas sobre los lados', html: `Los lados a (perpendiculares a B) sufren $F = N I a B$ = ${f(N * I * a * B)} N, iguales y opuestas: no desplazan la espira, pero forman un par de brazo b sen θ. Las de los lados b se anulan en la misma recta.` });
+    pasos.push({ t: 'Par', html: `$τ = m × B$, $|τ| = m B sen θ = N I S B sen θ = ${f(m)}·${f(B)}${th === 90 ? '' : `·sen ${f(th)}°`}$ = <b>${f(tau)} N·m</b>. ${s ? 'Tiende a girar la espira para poner m paralelo a B.' : 'Es nulo: m es paralelo (o antiparalelo) a B.'} El par máximo, con la normal perpendicular a B, es ${f(m * B)} N·m.` });
+    pasos.push({ t: 'Energía', html: `$U = −m · B = −m B cos θ$ = <b>${f(Ue)} J</b>. El equilibrio estable es θ = 0° (U = −mB) y el inestable θ = 180°. Para llevarla desde θ = 0° hasta ${f(th)}° hay que hacer $W = m B (1 − cos θ)$ = <b>${f(W)} J</b>.` });
     return { modo: 'espira', N, I, B, th, circ, a, b, R, S, m, tau, U: Ue, W, pasos };
   }
 

@@ -80,8 +80,8 @@ const OndasEM = (() => {
     const fr = dato === 'f' ? x : dato === 'lambda' ? v / x : dato === 'omega' ? x / (2 * Math.PI) : (x * v) / (2 * Math.PI);
     return { dato, x, fr, w: 2 * Math.PI * fr, k: (2 * Math.PI * fr) / v, lam: v / fr, T: 1 / fr };
   }
-  const medioTxt = (M) => (M.vacioM ? 'En el vacío: v = c = 1/√(μ<sub>0</sub>ε<sub>0</sub>) = 2,998·10<sup>8</sup> m/s, η<sub>0</sub> = √(μ<sub>0</sub>/ε<sub>0</sub>) = 376,7 Ω'
-    : `Medio con ε<sub>r</sub> = ${f(M.er)}${M.mr !== 1 ? ` y μ<sub>r</sub> = ${f(M.mr)}` : ''}: índice n = √(ε<sub>r</sub>μ<sub>r</sub>) = ${f(M.n)}, v = c/n = ${f(M.v)} m/s, η = √(μ/ε) = η<sub>0</sub>·√(μ<sub>r</sub>/ε<sub>r</sub>) = ${f(M.eta)} Ω`);
+  const medioTxt = (M) => (M.vacioM ? 'En el vacío: $v = c = 1/√(μ_0 ε_0)$ = 2,998·10<sup>8</sup> m/s, $η_0 = √(μ_0/ε_0)$ = 376,7 Ω'
+    : `Medio con ε<sub>r</sub> = ${f(M.er)}${M.mr !== 1 ? ` y μ<sub>r</sub> = ${f(M.mr)}` : ''}: índice $n = √(ε_r μ_r)$ = ${f(M.n)}, $v = c/n$ = ${f(M.v)} m/s, $η = √(μ/ε) = η_0 √(μ_r/ε_r)$ = ${f(M.eta)} Ω`);
 
   /* ---------- Onda plana ---------- */
   function onda(sc) {
@@ -96,8 +96,8 @@ const OndasEM = (() => {
     const dG = tp === 'circular' ? (sc.giro === 'horario' ? -90 : 90) : tp === 'eliptica' ? leeNum(vacio(sc.delta) ? '90' : sc.delta) : 0, dl = (dG * Math.PI) / 180;
     if (!isFinite(dl)) throw new Error('El desfase δ debe ser un número (en grados)');
     if (!sc.previos) pasos.push({ t: 'Medio', html: medioTxt(M) });
-    const fTxt = { f: `f = ${f(F.fr)} Hz ⇒ ω = 2πf = ${f(F.w)} rad/s`, lambda: `λ = ${f(F.x)} m ⇒ f = v/λ = ${f(M.v)}/${f(F.x)} = ${f(F.fr)} Hz, ω = 2πf = ${f(F.w)} rad/s`, omega: `ω = ${f(F.w)} rad/s ⇒ f = ω/(2π) = ${f(F.fr)} Hz`, k: `k = ${f(F.x)} rad/m ⇒ ω = kv = ${f(F.w)} rad/s, f = ${f(F.fr)} Hz` }[F.dato];
-    pasos.push({ t: 'Frecuencia, longitud de onda y número de onda', html: `${fTxt}<br>λ = v/f = <b>${f(F.lam)} m</b>, &ensp; k = 2π/λ = ω/v = <b>${f(F.k)} rad/m</b>, &ensp; T = 1/f = ${f(F.T)} s${M.vacioM ? '' : `<br>En el vacío tendría λ<sub>0</sub> = c/f = ${f(C0 / F.fr)} m: dentro del medio λ = λ<sub>0</sub>/n.`}<br>Zona del espectro: ${banda(F.fr)}` });
+    const fTxt = { f: `f = ${f(F.fr)} Hz ⇒ $ω = 2π f$ = ${f(F.w)} rad/s`, lambda: `λ = ${f(F.x)} m ⇒ $f = v/λ = ${f(M.v)}/${f(F.x)}$ = ${f(F.fr)} Hz, $ω = 2π f$ = ${f(F.w)} rad/s`, omega: `ω = ${f(F.w)} rad/s ⇒ $f = ω/(2π)$ = ${f(F.fr)} Hz`, k: `k = ${f(F.x)} rad/m ⇒ $ω = k v$ = ${f(F.w)} rad/s, f = ${f(F.fr)} Hz` }[F.dato];
+    pasos.push({ t: 'Frecuencia, longitud de onda y número de onda', html: `${fTxt}<br>$λ = v/f$ = <b>${f(F.lam)} m</b>, &ensp; $k = {2π}/λ = ω/v$ = <b>${f(F.k)} rad/m</b>, &ensp; $T = 1/f$ = ${f(F.T)} s${M.vacioM ? '' : `<br>En el vacío tendría $λ_0 = c/f$ = ${f(C0 / F.fr)} m: dentro del medio $λ = {λ_0}/n$.`}<br>Zona del espectro: ${banda(F.fr)}` });
     // con un eje se escribe kz + ωt; en otra dirección, k·r − ωt con las componentes de k
     const ar = K.eje ? K.eje : 'r', fTxt2 = phi ? ` ${phi < 0 ? '−' : '+'} ${f(Math.abs(phi))}` : '';
     const fase = K.eje ? `${f(F.k)}${ar} ${K.signo > 0 ? '−' : '+'} ${f(F.w)}t${fTxt2}` : `${kr(K.v, F.k)} − ${f(F.w)}t${fTxt2}`;
@@ -105,7 +105,7 @@ const OndasEM = (() => {
     const Eexp = tp === 'lineal' ? `E(${ar}, t) = ${f(E0)} cos(${fase}) ${dirExp(Ed.v)} V/m` : `E(${ar}, t) = ${f(E0)} cos(${fase}) ${dirExp(Ed.v)} + ${f(E02)} cos(${fase2(dl)}) ${dirExp(Bv)} V/m`;
     const Bexp = tp === 'lineal' ? `B(${ar}, t) = ${f(B0)} cos(${fase}) ${dirExp(Bv)} T` : `B(${ar}, t) = ${f(B0)} cos(${fase}) ${dirExp(Bv)} + ${f(E02 / M.v)} cos(${fase2(dl)}) ${dirExp(menosE1)} T`;
     const ek = (v) => (vecTxt(v)[0] === '−' ? `(${vecTxt(v)})` : vecTxt(v));
-    pasos.push({ t: 'Campo magnético', html: `En una onda plana E, B y la dirección de propagación son perpendiculares entre sí y B<sub>0</sub> = E<sub>0</sub>/v = ${f(E0)}/${f(M.v)} = <b>${f(B0)} T</b><br>La dirección de B sale de k̂ = Ê × B̂, es decir B̂ = k̂ × Ê = ${ek(K.v)} × ${ek(Ed.v)} = <b>${vecTxt(Bv)}</b>` });
+    pasos.push({ t: 'Campo magnético', html: `En una onda plana E, B y la dirección de propagación son perpendiculares entre sí y $B_0 = {E_0}/v = ${f(E0)}/{${f(M.v)}}$ = <b>${f(B0)} T</b><br>La dirección de B sale de k̂ = Ê × B̂, es decir B̂ = k̂ × Ê = ${ek(K.v)} × ${ek(Ed.v)} = <b>${vecTxt(Bv)}</b>` });
     if (tp !== 'lineal') {
       const forma = tp === 'circular' || (Math.abs(E02 - E0) < 1e-12 * E0 && Math.abs(Math.abs(dG) - 90) < 1e-9) ? 'circular' : Math.abs(Math.sin(dl)) < 1e-12 || E02 === 0 ? 'lineal' : 'elíptica', gira = Math.sin(dl) > 0 ? 'antihorario' : 'horario';
       pasos.push({ t: 'Polarización', html: `E es la suma de dos ondas perpendiculares: E<sub>01</sub> = ${f(E0)} V/m según ${vecTxt(Ed.v)} y E<sub>02</sub> = ${f(E02)} V/m según k̂ × Ê = ${vecTxt(Bv)}, desfasadas δ = ${f(dG)}°. ${forma === 'lineal' ? 'Con δ = 0° o 180° siguen en fase y la polarización sigue siendo <b>lineal</b>, inclinada.' : `En un punto fijo la punta de E describe una ${forma === 'circular' ? '<b>circunferencia</b> (polarización circular: E<sub>01</sub> = E<sub>02</sub> y δ = ±90°)' : '<b>elipse</b> (polarización elíptica)'} y gira en sentido <b>${gira}</b> visto por quien recibe la onda (mirando hacia la fuente).`}${forma === 'circular' ? ` |E| es constante, ${f(E0)} V/m.` : ''}` });
@@ -113,8 +113,8 @@ const OndasEM = (() => {
     const pref = phi ? `, con fase inicial φ = ${f(phiG)}° = ${f(phi)} rad` : '';
     pasos.push({ t: 'Expresiones', html: `Con la forma cos(k·r − ωt + φ), que avanza hacia ${dirTxt(K.v)}${K.eje ? '' : ` (k = k k̂ = ${kr(K.v, F.k).replace(/([xyz])/g, (m) => ` ${GORRO[m]}`)} rad/m)`}${pref}:<br>${Eexp}<br>${Bexp}` });
     const I = (E0 * E0 + E02 * E02) / (2 * M.eta), u = 0.5 * M.eps * (E0 * E0 + E02 * E02);
-    pasos.push({ t: 'Energía e intensidad', html: `Vector de Poynting S = (E × B)/μ, en la dirección ${vecTxt(K.v)}. Su valor medio es la intensidad:<br>${tp === 'lineal' ? `I = E<sub>0</sub><sup>2</sup>/(2η) = ${f(E0)}<sup>2</sup>/(2·${f(M.eta)})` : `I = (E<sub>01</sub><sup>2</sup> + E<sub>02</sub><sup>2</sup>)/(2η) = (${f(E0)}<sup>2</sup> + ${f(E02)}<sup>2</sup>)/(2·${f(M.eta)})`} = <b>${f(I)} W/m<sup>2</sup></b><br>Densidad media de energía u = ½εE<sub>0</sub><sup>2</sup> = ${f(u)} J/m<sup>3</sup> (la mitad en E y la mitad en B), y I = u·v.<br>Valores eficaces: E<sub>ef</sub> = E<sub>0</sub>/√2 = ${f(E0 / Math.SQRT2)} V/m, B<sub>ef</sub> = ${f(B0 / Math.SQRT2)} T` });
-    pasos.push({ t: 'Presión de radiación', html: `Sobre una superficie que la absorbe, p = I/v = ${f(I / M.v)} Pa; si la refleja del todo, p = 2I/v = ${f((2 * I) / M.v)} Pa.` });
+    pasos.push({ t: 'Energía e intensidad', html: `Vector de Poynting $S = {E × B}/μ$, en la dirección ${vecTxt(K.v)}. Su valor medio es la intensidad:<br>${tp === 'lineal' ? `$I = {E_0^2}/{2η} = {${f(E0)}^2}/{2·${f(M.eta)}}$` : `$I = {E_01^2 + E_02^2}/{2η} = {${f(E0)}^2 + ${f(E02)}^2}/{2·${f(M.eta)}}$`} = <b>${f(I)} W/m<sup>2</sup></b><br>Densidad media de energía $u = 1/2 ε E_0^2$ = ${f(u)} J/m<sup>3</sup> (la mitad en E y la mitad en B), y $I = u v$.<br>Valores eficaces: $E_ef = {E_0}/√2$ = ${f(E0 / Math.SQRT2)} V/m, B<sub>ef</sub> = ${f(B0 / Math.SQRT2)} T` });
+    pasos.push({ t: 'Presión de radiación', html: `Sobre una superficie que la absorbe, $p = I/v$ = ${f(I / M.v)} Pa; si la refleja del todo, $p = {2I}/v$ = ${f((2 * I) / M.v)} Pa.` });
     return { modo: 'onda', M, F, E0, B0, K, Ed, Bv, I, u, Eexp, Bexp, fase, phi, tp, E02, dl, pa: I / M.v, alfa: 0, pasos };
   }
 
@@ -170,11 +170,11 @@ const OndasEM = (() => {
     pasos.push({ t: 'Lectura de la expresión', html: `${X.func === 'sen' ? 'sen θ = cos(θ − π/2). ' : ''}Comparando con ${campo}<sub>0</sub> cos(k·r − ωt + φ): amplitud ${campo}<sub>0</sub> = <b>${f(amp)} ${campo === 'E' ? 'V/m' : 'T'}</b> según ${vecTxt(dv)}, k = (${kv.map((c) => f(c)).join(', ')}) rad/m, de módulo k = <b>${f(k)} rad/m</b>, ω = <b>${f(w)} rad/s</b>${phi ? ` y φ = ${f(phi)} rad` : ''}.${nota} Se propaga hacia ${vecTxt(kh)}.` });
     if (n < 1 - 1e-3) throw new Error(`Con esos k y ω la onda iría a ω/k = ${f(v).replace(/<[^>]+>/g, '')} m/s, más deprisa que la luz: revisa la expresión`);
     const enVacio = Math.abs(n - 1) < 2e-3;
-    pasos.push({ t: 'Velocidad y medio', html: `v = ω/k = ${f(w)}/${f(k)} = <b>${f(v)} m/s</b>${enVacio ? ': es c, así que la onda va por el vacío (o el aire).' : `, menor que c: va por un medio de índice n = c/v = <b>${f(n)}</b> (si μ<sub>r</sub> = 1, ε<sub>r</sub> = n<sup>2</sup> = ${f(n * n)}).`}` });
+    pasos.push({ t: 'Velocidad y medio', html: `$v = ω/k = ${f(w)}/{${f(k)}}$ = <b>${f(v)} m/s</b>${enVacio ? ': es c, así que la onda va por el vacío (o el aire).' : `, menor que c: va por un medio de índice $n = c/v$ = <b>${f(n)}</b> (si μ<sub>r</sub> = 1, $ε_r = n^2$ = ${f(n * n)}).`}` });
     if (Math.abs(kh[0] * dv[0] + kh[1] * dv[1] + kh[2] * dv[2]) > 1e-6) throw new Error(`El campo ${campo} no es perpendicular a k: no es una onda plana transversal`);
     let ev = dv, E0 = amp;
     const vMedio = enVacio ? C0 : v;
-    if (campo === 'B') { ev = cruz(dv, kh); E0 = amp * vMedio; pasos.push({ t: 'Campo eléctrico', html: `E<sub>0</sub> = v B<sub>0</sub> = ${f(vMedio)}·${f(amp)} = <b>${f(E0)} V/m</b>, y como B̂ = k̂ × Ê, la dirección de E es Ê = B̂ × k̂ = ${vecTxt(unit(ev))}.` }); }
+    if (campo === 'B') { ev = cruz(dv, kh); E0 = amp * vMedio; pasos.push({ t: 'Campo eléctrico', html: `$E_0 = v B_0 = ${f(vMedio)}·${f(amp)}$ = <b>${f(E0)} V/m</b>, y como B̂ = k̂ × Ê, la dirección de E es Ê = B̂ × k̂ = ${vecTxt(unit(ev))}.` }); }
     const e = unit(ev), num = (x) => String(+x.toPrecision(12));
     const sc2 = { modo: 'onda', medio: enVacio ? 'vacio' : 'medio', er: num(n * n), mr: '1', dato: 'omega', valor: num(w), E0: num(E0), prop: 'otra', kx: num(kh[0]), ky: num(kh[1]), kz: num(kh[2]), pol: 'otra', ex: num(e[0]), ey: num(e[1]), ez: num(e[2]), fase: num((phi * 180) / Math.PI), previos: pasos };
     const r = onda(sc2);
@@ -186,20 +186,20 @@ const OndasEM = (() => {
   function incidencia(sc) {
     const M = medio(sc), F = frecuencia(sc, M.v), E0 = lee(sc, 'E0', 'la amplitud E₀ de la onda incidente'), pasos = [], cond = sc.destino !== 'dielectrico';
     const I0 = (E0 * E0) / (2 * M.eta), B0 = E0 / M.v;
-    pasos.push({ t: 'Medio de llegada', html: `${medioTxt(M)}<br>λ = ${f(F.lam)} m, k = ${f(F.k)} rad/m. La onda llega por z < 0 hacia +z: E<sub>i</sub> = ${f(E0)} cos(kz − ωt) î V/m, con I<sub>i</sub> = E<sub>0</sub><sup>2</sup>/(2η) = ${f(I0)} W/m<sup>2</sup>.` });
+    pasos.push({ t: 'Medio de llegada', html: `${medioTxt(M)}<br>λ = ${f(F.lam)} m, k = ${f(F.k)} rad/m. La onda llega por z < 0 hacia +z: E<sub>i</sub> = ${f(E0)} cos(kz − ωt) î V/m, con $I_i = {E_0^2}/{2η}$ = ${f(I0)} W/m<sup>2</sup>.` });
     if (cond) {
       const K = (2 * B0) / M.mu;
       pasos.push({ t: 'Onda reflejada', html: 'Dentro de un conductor perfecto E = 0 y, como E tangente es continuo, E = 0 en la superficie z = 0. Eso exige una onda reflejada E<sub>r</sub> = −E<sub>0</sub> cos(kz + ωt) î: el coeficiente de reflexión es <b>r = −1</b> y se refleja toda la energía.' });
-      pasos.push({ t: 'Onda estacionaria', html: `Sumando: E = E<sub>0</sub>[cos(kz − ωt) − cos(kz + ωt)] = <b>2E<sub>0</sub> sen(kz) sen(ωt) î</b> = ${f(2 * E0)} sen(${f(F.k)}z) sen(${f(F.w)}t) î V/m<br>B = (E<sub>0</sub>/v)[cos(kz − ωt) + cos(kz + ωt)] = <b>2B<sub>0</sub> cos(kz) cos(ωt) ĵ</b> = ${f(2 * B0)} cos(${f(F.k)}z) cos(${f(F.w)}t) ĵ T<br>Ya no avanza: cada punto oscila en su sitio, y E y B van desfasados un cuarto de periodo en el tiempo y un cuarto de λ en el espacio.` });
+      pasos.push({ t: 'Onda estacionaria', html: `Sumando: $E = E_0 [cos(k z − ω t) − cos(k z + ω t)] = 2E_0 sen(k z) sen(ω t) î$ = ${f(2 * E0)} sen(${f(F.k)}z) sen(${f(F.w)}t) î V/m<br>$B = {E_0}/v [cos(k z − ω t) + cos(k z + ω t)] = 2B_0 cos(k z) cos(ω t) ĵ$ = ${f(2 * B0)} cos(${f(F.k)}z) cos(${f(F.w)}t) ĵ T<br>Ya no avanza: cada punto oscila en su sitio, y E y B van desfasados un cuarto de periodo en el tiempo y un cuarto de λ en el espacio.` });
       pasos.push({ t: 'Nodos y vientres', html: `E es nulo siempre en los planos z = −nλ/2 = 0, −${f(F.lam / 2)}, −${f(F.lam)} m… (nodos de E, donde B es máximo) y tiene amplitud máxima 2E<sub>0</sub> = ${f(2 * E0)} V/m en z = −λ/4, −3λ/4… = −${f(F.lam / 4)}, −${f((3 * F.lam) / 4)} m… La distancia entre dos nodos es λ/2 = <b>${f(F.lam / 2)} m</b>.` });
-      pasos.push({ t: 'Energía, presión y corriente en la superficie', html: `El vector de Poynting medio es 0: la energía no viaja, va y viene entre E y B. La presión de radiación sobre el conductor es p = 2I<sub>i</sub>/v = <b>${f((2 * I0) / M.v)} Pa</b>. En la superficie B = 2B<sub>0</sub> cos(ωt), y ese salto de B lo produce una corriente superficial K = B/μ = <b>${f(K)} cos(ωt) A/m</b> (según î).` });
+      pasos.push({ t: 'Energía, presión y corriente en la superficie', html: `El vector de Poynting medio es 0: la energía no viaja, va y viene entre E y B. La presión de radiación sobre el conductor es $p = {2I_i}/v$ = <b>${f((2 * I0) / M.v)} Pa</b>. En la superficie B = 2B<sub>0</sub> cos(ωt), y ese salto de B lo produce una corriente superficial $K = B/μ$ = <b>${f(K)} cos(ωt) A/m</b> (según î).` });
       return { modo: 'incidencia', cond, M, F, E0, B0, I0, r: -1, t: 0, R: 1, T: 0, K, pasos };
     }
     const er2 = lee(sc, 'er2', 'la permitividad relativa ε₂ del segundo medio'), mr2 = vacio(sc.mr2) ? 1 : lee(sc, 'mr2', 'la permeabilidad relativa μ₂'), M2 = medio({ medio: 'medio', er: er2, mr: mr2 });
     const r = (M2.eta - M.eta) / (M2.eta + M.eta), t = 1 + r, Rr = r * r, T = (M.eta / M2.eta) * t * t, swr = (1 + Math.abs(r)) / (1 - Math.abs(r));
     pasos.push({ t: 'Segundo medio', html: `ε<sub>r</sub> = ${f(er2)}${mr2 !== 1 ? `, μ<sub>r</sub> = ${f(mr2)}` : ''}: n<sub>2</sub> = ${f(M2.n)}, v<sub>2</sub> = ${f(M2.v)} m/s, η<sub>2</sub> = ${f(M2.eta)} Ω, λ<sub>2</sub> = ${f(M2.v / F.fr)} m.` });
-    pasos.push({ t: 'Coeficientes de Fresnel', html: `Con E y H tangentes continuos en z = 0: r = (η<sub>2</sub> − η<sub>1</sub>)/(η<sub>2</sub> + η<sub>1</sub>) = <b>${f(r)}</b> y t = 2η<sub>2</sub>/(η<sub>1</sub> + η<sub>2</sub>) = 1 + r = <b>${f(t)}</b>${mr2 === 1 && M.mr === 1 ? ` (con μ = μ<sub>0</sub>, r = (n<sub>1</sub> − n<sub>2</sub>)/(n<sub>1</sub> + n<sub>2</sub>))` : ''}.<br>E<sub>r</sub> = r E<sub>0</sub> = ${f(r * E0)} V/m${r < 0 ? ' (la reflejada se invierte: cambio de fase de 180°)' : ''} y E<sub>t</sub> = t E<sub>0</sub> = ${f(t * E0)} V/m.` });
-    pasos.push({ t: 'Energía', html: `R = r<sup>2</sup> = <b>${f(100 * Rr, 3)} %</b> se refleja y T = (η<sub>1</sub>/η<sub>2</sub>) t<sup>2</sup> = <b>${f(100 * T, 3)} %</b> se transmite (R + T = 1). En el primer medio la suma de la incidente y la reflejada es una onda parcialmente estacionaria: |E| oscila entre ${f(E0 * (1 - Math.abs(r)))} y ${f(E0 * (1 + Math.abs(r)))} V/m (razón de onda estacionaria ${f(swr)}).` });
+    pasos.push({ t: 'Coeficientes de Fresnel', html: `Con E y H tangentes continuos en z = 0: $r = {η_2 − η_1}/{η_2 + η_1}$ = <b>${f(r)}</b> y $t = {2η_2}/{η_1 + η_2} = 1 + r$ = <b>${f(t)}</b>${mr2 === 1 && M.mr === 1 ? ` (con μ = μ<sub>0</sub>, $r = {n_1 − n_2}/{n_1 + n_2}$)` : ''}.<br>$E_r = r E_0$ = ${f(r * E0)} V/m${r < 0 ? ' (la reflejada se invierte: cambio de fase de 180°)' : ''} y $E_t = t E_0$ = ${f(t * E0)} V/m.` });
+    pasos.push({ t: 'Energía', html: `$R = r^2$ = <b>${f(100 * Rr, 3)} %</b> se refleja y $T = {η_1}/{η_2} t^2$ = <b>${f(100 * T, 3)} %</b> se transmite (R + T = 1). En el primer medio la suma de la incidente y la reflejada es una onda parcialmente estacionaria: |E| oscila entre ${f(E0 * (1 - Math.abs(r)))} y ${f(E0 * (1 + Math.abs(r)))} V/m (razón de onda estacionaria ${f(swr)}).` });
     return { modo: 'incidencia', cond, M, M2, F, E0, B0, I0, r, t, R: Rr, T, swr, pasos };
   }
 
@@ -210,15 +210,15 @@ const OndasEM = (() => {
     pasos.push({ t: 'Medio', html: medioTxt(M) });
     if (de === 'fuente') {
       P = lee(sc, 'P', 'la potencia P'); r = lee(sc, 'r', 'la distancia r'); I = P / (4 * Math.PI * r * r);
-      pasos.push({ t: 'Intensidad a una distancia r', html: `Una fuente puntual reparte la potencia por igual en una esfera de área 4πr<sup>2</sup>:<br>I = P/(4πr<sup>2</sup>) = ${f(P)}/(4π·${f(r)}<sup>2</sup>) = <b>${f(I)} W/m<sup>2</sup></b>` });
+      pasos.push({ t: 'Intensidad a una distancia r', html: `Una fuente puntual reparte la potencia por igual en una esfera de área 4πr<sup>2</sup>:<br>$I = P/(4π r^2) = {${f(P)}}/{4π·${f(r)}^2}$ = <b>${f(I)} W/m<sup>2</sup></b>` });
     } else if (de === 'I') I = lee(sc, 'I', 'la intensidad I');
     let E0 = de === 'E0' ? lee(sc, 'E0', 'la amplitud E₀') : Math.sqrt(2 * M.eta * I);
-    if (de === 'E0') { I = (E0 * E0) / (2 * M.eta); pasos.push({ t: 'Intensidad', html: `I = E<sub>0</sub><sup>2</sup>/(2η) = ${f(E0)}<sup>2</sup>/(2·${f(M.eta)}) = <b>${f(I)} W/m<sup>2</sup></b>` }); }
-    else pasos.push({ t: 'Amplitud del campo eléctrico', html: `I = E<sub>0</sub><sup>2</sup>/(2η) ⇒ E<sub>0</sub> = √(2ηI) = √(2·${f(M.eta)}·${f(I)}) = <b>${f(E0)} V/m</b>` });
+    if (de === 'E0') { I = (E0 * E0) / (2 * M.eta); pasos.push({ t: 'Intensidad', html: `$I = {E_0^2}/{2η} = {${f(E0)}^2}/{2·${f(M.eta)}}$ = <b>${f(I)} W/m<sup>2</sup></b>` }); }
+    else pasos.push({ t: 'Amplitud del campo eléctrico', html: `$I = {E_0^2}/{2η} ⇒ E_0 = √(2η I) = √(2·${f(M.eta)}·${f(I)})$ = <b>${f(E0)} V/m</b>` });
     const B0 = E0 / M.v;
-    pasos.push({ t: 'Campo magnético y valores eficaces', html: `B<sub>0</sub> = E<sub>0</sub>/v = <b>${f(B0)} T</b><br>E<sub>ef</sub> = E<sub>0</sub>/√2 = ${f(E0 / Math.SQRT2)} V/m, &ensp; B<sub>ef</sub> = ${f(B0 / Math.SQRT2)} T` });
+    pasos.push({ t: 'Campo magnético y valores eficaces', html: `$B_0 = {E_0}/v$ = <b>${f(B0)} T</b><br>$E_ef = {E_0}/√2$ = ${f(E0 / Math.SQRT2)} V/m, &ensp; B<sub>ef</sub> = ${f(B0 / Math.SQRT2)} T` });
     const u = I / M.v, A = lee(sc, 'A', 'el área A', { opcional: true });
-    pasos.push({ t: 'Energía y presión de radiación', html: `u = I/v = ${f(u)} J/m<sup>3</sup><br>p = I/v = ${f(I / M.v)} Pa si se absorbe y 2I/v = ${f((2 * I) / M.v)} Pa si se refleja${A !== null ? `<br>Sobre A = ${f(A)} m<sup>2</sup>: potencia que llega I·A = ${f(I * A)} W, fuerza ${f((I * A) / M.v)} N (absorbe) o ${f((2 * I * A) / M.v)} N (refleja)` : ''}` });
+    pasos.push({ t: 'Energía y presión de radiación', html: `$u = I/v$ = ${f(u)} J/m<sup>3</sup><br>$p = I/v$ = ${f(I / M.v)} Pa si se absorbe y $ {2I}/v$ = ${f((2 * I) / M.v)} Pa si se refleja${A !== null ? `<br>Sobre A = ${f(A)} m<sup>2</sup>: potencia que llega I·A = ${f(I * A)} W, fuerza ${f((I * A) / M.v)} N (absorbe) o ${f((2 * I * A) / M.v)} N (refleja)` : ''}` });
     return { modo: 'intensidad', M, de, P, r, I, E0, B0, u, A, pa: I / M.v, pasos };
   }
 
@@ -230,19 +230,19 @@ const OndasEM = (() => {
     const alfa = base * Math.sqrt(raiz - 1), beta = base * Math.sqrt(raiz + 1), delta = alfa > 0 ? 1 / alfa : Infinity;
     const etaM = Math.sqrt(mu / eps) / Math.sqrt(raiz), th = 0.5 * Math.atan(tg), vf = w / beta, lam = (2 * Math.PI) / beta;
     const tipo = tg > 100 ? 'buen conductor' : tg < 0.01 ? 'buen dieléctrico (pocas pérdidas)' : 'medio con pérdidas moderadas';
-    pasos.push({ t: 'Tangente de pérdidas', html: `ω = 2πf = ${f(w)} rad/s, ε = ε<sub>r</sub>ε<sub>0</sub> = ${f(eps)} F/m<br>σ/(ωε) = ${f(sg)}/(${f(w)}·${f(eps)}) = <b>${f(tg)}</b> ⇒ ${tipo}${tg > 100 ? ' (domina la corriente de conducción)' : tg < 0.01 ? ' (domina la de desplazamiento)' : ''}` });
-    let h = `La constante de propagación es γ = α + jβ = √(jωμ(σ + jωε)), con<br>α = ω√(με/2)·√(√(1 + (σ/ωε)<sup>2</sup>) − 1) = <b>${f(alfa)} Np/m</b><br>β = ω√(με/2)·√(√(1 + (σ/ωε)<sup>2</sup>) + 1) = <b>${f(beta)} rad/m</b>`;
-    if (tg > 100) h += `<br>En un buen conductor α ≈ β ≈ √(πfμσ) = ${f(Math.sqrt(Math.PI * fr * mu * sg))}`;
-    else if (tg < 0.01 && sg > 0) h += `<br>Con pocas pérdidas α ≈ (σ/2)√(μ/ε) = ${f((sg / 2) * Math.sqrt(mu / eps))} y β ≈ ω√(με) = ${f(w * Math.sqrt(mu * eps))}`;
+    pasos.push({ t: 'Tangente de pérdidas', html: `$ω = 2π f$ = ${f(w)} rad/s, $ε = ε_r ε_0$ = ${f(eps)} F/m<br>$σ/(ω ε) = {${f(sg)}}/{${f(w)}·${f(eps)}}$ = <b>${f(tg)}</b> ⇒ ${tipo}${tg > 100 ? ' (domina la corriente de conducción)' : tg < 0.01 ? ' (domina la de desplazamiento)' : ''}` });
+    let h = `La constante de propagación es $γ = α + jβ = √(jω μ (σ + jω ε))$, con<br>$α = ω √({μ ε}/2) √(√(1 + (σ/(ω ε))^2) − 1)$ = <b>${f(alfa)} Np/m</b><br>$β = ω √({μ ε}/2) √(√(1 + (σ/(ω ε))^2) + 1)$ = <b>${f(beta)} rad/m</b>`;
+    if (tg > 100) h += `<br>En un buen conductor $α ≈ β ≈ √(π f μ σ)$ = ${f(Math.sqrt(Math.PI * fr * mu * sg))}`;
+    else if (tg < 0.01 && sg > 0) h += `<br>Con pocas pérdidas $α ≈ σ/2 √(μ/ε)$ = ${f((sg / 2) * Math.sqrt(mu / eps))} y $β ≈ ω √(μ ε)$ = ${f(w * Math.sqrt(mu * eps))}`;
     pasos.push({ t: 'Atenuación y fase', html: h });
-    pasos.push({ t: 'Profundidad de penetración', html: sg === 0 ? 'Sin conductividad no hay pérdidas: la onda no se atenúa (δ = ∞).' : `δ = 1/α = <b>${f(delta)} m</b>: a esa profundidad la amplitud baja a 1/e = 37 % y la intensidad a 1/e<sup>2</sup> = 13,5 %.` });
-    pasos.push({ t: 'Velocidad, longitud de onda e impedancia', html: `v = ω/β = ${f(vf)} m/s, &ensp; λ = 2π/β = ${f(lam)} m<br>η = √(jωμ/(σ + jωε)) = |η|∠θ = <b>${f(etaM)} Ω ∠${f((th * 180) / Math.PI)}°</b>: el campo B va ${f((th * 180) / Math.PI)}° retrasado respecto a E.` });
+    pasos.push({ t: 'Profundidad de penetración', html: sg === 0 ? 'Sin conductividad no hay pérdidas: la onda no se atenúa (δ = ∞).' : `$δ = 1/α$ = <b>${f(delta)} m</b>: a esa profundidad la amplitud baja a 1/e = 37 % y la intensidad a 1/e<sup>2</sup> = 13,5 %.` });
+    pasos.push({ t: 'Velocidad, longitud de onda e impedancia', html: `$v = ω/β$ = ${f(vf)} m/s, &ensp; $λ = {2π}/β$ = ${f(lam)} m<br>$η = √({jω μ}/{σ + jω ε}) = |η|∠θ$ = <b>${f(etaM)} Ω ∠${f((th * 180) / Math.PI)}°</b>: el campo B va ${f((th * 180) / Math.PI)}° retrasado respecto a E.` });
     const E0 = lee(sc, 'E0', 'la amplitud E₀', { opcional: true }), d = lee(sc, 'd', 'la profundidad d', { opcional: true, cero: true });
     let Ed = null;
     if (E0 !== null) {
       let g = `E(z, t) = ${f(E0)} e<sup>−${f(alfa)}z</sup> cos(${f(beta)}z − ${f(w)}t) V/m`;
-      if (d !== null) { Ed = E0 * Math.exp(-alfa * d); g += `<br>A z = ${f(d)} m: E = E<sub>0</sub>e<sup>−αz</sup> = ${f(E0)}·e<sup>−${f(alfa * d)}</sup> = <b>${f(Ed)} V/m</b> (${f(100 * Math.exp(-alfa * d))} % de la amplitud)`; }
-      g += `<br>Intensidad al entrar: I = E<sub>0</sub><sup>2</sup>cos θ/(2|η|) = ${f((E0 * E0 * Math.cos(th)) / (2 * etaM))} W/m<sup>2</sup>`;
+      if (d !== null) { Ed = E0 * Math.exp(-alfa * d); g += `<br>A z = ${f(d)} m: $E = E_0 e^{−α z} = ${f(E0)}·e^{−${f(alfa * d)}}$ = <b>${f(Ed)} V/m</b> (${f(100 * Math.exp(-alfa * d))} % de la amplitud)`; }
+      g += `<br>Intensidad al entrar: $I = {E_0^2 cos θ}/{2|η|}$ = ${f((E0 * E0 * Math.cos(th)) / (2 * etaM))} W/m<sup>2</sup>`;
       pasos.push({ t: 'Campo dentro del medio', html: g });
     }
     return { modo: 'perdidas', er, mr, sg, fr, w, tg, tipo, alfa, beta, delta, etaM, th, vf, lam, E0, d, Ed, M: { eps, mu, v: vf, eta: etaM }, F: { fr, w, k: beta, lam }, pasos };

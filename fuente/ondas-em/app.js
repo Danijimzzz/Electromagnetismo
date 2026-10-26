@@ -125,7 +125,7 @@
       if (sol.Ed !== null) h += dato(`E a z = ${f(sol.d)} m`, `<b>${f(sol.Ed)} V/m</b>`);
     }
     $('#res').innerHTML = h;
-    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('');
+    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${Mates.html(p.html, true)}</li>`).join('');
     $('#leyenda').innerHTML = sol.modo === 'incidencia' ? `E total en rojo y B total en azul a lo largo de z; la línea discontinua es la amplitud. ${sol.cond ? 'Los puntos marcan los nodos de E: la onda no avanza, oscila en su sitio.' : 'A la derecha, la onda transmitida.'}` : sol.modo === 'intensidad' && sol.de === 'fuente' ? 'Frentes de onda esféricos que salen de la fuente: la misma potencia se reparte en esferas cada vez mayores.' : (sol.tp && sol.tp !== 'lineal') ? 'E en rojo y B en azul: con dos componentes desfasadas, la punta de E gira alrededor del eje de propagación (en naranja la dirección de avance).' : `E en rojo, B en azul y la dirección de propagación (el vector de Poynting) en naranja${sol.modo === 'perdidas' && sol.alfa > 0 ? '; la línea discontinua es la envolvente e<sup>−αz</sup> y la marca, la profundidad δ' : ''}.`;
     dibuja();
   }

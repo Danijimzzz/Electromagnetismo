@@ -108,19 +108,20 @@
       $('#resumen').innerHTML = caja('Tensión final', cu(sol.Vf, 'V')) + caja('Carga total', cu(Math.abs(sol.Qt), 'C')) + caja('Energía antes', cu(sol.U0, 'J')) + caja('Energía perdida', cu(sol.perdida, 'J'), `queda ${cu(sol.Uf, 'J')}`);
       $('#regiones').innerHTML = `<thead><tr><th></th><th>C</th><th>Q antes</th><th>V antes</th><th>Q después</th><th>V después</th></tr></thead><tbody>${[[sol.C1, sol.Q1, sol.V1], [sol.C2, sol.Q2, sol.V2]].map(([c, q, v], i) => `<tr><td>C<sub>${i + 1}</sub></td><td>${cu(c, 'F')}</td><td>${cu(q, 'C')}</td><td>${cu(v, 'V')}</td><td>${cu(c * sol.Vf, 'C')}</td><td>${cu(sol.Vf, 'V')}</td></tr>`).join('')}</tbody>`;
     }
-    if (sol.tipo !== 'condensador') { $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join(''); dibuja(); return; }
+    if (sol.tipo !== 'condensador') { $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${Mates.html(p.html, true)}</li>`).join(''); dibuja(); return; }
     const c = sol.comp;
     $('#resumen').innerHTML = caja('Capacidad', cu(sol.C, 'F'), c ? `vacío: ${cu(c.C0, 'F')} (×${K.num(sol.C / c.C0, 3)})` : '') +
       caja('Carga', cu(sol.Q, 'C'), c && sol.fuente === 'V' ? `vacío: ${cu(c.Q0, 'C')}` : '') +
       caja('Tensión', cu(sol.V, 'V'), c && sol.fuente === 'Q' ? `vacío: ${cu(c.V0, 'V')}` : '') +
       caja('Energía', cu(sol.U, 'J'), c ? `vacío: ${cu(c.U0, 'J')}` : '') +
-      (sol.Vmax ? caja('Tensión máxima', cu(sol.Vmax, 'V'), 'antes de la ruptura') : '');
+      (sol.Vmax ? caja('Tensión máxima', cu(sol.Vmax, 'V'), 'antes de la ruptura') : '') +
+      (sol.letras ? `<div class="ancho"><span>Capacidad en letras</span>${Mates.html(`$${sol.letras}$`)}${sol.letrasNota ? `<small>${Mates.html(sol.letrasNota.replace(/^(\S+):/, '$$$1$$:'))}</small>` : ''}</div>` : '');
     const serie = sol.g.disposicion !== 'paralelo', plano = sol.g.geo === 'plano';
     const rango = (a, b, u) => (Math.abs(a - b) <= 1e-9 * Math.abs(a) ? cu(a, u) : `${cu(a, u)} → ${cu(b, u)}`);
     $('#regiones').innerHTML = `<thead><tr><th>Región</th><th>${serie ? (plano ? 'Espesor' : 'Radios') : plano ? 'Área' : 'Superficie'}</th><th>E</th><th>D</th><th>P</th><th>${serie ? 'ΔV' : 'Carga libre'}</th><th>Q polarización</th></tr></thead><tbody>${sol.regiones.map((o) => `<tr><td>${o.nombre}</td>
       <td>${serie ? (plano ? cu(o.hasta - o.desde, 'm') : `${K.num(o.desde * 100)}–${K.num(o.hasta * 100)} cm`) : `${K.num(o.fraccion * 100)} %`}</td>
       <td>${rango(o.E1, o.E2, 'V/m')}</td><td>${rango(o.D1, o.D2, 'C/m²')}</td><td>${o.vacio ? '0' : rango(o.P1, o.P2, 'C/m²')}</td><td>${serie ? cu(o.V, 'V') : cu(o.Q, 'C')}</td><td>${o.vacio ? '—' : '±' + cu(o.Qp, 'C')}</td></tr>`).join('')}</tbody>`;
-    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('');
+    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${Mates.html(p.html, true)}</li>`).join('');
     dibuja();
   }
 

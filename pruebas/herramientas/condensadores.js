@@ -59,6 +59,8 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       await page.selectOption('#f-geo', 'cilindro');
       await page.fill('#f-a', '3'); await page.fill('#f-b', '1');
       if (await page.locator('#error').isHidden()) mal('Condensadores: radios al revés no muestran el error');
+      // copiar la solución como texto o LaTeX e imprimirla (compartir.js)
+      if ((await page.locator('.compartir button').count()) !== 4 || !/Resultados[\s\S]*Desarrollo/.test(await page.evaluate(() => Compartir.ejercicio(false)))) mal('Condensadores: faltan los botones para copiar o imprimir la solución');
       await page.close();
       if (consola.length) mal('Condensadores: consola del navegador:\n      ' + consola.join('\n      '));
       if (fallos === antes) console.log(`  ✓ Condensadores: ${Condensador.ejemplos.length} ejemplos, cambio de forma y errores sin errores de consola`);

@@ -63,6 +63,8 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       }
       await page.evaluate(() => FaradayApp.abrirEjemplo('barra'));
       if (!(await page.locator('#res').textContent()).includes('0,4 V')) mal('Faraday: la fem de la barra no sale en la página');
+      // copiar la solución como texto o LaTeX e imprimirla (compartir.js)
+      if ((await page.locator('.compartir button').count()) !== 4 || !/Resultados[\s\S]*Desarrollo/.test(await page.evaluate(() => Compartir.ejercicio(false)))) mal('Faraday: faltan los botones para copiar o imprimir la solución');
       await page.selectOption('#f-modo', 'giratoria');
       await page.selectOption('#f-forma', 'area');
       if ((await page.locator('#f-S').count()) !== 1 || !(await page.locator('#error').isHidden())) mal('Faraday: la forma «superficie» no pide S');
