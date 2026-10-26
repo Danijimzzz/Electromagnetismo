@@ -133,6 +133,51 @@ const Presets = (() => {
         analyses: [A('E', { P: ['0', '0', '0'] }), A('findDipole', { P: ['0', '0', '0'], sym: 'p0', tau: ['1/(15*pi)', '-1/(30*pi)', '1/(10*pi)'], U: '', plane: 'x' })],
       }),
     },
+    {
+      key: 'p13', statement: "Un hilo indefinido con densidad λ coincide con el eje Z y está rodeado por un tubo cilíndrico coaxial de radio 2a con densidad superficial σ = −λ/(4πa). Obtener: 1) el campo eléctrico en (a, 0, 0); 2) el campo en (3a, 0, 0); 3) la diferencia de potencial V(a, 0, 0) − V(2a, 0, 0).", title: '13 · Hilo dentro de un tubo cargado',
+      make: () => scen({
+        sources: [S('line', 'λ', { pos: ['0', '0', '0'], dir: 'z', mode: 'lambda', R: '1' }, '1', 'lambda'), S('line', 'σ', { pos: ['0', '0', '0'], dir: 'z', mode: 'sigma', R: '2' }, '-1/(4*pi)', 'lambda')],
+        analyses: [A('E', { P: ['1', '0', '0'] }), A('E', { P: ['3', '0', '0'] }), A('dV', { A: ['2', '0', '0'], B: ['1', '0', '0'] })],
+      }),
+    },
+    {
+      key: 'p14', statement: "Una esfera de radio a centrada en el origen tiene una densidad de carga que crece con la distancia al centro, ρ = ρ0 r/a. Obtener: 1) el campo eléctrico en (a/2, 0, 0); 2) el campo en (2a, 0, 0); 3) el potencial en el centro.", title: '14 · Esfera con ρ = ρ0 r/a',
+      make: () => scen({
+        sources: [S('sphere', 'ρ', { pos: ['0', '0', '0'], R1: '0', R2: '1', perfil: 'lineal' }, '1', 'rho0')],
+        kinds: { rho0: 'rho' },
+        analyses: [A('E', { P: ['1/2', '0', '0'] }), A('E', { P: ['2', '0', '0'] }), A('V', { P: ['0', '0', '0'] })],
+      }),
+    },
+    {
+      key: 'p15', statement: "Un cilindro indefinido de radio 2a, coaxial con el eje Z, tiene una densidad de carga ρ = ρ0(1 − r/(2a)), máxima en el eje y nula en la superficie. Obtener el campo eléctrico en (a, 0, 0) y en (0, 4a, 0).", title: '15 · Cilindro con ρ = ρ0(1 − r/R)',
+      make: () => scen({
+        sources: [S('line', 'ρ', { pos: ['0', '0', '0'], dir: 'z', mode: 'rho', R: '2', R1: '', perfil: 'resta' }, '1', 'rho0')],
+        kinds: { rho0: 'rho' },
+        analyses: [A('E', { P: ['1', '0', '0'] }), A('E', { P: ['0', '4', '0'] })],
+      }),
+    },
+    {
+      key: 'p16', statement: "Una semicircunferencia de radio a, con densidad lineal λ, está en el plano XY, centrada en el origen y en la región y > 0. Obtener: 1) el campo eléctrico en el centro; 2) el potencial en el centro; 3) el campo en (0, 0, a).", title: '16 · Semicircunferencia cargada',
+      make: () => scen({
+        sources: [S('arc', 'λ', { pos: ['0', '0', '0'], axis: 'z', R: '1', t1: '0', t2: '180' }, '1', 'lambda')],
+        analyses: [A('E', { P: ['0', '0', '0'] }), A('V', { P: ['0', '0', '0'] }), A('E', { P: ['0', '0', '1'] })],
+      }),
+    },
+    {
+      key: 'p17', statement: "Una carga puntual q está en el centro de una corteza esférica conductora de radios a y 2a, con carga neta 2q. Obtener: 1) el campo eléctrico en (a/2, 0, 0), en (3a/2, 0, 0) y en (3a, 0, 0); 2) el potencial de la corteza.", title: '17 · Carga dentro de una corteza conductora',
+      make: () => scen({
+        sources: [S('point', 'q', { pos: ['0', '0', '0'] }, '1', 'q'), S('hollow', 'Q', { pos: ['0', '0', '0'], R1: '1', R2: '2' }, '2', 'q')],
+        analyses: [A('E', { P: ['1/2', '0', '0'] }), A('E', { P: ['3/2', '0', '0'] }), A('E', { P: ['3', '0', '0'] }), A('V', { P: ['3/2', '0', '0'] })],
+      }),
+    },
+    {
+      key: 'p18', statement: "Una varilla de longitud 2a sobre el eje X, de x = a a x = 3a, tiene una densidad que crece linealmente desde 0, λ = λ0 (x − a)/(2a). Obtener el campo eléctrico y el potencial en el origen.", title: '18 · Varilla con densidad lineal',
+      make: () => scen({
+        sources: [S('rod', 'λ', { A: ['1', '0', '0'], B: ['3', '0', '0'], perfil: 'lineal' }, '1', 'lambda0')],
+        kinds: { lambda0: 'lambda' },
+        analyses: [A('E', { P: ['0', '0', '0'] }), A('V', { P: ['0', '0', '0'] })],
+      }),
+    },
   ];
   return { section: 'Ejercicios de ejemplo', list, newId: id };
 })();

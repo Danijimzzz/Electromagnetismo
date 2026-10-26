@@ -381,7 +381,8 @@ const Canvas = (() => {
       const di = AXI[G.dir];
       if (di === c) {
         const p = toS(G.pos);
-        if (G.mode === 'rho') { g.fillStyle = col; g.globalAlpha = 0.18; g.beginPath(); g.arc(p[0], p[1], G.R * view.s, 0, 7); g.fill(); g.globalAlpha = 1; g.strokeStyle = col; g.beginPath(); g.arc(p[0], p[1], G.R * view.s, 0, 7); g.stroke(); }
+        if (G.mode === 'rho') { g.fillStyle = col; g.globalAlpha = 0.18; g.beginPath(); g.arc(p[0], p[1], G.R * view.s, 0, 2 * Math.PI); if (G.R1) { g.moveTo(p[0] + G.R1 * view.s, p[1]); g.arc(p[0], p[1], G.R1 * view.s, 0, 2 * Math.PI); } g.fill('evenodd'); g.globalAlpha = 1; g.strokeStyle = col; g.beginPath(); g.arc(p[0], p[1], G.R * view.s, 0, 7); g.stroke(); }
+        if (G.mode === 'sigma') { g.strokeStyle = col; g.lineWidth = 3; g.beginPath(); g.arc(p[0], p[1], G.R * view.s, 0, 7); g.stroke(); g.lineWidth = 1; }
         g.strokeStyle = col; g.lineWidth = 2; g.beginPath(); g.arc(p[0], p[1], 7, 0, 7); g.stroke();
         g.fillStyle = col; g.beginPath(); g.arc(p[0], p[1], 2.5, 0, 7); g.fill();
         label(nm, p[0] + 10, p[1] - 6, C.ink);
@@ -391,6 +392,7 @@ const Canvas = (() => {
         const vert = di !== a;
         g.strokeStyle = col; g.globalAlpha = off ? 0.4 : 1;
         if (G.mode === 'rho') { g.fillStyle = col; g.globalAlpha *= 0.18; const r = G.R * view.s; if (vert) g.fillRect(p[0] - r, 0, 2 * r, H); else g.fillRect(0, p[1] - r, W, 2 * r); g.globalAlpha = off ? 0.4 : 1; }
+        if (G.mode === 'sigma') { const r = G.R * view.s; g.lineWidth = 2.5; g.beginPath(); if (vert) { g.moveTo(p[0] - r, 0); g.lineTo(p[0] - r, H); g.moveTo(p[0] + r, 0); g.lineTo(p[0] + r, H); } else { g.moveTo(0, p[1] - r); g.lineTo(W, p[1] - r); g.moveTo(0, p[1] + r); g.lineTo(W, p[1] + r); } g.stroke(); }
         g.lineWidth = 3; g.setLineDash(off ? [6, 4] : []);
         g.beginPath(); if (vert) { g.moveTo(p[0], 0); g.lineTo(p[0], H); } else { g.moveTo(0, p[1]); g.lineTo(W, p[1]); } g.stroke(); g.setLineDash([]);
         label(nm, vert ? p[0] + 6 : 8, vert ? 22 : p[1] - 6, C.ink);
@@ -414,6 +416,21 @@ const Canvas = (() => {
         g.globalAlpha = 1;
         label(nm, vert ? p[0] + 7 : 8, vert ? 22 : p[1] - 6, C.ink);
       }
+    } else if (t === 'hollow') {
+      const d = G.pos[c] - cut, p = toS(G.pos), rr = (R) => (R > Math.abs(d) ? Math.sqrt(R * R - d * d) * view.s : 0), r2 = rr(G.R2), r1 = rr(G.R1);
+      if (r2 > 0) {
+        g.fillStyle = C.axis; g.globalAlpha = 0.25; g.beginPath(); g.arc(p[0], p[1], r2, 0, 2 * Math.PI); if (r1 > 0) { g.moveTo(p[0] + r1, p[1]); g.arc(p[0], p[1], r1, 0, 2 * Math.PI); } g.fill('evenodd');
+        g.globalAlpha = 1; g.strokeStyle = col; g.lineWidth = 2; g.beginPath(); g.arc(p[0], p[1], r2, 0, 7); g.stroke(); if (r1 > 0) { g.beginPath(); g.arc(p[0], p[1], r1, 0, 7); g.stroke(); }
+      }
+      label(nm, p[0] + r2 * 0.72 + 4, p[1] - r2 * 0.72, C.ink);
+      addAnchors();
+    } else if (t === 'arc') {
+      const p = toS(G.pos), pts = [];
+      for (let i = 0; i <= 64; i++) { const th = G.t1 + ((G.t2 - G.t1) * i) / 64; pts.push(toS(V3.add(G.pos, V3.add(V3.sc(G.e1, G.R * Math.cos(th)), V3.sc(G.e2, G.R * Math.sin(th)))))); }
+      g.strokeStyle = col; g.lineWidth = 4; g.lineCap = 'round'; g.beginPath(); pts.forEach((q, i) => (i ? g.lineTo(q[0], q[1]) : g.moveTo(q[0], q[1]))); g.stroke(); g.lineCap = 'butt';
+      g.fillStyle = col; g.beginPath(); g.arc(p[0], p[1], 2.5, 0, 7); g.fill();
+      const m = pts[32]; label(nm, m[0] + 8, m[1] - 6, C.ink);
+      addAnchors();
     } else if (t === 'sphere' || t === 'shell' || t === 'conductor') {
       const d = G.pos[c] - cut;
       const p = toS(G.pos);
@@ -421,7 +438,7 @@ const Canvas = (() => {
       const r2 = rr(t === 'sphere' ? G.R2 : G.R), r1 = t === 'sphere' ? rr(G.R1) : 0;
       if (r2 > 0) {
         g.fillStyle = t === 'conductor' ? C.axis : col; g.globalAlpha = t === 'shell' ? 0.06 : 0.2;
-        g.beginPath(); g.arc(p[0], p[1], r2, 0, 7); if (r1 > 0) g.arc(p[0], p[1], r1, 0, 7, true); g.fill('evenodd');
+        g.beginPath(); g.arc(p[0], p[1], r2, 0, 2 * Math.PI); if (r1 > 0) { g.moveTo(p[0] + r1, p[1]); g.arc(p[0], p[1], r1, 0, 2 * Math.PI); } g.fill('evenodd');
         g.globalAlpha = 1; g.strokeStyle = col; g.lineWidth = t === 'shell' || t === 'conductor' ? 3 : 1.5;
         g.beginPath(); g.arc(p[0], p[1], r2, 0, 7); g.stroke();
         if (r1 > 0) { g.lineWidth = 1.5; g.beginPath(); g.arc(p[0], p[1], r1, 0, 7); g.stroke(); }
@@ -710,6 +727,17 @@ const Canvas = (() => {
       const c = V3.add(G.pos, V3.sc(G.u, V3.dot(V3.sub(cam.c, G.pos), G.u)));
       g.lineWidth = 1.5; cylinder3(c, G.u, G.R, L * 2.4, 0.18, 4);
       lp = proj(V3.add(V3.add(c, V3.sc(G.u, L)), V3.sc(Math.abs(G.u[2]) < 0.9 ? [0, 0, 1] : [1, 0, 0], G.R)));
+    } else if (t === 'line' && G.mode === 'sigma') {
+      const c = V3.add(G.pos, V3.sc(G.u, V3.dot(V3.sub(cam.c, G.pos), G.u)));
+      g.lineWidth = 2; cylinder3(c, G.u, G.R, L * 2.4, 0.06, 4);
+      lp = proj(V3.add(V3.add(c, V3.sc(G.u, L)), V3.sc(Math.abs(G.u[2]) < 0.9 ? [0, 0, 1] : [1, 0, 0], G.R)));
+    } else if (t === 'hollow') {
+      sphere3(G.pos, G.R1, col, 0.05); const p = sphere3(G.pos, G.R2, C.axis, 0.18), R = G.R2 * cam.s * p[3];
+      lp = [p[0] + R * 0.7, p[1] - R * 0.7];
+    } else if (t === 'arc') {
+      g.lineWidth = 4; g.beginPath();
+      for (let i = 0; i <= 64; i++) { const th = G.t1 + ((G.t2 - G.t1) * i) / 64, q = proj(V3.add(G.pos, V3.add(V3.sc(G.e1, G.R * Math.cos(th)), V3.sc(G.e2, G.R * Math.sin(th))))); i ? g.lineTo(q[0], q[1]) : g.moveTo(q[0], q[1]); }
+      g.stroke(); lp = proj(V3.add(G.pos, V3.add(V3.sc(G.e1, G.R * Math.cos((G.t1 + G.t2) / 2)), V3.sc(G.e2, G.R * Math.sin((G.t1 + G.t2) / 2)))));
     } else if (t === 'line') {
       g.lineWidth = 3;
       line3(V3.sub(G.pos, V3.sc(G.u, L * 1.2)), V3.add(G.pos, V3.sc(G.u, L * 1.2))); lp = proj(V3.add(G.pos, V3.sc(G.u, L)));
