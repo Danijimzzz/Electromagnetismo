@@ -1,0 +1,50 @@
+<title>Propagación de errores e incertidumbres paso a paso · SimulaCiencia</title>
+<meta name="description" content="Calculadora de propagación de errores en español: incertidumbre de una magnitud calculada con derivadas parciales, suma cuadrática o cota lineal, error relativo, peso de cada variable y resultado bien redondeado; también el error de una serie de medidas.">
+<style>
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62 }
+textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 84px }
+.tabla-eco { border-collapse: collapse; font: 13.5px var(--f-ui); width: 100%; font-variant-numeric: tabular-nums }
+.tabla-eco th, .tabla-eco td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap }
+.tabla-eco th { font-weight: 600; color: var(--muted) } .tabla-eco th:first-child, .tabla-eco td:first-child { text-align: left }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Estadística</a> / Propagación de errores</span></header>
+<div class="wrap">
+<h1>Propagación de errores</h1>
+<p class="lead">Escribe la fórmula y las medidas con su incertidumbre, y obtén el error de la magnitud calculada con las derivadas parciales, lo que pesa cada medida y el resultado redondeado como se pide en el laboratorio.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Peso de cada medida</h2>
+      <canvas id="grafica" aria-label="Diagrama de barras con lo que aporta cada variable a la incertidumbre, o las medidas con su media y su banda de error"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card"><h2>Derivadas parciales</h2><div class="tabla-scroll" id="tabla"></div></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+<h2>Propagación con derivadas parciales</h2>
+<p class="m">Si una magnitud se calcula como $f(x, y, …)$ a partir de medidas con incertidumbres $Δx$, $Δy$…, cada una aporta su derivada parcial por su incertidumbre. Si los errores son independientes se suman en cuadratura; la cota lineal (sumar los valores absolutos) da el peor caso posible y es la que se usa en muchos guiones de prácticas:</p>
+<p class="f m">$Δf = √(({∂f}/{∂x} Δx)^2 + ({∂f}/{∂y} Δy)^2 + …)$<br>$Δf ≤ |{∂f}/{∂x}| Δx + |{∂f}/{∂y}| Δy + …$</p>
+<p class="m">Para productos y cocientes de potencias, $f = x^a y^b$, se suman los errores relativos: ${Δf}/{f} = √((a {Δx}/{x})^2 + (b {Δy}/{y})^2)$. Por eso la medida que va elevada a una potencia alta, como el periodo en $g = 4π^2 l/T^2$, es la que más pesa.</p>
+<h2>Cómo se redondea el resultado</h2>
+<p class="m">La incertidumbre se da con <b>una cifra significativa</b>, o con dos si la primera es un 1 (0,014 y no 0,01). El valor se redondea <b>hasta la misma cifra decimal</b> que la incertidumbre y se escriben juntos con la unidad: $g = (9,81 ± 0,05)$ m/s². Escribir $9,810652 ± 0,05$ es un error: las últimas cifras no significan nada.</p>
+<h2>Medidas repetidas</h2>
+<p class="m">Con n medidas de lo mismo se toma la media. La dispersión se mide con la desviación típica $s$ (entre $n − 1$), y la media se separa del valor verdadero en torno a $s/√n$, el error de la media. Se combina en cuadratura con la resolución del aparato: si manda el aparato, medir más veces no mejora nada.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Propagación de errores <span id="ver"></span> (beta)</footer>
+</body>

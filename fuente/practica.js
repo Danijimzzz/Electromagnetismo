@@ -86,6 +86,8 @@ const Practica = (() => {
     },
     // graficador: un polinomio o una racional sencilla para estudiar
     graficador: { datos: null, genera: () => window.GraficadorApp?.azar(), enunciado: () => window.GraficadorApp?.enunciado() },
+    // errores: un péndulo, una ley de Ohm o una densidad con medidas al azar
+    errores: { datos: null, genera: () => window.ErroresApp?.azar(), enunciado: () => window.ErroresApp?.enunciado() },
     // descriptiva: unas notas al azar (los datos están en un textarea)
     descriptiva: { datos: null, genera: () => window.DescriptivaApp?.azar(), enunciado: () => window.DescriptivaApp?.enunciado() },
     // regresión económica: una función de consumo al azar (los datos están en un textarea)
