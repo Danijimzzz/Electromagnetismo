@@ -1,0 +1,52 @@
+<title>Regresión sobre datos económicos: elasticidad, crecimiento y efecto marginal · SimulaCiencia</title>
+<meta name="description" content="Regresión por mínimos cuadrados con datos económicos en español: modelo lineal, doble logarítmico (elasticidad) y semilogarítmico (tasa de crecimiento), con R², t, p-valor, intervalos, lectura económica y predicción paso a paso.">
+<style>
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a; --serie-3: #6b3fa0 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 }
+textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 120px }
+.tabla-eco { border-collapse: collapse; font: 13.5px var(--f-ui); width: 100%; font-variant-numeric: tabular-nums }
+.tabla-eco th, .tabla-eco td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap }
+.tabla-eco th { font-weight: 600; color: var(--muted) } .tabla-eco th:first-child, .tabla-eco td:first-child { text-align: left }
+.tabla-eco tfoot td { font-weight: 600; background: var(--accent-soft) }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Economía</a> / Regresión sobre datos económicos</span></header>
+<div class="wrap">
+<h1>Regresión sobre datos económicos</h1>
+<p class="lead">Pega una serie de datos económicos y estima la relación por mínimos cuadrados: el efecto marginal, la elasticidad o la tasa de crecimiento, con su significación, el R² y una predicción.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Datos y ajuste</h2>
+      <canvas id="grafica" aria-label="Nube de puntos de los datos con la recta o la curva estimada"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+<h2>Mínimos cuadrados ordinarios</h2>
+<p class="m">El modelo de regresión simple es $Y_i = β_0 + β_1 X_i + u_i$, donde $u_i$ es la perturbación. Los estimadores de mínimos cuadrados son los que hacen mínima la suma de los residuos al cuadrado:</p>
+<p class="f m">$β̂_1 = {∑ (x_i − x̄)(y_i − ȳ)}/{∑ (x_i − x̄)^2}$,   $β̂_0 = ȳ − β̂_1 x̄$</p>
+<p class="m">El $R^2$ mide qué parte de la variación de Y explica el modelo, y el contraste $t = β̂_1/s(β̂_1)$, con $n − 2$ grados de libertad, dice si el efecto de X es significativo.</p>
+<h2>Cómo se lee cada forma</h2>
+<p class="m">En el modelo lineal, $β_1$ es el efecto marginal: lo que cambia Y cuando X sube una unidad. Es lo que se usa, por ejemplo, para la propensión marginal a consumir en $C = C_0 + c Y_d$.</p>
+<p class="m">En el doble logarítmico, $ln Y = β_0 + β_1 ln X$, $β_1$ es la elasticidad: el cambio porcentual de Y cuando X sube un 1 %. Es la forma habitual de estimar elasticidades de demanda o curvas de Engel.</p>
+<p class="m">En el semilogarítmico, $ln Y = β_0 + β_1 X$, Y crece a un ritmo constante: cada unidad de X la multiplica por $e^{β_1}$. Con X en años, $e^{β_1} − 1$ es la tasa de crecimiento anual.</p>
+<h2>Precauciones</h2>
+<p>Que dos variables estén relacionadas no significa que una cause la otra: puede haber una tercera detrás, como el tiempo en dos series que crecen juntas. Además, predecir fuera del rango de los datos (extrapolar) es arriesgado, y en series temporales los residuos suelen estar correlacionados, lo que hace que los errores típicos salgan demasiado pequeños.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Regresión sobre datos económicos <span id="ver"></span> (beta)</footer>
+</body>
