@@ -1,0 +1,51 @@
+<title>Números índice y tasas de variación: Laspeyres, Paasche y cambio de base · SimulaCiencia</title>
+<meta name="description" content="Calculadora de números índice en español: índices simples, cambio de base, tasas de variación, tasa acumulada y tasa media, e índices de precios de Laspeyres, Paasche y Fisher de una cesta de productos, con la gráfica y el desarrollo.">
+<style>
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a; --serie-3: #6b3fa0 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 }
+textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 120px }
+.tabla-eco { border-collapse: collapse; font: 13.5px var(--f-ui); width: 100%; font-variant-numeric: tabular-nums }
+.tabla-eco th, .tabla-eco td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap }
+.tabla-eco th { font-weight: 600; color: var(--muted) } .tabla-eco th:first-child, .tabla-eco td:first-child { text-align: left }
+.tabla-eco tfoot td { font-weight: 600; background: var(--accent-soft) }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Economía</a> / Números índice</span></header>
+<div class="wrap">
+<h1>Números índice y tasas de variación</h1>
+<p class="lead">Convierte una serie en índices con la base que quieras y saca sus tasas de variación, o calcula los índices de precios de Laspeyres, Paasche y Fisher de una cesta de productos.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>El índice</h2>
+      <canvas id="grafica" aria-label="Evolución del índice de la serie, o índice de precio de cada producto con los de Laspeyres y Paasche"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card"><h2>Tabla</h2><div class="tabla-scroll" id="tabla"></div></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+<h2>Índices simples y cambio de base</h2>
+<p class="m">Un número índice compara el valor de una magnitud con el de un periodo de referencia, la base, que vale 100: $I_t = 100 · x_t/x_0$. Un índice de 115 quiere decir un 15 % más que en la base. Para cambiar de base se dividen todos los índices entre el del nuevo periodo base y se multiplica por 100.</p>
+<h2>Tasas de variación</h2>
+<p class="m">La tasa de variación de un periodo al siguiente es $T = x_t/x_{t−1} − 1$. Las tasas no se suman: la acumulada es $(1 + T_1)(1 + T_2)… − 1$, y la tasa media acumulativa en n periodos es $T_m = (x_n/x_0)^{1/n} − 1$.</p>
+<h2>Índices compuestos: Laspeyres, Paasche y Fisher</h2>
+<p class="m">Para varios productos a la vez se compara lo que cuesta una cesta. Laspeyres usa las cantidades del periodo base, $L_p = 100 · ∑p_1 q_0/∑p_0 q_0$, y Paasche las del periodo actual, $P_p = 100 · ∑p_1 q_1/∑p_0 q_1$. Fisher es su media geométrica. El IPC es un índice de tipo Laspeyres, con la cesta de la Encuesta de Presupuestos Familiares, que se actualiza cada año.</p>
+<h2>Índice de valor</h2>
+<p class="m">El gasto cambia por los precios y por las cantidades: $V = 100 · ∑p_1 q_1/∑p_0 q_0 = L_p · P_q/100$. Deflactar es quitar la parte de los precios: dividir un valor en euros corrientes entre un índice de precios para tenerlo en euros constantes.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Números índice <span id="ver"></span> (beta)</footer>
+</body>
