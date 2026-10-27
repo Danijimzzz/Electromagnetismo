@@ -100,7 +100,7 @@ if (require.main === module) {
   (async () => {
     const { chromium } = require('playwright');
     const exe = process.env.CHROMIUM || ['/opt/pw-browsers/chromium'].find((f) => fs.existsSync(f) && fs.statSync(f).isFile());
-    const browser = await chromium.launch(exe ? { executablePath: exe } : {});
+    const browser = require('./sin-anuncios.js')(await chromium.launch(exe ? { executablePath: exe } : {}));
     const r = await humo(browser, { solo });
     await browser.close();
     console.log(`${process.exitCode ? '✗' : '✓'} Humo: ${r.probadas} herramientas${r.sinDato.length ? ` (sin dato que cambiar: ${r.sinDato.join(', ')})` : ''}`);

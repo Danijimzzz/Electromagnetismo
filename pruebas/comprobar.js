@@ -29,7 +29,9 @@ const PUBLICABLES = ['index.html', 'novedades/index.html', 'foro/index.html', 'o
   // «Física en la vida real»: el índice y una página por fenómeno disponible
   'fenomenos/index.html', ...Catalogo.fenomenos.lista.filter((f) => f.disponible).flatMap((f) => [`fenomenos/${f.clave}/index.html`, `fenomenos/${f.clave}/imagen.webp`]),
   // direcciones antiguas: una página que redirige a la nueva y las reglas 301 de Cloudflare
-  ...Object.keys(Catalogo.redirecciones).map((v) => `${v}index.html`), '_redirects'];
+  ...Object.keys(Catalogo.redirecciones).map((v) => `${v}index.html`), '_redirects',
+  // ads.txt solo con los anuncios activos (fuente/anuncios.js)
+  ...(require(path.join(fuente, 'anuncios.js')).activos ? ['ads.txt'] : [])];
 const listar = (dir, pre = '') => fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? listar(path.join(dir, e.name), pre + e.name + '/') : [pre + e.name]));
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'emsim-'));
 const juegos = [
@@ -234,7 +236,7 @@ async function navegador() {
     try { ({ chromium } = require(path.join(execFileSync('npm', ['root', '-g']).toString().trim(), 'playwright'))); } catch (e2) { mal('no se encuentra playwright (npm i playwright)'); return; }
   }
   const exe = process.env.CHROMIUM || ['/opt/pw-browsers/chromium'].find((f) => fs.existsSync(f) && fs.statSync(f).isFile());
-  const browser = await chromium.launch(exe ? { executablePath: exe } : {});
+  const browser = require('./sin-anuncios.js')(await chromium.launch(exe ? { executablePath: exe } : {}));
   for (const j of solo && solo !== 'electrostatica' ? [] : juegos) {
     const page = await browser.newPage({ viewport: { width: 1400, height: 900 } });
     const consola = [];

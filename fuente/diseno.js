@@ -12,7 +12,7 @@
    bloque «En la vida real» con los fenómenos disponibles que la usan:
      node diseno.js ASIGNATURA HERRAMIENTA < pagina.html
    ===================================================================== */
-const Catalogo = require('./catalogo.js'), Tema = require('./tema.js');
+const Catalogo = require('./catalogo.js'), Tema = require('./tema.js'), Anuncios = require('./anuncios.js');
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 // Hoja común de las herramientas (estilos.css) y la cabecera del portal, que comparten con el simulador de
@@ -122,12 +122,13 @@ function aplicaElectrostatica(html) {
 }, true);</script>`;
   return html.replace(/[ \t]*<a [^>]*a-inicio[^>]*>.*<\/a>\n?/, '').replace(btnLado, '').replace(practica, '')
     .replace(cierra, '$1×</button>').replace(/<span class="logo">.*?<\/span>/, '<span class="logo">Mis ejercicios</span>')
-    .replace('<main class="main">', `<main class="main">\n${cab}\n<div class="wrap">\n${migaE}`).replace('</main>', `${vidaReal('electromagnetismo/electrostatica')}</div>\n</main>`)
+    .replace('<main class="main">', `<main class="main">\n${cab}\n<div class="wrap">\n${migaE}`).replace('</main>', `${Anuncios.hueco()}${vidaReal('electromagnetismo/electrostatica')}</div>\n</main>`)
     .replace('<div class="app"', `<style>${css(a)}${extra}</style>\n${alterna}\n<div class="app"`);
 }
 
+// con anuncios.js activo: su código en la cabeza, «Preferencias de cookies» en el pie y un hueco por página
 function aplica(html, clave, herramienta) {
-  return `<script>${Tema.SCRIPT}</script>\n` + (clave === 'electrostatica' ? aplicaElectrostatica(html) : aplicaHerramienta(html, clave, herramienta));
+  return Anuncios.cabeza() + `<script>${Tema.SCRIPT}</script>\n` + Anuncios.pie(clave === 'electrostatica' ? aplicaElectrostatica(html) : aplicaHerramienta(html, clave, herramienta));
 }
 
 function aplicaHerramienta(html, clave, herramienta) {
@@ -143,8 +144,9 @@ function aplicaHerramienta(html, clave, herramienta) {
   const propios = a === V ? ESTILOS_FENOMENOS : '', vida = a === V ? '' : vidaReal(`${clave}/${herramienta}`);
   if (vida && !html.includes('<footer')) throw new Error('diseno.js: la página no tiene <footer>');
   return html.replace(m[0], cab).replace(/<div class="fen-etiquetas"|<h1/, (x) => miga + '\n' + x).replace(/^<style>/m, `<style>${ESTILOS}${acento(a)}${cabecera}${propios}</style>\n<style>`)
-    .replace(/(<\/div>\s*)?<footer/, (x) => (vida ? vida + x : x));
+    .replace(/(<\/div>\s*)?<footer/, (x) => (vida ? vida + x : x)).replace(TEORIA.test(html) ? TEORIA : /(<\/div>\s*)?<section class="vida-real"|(<\/div>\s*)?<footer/, (x) => Anuncios.hueco() + x);
 }
+const TEORIA = /<section class="teoria"/;
 
 if (typeof module !== 'undefined') module.exports = { aplica, css, ESTILOS };
 if (typeof require !== 'undefined' && require.main === module) {
