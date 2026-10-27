@@ -1,0 +1,69 @@
+<title>La lluvia ácida y el pH del mar, explicados paso a paso · SimulaCiencia</title>
+<meta name="description" content="Por qué la lluvia limpia tiene pH 5,6, cómo el SO₂ y los NOₓ la vuelven ácida, qué daños hace, por qué los lagos sobre caliza la aguantan (un tampón) y cómo se acidifica el mar, con una animación paso a paso y el cálculo en pH y valoraciones.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<!-- =====================================================================
+     La lluvia ácida y el pH del mar («Física en la vida real»). Maqueta común de los
+     fenómenos (ver fuego-san-telmo/pagina.html): animación, texto del paso, historia
+     y recuadro de la herramienta. Los pasos, el dibujo y el sonido están en escena.js.
+     ===================================================================== -->
+<style>
+/* colores del dibujo, con su valor en modo oscuro */
+:root {
+  --cielo: #dcebf3; --cielo-alto: #8fb7d8; --cielo-gris: #a9b2ba; --monte: #9fb39a; --tierra: #b08a63; --cesped: #7fae5c; --caliza: #e3dccb;
+  --edificio: #8a8f96; --chimenea: #6b6f75; --ventana: #f2d27a; --asfalto: #4b4f55; --coche: #2a5db5; --rueda: #1d2126; --marmol: #f1eee6; --mancha: #8a7f6a;
+  --tronco: #7a5232; --abeto: #2f6b3a; --seco: #b0873c; --lago: #4f8fbf; --pez: #e08a3c; --arena: #e6d3a3; --mar: #3f86b8; --mar-hondo: #1f4f7a; --coral: #e2725b; --concha: #f3e3c9;
+  --nube: #ffffff; --nube-gris: #c9ced3; --gota: #3f7fc4; --acida: #c2412a; --so2: #8a8273; --nox: #9a6a40; --co2: #4b5560; --oxigeno: #d0453a; --acido: #c2412a; --bicarbonato: #2a7d6b;
+  --resalta: #c2412a; --rotulo: #1a2128; --ph-0: #d6332a; --ph-4: #f08a24; --ph-7: #3e9b3e; --ph-10: #2f6fc4; --ph-14: #6b3fa0 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --cielo: #24384a; --cielo-alto: #142334; --cielo-gris: #2b3036; --monte: #2d3b2c; --tierra: #5a4632; --cesped: #3a5a2c; --caliza: #8f8875;
+  --edificio: #5c6168; --chimenea: #4a4e54; --ventana: #f2c14e; --asfalto: #2a2d32; --coche: #74a2f2; --rueda: #0d0f12; --marmol: #d8d4ca; --mancha: #6e6555;
+  --tronco: #6d4a2e; --abeto: #3f8a4c; --seco: #a07a36; --lago: #2f6f9f; --pez: #f2a65a; --arena: #8f7f5a; --mar: #2a6a98; --mar-hondo: #123251; --coral: #ef8a72; --concha: #d8c8ae;
+  --nube: #c8d0d8; --nube-gris: #6e767e; --gota: #8fbdf2; --acida: #ef7a62; --so2: #a9a090; --nox: #c49a6e; --co2: #aab4bd; --oxigeno: #ef7a62; --acido: #ef7a62; --bicarbonato: #5cc2a8;
+  --resalta: #ef7a62; --rotulo: #e3e8ea; --ph-0: #ef5a4e; --ph-4: #f5a34a; --ph-7: #6cc46c; --ph-10: #6a9ef0; --ph-14: #a57be0 } }
+:root[data-theme="dark"] {
+  --cielo: #24384a; --cielo-alto: #142334; --cielo-gris: #2b3036; --monte: #2d3b2c; --tierra: #5a4632; --cesped: #3a5a2c; --caliza: #8f8875;
+  --edificio: #5c6168; --chimenea: #4a4e54; --ventana: #f2c14e; --asfalto: #2a2d32; --coche: #74a2f2; --rueda: #0d0f12; --marmol: #d8d4ca; --mancha: #6e6555;
+  --tronco: #6d4a2e; --abeto: #3f8a4c; --seco: #a07a36; --lago: #2f6f9f; --pez: #f2a65a; --arena: #8f7f5a; --mar: #2a6a98; --mar-hondo: #123251; --coral: #ef8a72; --concha: #d8c8ae;
+  --nube: #c8d0d8; --nube-gris: #6e767e; --gota: #8fbdf2; --acida: #ef7a62; --so2: #a9a090; --nox: #c49a6e; --co2: #aab4bd; --oxigeno: #ef7a62; --acido: #ef7a62; --bicarbonato: #5cc2a8;
+  --resalta: #ef7a62; --rotulo: #e3e8ea; --ph-0: #ef5a4e; --ph-4: #f5a34a; --ph-7: #6cc46c; --ph-10: #6a9ef0; --ph-14: #a57be0 }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física en la vida real</a> / La lluvia ácida y el pH del mar</span></header>
+<div class="wrap fen">
+<div class="fen-etiquetas"><span>⚗ Química</span><span>Dificultad baja</span><span>6 pasos · 1 min</span></div>
+<h1>La lluvia ácida y el pH del mar</h1>
+<p class="lead">En los años 70 los lagos de Suecia y Noruega se quedaron sin peces y los abetos de la Selva Negra empezaron a secarse, a cientos de kilómetros de cualquier fábrica. La culpa era de la lluvia. ¿Cómo puede la lluvia ser ácida?</p>
+<div class="fen-escena"><canvas id="escena" role="img" aria-label="Animación de la lluvia ácida: la lluvia disuelve el CO₂ del aire, el humo de una fábrica y de un coche sube a las nubes y la lluvia se vuelve ácida, daña una estatua de mármol, los abetos y un lago, el bicarbonato de un lago sobre caliza atrapa los H⁺ y el mar absorbe CO₂, con un medidor de pH arriba"></canvas></div>
+<div class="fen-puntos" id="puntos" role="group" aria-label="Pasos"></div>
+<div class="fen-controles">
+  <button class="btn" id="ant" type="button">‹ Anterior</button>
+  <button class="btn" id="play" type="button" aria-pressed="true">❚❚ Parar</button>
+  <button class="btn" id="sig" type="button">Siguiente ›</button>
+  <button class="btn" id="sonido" type="button" aria-pressed="false">🔇 Sonido</button>
+</div>
+<div class="fen-texto" aria-live="polite"><h2 id="paso-t"></h2><div id="paso-x"></div></div>
+<section class="fen-historia" aria-label="Un poco de historia">
+  <h2>Un poco de historia</h2>
+  <ol>
+    <li><b>1852</b>El químico escocés Robert Angus Smith analiza la lluvia de Mánchester, llena de humo de carbón, y ve que es ácida. En 1872 la llama por primera vez «lluvia ácida».</li>
+    <li><b>1909</b>Søren Sørensen inventa la escala de pH en el laboratorio de la cervecera Carlsberg, para medir la acidez sin tener que escribir potencias de diez.</li>
+    <li><b>1972</b>En la conferencia de la ONU de Estocolmo, Suecia denuncia que sus lagos mueren por el azufre que llega de otros países. En 1979 se firma el primer convenio internacional contra la contaminación que cruza fronteras.</li>
+    <li><b>2003</b>Ken Caldeira y Michael Wickett usan por primera vez la expresión «acidificación del océano» para el CO₂ que absorbe el mar.</li>
+  </ol>
+</section>
+<section class="fen-rel" aria-label="Herramienta relacionada">
+  <div class="fen-ico" aria-hidden="true">pH</div>
+  <h2>Con qué herramienta se relaciona</h2>
+  <h3>pH y valoraciones <small>· Química</small></h3>
+  <p>La lluvia limpia es una disolución muy diluida de un ácido débil, el carbónico. Su pH sale del equilibrio con la constante de acidez; como se disocia un 16 %, conviene resolverlo sin aproximar.</p>
+  <p class="f m">K_a = [H^+][HCO_3^−]/[H_2CO_3] ,  pH = −log [H^+]</p>
+  <p class="f m">pH = pK_a + log([HCO_3^−]/[H_2CO_3])</p>
+  <p>Se abre como un ácido débil 1,4·10<sup>−5</sup> M con K<sub>a</sub> = 4,3·10<sup>−7</sup>, y sale pH 5,65. En la misma herramienta puedes probar el tampón bicarbonato del lago.</p>
+  <div class="fen-fichas"><div><small>Lluvia limpia</small><b>pH 5,65</b></div><div><small>Con 30 µmol/L de H₂SO₄</small><b>pH 4,22</b></div><div><small>Mar, desde 1850</small><b>8,2 → 8,1</b></div></div>
+  <a class="fen-abrir" id="abrir" href="../../quimica/ph/">Abrir en pH y valoraciones con estos datos →</a>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Física en la vida real <span id="ver"></span> (beta)</footer>
+</body>
