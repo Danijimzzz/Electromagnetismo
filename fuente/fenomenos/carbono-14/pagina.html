@@ -1,0 +1,63 @@
+<title>La datación por carbono 14, explicada paso a paso · SimulaCiencia</title>
+<meta name="description" content="Cómo se sabe la edad de un hueso con el carbono 14: origen en la atmósfera, desintegración beta, cinética de primer orden, vida media de 5730 años y cálculo de la edad, con una animación paso a paso y el sonido de un contador Geiger.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<!-- =====================================================================
+     La datación por carbono 14 («Física en la vida real»). Maqueta común de los
+     fenómenos (ver fuego-san-telmo/pagina.html): animación, texto del paso, historia
+     y recuadro de la herramienta. Los pasos, el dibujo y el sonido están en escena.js.
+     ===================================================================== -->
+<style>
+/* colores del dibujo, con su valor en modo oscuro */
+:root {
+  --espacio: #1c2340; --cielo: #dcebf3; --cielo-alto: #8fb7d8; --cesped: #7fae5c; --tierra: #b08a63; --tierra-2: #9c7652; --piedra: #6d5640;
+  --rayo: #e0a100; --nitrogeno: #8a96a3; --c14: #7b3fc4; --c12: #4b5560; --oxigeno: #d0453a; --tronco: #7a5232; --hoja: #4f8a3a;
+  --animal: #9a6a40; --hueso: #efe6d2; --resalta: #c2412a; --rotulo: #1a2128 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --espacio: #070a18; --cielo: #24384a; --cielo-alto: #142334; --cesped: #3a5a2c; --tierra: #5a4632; --tierra-2: #4b3a29; --piedra: #2e241a;
+  --rayo: #f2c14e; --nitrogeno: #9aa6b2; --c14: #c09bf7; --c12: #aab4bd; --oxigeno: #ef7a62; --tronco: #6d4a2e; --hoja: #5f9e4a;
+  --animal: #b58a62; --hueso: #d8cfbb; --resalta: #ef7a62; --rotulo: #e3e8ea } }
+:root[data-theme="dark"] {
+  --espacio: #070a18; --cielo: #24384a; --cielo-alto: #142334; --cesped: #3a5a2c; --tierra: #5a4632; --tierra-2: #4b3a29; --piedra: #2e241a;
+  --rayo: #f2c14e; --nitrogeno: #9aa6b2; --c14: #c09bf7; --c12: #aab4bd; --oxigeno: #ef7a62; --tronco: #6d4a2e; --hoja: #5f9e4a;
+  --animal: #b58a62; --hueso: #d8cfbb; --resalta: #ef7a62; --rotulo: #e3e8ea }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física en la vida real</a> / La datación por carbono 14</span></header>
+<div class="wrap fen">
+<div class="fen-etiquetas"><span>⚗ Química</span><span>Dificultad baja</span><span>6 pasos · 1 min</span></div>
+<h1>La datación por carbono 14</h1>
+<p class="lead">En un yacimiento aparece un hueso y en el laboratorio dicen que tiene 11 460 años. No llevaba ninguna fecha escrita. ¿Cómo lo saben?</p>
+<div class="fen-escena"><canvas id="escena" role="img" aria-label="Animación del carbono 14: se forma en la atmósfera con los rayos cósmicos, pasa a las plantas y los animales y, al morir, se desintegra en un hueso enterrado mientras una curva exponencial marca lo que queda"></canvas></div>
+<div class="fen-puntos" id="puntos" role="group" aria-label="Pasos"></div>
+<div class="fen-controles">
+  <button class="btn" id="ant" type="button">‹ Anterior</button>
+  <button class="btn" id="play" type="button" aria-pressed="true">❚❚ Parar</button>
+  <button class="btn" id="sig" type="button">Siguiente ›</button>
+  <button class="btn" id="sonido" type="button" aria-pressed="false">🔇 Sonido</button>
+</div>
+<div class="fen-texto" aria-live="polite"><h2 id="paso-t"></h2><div id="paso-x"></div></div>
+<section class="fen-historia" aria-label="Un poco de historia">
+  <h2>Un poco de historia</h2>
+  <ol>
+    <li><b>1902</b>Ernest Rutherford y Frederick Soddy descubren que los elementos radiactivos se transforman en otros a un ritmo que sigue una ley exponencial, con una vida media fija para cada uno.</li>
+    <li><b>1940</b>Martin Kamen y Sam Ruben fabrican carbono 14 en un ciclotrón de Berkeley y miden que su vida media es de miles de años.</li>
+    <li><b>1949</b>Willard Libby y sus colaboradores datan madera de tumbas egipcias de edad conocida y comprueban que el método funciona. Libby recibió el Premio Nobel de Química en 1960.</li>
+    <li><b>1988</b>Tres laboratorios datan la Sábana Santa de Turín con un acelerador que cuenta los átomos uno a uno: la tela es de entre 1260 y 1390.</li>
+  </ol>
+</section>
+<section class="fen-rel" aria-label="Herramienta relacionada">
+  <div class="fen-ico" aria-hidden="true">¹⁴C</div>
+  <h2>Con qué herramienta se relaciona</h2>
+  <h3>Cinética química <small>· Química</small></h3>
+  <p>La desintegración radiactiva es una cinética de primer orden: la velocidad es proporcional a lo que queda, la vida media no depende de la cantidad y el tiempo sale con un logaritmo.</p>
+  <p class="f m">N = N_0 e^{−k t} ,  k = ln 2/t_{1/2}</p>
+  <p class="f m">t = ln(N_0/N)/k</p>
+  <p>Se abre como una reacción de orden 1 con la constante sacada de la vida media, 5730 años, partiendo del 100 % y preguntando cuándo queda el 25 %. Sale k = 1,21·10<sup>−4</sup> años<sup>−1</sup> y 11 460 años.</p>
+  <div class="fen-fichas"><div><small>Vida media</small><b>5730 años</b></div><div><small>Constante</small><b>1,21·10⁻⁴ años⁻¹</b></div><div><small>Edad con el 25 %</small><b>11 460 años</b></div></div>
+  <a class="fen-abrir" id="abrir" href="../../quimica/cinetica/">Abrir en Cinética química con estos datos →</a>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Física en la vida real <span id="ver"></span> (beta)</footer>
+</body>

@@ -1,0 +1,54 @@
+<title>Ajustador de reacciones químicas paso a paso · SimulaCiencia</title>
+<meta name="description" content="Ajusta cualquier reacción química, también iónica, por el método algebraico: una incógnita por especie, el balance de cada elemento y de la carga, el sistema resuelto y la comprobación átomo a átomo.">
+<style>
+:root {
+  --serie-1: #2a5db5; --serie-2: #1d8a5b }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #4cc48e } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #4cc48e }
+#ecuacion { width: 100%; font: 15px var(--f-mono) }
+.ajustada { font: 22px var(--f-math); margin: 2px 0 4px; overflow-wrap: anywhere }
+.flecha { font-family: var(--f-ui); font-size: .9em; padding: 0 .15em }
+.estado { font-family: var(--f-ui); font-size: .7em; color: var(--muted); margin-left: 1px }
+#coefs b { font-size: 20px }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Química</a> / Ajustador de reacciones</span></header>
+<div class="wrap">
+<h1>Ajustador de reacciones</h1>
+<p class="lead">Escribe una reacción química, molecular o iónica, y la ajusta por el método algebraico, con el sistema de ecuaciones y la comprobación átomo a átomo.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <label for="ecuacion" class="nota" style="display:block;margin:0 0 6px">Reacción</label>
+    <input id="ecuacion" class="in" placeholder="C3H8 + O2 -> CO2 + H2O" autocomplete="off" spellcheck="false">
+    <p class="nota" id="nota">Separa las especies con + y los lados con -> (o =). Admite paréntesis, hidratos con ·, estados como (aq) y cargas: Fe^3+, Fe3+, SO4^2-, NO3-, y el electrón e-. Si escribes coeficientes, se ignoran. Las mayúsculas importan: Co es cobalto y CO, monóxido de carbono.</p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Reacción ajustada</h2>
+      <p class="ajustada" id="ajustada"></p>
+      <div class="resumen" id="coefs"></div>
+    </div>
+    <div class="card"><h2>Átomos a cada lado</h2>
+      <canvas id="grafica" aria-label="Átomos de cada elemento en los reactivos y en los productos, antes y después de ajustar"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Qué es ajustar una reacción</h2>
+  <p>En una reacción química los átomos no se crean ni se destruyen: solo se reorganizan. Ajustarla es buscar los coeficientes estequiométricos, los números que van delante de cada fórmula, para que haya los mismos átomos de cada elemento en los reactivos que en los productos. En una reacción iónica, además, la carga total tiene que ser la misma a los dos lados.</p>
+  <h2>El método algebraico</h2>
+  <p class="m">Se pone una incógnita delante de cada especie ($a$, $b$, $c$…) y se escribe una ecuación por elemento. Para la combustión del propano, $a$ C₃H₈ + $b$ O₂ → $c$ CO₂ + $d$ H₂O, las del carbono, el hidrógeno y el oxígeno son:</p>
+  <p class="f m">$3a = c$,   $8a = 2d$,   $2b = 2c + d$</p>
+  <p class="m">Es un sistema homogéneo con una incógnita libre: se da el valor $a = 1$, se despejan las demás ($c = 3$, $d = 4$, $b = 5$) y, si salen fracciones, se multiplica todo por el mínimo común múltiplo de los denominadores. Los coeficientes se dejan enteros y lo más pequeños posible.</p>
+  <h2>Por tanteo</h2>
+  <p>En reacciones sencillas se suele ajustar a ojo: primero los metales, luego los no metales, después el hidrógeno y por último el oxígeno. El método algebraico llega siempre al mismo resultado y funciona también cuando el tanteo se complica. Para las reacciones redox, el método del ion-electrón separa la oxidación y la reducción, pero el ajuste final es el mismo que da el sistema.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Ajustador de reacciones <span id="ver"></span> (beta)</footer>
+</body>

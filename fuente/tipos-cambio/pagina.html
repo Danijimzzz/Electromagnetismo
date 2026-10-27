@@ -1,0 +1,51 @@
+<title>Tipos de cambio y PPA: divisas, tipo real e índice Big Mac · SimulaCiencia</title>
+<meta name="description" content="Calculadora de tipos de cambio en español: cambiar euros por dólares, libras o yenes con comisión, tipo de cambio cruzado, apreciación y depreciación del euro, paridad del poder adquisitivo absoluta y relativa y tipo de cambio real (índice Big Mac), paso a paso.">
+<style>
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a; --serie-3: #6b3fa0 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 }
+textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 120px }
+.tabla-eco { border-collapse: collapse; font: 13.5px var(--f-ui); width: 100%; font-variant-numeric: tabular-nums }
+.tabla-eco th, .tabla-eco td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap }
+.tabla-eco th { font-weight: 600; color: var(--muted) } .tabla-eco th:first-child, .tabla-eco td:first-child { text-align: left }
+.tabla-eco tfoot td { font-weight: 600; background: var(--accent-soft) }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Economía</a> / Tipos de cambio</span></header>
+<div class="wrap">
+<h1>Tipos de cambio y PPA</h1>
+<p class="lead">Cambia euros por otra moneda, calcula un tipo cruzado, mira cuánto se ha apreciado o depreciado el euro y compara precios con la paridad del poder adquisitivo y el tipo de cambio real.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Gráfica</h2>
+      <canvas id="grafica" aria-label="La recta del cambio, las barras del tipo de cambio o del precio en euros, o el tipo de cambio año a año"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card"><h2>Año a año</h2><div class="tabla-scroll" id="tabla"></div></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+<h2>Tipo de cambio nominal</h2>
+<p class="m">Es el precio de una moneda en otra. En la zona euro se da como lo publica el BCE: $E$ unidades de la otra moneda por 1 € (por ejemplo, 1 € = 1,08 dólares). Para pasar euros a la otra moneda se multiplica por $E$ y para volver a euros se divide. Si $E$ sube, el euro se aprecia (vale más) y la otra moneda se deprecia.</p>
+<h2>Tipo de cambio cruzado</h2>
+<p>Si se conoce el valor del euro en dos monedas, el tipo entre ellas sale dividiendo: con 1 € = 1,08 dólares y 1 € = 0,85 libras, un dólar vale 0,85/1,08 = 0,787 libras. Así se calculan los tipos entre monedas que no se cotizan directamente.</p>
+<h2>Paridad del poder adquisitivo</h2>
+<p class="m">La PPA dice que, a largo plazo, el mismo bien debería costar lo mismo en todas partes, así que el tipo de cambio sería $E_{PPA} = P_e/P$. El tipo de cambio real, $q = E · P/P_e$, cuenta cuántos bienes de fuera se compran con lo que cuesta uno aquí: si es mayor que 1, el euro está sobrevalorado. El índice Big Mac de The Economist compara así el precio de la hamburguesa en cada país.</p>
+<h2>PPA relativa</h2>
+<p class="m">Aunque los niveles de precios no se igualen, la versión relativa dice que el tipo de cambio compensa la diferencia de inflación: $E_1 = E_0 · (1 + π_e)/(1 + π)$. La moneda del país con más inflación se deprecia, aproximadamente, en la diferencia entre las dos inflaciones.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Tipos de cambio <span id="ver"></span> (beta)</footer>
+</body>

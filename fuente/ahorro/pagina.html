@@ -1,0 +1,51 @@
+<title>Ahorro e inflación a largo plazo: simulador de un plan de ahorro · SimulaCiencia</title>
+<meta name="description" content="Simulador de un plan de ahorro en español: capital inicial y aportaciones mensuales o anuales, rentabilidad, inflación, saldo final en euros de entonces y de hoy, tipo real de Fisher, aportación necesaria para un objetivo y pérdida de poder adquisitivo.">
+<style>
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a; --serie-3: #6b3fa0 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 }
+textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 120px }
+.tabla-eco { border-collapse: collapse; font: 13.5px var(--f-ui); width: 100%; font-variant-numeric: tabular-nums }
+.tabla-eco th, .tabla-eco td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap }
+.tabla-eco th { font-weight: 600; color: var(--muted) } .tabla-eco th:first-child, .tabla-eco td:first-child { text-align: left }
+.tabla-eco tfoot td { font-weight: 600; background: var(--accent-soft) }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Economía</a> / Ahorro e inflación</span></header>
+<div class="wrap">
+<h1>Ahorro e inflación a largo plazo</h1>
+<p class="lead">Simula un plan de ahorro con aportaciones periódicas y mira cuánto tendrás al final, en euros de entonces y en euros de hoy; o cuánto hay que ahorrar para llegar a un objetivo, y cuánto se come la inflación.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>El ahorro año a año</h2>
+      <canvas id="grafica" aria-label="Saldo del plan de ahorro año a año en euros corrientes y en euros de hoy, frente a lo aportado"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card"><h2>Año a año</h2><div class="tabla-scroll" id="tabla"></div></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+<h2>Interés compuesto y aportaciones</h2>
+<p class="m">Un capital $C_0$ a una rentabilidad anual $r$ se convierte en $C_0 (1 + r)^n$ al cabo de $n$ años. Si además se aporta $a$ al final de cada periodo, las aportaciones forman una renta: su valor final es $a · s_{N¬i} = a · {(1 + i)^N − 1}/i$, con $N$ periodos al tipo $i$ de cada periodo.</p>
+<h2>Inflación y poder adquisitivo</h2>
+<p class="m">La inflación $π$ es lo que suben los precios cada año. Una cantidad $X$ de dentro de $n$ años equivale hoy a $X/(1 + π)^n$: es lo que se puede comprar con ella a precios de hoy. Con un 2 % de inflación, en 35 años los precios se duplican (regla del 70: $70/2 = 35$).</p>
+<h2>Tipo de interés real</h2>
+<p class="m">La ecuación de Fisher separa lo que crece el dinero de lo que crece lo que se puede comprar: $1 + r_{real} = (1 + r)/(1 + π)$, y aproximadamente $r_{real} ≈ r − π$. Si la rentabilidad no supera la inflación, se ahorra perdiendo poder adquisitivo.</p>
+<h2>Planificar con un objetivo</h2>
+<p>Para tener dentro de n años una cantidad que valga lo mismo que X € de hoy, hay que reunir X (1 + π)ⁿ € de entonces. Lo que no consiga el capital inicial lo tienen que poner las aportaciones; subirlas cada año con la inflación hace que el esfuerzo sea el mismo en términos reales.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Ahorro e inflación <span id="ver"></span> (beta)</footer>
+</body>

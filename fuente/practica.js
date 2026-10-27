@@ -84,6 +84,14 @@ const Practica = (() => {
       genera: () => window.MasaApp?.azar(), enunciado: () => window.MasaApp?.enunciado(),
       get textos() { return document.querySelector('#tab-emp')?.getAttribute('aria-selected') === 'true' ? [{ et: 'Fórmula empírica', sel: '#resumen-emp .formula' }] : []; },
     },
+    // descriptiva: unas notas al azar (los datos están en un textarea)
+    descriptiva: { datos: null, genera: () => window.DescriptivaApp?.azar(), enunciado: () => window.DescriptivaApp?.enunciado() },
+    // regresión económica: una función de consumo al azar (los datos están en un textarea)
+    'regresion-economia': { datos: null, genera: () => window.RegresionEconomiaApp?.azar(), enunciado: () => window.RegresionEconomiaApp?.enunciado() },
+    // ratios: un balance al azar que cuadre (si se cambian los datos sueltos, el activo y el pasivo no coinciden)
+    ratios: { datos: null, genera: () => window.RatiosApp?.azar(), enunciado: () => window.RatiosApp?.enunciado() },
+    // ajustador: una reacción de los ejemplos; se preguntan los coeficientes
+    ajustador: { datos: null, items: '#coefs > div', genera: () => window.AjustadorApp?.azar(), enunciado: () => window.AjustadorApp?.enunciado() },
     'configuracion-electronica': {
       items: null, tapa: '#res', datos: null,
       genera: () => { window.ConfigApp?.pestana('el'); pon(document.querySelector('#entrada'), String(entero(1, 56))); },

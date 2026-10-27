@@ -1,0 +1,54 @@
+<title>Interés simple y compuesto: capital final, TIN y TAE · SimulaCiencia</title>
+<meta name="description" content="Calculadora de interés simple y compuesto en español: capital final e inicial, tipo de interés, tiempo para llegar a un capital, capitalización mensual o trimestral y paso del TIN a la TAE, con la tabla año a año y el desarrollo.">
+<style>
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a; --serie-3: #6b3fa0 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 }
+textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 120px }
+.tabla-eco { border-collapse: collapse; font: 13.5px var(--f-ui); width: 100%; font-variant-numeric: tabular-nums }
+.tabla-eco th, .tabla-eco td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap }
+.tabla-eco th { font-weight: 600; color: var(--muted) } .tabla-eco th:first-child, .tabla-eco td:first-child { text-align: left }
+.tabla-eco tfoot td { font-weight: 600; background: var(--accent-soft) }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Economía</a> / Interés simple y compuesto</span></header>
+<div class="wrap">
+<h1>Interés simple y compuesto</h1>
+<p class="lead">Calcula cuánto crece un capital con interés simple o compuesto, qué capital hace falta hoy, qué tipo o cuánto tiempo, y pasa del TIN a la TAE, con la tabla año a año.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Crecimiento del capital</h2>
+      <canvas id="grafica" aria-label="Capital a lo largo del tiempo con interés simple (recta) y compuesto (curva)"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card"><h2>Año a año</h2><div class="tabla-scroll" id="tabla"></div></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+<h2>Capitalización simple</h2>
+<p>Los intereses se calculan siempre sobre el capital inicial, así que son los mismos cada año y el capital crece en línea recta. Se usa en operaciones a menos de un año, como letras o descuentos.</p>
+<p class="f m">$C_n = C_0 (1 + i · t)$,   $I = C_0 · i · t$</p>
+<h2>Capitalización compuesta</h2>
+<p>Los intereses de cada periodo se suman al capital y al periodo siguiente también generan intereses: el capital crece de forma exponencial. Con m periodos al año (12 si es mensual) y un tipo nominal i:</p>
+<p class="f m">$C_n = C_0 (1 + i/m)^{m · t}$</p>
+<p class="m">Despejando se obtiene el capital inicial (actualizar o descontar), $C_0 = C_n (1 + i)^{−t}$, el tipo, $i = (C_n/C_0)^{1/t} − 1$, o el tiempo, $t = {ln(C_n/C_0)}/{ln(1 + i)}$.</p>
+<h2>TIN y TAE</h2>
+<p class="m">El TIN (tipo de interés nominal) es el tipo anual que se reparte entre los periodos: $i_m = TIN/m$. La TAE (tasa anual equivalente) es lo que rinde de verdad en un año, contando los intereses de los intereses:</p>
+<p class="f m">$TAE = (1 + TIN/m)^m − 1$</p>
+<p>Por eso los bancos están obligados a dar la TAE: permite comparar productos con distintas formas de pago. En los préstamos, la TAE incluye además las comisiones y gastos obligatorios.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Interés simple y compuesto <span id="ver"></span> (beta)</footer>
+</body>

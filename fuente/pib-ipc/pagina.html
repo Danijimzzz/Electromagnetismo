@@ -1,0 +1,51 @@
+<title>PIB, IPC e inflación: PIB nominal y real, deflactor y euros constantes · SimulaCiencia</title>
+<meta name="description" content="Calculadora de PIB e inflación en español: PIB nominal y real, deflactor del PIB, crecimiento real, inflación, deflactar una serie con el IPC (euros constantes) y agregados de la contabilidad nacional (PIB, PNB, PNN y renta nacional), paso a paso.">
+<style>
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a; --serie-3: #6b3fa0 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 }
+textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 120px }
+.tabla-eco { border-collapse: collapse; font: 13.5px var(--f-ui); width: 100%; font-variant-numeric: tabular-nums }
+.tabla-eco th, .tabla-eco td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap }
+.tabla-eco th { font-weight: 600; color: var(--muted) } .tabla-eco th:first-child, .tabla-eco td:first-child { text-align: left }
+.tabla-eco tfoot td { font-weight: 600; background: var(--accent-soft) }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Economía</a> / PIB, IPC e inflación</span></header>
+<div class="wrap">
+<h1>PIB, IPC e inflación</h1>
+<p class="lead">Calcula el PIB nominal y real con su deflactor, pasa una serie de euros corrientes a euros constantes con el IPC, o recorre los agregados del PIB a la renta nacional.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>La gráfica</h2>
+      <canvas id="grafica" aria-label="PIB nominal y real de cada año, la serie en euros corrientes y constantes, o los componentes del gasto y los agregados"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card"><h2>Año a año</h2><div class="tabla-scroll" id="tabla"></div></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+<h2>PIB nominal y real</h2>
+<p class="m">El PIB es el valor de todos los bienes y servicios finales producidos en un país en un año. El nominal usa los precios de cada año, $∑ p_t q_t$, y puede subir solo porque suben los precios. El real usa los precios de un año base, $∑ p_0 q_t$, y solo cambia si se produce más o menos: su variación es el crecimiento económico.</p>
+<h2>Deflactor e IPC</h2>
+<p class="m">El deflactor del PIB, $100 · "PIB nominal"/"PIB real"$, mide la subida de los precios de todo lo que se produce. El IPC mide la de una cesta fija de lo que compran los hogares (es un índice de Laspeyres). La inflación es la tasa de variación de cualquiera de los dos.</p>
+<h2>Deflactar: euros constantes</h2>
+<p class="m">Para comparar cantidades de años distintos se pasan a euros de un mismo año dividiendo entre el índice de precios: $"real" = "nominal" · "IPC"_{ref}/"IPC"_t$. Un sueldo que sube un 2 % con una inflación del 3 % pierde poder adquisitivo: $(1,02/1,03) − 1 ≈ −1 %$.</p>
+<h2>Del PIB a la renta nacional</h2>
+<p class="m">Por el lado del gasto, $"PIB" = C + I + G + X − M$. Sumando las rentas netas que llegan del exterior sale el PNB; restando las amortizaciones, el PNN; y quitando los impuestos indirectos netos de subvenciones, la renta nacional, que se reparten los factores de producción.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· PIB, IPC e inflación <span id="ver"></span> (beta)</footer>
+</body>

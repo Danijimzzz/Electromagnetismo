@@ -1,0 +1,62 @@
+<title>Por qué la luz viaja en alta tensión, explicado paso a paso · SimulaCiencia</title>
+<meta name="description" content="Por qué las líneas eléctricas van a 400 kV y no a 230 V: la potencia P = VI, las pérdidas por efecto Joule I²R en los cables, el transformador y la red de la central al enchufe, con una animación paso a paso y el cálculo en Circuitos de continua.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<!-- =====================================================================
+     Por qué la luz viaja en alta tensión («Física en la vida real»). Maqueta común de
+     los fenómenos (ver fuego-san-telmo/pagina.html): animación, texto del paso, historia
+     y recuadro de la herramienta. Los pasos, el dibujo y el sonido están en escena.js.
+     ===================================================================== -->
+<style>
+/* colores del dibujo, con su valor en modo oscuro */
+:root {
+  --cielo: #dcebf3; --cielo-alto: #8fb7d8; --monte: #9fb39a; --cesped: #8db56a; --hormigon: #c9c4ba; --vapor: #ffffff; --edificio: #8a8f96; --ventana: #f2d27a; --apagada: #5b6068;
+  --trafo: #6b7f8f; --aislador: #a3c4d8; --valla: #5b6068; --torre: #5b6068; --cable: #3a3f45; --caliente: #e8502a; --carga: #2a5db5; --humo: #6b6f75;
+  --hierro: #7d858c; --primario: #c2412a; --secundario: #2a5db5; --flujo: #6b3fa0; --bien: #2f7d32; --resalta: #c2412a; --rotulo: #1a2128 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --cielo: #24384a; --cielo-alto: #142334; --monte: #2d3b2c; --cesped: #34522a; --hormigon: #6e6a62; --vapor: #aab4bd; --edificio: #4a4f56; --ventana: #f2c14e; --apagada: #2a2d32;
+  --trafo: #50606d; --aislador: #6f94ab; --valla: #8a96a3; --torre: #9aa6b2; --cable: #c8d0d8; --caliente: #ff7a4a; --carga: #74a2f2; --humo: #8a8f96;
+  --hierro: #9aa6b2; --primario: #ef7a62; --secundario: #74a2f2; --flujo: #b48be8; --bien: #7cc47f; --resalta: #ef7a62; --rotulo: #e3e8ea } }
+:root[data-theme="dark"] {
+  --cielo: #24384a; --cielo-alto: #142334; --monte: #2d3b2c; --cesped: #34522a; --hormigon: #6e6a62; --vapor: #aab4bd; --edificio: #4a4f56; --ventana: #f2c14e; --apagada: #2a2d32;
+  --trafo: #50606d; --aislador: #6f94ab; --valla: #8a96a3; --torre: #9aa6b2; --cable: #c8d0d8; --caliente: #ff7a4a; --carga: #74a2f2; --humo: #8a8f96;
+  --hierro: #9aa6b2; --primario: #ef7a62; --secundario: #74a2f2; --flujo: #b48be8; --bien: #7cc47f; --resalta: #ef7a62; --rotulo: #e3e8ea }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física en la vida real</a> / Por qué la luz viaja en alta tensión</span></header>
+<div class="wrap fen">
+<div class="fen-etiquetas"><span>⚡ Circuitos</span><span>Dificultad baja</span><span>6 pasos · 1 min</span></div>
+<h1>Por qué la luz viaja en alta tensión</h1>
+<p class="lead">En casa los enchufes dan 230 V, pero las torres que cruzan el campo llevan 400 000 V, tanto que la chispa saltaría por el aire si te acercaras. ¿Por qué no se lleva la luz directamente a 230 V?</p>
+<div class="fen-escena"><canvas id="escena" role="img" aria-label="Animación del transporte de la electricidad: una central, un transformador, tres torres con dos cables por los que avanzan las cargas y una ciudad; a 230 V los cables se ponen al rojo y la ciudad se apaga, a 400 kV casi no se calientan, y el transformador por dentro con sus dos bobinas"></canvas></div>
+<div class="fen-puntos" id="puntos" role="group" aria-label="Pasos"></div>
+<div class="fen-controles">
+  <button class="btn" id="ant" type="button">‹ Anterior</button>
+  <button class="btn" id="play" type="button" aria-pressed="true">❚❚ Parar</button>
+  <button class="btn" id="sig" type="button">Siguiente ›</button>
+  <button class="btn" id="sonido" type="button" aria-pressed="false">🔇 Sonido</button>
+</div>
+<div class="fen-texto" aria-live="polite"><h2 id="paso-t"></h2><div id="paso-x"></div></div>
+<section class="fen-historia" aria-label="Un poco de historia">
+  <h2>Un poco de historia</h2>
+  <ol>
+    <li><b>1841</b>James Prescott Joule mide que el calor que suelta un cable es proporcional al cuadrado de la corriente y a su resistencia: el efecto Joule.</li>
+    <li><b>1882</b>Thomas Edison abre en Nueva York la primera central de corriente continua. A 110 V, no puede llevar la luz más allá de un kilómetro y medio.</li>
+    <li><b>1886</b>William Stanley, con el transformador de Gaulard y Gibbs, ilumina el pueblo de Great Barrington con corriente alterna. Empieza la «guerra de las corrientes» entre Edison y Westinghouse.</li>
+    <li><b>1891</b>Una línea de 175 km lleva la electricidad de Lauffen a la exposición de Fráncfort a 15 000 V, en alterna trifásica. La alterna gana la guerra.</li>
+  </ol>
+</section>
+<section class="fen-rel" aria-label="Herramienta relacionada">
+  <div class="fen-ico" aria-hidden="true">I²R</div>
+  <h2>Con qué herramienta se relaciona</h2>
+  <h3>Circuitos de continua <small>· Circuitos</small></h3>
+  <p>La línea es un circuito en serie: la central como fuente de tensión, los dos cables como dos resistencias pequeñas y la ciudad como una resistencia grande que gasta 10 MW. El balance de potencias dice cuánto se pierde en los cables.</p>
+  <p class="f m">I = E/(R_1 + R_c + R_2) ,  P_p = I^2 (R_1 + R_2)</p>
+  <p>Se abre con una fuente de 400 kV, dos cables de 2,5 Ω y una ciudad de 16 kΩ. Sale I = 25 A y unos 1,56 kW en cada cable. Prueba a bajar la fuente a 20 kV y la ciudad a 40 Ω.</p>
+  <div class="fen-fichas"><div><small>Corriente</small><b>25 A</b></div><div><small>Pérdidas</small><b>3,1 kW (0,03 %)</b></div><div><small>A 230 V</small><b>9,45 GW</b></div></div>
+  <a class="fen-abrir" id="abrir" href="../../circuitos/continua/">Abrir en Circuitos de continua con estos datos →</a>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Física en la vida real <span id="ver"></span> (beta)</footer>
+</body>
