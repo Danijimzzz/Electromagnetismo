@@ -1,0 +1,49 @@
+<title>Curva de Lorenz e índice de Gini: desigualdad de la renta · SimulaCiencia</title>
+<meta name="description" content="Calculadora de desigualdad en español: curva de Lorenz e índice de Gini a partir de rentas sueltas, de tramos de renta o de quintiles, con la tabla de proporciones acumuladas, el índice por el área y con la fórmula Σ(p − q)/Σp y el ratio S80/S20, paso a paso.">
+<style>
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a; --serie-3: #6b3fa0 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 }
+textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 120px }
+.tabla-eco { border-collapse: collapse; font: 13.5px var(--f-ui); width: 100%; font-variant-numeric: tabular-nums }
+.tabla-eco th, .tabla-eco td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap }
+.tabla-eco th { font-weight: 600; color: var(--muted) } .tabla-eco th:first-child, .tabla-eco td:first-child { text-align: left }
+.tabla-eco tfoot td { font-weight: 600; background: var(--accent-soft) }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Economía</a> / Lorenz y Gini</span></header>
+<div class="wrap">
+<h1>Curva de Lorenz e índice de Gini</h1>
+<p class="lead">Escribe las rentas de cada persona, unos tramos o los quintiles, y mira la curva de Lorenz, el índice de Gini y cuánto se lleva el 20 % más rico frente al más pobre.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Curva de Lorenz</h2>
+      <canvas id="grafica" aria-label="La curva de Lorenz bajo la diagonal de la igualdad, con la zona de la desigualdad"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card"><h2>Proporciones acumuladas</h2><div class="tabla-scroll" id="tabla"></div></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+<h2>Curva de Lorenz</h2>
+<p class="m">Se ordena a la población de menos a más renta y se dibuja, para cada fracción de población acumulada $p$, la fracción de renta que tiene, $q$. Si todos ganaran lo mismo, el 20 % de la gente tendría el 20 % de la renta y la curva sería la diagonal; cuanto más se separa de ella hacia abajo, más desigual es el reparto.</p>
+<h2>Índice de Gini</h2>
+<p class="m">Es el doble del área entre la diagonal y la curva: 0 si todos tienen lo mismo y casi 1 si una sola persona lo tiene todo. Con los puntos de la curva se calcula por trapecios, $G = 1 − Σ (p_i − p_{i−1})(q_i + q_{i−1})$. En muchos libros se usa $I_G = {Σ (p_i − q_i)}/{Σ p_i}$, que da casi lo mismo cuando hay muchos grupos. España está alrededor de 0,32; los países nórdicos, cerca de 0,25; Sudáfrica, por encima de 0,6.</p>
+<h2>Ratio S80/S20</h2>
+<p>Divide la renta del 20 % más rico entre la del 20 % más pobre. Es la otra medida de desigualdad que publican el INE y Eurostat, y se entiende sin fórmulas: un 5 quiere decir que el quinto más rico tiene cinco veces más renta que el más pobre.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Lorenz y Gini <span id="ver"></span> (beta)</footer>
+</body>
