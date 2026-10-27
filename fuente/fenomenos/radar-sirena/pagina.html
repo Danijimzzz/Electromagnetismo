@@ -1,0 +1,63 @@
+<title>El radar de tráfico y la sirena: el efecto Doppler, explicado paso a paso · SimulaCiencia</title>
+<meta name="description" content="Por qué la sirena de una ambulancia suena más aguda al acercarse y más grave al alejarse, y cómo un radar de tráfico mide la velocidad con el eco de sus microondas: el efecto Doppler, con una animación paso a paso y sonido.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<!-- =====================================================================
+     El radar de tráfico y la sirena («Física en la vida real»). Maqueta común de los
+     fenómenos (ver fuego-san-telmo/pagina.html): animación, texto del paso, historia
+     y recuadro de la herramienta. Los pasos, el dibujo y el sonido están en escena.js.
+     ===================================================================== -->
+<style>
+/* colores del dibujo, con su valor en modo oscuro */
+:root {
+  --cielo: #dceaf3; --cielo-alto: #a9cbe2; --edificio: #c3c9cf; --edificio-2: #b0b8c0; --ventana: #eef3f7; --acera: #d4cfc4; --asfalto: #5b6168; --linea: #f2f2ee; --sombra: rgba(0,0,0,.25);
+  --ambulancia: #fbfbf8; --franja: #d2332b; --cristal: #6f9bbd; --luz: #2f6dff; --rueda: #24292e; --llanta: #9aa3ab; --coche: #2a5db5; --radar: #3d454d;
+  --persona: #56636e; --piel: #e2b38f; --onda: #7b3fc4; --agudo: #c2412a; --grave: #2a5db5; --ida: #c26a00; --eco: #7b3fc4; --resalta: #c2412a; --rotulo: #1a2128 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --cielo: #1d2a37; --cielo-alto: #0f1924; --edificio: #2c343c; --edificio-2: #343d46; --ventana: #e9c46a; --acera: #3a3d40; --asfalto: #22262a; --linea: #c9cccf; --sombra: rgba(0,0,0,.5);
+  --ambulancia: #e6e7e3; --franja: #e0574f; --cristal: #4d7491; --luz: #6d9bff; --rueda: #0d1013; --llanta: #7d868e; --coche: #5f8fe0; --radar: #8f989f;
+  --persona: #8995a0; --piel: #c9987a; --onda: #b48af0; --agudo: #ef7a62; --grave: #74a2f2; --ida: #f0a040; --eco: #b48af0; --resalta: #ef7a62; --rotulo: #e3e8ea } }
+:root[data-theme="dark"] {
+  --cielo: #1d2a37; --cielo-alto: #0f1924; --edificio: #2c343c; --edificio-2: #343d46; --ventana: #e9c46a; --acera: #3a3d40; --asfalto: #22262a; --linea: #c9cccf; --sombra: rgba(0,0,0,.5);
+  --ambulancia: #e6e7e3; --franja: #e0574f; --cristal: #4d7491; --luz: #6d9bff; --rueda: #0d1013; --llanta: #7d868e; --coche: #5f8fe0; --radar: #8f989f;
+  --persona: #8995a0; --piel: #c9987a; --onda: #b48af0; --agudo: #ef7a62; --grave: #74a2f2; --ida: #f0a040; --eco: #b48af0; --resalta: #ef7a62; --rotulo: #e3e8ea }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física en la vida real</a> / El radar de tráfico y la sirena</span></header>
+<div class="wrap fen">
+<div class="fen-etiquetas"><span>∿ Física general</span><span>Dificultad baja</span><span>6 pasos · 1 min</span></div>
+<h1>El radar de tráfico y la sirena</h1>
+<p class="lead">La sirena de una ambulancia suena más aguda cuando viene y más grave cuando se va, aunque la sirena siempre emite lo mismo. Y un radar sabe a qué velocidad vas solo con escuchar el eco de sus ondas. ¿Qué tienen en común?</p>
+<div class="fen-escena"><canvas id="escena" role="img" aria-label="Animación de una ambulancia que pasa junto a un peatón con los frentes de onda de la sirena, y de un radar de tráfico que mide la velocidad de un coche con el eco de sus microondas"></canvas></div>
+<div class="fen-puntos" id="puntos" role="group" aria-label="Pasos"></div>
+<div class="fen-controles">
+  <button class="btn" id="ant" type="button">‹ Anterior</button>
+  <button class="btn" id="play" type="button" aria-pressed="true">❚❚ Parar</button>
+  <button class="btn" id="sig" type="button">Siguiente ›</button>
+  <button class="btn" id="sonido" type="button" aria-pressed="false">🔇 Sonido</button>
+</div>
+<div class="fen-texto" aria-live="polite"><h2 id="paso-t"></h2><div id="paso-x"></div></div>
+<section class="fen-historia" aria-label="Un poco de historia">
+  <h2>Un poco de historia</h2>
+  <ol>
+    <li><b>1842</b>Christian Doppler, profesor en Praga, propone que el color de las estrellas dobles cambia según se acerquen o se alejen de nosotros. Para las estrellas se equivocaba en el tamaño del efecto, pero la idea era buena.</li>
+    <li><b>1845</b>Christophorus Buys Ballot lo comprueba con sonido en Utrecht: sube músicos a un tren que pasa a toda velocidad tocando una nota fija, y otros músicos en el andén, con buen oído, notan cómo cambia el tono.</li>
+    <li><b>1868</b>William Huggins mide el corrimiento de las líneas del espectro de Sirio y calcula a qué velocidad se mueve: el efecto Doppler se convierte en una herramienta de la astronomía.</li>
+    <li><b>1947</b>Aparecen los primeros radares de velocidad para la policía, en Estados Unidos. Hoy los de tráfico trabajan en torno a 24 GHz o 34 GHz, o con láser.</li>
+  </ol>
+</section>
+<section class="fen-rel" aria-label="Herramienta relacionada">
+  <div class="fen-ico" aria-hidden="true">f′</div>
+  <h2>Con qué herramienta se relaciona</h2>
+  <h3>Efecto Doppler <small>· Física general</small></h3>
+  <p>La sirena es una fuente que se mueve hacia un observador quieto, y el radar es un eco en un obstáculo que se mueve: dos efectos Doppler seguidos, primero el coche como observador y luego como fuente.</p>
+  <p class="f m">f′ = f v/(v − v_F) ,  f″ = f (v + u)/(v − u)</p>
+  <p class="f m">Δf = f″ − f ≈ 2 u f/c</p>
+  <p>Se abre en la pestaña del eco con el radar quieto de 24 GHz, ondas a 3·10<sup>8</sup> m/s y el coche acercándose a 33 m/s. Sale un eco 5280 Hz más agudo, la diferencia que mide el radar.</p>
+  <div class="fen-fichas"><div><small>Frecuencia del radar</small><b>24 GHz</b></div><div><small>Velocidad del coche</small><b>33 m/s</b></div><div><small>Diferencia en el eco</small><b>Δf = 5280 Hz</b></div></div>
+  <a class="fen-abrir" id="abrir" href="../../fisica/doppler/">Abrir en Efecto Doppler con estos datos →</a>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Física en la vida real <span id="ver"></span> (beta)</footer>
+</body>
