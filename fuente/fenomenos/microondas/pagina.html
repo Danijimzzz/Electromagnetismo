@@ -1,0 +1,65 @@
+<title>La rejilla del microondas, explicada paso a paso · SimulaCiencia</title>
+<meta name="description" content="Cómo funciona un microondas: ondas de 2,45 GHz y 12 cm, el agua que gira y se calienta, la onda estacionaria entre las paredes de metal, la velocidad de la luz medida con chocolate y por qué la rejilla de la puerta no deja salir las microondas pero sí la luz, con una animación paso a paso y el cálculo en Ondas electromagnéticas.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<!-- =====================================================================
+     La rejilla del microondas («Física en la vida real»). Maqueta común de los
+     fenómenos (ver fuego-san-telmo/pagina.html): animación, texto del paso, historia
+     y recuadro de la herramienta. Los pasos, el dibujo y el sonido están en escena.js.
+     ===================================================================== -->
+<style>
+/* colores del dibujo, con su valor en modo oscuro */
+:root {
+  --pared: #e9e4da; --encimera: #b9a68a; --encimera-borde: #8f7c62; --carcasa: #d4d7db; --cavidad: #4a4438; --cavidad-luz: #8a7a52; --metal: #8a96a3; --mandos: #3a3f45;
+  --magnetron: #b06a3a; --aleta: #6b6f75; --pantalla: #14191e; --digito: #6cf08a; --boton: #5b6068; --onda: #2a5db5; --caliente: #e8502a; --nodo: #1a2128;
+  --plato: #f3f1ea; --plato-borde: #b7b3a8; --taza: #c2412a; --agua: #6fa8d6; --campo: #e0a100; --oxigeno: #d0453a; --hidrogeno: #f4f4f4;
+  --chocolate: #5a3420; --derretido: #8a5432; --luz: #e0a100; --sol: #f0a020; --rotulo: #1a2128 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --pared: #1c2126; --encimera: #4b3f30; --encimera-borde: #3a3024; --carcasa: #5c6168; --cavidad: #1d1a15; --cavidad-luz: #4f4630; --metal: #9aa6b2; --mandos: #22262b;
+  --magnetron: #d0864f; --aleta: #8a8f96; --pantalla: #070a0d; --digito: #6cf08a; --boton: #3a3f45; --onda: #74a2f2; --caliente: #ff7a4a; --nodo: #e3e8ea;
+  --plato: #c8c4ba; --plato-borde: #8a8579; --taza: #ef7a62; --agua: #4f8fbf; --campo: #f2c14e; --oxigeno: #ef7a62; --hidrogeno: #e3e8ea;
+  --chocolate: #6b412a; --derretido: #a8714a; --luz: #f2c14e; --sol: #f2b84e; --rotulo: #e3e8ea } }
+:root[data-theme="dark"] {
+  --pared: #1c2126; --encimera: #4b3f30; --encimera-borde: #3a3024; --carcasa: #5c6168; --cavidad: #1d1a15; --cavidad-luz: #4f4630; --metal: #9aa6b2; --mandos: #22262b;
+  --magnetron: #d0864f; --aleta: #8a8f96; --pantalla: #070a0d; --digito: #6cf08a; --boton: #3a3f45; --onda: #74a2f2; --caliente: #ff7a4a; --nodo: #e3e8ea;
+  --plato: #c8c4ba; --plato-borde: #8a8579; --taza: #ef7a62; --agua: #4f8fbf; --campo: #f2c14e; --oxigeno: #ef7a62; --hidrogeno: #e3e8ea;
+  --chocolate: #6b412a; --derretido: #a8714a; --luz: #f2c14e; --sol: #f2b84e; --rotulo: #e3e8ea }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física en la vida real</a> / La rejilla del microondas</span></header>
+<div class="wrap fen">
+<div class="fen-etiquetas"><span>⚡ Electromagnetismo</span><span>Dificultad baja</span><span>6 pasos · 1 min</span></div>
+<h1>La rejilla del microondas</h1>
+<p class="lead">La puerta del microondas tiene una chapa llena de agujeros. Por ellos ves la taza girar, pero las microondas, que calientan el agua en un minuto, no salen. ¿Cómo distingue la rejilla entre la luz y las microondas?</p>
+<div class="fen-escena"><canvas id="escena" role="img" aria-label="Animación de un microondas: el magnetrón lanza una onda a la cavidad, las moléculas de agua de una taza giran con el campo, la onda estacionaria entre las paredes con sus nodos y vientres, una tableta de chocolate derretida a manchas, la rejilla de la puerta que refleja las microondas y deja pasar la luz, y la fuga máxima frente a la luz del Sol"></canvas></div>
+<div class="fen-puntos" id="puntos" role="group" aria-label="Pasos"></div>
+<div class="fen-controles">
+  <button class="btn" id="ant" type="button">‹ Anterior</button>
+  <button class="btn" id="play" type="button" aria-pressed="true">❚❚ Parar</button>
+  <button class="btn" id="sig" type="button">Siguiente ›</button>
+  <button class="btn" id="sonido" type="button" aria-pressed="false">🔇 Sonido</button>
+</div>
+<div class="fen-texto" aria-live="polite"><h2 id="paso-t"></h2><div id="paso-x"></div></div>
+<section class="fen-historia" aria-label="Un poco de historia">
+  <h2>Un poco de historia</h2>
+  <ol>
+    <li><b>1888</b>Heinrich Hertz produce y detecta las primeras ondas de radio en su laboratorio, y con ondas estacionarias entre una pared de metal y su emisor mide su longitud de onda.</li>
+    <li><b>1940</b>John Randall y Harry Boot construyen en Birmingham el magnetrón de cavidades, que da microondas potentes para los radares de la Segunda Guerra Mundial.</li>
+    <li><b>1945</b>Percy Spencer, ingeniero de Raytheon, nota que se le ha derretido una chocolatina en el bolsillo junto a un magnetrón. Prueba con maíz y salen palomitas: patenta el horno de microondas.</li>
+    <li><b>1967</b>Amana vende el primer microondas de cocina para casa a un precio que una familia se puede permitir. Hoy hay uno en casi todas las cocinas.</li>
+  </ol>
+</section>
+<section class="fen-rel" aria-label="Herramienta relacionada">
+  <div class="fen-ico" aria-hidden="true">λ</div>
+  <h2>Con qué herramienta se relaciona</h2>
+  <h3>Ondas electromagnéticas <small>· Electromagnetismo</small></h3>
+  <p>La onda de 2,45 GHz que llega a la pared de metal se refleja entera y forma una onda estacionaria, con nodos del campo eléctrico cada media longitud de onda.</p>
+  <p class="f m">λ = c/f ,  E = 2E_0 sen(k z) sen(ω t)</p>
+  <p>Se abre como una onda de 2,45 GHz y 1000 V/m que incide en un conductor perfecto. Sale λ = 12,24 cm, k = 51,35 rad/m, r = −1 y la onda estacionaria con sus nodos.</p>
+  <div class="fen-fichas"><div><small>Longitud de onda</small><b>12,2 cm</b></div><div><small>Entre nodos</small><b>6,1 cm</b></div><div><small>Agujeros de la rejilla</small><b>1 mm</b></div></div>
+  <a class="fen-abrir" id="abrir" href="../../electromagnetismo/ondas-em/">Abrir en Ondas electromagnéticas con estos datos →</a>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Física en la vida real <span id="ver"></span> (beta)</footer>
+</body>
