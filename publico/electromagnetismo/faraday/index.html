@@ -315,6 +315,9 @@ const Version = (() => {
       { v: '0.2', fecha: '2026-10-23', cambios: ['Nueva herramienta: Tabla periódica interactiva, en Química.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Portada para elegir asignatura y herramienta: Electromagnetismo, Física general, Química, Matemáticas y Laboratorio, con buscador. Las herramientas que vienen después aparecen como «Próximamente».', 'Nueva herramienta: Magnetostática, en Electromagnetismo.'] },
     ],
+    ajustador: [
+      { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: ajusta reacciones moleculares e iónicas por el método algebraico, con una incógnita por especie, el balance de cada elemento y de la carga, los coeficientes enteros y la comprobación átomo a átomo, con una gráfica de los átomos a cada lado y diez reacciones de ejemplo.'] },
+    ],
     electrostatica: [
       { v: '0.6', fecha: '2026-10-26', cambios: ['Tubo cilíndrico con carga superficial σ y cilindros huecos (con radio interior), para resolver cables coaxiales.', 'Densidades que no son uniformes en esferas y cilindros (ρ₀·r/R, ρ₀·R/r, ρ₀(1 − r/R) y ρ₀(1 − r²/R²)) y en varillas (λ que crece o decrece a lo largo), con Gauss y la carga encerrada.', 'Arcos cargados: semicircunferencias, cuartos de anillo o cualquier ángulo, con el campo y el potencial en el centro.', 'Corteza esférica conductora con radio interior y exterior: si dentro hay una carga centrada, se induce −q en la cara interior y +q en la exterior.', 'Seis ejercicios de ejemplo nuevos con todo esto.', 'La guía enlaza con la herramienta de Condensadores.'] },
       { v: '0.5.1', fecha: '2026-10-23', cambios: ['El simulador tiene ahora su propia dirección, /electromagnetismo/electrostatica/. Tus problemas guardados siguen ahí. El botón «Todas las herramientas» de la barra lateral vuelve a la portada.'] },
@@ -1831,6 +1834,8 @@ const Practica = (() => {
       genera: () => window.MasaApp?.azar(), enunciado: () => window.MasaApp?.enunciado(),
       get textos() { return document.querySelector('#tab-emp')?.getAttribute('aria-selected') === 'true' ? [{ et: 'Fórmula empírica', sel: '#resumen-emp .formula' }] : []; },
     },
+    // ajustador: una reacción de los ejemplos; se preguntan los coeficientes
+    ajustador: { datos: null, items: '#coefs > div', genera: () => window.AjustadorApp?.azar(), enunciado: () => window.AjustadorApp?.enunciado() },
     'configuracion-electronica': {
       items: null, tapa: '#res', datos: null,
       genera: () => { window.ConfigApp?.pestana('el'); pon(document.querySelector('#entrada'), String(entero(1, 56))); },
