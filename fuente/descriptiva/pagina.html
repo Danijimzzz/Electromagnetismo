@@ -1,0 +1,54 @@
+<title>Estadística descriptiva: media, mediana, moda, cuartiles y desviación típica · SimulaCiencia</title>
+<meta name="description" content="Calculadora de estadística descriptiva en español: tabla de frecuencias, media, mediana, moda, cuartiles, percentiles, varianza, desviación típica, coeficiente de variación, asimetría, curtosis, atípicos, histograma y diagrama de caja, paso a paso, con datos sueltos, en tabla o agrupados.">
+<style>
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a; --serie-3: #6b3fa0 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 }
+textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 120px }
+.tabla-eco { border-collapse: collapse; font: 13.5px var(--f-ui); width: 100%; font-variant-numeric: tabular-nums }
+.tabla-eco th, .tabla-eco td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap }
+.tabla-eco th { font-weight: 600; color: var(--muted) } .tabla-eco th:first-child, .tabla-eco td:first-child { text-align: left }
+.tabla-eco tfoot td { font-weight: 600; background: var(--accent-soft) }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Estadística</a> / Estadística descriptiva</span></header>
+<div class="wrap">
+<h1>Estadística descriptiva</h1>
+<p class="lead">Escribe tus datos sueltos, en una tabla de frecuencias o agrupados en intervalos, y obtén la tabla de frecuencias, las medidas de centralización, posición, dispersión y forma, el histograma y el diagrama de caja.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Histograma y diagrama de caja</h2>
+      <canvas id="grafica" aria-label="Histograma o diagrama de barras de las frecuencias con el diagrama de caja encima"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card"><h2>Tabla de frecuencias</h2><div class="tabla-scroll" id="tabla"></div></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+<h2>Medidas de centralización</h2>
+<p class="m">La media es el centro de gravedad de los datos, $x̄ = {∑ x_i n_i}/N$. La mediana deja la mitad de los datos a cada lado y no le afectan los valores extremos, y la moda es el valor que más se repite. Con datos agrupados se trabaja con la marca de clase de cada intervalo y la mediana se interpola:</p>
+<p class="f m">$Me = L_i + {N/2 − N_{i−1}}/{n_i} · a_i$</p>
+<h2>Medidas de posición</h2>
+<p class="m">Los cuartiles $Q_1$, $Q_2 = Me$ y $Q_3$ dejan por debajo el 25 %, el 50 % y el 75 % de los datos, y el percentil $P_k$, el k %. Con datos sin agrupar se busca la posición $k·N/4$ en las frecuencias acumuladas; si coincide justo con una de ellas, se toma la media de ese valor y el siguiente. Hay otros criterios (las calculadoras y hojas de cálculo interpolan), y pueden dar valores algo distintos.</p>
+<h2>Medidas de dispersión</h2>
+<p class="m">La varianza es la media de los cuadrados de las desviaciones a la media, y la desviación típica su raíz, en las mismas unidades que los datos. Con una muestra para estimar la de la población se divide entre $N − 1$ (cuasivarianza):</p>
+<p class="f m">$σ^2 = {∑ (x_i − x̄)^2 n_i}/N$,   $s^2 = {∑ (x_i − x̄)^2 n_i}/{N − 1}$</p>
+<p class="m">El coeficiente de variación, $CV = {σ}/{|x̄|}$, compara la dispersión de variables con distintas unidades o medias.</p>
+<h2>Diagrama de caja y atípicos</h2>
+<p class="m">La caja va del primer al tercer cuartil, con la mediana dentro. Un dato es atípico si está por debajo de $Q_1 − 1,5 · RIC$ o por encima de $Q_3 + 1,5 · RIC$, con $RIC = Q_3 − Q_1$; los bigotes llegan hasta el dato más extremo que no lo es.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Estadística descriptiva <span id="ver"></span> (beta)</footer>
+</body>

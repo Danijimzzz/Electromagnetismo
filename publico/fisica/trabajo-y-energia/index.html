@@ -328,6 +328,9 @@ const Version = (() => {
       { v: '0.2', fecha: '2026-10-23', cambios: ['Nueva herramienta: Tabla periódica interactiva, en Química.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Portada para elegir asignatura y herramienta: Electromagnetismo, Física general, Química, Matemáticas y Laboratorio, con buscador. Las herramientas que vienen después aparecen como «Próximamente».', 'Nueva herramienta: Magnetostática, en Electromagnetismo.'] },
     ],
+    descriptiva: [
+      { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: con una lista de datos, una tabla de frecuencias o datos agrupados en intervalos, saca la tabla de frecuencias, la media, la mediana, la moda, los cuartiles y cualquier percentil, la varianza y la desviación típica (de la población o de una muestra), el coeficiente de variación, la asimetría, la curtosis y los atípicos, con el histograma y el diagrama de caja.'] },
+    ],
     'regresion-economia': [
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: regresión por mínimos cuadrados con datos económicos en forma lineal, doble logarítmica (elasticidad) o semilogarítmica (tasa de crecimiento), con R² y R² ajustado, errores típicos, t, p-valor, intervalo de la pendiente, la lectura económica de cada coeficiente y una predicción.'] },
     ],
@@ -1893,6 +1896,8 @@ const Practica = (() => {
       genera: () => window.MasaApp?.azar(), enunciado: () => window.MasaApp?.enunciado(),
       get textos() { return document.querySelector('#tab-emp')?.getAttribute('aria-selected') === 'true' ? [{ et: 'Fórmula empírica', sel: '#resumen-emp .formula' }] : []; },
     },
+    // descriptiva: unas notas al azar (los datos están en un textarea)
+    descriptiva: { datos: null, genera: () => window.DescriptivaApp?.azar(), enunciado: () => window.DescriptivaApp?.enunciado() },
     // regresión económica: una función de consumo al azar (los datos están en un textarea)
     'regresion-economia': { datos: null, genera: () => window.RegresionEconomiaApp?.azar(), enunciado: () => window.RegresionEconomiaApp?.enunciado() },
     // ajustador: una reacción de los ejemplos; se preguntan los coeficientes

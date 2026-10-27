@@ -28,6 +28,7 @@
        resumen(sol), [[etiqueta, valor HTML, ancho?]] de la tarjeta de resultados
        tabla(sol),   HTML de la tabla (opcional)
        grafica(sol, col), configuración de grafica() o null
+       despues(r, sol, col), dibujo extra sobre la gráfica (r = { X, Y, g, w, h })
        leyenda(sol), HTML bajo la gráfica
        nota,         texto de ayuda bajo los datos
        azar(),       sc al azar para el modo práctica (opcional)
@@ -202,7 +203,8 @@ const Calculadora = (() => {
       const c = $('#grafica'); if (!c) return;
       const cfg = sol && o.grafica ? o.grafica(sol, col) : null;
       if (!cfg) { Herramienta.lienzo(c); return; }
-      grafica(c, cfg, col);
+      const r = grafica(c, cfg, col);
+      if (r && o.despues) o.despues(r, sol, col);
     }
     const leeColores = () => { col = colores(o.colores || []); };
     window.addEventListener('resize', dibuja);
