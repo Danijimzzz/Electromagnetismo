@@ -3,7 +3,7 @@
    las novedades y el índice de «Física en la vida real» (publico/fenomenos/index.html) a partir de catalogo.js.
    Lo llama build.sh; no hace falta ejecutarlo a mano. Las páginas de cada fenómeno las hace herramientas.js. */
 const fs = require('fs'), path = require('path');
-const Catalogo = require('./catalogo.js'), Version = require('./version.js'), Tema = require('./tema.js');
+const Catalogo = require('./catalogo.js'), Version = require('./version.js'), Tema = require('./tema.js'), Anuncios = require('./anuncios.js');
 const publico = path.join(__dirname, '..', 'publico');
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -110,6 +110,9 @@ a.card:hover { border-color:var(--c) }
 footer { text-align:center; font-size:12.5px; color:var(--muted); padding:0 16px 24px } footer a { margin:0 6px; white-space:nowrap } footer a:hover { color:var(--accent); text-decoration:underline }
 `;
 
+// con anuncios.js activo, un hueco al final de las páginas de asignatura y del índice de fenómenos
+// (no en la portada, el foro ni las novedades)
+const CON_ANUNCIO = [...Catalogo.asignaturas.map((a) => a.clave), V.clave];
 function pagina({ titulo, desc, raiz, actual, cuerpo, buscar, script }) {
   const nav = [...Catalogo.asignaturas, V].map((a) => `<a href="${raiz}${a.clave}/"${a.clave === actual ? ' aria-current="page"' : ''}>${esc(a.corto || a.nombre)}</a>`).join('');
   return `<!doctype html>
@@ -127,7 +130,7 @@ function pagina({ titulo, desc, raiz, actual, cuerpo, buscar, script }) {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
-<script>${Tema.SCRIPT}</script>
+${Anuncios.cabeza()}<script>${Tema.SCRIPT}</script>
 <style>${CSS}${Tema.CSS}</style>
 <body>
 <header class="top"><a class="logo" href="${raiz}">${esc(m1)}<i>${esc(m2)}</i></a>
@@ -135,7 +138,7 @@ function pagina({ titulo, desc, raiz, actual, cuerpo, buscar, script }) {
 <a class="foro" href="${raiz}foro/"${actual === 'foro' ? ' aria-current="page"' : ''}><span aria-hidden="true">💬</span>Foro</a>
 ${buscar ? '<input type="search" id="buscar" class="buscar" placeholder="Buscar: Biot-Savart, molaridad…" aria-label="Buscar herramientas" autocomplete="off">' : ''}${Tema.BOTON}</header>
 ${cuerpo}
-<footer><a href="${raiz}contacto.html">Contacto</a>·<a href="${raiz}aviso-legal.html">Aviso legal</a>·<a href="${raiz}privacidad.html">Privacidad</a>·<a href="${raiz}cookies.html">Cookies</a>· <a href="${raiz}novedades/">Versión ${esc(Version.de('web').current)} (beta)</a></footer>
+${CON_ANUNCIO.includes(actual) ? Anuncios.hueco() : ''}${Anuncios.pie(`<footer><a href="${raiz}contacto.html">Contacto</a>·<a href="${raiz}aviso-legal.html">Aviso legal</a>·<a href="${raiz}privacidad.html">Privacidad</a>·<a href="${raiz}cookies.html">Cookies</a>· <a href="${raiz}novedades/">Versión ${esc(Version.de('web').current)} (beta)</a></footer>`)}
 ${script ? `<script>${script}</script>\n` : ''}</body>
 </html>
 `;
@@ -349,6 +352,13 @@ for (const [vieja, nueva] of Object.entries(redir)) {
 </html>
 `;
 }
+// páginas legales (fuente/legal/): las líneas data-sin-anuncios solo salen con los anuncios apagados y las
+// data-con-anuncios solo con ellos encendidos (anuncios.js)
+const legal = path.join(__dirname, 'legal'), quita = Anuncios.activos ? 'data-sin-anuncios' : 'data-con-anuncios';
+for (const f of fs.readdirSync(legal)) archivos[f] = fs.readFileSync(path.join(legal, f), 'utf8').split('\n').filter((l) => !l.includes(quita)).join('\n').replace(/ data-(sin|con)-anuncios/g, '');
+// ads.txt de AdSense, solo con anuncios.js activo (si no, se borra el que hubiera)
+if (Anuncios.adsTxt()) archivos['ads.txt'] = Anuncios.adsTxt();
+else fs.rmSync(path.join(publico, 'ads.txt'), { force: true });
 // Cloudflare (Workers con assets) lee publico/_redirects; Vercel, vercel.json
 archivos._redirects = Object.entries(redir).flatMap(([v, n]) => [`/${v} /${n} 301`, `/${v.replace(/\/$/, '')} /${n} 301`]).join('\n') + '\n';
 const vercel = path.join(__dirname, '..', 'vercel.json'), conf = JSON.parse(fs.readFileSync(vercel, 'utf8'));

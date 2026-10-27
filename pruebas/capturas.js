@@ -22,7 +22,7 @@ im.save(sys.argv[2], 'WEBP', quality=82, method=6)`, png, path.join(guia, nombre
 
 (async () => {
   execFileSync('sh', [path.join(raiz, 'fuente', 'build.sh')]);
-  const browser = await chromium.launch(exe ? { executablePath: exe } : {});
+  const browser = require('./sin-anuncios.js')(await chromium.launch(exe ? { executablePath: exe } : {}));
   const page = await browser.newPage({ viewport: { width: 1300, height: 836 }, deviceScaleFactor: 2 });
   await page.goto('file://' + path.join(raiz, 'publico', 'index.html'));
   // biblioteca de ejemplo para la barra lateral: tres problemas propios, dos en una carpeta

@@ -24,7 +24,7 @@ im.resize((640, 360), Image.LANCZOS).save(sys.argv[2], 'WEBP', quality=80, metho
 
 (async () => {
   execFileSync('sh', [path.join(fuente, 'build.sh')]);
-  const browser = await chromium.launch(exe ? { executablePath: exe } : {});
+  const browser = require('./sin-anuncios.js')(await chromium.launch(exe ? { executablePath: exe } : {}));
   const page = await browser.newPage({ viewport: { width: 1300, height: 900 }, deviceScaleFactor: 2, reducedMotion: 'reduce', colorScheme: 'light' });
   await page.addInitScript(() => { window.FenomenoFoto = true; });
   for (const f of Catalogo.fenomenos.lista.filter((x) => x.disponible && (!solo || x.clave === solo))) {
