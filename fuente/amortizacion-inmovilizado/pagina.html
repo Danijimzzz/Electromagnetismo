@@ -1,0 +1,53 @@
+<title>Amortización del inmovilizado: lineal, suma de dígitos, degresivo y por unidades · SimulaCiencia</title>
+<meta name="description" content="Calculadora de amortización del inmovilizado en español: cuadro de amortización por el método lineal, suma de dígitos, degresivo de porcentaje constante y unidades de producción, con cuota anual, amortización acumulada y valor neto contable.">
+<style>
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a; --serie-3: #6b3fa0 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 }
+textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 120px }
+.tabla-eco { border-collapse: collapse; font: 13.5px var(--f-ui); width: 100%; font-variant-numeric: tabular-nums }
+.tabla-eco th, .tabla-eco td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap }
+.tabla-eco th { font-weight: 600; color: var(--muted) } .tabla-eco th:first-child, .tabla-eco td:first-child { text-align: left }
+.tabla-eco tfoot td { font-weight: 600; background: var(--accent-soft) }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Economía</a> / Amortización del inmovilizado</span></header>
+<div class="wrap">
+<h1>Amortización del inmovilizado</h1>
+<p class="lead">Haz el cuadro de amortización de una máquina, un vehículo o un ordenador por el método lineal, la suma de dígitos, el degresivo o las unidades de producción, con la cuota de cada año y el valor neto contable.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Valor neto contable y cuotas</h2>
+      <canvas id="grafica" aria-label="Valor neto contable del bien año a año y la cuota de amortización de cada año"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card"><h2>Cuadro de amortización</h2><div class="tabla-scroll" id="tabla"></div></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+<h2>Qué es la amortización</h2>
+<p>Los bienes que una empresa usa durante varios años (máquinas, vehículos, ordenadores, edificios) pierden valor con el uso y el paso del tiempo. La amortización reparte ese coste entre los años de vida útil: cada año se registra como gasto una parte, la cuota, en vez de todo el precio el año de la compra.</p>
+<p class="m">La base amortizable es el precio de adquisición menos el valor residual (lo que se espera recuperar al final), y el valor neto contable es lo que queda por amortizar: $VNC = V_0 − $ amortización acumulada.</p>
+<h2>Métodos</h2>
+<p class="m">Lineal: la misma cuota cada año, $(V_0 − V_R)/n$. Es el más usado.</p>
+<p class="m">Suma de dígitos: se suman los años, $S = n(n + 1)/2$, y el año k se amortiza $(n − k + 1)/S$ de la base. Las cuotas bajan de forma lineal, porque el bien pierde más valor al principio.</p>
+<p class="m">Degresivo de porcentaje constante: cada año se amortiza el mismo porcentaje, $t = "coeficiente"/n$, del valor pendiente, así que las cuotas bajan cada año. El último año se amortiza lo que falta hasta el valor residual.</p>
+<p>Unidades de producción: la cuota depende de lo que se ha usado el bien ese año (piezas fabricadas, kilómetros, horas), con un coste fijo por unidad.</p>
+<h2>En la contabilidad</h2>
+<p>La cuota se carga en la cuenta (681) Amortización del inmovilizado material, que es un gasto del año, y se abona en la (281) Amortización acumulada del inmovilizado material, que en el balance resta del valor del bien.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Amortización del inmovilizado <span id="ver"></span> (beta)</footer>
+</body>
