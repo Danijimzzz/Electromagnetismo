@@ -1,6 +1,6 @@
 # CLAUDE.md · SimulaCiencia
 
-Web estática de simuladores y calculadoras de ciencias para la carrera, en español, gratis y sin registro. 40 herramientas disponibles en 6 asignaturas (Electromagnetismo, Física general, Química, Matemáticas, Estadística, Circuitos) más Economía con todo «Próximamente». Sin framework ni dependencias: JS puro concatenado por `fuente/build.sh`. Producción: https://simulaciencia.vercel.app/ y https://electromagnetismo.aceropuro30.workers.dev (las dos se despliegan solas desde `main`).
+Web estática de simuladores y calculadoras de ciencias para la carrera, en español, gratis y sin registro. 59 herramientas disponibles en 7 asignaturas (Electromagnetismo, Física general, Química, Matemáticas, Estadística, Circuitos y Economía), más las que salen como «Próximamente». Sin framework ni dependencias: JS puro concatenado por `fuente/build.sh`. Producción: https://simulaciencia.vercel.app/ y https://electromagnetismo.aceropuro30.workers.dev (las dos se despliegan solas desde `main`).
 
 ## Mapa
 
@@ -15,6 +15,8 @@ Web estática de simuladores y calculadoras de ciencias para la carrera, en espa
 | `fuente/plantilla/` | Plantilla de herramienta: `pagina.html`, `calculo.js`, `app.js` y `prueba.js` (funcionan tal cual). |
 | `fuente/nueva.js` | `node fuente/nueva.js <asignatura> <clave> "<Nombre>"`: copia la plantilla y la da de alta en catalogo.js y version.js. |
 | `fuente/herramienta.js` | `Herramienta`: ayudantes comunes de las app.js (`$`, `esc`, `copia`, `vacio`, `leeSI`, `txt`, `marcas`, `lienzo`). Va en cada página tras version.js. |
+| `fuente/calculadora.js` | `Calculadora`: formato, lectura de campos, gráfica e interfaz entera (`monta`) de las herramientas sencillas (datos → resultados, gráfica, tabla y desarrollo): toda Economía, Estadística descriptiva, Física moderna, Métodos numéricos… Su prueba común está en `pruebas/herramientas/comun/calculadora.js`. |
+| `fuente/economia/comun.js` | Común de Economía (`Eco`: dinero y porcentajes); va en `scripts` tras calculadora.js. |
 | `fuente/biblioteca.js` | Barra lateral «Mis ejercicios», común a todas las herramientas. |
 | `fuente/practica.js` | Modo práctica común (datos al azar, corrige respuestas). |
 | `fuente/tema.js` | Botón claro/oscuro (`simu-tema`). |
