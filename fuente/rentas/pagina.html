@@ -1,0 +1,53 @@
+<title>Rentas y anualidades: valor actual, valor final y término · SimulaCiencia</title>
+<meta name="description" content="Calculadora de rentas financieras en español: valor actual y final de rentas constantes pospagables y prepagables, temporales, perpetuas y diferidas, el término y el número de términos, con términos anuales o mensuales y el desarrollo paso a paso.">
+<style>
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a; --serie-3: #6b3fa0 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 }
+textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 120px }
+.tabla-eco { border-collapse: collapse; font: 13.5px var(--f-ui); width: 100%; font-variant-numeric: tabular-nums }
+.tabla-eco th, .tabla-eco td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap }
+.tabla-eco th { font-weight: 600; color: var(--muted) } .tabla-eco th:first-child, .tabla-eco td:first-child { text-align: left }
+.tabla-eco tfoot td { font-weight: 600; background: var(--accent-soft) }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Economía</a> / Rentas y anualidades</span></header>
+<div class="wrap">
+<h1>Rentas y anualidades</h1>
+<p class="lead">Valor actual y valor final de una renta constante, pospagable o prepagable, temporal o perpetua, inmediata o diferida, o el término y el número de términos que hacen falta.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Los términos y lo que valen hoy</h2>
+      <canvas id="grafica" aria-label="Cada término de la renta en el tiempo y lo que vale hoy"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card"><h2>Términos</h2><div class="tabla-scroll" id="tabla"></div></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+<h2>Qué es una renta</h2>
+<p>Una renta es una serie de pagos (términos) a intervalos regulares: el alquiler, las cuotas de un préstamo, una pensión o lo que se ahorra cada mes. Para sumarlos hay que llevarlos todos al mismo momento: al origen (valor actual) o al final (valor final).</p>
+<h2>Renta pospagable</h2>
+<p>Los términos se pagan al final de cada periodo. Con n términos de cuantía C y un tipo i por periodo:</p>
+<p class="f m">$V_0 = C · a_{n¬i} = C {1 − (1 + i)^{−n}}/i$,   $V_n = C · s_{n¬i} = C {(1 + i)^n − 1}/i$</p>
+<h2>Prepagable, diferida y perpetua</h2>
+<p class="m">Si se paga al principio de cada periodo (prepagable), cada término gana un periodo más de interés y todo se multiplica por $(1 + i)$. Si la renta empieza d periodos más tarde (diferida), su valor actual se descuenta además por $(1 + i)^{−d}$. Si no se acaba nunca (perpetua), $(1 + i)^{−n} → 0$ y</p>
+<p class="f m">$V_0 = C/i$</p>
+<h2>El tipo de cada periodo</h2>
+<p class="m">Si los términos son mensuales, el tipo tiene que ser mensual. A partir del tipo efectivo anual (la TAE), el equivalente de cada periodo es $i_m = (1 + i)^{1/m} − 1$, con m = 12 para meses, 4 para trimestres y 2 para semestres.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Rentas y anualidades <span id="ver"></span> (beta)</footer>
+</body>
