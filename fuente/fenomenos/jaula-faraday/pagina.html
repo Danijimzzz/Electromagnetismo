@@ -1,0 +1,68 @@
+<title>La jaula de Faraday, explicada paso a paso · SimulaCiencia</title>
+<meta name="description" content="Por qué no pasa nada dentro de un coche alcanzado por un rayo y por qué no hay cobertura en el ascensor: el campo dentro de un conductor, el teorema de Gauss, el apantallamiento y la profundidad de penetración de las ondas en un metal, con una animación paso a paso y el cálculo en Ondas electromagnéticas.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<!-- =====================================================================
+     La jaula de Faraday («Física en la vida real»). Maqueta común de los fenómenos
+     (ver fuego-san-telmo/pagina.html): animación, texto del paso, historia y recuadro
+     de la herramienta. Los pasos, el dibujo y el sonido están en escena.js.
+     ===================================================================== -->
+<style>
+/* colores del dibujo, con su valor en modo oscuro */
+:root {
+  --cielo: #9aa6b2; --cielo-alto: #4b5560; --destello: #ffffff; --nube: #5b6068; --suelo: #6b7f5a; --asfalto: #3a3f45; --lluvia: #c8d6e2;
+  --carroceria: #c2412a; --cristal: #a9cbe0; --persona: #2a3036; --metal: #7d858c; --rueda: #1d2126; --llanta: #9aa6b2; --faro: #f2d27a;
+  --rayo: #f6e27a; --positivo: #c2412a; --negativo: #2a5db5; --gauss: #2f7d32; --campo: #6b3fa0;
+  --edificio: #c9c4ba; --hueco: #8a8f96; --torre: #5b6068; --cabina: #b7bec5; --cable: #3a3f45; --movil: #1a2128; --onda: #2a5db5;
+  --sala: #e9e4da; --columna: #8a8f96; --brillo: #ffffff; --mesa: #7a5232; --resalta: #c2412a; --rotulo: #1a2128 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --cielo: #2b3036; --cielo-alto: #0f1216; --destello: #dfe6ff; --nube: #3a3f45; --suelo: #2f3a28; --asfalto: #1d2126; --lluvia: #8a96a3;
+  --carroceria: #d8604a; --cristal: #4f7a96; --persona: #0d0f12; --metal: #9aa6b2; --rueda: #0d0f12; --llanta: #6b6f75; --faro: #f2c14e;
+  --rayo: #fff2a8; --positivo: #ef7a62; --negativo: #74a2f2; --gauss: #7cc47f; --campo: #b48be8;
+  --edificio: #4a4f56; --hueco: #2a2d32; --torre: #9aa6b2; --cabina: #5c6168; --cable: #c8d0d8; --movil: #0d0f12; --onda: #74a2f2;
+  --sala: #1c2126; --columna: #5c6168; --brillo: #e3e8ea; --mesa: #8a6040; --resalta: #ef7a62; --rotulo: #e3e8ea } }
+:root[data-theme="dark"] {
+  --cielo: #2b3036; --cielo-alto: #0f1216; --destello: #dfe6ff; --nube: #3a3f45; --suelo: #2f3a28; --asfalto: #1d2126; --lluvia: #8a96a3;
+  --carroceria: #d8604a; --cristal: #4f7a96; --persona: #0d0f12; --metal: #9aa6b2; --rueda: #0d0f12; --llanta: #6b6f75; --faro: #f2c14e;
+  --rayo: #fff2a8; --positivo: #ef7a62; --negativo: #74a2f2; --gauss: #7cc47f; --campo: #b48be8;
+  --edificio: #4a4f56; --hueco: #2a2d32; --torre: #9aa6b2; --cabina: #5c6168; --cable: #c8d0d8; --movil: #0d0f12; --onda: #74a2f2;
+  --sala: #1c2126; --columna: #5c6168; --brillo: #e3e8ea; --mesa: #8a6040; --resalta: #ef7a62; --rotulo: #e3e8ea }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física en la vida real</a> / La jaula de Faraday</span></header>
+<div class="wrap fen">
+<div class="fen-etiquetas"><span>⚡ Electromagnetismo</span><span>Dificultad baja</span><span>6 pasos · 1 min</span></div>
+<h1>La jaula de Faraday</h1>
+<p class="lead">Si te pilla una tormenta en el campo, el mejor sitio para esperar es dentro del coche: aunque le caiga un rayo, no te pasa nada. Y en el ascensor, en cambio, el móvil se queda sin cobertura. ¿Qué tienen en común?</p>
+<div class="fen-escena"><canvas id="escena" role="img" aria-label="Animación de la jaula de Faraday: un rayo cae sobre un coche, la carga se reparte por fuera de la carrocería, la corriente baja por la chapa hasta el suelo, las líneas de campo de la tormenta acaban en el coche sin entrar, la señal de una antena rebota en la cabina de un ascensor y Faraday sentado en una jaula con chispas por fuera"></canvas></div>
+<div class="fen-puntos" id="puntos" role="group" aria-label="Pasos"></div>
+<div class="fen-controles">
+  <button class="btn" id="ant" type="button">‹ Anterior</button>
+  <button class="btn" id="play" type="button" aria-pressed="true">❚❚ Parar</button>
+  <button class="btn" id="sig" type="button">Siguiente ›</button>
+  <button class="btn" id="sonido" type="button" aria-pressed="false">🔇 Sonido</button>
+</div>
+<div class="fen-texto" aria-live="polite"><h2 id="paso-t"></h2><div id="paso-x"></div></div>
+<section class="fen-historia" aria-label="Un poco de historia">
+  <h2>Un poco de historia</h2>
+  <ol>
+    <li><b>1755</b>Benjamin Franklin cuelga una bola de corcho dentro de una lata de metal cargada y ve que no la atrae: la carga se queda toda por fuera.</li>
+    <li><b>1836</b>Michael Faraday forra una habitación de metal, la carga hasta que saltan chispas por fuera y se mete dentro con un electroscopio: no nota ninguna carga.</li>
+    <li><b>1867</b>James Clerk Maxwell usa el mismo razonamiento para comprobar con mucha precisión que la fuerza eléctrica va con 1/r², como la de la gravedad.</li>
+    <li><b>1963</b>Tras varios accidentes, las normas de aviación exigen que los aviones conduzcan la corriente de un rayo por fuera y que sus depósitos aguanten las chispas.</li>
+  </ol>
+</section>
+<section class="fen-rel" aria-label="Herramienta relacionada">
+  <div class="fen-ico" aria-hidden="true">#</div>
+  <h2>Con qué herramienta se relaciona</h2>
+  <h3>Ondas electromagnéticas <small>· Electromagnetismo</small></h3>
+  <p>Una onda que entra en un buen conductor se atenúa de forma exponencial. La distancia en la que su amplitud baja a 1/e es la profundidad de penetración, y depende de la frecuencia y de la conductividad.</p>
+  <p class="f m">δ = 1/√(π f μ σ) ,  E(x) = E_0 e^{−x/δ}</p>
+  <p>Se abre como un medio con pérdidas: aluminio (σ = 3,5·10<sup>7</sup> S/m) y la señal del móvil a 900 MHz, mirando el campo a 10 µm. Sale δ = 2,84 µm y casi el 3 % de la amplitud.</p>
+  <div class="fen-fichas"><div><small>Penetración en aluminio</small><b>2,84 µm</b></div><div><small>Chapa de 1 mm</small><b>353 δ</b></div><div><small>Señal del móvil</small><b>λ = 33 cm</b></div></div>
+  <a class="fen-abrir" id="abrir" href="../../electromagnetismo/ondas-em/">Abrir en Ondas electromagnéticas con estos datos →</a>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Física en la vida real <span id="ver"></span> (beta)</footer>
+</body>
