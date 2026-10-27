@@ -1,0 +1,54 @@
+<title>Ratios financieros: liquidez, solvencia, endeudamiento, ROA y ROE · SimulaCiencia</title>
+<meta name="description" content="Calculadora de ratios financieros en español: fondo de maniobra, liquidez, prueba ácida, disponibilidad, garantía, endeudamiento, autonomía, calidad de la deuda, rentabilidad económica (ROA) y financiera (ROE) y apalancamiento financiero, con el balance dibujado y la interpretación.">
+<style>
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a; --serie-3: #6b3fa0; --bien: #2f7d32 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8; --bien: #7cc47f } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8; --bien: #7cc47f }
+textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 120px }
+.tabla-eco { border-collapse: collapse; font: 13.5px var(--f-ui); width: 100%; font-variant-numeric: tabular-nums }
+.tabla-eco th, .tabla-eco td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap }
+.tabla-eco th { font-weight: 600; color: var(--muted) } .tabla-eco th:first-child, .tabla-eco td:first-child { text-align: left }
+.tabla-eco tfoot td { font-weight: 600; background: var(--accent-soft) }
+.tabla-eco td small { display: block; color: var(--muted); font-size: 12px }
+.val-bien { color: var(--bien); font-weight: 600 } .val-bajo, .val-alto { color: var(--serie-2); font-weight: 600 }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Economía</a> / Ratios financieros</span></header>
+<div class="wrap">
+<h1>Ratios financieros</h1>
+<p class="lead">Escribe el balance y la cuenta de resultados de una empresa y obtén el fondo de maniobra, los ratios de liquidez, solvencia y endeudamiento con su valor recomendado, y las rentabilidades económica y financiera.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>El balance</h2>
+      <canvas id="grafica" aria-label="El balance en dos columnas: el activo y su financiación con patrimonio neto y pasivo"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card"><h2>Ratios</h2><div class="tabla-scroll" id="tabla"></div></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+<h2>El balance y el fondo de maniobra</h2>
+<p>El activo se ordena de menos a más líquido: no corriente (lo que se queda más de un año), existencias, realizable (lo que se va a cobrar) y disponible (caja y bancos). Se financia con el patrimonio neto (de los socios) y con el pasivo, no corriente (deudas a más de un año) y corriente (a menos de un año).</p>
+<p class="m">El fondo de maniobra, $FM = AC − PC$, es la parte del activo corriente financiada a largo plazo. Si es negativo, la empresa no puede pagar sus deudas a corto con lo que tiene a corto.</p>
+<h2>Liquidez y solvencia</h2>
+<p>Los ratios de liquidez comparan el activo corriente con las deudas a corto (liquidez general, entre 1,5 y 2; tesorería o prueba ácida, sin las existencias, entre 0,75 y 1; disponibilidad, solo con el dinero, entre 0,1 y 0,3). La garantía compara todos los bienes con todas las deudas (entre 1,5 y 2,5). Los valores recomendados son orientativos: dependen mucho del sector.</p>
+<h2>Endeudamiento</h2>
+<p>El endeudamiento, la parte del activo financiada con deudas, conviene que esté entre 0,4 y 0,6. La autonomía compara los fondos propios con las deudas, y la calidad de la deuda dice qué parte vence a corto plazo: cuanto menor, mejor.</p>
+<h2>Rentabilidades y apalancamiento</h2>
+<p class="m">La rentabilidad económica, $ROA = BAII/AT$, mide lo que rinden los activos; es el margen por la rotación. La financiera, $ROE = {"resultado neto"}/{PN}$, lo que rinde el dinero de los socios. Si la deuda cuesta menos que lo que rinde el activo ($i < ROA$), endeudarse sube la ROE: es el apalancamiento financiero, $ROE = [ROA + (ROA − i) PT/PN](1 − t)$.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Ratios financieros <span id="ver"></span> (beta)</footer>
+</body>
