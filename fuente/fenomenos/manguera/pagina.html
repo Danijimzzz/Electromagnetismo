@@ -1,0 +1,62 @@
+<title>Tapar la manguera con el dedo: continuidad y Bernoulli, explicados paso a paso · SimulaCiencia</title>
+<meta name="description" content="Por qué el agua llega más lejos al tapar la manguera con el dedo: ecuación de continuidad, velocidad de salida, tiro horizontal y parabólico y ecuación de Bernoulli, con una animación paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<!-- =====================================================================
+     Tapar la manguera con el dedo («Física en la vida real»). Maqueta común de los
+     fenómenos (ver fuego-san-telmo/pagina.html): animación, texto del paso, historia
+     y recuadro de la herramienta. Los pasos y el dibujo están en escena.js.
+     ===================================================================== -->
+<style>
+/* colores del dibujo, con su valor en modo oscuro */
+:root {
+  --cielo: #e3eff6; --cielo-alto: #a9cfe8; --pared: #e8dcc6; --teja: #b5553c; --grifo: #8f979e; --valla: #b49470; --cesped: #8dbb6a; --cesped-2: #6f9c52;
+  --hoja: #4f8a3a; --flor: #d9467a; --flor-2: #f0b429; --centro: #fff3c4; --manguera: #2f8f4e; --agua: #2a7fd4; --agua-claro: #7fb6ea; --agua-gota: #3c8fe0;
+  --persona: #56636e; --piel: #e2b38f; --presion: #c26a00; --resalta: #c2412a; --rotulo: #1a2128 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --cielo: #1e2c38; --cielo-alto: #0f1a24; --pared: #4a4238; --teja: #7d3a2a; --grifo: #9aa3ab; --valla: #6e5a44; --cesped: #2f4a26; --cesped-2: #3f6233;
+  --hoja: #5f9e4a; --flor: #e8709a; --flor-2: #f2c14e; --centro: #fff3c4; --manguera: #3fae66; --agua: #6cb0f0; --agua-claro: #4c7aa6; --agua-gota: #8cc4f5;
+  --persona: #8995a0; --piel: #c9987a; --presion: #f0a040; --resalta: #ef7a62; --rotulo: #e3e8ea } }
+:root[data-theme="dark"] {
+  --cielo: #1e2c38; --cielo-alto: #0f1a24; --pared: #4a4238; --teja: #7d3a2a; --grifo: #9aa3ab; --valla: #6e5a44; --cesped: #2f4a26; --cesped-2: #3f6233;
+  --hoja: #5f9e4a; --flor: #e8709a; --flor-2: #f2c14e; --centro: #fff3c4; --manguera: #3fae66; --agua: #6cb0f0; --agua-claro: #4c7aa6; --agua-gota: #8cc4f5;
+  --persona: #8995a0; --piel: #c9987a; --presion: #f0a040; --resalta: #ef7a62; --rotulo: #e3e8ea }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física en la vida real</a> / Tapar la manguera con el dedo</span></header>
+<div class="wrap fen">
+<div class="fen-etiquetas"><span>∿ Física general</span><span>Dificultad baja</span><span>6 pasos · 1 min</span></div>
+<h1>Tapar la manguera con el dedo</h1>
+<p class="lead">Si tapas media boca de la manguera con el pulgar, el agua sale disparada y llega a las plantas del fondo. Pero el grifo no da más agua por eso. ¿De dónde sale tanta velocidad?</p>
+<div class="fen-escena"><canvas id="escena" role="img" aria-label="Animación de una persona que riega con una manguera; al tapar la boca con el dedo el chorro sale más rápido y llega más lejos"></canvas></div>
+<div class="fen-puntos" id="puntos" role="group" aria-label="Pasos"></div>
+<div class="fen-controles">
+  <button class="btn" id="ant" type="button">‹ Anterior</button>
+  <button class="btn" id="play" type="button" aria-pressed="true">❚❚ Parar</button>
+  <button class="btn" id="sig" type="button">Siguiente ›</button>
+</div>
+<div class="fen-texto" aria-live="polite"><h2 id="paso-t"></h2><div id="paso-x"></div></div>
+<section class="fen-historia" aria-label="Un poco de historia">
+  <h2>Un poco de historia</h2>
+  <ol>
+    <li><b>1628</b>Benedetto Castelli, discípulo de Galileo, publica que por cada sección de un río pasa la misma cantidad de agua en el mismo tiempo, y que donde el cauce se estrecha el agua corre más: la ecuación de continuidad.</li>
+    <li><b>1638</b>Galileo demuestra en sus <i>Dos nuevas ciencias</i> que un proyectil lanzado sigue una parábola y que, en terreno llano, el mayor alcance se logra a 45°.</li>
+    <li><b>1643</b>Evangelista Torricelli estudia el agua que sale por un agujero de un depósito: sale con la velocidad que tendría si cayera libremente desde la superficie, y los chorros son parábolas.</li>
+    <li><b>1738</b>Daniel Bernoulli publica <i>Hydrodynamica</i>, donde relaciona la presión y la velocidad de un fluido en movimiento: donde va más rápido, la presión es menor.</li>
+  </ol>
+</section>
+<section class="fen-rel" aria-label="Herramienta relacionada">
+  <div class="fen-ico" aria-hidden="true">v</div>
+  <h2>Con qué herramienta se relaciona</h2>
+  <h3>Fluidos <small>· Física general</small></h3>
+  <p>La manguera y el hueco del dedo son un tubo que se estrecha: el caudal es el mismo en los dos tramos (continuidad) y la presión que sobra dentro se convierte en velocidad a la salida (Bernoulli).</p>
+  <p class="f m">Q = A_1 v_1 = A_2 v_2</p>
+  <p class="f m">p_1 + 1/2 ρ v_1^2 = p_2 + 1/2 ρ v_2^2</p>
+  <p>Se abre en la pestaña de Bernoulli con agua, una manguera de 1,6 cm, un hueco de 0,7 cm, un caudal de 0,2 L/s y 1,13·10<sup>5</sup> Pa dentro de la manguera. Sale 0,995 m/s dentro, 5,197 m/s a la salida y una diferencia de presión de unos 13 kPa, con el agua saliendo justo a la presión del aire.</p>
+  <div class="fen-fichas"><div><small>Dentro de la manguera</small><b>v₁ = 0,99 m/s</b></div><div><small>Por el hueco del dedo</small><b>v₂ = 5,2 m/s</b></div><div><small>Diferencia de presión</small><b>Δp ≈ 13 kPa</b></div></div>
+  <a class="fen-abrir" id="abrir" href="../../fisica/fluidos/">Abrir en Fluidos con estos datos →</a>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Física en la vida real <span id="ver"></span> (beta)</footer>
+</body>
