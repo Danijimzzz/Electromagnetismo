@@ -999,6 +999,6 @@ const Derivadas = (() => {
     { clave: 'esfera', nombre: 'Volumen de la esfera', sc: { modo: 'volumen', f: 'sqrt(1 - x^2)', g: '', a: '', b: '', eje: 'x' } },
     { clave: 'capas', nombre: 'Entre x y x² alrededor del eje y (capas)', sc: { modo: 'volumen', f: 'x', g: 'x^2', a: '', b: '', eje: 'y' } },
   ];
-  return { resolver, derivada, integral, limite, implicita, parciales, estudio, area, volumen, prim, igualNum, limNum, cuadratura, ejemplos, f, T };
+  return { resolver, derivada, integral, limite, implicita, parciales, estudio, area, volumen, prim, igualNum, limNum, raicesNum, cuadratura, ejemplos, f, T };
 })();
 if (typeof module !== 'undefined') module.exports = Derivadas;

@@ -1,0 +1,53 @@
+<title>Graficador de funciones online: dominio, cortes, asíntotas y extremos · SimulaCiencia</title>
+<meta name="description" content="Graficador de funciones en español: dibuja hasta tres funciones, mueve y acerca la gráfica, y obtén el dominio, los cortes con los ejes, las asíntotas, los máximos y mínimos, la inflexión y los cortes entre las curvas, paso a paso.">
+<style>
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a; --serie-3: #2f8a4c }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #6fcf8f } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #6fcf8f }
+#grafica { touch-action: pan-y; cursor: grab }
+#grafica:active { cursor: grabbing }
+.c-f { color: var(--serie-1) } .c-g { color: var(--serie-2) } .c-h { color: var(--serie-3) }
+.tabla-eco { border-collapse: collapse; font: 13.5px var(--f-ui); width: 100%; font-variant-numeric: tabular-nums }
+.tabla-eco th, .tabla-eco td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap }
+.tabla-eco th { font-weight: 600; color: var(--muted) }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Matemáticas</a> / Graficador de funciones</span></header>
+<div class="wrap">
+<h1>Graficador de funciones</h1>
+<p class="lead">Dibuja hasta tres funciones a la vez, muévete por la gráfica y obtén el dominio, los cortes, las asíntotas, los extremos y la inflexión de f, y dónde se cortan las curvas.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Funciones</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Estudio de f</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Gráfica</h2>
+      <canvas id="grafica" aria-label="Gráfica de las funciones con sus asíntotas, cortes y extremos; se mueve arrastrando y se acerca con la rueda"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card"><h2>Tabla de valores</h2><div class="tabla-scroll" id="tabla"></div></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+<h2>Cómo se estudia una función</h2>
+<p class="m">Primero el <b>dominio</b>: los x donde $f$ existe (sin dividir entre cero, sin raíces pares de negativos ni logaritmos de números que no son positivos). Luego la <b>simetría</b> ($f(−x) = f(x)$ par, $f(−x) = −f(x)$ impar) y los <b>cortes con los ejes</b>: con el eje x resolviendo $f(x) = 0$ y con el eje y calculando $f(0)$.</p>
+<h2>Asíntotas</h2>
+<p class="m">Hay asíntota vertical $x = a$ si $f$ se va a infinito cuando $x → a$; horizontal $y = L$ si $lím_{x → ±∞} f(x) = L$, y oblicua $y = m x + n$ si no hay horizontal y existen</p>
+<p class="f m">$m = lím_{x → ∞} {f(x)}/{x}$,   $n = lím_{x → ∞} (f(x) − m x)$</p>
+<h2>Extremos e inflexión</h2>
+<p class="m">Donde $f′ > 0$ la función crece y donde $f′ < 0$ decrece; un máximo o un mínimo relativo está donde $f′$ cambia de signo. Igual con $f″$: convexa ($∪$) si $f″ > 0$, cóncava ($∩$) si $f″ < 0$, y punto de inflexión donde cambia la curvatura.</p>
+<h2>Cortes entre dos curvas</h2>
+<p class="m">Las curvas $y = f(x)$ e $y = g(x)$ se cortan donde $f(x) = g(x)$, es decir, en las raíces de $f(x) − g(x)$. Aquí se buscan los cambios de signo de la diferencia dentro de la ventana y se afinan por bisección.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Graficador de funciones <span id="ver"></span> (beta)</footer>
+</body>
