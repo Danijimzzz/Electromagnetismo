@@ -1,0 +1,49 @@
+<title>Métodos numéricos: bisección, Newton, Simpson y Runge-Kutta · SimulaCiencia</title>
+<meta name="description" content="Calculadora de métodos numéricos en español: raíces por bisección, Newton-Raphson, secante y punto fijo, integrales por trapecios y Simpson, y ecuaciones diferenciales por Euler, Heun y Runge-Kutta 4, con la tabla de iteraciones y el desarrollo.">
+<style>
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a; --serie-3: #6b3fa0 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 }
+textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 120px }
+.tabla-eco { border-collapse: collapse; font: 13.5px var(--f-ui); width: 100%; font-variant-numeric: tabular-nums }
+.tabla-eco th, .tabla-eco td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap }
+.tabla-eco th { font-weight: 600; color: var(--muted) } .tabla-eco th:first-child, .tabla-eco td:first-child { text-align: left }
+.tabla-eco tfoot td { font-weight: 600; background: var(--accent-soft) }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Matemáticas</a> / Métodos numéricos</span></header>
+<div class="wrap">
+<h1>Métodos numéricos</h1>
+<p class="lead">Busca la raíz de una ecuación, calcula una integral o resuelve una ecuación diferencial paso a paso, con la tabla de iteraciones que se pide en los exámenes y una gráfica de lo que hace cada método.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Gráfica</h2>
+      <canvas id="grafica" aria-label="La función con las iteraciones del método, la telaraña del punto fijo, los trapecios bajo la curva o las soluciones aproximadas de la ecuación diferencial"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card"><h2>Tabla</h2><div class="tabla-scroll" id="tabla"></div></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+<h2>Raíces de ecuaciones</h2>
+<p class="m">Casi ninguna ecuación como $cos x = x$ se puede despejar, pero sí acercarse a la solución tanto como se quiera. La <b>bisección</b> parte de un intervalo $[a, b]$ donde $f$ cambia de signo y lo divide por la mitad una y otra vez: es lenta, pero siempre funciona. <b>Newton-Raphson</b> sigue la tangente, $x_{n+1} = x_n − f(x_n)/f′(x_n)$, y cerca de la raíz duplica las cifras correctas en cada paso, aunque puede escaparse si empieza lejos o si $f′$ se anula. La <b>secante</b> hace lo mismo sin derivar, con la recta que pasa por los dos últimos puntos. El <b>punto fijo</b> escribe la ecuación como $x = g(x)$ e itera $x_{n+1} = g(x_n)$; converge si $|g′| < 1$ cerca de la solución.</p>
+<h2>Integración numérica</h2>
+<p class="m">Para una integral sin primitiva, como la de $e^{−x^2}$, se parte $[a, b]$ en $n$ trozos de anchura $h$. La regla de los <b>trapecios</b> une los puntos con rectas y tiene un error del orden de $h^2$; la de <b>Simpson</b> pasa parábolas por cada tres puntos, necesita $n$ par y su error es del orden de $h^4$: con los mismos puntos, suele ser mucho más precisa.</p>
+<h2>Ecuaciones diferenciales</h2>
+<p class="m">Para $y′ = f(x, y)$ con $y(x_0) = y_0$ se avanza a pasos de tamaño $h$. <b>Euler</b> sigue la tangente, $y_{n+1} = y_n + h f(x_n, y_n)$, y su error es proporcional a $h$. <b>Heun</b> promedia la pendiente al principio y al final del paso (error del orden de $h^2$), y <b>Runge-Kutta 4</b> combina cuatro pendientes (error del orden de $h^4$): es el que usan casi todos los programas.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Métodos numéricos <span id="ver"></span> (beta)</footer>
+</body>
