@@ -1,0 +1,52 @@
+<title>Punto muerto: umbral de rentabilidad paso a paso · SimulaCiencia</title>
+<meta name="description" content="Calculadora del punto muerto en español: umbral de rentabilidad en unidades y en euros, margen de contribución, beneficio, margen de seguridad, apalancamiento operativo y ventas para un beneficio objetivo, con la gráfica de ingresos y costes.">
+<style>
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a; --serie-3: #6b3fa0 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 }
+textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 120px }
+.tabla-eco { border-collapse: collapse; font: 13.5px var(--f-ui); width: 100%; font-variant-numeric: tabular-nums }
+.tabla-eco th, .tabla-eco td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap }
+.tabla-eco th { font-weight: 600; color: var(--muted) } .tabla-eco th:first-child, .tabla-eco td:first-child { text-align: left }
+.tabla-eco tfoot td { font-weight: 600; background: var(--accent-soft) }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Economía</a> / Punto muerto</span></header>
+<div class="wrap">
+<h1>Punto muerto</h1>
+<p class="lead">Calcula cuántas unidades tiene que vender una empresa para cubrir sus costes, con la gráfica de ingresos y costes, el beneficio con las ventas previstas y el margen de seguridad.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Ingresos y costes</h2>
+      <canvas id="grafica" aria-label="Rectas de ingresos y de costes totales, que se cortan en el punto muerto"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+<h2>Costes fijos y variables</h2>
+<p>Los costes fijos (alquiler, sueldos fijos, seguros, amortizaciones) no dependen de lo que se venda; los variables (materias primas, comisiones, envíos) crecen con cada unidad. Los costes totales son CT = CF + c<sub>v</sub> · Q y los ingresos, IT = p · Q.</p>
+<h2>Margen de contribución y punto muerto</h2>
+<p class="m">Cada unidad vendida deja $m = p − c_v$ para pagar los costes fijos. El punto muerto o umbral de rentabilidad es la cantidad en la que ingresos y costes se igualan y el beneficio es 0:</p>
+<p class="f m">$Q^* = {CF}/{p − c_v}$</p>
+<p>Por debajo hay pérdidas y por encima, beneficios: cada unidad de más suma m euros al beneficio.</p>
+<h2>Margen de seguridad y apalancamiento</h2>
+<p class="m">El margen de seguridad, $(Q − Q^*)/Q$, dice cuánto pueden caer las ventas antes de perder dinero. El grado de apalancamiento operativo, $GAO = {m · Q}/B$, dice cuántas veces se amplifica en el beneficio una variación de las ventas: una empresa con muchos costes fijos tiene un GAO alto, gana mucho cuando vende y pierde mucho cuando no.</p>
+<h2>Beneficio objetivo</h2>
+<p class="m">Para ganar un beneficio B hay que vender $Q = (CF + B)/m$ unidades.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Punto muerto <span id="ver"></span> (beta)</footer>
+</body>
