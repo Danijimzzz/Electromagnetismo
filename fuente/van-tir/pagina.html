@@ -1,0 +1,53 @@
+<title>VAN, TIR y payback: evaluación de inversiones paso a paso · SimulaCiencia</title>
+<meta name="description" content="Calculadora de VAN, TIR y payback en español: valor actual neto, tasa interna de rentabilidad, plazo de recuperación simple y descontado e índice de rentabilidad de una inversión, con la gráfica del VAN y la tabla de flujos actualizados.">
+<style>
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a; --serie-3: #6b3fa0 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 }
+textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 120px }
+.tabla-eco { border-collapse: collapse; font: 13.5px var(--f-ui); width: 100%; font-variant-numeric: tabular-nums }
+.tabla-eco th, .tabla-eco td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap }
+.tabla-eco th { font-weight: 600; color: var(--muted) } .tabla-eco th:first-child, .tabla-eco td:first-child { text-align: left }
+.tabla-eco tfoot td { font-weight: 600; background: var(--accent-soft) }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Economía</a> / VAN, TIR y payback</span></header>
+<div class="wrap">
+<h1>VAN, TIR y payback</h1>
+<p class="lead">Evalúa una inversión con su desembolso inicial y sus flujos de caja: el valor actual neto, la tasa interna de rentabilidad, el plazo de recuperación y el índice de rentabilidad, con la decisión.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>El VAN según la tasa de descuento</h2>
+      <canvas id="grafica" aria-label="Valor actual neto en función de la tasa de descuento, que corta el eje en la TIR"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card"><h2>Flujos de caja</h2><div class="tabla-scroll" id="tabla"></div></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+<h2>Valor actual neto (VAN)</h2>
+<p>Un euro dentro de un año vale menos que un euro hoy. El VAN lleva todos los flujos de caja de la inversión al momento inicial con la tasa de descuento k (la rentabilidad que se exige, o el coste del dinero) y les resta el desembolso:</p>
+<p class="f m">$VAN = −A + {Q_1}/{1 + k} + {Q_2}/{(1 + k)^2} + … + {Q_n}/{(1 + k)^n}$</p>
+<p>Si el VAN es positivo, la inversión crea valor y conviene; si es negativo, no. Entre varias, se elige la de mayor VAN.</p>
+<h2>Tasa interna de rentabilidad (TIR)</h2>
+<p class="m">Es la tasa que hace el VAN igual a 0: la rentabilidad propia de la inversión. Se calcula por tanteo, porque la ecuación no se puede despejar. La inversión es rentable si $TIR > k$. En la gráfica, el VAN baja al subir la tasa y corta el eje justo en la TIR.</p>
+<h2>Plazo de recuperación (payback)</h2>
+<p>Es el tiempo que se tarda en recuperar el desembolso sumando los flujos. Es fácil de entender y mide el riesgo, pero no tiene en cuenta el valor del dinero en el tiempo (el payback descontado sí) ni lo que llega después de recuperar.</p>
+<h2>Índice de rentabilidad</h2>
+<p class="m">$IR = {∑ Q_t/(1 + k)^t}/A$: lo que devuelve, en euros de hoy, cada euro invertido. Es rentable si es mayor que 1, y sirve para comparar inversiones de distinto tamaño.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· VAN, TIR y payback <span id="ver"></span> (beta)</footer>
+</body>
