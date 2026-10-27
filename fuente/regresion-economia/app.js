@@ -2,7 +2,7 @@
    Interfaz de Regresión sobre datos económicos: los datos (una fila «x y»),
    el modelo, los nombres de las variables, la predicción, la nube de puntos
    con la recta o la curva estimada y el desarrollo. Se monta con
-   EcoApp.monta (economia/interfaz.js); el cálculo está en
+   Calculadora.monta (calculadora.js); el cálculo está en
    regresion-economia/calculo.js (RegresionEconomia).
    ===================================================================== */
 (() => {
@@ -13,7 +13,7 @@
     const datos = Array.from({ length: n }, (_, i) => { const x = 10 + 5 * i; return `${x} ${num(a + b * x + (Math.random() - 0.5) * 1.2, 1)}`; }).join('\n');
     return { modelo: 'lineal', nx: 'Renta disponible', ny: 'Consumo', datos, x0: String(10 + 5 * n), nivel: '95' };
   }
-  EcoApp.monta({
+  Eco.monta({
     C: R, carpeta: 'regresion-economia', app: 'RegresionEconomiaApp', azar,
     enunciado: (sc) => `Con los datos de renta y consumo de la tabla, estima la función de consumo por mínimos cuadrados: la propensión marginal a consumir, el consumo autónomo, el R², la elasticidad en la media y el consumo para una renta de ${sc.x0}.`,
     nota: 'Una observación por fila: el valor de X y el de Y separados por espacios, tabuladores o «;» (puedes pegarlos de una hoja de cálculo). La coma es decimal. Se salta una primera fila con nombres.',

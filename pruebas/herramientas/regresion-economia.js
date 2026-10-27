@@ -3,7 +3,7 @@
 module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
   let fallos = 0;
   const mal = (m) => { fallos++; avisa(m); };
-  const Com = require('./economia/comun.js'), N = 'Regresión económica';
+  const Com = require('./comun/calculadora.js'), N = 'Regresión económica';
   const C = require(path.join(fuente, 'regresion-economia', 'calculo.js'));
   {
     const antes = fallos, { cerca, error, ej } = Com.node(N, mal, C);

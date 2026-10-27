@@ -1,6 +1,6 @@
-/* Lo común de las comprobaciones de las herramientas de Economía (las de EcoApp, en
-   fuente/economia/interfaz.js). Cada pruebas/herramientas/<carpeta>.js de Economía lo usa así:
-     const Com = require('./economia/comun.js');
+/* Lo común de las comprobaciones de las herramientas que se montan con
+   Calculadora.monta (fuente/calculadora.js). Cada pruebas/herramientas/<carpeta>.js lo usa así:
+     const Com = require('./comun/calculadora.js');
      const { cerca, error } = Com.node(nombre, mal);        // en Node
      return Com.navegador({ … })                           // la parte del navegador
    cerca(a, b, tol, qué) falla si |a − b| > tol; error(sc, qué) falla si resolver(sc) no da error.
