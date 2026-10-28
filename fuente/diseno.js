@@ -9,7 +9,8 @@
    variables o añade lo propio (ver DISENO.md).
    Los fenómenos de «Física en la vida real» pasan por aquí con ASIGNATURA = fenomenos
    (su color, su miga y fenomenos/estilos.css). Cada herramienta lleva al final el
-   bloque «En la vida real» con los fenómenos disponibles que la usan:
+   bloque «En la vida real» con los fenómenos disponibles que la usan, y todas
+   (fenómenos también) el de «Herramientas relacionadas» (o «Más fenómenos»):
      node diseno.js ASIGNATURA HERRAMIENTA < pagina.html
    ===================================================================== */
 const Catalogo = require('./catalogo.js'), Tema = require('./tema.js'), Anuncios = require('./anuncios.js');
@@ -44,11 +45,15 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 :root { --vida:${V.color} }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --vida:${V.colorOscuro} } }
 :root[data-theme="dark"] { --vida:${V.colorOscuro} }
+.relacionadas { max-width:860px; margin:16px 0 0; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:4px 12px 12px 4px; padding:12px 16px }
+.relacionadas h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--accent); margin:0 0 4px }
+.relacionadas a { display:flex; gap:10px; align-items:baseline; padding:5px 0; color:var(--ink); text-decoration:none; font-size:14px }
+.relacionadas a b { font-weight:600; white-space:nowrap } .relacionadas a span { color:var(--muted) } .relacionadas a:hover b { color:var(--accent); text-decoration:underline }
 .vida-real { max-width:860px; margin:28px 0 0; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--vida); border-radius:4px 12px 12px 4px; padding:12px 16px }
 .vida-real h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--vida); margin:0 0 4px }
 .vida-real a { display:flex; gap:10px; align-items:baseline; padding:5px 0; color:var(--ink); text-decoration:none; font-size:14px }
 .vida-real a b { font-weight:600; white-space:nowrap } .vida-real a span { color:var(--muted) } .vida-real a:hover b { color:var(--vida); text-decoration:underline }
-@media (max-width:600px) { .vida-real a { display:block } .vida-real a b { display:block; white-space:normal } }
+@media (max-width:600px) { .vida-real a, .relacionadas a { display:block } .vida-real a b, .relacionadas a b { display:block; white-space:normal } }
 @media (max-width:700px) { header.top form { display:none } h1 { font-size:21px }
   .miga-izq, .miga-der, .miga::after { order:-1 } .miga::after { content:''; flex-basis:100%; height:0 } }
 ${Tema.CSS}`;
@@ -82,6 +87,19 @@ function vidaReal(herramienta) {
   return `<section class="vida-real" aria-label="En la vida real"><h2>En la vida real</h2>\n${fs.map((f) => `<a href="../../fenomenos/${f.clave}/"><b>${esc(f.nombre)} →</b><span>${esc(f.desc)}</span></a>`).join('\n')}\n</section>\n`;
 }
 
+// «Herramientas relacionadas»: las 4 disponibles más cercanas en el orden del catálogo, de la misma asignatura
+// (en los fenómenos, «Más fenómenos» con 3), para que Google y quien entra pasen de una página a otra
+function relacionadas(clave, herramienta) {
+  const fenomeno = clave === V.clave, lista = (fenomeno ? V.lista : Catalogo.asignaturas.find((x) => x.clave === clave).herramientas).filter((h) => h.disponible);
+  const i = lista.findIndex((h) => h.clave === herramienta);
+  if (i < 0 || lista.length < 2) return '';
+  const elegidas = [...new Set([1, 2, -1, -2, 3].map((d) => lista[(i + d + lista.length) % lista.length]))].filter((h) => h !== lista[i]).slice(0, fenomeno ? 3 : 4);
+  return `<section class="relacionadas" aria-label="${fenomeno ? 'Más fenómenos' : 'Herramientas relacionadas'}"><h2>${fenomeno ? 'Más fenómenos' : 'Herramientas relacionadas'}</h2>\n${elegidas.map((h) => `<a href="../${h.clave}/"><b>${esc(h.nombre)} →</b><span>${esc(h.desc)}</span></a>`).join('\n')}\n</section>\n`;
+}
+
+// Texto del simulador de electrostática para quien llega desde un buscador (electrostatica-teoria.html)
+const TEORIA_ELECTRO = require('fs').readFileSync(require('path').join(__dirname, 'electrostatica-teoria.html'), 'utf8').replace(/^<!--.*-->\n/, '');
+
 // El simulador de electrostática (shell.html) tiene su propia maqueta. En la web se le da la de las demás
 // herramientas: cabecera a lo ancho a la derecha de la barra lateral, contenido centrado con márgenes,
 // la miga con «Mis ejercicios» (abre y cierra su barra) a la izquierda y «Modo práctica» a la derecha,
@@ -104,7 +122,11 @@ function aplicaElectrostatica(html) {
 .main .top .tools { flex-basis:100% }
 .side-h .logo { font:600 15px var(--f-ui) }
 #side-close { font-size:20px; line-height:1; color:var(--muted) }
-@media (max-width:700px) { .main .top .title-in { font-size:21px } }`;
+@media (max-width:700px) { .main .top .title-in { font-size:21px } }
+.solo-lector { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap }
+.teoria { margin-top:28px; max-width:860px; font-size:15px; line-height:1.6; color:var(--ink) }
+.teoria h2 { font:600 19px var(--f-ui); margin:24px 0 6px } .teoria ul { padding-left:20px } .teoria li { margin-bottom:4px }
+.teoria .f { font-size:16px; background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:8px 12px; display:inline-block; max-width:100%; overflow-x:auto }`;
   const btnLado = /[ \t]*<button id="side-open"[^>]*>.*<\/button>\n?/, practica = /<label class="toggle"[^>]*><input type="checkbox" id="practice"> Modo práctica<\/label>/;
   const cierra = /(<button id="side-close"[^>]*>).*?<\/button>/;
   for (const r of [/[ \t]*<a [^>]*a-inicio[^>]*>.*<\/a>\n?/, btnLado, practica, cierra, /<span class="logo">.*?<\/span>/])
@@ -122,7 +144,7 @@ function aplicaElectrostatica(html) {
 }, true);</script>`;
   return html.replace(/[ \t]*<a [^>]*a-inicio[^>]*>.*<\/a>\n?/, '').replace(btnLado, '').replace(practica, '')
     .replace(cierra, '$1×</button>').replace(/<span class="logo">.*?<\/span>/, '<span class="logo">Mis ejercicios</span>')
-    .replace('<main class="main">', `<main class="main">\n${cab}\n<div class="wrap">\n${migaE}`).replace('</main>', `${Anuncios.hueco()}${vidaReal('electromagnetismo/electrostatica')}</div>\n</main>`)
+    .replace('<main class="main">', `<main class="main">\n${cab}\n<div class="wrap">\n<h1 class="solo-lector">Simulador de electrostática</h1>\n${migaE}`).replace('</main>', `${TEORIA_ELECTRO}${Anuncios.hueco()}${vidaReal('electromagnetismo/electrostatica')}${relacionadas('electromagnetismo', 'electrostatica')}</div>\n</main>`)
     .replace('<div class="app"', `<style>${css(a)}${extra}</style>\n${alterna}\n<div class="app"`);
 }
 
@@ -141,10 +163,10 @@ function aplicaHerramienta(html, clave, herramienta) {
   const { cab, miga } = piezas(a, nombre);
   // la hoja común va antes del <style> de la página, para que la página pueda ajustar sus variables
   if (!/^<style>/m.test(html)) throw new Error('diseno.js: la página no tiene <style>');
-  const propios = a === V ? ESTILOS_FENOMENOS : '', vida = a === V ? '' : vidaReal(`${clave}/${herramienta}`);
+  const propios = a === V ? ESTILOS_FENOMENOS : '', vida = (a === V ? '' : vidaReal(`${clave}/${herramienta}`)) + relacionadas(clave, herramienta);
   if (vida && !html.includes('<footer')) throw new Error('diseno.js: la página no tiene <footer>');
   return html.replace(m[0], cab).replace(/<div class="fen-etiquetas"|<h1/, (x) => miga + '\n' + x).replace(/^<style>/m, `<style>${ESTILOS}${acento(a)}${cabecera}${propios}</style>\n<style>`)
-    .replace(/(<\/div>\s*)?<footer/, (x) => (vida ? vida + x : x)).replace(TEORIA.test(html) ? TEORIA : /(<\/div>\s*)?<section class="vida-real"|(<\/div>\s*)?<footer/, (x) => Anuncios.hueco() + x);
+    .replace(/(<\/div>\s*)?<footer/, (x) => (vida ? vida + x : x)).replace(TEORIA.test(html) ? TEORIA : /(<\/div>\s*)?<section class="(vida-real|relacionadas)"|(<\/div>\s*)?<footer/, (x) => Anuncios.hueco() + x);
 }
 const TEORIA = /<section class="teoria"/;
 
