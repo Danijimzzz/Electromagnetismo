@@ -4,8 +4,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMwZDZiNjYiLz48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlNmE2NDAiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtZGFzaGFycmF5PSI0IDYuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48cGF0aCBkPSJNMjAgMzJINDQiLz48cGF0aCBkPSJNMjEgMjdDMjcgMTQgMzcgMTQgNDMgMjciLz48cGF0aCBkPSJNMjEgMzdDMjcgNTAgMzcgNTAgNDMgMzciLz48cGF0aCBkPSJNMTcgMjRDMjIgNCA0MiA0IDQ3IDI0Ii8+PHBhdGggZD0iTTE3IDQwQzIyIDYwIDQyIDYwIDQ3IDQwIi8+PC9nPjxjaXJjbGUgY3g9IjE3IiBjeT0iMzIiIHI9IjgiIGZpbGw9IiNlZjdhNjIiLz48Y2lyY2xlIGN4PSI0NyIgY3k9IjMyIiByPSI4IiBmaWxsPSIjNzRhMmYyIi8+PHBhdGggZD0iTTEzIDMyaDhNMTcgMjh2OE00MyAzMmg4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K">
 <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
-<meta property="og:title" content="χ² de bondad de ajuste e independencia">
-<meta property="og:description" content="Bondad de ajuste a una distribución y tablas de contingencia con el contraste de independencia.">
+<meta property="og:title" content="Prueba χ² paso a paso: bondad de ajuste e independencia">
+<meta property="og:description" content="Contraste χ² de bondad de ajuste (uniforme, proporciones dadas, binomial, Poisson o normal) y de independencia en tablas de contingencia, con las frecuencias esperadas, los grados de libertad, el p-valor y la conclusión">
 <link rel="canonical" href="https://simulaciencia.vercel.app/estadistica/chi2-bondad/">
 <meta property="og:image" content="https://simulaciencia.vercel.app/og.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -26,8 +26,8 @@
     for (const f of oyentes) { try { f.call(mq, { matches: oscuro(), media: mq.media }); } catch (err) { console.error(err); } }
   });
 })();</script>
-<title>χ² de bondad de ajuste e independencia · SimulaCiencia</title>
-<meta name="description" content="Bondad de ajuste a una distribución y tablas de contingencia con el contraste de independencia.">
+<title>Prueba χ² paso a paso: bondad de ajuste e independencia · SimulaCiencia</title>
+<meta name="description" content="Calculadora de la prueba chi cuadrado en español: bondad de ajuste a una distribución uniforme, proporciones dadas, binomial, Poisson o normal, y tablas de contingencia para la independencia, con las frecuencias esperadas, los grados de libertad, el valor crítico, el p-valor y la conclusión paso a paso.">
 <style>/* =====================================================================
    Hoja de estilos común de todas las herramientas (fuente/<herramienta>/pagina.html).
    diseno.js la mete en cada página, antes de su propio <style>, junto con el color
@@ -178,8 +178,11 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 @media (max-width:700px) { .top > .tema { margin-left:auto } .top > nav { order:1 } }
 </style>
 <style>
-/* Solo lo propio de esta herramienta. Las medidas comunes se ajustan con sus variables
-   y los colores propios (los de las gráficas) van aquí, con su valor en modo oscuro. */
+.tabla-eco { border-collapse: collapse; font: 13.5px var(--f-ui); width: 100%; font-variant-numeric: tabular-nums }
+.tabla-eco th, .tabla-eco td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap }
+.tabla-eco th { font-weight: 600; color: var(--muted) } .tabla-eco th:first-child, .tabla-eco td:first-child { text-align: left }
+.tabla-eco tfoot td { font-weight: 600; background: var(--accent-soft) }
+.tabla-eco small { color: var(--muted) }
 :root {
   --serie-1: #2a5db5; --serie-2: #c2412a }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
@@ -192,32 +195,35 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 <div class="wrap">
 <nav class="miga" aria-label="Estás en"><span class="miga-izq"></span><span class="miga-ico" aria-hidden="true">σ</span><a href="../">Estadística</a><span aria-hidden="true">›</span><span>χ² de bondad de ajuste e independencia</span><span class="miga-der"></span></nav>
 <h1>χ² de bondad de ajuste e independencia</h1>
-<p class="lead">Bondad de ajuste a una distribución y tablas de contingencia con el contraste de independencia.</p>
+<p class="lead">Comprueba si unas frecuencias observadas se ajustan a un modelo (un dado equilibrado, unas proporciones, una binomial, Poisson o normal) o si las dos variables de una tabla de contingencia son independientes, con las frecuencias esperadas, el estadístico χ², el p-valor y el desarrollo.</p>
 <div class="layout">
   <div class="card">
     <h2>Datos</h2>
     <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
-    <div class="campos" id="campos">
-      <label for="dato-a"></label><input id="dato-a" class="in" inputmode="decimal">
-      <div class="sep">[Grupo de datos]</div>
-      <label for="dato-b"></label><input id="dato-b" class="in" inputmode="decimal">
-    </div>
+    <div class="campos" id="campos"></div>
     <p class="nota" id="nota"></p>
     <p class="error" id="error" hidden></p>
   </div>
   <div>
     <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Observadas y esperadas</h2><div class="tabla-scroll" id="tabla"></div></div>
     <div class="card"><h2>Gráfica</h2>
-      <canvas id="grafica" aria-label="Gráfica"></canvas>
+      <canvas id="grafica" aria-label="Barras de las frecuencias observadas y esperadas de cada clase"></canvas>
       <p class="leyenda" id="leyenda"></p>
     </div>
     <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
   </div>
 </div>
 <section class="teoria">
-  <h2>[Primer apartado de teoría]</h2>
-  <p class="m">[Texto con alguna fórmula suelta, como $v = s/t$.]</p>
-  <p class="f m">$[fórmula destacada]$</p>
+<h2>La idea</h2>
+<p class="m">Se comparan las frecuencias <b>observadas</b> $O_i$ con las <b>esperadas</b> $E_i$ que habría si la hipótesis nula fuera cierta. Si se parecen, χ² sale pequeño; si se separan mucho, sale grande y se rechaza $H_0$. El contraste es siempre por la derecha.</p>
+<p class="f m">$χ^2 = ∑ {(O_i − E_i)^2}/{E_i}$</p>
+<h2>Bondad de ajuste</h2>
+<p class="m">$H_0$ es el modelo: $E_i = N p_i$, con $p_i$ la probabilidad de cada clase según el modelo. Los grados de libertad son $ν = k − 1 − m$, con $k$ clases y $m$ parámetros estimados de los propios datos (uno para la binomial con n conocido o la Poisson, dos para la normal).</p>
+<h2>Tablas de contingencia</h2>
+<p class="m">$H_0$: las dos variables son independientes (o, si cada fila es una población distinta, todas tienen las mismas proporciones: homogeneidad). La cuenta es la misma en los dos casos, con $E_{ij} = {F_i · C_j}/N$ (totales de la fila $i$ y de la columna $j$) y $ν = (r − 1)(c − 1)$. En las tablas 2 × 2 se puede aplicar la corrección de Yates, que resta 0,5 a cada $|O − E|$. La V de Cramér, $V = √({χ^2}/{N (mín(r, c) − 1)})$, mide la fuerza de la relación entre 0 y 1.</p>
+<h2>Cuándo vale la aproximación</h2>
+<p>La distribución χ² es una aproximación que funciona bien cuando todas las frecuencias esperadas son al menos 5. Si no, se juntan clases vecinas (cada clase que se junta resta un grado de libertad).</p>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· χ² de bondad de ajuste e independencia <span id="ver"></span> (beta)</footer>
@@ -301,10 +307,10 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-23', cambios: ['Portada para elegir asignatura y herramienta: Electromagnetismo, Física general, Química, Matemáticas y Laboratorio, con buscador. Las herramientas que vienen después aparecen como «Próximamente».', 'Nueva herramienta: Magnetostática, en Electromagnetismo.'] },
     ],
     'chi2-bondad': [
-      { v: '0.1', fecha: '2026-10-28', cambios: ['Primera versión: [qué hace, para los usuarios].'] },
+      { v: '0.1', fecha: '2026-10-28', cambios: ['Primera versión: bondad de ajuste a una distribución uniforme, a unas proporciones dadas o a una binomial, Poisson o normal (con los parámetros dados o estimados de los datos), juntando las clases con frecuencia esperada menor que 5; y tablas de contingencia para la independencia o la homogeneidad, con la corrección de Yates y la V de Cramér. Con la tabla de esperadas, la gráfica y el desarrollo.'] },
     ],
     contrastes: [
-      { v: '0.1', fecha: '2026-10-28', cambios: ['Primera versión: [qué hace, para los usuarios].'] },
+      { v: '0.1', fecha: '2026-10-28', cambios: ['Primera versión: contrastes de una media (z o t de Student), una proporción, una varianza, dos medias (también con Welch), dos proporciones y dos varianzas, bilaterales o unilaterales, con el estadístico, la región crítica sombreada en la gráfica, el p-valor y la conclusión paso a paso.'] },
     ],
     errores: [
       { v: '0.1', fecha: '2026-10-28', cambios: ['Primera versión: la incertidumbre de una magnitud calculada con las derivadas parciales (suma cuadrática o cota lineal), el error relativo, lo que pesa cada medida y el resultado redondeado como en el laboratorio; también el error de una serie de medidas repetidas.'] },
@@ -793,127 +799,905 @@ const Mates = (() => {
 })();
 
 /* =====================================================================
-   Chi2Bondad del cálculo de una herramienta (sin DOM). node fuente/nueva.js la
-   copia a fuente/<clave>/calculo.js cambiando Chi2Bondad y chi2-bondad por el
-   nombre y la clave. Trae un ejemplo que funciona (movimiento uniforme,
-   v = s/t) para que la página y las pruebas pasen desde el principio:
-   cámbialo por lo tuyo. La interfaz está en app.js y la prueba en
-   pruebas/herramientas/<clave>.js.
-     resolver(sc)  datos del formulario (texto) → { …resultados, pasos }; lanza
-                   un Error con un mensaje para el usuario si falta o falla algo
-     ejemplos      [{ clave, nombre, sc }] para el desplegable y Mis ejercicios
-     f(x)          número con coma decimal y ·10<sup>n</sup>
+   Calculadora: lo común de las herramientas sencillas (datos → resultados,
+   gráfica y desarrollo), para no repetirlo en cada app.js. Lo usan las de
+   Economía (con economia/comun.js) y otras como Estadística descriptiva.
+   Va en «scripts» de catalogo.js antes del calculo.js de la herramienta; en
+   Node, cada calculo.js lo pide con require.
+     f(x, d)          número con coma decimal, d cifras significativas y ·10ⁿ
+     num(x, dec)      número con dec decimales fijos y punto de miles (1.234,50)
+     leeNum(s)        número de un campo: coma o punto decimal, 3e8, 3·10^8,
+                      espacios y un % o € al final (se quitan)
+     lee(sc, k, nom, { min, minEx, max, maxEx, entero, def })   campo validado
+                      (def: valor si está vacío; si no, «Falta …»)
+     lista(texto, nom)   números separados por espacios, «;» o saltos de línea
+     filas(texto, n, nom) tabla de n columnas (una fila por línea; se salta
+                      una cabecera de texto)
+     grafica(canvas, cfg, col)   ejes, rejilla y series; devuelve { X, Y, g }
+     rango(vals, { cero })       límites de un eje con aire
+     colores(extra)   colores de la página para grafica()
+     monta(o)         la interfaz entera (ver más abajo)
+   La página sigue la plantilla: #ejemplos, #campos, #nota, #error,
+   #resumen, #grafica, #leyenda, #pasos y, si hay tabla, #tabla.
+     Calculadora.monta({
+       C,            el cálculo: { resolver(sc), ejemplos }
+       carpeta,      la de catalogo.js; el estado va en localStorage['<carpeta>-v1']
+       app,          nombre de window.<app> para el modo práctica y las pruebas
+       campos(sc),   lista de campos: { k, nom, un, tipo: 'num' | 'sel' | 'area' | 'texto',
+                     ops: [[valor, texto]], sep: 'título de grupo', ayuda, filas }
+       resumen(sol), [[etiqueta, valor HTML, ancho?]] de la tarjeta de resultados
+       tabla(sol),   HTML de la tabla (opcional)
+       grafica(sol, col), configuración de grafica() o null
+       despues(r, sol, col), dibujo extra sobre la gráfica (r = { X, Y, g, w, h })
+       leyenda(sol), HTML bajo la gráfica
+       nota,         texto de ayuda bajo los datos
+       azar(),       sc al azar para el modo práctica (opcional)
+       enunciado(sc, sol), enunciado del modo práctica (opcional)
+     })
+   Un cambio en un desplegable vuelve a pintar el formulario (los campos pueden
+   depender del modo elegido). window.<app>.pon(cambios) cambia unos datos desde
+   fuera del formulario (por ejemplo, al mover o acercar la gráfica) y recalcula.
    ===================================================================== */
-const Chi2Bondad = (() => {
+const Calculadora = (() => {
   const f = (x, d = 4) => {
     if (!isFinite(x)) return '—';
     if (Math.abs(x) < 1e-12) return '0';
     const a = Math.abs(x);
-    const s = a >= 1e6 || a < 1e-3 ? x.toExponential(d - 1).replace(/\.?0+e/, 'e').replace('e', '·10^').replace(/\^([+-]?)(\d+)/, (_, sg, e) => `<sup>${sg === '-' ? '−' : ''}${+e}</sup>`) : String(+x.toPrecision(d));
+    const s = a >= 1e9 || a < 1e-4 ? x.toExponential(d - 1).replace(/\.?0+e/, 'e').replace('e', '·10^').replace(/\^([+-]?)(\d+)/, (_, sg, e) => `<sup>${sg === '-' ? '−' : ''}${+e}</sup>`) : String(+x.toPrecision(d));
     return s.replace('.', ',').replace('-', '−');
   };
-  // acepta coma decimal, 3e8 y 3·10^8
-  const leeNum = (s) => +String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace(/[−–]/g, '-').replace(/[·x×*]10\^?([+\-]?\d+)/i, 'e$1');
+  const num = (x, dec = 2) => {
+    if (!isFinite(x)) return '—';
+    const [e, d] = Math.abs(x).toFixed(dec).split('.');
+    const s = e.replace(/\B(?=(\d{3})+(?!\d))/g, '.') + (d ? ',' + d : '');
+    return (x < 0 && +s.replace(/\./g, '').replace(',', '.') !== 0 ? '−' : '') + s;
+  };
+  const leeNum = (s) => {
+    const t = String(s ?? '').trim().replace(/\s/g, '').replace(/[%€$]$/, '').replace(',', '.').replace(/[−–]/g, '-').replace(/[·x×*]10\^?\(?([+\-]?\d+)\)?/i, 'e$1');
+    return t === '' ? NaN : +t;
+  };
   const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
-  function lee(sc, k, nom) {
-    if (vacio(sc[k])) throw new Error(`Falta ${nom}`);
+  const mayus = (s) => s[0].toUpperCase() + s.slice(1);
+  function lee(sc, k, nom, { min = -Infinity, minEx = false, max = Infinity, maxEx = false, entero = false, def } = {}) {
+    if (vacio(sc[k])) { if (def !== undefined) return def; throw new Error(`Falta ${nom}`); }
     const v = leeNum(sc[k]);
-    if (!isFinite(v)) throw new Error(`${nom[0].toUpperCase() + nom.slice(1)} debe ser un número`);
-    if (v <= 0) throw new Error(`${nom[0].toUpperCase() + nom.slice(1)} debe ser mayor que 0`);
+    if (!isFinite(v)) throw new Error(`${mayus(nom)} debe ser un número`);
+    if (entero && !Number.isInteger(v)) throw new Error(`${mayus(nom)} debe ser un número entero`);
+    if (v < min || (minEx && v === min)) throw new Error(`${mayus(nom)} debe ser ${minEx ? 'mayor que' : 'como mínimo'} ${String(min).replace('.', ',')}`);
+    if (v > max || (maxEx && v === max)) throw new Error(`${mayus(nom)} debe ser ${maxEx ? 'menor que' : 'como mucho'} ${String(max).replace('.', ',')}`);
     return v;
   }
-
-  function resolver(sc) {
-    const s = lee(sc, 's', 'la distancia'), t = lee(sc, 't', 'el tiempo'), v = s / t;
-    const pasos = [
-      { t: 'Datos', html: `$s = ${f(s)} "m"$, $t = ${f(t)} "s"$` },
-      { t: 'Velocidad media', html: `$v = s/t = ${f(s)}/${f(t)} = ${f(v)} "m/s"$` },
-      { t: 'En km/h', html: `$v = ${f(v)} · 3,6 = ${f(v * 3.6)} "km/h"$` },
-    ];
-    return { s, t, v, pasos };
+  function lista(texto, nom) {
+    const tk = String(texto ?? '').split(/[\s;]+/).filter(Boolean);
+    const v = tk.map(leeNum), i = v.findIndex((x) => !isFinite(x));
+    if (i >= 0) throw new Error(`En ${nom}, «${tk[i]}» no es un número (separa los valores con espacios o «;» y usa la coma decimal)`);
+    return v;
   }
-
-  const ejemplos = [
-    { clave: 'coche', nombre: 'Un coche recorre 150 m en 10 s', sc: { s: '150', t: '10' } },
-    { clave: 'luz', nombre: 'La luz del Sol a la Tierra', sc: { s: '1,496·10^11', t: '499' } },
-  ];
-
-  return { resolver, ejemplos, f };
-})();
-
-/* =====================================================================
-   Chi2Bondad de la interfaz de una herramienta: datos, ejemplos, resultados,
-   desarrollo y gráfica. node fuente/nueva.js la copia a fuente/<clave>/app.js;
-   el cálculo está en <clave>/calculo.js (Chi2Bondad) y los ayudantes comunes
-   ($, esc, copia, txt, marcas, lienzo) en herramienta.js.
-   Guarda el estado entero (sc) en localStorage[CLAVE] en cada cambio: es lo
-   que copia Mis ejercicios (biblioteca.js). Expone window.Chi2BondadApp para
-   el modo práctica y las pruebas.
-   ===================================================================== */
-(() => {
-  const { $, esc, copia, txt, marcas, lienzo } = Herramienta;
-  const P = Chi2Bondad, f = P.f, CLAVE = 'chi2-bondad-v1';
-
-  let sc = copia(P.ejemplos[0].sc);
-  try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && typeof g === 'object') sc = g; } catch (e) { /* sin almacenamiento */ }
-  const guarda = () => { try { localStorage.setItem(CLAVE, JSON.stringify(sc)); } catch (e) { /* sin almacenamiento */ } };
-  let sol = null, col = {};
-
-  /* ---------- Formulario ---------- */
-  const fila = (k, nom, un) => `<label for="f-${k}">${nom}${un ? ` <small>(${un})</small>` : ''}</label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc[k] ?? '')}" inputmode="decimal" autocomplete="off">`;
-  function formulario() {
-    $('#campos').innerHTML = fila('s', 'Distancia recorrida', 'm') + fila('t', 'Tiempo', 's');
-    $('#nota').textContent = 'Se admite coma decimal, 3e8 y 3·10^8.';
-  }
-  $('#campos').addEventListener('input', (e) => { const t = e.target; if (!t.dataset.k) return; sc[t.dataset.k] = t.value; $('#ejemplos').value = ''; calcula(); });
-
-  /* ---------- Ejemplos ---------- */
-  const sel = $('#ejemplos');
-  sel.innerHTML = '<option value="">Ejemplos…</option>' + P.ejemplos.map((e) => `<option value="${e.clave}">${e.nombre}</option>`).join('');
-  sel.addEventListener('change', () => { if (sel.value) abrirEjemplo(sel.value); });
-  function abrirEjemplo(clave) {
-    const e = P.ejemplos.find((x) => x.clave === clave);
-    if (!e) return;
-    sc = copia(e.sc); formulario(); calcula(); sel.value = clave;
-  }
-
-  /* ---------- Cálculo ---------- */
-  const dato = (t, v) => `<div><span>${t}</span><b>${v}</b></div>`;
-  function calcula() {
-    const err = $('#error');
-    try { sol = P.resolver(sc); } catch (e) {
-      sol = null; err.textContent = e.message; err.hidden = false;
-      $('#resumen').innerHTML = ''; $('#pasos').innerHTML = ''; $('#leyenda').textContent = ''; dibuja(); return;
-    }
-    err.hidden = true; guarda();
-    $('#resumen').innerHTML = dato('Velocidad media', `v = ${f(sol.v)} m/s`) + dato('En km/h', `v = ${f(sol.v * 3.6)} km/h`);
-    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
-    $('#leyenda').textContent = 'Posición x(t) = v·t desde 0 hasta t.';
-    dibuja();
+  function filas(texto, n, nom) {
+    const out = [];
+    String(texto ?? '').split(/\r?\n/).forEach((lin, i) => {
+      const l = lin.trim();
+      if (!l || l.startsWith('#')) return;
+      const tk = (/[;\t]/.test(l) ? l.split(/\s*[;\t]\s*/) : l.split(/\s+/)).filter((t) => t !== ''), v = tk.map(leeNum);
+      if (!out.length && v.some((x) => !isFinite(x)) && tk.some((t) => /[a-zñáéíóú]/i.test(t))) return; // cabecera
+      if (tk.length !== n) throw new Error(`${mayus(nom)}, fila ${i + 1}: escribe ${n} números separados por espacios, tabuladores o «;»`);
+      if (v.some((x) => !isFinite(x))) throw new Error(`${mayus(nom)}, fila ${i + 1}: «${l}» no son números`);
+      out.push(v);
+    });
+    return out;
   }
 
   /* ---------- Gráfica ---------- */
-  function colores() { const cs = getComputedStyle(document.documentElement); for (const k of ['--ink', '--muted', '--line', '--accent']) col[k] = cs.getPropertyValue(k).trim(); }
-  function dibuja() {
-    const { g, w, h } = lienzo('#grafica');
-    if (!sol || !w || !h) return;
-    const ml = 56, mr = 14, mt = 12, mb = 28;
-    const X = (t) => ml + (t / sol.t) * (w - ml - mr), Y = (x) => h - mb - (x / sol.s) * (h - mt - mb);
-    g.font = '12px system-ui, sans-serif'; g.fillStyle = col['--muted']; g.strokeStyle = col['--line']; g.lineWidth = 1;
+  // cfg: { x: [a, b], y: [a, b], series: [{ pts: [[x, y]…], color, tipo: 'linea' | 'puntos' | 'barras' | 'area', ancho, discontinua, grosor }],
+  //        fx, fy (texto de las marcas), ejeX, ejeY (nombres), verticales: [{ x, color, texto }], horizontales: [{ y, color, texto }],
+  //        etiquetas: [{ x, y, texto, color, alinea }] }
+  // col: colores leídos con getComputedStyle (--ink, --muted, --line y los de las series)
+  function grafica(c, cfg, col) {
+    const { g, w, h } = Herramienta.lienzo(c);
+    if (!w || !h) return null;
+    const fx = cfg.fx || ((v) => Herramienta.txt(f(v))), fy = cfg.fy || ((v) => Herramienta.txt(f(v)));
+    let [x0, x1] = cfg.x, [y0, y1] = cfg.y;
+    if (x1 === x0) { x0 -= 1; x1 += 1; }
+    if (y1 === y0) { y0 -= 1; y1 += 1; }
+    g.font = '12px system-ui, sans-serif';
+    const my = Herramienta.marcas(y0, y1, 5), mx = Herramienta.marcas(x0, x1, Math.max(3, Math.min(8, Math.floor(w / 90))));
+    const ml = Math.max(40, ...my.map((v) => g.measureText(fy(v)).width + 14)), mr = 14, mt = 14, mb = cfg.ejeX ? 44 : 28;
+    const X = (v) => ml + ((v - x0) / (x1 - x0)) * (w - ml - mr), Y = (v) => h - mb - ((v - y0) / (y1 - y0)) * (h - mt - mb);
+    g.strokeStyle = col['--line']; g.fillStyle = col['--muted']; g.lineWidth = 1;
     g.textAlign = 'right'; g.textBaseline = 'middle';
-    for (const x of marcas(0, sol.s, 4)) { g.beginPath(); g.moveTo(ml, Y(x)); g.lineTo(w - mr, Y(x)); g.stroke(); g.fillText(txt(f(x)), ml - 6, Y(x)); }
+    for (const v of my) { g.beginPath(); g.moveTo(ml, Y(v)); g.lineTo(w - mr, Y(v)); g.stroke(); g.fillText(fy(v), ml - 6, Y(v)); }
     g.textAlign = 'center'; g.textBaseline = 'top';
-    for (const t of marcas(0, sol.t, 5)) g.fillText(txt(f(t)), X(t), h - mb + 6);
-    g.strokeStyle = col['--accent']; g.lineWidth = 2.4;
-    g.beginPath(); g.moveTo(X(0), Y(0)); g.lineTo(X(sol.t), Y(sol.s)); g.stroke();
+    for (const v of mx) g.fillText(fx(v), X(v), h - mb + 6);
+    if (y0 < 0 && y1 > 0) { g.strokeStyle = col['--muted']; g.beginPath(); g.moveTo(ml, Y(0)); g.lineTo(w - mr, Y(0)); g.stroke(); }
+    if (cfg.ejeX) { g.fillText(cfg.ejeX, (ml + w - mr) / 2, h - 18); }
+    if (cfg.ejeY) { g.save(); g.textAlign = 'left'; g.textBaseline = 'top'; g.fillText(cfg.ejeY, ml + 4, 0); g.restore(); }
+    g.save(); g.beginPath(); g.rect(ml, mt - 4, w - ml - mr, h - mt - mb + 8); g.clip();
+    for (const s of cfg.series || []) {
+      const color = col[s.color] || s.color || col['--ink'];
+      g.strokeStyle = color; g.fillStyle = color; g.lineWidth = s.grosor || 2.4;
+      g.setLineDash(s.discontinua ? [6, 4] : []);
+      if (s.tipo === 'puntos') for (const [x, y] of s.pts) { g.beginPath(); g.arc(X(x), Y(y), s.radio || 4, 0, 2 * Math.PI); g.fill(); }
+      else if (s.tipo === 'barras') {
+        const an = s.ancho ?? (s.pts.length > 1 ? Math.abs(s.pts[1][0] - s.pts[0][0]) * 0.7 : 1);
+        for (const [x, y] of s.pts) { const a = X(x - an / 2), b = X(x + an / 2), base = Y(Math.max(y0, Math.min(0, y1))); g.globalAlpha = s.alfa ?? 0.85; g.fillRect(a + (s.desplaza || 0), Math.min(Y(y), base), b - a, Math.abs(base - Y(y))); g.globalAlpha = 1; }
+      } else if (s.tipo === 'area') {
+        if (s.pts.length) { g.globalAlpha = s.alfa ?? 0.18; g.beginPath(); g.moveTo(X(s.pts[0][0]), Y(s.base ?? 0)); for (const [x, y] of s.pts) g.lineTo(X(x), Y(y)); g.lineTo(X(s.pts[s.pts.length - 1][0]), Y(s.base ?? 0)); g.closePath(); g.fill(); g.globalAlpha = 1; }
+      } else { g.beginPath(); s.pts.forEach(([x, y], i) => (i ? g.lineTo(X(x), Y(y)) : g.moveTo(X(x), Y(y)))); g.stroke(); }
+      g.setLineDash([]);
+    }
+    for (const v of cfg.verticales || []) { g.strokeStyle = col[v.color] || col['--muted']; g.lineWidth = 1.2; g.setLineDash([4, 4]); g.beginPath(); g.moveTo(X(v.x), mt); g.lineTo(X(v.x), h - mb); g.stroke(); g.setLineDash([]); }
+    for (const v of cfg.horizontales || []) { g.strokeStyle = col[v.color] || col['--muted']; g.lineWidth = 1.2; g.setLineDash([4, 4]); g.beginPath(); g.moveTo(ml, Y(v.y)); g.lineTo(w - mr, Y(v.y)); g.stroke(); g.setLineDash([]); }
+    g.restore();
+    g.font = '600 12px system-ui, sans-serif';
+    for (const v of cfg.verticales || []) if (v.texto) { g.fillStyle = col[v.color] || col['--muted']; g.textAlign = X(v.x) > w - 120 ? 'right' : 'left'; g.textBaseline = 'top'; g.fillText(v.texto, X(v.x) + (g.textAlign === 'left' ? 4 : -4), mt); }
+    for (const v of cfg.horizontales || []) if (v.texto) { g.fillStyle = col[v.color] || col['--muted']; g.textAlign = 'right'; g.textBaseline = 'bottom'; g.fillText(v.texto, w - mr - 2, Y(v.y) - 2); }
+    for (const e of cfg.etiquetas || []) { g.fillStyle = col[e.color] || col['--ink']; g.textAlign = e.alinea || 'left'; g.textBaseline = 'bottom'; g.fillText(e.texto, X(e.x) + (e.alinea === 'right' ? -6 : 6), Y(e.y) - 4); }
+    return { X, Y, g, w, h };
   }
-  window.addEventListener('resize', dibuja);
-  // tema.js también avisa a este oyente al pulsar el botón claro/oscuro
-  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { colores(); dibuja(); });
+  // límites con un poco de aire alrededor de unos valores (incluido el 0 si se pide)
+  const rango = (vals, { cero = false, aire = 0.08 } = {}) => {
+    const v = vals.filter(isFinite); let a = Math.min(...v, ...(cero ? [0] : [])), b = Math.max(...v, ...(cero ? [0] : []));
+    if (!isFinite(a)) return [0, 1];
+    const m = (b - a || Math.abs(b) || 1) * aire;
+    return [cero && a >= 0 ? 0 : a - m, cero && b <= 0 ? 0 : b + m];
+  };
+  // colores de la página para grafica()
+  const colores = (extra = []) => { const cs = getComputedStyle(document.documentElement), col = {}; for (const k of ['--ink', '--muted', '--line', '--accent', '--serie-1', '--serie-2', '--serie-3', ...extra]) col[k] = cs.getPropertyValue(k).trim(); return col; };
 
-  const ver = $('#ver'); if (ver) ver.textContent = Version.de('chi2-bondad').current;
-  colores(); formulario(); calcula();
-  window.Chi2BondadApp = { abrirEjemplo, resultado: () => sol && { v: sol.v }, estado: () => copia(sc) };
+
+  /* ---------- Interfaz ---------- */
+  function monta(o) {
+    const { $, esc, copia } = Herramienta;
+    const C = o.C, CLAVE = `${o.carpeta}-v1`;
+    let sc = copia(C.ejemplos[0].sc);
+    try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && typeof g === 'object') sc = g; } catch (e) { /* sin almacenamiento */ }
+    const guarda = () => { try { localStorage.setItem(CLAVE, JSON.stringify(sc)); } catch (e) { /* sin almacenamiento */ } };
+    let sol = null, col = {};
+
+    /* ---------- Formulario ---------- */
+    const campo = (c) => {
+      const id = `f-${c.k}`, v = sc[c.k] ?? '';
+      const et = `<label for="${id}"${c.tipo === 'area' ? ' class="ancho"' : ''}>${c.nom}${c.un ? ` <small>(${c.un})</small>` : ''}${c.ayuda ? ` <small>${c.ayuda}</small>` : ''}</label>`;
+      if (c.tipo === 'sel') return et + `<select id="${id}" class="in" data-k="${c.k}">${c.ops.map(([val, t]) => `<option value="${val}"${val === v ? ' selected' : ''}>${t}</option>`).join('')}</select>`;
+      if (c.tipo === 'area') return et + `<textarea id="${id}" class="in ancho" data-k="${c.k}" rows="${c.filas || 7}" spellcheck="false" autocomplete="off">${esc(v)}</textarea>`;
+      return et + `<input id="${id}" class="in" data-k="${c.k}" value="${esc(v)}"${c.tipo === 'texto' ? '' : ' inputmode="decimal"'} autocomplete="off">`;
+    };
+    function formulario() {
+      const cs = o.campos(sc);
+      // los desplegables empiezan en su primera opción si el estado no trae valor
+      for (const c of cs) if (c.tipo === 'sel' && !c.ops.some(([val]) => val === sc[c.k])) sc[c.k] = c.ops[0][0];
+      $('#campos').innerHTML = cs.map((c) => (c.sep ? `<div class="sep">${c.sep}</div>` : '') + campo(c)).join('');
+      if (o.nota) $('#nota').innerHTML = o.nota;
+    }
+    $('#campos').addEventListener('input', (e) => { const t = e.target; if (!t.dataset.k || t.tagName === 'SELECT') return; sc[t.dataset.k] = t.value; $('#ejemplos').value = ''; calcula(); });
+    $('#campos').addEventListener('change', (e) => { const t = e.target; if (!t.dataset.k || t.tagName !== 'SELECT') return; sc[t.dataset.k] = t.value; $('#ejemplos').value = ''; formulario(); calcula(); });
+
+    /* ---------- Ejemplos ---------- */
+    const sel = $('#ejemplos');
+    sel.innerHTML = '<option value="">Ejemplos…</option>' + C.ejemplos.map((e) => `<option value="${e.clave}">${e.nombre}</option>`).join('');
+    sel.addEventListener('change', () => { if (sel.value) abrirEjemplo(sel.value); });
+    function abrirEjemplo(clave) {
+      const e = C.ejemplos.find((x) => x.clave === clave);
+      if (!e) return;
+      sc = copia(e.sc); formulario(); calcula(); sel.value = clave;
+    }
+    function azar() { if (!o.azar) return; sc = o.azar(); formulario(); calcula(); sel.value = ''; }
+    function pon(cambios) { Object.assign(sc, cambios); formulario(); calcula(); sel.value = ''; }
+
+    /* ---------- Cálculo ---------- */
+    function calcula() {
+      const err = $('#error');
+      try { sol = C.resolver(sc); } catch (e) {
+        sol = null; err.textContent = e.message; err.hidden = false;
+        for (const s of ['#resumen', '#pasos', '#leyenda', '#tabla']) { const el = $(s); if (el) el.innerHTML = ''; }
+        dibuja(); return;
+      }
+      err.hidden = true; guarda();
+      $('#resumen').innerHTML = o.resumen(sol).map(([t, v, ancho]) => `<div${ancho ? ' class="ancho"' : ''}><span>${t}</span><b>${v}</b></div>`).join('');
+      $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
+      const tb = $('#tabla'); if (tb) { const h = o.tabla ? o.tabla(sol) : ''; tb.innerHTML = h; tb.closest('.card').hidden = !h; }
+      $('#leyenda').innerHTML = o.leyenda ? o.leyenda(sol) : '';
+      dibuja();
+    }
+
+    /* ---------- Gráfica ---------- */
+    function dibuja() {
+      const c = $('#grafica'); if (!c) return;
+      const cfg = sol && o.grafica ? o.grafica(sol, col) : null;
+      if (!cfg) { Herramienta.lienzo(c); return; }
+      const r = grafica(c, cfg, col);
+      if (r && o.despues) o.despues(r, sol, col);
+    }
+    const leeColores = () => { col = colores(o.colores || []); };
+    window.addEventListener('resize', dibuja);
+    // tema.js también avisa a este oyente al pulsar el botón claro/oscuro
+    matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { leeColores(); dibuja(); });
+
+    const ver = $('#ver'); if (ver) ver.textContent = Version.de(o.carpeta).current;
+    leeColores(); formulario(); calcula();
+    const enunciado = () => (o.enunciado ? o.enunciado(sc, sol) : undefined);
+    return (window[o.app] = { abrirEjemplo, azar, pon, enunciado, resultado: () => sol, estado: () => copia(sc) });
+  }
+  return { f, num, leeNum, vacio, lee, lista, filas, grafica, rango, colores, monta };
+})();
+
+/* =====================================================================
+   Estadística: distribuciones (sin DOM). Normal, t de Student, χ², F de
+   Snedecor, exponencial, uniforme, binomial, Poisson, geométrica e
+   hipergeométrica: probabilidades P(X ≤ a), P(X ≥ a), P(a ≤ X ≤ b),
+   P(X = k), P(|X − μ| ≤ c), cuantiles, valores críticos bilaterales y
+   unilaterales, la μ o la σ de una normal a partir de una probabilidad,
+   aproximaciones y tabla de valores, con media, varianza y el desarrollo.
+   Ejercicios al azar con enunciado para el modo práctica.
+   Funciones especiales con la gamma y la beta incompletas regularizadas.
+   ===================================================================== */
+const Estadistica = (() => {
+  /* ---------- Funciones especiales ---------- */
+  const LANCZOS = [676.5203681218851, -1259.1392167224028, 771.32342877765313, -176.61502916214059, 12.507343278686905, -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
+  function lnGamma(x) {
+    if (x < 0.5) return Math.log(Math.PI / Math.abs(Math.sin(Math.PI * x))) - lnGamma(1 - x);
+    x -= 1;
+    let a = 0.99999999999980993;
+    const t = x + 7.5;
+    LANCZOS.forEach((c, i) => { a += c / (x + i + 1); });
+    return 0.5 * Math.log(2 * Math.PI) + (x + 0.5) * Math.log(t) - t + Math.log(a);
+  }
+  // gamma incompleta regularizada P(a, x)
+  function gammaP(a, x) {
+    if (x <= 0) return 0;
+    if (x < a + 1) {
+      let s = 1 / a, d = s, ap = a;
+      for (let n = 0; n < 1000; n++) { ap += 1; d *= x / ap; s += d; if (Math.abs(d) < Math.abs(s) * 1e-16) break; }
+      return s * Math.exp(-x + a * Math.log(x) - lnGamma(a));
+    }
+    return 1 - gammaQcf(a, x);
+  }
+  function gammaQcf(a, x) {
+    const TINY = 1e-300;
+    let b = x + 1 - a, c = 1 / TINY, d = 1 / b, h = d;
+    for (let i = 1; i < 1000; i++) {
+      const an = -i * (i - a);
+      b += 2;
+      d = an * d + b; if (Math.abs(d) < TINY) d = TINY;
+      c = b + an / c; if (Math.abs(c) < TINY) c = TINY;
+      d = 1 / d;
+      const del = d * c;
+      h *= del;
+      if (Math.abs(del - 1) < 1e-16) break;
+    }
+    return Math.exp(-x + a * Math.log(x) - lnGamma(a)) * h;
+  }
+  const gammaQ = (a, x) => (x <= 0 ? 1 : x < a + 1 ? 1 - gammaP(a, x) : gammaQcf(a, x));
+  // beta incompleta regularizada I_x(a, b)
+  function betaI(x, a, b) {
+    if (x <= 0) return 0;
+    if (x >= 1) return 1;
+    const bt = Math.exp(lnGamma(a + b) - lnGamma(a) - lnGamma(b) + a * Math.log(x) + b * Math.log(1 - x));
+    return x < (a + 1) / (a + b + 2) ? (bt * betacf(x, a, b)) / a : 1 - (bt * betacf(1 - x, b, a)) / b;
+  }
+  function betacf(x, a, b) {
+    const TINY = 1e-300, qab = a + b, qap = a + 1, qam = a - 1;
+    let c = 1, d = 1 - (qab * x) / qap;
+    if (Math.abs(d) < TINY) d = TINY;
+    d = 1 / d;
+    let h = d;
+    for (let m = 1; m < 1000; m++) {
+      const m2 = 2 * m;
+      let aa = (m * (b - m) * x) / ((qam + m2) * (a + m2));
+      d = 1 + aa * d; if (Math.abs(d) < TINY) d = TINY; c = 1 + aa / c; if (Math.abs(c) < TINY) c = TINY; d = 1 / d; h *= d * c;
+      aa = (-(a + m) * (qab + m) * x) / ((a + m2) * (qap + m2));
+      d = 1 + aa * d; if (Math.abs(d) < TINY) d = TINY; c = 1 + aa / c; if (Math.abs(c) < TINY) c = TINY; d = 1 / d;
+      const del = d * c;
+      h *= del;
+      if (Math.abs(del - 1) < 1e-16) break;
+    }
+    return h;
+  }
+  const Phi = (z) => (z < 0 ? 0.5 * gammaQ(0.5, (z * z) / 2) : 1 - 0.5 * gammaQ(0.5, (z * z) / 2));
+
+  /* ---------- Formato ---------- */
+  // cero: por debajo se escribe 0 (ruido de redondeo); las probabilidades usan 0 para no perder las colas lejanas
+  const num = (x, d = 4, cero = 1e-15) => {
+    if (!isFinite(x)) return x > 0 ? '∞' : x < 0 ? '−∞' : '—';
+    if (x === 0 || Math.abs(x) < cero) return '0';
+    const a = Math.abs(x);
+    const s = a >= 1e6 || a < 1e-4 ? x.toExponential(d - 1).replace(/\.?0+e/, 'e').replace(/e([+-])(\d+)/, (_, sg, e) => `·10<sup>${sg === '-' ? '−' : ''}${+e}</sup>`) : String(+x.toPrecision(Math.max(d, Math.ceil(Math.log10(a + 1)) + 1)));
+    return s.replace('.', ',').replace('-', '−');
+  };
+  // probabilidad con 4 decimales como en las tablas (y más si es muy pequeña)
+  const prob = (p) => (p !== 0 && Math.abs(p) < 1e-4 ? num(p, 4, 0) : p.toFixed(4).replace('.', ',').replace('-', '−'));
+  const leeNum = (s) => +String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace('−', '-');
+  const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
+  function lee(sc, k, nom, { entero = false, min = -Infinity, minEx = false, max = Infinity, maxEx = false } = {}) {
+    if (vacio(sc[k])) throw new Error(`Falta ${nom}`);
+    const v = leeNum(sc[k]);
+    if (!isFinite(v)) throw new Error(`${nom[0].toUpperCase() + nom.slice(1)} debe ser un número`);
+    if (entero && !Number.isInteger(v)) throw new Error(`${nom[0].toUpperCase() + nom.slice(1)} debe ser un número entero`);
+    if (minEx ? v <= min : v < min) throw new Error(`${nom[0].toUpperCase() + nom.slice(1)} debe ser ${minEx ? 'mayor que' : 'como mínimo'} ${num(min)}`);
+    if (maxEx ? v >= max : v > max) throw new Error(`${nom[0].toUpperCase() + nom.slice(1)} debe ser ${maxEx ? 'menor que' : 'como máximo'} ${num(max)}`);
+    return v;
+  }
+
+
+  /* ---------- Distribuciones ---------- */
+  // coeficiente binomial exacto con BigInt (para escribirlo) y en coma flotante
+  function combBig(n, k) { k = Math.min(k, n - k); let r = 1n; for (let i = 1; i <= k; i++) r = (r * BigInt(n - k + i)) / BigInt(i); return r; }
+  const combTxt = (n, k) => { const c = combBig(n, k); return c < 10n ** 15n ? c.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') : num(Number(c)); };
+  const lnC = (n, k) => lnGamma(n + 1) - lnGamma(k + 1) - lnGamma(n - k + 1);
+  // F de Snedecor (también la usa intervalos/calculo.js para el cociente de varianzas)
+  const fCdf = ({ d1, d2 }, x) => (x <= 0 ? 0 : betaI((d1 * x) / (d1 * x + d2), d1 / 2, d2 / 2));
+  // hipergeométrica: valores posibles y suma de la función de probabilidad
+  const hSop = ({ N, K, n }) => [Math.max(0, n - (N - K)), Math.min(n, K)];
+  const hPmf = (P, k) => { const [lo, hi] = hSop(P); return !Number.isInteger(k) || k < lo || k > hi ? 0 : Math.exp(lnC(P.K, k) + lnC(P.N - P.K, P.n - k) - lnC(P.N, P.n)); };
+  const hSuma = (P, a, b) => { const [lo, hi] = hSop(P); let s = 0; for (let k = Math.max(lo, Math.ceil(a)); k <= Math.min(hi, Math.floor(b)); k++) s += hPmf(P, k); return Math.min(1, s); };
+
+  const DIST = {
+    normal: {
+      nombre: 'Normal N(μ, σ)', continua: true, params: [['mu', 'Media μ', {}], ['sigma', 'Desviación típica σ', { min: 0, minEx: true }]],
+      pdf: ({ mu, sigma }, x) => Math.exp(-0.5 * ((x - mu) / sigma) ** 2) / (sigma * Math.sqrt(2 * Math.PI)),
+      cdf: ({ mu, sigma }, x) => Phi((x - mu) / sigma),
+      sf: ({ mu, sigma }, x) => Phi(-(x - mu) / sigma),
+      momentos: ({ mu, sigma }) => ({ media: mu, varianza: sigma * sigma }),
+      rango: ({ mu, sigma }) => [mu - 4 * sigma, mu + 4 * sigma],
+      simetrica: true, nombreX: 'X', etiqueta: (p) => `N(${num(p.mu)}, ${num(p.sigma)})`,
+    },
+    t: {
+      nombre: 't de Student', continua: true, params: [['nu', 'Grados de libertad ν', { min: 0, minEx: true }]],
+      pdf: ({ nu }, x) => Math.exp(lnGamma((nu + 1) / 2) - lnGamma(nu / 2) - 0.5 * Math.log(nu * Math.PI) - ((nu + 1) / 2) * Math.log(1 + (x * x) / nu)),
+      cdf: ({ nu }, x) => { const c = 0.5 * betaI(nu / (nu + x * x), nu / 2, 0.5); return x > 0 ? 1 - c : c; },
+      sf: ({ nu }, x) => { const c = 0.5 * betaI(nu / (nu + x * x), nu / 2, 0.5); return x > 0 ? c : 1 - c; },
+      momentos: ({ nu }) => ({ media: nu > 1 ? 0 : NaN, varianza: nu > 2 ? nu / (nu - 2) : nu > 1 ? Infinity : NaN }),
+      rango: ({ nu }) => { const r = nu < 3 ? 8 : 5; return [-r, r]; },
+      simetrica: true, nombreX: 'T', critico: (P) => `t<sub>${num(P.nu)}</sub>`, etiqueta: (p) => `t<sub>${num(p.nu)}</sub>`,
+    },
+    chi2: {
+      nombre: 'Chi cuadrado χ²', continua: true, params: [['k', 'Grados de libertad k', { min: 0, minEx: true }]],
+      pdf: ({ k }, x) => (x <= 0 ? (x === 0 && k === 2 ? 0.5 : 0) : Math.exp((k / 2 - 1) * Math.log(x) - x / 2 - (k / 2) * Math.LN2 - lnGamma(k / 2))),
+      cdf: ({ k }, x) => (x <= 0 ? 0 : gammaP(k / 2, x / 2)),
+      sf: ({ k }, x) => (x <= 0 ? 1 : gammaQ(k / 2, x / 2)),
+      momentos: ({ k }) => ({ media: k, varianza: 2 * k }),
+      rango: ({ k }) => [0, k + 5 * Math.sqrt(2 * k) + 2],
+      nombreX: 'χ²', critico: (P) => `χ<sup>2</sup><sub>${num(P.k)}</sub>`, etiqueta: (p) => `χ²<sub>${num(p.k)}</sub>`,
+    },
+    f: {
+      nombre: 'F de Snedecor', continua: true, params: [['d1', 'Grados de libertad del numerador d₁', { min: 0, minEx: true }], ['d2', 'Grados de libertad del denominador d₂', { min: 0, minEx: true }]],
+      pdf: ({ d1, d2 }, x) => (x <= 0 ? 0 : Math.exp(0.5 * (d1 * Math.log(d1 * x) + d2 * Math.log(d2) - (d1 + d2) * Math.log(d1 * x + d2)) - Math.log(x) - (lnGamma(d1 / 2) + lnGamma(d2 / 2) - lnGamma((d1 + d2) / 2)))),
+      cdf: fCdf,
+      sf: ({ d1, d2 }, x) => (x <= 0 ? 1 : betaI(d2 / (d2 + d1 * x), d2 / 2, d1 / 2)),
+      momentos: ({ d1, d2 }) => ({ media: d2 > 2 ? d2 / (d2 - 2) : NaN, varianza: d2 > 4 ? (2 * d2 * d2 * (d1 + d2 - 2)) / (d1 * (d2 - 2) ** 2 * (d2 - 4)) : d2 > 2 ? Infinity : NaN }),
+      rango: (P) => { let hi = 2; while (fCdf(P, hi) < 0.995 && hi < 1e5) hi *= 2; return [0, hi]; },
+      nombreX: 'F', critico: (P) => `F<sub>${num(P.d1)}, ${num(P.d2)}</sub>`, etiqueta: (p) => `F<sub>${num(p.d1)}, ${num(p.d2)}</sub>`,
+      nota: () => 'F = (χ²<sub>d₁</sub>/d₁)/(χ²<sub>d₂</sub>/d₂): es la que se usa para comparar dos varianzas y en el ANOVA.',
+    },
+    exponencial: {
+      nombre: 'Exponencial Exp(λ)', continua: true, params: [['lambda', 'Tasa λ', { min: 0, minEx: true }]],
+      pdf: ({ lambda }, x) => (x < 0 ? 0 : lambda * Math.exp(-lambda * x)),
+      cdf: ({ lambda }, x) => (x <= 0 ? 0 : -Math.expm1(-lambda * x)),
+      sf: ({ lambda }, x) => (x <= 0 ? 1 : Math.exp(-lambda * x)),
+      inv: ({ lambda }, p) => -Math.log1p(-p) / lambda,
+      invTxt: () => '1 − e<sup>−λa</sup> = p ⇒ a = −ln(1 − p)/λ',
+      momentos: ({ lambda }) => ({ media: 1 / lambda, varianza: 1 / (lambda * lambda) }),
+      rango: ({ lambda }) => [0, 6 / lambda],
+      nombreX: 'X', etiqueta: (p) => `Exp(${num(p.lambda)})`, nota: () => 'F(x) = 1 − e<sup>−λx</sup>. No tiene memoria: P(X ≥ s + t | X ≥ s) = P(X ≥ t).',
+    },
+    uniforme: {
+      nombre: 'Uniforme continua U(a, b)', continua: true, params: [['lo', 'Mínimo (extremo a)', {}], ['hi', 'Máximo (extremo b)', {}]],
+      valida: ({ lo, hi }) => (hi > lo ? '' : 'El máximo tiene que ser mayor que el mínimo'),
+      pdf: ({ lo, hi }, x) => (x < lo || x > hi ? 0 : 1 / (hi - lo)),
+      cdf: ({ lo, hi }, x) => Math.min(1, Math.max(0, (x - lo) / (hi - lo))),
+      inv: ({ lo, hi }, p) => lo + p * (hi - lo),
+      invTxt: () => '(a − mín)/(máx − mín) = p ⇒ a = mín + p·(máx − mín)',
+      momentos: ({ lo, hi }) => ({ media: (lo + hi) / 2, varianza: (hi - lo) ** 2 / 12 }),
+      rango: ({ lo, hi }) => [lo - 0.15 * (hi - lo), hi + 0.15 * (hi - lo)],
+      nombreX: 'X', etiqueta: (p) => `U(${num(p.lo)}, ${num(p.hi)})`, nota: (P) => `F(x) = (x − ${num(P.lo)})/(${num(P.hi)} − ${num(P.lo)}) entre los dos extremos: la probabilidad es proporcional a la longitud del tramo.`,
+    },
+    binomial: {
+      nombre: 'Binomial B(n, p)', continua: false, params: [['n', 'Número de pruebas n', { entero: true, min: 1, max: 100000 }], ['p', 'Probabilidad de éxito p', { min: 0, max: 1 }]],
+      pmf: ({ n, p }, k) => {
+        if (k < 0 || k > n || !Number.isInteger(k)) return 0;
+        if (p === 0) return k === 0 ? 1 : 0;
+        if (p === 1) return k === n ? 1 : 0;
+        return Math.exp(lnC(n, k) + k * Math.log(p) + (n - k) * Math.log1p(-p));
+      },
+      cdf: (P, k) => { const { n, p } = P; if (k < 0) return 0; if (k >= n) return 1; if (p === 0) return 1; if (p === 1) return 0; return betaI(1 - p, n - Math.floor(k), Math.floor(k) + 1); },
+      // P(X ≥ k) sin restar de 1, para no perder las colas pequeñas
+      cola: ({ n, p }, k) => { k = Math.ceil(k); if (k <= 0) return 1; if (k > n) return 0; if (p === 0) return 0; if (p === 1) return 1; return betaI(p, k, n - k + 1); },
+      soporte: ({ n }) => [0, n],
+      momentos: ({ n, p }) => ({ media: n * p, varianza: n * p * (1 - p) }),
+      rango: ({ n, p }) => { const m = n * p, s = Math.sqrt(n * p * (1 - p)); return [Math.max(0, Math.floor(m - 5 * s - 1)), Math.min(n, Math.ceil(m + 5 * s + 1))]; },
+      nombreX: 'X', etiqueta: (p) => `B(${num(p.n)}, ${num(p.p)})`,
+      formula: ({ n, p }, k) => `P(X = ${k}) = C(${n}, ${k})·${num(p)}<sup>${k}</sup>·${num(1 - p)}<sup>${n - k}</sup> = ${combTxt(n, k)}·${num(p)}<sup>${k}</sup>·${num(1 - p)}<sup>${n - k}</sup>`,
+      general: ({ p }) => `P(X = k) = C(n, k)·p<sup>k</sup>·q<sup>n−k</sup>, con q = 1 − p = ${num(1 - p)} y C(n, k) = n! / (k! (n − k)!)`,
+    },
+    poisson: {
+      nombre: 'Poisson P(λ)', continua: false, params: [['lambda', 'Media λ', { min: 0, minEx: true, max: 1e6 }]],
+      pmf: ({ lambda }, k) => (k < 0 || !Number.isInteger(k) ? 0 : Math.exp(-lambda + k * Math.log(lambda) - lnGamma(k + 1))),
+      cdf: ({ lambda }, k) => (k < 0 ? 0 : gammaQ(Math.floor(k) + 1, lambda)),
+      cola: ({ lambda }, k) => { k = Math.ceil(k); return k <= 0 ? 1 : gammaP(k, lambda); },
+      momentos: ({ lambda }) => ({ media: lambda, varianza: lambda }),
+      rango: ({ lambda }) => [Math.max(0, Math.floor(lambda - 5 * Math.sqrt(lambda) - 1)), Math.ceil(lambda + 5 * Math.sqrt(lambda) + 3)],
+      nombreX: 'X', etiqueta: (p) => `P(${num(p.lambda)})`,
+      formula: ({ lambda }, k) => `P(X = ${k}) = e<sup>−${num(lambda)}</sup>·${num(lambda)}<sup>${k}</sup> / ${k}!`,
+      general: () => 'P(X = k) = e<sup>−λ</sup>·λ<sup>k</sup> / k!, para k = 0, 1, 2…',
+    },
+    geometrica: {
+      nombre: 'Geométrica G(p)', continua: false, params: [['p', 'Probabilidad de éxito p', { min: 0, minEx: true, max: 1 }]],
+      pmf: ({ p }, k) => (k < 0 || !Number.isInteger(k) ? 0 : p === 1 ? (k === 0 ? 1 : 0) : Math.exp(k * Math.log1p(-p)) * p),
+      cdf: ({ p }, k) => (k < 0 ? 0 : p === 1 ? 1 : -Math.expm1((Math.floor(k) + 1) * Math.log1p(-p))),
+      cola: ({ p }, k) => { k = Math.ceil(k); return k <= 0 ? 1 : p === 1 ? 0 : Math.exp(k * Math.log1p(-p)); },
+      momentos: ({ p }) => ({ media: (1 - p) / p, varianza: (1 - p) / (p * p) }),
+      rango: ({ p }) => [0, p === 1 ? 3 : Math.max(5, Math.ceil(Math.log(0.002) / Math.log1p(-p)))],
+      nombreX: 'X', etiqueta: (p) => `G(${num(p.p)})`,
+      formula: ({ p }, k) => `P(X = ${k}) = ${num(1 - p)}<sup>${k}</sup>·${num(p)}`,
+      general: ({ p }) => `X = número de fracasos antes del primer éxito: P(X = k) = q<sup>k</sup>·p, con q = 1 − p = ${num(1 - p)}, para k = 0, 1, 2… Si se cuentan las pruebas hasta el primer éxito (incluido), Y = X + 1.`,
+    },
+    hipergeometrica: {
+      nombre: 'Hipergeométrica H(N, K, n)', continua: false,
+      params: [['N', 'Tamaño de la población N', { entero: true, min: 1, max: 1e6 }], ['K', 'Éxitos en la población K', { entero: true, min: 0 }], ['n', 'Extracciones sin reemplazo n', { entero: true, min: 1 }]],
+      valida: ({ N, K, n }) => (K > N ? 'Los éxitos K no pueden ser más que la población N' : n > N ? 'No se pueden sacar más elementos (n) de los que hay (N)' : ''),
+      pmf: hPmf,
+      cdf: (P, k) => hSuma(P, -Infinity, k),
+      cola: (P, k) => hSuma(P, k, Infinity),
+      soporte: hSop,
+      momentos: ({ N, K, n }) => ({ media: (n * K) / N, varianza: N > 1 ? n * (K / N) * (1 - K / N) * ((N - n) / (N - 1)) : 0 }),
+      rango: hSop,
+      nombreX: 'X', etiqueta: (p) => `H(${num(p.N)}, ${num(p.K)}, ${num(p.n)})`,
+      formula: ({ N, K, n }, k) => `P(X = ${k}) = C(${K}, ${k})·C(${N - K}, ${n - k}) / C(${N}, ${n}) = ${combTxt(K, k)}·${combTxt(N - K, n - k)} / ${combTxt(N, n)}`,
+      general: () => 'X = número de éxitos al sacar n elementos sin reemplazo de una población de N con K éxitos: P(X = k) = C(K, k)·C(N − K, n − k) / C(N, n)',
+    },
+  };
+  const CRITICOS = ['normal', 't', 'chi2', 'f'];
+  const TIPOS_C = [['menor', 'P(X ≤ a)'], ['mayor', 'P(X ≥ a)'], ['entre', 'P(a ≤ X ≤ b)'], ['centro', 'P(|X − μ| ≤ c): a una distancia c de la media'], ['cuantil', 'Cuantil: a con P(X ≤ a) = p'], ['critico', 'Valor crítico bilateral (α)'], ['criticoU', 'Valor crítico unilateral (α en la cola derecha)'], ['inverso', 'Hallar μ o σ a partir de una probabilidad']];
+  const TIPOS_D = [['igual', 'P(X = k)'], ['menor', 'P(X ≤ k)'], ['menorE', 'P(X < k)'], ['mayor', 'P(X ≥ k)'], ['mayorE', 'P(X > k)'], ['entre', 'P(a ≤ X ≤ b)'], ['centro', 'P(|X − μ| ≤ c): a una distancia c de la media'], ['cuantil', 'Cuantil: menor k con P(X ≤ k) ≥ p']];
+  const tipos = (d) => (DIST[d].continua ? TIPOS_C.filter(([k]) => (k !== 'critico' && k !== 'criticoU') || CRITICOS.includes(d)).filter(([k]) => k !== 'inverso' || d === 'normal') : TIPOS_D);
+
+  // cuantil continuo por bisección
+  function cuantil(D, P, p) {
+    if (D.inv) return D.inv(P, p);
+    let [lo, hi] = D.rango(P);
+    while (D.cdf(P, lo) > p) lo -= Math.max(1, Math.abs(hi - lo));
+    while (D.cdf(P, hi) < p) hi += Math.max(1, Math.abs(hi - lo));
+    for (let i = 0; i < 200; i++) { const m = (lo + hi) / 2; if (D.cdf(P, m) < p) lo = m; else hi = m; }
+    return (lo + hi) / 2;
+  }
+  const N01 = { mu: 0, sigma: 1 };
+  // la probabilidad del cuantil va en «q», para no pisar la p de la binomial (antes era «p»)
+  const probCuantil = (sc, D) => lee(vacio(sc.q) && !D.params.some(([k]) => k === 'p') ? { q: sc.p } : sc, 'q', 'la probabilidad p', { min: 0, minEx: true, max: 1, maxEx: true });
+
+  // μ o σ de una normal a partir de P(X ≤ a) o P(X ≥ a)
+  function inverso(sc, P, incog, pasos) {
+    const a = lee(sc, 'a', 'el valor a'), q = probCuantil(sc, DIST.normal), mayor = sc.cola === 'mayor', pIzq = mayor ? 1 - q : q, z = cuantil(DIST.normal, N01, pIzq);
+    const ev = `P(X ${mayor ? '≥' : '≤'} ${num(a)}) = ${num(q)}`;
+    let h = `${ev}${mayor ? ` ⇒ P(X ≤ ${num(a)}) = 1 − ${num(q)} = ${num(pIzq)}` : ''}.<br>Tipificando, Φ((a − μ)/σ) = ${num(pIzq)} ⇒ (a − μ)/σ = z = ${num(z)}.<br>`;
+    if (incog === 'mu') { P.mu = a - z * P.sigma; h += `Despejando, μ = a − zσ = ${num(a)} − ${num(z)}·${num(P.sigma)} = <b>${num(P.mu)}</b>`; }
+    else {
+      if (Math.abs(z) < 1e-12) throw new Error('Con esa probabilidad, a es justo la media: σ puede ser cualquiera');
+      const s = (a - P.mu) / z;
+      if (!(s > 0)) throw new Error(`No hay ninguna σ posible: con ${ev.replace(/<[^>]+>/g, '')}, a tiene que ser ${z > 0 ? 'mayor' : 'menor'} que μ = ${num(P.mu).replace(/<[^>]+>/g, '')}`);
+      P.sigma = s; h += `Despejando, σ = (a − μ)/z = (${num(a)} − ${num(P.mu)})/${num(z)} = <b>${num(s)}</b>`;
+    }
+    pasos.push({ t: `Hallar ${incog === 'mu' ? 'μ' : 'σ'}`, html: h });
+    return { a, q, z, mayor };
+  }
+
+  // tabla de valores de una discreta alrededor de lo pedido (como mucho 41 filas)
+  function tabla(D, P, enEv, centro) {
+    const [r0, r1] = D.rango(P), [s0, s1] = D.soporte ? D.soporte(P) : [0, Infinity];
+    let lo = Math.max(s0, Math.floor(r0)), hi = Math.min(s1, Math.ceil(r1));
+    if (hi - lo > 40) { const c = Math.round(isFinite(centro) ? Math.min(Math.max(centro, lo), hi) : (lo + hi) / 2); lo = Math.max(lo, c - 20); hi = lo + 40; }
+    const G = (k) => (D.cola ? D.cola(P, k) : 1 - D.cdf(P, k - 1));
+    const filas = []; for (let k = lo; k <= hi; k++) { const b = (x) => (enEv(k) ? `<b>${x}</b>` : x); filas.push(`<tr><td>${b(k)}</td><td>${b(prob(D.pmf(P, k)))}</td><td>${prob(D.cdf(P, k))}</td><td>${prob(G(k))}</td></tr>`); }
+    return `<div class="tabla-scroll"><table class="tabla"><thead><tr><th>k</th><th>P(X = k)</th><th>P(X ≤ k)</th><th>P(X ≥ k)</th></tr></thead><tbody>${filas.join('')}</tbody></table></div><button type="button" class="btn" data-copiar>Copiar la tabla</button>`;
+  }
+
+  // probabilidad aproximada de a ≤ X ≤ b por una normal con la corrección de continuidad
+  const porNormal = (m, s, a, b) => (isFinite(b) ? Phi((b + 0.5 - m) / s) : 1) - (isFinite(a) ? Phi((a - 0.5 - m) / s) : 0);
+  const intervalo = (a, b) => `${isFinite(a) ? `${num(a)} ≤ X` : 'X'}${isFinite(b) ? ` ≤ ${num(b)}` : ''}`;
+
+  function calcular(sc) {
+    const d = DIST[sc.dist] ? sc.dist : 'normal', D = DIST[d];
+    const lista = tipos(d), tipo = lista.some(([k]) => k === sc.tipo) ? sc.tipo : lista[0][0];
+    const incog = tipo === 'inverso' ? (sc.incog === 'sigma' ? 'sigma' : 'mu') : null, P = {}, pasos = [];
+    for (const [k, nom, op] of D.params) if (k !== incog) P[k] = lee(sc, k, nom.toLowerCase(), op);
+    const malo = D.valida?.(P); if (malo) throw new Error(malo);
+    const inv = incog ? inverso(sc, P, incog, pasos) : null;
+    const { media, varianza } = D.momentos(P), X = D.nombreX;
+    pasos.push({ t: 'Distribución', html: `${X} ~ ${D.etiqueta(P)}: media ${isNaN(media) ? 'no definida' : num(media)}, varianza ${isNaN(varianza) ? 'no definida' : num(varianza)}${isFinite(varianza) ? `, desviación típica ${num(Math.sqrt(varianza))}` : ''}` });
+    const r = { dist: d, tipo, P, media, varianza, pasos };
+    const leeC = () => { if (!isFinite(media)) throw new Error('Esta distribución no tiene media: no se puede medir la distancia a ella'); return lee(sc, 'cc', 'la distancia c', { min: 0 }); };
+    const cheb = (c) => (isFinite(varianza) && c > Math.sqrt(varianza) ? `<br>Para comparar, la desigualdad de Chebyshev asegura al menos 1 − σ²/c² = 1 − ${num(varianza)}/${num(c)}<sup>2</sup> = ${prob(1 - varianza / (c * c))} para cualquier distribución.` : '');
+    if (D.continua) {
+      const F = (x) => D.cdf(P, x), S = (x) => (D.sf ? D.sf(P, x) : 1 - D.cdf(P, x)), nota = D.nota ? ` &nbsp;(${D.nota(P)})` : '';
+      if (inv) {
+        Object.assign(r, { p: inv.q, a: inv.a, incog, valor: P[incog], sombra: inv.mayor ? [inv.a, Infinity] : [-Infinity, inv.a] });
+        pasos.push({ t: 'Comprobación', html: `Con ${incog === 'mu' ? `μ = ${num(P.mu)}` : `σ = ${num(P.sigma)}`}, P(X ${inv.mayor ? '≥' : '≤'} ${num(inv.a)}) = ${prob(inv.mayor ? S(inv.a) : F(inv.a))}` });
+      } else if (tipo === 'menor' || tipo === 'mayor') {
+        const a = lee(sc, 'a', 'el valor a');
+        const pa = F(a), res = tipo === 'menor' ? pa : S(a);
+        const zz = d === 'normal' ? (a - P.mu) / P.sigma : null;
+        pasos.push({ t: tipo === 'menor' ? `P(${X} ≤ ${num(a)})` : `P(${X} ≥ ${num(a)})`, html: d === 'normal'
+          ? `Tipificando, Z = (X − μ)/σ = (${num(a)} − ${num(P.mu)})/${num(P.sigma)} = ${num(zz)}<br>${tipo === 'menor' ? `P(Z ≤ ${num(zz)}) = Φ(${num(zz)})` : `P(Z ≥ ${num(zz)}) = 1 − Φ(${num(zz)})${zz < 0 ? ` = Φ(${num(-zz)})` : ''}`} = <b>${prob(res)}</b>`
+          : `${tipo === 'menor' ? `F(${num(a)})` : `1 − F(${num(a)}) = 1 − ${prob(pa)}`} = <b>${prob(res)}</b>${nota}` });
+        pasos.push({ t: 'En una distribución continua', html: `P(${X} = a) = 0, así que da igual escribir ≤ o &lt; (y ≥ o &gt;).` });
+        Object.assign(r, { p: res, a, sombra: tipo === 'menor' ? [-Infinity, a] : [a, Infinity] });
+      } else if (tipo === 'entre' || tipo === 'centro') {
+        let a, b, c = null;
+        if (tipo === 'centro') { c = leeC(); a = media - c; b = media + c; } else { a = lee(sc, 'a', 'el valor a'); b = lee(sc, 'b', 'el valor b'); }
+        if (b < a) throw new Error('b tiene que ser mayor o igual que a');
+        // en la cola derecha se resta con S para no perder cifras
+        const res = a > media ? S(a) - S(b) : F(b) - F(a), za = d === 'normal' ? (a - P.mu) / P.sigma : 0, zb = d === 'normal' ? (b - P.mu) / P.sigma : 0;
+        const tit = tipo === 'centro' ? `P(|${X} − μ| ≤ ${num(c)}) = P(${num(a)} ≤ ${X} ≤ ${num(b)})` : `P(${num(a)} ≤ ${X} ≤ ${num(b)}) = F(${num(b)}) − F(${num(a)})`;
+        pasos.push({ t: tit, html: (d === 'normal'
+          ? (tipo === 'centro' ? `P(−${num(zb)} ≤ Z ≤ ${num(zb)}) = 2Φ(${num(zb)}) − 1 = 2·${prob(Phi(zb))} − 1 = <b>${prob(res)}</b>` : `Z<sub>a</sub> = ${num(za)}, &nbsp;Z<sub>b</sub> = ${num(zb)}<br>Φ(${num(zb)}) − Φ(${num(za)}) = ${prob(F(b))} − ${prob(F(a))} = <b>${prob(res)}</b>`)
+          : `F(${num(b)}) − F(${num(a)}) = ${prob(F(b))} − ${prob(F(a))} = <b>${prob(res)}</b>${nota}`) + (c !== null ? cheb(c) : '') });
+        Object.assign(r, { p: res, a, b, c, sombra: [a, b] });
+      } else if (tipo === 'cuantil') {
+        const p = probCuantil(sc, D), x = cuantil(D, P, p);
+        let h = `Se busca a con P(${X} ≤ a) = ${num(p)}`;
+        if (d === 'normal') { const zq = cuantil(DIST.normal, N01, p); h += `.<br>En la normal tipificada, Φ(z) = ${num(p)} ⇒ z = ${num(zq)}.<br>Destipificando, a = μ + zσ = ${num(P.mu)} + ${num(zq)}·${num(P.sigma)} = <b>${num(x)}</b>`; }
+        else if (D.invTxt) h += `: ${D.invTxt()} = <b>${num(x)}</b>`;
+        else h += `: a = <b>${num(x)}</b>`;
+        pasos.push({ t: 'Cuantil', html: h });
+        Object.assign(r, { p, x, sombra: [-Infinity, x] });
+      } else {
+        const alfa = lee(sc, 'alfa', 'el nivel de significación α', { min: 0, minEx: true, max: 1, maxEx: true }), bil = tipo === 'critico';
+        const Q = d === 'normal' ? N01 : P, nor = d === 'normal', k = nor ? P.sigma : 1, m0 = nor ? P.mu : 0;
+        const nom = nor ? 'z' : D.critico(P), V = nor ? 'Z' : X, enX = (c) => (nor && (P.mu !== 0 || P.sigma !== 1) ? `<br>En X: μ ${bil ? '±' : '+'} cσ = ${bil ? `${num(P.mu - c * P.sigma)} y ` : ''}${num(P.mu + c * P.sigma)}` : '');
+        if (bil && D.simetrica) {
+          const c = cuantil(D, Q, 1 - alfa / 2);
+          pasos.push({ t: 'Valor crítico bilateral', html: `Se busca c con P(−c ≤ ${V} ≤ c) = 1 − α = ${num(1 - alfa)}: cada cola deja α/2 = ${num(alfa / 2)}, así que P(${V} ≤ c) = ${num(1 - alfa / 2)}.<br>${nor ? 'z' : 't'}<sub>α/2</sub> = <b>±${num(c)}</b>${enX(c)}` });
+          Object.assign(r, { p: 1 - alfa, alfa, c, sombra: [m0 - c * k, m0 + c * k] });
+        } else if (bil) {
+          const c1 = cuantil(D, Q, alfa / 2), c2 = cuantil(D, Q, 1 - alfa / 2);
+          pasos.push({ t: 'Valores críticos bilaterales', html: `${D.nombreX === 'F' ? 'La F' : 'La χ²'} no es simétrica: hacen falta dos valores, uno que deja α/2 = ${num(alfa / 2)} a la izquierda y otro que deja α/2 a la derecha.<br>c₁ = ${nom}<sub>; 1−α/2</sub> = <b>${num(c1)}</b> &nbsp;(P(${X} ≤ c₁) = ${num(alfa / 2)})<br>c₂ = ${nom}<sub>; α/2</sub> = <b>${num(c2)}</b> &nbsp;(P(${X} ≥ c₂) = ${num(alfa / 2)})${d === 'f' ? `<br>Se cumple c₁ = 1/F<sub>${num(P.d2)}, ${num(P.d1)}; α/2</sub>, como en las tablas.` : ''}` });
+          Object.assign(r, { p: 1 - alfa, alfa, c: c2, c1, sombra: [c1, c2] });
+        } else {
+          const c = cuantil(D, Q, 1 - alfa);
+          pasos.push({ t: 'Valor crítico unilateral', html: `Toda α va a la cola derecha: se busca c con P(${V} ≥ c) = α = ${num(alfa)}, es decir P(${V} ≤ c) = ${num(1 - alfa)}.<br>${nom}<sub>${nor ? '' : '; '}α</sub> = <b>${num(c)}</b>${D.simetrica ? `<br>Para la cola izquierda, por simetría: −${num(c)}.` : d === 'f' ? `<br>Para la cola izquierda, F<sub>${num(P.d1)}, ${num(P.d2)}; 1−α</sub> = 1/F<sub>${num(P.d2)}, ${num(P.d1)}; α</sub> = ${num(cuantil(D, P, alfa))}.` : `<br>Para la cola izquierda (P(${X} ≤ c) = α): ${num(cuantil(D, P, alfa))}.`}${enX(c)}` });
+          Object.assign(r, { p: alfa, alfa, c, sombra: [m0 + c * k, Infinity] });
+        }
+      }
+    } else {
+      const f = (k) => D.pmf(P, k), F = (k) => D.cdf(P, k), G = (k) => (D.cola ? D.cola(P, k) : 1 - F(k - 1));
+      pasos.push({ t: 'Función de probabilidad', html: D.general(P) });
+      const entero = (k, nom) => lee(sc, k, nom, { entero: true }), [s0, s1] = D.soporte ? D.soporte(P) : [0, Infinity];
+      const detalle = (k0, k1) => {
+        // suma término a término si son pocos
+        k0 = Math.max(k0, s0); k1 = Math.min(k1, s1);
+        if (k1 - k0 > 6 || k1 < k0) return '';
+        return '<br>' + Array.from({ length: k1 - k0 + 1 }, (_, i) => k0 + i).map((k) => `${D.formula(P, k)} = ${prob(f(k))}`).join('<br>');
+      };
+      let a, b, res, desc;
+      if (tipo === 'igual') { a = b = entero('a', 'el valor k'); res = f(a); desc = `P(X = ${a})`; pasos.push({ t: desc, html: `${a < s0 || a > s1 ? `${desc} = 0, porque X no puede valer ${a}` : `${D.formula(P, a)} = <b>${prob(res)}</b>`}` }); }
+      else if (tipo === 'entre' || tipo === 'centro') {
+        if (tipo === 'centro') { const c = leeC(); a = Math.ceil(media - c - 1e-9); b = Math.floor(media + c + 1e-9); r.c = c; desc = `P(|X − μ| ≤ ${num(c)}) = P(${num(media - c)} ≤ X ≤ ${num(media + c)}) = P(${a} ≤ X ≤ ${b})`; }
+        else { a = entero('a', 'el valor a'); b = entero('b', 'el valor b'); desc = `P(${a} ≤ X ≤ ${b})`; }
+        if (b < a) throw new Error(tipo === 'centro' ? 'No hay ningún valor entero a esa distancia de la media' : 'b tiene que ser mayor o igual que a');
+        res = a > media ? G(a) - G(b + 1) : F(b) - F(a - 1);
+        pasos.push({ t: desc, html: `= P(X ≤ ${b}) − P(X ≤ ${a - 1}) = ${prob(F(b))} − ${prob(F(a - 1))} = <b>${prob(res)}</b>${detalle(a, b)}${tipo === 'centro' ? cheb(r.c) : ''}` });
+      } else if (tipo === 'cuantil') {
+        const p = probCuantil(sc, D);
+        let k = Math.max(s0, Math.floor(D.rango(P)[0]));
+        while (F(k) < p && k < 1e7) k++;
+        while (k > s0 && F(k - 1) >= p) k--;
+        pasos.push({ t: 'Cuantil', html: `P(X ≤ ${k - 1}) = ${prob(F(k - 1))} &lt; ${num(p)} y P(X ≤ ${k}) = ${prob(F(k))} ≥ ${num(p)} ⇒ k = <b>${k}</b>` });
+        pasos.push({ t: 'Tabla de valores', html: tabla(D, P, (j) => j <= k, k) });
+        Object.assign(r, { p, x: k, sombra: [-Infinity, k], discreta: true });
+        return terminar(D, r);
+      } else {
+        a = entero('a', 'el valor k');
+        const T = { menor: [-Infinity, a, `P(X ≤ ${a})`], menorE: [-Infinity, a - 1, `P(X < ${a}) = P(X ≤ ${a - 1})`], mayor: [a, Infinity, `P(X ≥ ${a}) = 1 − P(X ≤ ${a - 1})`], mayorE: [a + 1, Infinity, `P(X > ${a}) = 1 − P(X ≤ ${a})`] }[tipo];
+        [a, b, desc] = T;
+        res = isFinite(b) ? F(b) : G(a);
+        const cuerpo = isFinite(b) ? `${b < 0 ? '' : `= Σ<sub>k=${s0}</sub><sup>${b}</sup> P(X = k) `}= <b>${prob(res)}</b>${b >= 0 ? detalle(0, b) : ''}` : `= 1 − ${prob(F(a - 1))} = <b>${prob(res)}</b>${a - 1 >= 0 ? detalle(0, a - 1) : ''}`;
+        pasos.push({ t: desc, html: cuerpo });
+      }
+      // aproximaciones de clase
+      const ev = intervalo(a, b);
+      if (d === 'binomial' && P.n * P.p >= 5 && P.n * (1 - P.p) >= 5) {
+        const s = Math.sqrt(varianza);
+        pasos.push({ t: 'Aproximación por la normal (np ≥ 5 y nq ≥ 5)', html: `X ≈ N(np, √(npq)) = N(${num(media)}, ${num(s)}), con la corrección de continuidad (±0,5): ${intervalo(a - 0.5, b + 0.5)} ⇒ ≈ ${prob(porNormal(media, s, a, b))} (exacta: ${prob(res)})` });
+      }
+      if (d === 'binomial' && P.n >= 30 && P.p <= 0.1) {
+        const L = { lambda: media }, Po = DIST.poisson, ap = (isFinite(b) ? Po.cdf(L, b) : 1) - (isFinite(a) ? Po.cdf(L, a - 1) : 0);
+        pasos.push({ t: 'Aproximación por la Poisson (n ≥ 30 y p ≤ 0,1)', html: `X ≈ P(λ = np = ${num(media)}): P(${ev}) ≈ ${prob(ap)} (exacta: ${prob(res)})` });
+      }
+      if (d === 'poisson' && P.lambda >= 10) {
+        const s = Math.sqrt(P.lambda);
+        pasos.push({ t: 'Aproximación por la normal (λ ≥ 10)', html: `X ≈ N(λ, √λ) = N(${num(P.lambda)}, ${num(s)}), con la corrección de continuidad (±0,5): ${intervalo(a - 0.5, b + 0.5)} ⇒ ≈ ${prob(porNormal(P.lambda, s, a, b))} (exacta: ${prob(res)})` });
+      }
+      pasos.push({ t: 'Tabla de valores', html: tabla(D, P, (k) => k >= a && k <= b, isFinite(a) ? a : b) });
+      Object.assign(r, { p: res, a, b, sombra: [a, b], discreta: true });
+    }
+    return terminar(D, r);
+  }
+  function terminar(D, r) {
+    r.res = r.tipo === 'inverso' ? `${r.incog === 'mu' ? 'μ' : 'σ'} = ${num(r.valor)}` : r.tipo === 'cuantil' ? `${r.discreta ? 'k' : 'a'} = ${num(r.x)}` : r.tipo === 'critico' ? (r.c1 !== undefined ? `c₁ = ${num(r.c1)}, c₂ = ${num(r.c)}` : `c = ±${num(r.c)}`) : r.tipo === 'criticoU' ? `c = ${num(r.c)}` : `P = ${prob(r.p)}`;
+    r.pct = ['cuantil', 'critico', 'criticoU', 'inverso'].includes(r.tipo) ? '' : `${num(100 * r.p, 4, 0)} %`;
+    return r;
+  }
+
+  const ejemplos = [
+    { clave: 'normal-menor', nombre: 'Normal: P(X ≤ 52) con N(50, 5)', sc: { dist: 'normal', mu: '50', sigma: '5', tipo: 'menor', a: '52' } },
+    { clave: 'normal-entre', nombre: 'Normal: P(μ − σ ≤ X ≤ μ + σ)', sc: { dist: 'normal', mu: '0', sigma: '1', tipo: 'entre', a: '-1', b: '1' } },
+    { clave: 'normal-centro', nombre: 'Normal: cociente intelectual a menos de 15 puntos de la media', sc: { dist: 'normal', mu: '100', sigma: '15', tipo: 'centro', cc: '15' } },
+    { clave: 'normal-cuantil', nombre: 'Normal: nota que supera el 90 %', sc: { dist: 'normal', mu: '6', sigma: '1.5', tipo: 'cuantil', q: '0.9' } },
+    { clave: 'normal-inverso', nombre: 'Normal: qué σ hace que solo el 5 % pase de 80', sc: { dist: 'normal', mu: '70', sigma: '5', tipo: 'inverso', incog: 'sigma', cola: 'mayor', a: '80', q: '0.05' } },
+    { clave: 'z-critico', nombre: 'Valor crítico z para α = 0,05', sc: { dist: 'normal', mu: '0', sigma: '1', tipo: 'critico', alfa: '0.05' } },
+    { clave: 'z-unilateral', nombre: 'Valor crítico unilateral z para α = 0,05', sc: { dist: 'normal', mu: '0', sigma: '1', tipo: 'criticoU', alfa: '0.05' } },
+    { clave: 't-critico', nombre: 't de Student: valor crítico con 10 g. l.', sc: { dist: 't', nu: '10', tipo: 'critico', alfa: '0.05' } },
+    { clave: 'chi2', nombre: 'χ² con 5 g. l.: P(χ² ≥ 11,07)', sc: { dist: 'chi2', k: '5', tipo: 'mayor', a: '11.07' } },
+    { clave: 'chi2-critico', nombre: 'χ² con 10 g. l.: los dos valores críticos', sc: { dist: 'chi2', k: '10', tipo: 'critico', alfa: '0.05' } },
+    { clave: 'f-critico', nombre: 'F de Snedecor: valor crítico F(5, 10)', sc: { dist: 'f', d1: '5', d2: '10', tipo: 'criticoU', alfa: '0.05' } },
+    { clave: 'exponencial', nombre: 'Exponencial: dura más de 3 horas', sc: { dist: 'exponencial', lambda: '0.5', tipo: 'mayor', a: '3' } },
+    { clave: 'uniforme', nombre: 'Uniforme: esperar más de 7 minutos entre 0 y 10', sc: { dist: 'uniforme', lo: '0', hi: '10', tipo: 'mayor', a: '7' } },
+    { clave: 'binomial-igual', nombre: 'Binomial: 3 caras en 10 lanzamientos', sc: { dist: 'binomial', n: '10', p: '0.5', tipo: 'igual', a: '3' } },
+    { clave: 'binomial-menor', nombre: 'Binomial: como mucho 2 defectuosas', sc: { dist: 'binomial', n: '20', p: '0.05', tipo: 'menor', a: '2' } },
+    { clave: 'binomial-normal', nombre: 'Binomial grande y su aproximación normal', sc: { dist: 'binomial', n: '100', p: '0.3', tipo: 'entre', a: '25', b: '35' } },
+    { clave: 'binomial-poisson', nombre: 'Binomial con p pequeña y su aproximación de Poisson', sc: { dist: 'binomial', n: '200', p: '0.02', tipo: 'menor', a: '3' } },
+    { clave: 'poisson', nombre: 'Poisson: al menos 2 llamadas', sc: { dist: 'poisson', lambda: '3', tipo: 'mayor', a: '2' } },
+    { clave: 'poisson-normal', nombre: 'Poisson con λ grande y su aproximación normal', sc: { dist: 'poisson', lambda: '25', tipo: 'entre', a: '20', b: '30' } },
+    { clave: 'geometrica', nombre: 'Geométrica: 3 fallos antes del primer acierto', sc: { dist: 'geometrica', p: '0.2', tipo: 'igual', a: '3' } },
+    { clave: 'hipergeometrica', nombre: 'Hipergeométrica: 2 defectuosas al sacar 4 de 20', sc: { dist: 'hipergeometrica', N: '20', K: '5', n: '4', tipo: 'igual', a: '2' } },
+  ];
+
+  /* ---------- Ejercicios al azar (modo práctica) ---------- */
+  // devuelve { sc, enunciado } con números de clase; r = generador de números al azar
+  function ejercicio(r = Math.random) {
+    const ent = (a, b) => a + Math.floor(r() * (b - a + 1)), de = (l) => l[ent(0, l.length - 1)], c = (x) => String(+x.toFixed(3)).replace('.', ',');
+    const T = [
+      () => { const mu = ent(5, 7), s = de([1, 1.5, 2]), a = c(mu + de([-1.5, -1, -0.5, 0.5, 1, 1.5, 2])); return { sc: { dist: 'normal', mu: String(mu), sigma: c(s), tipo: 'menor', a }, enunciado: `Las notas de un examen siguen una normal de media ${mu} y desviación típica ${c(s)}. ¿Qué proporción de alumnos saca menos de ${a}?` }; },
+      () => { const mu = ent(20, 60) * 10, s = ent(2, 6) * 5, a = String(mu + ent(1, 4) * 5); return { sc: { dist: 'normal', mu: String(mu), sigma: String(s), tipo: 'mayor', a }, enunciado: `El peso de unas piezas sigue una normal de media ${mu} g y desviación típica ${s} g. ¿Qué probabilidad hay de que una pieza pese más de ${a} g?` }; },
+      () => { const mu = ent(160, 180), s = ent(5, 10), a = mu - ent(2, 10), b = mu + ent(2, 10); return { sc: { dist: 'normal', mu: String(mu), sigma: String(s), tipo: 'entre', a: String(a), b: String(b) }, enunciado: `La estatura de los alumnos sigue una normal N(${mu}, ${s}) en cm. ¿Qué porcentaje mide entre ${a} y ${b} cm?` }; },
+      () => { const mu = ent(5, 7), s = de([1, 1.5, 2]), q = de([0.8, 0.9, 0.95]); return { sc: { dist: 'normal', mu: String(mu), sigma: c(s), tipo: 'cuantil', q: c(q) }, enunciado: `Las notas siguen una normal N(${mu}; ${c(s)}). ¿Qué nota hay que sacar para estar por encima del ${Math.round(100 * q)} % de la clase?` }; },
+      () => { const mu = ent(50, 100) * 10, a = mu + ent(2, 6) * 5, q = de([0.01, 0.02, 0.05]); return { sc: { dist: 'normal', mu: String(mu), sigma: '10', tipo: 'inverso', incog: 'sigma', cola: 'mayor', a: String(a), q: c(q) }, enunciado: `Una máquina llena botellas con una media de ${mu} ml. ¿Qué desviación típica puede tener como mucho para que solo el ${Math.round(100 * q)} % de las botellas pase de ${a} ml?` }; },
+      () => { const p = de([0.05, 0.1, 0.2, 0.25, 0.3]), n = ent(8, 20), k = ent(0, Math.min(4, n)); return { sc: { dist: 'binomial', n: String(n), p: c(p), tipo: 'igual', a: String(k) }, enunciado: `El ${Math.round(100 * p)} % de las piezas de una fábrica es defectuoso. Si se eligen ${n} piezas al azar, ¿qué probabilidad hay de que exactamente ${k} sean defectuosas?` }; },
+      () => { const p = de([0.05, 0.1, 0.2]), n = ent(10, 25), k = ent(1, 3); return { sc: { dist: 'binomial', n: String(n), p: c(p), tipo: 'menor', a: String(k) }, enunciado: `Un examen tipo test tiene ${n} preguntas y la probabilidad de acertar una al azar es ${c(p)}. ¿Qué probabilidad hay de acertar como mucho ${k}?` }; },
+      () => { const l = ent(2, 8), k = ent(1, 4); return { sc: { dist: 'poisson', lambda: String(l), tipo: 'mayor', a: String(k) }, enunciado: `A una centralita llegan de media ${l} llamadas por minuto (Poisson). ¿Qué probabilidad hay de que en un minuto lleguen al menos ${k}?` }; },
+      () => { const m = ent(2, 10), t = ent(1, 12); return { sc: { dist: 'exponencial', lambda: c(1 / m), tipo: 'mayor', a: String(t) }, enunciado: `La duración de una bombilla sigue una exponencial con media ${m} años (λ = 1/${m}). ¿Qué probabilidad hay de que dure más de ${t} años?` }; },
+      () => { const nu = ent(5, 30), a = de([0.01, 0.05, 0.1]); return { sc: { dist: 't', nu: String(nu), tipo: 'critico', alfa: c(a) }, enunciado: `Halla el valor crítico bilateral de la t de Student con ${nu} grados de libertad para α = ${c(a)}.` }; },
+      () => { const k = ent(3, 20), a = de([0.01, 0.05, 0.1]); return { sc: { dist: 'chi2', k: String(k), tipo: 'criticoU', alfa: c(a) }, enunciado: `Halla el valor de la χ² con ${k} grados de libertad que deja ${c(a)} a su derecha.` }; },
+      () => { const N = ent(15, 30), K = ent(3, 8), n = ent(3, 6), k = ent(0, Math.min(2, K)); return { sc: { dist: 'hipergeometrica', N: String(N), K: String(K), n: String(n), tipo: 'igual', a: String(k) }, enunciado: `En una caja hay ${N} bombillas y ${K} están fundidas. Se sacan ${n} sin devolverlas. ¿Qué probabilidad hay de sacar exactamente ${k} fundidas?` }; },
+    ];
+    return de(T)();
+  }
+
+  return { DIST, tipos, calcular, ejemplos, ejercicio, Phi, gammaP, gammaQ, betaI, lnGamma, num, prob, cuantil, fCdf };
+})();
+
+/* =====================================================================
+   χ² de bondad de ajuste e independencia (sin DOM). Bondad de ajuste de
+   unas frecuencias observadas a una distribución uniforme, a unas
+   proporciones dadas o a una binomial, Poisson o normal (con los
+   parámetros dados o estimados de los datos, que restan grados de
+   libertad), juntando si se pide las clases con frecuencia esperada menor
+   que 5. Independencia u homogeneidad en una tabla de contingencia, con la
+   corrección de Yates en las 2 × 2 y la V de Cramér. Las distribuciones y
+   sus cuantiles salen de estadistica/calculo.js; formato y lectura en
+   calculadora.js; interfaz en chi2-bondad/app.js.
+   ===================================================================== */
+const Chi2Bondad = (() => {
+  const ES = typeof Estadistica !== 'undefined' ? Estadistica : require('../estadistica/calculo.js');
+  const K = typeof Calculadora !== 'undefined' ? Calculadora : require('../calculadora.js');
+  const { f, lee, lista, filas } = K, D = ES.DIST;
+  const MODOS = { bondad: 'Bondad de ajuste', independencia: 'Independencia u homogeneidad (tabla de contingencia)' };
+  const MODELOS = { uniforme: 'Uniforme (todas las clases igual de probables)', dadas: 'Proporciones dadas', binomial: 'Binomial B(n, p)', poisson: 'Poisson P(λ)', normal: 'Normal N(μ, σ) por intervalos' };
+  const COLUMNAS = { uniforme: 1, dadas: 2, binomial: 2, poisson: 2, normal: 3 };
+  const suma = (v) => v.reduce((a, b) => a + b, 0);
+
+  // filas de la tabla: cuántas columnas tiene la primera fila de números
+  function tabla(texto, nom) {
+    const lin = String(texto ?? '').split(/\r?\n/).map((l) => l.trim()).filter((l) => l && !l.startsWith('#') && !/[a-zñáéíóú]/i.test(l.replace(/e[+-]?\d/gi, '')));
+    if (!lin.length) throw new Error(`Falta ${nom}`);
+    return filas(texto, (/[;\t]/.test(lin[0]) ? lin[0].split(/\s*[;\t]\s*/) : lin[0].split(/\s+/)).filter(Boolean).length, nom);
+  }
+  const frec = (o, nom) => { if (o.some((x) => x < 0 || !Number.isInteger(x))) throw new Error(`Las frecuencias observadas de ${nom} deben ser enteros de 0 en adelante`); };
+
+  /* ---------- Bondad de ajuste: clases { nom, o, p } ---------- */
+  function discretas(sc, modelo) {
+    const t = tabla(sc.datos, 'la tabla de valores x y frecuencias');
+    if (t[0].length !== 2) throw new Error('Escribe en cada fila el valor x y su frecuencia observada');
+    const x = t.map((r) => r[0]), o = t.map((r) => r[1]);
+    frec(o, 'la tabla');
+    if (x.some((v, i) => !Number.isInteger(v) || v < 0 || (i && v !== x[i - 1] + 1))) throw new Error('Los valores x deben ser enteros seguidos de menor a mayor (0, 1, 2…)');
+    const N = suma(o), m = suma(x.map((v, i) => v * o[i])) / N, est = sc.estima !== 'no';
+    let P, Dd, par, estTxt;
+    if (modelo === 'binomial') {
+      const n = lee(sc, 'nb', 'el número de pruebas n', { min: 1, entero: true });
+      if (x[x.length - 1] > n) throw new Error(`Hay valores x mayores que n = ${n}`);
+      const p = est ? m / n : lee(sc, 'pb', 'la probabilidad de éxito p', { min: 0, minEx: true, max: 1, maxEx: true });
+      Dd = D.binomial; P = { n, p }; par = est ? 1 : 0;
+      estTxt = est ? `$x̄ = {∑ x_i O_i}/N = ${f(m * N)}/${N} = ${f(m)}$ y, como la media de una binomial es $n p$, $p̂ = x̄/n = ${f(m)}/${n} = ${f(p)}$` : '';
+    } else {
+      const l = est ? m : lee(sc, 'lambda', 'la media λ', { min: 0, minEx: true });
+      Dd = D.poisson; P = { lambda: l }; par = est ? 1 : 0;
+      estTxt = est ? `La media de una Poisson es λ: $λ̂ = x̄ = {∑ x_i O_i}/N = ${f(m * N)}/${N} = ${f(l)}$` : '';
+    }
+    if (!(est ? P.p ?? P.lambda : 1) && est) throw new Error('Con todas las frecuencias en x = 0 no se puede estimar el parámetro');
+    const ult = x.length - 1, hasta = modelo === 'binomial' ? P.n : Infinity;
+    const cl = x.map((v, i) => {
+      const abajo = i === 0 && v > 0, arriba = i === ult && v < hasta;
+      const p = abajo ? Dd.cdf(P, v) : arriba ? Dd.cola(P, v) : Dd.pmf(P, v);
+      return { lo: abajo ? -Infinity : v, hi: arriba ? Infinity : v, o: o[i], p };
+    });
+    if (cl.length === 1) cl[0].p = 1;
+    const nomD = modelo === 'binomial' ? `B(${P.n}, ${f(P.p)})` : `P(${f(P.lambda)})`;
+    return { cl, N, par, Dd, P, nomD, estTxt, nomCl: (c) => c.lo === c.hi ? `x = ${c.lo}` : c.lo === -Infinity ? `x ≤ ${c.hi}` : c.hi === Infinity ? `x ≥ ${c.lo}` : `x = ${c.lo}–${c.hi}`, formP: (c) => c.lo === c.hi ? `P(X = ${c.lo})` : c.lo === -Infinity ? `P(X ≤ ${c.hi})` : c.hi === Infinity ? `P(X ≥ ${c.lo})` : `P(${c.lo} ≤ X ≤ ${c.hi})` };
+  }
+  function normal(sc) {
+    const t = tabla(sc.datos, 'la tabla de intervalos y frecuencias');
+    if (t[0].length !== 3) throw new Error('Escribe en cada fila el extremo inferior, el superior y la frecuencia observada del intervalo');
+    const o = t.map((r) => r[2]);
+    frec(o, 'la tabla');
+    t.forEach((r, i) => { if (!(r[1] > r[0])) throw new Error(`En la fila ${i + 1}, el extremo superior debe ser mayor que el inferior`); if (i && Math.abs(r[0] - t[i - 1][1]) > 1e-9) throw new Error(`Los intervalos deben ir seguidos: la fila ${i + 1} empieza en ${f(r[0])} y la anterior acaba en ${f(t[i - 1][1])}`); });
+    const N = suma(o), mc = t.map((r) => (r[0] + r[1]) / 2), est = sc.estima !== 'no';
+    const mu = est ? suma(mc.map((v, i) => v * o[i])) / N : lee(sc, 'mu', 'la media μ');
+    const sigma = est ? Math.sqrt(suma(mc.map((v, i) => o[i] * (v - mu) ** 2)) / N) : lee(sc, 'sigma', 'la desviación típica σ', { min: 0, minEx: true });
+    if (!(sigma > 0)) throw new Error('Todos los datos están en un solo intervalo: no se puede estimar σ');
+    const P = { mu, sigma }, ult = t.length - 1;
+    const cl = t.map((r, i) => ({ lo: i === 0 ? -Infinity : r[0], hi: i === ult ? Infinity : r[1], o: o[i] }));
+    for (const c of cl) c.p = (c.hi === Infinity ? 1 : D.normal.cdf(P, c.hi)) - (c.lo === -Infinity ? 0 : D.normal.cdf(P, c.lo));
+    return { cl, N, par: est ? 2 : 0, Dd: D.normal, P, nomD: `N(${f(mu)}, ${f(sigma)})`,
+      estTxt: est ? `Con las marcas de clase $m_i$: $μ̂ = x̄ = {∑ m_i O_i}/N = ${f(mu)}$ y $σ̂ = √({∑ O_i (m_i − x̄)^2}/N) = ${f(sigma)}$` : '',
+      nomCl: (c) => c.lo === -Infinity && c.hi === Infinity ? 'todo' : c.lo === -Infinity ? `x < ${f(c.hi)}` : c.hi === Infinity ? `x ≥ ${f(c.lo)}` : `${f(c.lo)}–${f(c.hi)}`,
+      formP: (c) => c.lo === -Infinity ? `P(X < ${f(c.hi)})` : c.hi === Infinity ? `P(X ≥ ${f(c.lo)})` : `P(${f(c.lo)} ≤ X < ${f(c.hi)})` };
+  }
+  function sencillas(sc, modelo) {
+    let o, w;
+    if (modelo === 'uniforme') { o = lista(sc.datos, 'las frecuencias observadas'); w = o.map(() => 1); }
+    else { const t = tabla(sc.datos, 'la tabla de frecuencias y proporciones'); if (t[0].length !== 2) throw new Error('Escribe en cada fila la frecuencia observada y la proporción esperada de la clase'); o = t.map((r) => r[0]); w = t.map((r) => r[1]); }
+    frec(o, 'las clases');
+    if (w.some((v) => !(v > 0))) throw new Error('Las proporciones esperadas deben ser mayores que 0');
+    const W = suma(w), N = suma(o);
+    return { cl: o.map((v, i) => ({ lo: i + 1, hi: i + 1, o: v, p: w[i] / W })), N, par: 0, nomD: modelo === 'uniforme' ? 'uniforme' : 'las proporciones dadas', estTxt: '', W, w,
+      nomCl: (c) => c.lo === c.hi ? `Clase ${c.lo}` : `Clases ${c.lo}–${c.hi}`, formP: (c) => modelo === 'uniforme' ? `1/${o.length}` : c.lo === c.hi ? `${f(w[c.lo - 1])}/${f(W)}` : `p_{${c.lo}–${c.hi}}` };
+  }
+  // junta la clase con menor frecuencia esperada (si es menor que 5) con su vecina más pequeña
+  function agrupa(cl, N) {
+    const out = cl.map((c) => ({ ...c })); let junto = false;
+    for (;;) {
+      if (out.length < 2) break;
+      let i = -1; out.forEach((c, j) => { if (N * c.p < 5 && (i < 0 || c.p < out[i].p)) i = j; });
+      if (i < 0) break;
+      const j = i === 0 ? 1 : i === out.length - 1 ? i - 1 : out[i - 1].p <= out[i + 1].p ? i - 1 : i + 1, [a, b] = [Math.min(i, j), Math.max(i, j)];
+      out.splice(a, 2, { lo: out[a].lo, hi: out[b].hi, o: out[a].o + out[b].o, p: out[a].p + out[b].p, junta: true });
+      junto = true;
+    }
+    return { cl: out, junto };
+  }
+
+  // la cola derecha de la χ²
+  function decide(chi, gl, alfa) {
+    const P = { k: gl }, crit = ES.cuantil(D.chi2, P, 1 - alfa), pv = D.chi2.sf(P, chi);
+    return { crit, pv, rechaza: chi > crit };
+  }
+  const sumaTxt = (t) => (t.length > 4 ? [...t.slice(0, 2), '…', t[t.length - 1]] : t).join(' + ');
+
+  function bondad(sc, alfa) {
+    const modelo = MODELOS[sc.modelo] ? sc.modelo : 'uniforme';
+    const r = modelo === 'normal' ? normal(sc) : modelo === 'binomial' || modelo === 'poisson' ? discretas(sc, modelo) : sencillas(sc, modelo);
+    if (!(r.N > 0)) throw new Error('El total de observaciones debe ser mayor que 0');
+    let cl = r.cl, junto = false;
+    if (sc.agrupa === 'si') ({ cl, junto } = agrupa(cl, r.N));
+    const celdas = cl.map((c) => { const e = r.N * c.p; return { nom: r.nomCl(c), o: c.o, e, c: (c.o - e) ** 2 / e, p: c.p, fp: r.formP(c), junta: c.junta }; });
+    const chi = suma(celdas.map((c) => c.c)), gl = celdas.length - 1 - r.par;
+    if (gl < 1) throw new Error(`Quedan ${celdas.length} clases y ${r.par ? `se estiman ${r.par} parámetros` : 'ningún parámetro estimado'}: no hay grados de libertad. Hacen falta más clases${junto ? ' (prueba sin juntar las de frecuencia esperada pequeña)' : ''}`);
+    const pocos = celdas.filter((c) => c.e < 5).length, { crit, pv, rechaza } = decide(chi, gl, alfa);
+    const h0 = modelo === 'uniforme' ? 'todas las clases son igual de probables' : modelo === 'dadas' ? 'las proporciones son las dadas' : `los datos siguen una ${{ binomial: 'binomial', poisson: 'Poisson', normal: 'normal' }[modelo]}${r.par ? '' : ` ${r.nomD}`}`;
+    const pasos = [];
+    pasos.push({ t: 'Hipótesis', html: `$H_0$: ${h0}, frente a $H_1$: no ${modelo === 'uniforme' || modelo === 'dadas' ? 'es así' : 'la siguen'}; con $α = ${f(alfa)}$ y $N = ${r.N}$ observaciones.` });
+    if (r.estTxt) pasos.push({ t: 'Parámetros estimados', html: `${r.estTxt}. Se ajusta a una ${r.nomD}; cada parámetro estimado resta un grado de libertad.` });
+    const ej = celdas.slice(0, 3).map((c) => `$E = N · ${c.fp} = ${r.N} · ${f(c.p)} = ${f(c.e)}$`).join('<br>');
+    pasos.push({ t: 'Frecuencias esperadas', html: `$E_i = N p_i$, con $p_i$ la probabilidad de cada clase si $H_0$ es cierta${modelo === 'normal' ? ' (el primer intervalo se alarga hasta −∞ y el último hasta +∞, para que sumen 1)' : modelo === 'binomial' || modelo === 'poisson' ? ' (la primera y la última clase se quedan con las colas, para que sumen 1)' : ''}:<br>${ej}${celdas.length > 3 ? '<br>y así las demás (en la tabla).' : ''}${junto ? '<br>Se han <b>juntado</b> con su vecina las clases con frecuencia esperada menor que 5.' : ''}${pocos ? `<br><b>Ojo:</b> ${pocos === 1 ? 'una clase tiene' : `${pocos} clases tienen`} frecuencia esperada menor que 5 y la aproximación χ² puede no ser buena${sc.agrupa === 'si' ? '' : ': conviene juntar clases'}.` : ''}` });
+    pasos.push({ t: 'Estadístico de contraste', html: `$χ^2 = ∑ {(O_i − E_i)^2}/{E_i} = ${sumaTxt(celdas.map((c) => `{(${c.o} − ${f(c.e)})^2}/{${f(c.e)}}`))}$<br>$χ^2 = ${sumaTxt(celdas.map((c) => f(c.c)))} = ${f(chi)}$` });
+    pasos.push({ t: 'Grados de libertad', html: `$ν = k − 1 − m = ${celdas.length} − 1${r.par ? ` − ${r.par}` : ''} = ${gl}$, con $k = ${celdas.length}$ clases${r.par ? ` y $m = ${r.par}$ ${r.par === 1 ? 'parámetro estimado' : 'parámetros estimados'}` : ''}.` });
+    return { modo: 'bondad', modelo, celdas, chi, gl, crit, pv, rechaza, pocos, junto, N: r.N, nomD: r.nomD, pasos, h0 };
+  }
+
+  function independencia(sc) {
+    const t = tabla(sc.datos, 'la tabla de contingencia'), r = t.length, c = t[0].length;
+    if (r < 2 || c < 2) throw new Error('La tabla de contingencia necesita al menos 2 filas y 2 columnas');
+    t.forEach((fl) => frec(fl, 'la tabla'));
+    const F = t.map(suma), C = t[0].map((_, j) => suma(t.map((fl) => fl[j]))), N = suma(F);
+    if (F.some((v) => !v) || C.some((v) => !v)) throw new Error('Hay una fila o una columna entera a cero: quítala de la tabla');
+    const yates = sc.yates === 'si' && r === 2 && c === 2, celdas = [];
+    t.forEach((fl, i) => fl.forEach((o, j) => { const e = (F[i] * C[j]) / N, d = yates ? Math.max(0, Math.abs(o - e) - 0.5) : o - e; celdas.push({ nom: `Fila ${i + 1}, columna ${j + 1}`, i, j, o, e, c: (d * d) / e }); }));
+    const chi = suma(celdas.map((x) => x.c)), gl = (r - 1) * (c - 1), pocos = celdas.filter((x) => x.e < 5).length, V = Math.sqrt(chi / (N * (Math.min(r, c) - 1)));
+    const pasos = [];
+    pasos.push({ t: 'Hipótesis', html: `$H_0$: las dos variables son <b>independientes</b> (o, si cada fila es una población, todas tienen las mismas proporciones), frente a $H_1$: hay relación entre ellas; con $α = ${f(alfa(sc))}$.` });
+    pasos.push({ t: 'Frecuencias esperadas', html: `Si son independientes, $E_{ij} = {F_i · C_j}/N$, con $F_i$ y $C_j$ los totales de la fila $i$ y de la columna $j$ y $N = ${N}$:<br>${celdas.slice(0, 2).map((x) => `$E_{${x.i + 1}${x.j + 1}} = {${F[x.i]} · ${C[x.j]}}/${N} = ${f(x.e)}$`).join(', &ensp; ')}, y así las demás (en la tabla).${pocos ? `<br><b>Ojo:</b> ${pocos === 1 ? 'una casilla tiene' : `${pocos} casillas tienen`} frecuencia esperada menor que 5 y la aproximación χ² puede no ser buena.` : ''}` });
+    pasos.push({ t: 'Estadístico de contraste', html: `${yates ? 'En una tabla 2 × 2 se aplica la corrección de Yates: ' : ''}$χ^2 = ∑ {(${yates ? '|O_{ij} − E_{ij}| − 0,5' : 'O_{ij} − E_{ij}'})^2}/{E_{ij}} = ${sumaTxt(celdas.map((x) => yates ? `{(|${x.o} − ${f(x.e)}| − 0,5)^2}/{${f(x.e)}}` : `{(${x.o} − ${f(x.e)})^2}/{${f(x.e)}}`))}$<br>$χ^2 = ${sumaTxt(celdas.map((x) => f(x.c)))} = ${f(chi)}$` });
+    pasos.push({ t: 'Grados de libertad', html: `$ν = (r − 1)(c − 1) = (${r} − 1)(${c} − 1) = ${gl}$, con $r = ${r}$ filas y $c = ${c}$ columnas.` });
+    const dc = decide(chi, gl, alfa(sc));
+    return { modo: 'independencia', celdas, chi, gl, ...dc, pocos, N, t, F, C, V, yates, pasos, h0: 'las variables son independientes' };
+  }
+  const alfa = (sc) => lee(sc, 'alfa', 'el nivel de significación α', { min: 0, minEx: true, max: 0.5, maxEx: true });
+
+  function resolver(sc) {
+    const a = alfa(sc), modo = MODOS[sc.modo] ? sc.modo : 'bondad';
+    const r = modo === 'independencia' ? independencia(sc) : bondad(sc, a);
+    if (modo === 'bondad') Object.assign(r, decide(r.chi, r.gl, a));
+    r.alfa = a;
+    r.pasos.push({ t: 'Región crítica y p-valor', html: `El contraste es siempre por la derecha (cuanto más se alejan las observadas de las esperadas, mayor sale χ²). Con $ν = ${r.gl}$, el valor crítico es $χ^2_{${r.gl}; ${f(1 - a)}} = ${f(r.crit)}$: se rechaza $H_0$ si $χ^2 > ${f(r.crit)}$.<br>$χ^2 = ${f(r.chi)}$ ${r.rechaza ? '<b>cae en la región crítica</b>' : '<b>no cae en la región crítica</b>'}, y el p-valor es $p = P(χ^2_{${r.gl}} ≥ ${f(r.chi)}) = ${f(r.pv)}$, ${r.pv < a ? 'menor' : 'mayor'} que $α$.` });
+    r.pasos.push({ t: 'Conclusión', html: r.rechaza ? `<b>Se rechaza $H_0$</b> con un nivel de significación del ${f(100 * a)} %: ${modo === 'independencia' ? `hay relación entre las dos variables (V de Cramér = ${f(r.V, 3)}, ${r.V < 0.1 ? 'muy débil' : r.V < 0.3 ? 'débil' : r.V < 0.5 ? 'moderada' : 'fuerte'})` : 'los datos no se ajustan al modelo'}.` : `<b>No se rechaza $H_0$</b> con un nivel de significación del ${f(100 * a)} %: ${modo === 'independencia' ? 'los datos no dan pruebas de relación entre las variables' : 'las diferencias entre lo observado y lo esperado se pueden deber al azar, y el modelo es aceptable'}.` });
+    return r;
+  }
+
+  const ejemplos = [
+    { clave: 'dado', nombre: 'Uniforme: ¿está trucado el dado? (120 tiradas)', sc: { modo: 'bondad', modelo: 'uniforme', alfa: '0,05', agrupa: 'no', datos: '12\n16\n20\n18\n22\n32' } },
+    { clave: 'mendel', nombre: 'Proporciones dadas: guisantes de Mendel (9 : 3 : 3 : 1)', sc: { modo: 'bondad', modelo: 'dadas', alfa: '0,05', agrupa: 'no', datos: '315 9\n108 3\n101 3\n32 1' } },
+    { clave: 'coces', nombre: 'Poisson: muertes por coz de caballo (Bortkiewicz)', sc: { modo: 'bondad', modelo: 'poisson', estima: 'si', alfa: '0,05', agrupa: 'si', datos: '0 109\n1 65\n2 22\n3 3\n4 1' } },
+    { clave: 'familias', nombre: 'Binomial: número de chicos en familias de 4 hijos', sc: { modo: 'bondad', modelo: 'binomial', estima: 'si', nb: '4', alfa: '0,05', agrupa: 'si', datos: '0 7\n1 33\n2 51\n3 37\n4 12' } },
+    { clave: 'alturas', nombre: 'Normal: alturas por intervalos (cm)', sc: { modo: 'bondad', modelo: 'normal', estima: 'si', alfa: '0,05', agrupa: 'si', datos: '150 160 8\n160 170 25\n170 180 40\n180 190 20\n190 200 7' } },
+    { clave: 'preferencia', nombre: 'Independencia: sexo y deporte preferido (2 × 3)', sc: { modo: 'independencia', alfa: '0,05', yates: 'no', datos: '20 30 50\n30 30 40' } },
+    { clave: 'curacion', nombre: 'Homogeneidad 2 × 2: curación con dos tratamientos', sc: { modo: 'independencia', alfa: '0,05', yates: 'no', datos: '45 105\n30 120' } },
+  ];
+
+  return { resolver, ejemplos, MODOS, MODELOS, COLUMNAS };
+})();
+
+/* =====================================================================
+   Interfaz de χ² de bondad de ajuste e independencia: el modo (bondad de
+   ajuste o tabla de contingencia), el modelo y sus parámetros, la tabla de
+   frecuencias observadas y esperadas, la gráfica de barras observadas
+   frente a esperadas y el desarrollo. Se monta con Calculadora.monta
+   (calculadora.js); el cálculo está en chi2-bondad/calculo.js.
+   ===================================================================== */
+(() => {
+  const C = Chi2Bondad, { f } = Calculadora;
+  const AYUDA = { uniforme: 'una frecuencia observada por clase', dadas: 'una fila «observada proporción» por clase (las proporciones se normalizan: 9 3 3 1 vale)', binomial: 'una fila «x frecuencia» por valor, seguidos', poisson: 'una fila «x frecuencia» por valor, seguidos', normal: 'una fila «desde hasta frecuencia» por intervalo' };
+  const SI_NO = [['si', 'Sí'], ['no', 'No']];
+  function campos(sc) {
+    const base = [{ k: 'modo', nom: 'Contraste', tipo: 'sel', ops: Object.entries(C.MODOS) }, { k: 'alfa', nom: 'Nivel de significación α' }];
+    if (sc.modo === 'independencia') return [...base, { k: 'yates', nom: 'Corrección de Yates', tipo: 'sel', ops: SI_NO, ayuda: 'solo en tablas 2 × 2' }, { k: 'datos', nom: 'Tabla de contingencia', tipo: 'area', ayuda: 'una fila por línea, columnas separadas por espacios', filas: 5 }];
+    const m = C.MODELOS[sc.modelo] ? sc.modelo : 'uniforme', dist = ['binomial', 'poisson', 'normal'].includes(m), est = sc.estima !== 'no';
+    return [...base, { k: 'modelo', nom: 'Modelo de H₀', tipo: 'sel', ops: Object.entries(C.MODELOS) },
+      ...(m === 'binomial' ? [{ k: 'nb', nom: 'Número de pruebas n' }] : []),
+      ...(dist ? [{ k: 'estima', nom: 'Parámetros', tipo: 'sel', ops: [['si', 'Estimados de los datos'], ['no', 'Dados']] }] : []),
+      ...(dist && !est ? { binomial: [{ k: 'pb', nom: 'Probabilidad de éxito p' }], poisson: [{ k: 'lambda', nom: 'Media λ' }], normal: [{ k: 'mu', nom: 'Media μ' }, { k: 'sigma', nom: 'Desviación típica σ' }] }[m] : []),
+      { k: 'agrupa', nom: 'Juntar clases con E < 5', tipo: 'sel', ops: SI_NO },
+      { k: 'datos', nom: 'Frecuencias observadas', tipo: 'area', ayuda: AYUDA[m], filas: 7 }];
+  }
+  // un dado o una tabla 2 × 3 al azar, para el modo práctica
+  function azar() {
+    const e = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+    if (Math.random() < 0.5) return { modo: 'bondad', modelo: 'uniforme', alfa: '0,05', agrupa: 'no', datos: Array.from({ length: 6 }, () => e(12, 30)).join('\n') };
+    return { modo: 'independencia', alfa: '0,05', yates: 'no', datos: [0, 1].map(() => Array.from({ length: 3 }, () => e(10, 50)).join(' ')).join('\n') };
+  }
+  const tex = (sc) => String(sc.datos || '').trim().split(/\r?\n/).map((l) => l.trim().split(/\s+/).join(', ')).join('; ');
+  const fila = (cs, td = 'td') => `<tr>${cs.map((c) => `<${td}>${c}</${td}>`).join('')}</tr>`;
+  Calculadora.monta({
+    C, carpeta: 'chi2-bondad', app: 'Chi2BondadApp', campos, azar,
+    enunciado: (sc, s) => s && (s.modo === 'independencia'
+      ? `En una tabla de contingencia se han observado estas frecuencias (cada fila separada por «;»): ${tex(sc)}. Con α = ${sc.alfa}, contrasta si las dos variables son independientes: calcula χ², los grados de libertad, el valor crítico y el p-valor.`
+      : s.modelo !== 'uniforme' ? `Se han observado estas frecuencias: ${tex(sc)}. Con α = ${sc.alfa}, contrasta si se ajustan a ${s.modelo === 'dadas' ? 'las proporciones dadas' : `una ${C.MODELOS[s.modelo]}`}: calcula χ², los grados de libertad, el valor crítico y el p-valor.`
+      : `Al tirar un dado ${s.N} veces, cada cara ha salido estas veces: ${tex(sc)}. Con α = ${sc.alfa}, contrasta si el dado está equilibrado: calcula χ², los grados de libertad, el valor crítico y el p-valor.`),
+    nota: 'En la bondad de ajuste, la hipótesis nula es el modelo; en la tabla de contingencia, que las dos variables son independientes. Cada frecuencia esperada debería ser al menos 5.',
+    resumen: (s) => [
+      ['Decisión', s.rechaza ? 'Se rechaza H₀' : 'No se rechaza H₀', true],
+      ['Estadístico', `χ² = ${f(s.chi)}`],
+      ['Grados de libertad', `ν = ${s.gl}`],
+      ['Valor crítico', f(s.crit)],
+      ['p-valor', f(s.pv)],
+      s.modo === 'independencia' ? ['V de Cramér', f(s.V, 3)] : ['Clases', String(s.celdas.length)],
+    ],
+    tabla: (s) => {
+      if (s.modo === 'independencia') {
+        const c = s.C.length, cab = ['', ...s.C.map((_, j) => `Columna ${j + 1}`), 'Total'];
+        const cuerpo = s.t.map((fl, i) => fila([`Fila ${i + 1}`, ...fl.map((o, j) => `${o} <small>(${f(s.celdas[i * c + j].e)})</small>`), String(s.F[i])])).join('');
+        return `<table class="tabla-eco"><thead>${fila(cab, 'th')}</thead><tbody>${cuerpo}</tbody><tfoot>${fila(['Total', ...s.C.map(String), String(s.N)])}</tfoot></table><p class="leyenda">Observadas y, entre paréntesis, esperadas si las variables fueran independientes.</p>`;
+      }
+      const cuerpo = s.celdas.map((x) => fila([x.nom, String(x.o), x.p.toFixed(4).replace('.', ','), `${f(x.e)}${x.e < 5 ? ' ⚠' : ''}`, f(x.c)])).join('');
+      return `<table class="tabla-eco"><thead>${fila(['Clase', 'Oᵢ', 'pᵢ', 'Eᵢ = N pᵢ', '(Oᵢ − Eᵢ)²/Eᵢ'], 'th')}</thead><tbody>${cuerpo}</tbody><tfoot>${fila(['∑', String(s.N), '1', f(s.N), f(s.chi)])}</tfoot></table>`;
+    },
+    grafica: (s) => {
+      const k = s.celdas.length, corto = (i) => (s.modo === 'independencia' ? `${s.celdas[i].i + 1}·${s.celdas[i].j + 1}` : s.celdas[i].nom.replace(/^(Clase |x = )/, ''));
+      return { x: [0.4, k + 0.6], y: [0, Math.max(...s.celdas.flatMap((x) => [x.o, x.e])) * 1.12], ejeX: s.modo === 'independencia' ? 'Casilla (fila·columna)' : 'Clase', ejeY: 'Frecuencia',
+        fx: (v) => (Number.isInteger(v) && v >= 1 && v <= k ? corto(v - 1) : ''),
+        series: [{ tipo: 'barras', pts: s.celdas.map((x, i) => [i + 0.82, x.o]), ancho: 0.34, color: '--serie-1' }, { tipo: 'barras', pts: s.celdas.map((x, i) => [i + 1.18, x.e]), ancho: 0.34, color: '--serie-2', alfa: 0.6 }] };
+    },
+    leyenda: (s) => `<b style="color:var(--serie-1)">Azul</b>: frecuencias observadas O; <b style="color:var(--serie-2)">rojo</b>: esperadas E si H₀ es cierta. Cuanto más se separan, mayor es χ² = ${f(s.chi)}, que ${s.rechaza ? 'supera' : 'no supera'} el valor crítico ${f(s.crit)}.`,
+  });
 })();
 
 /* =====================================================================
@@ -1281,6 +2065,8 @@ const Practica = (() => {
     errores: { datos: null, genera: () => window.ErroresApp?.azar(), enunciado: () => window.ErroresApp?.enunciado() },
     // contrastes: una media o una proporción con enunciado
     contrastes: { datos: null, genera: () => window.ContrastesApp?.azar(), enunciado: () => window.ContrastesApp?.enunciado() },
+    // chi2-bondad: un dado o una tabla 2 × 3 con enunciado
+    'chi2-bondad': { datos: null, genera: () => window.Chi2BondadApp?.azar(), enunciado: () => window.Chi2BondadApp?.enunciado() },
     // descriptiva: unas notas al azar (los datos están en un textarea)
     descriptiva: { datos: null, genera: () => window.DescriptivaApp?.azar(), enunciado: () => window.DescriptivaApp?.enunciado() },
     // regresión económica: una función de consumo al azar (los datos están en un textarea)

@@ -1,8 +1,11 @@
-<title>χ² de bondad de ajuste e independencia · SimulaCiencia</title>
-<meta name="description" content="Bondad de ajuste a una distribución y tablas de contingencia con el contraste de independencia.">
+<title>Prueba χ² paso a paso: bondad de ajuste e independencia · SimulaCiencia</title>
+<meta name="description" content="Calculadora de la prueba chi cuadrado en español: bondad de ajuste a una distribución uniforme, proporciones dadas, binomial, Poisson o normal, y tablas de contingencia para la independencia, con las frecuencias esperadas, los grados de libertad, el valor crítico, el p-valor y la conclusión paso a paso.">
 <style>
-/* Solo lo propio de esta herramienta. Las medidas comunes se ajustan con sus variables
-   y los colores propios (los de las gráficas) van aquí, con su valor en modo oscuro. */
+.tabla-eco { border-collapse: collapse; font: 13.5px var(--f-ui); width: 100%; font-variant-numeric: tabular-nums }
+.tabla-eco th, .tabla-eco td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap }
+.tabla-eco th { font-weight: 600; color: var(--muted) } .tabla-eco th:first-child, .tabla-eco td:first-child { text-align: left }
+.tabla-eco tfoot td { font-weight: 600; background: var(--accent-soft) }
+.tabla-eco small { color: var(--muted) }
 :root {
   --serie-1: #2a5db5; --serie-2: #c2412a }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
@@ -14,32 +17,35 @@
 <header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Estadística</a> / χ² de bondad de ajuste e independencia</span></header>
 <div class="wrap">
 <h1>χ² de bondad de ajuste e independencia</h1>
-<p class="lead">Bondad de ajuste a una distribución y tablas de contingencia con el contraste de independencia.</p>
+<p class="lead">Comprueba si unas frecuencias observadas se ajustan a un modelo (un dado equilibrado, unas proporciones, una binomial, Poisson o normal) o si las dos variables de una tabla de contingencia son independientes, con las frecuencias esperadas, el estadístico χ², el p-valor y el desarrollo.</p>
 <div class="layout">
   <div class="card">
     <h2>Datos</h2>
     <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
-    <div class="campos" id="campos">
-      <label for="dato-a"></label><input id="dato-a" class="in" inputmode="decimal">
-      <div class="sep">[Grupo de datos]</div>
-      <label for="dato-b"></label><input id="dato-b" class="in" inputmode="decimal">
-    </div>
+    <div class="campos" id="campos"></div>
     <p class="nota" id="nota"></p>
     <p class="error" id="error" hidden></p>
   </div>
   <div>
     <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Observadas y esperadas</h2><div class="tabla-scroll" id="tabla"></div></div>
     <div class="card"><h2>Gráfica</h2>
-      <canvas id="grafica" aria-label="Gráfica"></canvas>
+      <canvas id="grafica" aria-label="Barras de las frecuencias observadas y esperadas de cada clase"></canvas>
       <p class="leyenda" id="leyenda"></p>
     </div>
     <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
   </div>
 </div>
 <section class="teoria">
-  <h2>[Primer apartado de teoría]</h2>
-  <p class="m">[Texto con alguna fórmula suelta, como $v = s/t$.]</p>
-  <p class="f m">$[fórmula destacada]$</p>
+<h2>La idea</h2>
+<p class="m">Se comparan las frecuencias <b>observadas</b> $O_i$ con las <b>esperadas</b> $E_i$ que habría si la hipótesis nula fuera cierta. Si se parecen, χ² sale pequeño; si se separan mucho, sale grande y se rechaza $H_0$. El contraste es siempre por la derecha.</p>
+<p class="f m">$χ^2 = ∑ {(O_i − E_i)^2}/{E_i}$</p>
+<h2>Bondad de ajuste</h2>
+<p class="m">$H_0$ es el modelo: $E_i = N p_i$, con $p_i$ la probabilidad de cada clase según el modelo. Los grados de libertad son $ν = k − 1 − m$, con $k$ clases y $m$ parámetros estimados de los propios datos (uno para la binomial con n conocido o la Poisson, dos para la normal).</p>
+<h2>Tablas de contingencia</h2>
+<p class="m">$H_0$: las dos variables son independientes (o, si cada fila es una población distinta, todas tienen las mismas proporciones: homogeneidad). La cuenta es la misma en los dos casos, con $E_{ij} = {F_i · C_j}/N$ (totales de la fila $i$ y de la columna $j$) y $ν = (r − 1)(c − 1)$. En las tablas 2 × 2 se puede aplicar la corrección de Yates, que resta 0,5 a cada $|O − E|$. La V de Cramér, $V = √({χ^2}/{N (mín(r, c) − 1)})$, mide la fuerza de la relación entre 0 y 1.</p>
+<h2>Cuándo vale la aproximación</h2>
+<p>La distribución χ² es una aproximación que funciona bien cuando todas las frecuencias esperadas son al menos 5. Si no, se juntan clases vecinas (cada clase que se junta resta un grado de libertad).</p>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· χ² de bondad de ajuste e independencia <span id="ver"></span> (beta)</footer>
