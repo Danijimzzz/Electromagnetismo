@@ -485,7 +485,7 @@ async function navegador() {
     if (f === 'novedades/index.html') {
       // una tarjeta por versión con todos sus cambios dentro, y cada herramienta nueva enlazada
       const log = require(path.join(fuente, 'version.js')).de('web').log;
-      const tarjetas = await page.locator('.vers').evaluateAll((vs) => vs.map((v) => ({ v: v.querySelector('h2').textContent, n: v.querySelectorAll('li').length })));
+      const tarjetas = await page.locator('.vers').evaluateAll((vs) => vs.map((v) => ({ v: v.id.slice(1), n: v.querySelectorAll('li').length })));
       if (tarjetas.length !== log.length) mal(`novedades: ${tarjetas.length} versiones, se esperaban ${log.length}`);
       log.forEach((r, i) => { if (tarjetas[i]?.v !== r.v || tarjetas[i]?.n !== r.cambios.length) mal(`novedades: la versión ${r.v} no tiene sus ${r.cambios.length} cambios juntos`); });
       const nuevas = log.flatMap((r) => r.cambios).filter((c) => c.startsWith('Nueva herramienta:')).length, enlazadas = await page.locator('.vers a.ir').count();
