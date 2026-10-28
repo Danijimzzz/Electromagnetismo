@@ -361,6 +361,8 @@ for (const f of fs.readdirSync(legal)) archivos[f] = fs.readFileSync(path.join(l
 // ads.txt de AdSense, solo con anuncios.js activo (si no, se borra el que hubiera)
 if (Anuncios.adsTxt()) archivos['ads.txt'] = Anuncios.adsTxt();
 else fs.rmSync(path.join(publico, 'ads.txt'), { force: true });
+// archivo de verificación de Google Search Console (catalogo.js → googleArchivo)
+if (Catalogo.googleArchivo) archivos[`${Catalogo.googleArchivo}.html`] = `google-site-verification: ${Catalogo.googleArchivo}.html`;
 // Cloudflare (Workers con assets) lee publico/_redirects; Vercel, vercel.json
 archivos._redirects = Object.entries(redir).flatMap(([v, n]) => [`/${v} /${n} 301`, `/${v.replace(/\/$/, '')} /${n} 301`]).join('\n') + '\n';
 const vercel = path.join(__dirname, '..', 'vercel.json'), conf = JSON.parse(fs.readFileSync(vercel, 'utf8'));

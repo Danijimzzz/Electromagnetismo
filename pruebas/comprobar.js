@@ -30,6 +30,8 @@ const PUBLICABLES = ['index.html', 'novedades/index.html', 'foro/index.html', 'o
   'fenomenos/index.html', ...Catalogo.fenomenos.lista.filter((f) => f.disponible).flatMap((f) => [`fenomenos/${f.clave}/index.html`, `fenomenos/${f.clave}/imagen.webp`]),
   // direcciones antiguas: una página que redirige a la nueva y las reglas 301 de Cloudflare
   ...Object.keys(Catalogo.redirecciones).map((v) => `${v}index.html`), '_redirects',
+  // archivo de verificación de Google Search Console (catalogo.js → googleArchivo)
+  ...(Catalogo.googleArchivo ? [`${Catalogo.googleArchivo}.html`] : []),
   // ads.txt solo con los anuncios activos (fuente/anuncios.js)
   ...(require(path.join(fuente, 'anuncios.js')).activos ? ['ads.txt'] : [])];
 const listar = (dir, pre = '') => fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? listar(path.join(dir, e.name), pre + e.name + '/') : [pre + e.name]));

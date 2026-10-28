@@ -10,6 +10,8 @@ const Catalogo = {
   web: 'https://simulaciencia.vercel.app',
   // código de verificación de Google Search Console (el content de su <meta name="google-site-verification">); vacío = sin la etiqueta
   google: 'zUSlvyV2c1BcfJFspiXQvdhnooD2lXr2fTVKy69UxLs',
+  // y el archivo de verificación de Search Console (publico/<googleArchivo>.html, lo escribe portal.js); vacío = sin archivo
+  googleArchivo: 'google85c50c36a2e78915',
   lema: 'Simuladores y calculadoras para resolver problemas de la carrera paso a paso, con la misma notación que en clase. Gratis y sin registrarse.',
   asignaturas: [
     {
