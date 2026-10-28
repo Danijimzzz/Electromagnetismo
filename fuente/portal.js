@@ -125,7 +125,7 @@ function pagina({ titulo, desc, raiz, actual, cuerpo, buscar, script }) {
 <link rel="apple-touch-icon" href="${raiz}apple-touch-icon.png">
 <meta property="og:title" content="${esc(titulo)}">
 <meta property="og:description" content="${esc(desc)}">
-<meta property="og:image" content="https://electromagnetismo-two.vercel.app/og.png">
+<meta property="og:image" content="${Catalogo.web}/og.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -364,6 +364,17 @@ archivos._redirects = Object.entries(redir).flatMap(([v, n]) => [`/${v} /${n} 30
 const vercel = path.join(__dirname, '..', 'vercel.json'), conf = JSON.parse(fs.readFileSync(vercel, 'utf8'));
 conf.redirects = Object.entries(redir).flatMap(([v, n]) => [`/${v.replace(/\/$/, '')}`, `/${v}`].map((source) => ({ source, destination: `/${n}`, permanent: true })));
 fs.writeFileSync(vercel, JSON.stringify(conf, null, 2) + '\n');
+
+// para Google: la lista de páginas (sitemap.xml), dónde está (robots.txt) y, en cada página, su dirección principal
+// (canonical), para que la copia de Cloudflare no cuente como contenido duplicado. Las páginas de herramientas y
+// fenómenos las escribe herramientas.js, y Electrostática build.sh, con la misma etiqueta.
+const enlaces = ['', 'novedades/', ...Catalogo.asignaturas.flatMap((a) => [`${a.clave}/`, ...disponibles(a).map((h) => `${a.clave}/${h.clave}/`)]),
+  'fenomenos/', ...V.lista.filter((f) => f.disponible).map((f) => `fenomenos/${f.clave}/`), 'aviso-legal.html', 'privacidad.html', 'cookies.html', 'contacto.html'];
+archivos['sitemap.xml'] = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${enlaces.map((e) => `  <url><loc>${Catalogo.web}/${e}</loc></url>`).join('\n')}\n</urlset>\n`;
+archivos['robots.txt'] = `User-agent: *\nAllow: /\n\nSitemap: ${Catalogo.web}/sitemap.xml\n`;
+const canonica = (f) => `${Catalogo.web}/${f.replace(/index\.html$/, '')}`;
+for (const f of Object.keys(archivos)) if (f.endsWith('.html') && !archivos[f].includes('rel="canonical"'))
+  archivos[f] = archivos[f].replace('<meta charset="utf-8">', `<meta charset="utf-8">\n<link rel="canonical" href="${canonica(f)}">`);
 
 for (const [f, html] of Object.entries(archivos)) {
   fs.mkdirSync(path.dirname(path.join(publico, f)), { recursive: true });

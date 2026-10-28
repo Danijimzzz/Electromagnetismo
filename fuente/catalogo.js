@@ -6,6 +6,8 @@
    ===================================================================== */
 const Catalogo = {
   marca: ['Simula', 'Ciencia'], // nombre provisional: la segunda parte va en cursiva
+  // dirección principal: la que Google debe mostrar (canonical, sitemap.xml y robots.txt); Cloudflare sirve una copia
+  web: 'https://simulaciencia.vercel.app',
   lema: 'Simuladores y calculadoras para resolver problemas de la carrera paso a paso, con la misma notación que en clase. Gratis y sin registrarse.',
   asignaturas: [
     {
