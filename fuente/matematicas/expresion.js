@@ -166,8 +166,10 @@ const Expresion = (() => {
   const IRR = [['', 1], ['√2', Math.SQRT2], ['√3', Math.sqrt(3)], ['π', Math.PI], ['e', Math.E], ['√e', Math.sqrt(Math.E)], ['√π', Math.sqrt(Math.PI)], ['√6', Math.sqrt(6)], ['π^2', Math.PI ** 2], ['ln 2', Math.LN2]];
   function exacto(x, qMax = 50000) {
     if (Math.abs(x) < 1e-13) return { p: 0, q: 1, s: '' };
-    for (const [s, v] of IRR) { const r = fraccion(x / v, s ? 2000 : qMax); if (r && Math.abs(r[0]) <= 1e7) return { p: r[0], q: r[1], s }; }
-    return null;
+    // primero denominadores pequeños con cualquier s (2π antes que 312689/49766), luego racionales grandes
+    for (const [s, v] of IRR) { const r = fraccion(x / v, 2000); if (r && Math.abs(r[0]) <= 1e7) return { p: r[0], q: r[1], s }; }
+    const r = fraccion(x, qMax);
+    return r && Math.abs(r[0]) <= 1e7 ? { p: r[0], q: r[1], s: '' } : null;
   }
   const dec = (x) => String(+x.toPrecision(12)).replace('.', ',').replace('-', '−');
   // texto Mates de un número exacto o decimal

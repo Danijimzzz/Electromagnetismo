@@ -1,0 +1,60 @@
+<title>La línea de alta tensión y el suelo: un condensador gigante, explicado · SimulaCiencia</title>
+<meta name="description" content="Por qué se enciende un fluorescente debajo de una línea de alta tensión: el cable y el suelo como condensador, el método de las imágenes, el campo eléctrico bajo la línea y si es peligroso, con una animación paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<!-- =====================================================================
+     La línea de alta tensión y el suelo («Física en la vida real»). Maqueta
+     común de los fenómenos (ver fuego-san-telmo/pagina.html): animación,
+     texto del paso, historia y recuadro de la herramienta. Los pasos y el
+     dibujo están en escena.js.
+     ===================================================================== -->
+<style>
+/* colores del dibujo, con su valor en modo oscuro */
+:root {
+  --cielo: #eef3f6; --cielo-alto: #c4dbea; --colina: #b7c9a8; --hierba: #6e9a52; --tierra: #8a6c4d; --torre: #59616a; --aislador: #6aa5b8; --cable: #2b2f34;
+  --persona: #2f5d8a; --piel: #e2b38f; --tubo: #d9dde0; --brillo: #f4f8ff; --pos: #c2412a; --neg: #2a5db5; --lineas: #c47d12; --rotulo: #1a2128 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --cielo: #1e2a36; --cielo-alto: #0f1821; --colina: #2c3a2e; --hierba: #3f5f35; --tierra: #3b2e22; --torre: #8a939c; --aislador: #5b95a8; --cable: #c9ced3;
+  --persona: #6f9ccc; --piel: #c9987a; --tubo: #5b6168; --brillo: #e9f1ff; --pos: #ef7a62; --neg: #74a2f2; --lineas: #f0b04a; --rotulo: #e3e8ea } }
+:root[data-theme="dark"] {
+  --cielo: #1e2a36; --cielo-alto: #0f1821; --colina: #2c3a2e; --hierba: #3f5f35; --tierra: #3b2e22; --torre: #8a939c; --aislador: #5b95a8; --cable: #c9ced3;
+  --persona: #6f9ccc; --piel: #c9987a; --tubo: #5b6168; --brillo: #e9f1ff; --pos: #ef7a62; --neg: #74a2f2; --lineas: #f0b04a; --rotulo: #e3e8ea }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física en la vida real</a> / La línea de alta tensión y el suelo</span></header>
+<div class="wrap fen">
+<div class="fen-etiquetas"><span>⚡ Electromagnetismo</span><span>Dificultad media</span><span>6 pasos · 1 min</span></div>
+<h1>La línea de alta tensión y el suelo</h1>
+<p class="lead">Si sostienes un tubo fluorescente debajo de una línea de alta tensión, se enciende solo, sin cables ni enchufe. El cable y el suelo forman un condensador enorme.</p>
+<div class="fen-escena"><canvas id="escena" role="img" aria-label="Animación de una línea de alta tensión sobre un campo: la carga del cable y la inducida en el suelo, el cable imagen, las líneas de campo y una persona con un fluorescente que se enciende"></canvas></div>
+<div class="fen-puntos" id="puntos" role="group" aria-label="Pasos"></div>
+<div class="fen-controles">
+  <button class="btn" id="ant" type="button">‹ Anterior</button>
+  <button class="btn" id="play" type="button" aria-pressed="true">❚❚ Parar</button>
+  <button class="btn" id="sig" type="button">Siguiente ›</button>
+</div>
+<div class="fen-texto" aria-live="polite"><h2 id="paso-t"></h2><div id="paso-x"></div></div>
+<section class="fen-historia" aria-label="Un poco de historia">
+  <h2>Un poco de historia</h2>
+  <ol>
+    <li><b>1745</b>Ewald von Kleist y Pieter van Musschenbroek inventan por separado la botella de Leyden, el primer condensador: dos conductores separados por un aislante que guardan carga.</li>
+    <li><b>1848</b>William Thomson, el futuro Lord Kelvin, inventa el método de las imágenes: el campo de una carga junto a un plano conductor es el de la carga y una «imagen» de signo contrario al otro lado.</li>
+    <li><b>1891</b>La primera línea trifásica de alta tensión lleva electricidad de Lauffen a Fráncfort, a 175 km, a más de 15 000 V. Desde entonces, las líneas llevan la energía en alterna y a alta tensión.</li>
+    <li><b>2004</b>El artista Richard Box clava 1301 tubos fluorescentes en un campo bajo una línea de alta tensión, cerca de Bristol. Al anochecer se encienden solos con el campo eléctrico de la línea.</li>
+  </ol>
+</section>
+<section class="fen-rel" aria-label="Herramienta relacionada">
+  <div class="fen-ico" aria-hidden="true">E</div>
+  <h2>Con qué herramienta se relaciona</h2>
+  <h3>Electrostática <small>· Electromagnetismo</small></h3>
+  <p>Por el método de las imágenes, el cable sobre el suelo conductor es lo mismo que dos hilos infinitos paralelos con cargas opuestas, el cable y su imagen, separados 2h. El potencial y el campo salen de sumar los de los dos hilos.</p>
+  <p class="f m">C′ = {2πε_0}/{ln(2h/a)} ,  λ = C′ V</p>
+  <p class="f m">E_"suelo" = {λ}/{πε_0 h}</p>
+  <p>Se abre con los dos hilos en el SI, a 10 m por encima y por debajo del suelo y con ±1,028 µC/m. Sale una diferencia de potencial de 133 kV entre el cable y el suelo, un campo de 3,7 kV/m en el suelo y de 3,8 kV/m a 1,5 m de altura, y 4,5 kV entre los extremos del fluorescente.</p>
+  <div class="fen-fichas"><div><small>Cable – suelo</small><b>133 kV</b></div><div><small>E en el suelo</small><b>3,7 kV/m</b></div><div><small>Extremos del tubo</small><b>4,5 kV</b></div></div>
+  <a class="fen-abrir" id="abrir" href="../../electromagnetismo/electrostatica/">Abrir en Electrostática con estos datos →</a>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Física en la vida real <span id="ver"></span> (beta)</footer>
+</body>

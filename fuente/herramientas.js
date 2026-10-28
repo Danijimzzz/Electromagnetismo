@@ -37,7 +37,8 @@ function pagina(h) {
     + `<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,${icono}">\n`
     + '<link rel="apple-touch-icon" href="../../apple-touch-icon.png">\n'
     + `<meta property="og:title" content="${h.titulo}">\n<meta property="og:description" content="${h.descripcion}">\n`
-    + '<meta property="og:image" content="https://electromagnetismo-two.vercel.app/og.png">\n<meta name="twitter:card" content="summary_large_image">\n';
+    + `<link rel="canonical" href="${Catalogo.web}/${h.asignatura}/${h.clave}/">\n`
+    + `<meta property="og:image" content="${Catalogo.web}/og.png">\n<meta name="twitter:card" content="summary_large_image">\n`;
   // diseño común (diseno.js): cabecera de la portada, color de la asignatura y miga con los botones
   html += execFileSync('node', [path.join(__dirname, 'diseno.js'), h.asignatura, h.clave], { input: fs.readFileSync(path.join(__dirname, h.carpeta, 'pagina.html')) }).toString();
   html += '<script>\n';

@@ -35,7 +35,8 @@
        enunciado(sc, sol), enunciado del modo práctica (opcional)
      })
    Un cambio en un desplegable vuelve a pintar el formulario (los campos pueden
-   depender del modo elegido).
+   depender del modo elegido). window.<app>.pon(cambios) cambia unos datos desde
+   fuera del formulario (por ejemplo, al mover o acercar la gráfica) y recalcula.
    ===================================================================== */
 const Calculadora = (() => {
   const f = (x, d = 4) => {
@@ -181,6 +182,7 @@ const Calculadora = (() => {
       sc = copia(e.sc); formulario(); calcula(); sel.value = clave;
     }
     function azar() { if (!o.azar) return; sc = o.azar(); formulario(); calcula(); sel.value = ''; }
+    function pon(cambios) { Object.assign(sc, cambios); formulario(); calcula(); sel.value = ''; }
 
     /* ---------- Cálculo ---------- */
     function calcula() {
@@ -214,7 +216,7 @@ const Calculadora = (() => {
     const ver = $('#ver'); if (ver) ver.textContent = Version.de(o.carpeta).current;
     leeColores(); formulario(); calcula();
     const enunciado = () => (o.enunciado ? o.enunciado(sc, sol) : undefined);
-    return (window[o.app] = { abrirEjemplo, azar, enunciado, resultado: () => sol, estado: () => copia(sc) });
+    return (window[o.app] = { abrirEjemplo, azar, pon, enunciado, resultado: () => sol, estado: () => copia(sc) });
   }
   return { f, num, leeNum, vacio, lee, lista, filas, grafica, rango, colores, monta };
 })();
