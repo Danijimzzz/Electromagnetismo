@@ -237,7 +237,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
   <p class="f m">$Φ = ∬_S F · dS = ∬ F(r(u, v)) · (r_u × r_v) du dv$</p>
   <p class="m">Con la superficie dada como $r(u, v)$, el producto vectorial $r_u × r_v$ es un vector normal y su módulo es el elemento de área. Por ejemplo, la esfera de radio R es $r = (R sen u cos v, R sen u sen v, R cos u)$ con $u ∈ [0, π]$ y $v ∈ [0, 2π]$, y su normal apunta hacia fuera.</p>
   <p class="f m">$∬_S (∇ × F) · dS = ∮_{∂S} F · dr$</p>
-  <p class="m">El teorema de Stokes dice que el flujo del rotacional a través de una superficie es la circulación por su borde, recorrido dejando la superficie a la izquierda si se mira desde la punta de la normal. Todas las superficies con el mismo borde dan lo mismo, y en una superficie cerrada (sin borde) sale 0. Green es el caso plano.</p>
+  <p>El teorema de Stokes dice que el flujo del rotacional a través de una superficie es la circulación por su borde, recorrido dejando la superficie a la izquierda si se mira desde la punta de la normal. Todas las superficies con el mismo borde dan lo mismo, y en una superficie cerrada (sin borde) sale 0. Green es el caso plano.</p>
   <h2>Teorema de la divergencia (Gauss)</h2>
   <p class="f m">$∯_S F · dS = ∭_V ∇ · F dV$</p>
   <p class="m">El flujo hacia fuera por una superficie cerrada es la integral de la divergencia dentro. En una caja se suma cara a cara (en la cara $x = x_2$ sale $∬ P dy dz$; en $x = x_1$, $−∬ P dy dz$); en una esfera o un cilindro se usan coordenadas esféricas o cilíndricas. Si la divergencia es constante, el flujo es ella por el volumen.</p>
@@ -323,6 +323,9 @@ const Version = (() => {
       { v: '0.3', fecha: '2026-10-23', cambios: ['Nueva herramienta: Trabajo y energía, en Física general.'] },
       { v: '0.2', fecha: '2026-10-23', cambios: ['Nueva herramienta: Tabla periódica interactiva, en Química.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Portada para elegir asignatura y herramienta: Electromagnetismo, Física general, Química, Matemáticas y Laboratorio, con buscador. Las herramientas que vienen después aparecen como «Próximamente».', 'Nueva herramienta: Magnetostática, en Electromagnetismo.'] },
+    ],
+    'oferta-demanda': [
+      { v: '0.1', fecha: '2026-10-28', cambios: ['Primera versión: el precio y la cantidad de equilibrio con una demanda y una oferta lineales, las elasticidades en ese punto, la escasez o el excedente de un precio máximo o mínimo y el nuevo equilibrio cuando se desplaza la demanda, la oferta o las dos, con la gráfica y el desarrollo.'] },
     ],
     'chi2-bondad': [
       { v: '0.1', fecha: '2026-10-28', cambios: ['Primera versión: bondad de ajuste a una distribución uniforme, a unas proporciones dadas o a una binomial, Poisson o normal (con los parámetros dados o estimados de los datos), juntando las clases con frecuencia esperada menor que 5; y tablas de contingencia para la independencia o la homogeneidad, con la corrección de Yates y la V de Cramér. Con la tabla de esperadas, la gráfica y el desarrollo.'] },
@@ -491,6 +494,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: fuerza sobre una carga en un campo uniforme, con el radio, el periodo y el sentido de giro, o la hélice si v no es perpendicular a B. La velocidad se puede dar en m/s, por su energía en eV o por la ddp que la acelera.', 'Fuerza de Lorentz con vectores: v × B con su determinante y F = q(E + v × B).', 'Selector de velocidades y espectrómetro de masas, ciclotrón con la frecuencia, la energía de salida y las vueltas.', 'Fuerza sobre un hilo (y la corriente para que flote) y entre dos hilos paralelos.', 'Animación de cada situación.'] },
     ],
     campos: [
+      { v: '0.2.1', fecha: '2026-10-28', cambios: ['Arreglo: el párrafo sobre el teorema de Stokes de la teoría ya se lee como texto normal, no como una fórmula.'] },
       { v: '0.2', fecha: '2026-10-25', cambios: ['La función potencial con su expresión, φ = x²y + y³ + K, integrando componente a componente.', 'Integral de línea por una poligonal (como el contorno de un triángulo), tramo a tramo.', 'Nuevo modo ∫ f ds: longitud, masa y centro de masas de un alambre.', 'Teorema de Green en triángulos, polígonos y regiones entre dos curvas, con el área.', 'Nuevo modo de flujo por una superficie r(u, v) con el teorema de Stokes, y nuevo modo del teorema de la divergencia en una caja, una esfera o un cilindro, con la figura en 3D.', 'Comparte el ejercicio con un enlace (lleva los datos), cópialo como texto o en LaTeX para tus apuntes, o imprímelo o guárdalo en PDF solo con los resultados y el desarrollo.', 'Aviso junto a los datos: ln es el logaritmo neperiano y log, el decimal.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: gradiente, derivada direccional y laplaciano de un campo escalar, con su mapa de color y las curvas de nivel.', 'Divergencia y rotacional de un campo vectorial en el plano o en el espacio y, si es conservativo, su potencial.', 'Integral de línea (trabajo) a lo largo de una curva r(t), comparada con la diferencia de potencial cuando el campo es conservativo.', 'Teorema de Green en un círculo o un rectángulo: circulación y flujo por el borde frente a las integrales dobles.', 'Gráfica con partículas que siguen el campo y un molinillo que gira con el rotacional; tocándola se mueve el punto.'] },
     ],
@@ -507,6 +511,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: serie de Fourier de una función periódica dada hasta en cuatro tramos (1, x, x^2, |x|, sen x…), o desarrollo en senos o en cosenos de una función en [0, L].', 'Coeficientes a₀, aₙ y bₙ exactos (con π) y su término general cuando siguen una ley, como 2(1 − (−1)ⁿ)/(nπ), con la paridad de la función.', 'Convergencia en los saltos (a la media de los límites laterales), suma parcial en un punto e igualdad de Parseval.', 'Gráfica de la función y de la suma parcial, que se puede ver sumando armónicos uno a uno, y el espectro de amplitudes.'] },
     ],
     taylor: [
+      { v: '0.2.1', fecha: '2026-10-28', cambios: ['Arreglo: el párrafo sobre los límites con desarrollos de la teoría ya se lee como texto normal, no como una fórmula.'] },
       { v: '0.2', fecha: '2026-10-25', cambios: ['Arreglo: con aˣ los coeficientes salen claros, (ln 2)²/2 en vez de 0,240227.', 'Arreglo: en el móvil las fórmulas largas ya no se salen de la pantalla.', 'Singularidades evitables: sen x / x o (eˣ − 1)/x en 0 ya tienen desarrollo.', 'Radio de convergencia para cualquier función, con un aviso si el punto cae fuera.', 'Límites con Taylor, como lím (sen x − x)/x³.', 'Grado hasta 25.', 'Comparte el ejercicio con un enlace (lleva los datos), cópialo como texto o en LaTeX para tus apuntes, o imprímelo o guárdalo en PDF solo con los resultados y el desarrollo.', 'Aviso junto a los datos: ln es el logaritmo neperiano y log, el decimal.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: polinomio de Taylor o de Maclaurin de cualquier grado hasta 15 de una función escrita como en papel (e^x, sen x, ln(1+x), √x, arctg x…) en un punto que puede llevar π, con cada derivada, su valor exacto y los coeficientes.', 'Aproximación de f(x₀) con el error cometido y la cota del resto de Lagrange.', 'Reconoce los desarrollos conocidos (e^x, sen x, cos x, ln(1+x), la serie geométrica, arctg x y la binómica) y da su término general y dónde convergen.', 'Gráfica de la función con los polinomios de cada grado, que se pueden recorrer o ver acercarse uno tras otro.'] },
     ],
@@ -4597,6 +4602,8 @@ const Practica = (() => {
     contrastes: { datos: null, genera: () => window.ContrastesApp?.azar(), enunciado: () => window.ContrastesApp?.enunciado() },
     // chi2-bondad: un dado o una tabla 2 × 3 con enunciado
     'chi2-bondad': { datos: null, genera: () => window.Chi2BondadApp?.azar(), enunciado: () => window.Chi2BondadApp?.enunciado() },
+    // oferta-demanda: un mercado con equilibrio entero
+    'oferta-demanda': { datos: null, genera: () => window.OfertaDemandaApp?.azar(), enunciado: () => window.OfertaDemandaApp?.enunciado() },
     // descriptiva: unas notas al azar (los datos están en un textarea)
     descriptiva: { datos: null, genera: () => window.DescriptivaApp?.azar(), enunciado: () => window.DescriptivaApp?.enunciado() },
     // regresión económica: una función de consumo al azar (los datos están en un textarea)
