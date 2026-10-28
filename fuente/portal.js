@@ -117,8 +117,9 @@ function pagina({ titulo, desc, raiz, actual, cuerpo, buscar, script }) {
   const nav = [...Catalogo.asignaturas, V].map((a) => `<a href="${raiz}${a.clave}/"${a.clave === actual ? ' aria-current="page"' : ''}>${esc(a.corto || a.nombre)}</a>`).join('');
   return `<!doctype html>
 <html lang="es">
+<head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+${raiz === '' && Catalogo.google ? `<meta name="google-site-verification" content="${esc(Catalogo.google)}">\n` : ''}<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(titulo)}</title>
 <meta name="description" content="${esc(desc)}">
 <link rel="icon" type="image/svg+xml" href="${icono}">
@@ -127,11 +128,12 @@ function pagina({ titulo, desc, raiz, actual, cuerpo, buscar, script }) {
 <meta property="og:description" content="${esc(desc)}">
 <meta property="og:image" content="${Catalogo.web}/og.png">
 <meta name="twitter:card" content="summary_large_image">
-${raiz === '' && Catalogo.google ? `<meta name="google-site-verification" content="${esc(Catalogo.google)}">\n` : ''}<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
 ${Anuncios.cabeza()}<script>${Tema.SCRIPT}</script>
 <style>${CSS}${Tema.CSS}</style>
+</head>
 <body>
 <header class="top"><a class="logo" href="${raiz}">${esc(m1)}<i>${esc(m2)}</i></a>
 <nav aria-label="Asignaturas"><a href="${raiz}"${actual ? '' : ' aria-current="page"'}>Inicio</a>${nav}</nav>
