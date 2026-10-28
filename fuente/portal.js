@@ -93,7 +93,7 @@ a.card:hover { border-color:var(--c) }
 .vers::before { content:""; position:absolute; left:-30px; top:16px; width:12px; height:12px; border-radius:50%; background:var(--panel); border:3px solid var(--k) }
 .vers > header { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:4px }
 .vers h2 { margin:0; font:600 20px var(--f-math) } .vers header small { color:var(--muted); font-size:12.5px }
-.vers .actual { font-size:11px; font-weight:700; color:var(--panel); background:var(--accent); border-radius:99px; padding:1px 8px }
+.vers .actual { white-space:nowrap; font-size:11px; font-weight:700; color:var(--panel); background:var(--accent); border-radius:99px; padding:1px 8px }
 .vers ul { list-style:none; margin:0; padding:0 }
 .vers li { display:grid; grid-template-columns:24px minmax(0,1fr) auto; gap:4px 12px; align-items:start; padding:8px 0; border-top:1px solid var(--line); font-size:14px }
 .vers li:first-child { border-top:0 }
@@ -105,8 +105,17 @@ a.card:hover { border-color:var(--c) }
 .tipo.mejora { color:var(--mejora); background:color-mix(in srgb,var(--mejora) 13%,transparent) }
 .tipo.arreglo { color:var(--arreglo); background:color-mix(in srgb,var(--arreglo) 15%,transparent) }
 .sim { width:24px; height:24px; border-radius:6px; display:grid; place-items:center; font-weight:700; font-size:13px; color:var(--k); background:color-mix(in srgb,var(--k) 14%,transparent) }
+.vers.grande { padding:22px 24px 14px; border-top:4px solid var(--k) }
+.vers.grande > header { display:block; margin-bottom:6px } .vers.grande h2 { font:700 30px/1.15 var(--f-ui); letter-spacing:-.01em; display:inline; margin-right:10px } .vers.grande .actual { vertical-align:6px }
+.vers.grande > header p { margin:8px 0 0; font-size:16px; color:var(--muted) }
+.vers.grande section { border-top:1px solid var(--line); padding:14px 0 6px; margin-top:12px }
+.vers.grande h3 { display:flex; align-items:center; gap:10px; margin:0 0 6px; font:700 18px var(--f-ui) } .vers.grande h3 span { width:32px; height:32px; border-radius:9px; display:grid; place-items:center; font-size:17px; background:color-mix(in srgb,var(--k) 13%,transparent) }
+.vers.grande li { display:block; position:relative; padding:5px 0 5px 20px; border:0; font-size:14.5px; line-height:1.5 } .vers.grande li::before { content:""; position:absolute; left:6px; top:13px; width:6px; height:6px; border-radius:50%; background:var(--k) }
+.vers.grande li.asig-n { padding:8px 0; border-top:1px dashed var(--line) } .vers.grande li.asig-n::before { display:none } .vers.grande li.asig-n:first-child { border-top:0 }
+.asig-n .nom { display:inline-flex; align-items:center; gap:8px; color:var(--ink); margin-bottom:6px } .asig-n .nom small { font-size:11.5px; font-weight:700; color:var(--c); background:color-mix(in srgb,var(--c) 13%,transparent); border-radius:99px; padding:0 7px }
+.chips { display:flex; flex-wrap:wrap; gap:6px } .chips a { font-size:13px; color:var(--ink); border:1px solid color-mix(in srgb,var(--c) 35%,var(--line)); background:color-mix(in srgb,var(--c) 6%,transparent); border-radius:99px; padding:2px 10px } .chips a:hover { color:var(--c); border-color:var(--c) }
 .leyenda { display:flex; gap:8px; flex-wrap:wrap; margin:-10px 0 22px }
-@media (max-width:600px) { .dia { grid-template-columns:minmax(0,1fr) } .fecha { text-align:left; padding:6px 0 2px } .fecha b { display:inline; font-size:18px; margin-right:6px } .linea { padding-left:18px } .vers::before { left:-26px } .vers li { grid-template-columns:24px minmax(0,1fr) } .vers li .ir { grid-column:2 } }
+@media (max-width:600px) { .vers.grande { padding:18px 16px 10px } .vers.grande h2 { font-size:25px } .dia { grid-template-columns:minmax(0,1fr) } .fecha { text-align:left; padding:6px 0 2px } .fecha b { display:inline; font-size:18px; margin-right:6px } .linea { padding-left:18px } .vers::before { left:-26px } .vers li { grid-template-columns:24px minmax(0,1fr) } .vers li .ir { grid-column:2 } }
 footer { text-align:center; font-size:12.5px; color:var(--muted); padding:0 16px 24px } footer a { margin:0 6px; white-space:nowrap } footer a:hover { color:var(--accent); text-decoration:underline }
 `;
 
@@ -305,7 +314,18 @@ ${cards}
   const MES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
   const web = Version.de('web'), dias = new Map();
   for (const r of web.log) { if (!dias.has(r.fecha)) dias.set(r.fecha, []); dias.get(r.fecha).push(r); }
+  // versión con secciones: cabecera grande con título y subtítulo, y un bloque por sección con sus puntos
+  const negrita = (t) => esc(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+  const punto = (p) => {
+    const a = p.startsWith('@') && Catalogo.asignaturas.find((x) => x.clave === p.slice(1));
+    if (!a) return `<li>${negrita(p)}</li>`;
+    const hs = disponibles(a);
+    return `<li class="asig-n" style="${estilo(a)}"><a class="nom" href="../${a.clave}/"><span class="ico s">${esc(a.icono)}</span><b>${esc(a.nombre)}</b><small>${hs.length}</small></a><span class="chips">${hs.map((h) => `<a href="../${a.clave}/${h.clave}/">${esc(h.nombre)}</a>`).join('')}</span></li>`;
+  };
+  const grande = (r) => `<article class="vers grande" id="v${r.v}" style="--k:var(--nueva)"><header><h2>${esc(r.titulo)}</h2>${r.v === web.current ? '<span class="actual">Versión actual</span>' : ''}<p>${esc(r.subtitulo)}</p></header>
+${r.secciones.map((x) => `<section><h3><span>${x.icono}</span>${esc(x.titulo)}</h3><ul>${x.puntos.map(punto).join('')}</ul></section>`).join('\n')}</article>`;
   const tarjeta = (r) => {
+    if (r.secciones) return grande(r);
     const cambios = r.cambios.map((c) => {
       const m = c.match(/^Nueva herramienta: (.+?), en (.+?)\.$/), tipo = m || /\.0$/.test(r.v) ? 'nueva' : r.v.split('.').length > 2 ? 'arreglo' : 'mejora';
       if (m) {
@@ -330,7 +350,7 @@ ${rs.map(tarjeta).join('\n')}
 <div class="crumb"><a href="../">Inicio</a> / Novedades</div>
 <h1>Novedades</h1>
 <p class="sub">Lo último que ha llegado a la web, de lo más nuevo a lo más antiguo. Estás viendo la versión ${esc(web.current)}.</p>
-<div class="leyenda"><span class="tipo nueva">Nueva herramienta</span><span class="tipo mejora">Mejora</span><span class="tipo arreglo">Arreglo</span></div>
+${web.log.some((r) => !r.secciones) ? '<div class="leyenda"><span class="tipo nueva">Nueva herramienta</span><span class="tipo mejora">Mejora</span><span class="tipo arreglo">Arreglo</span></div>' : ''}
 <div class="tl">
 ${linea}
 </div>
