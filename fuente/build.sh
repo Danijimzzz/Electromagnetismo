@@ -16,7 +16,9 @@ if [ "$1" = privado ]; then presets=../privado/tema3-pdf.js; out=${2:?falta el a
     printf '<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,'; base64 < icono.svg | tr -d '\n'; printf '">\n'
     printf '<link rel="apple-touch-icon" href="../../apple-touch-icon.png">\n'
     printf '<meta property="og:title" content="Simulador de Electrostática">\n<meta property="og:description" content="Campo, potencial y energía de cargas, hilos, planos y esferas, con el desarrollo paso a paso">\n'
-    printf '<meta property="og:image" content="https://electromagnetismo-two.vercel.app/og.png">\n<meta name="twitter:card" content="summary_large_image">\n'
+    web=$(node -p "require('./catalogo.js').web")
+    printf '<link rel="canonical" href="%s/electromagnetismo/electrostatica/">\n' "$web"
+    printf '<meta property="og:image" content="%s/og.png">\n<meta name="twitter:card" content="summary_large_image">\n' "$web"
   fi
   # Las líneas data-solo-web (enlaces a las páginas legales de publico/) no van en la versión privada.
   # en la web, el diseño común de las herramientas (diseno.js); en la versión privada, sin enlaces a la web

@@ -9,7 +9,7 @@ Web estática de simuladores y calculadoras de ciencias para la carrera, en espa
 | `fuente/build.sh` | Genera todo `publico/`: Electrostática, y llama a `portal.js` y a `herramientas.js`. |
 | `fuente/herramientas.js` | Genera la página de cada herramienta con los datos del catálogo. |
 | `fuente/catalogo.js` | Asignaturas y herramientas: clave, nombre, icono, `disponible`, desc, búsqueda y, para generar la página, `scripts`, `titulo`, `descripcion`, `carpeta` y `guarda` (ver cabecera de herramientas.js). **Único sitio donde se da de alta una herramienta.** |
-| `fuente/portal.js` | Genera portada, páginas de asignatura, novedades y foro desde el catálogo (lo llama build.sh), copia las páginas legales y escribe `ads.txt`. |
+| `fuente/portal.js` | Genera portada, páginas de asignatura, novedades y foro desde el catálogo (lo llama build.sh), copia las páginas legales y escribe `ads.txt`, `sitemap.xml`, `robots.txt` y la etiqueta canonical de sus páginas (la dirección principal es `web` en catalogo.js). |
 | `fuente/legal/` | Aviso legal, privacidad, cookies, contacto y `legal.css`. Las líneas `data-sin-anuncios` / `data-con-anuncios` salen o no según `anuncios.js`. |
 | `fuente/anuncios.js` | Google AdSense: apagado mientras `cliente` esté vacío. Con el ID: código y verificación en la cabeza, un hueco por página (debajo de los resultados, nunca en el lienzo), «Preferencias de cookies» en el pie y `ads.txt`. Las pruebas cortan las peticiones a Google (`pruebas/sin-anuncios.js`). |
 | `fuente/diseno.js` | Pasa cada `pagina.html` y mete cabecera del portal, color de la asignatura, miga y CSS común. |
