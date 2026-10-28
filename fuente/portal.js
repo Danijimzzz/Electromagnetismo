@@ -140,7 +140,7 @@ ${Anuncios.cabeza()}<script>${Tema.SCRIPT}</script>
 <a class="foro" href="${raiz}foro/"${actual === 'foro' ? ' aria-current="page"' : ''}><span aria-hidden="true">💬</span>Foro</a>
 ${buscar ? '<input type="search" id="buscar" class="buscar" placeholder="Buscar: Biot-Savart, molaridad…" aria-label="Buscar herramientas" autocomplete="off">' : ''}${Tema.BOTON}</header>
 ${cuerpo}
-${CON_ANUNCIO.includes(actual) ? Anuncios.hueco() : ''}${Anuncios.pie(`<footer><a href="${raiz}contacto.html">Contacto</a>·<a href="${raiz}aviso-legal.html">Aviso legal</a>·<a href="${raiz}privacidad.html">Privacidad</a>·<a href="${raiz}cookies.html">Cookies</a>· <a href="${raiz}novedades/">Versión ${esc(Version.de('web').current)} (beta)</a></footer>`)}
+${CON_ANUNCIO.includes(actual) ? Anuncios.hueco() : ''}${Anuncios.pie(`<footer><a href="${raiz}contacto.html">Contacto</a>·<a href="${raiz}aviso-legal.html">Aviso legal</a>·<a href="${raiz}privacidad.html">Privacidad</a>·<a href="${raiz}cookies.html">Cookies</a>· <a href="${raiz}novedades/">Versión ${esc(Version.de('web').current)}</a></footer>`)}
 ${script ? `<script>${script}</script>\n` : ''}</body>
 </html>
 `;
@@ -287,7 +287,7 @@ ${cards}
 
 // novedades: una página propia con una línea de tiempo por días y una tarjeta por versión con todos sus cambios.
 // El tipo de cada cambio sale de la nota: «Nueva herramienta: X, en Y.» es una herramienta nueva (con enlace),
-// una versión con tercer número (0.20.1) es un arreglo y lo demás es una mejora.
+// una versión con tercer número (0.20.1) es un arreglo, lo de una versión mayor (1.0) es una novedad y lo demás es una mejora.
 {
   const norm = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
   const raizNombre = (n) => norm(n).split(/[:(,]/)[0].trim();
@@ -301,20 +301,20 @@ ${cards}
     for (const a of donde) for (const h of a.herramientas.filter((x) => x.disponible)) if (largas(nombre).filter((w) => largas(h.nombre).includes(w)).length >= 2) return { a, h };
     return null;
   };
-  const SIM = { mejora: '+', arreglo: '✓' }, COLOR = { nueva: 'var(--nueva)', mejora: 'var(--mejora)', arreglo: 'var(--arreglo)' };
+  const SIM = { nueva: '★', mejora: '+', arreglo: '✓' }, ETIQUETA = { nueva: 'Novedad', mejora: 'Mejora', arreglo: 'Arreglo' }, COLOR = { nueva: 'var(--nueva)', mejora: 'var(--mejora)', arreglo: 'var(--arreglo)' };
   const MES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
   const web = Version.de('web'), dias = new Map();
   for (const r of web.log) { if (!dias.has(r.fecha)) dias.set(r.fecha, []); dias.get(r.fecha).push(r); }
   const tarjeta = (r) => {
     const cambios = r.cambios.map((c) => {
-      const m = c.match(/^Nueva herramienta: (.+?), en (.+?)\.$/), tipo = m ? 'nueva' : r.v.split('.').length > 2 ? 'arreglo' : 'mejora';
+      const m = c.match(/^Nueva herramienta: (.+?), en (.+?)\.$/), tipo = m || /\.0$/.test(r.v) ? 'nueva' : r.v.split('.').length > 2 ? 'arreglo' : 'mejora';
       if (m) {
         const x = herramienta(m[1], m[2]);
         return x
           ? `<li style="${estilo(x.a)}"><span class="ico s">${esc(x.h.icono)}</span><span><span class="tipo nueva">Nueva herramienta</span><b>${esc(x.h.nombre)}</b>, en ${esc(x.a.nombre)}</span><a class="ir" href="../${x.a.clave}/${x.h.clave}/">Abrir →</a></li>`
           : `<li style="--k:var(--nueva)"><span class="sim">★</span><span><span class="tipo nueva">Nueva herramienta</span><b>${esc(m[1])}</b>, en ${esc(m[2])}</span></li>`;
       }
-      return { tipo, html: `<li style="--k:${COLOR[tipo]}"><span class="sim">${SIM[tipo]}</span><span><span class="tipo ${tipo}">${tipo === 'arreglo' ? 'Arreglo' : 'Mejora'}</span>${esc(c)}</span></li>` };
+      return { tipo, html: `<li style="--k:${COLOR[tipo]}"><span class="sim">${SIM[tipo]}</span><span><span class="tipo ${tipo}">${ETIQUETA[tipo]}</span>${esc(c)}</span></li>` };
     });
     const tipos = cambios.map((c) => (typeof c === 'string' ? 'nueva' : c.tipo));
     const k = COLOR[tipos.includes('nueva') ? 'nueva' : tipos.includes('mejora') ? 'mejora' : 'arreglo'];
@@ -329,7 +329,7 @@ ${rs.map(tarjeta).join('\n')}
     cuerpo: `<main>
 <div class="crumb"><a href="../">Inicio</a> / Novedades</div>
 <h1>Novedades</h1>
-<p class="sub">Lo último que ha llegado a la web, de lo más nuevo a lo más antiguo. Estás viendo la versión ${esc(web.current)} (beta).</p>
+<p class="sub">Lo último que ha llegado a la web, de lo más nuevo a lo más antiguo. Estás viendo la versión ${esc(web.current)}.</p>
 <div class="leyenda"><span class="tipo nueva">Nueva herramienta</span><span class="tipo mejora">Mejora</span><span class="tipo arreglo">Arreglo</span></div>
 <div class="tl">
 ${linea}
