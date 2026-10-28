@@ -1,0 +1,62 @@
+<title>El airbag y el cinturón: la fuerza en un choque, explicada paso a paso · SimulaCiencia</title>
+<meta name="description" content="Por qué el cinturón y el airbag salvan vidas: inercia, energía cinética, fuerza media según la distancia de frenado e impulso en un choque a 50 km/h, con una animación paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<!-- =====================================================================
+     El airbag y el cinturón («Física en la vida real»). Maqueta común de los
+     fenómenos (ver fuego-san-telmo/pagina.html): animación, texto del paso, historia
+     y recuadro de la herramienta. Los pasos y el dibujo están en escena.js.
+     ===================================================================== -->
+<style>
+/* colores del dibujo, con su valor en modo oscuro */
+:root {
+  --cielo: #e6eef4; --cielo-alto: #b9d3e6; --edificio: #c9cfd6; --edificio-2: #b4bcc6; --asfalto: #5d6268; --raya: #f2f2f2; --muro: #a7a29a;
+  --coche: #c2412a; --cristal: #bfe0f2; --rueda: #23272b; --llanta: #9aa3ab; --asiento: #3a4048; --persona: #2f5d8a; --piel: #e2b38f;
+  --cinturon: #f0b429; --airbag: #f4f4f4; --resalta: #b3261e; --rotulo: #1a2128 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --cielo: #1e2a36; --cielo-alto: #101922; --edificio: #2c3540; --edificio-2: #26303a; --asfalto: #2b2f34; --raya: #8b9096; --muro: #6b675f;
+  --coche: #d0563e; --cristal: #4c6f86; --rueda: #0e1012; --llanta: #7d868e; --asiento: #4a525c; --persona: #6f9ccc; --piel: #c9987a;
+  --cinturon: #f2c14e; --airbag: #dfe3e6; --resalta: #ef7a62; --rotulo: #e3e8ea } }
+:root[data-theme="dark"] {
+  --cielo: #1e2a36; --cielo-alto: #101922; --edificio: #2c3540; --edificio-2: #26303a; --asfalto: #2b2f34; --raya: #8b9096; --muro: #6b675f;
+  --coche: #d0563e; --cristal: #4c6f86; --rueda: #0e1012; --llanta: #7d868e; --asiento: #4a525c; --persona: #6f9ccc; --piel: #c9987a;
+  --cinturon: #f2c14e; --airbag: #dfe3e6; --resalta: #ef7a62; --rotulo: #e3e8ea }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física en la vida real</a> / El airbag y el cinturón</span></header>
+<div class="wrap fen">
+<div class="fen-etiquetas"><span>∿ Física general</span><span>Dificultad baja</span><span>6 pasos · 1 min</span></div>
+<h1>El airbag y el cinturón</h1>
+<p class="lead">En un choque a 50 km/h el coche se para en un instante. Con cinturón sales andando; sin él, el mismo choque puede matarte. La diferencia está en unos pocos centímetros.</p>
+<div class="fen-escena"><canvas id="escena" role="img" aria-label="Animación de un coche que choca contra un muro; sin cinturón el conductor sigue hacia delante y golpea el volante, con cinturón y airbag frena con el coche"></canvas></div>
+<div class="fen-puntos" id="puntos" role="group" aria-label="Pasos"></div>
+<div class="fen-controles">
+  <button class="btn" id="ant" type="button">‹ Anterior</button>
+  <button class="btn" id="play" type="button" aria-pressed="true">❚❚ Parar</button>
+  <button class="btn" id="sig" type="button">Siguiente ›</button>
+</div>
+<div class="fen-texto" aria-live="polite"><h2 id="paso-t"></h2><div id="paso-x"></div></div>
+<section class="fen-historia" aria-label="Un poco de historia">
+  <h2>Un poco de historia</h2>
+  <ol>
+    <li><b>1687</b>Isaac Newton publica sus <i>Principia</i> con la ley de la inercia: un cuerpo sigue moviéndose en línea recta mientras ninguna fuerza lo frene. Es lo que te pasa dentro de un coche que choca.</li>
+    <li><b>1953</b>El ingeniero estadounidense John Hetrick patenta una «bolsa de aire» que se infla en un choque, tras un susto en el coche con su familia.</li>
+    <li><b>1959</b>Nils Bohlin, ingeniero de Volvo, diseña el cinturón de tres puntos que llevan hoy todos los coches. Volvo deja la patente libre para que la use cualquier fabricante.</li>
+    <li><b>1981</b>Mercedes-Benz monta el airbag del conductor en un coche de serie, el Clase S, siempre junto al cinturón: el airbag solo funciona bien si el cinturón te sujeta.</li>
+  </ol>
+</section>
+<section class="fen-rel" aria-label="Herramienta relacionada">
+  <div class="fen-ico" aria-hidden="true">W</div>
+  <h2>Con qué herramienta se relaciona</h2>
+  <h3>Trabajo y energía <small>· Física general</small></h3>
+  <p>La fuerza que te frena hace un trabajo negativo que te quita toda la energía cinética. Cuanto más larga es la distancia de frenado, menor es la fuerza media.</p>
+  <p class="f m">W = −F d = 0 − 1/2 m v^2</p>
+  <p class="f m">F = {m v^2}/{2 d}</p>
+  <p>Se abre en la pestaña de fuerza variable, con una fuerza de −14 700 N durante 0,5 m sobre una persona de 75 kg que va a 14 m/s. El trabajo sale −7350 J y la velocidad final, cero: el cinturón te para justo en lo que se aplasta el coche.</p>
+  <div class="fen-fichas"><div><small>Energía cinética</small><b>Ec = 7350 J</b></div><div><small>Sin cinturón (5 cm)</small><b>F ≈ 147 000 N</b></div><div><small>Con cinturón (50 cm)</small><b>F ≈ 14 700 N</b></div></div>
+  <a class="fen-abrir" id="abrir" href="../../fisica/trabajo-y-energia/">Abrir en Trabajo y energía con estos datos →</a>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Física en la vida real <span id="ver"></span> (beta)</footer>
+</body>
