@@ -127,7 +127,7 @@ function pagina({ titulo, desc, raiz, actual, cuerpo, buscar, script }) {
 <meta property="og:description" content="${esc(desc)}">
 <meta property="og:image" content="${Catalogo.web}/og.png">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="preconnect" href="https://fonts.googleapis.com">
+${raiz === '' && Catalogo.google ? `<meta name="google-site-verification" content="${esc(Catalogo.google)}">\n` : ''}<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
 ${Anuncios.cabeza()}<script>${Tema.SCRIPT}</script>

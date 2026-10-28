@@ -9,6 +9,7 @@
 <link rel="canonical" href="https://simulaciencia.vercel.app/matematicas/taylor/">
 <meta property="og:image" content="https://simulaciencia.vercel.app/og.png">
 <meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Series de Taylor","description":"Calculadora del polinomio de Taylor y de Maclaurin en español: derivadas, coeficientes, aproximación de f(x₀), error y cota del resto de Lagrange, desarrollos conocidos con su término general y una gráfica animada de cómo los polinomios se acercan a la función.","url":"https://simulaciencia.vercel.app/matematicas/taylor/","inLanguage":"es","isAccessibleForFree":true,"applicationCategory":"EducationalApplication","operatingSystem":"Navegador web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://simulaciencia.vercel.app/"},{"@type":"ListItem","position":2,"name":"Matemáticas","item":"https://simulaciencia.vercel.app/matematicas/"},{"@type":"ListItem","position":3,"name":"Series de Taylor","item":"https://simulaciencia.vercel.app/matematicas/taylor/"}]}]}</script>
 <script>(() => {
   const raiz = document.documentElement, mq = matchMedia('(prefers-color-scheme: dark)'), oyentes = [];
   try { const t = localStorage.getItem('simu-tema'); if (t === 'dark' || t === 'light') raiz.dataset.theme = t; } catch (e) { /* sin almacenamiento */ }
@@ -26,7 +27,7 @@
     for (const f of oyentes) { try { f.call(mq, { matches: oscuro(), media: mq.media }); } catch (err) { console.error(err); } }
   });
 })();</script>
-<title>Series de Taylor: polinomio de Taylor y Maclaurin paso a paso · SimulaCiencia</title>
+<title>Calculadora de series de Taylor y Maclaurin · SimulaCiencia</title>
 <meta name="description" content="Calculadora del polinomio de Taylor y de Maclaurin en español: derivadas, coeficientes, aproximación de f(x₀), error y cota del resto de Lagrange, desarrollos conocidos con su término general y una gráfica animada de cómo los polinomios se acercan a la función.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -163,11 +164,15 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 :root { --vida:#6a4fc2 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --vida:#b39ff7 } }
 :root[data-theme="dark"] { --vida:#b39ff7 }
+.relacionadas { max-width:860px; margin:16px 0 0; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:4px 12px 12px 4px; padding:12px 16px }
+.relacionadas h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--accent); margin:0 0 4px }
+.relacionadas a { display:flex; gap:10px; align-items:baseline; padding:5px 0; color:var(--ink); text-decoration:none; font-size:14px }
+.relacionadas a b { font-weight:600; white-space:nowrap } .relacionadas a span { color:var(--muted) } .relacionadas a:hover b { color:var(--accent); text-decoration:underline }
 .vida-real { max-width:860px; margin:28px 0 0; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--vida); border-radius:4px 12px 12px 4px; padding:12px 16px }
 .vida-real h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--vida); margin:0 0 4px }
 .vida-real a { display:flex; gap:10px; align-items:baseline; padding:5px 0; color:var(--ink); text-decoration:none; font-size:14px }
 .vida-real a b { font-weight:600; white-space:nowrap } .vida-real a span { color:var(--muted) } .vida-real a:hover b { color:var(--vida); text-decoration:underline }
-@media (max-width:600px) { .vida-real a { display:block } .vida-real a b { display:block; white-space:normal } }
+@media (max-width:600px) { .vida-real a, .relacionadas a { display:block } .vida-real a b, .relacionadas a b { display:block; white-space:normal } }
 @media (max-width:700px) { header.top form { display:none } h1 { font-size:21px }
   .miga-izq, .miga-der, .miga::after { order:-1 } .miga::after { content:''; flex-basis:100%; height:0 } }
 
@@ -244,6 +249,12 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
   <h2>Límites con Taylor</h2>
   <p>Para un límite 0/0 se cambian el numerador y el denominador por sus desarrollos y se compara el primer término que no se anula en cada uno: si empiezan con la misma potencia, el límite es el cociente de sus coeficientes; si el numerador empieza más alto, es 0; y si empieza más alto el denominador, va a ±∞ (o no existe si los laterales tienen distinto signo). Por ejemplo,</p>
   <p class="f m">$lím_{x → 0} {sen x − x}/{x^3} = lím_{x → 0} {−{x^3}/{6} + …}/{x^3} = −{1}/{6}$</p>
+</section>
+<section class="relacionadas" aria-label="Herramientas relacionadas"><h2>Herramientas relacionadas</h2>
+<a href="../fourier/"><b>Series de Fourier →</b><span>Coeficientes a₀, aₙ y bₙ con su término general, desarrollos en senos o cosenos, Gibbs y Parseval, con la suma parcial animada.</span></a>
+<a href="../edos/"><b>Ecuaciones diferenciales →</b><span>Campo de pendientes con Euler y RK4, EDO lineales de segundo orden con resonancia y sistemas con su diagrama de fases.</span></a>
+<a href="../sistemas/"><b>Sistemas de ecuaciones lineales →</b><span>Rouché-Frobenius, Gauss, Cramer e inversa, en paramétricas, también con complejos.</span></a>
+<a href="../matrices/"><b>Matrices paso a paso →</b><span>Determinante, inversa, rango, Gauss-Jordan y valores propios, con fracciones exactas y complejos.</span></a>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Series de Taylor <span id="ver"></span> (beta)</footer>

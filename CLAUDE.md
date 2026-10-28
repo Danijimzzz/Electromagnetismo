@@ -12,7 +12,9 @@ Web estática de simuladores y calculadoras de ciencias para la carrera, en espa
 | `fuente/portal.js` | Genera portada, páginas de asignatura, novedades y foro desde el catálogo (lo llama build.sh), copia las páginas legales y escribe `ads.txt`, `sitemap.xml`, `robots.txt` y la etiqueta canonical de sus páginas (la dirección principal es `web` en catalogo.js). |
 | `fuente/legal/` | Aviso legal, privacidad, cookies, contacto y `legal.css`. Las líneas `data-sin-anuncios` / `data-con-anuncios` salen o no según `anuncios.js`. |
 | `fuente/anuncios.js` | Google AdSense: apagado mientras `cliente` esté vacío. Con el ID: código y verificación en la cabeza, un hueco por página (debajo de los resultados, nunca en el lienzo), «Preferencias de cookies» en el pie y `ads.txt`. Las pruebas cortan las peticiones a Google (`pruebas/sin-anuncios.js`). |
-| `fuente/diseno.js` | Pasa cada `pagina.html` y mete cabecera del portal, color de la asignatura, miga y CSS común. |
+| `fuente/diseno.js` | Pasa cada `pagina.html` y mete cabecera del portal, color de la asignatura, miga, CSS común y, al final, «Herramientas relacionadas» (o «Más fenómenos»). |
+| `fuente/seo.js` | Datos estructurados (JSON-LD: aplicación educativa o recurso explicativo + miga) en la cabeza de cada herramienta y fenómeno. El `<title>` de cada `pagina.html` empieza por lo que se busca («Calculadora de…», «Simulador de…») y cabe en ~60 letras; la verificación de Search Console va en `catalogo.js` (`google`). |
+| `fuente/electrostatica-teoria.html` | Texto de Electrostática debajo del lienzo (solo en la web). |
 | `fuente/estilos.css`, `DISENO.md` | Hoja común y guía de diseño. |
 | `fuente/plantilla/` | Plantilla de herramienta: `pagina.html`, `calculo.js`, `app.js` y `prueba.js` (funcionan tal cual). |
 | `fuente/nueva.js` | `node fuente/nueva.js <asignatura> <clave> "<Nombre>"`: copia la plantilla y la da de alta en catalogo.js y version.js. |

@@ -15,7 +15,7 @@
    publico/fenomenos/<clave>/ desde fuente/fenomenos/<clave>/pagina.html.
    ===================================================================== */
 const fs = require('fs'), path = require('path'), { execFileSync } = require('child_process');
-const Catalogo = require('./catalogo.js');
+const Catalogo = require('./catalogo.js'), Seo = require('./seo.js');
 const publico = path.join(__dirname, '..', 'publico');
 const icono = fs.readFileSync(path.join(__dirname, 'icono.svg')).toString('base64');
 // como `grep -v "^if (typeof module"`: la línea que exporta para Node no va en la página
@@ -39,8 +39,11 @@ function pagina(h) {
     + `<meta property="og:title" content="${h.titulo}">\n<meta property="og:description" content="${h.descripcion}">\n`
     + `<link rel="canonical" href="${Catalogo.web}/${h.asignatura}/${h.clave}/">\n`
     + `<meta property="og:image" content="${Catalogo.web}/og.png">\n<meta name="twitter:card" content="summary_large_image">\n`;
-  // diseño común (diseno.js): cabecera de la portada, color de la asignatura y miga con los botones
-  html += execFileSync('node', [path.join(__dirname, 'diseno.js'), h.asignatura, h.clave], { input: fs.readFileSync(path.join(__dirname, h.carpeta, 'pagina.html')) }).toString();
+  const fuente = fs.readFileSync(path.join(__dirname, h.carpeta, 'pagina.html'));
+  // datos estructurados para los buscadores (seo.js)
+  html += Seo.datos(h.asignatura, h.clave, Seo.descripcion(fuente.toString()));
+  // diseño común (diseno.js): cabecera de la portada, color de la asignatura, miga con los botones y herramientas relacionadas
+  html += execFileSync('node', [path.join(__dirname, 'diseno.js'), h.asignatura, h.clave], { input: fuente }).toString();
   html += '<script>\n';
   // datos de la página para los scripts comunes que arrancan antes que la app (compartir.js)
   html += `const Pagina = { carpeta: '${h.carpeta}', guarda: ${h.guarda === null ? 'null' : `'${h.guarda}'`} };\n`;

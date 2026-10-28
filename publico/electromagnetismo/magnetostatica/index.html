@@ -9,6 +9,7 @@
 <link rel="canonical" href="https://simulaciencia.vercel.app/electromagnetismo/magnetostatica/">
 <meta property="og:image" content="https://simulaciencia.vercel.app/og.png">
 <meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Magnetostática (Biot-Savart)","description":"Calculadora de campo magnético en español: campo de hilos, espiras circulares y rectangulares, arcos, solenoides, toroides, cilindros y cables coaxiales, láminas de corriente y discos que giran, con Biot-Savart y Ampère; fuerza sobre cargas y conductores, perfil de |B|, mapa de color y líneas de campo, paso a paso.","url":"https://simulaciencia.vercel.app/electromagnetismo/magnetostatica/","inLanguage":"es","isAccessibleForFree":true,"applicationCategory":"EducationalApplication","operatingSystem":"Navegador web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://simulaciencia.vercel.app/"},{"@type":"ListItem","position":2,"name":"Electromagnetismo","item":"https://simulaciencia.vercel.app/electromagnetismo/"},{"@type":"ListItem","position":3,"name":"Magnetostática (Biot-Savart)","item":"https://simulaciencia.vercel.app/electromagnetismo/magnetostatica/"}]}]}</script>
 <script>(() => {
   const raiz = document.documentElement, mq = matchMedia('(prefers-color-scheme: dark)'), oyentes = [];
   try { const t = localStorage.getItem('simu-tema'); if (t === 'dark' || t === 'light') raiz.dataset.theme = t; } catch (e) { /* sin almacenamiento */ }
@@ -26,8 +27,8 @@
     for (const f of oyentes) { try { f.call(mq, { matches: oscuro(), media: mq.media }); } catch (err) { console.error(err); } }
   });
 })();</script>
-<title>Calculadora de campo magnético (Biot-Savart) · SimulaCiencia</title>
-<meta name="description" content="Campo magnético de hilos, espiras circulares y rectangulares, arcos, solenoides, toroides, cilindros y cables coaxiales, láminas de corriente y discos que giran, con Biot-Savart y Ampère; fuerza sobre cargas y conductores, perfil de |B|, mapa de color y líneas de campo, paso a paso.">
+<title>Calculadora de campo magnético: Biot-Savart y Ampère</title>
+<meta name="description" content="Calculadora de campo magnético en español: campo de hilos, espiras circulares y rectangulares, arcos, solenoides, toroides, cilindros y cables coaxiales, láminas de corriente y discos que giran, con Biot-Savart y Ampère; fuerza sobre cargas y conductores, perfil de |B|, mapa de color y líneas de campo, paso a paso.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap">
@@ -163,11 +164,15 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 :root { --vida:#6a4fc2 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --vida:#b39ff7 } }
 :root[data-theme="dark"] { --vida:#b39ff7 }
+.relacionadas { max-width:860px; margin:16px 0 0; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:4px 12px 12px 4px; padding:12px 16px }
+.relacionadas h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--accent); margin:0 0 4px }
+.relacionadas a { display:flex; gap:10px; align-items:baseline; padding:5px 0; color:var(--ink); text-decoration:none; font-size:14px }
+.relacionadas a b { font-weight:600; white-space:nowrap } .relacionadas a span { color:var(--muted) } .relacionadas a:hover b { color:var(--accent); text-decoration:underline }
 .vida-real { max-width:860px; margin:28px 0 0; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--vida); border-radius:4px 12px 12px 4px; padding:12px 16px }
 .vida-real h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--vida); margin:0 0 4px }
 .vida-real a { display:flex; gap:10px; align-items:baseline; padding:5px 0; color:var(--ink); text-decoration:none; font-size:14px }
 .vida-real a b { font-weight:600; white-space:nowrap } .vida-real a span { color:var(--muted) } .vida-real a:hover b { color:var(--vida); text-decoration:underline }
-@media (max-width:600px) { .vida-real a { display:block } .vida-real a b { display:block; white-space:normal } }
+@media (max-width:600px) { .vida-real a, .relacionadas a { display:block } .vida-real a b, .relacionadas a b { display:block; white-space:normal } }
 @media (max-width:700px) { header.top form { display:none } h1 { font-size:21px }
   .miga-izq, .miga-der, .miga::after { order:-1 } .miga::after { content:''; flex-basis:100%; height:0 } }
 
@@ -300,6 +305,12 @@ svg.perfil { display: block; width: 100%; max-width: 440px; height: auto; margin
   <p class="eq"><span class="vv">B</span>(0) = <span class="fr"><span class="nu">μ<sub>0</sub><i>I</i></span><span class="de">π<i>a</i></span></span> <span class="uv">u</span><sub>y</sub></p>
   <p>La fuerza por unidad de longitud entre ellos es <i>F</i>/<i>L</i> = μ<sub>0</sub><i>I</i><sup>2</sup>/(2π·2<i>a</i>) = μ<sub>0</sub><i>I</i><sup>2</sup>/(4π<i>a</i>), repulsiva porque las corrientes son opuestas. Ábrelo en «Ejercicios de ejemplo», en la barra de Mis ejercicios, para ver el desarrollo completo.</p>
   <p>Para ver cómo cambia el campo, añade la pregunta «Perfil de |B|» con dos puntos P y Q: sale la gráfica de |<i>B</i>| a lo largo de la recta. La fuerza sobre cargas y corrientes, con radios, ciclotrón o efecto Hall, está en <a href="../fuerza/">Fuerza magnética</a>.</p>
+</section>
+<section class="relacionadas" aria-label="Herramientas relacionadas"><h2>Herramientas relacionadas</h2>
+<a href="../condensadores/"><b>Dieléctricos y condensadores →</b><span>Planos, cilíndricos y esféricos con capas de dieléctrico: capacidad, energía, D, P y polarización.</span></a>
+<a href="../induccion/"><b>Autoinducción e inducción mutua →</b><span>L de solenoides, toroides y coaxiales, M entre circuitos, energía magnética y circuito RL.</span></a>
+<a href="../electrostatica/"><b>Electrostática →</b><span>Cargas, hilos, planos y esferas. Campo, potencial, energía y Gauss.</span></a>
+<a href="../ondas-em/"><b>Ondas electromagnéticas planas →</b><span>λ, k, ω, el campo B y su dirección, E(r, t) y B(r, t), intensidad, presión de radiación y profundidad de penetración, con la onda en 3D.</span></a>
 </section>
 </div>
 <footer data-solo-web><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Magnetostática <span id="ver"></span> (beta)</footer>

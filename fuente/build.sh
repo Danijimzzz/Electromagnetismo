@@ -19,6 +19,10 @@ if [ "$1" = privado ]; then presets=../privado/tema3-pdf.js; out=${2:?falta el a
     web=$(node -p "require('./catalogo.js').web")
     printf '<link rel="canonical" href="%s/electromagnetismo/electrostatica/">\n' "$web"
     printf '<meta property="og:image" content="%s/og.png">\n<meta name="twitter:card" content="summary_large_image">\n' "$web"
+    # lo que sale en Google bajo el título y los datos estructurados (seo.js)
+    desc='Simulador de electrostática en español: campo eléctrico, potencial, fuerza y energía de cargas puntuales, hilos, planos, esferas y dipolos, con líneas de campo, vista 3D y el desarrollo paso a paso como en el solucionario.'
+    printf '<meta name="description" content="%s">\n' "$desc"
+    node seo.js electromagnetismo electrostatica "$desc"
   fi
   # Las líneas data-solo-web (enlaces a las páginas legales de publico/) no van en la versión privada.
   # en la web, el diseño común de las herramientas (diseno.js); en la versión privada, sin enlaces a la web
