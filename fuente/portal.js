@@ -60,7 +60,7 @@ a .t { background:var(--c); color:var(--panel) }
 @media (max-width:760px) {
   .lay { grid-template-columns:minmax(0,1fr) }
   .lado { display:flex; gap:6px; overflow-x:auto; max-height:none; padding:8px 16px; border-right:0; border-bottom:1px solid var(--line); background:var(--bg); z-index:2; scrollbar-width:none }
-  .lado h2, .lado .mas { display:none } .lado a { flex:0 0 auto; border:1px solid var(--line); border-radius:99px; padding:4px 10px 4px 4px; background:var(--panel) } .lado a small { display:none }
+  .lado h2 { display:none } .lado .mas { display:contents } .lado a { flex:0 0 auto; border:1px solid var(--line); border-radius:99px; padding:4px 10px 4px 4px; background:var(--panel) } .lado a small { display:none }
   .asig { scroll-margin-top:60px } .asig header small { display:none } body:has(.lado) .top nav { display:none } }
 /* Liquid Glass (portada, asignaturas, novedades, foro y fenómenos): fondo con color detrás y superficies de vidrio translúcido */
 :root { --vidrio:rgba(255,255,255,.55); --vidrio-fuerte:rgba(255,255,255,.72); --vidrio-borde:rgba(255,255,255,.7); --vidrio-brillo:inset 0 1px 0 rgba(255,255,255,.8);
