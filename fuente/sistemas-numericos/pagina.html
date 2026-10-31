@@ -1,0 +1,46 @@
+<title>Sistemas de numeración · SimulaCiencia</title>
+<meta name="description" content="Pasa un número entre decimal, binario, complemento a 2, hexadecimal y BCD, paso a paso.">
+<style>
+/* Solo lo propio de esta herramienta: los bits con su peso. */
+.bits { display: flex; flex-wrap: wrap; gap: 6px 0 }
+.bit { display: flex; flex-direction: column; align-items: center; min-width: 34px; padding: 4px 2px; border: 1px solid var(--line); border-right: 0; background: var(--panel) }
+.bit:last-child, .bit.fin { border-right: 1px solid var(--line) }
+.bit.fin { margin-right: 10px }
+.bit small { color: var(--muted); font-size: 11px }
+.bit b { font: 600 18px ui-monospace, monospace; color: var(--muted) }
+.bit.uno b { color: var(--accent) }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Circuitos</a> / Sistemas de numeración</span></header>
+<div class="wrap">
+<h1>Sistemas de numeración</h1>
+<p class="lead">Pasa un número entre decimal, binario, complemento a 2, hexadecimal y BCD, paso a paso.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Los bits y su peso</h2>
+      <div id="bits"></div>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Sistemas posicionales</h2>
+  <p class="m">En un sistema de base $b$ cada cifra pesa una potencia de $b$ según su posición: $N = ∑ c_i · b^i$. Binario: $b = 2$ (cifras 0 y 1). Hexadecimal: $b = 16$ (0-9 y A-F), con lo que cada cifra equivale a 4 bits.</p>
+  <p class="f m">$N = c_{n−1}·b^{n−1} + … + c_1·b + c_0$</p>
+  <h2>Complemento a 2</h2>
+  <p class="m">Con $n$ bits el primer bit pesa $−2^{n−1}$ y el resto pesa en positivo, así que se representan los enteros de $−2^{n−1}$ a $2^{n−1} − 1$. Para escribir un negativo: se pone su valor absoluto en $n$ bits, se invierten los bits y se suma 1 (equivale a calcular $2^n − |N|$). Sumar y restar funciona igual que con positivos.</p>
+  <h2>BCD</h2>
+  <p>El BCD (decimal codificado en binario) escribe cada dígito decimal con 4 bits, de 0000 a 1001. No es lo mismo que pasar el número entero a binario: 95 en BCD es 1001 0101, y en binario 0101 1111. Se usa en relojes, calculadoras y visualizadores de siete segmentos.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Sistemas de numeración <span id="ver"></span> (beta)</footer>
+</body>
