@@ -828,7 +828,7 @@ const SistemasNumericos = (() => {
     } else {
       t = t.replace(/^0b/i, '');
       if (!/^[01]+$/.test(t)) throw new Error(`En ${BASES[base]} solo caben los bits 0 y 1`);
-      if (t.length > 52) throw new Error('El número es demasiado grande (máximo 52 bits)');
+      if (t.length > (base === 'bcd' ? 60 : 52)) throw new Error(`El número es demasiado grande (máximo ${base === 'bcd' ? '15 dígitos BCD' : '52 bits'})`);
       if (base === 'bin') v = parseInt(t, 2);
       else if (base === 'c2') {
         if (t.length > n) throw new Error(`El patrón tiene ${t.length} bits y solo caben ${n}: sube el número de bits`);
@@ -875,7 +875,7 @@ const SistemasNumericos = (() => {
     const rango = `de ${String(min).replace('-', '−')} a ${max}`;
     const pasos = [];
 
-    pasos.push({ t: 'Número de partida', html: `El número es <b>${base === 'dec' ? sc.valor.trim() : t}</b> y está en ${BASES[base]}${base === 'c2' ? ` (${w} bits)` : ''}. Su valor decimal es $${String(v).replace('-', '−')}$.` });
+    pasos.push({ t: 'Número de partida', html: `El número es <b>${base === 'dec' ? String(sc.valor).trim() : t}</b> y está en ${BASES[base]}${base === 'c2' ? ` (${w} bits)` : ''}. Su valor decimal es $${String(v).replace('-', '−')}$.` });
     if (base !== 'dec') pasos.push(aDecimal(base, t, v, w));
     if (neg && base !== 'c2') pasos.push({ t: 'El signo', html: `Para pasar un número negativo a binario, hexadecimal o BCD se convierte su valor absoluto $${m}$ y se escribe el signo $−$ delante.` });
 
