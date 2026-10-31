@@ -101,6 +101,15 @@ Una herramienta **no vuelve a escribir** una regla de `estilos.css` (por ejemplo
 
 Si un elemento necesita algo distinto, se le da un id o una clase propia (`#resumen b { … }`, `.fila .in { … }`), nunca se cambia la clase común para toda la página.
 
+## Liquid Glass
+
+El aspecto es de cristal translúcido. Las variables (`--vidrio`, `--vidrio-fuerte`, `--vidrio-borde`, `--vidrio-brillo`, `--vidrio-sombra`, `--blur` y los halos `--halo1…3` del fondo) están en `estilos.css` con su valor oscuro. Una herramienta no las redefine.
+
+- `.card`, `.modos`, `.in`, `.btn` y la cabecera ya son de vidrio: no hace falta nada.
+- **El vidrio va en el marco, nunca en el lienzo ni bajo texto largo**: `canvas` y las fórmulas siguen sobre `--bg` y `--panel`.
+- `backdrop-filter` solo en cabecera, barras laterales y tarjetas principales; en pantallas estrechas el desenfoque baja a 12 px.
+- Con `prefers-reduced-transparency` o `prefers-contrast: more` todo vuelve a fondos sólidos (`--panel`). Una superficie nueva de vidrio tiene que añadirse a esa regla.
+
 ## Reglas
 
 - Sin colores fijos fuera de las variables de `:root`, y cada color propio con su valor en modo oscuro.
