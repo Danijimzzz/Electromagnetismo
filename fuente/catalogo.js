@@ -165,6 +165,8 @@ const Catalogo = {
           titulo: 'Transitorios RC, RL y RLC', descripcion: 'Calculadora de transitorios: carga y descarga de un condensador en un circuito RC, corriente en una bobina en un circuito RL, RLC en serie y en paralelo y cualquier circuito de primer orden por el método de los tres valores, con la constante de tiempo y la gráfica' },
         { clave: 'bode', nombre: 'Diagramas de Bode y filtros', icono: 'dB', disponible: false, desc: 'Filtros RC y RLC con su diagrama de Bode.', buscar: 'diagrama de bode filtros paso bajo paso alto rc rlc' },
         { clave: 'convolucion', nombre: 'Convolución y señales', icono: '∗', disponible: false, desc: 'Convolución animada y respuesta al escalón.', buscar: 'convolución señales respuesta al escalón sistemas' },
+        { clave: 'sistemas-numericos', nombre: 'Sistemas de numeración', icono: '01', disponible: true, desc: 'Pasa un número entre decimal, binario, complemento a 2, hexadecimal y BCD, paso a paso.', buscar: 'sistemas de numeración conversor binario decimal hexadecimal octal complemento a 2 c2 ca2 bcd base electrónica digital bits', scripts: ['mates.js', 'sistemas-numericos/calculo.js', 'sistemas-numericos/app.js'],
+          titulo: 'Sistemas de numeración', descripcion: 'Pasa un número entre decimal, binario, complemento a 2, hexadecimal y BCD, paso a paso.' },
       ],
     },
     {
