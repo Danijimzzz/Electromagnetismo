@@ -34,7 +34,7 @@ const BOTON = `<button class="tema" type="button" title="Cambiar de modo claro u
 
 // en modo claro se ve la luna (pasar a oscuro) y en modo oscuro el sol
 const CSS = `
-.tema { flex:0 0 auto; margin-left:auto; width:36px; height:36px; display:grid; place-items:center; padding:0; border:1px solid var(--line); border-radius:8px; background:var(--bg); color:var(--ink); cursor:pointer }
+.tema { flex:0 0 auto; margin-left:auto; width:36px; height:36px; display:grid; place-items:center; padding:0; border:1px solid var(--vidrio-borde, var(--line)); border-radius:99px; background:var(--vidrio, var(--bg)); color:var(--ink); cursor:pointer }
 .buscar ~ .tema, form ~ .tema { margin-left:0 }
 .tema:hover { border-color:var(--accent); color:var(--accent) }
 .tema:focus-visible { outline:2px solid var(--accent); outline-offset:1px }

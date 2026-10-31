@@ -12,6 +12,7 @@
 const Version = (() => {
   const registros = {
     web: [
+      { v: '1.3.1', fecha: '2026-10-31', cambios: ['La cabecera se ve más compacta en el móvil: logo, Foro y modo oscuro en una fila y el buscador debajo.'] },
       { v: '1.3', fecha: '2026-10-31', titulo: 'Nuevo aspecto: Liquid Glass', subtitulo: 'Cristal translúcido, esquinas redondeadas y fondos con color en toda la web.', secciones: [
         { icono: '🫧', titulo: 'Un diseño renovado', puntos: [
           '**Cabecera flotante de cristal** con buscador y botones redondeados, en todas las páginas.',

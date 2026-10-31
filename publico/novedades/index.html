@@ -101,8 +101,8 @@ body .card:not(.off), body .vers, body .obras { background:var(--vidrio); border
 body a.card:hover { border-color:color-mix(in srgb,var(--c) 45%,var(--vidrio-borde)); transform:translateY(-2px) } body .card { transition:transform .18s ease }
 body .vers::before { background:var(--bg) } body .filtro button { border-radius:99px; border-color:var(--vidrio-borde); background:var(--vidrio); -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur) } body .filtro button[aria-pressed=true] { background:var(--c) }
 body .t { background:var(--vidrio) } body a .t { background:var(--c) }
-@media (max-width:760px) { body .lado { margin:8px 10px 0; top:78px; max-height:none; border-radius:99px; background:var(--vidrio-fuerte); z-index:9 }
-  body .lado a { background:var(--vidrio) } body .top { top:6px } body .mini > * { -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px) } }
+@media (max-width:760px) { body .top { position:static; padding:10px 14px; gap:8px 10px; border-radius:20px } body .top .buscar { order:5; flex:1 0 100%; width:100%; margin-left:0 } body .top .tema { margin-left:0 } body .lado { margin:8px 10px 0; top:8px; max-height:none; border-radius:99px; background:var(--vidrio-fuerte); z-index:9 }
+  body .lado a { background:var(--vidrio) } body .mini > * { -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px) } }
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) { body .top, body .lado, body .mini > *, body .card, body .vers, body .obras, body .filtro button { background:var(--panel); -webkit-backdrop-filter:none; backdrop-filter:none } }
 @media (prefers-reduced-motion: reduce) { body .mini > * { transition:none } body .mini a:hover { transform:none } }
 .crumb { font-size:13.5px; color:var(--muted); margin-bottom:10px } .crumb a { color:var(--accent) } .crumb a:hover { text-decoration:underline }
@@ -164,7 +164,7 @@ a.card:hover { border-color:var(--c) }
 @media (max-width:600px) { .vers.grande { padding:18px 16px 10px } .vers.grande h2 { font-size:25px } .dia { grid-template-columns:minmax(0,1fr) } .fecha { text-align:left; padding:6px 0 2px } .fecha b { display:inline; font-size:18px; margin-right:6px } .linea { padding-left:18px } .vers::before { left:-26px } .vers li { grid-template-columns:24px minmax(0,1fr) } .vers li .ir { grid-column:2 } }
 footer { text-align:center; font-size:12.5px; color:var(--muted); padding:0 16px 24px } footer a { margin:0 6px; white-space:nowrap } footer a:hover { color:var(--accent); text-decoration:underline }
 
-.tema { flex:0 0 auto; margin-left:auto; width:36px; height:36px; display:grid; place-items:center; padding:0; border:1px solid var(--line); border-radius:8px; background:var(--bg); color:var(--ink); cursor:pointer }
+.tema { flex:0 0 auto; margin-left:auto; width:36px; height:36px; display:grid; place-items:center; padding:0; border:1px solid var(--vidrio-borde, var(--line)); border-radius:99px; background:var(--vidrio, var(--bg)); color:var(--ink); cursor:pointer }
 .buscar ~ .tema, form ~ .tema { margin-left:0 }
 .tema:hover { border-color:var(--accent); color:var(--accent) }
 .tema:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
@@ -182,11 +182,13 @@ footer { text-align:center; font-size:12.5px; color:var(--muted); padding:0 16px
 <main>
 <div class="crumb"><a href="../">Inicio</a> / Novedades</div>
 <h1>Novedades</h1>
-<p class="sub">Lo último que ha llegado a la web, de lo más nuevo a lo más antiguo. Estás viendo la versión 1.3.</p>
-
+<p class="sub">Lo último que ha llegado a la web, de lo más nuevo a lo más antiguo. Estás viendo la versión 1.3.1.</p>
+<div class="leyenda"><span class="tipo nueva">Nueva herramienta</span><span class="tipo mejora">Mejora</span><span class="tipo arreglo">Arreglo</span></div>
 <div class="tl">
 <div class="dia"><div class="fecha"><b>31</b>octubre 2026</div><div class="linea">
-<article class="vers grande" id="v1.3" style="--k:var(--nueva)"><header><h2>Nuevo aspecto: Liquid Glass</h2><span class="actual">Versión actual</span><p>Cristal translúcido, esquinas redondeadas y fondos con color en toda la web.</p></header>
+<article class="vers" id="v1.3.1" style="--k:var(--arreglo)"><header><h2>1.3.1</h2><span class="actual">Versión actual</span><small>1 cambio</small></header>
+<ul><li style="--k:var(--arreglo)"><span class="sim">✓</span><span><span class="tipo arreglo">Arreglo</span>La cabecera se ve más compacta en el móvil: logo, Foro y modo oscuro en una fila y el buscador debajo.</span></li></ul></article>
+<article class="vers grande" id="v1.3" style="--k:var(--nueva)"><header><h2>Nuevo aspecto: Liquid Glass</h2><p>Cristal translúcido, esquinas redondeadas y fondos con color en toda la web.</p></header>
 <section><h3><span>🫧</span>Un diseño renovado</h3><ul><li><b>Cabecera flotante de cristal</b> con buscador y botones redondeados, en todas las páginas.</li><li><b>Tarjetas, campos, botones y pestañas translúcidos</b> en las 68 herramientas y en Electrostática; las gráficas y las fórmulas se ven igual que antes.</li><li><b>Portada, asignaturas, novedades y foro</b> con fondos de color suaves y tarjetas que se elevan al pasar el ratón.</li><li>Funciona en <b>modo claro, oscuro y móvil</b>, y si tu dispositivo pide menos transparencia o más contraste, la web vuelve a fondos sólidos.</li></ul></section></article>
 <article class="vers grande" id="v1.2" style="--k:var(--nueva)"><header><h2>Costes y beneficio de la empresa</h2><p>Dos herramientas nuevas de Economía para ver cuánto cuesta producir y cuánto producir para ganar más.</p></header>
 <section><h3><span>🏭</span>Nuevas herramientas en Economía</h3><ul><li class="herr-n" style="--cl:#6b7a12;--co:#b8c955"><a href="../economia/costes/"><span class="ico s">CMg</span><span class="txt"><b>Costes de producción</b><small>Economía · Coste total, medio y marginal de una producción, mínimo de explotación y óptimo de explotación.</small></span><span class="ir">Abrir →</span></a></li><li class="herr-n" style="--cl:#6b7a12;--co:#b8c955"><a href="../economia/beneficio/"><span class="ico s">IMg</span><span class="txt"><b>Maximización del beneficio</b><small>Economía · Competencia perfecta y monopolio: IMg = CMg, precio y beneficio.</small></span><span class="ir">Abrir →</span></a></li><li><b>Costes de producción:</b> coste total, medio y marginal de una empresa, con su gráfica.</li><li><b>Maximización del beneficio:</b> la cantidad y el precio óptimos en competencia perfecta y en monopolio, con el precio de cierre, el índice de Lerner y la pérdida de eficiencia.</li></ul></section></article>
@@ -204,6 +206,6 @@ footer { text-align:center; font-size:12.5px; color:var(--muted); padding:0 16px
 </div></div>
 </div>
 </main>
-<footer><a href="../contacto.html">Contacto</a>·<a href="../aviso-legal.html">Aviso legal</a>·<a href="../privacidad.html">Privacidad</a>·<a href="../cookies.html">Cookies</a>· <a href="../novedades/">Versión 1.3</a></footer>
+<footer><a href="../contacto.html">Contacto</a>·<a href="../aviso-legal.html">Aviso legal</a>·<a href="../privacidad.html">Privacidad</a>·<a href="../cookies.html">Cookies</a>· <a href="../novedades/">Versión 1.3.1</a></footer>
 </body>
 </html>
