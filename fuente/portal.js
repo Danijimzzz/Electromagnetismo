@@ -113,6 +113,9 @@ a.card:hover { border-color:var(--c) }
 .vers.grande li { display:block; position:relative; padding:5px 0 5px 20px; border:0; font-size:14.5px; line-height:1.5 } .vers.grande li::before { content:""; position:absolute; left:6px; top:13px; width:6px; height:6px; border-radius:50%; background:var(--k) }
 .vers.grande li.asig-n { padding:8px 0; border-top:1px dashed var(--line) } .vers.grande li.asig-n::before { display:none } .vers.grande li.asig-n:first-child { border-top:0 }
 .asig-n .nom { display:inline-flex; align-items:center; gap:8px; color:var(--ink); margin-bottom:6px } .asig-n .nom small { font-size:11.5px; font-weight:700; color:var(--c); background:color-mix(in srgb,var(--c) 13%,transparent); border-radius:99px; padding:0 7px }
+.vers.grande li.herr-n { padding:4px 0 } .vers.grande li.herr-n::before { display:none }
+.herr-n a { display:flex; align-items:center; gap:12px; padding:10px 14px; border:1px solid color-mix(in srgb,var(--c) 35%,var(--line)); background:color-mix(in srgb,var(--c) 7%,transparent); border-radius:12px; color:var(--ink); text-decoration:none }
+.herr-n a:hover { border-color:var(--c) } .herr-n .txt { flex:1; min-width:0; display:flex; flex-direction:column } .herr-n .txt b { font-size:15px } .herr-n .txt small { color:var(--muted); font-size:12.5px; line-height:1.4 } .herr-n .ir { font-weight:700; font-size:13px; color:var(--c); white-space:nowrap }
 .chips { display:flex; flex-wrap:wrap; gap:6px } .chips a { font-size:13px; color:var(--ink); border:1px solid color-mix(in srgb,var(--c) 35%,var(--line)); background:color-mix(in srgb,var(--c) 6%,transparent); border-radius:99px; padding:2px 10px } .chips a:hover { color:var(--c); border-color:var(--c) }
 .leyenda { display:flex; gap:8px; flex-wrap:wrap; margin:-10px 0 22px }
 @media (max-width:600px) { .vers.grande { padding:18px 16px 10px } .vers.grande h2 { font-size:25px } .dia { grid-template-columns:minmax(0,1fr) } .fecha { text-align:left; padding:6px 0 2px } .fecha b { display:inline; font-size:18px; margin-right:6px } .linea { padding-left:18px } .vers::before { left:-26px } .vers li { grid-template-columns:24px minmax(0,1fr) } .vers li .ir { grid-column:2 } }
@@ -316,7 +319,14 @@ ${cards}
   for (const r of web.log) { if (!dias.has(r.fecha)) dias.set(r.fecha, []); dias.get(r.fecha).push(r); }
   // versión con secciones: cabecera grande con título y subtítulo, y un bloque por sección con sus puntos
   const negrita = (t) => esc(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+  // «#asignatura/herramienta»: tarjeta con el icono, el nombre, lo que hace y un enlace para abrirla
+  const tarjetaHerr = (p) => {
+    const [ac, hc] = p.slice(1).split('/'), a = Catalogo.asignaturas.find((x) => x.clave === ac), h = a?.herramientas.find((x) => x.clave === hc && x.disponible);
+    if (!h) throw new Error(`Novedades: no hay una herramienta disponible «${p}»`);
+    return `<li class="herr-n" style="${estilo(a)}"><a href="../${a.clave}/${h.clave}/"><span class="ico s">${esc(h.icono)}</span><span class="txt"><b>${esc(h.nombre)}</b><small>${esc(a.nombre)} · ${esc(h.desc)}</small></span><span class="ir">Abrir →</span></a></li>`;
+  };
   const punto = (p) => {
+    if (p.startsWith('#')) return tarjetaHerr(p);
     const a = p.startsWith('@') && Catalogo.asignaturas.find((x) => x.clave === p.slice(1));
     if (!a) return `<li>${negrita(p)}</li>`;
     const hs = disponibles(a);
