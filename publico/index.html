@@ -83,6 +83,29 @@ a .t { background:var(--c); color:var(--panel) }
   .lado { display:flex; gap:6px; overflow-x:auto; max-height:none; padding:8px 16px; border-right:0; border-bottom:1px solid var(--line); background:var(--bg); z-index:2; scrollbar-width:none }
   .lado h2, .lado .mas { display:none } .lado a { flex:0 0 auto; border:1px solid var(--line); border-radius:99px; padding:4px 10px 4px 4px; background:var(--panel) } .lado a small { display:none }
   .asig { scroll-margin-top:60px } .asig header small { display:none } body:has(.lado) .top nav { display:none } }
+/* Liquid Glass (portada, asignaturas, novedades, foro y fenómenos): fondo con color detrás y superficies de vidrio translúcido */
+:root { --vidrio:rgba(255,255,255,.55); --vidrio-fuerte:rgba(255,255,255,.72); --vidrio-borde:rgba(255,255,255,.7); --vidrio-brillo:inset 0 1px 0 rgba(255,255,255,.8);
+  --vidrio-sombra:0 1px 2px rgba(20,40,60,.06),0 8px 28px rgba(20,40,60,.10); --blur:blur(22px) saturate(1.7); --halo1:rgba(13,107,102,.22); --halo2:rgba(42,93,181,.20); --halo3:rgba(107,63,160,.14) }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --vidrio:rgba(34,46,54,.50); --vidrio-fuerte:rgba(26,36,42,.70); --vidrio-borde:rgba(255,255,255,.12); --vidrio-brillo:inset 0 1px 0 rgba(255,255,255,.10);
+  --vidrio-sombra:0 1px 2px rgba(0,0,0,.3),0 10px 32px rgba(0,0,0,.35); --halo1:rgba(77,188,176,.20); --halo2:rgba(116,162,242,.18); --halo3:rgba(170,120,230,.14) } }
+:root[data-theme="dark"] { --vidrio:rgba(34,46,54,.50); --vidrio-fuerte:rgba(26,36,42,.70); --vidrio-borde:rgba(255,255,255,.12); --vidrio-brillo:inset 0 1px 0 rgba(255,255,255,.10);
+  --vidrio-sombra:0 1px 2px rgba(0,0,0,.3),0 10px 32px rgba(0,0,0,.35); --halo1:rgba(77,188,176,.20); --halo2:rgba(116,162,242,.18); --halo3:rgba(170,120,230,.14) }
+body { background:radial-gradient(60% 50% at 8% 0%,var(--halo1),transparent 70%),radial-gradient(50% 45% at 95% 10%,var(--halo2),transparent 70%),radial-gradient(55% 50% at 60% 100%,var(--halo3),transparent 70%),var(--bg); background-attachment:fixed }
+body .top { position:sticky; top:10px; z-index:10; margin:10px clamp(10px,2vw,20px) 0; border:1px solid var(--vidrio-borde); border-radius:22px; background:var(--vidrio-fuerte); box-shadow:var(--vidrio-brillo),var(--vidrio-sombra); -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur) }
+body .top .buscar, body .top .foro { border-radius:99px; border-color:var(--vidrio-borde); background:var(--vidrio) }
+body .lado { margin:14px 0 0 clamp(10px,2vw,20px); top:84px; max-height:calc(100vh - 100px); border:1px solid var(--vidrio-borde); border-radius:22px; background:var(--vidrio); box-shadow:var(--vidrio-brillo),var(--vidrio-sombra); -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur) }
+body .lado a { border-radius:99px } body .lado .mas { border-top-color:var(--vidrio-borde) }
+body .mini > * { background:var(--vidrio); border:1px solid var(--vidrio-borde); border-radius:16px; box-shadow:var(--vidrio-brillo),var(--vidrio-sombra); -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur); transition:transform .18s ease,background .18s ease }
+body .mini a:hover { background:var(--vidrio-fuerte); border-color:color-mix(in srgb,var(--c) 45%,var(--vidrio-borde)); transform:translateY(-2px) }
+body .mini .off { background:transparent; box-shadow:none; -webkit-backdrop-filter:none; backdrop-filter:none; border-style:dashed }
+body .card:not(.off), body .vers, body .obras { background:var(--vidrio); border:1px solid var(--vidrio-borde); border-radius:18px; box-shadow:var(--vidrio-brillo),var(--vidrio-sombra); -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur) }
+body a.card:hover { border-color:color-mix(in srgb,var(--c) 45%,var(--vidrio-borde)); transform:translateY(-2px) } body .card { transition:transform .18s ease }
+body .vers::before { background:var(--bg) } body .filtro button { border-radius:99px; border-color:var(--vidrio-borde); background:var(--vidrio); -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur) } body .filtro button[aria-pressed=true] { background:var(--c) }
+body .t { background:var(--vidrio) } body a .t { background:var(--c) }
+@media (max-width:760px) { body .lado { margin:8px 10px 0; top:78px; max-height:none; border-radius:99px; background:var(--vidrio-fuerte); z-index:9 }
+  body .lado a { background:var(--vidrio) } body .top { top:6px } body .mini > * { -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px) } }
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) { body .top, body .lado, body .mini > *, body .card, body .vers, body .obras, body .filtro button { background:var(--panel); -webkit-backdrop-filter:none; backdrop-filter:none } }
+@media (prefers-reduced-motion: reduce) { body .mini > * { transition:none } body .mini a:hover { transform:none } }
 .crumb { font-size:13.5px; color:var(--muted); margin-bottom:10px } .crumb a { color:var(--accent) } .crumb a:hover { text-decoration:underline }
 .cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(250px,100%),1fr)); gap:14px }
 .card { background:var(--panel); border:1px solid var(--line); border-radius:12px; overflow:hidden; display:flex; flex-direction:column }

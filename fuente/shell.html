@@ -7,6 +7,8 @@
 /* Mesa de laboratorio: montaje a la izquierda, lienzo + preguntas a la derecha */
 :root {
   --bg: #eef1ee; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d5dbd5;
+  --vidrio: rgba(255,255,255,.55); --vidrio-fuerte: rgba(255,255,255,.72); --vidrio-borde: rgba(255,255,255,.7); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.8);
+  --vidrio-sombra: 0 1px 2px rgba(20,40,60,.06), 0 8px 28px rgba(20,40,60,.10); --blur: blur(22px) saturate(1.7); --halo1: rgba(13,107,102,.22); --halo2: rgba(42,93,181,.20); --halo3: rgba(107,63,160,.14);
   --accent: #0d6b66; --accent-soft: #e0efec; --pos: #c2412a; --neg: #2a5db5; --dipole: #b0700a; --mark: #6b3fa0;
   --canvas: #fbfcfa; --grid: #e7ebe6; --fieldline: #7d8c86; --equi: #c49a52; --warn: #8a5a00; --warn-bg: #fff4dc; --ok: #1d7a3e; --bad: #b3261e;
   --probe: #c0127a; --side: #e4e9e4; --side-hover: #d8dfd9; --side-active: #cdd8d2;
@@ -15,10 +17,12 @@
   --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --vidrio: rgba(34,46,54,.50); --vidrio-fuerte: rgba(26,36,42,.70); --vidrio-borde: rgba(255,255,255,.12); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.10); --vidrio-sombra: 0 1px 2px rgba(0,0,0,.3), 0 10px 32px rgba(0,0,0,.35); --halo1: rgba(77,188,176,.20); --halo2: rgba(116,162,242,.18); --halo3: rgba(170,120,230,.14); 
   --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #94a0a8; --line: #2a343b;
   --accent: #4dbcb0; --accent-soft: #173431; --pos: #ef7a62; --neg: #74a2f2; --dipole: #e6a640; --mark: #b892ec;
   --canvas: #141b1f; --grid: #1e282d; --fieldline: #6e8380; --equi: #9b7a3d; --warn: #f0c060; --warn-bg: #2d2412; --ok: #5fcf8a; --bad: #f08a80; --probe: #f070c0; --side: #0c1013; --side-hover: #1a2227; --side-active: #22303a; color-scheme: dark } }
 :root[data-theme="dark"] {
+  --vidrio: rgba(34,46,54,.50); --vidrio-fuerte: rgba(26,36,42,.70); --vidrio-borde: rgba(255,255,255,.12); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.10); --vidrio-sombra: 0 1px 2px rgba(0,0,0,.3), 0 10px 32px rgba(0,0,0,.35); --halo1: rgba(77,188,176,.20); --halo2: rgba(116,162,242,.18); --halo3: rgba(170,120,230,.14); 
   --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #94a0a8; --line: #2a343b;
   --accent: #4dbcb0; --accent-soft: #173431; --pos: #ef7a62; --neg: #74a2f2; --dipole: #e6a640; --mark: #b892ec;
   --canvas: #141b1f; --grid: #1e282d; --fieldline: #6e8380; --equi: #9b7a3d; --warn: #f0c060; --warn-bg: #2d2412; --ok: #5fcf8a; --bad: #f08a80; --probe: #f070c0; --side: #0c1013; --side-hover: #1a2227; --side-active: #22303a; color-scheme: dark }
@@ -286,6 +290,13 @@ body.dropping .main { outline: 3px dashed var(--accent); outline-offset: -8px }
   .g-nav button { white-space: nowrap; flex: 0 0 auto }
   .g-c { padding: 4px 16px 32px }
 }
+
+/* Liquid Glass: solo el marco (paneles, barra del lienzo, barra lateral); el lienzo y las fórmulas no se tocan */
+.panel, .stage { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 18px; box-shadow: var(--vidrio-brillo), var(--vidrio-sombra); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur) }
+.side { background: var(--vidrio-fuerte); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur); border-right-color: var(--vidrio-borde) }
+.in { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 10px }
+.btn { background: var(--vidrio-fuerte); border-color: var(--vidrio-borde); border-radius: 99px }
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) { .panel, .stage, .side { background: var(--panel); -webkit-backdrop-filter: none; backdrop-filter: none } }
 </style>
 
 <div class="app" id="app">
