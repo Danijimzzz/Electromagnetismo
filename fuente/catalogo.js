@@ -97,7 +97,8 @@ const Catalogo = {
         { clave: 'formulacion', nombre: 'Formulación inorgánica', icono: 'H₂O', disponible: false, desc: 'Nombre a fórmula y fórmula a nombre, según la IUPAC.', buscar: 'formulación inorgánica nomenclatura iupac' },
         { clave: 'equilibrio', nombre: 'Equilibrio químico y Le Chatelier', icono: 'K', disponible: false, desc: 'Kc, Kp y hacia dónde se desplaza el equilibrio.', buscar: 'equilibrio químico kc kp le chatelier' },
         { clave: 'redox', nombre: 'Redox por ion-electrón', icono: 'e⁻', disponible: false, desc: 'Ajuste en medio ácido y básico, paso a paso.', buscar: 'redox ion electrón oxidación reducción ajuste' },
-        { clave: 'termoquimica', nombre: 'Termoquímica y ley de Hess', icono: 'ΔH', disponible: false, desc: 'Entalpías de formación y ciclos de Hess.', buscar: 'termoquímica ley de hess entalpía de formación' },
+        { clave: 'termoquimica', nombre: 'Termoquímica y ley de Hess', icono: 'ΔH', disponible: true, desc: 'Entalpía de reacción con las entalpías de formación, ley de Hess y energía libre de Gibbs.', buscar: 'termoquímica ley de hess entalpía de reacción formación exotérmica endotérmica gibbs energía libre espontánea entropía calor de combustión ciclo de born haber', scripts: ['mates.js', 'calculadora.js', 'quimica/elementos.js', 'quimica/formulas.js', 'termoquimica/calculo.js', 'termoquimica/app.js'],
+          titulo: 'Calculadora de termoquímica y ley de Hess', descripcion: 'Calculadora de termoquímica: entalpía de reacción con las entalpías de formación, ley de Hess para combinar reacciones y energía libre de Gibbs, paso a paso' },
       ],
     },
     {
