@@ -1,0 +1,405 @@
+/* =====================================================================
+   Simulador de circuitos · motor (sin DOM). Un solo circuito, tres análisis
+   sobre la misma matriz de análisis nodal modificado (MNA) con números
+   complejos: punto de operación en continua (C abierto, L cortocircuito),
+   fasores en alterna (una resolución por cada frecuencia de las fuentes,
+   con las demás anuladas) y transitorio en el tiempo (regla trapezoidal con
+   modelos de compañero; Euler hacia atrás tras cada discontinuidad).
+   Los elementos no lineales (diodo, Zener, LED) se resuelven con
+   Newton-Raphson y se linealizan en el punto de operación para los fasores.
+   Circuito (netlist): { elementos: [{ id, t, p: [nudos], ...parámetros }] }
+   con el nudo '0' como referencia. Convenio como en Continua: la corriente
+   de cada elemento va de su primer pin al segundo y la potencia que se
+   calcula es la absorbida (negativa = entrega).
+   Tipos y parámetros:
+     R {R}  C {C}  L {L}  K {l1, l2, k} (bobinas acopladas)
+     V {onda}  I {onda}  (onda: ver «valor»)
+     VV {k}  p = [a, b, c, d]   VI {r, ctrl}   IV {g}  p = [a, b, c, d]   II {beta, ctrl}
+     SW {estado, tc}  interruptor que parte en «abierto» o «cerrado» y cambia en el instante tc
+     TR {n}  transformador ideal, p = [1a, 1b, 2a, 2b], v1 = n·v2
+     AO  amplificador operacional ideal, p = [+, −, salida]
+     D {Is, n}  Z {Is, n, Vz}  LED {Is, n}  diodo, Zener y LED, p = [ánodo, cátodo]
+   Va después del resto de ficheros del simulador (editor, vista, desarrollo).
+   ===================================================================== */
+const SimCircuitos = (() => {
+  const VT = 0.025852, GMIN = 1e-12, RON = 1e-6, ROFF = 1e12;
+  const REF = new Set(['0', 'tierra', 'gnd', 'GND']);
+
+  /* ---------- Formas de onda ---------- */
+  const amp = (o) => (o.eficaz ? o.A * Math.SQRT2 : o.A);
+  const rad = (g) => (g || 0) * Math.PI / 180;
+  // valor instantáneo de una onda en el instante t
+  function valor(o, t) {
+    switch (o.tipo) {
+      case 'seno': return (o.off || 0) + amp(o) * Math.sin(2 * Math.PI * o.f * t + rad(o.fase));
+      case 'escalon': return t >= (o.t0 || 0) ? o.v2 : o.v1;
+      case 'cuadrada': { const T = 1 / o.f, x = ((t / T) % 1 + 1) % 1; return (o.off || 0) + (x < (o.duty ?? 0.5) ? amp(o) : -amp(o)); }
+      case 'triangular': { const T = 1 / o.f, x = ((t / T) % 1 + 1) % 1; return (o.off || 0) + amp(o) * (x < 0.5 ? 4 * x - 1 : 3 - 4 * x); }
+      case 'diente': { const T = 1 / o.f, x = ((t / T) % 1 + 1) % 1; return (o.off || 0) + amp(o) * (2 * x - 1); }
+      case 'pulso': {
+        const { v1, v2, td = 0, tr = 0, tf = 0, pw, per } = o;
+        if (t < td) return v1;
+        const x = per ? (t - td) % per : t - td;
+        if (x < tr) return v1 + (v2 - v1) * x / tr;
+        if (x < tr + pw) return v2;
+        if (x < tr + pw + tf) return v2 + (v1 - v2) * (x - tr - pw) / tf;
+        return v1;
+      }
+      default: return o.v ?? 0; // cc
+    }
+  }
+  // parte de continua (para el punto de operación y las condiciones iniciales)
+  const continua = (o) => (o.tipo === 'seno' || o.tipo === 'cuadrada' || o.tipo === 'triangular' || o.tipo === 'diente' ? (o.off || 0) : o.tipo === 'escalon' || o.tipo === 'pulso' ? o.v1 : (o.v ?? 0));
+  // instantes en los que la onda cambia bruscamente (para no saltárselos al integrar)
+  function rupturas(o, tfin) {
+    const r = [];
+    if (o.tipo === 'escalon') r.push(o.t0 || 0);
+    if (o.tipo === 'pulso') { const per = o.per || Infinity, tr = o.tr || 0, tf = o.tf || 0; for (let k = 0, t0 = o.td || 0; t0 <= tfin && k < 5000; k++, t0 = (o.td || 0) + k * per) { r.push(t0, t0 + tr, t0 + tr + o.pw, t0 + tr + o.pw + tf); if (!isFinite(per)) break; } }
+    if (o.tipo === 'cuadrada') for (let k = 0; k / o.f <= tfin && k < 5000; k++) r.push(k / o.f, (k + (o.duty ?? 0.5)) / o.f);
+    return r;
+  }
+
+  /* ---------- Solución de A·x = b compleja por Gauss con pivote parcial ---------- */
+  // A y b se pasan como { re, im } (Float64Array); devuelve { re, im } o null si es singular
+  function resuelve(Are, Aim, bre, bim, n) {
+    const re = Float64Array.from(Are), im = Float64Array.from(Aim), xr = Float64Array.from(bre), xi = Float64Array.from(bim);
+    for (let c = 0; c < n; c++) {
+      let m = c, mm = -1;
+      for (let r = c; r < n; r++) { const q = re[r * n + c] ** 2 + im[r * n + c] ** 2; if (q > mm) { mm = q; m = r; } }
+      if (mm < 1e-300) return null;
+      if (m !== c) {
+        for (let k = 0; k < n; k++) { let t = re[c * n + k]; re[c * n + k] = re[m * n + k]; re[m * n + k] = t; t = im[c * n + k]; im[c * n + k] = im[m * n + k]; im[m * n + k] = t; }
+        let t = xr[c]; xr[c] = xr[m]; xr[m] = t; t = xi[c]; xi[c] = xi[m]; xi[m] = t;
+      }
+      const pr = re[c * n + c], pi = im[c * n + c], d = pr * pr + pi * pi;
+      for (let r = c + 1; r < n; r++) {
+        const ar = re[r * n + c], ai = im[r * n + c];
+        if (ar === 0 && ai === 0) continue;
+        const fr = (ar * pr + ai * pi) / d, fi = (ai * pr - ar * pi) / d;
+        for (let k = c; k < n; k++) { const br = re[c * n + k], bi = im[c * n + k]; re[r * n + k] -= fr * br - fi * bi; im[r * n + k] -= fr * bi + fi * br; }
+        xr[r] -= fr * xr[c] - fi * xi[c]; xi[r] -= fr * xi[c] + fi * xr[c];
+      }
+    }
+    for (let r = n - 1; r >= 0; r--) {
+      let sr = xr[r], si = xi[r];
+      for (let k = r + 1; k < n; k++) { sr -= re[r * n + k] * xr[k] - im[r * n + k] * xi[k]; si -= re[r * n + k] * xi[k] + im[r * n + k] * xr[k]; }
+      const pr = re[r * n + r], pi = im[r * n + r], d = pr * pr + pi * pi;
+      xr[r] = (sr * pr + si * pi) / d; xi[r] = (si * pr - sr * pi) / d;
+    }
+    return { re: xr, im: xi };
+  }
+
+  /* ---------- Preparación: nudos, ramas e incógnitas ---------- */
+  const RAMA = new Set(['V', 'L', 'VV', 'VI', 'TR', 'AO']);
+  const NOLINEAL = new Set(['D', 'Z', 'LED']);
+  const TIPOS_OK = new Set(['R', 'C', 'L', 'K', 'V', 'I', 'VV', 'VI', 'IV', 'II', 'SW', 'TR', 'AO', 'D', 'Z', 'LED']);
+  const NPINES = { R: 2, C: 2, L: 2, K: 0, V: 2, I: 2, VV: 4, VI: 2, IV: 4, II: 2, SW: 2, TR: 4, AO: 3, D: 2, Z: 2, LED: 2 };
+  function prepara(net) {
+    const crudos = net.elementos || [];
+    if (!crudos.length) throw new Error('Añade al menos un componente');
+    const ids = new Set(), nombres = [];
+    const esRef = (n) => REF.has(String(n));
+    const idx = new Map();
+    for (const e of crudos) {
+      if (!TIPOS_OK.has(e.t)) throw new Error(`${e.id}: tipo de componente desconocido (${e.t})`);
+      if (ids.has(e.id)) throw new Error(`${e.id}: hay dos componentes con el mismo nombre`);
+      ids.add(e.id);
+      if (e.t !== 'K' && (!Array.isArray(e.p) || e.p.length < NPINES[e.t] || e.p.some((n) => n === undefined || n === null || String(n) === ''))) throw new Error(`${e.id}: tiene patillas sin conectar`);
+      for (const n of e.p || []) if (!esRef(n) && !idx.has(String(n))) { idx.set(String(n), nombres.length); nombres.push(String(n)); }
+    }
+    if (!crudos.some((e) => (e.p || []).some(esRef))) throw new Error('Falta la tierra: conecta un nudo a tierra (0)');
+    const N = nombres.length;
+    const nodo = (n) => (esRef(n) ? -1 : idx.get(String(n)));
+    const els = crudos.map((e) => ({ ...e, q: (e.p || []).map(nodo), rama: -1 }));
+    let M = N;
+    for (const e of els) if (RAMA.has(e.t)) e.rama = M++;
+    const porId = new Map(els.map((e) => [e.id, e]));
+    for (const e of els) {
+      if (e.t === 'R' && !(e.R > 0)) throw new Error(`${e.id}: la resistencia debe ser mayor que 0`);
+      if (e.t === 'C' && !(e.C > 0)) throw new Error(`${e.id}: la capacidad debe ser mayor que 0`);
+      if (e.t === 'L' && !(e.L > 0)) throw new Error(`${e.id}: la inductancia debe ser mayor que 0`);
+      if (e.t === 'TR' && !(e.n > 0)) throw new Error(`${e.id}: la relación de transformación debe ser mayor que 0`);
+      if (e.t === 'VI' || e.t === 'II') {
+        const x = porId.get(e.ctrl);
+        if (!x) throw new Error(`${e.id}: no hay ningún componente llamado ${e.ctrl}`);
+        if (x === e) throw new Error(`${e.id}: no puede controlarla su propia corriente`);
+        if (!['R', 'V', 'L', 'C', 'SW', 'VV', 'VI'].includes(x.t)) throw new Error(`${e.id}: no se puede controlar con la corriente de ${e.ctrl}`);
+        e.x = x;
+      }
+      if (e.t === 'K') {
+        const a = porId.get(e.l1), b = porId.get(e.l2);
+        if (!a || !b || a.t !== 'L' || b.t !== 'L' || a === b) throw new Error(`${e.id}: debe acoplar dos bobinas distintas`);
+        if (!(e.k > 0 && e.k <= 1)) throw new Error(`${e.id}: el coeficiente de acoplamiento debe estar entre 0 y 1`);
+        e.a = a; e.b = b; e.M = e.k * Math.sqrt(a.L * b.L);
+      }
+    }
+    // conectividad (todas las patillas cuentan como unión)
+    const padre = Array.from({ length: N + 1 }, (_, i) => i), raiz = (i) => (padre[i] === i ? i : (padre[i] = raiz(padre[i])));
+    for (const e of els) { const qs = e.q.map((q) => (q < 0 ? N : q)); for (let i = 1; i < qs.length; i++) padre[raiz(qs[i])] = raiz(qs[0]); }
+    const sueltos = nombres.filter((_, i) => raiz(i) !== raiz(N));
+    if (sueltos.length) throw new Error(`El circuito está partido: ${sueltos.join(', ')} no están unidos a tierra`);
+    return { els, nombres, N, M, porId, nodo, idx };
+  }
+
+  /* ---------- Matriz ---------- */
+  // Cuadrícula de ecuaciones; add(fila, col, re, im) ignora los nudos de tierra (-1)
+  const matriz = (M) => {
+    const re = new Float64Array(M * M), im = new Float64Array(M * M), br = new Float64Array(M), bi = new Float64Array(M);
+    return { re, im, br, bi, M, add(i, j, r, m = 0) { if (i < 0 || j < 0) return; re[i * M + j] += r; im[i * M + j] += m; }, rhs(i, r, m = 0) { if (i < 0) return; br[i] += r; bi[i] += m; } };
+  };
+  const adm = (A, a, b, gr, gi = 0) => { A.add(a, a, gr, gi); A.add(b, b, gr, gi); A.add(a, b, -gr, -gi); A.add(b, a, -gr, -gi); };
+  // corriente de un componente x (de su pin 1 al 2) como combinación lineal de incógnitas: [[col, re, im], …]
+  function formaCorriente(x, modo, w, h) {
+    const [a, b] = x.q;
+    if (x.rama >= 0) return [[x.rama, 1, 0]];
+    if (x.t === 'R') return [[a, 1 / x.R, 0], [b, -1 / x.R, 0]];
+    if (x.t === 'SW') { const g = 1 / x.rsw; return [[a, g, 0], [b, -g, 0]]; }
+    if (x.t === 'C') { if (modo === 'ac') return [[a, 0, w * x.C], [b, 0, -w * x.C]]; return []; }
+    return [];
+  }
+
+  // tensión del diodo (a través de su modelo) → corriente y conductancia
+  function modeloDiodo(e, v) {
+    const Is = e.Is ?? (e.t === 'LED' ? 1e-18 : 1e-14), nn = e.n ?? (e.t === 'LED' ? 2 : 1), nvt = nn * VT;
+    const ex = Math.exp(Math.min(v / nvt, 80));
+    let i = Is * (ex - 1), g = Is * ex / nvt;
+    if (e.t === 'Z' && e.Vz > 0) { const er = Math.exp(Math.min(-(v + e.Vz) / nvt, 80)); i -= Is * (er - 1); g += Is * er / nvt; }
+    return { i, g: g + GMIN };
+  }
+  const vcrit = (e) => { const nvt = (e.n ?? (e.t === 'LED' ? 2 : 1)) * VT, Is = e.Is ?? (e.t === 'LED' ? 1e-18 : 1e-14); return nvt * Math.log(nvt / (Math.SQRT2 * Is)); };
+  function limita(vn, vo, e) {
+    const nvt = (e.n ?? (e.t === 'LED' ? 2 : 1)) * VT, vc = vcrit(e);
+    if (vn > vc && Math.abs(vn - vo) > 2 * nvt) {
+      if (vo > 0) { const arg = 1 + (vn - vo) / nvt; return arg > 0 ? vo + nvt * Math.log(arg) : vc; }
+      return nvt * Math.log(vn / nvt);
+    }
+    return vn;
+  }
+
+  // Ensambla el sistema. ctx: { modo: 'dc' | 'ac' | 'tr', w, t, h, f, x (iterado), prev, euler, fuentes }
+  function ensambla(P, ctx) {
+    const { modo, w = 0, t = 0, h = 0, x = null, prev = null, euler = false, f = 0 } = ctx;
+    const A = matriz(P.M), { N } = P;
+    for (let i = 0; i < N; i++) A.add(i, i, GMIN);
+    if (modo === 'dc') for (const i of fugas(P)) A.add(i, i, 1e-3);
+    const v = (q) => (q < 0 || !x ? 0 : x.re[q]);
+    for (const e of P.els) {
+      const [a, b, c, d] = e.q, r = e.rama;
+      switch (e.t) {
+        case 'R': adm(A, a, b, 1 / e.R); break;
+        case 'SW': adm(A, a, b, 1 / e.rsw); break;
+        case 'C':
+          if (modo === 'ac') adm(A, a, b, 0, w * e.C);
+          else if (modo === 'tr') {
+            const G = (euler ? 1 : 2) * e.C / h, vp = prev.V(a) - prev.V(b), ip = prev.Ic[e.id];
+            adm(A, a, b, G); const Ieq = euler ? G * vp : G * vp + ip; A.rhs(a, Ieq); A.rhs(b, -Ieq);
+          }
+          break;
+        case 'L': {
+          A.add(a, r, 1); A.add(b, r, -1); A.add(r, a, 1); A.add(r, b, -1);
+          if (modo === 'ac') A.add(r, r, 0, -w * e.L);
+          else if (modo === 'tr') {
+            const Z = (euler ? 1 : 2) * e.L / h; A.add(r, r, -Z);
+            A.rhs(r, euler ? -Z * prev.x.re[r] : -Z * prev.x.re[r] - (prev.V(a) - prev.V(b)));
+          }
+          break;
+        }
+        case 'K': {
+          const { a: la, b: lb, M } = e;
+          if (modo === 'ac') { A.add(la.rama, lb.rama, 0, -w * M); A.add(lb.rama, la.rama, 0, -w * M); }
+          else if (modo === 'tr') {
+            const Z = (euler ? 1 : 2) * M / h;
+            A.add(la.rama, lb.rama, -Z); A.add(lb.rama, la.rama, -Z);
+            A.rhs(la.rama, -Z * prev.x.re[lb.rama]); A.rhs(lb.rama, -Z * prev.x.re[la.rama]);
+          }
+          break;
+        }
+        case 'V': {
+          A.add(a, r, 1); A.add(b, r, -1); A.add(r, a, 1); A.add(r, b, -1);
+          const fv = ctx.fuente(e); A.rhs(r, fv.re, fv.im); break;
+        }
+        case 'I': { const fv = ctx.fuente(e); A.rhs(a, -fv.re, -fv.im); A.rhs(b, fv.re, fv.im); break; }
+        case 'VV': A.add(a, r, 1); A.add(b, r, -1); A.add(r, a, 1); A.add(r, b, -1); A.add(r, c, -e.k); A.add(r, d, e.k); break;
+        case 'VI': {
+          A.add(a, r, 1); A.add(b, r, -1); A.add(r, a, 1); A.add(r, b, -1);
+          for (const [col, gr, gi] of formaCorriente(e.x, modo, w, h)) A.add(r, col, -e.r * gr, -e.r * gi);
+          break;
+        }
+        case 'IV': A.add(a, c, e.g); A.add(a, d, -e.g); A.add(b, c, -e.g); A.add(b, d, e.g); break;
+        case 'II': for (const [col, gr, gi] of formaCorriente(e.x, modo, w, h)) { A.add(a, col, e.beta * gr, e.beta * gi); A.add(b, col, -e.beta * gr, -e.beta * gi); } break;
+        case 'TR': {
+          // i1 entra por 1a y sale por 1b; i2 = −n·i1 entra por 2a y sale por 2b
+          A.add(a, r, 1); A.add(b, r, -1); A.add(c, r, -e.n); A.add(d, r, e.n);
+          A.add(r, a, 1); A.add(r, b, -1); A.add(r, c, -e.n); A.add(r, d, e.n);
+          break;
+        }
+        case 'AO': { const [pos, neg, sal] = e.q; A.add(sal, r, 1); A.add(r, pos, 1); A.add(r, neg, -1); break; }
+        case 'D': case 'Z': case 'LED': {
+          let g, Ieq;
+          if (modo === 'ac') { const m = modeloDiodo(e, ctx.op.vd[e.id]); g = m.g; adm(A, a, b, g); break; }
+          const vd = limita(v(a) - v(b), ctx.vd[e.id] ?? 0, e); ctx.vd[e.id] = vd;
+          const m = modeloDiodo(e, vd); g = m.g; Ieq = m.i - g * vd;
+          adm(A, a, b, g); A.rhs(a, -Ieq); A.rhs(b, Ieq);
+          break;
+        }
+        default: break;
+      }
+    }
+    return A;
+  }
+
+  // nudos sin camino de continua a tierra (solo condensadores, fuentes de corriente o interruptores abiertos): un nudo de cada grupo se ata a tierra con
+  // una conductancia grande para que el punto de operación los deje en 0 V en vez de quedar indeterminados
+  function fugas(P) {
+    const { N } = P, padre = Array.from({ length: N + 1 }, (_, i) => i), raiz = (i) => (padre[i] === i ? i : (padre[i] = raiz(padre[i])));
+    const une = (a, b) => { padre[raiz(a < 0 ? N : a)] = raiz(b < 0 ? N : b); };
+    for (const e of P.els) {
+      if (['R', 'L', 'V', 'VV', 'VI', 'D', 'Z', 'LED'].includes(e.t) || (e.t === 'SW' && e.rsw === RON)) une(e.q[0], e.q[1]);
+      else if (e.t === 'TR') { une(e.q[0], e.q[1]); une(e.q[2], e.q[3]); } else if (e.t === 'AO') une(e.q[2], -1);
+    }
+    const vistos = new Set(), r = [];
+    for (let i = 0; i < N; i++) { const g = raiz(i); if (g !== raiz(N) && !vistos.has(g)) { vistos.add(g); r.push(i); } }
+    return r;
+  }
+  // resistencia del interruptor en el instante t
+  const rswEn = (e, t) => { const c0 = e.estado === 'cerrado', cambio = e.tc !== undefined && e.tc !== null && t >= e.tc; return (cambio ? !c0 : c0) ? RON : ROFF; };
+  const ponSW = (P, t) => { for (const e of P.els) if (e.t === 'SW') e.rsw = rswEn(e, t); };
+
+  // Resuelve un paso (Newton si hay no lineales). Devuelve el vector de incógnitas { re, im }
+  function paso(P, ctx, maxIt = 150) {
+    const hayNL = P.els.some((e) => NOLINEAL.has(e.t));
+    let x = ctx.x || { re: new Float64Array(P.M), im: new Float64Array(P.M) };
+    for (let it = 0; it < (hayNL && ctx.modo !== 'ac' ? maxIt : 1); it++) {
+      const A = ensambla(P, { ...ctx, x });
+      const s = resuelve(A.re, A.im, A.br, A.bi, P.M);
+      if (!s) throw new Error('El circuito no tiene solución única: revisa fuentes de tensión en paralelo, fuentes de corriente en serie o nudos sin camino de continua');
+      if (!hayNL || ctx.modo === 'ac') return s;
+      let dx = 0; for (let k = 0; k < P.M; k++) dx = Math.max(dx, Math.abs(s.re[k] - x.re[k]) - 1e-9 - 1e-6 * Math.abs(s.re[k]));
+      x = s;
+      if (dx <= 0 && it > 0) return s;
+    }
+    throw new Error('El circuito no lineal no converge: prueba con otros valores o quita algún diodo');
+  }
+
+  /* ---------- Resultados por componente ---------- */
+  const cx = (re, im = 0) => ({ re, im });
+  function resultados(P, x, modo, w, h, prev, euler, ctx) {
+    const V = (q) => (q < 0 ? cx(0) : cx(x.re[q], x.im[q]));
+    const dif = (a, b) => cx(V(a).re - V(b).re, V(a).im - V(b).im);
+    const tensiones = {}; P.nombres.forEach((n, i) => { tensiones[n] = V(i); });
+    const I = {}, U = {}, Pot = {};
+    for (const e of P.els) {
+      if (e.t === 'K') continue;
+      const [a, b] = e.q, u = e.t === 'TR' ? dif(a, b) : e.t === 'AO' ? dif(e.q[2], -1) : dif(a, b);
+      let i = cx(0);
+      if (e.rama >= 0) i = cx(x.re[e.rama], x.im[e.rama]);
+      else if (e.t === 'R') i = cx(u.re / e.R, u.im / e.R);
+      else if (e.t === 'SW') i = cx(u.re / e.rsw, u.im / e.rsw);
+      else if (e.t === 'C') { if (modo === 'ac') i = cx(-w * e.C * u.im, w * e.C * u.re); else if (modo === 'tr') { const G = (euler ? 1 : 2) * e.C / h, vp = prev.V(a) - prev.V(b); i = cx(euler ? G * (u.re - vp) : G * (u.re - vp) - prev.Ic[e.id]); } }
+      else if (e.t === 'I') { const f = ctx.fuente(e); i = cx(f.re, f.im); }
+      else if (e.t === 'IV') i = cx(e.g * (V(e.q[2]).re - V(e.q[3]).re), e.g * (V(e.q[2]).im - V(e.q[3]).im));
+      else if (e.t === 'II') { const f = formaCorriente(e.x, modo, w, h); let sr = 0, si = 0; for (const [c, gr, gi] of f) { const xr = x.re[c] ?? 0, xi = x.im[c] ?? 0; sr += gr * xr - gi * xi; si += gr * xi + gi * xr; } i = cx(e.beta * sr, e.beta * si); }
+      else if (NOLINEAL.has(e.t)) { if (modo === 'ac') i = cx(u.re * modeloDiodo(e, ctx.op.vd[e.id]).g, u.im * modeloDiodo(e, ctx.op.vd[e.id]).g); else i = cx(modeloDiodo(e, u.re).i); }
+      I[e.id] = i; U[e.id] = u;
+      // potencia absorbida: en continua y transitorio U·I; en alterna la compleja S = U·conj(I)/2 (valores de pico)
+      Pot[e.id] = modo === 'ac' ? cx((u.re * i.re + u.im * i.im) / 2, (u.im * i.re - u.re * i.im) / 2) : cx(u.re * i.re);
+    }
+    return { V: tensiones, I, U, P: Pot };
+  }
+
+  /* ---------- Análisis ---------- */
+  const fuenteCC = (e) => cx(continua(e.onda));
+
+  // Punto de operación en continua
+  function operacion(net) {
+    const P = prepara(net);
+    ponSW(P, -Infinity); // antes del cambio
+    const ctx = { modo: 'dc', fuente: fuenteCC, vd: {} };
+    const x = paso(P, ctx);
+    const r = resultados(P, x, 'dc', 0, 0, null, false, ctx);
+    r.vd = ctx.vd; r.P_ = P; r.x = x;
+    r.balance = Object.values(r.P).reduce((s, p) => s + p.re, 0);
+    return r;
+  }
+
+  // Fasores: una resolución por cada frecuencia que haya en las fuentes (superposición). Valores de pico, referencia seno.
+  function fasores(net, op) {
+    const P = op?.P_ || prepara(net);
+    ponSW(P, -Infinity);
+    if (!op && P.els.some((e) => NOLINEAL.has(e.t))) op = operacion(net); // solo hace falta el punto de operación si hay no lineales
+    const fr = [...new Set(P.els.filter((e) => (e.t === 'V' || e.t === 'I') && e.onda.tipo === 'seno').map((e) => e.onda.f))].sort((a, b) => a - b);
+    return fr.map((f) => {
+      const w = 2 * Math.PI * f;
+      const fuente = (e) => (e.onda.tipo === 'seno' && e.onda.f === f ? cx(amp(e.onda) * Math.cos(rad(e.onda.fase)), amp(e.onda) * Math.sin(rad(e.onda.fase))) : cx(0));
+      const ctx = { modo: 'ac', w, fuente, op };
+      const x = paso(P, ctx);
+      return { f, w, ...resultados(P, x, 'ac', w, 0, null, false, ctx) };
+    });
+  }
+
+  // Transitorio: tfin y, si se quiere, paso máximo h. Devuelve series t, V[nudo][], I[id][], U[id][], P[id][]
+  function transitorio(net, { tfin, h, puntos = 2000, uic = false } = {}) {
+    if (!(tfin > 0)) throw new Error('El tiempo final debe ser mayor que 0');
+    const P = prepara(net);
+    const frecs = P.els.filter((e) => (e.t === 'V' || e.t === 'I') && e.onda.f).map((e) => e.onda.f);
+    let hmax = h || tfin / puntos;
+    if (frecs.length) hmax = Math.min(hmax, 1 / (Math.max(...frecs) * 60));
+    // instantes de ruptura
+    const rup = [];
+    for (const e of P.els) { if ((e.t === 'V' || e.t === 'I')) rup.push(...rupturas(e.onda, tfin)); if (e.t === 'SW' && e.tc !== undefined && e.tc !== null) rup.push(+e.tc); }
+    const cortes = [...new Set(rup.filter((t) => t > 0 && t < tfin).map((t) => +t.toFixed(15)))].sort((a, b) => a - b);
+    // estado inicial
+    ponSW(P, -1e-30);
+    const ctx0 = { modo: 'dc', fuente: fuenteCC, vd: {} };
+    // condiciones iniciales: punto de operación (C abierto, L en corto) con las fuentes en t = 0, salvo UIC
+    const ceros = () => ({ re: new Float64Array(P.M), im: new Float64Array(P.M) });
+    let x;
+    if (uic) x = ceros(); else { try { x = paso(P, ctx0); } catch (e) { x = ceros(); } } // si la continua no está determinada (L en paralelo con una fuente), se parte de cero
+    const vd = ctx0.vd;
+    const out = { t: [0], V: {}, I: {}, U: {}, P: {} };
+    const guarda = (t, r) => {
+      if (t > 0) out.t.push(t);
+      for (const n of P.nombres) (out.V[n] ||= []).push(r.V[n].re);
+      for (const id of Object.keys(r.I)) { (out.I[id] ||= []).push(r.I[id].re); (out.U[id] ||= []).push(r.U[id].re); (out.P[id] ||= []).push(r.P[id].re); }
+    };
+    const mk = (xx, Ic) => ({ x: xx, V: (q) => (q < 0 ? 0 : xx.re[q]), Ic });
+    let prev = mk(x, {});
+    const r0 = resultados(P, x, 'dc', 0, 0, null, false, ctx0);
+    // en UIC los condensadores parten con 0 V y sus corrientes son 0; en el punto de operación también (C abierto)
+    for (const e of P.els) if (e.t === 'C') prev.Ic[e.id] = 0;
+    guarda(0, r0);
+    let t = 0, k = 0, euler = true, nPasos = 0;
+    while (t < tfin - 1e-15 * tfin && nPasos < 400000) {
+      let t1 = Math.min(t + hmax, tfin);
+      while (k < cortes.length && cortes[k] <= t + 1e-15) k++;
+      let corte = false;
+      if (k < cortes.length && cortes[k] < t1 + 1e-15) { t1 = cortes[k]; corte = true; }
+      const hh = t1 - t;
+      if (hh <= 0) { t = t1; continue; }
+      ponSW(P, t1);
+      // tras una discontinuidad se usa Euler hacia atrás en el paso siguiente: aquí usamos Euler en el paso que llega al corte
+      const ctx = { modo: 'tr', h: hh, t: t1, prev, euler, x, vd, fuente: (e) => cx(valor(e.onda, t1)) };
+      x = paso(P, ctx);
+      const r = resultados(P, x, 'tr', 0, hh, prev, euler, ctx);
+      for (const e of P.els) if (e.t === 'C') prev.Ic[e.id] = r.I[e.id].re;
+      prev = mk(x, prev.Ic);
+      guarda(t1, r);
+      t = t1; nPasos++;
+      euler = corte; // el paso siguiente a una ruptura se hace con Euler
+    }
+    out.nudos = P.nombres;
+    return out;
+  }
+
+  /* ---------- Utilidades ---------- */
+  const mod = (z) => Math.hypot(z.re, z.im), arg = (z) => Math.atan2(z.im, z.re);
+  // valor eficaz y media de una serie uniformemente muestreada por trapecios
+  function estadistica(t, y) {
+    let s = 0, s2 = 0; const T = t[t.length - 1] - t[0];
+    for (let i = 1; i < t.length; i++) { const dt = t[i] - t[i - 1]; s += (y[i] + y[i - 1]) / 2 * dt; s2 += (y[i] * y[i] + y[i - 1] * y[i - 1]) / 2 * dt; }
+    return { media: s / T, rms: Math.sqrt(s2 / T) };
+  }
+
+  return { operacion, fasores, transitorio, valor, continua, estadistica, mod, arg, prepara };
+})();
+if (typeof module !== 'undefined') module.exports = SimCircuitos;
