@@ -47,6 +47,8 @@ const Practica = (() => {
     // ondasem: una onda plana, una intensidad o un medio con pérdidas
     // guias-onda: una guía rectangular con un modo TE o TM; se preguntan fc, λc, β, λg, vf, vg y Z (o la atenuación)
     'guias-onda': { datos: null, items: '#resumen > div.num', genera: () => window.GuiasOndaApp?.azar(), enunciado: () => window.GuiasOndaApp?.enunciado() },
+    // líneas de transmisión: una carga y una línea al azar; se preguntan Γ, ROE, RL, λ, Zin y la posición del primer máximo
+    'lineas-transmision': { datos: null, items: '#resumen > div.num', genera: () => window.LineasTransmisionApp?.azar(), enunciado: () => window.LineasTransmisionApp?.enunciado() },
     'ondas-em': { datos: null, items: '#res > div', genera: () => window.OndasEMApp?.azar(), enunciado: () => window.OndasEMApp?.enunciado() },
     // maxwell: una ecuación al azar (Gauss, Gauss para B, Faraday, Ampère–Maxwell u onda)
     maxwell: { datos: null, items: '#res > div', genera: () => window.MaxwellApp?.azar(), enunciado: () => window.MaxwellApp?.enunciado() },

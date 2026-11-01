@@ -279,6 +279,14 @@ const Pagina = { carpeta: 'probabilidad', guarda: 'probabilidad-v1' };
 const Version = (() => {
   const registros = {
     web: [
+      { v: '1.7', fecha: '2026-11-01', titulo: 'Fase 4: líneas de transmisión', subtitulo: 'La carta de Smith, dibujada y calculada paso a paso.', secciones: [
+        { icono: '⚡', titulo: 'Nuevas herramientas en Electromagnetismo', puntos: [
+          '#electromagnetismo/lineas-transmision',
+          '**ROE y ondas estacionarias:** pon la impedancia de la línea, la carga R + jX, la frecuencia y la longitud, y obtén el coeficiente de reflexión, la ROE, la pérdida de retorno y la impedancia de entrada.',
+          '**La carta de Smith dibujada:** el punto de la carga, el círculo de ROE y el recorrido hacia el generador, con el perfil de la tensión y la corriente a lo largo de la línea.',
+          '**Adaptación de impedancias:** dónde poner un stub en paralelo y cuánto mide, en cortocircuito o en abierto, o un transformador λ/4. Con desarrollo paso a paso, ejemplos y **modo práctica**.',
+        ] },
+      ] },
       { v: '1.6', fecha: '2026-11-01', titulo: 'Fase 3: ondas, circuitos y la vida real', subtitulo: 'Diez herramientas nuevas y cuatro fenómenos: de las ecuaciones de Maxwell a las antenas, de los filtros de Bode a las lentes, y por qué el cielo es azul.', secciones: [
         { icono: '⚡', titulo: 'Nuevas herramientas en Electromagnetismo', puntos: [
           '#electromagnetismo/maxwell',
@@ -486,6 +494,9 @@ const Version = (() => {
           '**Diseño pensado también para el móvil.**',
         ] },
       ] },
+    ],
+    'lineas-transmision': [
+      { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: línea de transmisión sin pérdidas con una carga R + jX: coeficiente de reflexión, ROE, pérdida de retorno, impedancia de entrada, máximos y mínimos de tensión y adaptación con un stub en paralelo (en cortocircuito o en abierto) o con un transformador λ/4. Con la carta de Smith dibujada (círculo de ROE y recorrido hacia el generador), el perfil de la onda estacionaria, el desarrollo paso a paso, ejemplos y modo práctica.'] },
     ],
     maxwell: [
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: las cuatro ecuaciones de Maxwell en forma integral y diferencial con su significado y enlaces a los simuladores de Electromagnetismo, y una calculadora paso a paso para cada una: ley de Gauss (flujo y campo de una esfera cargada, dentro y fuera), Gauss para B (flujo por un cubo), Faraday (fem de una bobina), Ampère–Maxwell (corriente de desplazamiento y campo B en un condensador) y la velocidad de la luz con la onda plana, con gráfica, modo práctica y enlace para compartir.'] },
@@ -1777,6 +1788,8 @@ const Practica = (() => {
     // ondasem: una onda plana, una intensidad o un medio con pérdidas
     // guias-onda: una guía rectangular con un modo TE o TM; se preguntan fc, λc, β, λg, vf, vg y Z (o la atenuación)
     'guias-onda': { datos: null, items: '#resumen > div.num', genera: () => window.GuiasOndaApp?.azar(), enunciado: () => window.GuiasOndaApp?.enunciado() },
+    // líneas de transmisión: una carga y una línea al azar; se preguntan Γ, ROE, RL, λ, Zin y la posición del primer máximo
+    'lineas-transmision': { datos: null, items: '#resumen > div.num', genera: () => window.LineasTransmisionApp?.azar(), enunciado: () => window.LineasTransmisionApp?.enunciado() },
     'ondas-em': { datos: null, items: '#res > div', genera: () => window.OndasEMApp?.azar(), enunciado: () => window.OndasEMApp?.enunciado() },
     // maxwell: una ecuación al azar (Gauss, Gauss para B, Faraday, Ampère–Maxwell u onda)
     maxwell: { datos: null, items: '#res > div', genera: () => window.MaxwellApp?.azar(), enunciado: () => window.MaxwellApp?.enunciado() },
