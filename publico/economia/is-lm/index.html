@@ -268,6 +268,14 @@ const Pagina = { carpeta: 'is-lm', guarda: 'is-lm-v1' };
 const Version = (() => {
   const registros = {
     web: [
+      { v: '1.6', fecha: '2026-11-01', titulo: 'Guías de onda', subtitulo: 'Los modos TE y TM de una guía rectangular, con su frecuencia de corte y el campo dentro del tubo.', secciones: [
+        { icono: '📡', titulo: 'Nueva herramienta en Electromagnetismo', puntos: [
+          '#electromagnetismo/guias-onda',
+          '**Frecuencia de corte y modos:** elige el tamaño de la guía, el relleno, la frecuencia y el modo (TE o TM) y mira si se propaga o se atenúa.',
+          '**Todo lo que cae en el examen:** β, longitud de onda en la guía, velocidades de fase y de grupo, impedancia de onda, modo dominante y banda monomodo.',
+          '**El campo dentro de la guía** dibujado en la sección, con ejemplos como la WR-90 de banda X y el **modo práctica**.',
+        ] },
+      ] },
       { v: '1.5', fecha: '2026-11-01', titulo: 'Simulador de circuitos', subtitulo: 'Un solo simulador para continua y alterna, y las puertas lógicas ahora también desde ecuaciones.', secciones: [
         { icono: '🔌', titulo: 'Nueva herramienta en Circuitos', puntos: [
           '#circuitos/simulador',
@@ -401,6 +409,9 @@ const Version = (() => {
           '**Diseño pensado también para el móvil.**',
         ] },
       ] },
+    ],
+    'guias-onda': [
+      { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: modos TE y TM de una guía de onda rectangular (vacía o rellena de dieléctrico): frecuencia y longitud de onda de corte, constante de fase, longitud de onda en la guía, velocidades de fase y de grupo, impedancia de onda o atenuación si no se propaga, modo dominante y banda monomodo, con el campo eléctrico del modo dibujado en la sección, desarrollo paso a paso y modo práctica.'] },
     ],
     simulador: [
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: dibuja el circuito arrastrando componentes (resistencias, condensadores, bobinas, fuentes de continua y de alterna, diodos, transistores, operacionales, transformadores, trifásica y puertas lógicas), únelos con cables y mira tensiones, corrientes, fasores, osciloscopio y diagrama de Bode.'] },
@@ -1615,6 +1626,8 @@ const Practica = (() => {
     // intervalos: una media, una proporción, una varianza, dos medias o un tamaño de muestra
     intervalos: { datos: null, items: '#res > div', genera: () => window.IntervalosApp?.azar(), enunciado: () => window.IntervalosApp?.enunciado() },
     // ondasem: una onda plana, una intensidad o un medio con pérdidas
+    // guias-onda: una guía rectangular con un modo TE o TM; se preguntan fc, λc, β, λg, vf, vg y Z (o la atenuación)
+    'guias-onda': { datos: null, items: '#resumen > div.num', genera: () => window.GuiasOndaApp?.azar(), enunciado: () => window.GuiasOndaApp?.enunciado() },
     'ondas-em': { datos: null, items: '#res > div', genera: () => window.OndasEMApp?.azar(), enunciado: () => window.OndasEMApp?.enunciado() },
     // trabajo y energía: una rampa con muelle, un rizo, un péndulo, una montaña rusa o una fuerza variable
     'trabajo-y-energia': { datos: null, items: '#resumen > div', genera: () => window.EnergiaApp?.azar(), enunciado: () => window.EnergiaApp?.enunciado() },
