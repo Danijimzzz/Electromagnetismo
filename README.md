@@ -1,4 +1,58 @@
-# SimulaCiencia (nombre provisional)
+# SimulaCiencia
+
+**Simuladores y calculadoras de ciencias para la carrera, en español, gratis y sin registro.** Resuelven los problemas paso a paso y con la misma notación que en clase.
+
+🌐 **Web:** <https://simulaciencia.vercel.app/> · también en <https://electromagnetismo.aceropuro30.workers.dev>
+
+| | |
+| --- | --- |
+| **86** herramientas | repartidas en 7 asignaturas |
+| **16** fenómenos de «Física en la vida real» | animaciones que explican cosas cotidianas |
+| **Web 1.6** | última versión (1 nov 2026) |
+
+JS puro, sin framework ni dependencias: una web estática que se genera con `sh fuente/build.sh` y se publica desde `publico/`.
+
+## Asignaturas
+
+| Asignatura | Herramientas | Próximamente |
+| --- | :-: | :-: |
+| Electromagnetismo | 13 | 1 |
+| Física general | 17 | 0 |
+| Química | 9 | 3 |
+| Matemáticas | 11 | 2 |
+| Estadística | 8 | 0 |
+| Circuitos | 6 | 0 |
+| Economía | 22 | 1 |
+
+## Hoja de ruta
+
+La web sale en versiones. Las fases ordenan lo que falta solo por dificultad de construcción.
+
+```mermaid
+timeline
+    title Historia de la web
+    28 oct 2026 : Web 1.0 · lanzamiento, 65 herramientas y 12 fenómenos
+    31 oct 2026 : 1.1 Sistemas de numeración : 1.2 Costes y beneficio : 1.3 Aspecto Liquid Glass
+    1 nov 2026 : 1.4 Diez herramientas nuevas : 1.5 Simulador de circuitos : 1.6 Fase 3, ondas, circuitos y vida real
+```
+
+| Fase | Estado | Contenido |
+| --- | --- | --- |
+| 1 y 2 | ✅ Hecha | Herramientas fáciles y medias de todas las asignaturas |
+| 3 | ✅ Hecha (Web 1.6) | Maxwell, Fresnel, gravitación, óptica, Bode, convolución, Laplace numérica, imágenes, guías de onda, antena y 4 fenómenos |
+| 4 | 🔜 Siguiente | Líneas de transmisión y carta de Smith, superficies 3D, balance y cuenta de resultados, integrales múltiples, redox, VSEPR 3D y formulación inorgánica |
+| Fenómenos | 🔜 Pendientes | El rayo, las auroras, el altavoz y el motor, la cocina de inducción, el cargador inalámbrico y el arcoíris |
+| Más adelante | 💭 Sin fecha | Foro propio, dominio propio |
+
+El detalle de cada versión está en [Novedades](https://simulaciencia.vercel.app/novedades/). La línea del tiempo interna se genera con `node interno/linea-tiempo/generar.js`.
+
+## Desarrollo
+
+Las normas del proyecto están en [CLAUDE.md](CLAUDE.md) y la guía de diseño en [DISENO.md](DISENO.md). Antes de fusionar: `node pruebas/comprobar.js`.
+
+---
+
+## Detalles técnicos
 
 Simuladores y calculadoras por asignatura. Es una web estática en `publico/`:
 
