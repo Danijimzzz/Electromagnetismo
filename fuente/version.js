@@ -172,6 +172,8 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: dipolo corto, de media onda o de longitud cualquiera, con diagrama de radiación polar, resistencia de radiación, potencia radiada, directividad, ancho de haz y campo lejano, paso a paso.'] },
     bode: [
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: elige un filtro RC, RL o RLC (paso bajo, paso alto, paso banda o rechazo de banda), escribe R, L y C (admite 4k7, 100n, 10 µF) y obtén su diagrama de Bode de magnitud y fase con las asíntotas, la frecuencia de corte, el factor de calidad Q, el ancho de banda, el pico de resonancia y el desarrollo paso a paso.'] },
+    optica: [
+      { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: elige una lente (convergente o divergente) o un espejo (cóncavo o convexo), la distancia focal y el objeto, y mira el diagrama de rayos con la imagen, su posición, el aumento, si es real o virtual y derecha o invertida, la potencia en dioptrías o el radio del espejo, paso a paso. Con seis ejemplos y modo práctica.'] },
     ],
     simulador: [
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: dibuja el circuito arrastrando componentes (resistencias, condensadores, bobinas, fuentes de continua y de alterna, diodos, transistores, operacionales, transformadores, trifásica y puertas lógicas), únelos con cables y mira tensiones, corrientes, fasores, osciloscopio y diagrama de Bode.'] },

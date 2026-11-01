@@ -1,0 +1,49 @@
+<title>Simulador de lentes y espejos con trazado de rayos · SimulaCiencia</title>
+<meta name="description" content="Simulador de óptica geométrica en español: lentes delgadas y espejos esféricos con el trazado de rayos, la posición y el tamaño de la imagen, el aumento y si es real o virtual.">
+<style>
+:root {
+  --rayo-1: #c2412a; --rayo-2: #2a5db5; --rayo-3: #1d7a3e; --imagen: #6b3fa0; --alto-grafica: clamp(280px, 38vw, 420px) }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --rayo-1: #ef7a62; --rayo-2: #74a2f2; --rayo-3: #5fcf8a; --imagen: #b892ec } }
+:root[data-theme="dark"] {
+  --rayo-1: #ef7a62; --rayo-2: #74a2f2; --rayo-3: #5fcf8a; --imagen: #b892ec }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física general</a> / Óptica geométrica: lentes y espejos</span></header>
+<div class="wrap">
+<h1>Óptica geométrica: lentes y espejos</h1>
+<p class="lead">Elige una lente o un espejo, la distancia focal y dónde pones el objeto: se dibujan los rayos principales y se calcula dónde se forma la imagen, su aumento y si es real o virtual.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Diagrama de rayos</h2>
+      <canvas id="grafica" aria-label="Diagrama de rayos con el objeto, el elemento óptico y la imagen"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Ecuación de las lentes delgadas y de los espejos</h2>
+  <p class="m">En aproximación paraxial (rayos cercanos al eje) tanto las lentes delgadas como los espejos esféricos cumplen la misma ecuación, con la convención «real es positivo»: la distancia del objeto $s$ y la de la imagen $s′$ son positivas si son reales.</p>
+  <p class="f m">$1/s + 1/s′ = 1/f$</p>
+  <p class="m">La distancia focal es positiva en la lente convergente y el espejo cóncavo, y negativa en la lente divergente y el espejo convexo. En un espejo, $R = 2f$.</p>
+  <h2>Aumento lateral</h2>
+  <p class="f m">$m = h′/h = −s′/s$</p>
+  <p class="m">Si $m < 0$ la imagen está invertida; si $|m| > 1$ es mayor que el objeto. Una imagen real puede recogerse en una pantalla; una virtual solo se ve mirando a través de la lente o en el espejo.</p>
+  <h2>Los tres rayos principales</h2>
+  <p class="m">Para dibujar la imagen bastan dos de ellos: el rayo <b>paralelo al eje</b>, que sale pasando por el foco (o como si viniera de él); el rayo que <b>pasa por el centro</b> de la lente (o por el vértice del espejo), que no se desvía o se refleja con el mismo ángulo; y el rayo que <b>apunta al foco</b>, que sale paralelo al eje. La imagen está donde se cruzan, o donde se cruzarían sus prolongaciones si es virtual.</p>
+  <h2>Potencia de una lente</h2>
+  <p class="f m">$P = 1/f$</p>
+  <p class="m">Con $f$ en metros, $P$ sale en dioptrías (D). Las gafas para la miopía usan lentes divergentes ($P < 0$) y para la hipermetropía, convergentes ($P > 0$).</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Óptica geométrica: lentes y espejos <span id="ver"></span> (beta)</footer>
+</body>
