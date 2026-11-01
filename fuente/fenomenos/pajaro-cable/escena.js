@@ -22,11 +22,10 @@ const PajaroCable = (() => {
     { titulo: 'El peligro: tocar dos cosas a la vez', corto: 'Peligro', dato: { valor: 'unos 40 A', texto: 'pasarían por un ave que tocase el cable y la torre a la vez.' }, texto: 'Si un ave grande, como un águila o una cigüeña, toca a la vez el cable y la torre (que está unida a tierra) o dos cables distintos, entre sus dos puntos de contacto hay toda la tensión de la línea.\n\nCon 400 kV y unos 10 kΩ pasarían $I = (400 "kV")/(10 "kΩ") = 40 "A"$: la descarga la mata al instante. Por eso en las torres de las zonas con aves se aíslan los cables cerca de los apoyos y se ponen posaderos lejos de ellos.', dura: 12000 },
   ];
 
-  // circuito de Circuitos de continua (formato de circuitos-v1): la línea como una fuente de corriente de 500 A
-  // que pasa por el trozo de cable entre las patas (R1) con el pájaro en paralelo (R2) hasta la carga (R3)
-  const ejercicio = () => ({ elementos: [{ t: 'I', a: '0', b: 'a', v: '500' }, { t: 'R', a: 'a', b: 'b', v: '5µ' }, { t: 'R', a: 'a', b: 'b', v: '10k' }, { t: 'R', a: 'b', b: '0', v: '800' }], carga: '' });
+  // esquema del Simulador de circuitos: la línea como una fuente de corriente de 500 A que pasa por el trozo de cable entre las patas (R1) con el pájaro en paralelo (R2) hasta la carga (R3)
+  const ejercicio = () => ({"version":2,"componentes":[{"id":"I1","t":"I","x":0,"y":6,"rot":3,"espejo":false,"v":{"forma":"cc","v":"500","A":"5","eficaz":"de pico","f":"50","fase":"0","off":"0","duty":"50","v1":"0","v2":"5","t0":"0","td":"0","tr":"0","tf":"0","pw":"1m","per":"2m"}},{"id":"R1","t":"R","x":0,"y":2,"rot":0,"espejo":false,"v":{"R":"5µ"}},{"id":"R2","t":"R","x":0,"y":-2,"rot":0,"espejo":false,"v":{"R":"10k"}},{"id":"R3","t":"R","x":4,"y":2,"rot":1,"espejo":false,"v":{"R":"800"}},{"id":"GND1","t":"GND","x":0,"y":6,"rot":0,"espejo":false,"v":{}}],"cables":[{"a":[0,2],"b":[0,2]},{"a":[0,2],"b":[0,-2]},{"a":[4,2],"b":[4,-2]},{"a":[0,6],"b":[4,6]}],"analisis":{},"vista":null});
   function abrirEnCircuitos(destino) {
-    try { localStorage.setItem('circuitos-v1', JSON.stringify(ejercicio())); } catch (e) { /* sin almacenamiento: se abre sin datos */ }
+    try { localStorage.setItem('simulador-v1', JSON.stringify(ejercicio())); } catch (e) { /* sin almacenamiento: se abre sin datos */ }
     location.href = destino;
   }
 

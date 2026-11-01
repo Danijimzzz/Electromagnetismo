@@ -316,13 +316,13 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 <section class="fen-rel" aria-label="Herramienta relacionada">
   <div class="fen-ico" aria-hidden="true">τ</div>
   <h2>Con qué herramienta se relaciona</h2>
-  <h3>Transitorios RC, RL y RLC <small>· Circuitos</small></h3>
+  <h3>Simulador de circuitos <small>· Circuitos</small></h3>
   <p>La chispa es la descarga de un condensador (tu cuerpo) a través de una resistencia (tu piel y el arco): un circuito RC que se descarga, con una tensión y una corriente que caen de forma exponencial.</p>
   <p class="f m">V_C(t) = V_0 e^{−t/τ} ,  i(t) = −(V_0/R) e^{−t/τ}</p>
   <p class="f m">τ = R C ,  U = 1/2 C V_0^2</p>
-  <p>Se abre como una descarga RC con el condensador a V<sub>0</sub> = 10 kV, R = 330 Ω y C = 150 pF, y pregunta por el instante t = 100 ns. Sale una constante de tiempo de 49,5 ns, una corriente inicial de 30,3 A y, a los 100 ns, el cuerpo todavía a unos 1326 V.</p>
+  <p>Se abre el esquema con el condensador de 150 pF cargado a V<sub>0</sub> = 10 kV y un interruptor que lo desconecta de la fuente y lo deja descargarse por R = 330 Ω. En el osciloscopio se ve la caída exponencial: una constante de tiempo de 49,5 ns, una corriente inicial de 30,3 A y, a los 100 ns, el cuerpo todavía a unos 1326 V.</p>
   <div class="fen-fichas"><div><small>Constante de tiempo</small><b>τ = 49,5 ns</b></div><div><small>Corriente inicial</small><b>30,3 A</b></div><div><small>Energía</small><b>7,5 mJ</b></div></div>
-  <a class="fen-abrir" id="abrir" href="../../circuitos/transitorios/">Abrir en Transitorios con estos datos →</a>
+  <a class="fen-abrir" id="abrir" href="../../circuitos/simulador/">Abrir en el Simulador de circuitos con estos datos →</a>
 </section>
 <section class="relacionadas" aria-label="Más fenómenos"><h2>Más fenómenos</h2>
 <a href="../jaula-faraday/"><b>La jaula de Faraday →</b><span>Por qué no pasa nada dentro de un coche alcanzado por un rayo y no hay cobertura en el ascensor.</span></a>
@@ -348,6 +348,21 @@ const Pagina = { carpeta: 'fenomenos/chispa-pomo', guarda: null };
 const Version = (() => {
   const registros = {
     web: [
+      { v: '1.5', fecha: '2026-11-01', titulo: 'Simulador de circuitos', subtitulo: 'Un solo simulador para continua y alterna, y las puertas lógicas ahora también desde ecuaciones.', secciones: [
+        { icono: '🔌', titulo: 'Nueva herramienta en Circuitos', puntos: [
+          '#circuitos/simulador',
+          '**Editor de arrastrar y soltar:** pon resistencias, condensadores, bobinas, fuentes, transistores, operacionales, puertas lógicas y más (47 componentes), gíralos, refléjalos y únelos con cables.',
+          '**Continua y alterna a la vez:** punto de operación, fasores, osciloscopio con la forma de onda completa y diagrama de Bode.',
+          '**Instrumentos y trifásica:** amperímetro, voltímetro, vatímetro, sondas del osciloscopio y fuentes y cargas trifásicas.',
+          '**Corriente animada** y cables coloreados según su tensión, **desarrollo paso a paso** cuando el circuito se puede resolver a mano y **modo práctica**.',
+        ] },
+        { icono: '🔌', titulo: 'Mejoras en Tablas de verdad y puertas lógicas', puntos: [
+          '#circuitos/puertas-logicas',
+          '**Desde las ecuaciones:** escribe una o varias ecuaciones (F = A·B + C\'), con paréntesis, NOT, AND, OR y XOR, y mira su tabla de verdad, los minitérminos y maxitérminos, y el circuito de puertas.',
+          'El circuito sale **tal como lo escribiste** y, con «Simplificar», en suma de productos o producto de sumas.',
+          'Botones para insertar los símbolos sin buscarlos en el teclado.',
+        ] },
+      ] },
       { v: '1.4.1', fecha: '2026-11-01', titulo: 'Puertas lógicas más fáciles', subtitulo: 'Un editor para arrastrar y unir puertas, y las ecuaciones primero normales y luego simplificadas.', secciones: [
         { icono: '🔌', titulo: 'Mejoras en Tablas de verdad y puertas lógicas', puntos: [
           '#circuitos/puertas-logicas',
@@ -467,10 +482,14 @@ const Version = (() => {
         ] },
       ] },
     ],
+    simulador: [
+      { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: dibuja el circuito arrastrando componentes (resistencias, condensadores, bobinas, fuentes de continua y de alterna, diodos, transistores, operacionales, transformadores, trifásica y puertas lógicas), únelos con cables y mira tensiones, corrientes, fasores, osciloscopio y diagrama de Bode.'] },
+    ],
     'teoria-juegos': [
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: escribe la matriz de pagos de un juego de dos jugadores con dos estrategias y obtén las mejores respuestas, las estrategias dominantes, los equilibrios de Nash puros y mixtos, la eficiencia de Pareto y el tipo de juego (dilema del prisionero, coordinación, gallina…), con la gráfica de las curvas de mejor respuesta y el desarrollo paso a paso.'] },
     ],
     'puertas-logicas': [
+      { v: '0.3', fecha: '2026-11-01', cambios: ['Nuevo modo «Ecuaciones»: se escriben ecuaciones booleanas (con NOT, AND, OR, XOR, paréntesis y varias salidas) y salen la tabla de verdad, los minitérminos y maxitérminos, el mapa de Karnaugh y el circuito de puertas, tal como está escrito o simplificado.', 'Los modos pasan a llamarse Tabla, Puertas y Ecuaciones.'] },
       { v: '0.2', fecha: '2026-11-01', cambios: ['Editor gráfico de puertas: se arrastran desde la paleta, se mueven y se unen con el ratón (el cable suelto en el vacío se quita; doble clic marca la salida), con las puertas en cualquier orden.', 'Las ecuaciones salen primero en forma canónica y el botón «Simplificar ecuaciones» añade las simplificadas y el circuito más pequeño.', 'Las tablas de verdad llevan una línea más gruesa cada 4 filas.', 'Un botón en el circuito cambia entre la suma de productos y el producto de sumas.'] },
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: dos modos. Desde la tabla de verdad (1 a 5 variables, hasta 4 salidas y casillas indiferentes X) da los minitérminos Σm, los maxitérminos ΠM, las formas canónicas y la forma simplificada por Quine-McCluskey en suma de productos y en producto de sumas, con el mapa de Karnaugh y el circuito de puertas dibujado. Desde las puertas (AND, OR, NOT, NAND, NOR, XOR y XNOR de 2 a 4 entradas) da la ecuación de cada puerta, la tabla de verdad con todas las puertas y las mismas ecuaciones. Con ejemplos (mayoría, semisumador, sumador completo, primos en BCD, multiplexor y XOR con NAND), desarrollo paso a paso y botón para copiar las ecuaciones.'] },
     ],
@@ -670,11 +689,6 @@ const Version = (() => {
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['Una proporción con 0 éxitos, o con todos, ya no da un intervalo de un solo punto: se usa el intervalo de Wilson. Con pocos éxitos o fracasos también se muestra el de Wilson al lado del de siempre.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: intervalo de confianza de una media con σ conocida (z) o desconocida (t de Student), a partir de x̄, s y n o de la lista de datos, también si te dan la desviación con n.', 'Intervalos de una proporción, de la varianza y la desviación típica (con la χ²), de la diferencia de medias (σ conocidas, iguales o Welch) y de la diferencia de proporciones.', 'Tamaño de muestra para un error máximo en una media o una proporción.', 'Gráfica de la distribución con el área de confianza y simulación de 100 muestras que muestra cuántos intervalos aciertan.'] },
     ],
-    transitorios: [
-      { v: '0.2', fecha: '2026-10-26', cambios: ['Nuevo modo «Circuito cualquiera de primer orden»: escribe el circuito como lista de elementos, marca qué se conecta o desconecta en t = 0 y sale por el método de los tres valores (valor inicial, final y resistencia de Thévenin que ve el condensador o la bobina).', 'Conmutación en t₁: un condensador que se carga por R y se descarga por R₂, y una bobina que se abre con el pico de tensión que hace saltar la chispa.', 'Nuevo circuito RLC en paralelo con una fuente de corriente, con su tipo de amortiguamiento y la corriente de la bobina.', 'Tiempo hasta un valor también en el RLC, corriente inicial en la bobina y descarga por otra resistencia R₂.', 'Pasa el ratón o el dedo por la gráfica para leer la tensión y la corriente en cada instante; un clic deja el cursor fijo.'] },
-      { v: '0.1.1', fecha: '2026-10-25', cambios: ['Los valores admiten prefijos del SI y unidades: 4k7, 1,5 kΩ, 100n, 10 µF o 5 ms. Un número solo sigue en la unidad del campo (mH, μF).'] },
-      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: carga y descarga de un condensador en un circuito RC (también si ya tenía carga), con τ = RC, la tensión y la corriente en un instante y el tiempo hasta una tensión.', 'Corriente que sube o baja en una bobina en un circuito RL, con τ = L/R y la tensión de la bobina.', 'Circuito RLC en serie: dice si es subamortiguado, crítico o sobreamortiguado y da la tensión del condensador frente al tiempo, también con carga o corriente al empezar.', 'Esquema del circuito con la corriente que circula y la gráfica de V e i frente a t animadas.'] },
-    ],
     fuerza: [
       { v: '0.2', fecha: '2026-10-26', cambios: ['Carga que entra en una franja de campo: si la atraviesa, el ángulo con el que sale y cuánto se ha desplazado; si no, dónde vuelve a salir.', 'Campos E y B cruzados: velocidad de deriva E/B y la cicloide animada, también con velocidad inicial (cicloide acortada o con bucles).', 'Efecto Hall: tensión Hall, densidad de portadores, coeficiente de Hall y qué cara queda a más potencial.', 'Par sobre una espira o bobina: momento magnético, par, energía y trabajo para girarla.', 'Espectrómetro de masas con dos isótopos: la separación entre los impactos.', 'El campo B se dibuja en azul en todas las animaciones.', 'Botones para copiar el enlace del ejercicio, copiar la solución como texto o en LaTeX e imprimirla o guardarla en PDF.', 'El desarrollo paso a paso escribe las fórmulas como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: fuerza sobre una carga en un campo uniforme, con el radio, el periodo y el sentido de giro, o la hélice si v no es perpendicular a B. La velocidad se puede dar en m/s, por su energía en eV o por la ddp que la acelera.', 'Fuerza de Lorentz con vectores: v × B con su determinante y F = q(E + v × B).', 'Selector de velocidades y espectrómetro de masas, ciclotrón con la frecuencia, la energía de salida y las vueltas.', 'Fuerza sobre un hilo (y la corriente para que flote) y entre dos hilos paralelos.', 'Animación de cada situación.'] },
@@ -723,23 +737,11 @@ const Version = (() => {
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: normal, t de Student, chi cuadrado, exponencial, binomial y Poisson, con su media y su varianza.', 'Probabilidades P(X ≤ a), P(X ≥ a), entre dos valores y, en las discretas, P(X = k) y con desigualdad estricta; cuantiles y valores críticos bilaterales.', 'Gráfica con el área (o las barras) que se pide sombreada.', 'Desarrollo como en clase: tipificación Z = (X − μ)/σ y Φ(z), fórmula de la binomial y de la Poisson término a término, y aproximación de la binomial por la normal con corrección de continuidad.'] },
     ],
-    alterna: [
-      { v: '0.2', fecha: '2026-10-26', cambios: ['Redes de alterna cualesquiera por el método de los nudos con fasores: resistencias, bobinas, condensadores y fuentes de tensión o de corriente con su fase, con el sistema en complejos y el balance de potencias de Boucherot.', 'Sistemas trifásicos equilibrados en estrella y en triángulo: tensiones y corrientes de fase y de línea, fasores de las tres fases, potencias y la batería de condensadores para corregir el factor de potencia.', 'Triángulo de potencias y curva de resonancia (la corriente frente a la frecuencia, con f₀ y el ancho de banda) en el circuito RLC.', 'La fuente se puede dar con su valor de pico o eficaz, con fase inicial y con ω en lugar de f, y el resultado escribe v(t) e i(t).', 'Corrección del factor de potencia a partir de P, S, I o Q, y también de cargas capacitivas (con una bobina).'] },
-      { v: '0.1.2', fecha: '2026-10-25', cambios: ['Los valores admiten prefijos del SI y unidades: 4k7, 1,5 kΩ, 100n, 10 µF o 5 ms. Un número solo sigue en la unidad del campo (mH, μF, kW).', 'Arreglo: en paralelo, una resistencia de 0 Ω se ignoraba como si no estuviera; ahora avisa de que cortocircuita la fuente.'] },
-      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
-      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: circuitos RLC en serie y en paralelo (o solo con algunos de los elementos) con impedancias complejas en forma binómica y polar, la corriente, la tensión o la corriente de cada elemento, las potencias activa, reactiva y aparente y el factor de potencia, con el desarrollo paso a paso.', 'Diagrama de fasores y ondas v(t) e i(t) desfasadas.', 'Resonancia: frecuencia de resonancia, factor de calidad y ancho de banda.', 'Corrección del factor de potencia: el condensador que hay que poner en paralelo y cuánto baja la corriente de la línea.'] },
-    ],
     dinamica: [
       { v: '0.2', fecha: '2026-10-26', cambios: ['Bloques lanzados con velocidad inicial: frenan, se paran y se quedan quietos o vuelven, con la distancia y el tiempo de frenada.', 'Nuevos problemas: dos bloques en contacto o unidos por una cuerda, con la fuerza entre ellos; curvas con y sin peralte (velocidades máxima y mínima y si derrapa); péndulo cónico; loma y hondonada, y muelles (ley de Hooke, serie y paralelo, equilibrio en un plano y periodo de oscilación).', 'Fuerza mínima para que un bloque empiece a subir y el ángulo con el que menos cuesta, y el coeficiente de rozamiento a partir de una aceleración medida.', 'El dibujo se anima: el bloque se mueve, frena y vuelve, las masas de Atwood suben y bajan, el péndulo cónico gira y el muelle oscila. Se puede pausar.', 'Las fórmulas del desarrollo se ven como en los libros, y los ejemplos usan coma decimal.', 'Modo práctica con enunciado escrito para cada tipo de problema.'] },
       { v: '0.1.2', fecha: '2026-10-25', cambios: ['Arreglo: en el diagrama de fuerzas, el nombre del bloque ya no queda tapado por las flechas, el bloque se ve más grande y la flecha de la aceleración no cruza la normal.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: bloque en un plano horizontal o inclinado con rozamiento estático y dinámico, una fuerza aplicada con ángulo y, si quieres, una masa colgando de una polea. Dice si el bloque se mueve o el rozamiento lo sujeta y da la normal, el rozamiento, la aceleración y la tensión, con el desarrollo paso a paso.', 'Máquina de Atwood, también con una polea con masa.', 'Dibujo con el diagrama de fuerzas a escala y la aceleración, y la velocidad y el tiempo al recorrer una distancia.'] },
-    ],
-    circuitos: [
-      { v: '0.2', fecha: '2026-10-26', cambios: ['Fuentes dependientes: de tensión o de corriente, controladas por una tensión entre dos nudos o por la corriente de otro elemento, también en el equivalente de Thévenin.', 'Condensadores y bobinas en régimen permanente (abierto y cortocircuito), con la carga y la energía que guardan.', 'Equivalente de Thévenin y de Norton entre dos nudos cualesquiera, no solo visto por una resistencia.', 'Superposición paso a paso: lo que da cada fuente sola y la suma, en una tabla.', 'Método de las mallas como segundo desarrollo, con las ecuaciones de cada malla y la comprobación con el de los nudos.', 'Esquema más claro: los nudos se colocan para que los elementos no se crucen, y se pueden mover arrastrándolos.', 'Editor visual: en el modo Dibujar, arrastra de un nudo a otro (o a un sitio vacío) para añadir un elemento.'] },
-      { v: '0.1.2', fecha: '2026-10-25', cambios: ['Los valores admiten prefijos del SI: 4k7, 1,5k, 2M2 o 100m. Antes «1k» daba error.', 'Arreglo: si la carga está en paralelo con una fuente de tensión ideal (Rth = 0), en vez de «—» explica que no hay equivalente de Norton ni máxima transferencia de potencia.'] },
-      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
-      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: escribe el circuito como una lista de resistencias, fuentes de tensión y fuentes de corriente entre nudos, y obtén los potenciales, la corriente y la potencia de cada elemento por el método de los nudos, con las ecuaciones de Kirchhoff, el sistema en forma matricial y el balance de potencias.', 'Equivalente de Thévenin y de Norton visto por la resistencia que elijas, y máxima transferencia de potencia.', 'Esquema del circuito con el potencial de cada nudo y el sentido de cada corriente.'] },
     ],
     'solido-rigido': [
       { v: '0.2', fecha: '2026-10-26', cambios: ['Rodadura, polea y péndulo animados: se ve la rueda girar mientras baja.', 'Momento de inercia de un cuerpo compuesto: varias piezas (varillas, discos, esferas, masas puntuales…) cada una a su distancia del eje.', 'Choques que hacen girar: bala que se incrusta en una varilla colgada (y hasta dónde sube) y persona que salta a una plataforma.', 'Péndulo físico (periodo y longitud equivalente) y varilla que cae girando por su base.', 'Equilibrio estático: escalera apoyada en una pared (¿resbala?, ¿hasta dónde se puede subir?) y viga sobre dos apoyos con cargas.', 'Fórmulas del desarrollo bien escritas y ejemplos con coma decimal.', 'Modo práctica con enunciado.'] },
@@ -1183,7 +1185,7 @@ const Dibujo = (() => {
 
 /* =====================================================================
    La chispa al tocar el pomo: los 6 pasos de la animación (texto y dibujo) y
-   el ejercicio que se abre en Transitorios RC, RL y RLC (el cuerpo como un
+   el esquema que se abre en el Simulador de circuitos (el cuerpo como un
    condensador de 150 pF a 10 kV que se descarga por 330 Ω, el modelo de la
    norma IEC 61000-4-2). El motor es fenomenos/animacion.js, los ayudantes de
    dibujo fenomenos/dibujo.js y la maqueta pagina.html. En Node (pruebas) solo
@@ -1204,10 +1206,10 @@ const ChispaPomo = (() => {
     { titulo: 'El truco de la llave', corto: 'Truco', dato: { valor: 'Con una llave', texto: 'La chispa salta entre la llave y el pomo, no en tu piel.' }, texto: 'Si tocas el pomo con una llave o una moneda, la chispa salta entre el metal y el pomo, y la corriente entra en tu mano por toda la superficie con que agarras la llave. No la notas.\n\nPor debajo de unos 3 kV casi nadie siente la chispa; de 10 kV para arriba, duele. Por eso en las fábricas de electrónica se llevan pulseras unidas a tierra: una descarga que no notarías puede romper un chip.', dura: 12000 },
   ];
 
-  // ejercicio de Transitorios (formato de transitorios-v1): descarga RC con C en µF y el estado en t = 100 ns
-  const ejercicio = () => ({ modo: 'rc', proceso: 'descarga', V: '', V0: '10000', R: '330', C: '1,5e-4', t: '1e-7', Vobj: '' });
-  function abrirEnTransitorios(destino) {
-    try { localStorage.setItem('transitorios-v1', JSON.stringify(ejercicio())); } catch (e) { /* sin almacenamiento: se abre sin datos */ }
+  // esquema del Simulador de circuitos: el cuerpo (150 pF) cargado a 10 kV que se descarga por 330 Ω cuando se abre el interruptor
+  const ejercicio = () => ({"version":2,"componentes":[{"id":"E1","t":"V","x":0,"y":2,"rot":1,"espejo":false,"v":{"forma":"cc","v":"10k","A":"5","eficaz":"de pico","f":"50","fase":"0","off":"0","duty":"50","v1":"0","v2":"5","t0":"0","td":"0","tr":"0","tf":"0","pw":"1m","per":"2m"}},{"id":"S1","t":"SW","x":0,"y":2,"rot":0,"espejo":false,"v":{"estado":"cerrado","tc":"1p"}},{"id":"C1","t":"C","x":4,"y":2,"rot":1,"espejo":false,"v":{"C":"1,5e-4"}},{"id":"R1","t":"R","x":8,"y":2,"rot":1,"espejo":false,"v":{"R":"330"}},{"id":"SONDA1","t":"SONDA","x":4,"y":2,"rot":0,"espejo":false,"v":{"canal":"1"}},{"id":"GND1","t":"GND","x":0,"y":6,"rot":0,"espejo":false,"v":{}}],"cables":[{"a":[4,6],"b":[0,6]},{"a":[4,6],"b":[8,6]},{"a":[8,2],"b":[4,2]},{"a":[0,6],"b":[0,6]}],"analisis":{"tfin":"500n"},"vista":null});
+  function abrirEnSimulador(destino) {
+    try { localStorage.setItem('simulador-v1', JSON.stringify(ejercicio())); } catch (e) { /* sin almacenamiento: se abre sin datos */ }
     location.href = destino;
   }
 
@@ -1409,12 +1411,12 @@ const ChispaPomo = (() => {
   }
 
   const COLORES = ['pared', 'zocalo', 'alfombra', 'alfombra-dibujo', 'puerta', 'metal', 'metal-brillo', 'persona', 'piel', 'suela', 'neg', 'pos', 'campo', 'chispa', 'chispa-centro', 'rotulo', 'panel'];
-  return { datos, pasos, dibuja, sonido, COLORES, ejercicio, abrirEnTransitorios };
+  return { datos, pasos, dibuja, sonido, COLORES, ejercicio, abrirEnSimulador };
 })();
 
 if (typeof document !== 'undefined') {
   Animacion.monta({ lienzo: '#escena', pasos: ChispaPomo.pasos, dibuja: ChispaPomo.dibuja, colores: ChispaPomo.COLORES, sonido: ChispaPomo.sonido });
-  document.querySelector('#abrir').addEventListener('click', (e) => { e.preventDefault(); ChispaPomo.abrirEnTransitorios(e.currentTarget.getAttribute('href')); });
+  document.querySelector('#abrir').addEventListener('click', (e) => { e.preventDefault(); ChispaPomo.abrirEnSimulador(e.currentTarget.getAttribute('href')); });
 }
 
 </script>
