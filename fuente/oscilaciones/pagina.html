@@ -1,0 +1,45 @@
+<title>Calculadora de oscilaciones: MAS, amortiguado y resonancia · SimulaCiencia</title>
+<meta name="description" content="Calculadora de oscilaciones en español: movimiento armónico simple (muelle y péndulo), oscilador amortiguado (subamortiguado, crítico y sobreamortiguado) y oscilador forzado con su resonancia, con gráfica y desarrollo paso a paso.">
+<style>
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62 }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física general</a> / Oscilaciones</span></header>
+<div class="wrap">
+<h1>Oscilaciones: MAS, amortiguado y forzado</h1>
+<p class="lead">Calcula el periodo, la energía y la posición de un muelle o un péndulo, cómo se apaga un oscilador con rozamiento y cuánto se amplifica un oscilador empujado por una fuerza periódica cerca de su resonancia.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Gráfica</h2>
+      <canvas id="grafica" aria-label="Posición en el tiempo de un oscilador, o amplitud frente a la frecuencia de la fuerza en el oscilador forzado"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+<h2>Movimiento armónico simple</h2>
+<p class="m">Un cuerpo de masa $m$ unido a un muelle de constante $k$ sufre una fuerza $F = −k x$, y su ecuación $m x″ = −k x$ tiene como solución $x = A cos(ω t + φ)$ con $ω = √(k/m)$. El periodo $T = 2π/ω$ no depende de la amplitud. La velocidad es $v = −A ω sin(ω t + φ)$, la aceleración $a = −ω^2 x$, y la energía total $E = 1/2 k A^2$ pasa de cinética a potencial sin perderse.</p>
+<h2>El péndulo simple</h2>
+<p class="m">Para ángulos pequeños, $sin θ ≈ θ$ y el péndulo cumple $ω = √(g/L)$, sin depender de la masa. Con amplitudes grandes el periodo real es mayor; la herramienta lo calcula con la media aritmético-geométrica y lo compara con el aproximado.</p>
+<h2>Oscilador amortiguado</h2>
+<p class="m">Con un rozamiento $−b v$ la ecuación es $m x″ + b x′ + k x = 0$. Con $γ = b/2m$ y $ω_0 = √(k/m)$ hay tres casos: si $γ < ω_0$ oscila con $ω_d = √(ω_0^2 − γ^2)$ dentro de una envolvente $e^{−γ t}$; si $γ = ω_0$ es crítico y vuelve al equilibrio lo más deprisa posible sin oscilar (así se diseñan los amortiguadores de una puerta); si $γ > ω_0$ está sobreamortiguado y regresa despacio. El factor de calidad $Q = ω_0/(2γ)$ mide lo poco amortiguado que está.</p>
+<h2>Oscilador forzado y resonancia</h2>
+<p class="m">Con una fuerza $F_0 cos(ω t)$, pasado el transitorio el cuerpo oscila a la frecuencia de la fuerza con amplitud $A = {F_0/m}/√((ω_0^2 − ω^2)^2 + 4γ^2ω^2)$, retrasado un ángulo $δ$ respecto a ella. La amplitud es máxima cerca de $ω_r = √(ω_0^2 − 2γ^2)$: es la resonancia, tanto más estrecha y alta cuanto menor es el rozamiento. Es lo que hace sonar una copa con la voz o lo que se evita en los puentes y los edificios con terremotos.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Oscilaciones <span id="ver"></span> (beta)</footer>
+</body>
