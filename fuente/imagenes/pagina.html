@@ -1,0 +1,60 @@
+<title>Calculadora del método de las imágenes · SimulaCiencia</title>
+<meta name="description" content="Calculadora del método de las imágenes en español: carga imagen, fuerza sobre la carga, carga inducida, potencial y campo para una carga frente a un plano o una esfera conductora, paso a paso.">
+<style>
+:root {
+  --col-datos: 330px; --margen-grafica: 0;
+  --pos: #c0392b; --neg: #2a5db5; --metal: #e4e7ec; --campo: #5b6670 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --pos: #f07a6a; --neg: #74a2f2; --metal: #262e38; --campo: #94a0ac } }
+:root[data-theme="dark"] {
+  --pos: #f07a6a; --neg: #74a2f2; --metal: #262e38; --campo: #94a0ac }
+#dibujo { height: clamp(240px, 42vw, 330px) }
+#resumen { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 12px }
+@media (max-width: 700px) { #resumen { grid-template-columns: repeat(2, minmax(0, 1fr)) } }
+#resumen div { background: var(--accent-soft); border-radius: 8px; padding: 8px 10px; overflow-x: visible } #resumen span { display: block; font-size: 12px; color: var(--muted) } #resumen b { font: 500 16px var(--f-mono) }
+#resumen small { display: block; font-size: 11.5px; color: var(--muted); margin-top: 2px }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Electromagnetismo</a> / Método de las imágenes</span></header>
+<div class="wrap">
+<h1>Método de las imágenes</h1>
+<p class="lead">Una carga puntual frente a un plano o una esfera conductora, o dentro de una cavidad esférica: la carga imagen que sustituye al conductor, la fuerza sobre la carga, la carga inducida y su densidad superficial, el trabajo para llevarla al infinito y el potencial y el campo en un punto, con las líneas de campo.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card">
+      <canvas id="dibujo" aria-label="Carga frente al conductor con sus cargas imagen, las líneas de campo y la carga inducida"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+      <div class="resumen" id="resumen"></div>
+    </div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>La idea del método</h2>
+  <p>Un conductor en equilibrio es una superficie equipotencial y el campo en su superficie es perpendicular a ella. La solución de la ecuación de Poisson fuera del conductor es única si se conoce el potencial en su superficie, así que si encontramos unas cargas ficticias <em>dentro</em> del conductor (las cargas imagen) que, junto con la carga real, den el mismo potencial en la superficie, el campo y el potencial de fuera son los verdaderos. La carga inducida se obtiene después con la condición de contorno:</p>
+  <p class="f m">$σ = ε_0 E_n$, &ensp; $V|_{superficie} = V_0$</p>
+  <h2>Plano conductor a tierra</h2>
+  <p>La imagen es la opuesta, en el punto simétrico: q′ = −q en z = −d. El campo de arriba es el de un dipolo y la fuerza sobre q es la que haría la imagen, a una distancia 2d (la mitad que con dos cargas reales, porque la energía solo está en el semiespacio de arriba):</p>
+  <p class="f m">$F = −{q^2}/{16π ε_0 d^2}$, &ensp; $σ(ρ) = −{q d}/{2π (ρ^2 + d^2)^{3/2}}$, &ensp; $W = {q^2}/{16π ε_0 d}$</p>
+  <p>Integrando σ en todo el plano sale la carga inducida total, −q: todas las líneas de campo de q acaban en el plano.</p>
+  <h2>Esfera conductora</h2>
+  <p>Para una carga q a una distancia a del centro de una esfera de radio R, la imagen está en el eje, dentro de la esfera, y vale:</p>
+  <p class="f m">$q′ = −{q R}/a$, &ensp; $a′ = R^2/a$</p>
+  <p>Con la esfera a tierra, esa es toda la solución: la carga de la esfera es q′ y la fuerza sobre q, atractiva, es</p>
+  <p class="f m">$F = −{q^2 R a}/{4π ε_0 (a^2 − R^2)^2}$, &ensp; $σ(θ) = −{q (a^2 − R^2)}/{4π R (R^2 + a^2 − 2 a R cos θ)^{3/2}}$</p>
+  <p>Si la esfera está <strong>aislada</strong> y tiene una carga total Q, hay que añadir una segunda imagen q″ = Q − q′ en el centro, para que la superficie siga siendo una equipotencial sin cambiar la carga: una esfera neutra tiene q″ = +qR/a, con lo que sigue atrayendo a q (más débilmente que a tierra). Si se mantiene a un potencial V₀, la imagen del centro es q″ = 4π ε<sub>0</sub> R V₀.</p>
+  <h2>Cavidad esférica</h2>
+  <p>Si la carga está dentro de una cavidad esférica de radio R en un conductor (a &lt; R), la imagen está <em>fuera</em>, con las mismas fórmulas q′ = −qR/a y a′ = R²/a. La carga inducida en la pared es exactamente −q, y la fuerza sobre q la atrae hacia la pared más cercana:</p>
+  <p class="f m">$F = {q^2 R a}/{4π ε_0 (R^2 − a^2)^2}$</p>
+  <p>Las imágenes solo valen en la región donde está la carga real (arriba del plano, fuera de la esfera o dentro de la cavidad): en el conductor el campo real es cero. Con varias cargas se suman las imágenes de cada una. Para otras distribuciones de carga usa <a href="../electrostatica/">Electrostática</a>.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Método de las imágenes <span id="ver"></span> (beta)</footer>
+</body>
