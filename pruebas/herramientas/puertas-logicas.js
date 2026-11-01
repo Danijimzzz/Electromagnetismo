@@ -28,6 +28,19 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     const tipos = { AND: [0, 0, 0, 1], OR: [0, 1, 1, 1], NAND: [1, 1, 1, 0], NOR: [1, 0, 0, 0], XOR: [0, 1, 1, 0], XNOR: [1, 0, 0, 1] };
     for (const [t, v] of Object.entries(tipos)) igual(C.resolver({ modo: 'puertas', nc: '2', puertas: [{ id: 'P1', tipo: t, e: ['A', 'B'], sal: true }] }).salidas[0].v, v, `puerta ${t}`);
     igual(C.resolver({ modo: 'puertas', nc: '3', puertas: [{ id: 'P1', tipo: 'XOR', e: ['A', 'B', 'C'], sal: true }] }).salidas[0].unos, [1, 2, 4, 7], 'XOR de 3 entradas');
+    // desde las ecuaciones escritas
+    const ec = (t, extra = {}) => C.resolver({ modo: 'ecuacion', ec: t, ...extra });
+    igual(ec("F = A·B + C'").salidas[0].unos, [0, 2, 4, 6, 7], 'ecuación A·B + C′');
+    igual(ec("G = AB + A'C").salidas[0].unos, [1, 3, 6, 7], 'ecuación con variables juntas');
+    igual(ec('F = !(A + B)').salidas[0].v, [1, 0, 0, 0], 'ecuación NOR con !');
+    igual(ec('F = A ⊕ B ⊕ C').salidas[0].unos, [1, 2, 4, 7], 'ecuación XOR de tres');
+    igual(ec('ab + ~c').salidas[0].nombre, 'F', 'ecuación sin nombre');
+    igual(ec('S = A ^ B\nR = A·B').salidas.map((s) => s.nombre), ['S', 'R'], 'dos ecuaciones');
+    igual(ec('F = 1').salidas[0].constante, 1, 'ecuación constante');
+    igual(ec("F = A·B + C'").dibujo.nodos.map((n) => n.tipo), ['AND', 'NOT', 'OR'], 'circuito de la ecuación escrita');
+    igual(ec("F = A·B + C'", { simp: true }).dibujo.nodos.map((n) => n.tipo), ['AND', 'NOT', 'OR'], 'circuito simplificado de la ecuación');
+    igual(ec('F = A + B + C + D + E').dibujo.nodos.map((n) => n.e.length), [4, 2], 'más de 4 entradas se encadenan');
+    for (const t of ['F = A +', 'F = A Z', 'G = ', 'F = (A + B', 'F = A)', 'A = B', 'F = A\nF = B', '', 'F = A ?']) { let ok = false; try { ec(t); } catch (e) { ok = true; } if (!ok) mal(`PuertasLogicas: la ecuación «${t}» no da error`); }
     // constantes y errores
     igual(C.resolver({ modo: 'tabla', n: '2', m: '1', tabla: ['1111'] }).salidas[0].minS.txt, '1', 'constante 1');
     igual(C.resolver({ modo: 'tabla', n: '2', m: '1', tabla: ['0000'] }).salidas[0].minP.txt, '0', 'constante 0');
@@ -90,6 +103,23 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     // cambiar una casilla de la tabla
     await page.click('.cel[data-i="0"]');
     if ((await page.evaluate(() => PuertasLogicasApp.estado().tabla[0])) !== '10010111') mal('PuertasLogicas: pulsar una casilla no la cambia');
+    // modo ecuaciones: escribir y usar los botones de símbolos
+    await page.click('#tab-ecuacion');
+    await page.fill('#ecuaciones', "F = A·B + C'");
+    if ((await page.locator('#tabla-res tr').count()) !== 9) mal('PuertasLogicas: la tabla de las ecuaciones no tiene 8 filas');
+    if (!/ecuación escrita/.test(await page.locator('#resumen').innerText())) mal('PuertasLogicas: falta la ecuación escrita');
+    await page.fill('#ecuaciones', 'F = A');
+    await page.click('#ecuaciones'); await page.keyboard.press('End');
+    await page.click('.simbolos [data-ins="+"]'); await page.click('.simbolos [data-ins="!"]');
+    await page.keyboard.type('B');
+    if ((await page.inputValue('#ecuaciones')) !== 'F = A+!B') mal(`PuertasLogicas: los símbolos no se insertan (${await page.inputValue('#ecuaciones')})`);
+    await page.fill('#ecuaciones', 'F = A +');
+    if (await page.locator('#error').isHidden()) mal('PuertasLogicas: una ecuación incompleta no da error');
+    await page.fill('#ecuaciones', "F = A·B + C'");
+    await page.click('#simplificar');
+    if (await page.locator('#cambia-forma').isHidden()) mal('PuertasLogicas: el botón de forma debería verse al simplificar');
+    await page.click('#simplificar');
+    await page.click('#tab-tabla');
     // editor gráfico: añadir dos puertas de la paleta y unirlas con el ratón
     await page.click('#tab-puertas');
     await page.evaluate(() => { const s = PuertasLogicasApp.estado(); return s; });

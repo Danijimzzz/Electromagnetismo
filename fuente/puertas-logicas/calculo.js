@@ -1,9 +1,11 @@
 /* =====================================================================
    Tablas de verdad y puertas lógicas · cálculo (sin DOM).
-   Dos modos con el mismo resultado:
+   Tres modos con el mismo resultado:
      'tabla'   el usuario escribe la tabla de verdad (1 a 5 variables, 1 a 4 salidas,
                con indiferentes X) y sale cada ecuación: minitérminos Σm, maxitérminos ΠM,
                formas canónicas y simplificadas (Quine-McCluskey) y el circuito de puertas.
+     'ecuacion' el usuario escribe ecuaciones booleanas (F = A·B + C') y salen la tabla de
+               verdad, las mismas ecuaciones y el circuito de la ecuación escrita (o el simplificado).
      'puertas' el usuario añade puertas (AND, OR, NOT, NAND, NOR, XOR, XNOR) con sus
                entradas y marca las salidas; sale la tabla de verdad con todas las puertas
                y las mismas ecuaciones.
@@ -201,6 +203,98 @@ const PuertasLogicas = (() => {
     return { rotulo: `${rot(0, r) || ''}\\${rot(r, n)}`, filas: r ? filas : [''], cols, celdas: r ? celdas : [celdas[0]] };
   }
 
+  /* ---------- Ecuaciones escritas a mano ---------- */
+  // Una ecuación por línea: «F = A·B + C'». Negación: ' ! ~ ¬; Y: · * & . ∧ o variables juntas (AB);
+  // O: + | ∨; XOR: ⊕ ^. Prioridad: NOT, Y, XOR, O. Nodos: {t:'v',k} {t:'c',v} {t:'n',x} {t:'&'|'|'|'^',xs}
+  const OPS_Y = '·*&.∧×', OPS_O = '+|∨', OPS_X = '⊕^', OPS_N = '!~¬';
+  function lee(txt, num) {
+    const err = (m) => new Error(`Ecuación ${num}: ${m}`);
+    const toks = [];
+    for (const c of String(txt)) {
+      if (/\s/.test(c)) continue;
+      if (/[A-Za-z]/.test(c)) { const k = NOM.indexOf(c.toUpperCase()); if (k < 0) throw err(`solo se usan las variables A a E y «${c}» no es una`); toks.push({ t: 'v', k }); }
+      else if (c === '0' || c === '1') toks.push({ t: 'c', v: +c });
+      else if (c === '(' || c === ')') toks.push({ t: c });
+      else if (c === "'" || c === '’' || c === '′') toks.push({ t: 'post' });
+      else if (OPS_N.includes(c)) toks.push({ t: 'pre' });
+      else if (OPS_Y.includes(c)) toks.push({ t: '&' });
+      else if (OPS_O.includes(c)) toks.push({ t: '|' });
+      else if (OPS_X.includes(c)) toks.push({ t: '^' });
+      else throw err(`no entiendo el símbolo «${c}»`);
+    }
+    let i = 0;
+    const empieza = (t) => t && (t.t === 'v' || t.t === 'c' || t.t === '(' || t.t === 'pre');
+    const junta = (t, xs) => { const hijos = xs.flatMap((x) => (x.t === t ? x.xs : [x])); return hijos.length === 1 ? hijos[0] : { t, xs: hijos }; };
+    function atomo() {
+      const t = toks[i++];
+      if (!t) throw err('la ecuación termina antes de tiempo');
+      if (t.t === 'pre') return { t: 'n', x: atomo() };
+      let r;
+      if (t.t === 'v') r = { t: 'v', k: t.k };
+      else if (t.t === 'c') r = { t: 'c', v: t.v };
+      else if (t.t === '(') { r = o(); if (!toks[i] || toks[i].t !== ')') throw err('falta cerrar un paréntesis'); i++; }
+      else throw err('falta una variable antes de un operador');
+      while (toks[i] && toks[i].t === 'post') { i++; r = { t: 'n', x: r }; }
+      return r;
+    }
+    function y() { const xs = [atomo()]; while (toks[i] && (toks[i].t === '&' || empieza(toks[i]))) { if (toks[i].t === '&') i++; xs.push(atomo()); } return junta('&', xs); }
+    function x() { const xs = [y()]; while (toks[i] && toks[i].t === '^') { i++; xs.push(y()); } return junta('^', xs); }
+    function o() { const xs = [x()]; while (toks[i] && toks[i].t === '|') { i++; xs.push(x()); } return junta('|', xs); }
+    if (!toks.length) throw err('está vacía');
+    const r = o();
+    if (i < toks.length) throw err(toks[i].t === ')' ? 'sobra un paréntesis' : 'no entiendo lo que sigue');
+    return r;
+  }
+  function parseEcuaciones(txt) {
+    const lineas = String(txt ?? '').split(/\n|;/).map((l) => l.trim()).filter(Boolean);
+    if (!lineas.length) throw new Error('Escribe al menos una ecuación, por ejemplo F = A·B + C\'');
+    if (lineas.length > MAXM) throw new Error(`Hay como mucho ${MAXM} ecuaciones`);
+    const ecs = lineas.map((l, j) => {
+      const m = l.match(/^\s*([^=]*?)\s*=\s*(.*)$/);
+      let nombre = null, cuerpo = l;
+      if (m) { nombre = m[1]; cuerpo = m[2]; if (!/^[A-Za-z][A-Za-z0-9]*$/.test(nombre) || (nombre.length === 1 && NOM.includes(nombre.toUpperCase()))) throw new Error(`Ecuación ${j + 1}: el nombre de la salida «${nombre}» no vale (usa F, G, Y, F1…; A a E son las variables)`); }
+      return { nombre, ast: lee(cuerpo, j + 1) };
+    });
+    const nombres = ecs.map((e, j) => e.nombre || (ecs.length === 1 ? 'F' : `F${j + 1}`));
+    if (new Set(nombres).size !== nombres.length) throw new Error('Dos ecuaciones tienen el mismo nombre de salida');
+    ecs.forEach((e, j) => { e.nombre = nombres[j]; });
+    return ecs;
+  }
+  const usadas = (a, set = new Set()) => { if (a.t === 'v') set.add(a.k); else if (a.x) usadas(a.x, set); else (a.xs || []).forEach((q) => usadas(q, set)); return set; };
+  const evalAst = (a, i, n) => (a.t === 'v' ? (i >> (n - 1 - a.k)) & 1 : a.t === 'c' ? a.v : a.t === 'n' ? 1 - evalAst(a.x, i, n)
+    : a.t === '&' ? +a.xs.every((q) => evalAst(q, i, n)) : a.t === '|' ? +a.xs.some((q) => evalAst(q, i, n)) : a.xs.reduce((s, q) => s ^ evalAst(q, i, n), 0));
+  // la ecuación escrita de nuevo, en HTML (barra encima) y en texto
+  function escribe(a) {
+    const nivel = { '|': 1, '^': 2, '&': 3 };
+    if (a.t === 'v') return { h: NOM[a.k], t: NOM[a.k], p: 4 };
+    if (a.t === 'c') return { h: String(a.v), t: String(a.v), p: 4 };
+    if (a.t === 'n') { const q = escribe(a.x); return { h: `<i class="n">${q.h}</i>`, t: /^[A-E01]$/.test(q.t) ? `${q.t}'` : `(${q.t})'`, p: 4 }; }
+    const hs = a.xs.map(escribe), sep = a.t === '&' ? '·' : a.t === '^' ? ' ⊕ ' : ' + ', l = nivel[a.t];
+    const par = (q, v) => (q.p < l ? `(${q[v]})` : q[v]);
+    return { h: hs.map((q) => par(q, 'h')).join(sep), t: hs.map((q) => par(q, 't')).join(sep), p: l };
+  }
+  // circuito de la ecuación tal como está escrita: puertas de hasta 4 entradas, en árbol si hay más
+  function dibujoAst(ecs) {
+    const nodos = [], mapa = new Map(), usa = new Set(), consts = new Set();
+    const puerta = (tipo, e) => {
+      const ee = tipo === 'NOT' ? e : [...e].sort(), clave = `${tipo}:${ee.join(',')}`;
+      if (mapa.has(clave)) return mapa.get(clave);
+      const id = `G${nodos.length + 1}`; nodos.push({ id, tipo, e: ee }); mapa.set(clave, id); return id;
+    };
+    const TIPO = { '&': 'AND', '|': 'OR', '^': 'XOR' };
+    const crea = (a) => {
+      if (a.t === 'v') { usa.add(a.k); return NOM[a.k]; }
+      if (a.t === 'c') { consts.add(a.v); return `K${a.v}`; }
+      if (a.t === 'n') return puerta('NOT', [crea(a.x)]);
+      let ids = a.xs.map(crea);
+      while (ids.length > 4) ids = [puerta(TIPO[a.t], ids.slice(0, 4)), ...ids.slice(4)];
+      return puerta(TIPO[a.t], ids);
+    };
+    const salidas = ecs.map((e) => ({ nombre: e.nombre, id: crea(e.ast) }));
+    const entradas = [...usa].sort().map((k) => ({ id: NOM[k], etq: NOM[k] })).concat([...consts].sort().map((c) => ({ id: `K${c}`, etq: String(c) })));
+    return { entradas, nodos, salidas };
+  }
+
   /* ---------- Resolver ---------- */
   const entero = (s, a, b, nom) => {
     const x = Number(String(s ?? '').trim());
@@ -210,7 +304,8 @@ const PuertasLogicas = (() => {
   const nombresSal = (m) => (m === 1 ? ['F'] : [...Array(m).keys()].map((i) => `F${i + 1}`));
 
   function resolver(sc) {
-    const modo = sc.modo === 'puertas' ? 'puertas' : 'tabla';
+    const modo = sc.modo === 'puertas' ? 'puertas' : sc.modo === 'ecuacion' ? 'ecuacion' : 'tabla';
+    let ecs = null;
     const forma = sc.forma === 'pos' ? 'pos' : 'sop', simp = !!sc.simp;
     const pasos = [];
     let n, nombres, valores, tabla, circuito = null, dado = null;
@@ -224,6 +319,16 @@ const PuertasLogicas = (() => {
         return [...s].map((c) => (c === 'X' ? 2 : +c));
       });
       tabla = { cab: [...NOM.slice(0, n), ...nombres], filas: [...Array(N).keys()].map((i) => [...bin(i, n)].map(Number).concat(valores.map((v) => v[i]))) };
+    } else if (modo === 'ecuacion') {
+      ecs = parseEcuaciones(sc.ec);
+      const vs = new Set(); ecs.forEach((e) => usadas(e.ast, vs));
+      n = vs.size ? Math.max(...vs) + 1 : 1;  // sin variables (F = 1) se usa A solo para tener tabla
+      const N = 1 << n; nombres = ecs.map((e) => e.nombre);
+      valores = ecs.map((e) => [...Array(N).keys()].map((i) => evalAst(e.ast, i, n)));
+      tabla = { cab: [...NOM.slice(0, n), ...nombres], filas: [...Array(N).keys()].map((i) => [...bin(i, n)].map(Number).concat(valores.map((v) => v[i]))), nSal: nombres.map((_, j) => n + j) };
+      dado = ecs.map((e) => ({ nombre: e.nombre, ...escribe(e.ast) }));
+      pasos.push({ t: 'Ecuaciones leídas', html: dado.map((g) => `<b>${g.nombre}</b> = ${g.h}`).join('<br>') + `<br><span class="nota">Variables: ${NOM.slice(0, n).join(', ')}. Prioridad: NOT, AND, XOR, OR.</span>` });
+      pasos.push({ t: 'Tabla de verdad', html: `Se calcula cada ecuación en las ${N} combinaciones de ${NOM.slice(0, n).join(', ')} (de ${'0'.repeat(n)} a ${'1'.repeat(n)}).` });
     } else {
       n = entero(sc.nc, 1, MAXN, 'El número de entradas');
       const orden = ordena(sc, n);
@@ -255,7 +360,9 @@ const PuertasLogicas = (() => {
     }
 
     const dibujo = modo === 'puertas' ? circuito
+      : modo === 'ecuacion' && !simp ? dibujoAst(ecs)
       : dibujoNormal(n, salidas.map((s) => ({ nombre: s.nombre, grupos: simp ? (forma === 'sop' ? s.gruposS : s.gruposP) : (forma === 'sop' ? s.gruposCS : s.gruposCP) })), forma);
+    if (modo === 'ecuacion') pasos.push({ t: 'Circuito de puertas', html: simp ? `Con la forma simplificada en ${forma === 'sop' ? 'suma de productos' : 'producto de sumas'}.` : 'Cada operación de la ecuación es una puerta (NOT, AND, OR o XOR); si hay más de 4 entradas se encadenan puertas. Pulsa «Simplificar» para el circuito más pequeño.' });
     if (modo === 'tabla') pasos.push({ t: 'Circuito de puertas', html: `Con la forma ${simp ? 'simplificada' : 'canónica'} en ${forma === 'sop' ? 'suma de productos: una puerta AND por cada término y una OR que los suma' : 'producto de sumas: una puerta OR por cada factor y una AND que los multiplica'}. Las variables con barra pasan antes por una puerta NOT.${simp ? '' : " Pulsa «Simplificar» para ver el circuito más pequeño."}` });
     const mapas = n <= MAXN ? salidas.map((s) => ({ nombre: s.nombre, ...karnaugh(n, s.v, simp || modo === 'puertas' ? s.elegidosS : []) })) : [];
     return { modo, forma, simp, n, vars: NOM.slice(0, n), tabla, salidas, dibujo, mapas, dado, pasos };
@@ -264,6 +371,7 @@ const PuertasLogicas = (() => {
   /* ---------- Ejemplos ---------- */
   const T = (n, m, tabla) => ({ modo: 'tabla', n: String(n), m: String(m), tabla, forma: 'sop' });
   const P = (nc, puertas) => ({ modo: 'puertas', nc: String(nc), puertas, forma: 'sop' });
+  const E = (ec) => ({ modo: 'ecuacion', ec, forma: 'sop' });
   const g = (id, tipo, e, sal) => ({ id, tipo, e, sal: !!sal });
   const ejemplos = [
     { clave: 'mayoria', nombre: 'Mayoría de 3 (votación)', sc: T(3, 1, ['00010111']) },
@@ -272,6 +380,9 @@ const PuertasLogicas = (() => {
     { clave: 'primos-bcd', nombre: 'Primo en BCD (con indiferentes)', sc: T(4, 1, ['0011010100XXXXXX']) },
     { clave: 'circ-semisumador', nombre: 'Semisumador con puertas', sc: P(2, [g('P1', 'XOR', ['A', 'B'], 1), g('P2', 'AND', ['A', 'B'], 1)]) },
     { clave: 'circ-mux', nombre: 'Multiplexor 2 a 1 (selector C)', sc: P(3, [g('P1', 'NOT', ['C']), g('P2', 'AND', ['A', 'P1']), g('P3', 'AND', ['B', 'C']), g('P4', 'OR', ['P2', 'P3'], 1)]) },
+    { clave: 'ec-mux', nombre: 'Ecuación: multiplexor A·C′ + B·C', sc: E("F = A·C' + B·C") },
+    { clave: 'ec-semisumador', nombre: 'Ecuaciones: semisumador (⊕ y ·)', sc: E('S = A ⊕ B\nR = A·B') },
+    { clave: 'ec-demorgan', nombre: 'Ecuación: NOR, !(A + B)', sc: E('F = !(A + B)') },
     { clave: 'circ-xor-nand', nombre: 'XOR hecha solo con NAND', sc: P(2, [g('P1', 'NAND', ['A', 'B']), g('P2', 'NAND', ['A', 'P1']), g('P3', 'NAND', ['B', 'P1']), g('P4', 'NAND', ['P2', 'P3'], 1)]) },
   ];
 
@@ -282,6 +393,6 @@ const PuertasLogicas = (() => {
     return T(3, 1, [v.join('')]);
   }
 
-  return { resolver, ejemplos, azar, NOM, NOMBRES, TIPOS, arid, MAXN, MAXM };
+  return { resolver, ejemplos, azar, parseEcuaciones, NOM, NOMBRES, TIPOS, arid, MAXN, MAXM };
 })();
 if (typeof module !== 'undefined') module.exports = PuertasLogicas;

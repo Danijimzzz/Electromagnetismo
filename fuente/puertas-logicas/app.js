@@ -59,26 +59,31 @@
     }
     return h + '</table></div>';
   }
+  const editorEcuaciones = () => `<label for="ecuaciones" class="nota" style="display:block;margin-bottom:4px">Ecuaciones</label><textarea id="ecuaciones" class="in" spellcheck="false" autocomplete="off" rows="4" aria-label="Ecuaciones booleanas">${esc(sc.ec ?? '')}</textarea>`
+    + '<div class="simbolos" role="group" aria-label="Símbolos">' + [["'", "Negación (A')"], ['!', 'Negación'], ['·', 'AND'], ['+', 'OR'], ['⊕', 'XOR'], ['(', 'Abrir paréntesis'], [')', 'Cerrar paréntesis'], ['\n', 'Otra ecuación']].map(([c, t]) => `<button class="btn" data-ins="${esc(c)}" title="${t}" aria-label="${t}">${c === '\n' ? '↵' : esc(c)}</button>`).join('') + '</div>';
   const paleta = () => '<div class="paleta" role="group" aria-label="Puertas">' + Object.entries(P.NOMBRES).map(([t, nom]) => `<button class="btn" data-tipo="${t}" title="Pulsa para añadir o arrastra al dibujo">${esc(nom)}</button>`).join('') + '</div>';
   function formulario() {
-    const tabla = sc.modo !== 'puertas', forma = [['sop', 'Suma de productos (AND-OR)'], ['pos', 'Producto de sumas (OR-AND)']];
-    $('#tab-tabla').setAttribute('aria-selected', tabla); $('#tab-puertas').setAttribute('aria-selected', !tabla);
+    const modo = sc.modo === 'puertas' ? 'puertas' : sc.modo === 'ecuacion' ? 'ecuacion' : 'tabla', tabla = modo === 'tabla', forma = [['sop', 'Suma de productos (AND-OR)'], ['pos', 'Producto de sumas (OR-AND)']];
+    for (const m of ['tabla', 'puertas', 'ecuacion']) $(`#tab-${m}`).setAttribute('aria-selected', modo === m);
     $('#campos').innerHTML = tabla
       ? `<label for="f-n">Variables</label><select id="f-n" class="in" data-k="n">${opts(rango(1, P.MAXN).map((k) => [k, `${k} (${NOM.slice(0, k).join(', ')})`]), nT())}</select>`
         + `<label for="f-m">Salidas</label><select id="f-m" class="in" data-k="m">${opts(rango(1, P.MAXM).map((k) => [k, k]), mT())}</select>`
         + `<label for="f-forma">Circuito en</label><select id="f-forma" class="in" data-k="forma">${opts(forma, sc.forma)}</select>`
+      : modo === 'ecuacion' ? ''
       : `<label for="f-nc">Entradas</label><select id="f-nc" class="in" data-k="nc">${opts(rango(1, P.MAXN).map((k) => [k, `${k} (${NOM.slice(0, k).join(', ')})`]), nC())}</select>`;
-    $('#editor').innerHTML = tabla ? editorTabla() : '<p class="nota" style="margin:0 0 6px">Puertas: pulsa una para añadirla o arrástrala al dibujo.</p>' + paleta();
-    $('#nota').textContent = tabla ? 'Pulsa una casilla de la salida para cambiarla: 0, 1 o X (indiferente). A es el bit de más peso de la fila.'
+    $('#editor').innerHTML = modo === 'ecuacion' ? editorEcuaciones() : tabla ? editorTabla() : '<p class="nota" style="margin:0 0 6px">Puertas: pulsa una para añadirla o arrástrala al dibujo.</p>' + paleta();
+    $('#nota').textContent = modo === 'ecuacion' ? 'Una ecuación por línea, con variables de A a E. Negación: \' ! o ~. Y: · * & o variables juntas (AB). O: + o |. XOR: ⊕ o ^. Se admiten paréntesis y las constantes 0 y 1.' : tabla ? 'Pulsa una casilla de la salida para cambiarla: 0, 1 o X (indiferente). A es el bit de más peso de la fila.'
       : 'Une una salida (círculo de la derecha) con una entrada (círculo de la izquierda) arrastrando. Suelta un cable en el vacío para quitarlo. Doble clic en una puerta para marcarla como salida.';
-    $('#c-circ').hidden = !tabla; $('#c-editor').hidden = tabla;
-    if (!tabla) { colocaTodo(); pintaEditor(); }
+    $('#c-circ').hidden = modo === 'puertas'; $('#c-editor').hidden = modo !== 'puertas';
+    if (modo === 'puertas') { colocaTodo(); pintaEditor(); }
   }
   const cambio = () => { $('#ejemplos').value = ''; calcula(); };
   $('#modos').addEventListener('click', (e) => {
     const b = e.target.closest('button'); if (!b) return;
-    const m = b.id === 'tab-puertas' ? 'puertas' : 'tabla';
-    if (m === sc.modo) return;
+    const m = b.id === 'tab-puertas' ? 'puertas' : b.id === 'tab-ecuacion' ? 'ecuacion' : 'tabla';
+    if (m === (sc.modo || 'tabla')) return;
+    // al pasar a ecuaciones se parte de las simplificadas de la tabla (si hay) para no empezar con la caja vacía
+    if (m === 'ecuacion' && !sc.ec) sc.ec = sol && sol.modo === 'tabla' ? sol.salidas.map((s) => `${s.nombre} = ${s.minS.txt}`).join('\n') : "F = A·B + C'";
     sc.modo = m; if (m === 'puertas') sc.nc = sc.nc || '3';
     formulario(); cambio();
   });
@@ -92,8 +97,14 @@
     }
     formulario(); cambio();
   });
+  $('#editor').addEventListener('input', (e) => { if (e.target.id === 'ecuaciones') { sc.ec = e.target.value; cambio(); } });
   $('#editor').addEventListener('click', (e) => {
     const t = e.target.closest('button'); if (!t) return;
+    if (t.dataset.ins != null) { // símbolo en la posición del cursor de la caja de ecuaciones
+      const ta = $('#ecuaciones'), a = ta.selectionStart, z = ta.selectionEnd;
+      ta.value = ta.value.slice(0, a) + t.dataset.ins + ta.value.slice(z); ta.focus(); ta.selectionStart = ta.selectionEnd = a + t.dataset.ins.length;
+      sc.ec = ta.value; return cambio();
+    }
     if (t.classList.contains('cel')) {
       const j = +t.dataset.j, i = +t.dataset.i, s = [...sc.tabla[j]];
       s[i] = { 0: '1', 1: 'X', X: '0' }[s[i]] || '0'; sc.tabla[j] = s.join('');
@@ -287,6 +298,7 @@
     return sol.salidas.map((s) => {
       const f = s.nombre, ind = s.indif.length ? ` + d(${s.indif.join(', ')})` : '';
       let h = '';
+      if (sol.modo === 'ecuacion') { const g = sol.dado.find((x) => x.nombre === f); if (g) h += dato(`${f} · ecuación escrita`, `${f} = ${g.h}`); }
       if (sol.modo === 'puertas') { const o = sol.dibujo.salidas.find((x) => x.nombre === f), g = o && sol.dado.find((x) => x.id === o.id); if (g) h += dato(`${f} · ecuación del circuito`, `${f} = ${g.h}`); }
       h += dato(`${f} · minitérminos`, `${f} = ${s.sumM}${ind}`, un)
         + dato(`${f} · forma canónica, suma de minitérminos`, `${f} = ${s.canS.html}`)
@@ -323,12 +335,13 @@
     err.hidden = true;
     $('#resumen').innerHTML = resumen();
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${esc(p.t)}</strong>${p.html}</li>`).join('');
-    $('#c-tabla').hidden = sol.modo !== 'puertas'; $('#tabla-res').innerHTML = sol.modo === 'puertas' ? tablaResultado() : '';
+    $('#c-tabla').hidden = sol.modo === 'tabla'; $('#tabla-res').innerHTML = sol.modo !== 'tabla' ? tablaResultado() : '';
     $('#c-mapas').hidden = !sol.mapas.length;
     $('#mapas').innerHTML = mapas();
     $('#ley-mapas').textContent = sol.simp || sol.modo === 'puertas' ? 'Las casillas con borde son las que cubren los términos de la suma de productos simplificada; la X es un indiferente.' : 'Cada casilla lleva el número de su fila; la X es un indiferente. Pulsa «Simplificar ecuaciones» para ver los grupos.';
     const gs = sol.dibujo.nodos.length;
-    $('#leyenda').innerHTML = `Circuito de la forma ${sol.simp ? 'simplificada' : 'canónica'} en ${sol.forma === 'sop' ? 'suma de productos' : 'producto de sumas'}: <b>${gs}</b> ${gs === 1 ? 'puerta' : 'puertas'}.`;
+    $('#cambia-forma').hidden = sol.modo === 'ecuacion' && !sol.simp;
+    $('#leyenda').innerHTML = sol.modo === 'ecuacion' && !sol.simp ? `Circuito de la ecuación tal como está escrita: <b>${gs}</b> ${gs === 1 ? 'puerta' : 'puertas'}.` : `Circuito de la forma ${sol.simp ? 'simplificada' : 'canónica'} en ${sol.forma === 'sop' ? 'suma de productos' : 'producto de sumas'}: <b>${gs}</b> ${gs === 1 ? 'puerta' : 'puertas'}.`;
     dibuja();
   }
   $('#cambia-forma').addEventListener('click', () => { sc.forma = sc.forma === 'pos' ? 'sop' : 'pos'; calcula(); });
@@ -370,7 +383,7 @@
   }
   function dibuja() {
     const cv = $('#grafica');
-    if (!sol || sol.modo !== 'tabla') { const { g, w, h } = lienzo(cv); if (w && h) g.clearRect(0, 0, w, h); return; }
+    if (!sol || sol.modo === 'puertas') { const { g, w, h } = lienzo(cv); if (w && h) g.clearRect(0, 0, w, h); return; }
     const c = sol.dibujo, L = disposicion(c);
     const anchoNat = MARGEN + L.maxp * PASO + ANCHO + BURBUJA + 70, ancho = cv.getBoundingClientRect().width || anchoNat;
     const esc1 = Math.min(1, ancho / anchoNat);
