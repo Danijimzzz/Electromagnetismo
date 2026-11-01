@@ -342,9 +342,9 @@ ${cards}
   for (const r of web.log) { if (!dias.has(r.fecha)) dias.set(r.fecha, []); dias.get(r.fecha).push(r); }
   // versión con secciones: cabecera grande con título y subtítulo, y un bloque por sección con sus puntos
   const negrita = (t) => esc(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
-  // «#asignatura/herramienta»: tarjeta con el icono, el nombre, lo que hace y un enlace para abrirla
+  // «#asignatura/herramienta» (o «#fenomenos/fenomeno»): tarjeta con el icono, el nombre, lo que hace y un enlace para abrirla
   const tarjetaHerr = (p) => {
-    const [ac, hc] = p.slice(1).split('/'), a = Catalogo.asignaturas.find((x) => x.clave === ac), h = a?.herramientas.find((x) => x.clave === hc && x.disponible);
+    const [ac, hc] = p.slice(1).split('/'), a = ac === 'fenomenos' ? Catalogo.fenomenos : Catalogo.asignaturas.find((x) => x.clave === ac), h = (a?.herramientas || a?.lista)?.find((x) => x.clave === hc && x.disponible);
     if (!h) throw new Error(`Novedades: no hay una herramienta disponible «${p}»`);
     return `<li class="herr-n" style="${estilo(a)}"><a href="../${a.clave}/${h.clave}/"><span class="ico s">${esc(h.icono)}</span><span class="txt"><b>${esc(h.nombre)}</b><small>${esc(a.nombre)} · ${esc(h.desc)}</small></span><span class="ir">Abrir →</span></a></li>`;
   };
