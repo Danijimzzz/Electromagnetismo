@@ -260,8 +260,8 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 <a href="../../fenomenos/microondas/"><b>La rejilla del microondas →</b><span>Ondas de 12 cm que no pasan por agujeros de milímetros, y cómo calientan el agua.</span></a>
 </section>
 <section class="relacionadas" aria-label="Herramientas relacionadas"><h2>Herramientas relacionadas</h2>
+<a href="../laplace-numerica/"><b>Ecuación de Laplace numérica →</b><span>Potencial en una caja con los bordes y un electrodo fijados, por relajación (Jacobi, Gauss-Seidel o SOR), con mapa de color, equipotenciales y campo.</span></a>
 <a href="../electrostatica/"><b>Electrostática →</b><span>Cargas, hilos, planos y esferas. Campo, potencial, energía y Gauss.</span></a>
-<a href="../magnetostatica/"><b>Magnetostática (Biot-Savart) →</b><span>B de hilos, espiras, arcos, solenoides y toroides.</span></a>
 <a href="../fuerza/"><b>Fuerza magnética →</b><span>Fuerza de Lorentz con vectores, radio y periodo de una carga, selector de velocidades, espectrómetro, ciclotrón y fuerzas sobre hilos, con animación.</span></a>
 <a href="../faraday/"><b>Inducción: Faraday y Lenz →</b><span>Fem inducida en una barra, un alternador, un flujo que cambia y una espira que cruza un campo, con el sentido de Lenz.</span></a>
 </section>
@@ -283,6 +283,16 @@ const Pagina = { carpeta: 'ondas-em', guarda: 'ondasem-v1' };
 const Version = (() => {
   const registros = {
     web: [
+      { v: '1.6', fecha: '2026-11-01', titulo: 'Laplace en la caja', subtitulo: 'Fija los bordes de una caja y mira cómo se reparte el potencial.', secciones: [
+        { icono: '⚡', titulo: 'Nueva herramienta en Electromagnetismo', puntos: [
+          '#electromagnetismo/laplace-numerica',
+          '**Bordes y electrodo editables:** elige el potencial de cada uno de los cuatro lados de la caja y, si quieres, coloca un electrodo rectangular en su interior.',
+          '**Mapa de color, equipotenciales y campo:** el potencial se pinta con un mapa de color, con sus líneas equipotenciales y las flechas del campo eléctrico.',
+          '**Relajación a la vista:** compara Jacobi, Gauss-Seidel y SOR y mira cuántas vueltas necesita cada uno.',
+          '**Sonda:** pulsa en el mapa para leer el potencial y el campo en cualquier punto, y compáralo con la solución exacta en serie.',
+          '**Desarrollo paso a paso** y **modo práctica**.',
+        ] },
+      ] },
       { v: '1.5', fecha: '2026-11-01', titulo: 'Simulador de circuitos', subtitulo: 'Un solo simulador para continua y alterna, y las puertas lógicas ahora también desde ecuaciones.', secciones: [
         { icono: '🔌', titulo: 'Nueva herramienta en Circuitos', puntos: [
           '#circuitos/simulador',
@@ -416,6 +426,9 @@ const Version = (() => {
           '**Diseño pensado también para el móvil.**',
         ] },
       ] },
+    ],
+    'laplace-numerica': [
+      { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: fija el potencial de los cuatro bordes de una caja (y de un electrodo interior) y resuelve la ecuación de Laplace por relajación con Jacobi, Gauss-Seidel o SOR; muestra el mapa de color, las equipotenciales, el campo eléctrico y una sonda movible con el potencial y el campo en cualquier punto, el desarrollo paso a paso, la comparación con la solución exacta en serie y el modo práctica.'] },
     ],
     simulador: [
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: dibuja el circuito arrastrando componentes (resistencias, condensadores, bobinas, fuentes de continua y de alterna, diodos, transistores, operacionales, transformadores, trifásica y puertas lógicas), únelos con cables y mira tensiones, corrientes, fasores, osciloscopio y diagrama de Bode.'] },
@@ -1982,6 +1995,8 @@ const Practica = (() => {
     fuerza: { datos: null, items: '#res > div', genera: () => window.FuerzaApp?.azar(), enunciado: () => window.FuerzaApp?.enunciado() },
     // intervalos: una media, una proporción, una varianza, dos medias o un tamaño de muestra
     intervalos: { datos: null, items: '#res > div', genera: () => window.IntervalosApp?.azar(), enunciado: () => window.IntervalosApp?.enunciado() },
+    // laplace-numerica: una caja con los bordes a potenciales de clase (y a veces un electrodo central); se pregunta el potencial en la sonda, el campo y el potencial en el centro
+    'laplace-numerica': { datos: null, items: '#resumen > div.num', genera: () => window.LaplaceNumericaApp?.azar(), enunciado: () => window.LaplaceNumericaApp?.enunciado() },
     // ondasem: una onda plana, una intensidad o un medio con pérdidas
     'ondas-em': { datos: null, items: '#res > div', genera: () => window.OndasEMApp?.azar(), enunciado: () => window.OndasEMApp?.enunciado() },
     // trabajo y energía: una rampa con muelle, un rizo, un péndulo, una montaña rusa o una fuerza variable
