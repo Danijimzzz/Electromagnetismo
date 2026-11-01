@@ -1,6 +1,6 @@
 # CLAUDE.md · SimulaCiencia
 
-Web estática de simuladores y calculadoras de ciencias para la carrera, en español, gratis y sin registro. 66 herramientas disponibles en 7 asignaturas (Electromagnetismo, Física general, Química, Matemáticas, Estadística, Circuitos y Economía), más las que salen como «Próximamente». Sin framework ni dependencias: JS puro concatenado por `fuente/build.sh`. Producción: https://simulaciencia.vercel.app/ y https://electromagnetismo.aceropuro30.workers.dev (las dos se despliegan solas desde `main`).
+Web estática de simuladores y calculadoras de ciencias para la carrera, en español, gratis y sin registro. 76 herramientas disponibles en 7 asignaturas (Electromagnetismo, Física general, Química, Matemáticas, Estadística, Circuitos y Economía), más las que salen como «Próximamente». Sin framework ni dependencias: JS puro concatenado por `fuente/build.sh`. Producción: https://simulaciencia.vercel.app/ y https://electromagnetismo.aceropuro30.workers.dev (las dos se despliegan solas desde `main`).
 
 ## Mapa
 
@@ -29,6 +29,7 @@ Web estática de simuladores y calculadoras de ciencias para la carrera, en espa
 | `fuente/compartir.js` | Copiar enlace, texto o LaTeX e imprimir o PDF la solución (Matemáticas y Electromagnetismo); va en `scripts` antes del app.js. |
 | `fuente/matematicas/` | Común de Matemáticas: `algebra.js` (fracciones, complejos, matrices) y `expresion.js` (expresiones simbólicas). |
 | `fuente/quimica/` | Común de Química: elementos, fórmulas, configuración, disoluciones. |
+| `fuente/esquema.js` y `fuente/simulador/` | Simulador de circuitos (`/circuitos/simulador/`, sustituye a las antiguas Continua, Alterna y Transitorios): `esquema.js` es el editor SVG compartido (arrastrar, cablear, girar, deshacer); `componentes.js` (47 componentes y su paleta), `extraer.js` (esquema → circuito), `motor.js` (análisis nodal modificado: continua, fasores, Bode, trifásica y transitorio), `ejemplos.js`, `importar.js` (trae lo guardado con las antiguas) y `continua.js` / `alterna.js` (el desarrollo paso a paso). Las redirecciones de las URLs antiguas están en `catalogo.js` (`redirecciones`). |
 | `fuente/<clave>/` | Una carpeta por herramienta (ver abajo). |
 | `fuente/fenomenos/` | «Física en la vida real»: `animacion.js` (motor: avanza sola, parar, adelante y atrás, línea de tiempo, dato destacado, «Pruébalo tú» y sonido opcional), `dibujo.js` (ayudantes de dibujo con cámara: rótulos, signos, flechas, chispas), `estilos.css` y una carpeta por fenómeno (`pagina.html` con etiquetas, «Un poco de historia» y el recuadro de la herramienta + `escena.js` con los pasos, el dibujo y los datos para abrir la herramienta relacionada + `imagen.webp`, la imagen de su tarjeta en `/fenomenos/`). **Todo fenómeno disponible lleva imagen, no letra**: se elige el paso con `imagen: N` en `catalogo.js` y se genera con `node pruebas/imagenes-fenomenos.js [clave]` (paso N sin rótulos, 640 × 360); comprobar.js falla si falta. Se dan de alta en `catalogo.js` (`fenomenos.lista`); `portal.js` hace el índice `/fenomenos/` y el bloque «En la vida real» de cada asignatura, y `diseno.js` el de cada herramienta. Sin Mis ejercicios ni práctica; versión común `fenomenos` en version.js. Seguimiento en la base de Notion «Fenómenos (Física en la vida real)». |
 | `fuente/{engine,fmt,physics,presets,canvas,app}.js`, `shell.html`, `guia/` | Simulador de Electrostática: arquitectura propia y más antigua. |
@@ -47,7 +48,7 @@ Web estática de simuladores y calculadoras de ciencias para la carrera, en espa
 - `fisica.js` o `calculo.js` (sin DOM): `const Nombre = (() => { … return { resolver, ejemplos, … }; })();` y última línea `if (typeof module !== 'undefined') module.exports = Nombre;` (build.sh la quita; comprobar.js la usa con `require`).
 - `app.js` (interfaz): IIFE con `const { $, esc, copia, … } = Herramienta;`, estado `sc` guardado en `localStorage[CLAVE]`, `formulario()`, `calcula()`, `dibuja()` en `<canvas>`, `<select id="ejemplos">`, y expone `window.<Nombre>App = { abrirEjemplo, azar, enunciado, resultado, estado }` para práctica y pruebas.
 
-Excepciones: `electrostatica` (shell.html + scripts raíz, su propia biblioteca), `tabla-periodica` (sin estado), `magnetostatica` (fisica + ejemplos + app). La carpeta no siempre coincide con la clave del catálogo: `estadistica/` → `distribuciones`, `circuitos/` → `continua`.
+Excepciones: `electrostatica` (shell.html + scripts raíz, su propia biblioteca), `tabla-periodica` (sin estado), `magnetostatica` (fisica + ejemplos + app). La carpeta no siempre coincide con la clave del catálogo: `estadistica/` → `distribuciones`.
 
 **Crear una nueva**
 1. `node fuente/nueva.js <asignatura> <clave> "<Nombre>"`: crea `fuente/<clave>/` y `pruebas/herramientas/<clave>.js` desde `fuente/plantilla/` (un ejemplo que ya funciona y pasa las pruebas), y da de alta la herramienta en `catalogo.js` (o completa su «Próximamente») y en `version.js` (0.1).
@@ -74,7 +75,7 @@ Excepciones: `electrostatica` (shell.html + scripts raíz, su propia biblioteca)
 - Todo en español: código, comentarios, nombres (`calcula`, `dibuja`, `guarda`, `sc`, `sol`, `pasos`) y textos con frases completas.
 - Cada fichero empieza con un bloque `/* ===== … ===== */` que dice qué hace y dónde está lo demás.
 - Funciones pequeñas en una línea, estilo compacto; sin dependencias ni módulos ES (globales + IIFE).
-- Números con coma decimal y `·10<sup>n</sup>`; los campos aceptan `3e8`, `3·10^8` y coma; con `Herramienta.leeSI` también prefijos y unidades (`4k7`, `100n`, `10 µF`), como en Circuitos.
+- Números con coma decimal y `·10<sup>n</sup>`; los campos aceptan `3e8`, `3·10^8` y coma; con `Herramienta.leeSI` también prefijos y unidades (`4k7`, `100n`, `10 µF`), como en el Simulador de circuitos.
 - Colores solo con variables CSS y su valor en modo oscuro; las gráficas los leen con `getComputedStyle` y se redibujan con `matchMedia('(prefers-color-scheme: dark)')`.
 - Resultados de Electromagnetismo con la forma del solucionario oficial (no solo el valor).
 

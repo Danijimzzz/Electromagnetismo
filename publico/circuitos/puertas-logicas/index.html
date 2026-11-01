@@ -221,6 +221,9 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 .kmap td.cub { box-shadow: inset 0 0 0 2px var(--accent) }
 .kmap td.cx { color: var(--muted) }
 #grafica { display: block }
+#ecuaciones { font: 600 15px var(--f-math); min-height: 92px; resize: vertical; line-height: 1.5 }
+.simbolos { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 }
+.simbolos .btn { min-width: 36px; padding: 3px 8px; font-family: var(--f-math); font-size: 15px }
 .tv tr.g4 td { border-bottom: 2.5px solid var(--ink) }
 .resumen div.simp { outline: 1.5px solid var(--accent) }
 .paleta { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 6px; touch-action: none }
@@ -248,13 +251,14 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 <div class="wrap">
 <nav class="miga" aria-label="Estás en"><span class="miga-izq"></span><span class="miga-ico" aria-hidden="true">Ω</span><a href="../">Circuitos</a><span aria-hidden="true">›</span><span>Tablas de verdad y puertas lógicas</span><span class="miga-der"></span></nav>
 <h1>Tablas de verdad y puertas lógicas</h1>
-<p class="lead">Escribe una tabla de verdad y obtén sus ecuaciones (minitérminos, maxitérminos y forma simplificada) con el circuito de puertas, o dibuja el circuito puerta a puerta y obtén su tabla y sus ecuaciones.</p>
+<p class="lead">Escribe una tabla de verdad y obtén sus ecuaciones (minitérminos, maxitérminos y forma simplificada) con el circuito de puertas, dibuja el circuito puerta a puerta o escribe las ecuaciones, y obtén lo que falta: tabla, ecuaciones y circuito.</p>
 <div class="layout">
   <div class="card">
     <h2>Datos</h2>
-    <div class="modos" id="modos" role="tablist" aria-label="Qué quieres hacer">
-      <button id="tab-tabla" role="tab" aria-selected="true">Desde la tabla</button>
-      <button id="tab-puertas" role="tab" aria-selected="false">Desde las puertas</button>
+    <div class="modos" id="modos" role="tablist" aria-label="De qué partes">
+      <button id="tab-tabla" role="tab" aria-selected="true">Tabla</button>
+      <button id="tab-puertas" role="tab" aria-selected="false">Puertas</button>
+      <button id="tab-ecuacion" role="tab" aria-selected="false">Ecuaciones</button>
     </div>
     <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
     <div class="campos" id="campos"></div>
@@ -292,9 +296,8 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 </section>
 <section class="relacionadas" aria-label="Herramientas relacionadas"><h2>Herramientas relacionadas</h2>
 <a href="../simulador/"><b>Simulador de circuitos →</b><span>Arrastra resistencias, fuentes de continua y de alterna, condensadores, bobinas, transistores y más: tensiones, corrientes, fasores, osciloscopio y Bode.</span></a>
-<a href="../continua/"><b>Circuitos de corriente continua →</b><span>Método de los nudos y de las mallas con Kirchhoff, fuentes dependientes, Thévenin, Norton, superposición y esquema editable.</span></a>
+<a href="../resistencias/"><b>Código de colores de resistencias →</b><span>Colores y códigos SMD de resistencias, bobinas y condensadores, asociación, normalizadas, LED y divisor de tensión.</span></a>
 <a href="../sistemas-numericos/"><b>Sistemas de numeración →</b><span>Pasa un número entre decimal, binario, complemento a 2, hexadecimal y BCD, paso a paso.</span></a>
-<a href="../transitorios/"><b>Transitorios RC, RL y RLC →</b><span>RC, RL, RLC en serie y en paralelo y cualquier circuito de primer orden por los tres valores, con la gráfica animada.</span></a>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Tablas de verdad y puertas lógicas <span id="ver"></span> (beta)</footer>
@@ -315,13 +318,19 @@ const Pagina = { carpeta: 'puertas-logicas', guarda: 'puertas-logicas-v1' };
 const Version = (() => {
   const registros = {
     web: [
-      { v: '1.5', fecha: '2026-11-01', titulo: 'Simulador de circuitos', subtitulo: 'Un solo simulador para continua y alterna: arrastra cualquier componente, cablea y mira qué pasa.', secciones: [
+      { v: '1.5', fecha: '2026-11-01', titulo: 'Simulador de circuitos', subtitulo: 'Un solo simulador para continua y alterna, y las puertas lógicas ahora también desde ecuaciones.', secciones: [
         { icono: '🔌', titulo: 'Nueva herramienta en Circuitos', puntos: [
           '#circuitos/simulador',
           '**Editor de arrastrar y soltar:** pon resistencias, condensadores, bobinas, fuentes, transistores, operacionales, puertas lógicas y más (47 componentes), gíralos, refléjalos y únelos con cables.',
           '**Continua y alterna a la vez:** punto de operación, fasores, osciloscopio con la forma de onda completa y diagrama de Bode.',
           '**Instrumentos y trifásica:** amperímetro, voltímetro, vatímetro, sondas del osciloscopio y fuentes y cargas trifásicas.',
           '**Corriente animada** y cables coloreados según su tensión, **desarrollo paso a paso** cuando el circuito se puede resolver a mano y **modo práctica**.',
+        ] },
+        { icono: '🔌', titulo: 'Mejoras en Tablas de verdad y puertas lógicas', puntos: [
+          '#circuitos/puertas-logicas',
+          '**Desde las ecuaciones:** escribe una o varias ecuaciones (F = A·B + C\'), con paréntesis, NOT, AND, OR y XOR, y mira su tabla de verdad, los minitérminos y maxitérminos, y el circuito de puertas.',
+          'El circuito sale **tal como lo escribiste** y, con «Simplificar», en suma de productos o producto de sumas.',
+          'Botones para insertar los símbolos sin buscarlos en el teclado.',
         ] },
       ] },
       { v: '1.4.1', fecha: '2026-11-01', titulo: 'Puertas lógicas más fáciles', subtitulo: 'Un editor para arrastrar y unir puertas, y las ecuaciones primero normales y luego simplificadas.', secciones: [
@@ -450,6 +459,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: escribe la matriz de pagos de un juego de dos jugadores con dos estrategias y obtén las mejores respuestas, las estrategias dominantes, los equilibrios de Nash puros y mixtos, la eficiencia de Pareto y el tipo de juego (dilema del prisionero, coordinación, gallina…), con la gráfica de las curvas de mejor respuesta y el desarrollo paso a paso.'] },
     ],
     'puertas-logicas': [
+      { v: '0.3', fecha: '2026-11-01', cambios: ['Nuevo modo «Ecuaciones»: se escriben ecuaciones booleanas (con NOT, AND, OR, XOR, paréntesis y varias salidas) y salen la tabla de verdad, los minitérminos y maxitérminos, el mapa de Karnaugh y el circuito de puertas, tal como está escrito o simplificado.', 'Los modos pasan a llamarse Tabla, Puertas y Ecuaciones.'] },
       { v: '0.2', fecha: '2026-11-01', cambios: ['Editor gráfico de puertas: se arrastran desde la paleta, se mueven y se unen con el ratón (el cable suelto en el vacío se quita; doble clic marca la salida), con las puertas en cualquier orden.', 'Las ecuaciones salen primero en forma canónica y el botón «Simplificar ecuaciones» añade las simplificadas y el circuito más pequeño.', 'Las tablas de verdad llevan una línea más gruesa cada 4 filas.', 'Un botón en el circuito cambia entre la suma de productos y el producto de sumas.'] },
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: dos modos. Desde la tabla de verdad (1 a 5 variables, hasta 4 salidas y casillas indiferentes X) da los minitérminos Σm, los maxitérminos ΠM, las formas canónicas y la forma simplificada por Quine-McCluskey en suma de productos y en producto de sumas, con el mapa de Karnaugh y el circuito de puertas dibujado. Desde las puertas (AND, OR, NOT, NAND, NOR, XOR y XNOR de 2 a 4 entradas) da la ecuación de cada puerta, la tabla de verdad con todas las puertas y las mismas ecuaciones. Con ejemplos (mayoría, semisumador, sumador completo, primos en BCD, multiplexor y XOR con NAND), desarrollo paso a paso y botón para copiar las ecuaciones.'] },
     ],
@@ -649,11 +659,6 @@ const Version = (() => {
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['Una proporción con 0 éxitos, o con todos, ya no da un intervalo de un solo punto: se usa el intervalo de Wilson. Con pocos éxitos o fracasos también se muestra el de Wilson al lado del de siempre.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: intervalo de confianza de una media con σ conocida (z) o desconocida (t de Student), a partir de x̄, s y n o de la lista de datos, también si te dan la desviación con n.', 'Intervalos de una proporción, de la varianza y la desviación típica (con la χ²), de la diferencia de medias (σ conocidas, iguales o Welch) y de la diferencia de proporciones.', 'Tamaño de muestra para un error máximo en una media o una proporción.', 'Gráfica de la distribución con el área de confianza y simulación de 100 muestras que muestra cuántos intervalos aciertan.'] },
     ],
-    transitorios: [
-      { v: '0.2', fecha: '2026-10-26', cambios: ['Nuevo modo «Circuito cualquiera de primer orden»: escribe el circuito como lista de elementos, marca qué se conecta o desconecta en t = 0 y sale por el método de los tres valores (valor inicial, final y resistencia de Thévenin que ve el condensador o la bobina).', 'Conmutación en t₁: un condensador que se carga por R y se descarga por R₂, y una bobina que se abre con el pico de tensión que hace saltar la chispa.', 'Nuevo circuito RLC en paralelo con una fuente de corriente, con su tipo de amortiguamiento y la corriente de la bobina.', 'Tiempo hasta un valor también en el RLC, corriente inicial en la bobina y descarga por otra resistencia R₂.', 'Pasa el ratón o el dedo por la gráfica para leer la tensión y la corriente en cada instante; un clic deja el cursor fijo.'] },
-      { v: '0.1.1', fecha: '2026-10-25', cambios: ['Los valores admiten prefijos del SI y unidades: 4k7, 1,5 kΩ, 100n, 10 µF o 5 ms. Un número solo sigue en la unidad del campo (mH, μF).'] },
-      { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: carga y descarga de un condensador en un circuito RC (también si ya tenía carga), con τ = RC, la tensión y la corriente en un instante y el tiempo hasta una tensión.', 'Corriente que sube o baja en una bobina en un circuito RL, con τ = L/R y la tensión de la bobina.', 'Circuito RLC en serie: dice si es subamortiguado, crítico o sobreamortiguado y da la tensión del condensador frente al tiempo, también con carga o corriente al empezar.', 'Esquema del circuito con la corriente que circula y la gráfica de V e i frente a t animadas.'] },
-    ],
     fuerza: [
       { v: '0.2', fecha: '2026-10-26', cambios: ['Carga que entra en una franja de campo: si la atraviesa, el ángulo con el que sale y cuánto se ha desplazado; si no, dónde vuelve a salir.', 'Campos E y B cruzados: velocidad de deriva E/B y la cicloide animada, también con velocidad inicial (cicloide acortada o con bucles).', 'Efecto Hall: tensión Hall, densidad de portadores, coeficiente de Hall y qué cara queda a más potencial.', 'Par sobre una espira o bobina: momento magnético, par, energía y trabajo para girarla.', 'Espectrómetro de masas con dos isótopos: la separación entre los impactos.', 'El campo B se dibuja en azul en todas las animaciones.', 'Botones para copiar el enlace del ejercicio, copiar la solución como texto o en LaTeX e imprimirla o guardarla en PDF.', 'El desarrollo paso a paso escribe las fórmulas como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: fuerza sobre una carga en un campo uniforme, con el radio, el periodo y el sentido de giro, o la hélice si v no es perpendicular a B. La velocidad se puede dar en m/s, por su energía en eV o por la ddp que la acelera.', 'Fuerza de Lorentz con vectores: v × B con su determinante y F = q(E + v × B).', 'Selector de velocidades y espectrómetro de masas, ciclotrón con la frecuencia, la energía de salida y las vueltas.', 'Fuerza sobre un hilo (y la corriente para que flote) y entre dos hilos paralelos.', 'Animación de cada situación.'] },
@@ -702,23 +707,11 @@ const Version = (() => {
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: normal, t de Student, chi cuadrado, exponencial, binomial y Poisson, con su media y su varianza.', 'Probabilidades P(X ≤ a), P(X ≥ a), entre dos valores y, en las discretas, P(X = k) y con desigualdad estricta; cuantiles y valores críticos bilaterales.', 'Gráfica con el área (o las barras) que se pide sombreada.', 'Desarrollo como en clase: tipificación Z = (X − μ)/σ y Φ(z), fórmula de la binomial y de la Poisson término a término, y aproximación de la binomial por la normal con corrección de continuidad.'] },
     ],
-    alterna: [
-      { v: '0.2', fecha: '2026-10-26', cambios: ['Redes de alterna cualesquiera por el método de los nudos con fasores: resistencias, bobinas, condensadores y fuentes de tensión o de corriente con su fase, con el sistema en complejos y el balance de potencias de Boucherot.', 'Sistemas trifásicos equilibrados en estrella y en triángulo: tensiones y corrientes de fase y de línea, fasores de las tres fases, potencias y la batería de condensadores para corregir el factor de potencia.', 'Triángulo de potencias y curva de resonancia (la corriente frente a la frecuencia, con f₀ y el ancho de banda) en el circuito RLC.', 'La fuente se puede dar con su valor de pico o eficaz, con fase inicial y con ω en lugar de f, y el resultado escribe v(t) e i(t).', 'Corrección del factor de potencia a partir de P, S, I o Q, y también de cargas capacitivas (con una bobina).'] },
-      { v: '0.1.2', fecha: '2026-10-25', cambios: ['Los valores admiten prefijos del SI y unidades: 4k7, 1,5 kΩ, 100n, 10 µF o 5 ms. Un número solo sigue en la unidad del campo (mH, μF, kW).', 'Arreglo: en paralelo, una resistencia de 0 Ω se ignoraba como si no estuviera; ahora avisa de que cortocircuita la fuente.'] },
-      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
-      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: circuitos RLC en serie y en paralelo (o solo con algunos de los elementos) con impedancias complejas en forma binómica y polar, la corriente, la tensión o la corriente de cada elemento, las potencias activa, reactiva y aparente y el factor de potencia, con el desarrollo paso a paso.', 'Diagrama de fasores y ondas v(t) e i(t) desfasadas.', 'Resonancia: frecuencia de resonancia, factor de calidad y ancho de banda.', 'Corrección del factor de potencia: el condensador que hay que poner en paralelo y cuánto baja la corriente de la línea.'] },
-    ],
     dinamica: [
       { v: '0.2', fecha: '2026-10-26', cambios: ['Bloques lanzados con velocidad inicial: frenan, se paran y se quedan quietos o vuelven, con la distancia y el tiempo de frenada.', 'Nuevos problemas: dos bloques en contacto o unidos por una cuerda, con la fuerza entre ellos; curvas con y sin peralte (velocidades máxima y mínima y si derrapa); péndulo cónico; loma y hondonada, y muelles (ley de Hooke, serie y paralelo, equilibrio en un plano y periodo de oscilación).', 'Fuerza mínima para que un bloque empiece a subir y el ángulo con el que menos cuesta, y el coeficiente de rozamiento a partir de una aceleración medida.', 'El dibujo se anima: el bloque se mueve, frena y vuelve, las masas de Atwood suben y bajan, el péndulo cónico gira y el muelle oscila. Se puede pausar.', 'Las fórmulas del desarrollo se ven como en los libros, y los ejemplos usan coma decimal.', 'Modo práctica con enunciado escrito para cada tipo de problema.'] },
       { v: '0.1.2', fecha: '2026-10-25', cambios: ['Arreglo: en el diagrama de fuerzas, el nombre del bloque ya no queda tapado por las flechas, el bloque se ve más grande y la flecha de la aceleración no cruza la normal.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: bloque en un plano horizontal o inclinado con rozamiento estático y dinámico, una fuerza aplicada con ángulo y, si quieres, una masa colgando de una polea. Dice si el bloque se mueve o el rozamiento lo sujeta y da la normal, el rozamiento, la aceleración y la tensión, con el desarrollo paso a paso.', 'Máquina de Atwood, también con una polea con masa.', 'Dibujo con el diagrama de fuerzas a escala y la aceleración, y la velocidad y el tiempo al recorrer una distancia.'] },
-    ],
-    circuitos: [
-      { v: '0.2', fecha: '2026-10-26', cambios: ['Fuentes dependientes: de tensión o de corriente, controladas por una tensión entre dos nudos o por la corriente de otro elemento, también en el equivalente de Thévenin.', 'Condensadores y bobinas en régimen permanente (abierto y cortocircuito), con la carga y la energía que guardan.', 'Equivalente de Thévenin y de Norton entre dos nudos cualesquiera, no solo visto por una resistencia.', 'Superposición paso a paso: lo que da cada fuente sola y la suma, en una tabla.', 'Método de las mallas como segundo desarrollo, con las ecuaciones de cada malla y la comprobación con el de los nudos.', 'Esquema más claro: los nudos se colocan para que los elementos no se crucen, y se pueden mover arrastrándolos.', 'Editor visual: en el modo Dibujar, arrastra de un nudo a otro (o a un sitio vacío) para añadir un elemento.'] },
-      { v: '0.1.2', fecha: '2026-10-25', cambios: ['Los valores admiten prefijos del SI: 4k7, 1,5k, 2M2 o 100m. Antes «1k» daba error.', 'Arreglo: si la carga está en paralelo con una fuente de tensión ideal (Rth = 0), en vez de «—» explica que no hay equivalente de Norton ni máxima transferencia de potencia.'] },
-      { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
-      { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: escribe el circuito como una lista de resistencias, fuentes de tensión y fuentes de corriente entre nudos, y obtén los potenciales, la corriente y la potencia de cada elemento por el método de los nudos, con las ecuaciones de Kirchhoff, el sistema en forma matricial y el balance de potencias.', 'Equivalente de Thévenin y de Norton visto por la resistencia que elijas, y máxima transferencia de potencia.', 'Esquema del circuito con el potencial de cada nudo y el sentido de cada corriente.'] },
     ],
     'solido-rigido': [
       { v: '0.2', fecha: '2026-10-26', cambios: ['Rodadura, polea y péndulo animados: se ve la rueda girar mientras baja.', 'Momento de inercia de un cuerpo compuesto: varias piezas (varillas, discos, esferas, masas puntuales…) cada una a su distancia del eje.', 'Choques que hacen girar: bala que se incrusta en una varilla colgada (y hasta dónde sube) y persona que salta a una plataforma.', 'Péndulo físico (periodo y longitud equivalente) y varilla que cae girando por su base.', 'Equilibrio estático: escalera apoyada en una pared (¿resbala?, ¿hasta dónde se puede subir?) y viga sobre dos apoyos con cargas.', 'Fórmulas del desarrollo bien escritas y ejemplos con coma decimal.', 'Modo práctica con enunciado.'] },
@@ -991,10 +984,12 @@ const Mates = (() => {
 
 /* =====================================================================
    Tablas de verdad y puertas lógicas · cálculo (sin DOM).
-   Dos modos con el mismo resultado:
+   Tres modos con el mismo resultado:
      'tabla'   el usuario escribe la tabla de verdad (1 a 5 variables, 1 a 4 salidas,
                con indiferentes X) y sale cada ecuación: minitérminos Σm, maxitérminos ΠM,
                formas canónicas y simplificadas (Quine-McCluskey) y el circuito de puertas.
+     'ecuacion' el usuario escribe ecuaciones booleanas (F = A·B + C') y salen la tabla de
+               verdad, las mismas ecuaciones y el circuito de la ecuación escrita (o el simplificado).
      'puertas' el usuario añade puertas (AND, OR, NOT, NAND, NOR, XOR, XNOR) con sus
                entradas y marca las salidas; sale la tabla de verdad con todas las puertas
                y las mismas ecuaciones.
@@ -1192,6 +1187,98 @@ const PuertasLogicas = (() => {
     return { rotulo: `${rot(0, r) || ''}\\${rot(r, n)}`, filas: r ? filas : [''], cols, celdas: r ? celdas : [celdas[0]] };
   }
 
+  /* ---------- Ecuaciones escritas a mano ---------- */
+  // Una ecuación por línea: «F = A·B + C'». Negación: ' ! ~ ¬; Y: · * & . ∧ o variables juntas (AB);
+  // O: + | ∨; XOR: ⊕ ^. Prioridad: NOT, Y, XOR, O. Nodos: {t:'v',k} {t:'c',v} {t:'n',x} {t:'&'|'|'|'^',xs}
+  const OPS_Y = '·*&.∧×', OPS_O = '+|∨', OPS_X = '⊕^', OPS_N = '!~¬';
+  function lee(txt, num) {
+    const err = (m) => new Error(`Ecuación ${num}: ${m}`);
+    const toks = [];
+    for (const c of String(txt)) {
+      if (/\s/.test(c)) continue;
+      if (/[A-Za-z]/.test(c)) { const k = NOM.indexOf(c.toUpperCase()); if (k < 0) throw err(`solo se usan las variables A a E y «${c}» no es una`); toks.push({ t: 'v', k }); }
+      else if (c === '0' || c === '1') toks.push({ t: 'c', v: +c });
+      else if (c === '(' || c === ')') toks.push({ t: c });
+      else if (c === "'" || c === '’' || c === '′') toks.push({ t: 'post' });
+      else if (OPS_N.includes(c)) toks.push({ t: 'pre' });
+      else if (OPS_Y.includes(c)) toks.push({ t: '&' });
+      else if (OPS_O.includes(c)) toks.push({ t: '|' });
+      else if (OPS_X.includes(c)) toks.push({ t: '^' });
+      else throw err(`no entiendo el símbolo «${c}»`);
+    }
+    let i = 0;
+    const empieza = (t) => t && (t.t === 'v' || t.t === 'c' || t.t === '(' || t.t === 'pre');
+    const junta = (t, xs) => { const hijos = xs.flatMap((x) => (x.t === t ? x.xs : [x])); return hijos.length === 1 ? hijos[0] : { t, xs: hijos }; };
+    function atomo() {
+      const t = toks[i++];
+      if (!t) throw err('la ecuación termina antes de tiempo');
+      if (t.t === 'pre') return { t: 'n', x: atomo() };
+      let r;
+      if (t.t === 'v') r = { t: 'v', k: t.k };
+      else if (t.t === 'c') r = { t: 'c', v: t.v };
+      else if (t.t === '(') { r = o(); if (!toks[i] || toks[i].t !== ')') throw err('falta cerrar un paréntesis'); i++; }
+      else throw err('falta una variable antes de un operador');
+      while (toks[i] && toks[i].t === 'post') { i++; r = { t: 'n', x: r }; }
+      return r;
+    }
+    function y() { const xs = [atomo()]; while (toks[i] && (toks[i].t === '&' || empieza(toks[i]))) { if (toks[i].t === '&') i++; xs.push(atomo()); } return junta('&', xs); }
+    function x() { const xs = [y()]; while (toks[i] && toks[i].t === '^') { i++; xs.push(y()); } return junta('^', xs); }
+    function o() { const xs = [x()]; while (toks[i] && toks[i].t === '|') { i++; xs.push(x()); } return junta('|', xs); }
+    if (!toks.length) throw err('está vacía');
+    const r = o();
+    if (i < toks.length) throw err(toks[i].t === ')' ? 'sobra un paréntesis' : 'no entiendo lo que sigue');
+    return r;
+  }
+  function parseEcuaciones(txt) {
+    const lineas = String(txt ?? '').split(/\n|;/).map((l) => l.trim()).filter(Boolean);
+    if (!lineas.length) throw new Error('Escribe al menos una ecuación, por ejemplo F = A·B + C\'');
+    if (lineas.length > MAXM) throw new Error(`Hay como mucho ${MAXM} ecuaciones`);
+    const ecs = lineas.map((l, j) => {
+      const m = l.match(/^\s*([^=]*?)\s*=\s*(.*)$/);
+      let nombre = null, cuerpo = l;
+      if (m) { nombre = m[1]; cuerpo = m[2]; if (!/^[A-Za-z][A-Za-z0-9]*$/.test(nombre) || (nombre.length === 1 && NOM.includes(nombre.toUpperCase()))) throw new Error(`Ecuación ${j + 1}: el nombre de la salida «${nombre}» no vale (usa F, G, Y, F1…; A a E son las variables)`); }
+      return { nombre, ast: lee(cuerpo, j + 1) };
+    });
+    const nombres = ecs.map((e, j) => e.nombre || (ecs.length === 1 ? 'F' : `F${j + 1}`));
+    if (new Set(nombres).size !== nombres.length) throw new Error('Dos ecuaciones tienen el mismo nombre de salida');
+    ecs.forEach((e, j) => { e.nombre = nombres[j]; });
+    return ecs;
+  }
+  const usadas = (a, set = new Set()) => { if (a.t === 'v') set.add(a.k); else if (a.x) usadas(a.x, set); else (a.xs || []).forEach((q) => usadas(q, set)); return set; };
+  const evalAst = (a, i, n) => (a.t === 'v' ? (i >> (n - 1 - a.k)) & 1 : a.t === 'c' ? a.v : a.t === 'n' ? 1 - evalAst(a.x, i, n)
+    : a.t === '&' ? +a.xs.every((q) => evalAst(q, i, n)) : a.t === '|' ? +a.xs.some((q) => evalAst(q, i, n)) : a.xs.reduce((s, q) => s ^ evalAst(q, i, n), 0));
+  // la ecuación escrita de nuevo, en HTML (barra encima) y en texto
+  function escribe(a) {
+    const nivel = { '|': 1, '^': 2, '&': 3 };
+    if (a.t === 'v') return { h: NOM[a.k], t: NOM[a.k], p: 4 };
+    if (a.t === 'c') return { h: String(a.v), t: String(a.v), p: 4 };
+    if (a.t === 'n') { const q = escribe(a.x); return { h: `<i class="n">${q.h}</i>`, t: /^[A-E01]$/.test(q.t) ? `${q.t}'` : `(${q.t})'`, p: 4 }; }
+    const hs = a.xs.map(escribe), sep = a.t === '&' ? '·' : a.t === '^' ? ' ⊕ ' : ' + ', l = nivel[a.t];
+    const par = (q, v) => (q.p < l ? `(${q[v]})` : q[v]);
+    return { h: hs.map((q) => par(q, 'h')).join(sep), t: hs.map((q) => par(q, 't')).join(sep), p: l };
+  }
+  // circuito de la ecuación tal como está escrita: puertas de hasta 4 entradas, en árbol si hay más
+  function dibujoAst(ecs) {
+    const nodos = [], mapa = new Map(), usa = new Set(), consts = new Set();
+    const puerta = (tipo, e) => {
+      const ee = tipo === 'NOT' ? e : [...e].sort(), clave = `${tipo}:${ee.join(',')}`;
+      if (mapa.has(clave)) return mapa.get(clave);
+      const id = `G${nodos.length + 1}`; nodos.push({ id, tipo, e: ee }); mapa.set(clave, id); return id;
+    };
+    const TIPO = { '&': 'AND', '|': 'OR', '^': 'XOR' };
+    const crea = (a) => {
+      if (a.t === 'v') { usa.add(a.k); return NOM[a.k]; }
+      if (a.t === 'c') { consts.add(a.v); return `K${a.v}`; }
+      if (a.t === 'n') return puerta('NOT', [crea(a.x)]);
+      let ids = a.xs.map(crea);
+      while (ids.length > 4) ids = [puerta(TIPO[a.t], ids.slice(0, 4)), ...ids.slice(4)];
+      return puerta(TIPO[a.t], ids);
+    };
+    const salidas = ecs.map((e) => ({ nombre: e.nombre, id: crea(e.ast) }));
+    const entradas = [...usa].sort().map((k) => ({ id: NOM[k], etq: NOM[k] })).concat([...consts].sort().map((c) => ({ id: `K${c}`, etq: String(c) })));
+    return { entradas, nodos, salidas };
+  }
+
   /* ---------- Resolver ---------- */
   const entero = (s, a, b, nom) => {
     const x = Number(String(s ?? '').trim());
@@ -1201,7 +1288,8 @@ const PuertasLogicas = (() => {
   const nombresSal = (m) => (m === 1 ? ['F'] : [...Array(m).keys()].map((i) => `F${i + 1}`));
 
   function resolver(sc) {
-    const modo = sc.modo === 'puertas' ? 'puertas' : 'tabla';
+    const modo = sc.modo === 'puertas' ? 'puertas' : sc.modo === 'ecuacion' ? 'ecuacion' : 'tabla';
+    let ecs = null;
     const forma = sc.forma === 'pos' ? 'pos' : 'sop', simp = !!sc.simp;
     const pasos = [];
     let n, nombres, valores, tabla, circuito = null, dado = null;
@@ -1215,6 +1303,16 @@ const PuertasLogicas = (() => {
         return [...s].map((c) => (c === 'X' ? 2 : +c));
       });
       tabla = { cab: [...NOM.slice(0, n), ...nombres], filas: [...Array(N).keys()].map((i) => [...bin(i, n)].map(Number).concat(valores.map((v) => v[i]))) };
+    } else if (modo === 'ecuacion') {
+      ecs = parseEcuaciones(sc.ec);
+      const vs = new Set(); ecs.forEach((e) => usadas(e.ast, vs));
+      n = vs.size ? Math.max(...vs) + 1 : 1;  // sin variables (F = 1) se usa A solo para tener tabla
+      const N = 1 << n; nombres = ecs.map((e) => e.nombre);
+      valores = ecs.map((e) => [...Array(N).keys()].map((i) => evalAst(e.ast, i, n)));
+      tabla = { cab: [...NOM.slice(0, n), ...nombres], filas: [...Array(N).keys()].map((i) => [...bin(i, n)].map(Number).concat(valores.map((v) => v[i]))), nSal: nombres.map((_, j) => n + j) };
+      dado = ecs.map((e) => ({ nombre: e.nombre, ...escribe(e.ast) }));
+      pasos.push({ t: 'Ecuaciones leídas', html: dado.map((g) => `<b>${g.nombre}</b> = ${g.h}`).join('<br>') + `<br><span class="nota">Variables: ${NOM.slice(0, n).join(', ')}. Prioridad: NOT, AND, XOR, OR.</span>` });
+      pasos.push({ t: 'Tabla de verdad', html: `Se calcula cada ecuación en las ${N} combinaciones de ${NOM.slice(0, n).join(', ')} (de ${'0'.repeat(n)} a ${'1'.repeat(n)}).` });
     } else {
       n = entero(sc.nc, 1, MAXN, 'El número de entradas');
       const orden = ordena(sc, n);
@@ -1246,7 +1344,9 @@ const PuertasLogicas = (() => {
     }
 
     const dibujo = modo === 'puertas' ? circuito
+      : modo === 'ecuacion' && !simp ? dibujoAst(ecs)
       : dibujoNormal(n, salidas.map((s) => ({ nombre: s.nombre, grupos: simp ? (forma === 'sop' ? s.gruposS : s.gruposP) : (forma === 'sop' ? s.gruposCS : s.gruposCP) })), forma);
+    if (modo === 'ecuacion') pasos.push({ t: 'Circuito de puertas', html: simp ? `Con la forma simplificada en ${forma === 'sop' ? 'suma de productos' : 'producto de sumas'}.` : 'Cada operación de la ecuación es una puerta (NOT, AND, OR o XOR); si hay más de 4 entradas se encadenan puertas. Pulsa «Simplificar» para el circuito más pequeño.' });
     if (modo === 'tabla') pasos.push({ t: 'Circuito de puertas', html: `Con la forma ${simp ? 'simplificada' : 'canónica'} en ${forma === 'sop' ? 'suma de productos: una puerta AND por cada término y una OR que los suma' : 'producto de sumas: una puerta OR por cada factor y una AND que los multiplica'}. Las variables con barra pasan antes por una puerta NOT.${simp ? '' : " Pulsa «Simplificar» para ver el circuito más pequeño."}` });
     const mapas = n <= MAXN ? salidas.map((s) => ({ nombre: s.nombre, ...karnaugh(n, s.v, simp || modo === 'puertas' ? s.elegidosS : []) })) : [];
     return { modo, forma, simp, n, vars: NOM.slice(0, n), tabla, salidas, dibujo, mapas, dado, pasos };
@@ -1255,6 +1355,7 @@ const PuertasLogicas = (() => {
   /* ---------- Ejemplos ---------- */
   const T = (n, m, tabla) => ({ modo: 'tabla', n: String(n), m: String(m), tabla, forma: 'sop' });
   const P = (nc, puertas) => ({ modo: 'puertas', nc: String(nc), puertas, forma: 'sop' });
+  const E = (ec) => ({ modo: 'ecuacion', ec, forma: 'sop' });
   const g = (id, tipo, e, sal) => ({ id, tipo, e, sal: !!sal });
   const ejemplos = [
     { clave: 'mayoria', nombre: 'Mayoría de 3 (votación)', sc: T(3, 1, ['00010111']) },
@@ -1263,6 +1364,9 @@ const PuertasLogicas = (() => {
     { clave: 'primos-bcd', nombre: 'Primo en BCD (con indiferentes)', sc: T(4, 1, ['0011010100XXXXXX']) },
     { clave: 'circ-semisumador', nombre: 'Semisumador con puertas', sc: P(2, [g('P1', 'XOR', ['A', 'B'], 1), g('P2', 'AND', ['A', 'B'], 1)]) },
     { clave: 'circ-mux', nombre: 'Multiplexor 2 a 1 (selector C)', sc: P(3, [g('P1', 'NOT', ['C']), g('P2', 'AND', ['A', 'P1']), g('P3', 'AND', ['B', 'C']), g('P4', 'OR', ['P2', 'P3'], 1)]) },
+    { clave: 'ec-mux', nombre: 'Ecuación: multiplexor A·C′ + B·C', sc: E("F = A·C' + B·C") },
+    { clave: 'ec-semisumador', nombre: 'Ecuaciones: semisumador (⊕ y ·)', sc: E('S = A ⊕ B\nR = A·B') },
+    { clave: 'ec-demorgan', nombre: 'Ecuación: NOR, !(A + B)', sc: E('F = !(A + B)') },
     { clave: 'circ-xor-nand', nombre: 'XOR hecha solo con NAND', sc: P(2, [g('P1', 'NAND', ['A', 'B']), g('P2', 'NAND', ['A', 'P1']), g('P3', 'NAND', ['B', 'P1']), g('P4', 'NAND', ['P2', 'P3'], 1)]) },
   ];
 
@@ -1273,7 +1377,7 @@ const PuertasLogicas = (() => {
     return T(3, 1, [v.join('')]);
   }
 
-  return { resolver, ejemplos, azar, NOM, NOMBRES, TIPOS, arid, MAXN, MAXM };
+  return { resolver, ejemplos, azar, parseEcuaciones, NOM, NOMBRES, TIPOS, arid, MAXN, MAXM };
 })();
 
 /* =====================================================================
@@ -1337,26 +1441,31 @@ const PuertasLogicas = (() => {
     }
     return h + '</table></div>';
   }
+  const editorEcuaciones = () => `<label for="ecuaciones" class="nota" style="display:block;margin-bottom:4px">Ecuaciones</label><textarea id="ecuaciones" class="in" spellcheck="false" autocomplete="off" rows="4" aria-label="Ecuaciones booleanas">${esc(sc.ec ?? '')}</textarea>`
+    + '<div class="simbolos" role="group" aria-label="Símbolos">' + [["'", "Negación (A')"], ['!', 'Negación'], ['·', 'AND'], ['+', 'OR'], ['⊕', 'XOR'], ['(', 'Abrir paréntesis'], [')', 'Cerrar paréntesis'], ['\n', 'Otra ecuación']].map(([c, t]) => `<button class="btn" data-ins="${esc(c)}" title="${t}" aria-label="${t}">${c === '\n' ? '↵' : esc(c)}</button>`).join('') + '</div>';
   const paleta = () => '<div class="paleta" role="group" aria-label="Puertas">' + Object.entries(P.NOMBRES).map(([t, nom]) => `<button class="btn" data-tipo="${t}" title="Pulsa para añadir o arrastra al dibujo">${esc(nom)}</button>`).join('') + '</div>';
   function formulario() {
-    const tabla = sc.modo !== 'puertas', forma = [['sop', 'Suma de productos (AND-OR)'], ['pos', 'Producto de sumas (OR-AND)']];
-    $('#tab-tabla').setAttribute('aria-selected', tabla); $('#tab-puertas').setAttribute('aria-selected', !tabla);
+    const modo = sc.modo === 'puertas' ? 'puertas' : sc.modo === 'ecuacion' ? 'ecuacion' : 'tabla', tabla = modo === 'tabla', forma = [['sop', 'Suma de productos (AND-OR)'], ['pos', 'Producto de sumas (OR-AND)']];
+    for (const m of ['tabla', 'puertas', 'ecuacion']) $(`#tab-${m}`).setAttribute('aria-selected', modo === m);
     $('#campos').innerHTML = tabla
       ? `<label for="f-n">Variables</label><select id="f-n" class="in" data-k="n">${opts(rango(1, P.MAXN).map((k) => [k, `${k} (${NOM.slice(0, k).join(', ')})`]), nT())}</select>`
         + `<label for="f-m">Salidas</label><select id="f-m" class="in" data-k="m">${opts(rango(1, P.MAXM).map((k) => [k, k]), mT())}</select>`
         + `<label for="f-forma">Circuito en</label><select id="f-forma" class="in" data-k="forma">${opts(forma, sc.forma)}</select>`
+      : modo === 'ecuacion' ? ''
       : `<label for="f-nc">Entradas</label><select id="f-nc" class="in" data-k="nc">${opts(rango(1, P.MAXN).map((k) => [k, `${k} (${NOM.slice(0, k).join(', ')})`]), nC())}</select>`;
-    $('#editor').innerHTML = tabla ? editorTabla() : '<p class="nota" style="margin:0 0 6px">Puertas: pulsa una para añadirla o arrástrala al dibujo.</p>' + paleta();
-    $('#nota').textContent = tabla ? 'Pulsa una casilla de la salida para cambiarla: 0, 1 o X (indiferente). A es el bit de más peso de la fila.'
+    $('#editor').innerHTML = modo === 'ecuacion' ? editorEcuaciones() : tabla ? editorTabla() : '<p class="nota" style="margin:0 0 6px">Puertas: pulsa una para añadirla o arrástrala al dibujo.</p>' + paleta();
+    $('#nota').textContent = modo === 'ecuacion' ? 'Una ecuación por línea, con variables de A a E. Negación: \' ! o ~. Y: · * & o variables juntas (AB). O: + o |. XOR: ⊕ o ^. Se admiten paréntesis y las constantes 0 y 1.' : tabla ? 'Pulsa una casilla de la salida para cambiarla: 0, 1 o X (indiferente). A es el bit de más peso de la fila.'
       : 'Une una salida (círculo de la derecha) con una entrada (círculo de la izquierda) arrastrando. Suelta un cable en el vacío para quitarlo. Doble clic en una puerta para marcarla como salida.';
-    $('#c-circ').hidden = !tabla; $('#c-editor').hidden = tabla;
-    if (!tabla) { colocaTodo(); pintaEditor(); }
+    $('#c-circ').hidden = modo === 'puertas'; $('#c-editor').hidden = modo !== 'puertas';
+    if (modo === 'puertas') { colocaTodo(); pintaEditor(); }
   }
   const cambio = () => { $('#ejemplos').value = ''; calcula(); };
   $('#modos').addEventListener('click', (e) => {
     const b = e.target.closest('button'); if (!b) return;
-    const m = b.id === 'tab-puertas' ? 'puertas' : 'tabla';
-    if (m === sc.modo) return;
+    const m = b.id === 'tab-puertas' ? 'puertas' : b.id === 'tab-ecuacion' ? 'ecuacion' : 'tabla';
+    if (m === (sc.modo || 'tabla')) return;
+    // al pasar a ecuaciones se parte de las simplificadas de la tabla (si hay) para no empezar con la caja vacía
+    if (m === 'ecuacion' && !sc.ec) sc.ec = sol && sol.modo === 'tabla' ? sol.salidas.map((s) => `${s.nombre} = ${s.minS.txt}`).join('\n') : "F = A·B + C'";
     sc.modo = m; if (m === 'puertas') sc.nc = sc.nc || '3';
     formulario(); cambio();
   });
@@ -1370,8 +1479,14 @@ const PuertasLogicas = (() => {
     }
     formulario(); cambio();
   });
+  $('#editor').addEventListener('input', (e) => { if (e.target.id === 'ecuaciones') { sc.ec = e.target.value; cambio(); } });
   $('#editor').addEventListener('click', (e) => {
     const t = e.target.closest('button'); if (!t) return;
+    if (t.dataset.ins != null) { // símbolo en la posición del cursor de la caja de ecuaciones
+      const ta = $('#ecuaciones'), a = ta.selectionStart, z = ta.selectionEnd;
+      ta.value = ta.value.slice(0, a) + t.dataset.ins + ta.value.slice(z); ta.focus(); ta.selectionStart = ta.selectionEnd = a + t.dataset.ins.length;
+      sc.ec = ta.value; return cambio();
+    }
     if (t.classList.contains('cel')) {
       const j = +t.dataset.j, i = +t.dataset.i, s = [...sc.tabla[j]];
       s[i] = { 0: '1', 1: 'X', X: '0' }[s[i]] || '0'; sc.tabla[j] = s.join('');
@@ -1565,6 +1680,7 @@ const PuertasLogicas = (() => {
     return sol.salidas.map((s) => {
       const f = s.nombre, ind = s.indif.length ? ` + d(${s.indif.join(', ')})` : '';
       let h = '';
+      if (sol.modo === 'ecuacion') { const g = sol.dado.find((x) => x.nombre === f); if (g) h += dato(`${f} · ecuación escrita`, `${f} = ${g.h}`); }
       if (sol.modo === 'puertas') { const o = sol.dibujo.salidas.find((x) => x.nombre === f), g = o && sol.dado.find((x) => x.id === o.id); if (g) h += dato(`${f} · ecuación del circuito`, `${f} = ${g.h}`); }
       h += dato(`${f} · minitérminos`, `${f} = ${s.sumM}${ind}`, un)
         + dato(`${f} · forma canónica, suma de minitérminos`, `${f} = ${s.canS.html}`)
@@ -1601,12 +1717,13 @@ const PuertasLogicas = (() => {
     err.hidden = true;
     $('#resumen').innerHTML = resumen();
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${esc(p.t)}</strong>${p.html}</li>`).join('');
-    $('#c-tabla').hidden = sol.modo !== 'puertas'; $('#tabla-res').innerHTML = sol.modo === 'puertas' ? tablaResultado() : '';
+    $('#c-tabla').hidden = sol.modo === 'tabla'; $('#tabla-res').innerHTML = sol.modo !== 'tabla' ? tablaResultado() : '';
     $('#c-mapas').hidden = !sol.mapas.length;
     $('#mapas').innerHTML = mapas();
     $('#ley-mapas').textContent = sol.simp || sol.modo === 'puertas' ? 'Las casillas con borde son las que cubren los términos de la suma de productos simplificada; la X es un indiferente.' : 'Cada casilla lleva el número de su fila; la X es un indiferente. Pulsa «Simplificar ecuaciones» para ver los grupos.';
     const gs = sol.dibujo.nodos.length;
-    $('#leyenda').innerHTML = `Circuito de la forma ${sol.simp ? 'simplificada' : 'canónica'} en ${sol.forma === 'sop' ? 'suma de productos' : 'producto de sumas'}: <b>${gs}</b> ${gs === 1 ? 'puerta' : 'puertas'}.`;
+    $('#cambia-forma').hidden = sol.modo === 'ecuacion' && !sol.simp;
+    $('#leyenda').innerHTML = sol.modo === 'ecuacion' && !sol.simp ? `Circuito de la ecuación tal como está escrita: <b>${gs}</b> ${gs === 1 ? 'puerta' : 'puertas'}.` : `Circuito de la forma ${sol.simp ? 'simplificada' : 'canónica'} en ${sol.forma === 'sop' ? 'suma de productos' : 'producto de sumas'}: <b>${gs}</b> ${gs === 1 ? 'puerta' : 'puertas'}.`;
     dibuja();
   }
   $('#cambia-forma').addEventListener('click', () => { sc.forma = sc.forma === 'pos' ? 'sop' : 'pos'; calcula(); });
@@ -1648,7 +1765,7 @@ const PuertasLogicas = (() => {
   }
   function dibuja() {
     const cv = $('#grafica');
-    if (!sol || sol.modo !== 'tabla') { const { g, w, h } = lienzo(cv); if (w && h) g.clearRect(0, 0, w, h); return; }
+    if (!sol || sol.modo === 'puertas') { const { g, w, h } = lienzo(cv); if (w && h) g.clearRect(0, 0, w, h); return; }
     const c = sol.dibujo, L = disposicion(c);
     const anchoNat = MARGEN + L.maxp * PASO + ANCHO + BURBUJA + 70, ancho = cv.getBoundingClientRect().width || anchoNat;
     const esc1 = Math.min(1, ancho / anchoNat);
@@ -2013,8 +2130,6 @@ const Practica = (() => {
     campos: { datos: null, items: '#resumen > div.num', genera: () => window.CamposApp?.azar(), enunciado: () => window.CamposApp?.enunciado() },
     // fuerza: una carga, unos vectores, un selector, un ciclotrón o unos hilos con números de clase
     fuerza: { datos: null, items: '#res > div', genera: () => window.FuerzaApp?.azar(), enunciado: () => window.FuerzaApp?.enunciado() },
-    // transitorios: un RC, un RL o un RLC con valores de clase
-    transitorios: { datos: null, items: '#res > div', genera: () => window.TransitoriosApp?.azar(), enunciado: () => window.TransitoriosApp?.enunciado() },
     // intervalos: una media, una proporción, una varianza, dos medias o un tamaño de muestra
     intervalos: { datos: null, items: '#res > div', genera: () => window.IntervalosApp?.azar(), enunciado: () => window.IntervalosApp?.enunciado() },
     // ondasem: una onda plana, una intensidad o un medio con pérdidas

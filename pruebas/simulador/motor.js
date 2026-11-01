@@ -4,8 +4,8 @@
 const path = require('path'), fuente = path.join(__dirname, '..', '..', 'fuente');
 global.Herramienta = require(path.join(fuente, 'herramienta.js'));
 const S = require(path.join(fuente, 'simulador', 'motor.js'));
-const Continua = require(path.join(fuente, 'circuitos', 'fisica.js'));
-const Alterna = require(path.join(fuente, 'alterna', 'fisica.js'));
+const Continua = require(path.join(fuente, 'simulador', 'continua.js'));
+const Alterna = require(path.join(fuente, 'simulador', 'alterna.js'));
 let fallos = 0;
 const mal = (m) => { fallos++; console.log('✗ ' + m); };
 const cerca = (a, b, tol, q) => { if (!(Math.abs(a - b) <= tol * Math.max(1, Math.abs(b)))) mal(`${q}: ${a} en vez de ${b}`); };

@@ -1,7 +1,7 @@
 /* =====================================================================
    Por qué la luz viaja en alta tensión: los 6 pasos de la animación (texto
    y dibujo), el zumbido de los transformadores y el ejercicio que se abre
-   en Circuitos de continua (la central, los dos cables de la línea y la
+   en el Simulador de circuitos (la central, los dos cables de la línea y la
    ciudad como una resistencia, a 400 kV). El motor es fenomenos/animacion.js,
    los ayudantes de dibujo fenomenos/dibujo.js y la maqueta pagina.html. En
    Node (pruebas) solo se cargan los datos:
@@ -27,10 +27,10 @@ const TransporteAltaTension = (() => {
     { titulo: 'De la central al enchufe', corto: 'Red', dato: { valor: '400 kV → 230 V', texto: 'en varios saltos: transporte, distribución y el transformador del barrio.' }, texto: 'La central produce a unos 20 kV, un transformador lo sube a 400 kV para el viaje largo, en la entrada de la ciudad se baja a 20 kV para repartir por los barrios y el transformador de la esquina lo deja en 230 V para las casas.\n\nCon todo eso, la red de transporte pierde solo alrededor de un 1 o 2 % de la energía. Para distancias muy largas o cables bajo el mar, como el de la Península a Baleares, se usa alta tensión en continua, que hoy se puede transformar con electrónica de potencia.', dura: 11000 },
   ];
 
-  // circuito de Circuitos de continua (formato de circuitos-v1): central de 400 kV, dos cables de 2,5 Ω y la ciudad de 16 kΩ (10 MW)
-  const ejercicio = () => ({ elementos: [{ t: 'V', a: 'g', b: '0', v: '400k' }, { t: 'R', a: 'g', b: 'a', v: '2,5' }, { t: 'R', a: 'a', b: 'b', v: '16k' }, { t: 'R', a: 'b', b: '0', v: '2,5' }], carga: '' });
+  // esquema del Simulador de circuitos: central de 400 kV, dos cables de 2,5 Ω y la ciudad de 16 kΩ (10 MW)
+  const ejercicio = () => ({"version":2,"componentes":[{"id":"E1","t":"V","x":0,"y":2,"rot":1,"espejo":false,"v":{"forma":"cc","v":"400k","A":"5","eficaz":"de pico","f":"50","fase":"0","off":"0","duty":"50","v1":"0","v2":"5","t0":"0","td":"0","tr":"0","tf":"0","pw":"1m","per":"2m"}},{"id":"R1","t":"R","x":0,"y":2,"rot":0,"espejo":false,"v":{"R":"2,5"}},{"id":"R2","t":"R","x":4,"y":2,"rot":1,"espejo":false,"v":{"R":"16k"}},{"id":"R3","t":"R","x":4,"y":6,"rot":2,"espejo":false,"v":{"R":"2,5"}},{"id":"GND1","t":"GND","x":0,"y":6,"rot":0,"espejo":false,"v":{}}],"cables":[{"a":[0,6],"b":[0,6]}],"analisis":{},"vista":null});
   function abrirEnCircuitos(destino) {
-    try { localStorage.setItem('circuitos-v1', JSON.stringify(ejercicio())); } catch (e) { /* sin almacenamiento: se abre sin datos */ }
+    try { localStorage.setItem('simulador-v1', JSON.stringify(ejercicio())); } catch (e) { /* sin almacenamiento: se abre sin datos */ }
     location.href = destino;
   }
 

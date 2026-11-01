@@ -13,6 +13,7 @@
   const S = SimCircuitos, CAT = CompSim.C, CLAVE = 'simulador-v1';
   const RED = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  const avisoImport = ImportarSim.migra();
   let sc = copia(EjemplosSim.lista[0].sc);
   try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && g.componentes) sc = g; } catch (e) { /* sin almacenamiento */ }
   sc.analisis = sc.analisis || {};
@@ -161,6 +162,7 @@
   function redibuja() { rango = vGlobal(); ed.dibuja(); }
   // la rejilla puede cambiar los datos del estado: tras deshacer y rehacer se vuelve a calcular (cambia() ya lo hace)
   ed.estado.vista = ed.estado.vista || { x: 40, y: 40, z: 1 };
+  if (avisoImport) $('#ayuda').insertAdjacentHTML('afterend', `<p class="nota" role="status">${esc(avisoImport)}</p>`);
   const actualizaBotones = () => { $('#b-deshacer').disabled = !ed.hayHistorial(); $('#b-rehacer').disabled = !ed.hayRehacer(); const s = ed.seleccion.length > 0; for (const b of ['#b-girar', '#b-reflejar', '#b-copiar', '#b-borrar']) $(b).disabled = !s; };
   $('#b-deshacer').onclick = () => ed.deshaz(); $('#b-rehacer').onclick = () => ed.rehaz();
   $('#b-girar').onclick = () => ed.gira(); $('#b-reflejar').onclick = () => ed.refleja();

@@ -36,6 +36,6 @@ const EjemplosSim = (() => {
     { clave: 'trifasica', ...monta('Trifásica en estrella con carga equilibrada', [['G1', 'FT', 4, 4, 2, { Vf: '230', f: '50' }, true], ['K1', 'CT', 8, 4, 0, { R: '10', L: '0' }], ['GND1', 'GND', 2, 7, 0]],
       [['G1.0', 'K1.0'], ['G1.1', 'K1.1'], ['G1.2', 'K1.2'], ['G1.3', 'K1.3']], { tfin: '60m' }) },
   ];
-  return { lista };
+  return { lista, monta };
 })();
 if (typeof module !== 'undefined') module.exports = EjemplosSim;

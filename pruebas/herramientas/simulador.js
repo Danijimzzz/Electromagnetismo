@@ -24,6 +24,14 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     { const { x, fa } = get('transformador'); cerca(SimCircuitos.mod(fa[0].V[x.pinNet.R1[0]]) / Math.SQRT2, 23, 1e-9, 'transformador: 23 V en el secundario'); }
     { const e = Ejemplos.lista.find((q) => q.clave === 'rectificador'), x = Extraer.extraer(e.sc), tr = SimCircuitos.transitorio(x.net, { tfin: 0.06, puntos: 3000 }), v = tr.V[x.pinNet.C1[0]]; const n = v.length; const max = Math.max(...v), min = Math.min(...v.slice(Math.floor(n / 2)));
       if (!(max > 8.8 && max < 9.8)) mal(`Simulador · rectificador: la tensión máxima es ${max}`); if (!(min > 6 && min < max)) mal(`Simulador · rectificador: el rizado no cuadra (${min})`); }
+    // importar lo guardado con las herramientas antiguas: divisor de continua y RLC de alterna
+    {
+      const Imp = require(path.join(fuente, 'simulador', 'importar.js'));
+      const a = Imp.aEsquema({ elementos: [{ t: 'V', a: '1', b: '0', v: '12' }, { t: 'R', a: '1', b: '2', v: '1k' }, { t: 'R', a: '2', b: '0', v: '2k' }, { t: 'VV', a: '3', b: '0', v: '2' }] }, false);
+      if (a.omitidos !== 1) mal('Simulador · importar: debía omitir 1 elemento no soportado'); const x = Extraer.extraer(a.sc); cerca(SimCircuitos.operacion(x.net).V.n2 ?? SimCircuitos.operacion(x.net).V['2'].re, 8, 1e-9, 'importar continua: V del nudo 2');
+      const b = Imp.aEsquema({ f: '50', elementos: [{ t: 'V', a: '1', b: '0', v: '230', fase: '0' }, { t: 'R', a: '1', b: '2', v: '40' }, { t: 'L', a: '2', b: '3', v: '200' }, { t: 'C', a: '3', b: '0', v: '100' }] }, true), y = Extraer.extraer(b.sc), w = 100 * Math.PI;
+      cerca(SimCircuitos.mod(SimCircuitos.fasores(y.net)[0].I.R1) / Math.SQRT2, 230 / Math.hypot(40, w * 0.2 - 1 / (w * 100e-6)), 1e-6, 'importar alterna: corriente eficaz');
+    }
     // errores del esquema
     const ex = (sc) => { try { Extraer.extraer(sc); return ''; } catch (e) { return e.message; } };
     const base = () => JSON.parse(JSON.stringify(Ejemplos.lista[0].sc));

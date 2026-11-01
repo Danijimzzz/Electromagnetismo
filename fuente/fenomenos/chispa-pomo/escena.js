@@ -1,6 +1,6 @@
 /* =====================================================================
    La chispa al tocar el pomo: los 6 pasos de la animación (texto y dibujo) y
-   el ejercicio que se abre en Transitorios RC, RL y RLC (el cuerpo como un
+   el esquema que se abre en el Simulador de circuitos (el cuerpo como un
    condensador de 150 pF a 10 kV que se descarga por 330 Ω, el modelo de la
    norma IEC 61000-4-2). El motor es fenomenos/animacion.js, los ayudantes de
    dibujo fenomenos/dibujo.js y la maqueta pagina.html. En Node (pruebas) solo
@@ -21,10 +21,10 @@ const ChispaPomo = (() => {
     { titulo: 'El truco de la llave', corto: 'Truco', dato: { valor: 'Con una llave', texto: 'La chispa salta entre la llave y el pomo, no en tu piel.' }, texto: 'Si tocas el pomo con una llave o una moneda, la chispa salta entre el metal y el pomo, y la corriente entra en tu mano por toda la superficie con que agarras la llave. No la notas.\n\nPor debajo de unos 3 kV casi nadie siente la chispa; de 10 kV para arriba, duele. Por eso en las fábricas de electrónica se llevan pulseras unidas a tierra: una descarga que no notarías puede romper un chip.', dura: 12000 },
   ];
 
-  // ejercicio de Transitorios (formato de transitorios-v1): descarga RC con C en µF y el estado en t = 100 ns
-  const ejercicio = () => ({ modo: 'rc', proceso: 'descarga', V: '', V0: '10000', R: '330', C: '1,5e-4', t: '1e-7', Vobj: '' });
-  function abrirEnTransitorios(destino) {
-    try { localStorage.setItem('transitorios-v1', JSON.stringify(ejercicio())); } catch (e) { /* sin almacenamiento: se abre sin datos */ }
+  // esquema del Simulador de circuitos: el cuerpo (150 pF) cargado a 10 kV que se descarga por 330 Ω cuando se abre el interruptor
+  const ejercicio = () => ({"version":2,"componentes":[{"id":"E1","t":"V","x":0,"y":2,"rot":1,"espejo":false,"v":{"forma":"cc","v":"10k","A":"5","eficaz":"de pico","f":"50","fase":"0","off":"0","duty":"50","v1":"0","v2":"5","t0":"0","td":"0","tr":"0","tf":"0","pw":"1m","per":"2m"}},{"id":"S1","t":"SW","x":0,"y":2,"rot":0,"espejo":false,"v":{"estado":"cerrado","tc":"1p"}},{"id":"C1","t":"C","x":4,"y":2,"rot":1,"espejo":false,"v":{"C":"1,5e-4"}},{"id":"R1","t":"R","x":8,"y":2,"rot":1,"espejo":false,"v":{"R":"330"}},{"id":"SONDA1","t":"SONDA","x":4,"y":2,"rot":0,"espejo":false,"v":{"canal":"1"}},{"id":"GND1","t":"GND","x":0,"y":6,"rot":0,"espejo":false,"v":{}}],"cables":[{"a":[4,6],"b":[0,6]},{"a":[4,6],"b":[8,6]},{"a":[8,2],"b":[4,2]},{"a":[0,6],"b":[0,6]}],"analisis":{"tfin":"500n"},"vista":null});
+  function abrirEnSimulador(destino) {
+    try { localStorage.setItem('simulador-v1', JSON.stringify(ejercicio())); } catch (e) { /* sin almacenamiento: se abre sin datos */ }
     location.href = destino;
   }
 
@@ -226,11 +226,11 @@ const ChispaPomo = (() => {
   }
 
   const COLORES = ['pared', 'zocalo', 'alfombra', 'alfombra-dibujo', 'puerta', 'metal', 'metal-brillo', 'persona', 'piel', 'suela', 'neg', 'pos', 'campo', 'chispa', 'chispa-centro', 'rotulo', 'panel'];
-  return { datos, pasos, dibuja, sonido, COLORES, ejercicio, abrirEnTransitorios };
+  return { datos, pasos, dibuja, sonido, COLORES, ejercicio, abrirEnSimulador };
 })();
 
 if (typeof document !== 'undefined') {
   Animacion.monta({ lienzo: '#escena', pasos: ChispaPomo.pasos, dibuja: ChispaPomo.dibuja, colores: ChispaPomo.COLORES, sonido: ChispaPomo.sonido });
-  document.querySelector('#abrir').addEventListener('click', (e) => { e.preventDefault(); ChispaPomo.abrirEnTransitorios(e.currentTarget.getAttribute('href')); });
+  document.querySelector('#abrir').addEventListener('click', (e) => { e.preventDefault(); ChispaPomo.abrirEnSimulador(e.currentTarget.getAttribute('href')); });
 }
 if (typeof module !== 'undefined') module.exports = ChispaPomo;
