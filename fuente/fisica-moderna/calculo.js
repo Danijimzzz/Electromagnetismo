@@ -36,7 +36,7 @@ const FisicaModerna = (() => {
   const lorentz = (b) => 1 / Math.sqrt(1 - b * b);
   // γ − 1 sin restar números casi iguales (para velocidades pequeñas)
   const gm1 = (b) => { const r = Math.sqrt(1 - b * b); return (b * b) / (r * (1 + r)); };
-  const pasoGamma = (b, g, ms) => ({ t: 'Factor de Lorentz', html: `${ms ? `$β = v/c = {${n(b * C, 5)}}/{3·10^8} = ${n(b, 6)}$. ` : ''}$γ = 1/√(1 − β^2) = 1/√(1 − ${n(b, 6)}^2) = ${n(g, 6)}$` });
+  const pasoGamma = (b, g, ms) => ({ t: 'Factor de Lorentz', html: `${ms ? `$β = v/c = {${n(b * C, 5)}}/{3·10^8} = ${n(b, 6)}$. ` : ''}$γ = 1/√(1 − β^2) = 1/√(1 − ${n(b, 6)}^2) = ${b < 0.01 ? `1 + ${n(gm1(b), 5)}` : n(g, 6)}$${b < 0.01 ? ' (apenas distinto de 1)' : ''}` });
 
   function fotoelectrico(sc) {
     const met = METALES[sc.metal] ? sc.metal : 'sodio', W = met === 'otro' ? lee(sc, 'W', 'el trabajo de extracción', { min: 0, minEx: true }) : METALES[met][1];
@@ -79,11 +79,12 @@ const FisicaModerna = (() => {
   }
 
   function dilatacion(sc) {
-    const { b, ms } = beta(sc), g = lorentz(b), t0 = lee(sc, 't0', 'el tiempo propio', { min: 0, minEx: true }), t = g * t0, pasos = [pasoGamma(b, g, ms)];
+    const { b, ms } = beta(sc), g = lorentz(b), t0 = lee(sc, 't0', 'el tiempo propio', { min: 0, minEx: true }), t = g * t0, dif = gm1(b) * t0, pasos = [pasoGamma(b, g, ms)];
     pasos.push({ t: 'Tiempo dilatado', html: `$Δt = γ Δt_0 = ${n(g, 6)} · ${n(t0, 5)} = ${n(t, 5)} "s"$: lo que dura en el sistema que ve moverse el reloj es ${n(g, 4)} veces lo que marca el propio reloj.` });
+    pasos.push({ t: 'Diferencia entre los dos relojes', html: `$Δt − Δt_0 = (γ − 1) Δt_0 = ${n(gm1(b), 5)} · ${n(t0, 5)} = ${n(dif, 5)} "s"$${b < 0.01 ? ': con velocidades pequeñas la diferencia es diminuta, pero un reloj atómico la nota' : ''}.` });
     const d0 = b * C * t0, d = b * C * t;
     pasos.push({ t: 'Distancia recorrida', html: `Sin relatividad recorrería $v Δt_0 = ${n(d0, 4)} "m"$; con la dilatación, $v Δt = ${n(b * C, 5)} · ${n(t, 5)} = ${n(d, 4)} "m"$.` });
-    return { modo: 'dilatacion', b, g, t0, t, d0, d, pasos };
+    return { modo: 'dilatacion', b, g, t0, t, dif, d0, d, pasos };
   }
 
   function contraccion(sc) {
