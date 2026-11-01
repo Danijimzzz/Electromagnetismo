@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Línea del tiempo SimulaCiencia</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: cabecera con anillo de progreso, filtros, carril horizontal con tarjetas alternas arriba y abajo de una línea luminosa (hecho | hoy | planeado | futuro) y panel de detalle de cristal debajo. */
+:root{
+  --bg:#eef1ee; --halo1:rgba(13,107,102,.22); --halo2:rgba(42,93,181,.20); --halo3:rgba(107,63,160,.14);
+  --fg:#1a2128; --fg2:#5b6670; --fg3:#8a949c;
+  --glass:rgba(255,255,255,.55); --glass2:rgba(255,255,255,.78); --line:rgba(20,40,60,.14); --hi:rgba(255,255,255,.85);
+  --shadow:0 18px 50px -12px rgba(60,70,150,.28);
+  --hecho:#0c9a73; --plan:#e08a00; --futuro:#6e5af0; --hoy:#ea3a63;
+  --track:rgba(80,90,160,.2); --blob:.55;
+  --f-display:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;
+  --f-body:'Instrument Sans','Segoe UI',system-ui,sans-serif;
+  --f-mono:'DM Mono',ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111619; --halo1:rgba(77,188,176,.20); --halo2:rgba(116,162,242,.18); --halo3:rgba(170,120,230,.14);
+  --fg:#e3e8ea; --fg2:#94a0a8; --fg3:#6c7881;
+  --glass:rgba(34,46,54,.50); --glass2:rgba(44,58,68,.70); --line:rgba(255,255,255,.12); --hi:rgba(255,255,255,.10);
+  --shadow:0 20px 60px -12px rgba(0,0,0,.65);
+  --hecho:#3ee0b4; --plan:#ffb84a; --futuro:#a597ff; --hoy:#ff6f90;
+  --track:rgba(160,172,255,.22); --blob:.5; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111619; --halo1:rgba(77,188,176,.20); --halo2:rgba(116,162,242,.18); --halo3:rgba(170,120,230,.14);
+  --fg:#e3e8ea; --fg2:#94a0a8; --fg3:#6c7881;
+  --glass:rgba(34,46,54,.50); --glass2:rgba(44,58,68,.70); --line:rgba(255,255,255,.12); --hi:rgba(255,255,255,.10);
+  --shadow:0 20px 60px -12px rgba(0,0,0,.65);
+  --hecho:#3ee0b4; --plan:#ffb84a; --futuro:#a597ff; --hoy:#ff6f90;
+  --track:rgba(160,172,255,.22); --blob:.5; color-scheme:dark}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--fg);font:15px/1.55 var(--f-body);min-height:100vh;position:relative;overflow-x:hidden;
+  padding-block:22px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+/* Aurora de fondo */
+.aurora{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;
+  background:radial-gradient(60% 50% at 8% 0%,var(--halo1),transparent 70%),radial-gradient(50% 45% at 95% 10%,var(--halo2),transparent 70%),radial-gradient(55% 50% at 60% 100%,var(--halo3),transparent 70%),var(--bg)}
+.wrap{max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+.glass{background:linear-gradient(160deg,var(--hi),transparent 38%),var(--glass);border:1px solid var(--line);border-radius:28px;box-shadow:var(--shadow),inset 0 1px 0 var(--hi);backdrop-filter:blur(22px) saturate(1.6);-webkit-backdrop-filter:blur(22px) saturate(1.6)}
+/* Cabecera */
+.hero{padding:28px 30px;display:grid;grid-template-columns:1fr auto;gap:22px 30px;align-items:center}
+.hero>*{min-width:0}
+.tag{display:inline-flex;gap:8px;align-items:center;font:500 11px var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--fg2);padding:4px 12px;border-radius:99px;border:1px solid var(--line);background:var(--glass)}
+.tag::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--plan);box-shadow:0 0 0 0 var(--plan);animation:late 2s infinite}
+@keyframes late{70%{box-shadow:0 0 0 8px transparent}100%{box-shadow:0 0 0 0 transparent}}
+h1{font:800 clamp(32px,6.4vw,60px)/.98 var(--f-display);letter-spacing:-.025em;margin:14px 0 10px;text-wrap:balance;
+  background:linear-gradient(100deg,var(--fg) 20%,var(--futuro) 60%,var(--hecho));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--fg2);margin:0;max-width:50ch;font-size:16px}
+.anillo{position:relative;width:132px;height:132px}
+.anillo svg{width:100%;height:100%;transform:rotate(-90deg);overflow:visible}
+.anillo circle{fill:none;stroke-width:9;stroke-linecap:round}
+.anillo .base{stroke:var(--track)}
+.anillo .val{stroke:url(#grad);stroke-dasharray:0 999;transition:stroke-dasharray 1.2s cubic-bezier(.2,.8,.2,1);filter:drop-shadow(0 0 6px color-mix(in srgb,var(--hecho) 60%,transparent))}
+.anillo .c{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.anillo .c b{font:800 34px/1 var(--f-display);font-variant-numeric:tabular-nums}
+.anillo .c span{font-size:11px;color:var(--fg2);margin-top:3px}
+/* Filtros */
+.barra-f{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.chip{font:500 14px var(--f-body);color:var(--fg);background:var(--glass);border:1px solid var(--line);padding:8px 16px 8px 12px;border-radius:99px;cursor:pointer;display:inline-flex;gap:9px;align-items:center;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);transition:transform .15s,opacity .2s,background .2s}
+.chip:hover{transform:translateY(-1px)}
+.chip i{width:11px;height:11px;border-radius:50%;background:var(--c);box-shadow:0 0 10px var(--c)}
+.chip em{font:500 12px var(--f-mono);font-style:normal;color:var(--fg2)}
+.chip[aria-pressed="false"]{opacity:.42}
+.chip[aria-pressed="false"] i{box-shadow:none}
+.sp{flex:1}
+.tema{all:unset;cursor:pointer;font-size:13px;color:var(--fg2);padding:8px 14px;border-radius:99px;border:1px solid var(--line);background:var(--glass)}
+.chip:focus-visible,.nodo:focus-visible,.tema:focus-visible,.nav button:focus-visible{outline:2px solid var(--futuro);outline-offset:3px}
+/* Carril */
+.riel{position:relative;overflow-x:auto;overflow-y:hidden;cursor:grab;scrollbar-width:thin;scrollbar-color:var(--track) transparent;padding:6px 0 10px}
+.riel.arrastra{cursor:grabbing}
+.riel::before,.riel::after{content:"";position:sticky;top:0;width:36px;height:100%;pointer-events:none;z-index:5;display:block;float:left}
+.pista{position:relative;display:flex;width:max-content;height:430px;padding:0 54px}
+.l1,.l2{position:absolute;top:calc(50% - 3px);height:6px;border-radius:6px}
+.l1{left:0;background:linear-gradient(90deg,var(--hecho),var(--plan));box-shadow:0 0 18px color-mix(in srgb,var(--hecho) 70%,transparent),0 0 40px color-mix(in srgb,var(--plan) 30%,transparent)}
+.l2{right:0;background:repeating-linear-gradient(90deg,var(--futuro) 0 10px,transparent 10px 20px);opacity:.75;height:4px;top:calc(50% - 2px)}
+.nodo{all:unset;position:relative;flex:none;width:176px;height:100%;cursor:pointer;z-index:2;animation:sube .7s cubic-bezier(.2,.9,.3,1.2) both;animation-delay:calc(var(--i)*70ms)}
+@keyframes sube{from{opacity:0;transform:translateY(18px) scale(.94)}to{opacity:1;transform:none}}
+.nodo[hidden]{display:none}
+.orbe{position:absolute;left:50%;top:50%;width:54px;height:54px;margin:-27px 0 0 -27px;border-radius:50%;display:grid;place-items:center;font-size:23px;
+  background:radial-gradient(circle at 30% 25%,var(--hi),transparent 60%),var(--glass2);border:2px solid var(--c);
+  box-shadow:0 0 0 6px color-mix(in srgb,var(--c) 14%,transparent),0 8px 24px color-mix(in srgb,var(--c) 45%,transparent);
+  transition:transform .35s cubic-bezier(.3,1.6,.5,1),box-shadow .3s,background .3s}
+.nodo[data-e="futuro"] .orbe{border-style:dashed}
+.nodo:hover .orbe{transform:scale(1.12)}
+.nodo[aria-selected="true"] .orbe{transform:scale(1.32);background:radial-gradient(circle at 30% 25%,rgba(255,255,255,.55),transparent 60%),var(--c);
+  box-shadow:0 0 0 9px color-mix(in srgb,var(--c) 22%,transparent),0 0 0 20px color-mix(in srgb,var(--c) 9%,transparent),0 10px 34px color-mix(in srgb,var(--c) 60%,transparent)}
+.nodo.curso .orbe::after{content:"";position:absolute;inset:-8px;border-radius:50%;border:2px solid var(--c);animation:onda 2s ease-out infinite}
+@keyframes onda{from{transform:scale(.9);opacity:.9}to{transform:scale(1.7);opacity:0}}
+.tarj{position:absolute;left:50%;width:158px;margin-left:-79px;padding:11px 13px 12px;border-radius:18px;text-align:left;
+  background:linear-gradient(160deg,var(--hi),transparent 45%),var(--glass);border:1px solid var(--line);box-shadow:0 10px 28px -10px rgba(20,25,70,.35);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);transition:transform .3s,border-color .3s,box-shadow .3s}
+.nodo.arr .tarj{bottom:calc(50% + 50px)}
+.nodo.aba .tarj{top:calc(50% + 50px)}
+.nodo:hover .tarj{transform:translateY(-3px)}
+.nodo.aba:hover .tarj{transform:translateY(3px)}
+.nodo[aria-selected="true"] .tarj{border-color:var(--c);box-shadow:0 14px 34px -10px color-mix(in srgb,var(--c) 55%,transparent)}
+.tarj::after{content:"";position:absolute;left:50%;width:2px;height:24px;margin-left:-1px;background:linear-gradient(var(--c),transparent)}
+.nodo.arr .tarj::after{top:100%}
+.nodo.aba .tarj::after{bottom:100%;transform:scaleY(-1)}
+.tarj .v{font:500 11px var(--f-mono);color:var(--c);letter-spacing:.04em}
+.tarj .t{font:700 14px/1.2 var(--f-display);margin-top:3px;text-wrap:balance}
+.tarj .f{font:400 11px var(--f-mono);color:var(--fg3);margin-top:6px}
+.hoy{position:relative;flex:none;width:0;height:100%;z-index:3}
+.hoy::before{content:"";position:absolute;left:-1px;top:34px;bottom:34px;width:2px;background:repeating-linear-gradient(var(--hoy) 0 6px,transparent 6px 12px);opacity:.85}
+.hoy span{position:absolute;left:0;top:8px;transform:translateX(-50%);font:500 11px var(--f-mono);letter-spacing:.1em;background:var(--hoy);color:#fff;padding:3px 11px;border-radius:99px;white-space:nowrap;box-shadow:0 6px 18px color-mix(in srgb,var(--hoy) 55%,transparent)}
+/* Detalle */
+.detalle{position:relative;overflow:hidden;padding:0}
+.detalle>.in{padding:30px;display:grid;gap:22px;animation:entra .45s cubic-bezier(.2,.8,.2,1)}
+.detalle::before{content:"";position:absolute;inset:-40% -10% auto auto;width:60%;height:120%;background:radial-gradient(closest-side,color-mix(in srgb,var(--c) 28%,transparent),transparent);pointer-events:none;transition:background .4s}
+@keyframes entra{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.dcab{position:relative;display:grid;grid-template-columns:auto 1fr auto;gap:20px;align-items:center}
+.dcab>*{min-width:0}
+.gran{width:78px;height:78px;border-radius:26px;display:grid;place-items:center;font-size:38px;background:radial-gradient(circle at 30% 20%,rgba(255,255,255,.5),transparent 60%),var(--c);box-shadow:0 14px 34px -8px color-mix(in srgb,var(--c) 70%,transparent)}
+.pill{display:inline-flex;gap:7px;align-items:center;font:500 11px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;padding:4px 12px;border-radius:99px;color:var(--c);background:color-mix(in srgb,var(--c) 14%,transparent);border:1px solid color-mix(in srgb,var(--c) 40%,transparent)}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--c)}
+.dcab h2{font:800 clamp(26px,4.4vw,42px)/1.02 var(--f-display);letter-spacing:-.02em;margin:8px 0 0;text-wrap:balance}
+.mini{width:92px;height:92px}
+.mini .anillo{width:92px;height:92px}
+.mini .anillo circle{stroke-width:8}
+.mini .c b{font-size:24px}
+.meta{position:relative;display:flex;gap:8px;flex-wrap:wrap}
+.meta span{font:500 12px var(--f-mono);color:var(--fg2);padding:5px 12px;border-radius:99px;background:var(--glass);border:1px solid var(--line)}
+.meta b{color:var(--fg);font-weight:500}
+.cols{position:relative;display:grid;grid-template-columns:1fr 1.05fr;gap:22px}
+.cols>*{min-width:0}
+.cols h3{font:500 11px var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--fg3);margin:0 0 10px}
+.cols p{margin:0;font-size:16px;max-width:60ch}
+.paso{margin-top:16px;padding:14px 16px;border-radius:18px;background:color-mix(in srgb,var(--c) 10%,transparent);border:1px solid color-mix(in srgb,var(--c) 30%,transparent)}
+.paso h3{color:var(--c);margin-bottom:4px}
+.paso p{font-size:14px;color:var(--fg)}
+ul.pts{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+ul.pts li{display:flex;gap:12px;align-items:center;padding:10px 14px;border-radius:14px;background:var(--glass);border:1px solid var(--line);animation:sube .5s both;animation-delay:calc(var(--k)*60ms + 120ms)}
+ul.pts .ck{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;border:2px solid var(--c)}
+ul.pts li.ok .ck{background:var(--hecho);border-color:var(--hecho)}
+ul.pts li.ok .ck::after{content:"";width:5px;height:10px;border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg) translate(-1px,-1px)}
+ul.pts li.ok span{color:var(--fg2)}
+.etq{position:relative;display:flex;gap:7px;flex-wrap:wrap}
+.etq span{font-size:12px;padding:4px 12px;border-radius:99px;color:var(--fg2);background:var(--glass);border:1px solid var(--line)}
+.nav{position:relative;display:flex;justify-content:space-between;gap:10px;padding-top:6px;border-top:1px solid var(--line)}
+.nav button{font:500 14px var(--f-body);color:var(--fg);background:var(--glass);border:1px solid var(--line);border-radius:99px;padding:9px 18px;cursor:pointer;transition:transform .15s}
+.nav button:hover:not(:disabled){transform:translateY(-1px)}
+.nav button:disabled{opacity:.3;cursor:default}
+.nota{font-size:13px;color:var(--fg3);text-align:center}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:760px){
+  .hero{grid-template-columns:1fr;padding:22px 18px}
+  .anillo{width:104px;height:104px}
+  .detalle>.in{padding:20px 16px}
+  .dcab{grid-template-columns:auto 1fr;gap:14px}
+  .dcab .mini{grid-column:1/-1;justify-self:start}
+  .gran{width:60px;height:60px;font-size:30px;border-radius:20px}
+  .cols{grid-template-columns:1fr}
+  .nodo{width:164px}
+  .tarj{width:146px;margin-left:-73px}
+  .pista{height:410px;padding:0 30px}
+  .sp{display:none}
+}
+</style>
+
+</head>
+<body>
+<div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
+
+<div class="wrap">
+  <header class="glass hero">
+    <div>
+      <span class="tag">Interno · no se publica</span>
+      <h1>Línea del tiempo</h1>
+      <p class="sub">SimulaCiencia de un vistazo: lo que ya está en la web, lo que se está construyendo ahora y lo que viene después. Pulsa cualquier punto.</p>
+    </div>
+    <div class="anillo" id="anillo" role="img" aria-label="Progreso total">
+      <svg viewBox="0 0 120 120"><defs><linearGradient id="grad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--hecho)"/><stop offset="1" stop-color="var(--futuro)"/></linearGradient></defs>
+        <circle class="base" cx="60" cy="60" r="52"/><circle class="val" cx="60" cy="60" r="52" id="anilloVal"/></svg>
+      <div class="c"><b id="anilloPct">0%</b><span>entregado</span></div>
+    </div>
+  </header>
+
+  <div class="barra-f" id="filtros" role="group" aria-label="Filtrar por estado"></div>
+
+  <section class="glass riel" id="riel" aria-label="Línea del tiempo">
+    <div class="pista" id="pista" role="tablist"></div>
+  </section>
+
+  <article class="glass detalle" id="detalle" aria-live="polite"></article>
+
+  <p class="nota">Página interna, fuera de publico/: no se despliega ni sale en el sitemap. Se regenera con node interno/linea-tiempo/generar.js. Arrastra la línea o usa las flechas ← →.</p>
+</div>
+
+<script>
+// Los datos los escribe generar.js (versiones de version.js, catálogo y planes.js).
+var E={hecho:{n:'Hecho',c:'var(--hecho)'},plan:{n:'Planeado',c:'var(--plan)'},futuro:{n:'Futuro',c:'var(--futuro)'}};
+var D=[{"id":1,"e":"hecho","v":"Web 1.0","f":"28 oct 2026","t":"SimulaCiencia 1.0","i":"🧭","d":"65 herramientas y 12 fenómenos para estudiar ciencias, gratis y sin registro.","p":[["Siete asignaturas: Electromagnetismo, Física general, Química, Matemáticas, Estadística, Circuitos y Economía.",1],["Un buscador para encontrar cualquier herramienta al momento.",1],["Las herramientas que están por llegar aparecen ya como «Próximamente».",1],["Resultados claros, con su gráfica o animación.",1],["El desarrollo paso a paso, con las fórmulas escritas como en los libros.",1],["Escribe como en clase: coma decimal, potencias de diez y unidades como 4k7 o 10 µF.",1],["Mis ejercicios: guarda tus ejercicios en carpetas, fija los importantes, abre los de ejemplo y expórtalos a un archivo.",1],["Modo práctica: un ejercicio con datos al azar que corrige tus respuestas y luego te enseña la solución.",1],["y 6 cosas más (ver Novedades)",1]],"l":["Novedad","Web 1.0"]},{"id":2,"e":"hecho","v":"Web 1.1","f":"31 oct 2026","t":"Sistemas de numeración","i":"🔢","d":"Pasa un número entre decimal, binario, complemento a 2, hexadecimal y BCD.","p":[["Sistemas de numeración: escribe un número en cualquier sistema y míralo en todos los demás, con el desarrollo paso a paso.",1],["Complemento a 2 con 4, 8, 16 o 32 bits, y aviso si el número no cabe.",1],["Los bits con su peso a la vista, y modo práctica para pasar a decimal.",1]],"l":["Herramienta nueva","Web 1.1"]},{"id":3,"e":"hecho","v":"Web 1.2","f":"31 oct 2026","t":"Costes y beneficio de la empresa","i":"🏭","d":"Dos herramientas nuevas de Economía para ver cuánto cuesta producir y cuánto producir para ganar más.","p":[["Costes de producción: coste total, medio y marginal de una empresa, con su gráfica.",1],["Maximización del beneficio: la cantidad y el precio óptimos en competencia perfecta y en monopolio, con el precio de cierre, el índice de Lerner y …",1]],"l":["Herramienta nueva","Web 1.2"]},{"id":4,"e":"hecho","v":"Web 1.3","f":"31 oct 2026","t":"Nuevo aspecto: Liquid Glass","i":"🫧","d":"Cristal translúcido, esquinas redondeadas y fondos con color en toda la web.","p":[["Cabecera flotante de cristal con buscador y botones redondeados, en todas las páginas.",1],["Tarjetas, campos, botones y pestañas translúcidos en las 68 herramientas y en Electrostática; las gráficas y las fórmulas se ven igual que antes.",1],["Portada, asignaturas, novedades y foro con fondos de color suaves y tarjetas que se elevan al pasar el ratón.",1],["Funciona en modo claro, oscuro y móvil, y si tu dispositivo pide menos transparencia o más contraste, la web vuelve a fondos sólidos.",1]],"l":["Novedad","Web 1.3"]},{"id":5,"e":"hecho","v":"Web 1.3.1","f":"31 oct 2026","t":"Arreglos visibles","i":"🩹","d":"La cabecera se ve más compacta en el móvil: logo, Foro y modo oscuro en una fila y el buscador debajo.","p":[["La cabecera se ve más compacta en el móvil: logo, Foro y modo oscuro en una fila y el buscador debajo.",1]],"l":["Arreglo","Web 1.3.1"]},{"id":6,"e":"hecho","v":"Web 1.3.2","f":"31 oct 2026","t":"Arreglos visibles","i":"🩹","d":"Quitada la franja oscura que se veía sobre la barra de arriba.","p":[["Quitada la franja oscura que se veía sobre la barra de arriba.",1],["En el móvil, la portada vuelve a mostrar Novedades y Física en la vida real junto a las asignaturas.",1]],"l":["Arreglo","Web 1.3.2"]},{"id":7,"e":"hecho","v":"Web 1.4","f":"1 nov 2026","t":"Diez herramientas nuevas","i":"🔌","d":"Probabilidad, termoquímica, oscilaciones, teoría de juegos y mucho más, en cinco asignaturas.","p":[["Desde la tabla de verdad: rellena las salidas y obtén los minitérminos, los maxitérminos y la ecuación simplificada, con el mapa de Karnaugh y el c…",1],["Desde las puertas: añade AND, OR, NOT, NAND, NOR, XOR o XNOR, marca las salidas y mira la tabla de verdad y las ecuaciones de tu circuito.",1],["Casillas indiferentes (X), hasta 5 variables y 4 salidas, y modo práctica con los minitérminos.",1],["Multiplicador keynesiano: la renta de equilibrio del modelo renta-gasto, con impuestos e importaciones.",1],["Los multiplicadores del gasto, de los impuestos y del presupuesto equilibrado, y las rondas en las que se reparte el efecto.",1],["Cuánto gasto público haría falta para cerrar la brecha con el pleno empleo.",1],["Modelo IS-LM: las curvas IS y LM con su equilibrio, y qué pasa si el gobierno gasta más, baja impuestos o el banco central aumenta el dinero.",1],["Multiplicadores y efecto expulsión, con las curvas nuevas dibujadas junto a las antiguas.",1],["y 17 cosas más (ver Novedades)",1]],"l":["Herramienta nueva","Web 1.4"]},{"id":8,"e":"hecho","v":"Web 1.4.1","f":"1 nov 2026","t":"Puertas lógicas más fáciles","i":"🔌","d":"Un editor para arrastrar y unir puertas, y las ecuaciones primero normales y luego simplificadas.","p":[["Editor gráfico: arrastra las puertas al dibujo, muévelas y únelas con el ratón, de una salida a una entrada. Doble clic para marcar una puerta como…",1],["Ecuaciones normales y simplificadas: primero salen las formas canónicas (minitérminos y maxitérminos) y con el botón Simplificar ecuaciones aparece…",1],["Tablas más legibles: una línea más gruesa separa las filas de 4 en 4.",1],["Un botón en el circuito cambia entre el de la suma de productos y el del producto de sumas.",1]],"l":["Novedad","Web 1.4.1"]},{"e":"plan","curso":1,"v":"Web 1.4.2","f":"En curso","t":"Modo Ecuaciones en puertas lógicas","i":"🧮","d":"Un tercer modo para escribir una ecuación booleana y ver su circuito tal cual o simplificado. Está en un PR en borrador a la espera de salir junto con el simulador de circuitos.","p":[["Lector de ecuaciones booleanas",1],["Circuito tal cual y simplificado",1],["Salir junto al simulador de circuitos",0]],"l":["Circuitos","PR en borrador"],"pr":"Borrador #87","sp":"Esperar a que el simulador de circuitos esté terminado y publicar los dos cambios en un único PR.","id":9,"pg":67},{"e":"plan","v":"Web 1.5","f":"Próximamente","t":"Simulador de circuitos","i":"⚡","d":"Un solo simulador de corriente continua y alterna con editor de arrastrar y soltar, que sustituye a Continua, Alterna y Transitorios.","p":[["Motor de cálculo con pruebas de equivalencia",0],["Editor de esquemas compartido",0],["Todos los componentes en el primer lanzamiento",0],["Retirar las herramientas antiguas sin romper enlaces",0]],"l":["Circuitos","Gran cambio"],"pr":"Plan aprobado","pg":5,"sp":"Construir el motor y comprobar que da lo mismo que las herramientas actuales.","id":10},{"e":"plan","v":"Fenómenos","f":"Fase 2","t":"Cinco fenómenos de la vida real","i":"⚡","fen":["rayo","auroras","altavoz-motor","cocina-induccion","cargador-inalambrico"],"d":"Los fenómenos de «Física en la vida real» que tocan en la fase 2 de la hoja de ruta.","l":["Física en la vida real","Fase 2"],"id":11,"p":[["Fenómeno: El rayo",0],["Fenómeno: Las auroras boreales",0],["Fenómeno: El altavoz y el motor eléctrico",0],["Fenómeno: La cocina de inducción",0],["Fenómeno: El cargador inalámbrico",0]],"pg":0},{"e":"futuro","v":"Fase 3","f":"Después","t":"Herramientas de dificultad media","i":"📡","claves":["maxwell","fresnel","gravitacion","optica","bode","convolucion","laplace-numerica","imagenes","guias-onda","antena"],"fen":["olla-presion","gps-relatividad","tension-paso","cielo-azul"],"d":"La tercera fase de la hoja de ruta, ordenada solo por dificultad de construcción.","l":["Hoja de ruta","Fase 3"],"id":12,"p":[["Ecuaciones de Maxwell (Electromagnetismo)",0],["Reflexión y transmisión (Fresnel) (Electromagnetismo)",0],["Gravitación y órbitas (Física general)",0],["Óptica geométrica: lentes y espejos (Física general)",0],["Diagramas de Bode y filtros (Circuitos)",0],["Convolución y señales (Circuitos)",0],["Ecuación de Laplace numérica (Electromagnetismo)",0],["Método de las imágenes (Electromagnetismo)",0],["Guías de onda (Electromagnetismo)",0],["Antena dipolo y radiación (Electromagnetismo)",0],["Fenómeno: La olla a presión y el agua en la montaña",0],["Fenómeno: El GPS y la relatividad",0],["Fenómeno: La tensión de paso",0],["Fenómeno: Por qué el cielo es azul",0]],"pg":0},{"e":"futuro","v":"Fase 4","f":"Más adelante","t":"Herramientas difíciles","i":"🔬","claves":["lineas-transmision","superficies","balance","integrales-multiples","redox","vsepr","formulacion"],"fen":["arcoiris"],"d":"Lo más trabajoso de construir: va el último.","l":["Hoja de ruta","Fase 4"],"id":13,"p":[["Líneas de transmisión y carta de Smith (Electromagnetismo)",0],["Superficies y curvas de nivel en 3D (Matemáticas)",0],["Balance y cuenta de resultados (Economía)",0],["Integrales múltiples (Matemáticas)",0],["Redox por ion-electrón (Química)",0],["Geometría molecular VSEPR en 3D (Química)",0],["Formulación inorgánica (Química)",0],["Fenómeno: El arcoíris",0]],"pg":0},{"e":"futuro","v":"Foro","f":"Sin fecha","t":"Foro de la comunidad","i":"💬","d":"Un foro propio dentro de la web. Hay un plan con la opción recomendada y falta contestar las decisiones.","p":[["Plan del foro escrito",1],["Elegir dónde alojarlo",0],["Moderación y registro",0],["Diseño de las páginas",0]],"l":["Comunidad","Decisión pendiente"],"pr":"Pendiente de Dani","id":14,"pg":25},{"e":"futuro","v":"Dominio","f":"Sin fecha","t":"Dominio propio","i":"🌐","d":"Comprar un dominio propio. En pausa hasta saber si hay que cambiar el nombre de la web.","p":[["Resolver el tema del nombre",0],["Comprar el dominio",0],["Redirigir las direcciones actuales",0]],"l":["Web","En pausa"],"pr":"En pausa","id":15,"pg":0}];
+var HOY="1 NOV";
+var $=function(s){return document.querySelector(s)};
+var sel=(D.filter(function(x){return x.curso})[0]||D[D.length-1]).id, filtro={hecho:1,plan:1,futuro:1}, C=2*Math.PI*52;
+function esc(s){return String(s).replace(/[&<>]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[c]})}
+function visibles(){return D.filter(function(x){return filtro[x.e]})}
+function anilloSvg(pct){return '<div class="anillo"><svg viewBox="0 0 120 120"><circle class="base" cx="60" cy="60" r="52"/><circle class="val" cx="60" cy="60" r="52" stroke="var(--c)" style="stroke:var(--c);stroke-dasharray:'+(C*pct/100)+' 999"/></svg><div class="c"><b>'+pct+'%</b></div></div>'}
+
+function global(){
+  var pct=Math.round(D.filter(function(x){return x.e==='hecho'}).length/D.length*100);
+  $('#anilloPct').textContent=pct+'%';
+  requestAnimationFrame(function(){requestAnimationFrame(function(){$('#anilloVal').style.strokeDasharray=(C*pct/100)+' 999'})});
+}
+function filtros(){
+  var h='';
+  Object.keys(E).forEach(function(k){
+    var n=D.filter(function(x){return x.e===k}).length;
+    h+='<button class="chip" type="button" data-k="'+k+'" aria-pressed="'+(filtro[k]?'true':'false')+'" style="--c:'+E[k].c+'"><i></i>'+E[k].n+' <em>'+n+'</em></button>';
+  });
+  h+='<span class="sp"></span><button class="tema" id="tema" type="button">Cambiar tema</button>';
+  $('#filtros').innerHTML=h;
+}
+function pista(animar){
+  var v=visibles(), h='<div class="l1" id="l1"></div><div class="l2" id="l2"></div>', puesto=false;
+  v.forEach(function(x,idx){
+    if(!puesto && x.e!=='hecho'){h+='<div class="hoy" aria-hidden="true"><span>HOY · '+HOY+'</span></div>';puesto=true}
+    h+='<button class="nodo '+(idx%2?'aba':'arr')+(x.curso?' curso':'')+'" type="button" role="tab" data-id="'+x.id+'" data-e="'+x.e+'" aria-selected="'+(x.id===sel)+'" style="--c:'+E[x.e].c+';--i:'+(animar?idx:0)+'">'
+     +'<span class="tarj"><div class="v">'+esc(x.v)+'</div><div class="t">'+esc(x.t)+'</div><div class="f">'+esc(x.f)+'</div></span>'
+     +'<span class="orbe" aria-hidden="true">'+x.i+'</span></button>';
+  });
+  if(!puesto)h+='<div class="hoy" aria-hidden="true"><span>HOY · '+HOY+'</span></div>';
+  $('#pista').innerHTML=h;
+  lineas();
+}
+function lineas(){
+  var p=$('#pista'), hoy=p.querySelector('.hoy'); if(!hoy)return;
+  var x=hoy.offsetLeft, l1=$('#l1'), l2=$('#l2');
+  l1.style.width=x+'px'; l2.style.left=x+'px';
+}
+function detalle(){
+  var x=D.filter(function(y){return y.id===sel})[0], v=visibles(), i=v.indexOf(x);
+  var c=E[x.e].c, hechos=x.p.filter(function(p){return p[1]}).length;
+  var pct=x.e==='hecho'?100:(x.pg!=null?x.pg:Math.round(hechos/x.p.length*100));
+  var pts=x.p.map(function(p,k){return '<li class="'+(p[1]?'ok':'nok')+'" style="--k:'+k+'"><span class="ck"></span><span>'+esc(p[0])+'</span></li>'}).join('');
+  var etq=x.l.map(function(t){return '<span>'+esc(t)+'</span>'}).join('');
+  var el=$('#detalle'); el.style.setProperty('--c',c);
+  el.innerHTML='<div class="in" style="--c:'+c+'">'
+   +'<div class="dcab"><div class="gran">'+x.i+'</div><div><span class="pill">'+(x.curso?'En curso':E[x.e].n)+'</span><h2>'+esc(x.t)+'</h2></div><div class="mini">'+anilloSvg(pct)+'</div></div>'
+   +'<div class="meta"><span><b>'+esc(x.v)+'</b></span><span>'+esc(x.f)+'</span>'+(x.pr?'<span>'+esc(x.pr)+'</span>':'')+'<span>'+hechos+' de '+x.p.length+' puntos</span></div>'
+   +'<div class="cols"><div><h3>Qué incluye</h3><p>'+esc(x.d)+'</p>'+(x.sp?'<div class="paso"><h3>Siguiente paso</h3><p>'+esc(x.sp)+'</p></div>':'')+'</div>'
+   +'<div><h3>'+(x.e==='hecho'?'Entregado':'Lo planeado')+'</h3><ul class="pts">'+pts+'</ul></div></div>'
+   +'<div class="etq">'+etq+'</div>'
+   +'<div class="nav"><button type="button" id="ant"'+(i<=0?' disabled':'')+'>← Anterior</button><button type="button" id="sig"'+(i>=v.length-1?' disabled':'')+'>Siguiente →</button></div></div>';
+}
+function centra(){
+  var n=$('.nodo[aria-selected="true"]'); if(!n)return;
+  var r=$('#riel'); r.scrollTo({left:n.offsetLeft+n.offsetWidth/2-r.clientWidth/2,behavior:'smooth'});
+}
+function ir(id){
+  sel=id;
+  document.querySelectorAll('.nodo').forEach(function(n){n.setAttribute('aria-selected',+n.dataset.id===sel)});
+  detalle(); centra();
+}
+function mover(d){
+  var v=visibles(), i=v.findIndex(function(x){return x.id===sel})+d;
+  if(i>=0&&i<v.length)ir(v[i].id);
+}
+var arr=null;
+document.addEventListener('click',function(ev){
+  if(arr&&arr.mov){arr.mov=0;return}
+  var n=ev.target.closest('.nodo'); if(n){ir(+n.dataset.id);return}
+  var c=ev.target.closest('.chip');
+  if(c){var k=c.dataset.k; filtro[k]=filtro[k]?0:1;
+    if(!Object.keys(filtro).some(function(q){return filtro[q]}))filtro[k]=1;
+    filtros(); var v=visibles(); if(!v.some(function(x){return x.id===sel}))sel=v[0].id; pista(true); detalle(); setTimeout(centra,60); return}
+  if(ev.target.id==='ant')mover(-1);
+  if(ev.target.id==='sig')mover(1);
+  if(ev.target.id==='tema'){
+    var r=document.documentElement, os=matchMedia('(prefers-color-scheme: dark)').matches;
+    var a=r.dataset.theme||(os?'dark':'light'); r.dataset.theme=a==='dark'?'light':'dark';
+  }
+});
+document.addEventListener('keydown',function(ev){
+  if(ev.key==='ArrowRight')mover(1); else if(ev.key==='ArrowLeft')mover(-1);
+});
+// Arrastrar la línea con el ratón
+var riel=$('#riel');
+riel.addEventListener('pointerdown',function(e){
+  if(e.pointerType!=='mouse')return;
+  arr={x:e.clientX,s:riel.scrollLeft,mov:0,on:1};
+});
+window.addEventListener('pointermove',function(e){
+  if(!arr||!arr.on)return;
+  var dx=e.clientX-arr.x;
+  if(Math.abs(dx)>5){arr.mov=1;riel.classList.add('arrastra');riel.style.scrollBehavior='auto';riel.scrollLeft=arr.s-dx}
+});
+window.addEventListener('pointerup',function(){
+  if(arr){arr.on=0;riel.classList.remove('arrastra');riel.style.scrollBehavior='';setTimeout(function(){if(arr)arr.mov=0},0)}
+});
+window.addEventListener('resize',lineas);
+global(); filtros(); pista(true); detalle();
+setTimeout(centra,120);
+</script>
+</body>
+</html>
