@@ -1,0 +1,52 @@
+<title>Multiplicador keynesiano: calculadora renta-gasto</title>
+<meta name="description" content="Calculadora del multiplicador keynesiano en español: renta de equilibrio del modelo renta-gasto, multiplicador del gasto, de los impuestos y del presupuesto equilibrado, efecto de la política fiscal y brecha con el pleno empleo, con la cruz keynesiana.">
+<style>
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a; --serie-3: #6b3fa0 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 }
+.tabla-eco { border-collapse: collapse; font: 13.5px var(--f-ui); width: 100%; font-variant-numeric: tabular-nums }
+.tabla-eco th, .tabla-eco td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap }
+.tabla-eco th { font-weight: 600; color: var(--muted) } .tabla-eco th:first-child, .tabla-eco td:first-child { text-align: left }
+.tabla-eco tfoot td { font-weight: 600; background: var(--accent-soft) }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Economía</a> / Multiplicador keynesiano</span></header>
+<div class="wrap">
+<h1>Multiplicador keynesiano</h1>
+<p class="lead">Calcula la renta de equilibrio del modelo renta-gasto con impuestos e importaciones, los multiplicadores del gasto y de los impuestos, cuánto sube la renta si el Estado gasta más y el gasto que cierra la brecha con el pleno empleo.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>La cruz keynesiana</h2>
+      <canvas id="grafica" aria-label="Recta de 45 grados y demanda agregada en función de la renta, con la renta de equilibrio en su cruce"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card"><h2>Rondas del multiplicador</h2><div class="tabla-scroll" id="tabla"></div></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+<h2>El modelo renta-gasto</h2>
+<p class="m">En el corto plazo, con precios fijos y recursos sin emplear, la producción la fija la demanda. Se produce lo que se espera vender, y la renta de equilibrio es la que iguala producción y demanda agregada: $Y = DA = C + I + G + X − M$.</p>
+<h2>La cruz keynesiana</h2>
+<p class="m">La demanda agregada crece con la renta porque el consumo depende de ella: $DA = A + b · Y$. La recta de 45° marca los puntos donde producción y demanda coinciden, y la renta de equilibrio $Y^* = {A}/{1 − b}$ es donde se cruzan. Si la producción está por encima, las empresas acumulan existencias y recortan; si está por debajo, las agotan y producen más.</p>
+<h2>El multiplicador del gasto</h2>
+<p class="m">Un euro de gasto autónomo extra se convierte en renta de alguien, que gasta una parte $b$, que es renta de otro, que gasta una parte $b$… La suma es $1 + b + b^2 + … = {1}/{1 − b}$. Cuanto más se consume ($c$ alto), menos se paga en impuestos ($t$ bajo) y menos se importa ($m$ bajo), mayor es el multiplicador. Con $b = c · (1 − t) − m$.</p>
+<h2>Impuestos y presupuesto equilibrado</h2>
+<p class="m">Un euro más de impuestos fijos recorta el consumo en $c$ euros, no en uno, así que su multiplicador es menor en valor absoluto: $k_T = −{c}/{1 − b}$. Por eso subir a la vez gasto e impuestos en la misma cantidad aumenta la renta: es el teorema del presupuesto equilibrado, con multiplicador $k_{eq} = {1 − c}/{1 − b}$ (vale 1 en el modelo más simple).</p>
+<h2>Brecha de producción</h2>
+<p>La renta de equilibrio no tiene por qué coincidir con la de pleno empleo. Si es menor hay una brecha recesiva, y el Estado puede cerrarla con más gasto o menos impuestos: el gasto necesario es la brecha dividida entre el multiplicador. El modelo supone precios fijos y exceso de capacidad; cerca del pleno empleo, una parte del efecto se iría en inflación.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Multiplicador keynesiano <span id="ver"></span> (beta)</footer>
+</body>
