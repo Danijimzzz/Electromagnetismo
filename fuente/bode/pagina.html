@@ -1,0 +1,53 @@
+<title>Diagramas de Bode de filtros RC, RL y RLC · SimulaCiencia</title>
+<meta name="description" content="Filtros RC, RL y RLC (paso bajo, paso alto, paso banda y rechazo de banda) con su diagrama de Bode de magnitud y fase, la frecuencia de corte, el factor de calidad Q y el ancho de banda.">
+<style>
+/* Solo lo propio de esta herramienta. Las medidas comunes se ajustan con sus variables
+   y los colores propios (los de las gráficas) van aquí, con su valor en modo oscuro. */
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62 }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Circuitos</a> / Diagramas de Bode y filtros</span></header>
+<div class="wrap">
+<h1>Diagramas de Bode y filtros</h1>
+<p class="lead">Filtros RC, RL y RLC (paso bajo, paso alto, paso banda y rechazo de banda) con su diagrama de Bode de magnitud y fase, la frecuencia de corte, el factor de calidad Q y el ancho de banda.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Magnitud <small>(dB)</small></h2>
+      <canvas id="grafica" aria-label="Diagrama de Bode: magnitud en decibelios"></canvas>
+      <h2 style="margin-top:14px">Fase <small>(grados)</small></h2>
+      <canvas id="grafica-fase" aria-label="Diagrama de Bode: fase en grados"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Qué es un diagrama de Bode</h2>
+  <p class="m">Un filtro deja pasar unas frecuencias y atenúa otras. Su respuesta es la función de transferencia $H(jω) = V_"sal"/V_"ent"$, un número complejo para cada frecuencia. El diagrama de Bode dibuja su módulo en decibelios, $20 log |H|$, y su fase, ambos frente a la frecuencia en escala logarítmica. Así, las respuestas de filtros encadenados se suman y las rectas asintóticas se dibujan a mano.</p>
+  <h2>Filtros de primer orden</h2>
+  <p class="m">Un RC o un RL tienen una sola frecuencia de corte, donde la ganancia cae 3 dB ($|H| = 1/√2$) y la fase vale ∓45°:</p>
+  <p class="f m">$f_c = 1/(2πRC) = R/(2πL)$</p>
+  <p class="m">Por encima (paso bajo) o por debajo (paso alto) de $f_c$ la ganancia cambia 20 dB por década. Un paso bajo RC mide en el condensador; un paso alto RC, en la resistencia.</p>
+  <h2>Filtros RLC de segundo orden</h2>
+  <p class="m">El RLC en serie tiene una frecuencia propia y un factor de calidad que fija cómo es la respuesta cerca de ella:</p>
+  <p class="f m">$f_0 = 1/(2π√(LC))$, $Q = (1/R)√(L/C)$, $"BW" = f_0/Q$</p>
+  <p class="m">Con $Q > 1/√2$ los pasos bajo y alto presentan un pico de resonancia; en el paso banda (se mide en la resistencia) $Q$ da lo estrecha que es la banda, y en el rechazo de banda, lo estrecha que es la muesca. Las asíntotas cambian 40 dB por década en los pasos bajo y alto, y ±20 dB por década en el paso banda.</p>
+  <h2>Y el circuito completo</h2>
+  <p class="m">Para probar el filtro con una fuente, un osciloscopio y más componentes, monta el mismo circuito en el <a href="../simulador/">Simulador de circuitos</a>: su análisis en frecuencia dibuja este mismo diagrama.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Diagramas de Bode y filtros <span id="ver"></span> (beta)</footer>
+</body>
