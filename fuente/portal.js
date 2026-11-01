@@ -344,7 +344,14 @@ ${cards}
   const negrita = (t) => esc(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
   // «#asignatura/herramienta»: tarjeta con el icono, el nombre, lo que hace y un enlace para abrirla
   const tarjetaHerr = (p) => {
-    const [ac, hc] = p.slice(1).split('/'), a = Catalogo.asignaturas.find((x) => x.clave === ac), h = a?.herramientas.find((x) => x.clave === hc && x.disponible);
+    const [ac, hc] = p.slice(1).split('/');
+    // «#fenomenos/clave»: un fenómeno de «Física en la vida real»
+    if (ac === 'fenomenos') {
+      const f = V.lista.find((x) => x.clave === hc && x.disponible);
+      if (!f) throw new Error(`Novedades: no hay un fenómeno disponible «${p}»`);
+      return `<li class="herr-n" style="${estilo(V)}"><a href="../fenomenos/${f.clave}/"><span class="ico s">${esc(f.icono)}</span><span class="txt"><b>${esc(f.nombre)}</b><small>${esc(V.nombre)} · ${esc(f.desc)}</small></span><span class="ir">Abrir →</span></a></li>`;
+    }
+    const a = Catalogo.asignaturas.find((x) => x.clave === ac), h = a?.herramientas.find((x) => x.clave === hc && x.disponible);
     if (!h) throw new Error(`Novedades: no hay una herramienta disponible «${p}»`);
     return `<li class="herr-n" style="${estilo(a)}"><a href="../${a.clave}/${h.clave}/"><span class="ico s">${esc(h.icono)}</span><span class="txt"><b>${esc(h.nombre)}</b><small>${esc(a.nombre)} · ${esc(h.desc)}</small></span><span class="ir">Abrir →</span></a></li>`;
   };
