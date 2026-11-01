@@ -72,7 +72,8 @@ const Catalogo = {
         { clave: 'optica', nombre: 'Óptica geométrica: lentes y espejos', icono: 'f', disponible: false, desc: 'Trazado de rayos, imagen real o virtual y aumento.', buscar: 'óptica geométrica lentes espejos rayos imagen aumento' },
         { clave: 'fisica-moderna', nombre: 'Física moderna: fotoeléctrico y relatividad', icono: 'γ', disponible: true, desc: 'Efecto fotoeléctrico, longitud de onda de De Broglie, dilatación del tiempo, contracción de longitudes y energía relativista.', buscar: 'física moderna efecto fotoeléctrico relatividad dilatación contracción fotón trabajo de extracción frecuencia umbral potencial de frenado einstein de broglie onda de materia factor de lorentz gamma muones energía en reposo mc2', scripts: ['mates.js', 'calculadora.js', 'fisica-moderna/calculo.js', 'fisica-moderna/app.js'],
           titulo: 'Física moderna: efecto fotoeléctrico, De Broglie y relatividad', descripcion: 'Efecto fotoeléctrico con potencial de frenado y frecuencia umbral, longitud de onda de De Broglie, dilatación del tiempo, contracción de longitudes y energía relativista, paso a paso' },
-        { clave: 'unidades', nombre: 'Conversor de unidades y constantes', icono: 'SI', disponible: false, desc: 'Unidades del SI y técnicas, con las constantes CODATA.', buscar: 'conversor de unidades constantes físicas codata' },
+        { clave: 'unidades', nombre: 'Conversor de unidades y constantes', icono: 'SI', disponible: true, desc: 'Unidades del SI y técnicas, con las constantes CODATA.', buscar: 'conversor de unidades constantes físicas codata', scripts: ['mates.js', 'unidades/calculo.js', 'unidades/app.js'],
+          titulo: 'Conversor de unidades y constantes', descripcion: 'Unidades del SI y técnicas, con las constantes CODATA.' },
       ],
     },
     {

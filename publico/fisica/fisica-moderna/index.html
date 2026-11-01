@@ -245,8 +245,8 @@ textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 120px 
 <p class="m">Si la velocidad de la luz es la misma para todos, el tiempo y el espacio dependen del observador. Con $γ = 1/√(1 − v^2/c^2)$, un reloj en movimiento va más despacio, $Δt = γ Δt_0$, y un objeto en movimiento se acorta en la dirección en que se mueve, $L = L_0/γ$. La energía total es $E = γ m c^2$, con $m c^2$ la energía en reposo, y la cinética, $(γ − 1) m c^2$. Los muones creados en la alta atmósfera llegan al suelo gracias a la dilatación del tiempo.</p>
 </section>
 <section class="relacionadas" aria-label="Herramientas relacionadas"><h2>Herramientas relacionadas</h2>
+<a href="../unidades/"><b>Conversor de unidades y constantes →</b><span>Unidades del SI y técnicas, con las constantes CODATA.</span></a>
 <a href="../trabajo-y-energia/"><b>Trabajo y energía →</b><span>Conservación de la energía en rampas y muelles, rizos, péndulos y montañas rusas, y trabajo de una fuerza variable, con barras de energía.</span></a>
-<a href="../tiro-parabolico/"><b>Tiro parabólico y cinemática →</b><span>Trayectorias con y sin rozamiento del aire, alcance máximo, blanco, MRU y MRUA con encuentros, movimiento circular y gráficas x(t), v(t), a(t).</span></a>
 <a href="../gases/"><b>Gases ideales →</b><span>PV = nRT, transformaciones y ciclos con trabajo, calor y rendimiento, mezclas (Dalton), gases reales (Van der Waals) y teoría cinética.</span></a>
 <a href="../fluidos/"><b>Fluidos →</b><span>Presión hidrostática, tubo en U, prensa hidráulica, Arquímedes, Bernoulli, Torricelli, viscosidad, Pitot y Venturi, presas y capilaridad, con animación.</span></a>
 </section>
@@ -269,6 +269,13 @@ const Pagina = { carpeta: 'fisica-moderna', guarda: 'fisica-moderna-v1' };
 const Version = (() => {
   const registros = {
     web: [
+      { v: '1.4', fecha: '2026-11-01', titulo: 'Conversor de unidades y constantes', subtitulo: 'Pasa cualquier valor de una unidad a otra y consulta las constantes físicas en un solo sitio.', secciones: [
+        { icono: '📏', titulo: 'Nueva herramienta en Física general', puntos: [
+          '#fisica/unidades',
+          '**Conversor de unidades:** 24 magnitudes, del metro al año luz y del julio al electronvoltio, con el desarrollo paso a paso y el valor en todas las unidades a la vez.',
+          '**Constantes CODATA 2018** con buscador: c, h, e, ε₀, μ₀, la masa del electrón y muchas más.',
+        ] },
+      ] },
       { v: '1.3.2', fecha: '2026-10-31', cambios: ['Quitada la franja oscura que se veía sobre la barra de arriba.', 'En el móvil, la portada vuelve a mostrar Novedades y Física en la vida real junto a las asignaturas.'] },
       { v: '1.3.1', fecha: '2026-10-31', cambios: ['La cabecera se ve más compacta en el móvil: logo, Foro y modo oscuro en una fila y el buscador debajo.'] },
       { v: '1.3', fecha: '2026-10-31', titulo: 'Nuevo aspecto: Liquid Glass', subtitulo: 'Cristal translúcido, esquinas redondeadas y fondos con color en toda la web.', secciones: [
@@ -321,6 +328,9 @@ const Version = (() => {
           '**Diseño pensado también para el móvil.**',
         ] },
       ] },
+    ],
+    unidades: [
+      { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: convierte un valor entre las unidades de 24 magnitudes (longitud, masa, tiempo, velocidad, presión, energía, potencia, temperatura, carga, campo eléctrico y magnético…), con el desarrollo paso a paso por la unidad base del SI y el factor directo, el valor en todas las unidades a la vez y un botón para intercambiarlas. Incluye la tabla de constantes físicas CODATA 2018 con buscador.'] },
     ],
     beneficio: [
       { v: '0.1', fecha: '2026-10-31', cambios: ['Primera versión: cantidad y precio que maximizan el beneficio en competencia perfecta (precio de cierre y de beneficio nulo) y en monopolio (índice de Lerner, comparación con la competencia y pérdida de eficiencia), con la gráfica de ingreso marginal, coste marginal y coste medio.'] },
@@ -1600,6 +1610,8 @@ const Practica = (() => {
     // chi2-bondad: un dado o una tabla 2 × 3 con enunciado
     'chi2-bondad': { datos: null, genera: () => window.Chi2BondadApp?.azar(), enunciado: () => window.Chi2BondadApp?.enunciado() },
     // oferta-demanda: un mercado con equilibrio entero
+    // unidades: un valor con su conversión (solo el resultado, no el factor)
+    unidades: { datos: null, items: '#resumen > div.pr', genera: () => window.UnidadesApp?.azar(), enunciado: () => window.UnidadesApp?.enunciado() },
     'sistemas-numericos': { datos: null, items: '#resumen > div.pr', genera: () => window.SistemasNumericosApp?.azar(), enunciado: () => window.SistemasNumericosApp?.enunciado() },
     'oferta-demanda': { datos: null, genera: () => window.OfertaDemandaApp?.azar(), enunciado: () => window.OfertaDemandaApp?.enunciado() },
     // excedentes: un impuesto en un mercado con equilibrio entero
