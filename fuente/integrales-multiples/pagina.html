@@ -1,0 +1,59 @@
+<title>Calculadora de integrales dobles y triples paso a paso</title>
+<meta name="description" content="Calculadora de integrales múltiples en español: integral doble en cartesianas y en polares, triple en cartesianas, cilíndricas y esféricas, con la región, el jacobiano, cada integral iterada, el volumen y el valor medio.">
+<style>
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62 }
+#grafica { height: clamp(280px, 40vw, 420px) }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Matemáticas</a> / Integrales múltiples</span></header>
+<div class="wrap">
+<h1>Integrales múltiples</h1>
+<p class="lead">Calcula integrales dobles y triples sobre la región que dibujes con sus límites, en cartesianas, polares, cilíndricas o esféricas: ves la región, el cambio de variables con su jacobiano y cada integral iterada, de dentro afuera, con el área o el volumen y el valor medio.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Región</h2>
+      <canvas id="grafica" aria-label="Región de integración"></canvas>
+      <div class="controles"><button class="btn" id="animar" type="button" hidden>▶ Girar</button></div>
+      <p class="nota" id="leyenda"></p></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Integral doble y teorema de Fubini</h2>
+  <p class="f m">$∬_D f(x, y) dA = ∫_a^b ∫_{g_1(x)}^{g_2(x)} f(x, y) dy dx$</p>
+  <p class="m">Si la región es $a ≤ x ≤ b$, $g_1(x) ≤ y ≤ g_2(x)$, se integra primero en y (con x fijo, como si fuera un número) y el resultado, que depende solo de x, se integra después. Con $f = 1$ sale el área de la región, y $∬ f dA / A$ es el valor medio de f.</p>
+  <p class="m">A veces el otro orden es mucho más fácil. Por ejemplo, $∫_0^1 ∫_x^1 e^{y^{2}} dy dx$ no tiene primitiva en y, pero la misma región es $0 ≤ y ≤ 1$, $0 ≤ x ≤ y$, y entonces $∫_0^1 y e^{y^{2}} dy = (e − 1)/2$. Elige «dx dy» en la herramienta para ver ese caso. Dibujar la región es lo que permite cambiar el orden.</p>
+  <h2>Cambio de variables y jacobiano</h2>
+  <p class="f m">$∬_D f(x, y) dx dy = ∬_{D'} f(x(u, v), y(u, v)) |J| du dv$,&ensp; $J = {∂(x, y)}/{∂(u, v)}$</p>
+  <p class="m">El jacobiano es lo que se estira el área al cambiar de coordenadas: un trocito $du dv$ se convierte en un trocito de área $|J| du dv$. Se usa cuando la región o el integrando se escriben mejor en otras coordenadas, sobre todo si hay círculos, esferas o cilindros.</p>
+  <h2>Polares</h2>
+  <p class="f m">$x = r cos θ,&ensp; y = r sen θ,&ensp; dA = r dr dθ$</p>
+  <p class="m">El factor $r$ es el largo del arco $r dθ$ de un trocito de anillo de ancho $dr$. Además $x^{2} + y^{2} = r^{2}$, así que $∬ (x^{2} + y^{2}) dA = ∫ ∫ r^{3} dr dθ$. Un círculo de radio R es $0 ≤ θ ≤ 2π$, $0 ≤ r ≤ R$; la mitad de arriba, $0 ≤ θ ≤ π$; una corona, $R_1 ≤ r ≤ R_2$; y una curva $r = ρ(θ)$ (una cardioide $r = 1 + cos θ$) da $0 ≤ r ≤ ρ(θ)$. La integral de Gauss sale así: $∬ e^{−x^{2} − y^{2}} dA = π(1 − e^{−1})$ en el círculo unidad y $π$ en todo el plano.</p>
+  <h2>Integral triple</h2>
+  <p class="f m">$∭_V f dV = ∫_a^b ∫_{g_1(x)}^{g_2(x)} ∫_{h_1(x, y)}^{h_2(x, y)} f dz dy dx$</p>
+  <p class="m">Se integra de dentro afuera: primero z, entre las superficies de abajo y de arriba, luego y entre dos curvas y al final x entre dos números. Con $f = 1$ sale el volumen. Un tetraedro con tres caras en los planos coordenados es $0 ≤ x ≤ 1$, $0 ≤ y ≤ 1 − x$, $0 ≤ z ≤ 1 − x − y$.</p>
+  <h2>Cilíndricas</h2>
+  <p class="f m">$x = r cos θ,&ensp; y = r sen θ,&ensp; z = z,&ensp; dV = r dr dθ dz$</p>
+  <p class="m">Son polares más la altura: sirven para cilindros, conos y paraboloides. Un cono con vértice en el origen y altura 1 es $0 ≤ z ≤ 1$, $0 ≤ r ≤ z$, o también $0 ≤ r ≤ 1$, $r ≤ z ≤ 1$, que es su volumen $π/3$.</p>
+  <h2>Esféricas</h2>
+  <p class="f m">$x = ρ sen φ cos θ,&ensp; y = ρ sen φ sen θ,&ensp; z = ρ cos φ,&ensp; dV = ρ^{2} sen φ dρ dφ dθ$</p>
+  <p class="m">Aquí φ se mide desde el eje z (de 0 a π) y θ es el giro alrededor de z (de 0 a 2π), como en los apuntes de la mayoría de universidades españolas. Mira que algunos libros intercambian φ y θ. La esfera de radio R es $0 ≤ ρ ≤ R$, $0 ≤ φ ≤ π$, $0 ≤ θ ≤ 2π$, y su volumen $4πR^{3}/3$; el hemisferio de arriba tiene $0 ≤ φ ≤ π/2$. Además $x^{2} + y^{2} + z^{2} = ρ^{2}$.</p>
+  <h2>¿Qué coordenadas elegir?</h2>
+  <p class="m">Si en la región o en f aparece $x^{2} + y^{2}$, polares o cilíndricas; si aparece $x^{2} + y^{2} + z^{2}$ o hay una esfera o un cono con vértice en el origen, esféricas; si la región es una caja o un poliedro, cartesianas. El jacobiano no se olvida: $r$ en polares y cilíndricas, $ρ^{2} sen φ$ en esféricas.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Integrales múltiples <span id="ver"></span> (beta)</footer>
+</body>

@@ -518,6 +518,6 @@ const Campos = (() => {
     { clave: 'gauss-carga', nombre: 'Gauss falla: campo de una carga con ella dentro', sc: { modo: 'gauss', P: 'x/(x^2 + y^2 + z^2)^(3/2)', Q: 'y/(x^2 + y^2 + z^2)^(3/2)', R: 'z/(x^2 + y^2 + z^2)^(3/2)', solido: 'esfera', cx: '0', cy: '0', cz: '0', rad: '1' } },
   ];
 
-  return { resolver, escalar, vectorial, linea, masa, green, superficie, gauss, potSimb, ejemplos, integra, f, ex };
+  return { resolver, escalar, vectorial, linea, masa, green, superficie, gauss, potSimb, ejemplos, integra, f, ex, sust, primEn };
 })();
 if (typeof module !== 'undefined') module.exports = Campos;
