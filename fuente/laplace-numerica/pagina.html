@@ -1,0 +1,52 @@
+<title>Simulador de la ecuación de Laplace · SimulaCiencia</title>
+<meta name="description" content="Simulador de la ecuación de Laplace en una caja: fija el potencial de los bordes y de un electrodo interior y mira el mapa de color, las equipotenciales y el campo eléctrico por relajación.">
+<style>
+:root { --alto-grafica: clamp(300px, 48vw, 470px) }
+.controles label { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); cursor: pointer }
+.controles input { accent-color: var(--accent) }
+#grafica { cursor: crosshair; touch-action: none }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Electromagnetismo</a> / Ecuación de Laplace numérica</span></header>
+<div class="wrap">
+<h1>Ecuación de Laplace numérica</h1>
+<p class="lead">Fija el potencial de los cuatro bordes de una caja (y, si quieres, de un electrodo en su interior) y mira cómo se reparte el potencial por relajación: mapa de color, líneas equipotenciales y campo eléctrico. Pulsa en el mapa para colocar la sonda.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Mapa del potencial</h2>
+      <canvas id="grafica" aria-label="Mapa de color del potencial en la caja, con equipotenciales y campo eléctrico"></canvas>
+      <div class="controles">
+        <label><input type="checkbox" id="ver-eq"> Equipotenciales</label>
+        <label><input type="checkbox" id="ver-e"> Campo eléctrico</label>
+      </div>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>La ecuación de Laplace</h2>
+  <p class="m">En una región sin cargas el potencial eléctrico cumple $∇² V = 0$. Sus soluciones son funciones <em>armónicas</em>: no tienen máximos ni mínimos en el interior, así que el potencial más alto y el más bajo están siempre en el borde. Y la solución queda fijada por completo cuando se conoce el potencial de todo el contorno (teorema de unicidad).</p>
+  <h2>Propiedad del valor medio</h2>
+  <p class="m">El potencial en un punto es la media de sus valores sobre una circunferencia alrededor. En una malla cuadrada eso se traduce en que cada nodo vale la media de sus cuatro vecinos:</p>
+  <p class="f m">$V_{i,j} = {V_{i+1,j} + V_{i−1,j} + V_{i,j+1} + V_{i,j−1}}/4$</p>
+  <h2>Relajación</h2>
+  <p class="m">Se empieza con un reparto cualquiera y se va sustituyendo cada nodo por la media de sus vecinos hasta que deja de cambiar. <b>Jacobi</b> calcula todos los nodos con los valores de la vuelta anterior; <b>Gauss-Seidel</b> usa ya los valores nuevos y tarda la mitad; <b>SOR</b> se pasa un poco del valor medio (sobrerrelajación, con $1 < ω < 2$) y para una malla de $N$ celdas necesita del orden de $N$ vueltas en lugar de $N^2$. Compara los tres con el selector de método.</p>
+  <h2>Campo eléctrico</h2>
+  <p class="m">Una vez conocido el potencial, el campo es su gradiente cambiado de signo, $E = −∇V$: es perpendicular a las equipotenciales y apunta hacia donde el potencial baja. Sobre un conductor (el electrodo) el campo sale perpendicular a su superficie.</p>
+  <h2>Solución exacta en serie</h2>
+  <p class="m">Para una caja de lados $a$ y $b$ con un solo borde (el de arriba) a $V_0$ y los demás a 0, la solución exacta es una serie de Fourier, con $n$ impar:</p>
+  <p class="f m">$V(x, y) = ∑ {4V_0}/{nπ} · sen({nπx}/a) · {senh({nπy}/a)}/{senh({nπb}/a)}$</p>
+  <p class="m">Los otros bordes aportan lo mismo girado, y por superposición vale para cualquier combinación. La herramienta la usa para medir el error de la malla cuando no hay electrodo.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Ecuación de Laplace numérica <span id="ver"></span> (beta)</footer>
+</body>
