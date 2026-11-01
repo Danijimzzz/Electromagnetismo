@@ -1,0 +1,59 @@
+<title>La tensión de paso: por qué no hay que acercarse a un cable caído</title>
+<meta name="description" content="Por qué es peligroso acercarse a un cable caído o a un árbol alcanzado por un rayo: potencial en el suelo, tensión de paso y corriente por el cuerpo, con una animación paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<!-- =====================================================================
+     La tensión de paso («Física en la vida real»). Maqueta común de los
+     fenómenos (ver fuego-san-telmo/pagina.html): animación, texto del paso, historia
+     y recuadro de la herramienta. Los pasos y el dibujo están en escena.js.
+     ===================================================================== -->
+<style>
+/* colores del dibujo, con su valor en modo oscuro */
+:root {
+  --cielo: #e3edf2; --cielo-alto: #b6d3e6; --colina: #a9c19a; --hierba: #6e9a52; --tierra: #9a7653; --tierra-honda: #5c4630; --poste: #7a5a3c; --cable: #2b2f34;
+  --corriente: #c26a00; --resalta: #c2412a; --alta: #7b3fc4; --persona: #2f5d8a; --piel: #e2b38f; --chispa-centro: #fff3c4; --rotulo: #1a2128 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --cielo: #1e2a36; --cielo-alto: #0f1821; --colina: #2c3a2e; --hierba: #3f5f35; --tierra: #4a3a2a; --tierra-honda: #241b12; --poste: #a07c58; --cable: #c9ced3;
+  --corriente: #f0a040; --resalta: #ef7a62; --alta: #b48af0; --persona: #6f9ccc; --piel: #c9987a; --chispa-centro: #fff0b0; --rotulo: #e3e8ea } }
+:root[data-theme="dark"] {
+  --cielo: #1e2a36; --cielo-alto: #0f1821; --colina: #2c3a2e; --hierba: #3f5f35; --tierra: #4a3a2a; --tierra-honda: #241b12; --poste: #a07c58; --cable: #c9ced3;
+  --corriente: #f0a040; --resalta: #ef7a62; --alta: #b48af0; --persona: #6f9ccc; --piel: #c9987a; --chispa-centro: #fff0b0; --rotulo: #e3e8ea }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física en la vida real</a> / La tensión de paso</span></header>
+<div class="wrap fen">
+<div class="fen-etiquetas"><span>⚡ Electromagnetismo</span><span>Dificultad media</span><span>6 pasos · 1 min</span></div>
+<h1>La tensión de paso</h1>
+<p class="lead">Un cable de alta tensión cae al suelo y nadie lo toca. ¿Por qué dicen que no hay que acercarse a él ni siquiera andando, y qué hacer si te pilla cerca?</p>
+<div class="fen-escena"><canvas id="escena" role="img" aria-label="Animación de un cable de alta tensión caído sobre el suelo, con la corriente repartiéndose en semicírculos y una persona que da un paso cerca del cable"></canvas></div>
+<div class="fen-puntos" id="puntos" role="group" aria-label="Pasos"></div>
+<div class="fen-controles">
+  <button class="btn" id="ant" type="button">‹ Anterior</button>
+  <button class="btn" id="play" type="button" aria-pressed="true">❚❚ Parar</button>
+  <button class="btn" id="sig" type="button">Siguiente ›</button>
+</div>
+<div class="fen-texto" aria-live="polite"><h2 id="paso-t"></h2><div id="paso-x"></div></div>
+<section class="fen-historia" aria-label="Un poco de historia">
+  <h2>Un poco de historia</h2>
+  <ol>
+    <li><b>1785</b>Charles-Augustin de Coulomb publica que la fuerza entre dos cargas baja con el cuadrado de la distancia. De esa ley sale un potencial que baja como 1/r, el mismo que hay en el suelo alrededor de un cable caído.</li>
+    <li><b>1827</b>Georg Simon Ohm publica que la corriente por un conductor es proporcional a la tensión entre sus extremos: V = I·R. Con ella se calcula la corriente que pasa por el cuerpo.</li>
+    <li><b>Siglo XX</b>Charles Dalziel, en la Universidad de California en Berkeley, mide en voluntarios qué corrientes se aguantan y durante cuánto tiempo. De sus datos salen las tensiones de paso y de contacto que admiten las normas de puesta a tierra de subestaciones.</li>
+    <li><b>2014</b>En España, el Reglamento de instalaciones eléctricas de alta tensión (RD 337/2014) exige en su ITC-RAT 13 que las puestas a tierra mantengan las tensiones de paso y de contacto por debajo de unos límites seguros.</li>
+  </ol>
+</section>
+<section class="fen-rel" aria-label="Herramienta relacionada">
+  <div class="fen-ico" aria-hidden="true">E</div>
+  <h2>Con qué herramienta se relaciona</h2>
+  <h3>Electrostática <small>· Electromagnetismo</small></h3>
+  <p>El suelo homogéneo que conduce la corriente se comporta, matemáticamente, como el vacío con una carga: la corriente I que entra por el punto de contacto ocupa el lugar de la carga y la resistividad ρ, el de 1/ε. El potencial es el de una carga puntual, y la tensión de paso es la diferencia de potencial entre los dos pies.</p>
+  <p class="f m">V(r) = {ρ I}/{2π r} ,  ΔV = V(r) − V(r + d)</p>
+  <p class="f m">I_{cuerpo} = {ΔV}/{R_{cuerpo} + 6ρ}</p>
+  <p>Se abre con una carga puntual de 1,77 µC (que cumple k·q = ρI/2π = 15,9 kV·m) en el SI. Sale una diferencia de potencial de 8,0 kV entre los pies a 1 m y 2 m del contacto, de 145 V entre 10 m y 11 m, y un campo de 15,9 kV/m a 1 m.</p>
+  <div class="fen-fichas"><div><small>Paso a 1 m</small><b>8,0 kV</b></div><div><small>Paso a 10 m</small><b>145 V</b></div><div><small>Por el cuerpo a 10 m</small><b>90 mA</b></div></div>
+  <a class="fen-abrir" id="abrir" href="../../electromagnetismo/electrostatica/">Abrir en Electrostática con estos datos →</a>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Física en la vida real <span id="ver"></span> (beta)</footer>
+</body>
