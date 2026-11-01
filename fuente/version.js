@@ -87,6 +87,8 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: entalpía de una reacción a partir de las entalpías de formación (con una tabla de unas 60 sustancias y calor para una masa dada), ley de Hess que calcula por cuánto hay que multiplicar o dar la vuelta a cada reacción, y energía libre de Gibbs con la temperatura de equilibrio, con el diagrama de entalpías y el desarrollo paso a paso.'] },
     probabilidad: [
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: combinatoria (variaciones, permutaciones y combinaciones, con o sin repetición), probabilidad de la unión, la intersección y la condicionada de dos sucesos, y probabilidad total con el teorema de Bayes y su diagrama de árbol.'] },
+    unidades: [
+      { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: convierte un valor entre las unidades de 24 magnitudes (longitud, masa, tiempo, velocidad, presión, energía, potencia, temperatura, carga, campo eléctrico y magnético…), con el desarrollo paso a paso por la unidad base del SI y el factor directo, el valor en todas las unidades a la vez y un botón para intercambiarlas. Incluye la tabla de constantes físicas CODATA 2018 con buscador.'] },
     ],
     beneficio: [
       { v: '0.1', fecha: '2026-10-31', cambios: ['Primera versión: cantidad y precio que maximizan el beneficio en competencia perfecta (precio de cierre y de beneficio nulo) y en monopolio (índice de Lerner, comparación con la competencia y pérdida de eficiencia), con la gráfica de ingreso marginal, coste marginal y coste medio.'] },
