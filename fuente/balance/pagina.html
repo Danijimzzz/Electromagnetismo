@@ -1,0 +1,53 @@
+<title>Calculadora de balance y cuenta de resultados: EBITDA y beneficio</title>
+<meta name="description" content="Calculadora de balance y cuenta de resultados en español: escribe las partidas y obtén la cuenta de pérdidas y ganancias (EBITDA, resultado de explotación, BAI y beneficio neto) y el balance de situación que cuadra, con el fondo de maniobra, paso a paso.">
+<style>
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a; --serie-3: #6b3fa0; --bien: #2f7d32 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8; --bien: #7cc47f } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8; --bien: #7cc47f }
+.tabla-eco { border-collapse: collapse; font: 13.5px var(--f-ui); width: 100%; font-variant-numeric: tabular-nums }
+.tabla-eco th, .tabla-eco td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap }
+.tabla-eco th { font-weight: 600; color: var(--muted) } .tabla-eco th:first-child, .tabla-eco td:first-child { text-align: left }
+.tabla-eco tfoot td { font-weight: 600; background: var(--accent-soft) }
+.tabla-eco td small { display: block; color: var(--muted); font-size: 12px }
+.tabla-eco tr.sub td { font-weight: 600; border-top: 1px solid var(--muted) } .tabla-eco tr.tot td { font-weight: 700; background: var(--accent-soft) }
+.dos-cuentas { display: grid; gap: 18px }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Economía</a> / Balance y cuenta de resultados</span></header>
+<div class="wrap">
+<h1>Balance y cuenta de resultados</h1>
+<p class="lead">Escribe las partidas de una empresa y obtén su cuenta de pérdidas y ganancias, del EBITDA al resultado del ejercicio, y su balance de situación, que tiene que cuadrar, con el fondo de maniobra y el desarrollo paso a paso.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>El balance dibujado</h2>
+      <canvas id="grafica" aria-label="El balance en dos columnas: el activo y su financiación con patrimonio neto y pasivo"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card"><h2>Las dos cuentas</h2><div class="tabla-scroll" id="tabla"></div></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+<h2>La cuenta de pérdidas y ganancias</h2>
+<p>Cuenta lo que la empresa ha ganado o perdido en un año. Se va restando a las ventas: aprovisionamientos, personal y otros gastos de explotación dan el <b>EBITDA</b> (el resultado antes de amortizar, intereses e impuestos). Quitando la amortización queda el <b>resultado de explotación</b>, lo que da el negocio en sí.</p>
+<p class="m">Se suma el resultado financiero, $"ingresos financieros" − "gastos financieros"$, y sale el <b>BAI</b>, resultado antes de impuestos. Si es positivo se paga el impuesto de sociedades, $BAI · t$; el resto es el <b>resultado del ejercicio</b>. Con pérdidas no se paga impuesto.</p>
+<h2>El balance de situación</h2>
+<p>Es una foto de la empresa a una fecha. El <b>activo</b> es lo que tiene: no corriente (inmovilizado y lo que se queda más de un año) y corriente (existencias, deudores y tesorería, que se convierte en dinero en menos de un año). El <b>patrimonio neto</b> y el <b>pasivo</b> dicen de dónde salió el dinero: de los socios (capital, reservas y resultado) o de deudas, a largo o a corto plazo.</p>
+<p class="m">Siempre se cumple la ecuación contable, $"Activo" = "Patrimonio neto" + "Pasivo"$. El resultado del ejercicio es el puente entre las dos cuentas: el beneficio engorda el patrimonio neto, y las pérdidas lo reducen.</p>
+<h2>Fondo de maniobra</h2>
+<p class="m">$FM = AC − PC$ es la parte del activo corriente que no hay que devolver a corto plazo. Positivo, la empresa cubre con lo que va a cobrar lo que va a pagar; negativo, puede tener problemas de tesorería. Para valorarlo con ratios, usa la herramienta de <a href="../ratios/">Ratios financieros</a>.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Balance y cuenta de resultados <span id="ver"></span> (beta)</footer>
+</body>
