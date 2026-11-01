@@ -1,0 +1,45 @@
+<title>Calculadora de guías de onda: modos TE y TM · SimulaCiencia</title>
+<meta name="description" content="Calculadora de guías de onda rectangulares: modos TE y TM, frecuencia y longitud de onda de corte, constante de fase, velocidades de fase y de grupo, impedancia y banda monomodo, con el campo del modo.">
+<style>
+#resumen .est { grid-column: 1 / -1 }
+/* la sección es ancha y baja: no necesita tanta altura */
+:root { --alto-grafica: clamp(220px, 28vw, 300px) }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Electromagnetismo</a> / Guías de onda</span></header>
+<div class="wrap">
+<h1>Guías de onda</h1>
+<p class="lead">Modos TE y TM de una guía rectangular: frecuencia de corte, longitud de onda en la guía, velocidades, impedancia y el campo del modo.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Gráfica</h2>
+      <canvas id="grafica" aria-label="Gráfica"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Qué es una guía de onda</h2>
+  <p class="m">Un tubo metálico hueco (o relleno de dieléctrico) de sección rectangular $a × b$, con $a ≥ b$, que conduce ondas electromagnéticas de microondas con pocas pérdidas. Las paredes se tratan como conductor perfecto: el campo E tangencial se anula en ellas, y por eso solo caben ciertos <em>modos</em>, con $m$ y $n$ semiciclos a lo largo de $a$ y de $b$.</p>
+  <h2>Modos TE y TM</h2>
+  <p class="m">En los modos TE el campo eléctrico es transversal a la propagación ($E_z = 0$) y en los TM lo es el magnético ($H_z = 0$). En TE valen $m, n ≥ 0$ (no los dos a la vez nulos) y en TM $m, n ≥ 1$. El modo con menor frecuencia de corte, el dominante, es el $"TE"_{10}$.</p>
+  <h2>Frecuencia de corte</h2>
+  <p class="f m">$f_c = v/2 √({(m/a)^2 + (n/b)^2})$, &ensp; $λ_c = v/f_c$, &ensp; $v = c/√(ε_r)$</p>
+  <p class="m">Por debajo de $f_c$ el modo no se propaga: su campo decae con $α = k_c √(1 − (f/f_c)^2)$ y no transporta potencia. Por encima, se propaga con</p>
+  <p class="f m">$β = k √(1 − (f_c/f)^2)$, &ensp; $λ_g = {2π}/β > λ$, &ensp; $v_f = v/√(1 − (f_c/f)^2) > v$, &ensp; $v_g = v √(1 − (f_c/f)^2) < v$</p>
+  <p class="m">La velocidad de fase supera a la del medio, pero la energía viaja con la de grupo, y $v_f v_g = v^2$. Las impedancias de onda son $Z_{"TE"} = η/√(1 − (f_c/f)^2)$ y $Z_{"TM"} = η √(1 − (f_c/f)^2)$, con $η = η_0/√(ε_r)$.</p>
+  <h2>Banda monomodo</h2>
+  <p class="m">Entre la frecuencia de corte del modo dominante y la del siguiente solo se propaga un modo, que es como se trabaja en la práctica. En una guía WR-90 (22,86 × 10,16 mm) el $"TE"_{10}$ corta a 6,557 GHz y el siguiente modo a 13,114 GHz ($"TE"_{20}$): la banda X (8 a 12 GHz) cae dentro de la banda monomodo.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Guías de onda <span id="ver"></span> (beta)</footer>
+</body>
