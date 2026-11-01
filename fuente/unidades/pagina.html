@@ -1,0 +1,54 @@
+<title>Conversor de unidades y constantes · SimulaCiencia</title>
+<meta name="description" content="Convierte longitud, masa, energía, presión, temperatura o campo magnético entre unidades del SI y técnicas, paso a paso, y consulta las constantes físicas CODATA.">
+<style>
+/* Solo lo propio de esta herramienta: la tabla de constantes. */
+.ctes-barra { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; margin-bottom: 10px }
+.ctes-barra .in { max-width: 320px }
+.ctes-tabla { overflow-x: auto }
+.ctes table { border-collapse: collapse; width: 100%; font: 13.5px var(--f-ui) }
+.ctes th, .ctes td { border-bottom: 1px solid var(--line); padding: 5px 8px; text-align: left; vertical-align: baseline }
+.ctes th { color: var(--muted); font-weight: 600; font-size: 12px }
+.ctes td.s { font: 600 15px var(--f-math); white-space: nowrap }
+.ctes td.v { font: 600 14.5px var(--f-math); white-space: nowrap }
+.ctes td.u, .ctes td.x { color: var(--muted); font-size: 12.5px }
+.ctes td.n { min-width: 180px }
+.cambia { display: flex; gap: 8px; align-items: center }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física general</a> / Conversor de unidades y constantes</span></header>
+<div class="wrap">
+<h1>Conversor de unidades y constantes</h1>
+<p class="lead">Convierte longitud, masa, energía, presión, temperatura o campo magnético entre unidades del SI y técnicas, paso a paso, y consulta las constantes físicas CODATA.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultado</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>En todas las unidades</h2><div class="resumen" id="todas"></div></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<div class="card ctes" id="constantes">
+  <h2>Constantes físicas (CODATA 2018)</h2>
+  <div class="ctes-barra"><input id="busca" class="in" type="search" placeholder="Buscar: luz, planck, electrón, ε…" aria-label="Buscar una constante" autocomplete="off"><span class="nota" id="ctes-n" style="margin:0"></span></div>
+  <div class="ctes-tabla"><table><thead><tr><th>Constante</th><th>Símbolo</th><th>Valor</th><th>Unidad</th><th>Incertidumbre</th></tr></thead><tbody id="ctes"></tbody></table></div>
+  <p class="nota">Valores recomendados por el CODATA 2018. «Exacta» significa que la constante está fijada por la definición del SI desde 2019 (o por un convenio) y no tiene incertidumbre; entre paréntesis, la incertidumbre típica en las últimas cifras (6,674 30(15) = 6,674 30 ± 0,000 15).</p>
+</div>
+<section class="teoria">
+<h2>El Sistema Internacional</h2>
+<p class="m">El SI tiene siete unidades base: metro, kilogramo, segundo, amperio, kelvin, mol y candela. Las demás magnitudes se expresan con ellas: el newton es $"kg·m/s²"$, el julio es $"N·m"$ y el tesla es $"kg/(A·s²)"$. Convertir entre unidades de una misma magnitud es multiplicar por un factor igual a 1.</p>
+<h2>Factores de conversión</h2>
+<p class="m">Si $1 "mi" = 1609,344 "m"$, entonces $(1609,344 "m")/(1 "mi") = 1$ y se puede multiplicar por ese cociente (o por su inverso) sin cambiar la cantidad, solo la unidad. Esta herramienta pasa siempre por la unidad base del SI: primero a metros, kilogramos, julios… y de ahí a la unidad pedida, y al final te da el factor directo.</p>
+<h2>Temperaturas</h2>
+<p class="m">Las escalas Celsius y Fahrenheit tienen el cero desplazado, así que no basta con multiplicar: $T_K = T_C + 273,15$ y $T_F = T_C · 9/5 + 32$. Las diferencias de temperatura sí se convierten con un factor ($1 "K" = 1 "°C"$ y $1 "K" = 1,8 "°F"$). No existe nada por debajo de $0 "K"$.</p>
+<h2>Prefijos del SI</h2>
+<p class="m">Cada prefijo es una potencia de 10: $"p" = 10^{−12}$, $"n" = 10^{−9}$, $"µ" = 10^{−6}$, $"m" = 10^{−3}$, $"k" = 10^3$, $"M" = 10^6$, $"G" = 10^9$, $"T" = 10^{12}$. Un error típico es confundir $"mm"$ con $"Mm"$ o $"mV"$ con $"MV"$.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Conversor de unidades y constantes <span id="ver"></span> (beta)</footer>
+</body>
