@@ -1,0 +1,52 @@
+<title>Calculadora de reflexión y transmisión de Fresnel</title>
+<meta name="description" content="Calculadora de las ecuaciones de Fresnel en español: ángulo de refracción, coeficientes de reflexión y transmisión TE y TM, reflectancia, ángulo de Brewster, ángulo crítico y reflexión total, con el desarrollo paso a paso y la gráfica según el ángulo.">
+<style>
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a; --serie-3: #2f8a4f }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #6fc88e } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #6fc88e }
+#rayos { height: clamp(240px, 30vw, 300px) }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Electromagnetismo</a> / Reflexión y transmisión (Fresnel)</span></header>
+<div class="wrap">
+<h1>Reflexión y transmisión (Fresnel)</h1>
+<p class="lead">Una onda plana llega con un ángulo a la frontera entre dos medios: calcula el ángulo de refracción, los coeficientes de reflexión y transmisión de cada polarización, el ángulo de Brewster y la reflexión total.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="res" id="res"></div>
+      <canvas id="rayos" aria-label="Rayos incidente, reflejado y transmitido en la frontera"></canvas></div>
+    <div class="card"><h2>Reflectancia según el ángulo</h2>
+      <canvas id="grafica" aria-label="Reflectancia de las polarizaciones perpendicular y paralela según el ángulo de incidencia"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Qué ocurre en la frontera</h2>
+  <p class="m">Una onda que llega a la superficie de separación de dos medios se divide en una onda reflejada y otra transmitida. Los ángulos cumplen la ley de la reflexión, $θ_r = θ_i$, y la ley de Snell, $n_1 sen θ_i = n_2 sen θ_t$, con $n = √(ε_r μ_r)$. Lo que reparte la amplitud entre las dos ondas lo deciden las condiciones de contorno: las componentes tangenciales de E y de H son continuas.</p>
+  <h2>Polarización ⊥ (TE) y ∥ (TM)</h2>
+  <p class="m">El plano de incidencia es el que contiene al rayo y a la normal. Si E es perpendicular a él la onda es TE (⊥); si E está en él, es TM (∥). Cualquier otra polarización se descompone en estas dos, que se reflejan de forma distinta. Con la impedancia de cada medio $η = √(μ/ε)$:</p>
+  <p class="f m">$r_⊥ = {η_2 cos θ_i − η_1 cos θ_t}/{η_2 cos θ_i + η_1 cos θ_t}$, &ensp; $t_⊥ = {2 η_2 cos θ_i}/{η_2 cos θ_i + η_1 cos θ_t}$</p>
+  <p class="f m">$r_∥ = {η_2 cos θ_t − η_1 cos θ_i}/{η_2 cos θ_t + η_1 cos θ_i}$, &ensp; $t_∥ = {2 η_2 cos θ_i}/{η_2 cos θ_t + η_1 cos θ_i}$</p>
+  <p class="m">Los signos están tomados con el convenio de la figura de los campos E: con incidencia normal las dos polarizaciones dan el mismo $r = (n_1 − n_2)/(n_1 + n_2)$ en medios no magnéticos. Otros libros miden el campo ∥ al revés y su $r_∥$ cambia de signo.</p>
+  <h2>Reflectancia y transmitancia</h2>
+  <p class="m">La energía que se refleja es $R = r^2$ y la que se transmite, $T = {η_1 cos θ_t}/{η_2 cos θ_i} t^2$ (el haz cambia de anchura al refractarse). Siempre $R + T = 1$. Con incidencia normal, $R = ({n_1 − n_2}/{n_1 + n_2})^2$: un 4 % para el aire y el vidrio.</p>
+  <h2>Ángulo de Brewster</h2>
+  <p class="m">Existe un ángulo en el que $r_∥ = 0$: toda la luz ∥ se transmite y la reflejada sale polarizada ⊥. En medios no magnéticos es $tg θ_B = n_2/n_1$, y entonces los rayos reflejado y transmitido son perpendiculares. Por eso las gafas polarizadas quitan los reflejos del agua o de la carretera.</p>
+  <h2>Reflexión total</h2>
+  <p class="m">Al pasar a un medio de menor índice ($n_1 > n_2$), a partir del ángulo crítico $sen θ_c = n_2/n_1$ ya no hay rayo transmitido: $R = 1$. En el segundo medio queda una onda evanescente que decae en una distancia del orden de la longitud de onda, y la onda reflejada sufre un desfase distinto en cada polarización. Es el fundamento de la fibra óptica y de los prismas de reflexión total.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Reflexión y transmisión (Fresnel) <span id="ver"></span> (beta)</footer>
+</body>
