@@ -89,6 +89,8 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: combinatoria (variaciones, permutaciones y combinaciones, con o sin repetición), probabilidad de la unión, la intersección y la condicionada de dos sucesos, y probabilidad total con el teorema de Bayes y su diagrama de árbol.'] },
     unidades: [
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: convierte un valor entre las unidades de 24 magnitudes (longitud, masa, tiempo, velocidad, presión, energía, potencia, temperatura, carga, campo eléctrico y magnético…), con el desarrollo paso a paso por la unidad base del SI y el factor directo, el valor en todas las unidades a la vez y un botón para intercambiarlas. Incluye la tabla de constantes físicas CODATA 2018 con buscador.'] },
+    equilibrio: [
+      { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: Kc y Kp a partir de un equilibrio medido, concentraciones de equilibrio con la tabla ICE (para cualquier grado, no solo segundo), cociente de reacción Q frente a K y Le Chatelier con números (añadir o quitar una especie, cambiar el volumen o la temperatura con Van\'t Hoff, gas inerte y catalizador), con la gráfica de las concentraciones y modo práctica.'] },
     ],
     beneficio: [
       { v: '0.1', fecha: '2026-10-31', cambios: ['Primera versión: cantidad y precio que maximizan el beneficio en competencia perfecta (precio de cierre y de beneficio nulo) y en monopolio (índice de Lerner, comparación con la competencia y pérdida de eficiencia), con la gráfica de ingreso marginal, coste marginal y coste medio.'] },

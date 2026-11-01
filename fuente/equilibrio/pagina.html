@@ -1,0 +1,70 @@
+<title>Calculadora de equilibrio químico: Kc, Kp y Le Chatelier · SimulaCiencia</title>
+<meta name="description" content="Calculadora de equilibrio químico en español: Kc y Kp, concentraciones de equilibrio con la tabla ICE, cociente de reacción Q y principio de Le Chatelier con números, paso a paso.">
+<style>
+:root {
+  --serie-1: #2a5db5; --serie-2: #1d7a3e; --serie-3: #c2412a; --serie-4: #b0700a }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #5fcf8a; --serie-3: #ef7a62; --serie-4: #e6a640 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #5fcf8a; --serie-3: #ef7a62; --serie-4: #e6a640 }
+#grafica { height: clamp(240px, 32vw, 330px) }
+.reac { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 4px 0 12px }
+.reac .esp { display: inline-flex; gap: 3px }
+.reac .coef { width: 38px; text-align: center; padding-left: 4px; padding-right: 4px }
+.reac .nom { width: 74px }
+.reac .salto { flex-basis: 100%; height: 0 }
+.reac .mas { color: var(--muted); font-size: 18px }
+.reac .fl { font-size: 24px; color: var(--accent); padding: 0 4px }
+#claves { font-size: 13px; margin-top: 8px }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Química</a> / Equilibrio químico y Le Chatelier</span></header>
+<div class="wrap">
+<h1>Equilibrio químico y Le Chatelier</h1>
+<p class="lead">Escribe la reacción y calcula Kc y Kp, las concentraciones de equilibrio con la tabla ICE, el cociente de reacción Q o hacia dónde se desplaza el equilibrio si añades o quitas algo, cambias el volumen o la temperatura.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <h2>Reacción (coeficiente y fórmula)</h2>
+    <div class="reac" id="reac"></div>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Gráfica</h2>
+      <canvas id="grafica" aria-label="Concentraciones frente al avance de la reacción"></canvas>
+      <div id="claves"></div>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>La constante de equilibrio</h2>
+  <p class="m">En una reacción reversible $aA + bB ⇌ cC + dD$ llega un momento en que las velocidades directa e inversa se igualan y las concentraciones dejan de cambiar. Entonces se cumple la ley de acción de masas:</p>
+  <p class="f m">$K_c = {[C]^c [D]^d}/{[A]^a [B]^b}$</p>
+  <p class="m">$K_c$ solo depende de la temperatura. Los sólidos y los líquidos puros no aparecen. Si $K_c ≫ 1$ en el equilibrio predominan los productos y si $K_c ≪ 1$, los reactivos.</p>
+  <h2>Kp y Kc</h2>
+  <p class="m">Para gases se puede usar la presión parcial de cada uno, $p = cRT$, y entonces:</p>
+  <p class="f m">$K_p = K_c (R T)^{Δn}$</p>
+  <p class="m">donde $Δn$ son los moles de gas de los productos menos los de los reactivos, $R = 0,082 "atm·L/(mol·K)"$ y $T$ va en kelvin. Si $Δn = 0$, $K_p = K_c$.</p>
+  <h2>Tabla ICE</h2>
+  <p class="m">Se escribe una fila con las concentraciones iniciales (I), otra con el cambio (C), que es $−a x$ en los reactivos y $+c x$ en los productos, y otra con las del equilibrio (E). Se sustituyen en $K_c$ y se despeja $x$, el avance de la reacción. Aquí se resuelve numéricamente, así que sirve aunque la ecuación no sea de segundo grado; entre las soluciones solo vale la que no deja ninguna concentración negativa.</p>
+  <h2>Cociente de reacción</h2>
+  <p class="m">$Q$ se escribe igual que $K_c$ pero con las concentraciones de un instante cualquiera. Si $Q &lt; K_c$ la reacción avanza hacia los productos, si $Q &gt; K_c$ hacia los reactivos y si $Q = K_c$ está en equilibrio.</p>
+  <h2>Principio de Le Chatelier</h2>
+  <p>Si se perturba un sistema en equilibrio, este evoluciona en el sentido que se opone a la perturbación:</p>
+  <ul>
+    <li class="m"><b>Concentración:</b> añadir una especie desplaza el equilibrio hacia el lado contrario; quitarla, hacia su lado. $K$ no cambia.</li>
+    <li class="m"><b>Volumen o presión:</b> comprimir favorece el lado con menos moles de gas y expandir, el de más. Si $Δn = 0$ no hay desplazamiento.</li>
+    <li class="m"><b>Temperatura:</b> es lo único que cambia $K$, según la ecuación de Van't Hoff $ln {K_2}/{K_1} = −{ΔH}/{R} (1/T_2 − 1/T_1)$. Calentar favorece la reacción endotérmica y enfriar, la exotérmica.</li>
+    <li><b>Gas inerte a volumen constante:</b> no cambia las concentraciones, así que no desplaza el equilibrio.</li>
+    <li class="m"><b>Catalizador:</b> acelera la reacción directa y la inversa por igual: se llega antes al equilibrio, pero no cambia ni $K$ ni su posición.</li>
+  </ul>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Equilibrio químico y Le Chatelier <span id="ver"></span> (beta)</footer>
+</body>
