@@ -313,6 +313,8 @@
     const err = $('#error'); guarda();
     $('#simplificar').textContent = sc.simp ? 'Ocultar la simplificación' : 'Simplificar ecuaciones';
     $('#simplificar').setAttribute('aria-pressed', !!sc.simp);
+    $('#cambia-forma').textContent = sc.forma === 'pos' ? 'Ver el circuito en suma de productos (AND-OR)' : 'Ver el circuito en producto de sumas (OR-AND)';
+    const sf = $('#f-forma'); if (sf) sf.value = sc.forma === 'pos' ? 'pos' : 'sop';
     try { sol = P.resolver(sc); } catch (e) {
       sol = null; err.textContent = e.message; err.hidden = false;
       for (const q of ['#resumen', '#pasos', '#tabla-res', '#mapas']) $(q).innerHTML = '';
@@ -329,6 +331,7 @@
     $('#leyenda').innerHTML = `Circuito de la forma ${sol.simp ? 'simplificada' : 'canónica'} en ${sol.forma === 'sop' ? 'suma de productos' : 'producto de sumas'}: <b>${gs}</b> ${gs === 1 ? 'puerta' : 'puertas'}.`;
     dibuja();
   }
+  $('#cambia-forma').addEventListener('click', () => { sc.forma = sc.forma === 'pos' ? 'sop' : 'pos'; calcula(); });
   $('#simplificar').addEventListener('click', () => { sc.simp = !sc.simp; calcula(); });
   $('#copiar').addEventListener('click', () => {
     if (!sol) return;

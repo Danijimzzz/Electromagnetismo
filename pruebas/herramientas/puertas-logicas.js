@@ -80,6 +80,10 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     if ((await page.locator('.tv tr.g4').count()) !== 1) mal('PuertasLogicas: la tabla de 8 filas debería tener una separación a mitad');
     if (await page.locator('#resumen .simp').count()) mal('PuertasLogicas: las ecuaciones salen simplificadas sin pulsar el botón');
     await page.click('#simplificar');
+    const antesCirc = await page.locator('#leyenda').innerText();
+    await page.click('#cambia-forma');
+    if ((await page.locator('#leyenda').innerText()) === antesCirc || !/producto de sumas/.test(await page.locator('#leyenda').innerText())) mal('PuertasLogicas: el botón no cambia el circuito a producto de sumas');
+    await page.click('#cambia-forma');
     if ((await page.locator('#resumen .simp').count()) !== 2) mal('PuertasLogicas: «Simplificar» no añade las ecuaciones simplificadas');
     if (!/A·B \+ A·C \+ B·C/.test(await page.locator('#resumen').innerText())) mal('PuertasLogicas: falta la ecuación simplificada de la mayoría');
     await page.click('#simplificar');
