@@ -59,6 +59,8 @@ const Practica = (() => {
     fluidos: { datos: null, items: '#resumen > div', genera: () => window.FluidosApp?.azar(), enunciado: () => window.FluidosApp?.enunciado() },
     // dinamica: un bloque en un plano, dos bloques, Atwood, una curva, un péndulo cónico o un muelle
     dinamica: { datos: null, items: '#res > div', genera: () => window.DinamicaApp?.azar(), enunciado: () => window.DinamicaApp?.enunciado() },
+    // choques: elástico, inelástico o pegados, en 1D o 2D
+    choques: { datos: null, items: '#resumen > div', genera: () => window.ChoquesApp?.azar(), enunciado: () => window.ChoquesApp?.enunciado() },
     // interferencia: Young, una rendija, una red o una lámina delgada
     interferencia: { datos: null, items: '#res > div', genera: () => window.InterferenciaApp?.azar(), enunciado: () => window.InterferenciaApp?.enunciado() },
     // laplace: una transformada, una inversa por fracciones simples o una EDO; se preguntan los valores numéricos
