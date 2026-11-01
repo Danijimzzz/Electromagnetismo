@@ -37,8 +37,8 @@ const Catalogo = {
         { clave: 'lineas-transmision', nombre: 'Líneas de transmisión y carta de Smith', icono: 'Z', disponible: false, desc: 'Ondas estacionarias, ROE y adaptación de impedancias.', buscar: 'línea de transmisión carta de smith roe impedancia' },
         { clave: 'guias-onda', nombre: 'Guías de onda', icono: 'TE', disponible: false, desc: 'Modos TE y TM en una guía rectangular y frecuencia de corte.', buscar: 'guía de onda modos te tm frecuencia de corte' },
         { clave: 'antena', nombre: 'Antena dipolo y radiación', icono: 'P', disponible: false, desc: 'Diagrama de radiación y potencia radiada.', buscar: 'antena dipolo radiación potencia radiada' },
-        { clave: 'maxwell', nombre: 'Ecuaciones de Maxwell', icono: '∇', disponible: false, desc: 'Forma integral y diferencial, con enlaces a cada simulador.', buscar: 'ecuaciones de maxwell forma integral diferencial' },
-      ],
+        { clave: 'maxwell', nombre: 'Ecuaciones de Maxwell', icono: '∇', disponible: true, desc: 'Las cuatro ecuaciones en forma integral y diferencial, con una calculadora para cada una (Gauss, Faraday, Ampère–Maxwell y la velocidad de la luz) y enlaces a los simuladores.', buscar: 'ecuaciones de maxwell forma integral diferencial ley de gauss campo eléctrico magnético faraday inducción ampère corriente de desplazamiento divergencia rotacional teorema de stokes velocidad de la luz ecuación de ondas monopolo magnético flujo circulación', scripts: ['mates.js', 'maxwell/calculo.js', 'compartir.js', 'maxwell/app.js'],
+          titulo: 'Ecuaciones de Maxwell', descripcion: 'Las cuatro ecuaciones de Maxwell en forma integral y diferencial con una calculadora paso a paso para cada una: ley de Gauss, flujo magnético, ley de Faraday, corriente de desplazamiento de Ampère–Maxwell y velocidad de la luz' },      ],
     },
     {
       clave: 'fisica', nombre: 'Física general', icono: 'F', color: '#2a5db5', colorOscuro: '#74a2f2',

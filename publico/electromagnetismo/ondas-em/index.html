@@ -260,8 +260,8 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 <a href="../../fenomenos/microondas/"><b>La rejilla del microondas →</b><span>Ondas de 12 cm que no pasan por agujeros de milímetros, y cómo calientan el agua.</span></a>
 </section>
 <section class="relacionadas" aria-label="Herramientas relacionadas"><h2>Herramientas relacionadas</h2>
+<a href="../maxwell/"><b>Ecuaciones de Maxwell →</b><span>Las cuatro ecuaciones en forma integral y diferencial, con una calculadora para cada una (Gauss, Faraday, Ampère–Maxwell y la velocidad de la luz) y enlaces a los simuladores.</span></a>
 <a href="../electrostatica/"><b>Electrostática →</b><span>Cargas, hilos, planos y esferas. Campo, potencial, energía y Gauss.</span></a>
-<a href="../magnetostatica/"><b>Magnetostática (Biot-Savart) →</b><span>B de hilos, espiras, arcos, solenoides y toroides.</span></a>
 <a href="../fuerza/"><b>Fuerza magnética →</b><span>Fuerza de Lorentz con vectores, radio y periodo de una carga, selector de velocidades, espectrómetro, ciclotrón y fuerzas sobre hilos, con animación.</span></a>
 <a href="../faraday/"><b>Inducción: Faraday y Lenz →</b><span>Fem inducida en una barra, un alternador, un flujo que cambia y una espira que cruza un campo, con el sentido de Lenz.</span></a>
 </section>
@@ -283,6 +283,14 @@ const Pagina = { carpeta: 'ondas-em', guarda: 'ondasem-v1' };
 const Version = (() => {
   const registros = {
     web: [
+      { v: '1.6', fecha: '2026-11-01', titulo: 'Ecuaciones de Maxwell', subtitulo: 'Las cuatro ecuaciones del electromagnetismo, con una calculadora para cada una y enlaces a los simuladores.', secciones: [
+        { icono: '∇', titulo: 'Nueva herramienta en Electromagnetismo', puntos: [
+          '#electromagnetismo/maxwell',
+          '**Forma integral y diferencial:** Gauss para E y para B, Faraday y Ampère–Maxwell, con lo que dice cada una y el simulador donde verla en acción.',
+          '**Una calculadora por ecuación:** flujo y campo de una esfera cargada, flujo de B por un cubo, fem de una bobina, corriente de desplazamiento y campo en un condensador, y la velocidad de la luz con la onda plana.',
+          '**Paso a paso, con gráfica,** modo práctica y para copiar o imprimir la solución.',
+        ] },
+      ] },
       { v: '1.5', fecha: '2026-11-01', titulo: 'Simulador de circuitos', subtitulo: 'Un solo simulador para continua y alterna, y las puertas lógicas ahora también desde ecuaciones.', secciones: [
         { icono: '🔌', titulo: 'Nueva herramienta en Circuitos', puntos: [
           '#circuitos/simulador',
@@ -416,6 +424,9 @@ const Version = (() => {
           '**Diseño pensado también para el móvil.**',
         ] },
       ] },
+    ],
+    maxwell: [
+      { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: las cuatro ecuaciones de Maxwell en forma integral y diferencial con su significado y enlaces a los simuladores de Electromagnetismo, y una calculadora paso a paso para cada una: ley de Gauss (flujo y campo de una esfera cargada, dentro y fuera), Gauss para B (flujo por un cubo), Faraday (fem de una bobina), Ampère–Maxwell (corriente de desplazamiento y campo B en un condensador) y la velocidad de la luz con la onda plana, con gráfica, modo práctica y enlace para compartir.'] },
     ],
     simulador: [
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: dibuja el circuito arrastrando componentes (resistencias, condensadores, bobinas, fuentes de continua y de alterna, diodos, transistores, operacionales, transformadores, trifásica y puertas lógicas), únelos con cables y mira tensiones, corrientes, fasores, osciloscopio y diagrama de Bode.'] },
@@ -1984,6 +1995,8 @@ const Practica = (() => {
     intervalos: { datos: null, items: '#res > div', genera: () => window.IntervalosApp?.azar(), enunciado: () => window.IntervalosApp?.enunciado() },
     // ondasem: una onda plana, una intensidad o un medio con pérdidas
     'ondas-em': { datos: null, items: '#res > div', genera: () => window.OndasEMApp?.azar(), enunciado: () => window.OndasEMApp?.enunciado() },
+    // maxwell: una ecuación al azar (Gauss, Gauss para B, Faraday, Ampère–Maxwell u onda)
+    maxwell: { datos: null, items: '#res > div', genera: () => window.MaxwellApp?.azar(), enunciado: () => window.MaxwellApp?.enunciado() },
     // trabajo y energía: una rampa con muelle, un rizo, un péndulo, una montaña rusa o una fuerza variable
     'trabajo-y-energia': { datos: null, items: '#resumen > div', genera: () => window.EnergiaApp?.azar(), enunciado: () => window.EnergiaApp?.enunciado() },
     // tiro parabólico: un tiro, un blanco, una frenada, un encuentro o un giro (cuentan los resultados de la pestaña abierta)
