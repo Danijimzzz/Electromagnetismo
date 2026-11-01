@@ -313,6 +313,6 @@ const Formulas = (() => {
     { clave: 'redox-ionica', nombre: 'Redox iónica: permanganato y hierro(II)', ecuacion: 'MnO4^- + Fe^2+ + H^+ -> Mn^2+ + Fe^3+ + H2O', cantidades: [{ valor: 0.02, unidad: 'mol' }, { valor: 0.05, unidad: 'mol' }, { valor: 1, unidad: 'mol' }] },
   ];
 
-  return { leer, masaMolar, ajustar, estequiometria, empirica, num, masaDe, ejemplos, NA, VM, R, vm };
+  return { leer, separar, masaMolar, ajustar, estequiometria, empirica, num, masaDe, ejemplos, NA, VM, R, vm };
 })();
 if (typeof module !== 'undefined') module.exports = Formulas;

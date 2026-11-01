@@ -252,7 +252,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 </section>
 <section class="relacionadas" aria-label="Herramientas relacionadas"><h2>Herramientas relacionadas</h2>
 <a href="../equilibrio/"><b>Equilibrio químico y Le Chatelier →</b><span>Kc y Kp, concentraciones de equilibrio con la tabla ICE, cociente de reacción y desplazamiento con Le Chatelier.</span></a>
-<a href="../termoquimica/"><b>Termoquímica y ley de Hess →</b><span>Entalpía de reacción con las entalpías de formación, ley de Hess y energía libre de Gibbs.</span></a>
+<a href="../redox/"><b>Redox por ion-electrón →</b><span>Ajuste en medio ácido y básico, paso a paso: semirreacciones, electrones y comprobación.</span></a>
 <a href="../disoluciones/"><b>Disoluciones y concentraciones →</b><span>Molaridad, molalidad, fracción molar, % y ppm; preparar desde un reactivo comercial y diluir.</span></a>
 <a href="../ph/"><b>pH y valoraciones →</b><span>Ácidos y bases fuertes y débiles, tampones con Henderson-Hasselbalch y curvas de valoración con el indicador.</span></a>
 </section>
@@ -482,6 +482,9 @@ const Version = (() => {
           '**Diseño pensado también para el móvil.**',
         ] },
       ] },
+    ],
+    redox: [
+      { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: ajusta reacciones redox por el método del ion-electrón en medio ácido o básico, con los números de oxidación, las dos semirreacciones (elemento, oxígeno con H₂O, hidrógeno con H⁺ y carga con electrones), la igualación de electrones, la suma, el paso a medio básico con OH⁻ y la comprobación átomo a átomo, con una gráfica del cambio de número de oxidación y diez reacciones de ejemplo.'] },
     ],
     maxwell: [
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: las cuatro ecuaciones de Maxwell en forma integral y diferencial con su significado y enlaces a los simuladores de Electromagnetismo, y una calculadora paso a paso para cada una: ley de Gauss (flujo y campo de una esfera cargada, dentro y fuera), Gauss para B (flujo por un cubo), Faraday (fem de una bobina), Ampère–Maxwell (corriente de desplazamiento y campo B en un condensador) y la velocidad de la luz con la onda plana, con gráfica, modo práctica y enlace para compartir.'] },
@@ -1681,7 +1684,7 @@ const Formulas = (() => {
     { clave: 'redox-ionica', nombre: 'Redox iónica: permanganato y hierro(II)', ecuacion: 'MnO4^- + Fe^2+ + H^+ -> Mn^2+ + Fe^3+ + H2O', cantidades: [{ valor: 0.02, unidad: 'mol' }, { valor: 0.05, unidad: 'mol' }, { valor: 1, unidad: 'mol' }] },
   ];
 
-  return { leer, masaMolar, ajustar, estequiometria, empirica, num, masaDe, ejemplos, NA, VM, R, vm };
+  return { leer, separar, masaMolar, ajustar, estequiometria, empirica, num, masaDe, ejemplos, NA, VM, R, vm };
 })();
 
 /* =====================================================================
@@ -2252,6 +2255,8 @@ const Practica = (() => {
     ratios: { datos: null, genera: () => window.RatiosApp?.azar(), enunciado: () => window.RatiosApp?.enunciado() },
     // ajustador: una reacción de los ejemplos; se preguntan los coeficientes
     ajustador: { datos: null, items: '#coefs > div', genera: () => window.AjustadorApp?.azar(), enunciado: () => window.AjustadorApp?.enunciado() },
+    // redox: una reacción de los ejemplos; se preguntan los coeficientes
+    redox: { datos: null, items: '#coefs > div', genera: () => window.RedoxApp?.azar(), enunciado: () => window.RedoxApp?.enunciado() },
     'configuracion-electronica': {
       items: null, tapa: '#res', datos: null,
       genera: () => { window.ConfigApp?.pestana('el'); pon(document.querySelector('#entrada'), String(entero(1, 56))); },
