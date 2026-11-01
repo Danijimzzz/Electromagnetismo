@@ -32,9 +32,15 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     igual(C.resolver({ modo: 'tabla', n: '2', m: '1', tabla: ['1111'] }).salidas[0].minS.txt, '1', 'constante 1');
     igual(C.resolver({ modo: 'tabla', n: '2', m: '1', tabla: ['0000'] }).salidas[0].minP.txt, '0', 'constante 0');
     // el circuito normal de la mayoría: 3 AND, 1 OR
-    const d = may && C.resolver(C.ejemplos[0].sc).dibujo;
-    igual(d.nodos.map((n) => n.tipo), ['AND', 'AND', 'AND', 'OR'], 'circuito de la mayoría');
+    const d = C.resolver({ ...C.ejemplos[0].sc, simp: true }).dibujo;
+    igual(d.nodos.map((n) => n.tipo), ['AND', 'AND', 'AND', 'OR'], 'circuito simplificado de la mayoría');
+    const dc = C.resolver(C.ejemplos[0].sc).dibujo.nodos.map((n) => n.tipo).sort();
+    igual(dc, ['AND', 'AND', 'AND', 'AND', 'NOT', 'NOT', 'NOT', 'OR'], 'circuito canónico de la mayoría (sin simplificar)');
+    // las puertas pueden venir en cualquier orden: se ordenan por dependencias; un lazo y una entrada sin conectar dan error
+    igual(C.resolver({ modo: 'puertas', nc: '2', puertas: [{ id: 'P2', tipo: 'NOT', e: ['P1'], sal: true }, { id: 'P1', tipo: 'AND', e: ['A', 'B'] }] }).salidas[0].v, [1, 1, 1, 0], 'puertas desordenadas');
     for (const [sc, q] of [[{ modo: 'tabla', n: '6', m: '1', tabla: [''] }, 'seis variables'], [{ modo: 'puertas', nc: '2', puertas: [] }, 'sin puertas'],
+      [{ modo: 'puertas', nc: '2', puertas: [{ id: 'P1', tipo: 'AND', e: ['A', ''], sal: true }] }, 'entrada sin conectar'],
+      [{ modo: 'puertas', nc: '2', puertas: [{ id: 'P1', tipo: 'NOT', e: ['P2'], sal: true }, { id: 'P2', tipo: 'NOT', e: ['P1'] }] }, 'lazo'],
       [{ modo: 'puertas', nc: '2', puertas: [{ id: 'P1', tipo: 'AND', e: ['A', 'B'], sal: false }] }, 'sin salida'],
       [{ modo: 'puertas', nc: '2', puertas: [{ id: 'P1', tipo: 'AND', e: ['A', 'P2'], sal: true }] }, 'entrada que no existe']]) {
       let ok = false; try { C.resolver(sc); } catch (e) { ok = true; }
@@ -62,20 +68,55 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     if (ver !== Version.de('puertas-logicas').current) mal(`PuertasLogicas: la página muestra la versión «${ver}», se esperaba ${Version.de('puertas-logicas').current}`);
     for (const e of C.ejemplos) {
       await page.evaluate((c) => PuertasLogicasApp.abrirEjemplo(c), e.clave);
-      const r = await page.evaluate(() => ({ err: !document.querySelector('#error').hidden, pasos: document.querySelectorAll('#pasos li').length, res: document.querySelectorAll('#resumen > div').length, dolar: /\$/.test(document.querySelector('#pasos').textContent), mapa: document.querySelectorAll('#mapas .kmap').length, pix: (() => { const c = document.querySelector('#grafica'), v = document.createElement('canvas'); v.width = c.width; v.height = c.height; return c.toDataURL().length - v.toDataURL().length; })() }));
+      const r = await page.evaluate(() => ({ err: !document.querySelector('#error').hidden, pasos: document.querySelectorAll('#pasos li').length, res: document.querySelectorAll('#resumen > div').length, dolar: /\$/.test(document.querySelector('#pasos').textContent), mapa: document.querySelectorAll('#mapas .kmap').length,
+        dib: document.querySelector('#c-editor').hidden ? (() => { const c = document.querySelector('#grafica'), v = document.createElement('canvas'); v.width = c.width; v.height = c.height; return c.toDataURL().length - v.toDataURL().length; })() : document.querySelectorAll('#ed .nodo').length * 1000 + document.querySelectorAll('#ed .cable').length }));
       if (r.err || !r.pasos || !r.res) mal(`PuertasLogicas · ${e.clave}: falta el resultado o el desarrollo`);
       if (!r.mapa) mal(`PuertasLogicas · ${e.clave}: falta el mapa de Karnaugh`);
-      if (r.pix < 300) mal(`PuertasLogicas · ${e.clave}: el circuito no se dibuja`);
+      if (r.dib < 300) mal(`PuertasLogicas · ${e.clave}: el circuito no se dibuja`);
       if (r.dolar) mal(`PuertasLogicas · ${e.clave}: el desarrollo enseña un «$»`);
     }
-    // cambiar una casilla de la tabla: la mayoría con A = 0, B = 0, C = 0 a 1 ya no es la mayoría
+    // tabla: filas separadas de 4 en 4 y botón Simplificar
     await page.evaluate(() => PuertasLogicasApp.abrirEjemplo('mayoria'));
+    if ((await page.locator('.tv tr.g4').count()) !== 1) mal('PuertasLogicas: la tabla de 8 filas debería tener una separación a mitad');
+    if (await page.locator('#resumen .simp').count()) mal('PuertasLogicas: las ecuaciones salen simplificadas sin pulsar el botón');
+    await page.click('#simplificar');
+    const antesCirc = await page.locator('#leyenda').innerText();
+    await page.click('#cambia-forma');
+    if ((await page.locator('#leyenda').innerText()) === antesCirc || !/producto de sumas/.test(await page.locator('#leyenda').innerText())) mal('PuertasLogicas: el botón no cambia el circuito a producto de sumas');
+    await page.click('#cambia-forma');
+    if ((await page.locator('#resumen .simp').count()) !== 2) mal('PuertasLogicas: «Simplificar» no añade las ecuaciones simplificadas');
+    if (!/A·B \+ A·C \+ B·C/.test(await page.locator('#resumen').innerText())) mal('PuertasLogicas: falta la ecuación simplificada de la mayoría');
+    await page.click('#simplificar');
+    // cambiar una casilla de la tabla
     await page.click('.cel[data-i="0"]');
     if ((await page.evaluate(() => PuertasLogicasApp.estado().tabla[0])) !== '10010111') mal('PuertasLogicas: pulsar una casilla no la cambia');
-    // añadir una puerta a mano
+    // editor gráfico: añadir dos puertas de la paleta y unirlas con el ratón
     await page.click('#tab-puertas');
-    await page.click('#add');
-    if (!(await page.locator('.puerta').count())) mal('PuertasLogicas: no se pueden añadir puertas');
+    await page.evaluate(() => { const s = PuertasLogicasApp.estado(); return s; });
+    const hay = await page.evaluate(() => PuertasLogicasApp.estado().puertas?.length || 0);
+    if (hay) for (let i = 0; i < hay; i++) { await page.click('#ed .nodo:not([data-id="A"]):not([data-id="B"]):not([data-id="C"])'); await page.click('#sel-barra [data-a="del"]'); }
+    await page.click('.paleta [data-tipo="AND"]');
+    if ((await page.locator('#ed .nodo').count()) < 4) mal('PuertasLogicas: la paleta no añade la puerta');
+    const centro = async (sel) => { const b = await page.locator(sel).first().boundingBox(); return { x: b.x + b.width / 2, y: b.y + b.height / 2 }; };
+    const une = async (de, a) => { const p = await centro(de), q = await centro(a); await page.mouse.move(p.x, p.y); await page.mouse.down(); await page.mouse.move((p.x + q.x) / 2, (p.y + q.y) / 2); await page.mouse.move(q.x, q.y); await page.mouse.up(); };
+    const id = await page.evaluate(() => PuertasLogicasApp.estado().puertas[0].id);
+    await une('#ed .pin[data-k="out"][data-id="A"]', `#ed .pin[data-k="in"][data-id="${id}"][data-j="0"]`);
+    await une('#ed .pin[data-k="out"][data-id="B"]', `#ed .pin[data-k="in"][data-id="${id}"][data-j="1"]`);
+    let est = await page.evaluate(() => PuertasLogicasApp.estado());
+    if (est.puertas[0].e.join() !== 'A,B') mal(`PuertasLogicas: unir con el ratón no conecta (${est.puertas[0].e})`);
+    await page.dblclick(`#ed .nodo[data-id="${id}"]`);
+    if (!(await page.locator('#error').isHidden())) mal('PuertasLogicas: el circuito A·B con salida marcada da error: ' + await page.locator('#error').innerText());
+    if (!/F = A·B/.test(await page.locator('#resumen').innerText())) mal('PuertasLogicas: falta la ecuación A·B del circuito montado');
+    // mover la puerta con el ratón
+    const antes2 = est.puertas[0].x, c0 = await centro(`#ed .nodo[data-id="${id}"] .cuerpo`);
+    await page.mouse.move(c0.x, c0.y); await page.mouse.down(); await page.mouse.move(c0.x + 60, c0.y + 20); await page.mouse.up();
+    est = await page.evaluate(() => PuertasLogicasApp.estado());
+    if (est.puertas[0].x === antes2) mal('PuertasLogicas: arrastrar una puerta no la mueve');
+    // soltar el cable en el vacío lo quita
+    const p0 = await centro(`#ed .pin[data-k="in"][data-id="${id}"][data-j="0"]`);
+    await page.mouse.move(p0.x, p0.y); await page.mouse.down(); await page.mouse.move(p0.x - 40, p0.y + 60); await page.mouse.up();
+    est = await page.evaluate(() => PuertasLogicasApp.estado());
+    if (est.puertas[0].e[0] !== '') mal('PuertasLogicas: soltar el cable en el vacío no lo quita');
     await page.reload(); await page.waitForFunction(() => window.PuertasLogicasApp);
     if ((await page.evaluate(() => PuertasLogicasApp.estado().modo)) !== 'puertas') mal('PuertasLogicas: el modo no se guarda al recargar');
     await page.setViewportSize({ width: 390, height: 800 });

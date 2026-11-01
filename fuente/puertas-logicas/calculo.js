@@ -98,7 +98,7 @@ const PuertasLogicas = (() => {
     return {
       nombre, v, unos, ceros, indif,
       canS: ambos(sop, grupoCanonS), canP: ambos(pos, grupoCanonP),
-      minS: ambos(sop, gS), minP: ambos(pos, gP), gruposS: gS, gruposP: gP,
+      minS: ambos(sop, gS), minP: ambos(pos, gP), gruposS: gS, gruposP: gP, gruposCS: grupoCanonS, gruposCP: grupoCanonP,
       elegidosS: mS.elegidos, elegidosP: mP.elegidos,
       primos: mS.primos.map((p) => ({ pat: patron(p, n), html: prod(lits(p, n, true), true), cubre: p.c.filter((i) => unos.includes(i)), esencial: mS.esenciales.includes(p), elegido: mS.elegidos.includes(p) })),
       sumM: unos.length ? `Σm(${lista(unos)})` : 'Σm( )', prodM: ceros.length ? `ΠM(${lista(ceros)})` : 'ΠM( )',
@@ -158,19 +158,34 @@ const PuertasLogicas = (() => {
     for (const g of c.nodos) cols[g.id] = [...Array(N).keys()].map((i) => TIPOS[g.tipo](g.e.map((e) => cols[e][i])));
     return cols;
   }
-  function validaPuertas(sc, n) {
+  // comprueba las puertas y las devuelve en orden de cálculo (una puerta después de las que la alimentan)
+  function ordena(sc, n) {
     const ps = sc.puertas;
     if (!Array.isArray(ps) || !ps.length) throw new Error('Añade al menos una puerta');
-    const vistos = new Set(NOM.slice(0, n));
+    const por = new Map(), ent = new Set(NOM.slice(0, n));
     for (const p of ps) {
       if (!TIPOS[p.tipo]) throw new Error(`La puerta ${p.id} tiene un tipo que no existe`);
       const [a, b] = arid(p.tipo);
       if (!Array.isArray(p.e) || p.e.length < a || p.e.length > b) throw new Error(`La puerta ${p.id} (${p.tipo}) necesita entre ${a} y ${b} entradas`);
-      for (const e of p.e) if (!vistos.has(e)) throw new Error(`La puerta ${p.id} usa «${e}», que no es una entrada ni una puerta anterior`);
-      if (vistos.has(p.id)) throw new Error(`El nombre ${p.id} está repetido`);
-      vistos.add(p.id);
+      if (ent.has(p.id) || por.has(p.id)) throw new Error(`El nombre ${p.id} está repetido`);
+      por.set(p.id, p);
     }
+    const orden = [], estado = new Map();
+    const visita = (p) => {
+      if (estado.get(p.id) === 2) return;
+      if (estado.get(p.id) === 1) throw new Error(`Hay un lazo: la puerta ${p.id} depende de sí misma`);
+      estado.set(p.id, 1);
+      for (const e of p.e) {
+        if (!e) throw new Error(`La puerta ${p.id} tiene entradas sin conectar`);
+        if (ent.has(e)) continue;
+        if (!por.has(e)) throw new Error(`La puerta ${p.id} usa «${e}», que no es una entrada ni una puerta`);
+        visita(por.get(e));
+      }
+      estado.set(p.id, 2); orden.push(p);
+    };
+    ps.forEach(visita);
     if (!ps.some((p) => p.sal)) throw new Error('Marca al menos una puerta como salida');
+    return orden;
   }
 
   /* ---------- Mapa de Karnaugh ---------- */
@@ -196,7 +211,7 @@ const PuertasLogicas = (() => {
 
   function resolver(sc) {
     const modo = sc.modo === 'puertas' ? 'puertas' : 'tabla';
-    const forma = sc.forma === 'pos' ? 'pos' : 'sop';
+    const forma = sc.forma === 'pos' ? 'pos' : 'sop', simp = !!sc.simp;
     const pasos = [];
     let n, nombres, valores, tabla, circuito = null, dado = null;
 
@@ -211,9 +226,9 @@ const PuertasLogicas = (() => {
       tabla = { cab: [...NOM.slice(0, n), ...nombres], filas: [...Array(N).keys()].map((i) => [...bin(i, n)].map(Number).concat(valores.map((v) => v[i]))) };
     } else {
       n = entero(sc.nc, 1, MAXN, 'El número de entradas');
-      validaPuertas(sc, n);
-      const nodos = sc.puertas.map((p) => ({ id: p.id, tipo: p.tipo, e: [...p.e], etq: p.id }));
-      const sal = sc.puertas.filter((p) => p.sal);
+      const orden = ordena(sc, n);
+      const nodos = orden.map((p) => ({ id: p.id, tipo: p.tipo, e: [...p.e], etq: p.id }));
+      const sal = sc.puertas.filter((p) => p.sal);  // F, F2… por el orden en que se crearon
       nombres = nombresSal(sal.length);
       circuito = { entradas: NOM.slice(0, n).map((x) => ({ id: x, etq: x })), nodos, salidas: sal.map((p, j) => ({ nombre: nombres[j], id: p.id })) };
       const cols = evalCircuito(circuito, n), N = 1 << n;
@@ -240,10 +255,10 @@ const PuertasLogicas = (() => {
     }
 
     const dibujo = modo === 'puertas' ? circuito
-      : dibujoNormal(n, salidas.map((s) => ({ nombre: s.nombre, grupos: forma === 'sop' ? s.gruposS : s.gruposP })), forma);
-    if (modo === 'tabla') pasos.push({ t: 'Circuito de puertas', html: `Con la forma simplificada en ${forma === 'sop' ? 'suma de productos: una puerta AND por cada término y una OR que los suma' : 'producto de sumas: una puerta OR por cada factor y una AND que los multiplica'}. Las variables con barra pasan antes por una puerta NOT.` });
-    const mapas = n <= MAXN ? salidas.map((s) => ({ nombre: s.nombre, ...karnaugh(n, s.v, forma === 'sop' || modo === 'puertas' ? s.elegidosS : []) })) : [];
-    return { modo, forma, n, vars: NOM.slice(0, n), tabla, salidas, dibujo, mapas, dado, pasos };
+      : dibujoNormal(n, salidas.map((s) => ({ nombre: s.nombre, grupos: simp ? (forma === 'sop' ? s.gruposS : s.gruposP) : (forma === 'sop' ? s.gruposCS : s.gruposCP) })), forma);
+    if (modo === 'tabla') pasos.push({ t: 'Circuito de puertas', html: `Con la forma ${simp ? 'simplificada' : 'canónica'} en ${forma === 'sop' ? 'suma de productos: una puerta AND por cada término y una OR que los suma' : 'producto de sumas: una puerta OR por cada factor y una AND que los multiplica'}. Las variables con barra pasan antes por una puerta NOT.${simp ? '' : " Pulsa «Simplificar» para ver el circuito más pequeño."}` });
+    const mapas = n <= MAXN ? salidas.map((s) => ({ nombre: s.nombre, ...karnaugh(n, s.v, simp || modo === 'puertas' ? s.elegidosS : []) })) : [];
+    return { modo, forma, simp, n, vars: NOM.slice(0, n), tabla, salidas, dibujo, mapas, dado, pasos };
   }
 
   /* ---------- Ejemplos ---------- */
