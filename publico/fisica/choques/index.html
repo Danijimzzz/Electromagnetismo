@@ -1114,7 +1114,7 @@ const Choques = (() => {
   const enunciado = () => {
     const e = Herramienta.esc, t = sc.tipo, v = (x, y) => (+String(y).replace(',', '.') ? `(${e(x)}; ${e(y)})` : e(x));
     const tipo = t === 'pegados' ? 'quedan pegados tras el choque' : t === 'elastico' ? 'chocan de forma elástica' : `chocan con coeficiente de restitución e = ${e(sc.e)}`;
-    return `Un cuerpo de ${e(sc.m1)} kg con velocidad ${v(sc.v1x, sc.v1y)} m/s choca con otro de ${e(sc.m2)} kg con velocidad ${v(sc.v2x, sc.v2y)} m/s${+String(sc.th) ? ` (normal a ${e(sc.th)}° del eje x)` : ''}; ${tipo}. Calcula las velocidades finales, el momento lineal y la energía perdida.`;
+    return `Un cuerpo de ${e(sc.m1)} kg con velocidad ${v(sc.v1x, sc.v1y)} m/s choca con otro de ${e(sc.m2)} kg con velocidad ${v(sc.v2x, sc.v2y)} m/s${+String(sc.th).replace(',', '.') ? ` (normal a ${e(sc.th)}° del eje x)` : ''}; ${tipo}. Calcula las velocidades finales, el momento lineal y la energía perdida.`;
   };
 
   window.ChoquesApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { w1: sol.w1, w2: sol.w2, perdida: sol.perdida }, estado: () => copia(sc) };
