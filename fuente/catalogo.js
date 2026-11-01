@@ -167,6 +167,8 @@ const Catalogo = {
         { clave: 'convolucion', nombre: 'Convolución y señales', icono: '∗', disponible: false, desc: 'Convolución animada y respuesta al escalón.', buscar: 'convolución señales respuesta al escalón sistemas' },
         { clave: 'sistemas-numericos', nombre: 'Sistemas de numeración', icono: '01', disponible: true, desc: 'Pasa un número entre decimal, binario, complemento a 2, hexadecimal y BCD, paso a paso.', buscar: 'sistemas de numeración conversor binario decimal hexadecimal octal complemento a 2 c2 ca2 bcd base electrónica digital bits', scripts: ['mates.js', 'sistemas-numericos/calculo.js', 'sistemas-numericos/app.js'],
           titulo: 'Sistemas de numeración', descripcion: 'Pasa un número entre decimal, binario, complemento a 2, hexadecimal y BCD, paso a paso.' },
+        { clave: 'puertas-logicas', nombre: 'Tablas de verdad y puertas lógicas', icono: '&', disponible: true, desc: 'De la tabla de verdad a las ecuaciones (minitérminos, maxitérminos, simplificada) y al circuito de puertas, o de las puertas a la tabla.', buscar: 'tablas de verdad puertas lógicas and or not nand nor xor xnor minitérminos maxitérminos minterms maxterms karnaugh quine mccluskey simplificar función booleana álgebra de boole circuito digital electrónica combinacional', scripts: ['mates.js', 'puertas-logicas/calculo.js', 'puertas-logicas/app.js'],
+          titulo: 'Tablas de verdad y puertas lógicas', descripcion: 'Calculadora de tablas de verdad: ecuaciones por minitérminos y maxitérminos, forma simplificada por Quine-McCluskey y mapa de Karnaugh, circuito de puertas lógicas dibujado, o monta las puertas AND, OR, NOT, NAND, NOR, XOR y XNOR y obtén su tabla de verdad, paso a paso' },
       ],
     },
     {
