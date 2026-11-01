@@ -105,6 +105,9 @@ const V5 = { id: 'E', t: 'V', p: ['a', '0'], onda: { tipo: 'escalon', v1: 0, v2:
 { // trifásica en estrella con carga equilibrada: corriente de línea = V_f/Z, neutro sin corriente
   const Z = 10, el = [...S.trifasica('G', ['r', 's', 't', 'n'], 230, 50), { id: 'Rr', t: 'R', p: ['r', 'n'], R: Z }, { id: 'Rs', t: 'R', p: ['s', 'n'], R: Z }, { id: 'Rt', t: 'R', p: ['t', 'n'], R: Z }, { id: 'T', t: 'R', p: ['n', '0'], R: 1e-3 }];
   const f = S.fasores({ elementos: el })[0]; cerca(S.mod(f.I.Rr) / Math.SQRT2, 23, 1e-9, 'trifásica: corriente de fase'); cerca(S.mod(f.V.n), 0, 1e-6, 'trifásica: neutro a 0 V'); cerca(S.mod(f.V.r) / S.mod(f.V.s), 1, 1e-9, 'trifásica: tensiones iguales en módulo'); }
+{ // puerta NAND con las entradas a 5 V y a 0 V
+  const r = (a, b) => S.operacion({ elementos: [{ id: 'A', t: 'V', p: ['a', '0'], onda: cc(a) }, { id: 'B', t: 'V', p: ['b', '0'], onda: cc(b) }, { id: 'U', t: 'GATE', fn: 'NAND', Vcc: 5, p: ['a', 'b', 'y'] }, { id: 'R', t: 'R', p: ['y', '0'], R: 1000 }] }).V.y.re;
+  cerca(r(5, 5), 0, 1e-6, 'NAND(1,1) = 0'); cerca(r(5, 0), 5, 1e-6, 'NAND(1,0) = 1'); cerca(r(0, 0), 5, 1e-6, 'NAND(0,0) = 1'); }
 // 4. Coherencia: transitorio en régimen estacionario = fasores, y continua + alterna a la vez
 {
   const el = [{ id: 'E', t: 'V', p: ['a', '0'], onda: { tipo: 'seno', A: 2, f: 1000, fase: 0, off: 5 } }, { id: 'R', t: 'R', p: ['a', 'b'], R: 1000 }, { id: 'C', t: 'C', p: ['b', '0'], C: 159e-9 }];

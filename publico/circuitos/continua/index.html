@@ -274,8 +274,8 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 <section class="relacionadas" aria-label="Herramientas relacionadas"><h2>Herramientas relacionadas</h2>
 <a href="../resistencias/"><b>Código de colores de resistencias →</b><span>Colores y códigos SMD de resistencias, bobinas y condensadores, asociación, normalizadas, LED y divisor de tensión.</span></a>
 <a href="../alterna/"><b>Corriente alterna y fasores →</b><span>RLC en serie y en paralelo, redes por nudos con fasores, trifásica, potencias, corrección del factor de potencia y resonancia.</span></a>
+<a href="../simulador/"><b>Simulador de circuitos →</b><span>Arrastra resistencias, fuentes de continua y de alterna, condensadores, bobinas, transistores y más: tensiones, corrientes, fasores, osciloscopio y Bode.</span></a>
 <a href="../puertas-logicas/"><b>Tablas de verdad y puertas lógicas →</b><span>De la tabla de verdad a las ecuaciones (minitérminos, maxitérminos, simplificada) y al circuito de puertas, o de las puertas a la tabla.</span></a>
-<a href="../sistemas-numericos/"><b>Sistemas de numeración →</b><span>Pasa un número entre decimal, binario, complemento a 2, hexadecimal y BCD, paso a paso.</span></a>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Circuitos <span id="ver"></span> (beta)</footer>
@@ -295,6 +295,15 @@ const Pagina = { carpeta: 'circuitos', guarda: 'circuitos-v1' };
 const Version = (() => {
   const registros = {
     web: [
+      { v: '1.5', fecha: '2026-11-01', titulo: 'Simulador de circuitos', subtitulo: 'Un solo simulador para continua y alterna: arrastra cualquier componente, cablea y mira qué pasa.', secciones: [
+        { icono: '🔌', titulo: 'Nueva herramienta en Circuitos', puntos: [
+          '#circuitos/simulador',
+          '**Editor de arrastrar y soltar:** pon resistencias, condensadores, bobinas, fuentes, transistores, operacionales, puertas lógicas y más (47 componentes), gíralos, refléjalos y únelos con cables.',
+          '**Continua y alterna a la vez:** punto de operación, fasores, osciloscopio con la forma de onda completa y diagrama de Bode.',
+          '**Instrumentos y trifásica:** amperímetro, voltímetro, vatímetro, sondas del osciloscopio y fuentes y cargas trifásicas.',
+          '**Corriente animada** y cables coloreados según su tensión, **desarrollo paso a paso** cuando el circuito se puede resolver a mano y **modo práctica**.',
+        ] },
+      ] },
       { v: '1.4.1', fecha: '2026-11-01', titulo: 'Puertas lógicas más fáciles', subtitulo: 'Un editor para arrastrar y unir puertas, y las ecuaciones primero normales y luego simplificadas.', secciones: [
         { icono: '🔌', titulo: 'Mejoras en Tablas de verdad y puertas lógicas', puntos: [
           '#circuitos/puertas-logicas',
@@ -413,6 +422,9 @@ const Version = (() => {
           '**Diseño pensado también para el móvil.**',
         ] },
       ] },
+    ],
+    simulador: [
+      { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: dibuja el circuito arrastrando componentes (resistencias, condensadores, bobinas, fuentes de continua y de alterna, diodos, transistores, operacionales, transformadores, trifásica y puertas lógicas), únelos con cables y mira tensiones, corrientes, fasores, osciloscopio y diagrama de Bode.'] },
     ],
     'teoria-juegos': [
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: escribe la matriz de pagos de un juego de dos jugadores con dos estrategias y obtén las mejores respuestas, las estrategias dominantes, los equilibrios de Nash puros y mixtos, la eficiencia de Pareto y el tipo de juego (dilema del prisionero, coordinación, gallina…), con la gráfica de las curvas de mejor respuesta y el desarrollo paso a paso.'] },
@@ -1856,6 +1868,8 @@ const Practica = (() => {
     calorimetria: { datos: null, items: '#te, #resumen-d > div', genera: () => window.CalorApp?.azar(), enunciado: () => window.CalorApp?.enunciado() },
     // disoluciones: lo que se pide depende de la pestaña abierta (solo cuentan los que se ven)
     disoluciones: { items: '#valores > .valor:not(.dato), #valores-prep > .valor, #valores-col > .valor, #res-dil, #res-mez' },
+    // simulador de circuitos: un circuito de continua al azar; se pregunta la tensión de cada nudo
+    simulador: { datos: null, tapa: '#modos, #panel > .tabla-scroll, #panel > h3, #panel > .nota', items: '#resumen > div.num', genera: () => window.SimuladorApp?.azar(), enunciado: () => window.SimuladorApp?.enunciado() },
     matrices: { items: '#res' },
     // solo sistemas compatibles determinados: la solución paramétrica no se pregunta por huecos
     // complejos: una operación al azar con números pequeños (los datos son textos como 3 − 2i)

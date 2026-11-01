@@ -17,7 +17,9 @@
      VV {k}  p = [a, b, c, d]   VI {r, ctrl}   IV {g}  p = [a, b, c, d]   II {beta, ctrl}
      SW {estado, tc}  interruptor que parte en «abierto» o «cerrado» y cambia en el instante tc
      TR {n}  transformador ideal, p = [1a, 1b, 2a, 2b], v1 = n·v2
-     AO  amplificador operacional ideal, p = [+, −, salida]
+     AO  amplificador operacional ideal, p = [+, −, salida]   AOR / COMP {A, Vsat}  operacional real y comparador (saturan)
+     BJT {bf, Is, pnp}  p = [C, B, E]   MOS {k, Vth, lambda, pmos}  p = [D, G, S]
+     GATE {fn: AND NAND OR NOR XOR XNOR NOT BUF, Vcc}  p = [entradas…, salida]   AM amperímetro   VM voltímetro
      D {Is, n}  Z {Is, n, Vz}  LED {Is, n}  diodo, Zener y LED, p = [ánodo, cátodo]
    Va después del resto de ficheros del simulador (editor, vista, desarrollo).
    ===================================================================== */
@@ -90,11 +92,11 @@ const SimCircuitos = (() => {
   }
 
   /* ---------- Preparación: nudos, ramas e incógnitas ---------- */
-  const RAMA = new Set(['V', 'L', 'VV', 'VI', 'TR', 'AO', 'AM', 'AOR', 'COMP']);
+  const RAMA = new Set(['V', 'L', 'VV', 'VI', 'TR', 'AO', 'AM', 'AOR', 'COMP', 'GATE']);
   const NOLINEAL = new Set(['D', 'Z', 'LED', 'BJT', 'MOS']); // AOR y COMP lo son solo con saturación (ver esNL)
-  const esNL = (e) => NOLINEAL.has(e.t) || ((e.t === 'AOR' || e.t === 'COMP') && isFinite(e.Vsat));
-  const TIPOS_OK = new Set(['R', 'C', 'L', 'K', 'V', 'I', 'VV', 'VI', 'IV', 'II', 'SW', 'TR', 'AO', 'D', 'Z', 'LED', 'BJT', 'MOS', 'AOR', 'COMP', 'AM', 'VM']);
-  const NPINES = { R: 2, C: 2, L: 2, K: 0, V: 2, I: 2, VV: 4, VI: 2, IV: 4, II: 2, SW: 2, TR: 4, AO: 3, D: 2, Z: 2, LED: 2, BJT: 3, MOS: 3, AOR: 3, COMP: 3, AM: 2, VM: 2 };
+  const esNL = (e) => NOLINEAL.has(e.t) || (e.t === 'GATE' || ((e.t === 'AOR' || e.t === 'COMP') && isFinite(e.Vsat)));
+  const TIPOS_OK = new Set(['R', 'C', 'L', 'K', 'V', 'I', 'VV', 'VI', 'IV', 'II', 'SW', 'TR', 'AO', 'D', 'Z', 'LED', 'BJT', 'MOS', 'AOR', 'COMP', 'AM', 'VM', 'GATE']);
+  const NPINES = { R: 2, C: 2, L: 2, K: 0, V: 2, I: 2, VV: 4, VI: 2, IV: 4, II: 2, SW: 2, TR: 4, AO: 3, D: 2, Z: 2, LED: 2, BJT: 3, MOS: 3, AOR: 3, COMP: 3, AM: 2, VM: 2, GATE: 2 };
   function prepara(net) {
     const crudos = net.elementos || [];
     if (!crudos.length) throw new Error('Añade al menos un componente');
@@ -276,6 +278,11 @@ const SimCircuitos = (() => {
           const m = modeloDiodo(e, vd); g = m.g; Ieq = m.i - g * vd;
           adm(A, a, b, g); A.rhs(a, -Ieq); A.rhs(b, Ieq);
           break;
+        }
+        case 'GATE': { // puerta lógica: salida = fuente de tensión que vale 0 o Vcc según las entradas (respecto a tierra)
+          const ent = e.q.slice(0, -1), sal = e.q[e.q.length - 1], Vcc = e.Vcc ?? 5, th = e.Vth ?? Vcc / 2, bits = ent.map((q) => (v(q) > th ? 1 : 0)), n1 = bits.reduce((a, b) => a + b, 0);
+          const y = { AND: n1 === bits.length, NAND: n1 !== bits.length, OR: n1 > 0, NOR: n1 === 0, XOR: n1 % 2 === 1, XNOR: n1 % 2 === 0, NOT: bits[0] === 0, BUF: bits[0] === 1 }[e.fn];
+          A.add(sal, r, 1); A.add(r, sal, 1); A.rhs(r, y ? Vcc : 0); break;
         }
         case 'AM': A.add(a, r, 1); A.add(b, r, -1); A.add(r, a, 1); A.add(r, b, -1); break; // amperímetro: fuente de 0 V
         case 'VM': adm(A, a, b, 1e-9); break; // voltímetro: 1 GΩ
