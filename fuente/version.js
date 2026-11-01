@@ -168,6 +168,8 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: una carga puntual frente a un plano conductor a tierra, una esfera conductora (a tierra, aislada con una carga Q o a un potencial V₀) o dentro de una cavidad esférica, con la carga imagen y su posición, la fuerza sobre la carga, la carga inducida y su densidad superficial σ, el trabajo para llevarla al infinito y el potencial y el campo en un punto.', 'Dibujo con las líneas de campo, las cargas imagen y la carga inducida sobre el conductor, y modo práctica con enunciado.'] },
     'guias-onda': [
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: modos TE y TM de una guía de onda rectangular (vacía o rellena de dieléctrico): frecuencia y longitud de onda de corte, constante de fase, longitud de onda en la guía, velocidades de fase y de grupo, impedancia de onda o atenuación si no se propaga, modo dominante y banda monomodo, con el campo eléctrico del modo dibujado en la sección, desarrollo paso a paso y modo práctica.'] },
+    antena: [
+      { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: dipolo corto, de media onda o de longitud cualquiera, con diagrama de radiación polar, resistencia de radiación, potencia radiada, directividad, ancho de haz y campo lejano, paso a paso.'] },
     ],
     simulador: [
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: dibuja el circuito arrastrando componentes (resistencias, condensadores, bobinas, fuentes de continua y de alterna, diodos, transistores, operacionales, transformadores, trifásica y puertas lógicas), únelos con cables y mira tensiones, corrientes, fasores, osciloscopio y diagrama de Bode.'] },
