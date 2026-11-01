@@ -12,13 +12,6 @@
 const Version = (() => {
   const registros = {
     web: [
-      { v: '1.5', fecha: '2026-11-01', titulo: 'Teoría de juegos', subtitulo: 'El dilema del prisionero y el equilibrio de Nash, calculados paso a paso.', secciones: [
-        { icono: '♟️', titulo: 'Nueva herramienta en Economía', puntos: [
-          '#economia/teoria-juegos',
-          '**Teoría de juegos:** escribe la matriz de pagos de un juego de dos jugadores y obtén los equilibrios de Nash (puros y mixtos), las estrategias dominantes y si el resultado es eficiente.',
-          'Con **la gráfica de las mejores respuestas**, donde se cruzan los equilibrios, y ejemplos como el dilema del prisionero, la gallina o cara o cruz.',
-        ] },
-      ] },
       { v: '1.3.2', fecha: '2026-10-31', cambios: ['Quitada la franja oscura que se veía sobre la barra de arriba.', 'En el móvil, la portada vuelve a mostrar Novedades y Física en la vida real junto a las asignaturas.'] },
       { v: '1.3.1', fecha: '2026-10-31', cambios: ['La cabecera se ve más compacta en el móvil: logo, Foro y modo oscuro en una fila y el buscador debajo.'] },
       { v: '1.3', fecha: '2026-10-31', titulo: 'Nuevo aspecto: Liquid Glass', subtitulo: 'Cristal translúcido, esquinas redondeadas y fondos con color en toda la web.', secciones: [
