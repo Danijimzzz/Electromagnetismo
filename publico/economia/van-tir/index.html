@@ -274,6 +274,14 @@ const Pagina = { carpeta: 'van-tir', guarda: 'van-tir-v1' };
 const Version = (() => {
   const registros = {
     web: [
+      { v: '1.6', fecha: '2026-11-01', titulo: 'Convolución y señales', subtitulo: 'Mira cómo una señal se refleja, se desliza sobre otra y dibuja la salida de un filtro.', secciones: [
+        { icono: '🔌', titulo: 'Nueva herramienta en Circuitos', puntos: [
+          '#circuitos/convolucion',
+          '**Convolución animada:** elige dos señales (pulsos, escalón, exponencial, impulso) y mira cómo se refleja una, se desliza sobre la otra y el área del producto va dibujando la salida.',
+          '**Señal y sistema:** pasa una entrada por un filtro RC, un RLC serie, una media móvil o un retardo.',
+          '**Respuesta al escalón:** tiempo de subida, sobreoscilación y tiempo de establecimiento, con el desarrollo paso a paso.',
+        ] },
+      ] },
       { v: '1.5', fecha: '2026-11-01', titulo: 'Simulador de circuitos', subtitulo: 'Un solo simulador para continua y alterna, y las puertas lógicas ahora también desde ecuaciones.', secciones: [
         { icono: '🔌', titulo: 'Nueva herramienta en Circuitos', puntos: [
           '#circuitos/simulador',
@@ -407,6 +415,9 @@ const Version = (() => {
           '**Diseño pensado también para el móvil.**',
         ] },
       ] },
+    ],
+    convolucion: [
+      { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: refleja y desliza dos señales (pulsos rectangulares, triangulares y senoidales, escalón, exponencial e impulso) y mira cómo se dibuja su convolución, animada o moviendo el instante a mano.', 'Señal y sistema: pasa una entrada por un filtro RC, un RLC serie, una media móvil o un retardo y obtén la respuesta al escalón con el tiempo de subida, la sobreoscilación y el tiempo de establecimiento.', 'Desarrollo paso a paso con la solución exacta de los casos de clase y la comprobación con las áreas, ejemplos y modo práctica.'] },
     ],
     simulador: [
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: dibuja el circuito arrastrando componentes (resistencias, condensadores, bobinas, fuentes de continua y de alterna, diodos, transistores, operacionales, transformadores, trifásica y puertas lógicas), únelos con cables y mira tensiones, corrientes, fasores, osciloscopio y diagrama de Bode.'] },
@@ -1614,6 +1625,8 @@ const Practica = (() => {
     interferencia: { datos: null, items: '#res > div', genera: () => window.InterferenciaApp?.azar(), enunciado: () => window.InterferenciaApp?.enunciado() },
     // laplace: una transformada, una inversa por fracciones simples o una EDO; se preguntan los valores numéricos
     laplace: { datos: null, items: '#resumen > div.num', genera: () => window.LaplaceApp?.azar(), enunciado: () => window.LaplaceApp?.enunciado() },
+    // convolución: dos señales de clase o un filtro RC; se preguntan el máximo, su instante, el área o la respuesta al escalón
+    convolucion: { datos: null, items: '#resumen > div.num', genera: () => window.ConvolucionApp?.azar(), enunciado: () => window.ConvolucionApp?.enunciado() },
     // derivadas: una derivada en un punto o una integral definida de las de clase
     derivadas: { datos: null, items: '#resumen > div.num', genera: () => window.DerivadasApp?.azar(), enunciado: () => window.DerivadasApp?.enunciado() },
     complejos: { datos: null, genera: () => window.ComplejosApp?.azar(), enunciado: () => window.ComplejosApp?.enunciado() },

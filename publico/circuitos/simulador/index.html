@@ -345,8 +345,9 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 </section>
 <section class="relacionadas" aria-label="Herramientas relacionadas"><h2>Herramientas relacionadas</h2>
 <a href="../resistencias/"><b>Código de colores de resistencias →</b><span>Colores y códigos SMD de resistencias, bobinas y condensadores, asociación, normalizadas, LED y divisor de tensión.</span></a>
-<a href="../sistemas-numericos/"><b>Sistemas de numeración →</b><span>Pasa un número entre decimal, binario, complemento a 2, hexadecimal y BCD, paso a paso.</span></a>
+<a href="../convolucion/"><b>Convolución y señales →</b><span>Convolución animada de dos señales o de una señal con un filtro RC o RLC, con la respuesta al escalón: tiempo de subida, sobreoscilación y establecimiento.</span></a>
 <a href="../puertas-logicas/"><b>Tablas de verdad y puertas lógicas →</b><span>De la tabla de verdad a las ecuaciones (minitérminos, maxitérminos, simplificada) y al circuito de puertas, o de las puertas a la tabla.</span></a>
+<a href="../sistemas-numericos/"><b>Sistemas de numeración →</b><span>Pasa un número entre decimal, binario, complemento a 2, hexadecimal y BCD, paso a paso.</span></a>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Simulador de circuitos <span id="ver"></span> (beta)</footer>
@@ -367,6 +368,14 @@ const Pagina = { carpeta: 'simulador', guarda: 'simulador-v1' };
 const Version = (() => {
   const registros = {
     web: [
+      { v: '1.6', fecha: '2026-11-01', titulo: 'Convolución y señales', subtitulo: 'Mira cómo una señal se refleja, se desliza sobre otra y dibuja la salida de un filtro.', secciones: [
+        { icono: '🔌', titulo: 'Nueva herramienta en Circuitos', puntos: [
+          '#circuitos/convolucion',
+          '**Convolución animada:** elige dos señales (pulsos, escalón, exponencial, impulso) y mira cómo se refleja una, se desliza sobre la otra y el área del producto va dibujando la salida.',
+          '**Señal y sistema:** pasa una entrada por un filtro RC, un RLC serie, una media móvil o un retardo.',
+          '**Respuesta al escalón:** tiempo de subida, sobreoscilación y tiempo de establecimiento, con el desarrollo paso a paso.',
+        ] },
+      ] },
       { v: '1.5', fecha: '2026-11-01', titulo: 'Simulador de circuitos', subtitulo: 'Un solo simulador para continua y alterna, y las puertas lógicas ahora también desde ecuaciones.', secciones: [
         { icono: '🔌', titulo: 'Nueva herramienta en Circuitos', puntos: [
           '#circuitos/simulador',
@@ -500,6 +509,9 @@ const Version = (() => {
           '**Diseño pensado también para el móvil.**',
         ] },
       ] },
+    ],
+    convolucion: [
+      { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: refleja y desliza dos señales (pulsos rectangulares, triangulares y senoidales, escalón, exponencial e impulso) y mira cómo se dibuja su convolución, animada o moviendo el instante a mano.', 'Señal y sistema: pasa una entrada por un filtro RC, un RLC serie, una media móvil o un retardo y obtén la respuesta al escalón con el tiempo de subida, la sobreoscilación y el tiempo de establecimiento.', 'Desarrollo paso a paso con la solución exacta de los casos de clase y la comprobación con las áreas, ejemplos y modo práctica.'] },
     ],
     simulador: [
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: dibuja el circuito arrastrando componentes (resistencias, condensadores, bobinas, fuentes de continua y de alterna, diodos, transistores, operacionales, transformadores, trifásica y puertas lógicas), únelos con cables y mira tensiones, corrientes, fasores, osciloscopio y diagrama de Bode.'] },
@@ -3662,6 +3674,8 @@ const Practica = (() => {
     interferencia: { datos: null, items: '#res > div', genera: () => window.InterferenciaApp?.azar(), enunciado: () => window.InterferenciaApp?.enunciado() },
     // laplace: una transformada, una inversa por fracciones simples o una EDO; se preguntan los valores numéricos
     laplace: { datos: null, items: '#resumen > div.num', genera: () => window.LaplaceApp?.azar(), enunciado: () => window.LaplaceApp?.enunciado() },
+    // convolución: dos señales de clase o un filtro RC; se preguntan el máximo, su instante, el área o la respuesta al escalón
+    convolucion: { datos: null, items: '#resumen > div.num', genera: () => window.ConvolucionApp?.azar(), enunciado: () => window.ConvolucionApp?.enunciado() },
     // derivadas: una derivada en un punto o una integral definida de las de clase
     derivadas: { datos: null, items: '#resumen > div.num', genera: () => window.DerivadasApp?.azar(), enunciado: () => window.DerivadasApp?.enunciado() },
     complejos: { datos: null, genera: () => window.ComplejosApp?.azar(), enunciado: () => window.ComplejosApp?.enunciado() },

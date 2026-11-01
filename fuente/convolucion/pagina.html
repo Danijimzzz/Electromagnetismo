@@ -1,0 +1,60 @@
+<title>Convolución animada y respuesta al escalón · SimulaCiencia</title>
+<meta name="description" content="Simulador de convolución en español: refleja, desplaza y multiplica dos señales (pulsos, escalón, exponencial, impulso) y mira cómo se construye y(t), o pasa una señal por un filtro RC o RLC y obtén su respuesta al escalón, paso a paso.">
+<style>
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a; --serie-3: #1d7a3e }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #5fcf8a } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #5fcf8a }
+#grafica { height: clamp(210px, 28vw, 290px) }
+#salida { height: clamp(190px, 24vw, 250px); margin-top: 6px }
+.deslizador { display: flex; align-items: center; gap: 10px; flex: 1 1 220px; font-size: 13.5px }
+.deslizador input[type=range] { flex: 1 1 140px; accent-color: var(--accent) }
+.deslizador b { font-variant-numeric: tabular-nums; white-space: nowrap }
+.x1 { color: var(--serie-1) } .h1 { color: var(--serie-2) } .y1 { color: var(--serie-3) }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Circuitos</a> / Convolución y señales</span></header>
+<div class="wrap">
+<h1>Convolución y señales</h1>
+<p class="lead">Elige dos señales y mira cómo se construye su convolución: una se refleja, se desliza sobre la otra y el área del producto es la salida. O pasa una entrada por un filtro RC o RLC y obtén la respuesta al escalón.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="modos" role="tablist" aria-label="Qué se calcula"><button type="button" role="tab" data-modo="conv" aria-selected="true">Dos señales</button><button type="button" role="tab" data-modo="sistema" aria-selected="false">Señal y sistema</button></div>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Reflejar, desplazar y multiplicar</h2>
+      <canvas id="grafica" aria-label="Las señales x(τ) y h(t − τ) con el área de su producto"></canvas>
+      <canvas id="salida" aria-label="La convolución y(t) dibujada hasta el instante elegido"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+      <div class="controles">
+        <button class="btn" id="play" type="button">⏸ Pausa</button>
+        <label class="deslizador">Instante t <input id="t0" type="range" min="0" max="1000" step="1" value="0" aria-label="Instante t en el que se calcula la convolución"> <b id="t0v"></b></label>
+      </div>
+    </div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Qué es la convolución</h2>
+  <p class="m">La convolución de dos señales mezcla una con la otra: $y(t) = (x * h)(t) = ∫_{−∞}^{∞} x(τ) h(t − τ) dτ$. Para cada instante $t$ se da la vuelta a $h$, se mueve hasta $t$ y se mide el área de su producto con $x$. Eso es lo que anima la gráfica de arriba.</p>
+  <p class="m">Si $x(t)$ es la entrada de un sistema lineal e invariante en el tiempo (un circuito de resistencias, condensadores y bobinas lo es) y $h(t)$ su respuesta al impulso, la salida es justo $y = x * h$: cada instante de la entrada es un impulso pequeño, el sistema responde a cada uno con $h$ y la salida es la suma de todas esas respuestas.</p>
+  <h2>Propiedades que conviene recordar</h2>
+  <p class="m">Es conmutativa, $x * h = h * x$, así que da igual cuál de las dos se refleje. La duración de $y$ es la suma de las duraciones, y su área es el producto de las áreas: $∫ y = (∫ x)(∫ h)$. Con un impulso se desplaza sin cambiar: $x(t) * δ(t − a) = x(t − a)$. Un retardo puro es entonces un impulso retrasado.</p>
+  <h2>Respuesta al escalón</h2>
+  <p class="m">Si la entrada es el escalón $u(t)$, la salida es la integral de la respuesta al impulso: $s(t) = ∫_{0}^{t} h(τ) dτ$, y al revés, $h(t) = ds/dt$. De $s(t)$ salen los datos que se miden en el laboratorio: el <b>tiempo de subida</b> (de 10 % a 90 % del valor final), la <b>sobreoscilación</b> (cuánto se pasa) y el <b>tiempo de establecimiento</b> (cuándo se queda a menos de un 2 % del final).</p>
+  <h2>Filtros RC y RLC</h2>
+  <p class="m">Un filtro RC paso bajo tiene $τ = R C$, $h(t) = {1}/{τ} e^{−t/τ} u(t)$ y $s(t) = 1 − e^{−t/τ}$: no se pasa nunca y tarda $2{,}2 τ$ en subir del 10 % al 90 %. Un RLC serie (con la salida en el condensador) tiene $ω_0 = 1/√(L C)$ y $ζ = {R}/{2} √(C/L)$. Si $ζ < 1$ oscila al subir y se pasa un $e^{−πζ/√(1 − ζ^2)}$ del valor final; con $ζ = 1$ es la respuesta más rápida sin pasarse; con $ζ > 1$ es lenta pero sin oscilar.</p>
+  <h2>Cómo escribir los datos</h2>
+  <p class="m">Los tiempos van en segundos y admiten prefijos: <b>2m</b> o <b>2 ms</b> son dos milisegundos, <b>10µ</b> diez microsegundos. Los componentes también: <b>4k7</b> son 4,7 kΩ, <b>100n</b> son 100 nF. La coma decimal vale. En el modo de dos señales los números no tienen por qué ser segundos: sirve para cualquier unidad.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Convolución y señales <span id="ver"></span></footer>
+</body>
