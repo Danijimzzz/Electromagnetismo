@@ -1,0 +1,54 @@
+<title>Calculadora de equilibrio de Nash y teoría de juegos</title>
+<meta name="description" content="Calculadora de teoría de juegos en español: matriz de pagos 2×2, equilibrios de Nash en estrategias puras y mixtas, estrategias dominantes, dilema del prisionero y eficiencia de Pareto, con las curvas de mejor respuesta y el desarrollo.">
+<style>
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62 }
+.tabla-juego { border-collapse: collapse; font: 14px var(--f-ui); width: 100%; font-variant-numeric: tabular-nums }
+.tabla-juego th, .tabla-juego td { border: 1px solid var(--line); padding: 9px 10px; text-align: center }
+.tabla-juego thead th, .tabla-juego tbody th { background: var(--accent-soft); font-weight: 600 }
+.tabla-juego td.nash { background: var(--accent-soft); font-weight: 700; box-shadow: inset 0 0 0 2px var(--accent) }
+.tabla-juego small { color: var(--muted) }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Economía</a> / Teoría de juegos</span></header>
+<div class="wrap">
+<h1>Teoría de juegos</h1>
+<p class="lead">Escribe la matriz de pagos de un juego de dos jugadores con dos estrategias cada uno y obtén los equilibrios de Nash (puros y mixtos), las estrategias dominantes y si el resultado es eficiente, con el dilema del prisionero como ejemplo.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Matriz de pagos</h2><div class="tabla-scroll" id="tabla"></div>
+      <p class="leyenda">Subrayado, la mejor respuesta de cada jugador; sombreada, la casilla que es equilibrio de Nash; ★, los resultados óptimos de Pareto.</p></div>
+    <div class="card"><h2>Mejores respuestas</h2>
+      <canvas id="grafica" aria-label="Curvas de mejor respuesta de los dos jugadores, que se cruzan en los equilibrios de Nash"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+<h2>La matriz de pagos</h2>
+<p>Dos jugadores eligen a la vez, sin saber lo que hace el otro, una de sus dos estrategias. Cada casilla de la matriz dice cuánto gana cada uno con esa combinación: primero el jugador 1 (filas) y luego el 2 (columnas).</p>
+<h2>Estrategia dominante y equilibrio de Nash</h2>
+<p>Una estrategia es dominante si da más que la otra pase lo que pase. Un equilibrio de Nash es una combinación en la que nadie quiere cambiar por su cuenta: cada uno juega su mejor respuesta a lo que hace el otro. Si hay estrategias dominantes, el equilibrio las usa.</p>
+<h2>Equilibrio mixto</h2>
+<p class="m">A veces conviene decidir al azar. Si el jugador 2 juega su primera estrategia con probabilidad $q$, el 1 queda indiferente entre las suyas cuando sus dos pagos esperados coinciden, y de ahí sale $q$; lo mismo con $p$ para el 2:</p>
+<p class="f m">$q = {a_{22} − a_{12}}/{a_{11} − a_{12} − a_{21} + a_{22}}$</p>
+<p class="f m">$p = {b_{22} − b_{21}}/{b_{11} − b_{12} − b_{21} + b_{22}}$</p>
+<h2>Eficiencia y el dilema del prisionero</h2>
+<p>Un resultado es óptimo de Pareto si no se puede mejorar a uno sin empeorar al otro. El equilibrio de Nash no tiene por qué serlo: en el dilema del prisionero los dos confiesan porque es lo mejor que puede hacer cada uno, aunque los dos saldrían ganando si callaran. Es lo que pasa también con dos empresas que bajan los precios, o con países que no reducen sus emisiones.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Teoría de juegos <span id="ver"></span> (beta)</footer>
+</body>
