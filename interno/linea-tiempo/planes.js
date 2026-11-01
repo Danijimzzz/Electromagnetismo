@@ -6,14 +6,6 @@
    Las herramientas que quedan «Próximamente» se leen de catalogo.js (ver generar.js).
    ===================================================================== */
 module.exports = [
-  { e: 'plan', curso: 1, v: 'Web 1.4.2', f: 'En curso', t: 'Modo Ecuaciones en puertas lógicas', i: '🧮',
-    d: 'Un tercer modo para escribir una ecuación booleana y ver su circuito tal cual o simplificado. Está en un PR en borrador a la espera de salir junto con el simulador de circuitos.',
-    p: [['Lector de ecuaciones booleanas', 1], ['Circuito tal cual y simplificado', 1], ['Salir junto al simulador de circuitos', 0]],
-    l: ['Circuitos', 'PR en borrador'], pr: 'Borrador #87', sp: 'Esperar a que el simulador de circuitos esté terminado y publicar los dos cambios en un único PR.' },
-  { e: 'plan', v: 'Web 1.5', f: 'Próximamente', t: 'Simulador de circuitos', i: '⚡',
-    d: 'Un solo simulador de corriente continua y alterna con editor de arrastrar y soltar, que sustituye a Continua, Alterna y Transitorios.',
-    p: [['Motor de cálculo con pruebas de equivalencia', 0], ['Editor de esquemas compartido', 0], ['Todos los componentes en el primer lanzamiento', 0], ['Retirar las herramientas antiguas sin romper enlaces', 0]],
-    l: ['Circuitos', 'Gran cambio'], pr: 'Plan aprobado', pg: 5, sp: 'Construir el motor y comprobar que da lo mismo que las herramientas actuales.' },
   { e: 'plan', v: 'Fenómenos', f: 'Fase 2', t: 'Cinco fenómenos de la vida real', i: '⚡',
     fen: ['rayo', 'auroras', 'altavoz-motor', 'cocina-induccion', 'cargador-inalambrico'],
     d: 'Los fenómenos de «Física en la vida real» que tocan en la fase 2 de la hoja de ruta.', l: ['Física en la vida real', 'Fase 2'] },
