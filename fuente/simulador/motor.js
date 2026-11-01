@@ -90,10 +90,11 @@ const SimCircuitos = (() => {
   }
 
   /* ---------- Preparación: nudos, ramas e incógnitas ---------- */
-  const RAMA = new Set(['V', 'L', 'VV', 'VI', 'TR', 'AO']);
-  const NOLINEAL = new Set(['D', 'Z', 'LED']);
-  const TIPOS_OK = new Set(['R', 'C', 'L', 'K', 'V', 'I', 'VV', 'VI', 'IV', 'II', 'SW', 'TR', 'AO', 'D', 'Z', 'LED']);
-  const NPINES = { R: 2, C: 2, L: 2, K: 0, V: 2, I: 2, VV: 4, VI: 2, IV: 4, II: 2, SW: 2, TR: 4, AO: 3, D: 2, Z: 2, LED: 2 };
+  const RAMA = new Set(['V', 'L', 'VV', 'VI', 'TR', 'AO', 'AM', 'AOR', 'COMP']);
+  const NOLINEAL = new Set(['D', 'Z', 'LED', 'BJT', 'MOS']); // AOR y COMP lo son solo con saturación (ver esNL)
+  const esNL = (e) => NOLINEAL.has(e.t) || ((e.t === 'AOR' || e.t === 'COMP') && isFinite(e.Vsat));
+  const TIPOS_OK = new Set(['R', 'C', 'L', 'K', 'V', 'I', 'VV', 'VI', 'IV', 'II', 'SW', 'TR', 'AO', 'D', 'Z', 'LED', 'BJT', 'MOS', 'AOR', 'COMP', 'AM', 'VM']);
+  const NPINES = { R: 2, C: 2, L: 2, K: 0, V: 2, I: 2, VV: 4, VI: 2, IV: 4, II: 2, SW: 2, TR: 4, AO: 3, D: 2, Z: 2, LED: 2, BJT: 3, MOS: 3, AOR: 3, COMP: 3, AM: 2, VM: 2 };
   function prepara(net) {
     const crudos = net.elementos || [];
     if (!crudos.length) throw new Error('Añade al menos un componente');
@@ -176,6 +177,40 @@ const SimCircuitos = (() => {
     return vn;
   }
 
+
+  // BJT (Ebers-Moll de transporte). Terminales [C, B, E]; e.pnp invierte la polaridad. Devuelve corrientes que entran por C, B y E
+  // y su derivada respecto a las tensiones de las uniones (vbe, vbc); S pasa de tensiones de nudo a las de las uniones
+  function modeloBJT(e, vbe, vbc) {
+    const Is = e.Is ?? 1e-14, bf = e.bf ?? 100, br = e.br ?? 1, ef = Math.exp(Math.min(vbe / VT, 80)), er = Math.exp(Math.min(vbc / VT, 80));
+    const IF = Is * (ef - 1), IR = Is * (er - 1), gF = Is * ef / VT + GMIN, gR = Is * er / VT + GMIN, s = e.pnp ? -1 : 1;
+    const ic = IF - IR * (1 + 1 / br), ib = IF / bf + IR / br;
+    // derivadas (con respecto a vbe, vbc) de ic e ib
+    const dic = [gF, -gR * (1 + 1 / br)], dib = [gF / bf, gR / br];
+    return { I: [s * ic, s * ib, -s * (ic + ib)], Jj: [[s * dic[0], s * dic[1]], [s * dib[0], s * dib[1]], [-s * (dic[0] + dib[0]), -s * (dic[1] + dib[1])]] };
+  }
+  // MOSFET de nivel 1. Terminales [D, G, S]; e.p tipo P invierte la polaridad. Devuelve corrientes por D, G y S y su jacobiano respecto a (Vd, Vg, Vs)
+  function modeloMOS(e, Vd, Vg, Vs) {
+    const k = e.k ?? 2e-3, Vth = e.Vth ?? 2, lam = e.lambda ?? 0, s = e.pmos ? -1 : 1;
+    const f = (vgs, vds) => { // vds >= 0
+      const vov = vgs - Vth;
+      if (vov <= 0) return { id: 0, gm: 0, gds: GMIN };
+      if (vds < vov) return { id: k * (vov * vds - vds * vds / 2) * (1 + lam * vds), gm: k * vds * (1 + lam * vds), gds: k * (vov - vds) * (1 + lam * vds) + k * (vov * vds - vds * vds / 2) * lam + GMIN };
+      return { id: k / 2 * vov * vov * (1 + lam * vds), gm: k * vov * (1 + lam * vds), gds: k / 2 * vov * vov * lam + GMIN };
+    };
+    const d = s * Vd, g = s * Vg, so = s * Vs;
+    let Id, J; // J = [dId/dVd, dId/dVg, dId/dVs] en tensiones primadas
+    if (d >= so) { const m = f(g - so, d - so); Id = m.id; J = [m.gds, m.gm, -m.gm - m.gds]; }
+    else { const m = f(g - d, so - d); Id = -m.id; J = [m.gm + m.gds, -m.gm, -m.gds]; }
+    return { I: [s * Id, 0, -s * Id], J: [[J[0], J[1], J[2]], [0, 0, 0], [-J[0], -J[1], -J[2]]] };
+  }
+  // operacional real y comparador: V_sal = Vsat·tanh(A·(V+ − V−)/Vsat) (lineal V_sal = A·vd si no hay Vsat)
+  function modeloAO(e, vd) {
+    const A0 = e.A ?? (e.t === 'COMP' ? 1e6 : 1e5);
+    if (!isFinite(e.Vsat)) return { out: A0 * vd, g: A0 };
+    const th = Math.tanh(A0 * vd / e.Vsat);
+    return { out: e.Vsat * th, g: A0 * (1 - th * th) + 1e-9 };
+  }
+
   // Ensambla el sistema. ctx: { modo: 'dc' | 'ac' | 'tr', w, t, h, f, x (iterado), prev, euler, fuentes }
   function ensambla(P, ctx) {
     const { modo, w = 0, t = 0, h = 0, x = null, prev = null, euler = false, f = 0 } = ctx;
@@ -242,6 +277,39 @@ const SimCircuitos = (() => {
           adm(A, a, b, g); A.rhs(a, -Ieq); A.rhs(b, Ieq);
           break;
         }
+        case 'AM': A.add(a, r, 1); A.add(b, r, -1); A.add(r, a, 1); A.add(r, b, -1); break; // amperímetro: fuente de 0 V
+        case 'VM': adm(A, a, b, 1e-9); break; // voltímetro: 1 GΩ
+        case 'AOR': case 'COMP': {
+          const [pos, neg, sal] = e.q, vd0 = ctx.modo === 'ac' ? ctx.op.vd[e.id] : (ctx.vd[e.id] = ctx.x ? (v(pos) - v(neg)) : 0);
+          const m = modeloAO(e, ctx.modo === 'ac' ? vd0 : vd0);
+          A.add(sal, r, 1); A.add(r, sal, 1); A.add(r, pos, -m.g); A.add(r, neg, m.g);
+          if (ctx.modo !== 'ac') A.rhs(r, m.out - m.g * vd0);
+          break;
+        }
+        case 'BJT': {
+          const [c, b, em] = e.q, s = e.pnp ? -1 : 1;
+          let vj;
+          if (modo === 'ac') vj = ctx.op.vd[e.id];
+          else { const o = ctx.vd[e.id] || [0, 0], fake = { n: 1, Is: e.Is ?? 1e-14 }; vj = [limita(s * (v(b) - v(em)), o[0], fake), limita(s * (v(b) - v(c)), o[1], fake)]; ctx.vd[e.id] = vj; }
+          const m = modeloBJT(e, ...vj), q = [c, b, em];
+          // dvj/dV: vbe = s(Vb − Ve), vbc = s(Vb − Vc)
+          const S = [[0, s, -s], [-s, s, 0]]; // columnas C, B, E
+          for (let i = 0; i < 3; i++) {
+            let Ieq = m.I[i]; for (let k = 0; k < 2; k++) { Ieq -= m.Jj[i][k] * vj[k]; for (let j = 0; j < 3; j++) A.add(q[i], q[j], m.Jj[i][k] * S[k][j]); }
+            if (modo !== 'ac') A.rhs(q[i], -Ieq);
+          }
+          break;
+        }
+        case 'MOS': {
+          const [dd, gg, ss] = e.q, V = modo === 'ac' ? ctx.op.vd[e.id] : [v(dd), v(gg), v(ss)];
+          if (modo !== 'ac') ctx.vd[e.id] = V;
+          const m = modeloMOS(e, ...V), q = [dd, gg, ss];
+          for (let i = 0; i < 3; i++) {
+            let Ieq = m.I[i]; for (let j = 0; j < 3; j++) { A.add(q[i], q[j], m.J[i][j]); Ieq -= m.J[i][j] * V[j]; }
+            if (modo !== 'ac') A.rhs(q[i], -Ieq);
+          }
+          break;
+        }
         default: break;
       }
     }
@@ -267,7 +335,7 @@ const SimCircuitos = (() => {
 
   // Resuelve un paso (Newton si hay no lineales). Devuelve el vector de incógnitas { re, im }
   function paso(P, ctx, maxIt = 150) {
-    const hayNL = P.els.some((e) => NOLINEAL.has(e.t));
+    const hayNL = P.els.some(esNL);
     let x = ctx.x || { re: new Float64Array(P.M), im: new Float64Array(P.M) };
     for (let it = 0; it < (hayNL && ctx.modo !== 'ac' ? maxIt : 1); it++) {
       const A = ensambla(P, { ...ctx, x });
@@ -275,6 +343,7 @@ const SimCircuitos = (() => {
       if (!s) throw new Error('El circuito no tiene solución única: revisa fuentes de tensión en paralelo, fuentes de corriente en serie o nudos sin camino de continua');
       if (!hayNL || ctx.modo === 'ac') return s;
       let dx = 0; for (let k = 0; k < P.M; k++) dx = Math.max(dx, Math.abs(s.re[k] - x.re[k]) - 1e-9 - 1e-6 * Math.abs(s.re[k]));
+      if (it > 0 || ctx.x) for (let k = 0; k < P.N; k++) { const d = s.re[k] - x.re[k]; if (Math.abs(d) > 2) s.re[k] = x.re[k] + Math.sign(d) * 2; } // paso máximo de 2 V por iteración
       x = s;
       if (dx <= 0 && it > 0) return s;
     }
@@ -283,11 +352,25 @@ const SimCircuitos = (() => {
 
   /* ---------- Resultados por componente ---------- */
   const cx = (re, im = 0) => ({ re, im });
+  // corrientes por los tres terminales de un transistor en la solución x (y su potencia absorbida)
+  function terminales(e, V, modo, ctx) {
+    const q = e.q, T = q.map((n) => V(n));
+    if (modo === 'ac') {
+      const o = ctx.op.vd[e.id];
+      let J;
+      if (e.t === 'BJT') { const m = modeloBJT(e, ...o), s = e.pnp ? -1 : 1, S = [[0, s, -s], [-s, s, 0]]; J = m.Jj.map((fila) => [0, 1, 2].map((j) => fila[0] * S[0][j] + fila[1] * S[1][j])); } else J = modeloMOS(e, ...o).J;
+      const I = [0, 1, 2].map((i) => cx(J[i].reduce((a, g, j) => a + g * T[j].re, 0), J[i].reduce((a, g, j) => a + g * T[j].im, 0)));
+      return { I, P: cx(0) };
+    }
+    let I;
+    if (e.t === 'BJT') { const s = e.pnp ? -1 : 1; I = modeloBJT(e, s * (T[1].re - T[2].re), s * (T[1].re - T[0].re)).I; } else I = modeloMOS(e, T[0].re, T[1].re, T[2].re).I;
+    return { I: I.map((v) => cx(v)), P: cx(T.reduce((a, t, j) => a + t.re * I[j], 0)) };
+  }
   function resultados(P, x, modo, w, h, prev, euler, ctx) {
     const V = (q) => (q < 0 ? cx(0) : cx(x.re[q], x.im[q]));
     const dif = (a, b) => cx(V(a).re - V(b).re, V(a).im - V(b).im);
     const tensiones = {}; P.nombres.forEach((n, i) => { tensiones[n] = V(i); });
-    const I = {}, U = {}, Pot = {};
+    const I = {}, U = {}, Pot = {}, Iter = {};
     for (const e of P.els) {
       if (e.t === 'K') continue;
       const [a, b] = e.q, u = e.t === 'TR' ? dif(a, b) : e.t === 'AO' ? dif(e.q[2], -1) : dif(a, b);
@@ -299,12 +382,15 @@ const SimCircuitos = (() => {
       else if (e.t === 'I') { const f = ctx.fuente(e); i = cx(f.re, f.im); }
       else if (e.t === 'IV') i = cx(e.g * (V(e.q[2]).re - V(e.q[3]).re), e.g * (V(e.q[2]).im - V(e.q[3]).im));
       else if (e.t === 'II') { const f = formaCorriente(e.x, modo, w, h); let sr = 0, si = 0; for (const [c, gr, gi] of f) { const xr = x.re[c] ?? 0, xi = x.im[c] ?? 0; sr += gr * xr - gi * xi; si += gr * xi + gi * xr; } i = cx(e.beta * sr, e.beta * si); }
+      else if (e.t === 'VM') i = cx(u.re * 1e-9, u.im * 1e-9);
+      else if (e.t === 'BJT' || e.t === 'MOS') { const r3 = terminales(e, V, modo, ctx); i = r3.I[0]; Pot[e.id] = r3.P; I[e.id] = i; U[e.id] = e.t === 'BJT' ? dif(e.q[0], e.q[2]) : dif(e.q[0], e.q[2]); Iter[e.id] = r3.I; continue; }
+      else if (e.t === 'AOR' || e.t === 'COMP') { i = cx(x.re[e.rama], x.im[e.rama]); I[e.id] = i; U[e.id] = V(e.q[2]); Pot[e.id] = modo === 'ac' ? cx(0) : cx(0); continue; }
       else if (NOLINEAL.has(e.t)) { if (modo === 'ac') i = cx(u.re * modeloDiodo(e, ctx.op.vd[e.id]).g, u.im * modeloDiodo(e, ctx.op.vd[e.id]).g); else i = cx(modeloDiodo(e, u.re).i); }
       I[e.id] = i; U[e.id] = u;
       // potencia absorbida: en continua y transitorio U·I; en alterna la compleja S = U·conj(I)/2 (valores de pico)
       Pot[e.id] = modo === 'ac' ? cx((u.re * i.re + u.im * i.im) / 2, (u.im * i.re - u.re * i.im) / 2) : cx(u.re * i.re);
     }
-    return { V: tensiones, I, U, P: Pot };
+    return { V: tensiones, I, U, P: Pot, Iter };
   }
 
   /* ---------- Análisis ---------- */
@@ -326,7 +412,7 @@ const SimCircuitos = (() => {
   function fasores(net, op) {
     const P = op?.P_ || prepara(net);
     ponSW(P, -Infinity);
-    if (!op && P.els.some((e) => NOLINEAL.has(e.t))) op = operacion(net); // solo hace falta el punto de operación si hay no lineales
+    if (!op && P.els.some(esNL)) op = operacion(net); // solo hace falta el punto de operación si hay no lineales
     const fr = [...new Set(P.els.filter((e) => (e.t === 'V' || e.t === 'I') && e.onda.tipo === 'seno').map((e) => e.onda.f))].sort((a, b) => a - b);
     return fr.map((f) => {
       const w = 2 * Math.PI * f;
@@ -335,6 +421,28 @@ const SimCircuitos = (() => {
       const x = paso(P, ctx);
       return { f, w, ...resultados(P, x, 'ac', w, 0, null, false, ctx) };
     });
+  }
+
+  // Barrido en frecuencia: la fuente `fuente` (V o I) vale 1 con fase 0 y las demás se anulan; devuelve la relación entre
+  // la tensión entre los nudos [a, b] y esa fuente (módulo, dB y fase en grados) para cada frecuencia, repartidas en escala logarítmica
+  function barrido(net, { fuente, a, b = '0', fmin = 1, fmax = 1e6, puntos = 200 }) {
+    const P = prepara(net); ponSW(P, -Infinity);
+    if (!P.els.find((e) => e.id === fuente && (e.t === 'V' || e.t === 'I'))) throw new Error(`No hay ninguna fuente llamada ${fuente}`);
+    const ia = P.nodo(a), ib = P.nodo(b);
+    if (ia === undefined || ib === undefined) throw new Error('El nudo de salida no existe');
+    const op = P.els.some(esNL) ? operacion(net) : null, out = { f: [], mod: [], dB: [], fase: [] };
+    for (let k = 0; k < puntos; k++) {
+      const f = fmin * Math.pow(fmax / fmin, k / (puntos - 1)), w = 2 * Math.PI * f;
+      const x = paso(P, { modo: 'ac', w, op, fuente: (e) => (e.id === fuente ? cx(1) : cx(0)) });
+      const re = (ia < 0 ? 0 : x.re[ia]) - (ib < 0 ? 0 : x.re[ib]), im = (ia < 0 ? 0 : x.im[ia]) - (ib < 0 ? 0 : x.im[ib]), m = Math.hypot(re, im);
+      out.f.push(f); out.mod.push(m); out.dB.push(20 * Math.log10(Math.max(m, 1e-300))); out.fase.push(Math.atan2(im, re) * 180 / Math.PI);
+    }
+    return out;
+  }
+
+  // Fuente trifásica equilibrada en estrella: tres fuentes de tensión de eficaz `Vf` entre cada fase y el neutro, con fases 0°, −120° y 120°
+  function trifasica(id, [r, s, t, n], Vf, f, fase0 = 0) {
+    return [[r, 0], [s, -120], [t, 120]].map(([q, d], i) => ({ id: `${id}${'RST'[i]}`, t: 'V', p: [q, n], onda: { tipo: 'seno', A: Vf, eficaz: true, f, fase: fase0 + d } }));
   }
 
   // Transitorio: tfin y, si se quiere, paso máximo h. Devuelve series t, V[nudo][], I[id][], U[id][], P[id][]
@@ -400,6 +508,6 @@ const SimCircuitos = (() => {
     return { media: s / T, rms: Math.sqrt(s2 / T) };
   }
 
-  return { operacion, fasores, transitorio, valor, continua, estadistica, mod, arg, prepara };
+  return { operacion, fasores, barrido, trifasica, transitorio, valor, continua, estadistica, mod, arg, prepara };
 })();
 if (typeof module !== 'undefined') module.exports = SimCircuitos;

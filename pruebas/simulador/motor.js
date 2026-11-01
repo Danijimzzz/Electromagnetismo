@@ -90,6 +90,21 @@ const V5 = { id: 'E', t: 'V', p: ['a', '0'], onda: { tipo: 'escalon', v1: 0, v2:
   const k0 = tr.t.findIndex((t) => t >= 0.9e-3), k1 = tr.t.findIndex((t) => t >= 2e-3);
   cerca(tr.V.c[k0], 0, 1e-6, 'interruptor: antes de cerrar'); cerca(tr.V.c[k1], 5 * (1 - Math.exp(-1)), 3e-3, 'interruptor: 1 τ después de cerrar'); }
 
+{ // transistor NPN en emisor común: Vcc 12 V, R_B 470 kΩ, R_C 1 kΩ → I_B ≈ 24 μA, I_C ≈ β·I_B ≈ 2,4 mA, V_C ≈ 9,6 V
+  const r = S.operacion({ elementos: [{ id: 'Vcc', t: 'V', p: ['vcc', '0'], onda: cc(12) }, { id: 'RB', t: 'R', p: ['vcc', 'b'], R: 470e3 }, { id: 'RC', t: 'R', p: ['vcc', 'c'], R: 1000 }, { id: 'Q', t: 'BJT', p: ['c', 'b', '0'] }] });
+  if (!(r.V.c.re > 9.2 && r.V.c.re < 9.9)) mal(`BJT: V_C = ${r.V.c.re}`); if (!(r.V.b.re > 0.6 && r.V.b.re < 0.75)) mal(`BJT: V_BE = ${r.V.b.re}`); cerca(r.balance, 0, 1e-6, 'BJT: balance de potencias'); }
+{ // MOSFET de enriquecimiento en saturación: k = 2 mS/V², V_th = 2 V, V_GS = 4 V → I_D = ½·k·(V_GS − V_th)² = 4 mA, V_D = 10 − 4 = 6 V
+  const r = S.operacion({ elementos: [{ id: 'Vdd', t: 'V', p: ['vdd', '0'], onda: cc(10) }, { id: 'Vg', t: 'V', p: ['g', '0'], onda: cc(4) }, { id: 'RD', t: 'R', p: ['vdd', 'd'], R: 1000 }, { id: 'M', t: 'MOS', p: ['d', 'g', '0'], k: 2e-3, Vth: 2 }] });
+  cerca(r.V.d.re, 6, 1e-6, 'MOSFET: V_D'); cerca(r.balance, 0, 1e-6, 'MOSFET: balance de potencias'); }
+{ // operacional real no inversor: ganancia 1 + R2/R1 = 11, con saturación a ±12 V
+  const el = (vin) => [{ id: 'E', t: 'V', p: ['e', '0'], onda: cc(vin) }, { id: 'R1', t: 'R', p: ['n', '0'], R: 1000 }, { id: 'R2', t: 'R', p: ['s', 'n'], R: 10000 }, { id: 'A', t: 'AOR', p: ['e', 'n', 's'], A: 1e5, Vsat: 12 }];
+  cerca(S.operacion({ elementos: el(0.5) }).V.s.re, 5.5, 1e-3, 'operacional real: sin saturar'); cerca(S.operacion({ elementos: el(2) }).V.s.re, 12, 1e-2, 'operacional real: saturado'); }
+{ // Bode de un RC: f_c = 1/(2πRC), −3 dB y −45° en la frecuencia de corte
+  const fc = 1 / (2 * Math.PI * 1000 * 159e-9), b = S.barrido({ elementos: [{ id: 'E', t: 'V', p: ['a', '0'], onda: { tipo: 'seno', A: 1, f: 1 } }, { id: 'R', t: 'R', p: ['a', 'b'], R: 1000 }, { id: 'C', t: 'C', p: ['b', '0'], C: 159e-9 }] }, { fuente: 'E', a: 'b', fmin: fc / 100, fmax: fc * 100, puntos: 201 });
+  cerca(b.dB[100], -3.0103, 1e-3, 'Bode RC: −3 dB en f_c'); cerca(b.fase[100], -45, 1e-3, 'Bode RC: −45° en f_c'); cerca(b.dB[200], -40, 5e-3, 'Bode RC: −40 dB una década doble después'); }
+{ // trifásica en estrella con carga equilibrada: corriente de línea = V_f/Z, neutro sin corriente
+  const Z = 10, el = [...S.trifasica('G', ['r', 's', 't', 'n'], 230, 50), { id: 'Rr', t: 'R', p: ['r', 'n'], R: Z }, { id: 'Rs', t: 'R', p: ['s', 'n'], R: Z }, { id: 'Rt', t: 'R', p: ['t', 'n'], R: Z }, { id: 'T', t: 'R', p: ['n', '0'], R: 1e-3 }];
+  const f = S.fasores({ elementos: el })[0]; cerca(S.mod(f.I.Rr) / Math.SQRT2, 23, 1e-9, 'trifásica: corriente de fase'); cerca(S.mod(f.V.n), 0, 1e-6, 'trifásica: neutro a 0 V'); cerca(S.mod(f.V.r) / S.mod(f.V.s), 1, 1e-9, 'trifásica: tensiones iguales en módulo'); }
 // 4. Coherencia: transitorio en régimen estacionario = fasores, y continua + alterna a la vez
 {
   const el = [{ id: 'E', t: 'V', p: ['a', '0'], onda: { tipo: 'seno', A: 2, f: 1000, fase: 0, off: 5 } }, { id: 'R', t: 'R', p: ['a', 'b'], R: 1000 }, { id: 'C', t: 'C', p: ['b', '0'], C: 159e-9 }];
