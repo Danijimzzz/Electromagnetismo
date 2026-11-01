@@ -11,7 +11,7 @@ module.exports = [
     d: 'Los fenómenos de «Física en la vida real» que tocan en la fase 2 de la hoja de ruta.', l: ['Física en la vida real', 'Fase 2'] },
   { e: 'futuro', v: 'Fase 3', f: 'Después', t: 'Herramientas de dificultad media', i: '📡',
     claves: ['maxwell', 'fresnel', 'gravitacion', 'optica', 'bode', 'convolucion', 'laplace-numerica', 'imagenes', 'guias-onda', 'antena'],
-    fen: ['olla-presion', 'gps-relatividad', 'tension-paso', 'cielo-azul'],
+    fen: ['olla-presion', 'tension-paso', 'cielo-azul'],
     d: 'La tercera fase de la hoja de ruta, ordenada solo por dificultad de construcción.', l: ['Hoja de ruta', 'Fase 3'] },
   { e: 'futuro', v: 'Fase 4', f: 'Más adelante', t: 'Herramientas difíciles', i: '🔬',
     claves: ['lineas-transmision', 'superficies', 'balance', 'integrales-multiples', 'redox', 'vsepr', 'formulacion'],
