@@ -1,0 +1,58 @@
+<title>Probabilidad · SimulaCiencia</title>
+<meta name="description" content="Combinatoria, probabilidad condicionada, probabilidad total y teorema de Bayes con el diagrama de árbol.">
+<style>
+:root {
+  --alto-grafica: clamp(240px, 36vw, 340px);
+  --rama: #2a5db5; --rama2: #c2412a }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --rama: #74a2f2; --rama2: #ef7a62 } }
+:root[data-theme="dark"] {
+  --rama: #74a2f2; --rama2: #ef7a62 }
+.causas { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr); gap: 6px 8px; align-items: center }
+.causas span { font: 500 12px var(--f-ui); color: var(--muted) }
+.causas .in { width: 100% }
+#resumen b { font-family: var(--f-math); font-size: 19px }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Estadística</a> / Probabilidad</span></header>
+<div class="wrap">
+<h1>Probabilidad: combinatoria, sucesos y Bayes</h1>
+<p class="lead">Cuenta casos con variaciones, permutaciones y combinaciones, calcula la probabilidad de la unión, la intersección y la condicionada de dos sucesos, y resuelve problemas de probabilidad total y teorema de Bayes con el diagrama de árbol.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <div class="modos" role="tablist" aria-label="Qué se calcula"><button type="button" role="tab" data-modo="comb" aria-selected="true">Combinatoria</button><button type="button" role="tab" data-modo="suc" aria-selected="false">Sucesos</button><button type="button" role="tab" data-modo="bayes" aria-selected="false">Total y Bayes</button></div>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card" id="tarjeta-grafica"><h2 id="titulo-grafica">Diagrama</h2>
+      <canvas id="grafica" aria-label="Diagrama de árbol o de áreas con las probabilidades"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Cuántos casos hay: combinatoria</h2>
+  <p>Para contar casos hay que responder dos preguntas: si importa el orden y si se puede repetir. Si importa el orden y se eligen k de n elementos distintos sin repetir, son variaciones; si además se usan todos, permutaciones. Si no importa el orden, combinaciones.</p>
+  <p class="f m">$V_{n,k} = {n!}/{(n − k)!}$, &ensp; $VR_{n,k} = n^k$, &ensp; $P_n = n!$</p>
+  <p class="f m">$C_{n,k} = binom(n, k) = {n!}/{k!(n − k)!}$, &ensp; $CR_{n,k} = binom(n + k − 1, k)$, &ensp; $PR_n^{a,b,…} = {n!}/{a!b!⋯}$</p>
+  <p>Cuando todos los casos son igualmente probables, la regla de Laplace da la probabilidad como casos favorables entre casos posibles.</p>
+  <p class="f m">$P(A) = {"casos favorables"}/{"casos posibles"}$</p>
+  <h2>Unión, intersección y condicionada</h2>
+  <p>La probabilidad de la unión suma las de cada suceso y resta la intersección, que se habría contado dos veces. La condicionada es la probabilidad de A sabiendo que ha ocurrido B.</p>
+  <p class="f m">$P(A ∪ B) = P(A) + P(B) − P(A ∩ B)$, &ensp; $P(A | B) = {P(A ∩ B)}/{P(B)}$</p>
+  <p>Dos sucesos son independientes si saber que ocurre uno no cambia la probabilidad del otro: P(A ∩ B) = P(A)·P(B). Son incompatibles si no pueden ocurrir a la vez (P(A ∩ B) = 0); si ambos tienen probabilidad no nula, nunca son independientes. Las leyes de De Morgan dicen que el contrario de la unión es la intersección de los contrarios.</p>
+  <p class="f m">$P(Ā ∩ B̄) = 1 − P(A ∪ B)$</p>
+  <h2>Probabilidad total y teorema de Bayes</h2>
+  <p>Si las causas A₁, …, Aₙ forman un sistema completo (son incompatibles dos a dos y suman 1), la probabilidad de un suceso B es la suma de lo que aporta cada rama del árbol. El teorema de Bayes da la probabilidad de cada causa sabiendo que B ha ocurrido.</p>
+  <p class="f m">$P(B) = ∑ P(A_i)·P(B | A_i)$, &ensp; $P(A_i | B) = {P(A_i)·P(B | A_i)}/{P(B)}$</p>
+  <p>Las probabilidades P(Aᵢ) son las <b>a priori</b> y las P(Aᵢ | B), las <b>a posteriori</b>. Por eso una prueba médica muy fiable puede dar muchos falsos positivos si la enfermedad es rara: la prevalencia pesa mucho en P(B).</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Probabilidad <span id="ver"></span> (beta)</footer>
+</body>
