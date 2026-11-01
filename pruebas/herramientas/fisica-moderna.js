@@ -15,6 +15,8 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     // muones: γ = 1/√(1 − 0,998²) = 15,819; Δt = 34,80 µs; d = 0,998 · 3·10⁸ · 34,80·10⁻⁶ = 10,42 km
     const m = ej('muon'); cerca(m.g, 15.8193, 1e-4, 'γ del muon'); cerca(m.t * 1e6, 34.8025, 1e-3, 'Δt (µs)'); cerca(m.d, 10419.86, 0.1, 'distancia (m)');
     cerca(ej('nave').L, 60, 1e-9, 'longitud de la nave');
+    // satélite GPS: β = 3874/3·10⁸ = 1,2913·10⁻⁵; γ − 1 = β²/2 = 8,3375·10⁻¹¹; en 86400 s se atrasa 7,2036·10⁻⁶ s
+    const gps = C.resolver({ modo: 'dilatacion', uv: 'ms', v: '3874', t0: '86400' }); cerca(gps.dif * 1e6, 7.2038, 1e-3, 'diferencia del satélite GPS (µs)');
     // protón a 0,9c: γ = 2,2942; E0 = 1,673·10⁻²⁷ · 9·10¹⁶ = 1,5057·10⁻¹⁰ J; Ec = 1,2942 · E0
     const p = ej('proton'); cerca(p.E0, 1.5057e-10, 1e-15, 'E0'); cerca(p.Ec, (1 / Math.sqrt(1 - 0.81) - 1) * 1.5057e-10, 1e-15, 'Ec del protón');
     error({ modo: 'dilatacion', uv: 'c', v: '1', t0: '1' }, 'v = c'); error({ modo: 'contraccion', uv: 'ms', v: '4e8', L0: '1' }, 'más rápido que la luz');

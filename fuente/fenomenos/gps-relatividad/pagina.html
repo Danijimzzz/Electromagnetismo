@@ -1,0 +1,58 @@
+<title>El GPS y la relatividad: por qué el reloj de un satélite adelanta</title>
+<meta name="description" content="Por qué el reloj de un satélite GPS adelanta 38,5 microsegundos al día: 7,2 µs de atraso por la velocidad y 45,7 µs de adelanto por la gravedad, y por qué sin esa corrección el GPS fallaría 11 km al día, con una animación paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<!-- =====================================================================
+     El GPS y la relatividad («Física en la vida real»). Maqueta común de los
+     fenómenos (ver fuego-san-telmo/pagina.html): animación, texto del paso, historia
+     y recuadro de la herramienta. Los pasos, el dibujo y el sonido están en escena.js.
+     ===================================================================== -->
+<style>
+/* colores del dibujo, con su valor en modo oscuro (el espacio es oscuro en los dos modos) */
+:root {
+  --espacio: #0b1530; --espacio-alto: #050a1a; --estrella: #f2f5ff; --orbita: #9fb4e8; --tierra: #3f86c7; --tierra2: #4f9a62; --tierra-borde: #1c4f86; --aire: #7fc0ff;
+  --satelite: #d9dde6; --panelsol: #2f5fcf; --antena: #f0c14b; --movil: #2a3139; --pantalla: #bfe0ff;
+  --senal: #3ac0ff; --atraso: #e0574f; --adelanto: #37b26c; --saldo: #f0a52e; --error: #ff6b5e; --rotulo: #1a2128 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --senal: #5fd0ff; --atraso: #ef7a72; --adelanto: #52d08a; --saldo: #f5b84a; --error: #ff8479; --rotulo: #e3e8ea } }
+:root[data-theme="dark"] {
+  --senal: #5fd0ff; --atraso: #ef7a72; --adelanto: #52d08a; --saldo: #f5b84a; --error: #ff8479; --rotulo: #e3e8ea }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física en la vida real</a> / El GPS y la relatividad</span></header>
+<div class="wrap fen">
+<div class="fen-etiquetas"><span>∿ Física general</span><span>Dificultad media</span><span>6 pasos · 1 min</span></div>
+<h1>El GPS y la relatividad</h1>
+<p class="lead">El GPS de tu móvil funciona gracias a Einstein. Los relojes de los satélites van a su ritmo y, si nadie lo corrigiera, en un solo día te dirían que estás a 11 km de donde estás. ¿Por qué se desajustan y cómo se arregla?</p>
+<div class="fen-escena"><canvas id="escena" role="img" aria-label="Animación de cuatro satélites GPS en órbita que envían su señal a un móvil en la Tierra, con los relojes que se atrasan por la velocidad, se adelantan por la gravedad y el error que crecería sin corregirlo"></canvas></div>
+<div class="fen-puntos" id="puntos" role="group" aria-label="Pasos"></div>
+<div class="fen-controles">
+  <button class="btn" id="ant" type="button">‹ Anterior</button>
+  <button class="btn" id="play" type="button" aria-pressed="true">❚❚ Parar</button>
+  <button class="btn" id="sig" type="button">Siguiente ›</button>
+</div>
+<div class="fen-texto" aria-live="polite"><h2 id="paso-t"></h2><div id="paso-x"></div></div>
+<section class="fen-historia" aria-label="Un poco de historia">
+  <h2>Un poco de historia</h2>
+  <ol>
+    <li><b>1905</b>Albert Einstein publica la relatividad especial: un reloj que se mueve marcha más despacio que uno que está quieto.</li>
+    <li><b>1915</b>Con la relatividad general, Einstein añade que el tiempo también pasa más deprisa donde hay menos gravedad. Durante décadas parecía una curiosidad sin uso práctico.</li>
+    <li><b>1971</b>Hafele y Keating suben relojes atómicos de cesio a aviones comerciales y los pasean alrededor del mundo: al volver, se habían desfasado cientos de nanosegundos, como predecía la teoría.</li>
+    <li><b>1977</b>El satélite NTS-2 sale al espacio con la corrección relativista sin activar durante unas tres semanas. Su reloj adelantó casi exactamente lo previsto y después se activó el ajuste.</li>
+    <li><b>1995</b>El GPS está completo, con 24 satélites. Desde entonces los relojes se ajustan antes del lanzamiento teniendo en cuenta la relatividad.</li>
+  </ol>
+</section>
+<section class="fen-rel" aria-label="Herramienta relacionada">
+  <div class="fen-ico" aria-hidden="true">γ</div>
+  <h2>Con qué herramienta se relaciona</h2>
+  <h3>Física moderna <small>· Física general</small></h3>
+  <p>La parte de la velocidad es la dilatación del tiempo de la relatividad especial: el reloj del satélite, que va a 3874 m/s, marca un tiempo propio de un día mientras en la Tierra pasa algo más. La de la gravedad es de la relatividad general y no la calcula esta herramienta.</p>
+  <p class="f m">Δt = γ Δt₀ ,  γ − 1 ≈ v²/(2c²)</p>
+  <p>Se abre en «Dilatación del tiempo» con v = 3874 m/s y un día (86 400 s) de tiempo propio. La diferencia entre los dos relojes sale de 7,2 µs.</p>
+  <div class="fen-fichas"><div><small>Velocidad del satélite</small><b>3874 m/s</b></div><div><small>Tiempo propio</small><b>86 400 s</b></div><div><small>Diferencia</small><b>Δt − Δt₀ ≈ 7,2 µs</b></div></div>
+  <a class="fen-abrir" id="abrir" href="../../fisica/fisica-moderna/">Abrir en Física moderna con estos datos →</a>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Física en la vida real <span id="ver"></span> (beta)</footer>
+</body>

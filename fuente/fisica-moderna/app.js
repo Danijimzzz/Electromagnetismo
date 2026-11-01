@@ -31,7 +31,7 @@
       if (s.modo === 'fotoelectrico') return s.emite ? [['Energía cinética máxima', `${f(s.Ec)} eV`, true], ['Velocidad máxima', `${f(s.vmax)} m/s`], ['Potencial de frenado', `${f(s.V0)} V`], ['Energía del fotón', `${f(s.Ev)} eV`], ['Frecuencia umbral', `${f(s.f0)} Hz`]]
         : [['Electrones', 'no se arranca ninguno', true], ['Energía del fotón', `${f(s.Ev)} eV`], ['Trabajo de extracción', `${f(s.W)} eV`], ['Longitud de onda umbral', `${f(s.lam0 * 1e9)} nm`]];
       if (s.modo === 'debroglie') return [['Longitud de onda λ', `${f(s.lam)} m`, true], ['Momento lineal', `${f(s.p)} kg·m/s`], ['Velocidad', `${f(s.b)} c`]];
-      if (s.modo === 'dilatacion') return [['Tiempo dilatado Δt', `${f(s.t)} s`, true], ['Factor γ', f(s.g, 5)], ['Distancia recorrida', `${f(s.d)} m`]];
+      if (s.modo === 'dilatacion') return [['Tiempo dilatado Δt', `${f(s.t)} s`, true], ['Diferencia Δt − Δt₀', `${f(s.dif)} s`], ['Factor γ', f(s.g, 5)], ['Distancia recorrida', `${f(s.d)} m`]];
       if (s.modo === 'contraccion') return [['Longitud L', `${f(s.L)} m`, true], ['Factor γ', f(s.g, 5)]];
       return [['Energía cinética', `${f(s.Ec)} J`, true], ['Energía total', `${f(s.Et)} J`], ['Energía en reposo', `${f(s.E0)} J`], ['Momento lineal', `${f(s.p)} kg·m/s`], ['Factor γ', f(s.g, 5)]];
     },

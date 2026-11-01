@@ -1,0 +1,53 @@
+<title>Calculadora de antena dipolo: diagrama de radiación</title>
+<meta name="description" content="Calcula el diagrama de radiación, la potencia radiada, la resistencia de radiación, la directividad y el campo en un punto de un dipolo corto, de media onda o de cualquier longitud, paso a paso.">
+<style>
+/* Solo lo propio de esta herramienta. Las medidas comunes se ajustan con sus variables
+   y los colores propios (los de las gráficas) van aquí, con su valor en modo oscuro. */
+:root {
+  --ancho-valor: 175px; --alto-grafica: clamp(300px, 52vw, 420px);
+  --serie-1: #2a5db5; --serie-2: #c2412a }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62 }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Electromagnetismo</a> / Antena dipolo y radiación</span></header>
+<div class="wrap">
+<h1>Antena dipolo y radiación</h1>
+<p class="lead">Calcula el diagrama de radiación, la potencia radiada, la resistencia de radiación, la directividad y el campo en un punto de un dipolo corto, de media onda o de cualquier longitud, paso a paso.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Diagrama de radiación</h2>
+      <canvas id="grafica" aria-label="Diagrama de radiación polar"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Campo lejano de un dipolo</h2>
+  <p class="m">Una antena de hilo recorrida por una corriente alterna de amplitud $I_0$ radia ondas esféricas. Lejos de ella ($r ≫ λ$ y $r ≫ 2L^2/λ$) el campo eléctrico solo tiene componente $θ̂$ y decae como $1/r$:</p>
+  <p class="f m">$|E| = {η_0 I_0}/{2π r} F(θ)$, &ensp; $|B| = |E|/c$, &ensp; $S = {|E|^2}/{2η_0}$</p>
+  <p class="m">El ángulo θ se mide desde el eje de la antena y $η_0 = 376{,}73 Ω$. La forma del diagrama $F(θ)$ depende de la longitud $L$:</p>
+  <p class="f m">Dipolo corto ($L ≤ λ/10$): $F(θ) = π {L}/{λ} sin θ$</p>
+  <p class="f m">Longitud cualquiera: $F(θ) = {cos(π {L}/{λ} cos θ) − cos(π {L}/{λ})}/{sin θ}$</p>
+  <p class="m">En el de media onda ($L = λ/2$) queda $F = cos(π/2 cos θ)/sin θ$. El diagrama no radia a lo largo del eje y es máximo en el plano perpendicular a la antena; si $L > λ$ aparecen lóbulos laterales.</p>
+  <h2>Potencia, resistencia de radiación y directividad</h2>
+  <p class="m">La potencia radiada es el flujo del vector de Poynting a través de una esfera, y la resistencia de radiación $R_"rad"$ es la resistencia que disiparía esa misma potencia con la corriente $I_0$:</p>
+  <p class="f m">$P_"rad" = {η_0 I_0^2}/{4π} ∫_0^π F^2 sin θ dθ = 1/2 R_"rad" I_0^2$</p>
+  <p class="m">Para el dipolo corto sale $R_"rad" = 80 π^2 (L/λ)^2$ y para el de media onda $R_"rad" ≈ 73,1 Ω$. La directividad compara la dirección de máxima radiación con una antena isótropa que radiara la misma potencia:</p>
+  <p class="f m">$D = {4π U_"máx"}/{P_"rad"} = {2 F_"máx"^2}/{∫_0^π F^2 sin θ dθ}$, &ensp; $D_"dBi" = 10 log_10 D$</p>
+  <p class="m">Valen $D = 1,5$ (1,76 dBi) para el dipolo corto y $D ≈ 1,64$ (2,15 dBi) para el de media onda. El ancho de haz a −3 dB es el ángulo entre las dos direcciones donde la potencia cae a la mitad de la máxima: 90° y 78° respectivamente. La corriente $I_0$ es la amplitud en el centro del dipolo de media onda y la del máximo de la onda de corriente en los demás.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Antena dipolo y radiación <span id="ver"></span> (beta)</footer>
+</body>

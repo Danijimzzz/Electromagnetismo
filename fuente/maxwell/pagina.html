@@ -1,0 +1,100 @@
+<title>Ecuaciones de Maxwell: forma integral y diferencial · SimulaCiencia</title>
+<meta name="description" content="Las cuatro ecuaciones de Maxwell en forma integral y diferencial, con una calculadora para cada una (Gauss, Faraday, Ampère–Maxwell y la velocidad de la luz) y enlaces a los simuladores de Electromagnetismo.">
+<style>
+:root {
+  --e: #c2412a; --b: #2a5db5 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --e: #ef7a62; --b: #74a2f2 } }
+:root[data-theme="dark"] {
+  --e: #ef7a62; --b: #74a2f2 }
+.ecs { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; margin: 12px 0 }
+.eq { background: var(--panel); border: 1.5px solid var(--line); border-radius: 12px; padding: 4px 16px 14px; cursor: pointer }
+.eq.activa { border-color: var(--accent) }
+.eq h3 { font: 600 16px var(--f-ui); margin: 12px 0 2px }
+.eq h3 small { font-weight: 400; color: var(--muted) }
+.eq .f { display: block; margin: 8px 0 }
+.eq .sig { color: var(--muted); font-size: 14px; margin: 6px 0 }
+.eq .enl { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px }
+.eq .enl a, .eq .enl span { font-size: 13px; padding: 3px 10px; border-radius: 99px; border: 1px solid var(--line); text-decoration: none; color: var(--ink) }
+.eq .enl a { border-color: var(--accent); color: var(--accent); font-weight: 500 }
+.eq .enl span { color: var(--muted) }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Electromagnetismo</a> / Ecuaciones de Maxwell</span></header>
+<div class="wrap">
+<h1>Ecuaciones de Maxwell</h1>
+<p class="lead">Las cuatro ecuaciones del electromagnetismo, en forma integral y diferencial, cada una con su calculadora paso a paso y un enlace al simulador donde verlas en acción.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="modo" class="in" aria-label="Ecuación" style="margin-bottom:8px"></select>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="res" id="res"></div></div>
+    <div class="card"><h2>Gráfica</h2>
+      <canvas id="grafica" aria-label="Gráfica de la magnitud que calcula la ecuación elegida"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Las cuatro ecuaciones</h2>
+  <p>Todo el electromagnetismo clásico cabe en cuatro ecuaciones y la fuerza de Lorentz. Cada una se escribe en forma <b>integral</b> (sobre una superficie o una curva, la que se usa en los problemas con simetría) y en forma <b>diferencial</b> (en cada punto), y las dos dicen lo mismo. Pulsa una para abrir su calculadora.</p>
+  <div class="ecs">
+    <article class="eq" data-modo="gauss">
+      <h3>Ley de Gauss para E <small>· las cargas crean el campo eléctrico</small></h3>
+      <p class="f m">$∮ E·dS = Q_{enc}/ε_0$</p>
+      <p class="f m">$∇·E = ρ/ε_0$</p>
+      <p class="sig">El flujo de E por una superficie cerrada solo depende de la carga que encierra. Con ella se calculan los campos de esferas, hilos y planos.</p>
+      <div class="enl"><a href="../electrostatica/">Electrostática</a><a href="../condensadores/">Condensadores</a></div>
+    </article>
+    <article class="eq" data-modo="gaussmag">
+      <h3>Ley de Gauss para B <small>· no hay monopolos</small></h3>
+      <p class="f m">$∮ B·dS = 0$</p>
+      <p class="f m">$∇·B = 0$</p>
+      <p class="sig">Las líneas del campo magnético son cerradas: lo que entra en una superficie cerrada sale.</p>
+      <div class="enl"><a href="../magnetostatica/">Magnetostática</a></div>
+    </article>
+    <article class="eq" data-modo="faraday">
+      <h3>Ley de Faraday <small>· un B que cambia crea un E</small></h3>
+      <p class="f m">$∮ E·dl = −{dΦ_B}/{dt}$</p>
+      <p class="f m">$∇ × E = −{∂B}/{∂t}$</p>
+      <p class="sig">La fem inducida en una espira es menos la derivada del flujo (ley de Lenz). Es el principio del generador y del transformador.</p>
+      <div class="enl"><a href="../faraday/">Ley de Faraday</a><a href="../induccion/">Inducción</a></div>
+    </article>
+    <article class="eq" data-modo="ampere">
+      <h3>Ley de Ampère–Maxwell <small>· corrientes y E variable crean B</small></h3>
+      <p class="f m">$∮ B·dl = μ_0 I_{enc} + μ_0 ε_0 {dΦ_E}/{dt}$</p>
+      <p class="f m">$∇ × B = μ_0 J + μ_0 ε_0 {∂E}/{∂t}$</p>
+      <p class="sig">Maxwell añadió el último término, la corriente de desplazamiento, para que valga también entre las placas de un condensador. Con él aparecen las ondas.</p>
+      <div class="enl"><a href="../magnetostatica/">Magnetostática</a><a href="../condensadores/">Condensadores</a><a href="../ondas-em/">Ondas EM</a></div>
+    </article>
+    <article class="eq" data-modo="onda">
+      <h3>El resultado: la luz es una onda <small>· c = 1/√(μ₀ε₀)</small></h3>
+      <p class="f m">$∇² E = μ_0 ε_0 {∂²E}/{∂t²}$</p>
+      <p class="f m">$c = 1/√{μ_0 ε_0} ≈ 3·10^8 "m/s"$</p>
+      <p class="sig">En el vacío, Faraday y Ampère–Maxwell se encadenan: un E que cambia crea un B que cambia, que crea un E… y se propaga a la velocidad de la luz.</p>
+      <div class="enl"><a href="../ondas-em/">Ondas electromagnéticas</a><a href="../fuerza/">Fuerza magnética</a></div>
+    </article>
+  </div>
+  <h2>Integral y diferencial: dos teoremas</h2>
+  <p class="m">Se pasa de una forma a la otra con dos teoremas del cálculo vectorial. El de la divergencia, $∮ A·dS = ∫ ∇·A dV$, convierte los flujos por superficies cerradas (las dos leyes de Gauss) en divergencias. El de Stokes, $∮ A·dl = ∫ (∇ × A)·dS$, convierte las circulaciones (Faraday y Ampère–Maxwell) en rotacionales. Por eso las dos formas son equivalentes; la diferencial describe cada punto y la integral es la cómoda cuando hay simetría.</p>
+  <h2>La carga se conserva</h2>
+  <p>Si se toma la divergencia de la ley de Ampère–Maxwell y se usa la de Gauss, sale la ecuación de continuidad:</p>
+  <p class="f m">$∇·J + {∂ρ}/{∂t} = 0$</p>
+  <p>Sin la corriente de desplazamiento esta ecuación no saldría y la carga no se conservaría. Es la razón por la que Maxwell tuvo que añadirla.</p>
+  <h2>En la materia</h2>
+  <p class="m">Dentro de un dieléctrico o un imán es cómodo meter las cargas y corrientes de la materia en dos campos nuevos, $D = ε_0 E + P$ y $H = B/μ_0 − M$. Entonces las ecuaciones que solo tocan las fuentes libres son $∇·D = ρ_{libre}$ y $∇ × H = J_{libre} + {∂D}/{∂t}$. En un medio lineal, $D = εE$ y $B = μH$, y la velocidad de las ondas es $v = 1/√{με}$.</p>
+  <h2>La fuerza de Lorentz</h2>
+  <p>Las ecuaciones dicen cómo se crean los campos; cómo actúan sobre una carga lo dice la fuerza de Lorentz:</p>
+  <p class="f m">$F = q (E + v × B)$</p>
+  <p>Juntas, las cuatro ecuaciones y esta fuerza explican todo lo que estudia la asignatura, desde la ley de Coulomb hasta las ondas de radio.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Ecuaciones de Maxwell <span id="ver"></span> (beta)</footer>
+</body>

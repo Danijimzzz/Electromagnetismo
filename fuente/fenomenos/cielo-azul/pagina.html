@@ -1,0 +1,60 @@
+<title>Por qué el cielo es azul: dispersión de Rayleigh</title>
+<meta name="description" content="Por qué el cielo es azul y el atardecer rojo: la luz del Sol, el dipolo de las moléculas del aire, la dispersión de Rayleigh (intensidad proporcional a 1/λ⁴), por qué no es violeta y el cálculo con la longitud de onda, con una animación paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<!-- =====================================================================
+     Por qué el cielo es azul («Física en la vida real»). Maqueta común de los
+     fenómenos (ver fuego-san-telmo/pagina.html): animación, texto del paso, historia
+     y recuadro de la herramienta. Los pasos y el dibujo están en escena.js.
+     ===================================================================== -->
+<style>
+/* colores del dibujo, con su valor en modo oscuro */
+:root {
+  --cielo: #cfe4f5; --cielo-alto: #7fb2e0; --atardecer: #f6b36a; --atardecer-alto: #5a5f9a; --sol: #f6c431; --nube: #3f6fd8;
+  --aire: #a9cbe8; --suelo: #5f7a5a; --resalta: #b3261e; --rotulo: #1a2128 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --cielo: #2a4560; --cielo-alto: #132338; --atardecer: #b8683a; --atardecer-alto: #2b2a52; --sol: #f2c14e; --nube: #7fa3f2;
+  --aire: #3b5f80; --suelo: #2f4430; --resalta: #ef7a62; --rotulo: #e3e8ea } }
+:root[data-theme="dark"] {
+  --cielo: #2a4560; --cielo-alto: #132338; --atardecer: #b8683a; --atardecer-alto: #2b2a52; --sol: #f2c14e; --nube: #7fa3f2;
+  --aire: #3b5f80; --suelo: #2f4430; --resalta: #ef7a62; --rotulo: #e3e8ea }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física en la vida real</a> / El cielo azul</span></header>
+<div class="wrap fen">
+<div class="fen-etiquetas"><span>⚡ Electromagnetismo</span><span>Dificultad media</span><span>6 pasos · 1 min</span></div>
+<h1>El cielo azul</h1>
+<p class="lead">La luz del Sol es blanca y el espacio es negro, pero el cielo de día es azul y el del atardecer, rojo. No hay pintura en el aire: es la luz y las moléculas, y se calcula con una sola potencia.</p>
+<div class="fen-escena"><canvas id="escena" role="img" aria-label="Animación de la dispersión de Rayleigh: la luz del Sol con todos los colores, una molécula de aire que se polariza con una onda azul, la molécula emitiendo luz azul hacia los lados mucho más que luz roja, el gráfico de 1 sobre lambda a la cuarta y el Sol bajo cruzando más aire hasta el observador"></canvas></div>
+<div class="fen-puntos" id="puntos" role="group" aria-label="Pasos"></div>
+<div class="fen-controles">
+  <button class="btn" id="ant" type="button">‹ Anterior</button>
+  <button class="btn" id="play" type="button" aria-pressed="true">❚❚ Parar</button>
+  <button class="btn" id="sig" type="button">Siguiente ›</button>
+</div>
+<div class="fen-texto" aria-live="polite"><h2 id="paso-t"></h2><div id="paso-x"></div></div>
+<section class="fen-historia" aria-label="Un poco de historia">
+  <h2>Un poco de historia</h2>
+  <ol>
+    <li><b>1672</b>Isaac Newton publica sus experimentos con el prisma (hechos hacia 1666): la luz blanca contiene todos los colores; hasta entonces se pensaba que el prisma los «pintaba».</li>
+    <li><b>1869</b>John Tyndall hace pasar luz por gases con partículas muy pequeñas y ve que la luz dispersada es azul, como el cielo. Creía que lo hacían partículas de polvo o de vapor.</li>
+    <li><b>1871</b>Lord Rayleigh deduce que la luz dispersada por partículas mucho menores que la longitud de onda es proporcional a 1/λ⁴.</li>
+    <li><b>1899</b>Rayleigh concluye que no hace falta polvo: las propias moléculas del aire bastan para explicar el azul del cielo.</li>
+    <li><b>1910</b>Albert Einstein calcula la dispersión del aire por las fluctuaciones de densidad y la relaciona con el número de Avogadro.</li>
+  </ol>
+</section>
+<section class="fen-rel" aria-label="Herramienta relacionada">
+  <div class="fen-ico" aria-hidden="true">λ</div>
+  <h2>Con qué herramienta se relaciona</h2>
+  <h3>Ondas electromagnéticas <small>· Electromagnetismo</small></h3>
+  <p>La luz es una onda electromagnética plana y su color es su longitud de onda. Con ella salen la frecuencia que hace oscilar al dipolo y el número de onda; la dispersión de Rayleigh depende de la cuarta potencia de cualquiera de las dos.</p>
+  <p class="f m">I ∝ 1/λ^4 ∝ ω^4</p>
+  <p class="f m">I_azul / I_rojo = (700/450)^4 ≈ 5,9</p>
+  <p>Se abre en el modo de onda plana en el vacío, con la luz azul de 450 nm: la frecuencia sale 6,66·10¹⁴ Hz y el número de onda, 1,40·10⁷ rad/m. Cambia la longitud de onda a 700 nm y compruébalo con el rojo.</p>
+  <div class="fen-fichas"><div><small>Azul frente a rojo</small><b>×5,9</b></div><div><small>Violeta frente a rojo</small><b>×9,4</b></div><div><small>Rojo en el horizonte</small><b>25 %</b></div></div>
+  <a class="fen-abrir" id="abrir" href="../../electromagnetismo/ondas-em/">Abrir en Ondas electromagnéticas con estos datos →</a>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Física en la vida real <span id="ver"></span> (beta)</footer>
+</body>
