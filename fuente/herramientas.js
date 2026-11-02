@@ -3,8 +3,8 @@
    Página de cada herramienta, a partir de catalogo.js (lo llama build.sh):
    publico/<asignatura>/<clave>/index.html con la cabecera (icono y vista previa
    al compartir), fuente/<carpeta>/pagina.html pasada por diseno.js, y en un
-   <script> Pagina = { carpeta, guarda }, la Version reducida, herramienta.js, los scripts de la herramienta, biblioteca.js y
-   practica.js, más las llamadas que montan Mis ejercicios y el modo práctica.
+   <script> Pagina = { carpeta, guarda }, la Version reducida, herramienta.js, los scripts de la herramienta, biblioteca.js,
+   practica.js y personal.js (visitas y favoritas), más las llamadas que montan Mis ejercicios y el modo práctica.
    En el catálogo, cada herramienta con página lleva:
      scripts      los suyos en orden, sin version.js (va siempre el primero)
      titulo, descripcion   lo que se ve al compartir el enlace
@@ -60,7 +60,7 @@ function pagina(h) {
   // los fenómenos no tienen Mis ejercicios ni modo práctica
   const fenomeno = h.asignatura === 'fenomenos';
   html += versionReducida();
-  for (const f of ['herramienta.js', ...h.scripts, ...(fenomeno ? [] : ['biblioteca.js', 'practica.js'])]) html += script(f);
+  for (const f of ['herramienta.js', ...h.scripts, ...(fenomeno ? [] : ['biblioteca.js', 'practica.js']), 'personal.js']) html += script(f);
   // barra lateral «Mis ejercicios» y modo práctica (no hacen nada en las herramientas sin datos que guardar o preguntar)
   const guarda = h.guarda === null ? 'null' : `'${h.guarda}'`;
   if (!fenomeno) html += `Biblioteca.monta('${h.carpeta}', ${guarda});\nPractica.monta('${h.carpeta}', ${guarda});\n`;

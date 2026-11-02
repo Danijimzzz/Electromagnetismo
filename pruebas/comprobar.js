@@ -30,7 +30,7 @@ const mal = (m) => { fallos++; console.log('  ✗ ' + m); };
 // lo único que puede haber en publico/ (lo que sirven Vercel y Cloudflare): los archivos sueltos,
 // la portada, una página por asignatura y una por herramienta disponible del catálogo
 const Catalogo = require(path.join(fuente, 'catalogo.js')), Biblioteca = require(path.join(fuente, 'biblioteca.js'));
-const PUBLICABLES = ['index.html', 'novedades/index.html', 'foro/index.html', 'og.png', 'apple-touch-icon.png', 'buscador.js', 'legal.css', 'aviso-legal.html', 'privacidad.html', 'cookies.html', 'contacto.html', 'fuentes/stix-two-math.woff2', 'fuentes/OFL-STIX-Two.txt', 'sitemap.xml', 'robots.txt', 'manifest.webmanifest', 'sw.js', 'pwa.js', 'offline.html', '_headers', 'icono-192.png', 'icono-512.png', 'icono-maskable-512.png',
+const PUBLICABLES = ['index.html', 'novedades/index.html', 'foro/index.html', 'og.png', 'apple-touch-icon.png', 'buscador.js', 'llama.js', 'legal.css', 'aviso-legal.html', 'privacidad.html', 'cookies.html', 'contacto.html', 'fuentes/stix-two-math.woff2', 'fuentes/OFL-STIX-Two.txt', 'sitemap.xml', 'robots.txt', 'manifest.webmanifest', 'sw.js', 'pwa.js', 'offline.html', '_headers', 'icono-192.png', 'icono-512.png', 'icono-maskable-512.png',
   ...Catalogo.asignaturas.flatMap((a) => [`${a.clave}/index.html`, ...a.herramientas.filter((h) => h.disponible).map((h) => `${a.clave}/${h.clave}/index.html`)]),
   // «Física en la vida real»: el índice y una página por fenómeno disponible
   'fenomenos/index.html', ...Catalogo.fenomenos.lista.filter((f) => f.disponible).flatMap((f) => [`fenomenos/${f.clave}/index.html`, `fenomenos/${f.clave}/imagen.webp`]),
@@ -438,6 +438,97 @@ async function navegador() {
     if (consola.length) mal('Arreglo 6: consola del navegador:\n      ' + consola.join('\n      '));
     if (completo && probadas < 38) mal(`Mis ejercicios: solo se ha probado en ${probadas} herramientas`);
     if (fallos === antes) console.log(`  ✓ Mis ejercicios: guardar, carpeta, fijar, abrir, exportar, borrar e importar en ${probadas} herramientas, y en el móvil`);
+  }
+  if (primera) {
+    // Fase 7: enlace con el estado, hoja de ejercicios para imprimir y «Tu espacio» de la portada (el marco de la hoja pide http, no file://)
+    const antes = fallos, consola = [], http = require('http');
+    const tipos = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.png': 'image/png', '.webp': 'image/webp', '.json': 'application/json' };
+    const srv = http.createServer((q, r) => {
+      let f = path.join(publico, decodeURIComponent(q.url.split('?')[0].split('#')[0])); if (f.endsWith(path.sep) || (fs.existsSync(f) && fs.statSync(f).isDirectory())) f = path.join(f, 'index.html');
+      if (!f.startsWith(publico) || !fs.existsSync(f)) { r.writeHead(404); r.end(); return; }
+      r.writeHead(200, { 'content-type': tipos[path.extname(f)] || 'application/octet-stream' }); r.end(fs.readFileSync(f));
+    });
+    await new Promise((ok) => srv.listen(0, '127.0.0.1', ok));
+    const web = `http://127.0.0.1:${srv.address().port}/`;
+    const ctx = await browser.newContext({ viewport: { width: 1400, height: 900 } });
+    await ctx.grantPermissions(['clipboard-read', 'clipboard-write']).catch(() => {});
+    const page = await ctx.newPage();
+    page.on('console', (m) => { if (m.type() === 'error') consola.push(m.text()); });
+    page.on('pageerror', (e) => consola.push(`excepción: ${e.message}`));
+    const K = 'tiro-parabolico-v1';
+    await page.goto(web + 'fisica/tiro-parabolico/'); await page.waitForSelector('.bib .bib-acc');
+    // favorita y últimas usadas
+    await page.click('.fav-btn');
+    if ((await page.getAttribute('.fav-btn', 'aria-pressed')) !== 'true') mal('Favorita: el botón no se marca');
+    // dos ejercicios guardados
+    for (const [i, t] of [[0, 'Uno'], [1, 'Dos']]) { await page.click(`.bib .bib-ej >> nth=${i}`); await page.click('.bib [data-acc=nuevo]'); await page.fill('#bib-t', t); await page.click('.bib [data-acc=guardar]'); }
+    const datos = await page.evaluate((k) => localStorage.getItem(k), K);
+    // enlace con el estado: copiado, y abierto en otra página lleva los mismos datos
+    await page.click('.bib [data-acc=enlace]');
+    const enlace = await page.evaluate(() => navigator.clipboard.readText());
+    if (!/#d=[\w-]+$/.test(enlace)) mal('Copiar enlace: no lleva los datos (#d=…)');
+    else {
+      const p2 = await ctx.newPage(); await p2.goto(enlace); await p2.waitForSelector('.bib .bib-acc');
+      if ((await p2.evaluate((k) => localStorage.getItem(k), K)) !== datos) mal('Copiar enlace: al abrirlo no se recuperan los datos');
+      if (await p2.evaluate(() => location.hash)) mal('Copiar enlace: la dirección conserva el #d=… tras abrirlo');
+      await p2.close();
+    }
+    // hoja para imprimir: dos ejercicios con su desarrollo y el estado de antes intacto
+    await page.click('.bib [data-acc=hoja]'); await page.click('.bib [data-acc=hoja-todos]');
+    await page.evaluate(() => { window.print = () => { window.__hoja = document.getElementById('hoja-imp').innerHTML; }; });
+    await page.click('.bib [data-acc=hoja-imprimir]');
+    await page.waitForFunction(() => window.__hoja, null, { timeout: 30000 });
+    const hoja = await page.evaluate(() => window.__hoja);
+    if ((hoja.match(/<section class="hoja-ej">/g) || []).length !== 2 || !/1\. Uno/.test(hoja) || !/2\. Dos/.test(hoja)) mal('Hoja: no salen los dos ejercicios');
+    if (!/Desarrollo/i.test(hoja) || !/<math/.test(hoja)) mal('Hoja: faltan el desarrollo o sus fórmulas');
+    if ((await page.evaluate((k) => localStorage.getItem(k), K)) !== datos) mal('Hoja: no se devuelve el estado de antes');
+    await page.evaluate(() => dispatchEvent(new Event('afterprint')));
+    if (await page.evaluate(() => !!document.getElementById('hoja-imp') || document.body.classList.contains('hoja-imprimiendo'))) mal('Hoja: no se limpia tras imprimir');
+    // portada: «Tu espacio» con continuar, favoritas y últimas
+    const por = await ctx.newPage(); await por.goto(web); await por.waitForSelector('#tu-espacio:not([hidden])');
+    const tu = await por.textContent('#tu-espacio');
+    if (!/Continúa donde lo dejaste/.test(tu) || !/Favoritas/.test(tu) || !/Tiro parabólico/.test(tu)) mal('Portada: «Tu espacio» no muestra continuar y favoritas');
+    await por.fill('#buscar', 'gases');
+    if (await por.isVisible('#tu-espacio')) mal('Portada: «Tu espacio» debería ocultarse al buscar');
+    await por.fill('#buscar', ''); await por.click('#tu-espacio .olvida');
+    if (!(await por.getAttribute('#tu-espacio', 'hidden') !== null)) mal('Portada: «Olvidar mis datos» no vacía «Tu espacio»');
+    // la llama 🔥 de la herramienta más usada de cada asignatura (los datos de prueba hacen de contador)
+    const cl = await browser.newContext({ viewport: { width: 1400, height: 900 } });
+    await cl.addInitScript(() => { window.LLAMA_FUENTE = '/api-test/populares'; });
+    const visitas = []; await cl.route('**/api-test/visita', (r) => { visitas.push(r.request().postData()); r.fulfill({ status: 204 }); });
+    await cl.route('**/api-test/populares', (r) => r.fulfill({ json: { fisica: 'fisica/tiro-parabolico', matematicas: 'matematicas/derivadas' } }));
+    const pl = await cl.newPage(); pl.on('pageerror', (e) => consola.push(`llama: ${e.message}`));
+    await pl.goto(web); await pl.waitForSelector('.mini a .llama');
+    if ((await pl.locator('.mini a .llama').count()) !== 2) mal('Llama: la portada debería marcar solo las dos herramientas del contador');
+    await pl.goto(web + 'fisica/'); await pl.waitForSelector('a.card .llama');
+    await pl.goto(web + 'fisica/tiro-parabolico/'); await pl.waitForSelector('h1 .llama');
+    await pl.goto(web + 'fisica/gases/'); await pl.waitForTimeout(500);
+    if (await pl.locator('.llama').count()) mal('Llama: Gases no debería llevar llama');
+    if (!visitas.includes('{"r":"fisica/tiro-parabolico"}') || !visitas.includes('{"r":"fisica/gases"}') || visitas.length !== 2) mal(`Contador: se esperaban 2 visitas (una por herramienta y sesión) y hay ${JSON.stringify(visitas)}`);
+    // el Worker del contador (worker/contador.mjs) con una D1 de mentira
+    {
+      const W = await import(require('url').pathToFileURL(path.join(__dirname, '..', 'worker', 'contador.mjs')).href), filas = new Map();
+      const db = { prepare: (sql) => ({ bind: (...a) => ({
+        run: async () => { const k = `${a[0]}|${a[1]}`; filas.set(k, (filas.get(k) || 0) + 1); },
+        all: async () => { const suma = {}; for (const [k, n] of filas) { const [mes, ruta] = k.split('|'); if (a.includes(mes)) suma[ruta] = (suma[ruta] || 0) + n; } return { results: Object.entries(suma).map(([ruta, n]) => ({ ruta, n })) }; },
+      }) }) };
+      const web0 = 'https://electromagnetismo.aceropuro30.workers.dev', env = { VISITAS: db, ASSETS: { fetch: async () => new Response('pagina') } };
+      const llama = (u, o = {}) => W.default.fetch(new Request(web0 + u, o), env, { waitUntil: () => {} });
+      const post = (r, origen = web0) => llama('/api/visita', { method: 'POST', body: JSON.stringify({ r }), headers: { origin: origen } });
+      for (let i = 0; i < 12; i++) await post('fisica/tiro-parabolico');
+      for (let i = 0; i < 11; i++) await post('fisica/gases');
+      for (let i = 0; i < 3; i++) await post('matematicas/derivadas');            // por debajo del mínimo
+      for (let i = 0; i < 20; i++) await post('fisica/no-existe');                 // no es una herramienta
+      for (let i = 0; i < 20; i++) await post('quimica/ph', 'https://otra-web.example'); // origen no permitido
+      const pop = await (await llama('/api/populares')).json();
+      if (pop.fisica !== 'fisica/tiro-parabolico' || pop.matematicas || pop.quimica || Object.keys(pop).length !== 1) mal(`Contador: populares incorrecto ${JSON.stringify(pop)}`);
+      if ((await (await llama('/')).text()) !== 'pagina') mal('Contador: el resto de rutas debe servir publico/');
+      if ((await llama('/api/otra')).status !== 404) mal('Contador: /api/otra debería dar 404');
+    }
+    await cl.close();
+    await ctx.close(); srv.close();
+    if (consola.length) mal('Fase 7: consola del navegador:\n      ' + consola.join('\n      '));
+    if (fallos === antes) console.log('  ✓ Fase 7: copiar enlace con el estado, hoja de ejercicios para imprimir, «Tu espacio» en la portada y la llama de la más usada');
   }
   {
     // arreglo 7: modo práctica (datos al azar, se tapan los resultados, se corrigen las respuestas y se destapa la solución)

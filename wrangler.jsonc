@@ -1,8 +1,11 @@
-// Cloudflare Workers: sirve solo publico/, igual que Vercel (vercel.json).
+// Cloudflare Workers: sirve publico/, igual que Vercel (vercel.json), y en /api/* el contador de visitas
+// (worker/contador.mjs: suma visitas por herramienta en D1 y da la más usada de cada asignatura para la llama 🔥).
 // "previews" lo pide `wrangler preview`, el comando de las builds de ramas y PR.
 {
   "name": "electromagnetismo",
+  "main": "./worker/contador.mjs",
   "compatibility_date": "2026-10-23",
-  "assets": { "directory": "./publico" },
+  "assets": { "directory": "./publico", "binding": "ASSETS", "run_worker_first": ["/api/*"] },
+  "d1_databases": [{ "binding": "VISITAS", "database_name": "ciencify-visitas", "database_id": "370caed7-126c-48b2-b5b5-c605e35e5a63" }],
   "previews": {}
 }
