@@ -17,6 +17,8 @@
      lienzo(c)     prepara un <canvas> (o su selector) a la resolución de la
                    pantalla, limpio y en px CSS: { g, w, h, c, cambia }; cambia
                    es true si el tamaño era otro (para rehacer un fondo guardado)
+     accesible()   (ya se llama al cargar) aria-live en los resultados, role=alert en los
+                   errores y aria-describedby de cada gráfica hacia los resultados
    ===================================================================== */
 const Herramienta = (() => {
   const $ = (q) => document.querySelector(q);
@@ -48,6 +50,17 @@ const Herramienta = (() => {
     const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
     return { g, w, h, c, cambia };
   };
-  return { $, esc, copia, vacio, leeSI, txt, marcas, lienzo };
+  // Accesibilidad común: los resultados que cambian al tocar un dato se anuncian con cortesía (aria-live), los mensajes de error
+  // como alerta y cada gráfica se describe con los resultados de al lado (aria-describedby), no solo con su título fijo.
+  const accesible = (doc = typeof document !== 'undefined' ? document : null) => {
+    if (!doc) return;
+    const RES = '#resumen, #res, #resumen-d, #resumen-r, #resumen-c, #resumen-este, #resumen-emp, #resumen-nq, #resumen-conf, #res-masa, #res-dil, #res-mez';
+    for (const e of doc.querySelectorAll(RES)) if (!e.hasAttribute('aria-live')) e.setAttribute('aria-live', 'polite');
+    for (const e of doc.querySelectorAll('.error')) if (!e.hasAttribute('role')) e.setAttribute('role', 'alert');
+    const res = doc.querySelector('#resumen, #res');
+    if (res) for (const c of doc.querySelectorAll('canvas')) if (!c.hasAttribute('aria-describedby') && !c.closest('#resumen, #res') && !c.hasAttribute('aria-hidden')) c.setAttribute('aria-describedby', res.id);
+  };
+  accesible();
+  return { $, esc, copia, vacio, leeSI, txt, marcas, lienzo, accesible };
 })();
 if (typeof module !== 'undefined') module.exports = Herramienta;

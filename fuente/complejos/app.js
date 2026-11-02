@@ -92,7 +92,10 @@
       h = dato('Solución z₁', sz(sol.e1, sol.z1)) + dato('Solución z₂', sz(sol.e2, sol.z2));
     }
     else {
-      h = dato(sol.op === 'formas' ? 'Forma binómica' : 'Resultado (binómica)', M(F.binomica)) + dato('Forma polar', M(F.polar)) + dato('Módulo', M(F.rT)) + dato('Argumento', M(F.tT));
+      // el resultado de una operación sin raíces ni fracciones va como texto (así el modo práctica lo pregunta, como en la ecuación);
+      // con ellas, la forma exacta y el decimal al lado
+      const bino = sol.op === 'formas' ? M(F.binomica) : /[√π/]/.test(F.binomica) ? `${M(F.binomica)} ≈ ${K.bin(sol.z)}` : K.bin(sol.z);
+      h = dato(sol.op === 'formas' ? 'Forma binómica' : 'Resultado (binómica)', bino) + dato('Forma polar', M(F.polar)) + dato('Módulo', M(F.rT)) + dato('Argumento', M(F.tT));
       if (sol.op === 'formas') h += dato('Trigonométrica', M(F.trig)) + dato('Exponencial', M(F.expo)) + dato('Conjugado', K.bin(sol.conj)) + (sol.inv ? dato('Inverso', sol.ex ? M(Algebra.txt(Algebra.div(Algebra.c1, sol.ex))) : K.bin(sol.inv)) : '');
     }
     $('#resumen').innerHTML = h;

@@ -12,7 +12,7 @@ const Canvas = (() => {
   let cv, g, g0, W = 0, H = 0, dpr = 1;
   let view = { cx: 0, cy: 0, s: 50 }, needFit = true;
   let cam = { yaw: -0.6, pitch: 0.45, s: 50, c: [0, 0, 0] };
-  let lastOut = null, lastScen = null, anchors = [], drag = null, hover = null;
+  let lastOut = null, lastScen = null, anchors = [], drag = null, hover = null, foco = null; // foco: clave del punto elegido con el teclado
   let bg = null, bgKey = '', outVer = 0, lastOutRef = null, fast = false, fastTimer = 0;
   let place = null, probes = [], anim = 0, legend = null;
 
@@ -37,6 +37,11 @@ const Canvas = (() => {
     cv.addEventListener('pointerup', up);
     cv.addEventListener('pointercancel', up);
     cv.addEventListener('pointerleave', () => { hover = null; if (!drag) redraw(); });
+    // con teclado: Intro elige el siguiente punto movible, flechas lo mueven, Esc lo suelta (ver «teclado» más abajo)
+    cv.tabIndex = 0; cv.setAttribute('role', 'application'); cv.setAttribute('aria-describedby', 'cv-estado');
+    cv.setAttribute('aria-label', 'Lienzo del campo. Intro elige el siguiente punto movible, las flechas lo mueven (con Mayús, paso fino) y Esc lo suelta. Sin punto elegido, las flechas desplazan la vista, más y menos acercan o alejan, y 0 encuadra.');
+    cv.addEventListener('keydown', teclado);
+    cv.addEventListener('blur', () => { if (foco) { foco = null; redraw(); } });
     cv.addEventListener('wheel', (e) => { if (!e.ctrlKey && !e.metaKey) return; e.preventDefault(); zoom(e.deltaY < 0 ? 1.15 : 0.87); }, { passive: false });
     resize();
   }
@@ -126,6 +131,7 @@ const Canvas = (() => {
     drawProbes(C);
     if (legend) drawLegend(C);
     drawHover(out.ctx, C);
+    drawFoco(C);
     if (place) banner(place.hint + (place.pts.length ? ` (${place.pts.length}/${place.n})` : ''), C);
   }
   function banner(text, C) {
@@ -359,7 +365,7 @@ const Canvas = (() => {
     const col = colorOf(s, C);
     const nm = prettyName(s.name) + (s.unknown && !s.unknownSolved ? ' ?' : '');
     const t = s.src.type;
-    const addAnchors = () => { for (const an of s.def.anchors(s.src, G)) anchors.push({ p: toS(an.at), path: ['sources', i, ...an.path], at: an.at }); };
+    const addAnchors = () => { for (const an of s.def.anchors(s.src, G)) anchors.push({ p: toS(an.at), path: ['sources', i, ...an.path], at: an.at, lab: nm }); };
     g.lineWidth = 2;
     if (t === 'point' || t === 'dipole') {
       const p = toS(G.pos), inPlane = Math.abs(G.pos[c] - cut) < 1e-6;
@@ -497,7 +503,7 @@ const Canvas = (() => {
       g.beginPath(); g.moveTo(p[0], p[1] - 6); g.lineTo(p[0] + 6, p[1]); g.lineTo(p[0], p[1] + 6); g.lineTo(p[0] - 6, p[1]); g.closePath(); g.fill(); g.stroke();
       g.font = '600 12px "IBM Plex Sans", system-ui, sans-serif'; g.fillStyle = C.mark; g.textAlign = 'left'; g.textBaseline = 'top';
       g.fillText(lab, p[0] + 8, p[1] + 4);
-      if (path) anchors.push({ p, path, at });
+      if (path) anchors.push({ p, path, at, lab });
     };
     const many = scen.analyses.length > 1;
     scen.analyses.forEach((an, i) => {
@@ -768,6 +774,7 @@ const Canvas = (() => {
     place = spec ? { ...spec, pts: [] } : null;
     cv.classList.toggle('placing', !!place);
     redraw();
+    if (place) decir(`${place.hint || 'Colocar'}. Con teclado: flechas para mover la vista e Intro para colocarlo en el centro del lienzo.`);
   }
   function down(e) {
     const p = pos(e);
@@ -819,6 +826,63 @@ const Canvas = (() => {
     if (was && (was.anchor ? App.endDrag?.() : true)) { /* fin del arrastre */ }
     clearTimeout(fastTimer);
     fastTimer = setTimeout(() => { fast = false; redraw(); }, 120);
+  }
+  /* ------------------------- teclado ------------------------- */
+  // Cada punto que se arrastra con el ratón (cargas, extremos, puntos de cálculo) se elige con Intro y se mueve con las flechas;
+  // lo que pasa se dice en la región #cv-estado (aria-live) para quien usa lector de pantalla.
+  const clave = (an) => JSON.stringify(an.path);
+  const decir = (t) => { const e = el('cv-estado'); if (e) e.textContent = t; };
+  const coma = (x) => String(+x.toFixed(2)).replace('.', ',').replace('-', '−');
+  function dondeEsta(an) {
+    const [a, b] = ax(), u = lastOut?.ctx?.unit || 'a';
+    return `${an.lab}, en ${'xyz'[a]} = ${coma(an.at[a])}${u}, ${'xyz'[b]} = ${coma(an.at[b])}${u}`;
+  }
+  function elegido() { return foco ? anchors.find((an) => clave(an) === foco) : null; }
+  function elige(dir) {
+    if (!anchors.length) { decir('No hay ningún punto que se pueda mover.'); return; }
+    const i = anchors.findIndex((an) => clave(an) === foco), j = ((i < 0 ? (dir > 0 ? -1 : 0) : i) + dir + anchors.length) % anchors.length;
+    foco = clave(anchors[j]); redraw();
+    decir(`Punto ${j + 1} de ${anchors.length}: ${dondeEsta(anchors[j])}. Flechas para moverlo.`);
+  }
+  function teclado(e) {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    const k = e.key, flecha = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, 1], ArrowDown: [0, -1] }[k];
+    if (is3D()) {
+      if (!flecha) return;
+      e.preventDefault(); cam.yaw += flecha[0] * 0.1; cam.pitch = Math.max(-1.5, Math.min(1.5, cam.pitch - flecha[1] * 0.1)); redraw(); return;
+    }
+    if (place) {
+      if (k === 'Enter') {
+        e.preventDefault();
+        const w = toW(W / 2, H / 2), [a, b] = ax();
+        for (const c of [a, b]) w[c] = +(Math.round(w[c] / 0.25) * 0.25).toFixed(2);
+        place.pts.push(w);
+        if (place.pts.length >= place.n) { const sp = place; place = null; cv.classList.remove('placing'); sp.done(sp.pts); decir('Punto colocado.'); }
+        else { redraw(); decir(`Punto ${place.pts.length} de ${place.n} colocado.`); }
+        return;
+      }
+    }
+    if (flecha) {
+      e.preventDefault();
+      const an = elegido();
+      if (an) {
+        const [a, b] = ax(), paso = e.shiftKey ? 0.01 : 0.25, nuevo = { [a]: an.at[a] + flecha[0] * paso, [b]: an.at[b] + flecha[1] * paso };
+        for (const c of [a, b]) App.onDrag([...an.path, c], String(+(Math.round(nuevo[c] / paso) * paso).toFixed(2)));
+        App.endDrag?.();
+        const ant = clave(an);
+        setTimeout(() => { const nu = anchors.find((x) => clave(x) === ant); if (nu) decir(`${coma(nu.at[a])}${lastOut?.ctx?.unit || 'a'}, ${coma(nu.at[b])}${lastOut?.ctx?.unit || 'a'}`); }, 150);
+      } else { view.cx += (flecha[0] * 30) / view.s; view.cy += (flecha[1] * 30) / view.s; redraw(); }
+    } else if (k === 'Enter' || k === ' ') { e.preventDefault(); elige(e.shiftKey ? -1 : 1); }
+    else if (k === 'Escape' && foco) { foco = null; redraw(); decir('Punto soltado.'); }
+    else if (k === '+' || k === '=') { e.preventDefault(); zoom(1.15); }
+    else if (k === '-' || k === '_') { e.preventDefault(); zoom(0.87); }
+    else if (k === '0' || k === 'Home') { e.preventDefault(); fit(); redraw(); }
+  }
+  // el anillo alrededor del punto elegido con el teclado
+  function drawFoco(C) {
+    const an = elegido(); if (!an) return;
+    g.save(); g.strokeStyle = C.ink; g.lineWidth = 2; g.setLineDash([4, 3]);
+    g.beginPath(); g.arc(an.p[0], an.p[1], 15, 0, 7); g.stroke(); g.restore();
   }
   function snapshot() { try { return cv.toDataURL('image/png'); } catch (e) { return ''; } }
 

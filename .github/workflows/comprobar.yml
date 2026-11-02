@@ -5,8 +5,14 @@ on:
     branches: [main]
 jobs:
   comprobar:
+    # Las herramientas se reparten en 4 trozos que corren a la vez (node pruebas/comprobar.js --parte N/4);
+    # lo común (portada, asignaturas, Electrostática…) va en el trozo 1.
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        parte: [1, 2, 3, 4]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -14,9 +20,10 @@ jobs:
           node-version: 22
       - run: npm install --no-save playwright@1.56.1
       # El runner ya trae Google Chrome; descargar Chromium con --with-deps se quedaba colgado.
-      - name: Build, ejercicios (ejemplo y Tema 3) y consola del navegador
-        run: node pruebas/comprobar.js
+      - name: Build, ejercicios (ejemplo y Tema 3) y consola del navegador (trozo ${{ matrix.parte }} de 4)
+        run: node pruebas/comprobar.js --parte ${{ matrix.parte }}/4
         env:
           CHROMIUM: /usr/bin/google-chrome
       - name: publico/ está al día con fuente/
+        if: matrix.parte == 1
         run: git add -N publico && git diff --exit-code publico/

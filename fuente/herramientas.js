@@ -3,7 +3,7 @@
    Página de cada herramienta, a partir de catalogo.js (lo llama build.sh):
    publico/<asignatura>/<clave>/index.html con la cabecera (icono y vista previa
    al compartir), fuente/<carpeta>/pagina.html pasada por diseno.js, y en un
-   <script> Pagina = { carpeta, guarda }, version.js, herramienta.js, los scripts de la herramienta, biblioteca.js y
+   <script> Pagina = { carpeta, guarda }, la Version reducida, herramienta.js, los scripts de la herramienta, biblioteca.js y
    practica.js, más las llamadas que montan Mis ejercicios y el modo práctica.
    En el catálogo, cada herramienta con página lleva:
      scripts      los suyos en orden, sin version.js (va siempre el primero)
@@ -23,6 +23,16 @@ const script = (f) => {
   const ls = fs.readFileSync(path.join(__dirname, f), 'utf8').split('\n');
   if (ls[ls.length - 1] === '') ls.pop();
   return ls.filter((l) => !l.startsWith('if (typeof module')).map((l) => l + '\n').join('') + '\n';
+};
+
+// Las páginas solo necesitan el número de versión de cada herramienta (`Version.de(clave).current`):
+// el historial entero (version.js, más de 120 KB) solo hace falta en Novedades y en Electrostática, así que
+// aquí va una Version reducida a la última versión de cada registro. Si una herramienta quiere el historial
+// (`.log`, `.cambios`), debe ir por otro camino: aquí solo hay `{ v }`.
+const Version = require('./version.js');
+const versionReducida = () => {
+  const reg = Object.fromEntries(Object.entries(Version.registros).map(([k, r]) => [k, [{ v: r[0].v }]]));
+  return `const Version = (() => { const registros = ${JSON.stringify(reg)}; const de = (h) => ({ current: registros[h][0].v, log: registros[h] }); return { registros, de }; })();\n\n`;
 };
 
 const lista = () => [...Catalogo.asignaturas.flatMap((a) => a.herramientas.filter((h) => h.disponible && h.scripts).map((h) => {
@@ -49,7 +59,8 @@ function pagina(h) {
   html += `const Pagina = { carpeta: '${h.carpeta}', guarda: ${h.guarda === null ? 'null' : `'${h.guarda}'`} };\n`;
   // los fenómenos no tienen Mis ejercicios ni modo práctica
   const fenomeno = h.asignatura === 'fenomenos';
-  for (const f of ['version.js', 'herramienta.js', ...h.scripts, ...(fenomeno ? [] : ['biblioteca.js', 'practica.js'])]) html += script(f);
+  html += versionReducida();
+  for (const f of ['herramienta.js', ...h.scripts, ...(fenomeno ? [] : ['biblioteca.js', 'practica.js'])]) html += script(f);
   // barra lateral «Mis ejercicios» y modo práctica (no hacen nada en las herramientas sin datos que guardar o preguntar)
   const guarda = h.guarda === null ? 'null' : `'${h.guarda}'`;
   if (!fenomeno) html += `Biblioteca.monta('${h.carpeta}', ${guarda});\nPractica.monta('${h.carpeta}', ${guarda});\n`;
