@@ -235,6 +235,9 @@ const Version = (() => {
     formulacion: [
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: escribe una fórmula y obtén su nombre, o escribe un nombre y obtén su fórmula, en nomenclatura sistemática, de Stock y tradicional. Reconoce óxidos, peróxidos, hidruros, hidróxidos, hidrácidos, oxoácidos, sales binarias, oxisales, sales ácidas y compuestos entre no metales (casi 3.000 compuestos), con el desarrollo paso a paso (tipo de compuesto, estados de oxidación y cruce de cargas), sugerencias si te equivocas, ejemplos, tabla de oxoácidos, modo práctica y enlace para compartir.'] },
     ],
+    balance: [
+      { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: la cuenta de pérdidas y ganancias (EBITDA, resultado de explotación, financiero, BAI, impuesto y resultado del ejercicio) y el balance de situación con el resultado dentro del patrimonio neto, comprobando que cuadra, el fondo de maniobra y el balance dibujado en dos columnas, con cuatro ejemplos, desarrollo paso a paso y modo práctica.'] },
+    ],
     maxwell: [
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: las cuatro ecuaciones de Maxwell en forma integral y diferencial con su significado y enlaces a los simuladores de Electromagnetismo, y una calculadora paso a paso para cada una: ley de Gauss (flujo y campo de una esfera cargada, dentro y fuera), Gauss para B (flujo por un cubo), Faraday (fem de una bobina), Ampère–Maxwell (corriente de desplazamiento y campo B en un condensador) y la velocidad de la luz con la onda plana, con gráfica, modo práctica y enlace para compartir.'] },
     ],
