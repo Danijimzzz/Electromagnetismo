@@ -37,6 +37,8 @@ Web estática de simuladores y calculadoras de ciencias para la carrera, en espa
 | `privado/tema3-pdf.js` | Ejercicios del PDF de la asignatura. **Nunca van a `publico/`.** |
 | `pruebas/comprobar.js` | Comprobación común (build, publico/ limpio, diseño, Electrostática, portal, Mis ejercicios, práctica) y bucle de herramientas. `esperados*.json`: resultados de referencia. |
 | `pruebas/herramientas/<carpeta>.js` (y `fenomenos/<clave>.js`, con lo común en `fenomenos/comun.js`) | Lo de cada herramienta: cálculos a mano en Node y su página en Chromium. |
+| `pruebas/accesibilidad.js` | axe-core (WCAG 2 A/AA y buenas prácticas) en todas las páginas de `publico/` en claro, oscuro y 390 px; falla con cualquier infracción (`EXCEPCIONES` vacío). `AX_DETALLE=ruta.json` guarda el detalle. En CI se instala con `npm install --no-save axe-core@4.10.2`. |
+| `fuente/accesibilidad.js` | Script en línea de cada herramienta: pone `tabindex="0"` a las regiones que se desbordan (fórmulas y tablas anchas) para llegar con teclado. |
 | `pruebas/humo.js` | Prueba de humo igual para todas: cambiar un dato, guardarlo, recargar y verlo; modo oscuro y 390 px. |
 | `pruebas/capturas.js` | Rehace las capturas de la guía de Electrostática. |
 | `publico/` | Lo único que se publica. Generado: no se edita a mano. |
@@ -88,6 +90,7 @@ node pruebas/comprobar.js               # todo: ejercicios, publico/ limpio, dis
 node pruebas/comprobar.js --solo CARPETA  # solo una herramienta (unos 15 s); --solo electrostatica para el simulador
 node pruebas/comprobar.js --sin-navegador   # solo cálculos (rápido)
 node pruebas/humo.js [--solo CARPETA]  # solo la prueba de humo (necesita publico/ compilado)
+node pruebas/accesibilidad.js [--solo CARPETA] [--vista claro|oscuro|movil]  # solo axe-core (necesita publico/ y axe-core)
 node pruebas/comprobar.js --actualizar  # reescribe esperados*.json si el cambio de forma es intencionado
 sh fuente/build.sh privado SALIDA.html  # versión privada con el Tema 3 (artifact de claude.ai)
 ```

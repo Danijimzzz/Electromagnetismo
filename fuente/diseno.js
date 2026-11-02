@@ -13,7 +13,7 @@
    (fenómenos también) el de «Herramientas relacionadas» (o «Más fenómenos»):
      node diseno.js ASIGNATURA HERRAMIENTA < pagina.html
    ===================================================================== */
-const Catalogo = require('./catalogo.js'), Tema = require('./tema.js'), Anuncios = require('./anuncios.js');
+const Catalogo = require('./catalogo.js'), Tema = require('./tema.js'), Accesibilidad = require('./accesibilidad.js'), Anuncios = require('./anuncios.js');
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 // Hoja común de las herramientas (estilos.css) y la cabecera del portal, que comparten con el simulador de
@@ -60,8 +60,8 @@ ${Tema.CSS}`;
 // el simulador de electrostática no usa estilos.css: solo los colores, la cabecera y el aspecto de sus tarjetas
 const css = (a) => `
 :root { --bg:#eef1ee; --panel:#fff; --ink:#1a2128; --muted:#5b6670; --line:#d5dbd5 }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#111619; --panel:#182025; --ink:#e3e8ea; --muted:#94a0a8; --line:#2a343b; color-scheme:dark } }
-:root[data-theme="dark"] { --bg:#111619; --panel:#182025; --ink:#e3e8ea; --muted:#94a0a8; --line:#2a343b; color-scheme:dark }${acento(a)}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#111619; --panel:#182025; --ink:#e3e8ea; --muted:#a3aeb5; --line:#2a343b; color-scheme:dark } }
+:root[data-theme="dark"] { --bg:#111619; --panel:#182025; --ink:#e3e8ea; --muted:#a3aeb5; --line:#2a343b; color-scheme:dark }${acento(a)}
 .wrap { max-width:1300px }
 h1 { font:600 24px/1.25 var(--f-ui) }
 .card { border-radius:12px }
@@ -150,7 +150,7 @@ function aplicaElectrostatica(html) {
 
 // con anuncios.js activo: su código en la cabeza, «Preferencias de cookies» en el pie y un hueco por página
 function aplica(html, clave, herramienta) {
-  return Anuncios.cabeza() + `<script>${Tema.SCRIPT}</script>\n` + Anuncios.pie(clave === 'electrostatica' ? aplicaElectrostatica(html) : aplicaHerramienta(html, clave, herramienta));
+  return Anuncios.cabeza() + `<script>${Tema.SCRIPT}</script>\n<script>${Accesibilidad.SCRIPT}</script>\n` + Anuncios.pie(clave === 'electrostatica' ? aplicaElectrostatica(html) : aplicaHerramienta(html, clave, herramienta));
 }
 
 function aplicaHerramienta(html, clave, herramienta) {
@@ -165,8 +165,11 @@ function aplicaHerramienta(html, clave, herramienta) {
   if (!/^<style>/m.test(html)) throw new Error('diseno.js: la página no tiene <style>');
   const propios = a === V ? ESTILOS_FENOMENOS : '', vida = (a === V ? '' : vidaReal(`${clave}/${herramienta}`)) + relacionadas(clave, herramienta);
   if (vida && !html.includes('<footer')) throw new Error('diseno.js: la página no tiene <footer>');
-  return html.replace(m[0], cab).replace(/<div class="fen-etiquetas"|<h1/, (x) => miga + '\n' + x).replace(/^<style>/m, `<style>${ESTILOS}${acento(a)}${cabecera}${propios}</style>\n<style>`)
-    .replace(/(<\/div>\s*)?<footer/, (x) => (vida ? vida + x : x)).replace(TEORIA.test(html) ? TEORIA : /(<\/div>\s*)?<section class="(vida-real|relacionadas)"|(<\/div>\s*)?<footer/, (x) => Anuncios.hueco() + x);
+  // el contenido de la página es el «main» (accesibilidad): <div class="wrap"> … </div> antes del pie
+  if (!/<div class="wrap[^"]*"[^>]*>/.test(html) || !/<\/div>\s*<footer/.test(html)) throw new Error('diseno.js: la página no tiene <div class="wrap"> cerrado justo antes del <footer>');
+  const main = (x) => x.replace(/<div class="(wrap[^"]*)"([^>]*)>/, '<main class="$1"$2>').replace(/<\/div>(\s*)<footer/, '</main>$1<footer');
+  return main(html.replace(m[0], cab).replace(/<div class="fen-etiquetas"|<h1/, (x) => miga + '\n' + x).replace(/^<style>/m, `<style>${ESTILOS}${acento(a)}${cabecera}${propios}</style>\n<style>`)
+    .replace(/(<\/div>\s*)?<footer/, (x) => (vida ? vida + x : x)).replace(TEORIA.test(html) ? TEORIA : /(<\/div>\s*)?<section class="(vida-real|relacionadas)"|(<\/div>\s*)?<footer/, (x) => Anuncios.hueco() + x));
 }
 const TEORIA = /<section class="teoria"/;
 
