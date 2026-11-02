@@ -38,7 +38,7 @@
     },
     grafica: (s) => {
       const todos = s.g.flatMap((q) => q.x), lo = Math.min(...todos), hi = Math.max(...todos), aire = (hi - lo || 1) * 0.12, k = s.k;
-      return { x: [0.4, k + 0.6], y: [lo - aire, hi + aire], ejeX: 'Grupo', ejeY: 'Valor', fx: (v) => (Number.isInteger(v) && v >= 1 && v <= k ? s.g[v - 1].nom : ''),
+      return { x: [0.4, k + 0.6], y: [lo - aire, hi + aire], ejeX: 'Grupo', ejeY: 'Valor', fx: (v) => (Number.isInteger(v) && v >= 1 && v <= k ? s.g[v - 1].nom.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&amp;/g, '&') : ''),
         series: [...s.g.map((q, i) => ({ tipo: 'puntos', pts: q.x.map((v, j) => [i + 1 + (j - (q.n - 1) / 2) * 0.05, v]), color: '--serie-1', radio: 4 })),
           ...s.g.map((q, i) => ({ pts: [[i + 0.7, q.m], [i + 1.3, q.m]], color: '--serie-2', grosor: 3 }))],
         horizontales: [{ y: s.media, color: '--muted' }] };

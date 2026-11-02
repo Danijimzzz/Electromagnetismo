@@ -21,7 +21,7 @@ const Anova = (() => {
     String(texto ?? '').split(/\r?\n/).forEach((lin, i) => {
       const l = lin.trim();
       if (!l || l.startsWith('#')) return;
-      const j = l.indexOf(':'), nom = j > 0 ? l.slice(0, j).trim() : `Grupo ${g.length + 1}`, x = lista(j > 0 ? l.slice(j + 1) : l, `la línea ${i + 1}`);
+      const j = l.indexOf(':'), nom = j > 0 ? l.slice(0, j).trim().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;') : `Grupo ${g.length + 1}`, x = lista(j > 0 ? l.slice(j + 1) : l, `la línea ${i + 1}`);
       if (x.length < 1) throw new Error(`La línea ${i + 1} no tiene valores`);
       g.push({ nom, x });
     });
