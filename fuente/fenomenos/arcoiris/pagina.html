@@ -1,0 +1,60 @@
+<title>El arcoíris: refracción y reflexión en una gota</title>
+<meta name="description" content="Por qué el arcoíris sale a 42° y con colores: la refracción de la luz al entrar en una gota de agua, su reflexión en el fondo, la desviación mínima de Descartes y el índice de refracción de cada color, con una animación paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<!-- =====================================================================
+     El arcoíris («Física en la vida real»). Maqueta común de los fenómenos
+     (ver fuego-san-telmo/pagina.html): animación, texto del paso, historia
+     y recuadro de la herramienta. Los pasos y el dibujo están en escena.js.
+     ===================================================================== -->
+<style>
+/* colores del dibujo, con su valor en modo oscuro */
+:root {
+  --cielo: #dbe6ee; --cielo-alto: #a9bfd2; --gota: #2a74c6; --rayo: #e08a00; --sol: #f6c431; --nube: #6f8191;
+  --suelo: #8ba584; --resalta: #b3261e; --rotulo: #1a2128 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --cielo: #2c3d4e; --cielo-alto: #17222e; --gota: #7ab8ff; --rayo: #ffd54a; --sol: #f2c14e; --nube: #8fa1b1;
+  --suelo: #2f4430; --resalta: #ef7a62; --rotulo: #e3e8ea } }
+:root[data-theme="dark"] {
+  --cielo: #2c3d4e; --cielo-alto: #17222e; --gota: #7ab8ff; --rayo: #ffd54a; --sol: #f2c14e; --nube: #8fa1b1;
+  --suelo: #2f4430; --resalta: #ef7a62; --rotulo: #e3e8ea }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física en la vida real</a> / El arcoíris</span></header>
+<div class="wrap fen">
+<div class="fen-etiquetas"><span>∿ Física general</span><span>⚡ Electromagnetismo</span><span>Dificultad alta</span><span>6 pasos · 1 min</span></div>
+<h1>El arcoíris</h1>
+<p class="lead">Después de la lluvia, con el Sol detrás, aparece un arco de colores que nunca está en un sitio: cada persona ve el suyo. Es luz que entra en millones de gotas, rebota dentro y sale a un ángulo de 42°, y se calcula con la ley de Snell.</p>
+<div class="fen-escena"><canvas id="escena" role="img" aria-label="Animación del arcoíris: el Sol a la espalda del observador y las gotas de lluvia delante, un rayo que se dobla al entrar en una gota de agua, rebota en el fondo y sale con un giro de unos 138 grados, la curva del ángulo de salida con su máximo en 42 grados y el arco con el rojo por fuera y el violeta por dentro"></canvas></div>
+<div class="fen-puntos" id="puntos" role="group" aria-label="Pasos"></div>
+<div class="fen-controles">
+  <button class="btn" id="ant" type="button">‹ Anterior</button>
+  <button class="btn" id="play" type="button" aria-pressed="true">❚❚ Parar</button>
+  <button class="btn" id="sig" type="button">Siguiente ›</button>
+</div>
+<div class="fen-texto" aria-live="polite"><h2 id="paso-t"></h2><div id="paso-x"></div></div>
+<section class="fen-historia" aria-label="Un poco de historia">
+  <h2>Un poco de historia</h2>
+  <ol>
+    <li><b>Hacia 1000</b>Ibn al-Haytham (Alhacén) estudia la refracción y la reflexión en su «Libro de óptica»; en el siglo XIII Kamal al-Din al-Farisi explica el arcoíris con una esfera de agua llena como modelo de una gota.</li>
+    <li><b>1304</b>Teodorico de Freiberg hace lo mismo con una esfera de vidrio llena de agua y traza el camino de la luz: dos refracciones y una reflexión dentro de la gota.</li>
+    <li><b>1637</b>René Descartes, en «Los meteoros», calcula con la ley del seno el ángulo de 42° y ve que se amontonan los rayos en la desviación mínima. Todavía no explica los colores.</li>
+    <li><b>1666</b>Isaac Newton hace pasar la luz del Sol por un prisma y muestra que cada color se refracta distinto; con eso explica el orden de los colores del arco (<i>Opticks</i>, 1704).</li>
+    <li><b>1803</b>Thomas Young explica los arcos supernumerarios, las franjas tenues de color dentro del arco principal, con la interferencia de la luz; en 1908 Gustav Mie calcula con exactitud la dispersión de la luz por gotas.</li>
+  </ol>
+</section>
+<section class="fen-rel" aria-label="Herramienta relacionada">
+  <div class="fen-ico" aria-hidden="true">n</div>
+  <h2>Con qué herramienta se relaciona</h2>
+  <h3>Reflexión y transmisión (Fresnel) <small>· Electromagnetismo</small></h3>
+  <p>La luz del Sol pasa del aire al agua de la gota y se dobla según la ley de Snell; esa misma herramienta da el ángulo de refracción y, además, cuánta luz se refleja y cuánta pasa en cada superficie, que es lo que hace que el arcoíris sea tan tenue.</p>
+  <p class="f m">sen i = n · sen r</p>
+  <p class="f m">D = 180° + 2i − 4r,  cos²i = (n² − 1) / 3</p>
+  <p>Se abre con el aire (n = 1) y el agua (n = 1,333) y el ángulo de incidencia del arcoíris, 59,4°: sale un ángulo de refracción de 40,2°. Cambia el ángulo y comprueba que el arco no se mueve de 42°.</p>
+  <div class="fen-fichas"><div><small>Incidencia</small><b>59,4°</b></div><div><small>Refracción</small><b>40,2°</b></div><div><small>Arcoíris primario</small><b>42°</b></div></div>
+  <a class="fen-abrir" id="abrir" href="../../electromagnetismo/fresnel/">Abrir en Reflexión y transmisión con estos datos →</a>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Física en la vida real <span id="ver"></span> (beta)</footer>
+</body>

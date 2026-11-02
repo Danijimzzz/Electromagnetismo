@@ -1,0 +1,66 @@
+<title>Simulador de superficies y curvas de nivel en 3D · SimulaCiencia</title>
+<meta name="description" content="Dibuja una función de dos variables z = f(x, y) como superficie 3D que se gira con el ratón y como mapa de curvas de nivel, con las derivadas parciales, el gradiente, el plano tangente, la derivada direccional y los puntos críticos, paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root {
+  --z1: #2a5db5; --z2: #c2410c; --z3: #6b3fa0; --plano: #1d7a3e; --grad: #c2412a }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --z1: #74a2f2; --z2: #f0915a; --z3: #b892ec; --plano: #5fcf8a; --grad: #ef7a62 } }
+:root[data-theme="dark"] {
+  --z1: #74a2f2; --z2: #f0915a; --z3: #b892ec; --plano: #5fcf8a; --grad: #ef7a62 }
+.campos .larga { grid-column: 1 / -1 }
+#superficie { height: clamp(300px, 46vw, 460px); cursor: grab; touch-action: none }
+#superficie:active { cursor: grabbing }
+#niveles { height: clamp(280px, 40vw, 420px); cursor: crosshair }
+.controles label { display: inline-flex; align-items: center; gap: 6px; font-size: 13px }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Matemáticas</a> / Superficies y curvas de nivel en 3D</span></header>
+<div class="wrap">
+<h1>Superficies y curvas de nivel en 3D</h1>
+<p class="lead">Escribe una función de dos variables y mírala como una superficie que se gira arrastrando y como un mapa de curvas de nivel. Elige un punto y salen el gradiente, el plano tangente, la tangente a la curva de nivel, la derivada direccional, la aproximación lineal y los puntos críticos, paso a paso.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Superficie z = f(x, y)</h2>
+      <canvas id="superficie" tabindex="0" aria-label="Superficie en 3D de la función, con el plano tangente en el punto. Se gira arrastrando o con las flechas del teclado"></canvas>
+      <div class="controles">
+        <button class="btn" id="girar" type="button">▶ Girar sola</button>
+        <button class="btn" id="vista" type="button">Vista inicial</button>
+        <label><input type="checkbox" id="ver-plano" checked> Plano tangente</label>
+      </div>
+      <p class="nota" id="leyenda-3d"></p>
+    </div>
+    <div class="card"><h2>Curvas de nivel</h2>
+      <canvas id="niveles" aria-label="Mapa de curvas de nivel de la función, con el punto, el gradiente y la tangente a la curva de nivel. Al pulsar se cambia el punto"></canvas>
+      <p class="nota" id="leyenda"></p>
+    </div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Función de dos variables</h2>
+  <p class="m">Una función $z = f(x, y)$ da una altura $z$ a cada punto $(x, y)$ del plano; el conjunto de puntos $(x, y, f(x, y))$ es una <b>superficie</b>. Una <b>curva de nivel</b> es el conjunto de puntos del plano donde $f(x, y) = k$: es lo que dibuja un mapa topográfico (las curvas muy juntas son una pendiente fuerte).</p>
+  <h2>Derivadas parciales y gradiente</h2>
+  <p class="m">$f_{x}$ es la derivada respecto de x con y constante, y $f_{y}$ al revés. El <b>gradiente</b> $∇f = (f_{x}, f_{y})$ apunta hacia donde $f$ crece más deprisa, su módulo $|∇f|$ es esa pendiente máxima y es siempre perpendicular a la curva de nivel que pasa por el punto.</p>
+  <h2>Plano tangente y aproximación lineal</h2>
+  <p class="f m">$z = f(x_0, y_0) + f_{x}(x_0, y_0)(x − x_0) + f_{y}(x_0, y_0)(y − y_0)$</p>
+  <p class="m">Su normal es $n = (f_{x}, f_{y}, −1)$. Cerca del punto la superficie casi se confunde con el plano, así que $f(x, y) ≈ $ la altura del plano: es la aproximación lineal, y el error crece al alejarse.</p>
+  <h2>Derivada direccional</h2>
+  <p class="f m">$D_{u} f = ∇f · u = f_{x} u_{x} + f_{y} u_{y}$, &ensp; con $|u| = 1$</p>
+  <p class="m">Es la pendiente de la superficie al avanzar en la dirección $u$. Vale lo máximo, $|∇f|$, si $u$ va con el gradiente, lo mínimo, $−|∇f|$, en sentido contrario, y cero por la curva de nivel.</p>
+  <h2>Puntos críticos</h2>
+  <p class="m">Donde $f_{x} = f_{y} = 0$ el plano tangente es horizontal. Con el hessiano $D = f_{xx} f_{yy} − f_{xy}^{2}$: si $D > 0$ y $f_{xx} > 0$ hay un mínimo, si $D > 0$ y $f_{xx} < 0$ un máximo, si $D < 0$ un punto de silla, y si $D = 0$ no se puede decidir así.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Superficies y curvas de nivel <span id="ver"></span> (beta)</footer>
+</body>
