@@ -1,0 +1,44 @@
+<title>Calculadora de multiplicadores de Lagrange paso a paso · Ciencify</title>
+<meta name="description" content="Calculadora de multiplicadores de Lagrange: máximos y mínimos de f(x, y) o f(x, y, z) con una restricción g = c, el sistema ∇f = λ∇g, los puntos críticos, su clasificación y las curvas de nivel.">
+<style>
+:root {
+  --nivel: #8a96a3; --pmax: #1d7a3e; --pmin: #c2412a; --psilla: #b0700a; --restr: #2a5db5 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --nivel: #6b7784; --pmax: #5fcf8a; --pmin: #ef7a62; --psilla: #e6a640; --restr: #74a2f2 } }
+:root[data-theme="dark"] {
+  --nivel: #6b7784; --pmax: #5fcf8a; --pmin: #ef7a62; --psilla: #e6a640; --restr: #74a2f2 }
+#grafica { height: clamp(300px, 46vw, 460px) }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Cienci<i>fy</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Matemáticas</a> / Multiplicadores de Lagrange</span></header>
+<div class="wrap">
+<h1>Multiplicadores de Lagrange</h1>
+<p class="lead">Halla los máximos y mínimos de una función de dos o tres variables sobre una restricción g = c: plantea ∇f = λ∇g, encuentra los puntos críticos, calcula λ y dice si cada uno es máximo, mínimo o de silla, viendo las curvas de nivel.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota">Variables x e y (y z si la usas): x^2 + y^2, x y, 2x + 3y, e^(x y), x^2 y z… La restricción es g(x, y) = c; escribe c a la derecha. Los puntos se buscan numéricamente y se reconocen los valores exactos (√2/2, 1/3…).</p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Curvas de nivel</h2>
+      <canvas id="grafica" aria-label="Curvas de nivel de f, la restricción y los puntos críticos"></canvas>
+      <p class="nota" id="leyenda"></p></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>La idea</h2>
+  <p class="m">Para optimizar $f(x, y)$ sobre la curva $g(x, y) = c$, en un extremo la curva de nivel de $f$ es tangente a la restricción: los gradientes son paralelos.</p>
+  <p class="f m">$∇f = λ ∇g, \quad g(x, y) = c$</p>
+  <p class="m">Son tres ecuaciones (cuatro con tres variables) con las incógnitas $x$, $y$, $λ$. El número $λ$ es el multiplicador y mide cuánto cambia el óptimo si cambia $c$: $λ = d f^{*}/d c$.</p>
+  <h2>Máximo, mínimo o silla</h2>
+  <p class="m">Con la lagrangiana $L = f − λ g$, en cada punto crítico se estudia el hessiano de $L$ solo en las direcciones tangentes a la restricción. En dos variables, con $t = (−g_y, g_x)$, el signo de $q = t^T H_L t$ decide: $q &gt; 0$ mínimo, $q &lt; 0$ máximo (equivale al determinante del hessiano orlado, con el signo cambiado). En tres variables se mira el hessiano en el plano tangente: dos autovalores positivos, mínimo; negativos, máximo; distintos, silla.</p>
+  <p class="m">Los puntos críticos son solo candidatos: para decir cuál es el máximo absoluto se comparan los valores de $f$, y si la restricción no es cerrada y acotada puede que no haya máximo o mínimo.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Multiplicadores de Lagrange <span id="ver"></span> (beta)</footer>
+</body>
