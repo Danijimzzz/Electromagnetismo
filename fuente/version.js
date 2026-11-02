@@ -372,6 +372,15 @@ const Version = (() => {
     anova: [
       { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: ANOVA de un factor para comparar las medias de dos o más grupos escritos uno por línea. Da la tabla ANOVA (entre y dentro de los grupos), F con su valor crítico y p-valor, el tamaño del efecto η², las medias y varianzas de cada grupo, las comparaciones por parejas con la corrección de Bonferroni, la gráfica de los datos y el desarrollo paso a paso. Con 3 ejemplos de clase, modo práctica y enlace para compartir.'] },
     ],
+    'black-scholes': [
+      { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: precio de una call y una put europeas con la fórmula de Black-Scholes (con dividendo), d₁ y d₂, comprobación de la paridad call-put y las griegas (delta, gamma, vega, theta y rho), con la gráfica del valor de la opción hoy y al vencimiento y el desarrollo paso a paso.'] },
+    ],
+    bonos: [
+      { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: precio de un bono con cupón anual, semestral, trimestral o mensual a partir de la TIR (o la TIR a partir del precio), rentabilidad corriente, duración de Macaulay y modificada, convexidad y variación del precio al cambiar los tipos, con la curva precio-TIR, la tabla de flujos y el desarrollo paso a paso.'] },
+    ],
+    solow: [
+      { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: estado estacionario, regla de oro, velocidad de convergencia y semivida, y trayectoria del capital desde el valor inicial en el modelo de Solow con función Cobb-Douglas, con el diagrama de Solow, la tabla año a año y el desarrollo paso a paso.'] },
+    ],
     'integrales-multiples': [
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: integrales dobles (en cartesianas, con dy dx o dx dy, y en polares) y triples (en cartesianas, cilíndricas y esféricas) sobre la región que escribas con sus límites, de fuera adentro. Dibuja la región o el sólido en perspectiva, que se gira arrastrando; escribe el cambio de variables con su jacobiano, el integrando transformado y cada integral iterada de dentro afuera con su primitiva (y la numérica si alguna no sale), y da el valor exacto, el área o volumen de la región y el valor medio. Con 13 ejemplos de clase, modo práctica y enlace para compartir.'] },
     ],

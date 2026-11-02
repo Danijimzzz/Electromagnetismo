@@ -1,0 +1,52 @@
+<title>Calculadora de bonos y duración paso a paso · Ciencify</title>
+<meta name="description" content="Calculadora de bonos en español: precio de un bono con cupón, rentabilidad (TIR) a partir del precio, duración de Macaulay y modificada, convexidad y variación del precio cuando cambian los tipos, con la curva precio-TIR y la tabla de flujos.">
+<style>
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a; --serie-3: #6b3fa0 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 }
+.tabla-eco { border-collapse: collapse; font: 13.5px var(--f-ui); width: 100%; font-variant-numeric: tabular-nums }
+.tabla-eco th, .tabla-eco td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap }
+.tabla-eco th { font-weight: 600; color: var(--muted) } .tabla-eco th:first-child, .tabla-eco td:first-child { text-align: left }
+.tabla-eco tfoot td { font-weight: 600; background: var(--accent-soft) }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Cienci<i>fy</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Economía</a> / Bonos y duración</span></header>
+<div class="wrap">
+<h1>Bonos y duración</h1>
+<p class="lead">Valora un bono con cupón: precio, rentabilidad (TIR), duración, convexidad y cuánto cambia su precio cuando suben o bajan los tipos de interés.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Precio según la rentabilidad exigida</h2>
+      <canvas id="grafica" aria-label="Precio del bono en función de la TIR: curva convexa con su recta tangente"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card"><h2>Flujos del bono</h2><div class="tabla-scroll" id="tabla"></div></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+<h2>Precio de un bono</h2>
+<p>Un bono promete unos cupones periódicos y la devolución del nominal al vencimiento. Su precio es el valor actual de esos flujos descontados a la rentabilidad que exige el mercado (la TIR):</p>
+<p class="f m">$P = ∑_{j=1}^{n} {Q_j}/{(1 + y/m)^j}$,  con $Q_j = N·c/m$ y, en el último periodo, también $N$</p>
+<p>Si el cupón es mayor que la TIR, el bono vale más que el nominal (sobre la par); si es menor, menos (bajo la par); si coinciden, vale exactamente el nominal. Precio y TIR se mueven en sentido contrario.</p>
+<h2>Duración de Macaulay</h2>
+<p class="m">Es el plazo medio ponderado en que se recupera la inversión, pesando cada flujo por su valor actual: $D = ∑ t·VA_t / P$. Se mide en años; es menor que el vencimiento si hay cupones, y igual a él en un bono cupón cero.</p>
+<h2>Duración modificada y riesgo de tipos</h2>
+<p class="m">$D_m = D/(1 + y/m)$ da la sensibilidad del precio a la rentabilidad: $ΔP/P ≈ −D_m·Δy$. Cuanto más larga es la duración, más cae el bono cuando suben los tipos.</p>
+<h2>Convexidad</h2>
+<p class="m">La relación precio-TIR no es una recta, sino una curva convexa. La convexidad $C$ corrige la aproximación de la duración: $ΔP/P ≈ −D_m·Δy + ½·C·Δy²$. Con ella la estimación se acerca mucho más al precio exacto, sobre todo en variaciones grandes.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Bonos y duración <span id="ver"></span> (beta)</footer>
+</body>
