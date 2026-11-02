@@ -13,6 +13,7 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
   // 2. Esquema → circuito, con los ejemplos
   global.Esquema = require(path.join(fuente, 'esquema.js')); global.CompSim = require(path.join(fuente, 'simulador', 'componentes.js'));
   global.SimCircuitos = require(path.join(fuente, 'simulador', 'motor.js'));
+  global.Herramienta = require(path.join(fuente, 'herramienta.js'));
   const Extraer = require(path.join(fuente, 'simulador', 'extraer.js')), Ejemplos = require(path.join(fuente, 'simulador', 'ejemplos.js'));
   {
     const antes = fallos, cerca = (a, b, tol, q) => { if (!(Math.abs(a - b) <= tol * Math.max(1, Math.abs(b)))) mal(`Simulador · ${q}: ${a} en vez de ${b}`); };
@@ -77,6 +78,14 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       }
       // un esquema inválido no se exporta
       { try { Sp.exporta({ componentes: [], cables: [] }); mal('SPICE: exportar un esquema vacío debía fallar'); } catch (e) { /* bien */ } }
+    // barrido de un parámetro: el divisor con R2 de 1k a 4k, y la potencia en R2 (máxima cuando vale R1)
+    {
+      global.ExtraerSim = Extraer; const Bar = require(path.join(fuente, 'simulador', 'barrido.js')), sc = Ejemplos.lista.find((e) => e.clave === 'divisor').sc;
+      const a = Bar.barre(sc, { comp: 'R2', campo: 'R', desde: 1000, hasta: 4000, puntos: 4, medida: { k: 'U', id: 'R2' } });
+      cerca(a.y[0], 6, 1e-9, 'barrido: 6 V con R2 = 1k'); cerca(a.y[3], 9.6, 1e-9, 'barrido: 9,6 V con R2 = 4k');
+      const b = Bar.barre(sc, { comp: 'R2', campo: 'R', desde: 100, hasta: 100000, puntos: 61, log: true, medida: { k: 'P', id: 'R2' } }), iM = b.y.indexOf(Math.max(...b.y));
+      cerca(b.x[iM], 1000, 1e-9, 'barrido: potencia máxima con R2 = R1'); cerca(b.y[iM], 0.036, 1e-9, 'barrido: 36 mW de potencia máxima');
+      let err = ''; try { Bar.barre(sc, { comp: 'R2', campo: 'R', desde: 0, hasta: 10, log: true, medida: { k: 'U', id: 'R2' } }); } catch (e) { err = e.message; } if (!/logar/.test(err)) mal('Simulador: el barrido logarítmico desde 0 no avisa');
     }
     // errores del esquema
     const ex = (sc) => { try { Extraer.extraer(sc); return ''; } catch (e) { return e.message; } };
@@ -98,10 +107,17 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     if (ver !== Version.de('simulador').current) mal(`Simulador: la página muestra la versión «${ver}», se esperaba ${Version.de('simulador').current}`);
     for (const e of Ejemplos.lista) {
       await page.evaluate((c) => SimuladorApp.abrirEjemplo(c), e.clave);
-      for (const t of ['op', 'tr', 'fa', 'bo', 'de']) { await page.click('#tab-' + t); }
+      for (const t of ['op', 'tr', 'fa', 'bo', 'ba', 'th', 'de']) { await page.click('#tab-' + t); }
       const r = await page.evaluate(() => ({ err: SimuladorApp.resultado().err, cables: document.querySelectorAll('#ed .cable').length, comps: document.querySelectorAll('#ed .comp').length }));
       if (r.err || !r.comps) mal(`Simulador · ${e.clave}: ${r.err || 'no dibuja los componentes'}`);
     }
+    // pestaña Barrido (divisor: R2 de 100 a 100k, potencia máxima en 1k) y curva de potencia de Thévenin
+    await page.evaluate(() => SimuladorApp.abrirEjemplo('divisor')); await page.click('#tab-ba');
+    await page.selectOption('#ba-p', 'R2:R'); await page.fill('#ba-de', '100'); await page.dispatchEvent('#ba-de', 'change'); await page.fill('#ba-a', '100k'); await page.dispatchEvent('#ba-a', 'change');
+    await page.selectOption('#ba-log', 'log'); await page.selectOption('#ba-m', 'P:R2');
+    { const ley = await page.locator('#ba-ley').textContent(); if (!/máximo (36|35,9\d*) mW con R2 = (9\d\d(,\d+)?|1,0\d*) ?(Ω|kΩ)/.test(ley)) mal('Simulador: la leyenda del barrido no da 36 mW cerca de 1 kΩ: ' + ley); }
+    await page.click('#tab-th');
+    { const ley = await page.locator('#th-pot-ley').textContent().catch(() => ''); if (!/máximo/.test(ley)) mal('Simulador: Thévenin no dibuja la curva de potencia'); }
     // arrastrar de la paleta, cablear, girar, deshacer
     await page.evaluate(() => { SimuladorApp.abrirEjemplo('divisor'); });
     await page.click('#b-vaciar');
