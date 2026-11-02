@@ -170,6 +170,26 @@
   $('#b-mas').onclick = () => ed.zoom(1.25); $('#b-menos').onclick = () => ed.zoom(0.8); $('#b-ajustar').onclick = () => ed.ajustar();
   $('#b-vaciar').onclick = () => { ed.marca(); const e = ed.estado; e.componentes = []; e.cables = []; e.vista = { x: 40, y: 40, z: 1 }; ed.estado = e; sc = ed.estado; calcula(); };
 
+  /* ---------- Importar y exportar SPICE (spice.js) ---------- */
+  {
+    const tx = $('#spice-txt'), msg = (t) => { $('#sp-msg').textContent = t; };
+    $('#b-spice').onclick = () => { const a = $('#spice').hidden; $('#spice').hidden = !a; $('#b-spice').setAttribute('aria-expanded', String(a)); if (a && !tx.value) $('#sp-exportar').click(); };
+    $('#sp-exportar').onclick = () => {
+      try { const r = SpiceSim.exporta(ed.estado); tx.value = r.texto; msg(r.avisos.length ? `Escrita, con ${r.avisos.length} aviso${r.avisos.length > 1 ? 's' : ''}:\n${r.avisos.join('\n')}` : 'Escrita la red del esquema.'); }
+      catch (e) { msg(`No se puede escribir: ${e.message}`); }
+    };
+    const dibuja = () => {
+      const r = SpiceSim.importa(tx.value);
+      if (!r.sc) { msg(r.avisos.join('\n')); return; }
+      ed.marca(); ed.estado = r.sc; sc = ed.estado; ed.ajustar(); sc = ed.estado; calcula(); actualizaBotones();
+      msg(`Red dibujada: ${r.sc.componentes.filter((c) => !['GND', 'ETIQ'].includes(c.t)).length} piezas unidas por etiquetas de nudo (se pueden recolocar).${r.avisos.length ? `\n${r.avisos.join('\n')}` : ''}`);
+    };
+    $('#sp-importar').onclick = dibuja;
+    $('#sp-copiar').onclick = () => { navigator.clipboard?.writeText(tx.value).then(() => msg('Copiado.'), () => { tx.select(); msg('Selecciona y copia con Ctrl+C.'); }); };
+    $('#sp-descargar').onclick = () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([tx.value], { type: 'text/plain' })); a.download = 'circuito.cir'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); };
+    $('#sp-archivo').onchange = (ev) => { const f = ev.target.files[0]; if (!f) return; f.text().then((t) => { tx.value = t; dibuja(); }); ev.target.value = ''; };
+  }
+
   /* ---------- Medir en cualquier punto: pasa el ratón (o toca) un cable, una patilla o un componente ---------- */
   const tip = document.createElement('div'); tip.className = 'medida-tip'; tip.hidden = true; document.body.appendChild(tip);
   const vNudo = (n) => { const dc = tensionNet(n); if (dc === null || dc === undefined) return null; const f = faR && faR[0] && faR[0].V && faR[0].V[n]; return `${u(dc, 'V')}${f ? ` · ${u(S.mod(f) / Math.SQRT2, 'V')} ef.` : ''}`; };

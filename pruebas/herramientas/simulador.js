@@ -32,6 +32,52 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       const b = Imp.aEsquema({ f: '50', elementos: [{ t: 'V', a: '1', b: '0', v: '230', fase: '0' }, { t: 'R', a: '1', b: '2', v: '40' }, { t: 'L', a: '2', b: '3', v: '200' }, { t: 'C', a: '3', b: '0', v: '100' }] }, true), y = Extraer.extraer(b.sc), w = 100 * Math.PI;
       cerca(SimCircuitos.mod(SimCircuitos.fasores(y.net)[0].I.R1) / Math.SQRT2, 230 / Math.hypot(40, w * 0.2 - 1 / (w * 100e-6)), 1e-6, 'importar alterna: corriente eficaz');
     }
+    // SPICE: importar, exportar y volver a importar
+    {
+      const Sp = require(path.join(fuente, 'simulador', 'spice.js')); global.SpiceSim = Sp; global.ExtraerSim = Extraer;
+      const solve = (sc) => { const x = Extraer.extraer(sc); return { x, op: SimCircuitos.operacion(x.net) }; };
+      const V = (r, nombre) => r.op.V[nombre].re;
+      cerca(Sp.num('4.7k'), 4700, 1e-12, 'SPICE: 4.7k'); cerca(Sp.num('1meg'), 1e6, 1e-12, 'SPICE: 1meg'); cerca(Sp.num('10uF'), 1e-5, 1e-12, 'SPICE: 10uF'); cerca(Sp.num('1M'), 1e-3, 1e-12, 'SPICE: 1M es milli'); if (!isNaN(Sp.num('{R}'))) mal('SPICE: {R} no es un número');
+      // divisor de tensión con título, continuación y comentario
+      {
+        const r = Sp.importa('Divisor de tension\n* comentario\nV1 in 0 DC 12\nR1 in out\n+ 1k ; una resistencia\nR2 out 0 2k\n.op\n.end\n');
+        if (!r.sc || r.avisos.length) mal('SPICE · divisor: ' + JSON.stringify(r.avisos));
+        else { const s = solve(r.sc); cerca(V(s, 'out'), 8, 1e-9, 'SPICE · divisor: V(out)'); }
+      }
+      // sin título; GND como tierra; fuente sinusoidal, pulso, .tran
+      { const r = Sp.importa('V1 a gnd SIN(0 10 50 0 0 90)\nR1 a gnd 1k\n.tran 1m 40m'); const v = r.sc.componentes.find((c) => c.id === 'V1').v; if (v.forma !== 'seno' || v.f !== '50Hz' || v.A !== '10V' || v.fase !== '90' || r.sc.analisis.tfin !== '40m') mal('SPICE · SIN/.tran: ' + JSON.stringify(v) + JSON.stringify(r.sc.analisis)); }
+      { const r = Sp.importa('V1 a 0 PULSE(0 5 1m 1u 1u 2m 5m)\nR1 a 0 1k'); const v = r.sc.componentes.find((c) => c.id === 'V1').v; if (v.forma !== 'pulso' || v.pw !== '2m' || v.per !== '5m' || v.td !== '1m') mal('SPICE · PULSE: ' + JSON.stringify(v)); solve(r.sc); }
+      // semiconductores con .model (definido después de usarse): LED, Zener, NPN, NMOS
+      {
+        const r = Sp.importa('V1 a 0 5\nR1 a b 330\nD1 b 0 LED_ROJO\nR2 a c 10k\nDZ1 0 c ZEN\nQ1 a d e QN\nRb a d 100k\nRe e 0 1k\nM1 a g 0 0 MN W=2 L=1\nVg g 0 3\n.model LED_ROJO D(IS=1e-18 N=2)\n.model ZEN D(IS=1e-14 BV=5.1)\n.model QN NPN(BF=150 IS=2e-14)\n.model MN NMOS(KP=1m VTO=1.5 LAMBDA=0.01)\n');
+        const t = (id) => r.sc.componentes.find((c) => c.id === id);
+        if (t('D1').t !== 'LED' || t('DZ1').t !== 'Z' || t('DZ1').v.Vz !== '5,1V' || t('Q1').t !== 'BJT' || t('Q1').v.bf !== '150' || t('M1').t !== 'NMOS' || t('M1').v.k !== '2m' || t('M1').v.Vth !== '1,5V') mal('SPICE · modelos: ' + JSON.stringify(r.sc.componentes.filter((c) => /D|Q|M/.test(c.id)).map((c) => [c.id, c.t, c.v])));
+        solve(r.sc);
+      }
+      // bobinas acopladas y fuentes controladas
+      {
+        const r = Sp.importa('V1 1 0 SIN(0 10 1k)\nL1 1 0 1m\nL2 2 0 4m\nK1 L1 L2 0.9\nRc 2 0 100\nE1 3 0 1 0 2\nR3 3 0 1k\n');
+        if (!r.sc.componentes.find((c) => c.t === 'KL') || r.sc.componentes.some((c) => c.id === 'L1')) mal('SPICE · K: debe juntar L1, L2 y K1 en una pieza'); Extraer.extraer(r.sc);
+      }
+      // avisos: lo que no se puede importar se dice
+      { const r = Sp.importa('V1 1 0 1\nX1 1 2 sub\nS1 1 2 3 4 SW\nR1 1 0 1k\n.subckt sub a b\n'); if (!r.sc || r.avisos.length < 3) mal('SPICE · avisos: ' + JSON.stringify(r.avisos)); }
+      { const r = Sp.importa('* nada\n'); if (r.sc) mal('SPICE: un texto sin elementos no debe dibujar nada'); }
+      // exportar los ejemplos y volver a importar: mismo resultado en continua
+      for (const clave of ['divisor', 'wheatstone', 'rectificador', 'transformador', 'inversor']) {
+        const e = Ejemplos.lista.find((q) => q.clave === clave), r0 = Extraer.extraer(e.sc), ex = Sp.exporta(e.sc);
+        if (!/\.end\n$/.test(ex.texto)) mal(`SPICE · ${clave}: no acaba en .end`);
+        if (clave === 'transformador' && ex.avisos.length === 0) mal('SPICE · transformador: debía avisar de que no se exporta');
+        if (clave === 'inversor' && !ex.avisos.length) mal('SPICE · inversor: debía avisar del operacional ideal');
+        if (['divisor', 'wheatstone', 'rectificador'].includes(clave)) {
+          const nom = ex.nombres;
+          const im = Sp.importa(ex.texto); if (!im.sc) { mal(`SPICE · ${clave}: no se reimporta`); continue; }
+          const a = SimCircuitos.operacion(r0.net), b = SimCircuitos.operacion(Extraer.extraer(im.sc).net);
+          for (const el of r0.net.elementos) { const ia = a.I?.[el.id]; if (ia === undefined || !nom[el.id]) continue; const ib = b.I[nom[el.id]]; if (ib === undefined) { mal(`SPICE · ${clave}: falta ${el.id} (${nom[el.id]}) tras reimportar`); continue; } cerca(ib.re, ia.re, 1e-6, `SPICE · ${clave}: corriente de ${el.id}`); }
+        }
+      }
+      // un esquema inválido no se exporta
+      { try { Sp.exporta({ componentes: [], cables: [] }); mal('SPICE: exportar un esquema vacío debía fallar'); } catch (e) { /* bien */ } }
+    }
     // errores del esquema
     const ex = (sc) => { try { Extraer.extraer(sc); return ''; } catch (e) { return e.message; } };
     const base = () => JSON.parse(JSON.stringify(Ejemplos.lista[0].sc));
@@ -79,6 +125,14 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     // guardar, recargar y verlo
     await page.reload(); await page.waitForFunction(() => window.SimuladorApp);
     if ((await page.evaluate(() => SimuladorApp.estado().componentes.length)) !== 3) mal('Simulador: no recuerda el esquema al recargar');
+    // panel SPICE: escribir la red, cambiarla y dibujarla
+    await page.evaluate(() => SimuladorApp.abrirEjemplo('divisor'));
+    await page.click('#b-spice');
+    const txt = await page.inputValue('#spice-txt');
+    if (!/^R1 /m.test(txt) || !/\.end/.test(txt)) mal('Simulador: el panel SPICE no escribe la red del esquema');
+    await page.fill('#spice-txt', 'V1 a 0 DC 10\nR1 a b 1k\nR2 b 0 4k\n.end'); await page.click('#sp-importar'); await page.waitForTimeout(400);
+    est = await page.evaluate(() => SimuladorApp.resultado());
+    if (est.err || Math.abs(est.op.V.b.re - 8) > 1e-6) mal('Simulador: dibujar el texto SPICE no da 8 V en b (' + (est.err || JSON.stringify(est.op && est.op.V)) + ')');
     // modo oscuro y móvil, sin desbordar
     await page.emulateMedia({ colorScheme: 'dark' }); await page.waitForTimeout(150);
     await page.setViewportSize({ width: 390, height: 800 }); await page.waitForTimeout(250);
