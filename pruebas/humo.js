@@ -19,6 +19,9 @@ function otroNumero(v) {
   return (m[1] || '') + (d ? y.toFixed(d) : String(Math.round(y) === x ? x + 1 : Math.round(y))).replace('.', ',');
 }
 
+// páginas sin ejercicio que copiar: la tabla periódica, el editor de circuitos y Electrostática (que tiene su propia exportación)
+const SIN_COMPARTIR = ['quimica/tabla-periodica', 'circuitos/simulador', 'electromagnetismo/electrostatica'];
+
 async function humo(browser, { mal, solo, filtro } = {}) {
   mal = mal || ((m) => { console.log('  ✗ ' + m); process.exitCode = 1; });
   const pags = Catalogo.asignaturas.flatMap((a) => a.herramientas.filter((h) => h.disponible).map((h) => `${a.clave}/${h.clave}`));
@@ -35,6 +38,16 @@ async function humo(browser, { mal, solo, filtro } = {}) {
     page.on('pageerror', (e) => consola.push('excepción: ' + e.message));
     await page.goto('file://' + archivo);
     await page.waitForLoadState('load');
+    // compartir (compartir.js), con el ejemplo de partida: botones, texto y LaTeX con resultados y llaves bien cerradas; solo faltan donde no hay ejercicio que copiar
+    const co = await page.evaluate(() => (typeof Compartir === 'undefined' ? null : { botones: document.querySelectorAll('.compartir button').length, txt: Compartir.ejercicio(false), tex: Compartir.ejercicio(true) }));
+    if (!co) { if (!SIN_COMPARTIR.includes(pag)) mal(`${pag}: no tiene compartir.js`); }
+    else {
+      const llaves = co.tex.replace(/\\[{}]/g, '').split('').reduce((d, c) => (d < 0 ? d : d + (c === '{') - (c === '}')), 0);
+      if (co.botones < 4) mal(`${pag}: faltan los botones de compartir (${co.botones})`);
+      if (!/(Resultados|Desarrollo)/.test(co.txt)) mal(`${pag}: copiar como texto no saca resultados ni desarrollo`);
+      if (/\[object|undefined|NaN/.test(co.txt + co.tex)) mal(`${pag}: al copiar sale «object», «undefined» o «NaN»`);
+      if (llaves !== 0) mal(`${pag}: el LaTeX copiado tiene llaves sin cerrar`);
+    }
     if (clave) {
       await page.waitForSelector('.bib .bib-acc');
       // los campos con un número y los desplegables de la página; se busca por id porque muchas
