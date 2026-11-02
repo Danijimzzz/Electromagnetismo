@@ -13,7 +13,7 @@
    (fenómenos también) el de «Herramientas relacionadas» (o «Más fenómenos»):
      node diseno.js ASIGNATURA HERRAMIENTA < pagina.html
    ===================================================================== */
-const Catalogo = require('./catalogo.js'), Tema = require('./tema.js'), Anuncios = require('./anuncios.js');
+const Catalogo = require('./catalogo.js'), Tema = require('./tema.js'), Buscador = require('./buscador.js'), Anuncios = require('./anuncios.js');
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 // Hoja común de las herramientas (estilos.css) y la cabecera del portal, que comparten con el simulador de
@@ -75,7 +75,7 @@ function piezas(a, nombre) {
   const [m1, m2] = Catalogo.marca;
   const nav = [...Catalogo.asignaturas, V].map((x) => `<a href="../../${x.clave}/"${x === a ? ' aria-current="page"' : ''}>${esc(x.corto || x.nombre)}</a>`).join('');
   const cab = `<header class="top"><a class="logo" href="../../">${m1}<i>${m2}</i></a><nav aria-label="Asignaturas"><a href="../../">Inicio</a>${nav}</nav>`
-    + `<a class="foro" href="../../foro/"><span aria-hidden="true">💬</span>Foro</a><form action="../../" role="search"><input class="buscar" type="search" name="q" placeholder="Buscar: Biot-Savart, molaridad…" aria-label="Buscar herramientas"></form>${Tema.BOTON}</header>`;
+    + `<a class="foro" href="../../foro/"><span aria-hidden="true">💬</span>Foro</a><form action="../../" role="search"><input class="buscar" type="search" name="q" placeholder="Buscar: Biot-Savart, molaridad…" aria-label="Buscar herramientas (atajo: barra /)" title="Atajo: / o Ctrl+K"></form>${Tema.BOTON}</header>`;
   const miga = `<nav class="miga" aria-label="Estás en"><span class="miga-izq"></span><span class="miga-ico" aria-hidden="true">${esc(a.icono)}</span><a href="../">${esc(a.nombre)}</a><span aria-hidden="true">›</span><span>${esc(nombre)}</span><span class="miga-der"></span></nav>`;
   return { cab, miga };
 }
@@ -150,7 +150,7 @@ function aplicaElectrostatica(html) {
 
 // con anuncios.js activo: su código en la cabeza, «Preferencias de cookies» en el pie y un hueco por página
 function aplica(html, clave, herramienta) {
-  return Anuncios.cabeza() + `<script>${Tema.SCRIPT}</script>\n` + Anuncios.pie(clave === 'electrostatica' ? aplicaElectrostatica(html) : aplicaHerramienta(html, clave, herramienta));
+  return Anuncios.cabeza() + `<script>${Tema.SCRIPT}</script>\n${Buscador.ETIQUETA('../../')}\n` + Anuncios.pie(clave === 'electrostatica' ? aplicaElectrostatica(html) : aplicaHerramienta(html, clave, herramienta));
 }
 
 function aplicaHerramienta(html, clave, herramienta) {
