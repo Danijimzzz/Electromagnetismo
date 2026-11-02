@@ -308,6 +308,8 @@ const Version = (() => { const registros = {"web":[{"v":"1.9"}],"integrales-mult
      lienzo(c)     prepara un <canvas> (o su selector) a la resolución de la
                    pantalla, limpio y en px CSS: { g, w, h, c, cambia }; cambia
                    es true si el tamaño era otro (para rehacer un fondo guardado)
+     enlace        un enlace con #d=… (lo copia «Mis ejercicios») deja sus datos en la clave de la página
+                   (Pagina.guarda) antes de que arranque la app, en todas las herramientas
      accesible()   (ya se llama al cargar) aria-live en los resultados, role=alert en los
                    errores y aria-describedby de cada gráfica hacia los resultados
    ===================================================================== */
@@ -352,6 +354,14 @@ const Herramienta = (() => {
     if (res) for (const c of doc.querySelectorAll('canvas')) if (!c.hasAttribute('aria-describedby') && !c.closest('#resumen, #res') && !c.hasAttribute('aria-hidden')) c.setAttribute('aria-describedby', res.id);
   };
   accesible();
+  // Enlace que lleva el estado (#d=…, base64 url del JSON guardado): los datos pasan a donde la app los lee al arrancar
+  if (typeof location !== 'undefined' && typeof Pagina !== 'undefined' && Pagina.guarda) {
+    const m = /[#&]d=([A-Za-z0-9_-]+)/.exec(location.hash);
+    if (m) {
+      try { const json = decodeURIComponent(escape(atob(m[1].replace(/-/g, '+').replace(/_/g, '/')))); JSON.parse(json); localStorage.setItem(Pagina.guarda, json); } catch (e) { /* enlace roto o sin almacenamiento */ }
+      try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* file:// */ }
+    }
+  }
   return { $, esc, copia, vacio, leeSI, txt, marcas, lienzo, accesible };
 })();
 
@@ -4058,6 +4068,10 @@ const IntegralesMultiples = (() => {
    clave de la app y recarga la página, así sirve para cualquier herramienta.
    La clave sale del catálogo («guarda»): herramientas.js la pone en la llamada
    Biblioteca.monta(carpeta, clave) de cada página.
+   También: «Copiar enlace» (los datos de ahora en la dirección, #d=…; herramienta.js los recoge al
+   abrirlo) y «Hoja para imprimir» (elige varios ejercicios y se imprimen juntos con su solución:
+   cada uno se abre en un marco oculto de la misma página, se copian sus resultados y su desarrollo
+   y se devuelve el estado de antes).
    ===================================================================== */
 const Biblioteca = (() => {
   const FORMATO = 'simulaciencia-ejercicios', ANCHO = 1280;
@@ -4111,6 +4125,11 @@ const Biblioteca = (() => {
 .bib-pie p { margin: 0 }
 .bib-aviso { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 70; background: var(--ink); color: var(--panel); padding: 8px 14px; border-radius: 8px; font: 13px var(--f-ui, system-ui); box-shadow: 0 4px 16px rgba(0,0,0,.2) }
 .bib.arrastre { outline: 2px dashed var(--accent); outline-offset: -6px }
+.bib-chk { flex: 0 0 auto; margin: 0 4px 0 6px; accent-color: var(--accent); width: 16px; height: 16px }
+.bib-hoja-barra { display: grid; gap: 4px; padding: 0 8px 8px }
+.bib-hoja-barra p { margin: 0 6px 4px; color: var(--muted); font-size: 12.5px }
+#hoja-imp { display: none }
+@media print { body.hoja-imprimiendo > *:not(#hoja-imp) { display: none !important } body.hoja-imprimiendo #hoja-imp { display: block !important } body.hoja-imprimiendo { padding: 0 !important; background: #fff !important } #hoja-imp { color: #000; font: 11pt/1.4 var(--f-ui, system-ui) } #hoja-imp h1 { font-size: 17pt; margin: 0 0 4px } #hoja-imp .hoja-sub { color: #555; margin: 0 0 14px } #hoja-imp section.hoja-ej { margin: 0 0 18px; padding-top: 10px; border-top: 1px solid #999 } #hoja-imp h2 { font-size: 13pt; margin: 0 0 8px; break-after: avoid } #hoja-imp .card { box-shadow: none !important; border: 0 !important; padding: 0 0 6px !important; background: none !important; break-inside: avoid } #hoja-imp img { max-width: 100%; max-height: 9cm; object-fit: contain } #hoja-imp .pasos li { break-inside: avoid } }
 `;
 
   function monta(herramienta, clave) {
@@ -4122,7 +4141,7 @@ const Biblioteca = (() => {
     let ui = { abierta: window.innerWidth >= ANCHO, cerradas: {}, ...lee(K_UI, {}) };
     let activo = null; try { activo = sessionStorage.getItem(K_ACT); } catch (e) { /* sin almacenamiento */ }
     if (activo && !lib.items.some((x) => x.id === activo)) activo = null;
-    let busca = '', form = null, borrando = null;
+    let busca = '', form = null, borrando = null, hoja = null;
     const guardaLib = () => escribe(K, lib) || aviso('No se pudo guardar: el navegador no deja usar el almacenamiento');
     const guardaUI = () => escribe(K_UI, ui);
     const ponActivo = (id) => { activo = id; try { if (id) sessionStorage.setItem(K_ACT, id); else sessionStorage.removeItem(K_ACT); } catch (e) { /* sin almacenamiento */ } };
@@ -4228,8 +4247,81 @@ const Biblioteca = (() => {
       it.datos = datos; it.actualizado = Date.now(); guardaLib(); pinta(); aviso(`Cambios guardados en «${it.titulo}»`);
     }
 
+    // ----- enlace con los datos de ahora -----
+    const b64 = (t) => btoa(unescape(encodeURIComponent(t))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    const enlace = () => { const d = estado(); return location.href.split('#')[0] + (d ? `#d=${b64(d)}` : ''); };
+    async function copiaEnlace() {
+      const url = enlace(); let ok = false;
+      try { await navigator.clipboard.writeText(url); ok = true; } catch (e) {
+        const t = document.createElement('textarea'); t.value = url; t.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(t); t.select();
+        try { ok = document.execCommand('copy'); } catch (e2) { /* sin portapapeles */ } t.remove();
+      }
+      aviso(!ok ? 'No se ha podido copiar el enlace' : !url.includes('#d=') ? 'Enlace copiado, pero todavía no hay datos que llevar' : url.length > 8000 ? 'Enlace copiado (es muy largo: algunos programas lo cortan)' : 'Enlace copiado: abre la herramienta con estos datos');
+    }
+
+    // ----- hoja para imprimir: cada ejercicio se abre en un marco oculto y se copia su solución -----
+    const valorDe = (el) => el.tagName === 'SELECT' ? [...el.selectedOptions].map((o) => o.textContent.trim()).join(', ') : el.type === 'checkbox' || el.type === 'radio' ? (el.checked ? '✓' : '—') : el.value;
+    function extrae(d) {
+      let nodos = [...d.querySelectorAll('.layout .card')].filter((c) => !c.closest('[hidden]') && c.textContent.trim());
+      if (!nodos.length) { const w = d.querySelector('.wrap') || d.body; nodos = [w]; }
+      const out = d.createElement('div');
+      for (const n of nodos) {
+        const c = n.cloneNode(true);
+        // los campos y las gráficas se copian como su valor y como imagen
+        const o = [...n.querySelectorAll('input, select, textarea')], k = [...c.querySelectorAll('input, select, textarea')];
+        k.forEach((e, i) => { if (e.type === 'hidden' || e.type === 'file' || /^ejemplo/.test(e.id)) { (e.closest('label') || e).remove(); return; } const sp = d.createElement('b'); sp.textContent = valorDe(o[i]); e.replaceWith(sp); });
+        const lo = [...n.querySelectorAll('canvas')], lk = [...c.querySelectorAll('canvas')];
+        lk.forEach((e, i) => { try { const im = d.createElement('img'); im.src = lo[i].toDataURL('image/png'); im.alt = 'Gráfica del ejercicio'; e.replaceWith(im); } catch (x) { e.remove(); } });
+        c.querySelectorAll('button, .controles, .compartir, .tools, .chips, .teoria, footer, header.top, nav, script, style, [hidden]').forEach((e) => e.remove());
+        c.querySelectorAll('[id]').forEach((e) => e.removeAttribute('id'));
+        c.querySelectorAll('details').forEach((e) => { e.open = true; });
+        c.classList.add('card'); out.appendChild(c);
+      }
+      return out.innerHTML;
+    }
+    async function imprimeHoja(its) {
+      if (!its.length) return;
+      aviso('Preparando la hoja…');
+      let original = null; try { original = localStorage.getItem(clave); } catch (e) { /* sin almacenamiento */ }
+      const fr = document.createElement('iframe');
+      fr.style.cssText = 'position:fixed;left:-10000px;top:0;width:1200px;height:900px;border:0'; fr.setAttribute('aria-hidden', 'true'); fr.tabIndex = -1; fr.title = 'Preparando la hoja';
+      document.body.appendChild(fr);
+      const trozos = [];
+      try {
+        for (const it of its) {
+          if (!escribe(clave, it.datos)) throw new Error('el navegador no deja usar el almacenamiento');
+          await new Promise((ok) => { fr.onload = ok; fr.src = location.pathname + location.search; });
+          await new Promise((ok) => setTimeout(ok, 400));
+          trozos.push({ it, html: extrae(fr.contentDocument) });
+        }
+      } catch (err) { aviso(`No se pudo preparar la hoja: ${err.message}`); }
+      finally {
+        try { if (original === null) localStorage.removeItem(clave); else localStorage.setItem(clave, original); } catch (e) { /* sin almacenamiento */ }
+        fr.remove();
+      }
+      if (trozos.length !== its.length) return;
+      document.getElementById('hoja-imp')?.remove();
+      const cont = document.createElement('div'); cont.id = 'hoja-imp';
+      const fecha = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+      cont.innerHTML = `<h1>${esc(nombre)}</h1><p class="hoja-sub">Hoja de ejercicios · ${its.length} ejercicio${its.length === 1 ? '' : 's'} · ${esc(fecha)} · Ciencify</p>`
+        + trozos.map((t, i) => `<section class="hoja-ej"><h2>${i + 1}. ${esc(t.it.titulo)}${t.it.carpeta ? ` <small>(${esc(t.it.carpeta)})</small>` : ''}</h2>${t.html}</section>`).join('');
+      document.body.appendChild(cont);
+      const tema = document.documentElement.getAttribute('data-theme');
+      const fin = () => {
+        removeEventListener('afterprint', fin);
+        document.body.classList.remove('hoja-imprimiendo'); cont.remove();
+        if (tema === null) document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', tema);
+      };
+      addEventListener('afterprint', fin);
+      document.documentElement.setAttribute('data-theme', 'light');
+      document.body.classList.add('hoja-imprimiendo');
+      hoja = null; pinta(); abre(false);
+      window.print();
+    }
+
     function fila(it) {
       const b = borrando === it.id;
+      if (hoja) return `<label class="bib-it" data-id="${it.id}"><input type="checkbox" class="bib-chk" data-id="${it.id}"${hoja.has(it.id) ? ' checked' : ''}><span class="bib-abre">${esc(it.titulo)}</span></label>`;
       return `<div class="bib-it${it.id === activo ? ' activo' : ''}" data-id="${it.id}">
 <button class="bib-abre" data-acc="abrir" title="Abrir «${esc(it.titulo)}»">${esc(it.titulo)}</button>${b
         ? '<button class="bib-mini on" data-acc="si-borrar" title="Borrar de verdad" aria-label="Confirmar borrar">✓</button><button class="bib-mini" data-acc="no-borrar" title="No borrar" aria-label="Cancelar">✕</button>'
@@ -4252,16 +4344,27 @@ const Biblioteca = (() => {
       }
       lista += sueltos.map(fila).join('');
       if (!vis.length) lista = `<p class="bib-sec">Mis ejercicios</p><p class="bib-vacio">${lib.items.length ? 'Ningún ejercicio coincide con la búsqueda.' : 'Aún no has guardado ningún ejercicio. Prepara los datos y pulsa «Guardar el actual».'}</p>`;
-      const ejs = ejemplosHTML(q), abEj = q || !ui.cerradas[`${herramienta}/#ejemplos`];
+      const ejs = hoja ? '' : ejemplosHTML(q), abEj = q || !ui.cerradas[`${herramienta}/#ejemplos`];
       if (ejs) lista += `<button class="bib-carp bib-sec-ej" data-carpeta="#ejemplos" aria-expanded="${!!abEj}">Ejercicios de ejemplo<span class="n" aria-hidden="true">${abEj ? '▾' : '▸'}</span></button>${abEj ? `<div class="bib-ejs">${ejs}</div>` : ''}`;
       const it = lib.items.find((x) => x.id === activo), carps = [...new Set(lib.items.map((x) => x.carpeta).filter(Boolean))];
       const f = form && (form.id ? lib.items.find((x) => x.id === form.id) : { titulo: ejemplo() || `Ejercicio ${lib.items.length + 1}`, carpeta: it?.carpeta || '' });
+      if (hoja) {
+        panel.innerHTML = `<div class="bib-h"><b>Hoja para imprimir</b><button class="bib-x" data-acc="cerrar" title="Cerrar" aria-label="Cerrar Mis ejercicios">×</button></div>
+<div class="bib-hoja-barra"><p>Marca los ejercicios que quieres en la hoja. Se imprimen con sus resultados y su desarrollo.</p>
+<button data-acc="hoja-todos"><span class="bib-ic">☑</span>${vis.every((i) => hoja.has(i.id)) && vis.length ? 'Quitar todos' : 'Marcar todos'}</button>
+<button data-acc="hoja-imprimir"${hoja.size ? '' : ' disabled'}><span class="bib-ic">🖨</span>Imprimir ${hoja.size} ejercicio${hoja.size === 1 ? '' : 's'}</button>
+<button data-acc="hoja-cancelar"><span class="bib-ic">✕</span>Volver a Mis ejercicios</button></div>
+<div class="bib-lista">${lista}</div>`;
+        return;
+      }
       panel.innerHTML = `<div class="bib-h"><b>Mis ejercicios</b><button class="bib-x" data-acc="cerrar" title="Cerrar" aria-label="Cerrar Mis ejercicios">×</button></div>
 <div class="bib-acc">
 <button data-acc="nuevo"><span class="bib-ic">+</span>Guardar el actual como nuevo</button>
 <button data-acc="actualizar"${it ? '' : ' disabled'} title="${it ? `Guarda los datos de ahora en «${esc(it.titulo)}»` : 'Abre o guarda antes un ejercicio'}"><span class="bib-ic">↻</span>${it ? `Guardar cambios en «${esc(it.titulo.length > 22 ? it.titulo.slice(0, 21) + '…' : it.titulo)}»` : 'Guardar cambios'}</button>
 <button data-acc="importar"><span class="bib-ic">↥</span>Importar archivo…</button>
 <button data-acc="exportar-todo"${lib.items.length ? '' : ' disabled'}><span class="bib-ic">↧</span>Exportar todos</button>
+<button data-acc="enlace" title="Copia un enlace que abre la herramienta con los datos de ahora"><span class="bib-ic">🔗</span>Copiar enlace con estos datos</button>
+<button data-acc="hoja"${lib.items.length ? '' : ' disabled'} title="Elige varios ejercicios y imprímelos juntos con su solución"><span class="bib-ic">🖨</span>Hoja para imprimir…</button>
 ${lib.items.length > 5 ? `<input type="search" class="bib-busca" placeholder="Buscar por título o carpeta…" aria-label="Buscar ejercicios" value="${esc(busca)}">` : ''}
 </div>
 ${f ? `<div class="bib-form"><label>Título<input id="bib-t" value="${esc(f.titulo)}" maxlength="120" autocomplete="off"></label><label>Carpeta (opcional)<input id="bib-c" value="${esc(f.carpeta || '')}" maxlength="60" list="bib-dl" placeholder="sin carpeta" autocomplete="off"></label><datalist id="bib-dl">${carps.map((c) => `<option value="${esc(c)}">`).join('')}</datalist><div class="fila"><button data-acc="cancelar">Cancelar</button><button class="si" data-acc="guardar">Guardar</button></div></div>` : ''}
@@ -4281,6 +4384,11 @@ ${f ? `<div class="bib-form"><label>Título<input id="bib-t" value="${esc(f.titu
         case 'actualizar': actualiza(); break;
         case 'importar': archivo.click(); break;
         case 'exportar-todo': descarga(nombreArchivo(nombre + ' ejercicios'), archivoDe(lib.items)); break;
+        case 'enlace': copiaEnlace(); break;
+        case 'hoja': hoja = new Set(); form = null; pinta(); break;
+        case 'hoja-cancelar': hoja = null; pinta(); break;
+        case 'hoja-todos': { const q = norm(busca), vis = lib.items.filter((i) => !q || norm(i.titulo + ' ' + (i.carpeta || '')).includes(q)); if (vis.every((i) => hoja.has(i.id))) hoja.clear(); else vis.forEach((i) => hoja.add(i.id)); pinta(); break; }
+        case 'hoja-imprimir': imprimeHoja(lib.items.filter((i) => hoja.has(i.id))); break;
         case 'guardar': guardaForm(); break;
         case 'cancelar': form = null; pinta(); break;
         case 'abrir': if (it) carga(it); break;
@@ -4302,6 +4410,7 @@ ${f ? `<div class="bib-form"><label>Título<input id="bib-t" value="${esc(f.titu
       if (e.target.closest('.bib-form') && e.key === 'Enter') { e.preventDefault(); guardaForm(); }
       else if (e.key === 'Escape') { if (form) { form = null; pinta(); } else { abre(false); btn.focus(); } }
     });
+    panel.addEventListener('change', (e) => { if (hoja && e.target.classList.contains('bib-chk')) { if (e.target.checked) hoja.add(e.target.dataset.id); else hoja.delete(e.target.dataset.id); const f = e.target.dataset.id; pinta(); panel.querySelector(`.bib-chk[data-id="${f}"]`)?.focus(); } });
     panel.addEventListener('input', (e) => { if (e.target.classList.contains('bib-busca')) { busca = e.target.value; const pos = e.target.selectionStart; pinta(); const s = panel.querySelector('.bib-busca'); s.focus(); s.setSelectionRange(pos, pos); } });
     panel.addEventListener('dragover', (e) => { e.preventDefault(); panel.classList.add('arrastre'); });
     panel.addEventListener('dragleave', () => panel.classList.remove('arrastre'));
@@ -4718,6 +4827,59 @@ ${preguntas.length ? `<div class="prac-q">${filas}</div>` : '<p>Con estos datos 
     return (window.PracticaApp = { activa, nuevo, respuestas, get activo() { return activo; }, get preguntas() { return preguntas; } });
   }
   return { monta, CONF, numeros, leeAlumno, otroValor };
+})();
+
+/* =====================================================================
+   Portada personal: lo que Ciencify recuerda de ti, solo en este navegador (localStorage, sin
+   cuentas ni envíos). herramientas.js lo pone en cada herramienta y fenómeno tras biblioteca.js; la
+   portada (portal.js) lo usa para pintar «Tu espacio». Claves:
+     simu-recientes   [{ r: 'asignatura/herramienta', t: ms }]   las últimas 8, la más nueva primero
+     simu-favoritos   ['asignatura/herramienta', …]
+   En cada herramienta apunta la visita y añade el botón ☆ «Favorita» junto a Mis ejercicios.
+   Personal.espacio(sitio) devuelve { continuar, favoritas, recientes } con rutas (portal.js las
+   convierte en tarjetas); Personal.borra() olvida todo.
+   ===================================================================== */
+const Personal = (() => {
+  const K_REC = 'simu-recientes', K_FAV = 'simu-favoritos', MAX = 8;
+  const lee = (k) => { try { const v = JSON.parse(localStorage.getItem(k)); return Array.isArray(v) ? v : []; } catch (e) { return []; } };
+  const escribe = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } };
+  // «/fisica/gases/» → 'fisica/gases' (las dos últimas partes: también vale desde un archivo local)
+  const rutaDe = (p) => { const q = String(p).split('/').filter((s) => s && !/\.html?$/.test(s)); return q.length >= 2 ? q.slice(-2).join('/') : null; };
+  const recientes = () => lee(K_REC).filter((x) => x && typeof x.r === 'string');
+  const favoritos = () => lee(K_FAV).filter((x) => typeof x === 'string');
+  function visita(ruta, ahora = Date.now()) { escribe(K_REC, [{ r: ruta, t: ahora }, ...recientes().filter((x) => x.r !== ruta)].slice(0, MAX)); }
+  const esFavorita = (ruta) => favoritos().includes(ruta);
+  function alterna(ruta) { const f = favoritos(), i = f.indexOf(ruta); if (i >= 0) f.splice(i, 1); else f.push(ruta); escribe(K_FAV, f); return i < 0; }
+  // continuar = la última visitada; recientes = las demás
+  function espacio() {
+    const r = recientes();
+    return { continuar: r[0] || null, favoritas: favoritos(), recientes: r.slice(1, 6) };
+  }
+  function borra() { try { localStorage.removeItem(K_REC); localStorage.removeItem(K_FAV); } catch (e) { /* sin almacenamiento */ } }
+  // «hace 5 min», «hace 3 h», «ayer», «hace 4 días»
+  function hace(t, ahora = Date.now()) {
+    const m = Math.max(0, Math.round((ahora - t) / 60000));
+    if (m < 2) return 'justo ahora';
+    if (m < 60) return `hace ${m} min`;
+    if (m < 60 * 24) return `hace ${Math.round(m / 60)} h`;
+    const d = Math.round(m / 1440);
+    return d === 1 ? 'ayer' : `hace ${d} días`;
+  }
+
+  const CSS = '.fav-btn { display: inline-flex; align-items: center; gap: 6px; font: 600 13.5px var(--f-ui, system-ui); color: var(--ink); background: var(--vidrio, var(--panel)); -webkit-backdrop-filter: var(--blur, none); backdrop-filter: var(--blur, none); border: 1px solid var(--vidrio-borde, var(--line)); border-radius: 999px; padding: 5px 12px; cursor: pointer; white-space: nowrap } .fav-btn:hover, .fav-btn[aria-pressed=true] { border-color: var(--accent); color: var(--accent) } @media print { .fav-btn { display: none !important } }';
+  function monta() {
+    if (typeof document === 'undefined') return;
+    const ruta = rutaDe(location.pathname); if (!ruta) return;
+    visita(ruta);
+    const sitio = document.querySelector('.miga-der'); if (!sitio || sitio.querySelector('.fav-btn')) return;
+    const st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'fav-btn';
+    const pinta = () => { const on = esFavorita(ruta); b.setAttribute('aria-pressed', String(on)); b.title = on ? 'Quitar de tus favoritas (portada)' : 'Añadir a tus favoritas (portada)'; b.innerHTML = `<span aria-hidden="true">${on ? '★' : '☆'}</span> Favorita`; };
+    b.addEventListener('click', () => { alterna(ruta); pinta(); });
+    pinta(); sitio.append(b);
+  }
+  monta();
+  return { rutaDe, visita, esFavorita, alterna, espacio, borra, hace, recientes, favoritos, K_REC, K_FAV };
 })();
 
 Biblioteca.monta('integrales-multiples', 'integrales-multiples-v1');

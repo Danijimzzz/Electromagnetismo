@@ -54,6 +54,11 @@ a .t { background:var(--c); color:var(--panel) }
 .mini > * { min-width:0; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--c); border-radius:4px 10px 10px 4px; padding:10px 12px }
 .mini a:hover { background:color-mix(in srgb,var(--c) 6%,var(--panel)); border-color:color-mix(in srgb,var(--c) 50%,var(--line)); border-left-color:var(--c) }
 .mini b { display:block; font-weight:600; font-size:14px } .mini span { display:block; color:var(--muted); font-size:12.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+.tuyo { margin-bottom:30px } .tuyo[hidden], #tu-espacio[data-q] { display:none }
+.tuyo > header { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:12px } .tuyo h2 { margin:0; font:600 19px var(--f-ui) }
+.tuyo h3 { margin:14px 0 8px; font:600 12px var(--f-ui); letter-spacing:.06em; text-transform:uppercase; color:var(--muted) }
+.tuyo .olvida { margin-left:auto; font:500 13px var(--f-ui); color:var(--muted); background:none; border:0; cursor:pointer; text-decoration:underline } .tuyo .olvida:hover { color:var(--ink) }
+.mini .seguir { border-left-width:5px } .mini .seguir span { color:var(--c); font-weight:600 }
 .mini .off { color:var(--muted); border-style:dashed; border-left-style:solid; cursor:default }
 .mini .pronto { font-style:normal; font-weight:600; color:var(--c) }
 @media (prefers-reduced-motion: no-preference) { html { scroll-behavior:smooth } }
@@ -235,14 +240,42 @@ const BUSCAR = `(() => {
   addEventListener('scroll', mira, { passive: true }); mira();
 })();`;
 
+// «Tu espacio»: continuar, favoritas y últimas usadas (simu-recientes y simu-favoritos, que escribe personal.js en cada herramienta)
+const FICHAS = {};
+for (const a of Catalogo.asignaturas) for (const h of a.herramientas.filter((x) => x.disponible)) FICHAS[`${a.clave}/${h.clave}`] = [h.nombre, h.desc, estilo(a)];
+for (const f of V.lista.filter((x) => x.disponible)) FICHAS[`fenomenos/${f.clave}`] = [f.nombre, f.desc, estilo(V)];
+const ESPACIO = `(() => {
+  const F = ${JSON.stringify(FICHAS).replace(/</g, '\\u003c')}, K_REC = 'simu-recientes', K_FAV = 'simu-favoritos';
+  const sec = document.getElementById('tu-espacio'); if (!sec) return;
+  const lee = (k) => { try { const v = JSON.parse(localStorage.getItem(k)); return Array.isArray(v) ? v : []; } catch (e) { return []; } };
+  const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+  const hace = (t) => { const m = Math.max(0, Math.round((Date.now() - t) / 60000)); return m < 2 ? 'justo ahora' : m < 60 ? 'hace ' + m + ' min' : m < 1440 ? 'hace ' + Math.round(m / 60) + ' h' : Math.round(m / 1440) === 1 ? 'ayer' : 'hace ' + Math.round(m / 1440) + ' días'; };
+  const ficha = (r, extra) => { const f = F[r]; return f ? '<a href="' + r + '/" style="' + f[2] + '"' + (extra ? ' class="seguir"' : '') + '><b>' + esc(f[0]) + '</b><span>' + esc(extra || f[1]) + '</span></a>' : ''; };
+  function pinta() {
+    const rec = lee(K_REC).filter((x) => x && F[x.r]), fav = lee(K_FAV).filter((r) => F[r]);
+    if (!rec.length && !fav.length) { sec.hidden = true; return; }
+    let h = '<header><h2>Tu espacio</h2><small>Solo en este navegador</small><button type="button" class="olvida">Olvidar mis datos</button></header>';
+    if (rec[0]) h += '<h3>Continúa donde lo dejaste</h3><div class="mini">' + ficha(rec[0].r, 'Abierta ' + hace(rec[0].t) + ' · sigue con tus datos') + '</div>';
+    if (fav.length) h += '<h3>Favoritas</h3><div class="mini">' + fav.map((r) => ficha(r)).join('') + '</div>';
+    const ult = rec.slice(1, 7).filter((x) => !fav.includes(x.r));
+    if (ult.length) h += '<h3>Últimas usadas</h3><div class="mini">' + ult.map((x) => ficha(x.r)).join('') + '</div>';
+    sec.innerHTML = h; sec.hidden = false;
+    sec.querySelector('.olvida').addEventListener('click', () => { try { localStorage.removeItem(K_REC); localStorage.removeItem(K_FAV); } catch (e) { /* sin almacenamiento */ } pinta(); });
+  }
+  pinta();
+  const q = document.getElementById('buscar');
+  if (q) q.addEventListener('input', () => { if (q.value.trim()) sec.setAttribute('data-q', ''); else sec.removeAttribute('data-q'); });
+})();`;
+
 const archivos = { 'index.html': pagina({
   titulo: `${marca} · Simuladores y calculadoras por asignatura`,
-  desc: Catalogo.lema, raiz: '', buscar: true, script: BUSCAR,
+  desc: Catalogo.lema, raiz: '', buscar: true, script: BUSCAR + '\n' + ESPACIO,
   cuerpo: `<div class="lay">
 ${lado}
 <main>
 <h1>Elige asignatura y herramienta</h1>
 <p class="sub">${esc(Catalogo.lema)}</p>
+<section class="tuyo" id="tu-espacio" hidden aria-label="Tu espacio"></section>
 ${secciones}
 <p class="nada" id="nada" hidden>No hay ninguna herramienta con ese nombre todavía.</p>
 </main>

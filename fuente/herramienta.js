@@ -17,6 +17,8 @@
      lienzo(c)     prepara un <canvas> (o su selector) a la resolución de la
                    pantalla, limpio y en px CSS: { g, w, h, c, cambia }; cambia
                    es true si el tamaño era otro (para rehacer un fondo guardado)
+     enlace        un enlace con #d=… (lo copia «Mis ejercicios») deja sus datos en la clave de la página
+                   (Pagina.guarda) antes de que arranque la app, en todas las herramientas
      accesible()   (ya se llama al cargar) aria-live en los resultados, role=alert en los
                    errores y aria-describedby de cada gráfica hacia los resultados
    ===================================================================== */
@@ -61,6 +63,14 @@ const Herramienta = (() => {
     if (res) for (const c of doc.querySelectorAll('canvas')) if (!c.hasAttribute('aria-describedby') && !c.closest('#resumen, #res') && !c.hasAttribute('aria-hidden')) c.setAttribute('aria-describedby', res.id);
   };
   accesible();
+  // Enlace que lleva el estado (#d=…, base64 url del JSON guardado): los datos pasan a donde la app los lee al arrancar
+  if (typeof location !== 'undefined' && typeof Pagina !== 'undefined' && Pagina.guarda) {
+    const m = /[#&]d=([A-Za-z0-9_-]+)/.exec(location.hash);
+    if (m) {
+      try { const json = decodeURIComponent(escape(atob(m[1].replace(/-/g, '+').replace(/_/g, '/')))); JSON.parse(json); localStorage.setItem(Pagina.guarda, json); } catch (e) { /* enlace roto o sin almacenamiento */ }
+      try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* file:// */ }
+    }
+  }
   return { $, esc, copia, vacio, leeSI, txt, marcas, lienzo, accesible };
 })();
 if (typeof module !== 'undefined') module.exports = Herramienta;

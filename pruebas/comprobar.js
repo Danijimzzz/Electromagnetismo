@@ -407,6 +407,63 @@ async function navegador() {
     if (completo && probadas < 38) mal(`Mis ejercicios: solo se ha probado en ${probadas} herramientas`);
     if (fallos === antes) console.log(`  ✓ Mis ejercicios: guardar, carpeta, fijar, abrir, exportar, borrar e importar en ${probadas} herramientas, y en el móvil`);
   }
+  if (primera) {
+    // Fase 7: enlace con el estado, hoja de ejercicios para imprimir y «Tu espacio» de la portada (el marco de la hoja pide http, no file://)
+    const antes = fallos, consola = [], http = require('http');
+    const tipos = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.png': 'image/png', '.webp': 'image/webp', '.json': 'application/json' };
+    const srv = http.createServer((q, r) => {
+      let f = path.join(publico, decodeURIComponent(q.url.split('?')[0].split('#')[0])); if (f.endsWith(path.sep) || (fs.existsSync(f) && fs.statSync(f).isDirectory())) f = path.join(f, 'index.html');
+      if (!f.startsWith(publico) || !fs.existsSync(f)) { r.writeHead(404); r.end(); return; }
+      r.writeHead(200, { 'content-type': tipos[path.extname(f)] || 'application/octet-stream' }); r.end(fs.readFileSync(f));
+    });
+    await new Promise((ok) => srv.listen(0, '127.0.0.1', ok));
+    const web = `http://127.0.0.1:${srv.address().port}/`;
+    const ctx = await browser.newContext({ viewport: { width: 1400, height: 900 } });
+    await ctx.grantPermissions(['clipboard-read', 'clipboard-write']).catch(() => {});
+    const page = await ctx.newPage();
+    page.on('console', (m) => { if (m.type() === 'error') consola.push(m.text()); });
+    page.on('pageerror', (e) => consola.push(`excepción: ${e.message}`));
+    const K = 'tiro-parabolico-v1';
+    await page.goto(web + 'fisica/tiro-parabolico/'); await page.waitForSelector('.bib .bib-acc');
+    // favorita y últimas usadas
+    await page.click('.fav-btn');
+    if ((await page.getAttribute('.fav-btn', 'aria-pressed')) !== 'true') mal('Favorita: el botón no se marca');
+    // dos ejercicios guardados
+    for (const [i, t] of [[0, 'Uno'], [1, 'Dos']]) { await page.click(`.bib .bib-ej >> nth=${i}`); await page.click('.bib [data-acc=nuevo]'); await page.fill('#bib-t', t); await page.click('.bib [data-acc=guardar]'); }
+    const datos = await page.evaluate((k) => localStorage.getItem(k), K);
+    // enlace con el estado: copiado, y abierto en otra página lleva los mismos datos
+    await page.click('.bib [data-acc=enlace]');
+    const enlace = await page.evaluate(() => navigator.clipboard.readText());
+    if (!/#d=[\w-]+$/.test(enlace)) mal('Copiar enlace: no lleva los datos (#d=…)');
+    else {
+      const p2 = await ctx.newPage(); await p2.goto(enlace); await p2.waitForSelector('.bib .bib-acc');
+      if ((await p2.evaluate((k) => localStorage.getItem(k), K)) !== datos) mal('Copiar enlace: al abrirlo no se recuperan los datos');
+      if (await p2.evaluate(() => location.hash)) mal('Copiar enlace: la dirección conserva el #d=… tras abrirlo');
+      await p2.close();
+    }
+    // hoja para imprimir: dos ejercicios con su desarrollo y el estado de antes intacto
+    await page.click('.bib [data-acc=hoja]'); await page.click('.bib [data-acc=hoja-todos]');
+    await page.evaluate(() => { window.print = () => { window.__hoja = document.getElementById('hoja-imp').innerHTML; }; });
+    await page.click('.bib [data-acc=hoja-imprimir]');
+    await page.waitForFunction(() => window.__hoja, null, { timeout: 30000 });
+    const hoja = await page.evaluate(() => window.__hoja);
+    if ((hoja.match(/<section class="hoja-ej">/g) || []).length !== 2 || !/1\. Uno/.test(hoja) || !/2\. Dos/.test(hoja)) mal('Hoja: no salen los dos ejercicios');
+    if (!/Desarrollo/i.test(hoja) || !/<math/.test(hoja)) mal('Hoja: faltan el desarrollo o sus fórmulas');
+    if ((await page.evaluate((k) => localStorage.getItem(k), K)) !== datos) mal('Hoja: no se devuelve el estado de antes');
+    await page.evaluate(() => dispatchEvent(new Event('afterprint')));
+    if (await page.evaluate(() => !!document.getElementById('hoja-imp') || document.body.classList.contains('hoja-imprimiendo'))) mal('Hoja: no se limpia tras imprimir');
+    // portada: «Tu espacio» con continuar, favoritas y últimas
+    const por = await ctx.newPage(); await por.goto(web); await por.waitForSelector('#tu-espacio:not([hidden])');
+    const tu = await por.textContent('#tu-espacio');
+    if (!/Continúa donde lo dejaste/.test(tu) || !/Favoritas/.test(tu) || !/Tiro parabólico/.test(tu)) mal('Portada: «Tu espacio» no muestra continuar y favoritas');
+    await por.fill('#buscar', 'gases');
+    if (await por.isVisible('#tu-espacio')) mal('Portada: «Tu espacio» debería ocultarse al buscar');
+    await por.fill('#buscar', ''); await por.click('#tu-espacio .olvida');
+    if (!(await por.getAttribute('#tu-espacio', 'hidden') !== null)) mal('Portada: «Olvidar mis datos» no vacía «Tu espacio»');
+    await ctx.close(); srv.close();
+    if (consola.length) mal('Fase 7: consola del navegador:\n      ' + consola.join('\n      '));
+    if (fallos === antes) console.log('  ✓ Fase 7: copiar enlace con el estado, hoja de ejercicios para imprimir y «Tu espacio» en la portada');
+  }
   {
     // arreglo 7: modo práctica (datos al azar, se tapan los resultados, se corrigen las respuestas y se destapa la solución)
     const antes = fallos, consola = [];
