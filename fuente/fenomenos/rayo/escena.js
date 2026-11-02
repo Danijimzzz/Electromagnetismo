@@ -7,7 +7,7 @@
    pruebas/herramientas/fenomenos/rayo.js.
    ===================================================================== */
 const Rayo = (() => {
-  // modelo de orden de magnitud (datos de memoria, para revisar): la base de la nube (10 km²) y el suelo (a 2 km) como un
+  // modelo de orden de magnitud (datos revisados el 2 nov 2026 con valores típicos de la literatura): la base de la nube (10 km²) y el suelo (a 2 km) como un
   // condensador plano de aire; 100 MV justo antes de caer; 30 kA de corriente de pico típica; 343 m/s el sonido a 20 °C
   const S = 1e7, D = 2000, V = 100e6, EPS0 = 8.8541878128e-12, I = 30e3, SONIDO = 343, AIRE = 3e6;
   const C = (EPS0 * S) / D, Q = C * V, U = 0.5 * Q * V;
