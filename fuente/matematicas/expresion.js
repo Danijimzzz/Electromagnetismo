@@ -48,7 +48,7 @@ const Expresion = (() => {
       }
       if (c === 'π') { out.push({ k: 'c', v: 'π' }); i++; continue; }
       if (c === '√' || c === '∛') { out.push({ k: 'f', v: c === '√' ? 'sqrt' : 'cbrt' }); i++; continue; }
-      if ('+-*/^()|'.includes(c)) { out.push({ k: c }); i++; continue; }
+      if ('+-*/^()|!'.includes(c)) { out.push({ k: c }); i++; continue; }
       throw new Error(`${nom}: no entiendo el símbolo «${c}»`);
     }
     return out;
@@ -80,7 +80,8 @@ const Expresion = (() => {
       return potencia();
     }
     function potencia() {
-      const b = primario();
+      let b = primario();
+      while (es('!')) { p++; b = fn('fact', b); }
       if (es('^')) { p++; return op('^', b, unario()); }
       return b;
     }
@@ -121,6 +122,8 @@ const Expresion = (() => {
     arcsen: Math.asin, arccos: Math.acos, arctg: Math.atan, senh: Math.sinh, cosh: Math.cosh, tgh: Math.tanh,
     ln: (u) => (u > 0 ? Math.log(u) : NaN), log: (u) => (u > 0 ? Math.log10(u) : NaN), sqrt: (u) => (u >= 0 ? Math.sqrt(u) : NaN), cbrt: Math.cbrt, abs: Math.abs,
     u: (u) => (u >= 0 ? 1 : 0), 'δ': () => 0,
+    // n! para n entero 0…170 (más allá desborda)
+    fact: (u) => { if (!(u >= 0) || u !== Math.floor(u) || u > 170) return NaN; let r = 1; for (let i = 2; i <= u; i++) r *= i; return r; },
   };
   const CTE = { 'π': Math.PI, e: Math.E };
   // env: valores de las otras variables, { y: 2 }
@@ -392,6 +395,7 @@ const Expresion = (() => {
         if (n.f === 'sqrt') return solo ? `√${texto(u)}` : `√(${texto(u)})`;
         if (n.f === 'cbrt') return solo ? `∛${texto(u)}` : `∛(${texto(u)})`;
         if (n.f === 'abs') return `|${texto(u)}|`;
+        if (n.f === 'fact') return `${solo ? texto(u) : par(texto(u))}!`;
         return `${NOMBRE[n.f] || n.f} ${simple(u) ? texto(u) : par(texto(u))}`;
       }
     }

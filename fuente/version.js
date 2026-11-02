@@ -348,6 +348,12 @@ const Version = (() => {
         ] },
       ] },
     ],
+    lagrange: [
+      { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: extremos de f(x, y) o f(x, y, z) con una restricción g = c. Plantea ∇f = λ∇g, halla los puntos críticos con su λ, dice si cada uno es máximo, mínimo o de silla y dibuja las curvas de nivel con la restricción.'] },
+    ],
+    series: [
+      { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: dice si una serie numérica converge o diverge con la condición necesaria, la serie geométrica y la serie p, los criterios del cociente, de la raíz, de comparación y de Leibniz, la convergencia absoluta o condicional, la suma y las sumas parciales dibujadas.'] },
+    ],
     'integrales-multiples': [
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: integrales dobles (en cartesianas, con dy dx o dx dy, y en polares) y triples (en cartesianas, cilíndricas y esféricas) sobre la región que escribas con sus límites, de fuera adentro. Dibuja la región o el sólido en perspectiva, que se gira arrastrando; escribe el cambio de variables con su jacobiano, el integrando transformado y cada integral iterada de dentro afuera con su primitiva (y la numérica si alguna no sale), y da el valor exacto, el área o volumen de la región y el valor medio. Con 13 ejemplos de clase, modo práctica y enlace para compartir.'] },
     ],
@@ -586,6 +592,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: determinante por Gauss, por Sarrus o por Laplace; inversa por Gauss-Jordan o por adjuntos; rango; forma escalonada y escalonada reducida, con cada operación entre filas y la matriz después de cada paso.', 'Valores y vectores propios con el polinomio característico, las raíces exactas (también con radicales o complejas) y si la matriz es diagonalizable, con P y D.', 'Suma, resta, producto (elemento a elemento), producto por un número, potencia y traspuesta.', 'Fracciones exactas y números complejos en cualquier casilla: 3/4, 0,25, 2−3i o (1+i)/2.'] },
     ],
     derivadas: [
+      { v: '0.3', fecha: '2026-11-02', cambios: ['Integrales por sustitución y por partes con el paso a paso completo: la elección de u y dv, du y v, la tabla de signos del método de la tabla, la integral cíclica (e^x cos x) y ln, arctg y arcsen por partes.'] },
       { v: '0.2', fecha: '2026-10-25', cambios: ['Arreglo: una función constante ya no sale con un punto crítico falso.', 'Integrales impropias: con límites en ∞ o con una asíntota dentro, diciendo si convergen o divergen.', 'Nuevas primitivas: productos de senos y cosenos (sen 3x cos 2x) y cambios trigonométricos (√(1 − x²)).', 'Límites con L’Hôpital, también 0·∞, 1^∞, 0⁰, ∞⁰ e ∞ − ∞.', 'Área entre dos curvas y volumen de revolución (discos y capas).', 'Estudio completo de una función: dominio, simetría, cortes, asíntotas, monotonía y curvatura.', 'Derivación implícita y derivadas parciales, con los puntos críticos y la matriz hessiana.', 'Comparte el ejercicio con un enlace (lleva los datos), cópialo como texto o en LaTeX para tus apuntes, o imprímelo o guárdalo en PDF solo con los resultados y el desarrollo.', 'Aviso junto a los datos: ln es el logaritmo neperiano y log, el decimal.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: derivadas de orden 1 a 4 con la regla de cada paso (suma, producto, cociente, cadena, derivación logarítmica) y el resultado simplificado.', 'Recta tangente en un punto y puntos críticos con su tipo.', 'Primitivas por la tabla, sustitución, partes (también dos veces), fracciones simples e identidades trigonométricas, comprobadas derivándolas.', 'Integral definida con la regla de Barrow, o numérica si no hay primitiva elemental, y el área encerrada.', 'Gráfica de f y f′ con la tangente que recorre la curva, o del área que se va llenando con la primitiva.'] },
     ],
