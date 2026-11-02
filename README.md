@@ -4,16 +4,19 @@
 
 🌐 **Web:** <https://simulaciencia.vercel.app/> · también en <https://electromagnetismo.aceropuro30.workers.dev>
 
+<!-- cifras:inicio (lo escribe fuente/portal.js desde el catálogo; no editar a mano) -->
 | | |
 | --- | --- |
 | **93** herramientas | repartidas en 7 asignaturas |
 | **22** fenómenos de «Física en la vida real» | animaciones que explican cosas cotidianas |
 | **Web 1.8** | última versión (2 nov 2026) |
+<!-- cifras:fin -->
 
 JS puro, sin framework ni dependencias: una web estática que se genera con `sh fuente/build.sh` y se publica desde `publico/`.
 
 ## Asignaturas
 
+<!-- asignaturas:inicio (generado) -->
 | Asignatura | Herramientas | Próximamente |
 | --- | :-: | :-: |
 | Electromagnetismo | 14 | 0 |
@@ -23,6 +26,7 @@ JS puro, sin framework ni dependencias: una web estática que se genera con `sh 
 | Estadística | 8 | 0 |
 | Circuitos | 6 | 0 |
 | Economía | 23 | 0 |
+<!-- asignaturas:fin -->
 
 ## Hoja de ruta
 

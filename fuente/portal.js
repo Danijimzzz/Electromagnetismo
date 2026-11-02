@@ -437,3 +437,15 @@ for (const [f, html] of Object.entries(archivos)) {
   fs.mkdirSync(path.dirname(path.join(publico, f)), { recursive: true });
   fs.writeFileSync(path.join(publico, f), html);
 }
+
+/* cifras de README.md y CLAUDE.md: se calculan del catálogo y de version.js (entre marcas), para no tocarlas a mano */
+{
+  const nTot = Catalogo.asignaturas.reduce((n, a) => n + disponibles(a).length, 0), nFen = V.lista.filter((f) => f.disponible).length;
+  const ult = Version.registros.web[0], [ya, ym, yd] = ult.fecha.split('-'), mes = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'][+ym - 1];
+  const cifras = `| | |\n| --- | --- |\n| **${nTot}** herramientas | repartidas en ${Catalogo.asignaturas.length} asignaturas |\n| **${nFen}** fenómenos de «Física en la vida real» | animaciones que explican cosas cotidianas |\n| **Web ${ult.v}** | última versión (${+yd} ${mes} ${ya}) |\n`;
+  const tabla = `| Asignatura | Herramientas | Próximamente |\n| --- | :-: | :-: |\n${Catalogo.asignaturas.map((a) => `| ${a.nombre} | ${disponibles(a).length} | ${a.herramientas.length - disponibles(a).length} |`).join('\n')}\n`;
+  const pon = (f, fn) => { const r = path.join(__dirname, '..', f), t = fs.readFileSync(r, 'utf8'), n = fn(t); if (n !== t) fs.writeFileSync(r, n); };
+  const entre = (t, ini, fin, nuevo) => t.replace(new RegExp(`(<!-- ${ini}:inicio[^\\n]*-->\\n)[\\s\\S]*?(<!-- ${fin}:fin -->)`), (_, a, b) => a + nuevo + b);
+  pon('README.md', (t) => entre(entre(t, 'cifras', 'cifras', cifras), 'asignaturas', 'asignaturas', tabla));
+  pon('CLAUDE.md', (t) => t.replace(/<!--n-->.*?<!--\/n-->/, `<!--n-->${nTot} herramientas disponibles en ${Catalogo.asignaturas.length} asignaturas<!--/n-->`));
+}
