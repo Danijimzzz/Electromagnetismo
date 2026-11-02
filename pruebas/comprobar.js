@@ -190,6 +190,30 @@ if (primera) {
     if (!Ma.html('$x^2$').includes('data-src="x^2"')) mal('Mates: la fórmula no guarda su fuente');
     if (fallos === antes) console.log('  ✓ Compartir: fórmulas a LaTeX y a texto');
   }
+  {
+    // copia de seguridad global de «Mis ejercicios» (biblioteca.js): crea y restaura sin duplicar, con un almacén falso
+    const antes = fallos, falso = () => { const m = new Map(); return { get length() { return m.size; }, key: (i) => [...m.keys()][i] ?? null, getItem: (k) => (m.has(k) ? m.get(k) : null), setItem: (k, v) => m.set(k, String(v)), removeItem: (k) => m.delete(k) }; };
+    const a = falso(), b = falso();
+    a.setItem('simu-ejercicios:fisica-x', JSON.stringify({ items: [{ id: 'u1', titulo: 'Uno', carpeta: 'Tema 1', fijado: true, datos: '{"a":1}', actualizado: 5 }, { id: 'u2', titulo: 'Dos', datos: '{"a":2}' }] }));
+    a.setItem('simu-ejercicios:otra', JSON.stringify({ items: [{ id: 'o1', titulo: 'Otro', datos: 'x' }] }));
+    a.setItem('simu-ejercicios:vacia', JSON.stringify({ items: [] }));
+    a.setItem('simu-ejercicios-ui', '{}'); a.setItem('fisica-x-v1', 'estado');
+    a.setItem('electro-sim-lib-v2', JSON.stringify({ items: [{ id: 'e1', title: 'Problema', scene: { cargas: [] } }] }));
+    const c = Biblioteca.copia(a), json = JSON.parse(JSON.stringify(c));
+    if (c.formato !== Biblioteca.FORMATO_COPIA || c.total !== 4 || Object.keys(c.herramientas).sort().join() !== 'fisica-x,otra' || c.electrostatica.length !== 1) mal(`Copia de seguridad: contenido inesperado ${JSON.stringify(c).slice(0, 200)}`);
+    if (JSON.stringify(c).includes('fisica-x-v1') || JSON.stringify(c).includes('simu-ejercicios-ui')) mal('Copia de seguridad: se cuelan claves que no son de Mis ejercicios');
+    b.setItem('simu-ejercicios:fisica-x', JSON.stringify({ items: [{ id: 'z', titulo: 'Uno', datos: '{"a":1}' }, { id: 'u2', titulo: 'Propio', datos: 'otro' }] }));
+    const r = Biblioteca.restaura(json, b), lx = JSON.parse(b.getItem('simu-ejercicios:fisica-x')).items;
+    if (r.nuevos !== 3 || r.repetidos !== 1 || r.herramientas !== 3) mal(`Copia de seguridad: restaurar da ${JSON.stringify(r)} en vez de 3 nuevos, 1 repetido y 3 herramientas`);
+    if (lx.length !== 3 || new Set(lx.map((x) => x.id)).size !== 3 || !lx.some((x) => x.titulo === 'Propio') || !lx.some((x) => x.titulo === 'Dos' && x.datos === '{"a":2}')) mal('Copia de seguridad: restaurar pierde o duplica ejercicios');
+    if (JSON.parse(b.getItem('simu-ejercicios:otra')).items[0].datos !== 'x' || JSON.parse(b.getItem('electro-sim-lib-v2')).items[0].id !== 'e1') mal('Copia de seguridad: no restaura las demás herramientas ni Electrostática');
+    if (Biblioteca.restaura(json, b).nuevos !== 0) mal('Copia de seguridad: restaurar dos veces duplica');
+    let err = ''; try { Biblioteca.restaura({ formato: 'otro', herramientas: {} }, b); } catch (e) { err = e.message; }
+    if (!err) mal('Copia de seguridad: acepta un archivo que no es una copia');
+    Biblioteca.restaura({ formato: Biblioteca.FORMATO_COPIA, herramientas: { '../malo': [{ titulo: 'x', datos: 'y' }], 'ok-1': [{ titulo: 'x', datos: 'y' }] } }, b);
+    if (b.getItem('simu-ejercicios:../malo') || !b.getItem('simu-ejercicios:ok-1')) mal('Copia de seguridad: no filtra los nombres de herramienta');
+    if (fallos === antes) console.log('  ✓ Copia de seguridad global: crea, restaura sin duplicar, respeta lo propio y filtra claves ajenas');
+  }
 
 
   const Mates = require(path.join(fuente, 'mates.js'));
@@ -384,8 +408,16 @@ async function navegador() {
       const arch = path.join(tmp, `bib-${dir}.simu.json`); await descarga.saveAs(arch);
       const d = JSON.parse(fs.readFileSync(arch, 'utf8'));
       if (d.formato !== Biblioteca.FORMATO || d.herramienta !== dir || d.ejercicios[0].datos !== guardado[0].datos) mal(`${pag}: el archivo exportado no es correcto`);
+      // copia de seguridad global: se descarga con esta herramienta dentro y se restaura tras borrarlo
+      const [dc] = await Promise.all([page.waitForEvent('download'), page.click('.bib [data-acc=copia]')]);
+      const archC = path.join(tmp, `copia-${dir}.copia.json`); await dc.saveAs(archC);
+      const cp = JSON.parse(fs.readFileSync(archC, 'utf8'));
+      if (cp.formato !== Biblioteca.FORMATO_COPIA || cp.herramientas[dir]?.[0]?.datos !== guardado[0].datos) mal(`${pag}: la copia de seguridad no es correcta`);
       await page.click('.bib [data-acc=borrar]'); await page.click('.bib [data-acc=si-borrar]');
       if (await page.$('.bib-it')) mal(`${pag}: borrar no quita el ejercicio`);
+      await page.setInputFiles('.bib ~ input[type=file]', archC);
+      await page.waitForSelector('.bib .bib-it');
+      await page.click('.bib [data-acc=borrar]'); await page.click('.bib [data-acc=si-borrar]');
       await page.setInputFiles('.bib ~ input[type=file]', arch);
       await page.waitForSelector('.bib .bib-it');
       const imp = await page.evaluate((k) => JSON.parse(localStorage.getItem(k)).items, `simu-ejercicios:${dir}`);
