@@ -1,0 +1,60 @@
+<title>Cómo se forma un rayo: la nube y el suelo como condensador</title>
+<meta name="description" content="Cómo se forma un rayo: la nube y el suelo como un condensador gigante, la tensión de 100 MV, el líder escalonado, la corriente de 30 kA, la energía y el trueno, con una animación paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<!-- =====================================================================
+     El rayo («Física en la vida real»). Maqueta común de los fenómenos
+     (ver fuego-san-telmo/pagina.html): animación, texto del paso, historia
+     y recuadro de la herramienta. Los pasos y el dibujo están en escena.js.
+     ===================================================================== -->
+<style>
+/* colores del dibujo, con su valor en modo oscuro */
+:root {
+  --cielo: #a7b3bf; --cielo-alto: #6e7c8b; --colina: #7f9275; --hierba: #5f8a48; --tierra: #7d6244; --nube: #59626d; --nube-baja: #3e4650; --casa: #d9cfc0; --tejado: #9b4b3a; --tronco: #4d3a2a; --copa: #3f6b35;
+  --persona: #2f5d8a; --piel: #e2b38f; --hielo: #e8f0f7; --granizo: #ffffff; --rayo: #f3dd5b; --rayo2: #c27a00; --brillo: #fff7d6; --sonido: #2a74c6; --pos: #c2412a; --neg: #2a5db5; --campo: #c47d12; --rotulo: #1a2128 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --cielo: #1b2430; --cielo-alto: #0b1119; --colina: #26332a; --hierba: #38552f; --tierra: #33281d; --nube: #3a4350; --nube-baja: #232a33; --casa: #7d7468; --tejado: #7a3a2d; --tronco: #3a2c1f; --copa: #2d4d28;
+  --persona: #6f9ccc; --piel: #c9987a; --hielo: #b9c7d6; --granizo: #e8eef5; --rayo: #fff3a0; --rayo2: #ffd54a; --brillo: #fffbe6; --sonido: #74a2f2; --pos: #ef7a62; --neg: #74a2f2; --campo: #f0b04a; --rotulo: #e3e8ea } } }
+:root[data-theme="dark"] {
+  --cielo: #1b2430; --cielo-alto: #0b1119; --colina: #26332a; --hierba: #38552f; --tierra: #33281d; --nube: #3a4350; --nube-baja: #232a33; --casa: #7d7468; --tejado: #7a3a2d; --tronco: #3a2c1f; --copa: #2d4d28;
+  --persona: #6f9ccc; --piel: #c9987a; --hielo: #b9c7d6; --granizo: #e8eef5; --rayo: #fff3a0; --rayo2: #ffd54a; --brillo: #fffbe6; --sonido: #74a2f2; --pos: #ef7a62; --neg: #74a2f2; --campo: #f0b04a; --rotulo: #e3e8ea }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física en la vida real</a> / El rayo</span></header>
+<div class="wrap fen">
+<div class="fen-etiquetas"><span>⚡ Electromagnetismo y Circuitos</span><span>Dificultad media</span><span>6 pasos · 1 min</span></div>
+<h1>El rayo</h1>
+<p class="lead">Un rayo es la descarga de un condensador gigante: la base de una nube y el suelo, a unos 2 km, cargados a cien millones de voltios. ¿Cuánta carga, cuánta corriente y cuánta energía hay en un solo rayo?</p>
+<div class="fen-escena"><canvas id="escena" role="img" aria-label="Animación de un rayo: una nube de tormenta que se carga, el campo entre la nube y el suelo, el canal ionizado que baja a saltos hasta un árbol, la descarga de retorno y las ondas del trueno"></canvas></div>
+<div class="fen-puntos" id="puntos" role="group" aria-label="Pasos"></div>
+<div class="fen-controles">
+  <button class="btn" id="ant" type="button">‹ Anterior</button>
+  <button class="btn" id="play" type="button" aria-pressed="true">❚❚ Parar</button>
+  <button class="btn" id="sig" type="button">Siguiente ›</button>
+  <button class="btn" id="sonido" type="button" aria-pressed="false">🔇 Sonido</button>
+</div>
+<div class="fen-texto" aria-live="polite"><h2 id="paso-t"></h2><div id="paso-x"></div></div>
+<section class="fen-historia" aria-label="Un poco de historia">
+  <h2>Un poco de historia</h2>
+  <ol>
+    <li><b>1752</b>En Marly-la-Ville, cerca de París, Thomas-François d'Alibard recoge chispas de una nube con una barra de hierro, como había propuesto Benjamin Franklin. Poco después Franklin hace su experimento de la cometa y propone el pararrayos: el rayo es electricidad.</li>
+    <li><b>1920</b>C. T. R. Wilson mide el campo eléctrico bajo las tormentas y deduce que una nube de tormenta es un dipolo, con la parte alta positiva y la baja negativa.</li>
+    <li><b>1934</b>Los físicos Basil Schonland y Hugh Collens, en Sudáfrica, fotografían con una cámara de lente giratoria el líder escalonado que baja a saltos y la descarga de retorno que sube.</li>
+    <li><b>Hoy</b>Cámaras que graban cientos de miles de imágenes por segundo siguen cada salto del líder, y todavía se estudia cómo arranca un rayo dentro de la nube.</li>
+  </ol>
+</section>
+<section class="fen-rel" aria-label="Herramienta relacionada">
+  <div class="fen-ico" aria-hidden="true">C</div>
+  <h2>Con qué herramienta se relaciona</h2>
+  <h3>Dieléctricos y condensadores <small>· Electromagnetismo</small></h3>
+  <p>La base de la nube y el suelo son las dos placas de un condensador plano con aire. Su capacidad depende solo de la geometría; la carga y la energía, de la tensión a la que se carga.</p>
+  <p class="f m">C = {ε_0 S}/{d} ,  Q = C V</p>
+  <p class="f m">U = 1/2 Q V = 1/2 C V^2</p>
+  <p>Se abre con un condensador plano de 10 000 000 m² (10 km²) y 2000 m de separación, lleno de aire y conectado a 100 MV. Sale una capacidad de 44,27 nF, una carga de 4,427 C y una energía de 221,4 MJ.</p>
+  <div class="fen-fichas"><div><small>Capacidad</small><b>44 nF</b></div><div><small>Carga</small><b>4,4 C</b></div><div><small>Energía</small><b>220 MJ</b></div></div>
+  <a class="fen-abrir" id="abrir" href="../../electromagnetismo/condensadores/">Abrir en Condensadores con estos datos →</a>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Física en la vida real <span id="ver"></span> (beta)</footer>
+</body>
