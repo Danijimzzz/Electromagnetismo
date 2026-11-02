@@ -1,4 +1,4 @@
-# CLAUDE.md · SimulaCiencia
+# CLAUDE.md · Ciencify
 
 Web estática de simuladores y calculadoras de ciencias para la carrera, en español, gratis y sin registro. 93 herramientas disponibles en 7 asignaturas (Electromagnetismo, Física general, Química, Matemáticas, Estadística, Circuitos y Economía), más las que salen como «Próximamente». Sin framework ni dependencias: JS puro concatenado por `fuente/build.sh`. Producción: https://simulaciencia.vercel.app/ y https://electromagnetismo.aceropuro30.workers.dev (las dos se despliegan solas desde `main`).
 

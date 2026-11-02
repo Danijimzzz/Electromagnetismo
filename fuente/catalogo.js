@@ -5,8 +5,9 @@
    Las que tienen disponible: false salen como «Próximamente», sin enlace ni página propia.
    ===================================================================== */
 const Catalogo = {
-  marca: ['Simula', 'Ciencia'], // nombre provisional: la segunda parte va en cursiva
-  // dirección principal: la que Google debe mostrar (canonical, sitemap.xml y robots.txt); Cloudflare sirve una copia
+  marca: ['Cienci', 'fy'], // Ciencify: la segunda parte va en cursiva
+  // dirección principal: la que Google debe mostrar (canonical, sitemap.xml y robots.txt); Cloudflare sirve una copia.
+  // ÚNICO sitio donde cambiar el dominio: cuando exista ciencify.<dominio>, poner aquí su dirección (og:image, canonical y sitemap salen de esta constante)
   web: 'https://simulaciencia.vercel.app',
   // código de verificación de Google Search Console (el content de su <meta name="google-site-verification">); vacío = sin la etiqueta
   google: 'zUSlvyV2c1BcfJFspiXQvdhnooD2lXr2fTVKy69UxLs',

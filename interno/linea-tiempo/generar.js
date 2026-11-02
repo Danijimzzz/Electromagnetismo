@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* =====================================================================
-   Línea del tiempo interna de SimulaCiencia. Escribe interno/linea-tiempo/index.html (una sola
+   Línea del tiempo interna de Ciencify. Escribe interno/linea-tiempo/index.html (una sola
    página, abrir en el navegador) juntando: lo hecho, de fuente/version.js (registros.web);
    lo planeado y lo futuro, de planes.js; y las herramientas «Próximamente» y los fenómenos
    pendientes, de fuente/catalogo.js. Uso: node interno/linea-tiempo/generar.js

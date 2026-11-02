@@ -1,4 +1,4 @@
-# SimulaCiencia
+# Ciencify
 
 **Simuladores y calculadoras de ciencias para la carrera, en español, gratis y sin registro.** Resuelven los problemas paso a paso y con la misma notación que en clase.
 

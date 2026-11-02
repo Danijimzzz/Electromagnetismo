@@ -265,7 +265,7 @@ const Version = (() => {
           'Los **bits con su peso** a la vista, y modo práctica para pasar a decimal.',
         ] },
       ] },
-      { v: '1.0', fecha: '2026-10-28', titulo: 'SimulaCiencia 1.0', subtitulo: '65 herramientas y 12 fenómenos para estudiar ciencias, gratis y sin registro.', secciones: [
+      { v: '1.0', fecha: '2026-10-28', titulo: 'Ciencify 1.0', subtitulo: '65 herramientas y 12 fenómenos para estudiar ciencias, gratis y sin registro.', secciones: [
         { icono: '🧭', titulo: 'Una web para toda la carrera', puntos: [
           '**Siete asignaturas:** Electromagnetismo, Física general, Química, Matemáticas, Estadística, Circuitos y Economía.',
           '**Un buscador** para encontrar cualquier herramienta al momento.',
