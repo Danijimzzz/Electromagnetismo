@@ -89,12 +89,13 @@ sh fuente/build.sh                      # regenera publico/ (hay que hacerlo y c
 node pruebas/comprobar.js               # todo: ejercicios, publico/ limpio, diseño y navegador (varios minutos)
 node pruebas/comprobar.js --solo CARPETA  # solo una herramienta (unos 15 s); --solo electrostatica para el simulador
 node pruebas/comprobar.js --sin-navegador   # solo cálculos (rápido)
+node pruebas/comprobar.js --parte 2/4   # solo el trozo 2 de 4 de las herramientas (CI corre los 4 a la vez; lo común va en el 1)
 node pruebas/humo.js [--solo CARPETA]  # solo la prueba de humo (necesita publico/ compilado)
 node pruebas/accesibilidad.js [--solo CARPETA] [--vista claro|oscuro|movil]  # solo axe-core (necesita publico/ y axe-core)
 node pruebas/comprobar.js --actualizar  # reescribe esperados*.json si el cambio de forma es intencionado
 sh fuente/build.sh privado SALIDA.html  # versión privada con el Tema 3 (artifact de claude.ai)
 ```
-Playwright: en este contenedor ya está; en otro, `npm install --no-save playwright@1.56.1`. Usa `CHROMIUM` o `/opt/pw-browsers/chromium` si existe. GitHub Actions (`.github/workflows/comprobar.yml`) corre lo mismo y además falla si `publico/` no está al día con `fuente/`. Publicar = fusionar en `main`.
+Playwright: en este contenedor ya está; en otro, `npm install --no-save playwright@1.56.1`. Usa `CHROMIUM` o `/opt/pw-browsers/chromium` si existe. GitHub Actions (`.github/workflows/comprobar.yml`) corre lo mismo en 4 trozos paralelos (`--parte N/4`) y además falla si `publico/` no está al día con `fuente/`. Publicar = fusionar en `main`.
 
 ## Flujo de trabajo
 
