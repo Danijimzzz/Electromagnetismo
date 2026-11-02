@@ -1,0 +1,61 @@
+<title>Redox por ion-electrón: ajustar en medio ácido y básico · SimulaCiencia</title>
+<meta name="description" content="Ajusta reacciones redox por el método del ion-electrón en medio ácido o básico: números de oxidación, semirreacciones, electrones, suma y comprobación, paso a paso.">
+<style>
+:root {
+  --serie-1: #c2412a; --serie-2: #2a5db5 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #ef7a62; --serie-2: #74a2f2 } }
+:root[data-theme="dark"] {
+  --serie-1: #ef7a62; --serie-2: #74a2f2 }
+#ecuacion { width: 100%; font: 15px var(--f-mono) }
+.ajustada { font: 22px var(--f-math); margin: 2px 0 4px; overflow-wrap: anywhere }
+.ec { font-family: var(--f-math) }
+.flecha { font-family: var(--f-ui); font-size: .9em; padding: 0 .15em }
+#coefs b { font-size: 20px }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Química</a> / Redox por ion-electrón</span></header>
+<div class="wrap">
+<h1>Redox por ion-electrón</h1>
+<p class="lead">Escribe una reacción redox en forma iónica, elige el medio y la ajusta con el método del ion-electrón: números de oxidación, las dos semirreacciones, los electrones y la comprobación.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <label for="ecuacion" class="nota" style="display:block;margin:0 0 6px">Reacción sin ajustar</label>
+    <input id="ecuacion" class="in" placeholder="MnO4^- + Fe^2+ -> Mn^2+ + Fe^3+" autocomplete="off" spellcheck="false">
+    <p class="nota" style="margin:12px 0 6px">Medio</p>
+    <div class="modos" id="medio" role="tablist" style="margin-bottom:12px">
+      <button type="button" role="tab" data-medio="acido" aria-selected="true">Ácido</button>
+      <button type="button" role="tab" data-medio="basico" aria-selected="false">Básico</button>
+    </div>
+    <p class="nota" id="nota">Escribe solo las especies que intervienen, en forma iónica, y separa los lados con -> (o =). Las cargas van con ^ (Fe^3+, SO4^2-) o pegadas (Fe3+, NO3-). El H₂O, el H⁺ y el OH⁻ los pone el método, aunque los escribas. Las mayúsculas importan: Co es cobalto y CO, monóxido de carbono.</p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Reacción ajustada</h2>
+      <p class="ajustada" id="ajustada"></p>
+      <div class="resumen" id="coefs"></div>
+    </div>
+    <div class="card"><h2>Números de oxidación</h2>
+      <canvas id="grafica" aria-label="Cómo cambia el número de oxidación de lo que se oxida y de lo que se reduce"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Qué es una reacción redox</h2>
+  <p class="m">En una reacción de oxidación-reducción hay una especie que pierde electrones (se oxida, su número de oxidación sube) y otra que los gana (se reduce, su número baja). Los electrones que cede una son los que gana la otra, y ese balance es lo que hay que cuadrar. Por ejemplo, en $"MnO"_4^- + "Fe"^(2+) → "Mn"^(2+) + "Fe"^(3+)$ el manganeso pasa de $+7$ a $+2$ y el hierro de $+2$ a $+3$.</p>
+  <h2>El método del ion-electrón</h2>
+  <p>Se separa la reacción en dos semirreacciones, una de oxidación y otra de reducción, y cada una se ajusta por separado en cuatro pasos:</p>
+  <p>1. Se ajusta el elemento que cambia de número de oxidación. 2. Se ajusta el oxígeno con moléculas de H₂O. 3. Se ajusta el hidrógeno con iones H⁺. 4. Se ajusta la carga con electrones, que van a la izquierda en la reducción y a la derecha en la oxidación.</p>
+  <p>Luego se multiplica cada semirreacción por el número que haga iguales los electrones cedidos y ganados (el mínimo común múltiplo), se suman y se simplifica lo que queda a los dos lados.</p>
+  <h2>Medio ácido y medio básico</h2>
+  <p>En medio ácido el método se queda así, con H⁺ y H₂O. En medio básico no puede haber H⁺ libres: a los dos lados se añaden tantos OH⁻ como H⁺ haya, cada H⁺ y su OH⁻ forman un H₂O, y se simplifica el agua que sobra. Por eso el mismo par redox da una ecuación distinta según el medio: el permanganato con yoduro, por ejemplo, forma Mn²⁺ en ácido y MnO₂ en básico.</p>
+  <h2>Qué hacer si algo falla</h2>
+  <p>La herramienta trabaja con la reacción iónica neta. Si escribes sales enteras (KMnO₄, FeSO₄), quita los iones espectadores como K⁺ o SO₄²⁻, que no cambian. Si una especie tiene varios elementos sin número de oxidación fijo, escríbela con iones sencillos. Y comprueba que reactivos y productos incluyen tanto lo que se oxida como lo que se reduce.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Redox por ion-electrón <span id="ver"></span> (beta)</footer>
+</body>
