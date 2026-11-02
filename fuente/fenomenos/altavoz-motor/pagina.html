@@ -1,0 +1,56 @@
+<title>Cómo funcionan un altavoz y un motor eléctrico · SimulaCiencia</title>
+<meta name="description" content="Cómo funcionan un altavoz y un motor eléctrico: la fuerza de un campo magnético sobre una corriente, F = I L B, la bobina del altavoz, el par sobre una espira y el conmutador, con una animación paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<!-- =====================================================================
+     El altavoz y el motor eléctrico («Física en la vida real»). Maqueta común de los
+     fenómenos (ver fuego-san-telmo/pagina.html): animación, texto del paso, historia y
+     recuadro de la herramienta. Los pasos y el dibujo están en escena.js.
+     ===================================================================== -->
+<style>
+/* colores del dibujo, con su valor en modo oscuro */
+:root {
+  --fondo: #f3efe6; --cobre: #c47a35; --marco: #6b747d; --cono: #b9ae98; --imanN: #c8423a; --imanS: #3b6fb6; --fuerza: #1f8a5b; --resalta: #b3261e; --rotulo: #1a2128 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --fondo: #262a30; --cobre: #dd9550; --marco: #98a2ac; --cono: #8c8372; --imanN: #e0584e; --imanS: #5b92d6; --fuerza: #4fc58c; --resalta: #ef7a62; --rotulo: #e3e8ea } }
+:root[data-theme="dark"] {
+  --fondo: #262a30; --cobre: #dd9550; --marco: #98a2ac; --cono: #8c8372; --imanN: #e0584e; --imanS: #5b92d6; --fuerza: #4fc58c; --resalta: #ef7a62; --rotulo: #e3e8ea }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física en la vida real</a> / El altavoz y el motor</span></header>
+<div class="wrap fen">
+<div class="fen-etiquetas"><span>⚡ Electromagnetismo</span><span>Dificultad media</span><span>6 pasos · 1 min</span></div>
+<h1>El altavoz y el motor eléctrico</h1>
+<p class="lead">La música sale de un cono de papel que vibra, y una batidora gira sin que nadie la empuje. Los dos aparatos usan exactamente el mismo efecto: un campo magnético empuja un hilo por el que pasa corriente.</p>
+<div class="fen-escena"><canvas id="escena" role="img" aria-label="Animación de la fuerza sobre un hilo con corriente en un campo magnético, el corte de un altavoz con su bobina móvil, el par sobre la bobina de un motor y el conmutador"></canvas></div>
+<div class="fen-puntos" id="puntos" role="group" aria-label="Pasos"></div>
+<div class="fen-controles">
+  <button class="btn" id="ant" type="button">‹ Anterior</button>
+  <button class="btn" id="play" type="button" aria-pressed="true">❚❚ Parar</button>
+  <button class="btn" id="sig" type="button">Siguiente ›</button>
+</div>
+<div class="fen-texto" aria-live="polite"><h2 id="paso-t"></h2><div id="paso-x"></div></div>
+<section class="fen-historia" aria-label="Un poco de historia">
+  <h2>Un poco de historia</h2>
+  <ol>
+    <li><b>1820</b>El danés Hans Christian Ørsted ve que una corriente desvía la aguja de una brújula: la electricidad y el magnetismo están relacionados. Pocas semanas después, André-Marie Ampère estudia las fuerzas entre corrientes.</li>
+    <li><b>1821</b>Michael Faraday construye el primer motor eléctrico: un hilo con corriente que da vueltas alrededor de un imán, con sus extremos metidos en mercurio.</li>
+    <li><b>1837</b>El estadounidense Thomas Davenport patenta uno de los primeros motores eléctricos con aplicación práctica. El conmutador, que invierte la corriente en cada media vuelta para que el motor no se pare, se había inventado unos años antes.</li>
+    <li><b>1925</b>Chester Rice y Edward Kellogg, de General Electric, publican el diseño del altavoz de bobina móvil y cono, que, con pocos cambios, sigue sonando hoy en cualquier casa.</li>
+  </ol>
+</section>
+<section class="fen-rel" aria-label="Herramienta relacionada">
+  <div class="fen-ico" aria-hidden="true">F</div>
+  <h2>Con qué herramienta se relaciona</h2>
+  <h3>Fuerza magnética <small>· Electromagnetismo</small></h3>
+  <p>Fuerza de Lorentz, fuerza sobre un hilo y par sobre una espira: justo las dos cuentas de este fenómeno. El altavoz usa la fuerza sobre un hilo y el motor, el par sobre una bobina.</p>
+  <p class="f m">F = B I L = 1 · 0,5 · 3,14 ≈ 1,57 N</p>
+  <p class="f m">τ = N I S B sen θ = 100 · 0,5 · 0,0012 · 0,1 · 1 = 6·10<sup>−3</sup> N·m</p>
+  <p>Se abre con el modo de la espira: una bobina rectangular de 100 vueltas de 4 × 3 cm, con 0,5 A en un campo de 0,1 T y la normal perpendicular al campo, el caso en el que el par es máximo. Sale 6·10<sup>−3</sup> N·m; cambia el ángulo para ver cómo baja hasta cero. Para el altavoz, elige el modo del hilo con la longitud de la bobina, 3,14 m.</p>
+  <div class="fen-fichas"><div><small>Fuerza en el altavoz</small><b>≈ 1,57 N</b></div><div><small>Par máximo del motor</small><b>6·10<sup>−3</sup> N·m</b></div><div><small>Par medio con conmutador</small><b>≈ 3,8·10<sup>−3</sup> N·m</b></div></div>
+  <a class="fen-abrir" id="abrir" href="../../electromagnetismo/fuerza/">Abrir en Fuerza magnética con estos datos →</a>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Física en la vida real <span id="ver"></span> (beta)</footer>
+</body>

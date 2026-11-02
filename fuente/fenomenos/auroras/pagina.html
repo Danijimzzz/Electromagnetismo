@@ -1,0 +1,61 @@
+<title>Las auroras boreales: electrones en espiral en el campo de la Tierra</title>
+<meta name="description" content="Por qué se ven auroras cerca de los polos: los electrones del viento solar giran en hélice alrededor de las líneas del campo magnético de la Tierra, la fuerza de Lorentz, el radio de giro, el espejo magnético y el choque con el oxígeno que da el verde y el rojo, con una animación paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<!-- =====================================================================
+     Las auroras boreales («Física en la vida real»). Maqueta común de los
+     fenómenos (ver fuego-san-telmo/pagina.html): animación, texto del paso,
+     historia y recuadro de la herramienta. Los pasos y el dibujo están en
+     escena.js.
+     ===================================================================== -->
+<style>
+/* colores del dibujo, con su valor en modo oscuro */
+:root {
+  --cielo: #b9c7da; --cielo-alto: #7f94b3; --sol: #f1b51c; --tierra: #4e86b8; --tierra-2: #6b9a6e; --campo: #2a74c6; --electron: #c2185b;
+  --verde: #1f9d5a; --rojo: #d6403a; --violeta: #7b4bc4; --suelo: #6d7f71; --resalta: #b3261e; --rotulo: #1a2128 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --cielo: #16243a; --cielo-alto: #070d18; --sol: #f2c14e; --tierra: #3a6f9e; --tierra-2: #4f7d55; --campo: #7ab8ff; --electron: #ff7aa8;
+  --verde: #46e08a; --rojo: #ff6b5e; --violeta: #b48cff; --suelo: #1f2b24; --resalta: #ef7a62; --rotulo: #e3e8ea } }
+:root[data-theme="dark"] {
+  --cielo: #16243a; --cielo-alto: #070d18; --sol: #f2c14e; --tierra: #3a6f9e; --tierra-2: #4f7d55; --campo: #7ab8ff; --electron: #ff7aa8;
+  --verde: #46e08a; --rojo: #ff6b5e; --violeta: #b48cff; --suelo: #1f2b24; --resalta: #ef7a62; --rotulo: #e3e8ea }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física en la vida real</a> / Las auroras boreales</span></header>
+<div class="wrap fen">
+<div class="fen-etiquetas"><span>⚡ Electromagnetismo</span><span>Dificultad media</span><span>6 pasos · 1 min</span></div>
+<h1>Las auroras boreales</h1>
+<p class="lead">Cortinas verdes y rojas que ondulan en el cielo cerca de los polos. Son electrones que el Sol lanza al espacio, que el campo magnético de la Tierra obliga a girar en espiral y que acaban chocando con el oxígeno del aire, y se calcula con la fuerza de Lorentz.</p>
+<div class="fen-escena"><canvas id="escena" role="img" aria-label="Animación de las auroras: el viento solar llega a la Tierra y su campo magnético lo desvía, un electrón que gira en círculo en un campo magnético, la hélice que forma al avanzar a lo largo del campo, el electrón siguiendo la línea del campo hacia el polo y rebotando en el espejo magnético, y las cortinas verdes y rojas de la aurora a distintas alturas de la atmósfera"></canvas></div>
+<div class="fen-puntos" id="puntos" role="group" aria-label="Pasos"></div>
+<div class="fen-controles">
+  <button class="btn" id="ant" type="button">‹ Anterior</button>
+  <button class="btn" id="play" type="button" aria-pressed="true">❚❚ Parar</button>
+  <button class="btn" id="sig" type="button">Siguiente ›</button>
+</div>
+<div class="fen-texto" aria-live="polite"><h2 id="paso-t"></h2><div id="paso-x"></div></div>
+<section class="fen-historia" aria-label="Un poco de historia">
+  <h2>Un poco de historia</h2>
+  <ol>
+    <li><b>1619</b>Galileo Galilei llama «aurora boreal» a este resplandor (la diosa romana del amanecer y el viento del norte), aunque creía que era luz del Sol reflejada en el aire.</li>
+    <li><b>1741</b>Anders Celsius y su ayudante Olof Hiorter descubren que la aurora cambia la aguja de una brújula: la relación con el magnetismo de la Tierra.</li>
+    <li><b>Hacia 1900</b>Kristian Birkeland, en Noruega, lanza electrones contra una esfera magnetizada, su «terrella», en una cámara de vacío, y ve anillos luminosos alrededor de los polos: la aurora a pequeña escala. Propone que la causa son partículas eléctricas llegadas del Sol.</li>
+    <li><b>1925</b>John McLennan y Gordon Shrum identifican la línea verde (557,7 nm) como luz del oxígeno atómico. En 1931 Sydney Chapman y Vincenzo Ferraro explican cómo el campo de la Tierra frena una corriente de partículas del Sol.</li>
+    <li><b>1958</b>Eugene Parker demuestra que el Sol lanza una corriente continua de partículas, el «viento solar»; las naves espaciales lo confirman pocos años después y descubren los cinturones de partículas atrapadas en el campo de la Tierra.</li>
+  </ol>
+</section>
+<section class="fen-rel" aria-label="Herramienta relacionada">
+  <div class="fen-ico" aria-hidden="true">B</div>
+  <h2>Con qué herramienta se relaciona</h2>
+  <h3>Fuerza magnética <small>· Electromagnetismo</small></h3>
+  <p>Un electrón que entra en un campo magnético sufre la fuerza de Lorentz, siempre perpendicular a su velocidad: no le cambia la rapidez, solo la dirección, y lo hace girar en una circunferencia. Si además lleva velocidad a lo largo del campo, el camino es una hélice. Esa herramienta calcula el radio, el periodo, la frecuencia y el paso de la hélice.</p>
+  <p class="f m">F = |q| v B sen θ,  r = m v sen θ / (|q| B)</p>
+  <p class="f m">T = 2π m / (|q| B),  p = v cos θ · T</p>
+  <p>Se abre con un electrón de 5 keV, un campo de 50 µT (el que hay a unos 100 km de altura sobre los polos) y un ángulo de 30° con las líneas del campo: sale un radio de 2,38 m y un paso de la hélice de 25,9 m. Cambia la energía o el ángulo y mira cómo se estira o se aprieta la espiral.</p>
+  <div class="fen-fichas"><div><small>Radio de giro</small><b>2,38 m</b></div><div><small>Frecuencia</small><b>1,40 MHz</b></div><div><small>Paso de la hélice</small><b>25,9 m</b></div></div>
+  <a class="fen-abrir" id="abrir" href="../../electromagnetismo/fuerza/">Abrir en Fuerza magnética con estos datos →</a>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Física en la vida real <span id="ver"></span> (beta)</footer>
+</body>
