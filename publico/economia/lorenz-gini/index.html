@@ -836,6 +836,11 @@ const LorenzGini = (() => {
    clave de la app y recarga la página, así sirve para cualquier herramienta.
    La clave sale del catálogo («guarda»): herramientas.js la pone en la llamada
    Biblioteca.monta(carpeta, clave) de cada página.
+   Copia de seguridad global: «Copia de seguridad de todo» junta en un solo archivo
+   (.copia.json) los ejercicios de todas las herramientas (y los problemas propios de
+   Electrostática); «Importar archivo» y «Restaurar copia» la reconocen y la suman a lo
+   que ya hay sin duplicar ni borrar nada. La lógica (Biblioteca.copia / restaura) no toca
+   el DOM y se prueba en Node con un almacén falso.
    ===================================================================== */
 const Biblioteca = (() => {
   const FORMATO = 'simulaciencia-ejercicios', ANCHO = 1280;
@@ -843,6 +848,48 @@ const Biblioteca = (() => {
   const lee = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); return v ?? d; } catch (e) { return d; } };
   const escribe = (k, v) => { try { localStorage.setItem(k, typeof v === 'string' ? v : JSON.stringify(v)); return true; } catch (e) { return false; } };
   const norm = (s) => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+
+  // ---- copia de seguridad global (sin DOM: recibe el almacén, normalmente localStorage) ----
+  const FORMATO_COPIA = 'simulaciencia-copia', PREF = 'simu-ejercicios:', K_ELECTRO = 'electro-sim-lib-v2';
+  const idAzar = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  const leeAlm = (alm, k) => { try { const v = JSON.parse(alm.getItem(k)); return v ?? null; } catch (e) { return null; } };
+  function copia(alm = localStorage) {
+    const herramientas = {}; let total = 0;
+    for (let i = 0; i < alm.length; i++) {
+      const k = alm.key(i); if (!k || !k.startsWith(PREF)) continue;
+      const lib = leeAlm(alm, k), its = Array.isArray(lib?.items) ? lib.items.filter((x) => typeof x?.datos === 'string') : [];
+      if (!its.length) continue;
+      herramientas[k.slice(PREF.length)] = its.map((x) => ({ id: x.id, titulo: x.titulo, carpeta: x.carpeta || undefined, fijado: x.fijado || undefined, actualizado: x.actualizado, datos: x.datos }));
+      total += its.length;
+    }
+    const el = leeAlm(alm, K_ELECTRO), electrostatica = Array.isArray(el?.items) && el.items.length ? el.items : undefined;
+    return { formato: FORMATO_COPIA, version: 1, guardado: new Date().toISOString(), herramientas, electrostatica, total: total + (electrostatica?.length || 0) };
+  }
+  // suma la copia a lo que hay: lo que ya está (mismo título y mismos datos, o mismo id en Electrostática) se salta
+  function restaura(d, alm = localStorage) {
+    if (d?.formato !== FORMATO_COPIA || typeof d.herramientas !== 'object' || !d.herramientas) throw new Error('no es una copia de seguridad de Ciencify');
+    let nuevos = 0, repetidos = 0, herr = 0;
+    for (const [carpeta, its] of Object.entries(d.herramientas)) {
+      if (!/^[a-z0-9-]{1,60}$/.test(carpeta) || !Array.isArray(its)) continue;
+      const lib = leeAlm(alm, PREF + carpeta) || { items: [] }; if (!Array.isArray(lib.items)) lib.items = [];
+      let suma = 0;
+      for (const e of its) {
+        if (typeof e?.datos !== 'string') continue;
+        const titulo = String(e.titulo || 'Ejercicio importado').slice(0, 120);
+        if (lib.items.some((x) => x.titulo === titulo && x.datos === e.datos)) { repetidos++; continue; }
+        const id = typeof e.id === 'string' && e.id && !lib.items.some((x) => x.id === e.id) ? e.id : idAzar();
+        lib.items.push({ id, titulo, carpeta: String(e.carpeta || '').slice(0, 60), fijado: !!e.fijado, datos: e.datos, actualizado: Number(e.actualizado) || Date.now() }); suma++;
+      }
+      if (suma) { alm.setItem(PREF + carpeta, JSON.stringify(lib)); herr++; nuevos += suma; }
+    }
+    if (Array.isArray(d.electrostatica)) {
+      const lib = leeAlm(alm, K_ELECTRO) || { items: [] }; if (!Array.isArray(lib.items)) lib.items = [];
+      let suma = 0;
+      for (const e of d.electrostatica) { if (!e || typeof e.id !== 'string' || !e.scene) continue; if (lib.items.some((x) => x.id === e.id)) repetidos++; else { lib.items.push(e); suma++; } }
+      if (suma) { alm.setItem(K_ELECTRO, JSON.stringify(lib)); herr++; nuevos += suma; }
+    }
+    return { nuevos, repetidos, herramientas: herr };
+  }
 
   const CSS = `
 .bib-btn { display: inline-flex; align-items: center; gap: 6px; font: 600 13.5px var(--f-ui, system-ui); color: var(--ink); background: var(--vidrio, var(--panel)); -webkit-backdrop-filter: var(--blur, none); backdrop-filter: var(--blur, none); border: 1px solid var(--vidrio-borde, var(--line)); border-radius: 999px; padding: 5px 12px; cursor: pointer; white-space: nowrap }
@@ -954,6 +1001,11 @@ const Biblioteca = (() => {
       document.body.classList.toggle('bib-fija', v && window.innerWidth >= ANCHO);
       scrim.hidden = !v || window.innerWidth >= ANCHO;
     }
+    function descargaCopia() {
+      const c = copia(); if (!c.total) { aviso('Todavía no tienes ejercicios guardados en ninguna herramienta'); return; }
+      delete c.total; descarga(`ciencify-copia-${c.guardado.slice(0, 10)}.copia.json`, c);
+      aviso('Copia de seguridad descargada');
+    }
     function descarga(nombreArch, datos) {
       const url = URL.createObjectURL(new Blob([JSON.stringify(datos, null, 2)], { type: 'application/json' }));
       const a = document.createElement('a'); a.href = url; a.download = nombreArch; document.body.appendChild(a); a.click(); a.remove();
@@ -964,6 +1016,12 @@ const Biblioteca = (() => {
 
     function importa(texto) {
       const d = JSON.parse(texto);
+      if (d?.formato === FORMATO_COPIA) {
+        const r = restaura(d); lib = lee(K, { items: [] }); if (!Array.isArray(lib.items)) lib = { items: [] };
+        importa.aviso = r.nuevos ? `Copia restaurada: ${r.nuevos} ejercicio${r.nuevos === 1 ? '' : 's'} en ${r.herramientas} herramienta${r.herramientas === 1 ? '' : 's'}${r.repetidos ? ` (${r.repetidos} ya estaban)` : ''}` : 'La copia no traía nada nuevo: ya tenías todo';
+        return r.nuevos;
+      }
+      importa.aviso = '';
       if (d?.formato !== FORMATO || !Array.isArray(d.ejercicios)) throw new Error('no es un archivo de ejercicios de Ciencify');
       if (d.herramienta !== herramienta) throw new Error(`es de otra herramienta (${d.herramienta})`);
       let n = 0;
@@ -978,7 +1036,7 @@ const Biblioteca = (() => {
       for (const f of files) {
         try { n += importa(await f.text()); } catch (err) { aviso(`No se pudo importar ${f.name}: ${err.message}`); return; }
       }
-      guardaLib(); pinta(); aviso(n === 1 ? 'Ejercicio importado' : `${n} ejercicios importados`);
+      guardaLib(); pinta(); aviso(importa.aviso || (n === 1 ? 'Ejercicio importado' : `${n} ejercicios importados`));
     }
     function carga(it) {
       if (!escribe(clave, it.datos)) { aviso('No se pudo abrir: el navegador no deja usar el almacenamiento'); return; }
@@ -1040,11 +1098,13 @@ const Biblioteca = (() => {
 <button data-acc="actualizar"${it ? '' : ' disabled'} title="${it ? `Guarda los datos de ahora en «${esc(it.titulo)}»` : 'Abre o guarda antes un ejercicio'}"><span class="bib-ic">↻</span>${it ? `Guardar cambios en «${esc(it.titulo.length > 22 ? it.titulo.slice(0, 21) + '…' : it.titulo)}»` : 'Guardar cambios'}</button>
 <button data-acc="importar"><span class="bib-ic">↥</span>Importar archivo…</button>
 <button data-acc="exportar-todo"${lib.items.length ? '' : ' disabled'}><span class="bib-ic">↧</span>Exportar todos</button>
+<button data-acc="copia" title="Un solo archivo con los ejercicios de todas las herramientas"><span class="bib-ic">⛁</span>Copia de seguridad de todo</button>
+<button data-acc="restaurar" title="Suma a lo que tienes los ejercicios de una copia de seguridad"><span class="bib-ic">⟲</span>Restaurar copia…</button>
 ${lib.items.length > 5 ? `<input type="search" class="bib-busca" placeholder="Buscar por título o carpeta…" aria-label="Buscar ejercicios" value="${esc(busca)}">` : ''}
 </div>
 ${f ? `<div class="bib-form"><label>Título<input id="bib-t" value="${esc(f.titulo)}" maxlength="120" autocomplete="off"></label><label>Carpeta (opcional)<input id="bib-c" value="${esc(f.carpeta || '')}" maxlength="60" list="bib-dl" placeholder="sin carpeta" autocomplete="off"></label><datalist id="bib-dl">${carps.map((c) => `<option value="${esc(c)}">`).join('')}</datalist><div class="fila"><button data-acc="cancelar">Cancelar</button><button class="si" data-acc="guardar">Guardar</button></div></div>` : ''}
 <div class="bib-lista">${lista}</div>
-<div class="bib-pie"><p>Se guardan en este navegador. Exporta un archivo <code>.simu.json</code> para llevarlos a otro equipo o compartirlos; también puedes arrastrarlo aquí.</p></div>`;
+<div class="bib-pie"><p>Se guardan en este navegador. Exporta un archivo <code>.simu.json</code> para llevarlos a otro equipo o compartirlos; también puedes arrastrarlo aquí. Haz de vez en cuando una copia de seguridad de todo: si borras los datos del navegador, se pierden.</p></div>`;
       if (f) { const t = panel.querySelector('#bib-t'); t.focus(); t.select(); }
     }
 
@@ -1058,6 +1118,8 @@ ${f ? `<div class="bib-form"><label>Título<input id="bib-t" value="${esc(f.titu
         case 'nuevo': form = {}; pinta(); break;
         case 'actualizar': actualiza(); break;
         case 'importar': archivo.click(); break;
+        case 'copia': descargaCopia(); break;
+        case 'restaurar': archivo.click(); break;
         case 'exportar-todo': descarga(nombreArchivo(nombre + ' ejercicios'), archivoDe(lib.items)); break;
         case 'guardar': guardaForm(); break;
         case 'cancelar': form = null; pinta(); break;
@@ -1097,7 +1159,7 @@ ${f ? `<div class="bib-form"><label>Título<input id="bib-t" value="${esc(f.titu
     if (selsEj().some((s) => s.options.length > 1)) document.body.classList.add('bib-ejemplos');
     return { get items() { return lib.items; }, abre, importa: (t) => { const n = importa(t); guardaLib(); pinta(); return n; }, archivoDe };
   }
-  return { monta, FORMATO };
+  return { monta, FORMATO, FORMATO_COPIA, copia, restaura };
 })();
 
 /* =====================================================================
