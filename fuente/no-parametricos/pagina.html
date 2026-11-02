@@ -1,0 +1,51 @@
+<title>Mann-Whitney y Wilcoxon: contrastes no paramétricos · Ciencify</title>
+<meta name="description" content="Calculadora de la U de Mann-Whitney y del test de Wilcoxon de los rangos con signo en español: rangos, empates, p-valor exacto o por aproximación normal y conclusión paso a paso.">
+<style>
+.tabla-eco { border-collapse: collapse; font: 13.5px var(--f-ui); width: 100%; font-variant-numeric: tabular-nums }
+.tabla-eco th, .tabla-eco td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap }
+.tabla-eco th { font-weight: 600; color: var(--muted) } .tabla-eco th:first-child, .tabla-eco td:first-child { text-align: left }
+.tabla-eco tfoot td { font-weight: 600; background: var(--accent-soft) }
+.tabla-eco small { color: var(--muted) }
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62 }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Cienci<i>fy</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Estadística</a> / Contrastes no paramétricos</span></header>
+<div class="wrap">
+<h1>Contrastes no paramétricos: Mann-Whitney y Wilcoxon</h1>
+<p class="lead">Compara dos muestras sin suponer que son normales: la U de Mann-Whitney para dos grupos independientes y el test de Wilcoxon para datos apareados o una mediana, con los rangos, los empates, el p-valor y el desarrollo paso a paso.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Rangos</h2><div class="tabla-scroll" id="tabla"></div></div>
+    <div class="card"><h2>Rangos de cada dato</h2>
+      <canvas id="grafica" aria-label="Rangos de las observaciones"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+<h2>La idea</h2>
+<p class="m">Los contrastes no paramétricos no usan los valores, sino su <b>orden</b> (los rangos). Por eso no necesitan que los datos sean normales y casi no les afectan los atípicos, a costa de tener algo menos de potencia si los datos sí eran normales.</p>
+<h2>U de Mann-Whitney (dos muestras independientes)</h2>
+<p class="m">Se ordenan juntos todos los datos y se suman los rangos de cada muestra, $R_1$ y $R_2$. $U_1 = R_1 − n_1(n_1 + 1)/2$ cuenta cuántas veces un dato de la muestra 1 supera a uno de la 2 (los empates cuentan medio), y $U_1 + U_2 = n_1 n_2$. Se contrasta si una muestra tiende a dar valores mayores que la otra.</p>
+<h2>Wilcoxon (datos apareados o una mediana)</h2>
+<p class="m">Se toman las diferencias $d_i$ (entre las dos medidas o respecto de la mediana de $H_0$), se descartan las nulas, se ordenan los $|d_i|$ y se suman los rangos de las positivas, $W^+$, y de las negativas, $W^−$. Si $H_0$ es cierta, ambas sumas se parecen.</p>
+<h2>P-valor exacto o aproximado</h2>
+<p class="m">Con pocos datos y sin empates, el p-valor se calcula <b>exacto</b> contando todas las ordenaciones posibles. Con más datos o con empates se usa la aproximación normal, con la corrección de empates y, si se activa, la corrección de continuidad.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Contrastes no paramétricos <span id="ver"></span> (beta)</footer>
+</body>

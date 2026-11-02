@@ -32,4 +32,16 @@ module.exports = {
     ['¿Cómo se hace un contraste χ² de bondad de ajuste?', 'χ² = Σ(O − E)²/E, con k − 1 − (parámetros estimados) grados de libertad. Un dado lanzado 60 veces da 8, 10, 12, 9, 11 y 10; con E = 10 en cada cara, χ² = 1,0 con 5 grados de libertad, por debajo del valor crítico 11,07, y no se rechaza que sea equilibrado.'],
     ['¿Y el de independencia en una tabla de contingencia?', 'La frecuencia esperada de cada casilla es E = (total de fila · total de columna)/total, y los grados de libertad son (filas − 1)(columnas − 1). Una tabla 2×2 tiene 1 grado de libertad y su valor crítico al 5 % es 3,84.'],
   ],
+  anova: [
+    ['¿Cómo se hace un ANOVA de un factor?', 'Se compara la variabilidad entre grupos con la de dentro: F = CMₑ/CM_d, con CMₑ = SCₑ/(k − 1) y CM_d = SC_d/(N − k). Con los grupos 20 21 23 19 22, 24 26 25 27 23 y 29 28 31 27 30: medias 21, 25 y 29, SCₑ = 160, SC_d = 30, F = 80/2,5 = 32 con 2 y 12 g. l., que supera F₂,₁₂;0,95 = 3,885, luego se rechaza H₀.'],
+    ['¿Qué hacer si el ANOVA sale significativo?', 'Solo dice que alguna media difiere. Para saber cuáles se comparan las parejas con una t usando CM_d y se corrige el p-valor por el número de comparaciones (Bonferroni). El tamaño del efecto es η² = SCₑ/SC_T, en el ejemplo anterior 160/190 ≈ 0,84.'],
+  ],
+  'regresion-multiple': [
+    ['¿Cómo se calculan los coeficientes de una regresión lineal múltiple?', 'Por mínimos cuadrados, resolviendo las ecuaciones normales (XᵀX)β = Xᵀy, es decir, β̂ = (XᵀX)⁻¹Xᵀy. Cada coeficiente es el cambio medio de Y al subir una unidad esa variable manteniendo constantes las demás.'],
+    ['¿Qué diferencia hay entre R² y R² ajustado?', 'R² = 1 − SC_R/SC_T nunca baja al añadir variables; R² ajustado = 1 − (1 − R²)(n − 1)/(n − p − 1) penaliza las que no aportan. La F global contrasta que todos los coeficientes (salvo la constante) valgan 0 a la vez.'],
+  ],
+  'no-parametricos': [
+    ['¿Cómo se calcula la U de Mann-Whitney?', 'Se ordenan juntos todos los datos, se suman los rangos de cada muestra y U₁ = R₁ − n₁(n₁ + 1)/2, con U₁ + U₂ = n₁n₂. Con 14 17 16 19 22 y 10 12 15 11 13 9: R₁ = 44, U₁ = 44 − 15 = 29 y U₂ = 1, con p exacto bilateral = 4/462 ≈ 0,0087.'],
+    ['¿Cuándo usar Wilcoxon en lugar de la t de Student?', 'Cuando los datos apareados (o la muestra) no son normales o hay atípicos: el test usa los rangos de |d| con su signo, W⁺ y W⁻, y no necesita normalidad. Con n pequeño y sin empates el p-valor es exacto; si no, se usa la aproximación normal.'],
+  ],
 };

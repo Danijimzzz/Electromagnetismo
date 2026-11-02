@@ -1,0 +1,53 @@
+<title>Calculadora de regresión lineal múltiple · Ciencify</title>
+<meta name="description" content="Calculadora de regresión lineal múltiple en español: coeficientes por mínimos cuadrados con su error, t y p-valor, R², R² ajustado, F global, tabla ANOVA, residuos y predicción, paso a paso.">
+<style>
+.tabla-eco { border-collapse: collapse; font: 13.5px var(--f-ui); width: 100%; font-variant-numeric: tabular-nums }
+.tabla-eco th, .tabla-eco td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap }
+.tabla-eco th { font-weight: 600; color: var(--muted) } .tabla-eco th:first-child, .tabla-eco td:first-child { text-align: left }
+.tabla-eco tfoot td { font-weight: 600; background: var(--accent-soft) }
+.tabla-eco small { color: var(--muted) }
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62 }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Cienci<i>fy</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Estadística</a> / Regresión lineal múltiple</span></header>
+<div class="wrap">
+<h1>Regresión lineal múltiple</h1>
+<p class="lead">Ajusta Y con varias variables explicativas por mínimos cuadrados: coeficientes con su error típico, t y p-valor, R² y R² ajustado, el contraste F global, los residuos y una predicción, con el desarrollo paso a paso.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Coeficientes</h2><div class="tabla-scroll" id="tabla"></div></div>
+    <div class="card"><h2>Valores observados frente a ajustados</h2>
+      <canvas id="grafica" aria-label="Valores observados frente a ajustados"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+<h2>El modelo</h2>
+<p class="m">$Y = β_0 + β_1 X_1 + β_2 X_2 + ⋯ + β_p X_p + ε$. Cada $β_j$ es el cambio medio de $Y$ al subir una unidad $X_j$ <b>manteniendo constantes las demás variables</b>, y por eso no coincide con la pendiente de la regresión simple de $Y$ sobre $X_j$ si las $X$ están correlacionadas entre sí.</p>
+<h2>Mínimos cuadrados</h2>
+<p class="m">Los coeficientes que minimizan la suma de los residuos al cuadrado cumplen las <b>ecuaciones normales</b>:</p>
+<p class="f m">$(X^T X) β̂ = X^T y$, &nbsp; $β̂ = (X^T X)^{-1} X^T y$</p>
+<p class="m">con $X$ la matriz con una columna de unos y una columna por variable. La varianza residual es $s^2 = SC_R/(n − p − 1)$ y el error de cada coeficiente, $s √([(X^T X)^{-1}]_{jj})$.</p>
+<h2>Ajuste y contrastes</h2>
+<p class="m">$R^2 = 1 − SC_R/SC_T$ nunca baja al añadir variables; el $R^2$ ajustado, $1 − (1 − R^2)(n − 1)/(n − p − 1)$, penaliza las que no aportan. Cada $t_j = β̂_j/EE(β̂_j)$ contrasta $β_j = 0$ y la $F$ global contrasta que <i>todos</i> los $β_j$ (menos la constante) valgan cero a la vez.</p>
+<h2>Cuidado</h2>
+<p class="m">Si dos variables explicativas están muy relacionadas (multicolinealidad) los errores de sus coeficientes se disparan y los signos pueden ser engañosos. Hacen falta más observaciones que coeficientes: $n > p + 1$.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Regresión lineal múltiple <span id="ver"></span> (beta)</footer>
+</body>

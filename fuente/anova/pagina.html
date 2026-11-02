@@ -1,0 +1,50 @@
+<title>ANOVA de un factor paso a paso · Ciencify</title>
+<meta name="description" content="Calculadora de ANOVA de un factor en español: compara las medias de varios grupos con la tabla ANOVA, el estadístico F, el valor crítico, el p-valor, el tamaño del efecto η² y las comparaciones por parejas con Bonferroni.">
+<style>
+.tabla-eco { border-collapse: collapse; font: 13.5px var(--f-ui); width: 100%; font-variant-numeric: tabular-nums }
+.tabla-eco th, .tabla-eco td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap }
+.tabla-eco th { font-weight: 600; color: var(--muted) } .tabla-eco th:first-child, .tabla-eco td:first-child { text-align: left }
+.tabla-eco tfoot td { font-weight: 600; background: var(--accent-soft) }
+.tabla-eco small { color: var(--muted) }
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62 }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Cienci<i>fy</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Estadística</a> / ANOVA de un factor</span></header>
+<div class="wrap">
+<h1>ANOVA de un factor</h1>
+<p class="lead">Comprueba si las medias de varios grupos son iguales: la tabla ANOVA con la variabilidad entre y dentro de los grupos, el estadístico F, su p-valor, el tamaño del efecto y las comparaciones por parejas, con el desarrollo paso a paso.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Tabla ANOVA</h2><div class="tabla-scroll" id="tabla"></div></div>
+    <div class="card"><h2>Datos de cada grupo</h2>
+      <canvas id="grafica" aria-label="Puntos de cada grupo y su media"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+<h2>La idea</h2>
+<p class="m">Se quiere saber si $k$ grupos tienen la misma media. En vez de comparar los grupos de dos en dos, se compara la variabilidad <b>entre</b> las medias de los grupos con la variabilidad <b>dentro</b> de cada grupo: si las medias están mucho más separadas de lo que explica el ruido de dentro, se rechaza $H_0$.</p>
+<p class="f m">$SC_T = SC_E + SC_D$, &nbsp; $F = {CM_E}/{CM_D} = {SC_E/(k − 1)}/{SC_D/(N − k)}$</p>
+<h2>Condiciones</h2>
+<p class="m">Observaciones independientes, cada grupo aproximadamente normal y varianzas parecidas entre los grupos. Con grupos del mismo tamaño el contraste aguanta bastante bien la falta de normalidad; si los datos son muy asimétricos o hay pocos, mira los contrastes no paramétricos.</p>
+<h2>Tamaño del efecto y comparaciones por parejas</h2>
+<p class="m">$η^2 = SC_E/SC_T$ es la proporción de la variabilidad total que explica el factor. Si el ANOVA sale significativo, no dice <i>qué</i> medias difieren: para eso se comparan las parejas con una t usando $CM_D$ y se corrige el p-valor por hacer varias comparaciones a la vez (Bonferroni: se multiplica por el número de parejas).</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· ANOVA de un factor <span id="ver"></span> (beta)</footer>
+</body>

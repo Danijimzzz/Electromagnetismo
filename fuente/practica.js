@@ -135,6 +135,12 @@ const Practica = (() => {
     excedentes: { datos: null, genera: () => window.ExcedentesApp?.azar(), enunciado: () => window.ExcedentesApp?.enunciado() },
     // descriptiva: unas notas al azar (los datos están en un textarea)
     descriptiva: { datos: null, genera: () => window.DescriptivaApp?.azar(), enunciado: () => window.DescriptivaApp?.enunciado() },
+    // anova: tres grupos al azar
+    'anova': { datos: null, genera: () => window.AnovaApp?.azar(), enunciado: () => window.AnovaApp?.enunciado() },
+    // no-parametricos: dos muestras o pares al azar
+    'no-parametricos': { datos: null, genera: () => window.NoParametricosApp?.azar(), enunciado: () => window.NoParametricosApp?.enunciado() },
+    // regresion-multiple: un plano con ruido
+    'regresion-multiple': { datos: null, genera: () => window.RegresionMultipleApp?.azar(), enunciado: () => window.RegresionMultipleApp?.enunciado() },
     // regresión económica: una función de consumo al azar (los datos están en un textarea)
     'regresion-economia': { datos: null, genera: () => window.RegresionEconomiaApp?.azar(), enunciado: () => window.RegresionEconomiaApp?.enunciado() },
     // ratios: un balance al azar que cuadre (si se cambian los datos sueltos, el activo y el pasivo no coinciden)
