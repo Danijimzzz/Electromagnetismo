@@ -630,6 +630,7 @@ const Version = (() => {
     ],
     // «Física en la vida real» (todos los fenómenos comparten versión)
     fenomenos: [
+      { v: '0.7', fecha: '2026-11-02', cambios: ['Fenómeno nuevo: la cocina de inducción, con la bobina de 25 kHz, la ley de Faraday en la base de la sartén, las corrientes de Foucault, el calor por efecto Joule (P ∝ f²) y el imán que cae despacio por un tubo de cobre, que se abre en Inducción: Faraday y Lenz.'] },
       { v: '0.7', fecha: '2026-11-02', cambios: ['Fenómeno nuevo: el altavoz y el motor eléctrico, con la fuerza de un campo magnético sobre una corriente (F = I L B), la bobina móvil del altavoz, el par sobre la bobina de un motor y el conmutador, que se abre en Fuerza magnética.'] },
       { v: '0.7', fecha: '2026-11-02', cambios: ['Fenómeno nuevo: las auroras boreales, con el viento solar, un electrón girando en un campo magnético (fuerza de Lorentz, radio y frecuencia de giro), la hélice que dibuja al avanzar a lo largo del campo, el espejo magnético y el cono de pérdida que decide quién llega al polo, y el choque con el oxígeno que da el verde, el rojo y el violeta, que se abre en Fuerza magnética.'] },
       { v: '0.7', fecha: '2026-11-02', cambios: ['Fenómeno nuevo: el rayo, con la nube y el suelo como un condensador gigante (44 nF a 100 MV), la carga de 4,4 C, el campo que rompe el aire, el líder escalonado, la descarga de retorno de 30 kA, la energía de 220 MJ y el trueno (los segundos que tarda según la distancia), que se abre en Dieléctricos y condensadores con los datos puestos.'] },
