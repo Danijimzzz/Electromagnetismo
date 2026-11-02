@@ -61,6 +61,8 @@ async function pwa(browser, { mal } = {}) {
     await p.goto(base + '/');
     await p.evaluate(() => navigator.serviceWorker.ready);
     await p.waitForFunction(() => caches.keys().then((k) => k.length > 0));
+    // la caché se crea antes de terminar de guardar el núcleo: esperar a que esté offline.html y la portada
+    await p.waitForFunction(() => caches.match('offline.html').then((r) => !!r).then(async (ok) => ok && !!(await caches.match('./'))), null, { timeout: 30000 });
     await p.reload(); // ya lo controla el service worker
     if (!(await p.evaluate(() => !!navigator.serviceWorker.controller))) mal('el service worker no controla la página tras instalarse');
     // la portada enseña la franja de instalar y guardar
@@ -79,6 +81,8 @@ async function pwa(browser, { mal } = {}) {
     // con red llega la página nueva, no la guardada
     estado.titulo = 'Titulo NUEVO de prueba';
     await p.goto(base + '/'); if (!/NUEVO/.test(await p.title())) mal('con conexión: la portada sale de la caché vieja en vez de la red');
+    // la copia nueva se guarda en segundo plano: esperar a que esté antes de cortar la red
+    await p.waitForFunction(async () => { const r = await caches.match(location.href); return !!r && /NUEVO/.test(await r.clone().text()); }, null, { timeout: 30000 });
     estado.titulo = '';
     // sin red vale la última copia que se guardó (la nueva)
     await ctx.setOffline(true); await p.goto(base + '/'); if (!/NUEVO/.test(await p.title())) mal('sin conexión: no sale la última copia guardada de la portada');
