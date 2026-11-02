@@ -7,7 +7,7 @@
 <!-- cifras:inicio (lo escribe fuente/portal.js desde el catálogo; no editar a mano) -->
 | | |
 | --- | --- |
-| **93** herramientas | repartidas en 7 asignaturas |
+| **96** herramientas | repartidas en 7 asignaturas |
 | **22** fenómenos de «Física en la vida real» | animaciones que explican cosas cotidianas |
 | **Web 1.10** | última versión (2 nov 2026) |
 <!-- cifras:fin -->
@@ -25,7 +25,7 @@ JS puro, sin framework ni dependencias: una web estática que se genera con `sh 
 | Matemáticas | 13 | 0 |
 | Estadística | 8 | 0 |
 | Circuitos | 6 | 0 |
-| Economía | 23 | 0 |
+| Economía | 26 | 0 |
 <!-- asignaturas:fin -->
 
 ## Hoja de ruta

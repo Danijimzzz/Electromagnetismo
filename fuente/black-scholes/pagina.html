@@ -1,0 +1,45 @@
+<title>Calculadora de Black-Scholes: opciones y griegas · Ciencify</title>
+<meta name="description" content="Calculadora de Black-Scholes en español: precio de una call y una put europeas, d1 y d2, paridad call-put y las griegas (delta, gamma, vega, theta y rho), con la gráfica del valor de la opción y el desarrollo paso a paso.">
+<style>
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a; --serie-3: #6b3fa0 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Cienci<i>fy</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Economía</a> / Black-Scholes</span></header>
+<div class="wrap">
+<h1>Black-Scholes</h1>
+<p class="lead">Valora una opción europea de compra (call) o de venta (put) con la fórmula de Black-Scholes y calcula sus griegas: delta, gamma, vega, theta y rho.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Valor de la opción según el precio de la acción</h2>
+      <canvas id="grafica" aria-label="Valor de la opción hoy y al vencimiento en función del precio de la acción"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+        <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+<h2>Qué es una opción</h2>
+<p>Una <b>call</b> europea da derecho a comprar una acción al precio de ejercicio K en una fecha futura; una <b>put</b>, a venderla. Al vencimiento paga $máx(S − K, 0)$ la call y $máx(K − S, 0)$ la put. Hoy tiene un precio porque puede acabar valiendo algo: cuanto más volátil es la acción y más tiempo queda, más vale.</p>
+<h2>La fórmula de Black-Scholes</h2>
+<p class="f m">$d_1 = {ln(S/K) + (r − q + σ^2/2)T}/{σ√T}$,   $d_2 = d_1 − σ√T$</p>
+<p class="f m">$C = S e^{−qT} N(d_1) − K e^{−rT} N(d_2)$,   $P = K e^{−rT} N(−d_2) − S e^{−qT} N(−d_1)$</p>
+<p class="m">$N$ es la función de distribución de la normal estándar. Supone que el precio sigue un movimiento browniano geométrico con volatilidad constante, un tipo sin riesgo constante y mercados sin costes ni oportunidades de arbitraje. La <b>paridad call-put</b>, $C − P = S e^{−qT} − K e^{−rT}$, se cumple siempre.</p>
+<h2>Las griegas</h2>
+<p class="m"><b>Delta</b> es lo que cambia la opción por euro que sube la acción (entre 0 y 1 en la call, entre −1 y 0 en la put). <b>Gamma</b> es lo que cambia la delta. <b>Vega</b> es la sensibilidad a la volatilidad, <b>theta</b> la pérdida de valor por el paso del tiempo y <b>rho</b> la sensibilidad al tipo de interés. Sirven para cubrir el riesgo de una cartera de opciones.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Black-Scholes <span id="ver"></span> (beta)</footer>
+</body>
