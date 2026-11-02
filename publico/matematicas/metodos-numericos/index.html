@@ -248,8 +248,8 @@ textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 120px 
 <section class="relacionadas" aria-label="Herramientas relacionadas"><h2>Herramientas relacionadas</h2>
 <a href="../graficador/"><b>Graficador de funciones →</b><span>Dibuja hasta tres funciones, mueve y acerca la gráfica y saca el dominio, los cortes, las asíntotas y los extremos.</span></a>
 <a href="../matrices/"><b>Matrices paso a paso →</b><span>Determinante, inversa, rango, Gauss-Jordan y valores propios, con fracciones exactas y complejos.</span></a>
+<a href="../superficies/"><b>Superficies y curvas de nivel en 3D →</b><span>Funciones de dos variables como superficie 3D que se gira y mapa de curvas de nivel, con gradiente, plano tangente, derivada direccional y puntos críticos.</span></a>
 <a href="../complejos/"><b>Números complejos →</b><span>Formas binómica, polar y exponencial, operaciones, De Moivre, raíces n-ésimas y ecuaciones, con el plano de Argand.</span></a>
-<a href="../campos/"><b>Campos vectoriales →</b><span>Gradiente y derivada direccional, divergencia y rotacional, potencial, trabajo por una curva y teorema de Green, viendo el campo.</span></a>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Métodos numéricos <span id="ver"></span> (beta)</footer>
@@ -477,6 +477,9 @@ const Version = (() => {
           '**Diseño pensado también para el móvil.**',
         ] },
       ] },
+    ],
+    superficies: [
+      { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: escribe una función de dos variables z = f(x, y) y mírala como una superficie 3D que se gira arrastrando (con rueda para acercar y flechas del teclado) y como un mapa de curvas de nivel, que también se proyecta en el suelo.', 'Elige un punto, o púlsalo en el mapa: sale el gradiente y su módulo, el plano tangente con su normal, la tangente a la curva de nivel, la derivada direccional en la dirección que quieras y la aproximación lineal con su error.', 'Los puntos críticos del rango, clasificados con el hessiano como mínimo, máximo o punto de silla.', 'Desarrollo paso a paso, 8 ejemplos (paraboloide, silla, cono, campana de Gauss, huevera…) y modo práctica con ejercicios al azar.'] },
     ],
     maxwell: [
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: las cuatro ecuaciones de Maxwell en forma integral y diferencial con su significado y enlaces a los simuladores de Electromagnetismo, y una calculadora paso a paso para cada una: ley de Gauss (flujo y campo de una esfera cargada, dentro y fuera), Gauss para B (flujo por un cubo), Faraday (fem de una bobina), Ampère–Maxwell (corriente de desplazamiento y campo B en un condensador) y la velocidad de la luz con la onda plana, con gráfica, modo práctica y enlace para compartir.'] },
@@ -2618,6 +2621,8 @@ const Practica = (() => {
     laplace: { datos: null, items: '#resumen > div.num', genera: () => window.LaplaceApp?.azar(), enunciado: () => window.LaplaceApp?.enunciado() },
     // convolución: dos señales de clase o un filtro RC; se preguntan el máximo, su instante, el área o la respuesta al escalón
     convolucion: { datos: null, items: '#resumen > div.num', genera: () => window.ConvolucionApp?.azar(), enunciado: () => window.ConvolucionApp?.enunciado() },
+    // superficies: una función de dos variables y un punto; se preguntan f, fₓ, f_y, |∇f| y la derivada direccional
+    superficies: { datos: null, items: '#resumen > div.num', genera: () => window.SuperficiesApp?.azar(), enunciado: () => window.SuperficiesApp?.enunciado() },
     // derivadas: una derivada en un punto o una integral definida de las de clase
     derivadas: { datos: null, items: '#resumen > div.num', genera: () => window.DerivadasApp?.azar(), enunciado: () => window.DerivadasApp?.enunciado() },
     complejos: { datos: null, genera: () => window.ComplejosApp?.azar(), enunciado: () => window.ComplejosApp?.enunciado() },
