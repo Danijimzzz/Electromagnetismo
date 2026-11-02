@@ -3,7 +3,7 @@
    las novedades y el índice de «Física en la vida real» (publico/fenomenos/index.html) a partir de catalogo.js.
    Lo llama build.sh; no hace falta ejecutarlo a mano. Las páginas de cada fenómeno las hace herramientas.js. */
 const fs = require('fs'), path = require('path');
-const Catalogo = require('./catalogo.js'), Version = require('./version.js'), Tema = require('./tema.js'), Buscador = require('./buscador.js'), Anuncios = require('./anuncios.js');
+const Catalogo = require('./catalogo.js'), Version = require('./version.js'), Tema = require('./tema.js'), Buscador = require('./buscador.js'), Anuncios = require('./anuncios.js'), Pwa = require('./pwa.js');
 const publico = path.join(__dirname, '..', 'publico');
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -148,7 +148,7 @@ footer { text-align:center; font-size:12.5px; color:var(--muted); padding:0 16px
 // con anuncios.js activo, un hueco al final de las páginas de asignatura y del índice de fenómenos
 // (no en la portada, el foro ni las novedades)
 const CON_ANUNCIO = [...Catalogo.asignaturas.map((a) => a.clave), V.clave];
-function pagina({ titulo, desc, raiz, actual, cuerpo, buscar, script }) {
+function pagina({ titulo, desc, raiz, actual, cuerpo, buscar, script, pwa }) {
   const nav = [...Catalogo.asignaturas, V].map((a) => `<a href="${raiz}${a.clave}/"${a.clave === actual ? ' aria-current="page"' : ''}>${esc(a.corto || a.nombre)}</a>`).join('');
   return `<!doctype html>
 <html lang="es">
@@ -166,8 +166,9 @@ ${raiz === '' && Catalogo.google ? `<meta name="google-site-verification" conten
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+${Pwa.CABEZA(raiz)}
 ${Anuncios.cabeza()}<script>${Tema.SCRIPT}</script>
-<style>${CSS}${Tema.CSS}</style>
+<style>${CSS}${Tema.CSS}${pwa ? Pwa.CSS : ''}</style>
 </head>
 <body>
 <header class="top"><a class="logo" href="${raiz}">${esc(m1)}<i>${esc(m2)}</i></a>
@@ -237,7 +238,7 @@ const BUSCAR = `(() => {
 
 const archivos = { 'index.html': pagina({
   titulo: `${marca} · Simuladores y calculadoras por asignatura`,
-  desc: Catalogo.lema, raiz: '', buscar: true, script: BUSCAR,
+  desc: Catalogo.lema, raiz: '', buscar: true, script: BUSCAR, pwa: true,
   cuerpo: `<div class="lay">
 ${lado}
 <main>
@@ -245,6 +246,7 @@ ${lado}
 <p class="sub">${esc(Catalogo.lema)}</p>
 ${secciones}
 <p class="nada" id="nada" hidden>No hay ninguna herramienta con ese nombre todavía.</p>
+${Pwa.BARRA}
 </main>
 </div>`,
 }) };
@@ -434,6 +436,10 @@ for (const f of Object.keys(archivos)) if (f.endsWith('.html') && !archivos[f].i
   archivos[f] = archivos[f].replace('<meta charset="utf-8">', `<meta charset="utf-8">\n<link rel="canonical" href="${canonica(f)}">`);
 
 archivos['buscador.js'] = Buscador.archivo();
+// web instalable y sin conexión (pwa.js): manifiesto, service worker, su registro, la página sin conexión y los iconos
+archivos._headers = '/sw.js\n  Cache-Control: no-cache\n/manifest.webmanifest\n  Cache-Control: no-cache\n'; // Cloudflare (Vercel: vercel.json)
+archivos['manifest.webmanifest'] = Pwa.manifiesto(); archivos['sw.js'] = Pwa.sw(); archivos['pwa.js'] = Pwa.cliente(); archivos['offline.html'] = Pwa.offline();
+for (const [f] of Pwa.ICONOS) fs.copyFileSync(path.join(__dirname, 'pwa', f), path.join(publico, f));
 for (const [f, html] of Object.entries(archivos)) {
   fs.mkdirSync(path.dirname(path.join(publico, f)), { recursive: true });
   fs.writeFileSync(path.join(publico, f), html);
