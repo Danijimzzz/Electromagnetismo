@@ -305,7 +305,9 @@ const Catalogo = {
       { clave: 'olla-presion', nombre: 'La olla a presión y el agua en la montaña', icono: 'T', disponible: true, imagen: 3, dificultad: 'D3', desc: 'Por qué el agua hierve a 70 °C en el Everest y a 121 °C en una olla a presión: la temperatura de ebullición depende de la presión.', asignaturas: ['fisica', 'quimica'], herramientas: ['fisica/calorimetria', 'fisica/gases'],
         scripts: ['mates.js', 'fenomenos/animacion.js', 'fenomenos/dibujo.js', 'fenomenos/olla-presion/escena.js'],
         titulo: 'La olla a presión y el agua en la montaña, explicadas', descripcion: 'Por qué la olla a presión cuece cuatro veces más rápido y el agua hierve a 70 °C en el Everest: presión de vapor, temperatura de ebullición, ecuación de Clausius-Clapeyron y energía para calentar el agua, con una animación paso a paso y el cálculo en Calorimetría' },
-      { clave: 'arcoiris', nombre: 'El arcoíris', icono: '42°', disponible: false, dificultad: 'D4', desc: 'Refracción y reflexión en una gota: por qué sale a 42° y con colores.', asignaturas: ['fisica'], herramientas: [] },
+      { clave: 'arcoiris', nombre: 'El arcoíris', icono: '42°', disponible: true, imagen: 5, dificultad: 'D4', desc: 'Refracción y reflexión en una gota: por qué sale a 42° y con colores.', asignaturas: ['fisica', 'electromagnetismo'], herramientas: ['electromagnetismo/fresnel'],
+        scripts: ['mates.js', 'fenomenos/animacion.js', 'fenomenos/dibujo.js', 'fenomenos/arcoiris/escena.js'],
+        titulo: 'El arcoíris, explicado', descripcion: 'Por qué el arcoíris sale a 42° y con colores: refracción de la luz al entrar en una gota de agua, reflexión en el fondo, desviación mínima de Descartes e índice de refracción de cada color, con una animación paso a paso y el cálculo en Reflexión y transmisión (Fresnel)' },
     ],
   },
   // direcciones antiguas que llevan a la nueva (portal.js genera la página de aviso, _redirects y vercel.json las redirigen con 301)
