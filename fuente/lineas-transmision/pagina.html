@@ -1,0 +1,58 @@
+<title>Calculadora de líneas de transmisión y carta de Smith · SimulaCiencia</title>
+<meta name="description" content="Calculadora de líneas de transmisión con la carta de Smith dibujada: coeficiente de reflexión, ROE, impedancia de entrada, ondas estacionarias y adaptación con stub o transformador λ/4, paso a paso.">
+<style>
+#resumen .est { grid-column: 1 / -1 }
+/* la carta de Smith es redonda: cuanto más alta, mejor se lee */
+#grafica { height: clamp(300px, 52vw, 460px) }
+#perfil { height: clamp(200px, 26vw, 260px) }
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62 }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Electromagnetismo</a> / Líneas de transmisión y carta de Smith</span></header>
+<div class="wrap">
+<h1>Líneas de transmisión y carta de Smith</h1>
+<p class="lead">Coeficiente de reflexión, ROE y ondas estacionarias de una línea sin pérdidas, con la carta de Smith dibujada y la adaptación de impedancias con un stub o un transformador λ/4.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Carta de Smith</h2>
+      <canvas id="grafica" aria-label="Carta de Smith"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card"><h2>Ondas estacionarias</h2>
+      <canvas id="perfil" aria-label="Tensión y corriente a lo largo de la línea"></canvas>
+      <p class="leyenda" id="leyenda2"></p>
+    </div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Línea de transmisión sin pérdidas</h2>
+  <p class="m">Cuando la longitud de la línea no es pequeña frente a $λ$, la tensión y la corriente dependen de la posición. Una línea de impedancia característica $Z_0$ con $v = c/√(ε_r)$ tiene constante de fase $β = {2π}/λ$, con $λ = v/f$. Si termina en una carga $Z_L$, parte de la onda se refleja con el coeficiente</p>
+  <p class="f m">$Γ_L = {Z_L − Z_0}/{Z_L + Z_0}$, &ensp; $"ROE" = {1 + |Γ|}/{1 − |Γ|}$, &ensp; $"RL" = −20 log |Γ|$</p>
+  <p class="m">La onda incidente y la reflejada forman una <em>onda estacionaria</em>: $|V|$ oscila entre $(1 + |Γ|)|V^+|$ y $(1 − |Γ|)|V^+|$, con un máximo cada $λ/2$ y un mínimo $λ/4$ después. La ROE es el cociente entre ambos; vale 1 si la carga está adaptada y crece sin límite al acercarse a un cortocircuito o a un circuito abierto.</p>
+  <h2>Impedancia de entrada</h2>
+  <p class="f m">$Z_"in" = Z_0 {Z_L + j Z_0 tg(β l)}/{Z_0 + j Z_L tg(β l)}$, &ensp; $Γ_"in" = Γ_L e^{−j 2 β l}$</p>
+  <p class="m">Una línea de $λ/2$ repite la impedancia de la carga y una de $λ/4$ la invierte, $Z_"in" = Z_0^2/Z_L$. En un máximo de tensión la impedancia es real y vale $Z_0 "ROE"$; en un mínimo vale $Z_0/"ROE"$.</p>
+  <h2>La carta de Smith</h2>
+  <p class="m">Es el plano del coeficiente de reflexión $Γ$ (el interior de un círculo de radio 1) con las impedancias normalizadas $z = Z/Z_0 = r + j x$ dibujadas encima: las circunferencias de $r$ constante y los arcos de $x$ constante. El centro es $z = 1$ (adaptación), el borde son las cargas puramente reactivas, el punto de la izquierda es el cortocircuito y el de la derecha el circuito abierto.</p>
+  <p class="m">Desplazarse hacia el generador una distancia $d$ es girar en sentido horario sobre el círculo de ROE constante (radio $|Γ|$) un ángulo $4π d/λ$: una vuelta entera cada $λ/2$. Pasar de impedancia a admitancia es girar media vuelta, $y = 1/z$.</p>
+  <h2>Adaptación de impedancias</h2>
+  <p class="m"><b>Stub en paralelo.</b> Se conecta en paralelo, a una distancia $d$ de la carga, un trozo de línea en cortocircuito o en abierto. Se elige $d$ para que allí la conductancia normalizada valga 1, $y = 1 + j b$ (la circunferencia $r = 1$ de la carta leída como admitancias, es decir, girada media vuelta), y la longitud $l_s$ del stub para que su susceptancia sea $−b$. Hay dos soluciones. Un stub en cortocircuito tiene $y_s = −j cot(β l_s)$ y uno en abierto $y_s = j tg(β l_s)$.</p>
+  <p class="m"><b>Transformador λ/4.</b> Donde la impedancia es real (un máximo o un mínimo de tensión) se intercala un trozo de línea de longitud $λ/4$ y $Z_T = √(Z_0 Z_"real")$, que la lleva a $Z_0$.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Líneas de transmisión y carta de Smith <span id="ver"></span> (beta)</footer>
+</body>
