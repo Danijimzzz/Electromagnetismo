@@ -1,0 +1,56 @@
+<title>La radio AM y FM: cómo sintoniza una emisora · Ciencify</title>
+<meta name="description" content="Cómo funciona la radio: por qué hace falta una portadora, la modulación AM y FM, el circuito resonante que sintoniza una emisora (f₀ = 1/2π√LC) y el detector que recupera el sonido, con una animación paso a paso y el cálculo en Diagramas de Bode y filtros.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<!-- =====================================================================
+     La radio AM y FM («Física en la vida real»). Maqueta común de los fenómenos
+     (ver fuego-san-telmo/pagina.html): animación, texto del paso, historia y recuadro
+     de la herramienta. Los pasos y el dibujo están en escena.js.
+     ===================================================================== -->
+<style>
+/* colores del dibujo, con su valor en modo oscuro */
+:root {
+  --sala: #eef1f4; --suelo: #a8a094; --torre: #4a4f56; --am: #2a5db5; --fm: #1f8a5b; --audio: #c2692a; --portadora: #6b7680; --ruido: #c2412a; --radio: #d6c3a8; --resalta: #c2412a; --rotulo: #1a2128 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --sala: #1c2126; --suelo: #3a3f45; --torre: #9aa6b2; --am: #74a2f2; --fm: #4cc593; --audio: #f0a15c; --portadora: #9aa6b2; --ruido: #ef7a62; --radio: #5c4f40; --resalta: #ef7a62; --rotulo: #e3e8ea } }
+:root[data-theme="dark"] {
+  --sala: #1c2126; --suelo: #3a3f45; --torre: #9aa6b2; --am: #74a2f2; --fm: #4cc593; --audio: #f0a15c; --portadora: #9aa6b2; --ruido: #ef7a62; --radio: #5c4f40; --resalta: #ef7a62; --rotulo: #e3e8ea }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Cienci<i>fy</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física en la vida real</a> / La radio AM y FM</span></header>
+<div class="wrap fen">
+<div class="fen-etiquetas"><span>⚡ Electromagnetismo</span><span>Dificultad media</span><span>6 pasos · 1 min</span></div>
+<h1>La radio AM y FM</h1>
+<p class="lead">Hay decenas de emisoras en el aire a la vez y tu radio recibe un poco de cada una, pero giras la rueda y solo suena una. ¿Cómo se manda un sonido por el aire, y cómo se queda la radio con la emisora que quieres?</p>
+<div class="fen-escena"><canvas id="escena" role="img" aria-label="Animación de la radio: tres emisoras que emiten a la vez, el sonido y la portadora con sus longitudes de onda y antenas, una onda de amplitud modulada, una de frecuencia modulada con y sin ruido, el circuito resonante de sintonía con su curva de respuesta y el detector de diodo y condensador que recupera el sonido"></canvas></div>
+<div class="fen-puntos" id="puntos" role="group" aria-label="Pasos"></div>
+<div class="fen-controles">
+  <button class="btn" id="ant" type="button">‹ Anterior</button>
+  <button class="btn" id="play" type="button" aria-pressed="true">❚❚ Parar</button>
+  <button class="btn" id="sig" type="button">Siguiente ›</button>
+</div>
+<div class="fen-texto" aria-live="polite"><h2 id="paso-t"></h2><div id="paso-x"></div></div>
+<section class="fen-historia" aria-label="Un poco de historia">
+  <h2>Un poco de historia</h2>
+  <ol>
+    <li><b>1887</b>Heinrich Hertz genera y detecta ondas electromagnéticas en el laboratorio, confirmando lo que Maxwell había predicho con sus ecuaciones.</li>
+    <li><b>1901</b>Guglielmo Marconi manda la letra «S» en código Morse de Cornualles a Terranova, al otro lado del Atlántico, sin ningún cable.</li>
+    <li><b>1906</b>Reginald Fessenden transmite voz y música por amplitud modulada. Ese mismo año aparecen los detectores de cristal, los primeros receptores sencillos de radio.</li>
+    <li><b>1918</b>Edwin Armstrong inventa el receptor superheterodino, que todavía usan casi todas las radios.</li>
+    <li><b>1933</b>Armstrong patenta la frecuencia modulada, que acaba con el ruido de la AM; la FM empieza a emitir con regularidad a finales de esa década.</li>
+  </ol>
+</section>
+<section class="fen-rel" aria-label="Herramienta relacionada">
+  <div class="fen-ico" aria-hidden="true">dB</div>
+  <h2>Con qué herramienta se relaciona</h2>
+  <h3>Diagramas de Bode y filtros <small>· Circuitos</small></h3>
+  <p>El circuito de sintonía de una radio es un filtro RLC paso banda: la resonancia fija la frecuencia que deja pasar, la calidad Q lo estrecha y el diagrama de Bode muestra qué tanto atenúa a las vecinas.</p>
+  <p class="f m">f_0 = 1/(2π√(L C)) ,  Q = ω_0 L/R ,  Δf = f_0/Q</p>
+  <p>Se abre con el filtro «RLC paso banda» con L = 253,3 µH, C = 100 pF y R = 10 Ω, evaluado a 1009 kHz, la frecuencia de una emisora a 9 kHz de la sintonizada. Sale f₀ = 1000 kHz y Q = 159 (la banda pasante es f₀/Q = 6,28 kHz), y a 1009 kHz la señal se atenúa unos −9,6 dB.</p>
+  <div class="fen-fichas"><div><small>Frecuencia de resonancia</small><b>1000 kHz</b></div><div><small>Factor de calidad</small><b>159</b></div><div><small>A 1009 kHz</small><b>−9,6 dB</b></div></div>
+  <a class="fen-abrir" id="abrir" href="../../circuitos/bode/">Abrir en Diagramas de Bode y filtros con estos datos →</a>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Física en la vida real <span id="ver"></span> (beta)</footer>
+</body>
