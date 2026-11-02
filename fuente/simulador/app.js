@@ -282,7 +282,7 @@
     const tiles = Object.entries(opR.V).filter(([n]) => !n.includes('~')).map(([n, v]) => `<div class="num"><span>Tensión del nudo ${esc(n)}</span><b>${u(v.re, 'V')}</b></div>`).join('');
     return `${ac}<div class="resumen" id="resumen">${tiles}<div class="ancho"><span>Balance de potencias (debe ser 0)</span><b>${u(opR.balance, 'W')}</b></div></div>
       <h3 style="font:600 13px var(--f-ui);margin:14px 0 4px">Tensión de cada nudo (respecto a tierra)</h3>${tabla(['Nudo', 'Tensión'], [['0 (tierra)', '0 V'], ...nudos])}
-      <h3 style="font:600 13px var(--f-ui);margin:14px 0 4px">Cada elemento (la corriente va de la patilla 1 a la 2; potencia absorbida)</h3>${tabla(['Elemento', 'Tensión', 'Corriente', 'Potencia', ''], filas)}`;
+      <h3 style="font:600 13px var(--f-ui);margin:14px 0 4px">Cada elemento (la corriente va de la patilla 1 a la 2; potencia absorbida)</h3>${tabla(['Elemento', 'Tensión', 'Corriente', 'Potencia', 'Sentido'], filas)}`;
   }
 
   function rTr() {

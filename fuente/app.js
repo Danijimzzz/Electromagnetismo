@@ -167,7 +167,7 @@
     const section = (title, key, items, empty) => {
       const open = query || !key || ui[key] !== false;
       const head = h('button', { class: 'sec-h', 'aria-expanded': key ? String(!!open) : null, onclick: key && !query ? () => { ui[key] = !open; saveUI(); renderSidebar(); } : null }, h('span', {}, title), key && !query ? h('span', { class: 'chev' }, open ? '▾' : '▸') : h('span', { class: 'count' }, items.length ? String(items.length) : ''));
-      const list = h('div', { class: 'sec-l', role: 'list' }, open ? (items.length ? items : empty ? h('p', { class: 'side-empty' }, empty) : null) : null);
+      const list = h('div', open && items.length ? { class: 'sec-l', role: 'list' } : { class: 'sec-l' }, open ? (items.length ? items : empty ? h('p', { class: 'side-empty' }, empty) : null) : null);
       box.append(h('section', { class: 'sec' }, head, list));
     };
     if (!query || mine.length) section('Mis problemas', null, grouped(mine), query ? '' : 'Aún no tienes problemas propios. Crea uno nuevo o guarda un ejercicio de ejemplo.');

@@ -28,6 +28,24 @@
     for (const f of oyentes) { try { f.call(mq, { matches: oscuro(), media: mq.media }); } catch (err) { console.error(err); } }
   });
 })();</script>
+<script>(() => {
+  const ENFOCABLE = 'a[href],button,input,select,textarea,summary,[tabindex]';
+  let espera = 0;
+  const revisa = () => {
+    espera = 0;
+    for (const e of document.querySelectorAll('main *')) {
+      const desborda = e.scrollWidth > e.clientWidth || e.scrollHeight > e.clientHeight;
+      if (e.dataset.sf) { if (!desborda) { e.removeAttribute('tabindex'); delete e.dataset.sf; } continue; }
+      if (!desborda || e.hasAttribute('tabindex') || e.matches('svg,svg *,canvas') || e.querySelector(ENFOCABLE)) continue;
+      const o = getComputedStyle(e);
+      if (/auto|scroll/.test(o.overflowX + o.overflowY)) { e.tabIndex = 0; e.dataset.sf = '1'; }
+    }
+  };
+  window.revisaScroll = revisa; // también lo llama pruebas/accesibilidad.js antes de pasar axe
+  const pide = () => { if (!espera) espera = setTimeout(revisa, 400); };
+  addEventListener('load', () => { revisa(); const m = document.querySelector('main'); if (m) new MutationObserver(pide).observe(m, { childList: true, subtree: true, characterData: true }); });
+  addEventListener('resize', pide);
+})();</script>
 <title>Simulador de electrostática: campo, potencial y fuerza</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -48,12 +66,12 @@
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
   --vidrio: rgba(34,46,54,.50); --vidrio-fuerte: rgba(26,36,42,.70); --vidrio-borde: rgba(255,255,255,.12); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.10); --vidrio-sombra: 0 1px 2px rgba(0,0,0,.3), 0 10px 32px rgba(0,0,0,.35); --halo1: rgba(77,188,176,.20); --halo2: rgba(116,162,242,.18); --halo3: rgba(170,120,230,.14); 
-  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #94a0a8; --line: #2a343b;
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #a3aeb5; --line: #2a343b;
   --accent: #4dbcb0; --accent-soft: #173431; --pos: #ef7a62; --neg: #74a2f2; --dipole: #e6a640; --mark: #b892ec;
   --canvas: #141b1f; --grid: #1e282d; --fieldline: #6e8380; --equi: #9b7a3d; --warn: #f0c060; --warn-bg: #2d2412; --ok: #5fcf8a; --bad: #f08a80; --probe: #f070c0; --side: #0c1013; --side-hover: #1a2227; --side-active: #22303a; color-scheme: dark } }
 :root[data-theme="dark"] {
   --vidrio: rgba(34,46,54,.50); --vidrio-fuerte: rgba(26,36,42,.70); --vidrio-borde: rgba(255,255,255,.12); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.10); --vidrio-sombra: 0 1px 2px rgba(0,0,0,.3), 0 10px 32px rgba(0,0,0,.35); --halo1: rgba(77,188,176,.20); --halo2: rgba(116,162,242,.18); --halo3: rgba(170,120,230,.14); 
-  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #94a0a8; --line: #2a343b;
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #a3aeb5; --line: #2a343b;
   --accent: #4dbcb0; --accent-soft: #173431; --pos: #ef7a62; --neg: #74a2f2; --dipole: #e6a640; --mark: #b892ec;
   --canvas: #141b1f; --grid: #1e282d; --fieldline: #6e8380; --equi: #9b7a3d; --warn: #f0c060; --warn-bg: #2d2412; --ok: #5fcf8a; --bad: #f08a80; --probe: #f070c0; --side: #0c1013; --side-hover: #1a2227; --side-active: #22303a; color-scheme: dark }
 * { box-sizing: border-box }
@@ -332,9 +350,9 @@ body { display: flow-root }
 
 <style>
 :root { --bg:#eef1ee; --panel:#fff; --ink:#1a2128; --muted:#5b6670; --line:#d5dbd5 }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#111619; --panel:#182025; --ink:#e3e8ea; --muted:#94a0a8; --line:#2a343b; color-scheme:dark } }
-:root[data-theme="dark"] { --bg:#111619; --panel:#182025; --ink:#e3e8ea; --muted:#94a0a8; --line:#2a343b; color-scheme:dark }
-:root { --accent:#c2412a; --accent-soft:color-mix(in srgb, #c2412a 12%, #fff); --marca:#0d6b66 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#111619; --panel:#182025; --ink:#e3e8ea; --muted:#a3aeb5; --line:#2a343b; color-scheme:dark } }
+:root[data-theme="dark"] { --bg:#111619; --panel:#182025; --ink:#e3e8ea; --muted:#a3aeb5; --line:#2a343b; color-scheme:dark }
+:root { --accent:#b83c26; --accent-soft:color-mix(in srgb, #b83c26 12%, #fff); --marca:#0d6b66 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --accent:#ef7a62; --accent-soft:color-mix(in srgb, #ef7a62 16%, #182025); --marca:#4dbcb0 } }
 :root[data-theme="dark"] { --accent:#ef7a62; --accent-soft:color-mix(in srgb, #ef7a62 16%, #182025); --marca:#4dbcb0 }
 .wrap { max-width:1300px }
@@ -4397,7 +4415,7 @@ const Canvas = (() => {
     const section = (title, key, items, empty) => {
       const open = query || !key || ui[key] !== false;
       const head = h('button', { class: 'sec-h', 'aria-expanded': key ? String(!!open) : null, onclick: key && !query ? () => { ui[key] = !open; saveUI(); renderSidebar(); } : null }, h('span', {}, title), key && !query ? h('span', { class: 'chev' }, open ? '▾' : '▸') : h('span', { class: 'count' }, items.length ? String(items.length) : ''));
-      const list = h('div', { class: 'sec-l', role: 'list' }, open ? (items.length ? items : empty ? h('p', { class: 'side-empty' }, empty) : null) : null);
+      const list = h('div', open && items.length ? { class: 'sec-l', role: 'list' } : { class: 'sec-l' }, open ? (items.length ? items : empty ? h('p', { class: 'side-empty' }, empty) : null) : null);
       box.append(h('section', { class: 'sec' }, head, list));
     };
     if (!query || mine.length) section('Mis problemas', null, grouped(mine), query ? '' : 'Aún no tienes problemas propios. Crea uno nuevo o guarda un ejercicio de ejemplo.');

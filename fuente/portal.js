@@ -16,9 +16,9 @@ const CSS = `
 [style*="--cl:"] { --c:var(--cl) }
 :root { --bg:#eef1ee; --panel:#fff; --ink:#1a2128; --muted:#5b6670; --line:#d5dbd5; --accent:#0d6b66; --accent-soft:#e0efec;
   --f-ui:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif; --f-math:"STIX Two Text","Cambria Math",Cambria,Georgia,serif }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#111619; --panel:#182025; --ink:#e3e8ea; --muted:#94a0a8; --line:#2a343b; --accent:#4dbcb0; --accent-soft:#173431; color-scheme:dark }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#111619; --panel:#182025; --ink:#e3e8ea; --muted:#a3aeb5; --line:#2a343b; --accent:#4dbcb0; --accent-soft:#173431; color-scheme:dark }
   :root:not([data-theme="light"]) [style*="--cl:"] { --c:var(--co) } }
-:root[data-theme="dark"] { --bg:#111619; --panel:#182025; --ink:#e3e8ea; --muted:#94a0a8; --line:#2a343b; --accent:#4dbcb0; --accent-soft:#173431; color-scheme:dark }
+:root[data-theme="dark"] { --bg:#111619; --panel:#182025; --ink:#e3e8ea; --muted:#a3aeb5; --line:#2a343b; --accent:#4dbcb0; --accent-soft:#173431; color-scheme:dark }
 :root[data-theme="dark"] [style*="--cl:"] { --c:var(--co) }
 * { box-sizing:border-box } [hidden] { display:none !important }
 html, body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.5 var(--f-ui) }

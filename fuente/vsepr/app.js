@@ -74,7 +74,7 @@
       const tipo = `AX${g.x === 1 ? '' : `<sub>${g.x}</sub>`}${g.e ? 'E' + (g.e === 1 ? '' : `<sub>${g.e}</sub>`) : ''}`;
       return `<tr data-k="${k}"><td>${tipo}</td><td>${g.sn}</td><td>${g.ele}</td><td><b>${g.nombre}</b></td><td>${g.hib}</td><td>${g.real}</td><td>${g.ej}</td><td><button class="btn" data-n="${g.x}" data-m="${g.e}" aria-label="Ver ${g.nombre} en 3D">Ver en 3D</button></td></tr>`;
     }).join('');
-    $('#tabla-geo').innerHTML = '<thead><tr><th>Tipo</th><th>Dominios</th><th>Electrónica</th><th>Molecular</th><th>Hibridación</th><th>Ángulos</th><th>Ejemplos</th><th></th></tr></thead><tbody>' + filas + '</tbody>';
+    $('#tabla-geo').innerHTML = '<thead><tr><th>Tipo</th><th>Dominios</th><th>Electrónica</th><th>Molecular</th><th>Hibridación</th><th>Ángulos</th><th>Ejemplos</th><th><span class="solo-lector">Ver en 3D</span></th></tr></thead><tbody>' + filas + '</tbody>';
   }
   const marcaTabla = () => { for (const tr of document.querySelectorAll('#tabla-geo tr[data-k]')) tr.classList.toggle('activa', !!sol && tr.dataset.k === `${sol.sn}-${sol.e}`); };
   $('#tabla-geo').addEventListener('click', (ev) => {
