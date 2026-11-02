@@ -13,7 +13,7 @@
    (fenómenos también) el de «Herramientas relacionadas» (o «Más fenómenos»):
      node diseno.js ASIGNATURA HERRAMIENTA < pagina.html
    ===================================================================== */
-const Catalogo = require('./catalogo.js'), Tema = require('./tema.js'), Accesibilidad = require('./accesibilidad.js'), Buscador = require('./buscador.js'), Anuncios = require('./anuncios.js');
+const Catalogo = require('./catalogo.js'), Tema = require('./tema.js'), Accesibilidad = require('./accesibilidad.js'), Buscador = require('./buscador.js'), Anuncios = require('./anuncios.js'), Preguntas = require('./preguntas.js');
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 // Hoja común de las herramientas (estilos.css) y la cabecera del portal, que comparten con el simulador de
@@ -93,8 +93,15 @@ function relacionadas(clave, herramienta) {
   const fenomeno = clave === V.clave, lista = (fenomeno ? V.lista : Catalogo.asignaturas.find((x) => x.clave === clave).herramientas).filter((h) => h.disponible);
   const i = lista.findIndex((h) => h.clave === herramienta);
   if (i < 0 || lista.length < 2) return '';
-  const elegidas = [...new Set([1, 2, -1, -2, 3].map((d) => lista[(i + d + lista.length) % lista.length]))].filter((h) => h !== lista[i]).slice(0, fenomeno ? 3 : 4);
-  return `<section class="relacionadas" aria-label="${fenomeno ? 'Más fenómenos' : 'Herramientas relacionadas'}"><h2>${fenomeno ? 'Más fenómenos' : 'Herramientas relacionadas'}</h2>\n${elegidas.map((h) => `<a href="../${h.clave}/"><b>${esc(h.nombre)} →</b><span>${esc(h.desc)}</span></a>`).join('\n')}\n</section>\n`;
+  const cercanas = [...new Set([1, 2, -1, -2, 3].map((d) => lista[(i + d + lista.length) % lista.length]))].filter((h) => h !== lista[i]).map((h) => ({ h, href: `../${h.clave}/` }));
+  // enlaces cruzados con herramientas parecidas de otras asignaturas (preguntas.js), primero
+  const cruzadas = fenomeno ? [] : (Preguntas.ENLACES[herramienta] || []).map((r) => {
+    const [as, cl] = r.split('/'), h = Catalogo.asignaturas.find((x) => x.clave === as)?.herramientas.find((x) => x.clave === cl);
+    return h && h.disponible && as !== clave ? { h, href: `../../${as}/${cl}/` } : null;
+  }).filter(Boolean);
+  const propias = (Preguntas.ENLACES[herramienta] || []).filter((r) => r.startsWith(clave + '/')).map((r) => cercanas.find((c) => c.h.clave === r.split('/')[1])).filter(Boolean);
+  const elegidas = [...new Set([...cruzadas.slice(0, 2), ...propias, ...cercanas])].slice(0, fenomeno ? 3 : 4);
+  return `<section class="relacionadas" aria-label="${fenomeno ? 'Más fenómenos' : 'Herramientas relacionadas'}"><h2>${fenomeno ? 'Más fenómenos' : 'Herramientas relacionadas'}</h2>\n${elegidas.map(({ h, href }) => `<a href="${href}"><b>${esc(h.nombre)} →</b><span>${esc(h.desc)}</span></a>`).join('\n')}\n</section>\n`;
 }
 
 // Texto del simulador de electrostática para quien llega desde un buscador (electrostatica-teoria.html)
@@ -124,8 +131,8 @@ function aplicaElectrostatica(html) {
 #side-close { font-size:20px; line-height:1; color:var(--muted) }
 @media (max-width:700px) { .main .top .title-in { font-size:21px } }
 .solo-lector { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap }
-.teoria { margin-top:28px; max-width:860px; font-size:15px; line-height:1.6; color:var(--ink) }
-.teoria h2 { font:600 19px var(--f-ui); margin:24px 0 6px } .teoria ul { padding-left:20px } .teoria li { margin-bottom:4px }
+.teoria, .preguntas { margin-top:28px; max-width:860px; font-size:15px; line-height:1.6; color:var(--ink) }
+.teoria h2, .preguntas h2 { font:600 19px var(--f-ui); margin:24px 0 6px } .preguntas h3 { font:600 15px var(--f-ui); margin:14px 0 2px } .preguntas p { margin:0 } .teoria ul { padding-left:20px } .teoria li { margin-bottom:4px }
 .teoria .f { font-size:16px; background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:8px 12px; display:inline-block; max-width:100%; overflow-x:auto }`;
   const btnLado = /[ \t]*<button id="side-open"[^>]*>.*<\/button>\n?/, practica = /<label class="toggle"[^>]*><input type="checkbox" id="practice"> Modo práctica<\/label>/;
   const cierra = /(<button id="side-close"[^>]*>).*?<\/button>/;
@@ -144,7 +151,7 @@ function aplicaElectrostatica(html) {
 }, true);</script>`;
   return html.replace(/[ \t]*<a [^>]*a-inicio[^>]*>.*<\/a>\n?/, '').replace(btnLado, '').replace(practica, '')
     .replace(cierra, '$1×</button>').replace(/<span class="logo">.*?<\/span>/, '<span class="logo">Mis ejercicios</span>')
-    .replace('<main class="main">', `<main class="main">\n${cab}\n<div class="wrap">\n<h1 class="solo-lector">Simulador de electrostática</h1>\n${migaE}`).replace('</main>', `${TEORIA_ELECTRO}${Anuncios.hueco()}${vidaReal('electromagnetismo/electrostatica')}${relacionadas('electromagnetismo', 'electrostatica')}</div>\n</main>`)
+    .replace('<main class="main">', `<main class="main">\n${cab}\n<div class="wrap">\n<h1 class="solo-lector">Simulador de electrostática</h1>\n${migaE}`).replace('</main>', `${TEORIA_ELECTRO}${Preguntas.html('electrostatica')}${Anuncios.hueco()}${vidaReal('electromagnetismo/electrostatica')}${relacionadas('electromagnetismo', 'electrostatica')}</div>\n</main>`)
     .replace('<div class="app"', `<style>${css(a)}${extra}</style>\n${alterna}\n<div class="app"`);
 }
 
@@ -166,13 +173,13 @@ function aplicaHerramienta(html, clave, herramienta) {
   const { cab, miga } = piezas(a, nombre);
   // la hoja común va antes del <style> de la página, para que la página pueda ajustar sus variables
   if (!/^<style>/m.test(html)) throw new Error('diseno.js: la página no tiene <style>');
-  const propios = a === V ? ESTILOS_FENOMENOS : '', vida = (a === V ? '' : vidaReal(`${clave}/${herramienta}`)) + relacionadas(clave, herramienta);
+  const propios = a === V ? ESTILOS_FENOMENOS : '', vida = (a === V ? '' : Preguntas.html(herramienta) + vidaReal(`${clave}/${herramienta}`)) + relacionadas(clave, herramienta);
   if (vida && !html.includes('<footer')) throw new Error('diseno.js: la página no tiene <footer>');
   // el contenido de la página es el «main» (accesibilidad): <div class="wrap"> … </div> antes del pie
   if (!/<div class="wrap[^"]*"[^>]*>/.test(html) || !/<\/div>\s*<footer/.test(html)) throw new Error('diseno.js: la página no tiene <div class="wrap"> cerrado justo antes del <footer>');
   const main = (x) => x.replace(/<div class="(wrap[^"]*)"([^>]*)>/, '<main class="$1"$2>').replace(/<\/div>(\s*)<footer/, '</main>$1<footer');
   return main(html.replace(m[0], cab).replace(/<div class="fen-etiquetas"|<h1/, (x) => miga + '\n' + x).replace(/^<style>/m, `<style>${ESTILOS}${acento(a)}${cabecera}${propios}</style>\n<style>`)
-    .replace(/(<\/div>\s*)?<footer/, (x) => (vida ? vida + x : x)).replace(TEORIA.test(html) ? TEORIA : /(<\/div>\s*)?<section class="(vida-real|relacionadas)"|(<\/div>\s*)?<footer/, (x) => Anuncios.hueco() + x));
+    .replace(/(<\/div>\s*)?<footer/, (x) => (vida ? vida + x : x)).replace(TEORIA.test(html) ? TEORIA : /(<\/div>\s*)?<section class="(preguntas|vida-real|relacionadas)"|(<\/div>\s*)?<footer/, (x) => Anuncios.hueco() + x));
 }
 const TEORIA = /<section class="teoria"/;
 

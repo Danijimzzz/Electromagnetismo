@@ -9,7 +9,7 @@
 <link rel="canonical" href="https://simulaciencia.vercel.app/matematicas/taylor/">
 <meta property="og:image" content="https://simulaciencia.vercel.app/og.png">
 <meta name="twitter:card" content="summary_large_image">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Series de Taylor","description":"Calculadora del polinomio de Taylor y de Maclaurin en español: derivadas, coeficientes, aproximación de f(x₀), error y cota del resto de Lagrange, desarrollos conocidos con su término general y una gráfica animada de cómo los polinomios se acercan a la función.","url":"https://simulaciencia.vercel.app/matematicas/taylor/","inLanguage":"es","isAccessibleForFree":true,"applicationCategory":"EducationalApplication","operatingSystem":"Navegador web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://simulaciencia.vercel.app/"},{"@type":"ListItem","position":2,"name":"Matemáticas","item":"https://simulaciencia.vercel.app/matematicas/"},{"@type":"ListItem","position":3,"name":"Series de Taylor","item":"https://simulaciencia.vercel.app/matematicas/taylor/"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Series de Taylor","description":"Calculadora del polinomio de Taylor y de Maclaurin en español: derivadas, coeficientes, aproximación de f(x₀), error y cota del resto de Lagrange, desarrollos conocidos con su término general y una gráfica animada de cómo los polinomios se acercan a la función.","url":"https://simulaciencia.vercel.app/matematicas/taylor/","inLanguage":"es","isAccessibleForFree":true,"applicationCategory":"EducationalApplication","operatingSystem":"Navegador web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://simulaciencia.vercel.app/"},{"@type":"ListItem","position":2,"name":"Matemáticas","item":"https://simulaciencia.vercel.app/matematicas/"},{"@type":"ListItem","position":3,"name":"Series de Taylor","item":"https://simulaciencia.vercel.app/matematicas/taylor/"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Cómo se calcula el polinomio de Taylor?","acceptedAnswer":{"@type":"Answer","text":"P(x) = Σ f⁽ⁿ⁾(a)/n!·(x − a)ⁿ, y de Maclaurin si a = 0. Por ejemplo, eˣ ≈ 1 + x + x²/2 + x³/6, sen x ≈ x − x³/6 y cos x ≈ 1 − x²/2 + x⁴/24. Con grado 3, e^0,1 ≈ 1,105167 (el valor real es 1,105171)."}},{"@type":"Question","name":"¿Cómo se acota el error?","acceptedAnswer":{"@type":"Answer","text":"Con el resto de Lagrange, R_n = f⁽ⁿ⁺¹⁾(c)/(n + 1)!·(x − a)ⁿ⁺¹ para algún c entre a y x. Con grado 2 para e^0,1: |R| ≤ e^0,1/3! · 0,1³ ≈ 1,8·10⁻⁴."}}]}]}</script>
 <script>(() => {
   const raiz = document.documentElement, mq = matchMedia('(prefers-color-scheme: dark)'), oyentes = [];
   try { const t = localStorage.getItem('simu-tema'); if (t === 'dark' || t === 'light') raiz.dataset.theme = t; } catch (e) { /* sin almacenamiento */ }
@@ -158,7 +158,10 @@ canvas { display: block; width: 100%; height: var(--alto-grafica); border-radius
 .mat td { padding: 2px 7px; text-align: center; white-space: nowrap; font-variant-numeric: tabular-nums }
 
 /* ---------- Teoría ---------- */
-.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria, .preguntas { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.preguntas h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.preguntas h3 { font: 600 15px var(--f-ui); margin: 14px 0 2px }
+.preguntas p { margin: 0 }
 .teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
 .teoria .f { max-width: 100%; overflow-x: auto; overflow-y: hidden; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
 .teoria ul { padding-left: 20px }
@@ -288,6 +291,13 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
   <h2>Límites con Taylor</h2>
   <p>Para un límite 0/0 se cambian el numerador y el denominador por sus desarrollos y se compara el primer término que no se anula en cada uno: si empiezan con la misma potencia, el límite es el cociente de sus coeficientes; si el numerador empieza más alto, es 0; y si empieza más alto el denominador, va a ±∞ (o no existe si los laterales tienen distinto signo). Por ejemplo,</p>
   <p class="f m">$lím_{x → 0} {sen x − x}/{x^3} = lím_{x → 0} {−{x^3}/{6} + …}/{x^3} = −{1}/{6}$</p>
+</section>
+<section class="preguntas" aria-label="Preguntas frecuentes">
+<h2>Preguntas frecuentes</h2>
+<h3>¿Cómo se calcula el polinomio de Taylor?</h3>
+<p>P(x) = Σ f⁽ⁿ⁾(a)/n!·(x − a)ⁿ, y de Maclaurin si a = 0. Por ejemplo, eˣ ≈ 1 + x + x²/2 + x³/6, sen x ≈ x − x³/6 y cos x ≈ 1 − x²/2 + x⁴/24. Con grado 3, e^0,1 ≈ 1,105167 (el valor real es 1,105171).</p>
+<h3>¿Cómo se acota el error?</h3>
+<p>Con el resto de Lagrange, R_n = f⁽ⁿ⁺¹⁾(c)/(n + 1)!·(x − a)ⁿ⁺¹ para algún c entre a y x. Con grado 2 para e^0,1: |R| ≤ e^0,1/3! · 0,1³ ≈ 1,8·10⁻⁴.</p>
 </section>
 <section class="relacionadas" aria-label="Herramientas relacionadas"><h2>Herramientas relacionadas</h2>
 <a href="../fourier/"><b>Series de Fourier →</b><span>Coeficientes a₀, aₙ y bₙ con su término general, desarrollos en senos o cosenos, Gibbs y Parseval, con la suma parcial animada.</span></a>
@@ -709,7 +719,7 @@ const Compartir = (() => {
     });
     // al imprimir: solo el ejercicio, en claro
     const css = document.createElement('style');
-    css.textContent = '@media print { .top, .miga, .bib, .bib-scrim, footer, .teoria, .compartir, #ejemplos, .controles, .nota:empty, .error[hidden] { display: none !important } html, body { background: #fff !important } .wrap { max-width: none; padding: 0 } .layout { display: block !important } .card { break-inside: avoid; box-shadow: none !important } .pasos li { break-inside: avoid } canvas { max-height: 9cm; object-fit: contain } .chips, .stage-bar, .x, .tools { display: none !important } .cvwrap { height: 9cm !important; min-height: 0 !important } }';
+    css.textContent = '@media print { .top, .miga, .bib, .bib-scrim, footer, .teoria, .preguntas, .compartir, #ejemplos, .controles, .nota:empty, .error[hidden] { display: none !important } html, body { background: #fff !important } .wrap { max-width: none; padding: 0 } .layout { display: block !important } .card { break-inside: avoid; box-shadow: none !important } .pasos li { break-inside: avoid } canvas { max-height: 9cm; object-fit: contain } .chips, .stage-bar, .x, .tools { display: none !important } .cvwrap { height: 9cm !important; min-height: 0 !important } }';
     document.head.appendChild(css);
     // en claro y con los desarrollos plegados abiertos
     let tema = null, cerrados = [];

@@ -9,7 +9,7 @@
 <link rel="canonical" href="https://simulaciencia.vercel.app/economia/lorenz-gini/">
 <meta property="og:image" content="https://simulaciencia.vercel.app/og.png">
 <meta name="twitter:card" content="summary_large_image">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Curva de Lorenz e índice de Gini","description":"Calculadora del índice de Gini y la curva de Lorenz en español: a partir de rentas sueltas, de tramos de renta o de quintiles, con la tabla de proporciones acumuladas, el índice por el área y con la fórmula Σ(p − q)/Σp y el ratio S80/S20, paso a paso.","url":"https://simulaciencia.vercel.app/economia/lorenz-gini/","inLanguage":"es","isAccessibleForFree":true,"applicationCategory":"EducationalApplication","operatingSystem":"Navegador web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://simulaciencia.vercel.app/"},{"@type":"ListItem","position":2,"name":"Economía","item":"https://simulaciencia.vercel.app/economia/"},{"@type":"ListItem","position":3,"name":"Curva de Lorenz e índice de Gini","item":"https://simulaciencia.vercel.app/economia/lorenz-gini/"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Curva de Lorenz e índice de Gini","description":"Calculadora del índice de Gini y la curva de Lorenz en español: a partir de rentas sueltas, de tramos de renta o de quintiles, con la tabla de proporciones acumuladas, el índice por el área y con la fórmula Σ(p − q)/Σp y el ratio S80/S20, paso a paso.","url":"https://simulaciencia.vercel.app/economia/lorenz-gini/","inLanguage":"es","isAccessibleForFree":true,"applicationCategory":"EducationalApplication","operatingSystem":"Navegador web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://simulaciencia.vercel.app/"},{"@type":"ListItem","position":2,"name":"Economía","item":"https://simulaciencia.vercel.app/economia/"},{"@type":"ListItem","position":3,"name":"Curva de Lorenz e índice de Gini","item":"https://simulaciencia.vercel.app/economia/lorenz-gini/"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Cómo se calcula el índice de Gini?","acceptedAnswer":{"@type":"Answer","text":"G = 1 − Σ(xᵢ − xᵢ₋₁)(yᵢ + yᵢ₋₁), con x e y las proporciones acumuladas de población y de renta. Para 4 personas con rentas 10, 20, 30 y 40: y = 0,1; 0,3; 0,6; 1, y G = 1 − 0,25 · 3,0 = 0,25."}},{"@type":"Question","name":"¿Qué es la curva de Lorenz?","acceptedAnswer":{"@type":"Answer","text":"Muestra qué porcentaje acumulado de la renta posee cada porcentaje acumulado de la población. Con igualdad perfecta es la diagonal (G = 0); cuanto más se curva, mayor es la desigualdad (G cerca de 1)."}}]}]}</script>
 <script>(() => {
   const raiz = document.documentElement, mq = matchMedia('(prefers-color-scheme: dark)'), oyentes = [];
   try { const t = localStorage.getItem('simu-tema'); if (t === 'dark' || t === 'light') raiz.dataset.theme = t; } catch (e) { /* sin almacenamiento */ }
@@ -155,7 +155,10 @@ canvas { display: block; width: 100%; height: var(--alto-grafica); border-radius
 .mat td { padding: 2px 7px; text-align: center; white-space: nowrap; font-variant-numeric: tabular-nums }
 
 /* ---------- Teoría ---------- */
-.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria, .preguntas { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.preguntas h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.preguntas h3 { font: 600 15px var(--f-ui); margin: 14px 0 2px }
+.preguntas p { margin: 0 }
 .teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
 .teoria .f { max-width: 100%; overflow-x: auto; overflow-y: hidden; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
 .teoria ul { padding-left: 20px }
@@ -265,6 +268,13 @@ textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 120px 
 <p class="m">Es el doble del área entre la diagonal y la curva: 0 si todos tienen lo mismo y casi 1 si una sola persona lo tiene todo. Con los puntos de la curva se calcula por trapecios, $G = 1 − Σ (p_i − p_{i−1})(q_i + q_{i−1})$. En muchos libros se usa $I_G = {Σ (p_i − q_i)}/{Σ p_i}$, que da casi lo mismo cuando hay muchos grupos. España está alrededor de 0,32; los países nórdicos, cerca de 0,25; Sudáfrica, por encima de 0,6.</p>
 <h2>Ratio S80/S20</h2>
 <p>Divide la renta del 20 % más rico entre la del 20 % más pobre. Es la otra medida de desigualdad que publican el INE y Eurostat, y se entiende sin fórmulas: un 5 quiere decir que el quinto más rico tiene cinco veces más renta que el más pobre.</p>
+</section>
+<section class="preguntas" aria-label="Preguntas frecuentes">
+<h2>Preguntas frecuentes</h2>
+<h3>¿Cómo se calcula el índice de Gini?</h3>
+<p>G = 1 − Σ(xᵢ − xᵢ₋₁)(yᵢ + yᵢ₋₁), con x e y las proporciones acumuladas de población y de renta. Para 4 personas con rentas 10, 20, 30 y 40: y = 0,1; 0,3; 0,6; 1, y G = 1 − 0,25 · 3,0 = 0,25.</p>
+<h3>¿Qué es la curva de Lorenz?</h3>
+<p>Muestra qué porcentaje acumulado de la renta posee cada porcentaje acumulado de la población. Con igualdad perfecta es la diagonal (G = 0); cuanto más se curva, mayor es la desigualdad (G cerca de 1).</p>
 </section>
 <section class="relacionadas" aria-label="Herramientas relacionadas"><h2>Herramientas relacionadas</h2>
 <a href="../oferta-demanda/"><b>Oferta y demanda →</b><span>Equilibrio de mercado, desplazamientos de las curvas, excedentes y escasez.</span></a>

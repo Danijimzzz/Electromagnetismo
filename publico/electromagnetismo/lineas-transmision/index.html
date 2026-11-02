@@ -9,7 +9,7 @@
 <link rel="canonical" href="https://simulaciencia.vercel.app/electromagnetismo/lineas-transmision/">
 <meta property="og:image" content="https://simulaciencia.vercel.app/og.png">
 <meta name="twitter:card" content="summary_large_image">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Líneas de transmisión y carta de Smith","description":"Calculadora de líneas de transmisión con la carta de Smith dibujada: coeficiente de reflexión, ROE, impedancia de entrada, ondas estacionarias y adaptación con stub o transformador λ/4, paso a paso.","url":"https://simulaciencia.vercel.app/electromagnetismo/lineas-transmision/","inLanguage":"es","isAccessibleForFree":true,"applicationCategory":"EducationalApplication","operatingSystem":"Navegador web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://simulaciencia.vercel.app/"},{"@type":"ListItem","position":2,"name":"Electromagnetismo","item":"https://simulaciencia.vercel.app/electromagnetismo/"},{"@type":"ListItem","position":3,"name":"Líneas de transmisión y carta de Smith","item":"https://simulaciencia.vercel.app/electromagnetismo/lineas-transmision/"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Líneas de transmisión y carta de Smith","description":"Calculadora de líneas de transmisión con la carta de Smith dibujada: coeficiente de reflexión, ROE, impedancia de entrada, ondas estacionarias y adaptación con stub o transformador λ/4, paso a paso.","url":"https://simulaciencia.vercel.app/electromagnetismo/lineas-transmision/","inLanguage":"es","isAccessibleForFree":true,"applicationCategory":"EducationalApplication","operatingSystem":"Navegador web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://simulaciencia.vercel.app/"},{"@type":"ListItem","position":2,"name":"Electromagnetismo","item":"https://simulaciencia.vercel.app/electromagnetismo/"},{"@type":"ListItem","position":3,"name":"Líneas de transmisión y carta de Smith","item":"https://simulaciencia.vercel.app/electromagnetismo/lineas-transmision/"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Cómo se calculan el coeficiente de reflexión y la ROE?","acceptedAnswer":{"@type":"Answer","text":"Γ = (Z_L − Z₀)/(Z_L + Z₀) y ROE = (1 + |Γ|)/(1 − |Γ|). Con Z₀ = 50 Ω y Z_L = 100 Ω, Γ = 1/3 y ROE = 2."}},{"@type":"Question","name":"¿Cómo se usa la carta de Smith?","acceptedAnswer":{"@type":"Answer","text":"Se normaliza la carga, z = Z_L/Z₀, y se marca en la carta; avanzar hacia el generador es girar en sentido horario, y una vuelta completa equivale a λ/2 de línea. En una línea sin pérdidas de longitud λ/4, Z_in = Z₀²/Z_L: con Z₀ = 50 Ω y Z_L = 100 Ω, Z_in = 25 Ω."}}]}]}</script>
 <script>(() => {
   const raiz = document.documentElement, mq = matchMedia('(prefers-color-scheme: dark)'), oyentes = [];
   try { const t = localStorage.getItem('simu-tema'); if (t === 'dark' || t === 'light') raiz.dataset.theme = t; } catch (e) { /* sin almacenamiento */ }
@@ -155,7 +155,10 @@ canvas { display: block; width: 100%; height: var(--alto-grafica); border-radius
 .mat td { padding: 2px 7px; text-align: center; white-space: nowrap; font-variant-numeric: tabular-nums }
 
 /* ---------- Teoría ---------- */
-.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria, .preguntas { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.preguntas h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.preguntas h3 { font: 600 15px var(--f-ui); margin: 14px 0 2px }
+.preguntas p { margin: 0 }
 .teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
 .teoria .f { max-width: 100%; overflow-x: auto; overflow-y: hidden; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
 .teoria ul { padding-left: 20px }
@@ -275,11 +278,18 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
   <p class="m"><b>Stub en paralelo.</b> Se conecta en paralelo, a una distancia $d$ de la carga, un trozo de línea en cortocircuito o en abierto. Se elige $d$ para que allí la conductancia normalizada valga 1, $y = 1 + j b$ (la circunferencia $r = 1$ de la carta leída como admitancias, es decir, girada media vuelta), y la longitud $l_s$ del stub para que su susceptancia sea $−b$. Hay dos soluciones. Un stub en cortocircuito tiene $y_s = −j cot(β l_s)$ y uno en abierto $y_s = j tg(β l_s)$.</p>
   <p class="m"><b>Transformador λ/4.</b> Donde la impedancia es real (un máximo o un mínimo de tensión) se intercala un trozo de línea de longitud $λ/4$ y $Z_T = √(Z_0 Z_"real")$, que la lleva a $Z_0$.</p>
 </section>
+<section class="preguntas" aria-label="Preguntas frecuentes">
+<h2>Preguntas frecuentes</h2>
+<h3>¿Cómo se calculan el coeficiente de reflexión y la ROE?</h3>
+<p>Γ = (Z_L − Z₀)/(Z_L + Z₀) y ROE = (1 + |Γ|)/(1 − |Γ|). Con Z₀ = 50 Ω y Z_L = 100 Ω, Γ = 1/3 y ROE = 2.</p>
+<h3>¿Cómo se usa la carta de Smith?</h3>
+<p>Se normaliza la carga, z = Z_L/Z₀, y se marca en la carta; avanzar hacia el generador es girar en sentido horario, y una vuelta completa equivale a λ/2 de línea. En una línea sin pérdidas de longitud λ/4, Z_in = Z₀²/Z_L: con Z₀ = 50 Ω y Z_L = 100 Ω, Z_in = 25 Ω.</p>
+</section>
 <section class="relacionadas" aria-label="Herramientas relacionadas"><h2>Herramientas relacionadas</h2>
+<a href="../../circuitos/simulador/"><b>Simulador de circuitos →</b><span>Arrastra resistencias, fuentes de continua y de alterna, condensadores, bobinas, transistores y más: tensiones, corrientes, fasores, osciloscopio y Bode.</span></a>
+<a href="../../matematicas/complejos/"><b>Números complejos →</b><span>Formas binómica, polar y exponencial, operaciones, De Moivre, raíces n-ésimas y ecuaciones, con el plano de Argand.</span></a>
 <a href="../guias-onda/"><b>Guías de onda →</b><span>Modos TE y TM de una guía rectangular: frecuencia de corte, β, λg, velocidades, impedancia y banda monomodo, con el campo del modo.</span></a>
 <a href="../maxwell/"><b>Ecuaciones de Maxwell →</b><span>Las cuatro ecuaciones en forma integral y diferencial, con una calculadora para cada una (Gauss, Faraday, Ampère–Maxwell y la velocidad de la luz) y enlaces a los simuladores.</span></a>
-<a href="../imagenes/"><b>Método de las imágenes →</b><span>Carga frente a un plano o una esfera conductora: cargas imagen, fuerza, carga inducida, potencial y campo, con las líneas de campo.</span></a>
-<a href="../laplace-numerica/"><b>Ecuación de Laplace numérica →</b><span>Potencial en una caja con los bordes y un electrodo fijados, por relajación (Jacobi, Gauss-Seidel o SOR), con mapa de color, equipotenciales y campo.</span></a>
 </section>
 </main>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Líneas de transmisión y carta de Smith <span id="ver"></span> (beta)</footer>
@@ -821,7 +831,7 @@ const Compartir = (() => {
     });
     // al imprimir: solo el ejercicio, en claro
     const css = document.createElement('style');
-    css.textContent = '@media print { .top, .miga, .bib, .bib-scrim, footer, .teoria, .compartir, #ejemplos, .controles, .nota:empty, .error[hidden] { display: none !important } html, body { background: #fff !important } .wrap { max-width: none; padding: 0 } .layout { display: block !important } .card { break-inside: avoid; box-shadow: none !important } .pasos li { break-inside: avoid } canvas { max-height: 9cm; object-fit: contain } .chips, .stage-bar, .x, .tools { display: none !important } .cvwrap { height: 9cm !important; min-height: 0 !important } }';
+    css.textContent = '@media print { .top, .miga, .bib, .bib-scrim, footer, .teoria, .preguntas, .compartir, #ejemplos, .controles, .nota:empty, .error[hidden] { display: none !important } html, body { background: #fff !important } .wrap { max-width: none; padding: 0 } .layout { display: block !important } .card { break-inside: avoid; box-shadow: none !important } .pasos li { break-inside: avoid } canvas { max-height: 9cm; object-fit: contain } .chips, .stage-bar, .x, .tools { display: none !important } .cvwrap { height: 9cm !important; min-height: 0 !important } }';
     document.head.appendChild(css);
     // en claro y con los desarrollos plegados abiertos
     let tema = null, cerrados = [];

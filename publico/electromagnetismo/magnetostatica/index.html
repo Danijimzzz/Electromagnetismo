@@ -9,7 +9,7 @@
 <link rel="canonical" href="https://simulaciencia.vercel.app/electromagnetismo/magnetostatica/">
 <meta property="og:image" content="https://simulaciencia.vercel.app/og.png">
 <meta name="twitter:card" content="summary_large_image">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Magnetostática (Biot-Savart)","description":"Calculadora de campo magnético en español: campo de hilos, espiras circulares y rectangulares, arcos, solenoides, toroides, cilindros y cables coaxiales, láminas de corriente y discos que giran, con Biot-Savart y Ampère; fuerza sobre cargas y conductores, perfil de |B|, mapa de color y líneas de campo, paso a paso.","url":"https://simulaciencia.vercel.app/electromagnetismo/magnetostatica/","inLanguage":"es","isAccessibleForFree":true,"applicationCategory":"EducationalApplication","operatingSystem":"Navegador web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://simulaciencia.vercel.app/"},{"@type":"ListItem","position":2,"name":"Electromagnetismo","item":"https://simulaciencia.vercel.app/electromagnetismo/"},{"@type":"ListItem","position":3,"name":"Magnetostática (Biot-Savart)","item":"https://simulaciencia.vercel.app/electromagnetismo/magnetostatica/"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Magnetostática (Biot-Savart)","description":"Calculadora de campo magnético en español: campo de hilos, espiras circulares y rectangulares, arcos, solenoides, toroides, cilindros y cables coaxiales, láminas de corriente y discos que giran, con Biot-Savart y Ampère; fuerza sobre cargas y conductores, perfil de |B|, mapa de color y líneas de campo, paso a paso.","url":"https://simulaciencia.vercel.app/electromagnetismo/magnetostatica/","inLanguage":"es","isAccessibleForFree":true,"applicationCategory":"EducationalApplication","operatingSystem":"Navegador web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://simulaciencia.vercel.app/"},{"@type":"ListItem","position":2,"name":"Electromagnetismo","item":"https://simulaciencia.vercel.app/electromagnetismo/"},{"@type":"ListItem","position":3,"name":"Magnetostática (Biot-Savart)","item":"https://simulaciencia.vercel.app/electromagnetismo/magnetostatica/"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Cómo se calcula el campo magnético de un hilo con corriente?","acceptedAnswer":{"@type":"Answer","text":"Con la ley de Biot-Savart. Para un hilo infinito, B = μ₀I/(2πr). Por ejemplo, con I = 10 A a 5 cm del hilo, B = 4π·10⁻⁷ · 10 / (2π · 0,05) = 4·10⁻⁵ T, es decir, 40 μT."}},{"@type":"Question","name":"¿Y el de una espira, un solenoide o un toroide?","acceptedAnswer":{"@type":"Answer","text":"En el centro de una espira de radio R, B = μ₀I/(2R). En un solenoide largo, B = μ₀nI, con n espiras por metro; en un toroide de N espiras, B = μ₀NI/(2πr) dentro de él. Por ejemplo, un solenoide de 1000 espiras/m con 2 A da B = 4π·10⁻⁷ · 1000 · 2 ≈ 2,5·10⁻³ T."}}]}]}</script>
 <script>(() => {
   const raiz = document.documentElement, mq = matchMedia('(prefers-color-scheme: dark)'), oyentes = [];
   try { const t = localStorage.getItem('simu-tema'); if (t === 'dark' || t === 'light') raiz.dataset.theme = t; } catch (e) { /* sin almacenamiento */ }
@@ -158,7 +158,10 @@ canvas { display: block; width: 100%; height: var(--alto-grafica); border-radius
 .mat td { padding: 2px 7px; text-align: center; white-space: nowrap; font-variant-numeric: tabular-nums }
 
 /* ---------- Teoría ---------- */
-.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria, .preguntas { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.preguntas h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.preguntas h3 { font: 600 15px var(--f-ui); margin: 14px 0 2px }
+.preguntas p { margin: 0 }
 .teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
 .teoria .f { max-width: 100%; overflow-x: auto; overflow-y: hidden; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
 .teoria ul { padding-left: 20px }
@@ -345,11 +348,18 @@ svg.perfil { display: block; width: 100%; max-width: 440px; height: auto; margin
   <p>La fuerza por unidad de longitud entre ellos es <i>F</i>/<i>L</i> = μ<sub>0</sub><i>I</i><sup>2</sup>/(2π·2<i>a</i>) = μ<sub>0</sub><i>I</i><sup>2</sup>/(4π<i>a</i>), repulsiva porque las corrientes son opuestas. Ábrelo en «Ejercicios de ejemplo», en la barra de Mis ejercicios, para ver el desarrollo completo.</p>
   <p>Para ver cómo cambia el campo, añade la pregunta «Perfil de |B|» con dos puntos P y Q: sale la gráfica de |<i>B</i>| a lo largo de la recta. La fuerza sobre cargas y corrientes, con radios, ciclotrón o efecto Hall, está en <a href="../fuerza/">Fuerza magnética</a>.</p>
 </section>
+<section class="preguntas" aria-label="Preguntas frecuentes">
+<h2>Preguntas frecuentes</h2>
+<h3>¿Cómo se calcula el campo magnético de un hilo con corriente?</h3>
+<p>Con la ley de Biot-Savart. Para un hilo infinito, B = μ₀I/(2πr). Por ejemplo, con I = 10 A a 5 cm del hilo, B = 4π·10⁻⁷ · 10 / (2π · 0,05) = 4·10⁻⁵ T, es decir, 40 μT.</p>
+<h3>¿Y el de una espira, un solenoide o un toroide?</h3>
+<p>En el centro de una espira de radio R, B = μ₀I/(2R). En un solenoide largo, B = μ₀nI, con n espiras por metro; en un toroide de N espiras, B = μ₀NI/(2πr) dentro de él. Por ejemplo, un solenoide de 1000 espiras/m con 2 A da B = 4π·10⁻⁷ · 1000 · 2 ≈ 2,5·10⁻³ T.</p>
+</section>
 <section class="relacionadas" aria-label="Herramientas relacionadas"><h2>Herramientas relacionadas</h2>
+<a href="../../matematicas/campos/"><b>Campos vectoriales →</b><span>Gradiente y derivada direccional, divergencia y rotacional, potencial, trabajo por una curva y teorema de Green, viendo el campo.</span></a>
 <a href="../condensadores/"><b>Dieléctricos y condensadores →</b><span>Planos, cilíndricos y esféricos con capas de dieléctrico: capacidad, energía, D, P y polarización.</span></a>
 <a href="../induccion/"><b>Autoinducción e inducción mutua →</b><span>L de solenoides, toroides y coaxiales, M entre circuitos, energía magnética y circuito RL.</span></a>
 <a href="../electrostatica/"><b>Electrostática →</b><span>Cargas, hilos, planos y esferas. Campo, potencial, energía y Gauss.</span></a>
-<a href="../antena/"><b>Antena dipolo y radiación →</b><span>Diagrama de radiación polar, potencia radiada, resistencia de radiación, directividad y campo de un dipolo corto, de media onda o de cualquier longitud.</span></a>
 </section>
 </main>
 <footer data-solo-web><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Magnetostática <span id="ver"></span> (beta)</footer>
@@ -1630,7 +1640,7 @@ const Compartir = (() => {
     });
     // al imprimir: solo el ejercicio, en claro
     const css = document.createElement('style');
-    css.textContent = '@media print { .top, .miga, .bib, .bib-scrim, footer, .teoria, .compartir, #ejemplos, .controles, .nota:empty, .error[hidden] { display: none !important } html, body { background: #fff !important } .wrap { max-width: none; padding: 0 } .layout { display: block !important } .card { break-inside: avoid; box-shadow: none !important } .pasos li { break-inside: avoid } canvas { max-height: 9cm; object-fit: contain } .chips, .stage-bar, .x, .tools { display: none !important } .cvwrap { height: 9cm !important; min-height: 0 !important } }';
+    css.textContent = '@media print { .top, .miga, .bib, .bib-scrim, footer, .teoria, .preguntas, .compartir, #ejemplos, .controles, .nota:empty, .error[hidden] { display: none !important } html, body { background: #fff !important } .wrap { max-width: none; padding: 0 } .layout { display: block !important } .card { break-inside: avoid; box-shadow: none !important } .pasos li { break-inside: avoid } canvas { max-height: 9cm; object-fit: contain } .chips, .stage-bar, .x, .tools { display: none !important } .cvwrap { height: 9cm !important; min-height: 0 !important } }';
     document.head.appendChild(css);
     // en claro y con los desarrollos plegados abiertos
     let tema = null, cerrados = [];

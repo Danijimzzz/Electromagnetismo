@@ -9,7 +9,7 @@
 <link rel="canonical" href="https://simulaciencia.vercel.app/economia/prestamos/">
 <meta property="og:image" content="https://simulaciencia.vercel.app/og.png">
 <meta name="twitter:card" content="summary_large_image">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Préstamos y amortización","description":"Calculadora de préstamos e hipotecas en español: cuota por el sistema francés, cuota de amortización constante y sistema americano, cuadro de amortización completo, intereses totales y TAE con comisión de apertura, paso a paso.","url":"https://simulaciencia.vercel.app/economia/prestamos/","inLanguage":"es","isAccessibleForFree":true,"applicationCategory":"EducationalApplication","operatingSystem":"Navegador web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://simulaciencia.vercel.app/"},{"@type":"ListItem","position":2,"name":"Economía","item":"https://simulaciencia.vercel.app/economia/"},{"@type":"ListItem","position":3,"name":"Préstamos y amortización","item":"https://simulaciencia.vercel.app/economia/prestamos/"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Préstamos y amortización","description":"Calculadora de préstamos e hipotecas en español: cuota por el sistema francés, cuota de amortización constante y sistema americano, cuadro de amortización completo, intereses totales y TAE con comisión de apertura, paso a paso.","url":"https://simulaciencia.vercel.app/economia/prestamos/","inLanguage":"es","isAccessibleForFree":true,"applicationCategory":"EducationalApplication","operatingSystem":"Navegador web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://simulaciencia.vercel.app/"},{"@type":"ListItem","position":2,"name":"Economía","item":"https://simulaciencia.vercel.app/economia/"},{"@type":"ListItem","position":3,"name":"Préstamos y amortización","item":"https://simulaciencia.vercel.app/economia/prestamos/"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Cómo se calcula la cuota de un préstamo por el sistema francés?","acceptedAnswer":{"@type":"Answer","text":"a = C·i/(1 − (1 + i)⁻ⁿ). Con 10 000 € al 6 % anual (0,5 % mensual) en 12 meses, a = 10 000 · 0,005/(1 − 1,005⁻¹²) ≈ 860,66 €."}},{"@type":"Question","name":"¿Cómo se reparte cada cuota entre intereses y capital?","acceptedAnswer":{"@type":"Answer","text":"Los intereses son el tipo por el capital pendiente. En la primera cuota del ejemplo: 50 € de intereses y 810,66 € de capital. En el sistema de amortización constante se devuelve siempre C/n (833,33 € en el ejemplo) y la cuota va bajando."}}]}]}</script>
 <script>(() => {
   const raiz = document.documentElement, mq = matchMedia('(prefers-color-scheme: dark)'), oyentes = [];
   try { const t = localStorage.getItem('simu-tema'); if (t === 'dark' || t === 'light') raiz.dataset.theme = t; } catch (e) { /* sin almacenamiento */ }
@@ -155,7 +155,10 @@ canvas { display: block; width: 100%; height: var(--alto-grafica); border-radius
 .mat td { padding: 2px 7px; text-align: center; white-space: nowrap; font-variant-numeric: tabular-nums }
 
 /* ---------- Teoría ---------- */
-.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria, .preguntas { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.preguntas h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.preguntas h3 { font: 600 15px var(--f-ui); margin: 14px 0 2px }
+.preguntas p { margin: 0 }
 .teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
 .teoria .f { max-width: 100%; overflow-x: auto; overflow-y: hidden; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
 .teoria ul { padding-left: 20px }
@@ -270,6 +273,13 @@ textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 120px 
 <p>Solo se pagan intereses durante la vida del préstamo y todo el capital se devuelve al final, de una vez. Es el de muchos bonos y obligaciones.</p>
 <h2>TIN y TAE en un préstamo</h2>
 <p class="m">El tipo de cada periodo es $i = TIN/m$ (con m = 12 si se paga cada mes). La TAE es la tasa anual que iguala lo que se recibe con lo que se paga: si hay comisión de apertura, se recibe menos dinero por las mismas cuotas y la TAE sube.</p>
+</section>
+<section class="preguntas" aria-label="Preguntas frecuentes">
+<h2>Preguntas frecuentes</h2>
+<h3>¿Cómo se calcula la cuota de un préstamo por el sistema francés?</h3>
+<p>a = C·i/(1 − (1 + i)⁻ⁿ). Con 10 000 € al 6 % anual (0,5 % mensual) en 12 meses, a = 10 000 · 0,005/(1 − 1,005⁻¹²) ≈ 860,66 €.</p>
+<h3>¿Cómo se reparte cada cuota entre intereses y capital?</h3>
+<p>Los intereses son el tipo por el capital pendiente. En la primera cuota del ejemplo: 50 € de intereses y 810,66 € de capital. En el sistema de amortización constante se devuelve siempre C/n (833,33 € en el ejemplo) y la cuota va bajando.</p>
 </section>
 <section class="relacionadas" aria-label="Herramientas relacionadas"><h2>Herramientas relacionadas</h2>
 <a href="../van-tir/"><b>VAN, TIR y payback →</b><span>Valor actual neto, tasa interna de rentabilidad, payback simple y descontado e índice de rentabilidad.</span></a>
