@@ -1,6 +1,6 @@
 # Guía de diseño de las herramientas
 
-Todas las herramientas de SimulaCiencia comparten el mismo aspecto. Esta guía dice cómo se consigue y qué tiene que seguir una herramienta nueva para encajar sin hacer nada más.
+Todas las herramientas de Ciencify comparten el mismo aspecto. Esta guía dice cómo se consigue y qué tiene que seguir una herramienta nueva para encajar sin hacer nada más.
 
 ## Cómo se monta una página
 

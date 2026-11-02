@@ -37,7 +37,7 @@ const pag = plantilla('pagina.html')
   .replace('[Una o dos frases: qué calcula y qué se ve.]', desc)
   .replace(/\[Magnitud\] <small>\(unidad\)<\/small>/g, '').replace('[Gráfica]', 'Gráfica').replace('[Qué se dibuja]', 'Gráfica')
   .replace(/ *<div class="controles">.*\n/, '');
-fs.writeFileSync(path.join(dir, 'pagina.html'), `<title>${nombre} · SimulaCiencia</title>\n<meta name="description" content="${desc}">\n` + pag);
+fs.writeFileSync(path.join(dir, 'pagina.html'), `<title>${nombre} · Ciencify</title>\n<meta name="description" content="${desc}">\n` + pag);
 fs.writeFileSync(path.join(dir, 'calculo.js'), cambia(plantilla('calculo.js')));
 fs.writeFileSync(path.join(dir, 'app.js'), cambia(plantilla('app.js')));
 fs.writeFileSync(prueba, cambia(plantilla('prueba.js')));
