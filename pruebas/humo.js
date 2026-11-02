@@ -19,7 +19,7 @@ function otroNumero(v) {
   return (m[1] || '') + (d ? y.toFixed(d) : String(Math.round(y) === x ? x + 1 : Math.round(y))).replace('.', ',');
 }
 
-async function humo(browser, { mal, solo } = {}) {
+async function humo(browser, { mal, solo, filtro } = {}) {
   mal = mal || ((m) => { console.log('  ✗ ' + m); process.exitCode = 1; });
   const pags = Catalogo.asignaturas.flatMap((a) => a.herramientas.filter((h) => h.disponible).map((h) => `${a.clave}/${h.clave}`));
   let probadas = 0, sinDato = [];
@@ -28,6 +28,7 @@ async function humo(browser, { mal, solo } = {}) {
     // la carpeta y la clave de localStorage, de la llamada que monta Mis ejercicios en la página
     const [, dir = pag.split('/')[1], clave] = fs.readFileSync(archivo, 'utf8').match(/Biblioteca\.monta\('([^']+)', (?:'([^']+)'|null)\)/) || [];
     if (solo && solo !== dir && solo !== pag.split('/')[1]) continue;
+    if (filtro && !filtro(dir)) continue; // un trozo de --parte N/M
     const consola = [];
     const page = await browser.newPage({ viewport: { width: 1400, height: 900 } });
     page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') consola.push(`${m.type()}: ${m.text()}`); });

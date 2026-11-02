@@ -11,20 +11,26 @@
       desde la barra lateral y la guía, y falla si hay errores en la consola; abre también la portada
       y las páginas de asignatura y comprueba sus enlaces.
    Cada herramienta tiene lo suyo en pruebas/herramientas/<carpeta>.js; aquí queda lo común.
-   Uso: node pruebas/comprobar.js [--actualizar] [--sin-navegador] [--solo CARPETA]
+   Uso: node pruebas/comprobar.js [--actualizar] [--sin-navegador] [--solo CARPETA] [--parte N/M]
    --solo CARPETA compila todo pero solo comprueba esa herramienta (sus cálculos, su página, su humo,
    Mis ejercicios y práctica); con --solo electrostatica, solo el simulador de electrostática.
+   --parte N/M reparte las herramientas en M trozos y comprueba solo el N (de 1 a M): así CI las corre en paralelo.
+   Lo común (simulador de Electrostática, portada, asignaturas, MathML…) va solo en el trozo 1.
    --actualizar reescribe los esperados con los resultados actuales (solo si el cambio de forma es intencionado). */
 const fs = require('fs'), os = require('os'), path = require('path'), { execFileSync } = require('child_process');
 const raiz = path.join(__dirname, '..'), fuente = path.join(raiz, 'fuente'), publico = path.join(raiz, 'publico');
 const args = process.argv.slice(2), solo = args.includes('--solo') ? args[args.indexOf('--solo') + 1] : null;
+// --parte N/M: trozo N de M (las herramientas se reparten por su posición en el catálogo)
+const parte = args.includes('--parte') ? args[args.indexOf('--parte') + 1].split('/').map(Number) : null;
+if (parte && !(parte.length === 2 && parte[0] >= 1 && parte[0] <= parte[1])) { console.log('✗ --parte N/M: por ejemplo --parte 2/4'); process.exit(1); }
+const primera = !solo && (!parte || parte[0] === 1), completo = !solo && !parte; // lo común va solo en el trozo 1; los recuentos, solo con todo
 let fallos = 0;
 const mal = (m) => { fallos++; console.log('  ✗ ' + m); };
 
 // lo único que puede haber en publico/ (lo que sirven Vercel y Cloudflare): los archivos sueltos,
 // la portada, una página por asignatura y una por herramienta disponible del catálogo
 const Catalogo = require(path.join(fuente, 'catalogo.js')), Biblioteca = require(path.join(fuente, 'biblioteca.js'));
-const PUBLICABLES = ['index.html', 'novedades/index.html', 'foro/index.html', 'og.png', 'apple-touch-icon.png', 'legal.css', 'aviso-legal.html', 'privacidad.html', 'cookies.html', 'contacto.html', 'fuentes/stix-two-math.woff2', 'fuentes/OFL-STIX-Two.txt', 'sitemap.xml', 'robots.txt',
+const PUBLICABLES = ['index.html', 'novedades/index.html', 'foro/index.html', 'og.png', 'apple-touch-icon.png', 'buscador.js', 'legal.css', 'aviso-legal.html', 'privacidad.html', 'cookies.html', 'contacto.html', 'fuentes/stix-two-math.woff2', 'fuentes/OFL-STIX-Two.txt', 'sitemap.xml', 'robots.txt',
   ...Catalogo.asignaturas.flatMap((a) => [`${a.clave}/index.html`, ...a.herramientas.filter((h) => h.disponible).map((h) => `${a.clave}/${h.clave}/index.html`)]),
   // «Física en la vida real»: el índice y una página por fenómeno disponible
   'fenomenos/index.html', ...Catalogo.fenomenos.lista.filter((f) => f.disponible).flatMap((f) => [`fenomenos/${f.clave}/index.html`, `fenomenos/${f.clave}/imagen.webp`]),
@@ -151,9 +157,26 @@ const pagina = async (browser, width, height) => {
   return { page, consola };
 };
 if (solo && !HERRAMIENTAS.includes(solo) && solo !== 'electrostatica') { console.log(`✗ --solo ${solo}: no hay ninguna herramienta con esa carpeta`); process.exit(1); }
-const enNavegador = HERRAMIENTAS.filter((k) => (!solo || solo === k) && fs.existsSync(path.join(__dirname, 'herramientas', k + '.js'))).map((k) => require(path.join(__dirname, 'herramientas', k + '.js'))({ fs, path, fuente, publico, args, mal, pagina }));
+const enParte = (k) => !parte || Math.max(HERRAMIENTAS.indexOf(k), 0) % parte[1] === parte[0] - 1;
+const mia = (k) => (!solo || solo === k) && enParte(k);
+const enNavegador = HERRAMIENTAS.filter((k) => mia(k) && fs.existsSync(path.join(__dirname, 'herramientas', k + '.js'))).map((k) => require(path.join(__dirname, 'herramientas', k + '.js'))({ fs, path, fuente, publico, args, mal, pagina }));
 
-if (!solo) {
+if (primera) {
+  {
+    // peso de las páginas y cobertura del modo práctica (leyendo publico/, ya compilado)
+    const antes = fallos, EXCEPCIONES = { electrostatica: 'tiene su propia práctica en el simulador', 'tabla-periodica': 'tiene sus propias preguntas' }, MAX_KB = 450;
+    const pags = Catalogo.asignaturas.flatMap((a) => a.herramientas.filter((h) => h.disponible).map((h) => `${a.clave}/${h.clave}`));
+    let con = 0;
+    for (const pag of pags) {
+      const html = fs.readFileSync(path.join(publico, ...pag.split('/'), 'index.html'), 'utf8'), clave = pag.split('/')[1];
+      // cada página lleva solo la versión de cada herramienta, no todo el historial (herramientas.js); Electrostática es la excepción
+      if (clave !== 'electrostatica' && html.length / 1024 > MAX_KB) mal(`${pag}: la página pesa ${Math.round(html.length / 1024)} KB (el máximo son ${MAX_KB} KB; ¿se ha colado el historial de version.js o una librería entera?)`);
+      const monta = /Practica\.monta\('([^']+)', '([^']+)'\)/.test(html);
+      if (monta) con++;
+      else if (!(clave in EXCEPCIONES)) mal(`${pag}: no tiene modo práctica (solo lo tienen sin él ${Object.keys(EXCEPCIONES).join(' y ')}, que ${Object.values(EXCEPCIONES).join(' / ')})`);
+    }
+    if (fallos === antes) console.log(`  ✓ Modo práctica en ${con} de ${pags.length} herramientas (el resto tiene el suyo propio) y ninguna página pasa de ${MAX_KB} KB`);
+  }
   {
     // copiar en LaTeX y en texto (compartir.js) a partir de la fuente de las fórmulas
     const antes = fallos;
@@ -239,7 +262,7 @@ async function navegador() {
   }
   const exe = process.env.CHROMIUM || ['/opt/pw-browsers/chromium'].find((f) => fs.existsSync(f) && fs.statSync(f).isFile());
   const browser = require('./sin-anuncios.js')(await chromium.launch(exe ? { executablePath: exe } : {}));
-  for (const j of solo && solo !== 'electrostatica' ? [] : juegos) {
+  for (const j of (solo && solo !== 'electrostatica') || !primera ? [] : juegos) {
     const page = await browser.newPage({ viewport: { width: 1400, height: 900 } });
     const consola = [];
     page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') consola.push(m.type() + ': ' + m.text()); });
@@ -273,7 +296,7 @@ async function navegador() {
     if (fallos === antes) console.log(`  ✓ ${j.nombre}: mismos resultados, ${Object.keys(j.esp).length} ejercicios abiertos, guía y novedades sin errores de consola`);
   }
   for (const f of enNavegador) await f(browser);
-  if (!solo) {
+  if (primera) {
     {
       // arreglo 1: resultados destacados arriba y lectura de ancho fijo mientras corre el tiempo
       const page = await browser.newPage({ viewport: { width: 1200, height: 900 } });
@@ -337,7 +360,7 @@ async function navegador() {
     let probadas = 0;
     for (const pag of pags) {
       const html = fs.readFileSync(path.join(publico, ...pag.split('/'), 'index.html'), 'utf8'), [, dir, clave] = html.match(/Biblioteca\.monta\('([^']+)', (?:'([^']+)'|null)\)/) || [];
-      if (!dir || (solo && dir !== solo)) continue;
+      if (!dir || !mia(dir)) continue;
       const page = await browser.newPage({ viewport: { width: 1400, height: 900 }, acceptDownloads: true });
       page.on('console', (m) => { if (m.type() === 'error') consola.push(`${pag}: ${m.text()}`); });
       page.on('pageerror', (e) => consola.push(`${pag}: excepción: ${e.message}`));
@@ -369,7 +392,7 @@ async function navegador() {
       if (imp.length !== 1 || imp[0].titulo !== 'Prueba' || imp[0].datos !== guardado[0].datos || !imp[0].fijado) mal(`${pag}: importar no recupera el ejercicio`);
       await page.close(); probadas++;
     }
-    if (!solo) {
+    if (primera) {
       // en el móvil se abre por encima, sin ensanchar la página
       const movil = await browser.newPage({ viewport: { width: 390, height: 800 } });
       await movil.goto('file://' + path.join(publico, 'fisica', 'tiro-parabolico', 'index.html'));
@@ -381,7 +404,7 @@ async function navegador() {
       await movil.close();
     }
     if (consola.length) mal('Arreglo 6: consola del navegador:\n      ' + consola.join('\n      '));
-    if (!solo && probadas < 38) mal(`Mis ejercicios: solo se ha probado en ${probadas} herramientas`);
+    if (completo && probadas < 38) mal(`Mis ejercicios: solo se ha probado en ${probadas} herramientas`);
     if (fallos === antes) console.log(`  ✓ Mis ejercicios: guardar, carpeta, fijar, abrir, exportar, borrar e importar en ${probadas} herramientas, y en el móvil`);
   }
   {
@@ -391,7 +414,7 @@ async function navegador() {
     let probadas = 0, ejercicios = 0;
     for (const pag of pags) {
       const html = fs.readFileSync(path.join(publico, ...pag.split('/'), 'index.html'), 'utf8'), [, dir, clave] = html.match(/Practica\.monta\('([^']+)', (?:'([^']+)'|null)\)/) || [];
-      if (!dir || dir === 'tabla-periodica' || (solo && dir !== solo)) continue;
+      if (!dir || dir === 'tabla-periodica' || !mia(dir)) continue;
       const page = await browser.newPage({ viewport: { width: 1400, height: 900 } });
       page.on('console', (m) => { if (m.type() === 'error') consola.push(`${pag}: ${m.text()}`); });
       page.on('pageerror', (e) => consola.push(`${pag}: excepción: ${e.message}`));
@@ -420,19 +443,75 @@ async function navegador() {
       await page.close(); probadas++;
     }
     if (consola.length) mal('Arreglo 7: consola del navegador:\n      ' + consola.join('\n      '));
-    if (!solo && probadas < 38) mal(`Modo práctica: solo se ha probado en ${probadas} herramientas`);
+    if (completo && probadas < 38) mal(`Modo práctica: solo se ha probado en ${probadas} herramientas`);
     if (fallos === antes) console.log(`  ✓ Modo práctica: ${ejercicios} ejercicios al azar en ${probadas} herramientas, corregidos bien y mal, con la solución y la vuelta a los datos de antes`);
   }
   {
     // prueba de humo común (pruebas/humo.js): cambiar un dato, guardarlo, recargar y verlo de vuelta, modo oscuro y móvil
-    const antes = fallos, r = await require('./humo.js')(browser, { mal, solo });
+    const antes = fallos, r = await require('./humo.js')(browser, { mal, solo, filtro: mia });
     const total = Catalogo.asignaturas.flatMap((a) => a.herramientas.filter((h) => h.disponible)).length;
-    if (!solo && r.probadas < total) mal(`Humo: solo se han probado ${r.probadas} de ${total} herramientas`);
+    if (completo && r.probadas < total) mal(`Humo: solo se han probado ${r.probadas} de ${total} herramientas`);
     if (fallos === antes) console.log(`  ✓ Humo: ${r.probadas} herramientas guardan un dato cambiado y lo recuperan al recargar, en modo oscuro y a 390 px, sin errores de consola`);
   }
+  {
+    // accesibilidad (pruebas/accesibilidad.js): axe-core en todas las páginas de publico/, en claro, oscuro y a 390 px
+    const antes = fallos, r = await require('./accesibilidad.js')(browser, { mal, solo });
+    if (fallos === antes) console.log(`  ✓ Accesibilidad: axe-core sin infracciones en ${r.paginas} páginas, en modo claro, modo oscuro y a 390 px`);
+  }
   // portada y páginas de asignatura: sin errores de consola y sin enlaces internos rotos
-  const portal = solo ? [] : ['index.html', 'novedades/index.html', 'foro/index.html', 'fenomenos/index.html', ...Catalogo.asignaturas.map((a) => `${a.clave}/index.html`), 'electromagnetismo/magnetostatica/index.html', 'quimica/tabla-periodica/index.html', 'fisica/trabajo-y-energia/index.html', 'quimica/masa-molar/index.html', 'quimica/configuracion-electronica/index.html', 'electromagnetismo/condensadores/index.html', 'fisica/tiro-parabolico/index.html', 'quimica/disoluciones/index.html', 'fisica/calorimetria/index.html', 'electromagnetismo/induccion/index.html', 'matematicas/matrices/index.html', 'matematicas/sistemas/index.html', 'estadistica/distribuciones/index.html', 'circuitos/simulador/index.html', 'fisica/dinamica/index.html', 'fisica/solido-rigido/index.html', 'fisica/ondas/index.html', 'fisica/doppler/index.html', 'circuitos/resistencias/index.html', 'estadistica/regresion/index.html', 'matematicas/complejos/index.html', 'fisica/fluidos/index.html', 'quimica/ph/index.html', 'fisica/ciclos/index.html', 'matematicas/taylor/index.html', 'matematicas/fourier/index.html', 'matematicas/edos/index.html', 'quimica/cinetica/index.html', 'matematicas/campos/index.html', 'electromagnetismo/fuerza/index.html', 'estadistica/intervalos/index.html', 'electromagnetismo/ondas-em/index.html', 'fisica/interferencia/index.html', 'matematicas/laplace/index.html', 'matematicas/derivadas/index.html', 'fisica/gases/index.html', 'electromagnetismo/faraday/index.html'];
+  const portal = !primera ? [] : ['index.html', 'novedades/index.html', 'foro/index.html', 'fenomenos/index.html', ...Catalogo.asignaturas.map((a) => `${a.clave}/index.html`), 'electromagnetismo/magnetostatica/index.html', 'quimica/tabla-periodica/index.html', 'fisica/trabajo-y-energia/index.html', 'quimica/masa-molar/index.html', 'quimica/configuracion-electronica/index.html', 'electromagnetismo/condensadores/index.html', 'fisica/tiro-parabolico/index.html', 'quimica/disoluciones/index.html', 'fisica/calorimetria/index.html', 'electromagnetismo/induccion/index.html', 'matematicas/matrices/index.html', 'matematicas/sistemas/index.html', 'estadistica/distribuciones/index.html', 'circuitos/simulador/index.html', 'fisica/dinamica/index.html', 'fisica/solido-rigido/index.html', 'fisica/ondas/index.html', 'fisica/doppler/index.html', 'circuitos/resistencias/index.html', 'estadistica/regresion/index.html', 'matematicas/complejos/index.html', 'fisica/fluidos/index.html', 'quimica/ph/index.html', 'fisica/ciclos/index.html', 'matematicas/taylor/index.html', 'matematicas/fourier/index.html', 'matematicas/edos/index.html', 'quimica/cinetica/index.html', 'matematicas/campos/index.html', 'electromagnetismo/fuerza/index.html', 'estadistica/intervalos/index.html', 'electromagnetismo/ondas-em/index.html', 'fisica/interferencia/index.html', 'matematicas/laplace/index.html', 'matematicas/derivadas/index.html', 'fisica/gases/index.html', 'electromagnetismo/faraday/index.html'];
   const antes = fallos;
+  // buscador global (buscador.js): «/» y Ctrl+K abren la ventana, encuentra sin tildes, herramientas y fenómenos, Intro abre y Esc cierra
+  {
+    const Buscador = require(path.join(fuente, 'buscador.js')), ind = Buscador.indice();
+    const nh = Catalogo.asignaturas.reduce((s, y) => s + y.herramientas.filter((h) => h.disponible).length, 0), nf = Catalogo.fenomenos.lista.filter((x) => x.disponible).length;
+    if (ind.e.filter((x) => x[0] === 'h').length !== nh || ind.e.filter((x) => x[0] === 'f').length !== nf) mal('buscador: el índice no tiene todas las herramientas y fenómenos disponibles');
+    const antes = fallos;
+    const b = await browser.newPage({ viewport: { width: 1200, height: 900 } }), errs = [];
+    b.on('pageerror', (e) => errs.push(e.message));
+    await b.goto('file://' + path.join(publico, 'fisica/ondas/index.html'));
+    await b.keyboard.press('/');
+    if (!(await b.locator('.bq-fondo:visible').count())) mal('buscador: «/» no abre la ventana');
+    await b.keyboard.type('magnetostatica biot');
+    const primero = await b.locator('.bq a[role=option]').first().innerText();
+    if (!/Magnetostática/.test(primero)) mal(`buscador: «magnetostatica biot» (sin tilde) no pone Magnetostática la primera: ${primero.replace(/\n/g, ' | ')}`);
+    await b.keyboard.press('Escape');
+    if (await b.locator('.bq-fondo:visible').count()) mal('buscador: Esc no cierra la ventana');
+    await b.keyboard.press('Control+k');
+    await b.keyboard.type('el rayo');
+    if (!/Fenómeno/.test(await b.locator('.bq a[role=option]').first().innerText())) mal('buscador: «el rayo» no encuentra el fenómeno');
+    await b.keyboard.press('Escape');
+    await b.keyboard.press('Control+k');
+    await b.keyboard.type('zzzxq');
+    if (!(await b.locator('.bq-nada').count())) mal('buscador: sin resultados no avisa');
+    await b.fill('#bq-campo', 'dopler');
+    await b.fill('#bq-campo', 'doppler');
+    await b.keyboard.press('Enter');
+    await b.waitForURL(/fisica\/doppler\/$/, { timeout: 5000 }).catch(() => mal(`buscador: Intro no abre Doppler (${b.url()})`));
+    await b.goto(b.url() + 'index.html'); // file:// no completa la carpeta con su index.html
+    // al pulsar el campo de la cabecera también se abre
+    await b.click('header.top .buscar');
+    if (!(await b.locator('.bq-fondo:visible').count())) mal('buscador: el campo de la cabecera no abre la ventana');
+    await b.keyboard.press('Escape');
+    // en la portada «/» lleva al campo de la propia página
+    await b.goto('file://' + path.join(publico, 'index.html'));
+    await b.keyboard.press('/');
+    if (!(await b.evaluate(() => document.activeElement.id === 'buscar')) || (await b.locator('.bq-fondo:visible').count())) mal('buscador: en la portada «/» debe enfocar #buscar');
+    // en Electrostática Ctrl+K sigue buscando entre sus problemas y «/» abre el buscador global
+    await b.goto('file://' + path.join(publico, 'electromagnetismo/electrostatica/index.html'));
+    await b.keyboard.press('Control+k');
+    if (await b.locator('.bq-fondo:visible').count()) mal('buscador: Ctrl+K en Electrostática debe seguir siendo de sus problemas');
+    await b.locator('body').click({ position: { x: 5, y: 5 } });
+    await b.keyboard.press('/');
+    if (!(await b.locator('.bq-fondo:visible').count())) mal('buscador: «/» no abre la ventana en Electrostática');
+    // móvil: cabe en 390 px
+    await b.setViewportSize({ width: 390, height: 800 });
+    const ancho = await b.evaluate(() => document.querySelector('.bq').getBoundingClientRect().width);
+    if (ancho > 390) mal(`buscador: en el móvil mide ${ancho}px`);
+    if (errs.length) mal(`buscador: errores en la página: ${errs.join(' · ')}`);
+    await b.close();
+    if (fallos === antes) console.log('  ✓ buscador global: «/», Ctrl+K, sin tildes, herramientas y fenómenos, Intro, Esc, portada, Electrostática y móvil');
+  }
   for (const f of portal) {
     const page = await browser.newPage({ viewport: { width: 1200, height: 900 } });
     const consola = [];
@@ -494,7 +573,7 @@ async function navegador() {
     await page.close();
     if (consola.length) mal(`${f}: consola del navegador:\n      ` + consola.join('\n      '));
   }
-  if (!solo && fallos === antes) console.log(`  ✓ Portada, ${Catalogo.asignaturas.length} asignaturas y las herramientas sin errores de consola ni enlaces rotos`);
+  if (primera && fallos === antes) console.log(`  ✓ Portada, ${Catalogo.asignaturas.length} asignaturas y las herramientas sin errores de consola ni enlaces rotos`);
   await browser.close();
 }
 

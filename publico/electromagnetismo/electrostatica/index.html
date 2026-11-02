@@ -28,6 +28,25 @@
     for (const f of oyentes) { try { f.call(mq, { matches: oscuro(), media: mq.media }); } catch (err) { console.error(err); } }
   });
 })();</script>
+<script>(() => {
+  const ENFOCABLE = 'a[href],button,input,select,textarea,summary,[tabindex]';
+  let espera = 0;
+  const revisa = () => {
+    espera = 0;
+    for (const e of document.querySelectorAll('main *')) {
+      const desborda = e.scrollWidth > e.clientWidth || e.scrollHeight > e.clientHeight;
+      if (e.dataset.sf) { if (!desborda) { e.removeAttribute('tabindex'); delete e.dataset.sf; } continue; }
+      if (!desborda || e.hasAttribute('tabindex') || e.matches('svg,svg *,canvas') || e.querySelector(ENFOCABLE)) continue;
+      const o = getComputedStyle(e);
+      if (/auto|scroll/.test(o.overflowX + o.overflowY)) { e.tabIndex = 0; e.dataset.sf = '1'; }
+    }
+  };
+  window.revisaScroll = revisa; // también lo llama pruebas/accesibilidad.js antes de pasar axe
+  const pide = () => { if (!espera) espera = setTimeout(revisa, 400); };
+  addEventListener('load', () => { revisa(); const m = document.querySelector('main'); if (m) new MutationObserver(pide).observe(m, { childList: true, subtree: true, characterData: true }); });
+  addEventListener('resize', pide);
+})();</script>
+<script src="../../buscador.js" defer></script>
 <title>Simulador de electrostática: campo, potencial y fuerza</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -48,12 +67,12 @@
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
   --vidrio: rgba(34,46,54,.50); --vidrio-fuerte: rgba(26,36,42,.70); --vidrio-borde: rgba(255,255,255,.12); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.10); --vidrio-sombra: 0 1px 2px rgba(0,0,0,.3), 0 10px 32px rgba(0,0,0,.35); --halo1: rgba(77,188,176,.20); --halo2: rgba(116,162,242,.18); --halo3: rgba(170,120,230,.14); 
-  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #94a0a8; --line: #2a343b;
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #a3aeb5; --line: #2a343b;
   --accent: #4dbcb0; --accent-soft: #173431; --pos: #ef7a62; --neg: #74a2f2; --dipole: #e6a640; --mark: #b892ec;
   --canvas: #141b1f; --grid: #1e282d; --fieldline: #6e8380; --equi: #9b7a3d; --warn: #f0c060; --warn-bg: #2d2412; --ok: #5fcf8a; --bad: #f08a80; --probe: #f070c0; --side: #0c1013; --side-hover: #1a2227; --side-active: #22303a; color-scheme: dark } }
 :root[data-theme="dark"] {
   --vidrio: rgba(34,46,54,.50); --vidrio-fuerte: rgba(26,36,42,.70); --vidrio-borde: rgba(255,255,255,.12); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.10); --vidrio-sombra: 0 1px 2px rgba(0,0,0,.3), 0 10px 32px rgba(0,0,0,.35); --halo1: rgba(77,188,176,.20); --halo2: rgba(116,162,242,.18); --halo3: rgba(170,120,230,.14); 
-  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #94a0a8; --line: #2a343b;
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #a3aeb5; --line: #2a343b;
   --accent: #4dbcb0; --accent-soft: #173431; --pos: #ef7a62; --neg: #74a2f2; --dipole: #e6a640; --mark: #b892ec;
   --canvas: #141b1f; --grid: #1e282d; --fieldline: #6e8380; --equi: #9b7a3d; --warn: #f0c060; --warn-bg: #2d2412; --ok: #5fcf8a; --bad: #f08a80; --probe: #f070c0; --side: #0c1013; --side-hover: #1a2227; --side-active: #22303a; color-scheme: dark }
 * { box-sizing: border-box }
@@ -62,6 +81,8 @@ html, body { background: var(--bg); color: var(--ink) }
 .tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center }
 .in { font: 13px var(--f-mono); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 7px; min-width: 0; width: 100% }
 select.in { font-family: var(--f-ui); padding-right: 4px }
+#cv:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap }
 .in:focus-visible, .btn:focus-visible, summary:focus-visible, .icon:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
 .btn.a-inicio { text-decoration: none; font-weight: 600; color: var(--accent); white-space: nowrap; border-radius: 999px } .btn.a-inicio:hover { border-color: var(--accent) }
 .btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 11px; cursor: pointer }
@@ -332,9 +353,9 @@ body { display: flow-root }
 
 <style>
 :root { --bg:#eef1ee; --panel:#fff; --ink:#1a2128; --muted:#5b6670; --line:#d5dbd5 }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#111619; --panel:#182025; --ink:#e3e8ea; --muted:#94a0a8; --line:#2a343b; color-scheme:dark } }
-:root[data-theme="dark"] { --bg:#111619; --panel:#182025; --ink:#e3e8ea; --muted:#94a0a8; --line:#2a343b; color-scheme:dark }
-:root { --accent:#c2412a; --accent-soft:color-mix(in srgb, #c2412a 12%, #fff); --marca:#0d6b66 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#111619; --panel:#182025; --ink:#e3e8ea; --muted:#a3aeb5; --line:#2a343b; color-scheme:dark } }
+:root[data-theme="dark"] { --bg:#111619; --panel:#182025; --ink:#e3e8ea; --muted:#a3aeb5; --line:#2a343b; color-scheme:dark }
+:root { --accent:#b83c26; --accent-soft:color-mix(in srgb, #b83c26 12%, #fff); --marca:#0d6b66 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --accent:#ef7a62; --accent-soft:color-mix(in srgb, #ef7a62 16%, #182025); --marca:#4dbcb0 } }
 :root[data-theme="dark"] { --accent:#ef7a62; --accent-soft:color-mix(in srgb, #ef7a62 16%, #182025); --marca:#4dbcb0 }
 .wrap { max-width:1300px }
@@ -430,7 +451,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
   </aside>
   <div class="scrim" id="scrim"></div>
   <main class="main">
-<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><nav aria-label="Asignaturas"><a href="../../">Inicio</a><a href="../../electromagnetismo/" aria-current="page">Electromagnetismo</a><a href="../../fisica/">Física general</a><a href="../../quimica/">Química</a><a href="../../matematicas/">Matemáticas</a><a href="../../estadistica/">Estadística</a><a href="../../circuitos/">Circuitos</a><a href="../../economia/">Economía</a><a href="../../fenomenos/">Vida real</a></nav><a class="foro" href="../../foro/"><span aria-hidden="true">💬</span>Foro</a><form action="../../" role="search"><input class="buscar" type="search" name="q" placeholder="Buscar: Biot-Savart, molaridad…" aria-label="Buscar herramientas"></form><button class="tema" type="button" title="Cambiar de modo claro u oscuro" aria-label="Cambiar de modo claro u oscuro"><svg class="luna" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11z"/></svg><svg class="sol" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button></header>
+<header class="top"><a class="logo" href="../../">Cienci<i>fy</i></a><nav aria-label="Asignaturas"><a href="../../">Inicio</a><a href="../../electromagnetismo/" aria-current="page">Electromagnetismo</a><a href="../../fisica/">Física general</a><a href="../../quimica/">Química</a><a href="../../matematicas/">Matemáticas</a><a href="../../estadistica/">Estadística</a><a href="../../circuitos/">Circuitos</a><a href="../../economia/">Economía</a><a href="../../fenomenos/">Vida real</a></nav><a class="foro" href="../../foro/"><span aria-hidden="true">💬</span>Foro</a><form action="../../" role="search"><input class="buscar" type="search" name="q" placeholder="Buscar: Biot-Savart, molaridad…" aria-label="Buscar herramientas (atajo: barra /)" title="Atajo: / o Ctrl+K"></form><button class="tema" type="button" title="Cambiar de modo claro u oscuro" aria-label="Cambiar de modo claro u oscuro"><svg class="luna" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11z"/></svg><svg class="sol" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button></header>
 <div class="wrap">
 <h1 class="solo-lector">Simulador de electrostática</h1>
 <nav class="miga" aria-label="Estás en"><span class="miga-izq"><button id="side-open" type="button" aria-controls="side" title="Tus problemas y los ejercicios de ejemplo"><span aria-hidden="true">☰</span> Mis ejercicios</button></span><span class="miga-ico" aria-hidden="true">E</span><a href="../">Electromagnetismo</a><span aria-hidden="true">›</span><span>Electrostática</span><span class="miga-der"><label class="toggle" title="Oculta las soluciones para que escribas tu respuesta y la compruebes"><input type="checkbox" id="practice"><span aria-hidden="true">✎</span> Modo práctica</label></span></nav>
@@ -487,6 +508,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
         <span class="zoom"><button id="zout" class="btn" aria-label="Alejar">−</button><button id="zfit" class="btn">Encuadrar</button><button id="zin" class="btn" aria-label="Acercar">+</button></span>
       </div>
       <div class="cvwrap"><canvas id="cv"></canvas></div>
+      <div id="cv-estado" class="sr" role="status" aria-live="polite"></div>
       <div class="legend"><span><b style="background:var(--pos)"></b>carga positiva</span><span><b style="background:var(--neg)"></b>negativa</span><span><span class="ln" style="border-color:var(--fieldline)"></span>línea de campo</span><span><span class="ln" style="border-color:var(--equi);border-top-style:dashed"></span>equipotencial</span><span><span class="ln" style="border-color:var(--accent)"></span>campo E en el punto</span><span><span class="ln" style="border-color:var(--dipole)"></span>dipolo</span><span><span class="ln" style="border-color:var(--probe)"></span>carga de prueba</span><span>Arrastra cargas y puntos (Mayús = sin ajuste). Ctrl + rueda para zoom. En 3D, arrastra para girar.</span></div>
     </div>
     <section class="panel">
@@ -679,6 +701,27 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 const Version = (() => {
   const registros = {
     web: [
+      { v: '1.9', fecha: '2026-11-02', titulo: 'Fase 6: Ciencify, más rápida y más accesible', subtitulo: 'La web estrena nombre y buscador global, pesa casi la mitad y se puede usar mejor con teclado y lector de pantalla.', secciones: [
+        { icono: '🏷️', titulo: 'Nueva imagen', puntos: [
+          '**SimulaCiencia ahora se llama Ciencify:** nuevo nombre en la cabecera, las pestañas, los avisos legales y la imagen que sale al compartir el enlace. Tus ejercicios guardados y tus archivos `.simu.json` siguen funcionando igual.',
+        ] },
+        { icono: '🔎', titulo: 'Buscador en todas partes', puntos: [
+          '**Buscador en todas las páginas:** pulsa **/** o **Ctrl+K** (⌘K en Mac) y escribe. Encuentra herramientas, fenómenos de la vida real y asignaturas sin tildes ni mayúsculas, y con las flechas e Intro entras directo.',
+          '**Se acuerda de lo último que abriste** y funciona también tocando el campo de búsqueda de la cabecera, en el móvil y en modo oscuro.',
+        ] },
+        { icono: '⚡', titulo: 'Más rápida y más accesible', puntos: [
+          '**Las páginas pesan casi la mitad:** el sitio baja de **33,6 MB a 19,7 MB**, así que cada herramienta carga antes, sobre todo en el móvil.',
+          '**Teclado en el lienzo de @electromagnetismo/electrostatica:** Intro elige la siguiente carga o punto, las flechas lo mueven (con Mayús, paso fino), Esc lo suelta y +, − y 0 acercan, alejan y encuadran. Un lector de pantalla dice dónde está.',
+          '**Resultados que se anuncian:** al cambiar un dato, los lectores de pantalla leen los resultados nuevos, avisan de los errores y describen cada gráfica con ellos.',
+          '**Complejos:** el modo práctica ya pregunta también sumas, productos, cocientes y potencias.',
+          '**Accesible desde el teclado:** las fórmulas y tablas anchas se pueden recorrer con el tabulador, también en el móvil.',
+          '**Más legible:** el gris de los textos secundarios en modo oscuro y los colores de **Electromagnetismo** y **Circuitos** tienen más contraste.',
+          '**Mejor con lectores de pantalla:** cada página tiene su zona principal marcada, las tablas con columnas sin título ya lo dicen y las pestañas de **Trabajo y energía** se leen como pestañas.',
+        ] },
+        { icono: '✅', titulo: 'Datos revisados', puntos: [
+          '**Revisados los datos de varios fenómenos** (GPS, alta tensión, microondas, rayo, auroras, altavoz, inducción y cargador) y de la tabla periódica, Van der Waals y planetas; el cargador inalámbrico aclara ahora su aproximación.',
+        ] },
+      ] },
       { v: '1.8', fecha: '2026-11-02', titulo: 'Fase 5: cinco fenómenos más de la vida real', subtitulo: 'El rayo, las auroras boreales, el altavoz y el motor, la cocina de inducción y el cargador inalámbrico, cada uno con su animación paso a paso.', secciones: [
         { icono: '🌍', titulo: 'Nuevos fenómenos en Física en la vida real', puntos: [
           '#fenomenos/rayo',
@@ -932,7 +975,7 @@ const Version = (() => {
           'Los **bits con su peso** a la vista, y modo práctica para pasar a decimal.',
         ] },
       ] },
-      { v: '1.0', fecha: '2026-10-28', titulo: 'SimulaCiencia 1.0', subtitulo: '65 herramientas y 12 fenómenos para estudiar ciencias, gratis y sin registro.', secciones: [
+      { v: '1.0', fecha: '2026-10-28', titulo: 'Ciencify 1.0', subtitulo: '65 herramientas y 12 fenómenos para estudiar ciencias, gratis y sin registro.', secciones: [
         { icono: '🧭', titulo: 'Una web para toda la carrera', puntos: [
           '**Siete asignaturas:** Electromagnetismo, Física general, Química, Matemáticas, Estadística, Circuitos y Economía.',
           '**Un buscador** para encontrar cualquier herramienta al momento.',
@@ -3415,7 +3458,7 @@ const Canvas = (() => {
   let cv, g, g0, W = 0, H = 0, dpr = 1;
   let view = { cx: 0, cy: 0, s: 50 }, needFit = true;
   let cam = { yaw: -0.6, pitch: 0.45, s: 50, c: [0, 0, 0] };
-  let lastOut = null, lastScen = null, anchors = [], drag = null, hover = null;
+  let lastOut = null, lastScen = null, anchors = [], drag = null, hover = null, foco = null; // foco: clave del punto elegido con el teclado
   let bg = null, bgKey = '', outVer = 0, lastOutRef = null, fast = false, fastTimer = 0;
   let place = null, probes = [], anim = 0, legend = null;
 
@@ -3440,6 +3483,11 @@ const Canvas = (() => {
     cv.addEventListener('pointerup', up);
     cv.addEventListener('pointercancel', up);
     cv.addEventListener('pointerleave', () => { hover = null; if (!drag) redraw(); });
+    // con teclado: Intro elige el siguiente punto movible, flechas lo mueven, Esc lo suelta (ver «teclado» más abajo)
+    cv.tabIndex = 0; cv.setAttribute('role', 'application'); cv.setAttribute('aria-describedby', 'cv-estado');
+    cv.setAttribute('aria-label', 'Lienzo del campo. Intro elige el siguiente punto movible, las flechas lo mueven (con Mayús, paso fino) y Esc lo suelta. Sin punto elegido, las flechas desplazan la vista, más y menos acercan o alejan, y 0 encuadra.');
+    cv.addEventListener('keydown', teclado);
+    cv.addEventListener('blur', () => { if (foco) { foco = null; redraw(); } });
     cv.addEventListener('wheel', (e) => { if (!e.ctrlKey && !e.metaKey) return; e.preventDefault(); zoom(e.deltaY < 0 ? 1.15 : 0.87); }, { passive: false });
     resize();
   }
@@ -3529,6 +3577,7 @@ const Canvas = (() => {
     drawProbes(C);
     if (legend) drawLegend(C);
     drawHover(out.ctx, C);
+    drawFoco(C);
     if (place) banner(place.hint + (place.pts.length ? ` (${place.pts.length}/${place.n})` : ''), C);
   }
   function banner(text, C) {
@@ -3762,7 +3811,7 @@ const Canvas = (() => {
     const col = colorOf(s, C);
     const nm = prettyName(s.name) + (s.unknown && !s.unknownSolved ? ' ?' : '');
     const t = s.src.type;
-    const addAnchors = () => { for (const an of s.def.anchors(s.src, G)) anchors.push({ p: toS(an.at), path: ['sources', i, ...an.path], at: an.at }); };
+    const addAnchors = () => { for (const an of s.def.anchors(s.src, G)) anchors.push({ p: toS(an.at), path: ['sources', i, ...an.path], at: an.at, lab: nm }); };
     g.lineWidth = 2;
     if (t === 'point' || t === 'dipole') {
       const p = toS(G.pos), inPlane = Math.abs(G.pos[c] - cut) < 1e-6;
@@ -3900,7 +3949,7 @@ const Canvas = (() => {
       g.beginPath(); g.moveTo(p[0], p[1] - 6); g.lineTo(p[0] + 6, p[1]); g.lineTo(p[0], p[1] + 6); g.lineTo(p[0] - 6, p[1]); g.closePath(); g.fill(); g.stroke();
       g.font = '600 12px "IBM Plex Sans", system-ui, sans-serif'; g.fillStyle = C.mark; g.textAlign = 'left'; g.textBaseline = 'top';
       g.fillText(lab, p[0] + 8, p[1] + 4);
-      if (path) anchors.push({ p, path, at });
+      if (path) anchors.push({ p, path, at, lab });
     };
     const many = scen.analyses.length > 1;
     scen.analyses.forEach((an, i) => {
@@ -4171,6 +4220,7 @@ const Canvas = (() => {
     place = spec ? { ...spec, pts: [] } : null;
     cv.classList.toggle('placing', !!place);
     redraw();
+    if (place) decir(`${place.hint || 'Colocar'}. Con teclado: flechas para mover la vista e Intro para colocarlo en el centro del lienzo.`);
   }
   function down(e) {
     const p = pos(e);
@@ -4222,6 +4272,63 @@ const Canvas = (() => {
     if (was && (was.anchor ? App.endDrag?.() : true)) { /* fin del arrastre */ }
     clearTimeout(fastTimer);
     fastTimer = setTimeout(() => { fast = false; redraw(); }, 120);
+  }
+  /* ------------------------- teclado ------------------------- */
+  // Cada punto que se arrastra con el ratón (cargas, extremos, puntos de cálculo) se elige con Intro y se mueve con las flechas;
+  // lo que pasa se dice en la región #cv-estado (aria-live) para quien usa lector de pantalla.
+  const clave = (an) => JSON.stringify(an.path);
+  const decir = (t) => { const e = el('cv-estado'); if (e) e.textContent = t; };
+  const coma = (x) => String(+x.toFixed(2)).replace('.', ',').replace('-', '−');
+  function dondeEsta(an) {
+    const [a, b] = ax(), u = lastOut?.ctx?.unit || 'a';
+    return `${an.lab}, en ${'xyz'[a]} = ${coma(an.at[a])}${u}, ${'xyz'[b]} = ${coma(an.at[b])}${u}`;
+  }
+  function elegido() { return foco ? anchors.find((an) => clave(an) === foco) : null; }
+  function elige(dir) {
+    if (!anchors.length) { decir('No hay ningún punto que se pueda mover.'); return; }
+    const i = anchors.findIndex((an) => clave(an) === foco), j = ((i < 0 ? (dir > 0 ? -1 : 0) : i) + dir + anchors.length) % anchors.length;
+    foco = clave(anchors[j]); redraw();
+    decir(`Punto ${j + 1} de ${anchors.length}: ${dondeEsta(anchors[j])}. Flechas para moverlo.`);
+  }
+  function teclado(e) {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    const k = e.key, flecha = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, 1], ArrowDown: [0, -1] }[k];
+    if (is3D()) {
+      if (!flecha) return;
+      e.preventDefault(); cam.yaw += flecha[0] * 0.1; cam.pitch = Math.max(-1.5, Math.min(1.5, cam.pitch - flecha[1] * 0.1)); redraw(); return;
+    }
+    if (place) {
+      if (k === 'Enter') {
+        e.preventDefault();
+        const w = toW(W / 2, H / 2), [a, b] = ax();
+        for (const c of [a, b]) w[c] = +(Math.round(w[c] / 0.25) * 0.25).toFixed(2);
+        place.pts.push(w);
+        if (place.pts.length >= place.n) { const sp = place; place = null; cv.classList.remove('placing'); sp.done(sp.pts); decir('Punto colocado.'); }
+        else { redraw(); decir(`Punto ${place.pts.length} de ${place.n} colocado.`); }
+        return;
+      }
+    }
+    if (flecha) {
+      e.preventDefault();
+      const an = elegido();
+      if (an) {
+        const [a, b] = ax(), paso = e.shiftKey ? 0.01 : 0.25, nuevo = { [a]: an.at[a] + flecha[0] * paso, [b]: an.at[b] + flecha[1] * paso };
+        for (const c of [a, b]) App.onDrag([...an.path, c], String(+(Math.round(nuevo[c] / paso) * paso).toFixed(2)));
+        App.endDrag?.();
+        const ant = clave(an);
+        setTimeout(() => { const nu = anchors.find((x) => clave(x) === ant); if (nu) decir(`${coma(nu.at[a])}${lastOut?.ctx?.unit || 'a'}, ${coma(nu.at[b])}${lastOut?.ctx?.unit || 'a'}`); }, 150);
+      } else { view.cx += (flecha[0] * 30) / view.s; view.cy += (flecha[1] * 30) / view.s; redraw(); }
+    } else if (k === 'Enter' || k === ' ') { e.preventDefault(); elige(e.shiftKey ? -1 : 1); }
+    else if (k === 'Escape' && foco) { foco = null; redraw(); decir('Punto soltado.'); }
+    else if (k === '+' || k === '=') { e.preventDefault(); zoom(1.15); }
+    else if (k === '-' || k === '_') { e.preventDefault(); zoom(0.87); }
+    else if (k === '0' || k === 'Home') { e.preventDefault(); fit(); redraw(); }
+  }
+  // el anillo alrededor del punto elegido con el teclado
+  function drawFoco(C) {
+    const an = elegido(); if (!an) return;
+    g.save(); g.strokeStyle = C.ink; g.lineWidth = 2; g.setLineDash([4, 3]);
+    g.beginPath(); g.arc(an.p[0], an.p[1], 15, 0, 7); g.stroke(); g.restore();
   }
   function snapshot() { try { return cv.toDataURL('image/png'); } catch (e) { return ''; } }
 
@@ -4397,7 +4504,7 @@ const Canvas = (() => {
     const section = (title, key, items, empty) => {
       const open = query || !key || ui[key] !== false;
       const head = h('button', { class: 'sec-h', 'aria-expanded': key ? String(!!open) : null, onclick: key && !query ? () => { ui[key] = !open; saveUI(); renderSidebar(); } : null }, h('span', {}, title), key && !query ? h('span', { class: 'chev' }, open ? '▾' : '▸') : h('span', { class: 'count' }, items.length ? String(items.length) : ''));
-      const list = h('div', { class: 'sec-l', role: 'list' }, open ? (items.length ? items : empty ? h('p', { class: 'side-empty' }, empty) : null) : null);
+      const list = h('div', open && items.length ? { class: 'sec-l', role: 'list' } : { class: 'sec-l' }, open ? (items.length ? items : empty ? h('p', { class: 'side-empty' }, empty) : null) : null);
       box.append(h('section', { class: 'sec' }, head, list));
     };
     if (!query || mine.length) section('Mis problemas', null, grouped(mine), query ? '' : 'Aún no tienes problemas propios. Crea uno nuevo o guarda un ejercicio de ejemplo.');

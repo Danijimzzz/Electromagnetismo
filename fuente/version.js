@@ -12,6 +12,27 @@
 const Version = (() => {
   const registros = {
     web: [
+      { v: '1.9', fecha: '2026-11-02', titulo: 'Fase 6: Ciencify, más rápida y más accesible', subtitulo: 'La web estrena nombre y buscador global, pesa casi la mitad y se puede usar mejor con teclado y lector de pantalla.', secciones: [
+        { icono: '🏷️', titulo: 'Nueva imagen', puntos: [
+          '**SimulaCiencia ahora se llama Ciencify:** nuevo nombre en la cabecera, las pestañas, los avisos legales y la imagen que sale al compartir el enlace. Tus ejercicios guardados y tus archivos `.simu.json` siguen funcionando igual.',
+        ] },
+        { icono: '🔎', titulo: 'Buscador en todas partes', puntos: [
+          '**Buscador en todas las páginas:** pulsa **/** o **Ctrl+K** (⌘K en Mac) y escribe. Encuentra herramientas, fenómenos de la vida real y asignaturas sin tildes ni mayúsculas, y con las flechas e Intro entras directo.',
+          '**Se acuerda de lo último que abriste** y funciona también tocando el campo de búsqueda de la cabecera, en el móvil y en modo oscuro.',
+        ] },
+        { icono: '⚡', titulo: 'Más rápida y más accesible', puntos: [
+          '**Las páginas pesan casi la mitad:** el sitio baja de **33,6 MB a 19,7 MB**, así que cada herramienta carga antes, sobre todo en el móvil.',
+          '**Teclado en el lienzo de @electromagnetismo/electrostatica:** Intro elige la siguiente carga o punto, las flechas lo mueven (con Mayús, paso fino), Esc lo suelta y +, − y 0 acercan, alejan y encuadran. Un lector de pantalla dice dónde está.',
+          '**Resultados que se anuncian:** al cambiar un dato, los lectores de pantalla leen los resultados nuevos, avisan de los errores y describen cada gráfica con ellos.',
+          '**Complejos:** el modo práctica ya pregunta también sumas, productos, cocientes y potencias.',
+          '**Accesible desde el teclado:** las fórmulas y tablas anchas se pueden recorrer con el tabulador, también en el móvil.',
+          '**Más legible:** el gris de los textos secundarios en modo oscuro y los colores de **Electromagnetismo** y **Circuitos** tienen más contraste.',
+          '**Mejor con lectores de pantalla:** cada página tiene su zona principal marcada, las tablas con columnas sin título ya lo dicen y las pestañas de **Trabajo y energía** se leen como pestañas.',
+        ] },
+        { icono: '✅', titulo: 'Datos revisados', puntos: [
+          '**Revisados los datos de varios fenómenos** (GPS, alta tensión, microondas, rayo, auroras, altavoz, inducción y cargador) y de la tabla periódica, Van der Waals y planetas; el cargador inalámbrico aclara ahora su aproximación.',
+        ] },
+      ] },
       { v: '1.8', fecha: '2026-11-02', titulo: 'Fase 5: cinco fenómenos más de la vida real', subtitulo: 'El rayo, las auroras boreales, el altavoz y el motor, la cocina de inducción y el cargador inalámbrico, cada uno con su animación paso a paso.', secciones: [
         { icono: '🌍', titulo: 'Nuevos fenómenos en Física en la vida real', puntos: [
           '#fenomenos/rayo',
@@ -265,7 +286,7 @@ const Version = (() => {
           'Los **bits con su peso** a la vista, y modo práctica para pasar a decimal.',
         ] },
       ] },
-      { v: '1.0', fecha: '2026-10-28', titulo: 'SimulaCiencia 1.0', subtitulo: '65 herramientas y 12 fenómenos para estudiar ciencias, gratis y sin registro.', secciones: [
+      { v: '1.0', fecha: '2026-10-28', titulo: 'Ciencify 1.0', subtitulo: '65 herramientas y 12 fenómenos para estudiar ciencias, gratis y sin registro.', secciones: [
         { icono: '🧭', titulo: 'Una web para toda la carrera', puntos: [
           '**Siete asignaturas:** Electromagnetismo, Física general, Química, Matemáticas, Estadística, Circuitos y Economía.',
           '**Un buscador** para encontrar cualquier herramienta al momento.',

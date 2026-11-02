@@ -52,7 +52,7 @@
         ['Tipo de juego', s.tipo.split(':')[0].split(',')[0].replace(/\.$/, ''), true],
       ];
     },
-    tabla: (s) => `<table class="tabla-juego"><thead><tr><th></th><th>${s.nom.c[0]}</th><th>${s.nom.c[1]}</th></tr></thead><tbody>${[0, 1].map((i) => `<tr><th>${s.nom.f[i]}</th>${celda(s, i, 0)}${celda(s, i, 1)}</tr>`).join('')}</tbody></table>`,
+    tabla: (s) => `<table class="tabla-juego"><thead><tr><th><span class="solo-lector">Estrategias</span></th><th>${s.nom.c[0]}</th><th>${s.nom.c[1]}</th></tr></thead><tbody>${[0, 1].map((i) => `<tr><th>${s.nom.f[i]}</th>${celda(s, i, 0)}${celda(s, i, 1)}</tr>`).join('')}</tbody></table>`,
     grafica: (s) => {
       const [[a11, a12], [a21, a22]] = s.A, [[b11, b12], [b21, b22]] = s.B;
       const series = [];

@@ -6,8 +6,8 @@
    sen θ / |q|B, T = 2πm / |q|B, paso p = v cos θ · T); el espejo magnético
    (sen²α / B constante, cono de pérdida sen²α = B_ecuador / B_atmósfera) en
    un campo dipolar (B_ecuador = B0 / L³ con B0 = 31,2 µT, L = 6) y la energía
-   de los fotones del oxígeno (E = hc / λ). Datos de memoria que conviene
-   revisar: B0, la altura de las capas, el rendimiento de 35 eV por ionización
+   de los fotones del oxígeno (E = hc / λ). Datos revisados el 2 nov 2026
+   (valores típicos de la literatura): B0, la altura de las capas, el rendimiento de 35 eV por ionización
    y la lista de colores. El motor es fenomenos/animacion.js, los ayudantes de
    dibujo fenomenos/dibujo.js y la maqueta pagina.html. En Node (pruebas) solo
    se cargan los datos: pruebas/herramientas/fenomenos/auroras.js.

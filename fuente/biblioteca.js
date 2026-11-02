@@ -135,7 +135,7 @@ const Biblioteca = (() => {
 
     function importa(texto) {
       const d = JSON.parse(texto);
-      if (d?.formato !== FORMATO || !Array.isArray(d.ejercicios)) throw new Error('no es un archivo de ejercicios de SimulaCiencia');
+      if (d?.formato !== FORMATO || !Array.isArray(d.ejercicios)) throw new Error('no es un archivo de ejercicios de Ciencify');
       if (d.herramienta !== herramienta) throw new Error(`es de otra herramienta (${d.herramienta})`);
       let n = 0;
       for (const e of d.ejercicios) {

@@ -1,6 +1,6 @@
-# CLAUDE.md · SimulaCiencia
+# CLAUDE.md · Ciencify
 
-Web estática de simuladores y calculadoras de ciencias para la carrera, en español, gratis y sin registro. 93 herramientas disponibles en 7 asignaturas (Electromagnetismo, Física general, Química, Matemáticas, Estadística, Circuitos y Economía), más las que salen como «Próximamente». Sin framework ni dependencias: JS puro concatenado por `fuente/build.sh`. Producción: https://simulaciencia.vercel.app/ y https://electromagnetismo.aceropuro30.workers.dev (las dos se despliegan solas desde `main`).
+Web estática de simuladores y calculadoras de ciencias para la carrera, en español, gratis y sin registro. <!--n-->93 herramientas disponibles en 7 asignaturas<!--/n--> (Electromagnetismo, Física general, Química, Matemáticas, Estadística, Circuitos y Economía), más las que salen como «Próximamente». Sin framework ni dependencias: JS puro concatenado por `fuente/build.sh`. Producción: https://simulaciencia.vercel.app/ y https://electromagnetismo.aceropuro30.workers.dev (las dos se despliegan solas desde `main`).
 
 ## Mapa
 
@@ -9,7 +9,7 @@ Web estática de simuladores y calculadoras de ciencias para la carrera, en espa
 | `fuente/build.sh` | Genera todo `publico/`: Electrostática, y llama a `portal.js` y a `herramientas.js`. |
 | `fuente/herramientas.js` | Genera la página de cada herramienta con los datos del catálogo. |
 | `fuente/catalogo.js` | Asignaturas y herramientas: clave, nombre, icono, `disponible`, desc, búsqueda y, para generar la página, `scripts`, `titulo`, `descripcion`, `carpeta` y `guarda` (ver cabecera de herramientas.js). **Único sitio donde se da de alta una herramienta.** |
-| `fuente/portal.js` | Genera portada, páginas de asignatura, novedades y foro desde el catálogo (lo llama build.sh), copia las páginas legales y escribe `ads.txt`, `sitemap.xml`, `robots.txt` y la etiqueta canonical de sus páginas (la dirección principal es `web` en catalogo.js). |
+| `fuente/portal.js` | Calcula del catálogo las cifras de README.md y de la primera frase de este fichero (entre marcas `<!-- … -->`: no editarlas a mano). Genera portada, páginas de asignatura, novedades y foro desde el catálogo (lo llama build.sh), copia las páginas legales y escribe `ads.txt`, `sitemap.xml`, `robots.txt` y la etiqueta canonical de sus páginas (la dirección principal es `web` en catalogo.js). |
 | `fuente/legal/` | Aviso legal, privacidad, cookies, contacto y `legal.css`. Las líneas `data-sin-anuncios` / `data-con-anuncios` salen o no según `anuncios.js`. |
 | `fuente/anuncios.js` | Google AdSense: apagado mientras `cliente` esté vacío. Con el ID: código y verificación en la cabeza, un hueco por página (debajo de los resultados, nunca en el lienzo), «Preferencias de cookies» en el pie y `ads.txt`. Las pruebas cortan las peticiones a Google (`pruebas/sin-anuncios.js`). |
 | `fuente/diseno.js` | Pasa cada `pagina.html` y mete cabecera del portal, color de la asignatura, miga, CSS común y, al final, «Herramientas relacionadas» (o «Más fenómenos»). |
@@ -23,6 +23,7 @@ Web estática de simuladores y calculadoras de ciencias para la carrera, en espa
 | `fuente/economia/comun.js` | Común de Economía (`Eco`: dinero y porcentajes); va en `scripts` tras calculadora.js. |
 | `fuente/biblioteca.js` | Barra lateral «Mis ejercicios», común a todas las herramientas. |
 | `fuente/practica.js` | Modo práctica común (datos al azar, corrige respuestas). |
+| `fuente/buscador.js` | Buscador global (`/` o Ctrl+K en cualquier página): `portal.js` escribe `publico/buscador.js` (índice sacado de `catalogo.js` + código + CSS) y `portal.js`/`diseno.js` enganchan su `<script defer>`. En la portada enfoca `#buscar`; en Electrostática Ctrl+K sigue siendo de sus problemas. Las herramientas y fenómenos nuevos entran solos. |
 | `fuente/tema.js` | Botón claro/oscuro (`simu-tema`). |
 | `fuente/version.js` | Versiones y novedades: `registros.web` y uno por herramienta. |
 | `fuente/mates.js` | `Mates`: fórmulas `$…$` → MathML. |
@@ -37,6 +38,8 @@ Web estática de simuladores y calculadoras de ciencias para la carrera, en espa
 | `privado/tema3-pdf.js` | Ejercicios del PDF de la asignatura. **Nunca van a `publico/`.** |
 | `pruebas/comprobar.js` | Comprobación común (build, publico/ limpio, diseño, Electrostática, portal, Mis ejercicios, práctica) y bucle de herramientas. `esperados*.json`: resultados de referencia. |
 | `pruebas/herramientas/<carpeta>.js` (y `fenomenos/<clave>.js`, con lo común en `fenomenos/comun.js`) | Lo de cada herramienta: cálculos a mano en Node y su página en Chromium. |
+| `pruebas/accesibilidad.js` | axe-core (WCAG 2 A/AA y buenas prácticas) en todas las páginas de `publico/` en claro, oscuro y 390 px; falla con cualquier infracción (`EXCEPCIONES` vacío). `AX_DETALLE=ruta.json` guarda el detalle. En CI se instala con `npm install --no-save axe-core@4.10.2`. |
+| `fuente/accesibilidad.js` | Script en línea de cada herramienta: pone `tabindex="0"` a las regiones que se desbordan (fórmulas y tablas anchas) para llegar con teclado. |
 | `pruebas/humo.js` | Prueba de humo igual para todas: cambiar un dato, guardarlo, recargar y verlo; modo oscuro y 390 px. |
 | `pruebas/capturas.js` | Rehace las capturas de la guía de Electrostática. |
 | `publico/` | Lo único que se publica. Generado: no se edita a mano. |
@@ -87,11 +90,13 @@ sh fuente/build.sh                      # regenera publico/ (hay que hacerlo y c
 node pruebas/comprobar.js               # todo: ejercicios, publico/ limpio, diseño y navegador (varios minutos)
 node pruebas/comprobar.js --solo CARPETA  # solo una herramienta (unos 15 s); --solo electrostatica para el simulador
 node pruebas/comprobar.js --sin-navegador   # solo cálculos (rápido)
+node pruebas/comprobar.js --parte 2/4   # solo el trozo 2 de 4 de las herramientas (CI corre los 4 a la vez; lo común va en el 1)
 node pruebas/humo.js [--solo CARPETA]  # solo la prueba de humo (necesita publico/ compilado)
+node pruebas/accesibilidad.js [--solo CARPETA] [--vista claro|oscuro|movil]  # solo axe-core (necesita publico/ y axe-core)
 node pruebas/comprobar.js --actualizar  # reescribe esperados*.json si el cambio de forma es intencionado
 sh fuente/build.sh privado SALIDA.html  # versión privada con el Tema 3 (artifact de claude.ai)
 ```
-Playwright: en este contenedor ya está; en otro, `npm install --no-save playwright@1.56.1`. Usa `CHROMIUM` o `/opt/pw-browsers/chromium` si existe. GitHub Actions (`.github/workflows/comprobar.yml`) corre lo mismo y además falla si `publico/` no está al día con `fuente/`. Publicar = fusionar en `main`.
+Playwright: en este contenedor ya está; en otro, `npm install --no-save playwright@1.56.1`. Usa `CHROMIUM` o `/opt/pw-browsers/chromium` si existe. GitHub Actions (`.github/workflows/comprobar.yml`) corre lo mismo en 4 trozos paralelos (`--parte N/4`) y además falla si `publico/` no está al día con `fuente/`. Publicar = fusionar en `main`.
 
 ## Flujo de trabajo
 

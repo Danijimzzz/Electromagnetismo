@@ -106,7 +106,7 @@ const Equilibrio = (() => {
   const filaTabla = (t, xs) => `<tr><th>${t}</th>${xs.map((x) => `<td>${x}</td>`).join('')}</tr>`;
   function tablaICE(sc, nu, coef, c0, x, ceq) {
     const idx = presentes(nu);
-    const cab = `<tr><th></th>${idx.map((i) => `<th>${nh(nom(sc, i))}</th>`).join('')}</tr>`;
+    const cab = `<tr><th><span class="solo-lector">Especie</span></th>${idx.map((i) => `<th>${nh(nom(sc, i))}</th>`).join('')}</tr>`;
     const ini = filaTabla('Inicial', idx.map((i) => f(c0[i])));
     const cam = filaTabla('Cambio', idx.map((i) => `${nu[i] < 0 ? '−' : '+'}${coef[i] === 1 ? '' : num2(coef[i]) + '·'}x`));
     const eq = filaTabla('Equilibrio', idx.map((i) => `${f(c0[i])} ${nu[i] < 0 ? '−' : '+'} ${coef[i] === 1 ? '' : num2(coef[i]) + '·'}x`));

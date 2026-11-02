@@ -1,6 +1,6 @@
 # Guía de diseño de las herramientas
 
-Todas las herramientas de SimulaCiencia comparten el mismo aspecto. Esta guía dice cómo se consigue y qué tiene que seguir una herramienta nueva para encajar sin hacer nada más.
+Todas las herramientas de Ciencify comparten el mismo aspecto. Esta guía dice cómo se consigue y qué tiene que seguir una herramienta nueva para encajar sin hacer nada más.
 
 ## Cómo se monta una página
 
@@ -119,3 +119,4 @@ El aspecto es de cristal translúcido. Las variables (`--vidrio`, `--vidrio-fuer
 - Todo lo que se pulsa se puede usar con el teclado: el foco ya se ve con el color de la asignatura.
 - Los campos llevan `<label for>` o `aria-label`, y las gráficas, `aria-label`.
 - El pie de página termina en `<span id="ver"></span>` para la versión de la herramienta (`Version.de('<clave>')`).
+- Accesibilidad comprobada con axe-core (`node pruebas/accesibilidad.js`, también dentro de `comprobar.js`) en claro, oscuro y 390 px: el contenido va dentro de `<main class="wrap">` (lo hace diseno.js), el texto necesita contraste 4,5:1 (por eso `--muted` y el color de la asignatura no se aclaran a la ligera), las cabeceras de tabla no van vacías (`<span class="solo-lector">` si solo hay un icono) y los roles ARIA llevan sus hijos (un `role="tablist"` solo con `role="tab"`).

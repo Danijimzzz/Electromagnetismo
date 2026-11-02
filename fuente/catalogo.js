@@ -5,8 +5,9 @@
    Las que tienen disponible: false salen como «Próximamente», sin enlace ni página propia.
    ===================================================================== */
 const Catalogo = {
-  marca: ['Simula', 'Ciencia'], // nombre provisional: la segunda parte va en cursiva
-  // dirección principal: la que Google debe mostrar (canonical, sitemap.xml y robots.txt); Cloudflare sirve una copia
+  marca: ['Cienci', 'fy'], // Ciencify: la segunda parte va en cursiva
+  // dirección principal: la que Google debe mostrar (canonical, sitemap.xml y robots.txt); Cloudflare sirve una copia.
+  // ÚNICO sitio donde cambiar el dominio: cuando exista ciencify.<dominio>, poner aquí su dirección (og:image, canonical y sitemap salen de esta constante)
   web: 'https://simulaciencia.vercel.app',
   // código de verificación de Google Search Console (el content de su <meta name="google-site-verification">); vacío = sin la etiqueta
   google: 'zUSlvyV2c1BcfJFspiXQvdhnooD2lXr2fTVKy69UxLs',
@@ -15,7 +16,7 @@ const Catalogo = {
   lema: 'Simuladores y calculadoras para resolver problemas de la carrera paso a paso, con la misma notación que en clase. Gratis y sin registrarse.',
   asignaturas: [
     {
-      clave: 'electromagnetismo', nombre: 'Electromagnetismo', icono: 'E', color: '#c2412a', colorOscuro: '#ef7a62',
+      clave: 'electromagnetismo', nombre: 'Electromagnetismo', icono: 'E', color: '#b83c26', colorOscuro: '#ef7a62',
       resumen: 'Electrostática, magnetostática, inducción y dieléctricos, con el desarrollo completo de cada resultado.',
       herramientas: [
         { clave: 'electrostatica', nombre: 'Electrostática', icono: 'E', disponible: true, desc: 'Cargas, hilos, planos y esferas. Campo, potencial, energía y Gauss.', buscar: 'campo eléctrico potencial coulomb gauss carga hilo plano esfera dipolo energía electrostática' },
@@ -172,7 +173,7 @@ const Catalogo = {
       ],
     },
     {
-      clave: 'circuitos', nombre: 'Circuitos', icono: 'Ω', color: '#b0700a', colorOscuro: '#e6a640',
+      clave: 'circuitos', nombre: 'Circuitos', icono: 'Ω', color: '#9c6208', colorOscuro: '#e6a640',
       resumen: 'Circuitos de corriente continua y alterna: Kirchhoff, Thévenin, fasores y potencias, para la teoría y las prácticas.',
       herramientas: [
         { clave: 'resistencias', nombre: 'Código de colores de resistencias', icono: 'R', disponible: true, desc: 'Colores y códigos SMD de resistencias, bobinas y condensadores, asociación, normalizadas, LED y divisor de tensión.', buscar: 'código de colores resistencia bandas valor tolerancia ohmios serie e12 e24 e96 smd 472 4k7 electrónica condensador 104 bobina asociación serie paralelo led divisor de tensión normalizado', scripts: ['mates.js', 'resistencias/calculo.js', 'resistencias/app.js'],

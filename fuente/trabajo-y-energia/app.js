@@ -64,7 +64,7 @@
     for (const q of ['.controles', '#barras', '#grafica']) $(q).hidden = fz;
   }
   const rellena = () => { formulario(); for (const c of camposDe(modo())) if (c.k) $('#c-' + c.k).value = String(esc[c.k] ?? '').replace(/(\d)\.(\d)/g, '$1,$2'); };
-  $('#modos').innerHTML = Object.entries(MODOS).map(([k, t]) => `<button type="button" data-m="${k}">${t}</button>`).join('');
+  $('#modos').innerHTML = Object.entries(MODOS).map(([k, t]) => `<button type="button" role="tab" data-m="${k}">${t}</button>`).join('');
   $('#modos').addEventListener('click', (e) => {
     const b = e.target.closest('button'); if (!b || b.dataset.m === modo()) return;
     const ej = Energia.ejemplos.find((x) => (x.sc.modo || 'rampa') === b.dataset.m);
