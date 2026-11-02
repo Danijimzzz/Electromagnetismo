@@ -12,13 +12,53 @@
 const Version = (() => {
   const registros = {
     web: [
-      { v: '1.7', fecha: '2026-11-01', titulo: 'Fase 4: Química', subtitulo: 'Una herramienta para aprender a nombrar y escribir cualquier compuesto inorgánico.', secciones: [
+      { v: '1.7', fecha: '2026-11-01', titulo: 'Fase 4: matemáticas, química, circuitos y economía', subtitulo: 'Ocho novedades: integrales dobles y triples, superficies en 3D, formulación, redox, moléculas en 3D, la carta de Smith, el balance de una empresa y el arcoíris.', secciones: [
+        { icono: '⚡', titulo: 'Nuevas herramientas en Electromagnetismo', puntos: [
+          '#electromagnetismo/lineas-transmision',
+          '**ROE y ondas estacionarias:** pon la impedancia de la línea, la carga R + jX, la frecuencia y la longitud, y obtén el coeficiente de reflexión, la ROE, la pérdida de retorno y la impedancia de entrada.',
+          '**La carta de Smith dibujada:** el punto de la carga, el círculo de ROE y el recorrido hacia el generador, con el perfil de la tensión y la corriente a lo largo de la línea.',
+          '**Adaptación de impedancias:** dónde poner un stub en paralelo y cuánto mide, en cortocircuito o en abierto, o un transformador λ/4. Con desarrollo paso a paso, ejemplos y **modo práctica**.',
+        ] },
+        { icono: '∑', titulo: 'Nuevas herramientas en Matemáticas', puntos: [
+          '#matematicas/integrales-multiples',
+          '**Integrales dobles y triples:** en cartesianas (con dy dx o dx dy), en polares, en cilíndricas y en esféricas, con los límites de fuera adentro.',
+          '**Cada paso:** el cambio de variables con su jacobiano, el integrando transformado y cada integral iterada de dentro afuera con su primitiva; si alguna no sale, sigue en numérico y lo avisa.',
+          '**La región se ve:** el plano sombreado con el barrido de la integral interior, o el sólido en perspectiva que se gira arrastrando. Da el valor exacto, el área o volumen y el valor medio.',
+          '**13 ejemplos de clase** (cardioide, esfera, cono, tetraedro, e^(y²) cambiando el orden…) y **modo práctica**.',
+          '#matematicas/superficies',
+          '**Superficie en 3D que se gira:** escribe z = f(x, y) y arrástrala (rueda para acercar, flechas del teclado) con el plano tangente y el mapa de curvas de nivel proyectado en el suelo.',
+          '**Mapa de curvas de nivel:** con el gradiente (perpendicular a la curva), la tangente a la curva de nivel y los puntos críticos marcados; pulsa en el mapa para mover el punto.',
+          '**Todo en el punto:** gradiente y módulo, plano tangente con su normal, derivada direccional en la dirección que quieras y aproximación lineal con su error.',
+          '**Puntos críticos** clasificados con el hessiano (mínimo, máximo o silla), **8 ejemplos** y **modo práctica**.',
+        ] },
         { icono: '🧪', titulo: 'Nuevas herramientas en Química', puntos: [
           '#quimica/formulacion',
           '**De fórmula a nombre y de nombre a fórmula:** escribe Fe2O3 o «sulfato de aluminio» y te da el otro lado, con las tres nomenclaturas (sistemática, de Stock y tradicional).',
           '**Casi 3.000 compuestos:** óxidos, peróxidos, hidruros, hidróxidos, ácidos, sales binarias, oxisales, sales ácidas y compuestos entre no metales.',
           '**Paso a paso:** el tipo de compuesto, los estados de oxidación y el cruce de cargas, con sugerencias si te equivocas al escribir.',
           '**Modo práctica** con compuestos al azar, en los dos sentidos.',
+          '#quimica/redox',
+          '**Ajuste redox por ion-electrón:** escribe la reacción iónica, elige medio ácido o básico y te la ajusta.',
+          '**Cada paso:** los números de oxidación, qué se oxida y qué se reduce, las dos semirreacciones (elemento, oxígeno con H₂O, hidrógeno con H⁺ y carga con electrones), los electrones igualados, la suma y el paso a medio básico con OH⁻.',
+          '**Con comprobación y gráfica** del cambio del número de oxidación, **10 ejemplos de clase** (permanganato, dicromato, agua oxigenada, dismutación del cloro…) y **modo práctica**.',
+          '#quimica/vsepr',
+          '**Escribe una molécula o un ion** (H2O, SF4, NH4+, SO4 2-…) o elige un tipo AXₙEₘ y obtén los dominios de electrones, la geometría y los ángulos de enlace.',
+          '**La molécula en 3D:** gírala con el ratón, el dedo o las flechas del teclado; los pares libres salen como nubes y el momento dipolar como una flecha.',
+          '**Hibridación y polaridad,** con la suma vectorial de los enlaces explicada paso a paso, la tabla de las 14 geometrías (lineal, tetraédrica, balancín, forma de T, plana cuadrada…) y 23 ejemplos.',
+          '**Modo práctica:** adivina la geometría, la hibridación y si la molécula es polar.',
+        ] },
+        { icono: '💶', titulo: 'Nuevas herramientas en Economía', puntos: [
+          '#economia/balance',
+          '**Cuenta de pérdidas y ganancias:** de las ventas al resultado del ejercicio, pasando por el EBITDA, el resultado de explotación, el financiero, el BAI y el impuesto.',
+          '**Balance de situación:** activo, patrimonio neto y pasivo, con el resultado del ejercicio dentro del patrimonio neto. Comprueba que cuadra y te dice cuánto falta si no.',
+          '**Fondo de maniobra y balance dibujado** en dos columnas, con las dos cuentas escritas en tablas.',
+          '**4 ejemplos** (pyme, pérdidas, comercio, empresa nueva), desarrollo paso a paso y **modo práctica**.',
+        ] },
+        { icono: '✦', titulo: 'Nuevos fenómenos en Física en la vida real', puntos: [
+          '#fenomenos/arcoiris',
+          '**Seis pasos animados:** cómo la luz del Sol entra en una gota de lluvia, se dobla, rebota en el fondo y sale, y por qué los rayos se amontonan justo a **42°** del eje contrario al Sol.',
+          '**Cada color a su ángulo:** el rojo sale a 42,4° y el violeta a 40,6°, por eso el rojo queda por fuera del arco. También sale el arcoíris secundario, a 51°.',
+          '**«Pruébalo tú»:** cambia el ángulo con que el rayo entra en la gota y mira a qué ángulo sale. Se abre en Reflexión y transmisión (Fresnel) con los datos de la gota.',
         ] },
       ] },
       { v: '1.6', fecha: '2026-11-01', titulo: 'Fase 3: ondas, circuitos y la vida real', subtitulo: 'Diez herramientas nuevas y cuatro fenómenos: de las ecuaciones de Maxwell a las antenas, de los filtros de Bode a las lentes, y por qué el cielo es azul.', secciones: [
