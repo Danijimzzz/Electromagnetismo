@@ -16,6 +16,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0d6b66">
+<script src="pwa.js" defer></script>
 <script>(() => {
   const raiz = document.documentElement, mq = matchMedia('(prefers-color-scheme: dark)'), oyentes = [];
   try { const t = localStorage.getItem('simu-tema'); if (t === 'dark' || t === 'light') raiz.dataset.theme = t; } catch (e) { /* sin almacenamiento */ }
@@ -173,7 +176,12 @@ footer { text-align:center; font-size:12.5px; color:var(--muted); padding:0 16px
 :root[data-theme="dark"] .tema .sol { display:block } :root[data-theme="dark"] .tema .luna { display:none }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tema .sol { display:block } :root:not([data-theme="light"]) .tema .luna { display:none } }
 @media (max-width:700px) { .top > .tema { margin-left:auto } .top > nav { order:1 } }
-</style>
+
+.pwa-barra { display:flex; align-items:center; gap:8px 12px; flex-wrap:wrap; margin:8px 0 28px; font-size:13px; color:var(--muted) }
+.pwa-barra button { font:600 13px var(--f-ui); padding:7px 12px; border-radius:8px; border:1px solid var(--line); background:var(--panel); color:var(--ink); cursor:pointer }
+.pwa-barra button:hover:not(:disabled) { border-color:var(--accent); color:var(--accent) }
+.pwa-barra button:disabled { opacity:.6; cursor:progress }
+.pwa-barra button:focus-visible { outline:2px solid var(--accent); outline-offset:1px }</style>
 </head>
 <body>
 <header class="top"><a class="logo" href="">Cienci<i>fy</i></a>
@@ -309,6 +317,11 @@ footer { text-align:center; font-size:12.5px; color:var(--muted); padding:0 16px
   <a href="economia/lorenz-gini/" title="Desigualdad de la renta con la curva de Lorenz y el índice de Gini." data-buscar="Economía Curva de Lorenz e índice de Gini Desigualdad de la renta con la curva de Lorenz y el índice de Gini. curva de lorenz índice de gini desigualdad distribución de la renta quintiles deciles s80 s20 renta acumulada población acumulada reparto igualdad"><b>Curva de Lorenz e índice de Gini</b><span>Desigualdad de la renta con la curva de Lorenz y el índice de Gini.</span></a>
 </div></section>
 <p class="nada" id="nada" hidden>No hay ninguna herramienta con ese nombre todavía.</p>
+<section class="pwa-barra" id="pwa-barra" aria-label="Instalar y usar sin conexión" hidden>
+<button type="button" id="pwa-instalar" hidden>Instalar Ciencify</button>
+<button type="button" id="pwa-todo" title="Descarga unos 20 MB una sola vez">Guardar todo para usar sin conexión</button>
+<span id="pwa-estado" role="status"></span>
+</section>
 </main>
 </div>
 <footer><a href="contacto.html">Contacto</a>·<a href="aviso-legal.html">Aviso legal</a>·<a href="privacidad.html">Privacidad</a>·<a href="cookies.html">Cookies</a>· <a href="novedades/">Versión 1.9</a></footer>

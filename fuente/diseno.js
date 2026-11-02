@@ -13,7 +13,7 @@
    (fenómenos también) el de «Herramientas relacionadas» (o «Más fenómenos»):
      node diseno.js ASIGNATURA HERRAMIENTA < pagina.html
    ===================================================================== */
-const Catalogo = require('./catalogo.js'), Tema = require('./tema.js'), Accesibilidad = require('./accesibilidad.js'), Buscador = require('./buscador.js'), Anuncios = require('./anuncios.js');
+const Catalogo = require('./catalogo.js'), Tema = require('./tema.js'), Accesibilidad = require('./accesibilidad.js'), Buscador = require('./buscador.js'), Anuncios = require('./anuncios.js'), Pwa = require('./pwa.js');
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 // Hoja común de las herramientas (estilos.css) y la cabecera del portal, que comparten con el simulador de
@@ -150,7 +150,7 @@ function aplicaElectrostatica(html) {
 
 // con anuncios.js activo: su código en la cabeza, «Preferencias de cookies» en el pie y un hueco por página
 function aplica(html, clave, herramienta) {
-  return Anuncios.cabeza() + `<script>${Tema.SCRIPT}</script>
+  return Pwa.CABEZA('../../') + '\n' + Anuncios.cabeza() + `<script>${Tema.SCRIPT}</script>
 <script>${Accesibilidad.SCRIPT}</script>
 ${Buscador.ETIQUETA('../../')}
 ` + Anuncios.pie(clave === 'electrostatica' ? aplicaElectrostatica(html) : aplicaHerramienta(html, clave, herramienta));
