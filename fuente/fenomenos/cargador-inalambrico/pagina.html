@@ -1,0 +1,59 @@
+<title>Cómo funciona el cargador inalámbrico · SimulaCiencia</title>
+<meta name="description" content="Cómo carga un móvil sin cable: la bobina del cargador crea un campo que cambia, la ley de Faraday induce una tensión en la bobina del móvil, inducción mutua, resonancia y por qué hay que colocarlo bien, con una animación paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<!-- =====================================================================
+     El cargador inalámbrico («Física en la vida real»). Maqueta
+     común de los fenómenos (ver fuego-san-telmo/pagina.html): animación, texto del
+     paso, historia y recuadro de la herramienta. Los pasos y el dibujo están en escena.js.
+     ===================================================================== -->
+<style>
+/* colores del dibujo, con su valor en modo oscuro */
+:root {
+  --pared: #eef1f4; --mesa: #b9a58a; --base: #4a525b; --movil: #2b3138; --pantalla: #6fd0ff; --bobina: #c27a2c; --campo: #3b7fd1;
+  --corriente: #d6742a; --fem: #7a3fc4; --resalta: #b3261e; --rotulo: #1a2128; --barra: #3f8f4f }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --pared: #1c2128; --mesa: #4a4034; --base: #8a949d; --movil: #aab3bb; --pantalla: #5cc4f5; --bobina: #e39a4a; --campo: #6aa6f0;
+  --corriente: #f0a060; --fem: #b88cf0; --resalta: #ef7a62; --rotulo: #e3e8ea; --barra: #6cc07c } }
+:root[data-theme="dark"] {
+  --pared: #1c2128; --mesa: #4a4034; --base: #8a949d; --movil: #aab3bb; --pantalla: #5cc4f5; --bobina: #e39a4a; --campo: #6aa6f0;
+  --corriente: #f0a060; --fem: #b88cf0; --resalta: #ef7a62; --rotulo: #e3e8ea; --barra: #6cc07c }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física en la vida real</a> / El cargador inalámbrico</span></header>
+<div class="wrap fen">
+<div class="fen-etiquetas"><span>⚡ Electromagnetismo</span><span>Dificultad media</span><span>6 pasos · 1 min</span></div>
+<h1>El cargador inalámbrico</h1>
+<p class="lead">Dejas el móvil sobre una base y empieza a cargar, sin cable ni contacto. No hay magia: es la ley de Faraday de toda la vida, aplicada a dos bobinas separadas unos milímetros.</p>
+<div class="fen-escena"><canvas id="escena" role="img" aria-label="Animación de un cargador inalámbrico: la bobina de la base crea un campo magnético alterno que atraviesa la bobina del móvil y le induce una tensión"></canvas></div>
+<div class="fen-puntos" id="puntos" role="group" aria-label="Pasos"></div>
+<div class="fen-controles">
+  <button class="btn" id="ant" type="button">‹ Anterior</button>
+  <button class="btn" id="play" type="button" aria-pressed="true">❚❚ Parar</button>
+  <button class="btn" id="sig" type="button">Siguiente ›</button>
+</div>
+<div class="fen-texto" aria-live="polite"><h2 id="paso-t"></h2><div id="paso-x"></div></div>
+<section class="fen-historia" aria-label="Un poco de historia">
+  <h2>Un poco de historia</h2>
+  <ol>
+    <li><b>1831</b>Michael Faraday descubre la inducción electromagnética: un campo magnético que cambia crea una tensión en un circuito cercano, sin tocarlo. Es el principio de todo cargador inalámbrico.</li>
+    <li><b>1891</b>Nikola Tesla presenta su bobina resonante y sueña con transmitir energía sin cables a grandes distancias. A gran escala nunca funcionó, pero la resonancia es hoy clave en los cargadores.</li>
+    <li><b>Finales del siglo XX</b>Salen los primeros cepillos de dientes eléctricos que se cargan por inducción sobre su base, sellados para poder usarlos en el baño.</li>
+    <li><b>2008 y 2010</b>Nace el consorcio de carga inalámbrica y publica el estándar Qi (que significa «energía» en chino); en 2010 llegan los primeros móviles compatibles.</li>
+  </ol>
+</section>
+<section class="fen-rel" aria-label="Herramienta relacionada">
+  <div class="fen-ico" aria-hidden="true">M</div>
+  <h2>Con qué herramienta se relaciona</h2>
+  <h3>Autoinducción e inducción mutua <small>· Electromagnetismo</small></h3>
+  <p>La energía pasa de una bobina a otra por su inducción mutua $M$: la tensión que aparece en la bobina del móvil es $M$ por lo deprisa que cambia la corriente de la base.</p>
+  <p class="f m">M = μ₀ π N₁ N₂ R² r² / 2(R² + z²)<sup>3/2</sup> ≈ 1,52 µH</p>
+  <p class="f m">ε = M · dI/dt = M · 2π f I₀ ≈ 2,1 V</p>
+  <p>Se abre en la pestaña de inducción mutua con dos espiras coaxiales (3 cm y 1 cm de radio, 20 vueltas cada una) separadas 2 cm, con una corriente de 2 A a 110 kHz. Puedes cambiar la distancia, el número de vueltas o el tamaño de las bobinas y ver cómo cambian M, el flujo y la tensión inducida. Los datos de las bobinas son orientativos.</p>
+  <div class="fen-fichas"><div><small>Inducción mutua (2 cm)</small><b>1,52 µH</b></div><div><small>Tensión de pico</small><b>≈ 2,1 V</b></div><div><small>Frecuencia (Qi)</small><b>≈ 110 kHz</b></div></div>
+  <a class="fen-abrir" id="abrir" href="../../electromagnetismo/induccion/">Abrir en Autoinducción e inducción mutua con estos datos →</a>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Física en la vida real <span id="ver"></span> (beta)</footer>
+</body>
