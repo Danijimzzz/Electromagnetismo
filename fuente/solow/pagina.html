@@ -1,0 +1,51 @@
+<title>Simulador del modelo de Solow de crecimiento · Ciencify</title>
+<meta name="description" content="Simulador del modelo de Solow en español: estado estacionario, regla de oro, velocidad de convergencia y trayectoria del capital por trabajador, con el diagrama de Solow y el desarrollo paso a paso.">
+<style>
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a; --serie-3: #6b3fa0 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 }
+.tabla-eco { border-collapse: collapse; font: 13.5px var(--f-ui); width: 100%; font-variant-numeric: tabular-nums }
+.tabla-eco th, .tabla-eco td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap }
+.tabla-eco th { font-weight: 600; color: var(--muted) } .tabla-eco th:first-child, .tabla-eco td:first-child { text-align: left }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Cienci<i>fy</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Economía</a> / Modelo de Solow</span></header>
+<div class="wrap">
+<h1>Modelo de Solow</h1>
+<p class="lead">Simula el crecimiento económico de Solow: el estado estacionario, la regla de oro, la velocidad de convergencia y cómo evoluciona el capital desde su valor inicial.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>El diagrama de Solow</h2>
+      <canvas id="grafica" aria-label="Diagrama de Solow: inversión y reposición frente al capital por trabajador efectivo, que se cortan en el estado estacionario"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card"><h2>Trayectoria del capital</h2><div class="tabla-scroll" id="tabla"></div></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+<h2>La idea del modelo</h2>
+<p>El modelo de Solow explica el crecimiento con tres piezas: una función de producción con rendimientos decrecientes del capital, una parte fija de la renta que se ahorra y se invierte, y un capital que se desgasta. Trabaja con magnitudes por trabajador efectivo (la población multiplicada por el nivel tecnológico), así que k es el capital, y = A·kᵅ el producto y c el consumo de cada uno.</p>
+<p class="f m">$Δk = s·A·k^α − (n + g + δ)·k$</p>
+<p class="m">El primer término es la inversión que sale del ahorro; el segundo es la inversión de reposición, que compensa la depreciación $δ$ y el hecho de que el capital se reparte entre más trabajadores ($n$) más productivos ($g$).</p>
+<h2>Estado estacionario</h2>
+<p class="m">Es el capital en el que la inversión justo cubre la reposición ($Δk = 0$): $k^* = (sA/(n + g + δ))^{1/(1−α)}$. Si la economía está por debajo de $k^*$ el capital crece; si está por encima, baja. Allí el producto por trabajador efectivo es constante y el total crece a $n + g$: ahorrar más eleva el nivel de renta, pero no su crecimiento a largo plazo.</p>
+<h2>Regla de oro</h2>
+<p class="m">El consumo del estado estacionario, $c^* = (1 − s)·y^*$, no crece siempre con el ahorro: es máximo con $s = α$ (el ahorro que iguala la productividad marginal del capital a $n + g + δ$). Con más ahorro hay <b>ineficiencia dinámica</b>: se podría consumir más hoy y también mañana ahorrando menos.</p>
+<h2>Convergencia</h2>
+<p class="m">Cerca de $k^*$ la brecha se cierra a un ritmo aproximado $λ = (1 − α)(n + g + δ)$ al año, de modo que su mitad desaparece en $ln 2/λ$ años. Por eso las economías pobres con las mismas características que las ricas crecen más deprisa (convergencia condicional).</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Modelo de Solow <span id="ver"></span> (beta)</footer>
+</body>

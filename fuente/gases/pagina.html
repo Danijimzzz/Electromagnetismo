@@ -14,6 +14,7 @@
 .tramo { display: grid; grid-template-columns: 30px minmax(0, 1.3fr) 58px minmax(0, 1fr) 30px; gap: 6px; align-items: center; font-size: 13px }
 .tramo b { font: 600 13px var(--f-math); text-align: center }
 #caja { height: 200px; margin-top: 8px }
+#zp { height: 220px; margin-top: 8px }
 .botones { grid-column: 1 / -1; display: flex; gap: 8px; flex-wrap: wrap }
 </style>
 <body>
@@ -32,6 +33,7 @@
   <div>
     <div class="card"><h2>Resultado</h2><div class="res" id="res"></div>
       <canvas id="escena" aria-label="Diagrama P-V o distribución de velocidades"></canvas>
+      <canvas id="zp" aria-label="Factor de compresibilidad Z frente a la presión" hidden></canvas>
       <canvas id="caja" aria-label="Moléculas moviéndose en una caja"></canvas>
       <p class="leyenda" id="leyenda"></p></div>
     <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
@@ -53,6 +55,7 @@
   <h2>Gases reales</h2>
   <p class="f m">$(P + {a n^2}/{V^2})(V − nb) = nRT$</p>
   <p class="m">La ecuación de Van der Waals corrige el gas ideal: b es el volumen de las propias moléculas y a mide lo que se atraen. El factor de compresibilidad $Z = PV/(nRT)$ vale 1 en un gas ideal. Por encima de la temperatura crítica, $T_c = 8a/(27Rb)$, el gas no se licúa.</p>
+  <p class="m">La ecuación de Redlich-Kwong, $P = {RT}/{V_m − b} − {a}/{√T V_m (V_m + b)}$, con $a = 0,42748 R^2 T_c^{2,5}/P_c$ y $b = 0,08664 R T_c/P_c$, depende de la temperatura crítica y la presión crítica (aquí las de Van der Waals). Se ajusta mejor que Van der Waals a presiones altas; la gráfica de Z frente a P las compara con el gas ideal (Z = 1).</p>
   <h2>Teoría cinética</h2>
   <p class="f m">$v_{cm} = √({3RT}/M)$, &ensp; $⟨E_c⟩ = {3}/{2} k T$</p>
   <p class="m">Las velocidades de las moléculas siguen la distribución de Maxwell: la más probable es $√(2RT/M)$ y la media $√(8RT/(πM))$. La energía cinética media solo depende de la temperatura. Entre choque y choque una molécula recorre de media $λ = 1/(√2 π d^2 n_V)$, con d su diámetro y $n_V = P/(kT)$ las moléculas por metro cúbico.</p>

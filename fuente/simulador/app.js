@@ -170,6 +170,26 @@
   $('#b-mas').onclick = () => ed.zoom(1.25); $('#b-menos').onclick = () => ed.zoom(0.8); $('#b-ajustar').onclick = () => ed.ajustar();
   $('#b-vaciar').onclick = () => { ed.marca(); const e = ed.estado; e.componentes = []; e.cables = []; e.vista = { x: 40, y: 40, z: 1 }; ed.estado = e; sc = ed.estado; calcula(); };
 
+  /* ---------- Importar y exportar SPICE (spice.js) ---------- */
+  {
+    const tx = $('#spice-txt'), msg = (t) => { $('#sp-msg').textContent = t; };
+    $('#b-spice').onclick = () => { const a = $('#spice').hidden; $('#spice').hidden = !a; $('#b-spice').setAttribute('aria-expanded', String(a)); if (a && !tx.value) $('#sp-exportar').click(); };
+    $('#sp-exportar').onclick = () => {
+      try { const r = SpiceSim.exporta(ed.estado); tx.value = r.texto; msg(r.avisos.length ? `Escrita, con ${r.avisos.length} aviso${r.avisos.length > 1 ? 's' : ''}:\n${r.avisos.join('\n')}` : 'Escrita la red del esquema.'); }
+      catch (e) { msg(`No se puede escribir: ${e.message}`); }
+    };
+    const dibuja = () => {
+      const r = SpiceSim.importa(tx.value);
+      if (!r.sc) { msg(r.avisos.join('\n')); return; }
+      ed.marca(); ed.estado = r.sc; sc = ed.estado; ed.ajustar(); sc = ed.estado; calcula(); actualizaBotones();
+      msg(`Red dibujada: ${r.sc.componentes.filter((c) => !['GND', 'ETIQ'].includes(c.t)).length} piezas unidas por etiquetas de nudo (se pueden recolocar).${r.avisos.length ? `\n${r.avisos.join('\n')}` : ''}`);
+    };
+    $('#sp-importar').onclick = dibuja;
+    $('#sp-copiar').onclick = () => { navigator.clipboard?.writeText(tx.value).then(() => msg('Copiado.'), () => { tx.select(); msg('Selecciona y copia con Ctrl+C.'); }); };
+    $('#sp-descargar').onclick = () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([tx.value], { type: 'text/plain' })); a.download = 'circuito.cir'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); };
+    $('#sp-archivo').onchange = (ev) => { const f = ev.target.files[0]; if (!f) return; f.text().then((t) => { tx.value = t; dibuja(); }); ev.target.value = ''; };
+  }
+
   /* ---------- Medir en cualquier punto: pasa el ratón (o toca) un cable, una patilla o un componente ---------- */
   const tip = document.createElement('div'); tip.className = 'medida-tip'; tip.hidden = true; document.body.appendChild(tip);
   const vNudo = (n) => { const dc = tensionNet(n); if (dc === null || dc === undefined) return null; const f = faR && faR[0] && faR[0].V && faR[0].V[n]; return `${u(dc, 'V')}${f ? ` · ${u(S.mod(f) / Math.SQRT2, 'V')} ef.` : ''}`; };
@@ -403,6 +423,50 @@
     return `<p class="nota">Este circuito no tiene desarrollo paso a paso porque ${!soloCC && !fr[0] ? 'las fuentes no son solo de continua ni solo de un seno de una frecuencia' : 'tiene elementos que no se resuelven a mano (semiconductores, transformadores, interruptores, lógica…) o nudos con nombres largos'}. Se resuelve numéricamente con el análisis nodal modificado: mira la pestaña Continua para el resultado de cada nudo y elemento.</p>`;
   }
 
+  /* ---------- Barrido de un parámetro: se varía un valor y se mide otra cosa ---------- */
+  const medidasBa = () => {
+    const ids = sc.componentes.filter((c) => ext.elementosDe[c.id] && !['GND', 'ETIQ', 'SONDA'].includes(c.t)), out = [];
+    for (const c of ids) if (opR.U[ext.elementosDe[c.id][0]]) out.push([`U:${c.id}`, `Tensión de ${c.id}`], [`I:${c.id}`, `Corriente de ${c.id}`], [`P:${c.id}`, `Potencia de ${c.id}`]);
+    for (const n of Object.keys(opR.V).filter((q) => !q.includes('~'))) out.push([`V:${n}`, `Tensión del nudo ${n}`]);
+    return out;
+  };
+  const unidadBa = (k) => ({ U: 'V', V: 'V', I: 'A', P: 'W' }[k]);
+  function rBa() {
+    if (!ext || errTxt) return sinDatos();
+    const pars = sc.componentes.flatMap((c) => (ext.elementosDe[c.id] && c.t !== 'ETIQ' ? SimBarrido.parametros(c).map((f) => ({ id: c.id, k: f.k, f, c })) : []));
+    if (!pars.length) return '<p class="nota">No hay ningún valor numérico que variar: añade una resistencia, un condensador o una fuente.</p>';
+    const b = sc.analisis.barrido || {}, clave = (q) => `${q.id}:${q.k}`, ps = pars.find((q) => clave(q) === b.p) || pars[0], ms = medidasBa(), m = ms.find((q) => q[0] === b.m) ? b.m : ms[0][0];
+    const x0 = Herramienta.leeSI(ps.c.v[ps.k], ps.f.base ?? 1), de = b.p === clave(ps) && b.de ? b.de : String(+(x0 / 10).toPrecision(3)), a = b.p === clave(ps) && b.a ? b.a : String(+(x0 * 10).toPrecision(3));
+    sc.analisis.barrido = { ...b, p: clave(ps), m, de, a };
+    const uni = SimBarrido.siUnidad(ps.f), ca = faR && faR.length;
+    return `<div class="param"><label for="ba-p">Valor que se varía</label><select id="ba-p" class="in">${pars.map((q) => `<option value="${esc(clave(q))}"${clave(q) === clave(ps) ? ' selected' : ''}>${esc(q.id)} · ${esc(q.f.nom)}</option>`).join('')}</select><label for="ba-de">de</label><input id="ba-de" class="in" value="${esc(de)}"><label for="ba-a">a <small>(${esc(uni || 'unidades')})</small></label><input id="ba-a" class="in" value="${esc(a)}"><label for="ba-log">Escala</label><select id="ba-log" class="in"><option value="lin"${b.log ? '' : ' selected'}>Lineal</option><option value="log"${b.log ? ' selected' : ''}>Logarítmica</option></select></div><div class="param"><label for="ba-m">Lo que se mide</label><select id="ba-m" class="in">${ms.map(([v, n]) => `<option value="${esc(v)}"${v === m ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select><label for="ba-modo">Análisis</label><select id="ba-modo" class="in"><option value="cc"${b.modo === 'ca' && ca ? '' : ' selected'}>Continua</option>${ca ? `<option value="ca"${b.modo === 'ca' ? ' selected' : ''}>Alterna (valor eficaz)</option>` : ''}</select></div><canvas id="ba" aria-label="Gráfica de la medida al variar el valor elegido"></canvas><p class="leyenda" id="ba-ley"></p><div id="ba-tabla"></div>`;
+  }
+  let baR = null;
+  function dibujaBa() {
+    const c = $('#ba'); if (!c || !ext) return;
+    const b = sc.analisis.barrido, ps = { id: b.p.split(':')[0], k: b.p.split(':')[1] }, comp = sc.componentes.find((q) => q.id === ps.id), f = CompSim.C[comp.t].campos.find((q) => q.k === ps.k), base = f.base ?? 1;
+    const [mk, mid] = [b.m.slice(0, 1), b.m.slice(2)], un = unidadBa(mk), ux = SimBarrido.siUnidad(f);
+    try { baR = SimBarrido.barre(sc, { comp: ps.id, campo: ps.k, desde: Herramienta.leeSI(b.de, base), hasta: Herramienta.leeSI(b.a, base), puntos: 80, log: !!b.log, medida: { k: mk, id: mid }, modo: b.modo }); } catch (e) { baR = null; $('#ba-ley').textContent = e.message; $('#ba-tabla').innerHTML = ''; lienzo(c); return; }
+    const { g, w, h } = lienzo(c), col = colores(); if (!w || !h) return;
+    const pts = baR.x.map((x, i) => [x, baR.y[i]]).filter((q) => isFinite(q[1]));
+    if (!pts.length) { $('#ba-ley').textContent = 'No se pudo resolver el circuito en ningún punto del rango.'; $('#ba-tabla').innerHTML = ''; return; }
+    const ml = 62, mr = 14, mt = 10, mb = 30, x0 = baR.x[0], x1 = baR.x[baR.x.length - 1], lg = !!b.log;
+    const ys = pts.map((q) => q[1]), lo0 = Math.min(...ys), hi0 = Math.max(...ys), pad = (hi0 - lo0) * 0.1 || Math.abs(hi0) * 0.1 || 1, lo = lo0 - pad, hi = hi0 + pad;
+    const X = (x) => ml + ((lg ? Math.log(x / x0) / Math.log(x1 / x0) : (x - x0) / (x1 - x0))) * (w - ml - mr), Y = (y) => mt + (h - mt - mb) - ((y - lo) / (hi - lo)) * (h - mt - mb);
+    g.strokeStyle = col['--line']; g.fillStyle = col['--muted']; g.font = '11px system-ui'; g.lineWidth = 1; g.textAlign = 'right'; g.textBaseline = 'middle';
+    for (const v of marcas(lo, hi, 5)) { g.beginPath(); g.moveTo(ml, Y(v)); g.lineTo(w - mr, Y(v)); g.stroke(); g.fillText(u(v, un, 3), ml - 5, Y(v)); }
+    g.textAlign = 'center'; g.textBaseline = 'top';
+    const xt = lg ? Array.from({ length: Math.floor(Math.log10(x1)) - Math.ceil(Math.log10(x0)) + 1 }, (_, i) => 10 ** (Math.ceil(Math.log10(x0)) + i)) : marcas(x0, x1, 6);
+    for (const v of xt) { g.strokeStyle = col['--line']; g.beginPath(); g.moveTo(X(v), mt); g.lineTo(X(v), h - mb); g.stroke(); g.fillText(u(v, ux, 3), X(v), h - mb + 6); }
+    g.strokeStyle = col['--canal-1']; g.lineWidth = 2; g.beginPath(); let ini = true; baR.x.forEach((x, i) => { const y = baR.y[i]; if (!isFinite(y)) { ini = true; return; } ini ? g.moveTo(X(x), Y(y)) : g.lineTo(X(x), Y(y)); ini = false; }); g.stroke();
+    const iM = ys.indexOf(hi0), iN = ys.indexOf(lo0), pM = pts[iM], pN = pts[iN];
+    g.fillStyle = col['--canal-2']; for (const q of [pM, pN]) { g.beginPath(); g.arc(X(q[0]), Y(q[1]), 4, 0, 7); g.fill(); }
+    const nom = (ms) => (ms[0] === 'V' ? `tensión del nudo ${ms.slice(2)}` : `${{ U: 'tensión', I: 'corriente', P: 'potencia' }[ms[0]]} de ${ms.slice(2)}`);
+    $('#ba-ley').innerHTML = `<i class="c1"></i>${esc(nom(b.m))} · máximo ${u(pM[1], un)} con ${esc(ps.id)} = ${u(pM[0], ux)} · mínimo ${u(pN[1], un)} con ${u(pN[0], ux)}${b.modo === 'ca' ? ' · valores eficaces' : ''}`;
+    const filas = []; for (let i = 0; i < 9; i++) { const j = Math.round((i * (baR.x.length - 1)) / 8); filas.push([u(baR.x[j], ux), u(baR.y[j], un)]); }
+    $('#ba-tabla').innerHTML = tabla([`${esc(ps.id)} (${esc(f.nom.toLowerCase())})`, esc(nom(b.m))], filas);
+  }
+
   /* ---------- Thévenin y Norton: se abre el circuito por un componente (o entre dos nudos) ---------- */
   const dosPines = () => sc.componentes.filter((c) => { const ids = ext && ext.elementosDe[c.id]; return ids && ids.length === 1 && CAT[c.t].pines.length === 2 && !['GND', 'ETIQ', 'VM', 'AM', 'SW'].includes(c.t) && !CAT[c.t].sonda; });
   const dibujoTh = (norton, a, b, V, R) => {
@@ -414,6 +478,20 @@
       : `${l('M40 44V20H70')}${r(70, 13, true)}${l('M110 20H170M40 76V100H170')}${fuente}`;
     return `<svg class="eq-th" viewBox="0 0 200 120" role="img" aria-label="Circuito equivalente de ${norton ? 'Norton' : 'Thévenin'}">${cuerpo}<circle cx="170" cy="20" r="4"/><circle cx="170" cy="100" r="4"/><text x="178" y="24">${esc(a)}</text><text x="178" y="104">${esc(b)}</text><text class="v" x="${norton ? 12 : 4}" y="64">${V}</text><text class="v" x="${norton ? 112 : 70}" y="${norton ? 64 : 48}">${R}</text></svg>`;
   };
+  let thP = null;
+  function dibujaThPot() {
+    const c = $('#th-pot'); if (!c || !thP) return;
+    const { vth, rth } = thP, { g, w, h } = lienzo(c), col = colores(); if (!w || !h) return;
+    const ml = 62, mr = 14, mt = 10, mb = 30, r0 = rth / 10, r1 = rth * 10, P = (r) => (vth * vth * r) / ((r + rth) ** 2), pm = P(rth) * 1.1;
+    const X = (r) => ml + (Math.log(r / r0) / Math.log(r1 / r0)) * (w - ml - mr), Y = (p) => mt + (h - mt - mb) * (1 - p / pm);
+    g.strokeStyle = col['--line']; g.fillStyle = col['--muted']; g.font = '11px system-ui'; g.lineWidth = 1; g.textAlign = 'right'; g.textBaseline = 'middle';
+    for (const v of marcas(0, pm, 5)) { g.beginPath(); g.moveTo(ml, Y(v)); g.lineTo(w - mr, Y(v)); g.stroke(); g.fillText(u(v, 'W', 3), ml - 5, Y(v)); }
+    g.textAlign = 'center'; g.textBaseline = 'top';
+    for (const r of [r0, rth, r1]) { g.fillText(u(r, 'Ω', 3), Math.min(Math.max(X(r), ml + 18), w - mr - 18), h - mb + 6); }
+    g.strokeStyle = col['--canal-1']; g.lineWidth = 2; g.beginPath(); for (let i = 0; i <= 120; i++) { const r = r0 * (r1 / r0) ** (i / 120); i ? g.lineTo(X(r), Y(P(r))) : g.moveTo(X(r), Y(P(r))); } g.stroke();
+    g.fillStyle = col['--canal-2']; g.beginPath(); g.arc(X(rth), Y(P(rth)), 4.5, 0, 7); g.fill();
+    $('#th-pot-ley').innerHTML = `<i class="c1"></i>P(R) = V<sub>Th</sub>²·R / (R + R<sub>Th</sub>)² · máximo <b>${u(P(rth), 'W')}</b> con R = R<sub>Th</sub> = ${u(rth, 'Ω')}`;
+  }
   function rTh() {
     if (!ext || errTxt) return sinDatos();
     const cands = dosPines(), nets = Object.keys(opR.V).filter((n) => !n.includes('~')).concat(Object.keys(opR.V).includes('0') ? [] : ['0']);
@@ -429,7 +507,7 @@
     const apaga = (e) => (e.t === 'V' || e.t === 'I' ? { ...e, onda: { tipo: 'cc', v: 0 } } : e);
     const prueba = (onda) => ({ id: 'PRUEBA', t: 'I', p: [b, a], onda });
     const V = (r, n) => (n === '0' || !r.V[n] ? { re: 0, im: 0 } : r.V[n]);
-    let h = cab, t;
+    let h = cab, t; thP = null;
     try {
       const abierto = { ...ext.net, elementos: base }, op1 = S.operacion(abierto), vth = V(op1, a).re - V(op1, b).re;
       const op2 = S.operacion({ ...ext.net, elementos: [...base.map(apaga), prueba({ tipo: 'cc', v: 1 })] }), rth = V(op2, a).re - V(op2, b).re;
@@ -437,6 +515,8 @@
       t = `<h3>Corriente continua</h3><div class="resumen"><div><span>V<sub>Th</sub> = V<sub>abierto</sub></span><b>${u(vth, 'V')}</b></div><div><span>R<sub>Th</sub> = R<sub>N</sub></span><b>${u(rth, 'Ω')}</b></div><div><span>I<sub>N</sub> = V<sub>Th</sub> / R<sub>Th</sub></span><b>${cortoC === null ? '—' : u(cortoC, 'A')}</b></div></div>`;
       t += `<div class="eqs">${dibujoTh(false, a, b, u(vth, 'V'), u(rth, 'Ω'))}${dibujoTh(true, a, b, cortoC === null ? '—' : u(cortoC, 'A'), u(rth, 'Ω'))}</div><p class="nota">Terminales ${esc(a)} (positivo) y ${esc(b)}. V<sub>Th</sub> es la tensión entre los terminales con el circuito abierto, R<sub>Th</sub> la resistencia que se ve desde ellos con las fuentes de tensión en cortocircuito y las de corriente abiertas, e I<sub>N</sub> la corriente de cortocircuito entre ${esc(a)} y ${esc(b)}.</p>`;
       if (modo === 'c') { const Rc = ext.net.elementos.find((e) => e.id === quitar[0]); if (Rc && Rc.t === 'R' && isFinite(rth) && rth + Rc.R !== 0) t += `<p class="nota">Con ${esc(comp.id)} = ${u(Rc.R, 'Ω')} conectada de nuevo: I = V<sub>Th</sub> / (R<sub>Th</sub> + ${esc(comp.id)}) = <b>${u(vth / (rth + Rc.R), 'A')}</b> y V = <b>${u(vth * Rc.R / (rth + Rc.R), 'V')}</b>.</p>`; }
+      thP = rth > 0 && isFinite(rth) && vth !== 0 ? { vth, rth } : null;
+      if (thP) t += '<h3>Potencia en la carga</h3><canvas id="th-pot" aria-label="Potencia en una resistencia de carga según su valor: máxima cuando vale Rth"></canvas><p class="leyenda" id="th-pot-ley"></p>';
       if (faR && faR.length) {
         const filas = faR.map((q) => {
           const fa = S.fasores(abierto).find((x) => Math.abs(x.f - q.f) < 1e-9 * q.f) || null;
@@ -453,11 +533,11 @@
   }
 
   /* ---------- Pestañas ---------- */
-  const TABS = { op: rOp, tr: rTr, fa: rFa, bo: rBo, th: rTh, de: rDe };
+  const TABS = { op: rOp, tr: rTr, fa: rFa, bo: rBo, ba: rBa, th: rTh, de: rDe };
   function panel() {
     for (const k of Object.keys(TABS)) $(`#tab-${k}`).setAttribute('aria-selected', String(k === pestana));
     $('#panel').innerHTML = TABS[pestana]();
-    dibujaOsc(); dibujaFas(); dibujaBode();
+    dibujaOsc(); dibujaFas(); dibujaBode(); dibujaBa(); dibujaThPot();
   }
   $('#modos').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; pestana = b.id.slice(4); panel(); });
   $('#panel').addEventListener('change', (e) => {
@@ -465,6 +545,7 @@
     if (t.id === 'tfin') { sc.analisis.tfin = t.value; guarda(); calcula(); }
     else if (t.id === 'extraI') { sc.analisis.extraI = t.value; guarda(); panel(); }
     else if (['th-m', 'th-a', 'th-b'].includes(t.id)) { const m = $('#th-m').value; sc.analisis.th = m === 'n' ? { modo: 'n', a: $('#th-a') ? $('#th-a').value : '', b: $('#th-b') ? $('#th-b').value : '' } : { modo: 'c', comp: m.slice(2) }; guarda(); panel(); }
+    else if (t.id.startsWith('ba-')) { const q = (k) => $('#ba-' + k); const nuevo = t.id === 'ba-p'; sc.analisis.barrido = { ...sc.analisis.barrido, p: q('p').value, m: q('m').value, modo: q('modo').value, log: q('log').value === 'log', de: nuevo ? '' : q('de').value, a: nuevo ? '' : q('a').value }; guarda(); panel(); }
     else if (t.id === 'fsel') { sc.analisis.fi = +t.value; panel(); }
     else if (t.id === 'fdia') { sc.analisis.fdia = t.value; dibujaFas(); }
     else if (['bf', 'bs', 'bmin', 'bmax'].includes(t.id)) { sc.analisis.bode = { ...sc.analisis.bode, fuente: $('#bf').value, salida: $('#bs').value, fmin: $('#bmin').value, fmax: $('#bmax').value }; guarda(); dibujaBode(); }
@@ -503,7 +584,7 @@
   const bAnim = $('#b-anim');
   if (bAnim) bAnim.onclick = () => { anim = !anim; bAnim.setAttribute('aria-pressed', String(anim)); bAnim.textContent = anim ? '⏸ Animación' : '▶ Animación'; arrancaAnim(); };
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { panel(); });
-  window.addEventListener('resize', () => { dibujaOsc(); dibujaFas(); dibujaBode(); });
+  window.addEventListener('resize', () => { dibujaOsc(); dibujaFas(); dibujaBode(); dibujaBa(); dibujaThPot(); });
   new MutationObserver(() => panel()).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
   /* ---------- Arranque ---------- */

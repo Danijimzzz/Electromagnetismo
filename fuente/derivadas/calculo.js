@@ -299,13 +299,17 @@ const Derivadas = (() => {
       ps.push('$tg^{2} u = {1}/{cos^{2} u} − 1$');
       const a = prim(op('-', div(N(1), pot(fn('cos', vs[0].n.a.a), 2)), N(1)), ps, prof + 1); if (a) return a;
     }
-    const nota = (txt, F) => { ps.push(`$∫ ${T(n)} dx = ${T(F)}$ &ensp; (${txt})`); return F; };
+    const nota = (txt, F, det) => { ps.push(`$∫ ${T(n)} dx = ${T(F)}$ &ensp; (${txt})${det ? `<br>${det}` : ''}`); return F; };
     // un solo factor de la tabla con argumento lineal
     if (vs.length === 1) {
       const t = tipo(vs[0].n, vs[0].s);
       if (t.k === 'asen') { const F = prod(N(1 / Math.sqrt(t.q)), fn('arcsen', prod(N(Math.sqrt(t.q / t.p)), X))); return { F: nota('$∫ {dx}/{√(a^{2} − b^{2}x^{2})} = {1}/{b} arcsen {b x}/{a}$', F), como: 'tabla' }; }
       const L = t.u && lineal(t.u), Ft = L && tabla(t);
-      if (Ft) return { F: nota(`tabla, ${Math.abs(L.a - 1) < 1e-12 ? `$${nomT(t)}$` : `$${nomT(t)}$ con $u = ${T(t.u)}$, $du = ${E.numTxt(L.a)} dx$`}`, div(Ft, N(L.a))), como: 'tabla' };
+      if (Ft) {
+        // ln u, arctg u y arcsen u se integran por partes con dv = du: se enseña
+        const dW = { ln: '{1}/{w}', arctg: '{1}/{1 + w^{2}}', arcsen: '{1}/{√(1 − w^{2})}' }[t.k], dp = dW ? `Por partes (en $w = ${T(t.u)}$): $u = ${t.k} w$ ⟹ $du = ${dW} dw$ y $dv = dw$ ⟹ $v = w$.<br>$∫ ${t.k} w dw = w ${t.k} w − ∫ w · ${dW} dw$, y la integral que queda es de tabla o de sustitución.` : '';
+        return { F: nota(`tabla, ${Math.abs(L.a - 1) < 1e-12 ? `$${nomT(t)}$` : `$${nomT(t)}$ con $u = ${T(t.u)}$, $du = ${E.numTxt(L.a)} dx$`}`, div(Ft, N(L.a)), dp), como: 'tabla' };
+      }
     }
     // sustitución: un factor f(g(x)) por g′(x)
     for (let i = 0; i < vs.length; i++) {
@@ -316,7 +320,9 @@ const Derivadas = (() => {
         const Ft = tabla(t); if (!Ft) continue;
         const resto = junta(vs.filter((_, j) => j !== i)), du = D(t.u);
         const c = cociente(resto, du);
-        if (c !== null && Math.abs(c) > 1e-12) return { F: nota(`sustitución $u = ${T(t.u)}$, $du = ${T(du)} dx$, y $${nomT(t)}$`, prod(N(c), Ft)), como: 'sustitución' };
+        if (c !== null && Math.abs(c) > 1e-12) { const Fc = prod(N(c), Ft);
+        const det = `1) Se elige $u = ${T(t.u)}$.<br>2) Se deriva: $du = ${T(du)} dx$, y el resto del integrando es $${E.numTxt(c)} · du/dx$, así que $∫ f(x) dx = ${E.numTxt(c)} ∫ h(u) du$ con $h(u)$ la función de la tabla.<br>3) Se integra en $u$ con la regla de la tabla: $${nomT(t)}$.<br>4) Se deshace el cambio ($u = ${T(t.u)}$) y sale $${T(Fc)}$.`;
+        return { F: nota(`sustitución $u = ${T(t.u)}$, $du = ${T(du)} dx$, y $${nomT(t)}$`, Fc, det), como: 'sustitución' }; }
       }
     }
     // potencia impar de sen o cos: sen^{2m+1} u = sen u (1 − cos² u)^m, y cada término por sustitución
@@ -389,7 +395,8 @@ const Derivadas = (() => {
             filas.push(`$${T(poliAst(Pk))}$ · $${T(Hk)}$`);
             Pk = Pk.slice(1).map((c, i) => c * (i + 1)); sg = -sg; k++;
           }
-          return { F: nota(`por partes ${k} ${k === 1 ? 'vez' : 'veces'}: $∫ u dv = u v − ∫ v du$ con $u = ${T(poliAst(Pp))}$ y $dv = ${T(vs[ip].n)} dx$`, F), como: 'partes' };
+          const det = `Método de la tabla: se deriva $u = ${T(poliAst(Pp))}$ hasta llegar a 0 y se primitiva $dv = ${T(vs[ip].n)} dx$ cada vez, alternando los signos (+, −, +…) y multiplicando en diagonal:<br>${filas.map((fl, i) => `${i % 2 ? '−' : '+'} ${fl}`).join('<br>')}`;
+          return { F: nota(`por partes ${k} ${k === 1 ? 'vez' : 'veces'}: $∫ u dv = u v − ∫ v du$ con $u = ${T(poliAst(Pp))}$ y $dv = ${T(vs[ip].n)} dx$`, F, det), como: 'partes' };
         }
         // e^{ax} sen(bx), e^{ax} cos(bx): partes dos veces y se despeja
         const otro = vs.length === 2 ? tipo(vs[1 - ip].n) : null;
@@ -398,7 +405,8 @@ const Derivadas = (() => {
           if (A && B) {
             const a = A.a, b = B.a, k2 = a * a + b * b, e = op('^', C('e'), ex.u), s = fn('sen', tr.u), c = fn('cos', tr.u);
             const F = tr.k === 'sen' ? prod(div(e, N(k2)), op('-', prod(N(a), s), prod(N(b), c))) : prod(div(e, N(k2)), op('+', prod(N(a), c), prod(N(b), s)));
-            return { F: nota('por partes dos veces: vuelve a salir la integral del principio y se despeja', F), como: 'partes' };
+            const det = `Sea $I = ∫ ${T(n)} dx$. Se integra por partes dos veces, eligiendo cada vez la misma clase de función como $u$:<br>1) $u = ${T(fn(tr.k, tr.u))}$ y $dv = ${T(op('^', C('e'), ex.u))} dx$, y queda otra integral con la función trigonométrica cambiada.<br>2) Se repite el proceso y en el segundo miembro vuelve a aparecer $I$ multiplicada por $−${E.numTxt(b * b / (a * a))}$.<br>3) Se pasa al primer miembro: $I (1 + ${E.numTxt(b * b / (a * a))}) = $ lo demás, y al despejar queda $I = ${T(F)}$.`;
+            return { F: nota('por partes dos veces: vuelve a salir la integral del principio y se despeja', F, det), como: 'partes' };
           }
         }
       }
@@ -409,14 +417,20 @@ const Derivadas = (() => {
         if (V) {
           const Q = E.simp(V.F), g = vs[il].n;
           const resto = prim(prod(Q, D(g)), ps, prof + 1);
-          if (resto) return { F: nota(`por partes: $u = ${T(g)}$, $dv = ${T(dv)} dx$, así $v = ${T(Q)}$`, op('-', prod(Q, g), resto.F)), como: 'partes' };
+          if (resto) {
+            const det = `$u = ${T(g)}$ ⟹ $du = ${T(D(g))} dx$<br>$dv = ${T(dv)} dx$ ⟹ $v = ${T(Q)}$<br>$∫ u dv = u v − ∫ v du = ${T(prod(Q, g))} − ∫ ${T(prod(Q, D(g)))} dx$, y esa integral sale $${T(resto.F)}$.`;
+            return { F: nota(`por partes: $u = ${T(g)}$, $dv = ${T(dv)} dx$, así $v = ${T(Q)}$`, op('-', prod(Q, g), resto.F), det), como: 'partes' };
+          }
         }
       }
     }
     // una potencia de ln o una función inversa sola: por partes con dv = dx
     if (vs.length === 1 && vs[0].s > 0 && /ln|arc/.test(E.texto(n)) && prof < 4) {
       const resto = prim(prod(X, D(n)), ps, prof + 2);
-      if (resto) return { F: nota(`por partes: $u = ${T(n)}$, $dv = dx$, así $v = x$`, op('-', prod(X, n), resto.F)), como: 'partes' };
+      if (resto) {
+        const det = `$u = ${T(n)}$ ⟹ $du = ${T(D(n))} dx$<br>$dv = dx$ ⟹ $v = x$<br>$∫ u dv = u v − ∫ v du = ${T(prod(X, n))} − ∫ ${T(prod(X, D(n)))} dx$, y esa integral sale $${T(resto.F)}$.`;
+        return { F: nota(`por partes: $u = ${T(n)}$, $dv = dx$, así $v = x$`, op('-', prod(X, n), resto.F), det), como: 'partes' };
+      }
     }
     // u′/u: logaritmo
     if (n.t === '/') { const c = cociente(n.a, D(n.b)); if (c !== null) return { F: nota('$∫ {u′}/{u} dx = ln |u|$', prod(N(c), ln(abs(n.b)))), como: 'logaritmo' }; }

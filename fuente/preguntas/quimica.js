@@ -36,6 +36,12 @@ module.exports = {
     ['¿Cómo se nombra un compuesto inorgánico?', 'Hay tres nomenclaturas: sistemática (prefijos), de Stock (número romano) y tradicional. El Fe₂O₃ es trióxido de dihierro, óxido de hierro(III) u óxido férrico; el CO₂ es dióxido de carbono.'],
     ['¿Y los hidróxidos, ácidos y sales?', 'Ca(OH)₂ es hidróxido de calcio, H₂SO₄ es ácido sulfúrico (tetraoxidosulfato de dihidrógeno) y NaCl es cloruro de sodio. La herramienta pasa de fórmula a nombre y de nombre a fórmula.'],
   ],
+  solubilidad: [
+    ['¿Cómo se calcula la solubilidad a partir del Kps?', 'Para una sal AₐB_b, Kps = aᵃ·bᵇ·s^(a+b), así que s = (Kps/(aᵃ·bᵇ))^(1/(a+b)). Para el AgCl (Kps = 1,8·10⁻¹⁰), s = √(1,8·10⁻¹⁰) ≈ 1,3·10⁻⁵ mol/L; para el Ca(OH)₂ (Kps = 5,5·10⁻⁶), Kps = 4s³ y s ≈ 0,011 mol/L.'],
+    ['¿Cómo se calcula el Kps a partir de la solubilidad?', 'Se pasa la solubilidad a mol/L (g/L entre la masa molar), se multiplica por los coeficientes para tener la concentración de cada ion y se sustituye en Kps = [A]ᵃ[B]ᵇ. Para el Ag₂CrO₄ con s = 6,5·10⁻⁵ M: [Ag⁺] = 1,3·10⁻⁴ M, [CrO₄²⁻] = 6,5·10⁻⁵ M y Kps = 4s³ ≈ 1,1·10⁻¹².'],
+    ['¿Qué es el efecto del ion común?', 'Si la disolución ya contiene uno de los iones de la sal, esta se disuelve menos. El AgCl en NaCl 0,10 M cumple s(s + 0,10) = 1,8·10⁻¹⁰, de donde s ≈ 1,8·10⁻⁹ mol/L: unas 7 400 veces menos soluble que en agua pura.'],
+    ['¿Cómo saber si una sal precipita al mezclar dos disoluciones?', 'Se calculan las concentraciones tras mezclar (se diluyen), el producto iónico Q = [A]ᵃ[B]ᵇ y se compara con Kps: si Q > Kps precipita, y si Q < Kps no. Con 50 mL de Pb²⁺ 0,01 M y 50 mL de I⁻ 0,01 M, Q = 0,005·0,005² = 1,25·10⁻⁷, mayor que el Kps del PbI₂ (9,8·10⁻⁹), y precipita.'],
+  ],
   equilibrio: [
     ['¿Cómo se calculan Kc y Kp?', 'Para aA + bB ⇌ cC + dD, Kc = [C]ᶜ[D]ᵈ / ([A]ᵃ[B]ᵇ) y Kp = Kc·(RT)^Δn, con Δn la variación de moles de gas. En N₂ + 3 H₂ ⇌ 2 NH₃, Δn = −2.'],
     ['¿Cómo se resuelve un equilibrio con la tabla ICE?', 'Se escriben las concentraciones iniciales, el cambio (±x según coeficientes) y las del equilibrio, y se sustituyen en Kc. En H₂ + I₂ ⇌ 2 HI con Kc = 50 y 1 M de cada reactivo: 4x²/(1 − x)² = 50, x ≈ 0,78 y [HI] ≈ 1,56 M, [H₂] = [I₂] ≈ 0,22 M.'],

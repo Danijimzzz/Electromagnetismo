@@ -1,0 +1,55 @@
+<title>Calculadora de convergencia de series numéricas · Ciencify</title>
+<meta name="description" content="Calculadora de convergencia de series numéricas paso a paso: condición necesaria, serie geométrica y serie p, criterio del cociente, de la raíz, de comparación y de Leibniz, convergencia absoluta o condicional y suma.">
+<style>
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62 }
+#grafica { height: clamp(260px, 38vw, 400px) }
+.veredicto { font-weight: 600 }
+.veredicto.diverge { color: var(--serie-2) }
+.criterios { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-top: 4px }
+.criterios th, .criterios td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--line) }
+.criterios th { color: var(--muted); font-weight: 500 }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Cienci<i>fy</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Matemáticas</a> / Convergencia de series</span></header>
+<div class="wrap">
+<h1>Convergencia de series</h1>
+<p class="lead">Escribe el término general de una serie y mira si converge: condición necesaria, geométrica, serie p, cociente, raíz, comparación y Leibniz, con la conclusión (absoluta o condicional), la suma y las sumas parciales.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota">Escribe aₙ con la variable n: 1/n^2, (−1)^n/n, 2^n/n!, n/(2n+1), ln(n)/n^2, √n/(n^2+1)… El factorial se escribe n! y el producto de potencias n^n. Los límites se estiman con valores grandes de n, así que son aproximados.</p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Sumas parciales</h2>
+      <canvas id="grafica" aria-label="Sumas parciales de la serie y su suma"></canvas>
+      <p class="nota" id="leyenda"></p></div>
+    <div class="card"><h2>Criterios</h2><div id="criterios"></div></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Qué es converger</h2>
+  <p class="m">Una serie $∑ a_n$ converge si las sumas parciales $S_N = a_{n_0} + … + a_N$ se acercan a un número $S$ cuando $N → ∞$; si no, diverge. Si $∑ |a_n|$ converge, la serie converge <em>absolutamente</em>; si $∑ a_n$ converge pero $∑ |a_n|$ no, converge <em>condicionalmente</em>.</p>
+  <h2>Los criterios</h2>
+  <ul>
+    <li class="m"><b>Condición necesaria:</b> si $a_n \not→ 0$, la serie diverge. Si $a_n → 0$ no se sabe nada (la armónica $∑ 1/n$ diverge).</li>
+    <li class="m"><b>Geométrica</b> $∑ r^n$: converge si $|r| &lt; 1$ y su suma es $a_{n_0}/(1 − r)$.</li>
+    <li class="m"><b>Serie p</b> $∑ 1/n^p$: converge si y solo si $p &gt; 1$. Si $a_n ≈ C/n^p$ para $n$ grande, se compara con ella (comparación en el límite).</li>
+    <li class="m"><b>Cociente:</b> $L = lím |a_{n+1}/a_n|$. Converge absolutamente si $L &lt; 1$, diverge si $L &gt; 1$ y no decide si $L = 1$.</li>
+    <li class="m"><b>Raíz:</b> $L = lím |a_n|^{1/n}$, con la misma regla.</li>
+    <li class="m"><b>Leibniz:</b> si los signos se alternan, $|a_n|$ decrece y $a_n → 0$, la serie converge, y el error de parar en $S_N$ es menor que $|a_{N+1}|$.</li>
+  </ul>
+  <p class="m">Cuando ningún criterio decide (como en $∑ 1/(n \ ln n)$, que diverge, o $∑ 1/(n \ ln^2 n)$, que converge) hacen falta el criterio de la integral u otras comparaciones.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Convergencia de series <span id="ver"></span> (beta)</footer>
+</body>

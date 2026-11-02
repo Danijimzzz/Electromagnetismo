@@ -714,6 +714,52 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 const Version = (() => {
   const registros = {
     web: [
+      { v: '1.11', fecha: '2026-11-02', titulo: 'Fase 8: más profundidad en cada asignatura', subtitulo: 'Once herramientas nuevas y mejoras en el Simulador de circuitos, las ondas, los gases, el pH y las integrales.', secciones: [
+        { icono: '⚡', titulo: 'Simulador de circuitos', puntos: [
+          '**Importar y exportar SPICE:** pega una red escrita en SPICE (R, C, L, fuentes, diodos, transistores…) y se dibuja como esquema, o saca la tuya como texto. Avisa de lo que no puede traducir (interruptores, transformadores y subcircuitos).',
+          '**Pestaña Barrido:** cambia un valor del circuito (una resistencia, un condensador, la frecuencia…) en un rango lineal o logarítmico y mira cómo cambia una tensión, una corriente o una potencia, con el máximo y el mínimo marcados y una tabla.',
+          '**Potencia en Thévenin y Norton:** la curva de la potencia que recibe una carga según su valor, con el máximo cuando la carga vale R<sub>Th</sub>.',
+        ] },
+        { icono: '🌊', titulo: 'Ondas electromagnéticas', puntos: [
+          '**Polarizadores:** ley de Malus con luz natural, lineal o circular a través de hasta 6 polarizadores, con la intensidad tras cada uno.',
+          '**Vector de Poynting:** el balance de energía de un hilo con corriente, un condensador que se carga y un cable coaxial, comprobando que el flujo de S es la potencia. Se abre en @electromagnetismo/ondas-em.',
+        ] },
+        { icono: '🔭', titulo: 'Física general', puntos: [
+          '#fisica/osc-acopladas',
+          '**Dos masas, tres muelles:** modos normales y frecuencias, el movimiento de cada masa, el batido y cuánto tarda la energía en pasar de una a otra.',
+          '#fisica/relatividad',
+          '**Lorentz y Minkowski:** transforma un evento con su diagrama de ejes inclinados, suma velocidades con rapideces y calcula el intervalo entre dos eventos (tiempo propio, distancia propia y causalidad).',
+        ] },
+        { icono: '⚗️', titulo: 'Química', puntos: [
+          '#quimica/solubilidad',
+          '**Kps y solubilidad** de sales poco solubles, ion común, si precipita al mezclar y precipitación fraccionada, con 15 sales de ejemplo y un diagrama logarítmico.',
+          '**Gases reales:** @quimica/gases compara ahora Van der Waals con Redlich-Kwong y dibuja el factor de compresibilidad Z frente a la presión.',
+          '**Diagrama de especies** en @quimica/ph para los ácidos polipróticos: la fracción de cada forma frente al pH, con los pK marcados.',
+        ] },
+        { icono: '∑', titulo: 'Matemáticas', puntos: [
+          '#matematicas/series',
+          '**¿Converge o diverge?** Condición necesaria, serie geométrica y p, cociente, raíz, comparación y Leibniz, con la suma y las sumas parciales dibujadas.',
+          '#matematicas/lagrange',
+          '**Extremos con restricción:** plantea ∇f = λ∇g, clasifica cada punto crítico y dibuja las curvas de nivel con la restricción.',
+          '**Integrales paso a paso:** @matematicas/derivadas explica ahora la sustitución y la integración por partes (elección de u y dv, tabla de signos, integral cíclica).',
+        ] },
+        { icono: '📊', titulo: 'Estadística', puntos: [
+          '#estadistica/anova',
+          '**ANOVA de un factor** con su tabla, F, p-valor, η² y comparaciones por parejas con Bonferroni.',
+          '#estadistica/regresion-multiple',
+          '**Regresión lineal múltiple** hasta con 6 variables: coeficientes con t y p-valor, R² ajustado, ANOVA, VIF y predicción con intervalos.',
+          '#estadistica/no-parametricos',
+          '**Mann-Whitney y Wilcoxon** con la tabla de rangos, el p-valor exacto o aproximado y la conclusión paso a paso.',
+        ] },
+        { icono: '💶', titulo: 'Economía', puntos: [
+          '#economia/solow',
+          '**Modelo de Solow:** estado estacionario, regla de oro, convergencia y la trayectoria del capital.',
+          '#economia/bonos',
+          '**Bonos y duración:** precio, TIR, duración de Macaulay y modificada, convexidad y variación del precio con los tipos.',
+          '#economia/black-scholes',
+          '**Black-Scholes:** call y put europeas, paridad call-put y las griegas.',
+        ] },
+      ] },
       { v: '1.10', fecha: '2026-11-02', titulo: 'Fase 7: estudia en cualquier sitio', subtitulo: 'Ciencify se instala como una app, funciona sin conexión, guarda y comparte tus ejercicios de más formas y te recuerda por dónde ibas.', secciones: [
         { icono: '📲', titulo: 'Instalable y sin conexión', puntos: [
           '**Instala Ciencify** como una app: en el móvil o el ordenador, desde el menú del navegador («Instalar» o «Añadir a pantalla de inicio») o con el botón de la portada. Se abre sin barras del navegador y con su icono.',
@@ -1050,6 +1096,39 @@ const Version = (() => {
         ] },
       ] },
     ],
+    relatividad: [
+      { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: transformación de Lorentz de un evento con su diagrama de Minkowski (ejes inclinados de la nave y rayas paralelas para leer las coordenadas), suma y resta de velocidades con las rapideces e intervalo entre dos eventos con tiempo propio, distancia propia y causalidad. Con desarrollo paso a paso.'] },
+    ],
+    'osc-acopladas': [
+      { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: dos masas con tres muelles, sus modos normales y frecuencias, la posición de cada masa en el tiempo según cómo las sueltes, el batido y el tiempo que tarda la energía en pasar de una masa a la otra. Con desarrollo paso a paso.'] },
+    ],
+    solubilidad: [
+      { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: Kps a partir de la solubilidad (en mol/L o g/L) y solubilidad a partir del Kps, efecto del ion común, ¿precipita al mezclar dos disoluciones? (con lo que queda disuelto y los gramos de precipitado) y precipitación fraccionada de dos sales. Con 15 sales de ejemplo, el desarrollo paso a paso y un diagrama logarítmico [catión]–[anión] con la recta de saturación.'] },
+    ],
+    lagrange: [
+      { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: extremos de f(x, y) o f(x, y, z) con una restricción g = c. Plantea ∇f = λ∇g, halla los puntos críticos con su λ, dice si cada uno es máximo, mínimo o de silla y dibuja las curvas de nivel con la restricción.'] },
+    ],
+    series: [
+      { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: dice si una serie numérica converge o diverge con la condición necesaria, la serie geométrica y la serie p, los criterios del cociente, de la raíz, de comparación y de Leibniz, la convergencia absoluta o condicional, la suma y las sumas parciales dibujadas.'] },
+    ],
+    'no-parametricos': [
+      { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: U de Mann-Whitney para dos muestras independientes y test de Wilcoxon de los rangos con signo, para datos apareados o para la mediana de una muestra, bilaterales o unilaterales. Da la tabla de rangos (con la media de los rangos en los empates), el p-valor exacto si hay pocos datos y no hay empates o por aproximación normal con la corrección de empates y de continuidad, la gráfica y la conclusión paso a paso. Con 4 ejemplos de clase, modo práctica y enlace para compartir.'] },
+    ],
+    'regresion-multiple': [
+      { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: regresión lineal con hasta 6 variables explicativas por mínimos cuadrados, con los datos pegados desde una hoja de cálculo. Da el plano ajustado, los coeficientes con su error típico, t, p-valor e intervalo de confianza, R² y R² ajustado, el contraste F global con la tabla ANOVA, el VIF para detectar multicolinealidad, los valores observados frente a ajustados y una predicción con el intervalo de la media y el de un valor individual, paso a paso. Con 3 ejemplos de clase, modo práctica y enlace para compartir.'] },
+    ],
+    anova: [
+      { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: ANOVA de un factor para comparar las medias de dos o más grupos escritos uno por línea. Da la tabla ANOVA (entre y dentro de los grupos), F con su valor crítico y p-valor, el tamaño del efecto η², las medias y varianzas de cada grupo, las comparaciones por parejas con la corrección de Bonferroni, la gráfica de los datos y el desarrollo paso a paso. Con 3 ejemplos de clase, modo práctica y enlace para compartir.'] },
+    ],
+    'black-scholes': [
+      { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: precio de una call y una put europeas con la fórmula de Black-Scholes (con dividendo), d₁ y d₂, comprobación de la paridad call-put y las griegas (delta, gamma, vega, theta y rho), con la gráfica del valor de la opción hoy y al vencimiento y el desarrollo paso a paso.'] },
+    ],
+    bonos: [
+      { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: precio de un bono con cupón anual, semestral, trimestral o mensual a partir de la TIR (o la TIR a partir del precio), rentabilidad corriente, duración de Macaulay y modificada, convexidad y variación del precio al cambiar los tipos, con la curva precio-TIR, la tabla de flujos y el desarrollo paso a paso.'] },
+    ],
+    solow: [
+      { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: estado estacionario, regla de oro, velocidad de convergencia y semivida, y trayectoria del capital desde el valor inicial en el modelo de Solow con función Cobb-Douglas, con el diagrama de Solow, la tabla año a año y el desarrollo paso a paso.'] },
+    ],
     'integrales-multiples': [
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: integrales dobles (en cartesianas, con dy dx o dx dy, y en polares) y triples (en cartesianas, cilíndricas y esféricas) sobre la región que escribas con sus límites, de fuera adentro. Dibuja la región o el sólido en perspectiva, que se gira arrastrando; escribe el cambio de variables con su jacobiano, el integrando transformado y cada integral iterada de dentro afuera con su primitiva (y la numérica si alguna no sale), y da el valor exacto, el área o volumen de la región y el valor medio. Con 13 ejemplos de clase, modo práctica y enlace para compartir.'] },
     ],
@@ -1102,6 +1181,8 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: elige una lente (convergente o divergente) o un espejo (cóncavo o convexo), la distancia focal y el objeto, y mira el diagrama de rayos con la imagen, su posición, el aumento, si es real o virtual y derecha o invertida, la potencia en dioptrías o el radio del espejo, paso a paso. Con seis ejemplos y modo práctica.'] },
     ],
     simulador: [
+      { v: '0.3', fecha: '2026-11-02', cambios: ['Nueva pestaña «Barrido»: elige un valor del circuito (una resistencia, un condensador, la amplitud o la frecuencia de una fuente…), un rango en escala lineal o logarítmica y lo que quieres medir (tensión, corriente o potencia de un componente, o la tensión de un nudo), en continua o en alterna con valores eficaces, y sale la gráfica con el máximo y el mínimo marcados y una tabla.', 'La pestaña Thévenin y Norton dibuja ahora la potencia que recibe una carga según su valor, con el máximo marcado cuando la carga vale R<sub>Th</sub>.'] },
+      { v: '0.2', fecha: '2026-11-02', cambios: ['Importar y exportar redes en texto tipo SPICE: el botón «SPICE» escribe la red del esquema (R, C, L, fuentes de continua, seno y pulso, fuentes controladas, bobinas acopladas, diodos, transistores) o dibuja la que pegues o abras de un archivo .cir, con avisos de lo que no se puede traducir.'] },
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: dibuja el circuito arrastrando componentes (resistencias, condensadores, bobinas, fuentes de continua y de alterna, diodos, transistores, operacionales, transformadores, trifásica y puertas lógicas), únelos con cables y mira tensiones, corrientes, fasores, osciloscopio y diagrama de Bode.'] },
     ],
     'teoria-juegos': [
@@ -1288,6 +1369,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: determinante por Gauss, por Sarrus o por Laplace; inversa por Gauss-Jordan o por adjuntos; rango; forma escalonada y escalonada reducida, con cada operación entre filas y la matriz después de cada paso.', 'Valores y vectores propios con el polinomio característico, las raíces exactas (también con radicales o complejas) y si la matriz es diagonalizable, con P y D.', 'Suma, resta, producto (elemento a elemento), producto por un número, potencia y traspuesta.', 'Fracciones exactas y números complejos en cualquier casilla: 3/4, 0,25, 2−3i o (1+i)/2.'] },
     ],
     derivadas: [
+      { v: '0.3', fecha: '2026-11-02', cambios: ['Integrales por sustitución y por partes con el paso a paso completo: la elección de u y dv, du y v, la tabla de signos del método de la tabla, la integral cíclica (e^x cos x) y ln, arctg y arcsen por partes.'] },
       { v: '0.2', fecha: '2026-10-25', cambios: ['Arreglo: una función constante ya no sale con un punto crítico falso.', 'Integrales impropias: con límites en ∞ o con una asíntota dentro, diciendo si convergen o divergen.', 'Nuevas primitivas: productos de senos y cosenos (sen 3x cos 2x) y cambios trigonométricos (√(1 − x²)).', 'Límites con L’Hôpital, también 0·∞, 1^∞, 0⁰, ∞⁰ e ∞ − ∞.', 'Área entre dos curvas y volumen de revolución (discos y capas).', 'Estudio completo de una función: dominio, simetría, cortes, asíntotas, monotonía y curvatura.', 'Derivación implícita y derivadas parciales, con los puntos críticos y la matriz hessiana.', 'Comparte el ejercicio con un enlace (lleva los datos), cópialo como texto o en LaTeX para tus apuntes, o imprímelo o guárdalo en PDF solo con los resultados y el desarrollo.', 'Aviso junto a los datos: ln es el logaritmo neperiano y log, el decimal.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: derivadas de orden 1 a 4 con la regla de cada paso (suma, producto, cociente, cadena, derivación logarítmica) y el resultado simplificado.', 'Recta tangente en un punto y puntos críticos con su tipo.', 'Primitivas por la tabla, sustitución, partes (también dos veces), fracciones simples e identidades trigonométricas, comprobadas derivándolas.', 'Integral definida con la regla de Barrow, o numérica si no hay primitiva elemental, y el área encerrada.', 'Gráfica de f y f′ con la tangente que recorre la curva, o del área que se va llenando con la primitiva.'] },
     ],
@@ -1300,6 +1382,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: doble rendija de Young con la interfranja, la posición y el ángulo de cada máximo, la intensidad en un punto y la envolvente de difracción si das la anchura de las rendijas.', 'Rendija simple: mínimos, anchura del máximo central e intensidad.', 'Red de difracción: ángulos de cada orden, orden máximo y separación de dos longitudes de onda con el poder de resolución.', 'Láminas delgadas: colores que se refuerzan y se anulan y espesores para reforzar o quitar el reflejo.', 'Ondas que salen de las rendijas animadas y el patrón en la pantalla con el color de la luz.'] },
     ],
     'ondas-em': [
+      { v: '0.3', fecha: '2026-11-02', cambios: ['Nuevo cálculo «Polarizadores»: ley de Malus con luz natural, lineal o circular por hasta 6 polarizadores, con la intensidad tras cada uno.', 'Nuevo cálculo «Vector de Poynting»: balance de energía de un hilo con corriente, un condensador que se carga y un cable coaxial, comprobando que el flujo de S es la potencia.'] },
       { v: '0.2', fecha: '2026-10-26', cambios: ['La onda puede ir en cualquier dirección (escribiendo las componentes de k y de E) y tener una fase inicial.', 'Polarización circular y elíptica, con el sentido de giro y la expresión de E y B con sus dos componentes.', 'Nuevo cálculo: la onda a partir de su expresión E(r, t) o B(r, t), por ejemplo 30 cos(2,094y + 6,283e8t) k: dirección de propagación, velocidad, medio y el otro campo.', 'Nuevo cálculo: incidencia normal sobre un conductor perfecto (onda estacionaria, nodos, presión y corriente superficial) o sobre otro medio (coeficientes de reflexión y transmisión).', 'En el desarrollo, B̂ = k̂ × Ê ya no escribe paréntesis de más alrededor de los vectores unitarios.', 'Botones para copiar el enlace del ejercicio, copiar la solución como texto o en LaTeX e imprimirla o guardarla en PDF.', 'El desarrollo paso a paso escribe las fórmulas como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: onda plana en el vacío o en un material a partir de f, λ, ω o k, con λ, k, el campo B y su dirección (B̂ = k̂ × Ê) y las expresiones de E(r, t) y B(r, t).', 'Intensidad, densidad de energía y presión de radiación, también de una fuente puntual a una distancia.', 'Medios con pérdidas: tangente de pérdidas, atenuación, profundidad de penetración e impedancia compleja.', 'La onda dibujada en 3D con E y B moviéndose.'] },
@@ -1374,6 +1457,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ecuación de una onda armónica con ω y k en múltiplos de π, posición, velocidad y aceleración de un punto del medio y desfase entre dos puntos.', 'Ondas estacionarias en cuerdas y en tubos abiertos o cerrados: frecuencia de cada armónico, nodos y vientres, y velocidad en la cuerda con √(T/μ).', 'Efecto Doppler con la fuente y el observador moviéndose, y nivel sonoro en decibelios a distintas distancias y con varias fuentes.', 'Animación de la onda, de la onda estacionaria y de los frentes de onda del Doppler.'] },
     ],
     gases: [
+      { v: '0.3', fecha: '2026-11-02', cambios: ['Gases reales comparados: además de Van der Waals, la ecuación de Redlich-Kwong (con las mismas constantes críticas), y una gráfica del factor de compresibilidad Z frente a la presión con el gas ideal, Van der Waals y Redlich-Kwong a la temperatura del estado.'] },
       { v: '0.2', fecha: '2026-10-26', cambios: ['Mezclas de gases con la ley de Dalton: presiones parciales, fracciones molares, masa molar media y densidad, con un gráfico de barras.', 'Gases reales con la ecuación de Van der Waals: presión, factor de compresibilidad Z, comparación con el gas ideal, punto crítico y la isoterma dibujada.', 'Teoría cinética con el recorrido libre medio, el número de choques por segundo y la densidad de moléculas.', 'Caja de partículas animada que se mueve más rápido o más despacio según la temperatura.', 'Las fórmulas del desarrollo y de la teoría se ven como en los apuntes.', 'Los ejemplos usan coma decimal.', 'Modo práctica con enunciado escrito.', 'Enlace a Ciclos termodinámicos para Otto, Diesel, Brayton y Stirling.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ecuación de estado PV = nRT con P, V, T y n en varias unidades, los moles a partir de la masa y la densidad del gas.', 'Transformaciones isoterma, isobara, isocora y adiabática encadenadas, con el trabajo, el calor y la variación de energía interna de cada tramo, y ciclos con su rendimiento comparado con el de Carnot.', 'Diagrama P-V con las isotermas y el área del ciclo.', 'Teoría cinética: velocidades cuadrática media, media y más probable, energía cinética media y la distribución de Maxwell.'] },
@@ -1384,6 +1468,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ciclos de Carnot, Otto y Diesel con un gas ideal, con la tabla de estados, el trabajo, el calor y la energía interna de cada tramo y el rendimiento comparado con su fórmula y con Carnot.', 'Máquinas térmicas, frigoríficos y bombas de calor: el dato que falta, el rendimiento o la eficiencia, el límite de Carnot y si la máquina es posible, con la entropía del universo.', 'Diagrama p-V con un punto que recorre el ciclo y el cilindro con el émbolo, y el esquema de flujos de energía de las máquinas.'] },
     ],
     ph: [
+      { v: '0.3', fecha: '2026-11-02', cambios: ['Diagrama de especies de los ácidos polipróticos: la fracción de cada forma (H₃A, H₂A⁻, HA²⁻, A³⁻) frente al pH, con los pK marcados y el pH de tu cálculo o del punto de la valoración.'] },
       { v: '0.2', fecha: '2026-10-26', cambios: ['Hidrólisis de sales: pH del acetato de sodio, del cloruro de amonio o de una sal neutra, con la constante de hidrólisis.', 'Al revés: Ka o Kb a partir del pH medido, y la concentración que hace falta para un pH.', 'Preparar un tampón: el cociente sal/ácido y los gramos de sal para un pH dado.', 'Ácidos polipróticos (carbónico, fosfórico, sulfúrico con su segunda constante) y su valoración con una equivalencia por protón.', 'Mezclas de un ácido débil con una base fuerte, o al revés, como modo propio.', 'Agua a otra temperatura: Kw y el pH neutro cambian (6,63 a 50 °C).'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['Valoraciones de un ácido o una base débil: con muy poco valorante añadido, o muy cerca del punto de equivalencia, el pH ya sale bien. Antes se usaba Henderson-Hasselbalch también ahí y daba un pH equivocado (por ejemplo 2,05 en vez de 2,91 al empezar a valorar el ácido acético).'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: pH de ácidos y bases fuertes (también muy diluidos) y débiles, con el grado de disociación y la aproximación comprobada.', 'Mezclas de un ácido fuerte con una base fuerte y disoluciones reguladoras con Henderson-Hasselbalch, también al añadirles ácido o base.', 'Valoraciones de ácidos y bases fuertes y débiles: volumen y pH de equivalencia, pH a mitad, el pH con el volumen que pidas, el indicador adecuado y la curva.', 'Vaso con el color del indicador universal y las partículas, y una bureta que valora mientras se dibuja la curva.'] },

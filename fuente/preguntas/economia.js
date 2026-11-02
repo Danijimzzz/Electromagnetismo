@@ -92,4 +92,16 @@ module.exports = {
     ['¿Cómo se calcula el índice de Gini?', 'G = 1 − Σ(xᵢ − xᵢ₋₁)(yᵢ + yᵢ₋₁), con x e y las proporciones acumuladas de población y de renta. Para 4 personas con rentas 10, 20, 30 y 40: y = 0,1; 0,3; 0,6; 1, y G = 1 − 0,25 · 3,0 = 0,25.'],
     ['¿Qué es la curva de Lorenz?', 'Muestra qué porcentaje acumulado de la renta posee cada porcentaje acumulado de la población. Con igualdad perfecta es la diagonal (G = 0); cuanto más se curva, mayor es la desigualdad (G cerca de 1).'],
   ],
+  solow: [
+    ['¿Cómo se calcula el estado estacionario del modelo de Solow?', 'Se iguala la inversión a la reposición, s·k^α = (n + g + δ)·k, y se despeja k* = (s/(n + g + δ))^(1/(1 − α)). Con α = 1/3, s = 20 % y n + g + δ = 8 %: k* = 2,5^1,5 ≈ 3,95, y* ≈ 1,58 y c* ≈ 1,26.'],
+    ['¿Qué es la regla de oro y qué es la ineficiencia dinámica?', 'La regla de oro es la tasa de ahorro que maximiza el consumo del estado estacionario, que con Cobb-Douglas es s = α. Si se ahorra más que α hay ineficiencia dinámica: se podría consumir más hoy y mañana ahorrando menos.'],
+  ],
+  bonos: [
+    ['¿Cómo se calcula el precio de un bono?', 'Es el valor actual de sus flujos descontados a la TIR. Un bono de 1.000 € con cupón del 5 % a 3 años y TIR del 4 % paga 50, 50 y 1.050: 50/1,04 + 50/1,04² + 1.050/1,04³ ≈ 1.027,75 €.'],
+    ['¿Qué mide la duración de un bono?', 'La duración de Macaulay es el plazo medio, ponderado por valor actual, en que se recupera la inversión: en el ejemplo anterior, unos 2,86 años. Dividida por (1 + TIR) da la duración modificada, que indica cuánto cae el precio por cada punto que sube la TIR.'],
+  ],
+  'black-scholes': [
+    ['¿Cómo se calcula el precio de una call con Black-Scholes?', 'C = S·N(d₁) − K·e^(−rT)·N(d₂), con d₁ = [ln(S/K) + (r + σ²/2)T]/(σ√T) y d₂ = d₁ − σ√T. Con S = K = 100, T = 1, r = 5 % y σ = 20 %: d₁ = 0,35, d₂ = 0,15 y la call vale unos 10,45 €.'],
+    ['¿Qué relación hay entre el precio de la call y el de la put?', 'La paridad call-put: C − P = S − K·e^(−rT). En el ejemplo anterior, la put vale 10,45 − (100 − 95,12) ≈ 5,57 €. Con dividendos continuos q, se usa S·e^(−qT).'],
+  ],
 };

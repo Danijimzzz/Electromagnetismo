@@ -242,6 +242,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 .tramo { display: grid; grid-template-columns: 30px minmax(0, 1.3fr) 58px minmax(0, 1fr) 30px; gap: 6px; align-items: center; font-size: 13px }
 .tramo b { font: 600 13px var(--f-math); text-align: center }
 #caja { height: 200px; margin-top: 8px }
+#zp { height: 220px; margin-top: 8px }
 .botones { grid-column: 1 / -1; display: flex; gap: 8px; flex-wrap: wrap }
 </style>
 <body>
@@ -261,6 +262,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
   <div>
     <div class="card"><h2>Resultado</h2><div class="res" id="res"></div>
       <canvas id="escena" aria-label="Diagrama P-V o distribución de velocidades"></canvas>
+      <canvas id="zp" aria-label="Factor de compresibilidad Z frente a la presión" hidden></canvas>
       <canvas id="caja" aria-label="Moléculas moviéndose en una caja"></canvas>
       <p class="leyenda" id="leyenda"></p></div>
     <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
@@ -282,6 +284,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
   <h2>Gases reales</h2>
   <p class="f m">$(P + {a n^2}/{V^2})(V − nb) = nRT$</p>
   <p class="m">La ecuación de Van der Waals corrige el gas ideal: b es el volumen de las propias moléculas y a mide lo que se atraen. El factor de compresibilidad $Z = PV/(nRT)$ vale 1 en un gas ideal. Por encima de la temperatura crítica, $T_c = 8a/(27Rb)$, el gas no se licúa.</p>
+  <p class="m">La ecuación de Redlich-Kwong, $P = {RT}/{V_m − b} − {a}/{√T V_m (V_m + b)}$, con $a = 0,42748 R^2 T_c^{2,5}/P_c$ y $b = 0,08664 R T_c/P_c$, depende de la temperatura crítica y la presión crítica (aquí las de Van der Waals). Se ajusta mejor que Van der Waals a presiones altas; la gráfica de Z frente a P las compara con el gas ideal (Z = 1).</p>
   <h2>Teoría cinética</h2>
   <p class="f m">$v_{cm} = √({3RT}/M)$, &ensp; $⟨E_c⟩ = {3}/{2} k T$</p>
   <p class="m">Las velocidades de las moléculas siguen la distribución de Maxwell: la más probable es $√(2RT/M)$ y la media $√(8RT/(πM))$. La energía cinética media solo depende de la temperatura. Entre choque y choque una molécula recorre de media $λ = 1/(√2 π d^2 n_V)$, con d su diámetro y $n_V = P/(kT)$ las moléculas por metro cúbico.</p>
@@ -307,7 +310,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 </body>
 <script>
 const Pagina = { carpeta: 'gases', guarda: 'gases-v1' };
-const Version = (() => { const registros = {"web":[{"v":"1.10"}],"integrales-multiples":[{"v":"0.1"}],"formulacion":[{"v":"0.1"}],"balance":[{"v":"0.1"}],"redox":[{"v":"0.1"}],"lineas-transmision":[{"v":"0.1"}],"superficies":[{"v":"0.1"}],"vsepr":[{"v":"0.1"}],"maxwell":[{"v":"0.1"}],"fresnel":[{"v":"0.1"}],"gravitacion":[{"v":"0.1"}],"convolucion":[{"v":"0.1"}],"laplace-numerica":[{"v":"0.1"}],"imagenes":[{"v":"0.1"}],"guias-onda":[{"v":"0.1"}],"antena":[{"v":"0.1"}],"bode":[{"v":"0.1"}],"optica":[{"v":"0.1"}],"simulador":[{"v":"0.1"}],"teoria-juegos":[{"v":"0.1"}],"puertas-logicas":[{"v":"0.3"}],"multiplicador":[{"v":"0.1"}],"is-lm":[{"v":"0.1"}],"choques":[{"v":"0.1"}],"termoquimica":[{"v":"0.1"}],"probabilidad":[{"v":"0.1"}],"unidades":[{"v":"0.1"}],"equilibrio":[{"v":"0.1"}],"oscilaciones":[{"v":"0.1"}],"beneficio":[{"v":"0.1"}],"costes":[{"v":"0.1"}],"sistemas-numericos":[{"v":"0.1"}],"excedentes":[{"v":"0.1"}],"oferta-demanda":[{"v":"0.1"}],"chi2-bondad":[{"v":"0.1"}],"contrastes":[{"v":"0.1"}],"errores":[{"v":"0.1"}],"graficador":[{"v":"0.1"}],"metodos-numericos":[{"v":"0.1"}],"fisica-moderna":[{"v":"0.2"}],"lorenz-gini":[{"v":"0.1"}],"phillips-okun":[{"v":"0.1"}],"tipos-cambio":[{"v":"0.1"}],"elasticidades":[{"v":"0.1"}],"pib-ipc":[{"v":"0.1"}],"numeros-indice":[{"v":"0.1"}],"ratios":[{"v":"0.1"}],"punto-muerto":[{"v":"0.1"}],"ahorro":[{"v":"0.1"}],"van-tir":[{"v":"0.1"}],"amortizacion-inmovilizado":[{"v":"0.1"}],"prestamos":[{"v":"0.1"}],"rentas":[{"v":"0.1"}],"interes":[{"v":"0.1"}],"descriptiva":[{"v":"0.1"}],"regresion-economia":[{"v":"0.1"}],"ajustador":[{"v":"0.1"}],"electrostatica":[{"v":"0.6"}],"magnetostatica":[{"v":"0.2"}],"tabla-periodica":[{"v":"0.2"}],"trabajo-y-energia":[{"v":"0.2"}],"masa-molar":[{"v":"0.2"}],"configuracion-electronica":[{"v":"0.2"}],"condensadores":[{"v":"0.2"}],"tiro-parabolico":[{"v":"0.2"}],"disoluciones":[{"v":"0.2"}],"calorimetria":[{"v":"0.2"}],"induccion":[{"v":"0.2"}],"matrices":[{"v":"0.2"}],"derivadas":[{"v":"0.2"}],"laplace":[{"v":"0.2"}],"interferencia":[{"v":"0.2"}],"ondas-em":[{"v":"0.2"}],"intervalos":[{"v":"0.2"}],"fuerza":[{"v":"0.2"}],"campos":[{"v":"0.2.1"}],"cinetica":[{"v":"0.2"}],"edos":[{"v":"0.2"}],"fourier":[{"v":"0.2"}],"taylor":[{"v":"0.2.1"}],"complejos":[{"v":"0.2"}],"sistemas":[{"v":"0.3"}],"regresion":[{"v":"0.2"}],"estadistica":[{"v":"0.2"}],"dinamica":[{"v":"0.2"}],"solido-rigido":[{"v":"0.2"}],"ondas":[{"v":"0.2"}],"gases":[{"v":"0.2"}],"ciclos":[{"v":"0.2"}],"ph":[{"v":"0.2"}],"fluidos":[{"v":"0.2"}],"doppler":[{"v":"0.2"}],"resistencias":[{"v":"0.2"}],"faraday":[{"v":"0.2"}],"fenomenos":[{"v":"0.7"}]}; const de = (h) => ({ current: registros[h][0].v, log: registros[h] }); return { registros, de }; })();
+const Version = (() => { const registros = {"web":[{"v":"1.11"}],"relatividad":[{"v":"0.1"}],"osc-acopladas":[{"v":"0.1"}],"solubilidad":[{"v":"0.1"}],"lagrange":[{"v":"0.1"}],"series":[{"v":"0.1"}],"no-parametricos":[{"v":"0.1"}],"regresion-multiple":[{"v":"0.1"}],"anova":[{"v":"0.1"}],"black-scholes":[{"v":"0.1"}],"bonos":[{"v":"0.1"}],"solow":[{"v":"0.1"}],"integrales-multiples":[{"v":"0.1"}],"formulacion":[{"v":"0.1"}],"balance":[{"v":"0.1"}],"redox":[{"v":"0.1"}],"lineas-transmision":[{"v":"0.1"}],"superficies":[{"v":"0.1"}],"vsepr":[{"v":"0.1"}],"maxwell":[{"v":"0.1"}],"fresnel":[{"v":"0.1"}],"gravitacion":[{"v":"0.1"}],"convolucion":[{"v":"0.1"}],"laplace-numerica":[{"v":"0.1"}],"imagenes":[{"v":"0.1"}],"guias-onda":[{"v":"0.1"}],"antena":[{"v":"0.1"}],"bode":[{"v":"0.1"}],"optica":[{"v":"0.1"}],"simulador":[{"v":"0.3"}],"teoria-juegos":[{"v":"0.1"}],"puertas-logicas":[{"v":"0.3"}],"multiplicador":[{"v":"0.1"}],"is-lm":[{"v":"0.1"}],"choques":[{"v":"0.1"}],"termoquimica":[{"v":"0.1"}],"probabilidad":[{"v":"0.1"}],"unidades":[{"v":"0.1"}],"equilibrio":[{"v":"0.1"}],"oscilaciones":[{"v":"0.1"}],"beneficio":[{"v":"0.1"}],"costes":[{"v":"0.1"}],"sistemas-numericos":[{"v":"0.1"}],"excedentes":[{"v":"0.1"}],"oferta-demanda":[{"v":"0.1"}],"chi2-bondad":[{"v":"0.1"}],"contrastes":[{"v":"0.1"}],"errores":[{"v":"0.1"}],"graficador":[{"v":"0.1"}],"metodos-numericos":[{"v":"0.1"}],"fisica-moderna":[{"v":"0.2"}],"lorenz-gini":[{"v":"0.1"}],"phillips-okun":[{"v":"0.1"}],"tipos-cambio":[{"v":"0.1"}],"elasticidades":[{"v":"0.1"}],"pib-ipc":[{"v":"0.1"}],"numeros-indice":[{"v":"0.1"}],"ratios":[{"v":"0.1"}],"punto-muerto":[{"v":"0.1"}],"ahorro":[{"v":"0.1"}],"van-tir":[{"v":"0.1"}],"amortizacion-inmovilizado":[{"v":"0.1"}],"prestamos":[{"v":"0.1"}],"rentas":[{"v":"0.1"}],"interes":[{"v":"0.1"}],"descriptiva":[{"v":"0.1"}],"regresion-economia":[{"v":"0.1"}],"ajustador":[{"v":"0.1"}],"electrostatica":[{"v":"0.6"}],"magnetostatica":[{"v":"0.2"}],"tabla-periodica":[{"v":"0.2"}],"trabajo-y-energia":[{"v":"0.2"}],"masa-molar":[{"v":"0.2"}],"configuracion-electronica":[{"v":"0.2"}],"condensadores":[{"v":"0.2"}],"tiro-parabolico":[{"v":"0.2"}],"disoluciones":[{"v":"0.2"}],"calorimetria":[{"v":"0.2"}],"induccion":[{"v":"0.2"}],"matrices":[{"v":"0.2"}],"derivadas":[{"v":"0.3"}],"laplace":[{"v":"0.2"}],"interferencia":[{"v":"0.2"}],"ondas-em":[{"v":"0.3"}],"intervalos":[{"v":"0.2"}],"fuerza":[{"v":"0.2"}],"campos":[{"v":"0.2.1"}],"cinetica":[{"v":"0.2"}],"edos":[{"v":"0.2"}],"fourier":[{"v":"0.2"}],"taylor":[{"v":"0.2.1"}],"complejos":[{"v":"0.2"}],"sistemas":[{"v":"0.3"}],"regresion":[{"v":"0.2"}],"estadistica":[{"v":"0.2"}],"dinamica":[{"v":"0.2"}],"solido-rigido":[{"v":"0.2"}],"ondas":[{"v":"0.2"}],"gases":[{"v":"0.3"}],"ciclos":[{"v":"0.2"}],"ph":[{"v":"0.3"}],"fluidos":[{"v":"0.2"}],"doppler":[{"v":"0.2"}],"resistencias":[{"v":"0.2"}],"faraday":[{"v":"0.2"}],"fenomenos":[{"v":"0.7"}]}; const de = (h) => ({ current: registros[h][0].v, log: registros[h] }); return { registros, de }; })();
 
 /* =====================================================================
    Ayudantes comunes de las herramientas (los que antes copiaba cada una).
@@ -744,13 +747,19 @@ const Gases = (() => {
     if (V <= n * b) throw new Error(`El volumen tiene que ser mayor que el que ocupan las propias moléculas, nb = ${f(n * b * 1000).replace(/<[^>]+>/g, '')} L`);
     const Pi = (n * R * T) / V, rep = (n * R * T) / (V - n * b), atr = (a * n * n) / (V * V), P = rep - atr, Z = (P * V) / (n * R * T);
     const Tc = (8 * a) / (27 * R * b), Pc = a / (27 * b * b), Vc = 3 * b;
+    // Redlich-Kwong con los mismos Tc y Pc: a' = 0,42748 R²Tc^2,5/Pc, b' = 0,08664 R Tc/Pc; P = nRT/(V − nb') − a'n²/(√T V (V + nb'))
+    const aR = (0.42748 * R * R * Tc ** 2.5) / Pc, bR = (0.08664 * R * Tc) / Pc;
+    const prk = (Vm, TT) => (R * TT) / (Vm - bR) - aR / (Math.sqrt(TT) * Vm * (Vm + bR)), pvdw = (Vm, TT) => (R * TT) / (Vm - b) - a / (Vm * Vm);
+    if (V / n <= bR) throw new Error(`El volumen molar tiene que ser mayor que b de Redlich-Kwong, ${f(bR * 1000)} L/mol`);
+    const PRK = prk(V / n, T), ZRK = (PRK * V) / (n * R * T);
     const pasos = [
       { t: 'Ecuación de Van der Waals', html: `${nombre}: $a = ${f(a)}$ Pa·m⁶/mol², $b = ${f(b)}$ m³/mol. La ecuación $(P + {a n^2}/{V^2})(V − nb) = nRT$ corrige el gas ideal: b es el volumen que ocupan las moléculas y a mide lo que se atraen.` },
       { t: 'Presión del gas real', html: `$P = {nRT}/{V − nb} − {a n^2}/{V^2} = {${f(n)} · ${Rs} · ${f(T)}}/{${f(V)} − ${f(n * b)}} − {${f(a)} · ${f(n)}^2}/{(${f(V)})^2} = ${f(rep)} − ${f(atr)}$ = <b>${f(P)} Pa</b> (${f(P / 101325)} atm)` },
       { t: 'Comparación con el gas ideal', html: `Ideal: $P = {nRT}/V$ = ${f(Pi)} Pa (${f(Pi / 101325)} atm). El real da un ${f((100 * (P - Pi)) / Pi, 3)} %. Factor de compresibilidad $Z = {PV}/{nRT}$ = <b>${f(Z)}</b>: ${Z < 1 ? 'menor que 1, mandan las atracciones' : 'mayor que 1, manda el volumen de las moléculas'}.` },
+      { t: 'Redlich-Kwong', html: `Con los mismos $T_c$ y $P_c$: $a' = {0,42748 R^2 T_c^{2,5}}/{P_c} = ${f(aR)}$ Pa·m⁶·K<sup>½</sup>/mol², $b' = {0,08664 R T_c}/{P_c} = ${f(bR)}$ m³/mol. La ecuación $P = {RT}/{V_m − b'} − {a'}/{√T V_m (V_m + b')}$ da <b>${f(PRK)} Pa</b> (${f(PRK / 101325)} atm), $Z = ${f(ZRK)}$. Suele ajustarse mejor que Van der Waals a presiones altas y a temperaturas por encima de la crítica.` },
       { t: 'Punto crítico', html: `$T_c = {8a}/{27Rb}$ = <b>${f(Tc)} K</b>, $P_c = {a}/{27 b^2}$ = ${f(Pc / 101325)} atm, $V_{m,c} = 3b$ = ${f(Vc * 1000)} L/mol. Por encima de $T_c$ el gas no se puede licuar por mucho que se comprima.` },
     ];
-    return { modo: 'real', nombre, a, b, n, V, T, P, Pi, Z, Tc, Pc, Vc, pasos };
+    return { modo: 'real', nombre, a, b, n, V, T, P, Pi, Z, Tc, Pc, Vc, aR, bR, PRK, ZRK, prk, pvdw, pasos };
   }
   // densidad de Maxwell para la gráfica
   const maxwell = (M, T, v) => { const a = M / (2 * R * T); return 4 * Math.PI * (a / Math.PI) ** 1.5 * v * v * Math.exp(-a * v * v); };
@@ -1121,15 +1130,15 @@ const Compartir = (() => {
       h = dato('Presión total', `P = <b>${f(sol.Pt)} Pa</b> (${f(sol.Pt / 101325)} atm)`) + sol.comp.map((c) => dato(`Presión parcial de ${c.nombre}`, `<b>${f(c.P)} Pa</b> (x = ${f(c.x)})`)).join('') + dato('Masa molar media', `M̄ = ${f(sol.Mm)} g/mol`);
       ley = 'Las barras son la presión parcial de cada gas: juntas suman la total. Abajo, las moléculas de cada gas en la caja.';
     } else if (sol.modo === 'real') {
-      h = dato('Presión (Van der Waals)', `P = <b>${f(sol.P)} Pa</b> (${f(sol.P / 101325)} atm)`) + dato('Presión si fuera ideal', `P = ${f(sol.Pi)} Pa`) + dato('Factor de compresibilidad', `Z = <b>${f(sol.Z)}</b>`) + dato('Temperatura crítica', `T<sub>c</sub> = ${f(sol.Tc)} K`);
-      ley = 'Isoterma de Van der Waals (color) frente a la del gas ideal (gris) a la misma temperatura, con el estado marcado. En gris discontinuo, la isoterma crítica.';
+      h = dato('Presión (Van der Waals)', `P = <b>${f(sol.P)} Pa</b> (${f(sol.P / 101325)} atm)`) + dato('Presión si fuera ideal', `P = ${f(sol.Pi)} Pa`) + dato('Presión (Redlich-Kwong)', `P = ${f(sol.PRK)} Pa (${f(sol.PRK / 101325)} atm)`) + dato('Z de Redlich-Kwong', `Z = ${f(sol.ZRK)}`) + dato('Factor de compresibilidad', `Z = <b>${f(sol.Z)}</b>`) + dato('Temperatura crítica', `T<sub>c</sub> = ${f(sol.Tc)} K`);
+      ley = 'Isoterma de Van der Waals (color) frente a la del gas ideal (gris) a la misma temperatura, con el estado marcado. En gris discontinuo, la isoterma crítica. Abajo, Z = PV/nRT frente a P a esa temperatura: el gas ideal (Z = 1), Van der Waals y Redlich-Kwong.';
     } else {
       h = dato('Velocidad cuadrática media', `v<sub>cm</sub> = <b>${f(sol.vrms)} m/s</b>`) + dato('Velocidad media', `v̄ = ${f(sol.vmed)} m/s`) + dato('Más probable', `v<sub>p</sub> = ${f(sol.vp)} m/s`) + dato('Energía cinética media', `⟨E<sub>c</sub>⟩ = ${f(sol.Ec)} J`) + (sol.lam ? dato('Recorrido libre medio', `λ = <b>${f(sol.lam * 1e9)} nm</b>`) + dato('Choques por segundo', `z = ${f(sol.z)} s<sup>−1</sup>`) : '');
       ley = `Distribución de Maxwell de las velocidades a ${txt(f(sol.T, 5))} K; en gris, la del mismo gas al doble de temperatura. Abajo, moléculas que se mueven con esas velocidades (más claras las rápidas).`;
     }
     $('#res').innerHTML = h; $('#leyenda').textContent = ley;
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html, true)}</li>`).join('');
-    $('#caja').hidden = !['estado', 'cinetica', 'mezcla'].includes(sol.modo);
+    $('#caja').hidden = !['estado', 'cinetica', 'mezcla'].includes(sol.modo); $('#zp').hidden = sol.modo !== 'real';
     particulas = null; dibuja();
   }
 
@@ -1166,7 +1175,42 @@ const Compartir = (() => {
     }
     return pts;
   }
+  // Z = PV/nRT frente a P (rama de gas, volumen molar decreciente) para Van der Waals y Redlich-Kwong a la temperatura del estado
+  function dibujaZ() {
+    const c = $('#zp'), dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
+    if (c.hidden || !w || !h || !sol || sol.modo !== 'real') return;
+    if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
+    const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h); g.lineCap = 'round'; g.lineJoin = 'round';
+    if (!col['--ink']) colores();
+    const Pm = Math.max(sol.P, sol.PRK, sol.Pi) * 1.6, Vm0 = sol.V / sol.n, R = G.R;
+    const rama = (fn) => {
+      const pts = []; let ant = -Infinity;
+      for (let i = 0; i <= 400; i++) {
+        const Vm = Vm0 * 40 * (Math.max(sol.bR, sol.b) * 1.02 / (Vm0 * 40)) ** (i / 400), P = fn(Vm, sol.T);
+        if (!(P > 0) || P < ant) break; if (P > Pm) break; ant = P; pts.push([P / 101325, (P * Vm) / (R * sol.T)]);
+      }
+      return pts;
+    };
+    const A = rama(sol.pvdw), B = rama(sol.prk), todos = A.concat(B, [[sol.P / 101325, sol.Z], [sol.PRK / 101325, sol.ZRK]]);
+    const zmin = Math.min(0.5, ...todos.map((p) => p[1])) * 0.95, zmax = Math.max(1.1, ...todos.map((p) => p[1])) * 1.03, pmax = Pm / 101325;
+    const ml = 52, mr = 12, mt = 12, mb = 40, X = (p) => ml + (p / pmax) * (w - ml - mr), Y = (z) => h - mb - ((z - zmin) / (zmax - zmin)) * (h - mt - mb);
+    g.font = '12px system-ui, sans-serif'; g.lineWidth = 1; g.strokeStyle = col['--line']; g.fillStyle = col['--muted'];
+    g.textAlign = 'right'; g.textBaseline = 'middle';
+    for (const z of Herramienta.marcas(zmin, zmax, 4)) { g.beginPath(); g.moveTo(ml, Y(z)); g.lineTo(w - mr, Y(z)); g.stroke(); g.fillText(txt(f(z, 3)), ml - 6, Y(z)); }
+    g.textAlign = 'center'; g.textBaseline = 'top';
+    for (const p of Herramienta.marcas(0, pmax, 5)) g.fillText(txt(f(p, 3)), X(p), h - mb + 6);
+    g.fillText('P (atm)', ml + (w - ml - mr) / 2, h - 14);
+    g.textAlign = 'left'; g.textBaseline = 'top'; g.fillText('Z', ml + 4, mt);
+    g.strokeStyle = col['--ink']; g.lineWidth = 1.6; g.setLineDash([5, 4]); g.beginPath(); g.moveTo(X(0), Y(1)); g.lineTo(X(pmax), Y(1)); g.stroke(); g.setLineDash([]);
+    g.lineWidth = 2.4; g.strokeStyle = col['--accent']; curva(g, A, X, Y); g.strokeStyle = col['--peso'] || col['--accent']; curva(g, B, X, Y);
+    g.font = '600 12px system-ui, sans-serif'; g.textBaseline = 'middle';
+    g.textAlign = 'left'; const yl = h - mb - 52; g.fillStyle = col['--accent']; g.fillText('Van der Waals', ml + 10, yl);
+    g.fillStyle = col['--peso'] || col['--accent']; g.fillText('Redlich-Kwong', ml + 10, yl + 16);
+    g.fillStyle = col['--ink']; g.fillText('gas ideal (Z = 1)', ml + 10, yl + 32);
+    for (const [p, z, cl] of [[sol.P, sol.Z, col['--accent']], [sol.PRK, sol.ZRK, col['--peso'] || col['--accent']]]) { g.fillStyle = cl; g.beginPath(); g.arc(X(p / 101325), Y(z), 5, 0, 2 * Math.PI); g.fill(); }
+  }
   function dibuja() {
+    dibujaZ();
     const c = $('#escena'), dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
     if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
     const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h); g.lineCap = 'round'; g.lineJoin = 'round';
@@ -1775,9 +1819,14 @@ const Practica = (() => {
     // cinetica: un ejercicio de los de clase (ley integrada, datos, velocidades iniciales o Arrhenius)
     cinetica: { datos: null, items: '#resumen > div.num', genera: () => window.CineticaApp?.azar(), enunciado: () => window.CineticaApp?.enunciado() },
     // campos: gradiente, divergencia y rotacional, trabajo o Green con números enteros; se preguntan los valores decimales
+    // solubilidad: Kps, solubilidad, ion común o mezcla de dos disoluciones con una sal de tabla
+    solubilidad: { datos: null, items: '#resumen > div.num', genera: () => window.SolubilidadApp?.azar(), enunciado: () => window.SolubilidadApp?.enunciado() },
     equilibrio: { datos: null, items: '#resumen > div.num', genera: () => window.EquilibrioApp?.azar(), enunciado: () => window.EquilibrioApp?.enunciado() },
     // integrales-multiples: una integral doble o triple de las de clase (cartesianas, polares, cilíndricas o esféricas); se pregunta la integral, el área o volumen y el valor medio
     'integrales-multiples': { datos: null, items: '#resumen > div.num', genera: () => window.IntegralesMultiplesApp?.azar(), enunciado: () => window.IntegralesMultiplesApp?.enunciado() },
+    // series y lagrange: una serie con suma o un extremo condicionado con puntos racionales
+    series: { datos: null, items: '#resumen > div.num', genera: () => window.SeriesApp?.azar(), enunciado: () => window.SeriesApp?.enunciado() },
+    lagrange: { datos: null, items: '#resumen > div.num', genera: () => window.LagrangeApp?.azar(), enunciado: () => window.LagrangeApp?.enunciado() },
     campos: { datos: null, items: '#resumen > div.num', genera: () => window.CamposApp?.azar(), enunciado: () => window.CamposApp?.enunciado() },
     // imagenes: una carga frente a un plano, una esfera (a tierra, aislada o a un potencial) o dentro de una cavidad
     imagenes: { datos: null, items: '#resumen > div', genera: () => window.ImagenesApp?.azar(), enunciado: () => window.ImagenesApp?.enunciado() },
@@ -1871,6 +1920,12 @@ const Practica = (() => {
     excedentes: { datos: null, genera: () => window.ExcedentesApp?.azar(), enunciado: () => window.ExcedentesApp?.enunciado() },
     // descriptiva: unas notas al azar (los datos están en un textarea)
     descriptiva: { datos: null, genera: () => window.DescriptivaApp?.azar(), enunciado: () => window.DescriptivaApp?.enunciado() },
+    // anova: tres grupos al azar
+    'anova': { datos: null, genera: () => window.AnovaApp?.azar(), enunciado: () => window.AnovaApp?.enunciado() },
+    // no-parametricos: dos muestras o pares al azar
+    'no-parametricos': { datos: null, genera: () => window.NoParametricosApp?.azar(), enunciado: () => window.NoParametricosApp?.enunciado() },
+    // regresion-multiple: un plano con ruido
+    'regresion-multiple': { datos: null, genera: () => window.RegresionMultipleApp?.azar(), enunciado: () => window.RegresionMultipleApp?.enunciado() },
     // regresión económica: una función de consumo al azar (los datos están en un textarea)
     'regresion-economia': { datos: null, genera: () => window.RegresionEconomiaApp?.azar(), enunciado: () => window.RegresionEconomiaApp?.enunciado() },
     // ratios: un balance al azar que cuadre (si se cambian los datos sueltos, el activo y el pasivo no coinciden)

@@ -49,6 +49,14 @@ module.exports = {
     ['¿Cómo se halla una raíz con bisección o Newton-Raphson?', 'Bisección: con f(a)·f(b) < 0 se toma el punto medio y se queda el tramo donde cambia el signo, y el error baja a la mitad en cada paso. Newton: xₙ₊₁ = xₙ − f(xₙ)/f′(xₙ). Para x² − 2 = 0 con x₀ = 1,5, x₁ = 1,5 − 0,25/3 ≈ 1,4167 (√2 = 1,4142).'],
     ['¿Cómo se integra con trapecios o Simpson?', 'Trapecios: (h/2)[f₀ + 2Σfᵢ + fₙ]; Simpson: (h/3)[f₀ + 4(impares) + 2(pares) + fₙ]. Para ∫₀¹ x² dx con Simpson y n = 2, (0,5/3)(0 + 4·0,25 + 1) = 1/3, que es exacto.'],
   ],
+  series: [
+    ['¿Cómo se sabe si una serie converge?', 'Primero la condición necesaria: si aₙ no tiende a 0, diverge. Luego se prueba el criterio del cociente (L = lím |aₙ₊₁/aₙ|: converge si L < 1, diverge si L > 1), el de la raíz o la comparación con 1/nᵖ, que converge si p > 1. Por ejemplo, Σ 2ⁿ/n! tiene L = lím 2/(n + 1) = 0 y converge; su suma desde n = 0 es e² ≈ 7,389.'],
+    ['¿Qué diferencia hay entre convergencia absoluta y condicional?', 'Converge absolutamente si Σ|aₙ| converge, y condicionalmente si Σaₙ converge pero Σ|aₙ| no. Σ(−1)ⁿ/n² converge absolutamente (suma −π²/12), mientras que Σ(−1)ⁿ/n converge solo condicionalmente por el criterio de Leibniz (suma −ln 2).'],
+  ],
+  lagrange: [
+    ['¿Cómo se usan los multiplicadores de Lagrange?', 'Para optimizar f con la restricción g = c se resuelve ∇f = λ∇g junto con g = c. Para f = x² + y² con x + y = 2: 2x = λ, 2y = λ y x + y = 2 dan x = y = 1, λ = 2 y f = 2, que es el mínimo.'],
+    ['¿Cómo se sabe si el punto es máximo o mínimo?', 'Se mira el hessiano de L = f − λg en la dirección tangente a la restricción: q > 0 es mínimo y q < 0 máximo (en dos variables, el signo contrario al del hessiano orlado). Para x y con 2x + 2y = 20 sale x = y = 5, f = 25 y es un máximo.'],
+  ],
   graficador: [
     ['¿Cómo se calculan el dominio, los cortes y las asíntotas de una función?', 'El dominio excluye los puntos donde se anula un denominador, hay una raíz par de un negativo o un logaritmo de algo no positivo. Los cortes son f(0) con el eje y y las soluciones de f(x) = 0 con el eje x. Para f = 1/(x − 2): dominio x ≠ 2, asíntota vertical x = 2, horizontal y = 0 y corte con el eje y en −1/2.'],
     ['¿Para qué sirve dibujar varias funciones a la vez?', 'Para ver dónde se cortan (f = g), comparar una función con su derivada o con su aproximación de Taylor, y estimar áreas entre curvas antes de integrar.'],

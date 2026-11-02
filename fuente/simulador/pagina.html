@@ -76,6 +76,7 @@
 .eq-th text { fill: var(--ink); stroke: none; font: 600 12px var(--f-ui) } .eq-th text.v { fill: var(--accent) }
 .leyenda i { display: inline-block; width: 18px; height: 3px; vertical-align: middle; margin: 0 4px 2px 10px; border-radius: 2px }
 .leyenda i.c1 { background: var(--canal-1) } .leyenda i.c2 { background: var(--canal-2) } .leyenda i.c3 { background: var(--canal-3) } .leyenda i.c4 { background: var(--canal-4) }
+#spice { margin: 10px 0 } #spice textarea { font: 13px/1.5 var(--f-mono); resize: vertical; margin: 4px 0 8px } #sp-msg { white-space: pre-line }
 </style>
 <body>
 <header class="top"><a class="logo" href="../../">Cienci<i>fy</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Circuitos</a> / Simulador de circuitos</span></header>
@@ -106,6 +107,20 @@
         <button class="btn" id="b-ajustar" type="button" title="Ver todo el esquema">Ajustar</button>
         <button class="btn" id="b-anim" type="button" aria-pressed="true" title="Pausar o reanudar la corriente animada">⏸ Animación</button>
         <button class="btn" id="b-vaciar" type="button" title="Empezar un esquema en blanco">Vaciar</button>
+        <button class="btn" id="b-spice" type="button" aria-expanded="false" aria-controls="spice" title="Importar o exportar la red como texto SPICE">SPICE</button>
+      </div>
+      <div id="spice" hidden>
+        <label for="spice-txt"><b>Red en texto SPICE</b></label>
+        <textarea id="spice-txt" class="in" rows="9" spellcheck="false" placeholder="* Divisor de tensión&#10;V1 1 0 DC 12&#10;R1 1 2 1k&#10;R2 2 0 2k&#10;.end"></textarea>
+        <div class="tools">
+          <button class="btn" id="sp-exportar" type="button">Escribir la del esquema</button>
+          <button class="btn" id="sp-importar" type="button">Dibujar este texto</button>
+          <button class="btn" id="sp-copiar" type="button">Copiar</button>
+          <button class="btn" id="sp-descargar" type="button">Descargar .cir</button>
+          <label class="btn" for="sp-archivo">Abrir archivo…</label>
+          <input id="sp-archivo" type="file" accept=".cir,.sp,.net,.spi,.txt,text/plain" hidden>
+        </div>
+        <p class="nota" id="sp-msg" role="status"></p>
       </div>
       <svg id="ed" role="application" aria-label="Esquema del circuito"></svg>
       <p class="nota" id="ayuda">Arrastra un componente de la paleta al esquema. Une dos patillas arrastrando de una a otra. Mayús y arrastrar selecciona varios; arrastrar el fondo lo desplaza; la rueda hace zoom. Tocar un interruptor lo abre o lo cierra.</p>
@@ -124,6 +139,7 @@
     <button id="tab-tr" role="tab" aria-selected="false">Osciloscopio</button>
     <button id="tab-fa" role="tab" aria-selected="false">Fasores</button>
     <button id="tab-bo" role="tab" aria-selected="false">Bode</button>
+    <button id="tab-ba" role="tab" aria-selected="false">Barrido</button>
     <button id="tab-th" role="tab" aria-selected="false">Thévenin y Norton</button>
     <button id="tab-de" role="tab" aria-selected="false">Desarrollo</button>
   </div>
