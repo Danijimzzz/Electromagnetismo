@@ -33,7 +33,14 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     cerca(bu.comp[1].x, nHe / (nO + nHe), 1e-9, 'fracción molar del helio'); cerca(bu.Pt, ((nO + nHe) * 8.314 * 293) / 0.012, 1e-9, 'presión de la botella');
     // CO₂: 1 mol en 0,5 L a 300 K, a = 0,364 y b = 4,267·10⁻⁵
     const vd = r('vdw'), Pv = (8.314 * 300) / (5e-4 - 4.267e-5) - 0.364 / 25e-8;
-    cerca(vd.P, Pv, 1e-9, 'presión de Van der Waals'); cerca(vd.Z, (Pv * 5e-4) / (8.314 * 300), 1e-9, 'factor de compresibilidad'); cerca(vd.Tc, (8 * 0.364) / (27 * 8.314 * 4.267e-5), 1e-9, 'temperatura crítica del CO₂');
+    // Redlich-Kwong con Tc y Pc de Van der Waals (CO₂: a = 0,364; b = 4,267·10⁻⁵; R = 8,314)
+    const Tcv = (8 * 0.364) / (27 * 8.314 * 4.267e-5), Pcv = 0.364 / (27 * 4.267e-5 ** 2), aK = (0.42748 * 8.314 ** 2 * Tcv ** 2.5) / Pcv, bK = (0.08664 * 8.314 * Tcv) / Pcv;
+    const Pk = (8.314 * 300) / (5e-4 - bK) - aK / (Math.sqrt(300) * 5e-4 * (5e-4 + bK));
+    cerca(vd.PRK, Pk, 1e-9, 'presión de Redlich-Kwong'); cerca(vd.ZRK, (Pk * 5e-4) / (8.314 * 300), 1e-9, 'Z de Redlich-Kwong');
+    // a temperatura alta y volumen grande, Redlich-Kwong, Van der Waals y gas ideal coinciden
+    const gd = Gases.resolver({ modo: 'real', gasR: 'N2', a: '', b: '', n: '1', V: '1000', T: '400' });
+    cerca(gd.PRK / gd.Pi, 1, 1e-3, 'Redlich-Kwong → ideal a baja densidad');
+        cerca(vd.P, Pv, 1e-9, 'presión de Van der Waals'); cerca(vd.Z, (Pv * 5e-4) / (8.314 * 300), 1e-9, 'factor de compresibilidad'); cerca(vd.Tc, (8 * 0.364) / (27 * 8.314 * 4.267e-5), 1e-9, 'temperatura crítica del CO₂');
     if (!(vd.Z < 1) || !(r('vdw-n2').Z > 0.99)) mal('Gases: el CO₂ comprimido debería tener Z < 1 y el N₂ casi ideal Z ≈ 1');
     for (const [sc, q] of [[{ modo: 'estado', P: '1', V: '', T: '', n: '1' }, 'dos incógnitas'], [{ modo: 'estado', P: '1', V: '1', T: '300', n: '5' }, 'cuatro datos incoherentes'], [{ modo: 'estado', uT: 'C', P: '1', V: '', T: '-300', n: '1' }, 'T bajo el cero absoluto'], [{ modo: 'procesos', gas: 'diatomico', P: '1', V: '1', T: '300', n: '', procesos: [{ tipo: 'isoterma', dato: 'V', valor: '2' }, { tipo: 'isobara', dato: 'V', valor: 'A' }] }, 'ciclo que no cierra'], [{ modo: 'procesos', gas: 'diatomico', P: '1', V: '1', T: '300', n: '', procesos: [{ tipo: 'isocora', dato: 'V', valor: '2' }] }, 'isocora con V'], [{ modo: 'procesos', gas: 'diatomico', P: '1', V: '1', T: '300', n: '', procesos: [] }, 'sin transformaciones'], [{ modo: 'real', gasR: 'CO2', n: '1', V: '0,04', T: '300' }, 'un volumen menor que nb'], [{ modo: 'mezcla', T: '300', V: '10', cant: 'n', g1: 'N2', c1: '1', g2: 'O2', c2: '' }, 'una mezcla de un solo gas'], [{ modo: 'cinetica', molecula: 'otra', M: '30', T: '300', uT: 'K', P: '1', d: '' }, 'recorrido libre medio sin diámetro']]) {
       let ok = false; try { Gases.resolver(sc); } catch (e) { ok = true; }

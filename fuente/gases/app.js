@@ -117,15 +117,15 @@
       h = dato('Presión total', `P = <b>${f(sol.Pt)} Pa</b> (${f(sol.Pt / 101325)} atm)`) + sol.comp.map((c) => dato(`Presión parcial de ${c.nombre}`, `<b>${f(c.P)} Pa</b> (x = ${f(c.x)})`)).join('') + dato('Masa molar media', `M̄ = ${f(sol.Mm)} g/mol`);
       ley = 'Las barras son la presión parcial de cada gas: juntas suman la total. Abajo, las moléculas de cada gas en la caja.';
     } else if (sol.modo === 'real') {
-      h = dato('Presión (Van der Waals)', `P = <b>${f(sol.P)} Pa</b> (${f(sol.P / 101325)} atm)`) + dato('Presión si fuera ideal', `P = ${f(sol.Pi)} Pa`) + dato('Factor de compresibilidad', `Z = <b>${f(sol.Z)}</b>`) + dato('Temperatura crítica', `T<sub>c</sub> = ${f(sol.Tc)} K`);
-      ley = 'Isoterma de Van der Waals (color) frente a la del gas ideal (gris) a la misma temperatura, con el estado marcado. En gris discontinuo, la isoterma crítica.';
+      h = dato('Presión (Van der Waals)', `P = <b>${f(sol.P)} Pa</b> (${f(sol.P / 101325)} atm)`) + dato('Presión si fuera ideal', `P = ${f(sol.Pi)} Pa`) + dato('Presión (Redlich-Kwong)', `P = ${f(sol.PRK)} Pa (${f(sol.PRK / 101325)} atm)`) + dato('Z de Redlich-Kwong', `Z = ${f(sol.ZRK)}`) + dato('Factor de compresibilidad', `Z = <b>${f(sol.Z)}</b>`) + dato('Temperatura crítica', `T<sub>c</sub> = ${f(sol.Tc)} K`);
+      ley = 'Isoterma de Van der Waals (color) frente a la del gas ideal (gris) a la misma temperatura, con el estado marcado. En gris discontinuo, la isoterma crítica. Abajo, Z = PV/nRT frente a P a esa temperatura: el gas ideal (Z = 1), Van der Waals y Redlich-Kwong.';
     } else {
       h = dato('Velocidad cuadrática media', `v<sub>cm</sub> = <b>${f(sol.vrms)} m/s</b>`) + dato('Velocidad media', `v̄ = ${f(sol.vmed)} m/s`) + dato('Más probable', `v<sub>p</sub> = ${f(sol.vp)} m/s`) + dato('Energía cinética media', `⟨E<sub>c</sub>⟩ = ${f(sol.Ec)} J`) + (sol.lam ? dato('Recorrido libre medio', `λ = <b>${f(sol.lam * 1e9)} nm</b>`) + dato('Choques por segundo', `z = ${f(sol.z)} s<sup>−1</sup>`) : '');
       ley = `Distribución de Maxwell de las velocidades a ${txt(f(sol.T, 5))} K; en gris, la del mismo gas al doble de temperatura. Abajo, moléculas que se mueven con esas velocidades (más claras las rápidas).`;
     }
     $('#res').innerHTML = h; $('#leyenda').textContent = ley;
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html, true)}</li>`).join('');
-    $('#caja').hidden = !['estado', 'cinetica', 'mezcla'].includes(sol.modo);
+    $('#caja').hidden = !['estado', 'cinetica', 'mezcla'].includes(sol.modo); $('#zp').hidden = sol.modo !== 'real';
     particulas = null; dibuja();
   }
 
@@ -162,7 +162,42 @@
     }
     return pts;
   }
+  // Z = PV/nRT frente a P (rama de gas, volumen molar decreciente) para Van der Waals y Redlich-Kwong a la temperatura del estado
+  function dibujaZ() {
+    const c = $('#zp'), dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
+    if (c.hidden || !w || !h || !sol || sol.modo !== 'real') return;
+    if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
+    const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h); g.lineCap = 'round'; g.lineJoin = 'round';
+    if (!col['--ink']) colores();
+    const Pm = Math.max(sol.P, sol.PRK, sol.Pi) * 1.6, Vm0 = sol.V / sol.n, R = G.R;
+    const rama = (fn) => {
+      const pts = []; let ant = -Infinity;
+      for (let i = 0; i <= 400; i++) {
+        const Vm = Vm0 * 40 * (Math.max(sol.bR, sol.b) * 1.02 / (Vm0 * 40)) ** (i / 400), P = fn(Vm, sol.T);
+        if (!(P > 0) || P < ant) break; if (P > Pm) break; ant = P; pts.push([P / 101325, (P * Vm) / (R * sol.T)]);
+      }
+      return pts;
+    };
+    const A = rama(sol.pvdw), B = rama(sol.prk), todos = A.concat(B, [[sol.P / 101325, sol.Z], [sol.PRK / 101325, sol.ZRK]]);
+    const zmin = Math.min(0.5, ...todos.map((p) => p[1])) * 0.95, zmax = Math.max(1.1, ...todos.map((p) => p[1])) * 1.03, pmax = Pm / 101325;
+    const ml = 52, mr = 12, mt = 12, mb = 40, X = (p) => ml + (p / pmax) * (w - ml - mr), Y = (z) => h - mb - ((z - zmin) / (zmax - zmin)) * (h - mt - mb);
+    g.font = '12px system-ui, sans-serif'; g.lineWidth = 1; g.strokeStyle = col['--line']; g.fillStyle = col['--muted'];
+    g.textAlign = 'right'; g.textBaseline = 'middle';
+    for (const z of Herramienta.marcas(zmin, zmax, 4)) { g.beginPath(); g.moveTo(ml, Y(z)); g.lineTo(w - mr, Y(z)); g.stroke(); g.fillText(txt(f(z, 3)), ml - 6, Y(z)); }
+    g.textAlign = 'center'; g.textBaseline = 'top';
+    for (const p of Herramienta.marcas(0, pmax, 5)) g.fillText(txt(f(p, 3)), X(p), h - mb + 6);
+    g.fillText('P (atm)', ml + (w - ml - mr) / 2, h - 14);
+    g.textAlign = 'left'; g.textBaseline = 'top'; g.fillText('Z', ml + 4, mt);
+    g.strokeStyle = col['--ink']; g.lineWidth = 1.6; g.setLineDash([5, 4]); g.beginPath(); g.moveTo(X(0), Y(1)); g.lineTo(X(pmax), Y(1)); g.stroke(); g.setLineDash([]);
+    g.lineWidth = 2.4; g.strokeStyle = col['--accent']; curva(g, A, X, Y); g.strokeStyle = col['--peso'] || col['--accent']; curva(g, B, X, Y);
+    g.font = '600 12px system-ui, sans-serif'; g.textBaseline = 'middle';
+    g.textAlign = 'left'; const yl = h - mb - 52; g.fillStyle = col['--accent']; g.fillText('Van der Waals', ml + 10, yl);
+    g.fillStyle = col['--peso'] || col['--accent']; g.fillText('Redlich-Kwong', ml + 10, yl + 16);
+    g.fillStyle = col['--ink']; g.fillText('gas ideal (Z = 1)', ml + 10, yl + 32);
+    for (const [p, z, cl] of [[sol.P, sol.Z, col['--accent']], [sol.PRK, sol.ZRK, col['--peso'] || col['--accent']]]) { g.fillStyle = cl; g.beginPath(); g.arc(X(p / 101325), Y(z), 5, 0, 2 * Math.PI); g.fill(); }
+  }
   function dibuja() {
+    dibujaZ();
     const c = $('#escena'), dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
     if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
     const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h); g.lineCap = 'round'; g.lineJoin = 'round';

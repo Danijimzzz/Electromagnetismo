@@ -37,6 +37,12 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     cerca(r('mezcla-debil').pH, pKa, 1e-12, 'acético a medio neutralizar'); { const Kh = 1e-14 / 1.8e-5; cerca(r('mezcla-amoniaco').pH, -lg((-Kh + Math.sqrt(Kh * Kh + 4 * Kh * 0.05)) / 2), 1e-6, 'amoniaco y HCl a partes iguales'); }
     cerca(r('sulfurico').pH, -lg(0.01 + (-(0.01 + 0.012) + Math.sqrt((0.01 + 0.012) ** 2 + 4 * 0.012 * 0.01)) / 2), 2e-3, 'H₂SO₄ con su Ka₂');
     cerca(r('agua-50').pH, -lg(Math.sqrt(PHC.kwDe(50))), 1e-3, 'agua neutra a 50 °C'); cerca(r('agua-50').pKw, 13.262, 0.01, 'pKw a 50 °C');
+    { // diagrama de especies: fracciones que suman 1, iguales a pH = pKa y α del anión a partir de Ka
+      const Ka = [7.5e-3, 6.2e-8, 4.8e-13], al = PHC.fracciones(Ka, 7), suma = al.reduce((x, y) => x + y, 0);
+      cerca(suma, 1, 1e-12, 'las fracciones de especies suman 1'); const a1 = PHC.fracciones(Ka, -lg(Ka[0])); cerca(a1[0], a1[1], 1e-9 * 1e3, 'α(H₃A) = α(H₂A⁻) a pH = pKa1');
+      const h = 1e-7, den = 1 + Ka[0] / h + (Ka[0] * Ka[1]) / h ** 2 + (Ka[0] * Ka[1] * Ka[2]) / h ** 3; cerca(al[1], (Ka[0] / h) / den, 1e-12, 'α(H₂A⁻) a pH 7');
+      const pc = r('carbonico'); cerca(pc.alfa.reduce((x, y) => x + y, 0), 1, 1e-12, 'fracciones del carbónico'); cerca(pc.alfa[0] * 0.05, pc.conc[0], 1e-12, '[H₂A] = α·C');
+    }
     { const vp = r('val-fosforico'); if (vp.Veqs.join() !== '20,40,60') mal(`pH: equivalencias del fosfórico ${vp.Veqs}`); cerca(vp.ph(20), (-lg(7.5e-3) - lg(6.2e-8)) / 2, 0.1, 'primera equivalencia del fosfórico'); }
     if (va.ind[0] !== 'fenolftaleína') mal(`pH: para el acético con NaOH sale ${va.ind[0]}`);
     if (va.curva.some((q, i) => i && q[1] < va.curva[i - 1][1] - 1e-9)) mal('pH: la curva de valoración de un ácido no sube siempre');

@@ -1,0 +1,56 @@
+<title>Calculadora de solubilidad y Kps · Ciencify</title>
+<meta name="description" content="Calcula el Kps a partir de la solubilidad y al revés, el efecto del ion común, si precipita una sal al mezclar dos disoluciones y la precipitación fraccionada, paso a paso y con diagrama logarítmico.">
+<style>
+:root {
+  --serie-1: #2a5db5; --serie-2: #1d7a3e; --roz: #b0700a }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #5fcf8a; --roz: #e6a640 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #5fcf8a; --roz: #e6a640 }
+#grafica { height: clamp(240px, 30vw, 320px) }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Química</a> / Solubilidad y Kps</span></header>
+<div class="wrap">
+<h1>Solubilidad y Kps</h1>
+<p class="lead">Calcula el producto de solubilidad (Kps) de una sal poco soluble a partir de su solubilidad y la solubilidad a partir del Kps, cómo la reduce un ion común, si precipita al mezclar dos disoluciones y qué sal precipita antes cuando hay dos. Todo paso a paso y con el diagrama logarítmico de saturación.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Gráfica</h2>
+      <canvas id="grafica" aria-label="Gráfica"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Producto de solubilidad</h2>
+  <p class="m">Una sal poco soluble $A_{a}B_{b}$ alcanza un equilibrio con sus iones en la disolución saturada:</p>
+  <p class="f m">$A_{a}B_{b}(s) ⇌ a A^{n+}(aq) + b B^{m−}(aq)$, &ensp; $K_{"ps"} = [A]^{a} [B]^{b}$</p>
+  <p class="m">El sólido no entra en la constante. Si la solubilidad molar es $s$, entonces $[A] = a s$, $[B] = b s$ y $K_{"ps"} = a^{a} b^{b} s^{a+b}$. Para una sal 1:1 como el AgCl, $K_{"ps"} = s^{2}$; para una 1:2 como el Ca(OH)₂ o el PbI₂, $K_{"ps"} = 4 s^{3}$; para Ag₂CrO₄, también $4 s^{3}$.</p>
+  <p>Ojo: comparar Kps solo vale entre sales con la misma fórmula (1:1 con 1:1). Una sal 1:2 puede tener un Kps menor y ser más soluble que una 1:1.</p>
+  <h2>Efecto del ion común</h2>
+  <p class="m">Si la disolución ya contiene uno de los iones (NaCl para el AgCl), el producto $[A]^{a}[B]^{b}$ llega antes a $K_{"ps"}$ y se disuelve menos sal: el equilibrio se desplaza hacia el sólido (Le Chatelier). Cuando $s$ es mucho menor que la concentración $C$ del ion común se puede aproximar $a s + C ≈ C$; la herramienta resuelve además la ecuación entera y te dice cuánto difiere.</p>
+  <h2>¿Precipita?</h2>
+  <p class="m">Al mezclar dos disoluciones se diluyen los iones: $[A]_{0} = c_{1} V_{1}/(V_{1}+V_{2})$. Se compara el producto iónico $Q = [A]_{0}^{a}[B]_{0}^{b}$ con el $K_{"ps"}$:</p>
+  <ul>
+    <li>$Q &lt; K_{"ps"}$: disolución insaturada, no precipita.</li>
+    <li>$Q = K_{"ps"}$: justo saturada.</li>
+    <li>$Q &gt; K_{"ps"}$: sobresaturada, precipita hasta que el producto iónico baja a $K_{"ps"}$. Lo que queda disuelto sale de $(c_{A} − a x)^{a}(c_{B} − b x)^{b} = K_{"ps"}$.</li>
+  </ul>
+  <h2>Precipitación fraccionada</h2>
+  <p class="m">Si se añade poco a poco un ion que forma dos sales poco solubles, precipita primero la que necesita menos cantidad de él: $[X] = (K_{"ps"} / [Y]^{q})^{1/p}$. Cuando empieza a precipitar la segunda, lo que queda de la primera se calcula con el mismo Kps. Si queda menos del 0,1 %, la separación se considera cuantitativa. Es el fundamento del método de Mohr para valorar cloruros con Ag⁺ y cromato como indicador.</p>
+  <h2>Lo que no incluye</h2>
+  <p>Se trabaja con concentraciones, no con actividades, y a 25 °C. No se tienen en cuenta la hidrólisis de los iones, la formación de complejos ni el efecto del pH (que cambia mucho la solubilidad de hidróxidos y carbonatos). Los valores de Kps de las sales de ejemplo son de tablas de uso común y varían de un libro a otro: usa los de tu asignatura.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Solubilidad y Kps <span id="ver"></span> (beta)</footer>
+</body>

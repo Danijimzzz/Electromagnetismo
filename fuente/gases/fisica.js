@@ -203,13 +203,19 @@ const Gases = (() => {
     if (V <= n * b) throw new Error(`El volumen tiene que ser mayor que el que ocupan las propias moléculas, nb = ${f(n * b * 1000).replace(/<[^>]+>/g, '')} L`);
     const Pi = (n * R * T) / V, rep = (n * R * T) / (V - n * b), atr = (a * n * n) / (V * V), P = rep - atr, Z = (P * V) / (n * R * T);
     const Tc = (8 * a) / (27 * R * b), Pc = a / (27 * b * b), Vc = 3 * b;
+    // Redlich-Kwong con los mismos Tc y Pc: a' = 0,42748 R²Tc^2,5/Pc, b' = 0,08664 R Tc/Pc; P = nRT/(V − nb') − a'n²/(√T V (V + nb'))
+    const aR = (0.42748 * R * R * Tc ** 2.5) / Pc, bR = (0.08664 * R * Tc) / Pc;
+    const prk = (Vm, TT) => (R * TT) / (Vm - bR) - aR / (Math.sqrt(TT) * Vm * (Vm + bR)), pvdw = (Vm, TT) => (R * TT) / (Vm - b) - a / (Vm * Vm);
+    if (V / n <= bR) throw new Error(`El volumen molar tiene que ser mayor que b de Redlich-Kwong, ${f(bR * 1000)} L/mol`);
+    const PRK = prk(V / n, T), ZRK = (PRK * V) / (n * R * T);
     const pasos = [
       { t: 'Ecuación de Van der Waals', html: `${nombre}: $a = ${f(a)}$ Pa·m⁶/mol², $b = ${f(b)}$ m³/mol. La ecuación $(P + {a n^2}/{V^2})(V − nb) = nRT$ corrige el gas ideal: b es el volumen que ocupan las moléculas y a mide lo que se atraen.` },
       { t: 'Presión del gas real', html: `$P = {nRT}/{V − nb} − {a n^2}/{V^2} = {${f(n)} · ${Rs} · ${f(T)}}/{${f(V)} − ${f(n * b)}} − {${f(a)} · ${f(n)}^2}/{(${f(V)})^2} = ${f(rep)} − ${f(atr)}$ = <b>${f(P)} Pa</b> (${f(P / 101325)} atm)` },
       { t: 'Comparación con el gas ideal', html: `Ideal: $P = {nRT}/V$ = ${f(Pi)} Pa (${f(Pi / 101325)} atm). El real da un ${f((100 * (P - Pi)) / Pi, 3)} %. Factor de compresibilidad $Z = {PV}/{nRT}$ = <b>${f(Z)}</b>: ${Z < 1 ? 'menor que 1, mandan las atracciones' : 'mayor que 1, manda el volumen de las moléculas'}.` },
+      { t: 'Redlich-Kwong', html: `Con los mismos $T_c$ y $P_c$: $a' = {0,42748 R^2 T_c^{2,5}}/{P_c} = ${f(aR)}$ Pa·m⁶·K<sup>½</sup>/mol², $b' = {0,08664 R T_c}/{P_c} = ${f(bR)}$ m³/mol. La ecuación $P = {RT}/{V_m − b'} − {a'}/{√T V_m (V_m + b')}$ da <b>${f(PRK)} Pa</b> (${f(PRK / 101325)} atm), $Z = ${f(ZRK)}$. Suele ajustarse mejor que Van der Waals a presiones altas y a temperaturas por encima de la crítica.` },
       { t: 'Punto crítico', html: `$T_c = {8a}/{27Rb}$ = <b>${f(Tc)} K</b>, $P_c = {a}/{27 b^2}$ = ${f(Pc / 101325)} atm, $V_{m,c} = 3b$ = ${f(Vc * 1000)} L/mol. Por encima de $T_c$ el gas no se puede licuar por mucho que se comprima.` },
     ];
-    return { modo: 'real', nombre, a, b, n, V, T, P, Pi, Z, Tc, Pc, Vc, pasos };
+    return { modo: 'real', nombre, a, b, n, V, T, P, Pi, Z, Tc, Pc, Vc, aR, bR, PRK, ZRK, prk, pvdw, pasos };
   }
   // densidad de Maxwell para la gráfica
   const maxwell = (M, T, v) => { const a = M / (2 * R * T); return 4 * Math.PI * (a / Math.PI) ** 1.5 * v * v * Math.exp(-a * v * v); };
