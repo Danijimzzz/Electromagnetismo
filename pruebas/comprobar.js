@@ -30,7 +30,7 @@ const mal = (m) => { fallos++; console.log('  ✗ ' + m); };
 // lo único que puede haber en publico/ (lo que sirven Vercel y Cloudflare): los archivos sueltos,
 // la portada, una página por asignatura y una por herramienta disponible del catálogo
 const Catalogo = require(path.join(fuente, 'catalogo.js')), Biblioteca = require(path.join(fuente, 'biblioteca.js'));
-const PUBLICABLES = ['index.html', 'novedades/index.html', 'foro/index.html', 'og.png', 'apple-touch-icon.png', 'buscador.js', 'legal.css', 'aviso-legal.html', 'privacidad.html', 'cookies.html', 'contacto.html', 'fuentes/stix-two-math.woff2', 'fuentes/OFL-STIX-Two.txt', 'sitemap.xml', 'robots.txt',
+const PUBLICABLES = ['index.html', 'novedades/index.html', 'foro/index.html', 'og.png', 'apple-touch-icon.png', 'buscador.js', 'llama.js', 'legal.css', 'aviso-legal.html', 'privacidad.html', 'cookies.html', 'contacto.html', 'fuentes/stix-two-math.woff2', 'fuentes/OFL-STIX-Two.txt', 'sitemap.xml', 'robots.txt',
   ...Catalogo.asignaturas.flatMap((a) => [`${a.clave}/index.html`, ...a.herramientas.filter((h) => h.disponible).map((h) => `${a.clave}/${h.clave}/index.html`)]),
   // «Física en la vida real»: el índice y una página por fenómeno disponible
   'fenomenos/index.html', ...Catalogo.fenomenos.lista.filter((f) => f.disponible).flatMap((f) => [`fenomenos/${f.clave}/index.html`, `fenomenos/${f.clave}/imagen.webp`]),
@@ -460,9 +460,43 @@ async function navegador() {
     if (await por.isVisible('#tu-espacio')) mal('Portada: «Tu espacio» debería ocultarse al buscar');
     await por.fill('#buscar', ''); await por.click('#tu-espacio .olvida');
     if (!(await por.getAttribute('#tu-espacio', 'hidden') !== null)) mal('Portada: «Olvidar mis datos» no vacía «Tu espacio»');
+    // la llama 🔥 de la herramienta más usada de cada asignatura (los datos de prueba hacen de contador)
+    const cl = await browser.newContext({ viewport: { width: 1400, height: 900 } });
+    await cl.addInitScript(() => { window.LLAMA_FUENTE = '/api-test/populares'; });
+    const visitas = []; await cl.route('**/api-test/visita', (r) => { visitas.push(r.request().postData()); r.fulfill({ status: 204 }); });
+    await cl.route('**/api-test/populares', (r) => r.fulfill({ json: { fisica: 'fisica/tiro-parabolico', matematicas: 'matematicas/derivadas' } }));
+    const pl = await cl.newPage(); pl.on('pageerror', (e) => consola.push(`llama: ${e.message}`));
+    await pl.goto(web); await pl.waitForSelector('.mini a .llama');
+    if ((await pl.locator('.mini a .llama').count()) !== 2) mal('Llama: la portada debería marcar solo las dos herramientas del contador');
+    await pl.goto(web + 'fisica/'); await pl.waitForSelector('a.card .llama');
+    await pl.goto(web + 'fisica/tiro-parabolico/'); await pl.waitForSelector('h1 .llama');
+    await pl.goto(web + 'fisica/gases/'); await pl.waitForTimeout(500);
+    if (await pl.locator('.llama').count()) mal('Llama: Gases no debería llevar llama');
+    if (!visitas.includes('{"r":"fisica/tiro-parabolico"}') || !visitas.includes('{"r":"fisica/gases"}') || visitas.length !== 2) mal(`Contador: se esperaban 2 visitas (una por herramienta y sesión) y hay ${JSON.stringify(visitas)}`);
+    // el Worker del contador (worker/contador.mjs) con una D1 de mentira
+    {
+      const W = await import(require('url').pathToFileURL(path.join(__dirname, '..', 'worker', 'contador.mjs')).href), filas = new Map();
+      const db = { prepare: (sql) => ({ bind: (...a) => ({
+        run: async () => { const k = `${a[0]}|${a[1]}`; filas.set(k, (filas.get(k) || 0) + 1); },
+        all: async () => { const suma = {}; for (const [k, n] of filas) { const [mes, ruta] = k.split('|'); if (a.includes(mes)) suma[ruta] = (suma[ruta] || 0) + n; } return { results: Object.entries(suma).map(([ruta, n]) => ({ ruta, n })) }; },
+      }) }) };
+      const web0 = 'https://electromagnetismo.aceropuro30.workers.dev', env = { VISITAS: db, ASSETS: { fetch: async () => new Response('pagina') } };
+      const llama = (u, o = {}) => W.default.fetch(new Request(web0 + u, o), env, { waitUntil: () => {} });
+      const post = (r, origen = web0) => llama('/api/visita', { method: 'POST', body: JSON.stringify({ r }), headers: { origin: origen } });
+      for (let i = 0; i < 12; i++) await post('fisica/tiro-parabolico');
+      for (let i = 0; i < 11; i++) await post('fisica/gases');
+      for (let i = 0; i < 3; i++) await post('matematicas/derivadas');            // por debajo del mínimo
+      for (let i = 0; i < 20; i++) await post('fisica/no-existe');                 // no es una herramienta
+      for (let i = 0; i < 20; i++) await post('quimica/ph', 'https://otra-web.example'); // origen no permitido
+      const pop = await (await llama('/api/populares')).json();
+      if (pop.fisica !== 'fisica/tiro-parabolico' || pop.matematicas || pop.quimica || Object.keys(pop).length !== 1) mal(`Contador: populares incorrecto ${JSON.stringify(pop)}`);
+      if ((await (await llama('/')).text()) !== 'pagina') mal('Contador: el resto de rutas debe servir publico/');
+      if ((await llama('/api/otra')).status !== 404) mal('Contador: /api/otra debería dar 404');
+    }
+    await cl.close();
     await ctx.close(); srv.close();
     if (consola.length) mal('Fase 7: consola del navegador:\n      ' + consola.join('\n      '));
-    if (fallos === antes) console.log('  ✓ Fase 7: copiar enlace con el estado, hoja de ejercicios para imprimir y «Tu espacio» en la portada');
+    if (fallos === antes) console.log('  ✓ Fase 7: copiar enlace con el estado, hoja de ejercicios para imprimir, «Tu espacio» en la portada y la llama de la más usada');
   }
   {
     // arreglo 7: modo práctica (datos al azar, se tapan los resultados, se corrigen las respuestas y se destapa la solución)

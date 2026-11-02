@@ -3,7 +3,7 @@
    las novedades y el índice de «Física en la vida real» (publico/fenomenos/index.html) a partir de catalogo.js.
    Lo llama build.sh; no hace falta ejecutarlo a mano. Las páginas de cada fenómeno las hace herramientas.js. */
 const fs = require('fs'), path = require('path');
-const Catalogo = require('./catalogo.js'), Version = require('./version.js'), Tema = require('./tema.js'), Buscador = require('./buscador.js'), Anuncios = require('./anuncios.js');
+const Catalogo = require('./catalogo.js'), Version = require('./version.js'), Tema = require('./tema.js'), Buscador = require('./buscador.js'), Llama = require('./llama.js'), Anuncios = require('./anuncios.js');
 const publico = path.join(__dirname, '..', 'publico');
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -181,7 +181,7 @@ ${Anuncios.cabeza()}<script>${Tema.SCRIPT}</script>
 ${buscar ? '<input type="search" id="buscar" class="buscar" placeholder="Buscar: Biot-Savart, molaridad…" aria-label="Buscar herramientas (atajo: barra /)" title="Atajo: / o Ctrl+K" autocomplete="off">' : ''}${Tema.BOTON}</header>
 ${cuerpo}
 ${CON_ANUNCIO.includes(actual) ? Anuncios.hueco() : ''}${Anuncios.pie(`<footer><a href="${raiz}contacto.html">Contacto</a>·<a href="${raiz}aviso-legal.html">Aviso legal</a>·<a href="${raiz}privacidad.html">Privacidad</a>·<a href="${raiz}cookies.html">Cookies</a>· <a href="${raiz}novedades/">Versión ${esc(Version.de('web').current)}</a></footer>`)}
-${Buscador.ETIQUETA(raiz)}\n${script ? `<script>${script}</script>\n` : ''}</body>
+${Buscador.ETIQUETA(raiz)}\n${Llama.ETIQUETA(raiz)}\n${script ? `<script>${script}</script>\n` : ''}</body>
 </html>
 `;
 }
@@ -467,6 +467,10 @@ for (const f of Object.keys(archivos)) if (f.endsWith('.html') && !archivos[f].i
   archivos[f] = archivos[f].replace('<meta charset="utf-8">', `<meta charset="utf-8">\n<link rel="canonical" href="${canonica(f)}">`);
 
 archivos['buscador.js'] = Buscador.archivo();
+archivos['llama.js'] = Llama.archivo();
+// datos del contador de visitas (worker/contador.mjs): herramientas válidas y webs que pueden contar
+fs.mkdirSync(path.join(__dirname, '..', 'worker'), { recursive: true });
+fs.writeFileSync(path.join(__dirname, '..', 'worker', 'rutas.mjs'), `/* Generado por fuente/portal.js desde catalogo.js: no se edita a mano. */\nexport const RUTAS = ${JSON.stringify(Catalogo.asignaturas.flatMap((a) => a.herramientas.filter((h) => h.disponible).map((h) => `${a.clave}/${h.clave}`)))};\nexport const ORIGENES = ${JSON.stringify([...new Set([Catalogo.web, Catalogo.conteo && new URL(Catalogo.conteo).origin, 'https://electromagnetismo-two.vercel.app'].filter(Boolean))])};\n`);
 for (const [f, html] of Object.entries(archivos)) {
   fs.mkdirSync(path.dirname(path.join(publico, f)), { recursive: true });
   fs.writeFileSync(path.join(publico, f), html);
