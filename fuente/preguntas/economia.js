@@ -104,4 +104,8 @@ module.exports = {
     ['¿Cómo se calcula el precio de una call con Black-Scholes?', 'C = S·N(d₁) − K·e^(−rT)·N(d₂), con d₁ = [ln(S/K) + (r + σ²/2)T]/(σ√T) y d₂ = d₁ − σ√T. Con S = K = 100, T = 1, r = 5 % y σ = 20 %: d₁ = 0,35, d₂ = 0,15 y la call vale unos 10,45 €.'],
     ['¿Qué relación hay entre el precio de la call y el de la put?', 'La paridad call-put: C − P = S − K·e^(−rT). En el ejemplo anterior, la put vale 10,45 − (100 − 95,12) ≈ 5,57 €. Con dividendos continuos q, se usa S·e^(−qT).'],
   ],
+  markowitz: [
+    ['¿Cómo se calcula la cartera de mínima varianza de dos activos?', 'w₁ = (σ₂² − ρσ₁σ₂)/(σ₁² + σ₂² − 2ρσ₁σ₂). Con σ₁ = 20 %, σ₂ = 10 % y ρ = 0,3: w₁ = 0,004/0,038 ≈ 10,5 % y w₂ ≈ 89,5 %; el riesgo baja a σ ≈ 9,79 %, menos que el del activo más seguro.'],
+    ['¿Qué es la cartera tangente y cómo se obtiene el CAPM?', 'La tangente maximiza el ratio de Sharpe (μ − rf)/σ. Si el mercado es esa cartera, la rentabilidad exigida a un activo es rf + β·(μM − rf), con β = σiM/σM². Un activo con rentabilidad esperada mayor que esa cifra tiene alfa positivo.'],
+  ],
 };
