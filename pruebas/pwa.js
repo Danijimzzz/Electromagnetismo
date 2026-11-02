@@ -14,6 +14,7 @@ function servidor(estado) {
   return new Promise((ok) => {
     const s = http.createServer((req, res) => {
       const u = new URL(req.url, 'http://x'); let p = decodeURIComponent(u.pathname);
+      if (estado.caido) return req.socket.destroy(); // sin red de verdad: setOffline no siempre alcanza a las peticiones del service worker
       estado.peticiones.push(p);
       if (p.endsWith('/')) p += 'index.html';
       const f = path.join(publico, p);
@@ -22,7 +23,7 @@ function servidor(estado) {
       const ext = f.split('.').pop();
       if (estado.titulo && p === '/index.html') cuerpo = Buffer.from(cuerpo.toString().replace(/<title>[^<]*/, '<title>' + estado.titulo));
       if (estado.v2 && p === '/sw.js') cuerpo = Buffer.from(cuerpo.toString().replace("'ciencify-", "'ciencify-v2-") + '\n// versión 2\n');
-      res.writeHead(200, { 'Content-Type': TIPOS[ext] || 'application/octet-stream', 'Cache-Control': p === '/sw.js' ? 'no-cache' : 'max-age=3600' });
+      res.writeHead(200, { 'Content-Type': TIPOS[ext] || 'application/octet-stream', 'Cache-Control': p === '/sw.js' || ext === 'html' ? 'no-cache' : 'max-age=3600' });
       res.end(cuerpo);
     }).listen(0, '127.0.0.1', () => ok(s));
   });
@@ -55,6 +56,7 @@ async function pwa(browser, { mal } = {}) {
   // 3) en el navegador
   const estado = { peticiones: [], titulo: '', v2: false }, srv = await servidor(estado), base = 'http://127.0.0.1:' + srv.address().port;
   const ctx = await browser.newContext({ viewport: { width: 1200, height: 900 } }), errs = [];
+  const sinRed = async (v) => { estado.caido = v; await ctx.setOffline(v); };
   const nueva = async () => { const p = await ctx.newPage(); p.on('pageerror', (e) => errs.push(e.message)); p.on('console', (c) => { if (c.type() === 'error' && !/Failed to load resource|net::ERR/.test(c.text())) errs.push(c.text()); }); return p; };
   try {
     const p = await nueva();
@@ -69,7 +71,7 @@ async function pwa(browser, { mal } = {}) {
     if (!(await p.locator('#pwa-barra:visible #pwa-todo').count())) mal('la portada no muestra «Guardar todo para usar sin conexión»');
     // visitar una herramienta con red y luego sin red
     await p.goto(base + '/fisica/tiro-parabolico/'); await p.waitForSelector('h1');
-    await ctx.setOffline(true);
+    await sinRed(true);
     await p.reload(); await p.waitForSelector('h1');
     if (!/Tiro/i.test(await p.locator('h1').innerText())) mal('sin conexión: la herramienta ya visitada no carga desde la caché');
     await p.goto(base + '/'); if (!(await p.locator('#buscar').count())) mal('sin conexión: la portada no carga');
@@ -77,7 +79,7 @@ async function pwa(browser, { mal } = {}) {
     // una herramienta nunca visitada y sin «guardar todo»: página sin conexión
     await p.goto(base + '/quimica/ph/');
     if (!/Sin conexión/.test(await p.locator('h1').innerText())) mal('sin conexión: una página no guardada debería enseñar offline.html');
-    await ctx.setOffline(false);
+    await sinRed(false);
     // con red llega la página nueva, no la guardada
     estado.titulo = 'Titulo NUEVO de prueba';
     await p.goto(base + '/'); if (!/NUEVO/.test(await p.title())) mal('con conexión: la portada sale de la caché vieja en vez de la red');
@@ -85,18 +87,18 @@ async function pwa(browser, { mal } = {}) {
     await p.waitForFunction(async () => { const r = await caches.match(location.href); return !!r && /NUEVO/.test(await r.clone().text()); }, null, { timeout: 30000 });
     estado.titulo = '';
     // sin red vale la última copia que se guardó (la nueva)
-    await ctx.setOffline(true); await p.goto(base + '/'); if (!/NUEVO/.test(await p.title())) mal('sin conexión: no sale la última copia guardada de la portada');
-    await ctx.setOffline(false);
+    await sinRed(true); await p.goto(base + '/'); if (!/NUEVO/.test(await p.title())) mal('sin conexión: no sale la última copia guardada de la portada');
+    await sinRed(false);
     // guardar todo
     await p.goto(base + '/'); await p.waitForSelector('#pwa-todo:visible');
     await p.click('#pwa-todo');
     await p.waitForFunction(() => /Todo guardado/.test(document.getElementById('pwa-estado').textContent), null, { timeout: 90000 }).catch(() => mal('«Guardar todo» no termina ("' + '")'));
-    await ctx.setOffline(true);
+    await sinRed(true);
     for (const u of ['/quimica/ph/', '/fenomenos/rayo/', '/electromagnetismo/electrostatica/']) {
       await p.goto(base + u); const t = await p.locator('h1').first().innerText().catch(() => '');
       if (/Sin conexión/.test(t) || !t) mal(`sin conexión tras «Guardar todo»: ${u} no carga`);
     }
-    await ctx.setOffline(false);
+    await sinRed(false);
     // 4) versión nueva del service worker: avisa, se aplica al pulsar, borra la caché vieja y rehace «guardar todo»
     estado.v2 = true;
     await p.goto(base + '/');
