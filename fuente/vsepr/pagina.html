@@ -1,0 +1,79 @@
+<title>Geometría molecular VSEPR en 3D: forma, polaridad e hibridación · SimulaCiencia</title>
+<meta name="description" content="Simulador de geometría molecular VSEPR en 3D: escribe una fórmula (H2O, SF4, SO4 2-…) y gira la molécula; calcula los dominios de electrones, la geometría, los ángulos, la hibridación y si es polar, paso a paso.">
+<style>
+:root {
+  --at-central: #1d7a3e; --at-h: #b8c2cc; --at-c: #4a5560; --at-o: #d4402a; --at-n: #2a5db5; --at-s: #d9a514; --at-hal: #2f9e63; --at-otro: #8a5bb5;
+  --par-libre: #6b3fa0; --dipolo: #c2412a }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --at-central: #5fcf8a; --at-h: #d5dde5; --at-c: #8d99a6; --at-o: #ef6a52; --at-n: #74a2f2; --at-s: #f0c24a; --at-hal: #4fd08a; --at-otro: #b892ec;
+  --par-libre: #b892ec; --dipolo: #ef7a62 } }
+:root[data-theme="dark"] {
+  --at-central: #5fcf8a; --at-h: #d5dde5; --at-c: #8d99a6; --at-o: #ef6a52; --at-n: #74a2f2; --at-s: #f0c24a; --at-hal: #4fd08a; --at-otro: #b892ec;
+  --par-libre: #b892ec; --dipolo: #ef7a62 }
+#molecula { height: clamp(300px, 48vw, 440px); cursor: grab; touch-action: none; margin-top: 0 }
+#molecula:active { cursor: grabbing }
+.btn[aria-pressed=true] { background: var(--accent-soft); border-color: var(--accent); color: var(--accent) }
+.formula-g { font: 600 22px var(--f-math); margin: 0 0 4px }
+#tabla-geo td, #tabla-geo th { padding: 6px 8px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); font-size: 13.5px }
+#tabla-geo { width: 100%; border-collapse: collapse }
+#tabla-geo th { font: 600 12px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .03em }
+#tabla-geo tr.activa td { background: var(--accent-soft) }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Química</a> / Geometría molecular VSEPR en 3D</span></header>
+<div class="wrap">
+<h1>Geometría molecular VSEPR en 3D</h1>
+<p class="lead">Escribe una molécula o un ion y obtén sus dominios de electrones, su geometría, los ángulos, la hibridación y su polaridad, con la molécula en 3D que puedes girar con el ratón o el dedo.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="modos" role="tablist"><button role="tab" id="tab-formula" aria-selected="true">Fórmula</button><button role="tab" id="tab-axe" aria-selected="false">Tipo AXₙEₘ</button></div>
+    <div id="p-formula">
+      <input id="formula" class="in ancho" placeholder="H2O, SF4, NH4+, SO4 2-…" aria-label="Fórmula" autocomplete="off" spellcheck="false">
+      <p class="nota">Moléculas e iones con un átomo central y terminales H, F, Cl, Br, I, O o S. Las cargas, con o sin ^: NH4+, SO4 2-, SO4^2-. Las mayúsculas importan: CO es monóxido de carbono y Co, cobalto.</p>
+    </div>
+    <div id="p-axe" hidden>
+      <div class="campos">
+        <label for="f-n">Átomos enlazados X <small>(2 a 7)</small></label><input id="f-n" class="in" data-k="n" inputmode="numeric" autocomplete="off">
+        <label for="f-m">Pares libres E <small>(0 a 3)</small></label><input id="f-m" class="in" data-k="m" inputmode="numeric" autocomplete="off">
+      </div>
+      <p class="nota">Un átomo central A con n átomos X iguales y m pares libres, sin átomos concretos: sirve para ver la forma de cada tipo.</p>
+    </div>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><p class="formula-g" id="titulo-mol"></p><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>La molécula en 3D</h2>
+      <canvas id="molecula" tabindex="0" aria-label="Molécula en 3D: arrastra para girarla, rueda o + y − para acercar, flechas para girar con el teclado"></canvas>
+      <div class="controles">
+        <button class="btn" id="b-giro" aria-pressed="true">Girar sola</button>
+        <button class="btn" id="b-libres" aria-pressed="true">Pares libres</button>
+        <button class="btn" id="b-dipolo" aria-pressed="true">Momento dipolar</button>
+        <button class="btn" id="b-reinicio">Reiniciar vista</button>
+      </div>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>El modelo VSEPR</h2>
+  <p>La teoría de repulsión de los pares de electrones de la capa de valencia (VSEPR) dice que los <b>dominios de electrones</b> alrededor de un átomo central se colocan lo más lejos posible unos de otros. Un dominio es un enlace (sencillo, doble o triple), un par libre o un electrón desapareado.</p>
+  <p class="f m">$"dominios" = ("e⁻ de valencia del central" + "e⁻ que aportan los terminales" − "carga")/2$</p>
+  <ul>
+    <li>Un H o un halógeno terminal aporta 1 e⁻; un O o un S terminal enlazado con doble enlace aporta 0.</li>
+    <li>Tipo <b>AX<sub>n</sub>E<sub>m</sub></b>: n átomos enlazados (X) y m pares libres (E); los dominios son n + m.</li>
+    <li>Un par libre ocupa más sitio que un enlace, y por eso <b>cierra los ángulos</b>: 109,5° → 107° en el NH₃ → 104,5° en el H₂O.</li>
+    <li>En la bipirámide trigonal, los pares libres van al plano <b>ecuatorial</b>; en el octaedro, el segundo par libre va <b>opuesto</b> al primero.</li>
+  </ul>
+  <h2>Hibridación</h2>
+  <p>Con n dominios, el átomo central usa n orbitales híbridos: 2 → sp, 3 → sp², 4 → sp³, 5 → sp³d, 6 → sp³d². Para 5 o más hace falta que el átomo sea del periodo 3 o posterior (octeto expandido).</p>
+  <h2>Polaridad</h2>
+  <p>Cada enlace tiene un momento dipolar proporcional a la diferencia de electronegatividades Δχ y apunta al átomo más electronegativo. La molécula es polar si la suma <b>vectorial</b> de los momentos no es nula: por eso el CO₂ (lineal) y el CCl₄ (tetraédrico) son apolares, y el H₂O y el NH₃ polares.</p>
+  <h2>Todas las geometrías</h2>
+  <div class="tabla-scroll"><table id="tabla-geo"></table></div>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Geometría molecular VSEPR en 3D <span id="ver"></span> (beta)</footer>
+</body>
