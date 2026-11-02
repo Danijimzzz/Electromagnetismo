@@ -52,6 +52,15 @@ module.exports = {
     ['¿Cómo se calculan la frecuencia y el periodo de un oscilador?', 'Muelle: ω = √(k/m) y T = 2π√(m/k); péndulo simple: T = 2π√(L/g). Con k = 100 N/m y m = 1 kg, ω = 10 rad/s y T ≈ 0,63 s; un péndulo de 1 m tiene T ≈ 2,0 s.'],
     ['¿Qué diferencia hay entre un oscilador subamortiguado, crítico y sobreamortiguado?', 'Con rozamiento b y masa m, si b < 2√(km) el sistema oscila con frecuencia ω′ = √(ω₀² − (b/2m)²) y amplitud decreciente; si b = 2√(km) vuelve al equilibrio sin oscilar y lo más rápido posible; si b > 2√(km) vuelve lentamente. Con fuerza externa, hay resonancia cuando ω se acerca a la frecuencia natural.'],
   ],
+  'osc-acopladas': [
+    ['¿Qué son los modos normales de dos masas acopladas?', 'Son las dos formas de moverse en que las dos masas oscilan a la vez con la misma frecuencia. Con m₁ = m₂ = 1 kg, k₁ = k₂ = 100 N/m y kc = 10 N/m, el modo en fase tiene ω₁ = √(k/m) = 10 rad/s y el modo en oposición ω₂ = √((k + 2kc)/m) = √120 ≈ 10,95 rad/s.'],
+    ['¿Por qué aparece un batido y cuánto tarda la energía en pasar de una masa a la otra?', 'Si se suelta solo una masa se excitan los dos modos por igual y la amplitud de cada masa sube y baja lentamente. La energía pasa entera de una a otra en π/(ω₂ − ω₁); con las frecuencias de arriba son π/0,954 ≈ 3,29 s.'],
+  ],
+  relatividad: [
+    ['¿Cómo se pasa un evento de un sistema de referencia a otro?', 'Con la transformación de Lorentz: x′ = γ(x − βct) y ct′ = γ(ct − βx), con γ = 1/√(1 − β²). A β = 0,6 (γ = 1,25), el evento x = 4 años-luz, t = 6 años pasa a x′ = 0,5 años-luz y t′ = 4,5 años.'],
+    ['¿Cómo se suman las velocidades en relatividad?', 'w = (u + v)/(1 + uv/c²), que nunca supera c. Un proyectil a 0,8c lanzado desde una nave que va a 0,6c lleva 1,4/1,48 ≈ 0,946c respecto de la Tierra, no 1,4c.'],
+    ['¿Cómo se sabe si dos eventos pueden estar relacionados por causa y efecto?', 'Con el intervalo s² = (cΔt)² − Δx². Si es positivo (tipo tiempo) el orden es el mismo para todos y puede haber causalidad; si es negativo (tipo espacio) no. Con Δx = 3 años-luz y cΔt = 5 años-luz, s² = 16 y el tiempo propio es 4 años.'],
+  ],
   gravitacion: [
     ['¿Cómo se calcula la velocidad de un satélite en órbita circular?', 'v = √(GM/r) y T = 2π√(r³/GM). Para la Tierra (GM = 3,986·10¹⁴ m³/s²) a 400 km de altura, r = 6771 km y v ≈ 7,67 km/s.'],
     ['¿Cuál es la velocidad de escape y la órbita geoestacionaria?', 'v_esc = √(2GM/r); desde la superficie terrestre son unos 11,2 km/s. Un satélite geoestacionario tarda 24 h en dar una vuelta: su radio es de unos 42 164 km, a 35 786 km de altura.'],

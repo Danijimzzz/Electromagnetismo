@@ -348,6 +348,12 @@ const Version = (() => {
         ] },
       ] },
     ],
+    relatividad: [
+      { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: transformación de Lorentz de un evento con su diagrama de Minkowski (ejes inclinados de la nave y rayas paralelas para leer las coordenadas), suma y resta de velocidades con las rapideces e intervalo entre dos eventos con tiempo propio, distancia propia y causalidad. Con desarrollo paso a paso.'] },
+    ],
+    'osc-acopladas': [
+      { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: dos masas con tres muelles, sus modos normales y frecuencias, la posición de cada masa en el tiempo según cómo las sueltes, el batido y el tiempo que tarda la energía en pasar de una masa a la otra. Con desarrollo paso a paso.'] },
+    ],
     'integrales-multiples': [
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: integrales dobles (en cartesianas, con dy dx o dx dy, y en polares) y triples (en cartesianas, cilíndricas y esféricas) sobre la región que escribas con sus límites, de fuera adentro. Dibuja la región o el sólido en perspectiva, que se gira arrastrando; escribe el cambio de variables con su jacobiano, el integrando transformado y cada integral iterada de dentro afuera con su primitiva (y la numérica si alguna no sale), y da el valor exacto, el área o volumen de la región y el valor medio. Con 13 ejemplos de clase, modo práctica y enlace para compartir.'] },
     ],
