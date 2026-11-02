@@ -1,0 +1,58 @@
+<title>La cocina de inducción: cómo calienta sin fuego · SimulaCiencia</title>
+<meta name="description" content="Cómo calienta una placa de inducción sin llama: la bobina con corriente alterna de 25 kHz, la ley de Faraday, las corrientes de Foucault en la base de la sartén, el efecto Joule y el imán que cae despacio por un tubo de cobre, con una animación paso a paso y el cálculo en Inducción: Faraday y Lenz.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<!-- =====================================================================
+     La cocina de inducción («Física en la vida real»). Maqueta común de los fenómenos
+     (ver fuego-san-telmo/pagina.html): animación, texto del paso, historia y recuadro
+     de la herramienta. Los pasos y el dibujo están en escena.js.
+     ===================================================================== -->
+<style>
+/* colores del dibujo, con su valor en modo oscuro */
+:root {
+  --sala: #e9e4da; --encimera: #8d8479; --hueco: #c9c4ba; --cristal: #2a3036; --ferrita: #6b6f75; --cobre: #b8672e; --sarten: #4a4f56; --caliente: #e8602c; --agua: #8fc2e6;
+  --brillo: #ffffff; --campo: #6b3fa0; --corriente: #c2412a; --onda: #2a5db5; --imanN: #c2412a; --imanS: #2a5db5; --tubo: #7d858c; --tubocobre: #c97a3c; --resalta: #c2412a; --rotulo: #1a2128 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --sala: #1c2126; --encimera: #3a3f45; --hueco: #2a2d32; --cristal: #0d0f12; --ferrita: #9aa6b2; --cobre: #d8884a; --sarten: #6b7078; --caliente: #ff7a3d; --agua: #3f7fa8;
+  --brillo: #e3e8ea; --campo: #b48be8; --corriente: #ef7a62; --onda: #74a2f2; --imanN: #ef7a62; --imanS: #74a2f2; --tubo: #9aa6b2; --tubocobre: #d8884a; --resalta: #ef7a62; --rotulo: #e3e8ea } }
+:root[data-theme="dark"] {
+  --sala: #1c2126; --encimera: #3a3f45; --hueco: #2a2d32; --cristal: #0d0f12; --ferrita: #9aa6b2; --cobre: #d8884a; --sarten: #6b7078; --caliente: #ff7a3d; --agua: #3f7fa8;
+  --brillo: #e3e8ea; --campo: #b48be8; --corriente: #ef7a62; --onda: #74a2f2; --imanN: #ef7a62; --imanS: #74a2f2; --tubo: #9aa6b2; --tubocobre: #d8884a; --resalta: #ef7a62; --rotulo: #e3e8ea }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física en la vida real</a> / La cocina de inducción</span></header>
+<div class="wrap fen">
+<div class="fen-etiquetas"><span>⚡ Electromagnetismo</span><span>Dificultad media</span><span>6 pasos · 1 min</span></div>
+<h1>La cocina de inducción</h1>
+<p class="lead">Pones una sartén sobre una placa que no quema: el cristal casi no se calienta, y aun así el agua hierve en un minuto. ¿Cómo llega el calor a la sartén sin llama ni resistencia, y por qué solo funciona con algunas sartenes?</p>
+<div class="fen-escena"><canvas id="escena" role="img" aria-label="Animación de la cocina de inducción: una sartén con agua sobre una placa de cristal que no se calienta, la bobina de cobre con corriente alterna y su campo magnético, el flujo que cambia en la base de la sartén, las corrientes de Foucault, el calor por efecto Joule y un imán que cae despacio por un tubo de cobre"></canvas></div>
+<div class="fen-puntos" id="puntos" role="group" aria-label="Pasos"></div>
+<div class="fen-controles">
+  <button class="btn" id="ant" type="button">‹ Anterior</button>
+  <button class="btn" id="play" type="button" aria-pressed="true">❚❚ Parar</button>
+  <button class="btn" id="sig" type="button">Siguiente ›</button>
+</div>
+<div class="fen-texto" aria-live="polite"><h2 id="paso-t"></h2><div id="paso-x"></div></div>
+<section class="fen-historia" aria-label="Un poco de historia">
+  <h2>Un poco de historia</h2>
+  <ol>
+    <li><b>1831</b>Michael Faraday descubre la inducción electromagnética con dos bobinas arrolladas a un anillo de hierro: al cerrar y abrir el circuito de una, aparece corriente en la otra.</li>
+    <li><b>1855</b>Léon Foucault comprueba que un disco de cobre que gira entre los polos de un imán se frena y se calienta. Son las corrientes de Foucault.</li>
+    <li><b>Hacia 1900</b>Aparecen los hornos de inducción para fundir metales: el mismo principio, con corrientes enormes en una cuba.</li>
+    <li><b>1933</b>Se enseña una cocina de inducción en la Exposición Universal de Chicago; tardará décadas en llegar a las casas, hasta que la electrónica genera las altas frecuencias a buen precio.</li>
+  </ol>
+</section>
+<section class="fen-rel" aria-label="Herramienta relacionada">
+  <div class="fen-ico" aria-hidden="true">ε</div>
+  <h2>Con qué herramienta se relaciona</h2>
+  <h3>Inducción: Faraday y Lenz <small>· Electromagnetismo</small></h3>
+  <p>Un campo que cambia con el tiempo, B(t) = B₀ sen(ωt), atravesando una espira induce una fem. La ley de Faraday da su valor y la de Lenz, el sentido de la corriente.</p>
+  <p class="f m">ε = −dΦ/dt = −B_0 S ω cos(ωt) ,  I = ε/R</p>
+  <p>Se abre en el modo «Campo B(t) que cambia con el tiempo»: una espira de 8 cm de radio (la base de la sartén), B₀ = 3 mT, 25 kHz (ω = 157 080 rad/s) y R = 25,1 mΩ, en t = 0. Sale ε = −9,47 V y una corriente de 377 A.</p>
+  <div class="fen-fichas"><div><small>Fem de pico</small><b>9,47 V</b></div><div><small>Corriente de pico</small><b>377 A</b></div><div><small>Potencia (Joule)</small><b>1786 W</b></div></div>
+  <a class="fen-abrir" id="abrir" href="../../electromagnetismo/faraday/">Abrir en Inducción: Faraday y Lenz con estos datos →</a>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Física en la vida real <span id="ver"></span> (beta)</footer>
+</body>
