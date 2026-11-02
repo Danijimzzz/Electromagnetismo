@@ -78,6 +78,7 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       }
       // un esquema inválido no se exporta
       { try { Sp.exporta({ componentes: [], cables: [] }); mal('SPICE: exportar un esquema vacío debía fallar'); } catch (e) { /* bien */ } }
+    }
     // barrido de un parámetro: el divisor con R2 de 1k a 4k, y la potencia en R2 (máxima cuando vale R1)
     {
       global.ExtraerSim = Extraer; const Bar = require(path.join(fuente, 'simulador', 'barrido.js')), sc = Ejemplos.lista.find((e) => e.clave === 'divisor').sc;
