@@ -9,7 +9,7 @@
 | --- | --- |
 | **93** herramientas | repartidas en 7 asignaturas |
 | **22** fenómenos de «Física en la vida real» | animaciones que explican cosas cotidianas |
-| **Web 1.8** | última versión (2 nov 2026) |
+| **Web 1.9** | última versión (2 nov 2026) |
 <!-- cifras:fin -->
 
 JS puro, sin framework ni dependencias: una web estática que se genera con `sh fuente/build.sh` y se publica desde `publico/`.
