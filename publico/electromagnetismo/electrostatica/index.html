@@ -10,7 +10,10 @@
 <meta property="og:image" content="https://simulaciencia.vercel.app/og.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="description" content="Simulador de electrostática en español: campo eléctrico, potencial, fuerza y energía de cargas puntuales, hilos, planos, esferas y dipolos, con líneas de campo, vista 3D y el desarrollo paso a paso como en el solucionario.">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Electrostática","description":"Simulador de electrostática en español: campo eléctrico, potencial, fuerza y energía de cargas puntuales, hilos, planos, esferas y dipolos, con líneas de campo, vista 3D y el desarrollo paso a paso como en el solucionario.","url":"https://simulaciencia.vercel.app/electromagnetismo/electrostatica/","inLanguage":"es","isAccessibleForFree":true,"applicationCategory":"EducationalApplication","operatingSystem":"Navegador web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://simulaciencia.vercel.app/"},{"@type":"ListItem","position":2,"name":"Electromagnetismo","item":"https://simulaciencia.vercel.app/electromagnetismo/"},{"@type":"ListItem","position":3,"name":"Electrostática","item":"https://simulaciencia.vercel.app/electromagnetismo/electrostatica/"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Electrostática","description":"Simulador de electrostática en español: campo eléctrico, potencial, fuerza y energía de cargas puntuales, hilos, planos, esferas y dipolos, con líneas de campo, vista 3D y el desarrollo paso a paso como en el solucionario.","url":"https://simulaciencia.vercel.app/electromagnetismo/electrostatica/","inLanguage":"es","isAccessibleForFree":true,"applicationCategory":"EducationalApplication","operatingSystem":"Navegador web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://simulaciencia.vercel.app/"},{"@type":"ListItem","position":2,"name":"Electromagnetismo","item":"https://simulaciencia.vercel.app/electromagnetismo/"},{"@type":"ListItem","position":3,"name":"Electrostática","item":"https://simulaciencia.vercel.app/electromagnetismo/electrostatica/"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Cómo se calcula el campo eléctrico de varias cargas puntuales?","acceptedAnswer":{"@type":"Answer","text":"Con el principio de superposición: el campo en un punto es la suma vectorial del campo de cada carga, E = Σ k·qᵢ/rᵢ² en la dirección que une la carga con el punto, con k = 8,99·10⁹ N·m²/C². Por ejemplo, una carga de 2 nC a 3 cm crea E = 8,99·10⁹ · 2·10⁻⁹ / 0,03² ≈ 2,0·10⁴ N/C."}},{"@type":"Question","name":"¿Cómo se usa la ley de Gauss para hallar el campo?","acceptedAnswer":{"@type":"Answer","text":"Se elige una superficie gaussiana con la simetría del problema (esfera, cilindro o caja) y se aplica ∮E·dS = Q_int/ε₀. Fuera de una esfera cargada con Q, E = Q/(4πε₀r²); para un hilo infinito con densidad λ, E = λ/(2πε₀r); y para un plano infinito con densidad σ, E = σ/(2ε₀)."}},{"@type":"Question","name":"¿Cómo se calculan el potencial y la energía de un sistema de cargas?","acceptedAnswer":{"@type":"Answer","text":"El potencial es escalar y se suma con su signo, V = Σ k·qᵢ/rᵢ. La energía del sistema es la suma de todos los pares, U = Σ k·qᵢqⱼ/rᵢⱼ. Por ejemplo, dos cargas de 1 nC a 10 cm tienen U = 8,99·10⁹ · 10⁻¹⁸ / 0,1 ≈ 9,0·10⁻⁸ J."}}]}]}</script>
+<link rel="manifest" href="../../manifest.webmanifest">
+<meta name="theme-color" content="#0d6b66">
+<script src="../../pwa.js" defer></script>
 <script>(() => {
   const raiz = document.documentElement, mq = matchMedia('(prefers-color-scheme: dark)'), oyentes = [];
   try { const t = localStorage.getItem('simu-tema'); if (t === 'dark' || t === 'light') raiz.dataset.theme = t; } catch (e) { /* sin almacenamiento */ }
@@ -47,6 +50,7 @@
   addEventListener('resize', pide);
 })();</script>
 <script src="../../buscador.js" defer></script>
+<script src="../../llama.js" defer></script>
 <title>Simulador de electrostática: campo, potencial y fuerza</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -422,8 +426,8 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 #side-close { font-size:20px; line-height:1; color:var(--muted) }
 @media (max-width:700px) { .main .top .title-in { font-size:21px } }
 .solo-lector { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap }
-.teoria { margin-top:28px; max-width:860px; font-size:15px; line-height:1.6; color:var(--ink) }
-.teoria h2 { font:600 19px var(--f-ui); margin:24px 0 6px } .teoria ul { padding-left:20px } .teoria li { margin-bottom:4px }
+.teoria, .preguntas { margin-top:28px; max-width:860px; font-size:15px; line-height:1.6; color:var(--ink) }
+.teoria h2, .preguntas h2 { font:600 19px var(--f-ui); margin:24px 0 6px } .preguntas h3 { font:600 15px var(--f-ui); margin:14px 0 2px } .preguntas p { margin:0 } .teoria ul { padding-left:20px } .teoria li { margin-bottom:4px }
 .teoria .f { font-size:16px; background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:8px 12px; display:inline-block; max-width:100%; overflow-x:auto }</style>
 <script>document.addEventListener('click', (e) => {
   if (!e.target.closest('#side-open')) return;
@@ -533,6 +537,15 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
   <h2>Cómo se usa</h2>
   <p>Empieza por un ejercicio de ejemplo o crea uno nuevo, arrastra las cargas por el lienzo y mira las líneas de campo, las superficies equipotenciales, los vectores o el mapa de color del potencial en el plano o en 3D. Guarda tus problemas en «Mis ejercicios», exporta la solución y ponte a prueba con el modo práctica.</p>
 </section>
+<section class="preguntas" aria-label="Preguntas frecuentes">
+<h2>Preguntas frecuentes</h2>
+<h3>¿Cómo se calcula el campo eléctrico de varias cargas puntuales?</h3>
+<p>Con el principio de superposición: el campo en un punto es la suma vectorial del campo de cada carga, E = Σ k·qᵢ/rᵢ² en la dirección que une la carga con el punto, con k = 8,99·10⁹ N·m²/C². Por ejemplo, una carga de 2 nC a 3 cm crea E = 8,99·10⁹ · 2·10⁻⁹ / 0,03² ≈ 2,0·10⁴ N/C.</p>
+<h3>¿Cómo se usa la ley de Gauss para hallar el campo?</h3>
+<p>Se elige una superficie gaussiana con la simetría del problema (esfera, cilindro o caja) y se aplica ∮E·dS = Q_int/ε₀. Fuera de una esfera cargada con Q, E = Q/(4πε₀r²); para un hilo infinito con densidad λ, E = λ/(2πε₀r); y para un plano infinito con densidad σ, E = σ/(2ε₀).</p>
+<h3>¿Cómo se calculan el potencial y la energía de un sistema de cargas?</h3>
+<p>El potencial es escalar y se suma con su signo, V = Σ k·qᵢ/rᵢ. La energía del sistema es la suma de todos los pares, U = Σ k·qᵢqⱼ/rᵢⱼ. Por ejemplo, dos cargas de 1 nC a 10 cm tienen U = 8,99·10⁹ · 10⁻¹⁸ / 0,1 ≈ 9,0·10⁻⁸ J.</p>
+</section>
 <section class="vida-real" aria-label="En la vida real"><h2>En la vida real</h2>
 <a href="../../fenomenos/fuego-san-telmo/"><b>El Fuego de San Telmo →</b><span>Por qué brillan las puntas de los mástiles en una tormenta: efecto punta y descarga corona.</span></a>
 <a href="../../fenomenos/jaula-faraday/"><b>La jaula de Faraday →</b><span>Por qué no pasa nada dentro de un coche alcanzado por un rayo y no hay cobertura en el ascensor.</span></a>
@@ -541,10 +554,10 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 <a href="../../fenomenos/tension-paso/"><b>La tensión de paso →</b><span>Por qué es peligroso acercarse a un cable caído o a un árbol alcanzado por un rayo.</span></a>
 </section>
 <section class="relacionadas" aria-label="Herramientas relacionadas"><h2>Herramientas relacionadas</h2>
+<a href="../../matematicas/campos/"><b>Campos vectoriales →</b><span>Gradiente y derivada direccional, divergencia y rotacional, potencial, trabajo por una curva y teorema de Green, viendo el campo.</span></a>
 <a href="../magnetostatica/"><b>Magnetostática (Biot-Savart) →</b><span>B de hilos, espiras, arcos, solenoides y toroides.</span></a>
 <a href="../condensadores/"><b>Dieléctricos y condensadores →</b><span>Planos, cilíndricos y esféricos con capas de dieléctrico: capacidad, energía, D, P y polarización.</span></a>
 <a href="../antena/"><b>Antena dipolo y radiación →</b><span>Diagrama de radiación polar, potencia radiada, resistencia de radiación, directividad y campo de un dipolo corto, de media onda o de cualquier longitud.</span></a>
-<a href="../maxwell/"><b>Ecuaciones de Maxwell →</b><span>Las cuatro ecuaciones en forma integral y diferencial, con una calculadora para cada una (Gauss, Faraday, Ampère–Maxwell y la velocidad de la luz) y enlaces a los simuladores.</span></a>
 </section>
 </div>
 </main>
@@ -701,6 +714,40 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 const Version = (() => {
   const registros = {
     web: [
+      { v: '1.10', fecha: '2026-11-02', titulo: 'Fase 7: estudia en cualquier sitio', subtitulo: 'Ciencify se instala como una app, funciona sin conexión, guarda y comparte tus ejercicios de más formas y te recuerda por dónde ibas.', secciones: [
+        { icono: '📲', titulo: 'Instalable y sin conexión', puntos: [
+          '**Instala Ciencify** como una app: en el móvil o el ordenador, desde el menú del navegador («Instalar» o «Añadir a pantalla de inicio») o con el botón de la portada. Se abre sin barras del navegador y con su icono.',
+          '**Funciona sin conexión:** lo que ya abriste sigue disponible sin cobertura, y con **Guardar todo para usar sin conexión** (al final de la portada) tienes las 90+ herramientas y todos los fenómenos en el dispositivo.',
+          '**Siempre al día:** con conexión ves la versión nueva; si hay una, te lo avisa y pulsas **Actualizar**. Si habías guardado todo, se vuelve a guardar sola.',
+        ] },
+        { icono: '💾', titulo: 'Tus ejercicios, a salvo', puntos: [
+          '**Copia de seguridad de todo:** en **Mis ejercicios**, de cualquier herramienta, pulsa «Copia de seguridad de todo» y descargas **un solo archivo** con los ejercicios de todas las herramientas y tus problemas de Electrostática.',
+          '**Restaurar copia:** súbela en «Restaurar copia…» (o arrástrala a la barra) en este u otro navegador. Se **suma** a lo que ya tienes: no borra ni duplica nada.',
+          'Haz una de vez en cuando: si borras los datos del navegador, los ejercicios guardados se pierden.',
+        ] },
+        { icono: '📋', titulo: 'Copiar, LaTeX e imprimir en 90 herramientas', puntos: [
+          '**Copiar como texto, Copiar en LaTeX e Imprimir o PDF**, que antes solo tenían Matemáticas y Electromagnetismo, ya están en Física, Química, Estadística, Circuitos y Economía. Sacan solo el ejercicio: resultados y desarrollo, sin menús ni teoría.',
+          '**Copiar tabla** (donde la herramienta tiene una tabla, como los cuadros de amortización o las iteraciones): se pega en Excel o en Google Sheets con las columnas separadas, y en LaTeX sale como `tabular`.',
+        ] },
+        { icono: '🔗', titulo: 'Comparte un ejercicio con un enlace', puntos: [
+          '**Copiar enlace con estos datos**, en «Mis ejercicios» de todas las herramientas: quien lo abra ve la herramienta con tus números ya puestos, sin archivos ni cuentas.',
+        ] },
+        { icono: '🖨️', titulo: 'Hoja de ejercicios para imprimir', puntos: [
+          '**Elige varios ejercicios guardados** en «Mis ejercicios» → «Hoja para imprimir…» y sácalos juntos en una sola hoja, cada uno con sus datos, resultados, gráfica y desarrollo paso a paso. Sale en claro, lista para imprimir o guardar en PDF.',
+        ] },
+        { icono: '⭐', titulo: 'Tu espacio en la portada', puntos: [
+          '**Continúa donde lo dejaste:** la portada te muestra la última herramienta que abriste, tus **favoritas** (botón ☆ **Favorita** en cada herramienta) y las últimas usadas.',
+          'Todo queda **solo en tu navegador**: sin cuentas ni envíos, y «Olvidar mis datos» lo borra.',
+        ] },
+        { icono: '🔥', titulo: 'La herramienta del momento', puntos: [
+          '**Una llama animada marca la herramienta más usada de cada asignatura**, en la portada, en la página de la asignatura y en la propia herramienta. Se calcula con las visitas del último mes y se actualiza sola.',
+          'Solo se cuenta **cuántas veces se abre cada herramienta**: sin cookies, sin guardar tu IP y sin saber qué haces dentro. Con «No rastrear» activado, no cuentas.',
+        ] },
+        { icono: '🔎', titulo: 'Más fácil de encontrar', puntos: [
+          '**Preguntas frecuentes en cada herramienta:** al final de las 93 herramientas, «¿Cómo se calcula…?» con un ejemplo resuelto con números, para repasar la fórmula sin salir de la página.',
+          '**Herramientas relacionadas entre asignaturas:** desde Ondas electromagnéticas llegas a Ondas mecánicas, desde Laplace a Bode, desde VAN y TIR a Interés… más fácil saltar de una a otra.',
+        ] },
+      ] },
       { v: '1.9', fecha: '2026-11-02', titulo: 'Fase 6: Ciencify, más rápida y más accesible', subtitulo: 'La web estrena nombre y buscador global, pesa casi la mitad y se puede usar mejor con teclado y lector de pantalla.', secciones: [
         { icono: '🏷️', titulo: 'Nueva imagen', puntos: [
           '**SimulaCiencia ahora se llama Ciencify:** nuevo nombre en la cabecera, las pestañas, los avisos legales y la imagen que sale al compartir el enlace. Tus ejercicios guardados y tus archivos `.simu.json` siguen funcionando igual.',

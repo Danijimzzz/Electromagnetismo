@@ -30,7 +30,7 @@ const mal = (m) => { fallos++; console.log('  ✗ ' + m); };
 // lo único que puede haber en publico/ (lo que sirven Vercel y Cloudflare): los archivos sueltos,
 // la portada, una página por asignatura y una por herramienta disponible del catálogo
 const Catalogo = require(path.join(fuente, 'catalogo.js')), Biblioteca = require(path.join(fuente, 'biblioteca.js'));
-const PUBLICABLES = ['index.html', 'novedades/index.html', 'foro/index.html', 'og.png', 'apple-touch-icon.png', 'buscador.js', 'legal.css', 'aviso-legal.html', 'privacidad.html', 'cookies.html', 'contacto.html', 'fuentes/stix-two-math.woff2', 'fuentes/OFL-STIX-Two.txt', 'sitemap.xml', 'robots.txt',
+const PUBLICABLES = ['index.html', 'novedades/index.html', 'foro/index.html', 'og.png', 'apple-touch-icon.png', 'buscador.js', 'llama.js', 'legal.css', 'aviso-legal.html', 'privacidad.html', 'cookies.html', 'contacto.html', 'fuentes/stix-two-math.woff2', 'fuentes/OFL-STIX-Two.txt', 'sitemap.xml', 'robots.txt', 'manifest.webmanifest', 'sw.js', 'pwa.js', 'offline.html', '_headers', 'icono-192.png', 'icono-512.png', 'icono-maskable-512.png',
   ...Catalogo.asignaturas.flatMap((a) => [`${a.clave}/index.html`, ...a.herramientas.filter((h) => h.disponible).map((h) => `${a.clave}/${h.clave}/index.html`)]),
   // «Física en la vida real»: el índice y una página por fenómeno disponible
   'fenomenos/index.html', ...Catalogo.fenomenos.lista.filter((f) => f.disponible).flatMap((f) => [`fenomenos/${f.clave}/index.html`, `fenomenos/${f.clave}/imagen.webp`]),
@@ -138,6 +138,18 @@ const textos = hay.filter((f) => f.endsWith('.html')).map((f) => [f, fs.readFile
 const delPdf = juegos[1].Presets.list.flatMap((p) => [p.statement, p.title]).flatMap((t) => textos.filter(([, x]) => x.includes(t)).map(([f]) => `${f}: ${t}`));
 if (delPdf.length) mal(`publico/ contiene enunciados o títulos del Tema 3:\n      ${delPdf.join('\n      ')}`);
 else console.log('  ✓ publico/ no contiene ningún enunciado ni título del Tema 3');
+// SEO de contenido: cada herramienta disponible tiene preguntas frecuentes, visibles y en el FAQPage de su cabeza
+if (primera) {
+  const Preguntas = require(path.join(fuente, 'preguntas.js'));
+  const dispon = Catalogo.asignaturas.flatMap((a) => a.herramientas.filter((h) => h.disponible && h.scripts).map((h) => [a.clave, h.clave]));
+  const sin = dispon.filter(([, c]) => !Preguntas.tiene(c)).map(([, c]) => c);
+  if (sin.length) mal(`sin preguntas frecuentes (fuente/preguntas/): ${sin.join(', ')}`);
+  const raras = Object.entries(Preguntas.PREGUNTAS).filter(([, qs]) => qs.length < 2 || qs.some(([p, r]) => !p.startsWith('¿') || !p.endsWith('?') || r.length < 60)).map(([c]) => c);
+  if (raras.length) mal(`preguntas frecuentes mal formadas (mínimo 2, con ¿?, respuesta de 60 letras): ${raras.join(', ')}`);
+  const malas = dispon.filter(([a, c]) => { const x = textos.find(([f]) => f === `${a}/${c}/index.html`)?.[1] || ''; const ld = (x.match(/<script type="application\/ld\+json">(.*?)<\/script>/) || [])[1]; try { return !JSON.parse(ld)['@graph'].some((n) => n['@type'] === 'FAQPage' && n.mainEntity.every((q) => x.includes('<h3>' + q.name.replace(/&/g, '&amp;') + '</h3>'))); } catch (e) { return true; } }).map(([a, c]) => `${a}/${c}`);
+  if (malas.length) mal(`FAQPage ausente o distinto del texto visible en: ${malas.join(', ')}`);
+  else if (!sin.length && !raras.length) console.log(`  ✓ ${dispon.length} herramientas con preguntas frecuentes y FAQPage`);
+}
 console.log(`  · versiones: ${Object.keys(Version.registros).map((k) => `${k} ${Version.de(k).current}`).join(' · ')}`);
 
 // lo que comparten varias herramientas al cargarse en Node
@@ -189,6 +201,30 @@ if (primera) {
     }
     if (!Ma.html('$x^2$').includes('data-src="x^2"')) mal('Mates: la fórmula no guarda su fuente');
     if (fallos === antes) console.log('  ✓ Compartir: fórmulas a LaTeX y a texto');
+  }
+  {
+    // copia de seguridad global de «Mis ejercicios» (biblioteca.js): crea y restaura sin duplicar, con un almacén falso
+    const antes = fallos, falso = () => { const m = new Map(); return { get length() { return m.size; }, key: (i) => [...m.keys()][i] ?? null, getItem: (k) => (m.has(k) ? m.get(k) : null), setItem: (k, v) => m.set(k, String(v)), removeItem: (k) => m.delete(k) }; };
+    const a = falso(), b = falso();
+    a.setItem('simu-ejercicios:fisica-x', JSON.stringify({ items: [{ id: 'u1', titulo: 'Uno', carpeta: 'Tema 1', fijado: true, datos: '{"a":1}', actualizado: 5 }, { id: 'u2', titulo: 'Dos', datos: '{"a":2}' }] }));
+    a.setItem('simu-ejercicios:otra', JSON.stringify({ items: [{ id: 'o1', titulo: 'Otro', datos: 'x' }] }));
+    a.setItem('simu-ejercicios:vacia', JSON.stringify({ items: [] }));
+    a.setItem('simu-ejercicios-ui', '{}'); a.setItem('fisica-x-v1', 'estado');
+    a.setItem('electro-sim-lib-v2', JSON.stringify({ items: [{ id: 'e1', title: 'Problema', scene: { cargas: [] } }] }));
+    const c = Biblioteca.copia(a), json = JSON.parse(JSON.stringify(c));
+    if (c.formato !== Biblioteca.FORMATO_COPIA || c.total !== 4 || Object.keys(c.herramientas).sort().join() !== 'fisica-x,otra' || c.electrostatica.length !== 1) mal(`Copia de seguridad: contenido inesperado ${JSON.stringify(c).slice(0, 200)}`);
+    if (JSON.stringify(c).includes('fisica-x-v1') || JSON.stringify(c).includes('simu-ejercicios-ui')) mal('Copia de seguridad: se cuelan claves que no son de Mis ejercicios');
+    b.setItem('simu-ejercicios:fisica-x', JSON.stringify({ items: [{ id: 'z', titulo: 'Uno', datos: '{"a":1}' }, { id: 'u2', titulo: 'Propio', datos: 'otro' }] }));
+    const r = Biblioteca.restaura(json, b), lx = JSON.parse(b.getItem('simu-ejercicios:fisica-x')).items;
+    if (r.nuevos !== 3 || r.repetidos !== 1 || r.herramientas !== 3) mal(`Copia de seguridad: restaurar da ${JSON.stringify(r)} en vez de 3 nuevos, 1 repetido y 3 herramientas`);
+    if (lx.length !== 3 || new Set(lx.map((x) => x.id)).size !== 3 || !lx.some((x) => x.titulo === 'Propio') || !lx.some((x) => x.titulo === 'Dos' && x.datos === '{"a":2}')) mal('Copia de seguridad: restaurar pierde o duplica ejercicios');
+    if (JSON.parse(b.getItem('simu-ejercicios:otra')).items[0].datos !== 'x' || JSON.parse(b.getItem('electro-sim-lib-v2')).items[0].id !== 'e1') mal('Copia de seguridad: no restaura las demás herramientas ni Electrostática');
+    if (Biblioteca.restaura(json, b).nuevos !== 0) mal('Copia de seguridad: restaurar dos veces duplica');
+    let err = ''; try { Biblioteca.restaura({ formato: 'otro', herramientas: {} }, b); } catch (e) { err = e.message; }
+    if (!err) mal('Copia de seguridad: acepta un archivo que no es una copia');
+    Biblioteca.restaura({ formato: Biblioteca.FORMATO_COPIA, herramientas: { '../malo': [{ titulo: 'x', datos: 'y' }], 'ok-1': [{ titulo: 'x', datos: 'y' }] } }, b);
+    if (b.getItem('simu-ejercicios:../malo') || !b.getItem('simu-ejercicios:ok-1')) mal('Copia de seguridad: no filtra los nombres de herramienta');
+    if (fallos === antes) console.log('  ✓ Copia de seguridad global: crea, restaura sin duplicar, respeta lo propio y filtra claves ajenas');
   }
 
 
@@ -384,8 +420,16 @@ async function navegador() {
       const arch = path.join(tmp, `bib-${dir}.simu.json`); await descarga.saveAs(arch);
       const d = JSON.parse(fs.readFileSync(arch, 'utf8'));
       if (d.formato !== Biblioteca.FORMATO || d.herramienta !== dir || d.ejercicios[0].datos !== guardado[0].datos) mal(`${pag}: el archivo exportado no es correcto`);
+      // copia de seguridad global: se descarga con esta herramienta dentro y se restaura tras borrarlo
+      const [dc] = await Promise.all([page.waitForEvent('download'), page.click('.bib [data-acc=copia]')]);
+      const archC = path.join(tmp, `copia-${dir}.copia.json`); await dc.saveAs(archC);
+      const cp = JSON.parse(fs.readFileSync(archC, 'utf8'));
+      if (cp.formato !== Biblioteca.FORMATO_COPIA || cp.herramientas[dir]?.[0]?.datos !== guardado[0].datos) mal(`${pag}: la copia de seguridad no es correcta`);
       await page.click('.bib [data-acc=borrar]'); await page.click('.bib [data-acc=si-borrar]');
       if (await page.$('.bib-it')) mal(`${pag}: borrar no quita el ejercicio`);
+      await page.setInputFiles('.bib ~ input[type=file]', archC);
+      await page.waitForSelector('.bib .bib-it');
+      await page.click('.bib [data-acc=borrar]'); await page.click('.bib [data-acc=si-borrar]');
       await page.setInputFiles('.bib ~ input[type=file]', arch);
       await page.waitForSelector('.bib .bib-it');
       const imp = await page.evaluate((k) => JSON.parse(localStorage.getItem(k)).items, `simu-ejercicios:${dir}`);
@@ -406,6 +450,97 @@ async function navegador() {
     if (consola.length) mal('Arreglo 6: consola del navegador:\n      ' + consola.join('\n      '));
     if (completo && probadas < 38) mal(`Mis ejercicios: solo se ha probado en ${probadas} herramientas`);
     if (fallos === antes) console.log(`  ✓ Mis ejercicios: guardar, carpeta, fijar, abrir, exportar, borrar e importar en ${probadas} herramientas, y en el móvil`);
+  }
+  if (primera) {
+    // Fase 7: enlace con el estado, hoja de ejercicios para imprimir y «Tu espacio» de la portada (el marco de la hoja pide http, no file://)
+    const antes = fallos, consola = [], http = require('http');
+    const tipos = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.png': 'image/png', '.webp': 'image/webp', '.json': 'application/json' };
+    const srv = http.createServer((q, r) => {
+      let f = path.join(publico, decodeURIComponent(q.url.split('?')[0].split('#')[0])); if (f.endsWith(path.sep) || (fs.existsSync(f) && fs.statSync(f).isDirectory())) f = path.join(f, 'index.html');
+      if (!f.startsWith(publico) || !fs.existsSync(f)) { r.writeHead(404); r.end(); return; }
+      r.writeHead(200, { 'content-type': tipos[path.extname(f)] || 'application/octet-stream' }); r.end(fs.readFileSync(f));
+    });
+    await new Promise((ok) => srv.listen(0, '127.0.0.1', ok));
+    const web = `http://127.0.0.1:${srv.address().port}/`;
+    const ctx = await browser.newContext({ viewport: { width: 1400, height: 900 } });
+    await ctx.grantPermissions(['clipboard-read', 'clipboard-write']).catch(() => {});
+    const page = await ctx.newPage();
+    page.on('console', (m) => { if (m.type() === 'error') consola.push(m.text()); });
+    page.on('pageerror', (e) => consola.push(`excepción: ${e.message}`));
+    const K = 'tiro-parabolico-v1';
+    await page.goto(web + 'fisica/tiro-parabolico/'); await page.waitForSelector('.bib .bib-acc');
+    // favorita y últimas usadas
+    await page.click('.fav-btn');
+    if ((await page.getAttribute('.fav-btn', 'aria-pressed')) !== 'true') mal('Favorita: el botón no se marca');
+    // dos ejercicios guardados
+    for (const [i, t] of [[0, 'Uno'], [1, 'Dos']]) { await page.click(`.bib .bib-ej >> nth=${i}`); await page.click('.bib [data-acc=nuevo]'); await page.fill('#bib-t', t); await page.click('.bib [data-acc=guardar]'); }
+    const datos = await page.evaluate((k) => localStorage.getItem(k), K);
+    // enlace con el estado: copiado, y abierto en otra página lleva los mismos datos
+    await page.click('.bib [data-acc=enlace]');
+    const enlace = await page.evaluate(() => navigator.clipboard.readText());
+    if (!/#d=[\w-]+$/.test(enlace)) mal('Copiar enlace: no lleva los datos (#d=…)');
+    else {
+      const p2 = await ctx.newPage(); await p2.goto(enlace); await p2.waitForSelector('.bib .bib-acc');
+      if ((await p2.evaluate((k) => localStorage.getItem(k), K)) !== datos) mal('Copiar enlace: al abrirlo no se recuperan los datos');
+      if (await p2.evaluate(() => location.hash)) mal('Copiar enlace: la dirección conserva el #d=… tras abrirlo');
+      await p2.close();
+    }
+    // hoja para imprimir: dos ejercicios con su desarrollo y el estado de antes intacto
+    await page.click('.bib [data-acc=hoja]'); await page.click('.bib [data-acc=hoja-todos]');
+    await page.evaluate(() => { window.print = () => { window.__hoja = document.getElementById('hoja-imp').innerHTML; }; });
+    await page.click('.bib [data-acc=hoja-imprimir]');
+    await page.waitForFunction(() => window.__hoja, null, { timeout: 30000 });
+    const hoja = await page.evaluate(() => window.__hoja);
+    if ((hoja.match(/<section class="hoja-ej">/g) || []).length !== 2 || !/1\. Uno/.test(hoja) || !/2\. Dos/.test(hoja)) mal('Hoja: no salen los dos ejercicios');
+    if (!/Desarrollo/i.test(hoja) || !/<math/.test(hoja)) mal('Hoja: faltan el desarrollo o sus fórmulas');
+    if ((await page.evaluate((k) => localStorage.getItem(k), K)) !== datos) mal('Hoja: no se devuelve el estado de antes');
+    await page.evaluate(() => dispatchEvent(new Event('afterprint')));
+    if (await page.evaluate(() => !!document.getElementById('hoja-imp') || document.body.classList.contains('hoja-imprimiendo'))) mal('Hoja: no se limpia tras imprimir');
+    // portada: «Tu espacio» con continuar, favoritas y últimas
+    const por = await ctx.newPage(); await por.goto(web); await por.waitForSelector('#tu-espacio:not([hidden])');
+    const tu = await por.textContent('#tu-espacio');
+    if (!/Continúa donde lo dejaste/.test(tu) || !/Favoritas/.test(tu) || !/Tiro parabólico/.test(tu)) mal('Portada: «Tu espacio» no muestra continuar y favoritas');
+    await por.fill('#buscar', 'gases');
+    if (await por.isVisible('#tu-espacio')) mal('Portada: «Tu espacio» debería ocultarse al buscar');
+    await por.fill('#buscar', ''); await por.click('#tu-espacio .olvida');
+    if (!(await por.getAttribute('#tu-espacio', 'hidden') !== null)) mal('Portada: «Olvidar mis datos» no vacía «Tu espacio»');
+    // la llama 🔥 de la herramienta más usada de cada asignatura (los datos de prueba hacen de contador)
+    const cl = await browser.newContext({ viewport: { width: 1400, height: 900 } });
+    await cl.addInitScript(() => { window.LLAMA_FUENTE = '/api-test/populares'; });
+    const visitas = []; await cl.route('**/api-test/visita', (r) => { visitas.push(r.request().postData()); r.fulfill({ status: 204 }); });
+    await cl.route('**/api-test/populares', (r) => r.fulfill({ json: { fisica: 'fisica/tiro-parabolico', matematicas: 'matematicas/derivadas' } }));
+    const pl = await cl.newPage(); pl.on('pageerror', (e) => consola.push(`llama: ${e.message}`));
+    await pl.goto(web); await pl.waitForSelector('.mini a .llama');
+    if ((await pl.locator('.mini a .llama').count()) !== 2) mal('Llama: la portada debería marcar solo las dos herramientas del contador');
+    await pl.goto(web + 'fisica/'); await pl.waitForSelector('a.card .llama');
+    await pl.goto(web + 'fisica/tiro-parabolico/'); await pl.waitForSelector('h1 .llama');
+    await pl.goto(web + 'fisica/gases/'); await pl.waitForTimeout(500);
+    if (await pl.locator('.llama').count()) mal('Llama: Gases no debería llevar llama');
+    if (!visitas.includes('{"r":"fisica/tiro-parabolico"}') || !visitas.includes('{"r":"fisica/gases"}') || visitas.length !== 2) mal(`Contador: se esperaban 2 visitas (una por herramienta y sesión) y hay ${JSON.stringify(visitas)}`);
+    // el Worker del contador (worker/contador.mjs) con una D1 de mentira
+    {
+      const W = await import(require('url').pathToFileURL(path.join(__dirname, '..', 'worker', 'contador.mjs')).href), filas = new Map();
+      const db = { prepare: (sql) => ({ bind: (...a) => ({
+        run: async () => { const k = `${a[0]}|${a[1]}`; filas.set(k, (filas.get(k) || 0) + 1); },
+        all: async () => { const suma = {}; for (const [k, n] of filas) { const [mes, ruta] = k.split('|'); if (a.includes(mes)) suma[ruta] = (suma[ruta] || 0) + n; } return { results: Object.entries(suma).map(([ruta, n]) => ({ ruta, n })) }; },
+      }) }) };
+      const web0 = 'https://electromagnetismo.aceropuro30.workers.dev', env = { VISITAS: db, ASSETS: { fetch: async () => new Response('pagina') } };
+      const llama = (u, o = {}) => W.default.fetch(new Request(web0 + u, o), env, { waitUntil: () => {} });
+      const post = (r, origen = web0) => llama('/api/visita', { method: 'POST', body: JSON.stringify({ r }), headers: { origin: origen } });
+      for (let i = 0; i < 12; i++) await post('fisica/tiro-parabolico');
+      for (let i = 0; i < 11; i++) await post('fisica/gases');
+      for (let i = 0; i < 3; i++) await post('matematicas/derivadas');            // por debajo del mínimo
+      for (let i = 0; i < 20; i++) await post('fisica/no-existe');                 // no es una herramienta
+      for (let i = 0; i < 20; i++) await post('quimica/ph', 'https://otra-web.example'); // origen no permitido
+      const pop = await (await llama('/api/populares')).json();
+      if (pop.fisica !== 'fisica/tiro-parabolico' || pop.matematicas || pop.quimica || Object.keys(pop).length !== 1) mal(`Contador: populares incorrecto ${JSON.stringify(pop)}`);
+      if ((await (await llama('/')).text()) !== 'pagina') mal('Contador: el resto de rutas debe servir publico/');
+      if ((await llama('/api/otra')).status !== 404) mal('Contador: /api/otra debería dar 404');
+    }
+    await cl.close();
+    await ctx.close(); srv.close();
+    if (consola.length) mal('Fase 7: consola del navegador:\n      ' + consola.join('\n      '));
+    if (fallos === antes) console.log('  ✓ Fase 7: copiar enlace con el estado, hoja de ejercicios para imprimir, «Tu espacio» en la portada y la llama de la más usada');
   }
   {
     // arreglo 7: modo práctica (datos al azar, se tapan los resultados, se corrigen las respuestas y se destapa la solución)
@@ -457,6 +592,11 @@ async function navegador() {
     // accesibilidad (pruebas/accesibilidad.js): axe-core en todas las páginas de publico/, en claro, oscuro y a 390 px
     const antes = fallos, r = await require('./accesibilidad.js')(browser, { mal, solo });
     if (fallos === antes) console.log(`  ✓ Accesibilidad: axe-core sin infracciones en ${r.paginas} páginas, en modo claro, modo oscuro y a 390 px`);
+  }
+  if (primera) {
+    // web instalable y sin conexión (pruebas/pwa.js): manifiesto, instalación, sin red, «Guardar todo» y versión nueva
+    const antes = fallos, r = await require('./pwa.js')(browser, { mal });
+    if (fallos === antes) console.log('  ✓ PWA: manifiesto e iconos, se instala, sin conexión funcionan las páginas guardadas, con conexión llega la versión nueva, y una versión nueva avisa, se aplica y rehace «Guardar todo»');
   }
   // portada y páginas de asignatura: sin errores de consola y sin enlaces internos rotos
   const portal = !primera ? [] : ['index.html', 'novedades/index.html', 'foro/index.html', 'fenomenos/index.html', ...Catalogo.asignaturas.map((a) => `${a.clave}/index.html`), 'electromagnetismo/magnetostatica/index.html', 'quimica/tabla-periodica/index.html', 'fisica/trabajo-y-energia/index.html', 'quimica/masa-molar/index.html', 'quimica/configuracion-electronica/index.html', 'electromagnetismo/condensadores/index.html', 'fisica/tiro-parabolico/index.html', 'quimica/disoluciones/index.html', 'fisica/calorimetria/index.html', 'electromagnetismo/induccion/index.html', 'matematicas/matrices/index.html', 'matematicas/sistemas/index.html', 'estadistica/distribuciones/index.html', 'circuitos/simulador/index.html', 'fisica/dinamica/index.html', 'fisica/solido-rigido/index.html', 'fisica/ondas/index.html', 'fisica/doppler/index.html', 'circuitos/resistencias/index.html', 'estadistica/regresion/index.html', 'matematicas/complejos/index.html', 'fisica/fluidos/index.html', 'quimica/ph/index.html', 'fisica/ciclos/index.html', 'matematicas/taylor/index.html', 'matematicas/fourier/index.html', 'matematicas/edos/index.html', 'quimica/cinetica/index.html', 'matematicas/campos/index.html', 'electromagnetismo/fuerza/index.html', 'estadistica/intervalos/index.html', 'electromagnetismo/ondas-em/index.html', 'fisica/interferencia/index.html', 'matematicas/laplace/index.html', 'matematicas/derivadas/index.html', 'fisica/gases/index.html', 'electromagnetismo/faraday/index.html'];
