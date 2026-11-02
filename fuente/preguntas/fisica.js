@@ -77,4 +77,8 @@ module.exports = {
     ['¿Cómo se convierten unidades?', 'Se multiplica por el factor de conversión de modo que se cancele la unidad de partida. Por ejemplo, 90 km/h = 90 / 3,6 = 25 m/s; y 1 atm = 101 325 Pa, 1 cal = 4,184 J, 1 eV = 1,602·10⁻¹⁹ J.'],
     ['¿Qué valores tienen las constantes más usadas?', 'c = 299 792 458 m/s, h = 6,626·10⁻³⁴ J·s, e = 1,602·10⁻¹⁹ C, k_B = 1,381·10⁻²³ J/K y N_A = 6,022·10²³ mol⁻¹, según CODATA.'],
   ],
+  'termo-estadistica': [
+    ['¿Qué es la función de partición y qué se saca de ella?', 'Z = Σ gᵢ·e^(−εᵢ/k_BT) suma el peso de Boltzmann de todos los niveles. Con ella, pᵢ = gᵢ·e^(−εᵢ/k_BT)/Z, U = k_BT²·d(ln Z)/dT, F = −k_BT·ln Z y S = k_B(ln Z + U/k_BT). Con dos niveles no degenerados y ΔE = k_BT, Z = 1 + e⁻¹ = 1,368 y el nivel excitado tiene p = 0,269.'],
+    ['¿Cómo se calcula la entropía contando microestados?', 'S = k_B·ln Ω. En un sólido de Einstein con N osciladores y q cuantos, Ω = (q + N − 1)!/(q!·(N − 1)!). Con N = 3 y q = 4, Ω = 15 y S = k_B·ln 15 = 2,71 k_B; la temperatura sale de 1/T = ∂S/∂U.'],
+  ],
 };
