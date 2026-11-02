@@ -23,6 +23,7 @@ Web estática de simuladores y calculadoras de ciencias para la carrera, en espa
 | `fuente/economia/comun.js` | Común de Economía (`Eco`: dinero y porcentajes); va en `scripts` tras calculadora.js. |
 | `fuente/biblioteca.js` | Barra lateral «Mis ejercicios», común a todas las herramientas. |
 | `fuente/practica.js` | Modo práctica común (datos al azar, corrige respuestas). |
+| `fuente/buscador.js` | Buscador global (`/` o Ctrl+K en cualquier página): `portal.js` escribe `publico/buscador.js` (índice sacado de `catalogo.js` + código + CSS) y `portal.js`/`diseno.js` enganchan su `<script defer>`. En la portada enfoca `#buscar`; en Electrostática Ctrl+K sigue siendo de sus problemas. Las herramientas y fenómenos nuevos entran solos. |
 | `fuente/tema.js` | Botón claro/oscuro (`simu-tema`). |
 | `fuente/version.js` | Versiones y novedades: `registros.web` y uno por herramienta. |
 | `fuente/mates.js` | `Mates`: fórmulas `$…$` → MathML. |

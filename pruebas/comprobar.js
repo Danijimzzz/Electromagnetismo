@@ -30,7 +30,7 @@ const mal = (m) => { fallos++; console.log('  ✗ ' + m); };
 // lo único que puede haber en publico/ (lo que sirven Vercel y Cloudflare): los archivos sueltos,
 // la portada, una página por asignatura y una por herramienta disponible del catálogo
 const Catalogo = require(path.join(fuente, 'catalogo.js')), Biblioteca = require(path.join(fuente, 'biblioteca.js'));
-const PUBLICABLES = ['index.html', 'novedades/index.html', 'foro/index.html', 'og.png', 'apple-touch-icon.png', 'legal.css', 'aviso-legal.html', 'privacidad.html', 'cookies.html', 'contacto.html', 'fuentes/stix-two-math.woff2', 'fuentes/OFL-STIX-Two.txt', 'sitemap.xml', 'robots.txt',
+const PUBLICABLES = ['index.html', 'novedades/index.html', 'foro/index.html', 'og.png', 'apple-touch-icon.png', 'buscador.js', 'legal.css', 'aviso-legal.html', 'privacidad.html', 'cookies.html', 'contacto.html', 'fuentes/stix-two-math.woff2', 'fuentes/OFL-STIX-Two.txt', 'sitemap.xml', 'robots.txt',
   ...Catalogo.asignaturas.flatMap((a) => [`${a.clave}/index.html`, ...a.herramientas.filter((h) => h.disponible).map((h) => `${a.clave}/${h.clave}/index.html`)]),
   // «Física en la vida real»: el índice y una página por fenómeno disponible
   'fenomenos/index.html', ...Catalogo.fenomenos.lista.filter((f) => f.disponible).flatMap((f) => [`fenomenos/${f.clave}/index.html`, `fenomenos/${f.clave}/imagen.webp`]),
@@ -461,6 +461,57 @@ async function navegador() {
   // portada y páginas de asignatura: sin errores de consola y sin enlaces internos rotos
   const portal = !primera ? [] : ['index.html', 'novedades/index.html', 'foro/index.html', 'fenomenos/index.html', ...Catalogo.asignaturas.map((a) => `${a.clave}/index.html`), 'electromagnetismo/magnetostatica/index.html', 'quimica/tabla-periodica/index.html', 'fisica/trabajo-y-energia/index.html', 'quimica/masa-molar/index.html', 'quimica/configuracion-electronica/index.html', 'electromagnetismo/condensadores/index.html', 'fisica/tiro-parabolico/index.html', 'quimica/disoluciones/index.html', 'fisica/calorimetria/index.html', 'electromagnetismo/induccion/index.html', 'matematicas/matrices/index.html', 'matematicas/sistemas/index.html', 'estadistica/distribuciones/index.html', 'circuitos/simulador/index.html', 'fisica/dinamica/index.html', 'fisica/solido-rigido/index.html', 'fisica/ondas/index.html', 'fisica/doppler/index.html', 'circuitos/resistencias/index.html', 'estadistica/regresion/index.html', 'matematicas/complejos/index.html', 'fisica/fluidos/index.html', 'quimica/ph/index.html', 'fisica/ciclos/index.html', 'matematicas/taylor/index.html', 'matematicas/fourier/index.html', 'matematicas/edos/index.html', 'quimica/cinetica/index.html', 'matematicas/campos/index.html', 'electromagnetismo/fuerza/index.html', 'estadistica/intervalos/index.html', 'electromagnetismo/ondas-em/index.html', 'fisica/interferencia/index.html', 'matematicas/laplace/index.html', 'matematicas/derivadas/index.html', 'fisica/gases/index.html', 'electromagnetismo/faraday/index.html'];
   const antes = fallos;
+  // buscador global (buscador.js): «/» y Ctrl+K abren la ventana, encuentra sin tildes, herramientas y fenómenos, Intro abre y Esc cierra
+  {
+    const Buscador = require(path.join(fuente, 'buscador.js')), ind = Buscador.indice();
+    const nh = Catalogo.asignaturas.reduce((s, y) => s + y.herramientas.filter((h) => h.disponible).length, 0), nf = Catalogo.fenomenos.lista.filter((x) => x.disponible).length;
+    if (ind.e.filter((x) => x[0] === 'h').length !== nh || ind.e.filter((x) => x[0] === 'f').length !== nf) mal('buscador: el índice no tiene todas las herramientas y fenómenos disponibles');
+    const antes = fallos;
+    const b = await browser.newPage({ viewport: { width: 1200, height: 900 } }), errs = [];
+    b.on('pageerror', (e) => errs.push(e.message));
+    await b.goto('file://' + path.join(publico, 'fisica/ondas/index.html'));
+    await b.keyboard.press('/');
+    if (!(await b.locator('.bq-fondo:visible').count())) mal('buscador: «/» no abre la ventana');
+    await b.keyboard.type('magnetostatica biot');
+    const primero = await b.locator('.bq a[role=option]').first().innerText();
+    if (!/Magnetostática/.test(primero)) mal(`buscador: «magnetostatica biot» (sin tilde) no pone Magnetostática la primera: ${primero.replace(/\n/g, ' | ')}`);
+    await b.keyboard.press('Escape');
+    if (await b.locator('.bq-fondo:visible').count()) mal('buscador: Esc no cierra la ventana');
+    await b.keyboard.press('Control+k');
+    await b.keyboard.type('el rayo');
+    if (!/Fenómeno/.test(await b.locator('.bq a[role=option]').first().innerText())) mal('buscador: «el rayo» no encuentra el fenómeno');
+    await b.keyboard.press('Escape');
+    await b.keyboard.press('Control+k');
+    await b.keyboard.type('zzzxq');
+    if (!(await b.locator('.bq-nada').count())) mal('buscador: sin resultados no avisa');
+    await b.fill('#bq-campo', 'dopler');
+    await b.fill('#bq-campo', 'doppler');
+    await b.keyboard.press('Enter');
+    await b.waitForURL(/fisica\/doppler\/$/, { timeout: 5000 }).catch(() => mal(`buscador: Intro no abre Doppler (${b.url()})`));
+    await b.goto(b.url() + 'index.html'); // file:// no completa la carpeta con su index.html
+    // al pulsar el campo de la cabecera también se abre
+    await b.click('header.top .buscar');
+    if (!(await b.locator('.bq-fondo:visible').count())) mal('buscador: el campo de la cabecera no abre la ventana');
+    await b.keyboard.press('Escape');
+    // en la portada «/» lleva al campo de la propia página
+    await b.goto('file://' + path.join(publico, 'index.html'));
+    await b.keyboard.press('/');
+    if (!(await b.evaluate(() => document.activeElement.id === 'buscar')) || (await b.locator('.bq-fondo:visible').count())) mal('buscador: en la portada «/» debe enfocar #buscar');
+    // en Electrostática Ctrl+K sigue buscando entre sus problemas y «/» abre el buscador global
+    await b.goto('file://' + path.join(publico, 'electromagnetismo/electrostatica/index.html'));
+    await b.keyboard.press('Control+k');
+    if (await b.locator('.bq-fondo:visible').count()) mal('buscador: Ctrl+K en Electrostática debe seguir siendo de sus problemas');
+    await b.locator('body').click({ position: { x: 5, y: 5 } });
+    await b.keyboard.press('/');
+    if (!(await b.locator('.bq-fondo:visible').count())) mal('buscador: «/» no abre la ventana en Electrostática');
+    // móvil: cabe en 390 px
+    await b.setViewportSize({ width: 390, height: 800 });
+    const ancho = await b.evaluate(() => document.querySelector('.bq').getBoundingClientRect().width);
+    if (ancho > 390) mal(`buscador: en el móvil mide ${ancho}px`);
+    if (errs.length) mal(`buscador: errores en la página: ${errs.join(' · ')}`);
+    await b.close();
+    if (fallos === antes) console.log('  ✓ buscador global: «/», Ctrl+K, sin tildes, herramientas y fenómenos, Intro, Esc, portada, Electrostática y móvil');
+  }
   for (const f of portal) {
     const page = await browser.newPage({ viewport: { width: 1200, height: 900 } });
     const consola = [];
