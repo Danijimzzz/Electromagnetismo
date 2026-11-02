@@ -138,6 +138,18 @@ const textos = hay.filter((f) => f.endsWith('.html')).map((f) => [f, fs.readFile
 const delPdf = juegos[1].Presets.list.flatMap((p) => [p.statement, p.title]).flatMap((t) => textos.filter(([, x]) => x.includes(t)).map(([f]) => `${f}: ${t}`));
 if (delPdf.length) mal(`publico/ contiene enunciados o títulos del Tema 3:\n      ${delPdf.join('\n      ')}`);
 else console.log('  ✓ publico/ no contiene ningún enunciado ni título del Tema 3');
+// SEO de contenido: cada herramienta disponible tiene preguntas frecuentes, visibles y en el FAQPage de su cabeza
+if (primera) {
+  const Preguntas = require(path.join(fuente, 'preguntas.js'));
+  const dispon = Catalogo.asignaturas.flatMap((a) => a.herramientas.filter((h) => h.disponible && h.scripts).map((h) => [a.clave, h.clave]));
+  const sin = dispon.filter(([, c]) => !Preguntas.tiene(c)).map(([, c]) => c);
+  if (sin.length) mal(`sin preguntas frecuentes (fuente/preguntas/): ${sin.join(', ')}`);
+  const raras = Object.entries(Preguntas.PREGUNTAS).filter(([, qs]) => qs.length < 2 || qs.some(([p, r]) => !p.startsWith('¿') || !p.endsWith('?') || r.length < 60)).map(([c]) => c);
+  if (raras.length) mal(`preguntas frecuentes mal formadas (mínimo 2, con ¿?, respuesta de 60 letras): ${raras.join(', ')}`);
+  const malas = dispon.filter(([a, c]) => { const x = textos.find(([f]) => f === `${a}/${c}/index.html`)?.[1] || ''; const ld = (x.match(/<script type="application\/ld\+json">(.*?)<\/script>/) || [])[1]; try { return !JSON.parse(ld)['@graph'].some((n) => n['@type'] === 'FAQPage' && n.mainEntity.every((q) => x.includes('<h3>' + q.name.replace(/&/g, '&amp;') + '</h3>'))); } catch (e) { return true; } }).map(([a, c]) => `${a}/${c}`);
+  if (malas.length) mal(`FAQPage ausente o distinto del texto visible en: ${malas.join(', ')}`);
+  else if (!sin.length && !raras.length) console.log(`  ✓ ${dispon.length} herramientas con preguntas frecuentes y FAQPage`);
+}
 console.log(`  · versiones: ${Object.keys(Version.registros).map((k) => `${k} ${Version.de(k).current}`).join(' · ')}`);
 
 // lo que comparten varias herramientas al cargarse en Node

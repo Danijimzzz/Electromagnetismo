@@ -9,7 +9,7 @@
 <link rel="canonical" href="https://simulaciencia.vercel.app/matematicas/fourier/">
 <meta property="og:image" content="https://simulaciencia.vercel.app/og.png">
 <meta name="twitter:card" content="summary_large_image">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Series de Fourier","description":"Calculadora de series de Fourier en español: función por tramos o desarrollo en senos y cosenos, coeficientes a₀, aₙ y bₙ con su término general, paridad, convergencia en los saltos (Gibbs), Parseval y una gráfica animada de la suma parcial con el espectro.","url":"https://simulaciencia.vercel.app/matematicas/fourier/","inLanguage":"es","isAccessibleForFree":true,"applicationCategory":"EducationalApplication","operatingSystem":"Navegador web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://simulaciencia.vercel.app/"},{"@type":"ListItem","position":2,"name":"Matemáticas","item":"https://simulaciencia.vercel.app/matematicas/"},{"@type":"ListItem","position":3,"name":"Series de Fourier","item":"https://simulaciencia.vercel.app/matematicas/fourier/"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Series de Fourier","description":"Calculadora de series de Fourier en español: función por tramos o desarrollo en senos y cosenos, coeficientes a₀, aₙ y bₙ con su término general, paridad, convergencia en los saltos (Gibbs), Parseval y una gráfica animada de la suma parcial con el espectro.","url":"https://simulaciencia.vercel.app/matematicas/fourier/","inLanguage":"es","isAccessibleForFree":true,"applicationCategory":"EducationalApplication","operatingSystem":"Navegador web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://simulaciencia.vercel.app/"},{"@type":"ListItem","position":2,"name":"Matemáticas","item":"https://simulaciencia.vercel.app/matematicas/"},{"@type":"ListItem","position":3,"name":"Series de Fourier","item":"https://simulaciencia.vercel.app/matematicas/fourier/"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Cómo se calculan los coeficientes de Fourier?","acceptedAnswer":{"@type":"Answer","text":"Para periodo T y ω₀ = 2π/T: a₀ = (2/T)∫f dt, aₙ = (2/T)∫f·cos(nω₀t) dt y bₙ = (2/T)∫f·sen(nω₀t) dt, con f = a₀/2 + Σ(aₙ cos nω₀t + bₙ sen nω₀t). La onda cuadrada de ±1 y periodo 2π da aₙ = 0 y bₙ = 4/(nπ) para n impar: f = (4/π)(sen x + sen 3x/3 + sen 5x/5 + …)."}},{"@type":"Question","name":"¿Qué es el fenómeno de Gibbs?","acceptedAnswer":{"@type":"Answer","text":"En un salto, la serie converge a la media de los límites laterales, pero las sumas parciales sobrepasan el valor en un 9 % del salto aproximadamente, por muchos armónicos que se sumen. La igualdad de Parseval relaciona la potencia de la señal con la de sus armónicos."}}]}]}</script>
 <link rel="manifest" href="../../manifest.webmanifest">
 <meta name="theme-color" content="#0d6b66">
 <script src="../../pwa.js" defer></script>
@@ -162,7 +162,10 @@ canvas { display: block; width: 100%; height: var(--alto-grafica); border-radius
 .mat td { padding: 2px 7px; text-align: center; white-space: nowrap; font-variant-numeric: tabular-nums }
 
 /* ---------- Teoría ---------- */
-.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria, .preguntas { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.preguntas h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.preguntas h3 { font: 600 15px var(--f-ui); margin: 14px 0 2px }
+.preguntas p { margin: 0 }
 .teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
 .teoria .f { max-width: 100%; overflow-x: auto; overflow-y: hidden; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
 .teoria ul { padding-left: 20px }
@@ -300,11 +303,18 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
   <h2>Términos generales menos sencillos</h2>
   <p class="m">No siempre sale $1/n$ o $1/n^2$: con $|sen x|$ el denominador es $n^2 − 1$ y la fórmula vale desde n = 2 (el primer coeficiente se calcula aparte), con $e^x$ aparecen $n^2 + 1$ y senh π, y en una onda trapezoidal sale $sen(nπ/2)$, que va 1, 0, −1, 0… Si los tramos dejan un hueco, ahí se toma f = 0.</p>
 </section>
+<section class="preguntas" aria-label="Preguntas frecuentes">
+<h2>Preguntas frecuentes</h2>
+<h3>¿Cómo se calculan los coeficientes de Fourier?</h3>
+<p>Para periodo T y ω₀ = 2π/T: a₀ = (2/T)∫f dt, aₙ = (2/T)∫f·cos(nω₀t) dt y bₙ = (2/T)∫f·sen(nω₀t) dt, con f = a₀/2 + Σ(aₙ cos nω₀t + bₙ sen nω₀t). La onda cuadrada de ±1 y periodo 2π da aₙ = 0 y bₙ = 4/(nπ) para n impar: f = (4/π)(sen x + sen 3x/3 + sen 5x/5 + …).</p>
+<h3>¿Qué es el fenómeno de Gibbs?</h3>
+<p>En un salto, la serie converge a la media de los límites laterales, pero las sumas parciales sobrepasan el valor en un 9 % del salto aproximadamente, por muchos armónicos que se sumen. La igualdad de Parseval relaciona la potencia de la señal con la de sus armónicos.</p>
+</section>
 <section class="relacionadas" aria-label="Herramientas relacionadas"><h2>Herramientas relacionadas</h2>
-<a href="../edos/"><b>Ecuaciones diferenciales →</b><span>Campo de pendientes con Euler y RK4, EDO lineales de segundo orden con resonancia y sistemas con su diagrama de fases.</span></a>
+<a href="../../circuitos/convolucion/"><b>Convolución y señales →</b><span>Convolución animada de dos señales o de una señal con un filtro RC o RLC, con la respuesta al escalón: tiempo de subida, sobreoscilación y establecimiento.</span></a>
 <a href="../laplace/"><b>Transformada de Laplace →</b><span>Directa con la tabla, inversa por fracciones simples con polos dobles y complejos, y EDOs con condiciones iniciales.</span></a>
+<a href="../edos/"><b>Ecuaciones diferenciales →</b><span>Campo de pendientes con Euler y RK4, EDO lineales de segundo orden con resonancia y sistemas con su diagrama de fases.</span></a>
 <a href="../taylor/"><b>Series de Taylor →</b><span>Polinomio de Taylor y de Maclaurin con derivadas y coeficientes, aproximación, error y cota de Lagrange, con la gráfica animada.</span></a>
-<a href="../sistemas/"><b>Sistemas de ecuaciones lineales →</b><span>Rouché-Frobenius, Gauss, Cramer e inversa, en paramétricas, también con complejos.</span></a>
 </section>
 </main>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Series de Fourier <span id="ver"></span> (beta)</footer>
@@ -747,7 +757,7 @@ const Compartir = (() => {
     });
     // al imprimir: solo el ejercicio, en claro
     const css = document.createElement('style');
-    css.textContent = '@media print { .top, .miga, .bib, .bib-scrim, footer, .teoria, .compartir, #ejemplos, .controles, .nota:empty, .error[hidden] { display: none !important } html, body { background: #fff !important } .wrap { max-width: none; padding: 0 } .layout { display: block !important } .card { break-inside: avoid; box-shadow: none !important } .pasos li { break-inside: avoid } canvas { max-height: 9cm; object-fit: contain } .chips, .stage-bar, .x, .tools { display: none !important } .cvwrap { height: 9cm !important; min-height: 0 !important } }';
+    css.textContent = '@media print { .top, .miga, .bib, .bib-scrim, footer, .teoria, .preguntas, .compartir, #ejemplos, .controles, .nota:empty, .error[hidden] { display: none !important } html, body { background: #fff !important } .wrap { max-width: none; padding: 0 } .layout { display: block !important } .card { break-inside: avoid; box-shadow: none !important } .pasos li { break-inside: avoid } canvas { max-height: 9cm; object-fit: contain } .chips, .stage-bar, .x, .tools { display: none !important } .cvwrap { height: 9cm !important; min-height: 0 !important } }';
     document.head.appendChild(css);
     // en claro y con los desarrollos plegados abiertos
     let tema = null, cerrados = [];

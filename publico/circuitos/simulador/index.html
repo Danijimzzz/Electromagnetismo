@@ -9,7 +9,7 @@
 <link rel="canonical" href="https://simulaciencia.vercel.app/circuitos/simulador/">
 <meta property="og:image" content="https://simulaciencia.vercel.app/og.png">
 <meta name="twitter:card" content="summary_large_image">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Simulador de circuitos","description":"Simulador de circuitos: arrastra resistencias, condensadores, bobinas, fuentes de continua y de alterna, transistores, operacionales y más, cablea el esquema y obtén el punto de operación, los fasores, el osciloscopio y el diagrama de Bode.","url":"https://simulaciencia.vercel.app/circuitos/simulador/","inLanguage":"es","isAccessibleForFree":true,"applicationCategory":"EducationalApplication","operatingSystem":"Navegador web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://simulaciencia.vercel.app/"},{"@type":"ListItem","position":2,"name":"Circuitos","item":"https://simulaciencia.vercel.app/circuitos/"},{"@type":"ListItem","position":3,"name":"Simulador de circuitos","item":"https://simulaciencia.vercel.app/circuitos/simulador/"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Simulador de circuitos","description":"Simulador de circuitos: arrastra resistencias, condensadores, bobinas, fuentes de continua y de alterna, transistores, operacionales y más, cablea el esquema y obtén el punto de operación, los fasores, el osciloscopio y el diagrama de Bode.","url":"https://simulaciencia.vercel.app/circuitos/simulador/","inLanguage":"es","isAccessibleForFree":true,"applicationCategory":"EducationalApplication","operatingSystem":"Navegador web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://simulaciencia.vercel.app/"},{"@type":"ListItem","position":2,"name":"Circuitos","item":"https://simulaciencia.vercel.app/circuitos/"},{"@type":"ListItem","position":3,"name":"Simulador de circuitos","item":"https://simulaciencia.vercel.app/circuitos/simulador/"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Cómo se analiza un circuito de continua?","acceptedAnswer":{"@type":"Answer","text":"Con la ley de Ohm y el análisis nodal. En un divisor de tensión, V_R2 = V·R₂/(R₁ + R₂): con 10 V y R₁ = 1 kΩ, R₂ = 4 kΩ, V_R2 = 8 V y la corriente es 2 mA."}},{"@type":"Question","name":"¿Y uno de alterna o con transitorios?","acceptedAnswer":{"@type":"Answer","text":"En régimen sinusoidal, Z_R = R, Z_L = jωL y Z_C = 1/(jωC): una bobina de 10 mH a 50 Hz tiene X_L = 2π · 50 · 0,01 ≈ 3,14 Ω. En un transitorio RC o RL, la constante de tiempo es τ = RC o τ = L/R."}}]}]}</script>
 <link rel="manifest" href="../../manifest.webmanifest">
 <meta name="theme-color" content="#0d6b66">
 <script src="../../pwa.js" defer></script>
@@ -159,7 +159,10 @@ canvas { display: block; width: 100%; height: var(--alto-grafica); border-radius
 .mat td { padding: 2px 7px; text-align: center; white-space: nowrap; font-variant-numeric: tabular-nums }
 
 /* ---------- Teoría ---------- */
-.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria, .preguntas { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.preguntas h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.preguntas h3 { font: 600 15px var(--f-ui); margin: 14px 0 2px }
+.preguntas p { margin: 0 }
 .teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
 .teoria .f { max-width: 100%; overflow-x: auto; overflow-y: hidden; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
 .teoria ul { padding-left: 20px }
@@ -363,6 +366,13 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
   <p class="f m">Z_R = R ,  Z_L = jωL ,  Z_C = 1/(jωC)</p>
   <p><b>Osciloscopio.</b> Se integra en el tiempo con la regla trapezoidal, con la forma de onda completa de las fuentes (continua más alterna), los interruptores y los transistores.</p>
 </section>
+<section class="preguntas" aria-label="Preguntas frecuentes">
+<h2>Preguntas frecuentes</h2>
+<h3>¿Cómo se analiza un circuito de continua?</h3>
+<p>Con la ley de Ohm y el análisis nodal. En un divisor de tensión, V_R2 = V·R₂/(R₁ + R₂): con 10 V y R₁ = 1 kΩ, R₂ = 4 kΩ, V_R2 = 8 V y la corriente es 2 mA.</p>
+<h3>¿Y uno de alterna o con transitorios?</h3>
+<p>En régimen sinusoidal, Z_R = R, Z_L = jωL y Z_C = 1/(jωC): una bobina de 10 mH a 50 Hz tiene X_L = 2π · 50 · 0,01 ≈ 3,14 Ω. En un transitorio RC o RL, la constante de tiempo es τ = RC o τ = L/R.</p>
+</section>
 <section class="vida-real" aria-label="En la vida real"><h2>En la vida real</h2>
 <a href="../../fenomenos/chispa-pomo/"><b>La chispa al tocar el pomo →</b><span>El cuerpo como condensador: unos 150 pF a 10 kV y su descarga en nanosegundos.</span></a>
 <a href="../../fenomenos/pajaro-cable/"><b>El pájaro posado en un cable →</b><span>Por qué no se electrocuta: la tensión entre sus patas es casi nula.</span></a>
@@ -370,10 +380,10 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 <a href="../../fenomenos/rayo/"><b>El rayo →</b><span>La nube y el suelo como un condensador gigante: energía, corriente y duración.</span></a>
 </section>
 <section class="relacionadas" aria-label="Herramientas relacionadas"><h2>Herramientas relacionadas</h2>
+<a href="../bode/"><b>Diagramas de Bode y filtros →</b><span>Filtros RC, RL y RLC (paso bajo, paso alto, paso banda y rechazo de banda) con su diagrama de Bode de magnitud y fase, la frecuencia de corte, el factor de calidad Q y el ancho de banda.</span></a>
 <a href="../resistencias/"><b>Código de colores de resistencias →</b><span>Colores y códigos SMD de resistencias, bobinas y condensadores, asociación, normalizadas, LED y divisor de tensión.</span></a>
 <a href="../convolucion/"><b>Convolución y señales →</b><span>Convolución animada de dos señales o de una señal con un filtro RC o RLC, con la respuesta al escalón: tiempo de subida, sobreoscilación y establecimiento.</span></a>
 <a href="../puertas-logicas/"><b>Tablas de verdad y puertas lógicas →</b><span>De la tabla de verdad a las ecuaciones (minitérminos, maxitérminos, simplificada) y al circuito de puertas, o de las puertas a la tabla.</span></a>
-<a href="../sistemas-numericos/"><b>Sistemas de numeración →</b><span>Pasa un número entre decimal, binario, complemento a 2, hexadecimal y BCD, paso a paso.</span></a>
 </section>
 </main>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Simulador de circuitos <span id="ver"></span> (beta)</footer>

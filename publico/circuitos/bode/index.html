@@ -9,7 +9,7 @@
 <link rel="canonical" href="https://simulaciencia.vercel.app/circuitos/bode/">
 <meta property="og:image" content="https://simulaciencia.vercel.app/og.png">
 <meta name="twitter:card" content="summary_large_image">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Diagramas de Bode y filtros","description":"Filtros RC, RL y RLC (paso bajo, paso alto, paso banda y rechazo de banda) con su diagrama de Bode de magnitud y fase, la frecuencia de corte, el factor de calidad Q y el ancho de banda.","url":"https://simulaciencia.vercel.app/circuitos/bode/","inLanguage":"es","isAccessibleForFree":true,"applicationCategory":"EducationalApplication","operatingSystem":"Navegador web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://simulaciencia.vercel.app/"},{"@type":"ListItem","position":2,"name":"Circuitos","item":"https://simulaciencia.vercel.app/circuitos/"},{"@type":"ListItem","position":3,"name":"Diagramas de Bode y filtros","item":"https://simulaciencia.vercel.app/circuitos/bode/"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Diagramas de Bode y filtros","description":"Filtros RC, RL y RLC (paso bajo, paso alto, paso banda y rechazo de banda) con su diagrama de Bode de magnitud y fase, la frecuencia de corte, el factor de calidad Q y el ancho de banda.","url":"https://simulaciencia.vercel.app/circuitos/bode/","inLanguage":"es","isAccessibleForFree":true,"applicationCategory":"EducationalApplication","operatingSystem":"Navegador web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://simulaciencia.vercel.app/"},{"@type":"ListItem","position":2,"name":"Circuitos","item":"https://simulaciencia.vercel.app/circuitos/"},{"@type":"ListItem","position":3,"name":"Diagramas de Bode y filtros","item":"https://simulaciencia.vercel.app/circuitos/bode/"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Cómo se calcula la frecuencia de corte de un filtro RC?","acceptedAnswer":{"@type":"Answer","text":"f_c = 1/(2πRC), donde la ganancia cae 3 dB. Con R = 1 kΩ y C = 159 nF, f_c ≈ 1 kHz, y después cae 20 dB por década."}},{"@type":"Question","name":"¿Y la frecuencia de resonancia de un RLC?","acceptedAnswer":{"@type":"Answer","text":"f₀ = 1/(2π√(LC)); en serie, el factor de calidad es Q = (1/R)√(L/C). Con L = 10 mH y C = 100 nF, f₀ ≈ 5,03 kHz."}}]}]}</script>
 <link rel="manifest" href="../../manifest.webmanifest">
 <meta name="theme-color" content="#0d6b66">
 <script src="../../pwa.js" defer></script>
@@ -159,7 +159,10 @@ canvas { display: block; width: 100%; height: var(--alto-grafica); border-radius
 .mat td { padding: 2px 7px; text-align: center; white-space: nowrap; font-variant-numeric: tabular-nums }
 
 /* ---------- Teoría ---------- */
-.teoria { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.teoria, .preguntas { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.preguntas h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.preguntas h3 { font: 600 15px var(--f-ui); margin: 14px 0 2px }
+.preguntas p { margin: 0 }
 .teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
 .teoria .f { max-width: 100%; overflow-x: auto; overflow-y: hidden; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
 .teoria ul { padding-left: 20px }
@@ -274,11 +277,18 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
   <h2>Y el circuito completo</h2>
   <p class="m">Para probar el filtro con una fuente, un osciloscopio y más componentes, monta el mismo circuito en el <a href="../simulador/">Simulador de circuitos</a>: su análisis en frecuencia dibuja este mismo diagrama.</p>
 </section>
+<section class="preguntas" aria-label="Preguntas frecuentes">
+<h2>Preguntas frecuentes</h2>
+<h3>¿Cómo se calcula la frecuencia de corte de un filtro RC?</h3>
+<p>f_c = 1/(2πRC), donde la ganancia cae 3 dB. Con R = 1 kΩ y C = 159 nF, f_c ≈ 1 kHz, y después cae 20 dB por década.</p>
+<h3>¿Y la frecuencia de resonancia de un RLC?</h3>
+<p>f₀ = 1/(2π√(LC)); en serie, el factor de calidad es Q = (1/R)√(L/C). Con L = 10 mH y C = 100 nF, f₀ ≈ 5,03 kHz.</p>
+</section>
 <section class="relacionadas" aria-label="Herramientas relacionadas"><h2>Herramientas relacionadas</h2>
+<a href="../../matematicas/laplace/"><b>Transformada de Laplace →</b><span>Directa con la tabla, inversa por fracciones simples con polos dobles y complejos, y EDOs con condiciones iniciales.</span></a>
+<a href="../simulador/"><b>Simulador de circuitos →</b><span>Arrastra resistencias, fuentes de continua y de alterna, condensadores, bobinas, transistores y más: tensiones, corrientes, fasores, osciloscopio y Bode.</span></a>
 <a href="../sistemas-numericos/"><b>Sistemas de numeración →</b><span>Pasa un número entre decimal, binario, complemento a 2, hexadecimal y BCD, paso a paso.</span></a>
 <a href="../puertas-logicas/"><b>Tablas de verdad y puertas lógicas →</b><span>De la tabla de verdad a las ecuaciones (minitérminos, maxitérminos, simplificada) y al circuito de puertas, o de las puertas a la tabla.</span></a>
-<a href="../convolucion/"><b>Convolución y señales →</b><span>Convolución animada de dos señales o de una señal con un filtro RC o RLC, con la respuesta al escalón: tiempo de subida, sobreoscilación y establecimiento.</span></a>
-<a href="../resistencias/"><b>Código de colores de resistencias →</b><span>Colores y códigos SMD de resistencias, bobinas y condensadores, asociación, normalizadas, LED y divisor de tensión.</span></a>
 </section>
 </main>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Diagramas de Bode y filtros <span id="ver"></span> (beta)</footer>
@@ -905,7 +915,7 @@ const Compartir = (() => {
     });
     // al imprimir: solo el ejercicio, en claro
     const css = document.createElement('style');
-    css.textContent = '@media print { .top, .miga, .bib, .bib-scrim, footer, .teoria, .compartir, #ejemplos, .controles, .nota:empty, .error[hidden] { display: none !important } html, body { background: #fff !important } .wrap { max-width: none; padding: 0 } .layout { display: block !important } .card { break-inside: avoid; box-shadow: none !important } .pasos li { break-inside: avoid } canvas { max-height: 9cm; object-fit: contain } .chips, .stage-bar, .x, .tools { display: none !important } .cvwrap { height: 9cm !important; min-height: 0 !important } }';
+    css.textContent = '@media print { .top, .miga, .bib, .bib-scrim, footer, .teoria, .preguntas, .compartir, #ejemplos, .controles, .nota:empty, .error[hidden] { display: none !important } html, body { background: #fff !important } .wrap { max-width: none; padding: 0 } .layout { display: block !important } .card { break-inside: avoid; box-shadow: none !important } .pasos li { break-inside: avoid } canvas { max-height: 9cm; object-fit: contain } .chips, .stage-bar, .x, .tools { display: none !important } .cvwrap { height: 9cm !important; min-height: 0 !important } }';
     document.head.appendChild(css);
     // en claro y con los desarrollos plegados abiertos
     let tema = null, cerrados = [];
