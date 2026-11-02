@@ -1,0 +1,61 @@
+<title>Formulación inorgánica: nombre y fórmula paso a paso · SimulaCiencia</title>
+<meta name="description" content="Pasa de la fórmula al nombre y del nombre a la fórmula de óxidos, hidróxidos, ácidos y sales, con las nomenclaturas sistemática, de Stock y tradicional, paso a paso.">
+<style>
+#texto { width: 100%; font: 17px var(--f-math) }
+.formula { font: 34px/1.2 var(--f-math); margin: 2px 0 10px; overflow-wrap: anywhere }
+#res { margin-top: 12px }
+#res b.nombre { font: 600 18px var(--f-math) }
+#res i { font: italic 13px var(--f-ui); color: var(--muted) }
+#res .copiar { margin-left: 8px; padding: 2px 9px; font-size: 12px }
+#res div.usada { border-left: 3px solid var(--accent); padding-left: 8px }
+#sugs { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center }
+#sugs .btn { font-family: var(--f-math); padding: 3px 10px }
+#tabla-oxo td:first-child { font-family: var(--f-math) }
+#tabla-oxo th, #tabla-oxo td { text-align: left }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Química</a> / Formulación inorgánica</span></header>
+<div class="wrap">
+<h1>Formulación inorgánica</h1>
+<p class="lead">Escribe una fórmula y obtén su nombre, o escribe un nombre y obtén su fórmula. Sale en las tres nomenclaturas (sistemática, de Stock y tradicional) y con el desarrollo paso a paso: el tipo de compuesto, los estados de oxidación y el cruce de cargas.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="modos" role="tablist"><button role="tab" id="tab-f2n" aria-selected="true">Fórmula → nombre</button><button role="tab" id="tab-n2f" aria-selected="false">Nombre → fórmula</button></div>
+    <label for="texto" class="nota" id="et-texto" style="display:block;margin:0 0 6px">Fórmula</label>
+    <input id="texto" class="in" autocomplete="off" spellcheck="false" autocapitalize="off">
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+    <div id="sugs"></div>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultado</h2>
+      <p class="formula" id="formula" aria-live="polite"></p>
+      <div class="resumen" id="tipo"></div>
+      <div class="res" id="res"></div>
+    </div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<div id="aceptadas" hidden></div>
+<section class="teoria">
+  <h2>Tres formas de nombrar un compuesto</h2>
+  <p>Un mismo compuesto tiene varios nombres válidos, según la nomenclatura que se use. En la <b>sistemática</b> los prefijos numerales dicen cuántos átomos hay de cada elemento: Fe₂O₃ es el trióxido de dihierro. En la de <b>Stock</b> se escribe entre paréntesis, con números romanos, el estado de oxidación del elemento que puede tener varios: Fe₂O₃ es el óxido de hierro(III). En la <b>tradicional</b> se usan sufijos y prefijos: el hierro con +2 es «ferroso» y con +3 «férrico», así que Fe₂O₃ es el óxido férrico.</p>
+  <p>Para los oxoácidos y sus sales la tradicional es la más usada (ácido sulfúrico, sulfato de sodio), pero la IUPAC recomienda la sistemática: tetraoxidosulfato de disodio.</p>
+  <h2>Prefijos numerales</h2>
+  <p>1 mono-, 2 di-, 3 tri-, 4 tetra-, 5 penta-, 6 hexa-, 7 hepta-. Si lo que se repite es un grupo de varios átomos (como el sulfato, SO₄) se usan <b>bis-</b> (2), <b>tris-</b> (3) y <b>tetrakis-</b> (4) y el grupo va entre paréntesis: tris(tetraoxidosulfato) de dialuminio. El prefijo mono- del primer elemento se omite siempre.</p>
+  <h2>Del nombre a la fórmula: cruzar las cargas</h2>
+  <p class="m">Se escribe primero el catión (el metal o el elemento menos electronegativo) y después el anión. La carga de uno pasa a ser el subíndice del otro y se simplifica si se puede. Con Fe³⁺ y SO₄²⁻ resulta Fe₂(SO₄)₃, y el compuesto es neutro porque</p>
+  <p class="f m">$2·(+3) + 3·(−2) = 0$</p>
+  <p>El grupo SO₄ lleva paréntesis porque se repite tres veces; si el subíndice fuera 1 no hay paréntesis ni número.</p>
+  <h2>Terminaciones de la nomenclatura tradicional</h2>
+  <p>Cuando un elemento forma dos oxoácidos, el de menor estado de oxidación termina en <b>-oso</b> (sus sales en <b>-ito</b>) y el de mayor en <b>-ico</b> (sales en <b>-ato</b>): H₂SO₃ es el ácido sulfuroso y sus sales los sulfitos; H₂SO₄ es el ácido sulfúrico y sus sales los sulfatos. Los halógenos tienen cuatro: <b>hipo-…-oso</b> (+1), <b>-oso</b> (+3), <b>-ico</b> (+5) y <b>per-…-ico</b> (+7), como HClO, HClO₂, HClO₃ y HClO₄.</p>
+  <h2>Oxoácidos habituales</h2>
+  <div class="tabla-scroll"><table class="tabla" id="tabla-oxo"></table></div>
+  <h2>Sales ácidas</h2>
+  <p>Si un ácido con varios hidrógenos solo cede algunos, el anión conserva el resto y se nombra con «hidrogeno» delante (y di-, tri- si hay varios): NaHCO₃ es el hidrogenocarbonato de sodio y Ca(H₂PO₄)₂ el bis(dihidrogenofosfato) de calcio.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Formulación inorgánica <span id="ver"></span> (beta)</footer>
+</body>

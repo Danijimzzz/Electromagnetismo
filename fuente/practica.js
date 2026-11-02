@@ -132,6 +132,11 @@ const Practica = (() => {
     ratios: { datos: null, genera: () => window.RatiosApp?.azar(), enunciado: () => window.RatiosApp?.enunciado() },
     // ajustador: una reacción de los ejemplos; se preguntan los coeficientes
     ajustador: { datos: null, items: '#coefs > div', genera: () => window.AjustadorApp?.azar(), enunciado: () => window.AjustadorApp?.enunciado() },
+    // formulacion: un compuesto habitual, de fórmula a nombre o de nombre a fórmula; las respuestas válidas están en #ac0, #ac1…
+    formulacion: {
+      datos: null, items: null, genera: () => window.FormulacionApp?.azar(), enunciado: () => window.FormulacionApp?.enunciado(),
+      textos: [{ et: 'Tu respuesta', sel: '#ac0', otros: Array.from({ length: 59 }, (_, i) => `#ac${i + 1}`), ph: 'Escribe el nombre o la fórmula' }],
+    },
     'configuracion-electronica': {
       items: null, tapa: '#res', datos: null,
       genera: () => { window.ConfigApp?.pestana('el'); pon(document.querySelector('#entrada'), String(entero(1, 56))); },
@@ -280,7 +285,7 @@ const Practica = (() => {
       let elegidos = its.length <= 4 ? its : [its[0], ...its.slice(1).sort(() => Math.random() - 0.5).slice(0, 3)].sort((a, b) => its.indexOf(a) - its.indexOf(b));
       let huecos = 0; elegidos = elegidos.filter((x) => (huecos += x.n.vals.length) <= 10 || x === elegidos[0]);
       const q = elegidos.map((x) => ({ tipo: 'num', idx: its.indexOf(x), et: x.et, plantilla: x.n.plantilla, vals: x.n.vals, el: x.el }));
-      for (const t of conf.textos || []) q.push({ tipo: 'texto', et: t.et, sel: t.sel, otros: t.otros || [] });
+      for (const t of conf.textos || []) q.push({ tipo: 'texto', et: t.et, sel: t.sel, otros: t.otros || [], ph: t.ph });
       for (const t of conf.numeros || []) { const el = document.querySelector(t.sel), n = el && numeros(el); if (n && n.vals.length) q.push({ tipo: 'num', et: t.et, sel: t.sel, plantilla: '', vals: n.vals.slice(0, 1) }); }
       return q;
     }
@@ -307,7 +312,7 @@ const Practica = (() => {
       const z = zonaTapa()[0] || tapados[0]; if (z && card.nextElementSibling !== z) z.before(card);
       let n = 0;
       const filas = preguntas.map((p, i) => {
-        if (p.tipo === 'texto') return `<div><span class="et">${esc(p.et)}</span><span class="val"><input class="prac-in ancha" data-p="${i}" aria-label="${esc(p.et)}" autocomplete="off" spellcheck="false" placeholder="1s2 2s2 2p6…"></span></div>`;
+        if (p.tipo === 'texto') return `<div><span class="et">${esc(p.et)}</span><span class="val"><input class="prac-in ancha" data-p="${i}" aria-label="${esc(p.et)}" autocomplete="off" spellcheck="false" placeholder="${esc(p.ph ?? '1s2 2s2 2p6…')}"></span></div>`;
         const tpl = p.plantilla ? p.plantilla.replace(/<span data-hueco="(\d+)"><\/span>/g, (_, k) => `<input class="prac-in" data-p="${i}" data-k="${k}" inputmode="decimal" autocomplete="off" aria-label="${esc(p.et || 'Resultado')} (${+k + 1})">`) : `<input class="prac-in" data-p="${i}" data-k="0" inputmode="decimal" autocomplete="off" aria-label="${esc(p.et)}">`;
         n++; return `<div><span class="et">${esc(p.et || (preguntas.length > 1 ? `Pregunta ${n}` : 'Resultado'))}</span><span class="val">${tpl}</span></div>`;
       }).join('');
