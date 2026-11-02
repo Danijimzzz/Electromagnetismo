@@ -8,7 +8,8 @@
    incidencia normal sobre un conductor perfecto (onda estacionaria) o un
    dieléctrico; intensidad de una fuente puntual; y medios con pérdidas
    (conductividad σ): atenuación, profundidad de penetración e impedancia
-   compleja. Unidades del SI.
+   compleja; luz por polarizadores (ley de Malus); y el vector de Poynting
+   con el balance de energía de un hilo, un condensador y un coaxial. Unidades del SI.
    ===================================================================== */
 const OndasEM = (() => {
   const C0 = 299792458, MU0 = 1.25663706212e-6, EPS0 = 8.8541878128e-12;
@@ -248,7 +249,68 @@ const OndasEM = (() => {
     return { modo: 'perdidas', er, mr, sg, fr, w, tg, tipo, alfa, beta, delta, etaM, th, vf, lam, E0, d, Ed, M: { eps, mu, v: vf, eta: etaM }, F: { fr, w, k: beta, lam }, pasos };
   }
 
-  const MODOS = { onda, expresion, incidencia, intensidad, perdidas };
+  /* ---------- Polarizadores y ley de Malus ---------- */
+  // luz natural (I/2 al primer polarizador), lineal (Malus) o circular (I/2) por una serie de polarizadores ideales
+  function polarizadores(sc) {
+    const luz = ['natural', 'lineal', 'circular'].includes(sc.luz) ? sc.luz : 'natural', I0 = lee(sc, 'I0', 'la intensidad I₀'), pasos = [];
+    const angs = String(sc.angulos ?? '').split(';').map((s) => s.trim()).filter(Boolean).map(leeNum);
+    if (!angs.length) throw new Error('Falta el ángulo de al menos un polarizador (por ejemplo 0; 45; 90)');
+    if (angs.some((a) => !isFinite(a))) throw new Error('Los ángulos de los polarizadores deben ser números, separados por punto y coma (0; 45; 90)');
+    if (angs.length > 6) throw new Error('Como mucho 6 polarizadores');
+    const alfa = luz === 'lineal' ? (vacio(sc.alfa) ? 0 : leeNum(sc.alfa)) : 0;
+    if (luz === 'lineal' && !isFinite(alfa)) throw new Error('El ángulo de la luz debe ser un número');
+    const norm = (a) => { let d = ((a + 90) % 180 + 180) % 180 - 90; return d; };
+    pasos.push({ t: 'Ley de Malus', html: `Un polarizador ideal deja pasar solo la componente de E paralela a su eje: $E = E_0 cos θ$, y como $I ∝ E^2$:<br>$I = I_0 cos^2 θ$ (ley de Malus), con θ el ángulo entre la polarización de la luz y el eje.<br>Luz natural (todas las direcciones por igual): el primer polarizador deja pasar la mitad, $I = I_0/2$, y la deja polarizada según su eje. La circular también pierde la mitad.` });
+    const etapas = []; let I = I0, pol = luz === 'lineal' ? alfa : null;
+    angs.forEach((a, i) => {
+      const prev = I;
+      let h;
+      if (pol === null) { I = prev / 2; h = `Luz ${luz === 'natural' ? 'natural' : 'circular'}: $I_${i + 1} = I_${i}/2 = {${f(prev)}}/2$ = <b>${f(I)} W/m<sup>2</sup></b>`; etapas.push({ a, de: null, I, prev, c2: 0.5 }); }
+      else { const th = norm(a - pol), c2 = Math.cos((th * Math.PI) / 180) ** 2; I = prev * (Math.abs(c2) < 1e-15 ? 0 : c2); h = `Ángulo entre la luz (${f(pol)}°) y el eje (${f(a)}°): θ = ${f(th)}°<br>$I_${i + 1} = I_${i} cos^2 θ = ${f(prev)}·cos^2(${f(th)}°)$ = <b>${f(I)} W/m<sup>2</sup></b>`; etapas.push({ a, de: pol, th, I, prev, c2 }); }
+      pol = a;
+      pasos.push({ t: `Polarizador ${i + 1} (eje a ${f(a)}°)`, html: h + `<br>Sale polarizada según ${f(a)}°, con E<sub>0</sub> = ${f(Math.sqrt(2 * 376.730313 * I))} V/m (en el vacío).` });
+    });
+    const E0f = Math.sqrt(2 * 376.730313 * I), frac = I / I0;
+    pasos.push({ t: 'Resultado final', html: `$I_f/I_0 = $ <b>${f(frac, 4)}</b> (${f(100 * frac, 4)} %), $I_f = $ <b>${f(I)} W/m<sup>2</sup></b>, $E_0 = √(2 η I_f)$ = ${f(E0f)} V/m con η = 376,7 Ω.` });
+    if (I <= 1e-300 * I0) pasos.push({ t: 'Polarizadores cruzados', html: 'Con ejes a 90° no pasa nada de luz. Un polarizador intermedio a 45° entre dos cruzados deja pasar luz: es la paradoja clásica.' });
+    return { modo: 'polarizadores', luz, I0, alfa, angs, etapas, I, frac, E0f, pasos };
+  }
+
+  /* ---------- Vector de Poynting y balance de energía ---------- */
+  // sistemas con corriente continua: hilo con resistencia, condensador que se carga y cable coaxial
+  function poynting(sc) {
+    const sis = ['hilo', 'condensador', 'coaxial'].includes(sc.sis) ? sc.sis : 'hilo', pasos = [];
+    pasos.push({ t: 'Idea', html: `El vector de Poynting $S = {E × B}/μ_0$ da la potencia por unidad de área. Su flujo por una superficie cerrada es la potencia que entra o sale (balance de energía): $∮ S·dA = −{dU}/{dt} − P_{Joule}$. En un circuito la energía no viaja por los hilos: llega por los campos del exterior.` });
+    let r;
+    if (sis === 'hilo') {
+      const a = lee(sc, 'a', 'el radio a'), L = lee(sc, 'L', 'la longitud L'), I = lee(sc, 'I', 'la corriente I'), sg = lee(sc, 'sigma', 'la conductividad σ');
+      const A = Math.PI * a * a, R = L / (sg * A), E = I / (sg * A), B = (MU0 * I) / (2 * Math.PI * a), S = (E * B) / MU0, flujo = S * 2 * Math.PI * a * L, P = I * I * R;
+      pasos.push({ t: 'Campos en la superficie del hilo', html: `Sección A = πa<sup>2</sup> = ${f(A)} m<sup>2</sup>; resistencia $R = {L}/{σ A}$ = <b>${f(R)} Ω</b><br>Campo eléctrico (a lo largo del hilo): $E = {I}/{σ A}$ = ${f(E)} V/m<br>Campo magnético (Ampère, en r = a): $B = {μ_0 I}/{2π a}$ = ${f(B)} T, azimutal.` });
+      pasos.push({ t: 'Vector de Poynting', html: `$S = {E B}/μ_0 = {I^2}/{2π^2 σ a^3}$ = <b>${f(S)} W/m<sup>2</sup></b>, dirigido hacia el eje del hilo (radial, entrante): E × B apunta hacia dentro.` });
+      pasos.push({ t: 'Balance de energía', html: `Flujo por la superficie lateral de área 2πaL = ${f(2 * Math.PI * a * L)} m<sup>2</sup>:<br>$Φ_S = S·2π a L$ = <b>${f(flujo)} W</b> entrando<br>Potencia disipada: $P = I^2 R$ = ${f(P)} W. <b>Coinciden</b>: el hilo se calienta con la energía que le llega de los campos de fuera.` });
+      r = { E, B, S, flujo, P, R, dir: 'hacia dentro (radial)' };
+    } else if (sis === 'condensador') {
+      const a = lee(sc, 'a', 'el radio a de las placas'), d = lee(sc, 'd', 'la separación d'), V = lee(sc, 'V', 'la tensión V'), I = lee(sc, 'I', 'la corriente de carga I');
+      const C = (EPS0 * Math.PI * a * a) / d, E = V / d, B = (MU0 * I) / (2 * Math.PI * a), S = (E * B) / MU0, flujo = S * 2 * Math.PI * a * d, U = 0.5 * C * V * V, dU = V * I, vol = Math.PI * a * a * d, dE = I / (EPS0 * Math.PI * a * a);
+      pasos.push({ t: 'Condensador y campo eléctrico', html: `Capacidad $C = {ε_0 π a^2}/d$ = ${f(C)} F; campo entre placas $E = V/d$ = <b>${f(E)} V/m</b>, que crece a ${f(dE)} V/m/s mientras la corriente I = ${f(I)} A carga las placas.<br>Energía almacenada $U = ½ C V^2$ = ${f(U)} J.` });
+      pasos.push({ t: 'Campo magnético de Ampère–Maxwell', html: `La corriente de desplazamiento crea B en el borde: $B·2π a = μ_0 ε_0 π a^2 {dE}/{dt} = μ_0 I$ ⇒ $B = {μ_0 I}/{2π a}$ = ${f(B)} T, azimutal.` });
+      pasos.push({ t: 'Vector de Poynting', html: `$S = {E B}/μ_0$ = <b>${f(S)} W/m<sup>2</sup></b>, radial hacia dentro (con la placa cargándose).` });
+      pasos.push({ t: 'Balance de energía', html: `Flujo por el borde lateral de área 2πad = ${f(2 * Math.PI * a * d)} m<sup>2</sup>: $Φ_S = S·2π a d$ = <b>${f(flujo)} W</b><br>Ritmo de aumento de la energía del campo: $dU/dt = V I$ = ${f(dU)} W (con ${f(0.5 * EPS0 * E * E * vol)} J = ½ ε<sub>0</sub>E<sup>2</sup>·volumen). <b>Coinciden</b>: toda la energía entra por los lados, no por los hilos.` });
+      r = { E, B, S, flujo, P: dU, C, U, dir: 'hacia dentro (radial)' };
+    } else {
+      const a = lee(sc, 'a', 'el radio interior a'), b = lee(sc, 'b', 'el radio exterior b'), V = lee(sc, 'V', 'la tensión V'), I = lee(sc, 'I', 'la corriente I'), rr = vacio(sc.r) ? a : lee(sc, 'r', 'el radio r del punto');
+      if (b <= a) throw new Error('El radio exterior b debe ser mayor que el interior a');
+      if (rr < a || rr > b) throw new Error('El punto tiene que estar entre los dos conductores (a ≤ r ≤ b)');
+      const ln = Math.log(b / a), E = V / (rr * ln), B = (MU0 * I) / (2 * Math.PI * rr), S = (E * B) / MU0, flujo = V * I, P = V * I;
+      pasos.push({ t: 'Campos entre los conductores', html: `Gauss: $E = {V}/{r ln(b/a)}$ (radial), con ln(b/a) = ${f(ln)}; Ampère: $B = {μ_0 I}/{2π r}$ (azimutal). A r = ${f(rr)} m: E = ${f(E)} V/m, B = ${f(B)} T.` });
+      pasos.push({ t: 'Vector de Poynting', html: `$S = {E B}/μ_0 = {V I}/{2π r^2 ln(b/a)}$ = <b>${f(S)} W/m<sup>2</sup></b> a lo largo del cable, de la fuente a la carga (si V e I son positivas).` });
+      pasos.push({ t: 'Potencia transportada', html: `Integrando S por la corona entre a y b: $∫_a^b S·2π r dr = {V I}/{ln(b/a)}·ln(b/a)$ = <b>${f(P)} W</b>. Es $P = V I$: la potencia viaja por el dieléctrico entre los conductores, no por dentro del metal.` });
+      r = { E, B, S, flujo, P, ln, dir: 'a lo largo del eje, de la fuente a la carga', rr };
+    }
+    return { modo: 'poynting', sis, ...r, pasos };
+  }
+
+  const MODOS = { onda, expresion, incidencia, intensidad, perdidas, polarizadores, poynting };
   function resolver(sc) { return MODOS[sc.modo] ? MODOS[sc.modo](sc) : onda(sc); }
 
   const ejemplos = [
@@ -268,11 +330,17 @@ const OndasEM = (() => {
     { clave: 'bombilla', nombre: 'Bombilla de 100 W a 2 m', sc: { modo: 'intensidad', medio: 'vacio', de: 'fuente', P: '100', r: '2', I: '', E0: '', A: '' } },
     { clave: 'antena', nombre: 'Antena de 50 kW a 10 km', sc: { modo: 'intensidad', medio: 'vacio', de: 'fuente', P: '50000', r: '10000', I: '', E0: '', A: '' } },
     { clave: 'vela', nombre: 'Vela solar que refleja (E₀ dado)', sc: { modo: 'intensidad', medio: 'vacio', de: 'E0', E0: '1012', P: '', r: '', I: '', A: '100' } },
+    { clave: 'malus', nombre: 'Ley de Malus: luz lineal a 30° de un polarizador', sc: { modo: 'polarizadores', luz: 'lineal', alfa: '0', I0: '100', angulos: '30' } },
+    { clave: 'tres-polarizadores', nombre: 'Natural por tres polarizadores (0°, 45°, 90°)', sc: { modo: 'polarizadores', luz: 'natural', I0: '1000', angulos: '0; 45; 90' } },
+    { clave: 'cruzados', nombre: 'Dos polarizadores cruzados (0° y 90°)', sc: { modo: 'polarizadores', luz: 'natural', I0: '1000', angulos: '0; 90' } },
+    { clave: 'poy-hilo', nombre: 'Poynting en un hilo de cobre con corriente', sc: { modo: 'poynting', sis: 'hilo', a: '1e-3', L: '2', I: '10', sigma: '5,8e7' } },
+    { clave: 'poy-condensador', nombre: 'Poynting en un condensador que se carga', sc: { modo: 'poynting', sis: 'condensador', a: '0,05', d: '0,002', V: '100', I: '0,5' } },
+    { clave: 'poy-coaxial', nombre: 'Potencia por un cable coaxial', sc: { modo: 'poynting', sis: 'coaxial', a: '1e-3', b: '3,5e-3', V: '50', I: '2', r: '' } },
     { clave: 'cobre', nombre: 'Cobre a 1 MHz (buen conductor)', sc: { modo: 'perdidas', er: '1', mr: '1', sigma: '5,8e7', valor: '1e6', E0: '1', d: '0,0001' } },
     { clave: 'mar', nombre: 'Agua de mar a 1 kHz', sc: { modo: 'perdidas', er: '81', mr: '1', sigma: '4', valor: '1000', E0: '1', d: '10' } },
     { clave: 'tierra', nombre: 'Tierra húmeda a 1 MHz', sc: { modo: 'perdidas', er: '10', mr: '1', sigma: '0,01', valor: '1e6', E0: '10', d: '5' } },
     { clave: 'baquelita', nombre: 'Dieléctrico con pocas pérdidas', sc: { modo: 'perdidas', er: '4,9', mr: '1', sigma: '1e-6', valor: '1e8', E0: '5', d: '100' } },
   ];
-  return { resolver, onda, expresion, incidencia, intensidad, perdidas, leeExpresion, banda, ejemplos, f, C0, MU0, EPS0 };
+  return { resolver, onda, expresion, incidencia, intensidad, perdidas, polarizadores, poynting, leeExpresion, banda, ejemplos, f, C0, MU0, EPS0 };
 })();
 if (typeof module !== 'undefined') module.exports = OndasEM;
