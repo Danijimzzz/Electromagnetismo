@@ -275,6 +275,8 @@ const PH = (() => {
   }
 
   /* ---------- Ácido poliprótico ---------- */
+  // fracción de cada especie H_nA, H_(n−1)A⁻, …, A^n− a un pH: α_i = t_i/Σt, con t_0 = 1 y t_i = t_(i−1)·Ka_i/[H₃O⁺]
+  const fracciones = (Kas, pH) => { const h = 10 ** -pH, t = [1]; Kas.forEach((K, i) => t.push((t[i] * K) / h)); const den = t.reduce((a, b) => a + b, 0); return t.map((v) => v / den); };
   // sc: { C, K1, K2, K3 (opcional) } (Ka1 grande, como 1e3, para una primera disociación completa: H₂SO₄)
   const leeKas = (sc) => {
     const Kas = [lee(sc, 'K1', 'Ka₁'), lee(sc, 'K2', 'Ka₂')], K3 = lee(sc, 'K3', 'Ka₃', { opcional: true });
@@ -293,7 +295,7 @@ const PH = (() => {
     const conc = t.map((v) => (C * v) / den);
     pasos.push({ t: 'Con el balance de cargas completo', html: `<b>pH = ${f2(pH)}</b>. Concentraciones: ${conc.map((c, i) => `$[${nom[i]}] = ${f(c)}$ M`).join(', ')}.` });
     pasos.push({ t: 'Resultado', html: finPH(pH) });
-    return { modo: 'poliprotico', C, Kas, pH, pH1, conc, h, pasos };
+    return { modo: 'poliprotico', C, Kas, pH, pH1, conc, h, alfa: fracciones(Kas, pH), pasos };
   }
 
   /* ---------- Valoración ---------- */
@@ -428,6 +430,6 @@ const PH = (() => {
     { clave: 'val-amoniaco', nombre: 'Valoración de amoniaco con HCl', sc: { modo: 'valoracion', tipo: 'bd-af', C: '0.1', V: '20', Ct: '0.1', K: '1.8e-5', pK: '', Vt: '30' } },
   ];
 
-  return { resolver, fuerte, debil, tampon, mezcla, valoracion, sal, inverso, preparar, poliprotico, exacto, kwDe, ejemplos, INDICADORES, f, f2 };
+  return { resolver, fuerte, debil, tampon, mezcla, valoracion, sal, inverso, preparar, poliprotico, fracciones, exacto, kwDe, ejemplos, INDICADORES, f, f2 };
 })();
 if (typeof module !== 'undefined') module.exports = PH;

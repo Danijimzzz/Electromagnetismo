@@ -100,7 +100,7 @@
     const err = $('#error');
     try { sol = P.resolver(sc); } catch (e) {
       sol = null; err.textContent = e.message; err.hidden = false;
-      $('#resumen').innerHTML = ''; $('#pasos').innerHTML = ''; $('#leyenda').textContent = ''; $('#grafica').hidden = true;
+      $('#resumen').innerHTML = ''; $('#pasos').innerHTML = ''; $('#leyenda').textContent = ''; $('#grafica').hidden = true; $('#especies').hidden = true;
       dibuja(); return;
     }
     err.hidden = true; guarda();
@@ -124,7 +124,8 @@
     $('#resumen').innerHTML = h; $('#leyenda').textContent = ley;
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
     $('#grafica').hidden = sol.modo !== 'valoracion';
-    tA = 0; particulas(); dibuja(); grafica();
+    $('#especies').hidden = !(sol.modo === 'poliprotico' || (sol.modo === 'valoracion' && sol.poli));
+    tA = 0; particulas(); dibuja(); grafica(); especies();
   }
 
   /* ---------- Colores ---------- */
@@ -239,6 +240,35 @@
     texto(g, w * 0.58, h * 0.25 + 44, k >= 0 ? `${eqs.length > 1 ? `${k + 1}.º ` : ''}punto de equivalencia` : antes === 0 ? 'antes de la equivalencia' : antes === eqs.length ? 'pasada la equivalencia' : `pasada la ${antes}.ª equivalencia`, col['--muted'], 'left');
   }
 
+  /* ---------- Diagrama de especies (ácido poliprótico) ---------- */
+  // fracción de cada forma del ácido (H₃A, H₂A⁻, HA²⁻, A³⁻…) frente al pH; la línea marca el pH del cálculo (o el del volumen pedido)
+  function especies() {
+    const c = $('#especies');
+    if (c.hidden || !sol || !sol.Kas) return;
+    const L = lienzo(c); if (!L) return;
+    const { g, w, h } = L;
+    if (!col['--ink']) colores();
+    const ml = 40, mr = 14, mt = 18, mb = 38, X = (p) => ml + (p / 14) * (w - ml - mr), Y = (a) => mt + (1 - a) * (h - mt - mb), n = sol.Kas.length;
+    g.strokeStyle = col['--line']; g.lineWidth = 1;
+    for (let a = 0; a <= 1; a += 0.25) { g.beginPath(); g.moveTo(ml, Y(a)); g.lineTo(w - mr, Y(a)); g.stroke(); texto(g, ml - 6, Y(a), txt(f2(a)), col['--muted'], 'right'); }
+    for (let p = 0; p <= 14; p += 2) texto(g, X(p), h - mb + 12, String(p), col['--muted']);
+    texto(g, ml + (w - ml - mr) / 2, h - 7, 'pH', col['--muted']);
+    const cs = [col['--peso'], col['--roz'], col['--normal'], col['--tension']], nom = n === 2 ? ['H₂A', 'HA⁻', 'A²⁻'] : ['H₃A', 'H₂A⁻', 'HA²⁻', 'A³⁻'];
+    // pK: líneas finas discontinuas
+    g.setLineDash([3, 4]); g.strokeStyle = col['--muted'];
+    sol.Kas.forEach((K, i) => { const p = -Math.log10(K); if (p >= 0 && p <= 14) { g.beginPath(); g.moveTo(X(p), mt); g.lineTo(X(p), h - mb); g.stroke(); texto(g, X(p), mt - 8, `pK${i + 1} = ${txt(f2(p))}`, col['--muted']); } });
+    g.setLineDash([]);
+    for (let j = 0; j <= n; j++) {
+      g.strokeStyle = cs[j]; g.lineWidth = 2.4; g.beginPath();
+      for (let i = 0; i <= 140; i++) { const p = i / 10, a = P.fracciones(sol.Kas, p)[j]; i ? g.lineTo(X(p), Y(a)) : g.moveTo(X(p), Y(a)); }
+      g.stroke();
+      const pm = j === 0 ? 0.6 : j === n ? 13.3 : (-Math.log10(sol.Kas[j - 1]) - Math.log10(sol.Kas[j])) / 2;
+      if (pm > 0 && pm < 14) texto(g, X(Math.min(13.2, Math.max(0.8, pm))), Y(P.fracciones(sol.Kas, Math.min(13.2, Math.max(0.8, pm)))[j]) - 10, nom[j], cs[j], 'center', '600 ');
+    }
+    const pHm = sol.modo === 'poliprotico' ? sol.pH : sol.pHv;
+    if (pHm !== null && pHm !== undefined && pHm >= 0 && pHm <= 14) { g.strokeStyle = col['--ink']; g.lineWidth = 1.5; g.beginPath(); g.moveTo(X(pHm), mt); g.lineTo(X(pHm), h - mb); g.stroke(); punto(g, X(pHm), mt, 3.5, col['--ink']); }
+  }
+
   /* ---------- Curva de valoración ---------- */
   function grafica() {
     const c = $('#grafica');
@@ -273,8 +303,8 @@
     if (anda && sol) { tA += dt; mueve(dt); dibuja(); grafica(); }
     requestAnimationFrame(bucle);
   }
-  window.addEventListener('resize', () => { dibuja(); grafica(); });
-  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { colores(); dibuja(); grafica(); });
+  window.addEventListener('resize', () => { dibuja(); grafica(); especies(); });
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { colores(); dibuja(); grafica(); especies(); });
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('ph').current;
   formulario(); colores(); calcula(); requestAnimationFrame(bucle);
