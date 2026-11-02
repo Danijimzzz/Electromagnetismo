@@ -12,6 +12,52 @@
 const Version = (() => {
   const registros = {
     web: [
+      { v: '1.11', fecha: '2026-11-02', titulo: 'Fase 8: más profundidad en cada asignatura', subtitulo: 'Once herramientas nuevas y mejoras en el Simulador de circuitos, las ondas, los gases, el pH y las integrales.', secciones: [
+        { icono: '⚡', titulo: 'Simulador de circuitos', puntos: [
+          '**Importar y exportar SPICE:** pega una red escrita en SPICE (R, C, L, fuentes, diodos, transistores…) y se dibuja como esquema, o saca la tuya como texto. Avisa de lo que no puede traducir (interruptores, transformadores y subcircuitos).',
+          '**Pestaña Barrido:** cambia un valor del circuito (una resistencia, un condensador, la frecuencia…) en un rango lineal o logarítmico y mira cómo cambia una tensión, una corriente o una potencia, con el máximo y el mínimo marcados y una tabla.',
+          '**Potencia en Thévenin y Norton:** la curva de la potencia que recibe una carga según su valor, con el máximo cuando la carga vale R<sub>Th</sub>.',
+        ] },
+        { icono: '🌊', titulo: 'Ondas electromagnéticas', puntos: [
+          '**Polarizadores:** ley de Malus con luz natural, lineal o circular a través de hasta 6 polarizadores, con la intensidad tras cada uno.',
+          '**Vector de Poynting:** el balance de energía de un hilo con corriente, un condensador que se carga y un cable coaxial, comprobando que el flujo de S es la potencia. Se abre en @electromagnetismo/ondas-em.',
+        ] },
+        { icono: '🔭', titulo: 'Física general', puntos: [
+          '#fisica/osc-acopladas',
+          '**Dos masas, tres muelles:** modos normales y frecuencias, el movimiento de cada masa, el batido y cuánto tarda la energía en pasar de una a otra.',
+          '#fisica/relatividad',
+          '**Lorentz y Minkowski:** transforma un evento con su diagrama de ejes inclinados, suma velocidades con rapideces y calcula el intervalo entre dos eventos (tiempo propio, distancia propia y causalidad).',
+        ] },
+        { icono: '⚗️', titulo: 'Química', puntos: [
+          '#quimica/solubilidad',
+          '**Kps y solubilidad** de sales poco solubles, ion común, si precipita al mezclar y precipitación fraccionada, con 15 sales de ejemplo y un diagrama logarítmico.',
+          '**Gases reales:** @quimica/gases compara ahora Van der Waals con Redlich-Kwong y dibuja el factor de compresibilidad Z frente a la presión.',
+          '**Diagrama de especies** en @quimica/ph para los ácidos polipróticos: la fracción de cada forma frente al pH, con los pK marcados.',
+        ] },
+        { icono: '∑', titulo: 'Matemáticas', puntos: [
+          '#matematicas/series',
+          '**¿Converge o diverge?** Condición necesaria, serie geométrica y p, cociente, raíz, comparación y Leibniz, con la suma y las sumas parciales dibujadas.',
+          '#matematicas/lagrange',
+          '**Extremos con restricción:** plantea ∇f = λ∇g, clasifica cada punto crítico y dibuja las curvas de nivel con la restricción.',
+          '**Integrales paso a paso:** @matematicas/derivadas explica ahora la sustitución y la integración por partes (elección de u y dv, tabla de signos, integral cíclica).',
+        ] },
+        { icono: '📊', titulo: 'Estadística', puntos: [
+          '#estadistica/anova',
+          '**ANOVA de un factor** con su tabla, F, p-valor, η² y comparaciones por parejas con Bonferroni.',
+          '#estadistica/regresion-multiple',
+          '**Regresión lineal múltiple** hasta con 6 variables: coeficientes con t y p-valor, R² ajustado, ANOVA, VIF y predicción con intervalos.',
+          '#estadistica/no-parametricos',
+          '**Mann-Whitney y Wilcoxon** con la tabla de rangos, el p-valor exacto o aproximado y la conclusión paso a paso.',
+        ] },
+        { icono: '💶', titulo: 'Economía', puntos: [
+          '#economia/solow',
+          '**Modelo de Solow:** estado estacionario, regla de oro, convergencia y la trayectoria del capital.',
+          '#economia/bonos',
+          '**Bonos y duración:** precio, TIR, duración de Macaulay y modificada, convexidad y variación del precio con los tipos.',
+          '#economia/black-scholes',
+          '**Black-Scholes:** call y put europeas, paridad call-put y las griegas.',
+        ] },
+      ] },
       { v: '1.10', fecha: '2026-11-02', titulo: 'Fase 7: estudia en cualquier sitio', subtitulo: 'Ciencify se instala como una app, funciona sin conexión, guarda y comparte tus ejercicios de más formas y te recuerda por dónde ibas.', secciones: [
         { icono: '📲', titulo: 'Instalable y sin conexión', puntos: [
           '**Instala Ciencify** como una app: en el móvil o el ordenador, desde el menú del navegador («Instalar» o «Añadir a pantalla de inicio») o con el botón de la portada. Se abre sin barras del navegador y con su icono.',

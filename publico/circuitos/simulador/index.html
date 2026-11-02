@@ -304,6 +304,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 .eq-th text { fill: var(--ink); stroke: none; font: 600 12px var(--f-ui) } .eq-th text.v { fill: var(--accent) }
 .leyenda i { display: inline-block; width: 18px; height: 3px; vertical-align: middle; margin: 0 4px 2px 10px; border-radius: 2px }
 .leyenda i.c1 { background: var(--canal-1) } .leyenda i.c2 { background: var(--canal-2) } .leyenda i.c3 { background: var(--canal-3) } .leyenda i.c4 { background: var(--canal-4) }
+#spice { margin: 10px 0 } #spice textarea { font: 13px/1.5 var(--f-mono); resize: vertical; margin: 4px 0 8px } #sp-msg { white-space: pre-line }
 </style>
 <body>
 <header class="top"><a class="logo" href="../../">Cienci<i>fy</i></a><nav aria-label="Asignaturas"><a href="../../">Inicio</a><a href="../../electromagnetismo/">Electromagnetismo</a><a href="../../fisica/">Física general</a><a href="../../quimica/">Química</a><a href="../../matematicas/">Matemáticas</a><a href="../../estadistica/">Estadística</a><a href="../../circuitos/" aria-current="page">Circuitos</a><a href="../../economia/">Economía</a><a href="../../fenomenos/">Vida real</a></nav><a class="foro" href="../../foro/"><span aria-hidden="true">💬</span>Foro</a><form action="../../" role="search"><input class="buscar" type="search" name="q" placeholder="Buscar: Biot-Savart, molaridad…" aria-label="Buscar herramientas (atajo: barra /)" title="Atajo: / o Ctrl+K"></form><button class="tema" type="button" title="Cambiar de modo claro u oscuro" aria-label="Cambiar de modo claro u oscuro"><svg class="luna" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11z"/></svg><svg class="sol" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button></header>
@@ -335,6 +336,20 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
         <button class="btn" id="b-ajustar" type="button" title="Ver todo el esquema">Ajustar</button>
         <button class="btn" id="b-anim" type="button" aria-pressed="true" title="Pausar o reanudar la corriente animada">⏸ Animación</button>
         <button class="btn" id="b-vaciar" type="button" title="Empezar un esquema en blanco">Vaciar</button>
+        <button class="btn" id="b-spice" type="button" aria-expanded="false" aria-controls="spice" title="Importar o exportar la red como texto SPICE">SPICE</button>
+      </div>
+      <div id="spice" hidden>
+        <label for="spice-txt"><b>Red en texto SPICE</b></label>
+        <textarea id="spice-txt" class="in" rows="9" spellcheck="false" placeholder="* Divisor de tensión&#10;V1 1 0 DC 12&#10;R1 1 2 1k&#10;R2 2 0 2k&#10;.end"></textarea>
+        <div class="tools">
+          <button class="btn" id="sp-exportar" type="button">Escribir la del esquema</button>
+          <button class="btn" id="sp-importar" type="button">Dibujar este texto</button>
+          <button class="btn" id="sp-copiar" type="button">Copiar</button>
+          <button class="btn" id="sp-descargar" type="button">Descargar .cir</button>
+          <label class="btn" for="sp-archivo">Abrir archivo…</label>
+          <input id="sp-archivo" type="file" accept=".cir,.sp,.net,.spi,.txt,text/plain" hidden>
+        </div>
+        <p class="nota" id="sp-msg" role="status"></p>
       </div>
       <svg id="ed" role="application" aria-label="Esquema del circuito"></svg>
       <p class="nota" id="ayuda">Arrastra un componente de la paleta al esquema. Une dos patillas arrastrando de una a otra. Mayús y arrastrar selecciona varios; arrastrar el fondo lo desplaza; la rueda hace zoom. Tocar un interruptor lo abre o lo cierra.</p>
@@ -353,6 +368,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
     <button id="tab-tr" role="tab" aria-selected="false">Osciloscopio</button>
     <button id="tab-fa" role="tab" aria-selected="false">Fasores</button>
     <button id="tab-bo" role="tab" aria-selected="false">Bode</button>
+    <button id="tab-ba" role="tab" aria-selected="false">Barrido</button>
     <button id="tab-th" role="tab" aria-selected="false">Thévenin y Norton</button>
     <button id="tab-de" role="tab" aria-selected="false">Desarrollo</button>
   </div>
@@ -390,11 +406,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 </body>
 <script>
 const Pagina = { carpeta: 'simulador', guarda: 'simulador-v1' };
-<<<<<<< HEAD
-const Version = (() => { const registros = {"web":[{"v":"1.10"}],"integrales-multiples":[{"v":"0.1"}],"formulacion":[{"v":"0.1"}],"balance":[{"v":"0.1"}],"redox":[{"v":"0.1"}],"lineas-transmision":[{"v":"0.1"}],"superficies":[{"v":"0.1"}],"vsepr":[{"v":"0.1"}],"maxwell":[{"v":"0.1"}],"fresnel":[{"v":"0.1"}],"gravitacion":[{"v":"0.1"}],"convolucion":[{"v":"0.1"}],"laplace-numerica":[{"v":"0.1"}],"imagenes":[{"v":"0.1"}],"guias-onda":[{"v":"0.1"}],"antena":[{"v":"0.1"}],"bode":[{"v":"0.1"}],"optica":[{"v":"0.1"}],"simulador":[{"v":"0.1"}],"teoria-juegos":[{"v":"0.1"}],"puertas-logicas":[{"v":"0.3"}],"multiplicador":[{"v":"0.1"}],"is-lm":[{"v":"0.1"}],"choques":[{"v":"0.1"}],"termoquimica":[{"v":"0.1"}],"probabilidad":[{"v":"0.1"}],"unidades":[{"v":"0.1"}],"equilibrio":[{"v":"0.1"}],"oscilaciones":[{"v":"0.1"}],"beneficio":[{"v":"0.1"}],"costes":[{"v":"0.1"}],"sistemas-numericos":[{"v":"0.1"}],"excedentes":[{"v":"0.1"}],"oferta-demanda":[{"v":"0.1"}],"chi2-bondad":[{"v":"0.1"}],"contrastes":[{"v":"0.1"}],"errores":[{"v":"0.1"}],"graficador":[{"v":"0.1"}],"metodos-numericos":[{"v":"0.1"}],"fisica-moderna":[{"v":"0.2"}],"lorenz-gini":[{"v":"0.1"}],"phillips-okun":[{"v":"0.1"}],"tipos-cambio":[{"v":"0.1"}],"elasticidades":[{"v":"0.1"}],"pib-ipc":[{"v":"0.1"}],"numeros-indice":[{"v":"0.1"}],"ratios":[{"v":"0.1"}],"punto-muerto":[{"v":"0.1"}],"ahorro":[{"v":"0.1"}],"van-tir":[{"v":"0.1"}],"amortizacion-inmovilizado":[{"v":"0.1"}],"prestamos":[{"v":"0.1"}],"rentas":[{"v":"0.1"}],"interes":[{"v":"0.1"}],"descriptiva":[{"v":"0.1"}],"regresion-economia":[{"v":"0.1"}],"ajustador":[{"v":"0.1"}],"electrostatica":[{"v":"0.6"}],"magnetostatica":[{"v":"0.2"}],"tabla-periodica":[{"v":"0.2"}],"trabajo-y-energia":[{"v":"0.2"}],"masa-molar":[{"v":"0.2"}],"configuracion-electronica":[{"v":"0.2"}],"condensadores":[{"v":"0.2"}],"tiro-parabolico":[{"v":"0.2"}],"disoluciones":[{"v":"0.2"}],"calorimetria":[{"v":"0.2"}],"induccion":[{"v":"0.2"}],"matrices":[{"v":"0.2"}],"derivadas":[{"v":"0.2"}],"laplace":[{"v":"0.2"}],"interferencia":[{"v":"0.2"}],"ondas-em":[{"v":"0.3"}],"intervalos":[{"v":"0.2"}],"fuerza":[{"v":"0.2"}],"campos":[{"v":"0.2.1"}],"cinetica":[{"v":"0.2"}],"edos":[{"v":"0.2"}],"fourier":[{"v":"0.2"}],"taylor":[{"v":"0.2.1"}],"complejos":[{"v":"0.2"}],"sistemas":[{"v":"0.3"}],"regresion":[{"v":"0.2"}],"estadistica":[{"v":"0.2"}],"dinamica":[{"v":"0.2"}],"solido-rigido":[{"v":"0.2"}],"ondas":[{"v":"0.2"}],"gases":[{"v":"0.2"}],"ciclos":[{"v":"0.2"}],"ph":[{"v":"0.2"}],"fluidos":[{"v":"0.2"}],"doppler":[{"v":"0.2"}],"resistencias":[{"v":"0.2"}],"faraday":[{"v":"0.2"}],"fenomenos":[{"v":"0.7"}]}; const de = (h) => ({ current: registros[h][0].v, log: registros[h] }); return { registros, de }; })();
-=======
-const Version = (() => { const registros = {"web":[{"v":"1.10"}],"lagrange":[{"v":"0.1"}],"series":[{"v":"0.1"}],"integrales-multiples":[{"v":"0.1"}],"formulacion":[{"v":"0.1"}],"balance":[{"v":"0.1"}],"redox":[{"v":"0.1"}],"lineas-transmision":[{"v":"0.1"}],"superficies":[{"v":"0.1"}],"vsepr":[{"v":"0.1"}],"maxwell":[{"v":"0.1"}],"fresnel":[{"v":"0.1"}],"gravitacion":[{"v":"0.1"}],"convolucion":[{"v":"0.1"}],"laplace-numerica":[{"v":"0.1"}],"imagenes":[{"v":"0.1"}],"guias-onda":[{"v":"0.1"}],"antena":[{"v":"0.1"}],"bode":[{"v":"0.1"}],"optica":[{"v":"0.1"}],"simulador":[{"v":"0.1"}],"teoria-juegos":[{"v":"0.1"}],"puertas-logicas":[{"v":"0.3"}],"multiplicador":[{"v":"0.1"}],"is-lm":[{"v":"0.1"}],"choques":[{"v":"0.1"}],"termoquimica":[{"v":"0.1"}],"probabilidad":[{"v":"0.1"}],"unidades":[{"v":"0.1"}],"equilibrio":[{"v":"0.1"}],"oscilaciones":[{"v":"0.1"}],"beneficio":[{"v":"0.1"}],"costes":[{"v":"0.1"}],"sistemas-numericos":[{"v":"0.1"}],"excedentes":[{"v":"0.1"}],"oferta-demanda":[{"v":"0.1"}],"chi2-bondad":[{"v":"0.1"}],"contrastes":[{"v":"0.1"}],"errores":[{"v":"0.1"}],"graficador":[{"v":"0.1"}],"metodos-numericos":[{"v":"0.1"}],"fisica-moderna":[{"v":"0.2"}],"lorenz-gini":[{"v":"0.1"}],"phillips-okun":[{"v":"0.1"}],"tipos-cambio":[{"v":"0.1"}],"elasticidades":[{"v":"0.1"}],"pib-ipc":[{"v":"0.1"}],"numeros-indice":[{"v":"0.1"}],"ratios":[{"v":"0.1"}],"punto-muerto":[{"v":"0.1"}],"ahorro":[{"v":"0.1"}],"van-tir":[{"v":"0.1"}],"amortizacion-inmovilizado":[{"v":"0.1"}],"prestamos":[{"v":"0.1"}],"rentas":[{"v":"0.1"}],"interes":[{"v":"0.1"}],"descriptiva":[{"v":"0.1"}],"regresion-economia":[{"v":"0.1"}],"ajustador":[{"v":"0.1"}],"electrostatica":[{"v":"0.6"}],"magnetostatica":[{"v":"0.2"}],"tabla-periodica":[{"v":"0.2"}],"trabajo-y-energia":[{"v":"0.2"}],"masa-molar":[{"v":"0.2"}],"configuracion-electronica":[{"v":"0.2"}],"condensadores":[{"v":"0.2"}],"tiro-parabolico":[{"v":"0.2"}],"disoluciones":[{"v":"0.2"}],"calorimetria":[{"v":"0.2"}],"induccion":[{"v":"0.2"}],"matrices":[{"v":"0.2"}],"derivadas":[{"v":"0.3"}],"laplace":[{"v":"0.2"}],"interferencia":[{"v":"0.2"}],"ondas-em":[{"v":"0.2"}],"intervalos":[{"v":"0.2"}],"fuerza":[{"v":"0.2"}],"campos":[{"v":"0.2.1"}],"cinetica":[{"v":"0.2"}],"edos":[{"v":"0.2"}],"fourier":[{"v":"0.2"}],"taylor":[{"v":"0.2.1"}],"complejos":[{"v":"0.2"}],"sistemas":[{"v":"0.3"}],"regresion":[{"v":"0.2"}],"estadistica":[{"v":"0.2"}],"dinamica":[{"v":"0.2"}],"solido-rigido":[{"v":"0.2"}],"ondas":[{"v":"0.2"}],"gases":[{"v":"0.2"}],"ciclos":[{"v":"0.2"}],"ph":[{"v":"0.2"}],"fluidos":[{"v":"0.2"}],"doppler":[{"v":"0.2"}],"resistencias":[{"v":"0.2"}],"faraday":[{"v":"0.2"}],"fenomenos":[{"v":"0.7"}]}; const de = (h) => ({ current: registros[h][0].v, log: registros[h] }); return { registros, de }; })();
->>>>>>> origin/claude/project-thread-cd9zu1
+const Version = (() => { const registros = {"web":[{"v":"1.11"}],"relatividad":[{"v":"0.1"}],"osc-acopladas":[{"v":"0.1"}],"solubilidad":[{"v":"0.1"}],"lagrange":[{"v":"0.1"}],"series":[{"v":"0.1"}],"no-parametricos":[{"v":"0.1"}],"regresion-multiple":[{"v":"0.1"}],"anova":[{"v":"0.1"}],"black-scholes":[{"v":"0.1"}],"bonos":[{"v":"0.1"}],"solow":[{"v":"0.1"}],"integrales-multiples":[{"v":"0.1"}],"formulacion":[{"v":"0.1"}],"balance":[{"v":"0.1"}],"redox":[{"v":"0.1"}],"lineas-transmision":[{"v":"0.1"}],"superficies":[{"v":"0.1"}],"vsepr":[{"v":"0.1"}],"maxwell":[{"v":"0.1"}],"fresnel":[{"v":"0.1"}],"gravitacion":[{"v":"0.1"}],"convolucion":[{"v":"0.1"}],"laplace-numerica":[{"v":"0.1"}],"imagenes":[{"v":"0.1"}],"guias-onda":[{"v":"0.1"}],"antena":[{"v":"0.1"}],"bode":[{"v":"0.1"}],"optica":[{"v":"0.1"}],"simulador":[{"v":"0.3"}],"teoria-juegos":[{"v":"0.1"}],"puertas-logicas":[{"v":"0.3"}],"multiplicador":[{"v":"0.1"}],"is-lm":[{"v":"0.1"}],"choques":[{"v":"0.1"}],"termoquimica":[{"v":"0.1"}],"probabilidad":[{"v":"0.1"}],"unidades":[{"v":"0.1"}],"equilibrio":[{"v":"0.1"}],"oscilaciones":[{"v":"0.1"}],"beneficio":[{"v":"0.1"}],"costes":[{"v":"0.1"}],"sistemas-numericos":[{"v":"0.1"}],"excedentes":[{"v":"0.1"}],"oferta-demanda":[{"v":"0.1"}],"chi2-bondad":[{"v":"0.1"}],"contrastes":[{"v":"0.1"}],"errores":[{"v":"0.1"}],"graficador":[{"v":"0.1"}],"metodos-numericos":[{"v":"0.1"}],"fisica-moderna":[{"v":"0.2"}],"lorenz-gini":[{"v":"0.1"}],"phillips-okun":[{"v":"0.1"}],"tipos-cambio":[{"v":"0.1"}],"elasticidades":[{"v":"0.1"}],"pib-ipc":[{"v":"0.1"}],"numeros-indice":[{"v":"0.1"}],"ratios":[{"v":"0.1"}],"punto-muerto":[{"v":"0.1"}],"ahorro":[{"v":"0.1"}],"van-tir":[{"v":"0.1"}],"amortizacion-inmovilizado":[{"v":"0.1"}],"prestamos":[{"v":"0.1"}],"rentas":[{"v":"0.1"}],"interes":[{"v":"0.1"}],"descriptiva":[{"v":"0.1"}],"regresion-economia":[{"v":"0.1"}],"ajustador":[{"v":"0.1"}],"electrostatica":[{"v":"0.6"}],"magnetostatica":[{"v":"0.2"}],"tabla-periodica":[{"v":"0.2"}],"trabajo-y-energia":[{"v":"0.2"}],"masa-molar":[{"v":"0.2"}],"configuracion-electronica":[{"v":"0.2"}],"condensadores":[{"v":"0.2"}],"tiro-parabolico":[{"v":"0.2"}],"disoluciones":[{"v":"0.2"}],"calorimetria":[{"v":"0.2"}],"induccion":[{"v":"0.2"}],"matrices":[{"v":"0.2"}],"derivadas":[{"v":"0.3"}],"laplace":[{"v":"0.2"}],"interferencia":[{"v":"0.2"}],"ondas-em":[{"v":"0.3"}],"intervalos":[{"v":"0.2"}],"fuerza":[{"v":"0.2"}],"campos":[{"v":"0.2.1"}],"cinetica":[{"v":"0.2"}],"edos":[{"v":"0.2"}],"fourier":[{"v":"0.2"}],"taylor":[{"v":"0.2.1"}],"complejos":[{"v":"0.2"}],"sistemas":[{"v":"0.3"}],"regresion":[{"v":"0.2"}],"estadistica":[{"v":"0.2"}],"dinamica":[{"v":"0.2"}],"solido-rigido":[{"v":"0.2"}],"ondas":[{"v":"0.2"}],"gases":[{"v":"0.3"}],"ciclos":[{"v":"0.2"}],"ph":[{"v":"0.3"}],"fluidos":[{"v":"0.2"}],"doppler":[{"v":"0.2"}],"resistencias":[{"v":"0.2"}],"faraday":[{"v":"0.2"}],"fenomenos":[{"v":"0.7"}]}; const de = (h) => ({ current: registros[h][0].v, log: registros[h] }); return { registros, de }; })();
 
 /* =====================================================================
    Ayudantes comunes de las herramientas (los que antes copiaba cada una).
@@ -2285,6 +2297,52 @@ const ExtraerSim = (() => {
 })();
 
 /* =====================================================================
+   Simulador de circuitos · barrido de un parámetro (sin DOM). Cambia el valor
+   de un campo de un componente (una resistencia, un condensador, la amplitud o
+   la frecuencia de una fuente…) a lo largo de un rango, resuelve el circuito en
+   cada punto con el mismo camino que la interfaz (ExtraerSim + SimCircuitos) y
+   devuelve la medida pedida. La pestaña «Barrido» de app.js lo dibuja.
+   Medidas: { k: 'U'|'I'|'P', id } (tensión, corriente o potencia de un
+   componente) o { k: 'V', id: nudo }. Modo 'cc' (continua) o 'ca' (valor
+   eficaz de la primera frecuencia de las fuentes de seno).
+   Devuelve { x, y } en unidades del SI; los puntos que no se pueden resolver
+   quedan en NaN.
+   ===================================================================== */
+const SimBarrido = (() => {
+  const S = typeof SimCircuitos !== 'undefined' ? SimCircuitos : null;
+  // campos numéricos de un componente que se pueden barrer (sin listas ni nombres)
+  const parametros = (c) => (CompSim.C[c.t].campos || []).filter((f) => !f.op && f.k !== 'ctrl' && f.k !== 'nombre' && (!f.si || f.si(c.v)) && isFinite(Herramienta.leeSI(c.v[f.k], f.base ?? 1)) && String(c.v[f.k] ?? '').trim() !== '');
+  const siUnidad = (f) => (f.base && f.base !== 1 && f.un && f.un.length > 1 ? f.un.slice(1) : f.un || '');
+  const puntosDe = (desde, hasta, n, log) => Array.from({ length: n }, (_, i) => (log ? desde * (hasta / desde) ** (i / (n - 1)) : desde + ((hasta - desde) * i) / (n - 1)));
+
+  function barre(sc, { comp, campo, desde, hasta, puntos = 60, log = false, medida, modo = 'cc' }) {
+    const c0 = (sc.componentes || []).find((c) => c.id === comp), f = c0 && CompSim.C[c0.t].campos.find((q) => q.k === campo);
+    if (!f) throw new Error('Elige el componente y el parámetro que quieres variar');
+    if (!(isFinite(desde) && isFinite(hasta)) || desde === hasta) throw new Error('El rango del barrido no es válido');
+    if (log && !(desde > 0 && hasta > 0)) throw new Error('En escala logarítmica los dos extremos tienen que ser mayores que 0');
+    const base = f.base ?? 1, xs = puntosDe(desde, hasta, Math.max(2, puntos), log), ys = [];
+    for (const x of xs) {
+      const copia = Herramienta.copia(sc), c = copia.componentes.find((q) => q.id === comp);
+      c.v[campo] = String(x / base);
+      try {
+        const ext = ExtraerSim.extraer(copia), net = ext.net, ids = ext.elementosDe[medida.id] || [];
+        let y = NaN;
+        if (modo === 'ca') {
+          const fa = S.fasores(net)[0];
+          if (fa) y = medida.k === 'V' ? S.mod(fa.V[medida.id] || { re: 0, im: 0 }) / Math.SQRT2 : medida.k === 'P' ? (fa.U[ids[0]].re * fa.I[ids[0]].re + fa.U[ids[0]].im * fa.I[ids[0]].im) / 2 : S.mod(fa[medida.k][ids[0]]) / Math.SQRT2;
+        } else {
+          const op = S.operacion(net);
+          y = medida.k === 'V' ? (medida.id === '0' ? 0 : op.V[medida.id].re) : op[medida.k][ids[0]].re;
+        }
+        ys.push(y);
+      } catch (e) { ys.push(NaN); }
+    }
+    return { x: xs, y: ys };
+  }
+  return { parametros, siUnidad, barre };
+})();
+
+/* =====================================================================
    Simulador de circuitos · ejemplos de partida. Cada uno se escribe con
    componentes colocados en la rejilla (id, tipo, x, y, giro, valores) y
    cables entre patillas «id.n» o puntos [x, y]; `monta` los convierte en el
@@ -2386,6 +2444,239 @@ const ImportarSim = (() => {
     } catch (e) { return ''; }
   }
   return { aEsquema, migra };
+})();
+
+/* =====================================================================
+   Simulador de circuitos · importar y exportar redes en texto tipo SPICE
+   (sin DOM). `exporta(sc)` escribe el esquema como lista de elementos entre
+   nudos (R C L V I E G H F D Q M K, con sus .model, .op y .tran);
+   `importa(texto)` hace lo contrario y devuelve { sc, avisos }: cada pieza
+   se coloca suelta con una etiqueta de nudo en cada patilla (el nudo 0 lleva
+   una tierra), como ImportarSim, así que el circuito es siempre correcto y
+   se puede recolocar. Lo que no tiene equivalente (interruptores, puertas,
+   transformadores, subcircuitos, PWL…) se avisa en vez de callar.
+   Va en scripts tras extraer.js y antes de app.js; la prueba está en
+   pruebas/herramientas/simulador.js. La interfaz (panel SPICE) está en app.js.
+   ===================================================================== */
+const SpiceSim = (() => {
+  const SUF = { f: 1e-15, p: 1e-12, n: 1e-9, u: 1e-6, m: 1e-3, k: 1e3, meg: 1e6, g: 1e9, t: 1e12, mil: 25.4e-6 };
+  // número de SPICE («4k7» no: «4.7k», «1meg», «10uF», «1e-9») → número, NaN si no se entiende
+  function num(s) {
+    const m = /^([+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?)(meg|mil|[fpnumgt]|k)?[a-z]*$/i.exec(String(s ?? '').trim());
+    return m ? +m[1] * (m[2] ? SUF[m[2].toLowerCase()] : 1) : NaN;
+  }
+  const sp = (x) => String(+x.toPrecision(10));
+  // número → texto de un campo del simulador (con prefijo o unidad, para que leeSI no aplique la base del campo)
+  const PRE = [[1e9, 'G'], [1e6, 'M'], [1e3, 'k'], [1, ''], [1e-3, 'm'], [1e-6, 'µ'], [1e-9, 'n'], [1e-12, 'p']];
+  function campo(x, un = '') {
+    if (x === 0) return `0${un}`;
+    const a = Math.abs(x), p = PRE.find(([v]) => a >= v * 0.9999999);
+    if (!p || a >= 1e12) return `${String(+x.toPrecision(10)).replace('.', ',')}${un}`;
+    const mant = +(x / p[0]).toPrecision(6);
+    if (Math.abs(mant * p[0] - x) > 1e-9 * a) return `${String(+x.toPrecision(10))}${un}`;
+    return `${String(mant).replace('.', ',')}${p[1] || un}`;
+  }
+
+  /* ---------- Exportar ---------- */
+  function exporta(sc) {
+    const C = CompSim.C, ext = ExtraerSim.extraer(sc), comps = sc.componentes, avisos = [], lin = [], modelos = [];
+    const nudo = (s) => String(s).replace(/[^\w]/g, '_'), N = (c) => ext.pinNet[c.id].map(nudo);
+    const letraDe = { R: 'R', LAMP: 'R', POT: 'R', ZRL: 'R', ZRC: 'R', C: 'C', CP: 'C', L: 'L', KL: 'L', V: 'V', PILA: 'V', AM: 'V', I: 'I', VV: 'E', AOR: 'E', IV: 'G', VI: 'H', II: 'F', D: 'D', Z: 'D', LED: 'D', BJT: 'Q', PNP: 'Q', NMOS: 'M', PMOS: 'M' };
+    // nombre SPICE: el mismo id si ya empieza por la letra; si no, la letra y la cifra final (E1 → V1) o, si choca, la letra y el id entero
+    const nombres = {}, tomados = new Set();
+    for (const c of comps) {
+      const l = letraDe[c.t]; if (!l) continue;
+      let n = c.id.toUpperCase().startsWith(l) ? c.id : l + (/\d+$/.exec(c.id) || [''])[0];
+      if (tomados.has(n.toUpperCase()) || n === l) n = l + c.id;
+      tomados.add(n.toUpperCase()); nombres[c.id] = n;
+    }
+    const nombre = (c) => nombres[c.id];
+    const v = (c, k) => { const d = C[c.t].campos.find((f) => f.k === k); return Herramienta.leeSI(c.v[k], d?.base ?? 1); };
+    const noSale = (c, motivo) => { lin.push(`* ${c.id} (${C[c.t].nombre}): ${motivo}`); avisos.push(`${c.id}: ${motivo}`); };
+    const onda = (c) => {
+      const f = c.v.forma || 'cc', A = () => v(c, 'A') * (c.v.eficaz === 'eficaz' ? Math.SQRT2 : 1), off = () => (String(c.v.off ?? '').trim() ? v(c, 'off') : 0);
+      switch (f) {
+        case 'cc': return `DC ${sp(v(c, 'v'))}`;
+        case 'seno': return `SIN(${sp(off())} ${sp(A())} ${sp(v(c, 'f'))} 0 0 ${sp(String(c.v.fase ?? '').trim() ? v(c, 'fase') : 0)})`;
+        case 'cuadrada': { const T = 1 / v(c, 'f'), d = String(c.v.duty ?? '').trim() ? v(c, 'duty') / 100 : 0.5; return `PULSE(${sp(off() - A())} ${sp(off() + A())} 0 1n 1n ${sp(d * T)} ${sp(T)})`; }
+        case 'pulso': { const g = (k) => (String(c.v[k] ?? '').trim() ? v(c, k) : 0); return `PULSE(${sp(g('v1'))} ${sp(g('v2'))} ${sp(g('td'))} ${sp(g('tr'))} ${sp(g('tf'))} ${sp(g('pw'))} ${sp(g('per'))})`; }
+        case 'escalon': return `PULSE(${sp(v(c, 'v1'))} ${sp(v(c, 'v2'))} ${sp(String(c.v.t0 ?? '').trim() ? v(c, 't0') : 0)} 1n 1n 1e9 2e9)`;
+        default: avisos.push(`${c.id}: la onda ${f} no existe en SPICE; se exporta solo su continua`); return `DC ${sp(String(c.v.off ?? '').trim() ? v(c, 'off') : 0)}`;
+      }
+    };
+    const ctrlDe = (c) => {
+      const x = comps.find((q) => q.id.toLowerCase() === String(c.v.ctrl || '').trim().toLowerCase());
+      if (x && ['V', 'PILA', 'AM'].includes(x.t)) return nombre(x);
+      noSale(c, 'en SPICE la corriente de control tiene que pasar por una fuente de tensión (o amperímetro)'); return null;
+    };
+    lin.push(`* Ciencify · Simulador de circuitos · ${new Date().toISOString().slice(0, 10)}`);
+    for (const c of comps) {
+      const p = N(c), n = nombre(c), t = c.t;
+      switch (t) {
+        case 'R': case 'LAMP': lin.push(`${n} ${p[0]} ${p[1]} ${sp(v(c, 'R'))}`); break;
+        case 'C': case 'CP': lin.push(`${n} ${p[0]} ${p[1]} ${sp(v(c, 'C'))}`); break;
+        case 'L': lin.push(`${n} ${p[0]} ${p[1]} ${sp(v(c, 'L'))}`); break;
+        case 'POT': { const R = v(c, 'R'), x = Math.min(0.999, Math.max(0.001, v(c, 'pos'))); lin.push(`${n}a ${p[0]} ${p[2]} ${sp(R * x)}`, `${n}b ${p[2]} ${p[1]} ${sp(R * (1 - x))}`); break; }
+        case 'ZRL': lin.push(`R${c.id}r ${p[0]} ${nudo(c.id)}_m ${sp(v(c, 'R'))}`, `L${c.id}l ${nudo(c.id)}_m ${p[1]} ${sp(v(c, 'L'))}`); break;
+        case 'ZRC': lin.push(`R${c.id}r ${p[0]} ${nudo(c.id)}_m ${sp(v(c, 'R'))}`, `C${c.id}c ${nudo(c.id)}_m ${p[1]} ${sp(v(c, 'C'))}`); break;
+        case 'V': lin.push(`${n} ${p[0]} ${p[1]} ${onda(c)}`); break;
+        case 'PILA': lin.push(`${n} ${p[0]} ${p[1]} DC ${sp(v(c, 'v'))}`); break;
+        case 'I': lin.push(`${n} ${p[0]} ${p[1]} ${onda(c)}`); break;
+        case 'AM': lin.push(`${n} ${p[0]} ${p[1]} DC 0`); break;
+        case 'VV': lin.push(`${n} ${p[0]} ${p[1]} ${p[2]} ${p[3]} ${sp(v(c, 'k'))}`); break;
+        case 'IV': lin.push(`${n} ${p[0]} ${p[1]} ${p[2]} ${p[3]} ${sp(v(c, 'g'))}`); break;
+        case 'VI': { const q = ctrlDe(c); if (q) lin.push(`${n} ${p[0]} ${p[1]} ${q} ${sp(v(c, 'r'))}`); break; }
+        case 'II': { const q = ctrlDe(c); if (q) lin.push(`${n} ${p[0]} ${p[1]} ${q} ${sp(v(c, 'beta'))}`); break; }
+        case 'KL': lin.push(`L${c.id}1 ${p[0]} ${p[1]} ${sp(v(c, 'L1'))}`, `L${c.id}2 ${p[2]} ${p[3]} ${sp(v(c, 'L2'))}`, `K${c.id} L${c.id}1 L${c.id}2 ${sp(v(c, 'k'))}`); break;
+        case 'D': case 'LED': { const m = `${t === 'LED' ? 'LED' : 'D'}_${nudo(c.id)}`; lin.push(`${n} ${p[0]} ${p[1]} ${m}`); modelos.push(`.model ${m} D(IS=${sp(v(c, 'Is'))} N=${sp(v(c, 'n'))})`); break; }
+        case 'Z': { const m = `DZ_${nudo(c.id)}`; lin.push(`${n} ${p[0]} ${p[1]} ${m}`); modelos.push(`.model ${m} D(IS=${sp(v(c, 'Is'))} BV=${sp(v(c, 'Vz'))} IBV=1m)`); break; }
+        case 'BJT': case 'PNP': { const m = `Q_${nudo(c.id)}`; lin.push(`${n} ${p[0]} ${p[1]} ${p[2]} ${m}`); modelos.push(`.model ${m} ${t === 'BJT' ? 'NPN' : 'PNP'}(BF=${sp(v(c, 'bf'))} IS=${sp(v(c, 'Is'))})`); break; }
+        case 'NMOS': case 'PMOS': { const m = `M_${nudo(c.id)}`, vth = v(c, 'Vth'); lin.push(`${n} ${p[0]} ${p[1]} ${p[2]} ${p[2]} ${m}`); modelos.push(`.model ${m} ${t === 'NMOS' ? 'NMOS' : 'PMOS'}(LEVEL=1 KP=${sp(v(c, 'k'))} VTO=${sp(t === 'NMOS' ? vth : -vth)} LAMBDA=${sp(v(c, 'lambda'))})`); break; }
+        case 'AOR': lin.push(`${n} ${p[2]} 0 ${p[0]} ${p[1]} ${sp(v(c, 'A'))}`); avisos.push(`${c.id}: se exporta como fuente controlada de ganancia A, sin la saturación de ±${c.v.Vsat} V`); break;
+        case 'GND': case 'ETIQ': case 'SONDA': break;
+        case 'VM': lin.push(`* ${c.id}: voltímetro entre ${p[0]} y ${p[1]}`); break;
+        case 'SW': case 'SPDT': noSale(c, 'los interruptores no se exportan (en SPICE llevan un modelo propio)'); break;
+        case 'TR': case 'TRR': noSale(c, 'el transformador ideal o real no tiene equivalente directo; usa bobinas acopladas (K)'); break;
+        case 'AO': noSale(c, 'el operacional ideal no existe en SPICE; usa el real con ganancia grande'); break;
+        default: noSale(c, `${C[t].nombre} no se puede exportar`);
+      }
+    }
+    lin.push(...modelos, '.op');
+    const tf = Herramienta.leeSI(sc.analisis?.tfin || '', 1); if (isFinite(tf) && tf > 0) lin.push(`.tran ${sp(tf / 1000)} ${sp(tf)}`);
+    lin.push('.end');
+    return { texto: lin.join('\n') + '\n', avisos, nombres };
+  }
+
+  /* ---------- Importar ---------- */
+  function importa(texto) {
+    const avisos = [], filas = [];
+    // líneas lógicas: sin comentarios, con las continuaciones («+») unidas
+    String(texto ?? '').replace(/\r/g, '').split('\n').forEach((l, i) => {
+      const t = l.replace(/[;$].*$/, '');
+      if (/^\s*\*/.test(t) || !t.trim()) return;
+      if (/^\s*\+/.test(t) && filas.length) filas[filas.length - 1].s += ' ' + t.replace(/^\s*\+/, ''); else filas.push({ n: i + 1, s: t.trim() });
+    });
+    const trocea = (s) => s.replace(/\s*=\s*/g, '=').replace(/[(),]/g, ' ').trim().split(/\s+/);
+    // la primera línea es el título (se ignora) salvo que ya sea un elemento o una orden
+    if (filas.length && !/^\./.test(filas[0].s)) {
+      const t = trocea(filas[0].s), l = t[0][0].toUpperCase(), ok = { R: 4, C: 4, L: 4, V: 3, I: 3, E: 6, G: 6, H: 5, F: 5, D: 4, Q: 5, M: 6, K: 4 }[l];
+      const dato = { R: 3, C: 3, L: 3, E: 5, G: 5, H: 4, F: 4, K: 3 }[l];
+      if (!(ok && t.length >= ok && (dato === undefined || isFinite(num(t[dato]))))) filas.shift();
+    }
+    const modelos = {};
+    for (const f of filas) {
+      if (!/^\.model\b/i.test(f.s)) continue;
+      const t = trocea(f.s), par = {}; t.slice(3).forEach((q) => { const [k, x] = q.split('='); if (x !== undefined) par[k.toUpperCase()] = num(x); });
+      modelos[t[1].toLowerCase()] = { tipo: (t[2] || '').toUpperCase(), par };
+    }
+    const comps = [], cableado = []; let tfin = null;
+    const usados = new Set(), ids = new Map();
+    const idUnico = (nom) => { let id = nom, k = 1; while (usados.has(id.toLowerCase())) id = `${nom}_${++k}`; usados.add(id.toLowerCase()); return id; };
+    const nodos = (t, n) => t.slice(1, 1 + n);
+    const w = (f, m) => avisos.push(`Línea ${f.n}: ${m}`);
+    const campoNum = (f, s, q, un = '') => { const x = num(s); if (!isFinite(x)) { w(f, `no entiendo el valor «${s}» de ${q}`); return null; } return campo(x, un); };
+    const onda = (f, t, un, v) => {
+      let dc = null, i = 3;
+      const sal = (k) => { const x = num(t[k]); return isFinite(x) ? x : null; };
+      for (; i < t.length; i++) {
+        const u = t[i].toUpperCase();
+        if (u === 'DC') { dc = t[++i]; } else if (u === 'AC') { i++; if (isFinite(num(t[i + 1]))) i++; w(f, 'se ignora el valor AC (el simulador saca los fasores de las fuentes sinusoidales)'); }
+        else if (u === 'SIN' || u === 'PULSE') {
+          const a = []; while (isFinite(num(t[i + 1])) && i + 1 < t.length) a.push(num(t[++i]));
+          if (u === 'SIN') {
+            if (a[3] || a[4]) w(f, 'se ignoran el retardo y el amortiguamiento de la sinusoidal');
+            Object.assign(v, { forma: 'seno', off: campo(a[0] || 0, un), A: campo(a[1] ?? 0, un), eficaz: 'de pico', f: campo(a[2] ?? 0, 'Hz'), fase: String(a[5] || 0) });
+          } else Object.assign(v, { forma: 'pulso', v1: campo(a[0] ?? 0, un), v2: campo(a[1] ?? 0, un), td: campo(a[2] || 0, 's'), tr: campo(a[3] || 0, 's'), tf: campo(a[4] || 0, 's'), pw: campo(a[5] ?? 0, 's'), per: campo(a[6] ?? 0, 's') });
+        } else if (['PWL', 'EXP', 'SFFM', 'AM'].includes(u)) { w(f, `la onda ${u} no se puede importar; se deja la fuente en 0`); break; }
+        else if (dc === null && isFinite(num(t[i]))) dc = t[i];
+      }
+      if (v.forma === 'cc' || !v.forma) { v.forma = 'cc'; v.v = dc === null ? '0' : (campoNum(f, dc, 'la fuente', un) ?? '0'); }
+      return v;
+    };
+    const pend = [];
+    for (const f of filas) {
+      if (/^\./.test(f.s)) {
+        const t = trocea(f.s), o = t[0].toLowerCase();
+        if (o === '.tran') { const x = num(t[2]); if (isFinite(x)) tfin = campo(x, 's'); }
+        else if (['.subckt', '.ends', '.param', '.include', '.lib', '.ic', '.func', '.global'].includes(o)) w(f, `la orden ${o} no está soportada y se ignora`);
+        else if (['.ac', '.dc', '.noise', '.four'].includes(o)) w(f, `el análisis ${o} se ignora: el simulador tiene sus pestañas de Bode, fasores y continua`);
+        continue;
+      }
+      const t = trocea(f.s), nom = t[0], L = nom[0].toUpperCase();
+      if (!/^[A-Za-z]/.test(nom)) { w(f, `línea no reconocida: «${f.s.slice(0, 40)}»`); continue; }
+      const min = { R: 4, C: 4, L: 4, V: 3, I: 3, E: 6, G: 6, H: 5, F: 5, D: 4, Q: 5, M: 6, K: 4 }[L];
+      if (!min) { w(f, `${nom}: el elemento tipo ${L} no está soportado (${L === 'X' ? 'subcircuitos' : L === 'S' || L === 'W' ? 'interruptores' : L === 'B' ? 'fuentes con expresión' : L === 'T' ? 'líneas de transmisión' : 'no existe en el simulador'}) y se omite`); continue; }
+      if (t.length < min) { w(f, `${nom}: faltan datos`); continue; }
+      let pines, tipo, v = null;
+      try {
+        switch (L) {
+          case 'R': case 'C': case 'L': {
+            tipo = L; const x = campoNum(f, t[3], nom, { R: 'Ω', C: 'F', L: 'H' }[L]); if (x === null) continue;
+            pines = nodos(t, 2); v = { [L]: x }; break;
+          }
+          case 'V': case 'I': tipo = L; pines = nodos(t, 2); v = onda(f, t, L === 'V' ? 'V' : 'A', { ...CompSim.vacio(L) }); break;
+          case 'E': case 'G': {
+            if (/^(poly|value|table|laplace)$/i.test(t[3])) { w(f, `${nom}: las fuentes con ${t[3].toUpperCase()} no están soportadas y se omiten`); continue; }
+            tipo = L === 'E' ? 'VV' : 'IV'; const x = campoNum(f, t[5], nom, L === 'G' ? 'S' : ''); if (x === null) continue;
+            pines = nodos(t, 4); v = L === 'E' ? { k: x } : { g: x }; break;
+          }
+          case 'H': case 'F': {
+            tipo = L === 'H' ? 'VI' : 'II'; const x = campoNum(f, t[4], nom, L === 'H' ? 'Ω' : ''); if (x === null) continue;
+            pines = nodos(t, 2); v = L === 'H' ? { r: x, ctrl: t[3] } : { beta: x, ctrl: t[3] }; break;
+          }
+          case 'K': pend.push({ f, nom, l1: t[1], l2: t[2], k: num(t[3]) }); continue;
+          case 'D': {
+            const m = modelos[(t[3] || '').toLowerCase()]; if (!m) w(f, `${nom}: el modelo «${t[3]}» no está definido; se usan los valores por omisión`);
+            const par = m ? m.par : {}, led = /^led/i.test(t[3] || '');
+            if (par.BV > 0) { tipo = 'Z'; v = { Vz: campo(par.BV, 'V'), Is: campo(par.IS ?? 1e-14, 'A') }; } else { tipo = led ? 'LED' : 'D'; v = { Is: campo(par.IS ?? (led ? 1e-18 : 1e-14), 'A'), n: String(par.N ?? (led ? 2 : 1)).replace('.', ',') }; }
+            pines = nodos(t, 2); break;
+          }
+          case 'Q': {
+            const mod = t.slice(4).find((q) => modelos[q.toLowerCase()]) || t[4], m = modelos[(mod || '').toLowerCase()]; if (!m) w(f, `${nom}: el modelo «${mod}» no está definido; se toma un NPN con β = 100`);
+            const par = m ? m.par : {}; tipo = m && m.tipo === 'PNP' ? 'PNP' : 'BJT'; v = { bf: String(par.BF ?? 100).replace('.', ','), Is: campo(par.IS ?? 1e-14, 'A') }; pines = nodos(t, 3); break;
+          }
+          case 'M': {
+            const m = modelos[(t[5] || '').toLowerCase()]; if (!m) w(f, `${nom}: el modelo «${t[5]}» no está definido; se usan los valores por omisión`);
+            const par = m ? m.par : {}, g = (k) => { const q = t.find((s) => s.toUpperCase().startsWith(k + '=')); return q ? num(q.slice(k.length + 1)) : 1; };
+            tipo = m && m.tipo === 'PMOS' ? 'PMOS' : 'NMOS'; v = { k: campo((par.KP ?? 2e-5) * g('W') / g('L')), Vth: campo(Math.abs(par.VTO ?? 1), 'V'), lambda: String(par.LAMBDA ?? 0).replace('.', ',') }; pines = nodos(t, 3); break;
+          }
+        }
+      } catch (e) { w(f, `${nom}: no se entiende (${e.message})`); continue; }
+      comps.push({ nom, id: idUnico(nom), t: tipo, v, pines: pines.map((q) => q.toLowerCase()), nombres: pines });
+    }
+    // bobinas acopladas: las dos bobinas y el K se juntan en una pieza «Bobinas acopladas»
+    for (const k of pend) {
+      const a = comps.find((c) => c.t === 'L' && c.nom.toLowerCase() === k.l1.toLowerCase()), b = comps.find((c) => c.t === 'L' && c.nom.toLowerCase() === k.l2.toLowerCase());
+      if (!a || !b || a === b || !isFinite(k.k)) { w(k.f, `${k.nom}: no encuentro sus dos bobinas`); continue; }
+      comps.splice(comps.indexOf(a), 1); comps.splice(comps.indexOf(b), 1);
+      comps.push({ nom: k.nom, id: idUnico(k.nom), t: 'KL', v: { L1: a.v.L, L2: b.v.L, k: String(k.k).replace('.', ',') }, pines: [...a.pines, ...b.pines], nombres: [...a.nombres, ...b.nombres] });
+    }
+    // fuentes controladas por corriente: la fuente de control tiene que existir
+    for (const c of comps) if (c.t === 'VI' || c.t === 'II') { const x = comps.find((q) => q.nom.toLowerCase() === c.v.ctrl.toLowerCase() && ['V', 'AM'].includes(q.t)); if (x) c.v.ctrl = x.id; else avisos.push(`${c.nom}: no encuentro la fuente de tensión ${c.v.ctrl} que mide la corriente de control`); }
+    if (!comps.length) return { sc: null, avisos: avisos.length ? avisos : ['No he encontrado ningún elemento (R, C, L, V, I, E, G, H, F, D, Q, M, K)'] };
+
+    // colocación: cuadrícula de tres columnas, cada pieza con una etiqueta de nudo en cada patilla
+    const piezas = [], cables = [], bautiza = {}; let g = 0, n = 0;
+    const etiqueta = (nombre) => { const k = nombre.toLowerCase(); return bautiza[k] ||= nombre; };
+    comps.forEach((c, i) => {
+      const col = i % 3, fila = Math.floor(i / 3), x = 7 + col * 19, y = 6 + fila * 10;
+      const vac = CompSim.vacio(c.t), pieza = { id: c.id, t: c.t, x, y, rot: 0, espejo: false, v: { ...vac, ...c.v } };
+      piezas.push(pieza);
+      Esquema.pines(pieza, CompSim.C).forEach(([px, py], k) => {
+        const nombre = c.nombres[k]; if (nombre === undefined) return;
+        const izq = px <= x, arriba = py < y && px > x && px < x + 4, abajo = py > y && px > x && px < x + 4;
+        const [dx, dy, rot] = izq ? [-2, 0, 2] : arriba ? [0, -2, 3] : abajo ? [0, 2, 1] : [2, 0, 0];
+        const ex = px + dx, ey = py + dy;
+        cables.push({ a: [px, py], b: [ex, ey] });
+        if (['0', 'gnd'].includes(nombre.toLowerCase())) piezas.push({ id: `GND${++g}`, t: 'GND', x: ex, y: ey, rot: 0, espejo: false, v: CompSim.vacio('GND') });
+        else piezas.push({ id: `N${++n}`, t: 'ETIQ', x: ex, y: ey, rot, espejo: false, v: { nombre: etiqueta(nombre) } });
+      });
+    });
+    const sc = { version: 2, componentes: piezas, cables, analisis: tfin ? { tfin } : {}, vista: null };
+    if (!comps.some((c) => c.pines.some((q) => ['0', 'gnd'].includes(q)))) avisos.push('La red no tiene nudo 0 (tierra): añade una tierra al esquema para poder resolverla');
+    return { sc, avisos };
+  }
+  return { num, campo, exporta, importa };
 })();
 
 /* =====================================================================
@@ -2559,6 +2850,26 @@ const ImportarSim = (() => {
   $('#b-copiar').onclick = () => ed.copiar(); $('#b-pegar').onclick = () => ed.pegar(); $('#b-borrar').onclick = () => ed.borra();
   $('#b-mas').onclick = () => ed.zoom(1.25); $('#b-menos').onclick = () => ed.zoom(0.8); $('#b-ajustar').onclick = () => ed.ajustar();
   $('#b-vaciar').onclick = () => { ed.marca(); const e = ed.estado; e.componentes = []; e.cables = []; e.vista = { x: 40, y: 40, z: 1 }; ed.estado = e; sc = ed.estado; calcula(); };
+
+  /* ---------- Importar y exportar SPICE (spice.js) ---------- */
+  {
+    const tx = $('#spice-txt'), msg = (t) => { $('#sp-msg').textContent = t; };
+    $('#b-spice').onclick = () => { const a = $('#spice').hidden; $('#spice').hidden = !a; $('#b-spice').setAttribute('aria-expanded', String(a)); if (a && !tx.value) $('#sp-exportar').click(); };
+    $('#sp-exportar').onclick = () => {
+      try { const r = SpiceSim.exporta(ed.estado); tx.value = r.texto; msg(r.avisos.length ? `Escrita, con ${r.avisos.length} aviso${r.avisos.length > 1 ? 's' : ''}:\n${r.avisos.join('\n')}` : 'Escrita la red del esquema.'); }
+      catch (e) { msg(`No se puede escribir: ${e.message}`); }
+    };
+    const dibuja = () => {
+      const r = SpiceSim.importa(tx.value);
+      if (!r.sc) { msg(r.avisos.join('\n')); return; }
+      ed.marca(); ed.estado = r.sc; sc = ed.estado; ed.ajustar(); sc = ed.estado; calcula(); actualizaBotones();
+      msg(`Red dibujada: ${r.sc.componentes.filter((c) => !['GND', 'ETIQ'].includes(c.t)).length} piezas unidas por etiquetas de nudo (se pueden recolocar).${r.avisos.length ? `\n${r.avisos.join('\n')}` : ''}`);
+    };
+    $('#sp-importar').onclick = dibuja;
+    $('#sp-copiar').onclick = () => { navigator.clipboard?.writeText(tx.value).then(() => msg('Copiado.'), () => { tx.select(); msg('Selecciona y copia con Ctrl+C.'); }); };
+    $('#sp-descargar').onclick = () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([tx.value], { type: 'text/plain' })); a.download = 'circuito.cir'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); };
+    $('#sp-archivo').onchange = (ev) => { const f = ev.target.files[0]; if (!f) return; f.text().then((t) => { tx.value = t; dibuja(); }); ev.target.value = ''; };
+  }
 
   /* ---------- Medir en cualquier punto: pasa el ratón (o toca) un cable, una patilla o un componente ---------- */
   const tip = document.createElement('div'); tip.className = 'medida-tip'; tip.hidden = true; document.body.appendChild(tip);
@@ -2793,6 +3104,50 @@ const ImportarSim = (() => {
     return `<p class="nota">Este circuito no tiene desarrollo paso a paso porque ${!soloCC && !fr[0] ? 'las fuentes no son solo de continua ni solo de un seno de una frecuencia' : 'tiene elementos que no se resuelven a mano (semiconductores, transformadores, interruptores, lógica…) o nudos con nombres largos'}. Se resuelve numéricamente con el análisis nodal modificado: mira la pestaña Continua para el resultado de cada nudo y elemento.</p>`;
   }
 
+  /* ---------- Barrido de un parámetro: se varía un valor y se mide otra cosa ---------- */
+  const medidasBa = () => {
+    const ids = sc.componentes.filter((c) => ext.elementosDe[c.id] && !['GND', 'ETIQ', 'SONDA'].includes(c.t)), out = [];
+    for (const c of ids) if (opR.U[ext.elementosDe[c.id][0]]) out.push([`U:${c.id}`, `Tensión de ${c.id}`], [`I:${c.id}`, `Corriente de ${c.id}`], [`P:${c.id}`, `Potencia de ${c.id}`]);
+    for (const n of Object.keys(opR.V).filter((q) => !q.includes('~'))) out.push([`V:${n}`, `Tensión del nudo ${n}`]);
+    return out;
+  };
+  const unidadBa = (k) => ({ U: 'V', V: 'V', I: 'A', P: 'W' }[k]);
+  function rBa() {
+    if (!ext || errTxt) return sinDatos();
+    const pars = sc.componentes.flatMap((c) => (ext.elementosDe[c.id] && c.t !== 'ETIQ' ? SimBarrido.parametros(c).map((f) => ({ id: c.id, k: f.k, f, c })) : []));
+    if (!pars.length) return '<p class="nota">No hay ningún valor numérico que variar: añade una resistencia, un condensador o una fuente.</p>';
+    const b = sc.analisis.barrido || {}, clave = (q) => `${q.id}:${q.k}`, ps = pars.find((q) => clave(q) === b.p) || pars[0], ms = medidasBa(), m = ms.find((q) => q[0] === b.m) ? b.m : ms[0][0];
+    const x0 = Herramienta.leeSI(ps.c.v[ps.k], ps.f.base ?? 1), de = b.p === clave(ps) && b.de ? b.de : String(+(x0 / 10).toPrecision(3)), a = b.p === clave(ps) && b.a ? b.a : String(+(x0 * 10).toPrecision(3));
+    sc.analisis.barrido = { ...b, p: clave(ps), m, de, a };
+    const uni = SimBarrido.siUnidad(ps.f), ca = faR && faR.length;
+    return `<div class="param"><label for="ba-p">Valor que se varía</label><select id="ba-p" class="in">${pars.map((q) => `<option value="${esc(clave(q))}"${clave(q) === clave(ps) ? ' selected' : ''}>${esc(q.id)} · ${esc(q.f.nom)}</option>`).join('')}</select><label for="ba-de">de</label><input id="ba-de" class="in" value="${esc(de)}"><label for="ba-a">a <small>(${esc(uni || 'unidades')})</small></label><input id="ba-a" class="in" value="${esc(a)}"><label for="ba-log">Escala</label><select id="ba-log" class="in"><option value="lin"${b.log ? '' : ' selected'}>Lineal</option><option value="log"${b.log ? ' selected' : ''}>Logarítmica</option></select></div><div class="param"><label for="ba-m">Lo que se mide</label><select id="ba-m" class="in">${ms.map(([v, n]) => `<option value="${esc(v)}"${v === m ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select><label for="ba-modo">Análisis</label><select id="ba-modo" class="in"><option value="cc"${b.modo === 'ca' && ca ? '' : ' selected'}>Continua</option>${ca ? `<option value="ca"${b.modo === 'ca' ? ' selected' : ''}>Alterna (valor eficaz)</option>` : ''}</select></div><canvas id="ba" aria-label="Gráfica de la medida al variar el valor elegido"></canvas><p class="leyenda" id="ba-ley"></p><div id="ba-tabla"></div>`;
+  }
+  let baR = null;
+  function dibujaBa() {
+    const c = $('#ba'); if (!c || !ext) return;
+    const b = sc.analisis.barrido, ps = { id: b.p.split(':')[0], k: b.p.split(':')[1] }, comp = sc.componentes.find((q) => q.id === ps.id), f = CompSim.C[comp.t].campos.find((q) => q.k === ps.k), base = f.base ?? 1;
+    const [mk, mid] = [b.m.slice(0, 1), b.m.slice(2)], un = unidadBa(mk), ux = SimBarrido.siUnidad(f);
+    try { baR = SimBarrido.barre(sc, { comp: ps.id, campo: ps.k, desde: Herramienta.leeSI(b.de, base), hasta: Herramienta.leeSI(b.a, base), puntos: 80, log: !!b.log, medida: { k: mk, id: mid }, modo: b.modo }); } catch (e) { baR = null; $('#ba-ley').textContent = e.message; $('#ba-tabla').innerHTML = ''; lienzo(c); return; }
+    const { g, w, h } = lienzo(c), col = colores(); if (!w || !h) return;
+    const pts = baR.x.map((x, i) => [x, baR.y[i]]).filter((q) => isFinite(q[1]));
+    if (!pts.length) { $('#ba-ley').textContent = 'No se pudo resolver el circuito en ningún punto del rango.'; $('#ba-tabla').innerHTML = ''; return; }
+    const ml = 62, mr = 14, mt = 10, mb = 30, x0 = baR.x[0], x1 = baR.x[baR.x.length - 1], lg = !!b.log;
+    const ys = pts.map((q) => q[1]), lo0 = Math.min(...ys), hi0 = Math.max(...ys), pad = (hi0 - lo0) * 0.1 || Math.abs(hi0) * 0.1 || 1, lo = lo0 - pad, hi = hi0 + pad;
+    const X = (x) => ml + ((lg ? Math.log(x / x0) / Math.log(x1 / x0) : (x - x0) / (x1 - x0))) * (w - ml - mr), Y = (y) => mt + (h - mt - mb) - ((y - lo) / (hi - lo)) * (h - mt - mb);
+    g.strokeStyle = col['--line']; g.fillStyle = col['--muted']; g.font = '11px system-ui'; g.lineWidth = 1; g.textAlign = 'right'; g.textBaseline = 'middle';
+    for (const v of marcas(lo, hi, 5)) { g.beginPath(); g.moveTo(ml, Y(v)); g.lineTo(w - mr, Y(v)); g.stroke(); g.fillText(u(v, un, 3), ml - 5, Y(v)); }
+    g.textAlign = 'center'; g.textBaseline = 'top';
+    const xt = lg ? Array.from({ length: Math.floor(Math.log10(x1)) - Math.ceil(Math.log10(x0)) + 1 }, (_, i) => 10 ** (Math.ceil(Math.log10(x0)) + i)) : marcas(x0, x1, 6);
+    for (const v of xt) { g.strokeStyle = col['--line']; g.beginPath(); g.moveTo(X(v), mt); g.lineTo(X(v), h - mb); g.stroke(); g.fillText(u(v, ux, 3), X(v), h - mb + 6); }
+    g.strokeStyle = col['--canal-1']; g.lineWidth = 2; g.beginPath(); let ini = true; baR.x.forEach((x, i) => { const y = baR.y[i]; if (!isFinite(y)) { ini = true; return; } ini ? g.moveTo(X(x), Y(y)) : g.lineTo(X(x), Y(y)); ini = false; }); g.stroke();
+    const iM = ys.indexOf(hi0), iN = ys.indexOf(lo0), pM = pts[iM], pN = pts[iN];
+    g.fillStyle = col['--canal-2']; for (const q of [pM, pN]) { g.beginPath(); g.arc(X(q[0]), Y(q[1]), 4, 0, 7); g.fill(); }
+    const nom = (ms) => (ms[0] === 'V' ? `tensión del nudo ${ms.slice(2)}` : `${{ U: 'tensión', I: 'corriente', P: 'potencia' }[ms[0]]} de ${ms.slice(2)}`);
+    $('#ba-ley').innerHTML = `<i class="c1"></i>${esc(nom(b.m))} · máximo ${u(pM[1], un)} con ${esc(ps.id)} = ${u(pM[0], ux)} · mínimo ${u(pN[1], un)} con ${u(pN[0], ux)}${b.modo === 'ca' ? ' · valores eficaces' : ''}`;
+    const filas = []; for (let i = 0; i < 9; i++) { const j = Math.round((i * (baR.x.length - 1)) / 8); filas.push([u(baR.x[j], ux), u(baR.y[j], un)]); }
+    $('#ba-tabla').innerHTML = tabla([`${esc(ps.id)} (${esc(f.nom.toLowerCase())})`, esc(nom(b.m))], filas);
+  }
+
   /* ---------- Thévenin y Norton: se abre el circuito por un componente (o entre dos nudos) ---------- */
   const dosPines = () => sc.componentes.filter((c) => { const ids = ext && ext.elementosDe[c.id]; return ids && ids.length === 1 && CAT[c.t].pines.length === 2 && !['GND', 'ETIQ', 'VM', 'AM', 'SW'].includes(c.t) && !CAT[c.t].sonda; });
   const dibujoTh = (norton, a, b, V, R) => {
@@ -2804,6 +3159,20 @@ const ImportarSim = (() => {
       : `${l('M40 44V20H70')}${r(70, 13, true)}${l('M110 20H170M40 76V100H170')}${fuente}`;
     return `<svg class="eq-th" viewBox="0 0 200 120" role="img" aria-label="Circuito equivalente de ${norton ? 'Norton' : 'Thévenin'}">${cuerpo}<circle cx="170" cy="20" r="4"/><circle cx="170" cy="100" r="4"/><text x="178" y="24">${esc(a)}</text><text x="178" y="104">${esc(b)}</text><text class="v" x="${norton ? 12 : 4}" y="64">${V}</text><text class="v" x="${norton ? 112 : 70}" y="${norton ? 64 : 48}">${R}</text></svg>`;
   };
+  let thP = null;
+  function dibujaThPot() {
+    const c = $('#th-pot'); if (!c || !thP) return;
+    const { vth, rth } = thP, { g, w, h } = lienzo(c), col = colores(); if (!w || !h) return;
+    const ml = 62, mr = 14, mt = 10, mb = 30, r0 = rth / 10, r1 = rth * 10, P = (r) => (vth * vth * r) / ((r + rth) ** 2), pm = P(rth) * 1.1;
+    const X = (r) => ml + (Math.log(r / r0) / Math.log(r1 / r0)) * (w - ml - mr), Y = (p) => mt + (h - mt - mb) * (1 - p / pm);
+    g.strokeStyle = col['--line']; g.fillStyle = col['--muted']; g.font = '11px system-ui'; g.lineWidth = 1; g.textAlign = 'right'; g.textBaseline = 'middle';
+    for (const v of marcas(0, pm, 5)) { g.beginPath(); g.moveTo(ml, Y(v)); g.lineTo(w - mr, Y(v)); g.stroke(); g.fillText(u(v, 'W', 3), ml - 5, Y(v)); }
+    g.textAlign = 'center'; g.textBaseline = 'top';
+    for (const r of [r0, rth, r1]) { g.fillText(u(r, 'Ω', 3), Math.min(Math.max(X(r), ml + 18), w - mr - 18), h - mb + 6); }
+    g.strokeStyle = col['--canal-1']; g.lineWidth = 2; g.beginPath(); for (let i = 0; i <= 120; i++) { const r = r0 * (r1 / r0) ** (i / 120); i ? g.lineTo(X(r), Y(P(r))) : g.moveTo(X(r), Y(P(r))); } g.stroke();
+    g.fillStyle = col['--canal-2']; g.beginPath(); g.arc(X(rth), Y(P(rth)), 4.5, 0, 7); g.fill();
+    $('#th-pot-ley').innerHTML = `<i class="c1"></i>P(R) = V<sub>Th</sub>²·R / (R + R<sub>Th</sub>)² · máximo <b>${u(P(rth), 'W')}</b> con R = R<sub>Th</sub> = ${u(rth, 'Ω')}`;
+  }
   function rTh() {
     if (!ext || errTxt) return sinDatos();
     const cands = dosPines(), nets = Object.keys(opR.V).filter((n) => !n.includes('~')).concat(Object.keys(opR.V).includes('0') ? [] : ['0']);
@@ -2819,7 +3188,7 @@ const ImportarSim = (() => {
     const apaga = (e) => (e.t === 'V' || e.t === 'I' ? { ...e, onda: { tipo: 'cc', v: 0 } } : e);
     const prueba = (onda) => ({ id: 'PRUEBA', t: 'I', p: [b, a], onda });
     const V = (r, n) => (n === '0' || !r.V[n] ? { re: 0, im: 0 } : r.V[n]);
-    let h = cab, t;
+    let h = cab, t; thP = null;
     try {
       const abierto = { ...ext.net, elementos: base }, op1 = S.operacion(abierto), vth = V(op1, a).re - V(op1, b).re;
       const op2 = S.operacion({ ...ext.net, elementos: [...base.map(apaga), prueba({ tipo: 'cc', v: 1 })] }), rth = V(op2, a).re - V(op2, b).re;
@@ -2827,6 +3196,8 @@ const ImportarSim = (() => {
       t = `<h3>Corriente continua</h3><div class="resumen"><div><span>V<sub>Th</sub> = V<sub>abierto</sub></span><b>${u(vth, 'V')}</b></div><div><span>R<sub>Th</sub> = R<sub>N</sub></span><b>${u(rth, 'Ω')}</b></div><div><span>I<sub>N</sub> = V<sub>Th</sub> / R<sub>Th</sub></span><b>${cortoC === null ? '—' : u(cortoC, 'A')}</b></div></div>`;
       t += `<div class="eqs">${dibujoTh(false, a, b, u(vth, 'V'), u(rth, 'Ω'))}${dibujoTh(true, a, b, cortoC === null ? '—' : u(cortoC, 'A'), u(rth, 'Ω'))}</div><p class="nota">Terminales ${esc(a)} (positivo) y ${esc(b)}. V<sub>Th</sub> es la tensión entre los terminales con el circuito abierto, R<sub>Th</sub> la resistencia que se ve desde ellos con las fuentes de tensión en cortocircuito y las de corriente abiertas, e I<sub>N</sub> la corriente de cortocircuito entre ${esc(a)} y ${esc(b)}.</p>`;
       if (modo === 'c') { const Rc = ext.net.elementos.find((e) => e.id === quitar[0]); if (Rc && Rc.t === 'R' && isFinite(rth) && rth + Rc.R !== 0) t += `<p class="nota">Con ${esc(comp.id)} = ${u(Rc.R, 'Ω')} conectada de nuevo: I = V<sub>Th</sub> / (R<sub>Th</sub> + ${esc(comp.id)}) = <b>${u(vth / (rth + Rc.R), 'A')}</b> y V = <b>${u(vth * Rc.R / (rth + Rc.R), 'V')}</b>.</p>`; }
+      thP = rth > 0 && isFinite(rth) && vth !== 0 ? { vth, rth } : null;
+      if (thP) t += '<h3>Potencia en la carga</h3><canvas id="th-pot" aria-label="Potencia en una resistencia de carga según su valor: máxima cuando vale Rth"></canvas><p class="leyenda" id="th-pot-ley"></p>';
       if (faR && faR.length) {
         const filas = faR.map((q) => {
           const fa = S.fasores(abierto).find((x) => Math.abs(x.f - q.f) < 1e-9 * q.f) || null;
@@ -2843,11 +3214,11 @@ const ImportarSim = (() => {
   }
 
   /* ---------- Pestañas ---------- */
-  const TABS = { op: rOp, tr: rTr, fa: rFa, bo: rBo, th: rTh, de: rDe };
+  const TABS = { op: rOp, tr: rTr, fa: rFa, bo: rBo, ba: rBa, th: rTh, de: rDe };
   function panel() {
     for (const k of Object.keys(TABS)) $(`#tab-${k}`).setAttribute('aria-selected', String(k === pestana));
     $('#panel').innerHTML = TABS[pestana]();
-    dibujaOsc(); dibujaFas(); dibujaBode();
+    dibujaOsc(); dibujaFas(); dibujaBode(); dibujaBa(); dibujaThPot();
   }
   $('#modos').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; pestana = b.id.slice(4); panel(); });
   $('#panel').addEventListener('change', (e) => {
@@ -2855,6 +3226,7 @@ const ImportarSim = (() => {
     if (t.id === 'tfin') { sc.analisis.tfin = t.value; guarda(); calcula(); }
     else if (t.id === 'extraI') { sc.analisis.extraI = t.value; guarda(); panel(); }
     else if (['th-m', 'th-a', 'th-b'].includes(t.id)) { const m = $('#th-m').value; sc.analisis.th = m === 'n' ? { modo: 'n', a: $('#th-a') ? $('#th-a').value : '', b: $('#th-b') ? $('#th-b').value : '' } : { modo: 'c', comp: m.slice(2) }; guarda(); panel(); }
+    else if (t.id.startsWith('ba-')) { const q = (k) => $('#ba-' + k); const nuevo = t.id === 'ba-p'; sc.analisis.barrido = { ...sc.analisis.barrido, p: q('p').value, m: q('m').value, modo: q('modo').value, log: q('log').value === 'log', de: nuevo ? '' : q('de').value, a: nuevo ? '' : q('a').value }; guarda(); panel(); }
     else if (t.id === 'fsel') { sc.analisis.fi = +t.value; panel(); }
     else if (t.id === 'fdia') { sc.analisis.fdia = t.value; dibujaFas(); }
     else if (['bf', 'bs', 'bmin', 'bmax'].includes(t.id)) { sc.analisis.bode = { ...sc.analisis.bode, fuente: $('#bf').value, salida: $('#bs').value, fmin: $('#bmin').value, fmax: $('#bmax').value }; guarda(); dibujaBode(); }
@@ -2893,7 +3265,7 @@ const ImportarSim = (() => {
   const bAnim = $('#b-anim');
   if (bAnim) bAnim.onclick = () => { anim = !anim; bAnim.setAttribute('aria-pressed', String(anim)); bAnim.textContent = anim ? '⏸ Animación' : '▶ Animación'; arrancaAnim(); };
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { panel(); });
-  window.addEventListener('resize', () => { dibujaOsc(); dibujaFas(); dibujaBode(); });
+  window.addEventListener('resize', () => { dibujaOsc(); dibujaFas(); dibujaBode(); dibujaBa(); dibujaThPot(); });
   new MutationObserver(() => panel()).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
   /* ---------- Arranque ---------- */
@@ -3386,6 +3758,8 @@ const Practica = (() => {
     // cinetica: un ejercicio de los de clase (ley integrada, datos, velocidades iniciales o Arrhenius)
     cinetica: { datos: null, items: '#resumen > div.num', genera: () => window.CineticaApp?.azar(), enunciado: () => window.CineticaApp?.enunciado() },
     // campos: gradiente, divergencia y rotacional, trabajo o Green con números enteros; se preguntan los valores decimales
+    // solubilidad: Kps, solubilidad, ion común o mezcla de dos disoluciones con una sal de tabla
+    solubilidad: { datos: null, items: '#resumen > div.num', genera: () => window.SolubilidadApp?.azar(), enunciado: () => window.SolubilidadApp?.enunciado() },
     equilibrio: { datos: null, items: '#resumen > div.num', genera: () => window.EquilibrioApp?.azar(), enunciado: () => window.EquilibrioApp?.enunciado() },
     // integrales-multiples: una integral doble o triple de las de clase (cartesianas, polares, cilíndricas o esféricas); se pregunta la integral, el área o volumen y el valor medio
     'integrales-multiples': { datos: null, items: '#resumen > div.num', genera: () => window.IntegralesMultiplesApp?.azar(), enunciado: () => window.IntegralesMultiplesApp?.enunciado() },
@@ -3485,6 +3859,12 @@ const Practica = (() => {
     excedentes: { datos: null, genera: () => window.ExcedentesApp?.azar(), enunciado: () => window.ExcedentesApp?.enunciado() },
     // descriptiva: unas notas al azar (los datos están en un textarea)
     descriptiva: { datos: null, genera: () => window.DescriptivaApp?.azar(), enunciado: () => window.DescriptivaApp?.enunciado() },
+    // anova: tres grupos al azar
+    'anova': { datos: null, genera: () => window.AnovaApp?.azar(), enunciado: () => window.AnovaApp?.enunciado() },
+    // no-parametricos: dos muestras o pares al azar
+    'no-parametricos': { datos: null, genera: () => window.NoParametricosApp?.azar(), enunciado: () => window.NoParametricosApp?.enunciado() },
+    // regresion-multiple: un plano con ruido
+    'regresion-multiple': { datos: null, genera: () => window.RegresionMultipleApp?.azar(), enunciado: () => window.RegresionMultipleApp?.enunciado() },
     // regresión económica: una función de consumo al azar (los datos están en un textarea)
     'regresion-economia': { datos: null, genera: () => window.RegresionEconomiaApp?.azar(), enunciado: () => window.RegresionEconomiaApp?.enunciado() },
     // ratios: un balance al azar que cuadre (si se cambian los datos sueltos, el activo y el pasivo no coinciden)
