@@ -1,0 +1,59 @@
+<title>El transformador del poste: cómo baja 20 000 V a 400 V · Ciencify</title>
+<meta name="description" content="Por qué zumba el transformador de un poste y cómo baja la tensión de 20 000 V a 400 V sin piezas móviles: dos bobinas sobre un núcleo de hierro, ley de Faraday, relación de vueltas V₂/V₁ = N₂/N₁, conservación de la potencia, por qué solo funciona con corriente alterna y el zumbido de 100 Hz, con una animación paso a paso y el cálculo en Autoinducción e inducción mutua.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<!-- =====================================================================
+     El transformador del poste («Física en la vida real»). Maqueta común de los
+     fenómenos (ver fuego-san-telmo/pagina.html): animación, texto del paso, historia y recuadro
+     de la herramienta. Los pasos y el dibujo están en escena.js.
+     ===================================================================== -->
+<style>
+/* colores del dibujo, con su valor en modo oscuro */
+:root {
+  --sala: #e9e4da; --suelo: #8d8479; --poste: #6b5a46; --nucleo: #7d858c; --cobre: #b8672e; --hilo: #2a5db5; --campo: #6b3fa0; --onda: #2a5db5;
+  --corriente: #c2412a; --resalta: #c2412a; --caliente: #e8602c; --casa: #c9c4ba; --ventana: #f2c94c; --rotulo: #1a2128 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --sala: #1c2126; --suelo: #3a3f45; --poste: #8a7458; --nucleo: #5b6168; --cobre: #d8884a; --hilo: #74a2f2; --campo: #b48be8; --onda: #74a2f2;
+  --corriente: #ef7a62; --resalta: #ef7a62; --caliente: #ff7a3d; --casa: #3a3f45; --ventana: #f2c94c; --rotulo: #e3e8ea } }
+:root[data-theme="dark"] {
+  --sala: #1c2126; --suelo: #3a3f45; --poste: #8a7458; --nucleo: #5b6168; --cobre: #d8884a; --hilo: #74a2f2; --campo: #b48be8; --onda: #74a2f2;
+  --corriente: #ef7a62; --resalta: #ef7a62; --caliente: #ff7a3d; --casa: #3a3f45; --ventana: #f2c94c; --rotulo: #e3e8ea }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Cienci<i>fy</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física en la vida real</a> / El transformador del poste</span></header>
+<div class="wrap fen">
+<div class="fen-etiquetas"><span>⚡ Electromagnetismo</span><span>Dificultad media</span><span>6 pasos · 1 min</span></div>
+<h1>El transformador del poste</h1>
+<p class="lead">En lo alto de un poste hay un cajón gris que zumba. Le entran 20 000 V y le salen 400 V, y no tiene ninguna pieza que se mueva. ¿Cómo cambia la tensión con solo dos bobinas y un trozo de hierro, y por qué zumba?</p>
+<div class="fen-escena"><canvas id="escena" role="img" aria-label="Animación del transformador del poste: el poste con su cajón que zumba entre la línea de 20 000 V y los cables de 400 V, el núcleo de hierro con la bobina primaria de muchas vueltas y la secundaria de pocas, el flujo magnético que cambia, la misma potencia con 5 A en el primario y 250 A en el secundario, la diferencia entre corriente continua y alterna y las láminas del núcleo con el zumbido de 100 hercios"></canvas></div>
+<div class="fen-puntos" id="puntos" role="group" aria-label="Pasos"></div>
+<div class="fen-controles">
+  <button class="btn" id="ant" type="button">‹ Anterior</button>
+  <button class="btn" id="play" type="button" aria-pressed="true">❚❚ Parar</button>
+  <button class="btn" id="sig" type="button">Siguiente ›</button>
+</div>
+<div class="fen-texto" aria-live="polite"><h2 id="paso-t"></h2><div id="paso-x"></div></div>
+<section class="fen-historia" aria-label="Un poco de historia">
+  <h2>Un poco de historia</h2>
+  <ol>
+    <li><b>1831</b>Michael Faraday descubre la inducción con dos bobinas arrolladas a un anillo de hierro: es, sin saberlo, el primer transformador.</li>
+    <li><b>1836</b>Nicholas Callan construye en Irlanda una bobina de inducción, con la que se consiguen tensiones muy altas a partir de una pila.</li>
+    <li><b>1885</b>Károly Zipernowsky, Miksa Déri y Ottó Bláthy presentan en Budapest el primer transformador de núcleo cerrado, que permite alimentar muchas lámparas desde una sola línea.</li>
+    <li><b>1886</b>George Westinghouse y William Stanley prueban en Great Barrington (Massachusetts) la primera red de corriente alterna con transformadores.</li>
+    <li><b>Finales del siglo XIX</b>En la «guerra de las corrientes», la alterna gana a la continua precisamente porque su tensión se puede subir y bajar con un transformador.</li>
+  </ol>
+</section>
+<section class="fen-rel" aria-label="Herramienta relacionada">
+  <div class="fen-ico" aria-hidden="true">M</div>
+  <h2>Con qué herramienta se relaciona</h2>
+  <h3>Autoinducción e inducción mutua <small>· Electromagnetismo</small></h3>
+  <p>Un transformador ideal es dos bobinas con acoplamiento perfecto (k = 1): la fem de la secundaria es la inducción mutua M por lo deprisa que cambia la corriente del primario, y su cociente con la del primario es la relación de vueltas.</p>
+  <p class="f m">ε₂ = −M dI₁/dt ,  M = μ₀ N₁ N₂ h ln(b/a) / 2π ,  ε₂/ε₁ = N₂/N₁ = 1/50</p>
+  <p>Se abre en la pestaña de inducción mutua, en la geometría «Bobina sobre un toroide (k = 1)»: N₁ = 2500, N₂ = 50, un núcleo de 8 a 12 cm de radio y 4 cm de alto, sin hierro (con hierro L y M se multiplican por μ<sub>r</sub>, pero el cociente es el mismo). Con el ritmo de cambio del primario que corresponde a 20 kV de pico, sale ε₂ ≈ 566 V de pico, es decir 400 V eficaces.</p>
+  <div class="fen-fichas"><div><small>Relación de vueltas</small><b>50 : 1</b></div><div><small>Tensión del secundario</small><b>400 V</b></div><div><small>Corrientes (100 kVA)</small><b>5 A / 250 A</b></div></div>
+  <a class="fen-abrir" id="abrir" href="../../electromagnetismo/induccion/">Abrir en Autoinducción e inducción mutua con estos datos →</a>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Física en la vida real <span id="ver"></span> (beta)</footer>
+</body>
