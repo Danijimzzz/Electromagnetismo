@@ -345,6 +345,9 @@ const Catalogo = {
       { clave: 'arcoiris', nombre: 'El arcoíris', icono: '42°', disponible: true, imagen: 5, dificultad: 'D4', desc: 'Refracción y reflexión en una gota: por qué sale a 42° y con colores.', asignaturas: ['fisica', 'electromagnetismo'], herramientas: ['electromagnetismo/fresnel'],
         scripts: ['mates.js', 'fenomenos/animacion.js', 'fenomenos/dibujo.js', 'fenomenos/arcoiris/escena.js'],
         titulo: 'El arcoíris, explicado', descripcion: 'Por qué el arcoíris sale a 42° y con colores: refracción de la luz al entrar en una gota de agua, reflexión en el fondo, desviación mínima de Descartes e índice de refracción de cada color, con una animación paso a paso y el cálculo en Reflexión y transmisión (Fresnel)' },
+      { clave: 'radio-am-fm', nombre: 'La radio AM y FM', icono: 'AM', disponible: true, imagen: 3, dificultad: 'D2', desc: 'Cómo viaja el sonido por el aire y cómo elige tu radio una emisora: modulación AM y FM y circuito resonante.', asignaturas: ['electromagnetismo', 'circuitos'], herramientas: ['circuitos/bode', 'electromagnetismo/ondas-em'],
+        scripts: ['mates.js', 'fenomenos/animacion.js', 'fenomenos/dibujo.js', 'fenomenos/radio-am-fm/escena.js'],
+        titulo: 'La radio AM y FM, explicada', descripcion: 'Cómo funciona la radio: por qué hace falta una portadora, la modulación de amplitud y de frecuencia, el circuito resonante que sintoniza una emisora (f₀ = 1/2π√LC), el detector que recupera el sonido y el filtro paso banda, con una animación paso a paso y el cálculo en Diagramas de Bode y filtros' },
     ],
   },
   // direcciones antiguas que llevan a la nueva (portal.js genera la página de aviso, _redirects y vercel.json las redirigen con 301)
