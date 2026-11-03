@@ -23,6 +23,8 @@ JS puro, sin framework ni dependencias: una web estática que se genera con `sh 
 | --- | :-: | :-: |
 | Electromagnetismo | 14 | 0 |
 | Física general | 20 | 0 |
+| Electromagnetismo | 15 | 0 |
+| Física general | 19 | 0 |
 | Química | 13 | 0 |
 | Matemáticas | 15 | 0 |
 | Estadística | 11 | 0 |

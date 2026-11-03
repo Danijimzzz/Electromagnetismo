@@ -400,6 +400,8 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: cinco modos. Dos niveles (con degeneraciones), oscilador de Einstein, niveles propios (un rotor, un átomo…) con su función de partición, poblaciones de Boltzmann, energía, entropía, energía libre y capacidad calorífica, y la entropía S = k ln Ω de un sólido de Einstein y de dos sólidos que se reparten la energía, con su desarrollo paso a paso.'] },
     markowitz: [
       { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: frontera eficiente de Markowitz con de 2 a 6 activos y su matriz de correlaciones (con o sin ventas en corto), cartera de mínima varianza, cartera tangente con ratio de Sharpe y línea del mercado de capitales, cartera para una rentabilidad objetivo, y CAPM con beta, rentabilidad exigida, alfa y línea del mercado de valores. Con tabla de pesos y desarrollo paso a paso.'] },
+    cavidades: [
+      { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: cavidades rectangulares, cilíndricas y esféricas de paredes conductoras. Frecuencia de resonancia de cualquier modo TE o TM, factor de calidad de las paredes y del dieléctrico, ancho de banda, tabla de los modos más bajos y mapa del campo eléctrico o magnético en el plano de corte que elijas. Con desarrollo paso a paso.'] },
     ],
     relatividad: [
       { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: transformación de Lorentz de un evento con su diagrama de Minkowski (ejes inclinados de la nave y rayas paralelas para leer las coordenadas), suma y resta de velocidades con las rapideces e intervalo entre dos eventos con tiempo propio, distancia propia y causalidad. Con desarrollo paso a paso.'] },
