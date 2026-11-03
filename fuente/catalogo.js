@@ -345,6 +345,12 @@ const Catalogo = {
       { clave: 'arcoiris', nombre: 'El arcoíris', icono: '42°', disponible: true, imagen: 5, dificultad: 'D4', desc: 'Refracción y reflexión en una gota: por qué sale a 42° y con colores.', asignaturas: ['fisica', 'electromagnetismo'], herramientas: ['electromagnetismo/fresnel'],
         scripts: ['mates.js', 'fenomenos/animacion.js', 'fenomenos/dibujo.js', 'fenomenos/arcoiris/escena.js'],
         titulo: 'El arcoíris, explicado', descripcion: 'Por qué el arcoíris sale a 42° y con colores: refracción de la luz al entrar en una gota de agua, reflexión en el fondo, desviación mínima de Descartes e índice de refracción de cada color, con una animación paso a paso y el cálculo en Reflexión y transmisión (Fresnel)' },
+      { clave: 'fibra-optica', nombre: 'La fibra óptica', icono: 'θc', disponible: true, imagen: 4, dificultad: 'D2', desc: 'Por qué la luz no se sale de un hilo de vidrio: ángulo crítico de 80,6°, reflexión total y 0,2 dB/km.', asignaturas: ['electromagnetismo', 'fisica'], herramientas: ['electromagnetismo/fresnel'],
+        scripts: ['mates.js', 'fenomenos/animacion.js', 'fenomenos/dibujo.js', 'fenomenos/fibra-optica/escena.js'],
+        titulo: 'La fibra óptica y la reflexión total, explicadas', descripcion: 'Cómo viaja la luz por una fibra óptica sin salirse: ley de Snell, ángulo crítico de 80,6°, reflexión total, apertura numérica y atenuación de 0,2 dB/km, con una animación paso a paso y el cálculo en Reflexión y transmisión (Fresnel)' },
+      { clave: 'pantalla-tactil', nombre: 'La pantalla táctil', icono: 'pF', disponible: true, imagen: 1, dificultad: 'D1', desc: 'El dedo y un electrodo forman un condensador de unos 2,2 pF: así sabe el móvil dónde tocas, y por qué no funcionan los guantes.', asignaturas: ['electromagnetismo', 'circuitos'], herramientas: ['electromagnetismo/condensadores'],
+        scripts: ['mates.js', 'fenomenos/animacion.js', 'fenomenos/dibujo.js', 'fenomenos/pantalla-tactil/escena.js'],
+        titulo: 'La pantalla táctil capacitiva, explicada', descripcion: 'Cómo sabe el móvil dónde pones el dedo: el dedo y los electrodos bajo el cristal forman un condensador de 2,2 pF, la capacidad se suma, la posición sale del centro de gravedad de las señales y los guantes lo estropean, con una animación paso a paso y el cálculo en Dieléctricos y condensadores' },
     ],
   },
   // direcciones antiguas que llevan a la nueva (portal.js genera la página de aviso, _redirects y vercel.json las redirigen con 301)

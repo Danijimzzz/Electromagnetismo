@@ -1,0 +1,61 @@
+<title>La pantalla táctil capacitiva: cómo sabe el móvil dónde pones el dedo</title>
+<meta name="description" content="Cómo detecta un móvil dónde tocas: el dedo y los electrodos bajo el cristal forman un condensador de unos 2,2 pF, la capacidad se suma, la posición sale del centro de gravedad y los guantes lo estropean, con una animación paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<!-- =====================================================================
+     La pantalla táctil capacitiva («Física en la vida real»). Maqueta común de
+     los fenómenos (ver fuego-san-telmo/pagina.html): animación, texto del paso,
+     historia y recuadro de la herramienta. Los pasos y el dibujo están en escena.js.
+     ===================================================================== -->
+<style>
+/* colores del dibujo, con su valor en modo oscuro */
+:root {
+  --fondo: #eef3f6; --cristal: #c4dbe9; --fila: #1f7a8c; --columna: #8a4fb0; --electrodo: #3f9aa8; --electrodo2: #1f6f7d;
+  --dedo: #e3b48f; --dedo2: #a2643a; --guante: #8e7cc3; --positivo: #c0392b; --negativo: #1558ad;
+  --resalta: #1558ad; --alerta: #b35a00; --rotulo: #1a2128 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --fondo: #141c24; --cristal: #2c4a60; --fila: #55c1d4; --columna: #c79ae6; --electrodo: #4fb3c2; --electrodo2: #7fd3df;
+  --dedo: #b98862; --dedo2: #e8b690; --guante: #a999da; --positivo: #ff8f80; --negativo: #7ab8ff;
+  --resalta: #7ab8ff; --alerta: #ffb255; --rotulo: #e3e8ea } }
+:root[data-theme="dark"] {
+  --fondo: #141c24; --cristal: #2c4a60; --fila: #55c1d4; --columna: #c79ae6; --electrodo: #4fb3c2; --electrodo2: #7fd3df;
+  --dedo: #b98862; --dedo2: #e8b690; --guante: #a999da; --positivo: #ff8f80; --negativo: #7ab8ff;
+  --resalta: #7ab8ff; --alerta: #ffb255; --rotulo: #e3e8ea }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física en la vida real</a> / La pantalla táctil</span></header>
+<div class="wrap fen">
+<div class="fen-etiquetas"><span>⚡ Electromagnetismo y Circuitos</span><span>Dificultad baja</span><span>6 pasos · 1 min</span></div>
+<h1>La pantalla táctil</h1>
+<p class="lead">Rozas el cristal de tu móvil y sabe en qué punto exacto has tocado, incluso con varios dedos, pero no responde a la uña ni a un guante de lana. No hay botones ni presión: el dedo cambia en unos picofaradios la capacidad de un condensador que hay bajo el cristal.</p>
+<div class="fen-escena"><canvas id="escena" role="img" aria-label="Animación de la pantalla táctil capacitiva: la rejilla de electrodos bajo el cristal, un dedo que se acerca y forma un condensador con un electrodo, la carga que sube al sumarse la capacidad del dedo, el cálculo de la posición con el centro de gravedad de las señales y el efecto de un guante"></canvas></div>
+<div class="fen-puntos" id="puntos" role="group" aria-label="Pasos"></div>
+<div class="fen-controles">
+  <button class="btn" id="ant" type="button">‹ Anterior</button>
+  <button class="btn" id="play" type="button" aria-pressed="true">❚❚ Parar</button>
+  <button class="btn" id="sig" type="button">Siguiente ›</button>
+</div>
+<div class="fen-texto" aria-live="polite"><h2 id="paso-t"></h2><div id="paso-x"></div></div>
+<section class="fen-historia" aria-label="Un poco de historia">
+  <h2>Un poco de historia</h2>
+  <ol>
+    <li><b>1965</b>E. A. Johnson, en el Royal Radar Establishment británico, describe la primera pantalla táctil capacitiva, pensada para el control del tráfico aéreo.</li>
+    <li><b>1984</b>Bob Boie, en los Laboratorios Bell, construye una capa transparente capaz de detectar varios dedos a la vez por capacidad, un antecedente directo del multitáctil actual.</li>
+    <li><b>2007</b>El primer iPhone lleva al gran público una pantalla capacitiva multitáctil con cristal, de capacidad mutua proyectada, y desplaza a las resistivas con lápiz.</li>
+  </ol>
+</section>
+<section class="fen-rel" aria-label="Herramienta relacionada">
+  <div class="fen-ico" aria-hidden="true">C</div>
+  <h2>Con qué herramienta se relaciona</h2>
+  <h3>Dieléctricos y condensadores <small>· Electromagnetismo</small></h3>
+  <p>La yema del dedo y el electrodo de debajo son las dos placas de un condensador plano, y el cristal es su dieléctrico. Esa herramienta da la capacidad, la carga con 3,3 V y hasta el campo dentro del cristal, y deja añadir otra capa (un guante) para ver cómo cae la capacidad.</p>
+  <p class="f m">C = ε₀ εr S / d</p>
+  <p class="f m">Q = C V</p>
+  <p>Se abre con una yema y un electrodo de 5 × 5 mm separados por un cristal de 0,7 mm con εr = 7 y 3,3 V: salen 2,21 pF y 7,3 pC. Añade una capa de 1 mm con εr = 3 y comprueba que la capacidad baja a la cuarta parte.</p>
+  <div class="fen-fichas"><div><small>Capacidad</small><b>2,21 pF</b></div><div><small>Carga a 3,3 V</small><b>7,3 pC</b></div><div><small>Con guante de 1 mm</small><b>0,51 pF</b></div></div>
+  <a class="fen-abrir" id="abrir" href="../../electromagnetismo/condensadores/">Abrir en Dieléctricos y condensadores con estos datos →</a>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Física en la vida real <span id="ver"></span> (beta)</footer>
+</body>
