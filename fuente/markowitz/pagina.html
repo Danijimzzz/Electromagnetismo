@@ -1,0 +1,49 @@
+<title>Calculadora de cartera de Markowitz y CAPM · Ciencify</title>
+<meta name="description" content="Calculadora de carteras de Markowitz y CAPM en español: frontera eficiente, cartera de mínima varianza y tangente, ratio de Sharpe, beta, alfa y línea del mercado de valores, paso a paso.">
+<style>
+/* Solo lo propio de esta herramienta. Las medidas comunes se ajustan con sus variables
+   y los colores propios (los de las gráficas) van aquí, con su valor en modo oscuro. */
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a; --serie-3: #6b3fa0 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Cienci<i>fy</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Economía</a> / Cartera de Markowitz y CAPM</span></header>
+<div class="wrap">
+<h1>Cartera de Markowitz y CAPM</h1>
+<p class="lead">Elige cómo repartir tu dinero entre varios activos: calcula la cartera de menor riesgo, la mejor relación rentabilidad-riesgo (tangente) y, con el CAPM, la beta y el alfa de cada activo.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Frontera eficiente y mercado</h2>
+      <canvas id="grafica" aria-label="Rentabilidad esperada frente al riesgo de las carteras y los activos"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card"><h2>Pesos y CAPM</h2><div class="tabla-scroll" id="tabla"></div></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+<h2>La idea de Markowitz</h2>
+<p class="m">Una cartera de pesos $w$ rinde $μ_p = w^T·μ$ y tiene riesgo $σ_p = √(w^T·Σ·w)$. Como los activos no se mueven del todo a la vez (correlación menor que 1), repartir el dinero <b>baja el riesgo sin bajar la rentabilidad</b>: es la diversificación. De todas las carteras posibles, las <b>eficientes</b> son las que dan la mayor rentabilidad para cada riesgo; juntas forman la frontera eficiente. La de <b>mínima varianza</b> es su punto más a la izquierda.</p>
+<h2>Activo sin riesgo y cartera tangente</h2>
+<p class="m">Si además existe un activo sin riesgo con rentabilidad $r_f$, la mejor cartera de riesgo es la que maximiza el ratio de Sharpe $S = (μ_p − r_f)/σ_p$, la <b>cartera tangente</b>. Mezclándola con el activo sin riesgo se recorre la <b>línea del mercado de capitales</b> $μ_p = r_f + S·σ_p$, y todos los inversores eligen la misma cartera de riesgo, solo cambia cuánto prestan o piden prestado.</p>
+<h2>CAPM</h2>
+<p class="f m">$μ_i = r_f + β_i·(μ_M − r_f)$,   $β_i = σ_{iM}/σ_M^2$</p>
+<p class="m">Si el mercado es la cartera tangente, la rentabilidad que exige el mercado a un activo depende solo de su <b>beta</b>, la parte de su riesgo que no se elimina diversificando. La recta rentabilidad-beta es la <b>línea del mercado de valores</b> (SML). El <b>alfa</b> $α_i = μ_i − (r_f + β_i(μ_M − r_f))$ mide lo que rinde de más o de menos respecto a esa recta.</p>
+<h2>Ventas en corto</h2>
+<p class="m">Con ventas en corto los pesos pueden ser negativos y todo tiene solución en forma cerrada. Sin ellas ($w_i ≥ 0$) hay que probar qué activos entran en la cartera; la herramienta lo hace con todos los grupos posibles, así que el resultado es exacto. Es un modelo teórico: usa estimaciones de rentabilidad y riesgo que cambian, y no es una recomendación de inversión.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Cartera de Markowitz y CAPM <span id="ver"></span> (beta)</footer>
+</body>

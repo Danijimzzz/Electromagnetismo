@@ -1,0 +1,60 @@
+<title>El detector de metales: cómo encuentra una moneda enterrada · Ciencify</title>
+<meta name="description" content="Cómo encuentra un detector de metales una moneda bajo tierra: una bobina con corriente alterna, la ley de Faraday, las corrientes de Foucault, la ley de Lenz, el eco que oye la bobina receptora y por qué la señal cae tan deprisa con la profundidad, con una animación paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<!-- =====================================================================
+     El detector de metales («Física en la vida real»). Maqueta
+     común de los fenómenos (ver fuego-san-telmo/pagina.html): animación, texto del
+     paso, historia y recuadro de la herramienta. Los pasos y el dibujo están en escena.js.
+     ===================================================================== -->
+<style>
+/* colores del dibujo, con su valor en modo oscuro */
+:root {
+  --pared: #eef1f4; --cielo: #dcecf7; --tierra: #a58a66; --hierba: #5e9a4c; --baston: #5a626b; --cabezal: #39424b; --bobina: #c27a2c; --receptora: #3f8f4f;
+  --campo: #3b7fd1; --corriente: #d6742a; --foucault: #7a3fc4; --eco: #1c8f8f; --moneda: #d8b04a; --resalta: #b3261e; --rotulo: #1a2128 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --pared: #1c2128; --cielo: #243441; --tierra: #4f4233; --hierba: #3e6e34; --baston: #9aa4ad; --cabezal: #b6bfc7; --bobina: #e39a4a; --receptora: #6cc07c;
+  --campo: #6aa6f0; --corriente: #f0a060; --foucault: #b88cf0; --eco: #52cfcf; --moneda: #e8c25f; --resalta: #ef7a62; --rotulo: #e3e8ea } }
+:root[data-theme="dark"] {
+  --pared: #1c2128; --cielo: #243441; --tierra: #4f4233; --hierba: #3e6e34; --baston: #9aa4ad; --cabezal: #b6bfc7; --bobina: #e39a4a; --receptora: #6cc07c;
+  --campo: #6aa6f0; --corriente: #f0a060; --foucault: #b88cf0; --eco: #52cfcf; --moneda: #e8c25f; --resalta: #ef7a62; --rotulo: #e3e8ea }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Cienci<i>fy</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física en la vida real</a> / El detector de metales</span></header>
+<div class="wrap fen">
+<div class="fen-etiquetas"><span>⚡ Electromagnetismo</span><span>Dificultad media</span><span>6 pasos · 1 min</span></div>
+<h1>El detector de metales</h1>
+<p class="lead">Barres la arena con un disco al final de un bastón y, de pronto, pita: hay una moneda a quince centímetros bajo tus pies. El detector no «ve» el metal; le basta con hacerle cosquillas con un campo magnético y escuchar cómo contesta.</p>
+<div class="fen-escena"><canvas id="escena" role="img" aria-label="Animación de un detector de metales: la bobina del disco crea un campo magnético alterno que induce corrientes de Foucault en una moneda enterrada, que devuelve un eco que recoge la bobina receptora"></canvas></div>
+<div class="fen-puntos" id="puntos" role="group" aria-label="Pasos"></div>
+<div class="fen-controles">
+  <button class="btn" id="ant" type="button">‹ Anterior</button>
+  <button class="btn" id="play" type="button" aria-pressed="true">❚❚ Parar</button>
+  <button class="btn" id="sig" type="button">Siguiente ›</button>
+</div>
+<div class="fen-texto" aria-live="polite"><h2 id="paso-t"></h2><div id="paso-x"></div></div>
+<section class="fen-historia" aria-label="Un poco de historia">
+  <h2>Un poco de historia</h2>
+  <ol>
+    <li><b>1831</b>Michael Faraday descubre la inducción electromagnética: un campo magnético que cambia induce una tensión en cualquier conductor cercano. Sin esa ley no habría detectores.</li>
+    <li><b>1881</b>Alexander Graham Bell monta una «balanza de inducción» para localizar la bala alojada en el cuerpo del presidente Garfield. No funcionó, porque el somier metálico de la cama confundía al aparato.</li>
+    <li><b>Hacia 1930</b>Gerhard Fisher patenta el primer detector de metales portátil, pensado para buscar yacimientos y tuberías enterradas.</li>
+    <li><b>1941</b>El ingeniero polaco Józef Kosacki desarrolla un detector de minas portátil que se usa en la batalla de El Alamein, en 1942.</li>
+    <li><b>Desde 1960</b>Los transistores lo hacen ligero y barato y nace la afición a buscar monedas y reliquias; el mismo principio abre hoy los arcos de seguridad de los aeropuertos.</li>
+  </ol>
+</section>
+<section class="fen-rel" aria-label="Herramienta relacionada">
+  <div class="fen-ico" aria-hidden="true">Fe</div>
+  <h2>Con qué herramienta se relaciona</h2>
+  <h3>Autoinducción e inducción mutua <small>· Electromagnetismo</small></h3>
+  <p>La moneda y la bobina están acopladas por su inducción mutua $M$: la tensión que aparece en la moneda es $M$ por lo deprisa que cambia la corriente de la bobina, y $M$ cae con la profundidad $z$.</p>
+  <p class="f m">M = μ₀ π N₁ N₂ R² r² / 2(R² + z²)<sup>3/2</sup> ≈ 25,1 nH</p>
+  <p class="f m">ε = M · dI/dt = M · 2π f I₀ ≈ 0,79 mV</p>
+  <p>Se abre en la pestaña de inducción mutua con dos espiras coaxiales (10 cm de radio y 25 vueltas la bobina, 1,2 cm y una vuelta la moneda) separadas 10 cm, con una corriente de 0,5 A a 10 kHz. Puedes cambiar la distancia, el tamaño de la moneda o las vueltas y ver cómo cambian M, el flujo y la tensión inducida. La moneda se trata como una sola espira sin resistencia y los datos son orientativos.</p>
+  <div class="fen-fichas"><div><small>Inducción mutua (10 cm)</small><b>25,1 nH</b></div><div><small>Tensión de pico</small><b>≈ 0,79 mV</b></div><div><small>Eco a 10 cm / en contacto</small><b>1/8</b></div></div>
+  <a class="fen-abrir" id="abrir" href="../../electromagnetismo/induccion/">Abrir en Autoinducción e inducción mutua con estos datos →</a>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Física en la vida real <span id="ver"></span> (beta)</footer>
+</body>

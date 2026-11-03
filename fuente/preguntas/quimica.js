@@ -32,6 +32,10 @@ module.exports = {
     ['¿Cómo se predice la geometría de una molécula con VSEPR?', 'Los pares de electrones del átomo central se repelen y se colocan lo más lejos posible: 2 pares, lineal (180°); 3, trigonal plana (120°); 4, tetraédrica (109,5°); 5, bipirámide trigonal; 6, octaédrica (90°). El agua tiene 4 pares, 2 libres, y es angular (≈104,5°).'],
     ['¿Cómo se sabe la hibridación y si es polar?', '4 pares son sp³, 3 son sp² y 2 son sp. Una molécula es polar si los dipolos de sus enlaces no se cancelan: el CO₂ (lineal) es apolar y el H₂O (angular) es polar.'],
   ],
+  organica: [
+    ['¿Cómo se nombra un compuesto orgánico?', 'Se elige el grupo principal (ácido > éster > amida > nitrilo > aldehído > cetona > alcohol > amina), la cadena con más grupos principales, enlaces múltiples y carbonos, y se numera para dar los localizadores más bajos. El CH₃–CH(OH)–CH₃ es propan-2-ol y el CH₃–CH(CH₃)–CH₃ es 2-metilpropano.'],
+    ['¿Cómo se sabe si un centro es R o S, o un doble enlace E o Z?', 'Con las reglas de Cahn-Ingold-Prelog: se ordenan los sustituyentes por número atómico. Con el de menor prioridad detrás, si los otros tres giran en sentido horario es R y si giran en sentido antihorario, S. En un doble enlace, si los de mayor prioridad están del mismo lado es Z y si no, E. Con n centros quirales hay como máximo 2ⁿ estereoisómeros.'],
+  ],
   formulacion: [
     ['¿Cómo se nombra un compuesto inorgánico?', 'Hay tres nomenclaturas: sistemática (prefijos), de Stock (número romano) y tradicional. El Fe₂O₃ es trióxido de dihierro, óxido de hierro(III) u óxido férrico; el CO₂ es dióxido de carbono.'],
     ['¿Y los hidróxidos, ácidos y sales?', 'Ca(OH)₂ es hidróxido de calcio, H₂SO₄ es ácido sulfúrico (tetraoxidosulfato de dihidrógeno) y NaCl es cloruro de sodio. La herramienta pasa de fórmula a nombre y de nombre a fórmula.'],

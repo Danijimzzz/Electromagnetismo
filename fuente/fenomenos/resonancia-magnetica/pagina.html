@@ -1,0 +1,60 @@
+<title>La resonancia magnética: cómo se hace una imagen del cuerpo · Ciencify</title>
+<meta name="description" content="Cómo hace imágenes una resonancia magnética: un imán de 1,5 T, protones que giran a 63,9 MHz, un pulso de radio a esa frecuencia, la señal que induce una tensión en una bobina y los gradientes que dicen de dónde viene, con una animación paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<!-- =====================================================================
+     La resonancia magnética («Física en la vida real»). Maqueta
+     común de los fenómenos (ver fuego-san-telmo/pagina.html): animación, texto del
+     paso, historia y recuadro de la herramienta. Los pasos y el dibujo están en escena.js.
+     ===================================================================== -->
+<style>
+/* colores del dibujo, con su valor en modo oscuro */
+:root {
+  --pared: #eef1f4; --iman: #8fa3b8; --bobina: #8a4f12; --camilla: #7d8791; --cuerpo: #e3b999; --campo: #2f6fc0; --proton: #c0392b;
+  --rf: #d6742a; --grasa: #b8860b; --liquido: #1c8f8f; --resalta: #b3261e; --rotulo: #1a2128 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --pared: #1c2128; --iman: #3d4a59; --bobina: #e39a4a; --camilla: #8a949d; --cuerpo: #a77d62; --campo: #6aa6f0; --proton: #ef7a62;
+  --rf: #f0a060; --grasa: #e8c25f; --liquido: #52cfcf; --resalta: #ef7a62; --rotulo: #e3e8ea } }
+:root[data-theme="dark"] {
+  --pared: #1c2128; --iman: #3d4a59; --bobina: #e39a4a; --camilla: #8a949d; --cuerpo: #a77d62; --campo: #6aa6f0; --proton: #ef7a62;
+  --rf: #f0a060; --grasa: #e8c25f; --liquido: #52cfcf; --resalta: #ef7a62; --rotulo: #e3e8ea }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Cienci<i>fy</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física en la vida real</a> / La resonancia magnética</span></header>
+<div class="wrap fen">
+<div class="fen-etiquetas"><span>⚡ Electromagnetismo</span><span>Dificultad media</span><span>6 pasos · 1 min</span></div>
+<h1>La resonancia magnética</h1>
+<p class="lead">Te tumbas en un túnel ruidoso, sin rayos X ni radiación ionizante, y sale una imagen detallada de tu rodilla o de tu cerebro. Detrás hay un imán gigante, ondas de radio y la frecuencia a la que giran los protones de tu agua.</p>
+<div class="fen-escena"><canvas id="escena" role="img" aria-label="Animación de una resonancia magnética: un paciente dentro del túnel de un imán superconductor, el protón que gira a la frecuencia de Larmor, el pulso de radio, la señal que recibe la bobina y los gradientes que localizan cada rebanada"></canvas></div>
+<div class="fen-puntos" id="puntos" role="group" aria-label="Pasos"></div>
+<div class="fen-controles">
+  <button class="btn" id="ant" type="button">‹ Anterior</button>
+  <button class="btn" id="play" type="button" aria-pressed="true">❚❚ Parar</button>
+  <button class="btn" id="sig" type="button">Siguiente ›</button>
+</div>
+<div class="fen-texto" aria-live="polite"><h2 id="paso-t"></h2><div id="paso-x"></div></div>
+<section class="fen-historia" aria-label="Un poco de historia">
+  <h2>Un poco de historia</h2>
+  <ol>
+    <li><b>1938</b>Isidor Rabi mide la resonancia magnética de los núcleos en un haz de moléculas: es el primer experimento de resonancia magnética nuclear. Recibe el Nobel de Física en 1944.</li>
+    <li><b>1946</b>Felix Bloch y Edward Purcell, por separado, detectan la resonancia en líquidos y sólidos. Comparten el Nobel de Física de 1952.</li>
+    <li><b>1973</b>Paul Lauterbur propone usar gradientes de campo para localizar la señal y obtiene la primera imagen; Peter Mansfield mejora la técnica. Ambos reciben el Nobel de Medicina en 2003.</li>
+    <li><b>1977</b>Raymond Damadian y su equipo obtienen la primera imagen de un cuerpo humano entero, tras muchas horas de exploración.</li>
+    <li><b>Desde 1980</b>Los equipos clínicos se extienden por los hospitales: hoy son habituales los de 1,5 y 3 T, y existen de 7 T para investigación.</li>
+  </ol>
+</section>
+<section class="fen-rel" aria-label="Herramienta relacionada">
+  <div class="fen-ico" aria-hidden="true">B₀</div>
+  <h2>Con qué herramienta se relaciona</h2>
+  <h3>Magnetostática (Biot-Savart) <small>· Electromagnetismo</small></h3>
+  <p>El imán del escáner es un solenoide enorme: su campo en el centro lo da la ley de Ampère, y de él sale la frecuencia a la que hay que emitir el pulso de radio.</p>
+  <p class="f m">B₀ = μ₀ n I = μ₀ (N / L) I ≈ 1,500 T</p>
+  <p class="f m">f = (γ / 2π) B₀ = 42,577 MHz/T · B₀ ≈ 63,87 MHz</p>
+  <p>Se abre con un solenoide ideal de 2 m de largo y 0,4 m de radio, 4775 espiras y 500 A (en modo SI), con la pregunta «campo B en el centro». Puedes cambiar la corriente o las espiras y ver cómo cambia el campo y, con él, la frecuencia de Larmor. Los datos son orientativos: un imán real es superconductor y está hecho de varias bobinas.</p>
+  <div class="fen-fichas"><div><small>Campo B₀</small><b>1,500 T</b></div><div><small>Frecuencia de Larmor</small><b>63,87 MHz</b></div><div><small>Exceso de protones</small><b>≈ 5 por millón</b></div></div>
+  <a class="fen-abrir" id="abrir" href="../../electromagnetismo/magnetostatica/">Abrir en Magnetostática con estos datos →</a>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Física en la vida real <span id="ver"></span> (beta)</footer>
+</body>

@@ -1,0 +1,1031 @@
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMwZDZiNjYiLz48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlNmE2NDAiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtZGFzaGFycmF5PSI0IDYuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48cGF0aCBkPSJNMjAgMzJINDQiLz48cGF0aCBkPSJNMjEgMjdDMjcgMTQgMzcgMTQgNDMgMjciLz48cGF0aCBkPSJNMjEgMzdDMjcgNTAgMzcgNTAgNDMgMzciLz48cGF0aCBkPSJNMTcgMjRDMjIgNCA0MiA0IDQ3IDI0Ii8+PHBhdGggZD0iTTE3IDQwQzIyIDYwIDQyIDYwIDQ3IDQwIi8+PC9nPjxjaXJjbGUgY3g9IjE3IiBjeT0iMzIiIHI9IjgiIGZpbGw9IiNlZjdhNjIiLz48Y2lyY2xlIGN4PSI0NyIgY3k9IjMyIiByPSI4IiBmaWxsPSIjNzRhMmYyIi8+PHBhdGggZD0iTTEzIDMyaDhNMTcgMjh2OE00MyAzMmg4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta property="og:title" content="La pantalla táctil capacitiva, explicada">
+<meta property="og:description" content="Cómo sabe el móvil dónde pones el dedo: el dedo y los electrodos bajo el cristal forman un condensador de 2,2 pF, la capacidad se suma, la posición sale del centro de gravedad de las señales y los guantes lo estropean, con una animación paso a paso y el cálculo en Dieléctricos y condensadores">
+<link rel="canonical" href="https://simulaciencia.vercel.app/fenomenos/pantalla-tactil/">
+<meta property="og:image" content="https://simulaciencia.vercel.app/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"LearningResource","name":"La pantalla táctil","description":"Cómo detecta un móvil dónde tocas: el dedo y los electrodos bajo el cristal forman un condensador de unos 2,2 pF, la capacidad se suma, la posición sale del centro de gravedad y los guantes lo estropean, con una animación paso a paso.","url":"https://simulaciencia.vercel.app/fenomenos/pantalla-tactil/","inLanguage":"es","isAccessibleForFree":true,"learningResourceType":"Animación explicada paso a paso"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://simulaciencia.vercel.app/"},{"@type":"ListItem","position":2,"name":"Física en la vida real","item":"https://simulaciencia.vercel.app/fenomenos/"},{"@type":"ListItem","position":3,"name":"La pantalla táctil","item":"https://simulaciencia.vercel.app/fenomenos/pantalla-tactil/"}]}]}</script>
+<link rel="manifest" href="../../manifest.webmanifest">
+<meta name="theme-color" content="#0d6b66">
+<script src="../../pwa.js" defer></script>
+<script>(() => {
+  const raiz = document.documentElement, mq = matchMedia('(prefers-color-scheme: dark)'), oyentes = [];
+  try { const t = localStorage.getItem('simu-tema'); if (t === 'dark' || t === 'light') raiz.dataset.theme = t; } catch (e) { /* sin almacenamiento */ }
+  const orig = MediaQueryList.prototype.addEventListener;
+  MediaQueryList.prototype.addEventListener = function (tipo, f, ...r) { if (tipo === 'change' && /prefers-color-scheme/.test(this.media)) oyentes.push(f); return orig.call(this, tipo, f, ...r); };
+  const oscuro = () => (raiz.dataset.theme ? raiz.dataset.theme === 'dark' : mq.matches);
+  const rotula = () => document.querySelectorAll('.tema').forEach((b) => { const t = oscuro() ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'; b.title = t; b.setAttribute('aria-label', t); });
+  document.addEventListener('DOMContentLoaded', rotula);
+  mq.addEventListener('change', rotula);
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.tema')) return;
+    raiz.dataset.theme = oscuro() ? 'light' : 'dark';
+    try { localStorage.setItem('simu-tema', raiz.dataset.theme); } catch (e) { /* sin almacenamiento */ }
+    rotula();
+    for (const f of oyentes) { try { f.call(mq, { matches: oscuro(), media: mq.media }); } catch (err) { console.error(err); } }
+  });
+})();</script>
+<script>(() => {
+  const ENFOCABLE = 'a[href],button,input,select,textarea,summary,[tabindex]';
+  let espera = 0;
+  const revisa = () => {
+    espera = 0;
+    for (const e of document.querySelectorAll('main *')) {
+      const desborda = e.scrollWidth > e.clientWidth || e.scrollHeight > e.clientHeight;
+      if (e.dataset.sf) { if (!desborda) { e.removeAttribute('tabindex'); delete e.dataset.sf; } continue; }
+      if (!desborda || e.hasAttribute('tabindex') || e.matches('svg,svg *,canvas') || e.querySelector(ENFOCABLE)) continue;
+      const o = getComputedStyle(e);
+      if (/auto|scroll/.test(o.overflowX + o.overflowY)) { e.tabIndex = 0; e.dataset.sf = '1'; }
+    }
+  };
+  window.revisaScroll = revisa; // también lo llama pruebas/accesibilidad.js antes de pasar axe
+  const pide = () => { if (!espera) espera = setTimeout(revisa, 400); };
+  addEventListener('load', () => { revisa(); const m = document.querySelector('main'); if (m) new MutationObserver(pide).observe(m, { childList: true, subtree: true, characterData: true }); });
+  addEventListener('resize', pide);
+})();</script>
+<script src="../../buscador.js" defer></script>
+<script src="../../llama.js" defer></script>
+<title>La pantalla táctil capacitiva: cómo sabe el móvil dónde pones el dedo</title>
+<meta name="description" content="Cómo detecta un móvil dónde tocas: el dedo y los electrodos bajo el cristal forman un condensador de unos 2,2 pF, la capacidad se suma, la posición sale del centro de gravedad y los guantes lo estropean, con una animación paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<!-- =====================================================================
+     La pantalla táctil capacitiva («Física en la vida real»). Maqueta común de
+     los fenómenos (ver fuego-san-telmo/pagina.html): animación, texto del paso,
+     historia y recuadro de la herramienta. Los pasos y el dibujo están en escena.js.
+     ===================================================================== -->
+<style>/* =====================================================================
+   Hoja de estilos común de todas las herramientas (fuente/<herramienta>/pagina.html).
+   diseno.js la mete en cada página, antes de su propio <style>, junto con el color
+   de la asignatura (--accent, --accent-soft) y la cabecera del portal. La guía de uso
+   de cada componente, con su HTML, está en DISENO.md.
+   Una herramienta no vuelve a definir estas reglas: ajusta las variables de medida
+   (--col-datos, --ancho-valor, --alto-grafica) o añade una clase propia.
+   ===================================================================== */
+
+/* ---------- Colores y letras (claro y oscuro) ---------- */
+:root {
+  --bg: #eef1ee; --panel: #fff; --ink: #1a2128; --muted: #5b6670; --line: #d5dbd5; --error: #c0392b;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --vidrio: rgba(255,255,255,.55); --vidrio-fuerte: rgba(255,255,255,.72); --vidrio-borde: rgba(255,255,255,.7); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.8);
+  --vidrio-sombra: 0 1px 2px rgba(20,40,60,.06), 0 8px 28px rgba(20,40,60,.10); --blur: blur(22px) saturate(1.7); --halo1: rgba(13,107,102,.22); --halo2: rgba(42,93,181,.20); --halo3: rgba(107,63,160,.14);
+  /* medidas que cada herramienta puede ajustar */
+  --col-datos: 360px; --ancho-etiqueta: minmax(0, 1fr); --ancho-valor: 150px; --letra-campo: 13px var(--f-ui); --ancho-dato: 190px; --alto-grafica: clamp(260px, 36vw, 380px); --margen-grafica: 10px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #a3aeb5; --line: #2a343b; --error: #f08a80; --vidrio: rgba(34,46,54,.50); --vidrio-fuerte: rgba(26,36,42,.70); --vidrio-borde: rgba(255,255,255,.12); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.10); --vidrio-sombra: 0 1px 2px rgba(0,0,0,.3), 0 10px 32px rgba(0,0,0,.35); --halo1: rgba(77,188,176,.20); --halo2: rgba(116,162,242,.18); --halo3: rgba(170,120,230,.14); color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #a3aeb5; --line: #2a343b; --error: #f08a80; --vidrio: rgba(34,46,54,.50); --vidrio-fuerte: rgba(26,36,42,.70); --vidrio-borde: rgba(255,255,255,.12); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.10); --vidrio-sombra: 0 1px 2px rgba(0,0,0,.3), 0 10px 32px rgba(0,0,0,.35); --halo1: rgba(77,188,176,.20); --halo2: rgba(116,162,242,.18); --halo3: rgba(170,120,230,.14); color-scheme: dark }
+/* fin de los colores */
+
+/* ---------- Base ---------- */
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 24px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+/* texto solo para lectores de pantalla; sin position:absolute para que no ensanche las tablas con scroll */
+.solo-lector { display: inline-block; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; vertical-align: top }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px }
+footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+
+/* ---------- Diseño A: datos a la izquierda, resultados a la derecha ---------- */
+.layout { display: grid; grid-template-columns: var(--col-datos) minmax(0, 1fr); gap: 16px; align-items: start }
+.layout.invertido { grid-template-columns: minmax(0, 1fr) var(--col-datos) }
+@media (max-width: 900px) { .layout, .layout.invertido { grid-template-columns: minmax(0, 1fr) } }
+
+/* ---------- Tarjetas ---------- */
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 12px/1.4 var(--f-ui); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 10px }
+.destacado { border-color: var(--line); border-top: 3px solid var(--accent) }
+.destacado h2 { color: var(--accent) }
+
+/* ---------- Datos: campos, separadores, botones y pestañas ---------- */
+.campos { display: grid; grid-template-columns: var(--ancho-etiqueta) var(--ancho-valor); gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px }
+.campos label small { color: var(--muted) }
+.campos .ancho { grid-column: 1 / -1 }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--accent); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.in { font: var(--letra-campo); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer; white-space: nowrap }
+.btn:hover { border-color: var(--accent) }
+/* foco del teclado en todo lo que se pulsa o se escribe (sin especificidad: una herramienta puede ajustarlo) */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.controles { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px }
+.controles > .nota, .controles > .leyenda { flex: 1 1 220px; margin: 0 }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px }
+.tools label { color: var(--muted); font-size: 13px; display: inline-flex; gap: 6px; align-items: center }
+.modos { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-bottom: 14px }
+.modos button { font: 500 13.5px var(--f-ui); border: 0; background: var(--panel); color: var(--muted); padding: 7px 14px; cursor: pointer }
+.modos button[aria-selected=true] { background: var(--accent); color: var(--panel) }
+.error { color: var(--error); font-size: 13px; margin: 10px 0 0 }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+
+/* ---------- Resultados ---------- */
+.res { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--ancho-dato), 1fr)); gap: 6px 14px; font: 16px var(--f-math) }
+.res div { overflow-x: auto; overflow-y: hidden }
+.res span { display: block; font: 12px var(--f-ui); color: var(--muted) }
+.res div.ancho { grid-column: 1 / -1 }
+.resumen { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--ancho-dato), 1fr)); gap: 8px; margin: 0 }
+.resumen div { background: var(--accent-soft); border-radius: 8px; padding: 8px 10px; overflow-x: auto; overflow-y: hidden }
+.resumen div span { display: block; font-size: 12px; color: var(--muted) }
+.resumen div b { font: 600 17px var(--f-math) }
+.resumen div.ancho { grid-column: 1 / -1 }
+
+/* ---------- Gráficas ---------- */
+canvas { display: block; width: 100%; height: var(--alto-grafica); border-radius: 8px; background: var(--bg); margin-top: var(--margen-grafica) }
+.leyenda { font-size: 12.5px; color: var(--muted); margin: 6px 0 0 }
+.leyenda b { font-weight: 600 }
+
+/* ---------- Desarrollo paso a paso ---------- */
+/* el número va dentro del paso para que no lo corte el desplazamiento de las fórmulas largas */
+.pasos ol { margin: 0; padding: 0; list-style: none; counter-reset: paso }
+.pasos li { position: relative; margin: 0 0 12px; padding-left: 22px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto; counter-increment: paso; overflow-y: hidden }
+.pasos li::before { content: counter(paso) "."; position: absolute; left: 0; top: 0; font: 13.5px/1.45 var(--f-ui); color: var(--muted) }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.pasos table.tabla { border-collapse: collapse; margin: 6px 0; font: 13px var(--f-ui); font-variant-numeric: tabular-nums }
+.pasos table.tabla th, .pasos table.tabla td { border: 1px solid var(--line); padding: 3px 9px; text-align: right }
+.pasos table.tabla th { background: var(--accent-soft); font-weight: 600 }
+.tabla-scroll { overflow-x: auto }
+
+/* matrices con corchetes, dentro de una fórmula */
+.mat { position: relative; display: inline-block; vertical-align: middle; padding: 0 7px; margin: 2px 2px }
+.mat::before, .mat::after { content: ""; position: absolute; top: 0; bottom: 0; width: 5px; border: 1.4px solid currentColor }
+.mat::before { left: 0; border-right: 0 }
+.mat::after { right: 0; border-left: 0 }
+.mat table { border-collapse: collapse }
+.mat td { padding: 2px 7px; text-align: center; white-space: nowrap; font-variant-numeric: tabular-nums }
+
+/* ---------- Teoría ---------- */
+.teoria, .preguntas { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.preguntas h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.preguntas h3 { font: 600 15px var(--f-ui); margin: 14px 0 2px }
+.preguntas p { margin: 0 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; overflow-x: auto; overflow-y: hidden; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+.teoria ul { padding-left: 20px }
+.teoria li { margin-bottom: 4px }
+.teoria li, .teoria p { overflow-x: auto; overflow-y: hidden }
+
+/* ---------- Liquid Glass ---------- */
+/* Vidrio solo en el marco (tarjetas, controles, barras); el lienzo de las gráficas y las fórmulas no se tocan. */
+body { display: flow-root; background: radial-gradient(60% 50% at 8% 0%, var(--halo1), transparent 70%), radial-gradient(50% 45% at 95% 10%, var(--halo2), transparent 70%), radial-gradient(55% 50% at 60% 100%, var(--halo3), transparent 70%), var(--bg); background-attachment: fixed }
+.card { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 18px; box-shadow: var(--vidrio-brillo), var(--vidrio-sombra); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur) }
+.destacado { border-top: 3px solid var(--accent) }
+.in { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 10px; box-shadow: var(--vidrio-brillo) }
+.btn { background: var(--vidrio-fuerte); border-color: var(--vidrio-borde); border-radius: 99px; padding: 5px 14px; box-shadow: var(--vidrio-brillo) }
+.modos { border-color: var(--vidrio-borde); border-radius: 99px; background: var(--vidrio); box-shadow: var(--vidrio-brillo); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur) }
+.modos button { background: transparent; border-radius: 99px }
+.modos button[aria-selected=true] { box-shadow: 0 1px 6px rgba(0,0,0,.18) }
+.resumen div { border-radius: 14px }
+.teoria .f { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 12px }
+canvas { border-radius: 14px }
+@media (max-width: 900px) { .card, .modos { -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px) } }
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) { .card, .modos, header.top { background: var(--panel); -webkit-backdrop-filter: none; backdrop-filter: none } .in, .btn, .teoria .f { background: var(--panel) } }
+
+:root { --accent:#6a4fc2; --accent-soft:color-mix(in srgb, #6a4fc2 12%, #fff); --marca:#0d6b66 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --accent:#b39ff7; --accent-soft:color-mix(in srgb, #b39ff7 16%, #182025); --marca:#4dbcb0 } }
+:root[data-theme="dark"] { --accent:#b39ff7; --accent-soft:color-mix(in srgb, #b39ff7 16%, #182025); --marca:#4dbcb0 }
+header.top { display:flex; align-items:center; gap:8px 20px; flex-wrap:wrap; padding:12px clamp(16px,3vw,28px); position:sticky; top:10px; z-index:10; margin:10px clamp(10px,2vw,20px) 0; border:1px solid var(--vidrio-borde); border-radius:22px; background:var(--vidrio-fuerte); box-shadow:var(--vidrio-brillo),var(--vidrio-sombra); -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur) }
+header.top .logo { font:600 18px var(--f-math); margin:0; white-space:nowrap; color:var(--ink); text-decoration:none } header.top .logo i { color:var(--marca) }
+header.top nav { display:flex; gap:4px 14px; font-size:14px; overflow-x:auto; max-width:100%; scrollbar-width:none }
+header.top nav a { white-space:nowrap; padding:2px 0; color:var(--muted); text-decoration:none } header.top nav a:hover { color:var(--ink) }
+header.top nav a[aria-current] { color:var(--ink); font-weight:600; box-shadow:inset 0 -2px 0 var(--accent) }
+header.top form { margin-left:auto; flex:0 1 170px; min-width:130px }
+header.top .foro { margin-left:auto; display:inline-flex; align-items:center; gap:6px; white-space:nowrap; font:600 14px var(--f-ui); color:var(--ink); text-decoration:none; border:1px solid var(--vidrio-borde); background:var(--vidrio); border-radius:99px; padding:6px 12px } header.top .foro:hover, header.top .foro[aria-current] { border-color:var(--accent); color:var(--accent) } header.top .foro + form { margin-left:0 } header.top > .foro ~ .tema { margin-left:0 }
+@media (min-width:701px) { header.top { flex-wrap:nowrap } header.top nav { min-width:0 } }
+header.top .buscar { font:14px var(--f-ui); color:var(--ink); border:1px solid var(--vidrio-borde); border-radius:99px; padding:7px 14px; width:100%; background:var(--vidrio) }
+header.top .buscar:focus-visible, header.top a:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.miga { display:flex; align-items:center; flex-wrap:wrap; gap:8px; font-size:13.5px; color:var(--muted); margin:0 0 10px }
+.miga a { color:var(--accent); font-weight:600; text-decoration:none } .miga a:hover { text-decoration:underline }
+.miga-ico { display:inline-grid; place-items:center; width:22px; height:22px; border-radius:6px; background:var(--accent-soft); color:var(--accent); font:italic 600 13px var(--f-math) }
+.miga-der { margin-left:auto; display:flex; gap:8px } .miga-izq:empty, .miga-der:empty { display:none }
+.bib-btn, .prac-btn { border-radius:8px !important; padding:6px 12px !important }
+body.bib-ejemplos select[id^="ejemplo"] { display:none }
+:root { --vida:#6a4fc2 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --vida:#b39ff7 } }
+:root[data-theme="dark"] { --vida:#b39ff7 }
+.relacionadas { max-width:860px; margin:16px 0 0; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:4px 12px 12px 4px; padding:12px 16px }
+.relacionadas h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--accent); margin:0 0 4px }
+.relacionadas a { display:flex; gap:10px; align-items:baseline; padding:5px 0; color:var(--ink); text-decoration:none; font-size:14px }
+.relacionadas a b { font-weight:600; white-space:nowrap } .relacionadas a span { color:var(--muted) } .relacionadas a:hover b { color:var(--accent); text-decoration:underline }
+.vida-real { max-width:860px; margin:28px 0 0; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--vida); border-radius:4px 12px 12px 4px; padding:12px 16px }
+.vida-real h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--vida); margin:0 0 4px }
+.vida-real a { display:flex; gap:10px; align-items:baseline; padding:5px 0; color:var(--ink); text-decoration:none; font-size:14px }
+.vida-real a b { font-weight:600; white-space:nowrap } .vida-real a span { color:var(--muted) } .vida-real a:hover b { color:var(--vida); text-decoration:underline }
+@media (max-width:600px) { .vida-real a, .relacionadas a { display:block } .vida-real a b, .relacionadas a b { display:block; white-space:normal } }
+@media (max-width:700px) { header.top form { display:none } h1 { font-size:21px }
+  .miga-izq, .miga-der, .miga::after { order:-1 } .miga::after { content:''; flex-basis:100%; height:0 } }
+
+.tema { flex:0 0 auto; margin-left:auto; width:36px; height:36px; display:grid; place-items:center; padding:0; border:1px solid var(--vidrio-borde, var(--line)); border-radius:99px; background:var(--vidrio, var(--bg)); color:var(--ink); cursor:pointer }
+.buscar ~ .tema, form ~ .tema { margin-left:0 }
+.tema:hover { border-color:var(--accent); color:var(--accent) }
+.tema:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.tema .sol { display:none }
+:root[data-theme="dark"] .tema .sol { display:block } :root[data-theme="dark"] .tema .luna { display:none }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tema .sol { display:block } :root:not([data-theme="light"]) .tema .luna { display:none } }
+@media (max-width:700px) { .top > .tema { margin-left:auto } .top > nav { order:1 } }
+/* =====================================================================
+   Página de un fenómeno de «Física en la vida real» (diseno.js la añade tras
+   estilos.css cuando la asignatura es fenomenos). De arriba abajo: la animación
+   (media pantalla de alto, con las franjas de los lados como las herramientas),
+   los controles de animacion.js, el texto del paso, la historia (.fen-historia,
+   si hace falta) y el recuadro de la herramienta con la que se relaciona. La maqueta está en fenomenos/<clave>/pagina.html.
+   ===================================================================== */
+.fen { max-width: 1100px }
+.fen h1 { font-size: clamp(28px, 4.2vw, 40px); line-height: 1.15; letter-spacing: -.01em; margin: 6px 0 8px }
+.fen .lead { font-size: clamp(16px, 1.6vw, 18.5px); line-height: 1.55; margin-bottom: 16px }
+.fen-escena { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 8px }
+.fen-escena canvas { height: clamp(220px, min(50vh, 70vw), 560px); margin: 0; background: var(--bg) }
+.fen-etiquetas { display: flex; gap: 8px; flex-wrap: wrap; margin: 4px 0 2px }
+.fen-etiquetas span { font: 600 12px var(--f-ui); padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel); color: var(--muted) }
+.fen-etiquetas span:first-child { background: var(--accent-soft); border-color: transparent; color: var(--accent) }
+/* línea de tiempo de los pasos (animacion.js la rellena con --avance) */
+.fen-puntos { --avance: 0; position: relative; display: flex; justify-content: space-between; margin: 16px 0 0; padding: 0 6px }
+.fen-puntos::before, .fen-puntos::after { content: ""; position: absolute; left: 23px; top: 16px; height: 3px; border-radius: 2px }
+.fen-puntos::before { right: 23px; background: var(--line) }
+.fen-puntos::after { width: calc((100% - 46px) * var(--avance)); background: var(--accent) }
+.fen-puntos button { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; width: 34px; padding: 0; border: 0; background: none; cursor: pointer; font: 600 12.5px var(--f-ui); color: var(--muted) }
+.fen-puntos button b { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--line); background: var(--panel); font: 600 13px var(--f-ui); transition: background .3s, border-color .3s, box-shadow .3s }
+.fen-puntos button span { white-space: nowrap }
+.fen-puntos button.hecho { color: var(--ink) }
+.fen-puntos button.hecho b { background: var(--accent); border-color: var(--accent); color: var(--panel) }
+.fen-puntos button[aria-current=step] { color: var(--accent) }
+.fen-puntos button[aria-current=step] b { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 0 5px var(--accent-soft) }
+.fen-puntos button:hover b { border-color: var(--accent) }
+.fen-controles { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; margin: 14px 0 0 }
+.fen-controles .btn { font-size: 13.5px; padding: 6px 12px }
+#play { min-width: 112px }
+.fen-texto { max-width: 860px; margin: 16px 0 0; min-height: 132px }
+.fen-texto h2 { font: 600 19px/1.3 var(--f-ui); margin: 0 0 6px }
+.fen-texto h2 small { display: block; font: 600 12px var(--f-ui); color: var(--accent); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 2px }
+.fen-texto p { font-size: 15.5px; line-height: 1.6; margin: 0 0 8px; overflow-x: auto }
+.fen-texto.entra { animation: fen-entra .45s ease-out }
+@keyframes fen-entra { from { opacity: 0; transform: translateY(6px) } }
+@media (prefers-reduced-motion: reduce) { .fen-texto.entra { animation: none } .fen-puntos button b { transition: none } }
+.fen-dato { display: flex; align-items: center; gap: 6px 14px; flex-wrap: wrap; background: var(--accent-soft); border-left: 4px solid var(--accent); border-radius: 10px; padding: 10px 14px; margin: 6px 0 12px; font: 500 15px var(--f-ui) }
+.fen-dato b { font: 700 21px var(--f-ui); color: var(--accent); white-space: nowrap }
+.fen-historia { max-width: 860px; margin: 22px 0 0 }
+.fen-historia h2 { font: 600 12px/1.4 var(--f-ui); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 10px }
+.fen-historia ol { list-style: none; margin: 0; padding: 0 0 0 18px; border-left: 2px solid var(--line) }
+.fen-historia li { position: relative; margin: 0 0 12px; font-size: 14.5px; line-height: 1.55 }
+.fen-historia li::before { content: ""; position: absolute; left: -25px; top: 5px; width: 12px; height: 12px; border-radius: 50%; background: var(--panel); border: 2px solid var(--accent) }
+.fen-historia li b { display: block; font: 700 13px var(--f-ui); color: var(--accent) }
+.fen-rel { max-width: 860px; margin: 22px 0 0; background: var(--panel); border: 1px solid var(--line); border-top: 3px solid var(--accent); border-radius: 12px; padding: 14px 16px; display: grid; grid-template-columns: 56px 1fr; column-gap: 16px }
+.fen-rel > * { grid-column: 2 }
+.fen-rel .fen-ico { grid-column: 1; grid-row: 1 / span 3; width: 56px; height: 56px; border-radius: 14px; display: grid; place-items: center; font: italic 600 26px var(--f-math); color: var(--panel); background: var(--accent) }
+.fen-fichas { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0 14px }
+.fen-fichas div { flex: 1 1 140px; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px }
+.fen-fichas small { display: block; font: 600 11.5px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .05em }
+.fen-fichas b { font: 700 18px var(--f-ui) }
+.fen-rel h2 { font: 600 12px/1.4 var(--f-ui); text-transform: uppercase; letter-spacing: .06em; color: var(--accent); margin: 0 0 8px }
+.fen-rel h3 { font: 600 17px var(--f-ui); margin: 0 0 6px }
+.fen-rel p { font-size: 14.5px; line-height: 1.55; margin: 0 0 10px; overflow-x: auto }
+.fen-rel .f { font-family: var(--f-math); font-size: 16px; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; margin: 0 0 8px; overflow-x: auto }
+.fen-abrir { display: block; text-align: center; margin-top: 4px; font: 600 15px var(--f-ui); color: var(--panel); background: var(--accent); border: 0; border-radius: 10px; padding: 11px 18px; cursor: pointer; text-decoration: none }
+.fen-abrir:hover { filter: brightness(1.08) }
+@media (max-width: 600px) {
+  .fen-puntos button span { display: none }
+  .fen-rel { grid-template-columns: 1fr } .fen-rel > * { grid-column: 1 } .fen-rel .fen-ico { grid-row: auto; width: 44px; height: 44px; font-size: 21px; margin-bottom: 8px }
+  .fen-texto h2 { font-size: 17.5px } .fen-texto p { font-size: 15px } }
+.fen-prueba { display: flex; align-items: center; gap: 8px 14px; flex-wrap: wrap; margin: 10px 0 4px; background: var(--accent-soft); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; font: 500 14.5px var(--f-ui) }
+.fen-prueba label b { color: var(--accent) }
+.fen-prueba input { flex: 1 1 180px; accent-color: var(--accent) }
+.fen-prueba output { font: 600 14.5px var(--f-ui); min-width: 15em }
+#sonido { margin-left: 4px }
+</style>
+<style>
+/* colores del dibujo, con su valor en modo oscuro */
+:root {
+  --fondo: #eef3f6; --cristal: #c4dbe9; --fila: #1f7a8c; --columna: #8a4fb0; --electrodo: #3f9aa8; --electrodo2: #1f6f7d;
+  --dedo: #e3b48f; --dedo2: #a2643a; --guante: #8e7cc3; --positivo: #c0392b; --negativo: #1558ad;
+  --resalta: #1558ad; --alerta: #b35a00; --rotulo: #1a2128 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --fondo: #141c24; --cristal: #2c4a60; --fila: #55c1d4; --columna: #c79ae6; --electrodo: #4fb3c2; --electrodo2: #7fd3df;
+  --dedo: #b98862; --dedo2: #e8b690; --guante: #a999da; --positivo: #ff8f80; --negativo: #7ab8ff;
+  --resalta: #7ab8ff; --alerta: #ffb255; --rotulo: #e3e8ea } }
+:root[data-theme="dark"] {
+  --fondo: #141c24; --cristal: #2c4a60; --fila: #55c1d4; --columna: #c79ae6; --electrodo: #4fb3c2; --electrodo2: #7fd3df;
+  --dedo: #b98862; --dedo2: #e8b690; --guante: #a999da; --positivo: #ff8f80; --negativo: #7ab8ff;
+  --resalta: #7ab8ff; --alerta: #ffb255; --rotulo: #e3e8ea }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Cienci<i>fy</i></a><nav aria-label="Asignaturas"><a href="../../">Inicio</a><a href="../../electromagnetismo/">Electromagnetismo</a><a href="../../fisica/">Física general</a><a href="../../quimica/">Química</a><a href="../../matematicas/">Matemáticas</a><a href="../../estadistica/">Estadística</a><a href="../../circuitos/">Circuitos</a><a href="../../economia/">Economía</a><a href="../../fenomenos/" aria-current="page">Vida real</a></nav><a class="foro" href="../../foro/"><span aria-hidden="true">💬</span>Foro</a><form action="../../" role="search"><input class="buscar" type="search" name="q" placeholder="Buscar: Biot-Savart, molaridad…" aria-label="Buscar herramientas (atajo: barra /)" title="Atajo: / o Ctrl+K"></form><button class="tema" type="button" title="Cambiar de modo claro u oscuro" aria-label="Cambiar de modo claro u oscuro"><svg class="luna" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11z"/></svg><svg class="sol" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button></header>
+<main class="wrap fen">
+<nav class="miga" aria-label="Estás en"><span class="miga-izq"></span><span class="miga-ico" aria-hidden="true">✦</span><a href="../">Física en la vida real</a><span aria-hidden="true">›</span><span>La pantalla táctil</span><span class="miga-der"></span></nav>
+<div class="fen-etiquetas"><span>⚡ Electromagnetismo y Circuitos</span><span>Dificultad baja</span><span>6 pasos · 1 min</span></div>
+<h1>La pantalla táctil</h1>
+<p class="lead">Rozas el cristal de tu móvil y sabe en qué punto exacto has tocado, incluso con varios dedos, pero no responde a la uña ni a un guante de lana. No hay botones ni presión: el dedo cambia en unos picofaradios la capacidad de un condensador que hay bajo el cristal.</p>
+<div class="fen-escena"><canvas id="escena" role="img" aria-label="Animación de la pantalla táctil capacitiva: la rejilla de electrodos bajo el cristal, un dedo que se acerca y forma un condensador con un electrodo, la carga que sube al sumarse la capacidad del dedo, el cálculo de la posición con el centro de gravedad de las señales y el efecto de un guante"></canvas></div>
+<div class="fen-puntos" id="puntos" role="group" aria-label="Pasos"></div>
+<div class="fen-controles">
+  <button class="btn" id="ant" type="button">‹ Anterior</button>
+  <button class="btn" id="play" type="button" aria-pressed="true">❚❚ Parar</button>
+  <button class="btn" id="sig" type="button">Siguiente ›</button>
+</div>
+<div class="fen-texto" aria-live="polite"><h2 id="paso-t"></h2><div id="paso-x"></div></div>
+<section class="fen-historia" aria-label="Un poco de historia">
+  <h2>Un poco de historia</h2>
+  <ol>
+    <li><b>1965</b>E. A. Johnson, en el Royal Radar Establishment británico, describe la primera pantalla táctil capacitiva, pensada para el control del tráfico aéreo.</li>
+    <li><b>1984</b>Bob Boie, en los Laboratorios Bell, construye una capa transparente capaz de detectar varios dedos a la vez por capacidad, un antecedente directo del multitáctil actual.</li>
+    <li><b>2007</b>El primer iPhone lleva al gran público una pantalla capacitiva multitáctil con cristal, de capacidad mutua proyectada, y desplaza a las resistivas con lápiz.</li>
+  </ol>
+</section>
+<section class="fen-rel" aria-label="Herramienta relacionada">
+  <div class="fen-ico" aria-hidden="true">C</div>
+  <h2>Con qué herramienta se relaciona</h2>
+  <h3>Dieléctricos y condensadores <small>· Electromagnetismo</small></h3>
+  <p>La yema del dedo y el electrodo de debajo son las dos placas de un condensador plano, y el cristal es su dieléctrico. Esa herramienta da la capacidad, la carga con 3,3 V y hasta el campo dentro del cristal, y deja añadir otra capa (un guante) para ver cómo cae la capacidad.</p>
+  <p class="f m">C = ε₀ εr S / d</p>
+  <p class="f m">Q = C V</p>
+  <p>Se abre con una yema y un electrodo de 5 × 5 mm separados por un cristal de 0,7 mm con εr = 7 y 3,3 V: salen 2,21 pF y 7,3 pC. Añade una capa de 1 mm con εr = 3 y comprueba que la capacidad baja a la cuarta parte.</p>
+  <div class="fen-fichas"><div><small>Capacidad</small><b>2,21 pF</b></div><div><small>Carga a 3,3 V</small><b>7,3 pC</b></div><div><small>Con guante de 1 mm</small><b>0,51 pF</b></div></div>
+  <a class="fen-abrir" id="abrir" href="../../electromagnetismo/condensadores/">Abrir en Dieléctricos y condensadores con estos datos →</a>
+</section>
+<section class="relacionadas" aria-label="Más fenómenos"><h2>Más fenómenos</h2>
+<a href="../fuego-san-telmo/"><b>El Fuego de San Telmo →</b><span>Por qué brillan las puntas de los mástiles en una tormenta: efecto punta y descarga corona.</span></a>
+<a href="../chispa-pomo/"><b>La chispa al tocar el pomo →</b><span>El cuerpo como condensador: unos 150 pF a 10 kV y su descarga en nanosegundos.</span></a>
+<a href="../fibra-optica/"><b>La fibra óptica →</b><span>Por qué la luz no se sale de un hilo de vidrio: ángulo crítico de 80,6°, reflexión total y 0,2 dB/km.</span></a>
+</section>
+</main>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Física en la vida real <span id="ver"></span> (beta)</footer>
+</body>
+<script>
+const Pagina = { carpeta: 'fenomenos/pantalla-tactil', guarda: null };
+const Version = (() => { const registros = {"web":[{"v":"1.12"}],"control":[{"v":"0.1"}],"termo-estadistica":[{"v":"0.1"}],"markowitz":[{"v":"0.1"}],"cavidades":[{"v":"0.1"}],"organica":[{"v":"0.1"}],"transformada-z":[{"v":"0.1"}],"semiconductores":[{"v":"0.1"}],"relatividad":[{"v":"0.1"}],"osc-acopladas":[{"v":"0.1"}],"solubilidad":[{"v":"0.1"}],"lagrange":[{"v":"0.1"}],"series":[{"v":"0.1"}],"no-parametricos":[{"v":"0.1"}],"regresion-multiple":[{"v":"0.1"}],"anova":[{"v":"0.1"}],"black-scholes":[{"v":"0.1"}],"bonos":[{"v":"0.1"}],"solow":[{"v":"0.1"}],"integrales-multiples":[{"v":"0.1"}],"formulacion":[{"v":"0.1"}],"balance":[{"v":"0.1"}],"redox":[{"v":"0.1"}],"lineas-transmision":[{"v":"0.1"}],"superficies":[{"v":"0.1"}],"vsepr":[{"v":"0.1"}],"maxwell":[{"v":"0.1"}],"fresnel":[{"v":"0.1"}],"gravitacion":[{"v":"0.1"}],"convolucion":[{"v":"0.1"}],"laplace-numerica":[{"v":"0.1"}],"imagenes":[{"v":"0.1"}],"guias-onda":[{"v":"0.1"}],"antena":[{"v":"0.1"}],"bode":[{"v":"0.1"}],"optica":[{"v":"0.1"}],"simulador":[{"v":"0.3"}],"teoria-juegos":[{"v":"0.1"}],"puertas-logicas":[{"v":"0.3"}],"multiplicador":[{"v":"0.1"}],"is-lm":[{"v":"0.1"}],"choques":[{"v":"0.1"}],"termoquimica":[{"v":"0.1"}],"probabilidad":[{"v":"0.1"}],"unidades":[{"v":"0.1"}],"equilibrio":[{"v":"0.1"}],"oscilaciones":[{"v":"0.1"}],"beneficio":[{"v":"0.1"}],"costes":[{"v":"0.1"}],"sistemas-numericos":[{"v":"0.1"}],"excedentes":[{"v":"0.1"}],"oferta-demanda":[{"v":"0.1"}],"chi2-bondad":[{"v":"0.1"}],"contrastes":[{"v":"0.1"}],"errores":[{"v":"0.1"}],"graficador":[{"v":"0.1"}],"metodos-numericos":[{"v":"0.1"}],"fisica-moderna":[{"v":"0.2"}],"lorenz-gini":[{"v":"0.1"}],"phillips-okun":[{"v":"0.1"}],"tipos-cambio":[{"v":"0.1"}],"elasticidades":[{"v":"0.1"}],"pib-ipc":[{"v":"0.1"}],"numeros-indice":[{"v":"0.1"}],"ratios":[{"v":"0.1"}],"punto-muerto":[{"v":"0.1"}],"ahorro":[{"v":"0.1"}],"van-tir":[{"v":"0.1"}],"amortizacion-inmovilizado":[{"v":"0.1"}],"prestamos":[{"v":"0.1"}],"rentas":[{"v":"0.1"}],"interes":[{"v":"0.1"}],"descriptiva":[{"v":"0.1"}],"regresion-economia":[{"v":"0.1"}],"ajustador":[{"v":"0.1"}],"electrostatica":[{"v":"0.6"}],"magnetostatica":[{"v":"0.2"}],"tabla-periodica":[{"v":"0.2"}],"trabajo-y-energia":[{"v":"0.2"}],"masa-molar":[{"v":"0.2"}],"configuracion-electronica":[{"v":"0.2"}],"condensadores":[{"v":"0.2"}],"tiro-parabolico":[{"v":"0.2"}],"disoluciones":[{"v":"0.2"}],"calorimetria":[{"v":"0.2"}],"induccion":[{"v":"0.2"}],"matrices":[{"v":"0.2"}],"derivadas":[{"v":"0.3"}],"laplace":[{"v":"0.2"}],"interferencia":[{"v":"0.2"}],"ondas-em":[{"v":"0.3"}],"intervalos":[{"v":"0.2"}],"fuerza":[{"v":"0.2"}],"campos":[{"v":"0.2.1"}],"cinetica":[{"v":"0.2"}],"edos":[{"v":"0.2"}],"fourier":[{"v":"0.2"}],"taylor":[{"v":"0.2.1"}],"complejos":[{"v":"0.2"}],"sistemas":[{"v":"0.3"}],"regresion":[{"v":"0.2"}],"estadistica":[{"v":"0.2"}],"dinamica":[{"v":"0.2"}],"solido-rigido":[{"v":"0.2"}],"ondas":[{"v":"0.2"}],"gases":[{"v":"0.3"}],"ciclos":[{"v":"0.2"}],"ph":[{"v":"0.3"}],"fluidos":[{"v":"0.2"}],"doppler":[{"v":"0.2"}],"resistencias":[{"v":"0.2"}],"faraday":[{"v":"0.2"}],"fenomenos":[{"v":"0.8"}]}; const de = (h) => ({ current: registros[h][0].v, log: registros[h] }); return { registros, de }; })();
+
+/* =====================================================================
+   Ayudantes comunes de las herramientas (los que antes copiaba cada una).
+   herramientas.js lo pone en cada página justo después de version.js; en
+   Node (pruebas) comprobar.js lo deja en global.Herramienta. Uso:
+     const { $, esc, copia, vacio } = Herramienta;
+     $(q)          document.querySelector
+     esc(s)        texto seguro dentro de HTML y de atributos
+     copia(o)      copia profunda de datos JSON (el estado sc, un ejemplo)
+     vacio(v)      campo sin rellenar (undefined, null o solo espacios)
+     leeSI(s, base)  número de un campo con coma, 3·10^8, prefijos del SI y
+                   unidad: «4k7», «1,5 kΩ», «100n», «10 µF», «5 ms». Con prefijo,
+                   notación 4k7 o unidad escrita da el valor en unidades del SI;
+                   un número solo se multiplica por base (1e-3 si el campo
+                   está en mH, 1e-6 si en μF). NaN si no se entiende
+     txt(h)        HTML de un resultado a texto para el lienzo (exponentes ⁰¹²…)
+     marcas(a, b, n)  valores redondos (1, 2, 2,5, 5 × 10ⁿ) para las marcas de un eje
+     lienzo(c)     prepara un <canvas> (o su selector) a la resolución de la
+                   pantalla, limpio y en px CSS: { g, w, h, c, cambia }; cambia
+                   es true si el tamaño era otro (para rehacer un fondo guardado)
+     enlace        un enlace con #d=… (lo copia «Mis ejercicios») deja sus datos en la clave de la página
+                   (Pagina.guarda) antes de que arranque la app, en todas las herramientas
+     accesible()   (ya se llama al cargar) aria-live en los resultados, role=alert en los
+                   errores y aria-describedby de cada gráfica hacia los resultados
+   ===================================================================== */
+const Herramienta = (() => {
+  const $ = (q) => document.querySelector(q);
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const copia = (o) => JSON.parse(JSON.stringify(o));
+  const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
+  const PREFIJOS = { p: 1e-12, n: 1e-9, u: 1e-6, 'µ': 1e-6, 'μ': 1e-6, m: 1e-3, k: 1e3, K: 1e3, M: 1e6, G: 1e9, R: 1 };
+  const leeSI = (s, base = 1) => {
+    let t = String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace(/[−–]/g, '-').replace(/[·x×*]10\^?\(?([+\-]?\d+)\)?/i, 'e$1');
+    const sinUnidad = t.replace(/(Ω|ohmios?|ohms?|Hz|var|VA|V|A|F|H|W|S|s)$/, ''), unidad = sinUnidad !== t;
+    t = sinUnidad;
+    let m = t.match(/^([+-]?)(\d*)([pnuµμmkKMGR])(\d+)$/);
+    if (m) return +`${m[1]}${m[2] || 0}.${m[4]}` * PREFIJOS[m[3]];
+    m = t.match(/^([+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?)([pnuµμmkKMG]?)$/i);
+    if (!m) return NaN;
+    return +m[1] * (m[2] ? PREFIJOS[m[2]] : unidad ? 1 : base);
+  };
+  const txt = (h) => String(h).replace(/<sup>(.*?)<\/sup>/g, (_, e) => e.replace(/−/g, '⁻').replace(/\d/g, (d) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d])).replace(/<[^>]+>/g, '');
+  const marcas = (a, b, n = 6) => {
+    const p0 = (b - a) / n, e = 10 ** Math.floor(Math.log10(p0)), paso = [1, 2, 2.5, 5, 10].map((q) => q * e).find((q) => q >= p0) || 10 * e;
+    const out = []; for (let v = Math.ceil(a / paso) * paso; v <= b + paso * 1e-9; v += paso) out.push(Math.abs(v) < paso * 1e-9 ? 0 : v);
+    return out;
+  };
+  const lienzo = (c) => {
+    if (typeof c === 'string') c = $(c);
+    const dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
+    const cambia = c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr);
+    if (cambia) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
+    const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
+    return { g, w, h, c, cambia };
+  };
+  // Accesibilidad común: los resultados que cambian al tocar un dato se anuncian con cortesía (aria-live), los mensajes de error
+  // como alerta y cada gráfica se describe con los resultados de al lado (aria-describedby), no solo con su título fijo.
+  const accesible = (doc = typeof document !== 'undefined' ? document : null) => {
+    if (!doc) return;
+    const RES = '#resumen, #res, #resumen-d, #resumen-r, #resumen-c, #resumen-este, #resumen-emp, #resumen-nq, #resumen-conf, #res-masa, #res-dil, #res-mez';
+    for (const e of doc.querySelectorAll(RES)) if (!e.hasAttribute('aria-live')) e.setAttribute('aria-live', 'polite');
+    for (const e of doc.querySelectorAll('.error')) if (!e.hasAttribute('role')) e.setAttribute('role', 'alert');
+    const res = doc.querySelector('#resumen, #res');
+    if (res) for (const c of doc.querySelectorAll('canvas')) if (!c.hasAttribute('aria-describedby') && !c.closest('#resumen, #res') && !c.hasAttribute('aria-hidden')) c.setAttribute('aria-describedby', res.id);
+  };
+  accesible();
+  // Enlace que lleva el estado (#d=…, base64 url del JSON guardado): los datos pasan a donde la app los lee al arrancar
+  if (typeof location !== 'undefined' && typeof Pagina !== 'undefined' && Pagina.guarda) {
+    const m = /[#&]d=([A-Za-z0-9_-]+)/.exec(location.hash);
+    if (m) {
+      try { const json = decodeURIComponent(escape(atob(m[1].replace(/-/g, '+').replace(/_/g, '/')))); JSON.parse(json); localStorage.setItem(Pagina.guarda, json); } catch (e) { /* enlace roto o sin almacenamiento */ }
+      try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* file:// */ }
+    }
+  }
+  return { $, esc, copia, vacio, leeSI, txt, marcas, lienzo, accesible };
+})();
+
+/* =====================================================================
+   Fórmulas en MathML a partir de una sintaxis sencilla (sin DOM salvo
+   Mates.pinta). En los textos, lo que va entre $…$ es una fórmula:
+     a/b            fracción (los paréntesis de fuera se quitan)
+     x^2, e^{−bt/m} exponente; v_0x, E_{c,máx} subíndice
+     √(…), ∛(…)     raíz
+     "m/s"          texto tal cual (unidades, palabras); \{ \} llaves visibles
+     sen cos tg ln log exp máx mín   funciones; binom(n, k)
+   Una palabra que no es una función se lee letra a letra (mgh = m·g·h).
+   También acepta <sup>, <sub> y las etiquetas que devuelve f().
+   ===================================================================== */
+const Mates = (() => {
+  const FUNC = new Set(['sen', 'cos', 'tg', 'tan', 'ln', 'log', 'exp', 'arcsen', 'arccos', 'arctg', 'máx', 'mín', 'lím', 'senh', 'cosh', 'tgh']);
+  const OPS = '+-−=·×÷⇒⇔→←↔≈≠<>≤≥±∓,;:!∝∈∼≡∑∏∫∂∇⊥∥';
+  const escH = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  function tokens(src) {
+    const s = String(src)
+      .replace(/<sup>/g, '^{').replace(/<\/sup>/g, '}').replace(/<sub>/g, '_{').replace(/<\/sub>/g, '}')
+      .replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+    const out = [];
+    let i = 0, sp = false;
+    while (i < s.length) {
+      const c = s[i], resto = s.slice(i);
+      let m;
+      if (/\s/.test(c)) { sp = true; i++; continue; }
+      // \{ y \} son llaves que se ven: ℒ\{f(t)\}
+      if (c === '\\' && (s[i + 1] === '{' || s[i + 1] === '}')) { out.push({ t: 's', v: c + s[i + 1], sp }); i += 2; sp = false; continue; }
+      if ((m = resto.match(/^\d+(?:[.,]\d+)?/))) out.push({ t: 'n', v: m[0].replace('.', ','), sp });
+      else if (c === '"') { const j = s.indexOf('"', i + 1); m = [s.slice(i, j < 0 ? s.length : j + 1)]; out.push({ t: 'x', v: m[0].replace(/"/g, ''), sp }); }
+      else if ((m = resto.match(/^[\p{L}\p{M}∞]+[′″]*/u))) out.push({ t: 'w', v: m[0], sp });
+      else { m = [c]; out.push({ t: 's', v: c, sp }); }
+      i += m[0].length; sp = false;
+    }
+    return out;
+  }
+
+  // nodo: { m: MathML, dentro: MathML sin los paréntesis de fuera (o null) }
+  const nodo = (m, dentro = null) => ({ m, dentro });
+  const fila = (xs) => (xs.length === 1 ? xs[0] : `<mrow>${xs.join('')}</mrow>`);
+  const letra = (v) => (/^\d+(,\d+)?$/.test(v) ? `<mn>${v}</mn>` : [...v].length === 1 ? `<mi>${escH(v)}</mi>` : `<mi mathvariant="normal">${escH(v)}</mi>`);
+
+  function analiza(tk) {
+    let p = 0;
+    const ver = () => tk[p], es = (v) => tk[p] && tk[p].t === 's' && tk[p].v === v;
+    function secuencia(cierre) {
+      const xs = [];
+      let prevOp = true;
+      while (p < tk.length && !(cierre && es(cierre))) {
+        const k = ver();
+        // ∫ con límites lleva sus subíndices: ∫_a^b
+        if (k.t === 's' && OPS.includes(k.v) && !(k.v === '∫' && tk[p + 1] && tk[p + 1].t === 's' && (tk[p + 1].v === '_' || tk[p + 1].v === '^'))) {
+          p++;
+          const v = k.v === '-' ? '−' : k.v;
+          // un signo detrás de otro operador (o al principio) es de número: = −19,28
+          const signo = prevOp && (v === '−' || v === '+' || v === '±');
+          xs.push(v === '!' ? '<mo lspace="0">!</mo>' : v === ',' || v === ';' ? `<mo separator="true">${v}</mo>` : signo ? `<mo form="prefix" lspace="0" rspace="0.05em">${v}</mo>` : `<mo>${escH(v)}</mo>`);
+          prevOp = true; continue;
+        }
+        if (k.t === 's' && (k.v === ')' || k.v === '}' || k.v === ']')) { p++; continue; } // paréntesis sueltos
+        xs.push(fraccion().m); prevOp = false;
+      }
+      return xs;
+    }
+    function fraccion() {
+      let a = guiones();
+      while (es('/')) { p++; const b = guiones(); a = nodo(`<mfrac>${a.dentro ?? a.m}${b.dentro ?? b.m}</mfrac>`); }
+      return a;
+    }
+    function argumento() {
+      if (es('{')) { p++; const xs = secuencia('}'); p++; return fila(xs); }
+      if (es('-') || es('−')) { p++; const a = argumento(); return `<mrow><mo>−</mo>${a}</mrow>`; }
+      if (es('(')) { const a = atomo(); return a.m; }
+      // una racha de letras y números pegados: 0x, máx, 12
+      const k = ver();
+      if (!k) return '<mrow></mrow>';
+      if (k.t === 's') { p++; return `<mo>${escH(k.v)}</mo>`; }
+      let v = k.v; p++;
+      while (ver() && !ver().sp && (ver().t === 'n' || ver().t === 'w')) { v += ver().v; p++; }
+      return letra(v);
+    }
+    function guiones() {
+      const base = atomo();
+      let sub = null, sup = null;
+      for (;;) {
+        if (es('_') && sub === null) { p++; sub = argumento(); } else if (es('^') && sup === null) { p++; sup = argumento(); } else break;
+      }
+      if (sub === null && sup === null) return base;
+      const b = base.m;
+      return nodo(sub !== null && sup !== null ? `<msubsup>${b}${sub}${sup}</msubsup>` : sub !== null ? `<msub>${b}${sub}</msub>` : `<msup>${b}${sup}</msup>`);
+    }
+    function atomo() {
+      const k = ver();
+      if (!k) return nodo('<mrow></mrow>');
+      p++;
+      if (k.t === 'n') return nodo(`<mn>${k.v}</mn>`);
+      if (k.t === 'x') return nodo(`${k.sp && p > 1 ? '<mspace width="0.3em"></mspace>' : ''}<mtext>${escH(k.v)}</mtext>`);
+      if (k.t === 'w') {
+        // binom(n, k): número combinatorio
+        if (k.v === 'binom' && es('(')) { p++; const a = secuencia(','); p++; const b = secuencia(')'); p++; return nodo(`<mrow><mo>(</mo><mfrac linethickness="0">${fila(a)}${fila(b)}</mfrac><mo>)</mo></mrow>`); }
+        if (FUNC.has(k.v)) { let m = `<mi mathvariant="normal">${k.v}</mi>`; if (es('^')) { p++; m = `<msup>${m}${argumento()}</msup>`; } return nodo(`<mspace width="0.17em"></mspace>${m}<mo>&#x2061;</mo><mspace width="0.12em"></mspace>`); }
+        // diferencial suelto (dx, dt, dS, dθ…) detrás de algo: con un poco de aire, como en «f(x) dx»
+        if (k.sp && p > 1 && /^d[a-zA-Zθφρ]$/.test(k.v)) return nodo(`<mspace width="0.17em"></mspace><mi>d</mi><mi>${escH(k.v[1])}</mi>`);
+        const ls = [...k.v.replace(/[′″]+$/, '')], pr = (k.v.match(/[′″]+$/) || [''])[0];
+        // las marcas combinadas (î, ĵ con acento) van con su letra
+        const grupos = []; for (const c of ls) { if (/\p{M}/u.test(c) && grupos.length) grupos[grupos.length - 1] += c; else grupos.push(c); }
+        // las mayúsculas griegas (Δ, Σ, Φ, Ω) van rectas, como en los libros
+        return nodo(fila(grupos.map((c) => (c === '∞' ? '<mi>∞</mi>' : /^[Α-Ω]$/.test(c) ? `<mi mathvariant="normal">${c}</mi>` : `<mi>${escH(c)}</mi>`)).concat(pr ? [`<mo lspace="0" rspace="0">${pr}</mo>`] : [])));
+      }
+      const v = k.v;
+      if (v === '(' || v === '[') { const c = v === '(' ? ')' : ']'; const xs = secuencia(c); if (es(c)) p++; const d = fila(xs), est = /<m(frac|sqrt|root)/.test(d) ? '' : ' stretchy="false"'; return nodo(`<mrow><mo${est}>${v}</mo>${d}<mo${est}>${c}</mo></mrow>`, d); }
+      if (v === '{') { const xs = secuencia('}'); if (es('}')) p++; const d = fila(xs); return nodo(`<mrow>${d}</mrow>`, d); }
+      if (v === '√') { const a = guiones(); return nodo(`<msqrt>${a.dentro ?? a.m}</msqrt>`); }
+      if (v === '∛') { const a = guiones(); return nodo(`<mroot>${a.dentro ?? a.m}<mn>3</mn></mroot>`); }
+      if (v === '\\{' || v === '\\}') return nodo(`<mo stretchy="false">${v[1]}</mo>`);
+      if (v === '|') return nodo('<mo stretchy="false" lspace="0.05em" rspace="0.05em">|</mo>');
+      if (v === '°' || v === '%' || v === '‰') return nodo(`<mi mathvariant="normal">${v}</mi>`);
+      return nodo(`<mo>${escH(v)}</mo>`);
+    }
+    return fila(secuencia(null));
+  }
+
+  // la fuente se queda en data-src para poder copiarla (como texto o LaTeX)
+  const mathml = (src) => `<math data-src="${escH(src).replace(/"/g, '&quot;')}"><mstyle displaystyle="true">${analiza(tokens(src))}</mstyle></math>`;
+  // parte una fórmula antes de cada = o ⇒ que no esté dentro de paréntesis, llaves o comillas
+  function trozos(src) {
+    const out = [];
+    let ini = 0, nivel = 0, comillas = false;
+    for (let i = 0; i < src.length; i++) {
+      const c = src[i];
+      if (c === '"') comillas = !comillas;
+      else if (comillas || src[i - 1] === '\\') continue;
+      else if ('([{'.includes(c)) nivel++;
+      else if (')]}'.includes(c)) nivel--;
+      else if ((c === '=' || c === '⇒') && nivel === 0 && src.slice(ini, i).trim()) { out.push(src.slice(ini, i)); ini = i; }
+    }
+    return out.concat(src.slice(ini)).map((x) => x.trim()).filter(Boolean);
+  }
+  // sustituye cada $…$ de un texto HTML por su MathML; con partir, cada igualdad va en su propio
+  // <math> para que una cadena larga (a = b = c) baje de línea en el móvil en vez de salirse
+  const html = (s, partir = false) => String(s ?? '').replace(/\$([^$]+)\$/g, (_, x) => (partir
+    ? trozos(x).map((t, i) => (i ? mathml(t).replace(/^(<math[^>]*><mstyle[^>]*>(?:<mrow>)?)<mo>/, '$1<mo lspace="0">') : mathml(t))).join(' ')
+    : mathml(x)));
+  // convierte en el documento los elementos con class="m" (fórmulas escritas en el HTML)
+  function pinta(raiz) { if (typeof document === 'undefined') return; for (const el of (raiz || document).querySelectorAll('.m:not([data-m])')) { el.dataset.m = '1'; el.innerHTML = html(el.innerHTML.includes('$') ? el.innerHTML : `$${el.innerHTML}$`); } }
+  if (typeof document !== 'undefined') {
+    const st = document.createElement('style');
+    st.textContent = '@font-face { font-family: "STIX Two Math"; src: url(../../fuentes/stix-two-math.woff2) format("woff2"); font-display: swap }\nmath { font-family: "STIX Two Math", "Cambria Math", math; font-size: 1.08em }\nmath mtext { font-family: "STIX Two Text", "STIX Two Math", serif }';
+    document.head.appendChild(st);
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => pinta()); else pinta();
+  }
+  return { html, mathml, pinta, tokens };
+})();
+
+/* =====================================================================
+   Animación por pasos, común a todos los fenómenos de «Física en la vida real».
+   Va en la página tras mates.js; cada fenómeno (fenomenos/<clave>/escena.js)
+   solo da sus pasos y su dibujo:
+     Animacion.monta({ lienzo: '#escena', pasos, dibuja, colores, sonido? })
+       pasos    [{ titulo, corto, texto, dato?, anim?, dura?, prueba? }]: corto = nombre
+                en la línea de tiempo; dato = { valor, texto } destacado sobre el texto,
+                que va en HTML con fórmulas
+                $…$ (párrafos separados por una línea en blanco); anim = ms que dura el
+                movimiento del paso (2500) y dura = ms hasta pasar al siguiente (9000);
+                prueba = { etiqueta, min, max, paso, valor, muestra(v), cambia(v) }
+                pone un deslizador «Pruébalo tú» bajo el texto (al moverlo se para)
+       dibuja(g, { paso, t, reloj, w, h, c, quieto })  dibuja el paso en el contexto
+                g (px CSS): t va de 0 a 1 durante el movimiento, reloj son los segundos
+                desde que se abrió la página (para lo que se mueve siempre, como un
+                brillo), c los colores leídos de las variables CSS de «colores» y
+                quieto = true si el sistema pide menos movimiento
+       colores  nombres de variables CSS sin «--» (se releen al cambiar de modo)
+       sonido(ac) opcional: recibe un AudioContext y devuelve { cuadro(estado) }, al
+                que se llama en cada fotograma mientras el botón #sonido está activo
+                (apagado al abrir la página)
+   Avanza sola de un paso al siguiente; «Parar» detiene solo el avance (el paso
+   sigue animado), y Anterior, Siguiente, los números y las flechas del teclado
+   funcionan siempre. La maqueta (#escena, #ant, #play, #sig, #puntos, #paso-t,
+   #paso-x, #ver y, si hay sonido, #sonido) está en la pagina.html de cada fenómeno y los estilos en
+   fenomenos/estilos.css. Expone window.FenomenoApp para las pruebas.
+   ===================================================================== */
+const Animacion = (() => {
+  const { $, esc, lienzo } = Herramienta;
+  function monta({ lienzo: sel, pasos, dibuja, colores = [], sonido = null }) {
+    const cv = $(sel), puntos = $('#puntos'), play = $('#play'), n = pasos.length;
+    const quieto = matchMedia('(prefers-reduced-motion: reduce)').matches, t0 = performance.now();
+    let i = 0, inicio = t0, avanza = true, c = {}, audio = null, ac = null, suena = false;
+    const leeColores = () => { const st = getComputedStyle(document.documentElement); c = {}; for (const k of colores) c[k] = st.getPropertyValue('--' + k).trim(); };
+    const dura = (p) => p.dura || 9000, anim = (p) => p.anim || 2500;
+    // línea de tiempo: un círculo por paso con su nombre corto; la línea se rellena con --avance (0 a 1)
+    puntos.innerHTML = pasos.map((p, k) => `<button type="button" title="${esc(p.titulo)}" aria-label="Paso ${k + 1}: ${esc(p.titulo)}"><b>${k + 1}</b><span>${esc(p.corto || '')}</span></button>`).join('');
+    const botones = [...puntos.children];
+
+    function texto() {
+      const p = pasos[i];
+      $('#paso-t').innerHTML = `<small>Paso ${i + 1} de ${n}</small>${esc(p.titulo)}`;
+      const caja = $('.fen-texto');
+      if (caja) { caja.classList.remove('entra'); void caja.offsetWidth; caja.classList.add('entra'); }
+      $('#paso-x').innerHTML = (p.dato ? `<div class="fen-dato"><b>${Mates.html(p.dato.valor)}</b><span>${Mates.html(p.dato.texto)}</span></div>` : '') + p.texto.split(/\n\s*\n/).map((x) => `<p>${Mates.html(x.trim())}</p>`).join('') + (p.prueba ? deslizador(p.prueba) : '');
+      if (p.prueba) {
+        const d = $('#prueba'), o = $('#prueba-v');
+        d.addEventListener('input', () => { const v = +d.value; p.prueba.valor = v; p.prueba.cambia(v); o.innerHTML = p.prueba.muestra(v); if (avanza) ponPlay(false); });
+      }
+      botones.forEach((b, k) => { b.classList.toggle('hecho', k < i); if (k === i) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current'); });
+      $('#ant').disabled = i === 0; $('#sig').disabled = i === n - 1;
+    }
+    function deslizador(q) {
+      q.cambia(q.valor);
+      return `<div class="fen-prueba"><label for="prueba"><b>Pruébalo tú:</b> ${esc(q.etiqueta)}</label><input type="range" id="prueba" min="${q.min}" max="${q.max}" step="${q.paso}" value="${q.valor}"><output id="prueba-v" for="prueba">${q.muestra(q.valor)}</output></div>`;
+    }
+    function ve(k) { i = Math.max(0, Math.min(n - 1, k)); inicio = performance.now(); texto(); }
+    function ponPlay(on) { avanza = on; play.textContent = on ? '❚❚ Parar' : i === n - 1 && performance.now() - inicio >= dura(pasos[i]) ? '↻ Repetir' : '▶ Reproducir'; play.setAttribute('aria-pressed', String(on)); }
+    play.addEventListener('click', () => {
+      if (avanza) return ponPlay(false);
+      if (i === n - 1 && play.textContent.includes('Repetir')) ve(0); else inicio = performance.now();
+      ponPlay(true);
+    });
+    $('#ant').addEventListener('click', () => ve(i - 1));
+    $('#sig').addEventListener('click', () => ve(i + 1));
+    botones.forEach((b, k) => b.addEventListener('click', () => ve(k)));
+    addEventListener('keydown', (e) => {
+      if (e.target.closest('input, textarea, select') || e.altKey || e.ctrlKey || e.metaKey) return;
+      if (e.key === 'ArrowRight') ve(i + 1); else if (e.key === 'ArrowLeft') ve(i - 1); else return;
+      e.preventDefault();
+    });
+    matchMedia('(prefers-color-scheme: dark)').addEventListener('change', leeColores);
+    const bSonido = $('#sonido');
+    if (bSonido && sonido && (window.AudioContext || window.webkitAudioContext)) {
+      bSonido.addEventListener('click', () => {
+        suena = !suena; bSonido.setAttribute('aria-pressed', String(suena)); bSonido.textContent = suena ? '🔊 Sonido' : '🔇 Sonido';
+        if (suena && !ac) { ac = new (window.AudioContext || window.webkitAudioContext)(); audio = sonido(ac); }
+        if (ac) suena ? ac.resume() : ac.suspend();
+      });
+    } else if (bSonido) bSonido.hidden = true;
+
+    function cuadro(ahora) {
+      const p = pasos[i], el = ahora - inicio;
+      if (avanza && el >= dura(p)) { if (i < n - 1) ve(i + 1); else ponPlay(false); }
+      puntos.style.setProperty('--avance', Math.min(1, (i + (avanza && i < n - 1 ? Math.min(1, (ahora - inicio) / dura(pasos[i])) : 0)) / (n - 1)).toFixed(4));
+      const { g, w, h } = lienzo(cv);
+      const estado = { paso: i, t: quieto ? 1 : Math.min(1, Math.max(0, (ahora - inicio) / anim(pasos[i]))), reloj: quieto ? 0 : (ahora - t0) / 1000, w, h, c, quieto };
+      dibuja(g, estado);
+      if (suena && audio) audio.cuadro(estado);
+      requestAnimationFrame(cuadro);
+    }
+    leeColores(); texto(); ponPlay(true);
+    if (typeof Version !== 'undefined' && $('#ver')) $('#ver').textContent = Version.de('fenomenos').current;
+    requestAnimationFrame(cuadro);
+    window.FenomenoApp = { ve, paso: () => i, pasos: n, avanza: () => avanza, sonido: () => suena };
+  }
+  return { monta };
+})();
+
+/* =====================================================================
+   Ayudantes de dibujo comunes a las escenas de «Física en la vida real»
+   (fenomenos/<clave>/escena.js). Va en la página tras animacion.js.
+     Dibujo.suave, tramo, rgba, azar   curvas de 0 a 1, color con alfa y azar fijo
+     Dibujo.vista(g, w, h, c)  un mundo de 16 × 9 unidades dentro del lienzo, con
+         cámara: v.mira(cx, cy, zoom) la mueve (v.pantalla() vuelve a la vista
+         entera, para lo que va fijo como un medidor) y v.sigue(meta, reloj,
+         quieto) la lleva suave hacia otra cámara. Luego v.X(x) y v.Y(y) pasan a
+         px, v.K son los px por unidad y v.x0, v.x1, v.y0 lo que se ve; y dibuja
+         rótulos (que se escriben solos con «escribe»), signos + y −, flechas y
+         puntos, siempre en coordenadas del mundo. Con window.FenomenoFoto (pruebas/imagenes-fenomenos.js, la imagen
+         de la tarjeta del índice) no se dibujan los rótulos, que en pequeño no se leen.
+   ===================================================================== */
+const Dibujo = (() => {
+  const suave = (t) => t * t * (3 - 2 * t);
+  const tramo = (t, a, b) => Math.min(1, Math.max(0, (t - a) / (b - a)));
+  const rgba = (hex, a) => { const h = hex.replace('#', ''), n = parseInt(h.length === 3 ? h.replace(/./g, '$&$&') : h, 16); return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`; };
+  // azar fijo (siempre las mismas posiciones)
+  const azar = (k) => { const x = Math.sin(k * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+
+  function vista(g, w, h, c, cam = { x: 8, y: 4.5, z: 1 }) {
+    const k = Math.min(w / 16, h / 9), v = { k, cam };
+    v.mira = (cx, cy, z) => { v.K = k * z; v.cx = cx; v.cy = cy; v.x0 = cx - w / 2 / v.K; v.x1 = cx + w / 2 / v.K; v.y0 = cy - h / 2 / v.K; return v; };
+    v.mundo = () => v.mira(cam.x, cam.y, cam.z);
+    v.pantalla = () => v.mira(8, 4.5, 1);
+    // la cámara va suave hacia «meta» (el zoom, en escala logarítmica); con quieto, de golpe
+    v.sigue = (meta, reloj, quieto) => {
+      const dt = cam.antes === undefined || quieto ? 99 : Math.min(0.1, Math.max(0, reloj - cam.antes)), f = 1 - Math.exp(-dt * 2.4);
+      cam.antes = reloj;
+      cam.x += (meta.x - cam.x) * f; cam.y += (meta.y - cam.y) * f; cam.z = Math.exp(Math.log(cam.z) + (Math.log(meta.z) - Math.log(cam.z)) * f);
+      return v.mundo();
+    };
+    v.X = (x) => w / 2 + (x - v.cx) * v.K;
+    v.Y = (y) => h / 2 + (y - v.cy) * v.K;
+    const letra = (px, peso = 500) => `${peso} ${Math.max(11, (px * k) / 40)}px "IBM Plex Sans", system-ui, sans-serif`;
+    // rótulo; con «escribe» (0 a 1) aparece letra a letra, como escrito en la pizarra
+    v.rotulo = (txt, x, y, { color = c.rotulo, tam = 13, al = 'left', peso = 500, fondo = true, escribe = 1 } = {}) => {
+      if (escribe <= 0 || window.FenomenoFoto) return;
+      const letras = [...txt], ver = escribe >= 1 ? txt : letras.slice(0, Math.ceil(letras.length * escribe)).join('');
+      g.font = letra(tam, peso); g.textAlign = al; g.textBaseline = 'middle';
+      if (fondo) { const m = g.measureText(txt).width, p = 4, x2 = al === 'center' ? v.X(x) - m / 2 : al === 'right' ? v.X(x) - m : v.X(x); g.fillStyle = rgba(c.panel, 0.85); g.fillRect(x2 - p, v.Y(y) - 9 - p, m + 2 * p, 18 + 2 * p); }
+      g.fillStyle = color; g.fillText(ver, v.X(x), v.Y(y));
+    };
+    v.ancho = (txt, tam = 13, peso = 500) => { g.font = letra(tam, peso); return g.measureText(txt).width / v.K; };
+    v.signo = (x, y, s, color, a = 1, tam = 1) => {
+      const r = 0.13 * v.K * tam; g.globalAlpha = a; g.strokeStyle = color; g.lineWidth = Math.max(1.5, 0.045 * v.K * tam); g.beginPath();
+      g.moveTo(v.X(x) - r, v.Y(y)); g.lineTo(v.X(x) + r, v.Y(y)); if (s > 0) { g.moveTo(v.X(x), v.Y(y) - r); g.lineTo(v.X(x), v.Y(y) + r); } g.stroke(); g.globalAlpha = 1;
+    };
+    v.flecha = (xa, ya, xb, yb, color, a = 1, ancho = 0.03) => {
+      g.globalAlpha = a; g.strokeStyle = color; g.fillStyle = color; g.lineWidth = Math.max(1, ancho * v.K);
+      g.beginPath(); g.moveTo(v.X(xa), v.Y(ya)); g.lineTo(v.X(xb), v.Y(yb)); g.stroke();
+      const an = Math.atan2(v.Y(yb) - v.Y(ya), v.X(xb) - v.X(xa)), L = 0.18 * v.K;
+      g.beginPath(); g.moveTo(v.X(xb), v.Y(yb)); g.lineTo(v.X(xb) - L * Math.cos(an - 0.4), v.Y(yb) - L * Math.sin(an - 0.4)); g.lineTo(v.X(xb) - L * Math.cos(an + 0.4), v.Y(yb) - L * Math.sin(an + 0.4)); g.fill(); g.globalAlpha = 1;
+    };
+    v.punto = (x, y, r, color, a = 1) => { g.globalAlpha = a; g.fillStyle = color; g.beginPath(); g.arc(v.X(x), v.Y(y), r * v.K, 0, 2 * Math.PI); g.fill(); g.globalAlpha = 1; };
+    // recuadro con sombra (paneles y medidores)
+    v.panel = (x, y, ancho, alto, a = 0.94) => {
+      g.save(); g.fillStyle = rgba(c.panel, a); g.shadowColor = rgba('#000', 0.18); g.shadowBlur = 16; g.shadowOffsetY = 3;
+      g.beginPath(); g.roundRect(v.X(x), v.Y(y), ancho * v.K, alto * v.K, 0.22 * v.K); g.fill(); g.restore();
+    };
+    // chispa quebrada de (xa, ya) a (xb, yb), distinta cada vez que cambia «n»
+    v.chispa = (xa, ya, xb, yb, n, color, ancho = 0.05, quiebros = 7) => {
+      const L = Math.hypot(xb - xa, yb - ya), nx = -(yb - ya) / L, ny = (xb - xa) / L;
+      g.strokeStyle = color; g.lineWidth = Math.max(1.2, ancho * v.K); g.lineJoin = 'round'; g.beginPath(); g.moveTo(v.X(xa), v.Y(ya));
+      for (let j = 1; j < quiebros; j++) { const s = j / quiebros, d = (azar(n * 17 + j) - 0.5) * 0.35 * L / Math.sqrt(quiebros); g.lineTo(v.X(xa + (xb - xa) * s + nx * d), v.Y(ya + (yb - ya) * s + ny * d)); }
+      g.lineTo(v.X(xb), v.Y(yb)); g.stroke();
+    };
+    return v.mundo();
+  }
+  return { suave, tramo, rgba, azar, vista };
+})();
+
+/* =====================================================================
+   La pantalla táctil capacitiva: los 6 pasos de la animación (texto y dibujo)
+   y el ejercicio que se abre en Dieléctricos y condensadores: la yema del
+   dedo y un electrodo de 5 × 5 mm separados por un cristal de 0,7 mm con
+   εr = 7, con 3,3 V. Modelo de orden de magnitud: el dedo (conductor) y el
+   electrodo forman un condensador plano C = ε0 εr S/d que se suma, en paralelo,
+   a los 10 pF del electrodo; la posición sale del centro de gravedad de las
+   señales de los electrodos vecinos; un guante es otra capa en serie. El
+   motor es fenomenos/animacion.js, los ayudantes de dibujo
+   fenomenos/dibujo.js y la maqueta pagina.html. En Node (pruebas) solo se
+   cargan los datos: pruebas/herramientas/fenomenos/pantalla-tactil.js.
+   ===================================================================== */
+const PantallaTactil = (() => {
+  const E0 = 8.8541878128e-12, ER = 7, D = 0.7e-3, S = 25e-6, V = 3.3;          // cristal: εr = 7, 0,7 mm; electrodo de 5 × 5 mm; 3,3 V
+  const CS0 = 10e-12, UMBRAL = 1e-12, ERG = 3, PASO = 5, ANCHO = 8;              // electrodo sin tocar (10 pF), umbral de detección (1 pF), εr del guante, electrodos cada 5 mm y alcance de la señal (mm)
+  // capacidad entre la yema y el electrodo con el cristal de espesor d (m) y, en serie, un guante de espesor tg (m)
+  const cDedo = (d = D, tg = 0) => (E0 * S) / (d / ER + tg / ERG);
+  // posición (mm) que calcula el controlador: centro de gravedad de las señales de los 5 electrodos (en 0, 5, 10, 15 y 20 mm)
+  const senales = (x) => [0, 1, 2, 3, 4].map((k) => cDedo() * Math.max(0, 1 - Math.abs(x - k * PASO) / ANCHO));
+  const posicion = (x) => { const s = senales(x), tot = s.reduce((a, b) => a + b, 0); return s.reduce((a, b, k) => a + b * k * PASO, 0) / tot; };
+  const datos = { E0, ER, D, S, V, CS0, UMBRAL, ERG, Cd: cDedo(), dQ: cDedo() * V, Q0: CS0 * V, Q1: (CS0 + cDedo()) * V, subida: cDedo() / CS0, C1mm: cDedo(D, 1e-3) };
+  const f0 = (x) => String(Math.round(x)), f1 = (x) => x.toFixed(1).replace('.', ','), f2 = (x) => x.toFixed(2).replace('.', ',');
+  const pF = (x) => f2(x * 1e12) + ' pF', pC = (x) => f1(x * 1e12) + ' pC';
+
+  const pasos = [
+    { titulo: 'Bajo el cristal hay una rejilla invisible', corto: 'Rejilla', dato: { valor: '≈ 5 mm', texto: 'es la separación típica entre los electrodos de la rejilla.' }, texto: `Debajo del cristal de tu móvil hay dos capas de tiras de un material que conduce y es transparente (óxido de indio y estaño). Unas son **filas** y las otras **columnas**, separadas por un aislante, y cada cruce es un pequeño **condensador**.\n\nUn chip controlador envía un pulso por cada fila y mide lo que llega por cada columna, cientos de veces por segundo. Mientras nada toca el cristal, cada cruce guarda siempre la misma carga. Para saber dónde has tocado le basta con encontrar el cruce en que algo cambia.`, dura: 10000 },
+    { titulo: 'El dedo es un conductor, y la pantalla lo nota', corto: 'Dedo', dato: { valor: '≈ 60 %', texto: 'de tu cuerpo es agua con sales disueltas, que conduce la electricidad.' }, texto: `Tu cuerpo es en su mayor parte agua con sales, y eso lo hace un buen conductor. Además está unido a tierra a través de ti y de lo que tocas.\n\nCuando apoyas la yema sobre el cristal, el dedo (un conductor) y el electrodo de debajo (otro conductor), separados por el cristal (un aislante), son justo lo que hace falta para un **condensador**. Ni el cristal ni los electrodos cambian: lo que cambia es que ahora hay un conductor más al lado.` },
+    { titulo: 'La capacidad del dedo con el electrodo', corto: 'Condensador', dato: { valor: pF(datos.Cd), texto: 'es la capacidad entre la yema y un electrodo de 5 × 5 mm, con el cristal por medio.' }, texto: `Es un condensador plano, y se calcula como siempre: $C = {ε_0 ε_r S}/d$. Con un electrodo de $S = 5 × 5 "mm" = 25 "mm"^2$, el cristal de $d = 0,7 "mm"$ y $ε_r = 7$:\n\n$C = {8,854·10^{−12} · 7 · 25·10^{−6}}/{0,7·10^{−3}} = ${f2(datos.Cd * 1e12)} "pF"$\n\nUna capacidad de unos pocos picofaradios, muy pequeña, pero mensurable. Cuanto más fino sea el cristal o más alto su $ε_r$, mayor es: por eso las pantallas usan cristal fino y no una funda gruesa.`, dura: 11000 },
+    { titulo: 'El controlador detecta cuánta carga cabe', corto: 'Señal', dato: { valor: `+${f0(100 * datos.subida)} %`, texto: `sube la capacidad del electrodo al apoyar el dedo: de ${pF(CS0)} a ${pF(CS0 + datos.Cd)}.` }, texto: `Cada electrodo tiene ya una capacidad propia, de unos $${f0(CS0 * 1e12)} "pF"$. El dedo añade la suya **en paralelo**, así que se **suman**: $C = ${f0(CS0 * 1e12)} + ${f2(datos.Cd * 1e12)} = ${f2((CS0 + datos.Cd) * 1e12)} "pF"$.\n\nEl controlador carga el electrodo a $V = ${f1(V)} "V"$ y mide la carga que cabe: $Q = C V$ pasa de ${pC(datos.Q0)} a ${pC(datos.Q1)}. Si el aumento supera un umbral, hay un toque. (Las pantallas de hoy miden en realidad la capacidad *mutua* de cada cruce, que *baja* un poco porque el dedo se lleva parte de las líneas de campo, pero es el mismo tipo de cambio de pocos picofaradios.)` },
+    { titulo: 'La posición: el centro de gravedad de las señales', corto: 'Posición', dato: { valor: '< 1 mm', texto: 'de error al situar el dedo, aunque los electrodos estén cada 5 mm.' }, texto: `Un dedo mide más de 5 mm de ancho, así que toca varios electrodos a la vez y a cada uno le cambia la señal en proporción a lo cerca que está. Con las señales de los vecinos el chip calcula el **centro de gravedad**:\n\n$x = {Σ x_i s_i}/{Σ s_i}$\n\nAsí no hace falta un electrodo por cada punto: con electrodos cada 5 mm se sitúa el dedo con una precisión de menos de 1 mm. Con varios cruces con señal a la vez la pantalla también sigue varios dedos (multitáctil).`, dura: 12000 },
+    { titulo: 'Por qué fallan los guantes y la uña', corto: 'Guantes', dato: { valor: pF(datos.C1mm), texto: 'queda con un guante de 1 mm: unas 4 veces menos que con el dedo desnudo.' }, texto: `Un guante es una capa más de aislante entre el dedo y el electrodo, en serie con el cristal: $d_"eficaz" = d_1/ε_{r1} + d_2/ε_{r2}$. Con un guante de lana de 1 mm ($ε_r ≈ 3$): $C = {ε_0 S}/{0,7/7 + 1/3} = ${f2(datos.C1mm * 1e12)} "pF"$, que ya no llega al umbral supuesto de 1 pF.\n\nUna uña, un lápiz o un guante de lana normal no funcionan porque no conducen o están demasiado lejos. Los guantes «táctiles» llevan hilo conductor en las yemas, y los lápices para pantallas tienen una punta conductora. Y una gota de agua sí se nota: el agua conduce.` },
+  ];
+
+  // ejercicio de Dieléctricos y condensadores (formato de condensadores-v1): yema y electrodo de 25 mm², cristal de 0,7 mm con εr = 7, 3,3 V
+  const ejercicio = () => ({ geo: 'plano', S: '25 mm2', d: '0,7 mm', disposicion: 'serie', capas: [{ t: '0,7 mm', er: '7' }], fuente: 'V', V: '3,3 V' });
+  function abrirEnCondensadores(destino) {
+    try { localStorage.setItem('condensadores-v1', JSON.stringify(ejercicio())); } catch (e) { /* sin almacenamiento: se abre sin datos */ }
+    location.href = destino;
+  }
+
+  /* ---------------- dibujo (con los ayudantes de fenomenos/dibujo.js) ---------------- */
+  const { suave, tramo, rgba } = typeof Dibujo !== 'undefined' ? Dibujo : {};
+  // «Pruébalo tú» del paso 3: espesor del cristal (mm)
+  const prueba3 = { etiqueta: 'el espesor del cristal en mm', min: 0.3, max: 2, paso: 0.1, valor: 0.7, d: 0.7,
+    muestra: (d) => `cristal de ${f1(d).replace(',0', ',0')} mm → C = ${f2(cDedo(d * 1e-3) * 1e12)} pF (con 0,7 mm son ${f2(datos.Cd * 1e12)} pF)`,
+    cambia: (d) => { prueba3.d = d; } };
+  pasos[2].prueba = prueba3;
+  // «Pruébalo tú» del paso 5: posición real del dedo (mm)
+  const prueba5 = { etiqueta: 'dónde pones el dedo (mm)', min: 2, max: 18, paso: 0.5, valor: 7.5, x: 7.5,
+    muestra: (x) => `dedo en ${f1(x)} mm → la pantalla calcula ${f1(posicion(x))} mm (error de ${f2(Math.abs(posicion(x) - x))} mm)`,
+    cambia: (x) => { prueba5.x = x; } };
+  pasos[4].prueba = prueba5;
+  // «Pruébalo tú» del paso 6: espesor del guante (mm)
+  const prueba6 = { etiqueta: 'el grosor del guante en mm', min: 0, max: 3, paso: 0.1, valor: 1, tg: 1,
+    muestra: (tg) => { const C = cDedo(D, tg * 1e-3); return `guante de ${f1(tg)} mm → C = ${f2(C * 1e12)} pF: ${C >= UMBRAL ? 'se detecta el toque' : 'NO se detecta (menos de 1 pF)'}`; },
+    cambia: (tg) => { prueba6.tg = tg; } };
+  pasos[5].prueba = prueba6;
+
+  function dibuja(g, { paso, t, reloj, w, h, c, quieto }) {
+    const v = Dibujo.vista(g, w, h, c);
+    const { X, Y, rotulo, punto, flecha, signo } = v, foto = window.FenomenoFoto;
+    g.fillStyle = c.fondo; g.fillRect(0, 0, w, h);
+    // ---- ayudantes ----
+    const lin = (pts, color, ancho = 0.07, a = 1, discont = false) => {
+      g.strokeStyle = color; g.globalAlpha = a; g.lineWidth = Math.max(1.5, ancho * v.K); g.lineJoin = 'round'; g.lineCap = 'round'; g.setLineDash(discont ? [6, 5] : []);
+      g.beginPath(); pts.forEach((p, k) => (k ? g.lineTo(X(p[0]), Y(p[1])) : g.moveTo(X(p[0]), Y(p[1])))); g.stroke(); g.setLineDash([]); g.globalAlpha = 1;
+    };
+    const rect = (x, y, ancho, alto, color, a = 1, r = 0) => { g.globalAlpha = a; g.fillStyle = color; g.beginPath(); g.roundRect(X(x), Y(y), ancho * v.K, alto * v.K, r * v.K); g.fill(); g.globalAlpha = 1; };
+    // vista lateral de cristal + electrodo + controlador; devuelve la cara superior del cristal
+    function lateral(grosor, y0) {
+      const yv = y0, ye = y0 + grosor;
+      rect(2.2, yv, 11.6, grosor, c.cristal, 0.85);
+      lin([[2.2, yv], [13.8, yv]], c.rotulo, 0.025, 0.7);
+      rect(6.0, ye, 4.0, 0.3, c.electrodo, 1);                       // electrodo (ITO)
+      rect(2.2, ye, 3.5, 0.3, c.electrodo, 0.35); rect(10.3, ye, 3.5, 0.3, c.electrodo, 0.35);
+      lin([[8, ye + 0.3], [8, ye + 1.5], [11.6, ye + 1.5]], c.rotulo, 0.035, 0.9);
+      rect(11.6, ye + 1.05, 2.6, 0.9, c.panel, 1, 0.12); lin([[11.6, ye + 1.05], [14.2, ye + 1.05], [14.2, ye + 1.95], [11.6, ye + 1.95], [11.6, ye + 1.05]], c.rotulo, 0.025, 0.8);
+      rotulo('controlador', 12.9, ye + 1.5, { al: 'center', tam: 12, fondo: false });
+      return yv;
+    }
+    // dedo apoyado con la yema en la cara y (si hay guante, encima); a = opacidad, tg = grosor dibujado del guante
+    function dedo(y, a = 1, tg = 0) {
+      if (tg > 0.01) { rect(6.0, y - tg, 4.0, tg, c.guante, 0.9 * a, 0.12); }
+      rect(6.1, y - tg - 4.6, 3.8, 4.6, c.dedo, a, 1.3); rect(6.1, y - tg - 4.6, 3.8, 3.0, c.dedo, a, 0.2);
+      g.globalAlpha = a; lin([[8, y - tg - 4.6], [8, y - tg - 5.1], [11.7, y - tg - 5.1]], c.rotulo, 0.035, 0.9); g.globalAlpha = 1;
+      // tierra
+      lin([[11.7, y - tg - 5.1], [11.7, y - tg - 4.5]], c.rotulo, 0.035, 0.9 * a);
+      [0.45, 0.3, 0.15].forEach((m, k) => lin([[11.7 - m, y - tg - 4.5 + k * 0.17], [11.7 + m, y - tg - 4.5 + k * 0.17]], c.rotulo, 0.035, 0.9 * a));
+    }
+
+    // paso 1: la rejilla vista desde arriba
+    function rejilla() {
+      const FX = [3.7, 5.5, 7.3, 9.1, 10.9, 12.7], FY = [2.2, 3.7, 5.2, 6.7], on = suave(tramo(t, 0.02, 0.35));
+      rect(2.6, 0.9, 11.2, 7.2, c.cristal, 0.5 * on, 0.3); lin([[2.6, 0.9], [13.8, 0.9], [13.8, 8.1], [2.6, 8.1], [2.6, 0.9]], c.rotulo, 0.03, 0.7 * on);
+      const fila = Math.floor(reloj * 1.5) % 4, quedan = quieto ? -1 : fila;
+      FY.forEach((y, k) => { rect(2.9, y - 0.17, 10.6, 0.34, c.fila, (k === quedan ? 1 : 0.75) * suave(tramo(t, 0.1 + k * 0.05, 0.4 + k * 0.05))); });
+      FX.forEach((x, k) => { rect(x - 0.17, 1.15, 0.34, 6.7, c.columna, 0.85 * suave(tramo(t, 0.25 + k * 0.04, 0.5 + k * 0.04))); });
+      const n = suave(tramo(t, 0.5, 0.7));
+      FY.forEach((y) => FX.forEach((x) => punto(x, y, 0.11, c.panel, n)));
+      // pulso que recorre la fila activa
+      if (n > 0 && quedan >= 0) { const px = 2.9 + ((reloj * 1.5) % 1) * 10.6; punto(px, FY[quedan], 0.14, c.resalta, 0.9); }
+      // un cruce ampliado
+      const cx = FX[3], cy = FY[1];
+      const q = suave(tramo(t, 0.7, 1));
+      rotulo('filas: envían un pulso', 2.6, 0.5, { tam: 12.5, peso: 700, color: c.fila, fondo: false, escribe: tramo(t, 0.15, 0.4) });
+      rotulo('columnas: miden lo que llega', 13.8, 0.5, { al: 'right', tam: 12.5, peso: 700, color: c.columna, fondo: false, escribe: tramo(t, 0.3, 0.55) });
+      rotulo('cada cruce es un condensador', cx + 0.5, cy - 0.65, { tam: 12.5, peso: 700, escribe: tramo(t, 0.7, 0.9) });
+      if (q > 0) { punto(cx, cy, 0.3, c.resalta, 0.3 * q); lin([[cx - 0.3, cy], [cx + 0.3, cy]], c.resalta, 0.03, q); }
+      rotulo('vista desde arriba, bajo el cristal', 8.2, 8.55, { al: 'center', tam: 11.5, fondo: false, escribe: tramo(t, 0.8, 1) });
+    }
+    // paso 2: el dedo se acerca al cristal
+    function elDedo() {
+      const yv = lateral(0.6, 5.7), yd = yv - (1 - suave(tramo(t, 0.1, 0.55))) * 1.6;
+      dedo(yd);
+      rotulo('dedo (conductor)', 3.6, yd - 2.3, { al: 'center', tam: 13, peso: 700, color: c.dedo2, fondo: false, escribe: tramo(t, 0.4, 0.6) });
+      rotulo('cristal (aislante)', 4.3, yv + 0.3, { al: 'center', tam: 12.5, peso: 600, fondo: false, escribe: tramo(t, 0.5, 0.7) });
+      rotulo('electrodo', 4.0, yv + 1.2, { al: 'center', tam: 12.5, peso: 600, color: c.electrodo2, fondo: false, escribe: tramo(t, 0.55, 0.75) });
+      rotulo('tierra', 12.7, yd - 4.1, { tam: 12, fondo: false, escribe: tramo(t, 0.6, 0.8) });
+      const q = suave(tramo(t, 0.75, 1));
+      if (q > 0) rotulo('conductor – aislante – conductor = condensador', 8, 8.6, { al: 'center', tam: 13.5, peso: 700, color: c.resalta, escribe: tramo(t, 0.75, 1) });
+    }
+    // paso 3: el condensador yema – electrodo
+    function condensador() {
+      const dm = prueba3.d, gro = 0.35 + dm * 0.55, yv = lateral(gro, 6.0 - Math.max(0, gro - 0.6)), ye = yv + gro;
+      dedo(yv);
+      const f = suave(tramo(t, 0.1, 0.5));
+      // líneas de campo entre el dedo (−) y el electrodo (+)
+      for (let k = 0; k < 6; k++) { const x = 6.5 + k * 0.6; flecha(x, ye - 0.04, x, yv + 0.04, c.resalta, 0.85 * f, 0.03); }
+      for (let k = 0; k < 6; k++) { signo(6.5 + k * 0.6, ye + 0.15, 1, c.positivo, f); signo(6.5 + k * 0.6, yv - 0.2, -1, c.negativo, f); }
+      rotulo('E', 10.6, (yv + ye) / 2, { tam: 14, peso: 700, color: c.resalta, fondo: false, escribe: tramo(t, 0.4, 0.55) });
+      lin([[5.3, yv], [5.3, ye]], c.rotulo, 0.025, f); lin([[5.15, yv], [5.45, yv]], c.rotulo, 0.025, f); lin([[5.15, ye], [5.45, ye]], c.rotulo, 0.025, f);
+      rotulo(`d = ${f1(dm)} mm`, 5.0, (yv + ye) / 2, { al: 'right', tam: 12.5, peso: 600, escribe: tramo(t, 0.4, 0.6) });
+      rotulo('S = 5 × 5 mm', 8, ye + 0.8, { al: 'center', tam: 12.5, peso: 600, fondo: false, escribe: tramo(t, 0.5, 0.65) });
+      rotulo(`εr = ${ER}`, 11.5, yv + gro / 2 + 0.05, { tam: 12.5, peso: 600, fondo: false, escribe: tramo(t, 0.5, 0.65) });
+      if (foto) return;
+      v.panel(0.5, 0.6, 4.9, 2.2);
+      rotulo('C = ε₀ εr S / d', 0.8, 1.15, { tam: 15, peso: 700, fondo: false, escribe: tramo(t, 0.55, 0.7) });
+      rotulo(`C = ${f2(cDedo(dm * 1e-3) * 1e12)} pF`, 0.8, 1.95, { tam: 16, peso: 700, color: c.resalta, fondo: false, escribe: tramo(t, 0.7, 0.9) });
+    }
+    // paso 4: la carga que cabe, sin y con dedo
+    function senal() {
+      const x0 = 3.0, y0 = 7.4, Y1 = 1.6, esc = (q) => y0 - (q / 45e-12) * (y0 - Y1), a = suave(tramo(t, 0.05, 0.5)), b = suave(tramo(t, 0.45, 0.85));
+      v.panel(1.0, 0.7, 14.0, 7.9);
+      lin([[x0 - 0.5, y0], [14.6, y0]], c.rotulo, 0.03, 0.8);
+      const bar = (xi, Q, color, f) => { const top = y0 - (y0 - esc(Q)) * f; rect(xi, top, 2.4, y0 - top, color, 0.9, 0.08); };
+      bar(x0 + 0.6, datos.Q0, c.electrodo, a); bar(x0 + 4.0, datos.Q1, c.resalta, b);
+      const um = (CS0 + UMBRAL) * V;
+      lin([[x0 + 0.1, esc(um)], [14.4, esc(um)]], c.alerta, 0.03, 0.9, true);
+      rotulo(`umbral: ${pC(um)}`, 14.4, esc(um) - 0.4, { al: 'right', tam: 12, peso: 600, color: c.alerta, fondo: false, escribe: tramo(t, 0.6, 0.8) });
+      rotulo('sin dedo', x0 + 1.8, y0 + 0.5, { al: 'center', tam: 13, peso: 600, fondo: false });
+      rotulo('con dedo', x0 + 5.2, y0 + 0.5, { al: 'center', tam: 13, peso: 600, fondo: false });
+      rotulo(`${pF(CS0)}  →  ${pC(datos.Q0)}`, x0 + 1.8, esc(datos.Q0) - 0.45, { al: 'center', tam: 13, peso: 700, escribe: tramo(t, 0.2, 0.45) });
+      rotulo(`${pF(CS0 + datos.Cd)}  →  ${pC(datos.Q1)}`, x0 + 5.2, esc(datos.Q1) - 0.45, { al: 'center', tam: 13, peso: 700, color: c.resalta, escribe: tramo(t, 0.65, 0.9) });
+      rotulo('Q = C V', 12.2, 3.0, { al: 'center', tam: 18, peso: 700, fondo: false, escribe: tramo(t, 0.7, 0.85) });
+      rotulo(`con V = ${f1(V)} V`, 12.2, 3.8, { al: 'center', tam: 13, fondo: false, escribe: tramo(t, 0.8, 0.95) });
+      rotulo('¡toque detectado!', 12.2, 5.2, { al: 'center', tam: 15, peso: 700, color: c.resalta, escribe: tramo(t, 0.88, 1) });
+    }
+    // paso 5: electrodos cada 5 mm y centro de gravedad
+    function lugar() {
+      const mm = (x) => 2.4 + x * 0.57, base = 7.0, alto = 3.6, x = prueba5.x, s = senales(x), cd = cDedo(), a = suave(tramo(t, 0.05, 0.4)), b = suave(tramo(t, 0.35, 0.7));
+      v.panel(1.0, 0.6, 14.0, 8.1);
+      for (let k = 0; k < 5; k++) { rect(mm(k * PASO) - 0.45, base + 0.2, 0.9, 0.4, c.electrodo, 0.95 * a); rotulo(`${k * PASO}`, mm(k * PASO), base + 1.0, { al: 'center', tam: 11.5, fondo: false }); }
+      rotulo('mm', 14.5, base + 1.0, { tam: 11.5, fondo: false });
+      // barras de señal
+      s.forEach((q, k) => { const hh = (q / cd) * alto * b; if (hh > 0.02) rect(mm(k * PASO) - 0.35, base - hh, 0.7, hh, c.resalta, 0.75); if (q > 0 && b > 0.5) rotulo(f2(q * 1e12), mm(k * PASO), base - hh - 0.3, { al: 'center', tam: 11, fondo: false }); });
+      // dedo y posición calculada
+      const xp = posicion(x);
+      if (b > 0) { punto(mm(x), 1.9, 0.5, c.dedo, b); lin([[mm(x), 2.4], [mm(x), base]], c.dedo2, 0.03, 0.8 * b, true); }
+      const q = suave(tramo(t, 0.7, 0.95));
+      lin([[mm(xp), 2.5], [mm(xp), base + 0.65]], c.alerta, 0.05, q);
+      rotulo(`dedo: ${f1(x)} mm`, mm(x) - 0.45, 1.9, { al: 'right', tam: 12.5, peso: 700, color: c.dedo2, fondo: false, escribe: tramo(t, 0.55, 0.75) });
+      rotulo(`calculada: ${f1(xp)} mm`, mm(xp) + 0.2, 2.9, { tam: 12.5, peso: 700, color: c.alerta, escribe: tramo(t, 0.8, 1) });
+      rotulo('señal de cada electrodo (pF)', 1.3, 1.2, { tam: 12, peso: 600, fondo: false });
+    }
+    // paso 6: el guante en serie
+    function guantes() {
+      const tg = prueba6.tg, gd = tg * 0.32, yv = lateral(0.6, 6.4), C = cDedo(D, tg * 1e-3), a = suave(tramo(t, 0.05, 0.45));
+      dedo(yv, 1, gd * a);
+      // barra de capacidad frente al umbral
+      const bx = 1.2, by = 5.6, bh = 3.6;
+      rect(bx, by - bh, 0.9, bh, c.panel, 0.9, 0.05);
+      const hC = Math.min(1, C / (2.5e-12)) * bh * suave(tramo(t, 0.2, 0.7));
+      rect(bx, by - hC, 0.9, hC, C >= UMBRAL ? c.resalta : c.alerta, 0.9, 0.05);
+      lin([[bx - 0.2, by - (UMBRAL / 2.5e-12) * bh], [bx + 1.1, by - (UMBRAL / 2.5e-12) * bh]], c.alerta, 0.04, 1, true);
+      rotulo('1 pF', bx + 1.2, by - (UMBRAL / 2.5e-12) * bh, { tam: 11.5, color: c.alerta, fondo: false });
+      rotulo(`${f2(C * 1e12)} pF`, bx + 0.45, by + 0.4, { al: 'center', tam: 13, peso: 700, color: C >= UMBRAL ? c.resalta : c.alerta, fondo: false });
+      rotulo(C >= UMBRAL ? 'se detecta' : 'NO se detecta', 4.2, 8.5, { al: 'center', tam: 15, peso: 700, color: C >= UMBRAL ? c.resalta : c.alerta, escribe: tramo(t, 0.6, 0.85) });
+      rotulo(tg > 0 ? `guante de ${f1(tg)} mm` : 'dedo desnudo', 5.0, yv - gd * a - 0.3, { al: 'right', tam: 12.5, peso: 600, fondo: false, escribe: tramo(t, 0.4, 0.6) });
+      rotulo('d_eficaz = d₁/εr₁ + d₂/εr₂', 15.2, 3.4, { al: 'right', tam: 13, peso: 600, fondo: false, escribe: tramo(t, 0.55, 0.8) });
+    }
+
+    if (paso === 0) rejilla();
+    if (paso === 1) elDedo();
+    if (paso === 2) condensador();
+    if (paso === 3) senal();
+    if (paso === 4) lugar();
+    if (paso === 5) guantes();
+  }
+
+  const COLORES = ['fondo', 'cristal', 'fila', 'columna', 'electrodo', 'electrodo2', 'dedo', 'dedo2', 'guante', 'positivo', 'negativo', 'resalta', 'alerta', 'rotulo', 'panel'];
+  return { datos, pasos, dibuja, COLORES, ejercicio, abrirEnCondensadores, cDedo, senales, posicion };
+})();
+
+if (typeof document !== 'undefined') {
+  Animacion.monta({ lienzo: '#escena', pasos: PantallaTactil.pasos, dibuja: PantallaTactil.dibuja, colores: PantallaTactil.COLORES });
+  document.querySelector('#abrir').addEventListener('click', (e) => { e.preventDefault(); PantallaTactil.abrirEnCondensadores(e.currentTarget.getAttribute('href')); });
+}
+
+/* =====================================================================
+   Portada personal: lo que Ciencify recuerda de ti, solo en este navegador (localStorage, sin
+   cuentas ni envíos). herramientas.js lo pone en cada herramienta y fenómeno tras biblioteca.js; la
+   portada (portal.js) lo usa para pintar «Tu espacio». Claves:
+     simu-recientes   [{ r: 'asignatura/herramienta', t: ms }]   las últimas 8, la más nueva primero
+     simu-favoritos   ['asignatura/herramienta', …]
+   En cada herramienta apunta la visita y añade el botón ☆ «Favorita» junto a Mis ejercicios.
+   Personal.espacio(sitio) devuelve { continuar, favoritas, recientes } con rutas (portal.js las
+   convierte en tarjetas); Personal.borra() olvida todo.
+   ===================================================================== */
+const Personal = (() => {
+  const K_REC = 'simu-recientes', K_FAV = 'simu-favoritos', MAX = 8;
+  const lee = (k) => { try { const v = JSON.parse(localStorage.getItem(k)); return Array.isArray(v) ? v : []; } catch (e) { return []; } };
+  const escribe = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } };
+  // «/fisica/gases/» → 'fisica/gases' (las dos últimas partes: también vale desde un archivo local)
+  const rutaDe = (p) => { const q = String(p).split('/').filter((s) => s && !/\.html?$/.test(s)); return q.length >= 2 ? q.slice(-2).join('/') : null; };
+  const recientes = () => lee(K_REC).filter((x) => x && typeof x.r === 'string');
+  const favoritos = () => lee(K_FAV).filter((x) => typeof x === 'string');
+  function visita(ruta, ahora = Date.now()) { escribe(K_REC, [{ r: ruta, t: ahora }, ...recientes().filter((x) => x.r !== ruta)].slice(0, MAX)); }
+  const esFavorita = (ruta) => favoritos().includes(ruta);
+  function alterna(ruta) { const f = favoritos(), i = f.indexOf(ruta); if (i >= 0) f.splice(i, 1); else f.push(ruta); escribe(K_FAV, f); return i < 0; }
+  // continuar = la última visitada; recientes = las demás
+  function espacio() {
+    const r = recientes();
+    return { continuar: r[0] || null, favoritas: favoritos(), recientes: r.slice(1, 6) };
+  }
+  function borra() { try { localStorage.removeItem(K_REC); localStorage.removeItem(K_FAV); } catch (e) { /* sin almacenamiento */ } }
+  // «hace 5 min», «hace 3 h», «ayer», «hace 4 días»
+  function hace(t, ahora = Date.now()) {
+    const m = Math.max(0, Math.round((ahora - t) / 60000));
+    if (m < 2) return 'justo ahora';
+    if (m < 60) return `hace ${m} min`;
+    if (m < 60 * 24) return `hace ${Math.round(m / 60)} h`;
+    const d = Math.round(m / 1440);
+    return d === 1 ? 'ayer' : `hace ${d} días`;
+  }
+
+  const CSS = '.fav-btn { display: inline-flex; align-items: center; gap: 6px; font: 600 13.5px var(--f-ui, system-ui); color: var(--ink); background: var(--vidrio, var(--panel)); -webkit-backdrop-filter: var(--blur, none); backdrop-filter: var(--blur, none); border: 1px solid var(--vidrio-borde, var(--line)); border-radius: 999px; padding: 5px 12px; cursor: pointer; white-space: nowrap } .fav-btn:hover, .fav-btn[aria-pressed=true] { border-color: var(--accent); color: var(--accent) } @media print { .fav-btn { display: none !important } }';
+  function monta() {
+    if (typeof document === 'undefined') return;
+    const ruta = rutaDe(location.pathname); if (!ruta) return;
+    visita(ruta);
+    const sitio = document.querySelector('.miga-der'); if (!sitio || sitio.querySelector('.fav-btn')) return;
+    const st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'fav-btn';
+    const pinta = () => { const on = esFavorita(ruta); b.setAttribute('aria-pressed', String(on)); b.title = on ? 'Quitar de tus favoritas (portada)' : 'Añadir a tus favoritas (portada)'; b.innerHTML = `<span aria-hidden="true">${on ? '★' : '☆'}</span> Favorita`; };
+    b.addEventListener('click', () => { alterna(ruta); pinta(); });
+    pinta(); sitio.append(b);
+  }
+  monta();
+  return { rutaDe, visita, esFavorita, alterna, espacio, borra, hace, recientes, favoritos, K_REC, K_FAV };
+})();
+
+</script>
+</html>

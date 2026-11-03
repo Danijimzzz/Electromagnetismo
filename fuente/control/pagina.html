@@ -1,0 +1,55 @@
+<title>Calculadora de Routh, lugar de las raíces y Nyquist · Ciencify</title>
+<meta name="description" content="Estabilidad de un sistema realimentado: tabla de Routh con el rango de K, lugar de las raíces con asíntotas, puntos de ruptura y cruces, y diagrama de Nyquist con los márgenes de ganancia y de fase.">
+<style>
+/* Solo lo propio de esta herramienta. Las medidas comunes se ajustan con sus variables
+   y los colores propios (los de las gráficas) van aquí, con su valor en modo oscuro. */
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a; --serie-3: #2f8a4a; --zona: rgba(194, 65, 42, .10) }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #62c486; --zona: rgba(239, 122, 98, .14) } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #62c486; --zona: rgba(239, 122, 98, .14) }
+#grafica { height: clamp(300px, 46vw, 460px) }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Cienci<i>fy</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Circuitos</a> / Control</span></header>
+<div class="wrap">
+<h1>Control: Routh, raíces y Nyquist</h1>
+<p class="lead">Escribe la ganancia de lazo K·N(s)/D(s) de un sistema realimentado y estudia su estabilidad de tres maneras: la tabla de Routh, el lugar de las raíces y el diagrama de Nyquist, con el desarrollo paso a paso.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="modos" role="tablist" aria-label="Método"><button type="button" role="tab" data-modo="routh" aria-selected="true">Routh</button><button type="button" role="tab" data-modo="raices" aria-selected="false">Raíces</button><button type="button" role="tab" data-modo="nyquist" aria-selected="false">Nyquist</button></div>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2 id="titulo-grafica">Gráfica</h2>
+      <canvas id="grafica" aria-label="Gráfica del método elegido"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>El sistema realimentado</h2>
+  <p class="m">Con realimentación unitaria negativa y una ganancia de lazo $L(s) = K N(s)/D(s)$, los polos de lazo cerrado son las raíces de la ecuación característica:</p>
+  <p class="f m">$1 + L(s) = 0 ⇒ D(s) + K N(s) = 0$</p>
+  <p class="m">El sistema es estable si todas esas raíces están en el semiplano izquierdo ($"Re"(s) < 0$). Las tres herramientas responden a la misma pregunta: ¿para qué valores de K lo es?</p>
+  <h2>Criterio de Routh-Hurwitz</h2>
+  <p class="m">Dice cuántas raíces de un polinomio están en el semiplano derecho sin calcularlas. Se forma una tabla con los coeficientes y el número de cambios de signo de su primera columna es el número de raíces con parte real positiva. Dos casos especiales: un cero en la primera columna (se sustituye por un $ε$ pequeño) y una fila entera de ceros (hay raíces simétricas respecto al origen; se resuelve con el polinomio auxiliar $A(s)$ y se sigue con su derivada).</p>
+  <h2>Lugar de las raíces</h2>
+  <p class="m">Es el recorrido de los polos de lazo cerrado cuando K pasa de 0 a ∞. Sus reglas: nace en los polos y muere en los ceros (o en el infinito), el eje real pertenece al lugar donde deja a su derecha un número impar de polos y ceros, las ramas que se van al infinito siguen asíntotas de ángulos $(2k + 1)·180°/(n − m)$ desde el centroide:</p>
+  <p class="f m">$σ = (Σ "polos" − Σ "ceros")/(n − m)$</p>
+  <p class="m">Los puntos de ruptura son las raíces de $dK/ds = 0$, y el ángulo de salida de un polo complejo $p$ es $180° + Σ ∠(p − z) − Σ ∠(p − p_i)$ (con $p_i ≠ p$).</p>
+  <h2>Criterio de Nyquist</h2>
+  <p class="m">Se dibuja $L(jω)$ para todas las frecuencias. Si da $N$ vueltas horarias alrededor de −1 y $L(s)$ tiene $P$ polos en el semiplano derecho, el sistema en lazo cerrado tiene</p>
+  <p class="f m">$Z = N + P$</p>
+  <p class="m">polos en el semiplano derecho: es estable si $Z = 0$. El margen de ganancia es cuánto puede crecer K antes de que la curva toque −1 ($M_G = 1/|L(jω_{180})|$) y el margen de fase es lo que falta de fase para −180° en la frecuencia donde $|L| = 1$ ($M_F = 180° + ∠L(jω_c)$). Los diagramas de magnitud y fase de esos márgenes están en <a href="../bode/">Diagramas de Bode y filtros</a>, y el circuito real se puede montar en el <a href="../simulador/">Simulador de circuitos</a>.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Control: Routh, raíces y Nyquist <span id="ver"></span> (beta)</footer>
+</body>

@@ -1,0 +1,49 @@
+<title>Termodinámica estadística: Boltzmann y entropía · Ciencify</title>
+<meta name="description" content="Calculadora de termodinámica estadística en español: función de partición, poblaciones de Boltzmann, energía, entropía y capacidad calorífica de dos niveles, osciladores de Einstein y niveles propios, y entropía S = k ln Ω de sólidos de Einstein, paso a paso.">
+<style>
+/* Solo lo propio de esta herramienta. Las medidas comunes se ajustan con sus variables
+   y los colores propios (los de las gráficas) van aquí, con su valor en modo oscuro. */
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62 }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física general</a> / Termodinámica estadística</span></header>
+<div class="wrap">
+<h1>Termodinámica estadística</h1>
+<p class="lead">De los niveles de energía de un sistema a su función de partición, sus poblaciones de Boltzmann, su energía, su entropía y su calor específico, y la entropía S = k·ln Ω contando microestados.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Gráfica</h2>
+      <canvas id="grafica" aria-label="Gráfica del modo elegido: capacidad calorífica, probabilidades, ln Ω o reparto de energía entre dos sólidos"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+<h2>El factor de Boltzmann y la función de partición</h2>
+<p class="m">Un sistema en equilibrio con un baño a temperatura $T$ ocupa un estado de energía $ε_i$ con probabilidad proporcional a $e^{−ε_i/k_B T}$. Si el nivel tiene $g_i$ estados, su peso se multiplica por $g_i$. Todo sale de la <b>función de partición</b>:</p>
+<p class="f m">$Z = Σ g_i·e^{−ε_i/k_B T}$,   $p_i = {g_i·e^{−ε_i/k_B T}}/Z$</p>
+<p class="f m">$U = k_B T^2 {d ln Z}/{dT}$,   $F = −k_B T ln Z$,   $S = k_B (ln Z + U/{k_B T})$</p>
+<p class="m">La capacidad calorífica $C_V = dU/dT$ es la varianza de la energía dividida por $k_B T^2$. La energía se mide desde el nivel fundamental; cambiar el origen no cambia las poblaciones.</p>
+<h2>Dos niveles y osciladores</h2>
+<p class="m">Con dos niveles separados $ΔE$, la capacidad calorífica tiene un máximo (la <b>anomalía de Schottky</b>) cuando $k_B T$ ronda $ΔE$. El oscilador armónico cuántico tiene niveles $E_n = (n + 1/2)hν$ y $Z = 1/{1 − e^{−hν/k_B T}}$. Einstein lo usó para un sólido: a temperatura alta $C_V → 3R$ (Dulong-Petit) y a baja los modos se «congelan» y $C_V → 0$. Para un rotor rígido $E_J = B J(J+1)$ con $g = 2J+1$ y, a temperatura alta, $Z ≈ k_B T/B$.</p>
+<h2>Entropía y microestados</h2>
+<p class="f m">$S = k_B ln Ω$</p>
+<p class="m">Un <b>sólido de Einstein</b> con $N$ osciladores y $q$ cuantos tiene $Ω = binom(q + N − 1, q)$ microestados. La temperatura sale de $1/T = ∂S/∂U$. Si dos sólidos comparten cuantos, el reparto con más microestados domina de forma abrumadora y ahí es donde se igualan las temperaturas: es el segundo principio visto como pura cuenta. La distribución de Maxwell de las velocidades de un gas está en <a href="../gases/">Gases ideales</a> y los ciclos con entropía en <a href="../ciclos/">Ciclos termodinámicos</a>.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Termodinámica estadística <span id="ver"></span> (beta)</footer>
+</body>

@@ -57,4 +57,8 @@ module.exports = {
     ['¿Qué resistencia de radiación y directividad tiene un dipolo de media onda?', 'Su resistencia de radiación es de unos 73 Ω y su directividad 1,64 (2,15 dBi). El diagrama de radiación es proporcional a [cos(π/2·cos θ)/sen θ]², con máximo perpendicular al hilo y nulo en su eje.'],
     ['¿Cómo se calcula la potencia radiada?', 'P_rad = ½·I₀²·R_rad. Un dipolo de media onda con I₀ = 1 A radia ½ · 1² · 73 ≈ 36,5 W. Para un dipolo corto (de Hertz), R_rad = 80π²(l/λ)².'],
   ],
+  cavidades: [
+    ['¿Cómo se calcula la frecuencia de resonancia de una cavidad rectangular?', 'f₀ = (v/2)·√((m/a)² + (n/b)² + (p/d)²), con v = c/√εr. Por ejemplo, un cubo de aire de 40 mm de lado en el modo TE101 resuena a (c/2·0,04)·√2 = 5,300 GHz; ese mismo valor lo tienen el TE011 y el TM110 (modos degenerados).'],
+    ['¿Qué es el factor de calidad Q de una cavidad y cómo se calcula?', 'Q = ω₀·(energía almacenada)/(potencia perdida) y mide lo estrecha que es la resonancia: Δf = f₀/Q. Las paredes dan Q_c = 2Γ/δ, con δ = 1/√(π f₀ μ₀ σ) y Γ = ∫|H|²dV / ∮|H_t|²dS; el dieléctrico da Q_d = 1/tg δ y se combinan con 1/Q = 1/Q_c + 1/Q_d. Una cavidad cilíndrica de cobre de R = 25 mm y L = 40 mm en el modo TM010 resuena a 4,590 GHz con Q_c ≈ 15 800.'],
+  ],
 };

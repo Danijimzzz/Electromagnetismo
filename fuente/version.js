@@ -12,6 +12,48 @@
 const Version = (() => {
   const registros = {
     web: [
+      { v: '1.12', fecha: '2026-11-03', titulo: 'Fase 9: siete herramientas y siete fenómenos nuevos', subtitulo: 'Control, transformada z, semiconductores, orgánica en 3D, cavidades resonantes, termodinámica estadística, la cartera de Markowitz y siete fenómenos de la vida real.', secciones: [
+        { icono: '⚡', titulo: 'Circuitos', puntos: [
+          '#circuitos/transformada-z',
+          '**Transformada z y FFT:** polos, ceros, estabilidad, respuesta al impulso y respuesta en frecuencia de un sistema, y la FFT de una señal con ventanas, picos, resolución y aliasing.',
+          '#circuitos/control',
+          '**Routh, lugar de las raíces y Nyquist:** estabilidad de un sistema realimentado con el rango de K, las ramas con sus asíntotas y puntos de ruptura, y los márgenes de ganancia y de fase.',
+          '#circuitos/semiconductores',
+          '**Diodo, BJT y MOSFET:** recta de carga y punto de trabajo Q sobre las curvas del dispositivo, con la región en que trabaja y el desarrollo paso a paso.',
+        ] },
+        { icono: '🧲', titulo: 'Electromagnetismo', puntos: [
+          '#electromagnetismo/cavidades',
+          '**Cavidades rectangulares, cilíndricas y esféricas:** frecuencia de cada modo TE y TM, factor de calidad Q, ancho de banda y mapa del campo en el plano de corte.',
+        ] },
+        { icono: '🔭', titulo: 'Física general', puntos: [
+          '#fisica/termo-estadistica',
+          '**Función de partición y entropía:** poblaciones de Boltzmann, energía, entropía y calor específico de dos niveles y osciladores de Einstein, y S = k·ln Ω de sólidos en contacto.',
+        ] },
+        { icono: '⚗️', titulo: 'Química', puntos: [
+          '#quimica/organica',
+          '**Nombre IUPAC e isomería en 3D:** escribe una molécula y obtén su nombre, sus centros R/S, los dobles enlaces E/Z y todos sus estereoisómeros, con la molécula en 3D que se gira con el ratón.',
+        ] },
+        { icono: '💶', titulo: 'Economía', puntos: [
+          '#economia/markowitz',
+          '**Frontera eficiente y CAPM:** cartera de mínima varianza y tangente, ratio de Sharpe, beta, alfa y línea del mercado de valores.',
+        ] },
+        { icono: '🌍', titulo: 'Nuevos fenómenos en Física en la vida real', puntos: [
+          '#fenomenos/radio-am-fm',
+          '**La radio AM y FM:** la portadora, la modulación y el circuito resonante que sintoniza una emisora. Se abre en Diagramas de Bode.',
+          '#fenomenos/fibra-optica',
+          '**La fibra óptica:** por qué la luz no se sale de un hilo de vidrio (reflexión total). Se abre en Reflexión y transmisión.',
+          '#fenomenos/pantalla-tactil',
+          '**La pantalla táctil:** el dedo y un electrodo forman un condensador de unos pocos pF. Se abre en Dieléctricos y condensadores.',
+          '#fenomenos/frenado-magnetico',
+          '**El freno magnético y el tren de levitación:** corrientes de Foucault y ley de Lenz. Se abre en Inducción: Faraday y Lenz.',
+          '#fenomenos/transformador-poste',
+          '**El transformador del poste:** de 20 000 V a 400 V y por qué zumba a 100 Hz. Se abre en Autoinducción e inducción mutua.',
+          '#fenomenos/detector-metales',
+          '**El detector de metales:** una bobina, corrientes de Foucault y un eco. Se abre en Autoinducción e inducción mutua.',
+          '#fenomenos/resonancia-magnetica',
+          '**La resonancia magnética:** protones en un imán de 1,5 T y ondas de radio de 63,9 MHz. Se abre en Magnetostática.',
+        ] },
+      ] },
       { v: '1.11', fecha: '2026-11-02', titulo: 'Fase 8: más profundidad en cada asignatura', subtitulo: 'Once herramientas nuevas y mejoras en el Simulador de circuitos, las ondas, los gases, el pH y las integrales.', secciones: [
         { icono: '⚡', titulo: 'Simulador de circuitos', puntos: [
           '**Importar y exportar SPICE:** pega una red escrita en SPICE (R, C, L, fuentes, diodos, transistores…) y se dibuja como esquema, o saca la tuya como texto. Avisa de lo que no puede traducir (interruptores, transformadores y subcircuitos).',
@@ -393,6 +435,27 @@ const Version = (() => {
           '**Diseño pensado también para el móvil.**',
         ] },
       ] },
+    ],
+    control: [
+      { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: escribe la ganancia de lazo K·N(s)/D(s) (como expresión, s^2+3s+2, o con los coeficientes) y estudia la estabilidad de tres maneras: la tabla de Routh con el rango de K estable (con el cero en la primera columna y la fila de ceros), el lugar de las raíces con asíntotas, puntos de ruptura, ángulos de salida y cruces con el eje imaginario, y el diagrama de Nyquist con los márgenes de ganancia y de fase y el recuento de vueltas alrededor de −1. Con nueve ejemplos, desarrollo paso a paso y modo práctica.'] },
+    ],
+    'termo-estadistica': [
+      { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: cinco modos. Dos niveles (con degeneraciones), oscilador de Einstein, niveles propios (un rotor, un átomo…) con su función de partición, poblaciones de Boltzmann, energía, entropía, energía libre y capacidad calorífica, y la entropía S = k ln Ω de un sólido de Einstein y de dos sólidos que se reparten la energía, con su desarrollo paso a paso.'] },
+    ],
+    markowitz: [
+      { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: frontera eficiente de Markowitz con de 2 a 6 activos y su matriz de correlaciones (con o sin ventas en corto), cartera de mínima varianza, cartera tangente con ratio de Sharpe y línea del mercado de capitales, cartera para una rentabilidad objetivo, y CAPM con beta, rentabilidad exigida, alfa y línea del mercado de valores. Con tabla de pesos y desarrollo paso a paso.'] },
+    ],
+    cavidades: [
+      { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: cavidades rectangulares, cilíndricas y esféricas de paredes conductoras. Frecuencia de resonancia de cualquier modo TE o TM, factor de calidad de las paredes y del dieléctrico, ancho de banda, tabla de los modos más bajos y mapa del campo eléctrico o magnético en el plano de corte que elijas. Con desarrollo paso a paso.'] },
+    ],
+    organica: [
+      { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: escribe una molécula (cadenas con ramas, dobles y triples enlaces, alcoholes, aldehídos, cetonas, ácidos, ésteres, amidas, nitrilos, aminas, éteres y halógenos) y obtén su nombre IUPAC, los grupos funcionales, la fórmula y la masa molar. Marca los centros quirales (R/S) y los dobles enlaces E/Z con las reglas de Cahn-Ingold-Prelog, lista todos los estereoisómeros (enantiómeros, diastereoisómeros y formas meso) y las isomerías de cadena, posición y función. La molécula se ve en 3D con los hidrógenos y se gira con el ratón o el dedo. Con desarrollo paso a paso.'] },
+    ],
+    'transformada-z': [
+      { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: transformada z de una señal o de un sistema (polos, ceros, estabilidad, respuesta al impulso y respuesta en frecuencia) y FFT con ventanas, picos, resolución y aliasing.'] },
+    ],
+    semiconductores: [
+      { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: elige un diodo, un transistor BJT (polarización fija o por divisor de tensión) o un MOSFET, escribe el circuito (admite 4k7, 1M, 100n) y mira la recta de carga, el punto de trabajo Q sobre las curvas del dispositivo, la región en que trabaja (corte, activa, saturación o triodo), las tensiones y corrientes y el desarrollo paso a paso.'] },
     ],
     relatividad: [
       { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: transformación de Lorentz de un evento con su diagrama de Minkowski (ejes inclinados de la nave y rayas paralelas para leer las coordenadas), suma y resta de velocidades con las rapideces e intervalo entre dos eventos con tiempo propio, distancia propia y causalidad. Con desarrollo paso a paso.'] },
@@ -794,6 +857,7 @@ const Version = (() => {
     ],
     // «Física en la vida real» (todos los fenómenos comparten versión)
     fenomenos: [
+      { v: '0.8', fecha: '2026-11-03', cambios: ['Siete fenómenos nuevos: la radio AM y FM, la fibra óptica, la pantalla táctil, el freno magnético y el tren de levitación, el transformador del poste, el detector de metales y la resonancia magnética, cada uno con su animación paso a paso, su «Pruébalo tú» y su herramienta relacionada.'] },
       { v: '0.7', fecha: '2026-11-02', cambios: ['Fenómeno nuevo: el rayo, con la nube y el suelo como un condensador gigante (44 nF a 100 MV), la carga de 4,4 C, el campo que rompe el aire, el líder escalonado, la descarga de retorno de 30 kA, la energía de 220 MJ y el trueno (los segundos que tarda según la distancia), que se abre en Dieléctricos y condensadores con los datos puestos.', 'Fenómeno nuevo: las auroras boreales, con el viento solar, un electrón girando en un campo magnético (fuerza de Lorentz, radio y frecuencia de giro), la hélice que dibuja al avanzar a lo largo del campo, el espejo magnético y el cono de pérdida que decide quién llega al polo, y el choque con el oxígeno que da el verde, el rojo y el violeta, que se abre en Fuerza magnética.', 'Fenómeno nuevo: el altavoz y el motor eléctrico, con la fuerza de un campo magnético sobre una corriente (F = I L B), la bobina móvil del altavoz, el par sobre la bobina de un motor y el conmutador, que se abre en Fuerza magnética.', 'Fenómeno nuevo: la cocina de inducción, con la bobina de 25 kHz, la ley de Faraday en la base de la sartén, las corrientes de Foucault, el calor por efecto Joule (P ∝ f²) y el imán que cae despacio por un tubo de cobre, que se abre en Inducción: Faraday y Lenz.', 'Fenómeno nuevo: el cargador inalámbrico, con la bobina de la base que crea un campo alterno, el flujo en la bobina del móvil, la ley de Faraday (ε = −M dI/dt), la resonancia y el rectificador, y cómo cae la inducción mutua al separar las bobinas, que se abre en Autoinducción e inducción mutua.'] },
       { v: '0.6', fecha: '2026-11-01', cambios: ['Fenómeno nuevo: el arcoíris, con la luz del Sol, la refracción al entrar en la gota (ley de Snell), el rebote en el fondo, por qué los rayos se amontonan a 42° (desviación mínima de Descartes), los colores según el índice de refracción de cada uno y el cálculo, que se abre en Reflexión y transmisión (Fresnel) con los datos de la gota.'] },
       { v: '0.5', fecha: '2026-11-01', cambios: ['Fenómeno nuevo: por qué el cielo es azul y el atardecer rojo, con la luz del Sol, la molécula de aire como dipolo, la dispersión de Rayleigh (1/λ⁴), por qué no es violeta y la luz que sobrevive con el Sol en el horizonte, que se abre en Ondas electromagnéticas.', 'Fenómeno nuevo: el GPS y la relatividad, con el atraso de 7,2 µs al día por la velocidad del satélite, el adelanto de 45,7 µs por la gravedad, el saldo de 38,5 µs y el error de 11,5 km al día si no se corrigiera, que se abre en Física moderna.', 'Fenómeno nuevo: la tensión de paso, con la corriente de un cable caído repartiéndose por el suelo, el potencial V = ρI/2πr, la tensión entre los dos pies y la corriente por el cuerpo según lo cerca que estés, que se abre en Electrostática.', 'Fenómeno nuevo: la olla a presión y el agua en la montaña, con la presión y la temperatura de ebullición, por qué el agua hierve a unos 70 °C en el Everest y a 121 °C en una olla a presión, por qué esta cuece cuatro veces más rápido y la ecuación de Clausius-Clapeyron, que se abre en Calorimetría.'] },
