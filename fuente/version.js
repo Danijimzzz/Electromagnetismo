@@ -394,6 +394,9 @@ const Version = (() => {
         ] },
       ] },
     ],
+    organica: [
+      { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: escribe una molécula (cadenas con ramas, dobles y triples enlaces, alcoholes, aldehídos, cetonas, ácidos, ésteres, amidas, nitrilos, aminas, éteres y halógenos) y obtén su nombre IUPAC, los grupos funcionales, la fórmula y la masa molar. Marca los centros quirales (R/S) y los dobles enlaces E/Z con las reglas de Cahn-Ingold-Prelog, lista todos los estereoisómeros (enantiómeros, diastereoisómeros y formas meso) y las isomerías de cadena, posición y función. La molécula se ve en 3D con los hidrógenos y se gira con el ratón o el dedo. Con desarrollo paso a paso.'] },
+    ],
     relatividad: [
       { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: transformación de Lorentz de un evento con su diagrama de Minkowski (ejes inclinados de la nave y rayas paralelas para leer las coordenadas), suma y resta de velocidades con las rapideces e intervalo entre dos eventos con tiempo propio, distancia propia y causalidad. Con desarrollo paso a paso.'] },
     ],
