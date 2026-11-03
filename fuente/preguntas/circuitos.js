@@ -8,6 +8,11 @@ module.exports = {
     ['¿Cómo se calcula una convolución?', 'En continuo, y(t) = ∫x(τ)·h(t − τ) dτ; en discreto, y[n] = Σx[k]·h[n − k]. Con x = [1, 2, 3] y h = [1, 1], y = [1, 3, 5, 3].'],
     ['¿Cómo responde un filtro RC?', 'Su respuesta al impulso es h(t) = (1/RC)·e^(−t/RC) para t ≥ 0, con constante de tiempo τ = RC, y su respuesta al escalón es 1 − e^(−t/τ).'],
   ],
+  semiconductores: [
+    ['¿Qué es la recta de carga y el punto de trabajo?', 'La recta de carga sale de la malla del circuito (V_CC = V_CE + I_C·R_C en un BJT) y el punto de trabajo Q es donde corta a la curva del dispositivo. Con V_CC = 12 V y R_C = 2,2 kΩ, la recta corta los ejes en 12 V y 5,45 mA.'],
+    ['¿Cómo se sabe si un BJT está en corte, activa o saturación?', 'Si V_BB ≤ V_BE está en corte (I_C = 0). Si no, se calcula I_B suponiendo activa, I_C = β·I_B y V_CE; si sale V_CE por debajo de unos 0,2 V, está en saturación. Con 12 V, R_B = 470 kΩ, R_C = 2,2 kΩ y β = 100: I_C ≈ 2,40 mA y V_CE ≈ 6,71 V, en activa.'],
+    ['¿Cómo se resuelve un diodo con una resistencia en serie?', 'Se cortan la recta I_D = (V_S − V_D)/R y la ecuación de Shockley, lo que se hace numéricamente. Con 5 V, 1 kΩ, I_S = 10 pA y n = 1 sale V_D ≈ 0,515 V e I_D ≈ 4,49 mA; el modelo de 0,7 V da 4,3 mA.'],
+  ],
   bode: [
     ['¿Cómo se calcula la frecuencia de corte de un filtro RC?', 'f_c = 1/(2πRC), donde la ganancia cae 3 dB. Con R = 1 kΩ y C = 159 nF, f_c ≈ 1 kHz, y después cae 20 dB por década.'],
     ['¿Y la frecuencia de resonancia de un RLC?', 'f₀ = 1/(2π√(LC)); en serie, el factor de calidad es Q = (1/R)√(L/C). Con L = 10 mH y C = 100 nF, f₀ ≈ 5,03 kHz.'],

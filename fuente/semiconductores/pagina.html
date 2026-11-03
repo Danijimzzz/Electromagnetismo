@@ -1,0 +1,50 @@
+<title>Punto de trabajo y recta de carga: diodo, BJT y MOSFET · Ciencify</title>
+<meta name="description" content="Calculadora del punto de trabajo y la recta de carga de un diodo, un transistor BJT o un MOSFET: región de trabajo, tensiones y corrientes en continua y gráfica con las curvas del dispositivo.">
+<style>
+/* Solo lo propio de esta herramienta. Las medidas comunes se ajustan con sus variables
+   y los colores propios (los de las gráficas) van aquí, con su valor en modo oscuro. */
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a; --serie-3: #8a97ad }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #7d8aa2 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #7d8aa2 }
+#grafica { height: 340px }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Cienci<i>fy</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Circuitos</a> / Semiconductores: punto de trabajo y recta de carga</span></header>
+<div class="wrap">
+<h1>Punto de trabajo y recta de carga</h1>
+<p class="lead">Polariza un diodo, un transistor BJT o un MOSFET en continua: la recta de carga, el punto de trabajo Q sobre las curvas del dispositivo y la región en que trabaja, con el desarrollo paso a paso.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Curvas y recta de carga</h2>
+      <canvas id="grafica" aria-label="Curvas del dispositivo, recta de carga y punto de trabajo"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Recta de carga y punto de trabajo</h2>
+  <p class="m">El dispositivo (diodo o transistor) y su circuito exterior imponen cada uno una relación entre la tensión y la corriente. La del circuito sale de la ley de Kirchhoff de la malla y es una recta, la recta de carga. La del dispositivo es su curva característica. Las dos se cumplen a la vez en un único punto, el punto de trabajo (o de reposo) $Q$.</p>
+  <h2>Diodo</h2>
+  <p class="m">Con una fuente $V_S$ y una resistencia $R$ en serie, la recta es $I_D = (V_S − V_D)/R$ y la curva sigue la ecuación de Shockley, $I_D = I_S (e^(V_D/(n V_T)) − 1)$, con $V_T = kT/q ≈ 25,85 "mV"$ a 300 K. Como la ecuación no tiene solución algebraica, se resuelve numéricamente; en papel se usa el modelo ideal ($V_D = 0$) o el de tensión constante ($V_D ≈ 0,7 "V"$ en silicio).</p>
+  <h2>Transistor BJT</h2>
+  <p class="m">En polarización fija o por divisor de tensión se calcula la corriente de base con el equivalente de Thévenin del circuito de base, $I_B = (V_"BB" − V_"BE")/(R_"BB" + (β + 1) R_E)$. En activa $I_C = β I_B$ y la recta de carga es $V_"CC" = V_"CE" + I_C R_C + I_E R_E$. Si sale $V_"CE" < V_"CE,sat"$ el transistor está en saturación y $I_C < β I_B$; si $V_"BB" ≤ V_"BE"$ está en corte. Un punto cerca del centro de la recta permite amplificar sin recortar la señal; cerca de los extremos, el transistor trabaja como un interruptor.</p>
+  <h2>Transistor MOSFET</h2>
+  <p class="m">La puerta no consume corriente, así que $V_"GG"$ sale del divisor de tensión y $V_"GS" = V_"GG" − I_D R_S$. En saturación ($V_"DS" ≥ V_"GS" − V_t$) $I_D = 1/2 K (V_"GS" − V_t)^2$; en triodo, $I_D = K [(V_"GS" − V_t) V_"DS" − V_"DS"^2/2]$; por debajo de $V_t$ está en corte. La recta de carga es $V_"DD" = V_"DS" + I_D (R_D + R_S)$.</p>
+  <h2>Y el circuito completo</h2>
+  <p class="m">Para ver las tensiones y corrientes con una señal, un osciloscopio o más componentes, monta el mismo circuito en el <a href="../simulador/">Simulador de circuitos</a>, que ya incluye diodos y transistores.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Punto de trabajo y recta de carga <span id="ver"></span> (beta)</footer>
+</body>
