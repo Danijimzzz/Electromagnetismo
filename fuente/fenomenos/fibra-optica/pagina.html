@@ -1,0 +1,61 @@
+<title>La fibra óptica y la reflexión total: cómo viaja la luz por un hilo de vidrio</title>
+<meta name="description" content="Cómo viaja la luz por una fibra óptica sin salirse: la ley de Snell, el ángulo crítico de 80,6°, la reflexión total, la apertura numérica y la atenuación de 0,2 dB/km, con una animación paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<!-- =====================================================================
+     La fibra óptica y la reflexión total («Física en la vida real»). Maqueta
+     común de los fenómenos (ver fuego-san-telmo/pagina.html): animación,
+     texto del paso, historia y recuadro de la herramienta. Los pasos y el
+     dibujo están en escena.js.
+     ===================================================================== -->
+<style>
+/* colores del dibujo, con su valor en modo oscuro */
+:root {
+  --aire: #eef3f6; --vidrio: #b7d6ec; --cubierta: #aebfd0; --nucleo: #7fb8e6; --plastico: #8c97a3;
+  --rayo: #d4381f; --resalta: #1558ad; --alerta: #b35a00; --rotulo: #1a2128 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --aire: #141c24; --vidrio: #284a66; --cubierta: #34495e; --nucleo: #2f6f9e; --plastico: #55606b;
+  --rayo: #ff7b66; --resalta: #7ab8ff; --alerta: #ffb255; --rotulo: #e3e8ea } }
+:root[data-theme="dark"] {
+  --aire: #141c24; --vidrio: #284a66; --cubierta: #34495e; --nucleo: #2f6f9e; --plastico: #55606b;
+  --rayo: #ff7b66; --resalta: #7ab8ff; --alerta: #ffb255; --rotulo: #e3e8ea }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física en la vida real</a> / La fibra óptica</span></header>
+<div class="wrap fen">
+<div class="fen-etiquetas"><span>∿ Física general</span><span>⚡ Electromagnetismo</span><span>Dificultad media</span><span>6 pasos · 1 min</span></div>
+<h1>La fibra óptica</h1>
+<p class="lead">Casi todo Internet entre ciudades y países viaja como pulsos de luz por hilos de vidrio más finos que un pelo, a veces a lo largo de océanos enteros. La luz no se sale por los lados porque, dentro del hilo, rebota por completo en la pared: es la reflexión total.</p>
+<div class="fen-escena"><canvas id="escena" role="img" aria-label="Animación de la fibra óptica: un hilo de vidrio curvado con pulsos de luz, un rayo que se dobla al pasar del vidrio al aire, el ángulo crítico de 80,6 grados, un rayo que rebota sin salir del núcleo por reflexión total, el cono de aceptación a la entrada y la curva de la potencia que se pierde con los kilómetros"></canvas></div>
+<div class="fen-puntos" id="puntos" role="group" aria-label="Pasos"></div>
+<div class="fen-controles">
+  <button class="btn" id="ant" type="button">‹ Anterior</button>
+  <button class="btn" id="play" type="button" aria-pressed="true">❚❚ Parar</button>
+  <button class="btn" id="sig" type="button">Siguiente ›</button>
+</div>
+<div class="fen-texto" aria-live="polite"><h2 id="paso-t"></h2><div id="paso-x"></div></div>
+<section class="fen-historia" aria-label="Un poco de historia">
+  <h2>Un poco de historia</h2>
+  <ol>
+    <li><b>1842</b>El físico suizo Jean-Daniel Colladon enseña en Ginebra que la luz puede seguir la curva de un chorro de agua; Jacques Babinet enseña algo parecido en París por las mismas fechas. Es la primera vez que se guía luz por un medio transparente.</li>
+    <li><b>1870</b>John Tyndall repite el experimento ante la Royal Society de Londres con un chorro de agua iluminado, y lo hizo famoso.</li>
+    <li><b>1966</b>Charles Kao y George Hockham calculan que un vidrio muy puro podría perder menos de 20 dB/km y servir para comunicaciones. Kao recibió el Nobel de Física en 2009.</li>
+    <li><b>1970</b>Robert Maurer, Donald Keck y Peter Schultz, en Corning, fabrican la primera fibra de sílice con menos de 20 dB/km.</li>
+    <li><b>1988</b>Se tiende el TAT-8, primer cable transatlántico de fibra óptica entre Estados Unidos, Reino Unido y Francia.</li>
+  </ol>
+</section>
+<section class="fen-rel" aria-label="Herramienta relacionada">
+  <div class="fen-ico" aria-hidden="true">n</div>
+  <h2>Con qué herramienta se relaciona</h2>
+  <h3>Reflexión y transmisión (Fresnel) <small>· Electromagnetismo</small></h3>
+  <p>El ángulo crítico y la reflexión total son justo lo que calcula esa herramienta: pasa del núcleo a la cubierta con el ángulo de incidencia que quieras y te dice si hay refracción, cuánta luz se refleja y, si es reflexión total, cuánto penetra la onda evanescente.</p>
+  <p class="f m">sen θc = n₂ / n₁</p>
+  <p class="f m">AN = √(n₁² − n₂²)</p>
+  <p>Se abre con el núcleo (n₁ = 1,48), la cubierta (n₂ = 1,46), luz de 1550 nm y 85° de incidencia: sale reflexión total, con ángulo crítico 80,6°. Baja el ángulo a 78° y verás que ya se escapa una parte.</p>
+  <div class="fen-fichas"><div><small>Ángulo crítico</small><b>80,6°</b></div><div><small>Incidencia</small><b>85°</b></div><div><small>Reflejado</small><b>100 %</b></div></div>
+  <a class="fen-abrir" id="abrir" href="../../electromagnetismo/fresnel/">Abrir en Reflexión y transmisión con estos datos →</a>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Física en la vida real <span id="ver"></span> (beta)</footer>
+</body>
