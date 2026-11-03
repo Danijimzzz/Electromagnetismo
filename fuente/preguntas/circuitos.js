@@ -12,6 +12,11 @@ module.exports = {
     ['¿Cómo se calcula la frecuencia de corte de un filtro RC?', 'f_c = 1/(2πRC), donde la ganancia cae 3 dB. Con R = 1 kΩ y C = 159 nF, f_c ≈ 1 kHz, y después cae 20 dB por década.'],
     ['¿Y la frecuencia de resonancia de un RLC?', 'f₀ = 1/(2π√(LC)); en serie, el factor de calidad es Q = (1/R)√(L/C). Con L = 10 mH y C = 100 nF, f₀ ≈ 5,03 kHz.'],
   ],
+  control: [
+    ['¿Cómo se aplica el criterio de Routh?', 'Se ordenan los coeficientes del polinomio característico en las dos primeras filas y cada fila sale de las dos anteriores; los cambios de signo de la primera columna son las raíces del semiplano derecho. Para s³ + 3s² + 2s + K la fila s¹ vale (6 − K)/3, así que es estable con 0 < K < 6.'],
+    ['¿Cómo se dibuja el lugar de las raíces?', 'Las ramas nacen en los polos y mueren en los ceros o en el infinito, siguiendo asíntotas desde el centroide σ = (Σp − Σz)/(n − m). Con K/(s(s + 1)(s + 2)) el centroide es −1, las asíntotas tienen 60°, −60° y 180°, y hay una ruptura en s ≈ −0,4226.'],
+    ['¿Qué dice el criterio de Nyquist?', 'Si L(jω) da N vueltas horarias alrededor de −1 y L(s) tiene P polos en el semiplano derecho, el lazo cerrado tiene Z = N + P polos inestables. Para K/(s(s + 1)(s + 2)) el margen de ganancia es 6 (15,6 dB), en ω = √2 rad/s.'],
+  ],
   'sistemas-numericos': [
     ['¿Cómo se pasa de decimal a binario y a hexadecimal?', 'Se divide entre 2 (o entre 16) y se leen los restos al revés. 13 = 1101₂ (8 + 4 + 1) y 255 = FF₁₆.'],
     ['¿Cómo se escribe un número negativo en complemento a 2 y en BCD?', 'En complemento a 2 se invierten los bits del positivo y se suma 1: con 8 bits, −5 es 11111011. En BCD cada cifra decimal ocupa 4 bits: 25 es 0010 0101.'],
