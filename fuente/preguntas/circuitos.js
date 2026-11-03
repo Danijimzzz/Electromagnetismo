@@ -25,6 +25,10 @@ module.exports = {
     ['¿Cómo se obtiene la ecuación lógica de una tabla de verdad?', 'Con la suma de minitérminos (las filas con salida 1) o el producto de maxitérminos (las de salida 0). La puerta XOR da F = A′B + AB′.'],
     ['¿Cómo se simplifica una expresión?', 'Con álgebra de Boole, por ejemplo A + A′B = A + B, o con mapas de Karnaugh. De Morgan: (AB)′ = A′ + B′. Con puertas NAND se puede construir cualquier circuito.'],
   ],
+  'transformada-z': [
+    ['¿Cómo se sabe si un sistema discreto es estable?', 'Un sistema causal es estable si todos los polos de H(z) tienen módulo menor que 1. En y[n] = x[n] + 0,5·y[n−1] el polo es z = 0,5 y h[n] = 0,5ⁿ se amortigua; con un polo en z = 2, h[n] = 2ⁿ crece sin límite.'],
+    ['¿Qué resolución tiene una FFT y qué es la fuga espectral?', 'La resolución es Δf = fₛ/N: con fₛ = 640 Hz y N = 64 muestras, Δf = 10 Hz. Un tono de 50 Hz cae justo en un bin, pero uno de 55 Hz queda entre dos y reparte su energía en los vecinos; una ventana de Hann reduce esa fuga.'],
+  ],
   simulador: [
     ['¿Cómo se analiza un circuito de continua?', 'Con la ley de Ohm y el análisis nodal. En un divisor de tensión, V_R2 = V·R₂/(R₁ + R₂): con 10 V y R₁ = 1 kΩ, R₂ = 4 kΩ, V_R2 = 8 V y la corriente es 2 mA.'],
     ['¿Y uno de alterna o con transitorios?', 'En régimen sinusoidal, Z_R = R, Z_L = jωL y Z_C = 1/(jωC): una bobina de 10 mH a 50 Hz tiene X_L = 2π · 50 · 0,01 ≈ 3,14 Ω. En un transitorio RC o RL, la constante de tiempo es τ = RC o τ = L/R.'],

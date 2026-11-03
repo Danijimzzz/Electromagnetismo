@@ -1,0 +1,52 @@
+<title>Transformada z y FFT: calculadora de polos, ceros y espectro · Ciencify</title>
+<meta name="description" content="Transformada z de una señal o un sistema (polos, ceros, estabilidad, h[n] y respuesta en frecuencia) y FFT de una señal con ventana, picos, resolución y aliasing, paso a paso.">
+<style>
+/* Solo lo propio de esta herramienta. Las medidas comunes se ajustan con sus variables
+   y los colores propios (los de las gráficas) van aquí, con su valor en modo oscuro. */
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62 }
+#vistas { margin-bottom: 8px }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Cienci<i>fy</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Circuitos</a> / Transformada z y FFT</span></header>
+<div class="wrap">
+<h1>Transformada z y FFT</h1>
+<p class="lead">La transformada z de una señal o de un sistema discreto (polos, ceros, estabilidad, respuesta al impulso y respuesta en frecuencia) y la FFT de una señal con ventana: espectro, picos, resolución y aliasing, paso a paso.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Gráfica</h2>
+      <div class="modos" id="vistas" role="tablist" aria-label="Qué se dibuja"></div>
+      <canvas id="grafica" aria-label="Gráfica"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>La transformada z</h2>
+  <p class="m">Es la «Laplace» de las señales discretas. Para una secuencia $x[n]$ causal, $X(z) = Σ_{n=0}^{∞} x[n]·z^{-n}$, y retrasar una muestra equivale a multiplicar por $z^{-1}$. Un sistema lineal e invariante se describe con una ecuación en diferencias y su función de transferencia es el cociente $H(z) = B(z)/A(z)$ de dos polinomios en $z^{-1}$.</p>
+  <p class="f m">$H(z) = (b_0 + b_1 z^{-1} + … + b_M z^{-M})/(a_0 + a_1 z^{-1} + … + a_N z^{-N})$</p>
+  <h2>Polos, ceros y estabilidad</h2>
+  <p class="m">Los ceros son las raíces del numerador y los polos las del denominador (en potencias de $z$). Un sistema causal es <b>estable</b> si todos sus polos están dentro de la circunferencia unidad, $|p| < 1$: la respuesta al impulso $h[n]$ se amortigua como $|p|^n$. Un polo real $p$ da el término $p^n$; un par complejo $r e^{±jθ}$ da $r^n cos(θn + φ)$, una oscilación de frecuencia $θ$ rad/muestra.</p>
+  <h2>Respuesta en frecuencia</h2>
+  <p class="m">Si la circunferencia unidad está en la región de convergencia, $H(e^{jω}) = H(z)$ en $z = e^{jω}$ es la respuesta del sistema a un seno de frecuencia $ω$ (rad/muestra, entre $0$ y $π$). Un polo cerca de $e^{jω_0}$ la hace subir en $ω_0$ y un cero cerca la hace caer.</p>
+  <h2>DFT y FFT</h2>
+  <p class="m">La transformada discreta de Fourier de $N$ muestras es $X[k] = Σ x[n] e^{-j2πkn/N}$, es decir, la transformada z evaluada en $N$ puntos equiespaciados de la circunferencia unidad. El bin $k$ corresponde a $f_k = k f_s/N$ y la resolución es $Δf = f_s/N$: para distinguir dos tonos hay que observar más tiempo, no solo muestrear más rápido. La FFT radix-2 calcula la misma DFT con $(N/2) log_2 N$ multiplicaciones en lugar de $N^2$.</p>
+  <h2>Fugas, ventanas y aliasing</h2>
+  <p class="m">Si un tono no cae justo en un bin, su energía se reparte en los vecinos (<b>fuga espectral</b>). Una ventana (Hann, Hamming, Blackman) suaviza los extremos y reduce las fugas a costa de ensanchar el pico. Y si una frecuencia supera $f_s/2$, aparece <b>plegada</b> en $|f − k f_s|$: es el aliasing, y no se puede deshacer después de muestrear.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Transformada z y FFT <span id="ver"></span> (beta)</footer>
+</body>
