@@ -1,0 +1,59 @@
+<title>El freno magnético y el tren de levitación: cómo frenan sin tocar · Ciencify</title>
+<meta name="description" content="Cómo frena una montaña rusa sin zapatas y cómo flota un tren de levitación: fem de movimiento ε = B L v, corrientes de Foucault, fuerza de Lenz proporcional a la velocidad, frenada exponencial y levitación electrodinámica, con una animación paso a paso y el cálculo en Inducción: Faraday y Lenz.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<!-- =====================================================================
+     El freno magnético y el tren de levitación («Física en la vida real»). Maqueta común de los
+     fenómenos (ver fuego-san-telmo/pagina.html): animación, texto del paso, historia y recuadro
+     de la herramienta. Los pasos y el dibujo están en escena.js.
+     ===================================================================== -->
+<style>
+/* colores del dibujo, con su valor en modo oscuro */
+:root {
+  --sala: #e9e4da; --suelo: #8d8479; --riel: #4a4f56; --vagon: #c2412a; --placa: #c9a27a; --imanN: #c2412a; --imanS: #2a5db5; --campo: #6b3fa0;
+  --corriente: #c2412a; --onda: #2a5db5; --resalta: #c2412a; --cobre: #b8672e; --brillo: #ffffff; --rotulo: #1a2128 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --sala: #1c2126; --suelo: #3a3f45; --riel: #9aa6b2; --vagon: #ef7a62; --placa: #8a6c50; --imanN: #ef7a62; --imanS: #74a2f2; --campo: #b48be8;
+  --corriente: #ef7a62; --onda: #74a2f2; --resalta: #ef7a62; --cobre: #d8884a; --brillo: #e3e8ea; --rotulo: #e3e8ea } }
+:root[data-theme="dark"] {
+  --sala: #1c2126; --suelo: #3a3f45; --riel: #9aa6b2; --vagon: #ef7a62; --placa: #8a6c50; --imanN: #ef7a62; --imanS: #74a2f2; --campo: #b48be8;
+  --corriente: #ef7a62; --onda: #74a2f2; --resalta: #ef7a62; --cobre: #d8884a; --brillo: #e3e8ea; --rotulo: #e3e8ea }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Cienci<i>fy</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física en la vida real</a> / El freno magnético y el tren de levitación</span></header>
+<div class="wrap fen">
+<div class="fen-etiquetas"><span>⚡ Electromagnetismo</span><span>Dificultad media</span><span>6 pasos · 1 min</span></div>
+<h1>El freno magnético y el tren de levitación</h1>
+<p class="lead">Una montaña rusa se detiene suave al final del recorrido sin que nada roce, y un tren de levitación flota sobre su carril sin tocarlo. Los dos usan el mismo truco: ¿qué le pasa a un metal que se mueve dentro de un campo magnético?</p>
+<div class="fen-escena"><canvas id="escena" role="img" aria-label="Animación del freno magnético y la levitación: un vagón con una aleta de metal que pasa entre imanes, la aleta vista desde arriba con la zona de campo magnético, la fem de movimiento, las corrientes de Foucault y la fuerza de Lenz que frena, la gráfica de la velocidad que baja de forma exponencial y un tren que levita al ganar velocidad sobre las bobinas del carril"></canvas></div>
+<div class="fen-puntos" id="puntos" role="group" aria-label="Pasos"></div>
+<div class="fen-controles">
+  <button class="btn" id="ant" type="button">‹ Anterior</button>
+  <button class="btn" id="play" type="button" aria-pressed="true">❚❚ Parar</button>
+  <button class="btn" id="sig" type="button">Siguiente ›</button>
+</div>
+<div class="fen-texto" aria-live="polite"><h2 id="paso-t"></h2><div id="paso-x"></div></div>
+<section class="fen-historia" aria-label="Un poco de historia">
+  <h2>Un poco de historia</h2>
+  <ol>
+    <li><b>1824</b>François Arago observa que una aguja imantada se frena sobre un disco de cobre, y que si el disco gira arrastra la aguja sin tocarla. Nadie sabía explicarlo todavía.</li>
+    <li><b>1831</b>Michael Faraday descubre la inducción electromagnética y explica el experimento de Arago: el disco en movimiento crea corrientes que se oponen al movimiento.</li>
+    <li><b>1855</b>Léon Foucault comprueba que un disco de cobre que gira entre los polos de un imán se frena y se calienta. Son las corrientes de Foucault.</li>
+    <li><b>1960 - 1970</b>James Powell y Gordon Danby proponen trenes que flotan sobre un carril con imanes superconductores, el origen de la levitación electrodinámica.</li>
+    <li><b>2015</b>El tren de levitación japonés SCMaglev alcanza 603 km/h, el récord de velocidad de un tren.</li>
+  </ol>
+</section>
+<section class="fen-rel" aria-label="Herramienta relacionada">
+  <div class="fen-ico" aria-hidden="true">ε</div>
+  <h2>Con qué herramienta se relaciona</h2>
+  <h3>Inducción: Faraday y Lenz <small>· Electromagnetismo</small></h3>
+  <p>La aleta que se mueve en el campo es lo mismo que la barra que se desliza sobre unos raíles: la ley de Faraday da la fem de movimiento, la corriente sale de la resistencia y la ley de Lenz da la fuerza que se opone al movimiento.</p>
+  <p class="f m">ε = B L v ,  I = ε/R ,  F = I L B = B² L² v / R</p>
+  <p>Se abre en el modo «Barra que se desliza sobre unos raíles» con B = 1 T, L = 0,5 m, v = 20 m/s y R = 0,5 mΩ. Sale ε = 10 V, una corriente de 20 kA y una fuerza de frenado de 10 kN. Con un vagón de 2000 kg, la constante de tiempo de la frenada es τ = m R / (B² L²) = 4 s.</p>
+  <div class="fen-fichas"><div><small>Fem de movimiento</small><b>10 V</b></div><div><small>Corriente</small><b>20 kA</b></div><div><small>Fuerza de frenado</small><b>10 kN</b></div></div>
+  <a class="fen-abrir" id="abrir" href="../../electromagnetismo/faraday/">Abrir en Inducción: Faraday y Lenz con estos datos →</a>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Física en la vida real <span id="ver"></span> (beta)</footer>
+</body>

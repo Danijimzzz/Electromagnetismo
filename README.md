@@ -8,7 +8,7 @@
 | | |
 | --- | --- |
 | **104** herramientas | repartidas en 7 asignaturas |
-| **22** fenómenos de «Física en la vida real» | animaciones que explican cosas cotidianas |
+| **24** fenómenos de «Física en la vida real» | animaciones que explican cosas cotidianas |
 | **Web 1.11** | última versión (2 nov 2026) |
 <!-- cifras:fin -->
 

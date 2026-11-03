@@ -1,0 +1,1327 @@
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMwZDZiNjYiLz48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlNmE2NDAiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtZGFzaGFycmF5PSI0IDYuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48cGF0aCBkPSJNMjAgMzJINDQiLz48cGF0aCBkPSJNMjEgMjdDMjcgMTQgMzcgMTQgNDMgMjciLz48cGF0aCBkPSJNMjEgMzdDMjcgNTAgMzcgNTAgNDMgMzciLz48cGF0aCBkPSJNMTcgMjRDMjIgNCA0MiA0IDQ3IDI0Ii8+PHBhdGggZD0iTTE3IDQwQzIyIDYwIDQyIDYwIDQ3IDQwIi8+PC9nPjxjaXJjbGUgY3g9IjE3IiBjeT0iMzIiIHI9IjgiIGZpbGw9IiNlZjdhNjIiLz48Y2lyY2xlIGN4PSI0NyIgY3k9IjMyIiByPSI4IiBmaWxsPSIjNzRhMmYyIi8+PHBhdGggZD0iTTEzIDMyaDhNMTcgMjh2OE00MyAzMmg4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta property="og:title" content="El transformador del poste, explicado">
+<meta property="og:description" content="Por qué zumba el transformador de un poste y cómo baja la tensión de 20 000 V a 400 V sin piezas móviles: dos bobinas sobre un núcleo de hierro, ley de Faraday, relación de vueltas, conservación de la potencia, por qué solo funciona con alterna y el zumbido de 100 Hz, con una animación paso a paso y el cálculo en Autoinducción e inducción mutua">
+<link rel="canonical" href="https://simulaciencia.vercel.app/fenomenos/transformador-poste/">
+<meta property="og:image" content="https://simulaciencia.vercel.app/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"LearningResource","name":"El transformador del poste","description":"Por qué zumba el transformador de un poste y cómo baja la tensión de 20 000 V a 400 V sin piezas móviles: dos bobinas sobre un núcleo de hierro, ley de Faraday, relación de vueltas V₂/V₁ = N₂/N₁, conservación de la potencia, por qué solo funciona con corriente alterna y el zumbido de 100 Hz, con una animación paso a paso y el cálculo en Autoinducción e inducción mutua.","url":"https://simulaciencia.vercel.app/fenomenos/transformador-poste/","inLanguage":"es","isAccessibleForFree":true,"learningResourceType":"Animación explicada paso a paso"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://simulaciencia.vercel.app/"},{"@type":"ListItem","position":2,"name":"Física en la vida real","item":"https://simulaciencia.vercel.app/fenomenos/"},{"@type":"ListItem","position":3,"name":"El transformador del poste","item":"https://simulaciencia.vercel.app/fenomenos/transformador-poste/"}]}]}</script>
+<link rel="manifest" href="../../manifest.webmanifest">
+<meta name="theme-color" content="#0d6b66">
+<script src="../../pwa.js" defer></script>
+<script>(() => {
+  const raiz = document.documentElement, mq = matchMedia('(prefers-color-scheme: dark)'), oyentes = [];
+  try { const t = localStorage.getItem('simu-tema'); if (t === 'dark' || t === 'light') raiz.dataset.theme = t; } catch (e) { /* sin almacenamiento */ }
+  const orig = MediaQueryList.prototype.addEventListener;
+  MediaQueryList.prototype.addEventListener = function (tipo, f, ...r) { if (tipo === 'change' && /prefers-color-scheme/.test(this.media)) oyentes.push(f); return orig.call(this, tipo, f, ...r); };
+  const oscuro = () => (raiz.dataset.theme ? raiz.dataset.theme === 'dark' : mq.matches);
+  const rotula = () => document.querySelectorAll('.tema').forEach((b) => { const t = oscuro() ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'; b.title = t; b.setAttribute('aria-label', t); });
+  document.addEventListener('DOMContentLoaded', rotula);
+  mq.addEventListener('change', rotula);
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.tema')) return;
+    raiz.dataset.theme = oscuro() ? 'light' : 'dark';
+    try { localStorage.setItem('simu-tema', raiz.dataset.theme); } catch (e) { /* sin almacenamiento */ }
+    rotula();
+    for (const f of oyentes) { try { f.call(mq, { matches: oscuro(), media: mq.media }); } catch (err) { console.error(err); } }
+  });
+})();</script>
+<script>(() => {
+  const ENFOCABLE = 'a[href],button,input,select,textarea,summary,[tabindex]';
+  let espera = 0;
+  const revisa = () => {
+    espera = 0;
+    for (const e of document.querySelectorAll('main *')) {
+      const desborda = e.scrollWidth > e.clientWidth || e.scrollHeight > e.clientHeight;
+      if (e.dataset.sf) { if (!desborda) { e.removeAttribute('tabindex'); delete e.dataset.sf; } continue; }
+      if (!desborda || e.hasAttribute('tabindex') || e.matches('svg,svg *,canvas') || e.querySelector(ENFOCABLE)) continue;
+      const o = getComputedStyle(e);
+      if (/auto|scroll/.test(o.overflowX + o.overflowY)) { e.tabIndex = 0; e.dataset.sf = '1'; }
+    }
+  };
+  window.revisaScroll = revisa; // también lo llama pruebas/accesibilidad.js antes de pasar axe
+  const pide = () => { if (!espera) espera = setTimeout(revisa, 400); };
+  addEventListener('load', () => { revisa(); const m = document.querySelector('main'); if (m) new MutationObserver(pide).observe(m, { childList: true, subtree: true, characterData: true }); });
+  addEventListener('resize', pide);
+})();</script>
+<script src="../../buscador.js" defer></script>
+<script src="../../llama.js" defer></script>
+<title>El transformador del poste: cómo baja 20 000 V a 400 V · Ciencify</title>
+<meta name="description" content="Por qué zumba el transformador de un poste y cómo baja la tensión de 20 000 V a 400 V sin piezas móviles: dos bobinas sobre un núcleo de hierro, ley de Faraday, relación de vueltas V₂/V₁ = N₂/N₁, conservación de la potencia, por qué solo funciona con corriente alterna y el zumbido de 100 Hz, con una animación paso a paso y el cálculo en Autoinducción e inducción mutua.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<!-- =====================================================================
+     El transformador del poste («Física en la vida real»). Maqueta común de los
+     fenómenos (ver fuego-san-telmo/pagina.html): animación, texto del paso, historia y recuadro
+     de la herramienta. Los pasos y el dibujo están en escena.js.
+     ===================================================================== -->
+<style>/* =====================================================================
+   Hoja de estilos común de todas las herramientas (fuente/<herramienta>/pagina.html).
+   diseno.js la mete en cada página, antes de su propio <style>, junto con el color
+   de la asignatura (--accent, --accent-soft) y la cabecera del portal. La guía de uso
+   de cada componente, con su HTML, está en DISENO.md.
+   Una herramienta no vuelve a definir estas reglas: ajusta las variables de medida
+   (--col-datos, --ancho-valor, --alto-grafica) o añade una clase propia.
+   ===================================================================== */
+
+/* ---------- Colores y letras (claro y oscuro) ---------- */
+:root {
+  --bg: #eef1ee; --panel: #fff; --ink: #1a2128; --muted: #5b6670; --line: #d5dbd5; --error: #c0392b;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --vidrio: rgba(255,255,255,.55); --vidrio-fuerte: rgba(255,255,255,.72); --vidrio-borde: rgba(255,255,255,.7); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.8);
+  --vidrio-sombra: 0 1px 2px rgba(20,40,60,.06), 0 8px 28px rgba(20,40,60,.10); --blur: blur(22px) saturate(1.7); --halo1: rgba(13,107,102,.22); --halo2: rgba(42,93,181,.20); --halo3: rgba(107,63,160,.14);
+  /* medidas que cada herramienta puede ajustar */
+  --col-datos: 360px; --ancho-etiqueta: minmax(0, 1fr); --ancho-valor: 150px; --letra-campo: 13px var(--f-ui); --ancho-dato: 190px; --alto-grafica: clamp(260px, 36vw, 380px); --margen-grafica: 10px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #a3aeb5; --line: #2a343b; --error: #f08a80; --vidrio: rgba(34,46,54,.50); --vidrio-fuerte: rgba(26,36,42,.70); --vidrio-borde: rgba(255,255,255,.12); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.10); --vidrio-sombra: 0 1px 2px rgba(0,0,0,.3), 0 10px 32px rgba(0,0,0,.35); --halo1: rgba(77,188,176,.20); --halo2: rgba(116,162,242,.18); --halo3: rgba(170,120,230,.14); color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #a3aeb5; --line: #2a343b; --error: #f08a80; --vidrio: rgba(34,46,54,.50); --vidrio-fuerte: rgba(26,36,42,.70); --vidrio-borde: rgba(255,255,255,.12); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.10); --vidrio-sombra: 0 1px 2px rgba(0,0,0,.3), 0 10px 32px rgba(0,0,0,.35); --halo1: rgba(77,188,176,.20); --halo2: rgba(116,162,242,.18); --halo3: rgba(170,120,230,.14); color-scheme: dark }
+/* fin de los colores */
+
+/* ---------- Base ---------- */
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 24px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+/* texto solo para lectores de pantalla; sin position:absolute para que no ensanche las tablas con scroll */
+.solo-lector { display: inline-block; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; vertical-align: top }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px }
+footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
+
+/* ---------- Diseño A: datos a la izquierda, resultados a la derecha ---------- */
+.layout { display: grid; grid-template-columns: var(--col-datos) minmax(0, 1fr); gap: 16px; align-items: start }
+.layout.invertido { grid-template-columns: minmax(0, 1fr) var(--col-datos) }
+@media (max-width: 900px) { .layout, .layout.invertido { grid-template-columns: minmax(0, 1fr) } }
+
+/* ---------- Tarjetas ---------- */
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 12px/1.4 var(--f-ui); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 10px }
+.destacado { border-color: var(--line); border-top: 3px solid var(--accent) }
+.destacado h2 { color: var(--accent) }
+
+/* ---------- Datos: campos, separadores, botones y pestañas ---------- */
+.campos { display: grid; grid-template-columns: var(--ancho-etiqueta) var(--ancho-valor); gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px }
+.campos label small { color: var(--muted) }
+.campos .ancho { grid-column: 1 / -1 }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--accent); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.in { font: var(--letra-campo); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer; white-space: nowrap }
+.btn:hover { border-color: var(--accent) }
+/* foco del teclado en todo lo que se pulsa o se escribe (sin especificidad: una herramienta puede ajustarlo) */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.controles { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px }
+.controles > .nota, .controles > .leyenda { flex: 1 1 220px; margin: 0 }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px }
+.tools label { color: var(--muted); font-size: 13px; display: inline-flex; gap: 6px; align-items: center }
+.modos { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-bottom: 14px }
+.modos button { font: 500 13.5px var(--f-ui); border: 0; background: var(--panel); color: var(--muted); padding: 7px 14px; cursor: pointer }
+.modos button[aria-selected=true] { background: var(--accent); color: var(--panel) }
+.error { color: var(--error); font-size: 13px; margin: 10px 0 0 }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+
+/* ---------- Resultados ---------- */
+.res { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--ancho-dato), 1fr)); gap: 6px 14px; font: 16px var(--f-math) }
+.res div { overflow-x: auto; overflow-y: hidden }
+.res span { display: block; font: 12px var(--f-ui); color: var(--muted) }
+.res div.ancho { grid-column: 1 / -1 }
+.resumen { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--ancho-dato), 1fr)); gap: 8px; margin: 0 }
+.resumen div { background: var(--accent-soft); border-radius: 8px; padding: 8px 10px; overflow-x: auto; overflow-y: hidden }
+.resumen div span { display: block; font-size: 12px; color: var(--muted) }
+.resumen div b { font: 600 17px var(--f-math) }
+.resumen div.ancho { grid-column: 1 / -1 }
+
+/* ---------- Gráficas ---------- */
+canvas { display: block; width: 100%; height: var(--alto-grafica); border-radius: 8px; background: var(--bg); margin-top: var(--margen-grafica) }
+.leyenda { font-size: 12.5px; color: var(--muted); margin: 6px 0 0 }
+.leyenda b { font-weight: 600 }
+
+/* ---------- Desarrollo paso a paso ---------- */
+/* el número va dentro del paso para que no lo corte el desplazamiento de las fórmulas largas */
+.pasos ol { margin: 0; padding: 0; list-style: none; counter-reset: paso }
+.pasos li { position: relative; margin: 0 0 12px; padding-left: 22px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto; counter-increment: paso; overflow-y: hidden }
+.pasos li::before { content: counter(paso) "."; position: absolute; left: 0; top: 0; font: 13.5px/1.45 var(--f-ui); color: var(--muted) }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.pasos table.tabla { border-collapse: collapse; margin: 6px 0; font: 13px var(--f-ui); font-variant-numeric: tabular-nums }
+.pasos table.tabla th, .pasos table.tabla td { border: 1px solid var(--line); padding: 3px 9px; text-align: right }
+.pasos table.tabla th { background: var(--accent-soft); font-weight: 600 }
+.tabla-scroll { overflow-x: auto }
+
+/* matrices con corchetes, dentro de una fórmula */
+.mat { position: relative; display: inline-block; vertical-align: middle; padding: 0 7px; margin: 2px 2px }
+.mat::before, .mat::after { content: ""; position: absolute; top: 0; bottom: 0; width: 5px; border: 1.4px solid currentColor }
+.mat::before { left: 0; border-right: 0 }
+.mat::after { right: 0; border-left: 0 }
+.mat table { border-collapse: collapse }
+.mat td { padding: 2px 7px; text-align: center; white-space: nowrap; font-variant-numeric: tabular-nums }
+
+/* ---------- Teoría ---------- */
+.teoria, .preguntas { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.preguntas h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.preguntas h3 { font: 600 15px var(--f-ui); margin: 14px 0 2px }
+.preguntas p { margin: 0 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; overflow-x: auto; overflow-y: hidden; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+.teoria ul { padding-left: 20px }
+.teoria li { margin-bottom: 4px }
+.teoria li, .teoria p { overflow-x: auto; overflow-y: hidden }
+
+/* ---------- Liquid Glass ---------- */
+/* Vidrio solo en el marco (tarjetas, controles, barras); el lienzo de las gráficas y las fórmulas no se tocan. */
+body { display: flow-root; background: radial-gradient(60% 50% at 8% 0%, var(--halo1), transparent 70%), radial-gradient(50% 45% at 95% 10%, var(--halo2), transparent 70%), radial-gradient(55% 50% at 60% 100%, var(--halo3), transparent 70%), var(--bg); background-attachment: fixed }
+.card { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 18px; box-shadow: var(--vidrio-brillo), var(--vidrio-sombra); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur) }
+.destacado { border-top: 3px solid var(--accent) }
+.in { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 10px; box-shadow: var(--vidrio-brillo) }
+.btn { background: var(--vidrio-fuerte); border-color: var(--vidrio-borde); border-radius: 99px; padding: 5px 14px; box-shadow: var(--vidrio-brillo) }
+.modos { border-color: var(--vidrio-borde); border-radius: 99px; background: var(--vidrio); box-shadow: var(--vidrio-brillo); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur) }
+.modos button { background: transparent; border-radius: 99px }
+.modos button[aria-selected=true] { box-shadow: 0 1px 6px rgba(0,0,0,.18) }
+.resumen div { border-radius: 14px }
+.teoria .f { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 12px }
+canvas { border-radius: 14px }
+@media (max-width: 900px) { .card, .modos { -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px) } }
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) { .card, .modos, header.top { background: var(--panel); -webkit-backdrop-filter: none; backdrop-filter: none } .in, .btn, .teoria .f { background: var(--panel) } }
+
+:root { --accent:#6a4fc2; --accent-soft:color-mix(in srgb, #6a4fc2 12%, #fff); --marca:#0d6b66 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --accent:#b39ff7; --accent-soft:color-mix(in srgb, #b39ff7 16%, #182025); --marca:#4dbcb0 } }
+:root[data-theme="dark"] { --accent:#b39ff7; --accent-soft:color-mix(in srgb, #b39ff7 16%, #182025); --marca:#4dbcb0 }
+header.top { display:flex; align-items:center; gap:8px 20px; flex-wrap:wrap; padding:12px clamp(16px,3vw,28px); position:sticky; top:10px; z-index:10; margin:10px clamp(10px,2vw,20px) 0; border:1px solid var(--vidrio-borde); border-radius:22px; background:var(--vidrio-fuerte); box-shadow:var(--vidrio-brillo),var(--vidrio-sombra); -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur) }
+header.top .logo { font:600 18px var(--f-math); margin:0; white-space:nowrap; color:var(--ink); text-decoration:none } header.top .logo i { color:var(--marca) }
+header.top nav { display:flex; gap:4px 14px; font-size:14px; overflow-x:auto; max-width:100%; scrollbar-width:none }
+header.top nav a { white-space:nowrap; padding:2px 0; color:var(--muted); text-decoration:none } header.top nav a:hover { color:var(--ink) }
+header.top nav a[aria-current] { color:var(--ink); font-weight:600; box-shadow:inset 0 -2px 0 var(--accent) }
+header.top form { margin-left:auto; flex:0 1 170px; min-width:130px }
+header.top .foro { margin-left:auto; display:inline-flex; align-items:center; gap:6px; white-space:nowrap; font:600 14px var(--f-ui); color:var(--ink); text-decoration:none; border:1px solid var(--vidrio-borde); background:var(--vidrio); border-radius:99px; padding:6px 12px } header.top .foro:hover, header.top .foro[aria-current] { border-color:var(--accent); color:var(--accent) } header.top .foro + form { margin-left:0 } header.top > .foro ~ .tema { margin-left:0 }
+@media (min-width:701px) { header.top { flex-wrap:nowrap } header.top nav { min-width:0 } }
+header.top .buscar { font:14px var(--f-ui); color:var(--ink); border:1px solid var(--vidrio-borde); border-radius:99px; padding:7px 14px; width:100%; background:var(--vidrio) }
+header.top .buscar:focus-visible, header.top a:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.miga { display:flex; align-items:center; flex-wrap:wrap; gap:8px; font-size:13.5px; color:var(--muted); margin:0 0 10px }
+.miga a { color:var(--accent); font-weight:600; text-decoration:none } .miga a:hover { text-decoration:underline }
+.miga-ico { display:inline-grid; place-items:center; width:22px; height:22px; border-radius:6px; background:var(--accent-soft); color:var(--accent); font:italic 600 13px var(--f-math) }
+.miga-der { margin-left:auto; display:flex; gap:8px } .miga-izq:empty, .miga-der:empty { display:none }
+.bib-btn, .prac-btn { border-radius:8px !important; padding:6px 12px !important }
+body.bib-ejemplos select[id^="ejemplo"] { display:none }
+:root { --vida:#6a4fc2 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --vida:#b39ff7 } }
+:root[data-theme="dark"] { --vida:#b39ff7 }
+.relacionadas { max-width:860px; margin:16px 0 0; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:4px 12px 12px 4px; padding:12px 16px }
+.relacionadas h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--accent); margin:0 0 4px }
+.relacionadas a { display:flex; gap:10px; align-items:baseline; padding:5px 0; color:var(--ink); text-decoration:none; font-size:14px }
+.relacionadas a b { font-weight:600; white-space:nowrap } .relacionadas a span { color:var(--muted) } .relacionadas a:hover b { color:var(--accent); text-decoration:underline }
+.vida-real { max-width:860px; margin:28px 0 0; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--vida); border-radius:4px 12px 12px 4px; padding:12px 16px }
+.vida-real h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--vida); margin:0 0 4px }
+.vida-real a { display:flex; gap:10px; align-items:baseline; padding:5px 0; color:var(--ink); text-decoration:none; font-size:14px }
+.vida-real a b { font-weight:600; white-space:nowrap } .vida-real a span { color:var(--muted) } .vida-real a:hover b { color:var(--vida); text-decoration:underline }
+@media (max-width:600px) { .vida-real a, .relacionadas a { display:block } .vida-real a b, .relacionadas a b { display:block; white-space:normal } }
+@media (max-width:700px) { header.top form { display:none } h1 { font-size:21px }
+  .miga-izq, .miga-der, .miga::after { order:-1 } .miga::after { content:''; flex-basis:100%; height:0 } }
+
+.tema { flex:0 0 auto; margin-left:auto; width:36px; height:36px; display:grid; place-items:center; padding:0; border:1px solid var(--vidrio-borde, var(--line)); border-radius:99px; background:var(--vidrio, var(--bg)); color:var(--ink); cursor:pointer }
+.buscar ~ .tema, form ~ .tema { margin-left:0 }
+.tema:hover { border-color:var(--accent); color:var(--accent) }
+.tema:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.tema .sol { display:none }
+:root[data-theme="dark"] .tema .sol { display:block } :root[data-theme="dark"] .tema .luna { display:none }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tema .sol { display:block } :root:not([data-theme="light"]) .tema .luna { display:none } }
+@media (max-width:700px) { .top > .tema { margin-left:auto } .top > nav { order:1 } }
+/* =====================================================================
+   Página de un fenómeno de «Física en la vida real» (diseno.js la añade tras
+   estilos.css cuando la asignatura es fenomenos). De arriba abajo: la animación
+   (media pantalla de alto, con las franjas de los lados como las herramientas),
+   los controles de animacion.js, el texto del paso, la historia (.fen-historia,
+   si hace falta) y el recuadro de la herramienta con la que se relaciona. La maqueta está en fenomenos/<clave>/pagina.html.
+   ===================================================================== */
+.fen { max-width: 1100px }
+.fen h1 { font-size: clamp(28px, 4.2vw, 40px); line-height: 1.15; letter-spacing: -.01em; margin: 6px 0 8px }
+.fen .lead { font-size: clamp(16px, 1.6vw, 18.5px); line-height: 1.55; margin-bottom: 16px }
+.fen-escena { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 8px }
+.fen-escena canvas { height: clamp(220px, min(50vh, 70vw), 560px); margin: 0; background: var(--bg) }
+.fen-etiquetas { display: flex; gap: 8px; flex-wrap: wrap; margin: 4px 0 2px }
+.fen-etiquetas span { font: 600 12px var(--f-ui); padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel); color: var(--muted) }
+.fen-etiquetas span:first-child { background: var(--accent-soft); border-color: transparent; color: var(--accent) }
+/* línea de tiempo de los pasos (animacion.js la rellena con --avance) */
+.fen-puntos { --avance: 0; position: relative; display: flex; justify-content: space-between; margin: 16px 0 0; padding: 0 6px }
+.fen-puntos::before, .fen-puntos::after { content: ""; position: absolute; left: 23px; top: 16px; height: 3px; border-radius: 2px }
+.fen-puntos::before { right: 23px; background: var(--line) }
+.fen-puntos::after { width: calc((100% - 46px) * var(--avance)); background: var(--accent) }
+.fen-puntos button { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; width: 34px; padding: 0; border: 0; background: none; cursor: pointer; font: 600 12.5px var(--f-ui); color: var(--muted) }
+.fen-puntos button b { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--line); background: var(--panel); font: 600 13px var(--f-ui); transition: background .3s, border-color .3s, box-shadow .3s }
+.fen-puntos button span { white-space: nowrap }
+.fen-puntos button.hecho { color: var(--ink) }
+.fen-puntos button.hecho b { background: var(--accent); border-color: var(--accent); color: var(--panel) }
+.fen-puntos button[aria-current=step] { color: var(--accent) }
+.fen-puntos button[aria-current=step] b { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 0 5px var(--accent-soft) }
+.fen-puntos button:hover b { border-color: var(--accent) }
+.fen-controles { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; margin: 14px 0 0 }
+.fen-controles .btn { font-size: 13.5px; padding: 6px 12px }
+#play { min-width: 112px }
+.fen-texto { max-width: 860px; margin: 16px 0 0; min-height: 132px }
+.fen-texto h2 { font: 600 19px/1.3 var(--f-ui); margin: 0 0 6px }
+.fen-texto h2 small { display: block; font: 600 12px var(--f-ui); color: var(--accent); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 2px }
+.fen-texto p { font-size: 15.5px; line-height: 1.6; margin: 0 0 8px; overflow-x: auto }
+.fen-texto.entra { animation: fen-entra .45s ease-out }
+@keyframes fen-entra { from { opacity: 0; transform: translateY(6px) } }
+@media (prefers-reduced-motion: reduce) { .fen-texto.entra { animation: none } .fen-puntos button b { transition: none } }
+.fen-dato { display: flex; align-items: center; gap: 6px 14px; flex-wrap: wrap; background: var(--accent-soft); border-left: 4px solid var(--accent); border-radius: 10px; padding: 10px 14px; margin: 6px 0 12px; font: 500 15px var(--f-ui) }
+.fen-dato b { font: 700 21px var(--f-ui); color: var(--accent); white-space: nowrap }
+.fen-historia { max-width: 860px; margin: 22px 0 0 }
+.fen-historia h2 { font: 600 12px/1.4 var(--f-ui); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 10px }
+.fen-historia ol { list-style: none; margin: 0; padding: 0 0 0 18px; border-left: 2px solid var(--line) }
+.fen-historia li { position: relative; margin: 0 0 12px; font-size: 14.5px; line-height: 1.55 }
+.fen-historia li::before { content: ""; position: absolute; left: -25px; top: 5px; width: 12px; height: 12px; border-radius: 50%; background: var(--panel); border: 2px solid var(--accent) }
+.fen-historia li b { display: block; font: 700 13px var(--f-ui); color: var(--accent) }
+.fen-rel { max-width: 860px; margin: 22px 0 0; background: var(--panel); border: 1px solid var(--line); border-top: 3px solid var(--accent); border-radius: 12px; padding: 14px 16px; display: grid; grid-template-columns: 56px 1fr; column-gap: 16px }
+.fen-rel > * { grid-column: 2 }
+.fen-rel .fen-ico { grid-column: 1; grid-row: 1 / span 3; width: 56px; height: 56px; border-radius: 14px; display: grid; place-items: center; font: italic 600 26px var(--f-math); color: var(--panel); background: var(--accent) }
+.fen-fichas { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0 14px }
+.fen-fichas div { flex: 1 1 140px; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px }
+.fen-fichas small { display: block; font: 600 11.5px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .05em }
+.fen-fichas b { font: 700 18px var(--f-ui) }
+.fen-rel h2 { font: 600 12px/1.4 var(--f-ui); text-transform: uppercase; letter-spacing: .06em; color: var(--accent); margin: 0 0 8px }
+.fen-rel h3 { font: 600 17px var(--f-ui); margin: 0 0 6px }
+.fen-rel p { font-size: 14.5px; line-height: 1.55; margin: 0 0 10px; overflow-x: auto }
+.fen-rel .f { font-family: var(--f-math); font-size: 16px; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; margin: 0 0 8px; overflow-x: auto }
+.fen-abrir { display: block; text-align: center; margin-top: 4px; font: 600 15px var(--f-ui); color: var(--panel); background: var(--accent); border: 0; border-radius: 10px; padding: 11px 18px; cursor: pointer; text-decoration: none }
+.fen-abrir:hover { filter: brightness(1.08) }
+@media (max-width: 600px) {
+  .fen-puntos button span { display: none }
+  .fen-rel { grid-template-columns: 1fr } .fen-rel > * { grid-column: 1 } .fen-rel .fen-ico { grid-row: auto; width: 44px; height: 44px; font-size: 21px; margin-bottom: 8px }
+  .fen-texto h2 { font-size: 17.5px } .fen-texto p { font-size: 15px } }
+.fen-prueba { display: flex; align-items: center; gap: 8px 14px; flex-wrap: wrap; margin: 10px 0 4px; background: var(--accent-soft); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; font: 500 14.5px var(--f-ui) }
+.fen-prueba label b { color: var(--accent) }
+.fen-prueba input { flex: 1 1 180px; accent-color: var(--accent) }
+.fen-prueba output { font: 600 14.5px var(--f-ui); min-width: 15em }
+#sonido { margin-left: 4px }
+</style>
+<style>
+/* colores del dibujo, con su valor en modo oscuro */
+:root {
+  --sala: #e9e4da; --suelo: #8d8479; --poste: #6b5a46; --nucleo: #7d858c; --cobre: #b8672e; --hilo: #2a5db5; --campo: #6b3fa0; --onda: #2a5db5;
+  --corriente: #c2412a; --resalta: #c2412a; --caliente: #e8602c; --casa: #c9c4ba; --ventana: #f2c94c; --rotulo: #1a2128 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --sala: #1c2126; --suelo: #3a3f45; --poste: #8a7458; --nucleo: #5b6168; --cobre: #d8884a; --hilo: #74a2f2; --campo: #b48be8; --onda: #74a2f2;
+  --corriente: #ef7a62; --resalta: #ef7a62; --caliente: #ff7a3d; --casa: #3a3f45; --ventana: #f2c94c; --rotulo: #e3e8ea } }
+:root[data-theme="dark"] {
+  --sala: #1c2126; --suelo: #3a3f45; --poste: #8a7458; --nucleo: #5b6168; --cobre: #d8884a; --hilo: #74a2f2; --campo: #b48be8; --onda: #74a2f2;
+  --corriente: #ef7a62; --resalta: #ef7a62; --caliente: #ff7a3d; --casa: #3a3f45; --ventana: #f2c94c; --rotulo: #e3e8ea }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Cienci<i>fy</i></a><nav aria-label="Asignaturas"><a href="../../">Inicio</a><a href="../../electromagnetismo/">Electromagnetismo</a><a href="../../fisica/">Física general</a><a href="../../quimica/">Química</a><a href="../../matematicas/">Matemáticas</a><a href="../../estadistica/">Estadística</a><a href="../../circuitos/">Circuitos</a><a href="../../economia/">Economía</a><a href="../../fenomenos/" aria-current="page">Vida real</a></nav><a class="foro" href="../../foro/"><span aria-hidden="true">💬</span>Foro</a><form action="../../" role="search"><input class="buscar" type="search" name="q" placeholder="Buscar: Biot-Savart, molaridad…" aria-label="Buscar herramientas (atajo: barra /)" title="Atajo: / o Ctrl+K"></form><button class="tema" type="button" title="Cambiar de modo claro u oscuro" aria-label="Cambiar de modo claro u oscuro"><svg class="luna" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11z"/></svg><svg class="sol" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button></header>
+<main class="wrap fen">
+<nav class="miga" aria-label="Estás en"><span class="miga-izq"></span><span class="miga-ico" aria-hidden="true">✦</span><a href="../">Física en la vida real</a><span aria-hidden="true">›</span><span>El transformador del poste</span><span class="miga-der"></span></nav>
+<div class="fen-etiquetas"><span>⚡ Electromagnetismo</span><span>Dificultad media</span><span>6 pasos · 1 min</span></div>
+<h1>El transformador del poste</h1>
+<p class="lead">En lo alto de un poste hay un cajón gris que zumba. Le entran 20 000 V y le salen 400 V, y no tiene ninguna pieza que se mueva. ¿Cómo cambia la tensión con solo dos bobinas y un trozo de hierro, y por qué zumba?</p>
+<div class="fen-escena"><canvas id="escena" role="img" aria-label="Animación del transformador del poste: el poste con su cajón que zumba entre la línea de 20 000 V y los cables de 400 V, el núcleo de hierro con la bobina primaria de muchas vueltas y la secundaria de pocas, el flujo magnético que cambia, la misma potencia con 5 A en el primario y 250 A en el secundario, la diferencia entre corriente continua y alterna y las láminas del núcleo con el zumbido de 100 hercios"></canvas></div>
+<div class="fen-puntos" id="puntos" role="group" aria-label="Pasos"></div>
+<div class="fen-controles">
+  <button class="btn" id="ant" type="button">‹ Anterior</button>
+  <button class="btn" id="play" type="button" aria-pressed="true">❚❚ Parar</button>
+  <button class="btn" id="sig" type="button">Siguiente ›</button>
+</div>
+<div class="fen-texto" aria-live="polite"><h2 id="paso-t"></h2><div id="paso-x"></div></div>
+<section class="fen-historia" aria-label="Un poco de historia">
+  <h2>Un poco de historia</h2>
+  <ol>
+    <li><b>1831</b>Michael Faraday descubre la inducción con dos bobinas arrolladas a un anillo de hierro: es, sin saberlo, el primer transformador.</li>
+    <li><b>1836</b>Nicholas Callan construye en Irlanda una bobina de inducción, con la que se consiguen tensiones muy altas a partir de una pila.</li>
+    <li><b>1885</b>Károly Zipernowsky, Miksa Déri y Ottó Bláthy presentan en Budapest el primer transformador de núcleo cerrado, que permite alimentar muchas lámparas desde una sola línea.</li>
+    <li><b>1886</b>George Westinghouse y William Stanley prueban en Great Barrington (Massachusetts) la primera red de corriente alterna con transformadores.</li>
+    <li><b>Finales del siglo XIX</b>En la «guerra de las corrientes», la alterna gana a la continua precisamente porque su tensión se puede subir y bajar con un transformador.</li>
+  </ol>
+</section>
+<section class="fen-rel" aria-label="Herramienta relacionada">
+  <div class="fen-ico" aria-hidden="true">M</div>
+  <h2>Con qué herramienta se relaciona</h2>
+  <h3>Autoinducción e inducción mutua <small>· Electromagnetismo</small></h3>
+  <p>Un transformador ideal es dos bobinas con acoplamiento perfecto (k = 1): la fem de la secundaria es la inducción mutua M por lo deprisa que cambia la corriente del primario, y su cociente con la del primario es la relación de vueltas.</p>
+  <p class="f m">ε₂ = −M dI₁/dt ,  M = μ₀ N₁ N₂ h ln(b/a) / 2π ,  ε₂/ε₁ = N₂/N₁ = 1/50</p>
+  <p>Se abre en la pestaña de inducción mutua, en la geometría «Bobina sobre un toroide (k = 1)»: N₁ = 2500, N₂ = 50, un núcleo de 8 a 12 cm de radio y 4 cm de alto, sin hierro (con hierro L y M se multiplican por μ<sub>r</sub>, pero el cociente es el mismo). Con el ritmo de cambio del primario que corresponde a 20 kV de pico, sale ε₂ ≈ 566 V de pico, es decir 400 V eficaces.</p>
+  <div class="fen-fichas"><div><small>Relación de vueltas</small><b>50 : 1</b></div><div><small>Tensión del secundario</small><b>400 V</b></div><div><small>Corrientes (100 kVA)</small><b>5 A / 250 A</b></div></div>
+  <a class="fen-abrir" id="abrir" href="../../electromagnetismo/induccion/">Abrir en Autoinducción e inducción mutua con estos datos →</a>
+</section>
+<section class="relacionadas" aria-label="Más fenómenos"><h2>Más fenómenos</h2>
+<a href="../fuego-san-telmo/"><b>El Fuego de San Telmo →</b><span>Por qué brillan las puntas de los mástiles en una tormenta: efecto punta y descarga corona.</span></a>
+<a href="../chispa-pomo/"><b>La chispa al tocar el pomo →</b><span>El cuerpo como condensador: unos 150 pF a 10 kV y su descarga en nanosegundos.</span></a>
+<a href="../frenado-magnetico/"><b>El freno magnético y el tren de levitación →</b><span>Un metal que se mueve en un campo se frena solo: corrientes de Foucault, ley de Lenz y el tren que flota sobre el carril.</span></a>
+</section>
+</main>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Física en la vida real <span id="ver"></span> (beta)</footer>
+</body>
+<script>
+const Pagina = { carpeta: 'fenomenos/transformador-poste', guarda: null };
+const Version = (() => { const registros = {"web":[{"v":"1.11"}],"relatividad":[{"v":"0.1"}],"osc-acopladas":[{"v":"0.1"}],"solubilidad":[{"v":"0.1"}],"lagrange":[{"v":"0.1"}],"series":[{"v":"0.1"}],"no-parametricos":[{"v":"0.1"}],"regresion-multiple":[{"v":"0.1"}],"anova":[{"v":"0.1"}],"black-scholes":[{"v":"0.1"}],"bonos":[{"v":"0.1"}],"solow":[{"v":"0.1"}],"integrales-multiples":[{"v":"0.1"}],"formulacion":[{"v":"0.1"}],"balance":[{"v":"0.1"}],"redox":[{"v":"0.1"}],"lineas-transmision":[{"v":"0.1"}],"superficies":[{"v":"0.1"}],"vsepr":[{"v":"0.1"}],"maxwell":[{"v":"0.1"}],"fresnel":[{"v":"0.1"}],"gravitacion":[{"v":"0.1"}],"convolucion":[{"v":"0.1"}],"laplace-numerica":[{"v":"0.1"}],"imagenes":[{"v":"0.1"}],"guias-onda":[{"v":"0.1"}],"antena":[{"v":"0.1"}],"bode":[{"v":"0.1"}],"optica":[{"v":"0.1"}],"simulador":[{"v":"0.3"}],"teoria-juegos":[{"v":"0.1"}],"puertas-logicas":[{"v":"0.3"}],"multiplicador":[{"v":"0.1"}],"is-lm":[{"v":"0.1"}],"choques":[{"v":"0.1"}],"termoquimica":[{"v":"0.1"}],"probabilidad":[{"v":"0.1"}],"unidades":[{"v":"0.1"}],"equilibrio":[{"v":"0.1"}],"oscilaciones":[{"v":"0.1"}],"beneficio":[{"v":"0.1"}],"costes":[{"v":"0.1"}],"sistemas-numericos":[{"v":"0.1"}],"excedentes":[{"v":"0.1"}],"oferta-demanda":[{"v":"0.1"}],"chi2-bondad":[{"v":"0.1"}],"contrastes":[{"v":"0.1"}],"errores":[{"v":"0.1"}],"graficador":[{"v":"0.1"}],"metodos-numericos":[{"v":"0.1"}],"fisica-moderna":[{"v":"0.2"}],"lorenz-gini":[{"v":"0.1"}],"phillips-okun":[{"v":"0.1"}],"tipos-cambio":[{"v":"0.1"}],"elasticidades":[{"v":"0.1"}],"pib-ipc":[{"v":"0.1"}],"numeros-indice":[{"v":"0.1"}],"ratios":[{"v":"0.1"}],"punto-muerto":[{"v":"0.1"}],"ahorro":[{"v":"0.1"}],"van-tir":[{"v":"0.1"}],"amortizacion-inmovilizado":[{"v":"0.1"}],"prestamos":[{"v":"0.1"}],"rentas":[{"v":"0.1"}],"interes":[{"v":"0.1"}],"descriptiva":[{"v":"0.1"}],"regresion-economia":[{"v":"0.1"}],"ajustador":[{"v":"0.1"}],"electrostatica":[{"v":"0.6"}],"magnetostatica":[{"v":"0.2"}],"tabla-periodica":[{"v":"0.2"}],"trabajo-y-energia":[{"v":"0.2"}],"masa-molar":[{"v":"0.2"}],"configuracion-electronica":[{"v":"0.2"}],"condensadores":[{"v":"0.2"}],"tiro-parabolico":[{"v":"0.2"}],"disoluciones":[{"v":"0.2"}],"calorimetria":[{"v":"0.2"}],"induccion":[{"v":"0.2"}],"matrices":[{"v":"0.2"}],"derivadas":[{"v":"0.3"}],"laplace":[{"v":"0.2"}],"interferencia":[{"v":"0.2"}],"ondas-em":[{"v":"0.3"}],"intervalos":[{"v":"0.2"}],"fuerza":[{"v":"0.2"}],"campos":[{"v":"0.2.1"}],"cinetica":[{"v":"0.2"}],"edos":[{"v":"0.2"}],"fourier":[{"v":"0.2"}],"taylor":[{"v":"0.2.1"}],"complejos":[{"v":"0.2"}],"sistemas":[{"v":"0.3"}],"regresion":[{"v":"0.2"}],"estadistica":[{"v":"0.2"}],"dinamica":[{"v":"0.2"}],"solido-rigido":[{"v":"0.2"}],"ondas":[{"v":"0.2"}],"gases":[{"v":"0.3"}],"ciclos":[{"v":"0.2"}],"ph":[{"v":"0.3"}],"fluidos":[{"v":"0.2"}],"doppler":[{"v":"0.2"}],"resistencias":[{"v":"0.2"}],"faraday":[{"v":"0.2"}],"fenomenos":[{"v":"0.7"}]}; const de = (h) => ({ current: registros[h][0].v, log: registros[h] }); return { registros, de }; })();
+
+/* =====================================================================
+   Ayudantes comunes de las herramientas (los que antes copiaba cada una).
+   herramientas.js lo pone en cada página justo después de version.js; en
+   Node (pruebas) comprobar.js lo deja en global.Herramienta. Uso:
+     const { $, esc, copia, vacio } = Herramienta;
+     $(q)          document.querySelector
+     esc(s)        texto seguro dentro de HTML y de atributos
+     copia(o)      copia profunda de datos JSON (el estado sc, un ejemplo)
+     vacio(v)      campo sin rellenar (undefined, null o solo espacios)
+     leeSI(s, base)  número de un campo con coma, 3·10^8, prefijos del SI y
+                   unidad: «4k7», «1,5 kΩ», «100n», «10 µF», «5 ms». Con prefijo,
+                   notación 4k7 o unidad escrita da el valor en unidades del SI;
+                   un número solo se multiplica por base (1e-3 si el campo
+                   está en mH, 1e-6 si en μF). NaN si no se entiende
+     txt(h)        HTML de un resultado a texto para el lienzo (exponentes ⁰¹²…)
+     marcas(a, b, n)  valores redondos (1, 2, 2,5, 5 × 10ⁿ) para las marcas de un eje
+     lienzo(c)     prepara un <canvas> (o su selector) a la resolución de la
+                   pantalla, limpio y en px CSS: { g, w, h, c, cambia }; cambia
+                   es true si el tamaño era otro (para rehacer un fondo guardado)
+     enlace        un enlace con #d=… (lo copia «Mis ejercicios») deja sus datos en la clave de la página
+                   (Pagina.guarda) antes de que arranque la app, en todas las herramientas
+     accesible()   (ya se llama al cargar) aria-live en los resultados, role=alert en los
+                   errores y aria-describedby de cada gráfica hacia los resultados
+   ===================================================================== */
+const Herramienta = (() => {
+  const $ = (q) => document.querySelector(q);
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const copia = (o) => JSON.parse(JSON.stringify(o));
+  const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
+  const PREFIJOS = { p: 1e-12, n: 1e-9, u: 1e-6, 'µ': 1e-6, 'μ': 1e-6, m: 1e-3, k: 1e3, K: 1e3, M: 1e6, G: 1e9, R: 1 };
+  const leeSI = (s, base = 1) => {
+    let t = String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace(/[−–]/g, '-').replace(/[·x×*]10\^?\(?([+\-]?\d+)\)?/i, 'e$1');
+    const sinUnidad = t.replace(/(Ω|ohmios?|ohms?|Hz|var|VA|V|A|F|H|W|S|s)$/, ''), unidad = sinUnidad !== t;
+    t = sinUnidad;
+    let m = t.match(/^([+-]?)(\d*)([pnuµμmkKMGR])(\d+)$/);
+    if (m) return +`${m[1]}${m[2] || 0}.${m[4]}` * PREFIJOS[m[3]];
+    m = t.match(/^([+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?)([pnuµμmkKMG]?)$/i);
+    if (!m) return NaN;
+    return +m[1] * (m[2] ? PREFIJOS[m[2]] : unidad ? 1 : base);
+  };
+  const txt = (h) => String(h).replace(/<sup>(.*?)<\/sup>/g, (_, e) => e.replace(/−/g, '⁻').replace(/\d/g, (d) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d])).replace(/<[^>]+>/g, '');
+  const marcas = (a, b, n = 6) => {
+    const p0 = (b - a) / n, e = 10 ** Math.floor(Math.log10(p0)), paso = [1, 2, 2.5, 5, 10].map((q) => q * e).find((q) => q >= p0) || 10 * e;
+    const out = []; for (let v = Math.ceil(a / paso) * paso; v <= b + paso * 1e-9; v += paso) out.push(Math.abs(v) < paso * 1e-9 ? 0 : v);
+    return out;
+  };
+  const lienzo = (c) => {
+    if (typeof c === 'string') c = $(c);
+    const dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
+    const cambia = c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr);
+    if (cambia) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
+    const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
+    return { g, w, h, c, cambia };
+  };
+  // Accesibilidad común: los resultados que cambian al tocar un dato se anuncian con cortesía (aria-live), los mensajes de error
+  // como alerta y cada gráfica se describe con los resultados de al lado (aria-describedby), no solo con su título fijo.
+  const accesible = (doc = typeof document !== 'undefined' ? document : null) => {
+    if (!doc) return;
+    const RES = '#resumen, #res, #resumen-d, #resumen-r, #resumen-c, #resumen-este, #resumen-emp, #resumen-nq, #resumen-conf, #res-masa, #res-dil, #res-mez';
+    for (const e of doc.querySelectorAll(RES)) if (!e.hasAttribute('aria-live')) e.setAttribute('aria-live', 'polite');
+    for (const e of doc.querySelectorAll('.error')) if (!e.hasAttribute('role')) e.setAttribute('role', 'alert');
+    const res = doc.querySelector('#resumen, #res');
+    if (res) for (const c of doc.querySelectorAll('canvas')) if (!c.hasAttribute('aria-describedby') && !c.closest('#resumen, #res') && !c.hasAttribute('aria-hidden')) c.setAttribute('aria-describedby', res.id);
+  };
+  accesible();
+  // Enlace que lleva el estado (#d=…, base64 url del JSON guardado): los datos pasan a donde la app los lee al arrancar
+  if (typeof location !== 'undefined' && typeof Pagina !== 'undefined' && Pagina.guarda) {
+    const m = /[#&]d=([A-Za-z0-9_-]+)/.exec(location.hash);
+    if (m) {
+      try { const json = decodeURIComponent(escape(atob(m[1].replace(/-/g, '+').replace(/_/g, '/')))); JSON.parse(json); localStorage.setItem(Pagina.guarda, json); } catch (e) { /* enlace roto o sin almacenamiento */ }
+      try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* file:// */ }
+    }
+  }
+  return { $, esc, copia, vacio, leeSI, txt, marcas, lienzo, accesible };
+})();
+
+/* =====================================================================
+   Fórmulas en MathML a partir de una sintaxis sencilla (sin DOM salvo
+   Mates.pinta). En los textos, lo que va entre $…$ es una fórmula:
+     a/b            fracción (los paréntesis de fuera se quitan)
+     x^2, e^{−bt/m} exponente; v_0x, E_{c,máx} subíndice
+     √(…), ∛(…)     raíz
+     "m/s"          texto tal cual (unidades, palabras); \{ \} llaves visibles
+     sen cos tg ln log exp máx mín   funciones; binom(n, k)
+   Una palabra que no es una función se lee letra a letra (mgh = m·g·h).
+   También acepta <sup>, <sub> y las etiquetas que devuelve f().
+   ===================================================================== */
+const Mates = (() => {
+  const FUNC = new Set(['sen', 'cos', 'tg', 'tan', 'ln', 'log', 'exp', 'arcsen', 'arccos', 'arctg', 'máx', 'mín', 'lím', 'senh', 'cosh', 'tgh']);
+  const OPS = '+-−=·×÷⇒⇔→←↔≈≠<>≤≥±∓,;:!∝∈∼≡∑∏∫∂∇⊥∥';
+  const escH = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  function tokens(src) {
+    const s = String(src)
+      .replace(/<sup>/g, '^{').replace(/<\/sup>/g, '}').replace(/<sub>/g, '_{').replace(/<\/sub>/g, '}')
+      .replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+    const out = [];
+    let i = 0, sp = false;
+    while (i < s.length) {
+      const c = s[i], resto = s.slice(i);
+      let m;
+      if (/\s/.test(c)) { sp = true; i++; continue; }
+      // \{ y \} son llaves que se ven: ℒ\{f(t)\}
+      if (c === '\\' && (s[i + 1] === '{' || s[i + 1] === '}')) { out.push({ t: 's', v: c + s[i + 1], sp }); i += 2; sp = false; continue; }
+      if ((m = resto.match(/^\d+(?:[.,]\d+)?/))) out.push({ t: 'n', v: m[0].replace('.', ','), sp });
+      else if (c === '"') { const j = s.indexOf('"', i + 1); m = [s.slice(i, j < 0 ? s.length : j + 1)]; out.push({ t: 'x', v: m[0].replace(/"/g, ''), sp }); }
+      else if ((m = resto.match(/^[\p{L}\p{M}∞]+[′″]*/u))) out.push({ t: 'w', v: m[0], sp });
+      else { m = [c]; out.push({ t: 's', v: c, sp }); }
+      i += m[0].length; sp = false;
+    }
+    return out;
+  }
+
+  // nodo: { m: MathML, dentro: MathML sin los paréntesis de fuera (o null) }
+  const nodo = (m, dentro = null) => ({ m, dentro });
+  const fila = (xs) => (xs.length === 1 ? xs[0] : `<mrow>${xs.join('')}</mrow>`);
+  const letra = (v) => (/^\d+(,\d+)?$/.test(v) ? `<mn>${v}</mn>` : [...v].length === 1 ? `<mi>${escH(v)}</mi>` : `<mi mathvariant="normal">${escH(v)}</mi>`);
+
+  function analiza(tk) {
+    let p = 0;
+    const ver = () => tk[p], es = (v) => tk[p] && tk[p].t === 's' && tk[p].v === v;
+    function secuencia(cierre) {
+      const xs = [];
+      let prevOp = true;
+      while (p < tk.length && !(cierre && es(cierre))) {
+        const k = ver();
+        // ∫ con límites lleva sus subíndices: ∫_a^b
+        if (k.t === 's' && OPS.includes(k.v) && !(k.v === '∫' && tk[p + 1] && tk[p + 1].t === 's' && (tk[p + 1].v === '_' || tk[p + 1].v === '^'))) {
+          p++;
+          const v = k.v === '-' ? '−' : k.v;
+          // un signo detrás de otro operador (o al principio) es de número: = −19,28
+          const signo = prevOp && (v === '−' || v === '+' || v === '±');
+          xs.push(v === '!' ? '<mo lspace="0">!</mo>' : v === ',' || v === ';' ? `<mo separator="true">${v}</mo>` : signo ? `<mo form="prefix" lspace="0" rspace="0.05em">${v}</mo>` : `<mo>${escH(v)}</mo>`);
+          prevOp = true; continue;
+        }
+        if (k.t === 's' && (k.v === ')' || k.v === '}' || k.v === ']')) { p++; continue; } // paréntesis sueltos
+        xs.push(fraccion().m); prevOp = false;
+      }
+      return xs;
+    }
+    function fraccion() {
+      let a = guiones();
+      while (es('/')) { p++; const b = guiones(); a = nodo(`<mfrac>${a.dentro ?? a.m}${b.dentro ?? b.m}</mfrac>`); }
+      return a;
+    }
+    function argumento() {
+      if (es('{')) { p++; const xs = secuencia('}'); p++; return fila(xs); }
+      if (es('-') || es('−')) { p++; const a = argumento(); return `<mrow><mo>−</mo>${a}</mrow>`; }
+      if (es('(')) { const a = atomo(); return a.m; }
+      // una racha de letras y números pegados: 0x, máx, 12
+      const k = ver();
+      if (!k) return '<mrow></mrow>';
+      if (k.t === 's') { p++; return `<mo>${escH(k.v)}</mo>`; }
+      let v = k.v; p++;
+      while (ver() && !ver().sp && (ver().t === 'n' || ver().t === 'w')) { v += ver().v; p++; }
+      return letra(v);
+    }
+    function guiones() {
+      const base = atomo();
+      let sub = null, sup = null;
+      for (;;) {
+        if (es('_') && sub === null) { p++; sub = argumento(); } else if (es('^') && sup === null) { p++; sup = argumento(); } else break;
+      }
+      if (sub === null && sup === null) return base;
+      const b = base.m;
+      return nodo(sub !== null && sup !== null ? `<msubsup>${b}${sub}${sup}</msubsup>` : sub !== null ? `<msub>${b}${sub}</msub>` : `<msup>${b}${sup}</msup>`);
+    }
+    function atomo() {
+      const k = ver();
+      if (!k) return nodo('<mrow></mrow>');
+      p++;
+      if (k.t === 'n') return nodo(`<mn>${k.v}</mn>`);
+      if (k.t === 'x') return nodo(`${k.sp && p > 1 ? '<mspace width="0.3em"></mspace>' : ''}<mtext>${escH(k.v)}</mtext>`);
+      if (k.t === 'w') {
+        // binom(n, k): número combinatorio
+        if (k.v === 'binom' && es('(')) { p++; const a = secuencia(','); p++; const b = secuencia(')'); p++; return nodo(`<mrow><mo>(</mo><mfrac linethickness="0">${fila(a)}${fila(b)}</mfrac><mo>)</mo></mrow>`); }
+        if (FUNC.has(k.v)) { let m = `<mi mathvariant="normal">${k.v}</mi>`; if (es('^')) { p++; m = `<msup>${m}${argumento()}</msup>`; } return nodo(`<mspace width="0.17em"></mspace>${m}<mo>&#x2061;</mo><mspace width="0.12em"></mspace>`); }
+        // diferencial suelto (dx, dt, dS, dθ…) detrás de algo: con un poco de aire, como en «f(x) dx»
+        if (k.sp && p > 1 && /^d[a-zA-Zθφρ]$/.test(k.v)) return nodo(`<mspace width="0.17em"></mspace><mi>d</mi><mi>${escH(k.v[1])}</mi>`);
+        const ls = [...k.v.replace(/[′″]+$/, '')], pr = (k.v.match(/[′″]+$/) || [''])[0];
+        // las marcas combinadas (î, ĵ con acento) van con su letra
+        const grupos = []; for (const c of ls) { if (/\p{M}/u.test(c) && grupos.length) grupos[grupos.length - 1] += c; else grupos.push(c); }
+        // las mayúsculas griegas (Δ, Σ, Φ, Ω) van rectas, como en los libros
+        return nodo(fila(grupos.map((c) => (c === '∞' ? '<mi>∞</mi>' : /^[Α-Ω]$/.test(c) ? `<mi mathvariant="normal">${c}</mi>` : `<mi>${escH(c)}</mi>`)).concat(pr ? [`<mo lspace="0" rspace="0">${pr}</mo>`] : [])));
+      }
+      const v = k.v;
+      if (v === '(' || v === '[') { const c = v === '(' ? ')' : ']'; const xs = secuencia(c); if (es(c)) p++; const d = fila(xs), est = /<m(frac|sqrt|root)/.test(d) ? '' : ' stretchy="false"'; return nodo(`<mrow><mo${est}>${v}</mo>${d}<mo${est}>${c}</mo></mrow>`, d); }
+      if (v === '{') { const xs = secuencia('}'); if (es('}')) p++; const d = fila(xs); return nodo(`<mrow>${d}</mrow>`, d); }
+      if (v === '√') { const a = guiones(); return nodo(`<msqrt>${a.dentro ?? a.m}</msqrt>`); }
+      if (v === '∛') { const a = guiones(); return nodo(`<mroot>${a.dentro ?? a.m}<mn>3</mn></mroot>`); }
+      if (v === '\\{' || v === '\\}') return nodo(`<mo stretchy="false">${v[1]}</mo>`);
+      if (v === '|') return nodo('<mo stretchy="false" lspace="0.05em" rspace="0.05em">|</mo>');
+      if (v === '°' || v === '%' || v === '‰') return nodo(`<mi mathvariant="normal">${v}</mi>`);
+      return nodo(`<mo>${escH(v)}</mo>`);
+    }
+    return fila(secuencia(null));
+  }
+
+  // la fuente se queda en data-src para poder copiarla (como texto o LaTeX)
+  const mathml = (src) => `<math data-src="${escH(src).replace(/"/g, '&quot;')}"><mstyle displaystyle="true">${analiza(tokens(src))}</mstyle></math>`;
+  // parte una fórmula antes de cada = o ⇒ que no esté dentro de paréntesis, llaves o comillas
+  function trozos(src) {
+    const out = [];
+    let ini = 0, nivel = 0, comillas = false;
+    for (let i = 0; i < src.length; i++) {
+      const c = src[i];
+      if (c === '"') comillas = !comillas;
+      else if (comillas || src[i - 1] === '\\') continue;
+      else if ('([{'.includes(c)) nivel++;
+      else if (')]}'.includes(c)) nivel--;
+      else if ((c === '=' || c === '⇒') && nivel === 0 && src.slice(ini, i).trim()) { out.push(src.slice(ini, i)); ini = i; }
+    }
+    return out.concat(src.slice(ini)).map((x) => x.trim()).filter(Boolean);
+  }
+  // sustituye cada $…$ de un texto HTML por su MathML; con partir, cada igualdad va en su propio
+  // <math> para que una cadena larga (a = b = c) baje de línea en el móvil en vez de salirse
+  const html = (s, partir = false) => String(s ?? '').replace(/\$([^$]+)\$/g, (_, x) => (partir
+    ? trozos(x).map((t, i) => (i ? mathml(t).replace(/^(<math[^>]*><mstyle[^>]*>(?:<mrow>)?)<mo>/, '$1<mo lspace="0">') : mathml(t))).join(' ')
+    : mathml(x)));
+  // convierte en el documento los elementos con class="m" (fórmulas escritas en el HTML)
+  function pinta(raiz) { if (typeof document === 'undefined') return; for (const el of (raiz || document).querySelectorAll('.m:not([data-m])')) { el.dataset.m = '1'; el.innerHTML = html(el.innerHTML.includes('$') ? el.innerHTML : `$${el.innerHTML}$`); } }
+  if (typeof document !== 'undefined') {
+    const st = document.createElement('style');
+    st.textContent = '@font-face { font-family: "STIX Two Math"; src: url(../../fuentes/stix-two-math.woff2) format("woff2"); font-display: swap }\nmath { font-family: "STIX Two Math", "Cambria Math", math; font-size: 1.08em }\nmath mtext { font-family: "STIX Two Text", "STIX Two Math", serif }';
+    document.head.appendChild(st);
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => pinta()); else pinta();
+  }
+  return { html, mathml, pinta, tokens };
+})();
+
+/* =====================================================================
+   Autoinducción e inducción mutua (sin DOM): coeficiente de autoinducción
+   de solenoides, toroides (también con entrehierro), cables coaxiales y
+   líneas bifilares; coeficiente de inducción mutua de pares típicos y
+   bobinas acopladas en serie y en paralelo; energía magnética, flujo y fem
+   inducida; y el transitorio de un circuito RL (cerrar, abrir o conectar y
+   desconectar una y otra vez), con la energía disipada. Desarrollo en la forma
+   simbólica (μ₀ N² S / l) y con números. Unidades del SI.
+   ===================================================================== */
+const Induccion = (() => {
+  const MU0 = 4e-7 * Math.PI;
+  const f = (x, d = 4) => {
+    if (!isFinite(x)) return '—';
+    if (Math.abs(x) < 1e-15) return '0';
+    const a = Math.abs(x);
+    const s = a >= 1e5 || a < 1e-3 ? x.toExponential(d - 1).replace(/\.?0+e/, 'e').replace('e', '·10^').replace(/\^([+-]?)(\d+)/, (_, sg, e) => `<sup>${sg === '-' ? '−' : ''}${+e}</sup>`) : String(+x.toPrecision(d));
+    return s.replace('.', ',').replace('-', '−');
+  };
+  // con prefijo del SI: 4,935·10⁻⁴ H → 0,4935 mH
+  const PREF = [[1e9, 'G'], [1e6, 'M'], [1e3, 'k'], [1, ''], [1e-3, 'm'], [1e-6, 'μ'], [1e-9, 'n'], [1e-12, 'p']];
+  const u = (x, unidad, d = 4) => {
+    if (!isFinite(x) || x === 0) return `${f(x, d)} ${unidad}`;
+    const a = Math.abs(x), p = PREF.find(([v]) => a >= v * 0.9999999) || PREF[PREF.length - 1];
+    return `${String(+(x / p[0]).toPrecision(d)).replace('.', ',').replace('-', '−')} ${p[1]}${unidad}`;
+  };
+  const leeNum = (s) => +String(s).trim().replace(/\s/g, '').replace(',', '.').replace(/[·x×*]10\^?([+\-−]?\d+)/i, 'e$1').replace('−', '-');
+  const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
+  const lee = (sc, k, nom, { opcional = false, cero = false, signo = false } = {}) => {
+    if (vacio(sc[k])) { if (opcional) return null; throw new Error(`Falta ${nom}`); }
+    const v = leeNum(sc[k]);
+    if (!isFinite(v)) throw new Error(`${nom[0].toUpperCase() + nom.slice(1)} debe ser un número`);
+    if (!signo && (cero ? v < 0 : v <= 0)) throw new Error(`${nom[0].toUpperCase() + nom.slice(1)} debe ser ${cero ? 'positivo o cero' : 'mayor que 0'}`);
+    return v;
+  };
+
+  /* ---------- Autoinducción ---------- */
+  // cada geometría: campos (clave, nombre, unidad, factor a SI) y la función que da L con su desarrollo
+  const GEO_L = {
+    solenoide: {
+      nombre: 'Solenoide largo', campos: [['N', 'Número de espiras N', '', 1], ['l', 'Longitud l', 'cm', 1e-2], ['r', 'Radio r', 'cm', 1e-2], ['mur', 'Permeabilidad relativa μ<sub>r</sub>', '', 1]],
+      calc: ({ N, l, r, mur }) => {
+        const S = Math.PI * r * r, L = (MU0 * mur * N * N * S) / l;
+        return { L, pasos: [
+          { t: 'Campo dentro del solenoide (Ampère)', html: `$B = {μ_0 μ_r N I}/l$, uniforme dentro y nulo fuera (si l ≫ r).` },
+          { t: 'Flujo propio', html: `$Φ = N B S = {μ_0 μ_r N^2 S I}/l$, con $S = π r^2$ = ${f(S)} m<sup>2</sup>.` },
+          { t: 'Coeficiente de autoinducción', html: `$L = Φ/I = {μ_0 μ_r N^2 π r^2}/l = {4π·10^{−7} · ${f(mur)} · ${f(N)}^2 · ${f(S)}}/{${f(l)}}$ = <b>${u(L, 'H')}</b>` },
+        ], B1: (MU0 * mur * N) / l, letras: 'L = {μ_0 μ_r N^2 π r^2}/l' };
+      },
+    },
+    'toroide-rect': {
+      nombre: 'Toroide de sección rectangular', campos: [['N', 'Número de espiras N', '', 1], ['a', 'Radio interior a', 'cm', 1e-2], ['b', 'Radio exterior b', 'cm', 1e-2], ['h', 'Altura h', 'cm', 1e-2], ['mur', 'Permeabilidad relativa μ<sub>r</sub>', '', 1]],
+      valida: ({ a, b }) => { if (b <= a) throw new Error('El radio exterior debe ser mayor que el interior'); },
+      calc: ({ N, a, b, h, mur }) => {
+        const L = (MU0 * mur * N * N * h * Math.log(b / a)) / (2 * Math.PI);
+        return { L, pasos: [
+          { t: 'Campo dentro del toroide (Ampère)', html: `$B(r) = {μ_0 μ_r N I}/{2π r}$, para a < r < b.` },
+          { t: 'Flujo por una espira', html: `$Φ_1 = ∫_a^b B h dr = {μ_0 μ_r N I h ln(b/a)}/{2π}$, con ln(b/a) = ln(${f(b / a)}) = ${f(Math.log(b / a))}.` },
+          { t: 'Coeficiente de autoinducción', html: `$L = {N Φ_1}/I = {μ_0 μ_r N^2 h ln(b/a)}/{2π} = 2·10^{−7} · ${f(mur)} · ${f(N)}^2 · ${f(h)} · ${f(Math.log(b / a))}$ = <b>${u(L, 'H')}</b>` },
+        ], letras: 'L = {μ_0 μ_r N^2 h}/{2π} ln(b/a)' };
+      },
+    },
+    'toroide-circ': {
+      nombre: 'Toroide de sección circular', campos: [['N', 'Número de espiras N', '', 1], ['R', 'Radio medio R', 'cm', 1e-2], ['r', 'Radio de la sección r', 'cm', 1e-2], ['mur', 'Permeabilidad relativa μ<sub>r</sub>', '', 1]],
+      valida: ({ R, r }) => { if (r >= R) throw new Error('El radio de la sección debe ser menor que el radio medio'); },
+      calc: ({ N, R, r, mur }) => {
+        const L = MU0 * mur * N * N * (R - Math.sqrt(R * R - r * r)), La = (MU0 * mur * N * N * r * r) / (2 * R);
+        return { L, pasos: [
+          { t: 'Campo dentro del toroide (Ampère)', html: `$B(ρ) = {μ_0 μ_r N I}/{2π ρ}$, a una distancia ρ del eje.` },
+          { t: 'Coeficiente de autoinducción', html: `Integrando el flujo sobre la sección circular: $L = μ_0 μ_r N^2 (R − √(R^2 − r^2))$ = <b>${u(L, 'H')}</b>` },
+          { t: 'Aproximación de toroide fino', html: `Si r ≪ R, B es casi uniforme y $L ≈ {μ_0 μ_r N^2 π r^2}/{2π R}$ = ${u(La, 'H')} (difiere un ${f(100 * Math.abs(La / L - 1), 2)} %).` },
+        ], letras: 'L = μ_0 μ_r N^2 (R − √(R^2 − r^2))' };
+      },
+    },
+    entrehierro: {
+      nombre: 'Toroide con entrehierro', campos: [['N', 'Número de espiras N', '', 1], ['R', 'Radio medio R', 'cm', 1e-2], ['S', 'Sección S', 'cm²', 1e-4], ['mur', 'Permeabilidad relativa del núcleo μ<sub>r</sub>', '', 1], ['g', 'Entrehierro g', 'mm', 1e-3]],
+      valida: ({ R, g }) => { if (g >= 2 * Math.PI * R) throw new Error('El entrehierro no puede ser más largo que el toroide'); },
+      calc: ({ N, R, S, mur, g }) => {
+        const lc = 2 * Math.PI * R - g, Rn = lc / (MU0 * mur * S), Rg = g / (MU0 * S), Rt = Rn + Rg, L = (N * N) / Rt, L0 = (MU0 * mur * N * N * S) / (2 * Math.PI * R);
+        return { L, pasos: [
+          { t: 'Ley de Ampère', html: `Por la línea media del toroide: $H_n l_n + H_g g = N I$, con $l_n = 2πR − g$ = ${f(lc)} m de núcleo. Sin dispersión, B es el mismo en el núcleo y en el hueco: $H_n = B/(μ_0 μ_r)$ y $H_g = B/μ_0$, así que $B = {μ_0 N I}/{l_n/μ_r + g}$.` },
+          { t: 'Reluctancias', html: `Como en un circuito en serie: $ℛ_n = {l_n}/{μ_0 μ_r S}$ = ${f(Rn)} A/Wb y $ℛ_g = g/(μ_0 S)$ = ${f(Rg)} A/Wb. Total ℛ = <b>${f(Rt)} A/Wb</b>${Rg > Rn ? `: el hueco de aire, aunque mide solo ${f(g * 1000)} mm, pesa más que todo el núcleo` : ''}.` },
+          { t: 'Coeficiente de autoinducción', html: `Φ = N I/ℛ por espira, y $L = {N Φ}/I = N^2/ℛ = ${f(N)}^2/{${f(Rt)}}$ = <b>${u(L, 'H')}</b>. Sin entrehierro sería $ {μ_0 μ_r N^2 S}/{2π R}$ = ${u(L0, 'H')}, ${f(L0 / L, 3)} veces más.` },
+        ], B1: N / (Rt * S), letras: 'L = {μ_0 N^2 S}/{(2π R − g)/μ_r + g}' };
+      },
+    },
+    coaxial: {
+      nombre: 'Cable coaxial', campos: [['l', 'Longitud l', 'm', 1], ['a', 'Radio del conductor interior a', 'mm', 1e-3], ['b', 'Radio del conductor exterior b', 'mm', 1e-3]], interior: true,
+      valida: ({ a, b }) => { if (b <= a) throw new Error('El radio exterior debe ser mayor que el interior'); },
+      calc: ({ l, a, b, macizo }) => {
+        const Le = (MU0 * l * Math.log(b / a)) / (2 * Math.PI), Li = macizo ? (MU0 * l) / (8 * Math.PI) : 0, L = Le + Li;
+        const pasos = [
+          { t: 'Campo entre los conductores (Ampère)', html: `$B(r) = {μ_0 I}/{2π r}$, para a < r < b; fuera del cable B = 0.` },
+          { t: 'Parte externa', html: `$Φ = ∫_a^b B l dr = {μ_0 I l ln(b/a)}/{2π}$ ⇒ $L_ext = {μ_0 l ln(b/a)}/{2π} = 2·10^{−7} · ${f(l)} · ln(${f(b / a)})$ = <b>${u(Le, 'H')}</b>` },
+        ];
+        if (macizo) pasos.push({ t: 'Parte interna (conductor macizo)', html: `Dentro del conductor $B = {μ_0 I r}/{2π a^2}$. Por energía, $1/2 L_int I^2 = ∫ B^2/(2μ_0) dV$ ⇒ $L_int = {μ_0 l}/{8π}$ = ${u(Li, 'H')}. Total: L = <b>${u(L, 'H')}</b>` });
+        pasos.push({ t: 'Por unidad de longitud', html: `$L/l$ = <b>${u(L / l, 'H/m')}</b>` });
+        return { L, pasos, letras: macizo ? 'L = {μ_0 l}/{2π} (ln(b/a) + 1/4)' : 'L = {μ_0 l}/{2π} ln(b/a)' };
+      },
+    },
+    bifilar: {
+      nombre: 'Línea bifilar', campos: [['l', 'Longitud l', 'm', 1], ['d', 'Distancia entre ejes d', 'mm', 1e-3], ['a', 'Radio de cada hilo a', 'mm', 1e-3]], interior: true,
+      valida: ({ d, a }) => { if (d <= 2 * a) throw new Error('Los hilos se tocan: la distancia entre ejes debe ser mayor que 2a'); },
+      calc: ({ l, d, a, macizo }) => {
+        const Le = (MU0 * l * Math.log((d - a) / a)) / Math.PI, Li = macizo ? (MU0 * l) / (4 * Math.PI) : 0, L = Le + Li;
+        const pasos = [
+          { t: 'Campo entre los hilos', html: `Cada hilo crea $B = {μ_0 I}/{2π r}$ y entre ellos los dos campos se suman: $B(x) = {μ_0 I}/{2π} (1/x + 1/(d − x))$.` },
+          { t: 'Flujo entre los hilos', html: `$Φ = ∫_a^{d−a} B l dx = {μ_0 I l}/π ln({d − a}/a)$ ⇒ $L_ext = {μ_0 l}/π ln({d − a}/a) = 4·10^{−7} · ${f(l)} · ln(${f((d - a) / a)})$ = <b>${u(Le, 'H')}</b>${d > 20 * a ? ` ($≈ {μ_0 l}/π ln(d/a)$, pues d ≫ a)` : ''}` },
+        ];
+        if (macizo) pasos.push({ t: 'Parte interna (hilos macizos)', html: `Cada hilo aporta $ {μ_0 l}/{8π}$: $L_int = {μ_0 l}/{4π}$ = ${u(Li, 'H')}. Total: L = <b>${u(L, 'H')}</b>` });
+        pasos.push({ t: 'Por unidad de longitud', html: `$L/l$ = <b>${u(L / l, 'H/m')}</b>` });
+        return { L, pasos, letras: macizo ? 'L = {μ_0 l}/π (ln({d − a}/a) + 1/4)' : 'L = {μ_0 l}/π ln({d − a}/a)' };
+      },
+    },
+  };
+
+  /* ---------- Inducción mutua ---------- */
+  const GEO_M = {
+    solenoides: {
+      nombre: 'Dos solenoides coaxiales', campos: [['N1', 'Espiras del interior N<sub>1</sub>', '', 1], ['r1', 'Radio del interior r<sub>1</sub>', 'cm', 1e-2], ['N2', 'Espiras del exterior N<sub>2</sub>', '', 1], ['r2', 'Radio del exterior r<sub>2</sub>', 'cm', 1e-2], ['l', 'Longitud común l', 'cm', 1e-2]],
+      valida: ({ r1, r2 }) => { if (r1 > r2) throw new Error('El solenoide interior no puede ser más ancho que el exterior'); },
+      calc: ({ N1, r1, N2, r2, l }) => {
+        const S1 = Math.PI * r1 * r1, M = (MU0 * N1 * N2 * S1) / l, L1 = (MU0 * N1 * N1 * S1) / l, L2 = (MU0 * N2 * N2 * Math.PI * r2 * r2) / l;
+        return { M, L1, L2, pasos: [
+          { t: 'Campo del exterior', html: `Con una corriente I<sub>2</sub> en el exterior, $B_2 = {μ_0 N_2 I_2}/l$ dentro de él, también dentro del interior.` },
+          { t: 'Flujo en el interior', html: `$Φ_12 = N_1 B_2 π r_1^2 = {μ_0 N_1 N_2 π r_1^2 I_2}/l$ (solo cuenta la sección del interior).` },
+          { t: 'Coeficiente de inducción mutua', html: `$M = {Φ_12}/{I_2} = {μ_0 N_1 N_2 π r_1^2}/l = {4π·10^{−7} · ${f(N1)} · ${f(N2)} · ${f(S1)}}/{${f(l)}}$ = <b>${u(M, 'H')}</b>. Sale lo mismo calculando el flujo del interior en el exterior ($M_12 = M_21$).` },
+          { t: 'Coeficiente de acoplamiento', html: `$L_1 = {μ_0 N_1^2 π r_1^2}/l$ = ${u(L1, 'H')}, $L_2 = {μ_0 N_2^2 π r_2^2}/l$ = ${u(L2, 'H')} ⇒ $k = M/√(L_1 L_2) = {r_1}/{r_2}$ = <b>${f(M / Math.sqrt(L1 * L2))}</b>` },
+        ], letras: 'M = {μ_0 N_1 N_2 π r_1^2}/l' };
+      },
+    },
+    espiras: {
+      nombre: 'Espira pequeña en el centro de otra grande', campos: [['N1', 'Espiras de la grande N<sub>1</sub>', '', 1], ['R', 'Radio de la grande R', 'cm', 1e-2], ['N2', 'Espiras de la pequeña N<sub>2</sub>', '', 1], ['r', 'Radio de la pequeña r', 'cm', 1e-2]],
+      valida: ({ R, r }) => { if (r >= R) throw new Error('La espira pequeña debe tener un radio menor que la grande'); },
+      calc: ({ N1, R, N2, r }) => {
+        const M = (MU0 * N1 * N2 * Math.PI * r * r) / (2 * R);
+        return { M, pasos: [
+          { t: 'Campo en el centro de la grande', html: `$B_1 = {μ_0 N_1 I_1}/{2R}$ (Biot-Savart en el centro de la espira).` },
+          { t: 'Flujo en la pequeña', html: `Si r ≪ R el campo es casi uniforme sobre la espira pequeña: $Φ_21 = N_2 B_1 π r^2$.` },
+          { t: 'Coeficiente de inducción mutua', html: `$M = {Φ_21}/{I_1} = {μ_0 N_1 N_2 π r^2}/{2R}$ = <b>${u(M, 'H')}</b>${r > 0.2 * R ? '. Ojo: r no es mucho menor que R, así que es una aproximación gruesa.' : ''}` },
+        ], letras: 'M = {μ_0 N_1 N_2 π r^2}/{2R}' };
+      },
+    },
+    'espiras-coaxiales': {
+      nombre: 'Dos espiras coaxiales separadas', campos: [['N1', 'Espiras de la grande N<sub>1</sub>', '', 1], ['R', 'Radio de la grande R', 'cm', 1e-2], ['N2', 'Espiras de la pequeña N<sub>2</sub>', '', 1], ['r', 'Radio de la pequeña r', 'cm', 1e-2], ['z', 'Distancia entre los centros z', 'cm', 1e-2]],
+      valida: ({ R, r }) => { if (r > R) throw new Error('Pon como espira 1 la de radio mayor'); },
+      calc: ({ N1, R, N2, r, z }) => {
+        const D = Math.pow(R * R + z * z, 1.5), M = (MU0 * N1 * N2 * Math.PI * R * R * r * r) / (2 * D);
+        return { M, pasos: [
+          { t: 'Campo de la grande en su eje', html: `$B_1(z) = {μ_0 N_1 I_1 R^2}/{2 (R^2 + z^2)^{3/2}}$ (Biot-Savart), con $(R^2 + z^2)^{3/2}$ = ${f(D)} m<sup>3</sup>.` },
+          { t: 'Flujo en la pequeña', html: `Si la pequeña es pequeña frente a la distancia a los hilos de la grande, B<sub>1</sub> es casi uniforme sobre ella: $Φ_21 = N_2 B_1 π r^2$.` },
+          { t: 'Coeficiente de inducción mutua', html: `$M = {μ_0 π N_1 N_2 R^2 r^2}/{2 (R^2 + z^2)^{3/2}}$ = <b>${u(M, 'H')}</b>. Con z ≫ R baja como 1/z<sup>3</sup>, igual que el campo de un dipolo.${r > 0.3 * Math.sqrt(R * R + z * z) ? ' Ojo: r no es pequeño frente a √(R² + z²), así que es una aproximación gruesa.' : ''}` },
+        ], letras: 'M = {μ_0 π N_1 N_2 R^2 r^2}/{2 (R^2 + z^2)^{3/2}}' };
+      },
+    },
+    'espira-solenoide': {
+      nombre: 'Espira o bobina dentro de un solenoide', campos: [['N1', 'Espiras del solenoide N<sub>1</sub>', '', 1], ['l', 'Longitud del solenoide l', 'cm', 1e-2], ['N2', 'Espiras de la bobina N<sub>2</sub>', '', 1], ['r', 'Radio de la bobina r', 'cm', 1e-2], ['th', 'Ángulo entre los ejes θ', '°', 1]],
+      valida: ({ th }) => { if (th > 180) throw new Error('El ángulo entre los ejes tiene que estar entre 0° y 180°'); },
+      calc: ({ N1, l, N2, r, th }) => {
+        const c = Math.abs(Math.cos((th * Math.PI) / 180)) < 1e-12 ? 0 : Math.cos((th * Math.PI) / 180), M = (MU0 * N1 * N2 * Math.PI * r * r * c) / l;
+        return { M, pasos: [
+          { t: 'Campo del solenoide', html: `$B_1 = {μ_0 N_1 I_1}/l$, uniforme dentro (la bobina tiene que caber dentro y lejos de los extremos).` },
+          { t: 'Flujo en la bobina', html: `$Φ_21 = N_2 B_1 π r^2 cos θ$: solo cuenta la componente de B perpendicular a la bobina.` },
+          { t: 'Coeficiente de inducción mutua', html: `$M = {μ_0 N_1 N_2 π r^2 cos θ}/l = {4π·10^{−7} · ${f(N1)} · ${f(N2)} · π·${f(r)}^2${th ? ` · cos ${f(th)}°` : ''}}/{${f(l)}}$ = <b>${u(M, 'H')}</b>${c === 0 ? ': con los ejes perpendiculares no hay acoplamiento' : ''}. Girando la bobina, M cambia como cos θ (así funciona un generador).` },
+        ], letras: 'M = {μ_0 N_1 N_2 π r^2 cos θ}/l' };
+      },
+    },
+    'hilo-espira': {
+      nombre: 'Hilo recto y espira rectangular coplanaria', campos: [['d', 'Distancia del hilo al lado cercano d', 'cm', 1e-2], ['w', 'Ancho de la espira w', 'cm', 1e-2], ['h', 'Lado paralelo al hilo h', 'cm', 1e-2], ['N2', 'Espiras de la espira N', '', 1]],
+      calc: ({ d, w, h, N2 }) => {
+        const M = (MU0 * N2 * h * Math.log((d + w) / d)) / (2 * Math.PI);
+        return { M, pasos: [
+          { t: 'Campo del hilo', html: `$B(x) = {μ_0 I}/{2π x}$, perpendicular al plano de la espira.` },
+          { t: 'Flujo en la espira', html: `$Φ = N ∫_d^{d+w} {μ_0 I h}/{2π x} dx = {μ_0 N I h}/{2π} ln({d + w}/d)$, con ln(${f((d + w) / d)}) = ${f(Math.log((d + w) / d))}.` },
+          { t: 'Coeficiente de inducción mutua', html: `$M = Φ/I = {μ_0 N h}/{2π} ln({d + w}/d) = 2·10^{−7} · ${f(N2)} · ${f(h)} · ${f(Math.log((d + w) / d))}$ = <b>${u(M, 'H')}</b>` },
+        ], letras: 'M = {μ_0 N h}/{2π} ln({d + w}/d)' };
+      },
+    },
+    'toroide-bobina': {
+      nombre: 'Bobina enrollada sobre un toroide', campos: [['N1', 'Espiras del toroide N<sub>1</sub>', '', 1], ['N2', 'Espiras de la bobina N<sub>2</sub>', '', 1], ['a', 'Radio interior a', 'cm', 1e-2], ['b', 'Radio exterior b', 'cm', 1e-2], ['h', 'Altura h', 'cm', 1e-2]],
+      valida: ({ a, b }) => { if (b <= a) throw new Error('El radio exterior debe ser mayor que el interior'); },
+      calc: ({ N1, N2, a, b, h }) => {
+        const M = (MU0 * N1 * N2 * h * Math.log(b / a)) / (2 * Math.PI), L1 = (MU0 * N1 * N1 * h * Math.log(b / a)) / (2 * Math.PI), L2 = (MU0 * N2 * N2 * h * Math.log(b / a)) / (2 * Math.PI);
+        return { M, L1, L2, pasos: [
+          { t: 'Campo del toroide', html: `$B(r) = {μ_0 N_1 I_1}/{2π r}$ dentro del núcleo.` },
+          { t: 'Flujo en la bobina', html: `La bobina abraza todo el núcleo: $Φ_21 = N_2 {μ_0 N_1 I_1 h}/{2π} ln(b/a)$.` },
+          { t: 'Coeficiente de inducción mutua', html: `$M = {μ_0 N_1 N_2 h}/{2π} ln(b/a)$ = <b>${u(M, 'H')}</b>. Las dos bobinas comparten todo el flujo, así que $k = M/√(L_1 L_2)$ = <b>1</b> (L<sub>1</sub> = ${u(L1, 'H')}, L<sub>2</sub> = ${u(L2, 'H')}).` },
+        ], letras: 'M = {μ_0 N_1 N_2 h}/{2π} ln(b/a)' };
+      },
+    },
+    acoplamiento: {
+      nombre: 'A partir de L₁, L₂ y k', campos: [['L1', 'L<sub>1</sub>', 'mH', 1e-3], ['L2', 'L<sub>2</sub>', 'mH', 1e-3], ['k', 'Coeficiente de acoplamiento k', '', 1]],
+      valida: ({ k }) => { if (k > 1) throw new Error('El coeficiente de acoplamiento no puede ser mayor que 1'); },
+      calc: ({ L1, L2, k }) => {
+        const M = k * Math.sqrt(L1 * L2);
+        return { M, L1, L2, pasos: [{ t: 'Coeficiente de inducción mutua', html: `$M = k √(L_1 L_2) = ${f(k)} · √(${f(L1)} · ${f(L2)})$ = <b>${u(M, 'H')}</b>` }], letras: 'M = k √(L_1 L_2)' };
+      },
+    },
+  };
+
+  function leerGeo(G, sc) {
+    const p = {};
+    for (const [k, nom, un, fac] of G.campos) {
+      const n = nom.replace(/<[^>]+>/g, '');
+      p[k] = lee(sc, k, n.toLowerCase(), { cero: k === 'th' }) * fac;
+      if ((k === 'N' || k === 'N1' || k === 'N2') && !Number.isInteger(p[k])) throw new Error(`${n} debe ser un número entero`);
+    }
+    if (G.interior) p.macizo = sc.interior === 'macizo';
+    if (G.valida) G.valida(p);
+    return p;
+  }
+
+  // sc: { geo, ...campos, I, dIdt }
+  function autoinduccion(sc) {
+    const G = GEO_L[sc.geo] || GEO_L.solenoide, p = leerGeo(G, sc);
+    const r = G.calc(p), { L } = r, pasos = [...r.pasos], res = { L };
+    const I = lee(sc, 'I', 'la intensidad', { opcional: true, signo: true }), dI = lee(sc, 'dIdt', 'dI/dt', { opcional: true, signo: true });
+    if (I !== null) {
+      res.flujo = L * I; res.U = 0.5 * L * I * I;
+      pasos.push({ t: `Con I = ${f(I)} A`, html: `Flujo propio $Φ = L I$ = <b>${u(res.flujo, 'Wb')}</b> · energía magnética $U = 1/2 L I^2 = 1/2 · ${f(L)} · ${f(I)}^2$ = <b>${u(res.U, 'J')}</b>${r.B1 ? `<br>Campo ${sc.geo === 'entrehierro' ? 'en el núcleo y en el hueco' : 'dentro'}: ${sc.geo === 'entrehierro' ? '$B = {N I}/{ℛ S}$' : '$B = {μ_0 μ_r N I}/l$'} = ${u(r.B1 * I, 'T')}; la energía también sale de $u = B^2/(2μ)$ por el volumen.` : ''}` });
+    }
+    if (dI !== null) {
+      res.fem = -L * dI;
+      pasos.push({ t: `Si la corriente cambia a dI/dt = ${f(dI)} A/s`, html: `$ε = −L {dI}/{dt} = −${f(L)} · ${f(dI)}$ = <b>${f(res.fem)} V</b>${dI ? `, que se opone al ${dI > 0 ? 'aumento' : 'descenso'} de la corriente (ley de Lenz)` : ''}.` });
+    }
+    return { G, p, res, pasos, letras: r.letras };
+  }
+
+  // sc: { geo, ...campos, I1, dI1dt, I2, sentido: 'aditivo'|'opuesto' }
+  function mutua(sc) {
+    const G = GEO_M[sc.geo] || GEO_M.solenoides, p = leerGeo(G, sc);
+    const r = G.calc(p), { M } = r, pasos = [...r.pasos], res = { M, L1: r.L1, L2: r.L2 };
+    const I1 = lee(sc, 'I1', 'la intensidad I₁', { opcional: true, signo: true }), dI = lee(sc, 'dI1dt', 'dI₁/dt', { opcional: true, signo: true });
+    if (I1 !== null) { res.flujo = M * I1; pasos.push({ t: `Con I<sub>1</sub> = ${f(I1)} A`, html: `Flujo en el circuito 2: $Φ_21 = M I_1$ = <b>${u(res.flujo, 'Wb')}</b>` }); }
+    if (dI !== null) { res.fem = -M * dI; pasos.push({ t: `Si I<sub>1</sub> cambia a ${f(dI)} A/s`, html: `fem inducida en el circuito 2: $ε_2 = −M {dI_1}/{dt} = −${f(M)} · ${f(dI)}$ = <b>${f(res.fem)} V</b>` }); }
+    if (r.L1 !== undefined) {
+      const { L1, L2 } = r, D = L1 * L2 - M * M;
+      Object.assign(res, { Ls: L1 + L2 + 2 * M, Lso: L1 + L2 - 2 * M, Lp: D / (L1 + L2 - 2 * M), Lpo: D / (L1 + L2 + 2 * M) });
+      pasos.push({ t: 'Bobinas asociadas en serie', html: `Con los flujos que se suman (terminales homólogos seguidos): $L = L_1 + L_2 + 2M$ = <b>${u(res.Ls, 'H')}</b>. Con los flujos opuestos: $L = L_1 + L_2 − 2M$ = <b>${u(res.Lso, 'H')}</b>. Midiendo las dos se saca $M = {L_sumados − L_opuestos}/4$.` });
+      pasos.push({ t: 'Bobinas asociadas en paralelo', html: `$L = {L_1 L_2 − M^2}/{L_1 + L_2 ∓ 2M}$: con los flujos que se suman, <b>${u(res.Lp, 'H')}</b>; con los flujos opuestos, <b>${u(res.Lpo, 'H')}</b>.${Math.abs(D) < 1e-12 * L1 * L2 ? ' Con k = 1 el numerador es 0: en paralelo y bien acopladas se comportan como una sola bobina sin ninguna L extra que se oponga.' : ''}` });
+    }
+    const I2 = lee(sc, 'I2', 'la intensidad I₂', { opcional: true, signo: true });
+    if (I1 !== null && I2 !== null && r.L1 !== undefined) {
+      const s = sc.sentido === 'opuesto' ? -1 : 1;
+      res.U = 0.5 * r.L1 * I1 * I1 + 0.5 * r.L2 * I2 * I2 + s * M * I1 * I2;
+      pasos.push({ t: 'Energía de los dos circuitos', html: `$U = 1/2 L_1 I_1^2 + 1/2 L_2 I_2^2 ${s > 0 ? '+' : '−'} M I_1 I_2$ (flujos ${s > 0 ? 'que se suman' : 'opuestos'}) = <b>${u(res.U, 'J')}</b>` });
+    }
+    return { G, p, res, pasos, letras: r.letras };
+  }
+
+  /* ---------- Circuito RL ---------- */
+  // sc: { E (V), R (Ω), L (mH), modo: 'carga'|'descarga'|'pulsos', ton y toff (ms, en pulsos), t (ms) }
+  function rl(sc) {
+    const E = lee(sc, 'E', 'la fem de la fuente'), R = lee(sc, 'R', 'la resistencia'), L = lee(sc, 'L', 'la autoinducción') * 1e-3;
+    const t = lee(sc, 't', 'el instante', { opcional: true, cero: true }), carga = sc.modo !== 'descarga';
+    if (sc.modo === 'pulsos') return pulsos(sc, E, R, L, t);
+    const tau = L / R, I0 = E / R;
+    const I = (s) => (carga ? I0 * (1 - Math.exp(-s / tau)) : I0 * Math.exp(-s / tau));
+    const VL = (s) => (carga ? E * Math.exp(-s / tau) : -E * Math.exp(-s / tau));
+    const pasos = [
+      { t: 'Ecuación del circuito', html: carga ? `Al cerrar el interruptor: $ε = R I + L {dI}/{dt} ⇒ I(t) = ε/R (1 − e^{−t/τ})$` : `Al quitar la fuente (la bobina se descarga por R): $0 = R I + L {dI}/{dt} ⇒ I(t) = I_0 e^{−t/τ}$, con $I_0 = ε/R$` },
+      { t: 'Constante de tiempo', html: `$τ = L/R = ${f(L)}/${f(R)}$ = <b>${u(tau, 's')}</b>. ${carga ? 'Corriente final' : 'Corriente inicial'}: ε / R = <b>${u(I0, 'A')}</b>. Energía en la bobina con esa corriente: $1/2 L I^2$ = ${u(0.5 * L * I0 * I0, 'J')}.` },
+      { t: 'Tiempos característicos', html: `En t = τ la corriente ${carga ? 'llega al 63,2 %' : 'baja al 36,8 %'}; en 5τ = ${u(5 * tau, 's')} ${carga ? 'está al 99,3 % del valor final' : 'queda el 0,7 %'}. Tiempo para ${carga ? 'llegar a la mitad' : 'bajar a la mitad'}: $τ ln 2$ = ${u(tau * Math.LN2, 's')}.` },
+    ];
+    const res = { tau, I0 };
+    if (t !== null) {
+      const s = t * 1e-3, i = I(s);
+      Object.assign(res, { It: i, VLt: VL(s), VRt: R * i, Ut: 0.5 * L * i * i });
+      pasos.push({ t: `En t = ${f(t)} ms`, html: `$I = ${carga ? `${f(I0)} (1 − e^{−${f(s)}/${f(tau)}})` : `${f(I0)} e^{−${f(s)}/${f(tau)}}`}$ = <b>${u(i, 'A')}</b> · $V_R = R I$ = ${u(R * i, 'V')} · $V_L = L {dI}/{dt}$ = ${u(VL(s), 'V')} · $U = 1/2 L I^2$ = ${u(0.5 * L * i * i, 'J')}` });
+      if (carga) {
+        const Wf = E * I0 * (s - tau * (1 - Math.exp(-s / tau))), U = 0.5 * L * i * i;
+        Object.assign(res, { Wf, WR: Wf - U });
+        pasos.push({ t: 'Balance de energía hasta t', html: `La fuente ha dado $W_ε = ∫ε I dt = ε I_0 (t − τ (1 − e^{−t/τ}))$ = <b>${u(Wf, 'J')}</b>. De ella, $1/2 L I^2$ = ${u(U, 'J')} queda en la bobina y el resto, $W_R = ∫R I^2 dt$ = <b>${u(Wf - U, 'J')}</b>, se disipa en la resistencia.` });
+      } else {
+        const WR = 0.5 * L * I0 * I0 * (1 - Math.exp((-2 * s) / tau));
+        res.WR = WR;
+        pasos.push({ t: 'Energía disipada hasta t', html: `$W_R = ∫_0^t R I^2 dt = 1/2 L I_0^2 (1 − e^{−2t/τ})$ = <b>${u(WR, 'J')}</b>. Al final se disipa toda la energía que tenía la bobina, $1/2 L I_0^2$ = ${u(0.5 * L * I0 * I0, 'J')}.` });
+      }
+    }
+    return { p: { E, R, L, carga, t }, res, I, VL, tau, pasos, letras: carga ? 'I(t) = ε/R (1 − e^{−t/τ}), τ = L/R' : 'I(t) = ε/R e^{−t/τ}, τ = L/R' };
+  }
+
+  // la fuente se conecta durante ton y se quita durante toff, una y otra vez (la bobina se descarga por R)
+  function pulsos(sc, E, R, L, t) {
+    const ton = lee(sc, 'ton', 'el tiempo conectada') * 1e-3, toff = lee(sc, 'toff', 'el tiempo desconectada') * 1e-3;
+    const tau = L / R, I0 = E / R, P = ton + toff, a = Math.exp(-ton / tau), b = Math.exp(-toff / tau), A = a * b;
+    const Imax = (I0 * (1 - a)) / (1 - A), Imin = Imax * b, Imed = (I0 * ton) / P;
+    const inicio = (k) => Imin * (1 - Math.pow(A, k));
+    const I = (s) => { const k = Math.floor(s / P), x = s - k * P, i0 = inicio(k); if (x < ton) return I0 + (i0 - I0) * Math.exp(-x / tau); return (I0 + (i0 - I0) * a) * Math.exp(-(x - ton) / tau); };
+    const VL = (s) => { const x = s - Math.floor(s / P) * P; return x < ton ? E - R * I(s) : -R * I(s); };
+    const pasos = [
+      { t: 'Cada tramo', html: `Mientras está conectada, I tiende a ε/R = ${u(I0, 'A')} con $τ = L/R$ = <b>${u(tau, 's')}</b>: $I = ε/R + (I_inicio − ε/R) e^{−t/τ}$. Al quitar la fuente, la bobina se descarga por R: $I = I_fin e^{−t/τ}$. Cada tramo empieza con la corriente con la que acabó el anterior, porque la corriente en una bobina no puede saltar.` },
+      { t: 'Régimen permanente', html: `Tras unos ciclos, la corriente sube y baja siempre entre los mismos valores. Imponiendo que un ciclo termine como empieza: $I_máx = ε/R {1 − e^{−t_on/τ}}/{1 − e^{−T/τ}}$ = <b>${u(Imax, 'A')}</b> e $I_mín = I_máx e^{−t_off/τ}$ = <b>${u(Imin, 'A')}</b>, con T = ${u(P, 's')}.` },
+      { t: 'Corriente media', html: `En un ciclo la tensión media en la bobina es 0, así que $R I_media = ε t_on/T$: I<sub>media</sub> = <b>${u(Imed, 'A')}</b> (${f((100 * ton) / P, 3)} % del tiempo conectada). Es la idea de la regulación por PWM. El rizado es $I_máx − I_mín$ = ${u(Imax - Imin, 'A')}${tau > 3 * P ? ', pequeño porque τ es mucho mayor que el periodo' : ''}.` },
+    ];
+    const res = { tau, I0, Imax, Imin, Imed };
+    if (t !== null) { const s = t * 1e-3, i = I(s); Object.assign(res, { It: i, VLt: VL(s), VRt: R * i, Ut: 0.5 * L * i * i }); pasos.push({ t: `En t = ${f(t)} ms`, html: `Va por el ciclo ${Math.floor(s / P) + 1}, ${s - Math.floor(s / P) * P < ton ? 'conectada' : 'desconectada'}: I = <b>${u(i, 'A')}</b>, V<sub>L</sub> = ${u(VL(s), 'V')} y $U = 1/2 L I^2$ = ${u(0.5 * L * i * i, 'J')}.` }); }
+    return { p: { E, R, L, carga: true, pulsos: true, ton, toff, t }, res, I, VL, tau, pasos, letras: 'I_media = {ε t_on}/{R T}' };
+  }
+
+  const ejemplos = {
+    L: [
+      { clave: 'solenoide', nombre: 'Solenoide de 500 espiras', sc: { geo: 'solenoide', N: '500', l: '20', r: '1', mur: '1', I: '2', dIdt: '100' } },
+      { clave: 'solenoide-hierro', nombre: 'Solenoide con núcleo (μr = 800)', sc: { geo: 'solenoide', N: '300', l: '15', r: '1.5', mur: '800', I: '0.5' } },
+      { clave: 'toroide-rect', nombre: 'Toroide de sección rectangular', sc: { geo: 'toroide-rect', N: '1000', a: '5', b: '8', h: '2', mur: '1', I: '1' } },
+      { clave: 'toroide-circ', nombre: 'Toroide de sección circular', sc: { geo: 'toroide-circ', N: '200', R: '10', r: '2', mur: '1' } },
+      { clave: 'coaxial', nombre: 'Cable coaxial, conductor interior macizo', sc: { geo: 'coaxial', l: '1', a: '1', b: '4', interior: 'macizo' } },
+      { clave: 'entrehierro', nombre: 'Toroide de hierro con entrehierro', sc: { geo: 'entrehierro', N: '500', R: '10', S: '4', mur: '2000', g: '2', I: '1' } },
+      { clave: 'bifilar', nombre: 'Línea bifilar', sc: { geo: 'bifilar', l: '1', d: '10', a: '1', interior: 'hueco' } },
+    ],
+    M: [
+      { clave: 'solenoides', nombre: 'Solenoide dentro de otro', sc: { geo: 'solenoides', N1: '200', r1: '1', N2: '1000', r2: '2', l: '40', dI1dt: '50' } },
+      { clave: 'espiras', nombre: 'Espira pequeña en el centro de una grande', sc: { geo: 'espiras', N1: '1', R: '20', N2: '10', r: '1', dI1dt: '1000' } },
+      { clave: 'espiras-coaxiales', nombre: 'Dos espiras coaxiales a una distancia', sc: { geo: 'espiras-coaxiales', N1: '100', R: '10', N2: '20', r: '1', z: '10', dI1dt: '50' } },
+      { clave: 'espira-solenoide', nombre: 'Bobina girada dentro de un solenoide', sc: { geo: 'espira-solenoide', N1: '1000', l: '50', N2: '30', r: '1', th: '60', dI1dt: '100' } },
+      { clave: 'hilo-espira', nombre: 'Hilo y espira rectangular', sc: { geo: 'hilo-espira', d: '5', w: '10', h: '20', N2: '1', dI1dt: '200' } },
+      { clave: 'toroide-bobina', nombre: 'Bobina sobre un toroide (k = 1)', sc: { geo: 'toroide-bobina', N1: '500', N2: '50', a: '4', b: '6', h: '2', I1: '2', I2: '1', sentido: 'aditivo' } },
+      { clave: 'acoplamiento', nombre: 'Bobinas acopladas en serie y en paralelo', sc: { geo: 'acoplamiento', L1: '2', L2: '8', k: '0.5' } },
+    ],
+    RL: [
+      { clave: 'carga', nombre: 'Se cierra el interruptor', sc: { E: '12', R: '6', L: '300', modo: 'carga', t: '50' } },
+      { clave: 'descarga', nombre: 'La bobina se descarga por la resistencia', sc: { E: '10', R: '100', L: '500', modo: 'descarga', t: '2' } },
+      { clave: 'pulsos', nombre: 'Se conecta y desconecta una y otra vez', sc: { E: '12', R: '10', L: '50', modo: 'pulsos', ton: '5', toff: '5', t: '' } },
+    ],
+  };
+
+  return { autoinduccion, mutua, rl, GEO_L, GEO_M, ejemplos, f, u, MU0 };
+})();
+
+/* =====================================================================
+   Animación por pasos, común a todos los fenómenos de «Física en la vida real».
+   Va en la página tras mates.js; cada fenómeno (fenomenos/<clave>/escena.js)
+   solo da sus pasos y su dibujo:
+     Animacion.monta({ lienzo: '#escena', pasos, dibuja, colores, sonido? })
+       pasos    [{ titulo, corto, texto, dato?, anim?, dura?, prueba? }]: corto = nombre
+                en la línea de tiempo; dato = { valor, texto } destacado sobre el texto,
+                que va en HTML con fórmulas
+                $…$ (párrafos separados por una línea en blanco); anim = ms que dura el
+                movimiento del paso (2500) y dura = ms hasta pasar al siguiente (9000);
+                prueba = { etiqueta, min, max, paso, valor, muestra(v), cambia(v) }
+                pone un deslizador «Pruébalo tú» bajo el texto (al moverlo se para)
+       dibuja(g, { paso, t, reloj, w, h, c, quieto })  dibuja el paso en el contexto
+                g (px CSS): t va de 0 a 1 durante el movimiento, reloj son los segundos
+                desde que se abrió la página (para lo que se mueve siempre, como un
+                brillo), c los colores leídos de las variables CSS de «colores» y
+                quieto = true si el sistema pide menos movimiento
+       colores  nombres de variables CSS sin «--» (se releen al cambiar de modo)
+       sonido(ac) opcional: recibe un AudioContext y devuelve { cuadro(estado) }, al
+                que se llama en cada fotograma mientras el botón #sonido está activo
+                (apagado al abrir la página)
+   Avanza sola de un paso al siguiente; «Parar» detiene solo el avance (el paso
+   sigue animado), y Anterior, Siguiente, los números y las flechas del teclado
+   funcionan siempre. La maqueta (#escena, #ant, #play, #sig, #puntos, #paso-t,
+   #paso-x, #ver y, si hay sonido, #sonido) está en la pagina.html de cada fenómeno y los estilos en
+   fenomenos/estilos.css. Expone window.FenomenoApp para las pruebas.
+   ===================================================================== */
+const Animacion = (() => {
+  const { $, esc, lienzo } = Herramienta;
+  function monta({ lienzo: sel, pasos, dibuja, colores = [], sonido = null }) {
+    const cv = $(sel), puntos = $('#puntos'), play = $('#play'), n = pasos.length;
+    const quieto = matchMedia('(prefers-reduced-motion: reduce)').matches, t0 = performance.now();
+    let i = 0, inicio = t0, avanza = true, c = {}, audio = null, ac = null, suena = false;
+    const leeColores = () => { const st = getComputedStyle(document.documentElement); c = {}; for (const k of colores) c[k] = st.getPropertyValue('--' + k).trim(); };
+    const dura = (p) => p.dura || 9000, anim = (p) => p.anim || 2500;
+    // línea de tiempo: un círculo por paso con su nombre corto; la línea se rellena con --avance (0 a 1)
+    puntos.innerHTML = pasos.map((p, k) => `<button type="button" title="${esc(p.titulo)}" aria-label="Paso ${k + 1}: ${esc(p.titulo)}"><b>${k + 1}</b><span>${esc(p.corto || '')}</span></button>`).join('');
+    const botones = [...puntos.children];
+
+    function texto() {
+      const p = pasos[i];
+      $('#paso-t').innerHTML = `<small>Paso ${i + 1} de ${n}</small>${esc(p.titulo)}`;
+      const caja = $('.fen-texto');
+      if (caja) { caja.classList.remove('entra'); void caja.offsetWidth; caja.classList.add('entra'); }
+      $('#paso-x').innerHTML = (p.dato ? `<div class="fen-dato"><b>${Mates.html(p.dato.valor)}</b><span>${Mates.html(p.dato.texto)}</span></div>` : '') + p.texto.split(/\n\s*\n/).map((x) => `<p>${Mates.html(x.trim())}</p>`).join('') + (p.prueba ? deslizador(p.prueba) : '');
+      if (p.prueba) {
+        const d = $('#prueba'), o = $('#prueba-v');
+        d.addEventListener('input', () => { const v = +d.value; p.prueba.valor = v; p.prueba.cambia(v); o.innerHTML = p.prueba.muestra(v); if (avanza) ponPlay(false); });
+      }
+      botones.forEach((b, k) => { b.classList.toggle('hecho', k < i); if (k === i) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current'); });
+      $('#ant').disabled = i === 0; $('#sig').disabled = i === n - 1;
+    }
+    function deslizador(q) {
+      q.cambia(q.valor);
+      return `<div class="fen-prueba"><label for="prueba"><b>Pruébalo tú:</b> ${esc(q.etiqueta)}</label><input type="range" id="prueba" min="${q.min}" max="${q.max}" step="${q.paso}" value="${q.valor}"><output id="prueba-v" for="prueba">${q.muestra(q.valor)}</output></div>`;
+    }
+    function ve(k) { i = Math.max(0, Math.min(n - 1, k)); inicio = performance.now(); texto(); }
+    function ponPlay(on) { avanza = on; play.textContent = on ? '❚❚ Parar' : i === n - 1 && performance.now() - inicio >= dura(pasos[i]) ? '↻ Repetir' : '▶ Reproducir'; play.setAttribute('aria-pressed', String(on)); }
+    play.addEventListener('click', () => {
+      if (avanza) return ponPlay(false);
+      if (i === n - 1 && play.textContent.includes('Repetir')) ve(0); else inicio = performance.now();
+      ponPlay(true);
+    });
+    $('#ant').addEventListener('click', () => ve(i - 1));
+    $('#sig').addEventListener('click', () => ve(i + 1));
+    botones.forEach((b, k) => b.addEventListener('click', () => ve(k)));
+    addEventListener('keydown', (e) => {
+      if (e.target.closest('input, textarea, select') || e.altKey || e.ctrlKey || e.metaKey) return;
+      if (e.key === 'ArrowRight') ve(i + 1); else if (e.key === 'ArrowLeft') ve(i - 1); else return;
+      e.preventDefault();
+    });
+    matchMedia('(prefers-color-scheme: dark)').addEventListener('change', leeColores);
+    const bSonido = $('#sonido');
+    if (bSonido && sonido && (window.AudioContext || window.webkitAudioContext)) {
+      bSonido.addEventListener('click', () => {
+        suena = !suena; bSonido.setAttribute('aria-pressed', String(suena)); bSonido.textContent = suena ? '🔊 Sonido' : '🔇 Sonido';
+        if (suena && !ac) { ac = new (window.AudioContext || window.webkitAudioContext)(); audio = sonido(ac); }
+        if (ac) suena ? ac.resume() : ac.suspend();
+      });
+    } else if (bSonido) bSonido.hidden = true;
+
+    function cuadro(ahora) {
+      const p = pasos[i], el = ahora - inicio;
+      if (avanza && el >= dura(p)) { if (i < n - 1) ve(i + 1); else ponPlay(false); }
+      puntos.style.setProperty('--avance', Math.min(1, (i + (avanza && i < n - 1 ? Math.min(1, (ahora - inicio) / dura(pasos[i])) : 0)) / (n - 1)).toFixed(4));
+      const { g, w, h } = lienzo(cv);
+      const estado = { paso: i, t: quieto ? 1 : Math.min(1, Math.max(0, (ahora - inicio) / anim(pasos[i]))), reloj: quieto ? 0 : (ahora - t0) / 1000, w, h, c, quieto };
+      dibuja(g, estado);
+      if (suena && audio) audio.cuadro(estado);
+      requestAnimationFrame(cuadro);
+    }
+    leeColores(); texto(); ponPlay(true);
+    if (typeof Version !== 'undefined' && $('#ver')) $('#ver').textContent = Version.de('fenomenos').current;
+    requestAnimationFrame(cuadro);
+    window.FenomenoApp = { ve, paso: () => i, pasos: n, avanza: () => avanza, sonido: () => suena };
+  }
+  return { monta };
+})();
+
+/* =====================================================================
+   Ayudantes de dibujo comunes a las escenas de «Física en la vida real»
+   (fenomenos/<clave>/escena.js). Va en la página tras animacion.js.
+     Dibujo.suave, tramo, rgba, azar   curvas de 0 a 1, color con alfa y azar fijo
+     Dibujo.vista(g, w, h, c)  un mundo de 16 × 9 unidades dentro del lienzo, con
+         cámara: v.mira(cx, cy, zoom) la mueve (v.pantalla() vuelve a la vista
+         entera, para lo que va fijo como un medidor) y v.sigue(meta, reloj,
+         quieto) la lleva suave hacia otra cámara. Luego v.X(x) y v.Y(y) pasan a
+         px, v.K son los px por unidad y v.x0, v.x1, v.y0 lo que se ve; y dibuja
+         rótulos (que se escriben solos con «escribe»), signos + y −, flechas y
+         puntos, siempre en coordenadas del mundo. Con window.FenomenoFoto (pruebas/imagenes-fenomenos.js, la imagen
+         de la tarjeta del índice) no se dibujan los rótulos, que en pequeño no se leen.
+   ===================================================================== */
+const Dibujo = (() => {
+  const suave = (t) => t * t * (3 - 2 * t);
+  const tramo = (t, a, b) => Math.min(1, Math.max(0, (t - a) / (b - a)));
+  const rgba = (hex, a) => { const h = hex.replace('#', ''), n = parseInt(h.length === 3 ? h.replace(/./g, '$&$&') : h, 16); return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`; };
+  // azar fijo (siempre las mismas posiciones)
+  const azar = (k) => { const x = Math.sin(k * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+
+  function vista(g, w, h, c, cam = { x: 8, y: 4.5, z: 1 }) {
+    const k = Math.min(w / 16, h / 9), v = { k, cam };
+    v.mira = (cx, cy, z) => { v.K = k * z; v.cx = cx; v.cy = cy; v.x0 = cx - w / 2 / v.K; v.x1 = cx + w / 2 / v.K; v.y0 = cy - h / 2 / v.K; return v; };
+    v.mundo = () => v.mira(cam.x, cam.y, cam.z);
+    v.pantalla = () => v.mira(8, 4.5, 1);
+    // la cámara va suave hacia «meta» (el zoom, en escala logarítmica); con quieto, de golpe
+    v.sigue = (meta, reloj, quieto) => {
+      const dt = cam.antes === undefined || quieto ? 99 : Math.min(0.1, Math.max(0, reloj - cam.antes)), f = 1 - Math.exp(-dt * 2.4);
+      cam.antes = reloj;
+      cam.x += (meta.x - cam.x) * f; cam.y += (meta.y - cam.y) * f; cam.z = Math.exp(Math.log(cam.z) + (Math.log(meta.z) - Math.log(cam.z)) * f);
+      return v.mundo();
+    };
+    v.X = (x) => w / 2 + (x - v.cx) * v.K;
+    v.Y = (y) => h / 2 + (y - v.cy) * v.K;
+    const letra = (px, peso = 500) => `${peso} ${Math.max(11, (px * k) / 40)}px "IBM Plex Sans", system-ui, sans-serif`;
+    // rótulo; con «escribe» (0 a 1) aparece letra a letra, como escrito en la pizarra
+    v.rotulo = (txt, x, y, { color = c.rotulo, tam = 13, al = 'left', peso = 500, fondo = true, escribe = 1 } = {}) => {
+      if (escribe <= 0 || window.FenomenoFoto) return;
+      const letras = [...txt], ver = escribe >= 1 ? txt : letras.slice(0, Math.ceil(letras.length * escribe)).join('');
+      g.font = letra(tam, peso); g.textAlign = al; g.textBaseline = 'middle';
+      if (fondo) { const m = g.measureText(txt).width, p = 4, x2 = al === 'center' ? v.X(x) - m / 2 : al === 'right' ? v.X(x) - m : v.X(x); g.fillStyle = rgba(c.panel, 0.85); g.fillRect(x2 - p, v.Y(y) - 9 - p, m + 2 * p, 18 + 2 * p); }
+      g.fillStyle = color; g.fillText(ver, v.X(x), v.Y(y));
+    };
+    v.ancho = (txt, tam = 13, peso = 500) => { g.font = letra(tam, peso); return g.measureText(txt).width / v.K; };
+    v.signo = (x, y, s, color, a = 1, tam = 1) => {
+      const r = 0.13 * v.K * tam; g.globalAlpha = a; g.strokeStyle = color; g.lineWidth = Math.max(1.5, 0.045 * v.K * tam); g.beginPath();
+      g.moveTo(v.X(x) - r, v.Y(y)); g.lineTo(v.X(x) + r, v.Y(y)); if (s > 0) { g.moveTo(v.X(x), v.Y(y) - r); g.lineTo(v.X(x), v.Y(y) + r); } g.stroke(); g.globalAlpha = 1;
+    };
+    v.flecha = (xa, ya, xb, yb, color, a = 1, ancho = 0.03) => {
+      g.globalAlpha = a; g.strokeStyle = color; g.fillStyle = color; g.lineWidth = Math.max(1, ancho * v.K);
+      g.beginPath(); g.moveTo(v.X(xa), v.Y(ya)); g.lineTo(v.X(xb), v.Y(yb)); g.stroke();
+      const an = Math.atan2(v.Y(yb) - v.Y(ya), v.X(xb) - v.X(xa)), L = 0.18 * v.K;
+      g.beginPath(); g.moveTo(v.X(xb), v.Y(yb)); g.lineTo(v.X(xb) - L * Math.cos(an - 0.4), v.Y(yb) - L * Math.sin(an - 0.4)); g.lineTo(v.X(xb) - L * Math.cos(an + 0.4), v.Y(yb) - L * Math.sin(an + 0.4)); g.fill(); g.globalAlpha = 1;
+    };
+    v.punto = (x, y, r, color, a = 1) => { g.globalAlpha = a; g.fillStyle = color; g.beginPath(); g.arc(v.X(x), v.Y(y), r * v.K, 0, 2 * Math.PI); g.fill(); g.globalAlpha = 1; };
+    // recuadro con sombra (paneles y medidores)
+    v.panel = (x, y, ancho, alto, a = 0.94) => {
+      g.save(); g.fillStyle = rgba(c.panel, a); g.shadowColor = rgba('#000', 0.18); g.shadowBlur = 16; g.shadowOffsetY = 3;
+      g.beginPath(); g.roundRect(v.X(x), v.Y(y), ancho * v.K, alto * v.K, 0.22 * v.K); g.fill(); g.restore();
+    };
+    // chispa quebrada de (xa, ya) a (xb, yb), distinta cada vez que cambia «n»
+    v.chispa = (xa, ya, xb, yb, n, color, ancho = 0.05, quiebros = 7) => {
+      const L = Math.hypot(xb - xa, yb - ya), nx = -(yb - ya) / L, ny = (xb - xa) / L;
+      g.strokeStyle = color; g.lineWidth = Math.max(1.2, ancho * v.K); g.lineJoin = 'round'; g.beginPath(); g.moveTo(v.X(xa), v.Y(ya));
+      for (let j = 1; j < quiebros; j++) { const s = j / quiebros, d = (azar(n * 17 + j) - 0.5) * 0.35 * L / Math.sqrt(quiebros); g.lineTo(v.X(xa + (xb - xa) * s + nx * d), v.Y(ya + (yb - ya) * s + ny * d)); }
+      g.lineTo(v.X(xb), v.Y(yb)); g.stroke();
+    };
+    return v.mundo();
+  }
+  return { suave, tramo, rgba, azar, vista };
+})();
+
+/* =====================================================================
+   El transformador del poste: los 6 pasos de la animación (texto y dibujo) y el ejercicio que se abre
+   en Autoinducción e inducción mutua (bobina de 50 vueltas sobre un toroide de 2500, pestaña de inducción
+   mutua, geometría «Bobina sobre un toroide», k = 1). El motor es fenomenos/animacion.js, los ayudantes de dibujo
+   fenomenos/dibujo.js y la maqueta pagina.html. En Node (pruebas) solo se cargan los datos:
+   pruebas/herramientas/fenomenos/transformador-poste.js.
+   DATOS ESCRITOS DE MEMORIA (Dani debe revisarlos): 20 kV → 400 V (relación 50:1), 100 kVA, 50 Hz, núcleo
+   de 20 × 20 cm (A = 0,04 m²), rendimiento 99 %. La herramienta calcula el toroide sin hierro: con hierro L y M se
+   multiplican por μr, pero la relación de tensiones sigue siendo N₂/N₁.
+   ===================================================================== */
+const TransformadorPoste = (() => {
+  const MU0 = 4e-7 * Math.PI, V1 = 20000, V2 = 400, F = 50, N1 = 2500, N2 = 50, S = 100e3, AREA = 0.04, REND = 0.99;
+  const a = 0.08, b = 0.12, h = 0.04;                                                  // toroide de la herramienta (m)
+  const W = 2 * Math.PI * F, tension2 = (n2) => (V1 * n2) / N1;
+  const I1 = S / V1, I2 = S / V2, flujo = (V, n2) => (V * Math.SQRT2) / (W * n2), PHI = (V2 * Math.SQRT2) / (W * N2), BMAX = PHI / AREA;
+  const LN = Math.log(b / a), M = (MU0 * N1 * N2 * h * LN) / (2 * Math.PI), L1 = (MU0 * N1 * N1 * h * LN) / (2 * Math.PI);
+  const DIDT = Math.round((V1 * Math.SQRT2) / L1), EPS2 = M * DIDT;                     // pico de I₁' y fem del secundario
+  const datos = { V1, V2, F, N1, N2, S, AREA, REND, W, I1, I2, PHI, BMAX, M, L1, DIDT, EPS2, voltiosPorVuelta: V1 / N1, perdidas: S * (1 - REND), tension2, flujo, razon: N1 / N2 };
+
+  const n = (x, d = 1) => x.toFixed(d).replace('.', ',');
+  const miles = (x) => String(Math.round(x)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+
+  const pasos = [
+    { titulo: 'El cajón gris del poste que zumba', corto: 'Poste', dato: { valor: '20 000 V → 400 V', texto: 'es lo que hace el transformador de un poste: baja la tensión de la línea a la de las casas.' }, texto: 'En muchos postes y casetas hay un cajón gris que zumba. Por arriba entran los cables de la línea de media tensión, a unos **20 000 V**, y por abajo salen los que van a las casas, a **400 V** entre fases (230 V en cada enchufe).\n\nNo tiene piezas que se muevan, y aun así cambia la tensión en un factor 50 y deja pasar casi toda la energía. Dentro hay solo dos bobinas de hilo y un bloque de hierro. Veamos cómo funciona.' },
+    { titulo: 'Dos bobinas y un núcleo de hierro', corto: 'Núcleo', dato: { valor: `${miles(N1)} : ${N2}`, texto: 'es la relación de vueltas del ejemplo: 50 vueltas del primario por cada una del secundario.' }, texto: `Un transformador es un anillo de hierro con dos bobinas que no se tocan. La **primaria**, la que recibe los 20 kV, tiene muchas vueltas ($N_1$ = ${miles(N1)}) de hilo fino. La **secundaria**, que da los 400 V, tiene pocas ($N_2$ = ${N2}) de hilo grueso.\n\nEl hierro hace de guía: casi todo el campo magnético que crea una bobina queda dentro del núcleo y pasa por la otra. Entre las dos no hay ningún cable: solo el campo. (En el dibujo no están todas las vueltas.)` },
+    { titulo: 'Un flujo que cambia: Faraday', corto: 'Faraday', dato: { valor: `${n(datos.voltiosPorVuelta, 0)} V por vuelta`, texto: `es la fem que Faraday da a cada vuelta con 50 Hz: la misma para el primario y el secundario.` }, texto: `La corriente alterna del primario crea en el núcleo un flujo $Φ$ que sube, baja y se invierte 50 veces por segundo. Por cada vuelta de cualquier bobina pasa el mismo flujo, y la ley de Faraday da la fem de cada una:\n\n$ε = −N {dΦ}/{dt}$, de modo que $ {V_2}/{V_1} = {N_2}/{N_1} $\n\nCon 20 kV eficaces y 2500 vueltas salen ${n(datos.voltiosPorVuelta, 0)} V por vuelta; con 50 vueltas, $V_2$ = **${V2} V**. El flujo máximo es $Φ = V_2 √2 / (ω N_2)$ = ${n(PHI * 1000, 1)} mWb, y en un núcleo de 0,04 m², $B$ = ${n(BMAX, 2)} T. Cambia el número de vueltas del secundario.` },
+    { titulo: 'La misma potencia, otra corriente', corto: 'Potencia', dato: { valor: `${n(I1, 0)} A → ${miles(I2)} A`, texto: `de corriente en el primario y en el secundario: al bajar la tensión, sube la corriente.` }, texto: `Un transformador no crea energía: casi toda la potencia que entra sale. Si el poste entrega ${miles(S / 1000)} kVA, $P = V I$ es igual a los dos lados:\n\n$V_1 I_1 = V_2 I_2$, de modo que $I_1 = S/V_1$ = **${n(I1, 0)} A** e $I_2 = S/V_2$ = **${miles(I2)} A**\n\nPor eso el secundario es de hilo grueso (250 A) y el primario de hilo fino (5 A). Y por eso se transporta la electricidad a tensión alta: con una corriente pequeña se pierde poco en los cables, $P = I^2 R$. El transformador es lo que permite subirla a la salida de la central y bajarla en tu calle.` },
+    { titulo: 'Por qué solo funciona con alterna', corto: 'Alterna', dato: { valor: 'ε = 0', texto: 'con corriente continua: el flujo es constante, su derivada es cero y no se induce nada.' }, texto: 'Si conectas el primario a una pila, o a corriente continua, pasa algo curioso: al conectar, el flujo crece un instante y aparece una fem breve; después el flujo es constante y **$ε = −N dΦ/dt = 0$**. En el secundario no hay tensión.\n\nEn el primario, la impedancia de la bobina ($ω L$) es la que limita la corriente cuando es alterna; en continua solo queda la resistencia del hilo, y el primario se quema. Con alterna, el flujo cambia sin parar y la fem aparece siempre. Por eso la red es de corriente alterna: la ganó (guerra de las corrientes) por poder subir y bajar la tensión con transformadores.', dura: 11000 },
+    { titulo: 'El zumbido y el calor', corto: 'Zumbido', dato: { valor: '100 Hz', texto: `es el tono del zumbido: el doble de la red, porque la deformación del hierro depende de B², no del sentido.` }, texto: `El hierro no es perfecto. Se deforma un poquito al imantarse (magnetostricción) y lo hace igual con B positivo que con negativo: **dos veces por ciclo**, a 100 Hz. Ese es el zumbido que oyes.\n\nAdemás, el flujo que cambia crea corrientes de Foucault en el propio núcleo, que lo calientan. Por eso se hace de láminas finas de acero al silicio, aisladas entre sí: cortan los remolinos y reducen el calor. Aun así, un transformador de 100 kVA pierde en torno al 1 %, unos ${n(datos.perdidas / 1000, 1)} kW, que se llevan con aceite y aletas. Es un rendimiento del ${n(REND * 100, 0)} %.`, dura: 11000 },
+  ];
+
+  // ejercicio de Autoinducción e inducción mutua (formato de induccion-v1): bobina de N₂ vueltas sobre un toroide de N₁ vueltas, con la fem del secundario
+  const ejercicio = () => ({ tab: 'M', M: { geo: 'toroide-bobina', N1: String(N1), N2: String(N2), a: String(a * 100), b: String(b * 100), h: String(h * 100), dI1dt: String(DIDT) } });
+  function abrirEnInduccion(destino) {
+    let st = null;
+    try { st = JSON.parse(localStorage.getItem('induccion-v1')); } catch (e) { /* sin estado previo */ }
+    const base = st && st.L && st.RL ? st : { L: Induccion.ejemplos.L[0].sc, RL: Induccion.ejemplos.RL[0].sc };
+    try { localStorage.setItem('induccion-v1', JSON.stringify({ ...base, ...ejercicio() })); } catch (e) { /* sin almacenamiento: se abre sin datos */ }
+    location.href = destino;
+  }
+
+  /* ---------------- dibujo (con los ayudantes de fenomenos/dibujo.js) ---------------- */
+  const { suave, tramo, rgba, azar } = typeof Dibujo !== 'undefined' ? Dibujo : {};
+  const cam = { x: 8, y: 4.5, z: 1 };
+  const CAMS = [{ x: 8, y: 4.5, z: 1 }, { x: 8, y: 4.5, z: 1 }, { x: 8, y: 4.5, z: 1 }, { x: 8, y: 4.5, z: 1 }, { x: 8, y: 4.5, z: 1 }, { x: 8, y: 4.5, z: 1 }];
+  // «Pruébalo tú» del paso 3: vueltas del secundario
+  const prueba = { etiqueta: 'las vueltas del secundario', min: 10, max: 100, paso: 5, valor: 50, n2: 50,
+    muestra: (k) => `${k} vueltas → ${miles(tension2(k))} V en el secundario`, cambia: (k) => { prueba.n2 = k; } };
+  pasos[2].prueba = prueba;
+
+  // núcleo: marco de 7,2 × 5,4, patas de 1,4 y camino medio de 5,8 × 4,0
+  const NU = { x0: 4.4, x1: 11.6, y0: 1.8, y1: 7.2, p0: 5.1, p1: 10.9, q0: 2.5, q1: 6.5 };
+  const PER = 2 * ((NU.p1 - NU.p0) + (NU.q1 - NU.q0));
+  const camino = (s) => {
+    let d = ((s % 1) + 1) % 1 * PER; const an = NU.p1 - NU.p0, al = NU.q1 - NU.q0;
+    if (d < an) return [NU.p0 + d, NU.q0]; d -= an; if (d < al) return [NU.p1, NU.q0 + d]; d -= al; if (d < an) return [NU.p1 - d, NU.q1]; d -= an; return [NU.p0, NU.q1 - d];
+  };
+
+  function dibuja(g, { paso, t, reloj, w, h: alto, c, quieto }) {
+    const v = Dibujo.vista(g, w, alto, c, cam);
+    v.sigue(CAMS[paso], reloj, quieto);
+    const { X, Y, rotulo, punto } = v, foto = window.FenomenoFoto, r = quieto ? 0.2 : reloj;
+    const ph = quieto ? 0.2 : (r * 0.25) % 1, Phi = Math.sin(2 * Math.PI * ph), dPhi = Math.cos(2 * Math.PI * ph);
+    if (paso === 0) poste(); else nucleo();
+
+    // paso 1: el poste con su transformador, las líneas de 20 kV y los cables de 400 V
+    function poste() {
+      g.fillStyle = c.sala; g.fillRect(0, 0, w, alto);
+      g.fillStyle = c.suelo; g.fillRect(0, Y(7.6), w, alto - Y(7.6));
+      g.fillStyle = c.poste; g.fillRect(X(7.8), Y(1.6), 0.4 * v.K, 6.0 * v.K); g.fillRect(X(6.2), Y(2.0), 3.6 * v.K, 0.2 * v.K);
+      // línea de media tensión (hilos gruesos desde la izquierda) y cables de baja (hacia la casa de la derecha)
+      for (const dy of [0, 0.35, 0.7]) { g.strokeStyle = c.caliente; g.lineWidth = Math.max(2, 0.07 * v.K); g.beginPath(); g.moveTo(0, Y(1.2 + dy * 0.2)); g.quadraticCurveTo(X(3.2), Y(1.9 + dy * 0.2), X(6.4 + dy * 0.4), Y(2.0)); g.stroke(); }
+      for (const dy of [0, 0.25, 0.5]) { g.strokeStyle = c.onda; g.lineWidth = Math.max(1.5, 0.045 * v.K); g.beginPath(); g.moveTo(X(8.0), Y(4.7 + dy)); g.quadraticCurveTo(X(11.5), Y(5.4 + dy), X(13.2), Y(5.0 + dy * 0.2)); g.stroke(); }
+      // el transformador
+      g.fillStyle = c.nucleo; g.beginPath(); g.roundRect(X(6.9), Y(2.5), 2.2 * v.K, 2.0 * v.K, 0.15 * v.K); g.fill();
+      g.strokeStyle = rgba(c.rotulo, 0.4); g.lineWidth = 1; for (let k = 1; k < 6; k++) { g.beginPath(); g.moveTo(X(6.9 + k * 0.37), Y(2.7)); g.lineTo(X(6.9 + k * 0.37), Y(4.3)); g.stroke(); }
+      // zumbido: ondas que salen del cajón
+      for (let k = 0; k < 3; k++) { const s = ((quieto ? 0.4 : r * 0.6) + k / 3) % 1; g.strokeStyle = rgba(c.resalta, 0.7 * (1 - s)); g.lineWidth = Math.max(1.5, 0.04 * v.K); g.beginPath(); g.arc(X(8.0), Y(3.5), (1.4 + s * 1.6) * v.K, -0.8, 0.8); g.stroke(); g.beginPath(); g.arc(X(8.0), Y(3.5), (1.4 + s * 1.6) * v.K, Math.PI - 0.8, Math.PI + 0.8); g.stroke(); }
+      // la casa
+      g.fillStyle = c.casa; g.fillRect(X(13.2), Y(4.9), 2.3 * v.K, 2.7 * v.K); g.beginPath(); g.moveTo(X(12.9), Y(4.9)); g.lineTo(X(14.35), Y(3.9)); g.lineTo(X(15.8), Y(4.9)); g.fill();
+      g.fillStyle = c.ventana; g.fillRect(X(13.6), Y(5.5), 0.6 * v.K, 0.6 * v.K); g.fillRect(X(14.5), Y(5.5), 0.6 * v.K, 0.6 * v.K);
+      rotulo('20 000 V', 3.6, 1.0, { al: 'center', tam: 13.5, peso: 700, color: c.caliente, escribe: tramo(t, 0.25, 0.55) });
+      rotulo('400 V', 11.4, 4.2, { al: 'center', tam: 13.5, peso: 700, color: c.onda, escribe: tramo(t, 0.4, 0.7) });
+      rotulo('bzzzz…', 6.3, 3.5, { al: 'right', tam: 13, color: c.resalta, escribe: tramo(t, 0.55, 0.85) });
+      rotulo('transformador', 8.0, 5.0, { al: 'center', tam: 12, escribe: tramo(t, 0.65, 0.95) });
+    }
+
+    // pasos 2 a 6: el transformador por dentro (núcleo de hierro y dos bobinas)
+    function bobina(xc, vueltas, grueso, color) {
+      const y0 = 3.0, y1 = 6.0, wd = 1.9, x0 = xc - wd / 2;
+      g.fillStyle = rgba(color, 0.2); g.fillRect(X(x0), Y(y0), wd * v.K, (y1 - y0) * v.K);
+      g.strokeStyle = color; g.lineWidth = Math.max(1.5, grueso * v.K); g.lineCap = 'round';
+      for (let k = 0; k < vueltas; k++) { const y = y0 + 0.1 + (k + 0.5) * ((y1 - y0 - 0.2) / vueltas); g.beginPath(); g.moveTo(X(x0 + 0.05), Y(y + 0.04)); g.lineTo(X(x0 + wd - 0.05), Y(y - 0.04)); g.stroke(); }
+      g.lineCap = 'butt';
+    }
+    function nucleo() {
+      g.fillStyle = c.sala; g.fillRect(0, 0, w, alto);
+      g.fillStyle = c.nucleo; g.fillRect(X(NU.x0), Y(NU.y0), (NU.x1 - NU.x0) * v.K, (NU.y1 - NU.y0) * v.K);
+      g.fillStyle = c.sala; g.fillRect(X(5.8), Y(3.2), 4.4 * v.K, 2.6 * v.K);
+      // láminas (paso 6) o calor (paso 6)
+      if (paso === 5) { g.strokeStyle = rgba(c.rotulo, 0.35); g.lineWidth = 1; g.beginPath(); for (let k = 1; k < 10; k++) { const x = NU.x0 + k * (1.4 / 10); g.moveTo(X(x), Y(NU.y0)); g.lineTo(X(x), Y(NU.y1)); } g.stroke(); g.fillStyle = rgba(c.caliente, 0.25 + 0.1 * Math.sin(r * 2)); g.fillRect(X(NU.x0), Y(NU.y0), 1.4 * v.K, (NU.y1 - NU.y0) * v.K); }
+      const n2d = Math.max(2, Math.round((paso === 2 ? prueba.n2 : N2) / 5));
+      bobina(5.1, 24, 0.02, c.cobre); bobina(10.9, n2d, 0.055, c.hilo);
+      // flujo magnético: puntos que van y vienen por el camino medio, según el paso
+      const cont = paso === 4 && !quieto && (r % 8) < 4;
+      const amp = cont ? 0 : paso === 1 ? 0.035 : 0.05, sg = paso === 1 ? Phi : Phi;
+      const a = paso === 1 ? suave(tramo(t, 0.2, 0.55)) : 1, N = 18;
+      for (let k = 0; k < N; k++) { const [px, py] = camino(k / N + amp * sg); punto(px, py, 0.1, c.campo, a * (cont ? 0.9 : 0.45 + 0.55 * Math.abs(sg))); }
+      // cables de entrada y salida
+      g.strokeStyle = c.caliente; g.lineWidth = Math.max(2, 0.06 * v.K); g.beginPath(); g.moveTo(X(3.4), Y(2.8)); g.lineTo(X(4.1), Y(3.1)); g.moveTo(X(3.4), Y(6.2)); g.lineTo(X(4.1), Y(5.9)); g.stroke();
+      g.strokeStyle = c.onda; g.lineWidth = Math.max(3, 0.11 * v.K); g.beginPath(); g.moveTo(X(12.6), Y(3.1)); g.lineTo(X(13.4), Y(2.8)); g.moveTo(X(12.6), Y(5.9)); g.lineTo(X(13.4), Y(6.2)); g.stroke();
+      if (paso === 1) {
+        rotulo('núcleo de hierro', 8, 2.15, { al: 'center', tam: 12.5, peso: 700, color: c.rotulo, fondo: false, escribe: tramo(t, 0.1, 0.4) });
+        rotulo('primaria: muchas vueltas, hilo fino', 5.1, 7.6, { al: 'center', tam: 12, color: c.cobre, peso: 700, escribe: tramo(t, 0.35, 0.65) });
+        rotulo('secundaria: pocas, hilo grueso', 10.9, 7.6, { al: 'center', tam: 12, color: c.hilo, peso: 700, escribe: tramo(t, 0.55, 0.85) });
+        rotulo('20 kV', 3.1, 4.5, { al: 'right', tam: 13, peso: 700, color: c.caliente, escribe: tramo(t, 0.2, 0.5) });
+        rotulo('400 V', 13.9, 4.5, { tam: 13, peso: 700, color: c.onda, escribe: tramo(t, 0.2, 0.5) });
+        rotulo('sin contacto entre bobinas', 8, 4.5, { al: 'center', tam: 12, escribe: tramo(t, 0.7, 1) });
+      }
+      if (paso === 2) {
+        const V2p = tension2(prueba.n2);
+        rotulo(`V₁ = ${miles(V1)} V`, 3.1, 4.5, { al: 'right', tam: 12.5, peso: 700, color: c.caliente, escribe: tramo(t, 0.2, 0.5) });
+        rotulo(`V₂ = ${miles(V2p)} V`, 13.9, 4.5, { tam: 12.5, peso: 700, color: c.onda, escribe: tramo(t, 0.2, 0.5) });
+        rotulo('mismo Φ en cada vuelta', 8, 4.5, { al: 'center', tam: 12.5, peso: 700, color: c.campo, escribe: tramo(t, 0.35, 0.7) });
+        rotulo(`N₁ = ${miles(N1)}`, 5.1, 7.6, { al: 'center', tam: 12, escribe: tramo(t, 0.5, 0.8) });
+        rotulo(`N₂ = ${prueba.n2}`, 10.9, 7.6, { al: 'center', tam: 12, escribe: tramo(t, 0.5, 0.8) });
+        if (!foto) {
+          v.pantalla();
+          const x0 = 0.3, y0 = 0.25, an = 3.4, al = 2.1, gx = (u) => x0 + 0.3 + u * (an - 0.6), gy = (q) => y0 + al / 2 + 0.15 - q * (al / 2 - 0.6);
+          v.panel(x0, y0, an, al);
+          g.strokeStyle = rgba(c.rotulo, 0.4); g.lineWidth = 1; g.beginPath(); g.moveTo(X(gx(0)), Y(gy(0))); g.lineTo(X(gx(1)), Y(gy(0))); g.stroke();
+          for (const [f2, col] of [[(u) => Math.sin(2 * Math.PI * u), c.campo], [(u) => Math.cos(2 * Math.PI * u), c.corriente]]) {
+            g.strokeStyle = col; g.lineWidth = 2.2; g.beginPath(); for (let u = 0; u <= 1.0001; u += 0.01) { u ? g.lineTo(X(gx(u)), Y(gy(f2(u)))) : g.moveTo(X(gx(u)), Y(gy(f2(u)))); } g.stroke(); punto(gx(ph), gy(f2(ph)), 0.07, col);
+          }
+          rotulo('Φ(t)', x0 + 0.25, y0 + 0.3, { color: c.campo, peso: 700, tam: 11.5, fondo: false }); rotulo('ε ∝ −dΦ/dt', x0 + 1.0, y0 + 0.3, { color: c.corriente, peso: 700, tam: 11.5, fondo: false });
+          v.mundo();
+        }
+      }
+      if (paso === 3) {
+        const aa = suave(tramo(t, 0.2, 0.55)), sc = Phi >= 0 ? 1 : -1;
+        // flechas de corriente sobre los cables de entrada (finas) y de salida (gruesas)
+        v.flecha(3.0, 2.55, 3.9, 2.95, c.caliente, aa * (0.35 + 0.65 * Math.abs(dPhi)), 0.04);
+        v.flecha(13.7, 2.55, 12.8, 2.95, c.onda, aa * (0.35 + 0.65 * Math.abs(dPhi)), 0.14);
+        rotulo(`I₁ = ${n(I1, 0)} A`, 2.9, 1.9, { al: 'center', tam: 13, peso: 700, color: c.caliente, escribe: tramo(t, 0.3, 0.6) });
+        rotulo(`I₂ = ${miles(I2)} A`, 13.6, 1.9, { al: 'center', tam: 13, peso: 700, color: c.onda, escribe: tramo(t, 0.45, 0.75) });
+        rotulo(`P = V·I = ${miles(S / 1000)} kW`, 8, 4.5, { al: 'center', tam: 13, peso: 700, escribe: tramo(t, 0.6, 0.95) });
+        rotulo('la misma potencia, otra corriente', 8, 7.6, { al: 'center', tam: 12, escribe: tramo(t, 0.7, 1) });
+      }
+      if (paso === 4) {
+        const c0 = quieto ? false : (r % 8) < 4;
+        rotulo(c0 ? 'corriente continua' : 'corriente alterna', 8, 1.25, { al: 'center', tam: 14, peso: 700, color: c0 ? c.rotulo : c.caliente });
+        rotulo(c0 ? 'Φ constante → ε = −dΦ/dt = 0' : 'Φ cambia → hay fem en el secundario', 8, 4.5, { al: 'center', tam: 13, peso: 700, color: c.campo });
+        // voltímetro del secundario
+        const vx = 14.2, vy = 4.5, valor = c0 ? 0 : V2 * Math.cos(2 * Math.PI * ph);
+        g.fillStyle = rgba(c.panel, 0.95); g.beginPath(); g.arc(X(vx), Y(vy), 0.75 * v.K, 0, 2 * Math.PI); g.fill(); g.strokeStyle = c.rotulo; g.lineWidth = 1.5; g.stroke();
+        const ang = -Math.PI / 2 + (valor / V2) * 0.95; g.strokeStyle = c.resalta; g.lineWidth = Math.max(2, 0.05 * v.K); g.beginPath(); g.moveTo(X(vx), Y(vy + 0.2)); g.lineTo(X(vx + 0.62 * Math.cos(ang)), Y(vy + 0.2 + 0.62 * Math.sin(ang))); g.stroke();
+        rotulo('V₂', vx, vy + 0.45, { al: 'center', tam: 11, fondo: false });
+        rotulo(`${miles(valor)} V`, vx, vy + 1.2, { al: 'center', tam: 12, peso: 700, color: c.onda, fondo: false });
+      }
+      if (paso === 5) {
+        // ondas de sonido a los lados
+        for (const [cx, sg] of [[NU.x0, -1], [NU.x1, 1]]) for (let k = 0; k < 3; k++) { const s = ((quieto ? 0.4 : r * 0.9) + k / 3) % 1; g.strokeStyle = rgba(c.resalta, 0.7 * (1 - s)); g.lineWidth = Math.max(1.5, 0.04 * v.K); g.beginPath(); g.arc(X(cx), Y(4.5), (0.5 + s * 1.2) * v.K, sg > 0 ? -0.9 : Math.PI - 0.9, sg > 0 ? 0.9 : Math.PI + 0.9); g.stroke(); }
+        rotulo('láminas de acero al silicio', 8, 7.75, { al: 'center', tam: 12.5, peso: 700, color: c.rotulo, escribe: tramo(t, 0.2, 0.55) });
+        rotulo('zumba a 100 Hz', 8, 1.25, { al: 'center', tam: 13.5, peso: 700, color: c.resalta, escribe: tramo(t, 0.35, 0.7) });
+        rotulo(`pérdidas ≈ ${n(datos.perdidas / 1000, 1)} kW (1 %)`, 8, 4.5, { al: 'center', tam: 12, color: c.caliente, peso: 700, escribe: tramo(t, 0.55, 0.9) });
+      }
+    }
+  }
+
+  const COLORES = ['sala', 'suelo', 'poste', 'nucleo', 'cobre', 'hilo', 'campo', 'onda', 'corriente', 'resalta', 'caliente', 'casa', 'ventana', 'rotulo', 'panel'];
+  return { datos, pasos, dibuja, COLORES, ejercicio, abrirEnInduccion };
+})();
+
+if (typeof document !== 'undefined') {
+  Animacion.monta({ lienzo: '#escena', pasos: TransformadorPoste.pasos, dibuja: TransformadorPoste.dibuja, colores: TransformadorPoste.COLORES });
+  document.querySelector('#abrir').addEventListener('click', (e) => { e.preventDefault(); TransformadorPoste.abrirEnInduccion(e.currentTarget.getAttribute('href')); });
+}
+
+/* =====================================================================
+   Portada personal: lo que Ciencify recuerda de ti, solo en este navegador (localStorage, sin
+   cuentas ni envíos). herramientas.js lo pone en cada herramienta y fenómeno tras biblioteca.js; la
+   portada (portal.js) lo usa para pintar «Tu espacio». Claves:
+     simu-recientes   [{ r: 'asignatura/herramienta', t: ms }]   las últimas 8, la más nueva primero
+     simu-favoritos   ['asignatura/herramienta', …]
+   En cada herramienta apunta la visita y añade el botón ☆ «Favorita» junto a Mis ejercicios.
+   Personal.espacio(sitio) devuelve { continuar, favoritas, recientes } con rutas (portal.js las
+   convierte en tarjetas); Personal.borra() olvida todo.
+   ===================================================================== */
+const Personal = (() => {
+  const K_REC = 'simu-recientes', K_FAV = 'simu-favoritos', MAX = 8;
+  const lee = (k) => { try { const v = JSON.parse(localStorage.getItem(k)); return Array.isArray(v) ? v : []; } catch (e) { return []; } };
+  const escribe = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } };
+  // «/fisica/gases/» → 'fisica/gases' (las dos últimas partes: también vale desde un archivo local)
+  const rutaDe = (p) => { const q = String(p).split('/').filter((s) => s && !/\.html?$/.test(s)); return q.length >= 2 ? q.slice(-2).join('/') : null; };
+  const recientes = () => lee(K_REC).filter((x) => x && typeof x.r === 'string');
+  const favoritos = () => lee(K_FAV).filter((x) => typeof x === 'string');
+  function visita(ruta, ahora = Date.now()) { escribe(K_REC, [{ r: ruta, t: ahora }, ...recientes().filter((x) => x.r !== ruta)].slice(0, MAX)); }
+  const esFavorita = (ruta) => favoritos().includes(ruta);
+  function alterna(ruta) { const f = favoritos(), i = f.indexOf(ruta); if (i >= 0) f.splice(i, 1); else f.push(ruta); escribe(K_FAV, f); return i < 0; }
+  // continuar = la última visitada; recientes = las demás
+  function espacio() {
+    const r = recientes();
+    return { continuar: r[0] || null, favoritas: favoritos(), recientes: r.slice(1, 6) };
+  }
+  function borra() { try { localStorage.removeItem(K_REC); localStorage.removeItem(K_FAV); } catch (e) { /* sin almacenamiento */ } }
+  // «hace 5 min», «hace 3 h», «ayer», «hace 4 días»
+  function hace(t, ahora = Date.now()) {
+    const m = Math.max(0, Math.round((ahora - t) / 60000));
+    if (m < 2) return 'justo ahora';
+    if (m < 60) return `hace ${m} min`;
+    if (m < 60 * 24) return `hace ${Math.round(m / 60)} h`;
+    const d = Math.round(m / 1440);
+    return d === 1 ? 'ayer' : `hace ${d} días`;
+  }
+
+  const CSS = '.fav-btn { display: inline-flex; align-items: center; gap: 6px; font: 600 13.5px var(--f-ui, system-ui); color: var(--ink); background: var(--vidrio, var(--panel)); -webkit-backdrop-filter: var(--blur, none); backdrop-filter: var(--blur, none); border: 1px solid var(--vidrio-borde, var(--line)); border-radius: 999px; padding: 5px 12px; cursor: pointer; white-space: nowrap } .fav-btn:hover, .fav-btn[aria-pressed=true] { border-color: var(--accent); color: var(--accent) } @media print { .fav-btn { display: none !important } }';
+  function monta() {
+    if (typeof document === 'undefined') return;
+    const ruta = rutaDe(location.pathname); if (!ruta) return;
+    visita(ruta);
+    const sitio = document.querySelector('.miga-der'); if (!sitio || sitio.querySelector('.fav-btn')) return;
+    const st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'fav-btn';
+    const pinta = () => { const on = esFavorita(ruta); b.setAttribute('aria-pressed', String(on)); b.title = on ? 'Quitar de tus favoritas (portada)' : 'Añadir a tus favoritas (portada)'; b.innerHTML = `<span aria-hidden="true">${on ? '★' : '☆'}</span> Favorita`; };
+    b.addEventListener('click', () => { alterna(ruta); pinta(); });
+    pinta(); sitio.append(b);
+  }
+  monta();
+  return { rutaDe, visita, esFavorita, alterna, espacio, borra, hace, recientes, favoritos, K_REC, K_FAV };
+})();
+
+</script>
+</html>
