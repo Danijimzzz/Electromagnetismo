@@ -396,6 +396,8 @@ const Version = (() => {
     ],
     control: [
       { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: escribe la ganancia de lazo K·N(s)/D(s) (como expresión, s^2+3s+2, o con los coeficientes) y estudia la estabilidad de tres maneras: la tabla de Routh con el rango de K estable (con el cero en la primera columna y la fila de ceros), el lugar de las raíces con asíntotas, puntos de ruptura, ángulos de salida y cruces con el eje imaginario, y el diagrama de Nyquist con los márgenes de ganancia y de fase y el recuento de vueltas alrededor de −1. Con nueve ejemplos, desarrollo paso a paso y modo práctica.'] },
+    'termo-estadistica': [
+      { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: cinco modos. Dos niveles (con degeneraciones), oscilador de Einstein, niveles propios (un rotor, un átomo…) con su función de partición, poblaciones de Boltzmann, energía, entropía, energía libre y capacidad calorífica, y la entropía S = k ln Ω de un sólido de Einstein y de dos sólidos que se reparten la energía, con su desarrollo paso a paso.'] },
     ],
     relatividad: [
       { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: transformación de Lorentz de un evento con su diagrama de Minkowski (ejes inclinados de la nave y rayas paralelas para leer las coordenadas), suma y resta de velocidades con las rapideces e intervalo entre dos eventos con tiempo propio, distancia propia y causalidad. Con desarrollo paso a paso.'] },
