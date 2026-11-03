@@ -1,0 +1,67 @@
+<title>Calculadora de cavidades resonantes: frecuencia y Q · Ciencify</title>
+<meta name="description" content="Calculadora de cavidades resonantes rectangulares, cilíndricas y esféricas: frecuencia de resonancia de cada modo TE y TM, factor de calidad Q de las paredes y del dieléctrico, ancho de banda y mapa del campo.">
+<style>
+/* Solo lo propio de esta herramienta. Las medidas comunes se ajustan con sus variables
+   y los colores propios (los de las gráficas) van aquí, con su valor en modo oscuro. */
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62 }
+#resumen .est { grid-column: 1 / -1 }
+.controles select.in { width: auto }
+.controles input[type=range] { flex: 1 1 140px; min-width: 120px }
+#modos button { font: inherit; border: 0; background: none; color: var(--accent); padding: 2px 4px; cursor: pointer; text-decoration: underline }
+#modos button[aria-current] { font-weight: 700; text-decoration: none; color: var(--ink) }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Cienci<i>fy</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Electromagnetismo</a> / Cavidades resonantes</span></header>
+<div class="wrap">
+<h1>Cavidades resonantes</h1>
+<p class="lead">Cavidades rectangulares, cilíndricas y esféricas de paredes conductoras: frecuencia de resonancia de cada modo, factor de calidad Q, ancho de banda y el mapa del campo.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Campo del modo</h2>
+      <canvas id="grafica" aria-label="Mapa del campo del modo en un plano de corte de la cavidad"></canvas>
+      <div class="controles">
+        <select id="plano" class="in" aria-label="Plano de corte"></select>
+        <input id="pos" type="range" min="2" max="98" step="1" value="50" aria-label="Posición del plano de corte">
+        <b id="pos-v">50 %</b>
+        <div class="modos" id="que" role="tablist" aria-label="Campo que se dibuja"><button type="button" role="tab" data-q="E" aria-selected="true">Eléctrico</button><button type="button" role="tab" data-q="H" aria-selected="false">Magnético</button></div>
+      </div>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card"><h2>Modos más bajos</h2><div id="modos"></div></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Qué es una cavidad resonante</h2>
+  <p class="m">Una caja metálica cerrada (o un trozo de guía de onda cerrado por los dos extremos) en la que una onda electromagnética queda atrapada y forma una onda estacionaria. Solo existen ciertos <em>modos</em>, cada uno con su frecuencia de resonancia $f_0$ y su forma de campo. Es el equivalente de microondas del circuito $L C$: guarda energía eléctrica y magnética que se intercambian a $f_0$. Se usa en filtros, osciladores, medidores de frecuencia (ondámetros), aceleradores de partículas y hornos de microondas.</p>
+  <h2>Frecuencia de resonancia</h2>
+  <p class="m">Rectangular $a × b × d$, con modos $"TE"_{mnp}$ ($p ≥ 1$) y $"TM"_{mnp}$ ($m, n ≥ 1$):</p>
+  <p class="f m">$f_0 = v/2 √({(m/a)^2 + (n/b)^2 + (p/d)^2})$, &ensp; $v = c/√(ε_r)$</p>
+  <p class="m">Cilíndrica de radio $R$ y longitud $L$, con $x_{nm}$ el $m$-ésimo cero de $J_n$ (modos TM, $p ≥ 0$) o $x′_{nm}$ el de $J′_n$ (modos TE, $p ≥ 1$):</p>
+  <p class="f m">$f_0 = v/{2π} √({(x_{nm}/R)^2 + (p π/L)^2})$</p>
+  <p class="m">Esférica de radio $R$: en los modos TE, $x_{nl}$ es el $l$-ésimo cero de $j_n$; en los TM, el de $(x j_n)′$:</p>
+  <p class="f m">$f_0 = {v x_{nl}}/{2π R}$</p>
+  <p class="m">El modo dominante rectangular es el $"TE"_{101}$; en la cilíndrica, el $"TM"_{010}$ (si $L < 2,03 R$) o el $"TE"_{111}$; en la esférica, el $"TM"_{11}$ ($x = 2,744$). Los modos $"TE"_{0mp}$ y $"TM"_{1mp}$ de la cilíndrica son degenerados.</p>
+  <h2>Factor de calidad</h2>
+  <p class="m">$Q = ω_0 ·$ (energía almacenada) $/$ (potencia perdida). Las paredes de conductividad $σ$ disipan por efecto Joule en una capa de espesor $δ = 1/√(π f_0 μ_0 σ)$, con resistencia superficial $R_s = 1/(σ δ)$:</p>
+  <p class="f m">$Q_c = {ω_0 μ_0 ∫|H|^2 dV}/{R_s ∮|H_t|^2 dS} = {2Γ}/δ$</p>
+  <p class="m">El relleno con pérdidas añade $Q_d = 1/{"tan" δ}$ y las dos se combinan en paralelo:</p>
+  <p class="f m">$1/Q = 1/Q_c + 1/Q_d$, &ensp; $Δf = f_0/Q$</p>
+  <p class="m">Un $Q$ alto significa resonancia muy estrecha. En una cavidad de cobre con aire el orden de magnitud es $Q ≈ V/(S δ)$, de miles a decenas de miles; en la esférica, los modos TE tienen exactamente $Q_c = R/δ$.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Cavidades resonantes <span id="ver"></span> (beta)</footer>
+</body>
