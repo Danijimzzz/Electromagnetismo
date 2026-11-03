@@ -28,6 +28,8 @@ JS puro, sin framework ni dependencias: una web estática que se genera con `sh 
 | Estadística | 11 | 0 |
 | Circuitos | 7 | 0 |
 | Economía | 26 | 0 |
+| Circuitos | 6 | 0 |
+| Economía | 27 | 0 |
 <!-- asignaturas:fin -->
 
 ## Hoja de ruta
