@@ -1,0 +1,80 @@
+<title>Nomenclatura orgánica e isomería en 3D: nombre IUPAC, R/S y E/Z · Ciencify</title>
+<meta name="description" content="Escribe una molécula orgánica (SMILES) y obtén su nombre IUPAC, grupos funcionales, centros quirales R/S, isomería E/Z y todos sus estereoisómeros, con la molécula en 3D que puedes girar, paso a paso.">
+<style>
+:root {
+  --at-h: #b8c2cc; --at-c: #4a5560; --at-o: #d4402a; --at-n: #2a5db5; --at-s: #d9a514; --at-hal: #2f9e63; --at-quiral: #6b3fa0 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --at-h: #d5dde5; --at-c: #8d99a6; --at-o: #ef6a52; --at-n: #74a2f2; --at-s: #f0c24a; --at-hal: #4fd08a; --at-quiral: #b892ec } }
+:root[data-theme="dark"] {
+  --at-h: #d5dde5; --at-c: #8d99a6; --at-o: #ef6a52; --at-n: #74a2f2; --at-s: #f0c24a; --at-hal: #4fd08a; --at-quiral: #b892ec }
+#molecula { height: clamp(300px, 48vw, 440px); cursor: grab; touch-action: none; margin-top: 0 }
+#molecula:active { cursor: grabbing }
+.btn[aria-pressed=true] { background: var(--accent-soft); border-color: var(--accent); color: var(--accent) }
+.nombre-iupac { font: 600 21px var(--f-math); margin: 0 0 6px; overflow-wrap: anywhere }
+#smiles { font-family: var(--f-mono) }
+.lista-iso { width: 100%; border-collapse: collapse }
+.lista-iso td, .lista-iso th { padding: 6px 8px; text-align: left; vertical-align: middle; border-bottom: 1px solid var(--line); font-size: 13.5px }
+.lista-iso th { font: 600 12px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .03em }
+.lista-iso tr.activa td { background: var(--accent-soft) }
+.lista-iso code { font: 12.5px var(--f-mono); overflow-wrap: anywhere }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../">Cienci<i>fy</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Química</a> / Nomenclatura orgánica e isomería en 3D</span></header>
+<div class="wrap">
+<h1>Nomenclatura orgánica e isomería en 3D</h1>
+<p class="lead">Escribe una molécula orgánica y obtén su nombre IUPAC, sus grupos funcionales, los centros quirales (R/S), los dobles enlaces E/Z y todos sus estereoisómeros, con la molécula en 3D que puedes girar con el ratón o el dedo.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <label for="smiles" class="solo-lector">Molécula en SMILES</label>
+    <input id="smiles" class="in ancho" placeholder="CC(O)C, C/C=C/C, C[C@H](O)C(=O)O…" aria-label="Molécula en SMILES" autocomplete="off" spellcheck="false" autocapitalize="off">
+    <div class="controles">
+      <button class="btn" id="b-espejo">Ver el enantiómero</button>
+    </div>
+    <p class="nota">Se escribe en <b>SMILES</b>: cada letra es un átomo (C, N, O, S, F, Cl, Br, I) y los hidrógenos se ponen solos. <code>=</code> y <code>#</code> son el doble y el triple enlace; las ramas van entre paréntesis: <code>CC(C)C</code> es el 2-metilpropano, <code>CC(=O)O</code> el ácido etanoico. Para la quiralidad se usa <code>[C@H]</code> o <code>[C@@H]</code> (visto desde el primer vecino, los otros tres van en sentido antihorario o horario) y para E/Z, las marcas <code>/</code> y <code>\</code>: <code>C/C=C/C</code> es trans (E), <code>C/C=C\C</code> es cis (Z). De momento, moléculas sin anillos.</p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><p class="nombre-iupac" id="titulo-mol"></p><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>La molécula en 3D</h2>
+      <canvas id="molecula" tabindex="0" aria-label="Molécula en 3D: arrastra para girarla, rueda o + y − para acercar, flechas para girar con el teclado"></canvas>
+      <div class="controles">
+        <button class="btn" id="b-giro" aria-pressed="true">Girar sola</button>
+        <button class="btn" id="b-h" aria-pressed="true">Hidrógenos</button>
+        <button class="btn" id="b-rs" aria-pressed="true">Etiquetas R/S</button>
+        <button class="btn" id="b-reinicio">Reiniciar vista</button>
+      </div>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card" id="c-estereo" hidden><h2>Estereoisómeros</h2><p class="nota" id="n-estereo"></p><div class="tabla-scroll"><table class="lista-iso" id="t-estereo"></table></div></div>
+    <div class="card" id="c-iso" hidden><h2>Isómeros constitucionales</h2><p class="nota" id="n-iso"></p><div class="tabla-scroll"><table class="lista-iso" id="t-iso"></table></div></div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<section class="teoria">
+  <h2>Cómo se nombra un compuesto</h2>
+  <ol>
+    <li><b>Grupo principal.</b> Manda el de más prioridad: ácido carboxílico &gt; éster &gt; amida &gt; nitrilo &gt; aldehído &gt; cetona &gt; alcohol &gt; tiol &gt; amina. Los demás grupos pasan a prefijos (hidroxi, oxo, amino, halógenos…).</li>
+    <li><b>Cadena principal.</b> La que contiene más grupos principales; si hay empate, la de más enlaces dobles y triples y, después, la de más carbonos.</li>
+    <li><b>Numeración.</b> Por el extremo que da los localizadores más bajos: primero al grupo principal, luego a los enlaces múltiples y por último a los sustituyentes (y, si siguen empatados, al que va antes alfabéticamente).</li>
+    <li><b>Nombre.</b> Sustituyentes en orden alfabético (sin contar di-, tri-…), cadena con sus «an», «en» o «in» y el sufijo del grupo principal: <i>3-etil-2-metilpentano</i>, <i>but-3-en-2-ol</i>, <i>ácido 3-metilbutanoico</i>.</li>
+  </ol>
+  <h2>Reglas de Cahn-Ingold-Prelog (R/S y E/Z)</h2>
+  <p>Se ordenan los sustituyentes de un carbono por el número atómico del átomo unido a él; si empatan, se compara el conjunto de átomos de la esfera siguiente, y así hasta desempatar. Un doble enlace cuenta como dos enlaces sencillos (se duplica el átomo del otro extremo).</p>
+  <ul>
+    <li><b>Centro quiral</b> (carbono con cuatro sustituyentes distintos): se mira con el sustituyente de menor prioridad detrás; si los otros tres, de mayor a menor, giran en sentido horario es <b>R</b> (<i>rectus</i>) y si giran en sentido antihorario, <b>S</b> (<i>sinister</i>).</li>
+    <li><b>Doble enlace</b> con dos sustituyentes distintos en cada carbono: si los de mayor prioridad están del mismo lado es <b>Z</b> (<i>zusammen</i>) y si están en lados opuestos, <b>E</b> (<i>entgegen</i>).</li>
+    <li>Con <i>n</i> centros quirales (y dobles enlaces E/Z) hay como máximo 2<sup><i>n</i></sup> estereoisómeros; si la molécula tiene un plano de simetría hay menos, porque aparecen formas <b>meso</b> (aquirales, aunque tengan centros quirales).</li>
+  </ul>
+  <h2>Tipos de isomería</h2>
+  <ul>
+    <li><b>Constitucional o estructural.</b> Misma fórmula molecular, distinta unión de átomos. De <b>cadena</b> (butano e isobutano), de <b>posición</b> (propan-1-ol y propan-2-ol) y de <b>función</b> (etanol y metoxietano).</li>
+    <li><b>Estereoisomería.</b> Mismo orden de enlaces, distinta disposición en el espacio. <b>Geométrica</b> (cis/trans, E/Z) y <b>óptica</b>: los <b>enantiómeros</b> son imágenes especulares no superponibles y desvían el plano de la luz polarizada en sentidos opuestos; los <b>diastereoisómeros</b> no son imágenes especulares.</li>
+  </ul>
+  <h2>Lo que todavía no sabe</h2>
+  <p>Anillos y compuestos aromáticos, aminas secundarias y terciarias, amidas N-sustituidas, haluros de ácido y sustituyentes con un grupo acilo.</p>
+</section>
+</div>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Nomenclatura orgánica e isomería en 3D <span id="ver"></span></footer>
+</body>
