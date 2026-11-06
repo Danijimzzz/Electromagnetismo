@@ -155,9 +155,10 @@ function aplicaElectrostatica(html) {
     .replace('<div class="app"', `<style>${css(a)}${extra}</style>\n${alterna}\n<div class="app"`);
 }
 
-// con anuncios.js activo: su código en la cabeza, «Preferencias de cookies» en el pie y un hueco por página
+// con anuncios.js activo: su código en la cabeza, «Preferencias de cookies» en el pie y los huecos (en las
+// herramientas, además, el lateral bajo los datos y dos más repartidos por la teoría)
 function aplica(html, clave, herramienta) {
-  return Pwa.CABEZA('../../') + '\n' + Anuncios.cabeza() + `<script>${Tema.SCRIPT}</script>
+  return Pwa.CABEZA('../../') + '\n' + Anuncios.cabeza() + (clave === 'electrostatica' || clave === V.clave ? '' : Anuncios.lateral()) + `<script>${Tema.SCRIPT}</script>
 <script>${Accesibilidad.SCRIPT}</script>
 ${Buscador.ETIQUETA('../../')}
 ${Llama.ETIQUETA('../../')}
@@ -180,7 +181,11 @@ function aplicaHerramienta(html, clave, herramienta) {
   if (!/<div class="wrap[^"]*"[^>]*>/.test(html) || !/<\/div>\s*<footer/.test(html)) throw new Error('diseno.js: la página no tiene <div class="wrap"> cerrado justo antes del <footer>');
   const main = (x) => x.replace(/<div class="(wrap[^"]*)"([^>]*)>/, '<main class="$1"$2>').replace(/<\/div>(\s*)<footer/, '</main>$1<footer');
   return main(html.replace(m[0], cab).replace(/<div class="fen-etiquetas"|<h1/, (x) => miga + '\n' + x).replace(/^<style>/m, `<style>${ESTILOS}${acento(a)}${cabecera}${propios}</style>\n<style>`)
-    .replace(/(<\/div>\s*)?<footer/, (x) => (vida ? vida + x : x)).replace(TEORIA.test(html) ? TEORIA : /(<\/div>\s*)?<section class="(preguntas|vida-real|relacionadas)"|(<\/div>\s*)?<footer/, (x) => Anuncios.hueco() + x));
+    .replace(/(<\/div>\s*)?<footer/, (x) => (vida ? vida + x : x)).replace(TEORIA.test(html) ? TEORIA : /(<\/div>\s*)?<section class="(preguntas|vida-real|relacionadas)"|(<\/div>\s*)?<footer/, (x) => Anuncios.hueco() + x)
+    // en las herramientas con teoría, otros dos huecos: en mitad de la teoría (antes de su tercer apartado) y
+    // al final, antes de «Herramientas relacionadas» (o del pie); nunca pegados a otro anuncio
+    .replace(/<section class="teoria"[\s\S]*?<\/section>/, (t) => { let n = 0; return a === V ? t : t.replace(/<h2/g, (x) => (++n === 3 ? Anuncios.hueco() + x : x)); })
+    .replace(a === V || !TEORIA.test(html) ? /$^/ : /(<section class="relacionadas")|(<\/div>\s*)?<footer/, (x) => Anuncios.hueco() + x));
 }
 const TEORIA = /<section class="teoria"/;
 

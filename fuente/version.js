@@ -12,6 +12,7 @@
 const Version = (() => {
   const registros = {
     web: [
+      { v: '1.12.1', fecha: '2026-11-06', cambios: ['La web se prepara para mostrar publicidad de Google: en el pie de las páginas aparece «Preferencias de cookies» para elegir qué aceptas, y las políticas de cookies y privacidad lo explican.'] },
       { v: '1.12', fecha: '2026-11-03', titulo: 'Fase 9: siete herramientas y siete fenómenos nuevos', subtitulo: 'Control, transformada z, semiconductores, orgánica en 3D, cavidades resonantes, termodinámica estadística, la cartera de Markowitz y siete fenómenos de la vida real.', secciones: [
         { icono: '⚡', titulo: 'Circuitos', puntos: [
           '#circuitos/transformada-z',
