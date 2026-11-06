@@ -181,7 +181,7 @@ ${Anuncios.cabeza()}<script>${Tema.SCRIPT}</script>
 <a class="foro" href="${raiz}foro/"${actual === 'foro' ? ' aria-current="page"' : ''}><span aria-hidden="true">💬</span>Foro</a>
 ${buscar ? '<input type="search" id="buscar" class="buscar" placeholder="Buscar: Biot-Savart, molaridad…" aria-label="Buscar herramientas (atajo: barra /)" title="Atajo: / o Ctrl+K" autocomplete="off">' : ''}${Tema.BOTON}</header>
 ${cuerpo}
-${CON_ANUNCIO.includes(actual) ? Anuncios.hueco() : ''}${Anuncios.pie(`<footer><a href="${raiz}contacto.html">Contacto</a>·<a href="${raiz}aviso-legal.html">Aviso legal</a>·<a href="${raiz}privacidad.html">Privacidad</a>·<a href="${raiz}cookies.html">Cookies</a>· <a href="${raiz}novedades/">Versión ${esc(Version.de('web').current)}</a></footer>`)}
+${CON_ANUNCIO.includes(actual) && Anuncios.hueco() ? `<div role="region" aria-label="Publicidad">${Anuncios.hueco()}</div>` : ''}${Anuncios.pie(`<footer><a href="${raiz}contacto.html">Contacto</a>·<a href="${raiz}aviso-legal.html">Aviso legal</a>·<a href="${raiz}privacidad.html">Privacidad</a>·<a href="${raiz}cookies.html">Cookies</a>· <a href="${raiz}novedades/">Versión ${esc(Version.de('web').current)}</a></footer>`)}
 ${Buscador.ETIQUETA(raiz)}\n${Llama.ETIQUETA(raiz)}\n${script ? `<script>${script}</script>\n` : ''}</body>
 </html>
 `;
