@@ -5,16 +5,17 @@
    o inelástica, bien normal, de lujo o inferior, sustitutivos o
    complementarios) y el efecto sobre el ingreso total; y la elasticidad
    en un punto de una demanda lineal Q = a − bP, con el precio que hace
-   máximo el ingreso. Formato de economia/comun.js; interfaz en
+   máximo el ingreso; la elasticidad precio de la oferta entre dos situaciones
+   y la demanda u oferta isoelástica Q = A·Pᵋ (elasticidad constante). Formato de economia/comun.js; interfaz en
    elasticidades/app.js.
      resolver(sc)  { tipo: 'precio' | 'renta' | 'cruzada', x0, q0, x1, q1 } | { tipo: 'lineal', a, b, p } → { e, eArco, pasos }
    ===================================================================== */
 const Elasticidades = (() => {
   const K = typeof Eco !== 'undefined' ? Eco : require('../economia/comun.js');
   const { f, lee } = K;
-  const TIPOS = { precio: 'Precio de la demanda', renta: 'Renta', cruzada: 'Cruzada', lineal: 'Demanda lineal Q = a − bP' };
+  const TIPOS = { precio: 'Precio de la demanda', renta: 'Renta', cruzada: 'Cruzada', oferta: 'Precio de la oferta', lineal: 'Demanda lineal Q = a − bP', isoelastica: 'Isoelástica Q = A·P^±ε' };
   // qué es la x en cada tipo
-  const X = { precio: ['el precio', 'P'], renta: ['la renta', 'R'], cruzada: ['el precio del otro bien', 'P_y'] };
+  const X = { precio: ['el precio', 'P'], renta: ['la renta', 'R'], cruzada: ['el precio del otro bien', 'P_y'], oferta: ['el precio', 'P'] };
   const n = (x) => f(x, 8).replace(/\./g, ''), e4 = (x) => f(x, 4), pc = (x) => `${f(100 * x, 4)} %`;
 
   function clasifica(tipo, e) {
@@ -31,7 +32,7 @@ const Elasticidades = (() => {
     if (x0 === x1) throw new Error(`${nom[0].toUpperCase() + nom.slice(1)} no cambia: hace falta una variación para calcular la elasticidad`);
     const vq = (q1 - q0) / q0, vx = (x1 - x0) / x0, e = vq / vx;
     const vqm = (q1 - q0) / ((q0 + q1) / 2), vxm = (x1 - x0) / ((x0 + x1) / 2), ea = vqm / vxm;
-    const [clase, por] = clasifica(tipo, ea), pasos = [];
+    const [clase, por] = clasifica(tipo === 'oferta' ? 'precio' : tipo, ea), pasos = [];
     pasos.push({ t: 'Variaciones porcentuales', html: `$${s}$ pasa de ${n(x0)} a ${n(x1)}: $Δ${s}/${s}_0 = (${n(x1)} − ${n(x0)})/${n(x0)} = ${pc(vx)}$. La cantidad pasa de ${n(q0)} a ${n(q1)}: $ΔQ/Q_0 = (${n(q1)} − ${n(q0)})/${n(q0)} = ${pc(vq)}$.` });
     pasos.push({ t: 'Elasticidad sobre el valor inicial', html: `$ε = {ΔQ/Q_0}/{Δ${s}/${s}_0} = ${f(vq, 6)}/${f(vx, 6)} = ${e4(e)}$. ¡Ojo! Si el cambio fuera al revés (de ${n(x1)} a ${n(x0)}) saldría otro número: ${e4(((q0 - q1) / q1) / ((x0 - x1) / x1))}.` });
     pasos.push({ t: 'Elasticidad de arco (punto medio)', html: `Para que no dependa del sentido se divide entre la media: $Q_m = ${n((q0 + q1) / 2)}$ y $${s}_m = ${n((x0 + x1) / 2)}$, así que $ΔQ/Q_m = ${f(vqm, 6)}$, $Δ${s}/${s}_m = ${f(vxm, 6)}$ y $ε = ${f(vqm, 6)}/${f(vxm, 6)} = ${e4(ea)}$.` });
@@ -56,7 +57,17 @@ const Elasticidades = (() => {
     return { tipo: 'lineal', a, b, p, q, e, ea: e, clase, pm, it: p * q, itMax: (a * a) / (4 * b), pasos };
   }
 
-  const resolver = (sc) => (sc.tipo === 'lineal' ? lineal(sc) : arco(sc, TIPOS[sc.tipo] ? sc.tipo : 'precio'));
+  // Q = A·P^(−ε) (demanda) o Q = A·P^ε (oferta): la elasticidad es la misma en todos los puntos
+  function isoelastica(sc) {
+    const A = lee(sc, 'A', 'la constante A', { min: 0, minEx: true }), eps = lee(sc, 'eps', 'la elasticidad ε (en valor absoluto)', { min: 0, minEx: true, max: 100 }), p = lee(sc, 'p', 'el precio', { min: 0, minEx: true });
+    const lado = sc.lado === 'oferta' ? 'oferta' : 'demanda', sg = lado === 'oferta' ? 1 : -1, e = sg * eps, q = A * p ** e, [clase, por] = clasifica('precio', e), pasos = [];
+    pasos.push({ t: 'Cantidad', html: `$Q = A·P^{${lado === 'oferta' ? '' : '−'}ε} = ${n(A)}·${n(p)}^{${n(e)}} = ${n(q)}$` });
+    pasos.push({ t: 'Elasticidad constante', html: `$ε = {dQ}/{dP}·P/Q = ${n(e)}·A·P^{${n(e - 1)}}·P/(A·P^{${n(e)}}) = ${n(e)}$ en <b>todos</b> los puntos de la curva (por eso se llama isoelástica): ${lado} <b>${clase}</b> (${por}).` });
+    pasos.push({ t: 'Ingreso total', html: lado === 'demanda' ? `$IT = P·Q = A·P^{${n(1 - eps)}} = ${n(p * q)}$. ${eps > 1 + 1e-9 ? 'Como |ε| > 1, el ingreso baja cuando sube el precio.' : eps < 1 - 1e-9 ? 'Como |ε| < 1, el ingreso sube cuando sube el precio.' : 'Con |ε| = 1 el ingreso total es constante, $IT = A$.'}` : `$IT = P·Q = ${n(p * q)}$ y crece con el precio: al subir el precio los productores venden más.` });
+    return { tipo: 'isoelastica', lado, A, eps, p, q, e, ea: e, clase, it: p * q, pasos };
+  }
+
+  const resolver = (sc) => (sc.tipo === 'lineal' ? lineal(sc) : sc.tipo === 'isoelastica' ? isoelastica(sc) : arco(sc, TIPOS[sc.tipo] ? sc.tipo : 'precio'));
 
   const ejemplos = [
     { clave: 'cine', nombre: 'Entradas de cine que suben de 8 a 10 €', sc: { tipo: 'precio', x0: '8', q0: '500', x1: '10', q1: '400' } },
@@ -64,6 +75,9 @@ const Elasticidades = (() => {
     { clave: 'lujo', nombre: 'Viajes al subir el sueldo: un bien de lujo', sc: { tipo: 'renta', x0: '20000', q0: '2', x1: '22000', q1: '3' } },
     { clave: 'inferior', nombre: 'Bocadillos al subir la renta: un bien inferior', sc: { tipo: 'renta', x0: '1500', q0: '20', x1: '1800', q1: '16' } },
     { clave: 'cafe-te', nombre: 'Café y té: elasticidad cruzada', sc: { tipo: 'cruzada', x0: '10', q0: '100', x1: '12', q1: '115' } },
+    { clave: 'oferta', nombre: 'Oferta de naranjas: el precio sube de 2 a 2,5 €', sc: { tipo: 'oferta', x0: '2', q0: '1000', x1: '2,5', q1: '1300' } },
+    { clave: 'isoelastica', nombre: 'Demanda isoelástica Q = 1.000·P⁻² a 5 €', sc: { tipo: 'isoelastica', lado: 'demanda', A: '1000', eps: '2', p: '5' } },
+    { clave: 'isoelastica-oferta', nombre: 'Oferta isoelástica Q = 20·P^0,5 a 16 €', sc: { tipo: 'isoelastica', lado: 'oferta', A: '20', eps: '0,5', p: '16' } },
     { clave: 'lineal', nombre: 'Demanda lineal Q = 100 − 2P a 30 €', sc: { tipo: 'lineal', a: '100', b: '2', p: '30' } },
   ];
 
