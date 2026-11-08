@@ -80,6 +80,17 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     let cruzados = 0;
     for (const c of C.todos()) for (const l of c.lineas) for (const nom of [l.nombre, ...(l.otros || [])]) if (pn.get(C.norm(nom)).c !== c && cruzados++ < 5) mal(`Formulación: el nombre «${nom}» de ${c.formula} apunta a ${pn.get(C.norm(nom)).c.formula}`);
     if (C.todos().length < 2500) mal(`Formulación: solo hay ${C.todos().length} compuestos`);
+    // complejos, hidratos y compuestos con nombre propio
+    { const q = (t) => C.resolver({ modo: 'f2n', texto: t }), qn = (t) => C.resolver({ modo: 'n2f', texto: t });
+      const x = q('K3[Fe(CN)6]').c.complejo; if (x.ox !== 3 || x.cn !== 6 || x.geo !== 'octaédrica' || x.dN !== 5) mal('Formulación: K3[Fe(CN)6] debería ser Fe(III), CN 6, octaédrico, d5: ' + JSON.stringify([x.ox, x.cn, x.geo, x.dN]));
+      if (!q('K3[Fe(CN)6]').lineas.some((l) => l.nombre === 'hexacianoferrato(III) de potasio')) mal('Formulación: nombre de K3[Fe(CN)6]');
+      if (!q('[Cu(NH3)4]SO4').lineas.some((l) => l.nombre === 'sulfato de tetraaminocobre(II)')) mal('Formulación: nombre de [Cu(NH3)4]SO4');
+      if (q('[Ag(NH3)2]Cl').c.complejo.geo !== 'lineal') mal('Formulación: [Ag(NH3)2]+ debería ser lineal');
+      if (qn('hexacianoferrato(III) de potasio').formula !== 'K3[Fe(CN)6]') mal('Formulación: hexacianoferrato(III) de potasio → ' + qn('hexacianoferrato(III) de potasio').formula);
+      let ok = false; try { q('[Fe(CN)6]'); } catch (e) { ok = true; } if (!ok) mal('Formulación: un complejo sin carga debería dar error');
+      if (!q('CuSO4·5H2O').lineas.some((l) => /pentahidrato$/.test(l.nombre))) mal('Formulación: CuSO4·5H2O sin pentahidrato');
+      if (qn('sulfato de cobre(II) pentahidrato').formula !== 'CuSO4·5H2O') mal('Formulación: sulfato de cobre(II) pentahidrato → ' + qn('sulfato de cobre(II) pentahidrato').formula);
+      for (const [f, n] of [['O3', 'ozono'], ['H2S2O3', 'ácido tiosulfúrico'], ['CaC2', 'carburo de calcio'], ['K2MnO4', 'manganato de potasio'], ['H3BO3', 'ácido ortobórico'], ['KAl(SO4)2', 'sulfato de aluminio y potasio']]) if (qn(n).formula.replace(/[₀-₉]/g, (d) => '₀₁₂₃₄₅₆₇₈₉'.indexOf(d)) !== f) mal(`Formulación: «${n}» debería dar ${f} y da ${qn(n).formula}`); }
     // la fórmula se lee igual con subíndices, corchetes y espacios
     for (const t of ['Fe₂(SO₄)₃', 'Fe2 (SO4)3', 'Fe2[SO4]3', 'O12S3Fe2']) if (C.resolver({ modo: 'f2n', texto: t }).formula !== 'Fe2(SO4)3') mal(`Formulación: «${t}» no se lee como Fe2(SO4)3`);
     // errores
