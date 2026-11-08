@@ -6,7 +6,9 @@
    inflación, con el tipo real de Fisher), la aportación que hace falta para
    llegar a un objetivo y lo que pierde de poder adquisitivo un dinero
    parado. Formato en euros de economia/comun.js; interfaz en ahorro/app.js.
-     resolver(sc)  { modo, c0, a, m, r, pi, n, indexa, objetivo, x } → { final, real, aportado, filas, pasos }
+   Fase de retirada opcional: tras los n años se retira ret € de hoy por periodo (subiendo con la
+   inflación) durante nr años; dice cuándo se agota el dinero y cuánto se podría retirar como máximo.
+     resolver(sc)  { modo, c0, a, m, r, pi, n, indexa, objetivo, x, ret, nr } → { final, real, aportado, jub, filas, pasos }
    ===================================================================== */
 const Ahorro = (() => {
   const K = typeof Eco !== 'undefined' ? Eco : require('../economia/comun.js');
@@ -69,7 +71,24 @@ const Ahorro = (() => {
     pasos.push({ t: 'Tipo real (ecuación de Fisher)', html: `$1 + r_{real} = {1 + r}/{1 + π} = {${f(1 + r, 6)}}/{${f(1 + pi, 6)}}$ ⇒ $r_{real} = ${f(rr, 6)}$ (${tp(rr)} anual). Es lo que crece de verdad lo que se puede comprar; aproximadamente $r − π = ${f(100 * (r - pi), 4)} %$.` });
     pasos.push({ t: 'En euros de hoy', html: `$${e(final)}/(1 + ${f(pi, 6)})^{${n}} = ${e(final)}/${f(def, 6)} = ${e(real)}$ €: con lo ahorrado se comprará dentro de ${n} años lo mismo que hoy con ${e(real)} €. La inflación se lleva ${e(final - real)} € del saldo.` });
     const filas = anos.map((x) => ({ ...x, real: x.s / (1 + pi) ** x.t }));
-    return { modo, m, per, uno, r, pi, rr, n, c0, a, indexa, objetivo, final, real, aportado, def, filas, pasos };
+    // fase de retirada: se retira w₀ = ret·(1 + π)ⁿ por periodo el primer año (euros de entonces), subiendo cada año con la inflación
+    const ret = lee(sc, 'ret', 'la retirada', { min: 0, def: 0 });
+    let jub = null;
+    if (ret > 0) {
+      const nr = lee(sc, 'nr', 'los años de retirada', { min: 1, max: 60, entero: true, def: 25 }), w0 = ret * def;
+      let s = final, agota = null; const rows = [];
+      for (let j = 1; j <= nr; j++) {
+        const wj = w0 * (1 + pi) ** (j - 1);
+        for (let k = 1; k <= m; k++) { s = s * (1 + ip) - wj; if (s < 0 && agota === null) agota = j - 1 + k / m; if (s < 0) s = 0; }
+        rows.push({ t: n + j, s, ap: aportado, aj: wj, real: s / (1 + pi) ** (n + j), retirada: true });
+      }
+      const G = simula(0, 1, m, ip, nr, 1 + pi)[nr].s, maxN = final * (1 + ip) ** (nr * m) / G, maxHoy = maxN / def;
+      jub = { ret, nr, w0, agota, sobra: s, maxHoy, maxNom: maxN };
+      pasos.push({ t: 'Fase de retirada', html: `Se retiran ${e(ret)} € de hoy por ${uno}: dentro de ${n} años serán $${e(ret)} · ${f(def, 6)} = ${e(w0)}$ € por ${uno}, y suben cada año con la inflación. Durante ${nr} años el saldo sigue ganando el ${tp(r)} anual.<br>${agota === null ? `El dinero <b>alcanza</b> los ${nr} años y sobran ${e(s)} € (${e(s / (1 + pi) ** (n + nr))} € de hoy).` : `El dinero <b>se agota</b> a los ${f(agota, 3)} años de retirada, antes de los ${nr} previstos.`}` });
+      pasos.push({ t: 'Retirada máxima sostenible', html: `Para gastar justo todo el saldo en ${nr} años hay que resolver $S · (1 + i)^{N} = w_0 · s'$, donde $s'$ es lo que acumula 1 € retirado cada ${uno} subiendo con la inflación. Sale ${e(maxN)} € por ${uno} el primer año, es decir <b>${e(maxHoy)} € de hoy por ${uno}</b>.` });
+      filas.push(...rows);
+    }
+    return { modo, m, per, uno, r, pi, rr, n, c0, a, indexa, objetivo, final, real, aportado, def, jub, filas, pasos };
   }
 
   const ejemplos = [
@@ -77,6 +96,8 @@ const Ahorro = (() => {
     { clave: 'jubilacion', nombre: 'Plan para la jubilación con aportaciones que suben con el IPC', sc: { modo: 'final', c0: '0', a: '1200', m: '1', r: '4', pi: '3', n: '30', indexa: 'si' } },
     { clave: 'objetivo', nombre: '¿Cuánto ahorrar al mes para tener 100.000 € de hoy en 25 años?', sc: { modo: 'objetivo', c0: '5000', objetivo: '100000', m: '12', r: '6', pi: '2', n: '25', indexa: 'no' } },
     { clave: 'colchon', nombre: 'Dinero debajo del colchón: 10.000 € durante 10 años', sc: { modo: 'final', c0: '10000', a: '0', m: '1', r: '0', pi: '3', n: '10', indexa: 'no' } },
+    { clave: 'retirada', nombre: 'Ahorrar 800 € al mes 30 años y vivir 25 años retirando 1.000 € al mes de hoy', sc: { modo: 'final', c0: '0', a: '800', m: '12', r: '4', pi: '2', n: '30', indexa: 'no', ret: '1000', nr: '25' } },
+    { clave: 'agota', nombre: 'Retirada demasiado alta: el dinero se agota antes', sc: { modo: 'final', c0: '20000', a: '300', m: '12', r: '3', pi: '2', n: '20', indexa: 'no', ret: '1500', nr: '25' } },
     { clave: 'poder', nombre: 'Lo que valdrán 1.000 € dentro de 20 años', sc: { modo: 'poder', x: '1000', pi: '2,5', n: '20' } },
   ];
 
