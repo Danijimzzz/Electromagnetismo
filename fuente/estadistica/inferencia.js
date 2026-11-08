@@ -169,6 +169,40 @@ const Inferencia = (() => {
     return { JB, p: Math.exp(-JB / 2), n, g1, g2 };
   }
 
+
+  /* ---------- Correlación por rangos (Spearman y Kendall) ---------- */
+  function rangosDe(v) {
+    const idx = v.map((_, i) => i).sort((a, b) => v[a] - v[b]), r = new Array(v.length), t = [];
+    for (let i = 0; i < idx.length;) { let j = i; while (j + 1 < idx.length && v[idx[j + 1]] === v[idx[i]]) j++; for (let q = i; q <= j; q++) r[idx[q]] = (i + j) / 2 + 1; if (j > i) t.push(j - i + 1); i = j + 1; }
+    return { r, t };
+  }
+  // Spearman: r de Pearson de los rangos; p con la t de n − 2 g. l. (como scipy.stats.spearmanr)
+  function spearman(x, y) {
+    const n = x.length, a = rangosDe(x).r, b = rangosDe(y).r, ma = media(a), mb = media(b);
+    const sab = suma(a.map((v, i) => (v - ma) * (b[i] - mb))), saa = ssq(a), sbb = ssq(b);
+    if (n < 3 || !(saa > 0) || !(sbb > 0)) return { rho: NaN, p: NaN, n };
+    const rho = Math.max(-1, Math.min(1, sab / Math.sqrt(saa * sbb))), t = rho * Math.sqrt((n - 2) / Math.max(1e-300, 1 - rho * rho));
+    return { rho, t, p: Math.abs(rho) === 1 ? 0 : Math.min(1, 2 * D.t.sf({ nu: n - 2 }, Math.abs(t))), n };
+  }
+  // Kendall τ-b: exacto (inversiones) sin empates y n ≤ 40; si no, normal con la corrección de empates (como scipy.stats.kendalltau)
+  function kendall(x, y) {
+    const n = x.length; let C = 0, Dd = 0;
+    for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) { const s = Math.sign(x[j] - x[i]) * Math.sign(y[j] - y[i]); if (s > 0) C++; else if (s < 0) Dd++; }
+    const tx = rangosDe(x).t, ty = rangosDe(y).t, n0 = (n * (n - 1)) / 2, n1 = suma(tx.map((t) => (t * (t - 1)) / 2)), n2 = suma(ty.map((t) => (t * (t - 1)) / 2)), S = C - Dd;
+    if (n < 3 || n0 - n1 === 0 || n0 - n2 === 0) return { tau: NaN, p: NaN, n, C, D: Dd };
+    const tau = S / Math.sqrt((n0 - n1) * (n0 - n2));
+    if (!tx.length && !ty.length && n <= 40) {
+      // P(D = k) con n elementos: producto de (1 + q + … + q^(i−1)); S = n0 − 2D
+      let c = [1]; for (let i = 2; i <= n; i++) { const nu = new Array(c.length + i - 1).fill(0); for (let k = 0; k < c.length; k++) for (let q = 0; q < i; q++) nu[k + q] += c[k]; c = nu; }
+      const tot = suma(c); let p = 0; c.forEach((q, k) => { if (Math.abs(n0 - 2 * k) >= Math.abs(S)) p += q; });
+      return { tau, p: Math.min(1, p / tot), S, n, C, D: Dd, exacto: true };
+    }
+    const v0 = n * (n - 1) * (2 * n + 5), vt = suma(tx.map((t) => t * (t - 1) * (2 * t + 5))), vu = suma(ty.map((t) => t * (t - 1) * (2 * t + 5)));
+    const v1 = (suma(tx.map((t) => t * (t - 1))) * suma(ty.map((t) => t * (t - 1)))) / (2 * n * (n - 1)), v2 = n > 2 ? (suma(tx.map((t) => t * (t - 1) * (t - 2))) * suma(ty.map((t) => t * (t - 1) * (t - 2)))) / (9 * n * (n - 1) * (n - 2)) : 0;
+    const vr = (v0 - vt - vu) / 18 + v1 + v2, z = S / Math.sqrt(vr);
+    return { tau, z, p: Math.min(1, 2 * Phi(-Math.abs(z))), S, n, C, D: Dd, exacto: false };
+  }
+
   /* ---------- p-valores ajustados ---------- */
   const bonferroni = (ps) => ps.map((p) => Math.min(1, p * ps.length));
   function holm(ps) {
@@ -185,6 +219,6 @@ const Inferencia = (() => {
     return { levene: lev, shapiro: sh, bartlett: grupos.every((x) => x.length >= 2) ? bartlett(grupos) : null, normalidadOk: nok, varianzasOk: vok };
   }
 
-  return { nctCdf, nctPdf, ptukey, qtukey, rangoNormales, levene, bartlett, welch, shapiro, jarqueBera, ppnd, holm, bonferroni, supuestos, media, ssq, mediana, suma, integra };
+  return { spearman, kendall, rangosDe, nctCdf, nctPdf, ptukey, qtukey, rangoNormales, levene, bartlett, welch, shapiro, jarqueBera, ppnd, holm, bonferroni, supuestos, media, ssq, mediana, suma, integra };
 })();
 if (typeof module !== 'undefined') module.exports = Inferencia;

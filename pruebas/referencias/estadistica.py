@@ -92,5 +92,52 @@ R['potencia']['dosprop'] = {'pot': pot_dosprop(0.2, 0.1, 150, 150, 0.05)}
 R['potencia']['varianza'] = {'pot': float(stats.chi2.sf(stats.chi2.ppf(0.95, 19) * (2 * 2) / (3 * 3), 19))}
 R['potencia']['dosvar'] = {'pot': float(stats.f.sf(stats.f.ppf(0.975, 10, 12) / 3.0, 10, 12) + stats.f.cdf(stats.f.ppf(0.025, 10, 12) / 3.0, 10, 12))}
 
+# --- No paramétricos ---
+import numpy as np
+from scipy.stats import rankdata, tiecorrect
+def kw_dunn(grupos):
+    todos = np.concatenate(grupos); N = len(todos); r = rankdata(todos); pos = 0; Rm = []; n = []
+    for g in grupos: Rm.append(r[pos:pos + len(g)].mean()); n.append(len(g)); pos += len(g)
+    H, p = stats.kruskal(*grupos)
+    _, cnt = np.unique(todos, return_counts=True); corr = float(((cnt ** 3) - cnt).sum())
+    v = N * (N + 1) / 12 - corr / (12 * (N - 1)); ps = []
+    for i, j in itertools.combinations(range(len(grupos)), 2):
+        z = (Rm[i] - Rm[j]) / math.sqrt(v * (1 / n[i] + 1 / n[j])); ps.append(float(2 * stats.norm.sf(abs(z))))
+    return {'H': float(H), 'p': float(p), 'dunn_p': ps, 'holm': fl(multipletests(ps, method='holm')[1]), 'bonferroni': fl(multipletests(ps, method='bonferroni')[1])}
+R['kruskal'] = {
+  'tres': kw_dunn([np.array(v, float) for v in ([14, 17, 16, 19, 22], [10, 12, 15, 11, 13, 9], [20, 24, 21, 26, 23, 25])]),
+  'empates': kw_dunn([np.array(v, float) for v in ([3, 4, 4, 5, 5], [4, 5, 6, 6, 7, 7], [6, 7, 7, 8, 9, 9, 9])]),
+}
+a1 = [14, 17, 16, 19, 22]; b1 = [10, 12, 15, 11, 13, 9]
+R['mannwhitney'] = {'exacto': [float(v) for v in stats.mannwhitneyu(a1, b1, method='exact')], 'normal_empates': [float(v) for v in stats.mannwhitneyu([3, 4, 4, 5, 5, 5, 6, 7], [2, 3, 3, 4, 4, 5, 5, 6], alternative='greater', method='asymptotic', use_continuity=True)]}
+dd = np.array([82 - 78, 91 - 85, 77 - 75, 88 - 89, 95 - 88, 0, 84 - 76, 90 - 79], float)
+R['wilcoxon'] = {'exacto_mayor': [float(v) for v in stats.wilcoxon(dd, alternative='greater', method='exact', zero_method='wilcox')],
+                 'mediana_dos': [float(v) for v in stats.wilcoxon(np.array([54, 61, 48, 58, 66, 53, 63, 57, 49, 60]) - 50.0, method='exact')]}
+R['signos'] = {'dieta_mayor': float(stats.binomtest(6, 7, 0.5, alternative='greater').pvalue), 'mediana_dos': float(stats.binomtest(8, 10, 0.5).pvalue)}
+R['correlacion'] = {'sin_empates': {'spearman': [float(v) for v in stats.spearmanr([1,2,3,4,5,6,7,8],[2,1,4,3,7,8,5,6])], 'kendall': [float(v) for v in stats.kendalltau([1,2,3,4,5,6,7,8],[2,1,4,3,7,8,5,6])]},
+                    'empates': {'spearman': [float(v) for v in stats.spearmanr([1,2,2,3,4,4,5],[1,3,2,2,5,6,6])], 'kendall': [float(v) for v in stats.kendalltau([1,2,2,3,4,4,5],[1,3,2,2,5,6,6])]}}
+# Hodges-Lehmann con el intervalo de wilcox.test de R (sin corrección de continuidad), calculado aquí a mano con las distribuciones exactas
+def cuentas_mw(n1, n2):
+    c = [{} for _ in range(n1 + 1)]; c[0][0] = 1
+    for v in range(1, n1 + n2 + 1):
+        for j in range(min(n1, v), 0, -1):
+            for s_, q in list(c[j - 1].items()): c[j][s_ + v] = c[j].get(s_ + v, 0) + q
+    base = n1 * (n1 + 1) // 2; return {s_ - base: q for s_, q in c[n1].items()}
+def qdist(cu, p):
+    tot = sum(cu.values()); acu = 0
+    for k in sorted(cu):
+        acu += cu[k] / tot
+        if acu >= p - 1e-12: return k
+x = np.array(a1, float); y = np.array(b1, float); dif = np.sort((x[:, None] - y[None, :]).ravel()); M = len(dif)
+qu = qdist(cuentas_mw(5, 6), 0.025); qu = max(qu, 1); R['hodges_mw'] = {'est': float(np.median(dif)), 'lo': float(dif[qu - 1]), 'hi': float(dif[M - qu])}
+w = np.array([54, 61, 48, 58, 66, 53, 63, 57, 49, 60]) - 50.0; n = len(w)
+walsh = np.sort(np.array([(w[i] + w[j]) / 2 for i in range(n) for j in range(i, n)])); cs = {0: 1}
+for v in range(1, n + 1):
+    nu = dict(cs)
+    for s_, q in cs.items(): nu[s_ + v] = nu.get(s_ + v, 0) + q
+    cs = nu
+qs = max(qdist(cs, 0.025), 1); Mw = n * (n + 1) // 2
+R['hodges_wilcoxon'] = {'est': float(np.median(walsh)), 'lo': float(walsh[qs - 1]), 'hi': float(walsh[Mw - qs])}
+
 json.dump(R, open(os.path.join(os.path.dirname(__file__), 'estadistica.json'), 'w'), ensure_ascii=False, indent=1)
 print('estadistica.json escrito')

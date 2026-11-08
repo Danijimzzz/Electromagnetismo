@@ -1,11 +1,13 @@
-<title>Mann-Whitney y Wilcoxon: contrastes no paramétricos · Ciencify</title>
-<meta name="description" content="Calculadora de la U de Mann-Whitney y del test de Wilcoxon de los rangos con signo en español: rangos, empates, p-valor exacto o por aproximación normal y conclusión paso a paso.">
+<title>Kruskal-Wallis, Mann-Whitney y Wilcoxon: contrastes no paramétricos · Ciencify</title>
+<meta name="description" content="Calculadora de contrastes no paramétricos en español: U de Mann-Whitney, Wilcoxon, Kruskal-Wallis con Dunn, test de los signos, Spearman y Kendall, con rangos, empates, p-valor exacto, tamaño del efecto y estimador de Hodges-Lehmann paso a paso.">
 <style>
 .tabla-eco { border-collapse: collapse; font: 13.5px var(--f-ui); width: 100%; font-variant-numeric: tabular-nums }
 .tabla-eco th, .tabla-eco td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap }
 .tabla-eco th { font-weight: 600; color: var(--muted) } .tabla-eco th:first-child, .tabla-eco td:first-child { text-align: left }
 .tabla-eco tfoot td { font-weight: 600; background: var(--accent-soft) }
 .tabla-eco small { color: var(--muted) }
+.tabla-eco.libre th, .tabla-eco.libre td { text-align: left; white-space: normal; vertical-align: top }
+.tabla-eco caption { text-align: left; font-weight: 600; padding: 2px 0 6px; caption-side: top }
 :root {
   --serie-1: #2a5db5; --serie-2: #c2412a }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
@@ -16,8 +18,8 @@
 <body>
 <header class="top"><a class="logo" href="../../">Cienci<i>fy</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Estadística</a> / Contrastes no paramétricos</span></header>
 <div class="wrap">
-<h1>Contrastes no paramétricos: Mann-Whitney y Wilcoxon</h1>
-<p class="lead">Compara dos muestras sin suponer que son normales: la U de Mann-Whitney para dos grupos independientes y el test de Wilcoxon para datos apareados o una mediana, con los rangos, los empates, el p-valor y el desarrollo paso a paso.</p>
+<h1>Contrastes no paramétricos</h1>
+<p class="lead">Compara grupos sin suponer que son normales: Mann-Whitney para dos grupos independientes, Wilcoxon y el test de los signos para datos apareados o una mediana, Kruskal-Wallis con comparaciones de Dunn para tres o más grupos, y Spearman y Kendall para la correlación, con los rangos, los empates, el p-valor, el tamaño del efecto y el desarrollo paso a paso.</p>
 <div class="layout">
   <div class="card">
     <h2>Datos</h2>
@@ -28,9 +30,9 @@
   </div>
   <div>
     <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
-    <div class="card"><h2>Rangos</h2><div class="tabla-scroll" id="tabla"></div></div>
-    <div class="card"><h2>Rangos de cada dato</h2>
-      <canvas id="grafica" aria-label="Rangos de las observaciones"></canvas>
+    <div class="card"><h2>Tablas</h2><div class="tabla-scroll" id="tabla"></div></div>
+    <div class="card"><h2>Gráfica</h2>
+      <canvas id="grafica" aria-label="Gráfica de los rangos o de los signos de las observaciones"></canvas>
       <p class="leyenda" id="leyenda"></p>
     </div>
     <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
@@ -43,6 +45,23 @@
 <p class="m">Se ordenan juntos todos los datos y se suman los rangos de cada muestra, $R_1$ y $R_2$. $U_1 = R_1 − n_1(n_1 + 1)/2$ cuenta cuántas veces un dato de la muestra 1 supera a uno de la 2 (los empates cuentan medio), y $U_1 + U_2 = n_1 n_2$. Se contrasta si una muestra tiende a dar valores mayores que la otra.</p>
 <h2>Wilcoxon (datos apareados o una mediana)</h2>
 <p class="m">Se toman las diferencias $d_i$ (entre las dos medidas o respecto de la mediana de $H_0$), se descartan las nulas, se ordenan los $|d_i|$ y se suman los rangos de las positivas, $W^+$, y de las negativas, $W^−$. Si $H_0$ es cierta, ambas sumas se parecen.</p>
+<h2>Kruskal-Wallis (tres o más grupos)</h2>
+<p class="m">Es el ANOVA de un factor con rangos. Se ordenan juntos todos los datos y se mira si los rangos medios de los grupos se separan más de lo esperable: $H = {12}/{N(N + 1)} ∑ {R_i^2}/{n_i} − 3(N + 1)$, dividido por la corrección de empates $1 − {∑ (t^3 − t)}/{N^3 − N}$, sigue aproximadamente una $χ^2$ con $k − 1$ grados de libertad. Si sale significativo, las <b>comparaciones de Dunn</b> dicen qué parejas difieren: $z = {R̄_i − R̄_j}/√({N(N + 1)}/12 · (1/n_i + 1/n_j))$ con el p-valor ajustado por Holm (más potente) o Bonferroni. El tamaño del efecto es $ε^2 = H/(N − 1)$.</p>
+<h2>Test de los signos</h2>
+<p class="m">El más sencillo: solo cuenta si cada diferencia es positiva o negativa. Si $H_0$ es cierta, $n^+$ es una binomial $B(n, 1/2)$ y el p-valor sale exacto. Usa menos información que Wilcoxon (no mira cuánto), así que tiene menos potencia, pero casi no pide nada a los datos.</p>
+<h2>Spearman y Kendall</h2>
+<p class="m">Miden si dos variables crecen juntas aunque no sea en línea recta. <b>Spearman</b> es la correlación de Pearson de los rangos. <b>Kendall</b> cuenta pares concordantes ($C$) y discordantes ($D$): $τ_b = (C − D)/√((n_0 − n_1)(n_0 − n_2))$; su p-valor es exacto sin empates y es más fiable con pocos datos.</p>
+<h2>Tamaño del efecto y Hodges-Lehmann</h2>
+<p class="m">El p-valor no dice cuánto. Para Mann-Whitney se da la <b>probabilidad de superioridad</b> $U_1/(n_1 n_2)$ (0,5 si no hay diferencia) y $r = |z|/√N$ (0,1 pequeño, 0,3 mediano, 0,5 grande). El <b>estimador de Hodges-Lehmann</b> es la mediana de todas las diferencias entre un dato de una muestra y uno de la otra (en Wilcoxon, de las medias de Walsh $(d_i + d_j)/2$), con su intervalo de confianza, el mismo que da <code>wilcox.test</code> de R.</p>
+<h2>¿Qué contraste uso?</h2>
+<div class="tabla-scroll"><table class="tabla-eco libre"><caption>Elegir el contraste según la pregunta</caption><thead><tr><th scope="col">Quiero…</th><th scope="col">Uso</th><th scope="col">Equivale a (con normalidad)</th></tr></thead><tbody>
+<tr><td>comparar dos grupos independientes</td><td>Mann-Whitney</td><td><a href="../contrastes/">t de dos medias</a></td></tr>
+<tr><td>comparar antes y después</td><td>Wilcoxon (o los signos, si importan poco las magnitudes)</td><td><a href="../contrastes/">t apareada</a></td></tr>
+<tr><td>comparar una mediana con un valor</td><td>Wilcoxon de una muestra o signos</td><td><a href="../contrastes/">t de una media</a></td></tr>
+<tr><td>comparar tres o más grupos</td><td>Kruskal-Wallis con Dunn</td><td><a href="../anova/">ANOVA</a></td></tr>
+<tr><td>ver si dos variables van juntas</td><td>Spearman o Kendall</td><td><a href="../regresion/">Pearson</a></td></tr>
+<tr><td>comprobar si los datos son normales</td><td><a href="../contrastes/">Shapiro-Wilk en Contrastes</a></td><td>—</td></tr>
+</tbody></table></div>
 <h2>P-valor exacto o aproximado</h2>
 <p class="m">Con pocos datos y sin empates, el p-valor se calcula <b>exacto</b> contando todas las ordenaciones posibles. Con más datos o con empates se usa la aproximación normal, con la corrección de empates y, si se activa, la corrección de continuidad.</p>
 </section>
