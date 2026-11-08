@@ -1,23 +1,24 @@
-<title>ANOVA de un factor paso a paso · Ciencify</title>
-<meta name="description" content="Calculadora de ANOVA de un factor en español: compara las medias de varios grupos con la tabla ANOVA, el estadístico F, el valor crítico, el p-valor, el tamaño del efecto η² y las comparaciones por parejas con Bonferroni.">
+<title>ANOVA de uno y dos factores paso a paso · Ciencify</title>
+<meta name="description" content="Calculadora de ANOVA de uno y dos factores en español: tabla ANOVA, F y F de Welch, tamaño del efecto (η², ω²), supuestos (Levene, Shapiro-Wilk), comparaciones por parejas con Tukey, Holm, Scheffé y Games-Howell, contrastes planificados e interacción.">
 <style>
 .tabla-eco { border-collapse: collapse; font: 13.5px var(--f-ui); width: 100%; font-variant-numeric: tabular-nums }
 .tabla-eco th, .tabla-eco td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap }
 .tabla-eco th { font-weight: 600; color: var(--muted) } .tabla-eco th:first-child, .tabla-eco td:first-child { text-align: left }
 .tabla-eco tfoot td { font-weight: 600; background: var(--accent-soft) }
 .tabla-eco small { color: var(--muted) }
+.tabla-eco caption { text-align: left; font-weight: 600; padding: 2px 0 6px; caption-side: top }
 :root {
-  --serie-1: #2a5db5; --serie-2: #c2412a }
+  --serie-1: #2a5db5; --serie-2: #c2412a; --serie-3: #1f7a4d }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --serie-1: #74a2f2; --serie-2: #ef7a62 } }
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #5fc08a } }
 :root[data-theme="dark"] {
-  --serie-1: #74a2f2; --serie-2: #ef7a62 }
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #5fc08a }
 </style>
 <body>
-<header class="top"><a class="logo" href="../../">Cienci<i>fy</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Estadística</a> / ANOVA de un factor</span></header>
+<header class="top"><a class="logo" href="../../">Cienci<i>fy</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Estadística</a> / ANOVA de uno y dos factores</span></header>
 <div class="wrap">
-<h1>ANOVA de un factor</h1>
-<p class="lead">Comprueba si las medias de varios grupos son iguales: la tabla ANOVA con la variabilidad entre y dentro de los grupos, el estadístico F, su p-valor, el tamaño del efecto y las comparaciones por parejas, con el desarrollo paso a paso.</p>
+<h1>ANOVA de uno y dos factores</h1>
+<p class="lead">Comprueba si las medias de varios grupos son iguales, con uno o con dos factores: la tabla ANOVA, el estadístico F (también el de Welch si las varianzas difieren), su p-valor, el tamaño del efecto, la comprobación de los supuestos, las comparaciones por parejas y los contrastes planificados, con el desarrollo paso a paso.</p>
 <div class="layout">
   <div class="card">
     <h2>Datos</h2>
@@ -28,9 +29,9 @@
   </div>
   <div>
     <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
-    <div class="card"><h2>Tabla ANOVA</h2><div class="tabla-scroll" id="tabla"></div></div>
+    <div class="card"><h2>Tablas</h2><div class="tabla-scroll" id="tabla"></div></div>
     <div class="card"><h2>Datos de cada grupo</h2>
-      <canvas id="grafica" aria-label="Puntos de cada grupo y su media"></canvas>
+      <canvas id="grafica" aria-label="Gráfica de los datos: puntos de cada grupo con su media, o líneas de medias de la interacción entre los dos factores"></canvas>
       <p class="leyenda" id="leyenda"></p>
     </div>
     <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
@@ -40,11 +41,23 @@
 <h2>La idea</h2>
 <p class="m">Se quiere saber si $k$ grupos tienen la misma media. En vez de comparar los grupos de dos en dos, se compara la variabilidad <b>entre</b> las medias de los grupos con la variabilidad <b>dentro</b> de cada grupo: si las medias están mucho más separadas de lo que explica el ruido de dentro, se rechaza $H_0$.</p>
 <p class="f m">$SC_T = SC_E + SC_D$, &nbsp; $F = {CM_E}/{CM_D} = {SC_E/(k − 1)}/{SC_D/(N − k)}$</p>
-<h2>Condiciones</h2>
-<p class="m">Observaciones independientes, cada grupo aproximadamente normal y varianzas parecidas entre los grupos. Con grupos del mismo tamaño el contraste aguanta bastante bien la falta de normalidad; si los datos son muy asimétricos o hay pocos, mira los contrastes no paramétricos.</p>
-<h2>Tamaño del efecto y comparaciones por parejas</h2>
-<p class="m">$η^2 = SC_E/SC_T$ es la proporción de la variabilidad total que explica el factor. Si el ANOVA sale significativo, no dice <i>qué</i> medias difieren: para eso se comparan las parejas con una t usando $CM_D$ y se corrige el p-valor por hacer varias comparaciones a la vez (Bonferroni: se multiplica por el número de parejas).</p>
+<h2>Supuestos y qué hacer si fallan</h2>
+<p class="m">Observaciones independientes, residuos $x_{ij} − x̄_i$ aproximadamente normales (se comprueba con Shapiro-Wilk) y varianzas parecidas (Levene, con la mediana, es robusto; Bartlett es más potente pero se deja engañar si los datos no son normales). Con grupos del mismo tamaño el contraste aguanta bastante bien; si Levene rechaza, usa la <b>F de Welch</b>, que pondera cada grupo por $n_i/s_i^2$ y ajusta los grados de libertad, y compara las parejas con <b>Games-Howell</b>. Si la normalidad falla con pocos datos, mira Kruskal-Wallis en <a href="../no-parametricos/">Contrastes no paramétricos</a>.</p>
+<h2>Tamaño del efecto</h2>
+<p class="m">$η^2 = SC_E/SC_T$ es la proporción de la variabilidad total que explica el factor, pero tiende a sobrestimarla con pocos datos; $ω^2 = {SC_E − (k − 1) CM_D}/{SC_T + CM_D}$ lo corrige. Cohen propone $f = √{η^2/(1 − η^2)}$: 0,10 pequeño, 0,25 mediano, 0,40 grande.</p>
+<h2>Comparaciones por parejas</h2>
+<p>Si el ANOVA sale significativo no dice <i>qué</i> medias difieren. Comparar todas las parejas con una t ordinaria infla el error: con 10 grupos hay 45 parejas y, si todas las medias fueran iguales, casi seguro que alguna saldría «significativa». Los métodos controlan el error de <i>toda la familia</i>:</p>
+<ul class="m">
+<li><b>Tukey (HSD)</b> usa el rango studentizado $q = |x̄_i − x̄_j|/√(CM_D/2 · (1/n_i + 1/n_j))$; es la elección habitual para todas las parejas (Tukey-Kramer si los tamaños difieren).</li>
+<li><b>Bonferroni</b> multiplica cada p-valor por el número de parejas; <b>Holm</b> hace lo mismo paso a paso y siempre es más potente.</li>
+<li><b>Scheffé</b> es el más conservador, pero sirve para cualquier contraste, también los que se te ocurren después de ver los datos.</li>
+<li><b>Games-Howell</b> no supone varianzas iguales: usa la de cada pareja y sus grados de libertad de Welch.</li>
+</ul>
+<h2>Contrastes planificados</h2>
+<p class="m">Si la pregunta se conoce antes de ver los datos (por ejemplo, un control frente a la media de los tratamientos) se contrasta directamente con $ψ = ∑ c_i x̄_i$, donde $∑ c_i = 0$: $t = ψ/√(CM_D ∑ c_i^2/n_i)$ con $N − k$ grados de libertad. Para «A frente a la media de B y C» los coeficientes son 2, −1, −1.</p>
+<h2>Dos factores</h2>
+<p class="m">Con dos factores A (de $a$ niveles) y B (de $b$) y $n$ repeticiones en cada casilla, la variabilidad se reparte en $SC_A$, $SC_B$, la <b>interacción</b> $SC_{AB}$ y el error $SC_E$; cada efecto se contrasta con $F = CM_{efecto}/CM_E$. Hay interacción cuando el efecto de un factor depende del nivel del otro (en la gráfica, líneas no paralelas); si es significativa, interpreta los efectos principales con cuidado. El diseño tiene que ser equilibrado (todas las combinaciones, las mismas repeticiones); con un solo dato por casilla se supone que no hay interacción y se usa su variabilidad como error. Se da el $η^2$ y el $ω^2$ parciales de cada efecto.</p>
 </section>
 </div>
-<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· ANOVA de un factor <span id="ver"></span> (beta)</footer>
+<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· ANOVA de uno y dos factores <span id="ver"></span> (beta)</footer>
 </body>
