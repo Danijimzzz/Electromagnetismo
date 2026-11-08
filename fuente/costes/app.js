@@ -11,11 +11,12 @@
     usar: [{ a: 'beneficio', nombre: 'Maximización del beneficio', datos: (s) => (s.c === 0 ? { modo: 'competencia', cf: String(s.cf), c: String(s.a), d: String(s.b), p: String(Math.round(1e4 * s.pm) / 1e4).replace('.', ',') } : { modo: 'competencia3', cf: String(s.cf), ca: String(s.a), cb: String(s.b), cc: String(s.c), p: String(Math.round(1e4 * s.pm) / 1e4).replace('.', ',') }) }],
     C: P, carpeta: 'costes', app: 'CostesApp',
     nota: 'CT(Q) = CF + a·Q + b·Q² + c·Q³. Con b y c vacíos valen 0. Para una curva en U, b negativo y c positivo; con c = 0, b tiene que ser positivo.',
-    campos: () => [
+    campos: (sc) => [
+      { k: 'entrada', nom: 'Qué te dan', tipo: 'sel', ops: [['ct', 'El coste total CT(Q)'], ['cmg', 'El coste marginal CMg(Q) y CF']] },
       { k: 'cf', nom: 'Costes fijos CF', un: '€', sep: 'Función de costes' },
-      { k: 'a', nom: 'Coeficiente a', un: '€/unidad' },
-      { k: 'b', nom: 'Coeficiente b', un: '€/unidad²' },
-      { k: 'c', nom: 'Coeficiente c', un: '€/unidad³' },
+      ...(sc.entrada === 'cmg'
+        ? [{ k: 'm0', nom: 'CMg: término constante', un: '€/unidad' }, { k: 'm1', nom: 'CMg: coeficiente de Q' }, { k: 'm2', nom: 'CMg: coeficiente de Q²' }]
+        : [{ k: 'a', nom: 'Coeficiente a', un: '€/unidad' }, { k: 'b', nom: 'Coeficiente b', un: '€/unidad²' }, { k: 'c', nom: 'Coeficiente c', un: '€/unidad³' }]),
       { k: 'q', nom: 'Producción Q', un: 'unidades', sep: 'Producción' },
     ],
     resumen: (s) => [['Coste variable CV', dinero(s.cv)], ['Coste total CT', dinero(s.ct)], ['Coste medio CMe', dinero(s.cme)], ['Coste variable medio', dinero(s.cvme)], ['Coste fijo medio', dinero(s.cfme)], ['Coste marginal CMg', dinero(s.cmg), true],

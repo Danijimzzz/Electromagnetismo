@@ -22,7 +22,7 @@ const Costes = (() => {
     cvme: (q) => a + b * q + c * q * q, cme: (q) => cf / q + a + b * q + c * q * q, cmg: (q) => a + 2 * b * q + 3 * c * q * q,
   });
 
-  function resolver(sc) {
+  function resolverCT(sc) {
     const cf = lee(sc, 'cf', 'los costes fijos', { min: 0, minEx: true });
     const a = lee(sc, 'a', 'el coeficiente a (coste variable de la primera unidad)', { min: 0, minEx: true });
     const b = lee(sc, 'b', 'el coeficiente b', { def: 0 }), c = lee(sc, 'c', 'el coeficiente c', { min: 0, def: 0 });
@@ -56,8 +56,21 @@ const Costes = (() => {
   const ejemplos = [
     { clave: 'clasico', nombre: 'Curva en U: CV = Q³ − 6Q² + 15Q y CF = 32', sc: { cf: '32', a: '15', b: '-6', c: '1', q: '5' } },
     { clave: 'cuadratico', nombre: 'Costes cuadráticos: CT = 450 + 20Q + 0,5Q²', sc: { cf: '450', a: '20', b: '0,5', c: '0', q: '20' } },
+    { clave: 'dado-cmg', nombre: 'Dado el coste marginal CMg = 15 − 12Q + 3Q² y CF = 32', sc: { entrada: 'cmg', cf: '32', m0: '15', m1: '-12', m2: '3', q: '5' } },
+    { clave: 'cuadratico-2', nombre: 'Costes cuadráticos: CT = 200 + 10Q + 0,25Q²', sc: { cf: '200', a: '10', b: '0,25', c: '0', q: '30' } },
     { clave: 'optimo', nombre: 'Producir justo en el mínimo del coste medio', sc: { cf: '32', a: '15', b: '-6', c: '1', q: '4' } },
   ];
+
+  // entrada «dado el coste marginal»: CMg = m0 + m1·Q + m2·Q² se integra, CT = CF + m0·Q + m1·Q²/2 + m2·Q³/3 (la constante de integración es CF)
+  function resolver(sc) {
+    if (sc.entrada !== 'cmg') return resolverCT(sc);
+    const m0 = lee(sc, 'm0', 'el término constante del coste marginal', { min: 0, minEx: true }), m1 = lee(sc, 'm1', 'el coeficiente de Q del coste marginal', { def: 0 }), m2 = lee(sc, 'm2', 'el coeficiente de Q² del coste marginal', { min: 0, def: 0 });
+    const cf = lee(sc, 'cf', 'los costes fijos (la constante de integración)', { min: 0, minEx: true }), q = lee(sc, 'q', 'la producción Q', { min: 0, minEx: true });
+    const a = m0, b = m1 / 2, c = m2 / 3, S = (x) => String(x);
+    const r = resolverCT({ cf: S(cf), a: S(a), b: S(b), c: S(c), q: S(q) });
+    r.pasos.unshift({ t: 'Del coste marginal al coste total', html: `El coste marginal es la derivada del coste total, así que se integra: $CMg = ${f(m0, 6)} ${m1 < 0 ? '−' : '+'} ${f(Math.abs(m1), 6)}·Q + ${f(m2, 6)}·Q^2 ⇒ CT = ∫ CMg dQ = ${f(m0, 6)}·Q ${m1 < 0 ? '−' : '+'} ${f(Math.abs(m1) / 2, 6)}·Q^2 + ${f(m2 / 3, 6)}·Q^3 + K$. La constante de integración $K$ es el coste fijo (el coste con producción 0), que hay que dar: $K = CF = ${f(cf, 6)}$. Así $a = ${f(a, 6)}$, $b = ${f(b, 6)}$ y $c = ${f(c, 6)}$.` });
+    return { ...r, entrada: 'cmg', a, b, c, m0, m1, m2 };
+  }
 
   return { resolver, ejemplos, funciones };
 })();
