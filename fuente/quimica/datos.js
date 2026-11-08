@@ -132,6 +132,8 @@ const Datos = (() => {
     { id: 'Cr3+', ox: [S(1, 'Cr^3+')], red: [S(1, 'Cr', 's')], n: 3, E: -0.74, medio: 'neutro' },
     { id: 'Zn2+', ox: [S(1, 'Zn^2+')], red: [S(1, 'Zn', 's')], n: 2, E: -0.76, medio: 'neutro' },
     { id: 'H2O', ox: [S(2, 'H2O', 'l')], red: [S(1, 'H2', 'g'), S(2, 'OH-')], n: 2, E: -0.83, medio: 'básico' },
+    { id: 'H2O-pH7', ox: [S(2, 'H2O', 'l')], red: [S(1, 'H2', 'g'), S(2, 'OH-')], n: 2, E: -0.41, medio: 'pH 7' },
+    { id: 'O2-pH7', ox: [S(1, 'O2', 'g'), S(4, 'H+')], red: [S(2, 'H2O', 'l')], n: 4, E: 0.82, medio: 'pH 7' },
     { id: 'Mn2+', ox: [S(1, 'Mn^2+')], red: [S(1, 'Mn', 's')], n: 2, E: -1.18, medio: 'neutro' },
     { id: 'Al3+', ox: [S(1, 'Al^3+')], red: [S(1, 'Al', 's')], n: 3, E: -1.66, medio: 'neutro' },
     { id: 'Mg2+', ox: [S(1, 'Mg^2+')], red: [S(1, 'Mg', 's')], n: 2, E: -2.37, medio: 'neutro' },

@@ -17,7 +17,13 @@
 <header class="top"><a class="logo" href="../../">Cienci<i>fy</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Química</a> / Redox por ion-electrón</span></header>
 <div class="wrap">
 <h1>Redox por ion-electrón</h1>
-<p class="lead">Escribe una reacción redox en forma iónica, elige el medio y la ajusta con el método del ion-electrón: números de oxidación, las dos semirreacciones, los electrones y la comprobación.</p>
+<p class="lead">Escribe una reacción redox en forma iónica, elige el medio y la ajusta con el método del ion-electrón: números de oxidación, las dos semirreacciones, los electrones y la comprobación. Con las pestañas de arriba también calculas pilas (potenciales estándar, Nernst, ΔG° y K) y electrolisis (leyes de Faraday).</p>
+<div class="modos" id="pestanas" role="tablist" aria-label="Qué quieres hacer">
+  <button type="button" role="tab" id="tab-ajuste" data-pestana="ajuste" aria-selected="true" aria-controls="panel-ajuste">Ajustar reacciones</button>
+  <button type="button" role="tab" id="tab-pila" data-pestana="pila" aria-selected="false" aria-controls="panel-pila" tabindex="-1">Pilas y Nernst</button>
+  <button type="button" role="tab" id="tab-electro" data-pestana="electro" aria-selected="false" aria-controls="panel-electro" tabindex="-1">Electrolisis</button>
+</div>
+<div id="panel-ajuste" role="tabpanel" aria-labelledby="tab-ajuste">
 <div class="layout">
   <div class="card">
     <h2>Datos</h2>
@@ -44,6 +50,53 @@
     <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
   </div>
 </div>
+</div>
+<div id="panel-pila" role="tabpanel" aria-labelledby="tab-pila" hidden>
+<div class="layout">
+  <div class="card">
+    <h2>Datos de la pila</h2>
+    <select id="p-ejemplos" class="in" aria-label="Ejemplos de pilas" style="margin-bottom:12px"></select>
+    <label for="p-catodo" class="nota" style="display:block;margin:0 0 6px">Cátodo (+): semirreacción de reducción</label>
+    <select id="p-catodo" class="in"></select>
+    <label for="p-anodo" class="nota" style="display:block;margin:12px 0 6px">Ánodo (−): la de menor potencial (se oxida)</label>
+    <select id="p-anodo" class="in"></select>
+    <label for="p-T" class="nota" style="display:block;margin:12px 0 6px">Temperatura (K)</label>
+    <input id="p-T" class="in" inputmode="decimal" autocomplete="off" value="298,15">
+    <div id="p-conc" style="margin-top:12px"></div>
+    <p class="nota" id="p-nota">Elige las dos semirreacciones de la tabla de potenciales estándar (CRC, 25 °C, 1 M, 1 bar). Para Nernst escribe la concentración de cada ion (mol/L) o la presión de cada gas (bar); si lo dejas vacío vale 1.</p>
+    <p class="error" id="p-error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="p-res"></div></div>
+    <div class="card"><h2>Esquema de la pila</h2>
+      <canvas id="p-grafica" role="img" aria-label="Esquema de la pila con el ánodo, el cátodo, el puente salino y el voltímetro"></canvas>
+      <p class="leyenda" id="p-leyenda"></p>
+    </div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="p-pasos"></ol></div>
+  </div>
+</div>
+</div>
+<div id="panel-electro" role="tabpanel" aria-labelledby="tab-electro" hidden>
+<div class="layout">
+  <div class="card">
+    <h2>Datos de la electrolisis</h2>
+    <select id="e-ejemplos" class="in" aria-label="Ejemplos de electrolisis" style="margin-bottom:12px"></select>
+    <label for="e-modo" class="nota" style="display:block;margin:0 0 6px">Qué calcular</label>
+    <select id="e-modo" class="in"><option value="faraday">Masa, tiempo o intensidad (Faraday)</option><option value="orden">Orden de descarga en una mezcla</option></select>
+    <div id="e-campos" style="margin-top:12px"></div>
+    <p class="nota" id="e-nota"></p>
+    <p class="error" id="e-error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="e-res"></div></div>
+    <div class="card"><h2 id="e-titulo-graf">Gráfica</h2>
+      <canvas id="e-grafica" role="img" aria-label="Gráfica de la electrolisis"></canvas>
+      <p class="leyenda" id="e-leyenda"></p>
+    </div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="e-pasos"></ol></div>
+  </div>
+</div>
+</div>
 <section class="teoria">
   <h2>Qué es una reacción redox</h2>
   <p class="m">En una reacción de oxidación-reducción hay una especie que pierde electrones (se oxida, su número de oxidación sube) y otra que los gana (se reduce, su número baja). Los electrones que cede una son los que gana la otra, y ese balance es lo que hay que cuadrar. Por ejemplo, en $"MnO"_4^- + "Fe"^(2+) → "Mn"^(2+) + "Fe"^(3+)$ el manganeso pasa de $+7$ a $+2$ y el hierro de $+2$ a $+3$.</p>
@@ -55,6 +108,13 @@
   <p>En medio ácido el método se queda así, con H⁺ y H₂O. En medio básico no puede haber H⁺ libres: a los dos lados se añaden tantos OH⁻ como H⁺ haya, cada H⁺ y su OH⁻ forman un H₂O, y se simplifica el agua que sobra. Por eso el mismo par redox da una ecuación distinta según el medio: el permanganato con yoduro, por ejemplo, forma Mn²⁺ en ácido y MnO₂ en básico.</p>
   <h2>Qué hacer si algo falla</h2>
   <p>La herramienta trabaja con la reacción iónica neta. Si escribes sales enteras (KMnO₄, FeSO₄), quita los iones espectadores como K⁺ o SO₄²⁻, que no cambian. Si una especie tiene varios elementos sin número de oxidación fijo, escríbela con iones sencillos. Y comprueba que reactivos y productos incluyen tanto lo que se oxida como lo que se reduce.</p>
+  <h2>Pilas y potenciales estándar</h2>
+  <p class="m">Una pila convierte una reacción redox espontánea en corriente eléctrica: la oxidación ocurre en el <b>ánodo</b> (−) y la reducción en el <b>cátodo</b> (+). Cada semirreacción tiene un potencial estándar de reducción $E^"°"$ (medido frente al electrodo de hidrógeno, 0 V). El de la pila es $E^"°"_"pila" = E^"°"_"cátodo" − E^"°"_"ánodo"$ y, si es positivo, la reacción es espontánea. Se relaciona con la energía libre y con la constante de equilibrio: $ΔG^"°" = −n F E^"°"$ y $ln K = n F E^"°" / (R T)$.</p>
+  <h2>Ecuación de Nernst</h2>
+  <p class="m">Fuera de las condiciones estándar, $E = E^"°" − (R T)/(n F) ln Q$, que a 25 °C es $E = E^"°" − (0{,}0592)/n log Q$. El cociente $Q$ usa las concentraciones de los iones y las presiones de los gases; los sólidos y el agua no entran. Cuando $Q = K$, $E = 0$ y la pila se ha agotado.</p>
+  <h2>Electrolisis y leyes de Faraday</h2>
+  <p class="m">En una electrolisis se aplica corriente para forzar una reacción no espontánea. La masa que se deposita o la cantidad de gas que se desprende es proporcional a la carga que pasa: $m = M I t / (n F)$, con $F = 96485$ C/mol de electrones. Con un rendimiento de corriente menor del 100 % solo una parte de la carga hace la reacción deseada. En una mezcla, en el cátodo se reduce primero la especie de mayor potencial de reducción y en el ánodo se oxida primero la de menor potencial; el agua también compite.</p>
+  <p class="nota">Potenciales de la CRC Handbook y de Atkins, a 25 °C, 1 M y 1 bar. Algunos libros dan valores con una cifra distinta (Fe³⁺/Fe²⁺ 0,77 V, Cu²⁺/Cu 0,34 V): escribe el tuyo si difiere, la tabla no se puede editar, pero los resultados cambian de forma lineal.</p>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Redox por ion-electrón <span id="ver"></span> (beta)</footer>

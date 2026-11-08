@@ -52,6 +52,28 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     if (fallos === antes) console.log(`  ✓ Redox por ion-electrón: ${C.ejemplos.length} reacciones ajustadas a mano en medio ácido y básico, números de oxidación y errores`);
   }
 
+  {
+    // RE-1 / RE-2: pilas, Nernst y electrolisis calculadas a mano
+    const antes = fallos;
+    global.Datos = require(path.join(fuente, 'quimica', 'datos.js')); global.Elementos = require(path.join(fuente, 'quimica', 'elementos.js'));
+    const EL = require(path.join(fuente, 'redox', 'electro.js'));
+    const cerca = (a, b, tol, q) => { if (!(Math.abs(a - b) <= tol * Math.max(1, Math.abs(b)))) mal(`Redox · ${q}: ${a}, se esperaba ${b}`); };
+    const R = (c) => EL.resolver(EL.ejemplos.find((x) => x.clave === c).sc);
+    const d = R('daniell'); cerca(d.E0, 1.10, 1e-9, 'Daniell E°'); cerca(d.dG0, -2 * 96485 * 1.10 / 1000, 1e-3, 'Daniell ΔG°'); cerca(Math.log10(d.K), 2 * 1.10 / 0.05916, 2e-3, 'Daniell log K');
+    cerca(R('daniell-nernst').E, 1.10 - (0.05916 / 2) * Math.log10(1 / 0.01), 1e-3, 'Daniell Nernst'); // E = E° − (RT/nF) ln Q, Q = [Zn]/[Cu] = 100
+    cerca(R('plata-cobre').E0, 0.80 - 0.34, 1e-9, 'Ag/Cu'); cerca(R('permanganato-hierro').n, 5, 0, 'MnO4⁻/Fe n');
+    if (R('no-espontanea').espontanea) mal('Redox · una pila con E° < 0 sale espontánea');
+    cerca(R('electro-cobre').m, 63.546 * 2 * 3600 / (2 * 96485), 1e-3, 'Faraday Cu');
+    cerca(R('electro-tiempo').t, 5 * 96485 / (107.8682 * 3), 1e-3, 'Faraday tiempo Ag');
+    const cl = R('electro-cloro'); cerca(cl.V, (10 * 1800 / 96485 / 2) * 0.082057 * 298.15, 2e-3, 'Faraday volumen Cl₂');
+    const o = R('orden-descarga'); if (o.cat[0].id !== 'Ag+' || o.cat[1].id !== 'Cu2+') mal('Redox · orden de descarga: ' + o.cat.map((x) => x.id));
+    for (const [sc, q] of [[{ modo: 'pila', catodo: 'Cu2+', anodo: 'Cu2+' }, 'la misma semirreacción'], [{ modo: 'electrolisis', semi: 'Cu2+', I: '-1', t: '1', calcula: 'masa' }, 'intensidad negativa'], [{ modo: 'orden', mezcla: ['Ag+'] }, 'una sola especie']]) {
+      let ok = false; try { EL.resolver(sc); } catch (e) { ok = true; }
+      if (!ok) mal(`Redox · ${q} no da error`);
+    }
+    if (fallos === antes) console.log(`  ✓ Redox · pilas, Nernst, ΔG°, K, Faraday y orden de descarga a mano (${EL.ejemplos.length} ejemplos)`);
+  }
+
   return async (browser) => {
     const { page, consola } = await pagina(browser, 1200, 900);
     await page.goto('file://' + path.join(publico, 'quimica', 'redox', 'index.html'));
@@ -72,6 +94,34 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     if (await page.locator('#ajustada').innerText().then((t) => /OH/.test(t))) mal('Redox: al pasar a medio ácido sigue saliendo OH⁻');
     await page.fill('#ecuacion', 'Fe2+ -> Fe3+');
     if (await page.locator('#error').isHidden()) mal('Redox: una reacción sin reducción no muestra el error');
+    // pestañas de pilas y electrolisis
+    {
+      const a0 = fallos;
+      await page.goto('file://' + path.join(publico, 'quimica', 'redox', 'index.html') + '#pilas'); await page.reload();
+      await page.waitForFunction(() => window.ElectroApp);
+      const t1 = await page.evaluate(() => ({ p: ElectroApp.pestanaActual(), sel: [...document.querySelectorAll('#pestanas [role=tab]')].map((b) => b.getAttribute('aria-selected')), h: [...document.querySelectorAll('[role=tabpanel]')].map((x) => x.hidden) }));
+      if (t1.p !== 'pila' || t1.sel.join() !== 'false,true,false' || t1.h.join() !== 'true,false,true') mal('Redox · el enlace #pilas no abre la pestaña de pilas: ' + JSON.stringify(t1));
+      const v = await page.evaluate(() => { ElectroApp.abrirPila('daniell'); return ElectroApp.resultado(); });
+      if (Math.abs(v.E - 1.1) > 1e-9 || v.n !== 2) mal('Redox · pila Daniell en la página: ' + JSON.stringify(v));
+      await page.fill('#p-conc input[data-k="Cu^2+|aq"]', '0,01');
+      const nn = await page.evaluate(() => ElectroApp.resultado().E);
+      if (Math.abs(nn - 1.0408) > 2e-3) mal('Redox · Nernst en la página: E = ' + nn);
+      await page.keyboard.press('Control+End').catch(() => {});
+      await page.focus('#tab-pila'); await page.keyboard.press('ArrowRight');
+      if (await page.evaluate(() => ElectroApp.pestanaActual()) !== 'electro') mal('Redox · la flecha derecha no pasa a la pestaña de electrolisis');
+      const m = await page.evaluate(() => { ElectroApp.abrirE('electro-cobre'); return ElectroApp.resultado(); });
+      if (Math.abs(m.m - 2.371) > 2e-3) mal('Redox · electrolisis del cobre en la página: ' + m.m);
+      await page.evaluate(() => ElectroApp.abrirE('orden-descarga'));
+      if (!(await page.locator('#e-res').innerText()).includes('Ag')) mal('Redox · el orden de descarga no muestra la plata');
+      // el estado de las pestañas sobrevive a recargar y no pisa el ajuste
+      await page.reload(); await page.waitForFunction(() => window.RedoxApp && window.ElectroApp);
+      const g = await page.evaluate(() => JSON.parse(localStorage.getItem('redox-v1')));
+      if (!g.electro || g.electro.modoE !== 'orden' || !g.ecuacion) mal('Redox · el estado del ajuste o de electroquímica no se conserva junto: ' + Object.keys(g));
+      await page.evaluate(() => RedoxApp.abrirEjemplo('cobre-nitrico'));
+      const g2 = await page.evaluate(() => JSON.parse(localStorage.getItem('redox-v1')));
+      if (!g2.electro) mal('Redox · ajustar una reacción borra el estado de electroquímica');
+      if (fallos === a0) console.log('  ✓ Redox · pestañas Pilas y Electrolisis en la página: teclado, enlace, Nernst, Faraday y estado compartido');
+    }
     await page.close();
     if (consola.length) mal('Redox: consola del navegador:\n      ' + consola.join('\n      '));
     if (fallos === antes) console.log(`  ✓ Redox por ion-electrón: ${C.ejemplos.length} reacciones en la página, cambio de medio y errores, sin errores de consola`);
