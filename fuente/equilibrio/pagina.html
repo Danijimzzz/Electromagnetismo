@@ -2,12 +2,17 @@
 <meta name="description" content="Calculadora de equilibrio químico en español: Kc y Kp, concentraciones de equilibrio con la tabla ICE, cociente de reacción Q y principio de Le Chatelier con números, paso a paso.">
 <style>
 :root {
-  --serie-1: #2a5db5; --serie-2: #1d7a3e; --serie-3: #c2412a; --serie-4: #b0700a }
+  --serie-1: #2a5db5; --serie-2: #1d7a3e; --serie-3: #c2412a; --serie-4: #b0700a; --serie-5: #7a4fb5 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --serie-1: #74a2f2; --serie-2: #5fcf8a; --serie-3: #ef7a62; --serie-4: #e6a640 } }
+  --serie-1: #74a2f2; --serie-2: #5fcf8a; --serie-3: #ef7a62; --serie-4: #e6a640; --serie-5: #b79cf2 } }
 :root[data-theme="dark"] {
-  --serie-1: #74a2f2; --serie-2: #5fcf8a; --serie-3: #ef7a62; --serie-4: #e6a640 }
-#grafica { height: clamp(240px, 32vw, 330px) }
+  --serie-1: #74a2f2; --serie-2: #5fcf8a; --serie-3: #ef7a62; --serie-4: #e6a640; --serie-5: #b79cf2 }
+#grafica, #grafica-q { height: clamp(240px, 32vw, 330px) }
+.fase { font-size: .8em; color: var(--muted) }
+.reac .fase-sel, .reac select.fase { width: 78px; padding-left: 4px; padding-right: 4px }
+.fila5 { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; flex-basis: 100% }
+.fila5 b { width: 86px; font-size: 13px }
+.fila5 .in { width: 54px; text-align: center; padding-left: 4px; padding-right: 4px }
 .reac { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 4px 0 12px }
 .reac .esp { display: inline-flex; gap: 3px }
 .reac .coef { width: 38px; text-align: center; padding-left: 4px; padding-right: 4px }
@@ -38,6 +43,10 @@
       <canvas id="grafica" aria-label="Concentraciones frente al avance de la reacción"></canvas>
       <div id="claves"></div>
       <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card"><h2>Cociente Q frente a K</h2>
+      <canvas id="grafica-q" aria-label="Cociente de reacción Q, en escala logarítmica, frente al avance de la reacción, con la constante K como línea horizontal"></canvas>
+      <p class="leyenda" id="leyenda-q"></p>
     </div>
     <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
   </div>
