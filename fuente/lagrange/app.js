@@ -49,9 +49,10 @@
     }
     err.hidden = true; guarda();
     let h = '';
-    if (!sol.puntos.length) h = dato('Puntos críticos', 'Ninguno encontrado', 'ancho');
+    if (sol.constante !== null) h = dato('f es constante sobre la restricción', `f = ${f(sol.constante, 6)} en todos sus puntos`, 'ancho num');
+    else if (!sol.puntos.length) h = dato('Puntos críticos', 'Ninguno encontrado', 'ancho');
     else {
-      h += sol.puntos.map((q, i) => dato(`Punto ${i + 1}: ${q.tipo}`, `${pt(q)} · λ = ${f(q.lambda, 5)} · f = ${f(q.valor, 5)}`, 'ancho num')).join('');
+      h += sol.puntos.map((q, i) => dato(`Punto ${i + 1}: ${q.tipo}`, `${pt(q)} · ${q.singular ? '∇g = 0 aquí' : `λ = ${f(q.lambda, 5)}`} · f = ${f(q.valor, 5)}`, 'ancho num')).join('');
       h += dato('Máximo de f entre ellos', f(sol.max, 6), 'num') + dato('Mínimo de f entre ellos', f(sol.min, 6), 'num');
     }
     $('#resumen').innerHTML = h;

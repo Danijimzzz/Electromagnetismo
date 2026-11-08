@@ -95,8 +95,18 @@ const MetodosNumericos = (() => {
       ...(r ? [{ t: 'Primera iteración', html: `$x_1 = ${n6(x0)} − {${n6(r.fx)}}/{${n6(r.dx)}} = ${n8(r.x1)}$` }] : []),
       final(it, F),
     ];
-    if (it.conv && it.filas.length > 2) pasos.push({ t: 'Convergencia cuadrática', html: `Cerca de una raíz simple, el número de cifras correctas se duplica más o menos en cada paso: los errores van ${it.filas.filter((q) => q.err > 0).slice(-3).map((q) => f(q.err, 2)).join(', ')}.` });
-    return { modo: 'newton', F, dtx, x0, ...it, fx: F.ev(it.x), pasos };
+    // orden medido con el cociente de errores consecutivos: constante (entre 0,25 y 0,9) = lineal (raíz múltiple); si no, cuadrática
+    let orden = null, mult = null;
+    if (it.conv && it.filas.length > 2) {
+      const es = it.filas.filter((q) => q.err > 0).slice(-4).map((q) => q.err), rs = es.slice(1).map((e, i) => e / es[i]).slice(-2);
+      const lineal = rs.length === 2 && rs.every((q) => q > 0.25 && q < 0.9) && Math.abs(rs[0] - rs[1]) < 0.1 * rs[1];
+      orden = lineal ? 'lineal' : 'cuadrática';
+      if (lineal) {
+        mult = Math.round(1 / (1 - rs[1]));
+        pasos.push({ t: 'Convergencia lineal (raíz múltiple)', html: `Los errores van ${es.slice(-3).map((q) => f(q, 2)).join(', ')}: cada uno es solo ≈ ${f(rs[1], 2)} veces el anterior, no el cuadrado. Es lo que pasa cuando la raíz es <b>múltiple</b> ($f′ = 0$ también en ella): Newton se hace lineal y su rapidez baja mucho. Aquí la multiplicidad es $m ≈ ${mult}$; con la variante de Newton modificado, $x_{n+1} = x_n − m·{f(x_n)}/{f′(x_n)}$, se recupera la convergencia cuadrática.` });
+      } else pasos.push({ t: 'Convergencia cuadrática', html: `Cerca de una raíz simple, el número de cifras correctas se duplica más o menos en cada paso: los errores van ${es.slice(-3).map((q) => f(q, 2)).join(', ')}.` });
+    }
+    return { modo: 'newton', F, dtx, x0, ...it, fx: F.ev(it.x), orden, mult, pasos };
   }
 
   function secante(sc) {
@@ -193,7 +203,15 @@ const MetodosNumericos = (() => {
       { t: 'Resultado', html: `Repitiendo ${N} veces, $y(${f(xf)}) ≈ ${n8(yN)}$.${ex ? ` La solución exacta, $y = ${ex.tx}$, da $${n8(yex)}$: error ${f(Math.abs(yN - yex), 3)}.` : ''}` },
       { t: 'Los tres métodos', html: `Euler: ${n8(ys.euler[N])}; Heun: ${n8(ys.heun[N])}; Runge-Kutta 4: ${n8(ys.rk4[N])}.${ex ? ` Errores: ${f(Math.abs(ys.euler[N] - yex), 3)}, ${f(Math.abs(ys.heun[N] - yex), 3)} y ${f(Math.abs(ys.rk4[N] - yex), 3)}.` : ''} Al partir $h$ por la mitad, el error de Euler se divide más o menos entre 2 (orden 1), el de Heun entre 4 (orden 2) y el de Runge-Kutta 4 entre 16 (orden 4).` },
     ];
-    return { modo: 'edo', F, ex, met, x0, y0, h, xf, N, ys, filas, y: yN, yex, pasos };
+    // estabilidad: con λ = ∂f/∂y < 0 el método solo es estable si |R(hλ)| ≤ 1 (Euler: h < 2/|λ|); si no, los errores crecen aunque la solución se apague
+    const AMP = { euler: (z) => 1 + z, heun: (z) => 1 + z + z * z / 2, rk4: (z) => 1 + z + z * z / 2 + z ** 3 / 6 + z ** 4 / 24 }, HMAX = { euler: 2, heun: 2, rk4: 2.785 };
+    let lamMax = 0;
+    ys[met].forEach((y, i) => {
+      try { const d = 1e-6 * Math.max(1, Math.abs(y)), l = (Fd(x0 + i * h, y + d) - Fd(x0 + i * h, y)) / d; if (isFinite(l) && l < 0 && Math.abs(AMP[met](h * l)) > 1 + 1e-9) lamMax = Math.max(lamMax, -l); } catch (e) { /* fuera del dominio: se ignora */ }
+    });
+    const inestable = lamMax > 0, hEst = inestable ? HMAX[met] / lamMax : null;
+    if (inestable) pasos.push({ t: 'Aviso de estabilidad', html: `<b>Con este paso el método es inestable.</b> Aquí $∂f/∂y ≈ −${f(lamMax, 3)}$, así que $|R(hλ)| > 1$ y los errores se multiplican en cada paso en lugar de apagarse (la solución real sí se acerca a un valor fijo). Para que sea estable hace falta $h < ${f(hEst, 3)}$; prueba con un paso menor${met === 'euler' ? ' o con Runge-Kutta 4' : ''}.` });
+    return { modo: 'edo', F, ex, met, x0, y0, h, xf, N, ys, filas, y: yN, yex, inestable, hEst, pasos };
   }
 
   const R = { biseccion, newton, secante, puntofijo, integral, edo };

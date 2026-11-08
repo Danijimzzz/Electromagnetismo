@@ -945,14 +945,25 @@ const Derivadas = (() => {
     const oTxt = asO.length === 2 && asO[0].m === asO[1].m && asO[0].n === asO[1].n ? [`$y = ${recta(asO[0].m, asO[0].n)}$ (por los dos lados)`] : asO.map((q) => `$y = ${recta(q.m, q.n)}$ (cuando $${lado(q.s)}$)`);
     pasos.push({ t: 'Asíntotas', html: `Verticales: ${vert.length ? vert.map((c) => `$x = ${nt(c)}$`).join(', ') : 'ninguna'}.<br>Horizontales: ${hTxt.length ? hTxt.join(', ') : 'ninguna'}.${oTxt.length ? `<br>Oblicuas ($m = lím f/x$, $n = lím (f − m x)$): ${oTxt.join(', ')}.` : ''}` });
     // monotonía y extremos, curvatura e inflexión
-    const v1 = (x) => E.valor(d1, x), v2 = (x) => E.valor(d2, x);
+    // valor absoluto: f se parte en ramas donde cada |u| es +u o −u; en los ceros de u no hay derivada (pico) y el signo de f′ se mira rama a rama
+    const argsAbs = [], buscaAbs = (n) => { if (!n || typeof n !== 'object') return; if (n.t === 'fn' && n.f === 'abs') argsAbs.push(n.a); buscaAbs(n.a); buscaAbs(n.b); };
+    buscaAbs(ast);
+    const quiebros = [...new Set(argsAbs.flatMap((u) => raicesNum((x) => E.valor(u, x), -A_, A_, 1500)))].sort((a, b) => a - b);
+    const sinAbs = (n, xm) => { if (!n || typeof n !== 'object') return n; if (n.t === 'fn' && n.f === 'abs') { const u = sinAbs(n.a, xm); return E.valor(u, xm) < 0 ? neg(u) : u; } return { ...n, a: n.a && sinAbs(n.a, xm), b: n.b && sinAbs(n.b, xm) }; };
+    const cotas = [-A_ - 1, ...quiebros, A_ + 1], ramas = quiebros.length ? cotas.slice(0, -1).map((a, i) => { const q = sinAbs(ast, (a + cotas[i + 1]) / 2), e1 = E.simp(D(q)); return { d1: e1, d2: E.simp(D(e1)) }; }) : null;
+    const rama = (x) => quiebros.filter((c) => c <= x).length;
+    const v1 = ramas ? (x) => E.valor(ramas[rama(x)].d1, x) : (x) => E.valor(d1, x), v2 = ramas ? (x) => E.valor(ramas[rama(x)].d2, x) : (x) => E.valor(d2, x);
+    const eps = 1e-6, picos = quiebros.filter((c) => Math.abs(v1(c - eps) - v1(c + eps)) > 1e-4);
     const signos = (dv) => {
       const out = [];
       for (const t of tramos) {
-        const [l, r] = clip(t), rs = raicesNum(dv, l + 1e-9, r - 1e-9, 1500), pts = [t.l, ...rs, t.r];
+        const [l, r] = clip(t), qs = quiebros.filter((c) => c > t.l && c < t.r), rs = raicesNum(dv, l + 1e-9, r - 1e-9, 1500).filter((x) => !qs.some((c) => Math.abs(c - x) < 1e-6)), pts = [t.l, ...[...rs, ...qs].sort((a, b) => a - b), t.r];
         for (let i = 0; i < pts.length - 1; i++) {
           const p = pts[i], q = pts[i + 1], m = !isFinite(p) && !isFinite(q) ? 0 : !isFinite(p) ? q - 1 : !isFinite(q) ? p + 1 : (p + q) / 2;
-          out.push({ p, q, s: Math.sign(dv(m)), cierra: i < pts.length - 2 ? q : null });
+          const s = Math.sign(dv(m)), ant = out[out.length - 1];
+          // el mismo signo a los dos lados de una raíz (x³ en 0, o f″ ≡ 0 con ruido) es un solo intervalo; no a los lados de un pico
+          if (ant && ant.cierra !== null && ant.s === s && !picos.includes(ant.cierra)) { ant.q = q; ant.cierra = i < pts.length - 2 ? q : null; continue; }
+          out.push({ p, q, s, cierra: i < pts.length - 2 ? q : null });
         }
       }
       return out;
@@ -962,9 +973,10 @@ const Derivadas = (() => {
     const extremos = [];
     for (let i = 0; i < S1.length - 1; i++) if (S1[i].cierra !== null && S1[i].s && S1[i + 1].s && S1[i].s !== S1[i + 1].s) { const x = S1[i].cierra; extremos.push({ x, y: g(x), tipo: S1[i].s > 0 ? 'máximo' : 'mínimo' }); }
     const S2 = signos(v2), arriba = S2.filter((q) => q.s > 0).map((q) => iTxt(q.p, q.q)), abajo = S2.filter((q) => q.s < 0).map((q) => iTxt(q.p, q.q)), infl = [];
-    for (let i = 0; i < S2.length - 1; i++) if (S2[i].cierra !== null && S2[i].s && S2[i + 1].s && S2[i].s !== S2[i + 1].s) { const x = S2[i].cierra; infl.push({ x, y: g(x) }); }
-    pasos.push({ t: 'Monotonía y extremos', html: `Por el signo de $f′$: crece en $${crece.join(' ∪ ') || '∅'}$ y decrece en $${decrece.join(' ∪ ') || '∅'}$.<br>${extremos.length ? extremos.map((q) => `${q.tipo === 'máximo' ? 'Máximo' : 'Mínimo'} relativo en $(${nt(q.x)}, ${nt(q.y)})$`).join('<br>') : 'No tiene máximos ni mínimos relativos.'}` });
-    pasos.push({ t: 'Curvatura e inflexión', html: `Por el signo de $f″$: convexa ($∪$, $f″ > 0$) en $${arriba.join(' ∪ ') || '∅'}$ y cóncava ($∩$, $f″ < 0$) en $${abajo.join(' ∪ ') || '∅'}$.<br>${infl.length ? infl.map((q) => `Punto de inflexión en $(${nt(q.x)}, ${nt(q.y)})$`).join('<br>') : 'No tiene puntos de inflexión.'}` });
+    for (let i = 0; i < S2.length - 1; i++) if (S2[i].cierra !== null && S2[i].s && S2[i + 1].s && S2[i].s !== S2[i + 1].s && !picos.includes(S2[i].cierra)) { const x = S2[i].cierra; infl.push({ x, y: g(x) }); }
+    pasos.push({ t: 'Monotonía y extremos', html: `Por el signo de $f′$: crece en $${crece.join(' ∪ ') || '∅'}$ y decrece en $${decrece.join(' ∪ ') || '∅'}$.<br>${extremos.length ? extremos.map((q) => `${q.tipo === 'máximo' ? 'Máximo' : 'Mínimo'} relativo en $(${nt(q.x)}, ${nt(q.y)})$`).join('<br>') : 'No tiene máximos ni mínimos relativos.'}${picos.length ? `<br>Por el valor absoluto, $f$ no es derivable en ${picos.map((c) => `$x = ${nt(c)}$`).join(', ')} (hay un pico): ahí se compara el signo de $f′$ a cada lado.` : ''}` });
+    const rectas = S2.filter((q) => q.s === 0 && q.p !== q.q).map((q) => iTxt(q.p, q.q));
+    pasos.push({ t: 'Curvatura e inflexión', html: `Por el signo de $f″$: convexa ($∪$, $f″ > 0$) en $${arriba.join(' ∪ ') || '∅'}$ y cóncava ($∩$, $f″ < 0$) en $${abajo.join(' ∪ ') || '∅'}$.${rectas.length ? ` Es una recta ($f″ = 0$) en $${rectas.join(' ∪ ')}$.` : ''}<br>${infl.length ? infl.map((q) => `Punto de inflexión en $(${nt(q.x)}, ${nt(q.y)})$`).join('<br>') : 'No tiene puntos de inflexión.'}` });
     const asTxt = [...vert.map((c) => `x = ${nt(c)}`), ...(asH.length === 2 && asH[0].y === asH[1].y ? [`y = ${nt(asH[0].y)}`] : asH.map((q) => `y = ${nt(q.y)}`)), ...(asO.length === 2 && asO[0].m === asO[1].m && asO[0].n === asO[1].n ? [`y = ${recta(asO[0].m, asO[0].n)}`] : asO.map((q) => `y = ${recta(q.m, q.n)}`))];
     return { modo: 'estudio', ast, d1, d2, dom, tramos, asTxt, par: esPar, impar: esImpar, cortesX, y0, asV: vert, asH, asO, extremos, infl, crece, decrece, convexa: arriba, concava: abajo, f: (x) => g(x), d: (k) => (x) => E.valor(k === 1 ? d1 : d2, x), txt: dom, pasos };
   }

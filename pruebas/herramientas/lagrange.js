@@ -30,6 +30,23 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     x = cuenta('plano', 1, 'plano'); cerca(x.puntos[0].valor, 1 / 3, 1e-9, 'distancia al plano');
     // x y² con x + y = 3: (1, 2) máximo (f = 4) y (3, 0) mínimo local
     x = cuenta('cubica', 2, 'x y²'); cerca(x.max, 4, 1e-9, 'máx x y²');
+    // LA-1: f constante sobre la restricción (∇f ∥ ∇g en todas partes): se avisa, sin lista de «no decide»
+    for (const [fx, g, c, v] of [['x^2+y^2', 'x^2+y^2', '1', 1], ['x+y', 'x+y', '1', 1], ['x^2+y^2+z^2', 'x^2+y^2+z^2', '4', 4], ['2x^2+2y^2+3', 'x^2+y^2', '1', 5]]) {
+      const r = C.resolver({ f: fx, g, c });
+      if (r.constante === null || Math.abs(r.constante - v) > 1e-9 || r.puntos.length || !r.pasos.some((q) => /constante/.test(q.t))) mal(`Lagrange · f = ${fx}, g = ${g}: debería ser constante = ${v} (${r.constante}, ${r.puntos.length} puntos)`);
+    }
+    if (C.ejemplos.some((e) => C.resolver(e.sc).constante !== null)) mal('Lagrange: un ejemplo normal sale como constante');
+    // LA-2: puntos con ∇g = 0 en la restricción. f = x en y² = x³ (cúspide): mínimo en el origen, donde ∇g = 0
+    {
+      const r = C.resolver({ f: 'x', g: 'y^2 - x^3', c: '0' }), o = r.puntos.find((q) => q.singular);
+      if (!o || Math.hypot(...o.p) > 1e-9 || o.tipo !== 'mínimo' || r.min !== 0) mal(`Lagrange · cúspide y² = x³: ${JSON.stringify(r.puntos.map((q) => [q.p, q.tipo, q.singular]))}`);
+      if (!r.pasos.some((q) => /∇g = 0/.test(q.t))) mal('Lagrange · cúspide: falta el paso de los puntos con ∇g = 0');
+      // f = x + y en x² + y² = 0 (solo el origen): punto aislado; f = y − x² con y² = x⁴... se prueba también un nodo: x y = 0 con f = x + y no tiene ∇g = 0 en c ≠ 0
+      const r2 = C.resolver({ f: 'x + y', g: 'x^2 + y^2', c: '0' });
+      if (!r2.puntos.some((q) => q.singular && q.tipo === 'aislado')) mal('Lagrange · x² + y² = 0 debería dar el origen como punto aislado');
+      const r3 = C.resolver({ f: 'x', g: 'x^2 - y^2', c: '0' }), n = r3.puntos.find((q) => q.singular);
+      if (!n || n.tipo !== 'sin extremo') mal(`Lagrange · nodo x² = y²: f = x no tiene extremo en el origen (${n && n.tipo})`);
+    }
     for (const [sc, q] of [[{ f: '', g: 'x+y', c: '1' }, 'falta f'], [{ f: 'x', g: '', c: '1' }, 'falta g'], [{ f: 'x+y', g: '5', c: '1' }, 'g constante'], [{ f: 'x', g: 'x+y', c: 'abc' }, 'c no numérico']]) {
       let ok = false; try { C.resolver(sc); } catch (e) { ok = true; }
       if (!ok) mal(`Lagrange: ${q} no da error`);

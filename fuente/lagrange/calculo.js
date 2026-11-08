@@ -72,6 +72,64 @@ const Lagrange = (() => {
       }
       return norma(res(u)) < 1e-9 ? u : null;
     }
+    /* ---- Puntos de la restricción: ¿f es constante sobre ella? ---- */
+    const proyecta = (p0) => {
+      let p = p0.slice();
+      for (let it = 0; it < 80; it++) {
+        const gv = evN(ga, p) - c, gr = V.map((_, i) => evN(gg[i], p)), n2 = gr.reduce((a, b) => a + b * b, 0);
+        if (!isFinite(gv) || !(n2 > 1e-14)) return null;
+        if (Math.abs(gv) < 1e-13) return p;
+        p = p.map((a, i) => a - (gv * gr[i]) / n2);
+        if (p.some((a) => !isFinite(a) || Math.abs(a) > 1e6)) return null;
+      }
+      return Math.abs(evN(ga, p) - c) < 1e-10 ? p : null;
+    };
+    const muestra = [];
+    for (let k = 0; k < 60 && muestra.length < 24; k++) {
+      const q = V.map((_, i) => 3 * Math.sin(1.7 * k + 2.3 * i + 0.4) * Math.cos(0.9 * k * (i + 1)) + 0.11 * i);
+      const pr = proyecta(q);
+      if (pr && isFinite(ev(fa, pr))) muestra.push(pr);
+    }
+    const fm = muestra.map((q) => ev(fa, q)), escala = Math.max(1, ...fm.map(Math.abs));
+    const constante = muestra.length >= 6 && Math.max(...fm) - Math.min(...fm) < 1e-9 * escala ? fm[0] : null;
+
+    /* ---- Puntos singulares de la restricción (∇g = 0, g = c) ---- */
+    const singulares = [];
+    if (constante === null) {
+      const newtonG = (u) => {
+        for (let it = 0; it < 80; it++) {
+          const F = V.map((_, i) => evN(gg[i], u)), nF = norma(F);
+          if (!isFinite(nF)) return null;
+          if (nF < 1e-13) return u;
+          const J = V.map((_, i) => V.map((__, j) => evN(Hg[i][j], u))), d = gauss(J, F);
+          if (!d || d.some((x) => !isFinite(x))) return null;
+          u = u.map((a, i) => a - d[i]);
+          if (u.some((a) => Math.abs(a) > 1e6)) return null;
+        }
+        return null;
+      };
+      const nsm = dim === 2 ? 9 : 4;
+      for (let i = 0; i < nsm; i++) for (let j = 0; j < nsm; j++) for (let k = 0; k < (dim === 2 ? 1 : nsm); k++) {
+        const s0 = [(i - (nsm - 1) / 2) * 1.3 + 0.071, (j - (nsm - 1) / 2) * 1.3 - 0.113, (k - (nsm - 1) / 2) * 1.3 + 0.047].slice(0, dim);
+        const u = newtonG(s0);
+        if (!u) continue;
+        const q = u.map((a) => (Math.abs(a) < 1e-6 ? 0 : a));
+        if (Math.abs(evN(ga, q) - c) > 1e-8 * Math.max(1, Math.abs(c))) continue;
+        if (!singulares.some((w) => Math.hypot(...w.map((a, m) => a - q[m])) < 1e-4)) singulares.push(q);
+      }
+    }
+    // clasificación local de un punto singular: se proyectan sobre la restricción puntos cercanos, en muchas direcciones, y se compara f
+    const entorno = (p) => {
+      const hallados = [], dirs = [];
+      if (dim === 2) for (let k = 0; k < 240; k++) dirs.push([Math.cos((k * Math.PI) / 120), Math.sin((k * Math.PI) / 120)]);
+      else for (let a = 0; a < 36; a++) for (let b = 1; b < 18; b++) { const th = (b * Math.PI) / 18, ph = (a * 2 * Math.PI) / 36; dirs.push([Math.sin(th) * Math.cos(ph), Math.sin(th) * Math.sin(ph), Math.cos(th)]); }
+      for (const R of [0.03, 0.1, 0.3]) for (const d of dirs) {
+        const q = proyecta(p.map((a, i) => a + R * d[i])), dist = q ? Math.hypot(...q.map((a, i) => a - p[i])) : 0;
+        if (q && dist > 2e-3 && dist < 0.6) hallados.push(q);
+      }
+      return hallados;
+    };
+
     const sols = [];
     const paso = dim === 2 ? 1.1 : 1.7, n = dim === 2 ? 11 : 5;
     const semillas = [];
@@ -121,6 +179,15 @@ const Lagrange = (() => {
       }
       return pt;
     });
+    if (constante !== null) puntos.length = 0;
+    // si ∇g = 0 en toda una curva (muchos puntos), no se clasifican uno a uno
+    const muchos = singulares.length > 8;
+    for (const p of singulares.slice(0, muchos ? 3 : 8)) {
+      if (puntos.some((w) => Math.hypot(...w.p.map((a, i) => a - p[i])) < 1e-6)) continue;
+      const f0 = ev(fa, p), cerca = entorno(p), df = cerca.map((q) => ev(fa, q) - f0), tol = 1e-9 * Math.max(1, Math.abs(f0));
+      const tipo = muchos ? 'no decide' : !cerca.length ? 'aislado' : df.every((d) => d > -tol) ? 'mínimo' : df.every((d) => d < tol) ? 'máximo' : 'sin extremo';
+      puntos.push({ p, lambda: NaN, valor: f0, grad: V.map(() => 0), tipo, singular: true, vecinos: cerca.length });
+    }
     puntos.sort((a, b) => a.valor - b.valor);
     const vals = puntos.map((q) => q.valor);
     const gMax = puntos.length ? Math.max(...vals) : null, gMin = puntos.length ? Math.min(...vals) : null;
@@ -133,18 +200,22 @@ const Lagrange = (() => {
       { t: 'Sistema de Lagrange', html: `En un extremo condicionado $∇f = λ ∇g$ y se cumple la restricción:<br>${V.map((v, i) => `$${T(fg[i])} = λ (${T(gg[i])})$`).join('<br>')}<br>$${T(E.simp(ga))} = ${N(c)}$`
         + `<br>Son ${dim + 1} ecuaciones con ${dim + 1} incógnitas (${nom}, λ).` },
     ];
-    if (!puntos.length) {
+    const reg = puntos.filter((q) => !q.singular), sing = puntos.filter((q) => q.singular);
+    if (constante !== null) {
+      pasos.push({ t: 'f es constante sobre la restricción', html: `En todos los puntos de la restricción $f$ vale lo mismo, $f = ${N(constante)}$: $∇f$ es paralelo a $∇g$ en cada uno (todos cumplen el sistema) y no hay máximo ni mínimo que buscar. Por eso no se da ninguna lista de puntos: la «solución» es toda la restricción.` });
+    } else if (!puntos.length) {
       pasos.push({ t: 'Puntos críticos', html: 'No encuentro ninguna solución del sistema cerca del origen (en ' + (dim === 2 ? '|x|, |y| ≤ 6' : '|x|, |y|, |z| ≤ 4') + '): puede que no haya extremos o que estén más lejos.' });
     } else {
-      pasos.push({ t: 'Resolver el sistema', html: `Se resuelve numéricamente (Newton desde ${semillas.length} puntos de partida) y se reconocen los valores exactos. Hay ${puntos.length} punto${puntos.length === 1 ? '' : 's'} crítico${puntos.length === 1 ? '' : 's'}:<br>${puntos.map((q) => `$(${q.p.map(N).join(' ; ')})$ con $λ = ${N(q.lambda)}$ y $f = ${N(q.valor)}$`).join('<br>')}` });
-      pasos.push({ t: 'Clasificación', html: dim === 2
-        ? `Con $L = f − λ g$, en cada punto se mira el hessiano orlado $\\bar H$ (o $q = t^T H_L t$ en la tangente $t = (−g_y ; g_x)$): si $q > 0$ es mínimo y si $q < 0$, máximo.<br>${puntos.map((q) => `$(${q.p.map(N).join(' ; ')})$: $q = ${N(q.q)}$, $|\\bar H| = ${N(q.orlado)}$ → <b>${q.tipo}</b>`).join('<br>')}`
-        : `Con $L = f − λ g$ se mira $H_L$ restringido al plano tangente a $g = c$ (autovalores $μ_1$, $μ_2$): ambos positivos, mínimo; ambos negativos, máximo; de distinto signo, punto de silla.<br>${puntos.map((q) => `$(${q.p.map(N).join(' ; ')})$: ${q.autovalores ? `$μ_1 = ${N(q.autovalores[0])}$, $μ_2 = ${N(q.autovalores[1])}$` : 'sin plano tangente'} → <b>${q.tipo}</b>`).join('<br>')}` });
+      if (reg.length) pasos.push({ t: 'Resolver el sistema', html: `Se resuelve numéricamente (Newton desde ${semillas.length} puntos de partida) y se reconocen los valores exactos. Hay ${reg.length} punto${reg.length === 1 ? '' : 's'} crítico${reg.length === 1 ? '' : 's'}:<br>${reg.map((q) => `$(${q.p.map(N).join(' ; ')})$ con $λ = ${N(q.lambda)}$ y $f = ${N(q.valor)}$`).join('<br>')}` });
+      if (reg.length) pasos.push({ t: 'Clasificación', html: dim === 2
+        ? `Con $L = f − λ g$, en cada punto se mira el hessiano orlado $\\bar H$ (o $q = t^T H_L t$ en la tangente $t = (−g_y ; g_x)$): si $q > 0$ es mínimo y si $q < 0$, máximo.<br>${reg.map((q) => `$(${q.p.map(N).join(' ; ')})$: $q = ${N(q.q)}$, $|\\bar H| = ${N(q.orlado)}$ → <b>${q.tipo}</b>`).join('<br>')}`
+        : `Con $L = f − λ g$ se mira $H_L$ restringido al plano tangente a $g = c$ (autovalores $μ_1$, $μ_2$): ambos positivos, mínimo; ambos negativos, máximo; de distinto signo, punto de silla.<br>${reg.map((q) => `$(${q.p.map(N).join(' ; ')})$: ${q.autovalores ? `$μ_1 = ${N(q.autovalores[0])}$, $μ_2 = ${N(q.autovalores[1])}$` : 'sin plano tangente'} → <b>${q.tipo}</b>`).join('<br>')}` });
+      if (sing.length) pasos.push({ t: 'Puntos donde ∇g = 0', html: `El método de Lagrange pide $∇g ≠ 0$ en la restricción; los puntos con $∇g = 0$ que están en $g = ${N(c)}$ hay que probarlos aparte, porque $∇f = λ∇g$ no los detecta. Aquí: ${sing.map((q) => `$(${q.p.map(N).join(' ; ')})$ con $f = ${N(q.valor)}$ → <b>${muchos ? 'no se clasifica: ∇g = 0 en toda una curva (se muestran solo algunos puntos)' : q.tipo === 'aislado' ? 'punto aislado de la restricción' : q.tipo === 'sin extremo' ? 'ni máximo ni mínimo (f toma valores mayores y menores cerca)' : q.tipo + ' (se compara f con sus valores en un entorno de la restricción)'}</b>`).join('<br>')}` });
       const mx = puntos.filter((q) => q.valor > gMax - 1e-9 * Math.max(1, Math.abs(gMax))), mn = puntos.filter((q) => q.valor < gMin + 1e-9 * Math.max(1, Math.abs(gMin)));
       const lista = (a) => a.map((q) => `$(${q.p.map(N).join(' ; ')})$`).join(' y ');
       pasos.push({ t: 'Conclusión', html: puntos.length === 1 ? `Un solo punto crítico, $${lista(puntos).replace(/^\$|\$$/g, '')}$, que es un <b>${puntos[0].tipo}</b>.` : `Comparando los valores de $f$: el mayor es $${N(gMax)}$ en ${lista(mx)} y el menor es $${N(gMin)}$ en ${lista(mn)}. Si la restricción es una curva o superficie cerrada y acotada, son el máximo y el mínimo absolutos; si no, solo los extremos locales que se han clasificado.` });
     }
-    return { dim, V, fa, ga, c, f: (p) => ev(fa, p), g: (p) => ev(ga, p), puntos, max: gMax, min: gMin, nsemillas: semillas.length, fT: T(E.simp(fa)), gT: T(E.simp(ga)), pasos };
+    return { dim, V, fa, ga, c, constante, f: (p) => ev(fa, p), g: (p) => ev(ga, p), puntos, max: gMax, min: gMin, nsemillas: semillas.length, fT: T(E.simp(fa)), gT: T(E.simp(ga)), pasos };
   }
 
   const ejemplos = [

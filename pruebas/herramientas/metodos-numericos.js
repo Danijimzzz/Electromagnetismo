@@ -27,6 +27,16 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     error({ modo: 'integral', fx: 'x', a: '0', b: '1', n: '0' }, 'n = 0');
     error({ modo: 'edo', fxy: 'y', x0: '0', y0: '1', h: '0,3', xf: '1', metodo: 'euler' }, 'paso que no cabe');
     error({ modo: 'newton', fx: 'x^2 +', x0: '1', tol: '1e-6', nmax: '50' }, 'función mal escrita');
+    // MN-1: (x−1)² es raíz doble ⇒ los errores se dividen por ≈ 2 (convergencia lineal, m = 2), no se elevan al cuadrado
+    const rd = C.resolver({ modo: 'newton', fx: '(x-1)^2', x0: '3', tol: '1e-10', nmax: '60' });
+    if (rd.orden !== 'lineal' || rd.mult !== 2 || !rd.pasos.some((q) => /lineal/.test(q.t)) || rd.pasos.some((q) => q.t === 'Convergencia cuadrática')) mal(`${N}: Newton en raíz doble no avisa de convergencia lineal (${rd.orden}, m = ${rd.mult})`);
+    if (C.resolver({ modo: 'newton', fx: '(x-1)^3', x0: '3', tol: '1e-10', nmax: '100' }).mult !== 3) mal(`${N}: Newton en raíz triple debería dar m = 3`);
+    if (ej('newton').orden !== 'cuadrática') mal(`${N}: Newton en raíz simple debería ser cuadrático`);
+    // MN-2: y′ = −50y con Euler y h = 0,1 es inestable (|1 + hλ| = 4 > 1; h < 0,04); con h = 0,01 no
+    const ei = C.resolver({ modo: 'edo', fxy: '-50*y', x0: '0', y0: '1', h: '0.1', xf: '1', metodo: 'euler' });
+    if (!ei.inestable || Math.abs(ei.hEst - 0.04) > 1e-6 || !ei.pasos.some((q) => q.t === 'Aviso de estabilidad')) mal(`${N}: Euler inestable sin aviso (h < ${ei.hEst})`);
+    if (C.resolver({ modo: 'edo', fxy: '-50*y', x0: '0', y0: '1', h: '0.01', xf: '1', metodo: 'euler' }).inestable) mal(`${N}: Euler con h = 0,01 no es inestable`);
+    if (ej('exponencial').inestable || ej('lineal').inestable) mal(`${N}: los ejemplos estables no deben avisar`);
     if (ej('seno').par !== true) mal(`${N}: n = 4 debería admitir Simpson`);
     if (C.resolver({ modo: 'newton', fx: 'x^2 + 1', x0: '1', tol: '1e-10', nmax: '30' }).conv) mal(`${N}: x² + 1 no tiene raíz y Newton no debería converger`);
     if (fallos === antes) console.log(`  ✓ ${N}: ${C.ejemplos.length} ejemplos calculados a mano (bisección, Newton, secante, punto fijo, trapecios, Simpson, Euler, Heun y RK4) y errores`);

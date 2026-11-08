@@ -24,6 +24,20 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     // ventana fija con pi; automática para la cúbica: incluye ±18 (f(±3)) recortado al percentil
     cerca(t.x[0], -Math.PI, 1e-12, 'x mínimo −pi'); cerca(t.x[1], 2 * Math.PI, 1e-12, 'x máximo 2pi');
     const c = ej('cubica'); if (!(c.y[0] < -10 && c.y[1] > 10)) mal(`${N}: la altura automática de la cúbica es ${c.y}`);
+    // GR-1: |x| baja hasta 0 y sube después, con un mínimo sin derivada en (0, 0) y sin curvatura de ruido; |x² − 1| tiene mínimos en ±1 y máximo en (0, 1)
+    {
+      const eA = C.resolver({ f: 'abs(x)', xmin: '-3', xmax: '3' }).est;
+      if (eA.crece.join() !== '(0, ∞)' || eA.decrece.join() !== '(−∞, 0)') mal(`${N}: |x| crece en ${eA.crece} y decrece en ${eA.decrece}`);
+      if (eA.extremos.length !== 1 || eA.extremos[0].tipo !== 'mínimo' || eA.extremos[0].x !== 0 || eA.extremos[0].y !== 0) mal(`${N}: |x| debería tener un mínimo en (0, 0): ${JSON.stringify(eA.extremos)}`);
+      if (eA.convexa.length || eA.concava.length || eA.infl.length) mal(`${N}: |x| no es convexa ni cóncava en ningún tramo: ${eA.convexa.length}/${eA.concava.length}`);
+      if (!C.resolver({ f: 'abs(x)', xmin: '-3', xmax: '3' }).pasos.some((q) => /no es derivable en/.test(q.html))) mal(`${N}: |x| debería avisar de que no es derivable en 0`);
+      const eB = C.resolver({ f: 'abs(x^2-1)', xmin: '-3', xmax: '3' }).est;
+      if (eB.extremos.map((q) => q.tipo.slice(0, 3) + q.x + ',' + q.y).join(' ') !== 'mín-1,0 máx0,1 mín1,0') mal(`${N}: extremos de |x²−1|: ${eB.extremos.map((q) => q.tipo.slice(0, 3) + q.x + ',' + q.y).join(' ')}`);
+      const eC = C.resolver({ f: 'x*abs(x)', xmin: '-3', xmax: '3' }).est;
+      if (eC.crece.join() !== '(−∞, ∞)' || eC.extremos.length || eC.infl.length !== 1) mal(`${N}: x|x| crece siempre y tiene una inflexión en 0`);
+      const eD = C.resolver({ f: 'x^3', xmin: '-3', xmax: '3' }).est;
+      if (eD.crece.join() !== '(−∞, ∞)') mal(`${N}: x³ crece en ${eD.crece}`);
+    }
     error({ f: '', g: 'x', xmin: '', xmax: '' }, 'sin f');
     error({ f: 'x', xmin: '3', xmax: '1' }, 'x máximo menor');
     error({ f: 'x', xmin: '', xmax: '', ymin: '1', ymax: '' }, 'solo un límite de y');
