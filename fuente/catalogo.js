@@ -102,7 +102,7 @@ const Catalogo = {
       clave: 'quimica', nombre: 'Química', icono: 'Q', color: '#1d7a3e', colorOscuro: '#5fcf8a',
       resumen: 'Tabla periódica, estequiometría y disoluciones para química general.',
       herramientas: [
-        { clave: 'tabla-periodica', nombre: 'Tabla periódica interactiva', icono: 'Z', disponible: true, desc: 'Ficha de cada elemento y tendencias coloreadas.', buscar: 'elementos tabla periódica electronegatividad radio atómico', guarda: null, scripts: ['quimica/elementos.js', 'tabla-periodica/app.js'],
+        { clave: 'tabla-periodica', nombre: 'Tabla periódica interactiva', icono: 'Z', disponible: true, desc: 'Ficha de cada elemento y tendencias coloreadas.', buscar: 'elementos tabla periódica electronegatividad radio atómico', guarda: null, scripts: ['quimica/elementos.js', 'quimica/configuracion.js', 'tabla-periodica/app.js'],
           titulo: 'Tabla periódica interactiva', descripcion: 'Ficha de cada elemento con masa, configuración electrónica, electronegatividad y radio, y tendencias coloreadas' },
         { clave: 'masa-molar', nombre: 'Masa molar y estequiometría', icono: 'M', disponible: true, desc: 'Reactivo limitante, rendimiento, moles, gramos y litros.', buscar: 'masa molar moles estequiometría reactivo limitante', scripts: ['quimica/elementos.js', 'quimica/formulas.js', 'compartir.js', 'masa-molar/app.js'],
           titulo: 'Masa molar y estequiometría', descripcion: 'Masa molar y composición de cualquier fórmula, ajuste de reacciones, reactivo limitante y rendimiento, paso a paso' },
