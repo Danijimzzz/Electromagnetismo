@@ -18,19 +18,9 @@ const Termoquimica = (() => {
   const { f, leeNum, lee } = K;
   const SUB = { '₀': '0', '₁': '1', '₂': '2', '₃': '3', '₄': '4', '₅': '5', '₆': '6', '₇': '7', '₈': '8', '₉': '9' };
 
-  // ΔHf° en kJ/mol a 25 °C y 1 atm (valores de tablas habituales de clase; elementos en su estado estándar = 0)
-  const TABLA = {
-    'H2(g)': 0, 'O2(g)': 0, 'N2(g)': 0, 'Cl2(g)': 0, 'F2(g)': 0, 'Br2(l)': 0, 'I2(s)': 0, 'C(s)': 0, 'S(s)': 0,
-    'Na(s)': 0, 'K(s)': 0, 'Ca(s)': 0, 'Mg(s)': 0, 'Al(s)': 0, 'Fe(s)': 0, 'Cu(s)': 0, 'Zn(s)': 0, 'Ag(s)': 0, 'P(s)': 0,
-    'H2O(l)': -285.8, 'H2O(g)': -241.8, 'H2O2(l)': -187.8, 'O3(g)': 142.7,
-    'CO(g)': -110.5, 'CO2(g)': -393.5, 'CH4(g)': -74.8, 'C2H6(g)': -84.7, 'C3H8(g)': -103.8, 'C4H10(g)': -125.7, 'C2H4(g)': 52.3, 'C2H2(g)': 226.7,
-    'C6H6(l)': 49.0, 'CH3OH(l)': -238.6, 'C2H5OH(l)': -277.7, 'C6H12O6(s)': -1273.3, 'C8H18(l)': -250.0,
-    'NH3(g)': -46.1, 'NO(g)': 90.3, 'NO2(g)': 33.2, 'N2O(g)': 82.1, 'N2O4(g)': 9.2, 'HNO3(l)': -174.1,
-    'SO2(g)': -296.8, 'SO3(g)': -395.7, 'H2S(g)': -20.6, 'H2SO4(l)': -814.0,
-    'HCl(g)': -92.3, 'HF(g)': -273.3, 'HBr(g)': -36.3, 'HI(g)': 26.5,
-    'NaCl(s)': -411.2, 'NaOH(s)': -425.6, 'CaO(s)': -635.1, 'CaCO3(s)': -1206.9, 'Ca(OH)2(s)': -986.1, 'MgO(s)': -601.6,
-    'Fe2O3(s)': -824.2, 'Fe3O4(s)': -1118.4, 'Al2O3(s)': -1675.7, 'CuO(s)': -157.3, 'ZnO(s)': -348.3, 'SiO2(s)': -910.7,
-  };
+  // ΔHf° (kJ/mol), S° (J/(mol·K)) y ΔGf° (kJ/mol) a 25 °C y 1 bar: quimica/datos.js (QU-1), con su fuente
+  const D = typeof Datos !== 'undefined' ? Datos : require('../quimica/datos.js');
+  const TABLA = Object.fromEntries(Object.entries(D.TERMO).map(([k, v]) => [k, v[0]]));
 
   /* ---------- Lectura de sustancias y reacciones ---------- */
   const limpia = (t) => String(t).trim().replace(/[₀-₉]/g, (c) => SUB[c]).replace(/\((?:grafito|graf)\)/i, '(s)').replace(/\s+/g, ' ');
@@ -70,9 +60,15 @@ const Termoquimica = (() => {
   /* ---------- ΔHf ---------- */
   // «2 H2O(l) ; -285,8» → sustancia con su ΔHf (la de la tabla si no se da)
   function conEntalpia(linea) {
-    const [a, b] = linea.split(';');
+    const [a, b, c, d] = linea.split(';');
     const s = sustancia(a);
-    if (b !== undefined && b.trim() !== '') { const v = leeNum(b); if (!isFinite(v)) throw new Error(`La entalpía de formación de «${s.texto}» no es un número`); return { ...s, h: v, propia: true }; }
+    if (b !== undefined && b.trim() !== '') {
+      const v = leeNum(b); if (!isFinite(v)) throw new Error(`La entalpía de formación de «${s.texto}» no es un número`);
+      const o = { ...s, h: v, propia: true };
+      if (c !== undefined && c.trim() !== '') { o.s = leeNum(c); if (!isFinite(o.s)) throw new Error(`La entropía de «${s.texto}» no es un número`); }
+      if (d !== undefined && d.trim() !== '') { o.g = leeNum(d); if (!isFinite(o.g)) throw new Error(`La energía libre de formación de «${s.texto}» no es un número`); }
+      return o;
+    }
     let k = s.clave;
     if (!s.estado) {
       const cands = Object.keys(TABLA).filter((c) => c.replace(/\((?:s|l|g)\)$/, '') === s.base);
@@ -80,7 +76,7 @@ const Termoquimica = (() => {
       if (cands.length === 1) { k = cands[0]; s.estado = k.slice(-2, -1); s.html += `<small class="estado">(${s.estado})</small>`; }
     }
     if (!(k in TABLA)) throw new Error(`No tengo la entalpía de formación de «${s.clave}»: escríbela detrás de un «;» (por ejemplo «${s.texto} ; −100»)`);
-    return { ...s, clave: k, h: TABLA[k], propia: false };
+    return { ...s, clave: k, h: TABLA[k], s: D.TERMO[k][1], g: D.TERMO[k][2], propia: false };
   }
   const lineas = (t) => String(t ?? '').split(/\n/).map((l) => l.trim()).filter(Boolean);
   const ladoH = (t) => lineas(t).map(conEntalpia);
@@ -102,6 +98,24 @@ const Termoquimica = (() => {
       { t: 'Entalpía de la reacción', html: `$ΔH^"°"_r = ${f(hp)} − (${f(hr)}) = ${kJ(dH)}$. ${dH < 0 ? 'Es negativa: la reacción es <b>exotérmica</b> y desprende calor.' : dH > 0 ? 'Es positiva: la reacción es <b>endotérmica</b> y absorbe calor.' : 'Es nula.'}` },
     ];
     const out = { modo: 'formacion', dH, hp, hr, R, P, pasos, barras: [['Σ reactivos', hr], ['Σ productos', hp], ['ΔH', dH]] };
+    // TQ-1: con S° y ΔGf° de todas las sustancias (de la tabla o escritas tras «;») salen ΔS°, ΔG° y la temperatura de equilibrio sin teclear nada más
+    const tg = String(sc.t ?? '').trim() === '' ? 298.15 : lee(sc, 't', 'la temperatura', { min: 0, minEx: true });
+    const hay = (k) => [...R, ...P].every((q) => q[k] !== undefined);
+    if (hay('s')) {
+      const sS = (L) => L.reduce((a, q) => a + q.coef * q.s, 0), dS = sS(P) - sS(R);
+      out.dS = dS; out.T = tg; out.dGT = dH - tg * dS / 1000;
+      pasos.push({ t: 'Entropía de la reacción', html: `Con las entropías molares estándar S° (J/(mol·K)): ${[...R, ...P].map((q) => `${q.html}: ${f(q.s)}${q.propia ? ' (dato tuyo)' : ''}`).join(', ')}.<br>$ΔS^"°"_r = Σ n S^"°"("productos") − Σ n S^"°"("reactivos") = ${f(sS(P))} − ${f(sS(R))} = ${f(dS)} "J/K"$. ${dS > 0 ? 'Aumenta el desorden (ΔS > 0).' : dS < 0 ? 'Disminuye el desorden (ΔS < 0).' : ''}` });
+      pasos.push({ t: `Energía libre a ${f(tg)} K`, html: `$ΔG = ΔH − T ΔS = ${f(dH)} − ${f(tg)} · ${f(dS / 1000)} = ${kJ(out.dGT)}$ (ΔS pasada a kJ/K, suponiendo ΔH y ΔS constantes con la temperatura). ${out.dGT < 0 ? 'ΔG < 0: espontánea a esa temperatura.' : out.dGT > 0 ? 'ΔG > 0: no espontánea a esa temperatura.' : 'ΔG = 0: en equilibrio.'}` });
+      if (dS !== 0) {
+        const Te = dH * 1000 / dS; out.Te = Te > 0 ? Te : NaN;
+        pasos.push({ t: 'Temperatura de equilibrio', html: Te > 0 ? `ΔG = 0 ⇒ $T_e = {ΔH}/{ΔS} = {${f(dH * 1000)}}/{${f(dS)}} = ${f(Te)} "K"$ (${f(Te - 273.15)} °C). ${dH < 0 ? 'Por debajo de esa temperatura la reacción es espontánea.' : 'Por encima de esa temperatura la reacción es espontánea.'}` : `ΔH y ΔS tienen signo contrario: ${dH < 0 ? 'ΔG < 0 a cualquier temperatura (siempre espontánea).' : 'ΔG > 0 a cualquier temperatura (nunca espontánea).'}` });
+      }
+    }
+    if (hay('g')) {
+      const sG = (L) => L.reduce((a, q) => a + q.coef * q.g, 0), dG = sG(P) - sG(R);
+      out.dG298 = dG;
+      pasos.push({ t: 'Energía libre a 25 °C con ΔGf°', html: `$ΔG^"°"_r = Σ n ΔG_f^"°"("productos") − Σ n ΔG_f^"°"("reactivos") = ${f(sG(P))} − (${f(sG(R))}) = ${kJ(dG)}$. ${hay('s') ? `Comprobación con ΔH − TΔS a 298,15 K: ${kJ(dH - 298.15 * out.dS / 1000)}.` : ''}` });
+    }
     if (String(sc.masa ?? '').trim() !== '') {
       const m = lee(sc, 'masa', 'la masa', { min: 0, minEx: true }), s0 = R[0], M = F.masaMolar(s0.texto).M, n = m / M, q = dH * n / s0.coef;
       out.q = q; out.n = n; out.M = M;
@@ -171,7 +185,40 @@ const Termoquimica = (() => {
     return { modo: 'gibbs', dH: H, dS: S, T, dG: G, Te: ok ? Te : NaN, caso, pasos, barras: [['ΔH', H], ['−TΔS', -T * S / 1000], ['ΔG', G]] };
   }
 
-  const resolver = (sc) => ({ hess, gibbs }[sc.modo] || formacion)(sc);
+  /* ---------- Ciclo de Born-Haber (TQ-3) ---------- */
+  // sal M_aX_b de un metal alcalino, alcalinotérreo o Al con F, Cl, Br, I, O o S: energía reticular a partir de la formación
+  const CARGA_M = { Li: 1, Na: 1, K: 1, Rb: 1, Cs: 1, Mg: 2, Ca: 2, Sr: 2, Ba: 2, Al: 3 }, CARGA_X = { F: 1, Cl: 1, Br: 1, I: 1, O: 2, S: 2 };
+  function born(sc) {
+    const txt = String(sc.sal ?? '').trim().replace(/[₀-₉]/g, (c) => SUB[c]);
+    if (!txt) throw new Error('Escribe la sal: NaCl, MgO, CaF2…');
+    const m = txt.match(/^([A-Z][a-z]?)(\d*)([A-Z][a-z]?)(\d*)$/);
+    if (!m) throw new Error(`No entiendo la sal «${txt}»: escribe el metal primero y el no metal después, como NaCl, MgCl2 o Na2O`);
+    const M = m[1], X = m[3], a = +(m[2] || 1), b = +(m[4] || 1), qM = CARGA_M[M], qX = CARGA_X[X];
+    if (!qM) throw new Error(`El ciclo está preparado para los metales ${Object.keys(CARGA_M).join(', ')}; «${M}» no está`);
+    if (!qX) throw new Error(`El ciclo está preparado para los no metales ${Object.keys(CARGA_X).join(', ')}; «${X}» no está`);
+    if (a * qM !== b * qX) throw new Error(`«${txt}» no está equilibrada en carga: ${M}${qM > 1 ? qM : ''}+ y ${X}${qX > 1 ? qX : ''}− no dan esa proporción`);
+    const dm = D.METALES[M], dx = D.NOMETALES[X], ref = D.SALES_BORN[txt];
+    let hf;
+    if (String(sc.hf ?? '').trim() !== '') { hf = leeNum(sc.hf); if (!isFinite(hf)) throw new Error('La entalpía de formación debe ser un número'); }
+    else if (ref) hf = ref.hf;
+    else throw new Error(`No tengo la entalpía de formación de ${txt}: escríbela (kJ/mol)`);
+    const sub = a * dm.sub, ion = a * dm.ei.slice(0, qM).reduce((p, v) => p + v, 0), at = b * dx.atom, ae = -b * dx.ae.slice(0, qX).reduce((p, v) => p + v, 0);
+    const lat = hf - sub - ion - at - ae; // ΔH de formar el cristal desde los iones gaseosos (negativa)
+    const nombre = `${M}${a > 1 ? a : ''}${X}${b > 1 ? b : ''}`, num = (n) => (n === 1 ? '' : n + ' ');
+    const pasos = [
+      { t: 'La sal y su ciclo', html: `${nombre}: ${a} ${M}<sup>${qM > 1 ? qM : ''}+</sup> y ${b} ${X}<sup>${qX > 1 ? qX : ''}−</sup>. El ciclo de Born-Haber lleva de los elementos a la sal por dos caminos: la formación directa (ΔH<sub>f</sub>) y el camino por los iones gaseosos, cuyo último paso es la formación de la red (energía reticular).` },
+      { t: 'Sublimación del metal', html: `$${num(a)}${M}(s) → ${num(a)}${M}(g)$: $${a} · ${f(dm.sub)} = ${kJ(sub)}$` },
+      { t: `Ionización del metal (${qM === 1 ? '1.ª' : qM === 2 ? '1.ª y 2.ª' : '1.ª, 2.ª y 3.ª'} energía)`, html: `$${num(a)}${M}(g) → ${num(a)}${M}^{${qM}+}(g)$: $${a} · (${dm.ei.slice(0, qM).map((v) => f(v)).join(' + ')}) = ${kJ(ion)}$` },
+      { t: 'Atomización del no metal', html: `$${b === 1 ? '' : b + ' · '}1/2 ${X}_2 → ${num(b)}${X}(g)$: $${b} · ${f(dx.atom)} = ${kJ(at)}$ (la mitad de la energía de disociación${X === 'Br' ? ' y la vaporización del Br₂' : X === 'I' ? ' y la sublimación del I₂' : ''}).` },
+      { t: `Afinidad electrónica (${qX === 1 ? '1.ª' : '1.ª y 2.ª'})`, html: `$${num(b)}${X}(g) → ${num(b)}${X}^{${qX}−}(g)$: $−${b} · (${dx.ae.slice(0, qX).map((v) => f(v)).join(' + ')}) = ${kJ(ae)}$${qX === 2 ? '. La 2.ª afinidad es negativa (hay que dar energía para meter un electrón en un anión), pero la red la compensa de sobra.' : ''}` },
+      { t: 'Entalpía de formación', html: `$ΔH_f(${nombre}) = ${kJ(hf)}$${String(sc.hf ?? '').trim() !== '' ? ' (dato tuyo)' : ' (tabla)'}.` },
+      { t: 'Energía reticular', html: `$ΔH_f = ΔH_"sub" + ΔH_"ion" + ΔH_"at" + ΔH_"AE" + ΔH_"red"$ ⇒ $ΔH_"red" = ${f(hf)} − (${f(sub)} + ${f(ion)} + ${f(at)} + ${f(ae)}) = ${kJ(lat)}$.<br>La energía reticular (la que se desprende al formarse un mol de cristal a partir de los iones gaseosos) vale <b>${f(-lat)} kJ/mol</b>.${ref && String(sc.hf ?? '').trim() === '' ? ` El valor de las tablas es ${f(ref.ref)} kJ/mol (diferencia ${f(100 * (-lat - ref.ref) / ref.ref, 2)} %).` : ''}` },
+    ];
+    return { modo: 'born', sal: txt, a, b, M, X, qM, qX, hf, sub, ion, at, ae, lat, U: -lat, ref: ref?.ref ?? null, pasos,
+      barras: [['Sublimación', sub], ['Ionización', ion], ['Atomización', at], ['Afinidad', ae], ['Red', lat], ['ΔHf', hf]] };
+  }
+
+  const resolver = (sc) => ({ hess, gibbs, born }[sc.modo] || formacion)(sc);
 
   const ejemplos = [
     { clave: 'metano', nombre: 'Combustión del metano (ΔHf)', sc: { modo: 'formacion', reactivos: 'CH4(g)\n2 O2(g)', productos: 'CO2(g)\n2 H2O(l)', masa: '' } },
@@ -180,10 +227,15 @@ const Termoquimica = (() => {
     { clave: 'propio', nombre: 'Con una entalpía de formación propia', sc: { modo: 'formacion', reactivos: 'CaCO3(s) ; -1207,1', productos: 'CaO(s)\nCO2(g)', masa: '' } },
     { clave: 'hess-co', nombre: 'Hess: C + ½ O₂ → CO', sc: { modo: 'hess', reacciones: 'C(s) + O2(g) -> CO2(g) ; -393,5\nCO(g) + 1/2 O2(g) -> CO2(g) ; -283,0', objetivo: 'C(s) + 1/2 O2(g) -> CO(g)' } },
     { clave: 'hess-etano', nombre: 'Hess: formación del etano', sc: { modo: 'hess', reacciones: 'C2H6(g) + 7/2 O2(g) -> 2 CO2(g) + 3 H2O(l) ; -1560\nC(s) + O2(g) -> CO2(g) ; -393,5\nH2(g) + 1/2 O2(g) -> H2O(l) ; -285,8', objetivo: '2 C(s) + 3 H2(g) -> C2H6(g)' } },
+    { clave: 'gibbs-metano', nombre: 'Combustión del metano: ΔS°, ΔG° y temperatura de equilibrio', sc: { modo: 'formacion', reactivos: 'CH4(g)\n2 O2(g)', productos: 'CO2(g)\n2 H2O(g)', masa: '', t: '298,15' } },
+    { clave: 'caco3-descomposicion', nombre: 'Descomposición del CaCO₃: ¿a qué temperatura es espontánea?', sc: { modo: 'formacion', reactivos: 'CaCO3(s)', productos: 'CaO(s)\nCO2(g)', masa: '', t: '1000' } },
+    { clave: 'born-nacl', nombre: 'Born-Haber: energía reticular del NaCl', sc: { modo: 'born', sal: 'NaCl', hf: '' } },
+    { clave: 'born-mgo', nombre: 'Born-Haber: energía reticular del MgO', sc: { modo: 'born', sal: 'MgO', hf: '' } },
+    { clave: 'born-cacl2', nombre: 'Born-Haber: energía reticular del CaCl₂', sc: { modo: 'born', sal: 'CaCl2', hf: '' } },
     { clave: 'gibbs-hielo', nombre: 'Gibbs: fusión del hielo', sc: { modo: 'gibbs', h: '6,01', s: '22,0', t: '298' } },
     { clave: 'gibbs-caco3', nombre: 'Gibbs: descomposición del CaCO₃', sc: { modo: 'gibbs', h: '178,3', s: '160,5', t: '1000' } },
   ];
 
-  return { resolver, ejemplos, f, TABLA };
+  return { resolver, ejemplos, f, TABLA, born };
 })();
 if (typeof module !== 'undefined') module.exports = Termoquimica;
