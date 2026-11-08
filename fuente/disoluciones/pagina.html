@@ -48,7 +48,7 @@ th { color: var(--muted); font-weight: 500 }
 <div class="wrap">
 <h1>Disoluciones y concentraciones</h1>
 <p class="lead">Da la concentración de una disolución en cualquier forma y obtén todas las demás. También calcula cuánto soluto o reactivo comercial necesitas para prepararla, y cómo diluirla o mezclarla. Cada resultado viene con el desarrollo.</p>
-<div class="modos" role="tablist"><button role="tab" id="tab-conc" aria-selected="true">Concentración</button><button role="tab" id="tab-prep" aria-selected="false">Preparar</button><button role="tab" id="tab-dil" aria-selected="false">Diluir y mezclar</button><button role="tab" id="tab-col" aria-selected="false">Propiedades coligativas</button></div>
+<div class="modos" role="tablist"><button role="tab" id="tab-conc" aria-selected="true">Concentración</button><button role="tab" id="tab-prep" aria-selected="false">Preparar</button><button role="tab" id="tab-dil" aria-selected="false">Diluir y mezclar</button><button role="tab" id="tab-col" aria-selected="false">Propiedades coligativas</button><button role="tab" id="tab-sol" aria-selected="false">Solubilidad y gases</button></div>
 <label class="nota" style="display:inline-flex;gap:6px;align-items:center;margin:0 0 12px 12px">Masas atómicas <select id="modo" class="in"><option value="iupac">IUPAC (H 1,008; O 15,999)</option><option value="redondeadas">De clase (H 1; O 16; Cl 35,5)</option></select></label>
 
 <section id="conc">
@@ -168,6 +168,37 @@ th { color: var(--muted); font-weight: 500 }
   </div>
 </div>
 </section>
+<section id="sol" hidden>
+<div class="layout">
+  <div class="card">
+    <h2>Datos</h2>
+    <select id="ejemplos-sol" class="in" aria-label="Ejemplos" style="width:100%;margin-bottom:12px"></select>
+    <div class="campos">
+      <label for="s-modo">Qué calcular</label><select id="s-modo" class="in"><option value="sal">Solubilidad de una sal a una temperatura</option><option value="cristal">Cuánto cristaliza al enfriar (o calentar)</option><option value="busca">A qué temperatura satura</option><option value="gas">Gas disuelto (ley de Henry)</option></select>
+      <label for="s-sal" data-m="sal cristal busca">Sal</label><select id="s-sal" class="in" data-m="sal cristal busca"></select>
+      <label for="s-T" data-m="sal cristal">Temperatura <small>(°C)</small></label><input id="s-T" class="in" inputmode="decimal" autocomplete="off" data-m="sal cristal">
+      <label for="s-T2" data-m="cristal">Temperatura final <small>(°C)</small></label><input id="s-T2" class="in" inputmode="decimal" autocomplete="off" data-m="cristal">
+      <label for="s-agua" data-m="sal cristal">Masa de agua <small>(g)</small></label><input id="s-agua" class="in" inputmode="decimal" autocomplete="off" data-m="sal cristal">
+      <label for="s-soluto" data-m="sal cristal">Masa de soluto <small>(g, opcional)</small></label><input id="s-soluto" class="in" inputmode="decimal" autocomplete="off" data-m="sal cristal">
+      <label for="s-x" data-m="busca">Sal disuelta <small>(g por 100 g de agua)</small></label><input id="s-x" class="in" inputmode="decimal" autocomplete="off" data-m="busca">
+      <label for="s-gas" data-m="gas">Gas</label><select id="s-gas" class="in" data-m="gas"></select>
+      <label for="s-Tg" data-m="gas">Temperatura <small>(°C, de 0 a 60)</small></label><input id="s-Tg" class="in" inputmode="decimal" autocomplete="off" data-m="gas">
+      <label for="s-p" data-m="gas">Presión parcial del gas <small>(atm)</small></label><input id="s-p" class="in" inputmode="decimal" autocomplete="off" data-m="gas">
+      <label for="s-obj" data-m="gas">O la concentración que quieres <small>(mg/L, opcional)</small></label><input id="s-obj" class="in" inputmode="decimal" autocomplete="off" data-m="gas">
+    </div>
+    <p class="nota" id="nota-sol"></p>
+    <p class="error" id="error-sol" hidden></p>
+  </div>
+  <div>
+    <div class="card"><h2>Resultados</h2><div class="valores" id="valores-sol"></div></div>
+    <div class="card"><h2 id="titulo-graf-sol">Curva de solubilidad</h2>
+      <canvas id="graf-sol" role="img" aria-label="Solubilidad de la sal elegida frente a la temperatura, o gas disuelto frente a la temperatura"></canvas>
+      <p class="leyenda" id="leyenda-sol"></p>
+    </div>
+    <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos-sol"></ol></div>
+  </div>
+</div>
+</section>
 <section class="teoria">
   <h2>Formas de expresar la concentración</h2>
   <ul>
@@ -190,6 +221,10 @@ th { color: var(--muted); font-weight: 500 }
     <li><b>Ley de Raoult</b>: la presión de vapor del disolvente baja, P = x<sub>d</sub> P°.</li>
   </ul>
   <p>Al revés, midiendo cualquiera de ellas se obtiene la masa molar del soluto. La presión osmótica es la más sensible y sirve para moléculas grandes como las proteínas.</p>
+  <h2>Solubilidad y temperatura</h2>
+  <p>La solubilidad de un sólido en agua es la masa máxima que se disuelve en 100 g a una temperatura, y casi siempre crece al calentar (KNO₃ sube de 13 a 246 g/100 g entre 0 y 100 °C), aunque en el NaCl cambia poco y en el Ca(OH)₂ o el Li₂SO₄ baja. Una disolución saturada que se enfría cristaliza la diferencia entre las dos solubilidades. Los datos están cada 20 °C y entre ellos se interpola con una recta, así que el resultado es aproximado.</p>
+  <h2>Gases: ley de Henry</h2>
+  <p class="m">A una temperatura dada, la concentración de un gas disuelto es proporcional a su presión parcial: $c = k_H p$. Al subir la temperatura baja $k_H$, por eso un refresco caliente pierde el gas y un lago caliente tiene menos oxígeno. La ley falla para gases que reaccionan con el agua.</p>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Disoluciones <span id="ver"></span> (beta)</footer>

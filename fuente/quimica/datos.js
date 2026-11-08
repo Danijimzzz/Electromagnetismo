@@ -22,6 +22,8 @@ const Datos = (() => {
     potenciales: 'CRC Handbook (Electrochemical Series), Atkins y Chang; 25 °C, 1 M y 1 bar',
     indicadores: 'Intervalos de viraje de tablas habituales (Harris, Skoog)',
     complejos: 'CRC Handbook (Stability Constants) y Harris; 25 °C',
+    solubilidadT: 'CRC Handbook (Aqueous Solubility of Inorganic Compounds at Various Temperatures) y Lange; g de soluto anhidro por 100 g de agua cada 20 °C',
+    henry: 'Sander, R. (2015), Compilation of Henry\'s law constants, Atmos. Chem. Phys. 15, 4399; k a 298,15 K y d(ln k)/d(1/T) en K',
     born: 'CRC Handbook (Atomic, Molecular, and Optical Physics; Heat of Sublimation; Electron Affinities) y Atkins',
   };
   const R = 8.314462618, F = 96485.33212, T0 = 298.15, RATM = 0.082057366, RCLASE = 0.082, FCLASE = 96500;
@@ -165,6 +167,35 @@ const Datos = (() => {
     Na2O: { hf: -414.2, ref: 2481 }, K2O: { hf: -361.5, ref: 2238 }, Li2O: { hf: -597.9, ref: 2799 }, Na2S: { hf: -364.8, ref: 2203 },
   };
 
+
+  /* ---------- Solubilidad frente a la temperatura y ley de Henry (DI-1) ---------- */
+  // g de soluto (anhidro) por 100 g de agua a 0, 20, 40, 60, 80 y 100 °C
+  const SOLUBILIDAD_T = {
+    NaCl: { nombre: 'Cloruro de sodio', f: 'NaCl', v: [35.7, 35.9, 36.4, 37.1, 38.0, 39.2] },
+    KCl: { nombre: 'Cloruro de potasio', f: 'KCl', v: [28.0, 34.2, 40.1, 45.8, 51.3, 56.3] },
+    KNO3: { nombre: 'Nitrato de potasio', f: 'KNO3', v: [13.3, 31.6, 63.9, 110, 169, 246] },
+    NaNO3: { nombre: 'Nitrato de sodio', f: 'NaNO3', v: [73, 88, 105, 124, 148, 180] },
+    NH4Cl: { nombre: 'Cloruro de amonio', f: 'NH4Cl', v: [29.4, 37.2, 45.8, 55.3, 65.6, 77.3] },
+    CuSO4: { nombre: 'Sulfato de cobre(II)', f: 'CuSO4', v: [14.3, 20.7, 28.5, 40.0, 55.0, 75.4] },
+    K2Cr2O7: { nombre: 'Dicromato de potasio', f: 'K2Cr2O7', v: [4.7, 12.3, 26.3, 45.6, 73.0, 102] },
+    KClO3: { nombre: 'Clorato de potasio', f: 'KClO3', v: [3.3, 7.3, 13.9, 23.8, 37.5, 56.3] },
+    PbNO32: { nombre: 'Nitrato de plomo(II)', f: 'Pb(NO3)2', v: [37.5, 54.3, 72.1, 91.6, 111, 133] },
+    Na2SO4: { nombre: 'Sulfato de sodio (anhidro)', f: 'Na2SO4', v: [4.9, 19.5, 48.8, 45.3, 43.7, 42.5] },
+    Li2SO4: { nombre: 'Sulfato de litio', f: 'Li2SO4', v: [36.1, 35.1, 33.7, 32.6, 31.4, 30.5] },
+    CaOH2: { nombre: 'Hidróxido de calcio', f: 'Ca(OH)2', v: [0.189, 0.173, 0.141, 0.121, 0.094, 0.076] },
+    sacarosa: { nombre: 'Sacarosa', f: 'C12H22O11', v: [179, 204, 238, 287, 362, 487] },
+  };
+  const T_SOL = [0, 20, 40, 60, 80, 100];
+  // k_H (mol·L⁻¹·atm⁻¹) a 298,15 K y C = −d(ln k_H)/d(1/T)… con k_H(T) = k298·exp(C·(1/T − 1/298,15)), C en K
+  const HENRY = {
+    O2: { nombre: 'Oxígeno', f: 'O2', k: 1.3e-3, C: 1700, M: 31.998 }, N2: { nombre: 'Nitrógeno', f: 'N2', k: 6.4e-4, C: 1300, M: 28.014 },
+    CO2: { nombre: 'Dióxido de carbono', f: 'CO2', k: 3.3e-2, C: 2400, M: 44.009 }, H2: { nombre: 'Hidrógeno', f: 'H2', k: 7.8e-4, C: 500, M: 2.016 },
+    He: { nombre: 'Helio', f: 'He', k: 3.8e-4, C: 230, M: 4.003 }, Ar: { nombre: 'Argón', f: 'Ar', k: 1.4e-3, C: 1300, M: 39.948 },
+    CH4: { nombre: 'Metano', f: 'CH4', k: 1.4e-3, C: 1600, M: 16.043 }, CO: { nombre: 'Monóxido de carbono', f: 'CO', k: 9.5e-4, C: 1300, M: 28.010 },
+    N2O: { nombre: 'Óxido nitroso', f: 'N2O', k: 2.4e-2, C: 2700, M: 44.013 }, H2S: { nombre: 'Sulfuro de hidrógeno', f: 'H2S', k: 1.0e-1, C: 2100, M: 34.08 },
+    NH3: { nombre: 'Amoníaco', f: 'NH3', k: 59, C: 4200, M: 17.031 }, SO2: { nombre: 'Dióxido de azufre', f: 'SO2', k: 1.2, C: 3100, M: 64.066 },
+  };
+
   /* ---------- Constantes y ajustes «de clase» ---------- */
   // masas redondeadas de uso en clase (Cl 35,5; Cu 63,5…), por símbolo
   const MASAS_CLASE = { H: 1, He: 4, Li: 7, C: 12, N: 14, O: 16, F: 19, Na: 23, Mg: 24, Al: 27, Si: 28, P: 31, S: 32, Cl: 35.5, K: 39, Ca: 40, Mn: 55, Fe: 56, Cu: 63.5, Zn: 65.4, Br: 80, Ag: 108, I: 127, Ba: 137, Pb: 207 };
@@ -173,6 +204,6 @@ const Datos = (() => {
   // ajuste común (QU-3): masas y constantes «de clase» o exactas; lo fija la herramienta que lo cambia
   const ajuste = () => ({ clase: lee('quimica-clase') === '1' });
 
-  return { FUENTES, R, F, T0, RATM, RCLASE, FCLASE, TERMO, ELEMENTOS_ESTANDAR, ATOMOS_POR_MOLECULA, KPS, ACIDOS_ANION, COMPLEJOS, INDICADORES, POTENCIALES, METALES, NOMETALES, SALES_BORN, MASAS_CLASE, ajuste };
+  return { FUENTES, R, F, T0, RATM, RCLASE, FCLASE, SOLUBILIDAD_T, T_SOL, HENRY, TERMO, ELEMENTOS_ESTANDAR, ATOMOS_POR_MOLECULA, KPS, ACIDOS_ANION, COMPLEJOS, INDICADORES, POTENCIALES, METALES, NOMETALES, SALES_BORN, MASAS_CLASE, ajuste };
 })();
 if (typeof module !== 'undefined') module.exports = Datos;
