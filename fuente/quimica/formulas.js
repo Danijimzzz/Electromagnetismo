@@ -148,8 +148,20 @@ const Formulas = (() => {
       piv.push(c); r++;
     }
     const libres = [...Array(n).keys()].filter((c) => !piv.includes(c));
-    if (libres.length === 0) throw new Error('Esta reacción no se puede ajustar: revisa las fórmulas');
-    if (libres.length > 1) throw new Error('La reacción admite varios ajustes independientes (son dos reacciones juntas). Sepáralas.');
+    if (libres.length === 0) throw new Error(`Esta reacción no se puede ajustar: ningún conjunto de coeficientes positivos iguala los átomos${els.length ? ' de ' + els.join(', ') : ''}${sp.some((s) => s.carga) ? ' y la carga' : ''}. Suele faltar una sustancia (por ejemplo H₂O, H⁺ u OH⁻ en una reacción iónica) o haber una fórmula mal escrita: revisa cada especie.`);
+    if (libres.length > 1) {
+      // AJ-1: se escribe cada ajuste independiente (uno por incógnita libre) para que se vea que son varias reacciones juntas
+      const ajustes = libres.map((lib) => {
+        const x = Array(n).fill(null).map(() => fr(0n)); x[lib] = fr(1n); piv.forEach((c, i) => (x[c] = fr(-A[i][lib][0], A[i][lib][1])));
+        const mcm = x.reduce((m, v) => (m * v[1]) / mcd(m, v[1]), 1n); let coef = x.map((v) => (v[0] * mcm) / v[1]); const g = coef.reduce((a, b) => mcd(a, b)); coef = coef.map((c) => c / g);
+        const signo = coef.find((c) => c !== 0n) > 0n ? 1n : -1n; coef = coef.map((c) => c * signo);
+        const ladoT = (L) => L.map(([j, c]) => (c > 1n ? c + ' ' : '') + sp[j].texto).join(' + ');
+        const iz = coef.map((c, j) => [j, c]).filter(([j, c]) => c !== 0n && j < R.length), de = coef.map((c, j) => [j, c]).filter(([j, c]) => c !== 0n && j >= R.length);
+        const negativos = coef.some((c) => c < 0n);
+        return negativos ? null : (iz.length && de.length ? `${ladoT(iz)} → ${ladoT(de)}` : null);
+      }).filter(Boolean);
+      throw new Error(`La ecuación tiene ${libres.length} grados de libertad: admite ${libres.length} ajustes independientes y, por tanto, infinitos conjuntos de coeficientes (son varias reacciones juntas).${ajustes.length ? ' Ajustes independientes: ' + ajustes.join('  ·  ') + '.' : ''} Sepáralas en reacciones distintas y ajusta cada una.`);
+    }
     const lib = libres[0], x = Array(n).fill(null);
     x[lib] = fr(1n);
     piv.forEach((c, i) => (x[c] = fr(-A[i][lib][0], A[i][lib][1])));
