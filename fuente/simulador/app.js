@@ -325,7 +325,7 @@
   function dibujaOsc() {
     const c = $('#osc'); if (!c || !trR) return;
     const { g, w, h } = lienzo(c), col = colores(), se = series(); if (!w || !h || !se.length) return;
-    Herramienta.exportaGrafica(c, () => { const q = series(); return trR && q.length ? { filas: [['t (s)', ...q.map((s) => `${s.nom} (${s.un})`)], ...trR.t.map((t, i) => [t, ...q.map((s) => s.y[i])])], nombre: 'osciloscopio' } : null; });
+    Herramienta.exportar(c, { nombre: 'osciloscopio', titulo: 'Osciloscopio', datos: () => { const q = series(); return trR && q.length ? { cab: ['t (s)', ...q.map((s) => `${s.nom} (${s.un})`)], filas: trR.t.map((t, i) => [t, ...q.map((s) => s.y[i])]) } : null; } });
     const t = trR.t, T = t[t.length - 1], ml = 62, mr = 14, mt = 14, mb = 30;
     const grupos = [...new Set(se.map((s) => s.un))];
     const ejes = grupos.map((un) => { const ys = se.filter((s) => s.un === un).flatMap((s) => s.y); let lo = Math.min(...ys), hi = Math.max(...ys); if (hi - lo < 1e-12) { lo -= 1; hi += 1; } const p = (hi - lo) * 0.08; return { un, lo: lo - p, hi: hi + p }; });
@@ -384,7 +384,7 @@
     const b = sc.analisis.bode, fmin = Herramienta.leeSI(b.fmin || '1', 1), fmax = Herramienta.leeSI(b.fmax || '1M', 1);
     try { if (!(fmin > 0 && fmax > fmin)) throw new Error('El rango de frecuencias no es válido'); bodeR = S.barrido(ext.net, { fuente: b.fuente, a: b.salida, b: '0', fmin, fmax, puntos: 240, adaptativo: true }); } catch (e) { bodeR = null; $('#bode-ley').textContent = e.message; lienzo(c); return; }
     const { g, w, h } = lienzo(c), col = colores(); if (!w || !h) return;
-    Herramienta.exportaGrafica(c, () => bodeR && { filas: [['f (Hz)', '|H| (dB)', 'Fase (°)'], ...bodeR.f.map((x, i) => [x, bodeR.dB[i], bodeR.fase[i]])], nombre: `bode ${sc.analisis.bode.salida}` });
+    Herramienta.exportar(c, { nombre: 'bode', titulo: 'Diagrama de Bode', datos: () => bodeR && { cab: ['f (Hz)', '|H| (dB)', 'Fase (°)'], filas: bodeR.f.map((x, i) => [x, bodeR.dB[i], bodeR.fase[i]]) } });
     const ml = 56, mr = 14, h2 = (h - 40) / 2, X = (f) => ml + (Math.log10(f / fmin) / Math.log10(fmax / fmin)) * (w - ml - mr);
     const dBs = bodeR.dB, lo = Math.min(...dBs), hi = Math.max(...dBs), pad = Math.max((hi - lo) * 0.1, 3);
     const trazo = (y, y0, alto, a, bb, color, fmt) => {
@@ -454,7 +454,7 @@
     try { baR = SimBarrido.barre(sc, { comp: ps.id, campo: ps.k, desde: Herramienta.leeSI(b.de, base), hasta: Herramienta.leeSI(b.a, base), puntos: 80, log: !!b.log, medida: { k: mk, id: mid }, modo: b.modo }); } catch (e) { baR = null; $('#ba-ley').textContent = e.message; $('#ba-tabla').innerHTML = ''; lienzo(c); return; }
     const { g, w, h } = lienzo(c), col = colores(); if (!w || !h) return;
     baMeta = { ps, ux, un, m: b.m };
-    Herramienta.exportaGrafica(c, () => baR && baMeta && { filas: [[`${baMeta.ps.id} (${baMeta.ux || 'unidades'})`, `${nombreMedida(baMeta.m)} (${baMeta.un})`], ...baR.x.map((x, i) => [x, baR.y[i]])], nombre: `barrido ${baMeta.ps.id} ${baMeta.ps.k} ${baMeta.m.replace(':', ' ')}` });
+    Herramienta.exportar(c, { nombre: 'barrido', titulo: 'Barrido de un parámetro', datos: () => baR && baMeta && { cab: [`${baMeta.ps.id} (${baMeta.ux || 'unidades'})`, `${nombreMedida(baMeta.m)} (${baMeta.un})`], filas: baR.x.map((x, i) => [x, baR.y[i]]) } });
     const pts = baR.x.map((x, i) => [x, baR.y[i]]).filter((q) => isFinite(q[1]));
     if (!pts.length) { $('#ba-ley').textContent = 'No se pudo resolver el circuito en ningún punto del rango.'; $('#ba-tabla').innerHTML = ''; return; }
     const ml = 62, mr = 14, mt = 10, mb = 30, x0 = baR.x[0], x1 = baR.x[baR.x.length - 1], lg = !!b.log;

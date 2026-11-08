@@ -177,12 +177,12 @@
   // Exportar la gráfica de la pestaña actual y los números que la forman
   function datosGrafica() {
     if (!sol) return null;
-    if (sol.modo === 'routh') return { nombre: 'polos', filas: [['Polo', 'Re', 'Im'], ...C.raices(sol.D).map((z, i) => [`lazo abierto ${i + 1}`, z[0], z[1]]), ...sol.polosCL.map((z, i) => [`lazo cerrado ${i + 1}`, z[0], z[1]])] };
-    if (sol.modo === 'raices') return { nombre: 'lugar de las raices', filas: [['Rama', 'K', 'Re', 'Im'], ...sol.lg.ramas.flatMap((r, i) => r.map((z) => [i + 1, z[2], z[0], z[1]]))] };
-    return { nombre: 'nyquist', filas: [['w (rad/s)', 'Re L(jw)', 'Im L(jw)'], ...sol.ny.zs.map((z, i) => [sol.ny.ws[i], z[0], z[1]])] };
+    if (sol.modo === 'routh') return { cab: ['Polo', 'Re', 'Im'], filas: [...C.raices(sol.D).map((z, i) => [`lazo abierto ${i + 1}`, z[0], z[1]]), ...sol.polosCL.map((z, i) => [`lazo cerrado ${i + 1}`, z[0], z[1]])] };
+    if (sol.modo === 'raices') return { cab: ['Rama', 'K', 'Re', 'Im'], filas: sol.lg.ramas.flatMap((r, i) => r.map((z) => [i + 1, z[2], z[0], z[1]])) };
+    return { cab: ['w (rad/s)', 'Re L(jw)', 'Im L(jw)'], filas: sol.ny.zs.map((z, i) => [sol.ny.ws[i], z[0], z[1]]) };
   }
   function dibuja() {
-    Herramienta.exportaGrafica('#grafica', datosGrafica);
+    Herramienta.exportar('#grafica', { nombre: `control-${sol ? sol.modo : 'grafica'}`, titulo: sol ? { routh: 'Polos de lazo abierto y cerrado', raices: 'Lugar de las raíces', nyquist: 'Diagrama de Nyquist' }[sol.modo] : undefined, datos: datosGrafica });
     const { g, w, h } = lienzo('#grafica');
     if (!sol || !w || !h) return;
     colores();
