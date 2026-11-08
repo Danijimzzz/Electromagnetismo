@@ -5,6 +5,7 @@
      levene(grupos, centro), bartlett(grupos)   igualdad de varianzas
      welch(grupos)                         ANOVA de Welch (varianzas distintas)
      shapiro(x), jarqueBera(x)             normalidad
+     nctCdf(t, nu, d), nctPdf(t, nu, d)    t de Student no central (potencia)
      holm(ps), bonferroni(ps)              p-valores ajustados
      supuestos(grupos)                     resumen de los supuestos para un ANOVA
    El rango studentizado se integra con Gauss-Legendre (la fórmula de Tukey
@@ -76,6 +77,18 @@ const Inferencia = (() => {
     }
     return (a + b) / 2;
   }
+
+
+  /* ---------- t de Student no central (potencia de los contrastes con la t) ---------- */
+  // T' = (Z + δ)/√(χ²_ν/ν): P(T' ≤ t) = ∫ f_S(s) Φ(t·s − δ) ds con S = √(χ²_ν/ν); la densidad es f_T(t) = ∫ f_S(s) s φ(t·s − δ) ds
+  function nctInt(nu, g) {
+    const lnC = Math.log(2) + (nu / 2) * Math.log(nu / 2) - lnGamma(nu / 2);
+    const dens = (s) => (s <= 0 ? 0 : Math.exp(lnC + (nu - 1) * Math.log(s) - (nu * s * s) / 2));
+    const hi = Math.sqrt((nu + 7 * Math.sqrt(2 * nu) + 50) / nu), lo = nu > 120 ? Math.sqrt(Math.max(0, nu - 8 * Math.sqrt(2 * nu)) / nu) : 0;
+    return integra((s) => dens(s) * g(s), lo, hi, 16);
+  }
+  const nctCdf = (t, nu, d) => (!isFinite(nu) || nu > 1e5 ? Phi(t - d) : Math.min(1, Math.max(0, nctInt(nu, (s) => Phi(t * s - d)))));
+  const nctPdf = (t, nu, d) => (!isFinite(nu) || nu > 1e5 ? Math.exp(-((t - d) ** 2) / 2) / Math.sqrt(2 * Math.PI) : nctInt(nu, (s) => (s * Math.exp(-((t * s - d) ** 2) / 2)) / Math.sqrt(2 * Math.PI)));
 
   /* ---------- Varianzas ---------- */
   // Levene (centro = 'media') o Brown-Forsythe (centro = 'mediana'): F de ANOVA sobre |x − centro|
@@ -172,6 +185,6 @@ const Inferencia = (() => {
     return { levene: lev, shapiro: sh, bartlett: grupos.every((x) => x.length >= 2) ? bartlett(grupos) : null, normalidadOk: nok, varianzasOk: vok };
   }
 
-  return { ptukey, qtukey, rangoNormales, levene, bartlett, welch, shapiro, jarqueBera, ppnd, holm, bonferroni, supuestos, media, ssq, mediana, suma, integra };
+  return { nctCdf, nctPdf, ptukey, qtukey, rangoNormales, levene, bartlett, welch, shapiro, jarqueBera, ppnd, holm, bonferroni, supuestos, media, ssq, mediana, suma, integra };
 })();
 if (typeof module !== 'undefined') module.exports = Inferencia;

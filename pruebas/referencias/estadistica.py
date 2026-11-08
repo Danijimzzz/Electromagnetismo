@@ -57,5 +57,40 @@ R['jarque_bera'] = [float(v) for v in stats.jarque_bera(x)]
 rng = np.random.default_rng(12345); grande = rng.normal(5, 2, 300).round(3)
 R['shapiro_grande'] = {'x': fl(grande), 'res': [float(v) for v in stats.shapiro(grande)]}
 
+
+# --- Potencia de los contrastes (Contrastes de hipótesis) ---
+from statsmodels.stats.power import TTestPower, TTestIndPower, NormalIndPower
+tp = TTestPower(); ip = TTestIndPower()
+d1 = (12.5 - 12) / 1.2
+sp = math.sqrt((9 * 16 + 11 * 25) / 20); d2 = 4 / sp
+def nec_t(pw_fun, objetivo, n0, ratio=None):
+    n = 2
+    while pw_fun(n) < objetivo: n += 1
+    return n
+R['potencia'] = {
+  'media_t_mayor': {'d': d1, 'n': 16, 'pot': float(tp.power(d1, 16, 0.05, alternative='larger')), 'nec90': nec_t(lambda n: tp.power(d1, n, 0.05, alternative='larger'), 0.9, 16)},
+  'media_t_dos_colas': {'pot': float(tp.power(0.5, 12, 0.05, alternative='two-sided')), 'pot_menor': float(tp.power(-0.5, 12, 0.05, alternative='smaller'))},
+  'dosmedias_t': {'d': d2, 'pot': float(ip.power(d2, 10, 0.05, ratio=12 / 10, alternative='two-sided')),
+                  'nec80': (lambda n: [n, math.ceil(n * 1.2)])(nec_t(lambda n: ip.power(d2, n, 0.05, ratio=math.ceil(n * 1.2) / n, alternative='two-sided'), 0.8, 10))},
+}
+# z de una media (σ conocida), de una proporción y de dos proporciones con la fórmula clásica (scipy.stats.norm)
+zn = stats.norm
+def pot_z_media(real, mu0, sigma, n, alfa, h1):
+    dl = (real - mu0) / (sigma / math.sqrt(n)); c = zn.ppf(1 - alfa / 2 if h1 == 'distinto' else 1 - alfa)
+    return float(1 - zn.cdf(c - dl) + (zn.cdf(-c - dl) if h1 == 'distinto' else 0))
+R['potencia']['media_z'] = {'pot': pot_z_media(505, 500, 10, 25, 0.05, 'distinto')}
+def pot_prop(p0, p1, n, alfa):
+    se0 = math.sqrt(p0 * (1 - p0) / n); se1 = math.sqrt(p1 * (1 - p1) / n); c = zn.ppf(1 - alfa)
+    return float(1 - zn.cdf((c * se0 - (p1 - p0)) / se1))
+R['potencia']['prop'] = {'pot': pot_prop(0.25, 0.35, 200, 0.05), 'nec80': next(n for n in range(2, 100000) if pot_prop(0.25, 0.35, n, 0.05) >= 0.8)}
+def pot_dosprop(p2, dif, n1, n2, alfa):
+    p1 = p2 + dif; pc = (n1 * p1 + n2 * p2) / (n1 + n2); se0 = math.sqrt(pc * (1 - pc) * (1 / n1 + 1 / n2)); se1 = math.sqrt(p1 * (1 - p1) / n1 + p2 * (1 - p2) / n2); c = zn.ppf(1 - alfa / 2)
+    dl = dif / se0; sg = se1 / se0
+    return float(1 - zn.cdf((c - dl) / sg) + zn.cdf((-c - dl) / sg))
+R['potencia']['dosprop'] = {'pot': pot_dosprop(0.2, 0.1, 150, 150, 0.05)}
+# varianza (χ²) y dos varianzas (F): potencia = probabilidad bajo la escala real
+R['potencia']['varianza'] = {'pot': float(stats.chi2.sf(stats.chi2.ppf(0.95, 19) * (2 * 2) / (3 * 3), 19))}
+R['potencia']['dosvar'] = {'pot': float(stats.f.sf(stats.f.ppf(0.975, 10, 12) / 3.0, 10, 12) + stats.f.cdf(stats.f.ppf(0.025, 10, 12) / 3.0, 10, 12))}
+
 json.dump(R, open(os.path.join(os.path.dirname(__file__), 'estadistica.json'), 'w'), ensure_ascii=False, indent=1)
 print('estadistica.json escrito')
