@@ -13,7 +13,7 @@
    (fenómenos también) el de «Herramientas relacionadas» (o «Más fenómenos»):
      node diseno.js ASIGNATURA HERRAMIENTA < pagina.html
    ===================================================================== */
-const Catalogo = require('./catalogo.js'), Tema = require('./tema.js'), Accesibilidad = require('./accesibilidad.js'), Buscador = require('./buscador.js'), Llama = require('./llama.js'), Anuncios = require('./anuncios.js'), Pwa = require('./pwa.js'), Preguntas = require('./preguntas.js');
+const Limites = require('./limites.js'), Catalogo = require('./catalogo.js'), Tema = require('./tema.js'), Accesibilidad = require('./accesibilidad.js'), Buscador = require('./buscador.js'), Llama = require('./llama.js'), Anuncios = require('./anuncios.js'), Pwa = require('./pwa.js'), Preguntas = require('./preguntas.js');
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 // Hoja común de las herramientas (estilos.css) y la cabecera del portal, que comparten con el simulador de
@@ -133,6 +133,7 @@ function aplicaElectrostatica(html) {
 .solo-lector { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap }
 .teoria, .preguntas { margin-top:28px; max-width:860px; font-size:15px; line-height:1.6; color:var(--ink) }
 .teoria h2, .preguntas h2 { font:600 19px var(--f-ui); margin:24px 0 6px } .preguntas h3 { font:600 15px var(--f-ui); margin:14px 0 2px } .preguntas p { margin:0 } .teoria ul { padding-left:20px } .teoria li { margin-bottom:4px }
+.limites { margin-top:28px; max-width:860px; font-size:15px; line-height:1.6; padding:12px 18px 14px; background:var(--panel); border:1px solid var(--line); border-left:4px solid var(--accent); border-radius:8px } .limites h2 { font:600 17px var(--f-ui); margin:0 0 6px } .limites ul { margin:0; padding-left:20px } .limites li + li { margin-top:4px }
 .teoria .f { font-size:16px; background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:8px 12px; display:inline-block; max-width:100%; overflow-x:auto }`;
   const btnLado = /[ \t]*<button id="side-open"[^>]*>.*<\/button>\n?/, practica = /<label class="toggle"[^>]*><input type="checkbox" id="practice"> Modo práctica<\/label>/;
   const cierra = /(<button id="side-close"[^>]*>).*?<\/button>/;
@@ -175,7 +176,7 @@ function aplicaHerramienta(html, clave, herramienta) {
   const { cab, miga } = piezas(a, nombre);
   // la hoja común va antes del <style> de la página, para que la página pueda ajustar sus variables
   if (!/^<style>/m.test(html)) throw new Error('diseno.js: la página no tiene <style>');
-  const propios = a === V ? ESTILOS_FENOMENOS : '', vida = (a === V ? '' : Preguntas.html(herramienta) + vidaReal(`${clave}/${herramienta}`)) + relacionadas(clave, herramienta);
+  const propios = a === V ? ESTILOS_FENOMENOS : '', vida = (a === V ? '' : Limites.html(herramienta) + Preguntas.html(herramienta) + vidaReal(`${clave}/${herramienta}`)) + relacionadas(clave, herramienta);
   if (vida && !html.includes('<footer')) throw new Error('diseno.js: la página no tiene <footer>');
   // el contenido de la página es el «main» (accesibilidad): <div class="wrap"> … </div> antes del pie
   if (!/<div class="wrap[^"]*"[^>]*>/.test(html) || !/<\/div>\s*<footer/.test(html)) throw new Error('diseno.js: la página no tiene <div class="wrap"> cerrado justo antes del <footer>');

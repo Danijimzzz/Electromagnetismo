@@ -26,6 +26,8 @@ if (parte && !(parte.length === 2 && parte[0] >= 1 && parte[0] <= parte[1])) { c
 const primera = !solo && (!parte || parte[0] === 1), completo = !solo && !parte; // lo común va solo en el trozo 1; los recuentos, solo con todo
 let fallos = 0;
 const mal = (m) => { fallos++; console.log('  ✗ ' + m); };
+// espera a que la página se asiente (dos fotogramas pintados) en lugar de una pausa fija en milisegundos
+const asienta = (page) => page.evaluate(() => new Promise((ok) => requestAnimationFrame(() => requestAnimationFrame(ok))));
 
 // lo único que puede haber en publico/ (lo que sirven Vercel y Cloudflare): los archivos sueltos,
 // la portada, una página por asignatura y una por herramienta disponible del catálogo
@@ -56,6 +58,8 @@ console.log(`  ✓ simulador ${(fs.statSync(juegos[0].pagina).size / 1024).toFix
 const hay = listar(publico), sobran = hay.filter((f) => !PUBLICABLES.includes(f)), faltan = PUBLICABLES.filter((f) => !hay.includes(f));
 if (sobran.length) mal(`publico/ contiene archivos que no deberían publicarse: ${sobran.join(', ')}`);
 if (faltan.length) mal(`publico/ no tiene: ${faltan.join(', ')}`);
+// errores de unión de ramas (marcadores de conflicto, JSON y .js rotos, claves repetidas, scripts que no compilan juntos): pruebas/union.js
+if (primera) { try { execFileSync('node', [path.join(__dirname, 'union.js')], { stdio: 'inherit' }); } catch (e) { mal('Unión de ramas: ver arriba'); } }
 const web = fs.readFileSync(juegos[0].pagina, 'utf8');
 
 // resultados de todos los ejercicios: { clave: { titulo, incognita, resultados: [html…] } }
@@ -128,6 +132,14 @@ for (const j of juegos) {
     fs.writeFileSync(j.esperados, JSON.stringify(nodo, null, 1) + '\n');
     console.log(`  ✓ ${path.basename(j.esperados)} reescrito con ${Object.keys(nodo).length} ejercicios`);
   }
+  // 10.14 · sello de los esperados: solo --actualizar los cambia. Si alguien los edita a mano (o una unión de ramas los mezcla),
+  // el sello no coincide y falla, aunque el cálculo siguiera dando lo mismo que el archivo editado
+  {
+    const sellos = path.join(__dirname, 'esperados.sellos.json'), huella = require('crypto').createHash('sha256').update(fs.readFileSync(j.esperados)).digest('hex');
+    const tabla = fs.existsSync(sellos) ? JSON.parse(fs.readFileSync(sellos, 'utf8')) : {}, k = path.basename(j.esperados);
+    if (args.includes('--actualizar') || !tabla[k]) { tabla[k] = huella; fs.writeFileSync(sellos, JSON.stringify(tabla, null, 1) + '\n'); }
+    else if (tabla[k] !== huella) mal(`${k} se ha cambiado sin pasar por «node pruebas/comprobar.js --actualizar» (sello distinto): si el cambio es intencionado, actualízalo; si no, recupera el archivo`);
+  }
   j.esp = JSON.parse(fs.readFileSync(j.esperados, 'utf8'));
   const antes = fallos;
   comparar(nodo, j.esp, `Node · ${j.nombre}`);
@@ -178,6 +190,14 @@ if (primera) {
     // peso de las páginas y cobertura del modo práctica (leyendo publico/, ya compilado)
     const antes = fallos, EXCEPCIONES = { electrostatica: 'tiene su propia práctica en el simulador', 'tabla-periodica': 'tiene sus propias preguntas' }, MAX_KB = 450;
     const pags = Catalogo.asignaturas.flatMap((a) => a.herramientas.filter((h) => h.disponible).map((h) => `${a.clave}/${h.clave}`));
+    // 10.16 · presupuesto del peso TOTAL de publico/ (pruebas/presupuesto.json, en KB): sube a propósito con --actualizar
+    {
+      const total = Math.round(listar(publico).reduce((n, f) => n + fs.statSync(path.join(publico, f)).size, 0) / 1024), pf = path.join(__dirname, 'presupuesto.json');
+      if (args.includes('--actualizar') || !fs.existsSync(pf)) fs.writeFileSync(pf, JSON.stringify({ totalKB: Math.ceil(total * 1.03 / 100) * 100 }, null, 1) + '\n');
+      const tope = JSON.parse(fs.readFileSync(pf, 'utf8')).totalKB;
+      if (total > tope) mal(`publico/ pesa ${(total / 1024).toFixed(1)} MB y el presupuesto son ${(tope / 1024).toFixed(1)} MB (pruebas/presupuesto.json): reduce peso o, si es a propósito, sube el tope con --actualizar`);
+      else console.log(`  ✓ Peso de publico/: ${(total / 1024).toFixed(1)} MB de ${(tope / 1024).toFixed(1)} MB de presupuesto`);
+    }
     let con = 0;
     for (const pag of pags) {
       const html = fs.readFileSync(path.join(publico, ...pag.split('/'), 'index.html'), 'utf8'), clave = pag.split('/')[1];
@@ -314,7 +334,7 @@ async function navegador() {
     if (!sec.includes(j.Presets.section)) mal(`${j.nombre}: la barra lateral no muestra la sección «${j.Presets.section}»`);
     for (const e of Object.values(j.esp)) {
       await page.locator('#side-list .item .it', { hasText: e.titulo }).first().click();
-      await page.waitForTimeout(150);
+      await asienta(page);
       const err = await page.evaluate(() => { const x = document.querySelector('#errors'); return x && !x.hidden ? x.textContent : ''; });
       if (err) mal(`${j.nombre} · ${e.titulo}: ${err}`);
       const warn = await page.locator('.warn').allTextContents();
@@ -368,8 +388,7 @@ async function navegador() {
       const antes = fallos;
       for (const dir of ['tiro-parabolico', 'trabajo-y-energia', 'calorimetria']) {
         await page.goto('file://' + path.join(publico, 'fisica', dir, 'index.html'));
-        await page.waitForSelector('#pasos li');
-        await page.waitForTimeout(100);
+        await page.waitForSelector('#pasos li'); await page.waitForSelector('#pasos math'); await page.waitForSelector('.teoria math'); await asienta(page);
         const r = await page.evaluate(() => ({ pasos: document.querySelectorAll('#pasos math').length, teoria: document.querySelectorAll('.teoria math').length, dolar: /\$/.test(document.querySelector('#pasos').textContent + document.querySelector('.teoria').textContent), ancho: Math.min(...[...document.querySelectorAll('#pasos math')].map((m) => m.getBoundingClientRect().width)) }));
         if (r.pasos < 3 || r.teoria < 2) mal(`${dir}: faltan fórmulas MathML (desarrollo ${r.pasos}, teoría ${r.teoria})`);
         if (r.dolar) mal(`${dir}: queda algún $ sin convertir en una fórmula`);
@@ -413,7 +432,8 @@ async function navegador() {
       if (ej) await page.click('.bib .bib-ej >> nth=1');
       await page.click('.bib [data-acc=fijar]');
       if (!(await page.evaluate(() => /Fijados/.test(document.querySelector('.bib-lista').textContent)))) mal(`${pag}: fijar no lo pone en Fijados`);
-      await Promise.all([page.waitForEvent('load'), page.click('.bib .bib-abre')]);
+      // con una escritura pendiente de la app justo después del clic (10.1): tras recargar tiene que seguir lo guardado
+      await Promise.all([page.waitForEvent('load'), page.evaluate((c) => { setTimeout(() => localStorage.setItem(c, '{"pisado":true}'), 0); document.querySelector('.bib .bib-abre').click(); }, clave).catch(() => {})]);
       await page.waitForSelector('.bib .bib-it.activo');
       if ((await page.evaluate((k) => localStorage.getItem(k), clave)) !== guardado[0].datos) mal(`${pag}: abrir no recupera los datos guardados`);
       const [descarga] = await Promise.all([page.waitForEvent('download'), page.click('.bib [data-acc=exportar-todo]')]);
@@ -450,6 +470,34 @@ async function navegador() {
     if (consola.length) mal('Arreglo 6: consola del navegador:\n      ' + consola.join('\n      '));
     if (completo && probadas < 38) mal(`Mis ejercicios: solo se ha probado en ${probadas} herramientas`);
     if (fallos === antes) console.log(`  ✓ Mis ejercicios: guardar, carpeta, fijar, abrir, exportar, borrar e importar en ${probadas} herramientas, y en el móvil`);
+  }
+  if (primera) {
+    // Fase 10: ayudante común «Herramienta.exportar» (Descargar PNG + Copiar datos) y sus partes puras
+    const antes = fallos, consola = [];
+    const H = global.Herramienta;
+    if (H.tabla(['t (s)', 'x'], [[0.5, 1234.5678], [1, NaN], ['a\tb', null]]) !== 't (s)\tx\n0,5\t1234,5678\n1\t\na b\t') mal(`Exportar: tabla() da ${JSON.stringify(H.tabla(['t (s)', 'x'], [[0.5, 1234.5678], [1, NaN], ['a\tb', null]]))}`);
+    if (H.nombreArchivo('Trayectoria · Ángulo/θ') !== 'trayectoria-angulo' || H.nombreArchivo('') !== 'grafica') mal('Exportar: nombreArchivo() no limpia el nombre');
+    for (const vista of [{ ancho: 1200, tema: 'light' }, { ancho: 390, tema: 'dark' }]) {
+      const page = await browser.newPage({ viewport: { width: vista.ancho, height: 900 }, acceptDownloads: true, colorScheme: vista.tema });
+      page.on('console', (m) => { if (m.type() === 'error') consola.push(m.text()); });
+      page.on('pageerror', (e) => consola.push('excepción: ' + e.message));
+      await page.goto('file://' + path.join(publico, 'fisica', 'tiro-parabolico', 'index.html'));
+      await page.waitForSelector('#grafica');
+      await page.evaluate(() => { window.__copiado = null; navigator.clipboard.writeText = async (t) => { window.__copiado = t; }; Herramienta.exportar('#grafica', { nombre: 'prueba', etiqueta: 'la prueba', datos: () => ({ cab: ['t', 'x'], filas: [[1, 2.5]] }) }); Herramienta.exportar('#grafica', { datos: () => ({ cab: ['t', 'x'], filas: [[1, 2.5]] }) }); });
+      const n = await page.evaluate(() => ({ barras: document.querySelectorAll('.exportar').length, botones: [...document.querySelectorAll('.exportar button')].map((b) => b.textContent + '|' + b.getAttribute('aria-label')), aviso: document.querySelector('.exportar-aviso').getAttribute('aria-live'), ancho: document.documentElement.scrollWidth }));
+      if (n.barras !== 1 || n.botones.length !== 2 || !/PNG/.test(n.botones[0]) || !/Copiar/.test(n.botones[1]) || n.aviso !== 'polite') mal(`Exportar (${vista.ancho}px): barra incorrecta ${JSON.stringify(n)}`);
+      if (n.ancho > vista.ancho) mal(`Exportar (${vista.ancho}px): la página se ensancha (${n.ancho})`);
+      const [d] = await Promise.all([page.waitForEvent('download'), page.click('.exportar button >> nth=0')]);
+      const arch = path.join(tmp, 'exportar.png'); await d.saveAs(arch);
+      const png = fs.readFileSync(arch);
+      if (d.suggestedFilename() !== 'prueba.png' || png.length < 1000 || png.readUInt32BE(0) !== 0x89504e47) mal(`Exportar (${vista.ancho}px): el PNG descargado no es válido (${d.suggestedFilename()}, ${png.length} B)`);
+      await page.click('.exportar button >> nth=1');
+      await page.waitForFunction(() => window.__copiado);
+      if ((await page.evaluate(() => window.__copiado)) !== 't\tx\n1\t2,5' || !/copiados/.test(await page.locator('.exportar-aviso').textContent())) mal(`Exportar (${vista.ancho}px): los datos copiados no son los esperados`);
+      await page.close();
+    }
+    if (consola.length) mal('Exportar: consola del navegador:\n      ' + consola.join('\n      '));
+    if (fallos === antes) console.log('  ✓ Exportar gráfica: PNG válido y datos copiados con coma decimal, en claro (1200 px) y oscuro (390 px)');
   }
   if (primera) {
     // Fase 7: enlace con el estado, hoja de ejercicios para imprimir y «Tu espacio» de la portada (el marco de la hoja pide http, no file://)
@@ -514,7 +562,8 @@ async function navegador() {
     if ((await pl.locator('.mini a .llama').count()) !== 2) mal('Llama: la portada debería marcar solo las dos herramientas del contador');
     await pl.goto(web + 'fisica/'); await pl.waitForSelector('a.card .llama');
     await pl.goto(web + 'fisica/tiro-parabolico/'); await pl.waitForSelector('h1 .llama');
-    await pl.goto(web + 'fisica/gases/'); await pl.waitForTimeout(500);
+    await pl.goto(web + 'fisica/gases/'); await asienta(pl);
+    for (let i = 0; i < 40 && !visitas.includes('{"r":"fisica/gases"}'); i++) await new Promise((ok) => setTimeout(ok, 50)); // el aviso del contador sale tras cargar
     if (await pl.locator('.llama').count()) mal('Llama: Gases no debería llevar llama');
     if (!visitas.includes('{"r":"fisica/tiro-parabolico"}') || !visitas.includes('{"r":"fisica/gases"}') || visitas.length !== 2) mal(`Contador: se esperaban 2 visitas (una por herramienta y sesión) y hay ${JSON.stringify(visitas)}`);
     // el Worker del contador (worker/contador.mjs) con una D1 de mentira

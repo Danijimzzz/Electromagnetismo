@@ -166,7 +166,7 @@ const Calculadora = (() => {
       const cs = o.campos(sc);
       // los desplegables empiezan en su primera opción si el estado no trae valor
       for (const c of cs) if (c.tipo === 'sel' && !c.ops.some(([val]) => val === sc[c.k])) sc[c.k] = c.ops[0][0];
-      $('#campos').innerHTML = cs.map((c) => (c.sep ? `<div class="sep">${c.sep}</div>` : '') + campo(c)).join('');
+      $('#campos').innerHTML = cs.map((c) => (c.sep ? `<div class="sep">${c.sep}</div>` : '') + (c.k ? campo(c) : '')).join(''); // un {sep} suelto es solo un título: sin campo fantasma «undefined»
       if (o.nota) $('#nota').innerHTML = o.nota;
     }
     $('#campos').addEventListener('input', (e) => { const t = e.target; if (!t.dataset.k || t.tagName === 'SELECT') return; sc[t.dataset.k] = t.value; $('#ejemplos').value = ''; calcula(); });
@@ -187,13 +187,18 @@ const Calculadora = (() => {
     /* ---------- Cálculo ---------- */
     function calcula() {
       const err = $('#error');
-      try { sol = C.resolver(sc); } catch (e) {
+      let filas;
+      try {
+        sol = C.resolver(sc); filas = o.resumen(sol);
+        // un resultado que se sale de rango (Infinity, NaN) no se enseña: se explica (10.19, casos límite)
+        if (/\b(NaN|Infinity)\b/.test(JSON.stringify([filas, sol.pasos]))) throw new Error('Con estos datos el resultado se sale del rango que se puede calcular (demasiado grande, demasiado pequeño o indefinido). Prueba con valores más moderados.');
+      } catch (e) {
         sol = null; err.textContent = e.message; err.hidden = false;
         for (const s of ['#resumen', '#pasos', '#leyenda', '#tabla']) { const el = $(s); if (el) el.innerHTML = ''; }
         dibuja(); return;
       }
       err.hidden = true; guarda();
-      $('#resumen').innerHTML = o.resumen(sol).map(([t, v, ancho]) => `<div${ancho ? ' class="ancho"' : ''}><span>${t}</span><b>${v}</b></div>`).join('');
+      $('#resumen').innerHTML = filas.map(([t, v, ancho]) => `<div${ancho ? ' class="ancho"' : ''}><span>${t}</span><b>${v}</b></div>`).join('');
       $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
       const tb = $('#tabla'); if (tb) { const h = o.tabla ? o.tabla(sol) : ''; tb.innerHTML = h; tb.closest('.card').hidden = !h; }
       $('#leyenda').innerHTML = o.leyenda ? o.leyenda(sol) : '';
