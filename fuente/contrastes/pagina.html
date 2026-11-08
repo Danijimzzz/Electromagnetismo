@@ -2,11 +2,15 @@
 <meta name="description" content="Calculadora de contrastes de hipótesis en español: una media (z o t de Student), una proporción, una varianza, dos medias, dos proporciones y dos varianzas, bilaterales o unilaterales, con el estadístico, la región crítica, el p-valor y la conclusión paso a paso.">
 <style>
 :root {
-  --serie-1: #2a5db5; --serie-2: #c2412a }
+  --serie-1: #2a5db5; --serie-2: #c2412a; --serie-3: #1f7a4d }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --serie-1: #74a2f2; --serie-2: #ef7a62 } }
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #5fc08a } }
 :root[data-theme="dark"] {
-  --serie-1: #74a2f2; --serie-2: #ef7a62 }
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #5fc08a }
+.tabla-eco { border-collapse: collapse; font: 13.5px var(--f-ui); width: 100%; margin-bottom: 14px }
+.tabla-eco th, .tabla-eco td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: left }
+.tabla-eco th { font-weight: 600; color: var(--muted) }
+.tabla-eco caption { text-align: left; font-weight: 600; padding: 2px 0 6px }
 </style>
 <body>
 <header class="top"><a class="logo" href="../../">Cienci<i>fy</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Estadística</a> / Contrastes de hipótesis</span></header>
@@ -27,6 +31,10 @@
       <canvas id="grafica" aria-label="Densidad del estadístico bajo la hipótesis nula con la región crítica sombreada y el valor del estadístico"></canvas>
       <p class="leyenda" id="leyenda"></p>
     </div>
+    <div class="card" id="card-potencia" hidden><h2>Curva de potencia</h2>
+      <canvas id="grafica2" aria-label="Potencia del contraste en función del valor real del parámetro, con el valor elegido marcado"></canvas>
+      <p class="leyenda" id="leyenda2"></p>
+    </div>
     <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
   </div>
 </div>
@@ -38,8 +46,26 @@
 <h2>Qué estadístico se usa</h2>
 <p class="f m">$Z = {x̄ − μ_0}/{σ/√n}$ &emsp; $T = {x̄ − μ_0}/{s/√n}$ &emsp; $Z = {p̂ − p_0}/{√(p_0 (1 − p_0)/n)}$</p>
 <p class="f m">$χ^2 = {(n − 1) s^2}/{σ_0^2}$ &emsp; $F = {s_1^2}/{s_2^2}$</p>
-<h2>Errores tipo I y tipo II</h2>
-<p class="m">Rechazar $H_0$ siendo cierta es el error de tipo I, y su probabilidad es α. No rechazarla siendo falsa es el error de tipo II (β), y $1 − β$ es la potencia del contraste. Bajar α hace más difícil rechazar y sube β: por eso no rechazar $H_0$ no prueba que sea verdad.</p>
+<h2>Errores tipo I y tipo II, potencia y tamaño de muestra</h2>
+<p class="m">Rechazar $H_0$ siendo cierta es el error de tipo I, y su probabilidad es α. No rechazarla siendo falsa es el error de tipo II (β), y $1 − β$ es la <b>potencia</b> del contraste: la probabilidad de detectar una diferencia que existe. Bajar α hace más difícil rechazar y sube β: por eso no rechazar $H_0$ no prueba que sea verdad. Si escribes el valor real del parámetro, la herramienta calcula β y la potencia (con la t no central cuando el estadístico es una t) y el tamaño de muestra necesario para la potencia que quieras (se suele pedir 0,8).</p>
+<p class="f m">$1 − β = P(\text{rechazar } H_0 \mid \text{valor real})$; &emsp; en la media con σ conocida: $1 − β = Φ(−z_{α/2} + δ) + Φ(−z_{α/2} − δ)$, con $δ = {μ − μ_0}/{σ/√n}$</p>
+<h2>Tamaño del efecto</h2>
+<p class="m">El p-valor depende del tamaño de la muestra: con muchos datos una diferencia diminuta sale «significativa». La <b>d de Cohen</b>, $d = {x̄ − μ_0}/s$ (o la diferencia entre dos medias dividida por la desviación conjunta), mide cuántas desviaciones típicas se separa el resultado: 0,2 es un efecto pequeño, 0,5 mediano y 0,8 grande. Para proporciones se usa la <b>h de Cohen</b>, $h = 2 \arcsin √{p_1} − 2 \arcsin √{p_2}$, con los mismos umbrales.</p>
+<h2>Normalidad y varianzas</h2>
+<p class="m">La t y la χ² suponen datos normales. Con la lista de datos la herramienta avisa con Shapiro-Wilk (el más potente con pocos datos; Jarque-Bera necesita muchos) y dibuja el gráfico cuantil-cuantil. Para saber si varias varianzas son iguales (antes de un ANOVA o de una t con varianzas iguales) usa «Varias varianzas»: Levene (con la mediana) es robusto y Bartlett es más potente solo si los datos son normales.</p>
+<h2>¿Qué contraste uso?</h2>
+<div class="tabla-scroll"><table class="tabla-eco"><caption>Elegir el contraste según la pregunta</caption><thead><tr><th scope="col">Quiero…</th><th scope="col">Datos</th><th scope="col">Uso</th></tr></thead><tbody>
+<tr><td>comparar una media con un valor</td><td>numéricos, normales</td><td>Una media (t si no conoces σ)</td></tr>
+<tr><td>comparar antes y después en los mismos individuos</td><td>pares de números</td><td>Datos apareados</td></tr>
+<tr><td>comparar dos grupos independientes</td><td>numéricos, normales</td><td>Dos medias (Welch si las varianzas difieren)</td></tr>
+<tr><td>comparar tres o más grupos</td><td>numéricos, normales</td><td><a href="../anova/">ANOVA</a></td></tr>
+<tr><td>comparar grupos sin normalidad o con rangos</td><td>ordinales o muy asimétricos</td><td><a href="../no-parametricos/">Mann-Whitney, Wilcoxon, Kruskal-Wallis, signos</a></td></tr>
+<tr><td>una o dos proporciones</td><td>éxitos y fracasos</td><td>Proporción (si hay pocos casos, <a href="../chi2-bondad/">Fisher</a>)</td></tr>
+<tr><td>ver si dos variables categóricas se relacionan</td><td>tabla de frecuencias</td><td><a href="../chi2-bondad/">χ² de independencia</a></td></tr>
+<tr><td>comparar la dispersión</td><td>numéricos</td><td>Una o dos varianzas, o varias (Levene)</td></tr>
+<tr><td>saber si los datos son normales</td><td>una muestra</td><td>Normalidad (Shapiro-Wilk)</td></tr>
+<tr><td>estimar un valor en vez de contrastar</td><td>numéricos</td><td><a href="../intervalos/">Intervalos de confianza</a></td></tr>
+</tbody></table></div>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Contrastes de hipótesis <span id="ver"></span> (beta)</footer>

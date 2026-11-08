@@ -16,12 +16,28 @@
 
   /* ---------- Formulario ---------- */
   const fila = (k, nom, un) => `<label for="f-${k}">${nom}${un ? ` <small>(${un})</small>` : ''}</label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc[k] ?? '')}" inputmode="decimal" autocomplete="off">`;
+  const MODOS = [['uno', 'Un elemento: lente o espejo'], ['sistema', 'Sistema de varias lentes']];
   function formulario() {
-    $('#campos').innerHTML = `<label for="f-tipo">Elemento</label><select id="f-tipo" class="in" data-k="tipo">${P.TIPOS.map((t) => `<option value="${t.clave}"${t.clave === sc.tipo ? ' selected' : ''}>${t.nombre}</option>`).join('')}</select>`
+    const modo = sc.modo === 'sistema' ? 'sistema' : 'uno', cab = `<label for="f-modo">Qué estudias</label><select id="f-modo" class="in" data-k="modo">${MODOS.map(([v, t]) => `<option value="${v}"${v === modo ? ' selected' : ''}>${t}</option>`).join('')}</select>`;
+    if (modo === 'sistema') {
+      $('#campos').innerHTML = cab + `<label for="f-datos">Lentes, de izquierda a derecha <small>(una línea por lente)</small></label><textarea id="f-datos" class="in" data-k="datos" rows="5" autocomplete="off" spellcheck="false">${esc(sc.datos ?? '')}</textarea>`
+        + '<div class="sep">Objeto</div>' + fila('s', 'Distancia a la primera lente', 'cm') + fila('h', 'Altura', 'cm');
+      $('#nota').textContent = 'Cada línea es «convergente f» o «divergente f» (f en valor absoluto), o solo f con signo, y a partir de la segunda lente un tercer número: la separación con la lente anterior en cm. Ejemplo: «divergente 10 15». Hasta 6 lentes. Se admite coma decimal.';
+      return;
+    }
+    $('#campos').innerHTML = cab + `<label for="f-tipo">Elemento</label><select id="f-tipo" class="in" data-k="tipo">${P.TIPOS.map((t) => `<option value="${t.clave}"${t.clave === sc.tipo ? ' selected' : ''}>${t.nombre}</option>`).join('')}</select>`
       + fila('f', 'Distancia focal (valor absoluto)', 'cm') + '<div class="sep">Objeto</div>' + fila('s', 'Distancia al elemento', 'cm') + fila('h', 'Altura', 'cm');
     $('#nota').textContent = 'El signo de f lo decide el elemento. Objeto real delante (distancia positiva). Se admite coma decimal y 3e8.';
   }
-  const cambia = (e) => { const t = e.target; if (!t.dataset.k) return; sc[t.dataset.k] = t.value; $('#ejemplos').value = ''; calcula(); };
+  const cambia = (e) => {
+    const t = e.target; if (!t.dataset.k) return; sc[t.dataset.k] = t.value; $('#ejemplos').value = '';
+    if (t.dataset.k === 'modo') {
+      const base = P.ejemplos.find((x) => (x.sc.modo === 'sistema') === (t.value === 'sistema')).sc;
+      for (const k of Object.keys(base)) if (k !== 'modo' && (sc[k] === undefined || sc[k] === '' || (k === 'datos' && t.value === 'sistema'))) sc[k] = base[k];
+      sc.modo = t.value; formulario();
+    }
+    calcula();
+  };
   $('#campos').addEventListener('input', cambia);
   $('#campos').addEventListener('change', cambia);
 
@@ -41,9 +57,11 @@
     const err = $('#error');
     try { sol = P.resolver(sc); } catch (e) {
       sol = null; err.textContent = e.message; err.hidden = false;
-      $('#resumen').innerHTML = ''; $('#pasos').innerHTML = ''; $('#leyenda').textContent = ''; dibuja(); return;
+      $('#resumen').innerHTML = ''; $('#tabla').innerHTML = ''; $('#pasos').innerHTML = ''; $('#leyenda').textContent = ''; dibuja(); return;
     }
     err.hidden = true; guarda();
+    if (sol.modo === 'sistema') return resultadoSistema();
+    $('#tabla').innerHTML = '';
     const nat = sol.enfoque ? 'En el infinito (los rayos salen paralelos)'
       : `${sol.real ? 'Real' : 'Virtual'}, ${sol.derecha ? 'derecha' : 'invertida'}, ${sol.tam === 'igual' ? 'del mismo tamaño' : `${sol.tam} que el objeto`}`;
     $('#resumen').innerHTML = (sol.enfoque ? dato('Distancia de la imagen', 'No hay imagen (s′ → ∞)')
@@ -55,9 +73,58 @@
     dibuja();
   }
 
+  function resultadoSistema() {
+    const nat = sol.enfoque ? 'En el infinito (los rayos salen paralelos)' : `${sol.real ? 'Real' : 'Virtual'}, ${sol.derecha ? 'derecha' : 'invertida'}, ${sol.tam === 'igual' ? 'del mismo tamaño' : `${sol.tam} que el objeto`}`;
+    $('#resumen').innerHTML = (sol.enfoque ? dato('Imagen final', 'No hay imagen (s′ → ∞)') : dato('Distancia de la imagen final', `s′ = ${f(sol.sp)} cm`) + dato('Aumento total', `m = ${f(sol.m)}`) + dato('Altura de la imagen', `h′ = ${f(sol.hp)} cm`))
+      + dato('Naturaleza', nat, 'ancho') + (sol.n > 1 ? dato('Lente equivalente', isFinite(sol.feq) ? `f = ${f(sol.feq)} cm` : 'Sistema afocal') : dato('Potencia', `P = ${f(sol.potencia)} D`));
+    const fm = (v) => (isFinite(v) ? f(v) : '∞');
+    $('#tabla').innerHTML = `<div class="tabla-scroll" tabindex="0" role="region" aria-label="Tabla de cada lente"><table class="tabla-sis"><caption>Una fila por lente: la imagen de cada una es el objeto de la siguiente</caption><thead><tr><th scope="col">Lente</th><th scope="col">f (cm)</th><th scope="col">s (cm)</th><th scope="col">s′ (cm)</th><th scope="col">m</th><th scope="col">Imagen</th></tr></thead><tbody>${sol.filas.map((r) => `<tr><th scope="row">${r.i}</th><td>${f(r.fs)}</td><td>${f(r.s)}${r.objetoVirtual ? ' (virtual)' : ''}</td><td>${fm(r.sp)}</td><td>${fm(r.m)}</td><td>${r.enInfinito ? 'En el infinito' : r.real ? 'Real' : 'Virtual'}</td></tr>`).join('')}</tbody></table></div>`;
+    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
+    $('#leyenda').innerHTML = 'Rayos: el <b>paralelo al eje</b> y el que <b>pasa por el centro de la primera lente</b>, seguidos lente a lente con matrices de rayos. Líneas finas discontinuas: imágenes intermedias. Línea discontinua larga: prolongación virtual. Las alturas no van a escala con las distancias.';
+    $('#grafica').setAttribute('aria-label', `Diagrama de rayos de ${sol.n} lentes: ${sol.enfoque ? 'la imagen final está en el infinito' : `imagen final ${sol.real ? 'real' : 'virtual'} a ${f(sol.sp).replace(/<[^>]+>/g, '')} cm de la última lente, con aumento ${f(sol.m).replace(/<[^>]+>/g, '')}`}`);
+    dibuja();
+  }
+  function dibujaSistema() {
+    const { g, w, h: H } = lienzo('#grafica');
+    if (!sol || !w || !H) return;
+    const F = sol.filas, xl = F[F.length - 1].x, ah = sol.h, xi = sol.xImg;
+    let xmin = -sol.s * 1.1, xmax = xl + Math.max(xl * 0.25, sol.s * 0.4, 1);
+    if (isFinite(xi)) { xmax = Math.max(xmax, xi + (xi - xmin) * 0.06); xmin = Math.min(xmin, xi - (xmax - xmin) * 0.06); }
+    const alturas = [Math.abs(ah), ...sol.rayoB.pts.map((q) => Math.abs(q[1])), ...(isFinite(sol.hp) ? [Math.abs(sol.hp)] : [])];
+    let hI = ah; const inter = F.map((r) => { hI = isFinite(r.m) ? hI * r.m : NaN; return { x: r.x + r.sp, hp: hI, r }; }).filter((q) => isFinite(q.x) && isFinite(q.hp));
+    for (const q of inter) alturas.push(Math.abs(q.hp));
+    const ymax = Math.max(...alturas.filter((v) => isFinite(v))) * 1.4 || 1;
+    const ml = 14, mr = 14, mt = 14, mb = 22, X = (x) => ml + ((x - xmin) / (xmax - xmin)) * (w - ml - mr), Y = (y) => mt + (1 - (y + ymax) / (2 * ymax)) * (H - mt - mb), y0 = Y(0), hv = (H - mt - mb) / 2;
+    g.font = '12px system-ui, sans-serif'; g.lineCap = 'round'; g.lineJoin = 'round';
+    g.save(); g.beginPath(); g.rect(0, 0, w, H); g.clip();
+    g.strokeStyle = col['--muted']; g.lineWidth = 1; g.setLineDash([2, 4]); g.beginPath(); g.moveTo(ml, y0); g.lineTo(w - mr, y0); g.stroke(); g.setLineDash([]);
+    // lentes
+    F.forEach((r) => {
+      const xe = X(r.x), a = r.fs > 0 ? 1 : -1; g.strokeStyle = col['--accent']; g.fillStyle = col['--accent']; g.lineWidth = 2.6;
+      g.beginPath(); g.moveTo(xe, y0 - hv); g.lineTo(xe, y0 + hv); g.stroke(); g.lineWidth = 2.2;
+      for (const d of [1, -1]) { const yy = y0 - d * hv; g.beginPath(); g.moveTo(xe - 7, yy + d * 9 * a); g.lineTo(xe, yy); g.lineTo(xe + 7, yy + d * 9 * a); g.stroke(); }
+      g.textAlign = 'center'; g.textBaseline = 'top'; g.fillText(`L${r.i}`, xe, y0 + hv - 16);
+    });
+    // rayos
+    const tramo = (xa, ya, xb, yb, c, disc) => { g.strokeStyle = c; g.setLineDash(disc ? [6, 5] : []); g.lineWidth = disc ? 1.5 : 2; g.beginPath(); g.moveTo(X(xa), Y(ya)); g.lineTo(X(xb), Y(yb)); g.stroke(); g.setLineDash([]); };
+    const rayo = (R, c) => {
+      const pts = R.pts; for (let i = 1; i < pts.length; i++) tramo(pts[i - 1][0], pts[i - 1][1], pts[i][0], pts[i][1], c, false);
+      const xs = isFinite(xi) ? (xi > xl ? xi : xl + (xmax - xl) * 0.9) : xmax, yEnd = (x) => R.y + R.th * (x - R.xa);
+      tramo(R.xa, R.y, Math.max(xs, xl), yEnd(Math.max(xs, xl)), c, false);
+      if (isFinite(xi) && xi < xl) tramo(R.xa, R.y, xi, yEnd(xi), c, true);
+    };
+    rayo(sol.rayoA, col['--rayo-1']); rayo(sol.rayoB, col['--rayo-2']);
+    const flecha = (x, y, c, disc) => { const px = X(x), py = Y(y), s2 = y > 0 ? 1 : -1; g.fillStyle = c; g.strokeStyle = c; g.lineWidth = disc ? 1.4 : 2.6; g.setLineDash(disc ? [4, 4] : []); g.beginPath(); g.moveTo(px, y0); g.lineTo(px, py); g.stroke(); g.setLineDash([]); g.beginPath(); g.moveTo(px, py); g.lineTo(px - 5, py + 9 * s2); g.lineTo(px + 5, py + 9 * s2); g.closePath(); g.fill(); };
+    flecha(-sol.s, ah, col['--ink'], false); g.fillStyle = col['--ink']; g.textAlign = 'center'; g.textBaseline = 'top'; g.fillText('Objeto', X(-sol.s), y0 + 6);
+    inter.forEach((q, i) => { const ultima = i === inter.length - 1 && q.r.i === F.length; flecha(q.x, q.hp, ultima ? col['--imagen'] : col['--muted'], !ultima || !q.r.real); g.fillStyle = ultima ? col['--imagen'] : col['--muted']; g.textAlign = 'center'; g.textBaseline = q.hp > 0 ? 'bottom' : 'top'; g.fillText(ultima ? (q.r.real ? 'Imagen final real' : 'Imagen final virtual') : `I${q.r.i}`, X(q.x), Y(q.hp) + (q.hp > 0 ? -3 : 14)); });
+    if (!isFinite(xi)) { g.fillStyle = col['--muted']; g.textAlign = 'right'; g.textBaseline = 'top'; g.fillText('La imagen final está en el infinito', w - mr, mt); }
+    g.restore();
+  }
+
   /* ---------- Diagrama de rayos ---------- */
   function colores() { const cs = getComputedStyle(document.documentElement); for (const k of ['--ink', '--muted', '--line', '--accent', '--rayo-1', '--rayo-2', '--rayo-3', '--imagen']) col[k] = cs.getPropertyValue(k).trim(); }
   function dibuja() {
+    if (sol && sol.modo === 'sistema') return dibujaSistema();
     const { g, w, h: H } = lienzo('#grafica');
     if (!sol || !w || !H) return;
     const dir = sol.lente ? 1 : -1, fs = sol.fs, s = sol.s, ah = sol.h;
@@ -139,5 +206,6 @@
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('optica').current;
   colores(); formulario(); calcula();
+  if (Herramienta.exportar) Herramienta.exportar('#grafica', { nombre: 'optica-rayos', titulo: 'Diagrama de rayos', datos: () => (sol && sol.modo === 'sistema' ? { cab: ['Lente', 'f (cm)', 's (cm)', "s′ (cm)", 'm'], filas: sol.filas.map((r) => [r.i, r.fs, r.s, r.sp, r.m]) } : { cab: ['f (cm)', 's (cm)', "s′ (cm)", 'm', 'h′ (cm)'], filas: sol ? [[sol.fs, sol.s, sol.sp, sol.m, sol.hp]] : [] }) });
   window.OpticaApp = { abrirEjemplo, resultado: () => sol && { sp: sol.sp, m: sol.m, hp: sol.hp }, estado: () => copia(sc) };
 })();

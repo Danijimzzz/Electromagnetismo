@@ -20,17 +20,19 @@ const Relatividad = (() => {
     ls: { nom: 'segundos-luz y segundos', L: 'segundos-luz', T: 's', c: 1 },
     km: { nom: 'kilómetros y segundos', L: 'km', T: 's', c: 299792.458 },
   };
+  // β muy cerca de ±1: con 5 cifras saldría «1», así que se dan 12 y, aparte, lo que le falta para llegar a c
+  const nb = (b) => (Math.abs(b) > 0.9999 ? n(b, 12) : n(b, 5));
   const uni = (sc) => UNIDADES[sc.unidades] || UNIDADES.al;
   const beta = (sc, k, nom) => lee(sc, k, nom, { min: -1, minEx: true, max: 1, maxEx: true });
 
   function lorentz(sc) {
     const U = uni(sc), c = U.c, b = beta(sc, 'v', 'la velocidad v (en unidades de c)');
     const x = lee(sc, 'x', 'la posición x'), t = lee(sc, 't', 'el instante t'), pasos = [];
-    const g = 1 / Math.sqrt(1 - b * b), ct = c * t;
-    pasos.push({ t: 'Factor de Lorentz', html: `$β = v/c = ${n(b, 5)}$ y $γ = 1/√(1 − β^2) = ${n(g, 6)}$.` });
-    pasos.push({ t: 'Coordenadas en S′', html: `Con $c t = ${n(ct, 6)} "${U.L}"$: $x′ = γ (x − β c t) = ${n(g, 6)} (${n(x, 6)} − ${n(b, 5)} · ${n(ct, 6)}) = ${n(g * (x - b * ct), 6)} "${U.L}"$.` });
+    const g = 1 / Math.sqrt((1 - Math.abs(b)) * (1 + Math.abs(b))), ct = c * t;
+    pasos.push({ t: 'Factor de Lorentz', html: `$β = v/c = ${nb(b)}$ y $γ = 1/√(1 − β^2) = ${n(g, 6)}$.${Math.abs(b) > 0.9999 ? ` (Aquí $1 − |β| = ${n(1 - Math.abs(b), 4)}$: la nave va casi a la velocidad de la luz y γ es enorme.)` : ''}${b === 0 ? ' Con $β = 0$ los dos sistemas coinciden: $γ = 1$ y las coordenadas no cambian.' : ''}` });
+    pasos.push({ t: 'Coordenadas en S′', html: `Con $c t = ${n(ct, 6)} "${U.L}"$: $x′ = γ (x − β c t) = ${n(g, 6)} (${n(x, 6)} − ${nb(b)} · ${n(ct, 6)}) = ${n(g * (x - b * ct), 6)} "${U.L}"$.` });
     const xp = g * (x - b * ct), ctp = g * (ct - b * x), tp = ctp / c;
-    pasos.push({ t: 'Tiempo en S′', html: `$c t′ = γ (c t − β x) = ${n(g, 6)} (${n(ct, 6)} − ${n(b, 5)} · ${n(x, 6)}) = ${n(ctp, 6)} "${U.L}"$, es decir $t′ = ${n(tp, 6)} "${U.T}"$.` });
+    pasos.push({ t: 'Tiempo en S′', html: `$c t′ = γ (c t − β x) = ${n(g, 6)} (${n(ct, 6)} − ${nb(b)} · ${n(x, 6)}) = ${n(ctp, 6)} "${U.L}"$, es decir $t′ = ${n(tp, 6)} "${U.T}"$.` });
     const s2 = ct * ct - x * x, s2p = ctp * ctp - xp * xp;
     pasos.push({ t: 'Comprobación: el intervalo no cambia', html: `$(c t)^2 − x^2 = ${n(s2, 6)}$ y $(c t′)^2 − x′^2 = ${n(s2p, 6)}$ (en "${U.L}"$^2$): es un invariante, igual en los dos sistemas.` });
     pasos.push({ t: 'Qué se ve en el diagrama de Minkowski', html: `En el diagrama de S (x horizontal, $c t$ vertical) la luz va a 45°. El eje $c t′$ (la línea de mundo del origen de S′, $x′ = 0$) tiene pendiente $1/β$; el eje $x′$ ($c t′ = 0$) está inclinado el mismo ángulo hacia dentro, $c t = β x$, un ángulo $arctan β = ${n((Math.atan(b) * 180) / Math.PI, 4)}°$. Las líneas paralelas a los ejes inclinados por el evento dan sus coordenadas $x′$ y $c t′$ (pueden quedar en lados distintos de los ejes de S).` });
@@ -45,15 +47,17 @@ const Relatividad = (() => {
     const u = lee(sc, 'u', rel ? 'la velocidad u del objeto en S (en unidades de c)' : 'la velocidad u del objeto respecto de la nave (en unidades de c)', { min: -1, max: 1 });
     const v = beta(sc, 'v', rel ? 'la velocidad v de S′ respecto de S (en unidades de c)' : 'la velocidad v de la nave (en unidades de c)');
     const w = (u + s * v) / (1 + s * u * v), gal = u + s * v, pasos = [];
-    pasos.push({ t: 'Qué se pide', html: rel ? `Un objeto va a $u = ${n(u, 5)} c$ en S y el sistema S′ va a $v = ${n(v, 5)} c$ respecto de S: ¿qué velocidad tiene el objeto en S′?` : `Una nave va a $v = ${n(v, 5)} c$ respecto de la Tierra y lanza un objeto a $u = ${n(u, 5)} c$ respecto de la nave: ¿qué velocidad tiene el objeto respecto de la Tierra?` });
-    pasos.push({ t: 'Composición relativista', html: rel ? `$u′ = (u − v)/(1 − u v/c^2) = (${n(u, 5)} − ${n(v, 5)})/(1 − ${n(u, 5)} · ${n(v, 5)}) = ${n(w, 6)} c$` : `$w = (u + v)/(1 + u v/c^2) = (${n(u, 5)} + ${n(v, 5)})/(1 + ${n(u, 5)} · ${n(v, 5)}) = ${n(w, 6)} c$` });
+    // lo que le falta a |w| para llegar a 1, sin restar números casi iguales: 1 − w = (1 − u)(1 − s v)/(1 + s u v) y 1 + w = (1 + u)(1 + s v)/(1 + s u v)
+    const mw = w >= 0 ? ((1 - u) * (1 - s * v)) / (1 + s * u * v) : ((1 + u) * (1 + s * v)) / (1 + s * u * v);
+    pasos.push({ t: 'Qué se pide', html: rel ? `Un objeto va a $u = ${n(u, 5)} c$ en S y el sistema S′ va a $v = ${n(v, 5)} c$ respecto de S: ¿qué velocidad tiene el objeto en S′?` : `Una nave va a $v = ${nb(v)} c$ respecto de la Tierra y lanza un objeto a $u = ${nb(u)} c$ respecto de la nave: ¿qué velocidad tiene el objeto respecto de la Tierra?` });
+    pasos.push({ t: 'Composición relativista', html: rel ? `$u′ = (u − v)/(1 − u v/c^2) = (${nb(u)} − ${nb(v)})/(1 − ${nb(u)} · ${nb(v)}) = ${mw < 1e-6 ? `${w < 0 ? '−' : ''}(1 − ${n(mw, 4)})` : n(w, 6)} c$` : `$w = (u + v)/(1 + u v/c^2) = (${nb(u)} + ${nb(v)})/(1 + ${nb(u)} · ${nb(v)}) = ${mw < 1e-6 ? `1 − ${n(mw, 4)}` : n(w, 6)} c$` });
     pasos.push({ t: 'Lo que daría la suma de Galileo', html: `$${rel ? 'u − v' : 'u + v'} = ${n(gal, 6)} c$${Math.abs(gal) >= 1 ? ', que supera la velocidad de la luz: por eso no vale a estas velocidades' : ''}. La diferencia con el resultado relativista es ${n(gal - w, 4)} c.` });
-    const fu = Math.atanh(u), fv = Math.atanh(v), fw = Math.atanh(w);
+    const fu = Math.atanh(u), fv = Math.atanh(v), fw = Math.abs(u) < 1 ? fu + s * fv : Math.atanh(w);
     if (Math.abs(u) === 1) pasos.push({ t: 'Rapideces', html: 'La luz tiene rapidez infinita ($"atanh"(1) = ∞$): por eso su velocidad no cambia al sumar rapideces.' });
-    else pasos.push({ t: 'Rapideces', html: `La rapidez $φ = "atanh"(β)$ sí se suma: $φ_u = ${n(fu, 5)}$, $φ_v = ${n(fv, 5)}$, y $φ_w = φ_u ${rel ? '−' : '+'} φ_v = ${n(fw, 5)}$, que da $β = tanh φ_w = ${n(Math.tanh(fw), 6)}$.` });
-    const g = 1 / Math.sqrt(1 - w * w);
+    else pasos.push({ t: 'Rapideces', html: `La rapidez $φ = "atanh"(β)$ sí se suma: $φ_u = ${n(fu, 5)}$, $φ_v = ${n(fv, 5)}$, y $φ_w = φ_u ${rel ? '−' : '+'} φ_v = ${n(fw, 5)}$, que da $β = tanh φ_w = ${mw < 1e-6 ? `1 − ${n(mw, 4)}` : n(Math.tanh(fw), 6)}$.` });
+    const g = 1 / Math.sqrt(mw * (2 - mw));
     pasos.push({ t: 'Nunca se llega a c', html: `El resultado cumple $|w| < c$ siempre que $|u|, |v| < c$.${Math.abs(w) < 1 ? ` Aquí $γ = ${n(g, 6)}$.` : ''} Si $u = c$ (un rayo de luz), da exactamente $c$ para cualquier $v$: la luz va a $c$ en todos los sistemas.` });
-    return { modo: 'velocidades', rel, u, v, w, gal, fu, fv, fw, g, pasos };
+    return { modo: 'velocidades', rel, u, v, w, mw, gal, fu, fv, fw, g, pasos };
   }
 
   function intervalo(sc) {

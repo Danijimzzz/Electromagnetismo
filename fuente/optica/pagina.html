@@ -7,12 +7,18 @@
   --rayo-1: #ef7a62; --rayo-2: #74a2f2; --rayo-3: #5fcf8a; --imagen: #b892ec } }
 :root[data-theme="dark"] {
   --rayo-1: #ef7a62; --rayo-2: #74a2f2; --rayo-3: #5fcf8a; --imagen: #b892ec }
+#tabla table { border-collapse: collapse; margin-top: 14px; font: 13px var(--f-ui); font-variant-numeric: tabular-nums; min-width: 100% }
+#tabla caption { text-align: left; font-weight: 600; margin-bottom: 6px }
+#tabla th, #tabla td { border: 1px solid var(--line); padding: 4px 9px; text-align: right; white-space: nowrap }
+#tabla thead th { background: var(--accent-soft) }
+#tabla tbody th { font-weight: 600 }
+textarea.in { font-family: var(--f-math); resize: vertical }
 </style>
 <body>
 <header class="top"><a class="logo" href="../../">Cienci<i>fy</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Física general</a> / Óptica geométrica: lentes y espejos</span></header>
 <div class="wrap">
 <h1>Óptica geométrica: lentes y espejos</h1>
-<p class="lead">Elige una lente o un espejo, la distancia focal y dónde pones el objeto: se dibujan los rayos principales y se calcula dónde se forma la imagen, su aumento y si es real o virtual.</p>
+<p class="lead">Elige una lente o un espejo, la distancia focal y dónde pones el objeto, o encadena varias lentes (microscopio, telescopio, lentes en contacto): se dibujan los rayos y se calcula dónde se forma la imagen, su aumento y si es real o virtual.</p>
 <div class="layout">
   <div class="card">
     <h2>Datos</h2>
@@ -22,7 +28,7 @@
     <p class="error" id="error" hidden></p>
   </div>
   <div>
-    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div><div id="tabla"></div></div>
     <div class="card"><h2>Diagrama de rayos</h2>
       <canvas id="grafica" aria-label="Diagrama de rayos con el objeto, el elemento óptico y la imagen"></canvas>
       <p class="leyenda" id="leyenda"></p>
@@ -39,10 +45,14 @@
   <p class="f m">$m = h′/h = −s′/s$</p>
   <p class="m">Si $m < 0$ la imagen está invertida; si $|m| > 1$ es mayor que el objeto. Una imagen real puede recogerse en una pantalla; una virtual solo se ve mirando a través de la lente o en el espejo.</p>
   <h2>Los tres rayos principales</h2>
-  <p class="m">Para dibujar la imagen bastan dos de ellos: el rayo <b>paralelo al eje</b>, que sale pasando por el foco (o como si viniera de él); el rayo que <b>pasa por el centro</b> de la lente (o por el vértice del espejo), que no se desvía o se refleja con el mismo ángulo; y el rayo que <b>apunta al foco</b>, que sale paralelo al eje. La imagen está donde se cruzan, o donde se cruzarían sus prolongaciones si es virtual.</p>
+  <p>Para dibujar la imagen bastan dos de ellos: el rayo <b>paralelo al eje</b>, que sale pasando por el foco (o como si viniera de él); el rayo que <b>pasa por el centro</b> de la lente (o por el vértice del espejo), que no se desvía o se refleja con el mismo ángulo; y el rayo que <b>apunta al foco</b>, que sale paralelo al eje. La imagen está donde se cruzan, o donde se cruzarían sus prolongaciones si es virtual.</p>
   <h2>Potencia de una lente</h2>
   <p class="f m">$P = 1/f$</p>
   <p class="m">Con $f$ en metros, $P$ sale en dioptrías (D). Las gafas para la miopía usan lentes divergentes ($P < 0$) y para la hipermetropía, convergentes ($P > 0$).</p>
+  <h2>Sistemas de varias lentes</h2>
+  <p class="m">Con dos o más lentes se resuelve una detrás de otra: la imagen de la primera es el objeto de la segunda. Si las lentes están separadas una distancia $d$ y la primera forma su imagen en $s′_1$, el objeto de la segunda está a $s_2 = d − s′_1$. Si $s′_1 > d$ la imagen cae «detrás» de la segunda lente y se comporta como un <b>objeto virtual</b> ($s_2 < 0$): la ecuación sigue valiendo sin cambiar nada. El aumento total es el producto de los aumentos:</p>
+  <p class="f m">$m = m_1 · m_2 · … · m_n$</p>
+  <p class="m">Cuando la imagen intermedia cae justo en el foco de la siguiente lente, los rayos salen paralelos (imagen en el infinito) y esa lente forma la suya en su plano focal. Para dos lentes delgadas separadas $d$, el conjunto equivale a una lente de focal $f$ con $1/f = 1/f_1 + 1/f_2 − d/(f_1 f_2)$; en contacto ($d = 0$) las potencias se suman. Si $1/f = 0$ el sistema es <b>afocal</b>, como un telescopio: un haz paralelo sale paralelo. El microscopio compuesto es el ejemplo clásico: el objetivo forma una imagen real muy aumentada que el ocular usa como lupa. Aquí el resultado se comprueba con las matrices de rayos (ABCD), que dan el mismo valor.</p>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Óptica geométrica: lentes y espejos <span id="ver"></span> (beta)</footer>

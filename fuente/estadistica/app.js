@@ -7,7 +7,7 @@
 (() => {
   const { $, esc, copia } = Herramienta;
   const E = Estadistica, num = E.num, CLAVE = 'estadistica-v1';
-  const DEF = { mu: '0', sigma: '1', nu: '10', k: '5', d1: '5', d2: '10', lambda: '2', lo: '0', hi: '10', n: '10', p: '0.5', N: '50', K: '10', q: '0.5', a: '1', b: '2', cc: '1', alfa: '0.05', incog: 'mu', cola: 'menor' };
+  const DEF = { forma: '2', tasa: '1', al: '2', be: '3', escala: '1', r: '3', mu: '0', sigma: '1', nu: '10', k: '5', d1: '5', d2: '10', lambda: '2', lo: '0', hi: '10', n: '10', p: '0.5', N: '50', K: '10', q: '0.5', a: '1', b: '2', cc: '1', alfa: '0.05', incog: 'mu', cola: 'menor' };
 
   let sc = copia(E.ejemplos[0].sc);
   try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && E.DIST[g.dist]) sc = g; } catch (e) {}

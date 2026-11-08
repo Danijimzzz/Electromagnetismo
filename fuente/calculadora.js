@@ -31,6 +31,7 @@
        despues(r, sol, col), dibujo extra sobre la gráfica (r = { X, Y, g, w, h })
        leyenda(sol), HTML bajo la gráfica
        nota,         texto de ayuda bajo los datos
+       datosExporta(sol), tabla { cab, filas } para «Copiar datos» (opcional; si no, los puntos de las series)
        azar(),       sc al azar para el modo práctica (opcional)
        enunciado(sc, sol), enunciado del modo práctica (opcional)
      })
@@ -145,6 +146,8 @@ const Calculadora = (() => {
   const colores = (extra = []) => { const cs = getComputedStyle(document.documentElement), col = {}; for (const k of ['--ink', '--muted', '--line', '--accent', '--serie-1', '--serie-2', '--serie-3', ...extra]) col[k] = cs.getPropertyValue(k).trim(); return col; };
 
 
+  // los puntos de las series de una gráfica como tabla (serie, x, y) para «Copiar datos»
+  const puntosSeries = (cfg) => { if (!cfg) return null; const filas = []; (cfg.series || []).forEach((q, i) => (q.pts || []).forEach(([x, y]) => filas.push([`Serie ${i + 1}`, +x.toFixed(6), +y.toFixed(6)]))); return filas.length ? { cab: ['Serie', cfg.ejeX || 'x', cfg.ejeY || 'y'], filas } : null; };
   /* ---------- Interfaz ---------- */
   function monta(o) {
     const { $, esc, copia } = Herramienta;
@@ -212,6 +215,8 @@ const Calculadora = (() => {
       if (!cfg) { Herramienta.lienzo(c); return; }
       const r = grafica(c, cfg, col);
       if (r && o.despues) o.despues(r, sol, col);
+      // «Descargar PNG» y «Copiar datos» bajo la gráfica (Herramienta.exportar); datosExporta(sol) puede dar la tabla a copiar, y si no, salen los puntos de las series
+      if (window.Herramienta && Herramienta.exportar) Herramienta.exportar(c, { nombre: o.carpeta, titulo: (document.querySelector('h1') || {}).textContent, datos: () => (o.datosExporta ? o.datosExporta(sol) : puntosSeries(sol && o.grafica ? o.grafica(sol, col) : null)) });
     }
     const leeColores = () => { col = colores(o.colores || []); };
     window.addEventListener('resize', dibuja);
