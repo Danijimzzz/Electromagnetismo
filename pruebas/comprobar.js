@@ -26,6 +26,8 @@ if (parte && !(parte.length === 2 && parte[0] >= 1 && parte[0] <= parte[1])) { c
 const primera = !solo && (!parte || parte[0] === 1), completo = !solo && !parte; // lo común va solo en el trozo 1; los recuentos, solo con todo
 let fallos = 0;
 const mal = (m) => { fallos++; console.log('  ✗ ' + m); };
+// espera a que la página se asiente (dos fotogramas pintados) en lugar de una pausa fija en milisegundos
+const asienta = (page) => page.evaluate(() => new Promise((ok) => requestAnimationFrame(() => requestAnimationFrame(ok))));
 
 // lo único que puede haber en publico/ (lo que sirven Vercel y Cloudflare): los archivos sueltos,
 // la portada, una página por asignatura y una por herramienta disponible del catálogo
@@ -129,6 +131,14 @@ for (const j of juegos) {
   if (args.includes('--actualizar') || !fs.existsSync(j.esperados)) {
     fs.writeFileSync(j.esperados, JSON.stringify(nodo, null, 1) + '\n');
     console.log(`  ✓ ${path.basename(j.esperados)} reescrito con ${Object.keys(nodo).length} ejercicios`);
+  }
+  // 10.14 · sello de los esperados: solo --actualizar los cambia. Si alguien los edita a mano (o una unión de ramas los mezcla),
+  // el sello no coincide y falla, aunque el cálculo siguiera dando lo mismo que el archivo editado
+  {
+    const sellos = path.join(__dirname, 'esperados.sellos.json'), huella = require('crypto').createHash('sha256').update(fs.readFileSync(j.esperados)).digest('hex');
+    const tabla = fs.existsSync(sellos) ? JSON.parse(fs.readFileSync(sellos, 'utf8')) : {}, k = path.basename(j.esperados);
+    if (args.includes('--actualizar') || !tabla[k]) { tabla[k] = huella; fs.writeFileSync(sellos, JSON.stringify(tabla, null, 1) + '\n'); }
+    else if (tabla[k] !== huella) mal(`${k} se ha cambiado sin pasar por «node pruebas/comprobar.js --actualizar» (sello distinto): si el cambio es intencionado, actualízalo; si no, recupera el archivo`);
   }
   j.esp = JSON.parse(fs.readFileSync(j.esperados, 'utf8'));
   const antes = fallos;
@@ -316,7 +326,7 @@ async function navegador() {
     if (!sec.includes(j.Presets.section)) mal(`${j.nombre}: la barra lateral no muestra la sección «${j.Presets.section}»`);
     for (const e of Object.values(j.esp)) {
       await page.locator('#side-list .item .it', { hasText: e.titulo }).first().click();
-      await page.waitForTimeout(150);
+      await asienta(page);
       const err = await page.evaluate(() => { const x = document.querySelector('#errors'); return x && !x.hidden ? x.textContent : ''; });
       if (err) mal(`${j.nombre} · ${e.titulo}: ${err}`);
       const warn = await page.locator('.warn').allTextContents();
@@ -370,8 +380,7 @@ async function navegador() {
       const antes = fallos;
       for (const dir of ['tiro-parabolico', 'trabajo-y-energia', 'calorimetria']) {
         await page.goto('file://' + path.join(publico, 'fisica', dir, 'index.html'));
-        await page.waitForSelector('#pasos li');
-        await page.waitForTimeout(100);
+        await page.waitForSelector('#pasos li'); await page.waitForSelector('#pasos math'); await page.waitForSelector('.teoria math'); await asienta(page);
         const r = await page.evaluate(() => ({ pasos: document.querySelectorAll('#pasos math').length, teoria: document.querySelectorAll('.teoria math').length, dolar: /\$/.test(document.querySelector('#pasos').textContent + document.querySelector('.teoria').textContent), ancho: Math.min(...[...document.querySelectorAll('#pasos math')].map((m) => m.getBoundingClientRect().width)) }));
         if (r.pasos < 3 || r.teoria < 2) mal(`${dir}: faltan fórmulas MathML (desarrollo ${r.pasos}, teoría ${r.teoria})`);
         if (r.dolar) mal(`${dir}: queda algún $ sin convertir en una fórmula`);
@@ -545,7 +554,8 @@ async function navegador() {
     if ((await pl.locator('.mini a .llama').count()) !== 2) mal('Llama: la portada debería marcar solo las dos herramientas del contador');
     await pl.goto(web + 'fisica/'); await pl.waitForSelector('a.card .llama');
     await pl.goto(web + 'fisica/tiro-parabolico/'); await pl.waitForSelector('h1 .llama');
-    await pl.goto(web + 'fisica/gases/'); await pl.waitForTimeout(500);
+    await pl.goto(web + 'fisica/gases/'); await asienta(pl);
+    for (let i = 0; i < 40 && !visitas.includes('{"r":"fisica/gases"}'); i++) await new Promise((ok) => setTimeout(ok, 50)); // el aviso del contador sale tras cargar
     if (await pl.locator('.llama').count()) mal('Llama: Gases no debería llevar llama');
     if (!visitas.includes('{"r":"fisica/tiro-parabolico"}') || !visitas.includes('{"r":"fisica/gases"}') || visitas.length !== 2) mal(`Contador: se esperaban 2 visitas (una por herramienta y sesión) y hay ${JSON.stringify(visitas)}`);
     // el Worker del contador (worker/contador.mjs) con una D1 de mentira
