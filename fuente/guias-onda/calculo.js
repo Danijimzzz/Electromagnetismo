@@ -19,7 +19,8 @@ const GuiasOnda = (() => {
     return s.replace('.', ',').replace('-', '−');
   };
   // acepta coma decimal, 3e8 y 3·10^8
-  const leeNum = (s) => +String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace(/[−–]/g, '-').replace(/[·x×*]10\^?([+\-]?\d+)/i, 'e$1');
+  const leeNum0 = (s) => +String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace(/[−–]/g, '-').replace(/[·x×*]10\^?([+\-]?\d+)/i, 'e$1');
+  const leeNum = (s) => { const u = typeof Herramienta !== 'undefined' ? Herramienta.leeUn(s) : undefined; return u !== undefined ? u : leeNum0(s); }; // admite «4 mm», «2,4 GHz», «10 pF»
   const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
   const may = (s) => s[0].toUpperCase() + s.slice(1);
   function lee(sc, k, nom, min = 0) {

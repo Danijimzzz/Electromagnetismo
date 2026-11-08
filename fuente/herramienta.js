@@ -12,6 +12,7 @@
                    notación 4k7 o unidad escrita da el valor en unidades del SI;
                    un número solo se multiplica por base (1e-3 si el campo
                    está en mH, 1e-6 si en μF). NaN si no se entiende
+     leeUn(s)      valor en el SI de un número con unidad escrita («4 mm», «2,4 GHz», «10 pF»), o undefined si no lleva unidad
      txt(h)        HTML de un resultado a texto para el lienzo (exponentes ⁰¹²…)
      marcas(a, b, n)  valores redondos (1, 2, 2,5, 5 × 10ⁿ) para las marcas de un eje
      lienzo(c)     prepara un <canvas> (o su selector) a la resolución de la
@@ -37,6 +38,21 @@ const Herramienta = (() => {
     m = t.match(/^([+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?)([pnuµμmkKMG]?)$/i);
     if (!m) return NaN;
     return +m[1] * (m[2] ? PREFIJOS[m[2]] : unidad ? 1 : base);
+  };
+  // Número con unidad física escrita («4 mm», «2,4 GHz», «10 pF», «5 m», «30 cm»): valor en unidades del SI, o undefined si el texto no
+  // lleva unidad (entonces cada herramienta lo lee como antes). Con «m» suelta es el metro, no el prefijo milli.
+  const UNIDADES = { m: 1, Hz: 1, F: 1, H: 1, A: 1, V: 1, 'Ω': 1, ohm: 1, ohmios: 1, T: 1, W: 1, S: 1, s: 1, C: 1, N: 1, J: 1 };
+  const PREF_UN = { p: 1e-12, n: 1e-9, u: 1e-6, 'µ': 1e-6, 'μ': 1e-6, m: 1e-3, c: 1e-2, k: 1e3, M: 1e6, G: 1e9 };
+  const leeUn = (s) => {
+    const t = String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace(/[−–]/g, '-').replace(/[·x×*]10\^?\(?([+\-]?\d+)\)?/i, 'e$1');
+    const m = t.match(/^([+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?)(ohmios|ohm|Hz|[mFHAVΩTWSsCNJ]|[pnuµμmckMG](?:Hz|[mFHAVΩTWSsCNJ]))$/);
+    if (!m) return undefined;
+    const u = m[2];
+    if (UNIDADES[u] !== undefined) return +m[1];
+    const pre = u[0], r = u.slice(1);
+    if (PREF_UN[pre] === undefined || UNIDADES[r] === undefined) return undefined;
+    if (pre === 'c' && r !== 'm') return undefined;
+    return +m[1] * PREF_UN[pre];
   };
   const txt = (h) => String(h).replace(/<sup>(.*?)<\/sup>/g, (_, e) => e.replace(/−/g, '⁻').replace(/\d/g, (d) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d])).replace(/<[^>]+>/g, '');
   const marcas = (a, b, n = 6) => {
@@ -71,6 +87,6 @@ const Herramienta = (() => {
       try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* file:// */ }
     }
   }
-  return { $, esc, copia, vacio, leeSI, txt, marcas, lienzo, accesible };
+  return { $, esc, copia, vacio, leeSI, leeUn, txt, marcas, lienzo, accesible };
 })();
 if (typeof module !== 'undefined') module.exports = Herramienta;

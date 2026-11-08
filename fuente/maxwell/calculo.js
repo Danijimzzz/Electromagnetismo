@@ -21,7 +21,8 @@ const Maxwell = (() => {
   };
   // en las fórmulas $…$ el exponente va con ^ (f() da <sup>)
   const fm = (x, d) => f(x, d).replace(/<sup>(.*?)<\/sup>/, '^{$1}');
-  const leeNum = (s) => +String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace(/[−–]/g, '-').replace(/[·x×*]10\^?([+\-]?\d+)/i, 'e$1');
+  const leeNum0 = (s) => +String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace(/[−–]/g, '-').replace(/[·x×*]10\^?([+\-]?\d+)/i, 'e$1');
+  const leeNum = (s) => { const u = typeof Herramienta !== 'undefined' ? Herramienta.leeUn(s) : undefined; return u !== undefined ? u : leeNum0(s); }; // admite «4 mm», «2,4 GHz», «10 pF»
   const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
   const may = (s) => s[0].toUpperCase() + s.slice(1);
   // signo: 'pos' (> 0), 'no0' (≥ 0) o 'cualquiera'

@@ -270,8 +270,13 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
   <div>
     <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
     <div class="card"><h2>Diagrama de radiación</h2>
+      <label for="plano" class="nota">Plano del corte</label> <select id="plano" class="in"></select>
       <canvas id="grafica" aria-label="Diagrama de radiación polar"></canvas>
       <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card"><h2>Diagrama en 3D</h2>
+      <canvas id="vista3d" aria-label="Diagrama de radiación en tres dimensiones"></canvas>
+      <p class="leyenda" id="desc3d"></p>
     </div>
     <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
   </div>
@@ -327,6 +332,7 @@ const Version = (() => { const registros = {"web":[{"v":"1.12.1"}],"control":[{"
                    notación 4k7 o unidad escrita da el valor en unidades del SI;
                    un número solo se multiplica por base (1e-3 si el campo
                    está en mH, 1e-6 si en μF). NaN si no se entiende
+     leeUn(s)      valor en el SI de un número con unidad escrita («4 mm», «2,4 GHz», «10 pF»), o undefined si no lleva unidad
      txt(h)        HTML de un resultado a texto para el lienzo (exponentes ⁰¹²…)
      marcas(a, b, n)  valores redondos (1, 2, 2,5, 5 × 10ⁿ) para las marcas de un eje
      lienzo(c)     prepara un <canvas> (o su selector) a la resolución de la
@@ -352,6 +358,21 @@ const Herramienta = (() => {
     m = t.match(/^([+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?)([pnuµμmkKMG]?)$/i);
     if (!m) return NaN;
     return +m[1] * (m[2] ? PREFIJOS[m[2]] : unidad ? 1 : base);
+  };
+  // Número con unidad física escrita («4 mm», «2,4 GHz», «10 pF», «5 m», «30 cm»): valor en unidades del SI, o undefined si el texto no
+  // lleva unidad (entonces cada herramienta lo lee como antes). Con «m» suelta es el metro, no el prefijo milli.
+  const UNIDADES = { m: 1, Hz: 1, F: 1, H: 1, A: 1, V: 1, 'Ω': 1, ohm: 1, ohmios: 1, T: 1, W: 1, S: 1, s: 1, C: 1, N: 1, J: 1 };
+  const PREF_UN = { p: 1e-12, n: 1e-9, u: 1e-6, 'µ': 1e-6, 'μ': 1e-6, m: 1e-3, c: 1e-2, k: 1e3, M: 1e6, G: 1e9 };
+  const leeUn = (s) => {
+    const t = String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace(/[−–]/g, '-').replace(/[·x×*]10\^?\(?([+\-]?\d+)\)?/i, 'e$1');
+    const m = t.match(/^([+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?)(ohmios|ohm|Hz|[mFHAVΩTWSsCNJ]|[pnuµμmckMG](?:Hz|[mFHAVΩTWSsCNJ]))$/);
+    if (!m) return undefined;
+    const u = m[2];
+    if (UNIDADES[u] !== undefined) return +m[1];
+    const pre = u[0], r = u.slice(1);
+    if (PREF_UN[pre] === undefined || UNIDADES[r] === undefined) return undefined;
+    if (pre === 'c' && r !== 'm') return undefined;
+    return +m[1] * PREF_UN[pre];
   };
   const txt = (h) => String(h).replace(/<sup>(.*?)<\/sup>/g, (_, e) => e.replace(/−/g, '⁻').replace(/\d/g, (d) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d])).replace(/<[^>]+>/g, '');
   const marcas = (a, b, n = 6) => {
@@ -386,7 +407,7 @@ const Herramienta = (() => {
       try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* file:// */ }
     }
   }
-  return { $, esc, copia, vacio, leeSI, txt, marcas, lienzo, accesible };
+  return { $, esc, copia, vacio, leeSI, leeUn, txt, marcas, lienzo, accesible };
 })();
 
 /* =====================================================================
@@ -552,7 +573,12 @@ const Mates = (() => {
        F(θ) = [cos(kL/2 cos θ) − cos(kL/2)] / sin θ     (media onda: L = λ/2)
    y |E| = η0 I0 F(θ) / (2π r). La potencia radiada, la resistencia de radiación
    y la directividad salen de integrar F² sin θ (Simpson) con η0 = 376,73 Ω.
-     resolver(sc)  { tipo, f, L, I, r, th } (texto) → resultados y pasos
+   Array de N dipolos iguales (eje z), en fila sobre el eje x con separación d y fase progresiva β:
+     F_total(θ, φ) = F(θ) · |AF(ψ)|,  AF = sin(Nψ/2) / (N sin(ψ/2)),  ψ = k d sin θ cos φ + β
+   (broadside: β = 0; endfire: β = −k d). La directividad se integra sobre toda la esfera y, sin
+   acoplamiento mutuo, la potencia radiada es N veces la de uno. Enlace de Friis entre dos antenas:
+     P_r = P_t G_t G_r (λ / 4π d)²,  alcance = (λ / 4π) √(P_t G_t G_r / P_sens)
+     resolver(sc)  { tipo, f, L, I, r, th, N, d, modo, beta, Pt, Gr, dist, sens } (texto) → resultados y pasos
      ejemplos      para el desplegable, Mis ejercicios y las pruebas
      patron(tipo, lam, L, th)  F(θ) para dibujar el diagrama
    ===================================================================== */
@@ -566,7 +592,8 @@ const Antena = (() => {
     return s.replace('.', ',').replace('-', '−');
   };
   // acepta coma decimal, 3e8 y 3·10^8
-  const leeNum = (s) => +String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace(/[−–]/g, '-').replace(/[·x×*]10\^?([+\-]?\d+)/i, 'e$1');
+  const leeNum0 = (s) => +String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace(/[−–]/g, '-').replace(/[·x×*]10\^?([+\-]?\d+)/i, 'e$1');
+  const leeNum = (s) => { const u = typeof Herramienta !== 'undefined' ? Herramienta.leeUn(s) : undefined; return u !== undefined ? u : leeNum0(s); }; // admite «4 mm», «2,4 GHz», «10 pF»
   const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
   const may = (s) => s[0].toUpperCase() + s.slice(1);
   function lee(sc, k, nom, { pos = true, max } = {}) {
@@ -593,6 +620,57 @@ const Antena = (() => {
     return (t * h) / 3;
   }
 
+  // ---- array de N dipolos en fila (eje x), cada uno paralelo al eje z ----
+  const arrayAF = (N, psi) => { const s = Math.sin(psi / 2); return Math.abs(s) < 1e-9 ? 1 : Math.abs(Math.sin((N * psi) / 2) / (N * s)); };
+  const psiDe = (P, th, ph) => (2 * Math.PI * P.d) * Math.sin(th) * Math.cos(ph) + P.beta;
+  // |E| relativo (sin constantes) en la dirección (θ, φ): elemento × factor de array
+  const campoRel = (P, th, ph) => patron(P.tipo, P.lam, P.L, th) * (P.N > 1 ? arrayAF(P.N, psiDe(P, th, ph)) : 1);
+  // dirección del plano de corte: 'E' = plano xz (contiene al dipolo), 'H' = plano xy; α de 0 a 2π
+  const dirCorte = (plano, a) => (plano === 'H' ? [Math.PI / 2, a] : a <= Math.PI ? [a, 0] : [2 * Math.PI - a, Math.PI]);
+  function corte(P, plano, n = 720) {
+    const v = []; for (let i = 0; i < n; i++) { const [th, ph] = dirCorte(plano, (2 * Math.PI * i) / n); v.push(campoRel(P, th, ph)); }
+    return v;
+  }
+  // lóbulos de un corte circular: principales (≥ 99,9 % del máximo), secundarios, nivel del mayor secundario y ancho de haz a −3 dB
+  function lobulos(v) {
+    const n = v.length, mx = Math.max(...v);
+    if (mx <= 0) return { omni: false, principales: 0, secundarios: 0, sll: -Infinity, hpbw: 0, max: 0 };
+    if (Math.min(...v) / mx > 0.999) return { omni: true, principales: 0, secundarios: 0, sll: -Infinity, hpbw: 360, max: mx };
+    const lob = []; for (let i = 0; i < n; i++) { const a = v[(i + n - 1) % n], b = v[i], c = v[(i + 1) % n]; if (b > 1e-6 * mx && b >= a && b > c) lob.push(i); }
+    const prin = lob.filter((i) => v[i] >= 0.999 * mx), sec = lob.filter((i) => v[i] < 0.999 * mx);
+    const imax = v.indexOf(mx), umbral = mx / Math.SQRT2;
+    let i1 = imax, i2 = imax, k = 0; while (v[(i1 - 1 + n) % n] >= umbral && k++ < n) i1 = (i1 - 1 + n) % n;
+    k = 0; while (v[(i2 + 1) % n] >= umbral && k++ < n) i2 = (i2 + 1) % n;
+    const hpbw = (((i2 - i1 + n) % n) * 360) / n;
+    return { omni: false, principales: prin.length, secundarios: sec.length, sll: sec.length ? 20 * Math.log10(Math.max(...sec.map((i) => v[i])) / mx) : -Infinity, hpbw, max: mx, imax };
+  }
+  // máximo y directividad de toda la esfera: D = 4π U_máx / ∫ U dΩ
+  function esfera(P) {
+    const nt = 180, np = 360; let tot = 0, mx = 0, bt = Math.PI / 2, bp = 0;
+    for (let i = 0; i < nt; i++) {
+      const th = ((i + 0.5) * Math.PI) / nt, st = Math.sin(th);
+      for (let j = 0; j < np; j++) { const ph = (j * 2 * Math.PI) / np, F = campoRel(P, th, ph), u = F * F; tot += u * st; if (u > mx) { mx = u; bt = th; bp = ph; } }
+    }
+    tot *= (Math.PI / nt) * ((2 * Math.PI) / np);
+    // afina el máximo
+    let h = Math.PI / nt;
+    for (let it = 0; it < 40; it++) {
+      let mejor = false;
+      for (const [dt, dp] of [[h, 0], [-h, 0], [0, h], [0, -h]]) { const t2 = Math.min(Math.PI, Math.max(0, bt + dt)), F = campoRel(P, t2, bp + dp); if (F * F > mx) { mx = F * F; bt = t2; bp += dp; mejor = true; } }
+      if (!mejor) h /= 2;
+    }
+    return { D: (4 * Math.PI * mx) / tot, Umax: mx, thMax: (bt * 180) / Math.PI, phMax: ((((bp * 180) / Math.PI) % 360) + 360) % 360, integral: tot };
+  }
+  // superficie de radiación 3D: |E|/|E|máx en cada dirección → cuadriláteros para la vista 3D
+  function malla3d(P, nt = 24, np = 40) {
+    let mx = 0; const g = [];
+    for (let i = 0; i <= nt; i++) { g.push([]); for (let j = 0; j <= np; j++) { const F = campoRel(P, (i * Math.PI) / nt, (j * 2 * Math.PI) / np); g[i].push(F); if (F > mx) mx = F; } }
+    const pt = (i, j) => { const th = (i * Math.PI) / nt, ph = (j * 2 * Math.PI) / np, r = mx ? g[i][j] / mx : 0; return [r * Math.sin(th) * Math.cos(ph), r * Math.sin(th) * Math.sin(ph), r * Math.cos(th)]; };
+    const caras = []; for (let i = 0; i < nt; i++) for (let j = 0; j < np; j++) caras.push({ pts: [pt(i, j), pt(i + 1, j), pt(i + 1, j + 1), pt(i, j + 1)], v: (g[i][j] + g[i + 1][j] + g[i + 1][j + 1] + g[i][j + 1]) / (4 * (mx || 1)) });
+    return caras;
+  }
+  const dB = (x) => 10 * Math.log10(x);
+
   function resolver(sc) {
     const tipo = ['corto', 'media', 'general'].includes(sc.tipo) ? sc.tipo : 'media';
     const fr = lee(sc, 'f', 'la frecuencia'), I = lee(sc, 'I', 'la corriente'), r = lee(sc, 'r', 'la distancia'), th = lee(sc, 'th', 'el ángulo θ', { pos: false });
@@ -616,6 +694,31 @@ const Antena = (() => {
     const Emax = (ETA * I0 * Fmax) / (2 * Math.PI * r), Smax = (Emax * Emax) / (2 * ETA);
     const lejos = r > 2 * L * L / lam && r > lam;
     const lr = L / lam;
+    // ---- array ----
+    const NA = vacio(sc.N) ? 1 : Math.round(lee(sc, 'N', 'el número de elementos', { max: 16 }));
+    if (NA < 1) throw new Error('El número de elementos debe ser al menos 1');
+    const modo = ['broadside', 'endfire', 'fase'].includes(sc.modo) ? sc.modo : 'broadside';
+    const dsep = NA > 1 ? lee(sc, 'd', 'la separación entre elementos (en λ)', { max: 4 }) : 0;
+    const betaG = NA > 1 && modo === 'fase' ? lee(sc, 'beta', 'la fase progresiva β', { pos: false }) : 0;
+    const beta = NA === 1 ? 0 : modo === 'broadside' ? 0 : modo === 'endfire' ? -2 * Math.PI * dsep : (betaG * Math.PI) / 180;
+    const P = { tipo, lam, L, N: NA, d: dsep, beta };
+    let arr = null;
+    if (NA > 1) {
+      const ee = esfera(P), cE = lobulos(corte(P, 'E')), cH = lobulos(corte(P, 'H'));
+      const D1 = D;
+      arr = { N: NA, d: dsep, modo, Umax: ee.Umax, beta, betaGrados: (beta * 180) / Math.PI, D: ee.D, dBi: dB(ee.D), aumento: dB(ee.D / D1), thMax: ee.thMax, phMax: ee.phMax, cE, cH, Prad: NA * Prad };
+    }
+    const Dtot = arr ? arr.D : D, dBitot = arr ? arr.dBi : dBi;
+    // ---- enlace de Friis ----
+    let enlace = null;
+    if (!vacio(sc.Pt)) {
+      const Pt = lee(sc, 'Pt', 'la potencia del transmisor'), Gr = lee(sc, 'Gr', 'la ganancia de la antena receptora (dBi)', { pos: false }), dist = lee(sc, 'dist', 'la distancia del enlace');
+      const sens = vacio(sc.sens) ? null : lee(sc, 'sens', 'la sensibilidad del receptor (dBm)', { pos: false });
+      const Gt = Dtot, Grl = 10 ** (Gr / 10), pasoL = lam / (4 * Math.PI * dist), Pr = Pt * Gt * Grl * pasoL * pasoL;
+      const fspl = -20 * Math.log10(pasoL), PtdBm = dB(Pt * 1000), PrdBm = dB(Pr * 1000), eirp = PtdBm + dBitot;
+      enlace = { Pt, Gt, Gr, dist, fspl, PtdBm, PrdBm, Pr, eirp, sens, margen: sens === null ? null : PrdBm - sens,
+        alcance: sens === null ? null : (lam / (4 * Math.PI)) * Math.sqrt((Pt * Gt * Grl) / (1e-3 * 10 ** (sens / 10))), lejos: dist > 2 * (arr ? Math.max(L, (NA - 1) * dsep * lam + L) : L) ** 2 / lam && dist > lam };
+    }
     const pasos = [
       { t: 'Longitud de onda', html: `$λ = c/f = ${f(C0)}/${f(fr)} = ${f(lam)} "m"$` + (tipo === 'media' ? `, y la antena mide $L = λ/2 = ${f(L)} "m"$` : `, $L = ${f(L)} "m" = ${f(lr)} λ$`) },
       { t: 'Diagrama de radiación', html: tipo === 'corto'
@@ -627,7 +730,16 @@ const Antena = (() => {
       { t: 'Directividad', html: `$D = {4π U_"máx"}/{P_"rad"} = {2 F_"máx"^2}/{∫ F^2 sin θ dθ} = ${f(D)}$, es decir $${f(dBi)} "dBi"$. Ancho de haz a −3 dB: $${f(hpbw, 3)}°$.` },
       { t: `Campo en r = ${f(r)} m, θ = ${f(th, 4)}°`, html: `$E = {η_0 I_0 F(θ)}/{2π r} = ${f(E)} "V/m"$, $B = E/c = ${f(B)} "T"$ y $S = E^2/(2η_0) = ${f(S)} "W/m"^2$` + (lejos ? '' : '. <b>Aviso:</b> estás cerca de la antena (hace falta r mucho mayor que λ y que 2L²/λ); en campo cercano este resultado no es fiable.') },
     ];
-    return { tipo, lam, L, lr, I: I0, r, th, Fp, Fmax, thMax, J, Rrad, Prad, D, dBi, hpbw, E, B, S, Emax, Smax, lejos, pasos };
+    const lobTxt = (n, c) => `Plano ${n}: ` + (c.omni ? 'omnidireccional.' : `${c.principales} lóbulo(s) principal(es) con ancho de haz ${f(c.hpbw, 3)}°` + (c.secundarios ? ` y ${c.secundarios} secundario(s), el mayor a ${f(c.sll, 3)} dB` : ', sin lóbulos secundarios') + '.');
+    if (arr) {
+      const tipoArr = { broadside: 'broadside (β = 0, máximo perpendicular a la fila)', endfire: `endfire (β = −k d = ${f(arr.betaGrados, 4)}°, máximo a lo largo de la fila)`, fase: `fase elegida (β = ${f(arr.betaGrados, 4)}°)` }[modo];
+      pasos.push(
+        { t: `Array de ${NA} dipolos`, html: `Separación $d = ${f(dsep)} λ = ${f(dsep * lam)} "m"$, fase progresiva ${tipoArr}. Factor de array: $AF = {sin(N ψ/2)}/{N sin(ψ/2)}$ con $ψ = 2π (d/λ) sin θ cos φ + β$; el diagrama total es $F(θ) · |AF|$.` },
+        { t: 'Directividad y lóbulos del array', html: `$D = {4π U_"máx"}/{∫ U dΩ} = ${f(arr.D)}$ (${f(arr.dBi)} dBi), ${f(arr.aumento)} dB más que un solo elemento, con el máximo en $θ = ${f(arr.thMax, 4)}°$, $φ = ${f(arr.phMax, 4)}°$. ${lobTxt('E', arr.cE)} ${lobTxt('H', arr.cH)}` },
+        { t: 'Potencia del array', html: `Sin acoplamiento mutuo cada elemento radia lo mismo: $P_"rad" = N · P_1 = ${NA} · ${f(Prad)} = ${f(arr.Prad)} "W"$.` });
+    }
+    if (enlace) pasos.push({ t: 'Enlace de Friis', html: `$G_t = D = ${f(Dtot)}$ (${f(dBitot)} dBi, sin pérdidas), $G_r = ${f(10 ** (enlace.Gr / 10))}$. Pérdida en el espacio libre: $L_"fs" = (4π d/λ)^2 = ${f(10 ** (enlace.fspl / 10))}$, es decir $${f(enlace.fspl)} "dB"$. $P_r = P_t G_t G_r (λ/4π d)^2 = ${f(enlace.Pr)} "W"$ = $${f(enlace.PrdBm)} "dBm"$ (con $P_t$ = ${f(enlace.PtdBm)} dBm, PIRE ${f(enlace.eirp)} dBm).` + (enlace.margen === null ? '' : ` Margen sobre la sensibilidad de ${f(enlace.sens)} dBm: $${f(enlace.margen)} "dB"$; alcance máximo $d_"máx" = {λ}/{4π} √({P_t G_t G_r}/{P_"sens"}) = ${f(enlace.alcance)} "m"$.`) + (enlace.lejos ? '' : ' <b>Aviso:</b> la distancia del enlace no está en campo lejano; Friis no es fiable.') });
+    return { tipo, lam, L, lr, I: I0, r, th, Fp, Fmax, thMax, J, Rrad, Prad, D, dBi, hpbw, E, B, S, Emax, Smax, lejos, pasos, P, arr, enlace, Dtot, dBitot, ref: arr ? Math.sqrt(arr.Umax) : Fmax };
   }
 
   const ejemplos = [
@@ -635,9 +747,12 @@ const Antena = (() => {
     { clave: 'corto', nombre: 'Dipolo corto de 10 cm a 100 MHz', sc: { tipo: 'corto', f: '100e6', L: '0,1', I: '1', r: '100', th: '60' } },
     { clave: 'onda', nombre: 'Dipolo de onda completa (L ≈ λ)', sc: { tipo: 'general', f: '300e6', L: '1', I: '1', r: '50', th: '90' } },
     { clave: 'tres-medios', nombre: 'Dipolo largo de 3λ/2 (lóbulos laterales)', sc: { tipo: 'general', f: '300e6', L: '1,5', I: '1', r: '50', th: '60' } },
+    { clave: 'array-broadside', nombre: 'Array de 4 dipolos de media onda, broadside (d = λ/2)', sc: { tipo: 'media', f: '100e6', L: '', I: '1', r: '1000', th: '90', N: '4', d: '0,5', modo: 'broadside', beta: '0', Pt: '10', Gr: '2,15', dist: '5000', sens: '-90' } },
+    { clave: 'array-endfire', nombre: 'Par de dipolos endfire (d = λ/4)', sc: { tipo: 'media', f: '100e6', L: '', I: '1', r: '1000', th: '90', N: '2', d: '0,25', modo: 'endfire', beta: '0', Pt: '', Gr: '', dist: '', sens: '' } },
+    { clave: 'enlace-wifi', nombre: 'Enlace de 2,4 GHz a 100 m (Friis)', sc: { tipo: 'media', f: '2,4e9', L: '', I: '0,1', r: '10', th: '90', N: '1', d: '', modo: 'broadside', beta: '0', Pt: '0,1', Gr: '2,15', dist: '100', sens: '-90' } },
   ];
 
-  return { resolver, ejemplos, f, patron, ETA, C0 };
+  return { resolver, ejemplos, f, patron, ETA, C0, arrayAF, campoRel, corte, lobulos, esfera, malla3d, dirCorte };
 })();
 
 /* =====================================================================
@@ -859,6 +974,125 @@ const Compartir = (() => {
 })();
 
 /* =====================================================================
+   Exportar gráfica y datos (común a las herramientas de Electromagnetismo; si el ayudante
+   común de herramienta.js llega antes, este fichero se sustituye por él con las mismas llamadas).
+     Exportar.monta(lienzo, { nombre, datos })
+        añade bajo el lienzo los botones «Guardar imagen (PNG)» y «Copiar datos» (los
+        mismos en todas las herramientas). datos() devuelve { cabecera: [..], filas: [[..], ..] }
+        con lo que se ve en la gráfica; el texto copiado va separado por tabuladores
+        (se pega directo en una hoja de cálculo) y con coma decimal.
+     Exportar.tsv(datos)   el texto de los datos (para las pruebas)
+     Exportar.png(lienzo, nombre)   descarga el lienzo sobre el fondo de la página
+   Un aviso con aria-live dice «Imagen guardada» o «Datos copiados».
+   ===================================================================== */
+const Exportar = (() => {
+  const num = (v) => (typeof v === 'number' ? (isFinite(v) ? String(+v.toPrecision(7)).replace('.', ',') : '') : String(v ?? ''));
+  const tsv = (d) => [d.cabecera, ...d.filas].map((f) => f.map(num).join('\t')).join('\n');
+  const nombreArchivo = (s) => String(s || 'grafica').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-|-$/g, '').toLowerCase() || 'grafica';
+  function png(c, nombre) {
+    const o = document.createElement('canvas'); o.width = c.width; o.height = c.height;
+    const g = o.getContext('2d'); g.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#fff'; g.fillRect(0, 0, o.width, o.height); g.drawImage(c, 0, 0);
+    return new Promise((ok) => o.toBlob((b) => {
+      const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = nombreArchivo(nombre) + '.png';
+      document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); ok(true);
+    }, 'image/png'));
+  }
+  async function copia(texto) {
+    try { await navigator.clipboard.writeText(texto); return true; } catch (e) { /* sin permiso: copia clásica */ }
+    const t = document.createElement('textarea'); t.value = texto; t.setAttribute('readonly', ''); t.style.cssText = 'position:fixed;opacity:0';
+    document.body.appendChild(t); t.select(); let ok = false; try { ok = document.execCommand('copy'); } catch (e) { /* nada */ } t.remove(); return ok;
+  }
+  function monta(c, { nombre, datos } = {}) {
+    if (typeof c === 'string') c = document.querySelector(c);
+    if (!c || c.dataset.exportar) return;
+    c.dataset.exportar = '1';
+    const caja = document.createElement('div'); caja.className = 'controles exportar';
+    caja.innerHTML = '<button type="button" class="btn" data-x="png">Guardar imagen (PNG)</button>' + (datos ? '<button type="button" class="btn" data-x="datos">Copiar datos</button>' : '') + '<span class="nota" role="status" aria-live="polite"></span>';
+    const aviso = caja.querySelector('span'), di = (t) => { aviso.textContent = t; setTimeout(() => { if (aviso.textContent === t) aviso.textContent = ''; }, 3500); };
+    caja.addEventListener('click', async (e) => {
+      const b = e.target.closest('button'); if (!b) return;
+      if (b.dataset.x === 'png') { await png(c, nombre); di('Imagen guardada.'); }
+      else { const d = datos(); di(d && d.filas && d.filas.length ? ((await copia(tsv(d))) ? 'Datos copiados.' : 'No se pudo copiar.') : 'No hay datos que copiar.'); }
+    });
+    c.insertAdjacentElement('afterend', caja);
+    const hermano = c.nextElementSibling; // la leyenda, si la hay, queda justo debajo del lienzo
+    if (hermano && hermano !== caja && hermano.classList.contains('leyenda')) hermano.insertAdjacentElement('afterend', caja);
+    return caja;
+  }
+  return { monta, tsv, png, num, nombreArchivo };
+})();
+
+/* =====================================================================
+   Vista 3D común (Magnetostática, Fuerza magnética y Antena): proyección de líneas, puntos y
+   superficies en un <canvas>, que se gira arrastrando, con las flechas del teclado (el lienzo
+   admite foco) o con los botones de debajo. Siempre acompaña a una vista 2D y a una descripción
+   en texto; el lienzo 3D lleva role="img" y aria-label con esa descripción.
+     Vista3D.monta(lienzo, { escena, descripcion, yaw, pitch })
+        escena() → { lineas: [{ pts: [[x,y,z]..], color: '--serie-1', ancho, flecha }],
+                     puntos: [{ p: [x,y,z], color, r }], caras: [{ pts: [[x,y,z]x4], v: 0..1 }],
+                     ejes: bool, etiquetas: [{ p, t }] }   (coordenadas en [-1,1] aprox.)
+        descripcion() → texto para aria-label. Devuelve { dibuja, gira }.
+     Vista3D.proyecta(p, yaw, pitch)   → [x, y, profundidad] (para las pruebas)
+   ===================================================================== */
+const Vista3D = (() => {
+  const proyecta = (p, yaw, pitch) => {
+    const cy = Math.cos(yaw), sy = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
+    const x1 = p[0] * cy - p[1] * sy, y1 = p[0] * sy + p[1] * cy, z1 = p[2];
+    // z hacia arriba; la cámara mira desde −y girada por yaw y elevada por pitch
+    return [x1, z1 * cp - y1 * sp, y1 * cp + z1 * sp];
+  };
+  const rampa = (v) => { v = Math.max(0, Math.min(1, v)); return `hsl(${Math.round(230 - 200 * v)} 70% ${Math.round(45 + 10 * v)}%)`; };
+  function monta(c, op) {
+    if (typeof c === 'string') c = document.querySelector(c);
+    let yaw = op.yaw ?? 0.7, pitch = op.pitch ?? 0.45;
+    c.setAttribute('role', 'img'); c.tabIndex = 0;
+    const barra = document.createElement('div'); barra.className = 'controles';
+    barra.innerHTML = '<button type="button" class="btn" data-g="izq" aria-label="Girar a la izquierda">◀</button><button type="button" class="btn" data-g="der" aria-label="Girar a la derecha">▶</button><button type="button" class="btn" data-g="arr" aria-label="Subir la cámara">▲</button><button type="button" class="btn" data-g="aba" aria-label="Bajar la cámara">▼</button><button type="button" class="btn" data-g="ini">Restablecer vista</button><span class="nota">Arrastra o usa las flechas del teclado para girar.</span>';
+    c.insertAdjacentElement('afterend', barra);
+    const gira = (dy, dp) => { yaw += dy; pitch = Math.max(-1.5, Math.min(1.5, pitch + dp)); dibuja(); };
+    barra.addEventListener('click', (e) => {
+      const b = e.target.closest('button'); if (!b) return; const q = 0.2;
+      ({ izq: () => gira(-q, 0), der: () => gira(q, 0), arr: () => gira(0, -q), aba: () => gira(0, q), ini: () => { yaw = op.yaw ?? 0.7; pitch = op.pitch ?? 0.45; dibuja(); } })[b.dataset.g]();
+    });
+    c.addEventListener('keydown', (e) => {
+      const k = { ArrowLeft: [-0.15, 0], ArrowRight: [0.15, 0], ArrowUp: [0, -0.15], ArrowDown: [0, 0.15] }[e.key];
+      if (k) { e.preventDefault(); gira(...k); }
+    });
+    let ult = null;
+    c.addEventListener('pointerdown', (e) => { ult = [e.clientX, e.clientY]; c.setPointerCapture?.(e.pointerId); });
+    c.addEventListener('pointermove', (e) => { if (!ult) return; gira((e.clientX - ult[0]) * 0.01, (e.clientY - ult[1]) * 0.01); ult = [e.clientX, e.clientY]; });
+    c.addEventListener('pointerup', () => { ult = null; });
+    c.style.touchAction = 'none';
+    function dibuja() {
+      const { g, w, h } = Herramienta.lienzo(c);
+      if (!w || !h) return;
+      const cs = getComputedStyle(document.documentElement), col = (k) => cs.getPropertyValue(k).trim() || cs.getPropertyValue('--ink').trim();
+      const E = op.escena() || {}, esc = Math.min(w, h) * 0.38, X = (p) => { const q = proyecta(p, yaw, pitch); return [w / 2 + q[0] * esc, h / 2 - q[1] * esc, q[2]]; };
+      c.setAttribute('aria-label', op.descripcion ? op.descripcion() : 'Vista tridimensional');
+      g.lineJoin = 'round'; g.lineCap = 'round';
+      if (E.ejes) for (const [d, t] of [[[1, 0, 0], 'x'], [[0, 1, 0], 'y'], [[0, 0, 1], 'z']]) {
+        const a = X([0, 0, 0]), b = X(d.map((v) => v * 1.05)); g.strokeStyle = col('--line'); g.lineWidth = 1; g.beginPath(); g.moveTo(a[0], a[1]); g.lineTo(b[0], b[1]); g.stroke();
+        g.fillStyle = col('--muted'); g.font = '12px system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(t, b[0] + (b[0] - a[0]) * 0.08, b[1] + (b[1] - a[1]) * 0.08);
+      }
+      const caras = (E.caras || []).map((f) => { const q = f.pts.map(X); return { q, z: q.reduce((s, v) => s + v[2], 0) / q.length, v: f.v }; }).sort((a, b) => b.z - a.z);
+      g.lineWidth = 0.6; g.strokeStyle = col('--line');
+      for (const f of caras) { g.beginPath(); f.q.forEach((v, i) => (i ? g.lineTo(v[0], v[1]) : g.moveTo(v[0], v[1]))); g.closePath(); g.globalAlpha = 0.8; g.fillStyle = rampa(f.v); g.fill(); g.globalAlpha = 1; g.stroke(); }
+      for (const l of E.lineas || []) {
+        const q = l.pts.map(X); if (q.length < 2) continue;
+        g.strokeStyle = col(l.color || '--serie-1'); g.lineWidth = l.ancho || 1.8; g.beginPath(); q.forEach((v, i) => (i ? g.lineTo(v[0], v[1]) : g.moveTo(v[0], v[1]))); g.stroke();
+        if (l.flecha) { const a = q[Math.floor(q.length / 2) - 1] || q[0], b = q[Math.floor(q.length / 2)], d = Math.atan2(b[1] - a[1], b[0] - a[0]); g.fillStyle = g.strokeStyle; g.beginPath(); g.moveTo(b[0], b[1]); g.lineTo(b[0] - 9 * Math.cos(d - 0.4), b[1] - 9 * Math.sin(d - 0.4)); g.lineTo(b[0] - 9 * Math.cos(d + 0.4), b[1] - 9 * Math.sin(d + 0.4)); g.fill(); }
+      }
+      for (const p of E.puntos || []) { const q = X(p.p); g.fillStyle = col(p.color || '--serie-2'); g.beginPath(); g.arc(q[0], q[1], p.r || 4.5, 0, 7); g.fill(); }
+      for (const e of E.etiquetas || []) { const q = X(e.p); g.fillStyle = col('--ink'); g.font = '12px system-ui, sans-serif'; g.textAlign = 'left'; g.textBaseline = 'bottom'; g.fillText(e.t, q[0] + 6, q[1] - 4); }
+    }
+    window.addEventListener('resize', dibuja);
+    matchMedia('(prefers-color-scheme: dark)').addEventListener('change', dibuja);
+    return { dibuja, gira, estado: () => ({ yaw, pitch }) };
+  }
+  return { monta, proyecta, rampa };
+})();
+
+/* =====================================================================
    Antena dipolo y radiación: interfaz. Datos, ejemplos, resultados, desarrollo
    y el diagrama de radiación polar. El cálculo está en antena/calculo.js
    (Antena) y los ayudantes comunes ($, esc, copia, txt, lienzo) en herramienta.js.
@@ -867,6 +1101,7 @@ const Compartir = (() => {
    ===================================================================== */
 (() => {
   const { $, esc, copia, txt, lienzo } = Herramienta;
+  const ARRAY_MODOS = { broadside: 'Broadside (β = 0)', endfire: 'Endfire (β = −k d)', fase: 'Fase β elegida' };
   const P = Antena, f = P.f, CLAVE = 'antena-v1';
 
   let sc = copia(P.ejemplos[0].sc);
@@ -881,13 +1116,18 @@ const Compartir = (() => {
     const t = sc.tipo || 'media';
     $('#campos').innerHTML = `<label for="f-tipo">Antena</label><select id="f-tipo" class="in" data-k="tipo">${Object.entries(TIPOS).map(([k, v]) => `<option value="${k}"${k === t ? ' selected' : ''}>${v}</option>`).join('')}</select>`
       + fila('f', 'Frecuencia', 'Hz') + (t === 'media' ? '' : fila('L', 'Longitud de la antena', 'm')) + fila('I', 'Corriente I₀ (amplitud)', 'A')
-      + '<div class="sep">Punto de observación</div>' + fila('r', 'Distancia r', 'm') + fila('th', 'Ángulo θ desde el eje', '°');
-    $('#nota').textContent = 'Se admite coma decimal, 3e8 y 3·10^8. En la de media onda la longitud sale de la frecuencia (L = λ/2).';
+      + '<div class="sep">Array de dipolos en fila</div>' + fila('N', 'Número de elementos (1 = una antena)', '')
+      + ((+String(sc.N ?? '1').replace(',', '.') || 1) > 1
+        ? fila('d', 'Separación d', 'λ') + `<label for="f-modo">Alimentación</label><select id="f-modo" class="in" data-k="modo">${Object.entries(ARRAY_MODOS).map(([k, v]) => `<option value="${k}"${k === (sc.modo || 'broadside') ? ' selected' : ''}>${v}</option>`).join('')}</select>` + (sc.modo === 'fase' ? fila('beta', 'Fase progresiva β', '°') : '')
+        : '')
+      + '<div class="sep">Punto de observación</div>' + fila('r', 'Distancia r', 'm') + fila('th', 'Ángulo θ desde el eje', '°')
+      + '<div class="sep">Enlace entre dos antenas (Friis, opcional)</div>' + fila('Pt', 'Potencia del transmisor', 'W') + fila('Gr', 'Ganancia del receptor', 'dBi') + fila('dist', 'Distancia del enlace', 'm') + fila('sens', 'Sensibilidad del receptor', 'dBm');
+    $('#nota').textContent = 'Se admite coma decimal, 3e8, 3·10^8 y unidades (2,4 GHz, 30 cm, 0,5 m). En la de media onda la longitud sale de la frecuencia (L = λ/2). Deja vacía la potencia del transmisor si no quieres calcular el enlace.';
   }
   $('#campos').addEventListener('input', (e) => {
     const t = e.target; if (!t.dataset.k) return;
     sc[t.dataset.k] = t.value; $('#ejemplos').value = '';
-    if (t.dataset.k === 'tipo') formulario();
+    if (['tipo', 'N', 'modo'].includes(t.dataset.k)) { const pos = t.selectionStart; formulario(); const nuevo = $('#f-' + t.dataset.k); if (nuevo && nuevo.tagName === 'INPUT') { nuevo.focus(); try { nuevo.setSelectionRange(pos, pos); } catch (e) { /* sin selección */ } } else if (nuevo) nuevo.focus(); }
     calcula();
   });
 
@@ -905,7 +1145,7 @@ const Compartir = (() => {
     const de = (l) => l[Math.floor(Math.random() * l.length)], c = (x) => String(x).replace('.', ',');
     const tipo = de(['media', 'media', 'corto', 'general']), fr = de(['50e6', '100e6', '300e6', '900e6']), lam = 299792458 / +fr;
     const L = tipo === 'corto' ? c(+(lam / de([20, 25, 50])).toPrecision(2)) : tipo === 'general' ? c(+(lam * de([0.75, 1, 1.25, 1.5])).toPrecision(3)) : '';
-    sc = { tipo, f: fr, L, I: c(de([0.5, 1, 2, 5])), r: String(de([100, 500, 1000, 5000])), th: String(de([30, 45, 60, 90])) };
+    sc = { N: '1', d: '', modo: 'broadside', beta: '0', Pt: '', Gr: '', dist: '', sens: '', tipo, f: fr, L, I: c(de([0.5, 1, 2, 5])), r: String(de([100, 500, 1000, 5000])), th: String(de([30, 45, 60, 90])) };
     formulario(); calcula(); sel.value = '';
   }
   const enunciado = () => {
@@ -919,53 +1159,73 @@ const Compartir = (() => {
     const err = $('#error');
     try { sol = P.resolver(sc); } catch (e) {
       sol = null; err.textContent = e.message; err.hidden = false;
-      $('#resumen').innerHTML = ''; $('#pasos').innerHTML = ''; $('#leyenda').textContent = ''; dibuja(); return;
+      $('#resumen').innerHTML = ''; $('#pasos').innerHTML = ''; $('#leyenda').textContent = ''; $('#desc3d').textContent = ''; dibuja(); vista.dibuja(); return;
     }
     err.hidden = true; guarda();
     $('#resumen').innerHTML = dato('Longitud de onda', `λ = ${f(sol.lam)} m`) + (sc.tipo === 'media' ? dato('Longitud', `L = ${f(sol.L)} m`) : '')
       + dato('Resistencia de radiación', `R<sub>rad</sub> = ${f(sol.Rrad)} Ω`) + dato('Potencia radiada', `P<sub>rad</sub> = ${f(sol.Prad)} W`)
       + dato('Directividad', `D = ${f(sol.D)} (${f(sol.dBi)} dBi)`) + dato('Ancho de haz a −3 dB', `${f(sol.hpbw, 3)}°`)
+      + (sol.arr ? dato(`Array de ${sol.arr.N} dipolos`, `D = ${f(sol.arr.D)} (${f(sol.arr.dBi)} dBi)`) + dato('Máximo del array', `θ = ${f(sol.arr.thMax, 4)}°, φ = ${f(sol.arr.phMax, 4)}°`) + dato('Ancho de haz plano E / H', `${f(sol.arr.cE.hpbw, 3)}° / ${sol.arr.cH.omni ? 'omni' : f(sol.arr.cH.hpbw, 3) + '°'}`) + dato('Potencia radiada del array', `${f(sol.arr.Prad)} W`) : '')
+      + (sol.enlace ? dato('Pérdida en el espacio libre', `${f(sol.enlace.fspl)} dB`) + dato('Potencia recibida', `${f(sol.enlace.Pr)} W (${f(sol.enlace.PrdBm)} dBm)`) + (sol.enlace.margen === null ? '' : dato('Margen del enlace', `${f(sol.enlace.margen)} dB`) + dato('Alcance máximo', `${f(sol.enlace.alcance)} m`)) : '')
       + dato('Campo eléctrico en el punto', `E = ${f(sol.E)} V/m`) + dato('Campo magnético', `B = ${f(sol.B)} T`) + dato('Densidad de potencia', `S = ${f(sol.S)} W/m²`);
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
-    $('#leyenda').textContent = 'Potencia relativa F(θ)²/F²máx en un plano que contiene a la antena (vertical). Punto: tu θ. Círculo de trazos: antena isótropa (1/D).';
-    dibuja();
+    descripcion(); dibuja(); vista.dibuja();
   }
 
   /* ---------- Diagrama polar ---------- */
+  let plano = 'E';
+  const PLANOS = { E: 'Plano E (contiene a la antena)', H: 'Plano H (perpendicular a la antena)' };
+  $('#plano').innerHTML = Object.entries(PLANOS).map(([k, v]) => `<option value="${k}">${v}</option>`).join('');
+  $('#plano').addEventListener('change', () => { plano = $('#plano').value; descripcion(); dibuja(); });
   function colores() { const cs = getComputedStyle(document.documentElement); for (const k of ['--ink', '--muted', '--line', '--accent', '--serie-1', '--serie-2']) col[k] = cs.getPropertyValue(k).trim(); }
+  const refCorte = () => Math.max(...P.corte(sol.P, plano, 360));
+  const valores = (n = 360) => { if (!sol) return []; const r = refCorte(); return P.corte(sol.P, plano, n).map((v) => (v * v) / (r * r)); };
+  function descripcion() {
+    if (!sol) return;
+    const lob = plano === 'E' ? (sol.arr ? sol.arr.cE : P.lobulos(P.corte(sol.P, 'E'))) : (sol.arr ? sol.arr.cH : P.lobulos(P.corte(sol.P, 'H')));
+    const txt3 = `Diagrama de radiación ${sol.arr ? `de un array de ${sol.arr.N} dipolos` : 'del dipolo'}: directividad ${f(sol.dBitot)} dBi, máximo en θ = ${f(sol.arr ? sol.arr.thMax : sol.thMax, 4)}°${sol.arr ? `, φ = ${f(sol.arr.phMax, 4)}°` : ''}. `;
+    $('#desc3d').textContent = txt3 + (sol.arr ? '' : 'La superficie es de revolución alrededor de la antena: con forma de rosquilla, sin radiación a lo largo del eje. ') + `En el plano ${plano} ` + (lob.omni ? 'es omnidireccional.' : `hay ${lob.principales} lóbulo(s) principal(es) con ancho de haz de ${f(lob.hpbw, 3)}° a −3 dB` + (lob.secundarios ? ` y ${lob.secundarios} lóbulo(s) secundario(s), el mayor a ${f(lob.sll, 3)} dB.` : ', sin lóbulos secundarios.'));
+    $('#leyenda').textContent = `Potencia relativa en el ${PLANOS[plano].toLowerCase()}, respecto al máximo de este plano. ` + (plano === 'E' ? 'Ángulo medido desde el eje de la antena (arriba); la fila del array va en horizontal. Punto: tu θ. ' : 'Ángulo φ medido desde el eje x, el de la fila del array (a la derecha); la antena es el punto central. ') + 'Círculo de trazos: antena isótropa (1/D). ' + txt3.slice(0, -1) + '.';
+  }
   function dibuja() {
     const { g, w, h } = lienzo('#grafica');
     if (!sol || !w || !h) return;
-    const cx = w / 2, cy = h / 2, R = Math.min(w, h) / 2 - 22;
-    const pt = (th, rel) => [cx + R * rel * Math.sin(th), cy - R * rel * Math.cos(th)];
+    const cx = w / 2, cy = h / 2, R = Math.min(w, h) / 2 - 22, N = 360;
+    const pt = (a, rel) => (plano === 'E' ? [cx + R * rel * Math.sin(a), cy - R * rel * Math.cos(a)] : [cx + R * rel * Math.cos(a), cy - R * rel * Math.sin(a)]);
     g.font = '12px system-ui, sans-serif'; g.lineWidth = 1; g.strokeStyle = col['--line']; g.fillStyle = col['--muted'];
     for (const q of [0.25, 0.5, 0.75, 1]) { g.beginPath(); g.arc(cx, cy, R * q, 0, 7); g.stroke(); }
     g.beginPath(); g.moveTo(cx - R, cy); g.lineTo(cx + R, cy); g.moveTo(cx, cy - R); g.lineTo(cx, cy + R); g.stroke();
     g.textAlign = 'left'; g.textBaseline = 'bottom';
     for (const q of [0.5, 1]) g.fillText(String(q).replace('.', ','), cx + 4, cy - R * q - 2);
-    // antena isótropa (1/D)
-    g.save(); g.setLineDash([5, 4]); g.strokeStyle = col['--muted'];     g.beginPath(); g.arc(cx, cy, R / sol.D, 0, 7); g.stroke(); g.restore();
-    // diagrama (simétrico a ambos lados del eje)
-    const traza = (signo) => { g.beginPath(); for (let i = 0; i <= 360; i++) { const th = (i / 360) * Math.PI, F = P.patron(sol.tipo, sol.lam, sol.L, th), rel = (F * F) / (sol.Fmax * sol.Fmax), [x, y] = pt(th, rel); const X = cx + signo * (x - cx); i ? g.lineTo(X, y) : g.moveTo(X, y); } };
-    g.fillStyle = col['--serie-1']; g.globalAlpha = 0.18; traza(1); g.fill(); traza(-1); g.fill(); g.globalAlpha = 1;
-    g.strokeStyle = col['--serie-1']; g.lineWidth = 2.4; traza(1); g.stroke(); traza(-1); g.stroke();
-    // la antena
-    const mitad = Math.min(R * 0.5, (sol.L / sol.lam) * R * 0.5 + 6);
-    g.strokeStyle = col['--ink']; g.lineWidth = 3.5; g.lineCap = 'round'; g.beginPath(); g.moveTo(cx, cy - mitad); g.lineTo(cx, cy + mitad); g.stroke(); g.lineCap = 'butt';
-    // el punto de observación
-    const th = (sol.th * Math.PI) / 180, rel = (sol.Fp * sol.Fp) / (sol.Fmax * sol.Fmax), [px, py] = pt(th, rel);
-    g.strokeStyle = col['--serie-2']; g.lineWidth = 1.2; g.beginPath(); g.moveTo(cx, cy); g.lineTo(...pt(th, 1)); g.stroke();
-    g.fillStyle = col['--serie-2']; g.beginPath(); g.arc(px, py, 5, 0, 7); g.fill();
+    g.save(); g.setLineDash([5, 4]); g.strokeStyle = col['--muted']; g.beginPath(); const rIso = (1 / sol.Dtot) / ((refCorte() ** 2) / (sol.ref ** 2)); if (rIso <= 1) { g.arc(cx, cy, R * rIso, 0, 7); g.stroke(); } g.restore();
+    const v = valores(N), traza = () => { g.beginPath(); v.forEach((rel, i) => { const [x, y] = pt((i / N) * 2 * Math.PI, rel); i ? g.lineTo(x, y) : g.moveTo(x, y); }); g.closePath(); };
+    g.fillStyle = col['--serie-1']; g.globalAlpha = 0.18; traza(); g.fill(); g.globalAlpha = 1;
+    g.strokeStyle = col['--serie-1']; g.lineWidth = 2.4; traza(); g.stroke();
+    if (plano === 'E') {
+      const mitad = Math.min(R * 0.5, (sol.L / sol.lam) * R * 0.5 + 6);
+      g.strokeStyle = col['--ink']; g.lineWidth = 3.5; g.lineCap = 'round'; g.beginPath(); g.moveTo(cx, cy - mitad); g.lineTo(cx, cy + mitad); g.stroke(); g.lineCap = 'butt';
+      const th = (sol.th * Math.PI) / 180, F = P.campoRel(sol.P, th, 0), rel = (F * F) / (refCorte() ** 2), [px, py] = pt(th, rel);
+      g.strokeStyle = col['--serie-2']; g.lineWidth = 1.2; g.beginPath(); g.moveTo(cx, cy); g.lineTo(...pt(th, 1)); g.stroke();
+      g.fillStyle = col['--serie-2']; g.beginPath(); g.arc(px, py, 5, 0, 7); g.fill();
+    } else { g.fillStyle = col['--ink']; g.beginPath(); g.arc(cx, cy, 4.5, 0, 7); g.fill(); }
     g.fillStyle = col['--muted']; g.textAlign = 'center'; g.textBaseline = 'middle';
-    g.fillText('0°', cx, cy - R - 11); g.fillText('180°', cx, cy + R + 11); g.fillText('90°', cx + R + 14, cy); g.fillText('90°', cx - R - 14, cy);
+    if (plano === 'E') { g.fillText('0°', cx, cy - R - 11); g.fillText('180°', cx, cy + R + 11); g.fillText('90°', cx + R + 14, cy); g.fillText('90°', cx - R - 14, cy); }
+    else { g.fillText('φ = 0°', cx + R - 4, cy - 12); g.fillText('90°', cx, cy - R - 11); g.fillText('180°', cx - R - 16, cy); g.fillText('270°', cx, cy + R + 11); }
   }
+  /* ---------- Vista 3D (con su descripción en texto y el corte 2D de arriba como alternativa) ---------- */
+  const vista = Vista3D.monta('#vista3d', {
+    yaw: 0.6, pitch: 0.5,
+    escena: () => (sol ? { ejes: true, caras: P.malla3d(sol.P), etiquetas: [{ p: [0, 0, 1.12], t: 'antena' }, ...(sol.arr ? [{ p: [1.12, 0, 0], t: 'fila' }] : [])] } : {}),
+    descripcion: () => ($('#desc3d').textContent || 'Diagrama de radiación en tres dimensiones'),
+  });
+  Exportar.monta('#grafica', { nombre: 'diagrama-de-radiacion', datos: () => ({ cabecera: [plano === 'E' ? 'θ (°) desde el eje' : 'φ (°)', 'Potencia relativa'], filas: valores(360).map((v, i) => [i, v]) }) });
   window.addEventListener('resize', dibuja);
   // tema.js también avisa a este oyente al pulsar el botón claro/oscuro
-  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { colores(); dibuja(); });
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { colores(); dibuja(); vista.dibuja(); });
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('antena').current;
   colores(); formulario(); calcula();
-  window.AntenaApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { lam: sol.lam, Rrad: sol.Rrad, Prad: sol.Prad, D: sol.D, E: sol.E }, estado: () => copia(sc) };
+  window.AntenaApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { lam: sol.lam, Rrad: sol.Rrad, Prad: sol.Prad, D: sol.D, E: sol.E }, estado: () => copia(sc), vista: () => vista.estado(), plano: (p) => { plano = p; $('#plano').value = p; descripcion(); dibuja(); } };
 })();
 
 /* =====================================================================
