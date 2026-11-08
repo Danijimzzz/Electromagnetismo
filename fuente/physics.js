@@ -955,6 +955,48 @@ const Physics = (() => {
     return lines + (other.length ? `<div class="sub hint">Sin fórmula cerrada para ${other.join(', ')}: mira la gráfica.</div>` : '');
   }
 
+  /* --------- ES-3: comprobación dimensional de la respuesta del alumno --------- */
+  // dimensiones como exponentes de [C, m, N]; las de la expresión se miden escalando cada unidad por 2 y viendo cómo cambia el valor
+  const DIM_Q = { E: [-1, 0, 1], V: [-1, 1, 1], F: [0, 0, 1], U: [0, 1, 1], T: [0, 1, 1], Phi: [-1, 2, 1] };
+  const DIM_K = { q: [1, 0, 0], lambda: [1, -1, 0], sigma: [1, -2, 0], rho: [1, -3, 0], p: [1, 1, 0] };
+  const dimTxt = (d) => { const bs = ['C', 'm', 'N'], up = (n) => (n === 1 ? '' : String(n).replace('-', '⁻').replace(/\d/g, (c) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[c]).replace(/\./, ',')); const pos = [], neg = []; d.forEach((n, i) => { if (n > 0) pos.push(bs[i] + up(n)); else if (n < 0) neg.push(bs[i] + up(-n)); }); return pos.length ? pos.join('·') + (neg.length ? '/' + (neg.length > 1 ? '(' + neg.join('·') + ')' : neg[0]) : '') : neg.length ? '1/' + (neg.length > 1 ? '(' + neg.join('·') + ')' : neg[0]) : '1 (sin dimensiones)'; };
+  // trozos de una expresión separados por + o − fuera de paréntesis (no cuenta el signo ni el exponente)
+  function trozos(src) {
+    const t = []; let nivel = 0, ini = 0;
+    for (let i = 0; i < src.length; i++) { const c = src[i]; if (c === '(') nivel++; else if (c === ')') nivel--; else if (nivel === 0 && (c === '+' || c === '-') && i > ini && !/[*/^(eE+-]\s*$/.test(src.slice(ini, i).replace(/\s/g, '').slice(-1)) ) { t.push(src.slice(ini, i)); ini = i + 1; } }
+    t.push(src.slice(ini)); return t.map((x) => x.trim()).filter(Boolean);
+  }
+  function dimension(src, ctx) {
+    const norm = String(src).replace(/π/g, 'pi').replace(/λ/g, 'lambda').replace(/σ/g, 'sigma').replace(/ρ/g, 'rho').replace(/ε₀|ε0|ε/g, 'eps0');
+    const ids = [...new Set(norm.match(/[A-Za-z_][A-Za-z_0-9]*/g) || [])].filter((n) => !['pi', 'e'].includes(n.toLowerCase()) && !/^(sqrt|ln|log|exp|sin|cos|tan|asin|acos|atan|abs|arctan|arcsin|arccos)$/i.test(n));
+    const dims = {};
+    for (const n of ids) {
+      if (n === 'eps0') dims[n] = [2, -2, -1];
+      else if (n === 'a' || n === ctx.unit) dims[n] = [0, 1, 0];
+      else { const k = ctx.kinds[n] || (DIM_K[n] ? n : null); if (!k || !DIM_K[k]) return null; dims[n] = DIM_K[k]; }
+    }
+    const ev = (fl) => { const vars = {}; ids.forEach((n, i) => { vars[n] = (1.3 + 0.17 * i) * 2 ** dims[n].reduce((s, d, j) => s + d * fl[j], 0); }); try { return Engine.parseExpr(norm, null, vars); } catch (e) { return NaN; } };
+    const r0 = ev([0, 0, 0]); if (!isFinite(r0) || r0 === 0) return null;
+    const d = [[1, 0, 0], [0, 1, 0], [0, 0, 1]].map((fl) => { const q = ev(fl) / r0; return Math.log2(Math.abs(q)) ; });
+    if (d.some((x) => !isFinite(x) || Math.abs(2 * x - Math.round(2 * x)) > 1e-7)) return 'mixta';
+    return d.map((x) => Math.round(2 * x) / 2);
+  }
+  // devuelve un aviso si la respuesta no tiene las dimensiones de la magnitud pedida, o '' si cuadran o no se puede saber
+  function checkDim(raw, ans, ctx) {
+    if (F.getMode() === 'si' || !ctx) return '';
+    const esp = DIM_Q[ans.qty] || (DIM_K[ans.qty] ? DIM_K[ans.qty] : null); if (!esp) return '';
+    const piezas = trozos(raw), ds = piezas.map((x) => dimension(x, ctx));
+    if (ds.some((x) => x === null)) return '';
+    if (piezas.length > 1) {
+      const i = ds.findIndex((x, j) => j && (x === 'mixta' || ds[0] === 'mixta' || x.some((n, k) => Math.abs(n - ds[0][k]) > 1e-7)));
+      if (i > 0) return `Los sumandos no tienen las mismas dimensiones: «${piezas[0]}» sale en ${ds[0] === 'mixta' ? '¿?' : dimTxt(ds[0])} y «${piezas[i]}» en ${ds[i] === 'mixta' ? '¿?' : dimTxt(ds[i])}.`;
+    }
+    const d = dimension(raw, ctx); if (d === null) return '';
+    if (d === 'mixta') return 'Las dimensiones de la expresión no cuadran: hay sumandos o funciones con unidades que no se pueden combinar.';
+    if (d.some((n, k) => Math.abs(n - esp[k]) > 1e-7)) return `Las dimensiones no cuadran: tu expresión sale en ${dimTxt(d)} y debería salir en ${dimTxt(esp)}.`;
+    return 'Las dimensiones sí cuadran: revisa el coeficiente.';
+  }
+
   /* --------- Modo práctica: comprobar la respuesta del alumno --------- */
   function checkAnswer(ans, inputs, ctx) {
     const si = F.getMode() === 'si';
@@ -977,7 +1019,7 @@ const Physics = (() => {
         let got;
         try { got = raw === '' ? 0 : Engine.parseExpr(raw, null, vars); } catch (e) { return { ok: false, msg: 'No entiendo la expresión: ' + e.message }; }
         const scale = Math.max(Math.abs(exp), ...comps.map(() => 0)) || 1;
-        if (Math.abs(got - exp) > 2e-3 * Math.max(Math.abs(exp), 1e-12) && !(Math.abs(exp) < 1e-12 && Math.abs(got) < 1e-9 * scale)) return { ok: false, msg: ans.vec ? `La componente ${'xyz'[k]} no coincide.` : 'No coincide.' };
+        if (Math.abs(got - exp) > 2e-3 * Math.max(Math.abs(exp), 1e-12) && !(Math.abs(exp) < 1e-12 && Math.abs(got) < 1e-9 * scale)) return { ok: false, msg: (ans.vec ? `La componente ${'xyz'[k]} no coincide.` : 'No coincide.') + ' ' + checkDim(raw, ans, ctx) };
       }
     }
     return { ok: true, msg: 'Correcto' };
@@ -1282,6 +1324,6 @@ const Physics = (() => {
     return { ctx, unknown, results };
   }
 
-  return { SOURCES, ANALYSES, CONDS, run, build, checkAnswer, normUnknown, field, potential, fieldNum, potNum, trimNum };
+  return { SOURCES, ANALYSES, CONDS, run, build, checkAnswer, checkDim, normUnknown, field, potential, fieldNum, potNum, trimNum };
 })();
 if (typeof module !== 'undefined') module.exports = Physics;
