@@ -8,6 +8,7 @@
   const P = Costes, { f, dinero, num } = Eco;
   const ud = (x) => `${f(x, 6)} unidades`;
   Calculadora.monta({
+    usar: [{ a: 'beneficio', nombre: 'Maximización del beneficio', datos: (s) => (s.c === 0 ? { modo: 'competencia', cf: String(s.cf), c: String(s.a), d: String(s.b), p: String(Math.round(1e4 * s.pm) / 1e4).replace('.', ',') } : { modo: 'competencia3', cf: String(s.cf), ca: String(s.a), cb: String(s.b), cc: String(s.c), p: String(Math.round(1e4 * s.pm) / 1e4).replace('.', ',') }) }],
     C: P, carpeta: 'costes', app: 'CostesApp',
     nota: 'CT(Q) = CF + a·Q + b·Q² + c·Q³. Con b y c vacíos valen 0. Para una curva en U, b negativo y c positivo; con c = 0, b tiene que ser positivo.',
     campos: () => [

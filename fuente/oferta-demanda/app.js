@@ -16,6 +16,7 @@
   const ec = (sc) => `Qd = ${sc.a} − ${sc.b}P y Qs = ${String(sc.c).startsWith('-') ? `−${String(sc.c).slice(1)} + ` : sc.c === '0' ? '' : `${sc.c} + `}${sc.d}P`;
   Calculadora.monta({
     C: O, carpeta: 'oferta-demanda', app: 'OfertaDemandaApp', azar,
+    usar: [{ a: 'excedentes', nombre: 'Excedentes e impuestos', datos: (s, sc) => ({ a: sc.a, b: sc.b, c: sc.c, d: sc.d, interv: 'ninguna', v: '' }) }],
     enunciado: (sc) => `En un mercado, la demanda y la oferta son ${ec(sc)}. Calcula el precio y la cantidad de equilibrio y las elasticidades de la demanda y de la oferta en ese punto.`,
     nota: 'Demanda Qd = a − bP y oferta Qs = c + dP. Escribe las curvas como cantidad en función del precio (c puede ser negativo). Si te las dan al revés, P = α − βQ, despeja: a = α/β y b = 1/β. Los tres últimos datos son opcionales.',
     campos: () => [

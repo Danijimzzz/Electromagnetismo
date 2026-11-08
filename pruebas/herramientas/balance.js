@@ -24,5 +24,19 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     error({ ...C.ejemplos[0].sc, t: '120' }, 'impuesto superior al 100 %');
     if (fallos === antes) console.log(`  ✓ ${N}: ${C.ejemplos.length} ejemplos calculados a mano (EBITDA, BAI, impuesto, balance, fondo de maniobra) y errores`);
   }
-  return Com.navegador({ publico, carpeta: 'balance', nombre: N, app: 'BalanceApp', C, pagina, mal, malo: { k: 'cap', v: '5' } });
+  return Com.navegador({ publico, carpeta: 'balance', nombre: N, app: 'BalanceApp', C, pagina, mal, malo: { k: 'cap', v: '5' },
+    // «Usar en Ratios»: lleva el balance a la otra herramienta en la dirección (#d=…)
+    extra: async (page, m) => {
+      await page.evaluate(() => window.BalanceApp.abrirEjemplo(Object.keys ? document.querySelector('#ejemplos').options[1].value : ''));
+      const btn = page.locator('.usar-en a', { hasText: 'Ratios' });
+      if (!(await btn.count())) { m(`${N}: falta el botón «Usar en Ratios financieros»`); return; }
+      await page.evaluate(() => { window.addEventListener('simu-usar', (e) => { e.preventDefault(); window.__usar = e.detail.url; }); });
+      await btn.click();
+      const url = await page.evaluate(() => window.__usar);
+      if (!/^\.\.\/ratios\/#d=/.test(url || '')) { m(`${N}: «Usar en Ratios» no lleva a Ratios (${url})`); return; }
+      const d = JSON.parse(Buffer.from(url.split('#d=')[1].replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8'));
+      const S = C.resolver(C.ejemplos[0].sc), cuadra = Math.abs(+d.anc + +d.ex + +d.re + +d.di - (+d.pn + +d.pnc + +d.pc)) < 0.02;
+      if (!cuadra) m(`${N}: el balance que pasa a Ratios no cuadra: ${JSON.stringify(d)}`);
+      if (+d.re !== S.deu && C.ejemplos[0].sc.deu !== undefined) m(`${N}: el realizable no coincide con los deudores`);
+    } });
 };

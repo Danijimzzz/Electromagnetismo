@@ -262,7 +262,8 @@ const Calculadora = (() => {
         const a = e.target.closest('a[data-i]'); if (!a) return; e.preventDefault();
         const u = o.usar[+a.dataset.i]; if (!sol) { const er = $('#error'); er.textContent = 'Corrige primero los datos para poder usarlos en otra herramienta'; er.hidden = false; return; }
         const datos = JSON.stringify(u.datos(sol, sc)), b64 = btoa(unescape(encodeURIComponent(datos))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-        location.href = `../${u.a}/#d=${b64}`;
+        const url = `../${u.a}/#d=${b64}`;
+        if (window.dispatchEvent(new CustomEvent('simu-usar', { cancelable: true, detail: { url } }))) location.href = url;
       });
     }
     const leeColores = () => { col = colores(o.colores || []); };
