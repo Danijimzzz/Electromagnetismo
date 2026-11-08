@@ -30,13 +30,22 @@
        grafica(sol, col), configuración de grafica() o null
        despues(r, sol, col), dibujo extra sobre la gráfica (r = { X, Y, g, w, h })
        leyenda(sol), HTML bajo la gráfica
+       grafica2(sol, col), despues2, leyenda2(sol)   segunda gráfica (opcional: hace falta
+                     <canvas id="grafica2"> y <p id="leyenda2"> en una tarjeta de la página)
+       acciones(sol, sc), botones bajo los datos (opcional): [{ texto, cambios }]; al pulsar uno
+                     se cambian esos datos (como pon) y se recalcula
+       usar,         botones «Usar en…» (opcional): [{ a: 'carpeta-destino', nombre, datos(sol, sc) }]
+                     que abren esa herramienta con los datos que devuelve datos(), en el
+                     formato de estado de la otra (la dirección lleva #d=, como «Copiar enlace»)
        nota,         texto de ayuda bajo los datos
        datosExporta(sol), tabla { cab, filas } para «Copiar datos» (opcional; si no, los puntos de las series)
        azar(),       sc al azar para el modo práctica (opcional)
        enunciado(sc, sol), enunciado del modo práctica (opcional)
      })
    Un cambio en un desplegable vuelve a pintar el formulario (los campos pueden
-   depender del modo elegido). window.<app>.pon(cambios) cambia unos datos desde
+   depender del modo elegido). Cada gráfica lleva «Descargar PNG» y «Copiar datos» (Herramienta.exportar) y se
+   describe con su leyenda (role="img" y aria-describedby) para lectores de pantalla.
+   window.<app>.pon(cambios) cambia unos datos desde
    fuera del formulario (por ejemplo, al mover o acercar la gráfica) y recalcula.
    ===================================================================== */
 const Calculadora = (() => {
@@ -170,7 +179,8 @@ const Calculadora = (() => {
       // los desplegables empiezan en su primera opción si el estado no trae valor
       for (const c of cs) if (c.tipo === 'sel' && !c.ops.some(([val]) => val === sc[c.k])) sc[c.k] = c.ops[0][0];
       $('#campos').innerHTML = cs.map((c) => (c.sep ? `<div class="sep">${c.sep}</div>` : '') + (c.k ? campo(c) : '')).join(''); // un {sep} suelto es solo un título: sin campo fantasma «undefined»
-      if (o.nota) $('#nota').innerHTML = o.nota;
+      if (o.acciones && !$('#acciones')) { const d = document.createElement('div'); d.id = 'acciones'; d.className = 'controles'; d.setAttribute('role', 'group'); d.setAttribute('aria-label', 'Atajos'); d.style.margin = '8px 0'; $('#nota').after(d); }
+      if (o.nota) $('#nota').innerHTML = typeof o.nota === 'function' ? o.nota(sc) : o.nota;
     }
     $('#campos').addEventListener('input', (e) => { const t = e.target; if (!t.dataset.k || t.tagName === 'SELECT') return; sc[t.dataset.k] = t.value; $('#ejemplos').value = ''; calcula(); });
     $('#campos').addEventListener('change', (e) => { const t = e.target; if (!t.dataset.k || t.tagName !== 'SELECT') return; sc[t.dataset.k] = t.value; $('#ejemplos').value = ''; formulario(); calcula(); });
@@ -187,6 +197,15 @@ const Calculadora = (() => {
     function azar() { if (!o.azar) return; sc = o.azar(); formulario(); calcula(); sel.value = ''; }
     function pon(cambios) { Object.assign(sc, cambios); formulario(); calcula(); sel.value = ''; }
 
+    /* ---------- Atajos bajo los datos ---------- */
+    let accs = [];
+    function pintaAcciones() {
+      const d = $('#acciones'); if (!d) return;
+      accs = o.acciones(sol, sc) || [];
+      d.innerHTML = accs.map((a, i) => `<button type="button" class="btn" style="white-space:normal;text-align:left" data-i="${i}">${a.texto}</button>`).join('');
+    }
+    document.addEventListener('click', (e) => { const b = e.target.closest && e.target.closest('#acciones button[data-i]'); if (b && accs[+b.dataset.i]) pon(accs[+b.dataset.i].cambios); });
+
     /* ---------- Cálculo ---------- */
     function calcula() {
       const err = $('#error');
@@ -197,10 +216,12 @@ const Calculadora = (() => {
         if (/\b(NaN|Infinity)\b/.test(JSON.stringify([filas, sol.pasos]))) throw new Error('Con estos datos el resultado se sale del rango que se puede calcular (demasiado grande, demasiado pequeño o indefinido). Prueba con valores más moderados.');
       } catch (e) {
         sol = null; err.textContent = e.message; err.hidden = false;
+        if ($('#acciones')) $('#acciones').innerHTML = '';
         for (const s of ['#resumen', '#pasos', '#leyenda', '#tabla']) { const el = $(s); if (el) el.innerHTML = ''; }
         dibuja(); return;
       }
       err.hidden = true; guarda();
+      pintaAcciones();
       $('#resumen').innerHTML = filas.map(([t, v, ancho]) => `<div${ancho ? ' class="ancho"' : ''}><span>${t}</span><b>${v}</b></div>`).join('');
       $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
       const tb = $('#tabla'); if (tb) { const h = o.tabla ? o.tabla(sol) : ''; tb.innerHTML = h; tb.closest('.card').hidden = !h; }
@@ -212,11 +233,47 @@ const Calculadora = (() => {
     function dibuja() {
       const c = $('#grafica'); if (!c) return;
       const cfg = sol && o.grafica ? o.grafica(sol, col) : null;
-      if (!cfg) { Herramienta.lienzo(c); return; }
-      const r = grafica(c, cfg, col);
-      if (r && o.despues) o.despues(r, sol, col);
-      // «Descargar PNG» y «Copiar datos» bajo la gráfica (Herramienta.exportar); datosExporta(sol) puede dar la tabla a copiar, y si no, salen los puntos de las series
-      if (window.Herramienta && Herramienta.exportar) Herramienta.exportar(c, { nombre: o.carpeta, titulo: (document.querySelector('h1') || {}).textContent, datos: () => (o.datosExporta ? o.datosExporta(sol) : puntosSeries(sol && o.grafica ? o.grafica(sol, col) : null)) });
+      cfgs['#grafica'] = cfg;
+      if (!cfg) Herramienta.lienzo(c);
+      else { const r = grafica(c, cfg, col); if (r && o.despues) o.despues(r, sol, col); }
+      const c2 = $('#grafica2');
+      if (c2) {
+        const cfg2 = sol && o.grafica2 ? o.grafica2(sol, col) : null, card = c2.closest('.card');
+        cfgs['#grafica2'] = cfg2;
+        if (card) card.hidden = !cfg2;
+        if (!cfg2) Herramienta.lienzo(c2);
+        else { const r2 = grafica(c2, cfg2, col); if (r2 && o.despues2) o.despues2(r2, sol, col); }
+        const l2 = $('#leyenda2'); if (l2) l2.innerHTML = cfg2 && o.leyenda2 ? o.leyenda2(sol) : '';
+      }
+    }
+    // describe cada gráfica para lectores de pantalla y le pone «Descargar PNG» y «Copiar datos» (Herramienta.exportar)
+    let cfgs = {};
+    function botonesGrafica() {
+      for (const [id, ley, sufijo] of [['#grafica', '#leyenda', ''], ['#grafica2', '#leyenda2', '-2']]) {
+        const c = $(id); if (!c) continue;
+        c.setAttribute('role', 'img'); const l = $(ley); if (l) c.setAttribute('aria-describedby', l.id);
+        Herramienta.exportar(c, { nombre: `${o.carpeta}${sufijo}`, titulo: (c.closest('.card')?.querySelector('h2')?.textContent || '').trim(), datos: () => {
+          const cfg = cfgs[id]; if (!cfg) return null;
+          if (id === '#grafica' && o.datosExporta) return o.datosExporta(sol);
+          const filas = []; (cfg.series || []).forEach((sr, k) => { if (sr.tipo === 'barras' || sr.tipo === 'puntos' || !sr.tipo || sr.tipo === 'linea' || sr.tipo === 'area') for (const [x, y] of sr.pts) filas.push([`Serie ${k + 1}${sr.tipo === 'puntos' ? ' (puntos)' : ''}`, x, y]); });
+          return { cab: ['Serie', cfg.ejeX || 'x', cfg.ejeY || 'y'], filas };
+        } });
+      }
+    }
+    /* ---------- «Usar en…» ---------- */
+    function botonesUsar() {
+      if (!o.usar || !o.usar.length) return;
+      const card = $('#resumen') && $('#resumen').closest('.card'); if (!card || card.querySelector('.usar-en')) return;
+      const caja = document.createElement('div'); caja.className = 'controles usar-en'; caja.setAttribute('role', 'group'); caja.setAttribute('aria-label', 'Usar estos datos en otra herramienta'); caja.style.marginTop = '10px';
+      caja.innerHTML = o.usar.map((u, i) => `<a class="btn" href="#" data-i="${i}">Usar en ${esc(u.nombre)} →</a>`).join('');
+      card.appendChild(caja);
+      caja.addEventListener('click', (e) => {
+        const a = e.target.closest('a[data-i]'); if (!a) return; e.preventDefault();
+        const u = o.usar[+a.dataset.i]; if (!sol) { const er = $('#error'); er.textContent = 'Corrige primero los datos para poder usarlos en otra herramienta'; er.hidden = false; return; }
+        const datos = JSON.stringify(u.datos(sol, sc)), b64 = btoa(unescape(encodeURIComponent(datos))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+        const url = `../${u.a}/#d=${b64}`;
+        if (window.dispatchEvent(new CustomEvent('simu-usar', { cancelable: true, detail: { url } }))) location.href = url;
+      });
     }
     const leeColores = () => { col = colores(o.colores || []); };
     window.addEventListener('resize', dibuja);
@@ -224,7 +281,7 @@ const Calculadora = (() => {
     matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { leeColores(); dibuja(); });
 
     const ver = $('#ver'); if (ver) ver.textContent = Version.de(o.carpeta).current;
-    leeColores(); formulario(); calcula();
+    leeColores(); botonesGrafica(); botonesUsar(); formulario(); calcula();
     const enunciado = () => (o.enunciado ? o.enunciado(sc, sol) : undefined);
     return (window[o.app] = { abrirEjemplo, azar, pon, enunciado, resultado: () => sol, estado: () => copia(sc) });
   }

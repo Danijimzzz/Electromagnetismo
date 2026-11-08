@@ -10,16 +10,20 @@
   const ud = (x) => `${f(x, 6)} unidades`;
   Calculadora.monta({
     C: B, carpeta: 'beneficio', app: 'BeneficioApp',
-    nota: 'Costes totales CT = CF + c·Q + d·Q², con coste marginal CMg = c + 2d·Q. En competencia perfecta la empresa toma el precio del mercado; en monopolio se enfrenta a la demanda P = a − b·Q (con b > 0).',
+    nota: 'Costes totales CT = CF + c·Q + d·Q², con coste marginal CMg = c + 2d·Q (o, en «coste cúbico», CT = CF + a·Q + b·Q² + c·Q³, la misma función que Costes de producción). En competencia perfecta la empresa toma el precio del mercado; en monopolio se enfrenta a la demanda P = a − b·Q (con b > 0).',
     campos: (sc) => [
       { k: 'modo', nom: 'Mercado', tipo: 'sel', ops: Object.entries(B.MODOS) },
-      { k: 'cf', nom: 'Costes fijos CF', un: '€', sep: 'Costes' }, { k: 'c', nom: 'Coste variable c', un: '€/unidad' }, { k: 'd', nom: 'Coeficiente d', un: '€/unidad²', ayuda: 'cuánto crece el coste marginal con cada unidad' },
+      { k: 'cf', nom: 'Costes fijos CF', un: '€', sep: 'Costes' },
+      ...(sc.modo === 'competencia3'
+        ? [{ k: 'ca', nom: 'Coeficiente a (de Q)', un: '€/unidad' }, { k: 'cb', nom: 'Coeficiente b (de Q²)', ayuda: 'puede ser negativo' }, { k: 'cc', nom: 'Coeficiente c (de Q³)', ayuda: 'mayor que 0' }]
+        : [{ k: 'c', nom: 'Coste variable c', un: '€/unidad' }, { k: 'd', nom: 'Coeficiente d', un: '€/unidad²', ayuda: 'cuánto crece el coste marginal con cada unidad' }]),
       ...(sc.modo === 'monopolio'
         ? [{ k: 'a', nom: 'Ordenada a', un: '€', sep: 'Demanda P = a − b·Q', ayuda: 'precio con el que no se vende nada' }, { k: 'b', nom: 'Pendiente b', un: '€/unidad', ayuda: 'euros que baja el precio por cada unidad más' }]
         : [{ k: 'p', nom: 'Precio de mercado p', un: '€/unidad', sep: 'Mercado' }]),
     ],
     resumen: (s) => [
       ['Cantidad óptima', s.opera ? `Q = ${ud(s.q)}` : 'No producir (Q = 0)'],
+      ...(s.modo === 'competencia3' ? [['¿Producir o cerrar?', s.opera ? 'Producir' : 'Conviene cerrar', true]] : []),
       ['Precio', `${dinero(s.pr)}`],
       ['Ingresos', dinero(s.it)], ['Costes totales', dinero(s.ct)],
       ['Beneficio', dinero(s.b), true],
@@ -27,11 +31,11 @@
         : [['Índice de Lerner', f(s.lerner, 4)], ['Competencia: cantidad y precio', `${f(s.qc, 5)} a ${dinero(s.pc)}`], ['Pérdida de eficiencia', dinero(s.perd), true]]),
     ],
     grafica: (s) => {
-      const mono = s.modo === 'monopolio', X = mono ? Math.max(s.qc, s.q) * 1.35 : Math.max(s.q, 2 * Math.sqrt(s.cf / s.d || 1), 1) * 1.5;
-      const cmg = (x) => s.c + 2 * s.d * x, cme = (x) => s.cf / x + s.c + s.d * x, N = 60;
+      const mono = s.modo === 'monopolio', X = mono ? Math.max(s.qc, s.q) * 1.35 : s.fn ? Math.max(s.q, 1.6 * s.qm, 1) * 1.3 : Math.max(s.q, 2 * Math.sqrt(s.cf / s.d || 1), 1) * 1.5;
+      const cmg = s.fn ? s.fn.cmg : (x) => s.c + 2 * s.d * x, cme = s.fn ? s.fn.cme : (x) => s.cf / x + s.c + s.d * x, N = 60;
       const xs = Array.from({ length: N }, (_, i) => X * (i + 1) / N);
       const cmeMax = Math.max(s.pr, cmg(X)) * 1.15, rec = xs.filter((x) => cme(x) <= cmeMax);
-      const series = [{ pts: [[0, s.c], [X, cmg(X)]], color: '--serie-2' }, { pts: rec.map((x) => [x, cme(x)]), color: '--serie-3' }];
+      const series = [{ pts: s.fn ? xs.map((x) => [x, cmg(x)]) : [[0, s.c], [X, cmg(X)]], color: '--serie-2' }, { pts: rec.map((x) => [x, cme(x)]), color: '--serie-3' }];
       if (mono) series.unshift({ pts: [[0, s.a], [s.a / s.bb, 0]], color: '--serie-1', grosor: 1.6, discontinua: true }, { pts: [[0, s.a], [s.a / (2 * s.bb), 0]], color: '--serie-1' });
       else series.unshift({ pts: [[0, s.p], [X, s.p]], color: '--serie-1' });
       series.push({ pts: [[0, s.pr], [s.q, s.pr], [s.q, 0]], color: '--muted', grosor: 1, discontinua: true }, { tipo: 'puntos', pts: [[s.q, s.pr], [s.q, s.cmgq]], color: '--ink', radio: 5 });

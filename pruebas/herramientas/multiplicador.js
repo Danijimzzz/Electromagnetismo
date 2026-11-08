@@ -15,6 +15,8 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     // abierta: A = 150 − 75 + 250 + 350 + 200 − 50 = 825, b = 0,75·0,8 − 0,1 = 0,5, k = 2, Y* = 1650; M = 215; S + T + M = I + G + X
     const o = ej('abierta'); cerca(o.y, 1650, 1e-9, 'Y* abierta'); cerca(o.imp, 215, 1e-9, 'M'); cerca(o.ahorro + o.T + o.imp, 800, 1e-9, 'S + T + M = I + G + X'); cerca(o.da, o.y, 1e-9, 'DA = Y');
     cerca(o.brecha, 850, 1e-9, 'brecha'); cerca(o.dgNec, 425, 1e-9, 'ΔG necesario'); cerca(o.dtNec, -850 / 1.5, 1e-9, 'ΔT0 necesario');
+    // cerrada sin Estado: k = 1/(1 − 0,9) = 10, Y* = (50 + 150)·10 = 2000, ΔG = 20 → ΔY = 200; presupuesto equilibrado: ΔY = 100·5 − 0,8·100·5 = 100
+    { const z = ej('cerrada'); cerca(z.k, 10, 1e-9, 'multiplicador sin Estado'); cerca(z.y, 2000, 1e-9, 'Y* sin Estado'); cerca(z.dy, 200, 1e-9, 'ΔY sin Estado'); const q = ej('presupuesto-equilibrado'); cerca(q.dy, 100, 1e-9, 'ΔY con presupuesto equilibrado (teorema de Haavelmo)'); }
     error({ ...t.sc ?? C.ejemplos[0].sc, c: '1' }, 'multiplicador infinito');
     error({ ...C.ejemplos[0].sc, c: '1,2' }, 'c mayor que 1');
     error({ ...C.ejemplos[0].sc, c0: '' }, 'falta C0');

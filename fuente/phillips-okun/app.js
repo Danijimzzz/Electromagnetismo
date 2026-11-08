@@ -10,7 +10,7 @@
   const pc = (v) => `${f(v)} %`;
   Calculadora.monta({
     C: PO, carpeta: 'phillips-okun', app: 'PhillipsOkunApp',
-    nota: 'Paro, crecimiento e inflación en %. Para un valor negativo, escribe el signo menos (−1).',
+    nota: (sc) => 'Paro, crecimiento e inflación en %. Para un valor negativo, escribe el signo menos (−1).' + (sc.modo === 'datos' ? ' <b>Los datos del ejemplo están inventados</b> (no son de ningún país real): sustitúyelos por los tuyos.' : ''),
     campos: (sc) => {
       const cs = [{ k: 'modo', nom: 'Calcular', tipo: 'sel', ops: Object.entries(PO.MODOS) }];
       if (sc.modo === 'brecha') return [...cs, { k: 'u', nom: 'Paro u', un: '%' }, { k: 'un', nom: 'Paro natural uₙ', un: '%' }, { k: 'c', nom: 'Coeficiente de Okun c', ayuda: '(suele ser 2 o 3)' }, { k: 'Yp', nom: 'PIB potencial (opcional)', un: 'miles de millones de €' }];
