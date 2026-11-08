@@ -30,7 +30,8 @@ const Imagenes = (() => {
   };
   // para dentro de una fórmula: 3,333 nC → 3,333 "nC"
   const uq = (x, unidad, d = 4) => u(x, unidad, d).replace(/ (.+)$/, ' "$1"');
-  const leeNum = (s) => +String(s).trim().replace(/\s/g, '').replace(',', '.').replace(/[·x×*]10\^?([+\-−]?\d+)/i, 'e$1').replace('−', '-');
+  const leeNum0 = (s) => +String(s).trim().replace(/\s/g, '').replace(',', '.').replace(/[·x×*]10\^?([+\-−]?\d+)/i, 'e$1').replace('−', '-');
+  const leeNum = (s) => { const u = typeof Herramienta !== 'undefined' ? Herramienta.leeUn(s) : undefined; return u !== undefined ? u : leeNum0(s); }; // admite «4 mm», «2,4 GHz», «10 pF»
   const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
   const lee = (sc, k, nom, { opcional = false, signo = false, cero = false, def = null } = {}) => {
     if (vacio(sc[k])) { if (opcional) return def; throw new Error(`Falta ${nom}`); }
