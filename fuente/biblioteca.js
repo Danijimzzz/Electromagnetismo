@@ -16,6 +16,8 @@
    abrirlo) y «Hoja para imprimir» (elige varios ejercicios y se imprimen juntos con su solución:
    cada uno se abre en un marco oculto de la misma página, se copian sus resultados y su desarrollo
    y se devuelve el estado de antes).
+   Sin carreras (Fase 10): antes de leer el estado lanza «simu-guardar» (las apps con cálculo en espera guardan al momento) y, al
+   abrir un ejercicio, bloquea las escrituras de la clave hasta recargar. Prueba: pruebas/biblioteca-carreras.js.
    ===================================================================== */
 const Biblioteca = (() => {
   const FORMATO = 'simulaciencia-ejercicios', ANCHO = 1280;
@@ -221,6 +223,13 @@ const Biblioteca = (() => {
     function carga(it) {
       if (!escribe(clave, it.datos)) { aviso('No se pudo abrir: el navegador no deja usar el almacenamiento'); return; }
       ponActivo(it.id);
+      // hasta que la página se recargue, nada puede volver a escribir la clave: una app con un cálculo pendiente (espera, animación)
+      // sobrescribiría lo que se acaba de abrir con el estado de antes y el ejercicio saldría «a veces» mal
+      try {
+        const pon = Storage.prototype.setItem, quita = Storage.prototype.removeItem;
+        Storage.prototype.setItem = function (k, v) { if (this === localStorage && k === clave) return; return pon.call(this, k, v); };
+        Storage.prototype.removeItem = function (k) { if (this === localStorage && k === clave) return; return quita.call(this, k); };
+      } catch (e) { /* sin almacenamiento */ }
       // si se estaba practicando, lo que se abre sustituye a los datos de antes de la práctica
       try { sessionStorage.removeItem(`simu-practica:${herramienta}`); } catch (e) { /* sin almacenamiento */ }
       // sin el #… de la dirección, que en algunas herramientas (configuración electrónica) manda sobre lo guardado
