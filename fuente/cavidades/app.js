@@ -32,6 +32,7 @@
     const dims = g === 'rect' ? fila('a', 'Lado a', 'mm') + fila('b', 'Lado b', 'mm') + fila('d', 'Longitud d (eje z)', 'mm') : g === 'cil' ? fila('R', 'Radio R', 'mm') + fila('L', 'Longitud L (eje z)', 'mm') : fila('R', 'Radio R', 'mm');
     $('#campos').innerHTML = '<div class="sep">Cavidad</div>' + elige('geo', 'Forma', Object.entries(GEO).map(([k, v]) => [k, v.nombre])) + dims +
       '<div class="sep">Relleno y paredes</div>' + fila('er', 'Permitividad relativa εr') + fila('tand', 'Pérdidas del relleno tg δ') + fila('sigma', 'Conductividad de las paredes σ', 'S/m') +
+      '<div class="sep">Acoplo a la línea</div>' + fila('beta', 'Factor de acoplo β (vacío = 1)') +
       '<div class="sep">Modo</div>' + elige('tipo', 'Tipo de modo', [['TE', 'TE (Ez = 0)'], ['TM', 'TM (Hz = 0)']]) + G.idx.map((t, j) => fila('i' + (j + 1), t)).join('');
     $('#nota').textContent = 'Vacío tg δ: sin pérdidas en el relleno. σ del cobre: 5,8·10^7 S/m. Se admite coma decimal. El eje de la cavidad es z; en la esférica cada modo es (2n+1) veces degenerado.';
   }
@@ -76,17 +77,18 @@
     const err = $('#error');
     try { sol = P.resolver(sc); } catch (e) {
       sol = null; mp = null; err.textContent = e.message; err.hidden = false;
-      $('#resumen').innerHTML = ''; $('#pasos').innerHTML = ''; $('#modos').innerHTML = ''; $('#leyenda').textContent = ''; controles(); dibuja(); return;
+      $('#resumen').innerHTML = ''; $('#pasos').innerHTML = ''; $('#modos').innerHTML = ''; $('#leyenda').textContent = ''; controles(); dibuja(); curva(); return;
     }
     err.hidden = true; guarda();
     let h = dato('Modo', `${sol.nombre}`, 'est') + dato('Frecuencia de resonancia', `f<sub>0</sub> = ${f(sol.f0 / 1e9)} GHz`) + dato('Longitud de onda en el relleno', `λ<sub>0</sub> = ${f(sol.lam * 1000)} mm`) +
       dato('Profundidad de penetración', `δ = ${f(sol.delta * 1e6)} μm`) + dato('Q de las paredes', `Q<sub>c</sub> = ${f(sol.Qc)}`) +
-      (sol.tand > 0 ? dato('Q del dieléctrico', `Q<sub>d</sub> = ${f(sol.Qd)}`) : '') + dato('Factor de calidad total', `Q = ${f(sol.Q)}`) + dato('Ancho de banda', `Δf = ${f(sol.df / 1e3)} kHz`);
+      (sol.tand > 0 ? dato('Q del dieléctrico', `Q<sub>d</sub> = ${f(sol.Qd)}`) : '') + dato('Factor de calidad total', `Q = ${f(sol.Q)}`) + dato('Ancho de banda', `Δf = ${f(sol.df / 1e3)} kHz`) +
+      dato(`Acoplo ${sol.tipoAcoplo}`, `Q<sub>L</sub> = ${f(sol.QL)}, Δf<sub>L</sub> = ${f(sol.dfL / 1e3)} kHz`) + dato('Reflexión en resonancia', `|S<sub>11</sub>| = ${f(sol.s11min)} dB`);
     $('#resumen').innerHTML = h;
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
     $('#modos').innerHTML = '<div class="tabla-scroll"><table class="tabla"><thead><tr><th scope="col">Modo</th><th scope="col">Frecuencia (GHz)</th></tr></thead><tbody>' +
       sol.modos.map((m) => { const act = m.tipo === sol.tipo && m.i.every((q, j) => q === sol.i[j]); return `<tr><td><button type="button" class="elige-modo" data-m="${m.tipo}|${m.i.join('|')}"${act ? ' aria-current="true"' : ''}>${m.nombre}</button></td><td>${f(m.f / 1e9)}</td></tr>`; }).join('') + '</tbody></table></div>';
-    controles(); remapea();
+    controles(); remapea(); curva();
   }
   $('#modos').addEventListener('click', (e) => {
     const b = e.target.closest('button[data-m]'); if (!b) return;
@@ -113,6 +115,24 @@
     dibuja();
   }
 
+  /* ---------- Curva de resonancia |S11| (CA-2) ---------- */
+  function curva() {
+    const { g, w, h } = lienzo('#curva');
+    if (!sol || !w || !h) { $('#leyenda-curva').textContent = ''; return; }
+    const pts = P.curva(sol), mi = { l: 52, r: 14, t: 14, b: 34 }, fmin = pts[0].f, fmax = pts[pts.length - 1].f, ymin = Math.min(-30, Math.floor(sol.s11min / 10) * 10 - 10), ymax = 0;
+    const X = (fr) => mi.l + ((fr - fmin) / (fmax - fmin)) * (w - mi.l - mi.r), Y = (v) => mi.t + ((ymax - Math.max(v, ymin)) / (ymax - ymin)) * (h - mi.t - mi.b);
+    g.font = '12px system-ui, sans-serif'; g.strokeStyle = col['--line']; g.fillStyle = col['--muted']; g.lineWidth = 1; g.textAlign = 'right'; g.textBaseline = 'middle';
+    for (let v = ymax; v >= ymin; v -= 10) { g.beginPath(); g.moveTo(mi.l, Y(v)); g.lineTo(w - mi.r, Y(v)); g.stroke(); g.fillText(String(v), mi.l - 6, Y(v)); }
+    g.textAlign = 'center'; g.textBaseline = 'top';
+    for (const t of [fmin, sol.f0, fmax]) g.fillText(f(t / 1e9, 6) + ' GHz', Math.min(Math.max(X(t), mi.l + 36), w - mi.r - 36), h - mi.b + 8);
+    // ancho de banda cargado: la potencia reflejada pasa por la mitad de su hundimiento
+    g.save(); g.setLineDash([5, 4]); g.strokeStyle = col['--accent']; const xa = X(sol.f0 - sol.dfL / 2), xb = X(sol.f0 + sol.dfL / 2);
+    for (const x of [xa, xb]) { g.beginPath(); g.moveTo(x, mi.t); g.lineTo(x, h - mi.b); g.stroke(); } g.restore();
+    g.strokeStyle = col['--accent']; g.lineWidth = 2.4; g.beginPath(); pts.forEach((p, i) => (i ? g.lineTo(X(p.f), Y(p.s11)) : g.moveTo(X(p.f), Y(p.s11)))); g.stroke();
+    g.fillStyle = col['--ink']; g.save(); g.translate(14, (mi.t + h - mi.b) / 2); g.rotate(-Math.PI / 2); g.textAlign = 'center'; g.fillText('|S11| (dB)', 0, 0); g.restore();
+    $('#leyenda-curva').innerHTML = `Reflexión de la cavidad vista desde la línea de alimentación con β = ${f(sol.beta)} (${sol.tipoAcoplo}): mínimo de ${f(sol.s11min)} dB en f<sub>0</sub> = ${f(sol.f0 / 1e9)} GHz. Las líneas de trazos marcan el ancho de banda cargado Δf<sub>L</sub> = ${f(sol.dfL / 1e3)} kHz (Q<sub>L</sub> = ${f(sol.QL)}).`;
+  }
+  Exportar.monta('#curva', { nombre: 'curva-de-resonancia', datos: () => ({ cabecera: ['f (Hz)', '|S11| (dB)'], filas: sol ? P.curva(sol).map((p) => [p.f, p.s11]) : [] }) });
   /* ---------- Gráfica ---------- */
   function colores() { const cs = getComputedStyle(document.documentElement); for (const k of ['--ink', '--muted', '--line', '--accent', '--panel']) col[k] = cs.getPropertyValue(k).trim(); }
   function flecha(g, x, y, dx, dy, l) {
@@ -153,9 +173,9 @@
     g.textAlign = 'center'; g.textBaseline = 'top'; g.fillText(txt(`${ejeU}: ${f(mp.u0 * 1000)} a ${f(mp.u1 * 1000)} mm`), w / 2, y0 + H + 4);
     g.save(); g.translate(x0 - 6, y0 + H / 2); g.rotate(-Math.PI / 2); g.textBaseline = 'bottom'; g.fillText(txt(`${ejeV}: ${f(mp.v0 * 1000)} a ${f(mp.v1 * 1000)} mm`), 0, 0); g.restore();
   }
-  window.addEventListener('resize', dibuja);
+  window.addEventListener('resize', () => { dibuja(); curva(); });
   // tema.js también avisa a este oyente al pulsar el botón claro/oscuro
-  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { colores(); dibuja(); });
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { colores(); dibuja(); curva(); });
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('cavidades').current;
   colores(); formulario(); calcula();

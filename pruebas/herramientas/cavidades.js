@@ -129,6 +129,20 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     if (fallos === antes) console.log(`  ✓ Cavidades: ${C.ejemplos.length} ejemplos, f0 de las tres formas, Q de Pozar, del TM010 y de la esfera, ceros de Bessel, Maxwell y paredes en ${modos.length} modos, Q por integración directa y errores`);
   }
 
+  // CA-2 / EM-1: curva de resonancia y acoplo (Γ = |β−1|/(β+1), Q_L = Q₀/(1+β), mitad del hundimiento en ±Δf_L/2)
+  {
+    const antes = fallos, cerca = (a, b, tol, q) => { if (!(Math.abs(a - b) <= tol)) mal(`Cavidades · ${q}: ${a} en vez de ${b}`); };
+    const sc0 = C.ejemplos[0].sc, s2 = C.resolver({ ...sc0, beta: '2' }), s1 = C.resolver(sc0), sm = C.resolver({ ...sc0, beta: '0,25' });
+    cerca(s2.gam0, 1 / 3, 1e-12, '|Γ| con β = 2'); cerca(sm.gam0, 0.6, 1e-12, '|Γ| con β = 0,25'); cerca(s2.QL, s2.Q / 3, 1e-9, 'Q cargado con β = 2');
+    if (s1.tipoAcoplo !== 'crítico' || s2.tipoAcoplo !== 'sobreacoplado' || sm.tipoAcoplo !== 'subacoplado') mal('Cavidades: mal clasificado el acoplo');
+    cerca(C.gammaCurva(s2.Q, 2, 0), 1 / 3, 1e-12, 'Γ en resonancia'); cerca(C.gammaCurva(s2.Q, 2, 0.5), 1, 1e-6, 'Γ lejos de la resonancia');
+    // a ±Δf_L/2 la potencia reflejada está a mitad de camino entre el mínimo y 1
+    const dl = s2.dfL / 2 / s2.f0; cerca(C.gammaCurva(s2.Q, 2, dl) ** 2, (s2.gam0 ** 2 + 1) / 2, 1e-9, 'potencia reflejada a ±Δf_L/2');
+    const cv = C.curva(s2), mn = cv.reduce((a, b) => (b.s11 < a.s11 ? b : a)); cerca(mn.f, s2.f0, s2.f0 * 1e-4, 'mínimo de la curva en f₀');
+    let ok = false; try { C.resolver({ ...sc0, beta: '-1' }); } catch (e) { ok = true; } if (!ok) mal('Cavidades: β negativo no da error');
+    if (fallos === antes) console.log('  ✓ Cavidades: acoplo y curva de resonancia (casos cerrados)');
+  }
+
   return async (browser) => {
     const { page, consola } = await pagina(browser, 1200, 900);
     await page.goto('file://' + path.join(publico, 'electromagnetismo', 'cavidades', 'index.html'));
@@ -162,6 +176,10 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       const az = await page.evaluate(() => ({ err: !document.querySelector('#error').hidden, enun: CavidadesApp.enunciado().length, num: document.querySelectorAll('#resumen > div.num').length }));
       if (az.err || az.enun < 50 || !az.num) mal('Cavidades: el ejercicio al azar no sale bien');
     }
+    await page.evaluate(() => CavidadesApp.abrirEjemplo('teflon'));
+    await page.fill('#f-beta', '3');
+    const cv = await page.evaluate(() => ({ leyenda: document.querySelector('#leyenda-curva').textContent.length, botones: document.querySelectorAll('.exportar button').length, pasos: /Acoplo y curva/.test(document.querySelector('#pasos').textContent) }));
+    if (cv.leyenda < 40 || cv.botones !== 2 || !cv.pasos) mal('Cavidades: falta la curva de resonancia, su descripción o los botones de exportar');
     await page.close();
     if (consola.length) mal('Cavidades: consola del navegador:\n      ' + consola.join('\n      '));
     if (fallos === antes) console.log(`  ✓ Cavidades: ${C.ejemplos.length} ejemplos en la página con MathML, tabla de modos, mapa de campo, cambio de forma, ejercicio al azar y errores, sin errores de consola`);
