@@ -24,8 +24,11 @@
     h += sep('Medio 1 (de donde llega la onda)') + (er ? fila('er1', 'ε<sub>r</sub>') + fila('mr1', 'μ<sub>r</sub>', 'opcional, 1') : fila('n1', 'Índice n<sub>1</sub>'));
     h += sep('Medio 2') + (er ? fila('er2', 'ε<sub>r</sub>') + fila('mr2', 'μ<sub>r</sub>', 'opcional, 1') : fila('n2', 'Índice n<sub>2</sub>'));
     h += sep('Onda') + fila('theta', 'Ángulo de incidencia θ<sub>i</sub>', '°') + fila('E0', 'Amplitud incidente E<sub>0</sub>', 'V/m, opcional') + fila('lambda', 'Longitud de onda en el vacío', 'nm, opcional');
+    const nc = Math.min(3, Math.max(0, Math.round(+String(sc.nc || 0).replace(',', '.')) || 0));
+    h += sep('Capas delgadas entre los dos medios (opcional)') + `<label for="f-nc">Número de capas</label><select id="f-nc" class="in" data-k="nc">${[0, 1, 2, 3].map((k) => `<option value="${k}"${k === nc ? ' selected' : ''}>${k}</option>`).join('')}</select>`;
+    for (let i = 1; i <= nc; i++) h += fila(`c${i}n`, `Capa ${i}: índice n`) + fila(`c${i}d`, `Capa ${i}: espesor`, 'nm, o λ/4');
     $('#campos').innerHTML = h;
-    $('#nota').textContent = 'El ángulo se mide desde la normal a la superficie. La amplitud da los campos reflejado y transmitido; la longitud de onda, la profundidad de la onda evanescente en la reflexión total. Se admite coma decimal.';
+    $('#nota').textContent = (nc ? 'Las capas van de la 1 (junto al medio 1) a la última (junto al medio 2); hace falta la longitud de onda. Escribe «λ/4» como espesor para el cuarto de onda. ' : '') + 'El ángulo se mide desde la normal a la superficie. La amplitud da los campos reflejado y transmitido; la longitud de onda, la profundidad de la onda evanescente en la reflexión total. Se admite coma decimal.';
   }
   $('#campos').addEventListener('input', (e) => { const t = e.target; if (t.tagName !== 'INPUT') return; sc[t.dataset.k] = t.value; $('#ejemplos').value = ''; calcula(); });
   $('#campos').addEventListener('change', (e) => {
@@ -54,7 +57,7 @@
     const de = (l) => l[Math.floor(Math.random() * l.length)], c = (x) => String(x).replace('.', ',');
     const par = Math.random() < 0.6 ? [de([1, 1, 1.33]), de([1.5, 1.52, 1.7, 2.4, 1.33])] : [de([1.33, 1.5, 1.7, 2.4]), de([1, 1.33])];
     const [n1, n2] = par[0] === par[1] ? [1, 1.5] : par;
-    sc = { dato: 'n', n1: c(n1), n2: c(n2), theta: String(de([10, 20, 25, 30, 35, 40, 45, 50, 60, 70])), E0: de(['', '10', '20']), lambda: '' };
+    sc = { dato: 'n', n1: c(n1), n2: c(n2), theta: String(de([10, 20, 25, 30, 35, 40, 45, 50, 60, 70])), E0: de(['', '10', '20']), lambda: '', nc: '0' };
     formulario(); calcula(); sel.value = '';
   }
   const enunciado = () => `Una onda plana llega con un ángulo de incidencia de ${esc(sc.theta)}° desde un medio de índice n₁ = ${esc(sc.n1)} a otro de índice n₂ = ${esc(sc.n2)}${sc.E0 ? ` con una amplitud E₀ = ${esc(sc.E0)} V/m` : ''}. Calcula el ángulo de refracción, los coeficientes de reflexión y de transmisión de las polarizaciones ⊥ y ∥, las reflectancias, y los ángulos de Brewster y crítico.`;
@@ -66,7 +69,7 @@
     const err = $('#error');
     try { sol = P.resolver(sc); } catch (e) {
       sol = null; err.textContent = e.message; err.hidden = false;
-      $('#res').innerHTML = ''; $('#pasos').innerHTML = ''; $('#leyenda').textContent = ''; dibuja(); return;
+      $('#res').innerHTML = ''; $('#pasos').innerHTML = ''; $('#leyenda').textContent = ''; $('#leyenda-capas').textContent = ''; $('#bloque-capas').hidden = true; dibuja(); return;
     }
     err.hidden = true; guarda();
     let h = '';
@@ -86,9 +89,11 @@
     h += dato('Ángulo de Brewster', sol.thBl !== null ? `θ<sub>B</sub> = <b>${f(sol.thBl)}°</b>` : '<b>no hay</b>');
     h += dato('Ángulo crítico', sol.thc !== null ? `θ<sub>c</sub> = <b>${f(sol.thc)}°</b>` : '<b>no hay</b>');
     h += dato('Incidencia normal', `R = <b>${pc(sol.RN)}</b>`);
+    if (sol.cap) h += dato('Con las capas, luz natural', `R = <b>${pc(sol.cap.Rm)}</b> (sin capas ${pc((sol.cap.sin.Rp + sol.cap.sin.Rl) / 2)})`, 'ancho') + dato('Con las capas, incidencia normal', `R = <b>${pc(sol.cap.RN)}</b>`) + (sol.cap.nopt ? dato('Índice óptimo de una capa', `n = √(n₁n₂) = <b>${f(sol.cap.nopt)}</b>, d = <b>${f(sol.cap.dopt)} nm</b>`) : '');
     $('#res').innerHTML = h;
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html, true)}</li>`).join('');
-    $('#leyenda').textContent = 'Reflectancia según el ángulo de incidencia: ⊥ en azul, ∥ en rojo. La línea vertical marca el ángulo de los datos.';
+    leyendas();
+    $('#bloque-capas').hidden = !sol.cap;
     dibuja();
   }
 
@@ -137,35 +142,73 @@
     const am = (a0 + a1) / 2; g.font = `12px ${FU}`; g.textAlign = 'center'; g.textBaseline = 'middle';
     g.fillText(nombre, xc + (r + 14) * Math.cos(am), yc + (r + 14) * Math.sin(am));
   }
+  let cual = 'R', eje = 'lambda';
+  const CUAL = { R: 'Reflectancia R', T: 'Transmitancia T', F: 'Fase de la reflexión' };
+  const valorCurva = (c, k) => (cual === 'F' ? c['f' + k] : c[(cual === 'R' ? 'R' : 'T') + k]);
+  function leyendas() {
+    const cr = sol.thc !== null ? ` El ángulo crítico es ${f(sol.thc)}°.` : '', br = sol.thBl !== null ? ` El de Brewster (∥), ${f(sol.thBl)}°.` : '';
+    $('#leyenda').textContent = `${CUAL[cual]} según el ángulo de incidencia: ⊥ en azul, ∥ en rojo; la línea vertical marca el ángulo de los datos (${f(sol.th)}°).` + cr + br + (cual === 'F' ? ' La fase salta 180° donde r cambia de signo y varía de forma continua en la reflexión total.' : '');
+    $('#h-grafica').textContent = CUAL[cual] + ' según el ángulo';
+    if (sol.cap) $('#leyenda-capas').textContent = `Reflectancia con las ${sol.cap.capas.length} capa(s) en función de ${eje === 'lambda' ? 'la longitud de onda (incidencia con el ángulo de los datos)' : 'el ángulo de incidencia (a la longitud de onda de los datos)'}: ⊥ en azul, ∥ en rojo; en trazos, la misma frontera sin capas (luz natural). Con los datos: R = ${pc(sol.cap.Rm)} frente a ${pc((sol.cap.sin.Rp + sol.cap.sin.Rl) / 2)}.`;
+  }
+  const filasGrafica = () => { const r = []; for (let a = 0; a <= 89.5; a += 0.5) { const c = P.curvaFull(sol, a); r.push([a, c.Rp, c.Rl, c.Tp, c.Tl, c.fp, c.fl]); } return r; };
   function grafica() {
     const { g, w, h } = lienzo('#grafica');
     if (!sol || !w || !h) return;
-    const ml = 48, mr = 14, mt = 12, mb = 32, X = (a) => ml + (a / 90) * (w - ml - mr), Y = (r) => h - mb - r * (h - mt - mb);
+    const fase = cual === 'F', ymin = fase ? -180 : 0, ymax = fase ? 180 : 1;
+    const ml = 52, mr = 14, mt = 12, mb = 32, X = (a) => ml + (a / 90) * (w - ml - mr), Y = (r) => h - mb - ((r - ymin) / (ymax - ymin)) * (h - mt - mb);
     g.font = '12px system-ui, sans-serif'; g.fillStyle = col['--muted']; g.strokeStyle = col['--line']; g.lineWidth = 1;
     g.textAlign = 'right'; g.textBaseline = 'middle';
-    for (const r of [0, 0.25, 0.5, 0.75, 1]) { g.beginPath(); g.moveTo(ml, Y(r)); g.lineTo(w - mr, Y(r)); g.stroke(); g.fillText(`${100 * r} %`, ml - 6, Y(r)); }
+    for (const r of (fase ? [-180, -90, 0, 90, 180] : [0, 0.25, 0.5, 0.75, 1])) { g.beginPath(); g.moveTo(ml, Y(r)); g.lineTo(w - mr, Y(r)); g.stroke(); g.fillText(fase ? `${r}°` : `${100 * r} %`, ml - 6, Y(r)); }
     g.textAlign = 'center'; g.textBaseline = 'top';
     for (const a of marcas(0, 90, 6)) g.fillText(`${a}°`, X(a), h - mb + 6);
     g.fillText('ángulo de incidencia', (ml + w - mr) / 2, h - 14);
-    const traza = (campo, c) => {
-      g.strokeStyle = c; g.lineWidth = 2.4; g.beginPath();
-      for (let i = 0; i <= 180; i++) { const a = i / 2, r = P.curva(sol, a)[campo]; i ? g.lineTo(X(a), Y(r)) : g.moveTo(X(a), Y(r)); }
+    const traza = (k, c) => {
+      g.strokeStyle = c; g.lineWidth = 2.4; g.beginPath(); let ant = null;
+      for (let i = 0; i <= 180; i++) {
+        const a = Math.min(i / 2, 89.99), v = valorCurva(P.curvaFull(sol, a), k);
+        if (ant === null || (fase && Math.abs(v - ant) > 100)) g.moveTo(X(a), Y(v)); else g.lineTo(X(a), Y(v)); ant = v;
+      }
       g.stroke();
     };
-    traza('Rp', col['--serie-1']); traza('Rl', col['--serie-2']);
+    traza('p', col['--serie-1']); traza('l', col['--serie-2']);
     // ángulo crítico, Brewster y ángulo de los datos
     g.font = '12px system-ui, sans-serif';
-    if (sol.thc !== null) { g.setLineDash([3, 4]); g.strokeStyle = col['--muted']; g.beginPath(); g.moveTo(X(sol.thc), Y(1)); g.lineTo(X(sol.thc), Y(0)); g.stroke(); g.setLineDash([]); g.fillStyle = col['--muted']; g.textAlign = 'right'; g.textBaseline = 'top'; g.fillText('θc', X(sol.thc) - 4, Y(1) + 14); }
-    if (sol.thBl !== null) { g.fillStyle = col['--serie-2']; g.beginPath(); g.arc(X(sol.thBl), Y(0), 4, 0, 7); g.fill(); g.textAlign = 'center'; g.textBaseline = 'bottom'; g.fillText('θB', X(sol.thBl), Y(0) - 8); }
-    g.setLineDash([6, 4]); g.strokeStyle = col['--ink']; g.lineWidth = 1.4; g.beginPath(); g.moveTo(X(sol.th), Y(1)); g.lineTo(X(sol.th), Y(0)); g.stroke(); g.setLineDash([]);
-    for (const [c, r] of [[col['--serie-1'], sol.Rp], [col['--serie-2'], sol.Rl]]) { g.fillStyle = c; g.beginPath(); g.arc(X(sol.th), Y(r), 4.5, 0, 7); g.fill(); }
+    if (sol.thc !== null) { g.setLineDash([3, 4]); g.strokeStyle = col['--muted']; g.beginPath(); g.moveTo(X(sol.thc), Y(ymax)); g.lineTo(X(sol.thc), Y(ymin)); g.stroke(); g.setLineDash([]); g.fillStyle = col['--muted']; g.textAlign = 'right'; g.textBaseline = 'top'; g.fillText('θc', X(sol.thc) - 4, Y(ymax) + 2); }
+    if (sol.thBl !== null) { g.fillStyle = col['--serie-2']; g.beginPath(); g.arc(X(sol.thBl), Y(ymin), 4, 0, 7); g.fill(); g.textAlign = 'center'; g.textBaseline = 'bottom'; g.fillText('θB', X(sol.thBl), Y(ymin) - 8); }
+    g.setLineDash([6, 4]); g.strokeStyle = col['--ink']; g.lineWidth = 1.4; g.beginPath(); g.moveTo(X(sol.th), Y(ymax)); g.lineTo(X(sol.th), Y(ymin)); g.stroke(); g.setLineDash([]);
+    const c0 = P.curvaFull(sol, sol.th);
+    for (const [c, k] of [[col['--serie-1'], 'p'], [col['--serie-2'], 'l']]) { g.fillStyle = c; g.beginPath(); g.arc(X(sol.th), Y(valorCurva(c0, k)), 4.5, 0, 7); g.fill(); }
   }
-  const dibuja = () => { rayos(); grafica(); };
+  // R de las capas frente a λ (400–800 nm) o frente al ángulo
+  const tramoCapas = () => (eje === 'lambda' ? [400, 800] : [0, 89.5]);
+  const rCapas = (x, capas) => { const [a, b] = [sol.cap.lam, sol.th]; return eje === 'lambda' ? P.capasRT(sol.m1.n, sol.m2.n, capas, x, b) : P.capasRT(sol.m1.n, sol.m2.n, capas, a, x); };
+  function graficaCapas() {
+    const { g, w, h } = lienzo('#capas');
+    if (!sol || !sol.cap || !w || !h) return;
+    const [x0, x1] = tramoCapas(), ml = 52, mr = 14, mt = 12, mb = 32, X = (v) => ml + ((v - x0) / (x1 - x0)) * (w - ml - mr), Y = (r) => h - mb - r * (h - mt - mb), N = 200;
+    g.font = '12px system-ui, sans-serif'; g.fillStyle = col['--muted']; g.strokeStyle = col['--line']; g.lineWidth = 1; g.textAlign = 'right'; g.textBaseline = 'middle';
+    for (const r of [0, 0.25, 0.5, 0.75, 1]) { g.beginPath(); g.moveTo(ml, Y(r)); g.lineTo(w - mr, Y(r)); g.stroke(); g.fillText(`${100 * r} %`, ml - 6, Y(r)); }
+    g.textAlign = 'center'; g.textBaseline = 'top';
+    for (const v of marcas(x0, x1, 6)) g.fillText(eje === 'lambda' ? `${v}` : `${v}°`, X(v), h - mb + 6);
+    g.fillText(eje === 'lambda' ? 'longitud de onda (nm)' : 'ángulo de incidencia', (ml + w - mr) / 2, h - 14);
+    const traza = (k, capas, c, trazos) => { g.save(); if (trazos) g.setLineDash([5, 4]); g.strokeStyle = c; g.lineWidth = trazos ? 1.6 : 2.4; g.beginPath(); for (let i = 0; i <= N; i++) { const x = x0 + ((x1 - x0) * i) / N, r = rCapas(x, capas)[k]; i ? g.lineTo(X(x), Y(r)) : g.moveTo(X(x), Y(r)); } g.stroke(); g.restore(); };
+    g.globalAlpha = 0.9; traza('Rp', [], col['--muted'], true); g.globalAlpha = 1;
+    traza('Rp', sol.cap.capas, col['--serie-1']); traza('Rl', sol.cap.capas, col['--serie-2']);
+    const xd = eje === 'lambda' ? sol.cap.lam : sol.th; g.setLineDash([6, 4]); g.strokeStyle = col['--ink']; g.lineWidth = 1.4; g.beginPath(); g.moveTo(X(xd), Y(1)); g.lineTo(X(xd), Y(0)); g.stroke(); g.setLineDash([]);
+  }
+  const filasCapas = () => { const [x0, x1] = tramoCapas(), r = []; for (let i = 0; i <= 200; i++) { const x = x0 + ((x1 - x0) * i) / 200, c = rCapas(x, sol.cap.capas), s0 = rCapas(x, []); r.push([x, c.Rp, c.Rl, s0.Rp, s0.Rl]); } return r; };
+  $('#cual').innerHTML = Object.entries(CUAL).map(([k, v]) => `<option value="${k}">${v}</option>`).join('');
+  $('#cual').addEventListener('change', () => { cual = $('#cual').value; if (sol) { leyendas(); grafica(); } });
+  $('#eje-capas').addEventListener('change', () => { eje = $('#eje-capas').value; if (sol) { leyendas(); graficaCapas(); } });
+  Herramienta.exportar('#grafica', { nombre: 'fresnel-grafica', titulo: 'Reflectancia, transmitancia y fase', datos: () => ({ cab: ['θi (°)', 'R⊥', 'R∥', 'T⊥', 'T∥', 'fase ⊥ (°)', 'fase ∥ (°)'], filas: sol ? filasGrafica() : [] }) });
+  Herramienta.exportar('#capas', { nombre: 'fresnel-capas', titulo: 'Reflectancia con capas delgadas', datos: () => ({ cab: [eje === 'lambda' ? 'λ (nm)' : 'θi (°)', 'R⊥ con capas', 'R∥ con capas', 'R⊥ sin capas', 'R∥ sin capas'], filas: sol && sol.cap ? filasCapas() : [] }) });
+  const dibuja = () => { rayos(); grafica(); graficaCapas(); };
   window.addEventListener('resize', dibuja);
   // tema.js también avisa a este oyente al pulsar el botón claro/oscuro
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { colores(); dibuja(); });
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('fresnel').current;
   colores(); formulario(); calcula();
-  window.FresnelApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { tt: sol.tt, rp: sol.rp, rl: sol.rl, Rp: sol.Rp, Rl: sol.Rl, tot: sol.tot }, estado: () => copia(sc) };
+  window.FresnelApp = { cual: (c) => { cual = c; $('#cual').value = c; if (sol) { leyendas(); grafica(); } }, abrirEjemplo, azar, enunciado, resultado: () => sol && { tt: sol.tt, rp: sol.rp, rl: sol.rl, Rp: sol.Rp, Rl: sol.Rl, tot: sol.tot }, estado: () => copia(sc) };
 })();
