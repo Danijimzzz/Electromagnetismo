@@ -452,6 +452,34 @@ async function navegador() {
     if (fallos === antes) console.log(`  ✓ Mis ejercicios: guardar, carpeta, fijar, abrir, exportar, borrar e importar en ${probadas} herramientas, y en el móvil`);
   }
   if (primera) {
+    // Fase 10: ayudante común «Herramienta.exportar» (Descargar PNG + Copiar datos) y sus partes puras
+    const antes = fallos, consola = [];
+    const H = global.Herramienta;
+    if (H.tabla(['t (s)', 'x'], [[0.5, 1234.5678], [1, NaN], ['a\tb', null]]) !== 't (s)\tx\n0,5\t1234,5678\n1\t\na b\t') mal(`Exportar: tabla() da ${JSON.stringify(H.tabla(['t (s)', 'x'], [[0.5, 1234.5678], [1, NaN], ['a\tb', null]]))}`);
+    if (H.nombreArchivo('Trayectoria · Ángulo/θ') !== 'trayectoria-angulo' || H.nombreArchivo('') !== 'grafica') mal('Exportar: nombreArchivo() no limpia el nombre');
+    for (const vista of [{ ancho: 1200, tema: 'light' }, { ancho: 390, tema: 'dark' }]) {
+      const page = await browser.newPage({ viewport: { width: vista.ancho, height: 900 }, acceptDownloads: true, colorScheme: vista.tema });
+      page.on('console', (m) => { if (m.type() === 'error') consola.push(m.text()); });
+      page.on('pageerror', (e) => consola.push('excepción: ' + e.message));
+      await page.goto('file://' + path.join(publico, 'fisica', 'tiro-parabolico', 'index.html'));
+      await page.waitForSelector('#grafica');
+      await page.evaluate(() => { window.__copiado = null; navigator.clipboard.writeText = async (t) => { window.__copiado = t; }; Herramienta.exportar('#grafica', { nombre: 'prueba', etiqueta: 'la prueba', datos: () => ({ cab: ['t', 'x'], filas: [[1, 2.5]] }) }); Herramienta.exportar('#grafica', { datos: () => ({ cab: ['t', 'x'], filas: [[1, 2.5]] }) }); });
+      const n = await page.evaluate(() => ({ barras: document.querySelectorAll('.exportar').length, botones: [...document.querySelectorAll('.exportar button')].map((b) => b.textContent + '|' + b.getAttribute('aria-label')), aviso: document.querySelector('.exportar-aviso').getAttribute('aria-live'), ancho: document.documentElement.scrollWidth }));
+      if (n.barras !== 1 || n.botones.length !== 2 || !/PNG/.test(n.botones[0]) || !/Copiar/.test(n.botones[1]) || n.aviso !== 'polite') mal(`Exportar (${vista.ancho}px): barra incorrecta ${JSON.stringify(n)}`);
+      if (n.ancho > vista.ancho) mal(`Exportar (${vista.ancho}px): la página se ensancha (${n.ancho})`);
+      const [d] = await Promise.all([page.waitForEvent('download'), page.click('.exportar button >> nth=0')]);
+      const arch = path.join(tmp, 'exportar.png'); await d.saveAs(arch);
+      const png = fs.readFileSync(arch);
+      if (d.suggestedFilename() !== 'prueba.png' || png.length < 1000 || png.readUInt32BE(0) !== 0x89504e47) mal(`Exportar (${vista.ancho}px): el PNG descargado no es válido (${d.suggestedFilename()}, ${png.length} B)`);
+      await page.click('.exportar button >> nth=1');
+      await page.waitForFunction(() => window.__copiado);
+      if ((await page.evaluate(() => window.__copiado)) !== 't\tx\n1\t2,5' || !/copiados/.test(await page.locator('.exportar-aviso').textContent())) mal(`Exportar (${vista.ancho}px): los datos copiados no son los esperados`);
+      await page.close();
+    }
+    if (consola.length) mal('Exportar: consola del navegador:\n      ' + consola.join('\n      '));
+    if (fallos === antes) console.log('  ✓ Exportar gráfica: PNG válido y datos copiados con coma decimal, en claro (1200 px) y oscuro (390 px)');
+  }
+  if (primera) {
     // Fase 7: enlace con el estado, hoja de ejercicios para imprimir y «Tu espacio» de la portada (el marco de la hoja pide http, no file://)
     const antes = fallos, consola = [], http = require('http');
     const tipos = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.png': 'image/png', '.webp': 'image/webp', '.json': 'application/json' };
