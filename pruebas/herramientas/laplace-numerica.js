@@ -46,6 +46,32 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       let ok = false; try { C.resolver({ ...ej('conductor'), ...x }); } catch (e) { ok = true; }
       if (!ok) mal(`LaplaceNumerica: ${q} no da error`);
     }
+    // LA-1 Poisson: placas a tierra con ρ uniforme: V(x) = ρ x (a − x)/(2 ε0) y centro = ρ a²/(8 ε0)
+    const p1 = r('poisson-1d'), E0 = C.EPS0;
+    cerca(p1.centro.V, 1e-8 / (8 * E0), 1e-8 / (8 * E0) * 2e-3, 'Poisson 1D en el centro');
+    cerca(p1.exacto, p1.sonda.V, Math.abs(p1.exacto) * 2e-3, 'Poisson 1D frente a la parábola');
+    // caja a tierra con ρ: coincide con la serie doble y la carga ligada compensa a la libre (Σ Q = −q)
+    const p2 = r('poisson-caja'); cerca(p2.sonda.V, p2.exacto, Math.abs(p2.exacto) * 5e-3, 'Poisson 2D frente a la serie');
+    cerca(p2.qTotal, -p2.qDiscreta, Math.abs(p2.qDiscreta) * 1e-4, 'cargas inducidas = −carga libre');
+    // LA-2/3 placas planas con bordes aislantes: C' = ε0 b/a, carga ±ε0 V b/a y energía ½ C' V²
+    const pl = r('placas-planas');
+    cerca(pl.capacidad.C, E0 * 0.5 / 1, E0 * 1e-3, 'capacidad de placas planas'); cerca(pl.capacidad.Cw, pl.capacidad.C, pl.capacidad.C * 1e-3, 'capacidad por la energía');
+    cerca(pl.qTotal, 0, E0 * 1e-6, 'carga total nula entre placas'); cerca(pl.sonda.V, 100 * (1 - 0.25), 0.01, 'potencial lineal en x');
+    // cilindro (electrodo circular) en caja cuadrada: C' ~ 2πε0/ln(R/r) con R equivalente del cuadrado; se pide solo orden de magnitud y simetría
+    const ci = r('cilindro'); cerca(ci.capacidad.C, ci.capacidad.Cw, ci.capacidad.C * 0.02, 'capacidad del cilindro por carga y por energía');
+    if (!(ci.capacidad.C > 2 * Math.PI * E0 / Math.log(0.6 / 0.2) && ci.capacidad.C < 2 * Math.PI * E0 / Math.log(0.5 / 0.2))) mal('LaplaceNumerica: capacidad del cilindro fuera de los límites de los radios 0,5 y 0,6 m');
+    // dos electrodos: carga +/− y suma de cargas nula salvo bordes
+    const de = r('dos-electrodos'); cerca(de.q[4] + de.q[5] + de.q[0] + de.q[1] + de.q[2] + de.q[3], 0, Math.abs(de.q[4]) * 1e-6, 'neutralidad con dos electrodos');
+    // LA-4 comparar: mismas soluciones y orden de iteraciones
+    const cm = C.comparar(ej('borde-caliente'), [16, 32]);
+    const it = (m, n) => cm.find((q) => q.metodo === m && q.n === n).iter;
+    if (!(it('sor', 32) < it('gs', 32) && it('gs', 32) < it('jacobi', 32))) mal('LaplaceNumerica: comparar no ordena SOR < Gauss-Seidel < Jacobi');
+    if (!(it('gs', 32) / it('gs', 16) > 3)) mal('LaplaceNumerica: Gauss-Seidel no crece como N²');
+    for (const q of cm) if (!(q.error < 1e-3)) mal(`LaplaceNumerica: error ${q.error} al comparar ${q.metodo} ${q.n}`);
+    for (const [x, q] of [[{ ta: 'n', tb: 'n', ti: 'n', td: 'n', elec: '0' }, 'todo aislante sin electrodo'], [{ rho: '1e-8', rw: '2', rh: '0,2', rx: '0', ry: '0' }, 'región con carga fuera'], [{ e2: '1', e2t: 'circ', e2x: '0,5', e2y: '0,5', e2w: '0,1' }, 'electrodos solapados']]) {
+      let ok = false; try { C.resolver({ ...ej('conductor'), ...x }); } catch (e) { ok = true; }
+      if (!ok) mal(`LaplaceNumerica: ${q} no da error`);
+    }
     if (fallos === antes) console.log(`  ✓ LaplaceNumerica: serie, simetrías, tres métodos, malla fina y errores (${C.ejemplos.length} ejemplos)`);
   }
 
@@ -67,6 +93,7 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     await page.evaluate(() => LaplaceNumericaApp.abrirEjemplo('borde-caliente'));
     const pintado = await page.evaluate(() => { const c = document.querySelector('#grafica'), d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data; const vistos = new Set(); for (let i = 0; i < d.length; i += 4 * 97) vistos.add(d[i] + ',' + d[i + 1] + ',' + d[i + 2]); return vistos.size; });
     if (pintado < 20) mal(`LaplaceNumerica: el mapa de color solo tiene ${pintado} colores`);
+    await page.locator('#grafica').scrollIntoViewIfNeeded();
     const caja = await page.locator('#grafica').boundingBox();
     await page.mouse.click(caja.x + caja.width / 2, caja.y + caja.height / 2);
     const px = await page.inputValue('#f-px'); const py = await page.inputValue('#f-py');
@@ -81,6 +108,17 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     // un dato mal escrito muestra el error
     await page.fill('#f-a', '0');
     if (await page.locator('#error').isHidden()) mal('LaplaceNumerica: un ancho cero no muestra el error');
+    // bordes aislantes, Poisson y comparación en la página
+    await page.evaluate(() => LaplaceNumericaApp.abrirEjemplo('placas-planas'));
+    if (!/Capacidad por metro/.test(await page.locator('#resumen').textContent())) mal('LaplaceNumerica: placas planas sin capacidad en los resultados');
+    await page.selectOption('#f-ta', 'v'); if (!(await page.locator('#f-va').count())) mal('LaplaceNumerica: al fijar el borde no sale su potencial');
+    await page.fill('#f-rho', '1e-8'); if (!(await page.locator('#f-rw').count())) mal('LaplaceNumerica: con ρ no sale la región con carga');
+    await page.evaluate(() => LaplaceNumericaApp.abrirEjemplo('poisson-caja'));
+    await page.fill('#f-n', '16'); await page.click('#comparar');
+    const nf = await page.locator('#comp-cuerpo tr').count(); if (nf < 6 || await page.locator('#comp-tabla').isHidden()) mal(`LaplaceNumerica: la comparación da ${nf} filas`);
+    if (!(await page.locator('#exportar-png, [data-exportar], .exportar').count())) mal('LaplaceNumerica: falta el botón de exportar la gráfica');
+    await page.evaluate(() => LaplaceNumericaApp.abrirEjemplo('dos-electrodos'));
+    if (await page.locator('#error').isVisible()) mal('LaplaceNumerica: error con electrodos rectangular y circular');
     await page.close();
     if (consola.length) mal('LaplaceNumerica: consola del navegador:\n      ' + consola.join('\n      '));
     if (fallos === antes) console.log(`  ✓ LaplaceNumerica: ${C.ejemplos.length} ejemplos en la página con MathML, mapa pintado, sonda, electrodo y errores, sin errores de consola`);

@@ -22,12 +22,17 @@
   <div>
     <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
     <div class="card"><h2>Mapa del potencial</h2>
-      <canvas id="grafica" aria-label="Mapa de color del potencial en la caja, con equipotenciales y campo eléctrico"></canvas>
+      <canvas id="grafica" role="img" aria-label="Mapa de color del potencial en la caja, con equipotenciales y campo eléctrico. La lectura de la sonda está debajo"></canvas>
       <div class="controles">
         <label><input type="checkbox" id="ver-eq"> Equipotenciales</label>
         <label><input type="checkbox" id="ver-e"> Campo eléctrico</label>
       </div>
       <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card"><h2>Comparar métodos</h2>
+      <p class="controles"><button type="button" class="btn" id="comparar">Comparar Jacobi, Gauss-Seidel y SOR</button></p>
+      <p class="nota" id="comp-msg" role="status"></p>
+      <div class="tabla-scroll"><table id="comp-tabla" hidden><caption>Iteraciones, tiempo y error de cada método y malla</caption><thead><tr><th scope="col">Método</th><th scope="col">Malla</th><th scope="col">Iteraciones</th><th scope="col">Tiempo</th><th scope="col">Error</th></tr></thead><tbody id="comp-cuerpo"></tbody></table></div>
     </div>
     <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
   </div>
@@ -42,6 +47,10 @@
   <p class="m">Se empieza con un reparto cualquiera y se va sustituyendo cada nodo por la media de sus vecinos hasta que deja de cambiar. <b>Jacobi</b> calcula todos los nodos con los valores de la vuelta anterior; <b>Gauss-Seidel</b> usa ya los valores nuevos y tarda la mitad; <b>SOR</b> se pasa un poco del valor medio (sobrerrelajación, con $1 < ω < 2$) y para una malla de $N$ celdas necesita del orden de $N$ vueltas en lugar de $N^2$. Compara los tres con el selector de método.</p>
   <h2>Campo eléctrico</h2>
   <p class="m">Una vez conocido el potencial, el campo es su gradiente cambiado de signo, $E = −∇V$: es perpendicular a las equipotenciales y apunta hacia donde el potencial baja. Sobre un conductor (el electrodo) el campo sale perpendicular a su superficie.</p>
+  <h2>Ecuación de Poisson</h2>
+  <p class="m">Con carga en la región, $∇² V = −ρ/ε_0$. La relajación solo cambia en el término de la fuente: $V_{i,j} = {V_{i+1,j} + V_{i−1,j} + V_{i,j+1} + V_{i,j−1}}/4 + {ρ h^2}/{4 ε_0}$. Si la carga es uniforme entre dos placas a tierra, $V(x) = {ρ x (a − x)}/{2 ε_0}$.</p>
+  <h2>Bordes aislantes, carga y capacidad</h2>
+  <p class="m">En un borde aislante el campo no lo atraviesa ($∂V/∂n = 0$) y se resuelve con un nodo espejo. La carga de cada conductor sale del flujo de Gauss, $Q' = ε_0 ∮ E_n dl$, y la capacidad por metro de dos conductores es $C' = Q'/ΔV$, que también vale $2W'/ΔV^2$ con la energía $W' = ½ ε_0 ∫ E^2 dA$.</p>
   <h2>Solución exacta en serie</h2>
   <p class="m">Para una caja de lados $a$ y $b$ con un solo borde (el de arriba) a $V_0$ y los demás a 0, la solución exacta es una serie de Fourier, con $n$ impar:</p>
   <p class="f m">$V(x, y) = ∑ {4V_0}/{nπ} · sen({nπx}/a) · {senh({nπy}/a)}/{senh({nπb}/a)}$</p>
