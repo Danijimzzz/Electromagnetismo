@@ -139,5 +139,18 @@ for v in range(1, n + 1):
 qs = max(qdist(cs, 0.025), 1); Mw = n * (n + 1) // 2
 R['hodges_wilcoxon'] = {'est': float(np.median(walsh)), 'lo': float(walsh[qs - 1]), 'hi': float(walsh[Mw - qs])}
 
+# --- χ²: Fisher, McNemar y residuos ---
+from statsmodels.stats.contingency_tables import mcnemar as sm_mcnemar, Table
+R['chi2'] = {
+  'fisher_mayor': [float(v) for v in stats.fisher_exact([[3, 1], [1, 3]], alternative='greater')],
+  'fisher_menor': [float(v) for v in stats.fisher_exact([[3, 1], [1, 3]], alternative='less')],
+  'fisher_bil': [float(v) for v in stats.fisher_exact([[8, 2], [1, 5]])],
+  'mcnemar_chi': [float(sm_mcnemar([[59, 6], [16, 80]], exact=False, correction=True).statistic), float(sm_mcnemar([[59, 6], [16, 80]], exact=False, correction=True).pvalue)],
+  'mcnemar_exacto_59': [0.0, float(sm_mcnemar([[59, 6], [16, 80]], exact=True).pvalue)],
+  'mcnemar_exacto': [0.0, float(sm_mcnemar([[20, 9], [2, 15]], exact=True).pvalue)],
+  'residuos_tipificados': [[float(v) for v in fila] for fila in Table(np.array([[20, 30, 50], [30, 30, 40]])).standardized_resids],
+  'residuos_pearson': [[float(v) for v in fila] for fila in Table(np.array([[20, 30, 50], [30, 30, 40]])).resid_pearson],
+}
+
 json.dump(R, open(os.path.join(os.path.dirname(__file__), 'estadistica.json'), 'w'), ensure_ascii=False, indent=1)
 print('estadistica.json escrito')

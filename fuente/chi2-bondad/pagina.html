@@ -1,11 +1,12 @@
-<title>Calculadora de chi cuadrado paso a paso · Ciencify</title>
-<meta name="description" content="Calculadora de la prueba chi cuadrado en español: bondad de ajuste a una distribución uniforme, proporciones dadas, binomial, Poisson o normal, y tablas de contingencia para la independencia, con las frecuencias esperadas, los grados de libertad, el valor crítico, el p-valor y la conclusión paso a paso.">
+<title>Chi cuadrado, Fisher y McNemar paso a paso · Ciencify</title>
+<meta name="description" content="Calculadora de la prueba chi cuadrado en español: bondad de ajuste, tablas de contingencia con residuos tipificados, test exacto de Fisher para tablas 2 × 2 pequeñas y McNemar para datos apareados, con el p-valor y el desarrollo paso a paso.">
 <style>
 .tabla-eco { border-collapse: collapse; font: 13.5px var(--f-ui); width: 100%; font-variant-numeric: tabular-nums }
 .tabla-eco th, .tabla-eco td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap }
 .tabla-eco th { font-weight: 600; color: var(--muted) } .tabla-eco th:first-child, .tabla-eco td:first-child { text-align: left }
 .tabla-eco tfoot td { font-weight: 600; background: var(--accent-soft) }
 .tabla-eco small { color: var(--muted) }
+.tabla-eco caption { text-align: left; font-weight: 600; padding: 2px 0 6px; caption-side: top }
 :root {
   --serie-1: #2a5db5; --serie-2: #c2412a }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
@@ -16,7 +17,7 @@
 <body>
 <header class="top"><a class="logo" href="../../">Cienci<i>fy</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Estadística</a> / χ² de bondad de ajuste e independencia</span></header>
 <div class="wrap">
-<h1>χ² de bondad de ajuste e independencia</h1>
+<h1>χ² de bondad de ajuste e independencia, Fisher y McNemar</h1>
 <p class="lead">Comprueba si unas frecuencias observadas se ajustan a un modelo (un dado equilibrado, unas proporciones, una binomial, Poisson o normal) o si las dos variables de una tabla de contingencia son independientes, con las frecuencias esperadas, el estadístico χ², el p-valor y el desarrollo.</p>
 <div class="layout">
   <div class="card">
@@ -28,7 +29,7 @@
   </div>
   <div>
     <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
-    <div class="card"><h2>Observadas y esperadas</h2><div class="tabla-scroll" id="tabla"></div></div>
+    <div class="card"><h2>Tablas</h2><div class="tabla-scroll" id="tabla"></div></div>
     <div class="card"><h2>Gráfica</h2>
       <canvas id="grafica" aria-label="Barras de las frecuencias observadas y esperadas de cada clase"></canvas>
       <p class="leyenda" id="leyenda"></p>
@@ -44,6 +45,12 @@
 <p class="m">$H_0$ es el modelo: $E_i = N p_i$, con $p_i$ la probabilidad de cada clase según el modelo. Los grados de libertad son $ν = k − 1 − m$, con $k$ clases y $m$ parámetros estimados de los propios datos (uno para la binomial con n conocido o la Poisson, dos para la normal).</p>
 <h2>Tablas de contingencia</h2>
 <p class="m">$H_0$: las dos variables son independientes (o, si cada fila es una población distinta, todas tienen las mismas proporciones: homogeneidad). La cuenta es la misma en los dos casos, con $E_{ij} = {F_i · C_j}/N$ (totales de la fila $i$ y de la columna $j$) y $ν = (r − 1)(c − 1)$. En las tablas 2 × 2 se puede aplicar la corrección de Yates, que resta 0,5 a cada $|O − E|$. La V de Cramér, $V = √({χ^2}/{N (mín(r, c) − 1)})$, mide la fuerza de la relación entre 0 y 1.</p>
+<h2>Residuos: dónde está la asociación</h2>
+<p class="m">El χ² dice que hay asociación, pero no entre qué categorías. El <b>residuo tipificado</b> de cada casilla, $r_{ij} = {O_{ij} − E_{ij}}/√{E_{ij}(1 − F_i/N)(1 − C_j/N)}$, es aproximadamente $N(0, 1)$ bajo $H_0$: los que pasan de ±2 (marcados con ⚑) son las casillas con más o menos casos de los esperables por azar.</p>
+<h2>Test exacto de Fisher (2 × 2)</h2>
+<p class="m">Con pocos datos (alguna esperada menor que 5) el χ² no vale. Fisher no usa aproximaciones: fija los márgenes de la tabla y calcula la probabilidad exacta de cada tabla posible con la hipergeométrica, $P(X = k) = {\binom{F_1}{k}\binom{F_2}{C_1 − k}}/{\binom{N}{C_1}}$. El p-valor bilateral suma las tablas tan improbables como la observada o más. Da también el odds ratio muestral $n_{11} n_{22}/(n_{12} n_{21})$.</p>
+<h2>McNemar (datos apareados)</h2>
+<p class="m">Cuando los dos «grupos» son las mismas personas medidas antes y después (sí/no), solo importan los que cambian: $b$ (de sí a no) y $c$ (de no a sí). $χ^2 = (|b − c| − 1)^2/(b + c)$ con 1 grado de libertad; si $b + c$ es pequeño, mejor el p-valor exacto, que es el de una binomial $B(b + c, 1/2)$.</p>
 <h2>Cuándo vale la aproximación</h2>
 <p>La distribución χ² es una aproximación que funciona bien cuando todas las frecuencias esperadas son al menos 5. Si no, se juntan clases vecinas (cada clase que se junta resta un grado de libertad).</p>
 </section>

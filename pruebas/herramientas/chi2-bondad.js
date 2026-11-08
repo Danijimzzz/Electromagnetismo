@@ -5,6 +5,7 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
   const mal = (m) => { fallos++; avisa(m); };
   const Com = require('./comun/calculadora.js'), N = 'χ² de bondad de ajuste';
   const C = require(path.join(fuente, 'chi2-bondad', 'calculo.js'));
+  const REF = JSON.parse(fs.readFileSync(path.join(fuente, '..', 'pruebas', 'referencias', 'estadistica.json'), 'utf8')).chi2;
   {
     const antes = fallos, { cerca, error, ej } = Com.node(N, mal, C);
     const mira = (c, chi, gl, crit, rechaza, tol = 1e-3) => { const r = ej(c); cerca(r.chi, chi, tol, `${c}: χ²`); if (r.gl !== gl) mal(`${N} · ${c}: ${r.gl} grados de libertad en vez de ${gl}`); cerca(r.crit, crit, 2e-3, `${c}: valor crítico`); if (r.rechaza !== rechaza) mal(`${N} · ${c}: la decisión sale al revés`); return r; };
@@ -26,12 +27,23 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     mira('preferencia', 28 / 9, 2, 5.991, false, 1e-9);
     // curación: el mismo caso que dos proporciones con z = 2, y χ² = z² = 4 con 1 g. l.; con Yates, 2·49/37,5 + 2·49/112,5 = 3,4844
     const cu = mira('curacion', 4, 1, 3.841, true, 1e-9); cerca(cu.pv, 0.0455, 2e-4, 'curación: p-valor'); cerca(cu.V, Math.sqrt(4 / 300), 1e-9, 'curación: V de Cramér');
-    cerca(C.resolver({ ...C.ejemplos[6].sc, yates: 'si' }).chi, 98 / 37.5 + 98 / 112.5, 1e-9, 'corrección de Yates');
+    cerca(C.resolver({ ...C.ejemplos.find((q) => q.clave === 'curacion').sc, yates: 'si' }).chi, 98 / 37.5 + 98 / 112.5, 1e-9, 'corrección de Yates');
+    // ---- Fisher, McNemar y residuos contra scipy.stats.fisher_exact y statsmodels (ver pruebas/referencias/estadistica.py) ----
+    cerca(ej('fisher').p, REF.fisher_mayor[1], 1e-12, 'Fisher unilateral (scipy)'); cerca(ej('fisher').or, REF.fisher_mayor[0], 1e-12, 'odds ratio de Fisher (scipy)');
+    cerca(ej('fisher-bilateral').p, REF.fisher_bil[1], 1e-12, 'Fisher bilateral (scipy)'); cerca(ej('fisher-bilateral').or, REF.fisher_bil[0], 1e-12, 'odds ratio bilateral');
+    cerca(C.resolver({ modo: 'fisher', h1: 'menor', alfa: '0,05', datos: '3 1\n1 3' }).p, REF.fisher_menor[1], 1e-12, 'Fisher unilateral por la izquierda (scipy)');
+    cerca(ej('fisher').dist.reduce((a, [, q]) => a + q, 0), 1, 1e-12, 'las probabilidades hipergeométricas suman 1');
+    cerca(ej('mcnemar').pChi, REF.mcnemar_chi[1], 1e-9, 'McNemar χ² con corrección (statsmodels)'); cerca(ej('mcnemar').chi, REF.mcnemar_chi[0], 1e-9, 'McNemar: estadístico'); cerca(ej('mcnemar').pEx, REF.mcnemar_exacto_59[1], 1e-12, 'McNemar exacto (statsmodels)');
+    cerca(ej('mcnemar-exacto').p, REF.mcnemar_exacto[1], 1e-12, 'McNemar exacto con pocos discordantes (statsmodels)');
+    const rs = ej('preferencia'); REF.residuos_tipificados.flat().forEach((v, i) => cerca(rs.celdas[i].rs, v, 1e-9, `residuo tipificado ${i + 1} (statsmodels)`)); REF.residuos_pearson.flat().forEach((v, i) => cerca(rs.celdas[i].rp, v, 1e-9, `residuo de Pearson ${i + 1} (statsmodels)`));
+    const rm = C.resolver({ modo: 'independencia', alfa: '0,05', yates: 'no', datos: '30 10\n10 30' }); if (rm.mayores.length !== 4) mal(`${N}: en la tabla 30 10 / 10 30 las cuatro casillas deberían salir marcadas (residuo ±4,5)`);
+    error({ modo: 'fisher', alfa: '0,05', h1: 'distinto', datos: '1 2 3\n4 5 6' }, 'Fisher con 3 columnas'); error({ modo: 'fisher', alfa: '0,05', h1: 'distinto', datos: '0 0\n3 4' }, 'Fisher con una fila a cero');
+    error({ modo: 'mcnemar', alfa: '0,05', datos: '5 0\n0 7' }, 'McNemar sin discordantes'); error({ modo: 'mcnemar', alfa: '0,05', datos: '5 1,5\n2 7' }, 'McNemar con frecuencias no enteras');
     error({ modo: 'bondad', modelo: 'uniforme', alfa: '0,05', datos: '10' }, 'una sola clase');
     error({ modo: 'bondad', modelo: 'poisson', alfa: '0,05', datos: '0 10\n2 5' }, 'valores x no seguidos');
     error({ modo: 'independencia', alfa: '0,05', datos: '1 2 3' }, 'una sola fila');
     error({ modo: 'bondad', modelo: 'uniforme', alfa: '0,05', datos: '3 4,5 6' }, 'frecuencias no enteras');
-    if (fallos === antes) console.log(`  ✓ ${N}: ${C.ejemplos.length} ejemplos (uniforme, proporciones, Poisson, binomial, normal, contingencia y Yates) y errores`);
+    if (fallos === antes) console.log(`  ✓ ${N}: ${C.ejemplos.length} ejemplos (uniforme, proporciones, Poisson, binomial, normal, contingencia, Yates, residuos, Fisher y McNemar) y errores`);
   }
   return Com.navegador({ publico, asignatura: 'estadistica', carpeta: 'chi2-bondad', nombre: N, app: 'Chi2BondadApp', C, pagina, mal, malo: { k: 'datos', v: '10' } });
 };
