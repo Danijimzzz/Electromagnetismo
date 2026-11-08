@@ -42,7 +42,7 @@ document.addEventListener('click', (e) => { if (!e.target.closest('.pref-cookies
     espera = 0;
     for (const e of document.querySelectorAll('main *')) {
       const desborda = e.scrollWidth > e.clientWidth || e.scrollHeight > e.clientHeight;
-      if (e.dataset.sf) { if (!desborda) { e.removeAttribute('tabindex'); delete e.dataset.sf; } continue; }
+      if (e.dataset.sf) { if (!desborda || e.querySelector(ENFOCABLE)) { e.removeAttribute('tabindex'); delete e.dataset.sf; } continue; }
       if (!desborda || e.hasAttribute('tabindex') || e.matches('svg,svg *,canvas') || e.querySelector(ENFOCABLE)) continue;
       const o = getComputedStyle(e);
       if (/auto|scroll/.test(o.overflowX + o.overflowY)) { e.tabIndex = 0; e.dataset.sf = '1'; }
@@ -129,6 +129,8 @@ footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
 :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
 .controles { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px }
 .controles > .nota, .controles > .leyenda { flex: 1 1 220px; margin: 0 }
+.exportar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0 }
+.exportar-aviso { color: var(--muted); font-size: 12.5px }
 .tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px }
 .tools label { color: var(--muted); font-size: 13px; display: inline-flex; gap: 6px; align-items: center }
 .modos { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-bottom: 14px }
@@ -369,32 +371,8 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 </body>
 <script>
 const Pagina = { carpeta: 'fenomenos/fuego-san-telmo', guarda: null };
-const Version = (() => { const registros = {"web":[{"v":"1.12.1"}],"control":[{"v":"0.1"}],"termo-estadistica":[{"v":"0.1"}],"markowitz":[{"v":"0.1"}],"cavidades":[{"v":"0.1"}],"organica":[{"v":"0.1"}],"transformada-z":[{"v":"0.1"}],"semiconductores":[{"v":"0.1"}],"relatividad":[{"v":"0.1"}],"osc-acopladas":[{"v":"0.1"}],"solubilidad":[{"v":"0.1"}],"lagrange":[{"v":"0.1"}],"series":[{"v":"0.1"}],"no-parametricos":[{"v":"0.1"}],"regresion-multiple":[{"v":"0.1"}],"anova":[{"v":"0.1"}],"black-scholes":[{"v":"0.1"}],"bonos":[{"v":"0.1"}],"solow":[{"v":"0.1"}],"integrales-multiples":[{"v":"0.1"}],"formulacion":[{"v":"0.1"}],"balance":[{"v":"0.1"}],"redox":[{"v":"0.1"}],"lineas-transmision":[{"v":"0.1"}],"superficies":[{"v":"0.1"}],"vsepr":[{"v":"0.1"}],"maxwell":[{"v":"0.1"}],"fresnel":[{"v":"0.1"}],"gravitacion":[{"v":"0.1"}],"convolucion":[{"v":"0.1"}],"laplace-numerica":[{"v":"0.1"}],"imagenes":[{"v":"0.1"}],"guias-onda":[{"v":"0.1"}],"antena":[{"v":"0.1"}],"bode":[{"v":"0.1"}],"optica":[{"v":"0.1"}],"simulador":[{"v":"0.3"}],"teoria-juegos":[{"v":"0.1"}],"puertas-logicas":[{"v":"0.3"}],"multiplicador":[{"v":"0.1"}],"is-lm":[{"v":"0.1"}],"choques":[{"v":"0.1"}],"termoquimica":[{"v":"0.1"}],"probabilidad":[{"v":"0.1"}],"unidades":[{"v":"0.1"}],"equilibrio":[{"v":"0.1"}],"oscilaciones":[{"v":"0.1"}],"beneficio":[{"v":"0.1"}],"costes":[{"v":"0.1"}],"sistemas-numericos":[{"v":"0.1"}],"excedentes":[{"v":"0.1"}],"oferta-demanda":[{"v":"0.1"}],"chi2-bondad":[{"v":"0.1"}],"contrastes":[{"v":"0.1"}],"errores":[{"v":"0.1"}],"graficador":[{"v":"0.1"}],"metodos-numericos":[{"v":"0.1"}],"fisica-moderna":[{"v":"0.2"}],"lorenz-gini":[{"v":"0.1"}],"phillips-okun":[{"v":"0.1"}],"tipos-cambio":[{"v":"0.1"}],"elasticidades":[{"v":"0.1"}],"pib-ipc":[{"v":"0.1"}],"numeros-indice":[{"v":"0.1"}],"ratios":[{"v":"0.1"}],"punto-muerto":[{"v":"0.1"}],"ahorro":[{"v":"0.1"}],"van-tir":[{"v":"0.1"}],"amortizacion-inmovilizado":[{"v":"0.1"}],"prestamos":[{"v":"0.1"}],"rentas":[{"v":"0.1"}],"interes":[{"v":"0.1"}],"descriptiva":[{"v":"0.1"}],"regresion-economia":[{"v":"0.1"}],"ajustador":[{"v":"0.1"}],"electrostatica":[{"v":"0.6"}],"magnetostatica":[{"v":"0.2"}],"tabla-periodica":[{"v":"0.2"}],"trabajo-y-energia":[{"v":"0.2"}],"masa-molar":[{"v":"0.2"}],"configuracion-electronica":[{"v":"0.2"}],"condensadores":[{"v":"0.2"}],"tiro-parabolico":[{"v":"0.2"}],"disoluciones":[{"v":"0.2"}],"calorimetria":[{"v":"0.2"}],"induccion":[{"v":"0.2"}],"matrices":[{"v":"0.2"}],"derivadas":[{"v":"0.3"}],"laplace":[{"v":"0.2"}],"interferencia":[{"v":"0.2"}],"ondas-em":[{"v":"0.3"}],"intervalos":[{"v":"0.2"}],"fuerza":[{"v":"0.2"}],"campos":[{"v":"0.2.1"}],"cinetica":[{"v":"0.2"}],"edos":[{"v":"0.2"}],"fourier":[{"v":"0.2"}],"taylor":[{"v":"0.2.1"}],"complejos":[{"v":"0.2"}],"sistemas":[{"v":"0.3"}],"regresion":[{"v":"0.2"}],"estadistica":[{"v":"0.2"}],"dinamica":[{"v":"0.2"}],"solido-rigido":[{"v":"0.2"}],"ondas":[{"v":"0.2"}],"gases":[{"v":"0.3"}],"ciclos":[{"v":"0.2"}],"ph":[{"v":"0.3"}],"fluidos":[{"v":"0.2"}],"doppler":[{"v":"0.2"}],"resistencias":[{"v":"0.2"}],"faraday":[{"v":"0.2"}],"fenomenos":[{"v":"0.8"}]}; const de = (h) => ({ current: registros[h][0].v, log: registros[h] }); return { registros, de }; })();
+const Version = (() => { const registros = {"web":[{"v":"1.13"}],"control":[{"v":"0.2"}],"termo-estadistica":[{"v":"0.1"}],"markowitz":[{"v":"0.2"}],"cavidades":[{"v":"0.2"}],"organica":[{"v":"0.1"}],"transformada-z":[{"v":"0.2"}],"semiconductores":[{"v":"0.2"}],"relatividad":[{"v":"0.1"}],"osc-acopladas":[{"v":"0.1"}],"solubilidad":[{"v":"0.1"}],"lagrange":[{"v":"0.1"}],"series":[{"v":"0.1"}],"no-parametricos":[{"v":"0.1"}],"regresion-multiple":[{"v":"0.1"}],"anova":[{"v":"0.1"}],"black-scholes":[{"v":"0.2"}],"bonos":[{"v":"0.2"}],"solow":[{"v":"0.2"}],"integrales-multiples":[{"v":"0.1"}],"formulacion":[{"v":"0.1"}],"balance":[{"v":"0.2"}],"redox":[{"v":"0.1"}],"lineas-transmision":[{"v":"0.2"}],"superficies":[{"v":"0.1"}],"vsepr":[{"v":"0.1"}],"maxwell":[{"v":"0.2"}],"fresnel":[{"v":"0.2"}],"gravitacion":[{"v":"0.1"}],"convolucion":[{"v":"0.2"}],"laplace-numerica":[{"v":"0.2"}],"imagenes":[{"v":"0.2"}],"guias-onda":[{"v":"0.2"}],"antena":[{"v":"0.2"}],"bode":[{"v":"0.2"}],"optica":[{"v":"0.1"}],"simulador":[{"v":"0.4"}],"teoria-juegos":[{"v":"0.1"}],"puertas-logicas":[{"v":"0.4"}],"multiplicador":[{"v":"0.2"}],"is-lm":[{"v":"0.2"}],"choques":[{"v":"0.1"}],"termoquimica":[{"v":"0.1"}],"probabilidad":[{"v":"0.1"}],"unidades":[{"v":"0.1"}],"equilibrio":[{"v":"0.1"}],"oscilaciones":[{"v":"0.1"}],"beneficio":[{"v":"0.2"}],"costes":[{"v":"0.2"}],"sistemas-numericos":[{"v":"0.2"}],"excedentes":[{"v":"0.2"}],"oferta-demanda":[{"v":"0.2"}],"chi2-bondad":[{"v":"0.1"}],"contrastes":[{"v":"0.1"}],"errores":[{"v":"0.1"}],"graficador":[{"v":"0.1"}],"metodos-numericos":[{"v":"0.1"}],"fisica-moderna":[{"v":"0.2"}],"lorenz-gini":[{"v":"0.1"}],"phillips-okun":[{"v":"0.2"}],"tipos-cambio":[{"v":"0.2"}],"elasticidades":[{"v":"0.2"}],"pib-ipc":[{"v":"0.1"}],"numeros-indice":[{"v":"0.1"}],"ratios":[{"v":"0.2"}],"punto-muerto":[{"v":"0.1"}],"ahorro":[{"v":"0.2"}],"van-tir":[{"v":"0.2"}],"amortizacion-inmovilizado":[{"v":"0.1"}],"prestamos":[{"v":"0.2"}],"rentas":[{"v":"0.2"}],"interes":[{"v":"0.2"}],"descriptiva":[{"v":"0.1"}],"regresion-economia":[{"v":"0.1"}],"ajustador":[{"v":"0.1"}],"electrostatica":[{"v":"0.7"}],"magnetostatica":[{"v":"0.3"}],"tabla-periodica":[{"v":"0.2"}],"trabajo-y-energia":[{"v":"0.2"}],"masa-molar":[{"v":"0.2"}],"configuracion-electronica":[{"v":"0.2"}],"condensadores":[{"v":"0.3"}],"tiro-parabolico":[{"v":"0.2"}],"disoluciones":[{"v":"0.2"}],"calorimetria":[{"v":"0.2"}],"induccion":[{"v":"0.3"}],"matrices":[{"v":"0.2"}],"derivadas":[{"v":"0.3"}],"laplace":[{"v":"0.2"}],"interferencia":[{"v":"0.2"}],"ondas-em":[{"v":"0.4"}],"intervalos":[{"v":"0.2"}],"fuerza":[{"v":"0.3"}],"campos":[{"v":"0.2.1"}],"cinetica":[{"v":"0.2"}],"edos":[{"v":"0.2"}],"fourier":[{"v":"0.2"}],"taylor":[{"v":"0.2.1"}],"complejos":[{"v":"0.2"}],"sistemas":[{"v":"0.3"}],"regresion":[{"v":"0.2"}],"estadistica":[{"v":"0.2"}],"dinamica":[{"v":"0.2"}],"solido-rigido":[{"v":"0.2"}],"ondas":[{"v":"0.2"}],"gases":[{"v":"0.3"}],"ciclos":[{"v":"0.2"}],"ph":[{"v":"0.3"}],"fluidos":[{"v":"0.2"}],"doppler":[{"v":"0.2"}],"resistencias":[{"v":"0.3"}],"faraday":[{"v":"0.3"}],"fenomenos":[{"v":"0.8"}]}; const de = (h) => ({ current: registros[h][0].v, log: registros[h] }); return { registros, de }; })();
 
-/* =====================================================================
-   Ayudantes comunes de las herramientas (los que antes copiaba cada una).
-   herramientas.js lo pone en cada página justo después de version.js; en
-   Node (pruebas) comprobar.js lo deja en global.Herramienta. Uso:
-     const { $, esc, copia, vacio } = Herramienta;
-     $(q)          document.querySelector
-     esc(s)        texto seguro dentro de HTML y de atributos
-     copia(o)      copia profunda de datos JSON (el estado sc, un ejemplo)
-     vacio(v)      campo sin rellenar (undefined, null o solo espacios)
-     leeSI(s, base)  número de un campo con coma, 3·10^8, prefijos del SI y
-                   unidad: «4k7», «1,5 kΩ», «100n», «10 µF», «5 ms». Con prefijo,
-                   notación 4k7 o unidad escrita da el valor en unidades del SI;
-                   un número solo se multiplica por base (1e-3 si el campo
-                   está en mH, 1e-6 si en μF). NaN si no se entiende
-     txt(h)        HTML de un resultado a texto para el lienzo (exponentes ⁰¹²…)
-     marcas(a, b, n)  valores redondos (1, 2, 2,5, 5 × 10ⁿ) para las marcas de un eje
-     lienzo(c)     prepara un <canvas> (o su selector) a la resolución de la
-                   pantalla, limpio y en px CSS: { g, w, h, c, cambia }; cambia
-                   es true si el tamaño era otro (para rehacer un fondo guardado)
-     enlace        un enlace con #d=… (lo copia «Mis ejercicios») deja sus datos en la clave de la página
-                   (Pagina.guarda) antes de que arranque la app, en todas las herramientas
-     accesible()   (ya se llama al cargar) aria-live en los resultados, role=alert en los
-                   errores y aria-describedby de cada gráfica hacia los resultados
-   ===================================================================== */
 const Herramienta = (() => {
   const $ = (q) => document.querySelector(q);
   const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -411,10 +389,24 @@ const Herramienta = (() => {
     if (!m) return NaN;
     return +m[1] * (m[2] ? PREFIJOS[m[2]] : unidad ? 1 : base);
   };
+  const UNIDADES = { m: 1, Hz: 1, F: 1, H: 1, A: 1, V: 1, 'Ω': 1, ohm: 1, ohmios: 1, T: 1, W: 1, S: 1, s: 1, C: 1, N: 1, J: 1 };
+  const PREF_UN = { p: 1e-12, n: 1e-9, u: 1e-6, 'µ': 1e-6, 'μ': 1e-6, m: 1e-3, c: 1e-2, k: 1e3, M: 1e6, G: 1e9 };
+  const leeUn = (s) => {
+    const t = String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace(/[−–]/g, '-').replace(/[·x×*]10\^?\(?([+\-]?\d+)\)?/i, 'e$1');
+    const m = t.match(/^([+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?)(ohmios|ohm|Hz|[mFHAVΩTWSsCNJ]|[pnuµμmckMG](?:Hz|[mFHAVΩTWSsCNJ]))$/);
+    if (!m) return undefined;
+    const u = m[2];
+    if (UNIDADES[u] !== undefined) return +m[1];
+    const pre = u[0], r = u.slice(1);
+    if (PREF_UN[pre] === undefined || UNIDADES[r] === undefined) return undefined;
+    if (pre === 'c' && r !== 'm') return undefined;
+    return +m[1] * PREF_UN[pre];
+  };
   const txt = (h) => String(h).replace(/<sup>(.*?)<\/sup>/g, (_, e) => e.replace(/−/g, '⁻').replace(/\d/g, (d) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d])).replace(/<[^>]+>/g, '');
   const marcas = (a, b, n = 6) => {
     const p0 = (b - a) / n, e = 10 ** Math.floor(Math.log10(p0)), paso = [1, 2, 2.5, 5, 10].map((q) => q * e).find((q) => q >= p0) || 10 * e;
-    const out = []; for (let v = Math.ceil(a / paso) * paso; v <= b + paso * 1e-9; v += paso) out.push(Math.abs(v) < paso * 1e-9 ? 0 : v);
+    const out = []; if (!(paso > 0) || !isFinite(paso) || !(b > a)) return out; // paso nulo (desbordamiento) o eje sin rango: nada que marcar
+    for (let k = 0, v = Math.ceil(a / paso) * paso; k <= 200 && v <= b + paso * 1e-9; v = Math.ceil(a / paso) * paso + ++k * paso) out.push(Math.abs(v) < paso * 1e-9 ? 0 : v);
     return out;
   };
   const lienzo = (c) => {
@@ -425,8 +417,6 @@ const Herramienta = (() => {
     const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
     return { g, w, h, c, cambia };
   };
-  // Accesibilidad común: los resultados que cambian al tocar un dato se anuncian con cortesía (aria-live), los mensajes de error
-  // como alerta y cada gráfica se describe con los resultados de al lado (aria-describedby), no solo con su título fijo.
   const accesible = (doc = typeof document !== 'undefined' ? document : null) => {
     if (!doc) return;
     const RES = '#resumen, #res, #resumen-d, #resumen-r, #resumen-c, #resumen-este, #resumen-emp, #resumen-nq, #resumen-conf, #res-masa, #res-dil, #res-mez';
@@ -436,7 +426,58 @@ const Herramienta = (() => {
     if (res) for (const c of doc.querySelectorAll('canvas')) if (!c.hasAttribute('aria-describedby') && !c.closest('#resumen, #res') && !c.hasAttribute('aria-hidden')) c.setAttribute('aria-describedby', res.id);
   };
   accesible();
-  // Enlace que lleva el estado (#d=…, base64 url del JSON guardado): los datos pasan a donde la app los lee al arrancar
+  const nombreArchivo = (s) => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'grafica';
+  const celda = (v) => (typeof v === 'number' ? (Number.isFinite(v) ? String(+v.toPrecision(10)).replace('.', ',') : '') : String(v ?? '').replace(/[\t\r\n]+/g, ' '));
+  const tabla = (cab, filas) => [cab, ...filas].filter(Boolean).map((f) => f.map(celda).join('\t')).join('\n');
+  const color = (nom, otro) => { try { return getComputedStyle(document.documentElement).getPropertyValue(nom).trim() || otro; } catch (e) { return otro; } };
+  const png = (c, o = {}) => new Promise((ok, no) => {
+    if (typeof c === 'string') c = $(c);
+    if (!c || !c.width || !c.height) { no(new Error('la gráfica aún no está dibujada')); return; }
+    const k = c.width / (c.clientWidth || c.width), pad = Math.round(12 * k), tam = Math.round(14 * k);
+    const titulo = o.titulo || $('h1')?.textContent.trim() || '', pie = 'Ciencify · ' + (typeof location !== 'undefined' && /^https?:/.test(location.protocol) ? location.host + location.pathname : 'ciencias gratis y sin registro');
+    const alto = c.height + pad * 2 + tam * 2.4 + (titulo ? tam * 1.6 : 0), z = document.createElement('canvas');
+    z.width = c.width + pad * 2; z.height = Math.round(alto);
+    const g = z.getContext('2d'), fam = getComputedStyle(document.body).fontFamily || 'system-ui, sans-serif';
+    g.fillStyle = color('--panel', '#ffffff'); g.fillRect(0, 0, z.width, z.height);
+    g.textBaseline = 'top'; let y = pad;
+    if (titulo) { g.fillStyle = color('--ink', '#111'); g.font = `600 ${tam}px ${fam}`; g.fillText(titulo, pad, y); y += tam * 1.6; }
+    g.drawImage(c, pad, y); y += c.height + pad * 0.5;
+    g.fillStyle = color('--muted', '#555'); g.font = `${Math.round(tam * 0.85)}px ${fam}`; g.fillText(pie, pad, y);
+    z.toBlob((b) => (b ? ok(b) : no(new Error('el navegador no pudo crear la imagen'))), 'image/png');
+  });
+  const copiaTexto = async (t) => {
+    try { await navigator.clipboard.writeText(t); return true; } catch (e) { /* sin permiso o sin https: se prueba con el método antiguo */ }
+    const a = document.createElement('textarea'); a.value = t; a.setAttribute('readonly', ''); a.setAttribute('aria-hidden', 'true'); a.style.cssText = 'position:fixed;left:-9999px;top:0';
+    document.body.appendChild(a); a.select(); let r = false; try { r = document.execCommand('copy'); } catch (e) { r = false; } a.remove(); return r;
+  };
+  const exportar = (c, o = {}) => {
+    if (typeof c === 'string') c = $(c);
+    if (!c) return null;
+    if (c._exporta) { Object.assign(c._exporta.o, o); return c._exporta.barra; }
+    const barra = document.createElement('div'), aviso = document.createElement('span'), cual = o.etiqueta ? ` de ${o.etiqueta}` : '';
+    barra.className = 'exportar'; barra.setAttribute('role', 'group'); barra.setAttribute('aria-label', 'Exportar' + cual);
+    aviso.className = 'exportar-aviso'; aviso.setAttribute('role', 'status'); aviso.setAttribute('aria-live', 'polite');
+    const di = (t) => { aviso.textContent = t; clearTimeout(di.t); di.t = setTimeout(() => { aviso.textContent = ''; }, 3500); };
+    const boton = (txt, label, fn) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'btn'; b.textContent = txt; b.setAttribute('aria-label', label); b.addEventListener('click', fn); barra.appendChild(b); return b; };
+    boton('Descargar PNG', 'Descargar la gráfica' + cual + ' como imagen PNG', async () => {
+      try {
+        const b = await png(c, c._exporta.o), a = document.createElement('a');
+        a.href = URL.createObjectURL(b); a.download = nombreArchivo(c._exporta.o.nombre || c.id || 'grafica') + '.png'; document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 2000); di('Imagen descargada');
+      } catch (e) { di('No se pudo crear la imagen: ' + e.message); }
+    });
+    if (o.datos) boton('Copiar datos', 'Copiar los datos' + cual + ' al portapapeles', async () => {
+      let d; try { d = c._exporta.o.datos; d = typeof d === 'function' ? d() : d; } catch (e) { d = null; }
+      const t = typeof d === 'string' ? d : d && Array.isArray(d.filas) ? tabla(d.cab, d.filas) : '';
+      if (!t) { di('Todavía no hay datos que copiar'); return; }
+      di((await copiaTexto(t)) ? 'Datos copiados: pégalos en una hoja de cálculo' : 'No se pudo copiar: el navegador no lo permite');
+    });
+    barra.appendChild(aviso);
+    c._exporta = { o, barra };
+    const p = c.parentElement, ref = p && p.children.length === 1 && !p.matches('.card, .layout, .wrap, main, body') ? p : c;
+    ref.insertAdjacentElement('afterend', barra);
+    return barra;
+  };
   if (typeof location !== 'undefined' && typeof Pagina !== 'undefined' && Pagina.guarda) {
     const m = /[#&]d=([A-Za-z0-9_-]+)/.exec(location.hash);
     if (m) {
@@ -444,20 +485,10 @@ const Herramienta = (() => {
       try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* file:// */ }
     }
   }
-  return { $, esc, copia, vacio, leeSI, txt, marcas, lienzo, accesible };
+  const enlaceA = (carpeta, estado) => `../${carpeta}/#d=${btoa(unescape(encodeURIComponent(JSON.stringify(estado)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')}`;
+  return { $, esc, copia, vacio, leeSI, leeUn, txt, marcas, lienzo, accesible, exportar, png, tabla, nombreArchivo, enlaceA };
 })();
 
-/* =====================================================================
-   Fórmulas en MathML a partir de una sintaxis sencilla (sin DOM salvo
-   Mates.pinta). En los textos, lo que va entre $…$ es una fórmula:
-     a/b            fracción (los paréntesis de fuera se quitan)
-     x^2, e^{−bt/m} exponente; v_0x, E_{c,máx} subíndice
-     √(…), ∛(…)     raíz
-     "m/s"          texto tal cual (unidades, palabras); \{ \} llaves visibles
-     sen cos tg ln log exp máx mín   funciones; binom(n, k)
-   Una palabra que no es una función se lee letra a letra (mgh = m·g·h).
-   También acepta <sup>, <sub> y las etiquetas que devuelve f().
-   ===================================================================== */
 const Mates = (() => {
   const FUNC = new Set(['sen', 'cos', 'tg', 'tan', 'ln', 'log', 'exp', 'arcsen', 'arccos', 'arctg', 'máx', 'mín', 'lím', 'senh', 'cosh', 'tgh']);
   const OPS = '+-−=·×÷⇒⇔→←↔≈≠<>≤≥±∓,;:!∝∈∼≡∑∏∫∂∇⊥∥';
@@ -473,7 +504,6 @@ const Mates = (() => {
       const c = s[i], resto = s.slice(i);
       let m;
       if (/\s/.test(c)) { sp = true; i++; continue; }
-      // \{ y \} son llaves que se ven: ℒ\{f(t)\}
       if (c === '\\' && (s[i + 1] === '{' || s[i + 1] === '}')) { out.push({ t: 's', v: c + s[i + 1], sp }); i += 2; sp = false; continue; }
       if ((m = resto.match(/^\d+(?:[.,]\d+)?/))) out.push({ t: 'n', v: m[0].replace('.', ','), sp });
       else if (c === '"') { const j = s.indexOf('"', i + 1); m = [s.slice(i, j < 0 ? s.length : j + 1)]; out.push({ t: 'x', v: m[0].replace(/"/g, ''), sp }); }
@@ -484,7 +514,6 @@ const Mates = (() => {
     return out;
   }
 
-  // nodo: { m: MathML, dentro: MathML sin los paréntesis de fuera (o null) }
   const nodo = (m, dentro = null) => ({ m, dentro });
   const fila = (xs) => (xs.length === 1 ? xs[0] : `<mrow>${xs.join('')}</mrow>`);
   const letra = (v) => (/^\d+(,\d+)?$/.test(v) ? `<mn>${v}</mn>` : [...v].length === 1 ? `<mi>${escH(v)}</mi>` : `<mi mathvariant="normal">${escH(v)}</mi>`);
@@ -497,11 +526,9 @@ const Mates = (() => {
       let prevOp = true;
       while (p < tk.length && !(cierre && es(cierre))) {
         const k = ver();
-        // ∫ con límites lleva sus subíndices: ∫_a^b
         if (k.t === 's' && OPS.includes(k.v) && !(k.v === '∫' && tk[p + 1] && tk[p + 1].t === 's' && (tk[p + 1].v === '_' || tk[p + 1].v === '^'))) {
           p++;
           const v = k.v === '-' ? '−' : k.v;
-          // un signo detrás de otro operador (o al principio) es de número: = −19,28
           const signo = prevOp && (v === '−' || v === '+' || v === '±');
           xs.push(v === '!' ? '<mo lspace="0">!</mo>' : v === ',' || v === ';' ? `<mo separator="true">${v}</mo>` : signo ? `<mo form="prefix" lspace="0" rspace="0.05em">${v}</mo>` : `<mo>${escH(v)}</mo>`);
           prevOp = true; continue;
@@ -520,7 +547,6 @@ const Mates = (() => {
       if (es('{')) { p++; const xs = secuencia('}'); p++; return fila(xs); }
       if (es('-') || es('−')) { p++; const a = argumento(); return `<mrow><mo>−</mo>${a}</mrow>`; }
       if (es('(')) { const a = atomo(); return a.m; }
-      // una racha de letras y números pegados: 0x, máx, 12
       const k = ver();
       if (!k) return '<mrow></mrow>';
       if (k.t === 's') { p++; return `<mo>${escH(k.v)}</mo>`; }
@@ -545,15 +571,11 @@ const Mates = (() => {
       if (k.t === 'n') return nodo(`<mn>${k.v}</mn>`);
       if (k.t === 'x') return nodo(`${k.sp && p > 1 ? '<mspace width="0.3em"></mspace>' : ''}<mtext>${escH(k.v)}</mtext>`);
       if (k.t === 'w') {
-        // binom(n, k): número combinatorio
         if (k.v === 'binom' && es('(')) { p++; const a = secuencia(','); p++; const b = secuencia(')'); p++; return nodo(`<mrow><mo>(</mo><mfrac linethickness="0">${fila(a)}${fila(b)}</mfrac><mo>)</mo></mrow>`); }
         if (FUNC.has(k.v)) { let m = `<mi mathvariant="normal">${k.v}</mi>`; if (es('^')) { p++; m = `<msup>${m}${argumento()}</msup>`; } return nodo(`<mspace width="0.17em"></mspace>${m}<mo>&#x2061;</mo><mspace width="0.12em"></mspace>`); }
-        // diferencial suelto (dx, dt, dS, dθ…) detrás de algo: con un poco de aire, como en «f(x) dx»
         if (k.sp && p > 1 && /^d[a-zA-Zθφρ]$/.test(k.v)) return nodo(`<mspace width="0.17em"></mspace><mi>d</mi><mi>${escH(k.v[1])}</mi>`);
         const ls = [...k.v.replace(/[′″]+$/, '')], pr = (k.v.match(/[′″]+$/) || [''])[0];
-        // las marcas combinadas (î, ĵ con acento) van con su letra
         const grupos = []; for (const c of ls) { if (/\p{M}/u.test(c) && grupos.length) grupos[grupos.length - 1] += c; else grupos.push(c); }
-        // las mayúsculas griegas (Δ, Σ, Φ, Ω) van rectas, como en los libros
         return nodo(fila(grupos.map((c) => (c === '∞' ? '<mi>∞</mi>' : /^[Α-Ω]$/.test(c) ? `<mi mathvariant="normal">${c}</mi>` : `<mi>${escH(c)}</mi>`)).concat(pr ? [`<mo lspace="0" rspace="0">${pr}</mo>`] : [])));
       }
       const v = k.v;
@@ -569,9 +591,7 @@ const Mates = (() => {
     return fila(secuencia(null));
   }
 
-  // la fuente se queda en data-src para poder copiarla (como texto o LaTeX)
   const mathml = (src) => `<math data-src="${escH(src).replace(/"/g, '&quot;')}"><mstyle displaystyle="true">${analiza(tokens(src))}</mstyle></math>`;
-  // parte una fórmula antes de cada = o ⇒ que no esté dentro de paréntesis, llaves o comillas
   function trozos(src) {
     const out = [];
     let ini = 0, nivel = 0, comillas = false;
@@ -585,12 +605,9 @@ const Mates = (() => {
     }
     return out.concat(src.slice(ini)).map((x) => x.trim()).filter(Boolean);
   }
-  // sustituye cada $…$ de un texto HTML por su MathML; con partir, cada igualdad va en su propio
-  // <math> para que una cadena larga (a = b = c) baje de línea en el móvil en vez de salirse
   const html = (s, partir = false) => String(s ?? '').replace(/\$([^$]+)\$/g, (_, x) => (partir
     ? trozos(x).map((t, i) => (i ? mathml(t).replace(/^(<math[^>]*><mstyle[^>]*>(?:<mrow>)?)<mo>/, '$1<mo lspace="0">') : mathml(t))).join(' ')
     : mathml(x)));
-  // convierte en el documento los elementos con class="m" (fórmulas escritas en el HTML)
   function pinta(raiz) { if (typeof document === 'undefined') return; for (const el of (raiz || document).querySelectorAll('.m:not([data-m])')) { el.dataset.m = '1'; el.innerHTML = html(el.innerHTML.includes('$') ? el.innerHTML : `$${el.innerHTML}$`); } }
   if (typeof document !== 'undefined') {
     const st = document.createElement('style');
@@ -601,33 +618,6 @@ const Mates = (() => {
   return { html, mathml, pinta, tokens };
 })();
 
-/* =====================================================================
-   Animación por pasos, común a todos los fenómenos de «Física en la vida real».
-   Va en la página tras mates.js; cada fenómeno (fenomenos/<clave>/escena.js)
-   solo da sus pasos y su dibujo:
-     Animacion.monta({ lienzo: '#escena', pasos, dibuja, colores, sonido? })
-       pasos    [{ titulo, corto, texto, dato?, anim?, dura?, prueba? }]: corto = nombre
-                en la línea de tiempo; dato = { valor, texto } destacado sobre el texto,
-                que va en HTML con fórmulas
-                $…$ (párrafos separados por una línea en blanco); anim = ms que dura el
-                movimiento del paso (2500) y dura = ms hasta pasar al siguiente (9000);
-                prueba = { etiqueta, min, max, paso, valor, muestra(v), cambia(v) }
-                pone un deslizador «Pruébalo tú» bajo el texto (al moverlo se para)
-       dibuja(g, { paso, t, reloj, w, h, c, quieto })  dibuja el paso en el contexto
-                g (px CSS): t va de 0 a 1 durante el movimiento, reloj son los segundos
-                desde que se abrió la página (para lo que se mueve siempre, como un
-                brillo), c los colores leídos de las variables CSS de «colores» y
-                quieto = true si el sistema pide menos movimiento
-       colores  nombres de variables CSS sin «--» (se releen al cambiar de modo)
-       sonido(ac) opcional: recibe un AudioContext y devuelve { cuadro(estado) }, al
-                que se llama en cada fotograma mientras el botón #sonido está activo
-                (apagado al abrir la página)
-   Avanza sola de un paso al siguiente; «Parar» detiene solo el avance (el paso
-   sigue animado), y Anterior, Siguiente, los números y las flechas del teclado
-   funcionan siempre. La maqueta (#escena, #ant, #play, #sig, #puntos, #paso-t,
-   #paso-x, #ver y, si hay sonido, #sonido) está en la pagina.html de cada fenómeno y los estilos en
-   fenomenos/estilos.css. Expone window.FenomenoApp para las pruebas.
-   ===================================================================== */
 const Animacion = (() => {
   const { $, esc, lienzo } = Herramienta;
   function monta({ lienzo: sel, pasos, dibuja, colores = [], sonido = null }) {
@@ -636,7 +626,6 @@ const Animacion = (() => {
     let i = 0, inicio = t0, avanza = true, c = {}, audio = null, ac = null, suena = false;
     const leeColores = () => { const st = getComputedStyle(document.documentElement); c = {}; for (const k of colores) c[k] = st.getPropertyValue('--' + k).trim(); };
     const dura = (p) => p.dura || 9000, anim = (p) => p.anim || 2500;
-    // línea de tiempo: un círculo por paso con su nombre corto; la línea se rellena con --avance (0 a 1)
     puntos.innerHTML = pasos.map((p, k) => `<button type="button" title="${esc(p.titulo)}" aria-label="Paso ${k + 1}: ${esc(p.titulo)}"><b>${k + 1}</b><span>${esc(p.corto || '')}</span></button>`).join('');
     const botones = [...puntos.children];
 
@@ -700,24 +689,10 @@ const Animacion = (() => {
   return { monta };
 })();
 
-/* =====================================================================
-   Ayudantes de dibujo comunes a las escenas de «Física en la vida real»
-   (fenomenos/<clave>/escena.js). Va en la página tras animacion.js.
-     Dibujo.suave, tramo, rgba, azar   curvas de 0 a 1, color con alfa y azar fijo
-     Dibujo.vista(g, w, h, c)  un mundo de 16 × 9 unidades dentro del lienzo, con
-         cámara: v.mira(cx, cy, zoom) la mueve (v.pantalla() vuelve a la vista
-         entera, para lo que va fijo como un medidor) y v.sigue(meta, reloj,
-         quieto) la lleva suave hacia otra cámara. Luego v.X(x) y v.Y(y) pasan a
-         px, v.K son los px por unidad y v.x0, v.x1, v.y0 lo que se ve; y dibuja
-         rótulos (que se escriben solos con «escribe»), signos + y −, flechas y
-         puntos, siempre en coordenadas del mundo. Con window.FenomenoFoto (pruebas/imagenes-fenomenos.js, la imagen
-         de la tarjeta del índice) no se dibujan los rótulos, que en pequeño no se leen.
-   ===================================================================== */
 const Dibujo = (() => {
   const suave = (t) => t * t * (3 - 2 * t);
   const tramo = (t, a, b) => Math.min(1, Math.max(0, (t - a) / (b - a)));
   const rgba = (hex, a) => { const h = hex.replace('#', ''), n = parseInt(h.length === 3 ? h.replace(/./g, '$&$&') : h, 16); return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`; };
-  // azar fijo (siempre las mismas posiciones)
   const azar = (k) => { const x = Math.sin(k * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
 
   function vista(g, w, h, c, cam = { x: 8, y: 4.5, z: 1 }) {
@@ -725,7 +700,6 @@ const Dibujo = (() => {
     v.mira = (cx, cy, z) => { v.K = k * z; v.cx = cx; v.cy = cy; v.x0 = cx - w / 2 / v.K; v.x1 = cx + w / 2 / v.K; v.y0 = cy - h / 2 / v.K; return v; };
     v.mundo = () => v.mira(cam.x, cam.y, cam.z);
     v.pantalla = () => v.mira(8, 4.5, 1);
-    // la cámara va suave hacia «meta» (el zoom, en escala logarítmica); con quieto, de golpe
     v.sigue = (meta, reloj, quieto) => {
       const dt = cam.antes === undefined || quieto ? 99 : Math.min(0.1, Math.max(0, reloj - cam.antes)), f = 1 - Math.exp(-dt * 2.4);
       cam.antes = reloj;
@@ -735,7 +709,6 @@ const Dibujo = (() => {
     v.X = (x) => w / 2 + (x - v.cx) * v.K;
     v.Y = (y) => h / 2 + (y - v.cy) * v.K;
     const letra = (px, peso = 500) => `${peso} ${Math.max(11, (px * k) / 40)}px "IBM Plex Sans", system-ui, sans-serif`;
-    // rótulo; con «escribe» (0 a 1) aparece letra a letra, como escrito en la pizarra
     v.rotulo = (txt, x, y, { color = c.rotulo, tam = 13, al = 'left', peso = 500, fondo = true, escribe = 1 } = {}) => {
       if (escribe <= 0 || window.FenomenoFoto) return;
       const letras = [...txt], ver = escribe >= 1 ? txt : letras.slice(0, Math.ceil(letras.length * escribe)).join('');
@@ -755,12 +728,10 @@ const Dibujo = (() => {
       g.beginPath(); g.moveTo(v.X(xb), v.Y(yb)); g.lineTo(v.X(xb) - L * Math.cos(an - 0.4), v.Y(yb) - L * Math.sin(an - 0.4)); g.lineTo(v.X(xb) - L * Math.cos(an + 0.4), v.Y(yb) - L * Math.sin(an + 0.4)); g.fill(); g.globalAlpha = 1;
     };
     v.punto = (x, y, r, color, a = 1) => { g.globalAlpha = a; g.fillStyle = color; g.beginPath(); g.arc(v.X(x), v.Y(y), r * v.K, 0, 2 * Math.PI); g.fill(); g.globalAlpha = 1; };
-    // recuadro con sombra (paneles y medidores)
     v.panel = (x, y, ancho, alto, a = 0.94) => {
       g.save(); g.fillStyle = rgba(c.panel, a); g.shadowColor = rgba('#000', 0.18); g.shadowBlur = 16; g.shadowOffsetY = 3;
       g.beginPath(); g.roundRect(v.X(x), v.Y(y), ancho * v.K, alto * v.K, 0.22 * v.K); g.fill(); g.restore();
     };
-    // chispa quebrada de (xa, ya) a (xb, yb), distinta cada vez que cambia «n»
     v.chispa = (xa, ya, xb, yb, n, color, ancho = 0.05, quiebros = 7) => {
       const L = Math.hypot(xb - xa, yb - ya), nx = -(yb - ya) / L, ny = (xb - xa) / L;
       g.strokeStyle = color; g.lineWidth = Math.max(1.2, ancho * v.K); g.lineJoin = 'round'; g.beginPath(); g.moveTo(v.X(xa), v.Y(ya));
@@ -772,16 +743,7 @@ const Dibujo = (() => {
   return { suave, tramo, rgba, azar, vista };
 })();
 
-/* =====================================================================
-   El Fuego de San Telmo: los 6 pasos de la animación (texto y dibujo) y la
-   escena que se abre en Electrostática (dos esferas conductoras unidas, la
-   pequeña con su carga como incógnita). El motor de la animación es
-   fenomenos/animacion.js; la maqueta, pagina.html. En Node (pruebas) solo se
-   cargan los datos: pruebas/herramientas/fenomenos/fuego-san-telmo.js.
-   Los dibujos usan un mundo de 16 × 9 unidades centrado en el lienzo.
-   ===================================================================== */
 const FuegoSanTelmo = (() => {
-  // modelo del paso 3: casco de 1 m y punta de 1 cm a unos 50 kV del aire que los rodea
   const V = 50e3, R1 = 1, R2 = 0.01, RUPTURA = 3e6, EPS0 = 8.8541878128e-12;
   const datos = { V, R1, R2, Ecasco: V / R1, Epunta: V / R2, sigmas: R1 / R2, Q1: 4 * Math.PI * EPS0 * R1 * V, RUPTURA };
 
@@ -794,8 +756,6 @@ const FuegoSanTelmo = (() => {
     { titulo: 'La luz azul del Fuego de San Telmo', corto: 'Brillo', dato: { valor: 'Azul y violeta', texto: 'Es la luz de las moléculas de nitrógeno excitadas: un plasma frío que no quema.' }, texto: 'Las moléculas de nitrógeno que la avalancha excita emiten, al volver a su estado normal, luz azul y violeta (y algo de ultravioleta). Por eso las puntas brillan con un resplandor azulado y se oye un chisporroteo.\n\nEs un plasma frío con corrientes de microamperios: no quema ni rompe nada. Los marineros lo tomaban por la protección de San Erasmo, San Telmo. Hoy se ve en las alas de los aviones, y el pararrayos usa la misma idea: una punta unida a tierra que concentra el campo.\n\nPruébalo tú: con el deslizador cambias el radio de la punta. Por encima de unos 1,7 cm el campo, $E = V/R$, ya no llega a los 3 MV/m y el brillo se apaga.', dura: 12000 },
   ];
 
-  // escena del simulador de electrostática (formato de electro-sim-cur-v2): dos esferas conductoras en el SI,
-  // la pequeña con su carga como incógnita y la condición V_B − V_A = 0 entre las dos superficies
   const escenaElectrostatica = () => ({
     unit: 'a', mode: 'si', view: { plane: 'xy', cut: '0' }, kinds: {},
     sources: [
@@ -810,23 +770,18 @@ const FuegoSanTelmo = (() => {
     statement: 'Una esfera conductora de radio 1 m (el casco) con 5,56 µC y otra de radio 1 cm (la punta del mástil), a 20 m, están unidas por un hilo, así que tienen el mismo potencial. Obtener la carga de la pequeña y el campo eléctrico en la superficie de cada una, y compararlo con la rigidez dieléctrica del aire, 3 MV/m.',
     scene: escenaElectrostatica(),
   });
-  // escribe el ejercicio en el estado de Electrostática y la abre
   function abrirEnElectrostatica(destino) {
     try { localStorage.setItem('electro-sim-cur-v2', JSON.stringify(ejercicio())); } catch (e) { /* sin almacenamiento: se abre sin datos */ }
     location.href = destino;
   }
 
-  /* ---------------- dibujo (con los ayudantes de fenomenos/dibujo.js) ---------------- */
   const { suave, tramo, rgba, azar } = typeof Dibujo !== 'undefined' ? Dibujo : {};
   const PUNTA_A = [7, 2.9], PUNTA_B = [9.6, 3.9], AGUA = 7.7, CICLO_RAYO = 6.5;
-  // el barco se balancea alrededor de este punto; B() pasa de coordenadas del barco a las del mundo
   const EJE = [8, 7.4];
   const balanceo = (reloj) => ({ an: 0.022 * Math.sin(reloj * 0.8), dy: 0.05 * Math.sin(reloj * 1.1 + 1) });
   const B = ([x, y], { an, dy }) => [EJE[0] + (x - EJE[0]) * Math.cos(an) - (y - EJE[1]) * Math.sin(an), EJE[1] + dy + (x - EJE[0]) * Math.sin(an) + (y - EJE[1]) * Math.cos(an)];
-  // cámara de cada paso (centro en el mundo de 16 × 9 y zoom): se acerca a la punta en los pasos 4 y 5
   const camaraDe = (paso, bal) => paso === 3 ? { x: 7.9, y: 3.4, z: 1.7 } : paso === 4 ? { ...((p) => ({ x: p[0], y: p[1] }))(B(PUNTA_A, bal)), z: 7 } : { x: 8, y: 4.5, z: 1 };
   const cam = { x: 8, y: 4.5, z: 1 };
-  // «Pruébalo tú» del último paso: radio de la punta en cm
   const prueba = { etiqueta: 'cambia el radio de la punta del mástil', min: 0.3, max: 5, paso: 0.1, valor: 1, R: 1,
     muestra: (R) => { const E = V / (R / 100); return `R = ${R.toFixed(1).replace('.', ',')} cm → E = ${(E / 1e6).toFixed(1).replace('.', ',')} MV/m ${E > RUPTURA ? '> 3 MV/m: brilla' : '< 3 MV/m: no brilla'}`; },
     cambia: (R) => { prueba.R = R; } };
@@ -834,14 +789,11 @@ const FuegoSanTelmo = (() => {
 
   function dibuja(g, { paso, t, reloj, w, h, c, quieto }) {
     const bal = quieto ? { an: 0, dy: 0 } : balanceo(reloj), v = Dibujo.vista(g, w, h, c, cam);
-    // la cámara va suave hacia la de este paso
     v.sigue(camaraDe(paso, bal), reloj, quieto);
     const { X, Y, rotulo, signo, flecha, punto } = v, pantalla = v.pantalla;
     const enBarco = (dibujo) => { const p = B(EJE, bal); g.save(); g.translate(X(p[0]), Y(p[1])); g.rotate(bal.an); g.translate(-X(EJE[0]), -Y(EJE[1])); dibujo(); g.restore(); };
     const noche = paso === 5 ? suave(t) : 0;
-    // de cerca (paso 5) la escena del barco se funde con la de la avalancha
     const cerca = tramo(Math.log(cam.z), Math.log(2.2), Math.log(5));
-    // relámpago lejano: un destello cada CICLO_RAYO s mientras la cámara está lejos
     const nRayo = Math.floor(reloj / CICLO_RAYO), fase = reloj - nRayo * CICLO_RAYO, rayo = quieto || cerca > 0.5 || paso === 2 ? 0 : fase < 0.12 ? 1 : fase < 0.22 ? 0.35 : fase < 0.3 ? 0.8 : fase < 0.6 ? 0.8 * (1 - (fase - 0.3) / 0.3) : 0;
 
     if (cerca < 1) {
@@ -867,7 +819,6 @@ const FuegoSanTelmo = (() => {
       if (rayo) { g.fillStyle = rgba(c.rayo, 0.28 * rayo * (1 - 0.4 * noche)); g.fillRect(0, 0, w, h); }
     }
     function relampago() {
-      // un rayo quebrado a lo lejos, a un lado del barco, distinto cada vez
       const lado = nRayo % 2 ? 1 : -1, xa = lado > 0 ? Math.min(v.x1 - 1, 14.2) : Math.max(v.x0 + 1, 1.8);
       g.strokeStyle = rgba(c.rayo, rayo); g.lineWidth = Math.max(1.5, 0.05 * v.K); g.lineJoin = 'round'; g.beginPath();
       let x = xa + (azar(nRayo) - 0.5), y = 1.3; g.moveTo(X(x), Y(y));
@@ -885,7 +836,6 @@ const FuegoSanTelmo = (() => {
       const nNeg = paso === 0 ? Math.round(xs.length * tramo(t, 0.2, 0.8)) : xs.length;
       xs.slice(0, nNeg).forEach((x) => signo(x, 1.85, -1, c.neg));
     }
-    // pasos 1, 2 y 6: campo casi uniforme entre la nube y el mar, con partículas que suben por cada línea
     function campoNubeMar() {
       if (!(paso <= 1 || paso === 5)) return;
       const a = paso === 0 ? tramo(t, 0.5, 1) * 0.8 : paso === 1 ? 0.35 : 0.15 * (1 - noche);
@@ -901,7 +851,6 @@ const FuegoSanTelmo = (() => {
       }
     }
     function mar() {
-      // superficie con dos ondas que se mueven y crestas más claras
       const ola = (x, f) => AGUA + f * (0.06 * Math.sin(1.7 * x + reloj * 1.6) + 0.04 * Math.sin(3.1 * x - reloj * 2.3));
       g.fillStyle = c.mar; g.beginPath(); g.moveTo(0, h);
       for (let x = v.x0 - 0.2; x <= v.x1 + 0.2; x += 0.15) g.lineTo(X(x), Y(ola(x, 1)));
@@ -930,17 +879,14 @@ const FuegoSanTelmo = (() => {
       g.beginPath(); g.moveTo(X(7), Y(6.9)); g.lineTo(X(PUNTA_A[0]), Y(PUNTA_A[1])); g.moveTo(X(9.6), Y(6.9)); g.lineTo(X(PUNTA_B[0]), Y(PUNTA_B[1])); g.stroke();
       g.lineWidth = Math.max(1.5, 0.07 * v.K); g.beginPath(); g.moveTo(X(5.9), Y(4)); g.lineTo(X(8.1), Y(4)); g.moveTo(X(8.8), Y(4.9)); g.lineTo(X(10.4), Y(4.9)); g.stroke();
       g.globalAlpha = a * (1 - noche * 0.6); g.fillStyle = c.vela;
-      // velas algo hinchadas por el viento
       const vela = (xa, xb, ya, yb, e) => { g.beginPath(); g.moveTo(X(xa), Y(ya)); g.lineTo(X(xb), Y(ya)); g.quadraticCurveTo(X(xb - e + 0.12 * Math.sin(reloj * 1.3)), Y((ya + yb) / 2), X(xb - 0.2), Y(yb)); g.lineTo(X(xa + 0.2), Y(yb)); g.quadraticCurveTo(X(xa - e), Y((ya + yb) / 2), X(xa), Y(ya)); g.fill(); };
       vela(6.1, 7.9, 4.15, 6.3, 0.15); vela(8.95, 10.25, 5.05, 6.4, 0.12);
-      // la punta del mástil: una bolita cuyo tamaño sigue al deslizador del último paso
       g.globalAlpha = a; g.fillStyle = c.metal;
       const r = paso === 5 ? 0.025 + prueba.R * 0.035 : 0.06;
       for (const [x, y] of [PUNTA_A, PUNTA_B]) { g.beginPath(); g.arc(X(x), Y(y), r * v.K, 0, 2 * Math.PI); g.fill(); }
       g.globalAlpha = 1; g.lineCap = 'butt';
     }
     function induccion() {
-      // cargas positivas que suben del mar a las puntas y electrones que bajan
       const fin = [[7, 3.05], [7, 3.35], [6.85, 3.2], [7.15, 3.2], [9.6, 4.05], [9.6, 4.35], [9.45, 4.2], [9.75, 4.2]];
       fin.forEach(([x, y], j) => { const u = suave(tramo(t, 0.05 * j, 0.55 + 0.05 * j)); signo(x, 8.1 + (y - 8.1) * u, 1, c.pos); });
       for (let j = 0; j < 6; j++) { const u = suave(tramo(t, 0.1, 0.8)); signo(5.5 + j, 7.3 + 0.6 * u, -1, c.neg, 1 - 0.7 * u); }
@@ -952,14 +898,12 @@ const FuegoSanTelmo = (() => {
       for (const [x, y] of [[7.17, 3.15], [6.83, 3.15], [7.17, 3.45], [6.83, 3.45], [9.78, 4.15]]) signo(x, y, 1, c.pos, a, 0.55);
     }
     function esferas() {
-      // recuadro con el modelo: esfera grande (casco) y pequeña (punta) unidas por un hilo
       const bx = 10.3, by = 2.2, bw = 5.4, bh = 5.2, a = suave(tramo(t, 0, 0.3)), P = B(PUNTA_A, bal);
       g.globalAlpha = a; g.fillStyle = c.panel; g.strokeStyle = c.rotulo; g.lineWidth = 1;
       g.save(); g.shadowColor = rgba('#000', 0.18); g.shadowBlur = 18; g.shadowOffsetY = 4;
       g.beginPath(); g.roundRect(X(bx), Y(by), bw * v.K, bh * v.K, 0.25 * v.K); g.fill(); g.restore(); g.stroke();
       g.setLineDash([4, 4]); g.beginPath(); g.arc(X(P[0]), Y(P[1]), 0.45 * v.K, 0, 2 * Math.PI); g.moveTo(X(P[0] + 0.45), Y(P[1])); g.lineTo(X(bx), Y(by + 1.2)); g.stroke(); g.setLineDash([]);
       const C1 = [12, 4.85], r1 = 1.05, C2 = [14.7, 3.9], r2 = 0.18;
-      // el hilo se dibuja poco a poco
       const uh = tramo(t, 0.1, 0.3);
       g.strokeStyle = c.mastil; g.lineWidth = Math.max(1.5, 0.05 * v.K); g.beginPath();
       for (let s = 0; s <= uh + 1e-9; s += 0.05) { const a1 = [C1[0] + r1 * 0.8, C1[1] - r1 * 0.6], m = [14, 5.1], b1 = [C2[0], C2[1] + r2], q = (u, v, z) => (1 - s) ** 2 * u + 2 * s * (1 - s) * v + s * s * z; const x = q(a1[0], m[0], b1[0]), y = q(a1[1], m[1], b1[1]); s ? g.lineTo(X(x), Y(y)) : g.moveTo(X(x), Y(y)); }
@@ -971,7 +915,6 @@ const FuegoSanTelmo = (() => {
       g.globalAlpha = a; rotulo('R₁: casco', C1[0], C1[1] + r1 + 0.62, { al: 'center', fondo: false, escribe: tramo(t, 0.2, 0.4) }); rotulo('R₂: punta', C2[0], C2[1] - r2 - 0.55, { al: 'center', fondo: false, escribe: tramo(t, 0.3, 0.5) });
       g.globalAlpha = 1; rotulo(bw * v.K < 280 ? 'σ₂/σ₁ = R₁/R₂' : 'Mismo V  ⇒  σ₂/σ₁ = R₁/R₂', bx + bw / 2, by + bh - 0.35, { al: 'center', peso: 600, fondo: false, color: c.pos, escribe: tramo(t, 0.7, 1) });
     }
-    // paso 4: líneas de campo curvas que se juntan en la punta, con partículas que van más deprisa cerca de ella
     function campoPunta() {
       const P = B(PUNTA_A, bal), u = suave(tramo(t, 0, 0.6));
       for (let j = 0; j < 11; j++) {
@@ -984,7 +927,6 @@ const FuegoSanTelmo = (() => {
         if (u > 0.9) for (let q = 0; q < 4; q++) { const fase2 = (reloj * 0.35 + q / 4 + azar(j + 40)) % 1, s = Math.sqrt(fase2), [x, y] = en(s); punto(x, y, 0.045, c.campo, Math.min(1, 4 * (1 - s))); }
       }
     }
-    // paso 4: medidor de aguja con el campo junto a la punta y la zona roja de la ruptura del aire
     function medidor() {
       const cx = 13.3, cy = 6.1, R = 1.55, emax = 6e6, sube = suave(tramo(t, 0.35, 1)), E = datos.Epunta * sube * (1 + (sube > 0.95 ? 0.012 * Math.sin(reloj * 9) : 0));
       const ang = (e) => Math.PI + Math.PI * Math.min(1, e / emax);
@@ -1002,12 +944,10 @@ const FuegoSanTelmo = (() => {
       rotulo('casco: 0,05 MV/m · aire: 3 MV/m', cx, cy + 0.82, { al: 'center', fondo: false, tam: 10.5, escribe: tramo(t, 0.5, 0.8) });
       if (E > RUPTURA) rotulo('¡Se rompe el aire!', cx, cy - R - 1.15, { al: 'center', tam: 13, peso: 700, color: c.pos, escribe: tramo(t, 0.75, 0.95) });
     }
-    // paso 6: el resplandor de las puntas (que depende del radio del deslizador), chispas y la luz sobre el barco
     function brillo() {
       const a = suave(tramo(t, 0.2, 0.9)), Ep = V / (prueba.R / 100), fuerza = Math.min(1.3, Math.max(0, (Ep / RUPTURA - 1) / 0.6));
       const puntos = [[...PUNTA_A, 1], [...PUNTA_B, 0.85], [5.9, 4, 0.5], [8.1, 4, 0.5], [8.8, 4.9, 0.45], [10.4, 4.9, 0.45]];
       g.globalCompositeOperation = 'lighter';
-      // luz que cae sobre el mástil y las velas
       const P = B(PUNTA_A, bal), luz = g.createRadialGradient(X(P[0]), Y(P[1]), 0, X(P[0]), Y(P[1]), 3.2 * v.K);
       luz.addColorStop(0, rgba(c.brillo, 0.22 * a * fuerza)); luz.addColorStop(1, rgba(c.brillo, 0)); g.fillStyle = luz; g.fillRect(0, 0, w, h);
       puntos.forEach(([x0p, y0p, s], j) => {
@@ -1018,7 +958,6 @@ const FuegoSanTelmo = (() => {
         const gr = g.createRadialGradient(X(x), Y(y), 0, X(x), Y(y), r);
         gr.addColorStop(0, rgba(c['brillo-centro'], 0.95 * a)); gr.addColorStop(0.35, rgba(c.brillo, 0.7 * a)); gr.addColorStop(1, rgba(c.brillo, 0));
         g.fillStyle = gr; g.beginPath(); g.arc(X(x), Y(y), r, 0, 2 * Math.PI); g.fill();
-        // chispitas que salen de la punta y cambian a cada momento
         g.strokeStyle = rgba(c['brillo-centro'], 0.8 * a); g.lineWidth = 1.2;
         for (let q = 0; q < 7; q++) {
           const an = -Math.PI / 2 + (q - 3) * 0.45 + 0.25 * Math.sin(reloj * 7 + q * 3 + j), L = (0.25 + 0.35 * azar(Math.floor(reloj * 12) + q * 7 + j * 31)) * p;
@@ -1026,7 +965,6 @@ const FuegoSanTelmo = (() => {
           for (let s2 = 1; s2 <= 3; s2++) { const d = (L * s2) / 3, z = (azar(q + s2 * 13 + Math.floor(reloj * 20)) - 0.5) * 0.12; g.lineTo(X(x + d * Math.cos(an) + z), Y(y + d * Math.sin(an) + z)); }
           g.stroke();
         }
-        // pavesas de luz que suben y se apagan
         for (let q = 0; q < 4; q++) { const u = (reloj * 0.5 + q / 4 + azar(j * 9 + q)) % 1; punto(x + (azar(j + q * 5) - 0.5) * 0.5 * u, y - 0.9 * u * p, 0.03, c['brillo-centro'], a * (1 - u) * Math.min(1, p)); }
       });
       g.globalCompositeOperation = 'source-over';
@@ -1036,27 +974,21 @@ const FuegoSanTelmo = (() => {
       const Ep = V / (prueba.R / 100), si = Ep > RUPTURA;
       rotulo(`Punta de ${prueba.R.toFixed(1).replace('.', ',')} cm: E = ${(Ep / 1e6).toFixed(1).replace('.', ',')} MV/m`, Math.min(v.x1 - 0.3, 15.7), 0.55, { al: 'right', tam: 12.5, peso: 600, color: si ? c.brillo : c.rotulo });
     }
-    // paso 5: de cerca, la punta y los electrones que se multiplican en el aire
     function avalancha() {
       g.fillStyle = c.cielo; g.fillRect(0, 0, w, h);
       const P = [8, 5.2], u = suave(tramo(t, 0, 0.5));
-      // zona donde el campo supera la rigidez del aire, que late un poco
       const lat = 1 + 0.03 * Math.sin(reloj * 4);
       g.globalAlpha *= 1; g.fillStyle = rgba(c.brillo, 0.16 * u); g.beginPath(); g.arc(X(P[0]), Y(P[1]), 1.9 * lat * v.K, 0, 2 * Math.PI); g.fill();
       g.strokeStyle = rgba(c.brillo, u); g.setLineDash([5, 4]); g.lineWidth = 1.5; g.stroke(); g.setLineDash([]);
-      // moléculas de N₂ y O₂ que se agitan un poco
       for (let j = 0; j < 46; j++) {
         const an = -Math.PI * azar(j), r = 0.6 + 4.6 * azar(j + 50), x = P[0] + r * Math.cos(an) * 1.5 + 0.03 * Math.sin(reloj * 3 + j), y = P[1] + r * Math.sin(an) + 0.03 * Math.cos(reloj * 2.6 + j);
         if (y > P[1] + 0.2 || y < 0.3) continue;
-        // las que están cerca de la punta, excitadas, brillan
         const cerca2 = Math.hypot((x - P[0]) / 1.4, y - P[1]) < 1.9, ex = cerca2 && azar(j + Math.floor(reloj * 5)) > 0.6;
         if (ex) { const gr = g.createRadialGradient(X(x), Y(y), 0, X(x), Y(y), 0.35 * v.K); gr.addColorStop(0, rgba(c.brillo, 0.55 * u)); gr.addColorStop(1, rgba(c.brillo, 0)); g.fillStyle = gr; g.beginPath(); g.arc(X(x), Y(y), 0.35 * v.K, 0, 2 * Math.PI); g.fill(); }
         g.fillStyle = c.molecula; g.beginPath(); g.arc(X(x - 0.07), Y(y), 0.09 * v.K, 0, 2 * Math.PI); g.arc(X(x + 0.07), Y(y), 0.09 * v.K, 0, 2 * Math.PI); g.fill();
       }
-      // la punta del mástil, de cerca, con su carga positiva
       g.fillStyle = c.metal; g.beginPath(); g.moveTo(X(6.6), Y(9)); g.lineTo(X(7.75), Y(P[1] + 0.25)); g.quadraticCurveTo(X(8), Y(P[1] - 0.15), X(8.25), Y(P[1] + 0.25)); g.lineTo(X(9.4), Y(9)); g.closePath(); g.fill();
       for (const [x, y] of [[8, P[1] + 0.2], [7.6, P[1] + 0.9], [8.4, P[1] + 0.9], [7.2, P[1] + 1.8], [8.8, P[1] + 1.8]]) signo(x, y, 1, c.pos);
-      // electrones que caen hacia la punta cada vez más deprisa y se multiplican cerca de ella, con su estela
       const n = Math.round(4 + 10 * u);
       for (let j = 0; j < n; j++) {
         const an = -Math.PI * (0.12 + 0.76 * azar(j + 200)), q = (reloj * (0.35 + 0.2 * azar(j + 300)) + azar(j + 400)) % 1;
@@ -1074,8 +1006,6 @@ const FuegoSanTelmo = (() => {
     }
   }
 
-  /* ---------------- sonido (opcional, apagado al abrir) ---------------- */
-  // ruido blanco filtrado: lluvia suave siempre, truenos con cada relámpago y chisporroteo en los pasos 5 y 6
   function sonido(ac) {
     const ruido = ac.createBuffer(1, ac.sampleRate * 2, ac.sampleRate), d = ruido.getChannelData(0);
     for (let j = 0; j < d.length; j++) d[j] = Math.random() * 2 - 1;
@@ -1107,34 +1037,21 @@ if (typeof document !== 'undefined') {
   document.querySelector('#abrir').addEventListener('click', (e) => { e.preventDefault(); FuegoSanTelmo.abrirEnElectrostatica(e.currentTarget.getAttribute('href')); });
 }
 
-/* =====================================================================
-   Portada personal: lo que Ciencify recuerda de ti, solo en este navegador (localStorage, sin
-   cuentas ni envíos). herramientas.js lo pone en cada herramienta y fenómeno tras biblioteca.js; la
-   portada (portal.js) lo usa para pintar «Tu espacio». Claves:
-     simu-recientes   [{ r: 'asignatura/herramienta', t: ms }]   las últimas 8, la más nueva primero
-     simu-favoritos   ['asignatura/herramienta', …]
-   En cada herramienta apunta la visita y añade el botón ☆ «Favorita» junto a Mis ejercicios.
-   Personal.espacio(sitio) devuelve { continuar, favoritas, recientes } con rutas (portal.js las
-   convierte en tarjetas); Personal.borra() olvida todo.
-   ===================================================================== */
 const Personal = (() => {
   const K_REC = 'simu-recientes', K_FAV = 'simu-favoritos', MAX = 8;
   const lee = (k) => { try { const v = JSON.parse(localStorage.getItem(k)); return Array.isArray(v) ? v : []; } catch (e) { return []; } };
   const escribe = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } };
-  // «/fisica/gases/» → 'fisica/gases' (las dos últimas partes: también vale desde un archivo local)
   const rutaDe = (p) => { const q = String(p).split('/').filter((s) => s && !/\.html?$/.test(s)); return q.length >= 2 ? q.slice(-2).join('/') : null; };
   const recientes = () => lee(K_REC).filter((x) => x && typeof x.r === 'string');
   const favoritos = () => lee(K_FAV).filter((x) => typeof x === 'string');
   function visita(ruta, ahora = Date.now()) { escribe(K_REC, [{ r: ruta, t: ahora }, ...recientes().filter((x) => x.r !== ruta)].slice(0, MAX)); }
   const esFavorita = (ruta) => favoritos().includes(ruta);
   function alterna(ruta) { const f = favoritos(), i = f.indexOf(ruta); if (i >= 0) f.splice(i, 1); else f.push(ruta); escribe(K_FAV, f); return i < 0; }
-  // continuar = la última visitada; recientes = las demás
   function espacio() {
     const r = recientes();
     return { continuar: r[0] || null, favoritas: favoritos(), recientes: r.slice(1, 6) };
   }
   function borra() { try { localStorage.removeItem(K_REC); localStorage.removeItem(K_FAV); } catch (e) { /* sin almacenamiento */ } }
-  // «hace 5 min», «hace 3 h», «ayer», «hace 4 días»
   function hace(t, ahora = Date.now()) {
     const m = Math.max(0, Math.round((ahora - t) / 60000));
     if (m < 2) return 'justo ahora';

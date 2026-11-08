@@ -5,6 +5,8 @@
    isótopos), ciclotrón, carga que cruza una franja de campo, campos E y B
    cruzados (cicloide), efecto Hall, par sobre una espira, fuerza sobre un
    hilo y fuerza entre dos hilos paralelos. Todo en el SI.
+   Fase 10: trayectoria numérica (RK4) con E y B uniformes en cualquier dirección (FU-1) y espejo magnético con
+   conservación del momento magnético y cono de pérdidas (FU-3); ambas con la vista 3D de vista3d.js.
    En los dibujos B entrante es ⊗ (hacia dentro de la pantalla) y
    saliente ⊙; la carga y la corriente van hacia la derecha.
    ===================================================================== */
@@ -16,7 +18,8 @@ const Fuerza = (() => {
     const s = a >= 1e5 || a < 1e-3 ? x.toExponential(d - 1).replace(/\.?0+e/, 'e').replace('e', '·10^').replace(/\^([+-]?)(\d+)/, (_, sg, e) => `<sup>${sg === '-' ? '−' : ''}${+e}</sup>`) : String(+x.toPrecision(d));
     return s.replace('.', ',').replace('-', '−');
   };
-  const leeNum = (s) => +String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace(/[−–]/g, '-').replace(/[·x×*]10\^?\(?([+\-−]?\d+)\)?/i, (_, e) => `e${e.replace('−', '-')}`);
+  const leeNum0 = (s) => +String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace(/[−–]/g, '-').replace(/[·x×*]10\^?\(?([+\-−]?\d+)\)?/i, (_, e) => `e${e.replace('−', '-')}`);
+  const leeNum = (s) => { const u = typeof Herramienta !== 'undefined' ? Herramienta.leeUn(s) : undefined; return u !== undefined ? u : leeNum0(s); }; // admite «4 mm», «2,4 GHz», «10 pF»
   const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
   const may = (s) => s[0].toUpperCase() + s.slice(1);
   function num(sc, k, nom, { opcional = false, signo = false, cero = false, def = null } = {}) {
@@ -99,6 +102,78 @@ const Fuerza = (() => {
     let a = null;
     if (P.m) { a = F.map((x) => x / P.m); pasos.push({ t: 'Aceleración', html: `$a = F/m$ = ${ijk(a, 'm/s<sup>2</sup>')}, de módulo ${f(mod(a))} m/s<sup>2</sup>.` }); }
     return { modo: 'vectorial', P, v, B, E, hayE, vB, Fm, Fe, F, Fmod: mod(F), Fmmod: mod(Fm), ang, a, pasos };
+  }
+
+  /* ---------- Integración numérica (RK4): m dv/dt = q (E + v × B) ---------- */
+  const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+  // E(r, t) y B(r, t) devuelven vectores; parar(r, v, t) corta la integración. Devuelve muestras [t, x, y, z, vx, vy, vz] (≤ nmax)
+  function rk4(P, Ef, Bf, r0, v0, tmax, dt0, parar = null, nmax = 1600) {
+    const n = Math.ceil(tmax / dt0), dt = tmax / n, q = P.q, m = P.m, acc = (r, v, t) => { const e = Ef(r, t), c = cruz(v, Bf(r, t)); return [(q * (e[0] + c[0])) / m, (q * (e[1] + c[1])) / m, (q * (e[2] + c[2])) / m]; };
+    const paso = Math.max(1, Math.ceil(n / nmax)), out = [[0, ...r0, ...v0]];
+    let r = r0.slice(), v = v0.slice(), t = 0, parada = null;
+    for (let i = 1; i <= n; i++) {
+      const a1 = acc(r, v, t), r2 = r.map((x, k) => x + (v[k] * dt) / 2), v2 = v.map((x, k) => x + (a1[k] * dt) / 2), a2 = acc(r2, v2, t + dt / 2);
+      const r3 = r.map((x, k) => x + (v2[k] * dt) / 2), v3 = v.map((x, k) => x + (a2[k] * dt) / 2), a3 = acc(r3, v3, t + dt / 2);
+      const r4 = r.map((x, k) => x + v3[k] * dt), v4 = v.map((x, k) => x + a3[k] * dt), a4 = acc(r4, v4, t + dt);
+      r = r.map((x, k) => x + ((v[k] + 2 * v2[k] + 2 * v3[k] + v4[k]) * dt) / 6); v = v.map((x, k) => x + ((a1[k] + 2 * a2[k] + 2 * a3[k] + a4[k]) * dt) / 6); t += dt;
+      if (i % paso === 0 || i === n) out.push([t, ...r, ...v]);
+      if (parar && parar(r, v, t)) { parada = { t, r: r.slice(), v: v.slice() }; if (out[out.length - 1][0] !== t) out.push([t, ...r, ...v]); break; }
+    }
+    return { m: out, parada };
+  }
+
+  /* ---------- FU-1: trayectoria con E y B uniformes en cualquier dirección ---------- */
+  // sc: { part, q, m, vx.., Bx.., Ex.. (opcional), tt (s, opcional; vacío = 5 periodos de giro) }
+  function trayectoria(sc) {
+    const pasos = [], P = particula(sc, true), v0 = comp(sc, 'v', 'v'), B = comp(sc, 'B', 'B', true), hayE = ['x', 'y', 'z'].some((e) => !vacio(sc['E' + e])), E = hayE ? comp(sc, 'E', 'E', true) : [0, 0, 0];
+    const Bm = mod(B);
+    if (!Bm && !hayE) throw new Error('Escribe al menos una componente de B o de E');
+    if (!mod(v0) && !mod(E)) throw new Error('Sin velocidad inicial y sin campo eléctrico la partícula no se mueve');
+    const aq = Math.abs(P.q), b = Bm ? B.map((x) => x / Bm) : [0, 0, 1], Epar = dot(E, b), Eperp = E.map((x, i) => x - Epar * b[i]);
+    const vd = Bm ? cruz(Eperp, B).map((x) => x / (Bm * Bm)) : [0, 0, 0], vpar = dot(v0, b), vperp = v0.map((x, i) => x - vpar * b[i] - vd[i]), vpm = mod(vperp);
+    const w = Bm ? (aq * Bm) / P.m : 0, Tc = Bm ? (2 * Math.PI) / w : Infinity, rL = Bm ? (P.m * vpm) / (aq * Bm) : Infinity, apar = (P.q * Epar) / P.m;
+    if (Bm && mod(vd) >= C) throw new Error('E/B no puede ser igual o mayor que c: el modelo no relativista no vale');
+    const tt = vacio(sc.tt) ? (Bm ? 5 * Tc : null) : num(sc, 'tt', 'el tiempo de integración');
+    if (tt === null) throw new Error('Sin B hay que escribir el tiempo de integración');
+    const dt = Bm ? Math.min(Tc / 400, tt / 200) : tt / 400;
+    if (tt / dt > 400000) throw new Error('Demasiados pasos de integración: reduce el tiempo');
+    const run = rk4(P, () => E, () => B, [0, 0, 0], v0, tt, dt), M = run.m, ult = M[M.length - 1], KE = (r) => 0.5 * P.m * (r[4] * r[4] + r[5] * r[5] + r[6] * r[6]);
+    const KE0 = KE(M[0]), KE1 = KE(ult), WE = P.q * dot(E, [ult[1], ult[2], ult[3]]);
+    if (P.pre) pasos.push({ t: 'Datos de la partícula', html: datosP(P) });
+    pasos.push({ t: 'Ecuación del movimiento', html: `$m {dv}/{dt} = q (E + v × B)$ con $E = ${ijk(E, 'V/m')}$ y $B = ${ijk(B, 'T')}$. No tiene solución cerrada en general, así que se integra con Runge-Kutta de orden 4 con ${Math.round(tt / dt)} pasos de $${f(dt)} "s"$ hasta $t = ${f(tt)} "s"$.` });
+    if (Bm) pasos.push({ t: 'Giro alrededor de B', html: `$ω_c = {|q| B}/m = ${f(w)} "rad/s"$, periodo $T_c = 2π/ω_c = ${f(Tc)} "s"$ y, en el sistema que se mueve con la deriva, radio $r_L = {m v_⊥}/{|q| B} = ${f(rL)} "m"$ con $v_⊥ = ${f(vpm)} "m/s"$ (la velocidad perpendicular a B menos la deriva).` });
+    if (hayE && Bm) pasos.push({ t: 'Deriva E × B', html: `La parte de E perpendicular a B, $E_⊥ = ${ijk(Eperp, 'V/m')}$, hace derivar la partícula, sea cual sea su carga, con $v_d = {E × B}/{B^2} = ${ijk(vd, 'm/s')}$ (módulo ${f(mod(vd))} m/s).` });
+    if (hayE) pasos.push({ t: 'Aceleración a lo largo de B', html: Bm ? `La parte paralela, $E_∥ = ${f(Epar)} "V/m"$, acelera la partícula a lo largo del campo: $a_∥ = {q E_∥}/m = ${f(apar)} "m/s"^2$, y $v_∥ = ${f(vpar)} + a_∥ t$.` : `Sin B la aceleración es $a = qE/m = ${ijk(E.map((x) => (P.q * x) / P.m), 'm/s²')}$.` });
+    pasos.push({ t: 'Energía', html: `El campo magnético no hace trabajo; el eléctrico sí: $ΔE_c = q E·Δr = ${f(WE)} "J"$. Con la integración, $E_c$ pasa de ${f(KE0)} J a ${f(KE1)} J (${f(KE1 - KE0)} J).` });
+    return { modo: 'trayectoria', P, v0, B, E, hayE, Bm, w, Tc, rL, vd, vpar, vpm, apar, tt, dt, muestras: M, KE0, KE1, WE, rf: [ult[1], ult[2], ult[3]], vf: [ult[4], ult[5], ult[6]], Kmax: Math.max(...M.map(KE)), pasos };
+  }
+
+  /* ---------- FU-3: espejo magnético B(z) = B₀ (1 + z²/L²) ---------- */
+  // sc: { part, q, m, uv, v, B0 (T), Rm (relación de espejo), L (m), al (°, ángulo entre v y B en el centro) }
+  function espejo(sc) {
+    const pasos = [], P = particula(sc, true), v = velocidad(sc, P, pasos), B0 = num(sc, 'B0', 'el campo B₀ del centro'), Rm = num(sc, 'Rm', 'la relación de espejo Bmáx/B₀'), L = num(sc, 'L', 'la longitud característica L'), al = num(sc, 'al', 'el ángulo α₀', { signo: true });
+    if (!(Rm > 1)) throw new Error('La relación de espejo tiene que ser mayor que 1');
+    if (!(al > 0 && al <= 90)) throw new Error('El ángulo α₀ entre v y B tiene que estar entre 0° (exclusive) y 90°');
+    const a0 = (al * Math.PI) / 180, s0 = Math.sin(a0), c0 = Math.abs(Math.cos(a0)) < 1e-12 ? 0 : Math.cos(a0), aq = Math.abs(P.q), zm = L * Math.sqrt(Rm - 1), ac = Math.asin(1 / Math.sqrt(Rm)), atrapada = s0 > 1 / Math.sqrt(Rm) + 1e-12;
+    const vp = v * s0, va = v * c0, mu = (P.m * vp * vp) / (2 * B0), w0 = (aq * B0) / P.m, rL = (P.m * vp) / (aq * B0), Tc0 = (2 * Math.PI) / w0, zt = c0 === 0 ? 0 : L * (c0 / s0), Tb = (2 * Math.PI * L) / vp;
+    const Bf = (r) => [(-B0 * r[0] * r[2]) / (L * L), (-B0 * r[1] * r[2]) / (L * L), B0 * (1 + (r[2] * r[2]) / (L * L))];
+    const tt = atrapada ? 3 * Tb : Math.min(3 * Tb, (2 * zm) / Math.max(va, 1e-30) * 1.5 + Tb), dt = Math.min(Tc0 / 200, tt / 400);
+    if (rL > 0.3 * L) throw new Error(`El radio de giro (${f(rL)} m) no es pequeño frente a L (${f(L)} m): el momento magnético no se conserva bien. Reduce la energía, sube B₀ o aumenta L`);
+    if (tt / dt > 500000) throw new Error('Demasiados pasos de integración: el radio de giro es muy pequeño frente a L; aumenta la energía o baja B₀');
+    const run = rk4(P, () => [0, 0, 0], (r) => Bf(r), [0, 0, 0], [vp, 0, va], tt, dt, (r) => Math.abs(r[2]) >= zm), M = run.m;
+    const muT = M.map((q) => { const r = [q[1], q[2], q[3]], Bv = Bf(r), Bn = mod(Bv), vv = [q[4], q[5], q[6]], vpar = dot(vv, Bv) / Bn, v2 = dot(vv, vv); return [q[0], (P.m * (v2 - vpar * vpar)) / (2 * Bn)]; });
+    const dev = Math.max(...muT.map((x) => Math.abs(x[1] / mu - 1))), zmax = Math.max(...M.map((q) => Math.abs(q[3])));
+    // periodo de rebote medido: cruces de z = 0 hacia arriba
+    const cruces = []; for (let i = 1; i < M.length; i++) if (M[i - 1][3] < 0 && M[i][3] >= 0) cruces.push(M[i - 1][0] + ((M[i][0] - M[i - 1][0]) * -M[i - 1][3]) / (M[i][3] - M[i - 1][3]));
+    const TbSim = cruces.length >= 2 ? (cruces[cruces.length - 1] - cruces[0]) / (cruces.length - 1) : null;
+    if (P.pre) pasos.unshift({ t: 'Datos de la partícula', html: datosP(P) });
+    pasos.push({ t: 'El campo', html: `$B(z) = B_0 (1 + z^2/L^2)$ sobre el eje, con $B_0 = ${f(B0)} "T"$ y $L = ${f(L)} "m"$; fuera del eje aparece una componente radial $B_ρ = −{ρ}/{2} {dB}/{dz} = −B_0 {ρ z}/{L^2}$ (así $∇·B = 0$). En $z = ±z_m = ±${f(zm)} "m"$ el campo vale $R_m B_0 = ${f(Rm * B0)} "T"$, con $R_m = ${f(Rm)}$ la relación de espejo.` });
+    pasos.push({ t: 'Momento magnético', html: `Si el campo cambia poco en una vuelta, $μ = {m v_⊥^2}/{2B}$ es constante, y como el campo no hace trabajo $v^2 = v_⊥^2 + v_∥^2$ también. En el centro $v_⊥ = v sen α_0 = ${f(vp)} "m/s"$, $v_∥ = ${f(va)} "m/s"$ y $μ = ${f(mu)} "J/T"$.` });
+    pasos.push({ t: 'Punto de retorno', html: `La partícula se frena donde $v_∥ = 0$, es decir, $B(z_t) = B_0/sen^2 α_0$: ${c0 === 0 ? 'con α₀ = 90° no avanza a lo largo del eje.' : `$z_t = L cot α_0 = ${f(zt)} "m"$.`} Llega al final de la botella si $z_t ≥ z_m$.` });
+    pasos.push({ t: 'Cono de pérdidas', html: `Escapa quien llega a $z_m$: $sen^2 α_0 < B_0/B_{máx} = 1/R_m$, o sea $α_c = arcsen(1/√R_m) = ${f((ac * 180) / Math.PI)}°$. Con $α_0 = ${f(al)}°$ la partícula ${atrapada ? 'queda <b>atrapada</b>' : 'está <b>dentro del cono de pérdidas</b> y escapa'}${run.parada ? ` (la simulación la ve salir en $t = ${f(run.parada.t)} "s"$)` : ''}.` });
+    if (atrapada) pasos.push({ t: 'Periodo de rebote', html: `$T_b = 4 ∫_0^{z_t} {dz}/{v_∥(z)}$ con $v_∥ = √{v^2 − v_⊥0^2 B(z)/B_0}$ da exactamente $T_b = {2π L}/{v_⊥0} = ${f(Tb)} "s"$${TbSim ? `; la simulación da ${f(TbSim)} s` : ''}.` });
+    pasos.push({ t: 'Condición de validez', html: `El radio de giro $r_L = ${f(rL)} "m"$ es ${f(rL / L)} veces $L$ (hace falta $r_L ≪ L$). Con la integración, $μ$ varía como máximo un ${f(dev * 100)}% a lo largo del recorrido.` });
+    return { modo: 'espejo', P, v, B0, Rm, L, al, atrapada, ac, zm, vp, va, mu, rL, Tc0, zt, Tb, TbSim, tt, dt, muestras: M, mut: muT, dev, zmax, escapa: !!run.parada, tEscapa: run.parada ? run.parada.t : null, Bz: (z) => B0 * (1 + (z * z) / (L * L)), pasos };
   }
 
   /* ---------- Selector de velocidades y espectrómetro ---------- */
@@ -250,6 +325,8 @@ const Fuerza = (() => {
 
   function resolver(sc) {
     if (sc.modo === 'vectorial') return vectorial(sc);
+    if (sc.modo === 'trayectoria') return trayectoria(sc);
+    if (sc.modo === 'espejo') return espejo(sc);
     if (sc.modo === 'selector') return selector(sc);
     if (sc.modo === 'ciclotron') return ciclotron(sc);
     if (sc.modo === 'franja') return franja(sc);
@@ -270,6 +347,11 @@ const Fuerza = (() => {
     { clave: 'vec-proton', nombre: 'F = q v × B de un protón', sc: { modo: 'vectorial', part: 'proton', ...P0, vx: '2e5', vy: '3e5', vz: '0', Bx: '0', By: '0', Bz: '0,5', Ex: '', Ey: '', Ez: '' } },
     { clave: 'vec-electron', nombre: 'Electrón con B en dos direcciones', sc: { modo: 'vectorial', part: 'electron', ...P0, vx: '1e6', vy: '0', vz: '0', Bx: '0', By: '0,2', Bz: '0,3', Ex: '', Ey: '', Ez: '' } },
     { clave: 'vec-lorentz', nombre: 'Fuerza de Lorentz con E y B', sc: { modo: 'vectorial', part: 'otra', q: '2e-6', m: '1e-9', vx: '0', vy: '400', vz: '0', Bx: '0,1', By: '0', Bz: '0', Ex: '0', Ey: '0', Ez: '50' } },
+    { clave: 'tray-helice', nombre: 'Protón con E y B paralelos: hélice que acelera (FU-1)', sc: { modo: 'trayectoria', part: 'proton', ...P0, vx: '1e5', vy: '0', vz: '1e5', Bx: '0', By: '0', Bz: '0,1', Ex: '0', Ey: '0', Ez: '50', tt: '' } },
+    { clave: 'tray-deriva', nombre: 'Electrón con E y B cruzados e inclinados: deriva (FU-1)', sc: { modo: 'trayectoria', part: 'electron', ...P0, vx: '2e5', vy: '0', vz: '1e5', Bx: '0', By: '0', Bz: '0,01', Ex: '300', Ey: '0', Ez: '0', tt: '' } },
+    { clave: 'tray-general', nombre: 'Partícula con B y E en direcciones cualesquiera (FU-1)', sc: { modo: 'trayectoria', part: 'alfa', ...P0, vx: '1e5', vy: '2e5', vz: '5e4', Bx: '0,05', By: '0,02', Bz: '0,1', Ex: '200', Ey: '-100', Ez: '300', tt: '' } },
+    { clave: 'espejo-atrapada', nombre: 'Electrón atrapado en una botella magnética (FU-3)', sc: { modo: 'espejo', part: 'electron', ...P0, uv: 'eV', v: '100', B0: '0,01', Rm: '4', L: '0,5', al: '45' } },
+    { clave: 'espejo-escapa', nombre: 'Electrón que escapa por el cono de pérdidas (FU-3)', sc: { modo: 'espejo', part: 'electron', ...P0, uv: 'eV', v: '100', B0: '0,01', Rm: '4', L: '0,5', al: '20' } },
     { clave: 'selector', nombre: 'Selector de velocidades y espectrómetro', sc: { modo: 'selector', part: 'proton', ...P0, uv: 'ms', v: '', E: '1e5', B: '0,2', B2: '0,5' } },
     { clave: 'isotopos', nombre: 'Espectrómetro: separación de dos isótopos', sc: { modo: 'selector', part: 'otra', q: '1,602e-19', m: '1,993e-26', uv: 'ms', v: '', E: '4e4', B: '0,1', B2: '0,5', m2: '13' } },
     { clave: 'selector-rapido', nombre: 'Electrón demasiado rápido en el selector', sc: { modo: 'selector', part: 'electron', ...P0, uv: 'ms', v: '3e6', E: '2e4', B: '0,01', B2: '' } },
@@ -289,6 +371,6 @@ const Fuerza = (() => {
     { clave: 'antiparalelos', nombre: 'Dos hilos con corrientes contrarias', sc: { modo: 'paralelos', I1: '20', I2: '20', d: '0,05', L: '', sentido: 'opuesto' } },
   ];
 
-  return { resolver, carga, vectorial, selector, ciclotron, franja, cruzados, hall, espira, hilo, paralelos, ejemplos, f, PART, E0, U, MU0 };
+  return { resolver, rk4, carga, vectorial, trayectoria, espejo, selector, ciclotron, franja, cruzados, hall, espira, hilo, paralelos, ejemplos, f, PART, E0, U, MU0 };
 })();
 if (typeof module !== 'undefined') module.exports = Fuerza;

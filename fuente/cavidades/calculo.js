@@ -26,7 +26,8 @@ const Cavidades = (() => {
     return s.replace('.', ',').replace('-', '−');
   };
   // acepta coma decimal, 3e8 y 3·10^8
-  const leeNum = (s) => +String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace(/[−–]/g, '-').replace(/[·x×*]10\^?([+\-]?\d+)/i, 'e$1');
+  const leeNum0 = (s) => +String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace(/[−–]/g, '-').replace(/[·x×*]10\^?([+\-]?\d+)/i, 'e$1');
+  const leeNum = (s) => { const u = typeof Herramienta !== 'undefined' ? Herramienta.leeUn(s) : undefined; return u !== undefined ? u : leeNum0(s); }; // admite «4 mm», «2,4 GHz», «10 pF»
   const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
   const may = (s) => s[0].toUpperCase() + s.slice(1);
   function lee(sc, k, nom, min = 0, estricto = true) {
@@ -203,6 +204,14 @@ const Cavidades = (() => {
   }
   const cuerpo = (geo, D, G, tipo, i, v) => ({ lims: G.lims(D), dentro: G.dentro(D), H: G.campo(D, tipo, i) });
 
+  // Curva de resonancia de la cavidad como carga de un puerto con factor de acoplo β (Γ = (β − 1 + j2Q₀δ)/(β + 1 + j2Q₀δ), δ = (f − f₀)/f₀)
+  const vacio2 = (v) => v === undefined || v === null || String(v).trim() === '';
+  const gammaCurva = (Q0, beta, d) => { const x = 2 * Q0 * d; return Math.sqrt(((beta - 1) ** 2 + x * x) / ((beta + 1) ** 2 + x * x)); };
+  function curva(sol, n = 401) {
+    const pts = [], span = Math.max(4 / sol.QL, 1e-9);
+    for (let i = 0; i < n; i++) { const d = -span + (2 * span * i) / (n - 1), g = gammaCurva(sol.Q, sol.beta, d); pts.push({ f: sol.f0 * (1 + d), s11: 20 * Math.log10(Math.max(g, 1e-6)) }); }
+    return pts;
+  }
   function resolver(sc) {
     const { geo, G, D, er, tand, sigma, tipo, i } = lectura(sc);
     const v = C0 / Math.sqrt(er), eta = ETA0 / Math.sqrt(er);
@@ -211,6 +220,9 @@ const Cavidades = (() => {
     const gam = G.gamma(D, tipo, i), Qc = 2 * gam / delta, Qd = tand > 0 ? 1 / tand : Infinity, Q = 1 / (1 / Qc + (tand > 0 ? tand : 0)), df = f0 / Q;
     // modos más bajos
     const modos = G.listaIdx().map(([t, ix]) => ({ tipo: t, i: ix, f: G.frec(D, t, ix, v), nombre: G.nom(t, ix) })).sort((p, q) => p.f - q.f || (p.tipo < q.tipo ? -1 : 1)).slice(0, 12);
+    const beta = vacio2(sc.beta) ? 1 : leeNum(sc.beta);
+    if (!(beta > 0) || !isFinite(beta)) throw new Error('El factor de acoplo β debe ser mayor que 0');
+    const QL = Q / (1 + beta), dfL = f0 / QL, gam0 = Math.abs(beta - 1) / (beta + 1), s11min = 20 * Math.log10(Math.max(gam0, 1e-6)), tipoAcoplo = Math.abs(beta - 1) < 1e-9 ? 'crítico' : beta < 1 ? 'subacoplado' : 'sobreacoplado';
     const mn = G.mnom(tipo, i), nm = G.nom(tipo, i);
     const mm = (x) => f(x * 1000);
     let dat, form, cerrada = null;
@@ -242,8 +254,9 @@ const Cavidades = (() => {
     if (cerrada) pasos.push({ t: cerrada.t, html: `${cerrada.html} (coincide con el cálculo anterior)` });
     pasos.push(
       { t: 'Factor de calidad del dieléctrico', html: tand > 0 ? `$Q_d = 1/{"tan" δ} = ${f(Qd)}$` : 'Sin pérdidas en el relleno ($"tan" δ = 0$): $Q_d = ∞$' },
-      { t: 'Factor de calidad total y ancho de banda', html: `$1/Q = 1/Q_c + 1/Q_d$ → $Q = ${f(Q)}$, y $Δf = f_0/Q = ${f(df / 1e3)} "kHz"$` });
-    return { geo, D, er, tand, sigma, tipo, i, v, eta, f0, w0, lam, k, delta, Rs, gam, Qc, Qd, Q, df, modos, nombre: nm, mnombre: mn, cerrada: cerrada && cerrada.valor, pasos, G, cuerpo: cuerpo(geo, D, G, tipo, i, v) };
+      { t: 'Factor de calidad total y ancho de banda', html: `$1/Q = 1/Q_c + 1/Q_d$ → $Q = ${f(Q)}$, y $Δf = f_0/Q = ${f(df / 1e3)} "kHz"$` },
+      { t: 'Acoplo y curva de resonancia', html: `Con factor de acoplo $β = ${f(beta)}$ (${tipoAcoplo}): $Q_L = {Q_0}/{1 + β} = ${f(QL)}$, ancho de banda cargado $Δf_L = f_0/Q_L = ${f(dfL / 1e3)} "kHz"$. En resonancia $|Γ| = {|β − 1|}/{β + 1} = ${f(gam0)}$, es decir $|S_{11}| = ${f(s11min)} "dB"$` + (Math.abs(beta - 1) < 1e-9 ? ' (adaptada: no se refleja nada).' : '.') });
+    return { beta, QL, dfL, gam0, s11min, tipoAcoplo, geo, D, er, tand, sigma, tipo, i, v, eta, f0, w0, lam, k, delta, Rs, gam, Qc, Qd, Q, df, modos, nombre: nm, mnombre: mn, cerrada: cerrada && cerrada.valor, pasos, G, cuerpo: cuerpo(geo, D, G, tipo, i, v) };
   }
   const modoCampo = (sc) => { const s = resolver(sc); return { H: s.cuerpo.H, k: s.k, lims: s.cuerpo.lims, dentro: s.cuerpo.dentro, f0: s.f0 }; };
 
@@ -286,6 +299,6 @@ const Cavidades = (() => {
     { clave: 'esf-te11', nombre: 'Cavidad esférica de R = 50 mm: modo TE11', sc: { geo: 'esf', R: '50', er: '1', tand: '0', sigma: '5,8e7', tipo: 'TE', i1: '1', i2: '1', i3: '0' } },
   ];
 
-  return { resolver, modoCampo, mapa, ejemplos, f, Jn, jn, cerosJ, cerosJp, cerosj, cerosg, C0, MU0 };
+  return { resolver, curva, gammaCurva, modoCampo, mapa, ejemplos, f, Jn, jn, cerosJ, cerosJp, cerosj, cerosg, C0, MU0 };
 })();
 if (typeof module !== 'undefined') module.exports = Cavidades;

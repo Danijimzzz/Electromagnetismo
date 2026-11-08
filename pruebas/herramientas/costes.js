@@ -14,6 +14,10 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     // costes cuadráticos: Q* = √(450/0,5) = 30, CMe = 15 + 20 + 15 = 50; Q = 20 → CV = 400 + 200
     const u = ej('cuadratico'); cerca(u.qm, 30, 1e-12, 'Q* cuadrático'); cerca(u.pm, 50, 1e-12, 'CMe mínimo cuadrático'); cerca(u.cv, 600, 1e-9, 'CV cuadrático'); cerca(u.cmg, 40, 1e-9, 'CMg cuadrático'); cerca(u.pc, 20, 1e-12, 'cierre = a');
     const o = ej('optimo'); cerca(o.cme, o.cmg, 1e-9, 'CMe = CMg en el óptimo');
+    // dado CMg = 15 − 12Q + 3Q² y CF = 32: se integra a CT = 32 + 15Q − 6Q² + Q³, igual que el ejemplo clásico
+    { const g = ej('dado-cmg'), k = ej('clasico'); cerca(g.ct, k.ct, 1e-12, 'CT integrando el CMg'); cerca(g.cmg, k.cmg, 1e-12, 'CMg'); cerca(g.pm, k.pm, 1e-9, 'óptimo de explotación'); cerca(g.b, -6, 1e-12, 'b = m1/2'); cerca(g.c, 1, 1e-12, 'c = m2/3');
+      const c2 = ej('cuadratico-2'); cerca(c2.qm, Math.sqrt(200 / 0.25), 1e-9, 'óptimo del CT cuadrático (√(CF/b))'); cerca(c2.pm, 10 + 2 * Math.sqrt(200 * 0.25), 1e-9, 'mínimo del CMe cuadrático'); }
+    error({ entrada: 'cmg', cf: '', m0: '15', m1: '-12', m2: '3', q: '5' }, 'CMg sin costes fijos (constante de integración)'); error({ entrada: 'cmg', cf: '32', m0: '', m1: '1', m2: '0', q: '5' }, 'CMg sin término constante');
     error({ cf: '32', a: '15', b: '-6', c: '1', q: '0' }, 'producción 0');
     error({ cf: '32', a: '15', b: '0', c: '0', q: '3' }, 'costes lineales sin mínimo');
     error({ cf: '32', a: '1', b: '-6', c: '1', q: '3' }, 'coste marginal negativo');

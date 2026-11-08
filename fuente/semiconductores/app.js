@@ -17,12 +17,13 @@
   let sol = null, col = {};
 
   /* ---------- Formulario ---------- */
-  const NOMBRE = { Vs: 'Tensión de la fuente V_S', R: 'Resistencia R', Is: 'Corriente de saturación I_S', n: 'Factor de idealidad n', Vcc: 'Alimentación V_CC', RB: 'Resistencia de base R_B', R1: 'Resistencia R₁', R2: 'Resistencia R₂', RC: 'Resistencia de colector R_C', RE: 'Resistencia de emisor R_E', beta: 'Ganancia β', VBE: 'Tensión V_BE', VCEsat: 'Tensión V_CE,sat', Vdd: 'Alimentación V_DD', RD: 'Resistencia de drenador R_D', RS: 'Resistencia de fuente R_S', K: 'Transconductancia K', Vt: 'Tensión umbral V_t' };
-  const CAMPOS_MODO = { diodo: ['Vs', 'R', 'Is', 'n'], mosfet: ['Vdd', 'R1', 'R2', 'RD', 'RS', 'K', 'Vt'] };
-  const campos = () => (sc.modo === 'bjt' ? ['Vcc', ...(sc.conf === 'divisor' ? ['R1', 'R2'] : ['RB']), 'RC', 'RE', 'beta', 'VBE', 'VCEsat'] : CAMPOS_MODO[sc.modo]);
+  const NOMBRE = { Vs: 'Tensión de la fuente V_S', R: 'Resistencia R', Is: 'Corriente de saturación I_S', n: 'Factor de idealidad n', Vcc: 'Alimentación V_CC', RB: 'Resistencia de base R_B', R1: 'Resistencia R₁', R2: 'Resistencia R₂', RC: 'Resistencia de colector R_C', RE: 'Resistencia de emisor R_E', beta: 'Ganancia β', VBE: 'Tensión V_BE', VCEsat: 'Tensión V_CE,sat', Vdd: 'Alimentación V_DD', RD: 'Resistencia de drenador R_D', RS: 'Resistencia de fuente R_S', K: 'Transconductancia K', Vt: 'Tensión umbral V_t', RL: 'Carga R_L (opcional)', VA: 'Tensión de Early V_A (opcional)', lam: 'Parámetro λ (opcional)', Vz: 'Tensión Zener V_Z', rz: 'Resistencia dinámica r_z (opcional)' };
+  const CAMPOS_MODO = { diodo: ['Vs', 'R', 'Is', 'n'], zener: ['Vs', 'R', 'RL', 'Vz', 'rz'], mosfet: ['Vdd', 'R1', 'R2', 'RD', 'RS', 'K', 'Vt', 'RL', 'lam'] };
+  const campos = () => (sc.modo === 'bjt' ? ['Vcc', ...(sc.conf === 'divisor' ? ['R1', 'R2'] : ['RB']), 'RC', 'RE', 'beta', 'VBE', 'VCEsat', 'RL', 'VA'] : CAMPOS_MODO[sc.modo]);
   const fila = (k) => { const u = S.CAMPOS[k][2]; return `<label for="f-${k}">${NOMBRE[k].replace(/_([A-Za-z,]+)/g, '<sub>$1</sub>')}${u ? ` <small>(${u})</small>` : ''}</label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc[k] ?? '')}" inputmode="decimal" autocomplete="off" spellcheck="false">`; };
   function formulario() {
     let h = `<label for="f-modo">Dispositivo</label><select id="f-modo" class="in" data-k="modo">${Object.entries(S.MODOS).map(([k, n]) => `<option value="${k}"${sc.modo === k ? ' selected' : ''}>${n}</option>`).join('')}</select>`;
+    if (sc.modo === 'bjt' || sc.modo === 'mosfet') h += `<label for="f-pol">Tipo</label><select id="f-pol" class="in" data-k="pol"><option value="n"${sc.pol !== 'p' ? ' selected' : ''}>${sc.modo === 'bjt' ? 'npn' : 'Canal n'}</option><option value="p"${sc.pol === 'p' ? ' selected' : ''}>${sc.modo === 'bjt' ? 'pnp' : 'Canal p'}</option></select>`;
     if (sc.modo === 'bjt') h += `<label for="f-conf">Polarización</label><select id="f-conf" class="in" data-k="conf"><option value="fija"${sc.conf !== 'divisor' ? ' selected' : ''}>Fija (R_B a V_CC)</option><option value="divisor"${sc.conf === 'divisor' ? ' selected' : ''}>Divisor de tensión</option></select>`;
     $('#campos').innerHTML = h + campos().map(fila).join('');
     $('#nota').textContent = 'Resistencias en Ω, con prefijo y unidad si quieres (4k7, 1M, 100n). ' + (sc.modo === 'diodo' ? 'La corriente de saturación va en pA (o con unidad: 1e-18A).' : sc.modo === 'mosfet' ? 'K en mA/V²: en saturación, ID = ½·K·(VGS − Vt)².' : 'β no lleva unidad; VBE y VCE,sat van en voltios.');
@@ -30,7 +31,8 @@
   $('#campos').addEventListener('input', (e) => {
     const t = e.target; if (!t.dataset.k) return;
     sc[t.dataset.k] = t.value; $('#ejemplos').value = '';
-    if (t.dataset.k === 'modo') { const base = S.ejemplos.find((x) => x.sc.modo === sc.modo); sc = copia(base.sc); formulario(); }
+    if (t.dataset.k === 'modo') { const base = S.ejemplos.find((x) => x.sc.modo === sc.modo && !x.sc.pol && !x.sc.RL); sc = copia(base.sc); formulario(); }
+    else if (t.dataset.k === 'pol') formulario();
     else if (t.dataset.k === 'conf') { const e2 = S.ejemplos.find((x) => x.sc.conf === sc.conf); for (const k of ['R1', 'R2', 'RB']) if (e2.sc[k] !== undefined && vacioSc(k)) sc[k] = e2.sc[k]; formulario(); }
     calcula();
   });
@@ -59,16 +61,33 @@
     let h = dato('Región de trabajo', sol.region);
     if (sol.modo === 'diodo') h += dato('Tensión del diodo V<sub>D</sub>', `${f(sol.Vd)} V`) + dato('Corriente I<sub>D</sub>', mA(sol.Id)) + dato('Con tensión constante 0,7 V', mA(sol.Icte)) + dato('Con diodo ideal', mA(sol.Iideal));
     else if (sol.modo === 'bjt') h += dato('Punto Q: V<sub>CE</sub>', `${f(sol.VCE)} V`) + dato('I<sub>C</sub>', mA(sol.IC)) + dato('I<sub>B</sub>', `${f(sol.IB * 1e6)} µA`) + dato('I<sub>E</sub>', mA(sol.IE)) + dato('Potencia en el transistor', `${f(sol.pot * 1000)} mW`) + dato('Recta: I<sub>C</sub> máxima', mA(sol.ICmax));
+    else if (sol.modo === 'zener') h += dato('Tensión de salida V<sub>o</sub>', `${f(sol.Vo)} V`) + dato('Corriente del Zener I<sub>Z</sub>', mA(sol.Iz)) + dato('Corriente de carga I<sub>L</sub>', mA(sol.IL)) + dato('Potencia en el Zener', `${f(sol.Pz * 1000)} mW`) + dato('Regulación de línea', `${f(sol.regLinea * 1000)} mV/V`) + dato('Resistencia de salida', `${f(sol.Rout)} Ω`) + dato('Entrada mínima para regular', `${f(sol.Vsmin)} V`) + dato('Corriente de carga máxima', mA(sol.ILmax));
     else h += dato('Punto Q: V<sub>DS</sub>', `${f(sol.VDS)} V`) + dato('I<sub>D</sub>', mA(sol.ID)) + dato('V<sub>GS</sub>', `${f(sol.VGS)} V`) + dato('Potencia en el transistor', `${f(sol.pot * 1000)} mW`) + dato('Recta: I<sub>D</sub> máxima', mA(sol.IDmax));
+    if (sol.ac) {
+      const a = sol.ac;
+      h += dato('g<sub>m</sub>', `${f(a.gm * 1000)} mS`) + (a.rpi ? dato('r<sub>π</sub>', `${f(a.rpi)} Ω`) : '') + (a.ro !== Infinity ? dato('r<sub>o</sub>', `${f(a.ro)} Ω`) : '');
+      h += dato('Ganancia A<sub>v</sub> (puenteada)', f(a.AvP)) + dato('A<sub>v</sub> sin puentear', f(a.AvS)) + (a.AvSeg != null ? dato('A<sub>v</sub> como seguidor', f(a.AvSeg)) : '');
+      h += dato('R<sub>in</sub>', `${f(a.RinP ?? a.Rin)} Ω`) + dato('R<sub>out</sub>', `${f(a.Rout)} Ω`);
+    }
+    if (sol.modo === 'diodo' && isFinite(sol.rd)) h += dato('Resistencia dinámica r<sub>d</sub>', `${f(sol.rd)} Ω`);
     $('#resumen').innerHTML = h;
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
-    $('#leyenda').textContent = 'Línea fina: curvas del dispositivo. Línea discontinua: recta de carga. Punto: punto de trabajo Q.';
+    $('#leyenda').textContent = 'Línea fina: curvas del dispositivo. Línea discontinua larga: recta de carga en continua' + (sol.graf.rectaAC ? '; discontinua corta: recta de carga en alterna' : '') + '. Punto: punto de trabajo Q.';
     dibuja();
   }
 
   /* ---------- Gráfica ---------- */
   function colores() { const cs = getComputedStyle(document.documentElement); for (const k of ['--ink', '--muted', '--line', '--accent', '--serie-1', '--serie-2', '--serie-3']) col[k] = cs.getPropertyValue(k).trim(); }
   function dibuja() {
+    Herramienta.exportar('#grafica', { nombre: 'recta-de-carga', titulo: 'Recta de carga y punto de trabajo', datos: () => {
+      if (!sol) return null;
+      const G = sol.graf, filas = [];
+      for (const c of G.curvas) for (const [x, y] of c.pts) filas.push([c.etiqueta, x, y]);
+      filas.push(['Recta de carga (continua)', G.recta[0][0], G.recta[0][1]], ['Recta de carga (continua)', G.recta[1][0], G.recta[1][1]]);
+      if (G.rectaAC) filas.push(['Recta de carga (alterna)', G.rectaAC[0][0], G.rectaAC[0][1]], ['Recta de carga (alterna)', G.rectaAC[1][0], G.rectaAC[1][1]]);
+      filas.push(['Punto Q', G.Q.x, G.Q.y]);
+      return { cab: ['Curva', `${G.xl.replace('_', '')} (V)`, `${G.yl.replace('_', '')} (A)`], filas };
+    } });
     const { g, w, h } = lienzo('#grafica');
     if (!sol || !w || !h) return;
     const G = sol.graf, ml = 58, mr = 16, mt = 12, mb = 34;
@@ -90,6 +109,7 @@
     }
     g.setLineDash([7, 5]); g.strokeStyle = col['--serie-2']; g.lineWidth = 2.2;
     g.beginPath(); g.moveTo(X(G.recta[0][0]), Y(G.recta[0][1])); g.lineTo(X(G.recta[1][0]), Y(G.recta[1][1])); g.stroke();
+    if (G.rectaAC) { g.setLineDash([3, 3]); g.strokeStyle = col['--accent']; g.lineWidth = 2; g.beginPath(); g.moveTo(X(G.rectaAC[0][0]), Y(G.rectaAC[0][1])); g.lineTo(X(G.rectaAC[1][0]), Y(G.rectaAC[1][1])); g.stroke(); }
     g.setLineDash([2, 4]); g.strokeStyle = col['--muted']; g.lineWidth = 1;
     g.beginPath(); g.moveTo(X(G.Q.x), Y(0)); g.lineTo(X(G.Q.x), Y(G.Q.y)); g.lineTo(X(0), Y(G.Q.y)); g.stroke();
     g.setLineDash([]); g.fillStyle = col['--ink']; g.beginPath(); g.arc(X(G.Q.x), Y(G.Q.y), 5.5, 0, 2 * Math.PI); g.fill();

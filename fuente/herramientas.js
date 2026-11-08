@@ -22,7 +22,15 @@ const icono = fs.readFileSync(path.join(__dirname, 'icono.svg')).toString('base6
 const script = (f) => {
   const ls = fs.readFileSync(path.join(__dirname, f), 'utf8').split('\n');
   if (ls[ls.length - 1] === '') ls.pop();
-  return ls.filter((l) => !l.startsWith('if (typeof module')).map((l) => l + '\n').join('') + '\n';
+  // MA-1: las páginas pesan menos sin los comentarios de línea completa ni las cabeceras /* … */ (el código no cambia)
+  const fuera = []; let bloque = false;
+  for (const l of ls) {
+    if (bloque) { if (l.includes('*/')) bloque = false; continue; }
+    if (/^\s*\/\*/.test(l)) { if (!l.includes('*/')) bloque = true; continue; }
+    if (/^\s*\/\/(?!#)/.test(l)) continue;
+    fuera.push(l);
+  }
+  return fuera.filter((l) => !l.startsWith('if (typeof module')).map((l) => l + '\n').join('') + '\n';
 };
 
 // Las páginas solo necesitan el número de versión de cada herramienta (`Version.de(clave).current`):

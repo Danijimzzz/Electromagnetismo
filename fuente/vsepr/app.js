@@ -16,7 +16,7 @@
   let sc = inicial();
   try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && typeof g === 'object') sc = { ...sc, ...g }; } catch (e) { /* sin almacenamiento */ }
   const guarda = () => { try { localStorage.setItem(CLAVE, JSON.stringify(sc)); } catch (e) { /* sin almacenamiento */ } };
-  let sol = null, col = {};
+  let sol = null, lew = null, col = {};
   // vista 3D
   const reducido = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const vista = { yaw: 0.6, pitch: 0.35, zoom: 1, giro: !reducido, libres: true, dipolo: true };
@@ -24,20 +24,24 @@
   /* ---------- Formulario ---------- */
   function formulario() {
     const axe = sc.modo === 'axe';
-    $('#formula').value = sc.formula ?? ''; $('#f-n').value = sc.n ?? ''; $('#f-m').value = sc.m ?? '';
-    $('#tab-formula').setAttribute('aria-selected', String(!axe)); $('#tab-axe').setAttribute('aria-selected', String(axe));
-    $('#p-formula').hidden = axe; $('#p-axe').hidden = !axe;
+    const cad = sc.modo === 'cadena', fm = !axe && !cad;
+    $('#formula').value = sc.formula ?? ''; $('#f-n').value = sc.n ?? ''; $('#f-m').value = sc.m ?? ''; $('#cadena').value = sc.cadena ?? ''; $('#octeto').checked = !!sc.octeto;
+    $('#tab-formula').setAttribute('aria-selected', String(fm)); $('#tab-axe').setAttribute('aria-selected', String(axe)); $('#tab-cadena').setAttribute('aria-selected', String(cad));
+    $('#p-formula').hidden = !fm; $('#p-axe').hidden = !axe; $('#p-cadena').hidden = !cad;
   }
   $('#formula').addEventListener('input', (e) => { sc.formula = e.target.value; $('#ejemplos').value = ''; calcula(); });
   $('#p-axe').addEventListener('input', (e) => { const k = e.target.dataset.k; if (!k) return; sc[k] = e.target.value; $('#ejemplos').value = ''; calcula(); });
-  for (const [id, modo] of [['#tab-formula', 'formula'], ['#tab-axe', 'axe']]) $(id).addEventListener('click', () => { sc.modo = modo; formulario(); calcula(); });
+  $('#cadena').addEventListener('input', (e) => { sc.cadena = e.target.value; $('#ejemplos').value = ''; calcula(); });
+  $('#octeto').addEventListener('change', (e) => { sc.octeto = e.target.checked; calcula(); });
+  for (const [id, modo] of [['#tab-formula', 'formula'], ['#tab-axe', 'axe'], ['#tab-cadena', 'cadena']]) $(id).addEventListener('click', () => { sc.modo = modo; formulario(); calcula(); });
 
   /* ---------- Ejemplos ---------- */
   const sel = $('#ejemplos');
-  sel.innerHTML = '<option value="">Ejemplos…</option>' + P.ejemplos.map((e) => `<option value="${e.clave}">${e.nombre}</option>`).join('');
+  const EC = Lewis.ejemplosCadena.map((e) => ({ clave: 'c-' + e.clave, nombre: e.nombre, sc: { modo: 'cadena', cadena: e.texto } }));
+  sel.innerHTML = '<option value="">Ejemplos…</option><optgroup label="Un átomo central">' + P.ejemplos.map((e) => `<option value="${e.clave}">${e.nombre}</option>`).join('') + '</optgroup><optgroup label="Varios centros (semidesarrollada)">' + EC.map((e) => `<option value="${e.clave}">${e.nombre}</option>`).join('') + '</optgroup>';
   sel.addEventListener('change', () => { if (sel.value) abrirEjemplo(sel.value); });
   function abrirEjemplo(clave) {
-    const e = P.ejemplos.find((x) => x.clave === clave);
+    const e = P.ejemplos.find((x) => x.clave === clave) || EC.find((x) => x.clave === clave);
     if (!e) return;
     sc = { ...inicial(), ...copia(e.sc) }; formulario(); calcula(); sel.value = clave;
   }
@@ -50,7 +54,10 @@
   const dato = (t, v, extra = '', id = '') => `<div${extra}><span>${t}</span><b${id ? ` id="${id}"` : ''}>${v}</b></div>`;
   function calcula() {
     const err = $('#error');
+    if (sc.modo === 'cadena') return calculaCadena();
+    $('#card-3d').hidden = false; $('#card-centros').hidden = true;
     try { sol = P.resolver(sc); } catch (e) {
+      $('#card-lewis').hidden = true;
       sol = null; err.textContent = e.message; err.hidden = false;
       $('#resumen').innerHTML = ''; $('#titulo-mol').innerHTML = ''; $('#pasos').innerHTML = ''; $('#leyenda').textContent = ''; marcaTabla(); dibuja(); return;
     }
@@ -65,7 +72,46 @@
       + dato('Ángulo de enlace', `ideal ${sol.ideal}<br><small>real: ${sol.real}</small>`, ' class="ancho"');
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
     $('#leyenda').textContent = `Arrastra para girar. ${sol.e ? 'Las nubes moradas son los pares libres. ' : ''}${sol.polar && !sol.carga ? 'La flecha roja es el momento dipolar, hacia el extremo negativo (δ−). ' : ''}Otros con esta forma: ${sol.ejemplos}.`;
-    marcaTabla(); dibuja();
+    lewis(); marcaTabla(); dibuja();
+  }
+
+  /* ---------- Estructura de Lewis ---------- */
+  const filasAtomos = (r) => '<thead><tr><th>Átomo</th><th>Vecinos</th><th>Enlaces (suma)</th><th>Pares libres</th><th>Carga formal</th></tr></thead><tbody>' + r.atomos.map((a, i) => `<tr><td>${a.sim}${i + 1}</td><td>${a.en.length}</td><td>${a.en.reduce((t, b) => t + b.o, 0)}</td><td>${a.lp}</td><td>${a.fc > 0 ? '+' : a.fc < 0 ? '−' : ''}${Math.abs(a.fc)}</td></tr>`).join('') + '</tbody>';
+  const num = (x) => String(+x.toFixed(2)).replace('.', ',');
+  function pintaLewis(r, lista) {
+    $('#card-lewis').hidden = false; $('#lewis-nota').textContent = '';
+    $('#lewis-fig').innerHTML = r.svg;
+    $('#lewis-resumen').innerHTML = dato('Enlaces', r.enlaces, ' class="num"') + dato('Pares libres', r.atomos.reduce((t, a) => t + a.lp, 0), ' class="num"')
+      + (lista ? dato('Estructuras resonantes', r.resonancia, ' class="num"', 'l-res') : '')
+      + (r.ordenes.length ? dato('Orden de enlace', r.ordenes.map((o) => `${o.par}: ${num(o.medio)}`).join('<br>'), ' class="ancho"', 'l-orden') : '');
+    $('#lewis-tabla').innerHTML = filasAtomos(r);
+  }
+  function lewis() {
+    $('#lab-octeto').hidden = false;
+    let r = null;
+    try { r = Lewis.centro(sol.atomos[0].sim, sol.atomos.slice(1).map((a) => a.sim), sol.carga, !!sc.octeto); } catch (e) {
+      lew = null; $('#card-lewis').hidden = true; return;
+    }
+    lew = r; pintaLewis(r, true);
+    $('#pasos').innerHTML += r.pasos.map((p) => `<li><strong>Lewis · ${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
+  }
+  function calculaCadena() {
+    const err = $('#error'); sol = null; lew = null;
+    $('#card-3d').hidden = true;
+    try { lew = Lewis.condensada(sc.cadena); } catch (e) {
+      err.textContent = e.message; err.hidden = false; $('#resumen').innerHTML = ''; $('#titulo-mol').innerHTML = ''; $('#pasos').innerHTML = ''; $('#card-lewis').hidden = true; $('#card-centros').hidden = true; return;
+    }
+    err.hidden = true; guarda();
+    $('#lab-octeto').hidden = true;
+    $('#titulo-mol').innerHTML = esc(sc.cadena);
+    $('#resumen').innerHTML = dato('Átomos', lew.atomos.length, ' class="num"') + dato('Centros con geometría', lew.centros.length, ' class="num"', 'r-ncentros')
+      + dato('Enlaces', lew.enlaces, ' class="num"') + dato('Enlaces múltiples', lew.ordenes.length, ' class="num"');
+    pintaLewis(lew, false);
+    $('#card-centros').hidden = false;
+    $('#centros-tabla').innerHTML = '<thead><tr><th>Átomo</th><th>Tipo</th><th>Geometría</th><th>Hibridación</th><th>Ángulos</th></tr></thead><tbody>' + lew.centros.map((c) => `<tr><td>${c.sim}${c.i + 1}</td><td>${c.tipo.replace(/(\d)/g, '<sub>$1</sub>')}</td><td><b>${c.geo}</b></td><td>${c.hib}</td><td>${c.real}</td></tr>`).join('') + '</tbody>';
+    $('#pasos').innerHTML = lew.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('')
+      + lew.centros.map((c) => `<li><strong>${c.sim}${c.i + 1}</strong>${c.vecinos} vecinos + ${c.lp} ${c.lp === 1 ? 'par libre' : 'pares libres'} = ${c.sn} dominios (${c.tipo}) → <b>${c.geo.toLowerCase()}</b>, ${c.hib}.</li>`).join('');
+    $('#leyenda').textContent = '';
   }
 
   /* ---------- Tabla de geometrías ---------- */
@@ -197,6 +243,7 @@
   window.VseprApp = {
     abrirEjemplo, azar, enunciado,
     resultado: () => sol && { sn: sol.sn, e: sol.e, geo: sol.geo, hib: sol.hibTxt, polaridad: sol.polaridad },
+    lewis: () => lew && { enlaces: lew.enlaces, resonancia: lew.resonancia, ordenes: lew.ordenes, centros: lew.centros.map((c) => ({ sim: c.sim, tipo: c.tipo, geo: c.geo, hib: c.hibTxt })), fc: lew.atomos.map((a) => a.fc) },
     estado: () => copia(sc), vista: () => ({ ...vista }),
   };
 })();

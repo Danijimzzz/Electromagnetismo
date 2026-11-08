@@ -22,6 +22,7 @@
   const tabla2 = (tit, filas) => `<table class="tabla-eco"><thead><tr><th>${tit}</th><th>Euros</th></tr></thead><tbody>${filas}</tbody></table>`;
   Calculadora.monta({
     C: B, carpeta: 'balance', app: 'BalanceApp', azar,
+    usar: [{ a: 'ratios', nombre: 'Ratios financieros', datos: (s, sc) => ({ anc: String(s.anc), ex: String(s.ex), re: String(s.deu), di: String(s.teso), pn: String(Math.round(100 * s.pn) / 100), pnc: String(s.pnc), pc: String(s.pc), ventas: String(s.ventas), baii: String(Math.round(100 * s.rexp) / 100), gf: String(s.gf), t: String(sc.t || '25') }) }],
     enunciado: () => 'Con las partidas de esta empresa, elabora la cuenta de pérdidas y ganancias (EBITDA, resultado de explotación, BAI y resultado del ejercicio) y el balance de situación, comprueba que cuadra y calcula el fondo de maniobra.',
     nota: 'Los importes en euros. El resultado del ejercicio no se escribe: sale de la cuenta de pérdidas y ganancias y se suma al patrimonio neto del balance. El balance tiene que cuadrar (activo = patrimonio neto + pasivo); las reservas pueden ser negativas.',
     campos: () => [

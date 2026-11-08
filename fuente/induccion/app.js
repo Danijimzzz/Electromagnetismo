@@ -9,8 +9,8 @@
   const I = Induccion, f = I.f, u = I.u;
   const CLAVE = 'induccion-v1';
 
-  let st = { tab: 'L', L: copia(I.ejemplos.L[0].sc), M: copia(I.ejemplos.M[0].sc), RL: copia(I.ejemplos.RL[0].sc) };
-  try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && g.L && g.M && g.RL) st = { ...st, ...g }; } catch (e) {}
+  let st = { tab: 'L', L: copia(I.ejemplos.L[0].sc), M: copia(I.ejemplos.M[0].sc), RL: copia(I.ejemplos.RL[0].sc), F: copia(I.ejemplos.F[0].sc) };
+  try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && g.L && g.M && g.RL) st = { ...st, ...g, F: { ...st.F, ...(g.F || {}) } }; } catch (e) {}
   const guarda = () => { try { localStorage.setItem(CLAVE, JSON.stringify(st)); } catch (e) {} };
   let sol = null, col = {};
   const sc = () => st[st.tab];
@@ -22,7 +22,10 @@
   function formulario() {
     const s = sc();
     let h = '', nota = '';
-    if (st.tab === 'RL') {
+    if (st.tab === 'F') {
+      h = fila('N1', 'Espiras de la grande N<sub>1</sub>') + fila('R', 'Radio de la grande R', 'cm') + fila('N2', 'Espiras de la pequeña N<sub>2</sub>') + fila('r', 'Radio de la pequeña r', 'cm') + fila('z', 'Distancia z entre los planos', 'cm') + '<div class="sep">Corrientes</div>' + fila('I1', 'Intensidad I<sub>1</sub>', 'A') + fila('I2', 'Intensidad I<sub>2</sub>', 'A');
+      nota = 'Los ejes coinciden. Con corrientes del mismo signo (mismo sentido de giro) las espiras se atraen; con signos opuestos, se repelen. Vale cualquier cociente r/R.';
+    } else if (st.tab === 'RL') {
       h = fila('E', 'Fem de la fuente ε', 'V') + fila('R', 'Resistencia R', 'Ω') + fila('L', 'Autoinducción L', 'mH') +
         selector('modo', 'Qué pasa', [['carga', 'Cerrar el circuito'], ['descarga', 'Quitar la fuente'], ['pulsos', 'Conectar y desconectar una y otra vez']]) +
         (s.modo === 'pulsos' ? fila('ton', 'Tiempo conectada t<sub>on</sub>', 'ms') + fila('toff', 'Tiempo desconectada t<sub>off</sub>', 'ms') : '') +
@@ -69,11 +72,11 @@
   function ejemplos() { sel.innerHTML = '<option value="">Ejemplos…</option>' + I.ejemplos[st.tab].map((e) => `<option value="${e.clave}">${e.nombre}</option>`).join(''); }
   function pestana(t) {
     st.tab = t; guarda();
-    for (const k of ['L', 'M', 'RL']) $('#tab-' + k).setAttribute('aria-selected', k === t);
-    $('#dibujo').setAttribute('aria-label', t === 'RL' ? 'Gráfica de la corriente y la tensión en la bobina frente al tiempo' : 'Esquema del circuito');
+    for (const k of ['L', 'M', 'F', 'RL']) $('#tab-' + k).setAttribute('aria-selected', k === t);
+    $('#dibujo').setAttribute('aria-label', t === 'RL' ? 'Gráfica de la corriente y la tensión en la bobina frente al tiempo' : t === 'F' ? 'Gráfica de la fuerza entre las dos espiras frente a la distancia' : 'Esquema del circuito');
     ejemplos(); formulario(); calcula();
   }
-  for (const k of ['L', 'M', 'RL']) $('#tab-' + k).addEventListener('click', () => pestana(k));
+  for (const k of ['L', 'M', 'F', 'RL']) $('#tab-' + k).addEventListener('click', () => pestana(k));
   sel.addEventListener('change', () => { if (sel.value) abrirEjemplo(st.tab, sel.value); });
   function abrirEjemplo(tab, clave) {
     const e = I.ejemplos[tab].find((x) => x.clave === clave);
@@ -87,7 +90,7 @@
   const caja = (n, v, extra) => `<div><span>${n}</span><b>${v}</b>${extra ? `<small>${extra}</small>` : ''}</div>`;
   function calcula() {
     const err = $('#error');
-    try { sol = st.tab === 'L' ? I.autoinduccion(sc()) : st.tab === 'M' ? I.mutua(sc()) : I.rl(sc()); } catch (e) { err.textContent = e.message; err.hidden = false; return; }
+    try { sol = st.tab === 'L' ? I.autoinduccion(sc()) : st.tab === 'M' ? I.mutua(sc()) : st.tab === 'F' ? I.fuerza(sc()) : I.rl(sc()); } catch (e) { err.textContent = e.message; err.hidden = false; return; }
     err.hidden = true; guarda();
     const r = sol.res;
     let h = '';
@@ -96,6 +99,8 @@
       h += caja('Flujo propio Φ', r.flujo !== undefined ? u(r.flujo, 'Wb') : '—', r.flujo === undefined ? 'falta I' : '');
       h += caja('Energía U', r.U !== undefined ? u(r.U, 'J') : '—', r.U === undefined ? 'falta I' : '');
       h += caja('Fem autoinducida', r.fem !== undefined ? `${f(r.fem)} V` : '—', r.fem === undefined ? 'falta dI/dt' : '');
+    } else if (st.tab === 'F') {
+      h = caja('Fuerza F', u(Math.abs(r.F), 'N'), r.sentido) + caja('Inducción mutua M', u(r.M, 'H'), `dM/dz = ${f(r.dM)} H/m`) + caja('Aproximación de dipolo', u(Math.abs(r.Fd), 'N'), `error ${f(Math.abs(r.Fd / r.F - 1) * 100, 3)} %`) + caja('Fuerza máxima', u(r.Fmax, 'N'), `a z ≈ ${f(r.zmax * 100)} cm`);
     } else if (st.tab === 'M') {
       const k = r.L1 !== undefined ? r.M / Math.sqrt(r.L1 * r.L2) : null;
       h = caja('Inducción mutua M', u(r.M, 'H'), k !== null ? `k = ${f(k)}` : '');
@@ -154,6 +159,7 @@
     const { g, w, h } = lienzo($('#dibujo'));
     g.font = '12px "IBM Plex Sans", system-ui, sans-serif'; g.textBaseline = 'middle';
     if (st.tab === 'RL') return grafica(g, w, h);
+    if (st.tab === 'F') return graficaF(g, w, h);
     const p = sol.p, geo = sc().geo, cx = w / 2, cy = h / 2, H = h - 50;
     g.strokeStyle = col['--line'];
     if (geo === 'solenoide' || geo === 'solenoides') {
@@ -239,6 +245,19 @@
       texto(g, `k = ${f(p.k)}`, cx, cy - 58, col['--ink']);
     }
   }
+  // fuerza entre espiras: F(z) con el punto de los datos y la aproximación de dipolo discontinua
+  function graficaF(g, w, h) {
+    const { p, res } = sol, pts = sol.curva(), m = { l: 62, r: 20, t: 22, b: 36 }, zm = pts[pts.length - 1][0], Fm = Math.max(...pts.map((q) => Math.abs(q[1])), Math.abs(res.F)) * 1.1 || 1;
+    const X = (z) => m.l + (z / zm) * (w - m.l - m.r), Y = (F) => (m.t + h - m.b) / 2 - (F / Fm) * ((h - m.t - m.b) / 2);
+    const y0 = Y(0); g.strokeStyle = col['--line']; g.beginPath(); g.moveTo(m.l, m.t); g.lineTo(m.l, h - m.b); g.stroke(); g.beginPath(); g.moveTo(m.l, y0); g.lineTo(w - m.r, y0); g.stroke();
+    texto(g, 'z', w - m.r, y0 + 12); texto(g, '0', m.l - 6, y0, col['--muted'], 'right'); texto(g, `${f(zm * 100, 3)} cm`, w - m.r, y0 + 12 + 12, col['--muted'], 'right');
+    texto(g, u(Fm / 1.1, 'N', 3), m.l - 6, Y(Fm / 1.1), col['--muted'], 'right'); texto(g, `−${u(Fm / 1.1, 'N', 3)}`, m.l - 6, Y(-Fm / 1.1), col['--muted'], 'right');
+    g.strokeStyle = col['--cobre']; g.lineWidth = 2; g.beginPath(); pts.forEach(([z, F], i) => { const x = X(z), y = Y(F); i ? g.lineTo(x, y) : g.moveTo(x, y); }); g.stroke(); g.lineWidth = 1;
+    const dip = (z) => (p.I1 * p.I2 * -3 * I.MU0 * p.N1 * p.N2 * Math.PI * p.R * p.R * p.r * p.r * z) / (2 * Math.pow(p.R * p.R + z * z, 2.5));
+    g.setLineDash([5, 4]); g.strokeStyle = col['--muted']; g.beginPath(); pts.forEach(([z], i) => { const x = X(z), y = Y(dip(z)); i ? g.lineTo(x, y) : g.moveTo(x, y); }); g.stroke(); g.setLineDash([]);
+    circulo(g, X(p.z), Y(res.F), 5, col['--neg']); texto(g, `z = ${f(p.z * 100)} cm: ${u(res.F, 'N', 3)}`, Math.min(X(p.z) + 8, w - 150), Y(res.F) - 14, col['--neg']);
+    texto(g, 'F(z) exacta', m.l + 8, m.t + 2, col['--cobre'], 'left'); texto(g, 'aproximación de dipolo', m.l + 100, m.t + 2, col['--muted'], 'left'); texto(g, 'arriba: repulsión · abajo: atracción', w - m.r - 4, m.t + 2, col['--muted'], 'right');
+  }
   // transitorio RL: I(t) a la izquierda en A, V_L(t) a la derecha en V
   function grafica(g, w, h) {
     const { p, tau, res } = sol, T = p.pulsos ? Math.min(Math.max(5 * tau, 4 * (p.ton + p.toff)), 12 * (p.ton + p.toff)) : 5 * tau, m = { l: 52, r: 52, t: 16, b: 34 };
@@ -264,6 +283,6 @@
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', dibuja);
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('induccion').current;
-  pestana(['L', 'M', 'RL'].includes(st.tab) ? st.tab : 'L');
+  pestana(['L', 'M', 'F', 'RL'].includes(st.tab) ? st.tab : 'L');
   window.InducApp = { abrirEjemplo, pestana, resultado: () => sol && sol.res, estado: () => copia(st) };
 })();

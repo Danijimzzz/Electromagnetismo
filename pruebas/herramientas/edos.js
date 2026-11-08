@@ -9,6 +9,15 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     const antes = fallos, cerca = (a, b, tol, q) => { if (!(Math.abs(a - b) <= tol * Math.max(1, Math.abs(b)))) mal(`EDOs · ${q}: ${a} en vez de ${b}`); };
     const r = (c) => EDOsC.resolver(EDOsC.ejemplos.find((e) => e.clave === c).sc);
     for (const e of EDOsC.ejemplos) { try { const x = EDOsC.resolver(e.sc); if (x.pasos.length < 3) mal(`EDOs · ${e.clave}: desarrollo corto`); } catch (err) { mal(`EDOs · ${e.clave}: ${err.message}`); } }
+    // ED-1: y′ = √y, y(0) = 0 tiene también y = x²/4 (∂f/∂y no acotada): hay que avisar de que no es única; y′ = xy, y(0) = 0 sí lo es
+    for (const [fx, noUnica, otra] of [['sqrt(y)', true, /x\}\/\{2\}\)\^\{2\}/], ['y^(1/3)', true, /2 x\}\/\{3\}\)\^\{\{3\}\/\{2\}\}/], ['sqrt(y) + x', true, null], ['x*y', false, null], ['y', false, null]]) {
+      const x = EDOsC.resolver({ modo: 'primer', f: fx, x0: '0', y0: '0', x1: '3', h: '0,1' });
+      if (!!x.noUnica !== noUnica) mal(`EDOs · y′ = ${fx}, y(0) = 0: noUnica = ${x.noUnica}`);
+      if (noUnica && !x.pasos.some((q) => q.t === 'Aviso: la solución no es única')) mal(`EDOs · y′ = ${fx}: falta el aviso de unicidad`);
+      if (!noUnica && x.pasos.some((q) => /única/.test(q.t))) mal(`EDOs · y′ = ${fx}: avisa de no unicidad sin motivo`);
+      if (otra && !otra.test(x.pasos.find((q) => /única/.test(q.t)).html)) mal(`EDOs · y′ = ${fx}: falta la segunda solución`);
+    }
+    if (EDOsC.ejemplos.some((e) => e.sc.modo === 'primer' && EDOsC.resolver(e.sc).noUnica)) mal('EDOs: algún ejemplo de primer orden avisa de no unicidad');
     // y′ = x + y, y(0) = 1: y = 2eˣ − x − 1; Euler con h = 0,1 a mano: y₁₀ = 3,187485
     const eu = r('euler');
     if (eu.exacta?.txt !== '2 e^{x} − 1 − x') mal(`EDOs: y′ = x + y sale «${eu.exacta?.txt}»`);
@@ -51,6 +60,7 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       const { page, consola } = await pagina(browser, 1200, 900);
       await page.goto('file://' + path.join(publico, 'matematicas', 'edos', 'index.html'));
       await page.waitForFunction(() => window.EDOsApp);
+      await require('./comun/exportar.js')(page, mal, 'edos', { lienzo: '#grafica', datos: true });
       const antes = fallos;
       const verE = (await page.locator('#ver').textContent()).trim();
       if (verE !== Version.de('edos').current) mal(`EDOs: la página muestra la versión «${verE}», se esperaba ${Version.de('edos').current}`);

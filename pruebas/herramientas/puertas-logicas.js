@@ -69,6 +69,38 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
         if (+sop !== +v[i] || +pos !== +v[i]) { mal(`PuertasLogicas: la función ${v} se simplifica mal en la fila ${i}`); break; }
       }
     }
+    // PL-2: solo NAND o solo NOR
+    { const nd = (c) => C.soloUniversal(r(c).salidas[0].gruposS, 'NAND'), nr = (c) => C.soloUniversal(r(c).salidas[0].gruposP, 'NOR');
+      igual(nd('mayoria').txt, "((A·B)'·(A·C)'·(B·C)')'", 'mayoría solo con NAND'); igual(nd('mayoria').puertas, 4, 'mayoría con NAND: 3 + 1 puertas');
+      igual(nd('semisumador').puertas, 5, 'A′B + AB′ con NAND: 2 + 2 inversores + 1'); igual(nr('mayoria').txt, "((A + B)' + (A + C)' + (B + C)')'", 'mayoría solo con NOR');
+      igual(nr('ec-demorgan').txt, "(A + B)'", 'F = (A + B)′ es una NOR'); }
+    // PL-4: riesgos estáticos
+    { const mux = r('ec-mux'); igual(C.riesgos(3, mux.salidas[0]).map((h) => h.termino), ['A·B'], 'multiplexor A·C′ + B·C: falta el consenso A·B');
+      igual(C.riesgos(3, r('mayoria').salidas[0]), [], 'la mayoría no tiene riesgos'); igual(C.riesgos(4, r('primos-bcd').salidas[0]).map((h) => h.termino), ['C·D'], 'primos BCD: consenso C·D');
+      if (!mux.pasos.some((p) => /riesgos estáticos/.test(p.t) && /A·B/.test(p.html))) mal('PuertasLogicas: el desarrollo no cuenta el riesgo del multiplexor'); }
+    // PL-1: secuencial
+    { const sq = (o) => C.secuencial({ ff: 'JK', bits: '2', sentido: 'sube', ...o }), eq = (q) => Object.fromEntries(q.ecuaciones.map((e) => [e.nombre, e.txt]));
+      const jk = eq(sq({})); igual(jk, { J1: 'B', K1: 'B', J0: '1', K0: '1' }, 'contador JK de 2 bits (J1 = K1 = Q0, J0 = K0 = 1)');
+      igual(eq(sq({ ff: 'T', bits: '3' })), { T2: 'B·C', T1: 'C', T0: '1' }, 'contador T de 3 bits'); igual(sq({}).secuencia, ['00', '01', '10', '11', '00'], 'cuenta 0 a 3');
+      igual(sq({ sentido: 'baja' }).secuencia, ['00', '11', '10', '01', '00'], 'cuenta hacia atrás');
+      igual(sq({ ff: 'T' }).trans.map((t) => t.ent[0]), ['0', '1', '1', '0'], 'excitación T: Q xor Q⁺'); igual(sq({}).trans.map((t) => t.ent.join('')), ['0X', '1X', 'X1', 'X0'], 'excitación JK');
+      igual(sq({ ff: 'SR' }).trans.map((t) => t.ent.join('')), ['0X', '10', '01', 'X0'], 'excitación SR'); igual(sq({ ff: 'D' }).trans.map((t) => t.ent[0]), ['0', '1', '0', '1'], 'excitación D');
+      igual(sq({ ff: 'JK' }).caract.map((f) => f.sig).join(''), '00111010', 'JK: Q⁺ con Q = 0 y con Q = 1');
+      let ok = false; try { C.secuencial({ ff: 'JK', bits: '9' }); } catch (e) { ok = true; } if (!ok) mal('PuertasLogicas: un contador de 9 bits no da error');
+      // recorrer los estados con las ecuaciones de entrada da la secuencia de cuenta (comprobación independiente)
+      for (const ff of ['D', 'T', 'JK', 'SR']) for (const bits of [1, 2, 3, 4]) for (const sentido of ['sube', 'baja']) {
+        const q = C.secuencial({ ff, bits: String(bits), sentido }), N = 2 ** bits;
+        for (let e = 0; e < N; e++) {
+          let sig = 0;
+          for (let i = 0; i < bits; i++) {
+            const cols = q.ecuaciones.filter((x) => x.nombre.endsWith(String(bits - 1 - i)) && x.nombre.length === 2).map((x) => x.v[e]), Q = (e >> (bits - 1 - i)) & 1;
+            let nq; if (ff === 'D') nq = cols[0]; else if (ff === 'T') nq = Q ^ cols[0]; else if (ff === 'JK') nq = cols[0] === 2 && cols[1] === 2 ? Q : (Q ? (cols[1] === 1 ? 0 : 1) : (cols[0] === 1 ? 1 : 0)); else nq = Q ? (cols[1] === 1 ? 0 : 1) : (cols[0] === 1 ? 1 : 0);
+            sig |= nq << (bits - 1 - i);
+          }
+          if (sig !== (sentido === 'sube' ? (e + 1) % N : (e - 1 + N) % N)) mal(`PuertasLogicas: contador ${ff} de ${bits} bits (${sentido}): del estado ${e} pasa a ${sig}`);
+        }
+      }
+    }
     if (fallos === antes) console.log(`  ✓ PuertasLogicas: ${C.ejemplos.length} ejemplos, 7 puertas, errores y las 256 funciones de 3 variables`);
   }
 
@@ -151,6 +183,10 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     if ((await page.evaluate(() => PuertasLogicasApp.estado().modo)) !== 'puertas') mal('PuertasLogicas: el modo no se guarda al recargar');
     await page.setViewportSize({ width: 390, height: 800 });
     if (await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1)) mal('PuertasLogicas: la página se desborda en el móvil');
+    await page.selectOption('#s-ff', 'T'); await page.selectOption('#s-bits', '3');
+    if (!(await page.locator('#sec-res').textContent()).includes('T2')) mal('PuertasLogicas: el contador T de 3 bits no muestra T2');
+    await page.click('#sec-pulso'); await page.click('#sec-pulso'); if (!(await page.locator('#sec-estado').textContent()).includes('Estado 010')) mal('PuertasLogicas: tras dos pulsos el contador no está en 010');
+    await page.click('#sec-reinicio'); if (!(await page.locator('#sec-estado').textContent()).includes('Estado 000')) mal('PuertasLogicas: «Reiniciar a 0» no vuelve a 000');
     await page.close();
     if (consola.length) mal('PuertasLogicas: consola del navegador:\n      ' + consola.join('\n      '));
     if (fallos === antes) console.log(`  ✓ PuertasLogicas: ${C.ejemplos.length} ejemplos en la página con circuito, mapa y desarrollo, edición de la tabla y de las puertas, sin errores de consola`);

@@ -32,6 +32,10 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     cerca(r('poligonal-triangulo').W, 1, 1e-12, 'trabajo de (−y, x) por el triángulo (el doble del área)'); const pc = r('poligonal-camino'); cerca(pc.W, 2, 1e-12, 'trabajo por dos segmentos'); cerca(pc.dphi, 2, 1e-12, 'Δφ por dos segmentos');
     const ms = r('masa-semicirculo'); cerca(ms.I, 2, 1e-9, 'masa del semicírculo'); cerca(ms.L, Math.PI, 1e-9, 'longitud del semicírculo'); cerca(ms.cm[0], 0, 1e-9, 'x̄'); cerca(ms.cm[1], Math.PI / 4, 1e-9, 'ȳ');
     cerca(r('cicloide').I, 8, 1e-9, 'longitud de la cicloide'); cerca(r('masa-helice').I, 2 * Math.SQRT2 * Math.PI ** 2, 1e-9, 'masa de la hélice'); cerca(r('masa-triangulo').I, 1.5 + Math.SQRT1_2, 1e-12, '∫ x ds por el triángulo');
+    { const Cv = require('../../fuente/campos/curvilineas.js'); const por = (c) => Cv.calcula(Cv.ejemplos.find((e) => e.clave === c).sc);
+      if (por('cil-radial').divTxt !== '2') mal('Campos curvilíneas: ∇·(ρ ρ̂) en cilíndricas debe valer 2'); if (por('cil-giro').rotTxt[2] !== '2') mal('Campos curvilíneas: ∇×(ρ φ̂) debe valer 2 ẑ');
+      if (por('esf-radial').divTxt !== '3') mal('Campos curvilíneas: ∇·(r r̂) en esféricas debe valer 3'); if (por('esf-dipolo').divTxt !== '0' || por('cil-carga-lineal').divTxt !== '0' || por('esf-carga').divTxt !== '0') mal('Campos curvilíneas: los campos de carga puntual, lineal y dipolo tienen divergencia 0');
+      if (!por('esf-carga').grTxt[0].includes('r^{2}')) mal('Campos curvilíneas: ∇(1/r) debe llevar 1/r²'); }
     { const x = CamC.resolver({ modo: 'masa', f: 'x', curva: 'param', cx: 'cos t', cy: 'sen t', a: '0', b: '2π' }); if (x.cm) mal('Campos: una f con valores negativos sale como densidad'); cerca(x.I, 0, 1e-9, '∫ x ds en la circunferencia'); }
     // Green en polígonos y entre curvas (incluido un polígono horario y uno no convexo)
     cerca(r('green-triangulo').circula, 2, 1e-9, 'Green en el triángulo'); cerca(r('green-triangulo').area, 1, 1e-12, 'área del triángulo');
@@ -64,6 +68,7 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       const { page, consola } = await pagina(browser, 1200, 900);
       await page.goto('file://' + path.join(publico, 'matematicas', 'campos', 'index.html'));
       await page.waitForFunction(() => window.CamposApp);
+      await require('./comun/exportar.js')(page, mal, 'campos', { lienzo: '#grafica', datos: false });
       const antes = fallos;
       const verC = (await page.locator('#ver').textContent()).trim();
       if (verC !== Version.de('campos').current) mal(`Campos: la página muestra la versión «${verC}», se esperaba ${Version.de('campos').current}`);

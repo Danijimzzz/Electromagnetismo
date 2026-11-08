@@ -51,7 +51,7 @@ document.addEventListener('click', (e) => { if (!e.target.closest('.pref-cookies
     espera = 0;
     for (const e of document.querySelectorAll('main *')) {
       const desborda = e.scrollWidth > e.clientWidth || e.scrollHeight > e.clientHeight;
-      if (e.dataset.sf) { if (!desborda) { e.removeAttribute('tabindex'); delete e.dataset.sf; } continue; }
+      if (e.dataset.sf) { if (!desborda || e.querySelector(ENFOCABLE)) { e.removeAttribute('tabindex'); delete e.dataset.sf; } continue; }
       if (!desborda || e.hasAttribute('tabindex') || e.matches('svg,svg *,canvas') || e.querySelector(ENFOCABLE)) continue;
       const o = getComputedStyle(e);
       if (/auto|scroll/.test(o.overflowX + o.overflowY)) { e.tabIndex = 0; e.dataset.sf = '1'; }
@@ -132,6 +132,8 @@ footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
 :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
 .controles { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px }
 .controles > .nota, .controles > .leyenda { flex: 1 1 220px; margin: 0 }
+.exportar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0 }
+.exportar-aviso { color: var(--muted); font-size: 12.5px }
 .tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px }
 .tools label { color: var(--muted); font-size: 13px; display: inline-flex; gap: 6px; align-items: center }
 .modos { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-bottom: 14px }
@@ -333,32 +335,8 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 </body>
 <script>
 const Pagina = { carpeta: 'ph', guarda: 'ph-v1' };
-const Version = (() => { const registros = {"web":[{"v":"1.12.1"}],"control":[{"v":"0.1"}],"termo-estadistica":[{"v":"0.1"}],"markowitz":[{"v":"0.1"}],"cavidades":[{"v":"0.1"}],"organica":[{"v":"0.1"}],"transformada-z":[{"v":"0.1"}],"semiconductores":[{"v":"0.1"}],"relatividad":[{"v":"0.1"}],"osc-acopladas":[{"v":"0.1"}],"solubilidad":[{"v":"0.1"}],"lagrange":[{"v":"0.1"}],"series":[{"v":"0.1"}],"no-parametricos":[{"v":"0.1"}],"regresion-multiple":[{"v":"0.1"}],"anova":[{"v":"0.1"}],"black-scholes":[{"v":"0.1"}],"bonos":[{"v":"0.1"}],"solow":[{"v":"0.1"}],"integrales-multiples":[{"v":"0.1"}],"formulacion":[{"v":"0.1"}],"balance":[{"v":"0.1"}],"redox":[{"v":"0.1"}],"lineas-transmision":[{"v":"0.1"}],"superficies":[{"v":"0.1"}],"vsepr":[{"v":"0.1"}],"maxwell":[{"v":"0.1"}],"fresnel":[{"v":"0.1"}],"gravitacion":[{"v":"0.1"}],"convolucion":[{"v":"0.1"}],"laplace-numerica":[{"v":"0.1"}],"imagenes":[{"v":"0.1"}],"guias-onda":[{"v":"0.1"}],"antena":[{"v":"0.1"}],"bode":[{"v":"0.1"}],"optica":[{"v":"0.1"}],"simulador":[{"v":"0.3"}],"teoria-juegos":[{"v":"0.1"}],"puertas-logicas":[{"v":"0.3"}],"multiplicador":[{"v":"0.1"}],"is-lm":[{"v":"0.1"}],"choques":[{"v":"0.1"}],"termoquimica":[{"v":"0.1"}],"probabilidad":[{"v":"0.1"}],"unidades":[{"v":"0.1"}],"equilibrio":[{"v":"0.1"}],"oscilaciones":[{"v":"0.1"}],"beneficio":[{"v":"0.1"}],"costes":[{"v":"0.1"}],"sistemas-numericos":[{"v":"0.1"}],"excedentes":[{"v":"0.1"}],"oferta-demanda":[{"v":"0.1"}],"chi2-bondad":[{"v":"0.1"}],"contrastes":[{"v":"0.1"}],"errores":[{"v":"0.1"}],"graficador":[{"v":"0.1"}],"metodos-numericos":[{"v":"0.1"}],"fisica-moderna":[{"v":"0.2"}],"lorenz-gini":[{"v":"0.1"}],"phillips-okun":[{"v":"0.1"}],"tipos-cambio":[{"v":"0.1"}],"elasticidades":[{"v":"0.1"}],"pib-ipc":[{"v":"0.1"}],"numeros-indice":[{"v":"0.1"}],"ratios":[{"v":"0.1"}],"punto-muerto":[{"v":"0.1"}],"ahorro":[{"v":"0.1"}],"van-tir":[{"v":"0.1"}],"amortizacion-inmovilizado":[{"v":"0.1"}],"prestamos":[{"v":"0.1"}],"rentas":[{"v":"0.1"}],"interes":[{"v":"0.1"}],"descriptiva":[{"v":"0.1"}],"regresion-economia":[{"v":"0.1"}],"ajustador":[{"v":"0.1"}],"electrostatica":[{"v":"0.6"}],"magnetostatica":[{"v":"0.2"}],"tabla-periodica":[{"v":"0.2"}],"trabajo-y-energia":[{"v":"0.2"}],"masa-molar":[{"v":"0.2"}],"configuracion-electronica":[{"v":"0.2"}],"condensadores":[{"v":"0.2"}],"tiro-parabolico":[{"v":"0.2"}],"disoluciones":[{"v":"0.2"}],"calorimetria":[{"v":"0.2"}],"induccion":[{"v":"0.2"}],"matrices":[{"v":"0.2"}],"derivadas":[{"v":"0.3"}],"laplace":[{"v":"0.2"}],"interferencia":[{"v":"0.2"}],"ondas-em":[{"v":"0.3"}],"intervalos":[{"v":"0.2"}],"fuerza":[{"v":"0.2"}],"campos":[{"v":"0.2.1"}],"cinetica":[{"v":"0.2"}],"edos":[{"v":"0.2"}],"fourier":[{"v":"0.2"}],"taylor":[{"v":"0.2.1"}],"complejos":[{"v":"0.2"}],"sistemas":[{"v":"0.3"}],"regresion":[{"v":"0.2"}],"estadistica":[{"v":"0.2"}],"dinamica":[{"v":"0.2"}],"solido-rigido":[{"v":"0.2"}],"ondas":[{"v":"0.2"}],"gases":[{"v":"0.3"}],"ciclos":[{"v":"0.2"}],"ph":[{"v":"0.3"}],"fluidos":[{"v":"0.2"}],"doppler":[{"v":"0.2"}],"resistencias":[{"v":"0.2"}],"faraday":[{"v":"0.2"}],"fenomenos":[{"v":"0.8"}]}; const de = (h) => ({ current: registros[h][0].v, log: registros[h] }); return { registros, de }; })();
+const Version = (() => { const registros = {"web":[{"v":"1.13"}],"control":[{"v":"0.2"}],"termo-estadistica":[{"v":"0.1"}],"markowitz":[{"v":"0.2"}],"cavidades":[{"v":"0.2"}],"organica":[{"v":"0.1"}],"transformada-z":[{"v":"0.2"}],"semiconductores":[{"v":"0.2"}],"relatividad":[{"v":"0.1"}],"osc-acopladas":[{"v":"0.1"}],"solubilidad":[{"v":"0.1"}],"lagrange":[{"v":"0.1"}],"series":[{"v":"0.1"}],"no-parametricos":[{"v":"0.1"}],"regresion-multiple":[{"v":"0.1"}],"anova":[{"v":"0.1"}],"black-scholes":[{"v":"0.2"}],"bonos":[{"v":"0.2"}],"solow":[{"v":"0.2"}],"integrales-multiples":[{"v":"0.1"}],"formulacion":[{"v":"0.1"}],"balance":[{"v":"0.2"}],"redox":[{"v":"0.1"}],"lineas-transmision":[{"v":"0.2"}],"superficies":[{"v":"0.1"}],"vsepr":[{"v":"0.1"}],"maxwell":[{"v":"0.2"}],"fresnel":[{"v":"0.2"}],"gravitacion":[{"v":"0.1"}],"convolucion":[{"v":"0.2"}],"laplace-numerica":[{"v":"0.2"}],"imagenes":[{"v":"0.2"}],"guias-onda":[{"v":"0.2"}],"antena":[{"v":"0.2"}],"bode":[{"v":"0.2"}],"optica":[{"v":"0.1"}],"simulador":[{"v":"0.4"}],"teoria-juegos":[{"v":"0.1"}],"puertas-logicas":[{"v":"0.4"}],"multiplicador":[{"v":"0.2"}],"is-lm":[{"v":"0.2"}],"choques":[{"v":"0.1"}],"termoquimica":[{"v":"0.1"}],"probabilidad":[{"v":"0.1"}],"unidades":[{"v":"0.1"}],"equilibrio":[{"v":"0.1"}],"oscilaciones":[{"v":"0.1"}],"beneficio":[{"v":"0.2"}],"costes":[{"v":"0.2"}],"sistemas-numericos":[{"v":"0.2"}],"excedentes":[{"v":"0.2"}],"oferta-demanda":[{"v":"0.2"}],"chi2-bondad":[{"v":"0.1"}],"contrastes":[{"v":"0.1"}],"errores":[{"v":"0.1"}],"graficador":[{"v":"0.1"}],"metodos-numericos":[{"v":"0.1"}],"fisica-moderna":[{"v":"0.2"}],"lorenz-gini":[{"v":"0.1"}],"phillips-okun":[{"v":"0.2"}],"tipos-cambio":[{"v":"0.2"}],"elasticidades":[{"v":"0.2"}],"pib-ipc":[{"v":"0.1"}],"numeros-indice":[{"v":"0.1"}],"ratios":[{"v":"0.2"}],"punto-muerto":[{"v":"0.1"}],"ahorro":[{"v":"0.2"}],"van-tir":[{"v":"0.2"}],"amortizacion-inmovilizado":[{"v":"0.1"}],"prestamos":[{"v":"0.2"}],"rentas":[{"v":"0.2"}],"interes":[{"v":"0.2"}],"descriptiva":[{"v":"0.1"}],"regresion-economia":[{"v":"0.1"}],"ajustador":[{"v":"0.1"}],"electrostatica":[{"v":"0.7"}],"magnetostatica":[{"v":"0.3"}],"tabla-periodica":[{"v":"0.2"}],"trabajo-y-energia":[{"v":"0.2"}],"masa-molar":[{"v":"0.2"}],"configuracion-electronica":[{"v":"0.2"}],"condensadores":[{"v":"0.3"}],"tiro-parabolico":[{"v":"0.2"}],"disoluciones":[{"v":"0.2"}],"calorimetria":[{"v":"0.2"}],"induccion":[{"v":"0.3"}],"matrices":[{"v":"0.2"}],"derivadas":[{"v":"0.3"}],"laplace":[{"v":"0.2"}],"interferencia":[{"v":"0.2"}],"ondas-em":[{"v":"0.4"}],"intervalos":[{"v":"0.2"}],"fuerza":[{"v":"0.3"}],"campos":[{"v":"0.2.1"}],"cinetica":[{"v":"0.2"}],"edos":[{"v":"0.2"}],"fourier":[{"v":"0.2"}],"taylor":[{"v":"0.2.1"}],"complejos":[{"v":"0.2"}],"sistemas":[{"v":"0.3"}],"regresion":[{"v":"0.2"}],"estadistica":[{"v":"0.2"}],"dinamica":[{"v":"0.2"}],"solido-rigido":[{"v":"0.2"}],"ondas":[{"v":"0.2"}],"gases":[{"v":"0.3"}],"ciclos":[{"v":"0.2"}],"ph":[{"v":"0.3"}],"fluidos":[{"v":"0.2"}],"doppler":[{"v":"0.2"}],"resistencias":[{"v":"0.3"}],"faraday":[{"v":"0.3"}],"fenomenos":[{"v":"0.8"}]}; const de = (h) => ({ current: registros[h][0].v, log: registros[h] }); return { registros, de }; })();
 
-/* =====================================================================
-   Ayudantes comunes de las herramientas (los que antes copiaba cada una).
-   herramientas.js lo pone en cada página justo después de version.js; en
-   Node (pruebas) comprobar.js lo deja en global.Herramienta. Uso:
-     const { $, esc, copia, vacio } = Herramienta;
-     $(q)          document.querySelector
-     esc(s)        texto seguro dentro de HTML y de atributos
-     copia(o)      copia profunda de datos JSON (el estado sc, un ejemplo)
-     vacio(v)      campo sin rellenar (undefined, null o solo espacios)
-     leeSI(s, base)  número de un campo con coma, 3·10^8, prefijos del SI y
-                   unidad: «4k7», «1,5 kΩ», «100n», «10 µF», «5 ms». Con prefijo,
-                   notación 4k7 o unidad escrita da el valor en unidades del SI;
-                   un número solo se multiplica por base (1e-3 si el campo
-                   está en mH, 1e-6 si en μF). NaN si no se entiende
-     txt(h)        HTML de un resultado a texto para el lienzo (exponentes ⁰¹²…)
-     marcas(a, b, n)  valores redondos (1, 2, 2,5, 5 × 10ⁿ) para las marcas de un eje
-     lienzo(c)     prepara un <canvas> (o su selector) a la resolución de la
-                   pantalla, limpio y en px CSS: { g, w, h, c, cambia }; cambia
-                   es true si el tamaño era otro (para rehacer un fondo guardado)
-     enlace        un enlace con #d=… (lo copia «Mis ejercicios») deja sus datos en la clave de la página
-                   (Pagina.guarda) antes de que arranque la app, en todas las herramientas
-     accesible()   (ya se llama al cargar) aria-live en los resultados, role=alert en los
-                   errores y aria-describedby de cada gráfica hacia los resultados
-   ===================================================================== */
 const Herramienta = (() => {
   const $ = (q) => document.querySelector(q);
   const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -375,10 +353,24 @@ const Herramienta = (() => {
     if (!m) return NaN;
     return +m[1] * (m[2] ? PREFIJOS[m[2]] : unidad ? 1 : base);
   };
+  const UNIDADES = { m: 1, Hz: 1, F: 1, H: 1, A: 1, V: 1, 'Ω': 1, ohm: 1, ohmios: 1, T: 1, W: 1, S: 1, s: 1, C: 1, N: 1, J: 1 };
+  const PREF_UN = { p: 1e-12, n: 1e-9, u: 1e-6, 'µ': 1e-6, 'μ': 1e-6, m: 1e-3, c: 1e-2, k: 1e3, M: 1e6, G: 1e9 };
+  const leeUn = (s) => {
+    const t = String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace(/[−–]/g, '-').replace(/[·x×*]10\^?\(?([+\-]?\d+)\)?/i, 'e$1');
+    const m = t.match(/^([+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?)(ohmios|ohm|Hz|[mFHAVΩTWSsCNJ]|[pnuµμmckMG](?:Hz|[mFHAVΩTWSsCNJ]))$/);
+    if (!m) return undefined;
+    const u = m[2];
+    if (UNIDADES[u] !== undefined) return +m[1];
+    const pre = u[0], r = u.slice(1);
+    if (PREF_UN[pre] === undefined || UNIDADES[r] === undefined) return undefined;
+    if (pre === 'c' && r !== 'm') return undefined;
+    return +m[1] * PREF_UN[pre];
+  };
   const txt = (h) => String(h).replace(/<sup>(.*?)<\/sup>/g, (_, e) => e.replace(/−/g, '⁻').replace(/\d/g, (d) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d])).replace(/<[^>]+>/g, '');
   const marcas = (a, b, n = 6) => {
     const p0 = (b - a) / n, e = 10 ** Math.floor(Math.log10(p0)), paso = [1, 2, 2.5, 5, 10].map((q) => q * e).find((q) => q >= p0) || 10 * e;
-    const out = []; for (let v = Math.ceil(a / paso) * paso; v <= b + paso * 1e-9; v += paso) out.push(Math.abs(v) < paso * 1e-9 ? 0 : v);
+    const out = []; if (!(paso > 0) || !isFinite(paso) || !(b > a)) return out; // paso nulo (desbordamiento) o eje sin rango: nada que marcar
+    for (let k = 0, v = Math.ceil(a / paso) * paso; k <= 200 && v <= b + paso * 1e-9; v = Math.ceil(a / paso) * paso + ++k * paso) out.push(Math.abs(v) < paso * 1e-9 ? 0 : v);
     return out;
   };
   const lienzo = (c) => {
@@ -389,8 +381,6 @@ const Herramienta = (() => {
     const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
     return { g, w, h, c, cambia };
   };
-  // Accesibilidad común: los resultados que cambian al tocar un dato se anuncian con cortesía (aria-live), los mensajes de error
-  // como alerta y cada gráfica se describe con los resultados de al lado (aria-describedby), no solo con su título fijo.
   const accesible = (doc = typeof document !== 'undefined' ? document : null) => {
     if (!doc) return;
     const RES = '#resumen, #res, #resumen-d, #resumen-r, #resumen-c, #resumen-este, #resumen-emp, #resumen-nq, #resumen-conf, #res-masa, #res-dil, #res-mez';
@@ -400,7 +390,58 @@ const Herramienta = (() => {
     if (res) for (const c of doc.querySelectorAll('canvas')) if (!c.hasAttribute('aria-describedby') && !c.closest('#resumen, #res') && !c.hasAttribute('aria-hidden')) c.setAttribute('aria-describedby', res.id);
   };
   accesible();
-  // Enlace que lleva el estado (#d=…, base64 url del JSON guardado): los datos pasan a donde la app los lee al arrancar
+  const nombreArchivo = (s) => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'grafica';
+  const celda = (v) => (typeof v === 'number' ? (Number.isFinite(v) ? String(+v.toPrecision(10)).replace('.', ',') : '') : String(v ?? '').replace(/[\t\r\n]+/g, ' '));
+  const tabla = (cab, filas) => [cab, ...filas].filter(Boolean).map((f) => f.map(celda).join('\t')).join('\n');
+  const color = (nom, otro) => { try { return getComputedStyle(document.documentElement).getPropertyValue(nom).trim() || otro; } catch (e) { return otro; } };
+  const png = (c, o = {}) => new Promise((ok, no) => {
+    if (typeof c === 'string') c = $(c);
+    if (!c || !c.width || !c.height) { no(new Error('la gráfica aún no está dibujada')); return; }
+    const k = c.width / (c.clientWidth || c.width), pad = Math.round(12 * k), tam = Math.round(14 * k);
+    const titulo = o.titulo || $('h1')?.textContent.trim() || '', pie = 'Ciencify · ' + (typeof location !== 'undefined' && /^https?:/.test(location.protocol) ? location.host + location.pathname : 'ciencias gratis y sin registro');
+    const alto = c.height + pad * 2 + tam * 2.4 + (titulo ? tam * 1.6 : 0), z = document.createElement('canvas');
+    z.width = c.width + pad * 2; z.height = Math.round(alto);
+    const g = z.getContext('2d'), fam = getComputedStyle(document.body).fontFamily || 'system-ui, sans-serif';
+    g.fillStyle = color('--panel', '#ffffff'); g.fillRect(0, 0, z.width, z.height);
+    g.textBaseline = 'top'; let y = pad;
+    if (titulo) { g.fillStyle = color('--ink', '#111'); g.font = `600 ${tam}px ${fam}`; g.fillText(titulo, pad, y); y += tam * 1.6; }
+    g.drawImage(c, pad, y); y += c.height + pad * 0.5;
+    g.fillStyle = color('--muted', '#555'); g.font = `${Math.round(tam * 0.85)}px ${fam}`; g.fillText(pie, pad, y);
+    z.toBlob((b) => (b ? ok(b) : no(new Error('el navegador no pudo crear la imagen'))), 'image/png');
+  });
+  const copiaTexto = async (t) => {
+    try { await navigator.clipboard.writeText(t); return true; } catch (e) { /* sin permiso o sin https: se prueba con el método antiguo */ }
+    const a = document.createElement('textarea'); a.value = t; a.setAttribute('readonly', ''); a.setAttribute('aria-hidden', 'true'); a.style.cssText = 'position:fixed;left:-9999px;top:0';
+    document.body.appendChild(a); a.select(); let r = false; try { r = document.execCommand('copy'); } catch (e) { r = false; } a.remove(); return r;
+  };
+  const exportar = (c, o = {}) => {
+    if (typeof c === 'string') c = $(c);
+    if (!c) return null;
+    if (c._exporta) { Object.assign(c._exporta.o, o); return c._exporta.barra; }
+    const barra = document.createElement('div'), aviso = document.createElement('span'), cual = o.etiqueta ? ` de ${o.etiqueta}` : '';
+    barra.className = 'exportar'; barra.setAttribute('role', 'group'); barra.setAttribute('aria-label', 'Exportar' + cual);
+    aviso.className = 'exportar-aviso'; aviso.setAttribute('role', 'status'); aviso.setAttribute('aria-live', 'polite');
+    const di = (t) => { aviso.textContent = t; clearTimeout(di.t); di.t = setTimeout(() => { aviso.textContent = ''; }, 3500); };
+    const boton = (txt, label, fn) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'btn'; b.textContent = txt; b.setAttribute('aria-label', label); b.addEventListener('click', fn); barra.appendChild(b); return b; };
+    boton('Descargar PNG', 'Descargar la gráfica' + cual + ' como imagen PNG', async () => {
+      try {
+        const b = await png(c, c._exporta.o), a = document.createElement('a');
+        a.href = URL.createObjectURL(b); a.download = nombreArchivo(c._exporta.o.nombre || c.id || 'grafica') + '.png'; document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 2000); di('Imagen descargada');
+      } catch (e) { di('No se pudo crear la imagen: ' + e.message); }
+    });
+    if (o.datos) boton('Copiar datos', 'Copiar los datos' + cual + ' al portapapeles', async () => {
+      let d; try { d = c._exporta.o.datos; d = typeof d === 'function' ? d() : d; } catch (e) { d = null; }
+      const t = typeof d === 'string' ? d : d && Array.isArray(d.filas) ? tabla(d.cab, d.filas) : '';
+      if (!t) { di('Todavía no hay datos que copiar'); return; }
+      di((await copiaTexto(t)) ? 'Datos copiados: pégalos en una hoja de cálculo' : 'No se pudo copiar: el navegador no lo permite');
+    });
+    barra.appendChild(aviso);
+    c._exporta = { o, barra };
+    const p = c.parentElement, ref = p && p.children.length === 1 && !p.matches('.card, .layout, .wrap, main, body') ? p : c;
+    ref.insertAdjacentElement('afterend', barra);
+    return barra;
+  };
   if (typeof location !== 'undefined' && typeof Pagina !== 'undefined' && Pagina.guarda) {
     const m = /[#&]d=([A-Za-z0-9_-]+)/.exec(location.hash);
     if (m) {
@@ -408,20 +449,10 @@ const Herramienta = (() => {
       try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* file:// */ }
     }
   }
-  return { $, esc, copia, vacio, leeSI, txt, marcas, lienzo, accesible };
+  const enlaceA = (carpeta, estado) => `../${carpeta}/#d=${btoa(unescape(encodeURIComponent(JSON.stringify(estado)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')}`;
+  return { $, esc, copia, vacio, leeSI, leeUn, txt, marcas, lienzo, accesible, exportar, png, tabla, nombreArchivo, enlaceA };
 })();
 
-/* =====================================================================
-   Fórmulas en MathML a partir de una sintaxis sencilla (sin DOM salvo
-   Mates.pinta). En los textos, lo que va entre $…$ es una fórmula:
-     a/b            fracción (los paréntesis de fuera se quitan)
-     x^2, e^{−bt/m} exponente; v_0x, E_{c,máx} subíndice
-     √(…), ∛(…)     raíz
-     "m/s"          texto tal cual (unidades, palabras); \{ \} llaves visibles
-     sen cos tg ln log exp máx mín   funciones; binom(n, k)
-   Una palabra que no es una función se lee letra a letra (mgh = m·g·h).
-   También acepta <sup>, <sub> y las etiquetas que devuelve f().
-   ===================================================================== */
 const Mates = (() => {
   const FUNC = new Set(['sen', 'cos', 'tg', 'tan', 'ln', 'log', 'exp', 'arcsen', 'arccos', 'arctg', 'máx', 'mín', 'lím', 'senh', 'cosh', 'tgh']);
   const OPS = '+-−=·×÷⇒⇔→←↔≈≠<>≤≥±∓,;:!∝∈∼≡∑∏∫∂∇⊥∥';
@@ -437,7 +468,6 @@ const Mates = (() => {
       const c = s[i], resto = s.slice(i);
       let m;
       if (/\s/.test(c)) { sp = true; i++; continue; }
-      // \{ y \} son llaves que se ven: ℒ\{f(t)\}
       if (c === '\\' && (s[i + 1] === '{' || s[i + 1] === '}')) { out.push({ t: 's', v: c + s[i + 1], sp }); i += 2; sp = false; continue; }
       if ((m = resto.match(/^\d+(?:[.,]\d+)?/))) out.push({ t: 'n', v: m[0].replace('.', ','), sp });
       else if (c === '"') { const j = s.indexOf('"', i + 1); m = [s.slice(i, j < 0 ? s.length : j + 1)]; out.push({ t: 'x', v: m[0].replace(/"/g, ''), sp }); }
@@ -448,7 +478,6 @@ const Mates = (() => {
     return out;
   }
 
-  // nodo: { m: MathML, dentro: MathML sin los paréntesis de fuera (o null) }
   const nodo = (m, dentro = null) => ({ m, dentro });
   const fila = (xs) => (xs.length === 1 ? xs[0] : `<mrow>${xs.join('')}</mrow>`);
   const letra = (v) => (/^\d+(,\d+)?$/.test(v) ? `<mn>${v}</mn>` : [...v].length === 1 ? `<mi>${escH(v)}</mi>` : `<mi mathvariant="normal">${escH(v)}</mi>`);
@@ -461,11 +490,9 @@ const Mates = (() => {
       let prevOp = true;
       while (p < tk.length && !(cierre && es(cierre))) {
         const k = ver();
-        // ∫ con límites lleva sus subíndices: ∫_a^b
         if (k.t === 's' && OPS.includes(k.v) && !(k.v === '∫' && tk[p + 1] && tk[p + 1].t === 's' && (tk[p + 1].v === '_' || tk[p + 1].v === '^'))) {
           p++;
           const v = k.v === '-' ? '−' : k.v;
-          // un signo detrás de otro operador (o al principio) es de número: = −19,28
           const signo = prevOp && (v === '−' || v === '+' || v === '±');
           xs.push(v === '!' ? '<mo lspace="0">!</mo>' : v === ',' || v === ';' ? `<mo separator="true">${v}</mo>` : signo ? `<mo form="prefix" lspace="0" rspace="0.05em">${v}</mo>` : `<mo>${escH(v)}</mo>`);
           prevOp = true; continue;
@@ -484,7 +511,6 @@ const Mates = (() => {
       if (es('{')) { p++; const xs = secuencia('}'); p++; return fila(xs); }
       if (es('-') || es('−')) { p++; const a = argumento(); return `<mrow><mo>−</mo>${a}</mrow>`; }
       if (es('(')) { const a = atomo(); return a.m; }
-      // una racha de letras y números pegados: 0x, máx, 12
       const k = ver();
       if (!k) return '<mrow></mrow>';
       if (k.t === 's') { p++; return `<mo>${escH(k.v)}</mo>`; }
@@ -509,15 +535,11 @@ const Mates = (() => {
       if (k.t === 'n') return nodo(`<mn>${k.v}</mn>`);
       if (k.t === 'x') return nodo(`${k.sp && p > 1 ? '<mspace width="0.3em"></mspace>' : ''}<mtext>${escH(k.v)}</mtext>`);
       if (k.t === 'w') {
-        // binom(n, k): número combinatorio
         if (k.v === 'binom' && es('(')) { p++; const a = secuencia(','); p++; const b = secuencia(')'); p++; return nodo(`<mrow><mo>(</mo><mfrac linethickness="0">${fila(a)}${fila(b)}</mfrac><mo>)</mo></mrow>`); }
         if (FUNC.has(k.v)) { let m = `<mi mathvariant="normal">${k.v}</mi>`; if (es('^')) { p++; m = `<msup>${m}${argumento()}</msup>`; } return nodo(`<mspace width="0.17em"></mspace>${m}<mo>&#x2061;</mo><mspace width="0.12em"></mspace>`); }
-        // diferencial suelto (dx, dt, dS, dθ…) detrás de algo: con un poco de aire, como en «f(x) dx»
         if (k.sp && p > 1 && /^d[a-zA-Zθφρ]$/.test(k.v)) return nodo(`<mspace width="0.17em"></mspace><mi>d</mi><mi>${escH(k.v[1])}</mi>`);
         const ls = [...k.v.replace(/[′″]+$/, '')], pr = (k.v.match(/[′″]+$/) || [''])[0];
-        // las marcas combinadas (î, ĵ con acento) van con su letra
         const grupos = []; for (const c of ls) { if (/\p{M}/u.test(c) && grupos.length) grupos[grupos.length - 1] += c; else grupos.push(c); }
-        // las mayúsculas griegas (Δ, Σ, Φ, Ω) van rectas, como en los libros
         return nodo(fila(grupos.map((c) => (c === '∞' ? '<mi>∞</mi>' : /^[Α-Ω]$/.test(c) ? `<mi mathvariant="normal">${c}</mi>` : `<mi>${escH(c)}</mi>`)).concat(pr ? [`<mo lspace="0" rspace="0">${pr}</mo>`] : [])));
       }
       const v = k.v;
@@ -533,9 +555,7 @@ const Mates = (() => {
     return fila(secuencia(null));
   }
 
-  // la fuente se queda en data-src para poder copiarla (como texto o LaTeX)
   const mathml = (src) => `<math data-src="${escH(src).replace(/"/g, '&quot;')}"><mstyle displaystyle="true">${analiza(tokens(src))}</mstyle></math>`;
-  // parte una fórmula antes de cada = o ⇒ que no esté dentro de paréntesis, llaves o comillas
   function trozos(src) {
     const out = [];
     let ini = 0, nivel = 0, comillas = false;
@@ -549,12 +569,9 @@ const Mates = (() => {
     }
     return out.concat(src.slice(ini)).map((x) => x.trim()).filter(Boolean);
   }
-  // sustituye cada $…$ de un texto HTML por su MathML; con partir, cada igualdad va en su propio
-  // <math> para que una cadena larga (a = b = c) baje de línea en el móvil en vez de salirse
   const html = (s, partir = false) => String(s ?? '').replace(/\$([^$]+)\$/g, (_, x) => (partir
     ? trozos(x).map((t, i) => (i ? mathml(t).replace(/^(<math[^>]*><mstyle[^>]*>(?:<mrow>)?)<mo>/, '$1<mo lspace="0">') : mathml(t))).join(' ')
     : mathml(x)));
-  // convierte en el documento los elementos con class="m" (fórmulas escritas en el HTML)
   function pinta(raiz) { if (typeof document === 'undefined') return; for (const el of (raiz || document).querySelectorAll('.m:not([data-m])')) { el.dataset.m = '1'; el.innerHTML = html(el.innerHTML.includes('$') ? el.innerHTML : `$${el.innerHTML}$`); } }
   if (typeof document !== 'undefined') {
     const st = document.createElement('style');
@@ -565,16 +582,6 @@ const Mates = (() => {
   return { html, mathml, pinta, tokens };
 })();
 
-/* =====================================================================
-   Datos de los 118 elementos, compartidos por las herramientas de química
-   (tabla periódica, masa molar, configuración electrónica).
-   Cada fila: Z | símbolo | nombre | masa atómica (u; entre corchetes, la del isótopo más estable)
-            | categoría | electronegatividad de Pauling | 1.ª energía de ionización (kJ/mol)
-            | radio atómico calculado (pm, Clementi y Raimondi, 1967)
-   Un campo vacío es un dato desconocido o no medido.
-   Categorías: a alcalino, t alcalinotérreo, m metal de transición, l lantánido, c actínido,
-   p otro metal (bloque p), s metaloide, n no metal, h halógeno, g gas noble.
-   ===================================================================== */
 const Elementos = (() => {
   const FILAS = `1|H|Hidrógeno|1.008|n|2.20|1312|53
 2|He|Helio|4.0026|g||2372|31
@@ -695,9 +702,6 @@ const Elementos = (() => {
 117|Ts|Teneso|[294]|h|||
 118|Og|Oganesón|[294]|g|||`;
 
-  // propiedades físicas: Z | estados de oxidación habituales | afinidad electrónica (kJ/mol desprendidos al captar
-  // un electrón; x = el anión no es estable) | densidad (g/cm³ a 20–25 °C; los gases a 0 °C y 1 atm)
-  // | punto de fusión (°C) | punto de ebullición (°C). Valores de tabla (CRC); vacío = sin medir.
   const PROPIEDADES = `1|+1, −1|72.8|0.0000899|-259.16|-252.88
 2|0|x|0.0001785||-268.93
 3|+1|59.6|0.534|180.5|1342
@@ -810,7 +814,6 @@ const Elementos = (() => {
   const GASES = new Set(['H', 'He', 'N', 'O', 'F', 'Ne', 'Cl', 'Ar', 'Kr', 'Xe', 'Rn']), LIQUIDOS = new Set(['Br', 'Hg']);
   const num = (s) => (s === '' || s == null ? null : +s);
 
-  // grupo y periodo; los lantánidos y actínidos (57–71, 89–103) van en sus filas aparte
   const LIMITES = [2, 10, 18, 36, 54, 86, 118];
   function posicion(Z) {
     const periodo = LIMITES.findIndex((l) => Z <= l) + 1, ini = periodo === 1 ? 1 : LIMITES[periodo - 2] + 1, k = Z - ini;
@@ -823,7 +826,6 @@ const Elementos = (() => {
     return { periodo, grupo, fila: periodo, col: grupo };
   }
 
-  /* ---------- Configuración electrónica: Madelung (n + l) con las excepciones conocidas ---------- */
   const ORB = []; // orden de llenado
   for (let s = 1; s <= 8; s++) for (let l = Math.min(s - 1, 3); l >= 0; l--) { const n = s - l; if (n > l) ORB.push([n, l]); }
   const LETRA = 'spdf', CAP = [2, 6, 10, 14];
@@ -834,14 +836,11 @@ const Elementos = (() => {
     89: { '5f': 0, '6d': 1 }, 90: { '5f': 0, '6d': 2 }, 91: { '5f': 2, '6d': 1 }, 92: { '5f': 3, '6d': 1 }, 93: { '5f': 4, '6d': 1 },
     96: { '5f': 7, '6d': 1 }, 103: { '6d': 0, '7p': 1 },
   };
-  // devuelve [{n, l, e, nombre}] en orden de n y l (forma habitual: 1s² 2s² 2p⁶ 3s² 3p⁶ 3d¹⁰ 4s²…)
   function configuracion(Z, ion = 0) {
     const e = {};
     let resto = Z;
     for (const [n, l] of ORB) { if (!resto) break; const k = Math.min(CAP[l], resto); e[`${n}${LETRA[l]}`] = k; resto -= k; }
-    // los cationes salen de la configuración real del átomo neutro (Cu⁺: [Ar] 3d¹⁰, Cr³⁺: [Ar] 3d³)
     if (ion >= 0 && EXCEPCIONES[Z]) Object.assign(e, EXCEPCIONES[Z]);
-    // un catión pierde primero los electrones de mayor n (4s antes que 3d)
     for (let q = ion; q > 0; q--) {
       const k = Object.keys(e).filter((o) => e[o] > 0).sort((x, y) => +y[0] - +x[0] || LETRA.indexOf(y[1]) - LETRA.indexOf(x[1]))[0];
       if (k) e[k]--;
@@ -856,7 +855,6 @@ const Elementos = (() => {
   const SUP = (k) => String(k).replace(/\d/g, (d) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d]);
   const NOBLES = [2, 10, 18, 36, 54, 86];
   const texto = (conf) => conf.map((o) => o.nombre + SUP(o.e)).join(' ');
-  // forma abreviada con el gas noble anterior: [Ar] 3d⁶ 4s²
   function abreviada(Z) {
     const g = [...NOBLES].reverse().find((n) => n < Z);
     if (!g) return texto(configuracion(Z));
@@ -886,21 +884,14 @@ const Elementos = (() => {
   return { lista, porSimbolo, CATEGORIAS, configuracion, texto, abreviada, capas, bloque, NOBLES };
 })();
 
-/* =====================================================================
-   Fórmulas químicas (sin DOM): lectura de fórmulas con paréntesis, hidratos
-   y cargas, masa molar, ajuste de ecuaciones y estequiometría con reactivo
-   limitante. Usa Elementos (elementos.js) para las masas atómicas.
-   ===================================================================== */
 const Formulas = (() => {
   const SUB = { '₀': '0', '₁': '1', '₂': '2', '₃': '3', '₄': '4', '₅': '5', '₆': '6', '₇': '7', '₈': '8', '₉': '9' };
   const SUP = { '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9', '⁺': '+', '⁻': '-' };
   const NA = 6.02214076e23, VM = 22.4; // L/mol en condiciones normales (0 °C, 1 atm)
   const R = 0.082; // atm·L/(mol·K), el de clase
-  // volumen molar de un gas ideal: 22,4 L/mol en condiciones normales y RT/P en las demás
   const vm = (T = 273.15, P = 1) => (Math.abs(T - 273.15) < 1e-9 && Math.abs(P - 1) < 1e-12 ? VM : (R * T) / P);
   const ME = 5.48579909e-4; // masa molar del electrón (g/mol), para las semirreacciones
 
-  // masas «de clase»: enteras salvo las que se suelen dar con medio
   const MEDIAS = { Cl: 35.5, Cu: 63.5 };
   const masaDe = (sim, modo) => {
     const e = Elementos.porSimbolo[sim];
@@ -908,11 +899,6 @@ const Formulas = (() => {
     return e.masa;
   };
 
-  /* ---------- Lectura de una fórmula ---------- */
-  // Devuelve { atomos: {símbolo: n}, carga, estado, html }. Es el lector de fórmulas de todas las
-  // herramientas de química. Admite H2O, Ca(OH)2, K4[Fe(CN)6], CuSO4·5H2O (también con * o .),
-  // estados (s), (l), (g), (aq), cargas con ^ (SO4^2-, Fe^3+), sin ^ (Fe3+, NO3-, SO42-, SO4 2-),
-  // subíndices y superíndices Unicode y el electrón e^- de las semirreacciones.
   const ESTADOS = { s: 's', l: 'l', g: 'g', aq: 'aq', ac: 'aq', dis: 'aq' };
   function leer(texto) {
     let t = String(texto).trim().replace(/[₀-₉]/g, (c) => SUB[c]).replace(/[⁰¹²³⁴-⁹⁺⁻]/g, (c) => SUP[c]).replace(/[−–]/g, '-');
@@ -920,7 +906,6 @@ const Formulas = (() => {
     let estado = null;
     const me = t.match(/\s*\((s|l|g|aq|ac|dis)\)$/i);
     if (me) { estado = ESTADOS[me[1].toLowerCase()]; t = t.slice(0, me.index).trim(); }
-    // carga al final: ^2-, ^+, ^3+, ^-2; separada por un espacio (SO4 2-); o pegada (Fe3+, NO3-, SO42-)
     let carga = 0;
     const mc = t.match(/\^\(?(\d*)([+-])(\d*)\)?$/) || t.match(/\s+(\d*)([+-])$/);
     if (mc) { carga = (mc[2] === '+' ? 1 : -1) * (+(mc[1] || mc[3] || 1)); t = t.slice(0, mc.index); }
@@ -928,8 +913,6 @@ const Formulas = (() => {
       const mp = t.match(/(\d*)([+-])$/);
       if (mp) {
         const cuerpo = t.slice(0, mp.index), dig = mp[1];
-        // una sola cifra pegada a un ion de varios elementos es su subíndice (NO3-, NH4+); con dos cifras
-        // la última es la carga (SO42-, PO43-); en un ion de un solo elemento, la carga (Fe3+, O2-)
         const unAtomo = /^[A-Z][a-z]?$/.test(cuerpo);
         let q = '';
         if (dig.length >= 2) q = dig.slice(-1); else if (dig && unAtomo) q = dig;
@@ -976,14 +959,12 @@ const Formulas = (() => {
     }
     return { atomos, carga, estado, html: html(t, carga) + (estado ? `<small class="estado">(${estado})</small>` : '') };
   }
-  // H2O → H<sub>2</sub>O, CuSO4·5H2O conserva el coeficiente del hidrato
   function html(t, carga) {
     let h = t.replace(/[*•.]/g, '·').replace(/([A-Za-z)\]])(\d+)/g, '$1<sub>$2</sub>');
     if (carga) h += `<sup>${Math.abs(carga) > 1 ? Math.abs(carga) : ''}${carga > 0 ? '+' : '−'}</sup>`;
     return h;
   }
 
-  /* ---------- Masa molar ---------- */
   function masaMolar(texto, modo = 'iupac') {
     const f = leer(texto);
     if (f.electron) return { ...f, M: ME, filas: [] };
@@ -993,8 +974,6 @@ const Formulas = (() => {
     return { ...f, M, filas };
   }
 
-  /* ---------- Ajuste de ecuaciones ---------- */
-  // fracciones exactas con BigInt para la eliminación gaussiana
   const mcd = (a, b) => { a = a < 0n ? -a : a; b = b < 0n ? -b : b; while (b) [a, b] = [b, a % b]; return a; };
   const fr = (n, d = 1n) => { if (d < 0n) { n = -n; d = -d; } const g = mcd(n, d) || 1n; return [n / g, d / g]; };
   const mul = (a, b) => fr(a[0] * b[0], a[1] * b[1]), sub = (a, b) => fr(a[0] * b[1] - b[0] * a[1], a[1] * b[1]), div = (a, b) => fr(a[0] * b[1], a[1] * b[0]);
@@ -1003,8 +982,6 @@ const Formulas = (() => {
     const t = String(texto).replace(/<-+>|<=+>|⇌|⇄|↔|⟷|⟶|⇒|→|=>|-+>|=/g, '→');
     const lados = t.split('→');
     if (lados.length !== 2) throw new Error('Escribe la reacción con una flecha: reactivos -> productos');
-    // las especies se separan con « + » (con espacios); un + pegado es una carga
-    // un + pegado también separa si va detrás de una fórmula o de una carga y delante de otra fórmula (CH4+O2, Na++Cl-)
     const especies = (lado) => lado.split(/\s\+\s|\s\+(?=\s*[A-Z(\[\d])|(?<=[A-Za-z0-9)\]]|(?<!\^)[+-])(?<!\^)\+(?=\s*(?:\d+\s*)?(?:[A-Z(\[]|e(?![a-z])))/).map((s) => s.trim()).filter(Boolean)
       .map((s) => s.replace(/^\d+\s*(?=[A-Z(\[]|e(?![a-z]))/, '').replace(/^\d+\s+/, '')); // quita los coeficientes que ponga el usuario
     const R = especies(lados[0]), P = especies(lados[1]);
@@ -1022,7 +999,6 @@ const Formulas = (() => {
       if (!R.some((s) => leer(s).atomos[e])) throw new Error(`El ${Elementos.porSimbolo[e].nombre.toLowerCase()} (${e}) solo aparece en los productos`);
       if (!P.some((s) => leer(s).atomos[e])) throw new Error(`El ${Elementos.porSimbolo[e].nombre.toLowerCase()} (${e}) solo aparece en los reactivos`);
     }
-    // forma escalonada reducida
     const n = sp.length, A = filas.map((f) => f.map((v) => fr(BigInt(v))));
     const piv = [];
     let r = 0;
@@ -1036,8 +1012,19 @@ const Formulas = (() => {
       piv.push(c); r++;
     }
     const libres = [...Array(n).keys()].filter((c) => !piv.includes(c));
-    if (libres.length === 0) throw new Error('Esta reacción no se puede ajustar: revisa las fórmulas');
-    if (libres.length > 1) throw new Error('La reacción admite varios ajustes independientes (son dos reacciones juntas). Sepáralas.');
+    if (libres.length === 0) throw new Error(`Esta reacción no se puede ajustar: ningún conjunto de coeficientes positivos iguala los átomos${els.length ? ' de ' + els.join(', ') : ''}${sp.some((s) => s.carga) ? ' y la carga' : ''}. Suele faltar una sustancia (por ejemplo H₂O, H⁺ u OH⁻ en una reacción iónica) o haber una fórmula mal escrita: revisa cada especie.`);
+    if (libres.length > 1) {
+      const ajustes = libres.map((lib) => {
+        const x = Array(n).fill(null).map(() => fr(0n)); x[lib] = fr(1n); piv.forEach((c, i) => (x[c] = fr(-A[i][lib][0], A[i][lib][1])));
+        const mcm = x.reduce((m, v) => (m * v[1]) / mcd(m, v[1]), 1n); let coef = x.map((v) => (v[0] * mcm) / v[1]); const g = coef.reduce((a, b) => mcd(a, b)); coef = coef.map((c) => c / g);
+        const signo = coef.find((c) => c !== 0n) > 0n ? 1n : -1n; coef = coef.map((c) => c * signo);
+        const ladoT = (L) => L.map(([j, c]) => (c > 1n ? c + ' ' : '') + sp[j].texto).join(' + ');
+        const iz = coef.map((c, j) => [j, c]).filter(([j, c]) => c !== 0n && j < R.length), de = coef.map((c, j) => [j, c]).filter(([j, c]) => c !== 0n && j >= R.length);
+        const negativos = coef.some((c) => c < 0n);
+        return negativos ? null : (iz.length && de.length ? `${ladoT(iz)} → ${ladoT(de)}` : null);
+      }).filter(Boolean);
+      throw new Error(`La ecuación tiene ${libres.length} grados de libertad: admite ${libres.length} ajustes independientes y, por tanto, infinitos conjuntos de coeficientes (son varias reacciones juntas).${ajustes.length ? ' Ajustes independientes: ' + ajustes.join('  ·  ') + '.' : ''} Sepáralas en reacciones distintas y ajusta cada una.`);
+    }
     const lib = libres[0], x = Array(n).fill(null);
     x[lib] = fr(1n);
     piv.forEach((c, i) => (x[c] = fr(-A[i][lib][0], A[i][lib][1])));
@@ -1053,10 +1040,6 @@ const Formulas = (() => {
     return { especies, html: lado(especies.filter((s) => s.reactivo)) + ' <span class="flecha">→</span> ' + lado(especies.filter((s) => !s.reactivo)) };
   }
 
-  /* ---------- Estequiometría ---------- */
-  // cantidades: lista paralela a las especies con { valor, unidad, extra } o null. Unidades:
-  //   'g' (extra: pureza en %, opcional), 'mol', 'L' (gas a T y P) y 'disol' (valor en mL, extra: molaridad)
-  // opciones: modo de masas, rendimiento (%), T (K) y P (atm) de los gases, real: { i, masa } para sacar el rendimiento
   const leeNum = (v) => +String(v ?? '').trim().replace(/\s/g, '').replace(',', '.').replace(/[·x×*]10\^?\(?([+\-−]?\d+)\)?/i, 'e$1').replace('−', '-');
   const vacia = (v) => v === '' || v == null || String(v).trim() === '';
   function estequiometria(texto, cantidades, { modo = 'iupac', rendimiento = 100, T = 273.15, P = 1, real = null } = {}) {
@@ -1084,12 +1067,10 @@ const Formulas = (() => {
         pasos.push({ t: `Moles de ${d.s.html}`, html: `En disolución: n = M · V = ${num(c)} mol/L · ${num(v / 1000)} L = <b>${num(d.n)} mol</b>` });
       } else d.n = v;
     }
-    // reactivo limitante: el menor n / coeficiente
     for (const d of dadas) d.r = d.n / d.s.coef;
     const lim = dadas.reduce((a, b) => (b.r < a.r ? b : a));
     if (dadas.length > 1) pasos.push({ t: 'Reactivo limitante', html: dadas.map((d) => `${d.s.html}: ${num(d.n)} / ${d.s.coef} = ${num(d.r)}`).join(' · ') + `. El menor es el de <b>${lim.s.html}</b>: es el reactivo limitante y se consume entero.` });
     const avance = lim.r;
-    // rendimiento: el dado, o el que sale de la masa obtenida de verdad
     let ren = rendimiento / 100, renReal = null;
     if (real && real.i != null && !vacia(real.masa)) {
       const o = E[real.i], mr = leeNum(real.masa);
@@ -1114,7 +1095,6 @@ const Formulas = (() => {
       else if (o.inicial !== undefined && o !== res[lim.i] && o.sobra > 0) pasos.push({ t: `${o.html} que sobra`, html: `Reaccionan ${num(lim.n)} · ${o.coef} / ${lim.s.coef} = ${num(o.gastado)} mol de los ${num(o.inicial)} mol: sobran <b>${num(o.sobra)} mol = ${num(o.sobra * o.M)} g</b>.` });
       else if (o.inicial === undefined && o.reactivo) pasos.push({ t: `${o.html} necesario`, html: `n = ${num(lim.n)} · ${o.coef} / ${lim.s.coef} = <b>${num(o.gastado)} mol = ${num(o.gastado * o.M)} g</b>` });
     }
-    // tabla de moles al principio, lo que cambia y al final
     const filaT = (o) => {
       const ini = o.reactivo ? o.inicial : 0, cam = o.reactivo ? -o.gastado : o.formado;
       return `<tr><td>${o.html}</td><td>${ini === undefined ? '—' : num(ini)}</td><td>${num(cam)}</td><td>${ini === undefined ? '—' : num(Math.max(0, ini + cam))}</td></tr>`;
@@ -1123,8 +1103,6 @@ const Formulas = (() => {
     return { ajuste: aj, especies: res, limitante: lim.i, varios: dadas.length > 1, rendimiento: 100 * ren, renReal, Vm, pasos };
   }
 
-  /* ---------- Fórmula empírica y molecular ---------- */
-  // sc: { tipo: 'composicion' | 'combustion', composicion: 'C 40; H 6,7; O 53,3' (% o g), muestra, co2, h2o (g), M (g/mol, opcional), modo }
   function empirica(sc) {
     const modo = sc.modo || 'iupac', pasos = [], A = (e) => masaDe(e, modo);
     let gramos; // gramos de cada elemento en la muestra (o en 100 g)
@@ -1156,13 +1134,11 @@ const Formulas = (() => {
     pasos.push({ t: 'Moles de cada elemento', html: els.map((e) => `n(${e}) = ${num(gramos[e])} / ${num(A(e))} = ${num(n[e])} mol`).join(' &nbsp; ') });
     const min = Math.min(...els.map((e) => n[e])), rel = Object.fromEntries(els.map((e) => [e, n[e] / min]));
     pasos.push({ t: 'Se divide entre el menor', html: els.map((e) => `${e}: ${num(n[e])} / ${num(min)} = ${num(rel[e], 3)}`).join(' &nbsp; ') });
-    // el menor factor que deja todo en enteros (1,5 → ×2; 1,33 → ×3…)
     let fac = 1;
     for (let k = 1; k <= 8; k++) if (els.every((e) => Math.abs(rel[e] * k - Math.round(rel[e] * k)) < 0.1 * k ** 0.5 / 1.2)) { fac = k; break; } else if (k === 8) fac = 0;
     if (!fac) throw new Error('Las proporciones no dan números enteros pequeños: revisa los datos (redondea con más cifras)');
     const sub = Object.fromEntries(els.map((e) => [e, Math.round(rel[e] * fac)]));
     if (fac > 1) pasos.push({ t: 'Números enteros', html: `No todos salen enteros: multiplicando por ${fac}, ${els.map((e) => `${e} ${num(rel[e] * fac, 3)} ≈ ${sub[e]}`).join(', ')}.` });
-    // orgánicos en el orden de Hill (C, H y luego alfabético); inorgánicos de menos a más electronegativo (K2Cr2O7, Fe2O3)
     const en = (e) => Elementos.porSimbolo[e].en ?? 4;
     const orden = els.includes('C') ? ['C', 'H', ...els.filter((e) => e !== 'C' && e !== 'H').sort()].filter((e) => els.includes(e)) : [...els].sort((x, y) => en(x) - en(y));
     const formula = (k) => orden.map((e) => e + (sub[e] * k > 1 ? sub[e] * k : '')).join('');
@@ -1180,7 +1156,6 @@ const Formulas = (() => {
     return { gramos, moles: n, relacion: rel, factor: fac, subindices: sub, empirica: emp, Mempirica: Memp, molecular: mol, k, pasos, html: (f) => html(f, 0) };
   }
 
-  // número con coma decimal y 4 cifras significativas (notación científica si es muy grande o pequeño)
   function num(x, cifras = 4) {
     if (!isFinite(x)) return '—';
     if (x === 0) return '0';
@@ -1204,15 +1179,178 @@ const Formulas = (() => {
   return { leer, separar, masaMolar, ajustar, estequiometria, empirica, num, masaDe, ejemplos, NA, VM, R, vm };
 })();
 
-/* =====================================================================
-   pH y valoraciones (sin DOM): ácidos y bases fuertes y débiles, mezclas
-   de un ácido fuerte con una base fuerte, disoluciones reguladoras
-   (Henderson-Hasselbalch, también al añadirles ácido o base) y curvas de
-   valoración con el punto de equivalencia y el indicador adecuado.
-   Concentraciones en mol/L y volúmenes en mL. A 25 °C, Kw = 10^-14.
-   El desarrollo usa los métodos de clase; la curva sale del balance de
-   cargas exacto, que coincide con ellos donde son válidos.
-   ===================================================================== */
+const Datos = (() => {
+  const FUENTES = {
+    termo: 'CRC Handbook (Standard Thermodynamic Properties of Chemical Substances) y NBS, Wagman et al. 1982; 298,15 K y 1 bar',
+    kps: 'CRC Handbook (Solubility Product Constants) y Harris, Quantitative Chemical Analysis; 25 °C, sin actividades',
+    potenciales: 'CRC Handbook (Electrochemical Series), Atkins y Chang; 25 °C, 1 M y 1 bar',
+    indicadores: 'Intervalos de viraje de tablas habituales (Harris, Skoog)',
+    complejos: 'CRC Handbook (Stability Constants) y Harris; 25 °C',
+    solubilidadT: 'CRC Handbook (Aqueous Solubility of Inorganic Compounds at Various Temperatures) y Lange; g de soluto anhidro por 100 g de agua cada 20 °C',
+    henry: 'Sander, R. (2015), Compilation of Henry\'s law constants, Atmos. Chem. Phys. 15, 4399; k a 298,15 K y d(ln k)/d(1/T) en K',
+    born: 'CRC Handbook (Atomic, Molecular, and Optical Physics; Heat of Sublimation; Electron Affinities) y Atkins',
+  };
+  const R = 8.314462618, F = 96485.33212, T0 = 298.15, RATM = 0.082057366, RCLASE = 0.082, FCLASE = 96500;
+
+  const TERMO = {
+    'H2(g)': [0, 130.7, 0], 'O2(g)': [0, 205.1, 0], 'N2(g)': [0, 191.6, 0], 'Cl2(g)': [0, 223.1, 0], 'F2(g)': [0, 202.8, 0], 'Br2(l)': [0, 152.2, 0],
+    'I2(s)': [0, 116.1, 0], 'C(s)': [0, 5.7, 0], 'S(s)': [0, 32.1, 0], 'Na(s)': [0, 51.3, 0], 'K(s)': [0, 64.7, 0], 'Ca(s)': [0, 41.6, 0],
+    'Mg(s)': [0, 32.7, 0], 'Al(s)': [0, 28.3, 0], 'Fe(s)': [0, 27.3, 0], 'Cu(s)': [0, 33.2, 0], 'Zn(s)': [0, 41.6, 0], 'Ag(s)': [0, 42.6, 0],
+    'P(s)': [0, 41.1, 0], 'Si(s)': [0, 18.8, 0],
+    'H2O(l)': [-285.8, 69.9, -237.1], 'H2O(g)': [-241.8, 188.8, -228.6], 'H2O2(l)': [-187.8, 109.6, -120.4], 'O3(g)': [142.7, 238.9, 163.2],
+    'CO(g)': [-110.5, 197.7, -137.2], 'CO2(g)': [-393.5, 213.8, -394.4], 'CH4(g)': [-74.8, 186.3, -50.5], 'C2H6(g)': [-84.7, 229.6, -32.0],
+    'C3H8(g)': [-103.8, 270.3, -23.4], 'C4H10(g)': [-125.7, 310.2, -15.7], 'C2H4(g)': [52.3, 219.6, 68.4], 'C2H2(g)': [226.7, 200.9, 209.9],
+    'C6H6(l)': [49.0, 173.4, 124.5], 'CH3OH(l)': [-238.6, 126.8, -166.6], 'C2H5OH(l)': [-277.7, 160.7, -174.8], 'C6H12O6(s)': [-1273.3, 212.1, -910.4],
+    'C8H18(l)': [-250.0, 361.1, 6.4],
+    'NH3(g)': [-46.1, 192.8, -16.4], 'NO(g)': [90.3, 210.8, 86.6], 'NO2(g)': [33.2, 240.1, 51.3], 'N2O(g)': [82.1, 220.0, 104.2], 'N2O4(g)': [9.2, 304.4, 97.9],
+    'HNO3(l)': [-174.1, 155.6, -80.7],
+    'SO2(g)': [-296.8, 248.2, -300.1], 'SO3(g)': [-395.7, 256.8, -371.1], 'H2S(g)': [-20.6, 205.8, -33.4], 'H2SO4(l)': [-814.0, 156.9, -690.0],
+    'HCl(g)': [-92.3, 186.9, -95.3], 'HF(g)': [-273.3, 173.8, -275.4], 'HBr(g)': [-36.3, 198.7, -53.4], 'HI(g)': [26.5, 206.6, 1.7],
+    'NaCl(s)': [-411.2, 72.1, -384.1], 'NaOH(s)': [-425.6, 64.5, -379.5], 'CaO(s)': [-635.1, 38.1, -604.0], 'CaCO3(s)': [-1206.9, 91.7, -1128.8],
+    'Ca(OH)2(s)': [-986.1, 83.4, -898.5], 'MgO(s)': [-601.6, 26.9, -569.3], 'Fe2O3(s)': [-824.2, 87.4, -742.2], 'Fe3O4(s)': [-1118.4, 146.4, -1015.4],
+    'Al2O3(s)': [-1675.7, 50.9, -1582.3], 'CuO(s)': [-157.3, 42.6, -129.7], 'ZnO(s)': [-348.3, 43.6, -318.3], 'SiO2(s)': [-910.7, 41.8, -856.3],
+  };
+  const ELEMENTOS_ESTANDAR = { H: 'H2(g)', O: 'O2(g)', N: 'N2(g)', Cl: 'Cl2(g)', F: 'F2(g)', Br: 'Br2(l)', I: 'I2(s)', C: 'C(s)', S: 'S(s)', Na: 'Na(s)', K: 'K(s)', Ca: 'Ca(s)', Mg: 'Mg(s)', Al: 'Al(s)', Fe: 'Fe(s)', Cu: 'Cu(s)', Zn: 'Zn(s)', Ag: 'Ag(s)', P: 'P(s)', Si: 'Si(s)' };
+  const ATOMOS_POR_MOLECULA = { 'H2(g)': 2, 'O2(g)': 2, 'N2(g)': 2, 'Cl2(g)': 2, 'F2(g)': 2, 'Br2(l)': 2, 'I2(s)': 2 };
+
+  const KPS = [
+    ['AgCl', 'Ag+', 'Cl-', 1, 1, 1.8e-10, ''], ['AgBr', 'Ag+', 'Br-', 1, 1, 5.0e-13, ''], ['AgI', 'Ag+', 'I-', 1, 1, 8.5e-17, ''], ['AgSCN', 'Ag+', 'SCN-', 1, 1, 1.0e-12, ''],
+    ['CuCl', 'Cu+', 'Cl-', 1, 1, 1.7e-7, ''], ['CuI', 'Cu+', 'I-', 1, 1, 1.3e-12, ''], ['Hg2Cl2', 'Hg2^2+', 'Cl-', 1, 2, 1.4e-18, ''],
+    ['PbCl2', 'Pb2+', 'Cl-', 1, 2, 1.7e-5, ''], ['PbBr2', 'Pb2+', 'Br-', 1, 2, 6.6e-6, ''], ['PbI2', 'Pb2+', 'I-', 1, 2, 9.8e-9, ''],
+    ['CaF2', 'Ca2+', 'F-', 1, 2, 3.9e-11, 'F'], ['MgF2', 'Mg2+', 'F-', 1, 2, 5.2e-11, 'F'], ['BaF2', 'Ba2+', 'F-', 1, 2, 1.8e-7, 'F'], ['PbF2', 'Pb2+', 'F-', 1, 2, 3.3e-8, 'F'],
+    ['BaSO4', 'Ba2+', 'SO4^2-', 1, 1, 1.1e-10, 'SO4'], ['SrSO4', 'Sr2+', 'SO4^2-', 1, 1, 3.4e-7, 'SO4'], ['CaSO4', 'Ca2+', 'SO4^2-', 1, 1, 4.9e-5, 'SO4'],
+    ['PbSO4', 'Pb2+', 'SO4^2-', 1, 1, 1.6e-8, 'SO4'], ['Ag2SO4', 'Ag+', 'SO4^2-', 2, 1, 1.2e-5, 'SO4'],
+    ['CaCO3', 'Ca2+', 'CO3^2-', 1, 1, 3.4e-9, 'CO3'], ['MgCO3', 'Mg2+', 'CO3^2-', 1, 1, 6.8e-6, 'CO3'], ['BaCO3', 'Ba2+', 'CO3^2-', 1, 1, 2.6e-9, 'CO3'],
+    ['SrCO3', 'Sr2+', 'CO3^2-', 1, 1, 5.6e-10, 'CO3'], ['ZnCO3', 'Zn2+', 'CO3^2-', 1, 1, 1.5e-10, 'CO3'], ['PbCO3', 'Pb2+', 'CO3^2-', 1, 1, 7.4e-14, 'CO3'],
+    ['FeCO3', 'Fe2+', 'CO3^2-', 1, 1, 3.1e-11, 'CO3'], ['Ag2CO3', 'Ag+', 'CO3^2-', 2, 1, 8.5e-12, 'CO3'],
+    ['Ag2CrO4', 'Ag+', 'CrO4^2-', 2, 1, 1.1e-12, 'CrO4'], ['BaCrO4', 'Ba2+', 'CrO4^2-', 1, 1, 1.2e-10, 'CrO4'], ['PbCrO4', 'Pb2+', 'CrO4^2-', 1, 1, 2.8e-13, 'CrO4'],
+    ['CaC2O4', 'Ca2+', 'C2O4^2-', 1, 1, 2.3e-9, 'C2O4'],
+    ['Ca3(PO4)2', 'Ca2+', 'PO4^3-', 3, 2, 2.1e-33, 'PO4'], ['Ag3PO4', 'Ag+', 'PO4^3-', 3, 1, 8.9e-17, 'PO4'],
+    ['Mg(OH)2', 'Mg2+', 'OH-', 1, 2, 1.8e-11, 'OH'], ['Ca(OH)2', 'Ca2+', 'OH-', 1, 2, 5.5e-6, 'OH'], ['Al(OH)3', 'Al3+', 'OH-', 1, 3, 3e-34, 'OH'],
+    ['Fe(OH)3', 'Fe3+', 'OH-', 1, 3, 4e-38, 'OH'], ['Fe(OH)2', 'Fe2+', 'OH-', 1, 2, 4.9e-17, 'OH'], ['Zn(OH)2', 'Zn2+', 'OH-', 1, 2, 3e-17, 'OH'],
+    ['Cu(OH)2', 'Cu2+', 'OH-', 1, 2, 2.2e-20, 'OH'], ['Ni(OH)2', 'Ni2+', 'OH-', 1, 2, 5.5e-16, 'OH'], ['Mn(OH)2', 'Mn2+', 'OH-', 1, 2, 1.9e-13, 'OH'],
+    ['Pb(OH)2', 'Pb2+', 'OH-', 1, 2, 1.4e-20, 'OH'], ['Cr(OH)3', 'Cr3+', 'OH-', 1, 3, 6.3e-31, 'OH'], ['Co(OH)2', 'Co2+', 'OH-', 1, 2, 5.9e-15, 'OH'],
+    ['Cd(OH)2', 'Cd2+', 'OH-', 1, 2, 7.2e-15, 'OH'],
+    ['ZnS', 'Zn2+', 'S^2-', 1, 1, 1.6e-24, 'S'], ['CuS', 'Cu2+', 'S^2-', 1, 1, 6.3e-36, 'S'], ['PbS', 'Pb2+', 'S^2-', 1, 1, 8e-28, 'S'],
+    ['CdS', 'Cd2+', 'S^2-', 1, 1, 8e-27, 'S'], ['FeS', 'Fe2+', 'S^2-', 1, 1, 6.3e-18, 'S'], ['Ag2S', 'Ag+', 'S^2-', 2, 1, 6.3e-50, 'S'],
+  ];
+  const ACIDOS_ANION = { F: [3.17], SO4: [1.99], CO3: [6.35, 10.33], CrO4: [6.49], C2O4: [1.25, 4.27], PO4: [2.15, 7.20, 12.35], S: [7.0, 13.0], OH: [] };
+  const COMPLEJOS = {
+    'Ag+': { NH3: [3.32, 7.23], S2O3: [8.82, 13.46] },
+    'Cu2+': { NH3: [4.04, 7.47, 10.27, 11.75], OH: [6.3, 12.8] },
+    'Zn2+': { NH3: [2.37, 4.81, 7.31, 9.46], OH: [5.0, 11.1, 13.6, 14.8] },
+    'Pb2+': { OH: [6.3, 10.9, 13.9] },
+    'Al3+': { OH: [9.0, 17.9, 26.0, 33.0] },
+    'Ni2+': { NH3: [2.75, 4.95, 6.64, 7.79, 8.50, 8.49] },
+  };
+
+  const INDICADORES = [
+    ['azul de timol (ácido)', 1.2, 2.8, 'rojo', 'amarillo'], ['naranja de metilo', 3.1, 4.4, 'rojo', 'amarillo'], ['verde de bromocresol', 3.8, 5.4, 'amarillo', 'azul'],
+    ['rojo de metilo', 4.2, 6.3, 'rojo', 'amarillo'], ['púrpura de bromocresol', 5.2, 6.8, 'amarillo', 'púrpura'], ['azul de bromotimol', 6.0, 7.6, 'amarillo', 'azul'],
+    ['rojo de fenol', 6.8, 8.4, 'amarillo', 'rojo'], ['rojo de cresol', 7.2, 8.8, 'amarillo', 'rojo-púrpura'], ['azul de timol (básico)', 8.0, 9.6, 'amarillo', 'azul'],
+    ['fenolftaleína', 8.2, 10.0, 'incoloro', 'rosa'], ['timolftaleína', 9.3, 10.5, 'incoloro', 'azul'], ['amarillo de alizarina R', 10.1, 12.0, 'amarillo', 'rojo'],
+  ];
+
+  const S = (coef, esp, fase = 'aq') => [coef, esp, fase];
+  const POTENCIALES = [
+    { id: 'F2', ox: [S(1, 'F2', 'g')], red: [S(2, 'F-')], n: 2, E: 2.87, medio: 'neutro' },
+    { id: 'Co3+', ox: [S(1, 'Co^3+')], red: [S(1, 'Co^2+')], n: 1, E: 1.92, medio: 'neutro' },
+    { id: 'H2O2-ac', ox: [S(1, 'H2O2'), S(2, 'H+')], red: [S(2, 'H2O', 'l')], n: 2, E: 1.78, medio: 'ácido' },
+    { id: 'MnO4-ac', ox: [S(1, 'MnO4-'), S(8, 'H+')], red: [S(1, 'Mn^2+'), S(4, 'H2O', 'l')], n: 5, E: 1.51, medio: 'ácido' },
+    { id: 'Au3+', ox: [S(1, 'Au^3+')], red: [S(1, 'Au', 's')], n: 3, E: 1.50, medio: 'neutro' },
+    { id: 'PbO2', ox: [S(1, 'PbO2', 's'), S(4, 'H+')], red: [S(1, 'Pb^2+'), S(2, 'H2O', 'l')], n: 2, E: 1.46, medio: 'ácido' },
+    { id: 'Cl2', ox: [S(1, 'Cl2', 'g')], red: [S(2, 'Cl-')], n: 2, E: 1.36, medio: 'neutro' },
+    { id: 'Cr2O7', ox: [S(1, 'Cr2O7^2-'), S(14, 'H+')], red: [S(2, 'Cr^3+'), S(7, 'H2O', 'l')], n: 6, E: 1.33, medio: 'ácido' },
+    { id: 'O2-ac', ox: [S(1, 'O2', 'g'), S(4, 'H+')], red: [S(2, 'H2O', 'l')], n: 4, E: 1.23, medio: 'ácido' },
+    { id: 'MnO2', ox: [S(1, 'MnO2', 's'), S(4, 'H+')], red: [S(1, 'Mn^2+'), S(2, 'H2O', 'l')], n: 2, E: 1.22, medio: 'ácido' },
+    { id: 'Br2', ox: [S(1, 'Br2', 'l')], red: [S(2, 'Br-')], n: 2, E: 1.07, medio: 'neutro' },
+    { id: 'NO3-NO', ox: [S(1, 'NO3-'), S(4, 'H+')], red: [S(1, 'NO', 'g'), S(2, 'H2O', 'l')], n: 3, E: 0.96, medio: 'ácido' },
+    { id: 'Hg2+', ox: [S(1, 'Hg^2+')], red: [S(1, 'Hg', 'l')], n: 2, E: 0.85, medio: 'neutro' },
+    { id: 'Ag+', ox: [S(1, 'Ag+')], red: [S(1, 'Ag', 's')], n: 1, E: 0.80, medio: 'neutro' },
+    { id: 'NO3-NO2', ox: [S(1, 'NO3-'), S(2, 'H+')], red: [S(1, 'NO2', 'g'), S(1, 'H2O', 'l')], n: 1, E: 0.80, medio: 'ácido' },
+    { id: 'Fe3+', ox: [S(1, 'Fe^3+')], red: [S(1, 'Fe^2+')], n: 1, E: 0.77, medio: 'neutro' },
+    { id: 'O2-H2O2', ox: [S(1, 'O2', 'g'), S(2, 'H+')], red: [S(1, 'H2O2')], n: 2, E: 0.70, medio: 'ácido' },
+    { id: 'MnO4-neutro', ox: [S(1, 'MnO4-'), S(2, 'H2O', 'l')], red: [S(1, 'MnO2', 's'), S(4, 'OH-')], n: 3, E: 0.59, medio: 'básico' },
+    { id: 'I2', ox: [S(1, 'I2', 's')], red: [S(2, 'I-')], n: 2, E: 0.54, medio: 'neutro' },
+    { id: 'Cu+', ox: [S(1, 'Cu+')], red: [S(1, 'Cu', 's')], n: 1, E: 0.52, medio: 'neutro' },
+    { id: 'O2-bas', ox: [S(1, 'O2', 'g'), S(2, 'H2O', 'l')], red: [S(4, 'OH-')], n: 4, E: 0.40, medio: 'básico' },
+    { id: 'Cu2+', ox: [S(1, 'Cu^2+')], red: [S(1, 'Cu', 's')], n: 2, E: 0.34, medio: 'neutro' },
+    { id: 'AgCl', ox: [S(1, 'AgCl', 's')], red: [S(1, 'Ag', 's'), S(1, 'Cl-')], n: 1, E: 0.22, medio: 'neutro' },
+    { id: 'Cu2+/Cu+', ox: [S(1, 'Cu^2+')], red: [S(1, 'Cu+')], n: 1, E: 0.16, medio: 'neutro' },
+    { id: 'Sn4+', ox: [S(1, 'Sn^4+')], red: [S(1, 'Sn^2+')], n: 2, E: 0.15, medio: 'neutro' },
+    { id: 'H+', ox: [S(2, 'H+')], red: [S(1, 'H2', 'g')], n: 2, E: 0.00, medio: 'ácido' },
+    { id: 'Pb2+', ox: [S(1, 'Pb^2+')], red: [S(1, 'Pb', 's')], n: 2, E: -0.13, medio: 'neutro' },
+    { id: 'Sn2+', ox: [S(1, 'Sn^2+')], red: [S(1, 'Sn', 's')], n: 2, E: -0.14, medio: 'neutro' },
+    { id: 'Ni2+', ox: [S(1, 'Ni^2+')], red: [S(1, 'Ni', 's')], n: 2, E: -0.26, medio: 'neutro' },
+    { id: 'Co2+', ox: [S(1, 'Co^2+')], red: [S(1, 'Co', 's')], n: 2, E: -0.28, medio: 'neutro' },
+    { id: 'Cd2+', ox: [S(1, 'Cd^2+')], red: [S(1, 'Cd', 's')], n: 2, E: -0.40, medio: 'neutro' },
+    { id: 'Fe2+', ox: [S(1, 'Fe^2+')], red: [S(1, 'Fe', 's')], n: 2, E: -0.44, medio: 'neutro' },
+    { id: 'Cr3+', ox: [S(1, 'Cr^3+')], red: [S(1, 'Cr', 's')], n: 3, E: -0.74, medio: 'neutro' },
+    { id: 'Zn2+', ox: [S(1, 'Zn^2+')], red: [S(1, 'Zn', 's')], n: 2, E: -0.76, medio: 'neutro' },
+    { id: 'H2O', ox: [S(2, 'H2O', 'l')], red: [S(1, 'H2', 'g'), S(2, 'OH-')], n: 2, E: -0.83, medio: 'básico' },
+    { id: 'H2O-pH7', ox: [S(2, 'H2O', 'l')], red: [S(1, 'H2', 'g'), S(2, 'OH-')], n: 2, E: -0.41, medio: 'pH 7' },
+    { id: 'O2-pH7', ox: [S(1, 'O2', 'g'), S(4, 'H+')], red: [S(2, 'H2O', 'l')], n: 4, E: 0.82, medio: 'pH 7' },
+    { id: 'Mn2+', ox: [S(1, 'Mn^2+')], red: [S(1, 'Mn', 's')], n: 2, E: -1.18, medio: 'neutro' },
+    { id: 'Al3+', ox: [S(1, 'Al^3+')], red: [S(1, 'Al', 's')], n: 3, E: -1.66, medio: 'neutro' },
+    { id: 'Mg2+', ox: [S(1, 'Mg^2+')], red: [S(1, 'Mg', 's')], n: 2, E: -2.37, medio: 'neutro' },
+    { id: 'Na+', ox: [S(1, 'Na+')], red: [S(1, 'Na', 's')], n: 1, E: -2.71, medio: 'neutro' },
+    { id: 'Ca2+', ox: [S(1, 'Ca^2+')], red: [S(1, 'Ca', 's')], n: 2, E: -2.87, medio: 'neutro' },
+    { id: 'Ba2+', ox: [S(1, 'Ba^2+')], red: [S(1, 'Ba', 's')], n: 2, E: -2.91, medio: 'neutro' },
+    { id: 'K+', ox: [S(1, 'K+')], red: [S(1, 'K', 's')], n: 1, E: -2.93, medio: 'neutro' },
+    { id: 'Li+', ox: [S(1, 'Li+')], red: [S(1, 'Li', 's')], n: 1, E: -3.04, medio: 'neutro' },
+  ];
+
+  const METALES = {
+    Li: { sub: 159.4, ei: [520.2] }, Na: { sub: 107.5, ei: [495.8] }, K: { sub: 89.0, ei: [418.8] }, Rb: { sub: 80.9, ei: [403.0] }, Cs: { sub: 76.5, ei: [375.7] },
+    Mg: { sub: 147.1, ei: [737.7, 1450.7] }, Ca: { sub: 177.8, ei: [589.8, 1145.4] }, Sr: { sub: 164.4, ei: [549.5, 1064.2] }, Ba: { sub: 180.0, ei: [502.9, 965.2] },
+    Al: { sub: 330.0, ei: [577.5, 1816.7, 2744.8] },
+  };
+  const NOMETALES = {
+    F: { atom: 79.4, ae: [328.0] }, Cl: { atom: 121.3, ae: [349.0] }, Br: { atom: 111.9, ae: [324.6] }, I: { atom: 106.8, ae: [295.2] },
+    O: { atom: 249.2, ae: [141.0, -744.0] }, S: { atom: 277.2, ae: [200.4, -532.0] },
+  };
+  const SALES_BORN = {
+    LiF: { hf: -616.0, ref: 1037 }, LiCl: { hf: -408.6, ref: 853 }, NaF: { hf: -573.6, ref: 923 }, NaCl: { hf: -411.2, ref: 787 }, NaBr: { hf: -361.1, ref: 747 },
+    NaI: { hf: -287.8, ref: 704 }, KF: { hf: -567.3, ref: 821 }, KCl: { hf: -436.5, ref: 715 }, KBr: { hf: -393.8, ref: 682 }, KI: { hf: -327.9, ref: 649 },
+    RbCl: { hf: -435.4, ref: 689 }, CsCl: { hf: -443.0, ref: 659 }, MgO: { hf: -601.6, ref: 3791 }, CaO: { hf: -635.1, ref: 3401 }, SrO: { hf: -592.0, ref: 3223 },
+    BaO: { hf: -548.0, ref: 3054 }, MgCl2: { hf: -641.3, ref: 2526 }, CaF2: { hf: -1219.6, ref: 2630 }, CaCl2: { hf: -795.4, ref: 2258 }, MgF2: { hf: -1124.2, ref: 2957 },
+    Na2O: { hf: -414.2, ref: 2481 }, K2O: { hf: -361.5, ref: 2238 }, Li2O: { hf: -597.9, ref: 2799 }, Na2S: { hf: -364.8, ref: 2203 },
+  };
+
+
+  const SOLUBILIDAD_T = {
+    NaCl: { nombre: 'Cloruro de sodio', f: 'NaCl', v: [35.7, 35.9, 36.4, 37.1, 38.0, 39.2] },
+    KCl: { nombre: 'Cloruro de potasio', f: 'KCl', v: [28.0, 34.2, 40.1, 45.8, 51.3, 56.3] },
+    KNO3: { nombre: 'Nitrato de potasio', f: 'KNO3', v: [13.3, 31.6, 63.9, 110, 169, 246] },
+    NaNO3: { nombre: 'Nitrato de sodio', f: 'NaNO3', v: [73, 88, 105, 124, 148, 180] },
+    NH4Cl: { nombre: 'Cloruro de amonio', f: 'NH4Cl', v: [29.4, 37.2, 45.8, 55.3, 65.6, 77.3] },
+    CuSO4: { nombre: 'Sulfato de cobre(II)', f: 'CuSO4', v: [14.3, 20.7, 28.5, 40.0, 55.0, 75.4] },
+    K2Cr2O7: { nombre: 'Dicromato de potasio', f: 'K2Cr2O7', v: [4.7, 12.3, 26.3, 45.6, 73.0, 102] },
+    KClO3: { nombre: 'Clorato de potasio', f: 'KClO3', v: [3.3, 7.3, 13.9, 23.8, 37.5, 56.3] },
+    PbNO32: { nombre: 'Nitrato de plomo(II)', f: 'Pb(NO3)2', v: [37.5, 54.3, 72.1, 91.6, 111, 133] },
+    Na2SO4: { nombre: 'Sulfato de sodio (anhidro)', f: 'Na2SO4', v: [4.9, 19.5, 48.8, 45.3, 43.7, 42.5] },
+    Li2SO4: { nombre: 'Sulfato de litio', f: 'Li2SO4', v: [36.1, 35.1, 33.7, 32.6, 31.4, 30.5] },
+    CaOH2: { nombre: 'Hidróxido de calcio', f: 'Ca(OH)2', v: [0.189, 0.173, 0.141, 0.121, 0.094, 0.076] },
+    sacarosa: { nombre: 'Sacarosa', f: 'C12H22O11', v: [179, 204, 238, 287, 362, 487] },
+  };
+  const T_SOL = [0, 20, 40, 60, 80, 100];
+  const HENRY = {
+    O2: { nombre: 'Oxígeno', f: 'O2', k: 1.3e-3, C: 1700, M: 31.998 }, N2: { nombre: 'Nitrógeno', f: 'N2', k: 6.4e-4, C: 1300, M: 28.014 },
+    CO2: { nombre: 'Dióxido de carbono', f: 'CO2', k: 3.3e-2, C: 2400, M: 44.009 }, H2: { nombre: 'Hidrógeno', f: 'H2', k: 7.8e-4, C: 500, M: 2.016 },
+    He: { nombre: 'Helio', f: 'He', k: 3.8e-4, C: 230, M: 4.003 }, Ar: { nombre: 'Argón', f: 'Ar', k: 1.4e-3, C: 1300, M: 39.948 },
+    CH4: { nombre: 'Metano', f: 'CH4', k: 1.4e-3, C: 1600, M: 16.043 }, CO: { nombre: 'Monóxido de carbono', f: 'CO', k: 9.5e-4, C: 1300, M: 28.010 },
+    N2O: { nombre: 'Óxido nitroso', f: 'N2O', k: 2.4e-2, C: 2700, M: 44.013 }, H2S: { nombre: 'Sulfuro de hidrógeno', f: 'H2S', k: 1.0e-1, C: 2100, M: 34.08 },
+    NH3: { nombre: 'Amoníaco', f: 'NH3', k: 59, C: 4200, M: 17.031 }, SO2: { nombre: 'Dióxido de azufre', f: 'SO2', k: 1.2, C: 3100, M: 64.066 },
+  };
+
+  const MASAS_CLASE = { H: 1, He: 4, Li: 7, C: 12, N: 14, O: 16, F: 19, Na: 23, Mg: 24, Al: 27, Si: 28, P: 31, S: 32, Cl: 35.5, K: 39, Ca: 40, Mn: 55, Fe: 56, Cu: 63.5, Zn: 65.4, Br: 80, Ag: 108, I: 127, Ba: 137, Pb: 207 };
+
+  const lee = (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+  const ajuste = () => ({ clase: lee('quimica-clase') === '1' });
+
+  return { FUENTES, R, F, T0, RATM, RCLASE, FCLASE, SOLUBILIDAD_T, T_SOL, HENRY, TERMO, ELEMENTOS_ESTANDAR, ATOMOS_POR_MOLECULA, KPS, ACIDOS_ANION, COMPLEJOS, INDICADORES, POTENCIALES, METALES, NOMETALES, SALES_BORN, MASAS_CLASE, ajuste };
+})();
+
 const PH = (() => {
   const f = (x, d = 3) => {
     if (!isFinite(x)) return '—';
@@ -1232,7 +1370,6 @@ const PH = (() => {
     if (cero ? v < 0 : v <= 0) throw new Error(`${Mayus(nom)} debe ser ${cero ? 'positivo o cero' : 'mayor que 0'}`);
     return v;
   }
-  // K_w y pK_w: 10⁻¹⁴ y 14 a 25 °C; a otra temperatura, de la tabla (resolver() los fija para cada cálculo)
   let KW = 1e-14, PKW = 14;
   const lg = Math.log10;
   const KW_T = [[0, 0.114], [10, 0.293], [20, 0.681], [25, 1.0], [30, 1.47], [40, 2.92], [50, 5.47], [60, 9.61], [70, 15.8], [80, 25.1], [90, 38.0], [100, 56.0]];
@@ -1242,17 +1379,12 @@ const PH = (() => {
     return 1e-14 * 10 ** (lg(y0) + ((lg(y1) - lg(y0)) * (t - x0)) / (x1 - x0));
   };
   const p14 = () => (PKW === 14 ? '14' : f2(PKW));
-  // la constante: K o pK, la que se haya escrito
   function leeK(sc, nom) {
     if (!vacio(sc.K)) return lee(sc, 'K', nom);
     if (!vacio(sc.pK)) { const p = leeNum(sc.pK); if (!isFinite(p)) throw new Error(`El p${nom} debe ser un número`); return 10 ** -p; }
     throw new Error(`Falta ${nom} (o p${nom})`);
   }
 
-  /* ---------- pH exacto por el balance de cargas ---------- */
-  // c: { na (catión de base fuerte), cl (anión de ácido fuerte), ca + Ka (ácido débil), cb + Kb (base débil) }
-  //    y cp + Kas = [Ka1, Ka2, …] (ácido poliprótico)
-  // carga media de las especies de un poliprótico H_nA: Σ i·[H_(n−i)A^(i−)] / C
   const cargaMedia = (h, Kas) => { let t = 1, num = 0, den = 1; Kas.forEach((K, i) => { t *= K / h; den += t; num += (i + 1) * t; }); return num / den; };
   function exacto(c) {
     const Ka = c.Ka || 1, Kbh = c.Kb ? KW / c.Kb : 1;
@@ -1262,25 +1394,22 @@ const PH = (() => {
     return -(lo + hi) / 2;
   }
 
-  const INDICADORES = [['naranja de metilo', 3.1, 4.4, 'rojo', 'amarillo'], ['rojo de metilo', 4.2, 6.3, 'rojo', 'amarillo'], ['azul de bromotimol', 6.0, 7.6, 'amarillo', 'azul'], ['fenolftaleína', 8.2, 10.0, 'incoloro', 'rosa'], ['timolftaleína', 9.3, 10.5, 'incoloro', 'azul']];
-  const indicador = (pH) => INDICADORES.reduce((a, b) => (Math.abs((b[1] + b[2]) / 2 - pH) < Math.abs((a[1] + a[2]) / 2 - pH) ? b : a));
+  const D = typeof Datos !== 'undefined' ? Datos : require('../quimica/datos.js');
+  const INDICADORES = D.INDICADORES; // 12 indicadores con su intervalo de viraje (quimica/datos.js)
+  const CLASICOS = ['naranja de metilo', 'rojo de metilo', 'azul de bromotimol', 'fenolftaleína', 'timolftaleína']; // los de clase; el resto se muestra entre los que sirven
+  const indicador = (pH) => INDICADORES.filter((q) => CLASICOS.includes(q[0])).reduce((a, b) => (Math.abs((b[1] + b[2]) / 2 - pH) < Math.abs((a[1] + a[2]) / 2 - pH) ? b : a));
   const caracter = (pH) => (pH < PKW / 2 - 0.005 ? 'ácida' : pH > PKW / 2 + 0.005 ? 'básica' : 'neutra');
   const finPH = (pH) => `$pH = ${f2(pH)}$: disolución ${caracter(pH)}.`;
-  // pH a partir de [H3O+] o de [OH−], escrito como en clase
   const desdeH = (h) => `$pH = −log [H_{3}O^{+}] = −log ${f(h)}$ = <b>${f2(-lg(h))}</b>`;
   const desdeOH = (oh) => `$pOH = −log [OH^{−}] = −log ${f(oh)} = ${f2(-lg(oh))}$, &ensp; $pH = ${p14()} − pOH$ = <b>${f2(PKW + lg(oh))}</b>`;
-  // x de x²/(C − x) = K
   const raiz = (K, C) => (-K + Math.sqrt(K * K + 4 * K * C)) / 2;
 
-  /* ---------- Ácido o base fuerte ---------- */
-  // sc: { especie: 'acido' | 'base', C, n (H+ u OH− por fórmula) }
   function fuerte(sc) {
     const base = sc.especie === 'base', C = lee(sc, 'C', 'la concentración'), n = lee(sc, 'n', base ? 'el número de OH⁻' : 'el número de H⁺', { opcional: true }) ?? 1;
     const c = n * C, ion = base ? 'OH^{−}' : 'H_{3}O^{+}';
     const pasos = [{ t: 'Disociación completa', html: `Al ser ${base ? 'una base fuerte' : 'un ácido fuerte'} se disocia del todo${n > 1 ? ` y cada fórmula da ${f(n)} ${base ? 'OH⁻' : 'H⁺'}` : ''}: $[${ion}] = ${n > 1 ? `${f(n)} · ${f(C)}` : f(C)}$ = ${f(c)} M` }];
     let pH;
     if (c < 1e-6) {
-      // muy diluido: cuenta también el agua
       const x = (c + Math.sqrt(c * c + 4 * KW)) / 2;
       pH = base ? PKW + lg(x) : -lg(x);
       pasos.push({ t: 'Muy diluido: cuenta el agua', html: `Con tan poca concentración los iones del agua no son despreciables. Con $[${ion}] = c + [${base ? 'H_{3}O^{+}' : 'OH^{−}'}]$ y $K_w = [H_{3}O^{+}][OH^{−}] = ${PKW === 14 ? '10^{−14}' : f(KW)}$ queda $x^2 − c x − K_w = 0$, $x = ${f(x)}$ M` });
@@ -1293,8 +1422,6 @@ const PH = (() => {
     return { modo: 'fuerte', base, C, n, pH, h: 10 ** -pH, pasos };
   }
 
-  /* ---------- Ácido o base débil ---------- */
-  // sc: { especie, C, K o pK }
   function debil(sc) {
     const base = sc.especie === 'base', C = lee(sc, 'C', 'la concentración'), K = leeK(sc, base ? 'Kb' : 'Ka');
     const x = raiz(K, C), aprox = Math.sqrt(K * C), alfa = x / C;
@@ -1311,14 +1438,10 @@ const PH = (() => {
     return { modo: 'debil', base, C, K, pK: -lg(K), x, alfa, pH, h: 10 ** -pH, pasos };
   }
 
-  /* ---------- Disolución reguladora ---------- */
-  // sc: { especie: 'acido' (HA/A−) | 'base' (B/BH+), K o pK (del ácido débil o de la base débil), Cd (forma débil), Cs (sal), V (mL),
-  //       anade: 'nada' | 'acido' | 'base', Cad, Vad (mL) }
   function tampon(sc) {
     const base = sc.especie === 'base', K = leeK(sc, base ? 'Kb' : 'Ka');
     const Cd = lee(sc, 'Cd', base ? 'la concentración de la base' : 'la concentración del ácido'), Cs = lee(sc, 'Cs', 'la concentración de la sal');
     const pKa = base ? PKW + lg(K) : -lg(K); // del ácido del par
-    // forma ácida y forma básica del par
     const cAc = base ? Cs : Cd, cBa = base ? Cd : Cs, Ac = base ? 'BH^{+}' : 'HA', Ba = base ? 'B' : 'A^{−}';
     const pH0 = pKa + lg(cBa / cAc);
     const pasos = [{ t: 'Ecuación de Henderson-Hasselbalch', html: `${base ? `El par es $B/BH^{+}$: $pK_a = ${p14()} − pK_b = ${p14()} − ${f2(-lg(K))} = ${f2(pKa)}$.` : `$pK_a = −log ${f(K)} = ${f2(pKa)}$.`}<br>$pH = pK_a + log {[${Ba}]}/{[${Ac}]} = ${f2(pKa)} + log {${f(cBa)}}/{${f(cAc)}}$ = <b>${f2(pH0)}</b>` }];
@@ -1348,8 +1471,6 @@ const PH = (() => {
     return { modo: 'tampon', base, K, pKa, cAc, cBa, pH0, pH, anade, pHagua, nAc, nBa, h: 10 ** -pH, pasos };
   }
 
-  /* ---------- Mezcla de ácido fuerte y base fuerte ---------- */
-  // sc: { Ca, Va, Cb, Vb } (volúmenes en mL)
   function mezcla(sc) {
     if (sc.tipo === 'df' || sc.tipo === 'fd') return mezclaDebil(sc);
     const Ca = lee(sc, 'Ca', 'la concentración del ácido'), Va = lee(sc, 'Va', 'el volumen del ácido'), Cb = lee(sc, 'Cb', 'la concentración de la base'), Vb = lee(sc, 'Vb', 'el volumen de la base');
@@ -1369,7 +1490,6 @@ const PH = (() => {
     return { modo: 'mezcla', Ca, Va, Cb, Vb, na, nb, pH, h: 10 ** -pH, pasos };
   }
 
-  // el pH de clase si coincide con el exacto; si no, el exacto y por qué
   const contrasta = (pH, sp, pasos, porque) => {
     const ex = exacto(sp);
     if (Math.abs(ex - pH) <= 0.02) return pH;
@@ -1377,8 +1497,6 @@ const PH = (() => {
     return ex;
   };
 
-  /* ---------- Mezcla de un débil con un fuerte ---------- */
-  // sc: { tipo: 'df' (ácido débil HA + base fuerte) | 'fd' (base débil B + ácido fuerte), Ca, Va, Cb, Vb, K o pK del débil }
   function mezclaDebil(sc) {
     const df = sc.tipo === 'df', K = leeK(sc, df ? 'Ka' : 'Kb');
     const Ca = lee(sc, 'Ca', `la concentración del ácido${df ? ' débil' : ''}`), Va = lee(sc, 'Va', 'el volumen del ácido'), Cb = lee(sc, 'Cb', `la concentración de la base${df ? '' : ' débil'}`), Vb = lee(sc, 'Vb', 'el volumen de la base');
@@ -1413,9 +1531,18 @@ const PH = (() => {
     return { modo: 'mezcla', tipo: sc.tipo, caso, K, pKa, Ca, Va, Cb, Vb, na, nb, pH, h: 10 ** -pH, pasos };
   }
 
-  /* ---------- Hidrólisis de una sal ---------- */
-  // sc: { tipo: 'basica' (sal de ácido débil, A⁻: K = Ka del ácido) | 'acida' (sal de base débil, BH⁺: K = Kb de la base) | 'neutra', C, K o pK }
+  function anfotera(sc) {
+    const C = lee(sc, 'C', 'la concentración de la sal'), K1 = lee(sc, 'K1', 'Ka₁ (del ácido H₂A)'), K2 = lee(sc, 'K2', 'Ka₂ (de HA⁻)');
+    if (K2 >= K1) throw new Error('Ka₁ tiene que ser mayor que Ka₂');
+    const pH0 = (-lg(K1) - lg(K2)) / 2, h = Math.sqrt((K1 * (K2 * C + KW)) / (K1 + C)), pH = -lg(h), pasos = [];
+    pasos.push({ t: 'Anión anfótero', html: `El anión $HA^{−}$ se comporta como ácido ($HA^{−} + H_{2}O ⇌ A^{2−} + H_{3}O^{+}$, $K_{a2} = ${f(K2)}$) y como base ($HA^{−} + H_{2}O ⇌ H_{2}A + OH^{−}$, $K_b = K_w/K_{a1} = ${f(KW / K1)}$). El catión (Na⁺) no influye.` });
+    pasos.push({ t: 'Aproximación de clase', html: `Las dos reacciones se compensan y el pH no depende de la concentración: $pH ≈ {pK_{a1} + pK_{a2}}/2 = {${f2(-lg(K1))} + ${f2(-lg(K2))}}/2$ = <b>${f2(pH0)}</b>.` });
+    pasos.push({ t: 'Comprobación con la fórmula completa', html: `Con el balance de cargas sin aproximar, $[H_{3}O^{+}] = \sqrt{K_{a1}(K_{a2}C + K_w)/(K_{a1} + C)} = ${f(h)}$ M ⇒ <b>pH = ${f2(pH)}</b> (la aproximación se aparta ${f2(Math.abs(pH - pH0))} unidades).` });
+    pasos.push({ t: 'Cuándo vale', html: Math.abs(pH - pH0) < 0.05 ? 'La aproximación es buena: $C ≫ K_{a1}$... y $K_{a2}C ≫ K_w$.' : 'Aquí la aproximación empieza a fallar: la concentración es muy baja ($C$ no es mucho mayor que $K_{a1}$) o $K_{a2}C$ no supera a $K_w$. Usa el valor de la fórmula completa.' });
+    return { modo: 'sal', tipo: 'anfotera', C, K1, K2, pH, pH0, h, alfa: null, pasos };
+  }
   function sal(sc) {
+    if (sc.tipo === 'anfotera') return anfotera(sc);
     const tipo = ['basica', 'acida', 'neutra'].includes(sc.tipo) ? sc.tipo : 'basica', C = lee(sc, 'C', 'la concentración de la sal'), pasos = [];
     if (tipo === 'neutra') {
       pasos.push({ t: 'Sal de ácido fuerte y base fuerte', html: `Sus iones (como Na⁺ y Cl⁻) son conjugados de un ácido y una base fuertes: son tan débiles que no reaccionan con el agua. La disolución tiene el pH del agua: <b>pH = ${f2(PKW / 2)}</b>.` });
@@ -1430,8 +1557,6 @@ const PH = (() => {
     return { modo: 'sal', tipo, C, K, Kh, x, alfa: x / C, pH, h: 10 ** -pH, pasos };
   }
 
-  /* ---------- Al revés: la constante o la concentración a partir del pH ---------- */
-  // sc: { especie: 'acido' | 'base', fuerza: 'debil' | 'fuerte', busca: 'K' | 'C', pHm (pH medido), C (si busca K), K o pK (si busca C), n (H⁺ u OH⁻ por fórmula, fuerte) }
   function inverso(sc) {
     const base = sc.especie === 'base', pHm = lee(sc, 'pHm', 'el pH', { cero: true }), ion = base ? 'OH^{−}' : 'H_{3}O^{+}';
     if (pHm > PKW) throw new Error(`El pH tiene que estar entre 0 y ${p14()}`);
@@ -1459,8 +1584,6 @@ const PH = (() => {
     return { modo: 'inverso', base, pH: pHm, x, C, K, pK: -lg(K), alfa: x / C, h: 10 ** -pHm, pasos };
   }
 
-  /* ---------- Preparar un tampón ---------- */
-  // sc: { especie: 'acido' | 'base', K o pK, pHo (pH que se quiere), Cd (concentración de la forma débil), V (mL), sal (fórmula, opcional) }
   function preparar(sc) {
     const base = sc.especie === 'base', K = leeK(sc, base ? 'Kb' : 'Ka'), pHo = lee(sc, 'pHo', 'el pH que se quiere', { cero: true });
     const Cd = lee(sc, 'Cd', base ? 'la concentración de la base' : 'la concentración del ácido'), V = lee(sc, 'V', 'el volumen que se prepara');
@@ -1480,10 +1603,7 @@ const PH = (() => {
     return { modo: 'preparar', base, K, pKa, pH: pHo, cociente: r, Cs, ns, masa, M, h: 10 ** -pHo, pasos };
   }
 
-  /* ---------- Ácido poliprótico ---------- */
-  // fracción de cada especie H_nA, H_(n−1)A⁻, …, A^n− a un pH: α_i = t_i/Σt, con t_0 = 1 y t_i = t_(i−1)·Ka_i/[H₃O⁺]
   const fracciones = (Kas, pH) => { const h = 10 ** -pH, t = [1]; Kas.forEach((K, i) => t.push((t[i] * K) / h)); const den = t.reduce((a, b) => a + b, 0); return t.map((v) => v / den); };
-  // sc: { C, K1, K2, K3 (opcional) } (Ka1 grande, como 1e3, para una primera disociación completa: H₂SO₄)
   const leeKas = (sc) => {
     const Kas = [lee(sc, 'K1', 'Ka₁'), lee(sc, 'K2', 'Ka₂')], K3 = lee(sc, 'K3', 'Ka₃', { opcional: true });
     if (K3 !== null) Kas.push(K3);
@@ -1496,7 +1616,6 @@ const PH = (() => {
     const nom = Kas.length === 2 ? ['H_{2}A', 'HA^{−}', 'A^{2−}'] : ['H_{3}A', 'H_{2}A^{−}', 'HA^{2−}', 'A^{3−}'];
     pasos.push({ t: 'Primera disociación', html: `$${nom[0]} + H_{2}O ⇌ ${nom[1]} + H_{3}O^{+}$, &ensp; $K_{a1} = ${f(Kas[0])}$. Como las demás constantes son mucho menores, casi todo el H₃O⁺ sale de aquí: $x = {−K_{a1} + √(K_{a1}^2 + 4 K_{a1} C)}/{2} = ${f(x1)}$ M, $pH ≈ ${f2(pH1)}$` });
     pasos.push({ t: 'Segunda disociación', html: `$${nom[1]} ⇌ ${nom[2]} + H_{3}O^{+}$. Con $[${nom[1]}] ≈ [H_{3}O^{+}]$, queda $[${nom[2]}] ≈ K_{a2} = ${f(Kas[1])}$ M: aporta muy poco H₃O⁺${Kas[1] / x1 > 0.05 ? ' (aquí no tan poco, porque Ka₂ no es tan pequeña: por eso el pH exacto cambia)' : ''}.` });
-    // concentraciones de cada especie con el pH exacto
     const h = 10 ** -pH, t = [1]; Kas.forEach((K, i) => t.push((t[i] * K) / h)); const den = t.reduce((a, b) => a + b, 0);
     const conc = t.map((v) => (C * v) / den);
     pasos.push({ t: 'Con el balance de cargas completo', html: `<b>pH = ${f2(pH)}</b>. Concentraciones: ${conc.map((c, i) => `$[${nom[i]}] = ${f(c)}$ M`).join(', ')}.` });
@@ -1504,10 +1623,7 @@ const PH = (() => {
     return { modo: 'poliprotico', C, Kas, pH, pH1, conc, h, alfa: fracciones(Kas, pH), pasos };
   }
 
-  /* ---------- Valoración ---------- */
-  // sc: { tipo: 'af-bf' | 'ad-bf' | 'bf-af' | 'bd-af', C (valorado), V (mL), Ct (valorante), K o pK (si es débil), Vt (mL añadidos, opcional) }
   const TIPOS = { 'af-bf': ['ácido fuerte', 'base fuerte', false, false], 'ad-bf': ['ácido débil', 'base fuerte', true, false], 'bf-af': ['base fuerte', 'ácido fuerte', false, true], 'bd-af': ['base débil', 'ácido fuerte', true, true] };
-  // poliprótico con base fuerte: tantas equivalencias como protones
   function valoracionPoli(sc) {
     const C = lee(sc, 'C', 'la concentración del ácido'), V = lee(sc, 'V', 'el volumen valorado'), Ct = lee(sc, 'Ct', 'la concentración del valorante'), Kas = leeKas(sc);
     const np = Kas.length, n0 = (C * V) / 1000, Veq = (C * V) / Ct;
@@ -1531,7 +1647,6 @@ const PH = (() => {
     const C = lee(sc, 'C', `la concentración del ${nomV.split(' ')[0]}`), V = lee(sc, 'V', 'el volumen valorado'), Ct = lee(sc, 'Ct', 'la concentración del valorante');
     const K = debilV ? leeK(sc, esBase ? 'Kb' : 'Ka') : null;
     const n0 = (C * V) / 1000, Veq = (C * V) / Ct;
-    // pH exacto con v mL de valorante
     const ph = (v) => {
       const Vt = (V + v) / 1000, cv = n0 / Vt, ct = (Ct * v) / 1000 / Vt;
       if (tipo === 'af-bf') return exacto({ cl: cv, na: ct });
@@ -1543,7 +1658,6 @@ const PH = (() => {
     for (let i = 0; i <= 240; i++) { const v = (2 * Veq * i) / 240; curva.push([v, ph(v)]); }
     const pasos = [{ t: 'Punto de equivalencia', html: `Cuando los moles de valorante igualan a los del ${nomV}: $C V = C_t V_{eq}$, $V_{eq} = {C V}/{C_t} = {${f(C)} · ${f(V)}}/{${f(Ct)}}$ = <b>${f(Veq)} mL</b>` }];
     const pKa = debilV ? (esBase ? PKW + lg(K) : -lg(K)) : null;
-    // pH en la equivalencia, como en clase
     let pHeq;
     if (!debilV) {
       pHeq = PKW / 2;
@@ -1554,7 +1668,9 @@ const PH = (() => {
       pasos.push({ t: 'pH en la equivalencia', html: `Todo el ${nomV} se ha convertido en su ${esBase ? 'ácido conjugado, $BH^{+}$' : 'base conjugada, $A^{−}$'}, con $c = ${f(n0)}/${f((V + Veq) / 1000)} = ${f(cs)}$ M, que se hidroliza con $${esBase ? 'K_a' : 'K_b'} = K_w/${esBase ? 'K_b' : 'K_a'} = ${f(Kh)}$: $x = ${f(x)}$ M de ${esBase ? 'H₃O⁺' : 'OH⁻'}, y <b>pH = ${f2(pHeq)}</b>, ${esBase ? 'ácido' : 'básico'}.` });
     }
     const ind = indicador(pHeq);
+    const salto = [ph(Veq * 0.999), ph(Veq * 1.001)].sort((x, y) => x - y), adecuados = INDICADORES.filter((q) => Math.min(q[2], salto[1]) - Math.max(q[1], salto[0]) >= 0.5 * (q[2] - q[1]));
     pasos.push({ t: 'Indicador', html: `Hace falta uno que vire cerca de pH ${f2(pHeq)}: ${ind[0]}, que pasa de ${ind[3]} a ${ind[4]} entre ${f(ind[1])} y ${f(ind[2])}.` });
+    pasos.push({ t: '¿Qué indicadores sirven?', html: `El salto de pH al pasar del 99,9 % al 100,1 % del valorante va de ${f2(salto[0])} a ${f2(salto[1])}. Sirven los indicadores que viran dentro de ese salto: ${adecuados.length ? adecuados.map((q) => `${q[0]} (${f(q[1])}–${f(q[2])})`).join(', ') : 'ninguno de la lista (el salto es demasiado estrecho para un indicador visual: conviene un pH-metro)'}.` });
     if (debilV) pasos.push({ t: 'A mitad de la valoración', html: `Con $V = V_{eq}/2 = ${f(Veq / 2)}$ mL hay la misma cantidad de la forma ácida y de la básica: es una disolución reguladora con <b>pH = pK<sub>a</sub> = ${f2(pKa)}</b>${esBase ? ' (del ácido conjugado)' : ''}. Así se mide la constante de un ácido o una base.` });
     const v = lee(sc, 'Vt', 'el volumen añadido', { opcional: true, cero: true });
     let pHv = null;
@@ -1570,7 +1686,6 @@ const PH = (() => {
           pHv = pKa + (esBase ? -1 : 1) * lg(nt / d);
           const hh = pHv, ex = ph(v);
           html = `Ha reaccionado ${f(nt)} mol y quedan ${f(d)} mol de ${nomV}: es una disolución reguladora, $pH = pK_a + log {${esBase ? `n(B)`: `n(A^{−})`}}/{${esBase ? `n(BH^{+})` : `n(HA)`}} = ${f2(pKa)} + log {${f(esBase ? d : nt)}}/{${f(esBase ? nt : d)}}$`;
-          // Henderson-Hasselbalch supone que la disociación del débil no cambia las dos formas: falla al principio y muy cerca de la equivalencia
           if (Math.abs(hh - ex) > 0.02) {
             pHv = ex;
             html += ` = ${f2(hh)}. Pero aquí una de las dos formas es tan escasa que la ${esBase ? 'protonación de la base' : 'disociación del ácido'} (o la hidrólisis de su conjugado) la cambia mucho, y Henderson-Hasselbalch ya no vale. Resolviendo el equilibrio entero con el balance de cargas sale <b>pH = ${f2(pHv)}</b>`;
@@ -1585,11 +1700,10 @@ const PH = (() => {
       }
       pasos.push({ t: `Con ${f(v)} mL añadidos`, html });
     }
-    return { modo: 'valoracion', tipo, nomV, nomT, debilV, esBase, C, V, Ct, K, pKa, Veq, pHeq, ind, v, pHv, curva, pH: pHv ?? curva[0][1], ph, pasos };
+    return { modo: 'valoracion', tipo, nomV, nomT, debilV, esBase, C, V, Ct, K, pKa, Veq, pHeq, ind, adecuados, salto, v, pHv, curva, pH: pHv ?? curva[0][1], ph, pasos };
   }
 
   function resolver(sc) {
-    // K_w de la temperatura (vacía o 25 °C: 10⁻¹⁴)
     const T = vacio(sc.T) ? 25 : leeNum(sc.T);
     if (!isFinite(T) || T < 0 || T > 100) throw new Error('La temperatura tiene que estar entre 0 y 100 °C');
     KW = kwDe(T); PKW = KW === 1e-14 ? 14 : -lg(KW);
@@ -1622,6 +1736,8 @@ const PH = (() => {
     { clave: 'mezcla', nombre: 'Mezcla de HCl y NaOH', sc: { modo: 'mezcla', tipo: 'ff', Ca: '0.1', Va: '50', Cb: '0.2', Vb: '30' } },
     { clave: 'mezcla-debil', nombre: 'Mezcla de ácido acético y NaOH', sc: { modo: 'mezcla', tipo: 'df', Ca: '0.2', Va: '50', Cb: '0.1', Vb: '50', K: '1.8e-5', pK: '' } },
     { clave: 'mezcla-amoniaco', nombre: 'Mezcla de amoniaco y HCl (todo sal)', sc: { modo: 'mezcla', tipo: 'fd', Ca: '0.1', Va: '50', Cb: '0.1', Vb: '50', K: '1.8e-5', pK: '' } },
+    { clave: 'sal-bicarbonato', nombre: 'Sal anfótera: NaHCO₃ 0,1 M', sc: { modo: 'sal', tipo: 'anfotera', C: '0.1', K1: '4.5e-7', K2: '4.7e-11', K: '', pK: '' } },
+    { clave: 'sal-dihidrogenofosfato', nombre: 'Sal anfótera: NaH₂PO₄ 0,05 M', sc: { modo: 'sal', tipo: 'anfotera', C: '0.05', K1: '7.1e-3', K2: '6.3e-8', K: '', pK: '' } },
     { clave: 'sal-acetato', nombre: 'Hidrólisis: acetato de sodio 0,1 M', sc: { modo: 'sal', tipo: 'basica', C: '0.1', K: '1.8e-5', pK: '' } },
     { clave: 'sal-amonio', nombre: 'Hidrólisis: cloruro de amonio 0,1 M', sc: { modo: 'sal', tipo: 'acida', C: '0.1', K: '1.8e-5', pK: '' } },
     { clave: 'ka-ph', nombre: 'Ka a partir del pH (ácido 0,1 M con pH 2,87)', sc: { modo: 'inverso', especie: 'acido', fuerza: 'debil', busca: 'K', pHm: '2.87', C: '0.1' } },
@@ -1639,30 +1755,12 @@ const PH = (() => {
   return { resolver, fuerte, debil, tampon, mezcla, valoracion, sal, inverso, preparar, poliprotico, fracciones, exacto, kwDe, ejemplos, INDICADORES, f, f2 };
 })();
 
-/* =====================================================================
-   Compartir, copiar e imprimir (Matemáticas y Electromagnetismo; se pone
-   con 'compartir.js' en los scripts de la herramienta en catalogo.js):
-   · un enlace con los datos del ejercicio en la dirección (#d=…): al
-     abrirlo, los datos se dejan donde la herramienta guarda los suyos
-     (localStorage, la clave guarda de la página, que herramientas.js deja
-     en Pagina.guarda) antes de que arranque, así que se
-     abre con ellos sin que la herramienta tenga que saber nada;
-   · copiar los resultados y el desarrollo como texto o como LaTeX (las
-     fórmulas salen de su fuente, que Mates deja en data-src);
-   · imprimir (o guardar en PDF) solo el ejercicio, sin menús ni teoría.
-   Lee los resultados de #resumen o #res y el desarrollo de #pasos; en
-   Magnetostática, cada pregunta con su resultado ([data-res]) y su
-   desarrollo ([data-steps]);
-   · un aviso de que log es el logaritmo decimal.
-   Tiene que ir antes que el app.js de la herramienta.
-   ===================================================================== */
 const Compartir = (() => {
   const partes = () => (typeof location === 'undefined' ? '/herramienta/' : location.pathname).split('/').filter((q) => q && !/\.html?$/.test(q));
   const CLAVE = (typeof Pagina !== 'undefined' && Pagina.guarda) || `${partes().pop()}-v1`;
   const b64 = (s) => btoa(unescape(encodeURIComponent(s))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
   const deB64 = (s) => decodeURIComponent(escape(atob(s.replace(/-/g, '+').replace(/_/g, '/'))));
 
-  // los datos de un enlace compartido pasan a donde la herramienta los lee al arrancar
   if (typeof location !== 'undefined') {
     const m = /[#&]d=([A-Za-z0-9_-]+)/.exec(location.hash);
     if (m) {
@@ -1672,7 +1770,6 @@ const Compartir = (() => {
   }
   const enlace = () => { let d = null; try { d = localStorage.getItem(CLAVE); } catch (e) { /* sin almacenamiento */ } return location.href.split('#')[0] + (d ? `#d=${b64(d)}` : ''); };
 
-  /* ---------- De la sintaxis de Mates a LaTeX y a texto ---------- */
   const FUNC = { sen: '\\operatorname{sen}', cos: '\\cos', tg: '\\operatorname{tg}', tan: '\\tan', ln: '\\ln', log: '\\log', exp: '\\exp', arcsen: '\\operatorname{arcsen}', arccos: '\\arccos', arctg: '\\operatorname{arctg}', 'máx': '\\max', 'mín': '\\min', 'lím': '\\lim', senh: '\\operatorname{senh}', cosh: '\\cosh', tgh: '\\operatorname{tgh}', cotg: '\\operatorname{cotg}', sec: '\\sec' };
   const SIM = { '·': '\\cdot', '×': '\\times', '÷': '\\div', '−': '-', '≤': '\\le', '≥': '\\ge', '≠': '\\ne', '≈': '\\approx', '±': '\\pm', '∓': '\\mp', '→': '\\to', '←': '\\leftarrow', '⇒': '\\Rightarrow', '⇔': '\\Leftrightarrow', '↔': '\\leftrightarrow', '∞': '\\infty', '∫': '\\int', '∬': '\\iint', '∭': '\\iiint', '∮': '\\oint', '∯': '\\oiint', '∑': '\\sum', '∏': '\\prod', '∂': '\\partial', '∇': '\\nabla', '∈': '\\in', '∝': '\\propto', '⊥': '\\perp', '∥': '\\parallel', '≡': '\\equiv', '∼': '\\sim', '°': '^{\\circ}', '%': '\\%', '′': "'", '″': "''", '|': '|', '\\{': '\\{', '\\}': '\\}', 'ℒ': '\\mathcal{L}', '∅': '\\emptyset', '∪': '\\cup', '∩': '\\cap' };
   const GRIEGO = { α: 'alpha', β: 'beta', γ: 'gamma', δ: 'delta', ε: 'varepsilon', ζ: 'zeta', η: 'eta', θ: 'theta', ι: 'iota', κ: 'kappa', λ: 'lambda', μ: 'mu', ν: 'nu', ξ: 'xi', π: 'pi', ρ: 'rho', σ: 'sigma', τ: 'tau', υ: 'upsilon', φ: 'varphi', χ: 'chi', ψ: 'psi', ω: 'omega', Γ: 'Gamma', Δ: 'Delta', Θ: 'Theta', Λ: 'Lambda', Ξ: 'Xi', Π: 'Pi', Σ: 'Sigma', Φ: 'Phi', Ψ: 'Psi', Ω: 'Omega' };
@@ -1681,7 +1778,6 @@ const Compartir = (() => {
     const tk = Mates.tokens(src);
     let p = 0;
     const es = (v) => tk[p] && tk[p].t === 's' && tk[p].v === v;
-    // quita los paréntesis o las llaves de fuera si envuelven todo
     const quita = (s) => {
       let m = /^\\left\((.*)\\right\)$/.exec(s);
       if (m) return m[1];
@@ -1740,7 +1836,6 @@ const Compartir = (() => {
     }
     return secuencia(null);
   }
-  // texto plano: la fuente sin las llaves de agrupar
   function texto(src) {
     let s = String(src).replace(/<sup>(.*?)<\/sup>/g, '^($1)').replace(/<sub>(.*?)<\/sub>/g, '_$1').replace(/<[^>]+>/g, '').replace(/"/g, '').replace(/\\\{/g, '\u0001').replace(/\\\}/g, '\u0002');
     const simple = (a) => /^[\w.,′α-ωπ∂^−-]+$/.test(a) || /^\([^()]*\)$/.test(a);
@@ -1752,7 +1847,6 @@ const Compartir = (() => {
     return s.replace(/[{}]/g, '').replace(/\u0001/g, '{').replace(/\u0002/g, '}');
   }
 
-  /* ---------- El ejercicio como texto o como LaTeX ---------- */
   const escTex = (s) => s.replace(/\\/g, '\\textbackslash{}').replace(/([%#&_$])/g, '\\$1').replace(/[{}]/g, (c) => `\\${c}`);
   function lee(nodo, tex) {
     let out = '';
@@ -1781,20 +1875,15 @@ const Compartir = (() => {
     return out;
   }
   const limpia = (s) => s.replace(/[ \t]+/g, ' ').replace(/ *\n */g, '\n').replace(/\n{3,}/g, '\n\n').trim();
-  // cada fila de resultados «<span>nombre</span> valor» sale como «nombre: valor»
   const fila = (d, tex) => { const sp = d.querySelector(':scope > span'); if (!sp) return limpia(lee(d, tex)); const c = d.cloneNode(true); c.querySelector(':scope > span').remove(); return `${limpia(lee(sp, tex))}: ${limpia(lee(c, tex))}`; };
   const filas = (res, tex) => { const ds = [...res.children].filter((d) => !d.hidden && d.tagName === 'DIV' && d.querySelector(':scope > span')); return ds.length ? ds.map((d) => fila(d, tex)) : [limpia(lee(res, tex))].filter(Boolean); };
-  // bloques { titulo, items, pasos }: uno en las herramientas normales y uno por pregunta en Magnetostática
   function bloques(tex) {
     const preguntas = [...document.querySelectorAll('[data-res]')];
     if (preguntas.length) return preguntas.map((r, i) => { const p = r.closest('.pieza'), nom = p && p.querySelector('.badge'), st = document.querySelector(`[data-steps="${r.dataset.res}"] ol`); return { titulo: nom ? nom.textContent : `Pregunta ${i + 1}`, items: [limpia(lee(r, tex))], pasos: st ? [...st.children] : [] }; });
     const res = document.querySelector('#resumen') || document.querySelector('#res');
     const vis = (e) => !e.hidden && e.offsetParent !== null;
-    // herramientas con varias pestañas o resultados repartidos: lo visible de .resumen, .valores y .resultado
     const grupos = res && !res.querySelector(':scope > div > span') ? [...res.querySelectorAll('.resumen')] : res ? [] : [...document.querySelectorAll('.resumen, .valores, .resultado')].filter(vis);
-    // resultados repartidos en varias capas (Configuración electrónica): cada «etiqueta valor» visible de lo más hondo
     const hojas = res && !grupos.length && filas(res, tex).length < 2 ? [...res.querySelectorAll('div')].filter((d) => d.querySelector(':scope > span') && vis(d) && !d.querySelector('div > span')) : [];
-    // listas de definición («dt» etiqueta, «dd» valor): una línea por pareja, con el título de la tarjeta delante
     const dl = res && res.querySelector('dl');
     const parejas = dl ? [...dl.querySelectorAll('dt')].filter((t) => t.nextElementSibling && t.nextElementSibling.tagName === 'DD' && vis(t.nextElementSibling)).map((t) => `${limpia(lee(t, tex))}: ${limpia(lee(t.nextElementSibling, tex))}`) : [];
     const cab = dl && res.querySelector('.cab'), tituloDl = cab ? limpia(lee(cab, tex)).replace(/\n+/g, ' · ') : '';
@@ -1803,7 +1892,6 @@ const Compartir = (() => {
     const tb = document.querySelector('#tabla table');
     return [{ titulo: '', items, pasos, tabla: tb && vis(tb) ? tb : null }];
   }
-  // la tabla para pegar en una hoja de cálculo: columnas con tabulador
   const tablaTSV = () => { const tb = document.querySelector('#tabla table'); return tb ? [...tb.querySelectorAll('tr')].map((tr) => [...tr.children].map((c) => limpia(lee(c, false)).replace(/\s*\n+\s*/g, ' ')).join('\t')).join('\n') : ''; };
   function ejercicio(tex) {
     const tit = (document.querySelector('h1') || {}).textContent || document.title;
@@ -1814,7 +1902,6 @@ const Compartir = (() => {
     return [`% ${tit} · Ciencify`, `% ${enlace()}`, ...bs.flatMap((b) => { const sec = b.titulo ? '\\subsection*' : '\\section*'; return [...(b.titulo ? [`\\section*{${escTex(b.titulo)}}`] : []), ...(b.items.length ? [`${sec}{Resultados}`, '\\begin{itemize}', ...b.items.map((q) => `  \\item ${q.replace(/\n+/g, '; ')}`), '\\end{itemize}'] : []), ...(b.pasos.length ? [`${sec}{Desarrollo}`, '\\begin{enumerate}', ...b.pasos.map((li) => { const q = paso(li); return `  \\item ${q.t ? `\\textbf{${q.t}.} ` : ''}${q.c}`; }), '\\end{enumerate}'] : []), ...(b.tabla ? ((f) => [`${sec}{Tabla}`, `\\begin{tabular}{l${'r'.repeat(Math.max(0, Math.max(...f.map((x) => x.length)) - 1))}}`, '\\hline', ...f.map((x) => `${x.join(' & ')} \\\\`), '\\hline', '\\end{tabular}'])(tabla(b)) : [])]; })].join('\n');
   }
 
-  /* ---------- Botones ---------- */
   async function copia(s) {
     try { await navigator.clipboard.writeText(s); return true; } catch (e) {
       const t = document.createElement('textarea'); t.value = s; t.style.position = 'fixed'; t.style.opacity = '0'; document.body.appendChild(t); t.select();
@@ -1824,9 +1911,7 @@ const Compartir = (() => {
   }
   function botones() {
     if (typeof document === 'undefined') return;
-    // en la tarjeta del desarrollo (en Magnetostática, en la de las preguntas)
     const card = document.querySelector('#pasos') ? document.querySelector('#pasos').closest('.card') : document.querySelector('#preguntas') && document.querySelector('#preguntas').closest('.panel');
-    // sin tarjeta de desarrollo única (varias pestañas o solo resultados): debajo de la frase de presentación
     const lead = !card && document.querySelector('.wrap > .lead');
     if ((!card && !lead) || document.querySelector('.compartir')) return;
     const caja = document.createElement('div');
@@ -1841,15 +1926,12 @@ const Compartir = (() => {
       const ok = await copia(a === 'enlace' ? enlace() : a === 'tabla' ? tablaTSV() : ejercicio(a === 'latex'));
       const antes = b.textContent; b.textContent = ok ? '¡Copiado!' : 'No se ha podido copiar'; setTimeout(() => { b.textContent = antes; }, 1600);
     });
-    // al imprimir: solo el ejercicio, en claro
     const css = document.createElement('style');
     css.textContent = '@media print { .top, .miga, .bib, .bib-scrim, footer, .teoria, .preguntas, .compartir, #ejemplos, .controles, .nota:empty, .error[hidden] { display: none !important } html, body { background: #fff !important } .wrap { max-width: none; padding: 0 } .layout { display: block !important } .card { break-inside: avoid; box-shadow: none !important } .pasos li { break-inside: avoid } canvas { max-height: 9cm; object-fit: contain } .chips, .stage-bar, .x, .tools { display: none !important } .cvwrap { height: 9cm !important; min-height: 0 !important } }';
     document.head.appendChild(css);
-    // en claro y con los desarrollos plegados abiertos
     let tema = null, cerrados = [];
     addEventListener('beforeprint', () => { tema = document.documentElement.getAttribute('data-theme'); document.documentElement.setAttribute('data-theme', 'light'); cerrados = [...document.querySelectorAll('details:not([open])')]; cerrados.forEach((d) => { d.open = true; }); dispatchEvent(new Event('resize')); });
     addEventListener('afterprint', () => { if (tema === null) document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', tema); cerrados.forEach((d) => { d.open = false; }); dispatchEvent(new Event('resize')); });
-    // log es el decimal
     const err = document.querySelector('#error');
     if (err && ['taylor', 'fourier', 'edos', 'laplace', 'derivadas', 'campos'].includes(CLAVE.slice(0, -3))) { const q = document.createElement('p'); q.className = 'nota'; q.id = 'nota-log'; q.textContent = 'ln es el logaritmo neperiano y log, el decimal (log₁₀).'; err.before(q); }
   }
@@ -1857,22 +1939,16 @@ const Compartir = (() => {
   return { enlace, ejercicio, tablaTSV, latex, texto, CLAVE };
 })();
 
-/* =====================================================================
-   pH y valoraciones: interfaz (modo, datos, resultados, vaso con las
-   partículas y el color del indicador universal, la bureta y la curva de
-   valoración, y desarrollo). El cálculo está en ph/calculo.js (PH).
-   ===================================================================== */
 (() => {
   const { $, esc, copia, txt } = Herramienta;
   const P = PH, f = P.f, f2 = P.f2, CLAVE = 'ph-v1';
   const MODOS = [['fuerte', 'Ácido o base fuerte'], ['debil', 'Ácido o base débil'], ['sal', 'Hidrólisis de una sal'], ['inverso', 'Ka, Kb o C a partir del pH'], ['tampon', 'Disolución reguladora (tampón)'], ['preparar', 'Preparar un tampón'], ['mezcla', 'Mezcla de un ácido y una base'], ['poliprotico', 'Ácido poliprótico'], ['valoracion', 'Valoración']];
 
   let sc = copia(P.ejemplos[0].sc);
-  try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && MODOS.some(([k]) => k === g.modo)) sc = g; } catch (e) { /* sin almacenamiento */ }
+  try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && MODOS.some(([k]) => k === g.modo)) sc = { ...sc, ...g }; } catch (e) { /* sin almacenamiento */ }
   const guarda = () => { try { localStorage.setItem(CLAVE, JSON.stringify(sc)); } catch (e) { /* sin almacenamiento */ } };
   let sol = null, col = {}, anda = true;
 
-  /* ---------- Formulario ---------- */
   const fila = (k, nom, un) => `<label for="f-${k}">${nom}${un ? ` <small>${un}</small>` : ''}</label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc[k] ?? '')}" inputmode="decimal" autocomplete="off">`;
   const opciones = (k, lista) => lista.map(([v, t]) => `<option value="${v}"${sc[k] === v ? ' selected' : ''}>${t}</option>`).join('');
   const elige = (k, nom, lista) => `<label for="f-${k}">${nom}</label><select id="f-${k}" class="in" data-k="${k}">${opciones(k, lista)}</select>`;
@@ -1905,7 +1981,7 @@ const Compartir = (() => {
       h += elige('tipo', 'Qué se mezcla', [['ff', 'Ácido fuerte y base fuerte'], ['df', 'Ácido débil y base fuerte'], ['fd', 'Ácido fuerte y base débil']]);
       h += fila('Ca', 'Concentración del ácido', 'mol/L') + fila('Va', 'Volumen del ácido', 'mL') + fila('Cb', 'Concentración de la base', 'mol/L') + fila('Vb', 'Volumen de la base', 'mL') + (sc.tipo === 'df' || sc.tipo === 'fd' ? kk(sc.tipo === 'fd') : '');
     } else if (sc.modo === 'sal') {
-      h += elige('tipo', 'Qué sal', [['basica', 'De ácido débil (acetato de sodio)'], ['acida', 'De base débil (cloruro de amonio)'], ['neutra', 'De ácido y base fuertes (NaCl)']]) + fila('C', 'Concentración de la sal', 'mol/L') + (sc.tipo === 'neutra' ? '' : kk(sc.tipo === 'acida'));
+      h += elige('tipo', 'Qué sal', [['basica', 'De ácido débil (acetato de sodio)'], ['acida', 'De base débil (cloruro de amonio)'], ['neutra', 'De ácido y base fuertes (NaCl)'], ['anfotera', 'Anfótera (NaHCO₃, NaH₂PO₄)']]) + fila('C', 'Concentración de la sal', 'mol/L') + (sc.tipo === 'neutra' ? '' : sc.tipo === 'anfotera' ? fila('K1', 'Ka₁ del ácido H₂A') + fila('K2', 'Ka₂ (de HA⁻)') : kk(sc.tipo === 'acida'));
     } else if (sc.modo === 'inverso') {
       h += elige('fuerza', 'Qué es', [['debil', 'Débil'], ['fuerte', 'Fuerte']]) + especie([['acido', 'Un ácido'], ['base', 'Una base']]) + fila('pHm', 'pH medido');
       if (sc.fuerza === 'fuerte') h += fila('n', sc.especie === 'base' ? 'OH⁻ por fórmula' : 'H⁺ por fórmula');
@@ -1928,7 +2004,6 @@ const Compartir = (() => {
   $('#campos').addEventListener('input', (e) => {
     const t = e.target; if (t.tagName !== 'INPUT') return;
     sc[t.dataset.k] = t.value;
-    // K y pK son la misma información: al escribir una se vacía la otra
     if ((t.dataset.k === 'K' || t.dataset.k === 'pK') && t.value.trim()) { const o = t.dataset.k === 'K' ? 'pK' : 'K'; sc[o] = ''; const el = $(`#f-${o}`); if (el) el.value = ''; }
     $('#ejemplos').value = ''; calcula();
   });
@@ -1942,7 +2017,6 @@ const Compartir = (() => {
     $('#ejemplos').value = ''; formulario(); calcula();
   });
 
-  /* ---------- Ejemplos ---------- */
   const sel = $('#ejemplos');
   sel.innerHTML = '<option value="">Ejemplos…</option>' + P.ejemplos.map((e) => `<option value="${e.clave}">${e.nombre}</option>`).join('');
   sel.addEventListener('change', () => { if (sel.value) abrirEjemplo(sel.value); });
@@ -1953,7 +2027,6 @@ const Compartir = (() => {
     formulario(); calcula(); sel.value = clave;
   }
 
-  /* ---------- Cálculo ---------- */
   const dato = (t, v) => `<div><span>${t}</span><b>${v}</b></div>`;
   function calcula() {
     const err = $('#error');
@@ -1968,7 +2041,7 @@ const Compartir = (() => {
     else if (sol.modo === 'debil') { h = dato('pH', `pH = ${f2(sol.pH)}`) + dato(sol.base ? '[OH⁻]' : '[H₃O⁺]', `${f(sol.x)} M`) + dato('Grado de disociación', `α = ${f(100 * sol.alfa)} %`); ley += sol.base ? ' En gris las moléculas de B sin reaccionar y en verde los BH⁺.' : ' En gris las moléculas de HA sin disociar y en verde los A⁻.'; }
     else if (sol.modo === 'tampon') { h = dato('pH del tampón', `pH = ${f2(sol.pH0)}`) + (sol.anade !== 'nada' ? dato('Tras añadir', `pH = ${f2(sol.pH)}`) + dato('En agua pura sería', `pH = ${f2(sol.pHagua)}`) : '') + dato('pKa del par', `pK<sub>a</sub> = ${f2(sol.pKa)}`); ley += ' En gris la forma ácida del par y en verde la básica.'; }
     else if (sol.modo === 'mezcla') h = dato('pH', `pH = ${f2(sol.pH)}`) + dato('Moles de ácido', `${f(sol.na)} mol`) + dato('Moles de base', `${f(sol.nb)} mol`);
-    else if (sol.modo === 'sal') h = dato('pH', `pH = ${f2(sol.pH)}`) + (sol.Kh ? dato('Constante de hidrólisis', `${f(sol.Kh)}`) + dato('Grado de hidrólisis', `${f(100 * sol.alfa)} %`) : '');
+    else if (sol.modo === 'sal') h = dato('pH', `pH = ${f2(sol.pH)}`) + (sol.pH0 !== undefined ? dato('Aproximación ½(pKa₁ + pKa₂)', `pH ≈ ${f2(sol.pH0)}`, '') + dato('Concentración [H₃O⁺]', `${f(sol.h)} M`, '') : '') + (sol.Kh ? dato('Constante de hidrólisis', `${f(sol.Kh)}`) + dato('Grado de hidrólisis', `${f(100 * sol.alfa)} %`) : '');
     else if (sol.modo === 'inverso') h = (sol.K ? dato(sol.base ? 'Kb' : 'Ka', `${f(sol.K)}`) + dato(sol.base ? 'pKb' : 'pKa', `${f2(-Math.log10(sol.K))}`) : '') + dato('Concentración', `${f(sol.C)} M`) + (sol.alfa ? dato('Grado de disociación', `α = ${f(100 * sol.alfa)} %`) : '');
     else if (sol.modo === 'preparar') h = dato('Cociente base/ácido', `${f(sol.cociente)}`) + dato('Concentración de la sal', `${f(sol.Cs)} M`) + (sol.masa !== null ? dato('Masa de sal', `${f(sol.masa)} g`) : dato('Moles de sal', `${f(sol.ns)} mol`));
     else if (sol.modo === 'poliprotico') h = dato('pH', `pH = ${f2(sol.pH)}`) + dato('Solo con Ka₁', `pH = ${f2(sol.pH1)}`) + dato('[A²⁻]', `${f(sol.conc[2])} M`);
@@ -1984,12 +2057,16 @@ const Compartir = (() => {
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
     $('#grafica').hidden = sol.modo !== 'valoracion';
     $('#especies').hidden = !(sol.modo === 'poliprotico' || (sol.modo === 'valoracion' && sol.poli));
-    tA = 0; particulas(); dibuja(); grafica(); especies();
+    tA = 0; particulas(); dibuja(); grafica(); especies(); exporta();
+  }
+  function exporta() {
+    const n6 = (v) => String(+Number(v).toPrecision(6)).replace('.', ',');
+    const b1 = Herramienta.exportar('#grafica', { nombre: 'ph-valoracion', titulo: 'Curva de valoración: pH frente al volumen', etiqueta: 'la curva de valoración', datos: () => (sol && sol.curva ? { cab: ['V (mL)', 'pH'], filas: sol.curva.map(([v, p]) => [n6(v), n6(p)]) } : null) });
+    const b2 = Herramienta.exportar('#especies', { nombre: 'ph-especies', titulo: 'Diagrama de especies: fracción frente al pH', etiqueta: 'el diagrama de especies', datos: () => { if (!sol || !sol.Kas) return null; const nm = sol.Kas.length === 2 ? ['H₂A', 'HA⁻', 'A²⁻'] : ['H₃A', 'H₂A⁻', 'HA²⁻', 'A³⁻']; return { cab: ['pH', ...nm.map((x) => 'α(' + x + ')')], filas: Array.from({ length: 141 }, (_, i) => { const p = i / 10; return [n6(p), ...P.fracciones(sol.Kas, p).map(n6)]; }) }; } });
+    if (b1) b1.hidden = $('#grafica').hidden; if (b2) b2.hidden = $('#especies').hidden;
   }
 
-  /* ---------- Colores ---------- */
   function colores() { const cs = getComputedStyle(document.documentElement); for (const k of ['--ink', '--muted', '--line', '--accent', '--bg', '--peso', '--normal', '--roz', '--suelo', '--cuerpo', '--panel', '--tension']) col[k] = cs.getPropertyValue(k).trim(); }
-  // indicador universal: rojo, naranja, amarillo, verde, azul, violeta
   const UNIV = [[0, [214, 40, 40]], [3, [240, 130, 40]], [5, [242, 200, 50]], [7, [70, 170, 70]], [9, [40, 110, 200]], [11, [70, 60, 170]], [14, [120, 40, 140]]];
   const mezclaRGB = (a, b, s) => a.map((x, i) => Math.round(x + (b[i] - x) * s));
   function universal(pH) {
@@ -1997,8 +2074,7 @@ const Compartir = (() => {
     for (let i = 1; i < UNIV.length; i++) if (p <= UNIV[i][0]) { const [p0, c0] = UNIV[i - 1], [p1, c1] = UNIV[i]; return mezclaRGB(c0, c1, (p - p0) / (p1 - p0)); }
     return UNIV[UNIV.length - 1][1];
   }
-  const NOMBRES = { rojo: [214, 50, 40], amarillo: [240, 200, 50], azul: [40, 100, 210], rosa: [224, 80, 156], incoloro: null };
-  // color del indicador de la valoración a ese pH (incoloro = el del agua)
+  const NOMBRES = { rojo: [214, 50, 40], amarillo: [240, 200, 50], azul: [40, 100, 210], rosa: [224, 80, 156], 'púrpura': [130, 60, 160], 'rojo-púrpura': [190, 40, 110], incoloro: null };
   function deIndicador(ind, pH, agua) {
     const a = NOMBRES[ind[3]] || agua, b = NOMBRES[ind[4]] || agua, s = Math.max(0, Math.min(1, (pH - ind[1]) / (ind[2] - ind[1])));
     return mezclaRGB(a, b, s);
@@ -2006,12 +2082,10 @@ const Compartir = (() => {
   const rgba = (c, al = 1) => `rgba(${c[0]}, ${c[1]}, ${c[2]}, ${al})`;
   const hexRGB = (h) => { const m = /^#?([\da-f]{2})([\da-f]{2})([\da-f]{2})$/i.exec(h || ''); return m ? [1, 2, 3].map((i) => parseInt(m[i], 16)) : [200, 220, 240]; };
 
-  /* ---------- Animación ---------- */
   $('#play').addEventListener('click', () => { anda = !anda; $('#play').textContent = anda ? '⏸ Pausa' : '▶ Seguir'; });
   function texto(g, x, y, t, color = col['--ink'], al = 'center', peso = '') { g.font = `${peso}12px "IBM Plex Sans", system-ui, sans-serif`; g.fillStyle = color; g.textAlign = al; g.textBaseline = 'middle'; g.fillText(t, x, y); }
   const punto = (g, x, y, r, color) => { g.fillStyle = color; g.beginPath(); g.arc(x, y, r, 0, 2 * Math.PI); g.fill(); };
   let tA = 0, parts = [];
-  // partículas del vaso (posiciones en 0..1 dentro del líquido)
   function particulas() {
     parts = [];
     if (!sol || sol.modo === 'valoracion') return;
@@ -2019,7 +2093,6 @@ const Compartir = (() => {
     const add = (n, tipo) => { for (let i = 0; i < n; i++) parts.push({ x: Math.random(), y: Math.random(), vx: (Math.random() - 0.5) * 0.25, vy: (Math.random() - 0.5) * 0.25, tipo }); };
     add(nH || (pH >= 6.99 && pH <= 7.01 ? 1 : 0), 'H'); add(nOH || (pH >= 6.99 && pH <= 7.01 ? 1 : 0), 'OH');
     if (sol.modo === 'debil' || sol.modo === 'tampon') {
-      // fracción en forma básica del par
       const fb = sol.modo === 'debil' ? sol.alfa : 1 / (1 + 10 ** (sol.pKa - sol.pH)), tot = 26, nb = sol.modo === 'debil' ? Math.max(1, Math.round(tot * fb)) : Math.round(tot * fb);
       add(tot - nb, sol.base && sol.modo === 'debil' ? 'B' : 'HA'); add(nb, sol.base && sol.modo === 'debil' ? 'BH' : 'A');
     }
@@ -2033,7 +2106,6 @@ const Compartir = (() => {
       if (q.y < 0 || q.y > 1) { q.vy = -q.vy; q.y = Math.max(0, Math.min(1, q.y)); }
     }
   }
-  // volumen añadido en la animación de la valoración: de 0 a 2·Veq y una pausa
   const vMax = () => (sol.poli ? (sol.Kas.length + 1) * sol.Veq : 2 * sol.Veq);
   const vAnim = (t) => { const ciclo = 11, s = (t % ciclo) / 9.5; return Math.min(1, s) * vMax(); };
 
@@ -2050,7 +2122,6 @@ const Compartir = (() => {
     if (!col['--ink']) colores();
     const agua = hexRGB(col['--bg'] === '#11151b' ? '#2b4f7e' : '#cfe3f7');
     if (sol.modo !== 'valoracion') {
-      // vaso con el indicador universal
       const bw = Math.min(w * 0.42, 300), bx = w * 0.12, by = h * 0.12, bh = h * 0.6, ySup = by + bh * 0.18;
       g.fillStyle = rgba(universal(sol.pH), 0.55); g.fillRect(bx, ySup, bw, by + bh - ySup);
       g.strokeStyle = col['--suelo']; g.lineWidth = 3; g.beginPath(); g.moveTo(bx - 4, by); g.lineTo(bx, by + bh); g.lineTo(bx + bw, by + bh); g.lineTo(bx + bw + 4, by); g.stroke();
@@ -2060,10 +2131,8 @@ const Compartir = (() => {
         const x = bx + 10 + q.x * (bw - 20), y = ySup + 10 + q.y * (by + bh - ySup - 20);
         if (q.tipo === 'HA' || q.tipo === 'B') { punto(g, x - 4, y, 5, COL[q.tipo]); punto(g, x + 4, y, 4, COL[q.tipo]); } else punto(g, x, y, q.tipo === 'H' || q.tipo === 'OH' ? 4.5 : 5, COL[q.tipo]);
       }
-      // leyenda de las partículas
       const tipos = [...new Set(parts.map((q) => q.tipo))];
       tipos.forEach((t, i) => { punto(g, bx + bw + 30, by + 20 + i * 20, 5, COL[t]); texto(g, bx + bw + 42, by + 20 + i * 20, ETQ[t], col['--ink'], 'left'); });
-      // escala de pH
       const sx = 20, sw = w - 40, sy = h - 34;
       for (let i = 0; i < sw; i++) { g.fillStyle = rgba(universal((14 * i) / sw)); g.fillRect(sx + i, sy, 1.5, 12); }
       for (let p = 0; p <= 14; p += 2) texto(g, sx + (sw * p) / 14, sy + 22, String(p), col['--muted']);
@@ -2077,7 +2146,6 @@ const Compartir = (() => {
       }
       return;
     }
-    // valoración: bureta y matraz
     const v = vAnim(tA), pH = sol.ph(v), cx = w * 0.3, top = 10, bH = h * 0.42, bW = 16;
     const lleno = 1 - v / (1.2 * vMax());
     g.strokeStyle = col['--suelo']; g.lineWidth = 2; g.strokeRect(cx - bW / 2, top, bW, bH);
@@ -2099,8 +2167,6 @@ const Compartir = (() => {
     texto(g, w * 0.58, h * 0.25 + 44, k >= 0 ? `${eqs.length > 1 ? `${k + 1}.º ` : ''}punto de equivalencia` : antes === 0 ? 'antes de la equivalencia' : antes === eqs.length ? 'pasada la equivalencia' : `pasada la ${antes}.ª equivalencia`, col['--muted'], 'left');
   }
 
-  /* ---------- Diagrama de especies (ácido poliprótico) ---------- */
-  // fracción de cada forma del ácido (H₃A, H₂A⁻, HA²⁻, A³⁻…) frente al pH; la línea marca el pH del cálculo (o el del volumen pedido)
   function especies() {
     const c = $('#especies');
     if (c.hidden || !sol || !sol.Kas) return;
@@ -2113,7 +2179,6 @@ const Compartir = (() => {
     for (let p = 0; p <= 14; p += 2) texto(g, X(p), h - mb + 12, String(p), col['--muted']);
     texto(g, ml + (w - ml - mr) / 2, h - 7, 'pH', col['--muted']);
     const cs = [col['--peso'], col['--roz'], col['--normal'], col['--tension']], nom = n === 2 ? ['H₂A', 'HA⁻', 'A²⁻'] : ['H₃A', 'H₂A⁻', 'HA²⁻', 'A³⁻'];
-    // pK: líneas finas discontinuas
     g.setLineDash([3, 4]); g.strokeStyle = col['--muted'];
     sol.Kas.forEach((K, i) => { const p = -Math.log10(K); if (p >= 0 && p <= 14) { g.beginPath(); g.moveTo(X(p), mt); g.lineTo(X(p), h - mb); g.stroke(); texto(g, X(p), mt - 8, `pK${i + 1} = ${txt(f2(p))}`, col['--muted']); } });
     g.setLineDash([]);
@@ -2128,7 +2193,6 @@ const Compartir = (() => {
     if (pHm !== null && pHm !== undefined && pHm >= 0 && pHm <= 14) { g.strokeStyle = col['--ink']; g.lineWidth = 1.5; g.beginPath(); g.moveTo(X(pHm), mt); g.lineTo(X(pHm), h - mb); g.stroke(); punto(g, X(pHm), mt, 3.5, col['--ink']); }
   }
 
-  /* ---------- Curva de valoración ---------- */
   function grafica() {
     const c = $('#grafica');
     if (c.hidden || !sol || sol.modo !== 'valoracion') return;
@@ -2137,7 +2201,6 @@ const Compartir = (() => {
     if (!col['--ink']) colores();
     const ml = 40, mr = 14, mt = 14, mb = 30, Vm = vMax();
     const X = (v) => ml + (v / Vm) * (w - ml - mr), Y = (p) => mt + ((14 - p) / 14) * (h - mt - mb);
-    // franja de viraje del indicador
     g.fillStyle = col['--line']; g.globalAlpha = 0.5; g.fillRect(ml, Y(sol.ind[2]), w - ml - mr, Y(sol.ind[1]) - Y(sol.ind[2])); g.globalAlpha = 1;
     g.strokeStyle = col['--line']; g.lineWidth = 1;
     for (let p = 0; p <= 14; p += 2) { g.beginPath(); g.moveTo(ml, Y(p)); g.lineTo(w - mr, Y(p)); g.stroke(); texto(g, ml - 6, Y(p), String(p), col['--muted'], 'right'); }
@@ -2170,25 +2233,6 @@ const Compartir = (() => {
   window.PHApp = { abrirEjemplo, resultado: () => sol && { modo: sol.modo, pH: sol.pH, Veq: sol.Veq, pHeq: sol.pHeq, pHv: sol.pHv }, estado: () => copia(sc), pausa: () => { anda = false; } };
 })();
 
-/* =====================================================================
-   «Mis ejercicios»: barra lateral común a todas las herramientas, como la
-   del simulador de electrostática. Guarda en este navegador el estado de la
-   herramienta (lo que cada app ya deja en localStorage con su clave) con un
-   título, una carpeta y la marca de fijado; abre, renombra, borra, exporta e
-   importa ejercicios en archivos .simu.json. Abrir uno deja su estado en la
-   clave de la app y recarga la página, así sirve para cualquier herramienta.
-   La clave sale del catálogo («guarda»): herramientas.js la pone en la llamada
-   Biblioteca.monta(carpeta, clave) de cada página.
-   Copia de seguridad global: «Copia de seguridad de todo» junta en un solo archivo
-   (.copia.json) los ejercicios de todas las herramientas (y los problemas propios de
-   Electrostática); «Importar archivo» y «Restaurar copia» la reconocen y la suman a lo
-   que ya hay sin duplicar ni borrar nada. La lógica (Biblioteca.copia / restaura) no toca
-   el DOM y se prueba en Node con un almacén falso.
-   También: «Copiar enlace» (los datos de ahora en la dirección, #d=…; herramienta.js los recoge al
-   abrirlo) y «Hoja para imprimir» (elige varios ejercicios y se imprimen juntos con su solución:
-   cada uno se abre en un marco oculto de la misma página, se copian sus resultados y su desarrollo
-   y se devuelve el estado de antes).
-   ===================================================================== */
 const Biblioteca = (() => {
   const FORMATO = 'simulaciencia-ejercicios', ANCHO = 1280;
   const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -2196,7 +2240,6 @@ const Biblioteca = (() => {
   const escribe = (k, v) => { try { localStorage.setItem(k, typeof v === 'string' ? v : JSON.stringify(v)); return true; } catch (e) { return false; } };
   const norm = (s) => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 
-  // ---- copia de seguridad global (sin DOM: recibe el almacén, normalmente localStorage) ----
   const FORMATO_COPIA = 'simulaciencia-copia', PREF = 'simu-ejercicios:', K_ELECTRO = 'electro-sim-lib-v2';
   const idAzar = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
   const leeAlm = (alm, k) => { try { const v = JSON.parse(alm.getItem(k)); return v ?? null; } catch (e) { return null; } };
@@ -2212,7 +2255,6 @@ const Biblioteca = (() => {
     const el = leeAlm(alm, K_ELECTRO), electrostatica = Array.isArray(el?.items) && el.items.length ? el.items : undefined;
     return { formato: FORMATO_COPIA, version: 1, guardado: new Date().toISOString(), herramientas, electrostatica, total: total + (electrostatica?.length || 0) };
   }
-  // suma la copia a lo que hay: lo que ya está (mismo título y mismos datos, o mismo id en Electrostática) se salta
   function restaura(d, alm = localStorage) {
     if (d?.formato !== FORMATO_COPIA || typeof d.herramientas !== 'object' || !d.herramientas) throw new Error('no es una copia de seguridad de Ciencify');
     let nuevos = 0, repetidos = 0, herr = 0;
@@ -2302,11 +2344,11 @@ const Biblioteca = (() => {
     let busca = '', form = null, borrando = null, hoja = null;
     const guardaLib = () => escribe(K, lib) || aviso('No se pudo guardar: el navegador no deja usar el almacenamiento');
     const guardaUI = () => escribe(K_UI, ui);
+    const refresca = () => { const l = lee(K, null); if (l && Array.isArray(l.items)) lib = l; if (activo && !lib.items.some((x) => x.id === activo)) activo = null; };
+    window.addEventListener('storage', (e) => { if (e.key === K && !form) { refresca(); pinta(); } });
     const ponActivo = (id) => { activo = id; try { if (id) sessionStorage.setItem(K_ACT, id); else sessionStorage.removeItem(K_ACT); } catch (e) { /* sin almacenamiento */ } };
-    // las apps que guardan con retraso escuchan «simu-guardar» y guardan al momento
     const estado = () => { window.dispatchEvent(new Event('simu-guardar')); try { return localStorage.getItem(clave); } catch (e) { return null; } };
     const nuevoId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-    // «Ejercicios de ejemplo»: las opciones de los <select id="ejemplos…"> de la página, agrupadas
     const selsEj = () => [...document.querySelectorAll('select[id^="ejemplo"]')];
     function grupoDe(s) {
       const p = s.closest('[role="tabpanel"]'); if (!p) return '';
@@ -2334,7 +2376,6 @@ const Biblioteca = (() => {
     const btn = document.createElement('button');
     btn.className = 'bib-btn'; btn.type = 'button'; btn.setAttribute('aria-controls', 'bib'); btn.title = 'Guardar, abrir, exportar e importar tus ejercicios';
     btn.innerHTML = '<span aria-hidden="true">☰</span> Mis ejercicios';
-    // a la izquierda de la miga «Asignatura › Herramienta» (diseno.js), como la barra de electrostática
     const izq = document.querySelector('.miga-izq'), ini = cab.querySelector('.a-inicio');
     if (izq) izq.append(btn); else (ini ? ini.after(btn) : cab.prepend(btn));
     const panel = document.createElement('aside'); panel.className = 'bib'; panel.id = 'bib'; panel.setAttribute('aria-label', 'Mis ejercicios');
@@ -2384,6 +2425,7 @@ const Biblioteca = (() => {
       return n;
     }
     async function importaArchivos(files) {
+      refresca();
       let n = 0;
       for (const f of files) {
         try { n += importa(await f.text()); } catch (err) { aviso(`No se pudo importar ${f.name}: ${err.message}`); return; }
@@ -2393,13 +2435,17 @@ const Biblioteca = (() => {
     function carga(it) {
       if (!escribe(clave, it.datos)) { aviso('No se pudo abrir: el navegador no deja usar el almacenamiento'); return; }
       ponActivo(it.id);
-      // si se estaba practicando, lo que se abre sustituye a los datos de antes de la práctica
+      try {
+        const pon = Storage.prototype.setItem, quita = Storage.prototype.removeItem;
+        Storage.prototype.setItem = function (k, v) { if (this === localStorage && k === clave) return; return pon.call(this, k, v); };
+        Storage.prototype.removeItem = function (k) { if (this === localStorage && k === clave) return; return quita.call(this, k); };
+      } catch (e) { /* sin almacenamiento */ }
       try { sessionStorage.removeItem(`simu-practica:${herramienta}`); } catch (e) { /* sin almacenamiento */ }
-      // sin el #… de la dirección, que en algunas herramientas (configuración electrónica) manda sobre lo guardado
       history.replaceState(null, '', location.pathname + location.search);
       location.reload();
     }
     function guardaForm() {
+      refresca();
       const t = panel.querySelector('#bib-t').value.trim() || 'Ejercicio sin título', c = panel.querySelector('#bib-c').value.trim();
       if (form.id) { const it = lib.items.find((x) => x.id === form.id); if (it) Object.assign(it, { titulo: t, carpeta: c, actualizado: Date.now() }); }
       else {
@@ -2416,7 +2462,6 @@ const Biblioteca = (() => {
       it.datos = datos; it.actualizado = Date.now(); guardaLib(); pinta(); aviso(`Cambios guardados en «${it.titulo}»`);
     }
 
-    // ----- enlace con los datos de ahora -----
     const b64 = (t) => btoa(unescape(encodeURIComponent(t))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
     const enlace = () => { const d = estado(); return location.href.split('#')[0] + (d ? `#d=${b64(d)}` : ''); };
     async function copiaEnlace() {
@@ -2428,7 +2473,6 @@ const Biblioteca = (() => {
       aviso(!ok ? 'No se ha podido copiar el enlace' : !url.includes('#d=') ? 'Enlace copiado, pero todavía no hay datos que llevar' : url.length > 8000 ? 'Enlace copiado (es muy largo: algunos programas lo cortan)' : 'Enlace copiado: abre la herramienta con estos datos');
     }
 
-    // ----- hoja para imprimir: cada ejercicio se abre en un marco oculto y se copia su solución -----
     const valorDe = (el) => el.tagName === 'SELECT' ? [...el.selectedOptions].map((o) => o.textContent.trim()).join(', ') : el.type === 'checkbox' || el.type === 'radio' ? (el.checked ? '✓' : '—') : el.value;
     function extrae(d) {
       let nodos = [...d.querySelectorAll('.layout .card')].filter((c) => !c.closest('[hidden]') && c.textContent.trim());
@@ -2436,7 +2480,6 @@ const Biblioteca = (() => {
       const out = d.createElement('div');
       for (const n of nodos) {
         const c = n.cloneNode(true);
-        // los campos y las gráficas se copian como su valor y como imagen
         const o = [...n.querySelectorAll('input, select, textarea')], k = [...c.querySelectorAll('input, select, textarea')];
         k.forEach((e, i) => { if (e.type === 'hidden' || e.type === 'file' || /^ejemplo/.test(e.id)) { (e.closest('label') || e).remove(); return; } const sp = d.createElement('b'); sp.textContent = valorDe(o[i]); e.replaceWith(sp); });
         const lo = [...n.querySelectorAll('canvas')], lk = [...c.querySelectorAll('canvas')];
@@ -2545,6 +2588,7 @@ ${f ? `<div class="bib-form"><label>Título<input id="bib-t" value="${esc(f.titu
     }
 
     panel.addEventListener('click', (e) => {
+      refresca();
       const car = e.target.closest('.bib-carp');
       if (car) { const k = `${herramienta}/${car.dataset.carpeta}`; ui.cerradas[k] = !ui.cerradas[k]; guardaUI(); pinta(); return; }
       const b = e.target.closest('[data-acc]'); if (!b) return;
@@ -2593,184 +2637,105 @@ ${f ? `<div class="bib-form"><label>Título<input id="bib-t" value="${esc(f.titu
     scrim.addEventListener('click', () => abre(false));
     window.addEventListener('resize', () => abre(panel.classList.contains('abierta')));
 
-    // el ejemplo marcado sigue al <select>: las apps lo vacían al tocar un dato
     const sigue = (e) => { if (!panel.contains(e.target)) setTimeout(marcaEj); };
     document.addEventListener('change', sigue); document.addEventListener('input', sigue);
     pinta(); abre(!!ui.abierta);
-    // los ejemplos están en la barra: el desplegable de «Ejemplos…» de la página sobra (diseno.js lo oculta)
     if (selsEj().some((s) => s.options.length > 1)) document.body.classList.add('bib-ejemplos');
     return { get items() { return lib.items; }, abre, importa: (t) => { const n = importa(t); guardaLib(); pinta(); return n; }, archivoDe };
   }
   return { monta, FORMATO, FORMATO_COPIA, copia, restaura };
 })();
 
-/* =====================================================================
-   Modo práctica común a todas las herramientas. «Otro ejercicio» parte de
-   un ejemplo al azar y cambia sus datos numéricos (con la misma forma de
-   número: enteros pequeños, ángulos, probabilidades…), tapa los resultados
-   y el desarrollo, y pide al alumno los resultados principales, con un
-   hueco por cada número de lo que la herramienta escribiría. «Comprobar»
-   los corrige (1 % o la última cifra mostrada) y «Ver la solución» destapa
-   el desarrollo. Al salir se vuelve a los datos que había antes.
-   Lee de la página lo que ya calcula cada app: no repite ninguna física.
-   ===================================================================== */
 const Practica = (() => {
   const azar = (a, b) => a + Math.random() * (b - a), entero = (a, b) => Math.floor(azar(a, b + 1));
   const toma = (xs) => xs[Math.floor(Math.random() * xs.length)];
   const visible = (e) => !!e && !!(e.offsetWidth || e.offsetHeight || e.getClientRects().length) && !e.closest('[hidden]');
   const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
-  // lo que cambia de una herramienta a otra; lo demás sale de la estructura común de las páginas
   const CONF = {
-    // calorimetría: una mezcla, un problema al revés, un calentador o una dilatación
     calorimetria: { datos: null, items: '#te, #resumen-d > div', genera: () => window.CalorApp?.azar(), enunciado: () => window.CalorApp?.enunciado() },
-    // disoluciones: lo que se pide depende de la pestaña abierta (solo cuentan los que se ven)
     disoluciones: { items: '#valores > .valor:not(.dato), #valores-prep > .valor, #valores-col > .valor, #res-dil, #res-mez' },
-    // simulador de circuitos: un circuito de continua al azar; se pregunta la tensión de cada nudo
     simulador: { datos: null, tapa: '#modos, #panel > .tabla-scroll, #panel > h3, #panel > .nota', items: '#resumen > div.num', genera: () => window.SimuladorApp?.azar(), enunciado: () => window.SimuladorApp?.enunciado() },
     matrices: { items: '#res' },
-    // solo sistemas compatibles determinados: la solución paramétrica no se pregunta por huecos
-    // complejos: una operación al azar con números pequeños (los datos son textos como 3 − 2i)
-    // taylor: una función y un punto de los de clase; se preguntan los coeficientes, la aproximación y el error
     taylor: { datos: null, items: '#resumen > div.num', genera: () => window.TaylorApp?.azar(), enunciado: () => window.TaylorApp?.enunciado() },
-    // fourier: una función de las de clase; se preguntan a₀ y los primeros coeficientes
     fourier: { datos: null, items: '#resumen > div.num', genera: () => window.FourierApp?.azar(), enunciado: () => window.FourierApp?.enunciado() },
-    // edos: una ecuación de las de clase (Euler, segundo orden o sistema lineal); se preguntan los valores numéricos
     edos: { datos: null, items: '#resumen > div.num', genera: () => window.EDOsApp?.azar(), enunciado: () => window.EDOsApp?.enunciado() },
-    // cinetica: un ejercicio de los de clase (ley integrada, datos, velocidades iniciales o Arrhenius)
     cinetica: { datos: null, items: '#resumen > div.num', genera: () => window.CineticaApp?.azar(), enunciado: () => window.CineticaApp?.enunciado() },
-    // campos: gradiente, divergencia y rotacional, trabajo o Green con números enteros; se preguntan los valores decimales
-    // solubilidad: Kps, solubilidad, ion común o mezcla de dos disoluciones con una sal de tabla
     solubilidad: { datos: null, items: '#resumen > div.num', genera: () => window.SolubilidadApp?.azar(), enunciado: () => window.SolubilidadApp?.enunciado() },
     equilibrio: { datos: null, items: '#resumen > div.num', genera: () => window.EquilibrioApp?.azar(), enunciado: () => window.EquilibrioApp?.enunciado() },
-    // integrales-multiples: una integral doble o triple de las de clase (cartesianas, polares, cilíndricas o esféricas); se pregunta la integral, el área o volumen y el valor medio
     'integrales-multiples': { datos: null, items: '#resumen > div.num', genera: () => window.IntegralesMultiplesApp?.azar(), enunciado: () => window.IntegralesMultiplesApp?.enunciado() },
-    // series y lagrange: una serie con suma o un extremo condicionado con puntos racionales
     series: { datos: null, items: '#resumen > div.num', genera: () => window.SeriesApp?.azar(), enunciado: () => window.SeriesApp?.enunciado() },
     lagrange: { datos: null, items: '#resumen > div.num', genera: () => window.LagrangeApp?.azar(), enunciado: () => window.LagrangeApp?.enunciado() },
     campos: { datos: null, items: '#resumen > div.num', genera: () => window.CamposApp?.azar(), enunciado: () => window.CamposApp?.enunciado() },
-    // imagenes: una carga frente a un plano, una esfera (a tierra, aislada o a un potencial) o dentro de una cavidad
     imagenes: { datos: null, items: '#resumen > div', genera: () => window.ImagenesApp?.azar(), enunciado: () => window.ImagenesApp?.enunciado() },
-    // fuerza: una carga, unos vectores, un selector, un ciclotrón o unos hilos con números de clase
     fuerza: { datos: null, items: '#res > div', genera: () => window.FuerzaApp?.azar(), enunciado: () => window.FuerzaApp?.enunciado() },
-    // intervalos: una media, una proporción, una varianza, dos medias o un tamaño de muestra
     intervalos: { datos: null, items: '#res > div', genera: () => window.IntervalosApp?.azar(), enunciado: () => window.IntervalosApp?.enunciado() },
-    // laplace-numerica: una caja con los bordes a potenciales de clase (y a veces un electrodo central); se pregunta el potencial en la sonda, el campo y el potencial en el centro
     'laplace-numerica': { datos: null, items: '#resumen > div.num', genera: () => window.LaplaceNumericaApp?.azar(), enunciado: () => window.LaplaceNumericaApp?.enunciado() },
-    // ondasem: una onda plana, una intensidad o un medio con pérdidas
-    // guias-onda: una guía rectangular con un modo TE o TM; se preguntan fc, λc, β, λg, vf, vg y Z (o la atenuación)
     'guias-onda': { datos: null, items: '#resumen > div.num', genera: () => window.GuiasOndaApp?.azar(), enunciado: () => window.GuiasOndaApp?.enunciado() },
-    // líneas de transmisión: una carga y una línea al azar; se preguntan Γ, ROE, RL, λ, Zin y la posición del primer máximo
-    // cavidades: una cavidad rectangular, cilíndrica o esférica con uno de sus modos más bajos; se preguntan f0, λ, δ, Qc, Q y Δf
     cavidades: { datos: null, items: '#resumen > div.num', genera: () => window.CavidadesApp?.azar(), enunciado: () => window.CavidadesApp?.enunciado() },
     'lineas-transmision': { datos: null, items: '#resumen > div.num', genera: () => window.LineasTransmisionApp?.azar(), enunciado: () => window.LineasTransmisionApp?.enunciado() },
     'ondas-em': { datos: null, items: '#res > div', genera: () => window.OndasEMApp?.azar(), enunciado: () => window.OndasEMApp?.enunciado() },
-    // maxwell: una ecuación al azar (Gauss, Gauss para B, Faraday, Ampère–Maxwell u onda)
     maxwell: { datos: null, items: '#res > div', genera: () => window.MaxwellApp?.azar(), enunciado: () => window.MaxwellApp?.enunciado() },
-    // fresnel: una incidencia oblicua entre dos medios con índices de clase
     fresnel: { datos: null, items: '#res > div', genera: () => window.FresnelApp?.azar(), enunciado: () => window.FresnelApp?.enunciado() },
-    // trabajo y energía: una rampa con muelle, un rizo, un péndulo, una montaña rusa o una fuerza variable
     'trabajo-y-energia': { datos: null, items: '#resumen > div', genera: () => window.EnergiaApp?.azar(), enunciado: () => window.EnergiaApp?.enunciado() },
-    // tiro parabólico: un tiro, un blanco, una frenada, un encuentro o un giro (cuentan los resultados de la pestaña abierta)
     'tiro-parabolico': { datos: null, items: '#resumen > div, #resumen-r > div, #resumen-c > div', genera: () => window.TiroApp?.azar(), enunciado: () => window.TiroApp?.enunciado() },
-    // sólido rígido: un momento de inercia, una rodadura, una polea, una patinadora, un choque, un péndulo o una escalera
     'solido-rigido': { datos: null, items: '#res > div', genera: () => window.SolidoApp?.azar(), enunciado: () => window.SolidoApp?.enunciado() },
-    // ondas: una cuerda, un tubo, un Doppler, un nivel sonoro, unas pulsaciones, una potencia o una reflexión
     ondas: { datos: null, items: '#res > div', genera: () => window.OndasApp?.azar(), enunciado: () => window.OndasApp?.enunciado() },
-    // doppler: una fuente en línea o en ángulo, una que pasa, un eco, un cono de Mach o una luz que se corre al rojo
     doppler: { datos: null, items: '#resumen > div', genera: () => window.DopplerApp?.azar(), enunciado: () => window.DopplerApp?.enunciado() },
-    // ciclos: un Carnot, un Otto, un Diesel, un Brayton, un Stirling, un ciclo propio o una máquina
     ciclos: { datos: null, items: '#resumen > div', genera: () => window.CiclosApp?.azar(), enunciado: () => window.CiclosApp?.enunciado() },
-    // fluidos: una presión, un tubo en U, una prensa, un empuje, una tubería, un chorro, una viscosidad, un medidor, una presa o un capilar
-    // gases: un estado, una transformación, una mezcla, un gas real o una velocidad molecular
     gases: { datos: null, items: '#res > div', genera: () => window.GasesApp?.azar(), enunciado: () => window.GasesApp?.enunciado() },
     fluidos: { datos: null, items: '#resumen > div', genera: () => window.FluidosApp?.azar(), enunciado: () => window.FluidosApp?.enunciado() },
-    // dinamica: un bloque en un plano, dos bloques, Atwood, una curva, un péndulo cónico o un muelle
     dinamica: { datos: null, items: '#res > div', genera: () => window.DinamicaApp?.azar(), enunciado: () => window.DinamicaApp?.enunciado() },
-    // antena dipolo: un dipolo al azar; se pregunta λ, Rrad, Prad, D y el campo
     antena: { datos: null, items: '#resumen > div', genera: () => window.AntenaApp?.azar(), enunciado: () => window.AntenaApp?.enunciado() },
-    // choques: elástico, inelástico o pegados, en 1D o 2D
     choques: { datos: null, items: '#resumen > div', genera: () => window.ChoquesApp?.azar(), enunciado: () => window.ChoquesApp?.enunciado() },
-    // gravitación: una fuerza, un satélite, una velocidad de escape, una órbita por su periodo o una elipse de Kepler
     gravitacion: { datos: null, items: '#resumen > div', genera: () => window.GravitacionApp?.azar(), enunciado: () => window.GravitacionApp?.enunciado() },
-    // interferencia: Young, una rendija, una red o una lámina delgada
     interferencia: { datos: null, items: '#res > div', genera: () => window.InterferenciaApp?.azar(), enunciado: () => window.InterferenciaApp?.enunciado() },
-    // laplace: una transformada, una inversa por fracciones simples o una EDO; se preguntan los valores numéricos
     laplace: { datos: null, items: '#resumen > div.num', genera: () => window.LaplaceApp?.azar(), enunciado: () => window.LaplaceApp?.enunciado() },
-    // control: Routh, lugar de las raíces o Nyquist de una ganancia de lazo; se preguntan cambios de signo, K crítica, asíntotas, rupturas y márgenes
     control: { datos: null, items: '#resumen > div.num', genera: () => window.ControlApp?.azar(), enunciado: () => window.ControlApp?.enunciado() },
-    // convolución: dos señales de clase o un filtro RC; se preguntan el máximo, su instante, el área o la respuesta al escalón
     convolucion: { datos: null, items: '#resumen > div.num', genera: () => window.ConvolucionApp?.azar(), enunciado: () => window.ConvolucionApp?.enunciado() },
-    // superficies: una función de dos variables y un punto; se preguntan f, fₓ, f_y, |∇f| y la derivada direccional
     superficies: { datos: null, items: '#resumen > div.num', genera: () => window.SuperficiesApp?.azar(), enunciado: () => window.SuperficiesApp?.enunciado() },
-    // derivadas: una derivada en un punto o una integral definida de las de clase
     derivadas: { datos: null, items: '#resumen > div.num', genera: () => window.DerivadasApp?.azar(), enunciado: () => window.DerivadasApp?.enunciado() },
     complejos: { datos: null, genera: () => window.ComplejosApp?.azar(), enunciado: () => window.ComplejosApp?.enunciado() },
     sistemas: { items: '#res', valido: () => !/[λμ]|incompatible|no tiene/i.test(document.querySelector('#res')?.textContent + document.querySelector('#tipo')?.textContent) },
-    // distribuciones: un ejercicio con enunciado (normal, binomial, Poisson, valores críticos…)
     estadistica: { datos: null, items: '#res', genera: () => window.EstadisticaApp?.azar(), enunciado: () => window.EstadisticaApp?.enunciado() },
-    // regresión: una tabla de datos al azar alrededor de una recta (están en un textarea, no en campos numéricos)
     regresion: { datos: null, genera: () => window.RegresionApp?.azar(), enunciado: () => 'Con los datos de la tabla, calcula la recta de regresión de Y sobre X, la de X sobre Y, el coeficiente de correlación, las medias, la covarianza y la estimación de y que se pide.' },
-    // resistencias: unos colores al azar (no hay números que cambiar en los datos)
     resistencias: { datos: null, genera: () => window.ResistenciasApp?.azar(), enunciado: () => `¿Cuánto vale una resistencia con las bandas <b>${esc(window.ResistenciasApp?.colores() || '')}</b>? Escribe el valor y el margen en el que puede estar en las mismas unidades.` },
     magnetostatica: { items: '[data-res]', tapa: '[data-res], [data-steps], .cvwrap', datos: '#fuentes',
-      // el enunciado del ejemplo ya no vale con los datos nuevos
       despues: () => pon(document.querySelector('#enunciado'), 'Ejercicio de práctica: calcula el campo magnético en los puntos de las preguntas con las fuentes de la izquierda.'),
       antes: () => { const m = document.querySelector('#modo'); if (m && m.value !== 'si') { m.value = 'si'; m.dispatchEvent(new Event('change', { bubbles: true })); } } },
-    // masa-molar: según la pestaña, una masa molar, una estequiometría con su limitante o una fórmula empírica
     'masa-molar': {
       items: '#res-masa .grande, #resumen-este > div, #resumen-emp > div', quitar: '', datos: null,
       tapa: '#res-masa, #conv-card, #tabla-este td.n, #tabla-este td.m, #tabla-este td.s, #resumen-este, #este .pasos, #resumen-emp, #emp .pasos',
       genera: () => window.MasaApp?.azar(), enunciado: () => window.MasaApp?.enunciado(),
       get textos() { return document.querySelector('#tab-emp')?.getAttribute('aria-selected') === 'true' ? [{ et: 'Fórmula empírica', sel: '#resumen-emp .formula' }] : []; },
     },
-    // graficador: un polinomio o una racional sencilla para estudiar
     graficador: { datos: null, genera: () => window.GraficadorApp?.azar(), enunciado: () => window.GraficadorApp?.enunciado() },
-    // errores: un péndulo, una ley de Ohm o una densidad con medidas al azar
     errores: { datos: null, genera: () => window.ErroresApp?.azar(), enunciado: () => window.ErroresApp?.enunciado() },
-    // contrastes: una media o una proporción con enunciado
     contrastes: { datos: null, genera: () => window.ContrastesApp?.azar(), enunciado: () => window.ContrastesApp?.enunciado() },
-    // chi2-bondad: un dado o una tabla 2 × 3 con enunciado
     'chi2-bondad': { datos: null, genera: () => window.Chi2BondadApp?.azar(), enunciado: () => window.Chi2BondadApp?.enunciado() },
-    // probabilidad: un problema de probabilidad total y Bayes con tres máquinas
     probabilidad: { datos: null, items: '#resumen > div.pr', genera: () => window.ProbabilidadApp?.azar(), enunciado: () => window.ProbabilidadApp?.enunciado() },
-    // oferta-demanda: un mercado con equilibrio entero
-    // puertas-logicas: una tabla de verdad de 3 variables; se piden los minitérminos
     'puertas-logicas': { datos: null, items: '#resumen > div.pr', genera: () => window.PuertasLogicasApp?.azar(), enunciado: () => window.PuertasLogicasApp?.enunciado() },
-    // unidades: un valor con su conversión (solo el resultado, no el factor)
     unidades: { datos: null, items: '#resumen > div.pr', genera: () => window.UnidadesApp?.azar(), enunciado: () => window.UnidadesApp?.enunciado() },
     'sistemas-numericos': { datos: null, items: '#resumen > div.pr', genera: () => window.SistemasNumericosApp?.azar(), enunciado: () => window.SistemasNumericosApp?.enunciado() },
     'oferta-demanda': { datos: null, genera: () => window.OfertaDemandaApp?.azar(), enunciado: () => window.OfertaDemandaApp?.enunciado() },
-    // excedentes: un impuesto en un mercado con equilibrio entero
     excedentes: { datos: null, genera: () => window.ExcedentesApp?.azar(), enunciado: () => window.ExcedentesApp?.enunciado() },
-    // descriptiva: unas notas al azar (los datos están en un textarea)
     descriptiva: { datos: null, genera: () => window.DescriptivaApp?.azar(), enunciado: () => window.DescriptivaApp?.enunciado() },
-    // anova: tres grupos al azar
     'anova': { datos: null, genera: () => window.AnovaApp?.azar(), enunciado: () => window.AnovaApp?.enunciado() },
-    // no-parametricos: dos muestras o pares al azar
     'no-parametricos': { datos: null, genera: () => window.NoParametricosApp?.azar(), enunciado: () => window.NoParametricosApp?.enunciado() },
-    // regresion-multiple: un plano con ruido
     'regresion-multiple': { datos: null, genera: () => window.RegresionMultipleApp?.azar(), enunciado: () => window.RegresionMultipleApp?.enunciado() },
-    // regresión económica: una función de consumo al azar (los datos están en un textarea)
     'regresion-economia': { datos: null, genera: () => window.RegresionEconomiaApp?.azar(), enunciado: () => window.RegresionEconomiaApp?.enunciado() },
-    // ratios: un balance al azar que cuadre (si se cambian los datos sueltos, el activo y el pasivo no coinciden)
     ratios: { datos: null, genera: () => window.RatiosApp?.azar(), enunciado: () => window.RatiosApp?.enunciado() },
     balance: { datos: null, genera: () => window.BalanceApp?.azar(), enunciado: () => window.BalanceApp?.enunciado() },
-    // ajustador: una reacción de los ejemplos; se preguntan los coeficientes
     ajustador: { datos: null, items: '#coefs > div', genera: () => window.AjustadorApp?.azar(), enunciado: () => window.AjustadorApp?.enunciado() },
-    // formulacion: un compuesto habitual, de fórmula a nombre o de nombre a fórmula; las respuestas válidas están en #ac0, #ac1…
     formulacion: {
       datos: null, items: null, genera: () => window.FormulacionApp?.azar(), enunciado: () => window.FormulacionApp?.enunciado(),
       textos: [{ et: 'Tu respuesta', sel: '#ac0', otros: Array.from({ length: 59 }, (_, i) => `#ac${i + 1}`), ph: 'Escribe el nombre o la fórmula' }],
     },
-    // redox: una reacción de los ejemplos; se preguntan los coeficientes
     redox: { datos: null, items: '#coefs > div', genera: () => window.RedoxApp?.azar(), enunciado: () => window.RedoxApp?.enunciado() },
-    // vsepr: una molécula neutra de los ejemplos; se preguntan dominios, pares libres, geometría, hibridación y polaridad
     vsepr: {
       datos: null, items: '#resumen > div.num', genera: () => window.VseprApp?.azar(), enunciado: () => window.VseprApp?.enunciado(),
       textos: [{ et: 'Geometría molecular', sel: '#r-geo', ph: 'tetraédrica…' }, { et: 'Hibridación', sel: '#r-hib', ph: 'sp3…' }, { et: 'Polaridad', sel: '#r-pol', ph: 'polar o apolar' }],
     },
-    // organica: una molécula de los ejemplos; se pregunta su nombre IUPAC, los centros quirales y los estereoisómeros
     organica: {
       datos: null, items: null, genera: () => window.OrganicaApp?.azar(), enunciado: () => window.OrganicaApp?.enunciado(),
       textos: [{ et: 'Nombre IUPAC', sel: '#titulo-mol', ph: 'butan-2-ol…' }],
@@ -2796,7 +2761,6 @@ const Practica = (() => {
   const redondea = (x, cifras) => { if (x === 0) return 0; const e = Math.floor(Math.log10(Math.abs(x))) - cifras + 1; return Math.round(x / 10 ** e) * 10 ** e; };
   const limpio = (x) => parseFloat(x.toPrecision(12));
 
-  // un dato numérico nuevo, del mismo tipo que el que había
   function otroValor(v, etiqueta, texto) {
     if (v === 0) return 0;
     const ang = /°|ángulo|grados|α|θ|φ/i.test(etiqueta), s = Math.sign(v), a = Math.abs(v);
@@ -2808,15 +2772,12 @@ const Practica = (() => {
   }
   const etiquetaDe = (inp) => [inp.getAttribute('aria-label'), inp.id && document.querySelector(`label[for="${inp.id}"]`)?.textContent, inp.closest('label')?.textContent, inp.closest('.row, .fila')?.textContent].filter(Boolean).join(' ');
 
-  // los números de un resultado: la plantilla con un hueco por número y su valor (los de sub/sup, fórmulas y notas no cuentan)
-  // (también el número de la parte imaginaria, j31, y el decimal con punto de magnetostática)
   const RE = /(?:(?<![\p{L}\d,.])|(?<=(?:^|[^\p{L}\d])j))([−-]?\d+(?:[.,]\d+)?(?:\/\d+)?)(\s*[·×]\s*10)?/gu;
   const conEtiqueta = (el) => el.matches('div') && el.firstElementChild?.tagName === 'SPAN' && !el.firstElementChild.className && el.firstChild === el.firstElementChild;
   function numeros(el, quitar = 'small, .nota') {
     const c = el.cloneNode(true);
     if (conEtiqueta(c)) c.firstElementChild.remove();
     if (quitar) for (const x of c.querySelectorAll(quitar)) x.remove();
-    // las fracciones de matrices y sistemas (numerador y denominador apilados) pasan a a/b
     for (const fr of c.querySelectorAll('.fr')) if (fr.children.length === 2) fr.replaceWith(`${fr.children[0].textContent.trim()}/${fr.children[1].textContent.trim()}`);
     c.normalize();
     const vals = [], tw = document.createTreeWalker(c, NodeFilter.SHOW_TEXT), nodos = [];
@@ -2841,7 +2802,6 @@ const Practica = (() => {
     }
     return { plantilla: c.innerHTML, vals };
   }
-  // lo que escribe el alumno: 12,5 · 1.2e-3 · 1,2·10^-3 · −3/4
   function leeAlumno(s) {
     let t = String(s).trim().replace(/\s+/g, '').replace(/[−–]/g, '-').replace(/,/g, '.');
     if (!t) return null;
@@ -2887,7 +2847,6 @@ const Practica = (() => {
     const btn = document.createElement('button');
     btn.type = 'button'; btn.className = 'prac-btn'; btn.setAttribute('aria-pressed', 'false'); btn.title = 'Ejercicios con datos al azar: escribe tus resultados y compruébalos antes de ver el desarrollo';
     btn.innerHTML = '<span aria-hidden="true">✎</span> Modo práctica';
-    // a la derecha de la miga (diseno.js); en páginas sin miga, en la cabecera
     const der = document.querySelector('.miga-der'), tras = cab.querySelector('.bib-btn') || cab.querySelector('.a-inicio');
     if (der) der.append(btn); else (tras ? tras.after(btn) : cab.prepend(btn));
 
@@ -2906,7 +2865,6 @@ const Practica = (() => {
     }
     function ejemplo() {
       const d = datos(); if (!d) return;
-      // el desplegable de ejemplos está oculto cuando la barra «Mis ejercicios» los lista (body.bib-ejemplos)
       const usable = (x) => visible(x) || (document.body.classList.contains('bib-ejemplos') && /^ejemplo/.test(x.id) && !x.closest('[hidden]'));
       const s = [...d.querySelectorAll('select')].find((x) => usable(x) && x.options.length > 2 && /ejemplo/i.test(x.id + ' ' + x.options[0].textContent));
       if (s) { s.selectedIndex = entero(1, s.options.length - 1); s.dispatchEvent(new Event('change', { bubbles: true })); }
@@ -2918,7 +2876,6 @@ const Practica = (() => {
         pon(inp, escribe(otroValor(v, etiquetaDe(inp), inp.value), inp.value));
       }
     }
-    // escoge qué resultados se preguntan: todos si son pocos; si no, el primero y tres al azar
     function arma() {
       const its = items().map((el) => ({ el, et: conEtiqueta(el) ? el.firstElementChild.textContent.trim() : '', n: numeros(el, conf.quitar) })).filter((x) => x.n.vals.length && x.n.vals.length <= 9);
       let elegidos = its.length <= 4 ? its : [its[0], ...its.slice(1).sort(() => Math.random() - 0.5).slice(0, 3)].sort((a, b) => its.indexOf(a) - its.indexOf(b));
@@ -2962,7 +2919,6 @@ ${preguntas.length ? `<div class="prac-q">${filas}</div>` : '<p>Con estos datos 
 <div class="prac-acc"><button class="si" data-a="comprobar"${preguntas.length ? '' : ' disabled'}>Comprobar</button><button data-a="solucion">${resuelto ? 'Ocultar la solución' : 'Ver la solución'}</button><button data-a="otro">Otro ejercicio</button></div>
 <p class="prac-nota" role="status" hidden></p>`;
     }
-    // el valor correcto se lee al comprobar, por si el alumno ha tocado los datos
     function esperado(p) {
       if (p.tipo === 'texto') return [document.querySelector(p.sel), ...p.otros.map((s) => document.querySelector(s))].filter(Boolean).map((e) => e.textContent);
       const el = p.sel ? document.querySelector(p.sel) : items()[p.idx]; const n = el && numeros(el, conf.quitar);
@@ -3003,54 +2959,37 @@ ${preguntas.length ? `<div class="prac-q">${filas}</div>` : '<p>Con estos datos 
         nuevo(); card.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
       } else {
         tapa(false); card?.remove(); card = null;
-        // vuelve a los datos de antes de practicar
         let antes = null; try { antes = clave ? sessionStorage.getItem(K_ANTES) : null; sessionStorage.removeItem(K_ANTES); } catch (e) { /* sin almacenamiento */ }
         if (antes !== null) {
           const restaura = () => { try { if (antes) localStorage.setItem(clave, antes); else localStorage.removeItem(clave); } catch (e) { /* sin almacenamiento */ } };
-          // otra vez al irse la página, por si la herramienta guarda con retraso (un guardado pendiente pisaría los datos de antes)
           restaura(); window.addEventListener('pagehide', restaura, { once: true });
           history.replaceState(null, '', location.pathname + location.search); location.reload();
         }
       }
     }
-    // si se recargó en mitad de una práctica, deja los datos como estaban
     try { const antes = clave ? sessionStorage.getItem(K_ANTES) : null; if (antes !== null) { sessionStorage.removeItem(K_ANTES); if (antes) localStorage.setItem(clave, antes); else localStorage.removeItem(clave); history.replaceState(null, '', location.pathname + location.search); location.reload(); } } catch (e) { /* sin almacenamiento */ }
     btn.addEventListener('click', () => activa(!activo));
-    // lo que habría que escribir en cada hueco, en orden (para las pruebas)
     const respuestas = () => [...(card?.querySelectorAll('.prac-in') || [])].map((inp) => { const p = preguntas[+inp.dataset.p], e = esperado(p); return p.tipo === 'texto' ? e[0] : e[+inp.dataset.k].t; });
     return (window.PracticaApp = { activa, nuevo, respuestas, get activo() { return activo; }, get preguntas() { return preguntas; } });
   }
   return { monta, CONF, numeros, leeAlumno, otroValor };
 })();
 
-/* =====================================================================
-   Portada personal: lo que Ciencify recuerda de ti, solo en este navegador (localStorage, sin
-   cuentas ni envíos). herramientas.js lo pone en cada herramienta y fenómeno tras biblioteca.js; la
-   portada (portal.js) lo usa para pintar «Tu espacio». Claves:
-     simu-recientes   [{ r: 'asignatura/herramienta', t: ms }]   las últimas 8, la más nueva primero
-     simu-favoritos   ['asignatura/herramienta', …]
-   En cada herramienta apunta la visita y añade el botón ☆ «Favorita» junto a Mis ejercicios.
-   Personal.espacio(sitio) devuelve { continuar, favoritas, recientes } con rutas (portal.js las
-   convierte en tarjetas); Personal.borra() olvida todo.
-   ===================================================================== */
 const Personal = (() => {
   const K_REC = 'simu-recientes', K_FAV = 'simu-favoritos', MAX = 8;
   const lee = (k) => { try { const v = JSON.parse(localStorage.getItem(k)); return Array.isArray(v) ? v : []; } catch (e) { return []; } };
   const escribe = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } };
-  // «/fisica/gases/» → 'fisica/gases' (las dos últimas partes: también vale desde un archivo local)
   const rutaDe = (p) => { const q = String(p).split('/').filter((s) => s && !/\.html?$/.test(s)); return q.length >= 2 ? q.slice(-2).join('/') : null; };
   const recientes = () => lee(K_REC).filter((x) => x && typeof x.r === 'string');
   const favoritos = () => lee(K_FAV).filter((x) => typeof x === 'string');
   function visita(ruta, ahora = Date.now()) { escribe(K_REC, [{ r: ruta, t: ahora }, ...recientes().filter((x) => x.r !== ruta)].slice(0, MAX)); }
   const esFavorita = (ruta) => favoritos().includes(ruta);
   function alterna(ruta) { const f = favoritos(), i = f.indexOf(ruta); if (i >= 0) f.splice(i, 1); else f.push(ruta); escribe(K_FAV, f); return i < 0; }
-  // continuar = la última visitada; recientes = las demás
   function espacio() {
     const r = recientes();
     return { continuar: r[0] || null, favoritas: favoritos(), recientes: r.slice(1, 6) };
   }
   function borra() { try { localStorage.removeItem(K_REC); localStorage.removeItem(K_FAV); } catch (e) { /* sin almacenamiento */ } }
-  // «hace 5 min», «hace 3 h», «ayer», «hace 4 días»
   function hace(t, ahora = Date.now()) {
     const m = Math.max(0, Math.round((ahora - t) / 60000));
     if (m < 2) return 'justo ahora';

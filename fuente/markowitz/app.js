@@ -11,6 +11,7 @@
   const p2 = (x) => num(100 * x, 2);
   Calculadora.monta({
     C: P, carpeta: 'markowitz', app: 'MarkowitzApp',
+    acciones: (s) => (s.tg ? [{ texto: `Usar la rentabilidad de la cartera tangente (${f(100 * s.tg.mu, 4)} %) como objetivo`, cambios: { objetivo: (100 * s.tg.mu).toFixed(4).replace('.', ',') } }] : []),
     nota: 'Una línea por activo: «Nombre; rentabilidad esperada %; volatilidad %». Después, la matriz de correlaciones (una fila por línea, 1 en la diagonal). Sin pesos de mercado, el CAPM usa la cartera tangente como mercado.',
     campos: () => [
       { k: 'activos', nom: 'Activos', tipo: 'area', filas: 5, sep: 'Activos' },
@@ -22,7 +23,7 @@
       { k: 'grafico', nom: 'Gráfica', tipo: 'sel', ops: [['frontera', 'Frontera eficiente y CML'], ['sml', 'Línea del mercado de valores (SML)']] },
     ],
     resumen: (s) => {
-      const r = [['Mínima varianza', `${pct(s.mv.mu)} · σ ${pct(s.mv.sg)}`]];
+      const r = [['Modo', s.ventas ? 'Con ventas en corto (pesos negativos permitidos)' : 'Sin ventas en corto (pesos ≥ 0)', true], ['Mínima varianza', `${pct(s.mv.mu)} · σ ${pct(s.mv.sg)}`]];
       r.push(['Cartera tangente', s.tg ? `${pct(s.tg.mu)} · σ ${pct(s.tg.sg)}` : 'no existe']);
       r.push(['Ratio de Sharpe', s.tg ? f(s.tg.sharpe, 4) : '—']);
       if (s.obj) r.push([`Para ${pct(s.m0)}`, `σ ${pct(s.obj.sg)}`]);

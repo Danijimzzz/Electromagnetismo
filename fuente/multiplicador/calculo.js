@@ -67,6 +67,8 @@ const Multiplicador = (() => {
     { clave: 'basico', nombre: 'Modelo básico: C = 100 + 0,8·Y, I = 200, G = 300', sc: { c0: '100', c: '0,8', t0: '0', t: '0', i: '200', g: '300', x: '0', m0: '0', m: '0', dg: '50', dt0: '0', yp: '' } },
     { clave: 'estado', nombre: 'Con impuestos: T = 100 + 0,25·Y y gasto de +80', sc: { c0: '200', c: '0,8', t0: '100', t: '0,25', i: '300', g: '400', x: '0', m0: '0', m: '0', dg: '80', dt0: '0', yp: '' } },
     { clave: 'abierta', nombre: 'Economía abierta y brecha con el pleno empleo', sc: { c0: '150', c: '0,75', t0: '100', t: '0,2', i: '250', g: '350', x: '200', m0: '50', m: '0,1', dg: '0', dt0: '0', yp: '2500' } },
+    { clave: 'cerrada', nombre: 'Economía cerrada sin Estado: C = 50 + 0,9·Y, I = 150', sc: { c0: '50', c: '0,9', t0: '0', t: '0', i: '150', g: '0', x: '0', m0: '0', m: '0', dg: '20', dt0: '0', yp: '' } },
+    { clave: 'presupuesto-equilibrado', nombre: 'Presupuesto equilibrado: ΔG = ΔT = 100 (multiplicador 1)', sc: { c0: '100', c: '0,8', t0: '0', t: '0', i: '200', g: '300', x: '0', m0: '0', m: '0', dg: '100', dt0: '100', yp: '' } },
   ];
 
   return { resolver, ejemplos };

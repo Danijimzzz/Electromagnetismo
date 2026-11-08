@@ -275,6 +275,8 @@
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('superficies').current;
   colores(); formulario(); calcula();
+  Herramienta.exportar('#superficie', { nombre: 'superficie-3d', titulo: 'Superficie en 3D', etiqueta: 'la superficie' });
+  Herramienta.exportar('#niveles', { nombre: 'curvas-de-nivel', titulo: 'Curvas de nivel', etiqueta: 'las curvas de nivel' });
   window.SuperficiesApp = {
     abrirEjemplo, azar, enunciado,
     resultado: () => sol && { f: sol.txt.f, z0: sol.punto?.z0, gx: sol.punto?.gx, gy: sol.punto?.gy, g: sol.punto?.g, Du: sol.punto?.dir?.Du, plano: sol.punto?.tangente, crit: sol.crit.map((q) => q.tipo) },

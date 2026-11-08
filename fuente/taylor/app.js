@@ -203,5 +203,6 @@
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('taylor').current;
   formulario(); colores(); calcula(); requestAnimationFrame(bucle);
+  Herramienta.exportar('#grafica', { nombre: 'taylor', titulo: 'Polinomio de Taylor', etiqueta: 'Taylor', datos: () => sol && sol.coef ? { cab: ['k', 'coeficiente c_k'], filas: sol.coef.map((c, k) => [k, c]) } : null });
   window.TaylorApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && (sol.modo === 'limite' ? { lim: sol.val, txt: sol.txt } : { pol: sol.pol, coef: sol.coef, px0: sol.px0, fx0: sol.fx0, err: sol.err, cota: sol.cota }), estado: () => copia(sc), grado: (k) => { grado = Math.max(0, Math.min(sol ? sol.n : 0, k)); $('#grado').value = grado; pintaGrado(); dibuja(); } };
 })();

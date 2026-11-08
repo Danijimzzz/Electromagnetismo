@@ -9,7 +9,7 @@
 (() => {
   const { $, esc, copia, vacio, txt } = Herramienta;
   const K = Cinetica, f = K.f, CLAVE = 'cinetica-v1', MAXE = 6;
-  const MODOS = [['orden', 'Ley integrada (orden 0, 1 o 2)'], ['datos', 'Orden a partir de datos [A]–t'], ['iniciales', 'Método de las velocidades iniciales'], ['arrhenius', 'Ecuación de Arrhenius']];
+  const MODOS = [['orden', 'Ley integrada (orden 0, 1 o 2)'], ['datos', 'Orden a partir de datos [A]–t'], ['iniciales', 'Método de las velocidades iniciales'], ['arrhenius', 'Ecuación de Arrhenius'], ['consecutivas', 'Consecutivas A → B → C y reversibles'], ['mecanismo', 'Mecanismo de reacción']];
 
   let sc = copia(K.ejemplos[0].sc);
   try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && MODOS.some(([k]) => k === g.modo)) sc = g; } catch (e) { /* sin almacenamiento */ }
@@ -29,6 +29,8 @@
     orden: 'La concentración final es opcional: con ella se calcula cuánto tarda en llegar. El coeficiente a es el de A en la reacción (vacío = 1). Se admite 5,1e-4 o 5,1·10^-4.',
     datos: 'Escribe los tiempos y las concentraciones separados por espacios o por punto y coma, en el mismo orden.',
     iniciales: 'Cada experimento es una fila con las concentraciones iniciales y la velocidad inicial medida. Para ver un orden, cambia un reactivo y deja los demás igual.',
+    consecutivas: 'A → B → C: dos etapas de orden 1 seguidas; A ⇌ B: una reacción reversible. Se dibujan las concentraciones y se calcula el máximo de B o el equilibrio.',
+    mecanismo: 'Escribe una etapa elemental por línea con -> (irreversible) o <=> (reversible), con coeficientes (2 NO). Indica la etapa lenta, o la que forma el producto si usas el estado estacionario. Los órdenes experimentales son opcionales: NO=2, O2=1.',
     arrhenius: 'Con dos constantes a dos temperaturas sale la energía de activación; con ella y una constante, la de otra temperatura; con tres o más, la recta de ajuste. ΔH y el catalizador son opcionales.',
   };
   function formulario() {
@@ -40,6 +42,12 @@
       h += fila('A0', 'Concentración inicial [A]₀', 'mol/L') + fila('t', 'Tiempo t') + fila('C', 'Concentración a alcanzar', '(opcional)') + unidT();
     }
     else if (sc.modo === 'datos') h += `<label for="f-ts" class="ancho">Tiempos</label><input id="f-ts" class="in ancho" data-k="ts" value="${esc(sc.ts)}" autocomplete="off" spellcheck="false"><label for="f-As" class="ancho">Concentraciones [A] <small>mol/L</small></label><input id="f-As" class="in ancho" data-k="As" value="${esc(sc.As)}" autocomplete="off" spellcheck="false">` + unidT();
+    else if (sc.modo === 'consecutivas') {
+      h += elige('tipo', 'Qué reacción', [['abc', 'A → B → C (consecutivas)'], ['rev', 'A ⇌ B (reversible)']]) + (sc.tipo === 'rev' ? fila('kf', 'Constante directa kf') + fila('kr', 'Constante inversa kr') + fila('A0', 'Concentración inicial [A]₀', 'mol/L') + fila('B0', 'Concentración inicial [B]₀', 'mol/L, opcional') : fila('k1', 'Constante k₁ (A → B)') + fila('k2', 'Constante k₂ (B → C)') + fila('A0', 'Concentración inicial [A]₀', 'mol/L')) + unidT();
+    }
+    else if (sc.modo === 'mecanismo') {
+      h += `<label for="f-etapas" class="ancho">Etapas (una por línea)</label><textarea id="f-etapas" class="in ancho" data-k="etapas" rows="4" autocomplete="off" spellcheck="false" style="font-family:var(--f-mono)">${esc(sc.etapas ?? '')}</textarea>` + elige('metodo', 'Cómo obtener la ley', [['lenta', 'Etapa lenta (con equilibrios previos)'], ['ee', 'Estado estacionario del intermedio']]) + fila('lenta', sc.metodo === 'ee' ? 'Etapa que forma el producto' : 'Etapa lenta', 'n.º', 'numeric') + fila('exp', 'Órdenes medidos', 'opcional: NO=2, O2=1', 'text');
+    }
     else if (sc.modo === 'iniciales') {
       const r = nr(), Ls = LETRAS.slice(0, r), cl = `exp r${r}`;
       sc.nr = String(r); delete sc.conB;
@@ -57,7 +65,7 @@
   }
   const cambia = () => { $('#ejemplos').value = ''; calcula(); };
   $('#campos').addEventListener('input', (e) => {
-    const t = e.target; if (t.tagName !== 'INPUT') return;
+    const t = e.target; if (t.tagName !== 'INPUT' && t.tagName !== 'TEXTAREA') return;
     if (t.dataset.c) sc.exps[+t.dataset.i][t.dataset.c] = t.value; else sc[t.dataset.k] = t.value;
     cambia();
   });
@@ -67,7 +75,7 @@
     if (k === 'modo') sc = copia(K.ejemplos.find((x) => x.sc.modo === t.value).sc);
     else if (k === 'nr') { sc.nr = t.value; delete sc.conB; const r = +t.value; for (const x of sc.exps) for (const L of LETRAS.slice(0, r)) if (vacio(x[L])) x[L] = '0,1'; while (sc.exps.length < r + 1) sc.exps.push(Object.fromEntries([...LETRAS.slice(0, r).map((L) => [L, '0,1']), ['v', '']])); }
     else if (k === 'kde') { sc.kde = t.value; const d = { t12: { t12: '100' }, pct: { pct: '50', tp: '60' }, med: { t1: '0', A1: sc.A0 || '0,1', t2: '60', A2: '' } }[t.value] || {}; for (const [c, v] of Object.entries(d)) if (vacio(sc[c])) sc[c] = v; if (t.value === 'k' && vacio(sc.k)) sc.k = '0,01'; }
-    else { sc[k] = t.value; if (k === 'tipo' && t.value === 'k2' && vacio(sc.Ea)) sc.Ea = '50'; if (k === 'tipo' && t.value === 'ea' && vacio(sc.k2)) sc.k2 = '0,05'; if (k === 'tipo' && t.value === 'ajuste') { if (vacio(sc.Ts)) sc.Ts = '300 310 320 330'; if (vacio(sc.ks)) sc.ks = '0,001 0,0026 0,0063 0,014'; } }
+    else { sc[k] = t.value; if (sc.modo === 'consecutivas' && k === 'tipo') { const d = t.value === 'rev' ? { kf: '0,3', kr: '0,1' } : { k1: '0,2', k2: '0,1' }; for (const [c, v] of Object.entries(d)) if (vacio(sc[c])) sc[c] = v; } if (k === 'tipo' && t.value === 'k2' && vacio(sc.Ea)) sc.Ea = '50'; if (k === 'tipo' && t.value === 'ea' && vacio(sc.k2)) sc.k2 = '0,05'; if (k === 'tipo' && t.value === 'ajuste') { if (vacio(sc.Ts)) sc.Ts = '300 310 320 330'; if (vacio(sc.ks)) sc.ks = '0,001 0,0026 0,0063 0,014'; } }
     formulario(); cambia();
   });
   $('#campos').addEventListener('click', (e) => {
@@ -106,12 +114,17 @@
       const a = vacio(sc.a) || leeA() === 1 ? '' : `${esc(sc.a)} `, kd = sc.kde === 't12' ? `vida media ${esc(sc.t12)} ${u}` : sc.kde === 'pct' ? `un ${esc(sc.pct)} % de A que reacciona en ${esc(sc.tp)} ${u}` : sc.kde === 'med' ? `[A] = ${esc(sc.A1)} mol/L a los ${esc(sc.t1)} ${u} y ${esc(sc.A2)} mol/L a los ${esc(sc.t2)} ${u}` : `k = ${esc(sc.k)}`;
       return `Una reacción ${a}A → productos es de <b>orden ${esc(sc.n)}</b> con ${kd} y [A]₀ = ${esc(sc.A0)} mol/L. ${sc.kde && sc.kde !== 'k' ? 'Calcula k, ' : 'Calcula '}[A] a los ${esc(sc.t)} ${u}, la vida media${vacio(sc.C) ? '' : ` y cuánto tarda en llegar a ${esc(sc.C)} mol/L`}.`;
     }
+    if (sc.modo === 'consecutivas') return sc.tipo === 'rev' ? `Una reacción A ⇌ B tiene kf = ${esc(sc.kf)} y kr = ${esc(sc.kr)} (en ${u}⁻¹) y empieza con [A]₀ = ${esc(sc.A0)} mol/L. Calcula la <b>constante y las concentraciones de equilibrio</b> y la constante de tiempo.` : `En A → B → C con k₁ = ${esc(sc.k1)} y k₂ = ${esc(sc.k2)} (en ${u}⁻¹) y [A]₀ = ${esc(sc.A0)} mol/L, calcula <b>cuándo es máxima la concentración de B</b> y cuánto vale.`;
+    if (sc.modo === 'mecanismo') return `Con el mecanismo (${esc(String(sc.etapas).replace(/\n/g, '; '))}), halla la <b>reacción global</b>, los intermedios y la <b>ley de velocidad</b> por ${sc.metodo === 'ee' ? 'el estado estacionario' : 'la etapa lenta'}.`;
     if (sc.modo === 'datos') return `Con estas medidas (t en ${u}: ${esc(sc.ts)}; [A] en mol/L: ${esc(sc.As)}), averigua el <b>orden</b> de la reacción, la constante k y la vida media.`;
     if (sc.modo === 'iniciales') return `Con las velocidades iniciales de la tabla, halla los <b>órdenes</b> de reacción, la constante k y la ley de velocidad.`;
     const extra = `${vacio(sc.Eac) ? '' : ` Con un catalizador Eₐ baja a ${esc(sc.Eac)} kJ/mol: ¿por cuánto se multiplica k a ${esc(sc.T1 ?? '')} ${gC}?`}${vacio(sc.dH) ? '' : ` Si ΔH = ${esc(sc.dH)} kJ/mol, ¿cuál es la Eₐ de la reacción inversa?`}`;
     if (sc.tipo === 'ajuste') return `Con estas constantes (T en ${gC}: ${esc(sc.Ts)}; k: ${esc(sc.ks)}), calcula la <b>energía de activación</b> y el factor de frecuencia con la gráfica de Arrhenius.${extra}`;
     return (sc.tipo === 'k2' ? `Una reacción tiene Eₐ = ${esc(sc.Ea)} kJ/mol y k = ${esc(sc.k1)} a ${esc(sc.T1)} ${gC}. ¿Cuánto vale <b>k a ${esc(sc.T2)} ${gC}</b>?` : `La constante vale ${esc(sc.k1)} a ${esc(sc.T1)} ${sc.uT === 'C' ? '°C' : 'K'} y ${esc(sc.k2)} a ${esc(sc.T2)} ${sc.uT === 'C' ? '°C' : 'K'}. Calcula la <b>energía de activación</b> y el factor de frecuencia.`) + extra;
   };
+  const nh = (x) => String(x).replace(/(\d+)/g, '<sub>$1</sub>');
+  const glob = (s) => { const l = (o) => Object.entries(o).map(([x, c]) => `${c === 1 ? '' : String(c).replace('.', ',') + ' '}${nh(x)}`).join(' + '); return `${l(s.global.re)} → ${l(s.global.pr)}`; };
+  const ordenTxt = (o) => 'v = k' + Object.entries(o).map(([x, n]) => ` [${nh(x)}]${n === 1 ? '' : `<sup>${String(+n.toFixed(3)).replace('.', ',').replace('-', '−')}</sup>`}`).join('') + ` (orden total ${String(+Object.values(o).reduce((a, b) => a + b, 0).toFixed(3)).replace('.', ',').replace('-', '−')})`;
   const leeA = () => +String(sc.a).replace(',', '.');
 
   /* ---------- Cálculo ---------- */
@@ -134,6 +147,13 @@
     } else if (sol.modo === 'iniciales') {
       h = dato('Ley de velocidad', Mates.html(`$${sol.ley}$`), 'ancho') + dato('Orden respecto de A', String(sol.oA).replace('.', ',')) + (sol.nr > 1 ? dato('Orden respecto de B', String(sol.oB).replace('.', ',')) : '') + (sol.nr > 2 ? dato('Orden respecto de C', String(sol.oC).replace('.', ',')) : '') + dato('Constante', `k = ${f(sol.k, 4)} ${sol.unidad}`);
       ley = 'Velocidad inicial de cada experimento: la barra es la medida y el punto, la que da la ley de velocidad.';
+    } else if (sol.modo === 'consecutivas') {
+      if (sol.tipo === 'rev') { h = dato('Constante de equilibrio', `K = k<sub>f</sub>/k<sub>r</sub> = ${f(sol.K, 4)}`) + dato('[A] en el equilibrio', `${f(sol.Aeq, 4)} mol/L`) + dato('[B] en el equilibrio', `${f(sol.Beq, 4)} mol/L`) + dato('Constante de tiempo', `τ = ${f(sol.tau, 4)} ${K.unidT(sc.ut)}`) + dato('Semivida del acercamiento', `${f(sol.t12, 4)} ${K.unidT(sc.ut)}`); ley = 'Concentraciones frente al tiempo: A baja y B sube hasta el equilibrio (líneas de puntos).'; }
+      else { h = dato('B es máximo en', `t = ${f(sol.tmax, 4)} ${K.unidT(sc.ut)}`) + dato('Máximo de B', `${f(sol.Bmax, 4)} mol/L (${f(100 * sol.Bmax / sol.A0, 3)} %)`) + dato('Etapa lenta', sol.k1 < sol.k2 ? 'A → B' : sol.k1 > sol.k2 ? 'B → C' : 'ninguna', ''); ley = 'A baja, B sube hasta un máximo y baja, y C sube. El círculo marca el máximo de B.'; }
+    } else if (sol.modo === 'mecanismo') {
+      h = dato('Reacción global', glob(sol), 'num ancho') + dato('Intermedios', sol.intermedios.length ? sol.intermedios.map(nh).join(', ') : 'ninguno', '') + sol.leyes.map((l) => dato(l.nombre, l.ordenes ? ordenTxt(l.ordenes) : 'ver desarrollo', 'num ancho')).join('');
+      if (sol.cuadra) h += dato('Frente al experimento', sol.cuadra.some((c) => c.ok) ? 'Compatible' : 'No reproduce los órdenes medidos', 'ancho');
+      ley = '';
     } else {
       h = (sol.tipo !== 'k2' ? dato('Energía de activación', `E<sub>a</sub> = ${f(sol.Ea / 1000, 4)} kJ/mol`) : dato(`k a ${f(sol.uT === 'C' ? sol.T2 - 273.15 : sol.T2, 4)} ${sol.uT === 'C' ? '°C' : 'K'}`, `k₂ = ${f(sol.k2, 4)}`)) + dato('Factor de frecuencia', `A = ${f(sol.A, 4)}`) + (sol.tipo === 'ajuste' ? dato('R² de la recta', sol.r2.toFixed(5).replace('.', ','), '') : dato('k₂/k₁', f(sol.r, 4))) + (sol.fcat !== null ? dato('Con catalizador', `k × ${f(sol.fcat, 4)}`) : '') + (sol.dH !== null ? dato('Eₐ de la inversa', `${f(sol.Ea / 1000 - sol.dH, 4)} kJ/mol`) : '');
       ley = `Arriba, el diagrama de energía${sol.dH === null ? ' (pon ΔH para situar los productos)' : ''}${sol.Eac !== null ? ', con el camino del catalizador en discontinua' : ''}. Abajo, ln k frente a 1/T: una recta de pendiente −Eₐ/R. Cuanto más empinada, más sube k al calentar.`;
@@ -142,9 +162,21 @@
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
     $('#vistas').hidden = sol.modo !== 'datos';
     if (sol.modo === 'datos') { vista = sol.n; marcaVista(); }
-    $('#escena').hidden = sol.modo === 'iniciales'; $('#play').hidden = !(sol.modo === 'orden' || sol.modo === 'datos');
-    tA = 0; particulas(); dibuja(); grafica();
+    $('#escena').hidden = sol.modo === 'iniciales' || sol.modo === 'consecutivas' || sol.modo === 'mecanismo'; $('#grafica').hidden = sol.modo === 'mecanismo'; $('#play').hidden = !(sol.modo === 'orden' || sol.modo === 'datos');
+    tA = 0; particulas(); dibuja(); grafica(); exporta();
   }
+  // PNG y datos de la gráfica de cada modo (Herramienta.exportar)
+  const n6 = (v) => String(+Number(v).toPrecision(6)).replace('.', ',');
+  function datosGrafica() {
+    if (!sol) return null;
+    if (sol.modo === 'orden') { const T = tMax(); return { cab: [`t (${sol.u})`, '[A] (mol/L)'], filas: Array.from({ length: 41 }, (_, i) => { const t = (T * i) / 40; return [n6(t), n6(sol.c(t))]; }) }; }
+    if (sol.modo === 'datos') return { cab: [`t (${sol.u})`, '[A] (mol/L)', 'ln [A]', '1/[A]'], filas: sol.ts.map((t, i) => [n6(t), n6(sol.As[i]), n6(Math.log(sol.As[i])), n6(1 / sol.As[i])]) };
+    if (sol.modo === 'consecutivas') return { cab: [`t (${K.unidT(sc.ut)})`, ...sol.especies.map((e) => `[${e}] (mol/L)`)], filas: sol.curva.filter((_, i) => i % 5 === 0).map((p) => [n6(p.t), ...sol.especies.map((e) => n6(p[e]))]) };
+    if (sol.modo === 'iniciales') return { cab: ['Experimento', 'v₀ medida', 'v₀ de la ley'], filas: sol.E.map((e, i) => [String(i + 1), n6(e.v), n6(sol.vLey(e))]) };
+    if (sol.modo === 'arrhenius') { const P = sol.pts || [{ T: sol.T1, k: sol.k1 }, { T: sol.T2, k: sol.k2 }]; return { cab: ['1000/T (1/K)', 'ln k'], filas: P.map((q) => [n6(1000 / q.T), n6(Math.log(q.k))]) }; }
+    return null;
+  }
+  function exporta() { if (sol && sol.modo !== 'mecanismo') Herramienta.exportar('#grafica', { nombre: 'cinetica-' + sol.modo, titulo: 'Cinética: ' + (MODOS.find(([k]) => k === sol.modo) || ['', ''])[1], etiqueta: 'la gráfica', datos: datosGrafica }); }
   const marcaVista = () => { for (const b of document.querySelectorAll('#vistas button')) b.setAttribute('aria-pressed', String(+b.dataset.v === vista)); };
   $('#vistas').addEventListener('click', (e) => { const b = e.target.closest('[data-v]'); if (!b) return; vista = +b.dataset.v; marcaVista(); grafica(); });
 
@@ -273,6 +305,13 @@
       sol.ts.forEach((t, i) => punto(g, X(t), Y(ys[i]), 4.5, col['--ink']));
       texto(g, w - V.mR - 6, V.mT + 10, `R² = ${F.r2.toFixed(5).replace('.', ',')}`, vista === sol.n ? col['--accent'] : col['--muted'], 'right', '600 ');
       if (vista === 0) { const t = tDe(); punto(g, X(t), Y(sol.c(t)), 4, col['--peso']); }
+    } else if (sol.modo === 'consecutivas') {
+      const cv = sol.curva, T = sol.tfin, cmax = Math.max(sol.A0, ...cv.map((p) => p.B)) * 1.08 || 1, [X, Y] = marco(0, T, 0, cmax);
+      ejes(g, w, h, V, X, Y, `t (${sol.u || K.unidT(sc.ut)})`, 'concentración (mol/L)');
+      const serie = [['A', '--accent'], ['B', '--tension'], ['C', '--roz']].slice(0, sol.especies.length);
+      for (const [n, c] of serie) { g.strokeStyle = col[c]; g.lineWidth = 2.4; g.beginPath(); cv.forEach((p, i) => (i ? g.lineTo(X(p.t), Y(p[n])) : g.moveTo(X(p.t), Y(p[n])))); g.stroke(); texto(g, X(T) - 6, Y(cv[cv.length - 1][n]) - 9, n, col[c], 'right', '600 '); }
+      if (sol.tipo === 'rev') { g.setLineDash([4, 4]); g.lineWidth = 1.4; for (const [v, c] of [[sol.Aeq, '--accent'], [sol.Beq, '--tension']]) { g.strokeStyle = col[c]; g.beginPath(); g.moveTo(X(0), Y(v)); g.lineTo(X(T), Y(v)); g.stroke(); } g.setLineDash([]); }
+      else { g.setLineDash([4, 4]); g.strokeStyle = col['--muted']; g.beginPath(); g.moveTo(X(sol.tmax), Y(0)); g.lineTo(X(sol.tmax), Y(sol.Bmax)); g.stroke(); g.setLineDash([]); punto(g, X(sol.tmax), Y(sol.Bmax), 5, col['--ink']); }
     } else if (sol.modo === 'iniciales') {
       const vs = sol.E.map((e) => e.v), mx = Math.max(...vs, ...sol.E.map(sol.vLey)) * 1.1, n = sol.E.length;
       const [, Y] = marco(0, n, 0, mx), ancho = (w - V.mL - V.mR) / n;
@@ -303,7 +342,9 @@
   window.addEventListener('resize', () => { dibuja(); grafica(); });
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { colores(); dibuja(); grafica(); });
 
+  Ajuste.monta(document.querySelector('.layout .card'), { masas: false });
+  addEventListener('quimica-ajuste', () => calcula());
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('cinetica').current;
   formulario(); colores(); calcula(); requestAnimationFrame(bucle);
-  window.CineticaApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { modo: sol.modo, n: sol.n, k: sol.k, A: sol.A, t12: sol.t12, oA: sol.oA, oB: sol.oB, oC: sol.oC, Ea: sol.Ea, k2: sol.k2, fcat: sol.fcat }, estado: () => copia(sc), vista: (v) => { vista = v; marcaVista(); grafica(); }, pausa: () => { anda = false; } };
+  window.CineticaApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { modo: sol.modo, n: sol.n, k: sol.k, A: sol.A, t12: sol.t12, oA: sol.oA, oB: sol.oB, oC: sol.oC, Ea: sol.Ea, k2: sol.k2, fcat: sol.fcat, tmax: sol.tmax, Bmax: sol.Bmax, Aeq: sol.Aeq, Keq: sol.K, leyes: sol.leyes && sol.leyes.map((l) => l.ordenes), cuadra: sol.cuadra }, estado: () => copia(sc), vista: (v) => { vista = v; marcaVista(); grafica(); }, pausa: () => { anda = false; } };
 })();

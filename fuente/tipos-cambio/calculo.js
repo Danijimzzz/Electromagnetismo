@@ -3,7 +3,10 @@
    revés) con comisión, el tipo de cambio cruzado entre dos monedas, la
    apreciación o depreciación entre dos fechas, la paridad del poder
    adquisitivo absoluta con el tipo de cambio real (el índice Big Mac) y
-   la PPA relativa con la inflación de los dos países. El tipo de cambio
+   la PPA relativa con la inflación de los dos países y la paridad de los
+   tipos de interés (cubierta: el tipo a plazo y el arbitraje; descubierta:
+   la depreciación esperada). Los tipos de los ejemplos son ilustrativos, no
+   cotizaciones de ningún día. El tipo de cambio
    E va siempre como lo publica el BCE: unidades de la otra moneda por
    1 €. Formato de economia/comun.js; interfaz en tipos-cambio/app.js.
      resolver(sc)  { modo: 'convertir' | 'cruzado' | 'variacion' | 'ppa' | 'relativa', … } → { …, pasos }
@@ -11,7 +14,7 @@
 const TiposCambio = (() => {
   const K = typeof Eco !== 'undefined' ? Eco : require('../economia/comun.js');
   const { f, num, lee } = K;
-  const MODOS = { convertir: 'Cambiar dinero', cruzado: 'Tipo de cambio cruzado', variacion: 'Apreciación o depreciación', ppa: 'PPA y tipo de cambio real', relativa: 'PPA relativa (inflación)' };
+  const MODOS = { convertir: 'Cambiar dinero', cruzado: 'Tipo de cambio cruzado', variacion: 'Apreciación o depreciación', ppa: 'PPA y tipo de cambio real', relativa: 'PPA relativa (inflación)', paridad: 'Paridad de los tipos de interés' };
   // código → [nombre en plural, símbolo, con artículo]
   const MONEDAS = { USD: ['dólares', '$', 'el dólar'], GBP: ['libras', '£', 'la libra'], JPY: ['yenes', '¥', 'el yen'], CHF: ['francos suizos', 'CHF', 'el franco suizo'], MXN: ['pesos mexicanos', 'MXN', 'el peso mexicano'], CNY: ['yuanes', 'CNY', 'el yuan'] };
   // en los resultados va el código (USD), que no se confunde con las fórmulas $…$
@@ -70,7 +73,26 @@ const TiposCambio = (() => {
     return { modo: 'relativa', m, E0, pi, pe, N, r, En, v, filas, pasos };
   }
 
-  const R = { convertir, cruzado, variacion, ppa, relativa };
+  // paridad cubierta: invertir un euro aquí rinde (1 + i)^T; cambiarlo hoy, invertirlo fuera y volver a euros al tipo a plazo F rinde E·(1 + i*)^T/F. Sin arbitraje, F = E·((1 + i*)/(1 + i))^T
+  function paridad(sc) {
+    const m = mon(sc.mon), E = tipo(sc, 'E', 'el tipo de cambio de hoy'), i = lee(sc, 'i', 'el tipo de interés en España', { min: -50, max: 100 }) / 100, ie = lee(sc, 'ie', 'el tipo de interés fuera', { min: -50, max: 100 }) / 100;
+    const N = lee(sc, 'n', 'el plazo en años', { min: 0, minEx: true, max: 50 }), vacio = K.vacio(sc.Fm), Fm = vacio ? null : lee(sc, 'Fm', 'el tipo a plazo de mercado', { min: 0, minEx: true });
+    const aqui = (1 + i) ** N, fuera = (1 + ie) ** N, F = E * fuera / aqui, prima = F / E - 1, dif = ie - i, pasos = [];
+    pasos.push({ t: 'Dos formas de invertir un euro', html: `En España, un euro rinde $(1 + i)^T = (1 + ${f(i, 5)})^{${f(N, 5)}} = ${f(aqui, 7)}$ €.<br>Fuera: se cambia hoy por $E = ${n(E)}$ ${m[1]}, se invierten al ${pc(ie)} y se vuelven a cambiar a euros con un contrato a plazo $F$: $E·(1 + i^*)^T/F = ${n(E)}·${f(fuera, 7)}/F$ €.` });
+    pasos.push({ t: 'Paridad cubierta', html: `Si no hay arbitraje, las dos formas rinden lo mismo:<br>$F = E·{(1 + i^*)^T}/{(1 + i)^T} = ${n(E)}·${f(fuera, 7)}/${f(aqui, 7)} = ${f(F, 6)}$ ${m[1]} por euro.` });
+    pasos.push({ t: 'Prima o descuento', html: Math.abs(prima) < 1e-12 ? 'Los tipos de interés son iguales y el tipo a plazo coincide con el de hoy.' : `$F/E − 1 = ${pc(prima)}$: el euro cotiza a plazo con una <b>${prima > 0 ? 'prima' : 'descuento'}</b> del ${f(Math.abs(100 * prima), 4)} %, porque el tipo de interés ${dif > 0 ? 'de fuera es mayor' : 'de aquí es mayor'}. Aproximadamente, $(F − E)/E ≈ i^* − i = ${f(100 * dif, 4)}$ puntos (por año).` });
+    pasos.push({ t: 'Paridad descubierta', html: `Si los inversores no exigen prima de riesgo y no se cubren, el tipo de cambio esperado dentro de ${f(N, 4)} año${N === 1 ? '' : 's'} es el tipo a plazo: $E^e = F = ${f(F, 6)}$. La moneda con el tipo de interés más alto se espera que se deprecie: aquí, ${m[2]} ${dif > 0 ? 'rinde más pero se espera que valga menos euros' : dif < 0 ? 'rinde menos pero se espera que valga más euros' : 'rinde lo mismo y no se espera que cambie'}.` });
+    let arb = null;
+    if (Fm !== null) {
+      const cubierta = E * fuera / Fm, dg = cubierta - aqui;
+      arb = { Fm, cubierta, aqui, dg, pct: dg / aqui };
+      pasos.push({ t: 'Arbitraje con el tipo a plazo de mercado', html: `Con $F_m = ${n(Fm)}$: invertir fuera con cobertura rinde $${n(E)}·${f(fuera, 7)}/${n(Fm)} = ${f(cubierta, 7)}$ € por euro y hacerlo aquí, $${f(aqui, 7)}$ €. ${Math.abs(dg) < 1e-9 ? 'No hay arbitraje.' : dg > 0 ? `Compensa <b>invertir fuera con cobertura</b> (pidiendo prestados euros aquí): ganas ${f(dg, 5)} € por euro, un ${f(100 * dg / aqui, 4)} %, sin riesgo. Al hacerlo, el tipo a plazo y el de hoy se moverían hasta eliminar la ganancia.` : `Compensa <b>invertir aquí</b> y pedir prestado fuera con cobertura: ganas ${f(-dg, 5)} € por euro, un ${f(-100 * dg / aqui, 4)} %, sin riesgo. Al hacerlo, el tipo a plazo y el de hoy se moverían hasta eliminar la ganancia.`}` });
+    }
+    const filas = Array.from({ length: Math.min(Math.ceil(N), 20) + 1 }, (_, t) => ({ t, F: E * ((1 + ie) / (1 + i)) ** t }));
+    return { modo: 'paridad', m, E, i, ie, N, F, prima, dif, aqui, fuera, arb, filas, pasos };
+  }
+
+  const R = { convertir, cruzado, variacion, ppa, relativa, paridad };
   const resolver = (sc) => (R[sc.modo] || convertir)(sc);
 
   const ejemplos = [
@@ -79,6 +101,8 @@ const TiposCambio = (() => {
     { clave: 'cruzado', nombre: 'Dólares en libras con el euro de puente', sc: { modo: 'cruzado', mon: 'USD', mon2: 'GBP', E: '1,08', E2: '0,85' } },
     { clave: 'cae', nombre: 'El euro baja de 1,10 a 1,05 dólares', sc: { modo: 'variacion', mon: 'USD', E: '1,10', E2: '1,05' } },
     { clave: 'bigmac', nombre: 'Índice Big Mac: España y Japón', sc: { modo: 'ppa', mon: 'JPY', P: '5,40', Pe: '480', E: '160' } },
+    { clave: 'paridad', nombre: 'Tipo a plazo a 1 año: 3 % aquí y 5 % fuera', sc: { modo: 'paridad', mon: 'USD', E: '1,08', i: '3', ie: '5', n: '1', Fm: '' } },
+    { clave: 'arbitraje', nombre: 'Arbitraje: el mercado ofrece 1,12 a plazo', sc: { modo: 'paridad', mon: 'USD', E: '1,08', i: '3', ie: '5', n: '1', Fm: '1,12' } },
     { clave: 'inflacion', nombre: 'Inflación del 3 % aquí y del 2 % en EE. UU.', sc: { modo: 'relativa', mon: 'USD', E: '1,08', pi: '3', pe: '2', n: '5' } },
   ];
 

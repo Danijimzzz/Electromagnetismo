@@ -18,6 +18,15 @@
 #tabla-geo { width: 100%; border-collapse: collapse }
 #tabla-geo th { font: 600 12px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .03em }
 #tabla-geo tr.activa td { background: var(--accent-soft) }
+.lewis-fig { text-align: center; margin: 4px 0 10px; color: var(--ink) }
+.lewis-svg { max-width: 100%; height: auto }
+.lw-at { font: 600 17px var(--f-math); fill: var(--ink) }
+.lw-fc { font: 700 11px var(--f-ui); fill: var(--dipolo) }
+.lw-fc.neg { fill: var(--at-n) }
+.tab-datos { width: 100%; border-collapse: collapse; margin-top: 8px }
+.tab-datos td, .tab-datos th { padding: 5px 8px; text-align: left; border-bottom: 1px solid var(--line); font-size: 13.5px }
+.tab-datos th { font: 600 12px var(--f-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .03em }
+.opcion { display: flex; gap: 8px; align-items: center; margin: 6px 0; font-size: 14px }
 </style>
 <body>
 <header class="top"><a class="logo" href="../../">Cienci<i>fy</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Química</a> / Geometría molecular VSEPR en 3D</span></header>
@@ -28,10 +37,14 @@
   <div class="card">
     <h2>Datos</h2>
     <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
-    <div class="modos" role="tablist"><button role="tab" id="tab-formula" aria-selected="true">Fórmula</button><button role="tab" id="tab-axe" aria-selected="false">Tipo AXₙEₘ</button></div>
+    <div class="modos" role="tablist"><button role="tab" id="tab-formula" aria-selected="true">Fórmula</button><button role="tab" id="tab-axe" aria-selected="false">Tipo AXₙEₘ</button><button role="tab" id="tab-cadena" aria-selected="false">Varios centros</button></div>
     <div id="p-formula">
       <input id="formula" class="in ancho" placeholder="H2O, SF4, NH4+, SO4 2-…" aria-label="Fórmula" autocomplete="off" spellcheck="false">
       <p class="nota">Moléculas e iones con un átomo central y terminales H, F, Cl, Br, I, O o S. Las cargas, con o sin ^: NH4+, SO4 2-, SO4^2-. Las mayúsculas importan: CO es monóxido de carbono y Co, cobalto.</p>
+    </div>
+    <div id="p-cadena" hidden>
+      <input id="cadena" class="in ancho" placeholder="CH3-CH2-OH, CH2=CH2, CH3-C(=O)-OH…" aria-label="Fórmula semidesarrollada" autocomplete="off" spellcheck="false">
+      <p class="nota">Moléculas con varios átomos centrales en forma semidesarrollada: grupos como CH3, CH2, OH o NH2 unidos con - (sencillo), = (doble) y # (triple); las ramas, entre paréntesis: CH3-C(=O)-OH. Sin anillos todavía.</p>
     </div>
     <div id="p-axe" hidden>
       <div class="campos">
@@ -44,7 +57,18 @@
   </div>
   <div>
     <div class="card destacado"><h2>Resultados</h2><p class="formula-g" id="titulo-mol"></p><div class="resumen" id="resumen"></div></div>
-    <div class="card"><h2>La molécula en 3D</h2>
+    <div class="card" id="card-lewis" hidden><h2>Estructura de Lewis</h2>
+      <div class="lewis-fig" id="lewis-fig"></div>
+      <label class="opcion" id="lab-octeto"><input type="checkbox" id="octeto"> Limitar al octeto (sin expandir el del periodo 3 o más)</label>
+      <div class="resumen" id="lewis-resumen"></div>
+      <div class="tabla-scroll"><table class="tab-datos" id="lewis-tabla"></table></div>
+      <p class="nota" id="lewis-nota"></p>
+    </div>
+    <div class="card" id="card-centros" hidden><h2>Geometría de cada átomo</h2>
+      <div class="tabla-scroll"><table class="tab-datos" id="centros-tabla"></table></div>
+      <p class="nota">Cada átomo con dos o más vecinos tiene su propia geometría: se cuentan sus vecinos (átomos enlazados) y sus pares libres, igual que en una molécula con un solo centro.</p>
+    </div>
+    <div class="card" id="card-3d"><h2>La molécula en 3D</h2>
       <canvas id="molecula" tabindex="0" aria-label="Molécula en 3D: arrastra para girarla, rueda o + y − para acercar, flechas para girar con el teclado"></canvas>
       <div class="controles">
         <button class="btn" id="b-giro" aria-pressed="true">Girar sola</button>
@@ -58,6 +82,12 @@
   </div>
 </div>
 <section class="teoria">
+  <h2>Estructura de Lewis y cargas formales</h2>
+  <p>En la estructura de Lewis cada enlace es un par de electrones compartido y cada par libre se dibuja con dos puntos. Para repartir los electrones: se suman los e⁻ de valencia (restando la carga si es un anión y sumándola si es un catión), se unen los terminales al central con enlaces sencillos, se completan los octetos de los terminales y los pares que quedan van al átomo central.</p>
+  <p class="f m">$C_f = V - P - E/2$</p>
+  <p>La <b>carga formal</b> C<sub>f</sub> es V (electrones de valencia del átomo libre) menos P (electrones en pares libres) menos E/2 (la mitad de los electrones de enlace). La mejor estructura es la que tiene las cargas formales más pequeñas y la carga negativa en el átomo más electronegativo. Si se puede mover el doble enlace a otro terminal igual, hay <b>resonancia</b>: varias estructuras equivalentes cuya media es la molécula real, con un <b>orden de enlace</b> intermedio (en el NO₃⁻, 4/3). Los átomos del periodo 3 o posterior pueden pasar del octeto; si marcas «limitar al octeto» verás la otra estructura, la que muchos libros prefieren para el SO₂ o el SO₄²⁻.</p>
+  <h2>Moléculas con varios centros</h2>
+  <p>En el etanol, el ácido acético o el eteno hay varios átomos «centrales». La geometría de cada uno depende solo de sus vecinos y de sus pares libres: el C del CH₃ es tetraédrico (sp³), el C del C=O es trigonal plano (sp²), el C de un triple enlace es lineal (sp) y el O del OH es angular (dos pares libres). Un enlace doble o triple cuenta como un solo dominio.</p>
   <h2>El modelo VSEPR</h2>
   <p>La teoría de repulsión de los pares de electrones de la capa de valencia (VSEPR) dice que los <b>dominios de electrones</b> alrededor de un átomo central se colocan lo más lejos posible unos de otros. Un dominio es un enlace (sencillo, doble o triple), un par libre o un electrón desapareado.</p>
   <p class="f m">$"dominios" = ("e⁻ de valencia del central" + "e⁻ que aportan los terminales" − "carga")/2$</p>

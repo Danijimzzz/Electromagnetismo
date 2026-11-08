@@ -42,14 +42,9 @@ const Solubilidad = (() => {
     return v;
   }
 
-  // sales de ejemplo [clave, fórmula, cationes a, aniones b, Kps a 25 °C]: valores de tablas de uso común
-  const SALES = [
-    ['AgCl', 'AgCl', 1, 1, 1.8e-10], ['AgBr', 'AgBr', 1, 1, 5.0e-13], ['AgI', 'AgI', 1, 1, 8.5e-17],
-    ['BaSO4', 'BaSO4', 1, 1, 1.1e-10], ['CaCO3', 'CaCO3', 1, 1, 3.4e-9], ['PbSO4', 'PbSO4', 1, 1, 1.6e-8],
-    ['CaF2', 'CaF2', 1, 2, 3.9e-11], ['PbI2', 'PbI2', 1, 2, 9.8e-9], ['PbCl2', 'PbCl2', 1, 2, 1.7e-5],
-    ['Mg(OH)2', 'Mg(OH)2', 1, 2, 1.8e-11], ['Ca(OH)2', 'Ca(OH)2', 1, 2, 5.5e-6], ['Ag2CrO4', 'Ag2CrO4', 2, 1, 1.1e-12],
-    ['Ag2CO3', 'Ag2CO3', 2, 1, 8.5e-12], ['Al(OH)3', 'Al(OH)3', 1, 3, 3e-34], ['Fe(OH)3', 'Fe(OH)3', 1, 3, 4e-38],
-  ];
+  // sales de ejemplo [clave, fórmula, cationes a, aniones b, Kps a 25 °C, catión, anión, ácido conjugado del anión]: quimica/datos.js (QU-1), con su fuente
+  const D = typeof Datos !== 'undefined' ? Datos : require('../quimica/datos.js');
+  const SALES = D.KPS.map(([c, cat, an, a, b, K, ac]) => [c, c, a, b, K, cat, an, ac]);
 
   const ns = (n) => (n === 1 ? 's' : `${n} s`);
   const sub = (n) => (n === 1 ? '' : `_{${n}}`), ex = (n) => (n === 1 ? '' : `^{${n}}`);
@@ -160,7 +155,92 @@ const Solubilidad = (() => {
     return { modo: 'selectiva', cat, ion, S, primera: p.i, p, q, resta, frac, sep, pasos };
   }
 
+  /* ---------- Efecto del pH (SO-1) ---------- */
+  // pKa sucesivos «6,35 ; 10,33» → [6.35, 10.33]
+  const lista = (t, nom) => {
+    const xs = String(t ?? '').split(';').map((x) => x.trim()).filter(Boolean).map(leeNum);
+    if (!xs.length || xs.some((x) => !isFinite(x))) throw new Error(`${nom}: escribe números separados por «;», como 6,35 ; 10,33`);
+    return xs;
+  };
+  const pHde = (sc) => { const v = leeNum(sc.pH); if (!isFinite(v) || v < 0 || v > 14) throw new Error('El pH debe ser un número entre 0 y 14'); return v; };
+  // fracción del anión en su forma completamente desprotonada a un pH, con los pKa del ácido (de más ácido a menos)
+  const alfa0 = (pKas, pH) => {
+    const h = 10 ** -pH, Ka = pKas.map((p) => 10 ** -p); let suma = 1, prod = 1;
+    for (let k = 1; k <= Ka.length; k++) { prod *= Ka[Ka.length - k]; suma += h ** k / prod; }
+    return 1 / suma;
+  };
+  function ph(sc) {
+    const a = lee(sc, 'a', 'el número de cationes', { entero: true }), b = lee(sc, 'b', 'el número de aniones', { entero: true }), Kps = lee(sc, 'Kps', 'el Kps'), pH = pHde(sc);
+    const oh = sc.anion === 'oh', pKas = oh ? [] : lista(sc.pkas, 'Los pKa del ácido conjugado del anión'), M = masaM(sc), pasos = [cabecera(sc, a, b, M)];
+    const s0 = solAgua(Kps, a, b);
+    // solubilidad a un pH
+    const sDe = (pHx) => {
+      if (oh) { const OH = 10 ** (pHx - 14); return Math.min(Kps / OH ** b / a, Infinity) / 1; } // [A] = a·s → s = [A]/a con [A]^a [OH]^b = Kps
+      return (Kps / (a ** a * b ** b * alfa0(pKas, pHx) ** b)) ** (1 / (a + b));
+    };
+    let s;
+    if (oh) {
+      const OH = 10 ** (pH - 14), A = (Kps / OH ** b) ** (1 / a);
+      s = A / a;
+      pasos.push({ t: 'Hidróxido: el pH fija [OH⁻]', html: `El anión es el OH⁻, así que el pH lo fija desde fuera: $[OH^{−}] = 10^{pH−14} = 10^{${f(pH - 14, 3)}} = ${f(OH)}$ M. El equilibrio $K_{"ps"} = [A]${ex(a)}[OH^{−}]${ex(b)}$ da $[A] = (K_{"ps"}/[OH^{−}]${ex(b)})^{1/${a}} = ${f(A)}$ M.` });
+      pasos.push({ t: 'Solubilidad', html: `La solubilidad es lo que se disuelve del sólido: $s = [A]/${a} = ${f(s)}$ mol/L${M ? ` = ${f(s * M)} g/L` : ''}. En agua pura sería $s_{0} = ${f(s0)}$ mol/L (el pH que tendría esa disolución es otro: aquí el pH está mantenido por un tampón).` });
+    } else {
+      const al = alfa0(pKas, pH);
+      s = sDe(pH);
+      pasos.push({ t: 'El anión se protona', html: `El anión B es la base conjugada de un ácido débil con $pK_a$ = ${pKas.map((x) => f(x, 3)).join('; ')}. A pH ${f(pH, 3)} solo una fracción $α = ${f(al)}$ del anión total está como B libre; el resto está protonado (HB, H₂B…) y no cuenta en el $K_{"ps"}$.` });
+      pasos.push({ t: 'Solubilidad', html: `$K_{"ps"} = [A]${ex(a)}[B]${ex(b)} = (${a === 1 ? '' : a + ' '}s)${ex(a)}(${b === 1 ? '' : b + ' '}s α)${ex(b)}$ ⇒ $s = (K_{"ps"}/(${a ** a * b ** b} α${ex(b)}))^{1/${a + b}} = ${f(s)}$ mol/L${M ? ` = ${f(s * M)} g/L` : ''}. En medio donde el anión no se protona sería $s_{0} = ${f(s0)}$ mol/L.` });
+    }
+    pasos.push({ t: 'Efecto del pH', html: `A pH ${f(pH, 3)} la sal es <b>${f(s / s0, 3)} veces ${s > s0 ? 'más' : 'menos'} soluble</b> que sin tener en cuenta la protonación del anión${oh ? ' en agua pura' : ''}. ${oh ? 'Un pH ácido (poca OH⁻) disuelve el hidróxido; uno básico lo hace precipitar.' : 'Al bajar el pH el anión se protona, el equilibrio de disolución se desplaza hacia la derecha y la sal se disuelve más.'}` });
+    const r = { modo: 'ph', a, b, Kps, pH, s, s0, factor: s / s0, g: M ? s * M : null, M, oh, pKas, pasos };
+    const curva = []; for (let x = 0; x <= 14.0001; x += 0.25) curva.push([x, sDe(x)]);
+    r.curva = curva;
+    if (oh && String(sc.C ?? '').trim() !== '') {
+      const C = lee(sc, 'C', 'la concentración del catión'), pIni = 14 + lg10((Kps / C ** a) ** (1 / b)), Cres = C / 1000, pFin = 14 + lg10((Kps / Cres ** a) ** (1 / b));
+      Object.assign(r, { C, pHini: pIni, pHfin: pFin });
+      pasos.push({ t: `pH al que empieza a precipitar (${f(C)} M de catión)`, html: `Empieza cuando $Q = K_{"ps"}$: $[OH^{−}] = (K_{"ps"}/[A]${ex(a)})^{1/${b}} = (${f(Kps)}/${f(C)}${ex(a)})^{1/${b}} = ${f((Kps / C ** a) ** (1 / b))}$ M ⇒ $pOH = ${f(14 - pIni, 4)}$ ⇒ <b>pH = ${f(pIni, 4)}</b>.` });
+      pasos.push({ t: 'pH al que la precipitación es cuantitativa', html: `Cuando queda el 0,1 % del catión ($[A] = ${f(Cres)}$ M): $[OH^{−}] = (K_{"ps"}/${f(Cres)}${ex(a)})^{1/${b}}$ ⇒ <b>pH = ${f(pFin, 4)}</b>. Entre pH ${f(pIni, 3)} y ${f(pFin, 3)} está el intervalo de precipitación; a un pH mayor el hidróxido ha precipitado casi del todo.` });
+    }
+    if (oh && ['Al(OH)3', 'Zn(OH)2', 'Pb(OH)2', 'Cr(OH)3'].includes(sc.formula)) pasos.push({ t: 'Aviso: anfoterismo', html: `Este hidróxido es anfótero: en medio muy básico se vuelve a disolver formando hidroxocomplejos (por ejemplo $Al(OH)_{4}^{−}$). Este modo no los incluye, así que a pH alto la solubilidad real es mayor que la calculada; el modo de complejos lo trata con la constante de formación.` });
+    return r;
+  }
+  const lg10 = Math.log10;
+
+  /* ---------- Complejos (SO-2) ---------- */
+  // sal A_aB_b cuyo catión forma complejos A(L)_n con un ligando L (NH3, OH⁻, CN⁻…) con constantes de formación globales β_n
+  function complejo(sc) {
+    const a = lee(sc, 'a', 'el número de cationes', { entero: true }), b = lee(sc, 'b', 'el número de aniones', { entero: true }), Kps = lee(sc, 'Kps', 'el Kps');
+    const C0 = lee(sc, 'L0', 'la concentración inicial del ligando'), logb = lista(sc.logb, 'Los logaritmos de las constantes de formación (log β₁; log β₂…)');
+    const M = masaM(sc), pasos = [cabecera(sc, a, b, M)], lig = vacio(sc.lig) ? 'L' : sc.lig;
+    const beta = logb.map((x) => (x === null ? null : 10 ** x)), n = beta.length;
+    const nb = (L) => { let S = 1, N = 0; for (let k = 0; k < n; k++) if (beta[k]) { const t = beta[k] * L ** (k + 1); S += t; N += (k + 1) * t; } return [S, N / S]; }; // [1 + Σβ L^k, ligandos medios n̄]
+    // ligando libre para una solubilidad s: L + a·s·n̄(L) = C0 (monótona en L)
+    const libre = (s) => { let lo = 0, hi = C0; for (let i = 0; i < 200; i++) { const m = (lo + hi) / 2; if (m + a * s * nb(m)[1] < C0) lo = m; else hi = m; } return (lo + hi) / 2; };
+    const g = (s) => { const L = libre(s), [S] = nb(L); return Math.log((a * s / S) ** a * (b * s) ** b / Kps); };
+    const s0 = solAgua(Kps, a, b);
+    let lo = s0, hi = Math.max(s0 * 2, C0 / a * 2); while (g(hi) < 0 && hi < 1e6) hi *= 2;
+    for (let i = 0; i < 300; i++) { const m = (lo + hi) / 2; if (g(m) < 0) lo = m; else hi = m; }
+    const s = (lo + hi) / 2, L = libre(s), [S, nbar] = nb(L), Alibre = a * s / S;
+    const frac = (k) => (k === 0 ? 1 : beta[k - 1] ? beta[k - 1] * L ** k : 0) / S;
+    pasos.push({ t: 'Complejos del catión', html: `El catión A forma complejos con ${esc2(lig)}: $A + k ${lig} ⇌ A(${lig})_{k}$ con $β_k$ ($log β$ = ${logb.map((x, k) => `${k + 1}: ${x === null ? '—' : f(x, 3)}`).join('; ')}). Solo una fracción del catión disuelto está libre: $[A]_{"libre"} = [A]_{"total"}/(1 + Σ β_k [${lig}]^{k})$.` });
+    pasos.push({ t: 'Equilibrios acoplados', html: `Se imponen dos condiciones: $K_{"ps"} = [A]_{"libre"}${ex(a)}[B]${ex(b)}$ con $[A]_{"total"} = ${a === 1 ? '' : a + ' '}s$ y $[B] = ${b === 1 ? '' : b + ' '}s$, y el balance del ligando, $[${lig}]_{0} = [${lig}] + [A]_{"total"} · \bar n$, donde $\bar n$ es el número medio de ligandos por catión. Se resuelven juntas por bisección.` });
+    pasos.push({ t: 'Resultado', html: `Con ${f(C0)} M de ${lig} inicial queda libre $[${lig}] = ${f(L)}$ M y $\bar n = ${f(nbar)}$. La solubilidad es <b>$s = ${f(s)}$ mol/L</b>${M ? ` = ${f(s * M)} g/L` : ''}, frente a $s_{0} = ${f(s0)}$ mol/L en agua: <b>${f(s / s0, 3)} veces</b> mayor. El catión libre es $[A] = ${f(Alibre)}$ M.` });
+    const especies = beta.map((b2, k) => ({ k: k + 1, c: a * s * frac(k + 1) })).filter((e) => e.c > 0);
+    pasos.push({ t: 'Reparto del catión disuelto', html: `Libre: ${f(100 * frac(0), 4)} %${especies.map((e) => `; ${'A(' + lig + ')'}<sub>${e.k}</sub>: ${f(100 * frac(e.k), 4)} %`).join('')}.` });
+    const curva = []; for (let x = -3; x <= 1.0001; x += 0.1) { const c0 = 10 ** x; curva.push([x, solComp(c0)]); }
+    function solComp(c0) {
+      const lib = (ss) => { let l = 0, h = c0; for (let i = 0; i < 100; i++) { const m = (l + h) / 2; if (m + a * ss * nb(m)[1] < c0) l = m; else h = m; } return (l + h) / 2; };
+      const gg = (ss) => { const [Sx] = nb(lib(ss)); return Math.log((a * ss / Sx) ** a * (b * ss) ** b / Kps); };
+      let l = s0, h = Math.max(s0 * 2, c0 / a * 2); while (gg(h) < 0 && h < 1e6) h *= 2;
+      for (let i = 0; i < 100; i++) { const m = (l + h) / 2; if (gg(m) < 0) l = m; else h = m; }
+      return (l + h) / 2;
+    }
+    return { modo: 'complejo', a, b, Kps, L0: C0, lig, s, s0, factor: s / s0, L, nbar, Alibre, g: M ? s * M : null, M, curva, pasos };
+  }
+  const esc2 = (t) => String(t).replace(/[<>&]/g, '');
+
   function resolver(sc) {
+    if (sc.modo === 'ph') return ph(sc);
+    if (sc.modo === 'complejo') return complejo(sc);
     if (sc.modo === 'solub') return deKps(sc);
     if (sc.modo === 'comun') return ionComun(sc);
     if (sc.modo === 'precipita') return precipita(sc);
@@ -177,6 +257,13 @@ const Solubilidad = (() => {
     { clave: 'pbi2-mezcla', nombre: 'Mezcla de Pb²⁺ y I⁻: ¿precipita PbI₂?', sc: { modo: 'precipita', formula: 'PbI2', a: '1', b: '2', Kps: '9.8e-9', c1: '0.01', V1: '50', c2: '0.01', V2: '50', M: '' } },
     { clave: 'agcl-mezcla', nombre: 'Mezcla de Ag⁺ y Cl⁻: cuánto AgCl precipita', sc: { modo: 'precipita', formula: 'AgCl', a: '1', b: '1', Kps: '1.8e-10', c1: '0.10', V1: '50', c2: '0.10', V2: '50', M: '143.32' } },
     { clave: 'sin-precipitado', nombre: 'Disolución muy diluida: no precipita', sc: { modo: 'precipita', formula: 'AgCl', a: '1', b: '1', Kps: '1.8e-10', c1: '1e-6', V1: '100', c2: '1e-6', V2: '100', M: '' } },
+    { clave: 'mg-oh-ph', nombre: 'Mg(OH)₂ en un tampón de pH 9: solubilidad y pH de precipitación', sc: { modo: 'ph', sal: 'Mg(OH)2', formula: 'Mg(OH)2', a: '1', b: '2', Kps: '1.8e-11', anion: 'oh', pkas: '', pH: '9', C: '0.01', M: '' } },
+    { clave: 'caco3-ph', nombre: 'CaCO₃ a pH 5: se disuelve en medio ácido', sc: { modo: 'ph', sal: 'CaCO3', formula: 'CaCO3', a: '1', b: '1', Kps: '3.4e-9', anion: 'base', pkas: '6,35 ; 10,33', pH: '5', C: '', M: '' } },
+    { clave: 'caf2-ph', nombre: 'CaF₂ a pH 3: el F⁻ se protona', sc: { modo: 'ph', sal: 'CaF2', formula: 'CaF2', a: '1', b: '2', Kps: '3.9e-11', anion: 'base', pkas: '3,17', pH: '3', C: '', M: '' } },
+    { clave: 'agcl-nh3', nombre: 'AgCl en amoníaco 1 M: se disuelve por el complejo', sc: { modo: 'complejo', sal: 'AgCl', formula: 'AgCl', a: '1', b: '1', Kps: '1.8e-10', lig: 'NH3', logb: '3,32 ; 7,23', L0: '1', M: '' } },
+    { clave: 'cuoh2-nh3', nombre: 'Cu(OH)₂ en amoníaco 2 M', sc: { modo: 'complejo', sal: 'Cu(OH)2', formula: 'Cu(OH)2', a: '1', b: '2', Kps: '2.2e-20', lig: 'NH3', logb: '4,04 ; 7,47 ; 10,27 ; 11,75', L0: '2', M: '' } },
+    { clave: 'hidroxidos-separar', nombre: 'Separar Fe³⁺ y Mg²⁺ con OH⁻ (hidróxidos a pH controlado)', sc: { modo: 'selectiva', comun: 'an', a1: '1', b1: '3', Kps1: '4e-38', c1: '0.01', a2: '1', b2: '2', Kps2: '1.8e-11', c2: '0.01' } },
+    { clave: 'cl-i-ag', nombre: 'Separar I⁻ y Cl⁻ añadiendo Ag⁺', sc: { modo: 'selectiva', comun: 'cat', a1: '1', b1: '1', Kps1: '8.5e-17', c1: '0.10', a2: '1', b2: '1', Kps2: '1.8e-10', c2: '0.10' } },
     { clave: 'mohr', nombre: 'Cl⁻ y CrO₄²⁻ con Ag⁺ (método de Mohr)', sc: { modo: 'selectiva', comun: 'cat', a1: '1', b1: '1', Kps1: '1.8e-10', c1: '0.10', a2: '2', b2: '1', Kps2: '1.1e-12', c2: '1e-3' } },
   ];
 

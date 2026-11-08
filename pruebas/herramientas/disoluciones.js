@@ -55,6 +55,32 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     if (fallos === antes) console.log(`  ✓ Disoluciones: ${Disoluciones.ejemplos.length} concentraciones con los valores esperados y la vuelta desde cada forma, ${Disoluciones.ejemplosPreparar.length} preparaciones (también en N, g/L, % y molal), normalidad, diluciones con unidades, mezclas, coligativas y masa molar a mano y errores`);
   }
 
+  {
+    // DI-1 · solubilidad frente a T y Henry, a mano con la tabla y la fórmula de k_H(T)
+    const antes = fallos, ST = require(path.join(fuente, 'quimica', 'solubilidad-t.js')), DD = require(path.join(fuente, 'quimica', 'datos.js'));
+    const cerca = (a, b, tol, q) => { if (!(Math.abs(a - b) <= tol * Math.max(1, Math.abs(b)))) mal(`Disoluciones · ${q}: ${a} en vez de ${b}`); };
+    { const r = ST.sal({ modo: 'sal', sal: 'KNO3', T: '50', agua: '200', soluto: '150' }); cerca(r.S, (63.9 + 110) / 2, 1e-12, 'KNO3 a 50 °C'); cerca(r.max, 2 * (63.9 + 110) / 2, 1e-12, 'máximo en 200 g'); if (r.estado !== 'insaturada') mal('Disoluciones · 150 g de KNO3 en 200 g a 50 °C deberían ser insaturada: ' + r.estado); cerca(r.w, 86.95 / 186.95 * 100, 1e-12, '% en masa saturada');
+      const r2 = ST.sal({ modo: 'sal', sal: 'KNO3', T: '50', agua: '200', soluto: '200' }); if (!/sin disolver/.test(r2.estado)) mal('Disoluciones · 200 g de KNO3 deberían dejar sólido sin disolver: ' + r2.estado); }
+    { const r = ST.sal({ modo: 'sal', sal: 'NaCl', T: '20', agua: '100' }); cerca(r.m, 35.9 * 10 / 58.443, 1e-3, 'molalidad del NaCl saturado'); }
+    cerca(ST.sal({ modo: 'cristal', sal: 'KNO3', T: '80', T2: '20', agua: '500', soluto: '' }).cristaliza, (169 - 31.6) * 5, 1e-12, 'KNO3 que cristaliza al enfriar');
+    cerca(ST.sal({ modo: 'cristal', sal: 'NaCl', T: '100', T2: '0', agua: '100', soluto: '' }).cristaliza, 39.2 - 35.7, 1e-12, 'NaCl que cristaliza');
+    { const r = ST.sal({ modo: 'cristal', sal: 'KNO3', T: '20', T2: '60', agua: '100', soluto: '' }); if (r.cristaliza !== 0 || Math.abs(r.admiteMas - (110 - 31.6)) > 1e-9) mal('Disoluciones · calentar no debe cristalizar y sí admitir más: ' + JSON.stringify([r.cristaliza, r.admiteMas])); }
+    { const r = ST.sal({ modo: 'cristal', sal: 'KNO3', T: '80', T2: '20', agua: '100', soluto: '100' }); cerca(r.cristaliza, 100 - 31.6, 1e-12, 'cristaliza partiendo de 100 g disueltos'); }
+    // temperaturas de saturación: K2Cr2O7 a 40 g entre 40 (26,3) y 60 °C (45,6); Na2SO4 a 45 g sube y baja
+    { const r = ST.sal({ modo: 'busca', sal: 'K2Cr2O7', x: '40' }); cerca(r.T[0], 40 + 20 * (40 - 26.3) / (45.6 - 26.3), 1e-6, 'T de saturación del K2Cr2O7'); const n = ST.sal({ modo: 'busca', sal: 'Na2SO4', x: '45' }); cerca(n.T.length, 2, 0, 'dos temperaturas para el Na2SO4'); cerca(n.T[0], 20 + 20 * (45 - 19.5) / (48.8 - 19.5), 1e-6, 'primera T del Na2SO4'); cerca(n.T[1], 60 + 20 * (45 - 45.3) / (43.7 - 45.3), 1e-6, 'segunda T del Na2SO4'); cerca(ST.sal({ modo: 'busca', sal: 'KCl', x: '90' }).T.length, 0, 0, 'KCl no llega a 90 g'); }
+    // Henry: O2 a 20 °C y 0,2095 atm; a más temperatura, menos gas
+    { const k = 1.3e-3 * Math.exp(1700 * (1 / 293.15 - 1 / 298.15)), r = ST.gas({ gas: 'O2', Tg: '20', p: '0,2095' }); cerca(r.k, k, 1e-12, 'k_H del O2 a 20 °C'); cerca(r.c, k * 0.2095, 1e-12, 'c del O2'); cerca(r.mgL, k * 0.2095 * 31.998 * 1000, 1e-9, 'mg/L de O2'); cerca(r.mgL, 9.6, 0.02, 'O2 en agua a 20 °C ≈ 9,6 mg/L (sin presión de vapor)'); if (!(ST.gas({ gas: 'O2', Tg: '40', p: '0,2095' }).c < r.c)) mal('Disoluciones · el O2 debe disolverse menos al calentar');
+      const q = ST.gas({ gas: 'CO2', Tg: '5', p: '', obj: '3000' }); cerca(q.c, 3 / 44.009, 1e-9, 'c pedida del CO2'); cerca(ST.gas({ gas: 'CO2', Tg: '5', p: String(q.p) }).mgL, 3000, 1e-9, 'ida y vuelta de Henry'); }
+    // los datos: crecientes donde toca, valores coherentes con el tipo de sal y todas las fórmulas reconocidas
+    for (const [id, sl] of Object.entries(DD.SOLUBILIDAD_T)) { if (sl.v.length !== 6 || sl.v.some((x) => !(x > 0))) mal(`Disoluciones · datos de solubilidad de ${id}`); }
+    for (const id of ['KNO3', 'KCl', 'NH4Cl', 'NaNO3', 'CuSO4', 'K2Cr2O7', 'KClO3', 'PbNO32', 'sacarosa']) if (DD.SOLUBILIDAD_T[id].v.some((x, i, a) => i && x <= a[i - 1])) mal(`Disoluciones · ${id} debería crecer con la temperatura`);
+    for (const id of ['CaOH2', 'Li2SO4']) if (DD.SOLUBILIDAD_T[id].v.some((x, i, a) => i && x >= a[i - 1])) mal(`Disoluciones · ${id} debería bajar con la temperatura`);
+    if (!DD.FUENTES.solubilidadT || !DD.FUENTES.henry) mal('Disoluciones · faltan las fuentes de solubilidad y de Henry');
+    for (const [sc, q] of [[{ modo: 'sal', sal: 'KNO3', T: '120', agua: '100' }, 'T fuera de 0–100 °C'], [{ modo: 'sal', sal: 'xx', T: '20', agua: '100' }, 'sal que no existe'], [{ modo: 'sal', sal: 'KNO3', T: '20', agua: '0' }, 'agua cero'], [{ modo: 'cristal', sal: 'KNO3', T: '20', T2: '10', agua: '100', soluto: '500' }, 'más soluto del que cabe'], [{ modo: 'busca', sal: 'KNO3', x: '' }, 'falta la cantidad']]) { let ok = false; try { ST.sal(sc); } catch (e) { ok = true; } if (!ok) mal(`Disoluciones · ${q} no da error`); }
+    for (const [sc, q] of [[{ gas: 'O2', Tg: '80', p: '1' }, 'gas a 80 °C'], [{ gas: 'zz', Tg: '20', p: '1' }, 'gas que no existe'], [{ gas: 'O2', Tg: '20', p: '' , obj: ''}, 'falta la presión']]) { let ok = false; try { ST.gas(sc); } catch (e) { ok = true; } if (!ok) mal(`Disoluciones · ${q} no da error`); }
+    if (fallos === antes) console.log(`  ✓ Disoluciones · ${DD.SOLUBILIDAD_T ? Object.keys(DD.SOLUBILIDAD_T).length : 0} sales y ${Object.keys(DD.HENRY).length} gases: solubilidad, cristalización, saturación y Henry a mano, y errores`);
+  }
+
   return async (browser) => {
     {
       const { page, consola } = await pagina(browser, 1200, 900);
@@ -89,6 +115,22 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       await page.selectOption('#d-uV2', 'mL');
       await page.fill('#d-C1', '2'); await page.fill('#d-V1', '50'); await page.fill('#d-C2', ''); await page.fill('#d-V2', '200');
       if (!(await page.locator('#res-dil').textContent()).includes('0,5')) mal('Disoluciones: la dilución en la página no da C₂ = 0,5');
+      // solubilidad y gases en la página
+      { const a0 = fallos;
+        await page.evaluate(() => DisolApp.abrirEjemploS('kno3-cristal'));
+        const t1 = await page.evaluate(() => ({ r: DisolApp.resultadoSol(), sel: document.querySelector('#tab-sol').getAttribute('aria-selected'), vis: !document.querySelector('#sol').hidden, b: [...document.querySelectorAll('#sol .exportar button')].length, ocultos: [...document.querySelectorAll('#sol [data-m]')].filter((n) => n.hidden).length }));
+        if (Math.abs(t1.r.cristaliza - 687) > 1e-6 || t1.sel !== 'true' || !t1.vis || t1.b < 2 || t1.ocultos < 3) mal('Disoluciones · solubilidad en la página: ' + JSON.stringify(t1));
+        await page.fill('#s-agua', '100');
+        if (Math.abs((await page.evaluate(() => DisolApp.resultadoSol().cristaliza)) - 137.4) > 1e-6) mal('Disoluciones · cambiar la masa de agua no recalcula');
+        await page.evaluate(() => DisolApp.abrirEjemploS('co2-refresco'));
+        const g1 = await page.evaluate(() => ({ r: DisolApp.resultadoSol(), gas: !document.querySelector('label[for=s-gas]').hidden, sal: document.querySelector('label[for=s-sal]').hidden, tit: document.querySelector('#titulo-graf-sol').textContent }));
+        if (!(g1.r.mgL > 9000) || !g1.gas || !g1.sal || !/Gas/.test(g1.tit)) mal('Disoluciones · gas en la página: ' + JSON.stringify(g1));
+        await page.fill('#s-Tg', '90');
+        if (await page.locator('#error-sol').isHidden()) mal('Disoluciones · un gas a 90 °C no muestra el error');
+        await page.evaluate(() => DisolApp.abrirEjemploS('na2so4-pico'));
+        if (!/y/.test(await page.locator('#valores-sol').innerText())) mal('Disoluciones · Na2SO4 no muestra dos temperaturas');
+        if (fallos === a0) console.log('  ✓ Disoluciones · solubilidad frente a T y gases en la página, con la gráfica y los botones de exportar');
+      }
       await page.close();
       if (consola.length) mal('Disoluciones: consola del navegador:\n      ' + consola.join('\n      '));
       if (fallos === antes) console.log(`  ✓ Disoluciones: ${Disoluciones.ejemplos.length} concentraciones, ${Disoluciones.ejemplosPreparar.length} preparaciones, ${Disoluciones.ejemplosColig.length} coligativas y diluciones con unidades sin errores de consola`);

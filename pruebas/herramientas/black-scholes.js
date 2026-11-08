@@ -21,7 +21,17 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     cerca(d.deltaC, (P(d.S + e, d.T, d.sg, d.r) - P(d.S - e, d.T, d.sg, d.r)) / (2 * e), 1e-6, 'delta como derivada'); cerca(d.vega, (P(d.S, d.T, d.sg + e, d.r) - P(d.S, d.T, d.sg - e, d.r)) / (2 * e) / 100, 1e-6, 'vega como derivada');
     cerca(d.rhoC, (P(d.S, d.T, d.sg, d.r + e) - P(d.S, d.T, d.sg, d.r - e)) / (2 * e) / 100, 1e-6, 'rho como derivada'); cerca(d.thetaC * 365, -(P(d.S, d.T + e, d.sg, d.r) - P(d.S, d.T - e, d.sg, d.r)) / (2 * e), 1e-6, 'theta como derivada');
     cerca(d.gamma, (P(d.S + e, d.T, d.sg, d.r) - 2 * P(d.S, d.T, d.sg, d.r) + P(d.S - e, d.T, d.sg, d.r)) / (e * e), 1e-4, 'gamma como derivada segunda');
-    error({ ...C.ejemplos[0].sc, S: '0' }, 'acción a precio 0'); error({ ...C.ejemplos[0].sc, T: '0' }, 'vencimiento ya vencido'); error({ ...C.ejemplos[0].sc, sigma: '-5' }, 'volatilidad negativa'); error({ ...C.ejemplos[0].sc, K: '' }, 'sin precio de ejercicio');
+    error({ ...C.ejemplos[0].sc, S: '0' }, 'acción a precio 0'); // vencimiento y volatilidad cero: pago seguro
+    { const v = C.resolver({ ...C.ejemplos[0].sc, T: '0', S: '105' }); cerca(v.call, 5, 1e-12, 'call con T = 0'); cerca(v.put, 0, 1e-12, 'put con T = 0'); cerca(v.deltaC, 1, 1e-12, 'delta con T = 0'); cerca(v.deltaP, 0, 1e-12, 'delta put con T = 0'); cerca(v.gamma, 0, 1e-12, 'gamma con T = 0');
+      const w = C.resolver({ ...C.ejemplos[0].sc, S: '100', K: '95', sigma: '0' }); cerca(w.call, 100 - 95 * Math.exp(-0.05), 1e-12, 'call con σ = 0'); cerca(w.put, 0, 1e-12, 'put con σ = 0'); cerca(w.call - w.put, 100 - 95 * Math.exp(-0.05), 1e-12, 'paridad con σ = 0');
+      const lim = C.calcula(100, 95, 1, 0.05, 1e-7, 0); cerca(lim.call, C.calcula(100, 95, 1, 0.05, 1e-7, 0).call, 1e-12, 'estable'); cerca(C.calcula(100, 95, 1, 0.05, 1e-4, 0).call, w.call, 1e-6, 'σ → 0 tiende al caso σ = 0'); cerca(C.calcula(100, 95, 1e-6, 0.05, 0.2, 0).call, 5, 1e-3, 'T → 0 tiende al caso T = 0'); }
+    // volatilidad implícita: devuelve la σ que dio el precio
+    for (const [S, X, T, r, sg, q, t] of [[100, 100, 1, 0.05, 0.2, 0, 'call'], [50, 45, 0.25, 0.03, 0.3, 0, 'put'], [80, 85, 2, 0.04, 0.25, 0.03, 'call'], [30, 30, 0.75, 0.02, 0.6, 0, 'put']]) {
+      const o = C.calcula(S, X, T, r, sg, q), P = t === 'call' ? o.call : o.put, iv = C.sigmaImplicita(S, X, T, r, q, t, P); cerca(iv, sg, 1e-9, `σ implícita de la ${t} (S = ${S})`);
+    }
+    { const v = C.resolver({ modo: 'iv', S: '100', K: '100', T: '1', r: '5', q: '0', tipo: 'call', precio: '10,4506' }); cerca(v.sg, 0.2, 1e-6, 'σ implícita desde la página'); }
+    error({ modo: 'iv', S: '100', K: '100', T: '1', r: '5', q: '0', tipo: 'call', precio: '1000' }, 'precio de la call mayor que la acción'); error({ modo: 'iv', S: '100', K: '90', T: '1', r: '5', q: '0', tipo: 'call', precio: '1' }, 'precio por debajo del valor intrínseco (arbitraje)'); error({ modo: 'iv', S: '100', K: '100', T: '0', r: '5', q: '0', tipo: 'call', precio: '5' }, 'σ implícita con T = 0'); error({ modo: 'iv', S: '100', K: '100', T: '1', r: '5', q: '0', tipo: 'call', precio: '' }, 'sin precio de mercado');
+    error({ ...C.ejemplos[0].sc, T: '-1' }, 'vencimiento negativo'); error({ ...C.ejemplos[0].sc, sigma: '-5' }, 'volatilidad negativa'); error({ ...C.ejemplos[0].sc, K: '' }, 'sin precio de ejercicio');
     if (fallos === antes) console.log(`  ✓ ${N}: ${C.ejemplos.length} ejemplos, call, put, paridad y griegas (frente a derivadas numéricas), y errores`);
   }
   return Com.navegador({ publico, carpeta: 'black-scholes', nombre: N, app: 'BlackScholesApp', C, pagina, mal, malo: { k: 'sigma', v: '-5' } });

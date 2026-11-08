@@ -39,6 +39,25 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     const vl = r('velocidad-limite');
     cerca(vl.vL, (0.02 * 9.8 * 0.2) / (0.25 * 0.16), 1e-12, 'velocidad límite mgR/(B²L²)'); cerca(vl.tau, (0.02 * 0.2) / 0.04, 1e-12, 'τ = mR/(B²L²)');
     cerca(r('barra-lanzada').vf(0.8), 5 * Math.exp(-1), 1e-12, 'v(τ) de la barra lanzada');
+    // FA-1: raíles inclinados, corriente y potencia en el límite, g = 9,80665
+    { const inc = Faraday.resolver({ modo: 'dinamica', caso: 'cae', B: '0.5', L: '0.4', R: '0.2', m: '0.02', ang: '30', g: '9,80665', t: '' });
+      cerca(inc.vL, (0.02 * 9.80665 * 0.5 * 0.2) / (0.04), 1e-12, 'velocidad límite en raíles a 30°'); cerca(inc.IL, (0.02 * 9.80665 * 0.5) / (0.5 * 0.4), 1e-12, 'corriente límite I = mg sen θ/(BL)');
+      cerca(inc.PL, inc.IL * inc.IL * 0.2, 1e-12, 'potencia en el límite = I²R'); cerca(inc.If(10 * inc.tau), inc.IL, 1e-4, 'I(t) tiende a I límite'); cerca(inc.If(0) + 1, 1, 1e-12, 'I(0) = 0 al caer del reposo');
+      cerca(Faraday.resolver({ modo: 'dinamica', caso: 'cae', B: '0.5', L: '0.4', R: '0.2', m: '0.02' }).vL, (0.02 * 9.8 * 0.2) / 0.04, 1e-12, 'vertical por defecto con g = 9,8');
+      for (const mala of [{ ang: '0' }, { ang: '120' }]) { let ok = false; try { Faraday.resolver({ modo: 'dinamica', caso: 'cae', B: '1', L: '1', R: '1', m: '1', ...mala }); } catch (e) { ok = true; } if (!ok) mal(`Faraday: raíles ${JSON.stringify(mala)} deberían dar error`); }
+      // energía: ∫ I² R dt de 0 a ∞ + ½ m vL² = ∫ F v dt (por integración numérica)
+      const caer = Faraday.resolver({ modo: 'dinamica', caso: 'lanzada', B: '1', L: '0.5', R: '2', m: '0.1', v0: '5' }); let Q = 0; const n = 20000, T = 20 * caer.tau;
+      for (let i = 0; i < n; i++) { const t = ((i + 0.5) * T) / n; Q += caer.If(t) ** 2 * 2 * (T / n); } cerca(Q, 0.5 * 0.1 * 25, 1e-4, 'calor disipado = energía cinética inicial'); }
+    // FA-2 Foucault: disco y lámina por la integral de σE²
+    { const d = Faraday.resolver(Faraday.ejemplos.find((e) => e.clave === 'foucault-disco').sc), w = 2 * Math.PI * 50, a = 0.05, th = 0.002, sg = 58e6;
+      cerca(d.P, (Math.PI * sg * th * a ** 4 * (0.1 * w) ** 2) / 16, 1e-12, 'Foucault disco: potencia media');
+      let I = 0; const n = 4000; for (let i = 0; i < n; i++) { const rr = ((i + 0.5) * a) / n, E = (rr / 2) * 0.1 * w; I += sg * E * E * 2 * Math.PI * rr * th * (a / n); } cerca(d.P, I / 2, 1e-5, 'Foucault disco: integral numérica de σE²/2');
+      cerca(d.delta, Math.sqrt(2 / (w * 4e-7 * Math.PI * sg)), 1e-12, 'profundidad de penetración'); if (!d.aviso) mal('Faraday: el disco de cobre de 5 cm a 50 Hz debería llevar aviso de efecto pelicular');
+      const l = Faraday.resolver(Faraday.ejemplos.find((e) => e.clave === 'foucault-nucleo').sc), l1 = Faraday.resolver({ ...Faraday.ejemplos.find((e) => e.clave === 'foucault-nucleo').sc, N: '1' });
+      cerca(l1.P / l.P, 10000, 1e-9, 'laminar en 100 reduce la potencia 10⁴ veces'); cerca(l.comp.P1, l1.P, 1e-12, 'potencia sin laminar'); cerca(l.P, (2e6 * w * w * 1 * (0.0002) ** 2 / 24) * 500e-6, 1e-12, 'Foucault lámina: potencia');
+      let J = 0; const m = 4000, dl = 0.0002; for (let i = 0; i < m; i++) { const z = -dl / 2 + ((i + 0.5) * dl) / m, E = z * w; J += 2e6 * E * E * (dl / m); } cerca(l.pv, (J / dl) / 2, 1e-5, 'lámina: media de σE² en el espesor');
+      for (const mala of [{ sigma: '0' }, { B0: '' }, { a: '-1' }, { fr: '0' }]) { let ok = false; try { Faraday.resolver({ ...Faraday.ejemplos.find((e) => e.clave === 'foucault-disco').sc, ...mala }); } catch (e) { ok = true; } if (!ok) mal(`Faraday: Foucault ${JSON.stringify(mala)} debería dar error`); }
+      let ok = false; try { Faraday.resolver({ ...Faraday.ejemplos.find((e) => e.clave === 'foucault-nucleo').sc, N: '2,5' }); } catch (e) { ok = true; } if (!ok) mal('Faraday: Foucault con N no entero debería dar error'); }
     cerca(r('disco').eps, 0.5 * 0.8 * 100 * Math.PI * 0.01, 1e-12, 'ε = ½BωR² del disco');
     cerca(r('alternador').par, r('alternador').Pm / (100 * Math.PI), 1e-12, 'par medio del alternador');
     for (const [sc, q] of [[{ modo: 'hilo', I: '1', d: '1', w: '1', h: '1', N: '1' }, 'hilo sin nada que cambie'], [{ modo: 'barra', B: '1', L: '1', v: '0' }, 'barra quieta'], [{ modo: 'flujo', N: '1', forma: 'area', S: '1', B1: '1', B2: '1', dt: '1' }, 'flujo que no cambia'], [{ modo: 'giratoria', N: '2.5', B: '1', forma: 'area', S: '1', w: '1' }, 'N no entero'], [{ modo: 'cruza', N: '1', a: '0', D: '1', v: '1', B: '1' }, 'lado 0']]) {

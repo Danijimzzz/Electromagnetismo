@@ -26,7 +26,8 @@ const Fresnel = (() => {
     return s.replace('.', ',').replace('-', '−');
   };
   // acepta coma decimal, 3e8 y 3·10^8
-  const leeNum = (s) => +String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace(/[−–]/g, '-').replace(/[·x×*]10\^?([+\-]?\d+)/i, 'e$1');
+  const leeNum0 = (s) => +String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace(/[−–]/g, '-').replace(/[·x×*]10\^?([+\-]?\d+)/i, 'e$1');
+  const leeNum = (s) => { const u = typeof Herramienta !== 'undefined' ? Herramienta.leeUn(s) : undefined; return u !== undefined ? u : leeNum0(s); }; // admite «4 mm», «2,4 GHz», «10 pF»
   const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
   const mayus = (t) => t[0].toUpperCase() + t.slice(1);
   function lee(sc, k, nom, { opcional = false, defecto = null, positivo = true } = {}) {
@@ -66,6 +67,51 @@ const Fresnel = (() => {
     if (s >= 1) return { Rp: 1, Rl: 1 };
     const c = coef(m1.e, m2.e, ci, Math.sqrt(1 - s * s));
     return { Rp: c.Rp, Rl: c.Rl };
+  }
+
+  // R, T y fase de la reflexión (grados) de las dos polarizaciones a cualquier ángulo: gráficas de FR-3
+  function curvaFull(sol, g) {
+    const m1 = sol.m1, m2 = sol.m2, ci = Math.cos(g * RAD), s = (m1.n / m2.n) * Math.sin(g * RAD);
+    if (s >= 1) {
+      const q = Math.sqrt(s * s - 1), a = Math.atan((m1.e * q) / (m2.e * ci)), b = Math.atan((m2.e * q) / (m1.e * ci));
+      return { Rp: 1, Rl: 1, Tp: 0, Tl: 0, fp: (-2 * a) / RAD, fl: 180 - (2 * b) / RAD, tot: true };
+    }
+    const c = coef(m1.e, m2.e, ci, Math.sqrt(1 - s * s));
+    return { Rp: c.Rp, Rl: c.Rl, Tp: c.Tp, Tl: c.Tl, fp: c.rp < 0 ? 180 : 0, fl: c.rl < 0 ? 180 : 0, tot: false };
+  }
+
+  /* ---- Capas delgadas (FR-1): matriz característica de cada capa, medios sin pérdidas y no magnéticos ---- */
+  const Cx = { sum: (a, b) => [a[0] + b[0], a[1] + b[1]], mul: (a, b) => [a[0] * b[0] - a[1] * b[1], a[0] * b[1] + a[1] * b[0]], div: (a, b) => { const d = b[0] * b[0] + b[1] * b[1]; return [(a[0] * b[0] + a[1] * b[1]) / d, (a[1] * b[0] - a[0] * b[1]) / d]; }, abs2: (a) => a[0] * a[0] + a[1] * a[1] };
+  const cosC = (n1, nj, sinI) => { const q = 1 - ((n1 * sinI) / nj) ** 2; return q >= 0 ? [Math.sqrt(q), 0] : [0, Math.sqrt(-q)]; };
+  const chC = (z) => [Math.cos(z[0]) * Math.cosh(z[1]), -Math.sin(z[0]) * Math.sinh(z[1])], shC = (z) => [Math.sin(z[0]) * Math.cosh(z[1]), Math.cos(z[0]) * Math.sinh(z[1])];
+  // capas [{ n, d (nm) }] entre n1 y n2; { Rp, Rl, Tp, Tl } a la longitud de onda lam (nm) y al ángulo th (grados)
+  function capasRT(n1, n2, capas, lam, th) {
+    const si = Math.sin(th * RAD), out = {};
+    for (const pol of ['p', 'l']) {
+      const eta = (n, ct) => (pol === 'p' ? [n * ct[0], n * ct[1]] : Cx.div([n, 0], ct)); // ⊥: n cos θ; ∥: n / cos θ
+      const e1 = eta(n1, cosC(n1, n1, si)), es = eta(n2, cosC(n1, n2, si)), j = [0, 1];
+      let M = [[[1, 0], [0, 0]], [[0, 0], [1, 0]]];
+      for (const cp of capas) {
+        const ct = cosC(n1, cp.n, si), ej = eta(cp.n, ct), k = (2 * Math.PI * cp.n * cp.d) / lam, dC = [k * ct[0], k * ct[1]];
+        const cs = chC(dC), ss = shC(dC), m12 = Cx.mul(Cx.div(j, ej), ss), m21 = Cx.mul(Cx.mul(j, ej), ss);
+        M = [[Cx.sum(Cx.mul(M[0][0], cs), Cx.mul(M[0][1], m21)), Cx.sum(Cx.mul(M[0][0], m12), Cx.mul(M[0][1], cs))], [Cx.sum(Cx.mul(M[1][0], cs), Cx.mul(M[1][1], m21)), Cx.sum(Cx.mul(M[1][0], m12), Cx.mul(M[1][1], cs))]];
+      }
+      const B = Cx.sum(M[0][0], Cx.mul(M[0][1], es)), Cc = Cx.sum(M[1][0], Cx.mul(M[1][1], es)), eB = Cx.mul(e1, B);
+      const num = [eB[0] - Cc[0], eB[1] - Cc[1]], den = [eB[0] + Cc[0], eB[1] + Cc[1]];
+      out['R' + pol] = Math.min(1, Math.max(0, Cx.abs2(num) / Cx.abs2(den))); out['T' + pol] = Math.min(1, Math.max(0, (4 * e1[0] * es[0]) / Cx.abs2(den)));
+    }
+    return out;
+  }
+  // capas del formulario: nc (0 a 3), c1n, c1d, … («λ/4» = cuarto de onda a la λ dada y a incidencia normal)
+  function leeCapas(sc, lam) {
+    const nc = Math.min(3, Math.max(0, Math.round(vacio(sc.nc) ? 0 : leeNum(sc.nc)) || 0)), out = [];
+    for (let i = 1; i <= nc; i++) {
+      const n = lee(sc, 'c' + i + 'n', 'el índice de la capa ' + i), t = String(sc['c' + i + 'd'] ?? '').trim().toLowerCase().replace(/\s/g, '');
+      let d;
+      if (/^(λ|l)\/4$/.test(t)) d = lam ? lam / (4 * n) : NaN; else if (/^(λ|l)\/2$/.test(t)) d = lam ? lam / (2 * n) : NaN; else d = lee(sc, 'c' + i + 'd', 'el espesor de la capa ' + i + ' (nm)');
+      out.push({ n, d });
+    }
+    return out;
   }
 
   function resolver(sc) {
@@ -115,6 +161,20 @@ const Fresnel = (() => {
     car.push(thc !== null ? `ángulo crítico: $sen θ_c = n_2/n_1 = ${f(m2.n)}/${f(m1.n)}$ ⇒ <b>$θ_c = ${f(thc)}°$</b>; a partir de él hay reflexión total` : 'no hay ángulo crítico: hay reflexión total solo al pasar a un medio de menor índice');
     pasos.push({ t: 'Ángulos característicos', html: car.join('.<br>') + '.' });
     pasos.push({ t: 'Incidencia normal', html: `Con $θ_i = 0$ las dos polarizaciones coinciden: $r = {η_2 − η_1}/{η_2 + η_1} = ${f(rN)}$ y $R = r^2 = ${f(100 * RN, 3)} %$.` });
+    const capas = leeCapas(sc, lam0);
+    if (capas.length) {
+      if (!lam0) throw new Error('Con capas delgadas hace falta la longitud de onda en el vacío (nm)');
+      const rt = capasRT(m1.n, m2.n, capas, lam0, th), rN0 = capasRT(m1.n, m2.n, capas, lam0, 0), s0 = capasRT(m1.n, m2.n, [], lam0, th);
+      sol.cap = { capas, ...rt, Rm: (rt.Rp + rt.Rl) / 2, Tm: (rt.Tp + rt.Tl) / 2, RN: rN0.Rp, lam: lam0, sin: s0 };
+      const lista = capas.map((c, i) => `capa ${i + 1}: $n = ${f(c.n)}$, $d = ${f(c.d)} "nm"$ ($n d = ${f(c.n * c.d / lam0)} λ$)`).join('; ');
+      pasos.push({ t: 'Capas delgadas (matriz de transferencia)', html: `${lista}. Cada capa aporta $M_j = [[cos δ_j, j sen δ_j/η_j],[j η_j sen δ_j, cos δ_j]]$ con $δ_j = {2π n_j d_j cos θ_j}/{λ}$ y $η_j = n_j cos θ_j$ (⊥) o $n_j/cos θ_j$ (∥). Con $[B, C]^T = M_1 M_2 ⋯ [1, η_s]^T$: $r = {η_0 B − C}/{η_0 B + C}$ y $T = {4 η_0 "Re"(η_s)}/{|η_0 B + C|^2}$.` });
+      pasos.push({ t: 'Resultado con las capas', html: `A $λ = ${f(lam0)} "nm"$ y $θ_i = ${f(th)}°$: $R_⊥ = ${f(rt.Rp)}$, $R_∥ = ${f(rt.Rl)}$, $T_⊥ = ${f(rt.Tp)}$, $T_∥ = ${f(rt.Tl)}$; luz natural $R = ${f(100 * sol.cap.Rm, 4)} %$ frente a $${f(100 * (s0.Rp + s0.Rl) / 2, 4)} %$ sin capas. Con incidencia normal $R = ${f(100 * rN0.Rp, 4)} %$.` });
+      if (capas.length === 1) {
+        const nopt = Math.sqrt(m1.n * m2.n), dopt = lam0 / (4 * capas[0].n), Rc = ((m1.n * m2.n - capas[0].n ** 2) / (m1.n * m2.n + capas[0].n ** 2)) ** 2;
+        sol.cap.nopt = nopt; sol.cap.dopt = dopt; sol.cap.Rcuarto = Rc;
+        pasos.push({ t: 'Capa de cuarto de onda', html: `Con espesor $n d = λ/4$ ($d = ${f(dopt)} "nm"$) y incidencia normal, $R = ({n_1 n_2 − n^2}/{n_1 n_2 + n^2})^2 = ${f(100 * Rc, 4)} %$; se anula con el índice óptimo $n = √(n_1 n_2) = ${f(nopt)}$.` });
+      }
+    }
     sol.pasos = pasos;
     return sol;
   }
@@ -126,8 +186,10 @@ const Fresnel = (() => {
     { clave: 'vidrio-aire', nombre: 'Vidrio → aire, 30° (sin reflexión total)', sc: { dato: 'n', n1: '1,5', n2: '1', theta: '30', E0: '', lambda: '' } },
     { clave: 'agua-aire', nombre: 'Agua → aire, 60° (reflexión total)', sc: { dato: 'n', n1: '1,33', n2: '1', theta: '60', E0: '', lambda: '600' } },
     { clave: 'radio-agua', nombre: 'Onda de radio sobre el agua (εr = 81)', sc: { dato: 'er', er1: '1', mr1: '1', er2: '81', mr2: '1', theta: '45', E0: '', lambda: '' } },
+    { clave: 'antirreflejante', nombre: 'Antirreflejante de MgF₂ (n = 1,38, λ/4) sobre vidrio, 550 nm', sc: { dato: 'n', n1: '1', n2: '1,52', theta: '0', E0: '', lambda: '550', nc: '1', c1n: '1,38', c1d: 'λ/4', c2n: '', c2d: '', c3n: '', c3d: '' } },
+    { clave: 'espejo-dielectrico', nombre: 'Espejo dieléctrico de 3 capas ZnS/MgF₂/ZnS (λ/4) a 550 nm', sc: { dato: 'n', n1: '1', n2: '1,52', theta: '0', E0: '', lambda: '550', nc: '3', c1n: '2,35', c1d: 'λ/4', c2n: '1,38', c2d: 'λ/4', c3n: '2,35', c3d: 'λ/4' } },
   ];
 
-  return { resolver, curva, ejemplos, f };
+  return { resolver, curva, curvaFull, capasRT, ejemplos, f };
 })();
 if (typeof module !== 'undefined') module.exports = Fresnel;

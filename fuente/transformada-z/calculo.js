@@ -127,10 +127,18 @@ const TransformadaZ = (() => {
     while (b.length > 1 && Math.abs(b[b.length - 1]) < 1e-14) b.pop();
     const M = Math.max(a.length, b.length) - 1;
     const polos = raicesZ(a, M), ceros = raicesZ(b, M);
-    const rmax = Math.max(0, ...polos.map((r) => cabs(r.p)));
-    const estado = rmax > 1 + 1e-6 ? 'inestable' : rmax > 1 - 1e-6 && polos.length ? 'marginal' : 'estable';
+    // un cero que coincide con un polo lo cancela (TZ-4): la estabilidad y h[n] son los del sistema que queda
+    const cancel = [];
+    for (const p of polos) {
+      const c = ceros.find((q) => cabs(csub(q.p, p.p)) <= 1e-5 * Math.max(1, cabs(p.p)));
+      if (c) cancel.push({ p: p.p, m: Math.min(p.m, c.m) });
+    }
+    const polosEf = polos.map((r) => { const c = cancel.find((q) => cabs(csub(q.p, r.p)) <= 1e-5 * Math.max(1, cabs(r.p))); return c ? { p: r.p, m: r.m - c.m } : r; }).filter((r) => r.m > 0);
+    const nulo = bb.every((x) => Math.abs(x) < 1e-14);
+    const rmax = Math.max(0, ...polosEf.map((r) => cabs(r.p)));
+    const estado = nulo ? 'estable' : rmax > 1 + 1e-6 ? 'inestable' : rmax > 1 - 1e-6 && polosEf.length ? 'marginal' : 'estable';
     // marginal con polo repetido sobre la circunferencia: también inestable
-    const repetidoEnCirc = polos.some((r) => r.m > 1 && Math.abs(cabs(r.p) - 1) < 1e-6);
+    const repetidoEnCirc = polosEf.some((r) => r.m > 1 && Math.abs(cabs(r.p) - 1) < 1e-6);
     const estab = estado === 'marginal' && repetidoEnCirc ? 'inestable' : estado;
     // respuesta al impulso por recursión: y[n] = Σ b_k x[n−k] − Σ a_k y[n−k]
     const h = [];
@@ -138,7 +146,7 @@ const TransformadaZ = (() => {
     // forma cerrada con polos simples y distintos de 0
     let cerr = null;
     const pl = lugar(polos);
-    if (cerrada && b.length <= a.length && polos.length && polos.every((r) => r.m === 1 && cabs(r.p) > 1e-9) && pl.length === a.length - 1) {
+    if (cerrada && !cancel.length && !nulo && b.length <= a.length && polos.length && polos.every((r) => r.m === 1 && cabs(r.p) > 1e-9) && pl.length === a.length - 1) {
       const R = pl.map((p, i) => {
         const inv = cdiv([1, 0], p);
         let den = [1, 0];
@@ -159,7 +167,7 @@ const TransformadaZ = (() => {
     const alt = (c) => c.reduce((t, x, k) => t + x * (k % 2 ? -1 : 1), 0);
     const Hn = alt(a) === 0 ? [Infinity, 0] : [alt(b) / alt(a), 0];
     let ip = 0; mag.forEach((m, i) => { if (m > mag[ip]) ip = i; });
-    return { b, a, M, polos, ceros, rmax, estab, h, cerr, resp: { w, mag, fase }, H1: H1[0], Hn: Hn[0], pico: { w: w[ip], mag: mag[ip] }, fs };
+    return { b, a, M, polos, ceros, polosEf, cancel, nulo, rmax, estab, h, cerr, resp: { w, mag, fase }, H1: H1[0], Hn: Hn[0], pico: { w: w[ip], mag: mag[ip] }, fs };
   }
 
   // pasos del análisis (comunes a los modos «sistema» y «directa»)
@@ -180,6 +188,8 @@ const TransformadaZ = (() => {
     if (S.polos.length) {
       pasos.push({ t: 'Módulo de los polos', html: S.polos.map((r) => `$|${fc(r.p)}| = ${f(cabs(r.p), 5)}$`).join(',  ') + (S.polos.some((r) => Math.abs(r.p[1]) > 1e-9) ? `; en polar, ${S.polos.filter((r) => r.p[1] > 1e-9).map((r) => `$${f(cabs(r.p), 4)}∠${f((carg(r.p) * 180) / Math.PI, 4)}°$`).join(',  ')}.` : '.') });
     }
+    if (S.nulo) pasos.push({ t: 'Sistema nulo', html: 'El numerador vale 0: $H(z) = 0$, la salida es siempre 0 y $h[n] = 0$ para todo $n$. No hay respuesta que analizar; revisa los coeficientes de $b$.' });
+    if (S.cancel.length) pasos.push({ t: 'Cancelación polo-cero', html: `${S.cancel.map((c) => `El polo $${fc(c.p)}$ coincide con un cero (${c.m} ${c.m === 1 ? 'vez' : 'veces'}): se cancelan`).join('; ')}. La estabilidad y $h[n]$ son las del sistema que queda${S.polosEf.length ? `, con los polos $${conjuntos(S.polosEf)}$` : ', sin polos (queda un sistema FIR)'}. Ojo: en un sistema real la cancelación es exacta solo sobre el papel; un polo inestable cancelado sigue siendo peligroso.` });
     const lec = { estable: 'Todos los polos están dentro de la circunferencia unidad ($|p| < 1$): el sistema causal es <b>estable</b> y la respuesta al impulso se amortigua.', marginal: 'El polo de mayor módulo está sobre la circunferencia unidad ($|p| = 1$): el sistema es <b>marginalmente estable</b> (la respuesta no crece ni se anula).', inestable: 'Algún polo está fuera de la circunferencia unidad (o repetido sobre ella): el sistema causal es <b>inestable</b> y la respuesta crece sin límite.' };
     pasos.push({ t: 'Estabilidad', html: `$|p|_{"máx"} = ${f(S.rmax, 5)}$. ${lec[S.estab]}` });
     if (S.cerr) {
@@ -288,11 +298,15 @@ const TransformadaZ = (() => {
     }
     const N = x.length, w = x.map((_, n) => V.w(n, N)), xw = x.map((v, n) => v * w[n]);
     const cg = w.reduce((s, v) => s + v, 0) / N;
-    const X = fft(xw, Array(N).fill(0));
+    // relleno de ceros (TZ-3): más bins entre los mismos picos, pero la resolución real sigue siendo fs/N
+    const Mt = vacio(sc.pad) ? N : lee(sc, 'pad', 'el tamaño con relleno de ceros', { min: N, max: 16384, entero: true });
+    if (!esPot2(Mt)) throw new Error('El tamaño con relleno de ceros debe ser una potencia de 2 (64, 128, 256…)');
+    const X = fft(xw.concat(Array(Mt - N).fill(0)), Array(Mt).fill(0));
     const mod = X.re.map((r, k) => Math.hypot(r, X.im[k]));
-    const H = N / 2, amp = [], frec = [];
-    for (let k = 0; k <= H; k++) { amp.push((k === 0 || k === H ? 1 : 2) * mod[k] / (N * cg)); frec.push((k * fs) / N); }
+    const H = Mt / 2, amp = [], frec = [], fase = [];
+    for (let k = 0; k <= H; k++) { amp.push((k === 0 || k === H ? 1 : 2) * mod[k] / (N * cg)); frec.push((k * fs) / Mt); }
     const mx = Math.max(...amp);
+    for (let k = 0; k <= H; k++) fase.push(amp[k] > 1e-6 * mx ? (Math.atan2(X.im[k], X.re[k]) * 180) / Math.PI : 0);   // la fase de un bin casi nulo es ruido numérico: se pone 0
     // picos: máximos locales por encima del 1 % del mayor, con interpolación parabólica
     const picos = [];
     for (let k = 0; k <= H; k++) {
@@ -300,17 +314,18 @@ const TransformadaZ = (() => {
       const l = k > 0 ? amp[k - 1] : -1, r = k < H ? amp[k + 1] : -1;
       if (!(amp[k] >= l && amp[k] > r)) continue;
       const den = l - 2 * amp[k] + r, d = k > 0 && k < H && Math.abs(den) > 1e-12 ? (0.5 * (l - r)) / den : 0;
-      picos.push({ k, f: ((k + d) * fs) / N, fk: frec[k], amp: amp[k] - 0.25 * (l - r) * d, ampk: amp[k], d });
+      picos.push({ k, f: ((k + d) * fs) / Mt, fk: frec[k], amp: amp[k] - 0.25 * (l - r) * d, ampk: amp[k], d });
     }
     picos.sort((u, v) => v.ampk - u.ampk);
     const pk = picos.slice(0, 5);
     const alias = tonos.filter((t) => t.f > fs / 2 + 1e-9).map((t) => ({ f: t.f, alias: Math.abs(t.f - fs * Math.round(t.f / fs)) }));
-    const en = xw.reduce((s, v) => s + v * v, 0), enF = mod.reduce((s, v) => s + v * v, 0) / N;
-    const etapas = Math.log2(N), dftMul = N * N, fftMul = (N / 2) * etapas;
+    const en = xw.reduce((s, v) => s + v * v, 0), enF = mod.reduce((s, v) => s + v * v, 0) / Mt;
+    const etapas = Math.log2(Mt), dftMul = Mt * Mt, fftMul = (Mt / 2) * etapas;
     const pasos = [];
     pasos.push({ t: 'Definición (DFT)', html: `$X[k] = Σ_{n=0}^{N-1} x[n]·e^{-j2πkn/N}$, con $N = ${N}$ muestras a $f_s = ${f(fs)}$ Hz. El bin $k$ corresponde a la frecuencia $f_k = k·f_s/N$.` });
     pasos.push({ t: 'Resolución y rango', html: `Resolución en frecuencia: $Δf = f_s/N = ${f(fs)}/${N} = ${f(fs / N)}$ Hz. Duración observada: $T = N/f_s = ${f(N / fs)}$ s. Frecuencia máxima sin aliasing (Nyquist): $f_s/2 = ${f(fs / 2)}$ Hz.` });
     if (nota) pasos.push({ t: 'Relleno con ceros', html: nota });
+    if (Mt > N) pasos.push({ t: 'Relleno de ceros', html: `Se añaden ${Mt - N} ceros tras las ${N} muestras ventaneadas: la FFT pasa a $${Mt}$ puntos y los bins se separan $f_s/${Mt} = ${f(fs / Mt)}$ Hz. Es una interpolación del mismo espectro: dibuja los picos con más puntos, pero <b>no</b> separa dos tonos más cercanos que la resolución real $f_s/N = ${f(fs / N)}$ Hz (eso solo lo consigue observar más tiempo, con más muestras).` });
     if (tonos.length) pasos.push({ t: 'Señal', html: `$x[n] = ${(sc.dc && lee(sc, 'dc', '', { def: 0 }) ? f(lee(sc, 'dc', '', { def: 0 })) + ' + ' : '') + tonos.map((t) => `${f(t.a)}·cos(2π·${f(t.f)}·n/${f(fs)}${t.fase ? ' + ' + f(t.fase) : ''})`).join(' + ')}$` });
     pasos.push({ t: 'Ventana', html: `${V.nombre}${vent === 'rect' ? '' : `: $w[n]$ se multiplica por $x[n]$; ganancia coherente $${f(cg, 4)}$ (se divide entre ella para que la amplitud de un tono siga leyéndose bien)`}. ${mayus(V.lob)}.` });
     pasos.push({ t: 'FFT radix-2', html: `Con $N = 2^{${etapas}}$ la DFT se parte en pares/impares: $X[k] = E[k] + W_N^{k}·O[k]$ con $W_N = e^{-j2π/N}$. Son $log_2 N = ${etapas}$ etapas de $N/2 = ${H}$ mariposas: ${f(fftMul, 6)} multiplicaciones complejas en vez de $N^2 = ${f(dftMul, 6)}$ (${f(dftMul / fftMul, 4)} veces menos).` });
@@ -322,12 +337,128 @@ const TransformadaZ = (() => {
     if (alias.length) pasos.push({ t: 'Aliasing', html: alias.map((a) => `El tono de $${f(a.f)}$ Hz supera $f_s/2 = ${f(fs / 2)}$ Hz y aparece como $${f(a.alias)}$ Hz`).join('; ') + '.' });
     pasos.push({ t: 'Comprobación de Parseval', html: `$Σ|x_w[n]|^2 = ${f(en, 6)}$ y $(1/N)Σ|X[k]|^2 = ${f(enF, 6)}$: la energía es la misma en el tiempo y en la frecuencia.` });
     const fugas = vent === 'rect' && tonos.some((t) => Math.abs(t.f / (fs / N) - Math.round(t.f / (fs / N))) > 1e-6);
-    return { modo: 'fft', N, fs, x, xw, w, ventana: vent, cg, frec, amp, mod, X, pk, alias, tonos, df: fs / N, dftMul, fftMul, etapas, parseval: [en, enF], fugas, nota, pasos };
+    return { modo: 'fft', N, M: Mt, dfBin: fs / Mt, fase, fs, x, xw, w, ventana: vent, cg, frec, amp, mod, X, pk, alias, tonos, df: fs / N, dftMul, fftMul, etapas, parseval: [en, enF], fugas, nota, pasos };
+  }
+
+  /* ---------- Modo «inversa»: X(z) → x[n] (TZ-1) ---------- */
+  // Sistema lineal complejo A·c = y (eliminación gaussiana con pivote parcial); devuelve null si es singular
+  function resuelveC(A, y) {
+    const n = y.length, M = A.map((fila, i) => [...fila.map((z) => [z[0], z[1]]), [y[i][0], y[i][1]]]);
+    for (let c = 0; c < n; c++) {
+      let p = c; for (let r = c + 1; r < n; r++) if (cabs(M[r][c]) > cabs(M[p][c])) p = r;
+      if (cabs(M[p][c]) < 1e-13) return null;
+      [M[c], M[p]] = [M[p], M[c]];
+      for (let r = c + 1; r < n; r++) { const q = cdiv(M[r][c], M[c][c]); for (let k = c; k <= n; k++) M[r][k] = csub(M[r][k], cmul(q, M[c][k])); }
+    }
+    const x = Array(n).fill(null);
+    for (let i = n - 1; i >= 0; i--) { let s = M[i][n]; for (let k = i + 1; k < n; k++) s = csub(s, cmul(M[i][k], x[k])); x[i] = cdiv(s, M[i][i]); }
+    return x;
+  }
+  const binom = (n, k) => { let r = 1; for (let j = 1; j <= k; j++) r = (r * (n - k + j)) / j; return r; };   // C(n, k) con n entero cualquiera (polinomio en n)
+  const polo = (p, n) => { const r = cabs(p), a = carg(p); return r === 0 ? (n === 0 ? [1, 0] : [0, 0]) : [Math.pow(r, n) * Math.cos(n * a), Math.pow(r, n) * Math.sin(n * a)]; };
+  // radios distintos de los polos de A y las regiones de convergencia posibles (de dentro hacia fuera)
+  function regiones(polos) {
+    const rs = [];
+    for (const r of polos.map((q) => cabs(q.p)).sort((u, v) => u - v)) if (!rs.length || r > rs[rs.length - 1] * (1 + 1e-6) + 1e-12) rs.push(r);
+    const cad = (x) => f(x, 4);
+    if (!rs.length) return { rs, ops: ['Todo el plano z (salvo z = 0)'] };
+    const ops = [`|z| < ${cad(rs[0])} (todos los polos a la derecha de la región: señal anticausal)`];
+    for (let i = 0; i + 1 < rs.length; i++) ops.push(`${cad(rs[i])} < |z| < ${cad(rs[i + 1])} (señal bilateral)`);
+    ops.push(`|z| > ${cad(rs[rs.length - 1])} (señal causal)`);
+    return { rs, ops };
+  }
+  // opciones de región de convergencia para el desplegable de la interfaz (si los datos no se entienden, sale la causal)
+  function opcionesRoc(sc) {
+    try {
+      const aa = lista(sc.a, 'coeficientes del denominador'); if (Math.abs(aa[0]) < 1e-14) return ['|z| > polo de mayor módulo (señal causal)'];
+      const a = aa.map((x) => x / aa[0]); while (a.length > 1 && Math.abs(a[a.length - 1]) < 1e-14) a.pop();
+      return regiones(raicesZ(a, a.length - 1)).ops;
+    } catch (e) { return ['|z| > polo de mayor módulo (señal causal)']; }
+  }
+  function inversa(sc) {
+    const bb = lista(sc.b, 'coeficientes del numerador'), aa = lista(sc.a, 'coeficientes del denominador');
+    if (bb.length > 12 || aa.length > 12) throw new Error('Como mucho 12 coeficientes');
+    if (!aa.length || Math.abs(aa[0]) < 1e-14) throw new Error('El primer coeficiente del denominador (a₀) no puede ser 0');
+    if (bb.every((x) => Math.abs(x) < 1e-14)) throw new Error('El numerador no puede ser todo ceros: X(z) = 0 y x[n] = 0');
+    const Nn = lee(sc, 'Nn', 'el número de términos', { min: 2, max: 64, entero: true, def: 10 });
+    const b = bb.map((x) => x / aa[0]), a = aa.map((x) => x / aa[0]);
+    while (a.length > 1 && Math.abs(a[a.length - 1]) < 1e-14) a.pop();
+    while (b.length > 1 && Math.abs(b[b.length - 1]) < 1e-14) b.pop();
+    const Ma = a.length - 1, Mb = b.length - 1;
+    const polos = Ma ? raicesZ(a, Ma) : [], { rs, ops } = regiones(polos);
+    const idx = Math.max(0, Math.min(ops.length - 1, Math.round(vacio(sc.roc) ? ops.length - 1 : +sc.roc)));
+    // x_c[n]: desarrollo en potencias de z⁻¹ (el causal), por la recursión; sirve de base para ajustar las fracciones simples
+    const NS = 80, xc = [];
+    for (let n = 0; n < NS; n++) { let v = n < b.length ? b[n] : 0; for (let k = 1; k < a.length && k <= n; k++) v -= a[k] * xc[n - k]; xc.push(v); }
+    // partes: cociente polinómico (deltas en n = 0 … Mb − Ma) y fracciones R_{ik}/(1 − p_i z⁻¹)^k
+    const npoly = Math.max(0, Mb - Ma + 1), cols = [];
+    polos.forEach((r, i) => { for (let k = 1; k <= r.m; k++) cols.push({ i, k }); });
+    const nun = npoly + cols.length;
+    let R = [], Q = [];
+    if (nun) {
+      const Am = [], y = [];
+      for (let n = 0; n < nun; n++) {
+        Am.push([...Array(npoly).fill(0).map((_, j) => (n === j ? [1, 0] : [0, 0])), ...cols.map(({ i, k }) => { const pn = polo(polos[i].p, n), c = binom(n + k - 1, k - 1); return [pn[0] * c, pn[1] * c]; })]);
+        y.push([xc[n], 0]);
+      }
+      const sol = resuelveC(Am, y);
+      if (!sol) throw new Error('No se pudo descomponer en fracciones simples (polos demasiado próximos entre sí)');
+      Q = sol.slice(0, npoly).map((z) => z[0]);
+      R = cols.map((c, j) => ({ ...c, R: sol[npoly + j] }));
+    }
+    // valor de x[n] según la región elegida: los polos de módulo ≤ radio interior de la RDC son del lado derecho (causales)
+    const lo = idx === 0 ? 0 : rs[idx - 1], hi = idx >= rs.length ? Infinity : rs[idx];
+    const causal = (i) => idx > 0 && cabs(polos[i].p) <= lo * (1 + 1e-6) + 1e-12;
+    const valor = (n) => {
+      let v = 0;
+      if (n >= 0 && n < npoly) v += Q[n];
+      for (const c of R) {
+        const pn = polo(polos[c.i].p, n);
+        if (causal(c.i)) { if (n >= 0) { const t = cmul(c.R, pn), g = binom(n + c.k - 1, c.k - 1); v += t[0] * g; } }
+        else if (n <= -1) { const t = cmul(c.R, pn), g = binom(n + c.k - 1, c.k - 1); v -= t[0] * g; }
+      }
+      return v;
+    };
+    const lado = !rs.length ? 'finita' : idx === rs.length ? 'causal' : idx === 0 ? 'anticausal' : 'bilateral';
+    let n0, n1;
+    if (lado === 'causal' || lado === 'finita') { n0 = 0; n1 = Nn - 1; } else if (lado === 'anticausal') { n0 = -(Nn - 1); n1 = Math.max(npoly - 1, 0); } else { n0 = -Math.floor(Nn / 2); n1 = n0 + Nn - 1; }
+    const ns = [], xs = []; for (let n = n0; n <= n1; n++) { ns.push(n); xs.push(valor(n)); }
+    const contieneCirc = lo < 1 - 1e-9 && hi > 1 + 1e-9;
+    // ---- texto ----
+    const pasos = [];
+    const num = polinomio(b), den = polinomio(a);
+    pasos.push({ t: 'Transformada a invertir', html: `$X(z) = ${frac(num, den)}$ con la región de convergencia (RDC) <b>${ops[idx]}</b>. La RDC decide cómo se vuelve al tiempo: la misma $X(z)$ da señales distintas en regiones distintas.` });
+    if (!polos.length) pasos.push({ t: 'Sin polos', html: `$X(z)$ es un polinomio en $z^{-1}$: cada término $c_k z^{-k}$ es un impulso $c_k·δ[n−k]$, así que $x[n]$ es una secuencia finita: ${b.map((c, k) => `$x[${k}] = ${f(c)}$`).join(', ')}. Converge en todo el plano salvo en $z = 0$ (y $z = ∞$ si hay retardos).` });
+    else {
+      pasos.push({ t: 'Polos y regiones posibles', html: `Polos (raíces de $A$): $${conjuntos(polos)}$. Hay ${ops.length} ${ops.length === 1 ? 'región' : 'regiones'} de convergencia posible${ops.length === 1 ? '' : 's'}, separadas por los módulos de los polos: ${ops.map((o, i) => `${i === idx ? '<b>' : ''}${o}${i === idx ? '</b>' : ''}`).join('; ')}.` });
+      const polyTxt = npoly ? `${Q.map((c, j) => (Math.abs(c) < 1e-12 ? '' : `${f(c)}·z^{-${j}}`)).filter(Boolean).join(' + ') || '0'} + ` : '';
+      const fr = R.map((c) => { const p = polos[c.i].p; return `${fc(c.R)}/(1 − (${fc(p)}) z^{-1})${c.k > 1 ? '^' + c.k : ''}`; }).join(' + ');
+      pasos.push({ t: 'Fracciones parciales', html: `Se descompone $X(z) = ${npoly ? 'Q(z^{-1}) + ' : ''}Σ_i Σ_k R_{ik}/(1 − p_i z^{-1})^k$ (con un polinomio $Q$ solo si el numerador tiene más grado que el denominador). Los coeficientes salen de igualar con el desarrollo en serie (la división larga): $X(z) = ${polyTxt}${fr}$.` });
+      const izq = polos.filter((_, i) => !causal(i)), der = polos.filter((_, i) => causal(i));
+      pasos.push({ t: 'Qué pares de transformadas se usan', html: `Con polos <b>dentro</b> de la RDC (señal del lado derecho): $p^n u[n] ↔ 1/(1 − p z^{-1})$ y $C(n+k−1, k−1)·p^n u[n] ↔ 1/(1 − p z^{-1})^k$. Con polos <b>fuera</b> (lado izquierdo): $−p^n u[−n−1] ↔ 1/(1 − p z^{-1})$ y, en general, $−C(n+k−1, k−1)·p^n u[−n−1]$. Aquí ${der.length ? `derecha: $${conjuntos(der)}$` : 'ningún polo del lado derecho'}; ${izq.length ? `izquierda: $${conjuntos(izq)}$` : 'ningún polo del lado izquierdo'}.` });
+      // forma cerrada
+      const trozos = [], coef = (v) => (Math.abs(v - 1) < 1e-12 ? '' : Math.abs(v + 1) < 1e-12 ? '−' : f(v) + '·');
+      Q.forEach((c, j) => { if (Math.abs(c) > 1e-12) trozos.push(`${f(c)}·δ[n${j ? '−' + j : ''}]`); });
+      const u = (i) => (causal(i) ? 'u[n]' : 'u[−n−1]');
+      for (const c of R) {
+        const i = c.i, p = polos[i].p, sg = causal(i) ? 1 : -1, bin = c.k === 1 ? '' : c.k === 2 ? '(n+1)·' : `C(n+${c.k - 1}, ${c.k - 1})·`;
+        if (Math.abs(p[1]) < 1e-9) trozos.push(`${coef(sg * c.R[0])}${bin}(${fc(p)})^n·${u(i)}`);
+        else if (p[1] > 0) trozos.push(`${coef(sg * 2 * cabs(c.R))}${bin}${f(cabs(p), 5)}^n·cos(${f(carg(p), 5)}·n ${carg(c.R) < 0 ? '−' : '+'} ${f(Math.abs(carg(c.R)), 5)})·${u(i)}`);
+      }
+      pasos.push({ t: 'Resultado x[n]', html: `$x[n] = ${trozos.join(' + ').replace(/\+ −/g, '− ') || '0'}$` });
+    }
+    const quien = lado === 'causal' ? 'Como la señal es causal (RDC hacia fuera del polo mayor), $x[n] = 0$ para $n < 0$.' : lado === 'anticausal' ? 'Como la señal es anticausal (RDC hacia dentro del polo menor), $x[n] = 0$ para $n ≥ 1$ salvo los impulsos del cociente.' : lado === 'bilateral' ? 'La señal es bilateral: los polos de dentro aportan la parte causal y los de fuera la anticausal.' : 'La señal es finita.';
+    pasos.push({ t: 'Primeros términos', html: `${quien} Valores de $x[n]$ para $n = ${n0}, …, ${n1}$: $${ns.map((n, i) => `x[${n}] = ${f(xs[i], 5)}`).slice(0, 14).join(';  ')}${ns.length > 14 ? ';  …' : ''}$` });
+    if (lado === 'causal' || (lado === 'finita')) pasos.push({ t: 'Comprobación por división larga', html: `Dividiendo $B(z^{-1})$ entre $A(z^{-1})$ en potencias de $z^{-1}$ (la recursión $x[n] = b_n − Σ a_k x[n−k]$) salen $${xc.slice(0, 8).map((x) => f(x, 5)).join(';  ')}$: son los mismos coeficientes.` });
+    pasos.push({ t: 'Estabilidad y transformada de Fourier', html: contieneCirc ? 'La RDC <b>contiene la circunferencia unidad</b>: $x[n]$ es absolutamente sumable y existe su transformada de Fourier $X(e^{jω})$. Si $x[n]$ es la respuesta al impulso de un sistema, éste es estable.' : 'La RDC <b>no contiene la circunferencia unidad</b>: $x[n]$ no es absolutamente sumable (crece o no se amortigua) y no existe $X(e^{jω})$; si fuera la respuesta de un sistema, éste sería inestable.' });
+    const ceros = Mb ? raicesZ(b, Math.max(Ma, Mb)) : [];
+    return { modo: 'inversa', b, a, M: Math.max(Ma, Mb), polos, ceros, lado, roc: ops[idx], rocOps: ops, rocIdx: idx, rocRango: [lo, hi], contieneCirc, R, Q, valor, ns, xs, xc, rmax: Math.max(0, ...polos.map((r) => cabs(r.p))), estab: contieneCirc ? 'estable' : 'inestable', pasos };
   }
 
   /* ---------- Entrada ---------- */
   function resolver(sc) {
     if (sc.modo === 'fft') return resolverFFT(sc);
+    if (sc.modo === 'inversa') return inversa(sc);
     if (sc.modo === 'directa') return directa(sc);
     const b = lista(sc.b, 'coeficientes del numerador'), a = lista(sc.a, 'coeficientes del denominador');
     if (b.length > 12 || a.length > 12) throw new Error('Como mucho 12 coeficientes');
@@ -343,12 +474,15 @@ const TransformadaZ = (() => {
     { clave: 'media-movil', nombre: 'Media móvil de 4 muestras (FIR)', sc: { modo: 'sistema', b: '0,25 0,25 0,25 0,25', a: '1', Nn: '10' } },
     { clave: 'exp', nombre: 'Transformada de aⁿ·u[n] con a = 0,8', sc: { modo: 'directa', tipo: 'exp', a: '0,8', Nn: '12' } },
     { clave: 'coseno', nombre: 'Transformada de 0,9ⁿ·cos(πn/4)·u[n]', sc: { modo: 'directa', tipo: 'coseno', a: '0,9', w: 'π/4', Nn: '16' } },
+    { clave: 'inversa-causal', nombre: 'Inversa: X(z) = 1/((1 − 0,5z⁻¹)(1 − 0,25z⁻¹)), causal', sc: { modo: 'inversa', b: '1', a: '1 -0,75 0,125', roc: '2', Nn: '10' } },
+    { clave: 'inversa-bilateral', nombre: 'Inversa bilateral: polos 0,5 y 2, RDC entre ambos', sc: { modo: 'inversa', b: '1', a: '1 -2,5 1', roc: '1', Nn: '12' } },
+    { clave: 'inversa-doble', nombre: 'Inversa con polo doble: 1/(1 − 0,5z⁻¹)²', sc: { modo: 'inversa', b: '1', a: '1 -1 0,25', roc: '1', Nn: '10' } },
     { clave: 'dos-tonos', nombre: 'FFT de dos tonos (50 Hz y 120 Hz)', sc: { modo: 'fft', senal: 'tonos', fs: '640', N: '64', a1: '1', f1: '50', a2: '0,5', f2: '120', a3: '', f3: '', dc: '', ventana: 'rect' } },
     { clave: 'fugas', nombre: 'Fuga espectral: 55 Hz entre dos bins', sc: { modo: 'fft', senal: 'tonos', fs: '640', N: '64', a1: '1', f1: '55', a2: '', f2: '', a3: '', f3: '', dc: '', ventana: 'hann' } },
     { clave: 'aliasing', nombre: 'Aliasing: 130 Hz muestreado a 100 Hz', sc: { modo: 'fft', senal: 'tonos', fs: '100', N: '32', a1: '1', f1: '130', a2: '', f2: '', a3: '', f3: '', dc: '', ventana: 'rect' } },
     { clave: 'muestras', nombre: 'DFT de las muestras 1, 2, 3, 4', sc: { modo: 'fft', senal: 'muestras', fs: '4', x: '1 2 3 4', ventana: 'rect' } },
   ];
 
-  return { resolver, ejemplos, f, fc, fft, dft, raices, analiza, leeNum, VENTANAS, TIPOS_DIRECTA, cabs, carg };
+  return { resolver, ejemplos, f, fc, fft, dft, raices, analiza, leeNum, opcionesRoc, VENTANAS, TIPOS_DIRECTA, cabs, carg };
 })();
 if (typeof module !== 'undefined') module.exports = TransformadaZ;

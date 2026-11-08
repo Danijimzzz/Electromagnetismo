@@ -22,8 +22,9 @@
     const M = P.MODOS[sc.modo];
     $('#campos').innerHTML = `<label for="f-modo">Conductor</label><select id="f-modo" class="in" data-k="modo">${Object.entries(P.MODOS).map(([k, m]) => `<option value="${k}"${sc.modo === k ? ' selected' : ''}>${m.nombre}</option>`).join('')}</select>`
       + M.campos.map(([k, nom, un]) => fila(k, nom, un)).join('')
-      + '<div class="sep">Punto donde calcular V y E (opcional)</div>' + M.punto.map(([k, nom, un]) => fila(k, nom, un)).join('');
-    $('#nota').textContent = sc.modo === 'plano' ? 'El plano es z = 0 y q está en z = d. El punto se da por ρ (distancia al eje) y z (siempre mayor que 0).'
+      + (M.punto.length ? '<div class="sep">Punto donde calcular V y E (opcional)</div>' + M.punto.map(([k, nom, un]) => fila(k, nom, un)).join('') : '');
+    $('#nota').textContent = M.plana ? ({ cuna: 'Un plano es φ = 0 y el otro φ = π/n; q está a la distancia r₀ de la arista y a φ₀ del primero. Con n = 1 es un solo plano.', paralelos: 'Los planos son z = 0 y z = L; q está en el eje a la altura d. El punto se da por ρ (distancia al eje) y z.', varias: 'El plano es z = 0; cada carga se da por su posición (x, z) con z > 0. Deja vacías las cargas 2 y 3 si no las necesitas.', dipolo: 'El dipolo está a la altura d del plano z = 0; θ es el ángulo entre p y la normal al plano (θ = 0: perpendicular). Se admite coma decimal y unidades.' })[sc.modo]
+      : sc.modo === 'plano' ? 'El plano es z = 0 y q está en z = d. El punto se da por ρ (distancia al eje) y z (siempre mayor que 0).'
       : sc.modo === 'cavidad' ? 'El punto se da en polares desde el centro; θ se mide desde la recta del centro a q. El punto tiene que estar dentro de la cavidad.'
         : 'El punto se da en polares desde el centro; θ se mide desde la recta del centro a q. Tiene que estar fuera de la esfera. Se admite coma decimal y 3e8.';
   }
@@ -63,6 +64,10 @@
   }
   const enunciado = () => {
     const q = `${esc(sc.q)} nC`;
+    if (sc.modo === 'cuna') return `Una carga puntual q = ${q} está a ${esc(sc.r0)} cm de la arista de dos planos conductores a tierra que forman un ángulo de 180°/${esc(sc.n)}, y a ${esc(sc.ph)}° de uno de ellos. Calcula las cargas imagen y la fuerza sobre q.`;
+    if (sc.modo === 'paralelos') return `Una carga puntual q = ${q} está entre dos planos conductores paralelos a tierra separados ${esc(sc.L)} cm, a ${esc(sc.d)} cm del primero. Calcula la fuerza sobre q y la carga inducida en cada plano.`;
+    if (sc.modo === 'varias') return `Frente a un plano conductor a tierra z = 0 hay cargas puntuales: q₁ = ${q} en (${esc(sc.x1)}; ${esc(sc.z1)}) cm${sc.q2 ? `, q₂ = ${esc(sc.q2)} nC en (${esc(sc.x2)}; ${esc(sc.z2)}) cm` : ''}${sc.q3 ? `, q₃ = ${esc(sc.q3)} nC en (${esc(sc.x3)}; ${esc(sc.z3)}) cm` : ''}. Calcula la fuerza sobre cada carga y la energía del sistema.`;
+    if (sc.modo === 'dipolo') return `Un dipolo de momento p = ${esc(sc.p)} nC·cm está a ${esc(sc.d)} cm de un plano conductor a tierra, con p formando ${esc(sc.th)}° con la normal. Calcula la fuerza y el par sobre el dipolo.`;
     if (sc.modo === 'plano') return `Una carga puntual q = ${q} está a ${esc(sc.d)} cm de un plano conductor indefinido a tierra. Calcula la carga imagen, la fuerza sobre q, la densidad de carga inducida bajo ella y el trabajo para llevarla al infinito${sc.rho !== '' && sc.z !== '' ? `, y el potencial y el campo en el punto ρ = ${esc(sc.rho)} cm, z = ${esc(sc.z)} cm` : ''}.`;
     const pt = sc.r !== '' && sc.th !== '' ? `, y el potencial y el campo en el punto r = ${esc(sc.r)} cm, θ = ${esc(sc.th)}°` : '';
     if (sc.modo === 'cavidad') return `Una carga puntual q = ${q} está a ${esc(sc.a)} cm del centro de una cavidad esférica de ${esc(sc.R)} cm de radio en un conductor. Calcula la carga imagen y su posición, la fuerza sobre q y la densidad de carga inducida en el punto más cercano${pt}.`;
@@ -81,6 +86,12 @@
     }
     err.hidden = true; guarda();
     const s = sol, im = s.imagenes[0];
+    if (s.plana) {
+      $('#resumen').innerHTML = s.cajas.map(([n, v, e]) => caja(n, v, e)).join('');
+      $('#pasos').innerHTML = s.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
+      $('#leyenda').textContent = 'Líneas de campo de las cargas reales con sus imágenes (dibujadas con trazo discontinuo, dentro del conductor). El conductor es la zona sombreada.';
+      dibuja(); return;
+    }
     let h = '';
     if (im) h += caja('Carga imagen q′', u(im.q, 'C'), s.esfera ? `a a′ = ${cm(im.z)} del centro` : `en z = −${cm(s.p.d)}`);
     else h += caja('Carga imagen q′', '—', 'q está en el centro');
@@ -110,6 +121,7 @@
     const { g, w, h } = lienzo('#dibujo');
     if (!sol || !w || !h) return;
     colores();
+    if (sol.plana) { dibujaPlana(g, w, h); return; }
     const s = sol, pl = !s.esfera, R = s.R, big = s.imagenes.length && s.imagenes[0].z;
     // caja del mundo: horizontal [H0, H1], vertical [V0, V1] con la vertical hacia arriba
     let H0, H1, V0, V1;
@@ -132,7 +144,7 @@
     const cabe = (x) => Math.abs(x) / Math.max(Math.abs(s.sigmaMax), 1e-300);
     g.lineCap = 'butt';
     if (pl) {
-      const n = Math.max(40, Math.floor(((H1 - H0) * k) / 4));
+      const n = Math.min(1200, Math.max(40, Math.floor(((H1 - H0) * k) / 4))); // tope: con datos extremos k puede ser infinito
       for (let i = 0; i < n; i++) { const r0 = H0 + ((H1 - H0) * i) / n, r1 = H0 + ((H1 - H0) * (i + 1)) / n, v = Math.min(1, cabe(s.sigma((r0 + r1) / 2))); g.strokeStyle = s.q > 0 ? col['--neg'] : col['--pos']; g.lineWidth = 1 + 9 * v; g.beginPath(); g.moveTo(X(0, r0), Y(0, 0) + 1 + g.lineWidth / 2); g.lineTo(X(0, r1) + 0.5, Y(0, 0) + 1 + g.lineWidth / 2); g.stroke(); }
     } else {
       const n = 120, ancho = Math.max(...Array.from({ length: 13 }, (_, i) => Math.abs(s.sigma((Math.PI * i) / 12))), 1e-300);
@@ -195,6 +207,74 @@
       texto(g, 'E', x2 + 8 * Math.cos(an) + 4, y2 + 8 * Math.sin(an), col['--accent'], 'left');
     }
   }
+
+  /* ---------- Dibujo de los modos planos (cuña, planos paralelos, varias cargas y dipolo): corte x-z ---------- */
+  function dibujaPlana(g, w, h) {
+    const s = sol, cg = s.cargas, m = 14, M = s.modo, lim = s.lim;
+    let H0, H1, V0, V1;
+    if (M === 'cuna') { const xs = cg.map((c) => c.x).concat(0), zs = cg.map((c) => c.z).concat(0); H0 = Math.min(...xs); H1 = Math.max(...xs); V0 = Math.min(...zs); V1 = Math.max(...zs); const pd = 0.25 * Math.max(H1 - H0, V1 - V0); H0 -= pd; H1 += pd; V0 -= pd; V1 += pd; }
+    else if (M === 'paralelos') { H0 = -0.9 * lim; H1 = 0.9 * lim; V0 = -0.55 * lim; V1 = 1.55 * lim; }
+    else if (M === 'varias') { const xs = cg.map((c) => c.x); H0 = Math.min(...xs) - lim; H1 = Math.max(...xs) + lim; V0 = -1.3 * lim; V1 = 1.3 * lim; }
+    else { H0 = -1.8 * lim; H1 = 1.8 * lim; V0 = -1.5 * lim; V1 = 1.7 * lim; }
+    const k = Math.min((w - 2 * m) / (H1 - H0), (h - 2 * m) / (V1 - V0)), ox = (w - k * (H1 - H0)) / 2, oy = (h - k * (V1 - V0)) / 2;
+    const X = (x) => ox + (x - H0) * k, Y = (z) => h - oy - (z - V0) * k, big = 20 * Math.max(H1 - H0, V1 - V0);
+    g.font = '12px "IBM Plex Sans", system-ui, sans-serif'; g.textBaseline = 'middle';
+    // conductor
+    g.fillStyle = col['--metal']; g.strokeStyle = col['--ink']; g.lineWidth = 1.4;
+    if (M === 'cuna') {
+      g.beginPath(); g.rect(0, 0, w, h); g.moveTo(X(0), Y(0)); g.lineTo(X(big), Y(0));
+      for (let i = 0; i <= 24; i++) { const an = (s.alfa * i) / 24; g.lineTo(X(big * Math.cos(an)), Y(big * Math.sin(an))); }
+      g.closePath(); g.fill('evenodd');
+      g.beginPath(); g.moveTo(X(big), Y(0)); g.lineTo(X(0), Y(0)); g.lineTo(X(big * Math.cos(s.alfa)), Y(big * Math.sin(s.alfa))); g.stroke();
+    } else {
+      const planos = M === 'paralelos' ? [0, s.L] : [0];
+      g.fillRect(0, Y(0), w, h - Y(0)); if (M === 'paralelos') g.fillRect(0, 0, w, Y(s.L));
+      for (const z of planos) { g.beginPath(); g.moveTo(0, Y(z)); g.lineTo(w, Y(z)); g.stroke(); }
+    }
+    const dentro = (x, z) => (M === 'cuna' ? Math.atan2(z, x) >= 0 && Math.atan2(z, x) <= s.alfa : M === 'paralelos' ? z > 0 && z < s.L : z > 0);
+    const fuera = (x, z) => x < H0 - 0.05 * (H1 - H0) || x > H1 + 0.05 * (H1 - H0) || z < V0 - 0.05 * (V1 - V0) || z > V1 + 0.05 * (V1 - V0);
+    // líneas de campo desde cada carga real, hasta una de signo contrario
+    const ds = lim / 60, N = 14; g.lineWidth = 1.2; g.strokeStyle = col['--campo']; g.fillStyle = col['--campo'];
+    for (const c of cg.filter((q) => q.real)) {
+      const sg = Math.sign(c.q) || 1, dir = (x, z) => { const e = P.campoXZ(cg, x, z); return [(sg * e.Ex) / (e.E || 1), (sg * e.Ez) / (e.E || 1)]; };
+      for (let i = 0; i < N; i++) {
+        const ang = (2 * Math.PI * (i + 0.5)) / N; let x = c.x + 0.04 * lim * Math.cos(ang), z = c.z + 0.04 * lim * Math.sin(ang);
+        if (!dentro(x, z)) continue;
+        const pts = [[x, z]];
+        for (let j = 0; j < 2500; j++) {
+          const [a1, b1] = dir(x, z), [a2, b2] = dir(x + (a1 * ds) / 2, z + (b1 * ds) / 2);
+          x += a2 * ds; z += b2 * ds; pts.push([x, z]);
+          if (!dentro(x, z) || fuera(x, z) || cg.some((o) => o.real && Math.sign(o.q) === -sg && Math.hypot(x - o.x, z - o.z) < 2.2 * ds)) break;
+        }
+        g.beginPath(); pts.forEach(([xx, zz], j) => (j ? g.lineTo(X(xx), Y(zz)) : g.moveTo(X(xx), Y(zz)))); g.stroke();
+        const j = Math.floor(pts.length * 0.45);
+        if (j > 1 && j < pts.length - 1) {
+          const [x0, z0] = pts[j - 1], [x1, z1] = pts[j + 1], an = Math.atan2(Y(z1) - Y(z0), X(x1) - X(x0)), [xc, zc] = pts[j], px = X(xc), py = Y(zc);
+          g.beginPath(); g.moveTo(px + 5 * Math.cos(an), py + 5 * Math.sin(an)); g.lineTo(px - 4 * Math.cos(an - 0.55), py - 4 * Math.sin(an - 0.55)); g.lineTo(px - 4 * Math.cos(an + 0.55), py - 4 * Math.sin(an + 0.55)); g.closePath(); g.fill();
+        }
+      }
+    }
+    // cargas: reales llenas; imágenes con trazo discontinuo
+    for (const c of cg) {
+      const x = X(c.x), y = Y(c.z); if (x < 0 || x > w || y < 0 || y > h) continue;
+      const col1 = c.q > 0 ? col['--pos'] : col['--neg'];
+      g.beginPath(); g.arc(x, y, M === 'dipolo' ? 6 : 8, 0, 2 * Math.PI);
+      if (c.real) { g.fillStyle = col1; g.fill(); } else { g.fillStyle = col['--panel']; g.fill(); g.setLineDash([3, 3]); g.strokeStyle = col1; g.lineWidth = 1.8; g.stroke(); g.setLineDash([]); }
+      texto(g, c.q > 0 ? '+' : '−', x, y + 0.5, c.real ? '#fff' : col1);
+      if (cg.length <= 8 || c.real) texto(g, c.nom || '', x + 14, y - 12, col['--ink'], 'left');
+    }
+    // punto de observación
+    if (s.pt) {
+      const x = X(s.pt.x), y = Y(s.pt.z), m0 = Math.hypot(s.pt.Ex, s.pt.Ez) || 1, x2 = x + (s.pt.Ex / m0) * 38, y2 = y - (s.pt.Ez / m0) * 38, an = Math.atan2(y2 - y, x2 - x);
+      g.fillStyle = col['--accent']; g.strokeStyle = col['--accent']; g.lineWidth = 2; g.beginPath(); g.arc(x, y, 4, 0, 2 * Math.PI); g.fill();
+      g.beginPath(); g.moveTo(x, y); g.lineTo(x2, y2); g.stroke();
+      g.beginPath(); g.moveTo(x2, y2); g.lineTo(x2 - 7 * Math.cos(an - 0.45), y2 - 7 * Math.sin(an - 0.45)); g.lineTo(x2 - 7 * Math.cos(an + 0.45), y2 - 7 * Math.sin(an + 0.45)); g.closePath(); g.fill();
+      texto(g, 'E', x2 + 8 * Math.cos(an) + 4, y2 + 8 * Math.sin(an), col['--accent'], 'left');
+    }
+    if (M === 'cuna') texto(g, `α = ${f((s.alfa * 180) / Math.PI)}°`, X(0) + 34, Y(0) - 12, col['--muted']);
+    if (M === 'paralelos') texto(g, `L = ${cm(s.L)}`, X(H1 - 0.12 * (H1 - H0)), (Y(0) + Y(s.L)) / 2, col['--muted']);
+  }
+  Herramienta.exportar('#dibujo', { nombre: 'imagenes', titulo: 'Cargas imagen y líneas de campo' });
   window.addEventListener('resize', dibuja);
   // tema.js también avisa a este oyente al pulsar el botón claro/oscuro
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', dibuja);

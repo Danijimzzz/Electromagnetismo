@@ -55,7 +55,12 @@ const IsLm = (() => {
     pasos.push({ t: 'Multiplicadores', html: `Fiscal: $ΔY/ΔA = {1}/{(1 − c_1) + b · k / h} = ${u(mf)}$, frente al multiplicador keynesiano simple $α = {1}/{1 − c_1} = ${u(alfa)}$. Monetario: $ΔY/Δ(M/P) = {b / h}/{(1 − c_1) + b · k / h} = ${u(mm)}$.${dA && dm ? ` Efecto fiscal $${u(yf)}$ y efecto monetario $${u(ym)}$, que suman $ΔY$.` : ''}` });
     const ex = alfa * dA - yf;
     if (dA) pasos.push({ t: 'Efecto expulsión (crowding out)', html: `Sin reacción del tipo de interés, el multiplicador simple daría $α · ΔA = ${u(alfa)} · ${u(dA)} = ${u(alfa * dA)}$. Como la renta sube, aumenta la demanda de dinero y sube el tipo, lo que frena la inversión: el efecto fiscal real es $${u(yf)}$ y la inversión privada expulsada, en términos de renta, $${u(ex)}$ (${f(100 * ex / (alfa * dA), 4)} % del efecto simple).` });
-    return { ...r, dA, dm, A1, m1, y1: e1.y, i1: e1.i, dy, di, c1n, inv1, yf, ym, ex };
+    // eficacia de cada política frente a los casos extremos de clase (clásico: LM vertical, h → 0; keynesiano: trampa de liquidez, h → ∞, o IS vertical, b → 0)
+    const rf = dA ? yf / (alfa * dA) : null, rm = dm ? ym / (dm / k) : null, aviso = [];
+    if (rf !== null) aviso.push(rf < 0.01 ? `<b>Política fiscal ineficaz:</b> el efecto expulsión es casi total (la renta sube solo el ${f(100 * rf, 3)} % de lo que daría el multiplicador simple). Es el caso <b>clásico</b>: la LM es casi vertical porque la demanda de dinero casi no depende del tipo de interés (h pequeño), y el tipo sube lo necesario para expulsar toda la inversión que desplaza el gasto.` : rf > 0.99 ? `<b>Política fiscal plenamente eficaz:</b> casi no hay efecto expulsión (la renta sube el ${f(100 * rf, 3)} % de lo que daría el multiplicador simple). Es el caso <b>keynesiano</b>: la LM es casi horizontal (trampa de liquidez, h muy grande) o la inversión no depende del tipo (IS vertical).` : `La política fiscal conserva el ${f(100 * rf, 3)} % del multiplicador simple; el resto lo expulsa la subida del tipo de interés.`);
+    if (rm !== null) aviso.push(rm < 0.01 ? `<b>Política monetaria ineficaz:</b> la renta casi no cambia (${f(100 * rm, 3)} % de lo máximo posible). Es la <b>trampa de liquidez</b> (el dinero extra se queda en la demanda especulativa, h muy grande) o la inversión no reacciona al tipo (b muy pequeño, IS vertical).` : rm > 0.99 ? `<b>Política monetaria plenamente eficaz:</b> la renta cambia lo máximo posible, ΔM/(P·k) = ${u(dm / k)}. Es el caso <b>clásico</b> (LM vertical): la renta queda determinada por la cantidad real de dinero.` : `La política monetaria logra el ${f(100 * rm, 3)} % del máximo posible (ΔM/(P·k)).`);
+    if (aviso.length) pasos.push({ t: 'Eficacia de la política', html: aviso.join('<br>') });
+    return { ...r, rf, rm, dA, dm, A1, m1, y1: e1.y, i1: e1.i, dy, di, c1n, inv1, yf, ym, ex };
   }
 
   const base = { c0: '100', c1: '0,75', T: '200', I0: '300', b: '30', G: '150', M: '800', P: '2', k: '0,5', h: '20', dG: '', dT: '', dM: '' };
@@ -66,6 +71,9 @@ const IsLm = (() => {
     { clave: 'impuestos', nombre: 'Bajada de impuestos de 50', sc: { ...base, dT: '-50' } },
     { clave: 'mixta', nombre: 'Combinación: más gasto y más dinero', sc: { ...base, dG: '50', dM: '200' } },
     { clave: 'trampa', nombre: 'Trampa de liquidez: LM casi plana', sc: { ...base, h: '100000', dG: '50' } },
+    { clave: 'clasico', nombre: 'Caso clásico (LM vertical): gasto y dinero', sc: { ...base, h: '0,01', dG: '50', dM: '200' } },
+    { clave: 'trampa-monetaria', nombre: 'Trampa de liquidez: el dinero no sirve', sc: { ...base, h: '100000', dM: '200' } },
+    { clave: 'is-vertical', nombre: 'Inversión sin reacción al tipo (IS vertical)', sc: { ...base, b: '0,01', dG: '50', dM: '200' } },
   ];
 
   return { resolver, ejemplos };

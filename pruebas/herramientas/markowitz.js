@@ -48,9 +48,19 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     cerca(m.req[0], 0.025 + m.beta[0] * (m.mer.mu - 0.025), 1e-12, 'rentabilidad exigida');
     // diversificación: con ρ < 0 el riesgo de la mínima varianza es menor que el de cualquier activo
     const g = ej('negativa'); if (!(g.mv.sg < Math.min(...g.sg))) mal(`${N}: con correlación negativa la mínima varianza debería ser menor que el menor riesgo individual`);
+    // correlación ±1 con dos activos (σ₁ = 20 %, σ₂ = 10 %, μ₁ = 12 %, μ₂ = 6 %)
+    { const m1 = ej('rho-menos-uno');
+      cerca(m1.mv.w[0], 1 / 3, 1e-12, 'w₁ sin riesgo con ρ = −1 (σ₂/(σ₁+σ₂))'); cerca(m1.mv.sg, 0, 1e-12, 'riesgo cero con ρ = −1'); cerca(m1.mv.mu, 0.08, 1e-12, 'rentabilidad de la cartera sin riesgo (8 %)');
+      if (!m1.arbitraje || m1.tg) mal(`${N}: con la cartera sin riesgo al 8 % y rf = 2 % hay arbitraje y no hay tangente`);
+      cerca(m1.obj.w[0], 0.5, 1e-12, 'peso para el 9 % con ρ = −1'); cerca(m1.obj.sg, 0.05, 1e-12, 'riesgo para el 9 % con ρ = −1 (|0,5·20 − 0,5·10|)');
+      const sv = C.resolver({ ...C.ejemplos.find((e) => e.clave === 'rho-menos-uno').sc, rf: '8' }); if (sv.arbitraje || !sv.tg) mal(`${N}: con rf = 8 % no hay arbitraje y la tangente es el activo X`); else cerca(sv.tg.w[0], 1, 1e-12, 'tangente con ρ = −1 y rf = 8 %');
+      const m2 = ej('rho-uno'); cerca(m2.mv.w[1], 1, 1e-12, 'con ρ = 1 sin ventas la mínima varianza es el activo menos arriesgado'); cerca(m2.obj.sg, 0.15, 1e-12, 'riesgo para el 9 % con ρ = 1 (0,5·20 + 0,5·10)'); cerca(m2.tg.sharpe, 0.5, 1e-12, 'Sharpe con ρ = 1');
+      const cv = C.resolver({ ...C.ejemplos.find((e) => e.clave === 'rho-uno').sc, ventas: 'si', objetivo: '' }); cerca(cv.mv.sg, 0, 1e-12, 'con ρ = 1 y ventas en corto hay cartera sin riesgo'); cerca(cv.mv.w[0], -1, 1e-12, 'peso −1 en X'); cerca(cv.mv.w[1], 2, 1e-12, 'peso 2 en Y');
+      // el riesgo calculado con la fórmula general de la varianza coincide
+      const w = m2.obj.w; cerca(m2.obj.sg, Math.sqrt(w[0] ** 2 * 0.04 + w[1] ** 2 * 0.01 + 2 * w[0] * w[1] * 0.2 * 0.1), 1e-12, 'varianza con ρ = 1 por la fórmula general'); }
     // errores
     const b0 = C.ejemplos[0].sc;
-    error({ ...b0, corr: '1 1\n1 1' }, 'correlación 1 (matriz singular)'); error({ ...b0, corr: '1 0,3\n0,4 1' }, 'matriz no simétrica'); error({ ...b0, corr: '1 1,2\n1,2 1' }, 'correlación mayor que 1');
+    error({ ...C.ejemplos.find((e) => e.clave === 'tres').sc, corr: '1 1 1\n1 1 1\n1 1 1' }, 'correlación 1 con tres activos (matriz singular)'); error({ ...b0, corr: '1 0,3\n0,4 1' }, 'matriz no simétrica'); error({ ...b0, corr: '1 1,2\n1,2 1' }, 'correlación mayor que 1');
     error({ ...b0, corr: '1 0,3 0,1\n0,3 1 0\n0,1 0 1' }, 'matriz de tamaño distinto'); error({ ...b0, activos: 'Solo; 5; 10' }, 'un único activo'); error({ ...b0, activos: 'A; 5; 0\nB; 6; 10' }, 'volatilidad 0');
     error({ ...b0, activos: 'A; 5; 10\nB; 5; 20' }, 'misma rentabilidad'); error({ ...b0, rf: '' }, 'sin tipo sin riesgo'); error({ ...b0, objetivo: '30' }, 'objetivo fuera del rango sin ventas en corto'); error({ ...b0, mercado: '1 2 3' }, 'pesos de mercado de otro tamaño');
     // tangente inexistente: rf mayor que todas las rentabilidades

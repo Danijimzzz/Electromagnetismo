@@ -27,12 +27,21 @@
   <div class="card">
     <h2>Datos</h2>
     <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
+    <div class="modos" role="tablist"><button role="tab" id="tab-smiles" aria-selected="true">SMILES</button><button role="tab" id="tab-semi" aria-selected="false">Semidesarrollada</button></div>
+    <div id="p-semi" hidden>
+      <label for="semi" class="solo-lector">Fórmula semidesarrollada</label>
+      <input id="semi" class="in ancho" placeholder="CH3-CH(OH)-CH3, CH3-C(=O)-OH, CH2=CH-CH3…" aria-label="Fórmula semidesarrollada" autocomplete="off" spellcheck="false" autocapitalize="off">
+      <div class="controles" id="grupos-semi" role="group" aria-label="Grupos para insertar"></div>
+      <p class="nota">Como en clase: grupos CH3, CH2, CH, OH, NH2… unidos con <code>-</code>, <code>=</code> o <code>#</code> (o ≡), y las ramas entre paréntesis: <code>CH3-CH(OH)-CH3</code>. Se admiten las abreviaturas COOH, CHO, CONH2 y CN. Los anillos se escriben en SMILES.</p>
+    </div>
+    <div id="p-smiles">
     <label for="smiles" class="solo-lector">Molécula en SMILES</label>
     <input id="smiles" class="in ancho" placeholder="CC(O)C, C/C=C/C, C[C@H](O)C(=O)O…" aria-label="Molécula en SMILES" autocomplete="off" spellcheck="false" autocapitalize="off">
+    </div>
     <div class="controles">
       <button class="btn" id="b-espejo">Ver el enantiómero</button>
     </div>
-    <p class="nota">Se escribe en <b>SMILES</b>: cada letra es un átomo (C, N, O, S, F, Cl, Br, I) y los hidrógenos se ponen solos. <code>=</code> y <code>#</code> son el doble y el triple enlace; las ramas van entre paréntesis: <code>CC(C)C</code> es el 2-metilpropano, <code>CC(=O)O</code> el ácido etanoico. Para la quiralidad se usa <code>[C@H]</code> o <code>[C@@H]</code> (visto desde el primer vecino, los otros tres van en sentido antihorario o horario) y para E/Z, las marcas <code>/</code> y <code>\</code>: <code>C/C=C/C</code> es trans (E), <code>C/C=C\C</code> es cis (Z). De momento, moléculas sin anillos.</p>
+    <p class="nota" id="nota-smiles">Se escribe en <b>SMILES</b>: cada letra es un átomo (C, N, O, S, F, Cl, Br, I) y los hidrógenos se ponen solos. <code>=</code> y <code>#</code> son el doble y el triple enlace; las ramas van entre paréntesis: <code>CC(C)C</code> es el 2-metilpropano, <code>CC(=O)O</code> el ácido etanoico. Para la quiralidad se usa <code>[C@H]</code> o <code>[C@@H]</code> (visto desde el primer vecino, los otros tres van en sentido antihorario o horario) y para E/Z, las marcas <code>/</code> y <code>\</code>: <code>C/C=C/C</code> es trans (E), <code>C/C=C\C</code> es cis (Z). De momento, moléculas sin anillos.</p>
     <p class="error" id="error" hidden></p>
   </div>
   <div>

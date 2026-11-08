@@ -431,19 +431,33 @@ const SimCircuitos = (() => {
   }
 
   // Barrido en frecuencia: la fuente `fuente` (V o I) vale 1 con fase 0 y las demás se anulan; devuelve la relación entre
-  // la tensión entre los nudos [a, b] y esa fuente (módulo, dB y fase en grados) para cada frecuencia, repartidas en escala logarítmica
-  function barrido(net, { fuente, a, b = '0', fmin = 1, fmax = 1e6, puntos = 200 }) {
+  // la tensión entre los nudos [a, b] y esa fuente (módulo, dB y fase en grados) para cada frecuencia, repartidas en escala logarítmica.
+  // Respuesta en frecuencia V(a) − V(b) con la fuente `fuente` de 1 V (o 1 A). `puntos` frecuencias logarítmicas entre fmin y fmax; con
+  // `adaptativo` se añaden, por bisección, puntos donde la curva cambia más de 0,5 dB o 3° entre dos vecinos (hasta `maximo` puntos),
+  // para no perder el pico de un resonador de Q alto (con Q = 200 el pico mide el 0,5 % de la frecuencia).
+  function barrido(net, { fuente, a, b = '0', fmin = 1, fmax = 1e6, puntos = 200, adaptativo = false, maximo = 3000 }) {
     const P = prepara(net); ponSW(P, -Infinity);
     if (!P.els.find((e) => e.id === fuente && (e.t === 'V' || e.t === 'I'))) throw new Error(`No hay ninguna fuente llamada ${fuente}`);
     const ia = P.nodo(a), ib = P.nodo(b);
     if (ia === undefined || ib === undefined) throw new Error('El nudo de salida no existe');
     const op = P.els.some(esNL) ? operacion(net) : null, out = { f: [], mod: [], dB: [], fase: [] };
-    for (let k = 0; k < puntos; k++) {
-      const f = fmin * Math.pow(fmax / fmin, k / (puntos - 1)), w = 2 * Math.PI * f;
-      const x = paso(P, { modo: 'ac', w, op, fuente: (e) => (e.id === fuente ? cx(1) : cx(0)) });
+    const punto = (f) => {
+      const w = 2 * Math.PI * f, x = paso(P, { modo: 'ac', w, op, fuente: (e) => (e.id === fuente ? cx(1) : cx(0)) });
       const re = (ia < 0 ? 0 : x.re[ia]) - (ib < 0 ? 0 : x.re[ib]), im = (ia < 0 ? 0 : x.im[ia]) - (ib < 0 ? 0 : x.im[ib]), m = Math.hypot(re, im);
-      out.f.push(f); out.mod.push(m); out.dB.push(20 * Math.log10(Math.max(m, 1e-300))); out.fase.push(Math.atan2(im, re) * 180 / Math.PI);
+      return { f, mod: m, dB: 20 * Math.log10(Math.max(m, 1e-300)), fase: Math.atan2(im, re) * 180 / Math.PI };
+    };
+    let pts = [];
+    for (let k = 0; k < puntos; k++) pts.push(punto(fmin * Math.pow(fmax / fmin, k / (puntos - 1))));
+    if (adaptativo) {
+      const dif = (p, q) => { const d = Math.abs(p.fase - q.fase); return Math.max(Math.abs(p.dB - q.dB) / 0.5, Math.min(d, 360 - d) / 3); };
+      for (let vuelta = 0; vuelta < 14 && pts.length < maximo; vuelta++) {
+        const nuevo = [];
+        for (let k = 1; k < pts.length && pts.length + nuevo.length < maximo; k++) if (dif(pts[k - 1], pts[k]) > 1 && pts[k].f / pts[k - 1].f > 1 + 1e-9) nuevo.push(punto(Math.sqrt(pts[k - 1].f * pts[k].f)));
+        if (!nuevo.length) break;
+        pts = pts.concat(nuevo).sort((p, q) => p.f - q.f);
+      }
     }
+    for (const q of pts) { out.f.push(q.f); out.mod.push(q.mod); out.dB.push(q.dB); out.fase.push(q.fase); }
     return out;
   }
 

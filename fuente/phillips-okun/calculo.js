@@ -75,7 +75,7 @@ const PhillipsOkun = (() => {
     { clave: 'brecha', nombre: 'Paro del 9 % con un paro natural del 6 %', sc: { modo: 'brecha', u: '9', un: '6', c: '2', Yp: '1400' } },
     { clave: 'phillips', nombre: 'Paro por debajo del natural', sc: { modo: 'phillips', pe: '2', alfa: '0,5', un: '5', u: '3', s: '0' } },
     { clave: 'estanflacion', nombre: 'Estanflación: shock del petróleo', sc: { modo: 'phillips', pe: '2', alfa: '0,5', un: '5', u: '6', s: '4' } },
-    { clave: 'datos', nombre: 'Diez años de un país (datos de ejemplo)', sc: { modo: 'datos', datos: 'paro inflación\n4 5,1\n5 4,2\n6,5 3,4\n8 2,3\n7 3,1\n5,5 3,9\n4,5 4,9\n6 3,2\n7,5 2,9\n9 1,8' } },
+    { clave: 'datos', nombre: 'Diez años de un país imaginario (datos inventados)', sc: { modo: 'datos', datos: 'paro inflación\n4 5,1\n5 4,2\n6,5 3,4\n8 2,3\n7 3,1\n5,5 3,9\n4,5 4,9\n6 3,2\n7,5 2,9\n9 1,8' } },
   ];
 
   return { resolver, ejemplos, MODOS };

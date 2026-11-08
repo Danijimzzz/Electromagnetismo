@@ -552,6 +552,107 @@ const Magneto = (() => {
       final: 'Módulo del campo total en cada punto de la recta',
     };
   }
+  /* ---------- MG-2: dipolo magnético y potencial vector ---------- */
+  // momento dipolar por unidad de corriente de una espira, rectangular, solenoide o disco; null si la fuente no es un lazo
+  function momentoLazo(f) {
+    if (f.tipo === 'espira') return V3.sc(PLANOS[f.plano].n, PI * f.R * f.R * f.sentido);
+    if (f.tipo === 'rectangular') return V3.sc(PLANOS[f.plano].n, f.a * f.b * f.sentido);
+    if (f.tipo === 'solenoide') return V3.sc(EJES[f.eje], f.N * PI * f.R * f.R * f.sentido);
+    if (f.tipo === 'disco') return V3.sc(PLANOS[f.plano].n, (PI * Math.pow(f.R, 4) * f.sentido) / 4);
+    return null;
+  }
+  const centroLazo = (f) => f.C;
+  // campo de un dipolo m (con μ₀ = 1) en el punto relativo r: [3(m·r̂)r̂ − m]/(4π r³)
+  function campoDipolo(m, r) { const d = V3.norm(r), u = V3.sc(r, 1 / d); return V3.sc(V3.sub(V3.sc(u, 3 * V3.dot(m, u)), m), 1 / (4 * PI * d * d * d)); }
+  const dirTxt = (v) => { const n = V3.norm(v); if (!n) return '0'; const u = V3.sc(v, 1 / n), i = u.findIndex((x) => Math.abs(Math.abs(x) - 1) < 1e-9); return i >= 0 ? `${u[i] < 0 ? MINUS : '+'}${'xyz'[i]}` : pt(u.map((x) => +x.toFixed(4))); };
+  ANALYSES.dipolo = {
+    label: 'Dipolo magnético', titulo: 'Momento dipolar y campo lejano',
+    def: () => ({ P: ['0', '0', '3'] }),
+    run(q, fs, leer, modo) {
+      const P = q.P.map((x, j) => leer(x, `Punto P (${'xyz'[j]})`)), lazos = fs.filter((f) => momentoLazo(f)), otros = fs.filter((f) => !momentoLazo(f));
+      if (!lazos.length) throw new Error('Añade una espira, una espira rectangular, un solenoide o un disco que gira: el dipolo describe un lazo de corriente');
+      const exacto = campoTotal(lazos, P).vp, vd = {}, steps = [], mt = [0, 0, 0];
+      for (const f of lazos) {
+        const m = momentoLazo(f), r = V3.sub(P, centroLazo(f));
+        if (V3.norm(r) < 1e-12) throw new Error(`${f.nombre}: el punto P está en el centro del lazo, donde el dipolo no vale`);
+        vpAdd(vd, f.s, V3.sc(campoDipolo(m, r), f.k));
+        const mm = V3.norm(m), kf = mm / PI, mT = V3.sc(m, f.k);
+        for (let i = 0; i < 3; i++) mt[i] += mT[i];
+        const txt = modo === 'si' ? `${dec(mm * f.k)} <span class="unit">A·m²</span> hacia ${dirTxt(m)}` : `${kf === 1 ? '' : num(kf)}π ${sym(f.s)}<i>a</i><sup>2</sup> hacia ${dirTxt(m)}`;
+        steps.push({ texto: `${f.nombre} · momento dipolar`, html: `<span class="vv">m</span> = ${f.tipo === 'espira' ? 'π R² I' : f.tipo === 'rectangular' ? 'a b I' : f.tipo === 'solenoide' ? 'N π R² I' : 'π σ ω R⁴/4'} = ${txt}` });
+      }
+      vpLimpia(vd);
+      const tot = (vp) => Object.values(vp).reduce((a, b) => V3.add(a, b), [0, 0, 0]), Be = tot(exacto), Bd = tot(vd), nB = V3.norm(Be), err = nB ? V3.norm(V3.sub(Bd, Be)) / nB : NaN;
+      const m1 = lazos[0], req = Math.sqrt(V3.norm(momentoLazo(m1)) / PI), dist = V3.norm(V3.sub(P, centroLazo(m1)));
+      steps.push({ texto: 'Campo del dipolo', html: `<span class="vv">B</span><sub>dip</sub> = μ₀/(4π<i>r</i>³) [3(<span class="vv">m</span>·r̂)r̂ − <span class="vv">m</span>] = ${vecHtml(vd, -1, modo, 'T')}` });
+      steps.push({ texto: 'Campo exacto (Biot-Savart)', html: `<span class="vv">B</span> = ${vecHtml(exacto, -1, modo, 'T')}` });
+      const aviso = otros.length ? `<br><span class="sub">No se tienen en cuenta: ${otros.map((f) => esc(f.nombre)).join(', ')} (no son lazos).</span>` : '';
+      const mtxt = modo === 'si' ? `(${mt.map(dec).join(', ')}) <span class="unit">A·m²</span>` : lazos.map((f) => { const c = (V3.norm(momentoLazo(f)) / PI) * f.k; return `${c === 1 ? '' : num(c)}π ${sym(f.s)}<i>a</i><sup>2</sup> (${dirTxt(momentoLazo(f))})`; }).join(' + ');
+      return {
+        P, vp: exacto, dipolo: { Be, Bd, err, dist, req },
+        res: `<span class="vv">m</span> = ${mtxt}<br><span class="vv">B</span><sub>dip</sub>(P) = ${vecHtml(vd, -1, modo, 'T')}<br><span class="sub"><span class="vv">B</span><sub>exacto</sub>(P) = ${vecHtml(exacto, -1, modo, 'T')}</span><br><span class="sub">Diferencia: ${(100 * err).toLocaleString('es-ES', { maximumFractionDigits: 2 })} % · distancia ≈ ${(dist / req).toLocaleString('es-ES', { maximumFractionDigits: 2 })} radios del lazo</span>${aviso}`,
+        steps, final: 'B ≈ μ₀/(4π r³)[3(m·r̂)r̂ − m]; en el eje μ₀ m/(2π r³) y en el plano del lazo μ₀ m/(4π r³), con sentido contrario a m',
+      };
+    },
+  };
+  // potencial vector por unidad de corriente (μ₀ = 1): A = (1/4π)∮ dl/|r − r′|
+  function arcoA(P, c, pl, R, N = 256) {
+    const A = [0, 0, 0], h = (2 * PI) / N;
+    for (let i = 0; i < N; i++) {
+      const t = i * h, r = V3.add(c, V3.add(V3.sc(pl.e1, R * Math.cos(t)), V3.sc(pl.e2, R * Math.sin(t)))), dl = V3.add(V3.sc(pl.e1, -R * Math.sin(t) * h), V3.sc(pl.e2, R * Math.cos(t) * h)), k = 1 / (4 * PI * V3.norm(V3.sub(P, r)));
+      A[0] += k * dl[0]; A[1] += k * dl[1]; A[2] += k * dl[2];
+    }
+    return A;
+  }
+  function segmentoA(P, A0, B0) {
+    const d = V3.sub(B0, A0), L = V3.norm(d), u = V3.sc(d, 1 / L), w = V3.sub(P, A0), t0 = V3.dot(w, u), d2 = V3.dot(w, w) - t0 * t0, dd = Math.sqrt(Math.max(d2, 0));
+    if (dd < 1e-9 * L) return null;
+    return V3.sc(u, (Math.asinh((L - t0) / dd) + Math.asinh(t0 / dd)) / (4 * PI));
+  }
+  const POT = {
+    espira(f, P) {
+      const pl = PLANOS[f.plano], CP = V3.sub(P, f.C), z = V3.dot(CP, pl.n), rho = V3.norm(V3.sub(CP, V3.sc(pl.n, z)));
+      if ((rho - f.R) ** 2 + z * z < 1e-14 * f.R * f.R) return { error: 'el punto está sobre la espira' };
+      return { A: V3.sc(arcoA(P, f.C, pl, f.R, rho < 1e-12 ? 8 : 512), f.sentido), nota: rho < 1e-12 ? 'En el eje A = 0 por simetría' : 'Integral de Neumann a lo largo de la espira' };
+    },
+    rectangular(f, P) {
+      const v = esquinas(f), A = [0, 0, 0];
+      for (let k = 0; k < 4; k++) { const a = segmentoA(P, v[k], v[(k + 1) % 4]); if (!a) return { error: 'el punto está sobre un lado de la espira' }; A[0] += a[0]; A[1] += a[1]; A[2] += a[2]; }
+      return { A, nota: 'Suma de los cuatro lados: A = (μ₀I/4π) û [asinh + asinh]' };
+    },
+    solenoide(f, P, fino) {
+      const n = EJES[f.eje], CP = V3.sub(P, f.C), z = V3.dot(CP, n), rv = V3.sub(CP, V3.sc(n, z)), rho = V3.norm(rv), dens = f.N / f.L;
+      if (f.ideal) {
+        if (rho < 1e-12) return { A: [0, 0, 0], nota: 'En el eje A = 0' };
+        const phi = V3.cross(n, V3.sc(rv, 1 / rho)), a = rho < f.R ? (dens * rho) / 2 : (dens * f.R * f.R) / (2 * rho);
+        return { A: V3.sc(phi, a * f.sentido), nota: rho < f.R ? 'Dentro del solenoide ideal: A = μ₀ n I ρ/2 (según φ̂)' : 'Fuera del solenoide ideal: A = μ₀ n I R²/(2ρ): hay A aunque B = 0' };
+      }
+      if (Math.abs(rho - f.R) < 1e-9 && Math.abs(z) <= f.L / 2) return { error: 'el punto está sobre el bobinado' };
+      const pl = PLANOS[PLANO_DE_EJE[f.eje]], g = gl(fino ? 16 : 6), pan = fino ? 12 : 4, h = f.L / pan, A = [0, 0, 0];
+      for (let p = 0; p < pan; p++) for (let i = 0; i < g.x.length; i++) {
+        const zz = -f.L / 2 + h * (p + (g.x[i] + 1) / 2), a = arcoA(P, V3.add(f.C, V3.sc(n, zz)), pl, f.R, rho < 1e-12 ? 8 : 192), w = (g.w[i] * h) / 2 * dens * f.sentido;
+        A[0] += w * a[0]; A[1] += w * a[1]; A[2] += w * a[2];
+      }
+      return { A, nota: 'Suma de las espiras del solenoide (integral numérica)' };
+    },
+  };
+  ANALYSES.potencial = {
+    label: 'Potencial vector A', titulo: 'Potencial vector en un punto',
+    def: () => ({ P: ['2', '0', '0'] }),
+    run(q, fs, leer, modo) {
+      const P = q.P.map((x, j) => leer(x, `Punto P (${'xyz'[j]})`)), ok = fs.filter((f) => POT[f.tipo]), otros = fs.filter((f) => !POT[f.tipo]);
+      if (!ok.length) throw new Error('Añade una espira, una espira rectangular o un solenoide: el potencial vector está calculado para esos lazos');
+      const vp = {}, steps = [];
+      for (const f of ok) {
+        const r = POT[f.tipo](f, P, true); if (r.error) throw new Error(`${f.nombre}: ${r.error}`);
+        const v = V3.sc(r.A, f.k); vpAdd(vp, f.s, v); steps.push({ texto: `${f.nombre} · ${SOURCES[f.tipo].label}`, html: `<span class="vv">A</span> = ${vecHtml(vpLimpia({ [f.s]: v }), 0, modo, 'T·m')}<br><span class="sub">${r.nota}</span>` });
+      }
+      vpLimpia(vp);
+      const m = modHtml(vp, 0, modo, 'T·m'), aviso = otros.length ? `<br><span class="sub">No se tienen en cuenta: ${otros.map((f) => esc(f.nombre)).join(', ')}.</span>` : '';
+      return { P, vp, res: `<span class="vv">A</span>(P) = ${vecHtml(vp, 0, modo, 'T·m')}${m ? `<br><span class="sub">|<span class="vv">A</span>| = ${m}</span>` : ''}${aviso}`, steps, final: 'A = μ₀/(4π) ∮ I dl/|r − r′|, con B = ∇ × A y ∮ A·dl = flujo de B' };
+    },
+  };
+
   ANALYSES.perfil = { label: 'Perfil de |B|', titulo: 'Perfil de |B| a lo largo de una recta', def: () => ({ P: ['-3', '0', '0'], Q: ['3', '0', '0'] }), run: perfilB };
 
   /* ---------- Desarrollo de cada fuente ---------- */
@@ -585,6 +686,6 @@ const Magneto = (() => {
     return { modo, fuentes: fs, errors, results };
   }
 
-  return { SOURCES, ANALYSES, PLANOS, EJES, PLANO_DE_EJE, run, campoRapido, esquinas, MU0, num, dec, sym };
+  return { SOURCES, ANALYSES, PLANOS, EJES, PLANO_DE_EJE, run, campoRapido, esquinas, MU0, num, dec, sym, momentoLazo, campoDipolo, POT, campoTotal };
 })();
 if (typeof module !== 'undefined') module.exports = Magneto;

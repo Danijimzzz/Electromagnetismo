@@ -23,7 +23,8 @@ const Induccion = (() => {
     const a = Math.abs(x), p = PREF.find(([v]) => a >= v * 0.9999999) || PREF[PREF.length - 1];
     return `${String(+(x / p[0]).toPrecision(d)).replace('.', ',').replace('-', '−')} ${p[1]}${unidad}`;
   };
-  const leeNum = (s) => +String(s).trim().replace(/\s/g, '').replace(',', '.').replace(/[·x×*]10\^?([+\-−]?\d+)/i, 'e$1').replace('−', '-');
+  const leeNum0 = (s) => +String(s).trim().replace(/\s/g, '').replace(',', '.').replace(/[·x×*]10\^?([+\-−]?\d+)/i, 'e$1').replace('−', '-');
+  const leeNum = (s) => { const u = typeof Herramienta !== 'undefined' ? Herramienta.leeUn(s) : undefined; return u !== undefined ? u : leeNum0(s); }; // admite «4 mm», «2,4 GHz», «10 pF»
   const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
   const lee = (sc, k, nom, { opcional = false, cero = false, signo = false } = {}) => {
     if (vacio(sc[k])) { if (opcional) return null; throw new Error(`Falta ${nom}`); }
@@ -247,6 +248,40 @@ const Induccion = (() => {
     return { G, p, res, pasos, letras: r.letras };
   }
 
+
+  /* ---------- IN-3: fuerza entre dos espiras coaxiales (F = I₁ I₂ ∇M) ---------- */
+  // integrales elípticas completas K(k) y E(k) por la media aritmético-geométrica
+  function elip(k) {
+    let a = 1, b = Math.sqrt(1 - k * k), s = 0.5 * k * k, pw = 0.5;
+    for (let i = 0; i < 40; i++) { const an = (a + b) / 2, c = (a - b) / 2; b = Math.sqrt(a * b); a = an; pw *= 2; s += pw * c * c; if (Math.abs(c) < 1e-17) break; }
+    const K = Math.PI / (2 * a); return { K, E: K * (1 - s) };
+  }
+  // inducción mutua exacta de dos espiras circulares coaxiales (Neumann), por vuelta y por vuelta
+  function mutuaExacta(R, r, z) {
+    const k2 = (4 * R * r) / ((R + r) ** 2 + z * z), k = Math.sqrt(k2), { K, E } = elip(k);
+    return MU0 * Math.sqrt(R * r) * ((2 / k - k) * K - (2 / k) * E);
+  }
+  const dMdz = (R, r, z) => { const h = Math.max(z, R) * 1e-4, d = (a) => (mutuaExacta(R, r, z + a) - mutuaExacta(R, r, z - a)) / (2 * a); return (4 * d(h) - d(2 * h)) / 3; };
+  // sc: { N1, R, N2, r (cm), z (cm), I1, I2 (A) }
+  function fuerza(sc) {
+    const G = { campos: [['N1', 'Espiras de la grande N<sub>1</sub>', '', 1], ['R', 'Radio de la grande R', 'cm', 1e-2], ['N2', 'Espiras de la pequeña N<sub>2</sub>', '', 1], ['r', 'Radio de la pequeña r', 'cm', 1e-2], ['z', 'Distancia z entre los planos', 'cm', 1e-2]] };
+    const p = leerGeo(G, sc), I1 = lee(sc, 'I1', 'la intensidad I₁', { signo: true }), I2 = lee(sc, 'I2', 'la intensidad I₂', { signo: true });
+    const { N1, R, N2, r, z } = p, N = N1 * N2, k2 = (4 * R * r) / ((R + r) ** 2 + z * z), M = N * mutuaExacta(R, r, z), dM = N * dMdz(R, r, z), F = I1 * I2 * dM;
+    const Md = (MU0 * N * Math.PI * R * R * r * r) / (2 * Math.pow(R * R + z * z, 1.5)), dMd = (-3 * MU0 * N * Math.PI * R * R * r * r * z) / (2 * Math.pow(R * R + z * z, 2.5)), Fd = I1 * I2 * dMd;
+    const curva = (n = 200) => { const zm = 4 * Math.max(R, z); return Array.from({ length: n + 1 }, (_, i) => { const zz = 1e-3 * R + (zm * i) / n; return [zz, I1 * I2 * N * dMdz(R, r, zz)]; }); };
+    let zmax = 0, Fm = 0; for (const [zz, ff] of curva(400)) if (Math.abs(ff) > Fm) { Fm = Math.abs(ff); zmax = zz; }
+    const sentido = F === 0 ? 'no hay fuerza' : F < 0 ? 'se atraen' : 'se repelen';
+    const pasos = [
+      { t: 'Energía y fuerza', html: `La energía de interacción de dos circuitos con corrientes fijas es $U = M I_1 I_2$ y la fuerza que mantiene las corrientes es $F = I_1 I_2 {dM}/{dz}$ (con las corrientes impuestas, el trabajo de las fuentes duplica el cambio de energía y resulta $F = +∇U$). Si las corrientes son paralelas M baja al alejarse (dM/dz < 0) y las espiras se <b>atraen</b>; si son opuestas, se <b>repelen</b>.` },
+      { t: 'Inducción mutua exacta', html: `Para dos espiras coaxiales (Neumann), con $k^2 = {4Rr}/{(R + r)^2 + z^2}$ = ${f(k2)}: $M = μ_0 √(R r) [(2/k − k) K(k) − (2/k) E(k)]$ por pareja de vueltas. Con N<sub>1</sub>N<sub>2</sub> = ${f(N)} vueltas, $M$ = <b>${u(M, 'H')}</b>.` },
+      { t: 'Derivada de M', html: `$dM/dz$ = <b>${f(dM)} H/m</b> (derivada de la fórmula exacta).` },
+      { t: 'Fuerza', html: `$F = I_1 I_2 dM/dz = ${f(I1)} · ${f(I2)} · (${f(dM)})$ = <b>${u(F, 'N')}</b>: las espiras <b>${sentido}</b>.` },
+      { t: 'Comparación con el dipolo', html: `Si la pequeña se trata como un dipolo $m_2 = N_2 I_2 π r^2$ en el campo del eje de la grande, $M ≈ {μ_0 π N_1 N_2 R^2 r^2}/{2(R^2 + z^2)^{3/2}}$ = ${u(Md, 'H')} y $F ≈ −{3 μ_0 π N_1 N_2 I_1 I_2 R^2 r^2 z}/{2(R^2 + z^2)^{5/2}}$ = ${u(Fd, 'N')}, un ${f(Math.abs(Fd / F - 1) * 100, 3)} % ${Math.abs(Fd) >= Math.abs(F) ? 'más' : 'menos'} que el valor exacto.` },
+      { t: 'Dónde es máxima', html: `En la gráfica la fuerza es máxima en $z$ ≈ <b>${f(zmax * 100)} cm</b> (${u(Fm, 'N')}); para una espira pequeña ocurre cerca de $z = R/2$ y a mucha distancia cae como $1/z^4$.` },
+    ];
+    return { p: { ...p, I1, I2 }, res: { M, dM, F, Md, Fd, zmax, Fmax: Fm, sentido }, pasos, curva, letras: 'F = I_1 I_2 {dM}/{dz}' };
+  }
+
   /* ---------- Circuito RL ---------- */
   // sc: { E (V), R (Ω), L (mH), modo: 'carga'|'descarga'|'pulsos', ton y toff (ms, en pulsos), t (ms) }
   function rl(sc) {
@@ -316,6 +351,11 @@ const Induccion = (() => {
       { clave: 'toroide-bobina', nombre: 'Bobina sobre un toroide (k = 1)', sc: { geo: 'toroide-bobina', N1: '500', N2: '50', a: '4', b: '6', h: '2', I1: '2', I2: '1', sentido: 'aditivo' } },
       { clave: 'acoplamiento', nombre: 'Bobinas acopladas en serie y en paralelo', sc: { geo: 'acoplamiento', L1: '2', L2: '8', k: '0.5' } },
     ],
+    F: [
+      { clave: 'f-atraen', nombre: 'Dos espiras con corrientes paralelas: se atraen', sc: { N1: '1', R: '10', N2: '1', r: '5', z: '5', I1: '100', I2: '50' } },
+      { clave: 'f-repelen', nombre: 'Corrientes opuestas: se repelen (anillo que levita)', sc: { N1: '200', R: '10', N2: '1', r: '5', z: '3', I1: '10', I2: '-300' } },
+      { clave: 'f-lejos', nombre: 'Espira pequeña lejos: límite de dipolo', sc: { N1: '100', R: '10', N2: '20', r: '1', z: '40', I1: '2', I2: '1' } },
+    ],
     RL: [
       { clave: 'carga', nombre: 'Se cierra el interruptor', sc: { E: '12', R: '6', L: '300', modo: 'carga', t: '50' } },
       { clave: 'descarga', nombre: 'La bobina se descarga por la resistencia', sc: { E: '10', R: '100', L: '500', modo: 'descarga', t: '2' } },
@@ -323,6 +363,6 @@ const Induccion = (() => {
     ],
   };
 
-  return { autoinduccion, mutua, rl, GEO_L, GEO_M, ejemplos, f, u, MU0 };
+  return { autoinduccion, mutua, rl, fuerza, mutuaExacta, elip, GEO_L, GEO_M, ejemplos, f, u, MU0 };
 })();
 if (typeof module !== 'undefined') module.exports = Induccion;

@@ -19,6 +19,11 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     const x = ej('mixta'); cerca(x.y1, 1200, 1e-9, 'renta con política mixta'); cerca(x.i1, 5, 1e-9, 'el tipo no cambia'); cerca(x.yf + x.ym, x.dy, 1e-9, 'fiscal + monetario = ΔY');
     // LM casi plana: el multiplicador fiscal tiende al keynesiano 4
     const l = ej('trampa'); cerca(l.mf, 4, 0.01, 'trampa de liquidez: multiplicador fiscal ≈ 4'); cerca(l.dy, 200, 0.5, 'trampa: ΔY ≈ 200');
+    // casos extremos: LM vertical (h → 0): la fiscal es ineficaz y la monetaria da ΔM/(P·k) = 100; trampa (h → ∞): la monetaria no hace nada; IS vertical (b → 0): la fiscal da el multiplicador simple
+    { const c = ej('clasico'), t = ej('trampa-monetaria'), v = ej('is-vertical');
+      if (!(c.rf < 0.01)) mal(`${N}: en el caso clásico la fiscal debería ser ineficaz (${c.rf})`); cerca(c.rm, 1, 1e-3, 'monetaria plenamente eficaz en el caso clásico'); cerca(c.ym, 200 / 2 / 0.5, 0.5, 'ΔY monetario = ΔM/(P·k) en el caso clásico');
+      if (!(t.rm < 0.01)) mal(`${N}: en la trampa de liquidez la monetaria debería ser ineficaz (${t.rm})`); if (!(v.rf > 0.99)) mal(`${N}: con la IS vertical la fiscal debería ser plenamente eficaz (${v.rf})`); if (!(v.rm < 0.01)) mal(`${N}: con la IS vertical la monetaria debería ser ineficaz (${v.rm})`);
+      if (!c.pasos.some((p) => /Eficacia de la política/.test(p.t))) mal(`${N}: falta el aviso de eficacia`); if (ej('equilibrio').rf !== undefined) mal(`${N}: sin política no debe haber eficacia`); }
     error({ ...C.ejemplos[0].sc, c1: '1' }, 'c₁ = 1');
     error({ ...C.ejemplos[0].sc, h: '0' }, 'h = 0');
     error({ ...C.ejemplos[0].sc, b: '-5' }, 'b negativa');

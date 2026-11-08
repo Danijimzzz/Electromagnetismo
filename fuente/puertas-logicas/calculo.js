@@ -89,6 +89,70 @@ const PuertasLogicas = (() => {
     return { primos: ps, esenciales, elegidos: [...esenciales, ...resto].sort((a, b) => orden(a, n).localeCompare(orden(b, n)) || a.v - b.v) };
   }
 
+  /* ---------- Solo NAND o solo NOR (PL-2) ---------- */
+  // grupos: lista de grupos de literales {k, neg}; op: 'NAND' (suma de productos) o 'NOR' (producto de sumas)
+  function soloUniversal(grupos, op) {
+    const ligadura = op === 'NAND' ? '·' : ' + ', un = (l) => lit(l.k, l.neg, false);
+    const compl = new Set(); let puertas = 0;
+    const capa1 = grupos.map((g) => {
+      if (g.length === 1) { const l = g[0]; if (l.neg) return un({ k: l.k, neg: false }); puertas++; return un({ k: l.k, neg: true }); }   // un literal solo: se invierte (o ya viene invertido)
+      g.forEach((l) => { if (l.neg) compl.add(l.k); }); puertas++;
+      return `(${g.map(un).join(ligadura)})'`;
+    });
+    puertas += compl.size + 1;
+    const dentro = capa1.join(ligadura);
+    return { txt: `(${dentro})'`, puertas, inversores: compl.size, capa1 };
+  }
+  // riesgos estáticos de 1 en la suma de productos simplificada (PL-4): pares de unos vecinos que no cubre un mismo grupo
+  function riesgos(n, s) {
+    const out = [];
+    for (const i of s.unos) for (let b = 0; b < n; b++) {
+      const j = i ^ (1 << b); if (j < i || !s.unos.includes(j)) continue;
+      if (s.elegidosS.some((p) => cubreI(p, i) && cubreI(p, j))) continue;
+      const cons = s.primosS.find((p) => cubreI(p, i) && cubreI(p, j));
+      out.push({ i, j, termino: cons ? prod(lits(cons, n, true), false) : null });
+    }
+    // un mismo término de consenso se cuenta una vez
+    const vistos = new Set(); return out.filter((h) => { const k = h.termino; if (vistos.has(k)) return false; vistos.add(k); return true; });
+  }
+
+  /* ---------- Lógica secuencial (PL-1) ---------- */
+  const FFS = { D: 'Biestable D', T: 'Biestable T', JK: 'Biestable JK', SR: 'Biestable SR' };
+  const ENT = { D: ['D'], T: ['T'], JK: ['J', 'K'], SR: ['S', 'R'] };
+  // entradas necesarias para pasar de q a q+ (2 = indiferente)
+  const EXC = {
+    D: (q, qn) => [qn],
+    T: (q, qn) => [q ^ qn],
+    JK: (q, qn) => (q === 0 ? [qn, 2] : [2, 1 - qn]),
+    SR: (q, qn) => (q === 0 ? (qn ? [1, 0] : [0, 2]) : (qn ? [2, 0] : [0, 1])),
+  };
+  function secuencial(sc) {
+    const ff = FFS[sc.ff] ? sc.ff : 'D', nb = entero(sc.bits, 1, 4, 'El número de bits'), sube = sc.sentido !== 'baja', ent = ENT[ff];
+    const x = (v) => (v === 2 ? 'X' : String(v));
+    // tabla característica
+    const caract = [];
+    if (ff === 'D') for (const d of [0, 1]) caract.push({ ent: [d], q: null, sig: String(d) });
+    else if (ff === 'T') for (const q of [0, 1]) for (const t of [0, 1]) caract.push({ ent: [t], q, sig: String(q ^ t) });
+    else if (ff === 'JK') for (const q of [0, 1]) for (const j of [0, 1]) for (const k of [0, 1]) caract.push({ ent: [j, k], q, sig: String(j && k ? 1 - q : j ? 1 : k ? 0 : q) });
+    else for (const q of [0, 1]) for (const sI of [0, 1]) for (const rI of [0, 1]) caract.push({ ent: [sI, rI], q, sig: sI && rI ? 'X (prohibido)' : String(sI ? 1 : rI ? 0 : q) });
+    const trans = [[0, 0], [0, 1], [1, 0], [1, 1]].map(([q, qn]) => ({ q, qn, ent: EXC[ff](q, qn).map(x) }));
+    // contador síncrono de nb bits
+    const N = 1 << nb, bitsDe = (e) => e.toString(2).padStart(nb, '0'), sig = (e) => (sube ? (e + 1) % N : (e - 1 + N) % N);
+    const estados = [...Array(N).keys()].map((e) => {
+      const a = bitsDe(e), b = bitsDe(sig(e));
+      return { q: a, sig: b, ex: [...a].map((qa, i) => EXC[ff](+qa, +b[i]).map(x)) };   // ex[i] = entradas del biestable del bit i (el 0 es el de más peso)
+    });
+    const vars = NOM.slice(0, nb), ecuaciones = [];
+    for (let i = 0; i < nb; i++) ent.forEach((nm, c) => {
+      const v = [...Array(N).keys()].map((e) => EXC[ff](+bitsDe(e)[i], +bitsDe(sig(e))[i])[c]);
+      const an = analiza(nb, `${nm}${nb - 1 - i}`, v);
+      ecuaciones.push({ nombre: `${nm}${nb - 1 - i}`, txt: an.constante !== null ? String(an.constante) : an.minS.txt, constante: an.constante, v });
+    });
+    // la secuencia al dar pulsos de reloj desde 0
+    const secuencia = []; let e = 0; for (let k = 0; k <= N; k++) { secuencia.push(bitsDe(e)); e = sig(e); }
+    return { ff, nombre: FFS[ff], nb, sube, entradas: ent, caract, trans, estados, vars: vars.map((v, i) => `${v} = Q${nb - 1 - i}`), ecuaciones, secuencia };
+  }
+
   /* ---------- Análisis de una salida ---------- */
   function analiza(n, nombre, v) {
     const N = 1 << n, todos = [...Array(N).keys()];
@@ -101,7 +165,7 @@ const PuertasLogicas = (() => {
       nombre, v, unos, ceros, indif,
       canS: ambos(sop, grupoCanonS), canP: ambos(pos, grupoCanonP),
       minS: ambos(sop, gS), minP: ambos(pos, gP), gruposS: gS, gruposP: gP, gruposCS: grupoCanonS, gruposCP: grupoCanonP,
-      elegidosS: mS.elegidos, elegidosP: mP.elegidos,
+      elegidosS: mS.elegidos, elegidosP: mP.elegidos, primosS: mS.primos,
       primos: mS.primos.map((p) => ({ pat: patron(p, n), html: prod(lits(p, n, true), true), cubre: p.c.filter((i) => unos.includes(i)), esencial: mS.esenciales.includes(p), elegido: mS.elegidos.includes(p) })),
       sumM: unos.length ? `Σm(${lista(unos)})` : 'Σm( )', prodM: ceros.length ? `ΠM(${lista(ceros)})` : 'ΠM( )',
       constante: !unos.length && !indif.length ? 0 : !ceros.length && !indif.length ? 1 : null,
@@ -357,6 +421,10 @@ const PuertasLogicas = (() => {
       const filas = s.primos.map((p) => `<tr><td>${p.html}</td><td>${p.pat}</td><td>${lista(p.cubre)}</td><td>${p.esencial ? 'esencial' : p.elegido ? 'elegido' : ''}</td></tr>`).join('');
       pasos.push({ t: `${f}: simplificación (Quine-McCluskey)`, html: `Se agrupan los minitérminos (y los indiferentes) que se diferencian en un solo bit hasta que no se pueden juntar más. Quedan estos implicantes primos:<div class="tabla-scroll"><table class="tabla"><tr><th>Implicante</th><th>Patrón</th><th>Cubre</th><th>Tipo</th></tr>${filas}</table></div>Los esenciales son los únicos que cubren algún minitérmino; se añaden los que faltan para cubrirlos todos con el menor número de términos.` });
       pasos.push({ t: `${f}: resultado simplificado`, html: `Suma de productos: ${f} = ${s.minS.html}<br>Producto de sumas: ${f} = ${s.minP.html}<br><span class="nota">El producto de sumas sale de simplificar los ceros (${f}′) y complementar el resultado con De Morgan.</span>` });
+      { const hz = riesgos(n, s), nd = soloUniversal(s.gruposS, 'NAND'), nr = soloUniversal(s.gruposP, 'NOR');
+        pasos.push({ t: `${f}: solo con NAND o solo con NOR`, html: `Con dos negaciones, una suma de productos son <b>NAND de NAND</b>: ${f} = ${nd.txt.replace(/·/g, '·')} (${nd.puertas} ${nd.puertas === 1 ? 'puerta' : 'puertas'}${nd.inversores ? `, contando ${nd.inversores} ${nd.inversores === 1 ? 'inversor' : 'inversores'} hechos con NAND` : ''}). Un producto de sumas son <b>NOR de NOR</b>: ${f} = ${nr.txt} (${nr.puertas} ${nr.puertas === 1 ? 'puerta' : 'puertas'}). Se usa el teorema de De Morgan: (X·Y)′ = X′ + Y′.` });
+        pasos.push({ t: `${f}: riesgos estáticos (glitches)`, html: hz.length ? `En la suma de productos simplificada hay <b>riesgo estático de 1</b>: al pasar entre ${hz.map((h) => `${h.i} y ${h.j}`).join('; ')} la salida debería quedarse en 1, pero ningún grupo cubre las dos casillas y puede aparecer un pico a 0 mientras uno se apaga y el otro aún no se enciende. Se arregla añadiendo el término de consenso ${hz.map((h) => '<b>' + h.termino + '</b>').join(', ')} (no cambia la función, pero cubre el salto).` : `La suma de productos simplificada <b>no tiene riesgos estáticos de 1</b>: cada par de casillas vecinas con 1 lo cubre un mismo grupo del mapa de Karnaugh.` });
+      }
     }
 
     const dibujo = modo === 'puertas' ? circuito
@@ -393,6 +461,6 @@ const PuertasLogicas = (() => {
     return T(3, 1, [v.join('')]);
   }
 
-  return { resolver, ejemplos, azar, parseEcuaciones, NOM, NOMBRES, TIPOS, arid, MAXN, MAXM };
+  return { resolver, ejemplos, azar, parseEcuaciones, soloUniversal, riesgos, secuencial, FFS, NOM, NOMBRES, TIPOS, arid, MAXN, MAXM };
 })();
 if (typeof module !== 'undefined') module.exports = PuertasLogicas;

@@ -7,7 +7,9 @@
    rentabilidad económica (ROA, como margen por rotación) y la financiera
    (ROE), y el efecto del apalancamiento financiero. Formato en euros de
    economia/comun.js; interfaz en ratios/app.js.
-     resolver(sc)  { anc, ex, re, di, pn, pnc, pc, ventas, baii, gf, t } → { ratios, roa, roe, pasos }
+   Con comparar = 'si' se dan dos situaciones (A, y B con las mismas claves terminadas en 2: otra
+   empresa u otro año) y se comparan ratio a ratio.
+     resolver(sc)  { anc, ex, re, di, pn, pnc, pc, ventas, baii, gf, t, comparar } → { ratios, roa, roe, b, pasos }
    ===================================================================== */
 const Ratios = (() => {
   const K = typeof Eco !== 'undefined' ? Eco : require('../economia/comun.js');
@@ -18,7 +20,25 @@ const Ratios = (() => {
   // [mínimo, máximo] recomendados (null si no hay) y lo que se dice en cada caso
   const valora = (x, [a, b], bajo, alto, bien) => (a !== null && x < a ? ['bajo', bajo] : b !== null && x > b ? ['alto', alto] : ['bien', bien]);
 
+  const CLAVES = ['anc', 'ex', 're', 'di', 'pn', 'pnc', 'pc', 'ventas', 'baii', 'gf', 't'];
   function resolver(sc) {
+    const a = uno(sc);
+    if (sc.comparar !== 'si') return a;
+    const sc2 = {}; for (const k of CLAVES) sc2[k] = sc[k + '2'];
+    let b;
+    try { b = uno(sc2); } catch (err) { throw new Error(`En la situación B: ${err.message.charAt(0).toLowerCase()}${err.message.slice(1)}`); }
+    const mejor = (x, y, alto = true) => (Math.abs(x - y) < 1e-12 ? 'igual' : (x > y) === alto ? 'A' : 'B');
+    const filas = [['Fondo de maniobra', a.fm, b.fm, true, 'e'], ...a.ratios.map((x, k) => [x.nombre, x.val, b.ratios[k].val, null, 'r']), ['Rentabilidad económica (ROA)', a.roa, b.roa, true, 'p'], ['Rentabilidad financiera (ROE)', a.roe, b.roe, true, 'p']];
+    const lin = filas.filter((x) => x[1] !== null && x[2] !== null && isFinite(x[1]) && isFinite(x[2])).map(([n, x, y, alto, tipo]) => {
+      const fm = tipo === 'e' ? e : tipo === 'p' ? tp : r3, sube = y - x;
+      return `${n}: A ${tipo === 'e' ? fm(x) + ' €' : fm(x)} → B ${tipo === 'e' ? fm(y) + ' €' : fm(y)} (${sube > 0 ? 'B es mayor' : sube < 0 ? 'B es menor' : 'igual'}${alto === true ? `; mejor ${mejor(x, y)}` : ''})`;
+    });
+    const pasos = [{ t: 'Comparación de A y B', html: `Las dos situaciones calculadas con los mismos criterios:<br>${lin.join('<br>')}` }];
+    const dROA = b.roa - a.roa, dROE = a.roe !== null && b.roe !== null ? b.roe - a.roe : null;
+    pasos.push({ t: 'Qué cambia y por qué', html: `La rentabilidad económica pasa del ${tp(a.roa)} al ${tp(b.roa)} (${dROA >= 0 ? '+' : '−'}${f(100 * Math.abs(dROA), 4)} puntos): ${Math.abs(b.margen - a.margen) > Math.abs(b.rot - a.rot) * 0.1 ? `el margen va del ${tp(a.margen)} al ${tp(b.margen)} y la rotación de ${f(a.rot, 4)} a ${f(b.rot, 4)} veces` : 'cambia sobre todo por la rotación'}.${dROE !== null ? ` La financiera, del ${tp(a.roe)} al ${tp(b.roe)}: ${Math.sign(dROA) !== Math.sign(dROE) && Math.abs(dROA) > 1e-9 ? 'se mueve en sentido contrario a la económica porque cambia el endeudamiento y el coste de la deuda' : 'el endeudamiento y el coste de la deuda amplían o reducen el cambio'}.` : ''}` });
+    return { ...a, b, comparar: true, pasosA: a.pasos, pasos: [...a.pasos, ...pasos] };
+  }
+  function uno(sc) {
     const m = (k, nom) => lee(sc, k, nom, { min: 0 });
     const anc = m('anc', 'el activo no corriente'), ex = m('ex', 'las existencias'), re = m('re', 'el realizable'), di = m('di', 'el disponible');
     const pn = lee(sc, 'pn', 'el patrimonio neto'), pnc = m('pnc', 'el pasivo no corriente'), pc = m('pc', 'el pasivo corriente');
@@ -58,6 +78,7 @@ const Ratios = (() => {
     { clave: 'equilibrada', nombre: 'Una empresa equilibrada', sc: { anc: '400000', ex: '80000', re: '70000', di: '50000', pn: '300000', pnc: '150000', pc: '150000', ventas: '900000', baii: '72000', gf: '9000', t: '25' } },
     { clave: 'apalancada', nombre: 'Mucha deuda que rinde: apalancamiento positivo', sc: { anc: '700000', ex: '100000', re: '120000', di: '80000', pn: '200000', pnc: '500000', pc: '300000', ventas: '1500000', baii: '150000', gf: '40000', t: '25' } },
     { clave: 'suspension', nombre: 'Fondo de maniobra negativo y pérdidas', sc: { anc: '500000', ex: '40000', re: '30000', di: '10000', pn: '200000', pnc: '180000', pc: '200000', ventas: '400000', baii: '20000', gf: '24000', t: '25' } },
+    { clave: 'comparar', nombre: 'Comparar dos años: la deuda sube y el ROE también', sc: { comparar: 'si', anc: '400000', ex: '80000', re: '70000', di: '50000', pn: '300000', pnc: '150000', pc: '150000', ventas: '900000', baii: '72000', gf: '9000', t: '25', anc2: '500000', ex2: '90000', re2: '80000', di2: '30000', pn2: '300000', pnc2: '300000', pc2: '100000', ventas2: '1000000', baii2: '90000', gf2: '15000', t2: '25' } },
     { clave: 'tienda', nombre: 'Una tienda pequeña con mucha caja', sc: { anc: '60000', ex: '30000', re: '5000', di: '15000', pn: '70000', pnc: '20000', pc: '20000', ventas: '250000', baii: '25000', gf: '1000', t: '25' } },
   ];
 

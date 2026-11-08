@@ -107,6 +107,24 @@ const Markowitz = (() => {
     return { stats, mv, objetivo, tg };
   }
 
+  // dos activos con correlación +1 o −1: la covarianza es singular y todas las carteras están sobre una recta (σp = |w·σ1 + ρ·(1 − w)·σ2|);
+  // se resuelve con la fórmula directa. Hay una cartera sin riesgo (σp = 0) salvo con ρ = 1 y σ1 = σ2.
+  function modeloDos(mu, sg, r, rf, ventas) {
+    const [m1, m2] = mu, [s1, s2] = sg;
+    const st = (w1) => { const sgp = Math.abs(w1 * s1 + r * (1 - w1) * s2); return { w: [w1, 1 - w1], mu: w1 * m1 + (1 - w1) * m2, sg: sgp, v: sgp * sgp }; };
+    const ok = (w1) => ventas || (w1 >= -1e-12 && w1 <= 1 + 1e-12);
+    const objetivo = (m) => { const w1 = (m - m2) / (m1 - m2); return ok(w1) ? st(w1) : null; };
+    const den = s1 - r * s2, w0 = den === 0 ? null : -r * s2 / den;
+    let mv;
+    if (w0 !== null && ok(w0)) mv = st(w0);
+    else { const a = st(0), b = st(1); mv = a.sg < b.sg - 1e-15 ? a : b.sg < a.sg - 1e-15 ? b : (a.mu >= b.mu ? a : b); }
+    let tg = null, arbitraje = false;
+    if (mv.sg < 1e-12 && mv.mu > rf + 1e-12) arbitraje = true;
+    else if (mv.sg < 1e-12 && ventas && mv.mu < rf - 1e-12) arbitraje = true;
+    else if (!ventas) for (const w1 of [0, 1]) { const p = st(w1), sh = p.sg > 1e-12 ? (p.mu - rf) / p.sg : -Infinity; if (sh > 0 && (!tg || sh > tg.sharpe)) tg = { ...p, sharpe: sh }; }
+    return { stats: (w) => { const v = sg.reduce((a, _, i) => a + sg.reduce((b, __, j) => b + w[i] * w[j] * (i === j ? 1 : r) * sg[i] * sg[j], 0), 0); return { w, mu: dot(w, mu), sg: Math.sqrt(Math.max(0, v)), v: Math.max(0, v) }; }, mv, objetivo, tg, arbitraje };
+  }
+
   /* ---------- Resolver ---------- */
   function resolver(sc) {
     const act = activos(sc.activos), n = act.length;
@@ -124,13 +142,14 @@ const Markowitz = (() => {
       }
     }
     const cov = rho.map((r, i) => r.map((x, j) => x * sg[i] * sg[j]));
-    if (!definidaPositiva(cov)) throw new Error('Esa matriz de correlaciones no es válida: con ella alguna cartera tendría varianza cero o negativa (por ejemplo, dos activos con correlación 1)');
+    const extremo = n === 2 && Math.abs(Math.abs(rho[0][1]) - 1) < 1e-9, r12 = extremo ? Math.sign(rho[0][1]) : 0;
+    if (!extremo && !definidaPositiva(cov)) throw new Error('Esa matriz de correlaciones no es válida: con ella alguna cartera tendría varianza cero o negativa (por ejemplo, dos activos con correlación 1)');
     const rf = lee(sc, 'rf', 'el tipo sin riesgo', { min: -50, max: 100 }) / 100;
     const ventas = sc.ventas === 'si';
     const objPct = lee(sc, 'objetivo', 'la rentabilidad objetivo', { min: -100, max: 1000, def: NaN });
     const m0 = isNaN(objPct) ? null : objPct / 100;
     const grafico = sc.grafico === 'sml' ? 'sml' : 'frontera';
-    const M = modelo(mu, cov, rf, ventas), { mv, tg } = M;
+    const M = extremo ? modeloDos(mu, sg, r12, rf, ventas) : modelo(mu, cov, rf, ventas), { mv, tg } = M;
     if (!mv) throw new Error('No se ha podido calcular la cartera de mínima varianza');
     const maxMu = Math.max(...mu), minMu = Math.min(...mu);
     let obj = null;
@@ -166,12 +185,15 @@ const Markowitz = (() => {
 
     /* ---------- Desarrollo ---------- */
     const pasos = [];
+    if (extremo) pasos.push({ t: `Caso especial: correlación ${r12 > 0 ? '+1' : '−1'} con dos activos`, html: `Con $ρ = ${r12 > 0 ? '1' : '−1'}$ la varianza de la cartera es un cuadrado perfecto: $σ_p = |w·σ_1 ${r12 > 0 ? '+' : '−'} (1 − w)·σ_2|$ (con $w$ el peso del primer activo). Todas las carteras están sobre una recta y se resuelven directamente, sin invertir la matriz de covarianzas (que aquí es singular).<br>${mv.sg < 1e-9 ? `Existe una <b>cartera sin riesgo</b>: con $w = ${e(mv.w[0])}$ ($σ_p = 0$) rinde ${pct(mv.mu)}.` : `No hay cartera sin riesgo (los dos activos tienen la misma volatilidad y correlación 1): el menor riesgo se consigue con el activo de más rentabilidad entre los de menor σ.`}${M.arbitraje ? ` Como esa cartera sin riesgo rinde ${mv.mu > rf ? 'más' : 'menos'} que el activo sin riesgo (${pct(rf)}), habría <b>arbitraje</b> (ganar dinero sin riesgo ${mv.mu > rf ? 'pidiendo prestado a $r_f$ e invirtiendo en ella' : 'vendiéndola en corto e invirtiendo a $r_f$'}); por eso no hay cartera tangente.` : ''}` });
     const pesos = (w, S = nombres) => w.map((x, i) => `${esc(S[i])}: <b>${pct(x)}</b>`).join(' · ');
     const filaCov = (i, j) => `$σ_{${i + 1}${j + 1}} = ρ_{${i + 1}${j + 1}}·σ_${i + 1}·σ_${j + 1} = ${e(rho[i][j])}·${e(sg[i])}·${e(sg[j])} = ${e6(cov[i][j])}$`;
     pasos.push({ t: 'Matriz de covarianzas', html: `Con las volatilidades σ y las correlaciones ρ, la covarianza entre dos activos es $σ_{ij} = ρ_{ij}·σ_i·σ_j$ (y la diagonal, la varianza $σ_i^2$).<br>${filaCov(0, 1)}${n > 2 ? `<br>${filaCov(0, 2)}` : ''}<table class="tabla"><thead><tr><th>Activo</th>${nombres.map((x) => `<th>${esc(x)}</th>`).join('')}</tr></thead><tbody>${cov.map((r, i) => `<tr><th>${esc(nombres[i])}</th>${r.map((x) => `<td>${e6(x)}</td>`).join('')}</tr>`).join('')}</tbody></table>La rentabilidad y la varianza de una cartera con pesos $w$ son $μ_p = w^T·μ$ y $σ_p^2 = w^T·Σ·w$.` });
     const sin = ventas ? '' : ' Sin ventas en corto, se prueba con cada grupo de activos posible y se queda el mejor con todos los pesos positivos; el resto de activos queda en 0.';
     pasos.push({ t: 'Cartera de mínima varianza', html: `${ventas ? '$w = {Σ^{−1}·1}/{1^T·Σ^{−1}·1}$.' : 'Minimiza $σ_p^2$ con $Σw_i = 1$ y $w_i ≥ 0$.'}${sin}<br>Pesos: ${pesos(mv.w)}<br>$μ_{mín} = ${e(mv.mu)}$ = <b>${pct(mv.mu)}</b> y $σ_{mín} = ${e(mv.sg)}$ = <b>${pct(mv.sg)}</b>. Ninguna combinación de estos activos tiene menos riesgo.` });
     if (tg) pasos.push({ t: 'Cartera tangente', html: `Es la de mayor ratio de Sharpe $S = (μ_p − r_f)/σ_p$ con $r_f$ = ${pct(rf)}: ${ventas ? '$w ∝ Σ^{−1}·(μ − r_f·1)$, normalizada para que sume 1.' : 'el mismo criterio, con $w_i ≥ 0$.'}<br>Pesos: ${pesos(tg.w)}<br>$μ_T = ${e(tg.mu)}$ = <b>${pct(tg.mu)}</b>, $σ_T = ${e(tg.sg)}$ = <b>${pct(tg.sg)}</b> y $S = {${e(tg.mu)} − ${e(rf)}}/${e(tg.sg)} = ${e(tg.sharpe)}$.` });
+    else if (M.arbitraje) pasos.push({ t: 'Cartera tangente', html: 'No existe: con correlación ±1 y una cartera sin riesgo que no rinde lo mismo que el activo sin riesgo hay arbitraje, y el ratio de Sharpe sería infinito.' });
+    else if (extremo && ventas) pasos.push({ t: 'Cartera tangente', html: 'No está definida: con ventas en corto y correlación ±1 todas las carteras tienen el mismo ratio de Sharpe o crecen sin límite. Prueba sin ventas en corto.' });
     else pasos.push({ t: 'Cartera tangente', html: `No existe: ${ventas ? `el tipo sin riesgo ${pct(rf)} no es menor que la rentabilidad de la cartera de mínima varianza (${pct(mv.mu)})` : `ningún activo rinde más que el tipo sin riesgo ${pct(rf)}`}, así que invertir en el activo sin riesgo es mejor que cualquier cartera de riesgo.` });
     if (tg) pasos.push({ t: 'Línea del mercado de capitales', html: `Combinar el activo sin riesgo con la cartera tangente da la recta $μ_p = r_f + S·σ_p = ${e(rf)} + ${e(tg.sharpe)}·σ_p$. Con $α$ en la tangente y $1 − α$ en el activo sin riesgo, el riesgo es $α·σ_T$ (con α > 1 se invierte pidiendo prestado a $r_f$). Es la mejor combinación posible: siempre por encima de la frontera.` });
     if (obj) pasos.push({ t: `Cartera con rentabilidad ${pct(m0)}`, html: `${ventas ? 'Con $A = 1^TΣ^{−1}1$, $B = 1^TΣ^{−1}μ$, $C = μ^TΣ^{−1}μ$ y $D = AC − B^2$: $w = λ·Σ^{−1}1 + γ·Σ^{−1}μ$ con $λ = (C − B·m)/D$ y $γ = (A·m − B)/D$.' : 'Minimiza la varianza con la rentabilidad fijada en $m$ y $w_i ≥ 0$.'}<br>Pesos: ${pesos(obj.w)}<br>Riesgo mínimo para ese rendimiento: $σ_p = ${e(obj.sg)}$ = <b>${pct(obj.sg)}</b>${m0 < mv.mu - 1e-12 ? '. Está por debajo de la cartera de mínima varianza: es ineficiente, hay otra con más rentabilidad y el mismo riesgo.' : '.'}` });
@@ -180,7 +202,7 @@ const Markowitz = (() => {
       pasos.push({ t: 'CAPM: beta, rentabilidad exigida y alfa', html: `Cartera de mercado: ${merTipo === 'dado' ? 'los pesos que has escrito (normalizados)' : 'la cartera tangente (si todos invierten con Markowitz, el mercado es la tangente)'}, con $μ_M = ${e(mer.mu)}$ y $σ_M = ${e(mer.sg)}$.<br>$β_i = σ_{iM}/σ_M^2 = (Σw)_i/σ_M^2$, la rentabilidad exigida es $μ_i^* = r_f + β_i·(μ_M − r_f)$ y $α_i = μ_i − μ_i^*$.<table class="tabla"><thead><tr><th>Activo</th><th>β</th><th>Exigida</th><th>Esperada</th><th>α</th></tr></thead><tbody>${filasC}</tbody></table>${merTipo === 'tangente' && ventas ? 'Con ventas en corto, todos los activos quedan sobre la SML (α = 0): es la propia condición de la cartera tangente.' : 'α > 0: el activo rinde más de lo que su riesgo de mercado exige (por encima de la SML); α < 0, menos.'}` });
     } else pasos.push({ t: 'CAPM', html: 'Sin cartera tangente no hay cartera de mercado por defecto. Escribe los pesos de mercado para calcular betas, rentabilidades exigidas y alfas.' });
 
-    return { n, nombres, mu, sg, rho, cov, rf, ventas, m0, grafico, mv, tg, obj, mer, merTipo, beta, req, alfa, frontera, pasos };
+    return { extremo, arbitraje: !!M.arbitraje, n, nombres, mu, sg, rho, cov, rf, ventas, m0, grafico, mv, tg, obj, mer, merTipo, beta, req, alfa, frontera, pasos };
   }
   const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
@@ -188,6 +210,8 @@ const Markowitz = (() => {
     { clave: 'dos', nombre: 'Dos activos: acciones y bonos', sc: { activos: 'Acciones; 10; 20\nBonos; 6; 10', corr: '1 0,3\n0,3 1', rf: '2', ventas: 'no', objetivo: '8', mercado: '', grafico: 'frontera' } },
     { clave: 'tres', nombre: 'Tres activos, sin ventas en corto', sc: { activos: 'Tecnología; 12; 25\nEnergía; 8; 15\nBonos; 5; 8', corr: '1 0,4 0,2\n0,4 1 0,3\n0,2 0,3 1', rf: '3', ventas: 'no', objetivo: '8', mercado: '', grafico: 'frontera' } },
     { clave: 'corto', nombre: 'Cuatro activos con ventas en corto', sc: { activos: 'A; 14; 30\nB; 10; 20\nC; 7; 12\nD; 4; 6', corr: '1 0,5 0,3 0,1\n0,5 1 0,4 0,2\n0,3 0,4 1 0,3\n0,1 0,2 0,3 1', rf: '2', ventas: 'si', objetivo: '10', mercado: '', grafico: 'frontera' } },
+    { clave: 'rho-menos-uno', nombre: 'Correlación −1: una cartera sin riesgo', sc: { activos: 'Activo X; 12; 20\nActivo Y; 6; 10', corr: '1 -1\n-1 1', rf: '2', ventas: 'no', objetivo: '9', mercado: '', grafico: 'frontera' } },
+    { clave: 'rho-uno', nombre: 'Correlación +1: no hay diversificación', sc: { activos: 'Activo X; 12; 20\nActivo Y; 6; 10', corr: '1 1\n1 1', rf: '2', ventas: 'no', objetivo: '9', mercado: '', grafico: 'frontera' } },
     { clave: 'negativa', nombre: 'Correlación negativa: diversificar de verdad', sc: { activos: 'Oro; 5; 15\nBolsa; 9; 18', corr: '1 -0,5\n-0,5 1', rf: '1', ventas: 'no', objetivo: '', mercado: '', grafico: 'frontera' } },
     { clave: 'capm', nombre: 'CAPM con pesos de mercado y la SML', sc: { activos: 'Alfa SA; 11; 22\nBeta SA; 8; 14\nGamma SA; 6; 9', corr: '1 0,6 0,3\n0,6 1 0,4\n0,3 0,4 1', rf: '2,5', ventas: 'si', objetivo: '', mercado: '50 30 20', grafico: 'sml' } },
   ];

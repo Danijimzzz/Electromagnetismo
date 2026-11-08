@@ -12,6 +12,124 @@
 const Version = (() => {
   const registros = {
     web: [
+      { v: '1.13', fecha: '2026-11-08', titulo: 'Fase 10: mejor, más completo y más accesible', subtitulo: 'Ninguna herramienta nueva, pero casi todas con más cálculos, más ejemplos, gráficas que se descargan y botones para llevar un resultado a otra herramienta.', secciones: [
+        { icono: '🛠️', titulo: 'En todas las herramientas', puntos: [
+          '**Descargar PNG y Copiar datos** bajo cada gráfica: la imagen sale sobre el fondo de la página con su título, y los datos se pegan en una hoja de cálculo con coma decimal.',
+          '**«Usar en…»**: botones que llevan un resultado a otra herramienta de la misma asignatura (por ejemplo, el equilibrio de Oferta y demanda a Excedentes, o la ΔG° de Termoquímica a Equilibrio).',
+          '**Mis ejercicios más fiable:** al abrir un ejercicio ya no se puede pisar con un cálculo pendiente, y la lista se actualiza sola entre pestañas.',
+          '**Casos límite:** las herramientas explican con un aviso los datos que dan un resultado fuera de rango (infinito, indefinido), y se han arreglado cuatro páginas que se colgaban con valores extremos.',
+          '**Límites de cada herramienta:** las más delicadas (orgánica, termodinámica estadística, ANOVA, gases, Simulador de circuitos) dicen qué casos no cubren.',
+        ] },
+        { icono: '🧲', titulo: 'Electromagnetismo', puntos: [
+          '#electromagnetismo/magnetostatica',
+          '**Dipolo magnético y potencial vector A:** momento dipolar de espiras, solenoides y discos, y A comparado con el exacto de Biot-Savart.',
+          '#electromagnetismo/ondas-em',
+          '**Plasma e ionosfera y suma de dos ondas:** frecuencia de plasma, velocidades de fase y de grupo, batidos y ondas estacionarias con su ROE.',
+          '#electromagnetismo/maxwell',
+          '**¿Este campo cumple las ecuaciones?** Escribe E y B como expresiones y se comprueban sus divergencias y rotacionales.',
+          '#electromagnetismo/lineas-transmision',
+          '**Líneas con pérdidas, transitorios con reflexiones y adaptación con stub** simple y doble.',
+          '#electromagnetismo/fresnel',
+          '**Capas delgadas y antirreflejantes** con R, T y la fase frente al ángulo.',
+          '#electromagnetismo/laplace-numerica',
+          '**Laplace y Poisson:** densidad de carga, bordes aislantes, hasta tres electrodos circulares, capacidad y energía.',
+          '#electromagnetismo/imagenes',
+          '**Método de las imágenes:** cuña conductora, planos paralelos, varias cargas y dipolo frente a un plano.',
+          '#electromagnetismo/guias-onda',
+          '**Guía circular** (modos TE y TM) y botón para cerrarla en una cavidad.',
+          '#electromagnetismo/antena',
+          '**Arrays de antenas,** diagrama de radiación en 3D y enlace de Friis.',
+          '#electromagnetismo/fuerza',
+          '**Fuerza magnética:** trayectoria con E y B cualesquiera (hélice, deriva E×B), espejo magnético y vista 3D.',
+          '#electromagnetismo/induccion',
+          '**Fuerza entre dos espiras** con la inducción mutua exacta.',
+          '#electromagnetismo/faraday',
+          '**Barra en raíles inclinados y corrientes de Foucault** en discos y núcleos laminados.',
+          '**Modo práctica de Electrostática:** comprueba las dimensiones de tu respuesta (N/C, V, N, J…) y señala qué término falla.',
+        ] },
+        { icono: '⚡', titulo: 'Circuitos', puntos: [
+          '#circuitos/bode',
+          '**Bode con Q alto:** los filtros muy selectivos ya no pierden el pico de resonancia ni la frecuencia de corte.',
+          '#circuitos/control',
+          '**Control:** respuesta al escalón y Bode de lazo abierto con los márgenes de fase y de ganancia.',
+          '#circuitos/transformada-z',
+          '**Transformada z:** modo inverso con la región de convergencia y FFT con relleno de ceros y fase.',
+          '#circuitos/semiconductores',
+          '**Semiconductores:** pnp, canal p, Zener, pequeña señal y estabilidad térmica.',
+          '#circuitos/convolucion',
+          '**Convolución discreta** y filtros RL, RC paso alto y RLC paso banda.',
+          '#circuitos/puertas-logicas',
+          '**Puertas lógicas:** cada salida con solo NAND o solo NOR, riesgos estáticos y lógica secuencial.',
+          '#circuitos/resistencias',
+          '**Resistencias:** el divisor en el peor caso con la tolerancia, aviso de potencia y series E3 y E192.',
+          '#circuitos/simulador',
+          '**Simulador de circuitos:** seis ejemplos nuevos y un barrido que se afina solo cerca de las resonancias.',
+        ] },
+        { icono: '🔭', titulo: 'Física general', puntos: [
+          '#fisica/optica',
+          '**Óptica:** sistemas de varias lentes con matrices ABCD.',
+          '#fisica/gases',
+          '**Gases:** cada constante con su fuente y aviso cuando el método numérico pierde precisión.',
+          '#fisica/osc-acopladas',
+          '**Oscilaciones acopladas:** casos de acoplo nulo y de modos simétricos.',
+          '#fisica/relatividad',
+          '**Relatividad:** casos límite explicados.',
+        ] },
+        { icono: '📊', titulo: 'Estadística', puntos: [
+          '#estadistica/anova',
+          '**ANOVA de uno y dos factores** con comparaciones de Tukey, Holm y Scheffé, Welch y tamaño del efecto ω².',
+          '#estadistica/contrastes',
+          '**Contrastes:** potencia, datos apareados y normalidad.',
+          '#estadistica/no-parametricos',
+          '**No paramétricos:** Kruskal-Wallis con Dunn, Spearman, Kendall y Hodges-Lehmann.',
+          '#estadistica/chi2-bondad',
+          '**χ²:** test exacto de Fisher, McNemar y residuos.',
+          '#estadistica/distribuciones',
+          '**Cinco distribuciones nuevas:** gamma, beta, lognormal, Weibull y binomial negativa.',
+        ] },
+        { icono: '📐', titulo: 'Matemáticas', puntos: [
+          '#matematicas/derivadas',
+          '**Integrales:** resuelve ahora casos que antes se quedaban sin primitiva, y avisa cuando no la tiene elemental.',
+          '#matematicas/campos',
+          '**Coordenadas cilíndricas y esféricas** para ∇f, ∇·F y ∇×F.',
+          '#matematicas/graficador',
+          '**Graficador:** estudio de funciones con valor absoluto.',
+          '**Series, métodos numéricos, EDOs y Lagrange:** conclusiones más honestas (series p casi 1, orden de Newton, falta de unicidad, casos singulares).',
+        ] },
+        { icono: '⚗️', titulo: 'Química', puntos: [
+          '#quimica/redox',
+          '**Redox:** pilas con Nernst y electrólisis de Faraday.',
+          '#quimica/termoquimica',
+          '**Termoquímica:** ΔS°, ΔG°, ciclo de Born-Haber y botón «Calcular K en Equilibrio».',
+          '#quimica/equilibrio',
+          '**Equilibrio:** fases, K desde ΔG° y dos equilibrios acoplados.',
+          '#quimica/cinetica',
+          '**Cinética:** reacciones consecutivas, reversibles y mecanismos con etapa lenta.',
+          '#quimica/disoluciones',
+          '**Disoluciones:** solubilidad frente a la temperatura y ley de Henry.',
+          '#quimica/vsepr',
+          '**Lewis y VSEPR:** cargas formales, resonancia, octeto expandido y varios átomos centrales.',
+          '#quimica/formulacion',
+          '**Formulación:** complejos, hidratos y compuestos con nombre propio.',
+          '#quimica/organica',
+          '**Orgánica:** escribe la fórmula semidesarrollada como en clase.',
+          '**Ajuste común «de clase / exactas»** para R, F y masas atómicas en Equilibrio, Cinética, Redox y Masa molar.',
+          '**Tabla periódica y configuración electrónica** comprobadas con los 118 elementos; pH con 12 indicadores y Solubilidad con 54 sales.',
+        ] },
+        { icono: '💶', titulo: 'Economía', puntos: [
+          '#economia/black-scholes',
+          '**Black-Scholes:** casos límite y volatilidad implícita.',
+          '#economia/markowitz',
+          '**Markowitz:** correlación ±1, sin ventas en corto por defecto y cartera tangente como objetivo.',
+          '#economia/prestamos',
+          '**Préstamos:** carencia y amortización anticipada con los intereses ahorrados.',
+          '#economia/van-tir',
+          '**VAN y TIR:** varias TIR, TIR modificada y comparación de dos proyectos.',
+          '#economia/tipos-cambio',
+          '**Tipos de cambio:** paridad de los tipos de interés y arbitraje.',
+          '**Solow, bonos, rentas, interés, ahorro, ratios, beneficio, costes, IS-LM, Phillips y Okun** con más cálculos, gráficas y ejemplos, y botones «Usar en…» entre Oferta y demanda, Excedentes, Elasticidades, Costes, IS-LM y Multiplicador.',
+        ] },
+      ] },
       { v: '1.12.1', fecha: '2026-11-06', cambios: ['La web se prepara para mostrar publicidad de Google: en el pie de las páginas aparece «Preferencias de cookies» para elegir qué aceptas, y las políticas de cookies y privacidad lo explican.'] },
       { v: '1.12', fecha: '2026-11-03', titulo: 'Fase 9: siete herramientas y siete fenómenos nuevos', subtitulo: 'Control, transformada z, semiconductores, orgánica en 3D, cavidades resonantes, termodinámica estadística, la cartera de Markowitz y siete fenómenos de la vida real.', secciones: [
         { icono: '⚡', titulo: 'Circuitos', puntos: [
@@ -438,24 +556,29 @@ const Version = (() => {
       ] },
     ],
     control: [
+      { v: '0.2', fecha: '2026-11-08', cambios: ['Dos pestañas nuevas: «Escalón», con la respuesta al escalón del lazo cerrado (valor final, error, tiempo de subida, sobreoscilación y establecimiento), y «Bode», con el diagrama de lazo abierto y los márgenes de fase y de ganancia.', 'Los errores de datos (ganancia 0, numerador de más grado que el denominador) se avisan igual en todas las pestañas, y las gráficas se pueden descargar en PNG o copiar sus datos.'] },
       { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: escribe la ganancia de lazo K·N(s)/D(s) (como expresión, s^2+3s+2, o con los coeficientes) y estudia la estabilidad de tres maneras: la tabla de Routh con el rango de K estable (con el cero en la primera columna y la fila de ceros), el lugar de las raíces con asíntotas, puntos de ruptura, ángulos de salida y cruces con el eje imaginario, y el diagrama de Nyquist con los márgenes de ganancia y de fase y el recuento de vueltas alrededor de −1. Con nueve ejemplos, desarrollo paso a paso y modo práctica.'] },
     ],
     'termo-estadistica': [
       { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: cinco modos. Dos niveles (con degeneraciones), oscilador de Einstein, niveles propios (un rotor, un átomo…) con su función de partición, poblaciones de Boltzmann, energía, entropía, energía libre y capacidad calorífica, y la entropía S = k ln Ω de un sólido de Einstein y de dos sólidos que se reparten la energía, con su desarrollo paso a paso.'] },
     ],
     markowitz: [
+      { v: '0.2', fecha: '2026-11-08', cambios: ['Dos activos con correlación +1 o −1 (con cartera sin riesgo y aviso de arbitraje); modo sin ventas en corto por defecto, indicado en los resultados; botón para usar la rentabilidad de la cartera tangente como objetivo.'] },
       { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: frontera eficiente de Markowitz con de 2 a 6 activos y su matriz de correlaciones (con o sin ventas en corto), cartera de mínima varianza, cartera tangente con ratio de Sharpe y línea del mercado de capitales, cartera para una rentabilidad objetivo, y CAPM con beta, rentabilidad exigida, alfa y línea del mercado de valores. Con tabla de pesos y desarrollo paso a paso.'] },
     ],
     cavidades: [
+      { v: '0.2', fecha: '2026-11-08', cambios: ['Curva de resonancia con el factor de calidad y el acoplo, y descarga de la gráfica. Los campos admiten unidades.'] },
       { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: cavidades rectangulares, cilíndricas y esféricas de paredes conductoras. Frecuencia de resonancia de cualquier modo TE o TM, factor de calidad de las paredes y del dieléctrico, ancho de banda, tabla de los modos más bajos y mapa del campo eléctrico o magnético en el plano de corte que elijas. Con desarrollo paso a paso.'] },
     ],
     organica: [
       { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: escribe una molécula (cadenas con ramas, dobles y triples enlaces, alcoholes, aldehídos, cetonas, ácidos, ésteres, amidas, nitrilos, aminas, éteres y halógenos) y obtén su nombre IUPAC, los grupos funcionales, la fórmula y la masa molar. Marca los centros quirales (R/S) y los dobles enlaces E/Z con las reglas de Cahn-Ingold-Prelog, lista todos los estereoisómeros (enantiómeros, diastereoisómeros y formas meso) y las isomerías de cadena, posición y función. La molécula se ve en 3D con los hidrógenos y se gira con el ratón o el dedo. Con desarrollo paso a paso.'] },
     ],
     'transformada-z': [
+      { v: '0.2', fecha: '2026-11-08', cambios: ['Nuevo modo «Transformada inversa» con la región de convergencia a elegir (causal, anticausal o bilateral), aviso de cancelaciones polo-cero y sistema nulo, FFT con relleno de ceros y pestaña de fase, y exportar las gráficas.'] },
       { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: transformada z de una señal o de un sistema (polos, ceros, estabilidad, respuesta al impulso y respuesta en frecuencia) y FFT con ventanas, picos, resolución y aliasing.'] },
     ],
     semiconductores: [
+      { v: '0.2', fecha: '2026-11-08', cambios: ['Transistores pnp y de canal p, diodo Zener, pequeña señal, estabilidad térmica y casos extremos mejor avisados; las gráficas se pueden descargar o copiar.'] },
       { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: elige un diodo, un transistor BJT (polarización fija o por divisor de tensión) o un MOSFET, escribe el circuito (admite 4k7, 1M, 100n) y mira la recta de carga, el punto de trabajo Q sobre las curvas del dispositivo, la región en que trabaja (corte, activa, saturación o triodo), las tensiones y corrientes y el desarrollo paso a paso.'] },
     ],
     relatividad: [
@@ -483,12 +606,15 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: ANOVA de un factor para comparar las medias de dos o más grupos escritos uno por línea. Da la tabla ANOVA (entre y dentro de los grupos), F con su valor crítico y p-valor, el tamaño del efecto η², las medias y varianzas de cada grupo, las comparaciones por parejas con la corrección de Bonferroni, la gráfica de los datos y el desarrollo paso a paso. Con 3 ejemplos de clase, modo práctica y enlace para compartir.'] },
     ],
     'black-scholes': [
+      { v: '0.2', fecha: '2026-11-08', cambios: ['Casos límite (vencimiento o volatilidad cero) y volatilidad implícita a partir del precio de mercado de la opción.'] },
       { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: precio de una call y una put europeas con la fórmula de Black-Scholes (con dividendo), d₁ y d₂, comprobación de la paridad call-put y las griegas (delta, gamma, vega, theta y rho), con la gráfica del valor de la opción hoy y al vencimiento y el desarrollo paso a paso.'] },
     ],
     bonos: [
+      { v: '0.2', fecha: '2026-11-08', cambios: ['Más cálculos de bonos con su gráfica y mejor desarrollo paso a paso.'] },
       { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: precio de un bono con cupón anual, semestral, trimestral o mensual a partir de la TIR (o la TIR a partir del precio), rentabilidad corriente, duración de Macaulay y modificada, convexidad y variación del precio al cambiar los tipos, con la curva precio-TIR, la tabla de flujos y el desarrollo paso a paso.'] },
     ],
     solow: [
+      { v: '0.2', fecha: '2026-11-08', cambios: ['Gráfica del modelo con la senda del capital y el estado estacionario, y más ejemplos.'] },
       { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: estado estacionario, regla de oro, velocidad de convergencia y semivida, y trayectoria del capital desde el valor inicial en el modelo de Solow con función Cobb-Douglas, con el diagrama de Solow, la tabla año a año y el desarrollo paso a paso.'] },
     ],
     'integrales-multiples': [
@@ -498,12 +624,14 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: escribe una fórmula y obtén su nombre, o escribe un nombre y obtén su fórmula, en nomenclatura sistemática, de Stock y tradicional. Reconoce óxidos, peróxidos, hidruros, hidróxidos, hidrácidos, oxoácidos, sales binarias, oxisales, sales ácidas y compuestos entre no metales (casi 3.000 compuestos), con el desarrollo paso a paso (tipo de compuesto, estados de oxidación y cruce de cargas), sugerencias si te equivocas, ejemplos, tabla de oxoácidos, modo práctica y enlace para compartir.'] },
     ],
     balance: [
+      { v: '0.2', fecha: '2026-11-08', cambios: ['Botones para llevar los datos a otras herramientas.'] },
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: la cuenta de pérdidas y ganancias (EBITDA, resultado de explotación, financiero, BAI, impuesto y resultado del ejercicio) y el balance de situación con el resultado dentro del patrimonio neto, comprobando que cuadra, el fondo de maniobra y el balance dibujado en dos columnas, con cuatro ejemplos, desarrollo paso a paso y modo práctica.'] },
     ],
     redox: [
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: ajusta reacciones redox por el método del ion-electrón en medio ácido o básico, con los números de oxidación, las dos semirreacciones (elemento, oxígeno con H₂O, hidrógeno con H⁺ y carga con electrones), la igualación de electrones, la suma, el paso a medio básico con OH⁻ y la comprobación átomo a átomo, con una gráfica del cambio de número de oxidación y diez reacciones de ejemplo.'] },
     ],
     'lineas-transmision': [
+      { v: '0.2', fecha: '2026-11-08', cambios: ['Líneas con pérdidas, transitorios con reflexiones, adaptación con stub en serie y con doble stub, anchos de banda y lectura de la carta de Smith.'] },
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: línea de transmisión sin pérdidas con una carga R + jX: coeficiente de reflexión, ROE, pérdida de retorno, impedancia de entrada, máximos y mínimos de tensión y adaptación con un stub en paralelo (en cortocircuito o en abierto) o con un transformador λ/4. Con la carta de Smith dibujada (círculo de ROE y recorrido hacia el generador), el perfil de la onda estacionaria, el desarrollo paso a paso, ejemplos y modo práctica.'] },
     ],
     superficies: [
@@ -513,36 +641,45 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: escribe una molécula o un ion (H2O, SF4, NH4+, SO4 2-…) o elige un tipo AXₙEₘ y mira sus dominios de electrones, geometría electrónica y molecular, ángulos de enlace, hibridación y polaridad, paso a paso, con la molécula en 3D que se gira con el ratón, el dedo o el teclado (pares libres y momento dipolar incluidos), 22 ejemplos, la tabla de las 14 geometrías y modo práctica.'] },
     ],
     maxwell: [
+      { v: '0.2', fecha: '2026-11-08', cambios: ['Nuevo modo «¿Este campo cumple las ecuaciones?»: escribe E y B como expresiones y comprueba divergencias y rotacionales exactos.'] },
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: las cuatro ecuaciones de Maxwell en forma integral y diferencial con su significado y enlaces a los simuladores de Electromagnetismo, y una calculadora paso a paso para cada una: ley de Gauss (flujo y campo de una esfera cargada, dentro y fuera), Gauss para B (flujo por un cubo), Faraday (fem de una bobina), Ampère–Maxwell (corriente de desplazamiento y campo B en un condensador) y la velocidad de la luz con la onda plana, con gráfica, modo práctica y enlace para compartir.'] },
     ],
     fresnel: [
+      { v: '0.2', fecha: '2026-11-08', cambios: ['Capas delgadas (antirreflejantes y multicapa) y gráficas de R, T y de la fase frente al ángulo.'] },
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: una onda plana llega con un ángulo a la frontera entre dos medios (por índices n o por εr y μr) y salen el ángulo de refracción, los coeficientes de reflexión y transmisión de las polarizaciones TE y TM, las reflectancias y transmitancias, el ángulo de Brewster, el ángulo crítico y, en la reflexión total, los desfases y la profundidad de la onda evanescente, con el desarrollo paso a paso, el dibujo de los rayos y la gráfica de la reflectancia según el ángulo.'] },
     ],
     gravitacion: [
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: calcula la fuerza de atracción entre dos masas, la velocidad, el periodo y la energía de un satélite en órbita circular, la velocidad de escape, la órbita que corresponde a un periodo (geoestacionaria) y las leyes de Kepler en una órbita elíptica con la elipse dibujada, con el desarrollo paso a paso y modo práctica.'] },
     ],
     convolucion: [
+      { v: '0.2', fecha: '2026-11-08', cambios: ['Nuevo modo «Discreta» (secuencias x[n] y h[n] con tabla de la suma), filtros RL, RC paso alto y RLC paso banda, y exportar las gráficas.'] },
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: refleja y desliza dos señales (pulsos rectangulares, triangulares y senoidales, escalón, exponencial e impulso) y mira cómo se dibuja su convolución, animada o moviendo el instante a mano.', 'Señal y sistema: pasa una entrada por un filtro RC, un RLC serie, una media móvil o un retardo y obtén la respuesta al escalón con el tiempo de subida, la sobreoscilación y el tiempo de establecimiento.', 'Desarrollo paso a paso con la solución exacta de los casos de clase y la comprobación con las áreas, ejemplos y modo práctica.'] },
     ],
     'laplace-numerica': [
+      { v: '0.2', fecha: '2026-11-08', cambios: ['Ecuación de Poisson con densidad de carga, bordes aislantes, hasta tres electrodos circulares, cargas, capacidad, energía y comparación de métodos.'] },
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: fija el potencial de los cuatro bordes de una caja (y de un electrodo interior) y resuelve la ecuación de Laplace por relajación con Jacobi, Gauss-Seidel o SOR; muestra el mapa de color, las equipotenciales, el campo eléctrico y una sonda movible con el potencial y el campo en cualquier punto, el desarrollo paso a paso, la comparación con la solución exacta en serie y el modo práctica.'] },
     ],
     imagenes: [
+      { v: '0.2', fecha: '2026-11-08', cambios: ['Cuña conductora de ángulo π/n, planos paralelos, varias cargas y dipolo frente a un plano.'] },
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: una carga puntual frente a un plano conductor a tierra, una esfera conductora (a tierra, aislada con una carga Q o a un potencial V₀) o dentro de una cavidad esférica, con la carga imagen y su posición, la fuerza sobre la carga, la carga inducida y su densidad superficial σ, el trabajo para llevarla al infinito y el potencial y el campo en un punto.', 'Dibujo con las líneas de campo, las cargas imagen y la carga inducida sobre el conductor, y modo práctica con enunciado.'] },
     ],
     'guias-onda': [
+      { v: '0.2', fecha: '2026-11-08', cambios: ['Guía circular (modos TE y TM), cierre de la guía en una cavidad y botón «Abrir en Cavidades».'] },
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: modos TE y TM de una guía de onda rectangular (vacía o rellena de dieléctrico): frecuencia y longitud de onda de corte, constante de fase, longitud de onda en la guía, velocidades de fase y de grupo, impedancia de onda o atenuación si no se propaga, modo dominante y banda monomodo, con el campo eléctrico del modo dibujado en la sección, desarrollo paso a paso y modo práctica.'] },
     ],
     antena: [
+      { v: '0.2', fecha: '2026-11-08', cambios: ['Nuevos arrays de antenas con su diagrama, vista 3D del diagrama de radiación (con alternativa plana y descripción en texto), enlace de Friis y descarga de la gráfica como imagen. Los campos admiten unidades.'] },
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: dipolo corto, de media onda o de longitud cualquiera, con diagrama de radiación polar, resistencia de radiación, potencia radiada, directividad, ancho de haz y campo lejano, paso a paso.'] },
     ],
     bode: [
+      { v: '0.2', fecha: '2026-11-08', cambios: ['Los filtros de factor de calidad alto (Q grande) ya no pierden el pico de resonancia ni la frecuencia de corte: la rejilla se afina sola alrededor de ella. Las dos gráficas llevan «Descargar PNG» y «Copiar datos».'] },
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: elige un filtro RC, RL o RLC (paso bajo, paso alto, paso banda o rechazo de banda), escribe R, L y C (admite 4k7, 100n, 10 µF) y obtén su diagrama de Bode de magnitud y fase con las asíntotas, la frecuencia de corte, el factor de calidad Q, el ancho de banda, el pico de resonancia y el desarrollo paso a paso.'] },
     ],
     optica: [
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: elige una lente (convergente o divergente) o un espejo (cóncavo o convexo), la distancia focal y el objeto, y mira el diagrama de rayos con la imagen, su posición, el aumento, si es real o virtual y derecha o invertida, la potencia en dioptrías o el radio del espejo, paso a paso. Con seis ejemplos y modo práctica.'] },
     ],
     simulador: [
+      { v: '0.4', fecha: '2026-11-08', cambios: ['Seis ejemplos nuevos, el barrido se afina solo cerca de las resonancias (el Bode no pierde el pico) y las gráficas se pueden descargar en PNG o copiar sus datos.'] },
       { v: '0.3', fecha: '2026-11-02', cambios: ['Nueva pestaña «Barrido»: elige un valor del circuito (una resistencia, un condensador, la amplitud o la frecuencia de una fuente…), un rango en escala lineal o logarítmica y lo que quieres medir (tensión, corriente o potencia de un componente, o la tensión de un nudo), en continua o en alterna con valores eficaces, y sale la gráfica con el máximo y el mínimo marcados y una tabla.', 'La pestaña Thévenin y Norton dibuja ahora la potencia que recibe una carga según su valor, con el máximo marcado cuando la carga vale R<sub>Th</sub>.'] },
       { v: '0.2', fecha: '2026-11-02', cambios: ['Importar y exportar redes en texto tipo SPICE: el botón «SPICE» escribe la red del esquema (R, C, L, fuentes de continua, seno y pulso, fuentes controladas, bobinas acopladas, diodos, transistores) o dibuja la que pegues o abras de un archivo .cir, con avisos de lo que no se puede traducir.'] },
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: dibuja el circuito arrastrando componentes (resistencias, condensadores, bobinas, fuentes de continua y de alterna, diodos, transistores, operacionales, transformadores, trifásica y puertas lógicas), únelos con cables y mira tensiones, corrientes, fasores, osciloscopio y diagrama de Bode.'] },
@@ -551,14 +688,17 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: escribe la matriz de pagos de un juego de dos jugadores con dos estrategias y obtén las mejores respuestas, las estrategias dominantes, los equilibrios de Nash puros y mixtos, la eficiencia de Pareto y el tipo de juego (dilema del prisionero, coordinación, gallina…), con la gráfica de las curvas de mejor respuesta y el desarrollo paso a paso.'] },
     ],
     'puertas-logicas': [
+      { v: '0.4', fecha: '2026-11-08', cambios: ['Cada salida muestra ahora cómo hacerla solo con puertas NAND o solo con NOR, cuántas puertas hacen falta y si la suma de productos tiene riesgos estáticos (glitches) con el término de consenso que los evita.', 'Nueva sección de lógica secuencial: tablas características y de excitación de los biestables D, T, JK y SR, contador síncrono de 1 a 4 bits con sus ecuaciones de entrada y pulsos de reloj.'] },
       { v: '0.3', fecha: '2026-11-01', cambios: ['Nuevo modo «Ecuaciones»: se escriben ecuaciones booleanas (con NOT, AND, OR, XOR, paréntesis y varias salidas) y salen la tabla de verdad, los minitérminos y maxitérminos, el mapa de Karnaugh y el circuito de puertas, tal como está escrito o simplificado.', 'Los modos pasan a llamarse Tabla, Puertas y Ecuaciones.'] },
       { v: '0.2', fecha: '2026-11-01', cambios: ['Editor gráfico de puertas: se arrastran desde la paleta, se mueven y se unen con el ratón (el cable suelto en el vacío se quita; doble clic marca la salida), con las puertas en cualquier orden.', 'Las ecuaciones salen primero en forma canónica y el botón «Simplificar ecuaciones» añade las simplificadas y el circuito más pequeño.', 'Las tablas de verdad llevan una línea más gruesa cada 4 filas.', 'Un botón en el circuito cambia entre la suma de productos y el producto de sumas.'] },
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: dos modos. Desde la tabla de verdad (1 a 5 variables, hasta 4 salidas y casillas indiferentes X) da los minitérminos Σm, los maxitérminos ΠM, las formas canónicas y la forma simplificada por Quine-McCluskey en suma de productos y en producto de sumas, con el mapa de Karnaugh y el circuito de puertas dibujado. Desde las puertas (AND, OR, NOT, NAND, NOR, XOR y XNOR de 2 a 4 entradas) da la ecuación de cada puerta, la tabla de verdad con todas las puertas y las mismas ecuaciones. Con ejemplos (mayoría, semisumador, sumador completo, primos en BCD, multiplexor y XOR con NAND), desarrollo paso a paso y botón para copiar las ecuaciones.'] },
     ],
     multiplicador: [
+      { v: '0.2', fecha: '2026-11-08', cambios: ['Más ejemplos.'] },
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: renta de equilibrio del modelo renta-gasto con impuestos e importaciones, multiplicador del gasto, de los impuestos fijos y del presupuesto equilibrado, efecto de un cambio de gasto o de impuestos con sus rondas, brecha con el pleno empleo y la cruz keynesiana, con el desarrollo paso a paso.'] },
     ],
     'is-lm': [
+      { v: '0.2', fecha: '2026-11-08', cambios: ['Casos clásico y keynesiano con aviso de la eficacia de cada política.'] },
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: curvas IS y LM, renta y tipo de interés de equilibrio, y el efecto de subir el gasto, bajar impuestos o aumentar el dinero (multiplicadores y efecto expulsión), con la gráfica y el desarrollo paso a paso.'] },
     ],
     choques: [
@@ -580,18 +720,23 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: movimiento armónico simple de una masa en un muelle o un péndulo (periodo, velocidad y aceleración máximas, energía, posición en un instante y periodo exacto del péndulo), oscilador amortiguado (subamortiguado, crítico y sobreamortiguado, con factor de calidad y decremento logarítmico) y oscilador forzado con su amplitud, desfase y resonancia, con la gráfica y el desarrollo.'] },
     ],
     beneficio: [
+      { v: '0.2', fecha: '2026-11-08', cambios: ['Competencia perfecta con el coste cúbico de Costes de producción: cantidad óptima, regla de cierre y precio de beneficio nulo.'] },
       { v: '0.1', fecha: '2026-10-31', cambios: ['Primera versión: cantidad y precio que maximizan el beneficio en competencia perfecta (precio de cierre y de beneficio nulo) y en monopolio (índice de Lerner, comparación con la competencia y pérdida de eficiencia), con la gráfica de ingreso marginal, coste marginal y coste medio.'] },
     ],
     costes: [
+      { v: '0.2', fecha: '2026-11-08', cambios: ['Se puede partir del coste marginal, y hay más ejemplos.'] },
       { v: '0.1', fecha: '2026-10-31', cambios: ['Primera versión: a partir de la función de costes con costes fijos y términos de primer, segundo y tercer grado, el coste variable, total, medio (fijo, variable y total) y marginal de una producción, el mínimo de explotación (precio de cierre) y el óptimo de explotación (umbral de rentabilidad), con la gráfica de las curvas.'] },
     ],
     'sistemas-numericos': [
+      { v: '0.2', fecha: '2026-11-08', cambios: ['Nuevos modos: fracciones con coma (con expansión periódica), coma flotante IEEE 754 de 32 y 64 bits, y suma y resta en complemento a 2 con acarreos y desbordamiento; además octal y código Gray.'] },
       { v: '0.1', fecha: '2026-10-31', cambios: ['Primera versión: pasa un número entero entre decimal, binario, complemento a 2 (4, 8, 16 o 32 bits), hexadecimal y BCD, con el desarrollo paso a paso (divisiones entre 2, grupos de 4 bits, invertir y sumar 1), los bits con su peso y ejemplos de cada sistema.'] },
     ],
     excedentes: [
+      { v: '0.2', fecha: '2026-11-08', cambios: ['Curvas inversas y por dos puntos, e impuesto ad valorem.'] },
       { v: '0.1', fecha: '2026-10-28', cambios: ['Primera versión: el excedente del consumidor y del productor en el equilibrio y lo que pasa con un impuesto o una subvención por unidad o con un precio máximo o mínimo: los precios, la recaudación o el gasto, quién soporta el impuesto y la pérdida irrecuperable de eficiencia, sombreados en la gráfica.'] },
     ],
     'oferta-demanda': [
+      { v: '0.2', fecha: '2026-11-08', cambios: ['Curvas dadas por dos puntos o en forma inversa, y botones para llevar el equilibrio a otras herramientas.'] },
       { v: '0.1', fecha: '2026-10-28', cambios: ['Primera versión: el precio y la cantidad de equilibrio con una demanda y una oferta lineales, las elasticidades en ese punto, la escasez o el excedente de un precio máximo o mínimo y el nuevo equilibrio cuando se desplaza la demanda, la oferta o las dos, con la gráfica y el desarrollo.'] },
     ],
     'chi2-bondad': [
@@ -617,12 +762,15 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: la curva de Lorenz y el índice de Gini a partir de las rentas de cada persona, de tramos de renta o de quintiles, por el área y con la fórmula de clase, con lo que se lleva el 20 % más pobre y el más rico (S80/S20), la tabla y el desarrollo.'] },
     ],
     'phillips-okun': [
+      { v: '0.2', fecha: '2026-11-08', cambios: ['Las curvas de Phillips y de Okun llevan ahora su rótulo y su explicación.'] },
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: la ley de Okun (el paro con un crecimiento o el crecimiento para bajar el paro), la brecha de producción con el paro natural, la curva de Phillips con expectativas y shocks de oferta (estanflación) y el ajuste de una curva de Phillips a datos de paro e inflación, con la gráfica y el desarrollo.'] },
     ],
     'tipos-cambio': [
+      { v: '0.2', fecha: '2026-11-08', cambios: ['Paridad de los tipos de interés: tipo a plazo, prima o descuento, paridad descubierta y arbitraje con el tipo a plazo de mercado.', 'Aviso de que los tipos de los ejemplos son ilustrativos.'] },
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: cambiar euros por dólares, libras, yenes y otras monedas (y al revés) con comisión, el tipo de cambio cruzado, la apreciación o depreciación del euro, la paridad del poder adquisitivo con el tipo de cambio real (como el índice Big Mac) y la PPA relativa con la inflación de los dos países, con su gráfica y el desarrollo.'] },
     ],
     elasticidades: [
+      { v: '0.2', fecha: '2026-11-08', cambios: ['Elasticidad de la oferta y curva isoelástica.'] },
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: elasticidad precio de la demanda, renta y cruzada entre dos situaciones, sobre el valor inicial y de arco, con su clasificación y el efecto sobre el ingreso total, y la elasticidad en un punto de una demanda lineal con el precio que hace máximo el ingreso, con la gráfica.'] },
     ],
     'pib-ipc': [
@@ -632,27 +780,33 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: índices simples de una serie con la base que elijas (cambio de base), tasas de variación, tasa acumulada y tasa media acumulativa, e índices de precios de Laspeyres, Paasche y Fisher, de cantidades y de valor de una cesta de productos, con la gráfica y la tabla.'] },
     ],
     ratios: [
+      { v: '0.2', fecha: '2026-11-08', cambios: ['Comparar dos empresas o dos años ratio a ratio.'] },
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: a partir del balance y la cuenta de resultados, el fondo de maniobra, los ratios de liquidez, tesorería, disponibilidad, garantía, endeudamiento, autonomía y calidad de la deuda con su valor recomendado y su valoración, la rentabilidad económica (margen por rotación), la financiera y el apalancamiento, con el balance dibujado.'] },
     ],
     'punto-muerto': [
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: punto muerto en unidades y en euros, margen de contribución, beneficio con las ventas previstas, margen de seguridad, apalancamiento operativo y ventas para un beneficio objetivo, con la gráfica de ingresos y costes.'] },
     ],
     ahorro: [
+      { v: '0.2', fecha: '2026-11-08', cambios: ['Fase de retirada: cuánto dura el dinero y la retirada máxima sostenible.'] },
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: plan de ahorro con capital inicial y aportaciones mensuales, trimestrales o anuales (también subiendo con la inflación), saldo final en euros de entonces y de hoy, tipo real de Fisher, aportación necesaria para un objetivo y pérdida de poder adquisitivo de un dinero parado, con la gráfica y la tabla año a año.'] },
     ],
     'van-tir': [
+      { v: '0.2', fecha: '2026-11-08', cambios: ['Varias TIR cuando los flujos cambian de signo, TIR modificada y comparación de dos proyectos con la tasa de Fisher.'] },
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: valor actual neto, tasa interna de rentabilidad, plazo de recuperación simple y descontado e índice de rentabilidad de una inversión, con la decisión, la tabla de flujos actualizados y la gráfica del VAN según la tasa.'] },
     ],
     'amortizacion-inmovilizado': [
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: cuadro de amortización de un bien por el método lineal, la suma de dígitos, el degresivo de porcentaje constante y las unidades de producción, con la cuota de cada año, la amortización acumulada, el valor neto contable y su gráfica.'] },
     ],
     prestamos: [
+      { v: '0.2', fecha: '2026-11-08', cambios: ['Periodo de carencia de capital y amortización anticipada reduciendo la cuota o el plazo, con los intereses ahorrados.'] },
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: cuota y cuadro de amortización completo de un préstamo por el sistema francés, el de cuota de amortización constante y el americano, con pagos anuales, semestrales, trimestrales o mensuales, los intereses totales y la TAE, también con comisión de apertura.'] },
     ],
     rentas: [
+      { v: '0.2', fecha: '2026-11-08', cambios: ['Rentas variables: términos en progresión aritmética o geométrica, con valor actual y valor final.'] },
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: valor actual, valor final, término y número de términos de rentas constantes pospagables o prepagables, temporales o perpetuas, inmediatas o diferidas, con términos anuales, semestrales, trimestrales o mensuales, la tabla de términos y su gráfica.'] },
     ],
     interes: [
+      { v: '0.2', fecha: '2026-11-08', cambios: ['Tiempo en meses o días (año de 365 o 360 días) y capitalización continua.'] },
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: capital final, capital inicial, tipo de interés y tiempo en capitalización simple y compuesta (anual, semestral, trimestral, mensual o diaria), el paso del TIN a la TAE y al revés, la comparación simple frente a compuesta año a año y su gráfica.'] },
     ],
     descriptiva: [
@@ -665,6 +819,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: ajusta reacciones moleculares e iónicas por el método algebraico, con una incógnita por especie, el balance de cada elemento y de la carga, los coeficientes enteros y la comprobación átomo a átomo, con una gráfica de los átomos a cada lado y diez reacciones de ejemplo.'] },
     ],
     electrostatica: [
+      { v: '0.7', fecha: '2026-11-08', cambios: ['El modo práctica comprueba las dimensiones: si tu respuesta no sale en N/C, V, N, J… te lo dice, y si sumas términos con unidades distintas señala cuál falla.'] },
       { v: '0.6', fecha: '2026-10-26', cambios: ['Tubo cilíndrico con carga superficial σ y cilindros huecos (con radio interior), para resolver cables coaxiales.', 'Densidades que no son uniformes en esferas y cilindros (ρ₀·r/R, ρ₀·R/r, ρ₀(1 − r/R) y ρ₀(1 − r²/R²)) y en varillas (λ que crece o decrece a lo largo), con Gauss y la carga encerrada.', 'Arcos cargados: semicircunferencias, cuartos de anillo o cualquier ángulo, con el campo y el potencial en el centro.', 'Corteza esférica conductora con radio interior y exterior: si dentro hay una carga centrada, se induce −q en la cara interior y +q en la exterior.', 'Seis ejercicios de ejemplo nuevos con todo esto.', 'La guía enlaza con la herramienta de Condensadores.'] },
       { v: '0.5.1', fecha: '2026-10-23', cambios: ['El simulador tiene ahora su propia dirección, /electromagnetismo/electrostatica/. Tus problemas guardados siguen ahí. El botón «Todas las herramientas» de la barra lateral vuelve a la portada.'] },
     { v: '0.5', fecha: '2026-10-23', cambios: ['Doce ejercicios de ejemplo con enunciados propios: los mismos tipos de pregunta que en clase, con otras figuras y otros números. La guía de uso tiene capturas nuevas hechas con ellos.', 'La web tiene icono propio: un dipolo con sus líneas de campo, en la pestaña del navegador, en la pantalla de inicio del móvil y en la vista previa al compartir el enlace.', 'Páginas de aviso legal, privacidad, cookies y contacto, enlazadas al pie de la barra lateral.'] },
@@ -674,6 +829,7 @@ const Version = (() => {
     { v: '0.1', fecha: '2026-10-22', cambios: ['Primera versión: cargas, hilos, planos y esferas con el desarrollo paso a paso y 12 ejercicios resueltos.', 'Barra lateral con tus problemas, los importados y los ejercicios; título y enunciado editables; archivos .emsim.json.'] },
     ],
     magnetostatica: [
+      { v: '0.3', fecha: '2026-11-08', cambios: ['Nueva pregunta «Dipolo magnético»: momento dipolar de espiras, solenoides y discos, campo del dipolo comparado con el exacto de Biot-Savart.', 'Nueva pregunta «Potencial vector A» para espiras, espiras rectangulares y solenoides (también el ideal).', 'Vista 3D de las líneas de campo, que se gira con el ratón o con el teclado, con una descripción en texto y la vista plana como alternativa.'] },
       { v: '0.2', fecha: '2026-10-26', cambios: ['Nuevas fuentes: cilindro con corriente (macizo, hueco o con J proporcional a r, para cables coaxiales), lámina de corriente K, espira rectangular de una pieza y disco cargado que gira.', 'Nueva pregunta «Perfil de |B|»: la gráfica del módulo del campo a lo largo de una recta entre dos puntos.', 'Mapa de color de |B| y líneas de campo continuas en el dibujo.', 'Seis ejercicios de ejemplo nuevos con todo esto.', 'Los números decimales se escriben con coma.', 'Botones para copiar el enlace del ejercicio, copiar la solución de cada pregunta como texto o en LaTeX e imprimirla o guardarla en PDF.'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['Arreglo: el ejemplo resuelto de la teoría explica dónde abrirlo ahora, en «Ejercicios de ejemplo» de la barra Mis ejercicios.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: campo magnético de hilos, segmentos, hilos semiinfinitos, espiras, arcos, solenoides y toroides con Biot-Savart, y fuerza sobre cargas en movimiento y sobre conductores, con el desarrollo paso a paso en la forma μ₀I/(πa) o en unidades del SI.', 'Dibujo del campo B en el plano XY, XZ o YZ, con puntos que se pueden arrastrar y ocho ejemplos resueltos.'] },
@@ -699,6 +855,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: configuración electrónica de cualquier elemento o ion por orden de llenado, abreviada y por capas, con el diagrama de Moeller, el diagrama de orbitales con la regla de Hund, los electrones desapareados y los números cuánticos del electrón diferenciador.', 'Avisa de las excepciones como el cromo o el cobre, y en los cationes quita primero los electrones de la capa más externa.'] },
     ],
     condensadores: [
+      { v: '0.3', fecha: '2026-11-08', cambios: ['Al conectar dos condensadores cargados, las capacidades admiten unidades y prefijos (2200 nF, 4,7 µF…).'] },
       { v: '0.2', fecha: '2026-10-26', cambios: ['Cilíndricos y esféricos con el dieléctrico por sectores, en paralelo: por ejemplo, media esfera con un material y la otra media con otro.', 'Permitividad que cambia con la posición, de ε₁ en una armadura a ε₂ en la otra, con las cargas de polarización de las caras y del volumen.', 'Fuerza entre las armaduras y fuerza que mete un dieléctrico a medio introducir.', 'Rigidez dieléctrica: escribe la de cada capa y sale la tensión máxima antes de la ruptura.', 'Asociaciones de condensadores en serie, en paralelo y mixtas, con la carga, la tensión y la energía de cada uno, y dos condensadores cargados que se conectan, con la energía que se pierde.', 'La carga libre de cada armadura en el desarrollo.', 'Botones para copiar el enlace del ejercicio, copiar la solución como texto o en LaTeX e imprimirla o guardarla en PDF.', 'El desarrollo paso a paso escribe las fórmulas como en los libros: fracciones, raíces, exponentes y subíndices de verdad.', 'La capacidad sale también en letras, como en los apuntes (por ejemplo C = 4πε₀εᵣab/(b − a), o la suma de cada capa en serie).', 'Enlace al simulador de Electrostática desde la teoría.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: condensadores planos, cilíndricos y esféricos con capas de dieléctrico en serie o, en el plano, ocupando parte del área. Capacidad, carga, tensión y energía; campos E, D y P en cada capa y cargas de polarización, con el desarrollo paso a paso.', 'Compara con el condensador vacío: qué pasa al meter el dieléctrico con la batería conectada o con el condensador aislado.', 'Dibujo del corte con las líneas de campo y gráfica de E a lo largo del condensador.'] },
@@ -721,6 +878,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: temperatura de equilibrio al mezclar hasta cinco cuerpos de agua, hielo, vapor, metales, etanol, vidrio, un calorímetro o una sustancia con tus datos, con los cambios de fase que hagan falta.', 'Si la energía no llega para fundir todo el hielo o condensar todo el vapor, dice cuántos gramos quedan de cada fase.', 'Tabla con el calor de cada cuerpo, el desarrollo etapa por etapa (m c ΔT y m L) y la curva de calentamiento de cada uno.'] },
     ],
     induccion: [
+      { v: '0.3', fecha: '2026-11-08', cambios: ['Nueva pestaña «Fuerza entre espiras»: fuerza y sentido entre dos espiras coaxiales con la inducción mutua exacta, la gráfica frente a la distancia y la comparación con el límite de dipolo.'] },
       { v: '0.2', fecha: '2026-10-26', cambios: ['Toroide con entrehierro: reluctancia del núcleo y del hueco de aire y la autoinducción que queda.', 'Inducción mutua de dos espiras coaxiales a una distancia y de una bobina girada dentro de un solenoide.', 'Bobinas acopladas en serie y en paralelo, con los flujos que se suman o que se oponen.', 'Circuito RL: balance de energía (lo que da la fuente, lo que guarda la bobina y lo que se disipa en la resistencia) y una fuente que se conecta y desconecta una y otra vez, con la corriente máxima, mínima y media.', 'Los dibujos usan azul para el campo y el segundo circuito, y la gráfica del RL distingue corriente y tensión.', 'Botones para copiar el enlace del ejercicio, copiar la solución como texto o en LaTeX e imprimirla o guardarla en PDF.', 'El desarrollo paso a paso escribe las fórmulas como en los libros: fracciones, raíces, exponentes y subíndices de verdad.', 'El resultado sale también en letras, como en los apuntes (por ejemplo L = μ₀N²h ln(b/a)/(2π) o la corriente del circuito RL).', 'Enlace a Faraday y Lenz desde la teoría.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: coeficiente de autoinducción de solenoides (con núcleo), toroides de sección rectangular y circular, cables coaxiales y líneas bifilares, con el desarrollo desde la ley de Ampère.', 'Inducción mutua entre dos solenoides, dos espiras, un hilo y una espira, y una bobina sobre un toroide, o a partir de L₁, L₂ y k, con el coeficiente de acoplamiento.', 'Flujo, energía magnética y fem inducida si das la corriente o cómo cambia.', 'Circuito RL al cerrar el interruptor o al quitar la fuente: constante de tiempo, corriente y tensión en la bobina en cualquier instante y su gráfica.'] },
@@ -744,6 +902,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: doble rendija de Young con la interfranja, la posición y el ángulo de cada máximo, la intensidad en un punto y la envolvente de difracción si das la anchura de las rendijas.', 'Rendija simple: mínimos, anchura del máximo central e intensidad.', 'Red de difracción: ángulos de cada orden, orden máximo y separación de dos longitudes de onda con el poder de resolución.', 'Láminas delgadas: colores que se refuerzan y se anulan y espesores para reforzar o quitar el reflejo.', 'Ondas que salen de las rendijas animadas y el patrón en la pantalla con el color de la luz.'] },
     ],
     'ondas-em': [
+      { v: '0.4', fecha: '2026-11-08', cambios: ['Nuevo cálculo «Plasma e ionosfera»: frecuencia de plasma, relación de dispersión, velocidades de fase y de grupo, onda evanescente y ley de la secante en incidencia oblicua.', 'Nuevo cálculo «Suma de dos ondas»: batidos, onda estacionaria con su ROE y polarización resultante de dos ondas perpendiculares.', 'Nuevo cálculo «Láminas de retardo»: hasta cuatro polarizadores y láminas λ/4 o λ/2 con el cálculo de Jones y el estado de polarización tras cada elemento.', 'Botón «Abrir en Fresnel» en la incidencia sobre un dieléctrico y descarga del dibujo como imagen.'] },
       { v: '0.3', fecha: '2026-11-02', cambios: ['Nuevo cálculo «Polarizadores»: ley de Malus con luz natural, lineal o circular por hasta 6 polarizadores, con la intensidad tras cada uno.', 'Nuevo cálculo «Vector de Poynting»: balance de energía de un hilo con corriente, un condensador que se carga y un cable coaxial, comprobando que el flujo de S es la potencia.'] },
       { v: '0.2', fecha: '2026-10-26', cambios: ['La onda puede ir en cualquier dirección (escribiendo las componentes de k y de E) y tener una fase inicial.', 'Polarización circular y elíptica, con el sentido de giro y la expresión de E y B con sus dos componentes.', 'Nuevo cálculo: la onda a partir de su expresión E(r, t) o B(r, t), por ejemplo 30 cos(2,094y + 6,283e8t) k: dirección de propagación, velocidad, medio y el otro campo.', 'Nuevo cálculo: incidencia normal sobre un conductor perfecto (onda estacionaria, nodos, presión y corriente superficial) o sobre otro medio (coeficientes de reflexión y transmisión).', 'En el desarrollo, B̂ = k̂ × Ê ya no escribe paréntesis de más alrededor de los vectores unitarios.', 'Botones para copiar el enlace del ejercicio, copiar la solución como texto o en LaTeX e imprimirla o guardarla en PDF.', 'El desarrollo paso a paso escribe las fórmulas como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
@@ -755,6 +914,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: intervalo de confianza de una media con σ conocida (z) o desconocida (t de Student), a partir de x̄, s y n o de la lista de datos, también si te dan la desviación con n.', 'Intervalos de una proporción, de la varianza y la desviación típica (con la χ²), de la diferencia de medias (σ conocidas, iguales o Welch) y de la diferencia de proporciones.', 'Tamaño de muestra para un error máximo en una media o una proporción.', 'Gráfica de la distribución con el área de confianza y simulación de 100 muestras que muestra cuántos intervalos aciertan.'] },
     ],
     fuerza: [
+      { v: '0.3', fecha: '2026-11-08', cambios: ['Trayectoria de una partícula con E y B cualesquiera (hélice, deriva E×B), espejo magnético con cono de pérdidas y vista 3D con alternativa plana y descripción en texto.'] },
       { v: '0.2', fecha: '2026-10-26', cambios: ['Carga que entra en una franja de campo: si la atraviesa, el ángulo con el que sale y cuánto se ha desplazado; si no, dónde vuelve a salir.', 'Campos E y B cruzados: velocidad de deriva E/B y la cicloide animada, también con velocidad inicial (cicloide acortada o con bucles).', 'Efecto Hall: tensión Hall, densidad de portadores, coeficiente de Hall y qué cara queda a más potencial.', 'Par sobre una espira o bobina: momento magnético, par, energía y trabajo para girarla.', 'Espectrómetro de masas con dos isótopos: la separación entre los impactos.', 'El campo B se dibuja en azul en todas las animaciones.', 'Botones para copiar el enlace del ejercicio, copiar la solución como texto o en LaTeX e imprimirla o guardarla en PDF.', 'El desarrollo paso a paso escribe las fórmulas como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: fuerza sobre una carga en un campo uniforme, con el radio, el periodo y el sentido de giro, o la hélice si v no es perpendicular a B. La velocidad se puede dar en m/s, por su energía en eV o por la ddp que la acelera.', 'Fuerza de Lorentz con vectores: v × B con su determinante y F = q(E + v × B).', 'Selector de velocidades y espectrómetro de masas, ciclotrón con la frecuencia, la energía de salida y las vueltas.', 'Fuerza sobre un hilo (y la corriente para que flote) y entre dos hilos paralelos.', 'Animación de cada situación.'] },
     ],
@@ -847,11 +1007,13 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: frecuencia que se oye con la fuente, el observador y el viento moviéndose, con la longitud de onda delante de la fuente.', 'Una fuente que pasa de largo: lo que se oye antes y después, el salto en hercios y semitonos y, al revés, su velocidad a partir de las dos frecuencias. Con el observador a un lado de la carretera, la gráfica del cambio gradual.', 'Eco en un obstáculo que se mueve (radar de tráfico, murciélago, ecografía Doppler): la frecuencia del eco y las pulsaciones, o la velocidad del obstáculo a partir de ellas.', 'Onda de choque: número de Mach, semiángulo del cono y cuándo se oye el estampido.', 'Animación de los frentes de onda y botón para escuchar la diferencia.'] },
     ],
     resistencias: [
+      { v: '0.3', fecha: '2026-11-08', cambios: ['El divisor de tensión da la salida en el peor caso con la tolerancia y avisa si las resistencias de 1/4 W no aguantan la potencia (también en el LED); nuevas series E3 y E192.'] },
       { v: '0.2', fecha: '2026-10-26', cambios: ['Nuevo modo de asociación: escribe 100 + (220 ‖ 330) y sale la resistencia equivalente paso a paso, y con una tensión, la corriente y la potencia.', 'Nuevo modo para conseguir un valor que no existe con dos normalizadas en serie o en paralelo (5 kΩ = 10 kΩ ‖ 10 kΩ).', 'Nuevos modos de resistencia para un LED, con el valor normalizado y la potencia que debe aguantar, y de divisor de tensión con normalizadas, también con carga.', 'Código impreso de los condensadores (104, 472J, 104K 2A, 4n7) con la tolerancia y la tensión, y el código de colores de las bobinas en μH.', 'Avisa si parece que estás leyendo la resistencia al revés y te dice qué valor saldría desde el otro extremo.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas dentro del texto de la teoría se ven bien escritas, no con símbolos $.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: elige los colores de una resistencia de 3, 4, 5 o 6 bandas y obtén el valor, la tolerancia, el margen del valor real y el coeficiente de temperatura, con el dibujo de la resistencia.', 'Del valor a los colores: escribe 4k7, 2M2 o 470R y te da las bandas y el valor normalizado más cercano de las series E6 a E96.', 'Códigos SMD de 3 y 4 cifras, con R y EIA-96.'] },
     ],
     faraday: [
+      { v: '0.3', fecha: '2026-11-08', cambios: ['Barra en raíles inclinados con g, corriente y potencia en el límite, y corrientes de Foucault en discos y núcleos laminados.'] },
       { v: '0.2', fecha: '2026-10-26', cambios: ['Hilo recto y espira rectangular: la espira se aleja o se acerca, o la corriente del hilo cambia, con el flujo integrado, la fem, el sentido y la fuerza sobre la espira.', 'Campo que cambia con una función del tiempo (B₀ + kt, B₀ + kt², B₀ sen ωt o B₀ e^(−t/τ)): fem en cualquier instante y gráficas de B(t) y ε(t).', 'Barra con masa: velocidad límite al tirar de ella o al caer por raíles verticales, y la distancia que recorre una barra lanzada hasta pararse, con v(t).', 'Varilla que gira por un extremo y disco de Faraday: ε = ½BωL².', 'Alternador: el par que hay que hacer para mantener el giro y la energía de cada vuelta.', 'Botones para copiar el enlace del ejercicio, copiar la solución como texto o en LaTeX e imprimirla o guardarla en PDF.', 'El desarrollo paso a paso escribe las fórmulas como en los libros: fracciones, raíces, exponentes y subíndices de verdad.', 'Enlace a Autoinducción e inducción mutua desde la teoría.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: fem y corriente inducidas en una barra que se desliza sobre unos raíles, con la fuerza que la frena y la potencia.', 'Bobina que gira en un campo (alternador): flujo y fem en función del tiempo, valores máximo y eficaz.', 'Flujo que cambia en un tiempo porque cambia el campo o el ángulo: fem media, corriente y carga.', 'Espira que atraviesa una región con campo: fem al entrar y al salir, fuerza y calor.', 'Sentido de la corriente por la ley de Lenz y animación con la gráfica de Φ y ε.'] },

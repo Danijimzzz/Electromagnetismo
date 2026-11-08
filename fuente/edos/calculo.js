@@ -220,6 +220,13 @@ const EDOs = (() => {
   const kT = (k, s) => (Math.abs(k - 1) < 1e-12 ? s : Math.abs(k + 1) < 1e-12 ? `−${s}` : `${cTxt(k)} ${s}`);
   const par = (t) => (/^[^ ]+$/.test(t) || /^\{.*\}$/.test(t) ? t : `(${t})`);
 
+  // ¿f(x, y) es lipschitziana en y cerca de (x₀, y₀)? Si el cociente incremental crece sin límite al acercarse (√y en 0, y^(1/3)), no hay unicidad
+  function lipschitzOk(F, x0, y0) {
+    const q = (d) => { const a = F(x0, y0 + d), b = F(x0, y0); return isFinite(a) && isFinite(b) ? Math.abs(a - b) / Math.abs(d) : NaN; };
+    for (const s of [1, -1]) { const q1 = q(s * 1e-3), q2 = q(s * 1e-9); if (isFinite(q1) && isFinite(q2) && q2 > 50 && q2 > 5 * q1) return false; }
+    return true;
+  }
+
   // y′ = g(x) h(y)
   function separable(ast, F, x0, y0, fino) {
     const pts = [[0.3, 0.7], [1.4, -0.6], [-0.8, 1.9], [2.2, 2.6], [1.1, 0.4], [0.6, 3.1]];
@@ -253,6 +260,19 @@ const EDOs = (() => {
     }
     const h0 = E.valor(hX, y0);
     if (Math.abs(h0) < 1e-12) {
+      if (!lipschitzOk(F, x0, y0)) {
+        // h(y) ≈ c (y − y₀)ᵃ con 0 < a < 1: además de la recta, y = y₀ + [(1 − a) c (G(x) − G(x₀))]^(1/(1−a)) para x ≥ x₀
+        const hv = (d) => E.valor(hX, y0 + d), a = Math.log(hv(2e-6) / hv(1e-6)) / Math.LN2, a2 = Math.log(hv(2e-9) / hv(1e-9)) / Math.LN2;
+        pasos.push({ t: 'Solución de equilibrio', html: `$h(${f(y0)}) = 0$: la recta $y = ${cTxt(y0)}$ es solución (la pendiente es 0 en todos sus puntos).` });
+        let otra = '';
+        if (isFinite(a) && Math.abs(a - a2) < 1e-3 && a > 0.01 && a < 0.99 && G) {
+          const cc = hv(1e-6) / 1e-6 ** a, k = (1 - a) * cc, e = 1 / (1 - a), yv = (x) => y0 + (k * (Gf(x) - Gf(x0))) ** e;
+          const ok = [1, 1.7, 3].every((d) => { const x = x0 + d, e1 = 1e-5, dv = (yv(x + e1) - yv(x - e1)) / (2 * e1), fv = F(x, yv(x)); return isFinite(dv) && isFinite(fv) && Math.abs(dv - fv) < 1e-4 * Math.max(1, Math.abs(fv)); });
+          if (ok) otra = ` Y también es solución, para $x ≥ ${f(x0)}$, $y = ${y0 ? cTxt(limpio(y0)) + ' + ' : ''}(${T(E.simp(op('*', NN(limpio(k)), op('-', G, NN(limpio(Gf(x0)))))))})^{${cTxt(limpio(e))}}$, que sale de separar las variables y empieza en el mismo punto.`;
+        }
+        pasos.push({ t: 'Aviso: la solución no es única', html: `<b>El teorema de unicidad no se cumple aquí:</b> $∂f/∂y$ no está acotada cerca de $(${f(x0)}, ${f(y0)})$ (la pendiente cambia demasiado deprisa con $y$), así que por ese punto puede pasar <b>más de una solución</b>.${otra} Lo que se muestra abajo es solo una de ellas (la de equilibrio).` });
+        return { pasos, exacta: { txt: cTxt(limpio(y0)), y: () => y0 }, noUnica: true, otra: !!otra };
+      }
       pasos.push({ t: 'Solución de equilibrio', html: `$h(${f(y0)}) = 0$: la recta $y = ${cTxt(y0)}$ es solución (la pendiente es 0 en todos sus puntos) y por unicidad es la que pasa por el punto inicial.` });
       return { pasos, exacta: { txt: cTxt(limpio(y0)), y: () => y0 } };
     }
@@ -460,10 +480,13 @@ const EDOs = (() => {
     // RK4 se para si la solución se dispara: explota (asíntota vertical) antes de x₁
     const explota = fino[fino.length - 1].t < x1 - 1e-9 ? fino[fino.length - 1].t : null;
     // no es lineal con coeficiente constante: separable, lineal con factor integrante, Bernoulli o exacta
+    let noUnica = false;
     if (p === null || sinPart) {
       let r = null;
       try { r = separable(ast, F, x0, y0, fino) || (lin ? linealVariable(ast, x0, y0, fino) : bernoulli(ast, F, x0, y0, fino) || ecExacta(E.simp(ast), x0, y0)); } catch (e) { r = null; }
       if (r) { pasos.push(...r.pasos); exacta = r.exacta || null; implicita = r.implicita || null; }
+      if (!(r && r.noUnica) && !lipschitzOk(F, x0, y0)) { noUnica = true; pasos.push({ t: 'Aviso: la solución no es única', html: `<b>El teorema de unicidad no se cumple aquí:</b> $∂f/∂y$ no está acotada cerca de $(${f(x0)}, ${f(y0)})$, así que puede haber más de una solución que pase por ese punto y los métodos numéricos solo siguen una de ellas.` }); }
+      if (r && r.noUnica) noUnica = true;
       if (!r || (!r.exacta && !r.implicita)) pasos.push({ t: 'Tipo', html: r ? 'Sin solución en fórmula: se resuelve numéricamente, como aquí abajo.' : 'No es lineal, ni de variables separables, ni de Bernoulli, ni exacta: se resuelve numéricamente, como aquí abajo.' });
     }
     const yEu = eul[eul.length - 1].y, yEx = exacta ? exacta.y(x1) : null;
@@ -477,7 +500,7 @@ const EDOs = (() => {
       const fila = (q) => `<tr><td>${q.nom}</td><td>${q.orden}</td><td>${f(q.y, 7)}</td><td>${f(q.err, 2)}</td><td>${f(q.err2, 2)}</td><td>${q.err2 > 1e-13 ? f(q.err / q.err2, 3) : '—'}</td></tr>`;
       pasos.push({ t: 'Comparación de métodos', html: `${exacta ? `La solución exacta vale $y(${f(x1)}) = ${f(yEx, 7)}$` : `Con RK4 muy fino (${fino.length - 1} pasos) sale $y(${f(x1)}) ≈ ${f(yRK, 7)}$`}. Con el mismo paso h = ${f(h)} y con h/2:<table class="tabla"><tr><th>Método</th><th>Orden</th><th>y(${f(x1)})</th><th>Error con h</th><th>Error con h/2</th><th>Cociente</th></tr>${metodos.map(fila).join('')}</table>Un método de orden p tiene un error proporcional a $h^p$: al partir el paso por la mitad el error se divide por unos $2^p$ (2 Euler, 4 Heun y el punto medio, 16 RK4). Heun hace $y_{n+1} = y_n + {h}/{2}(k_1 + k_2)$ con $k_2 = f(x_n + h, y_n + h k_1)$, y el punto medio $y_{n+1} = y_n + h f(x_n + {h}/{2}, y_n + {h}/{2} k_1)$.` });
     }
-    return { modo: 'primer', fTxt, F, x0, y0, x1, h, eul, fino, exacta, implicita, yRK, yEu, yEx, explota, metodos, pasos, lineal: p !== null };
+    return { modo: 'primer', fTxt, F, x0, y0, x1, h, eul, fino, exacta, implicita, yRK, yEu, yEx, explota, metodos, pasos, noUnica, lineal: p !== null };
   }
   // sustituye y por un nodo
   function sustY(n, por) {

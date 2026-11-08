@@ -296,7 +296,7 @@ const Condensador = (() => {
   /* ---------- Dos condensadores cargados que se conectan ---------- */
   // sc: { tipo: 'conectar', C1, V1, C2, V2 (µF y V), union: 'igual'|'opuesta' }
   function conectar(sc) {
-    const uF = (v, n) => { const x = +String(v ?? '').trim().replace(',', '.'); if (!(x > 0)) throw new Error(`${n} debe ser un número positivo (en µF)`); return x * 1e-6; }, C1 = uF(sc.C1, 'C₁'), C2 = uF(sc.C2, 'C₂'), V1 = leer(sc.V1, 'V', 'V₁'), V2 = leer(sc.V2, 'V', 'V₂');
+    const uF = (v, n) => { const t = String(v ?? '').trim(), conU = /[A-Za-zµμ]/.test(t.replace(/e[+-]?\d+/i, '')), y = conU && typeof Herramienta !== 'undefined' ? Herramienta.leeUn(t) : undefined, x = y !== undefined ? y / 1e-6 : +t.replace(',', '.'); if (!(x > 0)) throw new Error(`${n} debe ser un número positivo (en µF; admite 10 nF, 2,2 µF…)`); return x * 1e-6; }, C1 = uF(sc.C1, 'C₁'), C2 = uF(sc.C2, 'C₂'), V1 = leer(sc.V1, 'V', 'V₁'), V2 = leer(sc.V2, 'V', 'V₂');
     const op = sc.union === 'opuesta', Q1 = C1 * V1, Q2 = C2 * V2, Qt = op ? Q1 - Q2 : Q1 + Q2, Vf = Qt / (C1 + C2), U0 = 0.5 * C1 * V1 * V1 + 0.5 * C2 * V2 * V2, Uf = (0.5 * Qt * Qt) / (C1 + C2);
     const pasos = [
       { t: 'Cargas antes de conectar', html: `$Q_1 = C_1 V_1$ = ${conUnidad(Q1, 'C')}, $Q_2 = C_2 V_2$ = ${conUnidad(Q2, 'C')}; energía $U_0 = 1/2 C_1 V_1^2 + 1/2 C_2 V_2^2$ = ${conUnidad(U0, 'J')}` },

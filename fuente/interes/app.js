@@ -10,7 +10,7 @@
   const periodos = { k: 'm', nom: 'Capitalización', tipo: 'sel', ops: Object.entries(I.PERIODOS).map(([k, v]) => [k, v[0].toUpperCase() + v.slice(1)]) };
   Calculadora.monta({
     C: I, carpeta: 'interes', app: 'InteresApp',
-    nota: 'Los tipos van en % anual (TIN) y el tiempo en años: 9 meses son 0,75 años. Se admite coma decimal.',
+    nota: 'Los tipos van en % anual (TIN). El tiempo puede ir en años, meses o días (con el año de 365 o 360 días). La capitalización continua es el límite de capitalizar infinitas veces al año. Se admite coma decimal.',
     campos: (sc) => {
       const cs = [{ k: 'modo', nom: 'Calcular', tipo: 'sel', ops: Object.entries(I.MODOS) }];
       if (sc.modo === 'tae') return [...cs, { k: 'conocido', nom: 'Conozco', tipo: 'sel', ops: [['tin', 'El TIN'], ['tae', 'La TAE']] }, sc.conocido === 'tae' ? { k: 'tae', nom: 'TAE', un: '%' } : { k: 'i', nom: 'TIN', un: '% anual' }, periodos];
@@ -18,7 +18,8 @@
       if (sc.modo !== 'inicial') cs.push({ k: 'c0', nom: 'Capital inicial C₀', un: '€' });
       if (sc.modo !== 'final') cs.push({ k: 'cn', nom: 'Capital final Cₙ', un: '€' });
       if (sc.modo !== 'tipo') cs.push({ k: 'i', nom: 'Tipo de interés (TIN)', un: '% anual' });
-      if (sc.modo !== 'tiempo') cs.push({ k: 't', nom: 'Tiempo', un: 'años' });
+      if (sc.modo !== 'tiempo') cs.push({ k: 't', nom: 'Tiempo', un: sc.tu === 'm' ? 'meses' : sc.tu === 'd' ? 'días' : 'años' }, { k: 'tu', nom: 'Medido en', tipo: 'sel', ops: Object.entries(I.UNIDADES) });
+      if (sc.modo !== 'tiempo' && sc.tu === 'd') cs.push({ k: 'base', nom: 'Año de', tipo: 'sel', ops: [['365', '365 días'], ['360', '360 días (año comercial)']] });
       if (sc.regimen !== 'simple') cs.push(periodos);
       return cs;
     },
@@ -31,13 +32,14 @@
       if (s.modo === 'tae') {
         // un capital de 100 € durante un año con capitalización anual (TAE) y por periodos (TIN/m), escalonado
         const esc = [];
-        for (let k = 0; k < s.m; k++) { const v = 100 * (1 + s.tin / s.m) ** k; esc.push([k / s.m, v], [(k + 1) / s.m, v]); }
-        esc.push([1, 100 * (1 + s.tae)]);
+        if (s.m === 0) for (let k = 0; k <= 60; k++) esc.push([k / 60, 100 * Math.exp((s.tin * k) / 60)]);
+        else for (let k = 0; k < s.m; k++) { const v = 100 * (1 + s.tin / s.m) ** k; esc.push([k / s.m, v], [(k + 1) / s.m, v]); }
+        if (s.m !== 0) esc.push([1, 100 * (1 + s.tae)]);
         return { x: [0, 1], y: [100, 100 * (1 + s.tae) * 1.005], series: [{ pts: [[0, 100], [1, 100 * (1 + s.tin)]], color: '--serie-1', discontinua: true }, { pts: esc, color: '--serie-2' }], ejeX: 'Años', ejeY: 'Capital de 100 €' };
       }
       const T = Math.max(s.t, 1e-9), pts = (fn) => Array.from({ length: 121 }, (_, k) => [(T * k) / 120, fn((T * k) / 120)]);
       const fy = (v) => num(v, Math.abs(v) >= 100 ? 0 : 2);
-      return { x: [0, T], y: Eco.rango([s.c0, s.cnS, s.cnC]), fy, ejeX: 'Años', ejeY: 'Capital (€)', series: [{ pts: pts((x) => s.c0 * (1 + s.i * x)), color: '--serie-1' }, { pts: pts((x) => s.c0 * (1 + s.i / s.m) ** (s.m * x)), color: '--serie-2' }, { pts: [[s.t, s.cn]], tipo: 'puntos', color: '--serie-3', radio: 5 }] };
+      return { x: [0, T], y: Eco.rango([s.c0, s.cnS, s.cnC]), fy, ejeX: 'Años', ejeY: 'Capital (€)', series: [{ pts: pts((x) => s.c0 * (1 + s.i * x)), color: '--serie-1' }, { pts: pts((x) => s.c0 * s.cap(s.i, x)), color: '--serie-2' }, { pts: [[s.t, s.cn]], tipo: 'puntos', color: '--serie-3', radio: 5 }] };
     },
     leyenda: (s) => (s.modo === 'tae' ? 'Un capital de 100 € durante un año: <b>a trozos</b>, sumando los intereses de cada periodo (acaba en la TAE); <b>discontinua</b>, el TIN sin capitalizar.' : '<b>Recta azul</b>: interés simple. <b>Curva roja</b>: interés compuesto. <b>Punto</b>: el resultado.'),
   });

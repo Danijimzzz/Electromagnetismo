@@ -21,7 +21,7 @@
   };
   const BLOQUES = { s: '#e07a5f', p: '#3d8bbd', d: '#d9a441', f: '#8e6fc1' };
   const ESTADOS = { gas: '#5aa9e6', 'líquido': '#2bb39a', 'sólido': '#9aa5ad' };
-  let modo = 'cat', sel = null, filtroCat = null;
+  let modo = 'cat', sel = null, filtroCat = null, T = 298;
   try { modo = localStorage.getItem('tabla-color') || 'cat'; } catch (e) { /* sin almacenamiento */ }
 
   const tabla = $('#tabla'), celdas = {};
@@ -41,6 +41,9 @@
     const d = document.createElement('div'); d.className = 'el hueco'; d.style.gridRow = filaRej(fila); d.style.gridColumn = 3; d.textContent = txt; tabla.append(d);
   }
 
+  // estado de un elemento a T kelvin con los puntos de fusión y ebullición de la tabla (a 1 atm); sin datos, null
+  const estadoA = (e, K) => (e.fusion == null || e.ebullicion == null ? null : K < e.fusion + 273.15 ? 'sólido' : K < e.ebullicion + 273.15 ? 'líquido' : 'gas');
+  const INI = { 'sólido': 'S', 'líquido': 'L', gas: 'G' };
   function pinta() {
     const p = PROPS[modo], vals = p ? E.lista.map(p.v).filter((x) => x != null) : [];
     const lo = Math.min(...vals), hi = Math.max(...vals);
@@ -50,6 +53,7 @@
       if (modo === 'cat') { fondo = `var(--c-${e.cat})`; v.textContent = e.nombre; }
       else if (modo === 'bloque') { const b = E.bloque(e.Z); fondo = `color-mix(in srgb, ${BLOQUES[b]} 35%, var(--panel))`; v.textContent = b; }
       else if (modo === 'estado') { fondo = e.estado ? `color-mix(in srgb, ${ESTADOS[e.estado]} 35%, var(--panel))` : 'var(--bg)'; v.textContent = e.estado || '?'; }
+      else if (modo === 'temperatura') { const st = estadoA(e, T); fondo = st ? `color-mix(in srgb, ${ESTADOS[st]} 35%, var(--panel))` : 'var(--bg)'; v.textContent = st ? `${INI[st]} · ${st}` : '?'; }
       else {
         const x = p.v(e);
         const t = x == null ? 0 : (x - lo) / (hi - lo || 1);
@@ -64,6 +68,10 @@
     const ley = $('#leyenda');
     if (modo === 'cat') ley.innerHTML = Object.entries(E.CATEGORIAS).map(([k, n]) => `<button data-cat="${k}" class="${filtroCat === k ? 'on' : ''}"><b style="background:var(--c-${k})"></b>${n}</button>`).join('');
     else if (modo === 'bloque') ley.innerHTML = Object.entries(BLOQUES).map(([k, c]) => `<span><b style="background:color-mix(in srgb, ${c} 35%, var(--panel))"></b> bloque ${k}</span>`).join('');
+    else if (modo === 'temperatura') {
+      const n = { 'sólido': 0, 'líquido': 0, gas: 0, '?': 0 }; for (const e of E.lista) n[estadoA(e, T) || '?']++;
+      ley.innerHTML = Object.entries(ESTADOS).map(([k, c]) => `<span><b style="background:color-mix(in srgb, ${c} 35%, var(--panel))"></b> ${INI[k]} · ${k}: ${n[k]}</span>`).join('') + `<span>? sin datos: ${n['?']}</span><span>a 1 atm, con los puntos de fusión y ebullición de la ficha</span>`;
+    }
     else if (modo === 'estado') ley.innerHTML = Object.entries(ESTADOS).map(([k, c]) => `<span><b style="background:color-mix(in srgb, ${c} 35%, var(--panel))"></b> ${k}</span>`).join('') + '<span>? desconocido</span>';
     else ley.innerHTML = `<span>${p.nombre}:</span><span>${p.f(lo)}</span><span class="escala"></span><span>${p.f(hi)} ${p.u}</span><span>· gris: sin datos</span>`;
     ley.querySelectorAll('[data-cat]').forEach((b) => b.addEventListener('click', () => { filtroCat = filtroCat === b.dataset.cat ? null : b.dataset.cat; pinta(); }));
@@ -84,6 +92,7 @@
         <dt>Bloque</dt><dd>${E.bloque(e.Z)}</dd>
         <dt>Configuración</dt><dd class="conf">${E.abreviada(e.Z)}</dd>
         <dt>Completa</dt><dd class="conf">${E.texto(E.configuracion(e.Z))}</dd>
+        ${valenciaFicha(e)}
         <dt>Electrones por capa</dt><dd class="capas">${E.capas(e.Z).map((k, i) => `<span>${'KLMNOPQ'[i]} ${k}</span>`).join('')}</dd>
         <dt>Electronegatividad</dt><dd>${coma(e.en, e.en == null ? null : 2)}</dd>
         <dt>1.ª ionización</dt><dd>${e.ei == null ? '—' : coma(e.ei) + ' kJ/mol'}</dd>
@@ -91,6 +100,7 @@
         <dt>Afinidad electrónica</dt><dd>${e.aeInestable ? 'no forma un anión estable' : e.ae == null ? '—' : coma(e.ae) + ' kJ/mol'}</dd>
         <dt>Estados de oxidación</dt><dd>${e.oxidacion || '—'}</dd>
         <dt>Estado a 25 °C</dt><dd>${e.estado || 'desconocido'}</dd>
+        ${modo === 'temperatura' ? `<dt>Estado a ${T} K</dt><dd>${estadoA(e, T) || 'sin datos'}</dd>` : ''}
         <dt>Densidad</dt><dd>${dens(e)}</dd>
         <dt>Punto de fusión</dt><dd>${temp(e.fusion)}</dd>
         <dt>Punto de ebullición</dt><dd>${temp(e.ebullicion)}</dd>
@@ -99,6 +109,27 @@
       ${e.Z > 100 ? '<p class="nota">Elemento sintético de vida muy corta: la configuración es la prevista y casi no hay propiedades medidas.</p>' : ''}
       <div class="acciones"><a class="btn" href="../configuracion-electronica/#${e.simbolo}">Configuración y Zef</a><a class="btn" href="../masa-molar/#${e.simbolo}">Masa molar</a><button class="btn" type="button" id="comparar"${comp.includes(e.Z) ? ' disabled' : ''}>${comp.includes(e.Z) ? 'Ya en la comparación' : comp.length >= 3 ? 'Comparar (cambia el primero)' : 'Comparar'}</button></div>`;
     $('#comparar').addEventListener('click', () => compara(e.Z));
+  }
+  /* Capa de valencia (TP-3): configuración abreviada, electrones de valencia y desapareados con Configuracion, e iones habituales
+     (los estados de oxidación de la ficha: cationes de metales y aniones de los grupos 15–17) con su configuración */
+  const sup = (k, sg) => String(k).replace(/\d/g, (d) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d]) + sg;
+  function ionesHabituales(e) {
+    const out = [], q = new Set();
+    if (['a', 't', 'm', 'p', 'l', 'c'].includes(e.cat)) for (const m of String(e.oxidacion || '').matchAll(/\+(\d)/g)) if (+m[1] >= 1 && +m[1] <= 4 && e.Z > +m[1]) q.add(+m[1]);
+    if (e.grupo >= 15 && e.grupo <= 17 && ['n', 'h'].includes(e.cat)) q.add(-(18 - e.grupo));
+    for (const c of [...q].sort((a, b) => a - b)) {
+      let a; try { a = Configuracion.analizar(e.simbolo, c); } catch (err) { continue; }
+      out.push(`<span class="ion">${e.simbolo}<sup>${c > 0 ? (c > 1 ? c : '') + '+' : (c < -1 ? -c : '') + '−'}</sup>: ${a.abreviada || '—'}${a.desapareados ? ` · ${a.desapareados} desapareado${a.desapareados > 1 ? 's' : ''}` : ''}</span>`);
+    }
+    return out;
+  }
+  function valenciaFicha(e) {
+    if (e.Z > 118) return '';
+    const a = Configuracion.analizar(e.simbolo), ions = ionesHabituales(e);
+    return `<dt>Capa de valencia</dt><dd class="conf">${a.valencia.texto || '—'}</dd>
+        <dt>Electrones de valencia</dt><dd>${a.valencia.n}</dd>
+        <dt>Desapareados</dt><dd>${a.desapareados} (${a.magnetismo})</dd>
+        <dt>Iones habituales</dt><dd>${ions.length ? ions.join('<br>') : 'no forma iones sencillos'}</dd>`;
   }
   const dens = (e) => (e.densidad == null ? '—' : e.estado === 'gas' ? `${coma(+(e.densidad * 1000).toPrecision(4))} g/L (gas, a 0 °C y 1 atm)` : `${coma(+e.densidad.toPrecision(4))} g/cm³`);
   const temp = (t) => (t == null ? '—' : `${coma(t).replace('-', '−')} °C (${coma(+(t + 273.15).toFixed(t % 1 ? 2 : 0))} K)`);
@@ -185,9 +216,19 @@
     }
     if (primero) elige(primero);
   });
+  const ctl = $('#ctl-temp');
+  function fijaT(K) {
+    T = Math.min(6000, Math.max(0, Math.round(+K) || 0)); $('#temp').value = T; $('#temp-n').value = T;
+    $('#temp-txt').textContent = `= ${coma(+(T - 273.15).toFixed(2))} °C`.replace('= -', '= −');
+    if (modo === 'temperatura') { pinta(); if (sel) ficha(E.lista[sel - 1]); }
+  }
+  $('#temp').addEventListener('input', (ev) => fijaT(ev.target.value));
+  $('#temp-n').addEventListener('input', (ev) => { if (ev.target.value !== '') fijaT(ev.target.value); });
+  $('#temp').setAttribute('aria-label', 'Temperatura en kelvin');
   const sc = $('#color');
-  sc.value = modo;
-  sc.addEventListener('change', () => { modo = sc.value; filtroCat = null; try { localStorage.setItem('tabla-color', modo); } catch (e) { /* sin almacenamiento */ } pinta(); if (sel) ficha(E.lista[sel - 1]); });
+  if (modo === 'temperatura') { ctl.hidden = false; }
+  sc.value = modo; fijaT(T);
+  sc.addEventListener('change', () => { modo = sc.value; ctl.hidden = modo !== 'temperatura'; if (modo === 'temperatura') fijaT(T); filtroCat = null; try { localStorage.setItem('tabla-color', modo); } catch (e) { /* sin almacenamiento */ } pinta(); if (sel) ficha(E.lista[sel - 1]); });
   // flechas del teclado para moverse por la tabla
   tabla.addEventListener('keydown', (ev) => {
     const d = { ArrowLeft: [0, -1], ArrowRight: [0, 1], ArrowUp: [-1, 0], ArrowDown: [1, 0] }[ev.key];
@@ -200,5 +241,5 @@
   const h = decodeURIComponent(location.hash.slice(1));
   elige((E.porSimbolo[h] || E.lista[25]).Z, false);
   pregunta();
-  window.TablaApp = { elige, compara, get comparando() { return [...comp]; }, pregunta: () => { pregunta(); return { texto: preg.t, solucion: preg.sol }; }, responde: (r) => { $('#q-resp').value = r; corrige(); return $('#q-res').classList.contains('bien'); }, get modo() { return modo; }, colorea: (m) => { sc.value = m; sc.dispatchEvent(new Event('change')); } };
+  window.TablaApp = { elige, temperatura: (K) => { sc.value = 'temperatura'; sc.dispatchEvent(new Event('change')); fijaT(K); }, estadoA, compara, get comparando() { return [...comp]; }, pregunta: () => { pregunta(); return { texto: preg.t, solucion: preg.sol }; }, responde: (r) => { $('#q-resp').value = r; corrige(); return $('#q-res').classList.contains('bien'); }, get modo() { return modo; }, colorea: (m) => { sc.value = m; sc.dispatchEvent(new Event('change')); } };
 })();

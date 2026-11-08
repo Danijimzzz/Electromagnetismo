@@ -19,11 +19,11 @@ const OfertaDemanda = (() => {
   const flecha = (x) => (Math.abs(x) < 1e-9 ? 'no cambia' : x > 0 ? 'sube' : 'baja');
 
   function resolver(sc) {
-    const a = lee(sc, 'a', 'el término a de la demanda', { min: 0, minEx: true }), b = lee(sc, 'b', 'la pendiente b de la demanda', { min: 0, minEx: true });
-    const c = lee(sc, 'c', 'el término c de la oferta'), d = lee(sc, 'd', 'la pendiente d de la oferta', { min: 0, minEx: true });
+    const { a, b, c, d, conv } = K.curvas(sc);
     const { p, q } = equilibrio(a, b, c, d);
     if (!(p > 0) || !(q > 0)) throw new Error('Con estas curvas no hay un equilibrio con precio y cantidad positivos: revisa los signos (la demanda baja con el precio y la oferta sube)');
     const ed = (-b * p) / q, es = (d * p) / q, pasos = [];
+    if (conv) pasos.push({ t: 'Conversión de las curvas', html: conv });
     pasos.push({ t: 'Equilibrio', html: `En el equilibrio se demanda lo mismo que se ofrece, $Q_d = Q_s$:<br>$${n(a)} − ${n(b)} P = ${n(c)} + ${n(d)} P ⇒ (${n(b)} + ${n(d)}) P = ${n(a)} − ${par(c)}$<br>$P^* = {${n(a)} − ${par(c)}}/{${n(b + d)}} = ${n(p)}$ &ensp; y &ensp; $Q^* = ${n(a)} − ${n(b)} · ${n(p)} = ${n(q)}$` });
     pasos.push({ t: 'Elasticidades en el equilibrio', html: `Demanda: $ε_d = −b · P^*/Q^* = −${n(b)} · ${n(p)}/${n(q)} = ${f(ed, 4)}$ (${Math.abs(ed) > 1 ? 'elástica' : Math.abs(ed) < 1 ? 'inelástica' : 'unitaria'}).<br>Oferta: $ε_s = d · P^*/Q^* = ${n(d)} · ${n(p)}/${n(q)} = ${f(es, 4)}$ (${es > 1 ? 'elástica' : es < 1 ? 'inelástica' : 'unitaria'}).` });
     let control = null;
@@ -54,6 +54,8 @@ const OfertaDemanda = (() => {
     { clave: 'renta', nombre: 'Sube la renta: la demanda se desplaza a la derecha', sc: { a: '100', b: '2', c: '20', d: '2', pf: '', da: '20', dc: '' } },
     { clave: 'helada', nombre: 'Una helada: baja la oferta de naranjas', sc: { a: '200', b: '10', c: '50', d: '20', pf: '', da: '', dc: '-30' } },
     { clave: 'ambas', nombre: 'Suben a la vez la demanda y la oferta', sc: { a: '100', b: '2', c: '20', d: '2', pf: '', da: '20', dc: '20' } },
+    { clave: 'inversa', nombre: 'Curvas como precio: P = 50 − Q/2 y P = 10 + Q/2', sc: { forma: 'p', pa: '50', pb: '0,5', pc: '10', pd: '0,5', pf: '', da: '', dc: '' } },
+    { clave: 'dos-puntos', nombre: 'Curvas por dos puntos: a 10 € se piden 80 y a 20 €, 60', sc: { forma: 'puntos', dp1: '10', dq1: '80', dp2: '20', dq2: '60', sp1: '10', sq1: '40', sp2: '20', sq2: '60', pf: '', da: '', dc: '' } },
   ];
 
   return { resolver, ejemplos, equilibrio };

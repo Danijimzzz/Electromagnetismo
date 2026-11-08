@@ -109,13 +109,22 @@ const Series = (() => {
     let pot = null;
     if (grandes) {
       const pp = (n) => -Math.log(Math.abs(a(2 * n) / a(n))) / Math.LN2;
-      const p1 = pp(1e3), p2 = pp(1e5);
+      const p1 = pp(1e3), p2 = pp(1e5), p3 = pp(1e6);
       if (isFinite(p1) && isFinite(p2) && Math.abs(p1 - p2) < 0.02 && Math.abs(p2) < 50) {
-        const p = p2, pr = Math.round(p * 2) / 2, exacto = Math.abs(p - pr) < 0.02, pu = exacto ? pr : p;
+        const q3 = isFinite(p3) ? p3 : p2;
+        // potencia pura C/nᵖ: el exponente medido coincide a 1e-7 en tres tamaños de n (con un logaritmo o un término sumado no)
+        const pura = isFinite(p3) && Math.abs(p1 - p2) < 1e-7 && Math.abs(p2 - p3) < 1e-7;
+        const pr = Math.round(q3 * 2) / 2;
+        // exponente tipo n/(n+1): se acerca a un múltiplo de 1/2 al crecer n (no se queda en 0,01 de distancia)
+        const exacto = !pura && Math.abs(q3 - pr) < 1e-4 && Math.abs(p1 - pr) < 0.02;
+        const pu = pura ? +q3.toFixed(6) : exacto ? pr : q3;
         const C = Math.abs(a(1e5)) * 1e5 ** pu;
-        pot = { p: pu, C };
-        out.pruebas.push({ nombre: 'Comparación con 1/nᵖ', veredicto: pu > 1.02 ? 'converge' : pu <= 1.02 ? 'diverge' : 'no concluye', valor: pu });
-        pasos.push({ t: 'Comparación con la serie p', html: `Para $n$ grande $|a_n| ≈ ${f(C, 4)} · {1}/{n^{${f(pu, 4)}}}$, de la forma $C/n^p$ con $p = ${f(pu, 4)}$. ${pu > 1.02 ? `Como $p > 1$, la serie $∑ 1/n^p$ converge y (por el criterio de comparación en el límite) <b>converge absolutamente</b>.` : `Como $p ≤ 1$, la serie $∑ 1/n^p$ diverge y <b>$∑ |a_n|$ diverge</b>.`}` });
+        // solo estimado y a menos de 0,03 de 1: una estimación no decide
+        const cerca1 = !pura && !exacto && Math.abs(pu - 1) < 0.03;
+        const v = cerca1 ? 'no concluye' : pu > 1 ? 'converge' : 'diverge';
+        pot = { p: pu, C, pura, v };
+        out.pruebas.push({ nombre: 'Comparación con 1/nᵖ', veredicto: v, valor: pu });
+        pasos.push({ t: 'Comparación con la serie p', html: `Para $n$ grande $|a_n| ≈ ${f(C, 4)} · {1}/{n^{${f(pu, 6)}}}$, de la forma $C/n^p$ con $p = ${f(pu, 6)}$${pura ? ' (exponente exacto: aₙ es una potencia de n)' : ''}. ${cerca1 ? 'Como $p$ está tan cerca de 1 y es solo una estimación (aₙ no es exactamente una potencia de $n$), la comparación <b>no decide</b>: prueba el criterio de la integral o una desigualdad.' : pu > 1 ? 'Como $p > 1$, la serie $∑ 1/n^p$ converge y (por el criterio de comparación en el límite) <b>converge absolutamente</b>.' : 'Como $p ≤ 1$, la serie $∑ 1/n^p$ diverge y <b>$∑ |a_n|$ diverge</b>.'}` });
       } else {
         out.pruebas.push({ nombre: 'Comparación con 1/nᵖ', veredicto: 'no aplica' });
       }
@@ -174,7 +183,11 @@ const Series = (() => {
       const N = 4000, s1 = suma(N), s2 = s1 + a(N + 1);
       return { v: (s1 + s2) / 2, err: Math.abs(a(N + 1)) / 2, nota: '(suma parcial hasta n = 4000 promediada con la siguiente; el error es menor que |aₙ₊₁|)' };
     }
-    if (pot && pot.p > 1.02) {
+    if (pot && pot.pura && pot.p > 1) {
+      const N = 20000, s1 = suma(N), tail = pot.C * (N ** (1 - pot.p) / (pot.p - 1) - N ** -pot.p / 2);
+      return { v: s1 + tail, err: Math.abs(tail) * 1e-3 + 1e-6, nota: '(suma parcial hasta n = 20 000 más la cola calculada con la integral de C/nᵖ)' };
+    }
+    if (pot && pot.p > 1.02 && pot.v === 'converge') {
       const N = 20000, s1 = suma(N), s2 = suma(2 * N), q = 2 ** (pot.p - 1);
       return { v: s2 + (s2 - s1) / (q - 1), err: Math.abs(s2 - s1) / (q - 1) * 0.1, nota: '(sumas parciales hasta n = 20 000 y 40 000 con extrapolación de Richardson)' };
     }

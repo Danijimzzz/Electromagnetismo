@@ -15,7 +15,7 @@ module.exports = {
     return { cerca, error, ej };
   },
   // { publico, asignatura, carpeta, nombre, app, C, pagina, mal, malo: { k, v }, extra: async (page) => {} }
-  navegador({ publico, asignatura = 'economia', carpeta, nombre, app, C, pagina, mal, malo, extra }) {
+  navegador({ publico, asignatura = 'economia', carpeta, nombre, app, C, pagina, mal, malo, extra, exportar }) {
     return async (browser) => {
       let fallos = 0; const m = (x) => { fallos++; mal(x); };
       const { page, consola } = await pagina(browser, 1200, 900);
@@ -34,6 +34,7 @@ module.exports = {
         await page.fill(`#f-${malo.k}`, malo.v);
         if (await page.locator('#error').isHidden()) m(`${nombre}: «${malo.v}» en ${malo.k} no muestra el error`);
       }
+      if (exportar) { await page.evaluate(([a, c]) => window[a].abrirEjemplo(c), [app, C.ejemplos[0].clave]); await require('./exportar.js')(page, m, nombre, exportar); }
       if (extra) await extra(page, m);
       await page.close();
       if (consola.length) m(`${nombre}: consola del navegador:\n      ` + consola.join('\n      '));

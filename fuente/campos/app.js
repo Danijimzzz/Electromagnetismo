@@ -14,11 +14,12 @@
   const C = Campos, CLAVE = 'campos-v1';
   const fH = (x, d = 4) => C.f(x, d).replace(/\^\{([^}]*)\}/, '<sup>$1</sup>');
   const coma = (v) => String(v).replace('.', ',');
-  const MODOS = [['escalar', 'Gradiente de un campo escalar f'], ['vectorial', 'Divergencia, rotacional y potencial de F'], ['linea', 'Integral de línea (trabajo)'], ['masa', 'Integral de f a lo largo de una curva (∫ f ds)'], ['green', 'Teorema de Green'], ['superficie', 'Flujo por una superficie y Stokes'], ['gauss', 'Teorema de la divergencia (Gauss)']];
+  const MODOS = [['curvilineas', 'Cilíndricas y esféricas: ∇f, ∇·F y ∇×F'], ['escalar', 'Gradiente de un campo escalar f'], ['vectorial', 'Divergencia, rotacional y potencial de F'], ['linea', 'Integral de línea (trabajo)'], ['masa', 'Integral de f a lo largo de una curva (∫ f ds)'], ['green', 'Teorema de Green'], ['superficie', 'Flujo por una superficie y Stokes'], ['gauss', 'Teorema de la divergencia (Gauss)']];
   const REGION = { circulo: { cx: '0', cy: '0', rad: '1' }, rectangulo: { x1: '0', x2: '2', y1: '0', y2: '1' }, poligono: { vertices: '0 0; 2 0; 0 1' }, curvas: { g1: 'x^2', g2: 'x', a: '0', b: '1' } };
   const SOLIDO = { caja: { x1: '0', x2: '1', y1: '0', y2: '1', z1: '0', z2: '1' }, esfera: { cx: '0', cy: '0', cz: '0', rad: '1' }, cilindro: { cx: '0', cy: '0', rad: '1', z1: '0', z2: '2' } };
   const CURVA = { param: { cx: 'cos t', cy: 'sen t', cz: '', a: '0', b: 'π' }, poligonal: { vertices: '0 0; 1 0; 0 1', cierra: 'si' } };
   const D3 = ['superficie', 'gauss'];
+  const SIS = Object.fromEntries(C.ejemplos.filter((e) => e.sc.modo === 'curvilineas' && ['cil-radial', 'esf-carga'].includes(e.clave)).map((e) => [e.sc.sis, e.sc]));
 
   let sc = copia(C.ejemplos[0].sc);
   try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && MODOS.some(([k]) => k === g.modo)) sc = g; } catch (e) { /* sin almacenamiento */ }
@@ -35,6 +36,7 @@
     ? fila('vertices', 'Vértices', 'x y (z); …', true) + elige('cierra', 'Volver al primero', [['si', 'Sí (cerrada)'], ['no', 'No']])
     : fila('cx', 'x(t)', '', true) + fila('cy', 'y(t)', '', true) + fila('cz', 'z(t)', 'vacía en el plano', true) + fila('a', 't inicial') + fila('b', 't final'));
   const NOTAS = {
+    curvilineas: 'Cilíndricas: ρ → r, φ → p. Esféricas: r → r, θ → t (ángulo con el eje z, de 0 a π), φ → p. Escribe f y las componentes del campo en la base (e_ρ, e_φ, e_z) o (e_r, e_θ, e_φ), con sen, cos, ln, π…; deja vacía la que no uses.',
     escalar: 'Escribe f con x, y (y z si quieres): x^2 + y^2, x y z, e^x sen y… La dirección u es opcional y no hace falta que sea unitaria.',
     vectorial: 'Escribe las componentes con x, y, z. Si R está vacía y no hay z, el campo es plano. Toca la gráfica para mover el punto.',
     linea: 'La curva r(t) = (x(t), y(t), z(t)) va de t inicial a t final; por ejemplo cos t, sen t con t de 0 a 2π. Una poligonal se escribe con sus vértices: 0 0; 1 0; 1 1 (separados por «;», decimales con punto).',
@@ -45,7 +47,12 @@
   };
   function formulario() {
     let h = elige('modo', 'Qué calcular', MODOS);
-    if (sc.modo === 'escalar') h += fila('f', 'f(x, y, z) =', '', true) + punto() + fila('u', 'Dirección u', '(opcional) 1, 2');
+    if (sc.modo === 'curvilineas') {
+      const cil = sc.sis === 'cil', n = cil ? ['ρ', 'φ', 'z'] : ['r', 'θ', 'φ'], c = cil ? ['F_ρ', 'F_φ', 'F_z'] : ['F_r', 'F_θ', 'F_φ'], v = cil ? 'r, p, z' : 'r, t, p';
+      h += elige('sis', 'Sistema', [['cil', 'Cilíndricas (ρ, φ, z)'], ['esf', 'Esféricas (r, θ, φ)']]) + sep('Campo escalar') + fila('f', 'f =', 'variables ' + v + ' (opcional)', true)
+        + sep('Campo vectorial') + fila('A', c[0], 'componente en e_' + n[0], true) + fila('B', c[1], 'componente en e_' + n[1], true) + fila('C', c[2], 'componente en e_' + n[2], true)
+        + sep('Punto') + fila('p1', n[0] + ' =') + fila('p2', n[1] + ' =', 'radianes: π/3') + fila('p3', n[2] + ' =', 'radianes si es φ');
+    } else if (sc.modo === 'escalar') h += fila('f', 'f(x, y, z) =', '', true) + punto() + fila('u', 'Dirección u', '(opcional) 1, 2');
     else if (sc.modo === 'vectorial') h += campoF() + punto();
     else if (sc.modo === 'linea' || sc.modo === 'masa') h += (sc.modo === 'linea' ? campoF() : sep('Campo escalar') + fila('f', 'f(x, y, z) =', 'densidad', true)) + curvaF();
     else if (sc.modo === 'superficie') h += campoF() + sep('Superficie r(u, v)') + fila('sx', 'x(u, v)', '', true) + fila('sy', 'y(u, v)', '', true) + fila('sz', 'z(u, v)', '', true) + fila('u1', 'u mínima') + fila('u2', 'u máxima') + fila('v1', 'v mínima') + fila('v2', 'v máxima');
@@ -70,7 +77,7 @@
     const t = e.target; if (t.tagName !== 'SELECT') return;
     const k = t.dataset.k;
     if (k === 'modo') sc = copia(C.ejemplos.find((x) => x.sc.modo === t.value).sc);
-    else { sc[k] = t.value; Object.assign(sc, ({ region: REGION, solido: SOLIDO, curva: CURVA }[k] || {})[t.value] || {}); }
+    else { sc[k] = t.value; Object.assign(sc, ({ region: REGION, solido: SOLIDO, curva: CURVA, sis: SIS }[k] || {})[t.value] || {}); }
     formulario(); cambia();
   });
 
@@ -113,6 +120,7 @@
   const enunciado = () => {
     const F = () => `F = (${esc(sc.P || '0')}, ${esc(sc.Q || '0')}${sc.R ? `, ${esc(sc.R)}` : ''})`;
     const P = () => `(${esc(sc.x0)}, ${esc(sc.y0)}${sc.z0 ? `, ${esc(sc.z0)}` : ''})`;
+    if (sc.modo === 'curvilineas') return `En coordenadas ${sc.sis === 'cil' ? 'cilíndricas' : 'esféricas'}, calcula ${sc.f ? `el gradiente y el laplaciano de <b>f = ${esc(sc.f)}</b>` : ''}${sc.f && (sc.A || sc.B || sc.C) ? ' y ' : ''}${sc.A || sc.B || sc.C ? `la divergencia y el rotacional de <b>F = (${esc(sc.A || '0')}, ${esc(sc.B || '0')}, ${esc(sc.C || '0')})</b>` : ''} en el punto (${esc(sc.p1)}, ${esc(sc.p2)}, ${esc(sc.p3)}).`;
     if (sc.modo === 'escalar') return `Calcula el gradiente de <b>f = ${esc(sc.f)}</b> en el punto ${P()}${sc.u ? ` y la derivada direccional en la dirección (${esc(sc.u)})` : ''}, y su laplaciano.`;
     if (sc.modo === 'vectorial') return `Calcula la divergencia y el rotacional de <b>${F()}</b> en ${P()}. ¿Es conservativo?`;
     const cur = () => (sc.curva === 'poligonal' ? `la poligonal ${esc(sc.vertices).split(';').map((q) => `(${q.trim().split(/[\s,]+/).join(', ')})`).join(' → ')}${sc.cierra === 'si' ? ' (cerrada)' : ''}` : `r(t) = (${esc(sc.cx)}, ${esc(sc.cy)}${sc.cz ? `, ${esc(sc.cz)}` : ''}) con t de ${esc(sc.a)} a ${esc(sc.b)}`);
@@ -143,7 +151,21 @@
     err.hidden = true; guarda();
     const d3 = sol.d3, pt = sol.p ? vec((d3 ? sol.p : sol.p.slice(0, 2)).map((v) => fH(v, 3))) : '';
     let h = '';
-    if (sol.modo === 'escalar') {
+    if (sol.modo === 'curvilineas') {
+      const n = sol.simb.map((s) => s), pun = vec(sol.p.map((v) => fH(v, 3)));
+      if (sol.hayF) {
+        h += dato('Gradiente', M(`∇f = ${vec(sol.grTxt)}`), 'ancho');
+        h += dato(`∇f en ${pun}`, M(vec(sol.g0.map((v) => C.ex(v)))), 'ancho');
+        h += dato('Laplaciano', M(`∇² f = ${sol.lapTxt}`) + (sol.armonica ? ' (armónica)' : ''), 'ancho');
+        h += dato(`∇² f en ${pun}`, nx(sol.lap0), 'num');
+      }
+      if (sol.hayV) {
+        h += dato('Divergencia', M(`∇ · F = ${sol.divTxt}`) + (sol.solenoidal ? ' (solenoidal)' : ''), 'ancho');
+        h += dato(`∇ · F en ${pun}`, nx(sol.div0), 'num');
+        h += dato('Rotacional', M(`∇ × F = ${vec(sol.rotTxt)}`) + (sol.irrot ? ' (irrotacional)' : ''), 'ancho');
+        h += dato(`∇ × F en ${pun}`, M(vec(sol.rot0.map((v) => C.ex(v)))), 'ancho');
+      }
+    } else if (sol.modo === 'escalar') {
       h += dato('Gradiente', M(`∇f = ${vec(sol.grTxt)}`), 'ancho');
       h += dato(`∇f en ${pt}`, M(vec((d3 ? sol.g0 : sol.g0.slice(0, 2)).map((v) => C.ex(v)))));
       h += dato('|∇f|', nx(sol.mod), 'num');
@@ -186,8 +208,9 @@
     }
     $('#resumen').innerHTML = h;
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
-    const corte = d3 && !['green', 'superficie', 'gauss'].includes(sol.modo) ? ` Es el corte por el plano z = ${fH(sol.p ? sol.p[2] : 0, 3)}${sol.modo === 'linea' || sol.modo === 'masa' ? ' y la curva vista desde arriba' : ''}.` : '';
-    $('#leyenda').innerHTML = (sol.modo === 'escalar' ? `Mapa de color de f (azul, valores bajos; naranja, altos) con sus curvas de nivel y, en flechas grises, el gradiente. En color, ∇f en el punto${sol.u ? ' y en azul la dirección u' : ''}. Toca la gráfica para mover el punto.`
+    const corte = d3 && !['green', 'superficie', 'gauss', 'curvilineas'].includes(sol.modo) ? ` Es el corte por el plano z = ${fH(sol.p ? sol.p[2] : 0, 3)}${sol.modo === 'linea' || sol.modo === 'masa' ? ' y la curva vista desde arriba' : ''}.` : '';
+    $('#leyenda').innerHTML = (sol.modo === 'curvilineas' ? (sol.sis === 'cil' ? 'Vista desde arriba del plano xy: el punto, en negro, con la base local e_ρ (radial, en color) y e_φ (a lo largo del círculo, en azul). Si hay campo, la flecha gruesa es F en el punto, con sus componentes.' : 'Plano que contiene al eje z y al punto (el meridiano), con la base local e_r (radial, en color) y e_θ (hacia donde crece θ, en azul). Si hay campo, la flecha gruesa es F en el punto; su componente e_φ sale del plano.')
+      : sol.modo === 'escalar' ? `Mapa de color de f (azul, valores bajos; naranja, altos) con sus curvas de nivel y, en flechas grises, el gradiente. En color, ∇f en el punto${sol.u ? ' y en azul la dirección u' : ''}. Toca la gráfica para mover el punto.`
       : sol.modo === 'vectorial' ? 'Las flechas son la dirección del campo y las partículas lo siguen. El molinillo del punto gira según el rotacional. Toca la gráfica para mover el punto.'
         : sol.modo === 'linea' ? 'La curva va de A (hueco) a B (relleno). El punto que la recorre lleva la fuerza F (en color) y la velocidad r′(t) (en azul): el trabajo crece cuando van en el mismo sentido.'
           : sol.modo === 'masa' ? `Mapa de color de f (azul, valores bajos; naranja, altos) y la curva encima. La cruz es el ${sol.cm ? 'centro de masas del alambre' : 'centroide de la curva'}.`
@@ -318,11 +341,40 @@
       g.globalAlpha = 1;
     }
   }
+  // coordenadas curvilíneas: el punto con su base local y el campo en ese punto
+  function dibujaCurv(g, w, h) {
+    const cil = sol.sis === 'cil', cx = w / 2, cy = h / 2, [a, b] = [sol.p[0], sol.p[1]];
+    const R = Math.max(a, 1e-9), k = (0.38 * Math.min(w, h)) / Math.max(R * (cil ? 1.15 : 1.15), 1e-9);
+    // posición del punto en el dibujo (cilíndricas: plano xy; esféricas: meridiano con el eje z vertical)
+    const px = cil ? a * Math.cos(b) : a * Math.sin(b), py = cil ? a * Math.sin(b) : a * Math.cos(b);
+    const X = (x) => cx + k * x, Y = (y) => cy - k * y;
+    // base local: e1 radial y e2 transversal, en el plano del dibujo
+    const e1 = cil ? [Math.cos(b), Math.sin(b)] : [Math.sin(b), Math.cos(b)], e2 = cil ? [-Math.sin(b), Math.cos(b)] : [Math.cos(b), -Math.sin(b)];
+    g.save(); g.font = '12px "IBM Plex Sans", system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.strokeStyle = col['--line']; g.fillStyle = col['--muted']; g.lineWidth = 1;
+    const L = Math.min(w, h) * 0.46;
+    g.beginPath(); g.moveTo(cx - L, cy); g.lineTo(cx + L, cy); g.moveTo(cx, cy - L); g.lineTo(cx, cy + L); g.stroke();
+    g.fillText(cil ? 'x' : 'ρ (distancia al eje z)', cx + L - (cil ? 6 : 52), cy + 12); g.fillText(cil ? 'y' : 'z', cx + 10, cy - L + 4);
+    g.beginPath(); if (cil) g.arc(cx, cy, k * R, 0, 2 * Math.PI); else g.arc(cx, cy, k * R, -Math.PI / 2, Math.PI / 2); g.stroke();
+    g.beginPath(); g.moveTo(cx, cy); g.lineTo(X(px), Y(py)); g.strokeStyle = col['--muted']; g.setLineDash([4, 4]); g.stroke(); g.setLineDash([]);
+    const P = [X(px), Y(py)], len = Math.min(w, h) * 0.2;
+    g.lineWidth = 2.4; g.strokeStyle = col['--accent']; g.beginPath(); flecha(g, P[0], P[1], e1[0], -e1[1], len, 5); g.stroke();
+    g.strokeStyle = col['--z1']; g.beginPath(); flecha(g, P[0], P[1], e2[0], -e2[1], len, 5); g.stroke();
+    g.fillStyle = col['--accent']; g.fillText(cil ? 'e_ρ' : 'e_r', P[0] + e1[0] * (len + 14), P[1] - e1[1] * (len + 14));
+    g.fillStyle = col['--z1']; g.fillText(cil ? 'e_φ' : 'e_θ', P[0] + e2[0] * (len + 14), P[1] - e2[1] * (len + 14));
+    if (sol.hayV && sol.F0.every(isFinite)) {
+      const vx = sol.F0[0] * e1[0] + sol.F0[1] * e2[0], vy = sol.F0[0] * e1[1] + sol.F0[1] * e2[1], m = Math.hypot(vx, vy);
+      if (m > 1e-12) { g.lineWidth = 3.4; g.strokeStyle = col['--ink']; g.beginPath(); flecha(g, P[0], P[1], vx, -vy, Math.min(w, h) * 0.3, 7); g.stroke(); g.fillStyle = col['--ink']; g.fillText('F', P[0] + (vx / m) * (Math.min(w, h) * 0.3 + 12), P[1] - (vy / m) * (Math.min(w, h) * 0.3 + 12)); }
+    }
+    circulo(g, P[0], P[1], 4.5, col['--panel'], col['--ink']);
+    g.restore();
+  }
   function dibuja(dt = 0) {
     const { g, w, h } = lienzo('#grafica');
     trans = null;
     if (!sol) return;
     if (!col['--ink']) colores();
+    if (sol.modo === 'curvilineas') { dibujaCurv(g, w, h); return; }
     if (D3.includes(sol.modo)) { dibuja3(g, w, h); return; }
     if (!V) V = ventana(w, h);
     const X = (x) => mL + ((x - V.x1) / (V.x2 - V.x1)) * (w - mL - mR), Y = (y) => mT + ((V.y2 - y) / (V.y2 - V.y1)) * (h - mT - mB);
@@ -400,5 +452,6 @@
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('campos').current;
   formulario(); colores(); calcula(); requestAnimationFrame(bucle);
-  window.CamposApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { modo: sol.modo, g0: sol.g0, du: sol.du, div: sol.div, rot0: sol.rot0, phi: sol.phi, phiTxt: sol.phiTxt, W: sol.W, I: sol.I, cm: sol.cm, circula: sol.circula, dobleR: sol.dobleR, flujo: sol.flujo, dobleD: sol.dobleD, rotFlujo: sol.rotFlujo, vol: sol.vol }, estado: () => copia(sc) };
+  Herramienta.exportar('#grafica', { nombre: 'campos-vectoriales', titulo: 'Campos vectoriales', etiqueta: 'el campo' });
+  window.CamposApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { modo: sol.modo, div0: sol.div0, lap0: sol.lap0, divTxt: sol.divTxt, rotTxt: sol.rotTxt, grTxt: sol.grTxt, lapTxt: sol.lapTxt, g0: sol.g0, du: sol.du, div: sol.div, rot0: sol.rot0, phi: sol.phi, phiTxt: sol.phiTxt, W: sol.W, I: sol.I, cm: sol.cm, circula: sol.circula, dobleR: sol.dobleR, flujo: sol.flujo, dobleD: sol.dobleD, rotFlujo: sol.rotFlujo, vol: sol.vol }, estado: () => copia(sc) };
 })();

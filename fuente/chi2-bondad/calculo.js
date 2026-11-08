@@ -6,14 +6,17 @@
    libertad), juntando si se pide las clases con frecuencia esperada menor
    que 5. Independencia u homogeneidad en una tabla de contingencia, con la
    corrección de Yates en las 2 × 2 y la V de Cramér. Las distribuciones y
-   sus cuantiles salen de estadistica/calculo.js; formato y lectura en
+   sus cuantiles salen de estadistica/calculo.js. Además: residuos tipificados
+   de cada casilla, el test exacto de Fisher en 2 × 2 (hipergeométrica) y
+   el de McNemar para datos apareados (con corrección y exacto); formato y lectura en
    calculadora.js; interfaz en chi2-bondad/app.js.
    ===================================================================== */
 const Chi2Bondad = (() => {
   const ES = typeof Estadistica !== 'undefined' ? Estadistica : require('../estadistica/calculo.js');
   const K = typeof Calculadora !== 'undefined' ? Calculadora : require('../calculadora.js');
   const { f, lee, lista, filas } = K, D = ES.DIST;
-  const MODOS = { bondad: 'Bondad de ajuste', independencia: 'Independencia u homogeneidad (tabla de contingencia)' };
+  const MODOS = { bondad: 'Bondad de ajuste', independencia: 'Independencia u homogeneidad (tabla de contingencia)', fisher: 'Test exacto de Fisher (tabla 2 × 2 con pocos datos)', mcnemar: 'McNemar (datos apareados 2 × 2)' };
+  const H1 = { distinto: 'Bilateral: las proporciones difieren', mayor: 'Unilateral: odds ratio > 1', menor: 'Unilateral: odds ratio < 1' };
   const MODELOS = { uniforme: 'Uniforme (todas las clases igual de probables)', dadas: 'Proporciones dadas', binomial: 'Binomial B(n, p)', poisson: 'Poisson P(λ)', normal: 'Normal N(μ, σ) por intervalos' };
   const COLUMNAS = { uniforme: 1, dadas: 2, binomial: 2, poisson: 2, normal: 3 };
   const suma = (v) => v.reduce((a, b) => a + b, 0);
@@ -141,13 +144,59 @@ const Chi2Bondad = (() => {
     pasos.push({ t: 'Frecuencias esperadas', html: `Si son independientes, $E_{ij} = {F_i · C_j}/N$, con $F_i$ y $C_j$ los totales de la fila $i$ y de la columna $j$ y $N = ${N}$:<br>${celdas.slice(0, 2).map((x) => `$E_{${x.i + 1}${x.j + 1}} = {${F[x.i]} · ${C[x.j]}}/${N} = ${f(x.e)}$`).join(', &ensp; ')}, y así las demás (en la tabla).${pocos ? `<br><b>Ojo:</b> ${pocos === 1 ? 'una casilla tiene' : `${pocos} casillas tienen`} frecuencia esperada menor que 5 y la aproximación χ² puede no ser buena.` : ''}` });
     pasos.push({ t: 'Estadístico de contraste', html: `${yates ? 'En una tabla 2 × 2 se aplica la corrección de Yates: ' : ''}$χ^2 = ∑ {(${yates ? '|O_{ij} − E_{ij}| − 0,5' : 'O_{ij} − E_{ij}'})^2}/{E_{ij}} = ${sumaTxt(celdas.map((x) => yates ? `{(|${x.o} − ${f(x.e)}| − 0,5)^2}/{${f(x.e)}}` : `{(${x.o} − ${f(x.e)})^2}/{${f(x.e)}}`))}$<br>$χ^2 = ${sumaTxt(celdas.map((x) => f(x.c)))} = ${f(chi)}$` });
     pasos.push({ t: 'Grados de libertad', html: `$ν = (r − 1)(c − 1) = (${r} − 1)(${c} − 1) = ${gl}$, con $r = ${r}$ filas y $c = ${c}$ columnas.` });
+    // residuos de Pearson (O − E)/√E y tipificados corregidos (O − E)/√(E (1 − F_i/N)(1 − C_j/N)): fuera de ±2 la casilla pesa de más
+    celdas.forEach((x) => { x.rp = (x.o - x.e) / Math.sqrt(x.e); x.rs = (x.o - x.e) / Math.sqrt(x.e * (1 - F[x.i] / N) * (1 - C[x.j] / N)); x.marca = Math.abs(x.rs) > 2; });
+    const mayores = celdas.filter((x) => x.marca);
+    pasos.push({ t: 'Residuos tipificados', html: `Para ver <i>dónde</i> está la asociación: $r_{ij} = {O_{ij} − E_{ij}}/√{E_{ij}(1 − F_i/N)(1 − C_j/N)}$, que bajo $H_0$ es aproximadamente $N(0, 1)$: un valor fuera de $±2$ marca una casilla con más (o menos) casos de los esperados.<br>${celdas.slice(0, 2).map((x) => `$r_{${x.i + 1}${x.j + 1}} = ${f(x.rs)}$`).join(', &ensp; ')}${celdas.length > 2 ? ', …' : ''}. ${mayores.length ? `Destacan: ${mayores.map((x) => `fila ${x.i + 1}, columna ${x.j + 1} (${f(x.rs)}: ${x.rs > 0 ? 'más' : 'menos'} de lo esperado)`).join('; ')}.` : 'Ninguna casilla sale de ±2.'}` });
     const dc = decide(chi, gl, alfa(sc));
-    return { modo: 'independencia', celdas, chi, gl, ...dc, pocos, N, t, F, C, V, yates, pasos, h0: 'las variables son independientes' };
+    return { modo: 'independencia', celdas, chi, gl, ...dc, pocos, N, t, F, C, V, yates, pasos, h0: 'las variables son independientes', mayores };
   }
   const alfa = (sc) => lee(sc, 'alfa', 'el nivel de significación α', { min: 0, minEx: true, max: 0.5, maxEx: true });
 
+
+  /* ---------- Test exacto de Fisher (2 × 2) ---------- */
+  const lnFact = (n) => ES.lnGamma(n + 1);
+  const lnC = (n, k) => lnFact(n) - lnFact(k) - lnFact(n - k);
+  function fisher(sc, a) {
+    const t = tabla(sc.datos, 'la tabla 2 × 2'); if (t.length !== 2 || t[0].length !== 2) throw new Error('El test de Fisher necesita una tabla 2 × 2: dos filas con dos números cada una');
+    t.forEach((fl) => frec(fl, 'la tabla'));
+    const [[n11, n12], [n21, n22]] = t, r1 = n11 + n12, r2 = n21 + n22, c1 = n11 + n21, N = r1 + r2, h1 = H1[sc.h1] ? sc.h1 : 'distinto';
+    if (!r1 || !r2 || !c1 || !(n12 + n22)) throw new Error('Hay una fila o una columna entera a cero: quítala de la tabla');
+    const lo = Math.max(0, c1 - r2), hi = Math.min(r1, c1), pr = (k) => Math.exp(lnC(r1, k) + lnC(r2, c1 - k) - lnC(N, c1)), obs = pr(n11);
+    let le = 0, ge = 0, bil = 0; for (let k = lo; k <= hi; k++) { const q = pr(k); if (k <= n11) le += q; if (k >= n11) ge += q; if (q <= obs * (1 + 1e-7)) bil += q; }
+    const p = Math.min(1, h1 === 'mayor' ? ge : h1 === 'menor' ? le : bil), or = n12 * n21 === 0 ? (n11 * n22 === 0 ? NaN : Infinity) : (n11 * n22) / (n12 * n21);
+    const esp = [r1 * c1 / N, r1 * (N - c1) / N, r2 * c1 / N, r2 * (N - c1) / N], pocos = esp.filter((e) => e < 5).length;
+    const pasos = [
+      { t: 'Hipótesis', html: `$H_0$: las dos filas tienen la misma probabilidad de «éxito» (columna 1), es decir, el odds ratio vale 1; frente a $H_1$: ${{ distinto: 'es distinto de 1', mayor: 'es mayor que 1', menor: 'es menor que 1' }[h1]}. Con los márgenes fijos ($F_1 = ${r1}$, $F_2 = ${r2}$, $C_1 = ${c1}$, $N = ${N}$).` },
+      { t: 'Distribución exacta', html: `Con los márgenes fijos, el número $X$ de casos en la casilla (1, 1) sigue una <b>hipergeométrica</b>: $P(X = k) = {\\binom{${r1}}{k}\\binom{${r2}}{${c1} − k}}/{\\binom{${N}}{${c1}}}$, con $k$ de $${lo}$ a $${hi}$. La tabla observada tiene $k = ${n11}$ y $P(X = ${n11}) = ${ES.prob(obs)}$.${pocos ? ` (Por eso no vale el χ²: ${pocos === 1 ? 'una casilla tiene' : `${pocos} casillas tienen`} frecuencia esperada menor que 5.)` : ''}` },
+      { t: 'p-valor exacto', html: h1 === 'mayor' ? `$p = P(X ≥ ${n11}) = ${ES.prob(ge)}$` : h1 === 'menor' ? `$p = P(X ≤ ${n11}) = ${ES.prob(le)}$` : `Bilateral: se suman las probabilidades de todas las tablas tan poco probables como la observada o menos, $p = ∑_{P(X = k) ≤ ${ES.prob(obs)}} P(X = k) = ${ES.prob(bil)}$.` },
+      { t: 'Odds ratio', html: `Odds ratio muestral: $OR = {n_{11} n_{22}}/{n_{12} n_{21}} = {${n11} · ${n22}}/{${n12} · ${n21}} = ${isFinite(or) ? f(or) : or === Infinity ? '∞' : 'indeterminado'}$ (1 = sin asociación).` },
+      { t: 'Conclusión', html: p < a ? `<b>Se rechaza $H_0$</b> con un nivel de significación del ${f(100 * a)} %: hay asociación entre la fila y la columna.` : `<b>No se rechaza $H_0$</b> con un nivel de significación del ${f(100 * a)} %: no hay evidencia de asociación.` },
+    ];
+    return { modo: 'fisher', t, N, h1, p, pv: p, le, ge, bil, obs, or, lo, hi, dist: Array.from({ length: hi - lo + 1 }, (_, i) => [lo + i, pr(lo + i)]), n11, pocos, esp, rechaza: p < a, chi: NaN, gl: 0, crit: NaN, pasos, alfa: a };
+  }
+
+  /* ---------- McNemar (datos apareados) ---------- */
+  function mcnemar(sc, a) {
+    const t = tabla(sc.datos, 'la tabla 2 × 2 de los pares'); if (t.length !== 2 || t[0].length !== 2) throw new Error('McNemar necesita una tabla 2 × 2: dos filas con dos números cada una');
+    t.forEach((fl) => frec(fl, 'la tabla'));
+    const [[A, b], [c, d]] = t, n = b + c; if (n < 1) throw new Error('No hay pares discordantes (b + c = 0): no se puede hacer el contraste');
+    const corr = sc.yates !== 'no', chi = ((corr ? Math.max(0, Math.abs(b - c) - 1) : Math.abs(b - c)) ** 2) / n, pChi = D.chi2.sf({ k: 1 }, chi);
+    let s = 0, cb = 1; for (let i = 0; i <= Math.min(b, c); i++) { s += cb; cb = (cb * (n - i)) / (i + 1); } const pEx = Math.min(1, (2 * s) / 2 ** n);
+    const usaEx = sc.metodo === 'exacto', p = usaEx ? pEx : pChi;
+    const pasos = [
+      { t: 'Hipótesis', html: `Cada individuo se mide dos veces (antes y después). Solo importan los <b>discordantes</b>: $b = ${b}$ (sí → no) y $c = ${c}$ (no → sí). $H_0$: los dos cambios son igual de probables ($b$ y $c$ deben ser parecidos), frente a $H_1$: no lo son; $α = ${f(a)}$.` },
+      { t: 'Estadístico', html: `$χ^2 = {(${corr ? '|b − c| − 1' : 'b − c'})^2}/{b + c} = {(${corr ? `|${b} − ${c}| − 1` : `${b} − ${c}`})^2}/{${n}} = ${f(chi)}$ con 1 grado de libertad${corr ? ' (con la corrección de continuidad)' : ''}: $p = ${ES.prob(pChi)}$.` },
+      { t: 'Versión exacta', html: `Si $H_0$ es cierta, $b$ es una binomial $B(${n}, 1/2)$ y $p = 2 · P(X ≤ ${Math.min(b, c)}) = ${ES.prob(pEx)}$ (limitado a 1). Es preferible si $b + c$ es pequeño (menos de unos 25).` },
+      { t: 'Conclusión', html: `Con ${usaEx ? 'la versión exacta' : 'el χ²'}, $p = ${ES.prob(p)}$: ${p < a ? `<b>se rechaza $H_0$</b> con un nivel de significación del ${f(100 * a)} %: el cambio no es casual` : `<b>no se rechaza $H_0$</b> con un nivel de significación del ${f(100 * a)} %: no hay evidencia de cambio`}.` },
+    ];
+    return { modo: 'mcnemar', t, A, b, c, d, n, corr, chi, pChi, pEx, usaEx, p, pv: p, rechaza: p < a, gl: 1, crit: ES.cuantil(D.chi2, { k: 1 }, 1 - a), pasos, alfa: a, N: A + b + c + d };
+  }
+
   function resolver(sc) {
     const a = alfa(sc), modo = MODOS[sc.modo] ? sc.modo : 'bondad';
+    if (modo === 'fisher') return fisher(sc, a);
+    if (modo === 'mcnemar') return mcnemar(sc, a);
     const r = modo === 'independencia' ? independencia(sc) : bondad(sc, a);
     if (modo === 'bondad') Object.assign(r, decide(r.chi, r.gl, a));
     r.alfa = a;
@@ -163,9 +212,13 @@ const Chi2Bondad = (() => {
     { clave: 'familias', nombre: 'Binomial: número de chicos en familias de 4 hijos', sc: { modo: 'bondad', modelo: 'binomial', estima: 'si', nb: '4', alfa: '0,05', agrupa: 'si', datos: '0 7\n1 33\n2 51\n3 37\n4 12' } },
     { clave: 'alturas', nombre: 'Normal: alturas por intervalos (cm)', sc: { modo: 'bondad', modelo: 'normal', estima: 'si', alfa: '0,05', agrupa: 'si', datos: '150 160 8\n160 170 25\n170 180 40\n180 190 20\n190 200 7' } },
     { clave: 'preferencia', nombre: 'Independencia: sexo y deporte preferido (2 × 3)', sc: { modo: 'independencia', alfa: '0,05', yates: 'no', datos: '20 30 50\n30 30 40' } },
+    { clave: 'fisher', nombre: 'Fisher: té con leche (tabla 2 × 2 pequeña)', sc: { modo: 'fisher', h1: 'mayor', alfa: '0,05', datos: '3 1\n1 3' } },
+    { clave: 'fisher-bilateral', nombre: 'Fisher bilateral: un fármaco con pocos casos', sc: { modo: 'fisher', h1: 'distinto', alfa: '0,05', datos: '8 2\n1 5' } },
+    { clave: 'mcnemar', nombre: 'McNemar: opinión antes y después de una campaña', sc: { modo: 'mcnemar', alfa: '0,05', yates: 'si', metodo: 'chi2', datos: '59 6\n16 80' } },
+    { clave: 'mcnemar-exacto', nombre: 'McNemar exacto con pocos discordantes', sc: { modo: 'mcnemar', alfa: '0,05', yates: 'si', metodo: 'exacto', datos: '20 9\n2 15' } },
     { clave: 'curacion', nombre: 'Homogeneidad 2 × 2: curación con dos tratamientos', sc: { modo: 'independencia', alfa: '0,05', yates: 'no', datos: '45 105\n30 120' } },
   ];
 
-  return { resolver, ejemplos, MODOS, MODELOS, COLUMNAS };
+  return { resolver, ejemplos, MODOS, MODELOS, COLUMNAS, H1 };
 })();
 if (typeof module !== 'undefined') module.exports = Chi2Bondad;

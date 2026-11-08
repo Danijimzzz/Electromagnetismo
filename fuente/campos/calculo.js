@@ -22,6 +22,8 @@ const Campos = (() => {
   const E = typeof Expresion !== 'undefined' ? Expresion : require('../matematicas/expresion.js');
   const D = typeof Derivadas !== 'undefined' ? Derivadas : require('../derivadas/calculo.js');
   const V3 = ['x', 'y', 'z'];
+  // coordenadas cilíndricas y esféricas (campos/curvilineas.js); solo hace falta en la página de Campos
+  const Cv = () => (typeof Curvilineas !== 'undefined' ? Curvilineas : require('./curvilineas.js'));
   const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
   const f = (x, d = 4) => E.dec4(Math.abs(x) < 1e-12 ? 0 : x, d);
   // número exacto si se reconoce con denominador pequeño (2π, 3√2, ln 2/2…), si no decimal; es texto Mates
@@ -475,6 +477,7 @@ const Campos = (() => {
     if (sc.modo === 'superficie') return superficie(sc);
     if (sc.modo === 'gauss') return gauss(sc);
     if (sc.modo === 'green') return green(sc);
+    if (sc.modo === 'curvilineas') return Cv().calcula(sc);
     return escalar(sc);
   }
 
@@ -517,6 +520,11 @@ const Campos = (() => {
     { clave: 'gauss-cilindro', nombre: 'Gauss: (x, y, z²) en un cilindro', sc: { modo: 'gauss', P: 'x', Q: 'y', R: 'z^2', solido: 'cilindro', cx: '0', cy: '0', rad: '1', z1: '0', z2: '2' } },
     { clave: 'gauss-carga', nombre: 'Gauss falla: campo de una carga con ella dentro', sc: { modo: 'gauss', P: 'x/(x^2 + y^2 + z^2)^(3/2)', Q: 'y/(x^2 + y^2 + z^2)^(3/2)', R: 'z/(x^2 + y^2 + z^2)^(3/2)', solido: 'esfera', cx: '0', cy: '0', cz: '0', rad: '1' } },
   ];
+
+  // los ejemplos de coordenadas curvilíneas solo salen donde está Curvilineas (la página de Campos y Node)
+  let curv = [];
+  try { curv = Cv().ejemplos.map((e) => ({ clave: e.clave, nombre: e.nombre, sc: { modo: 'curvilineas', ...e.sc } })); } catch (e) { curv = []; }
+  ejemplos.push(...curv);
 
   return { resolver, escalar, vectorial, linea, masa, green, superficie, gauss, potSimb, ejemplos, integra, f, ex, sust, primEn };
 })();

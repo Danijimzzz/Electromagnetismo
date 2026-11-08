@@ -192,5 +192,6 @@
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('complejos').current;
   formulario(); calcula();
+  Herramienta.exportar('#plano', { nombre: 'plano-de-argand', titulo: 'Plano de Argand', etiqueta: 'el plano de Argand' });
   window.ComplejosApp = { abrirEjemplo, azar, enunciado: () => (ENUN[sc.op] || ENUN.formas)(), resultado: () => sol && { op: sol.op, z: sol.z, z1: sol.z1, z2: sol.z2, raices: sol.raices }, estado: () => copia(sc) };
 })();

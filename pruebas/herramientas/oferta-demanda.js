@@ -20,6 +20,10 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     const h = ej('helada'); cerca(h.p, 5, 1e-12, 'precio de las naranjas'); cerca(h.nuevo.p, 6, 1e-12, 'precio tras la helada'); cerca(h.nuevo.q, 140, 1e-12, 'cantidad tras la helada');
     // las dos + 20: P = (120 − 40)/4 = 20 (no cambia), Q = 80
     const a = ej('ambas').nuevo; cerca(a.dp, 0, 1e-12, 'precio con las dos'); cerca(a.q, 80, 1e-12, 'cantidad con las dos');
+    // P = 50 − Q/2 ⇒ Qd = 100 − 2P; P = 10 + Q/2 ⇒ Qs = −20 + 2P; equilibrio P = 30, Q = 40
+    { const i = ej('inversa'); cerca(i.a, 100, 1e-12, 'a desde P = α − βQ'); cerca(i.b, 2, 1e-12, 'b desde β'); cerca(i.c, -20, 1e-12, 'c desde γ'); cerca(i.d, 2, 1e-12, 'd desde δ'); cerca(i.p, 30, 1e-12, 'precio con curvas inversas'); cerca(i.q, 40, 1e-12, 'cantidad con curvas inversas');
+      const d = ej('dos-puntos'); cerca(d.p, 20, 1e-12, 'precio con curvas por dos puntos'); cerca(d.q, 60, 1e-12, 'cantidad con curvas por dos puntos'); }
+    error({ forma: 'puntos', dp1: '10', dq1: '60', dp2: '20', dq2: '80', sp1: '10', sq1: '40', sp2: '20', sq2: '60' }, 'demanda creciente'); error({ forma: 'p', pa: '50', pb: '0', pc: '10', pd: '0,5' }, 'β = 0');
     error({ a: '10', b: '2', c: '20', d: '2' }, 'oferta mínima por encima de la demanda máxima');
     error({ a: '100', b: '0', c: '20', d: '2' }, 'b = 0');
     error({ a: '100', b: '2', c: '20', d: '2', da: '-200' }, 'desplazamiento que deja el mercado vacío');

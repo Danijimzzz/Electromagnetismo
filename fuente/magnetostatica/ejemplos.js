@@ -149,6 +149,24 @@ const MagEjemplos = (() => {
         vista: { plano: 'xz', corte: '0', lineas: true },
       }),
     },
+    {
+      clave: 'dipolo', titulo: 'Espira vista como dipolo magnético',
+      enunciado: 'Una espira circular de radio a, en el plano XY y centrada en el origen, lleva una corriente I en sentido antihorario visto desde +Z. Calcular su momento dipolar magnético y comparar el campo del dipolo con el campo exacto de Biot-Savart en los puntos (0, 0, 2a) y (0, 0, 8a): ¿a partir de qué distancia es buena la aproximación?',
+      escena: () => ({
+        fuentes: [{ tipo: 'espira', nombre: 'Espira', I: '1', s: 'I', C: v(0, 0, 0), plano: 'xy', R: '1', sentido: 1 }],
+        preguntas: [{ tipo: 'dipolo', P: v(0, 0, 2) }, { tipo: 'dipolo', P: v(0, 0, 8) }, { tipo: 'dipolo', P: v(8, 0, 0) }],
+        vista: { plano: 'xz', corte: '0', lineas: true },
+      }),
+    },
+    {
+      clave: 'potencial', titulo: 'Potencial vector de un solenoide ideal',
+      enunciado: 'Un solenoide ideal muy largo, de radio a y n = N/L espiras por unidad de longitud, lleva una corriente I y su eje es el eje Z. Calcular el potencial vector A y el campo B dentro (a distancia a/2 del eje) y fuera (a distancia 2a). ¿Por qué hay A fuera si B = 0?',
+      escena: () => ({
+        fuentes: [{ tipo: 'solenoide', nombre: 'Solenoide', I: '1', s: 'I', C: v(0, 0, 0), eje: 'z', R: '1', L: '4', N: '4', sentido: 1, ideal: true }],
+        preguntas: [{ tipo: 'potencial', P: v('1/2', 0, 0) }, { tipo: 'potencial', P: v(2, 0, 0) }, { tipo: 'B', P: v(2, 0, 0) }],
+        vista: { plano: 'xy', corte: '0' },
+      }),
+    },
   ];
   return { lista };
 })();

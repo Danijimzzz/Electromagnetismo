@@ -11,6 +11,7 @@
   --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784; --z1: #5cc4d6; --z2: #e6a640 } }
 :root[data-theme="dark"] {
   --peso: #ef7a62; --normal: #5fcf8a; --roz: #e6a640; --fuerza: #b892ec; --tension: #74a2f2; --cuerpo: #3a4656; --suelo: #6b7784; --z1: #5cc4d6; --z2: #e6a640 }
+#vista3d { height: clamp(260px, 46vw, 420px) }
 .tres { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px }
 .uv { font-style: normal; font-weight: 600 }
 .det { display: inline-block; vertical-align: middle; border-left: 1.4px solid currentColor; border-right: 1.4px solid currentColor; padding: 0 4px; margin: 2px 2px }
@@ -33,10 +34,17 @@
     <div class="card"><h2>Resultado</h2><div class="res" id="res"></div>
       <canvas id="escena" aria-label="Animación de la fuerza magnética"></canvas>
       <div class="controles"><button class="btn" id="play" type="button">⏸ Pausa</button><span class="nota" id="leyenda" style="margin:0"></span></div></div>
+    <div class="card" id="card3d" hidden><h2>Vista 3D</h2>
+      <canvas id="vista3d" aria-label="Vista tridimensional de la trayectoria"></canvas>
+      <p class="leyenda" id="desc3d"></p></div>
     <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
   </div>
 </div>
 <section class="teoria">
+  <h2>Trayectoria con E y B cualesquiera</h2>
+  <p class="m">Con $E$ y $B$ uniformes la ecuación $m dv/dt = q(E + v × B)$ se descompone respecto a $B$: a lo largo del campo la partícula se acelera con $a_∥ = q E_∥/m$; en el plano perpendicular gira con $ω_c = |q| B/m$ y se desplaza con la deriva $v_d = {E × B}/{B^2}$, igual para cualquier carga y masa. La herramienta la integra numéricamente (Runge-Kutta de orden 4) y la dibuja en 3D y en proyecciones; el campo magnético no hace trabajo, así que la energía solo cambia por $q E·Δr$.</p>
+  <h2>Espejo magnético</h2>
+  <p class="m">Si el campo crece a lo largo de las líneas de B, $μ = m v_⊥^2/(2B)$ se conserva (invariante adiabático) y también la energía, de modo que al aumentar $B$ crece $v_⊥$ y baja $v_∥$ hasta que la partícula se refleja donde $B(z_t) = B_0/sen^2 α_0$. Solo escapa quien tiene $sen^2 α_0 < 1/R_m$, con $R_m = B_{máx}/B_0$ (cono de pérdidas). En la botella $B = B_0(1 + z^2/L^2)$ el punto de retorno es $z_t = L cot α_0$ y el periodo de rebote, $T_b = 2π L/v_⊥$.</p>
   <h2>Fuerza de Lorentz</h2>
   <p class="f m">$F = q (E + v × B)$, &ensp; $|F_m| = |q| v B sen θ$</p>
   <p>La fuerza magnética es perpendicular a la velocidad y al campo, y su sentido sale de la regla de la mano derecha (para una carga negativa, el contrario). Como es perpendicular a v, no hace trabajo: cambia la dirección de la velocidad pero no su módulo.</p>
