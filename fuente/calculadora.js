@@ -32,6 +32,8 @@
        leyenda(sol), HTML bajo la gráfica
        grafica2(sol, col), despues2, leyenda2(sol)   segunda gráfica (opcional: hace falta
                      <canvas id="grafica2"> y <p id="leyenda2"> en una tarjeta de la página)
+       acciones(sol, sc), botones bajo los datos (opcional): [{ texto, cambios }]; al pulsar uno
+                     se cambian esos datos (como pon) y se recalcula
        usar,         botones «Usar en…» (opcional): [{ a: 'carpeta-destino', nombre, datos(sol, sc) }]
                      que abren esa herramienta con los datos que devuelve datos(), en el
                      formato de estado de la otra (la dirección lleva #d=, como «Copiar enlace»)
@@ -174,6 +176,7 @@ const Calculadora = (() => {
       // los desplegables empiezan en su primera opción si el estado no trae valor
       for (const c of cs) if (c.tipo === 'sel' && !c.ops.some(([val]) => val === sc[c.k])) sc[c.k] = c.ops[0][0];
       $('#campos').innerHTML = cs.map((c) => (c.sep ? `<div class="sep">${c.sep}</div>` : '') + campo(c)).join('');
+      if (o.acciones && !$('#acciones')) { const d = document.createElement('div'); d.id = 'acciones'; d.className = 'controles'; d.setAttribute('role', 'group'); d.setAttribute('aria-label', 'Atajos'); d.style.margin = '8px 0'; $('#nota').after(d); }
       if (o.nota) $('#nota').innerHTML = typeof o.nota === 'function' ? o.nota(sc) : o.nota;
     }
     $('#campos').addEventListener('input', (e) => { const t = e.target; if (!t.dataset.k || t.tagName === 'SELECT') return; sc[t.dataset.k] = t.value; $('#ejemplos').value = ''; calcula(); });
@@ -191,15 +194,26 @@ const Calculadora = (() => {
     function azar() { if (!o.azar) return; sc = o.azar(); formulario(); calcula(); sel.value = ''; }
     function pon(cambios) { Object.assign(sc, cambios); formulario(); calcula(); sel.value = ''; }
 
+    /* ---------- Atajos bajo los datos ---------- */
+    let accs = [];
+    function pintaAcciones() {
+      const d = $('#acciones'); if (!d) return;
+      accs = o.acciones(sol, sc) || [];
+      d.innerHTML = accs.map((a, i) => `<button type="button" class="btn" style="white-space:normal;text-align:left" data-i="${i}">${a.texto}</button>`).join('');
+    }
+    document.addEventListener('click', (e) => { const b = e.target.closest && e.target.closest('#acciones button[data-i]'); if (b && accs[+b.dataset.i]) pon(accs[+b.dataset.i].cambios); });
+
     /* ---------- Cálculo ---------- */
     function calcula() {
       const err = $('#error');
       try { sol = C.resolver(sc); } catch (e) {
         sol = null; err.textContent = e.message; err.hidden = false;
+        if ($('#acciones')) $('#acciones').innerHTML = '';
         for (const s of ['#resumen', '#pasos', '#leyenda', '#tabla']) { const el = $(s); if (el) el.innerHTML = ''; }
         dibuja(); return;
       }
       err.hidden = true; guarda();
+      pintaAcciones();
       $('#resumen').innerHTML = o.resumen(sol).map(([t, v, ancho]) => `<div${ancho ? ' class="ancho"' : ''}><span>${t}</span><b>${v}</b></div>`).join('');
       $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
       const tb = $('#tabla'); if (tb) { const h = o.tabla ? o.tabla(sol) : ''; tb.innerHTML = h; tb.closest('.card').hidden = !h; }
