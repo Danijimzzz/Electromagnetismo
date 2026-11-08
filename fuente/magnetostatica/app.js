@@ -107,7 +107,7 @@
   }
 
   /* ---------------- cálculo ---------------- */
-  let tRec = 0;
+  let tRec = 0, t3 = 0;
   // «Mis ejercicios» pide el estado al momento, sin esperar a la pausa
   window.addEventListener('simu-guardar', () => { clearTimeout(tRec); guarda(); });
   function recalcula(conGuardar = true) {
@@ -123,6 +123,7 @@
     }
     if (conGuardar) { clearTimeout(tRec); tRec = setTimeout(guarda, 300); }
     dibuja();
+    clearTimeout(t3); t3 = setTimeout(() => { if (typeof actualiza3d === 'function') actualiza3d(); }, 120);
   }
 
   /* ---------------- dibujo ---------------- */
@@ -446,10 +447,67 @@
   });
   for (const [t, T] of Object.entries(SOURCES)) $('#add-fuente').append(h('button', { class: 'chip', onclick: () => { esc.fuentes.push({ id: newId(), tipo: t, nombre: `${T.label} ${esc.fuentes.length + 1}`, I: '1', s: 'I', ...T.def() }); editor(); encuadra(); recalcula(); } }, '+ ' + T.label));
   for (const [t, A] of Object.entries(ANALYSES)) $('#add-pregunta').append(h('button', { class: 'chip', onclick: () => { esc.preguntas.push({ id: newId(), tipo: t, ...A.def(esc.fuentes) }); editor(); encuadra(); recalcula(); } }, '+ ' + A.label));
+
+  /* ---------------- vista 3D de las líneas de B (EM-5), con el plano 2D de arriba como alternativa y una descripción en texto ---------------- */
+  let c3 = null; // escena 3D en caché: se rehace al cambiar las fuentes
+  function tam3d(f) {
+    const c = f.C || f.A || [0, 0, 0], d = V3.norm(c);
+    const t = { espira: f.R, disco: f.R, rectangular: Math.max(f.a || 0, f.b || 0) / 2, solenoide: Math.max(f.R || 0, (f.L || 0) / 2), toroide: f.R2, cilindro: f.R2 }[f.tipo];
+    return d + (t || 1);
+  }
+  function escena3dMag() {
+    if (c3) return c3.e;
+    const fs = out ? out.fuentes : [];
+    if (!fs.length) return (c3 = { e: {}, t: 'Sin fuentes: añade una para ver sus líneas de campo.' }).e;
+    const S = Math.max(1e-6, ...fs.map(tam3d)) * 1.5, n = (p) => [p[0] / S, p[1] / S, p[2] / S], lineas = [], pl = (f) => PLANOS[f.plano];
+    const circ = (c, e1, e2, r, a0 = 0, a1 = 2 * Math.PI, N = 64) => Array.from({ length: N + 1 }, (_, i) => { const t = a0 + ((a1 - a0) * i) / N; return n(V3.add(c, V3.add(V3.sc(e1, r * Math.cos(t)), V3.sc(e2, r * Math.sin(t))))); });
+    const recta = (A, B) => ({ pts: [n(A), n(B)], color: '--pos', ancho: 3, flecha: true });
+    for (const f of fs) {
+      if (f.tipo === 'espira' || f.tipo === 'disco') lineas.push({ pts: circ(f.C, pl(f).e1, pl(f).e2, f.R, 0, 2 * Math.PI * f.sentido), color: '--pos', ancho: 3, flecha: true });
+      else if (f.tipo === 'rectangular') { const v = Magneto.esquinas(f); lineas.push({ pts: [...v, v[0]].map(n), color: '--pos', ancho: 3, flecha: true }); }
+      else if (f.tipo === 'solenoide') { const k = Magneto.EJES[f.eje], q = Magneto.PLANOS[Magneto.PLANO_DE_EJE[f.eje]], vu = Math.max(2, Math.min(f.N, 14)); lineas.push({ pts: Array.from({ length: vu * 24 + 1 }, (_, i) => { const t = (2 * Math.PI * i) / 24, z = -f.L / 2 + (f.L * i) / (vu * 24); return n(V3.add(f.C, V3.add(V3.sc(k, z), V3.add(V3.sc(q.e1, f.R * Math.cos(t * f.sentido)), V3.sc(q.e2, f.R * Math.sin(t * f.sentido)))))); }), color: '--pos', ancho: 2, flecha: true }); }
+      else if (f.tipo === 'toroide') for (const r of [f.R1, (f.R1 + f.R2) / 2, f.R2]) lineas.push({ pts: circ(f.C, pl(f).e1, pl(f).e2, r), color: '--pos', ancho: r === f.R1 || r === f.R2 ? 1.2 : 2.4 });
+      else if (f.tipo === 'hilo' || f.tipo === 'cilindro') { const u = V3.unit(f.u), c = f.A || f.C; lineas.push(recta(V3.sub(c, V3.sc(u, S * 1.2)), V3.add(c, V3.sc(u, S * 1.2)))); }
+      else if (f.tipo === 'segmento') lineas.push(recta(f.A, f.B));
+      else if (f.tipo === 'semi') { const u = V3.unit(f.u); lineas.push(recta(f.A, V3.add(f.A, V3.sc(u, S * 1.2 * f.sentido)))); }
+      else if (f.tipo === 'arco') lineas.push({ pts: circ(f.C, pl(f).e1, pl(f).e2, f.R, (f.t1 * Math.PI) / 180, (f.t2 * Math.PI) / 180, 40), color: '--pos', ancho: 3, flecha: true });
+    }
+    // líneas de B: se siembran alrededor de cada fuente y se siguen en los dos sentidos
+    const B3 = (p) => Magneto.campoRapido(fs, p), paso = 0.03 * S, vistos = [], dirs = [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1], [0.7, 0.7, 0], [-0.7, 0.7, 0], [0.7, 0, 0.7], [0, 0.7, 0.7]];
+    let nl = 0;
+    const sigue = (p0, sg) => {
+      const pts = []; let p = p0;
+      for (let k = 0; k < 420; k++) {
+        const b1 = B3(p), m1 = V3.norm(b1); if (!(m1 > 1e-12)) break;
+        const pm = V3.add(p, V3.sc(b1, (sg * paso) / (2 * m1))), b2 = B3(pm), m2 = V3.norm(b2); if (!(m2 > 1e-12)) break;
+        p = V3.add(p, V3.sc(b2, (sg * paso) / m2));
+        if (Math.max(Math.abs(p[0]), Math.abs(p[1]), Math.abs(p[2])) > S) break;
+        pts.push(p); if (k > 20 && V3.norm(V3.sub(p, p0)) < paso * 1.5) { pts.push(p0); break; }
+      }
+      return pts;
+    };
+    for (const f of fs) {
+      const c = f.C || f.A || [0, 0, 0], r = tam3d(f) - V3.norm(c);
+      for (const rr of [0.55, 1.15]) for (const d of dirs) {
+        if (nl >= 22) break;
+        const p0 = V3.add(c, V3.sc(V3.unit(d), r * rr + 0.12 * S)), m = V3.norm(B3(p0));
+        if (!(m > 1e-12) || vistos.some((q) => V3.norm(V3.sub(q, p0)) < 0.12 * S)) continue;
+        const l = [...sigue(p0, -1).reverse(), p0, ...sigue(p0, 1)];
+        if (l.length < 10) continue;
+        l.forEach((q, i) => { if (i % 5 === 0) vistos.push(q); });
+        lineas.push({ pts: l.map(n), color: '--neg', ancho: 1.4, flecha: true }); nl++;
+      }
+    }
+    const nom = fs.map((f) => (f.nombre || SOURCES[f.tipo].label)).join(', ');
+    c3 = { e: { lineas, ejes: true, etiquetas: [] }, t: `Vista 3D de las líneas del campo magnético de ${fs.length === 1 ? 'una fuente' : fs.length + ' fuentes'} (${nom}): ${nl} líneas azules de B, que rodean a la corriente en el sentido de la regla de la mano derecha y se cierran sobre sí mismas, y en rojo los conductores con el sentido de la corriente. La vista plana de arriba, con «líneas de campo» activado, muestra el mismo campo en un plano de corte. Se gira con las flechas del teclado, arrastrando o con los botones.` };
+    return c3.e;
+  }
+  const vista3d = Vista3D.monta('#vista3d', { escena: escena3dMag, descripcion: () => (c3 ? c3.t : 'Vista tridimensional de las líneas de campo'), yaw: 0.7, pitch: 0.4 });
+  function actualiza3d() { c3 = null; escena3dMag(); $('#desc3d').textContent = c3.t; vista3d.dibuja(); }
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('magnetostatica').current;
 
   new ResizeObserver(() => { tam(); encuadra(); dibuja(); }).observe(cv.parentElement);
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', dibuja);
-  editor(); tam(); recalcula(false); encuadra(); dibuja();
+  editor(); tam(); recalcula(false); encuadra(); dibuja(); actualiza3d();
   window.MagApp = { get escena() { return esc; }, get salida() { return out; }, abrirEjemplo: (c) => { esc = deEjemplo(MagEjemplos.lista.find((x) => x.clave === c)); editor(); encuadra(); recalcula(); } };
 })();
