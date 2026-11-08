@@ -30,6 +30,7 @@
        grafica(sol, col), configuración de grafica() o null
        despues(r, sol, col), dibujo extra sobre la gráfica (r = { X, Y, g, w, h })
        leyenda(sol), HTML bajo la gráfica
+       usarEn(sol, sc), [{ texto, carpeta, estado }]: enlaces «Usar en…» a otra herramienta con su estado (opcional)
        nota,         texto de ayuda bajo los datos
        azar(),       sc al azar para el modo práctica (opcional)
        enunciado(sc, sol), enunciado del modo práctica (opcional)
@@ -189,11 +190,16 @@ const Calculadora = (() => {
       const err = $('#error');
       try { sol = C.resolver(sc); } catch (e) {
         sol = null; err.textContent = e.message; err.hidden = false;
-        for (const s of ['#resumen', '#pasos', '#leyenda', '#tabla']) { const el = $(s); if (el) el.innerHTML = ''; }
+        for (const s of ['#resumen', '#pasos', '#leyenda', '#tabla', '#usar-en']) { const el = $(s); if (el) el.innerHTML = ''; }
         dibuja(); return;
       }
       err.hidden = true; guarda();
       $('#resumen').innerHTML = o.resumen(sol).map(([t, v, ancho]) => `<div${ancho ? ' class="ancho"' : ''}><span>${t}</span><b>${v}</b></div>`).join('');
+      if (o.usarEn) {
+        let ue = $('#usar-en');
+        if (!ue) { ue = document.createElement('div'); ue.id = 'usar-en'; ue.className = 'controles'; ue.setAttribute('role', 'group'); ue.setAttribute('aria-label', 'Usar el resultado en otra herramienta'); $('#resumen').insertAdjacentElement('afterend', ue); }
+        ue.innerHTML = (o.usarEn(sol, sc) || []).map((l) => `<a class="btn" href="${esc(Herramienta.enlaceA(l.carpeta, l.estado))}">${l.texto}</a>`).join('');
+      }
       $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
       const tb = $('#tabla'); if (tb) { const h = o.tabla ? o.tabla(sol) : ''; tb.innerHTML = h; tb.closest('.card').hidden = !h; }
       $('#leyenda').innerHTML = o.leyenda ? o.leyenda(sol) : '';

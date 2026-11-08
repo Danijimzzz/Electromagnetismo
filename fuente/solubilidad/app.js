@@ -93,7 +93,7 @@
     const err = $('#error');
     try { sol = P.resolver(sc); } catch (e) {
       sol = null; err.textContent = e.message; err.hidden = false;
-      $('#resumen').innerHTML = ''; $('#pasos').innerHTML = ''; $('#leyenda').textContent = ''; dibuja(); return;
+      $('#resumen').innerHTML = ''; $('#usar-en').innerHTML = ''; $('#pasos').innerHTML = ''; $('#leyenda').textContent = ''; dibuja(); return;
     }
     err.hidden = true; guarda();
     let h = '', ley = 'Diagrama logarítmico: la recta es el límite de saturación ([A]^a·[B]^b = Kps). Por encima hay sobresaturación y precipita; por debajo, la disolución admite más sal.';
@@ -116,6 +116,8 @@
       ley = `Cada recta es una sal: [${sol.cat ? 'B' : 'A'}] frente a [${sol.cat ? 'A' : 'B'}] en saturación. Los puntos naranjas marcan dónde empieza a precipitar cada una; el negro, lo que queda de la primera cuando empieza la segunda.`;
     }
     $('#resumen').innerHTML = h; $('#leyenda').textContent = ley;
+    // «Usar en…»: un hidróxido poco soluble es una base fuerte con [OH⁻] = b·s; el pH de su disolución saturada se calcula en la herramienta de pH
+    $('#usar-en').innerHTML = ['kps', 'solub'].includes(sol.modo) && /OH/.test(sc.formula || '') && sol.s > 0 && isFinite(sol.s) ? `<a class="btn" id="u-ph" href="${esc(Herramienta.enlaceA('ph', { modo: 'fuerte', especie: 'base', C: String(sol.s), n: String(sol.b) }))}">Calcular el pH de la disolución saturada</a>` : '';
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
     dibuja();
   }

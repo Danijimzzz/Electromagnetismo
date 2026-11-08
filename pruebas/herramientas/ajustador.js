@@ -68,6 +68,20 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     }
     await page.fill('#ecuacion', 'NaCl -> Na');
     if (await page.locator('#error').isHidden()) mal('Ajustador: una reacción imposible no muestra el error');
+    // QU-2 · la ecuación ajustada pasa a la estequiometría de Masa molar
+    { const a0 = fallos;
+      await page.evaluate(() => AjustadorApp.abrirEjemplo('propano'));
+      const href = await page.evaluate(() => document.querySelector('#u-masa')?.getAttribute('href') || '');
+      if (!/^\.\.\/masa-molar\/#d=/.test(href)) mal('Ajustador · falta el enlace a Masa molar: ' + href);
+      else {
+        const e = await page.evaluate(`(${(h) => JSON.parse(decodeURIComponent(escape(atob(h.slice(h.indexOf('#d=') + 3).replace(/-/g, '+').replace(/_/g, '/')))))})(${JSON.stringify(href)})`);
+        if (e.tab !== 'este' || !/C3H8.*->.*CO2/.test(e.ecuacion) || e.cantidades.length !== 4) mal('Ajustador · estado enviado a Masa molar: ' + JSON.stringify(e));
+        await page.goto('file://' + path.join(publico, 'quimica', 'masa-molar', 'index.html') + href.slice(href.indexOf('#')));
+        await page.waitForFunction(() => window.MasaApp);
+        if (!(await page.evaluate(() => document.querySelector('#ecuacion').value)).includes('C3H8') || (await page.locator('#este').isHidden())) mal('Ajustador · Masa molar no abre la estequiometría con la ecuación');
+      }
+      if (fallos === a0) console.log('  ✓ Ajustador · «Calcular cantidades en Masa molar»: el enlace lleva la ecuación y Masa molar abre su estequiometría');
+    }
     await page.close();
     if (consola.length) mal('Ajustador: consola del navegador:\n      ' + consola.join('\n      '));
     if (fallos === antes) console.log(`  ✓ Ajustador de reacciones: ${C.ejemplos.length} reacciones en la página con MathML y errores, sin errores de consola`);

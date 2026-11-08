@@ -39,11 +39,14 @@
     const err = $('#error');
     try { sol = A.resolver(sc); } catch (e) {
       sol = null; err.textContent = e.message; err.hidden = false; ec.setAttribute('aria-invalid', 'true');
-      $('#ajustada').innerHTML = ''; $('#coefs').innerHTML = ''; $('#pasos').innerHTML = ''; $('#leyenda').textContent = ''; dibuja(); return;
+      $('#ajustada').innerHTML = ''; $('#coefs').innerHTML = ''; $('#usar-en').innerHTML = ''; $('#pasos').innerHTML = ''; $('#leyenda').textContent = ''; dibuja(); return;
     }
     err.hidden = true; ec.removeAttribute('aria-invalid'); guarda();
     $('#ajustada').innerHTML = sol.html;
     $('#coefs').innerHTML = sol.especies.map((s) => `<div><span>Coeficiente de ${sinEstado(s.html)}</span><b>${s.coef}</b></div>`).join('');
+    // «Usar en…»: la ecuación ajustada pasa a la estequiometría de Masa molar (las cantidades las pones allí)
+    const lado = (L) => L.map((s) => s.texto).join(' + ');
+    $('#usar-en').innerHTML = sol.ionica ? '' : `<a class="btn" id="u-masa" href="${esc(Herramienta.enlaceA('masa-molar', { tab: 'este', ecuacion: lado(sol.especies.filter((s) => s.reactivo)) + ' -> ' + lado(sol.especies.filter((s) => !s.reactivo)), cantidades: sol.especies.map(() => null) }))}">Calcular cantidades en Masa molar</a>`;
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
     $('#leyenda').innerHTML = 'Átomos de cada elemento: <b>reactivos</b> a la izquierda y <b>productos</b> a la derecha. El contorno discontinuo es lo que habría con todos los coeficientes a 1; las barras llenas, con la reacción ajustada, son iguales.';
     dibuja();

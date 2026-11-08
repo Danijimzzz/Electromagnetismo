@@ -56,5 +56,27 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     error({ modo: 'gibbs', h: '1', s: '1', t: '0' }, 'temperatura cero');
     if (fallos === antes) console.log(`  ✓ ${N}: ${C.ejemplos.length} ejemplos calculados a mano (ΔHf, Hess, Gibbs) y errores`);
   }
-  return Com.navegador({ publico, asignatura: 'quimica', carpeta: 'termoquimica', nombre: N, app: 'TermoquimicaApp', C, pagina, mal, malo: { k: 'masa', v: '-1' } });
+  const nav = Com.navegador({ publico, asignatura: 'quimica', carpeta: 'termoquimica', nombre: N, app: 'TermoquimicaApp', C, pagina, mal, malo: { k: 'masa', v: '-1' } });
+  return async (browser) => {
+    await nav(browser);
+    // QU-2 · «Usar en…»: ΔG° de la síntesis del amoníaco → Equilibrio (K = e^(−ΔG°/RT))
+    const antes = fallos, { page } = await pagina(browser, 1200, 900);
+    await page.goto('file://' + path.join(publico, 'quimica', 'termoquimica', 'index.html'));
+    await page.waitForFunction(() => window.TermoquimicaApp);
+    await page.evaluate(() => TermoquimicaApp.abrirEjemplo('amoniaco'));
+
+    const href = await page.evaluate(() => document.querySelector('#usar-en a')?.getAttribute('href') || '');
+    if (!/^\.\.\/equilibrio\/#d=/.test(href)) mal('Termoquímica · falta el enlace «Calcular K en Equilibrio»: ' + href);
+    else {
+      const e = await page.evaluate(`(${(h) => JSON.parse(decodeURIComponent(escape(atob(h.slice(h.indexOf('#d=') + 3).replace(/-/g, '+').replace(/_/g, '/')))))})(${JSON.stringify(href)})`);
+      if (e.modo !== 'dG' || e.nA !== 'N2' || e.nB !== 'H2' || e.nC !== 'NH3' || e.b !== '3' || e.c !== '2' || Math.abs(+e.dG.replace(',', '.') + 33.1365) > 1e-3) mal('Termoquímica · estado enviado a Equilibrio: ' + JSON.stringify(e));
+      await page.goto('file://' + path.join(publico, 'quimica', 'equilibrio', 'index.html') + href.slice(href.indexOf('#')));
+      await page.waitForFunction(() => window.EquilibrioApp);
+      const r = await page.evaluate(() => EquilibrioApp.resultado());
+      const Kp = Math.exp(33136.5 / (8.314462618 * 298.15));
+      if (!r || r.modo !== 'dG' || Math.abs(r.Kp / Kp - 1) > 1e-3) mal('Termoquímica · Equilibrio no calcula Kp = e^(−ΔG°/RT) ≈ ' + Kp.toExponential(3) + ': ' + JSON.stringify(r));
+    }
+    await page.close();
+    if (fallos === antes) console.log('  ✓ Termoquímica · «Calcular K en Equilibrio»: el enlace lleva reactivos, productos y ΔG° y Equilibrio da Kp = e^(−ΔG°/RT)');
+  };
 };

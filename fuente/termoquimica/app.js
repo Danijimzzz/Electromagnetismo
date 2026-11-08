@@ -39,6 +39,16 @@
         series: b.map(([, v], i) => ({ tipo: 'barras', pts: [[i, v]], ancho: 0.6, color: i === b.length - 1 || s.modo === 'gibbs' && i === 0 ? '--serie-2' : '--serie-1' })),
         etiquetas: b.map(([t, v], i) => ({ x: i - 0.3, y: Math.max(v, 0), texto: `${t}  ${f(v, 4).replace(/<[^>]+>/g, '')}`, color: '--ink' })) };
     },
+    // ΔG° de la reacción → K en Equilibrio (K = e^(−ΔG°/RT)), si cabe en dos reactivos y dos productos
+    usarEn: (s) => {
+      const dG = s.dGT !== undefined ? s.dGT : s.dG298, T = s.dGT !== undefined ? s.T : 298.15;
+      if (s.modo !== 'formacion' || dG === undefined || !isFinite(dG) || s.R.length > 2 || s.P.length > 2) return [];
+      const c = (x) => String(+x.toFixed(4)).replace('.', ','), L = [...s.R, ...s.P];
+      const e = { modo: 'dG', dG: c(dG), T: c(T), nA: '', nB: '', nC: '', nD: '', a: '', b: '', c: '', d: '', cA: '', cB: '', cC: '', cD: '' };
+      s.R.forEach((q, i) => { const k = 'AB'[i]; e['n' + k] = q.base; e[k.toLowerCase()] = String(q.coef); e['c' + k] = String(q.coef); });
+      s.P.forEach((q, i) => { const k = 'CD'[i]; e['n' + k] = q.base; e[k.toLowerCase()] = String(q.coef); e['c' + k] = '0'; });
+      return L.length ? [{ texto: 'Calcular K en Equilibrio', carpeta: 'equilibrio', estado: e }] : [];
+    },
     leyenda: (s) => (s.modo === 'born' ? 'Cada paso del ciclo (sublimación, ionización, atomización, afinidad, red) y la entalpía de formación, que es la suma de todos.' : s.modo === 'gibbs' ? 'Barras: la entalpía, el término −T·ΔS y la energía libre ΔG que resulta de sumarlos.' : s.modo === 'hess' ? 'Entalpía que aporta cada reacción (ya multiplicada o invertida) y la suma, que es la ΔH pedida.' : 'Entalpía de formación total de los reactivos y de los productos; su diferencia es la entalpía de reacción ΔH.'),
   });
 })();
