@@ -132,7 +132,7 @@
     g.fillStyle = col['--ink']; g.save(); g.translate(14, (mi.t + h - mi.b) / 2); g.rotate(-Math.PI / 2); g.textAlign = 'center'; g.fillText('|S11| (dB)', 0, 0); g.restore();
     $('#leyenda-curva').innerHTML = `Reflexión de la cavidad vista desde la línea de alimentación con β = ${f(sol.beta)} (${sol.tipoAcoplo}): mínimo de ${f(sol.s11min)} dB en f<sub>0</sub> = ${f(sol.f0 / 1e9)} GHz. Las líneas de trazos marcan el ancho de banda cargado Δf<sub>L</sub> = ${f(sol.dfL / 1e3)} kHz (Q<sub>L</sub> = ${f(sol.QL)}).`;
   }
-  Exportar.monta('#curva', { nombre: 'curva-de-resonancia', datos: () => ({ cabecera: ['f (Hz)', '|S11| (dB)'], filas: sol ? P.curva(sol).map((p) => [p.f, p.s11]) : [] }) });
+  Herramienta.exportar('#curva', { nombre: 'curva-de-resonancia', titulo: 'Curva de resonancia', datos: () => ({ cab: ['f (Hz)', '|S11| (dB)'], filas: sol ? P.curva(sol).map((p) => [p.f, p.s11]) : [] }) });
   /* ---------- Gráfica ---------- */
   function colores() { const cs = getComputedStyle(document.documentElement); for (const k of ['--ink', '--muted', '--line', '--accent', '--panel']) col[k] = cs.getPropertyValue(k).trim(); }
   function flecha(g, x, y, dx, dy, l) {

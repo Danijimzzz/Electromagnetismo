@@ -124,7 +124,7 @@
     escena: () => (sol ? { ejes: true, caras: P.malla3d(sol.P), etiquetas: [{ p: [0, 0, 1.12], t: 'antena' }, ...(sol.arr ? [{ p: [1.12, 0, 0], t: 'fila' }] : [])] } : {}),
     descripcion: () => ($('#desc3d').textContent || 'Diagrama de radiación en tres dimensiones'),
   });
-  Exportar.monta('#grafica', { nombre: 'diagrama-de-radiacion', datos: () => ({ cabecera: [plano === 'E' ? 'θ (°) desde el eje' : 'φ (°)', 'Potencia relativa'], filas: valores(360).map((v, i) => [i, v]) }) });
+  Herramienta.exportar('#grafica', { nombre: 'diagrama-de-radiacion', titulo: 'Diagrama de radiación', datos: () => ({ cab: [plano === 'E' ? 'θ (°) desde el eje' : 'φ (°)', 'Potencia relativa'], filas: valores(360).map((v, i) => [i, v]) }) });
   window.addEventListener('resize', dibuja);
   // tema.js también avisa a este oyente al pulsar el botón claro/oscuro
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { colores(); dibuja(); vista.dibuja(); });

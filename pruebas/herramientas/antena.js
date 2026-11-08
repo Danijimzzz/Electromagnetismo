@@ -68,9 +68,9 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     if ((await page.evaluate(() => AntenaApp.vista().yaw)) === antesVista.yaw) mal('Antena: las flechas no giran la vista 3D');
     await page.selectOption('#plano', 'H');
     if (!/plano h/i.test(await page.locator('#leyenda').textContent())) mal('Antena: el plano H no actualiza la leyenda');
-    const tsv = await page.evaluate(() => { let t = ''; navigator.clipboard.writeText = async (x) => { t = x; }; document.querySelector('.exportar [data-x=datos]').click(); return new Promise((r) => setTimeout(() => r(t), 100)); });
+    const tsv = await page.evaluate(() => { let t = ''; navigator.clipboard.writeText = async (x) => { t = x; }; document.querySelector('.exportar button:nth-of-type(2)').click(); return new Promise((r) => setTimeout(() => r(t), 100)); });
     if (tsv.split('\n').length !== 361 || !tsv.startsWith('φ (°)\tPotencia relativa')) mal('Antena: «Copiar datos» no copia la tabla del diagrama');
-    const [descarga] = await Promise.all([page.waitForEvent('download'), page.click('.exportar [data-x=png]')]);
+    const [descarga] = await Promise.all([page.waitForEvent('download'), page.click('.exportar button:nth-of-type(1)')]);
     if (!/\.png$/.test(descarga.suggestedFilename())) mal('Antena: el PNG exportado no tiene extensión .png');
     await page.fill('#f-N', '3'); await page.fill('#f-d', '0,5');
     if (await page.locator('#error').isVisible()) mal('Antena: un array de 3 elementos da error: ' + await page.locator('#error').textContent());
