@@ -9,6 +9,8 @@
    · ecuación de Arrhenius: energía de activación con dos temperaturas o
      ajustada a varias, la constante a otra temperatura, el efecto de un
      catalizador y los datos del diagrama de energía (Eₐ, ΔH, Eₐ inversa).
+   · reacciones consecutivas A → B → C y reversibles A ⇌ B, y mecanismos con etapa lenta o
+     estado estacionario: en mecanismo.js.
    Concentraciones en mol/L; el tiempo en la unidad que se elija.
    ===================================================================== */
 const Cinetica = (() => {
@@ -249,7 +251,11 @@ const Cinetica = (() => {
     return { modo: 'arrhenius', tipo, k1, k2, T1, T2, Ea, A, r, r2, pts, Eac: Eac === null ? null : Eac * 1000, fcat, dH, uT: C ? 'C' : 'K', k: (T) => A * Math.exp(-Ea / (R * T)), pasos };
   }
 
+  // consecutivas, reversibles y mecanismos viven en mecanismo.js (en la web va antes en scripts)
+  const Mec = typeof Mecanismo !== 'undefined' ? Mecanismo : require('./mecanismo.js');
   function resolver(sc) {
+    if (sc.modo === 'consecutivas') return Mec.consecutivas(sc);
+    if (sc.modo === 'mecanismo') return Mec.mecanismo(sc);
     if (sc.modo === 'datos') return datos(sc);
     if (sc.modo === 'iniciales') return iniciales(sc);
     if (sc.modo === 'arrhenius') return arrhenius(sc);
@@ -278,6 +284,7 @@ const Cinetica = (() => {
     { clave: 'arrhenius-cat', nombre: 'Arrhenius: catalizador y diagrama de energía', sc: { modo: 'arrhenius', tipo: 'k2', uT: 'K', Ea: '75', k1: '2e-4', T1: '298', T2: '318', Eac: '50', dH: '-40' } },
   ];
 
+  ejemplos.push(...Mec.ejemplos);
   return { resolver, orden, datos, iniciales, arrhenius, conc, vidaMedia, tiempo, recta, ejemplos, f, unidK, unidT: (u) => UT[u] || 's', R };
 })();
 if (typeof module !== 'undefined') module.exports = Cinetica;
