@@ -38,8 +38,10 @@ const Equilibrio = (() => {
   const leeNum = (s) => +String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace(/[−–]/g, '-').replace(/[·x×*]10\^?([+\-]?\d+)/i, 'e$1');
   const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
   const may = (s) => s[0].toUpperCase() + s.slice(1);
-  const R_ATM = 0.082, R_J = 8.314; // atm·L/(mol·K) y J/(mol·K)
-  const R_BAR = 0.083145; // bar·L/(mol·K), para pasar de ΔG° (estado estándar a 1 bar) a Kc
+  const Aj = typeof Ajuste !== 'undefined' ? Ajuste : require('../quimica/ajuste.js');
+  // R de clase (8,314 J/(mol·K), 0,082 atm·L/(mol·K), 0,083145 bar·L/(mol·K)) o exacta, según el ajuste común de Química
+  let R_ATM = 0.082, R_J = 8.314, R_BAR = 0.083145;
+  const ajusta = () => { const v = Aj.valores(); R_ATM = v.Ratm; R_J = v.R; R_BAR = v.Rbar; };
   const L = ['A', 'B', 'C', 'D'];
   const FASES = [['g', 'gas (g)'], ['aq', 'disuelta (aq)'], ['s', 'sólido (s)'], ['l', 'líquido (l)']];
   const fase = (sc, i) => { const v = sc['f' + L[i]]; return FASES.some(([k]) => k === v) ? v : 'g'; };
@@ -321,6 +323,7 @@ const Equilibrio = (() => {
   }
 
   function resolver(sc) {
+    ajusta();
     if (sc.modo === 'dos') return modoDos(sc);
     const base = lee(sc);
     if (!presentes(base.nu).some((i) => base.nu[i] < 0) || !presentes(base.nu).some((i) => base.nu[i] > 0)) throw new Error('Hace falta al menos un reactivo y un producto');

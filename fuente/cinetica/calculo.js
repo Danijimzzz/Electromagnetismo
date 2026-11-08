@@ -14,7 +14,8 @@
    Concentraciones en mol/L; el tiempo en la unidad que se elija.
    ===================================================================== */
 const Cinetica = (() => {
-  const R = 8.314;
+  const Aj = typeof Ajuste !== 'undefined' ? Ajuste : require('../quimica/ajuste.js');
+  let R = 8.314; // J/(mol·K): la de clase o la exacta, según el ajuste común de Química
   const f = (x, d = 3) => {
     if (!isFinite(x)) return '—';
     if (Math.abs(x) < 1e-15) return '0';
@@ -211,23 +212,23 @@ const Cinetica = (() => {
       Ea = -F.b * R; A = Math.exp(F.a); r2 = F.r2;
       pts = Ts.map((v, i) => ({ T: v, k: ks[i] }));
       const ord = [...pts].sort((a, b) => a.T - b.T); [T1, k1, T2, k2] = [ord[0].T, ord[0].k, ord[ord.length - 1].T, ord[ord.length - 1].k];
-      pasos.push({ t: 'Ecuación de Arrhenius', html: `Tomando logaritmos, $ln k = ln A − {E_a}/{R} · {1}/{T}$: ln k frente a 1/T es una recta de pendiente $−E_a/R$, con $R = 8,314$ J/(mol·K)${C ? '. Las temperaturas pasan a kelvin sumando 273,15' : ''}.` });
+      pasos.push({ t: 'Ecuación de Arrhenius', html: `Tomando logaritmos, $ln k = ln A − {E_a}/{R} · {1}/{T}$: ln k frente a 1/T es una recta de pendiente $−E_a/R$, con $R = ${Aj.texto(R)}$ J/(mol·K)${C ? '. Las temperaturas pasan a kelvin sumando 273,15' : ''}.` });
       pasos.push({ t: 'Tabla', html: `<table class="tabla"><tr><th>T (K)</th><th>1/T (K⁻¹)</th><th>ln k</th></tr>${pts.map((q) => `<tr><td>${f(q.T, 5)}</td><td>${f(1 / q.T, 4)}</td><td>${f(Math.log(q.k), 4)}</td></tr>`).join('')}</table>` });
       pasos.push({ t: 'Recta de mínimos cuadrados', html: `$ln k = ${m(F.a, 4)} ${F.b < 0 ? '−' : '+'} ${m(Math.abs(F.b), 4)} · {1}/{T}$, &ensp; $R^2 = ${F.r2.toFixed(5).replace('.', ',')}$${F.r2 < 0.98 ? ' (los puntos se alejan bastante de la recta: revisa las medidas)' : ''}.` });
-      pasos.push({ t: 'Energía de activación', html: `$E_a = −R · pendiente = 8,314 · ${m(-F.b, 4)} = ${m(Ea, 4)}$ J/mol = <b>${f(Ea / 1000, 4)} kJ/mol</b>${Ea < 0 ? '. Sale negativa: la constante baja al calentar, algo raro en una reacción elemental' : ''}` });
+      pasos.push({ t: 'Energía de activación', html: `$E_a = −R · pendiente = ${Aj.texto(R)} · ${m(-F.b, 4)} = ${m(Ea, 4)}$ J/mol = <b>${f(Ea / 1000, 4)} kJ/mol</b>${Ea < 0 ? '. Sale negativa: la constante baja al calentar, algo raro en una reacción elemental' : ''}` });
       pasos.push({ t: 'Factor de frecuencia', html: `$A = e^{ordenada} = e^{${m(F.a, 4)}} = ${m(A, 4)}$ (mismas unidades que k).` });
     } else {
       k1 = lee(sc, 'k1', 'la constante k₁'); T1 = T('T1', 'la temperatura T₁'); T2 = T('T2', 'la temperatura T₂');
       if (Math.abs(T1 - T2) < 1e-9) throw new Error('Las dos temperaturas tienen que ser distintas');
-      pasos.push({ t: 'Ecuación de Arrhenius', html: `$k = A e^{−E_a/(RT)}$, y dividiendo para dos temperaturas: $ln {k_2}/{k_1} = −{E_a}/{R} ({1}/{T_2} − {1}/{T_1})$, con $R = 8,314$ J/(mol·K)${C ? '. Las temperaturas pasan a kelvin: ' + `$T_1 = ${tK(T1)}$, $T_2 = ${tK(T2)}$` : ''}.` });
+      pasos.push({ t: 'Ecuación de Arrhenius', html: `$k = A e^{−E_a/(RT)}$, y dividiendo para dos temperaturas: $ln {k_2}/{k_1} = −{E_a}/{R} ({1}/{T_2} − {1}/{T_1})$, con $R = ${Aj.texto(R)}$ J/(mol·K)${C ? '. Las temperaturas pasan a kelvin: ' + `$T_1 = ${tK(T1)}$, $T_2 = ${tK(T2)}$` : ''}.` });
       if (tipo === 'k2') {
         Ea = lee(sc, 'Ea', 'la energía de activación') * 1000;
         k2 = k1 * Math.exp((-Ea / R) * (1 / T2 - 1 / T1));
-        pasos.push({ t: 'Constante a T₂', html: `$ln {k_2}/{${m(k1)}} = −{${m(Ea, 4)}}/{8,314} ({1}/{${m(T2, 5)}} − {1}/{${m(T1, 5)}}) = ${m(Math.log(k2 / k1), 4)}$ → $k_2 = ${m(k1)} · e^{${m(Math.log(k2 / k1), 4)}}$ = <b>${f(k2, 4)}</b>` });
+        pasos.push({ t: 'Constante a T₂', html: `$ln {k_2}/{${m(k1)}} = −{${m(Ea, 4)}}/{${Aj.texto(R)}} ({1}/{${m(T2, 5)}} − {1}/{${m(T1, 5)}}) = ${m(Math.log(k2 / k1), 4)}$ → $k_2 = ${m(k1)} · e^{${m(Math.log(k2 / k1), 4)}}$ = <b>${f(k2, 4)}</b>` });
       } else {
         k2 = lee(sc, 'k2', 'la constante k₂');
         Ea = (-R * Math.log(k2 / k1)) / (1 / T2 - 1 / T1);
-        pasos.push({ t: 'Energía de activación', html: `$E_a = {−R ln(k_2/k_1)}/{1/T_2 − 1/T_1} = {−8,314 · ln {${m(k2)}}/{${m(k1)}}}/{{1}/{${m(T2, 5)}} − {1}/{${m(T1, 5)}}} = ${m(Ea, 4)}$ J/mol = <b>${f(Ea / 1000, 4)} kJ/mol</b>${Ea < 0 ? '. Sale negativa: la constante baja al calentar, algo raro en una reacción elemental' : ''}` });
+        pasos.push({ t: 'Energía de activación', html: `$E_a = {−R ln(k_2/k_1)}/{1/T_2 − 1/T_1} = {−${Aj.texto(R)} · ln {${m(k2)}}/{${m(k1)}}}/{{1}/{${m(T2, 5)}} − {1}/{${m(T1, 5)}}} = ${m(Ea, 4)}$ J/mol = <b>${f(Ea / 1000, 4)} kJ/mol</b>${Ea < 0 ? '. Sale negativa: la constante baja al calentar, algo raro en una reacción elemental' : ''}` });
       }
       A = k1 / Math.exp(-Ea / (R * T1));
       pasos.push({ t: 'Factor de frecuencia', html: `$A = k_1 e^{E_a/(R T_1)} = ${m(A, 4)}$ (mismas unidades que k).` });
@@ -240,7 +241,7 @@ const Cinetica = (() => {
     if (Eac !== null) {
       if (!(Eac * 1000 < Ea)) throw new Error('Con catalizador la energía de activación tiene que ser menor que sin él');
       fcat = Math.exp((Ea - Eac * 1000) / (R * T1));
-      pasos.push({ t: 'Con catalizador', html: `El catalizador abre otro camino con menor barrera y, si A no cambia, $${'{k_{cat}}/{k}'} = e^{(E_a − E_{a,cat})/(R T)} = e^{${m(Ea - Eac * 1000, 4)}/(8,314 · ${m(T1, 5)})}$ = <b>${f(fcat, 4)}</b> a ${tC(T1)}. No cambia ΔH ni el equilibrio: acelera igual la reacción directa y la inversa.` });
+      pasos.push({ t: 'Con catalizador', html: `El catalizador abre otro camino con menor barrera y, si A no cambia, $${'{k_{cat}}/{k}'} = e^{(E_a − E_{a,cat})/(R T)} = e^{${m(Ea - Eac * 1000, 4)}/(${Aj.texto(R)} · ${m(T1, 5)})}$ = <b>${f(fcat, 4)}</b> a ${tC(T1)}. No cambia ΔH ni el equilibrio: acelera igual la reacción directa y la inversa.` });
     }
     const dH = lee(sc, 'dH', 'la entalpía de reacción', { opcional: true, negativo: true });
     if (dH !== null) {
@@ -254,6 +255,7 @@ const Cinetica = (() => {
   // consecutivas, reversibles y mecanismos viven en mecanismo.js (en la web va antes en scripts)
   const Mec = typeof Mecanismo !== 'undefined' ? Mecanismo : require('./mecanismo.js');
   function resolver(sc) {
+    R = Aj.valores().R;
     if (sc.modo === 'consecutivas') return Mec.consecutivas(sc);
     if (sc.modo === 'mecanismo') return Mec.mecanismo(sc);
     if (sc.modo === 'datos') return datos(sc);

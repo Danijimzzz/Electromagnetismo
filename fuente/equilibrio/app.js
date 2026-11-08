@@ -212,6 +212,8 @@
     return `En el equilibrio ${r.reaccion} se parte de ${concs} y en el equilibrio se mide [${nh(r.nombres[2])}] = ${esc(sc.ceq)} mol/L. Calcula <b>K<sub>c</sub></b>${kp ? ' y K<sub>p</sub>' : ''} y la conversión de ${nh(r.nombres[0])}.`;
   };
 
+  Ajuste.monta(document.querySelector('.layout .card'), { masas: false });
+  addEventListener('quimica-ajuste', () => calcula());
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('equilibrio').current;
   colores(); formulario(); calcula();
   window.EquilibrioApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { modo: sol.modo, K: sol.K, K2: sol.K2, Kp: sol.Kp, x: sol.x, ceq: sol.ceq, alfa: sol.alfa, s0: sol.s0 }, estado: () => copia(sc) };

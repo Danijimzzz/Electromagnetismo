@@ -54,6 +54,15 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     await page.evaluate(() => SolubilidadApp.abrirEjemplo('agcl'));
     await page.fill('#f-Kps', '0');
     if (await page.locator('#error').isHidden()) mal('Solubilidad: un Kps cero no muestra el error');
+    // QU-4 · exportar la gráfica y sus datos
+    { const a0 = fallos;
+      for (const [c, q] of [['caoh2', 'solub'], ['mg-oh-ph', 'ph'], ['agcl-nh3', 'complejo']]) {
+        await page.evaluate((x) => SolubilidadApp.abrirEjemplo(x), c);
+        const n = await page.evaluate(() => [...document.querySelectorAll('.exportar')].filter((x) => x.previousElementSibling && x.previousElementSibling.id === 'grafica').map((x) => x.querySelectorAll('button').length));
+        if (!n.length || n[0] < 2) mal(`Solubilidad · ${q}: faltan los botones de exportar`);
+      }
+      if (fallos === a0) console.log('  ✓ Solubilidad · exportar PNG y datos en los modos de solubilidad, pH y complejos');
+    }
     // QU-2 · hidróxido poco soluble → pH de su disolución saturada
     { const a0 = fallos;
       await page.evaluate(() => SolubilidadApp.abrirEjemplo('caoh2'));

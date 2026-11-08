@@ -30,6 +30,7 @@
        grafica(sol, col), configuración de grafica() o null
        despues(r, sol, col), dibujo extra sobre la gráfica (r = { X, Y, g, w, h })
        leyenda(sol), HTML bajo la gráfica
+       exportar,     true: botones «Descargar PNG» y «Copiar datos» (los puntos de cada serie) bajo la gráfica
        usarEn(sol, sc), [{ texto, carpeta, estado }]: enlaces «Usar en…» a otra herramienta con su estado (opcional)
        nota,         texto de ayuda bajo los datos
        azar(),       sc al azar para el modo práctica (opcional)
@@ -213,6 +214,10 @@ const Calculadora = (() => {
       if (!cfg) { Herramienta.lienzo(c); return; }
       const r = grafica(c, cfg, col);
       if (r && o.despues) o.despues(r, sol, col);
+      if (o.exportar) {
+        const num6 = (v) => String(+Number(v).toPrecision(6)).replace('.', ',');
+        Herramienta.exportar(c, { nombre: o.carpeta, titulo: (document.querySelector('h1') || {}).textContent || o.carpeta, etiqueta: 'la gráfica', datos: () => { const k = sol && o.grafica ? o.grafica(sol, col) : null; return k ? { cab: ['Serie', 'x', 'y'], filas: (k.series || []).flatMap((s, i) => (s.pts || []).map((p) => [s.nombre || s.et || `serie ${i + 1}`, num6(p[0]), num6(p[1])])) } : null; } });
+      }
     }
     const leeColores = () => { col = colores(o.colores || []); };
     window.addEventListener('resize', dibuja);

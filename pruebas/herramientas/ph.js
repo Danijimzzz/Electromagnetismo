@@ -101,6 +101,20 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       await page.fill('#f-C', '');
       if (await page.locator('#error').isHidden()) mal('pH: sin concentración no muestra el error');
       await page.click('#play');
+      // QU-4 · botones de exportar de la curva de valoración y del diagrama de especies
+      { const a0 = fallos;
+        const est = () => page.evaluate(() => ({ g: document.querySelector('#grafica').hidden, bg: [...document.querySelectorAll('.exportar')].filter((x) => x.previousElementSibling && x.previousElementSibling.id === 'grafica').map((x) => [x.hidden, x.querySelectorAll('button').length]), be: [...document.querySelectorAll('.exportar')].filter((x) => x.previousElementSibling && x.previousElementSibling.id === 'especies').map((x) => [x.hidden, x.querySelectorAll('button').length]) }));
+        await page.evaluate(() => PHApp.abrirEjemplo('val-acetico'));
+        const e1 = await est();
+        if (e1.g || !e1.bg.length || e1.bg[0][0] || e1.bg[0][1] < 2) mal('pH · la valoración no muestra los botones de exportar: ' + JSON.stringify(e1));
+        await page.evaluate(() => PHApp.abrirEjemplo('hcl'));
+        const e2 = await est();
+        if (!e2.bg.length || !e2.bg[0][0]) mal('pH · sin valoración los botones de exportar deberían estar ocultos: ' + JSON.stringify(e2));
+        await page.evaluate(() => PHApp.abrirEjemplo('carbonico'));
+        const e3 = await est();
+        if (!e3.be.length || e3.be[0][0] || e3.be[0][1] < 2) mal('pH · el diagrama de especies no muestra los botones de exportar: ' + JSON.stringify(e3));
+        if (fallos === a0) console.log('  ✓ pH · exportar PNG y datos de la curva de valoración y del diagrama de especies (y ocultos cuando no se ven)');
+      }
       await page.close();
       if (consola.length) mal('pH: consola del navegador:\n      ' + consola.join('\n      '));
       if (fallos === antes) console.log(`  ✓ pH y valoraciones: ${PHC.ejemplos.length} ejemplos con MathML, curva solo en las valoraciones, K o pK, cambio de datos y errores sin errores de consola`);

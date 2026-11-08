@@ -116,6 +116,7 @@
       ley = `Cada recta es una sal: [${sol.cat ? 'B' : 'A'}] frente a [${sol.cat ? 'A' : 'B'}] en saturación. Los puntos naranjas marcan dónde empieza a precipitar cada una; el negro, lo que queda de la primera cuando empieza la segunda.`;
     }
     $('#resumen').innerHTML = h; $('#leyenda').textContent = ley;
+    exporta();
     // «Usar en…»: un hidróxido poco soluble es una base fuerte con [OH⁻] = b·s; el pH de su disolución saturada se calcula en la herramienta de pH
     $('#usar-en').innerHTML = ['kps', 'solub'].includes(sol.modo) && /OH/.test(sc.formula || '') && sol.s > 0 && isFinite(sol.s) ? `<a class="btn" id="u-ph" href="${esc(Herramienta.enlaceA('ph', { modo: 'fuerte', especie: 'base', C: String(sol.s), n: String(sol.b) }))}">Calcular el pH de la disolución saturada</a>` : '';
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
@@ -166,6 +167,16 @@
     g.fillStyle = col['--ink']; g.beginPath(); g.arc(px, py, 5.5, 0, 2 * Math.PI); g.fill();
     g.font = '600 12px system-ui, sans-serif'; g.textAlign = px > w - 90 ? 'right' : 'left'; g.textBaseline = 'bottom'; g.fillText('tu dato', px + (px > w - 90 ? -9 : 9), py - 6);
     g.fillStyle = col['--muted']; g.textAlign = 'right'; g.textBaseline = 'bottom'; g.fillText(ph ? 'sin protonación' : 'agua pura', w - mr - 8, Y(lg(sol.s0)) - 4);
+  }
+  // PNG y datos de la gráfica (Herramienta.exportar): la curva de solubilidad o los puntos y rectas de saturación
+  function exporta() {
+    const n6 = (v) => String(+Number(v).toPrecision(6)).replace('.', ',');
+    Herramienta.exportar('#grafica', { nombre: 'solubilidad-' + (sol ? sol.modo : 'grafica'), titulo: 'Solubilidad', etiqueta: 'la gráfica', datos: () => {
+      if (!sol) return null;
+      if (sol.curva) return { cab: [sol.modo === 'ph' ? 'pH' : 'ligando inicial (mol/L)', 'solubilidad (mol/L)'], filas: sol.curva.map((q) => [n6(q[0]), n6(q[1])]) };
+      const fg = figura();
+      return { cab: ['Punto', fg.ejes[0] + ' (log10)', fg.ejes[1] + ' (log10)'], filas: fg.pts.map((p) => [p.et || 'punto', n6(p.x), n6(p.y)]) };
+    } });
   }
   function dibuja() {
     const { g, w, h } = lienzo('#grafica');

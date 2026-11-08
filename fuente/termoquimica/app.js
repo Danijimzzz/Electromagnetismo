@@ -8,7 +8,7 @@
   const P = Termoquimica, { f } = P;
   const kJ = (x) => `${f(x, 5)} kJ`;
   Calculadora.monta({
-    C: P, carpeta: 'termoquimica', app: 'TermoquimicaApp',
+    C: P, carpeta: 'termoquimica', app: 'TermoquimicaApp', exportar: true,
     nota: 'Una sustancia por línea, con su coeficiente y su estado: «2 H2O(l)». Si la entalpía de formación no está en la tabla, escríbela detrás de un «;» (kJ/mol). En la ley de Hess, cada reacción lleva «; ΔH» (kJ) al final y se admiten coeficientes como 1/2.',
     campos: (sc) => [
       { k: 'modo', nom: 'Qué calcular', tipo: 'sel', ops: [['formacion', 'ΔH desde entalpías de formación'], ['hess', 'Ley de Hess (combinar reacciones)'], ['gibbs', 'Espontaneidad (ΔG = ΔH − TΔS)'], ['born', 'Ciclo de Born-Haber (energía reticular)']] },

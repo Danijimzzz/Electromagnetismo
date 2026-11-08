@@ -125,7 +125,14 @@
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
     $('#grafica').hidden = sol.modo !== 'valoracion';
     $('#especies').hidden = !(sol.modo === 'poliprotico' || (sol.modo === 'valoracion' && sol.poli));
-    tA = 0; particulas(); dibuja(); grafica(); especies();
+    tA = 0; particulas(); dibuja(); grafica(); especies(); exporta();
+  }
+  // PNG y datos de la curva de valoración y del diagrama de especies (Herramienta.exportar)
+  function exporta() {
+    const n6 = (v) => String(+Number(v).toPrecision(6)).replace('.', ',');
+    const b1 = Herramienta.exportar('#grafica', { nombre: 'ph-valoracion', titulo: 'Curva de valoración: pH frente al volumen', etiqueta: 'la curva de valoración', datos: () => (sol && sol.curva ? { cab: ['V (mL)', 'pH'], filas: sol.curva.map(([v, p]) => [n6(v), n6(p)]) } : null) });
+    const b2 = Herramienta.exportar('#especies', { nombre: 'ph-especies', titulo: 'Diagrama de especies: fracción frente al pH', etiqueta: 'el diagrama de especies', datos: () => { if (!sol || !sol.Kas) return null; const nm = sol.Kas.length === 2 ? ['H₂A', 'HA⁻', 'A²⁻'] : ['H₃A', 'H₂A⁻', 'HA²⁻', 'A³⁻']; return { cab: ['pH', ...nm.map((x) => 'α(' + x + ')')], filas: Array.from({ length: 141 }, (_, i) => { const p = i / 10; return [n6(p), ...P.fracciones(sol.Kas, p).map(n6)]; }) }; } });
+    if (b1) b1.hidden = $('#grafica').hidden; if (b2) b2.hidden = $('#especies').hidden;
   }
 
   /* ---------- Colores ---------- */

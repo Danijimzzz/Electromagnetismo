@@ -15,6 +15,9 @@ const Electro = (() => {
   const D = typeof Datos !== 'undefined' ? Datos : require('../quimica/datos.js');
   const F0 = typeof Formulas !== 'undefined' ? Formulas : require('../quimica/formulas.js');
   const R = D.R, T0 = D.T0;
+  // constantes «de clase»: lo pide el estado (sc.constantes) o, si no, el ajuste común de Química (por defecto, exactas)
+  const Aj = typeof Ajuste !== 'undefined' ? Ajuste : require('../quimica/ajuste.js');
+  const esClase = (sc) => (sc.constantes === undefined ? Aj.leer({ constantes: false }).constantes : sc.constantes === 'clase');
   const leeNum = (s) => +String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace(/[−–]/g, '-').replace(/[·x×*]10\^?\(?([+\-]?\d+)\)?/i, 'e$1');
   const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
   const f = (x, d = 4) => {
@@ -73,7 +76,7 @@ const Electro = (() => {
     let cat = semi(sc.catodo), an = semi(sc.anodo);
     if (cat.id === an.id) throw new Error('Elige dos semirreacciones distintas para el cátodo y el ánodo');
     const conc = sc.conc && typeof sc.conc === 'object' ? sc.conc : {};
-    const T = num(sc, 'T', 'la temperatura', { min: 0, minEx: true, def: T0 }), clase = sc.constantes === 'clase', F = clase ? D.FCLASE : D.F;
+    const T = num(sc, 'T', 'la temperatura', { min: 0, minEx: true, def: T0 }), clase = esClase(sc), F = clase ? D.FCLASE : D.F;
     const E0 = cat.E - an.E, nL = mcm(cat.n, an.n), fc = nL / cat.n, fa = nL / an.n, pasos = [];
     pasos.push({ t: 'Potenciales estándar', html: `Del cátodo (reducción): ${eqSemi(cat)} &nbsp; $E^"°"_"cátodo" = ${f(cat.E, 3)} "V"$<br>Del ánodo (se escribe como reducción en la tabla): ${eqSemi(an)} &nbsp; $E^"°"_"ánodo" = ${f(an.E, 3)} "V"$` });
     pasos.push({ t: 'Quién se reduce y quién se oxida', html: `En el <b>cátodo</b> (+) ocurre la reducción y en el <b>ánodo</b> (−) la oxidación. Se oxida la semirreacción que tiene el potencial de reducción menor: se escribe al revés.<br>Ánodo (oxidación): ${eqSemi(an, true)}` });
@@ -120,7 +123,7 @@ const Electro = (() => {
   /* ---------- Electrolisis: leyes de Faraday ---------- */
   const UT = { s: 1, min: 60, h: 3600 };
   function electrolisis(sc) {
-    const s = semi(sc.semi), oxida = sc.sentido === 'oxidacion', F = sc.constantes === 'clase' ? D.FCLASE : D.F;
+    const s = semi(sc.semi), oxida = sc.sentido === 'oxidacion', F = esClase(sc) ? D.FCLASE : D.F;
     const prod = (oxida ? s.ox : s.red).concat().find((sp) => (sp[2] === 's' || sp[2] === 'g' || (sp[2] === 'l' && sp[1] !== 'H2O')) && sp[1] !== 'H2O') || (oxida ? s.ox : s.red).find((sp) => sp[1] !== 'H2O' && sp[1] !== 'H+' && sp[1] !== 'OH-');
     const reag = (oxida ? s.red : s.ox).find((sp) => sp[1] !== 'H2O' && sp[1] !== 'H+' && sp[1] !== 'OH-');
     if (!prod) throw new Error('Esa semirreacción no tiene un producto que se deposite o se desprenda: elige otra');
@@ -150,7 +153,7 @@ const Electro = (() => {
     }
     const mol = m / M, r = { modo: 'electrolisis', semi: s, oxida, prod: plano(html(prod)), formula, M, n, I, t, m, mol, ne: mol * n, Q: mol * n * F / eta, esGas, calcula: que, eta, F, pasos };
     if (esGas) {
-      const T = num(sc, 'T', 'la temperatura', { min: 0, minEx: true, def: T0 }), P = num(sc, 'P', 'la presión', { min: 0, minEx: true, def: 1 }), Rg = sc.constantes === 'clase' ? D.RCLASE : D.RATM;
+      const T = num(sc, 'T', 'la temperatura', { min: 0, minEx: true, def: T0 }), P = num(sc, 'P', 'la presión', { min: 0, minEx: true, def: 1 }), Rg = esClase(sc) ? D.RCLASE : D.RATM;
       const V = mol * Rg * T / P; r.V = V; r.T = T; r.P = P;
       pasos.push({ t: 'Volumen del gas', html: `Gas ideal: $V = {n R T}/{P} = {${f(mol)} · ${f(Rg, 6)} · ${f(T)}}/{${f(P)}} = ${f(V)} "L"$ a ${f(T)} K y ${f(P)} atm.` });
     }

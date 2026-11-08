@@ -342,6 +342,8 @@
   window.addEventListener('resize', () => { dibuja(); grafica(); });
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { colores(); dibuja(); grafica(); });
 
+  Ajuste.monta(document.querySelector('.layout .card'), { masas: false });
+  addEventListener('quimica-ajuste', () => calcula());
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('cinetica').current;
   formulario(); colores(); calcula(); requestAnimationFrame(bucle);
   window.CineticaApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { modo: sol.modo, n: sol.n, k: sol.k, A: sol.A, t12: sol.t12, oA: sol.oA, oB: sol.oB, oC: sol.oC, Ea: sol.Ea, k2: sol.k2, fcat: sol.fcat, tmax: sol.tmax, Bmax: sol.Bmax, Aeq: sol.Aeq, Keq: sol.K, leyes: sol.leyes && sol.leyes.map((l) => l.ordenes), cuadra: sol.cuadra }, estado: () => copia(sc), vista: (v) => { vista = v; marcaVista(); grafica(); }, pausa: () => { anda = false; } };

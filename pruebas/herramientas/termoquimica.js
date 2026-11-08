@@ -76,7 +76,9 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       const Kp = Math.exp(33136.5 / (8.314462618 * 298.15));
       if (!r || r.modo !== 'dG' || Math.abs(r.Kp / Kp - 1) > 1e-3) mal('Termoquímica · Equilibrio no calcula Kp = e^(−ΔG°/RT) ≈ ' + Kp.toExponential(3) + ': ' + JSON.stringify(r));
     }
+    { const n = await page.evaluate(() => document.querySelectorAll('.exportar button').length);
+      if (n < 2) mal('Termoquímica · faltan los botones de exportar la gráfica: ' + n); }
     await page.close();
-    if (fallos === antes) console.log('  ✓ Termoquímica · «Calcular K en Equilibrio»: el enlace lleva reactivos, productos y ΔG° y Equilibrio da Kp = e^(−ΔG°/RT)');
+    if (fallos === antes) console.log('  ✓ Termoquímica · «Calcular K en Equilibrio»: el enlace lleva reactivos, productos y ΔG° y Equilibrio da Kp = e^(−ΔG°/RT); botones de exportar de la gráfica');
   };
 };

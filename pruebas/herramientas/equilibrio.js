@@ -38,6 +38,11 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       // un sólido con poca cantidad se agota antes del equilibrio
       const v = C.resolver({ modo: 'eq', nA: 'CaCO3', nC: 'CaO', nD: 'CO2', a: '1', c: '1', d: '1', fA: 's', fC: 's', fD: 'g', cA: '0,001', cD: '0', K: '0,0025' }); if (!v.agotado || Math.abs(v.ceq[3] - 0.001) > 1e-12) mal('Equilibrio · el sólido que se agota no se detecta: ' + v.ceq[3]); }
     // EQ-1 · K desde ΔG°: Kp = e^(33000/(8,314·298)) ≈ 5,6·10⁵ y el equilibrio cumple Kc = Kp·(R·T)^−Δn
+    { // el ajuste común de Química (QU-3): con R exacta cambia K desde ΔG°
+      const Aj = require(path.join(fuente, 'quimica', 'ajuste.js')), guarda = global.localStorage;
+      global.localStorage = { getItem: () => JSON.stringify({ masas: false, constantes: false }) };
+      const e = r('dg-amoniaco'); global.localStorage = guarda;
+      cerca(e.Kp0, Math.exp(32800 / (8.314462618 * 298)), 1e-9, 'K desde ΔG° con R exacta'); cerca(Aj.valores().R, 8.314, 0, 'R de clase por defecto'); }
     { const s = r('dg-amoniaco'), Kp = Math.exp(32800 / (8.314 * 298)); cerca(s.Kp0, Kp, 1e-9, 'K desde ΔG°'); cerca(s.Kp, Kp, 1e-9, 'Kp de vuelta'); cerca(Math.pow(s.ceq[2], 2) / (s.ceq[0] * Math.pow(s.ceq[1], 3)), Kp * Math.pow(0.083145 * 298, 2), 1e-8, 'Kc desde ΔG°');
       for (const [sc, q] of [[{ dG: '-5000' }, 'ΔG° enorme'], [{ dG: '' }, 'falta ΔG°'], [{ T: '' }, 'falta T']]) { let ok = false; try { C.resolver(Object.assign({}, C.ejemplos.find((e) => e.clave === 'dg-amoniaco').sc, sc)); } catch (e) { ok = true; } if (!ok) mal(`Equilibrio · ${q} no da error`); } }
     // EQ-3 · dos equilibrios: A ⇌ B (K₁ = 2) y B ⇌ C (K₂ = 0,5), 1 M de A ⇒ [A] = 1/4, [B] = 1/2, [C] = 1/4
@@ -104,6 +109,29 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       await page.evaluate(() => EquilibrioApp.azar());
       const p = await page.evaluate(() => ({ err: !document.querySelector('#error').hidden, n: document.querySelectorAll('#resumen > div.num').length, en: EquilibrioApp.enunciado().length }));
       if (p.err || !p.n || p.en < 30) mal('Equilibrio: el ejercicio al azar no sale bien');
+    }
+    // QU-3 · ajuste común «de clase / exactas»: R cambia en el desarrollo y en K, y Masa molar lo sigue
+    { const a0 = fallos;
+      await page.evaluate(() => { localStorage.removeItem('quimica-ajuste'); });
+      await page.reload(); await page.waitForFunction(() => window.EquilibrioApp);
+      await page.evaluate(() => EquilibrioApp.abrirEjemplo('dg-amoniaco'));
+      if (!(await page.isChecked('#aj-const')) || !/R = 8,314 J/.test(await page.textContent('#aj-valor'))) mal('Equilibrio · por defecto debería usar las constantes de clase: ' + await page.textContent('#aj-valor'));
+      const k1 = await page.evaluate(() => EquilibrioApp.resultado().Kp);
+      await page.uncheck('#aj-const');
+      const k2 = await page.evaluate(() => EquilibrioApp.resultado().Kp), txt = await page.textContent('#aj-valor'), pasos = await page.textContent('#pasos');
+      if (!/8,314462618/.test(txt)) mal('Equilibrio · el valor exacto de R no sale en «En uso»: ' + txt);
+      if (!(Math.abs(k1 / Math.exp(32800 / (8.314 * 298)) - 1) < 1e-3) || !(Math.abs(k2 / Math.exp(32800 / (8.314462618 * 298)) - 1) < 1e-3)) mal(`Equilibrio · K con R de clase (${k1}) y exacta (${k2}) no coinciden con e^(−ΔG°/RT)`);
+      if (!/8\.314462618|8,314462618/.test(pasos)) mal('Equilibrio · el desarrollo no muestra la R exacta');
+      // Masa molar sigue el ajuste de masas
+      await page.check('#aj-const');
+      const guard = await page.evaluate(() => localStorage.getItem('quimica-ajuste'));
+      if (JSON.parse(guard).constantes !== true) mal('Equilibrio · el ajuste no se guarda: ' + guard);
+      await page.evaluate(() => localStorage.setItem('quimica-ajuste', JSON.stringify({ masas: true, constantes: true })));
+      await page.goto('file://' + path.join(publico, 'quimica', 'masa-molar', 'index.html'));
+      await page.waitForFunction(() => window.MasaApp);
+      if ((await page.inputValue('#modo')) !== 'redondeadas') mal('Equilibrio · Masa molar no sigue el ajuste «masas de clase»');
+      await page.evaluate(() => localStorage.removeItem('quimica-ajuste'));
+      if (fallos === a0) console.log('  ✓ Equilibrio · ajuste común de Química: R de clase por defecto, R exacta al desmarcar (K = e^(−ΔG°/RT) con cada una) y Masa molar sigue las masas de clase');
     }
     await page.close();
     if (consola.length) mal('Equilibrio: consola del navegador:\n      ' + consola.join('\n      '));
