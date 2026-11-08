@@ -15,6 +15,8 @@
   --heat: #4dbcb0; --on-heat: #0b1215;
   --c-a: #5a2f24; --c-t: #574120; --c-m: #4a4230; --c-l: #3f3352; --c-c: #4d2f42; --c-p: #2b3a44; --c-s: #2f4230; --c-n: #234039; --c-h: #50461c; --c-g: #34355a }
 #color, #buscar { width: auto; font-variant-numeric: normal }
+#ctl-temp[hidden] { display: none } #ctl-temp input[type=range] { width: 200px } #ctl-temp .in { width: 84px } #temp-txt { color: var(--muted); font-size: 12.5px }
+.ficha .ion { display: inline-block; margin: 0 6px 2px 0; font-family: var(--f-math); font-size: 14px }
 .el:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
 
 @media (max-width: 1100px) { #tabla-layout { grid-template-columns: minmax(0, 1fr) } }
@@ -67,8 +69,9 @@
 <div class="tools">
   <label>Colorear por <select id="color" class="in">
     <option value="cat">Categoría</option><option value="en">Electronegatividad</option><option value="ei">Energía de ionización</option>
-    <option value="radio">Radio atómico</option><option value="ae">Afinidad electrónica</option><option value="masa">Masa atómica</option><option value="densidad">Densidad</option><option value="fusion">Punto de fusión</option><option value="ebullicion">Punto de ebullición</option><option value="bloque">Bloque (s, p, d, f)</option><option value="estado">Estado a 25 °C</option>
+    <option value="radio">Radio atómico</option><option value="ae">Afinidad electrónica</option><option value="masa">Masa atómica</option><option value="densidad">Densidad</option><option value="fusion">Punto de fusión</option><option value="ebullicion">Punto de ebullición</option><option value="bloque">Bloque (s, p, d, f)</option><option value="estado">Estado a 25 °C</option><option value="temperatura">Estado según la temperatura</option>
   </select></label>
+  <label id="ctl-temp" hidden>Temperatura <input type="range" id="temp" min="0" max="6000" step="10" value="298" aria-describedby="temp-txt"> <input type="number" id="temp-n" class="in" min="0" max="6000" step="1" value="298" aria-label="Temperatura en kelvin"> K <output id="temp-txt" for="temp temp-n"></output></label>
   <input type="search" id="buscar" class="in" placeholder="Buscar: Fe, hierro, 26…" aria-label="Buscar elemento" autocomplete="off">
 </div>
 <div class="layout invertido" id="tabla-layout">

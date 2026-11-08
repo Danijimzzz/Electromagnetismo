@@ -13,7 +13,7 @@
 
   let sc = copia(A.ejemplos[0].sc);
   try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && typeof g === 'object') sc = g; } catch (e) { /* sin almacenamiento */ }
-  const guarda = () => { try { localStorage.setItem(CLAVE, JSON.stringify(sc)); } catch (e) { /* sin almacenamiento */ } };
+  const guarda = () => { try { const g = JSON.parse(localStorage.getItem(CLAVE)) || {}; if (g.electro) sc.electro = g.electro; localStorage.setItem(CLAVE, JSON.stringify(sc)); } catch (e) { /* sin almacenamiento */ } };
   let sol = null, col = {};
 
   const ec = $('#ecuacion');

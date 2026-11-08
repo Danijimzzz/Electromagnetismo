@@ -69,7 +69,11 @@ const Formulacion = (() => {
     ['C', 4, 3, 2, 1, 'carbónico', 'carbonato', 1], ['Si', 4, 3, 2, 1, 'silícico', 'silicato'], ['B', 3, 3, 3, 1, 'bórico', 'borato'],
     ['Cr', 6, 4, 2, 1, 'crómico', 'cromato', 1], ['Cr', 6, 7, 2, 2, 'dicrómico', 'dicromato', 1],
     ['Mn', 7, 4, 1, 1, 'permangánico', 'permanganato', 1],
+    ['P', 5, 7, 4, 2, 'difosfórico', 'difosfato'], ['S', 6, 7, 2, 2, 'disulfúrico', 'disulfato'],
+    ['Si', 4, 4, 4, 1, 'ortosilícico', 'ortosilicato'], ['B', 3, 2, 1, 1, 'metabórico', 'metaborato'],
   ];
+  // nombres alternativos (meta, orto, piro…) de compuestos que ya salen de las tablas
+  const ALIAS_EXTRA = [['H2SiO3', ['ácido metasilícico']], ['Na2SiO3', ['metasilicato de sodio']], ['H3BO3', ['ácido ortobórico']], ['H3PO4', ['ácido ortofosfórico']], ['H4P2O7', ['ácido pirofosfórico']], ['H2S2O7', ['ácido pirosulfúrico']], ['Na2S2O7', ['pirosulfato de sodio']], ['Na4P2O7', ['pirofosfato de sodio']], ['H2O2', ['agua oxigenada']], ['NH3', ['azano']]];
   const ATO = { Cl: 'clorato', Br: 'bromato', I: 'yodato', S: 'sulfato', Se: 'selenato', Te: 'telurato', N: 'nitrato', P: 'fosfato', As: 'arsenato', C: 'carbonato', Si: 'silicato', B: 'borato', Cr: 'cromato', Mn: 'manganato' };
   const ICO = { Cl: 'clórico', Br: 'brómico', I: 'yódico', S: 'sulfúrico', Se: 'selénico', Te: 'telúrico', N: 'nítrico', P: 'fosfórico', As: 'arsénico', C: 'carbónico', Si: 'silícico', B: 'bórico', Cr: 'crómico', Mn: 'mangánico' };
   // hidruros y otros compuestos con nombre propio: fórmula, tipo, nombres [etiqueta, nombre]
@@ -82,6 +86,22 @@ const Formulacion = (() => {
     ['CH4', 'Hidruro no metálico', [['Sistemática', 'tetrahidruro de carbono'], ['IUPAC (hidruros)', 'metano']], 1],
     ['SiH4', 'Hidruro no metálico', [['Sistemática', 'tetrahidruro de silicio'], ['IUPAC (hidruros)', 'silano']], 1],
     ['BH3', 'Hidruro no metálico', [['Sistemática', 'trihidruro de boro'], ['IUPAC (hidruros)', 'borano']]],
+    ['H2MnO4', 'Oxoácido', [['Tradicional', 'ácido mangánico'], ['Sistemática', 'tetraoxidomanganato de dihidrógeno']]], ['K2MnO4', 'Oxisal', [['Tradicional', 'manganato de potasio'], ['Sistemática', 'tetraoxidomanganato de dipotasio']]], ['Na2MnO4', 'Oxisal', [['Tradicional', 'manganato de sodio']]],
+    ['HPO3', 'Oxoácido', [['Tradicional', 'ácido metafosfórico'], ['Sistemática', 'trioxidofosfato de hidrógeno']]],
+    // elementos con nombre propio
+    ['O3', 'Elemento', [['Sistemática', 'trioxígeno'], ['Nombre común', 'ozono']], 1], ['O2', 'Elemento', [['Sistemática', 'dioxígeno'], ['Nombre común', 'oxígeno']], 1], ['H2', 'Elemento', [['Sistemática', 'dihidrógeno'], ['Nombre común', 'hidrógeno']], 1],
+    ['N2', 'Elemento', [['Sistemática', 'dinitrógeno'], ['Nombre común', 'nitrógeno']], 1], ['F2', 'Elemento', [['Sistemática', 'diflúor'], ['Nombre común', 'flúor']]], ['Cl2', 'Elemento', [['Sistemática', 'dicloro'], ['Nombre común', 'cloro']], 1],
+    ['Br2', 'Elemento', [['Sistemática', 'dibromo'], ['Nombre común', 'bromo']]], ['I2', 'Elemento', [['Sistemática', 'diyodo'], ['Nombre común', 'yodo']]], ['P4', 'Elemento', [['Sistemática', 'tetrafósforo'], ['Nombre común', 'fósforo blanco']]], ['S8', 'Elemento', [['Sistemática', 'octaazufre'], ['Nombre común', 'azufre']]],
+    // oxoácidos y sales con nombre propio
+    ['H3PO2', 'Oxoácido', [['Tradicional', 'ácido hipofosforoso'], ['IUPAC', 'ácido fosfínico']]],
+    ['H2S2O3', 'Tioácido', [['Tradicional', 'ácido tiosulfúrico'], ['Sistemática', 'trioxidosulfidosulfato de dihidrógeno']]], ['Na2S2O3', 'Tiosulfato', [['Tradicional', 'tiosulfato de sodio'], ['Sistemática', 'trioxidosulfidosulfato de disodio']]], ['K2S2O3', 'Tiosulfato', [['Tradicional', 'tiosulfato de potasio']]],
+    ['HSCN', 'Tioácido', [['Tradicional', 'ácido tiociánico'], ['IUPAC', 'tiocianato de hidrógeno']]], ['KSCN', 'Tiocianato', [['Tradicional', 'tiocianato de potasio']]], ['NaSCN', 'Tiocianato', [['Tradicional', 'tiocianato de sodio']]], ['NH4SCN', 'Tiocianato', [['Tradicional', 'tiocianato de amonio']]],
+    ['H2SO5', 'Peroxoácido', [['Tradicional', 'ácido peroxosulfúrico'], ['Sistemática', 'peroxidotrioxidosulfato de dihidrógeno']]], ['H2S2O8', 'Peroxoácido', [['Tradicional', 'ácido peroxodisulfúrico']]], ['HNO4', 'Peroxoácido', [['Tradicional', 'ácido peroxonítrico']]],
+    ['K2S2O8', 'Peroxosal', [['Tradicional', 'peroxodisulfato de potasio']]], ['Na2S2O8', 'Peroxosal', [['Tradicional', 'peroxodisulfato de sodio']]], ['(NH4)2S2O8', 'Peroxosal', [['Tradicional', 'peroxodisulfato de amonio']]],
+    ['CaC2', 'Carburo', [['Tradicional', 'carburo de calcio'], ['Sistemática', 'dicarburo de calcio'], ['IUPAC', 'acetiluro de calcio']]],
+    // sales dobles
+    ['KAl(SO4)2', 'Sal doble', [['Tradicional', 'sulfato de aluminio y potasio'], ['Sistemática', 'bis(tetraoxidosulfato) de aluminio y potasio']]], ['NaKCO3', 'Sal doble', [['Tradicional', 'carbonato de potasio y sodio']]],
+    ['CaMg(CO3)2', 'Sal doble', [['Tradicional', 'carbonato de calcio y magnesio']]], ['MgNH4PO4', 'Sal doble', [['Tradicional', 'fosfato de amonio y magnesio']]], ['KNaSO4', 'Sal doble', [['Tradicional', 'sulfato de potasio y sodio']]],
   ];
 
   /* ---------- Fórmulas ---------- */
@@ -218,6 +238,7 @@ const Formulacion = (() => {
     return cat.cl === 'nm' ? 'Compuesto binario no metálico' : 'Sal binaria';
   }
   function crea(cat, an) {
+    if (cat.f === "Ca" && an.f === "C") return;
     const g = mcd(cat.v, an.w), n = an.w / g, m = cat.v / g;
     const fc = n > 1 ? (cat.poli ? `(${cat.f})${n}` : `${cat.f}${n}`) : cat.f, fa = m > 1 ? (an.poli ? `(${an.f})${m}` : `${an.f}${m}`) : an.f;
     const formula = fc + fa, { L, alias } = nombres(cat, n, an, m);
@@ -266,6 +287,7 @@ const Formulacion = (() => {
   for (const [formula, tipo, lin, comun] of ESPECIALES) {
     compuestos.push({ formula, tipo, esp: true, lineas: lin.map(([et, nombre]) => ({ et, nombre })), alias: [], comun: !!comun });
   }
+  for (const [formula, al] of ALIAS_EXTRA) { const c = compuestos.find((x) => x.formula === formula); if (c) c.alias.push(...al); }
   // el tipo, el html y la cuenta de átomos de cada uno
   for (const c of compuestos) { c.html = fh(c.formula); c.texto = ft(c.formula); c.cuenta = leeFormula(c.formula); c.clave = claveCuenta(c.cuenta); }
 
@@ -281,7 +303,7 @@ const Formulacion = (() => {
       for (const nom of c.alias) añade(nom, c, 'Sistemática');
     }
   }
-  function añade(nombre, c, et) { const k = norm(nombre); if (!porNombre.has(k)) porNombre.set(k, { c, et, nombre }); }
+  function añade(nombre, c, et) { const k = norm(nombre); if (!porNombre.has(k) || (c.esp && !porNombre.get(k).c.esp && c.formula === "CaC2")) porNombre.set(k, { c, et, nombre }); }
   const todos = () => compuestos;
 
   /* ---------- Desarrollo ---------- */
@@ -312,7 +334,7 @@ const Formulacion = (() => {
   }
   function pasosFN(c) {
     if (c.esp) {
-      return [{ t: 'Reconoce el compuesto', html: `${c.html} es ${c.tipo === 'Agua' ? 'el <b>agua</b>' : 'un <b>hidruro no metálico</b>'}: de los hidruros del grupo 13–15 y del agua se usan sobre todo los nombres comunes y los de la IUPAC.` },
+      return [{ t: 'Reconoce el compuesto', html: `${c.html} es ${c.tipo === 'Agua' ? 'el <b>agua</b>' : c.tipo === 'Hidruro no metálico' ? 'un <b>hidruro no metálico</b>: de los hidruros del grupo 13–15 se usan sobre todo los nombres comunes y los de la IUPAC' : `un compuesto de tipo <b>${c.tipo.toLowerCase()}</b> que tiene su propio nombre y no sale de las reglas generales`}. Se escribe $${c.formula.replace(/\d+/g, (d) => '_{' + d + '}')}$ y los nombres de la lista son los de uso habitual.` },
         { t: 'Nombres', html: c.lineas.map((l) => `${l.et}: <b>${l.nombre}</b>`).join('<br>') }];
     }
     const p = [{ t: 'Reconoce el tipo de compuesto', html: tipoTxt(c) }, { t: 'Calcula el estado de oxidación', html: oxTxt(c) }];
@@ -320,7 +342,7 @@ const Formulacion = (() => {
     return p;
   }
   function pasosNF(c, usada) {
-    if (c.esp) return [{ t: 'Reconoce el nombre', html: `«${usada.nombre}» es un nombre ${c.tipo === 'Agua' ? 'del agua' : 'de un hidruro no metálico'}.` }, { t: 'Escribe la fórmula', html: `Su fórmula es <b>${c.html}</b>.` }];
+    if (c.esp) return [{ t: 'Reconoce el nombre', html: `«${usada.nombre}» es un nombre ${c.tipo === 'Agua' ? 'del agua' : `de un compuesto de tipo ${c.tipo.toLowerCase()}`}: su fórmula es $${c.formula.replace(/\d+/g, (d) => '_{' + d + '}')}$.` }, { t: 'Escribe la fórmula', html: `Su fórmula es <b>${c.html}</b>.` }];
     const { cat, an, n, m, g } = c, sist = /Sistem/.test(usada.et);
     const p = [];
     p.push({ t: 'Interpreta el nombre', html: `«${usada.nombre}» está en nomenclatura ${usada.et.toLowerCase().replace(/ · /g, ', ')}. ${tipoTxt(c)}` });
@@ -340,8 +362,25 @@ const Formulacion = (() => {
     return [...r.keys()];
   }
   function errorConSug(msg, sug) { const e = new Error(msg); e.sugerencias = sug || []; return e; }
+  const CompL = typeof Complejos !== 'undefined' ? Complejos : require('./complejos.js');
+  const PREFH = ['', 'mono', 'di', 'tri', 'tetra', 'penta', 'hexa', 'hepta', 'octa', 'nona', 'deca'];
+  // hidratos: «CuSO4·5H2O» ↔ «sulfato de cobre(II) pentahidrato»
+  function hidrato(base, n, usadaBase) {
+    const r = base, pf = PREFH[n] || `${n}-`, c0 = r.c;
+    const lineas = r.lineas.filter((l) => l.et !== 'Nombre común').map((l) => ({ ...l, nombre: `${l.nombre} ${pf}hidrato`, regla: `${l.regla || ''} El agua de cristalización se añade con el prefijo ${pf}- y la palabra «hidrato».` }));
+    const formula = `${c0.formula}·${n === 1 ? '' : n}H2O`, html = `${c0.html}·${n === 1 ? '' : n}H<sub>2</sub>O`;
+    const c = { ...c0, formula, html, texto: ft(c0.formula) + `·${n === 1 ? '' : n}H₂O`, tipo: 'Hidrato', lineas, alias: [], esp: true, hidrato: n };
+    const pasos = [...r.pasos, { t: 'Agua de cristalización', html: `La fórmula acaba en <b>·${n === 1 ? '' : n}H<sub>2</sub>O</b>: por cada unidad de ${c0.html} hay ${n} molécula${n > 1 ? 's' : ''} de agua en el cristal. Se nombra el compuesto y se termina con <b>${pf}hidrato</b>.` }];
+    return { modo: r.modo, c, formula, html, tipo: 'Hidrato', lineas, alt: [], pasos, usada: usadaBase || null };
+  }
   function resolver(sc) {
     indice();
+    { const t0 = String(sc?.texto ?? '').trim();
+      if (sc && sc.modo !== 'n2f' && /\[/.test(t0)) { let x = null, e1 = null; try { x = CompL.leer(t0); } catch (e) { e1 = e; } if (!x) { try { return resolver({ ...sc, texto: t0.replace(/\[/g, '(').replace(/\]/g, ')') }); } catch (e2) { throw e1; } } return { modo: 'f2n', c: { formula: x.formula, html: x.html, texto: x.formula, tipo: x.tipo, lineas: x.nombres, alias: [], esp: true, complejo: x }, formula: x.formula, html: x.html, tipo: x.tipo, lineas: x.nombres, alt: [], pasos: x.pasos, usada: null }; }
+      const mh = /^(.*?)\s*[·.*•]\s*(\d*)\s*H2O\s*$/i.exec(t0.replace(/[₀-₉]/g, (d) => SUBS.indexOf(d)));
+      if (sc && sc.modo !== 'n2f' && mh && mh[1]) return hidrato(resolver({ modo: 'f2n', texto: mh[1] }), +mh[2] || 1);
+      const mn = /^(.*?)\s+(mono|di|tri|tetra|penta|hexa|hepta|octa|nona|deca)hidrato\s*$/i.exec(t0);
+      if (sc && sc.modo === 'n2f' && mn) { const n = PREFH.indexOf(mn[2].toLowerCase()); const b = resolver({ modo: 'n2f', texto: mn[1] }); return hidrato({ ...b, modo: 'n2f' }, n, b.usada); } }
     const modo = sc && sc.modo === 'n2f' ? 'n2f' : 'f2n', texto = String(sc?.texto ?? '').trim();
     const romanos = (t) => t.replace(/\(\s*\+?([1-7])\s*\+?\s*\)/g, (_, d) => `(${ROM[d]})`);
     if (!texto) throw new Error(modo === 'f2n' ? 'Escribe una fórmula, por ejemplo Fe2O3, H2SO4 o Ca(OH)2.' : 'Escribe un nombre, por ejemplo «óxido de hierro(III)» o «ácido sulfúrico».');
@@ -355,6 +394,7 @@ const Formulacion = (() => {
       return { modo, c, formula: c.formula, html: c.html, tipo: c.tipo, lineas: c.lineas, alt: cs.slice(1), pasos: pasosFN(c), usada: null };
     }
     const k = norm(romanos(texto)), e = porNombre.get(k);
+    if (!e) { let f = null; try { f = CompL.porNombre(k); } catch (err) { f = null; } if (f) return { ...resolver({ modo: 'f2n', texto: f }), modo, usada: { et: 'Libros de texto', nombre: texto } }; }
     if (!e) throw errorConSug(`No reconozco el nombre «${texto}». Revisa los acentos, los prefijos y el número romano entre paréntesis; por ejemplo «óxido de hierro(III)», «trióxido de dihierro» o «ácido nítrico».`, sugerenciasNombre(k));
     const c = e.c;
     return { modo, c, formula: c.formula, html: c.html, tipo: c.tipo, lineas: c.lineas, alt: [], pasos: pasosNF(c, e), usada: e };
@@ -376,6 +416,7 @@ const Formulacion = (() => {
   for (const [g, fs] of [['De fórmula a nombre · Óxidos e hidruros', ['Fe2O3', 'CO2', 'Na2O', 'H2O2', 'CaH2', 'NH3']], ['De fórmula a nombre · Hidróxidos y ácidos', ['Ca(OH)2', 'Fe(OH)3', 'HCl', 'H2S', 'H2SO4', 'HNO3', 'H3PO4', 'HClO4']], ['De fórmula a nombre · Sales', ['NaCl', 'FeCl3', 'Cu2S', 'PCl5', 'CaCO3', 'Al2(SO4)3', 'KMnO4', 'NaClO', 'NaHCO3', 'Ca(H2PO4)2', '(NH4)2SO4']]]) for (const f of fs) ej(g, 'f2n', f);
   for (const [g, ns] of [['De nombre a fórmula', ['óxido de hierro(III)', 'trióxido de dihierro', 'dióxido de carbono', 'hidróxido de aluminio', 'ácido sulfúrico', 'ácido clorhídrico', 'dicloruro de calcio', 'sulfato de aluminio', 'carbonato de calcio', 'nitrato de plata', 'hidrogenocarbonato de sodio', 'tetraoxosulfato(VI) de cobre(II)', 'sulfuro de hidrógeno', 'ácido perclórico']]]) for (const t of ns) ej(g, 'n2f', t);
 
+  for (const [g, m, ts] of [['Complejos e hidratos · de fórmula a nombre', 'f2n', ['[Cu(NH3)4]SO4', 'K3[Fe(CN)6]', 'Na[Al(OH)4]', 'CuSO4·5H2O', 'O3']], ['Complejos e hidratos · de nombre a fórmula', 'n2f', ['hexacianoferrato(III) de potasio', 'sulfato de calcio dihidrato', 'ácido tiosulfúrico']]]) for (const t of ts) ej(g, m, t);
   return { resolver, ejemplos, todos, aceptadas, nombreEnunciado, leeFormula, norm, ft, fh, ionH, porFormula: () => { indice(); return porFormula; }, porNombre: () => { indice(); return porNombre; } };
 })();
 if (typeof module !== 'undefined') module.exports = Formulacion;

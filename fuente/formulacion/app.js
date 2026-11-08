@@ -87,7 +87,7 @@
 
   /* ---------- Tabla de oxoácidos de la teoría ---------- */
   const tabla = $('#tabla-oxo');
-  if (tabla) tabla.innerHTML = '<thead><tr><th>Fórmula</th><th>Tradicional</th><th>Stock</th><th>Sistemática</th></tr></thead><tbody>' + P.todos().filter((c) => c.tipo === 'Oxoácido' && c.an.comun).map((c) => `<tr><td>${c.html}</td><td>${esc(c.lineas[2].nombre)}</td><td>${esc(c.lineas[1].nombre)}</td><td>${esc(c.lineas[0].nombre)}</td></tr>`).join('') + '</tbody>';
+  if (tabla) tabla.innerHTML = '<thead><tr><th>Fórmula</th><th>Tradicional</th><th>Stock</th><th>Sistemática</th></tr></thead><tbody>' + P.todos().filter((c) => c.tipo === 'Oxoácido' && !c.esp && c.an.comun).map((c) => `<tr><td>${c.html}</td><td>${esc(c.lineas[2].nombre)}</td><td>${esc(c.lineas[1].nombre)}</td><td>${esc(c.lineas[0].nombre)}</td></tr>`).join('') + '</tbody>';
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('formulacion').current;
   formulario(); calcula();

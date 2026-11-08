@@ -120,6 +120,19 @@ CC(=O)C=C|but-3-en-2-ona`.split('\n').map((l) => l.split('|'));
     if (fallos === antes) console.log(`  ✓ Orgánica: ${nombres.length + est.length} nombres, fórmulas, estereoisómeros, 3D coherente con R/S y E/Z y errores`);
   }
 
+  {
+    // OR-3 · semidesarrollada ↔ SMILES, con el nombre IUPAC hecho a mano
+    const antes = fallos, S = require(path.join(fuente, 'organica', 'semi.js'));
+    for (const [t, smi, nom] of [['CH3-CH(OH)-CH3', 'CC(O)C', 'propan-2-ol'], ['CH3-C(=O)-OH', 'CC(=O)O', 'ácido etanoico'], ['CH2=CH-CH3', 'C=CC', 'propeno'], ['CH3CH2CH2OH', 'CCCO', 'propan-1-ol'], ['HC≡CH', 'C#C', 'etino'], ['CH3COOH', 'CC(=O)O', 'ácido etanoico'], ['CH3-CH2-CHO', 'CCC=O', 'propanal'], ['CH3-CN', 'CC#N', 'etanonitrilo'], ['CH3CONH2', 'CC(=O)N', 'etanamida'], ['CH3-CH(CH3)-CH2-Cl', 'CC(C)CCl', '1-cloro-2-metilpropano'], ['CH3-CO-CH3'.replace('CO', 'C(=O)'), 'CC(=O)C', 'propanona'], ['CH₃-CH₂-OH', 'CCO', 'etanol']]) {
+      const r = S.aSmiles(t); if (r.smiles !== smi) mal(`Orgánica · ${t} → ${r.smiles} en vez de ${smi}`);
+      const n = nombre(r.smiles); if (n !== nom) mal(`Orgánica · ${t}: nombre «${n}» en vez de «${nom}»`);
+    }
+    // ida y vuelta: el SMILES escrito de nuevo da la misma molécula
+    for (const smi of ['CC(O)C', 'CC(=O)O', 'C=CC', 'CCC#N', 'CC(C)CCl', 'CC(=O)CC', 'OCC(O)CO']) { const t = S.deSmiles(smi); if (S.aSmiles(t).smiles !== smi && nombre(S.aSmiles(t).smiles) !== nombre(smi)) mal(`Orgánica · ida y vuelta de ${smi}: ${t} → ${S.aSmiles(t).smiles}`); }
+    if (S.deSmiles('CC(O)C') !== 'CH₃-CH(OH)-CH₃') mal('Orgánica · deSmiles(CC(O)C) = ' + S.deSmiles('CC(O)C'));
+    for (const [t, q] of [['', 'vacío'], ['CH3-CH2-', 'acaba en enlace'], ['CH4-CH3', 'C con cinco enlaces'], ['CH3)', 'paréntesis sin abrir'], ['CH3(', 'paréntesis sin cerrar'], ['C6H6', 'número suelto'], ['CH3-CHOH-CH3', 'CHOH ambiguo'], ['Xx', 'elemento inventado']]) { let ok = false; try { S.aSmiles(t); } catch (e) { ok = true; } if (!ok) mal(`Orgánica · ${q} no da error`); }
+    if (fallos === antes) console.log('  ✓ Orgánica · semidesarrollada: 12 fórmulas a SMILES y nombre, ida y vuelta, abreviaturas COOH, CHO, CONH2 y CN, y errores');
+  }
   return async (browser) => {
     const { page, consola } = await pagina(browser, 1200, 900);
     await page.goto('file://' + path.join(publico, 'quimica', 'organica', 'index.html'));
@@ -144,6 +157,20 @@ CC(=O)C=C|but-3-en-2-ona`.split('\n').map((l) => l.split('|'));
     if (!/\(2S\)/.test(await page.locator('#titulo-mol').textContent())) mal('Orgánica: «Ver en 3D» de la tabla no cambia de estereoisómero');
     await page.fill('#smiles', 'CC(');
     if (await page.locator('#error').isHidden()) mal('Orgánica: un SMILES mal escrito no muestra el error');
+    // entrada semidesarrollada y botones de grupos
+    { const a0 = fallos;
+      await page.click('#tab-semi');
+      await page.fill('#semi', 'CH3-CH(OH)-CH3');
+      const r1 = await page.evaluate(() => ({ s: document.querySelector('#smiles').value, n: document.querySelector('#titulo-mol').textContent, semi: document.querySelector('#r-semi').textContent, vis: !document.querySelector('#p-semi').hidden, ocu: document.querySelector('#p-smiles').hidden }));
+      if (r1.s !== 'CC(O)C' || r1.n !== 'propan-2-ol' || r1.semi !== 'CH₃-CH(OH)-CH₃' || !r1.vis || !r1.ocu) mal('Orgánica · semidesarrollada en la página: ' + JSON.stringify(r1));
+      await page.fill('#semi', ''); await page.click('#grupos-semi button[data-t="CH3"]'); await page.click('#grupos-semi button[data-t="-"]'); await page.click('#grupos-semi button[data-t="CH2"]'); await page.click('#grupos-semi button[data-t="-"]'); await page.click('#grupos-semi button[data-t="OH"]');
+      if ((await page.inputValue('#semi')) !== 'CH3-CH2-OH' || (await page.textContent('#titulo-mol')) !== 'etanol') mal('Orgánica · los botones de grupos no arman el etanol: ' + await page.inputValue('#semi'));
+      await page.fill('#semi', 'CH3-CH2-');
+      if (await page.locator('#error').isHidden()) mal('Orgánica · una semidesarrollada incompleta no da error');
+      await page.click('#tab-smiles');
+      if (!(await page.locator('#p-semi').isHidden())) mal('Orgánica · volver a SMILES no oculta la entrada semidesarrollada');
+      if (fallos === a0) console.log('  ✓ Orgánica · semidesarrollada en la página: conversión a SMILES, botones de grupos y errores');
+    }
     await page.close();
     if (consola.length) mal('Orgánica: consola del navegador:\n      ' + consola.join('\n      '));
     if (fallos === antes) console.log(`  ✓ Orgánica: ${C.ejemplos.length} ejemplos en la página con 3D, tabla de estereoisómeros y errores, sin errores de consola`);

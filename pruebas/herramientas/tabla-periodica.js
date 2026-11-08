@@ -56,6 +56,24 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
         if (!(await page.evaluate((r) => TablaApp.responde(r), q.solucion.replace(/^grupo (\d+), periodo (\d+)$/, '$1 y $2').replace(/ \(.*$/, '')))) mal(`Tabla periódica: la solución no se da por buena en «${q.texto}» (${q.solucion})`);
         if (await page.evaluate(() => TablaApp.responde('zzz'))) mal(`Tabla periódica: «zzz» se da por bueno en «${q.texto}»`);
       }
+      // TP-1: estado según la temperatura (Hg líquido a 298 K, sólido a 200 K, gas a 700 K; Fe líquido a 2000 K; W sólido a 3000 K y gas a 6000 K)
+      await page.evaluate(() => TablaApp.temperatura(298));
+      const estT = (s, K) => page.evaluate(([s, K]) => TablaApp.estadoA(Elementos.porSimbolo[s], K), [s, K]);
+      for (const [s, K, st] of [['Hg', 298, 'líquido'], ['Hg', 200, 'sólido'], ['Hg', 700, 'gas'], ['Fe', 2000, 'líquido'], ['W', 3000, 'sólido'], ['W', 6000, 'gas'], ['Br', 270, 'líquido'], ['Br', 250, 'sólido'], ['Ga', 303, 'líquido'], ['H', 10, 'sólido'], ['H', 18, 'líquido'], ['O', 100, 'gas'], ['O', 80, 'líquido'], ['Og', 300, null]]) { const o = await estT(s, K); if (o !== st) mal(`Tabla periódica · estado de ${s} a ${K} K: ${o}, se esperaba ${st}`); }
+      if ((await page.locator('#ctl-temp').isHidden())) mal('Tabla periódica: el control de temperatura no aparece al elegir «Estado según la temperatura»');
+      await page.fill('#temp-n', '1500');
+      const cel = async (s) => (await page.locator(`.el:has(.s:text-is("${s}")) .v`).textContent()).trim();
+      if ((await cel('Fe')) !== 'S · sólido' || (await cel('Hg')) !== 'G · gas' || (await cel('Ga')) !== 'L · líquido') mal(`Tabla periódica: a 1500 K se esperaba Fe sólido, Hg gas y Ga líquido (sale ${await cel('Fe')}, ${await cel('Hg')}, ${await cel('Ga')})`);
+      if (!(await page.locator('#temp-txt').textContent()).includes('1226,85')) mal('Tabla periódica: la temperatura en °C no sale (1500 K = 1226,85 °C)');
+      if ((await page.locator('#leyenda').textContent()).includes('NaN')) mal('Tabla periódica: la leyenda de temperatura sale mal');
+      await page.evaluate(() => TablaApp.colorea('cat'));
+      // TP-3: capa de valencia, desapareados e iones habituales
+      await page.evaluate(() => TablaApp.elige(26));
+      const f26 = await page.locator('#ficha').textContent();
+      if (!f26.includes('3d⁶ 4s²') || !f26.includes('Electrones de valencia8') || !f26.includes('Desapareados4 (paramagnético)') || !f26.includes('Fe2+')) mal('Tabla periódica: la ficha del hierro no resume la capa de valencia');
+      const ion = async (z) => { await page.evaluate((z) => TablaApp.elige(z), z); return (await page.locator('#ficha dt:text-is("Iones habituales") + dd').textContent()).replace(/\s+/g, ' '); };
+      const i26 = await ion(26), i17 = await ion(17), i10 = await ion(10), i11 = await ion(11);
+      if (!i26.includes('[Ar] 3d⁶ ·') || !i26.includes('[Ar] 3d⁵') || !i17.includes('[Ar]') || !i11.includes('[He] 2s² 2p⁶') && !i11.includes('[Ne]') || !i10.includes('no forma')) mal(`Tabla periódica: iones habituales mal (Fe: ${i26}; Cl: ${i17}; Ne: ${i10}; Na: ${i11})`);
       await page.setViewportSize({ width: 390, height: 800 });
       if (await page.locator('.el .v').first().isVisible()) mal('Tabla periódica: en el móvil las casillas siguen mostrando el valor');
       const ancho = await page.evaluate(() => document.documentElement.scrollWidth);

@@ -9,7 +9,7 @@
   const MODOS = [['fuerte', 'Ácido o base fuerte'], ['debil', 'Ácido o base débil'], ['sal', 'Hidrólisis de una sal'], ['inverso', 'Ka, Kb o C a partir del pH'], ['tampon', 'Disolución reguladora (tampón)'], ['preparar', 'Preparar un tampón'], ['mezcla', 'Mezcla de un ácido y una base'], ['poliprotico', 'Ácido poliprótico'], ['valoracion', 'Valoración']];
 
   let sc = copia(P.ejemplos[0].sc);
-  try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && MODOS.some(([k]) => k === g.modo)) sc = g; } catch (e) { /* sin almacenamiento */ }
+  try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && MODOS.some(([k]) => k === g.modo)) sc = { ...sc, ...g }; } catch (e) { /* sin almacenamiento */ }
   const guarda = () => { try { localStorage.setItem(CLAVE, JSON.stringify(sc)); } catch (e) { /* sin almacenamiento */ } };
   let sol = null, col = {}, anda = true;
 
@@ -46,7 +46,7 @@
       h += elige('tipo', 'Qué se mezcla', [['ff', 'Ácido fuerte y base fuerte'], ['df', 'Ácido débil y base fuerte'], ['fd', 'Ácido fuerte y base débil']]);
       h += fila('Ca', 'Concentración del ácido', 'mol/L') + fila('Va', 'Volumen del ácido', 'mL') + fila('Cb', 'Concentración de la base', 'mol/L') + fila('Vb', 'Volumen de la base', 'mL') + (sc.tipo === 'df' || sc.tipo === 'fd' ? kk(sc.tipo === 'fd') : '');
     } else if (sc.modo === 'sal') {
-      h += elige('tipo', 'Qué sal', [['basica', 'De ácido débil (acetato de sodio)'], ['acida', 'De base débil (cloruro de amonio)'], ['neutra', 'De ácido y base fuertes (NaCl)']]) + fila('C', 'Concentración de la sal', 'mol/L') + (sc.tipo === 'neutra' ? '' : kk(sc.tipo === 'acida'));
+      h += elige('tipo', 'Qué sal', [['basica', 'De ácido débil (acetato de sodio)'], ['acida', 'De base débil (cloruro de amonio)'], ['neutra', 'De ácido y base fuertes (NaCl)'], ['anfotera', 'Anfótera (NaHCO₃, NaH₂PO₄)']]) + fila('C', 'Concentración de la sal', 'mol/L') + (sc.tipo === 'neutra' ? '' : sc.tipo === 'anfotera' ? fila('K1', 'Ka₁ del ácido H₂A') + fila('K2', 'Ka₂ (de HA⁻)') : kk(sc.tipo === 'acida'));
     } else if (sc.modo === 'inverso') {
       h += elige('fuerza', 'Qué es', [['debil', 'Débil'], ['fuerte', 'Fuerte']]) + especie([['acido', 'Un ácido'], ['base', 'Una base']]) + fila('pHm', 'pH medido');
       if (sc.fuerza === 'fuerte') h += fila('n', sc.especie === 'base' ? 'OH⁻ por fórmula' : 'H⁺ por fórmula');
@@ -109,7 +109,7 @@
     else if (sol.modo === 'debil') { h = dato('pH', `pH = ${f2(sol.pH)}`) + dato(sol.base ? '[OH⁻]' : '[H₃O⁺]', `${f(sol.x)} M`) + dato('Grado de disociación', `α = ${f(100 * sol.alfa)} %`); ley += sol.base ? ' En gris las moléculas de B sin reaccionar y en verde los BH⁺.' : ' En gris las moléculas de HA sin disociar y en verde los A⁻.'; }
     else if (sol.modo === 'tampon') { h = dato('pH del tampón', `pH = ${f2(sol.pH0)}`) + (sol.anade !== 'nada' ? dato('Tras añadir', `pH = ${f2(sol.pH)}`) + dato('En agua pura sería', `pH = ${f2(sol.pHagua)}`) : '') + dato('pKa del par', `pK<sub>a</sub> = ${f2(sol.pKa)}`); ley += ' En gris la forma ácida del par y en verde la básica.'; }
     else if (sol.modo === 'mezcla') h = dato('pH', `pH = ${f2(sol.pH)}`) + dato('Moles de ácido', `${f(sol.na)} mol`) + dato('Moles de base', `${f(sol.nb)} mol`);
-    else if (sol.modo === 'sal') h = dato('pH', `pH = ${f2(sol.pH)}`) + (sol.Kh ? dato('Constante de hidrólisis', `${f(sol.Kh)}`) + dato('Grado de hidrólisis', `${f(100 * sol.alfa)} %`) : '');
+    else if (sol.modo === 'sal') h = dato('pH', `pH = ${f2(sol.pH)}`) + (sol.pH0 !== undefined ? dato('Aproximación ½(pKa₁ + pKa₂)', `pH ≈ ${f2(sol.pH0)}`, '') + dato('Concentración [H₃O⁺]', `${f(sol.h)} M`, '') : '') + (sol.Kh ? dato('Constante de hidrólisis', `${f(sol.Kh)}`) + dato('Grado de hidrólisis', `${f(100 * sol.alfa)} %`) : '');
     else if (sol.modo === 'inverso') h = (sol.K ? dato(sol.base ? 'Kb' : 'Ka', `${f(sol.K)}`) + dato(sol.base ? 'pKb' : 'pKa', `${f2(-Math.log10(sol.K))}`) : '') + dato('Concentración', `${f(sol.C)} M`) + (sol.alfa ? dato('Grado de disociación', `α = ${f(100 * sol.alfa)} %`) : '');
     else if (sol.modo === 'preparar') h = dato('Cociente base/ácido', `${f(sol.cociente)}`) + dato('Concentración de la sal', `${f(sol.Cs)} M`) + (sol.masa !== null ? dato('Masa de sal', `${f(sol.masa)} g`) : dato('Moles de sal', `${f(sol.ns)} mol`));
     else if (sol.modo === 'poliprotico') h = dato('pH', `pH = ${f2(sol.pH)}`) + dato('Solo con Ka₁', `pH = ${f2(sol.pH1)}`) + dato('[A²⁻]', `${f(sol.conc[2])} M`);
@@ -125,7 +125,14 @@
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
     $('#grafica').hidden = sol.modo !== 'valoracion';
     $('#especies').hidden = !(sol.modo === 'poliprotico' || (sol.modo === 'valoracion' && sol.poli));
-    tA = 0; particulas(); dibuja(); grafica(); especies();
+    tA = 0; particulas(); dibuja(); grafica(); especies(); exporta();
+  }
+  // PNG y datos de la curva de valoración y del diagrama de especies (Herramienta.exportar)
+  function exporta() {
+    const n6 = (v) => String(+Number(v).toPrecision(6)).replace('.', ',');
+    const b1 = Herramienta.exportar('#grafica', { nombre: 'ph-valoracion', titulo: 'Curva de valoración: pH frente al volumen', etiqueta: 'la curva de valoración', datos: () => (sol && sol.curva ? { cab: ['V (mL)', 'pH'], filas: sol.curva.map(([v, p]) => [n6(v), n6(p)]) } : null) });
+    const b2 = Herramienta.exportar('#especies', { nombre: 'ph-especies', titulo: 'Diagrama de especies: fracción frente al pH', etiqueta: 'el diagrama de especies', datos: () => { if (!sol || !sol.Kas) return null; const nm = sol.Kas.length === 2 ? ['H₂A', 'HA⁻', 'A²⁻'] : ['H₃A', 'H₂A⁻', 'HA²⁻', 'A³⁻']; return { cab: ['pH', ...nm.map((x) => 'α(' + x + ')')], filas: Array.from({ length: 141 }, (_, i) => { const p = i / 10; return [n6(p), ...P.fracciones(sol.Kas, p).map(n6)]; }) }; } });
+    if (b1) b1.hidden = $('#grafica').hidden; if (b2) b2.hidden = $('#especies').hidden;
   }
 
   /* ---------- Colores ---------- */
@@ -138,7 +145,7 @@
     for (let i = 1; i < UNIV.length; i++) if (p <= UNIV[i][0]) { const [p0, c0] = UNIV[i - 1], [p1, c1] = UNIV[i]; return mezclaRGB(c0, c1, (p - p0) / (p1 - p0)); }
     return UNIV[UNIV.length - 1][1];
   }
-  const NOMBRES = { rojo: [214, 50, 40], amarillo: [240, 200, 50], azul: [40, 100, 210], rosa: [224, 80, 156], incoloro: null };
+  const NOMBRES = { rojo: [214, 50, 40], amarillo: [240, 200, 50], azul: [40, 100, 210], rosa: [224, 80, 156], 'púrpura': [130, 60, 160], 'rojo-púrpura': [190, 40, 110], incoloro: null };
   // color del indicador de la valoración a ese pH (incoloro = el del agua)
   function deIndicador(ind, pH, agua) {
     const a = NOMBRES[ind[3]] || agua, b = NOMBRES[ind[4]] || agua, s = Math.max(0, Math.min(1, (pH - ind[1]) / (ind[2] - ind[1])));

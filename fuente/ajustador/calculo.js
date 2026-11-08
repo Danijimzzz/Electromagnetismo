@@ -56,7 +56,28 @@ const Ajustador = (() => {
       { t: 'Reacción ajustada', html: aj.html },
       { t: 'Comprobación', html: tabla.map((r) => `${r.el}: ${r.iz} = ${r.de}`).join(' · ') + (cargas ? ` · carga: ${cargas.iz} = ${cargas.de}` : '') },
     ];
-    return { html: aj.html, especies: sp, elementos, tabla, cargas, pasos };
+    // AJ-2: tipo de reacción y, si es molecular con sales o ácidos, ecuación iónica completa y neta sin los espectadores
+    const I = typeof Iones !== 'undefined' ? Iones : require('../quimica/iones.js');
+    const conEstado = sp.map((s) => {
+      const dado = Formulas.leer(s.texto).estado, base = s.texto.replace(/\s*\((?:s|l|g|aq|ac|dis)\)\s*$/i, '').trim();
+      const supuesto = dado ? null : I.estadoPorReglas(base);
+      return { texto: base, estado: dado || supuesto.estado, supuesto, coef: s.coef, reactivo: s.reactivo, carga: s.carga, html: nom(s) };
+    });
+    const tipo = I.tipo(conEstado);
+    pasos.push({ t: 'Tipo de reacción', html: `Es una reacción de <b>${tipo}</b>.` });
+    let ionica = null;
+    const reactIon = conEstado.filter((s) => s.reactivo && (I.ionizar(s.texto) || I.esAcido(s.texto))).length;
+    const hayElemento = conEstado.some((s) => s.reactivo && /^[A-Z][a-z]?\d*$/.test(s.texto));
+    const hayIonico = !hayCarga && (sp.some((s) => /\(aq\)/i.test(s.texto)) || reactIon >= 2 || (reactIon >= 1 && hayElemento));
+    if (hayIonico) {
+      const sup = conEstado.filter((s) => s.supuesto);
+      if (sup.length) pasos.push({ t: 'Estados de agregación (supuestos)', html: `Como no están escritos, se suponen con las reglas de solubilidad (puedes escribirlos tú, como NaCl(aq)): ${sup.map((s) => `${s.html}: (${s.estado}), ${s.supuesto.motivo}`).join('; ')}.` });
+      ionica = I.neta(conEstado);
+      pasos.push({ t: 'Ecuación iónica completa', html: `Los electrolitos fuertes disueltos (sales solubles, ácidos y bases fuertes) se escriben como iones; los sólidos, líquidos, gases y electrolitos débiles, enteros:<br>${ionica.htmlCompleta}` });
+      pasos.push({ t: 'Iones espectadores', html: ionica.espectadores.length ? `Aparecen igual a los dos lados y no reaccionan: ${ionica.htmlEspectadores}.` : 'No hay iones que aparezcan igual a los dos lados.' });
+      pasos.push({ t: 'Ecuación iónica neta', html: ionica.hayNeta ? `<b>${ionica.htmlNeta}</b>` : 'No queda nada: todos los iones son espectadores, así que <b>no hay reacción neta</b> (no se forma ningún sólido, gas ni electrolito débil).' });
+    }
+    return { html: aj.html, especies: sp, elementos, tabla, cargas, pasos, tipo, ionica };
   }
 
   const ejemplos = [
@@ -69,6 +90,9 @@ const Ajustador = (() => {
     { clave: 'aluminio', nombre: 'Aluminio con ácido sulfúrico', sc: { ecuacion: 'Al + H2SO4 -> Al2(SO4)3 + H2' } },
     { clave: 'cobre-nitrico', nombre: 'Cobre con ácido nítrico', sc: { ecuacion: 'Cu + HNO3 -> Cu(NO3)2 + NO + H2O' } },
     { clave: 'permanganato', nombre: 'Permanganato con ácido clorhídrico', sc: { ecuacion: 'KMnO4 + HCl -> KCl + MnCl2 + Cl2 + H2O' } },
+    { clave: 'precipitacion', nombre: 'Precipitación: nitrato de plata y cloruro de sodio', sc: { ecuacion: 'AgNO3 + NaCl -> AgCl + NaNO3' } },
+    { clave: 'neutralizacion', nombre: 'Neutralización: ácido sulfúrico e hidróxido de sodio', sc: { ecuacion: 'H2SO4 + NaOH -> Na2SO4 + H2O' } },
+    { clave: 'carbonato-acido', nombre: 'Carbonato de calcio con ácido clorhídrico', sc: { ecuacion: 'CaCO3 + HCl -> CaCl2 + CO2 + H2O' } },
     { clave: 'redox-ionica', nombre: 'Redox iónica: permanganato y hierro(II)', sc: { ecuacion: 'MnO4^- + Fe^2+ + H^+ -> Mn^2+ + Fe^3+ + H2O' } },
   ];
 

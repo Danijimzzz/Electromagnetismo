@@ -19,6 +19,33 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       if (r.desapareados !== d) mal(`Configuración · ${x}: ${r.desapareados} desapareados, se esperaban ${d}`);
       if ([q.n, q.l, q.ml, q.ms].join(',') !== qn) mal(`Configuración · ${x}: números cuánticos ${[q.n, q.l, q.ml, q.ms]}, se esperaban ${qn}`);
     }
+    // CE-1: los 118 elementos contra la referencia (NIST para Z ≤ 103; los siguientes son los previstos). Se calcula Madelung por otro camino
+    // y se comparan los 20 elementos que se apartan con su configuración exacta de la referencia, escrita a mano.
+    {
+      const Elem = require(path.join(fuente, 'quimica', 'elementos.js')), SUPS = '⁰¹²³⁴⁵⁶⁷⁸⁹', num = (t) => +[...t].map((c) => SUPS.indexOf(c)).join('');
+      const EXC = { 24: '[Ar] 3d⁵ 4s¹', 29: '[Ar] 3d¹⁰ 4s¹', 41: '[Kr] 4d⁴ 5s¹', 42: '[Kr] 4d⁵ 5s¹', 44: '[Kr] 4d⁷ 5s¹', 45: '[Kr] 4d⁸ 5s¹', 46: '[Kr] 4d¹⁰', 47: '[Kr] 4d¹⁰ 5s¹',
+        57: '[Xe] 5d¹ 6s²', 58: '[Xe] 4f¹ 5d¹ 6s²', 64: '[Xe] 4f⁷ 5d¹ 6s²', 78: '[Xe] 4f¹⁴ 5d⁹ 6s¹', 79: '[Xe] 4f¹⁴ 5d¹⁰ 6s¹',
+        89: '[Rn] 6d¹ 7s²', 90: '[Rn] 6d² 7s²', 91: '[Rn] 5f² 6d¹ 7s²', 92: '[Rn] 5f³ 6d¹ 7s²', 93: '[Rn] 5f⁴ 6d¹ 7s²', 96: '[Rn] 5f⁷ 6d¹ 7s²', 103: '[Rn] 5f¹⁴ 7s² 7p¹' };
+      const orden = []; for (let suma = 1; suma <= 8; suma++) for (let l = suma >> 1; l >= 0; l--) { const n = suma - l; if (n > l) orden.push([n, l]); }
+      const madelung = (Z) => { const m = {}; let r = Z; for (const [n, l] of orden) { if (!r) break; const k = Math.min(2 * (2 * l + 1), r); m[n + 'spdf'[l]] = k; r -= k; } return m; };
+      const comoMapa = (txt) => { const m = {}; const nob = /^\[(\w+)\]/.exec(txt); if (nob) Object.assign(m, madelung(Elem.porSimbolo[nob[1]].Z)); for (const o of txt.replace(/^\[\w+\]/, '').matchAll(/(\d[spdf])([⁰¹²³⁴⁵⁶⁷⁸⁹]+)/g)) m[o[1]] = num(o[2]); return m; };
+      const igual = (a, b) => { const ks = new Set([...Object.keys(a), ...Object.keys(b)]); return [...ks].every((k) => (a[k] || 0) === (b[k] || 0)); };
+      let difieren = 0;
+      for (const e of Elem.lista) {
+        const real = Object.fromEntries(Elem.configuracion(e.Z).map((o) => [o.nombre, o.e])), esperada = EXC[e.Z] ? comoMapa(EXC[e.Z]) : madelung(e.Z);
+        if (!igual(real, esperada)) mal(`Configuración (CE-1) · ${e.simbolo} (${e.Z}): sale ${Elem.abreviada(e.Z)}, la referencia es ${EXC[e.Z] || Object.entries(esperada).map(([k, v]) => k + v).join(' ')}`);
+        if (!igual(real, madelung(e.Z))) difieren++;
+        if (EXC[e.Z] && Elem.abreviada(e.Z).replace(/ /g, '') !== EXC[e.Z].replace(/ /g, '') && !igual(comoMapa(Elem.abreviada(e.Z)), comoMapa(EXC[e.Z]))) mal(`Configuración (CE-1) · ${e.simbolo}: abreviada ${Elem.abreviada(e.Z)}`);
+        if (Configuracion.analizar(String(e.Z)).excepcion !== !!EXC[e.Z]) mal(`Configuración (CE-1) · ${e.simbolo}: el aviso de excepción no coincide con la referencia`);
+      }
+      if (difieren !== 20) mal(`Configuración (CE-1): ${difieren} elementos se apartan de Madelung, la referencia tiene 20`);
+      // iones: los de transición pierden primero los ns; los del bloque p, los np antes que los ns; los aniones llenan el siguiente orbital
+      const IONES = { 'Ti^2+': '[Ar] 3d²', 'V^3+': '[Ar] 3d²', 'Cr^3+': '[Ar] 3d³', 'Cr^2+': '[Ar] 3d⁴', 'Mn^2+': '[Ar] 3d⁵', 'Fe^3+': '[Ar] 3d⁵', 'Co^2+': '[Ar] 3d⁷', 'Ni^2+': '[Ar] 3d⁸', 'Cu^2+': '[Ar] 3d⁹',
+        'Zn^2+': '[Ar] 3d¹⁰', 'Ag+': '[Kr] 4d¹⁰', 'Pd^2+': '[Kr] 4d⁸', 'Au+': '[Xe] 4f¹⁴ 5d¹⁰', 'Au^3+': '[Xe] 4f¹⁴ 5d⁸', 'Sn^2+': '[Kr] 4d¹⁰ 5s²', 'Pb^2+': '[Xe] 4f¹⁴ 5d¹⁰ 6s²', 'Tl+': '[Xe] 4f¹⁴ 5d¹⁰ 6s²',
+        'Ce^3+': '[Xe] 4f¹', 'Gd^3+': '[Xe] 4f⁷', 'Mn^7+': '[Ne] 3s² 3p⁶', 'Sc^3+': '[Ne] 3s² 3p⁶', 'Ca^2+': '[Ne] 3s² 3p⁶', 'O^2-': '[He] 2s² 2p⁶', 'S^2-': '[Ne] 3s² 3p⁶', 'N^3-': '[He] 2s² 2p⁶', 'H-': '1s²' };
+      for (const [x, ref] of Object.entries(IONES)) { const r = Configuracion.analizar(x), refMapa = comoMapa(ref), real = Object.fromEntries(Elem.configuracion(r.Z, r.carga).map((o) => [o.nombre, o.e])); if (!igual(real, refMapa)) mal(`Configuración (CE-1) · ${x}: ${r.abreviada}, la referencia es ${ref}`); }
+      if (Configuracion.analizar('Fe^2+').electrones !== 24) mal('Configuración (CE-1): el Fe²⁺ tiene 24 electrones');
+    }
     if (Configuracion.analizar('Cr^3+').excepcion) mal('Configuración: el aviso de excepción es solo para el átomo neutro');
     if (Configuracion.analizar('Pt').cambio.esperada !== '6s² 5d⁸' || Configuracion.analizar('Pt').cambio.real !== '6s¹ 5d⁹') mal('Configuración: la excepción del platino debería ser 6s² 5d⁸ → 6s¹ 5d⁹');
     if (!Configuracion.analizar('Cr').excepcion || Configuracion.analizar('Fe').excepcion) mal('Configuración: el cromo es una excepción y el hierro no');

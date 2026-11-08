@@ -45,6 +45,23 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       let ok = false; try { CinC.resolver(sc); } catch (e) { ok = true; }
       if (!ok) mal(`Cinética: ${q} no da error`);
     }
+    // CI-2 · consecutivas: k₁ = 0,2, k₂ = 0,1 ⇒ t_máx = ln(k₂/k₁)/(k₂ − k₁) = 6,931 y B_máx = A₀(k₁/k₂)^(k₂/(k₂−k₁)) = 0,5
+    { const x = r('consec-abc'), cerca = (p, q, tol, w) => { if (!(Math.abs(p - q) <= tol * Math.max(1, Math.abs(q)))) mal(`Cinética · ${w}: ${p} en vez de ${q}`); };
+      cerca(x.tmax, Math.log(0.5) / -0.1, 1e-12, 't máx de B'); cerca(x.Bmax, 0.5, 1e-12, 'B máx'); cerca(x.curva[0].A, 1, 1e-12, 'A(0)');
+      for (const p of x.curva) { cerca(p.A + p.B + p.C, 1, 1e-9, 'balance de materia A+B+C'); }
+      const m = x.curva.reduce((a, b) => (b.B > a.B ? b : a)); cerca(m.B, 0.5, 2e-3, 'B máximo en la curva');
+      const y = r('consec-igual'); cerca(y.tmax, 1 / 0.05, 1e-12, 't máx con k₁ = k₂'); cerca(y.Bmax, 0.8 / Math.E, 1e-12, 'B máx con k₁ = k₂');
+      // A ⇌ B, kf = 0,3, kr = 0,1: K = 3, [A]eq = 0,25, [B]eq = 0,75, τ = 2,5
+      const z = r('reversible'); cerca(z.K, 3, 1e-12, 'K de A ⇌ B'); cerca(z.Aeq, 0.25, 1e-12, '[A]eq'); cerca(z.Beq, 0.75, 1e-12, '[B]eq'); cerca(z.tau, 2.5, 1e-12, 'τ'); cerca(z.curva[200].A, 0.25, 4e-3, 'A al final'); }
+    // CI-1 · mecanismos: orden global 3 (2 NO + O₂), O₃ con orden −1 en O₂, y el estado estacionario con sus casos límite
+    { const a1 = r('mec-no-o2'), o1 = a1.leyes[0].ordenes; if (o1.NO !== 2 || o1.O2 !== 1 || Object.keys(o1).length !== 2) mal('Cinética · ley de 2 NO + O2 por etapa lenta: ' + JSON.stringify(o1));
+      if (a1.global.re.NO !== 2 || a1.global.re.O2 !== 1 || a1.global.pr.NO2 !== 2 || a1.intermedios.join() !== 'N2O2') mal('Cinética · global o intermedio del NO: ' + JSON.stringify(a1.global) + a1.intermedios);
+      const o3 = r('mec-ozono').leyes[0].ordenes; if (o3.O3 !== 2 || o3.O2 !== -1) mal('Cinética · ley del ozono: ' + JSON.stringify(o3));
+      const e1 = r('mec-no-o2-ee'); if (e1.leyes.length !== 2 || e1.leyes[0].ordenes.O2 !== 1 || e1.leyes[1].ordenes.O2 !== undefined || e1.leyes[1].ordenes.NO !== 2) mal('Cinética · casos límite del estado estacionario: ' + JSON.stringify(e1.leyes.map((l) => l.ordenes)));
+      if (!e1.cuadra[0].ok || e1.cuadra[1].ok) mal('Cinética · la comparación con el experimento (NO=2, O2=1) falla: ' + JSON.stringify(e1.cuadra));
+      const mal1 = CinC.resolver({ modo: 'mecanismo', etapas: 'NO + NO <=> N2O2\nN2O2 + O2 -> 2 NO2', metodo: 'lenta', lenta: '1', exp: 'NO=2, O2=1' }); if (mal1.cuadra.some((c) => c.ok)) mal('Cinética · con la etapa 1 lenta no puede salir orden 3');
+      for (const [sc, q] of [[{ modo: 'mecanismo', etapas: 'A -> B', lenta: '1' }, 'una sola etapa'], [{ modo: 'mecanismo', etapas: 'A B', lenta: '1' }, 'etapa sin flecha'], [{ modo: 'mecanismo', etapas: 'A -> B\nB -> C', lenta: '5' }, 'etapa lenta que no existe'], [{ modo: 'mecanismo', etapas: 'A -> I\nI + B -> C', lenta: '2', metodo: 'lenta' }, 'intermedio sin equilibrio previo'], [{ modo: 'consecutivas', tipo: 'abc', k1: '0', k2: '1', A0: '1' }, 'k₁ = 0'], [{ modo: 'consecutivas', tipo: 'rev', kf: '1', kr: '', A0: '1' }, 'falta kr']]) {
+        let ok = false; try { CinC.resolver(sc); } catch (e) { ok = true; } if (!ok) mal(`Cinética · ${q} no da error`); } }
     if (fallos === antes) console.log(`  ✓ Cinética química: ${CinC.ejemplos.length} ejemplos, leyes integradas y vidas medias a mano, unidades de k, coeficiente de A, k de la vida media, de un % o de dos medidas, orden a partir de datos con aviso, velocidades iniciales con tres reactivos, Arrhenius de ida y vuelta, ajustado y con catalizador, y errores`);
   }
 
@@ -61,7 +78,23 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
         const r = await page.evaluate(() => ({ err: !document.querySelector('#error').hidden, pasos: document.querySelectorAll('#pasos li').length, mathml: document.querySelectorAll('#pasos math').length, dolar: /\$/.test(document.querySelector('#pasos').textContent + document.querySelector('#resumen').textContent), res: document.querySelectorAll('#resumen > div.num').length, modo: document.querySelector('#f-modo').value, vaso: !document.querySelector('#escena').hidden }));
         if (r.err || r.pasos < 3 || r.res < 1) mal(`Cinética · ${e.clave}: falta el resultado o el desarrollo`);
         if (!r.mathml || r.dolar) mal(`Cinética · ${e.clave}: el desarrollo no sale en MathML`);
-        if (r.modo !== e.sc.modo || r.vaso !== (e.sc.modo !== 'iniciales')) mal(`Cinética · ${e.clave}: el modo o el vaso no cuadran`);
+        if (r.modo !== e.sc.modo || r.vaso !== !['iniciales', 'consecutivas', 'mecanismo'].includes(e.sc.modo)) mal(`Cinética · ${e.clave}: el modo o el vaso no cuadran`);
+      }
+      // consecutivas y mecanismos en la página
+      { const a0 = fallos;
+        await page.evaluate(() => CineticaApp.abrirEjemplo('consec-abc'));
+        const c1 = await page.evaluate(() => ({ r: CineticaApp.resultado(), g: !document.querySelector('#grafica').hidden, b: document.querySelectorAll('.exportar button').length }));
+        if (Math.abs(c1.r.Bmax - 0.5) > 1e-9 || !c1.g || c1.b < 2) mal('Cinética · A → B → C en la página: ' + JSON.stringify(c1));
+        await page.selectOption('#f-tipo', 'rev');
+        if (!(await page.locator('#f-kf').count()) || !(await page.evaluate(() => CineticaApp.resultado().Keq > 0))) mal('Cinética · al pasar a A ⇌ B no salen kf, kr ni K');
+        await page.evaluate(() => CineticaApp.abrirEjemplo('mec-no-o2'));
+        const m1 = await page.evaluate(() => ({ t: document.querySelector('#resumen').textContent, g: document.querySelector('#grafica').hidden, ta: !!document.querySelector('#f-etapas') }));
+        if (!/\[NO\]\s*2|NO.*2/.test(m1.t) || !/Compatible/.test(m1.t) || !m1.g || !m1.ta) mal('Cinética · mecanismo en la página: ' + m1.t.slice(0, 200));
+        await page.fill('#f-etapas', 'NO + NO -> N2O2');
+        if (await page.locator('#error').isHidden()) mal('Cinética · un mecanismo con una sola etapa no muestra el error');
+        await page.fill('#f-etapas', 'NO + NO <=> N2O2\nN2O2 + O2 -> 2 NO2'); await page.selectOption('#f-metodo', 'ee');
+        if (await page.evaluate(() => CineticaApp.resultado().leyes.length) !== 2) mal('Cinética · el estado estacionario no da los dos casos límite en la página');
+        if (fallos === a0) console.log('  ✓ Cinética · consecutivas, reversibles y mecanismos en la página, con la gráfica y los botones de exportar');
       }
       await page.evaluate(() => CineticaApp.abrirEjemplo('primer-orden'));
       if (!(await page.locator('#resumen').textContent()).includes('1359')) mal('Cinética: la vida media del N₂O₅ (1359 s) no sale en la página');

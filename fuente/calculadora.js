@@ -37,6 +37,8 @@
        usar,         botones «Usar en…» (opcional): [{ a: 'carpeta-destino', nombre, datos(sol, sc) }]
                      que abren esa herramienta con los datos que devuelve datos(), en el
                      formato de estado de la otra (la dirección lleva #d=, como «Copiar enlace»)
+       exportar,     (ya no hace falta: todas las gráficas llevan «Descargar PNG» y «Copiar datos»)
+       usarEn(sol, sc), [{ texto, carpeta, estado }]: enlaces «Usar en…» a otra herramienta con su estado (opcional)
        nota,         texto de ayuda bajo los datos
        datosExporta(sol), tabla { cab, filas } para «Copiar datos» (opcional; si no, los puntos de las series)
        azar(),       sc al azar para el modo práctica (opcional)
@@ -217,12 +219,17 @@ const Calculadora = (() => {
       } catch (e) {
         sol = null; err.textContent = e.message; err.hidden = false;
         if ($('#acciones')) $('#acciones').innerHTML = '';
-        for (const s of ['#resumen', '#pasos', '#leyenda', '#tabla']) { const el = $(s); if (el) el.innerHTML = ''; }
+        for (const s of ['#resumen', '#pasos', '#leyenda', '#tabla', '#usar-en']) { const el = $(s); if (el) el.innerHTML = ''; }
         dibuja(); return;
       }
       err.hidden = true; guarda();
       pintaAcciones();
       $('#resumen').innerHTML = filas.map(([t, v, ancho]) => `<div${ancho ? ' class="ancho"' : ''}><span>${t}</span><b>${v}</b></div>`).join('');
+      if (o.usarEn) {
+        let ue = $('#usar-en');
+        if (!ue) { ue = document.createElement('div'); ue.id = 'usar-en'; ue.className = 'controles'; ue.setAttribute('role', 'group'); ue.setAttribute('aria-label', 'Usar el resultado en otra herramienta'); $('#resumen').insertAdjacentElement('afterend', ue); }
+        ue.innerHTML = (o.usarEn(sol, sc) || []).map((l) => `<a class="btn" href="${esc(Herramienta.enlaceA(l.carpeta, l.estado))}">${l.texto}</a>`).join('');
+      }
       $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
       const tb = $('#tabla'); if (tb) { const h = o.tabla ? o.tabla(sol) : ''; tb.innerHTML = h; tb.closest('.card').hidden = !h; }
       $('#leyenda').innerHTML = o.leyenda ? o.leyenda(sol) : '';

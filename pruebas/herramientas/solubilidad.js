@@ -54,6 +54,32 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     await page.evaluate(() => SolubilidadApp.abrirEjemplo('agcl'));
     await page.fill('#f-Kps', '0');
     if (await page.locator('#error').isHidden()) mal('Solubilidad: un Kps cero no muestra el error');
+    // QU-4 · exportar la gráfica y sus datos
+    { const a0 = fallos;
+      for (const [c, q] of [['caoh2', 'solub'], ['mg-oh-ph', 'ph'], ['agcl-nh3', 'complejo']]) {
+        await page.evaluate((x) => SolubilidadApp.abrirEjemplo(x), c);
+        const n = await page.evaluate(() => [...document.querySelectorAll('.exportar')].filter((x) => x.previousElementSibling && x.previousElementSibling.id === 'grafica').map((x) => x.querySelectorAll('button').length));
+        if (!n.length || n[0] < 2) mal(`Solubilidad · ${q}: faltan los botones de exportar`);
+      }
+      if (fallos === a0) console.log('  ✓ Solubilidad · exportar PNG y datos en los modos de solubilidad, pH y complejos');
+    }
+    // QU-2 · hidróxido poco soluble → pH de su disolución saturada
+    { const a0 = fallos;
+      await page.evaluate(() => SolubilidadApp.abrirEjemplo('caoh2'));
+      const href = await page.evaluate(() => document.querySelector('#u-ph')?.getAttribute('href') || '');
+      const s0 = await page.evaluate(() => SolubilidadApp.resultado().s);
+      if (!/^\.\.\/ph\/#d=/.test(href)) mal('Solubilidad · falta el enlace al pH del Ca(OH)2: ' + href);
+      else {
+        const e = await page.evaluate(`(${(h) => JSON.parse(decodeURIComponent(escape(atob(h.slice(h.indexOf('#d=') + 3).replace(/-/g, '+').replace(/_/g, '/')))))})(${JSON.stringify(href)})`);
+        if (e.modo !== 'fuerte' || e.especie !== 'base' || e.n !== '2' || Math.abs(+e.C / s0 - 1) > 1e-9) mal('Solubilidad · estado enviado a pH: ' + JSON.stringify(e));
+        await page.goto('file://' + path.join(publico, 'quimica', 'ph', 'index.html') + href.slice(href.indexOf('#')));
+        await page.waitForFunction(() => window.PhApp || window.PHApp);
+        const pH = await page.evaluate(() => (window.PhApp || window.PHApp).resultado().pH);
+        const esperado = 14 + Math.log10(2 * s0);
+        if (!(Math.abs(pH - esperado) < 0.01)) mal(`Solubilidad · pH del Ca(OH)2 saturado: ${pH} en vez de ${esperado}`);
+      }
+      if (fallos === a0) console.log('  ✓ Solubilidad · «Calcular el pH de la disolución saturada»: el Ca(OH)2 envía s y n = 2 y la herramienta de pH da 14 + log(2s)');
+    }
     await page.close();
     if (consola.length) mal('Solubilidad: consola del navegador:\n      ' + consola.join('\n      '));
     if (fallos === antes) console.log(`  ✓ Solubilidad: ${C.ejemplos.length} ejemplos en la página con MathML y errores, sin errores de consola`);
