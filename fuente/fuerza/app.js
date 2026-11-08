@@ -9,7 +9,7 @@
 (() => {
   const { $, esc, copia, txt } = Herramienta;
   const F = Fuerza, f = F.f, CLAVE = 'fuerza-v1';
-  const MODOS = [['carga', 'Carga en un campo B (circunferencia o hélice)'], ['franja', 'Carga que entra en una franja de campo'], ['vectorial', 'Fuerza de Lorentz con vectores'], ['cruzados', 'Campos E y B cruzados (cicloide)'], ['selector', 'Selector de velocidades y espectrómetro'], ['ciclotron', 'Ciclotrón'], ['hall', 'Efecto Hall'], ['hilo', 'Fuerza sobre un hilo'], ['espira', 'Par sobre una espira'], ['paralelos', 'Fuerza entre dos hilos paralelos']];
+  const MODOS = [['trayectoria', 'Trayectoria con E y B en cualquier dirección (3D)'], ['espejo', 'Espejo magnético (botella)'], ['carga', 'Carga en un campo B (circunferencia o hélice)'], ['franja', 'Carga que entra en una franja de campo'], ['vectorial', 'Fuerza de Lorentz con vectores'], ['cruzados', 'Campos E y B cruzados (cicloide)'], ['selector', 'Selector de velocidades y espectrómetro'], ['ciclotron', 'Ciclotrón'], ['hall', 'Efecto Hall'], ['hilo', 'Fuerza sobre un hilo'], ['espira', 'Par sobre una espira'], ['paralelos', 'Fuerza entre dos hilos paralelos']];
   const PARTS = [['proton', 'Protón'], ['electron', 'Electrón'], ['alfa', 'Partícula α'], ['deuteron', 'Deuterón'], ['otra', 'Otra (escribo q y m)']];
 
   let sc = copia(F.ejemplos[0].sc);
@@ -26,6 +26,8 @@
   const particula = (conM = true) => elige('part', 'Partícula', PARTS) + (sc.part === 'otra' ? fila('q', 'Carga q', 'C') + fila('m', conM ? 'Masa m' : 'Masa m (opcional)', 'kg') : '');
   const veloc = (op = false) => elige('uv', 'Doy', [['ms', 'la velocidad v (m/s)'], ['eV', 'la energía cinética (eV)'], ['V', 'la ddp que la acelera (V)']]) + fila('v', `${sc.uv === 'eV' ? 'Energía cinética' : sc.uv === 'V' ? 'Diferencia de potencial' : 'Velocidad v'}${op ? ' (opcional)' : ''}`, sc.uv === 'eV' ? 'eV' : sc.uv === 'V' ? 'V' : 'm/s');
   const NOTAS = {
+    trayectoria: 'La partícula parte del origen. Escribe las tres componentes de v, B y E (las que falten valen 0). Se integra la ecuación de Lorentz paso a paso (Runge-Kutta 4) y se dibuja en 3D y en proyecciones. Se admite 2e5 o 2·10^5.',
+    espejo: 'Botella magnética B(z) = B₀(1 + z²/L²) con los extremos en z = ±L√(Rm − 1). La partícula sale del centro; α₀ es el ángulo entre v y B ahí (90° = gira sin avanzar). Se integra en 3D y se compara con la teoría del momento magnético.',
     carga: 'θ es el ángulo entre v y B: con 90° la trayectoria es una circunferencia y con otro ángulo, una hélice. Se admite 2e6 o 2·10^6.',
     vectorial: 'Escribe las componentes en el SI. E es opcional: con E sale la fuerza de Lorentz completa F = q(E + v × B).',
     franja: 'La partícula entra perpendicular al borde de una franja de anchura d con B uniforme; fuera de ella no hay campo.',
@@ -40,6 +42,8 @@
   function formulario() {
     let h = elige('modo', 'Situación', MODOS);
     if (sc.modo === 'carga') h += particula() + veloc() + fila('B', 'Campo B', 'T') + sentidoB() + fila('th', 'Ángulo entre v y B θ', '°');
+    else if (sc.modo === 'trayectoria') h += particula() + tres('v', 'Velocidad inicial v', 'm/s') + tres('B', 'Campo B', 'T') + tres('E', 'Campo eléctrico E', 'V/m') + sep('Opcional') + fila('tt', 'Tiempo de integración', 's (vacío = 5 vueltas)');
+    else if (sc.modo === 'espejo') h += particula() + veloc() + fila('B0', 'Campo en el centro B₀', 'T') + fila('Rm', 'Relación de espejo Bmáx/B₀', '') + fila('L', 'Longitud característica L', 'm') + fila('al', 'Ángulo entre v y B en el centro α₀', '°');
     else if (sc.modo === 'vectorial') h += particula(false) + tres('v', 'Velocidad v', 'm/s') + tres('B', 'Campo B', 'T') + sep('Opcional') + tres('E', 'Campo eléctrico E', 'V/m');
     else if (sc.modo === 'selector') h += particula() + fila('E', 'Campo eléctrico E', 'V/m') + fila('B', 'Campo B del selector', 'T') + sep('Opcional') + veloc(true) + fila('B2', 'Campo B′ del espectrómetro', 'T') + fila('m2', 'Masa de un segundo isótopo', 'u');
     else if (sc.modo === 'ciclotron') h += particula() + fila('B', 'Campo B', 'T') + fila('R', 'Radio de las des R', 'm') + fila('V', 'Ddp entre las des (opcional)', 'V');
@@ -102,6 +106,8 @@
     const p = PNOM[sc.part] || `una partícula de carga ${esc(sc.q)} C${sc.m ? ` y masa ${esc(sc.m)} kg` : ''}`;
     const vel = () => (sc.uv === 'eV' ? `con una energía cinética de ${esc(sc.v)} eV` : sc.uv === 'V' ? `acelerado desde el reposo por una ddp de ${esc(sc.v)} V` : `a ${esc(sc.v)} m/s`);
     const vec = (k) => `(${['x', 'y', 'z'].map((e) => esc(sc[k + e] || '0')).join(', ')})`;
+    if (sc.modo === 'trayectoria') return `${p[0].toUpperCase() + p.slice(1)} sale del origen con v = ${vec('v')} m/s en una región con B = ${vec('B')} T y E = ${vec('E')} V/m. Calcula el radio de giro, la deriva y la energía cinética final.`;
+    if (sc.modo === 'espejo') return `${p[0].toUpperCase() + p.slice(1)} ${vel()} sale del centro de una botella magnética con B₀ = ${esc(sc.B0)} T y relación de espejo ${esc(sc.Rm)}, formando ${esc(sc.al)}° con B. ¿Queda atrapada? Calcula el ángulo del cono de pérdidas y el periodo de rebote.`;
     if (sc.modo === 'carga') return `${p[0].toUpperCase() + p.slice(1)} entra ${vel()} en un campo B = ${esc(sc.B)} T, formando ${esc(sc.th || '90')}° con él. Calcula la fuerza, el radio${sc.th && sc.th !== '90' ? ' y el paso de la hélice' : ''} y el periodo.`;
     if (sc.modo === 'vectorial') return `Calcula la fuerza sobre ${p} con v = ${vec('v')} m/s en B = ${vec('B')} T${['x', 'y', 'z'].some((e) => sc['E' + e]) ? ` y E = ${vec('E')} V/m` : ''}.`;
     if (sc.modo === 'selector') return `En un selector de velocidades con E = ${esc(sc.E)} V/m y B = ${esc(sc.B)} T, ¿qué velocidad pasa sin desviarse?${sc.B2 ? ` Si ${p} sale y entra en B′ = ${esc(sc.B2)} T, ¿qué radio describe?` : ''}`;
@@ -119,7 +125,7 @@
   const ijk = (u, un) => { const t = u.map((x, i) => (Math.abs(x) < 1e-300 ? '' : `${x < 0 ? '−' : '+'} ${f(Math.abs(x))} <i class="uv">${'ijk'[i]}</i>`)).filter(Boolean).join(' ').replace(/^\+ /, '').replace(/^− /, '−'); return t ? `(${t}) ${un}` : `0 ${un}`; };
   function calcula() {
     const err = $('#error');
-    try { sol = F.resolver(sc); } catch (e) { sol = null; err.textContent = e.message; err.hidden = false; $('#res').innerHTML = ''; $('#pasos').innerHTML = ''; $('#leyenda').textContent = ''; dibuja(); return; }
+    try { sol = F.resolver(sc); } catch (e) { sol = null; err.textContent = e.message; err.hidden = false; $('#res').innerHTML = ''; $('#pasos').innerHTML = ''; $('#leyenda').textContent = ''; $('#card3d').hidden = true; $('#desc3d').textContent = ''; dibuja(); return; }
     err.hidden = true; guarda(); tA = 0;
     let h = '', ley = '';
     if (sol.modo === 'carga') {
@@ -127,6 +133,12 @@
       if (sol.F) h += dato('Radio', `r = <b>${f(sol.r)} m</b>`) + dato('Periodo', `T = ${f(sol.T)} s`) + dato('Frecuencia', `f = ${f(sol.f)} Hz`) + (sol.th !== 90 ? dato('Paso de la hélice', `p = <b>${f(sol.paso)} m</b>`) : dato('Sentido de giro', `<b>${sol.giro}</b>`));
       if (sc.uv && sc.uv !== 'ms') h += dato('Velocidad', `v = ${f(sol.v)} m/s`);
       ley = sol.F === 0 ? 'v es paralela a B: no hay fuerza y la partícula sigue recta.' : sol.th === 90 ? 'Visto desde arriba, con B perpendicular a la pantalla. Verde: velocidad; rojo: fuerza magnética, siempre hacia el centro.' : 'Visto de lado, con B hacia la derecha: la partícula gira alrededor de las líneas de campo mientras avanza (en la parte de atrás, más pálida).';
+    } else if (sol.modo === 'trayectoria') {
+      h = (sol.Bm ? dato('Frecuencia de giro', `ω<sub>c</sub> = ${f(sol.w)} rad/s · T<sub>c</sub> = ${f(sol.Tc)} s`) + dato('Radio de giro', `r<sub>L</sub> = <b>${f(sol.rL)} m</b>`) : '') + (sol.hayE && sol.Bm ? dato('Deriva E × B', `v<sub>d</sub> = <b>${f(Math.hypot(...sol.vd))} m/s</b>`) : '') + (sol.hayE ? dato('Aceleración a lo largo de B', `a<sub>∥</sub> = ${f(sol.apar)} m/s²`) : '') + dato('Posición final', `(${sol.rf.map((x) => f(x)).join('; ')}) m`) + dato('Energía cinética', `${f(sol.KE0)} J → <b>${f(sol.KE1)} J</b>`) + dato('Trabajo del campo eléctrico', `q E·Δr = ${f(sol.WE)} J`);
+      ley = 'Arriba, la trayectoria vista desde cada lado (círculo: inicio; cuadrado: final). Abajo, la energía cinética en función del tiempo: solo cambia por el campo eléctrico.';
+    } else if (sol.modo === 'espejo') {
+      h = dato('Ángulo del cono de pérdidas', `α<sub>c</sub> = <b>${f((sol.ac * 180) / Math.PI)}°</b>`) + dato('Esta partícula', sol.atrapada ? '<b>atrapada</b>' : '<b>escapa</b>') + dato('Momento magnético', `μ = ${f(sol.mu)} J/T`) + dato('Variación de μ en la simulación', `${f(sol.dev * 100)} %`) + (sol.atrapada ? dato('Punto de retorno', `z<sub>t</sub> = L cot α₀ = <b>${f(sol.zt)} m</b> (simulado ${f(sol.zmax)} m)`) + dato('Periodo de rebote', `T<sub>b</sub> = 2πL/v<sub>⊥</sub> = <b>${f(sol.Tb)} s</b>${sol.TbSim ? ` (simulado ${f(sol.TbSim)} s)` : ''}`) : dato('Sale de la botella', `en t = ${f(sol.tEscapa)} s`)) + dato('Radio de giro en el centro', `r<sub>L</sub> = ${f(sol.rL)} m`);
+      ley = 'Arriba, vista lateral de la botella con las líneas de B y la trayectoria. Abajo, la altura z(t) y el momento magnético μ(t) relativo al inicial: rebota sin que μ cambie.';
     } else if (sol.modo === 'vectorial') {
       h = dato('v × B', ijk(sol.vB, 'T·m/s')) + dato(sol.hayE ? 'Fuerza magnética' : 'Fuerza', `F${sol.hayE ? '<sub>m</sub>' : ''} = <b>${ijk(sol.Fm, 'N')}</b>`) + dato(sol.hayE ? '|F<sub>m</sub>|' : 'Módulo', `${f(sol.Fmmod)} N`);
       if (sol.hayE) h += dato('Fuerza de Lorentz', `F = <b>${ijk(sol.F, 'N')}</b>`) + dato('|F|', `${f(sol.Fmod)} N`);
@@ -162,7 +174,9 @@
     $('#res').innerHTML = h;
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${Mates.html(p.html, true)}</li>`).join('');
     $('#leyenda').textContent = ley;
-    dibuja();
+    const t3 = sol.modo === 'trayectoria' || sol.modo === 'espejo';
+    $('#card3d').hidden = !t3; $('#desc3d').textContent = t3 ? descripcion3d() : '';
+    dibuja(); if (t3) vista.dibuja();
   }
 
   /* ---------- Animación ---------- */
@@ -187,12 +201,76 @@
   const bola = (g, x, y, r, q) => { g.fillStyle = q > 0 ? col['--peso'] : col['--z1']; g.beginPath(); g.arc(x, y, r, 0, 2 * Math.PI); g.fill(); g.fillStyle = '#fff'; g.font = `600 ${Math.round(r * 1.5)}px system-ui, sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(q > 0 ? '+' : '−', x, y + 0.5); };
   const etiqueta = (g, t, x, y, al = 'left', c = col['--muted']) => { g.font = '12px "IBM Plex Sans", system-ui, sans-serif'; g.fillStyle = c; g.textAlign = al; g.textBaseline = 'top'; g.fillText(t, x, y); };
 
+  /* ---------- Trayectorias numéricas: proyecciones, gráfica y vista 3D (FU-1, FU-3) ---------- */
+  // dibuja una polilínea [[a, b]…] dentro de un cuadro con escala común y ejes en el origen
+  function proyeccion(g, x0, y0, pw, ph, pts, nomA, nomB, color, extra) {
+    const A = pts.map((q) => q[0]), Bb = pts.map((q) => q[1]), a0 = Math.min(...A, extra ? extra.a0 : Infinity), a1 = Math.max(...A, extra ? extra.a1 : -Infinity), b0 = Math.min(...Bb, extra ? extra.b0 : Infinity), b1 = Math.max(...Bb, extra ? extra.b1 : -Infinity);
+    const sa = (a1 - a0) || 1, sb = (b1 - b0) || 1, k = Math.min((pw - 40) / sa, (ph - 34) / sb), ox = x0 + 28 + ((pw - 40) - sa * k) / 2, oy = y0 + ph - 20 - ((ph - 34) - sb * k) / 2;
+    const X = (a) => ox + (a - a0) * k, Y = (b) => oy - (b - b0) * k;
+    g.strokeStyle = col['--line']; g.lineWidth = 1; g.beginPath(); if (a0 <= 0 && a1 >= 0) { g.moveTo(X(0), Y(b0)); g.lineTo(X(0), Y(b1)); } if (b0 <= 0 && b1 >= 0) { g.moveTo(X(a0), Y(0)); g.lineTo(X(a1), Y(0)); } g.stroke();
+    if (extra && extra.lineas) for (const l of extra.lineas) { g.strokeStyle = col['--muted']; g.globalAlpha = 0.5; g.lineWidth = 1; g.beginPath(); l.forEach(([a, b], i) => (i ? g.lineTo(X(a), Y(b)) : g.moveTo(X(a), Y(b)))); g.stroke(); g.globalAlpha = 1; }
+    g.strokeStyle = col[color]; g.lineWidth = 1.8; g.beginPath(); pts.forEach(([a, b], i) => (i ? g.lineTo(X(a), Y(b)) : g.moveTo(X(a), Y(b)))); g.stroke();
+    g.fillStyle = col['--normal']; g.beginPath(); g.arc(X(pts[0][0]), Y(pts[0][1]), 4.5, 0, 7); g.fill();
+    const u = pts[pts.length - 1]; g.fillStyle = col['--peso']; g.fillRect(X(u[0]) - 4, Y(u[1]) - 4, 8, 8);
+    etiqueta(g, nomA, x0 + pw - 14, oy + 2, 'right'); etiqueta(g, nomB, x0 + 2, y0 + 2, 'left');
+    etiqueta(g, `${txt(f(a0, 3))} … ${txt(f(a1, 3))} m`, x0 + pw / 2, y0 + ph - 14, 'center');
+  }
+  // curvas t → y con sus etiquetas, normalizadas cada una a su rango
+  function graficaT(g, x0, y0, gw, gh, series, tmax) {
+    g.strokeStyle = col['--line']; g.lineWidth = 1; g.beginPath(); g.moveTo(x0, y0); g.lineTo(x0, y0 + gh); g.lineTo(x0 + gw, y0 + gh); g.stroke();
+    etiqueta(g, `t = 0 … ${txt(f(tmax, 3))} s`, x0 + gw, y0 + gh + 3, 'right');
+    series.forEach((se, i) => {
+      const ys = se.pts.map((q) => q[1]), lo = se.lo ?? Math.min(...ys), hi = se.hi ?? Math.max(...ys), rg = (hi - lo) || Math.abs(hi) || 1;
+      g.strokeStyle = col[se.color]; g.lineWidth = 2; g.beginPath(); se.pts.forEach(([t, y], j) => { const px = x0 + (t / tmax) * gw, py = y0 + gh - 4 - ((y - lo) / rg) * (gh - 12); j ? g.lineTo(px, py) : g.moveTo(px, py); }); g.stroke();
+      etiqueta(g, se.nombre, x0 + 8, y0 + 3 + i * 15, 'left', col[se.color]);
+    });
+  }
+  function escNumerica(g, w, h) {
+    const M = sol.muestras, hs = h * 0.56, ancho = w / 2;
+    if (sol.modo === 'trayectoria') {
+      proyeccion(g, 4, 4, ancho - 8, hs - 8, M.map((q) => [q[1], q[2]]), 'x', 'y', '--tension');
+      proyeccion(g, ancho + 4, 4, ancho - 8, hs - 8, M.map((q) => [q[1], q[3]]), 'x', 'z', '--tension');
+      const KE = M.map((q) => [q[0], 0.5 * sol.P.m * (q[4] * q[4] + q[5] * q[5] + q[6] * q[6])]);
+      graficaT(g, 30, hs + 8, w - 44, h - hs - 28, [{ pts: KE, color: '--fuerza', nombre: `Energía cinética (${txt(f(sol.KE0))} → ${txt(f(sol.KE1))} J)` }], sol.tt);
+    } else {
+      const zm = sol.zm, lineas = [-0.8, -0.5, 0.5, 0.8].map((fr) => Array.from({ length: 41 }, (_, i) => { const z = -zm + (2 * zm * i) / 40; return [fr * 0 + z, (fr * zm * 0.5) / Math.sqrt(1 + (z * z) / (sol.L * sol.L))]; }));
+      proyeccion(g, 4, 4, w - 8, hs - 8, M.map((q) => [q[3], q[1]]), 'z', 'x', '--tension', { a0: -zm, a1: zm, b0: -zm * 0.5, b1: zm * 0.5, lineas });
+      graficaT(g, 30, hs + 8, w - 44, h - hs - 28, [{ pts: M.map((q) => [q[0], q[3]]), color: '--tension', nombre: `z(t), |z| máx ${txt(f(sol.zmax))} m` }, { pts: sol.mut.map((q) => [q[0], q[1] / sol.mu]), color: '--fuerza', nombre: 'μ(t)/μ₀', lo: 0.9, hi: 1.1 }], M[M.length - 1][0]);
+    }
+  }
+  function descripcion3d() {
+    const r = (x) => txt(f(x, 3));
+    if (sol.modo === 'trayectoria') {
+      const u = sol.rf;
+      return `Vista 3D de la trayectoria de ${sol.P.pre ? `${sol.P.art} ${sol.P.nom}` : 'la partícula'}: ${sol.Bm ? `gira alrededor de B con radio ${r(sol.rL)} m` : 'sin campo magnético, se acelera en línea recta'}${sol.hayE && sol.Bm ? `, deriva con velocidad ${r(Math.hypot(...sol.vd))} m/s` : ''}${sol.hayE ? ` y se acelera a lo largo de B a ${r(sol.apar)} m/s²` : ''}. Parte del origen y termina en (${u.map(r).join('; ')}) m. Flecha verde: dirección de B; flecha morada: dirección de E.`;
+    }
+    return `Vista 3D del espejo magnético: la partícula ${sol.atrapada ? `gira alrededor de las líneas de B y rebota entre z = ±${r(sol.zt)} m con un periodo de ${r(sol.Tb)} s` : `sale de la botella en t = ${r(sol.tEscapa)} s por el extremo`}. Las líneas grises son líneas de B que se juntan hacia los extremos (z = ±${r(sol.zm)} m), donde el campo es ${r(sol.Rm)} veces el del centro.`;
+  }
+  function escena3d() {
+    if (!sol || (sol.modo !== 'trayectoria' && sol.modo !== 'espejo')) return {};
+    const M = sol.muestras;
+    if (sol.modo === 'trayectoria') {
+      const S = Math.max(...M.flatMap((q) => [Math.abs(q[1]), Math.abs(q[2]), Math.abs(q[3])]), 1e-300), n = (q) => [q[1] / S, q[2] / S, q[3] / S];
+      const lineas = [{ pts: M.map(n), color: '--tension', ancho: 2, flecha: true }];
+      const vec = (u, c, e) => { const m = Math.hypot(...u); if (m) lineas.push({ pts: [[0, 0, 0], u.map((x) => (0.5 * x) / m)], color: c, ancho: 2.4, flecha: true }); };
+      vec(sol.B, '--normal'); vec(sol.E, '--fuerza');
+      return { lineas, puntos: [{ p: n(M[0]), color: '--normal', r: 5 }, { p: n(M[M.length - 1]), color: '--peso', r: 5 }], ejes: true, etiquetas: [{ p: [0.55, 0, 0], t: 'x' }] };
+    }
+    const zm = sol.zm, S = zm * 1.05, lineas = [];
+    for (const az of [0, Math.PI / 2, Math.PI, 1.5 * Math.PI]) lineas.push({ pts: Array.from({ length: 31 }, (_, i) => { const z = -zm + (2 * zm * i) / 30, rho = (0.35 * zm) / Math.sqrt(1 + (z * z) / (sol.L * sol.L)); return [(rho * Math.cos(az)) / S, (rho * Math.sin(az)) / S, z / S]; }), color: '--muted', ancho: 1 });
+    for (const z of [-zm, zm]) lineas.push({ pts: Array.from({ length: 49 }, (_, i) => [(0.35 * zm * Math.cos((i * Math.PI) / 24)) / S, (0.35 * zm * Math.sin((i * Math.PI) / 24)) / S, z / S]), color: '--suelo', ancho: 2 });
+    lineas.push({ pts: M.map((q) => [q[1] / S, q[2] / S, q[3] / S]), color: '--tension', ancho: 1.6, flecha: true });
+    return { lineas, puntos: [{ p: [M[0][1] / S, M[0][2] / S, M[0][3] / S], color: '--normal', r: 5 }, { p: [M[M.length - 1][1] / S, M[M.length - 1][2] / S, M[M.length - 1][3] / S], color: '--peso', r: 5 }], ejes: true, etiquetas: [] };
+  }
+  const vista = Vista3D.monta('#vista3d', { escena: escena3d, descripcion: () => $('#desc3d').textContent || 'Vista tridimensional de la trayectoria', yaw: 0.7, pitch: 0.4 });
+
   function dibuja() {
     const { g, w, h } = lienzo();
     if (!sol) return;
     if (!col['--ink']) colores();
     const t = tA;
-    if (sol.modo === 'carga') escCarga(g, w, h, t);
+    if (sol.modo === 'trayectoria' || sol.modo === 'espejo') escNumerica(g, w, h);
+    else if (sol.modo === 'carga') escCarga(g, w, h, t);
     else if (sol.modo === 'vectorial') escVectores(g, w, h, t);
     else if (sol.modo === 'selector') escSelector(g, w, h, t);
     else if (sol.modo === 'ciclotron') escCiclotron(g, w, h, t);
@@ -423,6 +501,7 @@
     etiqueta(g, `d = ${txt(f(sol.d, 3))} m`, w / 2, h - 22, 'center');
   }
 
+  Herramienta.exportar('#escena', { nombre: 'fuerza-magnetica', titulo: 'Fuerza magnética', datos: () => (sol && sol.muestras ? { cab: ['t (s)', 'x (m)', 'y (m)', 'z (m)', 'vx (m/s)', 'vy (m/s)', 'vz (m/s)'], filas: sol.muestras } : null) });
   $('#play').addEventListener('click', () => { anda = !anda; $('#play').textContent = anda ? '⏸ Pausa' : '▶ Seguir'; });
   let ultimo = performance.now();
   function bucle() {
@@ -435,5 +514,5 @@
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('fuerza').current;
   formulario(); colores(); calcula(); requestAnimationFrame(bucle);
-  window.FuerzaApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { modo: sol.modo, F: sol.F, Fmod: sol.Fmod, r: sol.r, vs: sol.vs, r2: sol.r2, sepa: sol.sepa, fr: sol.fr, n: sol.n, FL: sol.FL, alfa: sol.alfa, vd: sol.vd, h: sol.h, VH: sol.VH, tau: sol.tau }, estado: () => copia(sc) };
+  window.FuerzaApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { atrapada: sol.atrapada, KE1: sol.KE1, zmax: sol.zmax, modo: sol.modo, F: sol.F, Fmod: sol.Fmod, r: sol.r, vs: sol.vs, r2: sol.r2, sepa: sol.sepa, fr: sol.fr, n: sol.n, FL: sol.FL, alfa: sol.alfa, vd: sol.vd, h: sol.h, VH: sol.VH, tau: sol.tau }, estado: () => copia(sc) };
 })();

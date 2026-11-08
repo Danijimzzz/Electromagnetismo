@@ -26,6 +26,21 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       let ok = false; try { C.resolver(sc); } catch (e) { ok = true; }
       if (!ok) mal(`Maxwell: ${q} no da error`);
     }
+    // MX-1 campos: onda plana (con B = E/c) cumple las cuatro; con B mal escalado fallan Faraday y Ampère; Coulomb fuera del origen cumple
+    { const ok = (c) => r(c).eqs.map((q) => q.ok), base = C.ejemplos.find((e) => e.clave === 'campo-onda').sc;
+      if (ok('campo-onda').some((x) => !x) || !r('campo-onda').ok) mal('Maxwell · MX-1: la onda plana debería cumplir las cuatro');
+      const mal2 = r('campo-mal'); if (mal2.eqs.map((q) => q.n + q.ok).join() !== 'Gauss para Etrue,Gauss para Btrue,Faradayfalse,Ampère–Maxwellfalse') mal('Maxwell · MX-1: B mal escalado debería fallar Faraday y Ampère: ' + mal2.eqs.map((q) => q.n + q.ok));
+      if (!r('campo-coulomb').ok) mal('Maxwell · MX-1: el campo de una carga puntual debería cumplir todo fuera del origen');
+      if (r('campo-uniforme').eqs[0].ok || r('campo-uniforme').conB) mal('Maxwell · MX-1: E = 5x sin carga debería fallar Gauss y no dar veredicto sin B');
+      cerca(r('campo-uniforme').eqs[0].rel, 1, 1e-9, 'residuo relativo de E = 5x sin carga'); if (!r('campo-rho').ok) mal('Maxwell · MX-1: E = 5x con ρ = 5ε₀ debería cumplir');
+      const g = (extra) => C.resolver({ ...base, ...extra });
+      if (g({ Bx: 'x', By: '0', Bz: '0' }).eqs[1].ok) mal('Maxwell · MX-1: B = (x, 0, 0) tiene divergencia 1 y debería fallar Gauss para B');
+      if (g({ Ey: '100 cos(2 t - z)', Bx: '-100 cos(2 t - z)/2' }).ok) mal('Maxwell · MX-1: una onda con ω ≠ ck debería fallar');
+      // corriente: E = 0, B = (0, x, 0)·? ∇×B = (0, 0, 1)·... B = (0, x, 0) → rot B = (0, 0, 1): J = 1/μ0 en z
+      const est = C.resolver({ modo: 'campo', Ex: '0', Ey: '0', Ez: '0', Bx: '0', By: 'x', Bz: '0', Jz: '795774.715', rho: '', Jx: '', Jy: '' }); cerca(est.eqs[3].rel + 1, 1, 1e-5, 'Ampère estático con J = 1/μ₀'); if (!est.eqs[3].ok) mal('Maxwell · MX-1: ∇×B = μ₀J estático debería cumplir con J = 1/μ₀');
+      cerca(g({ Ey: '100 cos(299792458 t - z)' }).eqs.length, 4, 0, 'cuatro ecuaciones con B');
+      for (const mala of [{ Ex: '', Ey: '', Ez: '' }, { Ey: '100 cos(w t)' }, { Ey: 'sen(' }, { Ey: '1/(x-x)' }]) { let hay = false; try { g(mala); } catch (e) { hay = true; } if (!hay) mal(`Maxwell · MX-1: ${JSON.stringify(mala)} debería dar error`); }
+    }
     if (fallos === antes) console.log(`  ✓ Maxwell: ${C.ejemplos.length} ejemplos a mano (Gauss, Faraday, Ampère–Maxwell, onda) y errores`);
   }
 

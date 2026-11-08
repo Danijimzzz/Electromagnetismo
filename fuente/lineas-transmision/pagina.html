@@ -4,13 +4,14 @@
 #resumen .est { grid-column: 1 / -1 }
 /* la carta de Smith es redonda: cuanto más alta, mejor se lee */
 #grafica { height: clamp(300px, 52vw, 460px) }
-#perfil { height: clamp(200px, 26vw, 260px) }
+#perfil, #trans, #rebotes, #bw { height: clamp(200px, 26vw, 260px) }
+#rebotes { height: clamp(220px, 30vw, 300px) }
 :root {
-  --serie-1: #2a5db5; --serie-2: #c2412a }
+  --serie-1: #2a5db5; --serie-2: #c2412a; --serie-3: #1f8a4c }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --serie-1: #74a2f2; --serie-2: #ef7a62 } }
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #5fcf8a } }
 :root[data-theme="dark"] {
-  --serie-1: #74a2f2; --serie-2: #ef7a62 }
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #5fcf8a }
 </style>
 <body>
 <header class="top"><a class="logo" href="../../">Cienci<i>fy</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Electromagnetismo</a> / Líneas de transmisión y carta de Smith</span></header>
@@ -28,8 +29,20 @@
   <div>
     <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
     <div class="card"><h2>Carta de Smith</h2>
-      <canvas id="grafica" aria-label="Carta de Smith"></canvas>
+      <canvas id="grafica" aria-label="Carta de Smith: pulsa un punto para leer su coeficiente de reflexión, impedancia, admitancia y ROE"></canvas>
       <p class="leyenda" id="leyenda"></p>
+      <div class="controles"><label for="lee-r">Leer el punto z =</label><input id="lee-r" class="in" style="width:5.5em" inputmode="decimal" aria-label="Parte real r normalizada del punto que se lee"> + j<input id="lee-x" class="in" style="width:5.5em" inputmode="decimal" aria-label="Parte imaginaria x normalizada del punto que se lee"> <button type="button" class="btn" id="borra-sonda">Quitar punto</button> <label><input type="checkbox" id="ver-adm"> Mostrar admitancias</label></div>
+      <p class="leyenda" id="lectura" role="status" aria-live="polite"></p>
+    </div>
+    <div class="card" id="bloque-trans" hidden><h2>Transitorio: tensión en el tiempo</h2>
+      <canvas id="trans" aria-label="Tensión en el generador, en un punto y en la carga frente al tiempo"></canvas>
+      <p class="leyenda" id="leyenda-trans"></p>
+      <canvas id="rebotes" aria-label="Diagrama de rebotes: posición frente al tiempo con la amplitud de cada frente de onda"></canvas>
+      <p class="leyenda">Diagrama de rebotes: cada tramo es un frente de onda que va del generador a la carga (T) y vuelve, con su amplitud.</p>
+    </div>
+    <div class="card" id="bloque-bw" hidden><h2>Ancho de banda de la adaptación</h2>
+      <canvas id="bw" aria-label="Módulo del coeficiente de reflexión de cada red de adaptación frente a la frecuencia"></canvas>
+      <p class="leyenda" id="leyenda-bw"></p>
     </div>
     <div class="card"><h2>Ondas estacionarias</h2>
       <canvas id="perfil" aria-label="Tensión y corriente a lo largo de la línea"></canvas>

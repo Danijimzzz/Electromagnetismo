@@ -10,7 +10,7 @@
   const { $, esc, copia } = Herramienta;
   const O = OndasEM, f = O.f, CLAVE = 'ondasem-v1';
   const txt = (h) => String(h).replace(/<sup>(.*?)<\/sup>/g, (_, e) => e.replace(/−/g, '⁻').replace(/\d/g, (d) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d])).replace(/<sub>(.*?)<\/sub>/g, (_, e) => e.replace(/\d/g, (d) => '₀₁₂₃₄₅₆₇₈₉'[d])).replace(/<[^>]+>/g, '');
-  const MODOS = [['onda', 'Onda plana: E, B y su expresión'], ['expresion', 'Onda a partir de E(r, t) o B(r, t)'], ['incidencia', 'Incidencia normal: reflexión y onda estacionaria'], ['intensidad', 'Intensidad y presión de radiación'], ['perdidas', 'Medio con pérdidas (conductor)'], ['polarizadores', 'Polarizadores: ley de Malus'], ['poynting', 'Vector de Poynting y balance de energía']];
+  const MODOS = [['onda', 'Onda plana: E, B y su expresión'], ['expresion', 'Onda a partir de E(r, t) o B(r, t)'], ['incidencia', 'Incidencia normal: reflexión y onda estacionaria'], ['intensidad', 'Intensidad y presión de radiación'], ['perdidas', 'Medio con pérdidas (conductor)'], ['polarizadores', 'Polarizadores: ley de Malus'], ['poynting', 'Vector de Poynting y balance de energía'], ['plasma', 'Plasma e ionosfera: relación de dispersión'], ['suma', 'Suma de dos ondas: batidos, estacionarias, polarización'], ['retardo', 'Láminas de retardo λ/4 y λ/2 (Jones)']];
   const DIRS = ['+x', '-x', '+y', '-y', '+z', '-z'].map((d) => [d, d.replace('-', '−')]).concat([['otra', 'otra (componentes)']]);
 
   let sc = copia(O.ejemplos[0].sc);
@@ -33,6 +33,9 @@
     intensidad: 'La intensidad es el valor medio del vector de Poynting. Una fuente puntual la reparte en una esfera, así que baja como 1/r².',
     polarizadores: 'Ángulos de los ejes respecto de una dirección fija, separados por punto y coma: 0; 45; 90. Los polarizadores son ideales. La luz natural pierde la mitad en el primero; la lineal sigue la ley de Malus I = I₀ cos²θ.',
     poynting: 'Corriente continua: la energía llega por los campos del exterior. El flujo de S = E × B/μ₀ por la superficie coincide con la potencia que se disipa o que se almacena.',
+    plasma: 'Densidad de electrones nₑ en m⁻³ (la ionosfera ronda 10¹¹–10¹² m⁻³; un metal, 10²⁸–10²⁹). La frecuencia y el ángulo son opcionales: con la frecuencia dice si la onda se propaga y con el ángulo aplica la ley de la secante.',
+    suma: 'Suma dos ondas en un punto o a lo largo de z. Batidos: dos frecuencias parecidas. Estacionaria: incidente y reflejada con amplitudes distintas (la fase δ es la de la reflejada). Polarización: dos ondas perpendiculares desfasadas δ.',
+    retardo: 'Hasta cuatro elementos en orden, con el ángulo de su eje respecto del eje x. En el polarizador es el eje de transmisión y en las láminas el eje rápido. La luz de entrada tiene intensidad 1.',
     perdidas: 'Con conductividad σ la onda se atenúa como e^(−αz). Si σ/(ωε) es mucho mayor que 1 el medio es un buen conductor y la onda apenas entra (efecto pelicular).',
   };
   function formulario() {
@@ -59,6 +62,17 @@
       if (sc.sis === 'hilo') h += fila('a', 'Radio a', 'm') + fila('L', 'Longitud L', 'm') + fila('I', 'Corriente I', 'A') + fila('sigma', 'Conductividad σ', 'S/m');
       else if (sc.sis === 'condensador') h += fila('a', 'Radio de las placas a', 'm') + fila('d', 'Separación d', 'm') + fila('V', 'Tensión V', 'V') + fila('I', 'Corriente de carga I', 'A');
       else h += fila('a', 'Radio interior a', 'm') + fila('b', 'Radio exterior b', 'm') + fila('V', 'Tensión V', 'V') + fila('I', 'Corriente I', 'A') + fila('r', 'Punto r (opcional, a ≤ r ≤ b)', 'm');
+    } else if (sc.modo === 'plasma') h += fila('ne', 'Densidad de electrones n<sub>e</sub>', 'm⁻³') + fila('valor', 'Frecuencia f (opcional)', 'Hz') + fila('ang', 'Ángulo de incidencia (opcional)', '°');
+    else if (sc.modo === 'suma') {
+      h += elige('caso', 'Qué se suma', [['batido', 'Dos frecuencias: batidos'], ['estacionaria', 'Incidente y reflejada: onda estacionaria'], ['polarizacion', 'Dos ondas perpendiculares: polarización']]);
+      const e = sc.caso === 'estacionaria', pl = sc.caso === 'polarizacion';
+      h += fila('A1', pl ? 'Amplitud según x, A<sub>1</sub>' : e ? 'Amplitud incidente A<sub>1</sub>' : 'Amplitud A<sub>1</sub>', 'V/m') + fila('A2', pl ? 'Amplitud según y, A<sub>2</sub>' : e ? 'Amplitud reflejada A<sub>2</sub>' : 'Amplitud A<sub>2</sub>', 'V/m');
+      if (sc.caso === 'batido') h += fila('f1', 'Frecuencia f<sub>1</sub>', 'Hz') + fila('f2', 'Frecuencia f<sub>2</sub>', 'Hz'); else if (e) h += fila('f1', 'Frecuencia f', 'Hz');
+      h += fila('delta', pl ? 'Desfase δ de y respecto de x' : 'Desfase δ de la segunda onda', '°');
+    } else if (sc.modo === 'retardo') {
+      h += elige('luz', 'Luz de entrada', [['lineal', 'Lineal'], ['circI', 'Circular a izquierdas'], ['circD', 'Circular a derechas']]);
+      if (sc.luz === 'lineal') h += fila('alfa', 'Ángulo de polarización', '°');
+      for (let i = 1; i <= 4; i++) { h += sep(`Elemento ${i}`) + elige('e' + i, `Elemento ${i}`, [['', '— ninguno —'], ['pol', 'Polarizador'], ['l4', 'Lámina λ/4'], ['l2', 'Lámina λ/2']]); if (sc['e' + i]) h += fila('a' + i, `Ángulo del eje ${i}`, '°'); }
     } else h += fila('sigma', 'Conductividad σ', 'S/m') + fila('er', 'Permitividad relativa ε<sub>r</sub>') + fila('mr', 'Permeabilidad relativa μ<sub>r</sub>', 'opcional, 1') + fila('valor', 'Frecuencia f', 'Hz') + sep('Opcional') + fila('E0', 'Amplitud al entrar E<sub>0</sub>', 'V/m') + fila('d', 'Profundidad z', 'm');
     $('#campos').innerHTML = h;
     $('#nota').textContent = NOTAS[sc.modo];
@@ -69,12 +83,14 @@
     const t = e.target; if (t.tagName !== 'SELECT') return;
     const k = t.dataset.k;
     if (k === 'modo') sc = copia(O.ejemplos.find((x) => x.sc.modo === t.value).sc);
+    else if (k === 'caso') sc = copia(O.ejemplos.find((x) => x.sc.modo === 'suma' && x.sc.caso === t.value).sc);
     else {
       sc[k] = t.value;
       if (k === 'medio' && t.value === 'medio' && !sc.er) sc.er = '4';
       if (k === 'destino' && t.value === 'dielectrico' && !sc.er2) sc.er2 = '2,25';
       if (k === 'tipoPol' && t.value === 'eliptica' && !sc.E02) { sc.E02 = String(sc.E0 || '10').replace(/^(\d+)/, (m) => String(Math.max(1, Math.round(+m / 2)))); sc.delta = '90'; }
       if (k === 'luz' && t.value === 'lineal' && vacio(sc.alfa)) sc.alfa = '0';
+      if (/^e[1-4]$/.test(k) && t.value && vacio(sc['a' + k[1]])) sc['a' + k[1]] = '0';
       if (k === 'sis') { const o = O.ejemplos.find((x) => x.sc.sis === t.value); if (o) sc = copia(o.sc); }
       if (k === 'prop' && t.value === 'otra' && !sc.kx) Object.assign(sc, { kx: '1', ky: '1', kz: '0' });
       if (k === 'pol' && t.value === 'otra' && !sc.ex) Object.assign(sc, { ex: '0', ey: '0', ez: '1' });
@@ -119,6 +135,9 @@
     if (sc.modo === 'intensidad') return sc.de === 'fuente' ? `Una fuente puntual emite ${esc(sc.P)} W por igual en todas direcciones. Calcula la intensidad a ${esc(sc.r)} m, las amplitudes de E y B y la presión de radiación.` : sc.de === 'I' ? `Una onda tiene una intensidad de ${esc(sc.I)} W/m². Calcula E₀, B₀, la densidad de energía y la presión de radiación${sc.A ? ` y la fuerza sobre ${esc(sc.A)} m²` : ''}.` : `El campo eléctrico de una onda tiene amplitud ${esc(sc.E0)} V/m. Calcula la intensidad, B₀ y la presión de radiación.`;
     if (sc.modo === 'polarizadores') return `Un haz de luz ${{ natural: 'natural', lineal: `polarizada linealmente a ${esc(sc.alfa)}°`, circular: 'circular' }[sc.luz || 'natural']} de intensidad ${esc(sc.I0)} W/m² atraviesa polarizadores ideales con ejes a ${esc(sc.angulos)} grados. Calcula la intensidad tras cada uno y la final.`;
     if (sc.modo === 'poynting') return { hilo: `Un hilo de radio ${esc(sc.a)} m, longitud ${esc(sc.L)} m y σ = ${esc(sc.sigma)} S/m lleva una corriente de ${esc(sc.I)} A. Calcula E, B y el vector de Poynting en su superficie y comprueba que su flujo es la potencia disipada.`, condensador: `Un condensador de placas circulares de radio ${esc(sc.a)} m separadas ${esc(sc.d)} m se carga con ${esc(sc.I)} A cuando tiene ${esc(sc.V)} V. Calcula E, B en el borde, S y comprueba el balance de energía.`, coaxial: `Un cable coaxial de radios ${esc(sc.a)} m y ${esc(sc.b)} m lleva ${esc(sc.I)} A con ${esc(sc.V)} V entre sus conductores. Calcula E, B y S entre ellos y la potencia transportada.` }[sc.sis || 'hilo'];
+    if (sc.modo === 'plasma') return `Un plasma tiene ${esc(sc.ne)} electrones por m³. Calcula su frecuencia de plasma${vacio(sc.valor) ? '' : ` y di si se propaga una onda de ${esc(sc.valor)} Hz (índice, velocidades de fase y de grupo)`}${vacio(sc.ang) ? '' : `; con incidencia a ${esc(sc.ang)}° halla la frecuencia máxima que se refleja`}.`;
+    if (sc.modo === 'suma') return sc.caso === 'batido' ? `Se suman dos ondas de amplitudes ${esc(sc.A1)} y ${esc(sc.A2)} V/m y frecuencias ${esc(sc.f1)} y ${esc(sc.f2)} Hz. Calcula la frecuencia de batido, la frecuencia media y la amplitud máxima y mínima.` : sc.caso === 'estacionaria' ? `Una onda de ${esc(sc.f1)} Hz y ${esc(sc.A1)} V/m se refleja con ${esc(sc.A2)} V/m y desfase ${esc(sc.delta)}°. Calcula la longitud de onda, la amplitud en vientres y nodos y la relación de onda estacionaria.` : `Se suman Ex = ${esc(sc.A1)} cos(kz − ωt) y Ey = ${esc(sc.A2)} cos(kz − ωt + ${esc(sc.delta)}°). Calcula el tipo de polarización, el sentido de giro y los semiejes de la elipse.`;
+    if (sc.modo === 'retardo') return `Luz ${{ lineal: `lineal a ${esc(sc.alfa)}°`, circI: 'circular a izquierdas', circD: 'circular a derechas' }[sc.luz || 'lineal']} atraviesa ${[1, 2, 3, 4].filter((i) => sc['e' + i]).map((i) => `${{ pol: 'un polarizador', l4: 'una lámina λ/4', l2: 'una lámina λ/2' }[sc['e' + i]]} a ${esc(sc['a' + i])}°`).join(', luego ')}. Con el cálculo de Jones halla la polarización y la intensidad de salida.`;
     return `Una onda de ${esc(sc.valor)} Hz entra en un medio con σ = ${esc(sc.sigma)} S/m y εr = ${esc(sc.er)}. ¿Es un buen conductor? Calcula α, β, la profundidad de penetración y la impedancia.`;
   };
 
@@ -143,13 +162,26 @@
       sol.etapas.forEach((e, i) => { h += dato(`Tras el polarizador ${i + 1}`, `I<sub>${i + 1}</sub> = ${f(e.I)} W/m<sup>2</sup>`); });
     } else if (sol.modo === 'poynting') {
       h = dato('Campo eléctrico', `E = <b>${f(sol.E)} V/m</b>`) + dato('Campo magnético', `B = <b>${f(sol.B)} T</b>`) + dato('Vector de Poynting', `S = <b>${f(sol.S)} W/m<sup>2</sup></b>`) + dato('Dirección de S', sol.dir) + dato(sol.sis === 'coaxial' ? 'Potencia transportada' : 'Flujo de S por la superficie', `Φ = <b>${f(sol.flujo)} W</b>`) + dato(sol.sis === 'hilo' ? 'Potencia disipada I²R' : sol.sis === 'condensador' ? 'dU/dt = V I' : 'P = V I', `${f(sol.P)} W`);
+    } else if (sol.modo === 'plasma') {
+      h = dato('Frecuencia angular de plasma', `ω<sub>p</sub> = <b>${f(sol.wp)} rad/s</b>`) + dato('Frecuencia de plasma', `f<sub>p</sub> = <b>${f(sol.fp)} Hz</b>`) + dato('Longitud de onda de plasma', `λ<sub>p</sub> = ${f(sol.lp)} m`);
+      if (sol.fr !== null) h += dato('Cociente', `ω/ω<sub>p</sub> = ${f(sol.x)}`) + (sol.propaga ? dato('Estado', '<b>se propaga</b>') + dato('Índice de refracción', `n = <b>${f(sol.n)}</b>`) + dato('Longitud de onda', `λ = ${f(sol.lam)} m`) + dato('Velocidad de fase', `v<sub>f</sub> = <b>${f(sol.vf)} m/s</b>`) + dato('Velocidad de grupo', `v<sub>g</sub> = <b>${f(sol.vg)} m/s</b>`) : dato('Estado', '<b>no se propaga (evanescente)</b>') + dato('Atenuación', `κ = <b>${f(sol.kappa)} m<sup>-1</sup></b>`) + dato('Profundidad de penetración', `δ = ${f(sol.delta)} m`));
+      h += sol.ang === null ? dato('Reflexión vertical hasta', `f<sub>p</sub> = ${f(sol.fp)} Hz`) : dato(`Frecuencia máxima a ${f(sol.ang)}°`, `f<sub>p</sub>/cos θ = <b>${f(sol.fcrit)} Hz</b>`);
+      if (sol.fr !== null) h += dato('¿Se refleja en la capa?', `<b>${sol.reflejada ? 'sí' : 'no, la atraviesa'}</b>`);
+    } else if (sol.modo === 'suma') {
+      if (sol.caso === 'batido') h = dato('Frecuencia media', `f̄ = <b>${f(sol.fm)} Hz</b>`) + dato('Frecuencia de batido', `f<sub>b</sub> = <b>${f(sol.df)} Hz</b>`) + dato('Amplitud máxima', `A<sub>1</sub> + A<sub>2</sub> = <b>${f(sol.Emax)} V/m</b>`) + dato('Amplitud mínima', `|A<sub>1</sub> − A<sub>2</sub>| = <b>${f(sol.Emin)} V/m</b>`) + (isFinite(sol.Tb) ? dato('Periodo del batido', `T<sub>b</sub> = ${f(sol.Tb)} s`) : '');
+      else if (sol.caso === 'estacionaria') h = dato('Longitud de onda', `λ = <b>${f(sol.lam)} m</b>`) + dato('Número de onda', `k = ${f(sol.k)} rad/m`) + dato('Amplitud en los vientres', `<b>${f(sol.Emax)} V/m</b>`) + dato('Amplitud en los nodos', `<b>${f(sol.Emin)} V/m</b>`) + dato('Relación de onda estacionaria', `ROE = <b>${sol.ROE === Infinity ? '∞' : f(sol.ROE)}</b>`) + (sol.Pr !== null ? dato('Potencia reflejada', `${f(100 * sol.Pr, 3)} %`) : '');
+      else h = dato('Polarización', `<b>${sol.estado.tipo}</b>`) + (sol.estado.giro ? dato('Sentido (visto por quien recibe)', `${sol.estado.giro}`) : '') + dato('Semieje mayor', `a = <b>${f(sol.estado.a)} V/m</b>`) + dato('Semieje menor', `b = <b>${f(sol.estado.b)} V/m</b>`) + dato('Inclinación del eje mayor', `ψ = ${f(sol.estado.psi)}°`);
+    } else if (sol.modo === 'retardo') {
+      h = dato('Luz de salida', `<b>${sol.texto}</b>`) + dato('Intensidad de salida', `I/I<sub>0</sub> = <b>${f(sol.I, 4)}</b> (${f(100 * sol.I, 4)} %)`);
+      sol.etapas.slice(1).forEach((e, i) => { h += dato(`Tras el elemento ${i + 1}`, `I = ${f(e.I, 4)}, ${txtEst(e.estado)}`); });
     } else {
       h = dato('Tipo de medio', `<b>${sol.tipo}</b>`) + dato('σ/(ωε)', `${f(sol.tg)}`) + dato('Atenuación', `α = <b>${f(sol.alfa)} Np/m</b>`) + dato('Constante de fase', `β = ${f(sol.beta)} rad/m`) + dato('Profundidad de penetración', `δ = <b>${f(sol.delta)} m</b>`) + dato('Impedancia', `|η| = ${f(sol.etaM)} Ω`);
       if (sol.Ed !== null) h += dato(`E a z = ${f(sol.d)} m`, `<b>${f(sol.Ed)} V/m</b>`);
     }
     $('#res').innerHTML = h;
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${Mates.html(p.html, true)}</li>`).join('');
-    $('#leyenda').innerHTML = sol.modo === 'polarizadores' ? 'Cada disco es un polarizador con su eje; la flecha roja es E tras él, con longitud proporcional a √I.' : sol.modo === 'poynting' ? 'E en rojo, B en azul y S en ámbar: S = E × B/μ₀ apunta por donde viaja la energía.' : sol.modo === 'incidencia' ? `E total en rojo y B total en azul a lo largo de z; la línea discontinua es la amplitud. ${sol.cond ? 'Los puntos marcan los nodos de E: la onda no avanza, oscila en su sitio.' : 'A la derecha, la onda transmitida.'}` : sol.modo === 'intensidad' && sol.de === 'fuente' ? 'Frentes de onda esféricos que salen de la fuente: la misma potencia se reparte en esferas cada vez mayores.' : (sol.tp && sol.tp !== 'lineal') ? 'E en rojo y B en azul: con dos componentes desfasadas, la punta de E gira alrededor del eje de propagación (en naranja la dirección de avance).' : `E en rojo, B en azul y la dirección de propagación (el vector de Poynting) en naranja${sol.modo === 'perdidas' && sol.alfa > 0 ? '; la línea discontinua es la envolvente e<sup>−αz</sup> y la marca, la profundidad δ' : ''}.`;
+    $('#abrir-fresnel').hidden = !(sol.modo === 'incidencia' && !sol.cond && sol.M && sol.M2);
+    $('#leyenda').innerHTML = sol.modo === 'plasma' ? 'Izquierda: relación de dispersión ω(k); la línea discontinua es la luz en el vacío. Derecha: un paquete de ondas, que avanza con v<sub>g</sub> mientras las crestas van con v<sub>f</sub>, o el decaimiento de una onda evanescente.' : sol.modo === 'suma' ? (sol.caso === 'batido' ? 'E total en un punto en función del tiempo, con su envolvente (línea discontinua): la amplitud late a la frecuencia de batido.' : sol.caso === 'estacionaria' ? 'E(z) en este instante y su envolvente; los puntos son los nodos, separados λ/2.' : 'Curva que recorre la punta de E en un punto fijo, con sus semiejes; el punto marca el sentido.') : sol.modo === 'retardo' ? 'Estado de polarización tras cada elemento, visto por quien recibe la luz: tamaño ∝ √I; la punta se mueve en el sentido de giro.' : sol.modo === 'polarizadores' ? 'Cada disco es un polarizador con su eje; la flecha roja es E tras él, con longitud proporcional a √I.' : sol.modo === 'poynting' ? 'E en rojo, B en azul y S en ámbar: S = E × B/μ₀ apunta por donde viaja la energía.' : sol.modo === 'incidencia' ? `E total en rojo y B total en azul a lo largo de z; la línea discontinua es la amplitud. ${sol.cond ? 'Los puntos marcan los nodos de E: la onda no avanza, oscila en su sitio.' : 'A la derecha, la onda transmitida.'}` : sol.modo === 'intensidad' && sol.de === 'fuente' ? 'Frentes de onda esféricos que salen de la fuente: la misma potencia se reparte en esferas cada vez mayores.' : (sol.tp && sol.tp !== 'lineal') ? 'E en rojo y B en azul: con dos componentes desfasadas, la punta de E gira alrededor del eje de propagación (en naranja la dirección de avance).' : `E en rojo, B en azul y la dirección de propagación (el vector de Poynting) en naranja${sol.modo === 'perdidas' && sol.alfa > 0 ? '; la línea discontinua es la envolvente e<sup>−αz</sup> y la marca, la profundidad δ' : ''}.`;
     dibuja();
   }
 
@@ -171,6 +203,9 @@
     if (sol.modo === 'incidencia') return incide(g, w, h);
     if (sol.modo === 'polarizadores') return polariza(g, w, h);
     if (sol.modo === 'poynting') return poynt(g, w, h);
+    if (sol.modo === 'plasma') return plasmaD(g, w, h);
+    if (sol.modo === 'suma') return sol.caso === 'batido' ? batidoD(g, w, h) : sol.caso === 'estacionaria' ? estacD(g, w, h) : elipseD(g, w, h);
+    if (sol.modo === 'retardo') return retardoD(g, w, h);
     plana(g, w, h);
   }
   // onda plana en perspectiva: el eje de propagación en horizontal, E en vertical y B en profundidad
@@ -277,6 +312,100 @@
       rot(w / 2, yc - 74, 'S (de la fuente a la carga) entre los conductores', col['--s']); rot(w / 2, yc + 74, 'E radial · B azimutal', col['--muted']);
     }
   }
+
+  /* ---------- Dibujos de plasma, suma de ondas y láminas de retardo ---------- */
+  const txtEst = (e) => (e.tipo === 'sin luz' ? 'sin luz' : e.tipo === 'lineal' ? `lineal a ${f(e.psi)}°` : e.tipo === 'circular' ? `circular ${e.giro === 'antihorario' ? 'a izquierdas' : 'a derechas'}` : `elíptica ${e.giro === 'antihorario' ? 'a izquierdas' : 'a derechas'}`);
+  function ejes(g, x0, y0, x1, y1, tx, ty) {
+    flecha(g, x0, y0, x1, y0, col['--muted'], 1.2); flecha(g, x0, y0, x0, y1, col['--muted'], 1.2);
+    g.fillStyle = col['--muted']; g.font = `12px ${FU}`; g.textAlign = 'right'; g.textBaseline = 'top'; g.fillText(tx, x1, y0 + 4); g.textAlign = 'left'; g.textBaseline = 'middle'; g.fillText(ty, x0 + 5, y1 + 6);
+  }
+  // plasma: ω(k) a la izquierda; a la derecha el paquete de ondas (v_g frente a v_f) o la onda evanescente
+  function plasmaD(g, w, h) {
+    const wl = Math.round(w * 0.42), mx = 38, my = 22, X0 = mx, Y0 = h - 34, XM = wl - 14, YM = my + 10, ymax = Math.max(3, sol.x ? sol.x * 1.15 : 3), xmax = Math.sqrt(ymax * ymax - 1) * 1.02;
+    const X = (k) => X0 + (k / xmax) * (XM - X0), Y = (v) => Y0 - (v / ymax) * (Y0 - YM);
+    ejes(g, X0, Y0, XM, YM - 6, 'kc/ωp', 'ω/ωp');
+    g.setLineDash([5, 4]); g.strokeStyle = col['--muted']; g.lineWidth = 1.2; g.beginPath(); g.moveTo(X(0), Y(0)); g.lineTo(X(Math.min(xmax, ymax)), Y(Math.min(xmax, ymax))); g.stroke();
+    g.beginPath(); g.moveTo(X0, Y(1)); g.lineTo(XM, Y(1)); g.stroke(); g.setLineDash([]);
+    g.fillStyle = col['--muted']; g.textAlign = 'left'; g.textBaseline = 'bottom'; g.font = `12px ${FU}`; g.fillText('ω = ωp', X0 + 6, Y(1) - 3);
+    g.strokeStyle = col['--e']; g.lineWidth = 2.4; g.beginPath(); for (let i = 0; i <= 120; i++) { const k = (xmax * i) / 120, y = Math.sqrt(1 + k * k); i ? g.lineTo(X(k), Y(y)) : g.moveTo(X(k), Y(y)); } g.stroke();
+    const xr = Math.min(wl + 10, w - 120);
+    if (sol.fr !== null) {
+      const y = Y(sol.x); g.strokeStyle = col['--s']; g.lineWidth = 1.2; g.setLineDash([3, 3]); g.beginPath(); g.moveTo(X0, y); g.lineTo(sol.propaga ? X(Math.sqrt(sol.x * sol.x - 1)) : XM, y); g.stroke(); g.setLineDash([]);
+      g.fillStyle = col['--s']; g.beginPath(); g.arc(sol.propaga ? X(Math.sqrt(sol.x * sol.x - 1)) : X0, y, 5, 0, 2 * Math.PI); g.fill();
+    }
+    // lado derecho
+    const x1 = xr, x2 = w - 16, yc = h * 0.5, A = Math.min(h * 0.28, 70);
+    g.strokeStyle = col['--line']; g.lineWidth = 1; g.beginPath(); g.moveTo(x1, yc); g.lineTo(x2, yc); g.stroke();
+    g.font = `12px ${FU}`; g.textAlign = 'center';
+    if (sol.fr === null) { g.fillStyle = col['--muted']; g.textBaseline = 'middle'; g.fillText('Escribe una frecuencia para ver la onda', (x1 + x2) / 2, yc); return; }
+    if (sol.propaga) {
+      const n = sol.n, vf = 1 / n, vg = n, lamPx = 38, kPx = (2 * Math.PI) / lamPx, c0 = 46, t = tA, W = x2 - x1, sg = W * 0.16, zc = x1 + ((vg * c0 * t) % (W + 4 * sg)) - 2 * sg;
+      g.strokeStyle = col['--e']; g.lineWidth = 2; g.beginPath();
+      for (let i = 0; i <= W; i += 2) { const x = x1 + i, env = Math.exp(-((x - zc) ** 2) / (2 * sg * sg)); const y = yc - A * env * Math.cos(kPx * (x - x1) - kPx * vf * c0 * t); i ? g.lineTo(x, y) : g.moveTo(x, y); } g.stroke();
+      g.setLineDash([4, 3]); g.strokeStyle = col['--s']; g.lineWidth = 1.2; g.beginPath(); for (let i = 0; i <= W; i += 3) { const x = x1 + i, y = yc - A * Math.exp(-((x - zc) ** 2) / (2 * sg * sg)); i ? g.lineTo(x, y) : g.moveTo(x, y); } g.stroke(); g.setLineDash([]);
+      g.fillStyle = col['--s']; g.textBaseline = 'bottom'; g.fillText(txt(`paquete: v_g = ${f(sol.vg)} m/s`), (x1 + x2) / 2, yc - A - 10);
+      g.fillStyle = col['--e']; g.textBaseline = 'top'; g.fillText(txt(`crestas: v_f = ${f(sol.vf)} m/s`), (x1 + x2) / 2, yc + A + 8);
+    } else {
+      const W = x2 - x1, d = W / 4; g.strokeStyle = col['--e']; g.lineWidth = 2.4; g.beginPath(); for (let i = 0; i <= W; i += 2) { const y = yc - A * Math.exp(-i / d); i ? g.lineTo(x1 + i, y) : g.moveTo(x1 + i, y); } g.stroke();
+      g.strokeStyle = col['--muted']; g.lineWidth = 1; g.beginPath(); g.moveTo(x1 + d, yc + 6); g.lineTo(x1 + d, yc - 6); g.stroke();
+      g.fillStyle = col['--muted']; g.textBaseline = 'top'; g.fillText('δ', x1 + d, yc + 9); g.fillStyle = col['--e']; g.textBaseline = 'bottom'; g.fillText(txt(`onda evanescente: e^(−z/δ), δ = ${f(sol.delta)} m`), (x1 + x2) / 2, yc - A - 10);
+    }
+  }
+  // batidos: E(t) y su envolvente
+  function batidoD(g, w, h) {
+    const ml = 18, mr = 18, yc = h * 0.5, A = h * 0.36, Tw = isFinite(sol.Tb) ? 2 * sol.Tb : 4 / sol.fm, X = (t) => ml + (t / Tw) * (w - ml - mr), Y = (v) => yc - (A * v) / sol.Emax;
+    flecha(g, ml, yc, w - mr + 8, yc, col['--muted'], 1);
+    const N = Math.min(4000, Math.max(600, Math.round(w * 4)));
+    g.setLineDash([5, 4]); g.strokeStyle = col['--s']; g.lineWidth = 1.4; for (const sg of [1, -1]) { g.beginPath(); for (let i = 0; i <= N; i++) { const t = (Tw * i) / N; i ? g.lineTo(X(t), Y(sg * sol.env(t))) : g.moveTo(X(t), Y(sg * sol.env(t))); } g.stroke(); } g.setLineDash([]);
+    g.strokeStyle = col['--e']; g.lineWidth = 1.6; g.beginPath(); for (let i = 0; i <= N; i++) { const t = (Tw * i) / N; i ? g.lineTo(X(t), Y(sol.E(t))) : g.moveTo(X(t), Y(sol.E(t))); } g.stroke();
+    const tc = (tA * 0.25 * Tw) % Tw; g.strokeStyle = col['--muted']; g.lineWidth = 1; g.beginPath(); g.moveTo(X(tc), 8); g.lineTo(X(tc), h - 8); g.stroke(); g.fillStyle = col['--ink']; g.beginPath(); g.arc(X(tc), Y(sol.E(tc)), 4, 0, 2 * Math.PI); g.fill();
+    g.font = `12px ${FU}`; g.fillStyle = col['--muted']; g.textAlign = 'right'; g.textBaseline = 'bottom'; g.fillText('t', w - mr, yc - 4); g.textAlign = 'left'; g.fillText(txt(isFinite(sol.Tb) ? `ventana de 2 periodos de batido = ${f(Tw)} s` : `ventana de ${f(Tw)} s`), ml, h - 6);
+  }
+  // onda estacionaria: E(z) en el instante t y envolvente
+  function estacD(g, w, h) {
+    const ml = 18, mr = 18, yc = h * 0.5, A = h * 0.36, zm = 2 * sol.lam, X = (z) => ml + (z / zm) * (w - ml - mr), Y = (v) => yc - (A * v) / sol.Emax, th = 2 * Math.PI * 0.4 * tA, N = 800;
+    flecha(g, ml, yc, w - mr + 8, yc, col['--muted'], 1);
+    g.setLineDash([5, 4]); g.strokeStyle = col['--s']; g.lineWidth = 1.4; for (const sg of [1, -1]) { g.beginPath(); for (let i = 0; i <= N; i++) { const z = (zm * i) / N; i ? g.lineTo(X(z), Y(sg * sol.env(z))) : g.moveTo(X(z), Y(sg * sol.env(z))); } g.stroke(); } g.setLineDash([]);
+    const d = (sol.delta * Math.PI) / 180, E = (z) => sol.A1 * Math.cos(sol.k * z - th) + sol.A2 * Math.cos(sol.k * z + th + d);
+    g.strokeStyle = col['--e']; g.lineWidth = 2.2; g.beginPath(); for (let i = 0; i <= N; i++) { const z = (zm * i) / N; i ? g.lineTo(X(z), Y(E(z))) : g.moveTo(X(z), Y(E(z))); } g.stroke();
+    // nodos: 2kz + δ = (2m + 1)π
+    g.fillStyle = col['--ink']; for (let m = -4; m < 12; m++) { const z = ((2 * m + 1) * Math.PI - d) / (2 * sol.k); if (z >= 0 && z <= zm) { g.beginPath(); g.arc(X(z), yc, 3.5, 0, 2 * Math.PI); g.fill(); } }
+    g.font = `12px ${FU}`; g.fillStyle = col['--muted']; g.textAlign = 'right'; g.textBaseline = 'bottom'; g.fillText('z', w - mr, yc - 4); g.textAlign = 'left'; g.fillText(txt(`2 longitudes de onda = ${f(zm)} m · vientres ${f(sol.Emax)} V/m · nodos ${f(sol.Emin)} V/m`), ml, h - 6);
+  }
+  // elipse de polarización (semiejes a, b e inclinación ψ) con un punto que gira
+  function elipseGen(g, cx0, cy0, R, e, I, fase) {
+    const a = R * Math.sqrt(I) * 1, rz = e.tipo === 'lineal' ? 0 : e.razon, b = a * rz, ps = (e.psi * Math.PI) / 180, sg = e.giro === 'horario' ? -1 : 1;
+    const P = (u) => { const x = a * Math.cos(u), y = b * Math.sin(u) * sg; return [cx0 + x * Math.cos(ps) - y * Math.sin(ps), cy0 - (x * Math.sin(ps) + y * Math.cos(ps))]; };
+    g.strokeStyle = col['--e']; g.lineWidth = 2; g.beginPath(); for (let i = 0; i <= 90; i++) { const [x, y] = P((2 * Math.PI * i) / 90); i ? g.lineTo(x, y) : g.moveTo(x, y); } g.stroke();
+    const [px, py] = P(fase); g.fillStyle = col['--s']; g.beginPath(); g.arc(px, py, 4, 0, 2 * Math.PI); g.fill();
+  }
+  function elipseD(g, w, h) {
+    const S = sol.estado, cx0 = w * 0.5, cy0 = h * 0.5, R = Math.min(w, h) * 0.38, m = Math.max(sol.A1, sol.A2), esc2 = R / m;
+    flecha(g, cx0 - R - 14, cy0, cx0 + R + 18, cy0, col['--muted'], 1); flecha(g, cx0, cy0 + R + 14, cx0, cy0 - R - 18, col['--muted'], 1);
+    g.font = `12px ${FU}`; g.fillStyle = col['--muted']; g.textAlign = 'left'; g.textBaseline = 'top'; g.fillText('Ex', cx0 + R + 20, cy0 + 4); g.textBaseline = 'bottom'; g.fillText('Ey', cx0 + 6, cy0 - R - 18);
+    // caja de las amplitudes
+    g.setLineDash([4, 3]); g.strokeStyle = col['--line']; g.strokeRect(cx0 - sol.A1 * esc2, cy0 - sol.A2 * esc2, 2 * sol.A1 * esc2, 2 * sol.A2 * esc2); g.setLineDash([]);
+    const ps = (S.psi * Math.PI) / 180; g.strokeStyle = col['--b']; g.lineWidth = 1.4; g.beginPath(); g.moveTo(cx0 - S.a * esc2 * Math.cos(ps), cy0 + S.a * esc2 * Math.sin(ps)); g.lineTo(cx0 + S.a * esc2 * Math.cos(ps), cy0 - S.a * esc2 * Math.sin(ps)); g.stroke();
+    // trayectoria exacta (Ex = A1 cos φ, Ey = A2 cos(φ + δ)) y punto que gira
+    const d = (sol.delta * Math.PI) / 180, ph = -2 * Math.PI * 0.4 * tA;
+    g.strokeStyle = col['--e']; g.lineWidth = 2.2; g.beginPath(); for (let i = 0; i <= 180; i++) { const u = (2 * Math.PI * i) / 180, x = cx0 + sol.A1 * esc2 * Math.cos(u), y = cy0 - sol.A2 * esc2 * Math.cos(u + d); i ? g.lineTo(x, y) : g.moveTo(x, y); } g.stroke();
+    g.fillStyle = col['--s']; g.beginPath(); g.arc(cx0 + sol.A1 * esc2 * Math.cos(ph), cy0 - sol.A2 * esc2 * Math.cos(ph + d), 5, 0, 2 * Math.PI); g.fill();
+    g.fillStyle = col['--muted']; g.textAlign = 'left'; g.textBaseline = 'bottom'; g.fillText(txt(`${S.tipo}${S.giro ? ' · ' + S.giro : ''} · a = ${f(S.a)}, b = ${f(S.b)} V/m`), 12, h - 6);
+  }
+  // láminas de retardo: estado de polarización a la entrada y tras cada elemento
+  function retardoD(g, w, h) {
+    const n = sol.etapas.length, paso = (w - 20) / n, yc = h * 0.46, R = Math.min(paso * 0.38, h * 0.3), fase = -2 * Math.PI * 0.6 * tA;
+    sol.etapas.forEach((e, i) => {
+      const x = 10 + paso * (i + 0.5);
+      g.strokeStyle = col['--line']; g.lineWidth = 1; g.beginPath(); g.arc(x, yc, R, 0, 2 * Math.PI); g.stroke();
+      g.beginPath(); g.moveTo(x - R, yc); g.lineTo(x + R, yc); g.moveTo(x, yc - R); g.lineTo(x, yc + R); g.stroke();
+      if (e.estado.tipo !== 'sin luz') elipseGen(g, x, yc, R, e.estado, e.I, fase);
+      g.font = `12px ${FU}`; g.textAlign = 'center'; g.fillStyle = col['--ink']; g.textBaseline = 'top';
+      const nom = i === 0 ? 'Entrada' : (e.nombre || ''); g.fillText(nom.length > 18 && paso < 150 ? nom.replace('Lámina ', 'λ ').replace('Polarizador', 'Pol.') : nom, x, yc + R + 8);
+      g.fillStyle = col['--muted']; g.textBaseline = 'top'; g.fillText(txt(`I = ${f(e.I, 3)}`), x, yc + R + 26); g.fillText(txt(txtEst(e.estado)), x, yc + R + 44);
+      if (i > 0) flecha(g, x - paso + R + 6, yc, x - R - 6, yc, col['--muted'], 1.2);
+    });
+  }
   // fuente puntual: frentes de onda que se alejan y el punto a distancia r
   function fuente(g, w, h) {
     const cx = Math.min(w * 0.3, 160), cy = h / 2, R = w - cx - 30, paso = 34, t = (tA * 40) % paso;
@@ -289,6 +418,15 @@
     g.textBaseline = 'top'; g.fillStyle = col['--s']; g.fillText(`P = ${txt(f(sol.P))} W`, cx, cy + 12); g.fillStyle = col['--ink']; g.fillText(`I = ${txt(f(sol.I))} W/m²`, xr, cy + 10);
   }
 
+  // EM-4: lleva la incidencia sobre un dieléctrico a Fresnel (n₁, n₂ e incidencia normal)
+  $('#abrir-fresnel').addEventListener('click', () => {
+    if (!sol || sol.modo !== 'incidencia' || sol.cond || !sol.M || !sol.M2) return;
+    const n1 = sol.M.n, n2 = sol.M2.n; if (!(n1 > 0 && n2 > 0)) return;
+    const c = (x) => String(+x.toPrecision(8)).replace('.', ',');
+    try { localStorage.setItem('fresnel-v1', JSON.stringify({ dato: 'n', n1: c(n1), n2: c(n2), theta: '0', E0: String(sol.E0).replace('.', ','), lambda: '' })); } catch (e) { /* sin almacenamiento */ }
+    location.href = '../fresnel/' + (location.protocol === 'file:' ? 'index.html' : '');
+  });
+  Herramienta.exportar('#escena', { nombre: 'ondas-electromagneticas', titulo: 'Ondas electromagnéticas' });
   $('#play').addEventListener('click', () => { anda = !anda; $('#play').textContent = anda ? '⏸ Pausa' : '▶ Seguir'; });
   let ultimo = performance.now();
   function bucle() {
@@ -301,5 +439,5 @@
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('ondas-em').current;
   formulario(); colores(); calcula(); requestAnimationFrame(bucle);
-  window.OndasEMApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { modo: sol.modo, I: sol.I, S: sol.S, flujo: sol.flujo, B0: sol.B0, alfa: sol.alfa, delta: sol.delta, r: sol.r, R: sol.R }, estado: () => copia(sc) };
+  window.OndasEMApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { modo: sol.modo, I: sol.I, S: sol.S, flujo: sol.flujo, B0: sol.B0, alfa: sol.alfa, delta: sol.delta, r: sol.r, R: sol.R }, estado: () => copia(sc), fresnel: () => { $('#abrir-fresnel').click(); } };
 })();

@@ -5,6 +5,7 @@
    y campo eléctrico. Pulsar en el mapa coloca la sonda; pasar el ratón
    lee el potencial. El cálculo está en laplace-numerica/calculo.js
    (LaplaceNumerica) y los ayudantes comunes en herramienta.js.
+   También: Poisson, bordes aislantes, varios electrodos, cargas, capacidad, energía y comparación de métodos.
    Guarda el estado entero (sc) en localStorage[CLAVE] en cada cambio: es lo
    que copia Mis ejercicios (biblioteca.js). Expone window.LaplaceNumericaApp
    para el modo práctica y las pruebas.
@@ -21,21 +22,31 @@
   /* ---------- Formulario ---------- */
   const fila = (k, nom, un) => `<label for="f-${k}">${nom}${un ? ` <small>(${un})</small>` : ''}</label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc[k] ?? '')}" inputmode="decimal" autocomplete="off">`;
   const lista = (k, nom, ops) => `<label for="f-${k}">${nom}</label><select id="f-${k}" class="in" data-k="${k}">${ops.map(([v, t]) => `<option value="${v}"${(sc[k] ?? ops[0][0]) === v ? ' selected' : ''}>${t}</option>`).join('')}</select>`;
+  const borde = (k, t, nom) => {
+    const ais = sc[t] === 'n';
+    return lista(t, nom, [['v', 'Potencial fijo'], ['n', 'Aislante (∂V/∂n = 0)']]) + (ais ? '' : fila(k, 'Potencial de ese borde', 'V'));
+  };
+  const electrodo = (on, tt, kx, ky, kw, kh, kv, n) => {
+    const e = sc[on] === '1', c = sc[tt] === 'circ';
+    return `<div class="sep">Electrodo ${n}</div>` + lista(on, 'Electrodo', [['0', 'Sin electrodo'], ['1', 'Con electrodo']])
+      + (e ? lista(tt, 'Forma', [['rect', 'Rectangular'], ['circ', 'Circular']]) + (c ? fila(kx, 'Centro, x', 'm') + fila(ky, 'Centro, y', 'm') + fila(kw, 'Radio', 'm') : fila(kx, 'Esquina inferior, x', 'm') + fila(ky, 'Esquina inferior, y', 'm') + fila(kw, 'Ancho', 'm') + fila(kh, 'Alto', 'm')) + fila(kv, 'Potencial', 'V') : '');
+  };
   function formulario() {
-    const el = sc.elec === '1';
     $('#campos').innerHTML = '<div class="sep">Caja</div>' + fila('a', 'Ancho', 'm') + fila('b', 'Alto', 'm') + fila('n', 'Celdas en el ancho')
-      + '<div class="sep">Potencial de los bordes</div>' + fila('va', 'Borde de arriba', 'V') + fila('vb', 'Borde de abajo', 'V') + fila('vi', 'Borde izquierdo', 'V') + fila('vd', 'Borde derecho', 'V')
-      + '<div class="sep">Electrodo interior</div>' + lista('elec', 'Electrodo', [['0', 'Sin electrodo'], ['1', 'Con electrodo']])
-      + (el ? fila('ex', 'Esquina inferior, x', 'm') + fila('ey', 'Esquina inferior, y', 'm') + fila('ew', 'Ancho', 'm') + fila('eh', 'Alto', 'm') + fila('ev', 'Potencial', 'V') : '')
+      + '<div class="sep">Bordes</div>' + borde('va', 'ta', 'Borde de arriba') + borde('vb', 'tb', 'Borde de abajo') + borde('vi', 'ti', 'Borde izquierdo') + borde('vd', 'td', 'Borde derecho')
+      + '<div class="sep">Carga dentro de la caja (Poisson)</div>' + fila('rho', 'Densidad de carga ρ', 'C/m³, vacío = Laplace')
+      + (vacioRho() ? '' : fila('rx', 'Región con carga: x', 'm, vacío = toda la caja') + fila('ry', 'Región con carga: y', 'm') + fila('rw', 'Región con carga: ancho', 'm') + fila('rh', 'Región con carga: alto', 'm'))
+      + electrodo('elec', 'et', 'ex', 'ey', 'ew', 'eh', 'ev', 1) + electrodo('e2', 'e2t', 'e2x', 'e2y', 'e2w', 'e2h', 'e2v', 2) + electrodo('e3', 'e3t', 'e3x', 'e3y', 'e3w', 'e3h', 'e3v', 3)
       + '<div class="sep">Relajación</div>' + lista('metodo', 'Método', [['sor', 'SOR'], ['gs', 'Gauss-Seidel'], ['jacobi', 'Jacobi']]) + fila('tol', 'Error máximo', 'V')
       + '<div class="sep">Sonda</div>' + fila('px', 'Posición x', 'm') + fila('py', 'Posición y', 'm');
-    $('#nota').textContent = 'Se admite coma decimal, 3e8 y 3·10^8. Las celdas del alto salen del ancho y de la proporción de la caja.';
+    $('#nota').textContent = 'Se admite coma decimal, 3e8, 3·10^8 y unidades (50 mV). Un borde aislante no fija el potencial: el campo no lo atraviesa. Las cargas y la capacidad son por metro de profundidad.';
     $('#ver-eq').checked = sc.eq !== '0'; $('#ver-e').checked = sc.cam === '1';
   }
+  const vacioRho = () => !String(sc.rho ?? '').trim();
   $('#campos').addEventListener('input', (e) => {
     const t = e.target; if (!t.dataset.k) return;
     sc[t.dataset.k] = t.value; $('#ejemplos').value = '';
-    if (t.dataset.k === 'elec') formulario();
+    if (t.tagName === 'SELECT' || t.dataset.k === 'rho') { const k = t.dataset.k, foco = k === 'rho' ? k : null; formulario(); if (foco) { const i = $('#f-' + foco); i.focus(); i.setSelectionRange(i.value.length, i.value.length); } else $('#f-' + k).focus(); }
     calcula();
   });
   $('#ver-eq').addEventListener('change', (e) => { sc.eq = e.target.checked ? '1' : '0'; guarda(); dibuja(); });
@@ -64,7 +75,10 @@
     $('#resumen').innerHTML = dato('Potencial en la sonda', `V = ${f(s.V)} V`, 'num') + dato('Campo en la sonda', `E = ${f(s.E)} V/m`, 'num')
       + dato('Componentes del campo', `E<sub>x</sub> = ${f(s.Ex)} V/m · E<sub>y</sub> = ${f(s.Ey)} V/m`, 'ancho')
       + dato('Potencial en el centro', `V = ${f(sol.centro.V)} V`, 'num') + dato('Iteraciones', `${sol.iter}${sol.convergio ? '' : ' (sin converger)'}`)
-      + (sol.exacto !== null ? dato('Solución exacta (serie)', `V = ${f(sol.exacto)} V`) + dato('Error de la malla', `${f(Math.abs(s.V - sol.exacto))} V`) : '');
+      + (sol.exacto !== null ? dato('Solución exacta', `V = ${f(sol.exacto)} V`) + dato('Error de la malla', `${f(Math.abs(s.V - sol.exacto))} V`) : '')
+      + sol.conductores.map((c, i) => dato(`Carga de ${c.nombre.toLowerCase()} (${f(c.v)} V)`, `Q' = ${f(sol.q[i])} C/m`)).join('')
+      + dato('Energía por metro', `W' = ${f(sol.W)} J/m`)
+      + (sol.capacidad ? dato('Capacidad por metro', `C' = ${f(sol.capacidad.C)} F/m`) + dato('Capacidad por la energía', `C' = 2W'/ΔV² = ${f(sol.capacidad.Cw)} F/m`) : '');
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
     lectura = null; dibuja();
   }
@@ -143,12 +157,18 @@
       }
       g.globalAlpha = 1;
     }
-    // marco, electrodo y sonda
+    // marco, electrodos, región con carga, bordes aislantes (a trazos) y sonda
     g.strokeStyle = TINTA; g.lineWidth = 1.2; g.strokeRect(x0, y0, pw, ph);
-    if (sol.electrodo) {
-      const e = sol.electrodo; g.lineWidth = 2; g.strokeStyle = TINTA;
-      g.strokeRect(X(e.i0 * sol.hx), Y(e.j1 * sol.hy), (e.i1 - e.i0) * sol.hx * k, (e.j1 - e.j0) * sol.hy * k);
+    g.lineWidth = 2; g.strokeStyle = TINTA;
+    for (const e of sol.electrodos) {
+      if (e.tipo === 'circ') { g.beginPath(); g.arc(X(e.x), Y(e.y), e.w * k, 0, 6.2832); g.stroke(); }
+      else g.strokeRect(X(e.i0 * sol.hx), Y(e.j1 * sol.hy), (e.i1 - e.i0) * sol.hx * k, (e.j1 - e.j0) * sol.hy * k);
     }
+    if (sol.rhoRegion) { const r = sol.rhoRegion; g.setLineDash([5, 4]); g.lineWidth = 1.2; g.strokeRect(X(r.x), Y(r.y + r.h), r.w * k, r.h * k); g.setLineDash([]); }
+    g.lineWidth = 3; g.setLineDash([6, 5]); g.beginPath();
+    if (sol.neu.arr) { g.moveTo(x0, y0); g.lineTo(x0 + pw, y0); } if (sol.neu.aba) { g.moveTo(x0, y0 + ph); g.lineTo(x0 + pw, y0 + ph); }
+    if (sol.neu.izq) { g.moveTo(x0, y0); g.lineTo(x0, y0 + ph); } if (sol.neu.der) { g.moveTo(x0 + pw, y0); g.lineTo(x0 + pw, y0 + ph); }
+    g.stroke(); g.setLineDash([]);
     const sx = X(sol.px), sy = Y(sol.py);
     g.lineWidth = 2; g.strokeStyle = BLANCO; g.beginPath(); g.arc(sx, sy, 6, 0, 6.2832); g.stroke();
     g.lineWidth = 1.6; g.strokeStyle = TINTA; g.beginPath(); g.arc(sx, sy, 6, 0, 6.2832); g.moveTo(sx - 10, sy); g.lineTo(sx + 10, sy); g.moveTo(sx, sy - 10); g.lineTo(sx, sy + 10); g.stroke();
@@ -192,7 +212,7 @@
   function azar() {
     const ent = (a, b) => a + Math.floor(Math.random() * (b - a + 1)), de = (l) => l[ent(0, l.length - 1)], c = (x) => String(x).replace('.', ',');
     const v = () => String(de([0, 0, 50, 100, -50, -100, 20, 80]));
-    const base = { a: '1', b: '1', n: '40', elec: '0', ex: '0,4', ey: '0,4', ew: '0,2', eh: '0,2', ev: '100', metodo: 'sor', tol: '1e-6' };
+    const base = { ta: 'v', tb: 'v', ti: 'v', td: 'v', rho: '', et: 'rect', e2: '0', e3: '0', a: '1', b: '1', n: '40', elec: '0', ex: '0,4', ey: '0,4', ew: '0,2', eh: '0,2', ev: '100', metodo: 'sor', tol: '1e-6' };
     do { sc = { ...base, va: v(), vb: v(), vi: v(), vd: v() }; } while (new Set([sc.va, sc.vb, sc.vi, sc.vd]).size < 2);
     if (Math.random() < 0.4) sc.elec = '1', sc.ev = String(de([50, 100, -100]));
     sc.px = c(de([0.25, 0.5, 0.75])); sc.py = c(de([0.25, 0.5, 0.75]));
@@ -203,6 +223,16 @@
     const u = (x) => `${esc(x)} V`;
     return `Una caja cuadrada de 1 m de lado tiene el borde de arriba a ${u(sc.va)}, el de abajo a ${u(sc.vb)}, el izquierdo a ${u(sc.vi)} y el derecho a ${u(sc.vd)}${sc.elec === '1' ? `, y un electrodo cuadrado de 0,2 m de lado centrado en la caja a ${u(sc.ev)}` : ''}. Resolviendo la ecuación de Laplace por relajación, calcula el potencial y el módulo del campo eléctrico en el punto (${esc(sc.px)}; ${esc(sc.py)}) m y el potencial en el centro de la caja.`;
   };
+  /* ---------- Comparar métodos (LA-4) ---------- */
+  $('#comparar').addEventListener('click', () => {
+    const cuerpo = $('#comp-cuerpo'), msg = $('#comp-msg');
+    try {
+      const filas = P.comparar(sc), nm = P.NOM_METODO;
+      cuerpo.innerHTML = filas.map((q) => `<tr><td>${nm[q.metodo]}</td><td>${q.n} × ${q.ny}</td><td>${q.iter}${q.convergio ? '' : ' (sin converger)'}</td><td>${f(q.tiempo)} ms</td><td>${f(q.error)} V</td></tr>`).join('');
+      msg.textContent = 'Cada fila resuelve el mismo problema con la malla y el método indicados; el error es el mayor desvío respecto de una solución de referencia con SOR y error 10⁻¹⁰ V en la misma malla.'; $('#comp-tabla').hidden = false;
+    } catch (e) { msg.textContent = e.message; $('#comp-tabla').hidden = true; }
+  });
+  Herramienta.exportar('#grafica', { nombre: 'laplace-mapa', titulo: 'Mapa del potencial' });
   window.addEventListener('resize', dibuja);
   // tema.js también avisa a este oyente al pulsar el botón claro/oscuro
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { colores(); dibuja(); });

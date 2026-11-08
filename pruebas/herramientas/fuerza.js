@@ -37,6 +37,33 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       let ok = false; try { FzC.resolver(sc); } catch (err) { ok = true; }
       if (!ok) mal(`Fuerza magnética: ${q} no da error`);
     }
+    // FU-1: trayectoria numérica contra los casos cerrados
+    { const q = FzC.E0, m = FzC.PART.proton.m, tr = (extra) => FzC.resolver({ modo: 'trayectoria', part: 'proton', q: '', m: '', vx: '0', vy: '0', vz: '0', Bx: '0', By: '0', Bz: '0', Ex: '0', Ey: '0', Ez: '0', tt: '', ...extra });
+      const cer = (a, b, tol, w) => { if (!(Math.abs(a - b) <= tol)) mal(`Fuerza magnética · ${w}: ${a} en vez de ${b}`); };
+      // sin E: circunferencia de radio mv/(qB); a un periodo vuelve al origen y la energía se conserva
+      { const v = 1e6, B = 0.5, r = (m * v) / (q * B), T = (2 * Math.PI * m) / (q * B), s2 = tr({ vx: String(v), Bz: String(B), tt: String(T) }), u = s2.muestras[s2.muestras.length - 1];
+        cerca(s2.rL, r, 1e-12, 'radio de giro'); cer(Math.hypot(u[1], u[2]) / r, 0, 1e-6, 'vuelve al origen tras un periodo'); cerca(s2.KE1, s2.KE0, 1e-9, 'energía constante sin E');
+        const ymax = Math.max(...s2.muestras.map((x) => Math.abs(x[2]))); cerca(ymax, 2 * r, 2e-3, 'diámetro de la circunferencia'); }
+      // hélice: avanza v∥·T por vuelta, con B inclinado en x-z
+      { const v = 1e6, B = 0.2, T = (2 * Math.PI * m) / (q * B), s2 = tr({ vx: '5e5', vz: '8.66025e5', Bz: String(B), tt: String(3 * T) }), u = s2.muestras[s2.muestras.length - 1]; cerca(u[3], 8.66025e5 * 3 * T, 1e-6, 'avance de la hélice en 3 vueltas'); cerca(s2.vpm, 5e5, 1e-12, 'velocidad perpendicular'); cerca(s2.vpar, 8.66025e5, 1e-12, 'velocidad paralela'); }
+      // E ⊥ B desde el reposo: cicloide, deriva E/B, velocidad máxima 2E/B y desplazamiento de un periodo = 2π m E/(q B²)
+      { const E = 1000, B = 0.01, T = (2 * Math.PI * m) / (q * B), s2 = tr({ Ex: String(E), Bz: String(B), tt: String(T) }), u = s2.muestras[s2.muestras.length - 1], vmax = Math.max(...s2.muestras.map((x) => Math.hypot(x[4], x[5], x[6])));
+        cerca(Math.hypot(...s2.vd), E / B, 1e-12, 'deriva E/B'); cerca(vmax, 2 * E / B, 1e-3, 'velocidad máxima de la cicloide 2E/B'); cerca(u[2], -(2 * Math.PI * m * E) / (q * B * B), 1e-3, 'desplazamiento de un periodo de la cicloide');
+        if (s2.vd[1] >= 0) mal('Fuerza magnética · E × B de x con B de z debería derivar hacia −y'); }
+      // E ∥ B: movimiento uniformemente acelerado a lo largo de B
+      { const E = 50, B = 0.1, tt = 1e-6, s2 = tr({ Ez: String(E), Bz: String(B), vx: '1e5', tt: String(tt) }), u = s2.muestras[s2.muestras.length - 1]; cerca(u[3], 0.5 * (q * E / m) * tt * tt, 1e-6, 'aceleración a lo largo de B'); cerca(s2.apar, q * E / m, 1e-12, 'a∥'); }
+      // teorema trabajo-energía con campos inclinados
+      { const s2 = FzC.resolver(FzC.ejemplos.find((e) => e.clave === 'tray-general').sc); cerca(s2.KE1 - s2.KE0, s2.WE, 1e-3, 'ΔE_c = q E·Δr con E y B inclinados'); if (s2.muestras.length < 100) mal('Fuerza magnética · trayectoria con pocas muestras'); }
+      for (const mala of [{ Bz: '0', Ez: '0' }, { vx: '0', Bz: '0.1', Ez: '0' }, { Bz: '0', Ex: '5', tt: '' }, { Ex: '1e9', Bz: '1', vx: '1' }, { part: 'otra', q: '1e-19', m: '' }]) { let ok = false; try { tr({ vx: '1e5', ...mala }); } catch (e) { ok = true; } if (!ok) mal(`Fuerza magnética · trayectoria ${JSON.stringify(mala)} debería dar error`); } }
+    // FU-3: espejo magnético: punto de retorno L cot α, periodo 2πL/v⊥, μ conservado, cono de pérdidas
+    { const a = FzC.resolver(FzC.ejemplos.find((e) => e.clave === 'espejo-atrapada').sc), b = FzC.resolver(FzC.ejemplos.find((e) => e.clave === 'espejo-escapa').sc);
+      cerca(a.ac, Math.asin(1 / 2), 1e-12, 'ángulo del cono de pérdidas arcsen(1/√Rm)'); if (!a.atrapada || a.escapa) mal('Fuerza magnética · espejo: α₀ = 45° con Rm = 4 debería quedar atrapada');
+      cerca(a.zt, 0.5, 1e-12, 'z_t = L cot α₀'); cerca(a.zmax, a.zt, 0.01, 'punto de retorno simulado'); cerca(a.TbSim, a.Tb, 0.01, 'periodo de rebote simulado frente a 2πL/v⊥'); if (!(a.dev < 0.02)) mal(`Fuerza magnética · espejo: μ varía un ${a.dev}`);
+      cerca(a.mu, (a.P.m * a.vp * a.vp) / (2 * a.B0), 1e-12, 'μ inicial'); const KE = (q) => 0.5 * a.P.m * (q[4] ** 2 + q[5] ** 2 + q[6] ** 2); cerca(Math.max(...a.muestras.map(KE)), KE(a.muestras[0]), 1e-6, 'energía constante en el espejo');
+      if (b.atrapada || !b.escapa) mal('Fuerza magnética · espejo: α₀ = 20° con Rm = 4 debería escapar'); cerca(b.zmax, b.zm, 0.02, 'sale por el extremo z = ±L√(Rm − 1)');
+      // en el límite del cono (sen²α = 1/Rm) el punto de retorno es justo el extremo
+      cerca(FzC.resolver({ ...FzC.ejemplos.find((e) => e.clave === 'espejo-atrapada').sc, al: '35' }).zt, 0.5 / Math.tan((35 * Math.PI) / 180), 1e-12, 'z_t con 35°');
+      for (const mala of [{ Rm: '1' }, { al: '0' }, { al: '120' }, { L: '0.001' }, { B0: '1e-9' }]) { let ok = false; try { FzC.resolver({ ...FzC.ejemplos.find((e) => e.clave === 'espejo-atrapada').sc, ...mala }); } catch (e) { ok = true; } if (!ok) mal(`Fuerza magnética · espejo ${JSON.stringify(mala)} debería dar error`); } }
     if (fallos === antes) console.log(`  ✓ Fuerza magnética: ${FzC.ejemplos.length} ejemplos, radio, periodo, hélice, sentido de giro, v × B, selector, espectrómetro e isótopos, ciclotrón, franja, cicloide, Hall, espira, hilos y errores`);
   }
 
@@ -76,6 +103,19 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       for (let i = 0; i < 12; i++) { await page.evaluate(() => FuerzaApp.azar()); if (!(await page.locator('#error').isHidden())) mal(`Fuerza magnética: un ejercicio al azar da error: ${JSON.stringify(await page.evaluate(() => FuerzaApp.estado()))}`); }
       // copiar la solución como texto o LaTeX e imprimirla (compartir.js)
       if ((await page.locator('.compartir button').count()) !== 4 || !/Resultados[\s\S]*Desarrollo/.test(await page.evaluate(() => Compartir.ejercicio(false)))) mal('Fuerza magnética: faltan los botones para copiar o imprimir la solución');
+      // vista 3D y alternativa 2D de los modos numéricos
+      for (const c of ['tray-helice', 'tray-general', 'espejo-atrapada', 'espejo-escapa']) {
+        await page.evaluate((k) => FuerzaApp.abrirEjemplo(k), c);
+        const r = await page.evaluate(() => ({ visible: !document.querySelector('#card3d').hidden, desc: document.querySelector('#desc3d').textContent.length, aria: document.querySelector('#vista3d').getAttribute('aria-label').length, p3: document.querySelector('#vista3d').toDataURL().length, p2: document.querySelector('#escena').toDataURL().length, tab: document.querySelector('#vista3d').tabIndex }));
+        if (!r.visible || r.desc < 60 || r.aria < 60 || r.p3 < 4000 || r.p2 < 4000 || r.tab !== 0) mal(`Fuerza magnética · ${c}: la vista 3D, su descripción o la alternativa 2D no salen bien (${JSON.stringify(r)})`);
+      }
+      await page.evaluate(() => FuerzaApp.abrirEjemplo('proton'));
+      if (!(await page.locator('#card3d').isHidden())) mal('Fuerza magnética: la vista 3D debería ocultarse en los demás modos');
+      await page.evaluate(() => FuerzaApp.abrirEjemplo('tray-helice'));
+      await page.focus('#vista3d'); const antes3 = await page.evaluate(() => document.querySelector('#vista3d').toDataURL()); await page.keyboard.press('ArrowRight'); await page.keyboard.press('ArrowRight');
+      if ((await page.evaluate(() => document.querySelector('#vista3d').toDataURL())) === antes3) mal('Fuerza magnética: las flechas del teclado no giran la vista 3D');
+      await page.selectOption('#f-modo', 'espejo'); if (await page.locator('#error').isVisible()) mal('Fuerza magnética: error al elegir el espejo magnético: ' + await page.locator('#error').textContent());
+      await page.fill('#f-Rm', '1'); if (await page.locator('#error').isHidden()) mal('Fuerza magnética: Rm = 1 debería dar error');
       await page.close();
       if (consola.length) mal('Fuerza magnética: consola del navegador:\n      ' + consola.join('\n      '));
       if (fallos === antes) console.log(`  ✓ Fuerza magnética: ${FzC.ejemplos.length} ejemplos, cambio de campo y de partícula, sentido de giro, ddp, errores, vectores con E y ejercicios al azar sin errores de consola`);

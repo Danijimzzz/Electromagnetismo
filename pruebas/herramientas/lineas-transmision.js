@@ -50,6 +50,36 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     if (fallos === antes) console.log(`  ✓ Líneas de transmisión: ${C.ejemplos.length} ejemplos, Γ, ROE, pérdidas, Zin, máximos y mínimos, stubs, transformador λ/4 y errores`);
   }
 
+  // EM-1 y olas 2-3: pérdidas (LT-1), transitorios (LT-2), stub en serie, doble stub y anchos de banda (LT-3)
+  {
+    const antes = fallos, cerca = (a, b, tol, q) => { if (!(Math.abs(a - b) <= tol * Math.max(1e-300, Math.abs(b)) + 1e-9)) mal(`Líneas de transmisión · ${q}: ${a} en vez de ${b}`); };
+    const r = (c) => C.resolver(C.ejemplos.find((e) => e.clave === c).sc), base = C.ejemplos[0].sc;
+    // pérdidas: carga adaptada → Zin = Z0 y pérdida = α·l; línea corta casi sin pérdidas → resultado sin pérdidas; cortocircuito: Zin = Z0 tgh(γl)
+    const p = C.resolver({ ...base, R: '50', X: '0', alfa: '0,1', l: '30', P: '100' });
+    cerca(p.perd.atenDb, 3, 1e-12, 'atenuación α·l'); cerca(p.perd.PL, 100 * 10 ** (-0.3), 1e-4, 'P_L = P·10^(−α l/10) con carga adaptada'); cerca(p.perd.perdidaTotalDb, 3, 1e-4, 'pérdida total con carga adaptada'); cerca(p.perd.zin.re, 50, 1e-3, 'Zin = Z0 con carga adaptada');
+    cerca(p.perd.lmaxUtil3, 30, 1e-12, 'longitud máxima útil a 3 dB');
+    const q = C.resolver({ ...base, alfa: '1e-9' }); cerca(q.perd.zin.re, q.zin.re, 1e-6, 'sin pérdidas Re Zin coincide'); cerca(q.perd.zin.im, q.zin.im, 1e-6, 'sin pérdidas Im Zin coincide');
+    const cc = C.resolver({ ...base, R: '1e-9', X: '0', alfa: '0,05', l: '10', lu: 'm' }); cerca(cc.perd.gin, Math.exp(-2 * cc.perd.alfa * 10), 1e-6, '|Γin| = e^(−2αl) en cortocircuito');
+    const gr = C.resolver({ ...base, alfa: '0,5', l: '40' }); if (!(gr.perd.roeIn < gr.roe)) mal('Líneas de transmisión: la ROE a la entrada debe bajar con las pérdidas');
+    // transitorios: generador adaptado y carga abierta → V_carga = Vg a t = T; escalón con rebotes → V∞; pulso = escalón − escalón retrasado
+    const t = r('escalon').trans, T = t.T;
+    cerca(t.V1, 10 * 50 / 75, 1e-12, 'V1 = Vg Z0/(Z0 + Rg)'); cerca(t.Gg, -1 / 3, 1e-12, 'Γg'); cerca(t.V(T * 1.01, 30), t.V1 * 2, 1e-6, 'V en la carga abierta tras T = 2 V1');
+    cerca(t.V(1000 * T, 15), t.Vinf, 1e-6, 'V en el régimen permanente = Vg RL/(RL + Rg)'); cerca(t.V(1000 * T, 0), t.Vinf, 1e-6, 'V en el generador al final');
+    cerca(t.V(0.4 * T, 15), 0, 0, 'antes de llegar el frente no hay tensión a mitad de línea'); cerca(t.V(T * 0.51, 15), t.V1, 1e-9, 'V1 a mitad de la línea');
+    const pu = r('pulso').trans; cerca(pu.V(1.5 * pu.T, pu.x), 3.75, 1e-9, 'pulso: V1(1 + ΓL) en la carga'); cerca(pu.V(pu.T + 60e-9, pu.x), 0, 1e-9, 'pulso: vuelve a 0 al acabar'); cerca(pu.rebotes[0].v, 2.5, 1e-12, 'primer frente 2,5 V'); cerca(pu.rebotes[1].v, 1.25, 1e-12, 'frente reflejado = ΓL V1');
+    let ok = false; try { C.resolver({ ...base, X: '10', Vg: '5', Rg: '50' }); } catch (e) { ok = true; } if (!ok) mal('Líneas de transmisión: el transitorio con carga reactiva no da error');
+    // stub en serie: z(d) = 1 ± jx y el stub lo anula; doble stub: |Γ| = 0; conservación en todas las redes
+    for (const c of ['compleja', 'resistiva', 'antena']) {
+      const s = r(c);
+      for (const w of s.serie) { const z = C.zEnK(s, w.d, 1); cerca(z.re, 1, 1e-9, `${c}: parte real 1 en el stub serie`); cerca(Math.tan(2 * Math.PI * w.lcc) + z.im, 0, 1e-8, `${c}: stub serie cc anula x`); cerca(z.im * Math.tan(2 * Math.PI * w.lab), -1 * -1, 1e-6 + 1e-3, `${c}: stub serie ab anula x`); }
+      if (!s.doble.prohibida) for (const w of s.doble.sols) cerca(C.redes(s, null, null, { d1: s.doble.d1, sep: s.doble.sep, l1: w.l1, l2: w.l2 }, null).doble(1), 0, 1e-9, `${c}: doble stub adapta`);
+      cerca(s.bw.stub.G0, 0, 1e-9, `${c}: stub adapta`); cerca(s.bw.serie.G0, 0, 1e-9, `${c}: serie adapta`); cerca(s.bw.cuarto.G0, 0, 1e-9, `${c}: λ/4 adapta`);
+      if (!(s.bw.cuarto.bw > s.bw.doble.bw)) mal(`Líneas de transmisión · ${c}: el λ/4 debería ser más ancho que el doble stub`);
+    }
+    const zp = C.dobleStub(C.resolver({ ...base, R: '1', X: '0' }), 0, 0.125); if (!zp.prohibida) mal('Líneas de transmisión: debería haber zona prohibida del doble stub con g = 50');
+    if (fallos === antes) console.log('  ✓ Líneas de transmisión: pérdidas, transitorios, stub en serie, doble stub y anchos de banda (casos cerrados)');
+  }
+
   return async (browser) => {
     const { page, consola } = await pagina(browser, 1200, 900);
     await page.goto('file://' + path.join(publico, 'electromagnetismo', 'lineas-transmision', 'index.html'));
@@ -64,8 +94,9 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       if (!r.mathml || r.dolar) mal(`Líneas de transmisión · ${e.clave}: el desarrollo no sale en MathML`);
     }
     // los dos lienzos dibujan algo
-    const pix = await page.evaluate(() => [...document.querySelectorAll('canvas')].map((c) => { const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data; let n = 0; for (let i = 3; i < d.length; i += 4) if (d[i]) n++; return n; }));
-    if (pix.length !== 2 || pix.some((n) => n < 2000)) mal('Líneas de transmisión: algún lienzo parece vacío');
+    await page.evaluate(() => LineasTransmisionApp.abrirEjemplo('compleja'));
+    const pix = await page.evaluate(() => [...document.querySelectorAll('canvas')].filter((c) => c.offsetParent).map((c) => { const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data; let n = 0; for (let i = 3; i < d.length; i += 4) if (d[i]) n++; return n; }));
+    if (pix.length !== 3 || pix.some((n) => n < 2000)) mal('Líneas de transmisión: algún lienzo parece vacío');
     await page.fill('#f-R', '0');
     if (await page.locator('#error').isHidden()) mal('Líneas de transmisión: una resistencia cero no muestra el error');
     await page.fill('#f-R', '100'); await page.fill('#f-X', '0'); await page.selectOption('#f-lu', 'lam'); await page.fill('#f-l', '0,25');
@@ -74,6 +105,18 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     await page.evaluate(() => LineasTransmisionApp.azar());
     const az = await page.evaluate(() => ({ err: !document.querySelector('#error').hidden, enun: LineasTransmisionApp.enunciado().length, num: document.querySelectorAll('#resumen > div.num').length }));
     if (az.err || az.enun < 50 || !az.num) mal('Líneas de transmisión: el ejercicio al azar no sale bien');
+    // lectura de la carta (LT-5), admitancias, transitorio y exportar
+    await page.evaluate(() => LineasTransmisionApp.abrirEjemplo('compleja'));
+    const so = await page.evaluate(() => LineasTransmisionApp.sonda(1, 1));
+    if (Math.abs(so.re - 1 / 5) > 1e-9 || Math.abs(so.im - 2 / 5) > 1e-9) mal('Líneas de transmisión: z = 1 + j1 debe dar Γ = 0,2 + j0,4');
+    const le = await page.locator('#lectura').textContent();
+    if (!/Γ = 0,4472/.test(le) || !/ROE = 2,618/.test(le)) mal('Líneas de transmisión: la lectura de la carta no da |Γ| = 0,4472 y ROE = 2,618: ' + le);
+    await page.fill('#lee-r', '2'); await page.fill('#lee-x', '0');
+    if (!/ROE = 2\b|ROE = 2 /.test(await page.locator('#lectura').textContent())) mal('Líneas de transmisión: z = 2 debe dar ROE = 2');
+    await page.check('#ver-adm'); await page.click('#borra-sonda');
+    await page.evaluate(() => LineasTransmisionApp.abrirEjemplo('escalon'));
+    const tr = await page.evaluate(() => ({ visible: !document.querySelector('#bloque-trans').hidden, ley: document.querySelector('#leyenda-trans').textContent.length, bot: document.querySelectorAll('.exportar button').length, bw: !document.querySelector('#bloque-bw').hidden }));
+    if (!tr.visible || tr.ley < 40 || tr.bot < 6 || !tr.bw) mal('Líneas de transmisión: faltan el transitorio, su descripción, el ancho de banda o los botones de exportar');
     await page.close();
     if (consola.length) mal('Líneas de transmisión: consola del navegador:\n      ' + consola.join('\n      '));
     if (fallos === antes) console.log(`  ✓ Líneas de transmisión: ${C.ejemplos.length} ejemplos en la página con MathML, dos lienzos, cambio de datos, ejercicio al azar y errores, sin errores de consola`);

@@ -54,6 +54,9 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
         await page.evaluate((c) => CondApp.abrirEjemplo(c), e.clave);
         if ((await page.locator('#regiones tbody tr').count()) < 1 || (await page.locator('#pasos li').count()) < 3) mal(`Condensadores · ${e.clave}: faltan la tabla o el desarrollo`);
       }
+      // EM-3: la capacidad al conectar admite prefijos y unidades
+      await page.evaluate(() => CondApp.abrirEjemplo('plano-lleno')); await page.selectOption('#f-tipo', 'conectar').catch(() => {});
+      if ((await page.locator('#f-C1').count()) === 1) { await page.fill('#f-C1', '2200 nF'); await page.fill('#f-C2', '4,7 µF'); if (!(await page.locator('#error').isHidden())) mal('Condensadores: C₁ = 2200 nF y C₂ = 4,7 µF dan error: ' + await page.locator('#error').textContent()); await page.fill('#f-C1', '0 nF'); if (await page.locator('#error').isHidden()) mal('Condensadores: C₁ = 0 nF debería dar error'); }
       await page.evaluate(() => CondApp.abrirEjemplo('plano-lleno'));
       await page.click('#anade');
       await page.selectOption('#f-geo', 'cilindro');

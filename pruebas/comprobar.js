@@ -145,6 +145,17 @@ for (const j of juegos) {
   comparar(nodo, j.esp, `Node · ${j.nombre}`);
   if (fallos === antes) console.log(`  ✓ ${j.nombre}: ${Object.keys(j.esp).length} ejercicios iguales a ${path.basename(j.esperados)}`);
 }
+// ES-3: la práctica de Electrostática avisa de las dimensiones de la respuesta
+{
+  const antes = fallos, out = Physics.run(juegos[0].Presets.list.find((p) => p.key === 'p1').make()), r = out.results.find((x) => x.answers && x.answers.length), ans = { ...r.answers[0], qty: 'E', vec: undefined, val: r.answers[0].val || r.answers[0].vec[0] };
+  const ver = (exp, esperado, q) => { const t = Physics.checkDim(exp, { ...ans, qty: q || 'E' }, out.ctx); if (!t.includes(esperado)) mal(`Electrostática · dimensiones de «${exp}»: «${t}» no contiene «${esperado}»`); };
+  ver('q/(4*pi*eps0*a^2)', 'sí cuadran'); ver('q/(4*pi*eps0*a)', 'no cuadran'); ver('q/(4*pi*eps0*a)', 'N/C'); ver('q/(4*pi*eps0*a^2) + q/(4*pi*eps0*a)', 'sumandos'); ver('q/(4*pi*eps0*a)', 'sí cuadran', 'V'); ver('q*a', 'no cuadran', 'V'); ver('sqrt(q^2)/(4*pi*eps0*a)', 'sí cuadran', 'V'); ver('q/(4*pi*eps0*a^2) + 1', '«1»');
+  if (Physics.checkDim('q/(2*desconocido)', ans, out.ctx) !== '') mal('Electrostática: con un símbolo desconocido no debe opinar sobre las dimensiones');
+  const bad = Physics.checkAnswer({ ...ans, qty: 'V', val: ans.val }, ['q/(4*pi*eps0*a^2)', '', ''], out.ctx);
+  if (bad.ok || !/Las dimensiones no cuadran/.test(bad.msg)) mal('Electrostática: checkAnswer no avisa de las dimensiones: ' + bad.msg);
+  if (fallos === antes) console.log('  ✓ Electrostática: la práctica avisa de las dimensiones de la respuesta y del sumando que falla');
+}
+
 // la web pública no puede llevar nada del PDF de la asignatura
 const textos = hay.filter((f) => f.endsWith('.html')).map((f) => [f, fs.readFileSync(path.join(publico, f), 'utf8')]);
 const delPdf = juegos[1].Presets.list.flatMap((p) => [p.statement, p.title]).flatMap((t) => textos.filter(([, x]) => x.includes(t)).map(([f]) => `${f}: ${t}`));

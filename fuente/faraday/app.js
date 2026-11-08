@@ -7,7 +7,7 @@
   const { $, esc, copia } = Herramienta;
   const F = Faraday, f = F.f, CLAVE = 'faraday-v1';
   const txt = (h) => String(h).replace(/<sup>/g, '^').replace(/<[^>]+>/g, '');
-  const MODOS = [['barra', 'Barra sobre raíles'], ['giratoria', 'Bobina que gira (alternador)'], ['flujo', 'Flujo que cambia en un tiempo'], ['cruza', 'Espira que atraviesa un campo'], ['hilo', 'Hilo recto y espira rectangular'], ['funcion', 'Campo B(t) que cambia con el tiempo'], ['dinamica', 'Barra con masa: velocidad límite'], ['gira', 'Varilla o disco que gira']];
+  const MODOS = [['barra', 'Barra sobre raíles'], ['giratoria', 'Bobina que gira (alternador)'], ['flujo', 'Flujo que cambia en un tiempo'], ['cruza', 'Espira que atraviesa un campo'], ['hilo', 'Hilo recto y espira rectangular'], ['funcion', 'Campo B(t) que cambia con el tiempo'], ['dinamica', 'Barra con masa: velocidad límite'], ['gira', 'Varilla o disco que gira'], ['foucault', 'Corrientes de Foucault']];
 
   let sc = copia(F.ejemplos[0].sc);
   try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && MODOS.some(([k]) => k === g.modo)) sc = g; } catch (e) {}
@@ -40,8 +40,12 @@
       h += fila('N', 'Número de espiras N', '') + forma() + sentidoB() + elige('tipoB', 'Cómo cambia B', Object.entries(F.FUNCB).map(([k, v]) => [k, v.nombre])) + fila('B0', 'B₀', 'T') + (t === 'lineal' || t === 'cuadratica' ? fila('k', 'Constante k', t === 'lineal' ? 'T/s' : 'T/s²') : '') + (t === 'seno' ? fila('w', 'Frecuencia angular ω', 'rad/s') : '') + (t === 'exp' ? fila('tau', 'Constante de tiempo τ', 's') : '') + fila('th', 'Ángulo entre B y la normal θ', '°') + fila('t', 'Instante t', 's') + fila('R', 'Resistencia R (opcional)', 'Ω');
       $('#nota').textContent = 'El sentido de B es el de los valores positivos de B(t). Se calcula la fem en el instante t y se dibujan B(t) y ε(t).';
     } else if (sc.modo === 'dinamica') {
-      h += elige('caso', 'Situación', [['fuerza', 'Se tira con una fuerza constante F'], ['cae', 'Cae por raíles verticales'], ['lanzada', 'Se lanza con v₀ y se suelta']]) + fila('B', 'Campo B', 'T') + fila('L', 'Longitud de la barra L', 'm') + fila('R', 'Resistencia R', 'Ω') + fila('m', 'Masa de la barra m', 'kg') + (sc.caso === 'fuerza' ? fila('F', 'Fuerza F', 'N') : sc.caso === 'lanzada' ? fila('v0', 'Velocidad inicial v₀', 'm/s') : '') + sep('Opcional') + fila('t', 'Instante t', 's');
-      $('#nota').textContent = sc.caso === 'cae' ? 'La barra parte del reposo y cae deslizando sin rozamiento, con g = 9,8 m/s².' : 'Sin rozamiento; la barra parte ' + (sc.caso === 'fuerza' ? 'del reposo.' : 'con v₀ y nadie la empuja.');
+      h += elige('caso', 'Situación', [['fuerza', 'Se tira con una fuerza constante F'], ['cae', 'Cae por raíles verticales'], ['lanzada', 'Se lanza con v₀ y se suelta']]) + fila('B', 'Campo B', 'T') + fila('L', 'Longitud de la barra L', 'm') + fila('R', 'Resistencia R', 'Ω') + fila('m', 'Masa de la barra m', 'kg') + (sc.caso === 'fuerza' ? fila('F', 'Fuerza F', 'N') : sc.caso === 'lanzada' ? fila('v0', 'Velocidad inicial v₀', 'm/s') : fila('ang', 'Ángulo de los raíles con la horizontal', '°, vacío = 90°') + elige('g', 'Gravedad g', [['9.8', '9,8 m/s²'], ['9.80665', '9,80665 m/s²']])) + sep('Opcional') + fila('t', 'Instante t', 's');
+      $('#nota').textContent = sc.caso === 'cae' ? 'La barra parte del reposo y desliza sin rozamiento por raíles verticales (o inclinados si das el ángulo); B es perpendicular al plano de los raíles.' : 'Sin rozamiento; la barra parte ' + (sc.caso === 'fuerza' ? 'del reposo.' : 'con v₀ y nadie la empuja.');
+    } else if (sc.modo === 'foucault') {
+      h += elige('geo', 'Pieza', [['disco', 'Disco o placa circular (B perpendicular)'], ['lamina', 'Núcleo laminado (B en el plano de las láminas)']]) + fila('sigma', 'Conductividad σ', 'MS/m') + fila('B0', 'Amplitud del campo B₀', 'T') + fila('fr', 'Frecuencia f', 'Hz')
+        + (sc.geo === 'lamina' ? fila('D', 'Espesor total del núcleo D', 'mm') + fila('N', 'Número de láminas N', '') + fila('V', 'Volumen del núcleo', 'cm³') : fila('a', 'Radio del disco a', 'cm') + fila('d', 'Espesor del disco d', 'mm'));
+      $('#nota').textContent = 'Modelo simple: campo uniforme B₀ sen ωt en toda la pieza. Cobre 58 MS/m, aluminio 35, hierro 10, acero al silicio 2. Se avisa cuando la pieza es grande frente a la profundidad de penetración.';
     } else if (sc.modo === 'gira') {
       h += elige('cuerpo', 'Qué gira', [['varilla', 'Varilla que gira por un extremo'], ['disco', 'Disco conductor (disco de Faraday)']]) + fila('B', 'Campo B (perpendicular)', 'T') + sentidoB() + fila('L', sc.cuerpo === 'disco' ? 'Radio del disco R' : 'Longitud de la varilla L', 'm') + fila('w', 'Velocidad de giro', '') + elige('uw', 'Unidad', [['rad/s', 'rad/s'], ['rpm', 'rpm'], ['Hz', 'Hz (vueltas por segundo)']]) + fila('R', 'Resistencia del circuito (opcional)', 'Ω');
       $('#nota').textContent = 'B es perpendicular al plano en el que gira. La fem sale entre el eje y el extremo.';
@@ -59,6 +63,7 @@
     sc[t.dataset.k] = t.value;
     if (t.dataset.k === 'modo') sc = copia(F.ejemplos.find((x) => x.sc.modo === t.value).sc);
     if (t.dataset.k === 'tipoB') { const d = { lineal: { k: '0.5' }, cuadratica: { k: '0.4' }, seno: { w: '314', B0: '0.05' }, exp: { tau: '0.5', B0: '1' } }[t.value]; for (const [k, v] of Object.entries(d)) if (vacioC(sc[k])) sc[k] = v; }
+    if (t.dataset.k === 'geo') { const d = { disco: { a: '5', d: '2' }, lamina: { D: '20', N: '100', V: '500' } }[t.value]; for (const [k, v] of Object.entries(d)) if (vacioC(sc[k])) sc[k] = v; }
     if (t.dataset.k === 'caso') { const d = { fuerza: { F: '0.5' }, lanzada: { v0: '5' }, cae: {} }[t.value]; for (const [k, v] of Object.entries(d)) if (vacioC(sc[k])) sc[k] = v; }
     if (t.dataset.k === 'forma') { const d = { circulo: { r: '0.05' }, rectangulo: { a: '0.1', b: '0.2' }, area: { S: '0.01' } }[t.value]; for (const [k, v] of Object.entries(d)) if (vacioC(sc[k])) sc[k] = v; }
     $('#ejemplos').value = ''; formulario(); calcula();
@@ -98,8 +103,11 @@
       h = dato(`B en t = ${f(sol.t)} s`, `B = ${f(sol.Bt)} T`) + dato('Flujo', `Φ = ${f(sol.Phi)} Wb`) + dato('Fem', `ε = <b>${f(sol.eps)} V</b>`) + (sol.sentido ? dato('Sentido', `<b>${sol.sentido}</b>`) : '') + (sol.I !== null ? dato('Corriente', `I = ${f(sol.I)} A`) : '');
       ley = 'Arriba, la espira con el campo que cambia. Abajo, B(t) en azul y ε(t) en rojo; la línea vertical marca el instante t.';
     } else if (sol.modo === 'dinamica') {
-      h = dato('Constante de tiempo', `τ = <b>${f(sol.tau)} s</b>`) + (sol.caso !== 'lanzada' ? dato('Velocidad límite', `v<sub>L</sub> = <b>${f(sol.vL)} m/s</b>`) : dato('Distancia hasta pararse', `x = <b>${f(sol.v0 * sol.tau)} m</b>`)) + (sol.vt !== null ? dato(`En t = ${f(sol.t)} s`, `v = ${f(sol.vt)} m/s, I = ${f(sol.It)} A`) : '');
-      ley = 'La barra acelera (o frena) hasta que la fuerza magnética equilibra a la que la mueve. Abajo, v(t) con la asíntota de la velocidad límite.';
+      h = dato('Constante de tiempo', `τ = <b>${f(sol.tau)} s</b>`) + (sol.caso !== 'lanzada' ? dato('Velocidad límite', `v<sub>L</sub> = <b>${f(sol.vL)} m/s</b>`) + dato('Corriente límite', `I<sub>L</sub> = ${f(sol.IL)} A`) + dato('Potencia en el límite', `P = ${f(sol.PL)} W`) : dato('Distancia hasta pararse', `x = <b>${f(sol.v0 * sol.tau)} m</b>`)) + (sol.vt !== null ? dato(`En t = ${f(sol.t)} s`, `v = ${f(sol.vt)} m/s, I = ${f(sol.It)} A`) : '');
+      ley = 'La barra acelera (o frena) hasta que la fuerza magnética equilibra a la que la mueve. Abajo, v(t) en azul e I(t) en rojo, que se acercan a sus valores límite.';
+    } else if (sol.modo === 'foucault') {
+      h = dato('Potencia media disipada', `⟨P⟩ = <b>${f(sol.P)} W</b>`) + dato('Potencia máxima', `P<sub>máx</sub> = ${f(sol.Pp)} W`) + dato('Potencia por volumen', `p = ${f(sol.pv)} W/m³`) + dato('Densidad de corriente máxima', `J<sub>máx</sub> = ${f(sol.Jmax)} A/m²`) + dato('Profundidad de penetración', `δ = ${f(sol.delta * 1000)} mm`) + (sol.comp ? dato(`Sin laminar (N = 1)`, `⟨P⟩ = ${f(sol.comp.P1)} W · ${f(sol.comp.reduccion)} veces más`) : '') + (sol.aviso ? dato('Aviso', `<b>${sol.aviso}</b>`) : '');
+      ley = 'Las corrientes de Foucault son lazos cerrados en el material, perpendiculares a B; invierten el sentido cada medio periodo. Abajo, B(t) en azul y J(t) en rojo (máxima cuando B pasa por cero).';
     } else if (sol.modo === 'gira') {
       h = dato('Fem entre el eje y el extremo', `ε = <b>${f(sol.eps)} V</b>`) + dato('Velocidad angular', `ω = ${f(sol.w)} rad/s`) + (sol.I !== null ? dato('Corriente', `I = ${f(sol.I)} A`) + dato('Potencia', `P = ${f(sol.P)} W`) : '');
       ley = `${sol.cuerpo === 'disco' ? 'El disco' : 'La varilla'} gira en un campo uniforme; la zona sombreada es el área barrida, que hace crecer el flujo a ritmo ½BωL².`;
@@ -247,7 +255,27 @@
         if (sol.caso === 'fuerza') flecha(g, xb + 6, (yA + yB) / 2, xb + 50, (yA + yB) / 2, col['--normal'], 2.4);
       }
       const pts = Array.from({ length: 201 }, (_, i) => { const t = (tf * i) / 200; return [t, sol.vf(t)]; });
-      grafica(g, 20, hs + 8, w - 40, h - hs - 16, tf, [{ pts, color: col['--tension'], nombre: sol.caso === 'lanzada' ? `v(t), v₀ = ${txt(f(sol.v0))} m/s` : `v(t) → v límite = ${txt(f(sol.vL))} m/s` }], tc);
+      const pi = Array.from({ length: 201 }, (_, i) => { const t = (tf * i) / 200; return [t, sol.If(t)]; });
+      grafica(g, 20, hs + 8, w - 40, h - hs - 16, tf, [{ pts, color: col['--tension'], nombre: sol.caso === 'lanzada' ? `v(t), v₀ = ${txt(f(sol.v0))} m/s` : `v(t) → ${txt(f(sol.vL))} m/s` }, { pts: pi, color: rojo, nombre: sol.caso === 'lanzada' ? `I(t), I₀ = ${txt(f(sol.If(0)))} A` : `I(t) → ${txt(f(sol.IL))} A` }], tc);
+    } else if (sol.modo === 'foucault') {
+      const hs = h * 0.56, T = 4, ph = (tAnim / T) * 2 * Math.PI, B = Math.sin(ph), dB = Math.cos(ph), cx = w / 2, cy = hs / 2, disco = sol.geo === 'disco';
+      campo(g, 0, 0, w, hs, B >= 0, Math.max(Math.abs(B), 0.15));
+      const sg = dB >= 0 ? -1 : 1; // B entrante que crece → corriente antihoraria (sentido −1 en pantalla)
+      g.strokeStyle = rojo; g.fillStyle = rojo; g.globalAlpha = 0.25 + 0.75 * Math.abs(dB);
+      if (disco) {
+        const R = hs * 0.38; g.lineWidth = 3; g.strokeStyle = col['--roz']; g.globalAlpha = 1; g.beginPath(); g.arc(cx, cy, R, 0, 2 * Math.PI); g.stroke();
+        g.strokeStyle = rojo; g.globalAlpha = 0.25 + 0.75 * Math.abs(dB);
+        for (const q of [0.3, 0.55, 0.8]) { g.lineWidth = 1 + 3 * q * Math.abs(dB); g.beginPath(); g.arc(cx, cy, R * q, 0, 2 * Math.PI); g.stroke(); punta(g, cx + R * q, cy, sg * Math.PI / 2, rojo); }
+      } else {
+        const ww = Math.min(w * 0.7, 360), hh = hs * 0.72;
+        g.globalAlpha = 1; g.lineWidth = 3; g.strokeStyle = col['--roz']; g.strokeRect(cx - ww / 2, cy - hh / 2, ww, hh);
+        g.strokeStyle = rojo; g.globalAlpha = 0.25 + 0.75 * Math.abs(dB);
+        for (const q of [0.25, 0.5, 0.75]) { g.lineWidth = 1 + 3 * q * Math.abs(dB); g.strokeRect(cx - (ww * q) / 2, cy - (hh * q) / 2, ww * q, hh * q); punta(g, cx, cy - (hh * q) / 2, sg > 0 ? 0 : Math.PI, rojo); }
+      }
+      g.globalAlpha = 1;
+      texto(g, cx, hs - 6, `B = ${txt(f(sol.B0 * B, 3))} T · ⟨P⟩ = ${txt(f(sol.P))} W`, col['--ink'], 'center', '600 ');
+      const tf = 2 / sol.fr, pts = (fn) => Array.from({ length: 241 }, (_, i) => { const t = (tf * i) / 240; return [t, fn(t)]; }), tc = ((tAnim % T) / T) * tf;
+      grafica(g, 20, hs + 8, w - 40, h - hs - 16, tf, [{ pts: pts((t) => Math.sin(sol.w * t)), color: col['--tension'], nombre: `B(t), B₀ = ${txt(f(sol.B0))} T` }, { pts: pts((t) => Math.cos(sol.w * t)), color: rojo, nombre: `J(t), J máx = ${txt(f(sol.Jmax))} A/m²` }], tc);
     } else if (sol.modo === 'gira') {
       const cx = w / 2, cy = h / 2 - 8, R = Math.min(w, h) * 0.36, a = (tAnim * 1.2) % (2 * Math.PI), disco = sol.cuerpo === 'disco';
       campo(g, 0, 0, w, h - 24, sol.sentidoB !== 'saliente', 0.8);
@@ -279,10 +307,11 @@
     if (sol) { tAnim += Math.min(dt, 0.1); dibuja(); }
     requestAnimationFrame(bucle);
   }
+  Herramienta.exportar('#escena', { nombre: 'faraday', titulo: 'Inducción electromagnética' });
   window.addEventListener('resize', dibuja);
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { colores(); dibuja(); });
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('faraday').current;
   formulario(); colores(); calcula(); requestAnimationFrame(bucle);
-  window.FaradayApp = { abrirEjemplo, resultado: () => sol && { modo: sol.modo, eps: sol.eps, em: sol.em, I: sol.I, sentido: sol.sentido, vL: sol.vL, tau: sol.tau }, estado: () => copia(sc), pausa: () => { anda = false; } };
+  window.FaradayApp = { abrirEjemplo, resultado: () => sol && { P: sol.P, IL: sol.IL, modo: sol.modo, eps: sol.eps, em: sol.em, I: sol.I, sentido: sol.sentido, vL: sol.vL, tau: sol.tau }, estado: () => copia(sc), pausa: () => { anda = false; } };
 })();

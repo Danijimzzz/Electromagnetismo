@@ -17,12 +17,12 @@
   let sol = null, col = {};
 
   /* ---------- Formulario ---------- */
-  const fila = (k, nom, un) => `<label for="f-${k}">${nom}${un ? ` <small>(${un})</small>` : ''}</label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc[k] ?? '')}" inputmode="decimal" autocomplete="off">`;
+  const fila = (k, nom, un) => `<label for="f-${k}">${nom}${un ? ` <small>(${un})</small>` : ''}</label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc[k] ?? '')}" inputmode="${sc.modo === 'campo' ? 'text' : 'decimal'}" autocomplete="off">`;
   function formulario() {
     $('#modo').innerHTML = MODOS.map((m) => `<option value="${m}">${M.nombres[m]}</option>`).join('');
     $('#modo').value = sc.modo;
     $('#campos').innerHTML = M.campos[sc.modo].map(([k, nom, un]) => fila(k, nom, un)).join('');
-    $('#nota').textContent = 'Se admite coma decimal, 3e8 y 3·10^8.';
+    $('#nota').textContent = sc.modo === 'campo' ? 'Escribe cada componente como expresión en x, y, z (m) y t (s): 5 x, 100 cos(299792458 t − z), x/(x^2+y^2+z^2)^(3/2). Las potencias de diez se escriben 10^8, no 1e8. Si dejas B en blanco se calcula ∂B/∂t = −∇×E.' : 'Se admite coma decimal, 3e8 y 3·10^8.';
     document.querySelectorAll('.eq[data-modo]').forEach((e) => e.classList.toggle('activa', e.dataset.modo === sc.modo));
   }
   $('#campos').addEventListener('input', (e) => { const t = e.target; if (!t.dataset.k) return; sc[t.dataset.k] = t.value; $('#ejemplos').value = ''; calcula(); });
@@ -49,7 +49,7 @@
   // un ejercicio al azar de los de clase, para el modo práctica
   function azar() {
     const ent = (a, b) => a + Math.floor(Math.random() * (b - a + 1)), de = (l) => l[ent(0, l.length - 1)], c = (x) => String(x).replace('.', ',');
-    const modo = de(MODOS);
+    const modo = de(MODOS.filter((m) => m !== 'campo'));
     if (modo === 'gauss') { const R = de([0.05, 0.1, 0.2]); sc = { modo, Q: String(de([1, 2, 5, 10])), R: c(R), r: c(de([R / 2, 2 * R, 3 * R])) }; }
     else if (modo === 'gaussmag') sc = { modo, Bx: c(de([0.1, 0.2, -0.3])), By: c(de([0.5, -0.4, 0.2])), Bz: c(de([0.3, -0.1, 0.6])), L: c(de([0.2, 0.5, 1])) };
     else if (modo === 'faraday') sc = { modo, B0: String(de([50, 100, 200])), fr: String(de([50, 60, 100])), A: String(de([10, 20, 50])), N: String(de([50, 100, 200, 500])) };
@@ -59,6 +59,7 @@
   }
   const enunciado = () => {
     const v = (k) => esc(sc[k]);
+    if (sc.modo === 'campo') return `Un campo tiene E = (${v('Ex')}; ${v('Ey')}; ${v('Ez')}) V/m y B = (${v('Bx')}; ${v('By')}; ${v('Bz')}) T. ¿Cumple las cuatro ecuaciones de Maxwell? Si no, di cuál falla.`;
     if (sc.modo === 'gauss') return `Una esfera de radio ${v('R')} m tiene una carga Q = ${v('Q')} nC repartida uniformemente en su volumen. Con la ley de Gauss calcula el flujo del campo eléctrico y el campo E sobre una superficie esférica concéntrica de radio ${v('r')} m.`;
     if (sc.modo === 'gaussmag') return `Un cubo de lado ${v('L')} m está en un campo magnético uniforme B = (${v('Bx')}, ${v('By')}, ${v('Bz')}) T. Calcula el flujo por cada cara y el flujo total.`;
     if (sc.modo === 'faraday') return `Una bobina de ${v('N')} espiras de ${v('A')} cm² está en un campo B(t) = ${v('B0')}·sen(2π·${v('fr')}·t) mT perpendicular a ella. Calcula la amplitud del flujo, la fem máxima y la fem eficaz.`;
@@ -75,7 +76,10 @@
     ampere: (s) => dato('Variación del campo E', `dE/dt = <b>${f(s.dEdt)} V/(m·s)</b>`) + dato('Corriente de desplazamiento', `I<sub>d</sub> = <b>${f(s.Id)} A</b>`) + dato('Campo magnético', `B = <b>${f(s.B)} T</b>`) + dato('Punto', s.dentro ? 'entre las placas' : 'fuera de las placas'),
     onda: (s) => dato('Velocidad de la luz', `c = <b>${f(s.c)} m/s</b>`) + dato('Amplitud de B', `B<sub>0</sub> = <b>${f(s.B0)} T</b>`) + dato('Longitud de onda', `λ = <b>${f(s.lam)} m</b>`) + dato('Intensidad', `I = <b>${f(s.I)} W/m<sup>2</sup></b>`) + dato('Impedancia del vacío', `η = ${f(s.eta)} Ω`),
   };
+  const SINO = (b) => (b ? '<b>sí</b>' : '<b>no</b>');
+  RES.campo = (s) => s.eqs.map((q) => dato(q.n, `${q.f}: ${q.ok ? '✓ se cumple' : '✗ falla'} <small>(diferencia relativa ${f(q.rel)})</small>`)).join('') + dato('Campo electromagnético posible', s.conB ? SINO(s.ok) : 'falta B para decidirlo') + (s.eqs[0].ok ? '' : dato('ρ que haría falta', `ε₀∇·E = ${esc(s.eqs[0].extra.replace('ρ necesaria = ε₀∇·E = ', ''))} C/m³`));
   const LEYENDA = {
+    campo: 'Diferencia relativa entre los dos miembros de cada ecuación (0 = se cumple; por encima de 10⁻⁶ falla).',
     gauss: 'Módulo del campo de la esfera cargada: crece dentro y cae como 1/r² fuera. La línea marca la superficie elegida.',
     gaussmag: 'Flujo de B por cada cara del cubo: cada una tiene su opuesta con el signo contrario, así que suman cero.',
     faraday: 'Dos periodos: el flujo Φ y la fem ε = −dΦ/dt, desfasados 90°.',
@@ -129,11 +133,12 @@
       g.fillStyle = col[s.c]; g.textAlign = 'left'; g.textBaseline = 'top'; g.fillText(txt(s.n), ml + 8, mt + 2 + i * 16);
     });
   }
+  Herramienta.exportar('#grafica', { nombre: 'maxwell', titulo: 'Ecuaciones de Maxwell' });
   window.addEventListener('resize', dibuja);
   // tema.js también avisa a este oyente al pulsar el botón claro/oscuro
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { colores(); dibuja(); });
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('maxwell').current;
   colores(); formulario(); calcula();
-  window.MaxwellApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { modo: sol.modo, Phi: sol.Phi, E: sol.E, B: sol.B, emax: sol.emax, total: sol.total, B0: sol.B0 }, estado: () => copia(sc) };
+  window.MaxwellApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { ok: sol.ok, modo: sol.modo, Phi: sol.Phi, E: sol.E, B: sol.B, emax: sol.emax, total: sol.total, B0: sol.B0 }, estado: () => copia(sc) };
 })();
