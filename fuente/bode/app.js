@@ -98,6 +98,13 @@
     diagrama('#grafica', c.f, c.dB, asi, ymin, ymax, ' dB', [[0, col['--line'], []], [-3, col['--muted'], [2, 4]]], p && { x: p.f, y: p.dB });
     diagrama('#grafica-fase', c.f, c.fase, null, -180, 180, '°', [[0, col['--line'], []]], p && { x: p.f, y: p.fase });
   }
+  // Exportar: cada diagrama se guarda como imagen y la tabla de la curva (f, dB, fase) se copia
+  const tabla = (parte) => () => {
+    if (!sol) return null;
+    const c = sol.curva(500);
+    return { filas: [['f (Hz)', '|H| (dB)', 'Fase (°)'], ...c.f.map((x, k) => [x, c.dB[k], c.fase[k]])], nombre: `${sol.def.nombre} ${parte}` };
+  };
+  Herramienta.exportaGrafica('#grafica', tabla('magnitud')); Herramienta.exportaGrafica('#grafica-fase', tabla('fase'));
   window.addEventListener('resize', dibuja);
   // tema.js también avisa a este oyente al pulsar el botón claro/oscuro
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { colores(); dibuja(); });
