@@ -48,6 +48,22 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     // divisor 12 → 5 V: 4k7 y 3k3 dan 12·3,3/8 = 4,95 V
     const dv = r('divisor'); cerca(dv.V, 12 * dv.R2 / (dv.R1 + dv.R2), 1e-12, 'salida del divisor'); if (Math.abs(dv.V - 5) > 0.06) mal(`Resistencias: el divisor de 12 a 5 V da ${dv.V} V`);
     cerca(ResistenciasC.divisor({ Vin: '12', Vout: '5', Rt: '10k', serie: 'E12', RL: '3k3' }).Vc, 12 * (1650) / (4700 + 1650), 1e-9, 'divisor con carga');
+    // RE-1: tolerancia en el divisor y avisos de potencia
+    { const d = ResistenciasC.divisor({ Vin: '10', Vout: '5', Rt: '10k', serie: 'E12', tol: '5' });
+      cerca(d.R1, 4700, 0, 'divisor 10→5 V: R1'); cerca(d.R2, 4700, 0, 'divisor 10→5 V: R2'); cerca(d.Vmin, 4.75, 1e-12, 'divisor: salida mínima con ±5 %'); cerca(d.Vmax, 5.25, 1e-12, 'divisor: salida máxima con ±5 %');
+      cerca(ResistenciasC.divisor({ Vin: '10', Vout: '5', Rt: '10k', serie: 'E96' }).tol, 1, 0, 'divisor: la tolerancia por defecto es la de la serie');
+      if (d.aviso) mal('Resistencias: el divisor de 10 V con 10 kΩ no debería avisar de potencia');
+      if (!ResistenciasC.divisor({ Vin: '24', Vout: '12', Rt: '100', serie: 'E12' }).aviso) mal('Resistencias: un divisor de 24 V con 100 Ω debe avisar de que las resistencias de 1/4 W no aguantan');
+      let ok = false; try { ResistenciasC.divisor({ Vin: '10', Vout: '5', tol: '80' }); } catch (e) { ok = true; } if (!ok) mal('Resistencias: una tolerancia del 80 % no da error');
+      if (ResistenciasC.led({ Vs: '5', Vled: '2', I: '20', serie: 'E12' }).aviso) mal('Resistencias: un LED de 20 mA no debería avisar de potencia');
+      const l2 = ResistenciasC.led({ Vs: '12', Vled: '2', I: '90', serie: 'E12' }); if (!l2.aviso || l2.Pn !== 2) mal(`Resistencias: LED de 100 mA con 12 V: potencia nominal ${l2.Pn}, aviso ${l2.aviso}`); }
+    // RE-2: E3 y E192
+    { const S = ResistenciasC.SERIES; cerca(S.E192.length, 192, 0, 'E192: 192 valores'); cerca(S.E3.length, 3, 0, 'E3: 3 valores');
+      for (const v of S.E96) if (!S.E192.includes(v)) mal(`Resistencias: ${v} es de la E96 y no está en la E192`);
+      S.E192.forEach((v, k) => { if (Math.abs(v - 100 * 10 ** (k / 192)) > 1.1) mal(`Resistencias: E192[${k}] = ${v}, lejos de 100·10^(${k}/192)`); if (k && v <= S.E192[k - 1]) mal('Resistencias: la E192 no es creciente'); });
+      const v3 = ResistenciasC.valor({ valor: '5k', serie: 'E3', bandas: '4', tol: 'oro' }); cerca(v3.Rn, 4700, 0, 'E3: el normalizado más cercano a 5 kΩ'); cerca(v3.err, (100 * (4700 - 5000)) / 5000, 1e-9, 'E3: error');
+      const v192 = ResistenciasC.valor({ valor: '12,34k', serie: 'E192', bandas: '5', tol: 'marron' }); cerca(v192.Rn, 12300, 0, 'E192: normalizado más cercano a 12,34 kΩ');
+      cerca(ResistenciasC.normalizado(12300).exacta === 'E192' ? 1 : 0, 1, 0, '12,3 kΩ es de la E192'); cerca(ResistenciasC.normalizado(22000).exacta === 'E6' ? 1 : 0, 1, 0, '22 kΩ es de la E6 (y de la E3)'); }
     if (fallos === antes) console.log(`  ✓ Código de colores: ${ResistenciasC.ejemplos.length} ejemplos, 3 a 6 bandas, ida y vuelta valor ↔ colores, series E, SMD, lectura al revés, bobinas, condensadores, asociación, pareja, LED, divisor y errores`);
   }
 

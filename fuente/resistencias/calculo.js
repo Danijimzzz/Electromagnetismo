@@ -35,7 +35,9 @@ const Resistencias = (() => {
     E96: [100, 102, 105, 107, 110, 113, 115, 118, 121, 124, 127, 130, 133, 137, 140, 143, 147, 150, 154, 158, 162, 165, 169, 174, 178, 182, 187, 191, 196, 200, 205, 210, 215, 221, 226, 232, 237, 243, 249, 255, 261, 267, 274, 280, 287, 294, 301, 309, 316, 324, 332, 340, 348, 357, 365, 374, 383, 392, 402, 412, 422, 432, 442, 453, 464, 475, 487, 499, 511, 523, 536, 549, 562, 576, 590, 604, 619, 634, 649, 665, 681, 698, 715, 732, 750, 768, 787, 806, 825, 845, 866, 887, 909, 931, 953, 976],
   };
   SERIES.E48 = SERIES.E96.filter((_, i) => i % 2 === 0);
-  const TOL_SERIE = { E6: 20, E12: 10, E24: 5, E48: 2, E96: 1 };
+  SERIES.E3 = [10, 22, 47];   // ±40 % (RE-2)
+  SERIES.E192 = [100, 101, 102, 104, 105, 106, 107, 109, 110, 111, 113, 114, 115, 117, 118, 120, 121, 123, 124, 126, 127, 129, 130, 132, 133, 135, 137, 138, 140, 142, 143, 145, 147, 149, 150, 152, 154, 156, 158, 160, 162, 164, 165, 167, 169, 172, 174, 176, 178, 180, 182, 184, 187, 189, 191, 193, 196, 198, 200, 203, 205, 208, 210, 213, 215, 218, 221, 223, 226, 229, 232, 234, 237, 240, 243, 246, 249, 252, 255, 258, 261, 264, 267, 271, 274, 277, 280, 284, 287, 291, 294, 298, 301, 305, 309, 312, 316, 320, 324, 328, 332, 336, 340, 344, 348, 352, 357, 361, 365, 370, 374, 379, 383, 388, 392, 397, 402, 407, 412, 417, 422, 427, 432, 437, 442, 448, 453, 459, 464, 470, 475, 481, 487, 493, 499, 505, 511, 517, 523, 530, 536, 542, 549, 556, 562, 569, 576, 583, 590, 597, 604, 612, 619, 626, 634, 642, 649, 657, 665, 673, 681, 690, 698, 706, 715, 723, 732, 741, 750, 759, 768, 777, 787, 796, 806, 816, 825, 835, 845, 856, 866, 876, 887, 897, 909, 919, 931, 942, 953, 965, 976, 988];   // ±0,5 %: las de tres cifras de las series de precisión (RE-2)
+  const TOL_SERIE = { E3: 40, E6: 20, E12: 10, E24: 5, E48: 2, E96: 1, E192: 0.5 };
 
   // 4700 → '4,7 kΩ'
   function ohm(x, cifras = 4) {
@@ -113,7 +115,7 @@ const Resistencias = (() => {
   function normalizado(R) {
     const e = Math.floor(Math.log10(R) + 1e-9), m2 = Math.round((R / 10 ** (e - 1)) * 1e6) / 1e6, m3 = Math.round((R / 10 ** (e - 2)) * 1e6) / 1e6;
     for (const s of ['E6', 'E12', 'E24']) if (SERIES[s].includes(m2)) return { exacta: s };
-    for (const s of ['E48', 'E96']) if (SERIES[s].includes(m3)) return { exacta: s };
+    for (const s of ['E48', 'E96', 'E192']) if (SERIES[s].includes(m3)) return { exacta: s };
     return { exacta: null };
   }
 
@@ -294,6 +296,7 @@ const Resistencias = (() => {
   }
   const serieDe = (sc, def = 'E12') => (SERIES[sc.serie] ? sc.serie : def);
   const leePos = (v, nom, base = 1) => { if (vacio(v)) throw new Error(`Falta ${nom}`); const x = Herramienta.leeSI(v, base); if (!(x > 0)) throw new Error(`${nom[0].toUpperCase() + nom.slice(1)} debe ser un número mayor que 0`); return x; };
+  const leeTol = (v) => { const x = Herramienta.leeSI(v, 1); if (!(x >= 0 && x <= 50)) throw new Error('La tolerancia debe ser un porcentaje entre 0 y 50'); return x; };
   const rel = (x, R) => (100 * (x - R)) / R;
   const dif = (e) => (Math.abs(e) < 1e-9 ? 'exacto' : `${e > 0 ? '+' : '−'}${num(Math.abs(e), 3)} %`);
 
@@ -339,13 +342,15 @@ const Resistencias = (() => {
       { t: `Normalizado (serie ${ser})`, html: Math.abs(Rn - R) < 1e-9 * R ? `${ohm(R)} ya es normalizado.` : `Se toma el siguiente valor hacia arriba, <b>${ohm(Rn)}</b>, para no pasar de la corriente máxima: I = (${num(Vs)} − ${num(Vl)})/${num(Rn)} = <b>${amp(In)}</b>.` },
       { t: 'Potencia', html: `En la resistencia: P = I<sup>2</sup>R = <b>${vatio(P)}</b>. Con margen del doble, ${Pn ? `basta una de <b>${nomP(Pn)}</b>` : 'hace falta más de 10 W: mejor baja la corriente o usa una fuente menor'}. El LED consume V·I = ${vatio(Vl * In)} y la fuente da ${vatio(Vs * In)} (rendimiento del ${num((100 * Vl) / Vs, 3)} %).` },
     ];
-    return { modo: 'led', R, Rn, I: In, P, Pn, serie: ser, pasos };
+    const aviso = !Pn ? `La resistencia disipa ${vatio(P)}: es demasiado. Baja la corriente o usa una fuente menor.` : Pn > 0.25 ? `Ojo: la resistencia disipa ${vatio(P)} y con margen del doble hace falta de ${nomP(Pn)}; una de 1/4 W no aguantaría.` : null;
+    return { modo: 'led', R, Rn, I: In, P, Pn, serie: ser, aviso, pasos };
   }
 
   /* ---------- Divisor de tensión ---------- */
   // sc: { Vin, Vout, Rt (orientativa: R₁ + R₂), serie, RL (carga, opcional) }
   function divisor(sc) {
     const Vi = leePos(sc.Vin, 'la tensión de entrada'), Vo = leePos(sc.Vout, 'la tensión de salida'), Rt = vacio(sc.Rt) ? 1e4 : leePos(sc.Rt, 'la resistencia total'), ser = serieDe(sc, 'E12');
+    const tol = vacio(sc.tol) ? TOL_SERIE[ser] : leeTol(sc.tol);
     if (Vo >= Vi) throw new Error('Un divisor solo baja la tensión: la salida tiene que ser menor que la entrada');
     const RL = vacio(sc.RL) ? null : leePos(sc.RL, 'la carga');
     const vals = valoresDe(ser).filter((x) => x >= Rt / 30 && x <= Rt * 3);
@@ -363,12 +368,19 @@ const Resistencias = (() => {
       { t: `Con valores de la serie ${ser}`, html: `La pareja que más se acerca es <b>R<sub>1</sub> = ${ohm(m.r1)}</b> y <b>R<sub>2</sub> = ${ohm(m.r2)}</b>: V<sub>out</sub> = ${num(Vi)} · ${num(m.r2)}/${num(m.r1 + m.r2)} = <b>${voltio(m.v)}</b> (${dif(err)}).` },
       { t: 'Corriente y potencia', html: `I = V<sub>in</sub>/(R<sub>1</sub> + R<sub>2</sub>) = ${amp(I)}; P<sub>1</sub> = ${vatio(I * I * m.r1)} y P<sub>2</sub> = ${vatio(I * I * m.r2)}${potencia(Math.max(I * I * m.r1, I * I * m.r2)) ? `: valen de ${nomP(potencia(Math.max(I * I * m.r1, I * I * m.r2)))}` : ''}.` },
     ];
+    // peor caso con la tolerancia (RE-1): R₂ al mínimo y R₁ al máximo, y al revés
+    const k = tol / 100, Vmin = (Vi * m.r2 * (1 - k)) / (m.r2 * (1 - k) + m.r1 * (1 + k)), Vmax = (Vi * m.r2 * (1 + k)) / (m.r2 * (1 + k) + m.r1 * (1 - k));
+    pasos.push({ t: `Con la tolerancia de ±${num(tol)} %`, html: `En el peor caso las resistencias se desvían ±${num(tol)} % en sentidos contrarios y la salida queda entre <b>${voltio(Vmin)}</b> (R<sub>2</sub> al mínimo, R<sub>1</sub> al máximo) y <b>${voltio(Vmax)}</b> (al revés), es decir, ${dif(rel(Vmin, Vo))} y ${dif(rel(Vmax, Vo))} respecto de lo pedido. ${Vmin <= Vo && Vo <= Vmax ? 'El valor pedido cae dentro de ese margen.' : 'El valor pedido queda fuera del margen: usa una serie de menos tolerancia.'}` });
+    const Pm = Math.max(I * I * m.r1, I * I * m.r2), Pnom = potencia(Pm);
+    let aviso = null;
+    if (!Pnom) aviso = `Cada resistencia disipa hasta ${vatio(Pm)}: es más de lo que aguanta una de las corrientes (10 W con margen del doble). Sube la resistencia total para bajar la corriente.`;
+    else if (Pnom > 0.25) aviso = `Ojo: cada resistencia disipa hasta ${vatio(Pm)}, y con margen del doble hacen falta de ${nomP(Pnom)}; las de 1/4 W de siempre se quemarían. Sube la resistencia total o usa resistencias de más potencia.`;
     let Vc = null;
     if (RL !== null) {
       const Rp = (m.r2 * RL) / (m.r2 + RL); Vc = (Vi * Rp) / (m.r1 + Rp);
       pasos.push({ t: `Con una carga de ${ohm(RL)}`, html: `La carga queda en paralelo con R<sub>2</sub>: ${ohm(m.r2)} ‖ ${ohm(RL)} = ${ohm(Rp)}, y la salida baja a <b>${voltio(Vc)}</b> (${dif(rel(Vc, Vo))}). ${RL < 10 * m.r2 ? 'Para que la carga no la cambie, R<sub>2</sub> tiene que ser mucho menor que la carga (unas 10 veces).' : 'Como la carga es mucho mayor que R<sub>2</sub>, apenas cambia.'}` });
     }
-    return { modo: 'divisor', R1: m.r1, R2: m.r2, V: m.v, err, I, Vc, serie: ser, pasos };
+    return { modo: 'divisor', R1: m.r1, R2: m.r2, V: m.v, err, I, Vc, serie: ser, tol, Vmin, Vmax, Pm, Pnom, aviso, pasos };
   }
 
   function resolver(sc) {
