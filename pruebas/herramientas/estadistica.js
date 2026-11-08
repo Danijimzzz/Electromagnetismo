@@ -45,6 +45,25 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     for (let i = 0; i < 200; i++) { const e = Es.ejercicio(); try { Es.calcular(e.sc); } catch (err) { mal(`Estadística: el ejercicio al azar «${e.enunciado}» da un error: ${err.message}`); break; } }
     for (const m of [{ dist: 'normal', mu: '70', sigma: '5', tipo: 'inverso', incog: 'sigma', cola: 'mayor', a: '60', q: '0.05' }, { dist: 'uniforme', lo: '5', hi: '2', tipo: 'menor', a: '3' }, { dist: 'hipergeometrica', N: '5', K: '7', n: '2', tipo: 'igual', a: '1' }, { dist: 't', nu: '1', tipo: 'centro', cc: '1' }]) malas.push(m);
     for (const m of malas) { let ok = false; try { Es.calcular(m); } catch (e) { ok = true; } if (!ok) mal(`Estadística: ${JSON.stringify(m)} debería dar un error`); }
+    // gamma, beta, lognormal, Weibull y binomial negativa frente a scipy.stats
+    {
+      const REF = JSON.parse(fs.readFileSync(path.join(fuente, '..', 'pruebas', 'referencias', 'estadistica.json'), 'utf8')).distribuciones, rel = (a, b, t = 1e-8) => Math.abs(a - b) <= t * Math.max(1, Math.abs(b));
+      for (const [k, d] of Object.entries(REF)) {
+        const nom = k.split('_')[0];
+        if (k === 'momentos' || k === 'nbinomial') continue;
+        const D = Es.DIST[nom], P = d.par;
+        d.x.forEach((x, i) => {
+          if (!rel(D.pdf(P, x), d.pdf[i])) mal(`Estadística · ${k}: f(${x}) = ${D.pdf(P, x)}, scipy ${d.pdf[i]}`);
+          if (!rel(D.cdf(P, x), d.cdf[i])) mal(`Estadística · ${k}: F(${x}) = ${D.cdf(P, x)}, scipy ${d.cdf[i]}`);
+          if (!rel(D.sf(P, x), d.sf[i])) mal(`Estadística · ${k}: S(${x}) = ${D.sf(P, x)}, scipy ${d.sf[i]}`);
+        });
+        d.p.forEach((q, i) => { const v = Es.cuantil(D, P, q); if (!rel(v, d.ppf[i], 1e-7)) mal(`Estadística · ${k}: cuantil ${q} = ${v}, scipy ${d.ppf[i]}`); });
+      }
+      for (const [nom, [m, v]] of Object.entries(REF.momentos)) { const P = nom === 'nbinomial' ? REF.nbinomial.par : Object.values(REF).find((x, j) => Object.keys(REF)[j] === nom)?.par, mo = Es.DIST[nom].momentos(P); if (!rel(mo.media, m, 1e-9) || !rel(mo.varianza, v, 1e-9)) mal(`Estadística · ${nom}: momentos ${mo.media}, ${mo.varianza} frente a ${m}, ${v}`); }
+      const NB = REF.nbinomial, Dn = Es.DIST.nbinomial;
+      NB.k.forEach((k, i) => { if (!rel(Dn.pmf(NB.par, k), NB.pmf[i], 1e-10) || !rel(Dn.cdf(NB.par, k), NB.cdf[i], 1e-10) || !rel(Dn.cola(NB.par, k), NB.sf_ge[i], 1e-10)) mal(`Estadística · binomial negativa en k = ${k}`); });
+      for (const e of Es.ejemplos.filter((x) => ['gamma', 'beta', 'lognormal', 'weibull', 'nbinomial'].includes(x.clave))) { const r = Es.calcular(e.sc); if (!(r.p >= 0 && r.p <= 1) && r.x === undefined) mal(`Estadística · ejemplo ${e.clave} sin resultado`); }
+    }
     if (fallos === antes) console.log(`  ✓ Estadística: tabla de Φ, ${Es.ejemplos.length} ejemplos con el valor esperado, binomial y Poisson acumuladas, cuantiles inversos y errores`);
   }
 

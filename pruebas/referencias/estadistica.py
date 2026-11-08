@@ -152,5 +152,22 @@ R['chi2'] = {
   'residuos_pearson': [[float(v) for v in fila] for fila in Table(np.array([[20, 30, 50], [30, 30, 40]])).resid_pearson],
 }
 
+# distribuciones nuevas: [parámetros, x, pdf, cdf, sf] y cuantiles
+from scipy import stats as _st
+def _d(nombre, d, par, xs, ps):
+    return {'par': par, 'x': xs, 'pdf': [float(d.pdf(x)) for x in xs], 'cdf': [float(d.cdf(x)) for x in xs], 'sf': [float(d.sf(x)) for x in xs], 'p': ps, 'ppf': [float(d.ppf(q)) for q in ps]}
+_ps = [0.05, 0.5, 0.95]
+R['distribuciones'] = {
+  'gamma': _d('gamma', _st.gamma(3, scale=1/2), {'forma': 3, 'tasa': 2}, [0.3, 1.0, 2.0, 4.0], _ps),
+  'gamma_pequena': _d('gamma', _st.gamma(0.5, scale=1/1.5), {'forma': 0.5, 'tasa': 1.5}, [0.1, 1.0, 3.0], _ps),
+  'beta': _d('beta', _st.beta(2, 5), {'al': 2, 'be': 5}, [0.1, 0.4, 0.8], _ps),
+  'beta_u': _d('beta', _st.beta(0.5, 0.5), {'al': 0.5, 'be': 0.5}, [0.1, 0.5, 0.9], _ps),
+  'lognormal': _d('lognormal', _st.lognorm(0.5, scale=math.exp(1)), {'mu': 1, 'sigma': 0.5}, [1, 3, 5, 12], _ps),
+  'weibull': _d('weibull', _st.weibull_min(2, scale=1000), {'forma': 2, 'escala': 1000}, [200, 886.2269, 1500, 3000], _ps),
+  'weibull_k05': _d('weibull', _st.weibull_min(0.7, scale=3), {'forma': 0.7, 'escala': 3}, [0.5, 3, 9], _ps),
+  'momentos': {k: [float(v[0]), float(v[1])] for k, v in {'gamma': _st.gamma(3, scale=1/2).stats(), 'beta': _st.beta(2, 5).stats(), 'lognormal': _st.lognorm(0.5, scale=math.exp(1)).stats(), 'weibull': _st.weibull_min(2, scale=1000).stats(), 'nbinomial': _st.nbinom(3, 0.4).stats()}.items()},
+  'nbinomial': {'par': {'r': 3, 'p': 0.4}, 'k': list(range(0, 9)), 'pmf': [float(_st.nbinom.pmf(k, 3, 0.4)) for k in range(0, 9)], 'cdf': [float(_st.nbinom.cdf(k, 3, 0.4)) for k in range(0, 9)], 'sf_ge': [float(_st.nbinom.sf(k - 1, 3, 0.4)) for k in range(0, 9)]},
+}
+
 json.dump(R, open(os.path.join(os.path.dirname(__file__), 'estadistica.json'), 'w'), ensure_ascii=False, indent=1)
 print('estadistica.json escrito')
