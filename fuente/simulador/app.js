@@ -57,7 +57,9 @@
     ed.dibuja(); panel(); props();
     arrancaAnim();
   }
-  let pend = null; const pide = () => { clearTimeout(pend); pend = setTimeout(calcula, 120); };
+  let pend = null; const pide = () => { clearTimeout(pend); pend = setTimeout(() => { pend = null; calcula(); }, 120); };
+  // «Mis ejercicios» pide el estado de ahora: si hay un cálculo en espera, se hace ya y se guarda (si no, guardaría el de antes)
+  window.addEventListener('simu-guardar', () => { if (pend) { clearTimeout(pend); pend = null; calcula(); } });
 
   /* ---------- Vista del esquema ---------- */
   const vGlobal = () => {
