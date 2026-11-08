@@ -5,12 +5,15 @@
      faraday    fem inducida en una bobina con B(t) = B₀ sen ωt
      ampere     corriente de desplazamiento y B entre las placas de un condensador
      onda       c = 1/√(μ₀ε₀), B₀ = E₀/c, intensidad y λ de una onda plana
+     campo      (MX-1) ¿cumplen E(x, y, z, t) y B(x, y, z, t) las cuatro ecuaciones? Derivadas con Expresion
+                (matematicas/expresion.js), residuos en varios puntos y la ecuación que falla
    resolver(sc) → { modo, …resultados, pasos, grafica } (la gráfica es una lista de
    series {n, c, pts} o unas barras); lanza Error con un mensaje para el usuario.
    campos[modo] da los datos de cada ecuación y ejemplos los de Mis ejercicios.
    La interfaz está en app.js y la prueba en pruebas/herramientas/maxwell.js.
    ===================================================================== */
 const Maxwell = (() => {
+  const Ex_ = typeof Expresion !== 'undefined' ? Expresion : require('../matematicas/expresion.js');
   const E0V = 8.8541878128e-12, MU0 = 1.25663706212e-6, C = 1 / Math.sqrt(E0V * MU0);
   const f = (x, d = 4) => {
     if (!isFinite(x)) return '—';
@@ -41,13 +44,71 @@ const Maxwell = (() => {
     faraday: [['B0', 'Amplitud del campo B₀', 'mT'], ['fr', 'Frecuencia f', 'Hz'], ['A', 'Área de cada espira A', 'cm²'], ['N', 'Número de espiras N', '']],
     ampere: [['I', 'Corriente I que carga el condensador', 'A'], ['R', 'Radio de las placas R', 'cm'], ['r', 'Distancia al eje r', 'cm']],
     onda: [['E0', 'Amplitud del campo eléctrico E₀', 'V/m'], ['fr', 'Frecuencia f', 'Hz']],
+    campo: [['Ex', 'Campo E, componente x', 'V/m'], ['Ey', 'Campo E, componente y', 'V/m'], ['Ez', 'Campo E, componente z', 'V/m'], ['Bx', 'Campo B, componente x (vacío = no se conoce)', 'T'], ['By', 'Campo B, componente y', 'T'], ['Bz', 'Campo B, componente z', 'T'], ['rho', 'Densidad de carga ρ (vacío = 0)', 'C/m³'], ['Jx', 'Corriente J, componente x (vacío = 0)', 'A/m²'], ['Jy', 'Corriente J, componente y', 'A/m²'], ['Jz', 'Corriente J, componente z', 'A/m²']],
   };
-  const nombres = { gauss: 'Gauss para E', gaussmag: 'Gauss para B', faraday: 'Faraday', ampere: 'Ampère–Maxwell', onda: 'La onda electromagnética' };
+  const nombres = { gauss: 'Gauss para E', gaussmag: 'Gauss para B', faraday: 'Faraday', ampere: 'Ampère–Maxwell', onda: 'La onda electromagnética', campo: '¿Cumple este campo las ecuaciones?' };
 
   const lineas = (a, b, g, n = 120) => Array.from({ length: n + 1 }, (_, i) => { const x = a + ((b - a) * i) / n; return [x, g(x)]; });
 
+
+  /* ---------- MX-1: ¿este campo cumple las ecuaciones? ---------- */
+  const VARS = ['x', 'y', 'z', 't'], PUNTOS = [[0.31, -0.52, 0.77, 0], [-0.43, 0.28, 0.61, 1e-9], [0.67, 0.35, -0.29, 2.7e-9], [0.18, -0.74, -0.46, 0.13], [-0.55, -0.21, 0.38, 0.61], [0.92, 0.47, 0.83, 3.1e-9]];
+  const val = (n, P) => Ex_.valor(n, P[0], { y: P[1], z: P[2], t: P[3] });
+  const lc = (src, nom) => (vacio(src) ? null : Ex_.lee(src, nom, VARS));
+  const tx = (n) => Ex_.texto(n);
+  const CERO = Ex_.N(0), suma = (...l) => l.reduce((a, b) => Ex_.simp({ t: '+', a, b }));
+  const neg = (a) => Ex_.simp({ t: 'neg', a }), rest = (a, b) => Ex_.simp({ t: '-', a, b });
+  const dv = (n, v) => (n ? Ex_.deriva(n, v) : CERO);
+  const por = (c, a) => Ex_.simp({ t: '*', a: Ex_.N(c), b: a });
+  // residuo relativo de una ecuación vectorial/escalar: máx |izq − der| / máx(|izq|, |términos|, 1e-300) en todos los puntos
+  function residuo(izq, der) {
+    let r = 0, esc2 = 0, n = 0, malos = 0;
+    for (const P of PUNTOS) {
+      for (let c = 0; c < izq.length; c++) {
+        const a = val(izq[c], P), b = val(der[c], P); if (!isFinite(a) || !isFinite(b)) { malos++; continue; }
+        n++; r = Math.max(r, Math.abs(a - b)); esc2 = Math.max(esc2, Math.abs(a), Math.abs(b));
+      }
+    }
+    if (!n || malos * 2 > n + malos) throw new Error('No se puede evaluar el campo en los puntos de prueba (¿se divide por cero o falta una variable?)');
+    return { abs: r, rel: esc2 > 0 ? r / esc2 : 0, escala: esc2 };
+  }
+  function resolverCampo(sc) {
+    const E = ['Ex', 'Ey', 'Ez'].map((k) => lc(sc[k], `E${k[1]}`) || CERO), Bv = ['Bx', 'By', 'Bz'].map((k) => lc(sc[k], `B${k[1]}`)), conB = Bv.some(Boolean), B = Bv.map((b) => b || CERO);
+    if (E.every((e) => e === CERO)) throw new Error('Escribe al menos una componente de E');
+    const rho = lc(sc.rho, 'ρ') || CERO, J = ['Jx', 'Jy', 'Jz'].map((k) => lc(sc[k], `J${k[1]}`) || CERO);
+    const V = ['x', 'y', 'z'], rot = (F) => [rest(dv(F[2], 'y'), dv(F[1], 'z')), rest(dv(F[0], 'z'), dv(F[2], 'x')), rest(dv(F[1], 'x'), dv(F[0], 'y'))];
+    const div = (F) => suma(dv(F[0], 'x'), dv(F[1], 'y'), dv(F[2], 'z'));
+    const divE = div(E), rotE = rot(E), dBdt = B.map((b) => dv(b, 't')), dEdt = E.map((e) => dv(e, 't'));
+    const eqs = [];
+    // 1. Gauss para E: ∇·E = ρ/ε0  (se compara ε0 ∇·E con ρ para no arrastrar 10⁻¹²)
+    eqs.push({ n: 'Gauss para E', f: '∇·E = ρ/ε₀', ...residuo([por(E0V, divE)], [rho]), t: `$∇·E = ${tx(divE)}$`, extra: `ρ necesaria = ε₀∇·E = ${tx(por(E0V, divE))}` });
+    // 2. Gauss para B
+    let divB = null;
+    if (conB) { divB = div(B); eqs.push({ n: 'Gauss para B', f: '∇·B = 0', ...residuo([divB], [CERO]), t: `$∇·B = ${tx(divB)}$` }); }
+    // 3. Faraday: ∇×E = −∂B/∂t
+    if (conB) eqs.push({ n: 'Faraday', f: '∇×E = −∂B/∂t', ...residuo(rotE, dBdt.map(neg)), t: `$∇×E = (${rotE.map(tx).join(', ')})$ y $−∂B/∂t = (${dBdt.map((d) => tx(neg(d))).join(', ')})$` });
+    // 4. Ampère–Maxwell: ∇×B = μ0 J + μ0 ε0 ∂E/∂t   (se multiplica por 1/μ0)
+    let rotB = null;
+    if (conB) { rotB = rot(B); eqs.push({ n: 'Ampère–Maxwell', f: '∇×B = μ₀J + μ₀ε₀ ∂E/∂t', ...residuo(rotB.map((b) => por(1 / MU0, b)), J.map((j, i) => suma(j, por(E0V, dEdt[i])))), t: `$∇×B = (${rotB.map(tx).join(', ')})$` }); }
+    for (const q of eqs) q.ok = q.rel <= 1e-6;
+    const fallan = eqs.filter((q) => !q.ok), pasos = [];
+    pasos.push({ t: 'Planteamiento', html: `Se comprueba cada ecuación de Maxwell con las derivadas parciales exactas de lo que has escrito (variables $x$, $y$, $z$, $t$ en m y s). Después se evalúa la diferencia entre los dos miembros en ${PUNTOS.length} puntos de prueba y se acepta si es menor que $10^{−6}$ del tamaño de los términos.` });
+    pasos.push({ t: 'Divergencia de E', html: `$∇·E = {∂E_x}/{∂x} + {∂E_y}/{∂y} + {∂E_z}/{∂z} = ${tx(divE)}$. Gauss exige $∇·E = ρ/ε_0$: ` + (eqs[0].ok ? `se cumple con ρ = ${tx(rho)}.` : `no se cumple con ρ = ${tx(rho)}; haría falta $ρ = ε_0 ∇·E = ${tx(por(E0V, divE))}$ (diferencia relativa ${f(eqs[0].rel)}).`) });
+    if (conB) {
+      pasos.push({ t: 'Divergencia de B', html: `$∇·B = ${tx(divB)}$. Gauss para B exige que sea 0: ` + (eqs[1].ok ? 'se cumple.' : `no se cumple (diferencia relativa ${f(eqs[1].rel)}): un campo B así implicaría un monopolo magnético.`) });
+      pasos.push({ t: 'Rotacional de E', html: `$∇×E = (${rotE.map(tx).join(', ')})$ y $−{∂B}/{∂t} = (${dBdt.map((d) => tx(neg(d))).join(', ')})$. Faraday: ` + (eqs[2].ok ? 'coinciden.' : `no coinciden (diferencia relativa ${f(eqs[2].rel)}).`) });
+      pasos.push({ t: 'Rotacional de B', html: `$∇×B = (${rotB.map(tx).join(', ')})$ y $μ_0 J + μ_0 ε_0 {∂E}/{∂t} = μ_0 (${J.map((j, i) => tx(suma(j, por(E0V, dEdt[i])))).join(', ')})$. Ampère–Maxwell: ` + (eqs[3].ok ? 'coinciden.' : `no coinciden (diferencia relativa ${f(eqs[3].rel)}).`) });
+    } else {
+      pasos.push({ t: 'Cuál es B', html: `Con solo E, Faraday da $∂B/∂t = −∇×E = (${rotE.map((r2) => tx(neg(r2))).join(', ')})$. Integrando en $t$ (más un campo estático arbitrario) sale B; escríbelo en los campos de B para comprobar Gauss para B y Ampère–Maxwell.` });
+    }
+    pasos.push({ t: 'Conclusión', html: conB ? (fallan.length ? `El campo <b>no</b> cumple: ${fallan.map((q) => q.n).join(', ')}. No puede ser un campo electromagnético con esas fuentes.` : 'Cumple las cuatro ecuaciones: es un campo electromagnético posible con esas fuentes.') : (eqs[0].ok ? 'Cumple Gauss para E; da el campo B para seguir.' : 'No cumple Gauss para E con esa ρ.') });
+    const ok = conB && !fallan.length;
+    return { modo: 'campo', eqs, conB, ok, fallan, divE: tx(divE), rotE: rotE.map(tx), dBdt: dBdt.map((d) => tx(neg(d))), pasos, grafica: { barras: eqs.map((q) => ({ n: q.n, v: q.rel })), yl: 'diferencia relativa entre los dos miembros', cero: true } };
+  }
+
   function resolver(sc) {
     const modo = sc.modo || 'gauss';
+    if (modo === 'campo') return resolverCampo(sc);
     if (!campos[modo]) throw new Error('Esa ecuación no existe');
     let r;
     if (modo === 'gauss') {
@@ -126,6 +187,11 @@ const Maxwell = (() => {
     { clave: 'condensador-dentro', nombre: 'Ampère–Maxwell: dentro de un condensador', sc: { modo: 'ampere', I: '2', R: '5', r: '2' } },
     { clave: 'condensador-fuera', nombre: 'Ampère–Maxwell: fuera de un condensador', sc: { modo: 'ampere', I: '2', R: '5', r: '10' } },
     { clave: 'fm', nombre: 'Onda: emisora de FM a 100 MHz', sc: { modo: 'onda', E0: '1', fr: '1e8' } },
+    { clave: 'campo-onda', nombre: 'Campo: onda plana en el vacío (cumple todo)', sc: { modo: 'campo', Ex: '0', Ey: '100 cos(299792458 t - z)', Ez: '0', Bx: '-100 cos(299792458 t - z)/299792458', By: '0', Bz: '0', rho: '', Jx: '', Jy: '', Jz: '' } },
+    { clave: 'campo-mal', nombre: 'Campo: onda con B demasiado grande (falla Faraday)', sc: { modo: 'campo', Ex: '0', Ey: '100 cos(299792458 t - z)', Ez: '0', Bx: '-100 cos(299792458 t - z)/100000000', By: '0', Bz: '0', rho: '', Jx: '', Jy: '', Jz: '' } },
+    { clave: 'campo-coulomb', nombre: 'Campo: carga puntual (∇·E = 0 fuera del origen)', sc: { modo: 'campo', Ex: '9 x/(x^2+y^2+z^2)^(3/2)', Ey: '9 y/(x^2+y^2+z^2)^(3/2)', Ez: '9 z/(x^2+y^2+z^2)^(3/2)', Bx: '0', By: '0', Bz: '0', rho: '', Jx: '', Jy: '', Jz: '' } },
+    { clave: 'campo-uniforme', nombre: 'Campo: E lineal sin cargas (falla Gauss)', sc: { modo: 'campo', Ex: '5 x', Ey: '0', Ez: '0', Bx: '', By: '', Bz: '', rho: '', Jx: '', Jy: '', Jz: '' } },
+    { clave: 'campo-rho', nombre: 'Campo: E = 5x con ρ = 5ε₀ (cumple Gauss)', sc: { modo: 'campo', Ex: '5 x', Ey: '0', Ez: '0', Bx: '0', By: '0', Bz: '0', rho: '4.4270939064*10^(-11)', Jx: '', Jy: '', Jz: '' } },
   ];
 
   return { resolver, ejemplos, campos, nombres, f, constantes: { E0V, MU0, C } };
