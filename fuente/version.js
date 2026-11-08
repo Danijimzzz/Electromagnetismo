@@ -438,6 +438,7 @@ const Version = (() => {
       ] },
     ],
     control: [
+      { v: '0.2', fecha: '2026-11-08', cambios: ['Los errores de datos (ganancia 0, numerador de más grado que el denominador) se avisan igual en todos los modos, y las gráficas se pueden descargar en PNG o copiar sus datos.'] },
       { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: escribe la ganancia de lazo K·N(s)/D(s) (como expresión, s^2+3s+2, o con los coeficientes) y estudia la estabilidad de tres maneras: la tabla de Routh con el rango de K estable (con el cero en la primera columna y la fila de ceros), el lugar de las raíces con asíntotas, puntos de ruptura, ángulos de salida y cruces con el eje imaginario, y el diagrama de Nyquist con los márgenes de ganancia y de fase y el recuento de vueltas alrededor de −1. Con nueve ejemplos, desarrollo paso a paso y modo práctica.'] },
     ],
     'termo-estadistica': [
@@ -453,9 +454,11 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: escribe una molécula (cadenas con ramas, dobles y triples enlaces, alcoholes, aldehídos, cetonas, ácidos, ésteres, amidas, nitrilos, aminas, éteres y halógenos) y obtén su nombre IUPAC, los grupos funcionales, la fórmula y la masa molar. Marca los centros quirales (R/S) y los dobles enlaces E/Z con las reglas de Cahn-Ingold-Prelog, lista todos los estereoisómeros (enantiómeros, diastereoisómeros y formas meso) y las isomerías de cadena, posición y función. La molécula se ve en 3D con los hidrógenos y se gira con el ratón o el dedo. Con desarrollo paso a paso.'] },
     ],
     'transformada-z': [
+      { v: '0.2', fecha: '2026-11-08', cambios: ['Nuevo modo «Transformada inversa» con la región de convergencia a elegir (causal, anticausal o bilateral), aviso de cancelaciones polo-cero y sistema nulo, FFT con relleno de ceros y pestaña de fase, y exportar las gráficas.'] },
       { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: transformada z de una señal o de un sistema (polos, ceros, estabilidad, respuesta al impulso y respuesta en frecuencia) y FFT con ventanas, picos, resolución y aliasing.'] },
     ],
     semiconductores: [
+      { v: '0.2', fecha: '2026-11-08', cambios: ['Transistores pnp y de canal p, diodo Zener, pequeña señal, estabilidad térmica y casos extremos mejor avisados; las gráficas se pueden descargar o copiar.'] },
       { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: elige un diodo, un transistor BJT (polarización fija o por divisor de tensión) o un MOSFET, escribe el circuito (admite 4k7, 1M, 100n) y mira la recta de carga, el punto de trabajo Q sobre las curvas del dispositivo, la región en que trabaja (corte, activa, saturación o triodo), las tensiones y corrientes y el desarrollo paso a paso.'] },
     ],
     relatividad: [
@@ -522,6 +525,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: calcula la fuerza de atracción entre dos masas, la velocidad, el periodo y la energía de un satélite en órbita circular, la velocidad de escape, la órbita que corresponde a un periodo (geoestacionaria) y las leyes de Kepler en una órbita elíptica con la elipse dibujada, con el desarrollo paso a paso y modo práctica.'] },
     ],
     convolucion: [
+      { v: '0.2', fecha: '2026-11-08', cambios: ['Nuevo modo «Discreta» (secuencias x[n] y h[n] con tabla de la suma), filtros RL, RC paso alto y RLC paso banda, y exportar las gráficas.'] },
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: refleja y desliza dos señales (pulsos rectangulares, triangulares y senoidales, escalón, exponencial e impulso) y mira cómo se dibuja su convolución, animada o moviendo el instante a mano.', 'Señal y sistema: pasa una entrada por un filtro RC, un RLC serie, una media móvil o un retardo y obtén la respuesta al escalón con el tiempo de subida, la sobreoscilación y el tiempo de establecimiento.', 'Desarrollo paso a paso con la solución exacta de los casos de clase y la comprobación con las áreas, ejemplos y modo práctica.'] },
     ],
     'laplace-numerica': [
@@ -537,12 +541,14 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: dipolo corto, de media onda o de longitud cualquiera, con diagrama de radiación polar, resistencia de radiación, potencia radiada, directividad, ancho de haz y campo lejano, paso a paso.'] },
     ],
     bode: [
+      { v: '0.2', fecha: '2026-11-08', cambios: ['Los filtros de factor de calidad alto (Q grande) ya no pierden el pico de resonancia ni la frecuencia de corte: la rejilla se afina sola alrededor de ella. Las dos gráficas llevan «Descargar PNG» y «Copiar datos».'] },
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: elige un filtro RC, RL o RLC (paso bajo, paso alto, paso banda o rechazo de banda), escribe R, L y C (admite 4k7, 100n, 10 µF) y obtén su diagrama de Bode de magnitud y fase con las asíntotas, la frecuencia de corte, el factor de calidad Q, el ancho de banda, el pico de resonancia y el desarrollo paso a paso.'] },
     ],
     optica: [
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: elige una lente (convergente o divergente) o un espejo (cóncavo o convexo), la distancia focal y el objeto, y mira el diagrama de rayos con la imagen, su posición, el aumento, si es real o virtual y derecha o invertida, la potencia en dioptrías o el radio del espejo, paso a paso. Con seis ejemplos y modo práctica.'] },
     ],
     simulador: [
+      { v: '0.4', fecha: '2026-11-08', cambios: ['Seis ejemplos nuevos, el barrido se afina solo cerca de las resonancias (el Bode no pierde el pico) y las gráficas se pueden descargar en PNG o copiar sus datos.'] },
       { v: '0.3', fecha: '2026-11-02', cambios: ['Nueva pestaña «Barrido»: elige un valor del circuito (una resistencia, un condensador, la amplitud o la frecuencia de una fuente…), un rango en escala lineal o logarítmica y lo que quieres medir (tensión, corriente o potencia de un componente, o la tensión de un nudo), en continua o en alterna con valores eficaces, y sale la gráfica con el máximo y el mínimo marcados y una tabla.', 'La pestaña Thévenin y Norton dibuja ahora la potencia que recibe una carga según su valor, con el máximo marcado cuando la carga vale R<sub>Th</sub>.'] },
       { v: '0.2', fecha: '2026-11-02', cambios: ['Importar y exportar redes en texto tipo SPICE: el botón «SPICE» escribe la red del esquema (R, C, L, fuentes de continua, seno y pulso, fuentes controladas, bobinas acopladas, diodos, transistores) o dibuja la que pegues o abras de un archivo .cir, con avisos de lo que no se puede traducir.'] },
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: dibuja el circuito arrastrando componentes (resistencias, condensadores, bobinas, fuentes de continua y de alterna, diodos, transistores, operacionales, transformadores, trifásica y puertas lógicas), únelos con cables y mira tensiones, corrientes, fasores, osciloscopio y diagrama de Bode.'] },
@@ -586,6 +592,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-31', cambios: ['Primera versión: a partir de la función de costes con costes fijos y términos de primer, segundo y tercer grado, el coste variable, total, medio (fijo, variable y total) y marginal de una producción, el mínimo de explotación (precio de cierre) y el óptimo de explotación (umbral de rentabilidad), con la gráfica de las curvas.'] },
     ],
     'sistemas-numericos': [
+      { v: '0.2', fecha: '2026-11-08', cambios: ['Nuevos modos: fracciones con coma (con expansión periódica), coma flotante IEEE 754 de 32 y 64 bits, y suma y resta en complemento a 2 con acarreos y desbordamiento; además octal y código Gray.'] },
       { v: '0.1', fecha: '2026-10-31', cambios: ['Primera versión: pasa un número entero entre decimal, binario, complemento a 2 (4, 8, 16 o 32 bits), hexadecimal y BCD, con el desarrollo paso a paso (divisiones entre 2, grupos de 4 bits, invertir y sumar 1), los bits con su peso y ejemplos de cada sistema.'] },
     ],
     excedentes: [
@@ -847,6 +854,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: frecuencia que se oye con la fuente, el observador y el viento moviéndose, con la longitud de onda delante de la fuente.', 'Una fuente que pasa de largo: lo que se oye antes y después, el salto en hercios y semitonos y, al revés, su velocidad a partir de las dos frecuencias. Con el observador a un lado de la carretera, la gráfica del cambio gradual.', 'Eco en un obstáculo que se mueve (radar de tráfico, murciélago, ecografía Doppler): la frecuencia del eco y las pulsaciones, o la velocidad del obstáculo a partir de ellas.', 'Onda de choque: número de Mach, semiángulo del cono y cuándo se oye el estampido.', 'Animación de los frentes de onda y botón para escuchar la diferencia.'] },
     ],
     resistencias: [
+      { v: '0.3', fecha: '2026-11-08', cambios: ['El divisor de tensión da la salida en el peor caso con la tolerancia y avisa si las resistencias de 1/4 W no aguantan la potencia (también en el LED); nuevas series E3 y E192.'] },
       { v: '0.2', fecha: '2026-10-26', cambios: ['Nuevo modo de asociación: escribe 100 + (220 ‖ 330) y sale la resistencia equivalente paso a paso, y con una tensión, la corriente y la potencia.', 'Nuevo modo para conseguir un valor que no existe con dos normalizadas en serie o en paralelo (5 kΩ = 10 kΩ ‖ 10 kΩ).', 'Nuevos modos de resistencia para un LED, con el valor normalizado y la potencia que debe aguantar, y de divisor de tensión con normalizadas, también con carga.', 'Código impreso de los condensadores (104, 472J, 104K 2A, 4n7) con la tolerancia y la tensión, y el código de colores de las bobinas en μH.', 'Avisa si parece que estás leyendo la resistencia al revés y te dice qué valor saldría desde el otro extremo.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas dentro del texto de la teoría se ven bien escritas, no con símbolos $.'] },
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: elige los colores de una resistencia de 3, 4, 5 o 6 bandas y obtén el valor, la tolerancia, el margen del valor real y el coeficiente de temperatura, con el dibujo de la resistencia.', 'Del valor a los colores: escribe 4k7, 2M2 o 470R y te da las bandas y el valor normalizado más cercano de las series E6 a E96.', 'Códigos SMD de 3 y 4 cifras, con R y EIA-96.'] },
