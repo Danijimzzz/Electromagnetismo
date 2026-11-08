@@ -22,6 +22,24 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     if (C.resolver({ modo: 'intervalo', unidades: 'al', x1: '0', t1: '0', x2: '3', t2: '3' }).tipo !== 'luz') mal(`${N}: Δx = cΔt debería ser tipo luz`);
     error({ modo: 'lorentz', unidades: 'al', v: '1', x: '1', t: '1' }, 'v = c'); error({ modo: 'lorentz', unidades: 'al', v: '1,2', x: '1', t: '1' }, 'v > c'); error({ modo: 'velocidades', caso: 'compone', u: '1,1', v: '0,5' }, 'u > c');
     error({ modo: 'intervalo', unidades: 'al', x1: '1', t1: '2', x2: '1', t2: '2' }, 'eventos iguales'); error({ modo: 'lorentz', unidades: 'al', v: 'abc', x: '1', t: '1' }, 'v no numérica');
+    // casos límite (FM-1): v = 0 es la identidad; β ≈ 1 conserva las cifras; sucesos sobre el cono de luz; suma de dos velocidades casi c
+    {
+      const I = C.resolver({ modo: 'lorentz', unidades: 'al', v: '0', x: '4', t: '6' });
+      cerca(I.g, 1, 0, 'γ con v = 0'); cerca(I.xp, 4, 0, 'x′ con v = 0'); cerca(I.ctp, 6, 0, 'ct′ con v = 0'); cerca(I.s2p, I.s2, 0, 'intervalo con v = 0');
+      for (const v of ['0,999999999', '-0,999999999']) {
+        const L = C.resolver({ modo: 'lorentz', unidades: 'al', v, x: '4', t: '6' }), b = Math.abs(+v.replace(',', '.'));
+        cerca(L.g, 1 / Math.sqrt((1 - b) * (1 + b)), 1e-6 * L.g, `γ con β = ${v}`); cerca(L.s2p, L.s2, 1e-2, `el intervalo se conserva con β = ${v}`);
+        if (!/0,999999999/.test(L.pasos[0].html)) mal(`${N}: con β = ${v} no se muestran las cifras de β (saldría «1»)`);
+      }
+      const luz = C.resolver({ modo: 'lorentz', unidades: 'al', v: '0,6', x: '3', t: '3' });
+      if (luz.tipo !== 'luz') mal(`${N}: (3, 3) está sobre el cono de luz`); cerca(luz.xp, luz.ctp, 1e-12, 'sobre el cono de luz x′ = ct′'); cerca(luz.s2p, 0, 1e-12, 's² = 0 en S′');
+      const W = C.resolver({ modo: 'velocidades', caso: 'compone', u: '0,999999999', v: '0,999999999' });
+      cerca(W.mw, 5e-19, 1e-24, '1 − w con dos velocidades casi c (producto de las diferencias dividido por 2)'); cerca(W.g, 1e9, 1e3, 'γ del resultado'); cerca(W.fw, 2 * Math.atanh(0.999999999), 1e-12, 'rapideces');
+      if (/—/.test(W.pasos.map((q) => q.html).join(' '))) mal(`${N}: la suma de dos velocidades casi c deja un «—» en el desarrollo`);
+      cerca(C.resolver({ modo: 'velocidades', caso: 'compone', u: '0', v: '0' }).w, 0, 0, 'w = 0');
+      cerca(C.resolver({ modo: 'velocidades', caso: 'compone', u: '0,5', v: '0' }).w, 0.5, 1e-15, 'v = 0: w = u');
+      cerca(C.resolver({ modo: 'velocidades', caso: 'relativa', u: '0,7', v: '0,7' }).w, 0, 1e-15, 'velocidad relativa de dos naves iguales');
+    }
     if (fallos === antes) console.log(`  ✓ ${N}: ${C.ejemplos.length} ejemplos calculados a mano (Lorentz, velocidades e intervalos) y errores`);
   }
   return Com.navegador({ publico, asignatura: 'fisica', carpeta: 'relatividad', nombre: N, app: 'RelatividadApp', C, pagina, mal, malo: { k: 'v', v: '1,5' } });
