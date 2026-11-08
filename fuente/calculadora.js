@@ -42,7 +42,7 @@
        enunciado(sc, sol), enunciado del modo práctica (opcional)
      })
    Un cambio en un desplegable vuelve a pintar el formulario (los campos pueden
-   depender del modo elegido). Cada gráfica lleva su botón «Guardar gráfica (PNG)» y se
+   depender del modo elegido). Cada gráfica lleva «Descargar PNG» y «Copiar datos» (Herramienta.exportar) y se
    describe con su leyenda (role="img" y aria-describedby) para lectores de pantalla.
    window.<app>.pon(cambios) cambia unos datos desde
    fuera del formulario (por ejemplo, al mover o acercar la gráfica) y recalcula.
@@ -225,37 +225,30 @@ const Calculadora = (() => {
     function dibuja() {
       const c = $('#grafica'); if (!c) return;
       const cfg = sol && o.grafica ? o.grafica(sol, col) : null;
+      cfgs['#grafica'] = cfg;
       if (!cfg) Herramienta.lienzo(c);
       else { const r = grafica(c, cfg, col); if (r && o.despues) o.despues(r, sol, col); }
       const c2 = $('#grafica2');
       if (c2) {
         const cfg2 = sol && o.grafica2 ? o.grafica2(sol, col) : null, card = c2.closest('.card');
+        cfgs['#grafica2'] = cfg2;
         if (card) card.hidden = !cfg2;
         if (!cfg2) Herramienta.lienzo(c2);
         else { const r2 = grafica(c2, cfg2, col); if (r2 && o.despues2) o.despues2(r2, sol, col); }
         const l2 = $('#leyenda2'); if (l2) l2.innerHTML = cfg2 && o.leyenda2 ? o.leyenda2(sol) : '';
       }
     }
-    // guardar la gráfica como imagen PNG (sobre el color de fondo de la tarjeta) y describirla para lectores de pantalla
-    function guardaPNG(c, nombre) {
-      const out = document.createElement('canvas'); out.width = c.width; out.height = c.height;
-      const g = out.getContext('2d'), fondo = getComputedStyle(document.documentElement).getPropertyValue('--panel').trim() || '#ffffff';
-      g.fillStyle = fondo; g.fillRect(0, 0, out.width, out.height); g.drawImage(c, 0, 0);
-      return new Promise((ok) => out.toBlob((b) => {
-        if (!b) return ok(false);
-        const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = nombre; document.body.appendChild(a); a.click(); a.remove();
-        setTimeout(() => URL.revokeObjectURL(a.href), 2000); ok(true);
-      }, 'image/png'));
-    }
+    // describe cada gráfica para lectores de pantalla y le pone «Descargar PNG» y «Copiar datos» (Herramienta.exportar)
+    let cfgs = {};
     function botonesGrafica() {
       for (const [id, ley, sufijo] of [['#grafica', '#leyenda', ''], ['#grafica2', '#leyenda2', '-2']]) {
         const c = $(id); if (!c) continue;
         c.setAttribute('role', 'img'); const l = $(ley); if (l) c.setAttribute('aria-describedby', l.id);
-        if (c.parentElement.querySelector('.guardar-png')) continue;
-        const b = document.createElement('button'); b.type = 'button'; b.className = 'btn guardar-png'; b.textContent = 'Guardar gráfica (PNG)'; b.style.marginTop = '8px';
-        const msg = document.createElement('span'); msg.className = 'leyenda'; msg.setAttribute('role', 'status'); msg.style.marginLeft = '8px';
-        b.addEventListener('click', async () => { const ok = await guardaPNG(c, `${o.carpeta}-grafica${sufijo}.png`); msg.textContent = ok ? 'Imagen guardada' : 'No se ha podido guardar la imagen'; setTimeout(() => { msg.textContent = ''; }, 2500); });
-        (l || c).before(b); b.after(msg);
+        Herramienta.exportar(c, { nombre: `${o.carpeta}${sufijo}`, titulo: (c.closest('.card')?.querySelector('h2')?.textContent || '').trim(), datos: () => {
+          const cfg = cfgs[id]; if (!cfg) return null;
+          const filas = []; (cfg.series || []).forEach((sr, k) => { if (sr.tipo === 'barras' || sr.tipo === 'puntos' || !sr.tipo || sr.tipo === 'linea' || sr.tipo === 'area') for (const [x, y] of sr.pts) filas.push([`Serie ${k + 1}${sr.tipo === 'puntos' ? ' (puntos)' : ''}`, x, y]); });
+          return { cab: ['Serie', cfg.ejeX || 'x', cfg.ejeY || 'y'], filas };
+        } });
       }
     }
     /* ---------- «Usar en…» ---------- */
