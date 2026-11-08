@@ -76,6 +76,7 @@ const Maxwell = (() => {
     const E = ['Ex', 'Ey', 'Ez'].map((k) => lc(sc[k], `E${k[1]}`) || CERO), Bv = ['Bx', 'By', 'Bz'].map((k) => lc(sc[k], `B${k[1]}`)), conB = Bv.some(Boolean), B = Bv.map((b) => b || CERO);
     if (E.every((e) => e === CERO)) throw new Error('Escribe al menos una componente de E');
     const rho = lc(sc.rho, 'ρ') || CERO, J = ['Jx', 'Jy', 'Jz'].map((k) => lc(sc[k], `J${k[1]}`) || CERO);
+    for (const [n, nom] of [...E.map((e, i) => [e, 'E' + 'xyz'[i]]), ...B.map((b, i) => [b, 'B' + 'xyz'[i]]), ...J.map((j, i) => [j, 'J' + 'xyz'[i]]), [rho, 'ρ']]) if (PUNTOS.filter((P) => !isFinite(val(n, P))).length * 2 >= PUNTOS.length) throw new Error(`${nom} no se puede evaluar en los puntos de prueba (¿divide por cero?)`);
     const V = ['x', 'y', 'z'], rot = (F) => [rest(dv(F[2], 'y'), dv(F[1], 'z')), rest(dv(F[0], 'z'), dv(F[2], 'x')), rest(dv(F[1], 'x'), dv(F[0], 'y'))];
     const div = (F) => suma(dv(F[0], 'x'), dv(F[1], 'y'), dv(F[2], 'z'));
     const divE = div(E), rotE = rot(E), dBdt = B.map((b) => dv(b, 't')), dEdt = E.map((e) => dv(e, 't'));
