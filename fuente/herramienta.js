@@ -115,7 +115,7 @@ const Herramienta = (() => {
   const exportar = (c, o = {}) => {
     if (typeof c === 'string') c = $(c);
     if (!c) return null;
-    if (c._exporta) { c._exporta.o.datos = o.datos; return c._exporta.barra; }
+    if (c._exporta) { Object.assign(c._exporta.o, o); return c._exporta.barra; }
     const barra = document.createElement('div'), aviso = document.createElement('span'), cual = o.etiqueta ? ` de ${o.etiqueta}` : '';
     barra.className = 'exportar'; barra.setAttribute('role', 'group'); barra.setAttribute('aria-label', 'Exportar' + cual);
     aviso.className = 'exportar-aviso'; aviso.setAttribute('role', 'status'); aviso.setAttribute('aria-live', 'polite');

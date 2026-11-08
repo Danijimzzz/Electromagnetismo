@@ -42,7 +42,7 @@ document.addEventListener('click', (e) => { if (!e.target.closest('.pref-cookies
     espera = 0;
     for (const e of document.querySelectorAll('main *')) {
       const desborda = e.scrollWidth > e.clientWidth || e.scrollHeight > e.clientHeight;
-      if (e.dataset.sf) { if (!desborda) { e.removeAttribute('tabindex'); delete e.dataset.sf; } continue; }
+      if (e.dataset.sf) { if (!desborda || e.querySelector(ENFOCABLE)) { e.removeAttribute('tabindex'); delete e.dataset.sf; } continue; }
       if (!desborda || e.hasAttribute('tabindex') || e.matches('svg,svg *,canvas') || e.querySelector(ENFOCABLE)) continue;
       const o = getComputedStyle(e);
       if (/auto|scroll/.test(o.overflowX + o.overflowY)) { e.tabIndex = 0; e.dataset.sf = '1'; }
@@ -128,6 +128,8 @@ footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
 :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
 .controles { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px }
 .controles > .nota, .controles > .leyenda { flex: 1 1 220px; margin: 0 }
+.exportar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0 }
+.exportar-aviso { color: var(--muted); font-size: 12.5px }
 .tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px }
 .tools label { color: var(--muted); font-size: 13px; display: inline-flex; gap: 6px; align-items: center }
 .modos { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-bottom: 14px }
@@ -364,32 +366,8 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 </body>
 <script>
 const Pagina = { carpeta: 'fenomenos/radio-am-fm', guarda: null };
-const Version = (() => { const registros = {"web":[{"v":"1.12.1"}],"control":[{"v":"0.1"}],"termo-estadistica":[{"v":"0.1"}],"markowitz":[{"v":"0.1"}],"cavidades":[{"v":"0.1"}],"organica":[{"v":"0.1"}],"transformada-z":[{"v":"0.1"}],"semiconductores":[{"v":"0.1"}],"relatividad":[{"v":"0.1"}],"osc-acopladas":[{"v":"0.1"}],"solubilidad":[{"v":"0.1"}],"lagrange":[{"v":"0.1"}],"series":[{"v":"0.1"}],"no-parametricos":[{"v":"0.1"}],"regresion-multiple":[{"v":"0.1"}],"anova":[{"v":"0.1"}],"black-scholes":[{"v":"0.1"}],"bonos":[{"v":"0.1"}],"solow":[{"v":"0.1"}],"integrales-multiples":[{"v":"0.1"}],"formulacion":[{"v":"0.1"}],"balance":[{"v":"0.1"}],"redox":[{"v":"0.1"}],"lineas-transmision":[{"v":"0.1"}],"superficies":[{"v":"0.1"}],"vsepr":[{"v":"0.1"}],"maxwell":[{"v":"0.1"}],"fresnel":[{"v":"0.1"}],"gravitacion":[{"v":"0.1"}],"convolucion":[{"v":"0.1"}],"laplace-numerica":[{"v":"0.1"}],"imagenes":[{"v":"0.1"}],"guias-onda":[{"v":"0.1"}],"antena":[{"v":"0.1"}],"bode":[{"v":"0.1"}],"optica":[{"v":"0.1"}],"simulador":[{"v":"0.3"}],"teoria-juegos":[{"v":"0.1"}],"puertas-logicas":[{"v":"0.3"}],"multiplicador":[{"v":"0.1"}],"is-lm":[{"v":"0.1"}],"choques":[{"v":"0.1"}],"termoquimica":[{"v":"0.1"}],"probabilidad":[{"v":"0.1"}],"unidades":[{"v":"0.1"}],"equilibrio":[{"v":"0.1"}],"oscilaciones":[{"v":"0.1"}],"beneficio":[{"v":"0.1"}],"costes":[{"v":"0.1"}],"sistemas-numericos":[{"v":"0.1"}],"excedentes":[{"v":"0.1"}],"oferta-demanda":[{"v":"0.1"}],"chi2-bondad":[{"v":"0.1"}],"contrastes":[{"v":"0.1"}],"errores":[{"v":"0.1"}],"graficador":[{"v":"0.1"}],"metodos-numericos":[{"v":"0.1"}],"fisica-moderna":[{"v":"0.2"}],"lorenz-gini":[{"v":"0.1"}],"phillips-okun":[{"v":"0.1"}],"tipos-cambio":[{"v":"0.1"}],"elasticidades":[{"v":"0.1"}],"pib-ipc":[{"v":"0.1"}],"numeros-indice":[{"v":"0.1"}],"ratios":[{"v":"0.1"}],"punto-muerto":[{"v":"0.1"}],"ahorro":[{"v":"0.1"}],"van-tir":[{"v":"0.1"}],"amortizacion-inmovilizado":[{"v":"0.1"}],"prestamos":[{"v":"0.1"}],"rentas":[{"v":"0.1"}],"interes":[{"v":"0.1"}],"descriptiva":[{"v":"0.1"}],"regresion-economia":[{"v":"0.1"}],"ajustador":[{"v":"0.1"}],"electrostatica":[{"v":"0.6"}],"magnetostatica":[{"v":"0.2"}],"tabla-periodica":[{"v":"0.2"}],"trabajo-y-energia":[{"v":"0.2"}],"masa-molar":[{"v":"0.2"}],"configuracion-electronica":[{"v":"0.2"}],"condensadores":[{"v":"0.2"}],"tiro-parabolico":[{"v":"0.2"}],"disoluciones":[{"v":"0.2"}],"calorimetria":[{"v":"0.2"}],"induccion":[{"v":"0.2"}],"matrices":[{"v":"0.2"}],"derivadas":[{"v":"0.3"}],"laplace":[{"v":"0.2"}],"interferencia":[{"v":"0.2"}],"ondas-em":[{"v":"0.3"}],"intervalos":[{"v":"0.2"}],"fuerza":[{"v":"0.2"}],"campos":[{"v":"0.2.1"}],"cinetica":[{"v":"0.2"}],"edos":[{"v":"0.2"}],"fourier":[{"v":"0.2"}],"taylor":[{"v":"0.2.1"}],"complejos":[{"v":"0.2"}],"sistemas":[{"v":"0.3"}],"regresion":[{"v":"0.2"}],"estadistica":[{"v":"0.2"}],"dinamica":[{"v":"0.2"}],"solido-rigido":[{"v":"0.2"}],"ondas":[{"v":"0.2"}],"gases":[{"v":"0.3"}],"ciclos":[{"v":"0.2"}],"ph":[{"v":"0.3"}],"fluidos":[{"v":"0.2"}],"doppler":[{"v":"0.2"}],"resistencias":[{"v":"0.2"}],"faraday":[{"v":"0.2"}],"fenomenos":[{"v":"0.8"}]}; const de = (h) => ({ current: registros[h][0].v, log: registros[h] }); return { registros, de }; })();
+const Version = (() => { const registros = {"web":[{"v":"1.13"}],"control":[{"v":"0.2"}],"termo-estadistica":[{"v":"0.1"}],"markowitz":[{"v":"0.2"}],"cavidades":[{"v":"0.2"}],"organica":[{"v":"0.1"}],"transformada-z":[{"v":"0.2"}],"semiconductores":[{"v":"0.2"}],"relatividad":[{"v":"0.1"}],"osc-acopladas":[{"v":"0.1"}],"solubilidad":[{"v":"0.1"}],"lagrange":[{"v":"0.1"}],"series":[{"v":"0.1"}],"no-parametricos":[{"v":"0.1"}],"regresion-multiple":[{"v":"0.1"}],"anova":[{"v":"0.1"}],"black-scholes":[{"v":"0.2"}],"bonos":[{"v":"0.2"}],"solow":[{"v":"0.2"}],"integrales-multiples":[{"v":"0.1"}],"formulacion":[{"v":"0.1"}],"balance":[{"v":"0.2"}],"redox":[{"v":"0.1"}],"lineas-transmision":[{"v":"0.2"}],"superficies":[{"v":"0.1"}],"vsepr":[{"v":"0.1"}],"maxwell":[{"v":"0.2"}],"fresnel":[{"v":"0.2"}],"gravitacion":[{"v":"0.1"}],"convolucion":[{"v":"0.2"}],"laplace-numerica":[{"v":"0.2"}],"imagenes":[{"v":"0.2"}],"guias-onda":[{"v":"0.2"}],"antena":[{"v":"0.2"}],"bode":[{"v":"0.2"}],"optica":[{"v":"0.1"}],"simulador":[{"v":"0.4"}],"teoria-juegos":[{"v":"0.1"}],"puertas-logicas":[{"v":"0.4"}],"multiplicador":[{"v":"0.2"}],"is-lm":[{"v":"0.2"}],"choques":[{"v":"0.1"}],"termoquimica":[{"v":"0.1"}],"probabilidad":[{"v":"0.1"}],"unidades":[{"v":"0.1"}],"equilibrio":[{"v":"0.1"}],"oscilaciones":[{"v":"0.1"}],"beneficio":[{"v":"0.2"}],"costes":[{"v":"0.2"}],"sistemas-numericos":[{"v":"0.2"}],"excedentes":[{"v":"0.2"}],"oferta-demanda":[{"v":"0.2"}],"chi2-bondad":[{"v":"0.1"}],"contrastes":[{"v":"0.1"}],"errores":[{"v":"0.1"}],"graficador":[{"v":"0.1"}],"metodos-numericos":[{"v":"0.1"}],"fisica-moderna":[{"v":"0.2"}],"lorenz-gini":[{"v":"0.1"}],"phillips-okun":[{"v":"0.2"}],"tipos-cambio":[{"v":"0.2"}],"elasticidades":[{"v":"0.2"}],"pib-ipc":[{"v":"0.1"}],"numeros-indice":[{"v":"0.1"}],"ratios":[{"v":"0.2"}],"punto-muerto":[{"v":"0.1"}],"ahorro":[{"v":"0.2"}],"van-tir":[{"v":"0.2"}],"amortizacion-inmovilizado":[{"v":"0.1"}],"prestamos":[{"v":"0.2"}],"rentas":[{"v":"0.2"}],"interes":[{"v":"0.2"}],"descriptiva":[{"v":"0.1"}],"regresion-economia":[{"v":"0.1"}],"ajustador":[{"v":"0.1"}],"electrostatica":[{"v":"0.7"}],"magnetostatica":[{"v":"0.3"}],"tabla-periodica":[{"v":"0.2"}],"trabajo-y-energia":[{"v":"0.2"}],"masa-molar":[{"v":"0.2"}],"configuracion-electronica":[{"v":"0.2"}],"condensadores":[{"v":"0.3"}],"tiro-parabolico":[{"v":"0.2"}],"disoluciones":[{"v":"0.2"}],"calorimetria":[{"v":"0.2"}],"induccion":[{"v":"0.3"}],"matrices":[{"v":"0.2"}],"derivadas":[{"v":"0.3"}],"laplace":[{"v":"0.2"}],"interferencia":[{"v":"0.2"}],"ondas-em":[{"v":"0.4"}],"intervalos":[{"v":"0.2"}],"fuerza":[{"v":"0.3"}],"campos":[{"v":"0.2.1"}],"cinetica":[{"v":"0.2"}],"edos":[{"v":"0.2"}],"fourier":[{"v":"0.2"}],"taylor":[{"v":"0.2.1"}],"complejos":[{"v":"0.2"}],"sistemas":[{"v":"0.3"}],"regresion":[{"v":"0.2"}],"estadistica":[{"v":"0.2"}],"dinamica":[{"v":"0.2"}],"solido-rigido":[{"v":"0.2"}],"ondas":[{"v":"0.2"}],"gases":[{"v":"0.3"}],"ciclos":[{"v":"0.2"}],"ph":[{"v":"0.3"}],"fluidos":[{"v":"0.2"}],"doppler":[{"v":"0.2"}],"resistencias":[{"v":"0.3"}],"faraday":[{"v":"0.3"}],"fenomenos":[{"v":"0.8"}]}; const de = (h) => ({ current: registros[h][0].v, log: registros[h] }); return { registros, de }; })();
 
-/* =====================================================================
-   Ayudantes comunes de las herramientas (los que antes copiaba cada una).
-   herramientas.js lo pone en cada página justo después de version.js; en
-   Node (pruebas) comprobar.js lo deja en global.Herramienta. Uso:
-     const { $, esc, copia, vacio } = Herramienta;
-     $(q)          document.querySelector
-     esc(s)        texto seguro dentro de HTML y de atributos
-     copia(o)      copia profunda de datos JSON (el estado sc, un ejemplo)
-     vacio(v)      campo sin rellenar (undefined, null o solo espacios)
-     leeSI(s, base)  número de un campo con coma, 3·10^8, prefijos del SI y
-                   unidad: «4k7», «1,5 kΩ», «100n», «10 µF», «5 ms». Con prefijo,
-                   notación 4k7 o unidad escrita da el valor en unidades del SI;
-                   un número solo se multiplica por base (1e-3 si el campo
-                   está en mH, 1e-6 si en μF). NaN si no se entiende
-     txt(h)        HTML de un resultado a texto para el lienzo (exponentes ⁰¹²…)
-     marcas(a, b, n)  valores redondos (1, 2, 2,5, 5 × 10ⁿ) para las marcas de un eje
-     lienzo(c)     prepara un <canvas> (o su selector) a la resolución de la
-                   pantalla, limpio y en px CSS: { g, w, h, c, cambia }; cambia
-                   es true si el tamaño era otro (para rehacer un fondo guardado)
-     enlace        un enlace con #d=… (lo copia «Mis ejercicios») deja sus datos en la clave de la página
-                   (Pagina.guarda) antes de que arranque la app, en todas las herramientas
-     accesible()   (ya se llama al cargar) aria-live en los resultados, role=alert en los
-                   errores y aria-describedby de cada gráfica hacia los resultados
-   ===================================================================== */
 const Herramienta = (() => {
   const $ = (q) => document.querySelector(q);
   const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -406,10 +384,24 @@ const Herramienta = (() => {
     if (!m) return NaN;
     return +m[1] * (m[2] ? PREFIJOS[m[2]] : unidad ? 1 : base);
   };
+  const UNIDADES = { m: 1, Hz: 1, F: 1, H: 1, A: 1, V: 1, 'Ω': 1, ohm: 1, ohmios: 1, T: 1, W: 1, S: 1, s: 1, C: 1, N: 1, J: 1 };
+  const PREF_UN = { p: 1e-12, n: 1e-9, u: 1e-6, 'µ': 1e-6, 'μ': 1e-6, m: 1e-3, c: 1e-2, k: 1e3, M: 1e6, G: 1e9 };
+  const leeUn = (s) => {
+    const t = String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace(/[−–]/g, '-').replace(/[·x×*]10\^?\(?([+\-]?\d+)\)?/i, 'e$1');
+    const m = t.match(/^([+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?)(ohmios|ohm|Hz|[mFHAVΩTWSsCNJ]|[pnuµμmckMG](?:Hz|[mFHAVΩTWSsCNJ]))$/);
+    if (!m) return undefined;
+    const u = m[2];
+    if (UNIDADES[u] !== undefined) return +m[1];
+    const pre = u[0], r = u.slice(1);
+    if (PREF_UN[pre] === undefined || UNIDADES[r] === undefined) return undefined;
+    if (pre === 'c' && r !== 'm') return undefined;
+    return +m[1] * PREF_UN[pre];
+  };
   const txt = (h) => String(h).replace(/<sup>(.*?)<\/sup>/g, (_, e) => e.replace(/−/g, '⁻').replace(/\d/g, (d) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d])).replace(/<[^>]+>/g, '');
   const marcas = (a, b, n = 6) => {
     const p0 = (b - a) / n, e = 10 ** Math.floor(Math.log10(p0)), paso = [1, 2, 2.5, 5, 10].map((q) => q * e).find((q) => q >= p0) || 10 * e;
-    const out = []; for (let v = Math.ceil(a / paso) * paso; v <= b + paso * 1e-9; v += paso) out.push(Math.abs(v) < paso * 1e-9 ? 0 : v);
+    const out = []; if (!(paso > 0) || !isFinite(paso) || !(b > a)) return out; // paso nulo (desbordamiento) o eje sin rango: nada que marcar
+    for (let k = 0, v = Math.ceil(a / paso) * paso; k <= 200 && v <= b + paso * 1e-9; v = Math.ceil(a / paso) * paso + ++k * paso) out.push(Math.abs(v) < paso * 1e-9 ? 0 : v);
     return out;
   };
   const lienzo = (c) => {
@@ -420,8 +412,6 @@ const Herramienta = (() => {
     const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
     return { g, w, h, c, cambia };
   };
-  // Accesibilidad común: los resultados que cambian al tocar un dato se anuncian con cortesía (aria-live), los mensajes de error
-  // como alerta y cada gráfica se describe con los resultados de al lado (aria-describedby), no solo con su título fijo.
   const accesible = (doc = typeof document !== 'undefined' ? document : null) => {
     if (!doc) return;
     const RES = '#resumen, #res, #resumen-d, #resumen-r, #resumen-c, #resumen-este, #resumen-emp, #resumen-nq, #resumen-conf, #res-masa, #res-dil, #res-mez';
@@ -431,7 +421,58 @@ const Herramienta = (() => {
     if (res) for (const c of doc.querySelectorAll('canvas')) if (!c.hasAttribute('aria-describedby') && !c.closest('#resumen, #res') && !c.hasAttribute('aria-hidden')) c.setAttribute('aria-describedby', res.id);
   };
   accesible();
-  // Enlace que lleva el estado (#d=…, base64 url del JSON guardado): los datos pasan a donde la app los lee al arrancar
+  const nombreArchivo = (s) => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'grafica';
+  const celda = (v) => (typeof v === 'number' ? (Number.isFinite(v) ? String(+v.toPrecision(10)).replace('.', ',') : '') : String(v ?? '').replace(/[\t\r\n]+/g, ' '));
+  const tabla = (cab, filas) => [cab, ...filas].filter(Boolean).map((f) => f.map(celda).join('\t')).join('\n');
+  const color = (nom, otro) => { try { return getComputedStyle(document.documentElement).getPropertyValue(nom).trim() || otro; } catch (e) { return otro; } };
+  const png = (c, o = {}) => new Promise((ok, no) => {
+    if (typeof c === 'string') c = $(c);
+    if (!c || !c.width || !c.height) { no(new Error('la gráfica aún no está dibujada')); return; }
+    const k = c.width / (c.clientWidth || c.width), pad = Math.round(12 * k), tam = Math.round(14 * k);
+    const titulo = o.titulo || $('h1')?.textContent.trim() || '', pie = 'Ciencify · ' + (typeof location !== 'undefined' && /^https?:/.test(location.protocol) ? location.host + location.pathname : 'ciencias gratis y sin registro');
+    const alto = c.height + pad * 2 + tam * 2.4 + (titulo ? tam * 1.6 : 0), z = document.createElement('canvas');
+    z.width = c.width + pad * 2; z.height = Math.round(alto);
+    const g = z.getContext('2d'), fam = getComputedStyle(document.body).fontFamily || 'system-ui, sans-serif';
+    g.fillStyle = color('--panel', '#ffffff'); g.fillRect(0, 0, z.width, z.height);
+    g.textBaseline = 'top'; let y = pad;
+    if (titulo) { g.fillStyle = color('--ink', '#111'); g.font = `600 ${tam}px ${fam}`; g.fillText(titulo, pad, y); y += tam * 1.6; }
+    g.drawImage(c, pad, y); y += c.height + pad * 0.5;
+    g.fillStyle = color('--muted', '#555'); g.font = `${Math.round(tam * 0.85)}px ${fam}`; g.fillText(pie, pad, y);
+    z.toBlob((b) => (b ? ok(b) : no(new Error('el navegador no pudo crear la imagen'))), 'image/png');
+  });
+  const copiaTexto = async (t) => {
+    try { await navigator.clipboard.writeText(t); return true; } catch (e) { /* sin permiso o sin https: se prueba con el método antiguo */ }
+    const a = document.createElement('textarea'); a.value = t; a.setAttribute('readonly', ''); a.setAttribute('aria-hidden', 'true'); a.style.cssText = 'position:fixed;left:-9999px;top:0';
+    document.body.appendChild(a); a.select(); let r = false; try { r = document.execCommand('copy'); } catch (e) { r = false; } a.remove(); return r;
+  };
+  const exportar = (c, o = {}) => {
+    if (typeof c === 'string') c = $(c);
+    if (!c) return null;
+    if (c._exporta) { Object.assign(c._exporta.o, o); return c._exporta.barra; }
+    const barra = document.createElement('div'), aviso = document.createElement('span'), cual = o.etiqueta ? ` de ${o.etiqueta}` : '';
+    barra.className = 'exportar'; barra.setAttribute('role', 'group'); barra.setAttribute('aria-label', 'Exportar' + cual);
+    aviso.className = 'exportar-aviso'; aviso.setAttribute('role', 'status'); aviso.setAttribute('aria-live', 'polite');
+    const di = (t) => { aviso.textContent = t; clearTimeout(di.t); di.t = setTimeout(() => { aviso.textContent = ''; }, 3500); };
+    const boton = (txt, label, fn) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'btn'; b.textContent = txt; b.setAttribute('aria-label', label); b.addEventListener('click', fn); barra.appendChild(b); return b; };
+    boton('Descargar PNG', 'Descargar la gráfica' + cual + ' como imagen PNG', async () => {
+      try {
+        const b = await png(c, c._exporta.o), a = document.createElement('a');
+        a.href = URL.createObjectURL(b); a.download = nombreArchivo(c._exporta.o.nombre || c.id || 'grafica') + '.png'; document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 2000); di('Imagen descargada');
+      } catch (e) { di('No se pudo crear la imagen: ' + e.message); }
+    });
+    if (o.datos) boton('Copiar datos', 'Copiar los datos' + cual + ' al portapapeles', async () => {
+      let d; try { d = c._exporta.o.datos; d = typeof d === 'function' ? d() : d; } catch (e) { d = null; }
+      const t = typeof d === 'string' ? d : d && Array.isArray(d.filas) ? tabla(d.cab, d.filas) : '';
+      if (!t) { di('Todavía no hay datos que copiar'); return; }
+      di((await copiaTexto(t)) ? 'Datos copiados: pégalos en una hoja de cálculo' : 'No se pudo copiar: el navegador no lo permite');
+    });
+    barra.appendChild(aviso);
+    c._exporta = { o, barra };
+    const p = c.parentElement, ref = p && p.children.length === 1 && !p.matches('.card, .layout, .wrap, main, body') ? p : c;
+    ref.insertAdjacentElement('afterend', barra);
+    return barra;
+  };
   if (typeof location !== 'undefined' && typeof Pagina !== 'undefined' && Pagina.guarda) {
     const m = /[#&]d=([A-Za-z0-9_-]+)/.exec(location.hash);
     if (m) {
@@ -439,20 +480,10 @@ const Herramienta = (() => {
       try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* file:// */ }
     }
   }
-  return { $, esc, copia, vacio, leeSI, txt, marcas, lienzo, accesible };
+  const enlaceA = (carpeta, estado) => `../${carpeta}/#d=${btoa(unescape(encodeURIComponent(JSON.stringify(estado)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')}`;
+  return { $, esc, copia, vacio, leeSI, leeUn, txt, marcas, lienzo, accesible, exportar, png, tabla, nombreArchivo, enlaceA };
 })();
 
-/* =====================================================================
-   Fórmulas en MathML a partir de una sintaxis sencilla (sin DOM salvo
-   Mates.pinta). En los textos, lo que va entre $…$ es una fórmula:
-     a/b            fracción (los paréntesis de fuera se quitan)
-     x^2, e^{−bt/m} exponente; v_0x, E_{c,máx} subíndice
-     √(…), ∛(…)     raíz
-     "m/s"          texto tal cual (unidades, palabras); \{ \} llaves visibles
-     sen cos tg ln log exp máx mín   funciones; binom(n, k)
-   Una palabra que no es una función se lee letra a letra (mgh = m·g·h).
-   También acepta <sup>, <sub> y las etiquetas que devuelve f().
-   ===================================================================== */
 const Mates = (() => {
   const FUNC = new Set(['sen', 'cos', 'tg', 'tan', 'ln', 'log', 'exp', 'arcsen', 'arccos', 'arctg', 'máx', 'mín', 'lím', 'senh', 'cosh', 'tgh']);
   const OPS = '+-−=·×÷⇒⇔→←↔≈≠<>≤≥±∓,;:!∝∈∼≡∑∏∫∂∇⊥∥';
@@ -468,7 +499,6 @@ const Mates = (() => {
       const c = s[i], resto = s.slice(i);
       let m;
       if (/\s/.test(c)) { sp = true; i++; continue; }
-      // \{ y \} son llaves que se ven: ℒ\{f(t)\}
       if (c === '\\' && (s[i + 1] === '{' || s[i + 1] === '}')) { out.push({ t: 's', v: c + s[i + 1], sp }); i += 2; sp = false; continue; }
       if ((m = resto.match(/^\d+(?:[.,]\d+)?/))) out.push({ t: 'n', v: m[0].replace('.', ','), sp });
       else if (c === '"') { const j = s.indexOf('"', i + 1); m = [s.slice(i, j < 0 ? s.length : j + 1)]; out.push({ t: 'x', v: m[0].replace(/"/g, ''), sp }); }
@@ -479,7 +509,6 @@ const Mates = (() => {
     return out;
   }
 
-  // nodo: { m: MathML, dentro: MathML sin los paréntesis de fuera (o null) }
   const nodo = (m, dentro = null) => ({ m, dentro });
   const fila = (xs) => (xs.length === 1 ? xs[0] : `<mrow>${xs.join('')}</mrow>`);
   const letra = (v) => (/^\d+(,\d+)?$/.test(v) ? `<mn>${v}</mn>` : [...v].length === 1 ? `<mi>${escH(v)}</mi>` : `<mi mathvariant="normal">${escH(v)}</mi>`);
@@ -492,11 +521,9 @@ const Mates = (() => {
       let prevOp = true;
       while (p < tk.length && !(cierre && es(cierre))) {
         const k = ver();
-        // ∫ con límites lleva sus subíndices: ∫_a^b
         if (k.t === 's' && OPS.includes(k.v) && !(k.v === '∫' && tk[p + 1] && tk[p + 1].t === 's' && (tk[p + 1].v === '_' || tk[p + 1].v === '^'))) {
           p++;
           const v = k.v === '-' ? '−' : k.v;
-          // un signo detrás de otro operador (o al principio) es de número: = −19,28
           const signo = prevOp && (v === '−' || v === '+' || v === '±');
           xs.push(v === '!' ? '<mo lspace="0">!</mo>' : v === ',' || v === ';' ? `<mo separator="true">${v}</mo>` : signo ? `<mo form="prefix" lspace="0" rspace="0.05em">${v}</mo>` : `<mo>${escH(v)}</mo>`);
           prevOp = true; continue;
@@ -515,7 +542,6 @@ const Mates = (() => {
       if (es('{')) { p++; const xs = secuencia('}'); p++; return fila(xs); }
       if (es('-') || es('−')) { p++; const a = argumento(); return `<mrow><mo>−</mo>${a}</mrow>`; }
       if (es('(')) { const a = atomo(); return a.m; }
-      // una racha de letras y números pegados: 0x, máx, 12
       const k = ver();
       if (!k) return '<mrow></mrow>';
       if (k.t === 's') { p++; return `<mo>${escH(k.v)}</mo>`; }
@@ -540,15 +566,11 @@ const Mates = (() => {
       if (k.t === 'n') return nodo(`<mn>${k.v}</mn>`);
       if (k.t === 'x') return nodo(`${k.sp && p > 1 ? '<mspace width="0.3em"></mspace>' : ''}<mtext>${escH(k.v)}</mtext>`);
       if (k.t === 'w') {
-        // binom(n, k): número combinatorio
         if (k.v === 'binom' && es('(')) { p++; const a = secuencia(','); p++; const b = secuencia(')'); p++; return nodo(`<mrow><mo>(</mo><mfrac linethickness="0">${fila(a)}${fila(b)}</mfrac><mo>)</mo></mrow>`); }
         if (FUNC.has(k.v)) { let m = `<mi mathvariant="normal">${k.v}</mi>`; if (es('^')) { p++; m = `<msup>${m}${argumento()}</msup>`; } return nodo(`<mspace width="0.17em"></mspace>${m}<mo>&#x2061;</mo><mspace width="0.12em"></mspace>`); }
-        // diferencial suelto (dx, dt, dS, dθ…) detrás de algo: con un poco de aire, como en «f(x) dx»
         if (k.sp && p > 1 && /^d[a-zA-Zθφρ]$/.test(k.v)) return nodo(`<mspace width="0.17em"></mspace><mi>d</mi><mi>${escH(k.v[1])}</mi>`);
         const ls = [...k.v.replace(/[′″]+$/, '')], pr = (k.v.match(/[′″]+$/) || [''])[0];
-        // las marcas combinadas (î, ĵ con acento) van con su letra
         const grupos = []; for (const c of ls) { if (/\p{M}/u.test(c) && grupos.length) grupos[grupos.length - 1] += c; else grupos.push(c); }
-        // las mayúsculas griegas (Δ, Σ, Φ, Ω) van rectas, como en los libros
         return nodo(fila(grupos.map((c) => (c === '∞' ? '<mi>∞</mi>' : /^[Α-Ω]$/.test(c) ? `<mi mathvariant="normal">${c}</mi>` : `<mi>${escH(c)}</mi>`)).concat(pr ? [`<mo lspace="0" rspace="0">${pr}</mo>`] : [])));
       }
       const v = k.v;
@@ -564,9 +586,7 @@ const Mates = (() => {
     return fila(secuencia(null));
   }
 
-  // la fuente se queda en data-src para poder copiarla (como texto o LaTeX)
   const mathml = (src) => `<math data-src="${escH(src).replace(/"/g, '&quot;')}"><mstyle displaystyle="true">${analiza(tokens(src))}</mstyle></math>`;
-  // parte una fórmula antes de cada = o ⇒ que no esté dentro de paréntesis, llaves o comillas
   function trozos(src) {
     const out = [];
     let ini = 0, nivel = 0, comillas = false;
@@ -580,12 +600,9 @@ const Mates = (() => {
     }
     return out.concat(src.slice(ini)).map((x) => x.trim()).filter(Boolean);
   }
-  // sustituye cada $…$ de un texto HTML por su MathML; con partir, cada igualdad va en su propio
-  // <math> para que una cadena larga (a = b = c) baje de línea en el móvil en vez de salirse
   const html = (s, partir = false) => String(s ?? '').replace(/\$([^$]+)\$/g, (_, x) => (partir
     ? trozos(x).map((t, i) => (i ? mathml(t).replace(/^(<math[^>]*><mstyle[^>]*>(?:<mrow>)?)<mo>/, '$1<mo lspace="0">') : mathml(t))).join(' ')
     : mathml(x)));
-  // convierte en el documento los elementos con class="m" (fórmulas escritas en el HTML)
   function pinta(raiz) { if (typeof document === 'undefined') return; for (const el of (raiz || document).querySelectorAll('.m:not([data-m])')) { el.dataset.m = '1'; el.innerHTML = html(el.innerHTML.includes('$') ? el.innerHTML : `$${el.innerHTML}$`); } }
   if (typeof document !== 'undefined') {
     const st = document.createElement('style');
@@ -596,33 +613,6 @@ const Mates = (() => {
   return { html, mathml, pinta, tokens };
 })();
 
-/* =====================================================================
-   Animación por pasos, común a todos los fenómenos de «Física en la vida real».
-   Va en la página tras mates.js; cada fenómeno (fenomenos/<clave>/escena.js)
-   solo da sus pasos y su dibujo:
-     Animacion.monta({ lienzo: '#escena', pasos, dibuja, colores, sonido? })
-       pasos    [{ titulo, corto, texto, dato?, anim?, dura?, prueba? }]: corto = nombre
-                en la línea de tiempo; dato = { valor, texto } destacado sobre el texto,
-                que va en HTML con fórmulas
-                $…$ (párrafos separados por una línea en blanco); anim = ms que dura el
-                movimiento del paso (2500) y dura = ms hasta pasar al siguiente (9000);
-                prueba = { etiqueta, min, max, paso, valor, muestra(v), cambia(v) }
-                pone un deslizador «Pruébalo tú» bajo el texto (al moverlo se para)
-       dibuja(g, { paso, t, reloj, w, h, c, quieto })  dibuja el paso en el contexto
-                g (px CSS): t va de 0 a 1 durante el movimiento, reloj son los segundos
-                desde que se abrió la página (para lo que se mueve siempre, como un
-                brillo), c los colores leídos de las variables CSS de «colores» y
-                quieto = true si el sistema pide menos movimiento
-       colores  nombres de variables CSS sin «--» (se releen al cambiar de modo)
-       sonido(ac) opcional: recibe un AudioContext y devuelve { cuadro(estado) }, al
-                que se llama en cada fotograma mientras el botón #sonido está activo
-                (apagado al abrir la página)
-   Avanza sola de un paso al siguiente; «Parar» detiene solo el avance (el paso
-   sigue animado), y Anterior, Siguiente, los números y las flechas del teclado
-   funcionan siempre. La maqueta (#escena, #ant, #play, #sig, #puntos, #paso-t,
-   #paso-x, #ver y, si hay sonido, #sonido) está en la pagina.html de cada fenómeno y los estilos en
-   fenomenos/estilos.css. Expone window.FenomenoApp para las pruebas.
-   ===================================================================== */
 const Animacion = (() => {
   const { $, esc, lienzo } = Herramienta;
   function monta({ lienzo: sel, pasos, dibuja, colores = [], sonido = null }) {
@@ -631,7 +621,6 @@ const Animacion = (() => {
     let i = 0, inicio = t0, avanza = true, c = {}, audio = null, ac = null, suena = false;
     const leeColores = () => { const st = getComputedStyle(document.documentElement); c = {}; for (const k of colores) c[k] = st.getPropertyValue('--' + k).trim(); };
     const dura = (p) => p.dura || 9000, anim = (p) => p.anim || 2500;
-    // línea de tiempo: un círculo por paso con su nombre corto; la línea se rellena con --avance (0 a 1)
     puntos.innerHTML = pasos.map((p, k) => `<button type="button" title="${esc(p.titulo)}" aria-label="Paso ${k + 1}: ${esc(p.titulo)}"><b>${k + 1}</b><span>${esc(p.corto || '')}</span></button>`).join('');
     const botones = [...puntos.children];
 
@@ -695,24 +684,10 @@ const Animacion = (() => {
   return { monta };
 })();
 
-/* =====================================================================
-   Ayudantes de dibujo comunes a las escenas de «Física en la vida real»
-   (fenomenos/<clave>/escena.js). Va en la página tras animacion.js.
-     Dibujo.suave, tramo, rgba, azar   curvas de 0 a 1, color con alfa y azar fijo
-     Dibujo.vista(g, w, h, c)  un mundo de 16 × 9 unidades dentro del lienzo, con
-         cámara: v.mira(cx, cy, zoom) la mueve (v.pantalla() vuelve a la vista
-         entera, para lo que va fijo como un medidor) y v.sigue(meta, reloj,
-         quieto) la lleva suave hacia otra cámara. Luego v.X(x) y v.Y(y) pasan a
-         px, v.K son los px por unidad y v.x0, v.x1, v.y0 lo que se ve; y dibuja
-         rótulos (que se escriben solos con «escribe»), signos + y −, flechas y
-         puntos, siempre en coordenadas del mundo. Con window.FenomenoFoto (pruebas/imagenes-fenomenos.js, la imagen
-         de la tarjeta del índice) no se dibujan los rótulos, que en pequeño no se leen.
-   ===================================================================== */
 const Dibujo = (() => {
   const suave = (t) => t * t * (3 - 2 * t);
   const tramo = (t, a, b) => Math.min(1, Math.max(0, (t - a) / (b - a)));
   const rgba = (hex, a) => { const h = hex.replace('#', ''), n = parseInt(h.length === 3 ? h.replace(/./g, '$&$&') : h, 16); return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`; };
-  // azar fijo (siempre las mismas posiciones)
   const azar = (k) => { const x = Math.sin(k * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
 
   function vista(g, w, h, c, cam = { x: 8, y: 4.5, z: 1 }) {
@@ -720,7 +695,6 @@ const Dibujo = (() => {
     v.mira = (cx, cy, z) => { v.K = k * z; v.cx = cx; v.cy = cy; v.x0 = cx - w / 2 / v.K; v.x1 = cx + w / 2 / v.K; v.y0 = cy - h / 2 / v.K; return v; };
     v.mundo = () => v.mira(cam.x, cam.y, cam.z);
     v.pantalla = () => v.mira(8, 4.5, 1);
-    // la cámara va suave hacia «meta» (el zoom, en escala logarítmica); con quieto, de golpe
     v.sigue = (meta, reloj, quieto) => {
       const dt = cam.antes === undefined || quieto ? 99 : Math.min(0.1, Math.max(0, reloj - cam.antes)), f = 1 - Math.exp(-dt * 2.4);
       cam.antes = reloj;
@@ -730,7 +704,6 @@ const Dibujo = (() => {
     v.X = (x) => w / 2 + (x - v.cx) * v.K;
     v.Y = (y) => h / 2 + (y - v.cy) * v.K;
     const letra = (px, peso = 500) => `${peso} ${Math.max(11, (px * k) / 40)}px "IBM Plex Sans", system-ui, sans-serif`;
-    // rótulo; con «escribe» (0 a 1) aparece letra a letra, como escrito en la pizarra
     v.rotulo = (txt, x, y, { color = c.rotulo, tam = 13, al = 'left', peso = 500, fondo = true, escribe = 1 } = {}) => {
       if (escribe <= 0 || window.FenomenoFoto) return;
       const letras = [...txt], ver = escribe >= 1 ? txt : letras.slice(0, Math.ceil(letras.length * escribe)).join('');
@@ -750,12 +723,10 @@ const Dibujo = (() => {
       g.beginPath(); g.moveTo(v.X(xb), v.Y(yb)); g.lineTo(v.X(xb) - L * Math.cos(an - 0.4), v.Y(yb) - L * Math.sin(an - 0.4)); g.lineTo(v.X(xb) - L * Math.cos(an + 0.4), v.Y(yb) - L * Math.sin(an + 0.4)); g.fill(); g.globalAlpha = 1;
     };
     v.punto = (x, y, r, color, a = 1) => { g.globalAlpha = a; g.fillStyle = color; g.beginPath(); g.arc(v.X(x), v.Y(y), r * v.K, 0, 2 * Math.PI); g.fill(); g.globalAlpha = 1; };
-    // recuadro con sombra (paneles y medidores)
     v.panel = (x, y, ancho, alto, a = 0.94) => {
       g.save(); g.fillStyle = rgba(c.panel, a); g.shadowColor = rgba('#000', 0.18); g.shadowBlur = 16; g.shadowOffsetY = 3;
       g.beginPath(); g.roundRect(v.X(x), v.Y(y), ancho * v.K, alto * v.K, 0.22 * v.K); g.fill(); g.restore();
     };
-    // chispa quebrada de (xa, ya) a (xb, yb), distinta cada vez que cambia «n»
     v.chispa = (xa, ya, xb, yb, n, color, ancho = 0.05, quiebros = 7) => {
       const L = Math.hypot(xb - xa, yb - ya), nx = -(yb - ya) / L, ny = (xb - xa) / L;
       g.strokeStyle = color; g.lineWidth = Math.max(1.2, ancho * v.K); g.lineJoin = 'round'; g.beginPath(); g.moveTo(v.X(xa), v.Y(ya));
@@ -767,23 +738,9 @@ const Dibujo = (() => {
   return { suave, tramo, rgba, azar, vista };
 })();
 
-/* =====================================================================
-   La radio AM y FM: los 6 pasos de la animación (texto y dibujo) y el ejercicio
-   que se abre en Diagramas de Bode y filtros (el circuito de sintonía como filtro
-   RLC paso banda: L = 253,3 µH, C = 100 pF y R = 10 Ω, que sintoniza 1000 kHz).
-   El motor es fenomenos/animacion.js, los ayudantes de dibujo fenomenos/dibujo.js
-   y la maqueta pagina.html. En Node (pruebas) solo se cargan los datos:
-   pruebas/herramientas/fenomenos/radio-am-fm.js.
-   DATOS ESCRITOS DE MEMORIA (Dani debe revisarlos): banda de onda media 530-1700 kHz
-   con canales cada 9 kHz, audio de AM hasta 4,5 kHz, FM de 87,5 a 108 MHz con
-   ±75 kHz de desviación y canales de 200 kHz, bobina de 253,3 µH con Q ≈ 160
-   (R = 10 Ω de hilo), detector de 10 kΩ y 2,2 nF, frecuencias intermedias de
-   455 kHz (AM) y 10,7 MHz (FM) y las fechas de la historia.
-   ===================================================================== */
 const RadioAmFm = (() => {
   const CLUZ = 3e8, L = 253.3e-6, C0 = 100e-12, R = 10, RDET = 1e4, CDET = 2.2e-9, FM_MHZ = 98.5;
   const ESTACIONES = [{ n: 'A', f: 855, tipo: 'AM' }, { n: 'B', f: 1000, tipo: 'AM' }, { n: 'C', f: 1215, tipo: 'AM' }];
-  // circuito de sintonía: f₀ = 1/(2π√(LC)) en kHz con C en pF; Q = ω₀L/R; ganancia del paso banda con la salida en R
   const f0De = (Cpf) => 1 / (2 * Math.PI * Math.sqrt(L * Cpf * 1e-12)) / 1e3;
   const Qde = (f0k) => (2 * Math.PI * f0k * 1e3 * L) / R;
   const gananciaDe = (f, f0k) => { const Q = Qde(f0k), x = f / f0k - f0k / f; return 1 / Math.sqrt(1 + Q * Q * x * x); };
@@ -805,23 +762,19 @@ const RadioAmFm = (() => {
     { titulo: 'Sacar el sonido: diodo y condensador', corto: 'Detector', dato: { valor: `${n(datos.tau * 1e6, 0)} µs`, texto: 'es RC del detector: mucho mayor que 1 µs de la portadora y mucho menor que 200 µs del sonido de 5 kHz.' }, texto: `Ya sintonizada, la señal de AM sigue siendo la portadora de 1 MHz con la altura variable: ningún altavoz podría seguirla. Hay que quedarse solo con la envolvente.\n\nUn **diodo** deja pasar solo los semiciclos positivos y un **condensador con una resistencia** se carga en cada pico y se descarga despacio entre pico y pico. La constante $τ = R C = 10 "kΩ" · 2,2 "nF" = ${n(datos.tau * 1e6, 0)} "µs"$ hace de filtro paso bajo: sigue la subida y bajada de la envolvente (200 µs para 5 kHz) pero no los 1 000 ciclos de la portadora por milisegundo. Lo que queda es el sonido, que un amplificador lleva al altavoz. En la FM el detector es otro (un discriminador que convierte cada cambio de frecuencia en tensión), pero el final es el mismo.` },
   ];
 
-  // ejercicio de Diagramas de Bode (formato de bode-v1): filtro RLC paso banda con L = 253,3 µH, C = 100 pF y R = 10 Ω, evaluado en 1009 kHz
   const ejercicio = () => ({ tipo: 'rlc-banda', R: '10', L: '0,2533', C: '0,0001', f: '1009k', fmin: '100k', fmax: '10M' });
   function abrirEnBode(destino) {
     try { localStorage.setItem('bode-v1', JSON.stringify(ejercicio())); } catch (e) { /* sin almacenamiento: se abre sin datos */ }
     location.href = destino;
   }
 
-  /* ---------------- dibujo (con los ayudantes de fenomenos/dibujo.js) ---------------- */
   const { suave, tramo, rgba, azar } = typeof Dibujo !== 'undefined' ? Dibujo : {};
   const cam = { x: 8, y: 4.5, z: 1 };
   const CAMS = [0, 1, 2, 3, 4, 5].map(() => ({ x: 8, y: 4.5, z: 1 }));
-  // «Pruébalo tú» del paso 5: capacidad del condensador variable
   const prueba = { etiqueta: 'la capacidad del condensador (pF)', min: 35, max: 356, paso: 1, valor: 100, C: 100,
     muestra: (Cpf) => { const f = f0De(Cpf), e = cercana(f); return `C = ${Cpf} pF → ${entero(f)} kHz${e ? ` · suena la emisora ${e.n}` : ' · solo ruido entre emisoras'}`; }, cambia: (Cpf) => { prueba.C = Cpf; } };
   pasos[4].prueba = prueba;
 
-  // señales (u de 0 a 1 a lo ancho; tau desplaza para que avancen)
   const NC = 26;
   const audio = (u) => 0.62 * Math.sin(2 * Math.PI * 2 * u) + 0.38 * Math.sin(2 * Math.PI * 3 * u + 1);
   const integral = (u) => (-0.62 * Math.cos(2 * Math.PI * 2 * u)) / (2 * Math.PI * 2) - (0.38 * Math.cos(2 * Math.PI * 3 * u + 1)) / (2 * Math.PI * 3);
@@ -838,7 +791,6 @@ const RadioAmFm = (() => {
     const tau = quieto ? 0.13 : (r * 0.05) % 1;
     g.fillStyle = c.sala; g.fillRect(0, 0, w, h);
 
-    // una línea de datos a lo ancho de x0..x1 centrada en yc: fn(u) de −1 a 1
     function traza(fn, yc, amp, color, { x0 = 3.5, x1 = 15.3, ancho = 0.04, a = 1, n = 520, pasoU = 0 } = {}) {
       g.strokeStyle = rgba(color, a); g.lineWidth = Math.max(1.4, ancho * v.K); g.lineJoin = 'round'; g.beginPath();
       for (let j = 0; j <= n; j++) { const u = j / n, x = x0 + u * (x1 - x0), y = yc - amp * fn(u - tau * pasoU); j ? g.lineTo(X(x), Y(y)) : g.moveTo(X(x), Y(y)); }
@@ -847,7 +799,6 @@ const RadioAmFm = (() => {
     const ejeFila = (yc, a = 1) => { g.strokeStyle = rgba(c.rotulo, 0.25 * a); g.lineWidth = 1; g.beginPath(); g.moveTo(X(3.5), Y(yc)); g.lineTo(X(15.3), Y(yc)); g.stroke(); };
     const fila = (yc, a = 1) => { v.panel(0.4, yc - 1.02, 15.2, 2.04, 0.5 * a); ejeFila(yc, a); };
 
-    // una antena (torre) con cruces; arriba una luz; base en y = suelo
     function torre(x, suelo, alto, color, a = 1) {
       g.strokeStyle = rgba(color, a); g.lineWidth = Math.max(1.8, 0.05 * v.K);
       g.beginPath(); g.moveTo(X(x - 0.22), Y(suelo)); g.lineTo(X(x), Y(suelo - alto)); g.lineTo(X(x + 0.22), Y(suelo)); g.stroke();
@@ -869,7 +820,6 @@ const RadioAmFm = (() => {
         punto(a.x, suelo - 1.95, 0.08, a.col);
         rotulo(a.rot, a.x, suelo + 0.55, { al: 'center', tam: 11.5, peso: 700, color: a.col, escribe: tramo(t, 0.2 + a.fase * 0.3, 0.5 + a.fase * 0.3) });
       }
-      // la radio: caja, altavoz, dial, antena y una frecuencia elegida
       const rx = 13.4, ry = 6.6;
       g.strokeStyle = c.rotulo; g.lineWidth = Math.max(1.6, 0.04 * v.K); g.beginPath(); g.moveTo(X(rx + 0.9), Y(ry - 0.6)); g.lineTo(X(rx + 1.2), Y(ry - 2.2)); g.stroke();
       punto(rx + 1.2, ry - 2.2, 0.07, c.rotulo);
@@ -888,13 +838,11 @@ const RadioAmFm = (() => {
       for (const [x0, ancho, titulo, col, ciclos, lam, ant] of [[0.5, 7.3, 'sonido: 1 kHz', c.audio, 1.2, 'λ = 300 km', 'antena de 75 km'], [8.2, 7.3, 'portadora: 1 MHz', c.am, 26, 'λ = 300 m', 'antena de 75 m']]) {
         v.panel(x0, 0.5, ancho, 8.0, 0.75);
         rotulo(titulo, x0 + ancho / 2, 1.1, { al: 'center', tam: 14, peso: 700, color: col, escribe: tramo(t, 0.1, 0.35) });
-        // onda
         const yc = 2.9, ini = x0 + 0.5, fin = x0 + ancho - 0.5;
         g.strokeStyle = rgba(col, a); g.lineWidth = Math.max(1.6, 0.05 * v.K); g.beginPath();
         for (let j = 0; j <= 300; j++) { const u = j / 300, y = yc - 0.55 * Math.sin(2 * Math.PI * ciclos * u - (quieto ? 0.5 : r * (ciclos > 5 ? 3 : 1.2))); j ? g.lineTo(X(ini + u * (fin - ini)), Y(y)) : g.moveTo(X(ini), Y(y)); }
         g.stroke();
         rotulo(lam, x0 + ancho / 2, 3.85, { al: 'center', tam: 13, peso: 700, escribe: tramo(t, 0.3, 0.55) });
-        // torre al cuarto de onda: alta y cortada en el sonido, pequeña en la portadora
         const base = 8.0, cx = x0 + ancho / 2, alto = ciclos > 5 ? 2.0 : 2.7;
         torre(cx, base, alto, c.torre, a);
         if (ciclos <= 5) {
@@ -914,7 +862,6 @@ const RadioAmFm = (() => {
         fila(f.y, a); traza(f.fn, f.y, 0.78, f.col, { a, ancho: k === 1 ? 0.025 : 0.05, pasoU: 1 });
         rotulo(f.rot, 0.8, f.y, { tam: 13, peso: 700, color: f.col, fondo: false, escribe: tramo(t, 0.1 + k * 0.22, 0.3 + k * 0.22) });
       });
-      // envolvente de la AM, discontinua
       const aE = suave(tramo(t, 0.5, 0.75)); g.setLineDash([7, 6]);
       traza(envolvente, 7.1, 0.78, c.resalta, { a: aE, ancho: 0.03, pasoU: 1 }); traza((u) => -envolvente(u), 7.1, 0.78, c.resalta, { a: aE, ancho: 0.03, pasoU: 1 }); g.setLineDash([]);
       rotulo('la envolvente copia al sonido', 15.0, 8.35, { al: 'right', tam: 12, color: c.resalta, peso: 700, fondo: false, escribe: tramo(t, 0.7, 0.95) });
@@ -923,14 +870,12 @@ const RadioAmFm = (() => {
 
     if (paso === 3) {
       const filas = [{ y: 2.1, fn: audio, col: c.audio, rot: 'sonido m(t)' }, { y: 4.6, fn: fm, col: c.fm, rot: 'FM' }, { y: 7.1, fn: null, col: c.ruido, rot: 'con ruido' }];
-      // ruido: picos de amplitud en posiciones fijas que viajan con la señal
       const ruido = (u) => { let s = 0; for (const [p, q] of [[0.17, 0.55], [0.42, 0.8], [0.66, 0.5], [0.87, 0.7]]) s += q * Math.exp(-(((u - p) * 90) ** 2)); return s; };
       filas.forEach((f, k) => {
         const a = suave(tramo(t, 0.04 + k * 0.22, 0.2 + k * 0.22));
         fila(f.y, a);
         if (f.fn) traza(f.fn, f.y, 0.78, f.col, { a, ancho: k === 0 ? 0.05 : 0.035, pasoU: 1 });
         else {
-          // la señal FM recibida con picos de ruido en la amplitud
           g.strokeStyle = rgba(c.fm, a); g.lineWidth = Math.max(1.4, 0.035 * v.K); g.beginPath();
           for (let j = 0; j <= 520; j++) { const u = j / 520, x = 3.5 + u * 11.8, y = f.y - 0.78 * fm(u - tau) * (1 + ruido(u - tau) * 0.9); j ? g.lineTo(X(x), Y(y)) : g.moveTo(X(x), Y(y)); }
           g.stroke();
@@ -946,18 +891,14 @@ const RadioAmFm = (() => {
     if (paso === 4) {
       const Cpf = prueba.C, f0k = f0De(Cpf), Qk = Qde(f0k), e = cercana(f0k);
       const a = suave(tramo(t, 0.03, 0.3));
-      // circuito RLC en serie: antena, bobina, condensador variable y resistencia
       const x0 = 0.9, x1 = 5.6, y0 = 1.9, y1 = 5.4;
       v.panel(0.4, 0.5, 5.8, 6.5, 0.7);
       g.strokeStyle = rgba(c.rotulo, a); g.lineWidth = Math.max(1.8, 0.045 * v.K); g.lineJoin = 'round';
       const lin = (xa, ya, xb, yb) => { g.beginPath(); g.moveTo(X(xa), Y(ya)); g.lineTo(X(xb), Y(yb)); g.stroke(); };
       lin(x0, y0, 1.7, y0); lin(4.3, y0, x1, y0); lin(x1, y0, x1, 3.0); lin(x1, 4.0, x1, y1); lin(x1, y1, x0, y1); lin(x0, y1, x0, 4.4); lin(x0, 3.0, x0, y0);
-      // bobina
       g.beginPath(); for (let k = 0; k < 4; k++) g.arc(X(2.0 + k * 0.6), Y(y0), 0.3 * v.K, Math.PI, 0); g.stroke();
-      // condensador variable (derecha, dos placas) con flecha oblicua
       lin(x1 - 0.5, 3.0, x1 + 0.5, 3.0); lin(x1 - 0.5, 4.0, x1 + 0.5, 4.0);
       v.flecha(x1 - 0.8, 4.35, x1 + 0.7, 2.65, c.resalta, a, 0.035);
-      // resistencia (abajo) y antena (izquierda, círculo con ~)
       g.fillStyle = rgba(c.sala, 0.9); g.fillRect(X(2.4), Y(y1 - 0.2), 1.6 * v.K, 0.4 * v.K); g.strokeRect(X(2.4), Y(y1 - 0.2), 1.6 * v.K, 0.4 * v.K);
       g.fillStyle = rgba(c.sala, 0.9); g.beginPath(); g.arc(X(x0), Y(3.7), 0.4 * v.K, 0, 2 * Math.PI); g.fill(); g.stroke();
       g.beginPath(); for (let k = 0; k <= 20; k++) { const xx = x0 - 0.22 + 0.44 * (k / 20); k ? g.lineTo(X(xx), Y(3.7 - 0.12 * Math.sin(k / 20 * 2 * Math.PI))) : g.moveTo(X(xx), Y(3.7)); } g.stroke();
@@ -966,7 +907,6 @@ const RadioAmFm = (() => {
       rotulo(`C = ${Cpf} pF`, x1 - 0.75, 3.5, { al: 'right', tam: 11.5, peso: 700, color: c.resalta, fondo: false });
       rotulo('R = 10 Ω', 3.2, y1 + 0.55, { al: 'center', tam: 11.5, peso: 700, fondo: false, escribe: tramo(t, 0.45, 0.65) });
       rotulo('la salida se mide en R', 3.2, 6.35, { al: 'center', tam: 11, fondo: false, escribe: tramo(t, 0.55, 0.75) });
-      // curva de respuesta en toda la banda
       const gx0 = 7.2, gx1 = 15.3, gy0 = 3.6, gy1 = 0.9, fa = 500, fb = 1700;
       const px = (f) => gx0 + ((f - fa) / (fb - fa)) * (gx1 - gx0), py = (q) => gy0 + (gy1 - gy0) * q;
       v.panel(6.6, 0.4, 9.2, 4.6, 0.8);
@@ -981,7 +921,6 @@ const RadioAmFm = (() => {
       for (let f = fa; f <= fb; f += 0.5) { const q = gananciaDe(f, f0k); f > fa ? g.lineTo(X(px(f)), Y(py(q))) : g.moveTo(X(px(f)), Y(py(q))); }
       g.stroke(); punto(px(f0k), py(1), 0.1, c.resalta);
       rotulo('500 kHz', gx0, gy0 + 0.25, { tam: 10, fondo: false, al: 'left' }); rotulo('1700 kHz', gx1, gy0 + 0.25, { tam: 10, fondo: false, al: 'right' });
-      // zoom ±25 kHz: el ancho de la curva comparado con los 9 kHz entre emisoras
       const zx0 = 7.2, zx1 = 15.3, zy0 = 7.5, zy1 = 5.6, zq = (f) => zx0 + ((f - f0k + 25) / 50) * (zx1 - zx0), zy = (q) => zy0 + (zy1 - zy0) * q;
       v.panel(6.6, 5.2, 9.2, 3.7, 0.8);
       rotulo(`ampliado: ${entero(f0k)} kHz ± 25 kHz`, 6.9, 5.55, { tam: 12, peso: 700, fondo: false });
@@ -1022,34 +961,21 @@ if (typeof document !== 'undefined') {
   document.querySelector('#abrir').addEventListener('click', (e) => { e.preventDefault(); RadioAmFm.abrirEnBode(e.currentTarget.getAttribute('href')); });
 }
 
-/* =====================================================================
-   Portada personal: lo que Ciencify recuerda de ti, solo en este navegador (localStorage, sin
-   cuentas ni envíos). herramientas.js lo pone en cada herramienta y fenómeno tras biblioteca.js; la
-   portada (portal.js) lo usa para pintar «Tu espacio». Claves:
-     simu-recientes   [{ r: 'asignatura/herramienta', t: ms }]   las últimas 8, la más nueva primero
-     simu-favoritos   ['asignatura/herramienta', …]
-   En cada herramienta apunta la visita y añade el botón ☆ «Favorita» junto a Mis ejercicios.
-   Personal.espacio(sitio) devuelve { continuar, favoritas, recientes } con rutas (portal.js las
-   convierte en tarjetas); Personal.borra() olvida todo.
-   ===================================================================== */
 const Personal = (() => {
   const K_REC = 'simu-recientes', K_FAV = 'simu-favoritos', MAX = 8;
   const lee = (k) => { try { const v = JSON.parse(localStorage.getItem(k)); return Array.isArray(v) ? v : []; } catch (e) { return []; } };
   const escribe = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } };
-  // «/fisica/gases/» → 'fisica/gases' (las dos últimas partes: también vale desde un archivo local)
   const rutaDe = (p) => { const q = String(p).split('/').filter((s) => s && !/\.html?$/.test(s)); return q.length >= 2 ? q.slice(-2).join('/') : null; };
   const recientes = () => lee(K_REC).filter((x) => x && typeof x.r === 'string');
   const favoritos = () => lee(K_FAV).filter((x) => typeof x === 'string');
   function visita(ruta, ahora = Date.now()) { escribe(K_REC, [{ r: ruta, t: ahora }, ...recientes().filter((x) => x.r !== ruta)].slice(0, MAX)); }
   const esFavorita = (ruta) => favoritos().includes(ruta);
   function alterna(ruta) { const f = favoritos(), i = f.indexOf(ruta); if (i >= 0) f.splice(i, 1); else f.push(ruta); escribe(K_FAV, f); return i < 0; }
-  // continuar = la última visitada; recientes = las demás
   function espacio() {
     const r = recientes();
     return { continuar: r[0] || null, favoritas: favoritos(), recientes: r.slice(1, 6) };
   }
   function borra() { try { localStorage.removeItem(K_REC); localStorage.removeItem(K_FAV); } catch (e) { /* sin almacenamiento */ } }
-  // «hace 5 min», «hace 3 h», «ayer», «hace 4 días»
   function hace(t, ahora = Date.now()) {
     const m = Math.max(0, Math.round((ahora - t) / 60000));
     if (m < 2) return 'justo ahora';

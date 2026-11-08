@@ -51,7 +51,7 @@ document.addEventListener('click', (e) => { if (!e.target.closest('.pref-cookies
     espera = 0;
     for (const e of document.querySelectorAll('main *')) {
       const desborda = e.scrollWidth > e.clientWidth || e.scrollHeight > e.clientHeight;
-      if (e.dataset.sf) { if (!desborda) { e.removeAttribute('tabindex'); delete e.dataset.sf; } continue; }
+      if (e.dataset.sf) { if (!desborda || e.querySelector(ENFOCABLE)) { e.removeAttribute('tabindex'); delete e.dataset.sf; } continue; }
       if (!desborda || e.hasAttribute('tabindex') || e.matches('svg,svg *,canvas') || e.querySelector(ENFOCABLE)) continue;
       const o = getComputedStyle(e);
       if (/auto|scroll/.test(o.overflowX + o.overflowY)) { e.tabIndex = 0; e.dataset.sf = '1'; }
@@ -129,6 +129,8 @@ footer a { color: var(--muted); margin: 0 6px; white-space: nowrap }
 :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
 .controles { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px }
 .controles > .nota, .controles > .leyenda { flex: 1 1 220px; margin: 0 }
+.exportar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0 }
+.exportar-aviso { color: var(--muted); font-size: 12.5px }
 .tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px }
 .tools label { color: var(--muted); font-size: 13px; display: inline-flex; gap: 6px; align-items: center }
 .modos { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-bottom: 14px }
@@ -319,32 +321,8 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 </body>
 <script>
 const Pagina = { carpeta: 'imagenes', guarda: 'imagenes-v1' };
-const Version = (() => { const registros = {"web":[{"v":"1.12.1"}],"control":[{"v":"0.1"}],"termo-estadistica":[{"v":"0.1"}],"markowitz":[{"v":"0.1"}],"cavidades":[{"v":"0.1"}],"organica":[{"v":"0.1"}],"transformada-z":[{"v":"0.1"}],"semiconductores":[{"v":"0.1"}],"relatividad":[{"v":"0.1"}],"osc-acopladas":[{"v":"0.1"}],"solubilidad":[{"v":"0.1"}],"lagrange":[{"v":"0.1"}],"series":[{"v":"0.1"}],"no-parametricos":[{"v":"0.1"}],"regresion-multiple":[{"v":"0.1"}],"anova":[{"v":"0.1"}],"black-scholes":[{"v":"0.1"}],"bonos":[{"v":"0.1"}],"solow":[{"v":"0.1"}],"integrales-multiples":[{"v":"0.1"}],"formulacion":[{"v":"0.1"}],"balance":[{"v":"0.1"}],"redox":[{"v":"0.1"}],"lineas-transmision":[{"v":"0.1"}],"superficies":[{"v":"0.1"}],"vsepr":[{"v":"0.1"}],"maxwell":[{"v":"0.1"}],"fresnel":[{"v":"0.1"}],"gravitacion":[{"v":"0.1"}],"convolucion":[{"v":"0.1"}],"laplace-numerica":[{"v":"0.1"}],"imagenes":[{"v":"0.1"}],"guias-onda":[{"v":"0.1"}],"antena":[{"v":"0.1"}],"bode":[{"v":"0.1"}],"optica":[{"v":"0.1"}],"simulador":[{"v":"0.3"}],"teoria-juegos":[{"v":"0.1"}],"puertas-logicas":[{"v":"0.3"}],"multiplicador":[{"v":"0.1"}],"is-lm":[{"v":"0.1"}],"choques":[{"v":"0.1"}],"termoquimica":[{"v":"0.1"}],"probabilidad":[{"v":"0.1"}],"unidades":[{"v":"0.1"}],"equilibrio":[{"v":"0.1"}],"oscilaciones":[{"v":"0.1"}],"beneficio":[{"v":"0.1"}],"costes":[{"v":"0.1"}],"sistemas-numericos":[{"v":"0.1"}],"excedentes":[{"v":"0.1"}],"oferta-demanda":[{"v":"0.1"}],"chi2-bondad":[{"v":"0.1"}],"contrastes":[{"v":"0.1"}],"errores":[{"v":"0.1"}],"graficador":[{"v":"0.1"}],"metodos-numericos":[{"v":"0.1"}],"fisica-moderna":[{"v":"0.2"}],"lorenz-gini":[{"v":"0.1"}],"phillips-okun":[{"v":"0.1"}],"tipos-cambio":[{"v":"0.1"}],"elasticidades":[{"v":"0.1"}],"pib-ipc":[{"v":"0.1"}],"numeros-indice":[{"v":"0.1"}],"ratios":[{"v":"0.1"}],"punto-muerto":[{"v":"0.1"}],"ahorro":[{"v":"0.1"}],"van-tir":[{"v":"0.1"}],"amortizacion-inmovilizado":[{"v":"0.1"}],"prestamos":[{"v":"0.1"}],"rentas":[{"v":"0.1"}],"interes":[{"v":"0.1"}],"descriptiva":[{"v":"0.1"}],"regresion-economia":[{"v":"0.1"}],"ajustador":[{"v":"0.1"}],"electrostatica":[{"v":"0.6"}],"magnetostatica":[{"v":"0.2"}],"tabla-periodica":[{"v":"0.2"}],"trabajo-y-energia":[{"v":"0.2"}],"masa-molar":[{"v":"0.2"}],"configuracion-electronica":[{"v":"0.2"}],"condensadores":[{"v":"0.2"}],"tiro-parabolico":[{"v":"0.2"}],"disoluciones":[{"v":"0.2"}],"calorimetria":[{"v":"0.2"}],"induccion":[{"v":"0.2"}],"matrices":[{"v":"0.2"}],"derivadas":[{"v":"0.3"}],"laplace":[{"v":"0.2"}],"interferencia":[{"v":"0.2"}],"ondas-em":[{"v":"0.3"}],"intervalos":[{"v":"0.2"}],"fuerza":[{"v":"0.2"}],"campos":[{"v":"0.2.1"}],"cinetica":[{"v":"0.2"}],"edos":[{"v":"0.2"}],"fourier":[{"v":"0.2"}],"taylor":[{"v":"0.2.1"}],"complejos":[{"v":"0.2"}],"sistemas":[{"v":"0.3"}],"regresion":[{"v":"0.2"}],"estadistica":[{"v":"0.2"}],"dinamica":[{"v":"0.2"}],"solido-rigido":[{"v":"0.2"}],"ondas":[{"v":"0.2"}],"gases":[{"v":"0.3"}],"ciclos":[{"v":"0.2"}],"ph":[{"v":"0.3"}],"fluidos":[{"v":"0.2"}],"doppler":[{"v":"0.2"}],"resistencias":[{"v":"0.2"}],"faraday":[{"v":"0.2"}],"fenomenos":[{"v":"0.8"}]}; const de = (h) => ({ current: registros[h][0].v, log: registros[h] }); return { registros, de }; })();
+const Version = (() => { const registros = {"web":[{"v":"1.13"}],"control":[{"v":"0.2"}],"termo-estadistica":[{"v":"0.1"}],"markowitz":[{"v":"0.2"}],"cavidades":[{"v":"0.2"}],"organica":[{"v":"0.1"}],"transformada-z":[{"v":"0.2"}],"semiconductores":[{"v":"0.2"}],"relatividad":[{"v":"0.1"}],"osc-acopladas":[{"v":"0.1"}],"solubilidad":[{"v":"0.1"}],"lagrange":[{"v":"0.1"}],"series":[{"v":"0.1"}],"no-parametricos":[{"v":"0.1"}],"regresion-multiple":[{"v":"0.1"}],"anova":[{"v":"0.1"}],"black-scholes":[{"v":"0.2"}],"bonos":[{"v":"0.2"}],"solow":[{"v":"0.2"}],"integrales-multiples":[{"v":"0.1"}],"formulacion":[{"v":"0.1"}],"balance":[{"v":"0.2"}],"redox":[{"v":"0.1"}],"lineas-transmision":[{"v":"0.2"}],"superficies":[{"v":"0.1"}],"vsepr":[{"v":"0.1"}],"maxwell":[{"v":"0.2"}],"fresnel":[{"v":"0.2"}],"gravitacion":[{"v":"0.1"}],"convolucion":[{"v":"0.2"}],"laplace-numerica":[{"v":"0.2"}],"imagenes":[{"v":"0.2"}],"guias-onda":[{"v":"0.2"}],"antena":[{"v":"0.2"}],"bode":[{"v":"0.2"}],"optica":[{"v":"0.1"}],"simulador":[{"v":"0.4"}],"teoria-juegos":[{"v":"0.1"}],"puertas-logicas":[{"v":"0.4"}],"multiplicador":[{"v":"0.2"}],"is-lm":[{"v":"0.2"}],"choques":[{"v":"0.1"}],"termoquimica":[{"v":"0.1"}],"probabilidad":[{"v":"0.1"}],"unidades":[{"v":"0.1"}],"equilibrio":[{"v":"0.1"}],"oscilaciones":[{"v":"0.1"}],"beneficio":[{"v":"0.2"}],"costes":[{"v":"0.2"}],"sistemas-numericos":[{"v":"0.2"}],"excedentes":[{"v":"0.2"}],"oferta-demanda":[{"v":"0.2"}],"chi2-bondad":[{"v":"0.1"}],"contrastes":[{"v":"0.1"}],"errores":[{"v":"0.1"}],"graficador":[{"v":"0.1"}],"metodos-numericos":[{"v":"0.1"}],"fisica-moderna":[{"v":"0.2"}],"lorenz-gini":[{"v":"0.1"}],"phillips-okun":[{"v":"0.2"}],"tipos-cambio":[{"v":"0.2"}],"elasticidades":[{"v":"0.2"}],"pib-ipc":[{"v":"0.1"}],"numeros-indice":[{"v":"0.1"}],"ratios":[{"v":"0.2"}],"punto-muerto":[{"v":"0.1"}],"ahorro":[{"v":"0.2"}],"van-tir":[{"v":"0.2"}],"amortizacion-inmovilizado":[{"v":"0.1"}],"prestamos":[{"v":"0.2"}],"rentas":[{"v":"0.2"}],"interes":[{"v":"0.2"}],"descriptiva":[{"v":"0.1"}],"regresion-economia":[{"v":"0.1"}],"ajustador":[{"v":"0.1"}],"electrostatica":[{"v":"0.7"}],"magnetostatica":[{"v":"0.3"}],"tabla-periodica":[{"v":"0.2"}],"trabajo-y-energia":[{"v":"0.2"}],"masa-molar":[{"v":"0.2"}],"configuracion-electronica":[{"v":"0.2"}],"condensadores":[{"v":"0.3"}],"tiro-parabolico":[{"v":"0.2"}],"disoluciones":[{"v":"0.2"}],"calorimetria":[{"v":"0.2"}],"induccion":[{"v":"0.3"}],"matrices":[{"v":"0.2"}],"derivadas":[{"v":"0.3"}],"laplace":[{"v":"0.2"}],"interferencia":[{"v":"0.2"}],"ondas-em":[{"v":"0.4"}],"intervalos":[{"v":"0.2"}],"fuerza":[{"v":"0.3"}],"campos":[{"v":"0.2.1"}],"cinetica":[{"v":"0.2"}],"edos":[{"v":"0.2"}],"fourier":[{"v":"0.2"}],"taylor":[{"v":"0.2.1"}],"complejos":[{"v":"0.2"}],"sistemas":[{"v":"0.3"}],"regresion":[{"v":"0.2"}],"estadistica":[{"v":"0.2"}],"dinamica":[{"v":"0.2"}],"solido-rigido":[{"v":"0.2"}],"ondas":[{"v":"0.2"}],"gases":[{"v":"0.3"}],"ciclos":[{"v":"0.2"}],"ph":[{"v":"0.3"}],"fluidos":[{"v":"0.2"}],"doppler":[{"v":"0.2"}],"resistencias":[{"v":"0.3"}],"faraday":[{"v":"0.3"}],"fenomenos":[{"v":"0.8"}]}; const de = (h) => ({ current: registros[h][0].v, log: registros[h] }); return { registros, de }; })();
 
-/* =====================================================================
-   Ayudantes comunes de las herramientas (los que antes copiaba cada una).
-   herramientas.js lo pone en cada página justo después de version.js; en
-   Node (pruebas) comprobar.js lo deja en global.Herramienta. Uso:
-     const { $, esc, copia, vacio } = Herramienta;
-     $(q)          document.querySelector
-     esc(s)        texto seguro dentro de HTML y de atributos
-     copia(o)      copia profunda de datos JSON (el estado sc, un ejemplo)
-     vacio(v)      campo sin rellenar (undefined, null o solo espacios)
-     leeSI(s, base)  número de un campo con coma, 3·10^8, prefijos del SI y
-                   unidad: «4k7», «1,5 kΩ», «100n», «10 µF», «5 ms». Con prefijo,
-                   notación 4k7 o unidad escrita da el valor en unidades del SI;
-                   un número solo se multiplica por base (1e-3 si el campo
-                   está en mH, 1e-6 si en μF). NaN si no se entiende
-     txt(h)        HTML de un resultado a texto para el lienzo (exponentes ⁰¹²…)
-     marcas(a, b, n)  valores redondos (1, 2, 2,5, 5 × 10ⁿ) para las marcas de un eje
-     lienzo(c)     prepara un <canvas> (o su selector) a la resolución de la
-                   pantalla, limpio y en px CSS: { g, w, h, c, cambia }; cambia
-                   es true si el tamaño era otro (para rehacer un fondo guardado)
-     enlace        un enlace con #d=… (lo copia «Mis ejercicios») deja sus datos en la clave de la página
-                   (Pagina.guarda) antes de que arranque la app, en todas las herramientas
-     accesible()   (ya se llama al cargar) aria-live en los resultados, role=alert en los
-                   errores y aria-describedby de cada gráfica hacia los resultados
-   ===================================================================== */
 const Herramienta = (() => {
   const $ = (q) => document.querySelector(q);
   const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -361,10 +339,24 @@ const Herramienta = (() => {
     if (!m) return NaN;
     return +m[1] * (m[2] ? PREFIJOS[m[2]] : unidad ? 1 : base);
   };
+  const UNIDADES = { m: 1, Hz: 1, F: 1, H: 1, A: 1, V: 1, 'Ω': 1, ohm: 1, ohmios: 1, T: 1, W: 1, S: 1, s: 1, C: 1, N: 1, J: 1 };
+  const PREF_UN = { p: 1e-12, n: 1e-9, u: 1e-6, 'µ': 1e-6, 'μ': 1e-6, m: 1e-3, c: 1e-2, k: 1e3, M: 1e6, G: 1e9 };
+  const leeUn = (s) => {
+    const t = String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace(/[−–]/g, '-').replace(/[·x×*]10\^?\(?([+\-]?\d+)\)?/i, 'e$1');
+    const m = t.match(/^([+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?)(ohmios|ohm|Hz|[mFHAVΩTWSsCNJ]|[pnuµμmckMG](?:Hz|[mFHAVΩTWSsCNJ]))$/);
+    if (!m) return undefined;
+    const u = m[2];
+    if (UNIDADES[u] !== undefined) return +m[1];
+    const pre = u[0], r = u.slice(1);
+    if (PREF_UN[pre] === undefined || UNIDADES[r] === undefined) return undefined;
+    if (pre === 'c' && r !== 'm') return undefined;
+    return +m[1] * PREF_UN[pre];
+  };
   const txt = (h) => String(h).replace(/<sup>(.*?)<\/sup>/g, (_, e) => e.replace(/−/g, '⁻').replace(/\d/g, (d) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d])).replace(/<[^>]+>/g, '');
   const marcas = (a, b, n = 6) => {
     const p0 = (b - a) / n, e = 10 ** Math.floor(Math.log10(p0)), paso = [1, 2, 2.5, 5, 10].map((q) => q * e).find((q) => q >= p0) || 10 * e;
-    const out = []; for (let v = Math.ceil(a / paso) * paso; v <= b + paso * 1e-9; v += paso) out.push(Math.abs(v) < paso * 1e-9 ? 0 : v);
+    const out = []; if (!(paso > 0) || !isFinite(paso) || !(b > a)) return out; // paso nulo (desbordamiento) o eje sin rango: nada que marcar
+    for (let k = 0, v = Math.ceil(a / paso) * paso; k <= 200 && v <= b + paso * 1e-9; v = Math.ceil(a / paso) * paso + ++k * paso) out.push(Math.abs(v) < paso * 1e-9 ? 0 : v);
     return out;
   };
   const lienzo = (c) => {
@@ -375,8 +367,6 @@ const Herramienta = (() => {
     const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
     return { g, w, h, c, cambia };
   };
-  // Accesibilidad común: los resultados que cambian al tocar un dato se anuncian con cortesía (aria-live), los mensajes de error
-  // como alerta y cada gráfica se describe con los resultados de al lado (aria-describedby), no solo con su título fijo.
   const accesible = (doc = typeof document !== 'undefined' ? document : null) => {
     if (!doc) return;
     const RES = '#resumen, #res, #resumen-d, #resumen-r, #resumen-c, #resumen-este, #resumen-emp, #resumen-nq, #resumen-conf, #res-masa, #res-dil, #res-mez';
@@ -386,7 +376,58 @@ const Herramienta = (() => {
     if (res) for (const c of doc.querySelectorAll('canvas')) if (!c.hasAttribute('aria-describedby') && !c.closest('#resumen, #res') && !c.hasAttribute('aria-hidden')) c.setAttribute('aria-describedby', res.id);
   };
   accesible();
-  // Enlace que lleva el estado (#d=…, base64 url del JSON guardado): los datos pasan a donde la app los lee al arrancar
+  const nombreArchivo = (s) => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'grafica';
+  const celda = (v) => (typeof v === 'number' ? (Number.isFinite(v) ? String(+v.toPrecision(10)).replace('.', ',') : '') : String(v ?? '').replace(/[\t\r\n]+/g, ' '));
+  const tabla = (cab, filas) => [cab, ...filas].filter(Boolean).map((f) => f.map(celda).join('\t')).join('\n');
+  const color = (nom, otro) => { try { return getComputedStyle(document.documentElement).getPropertyValue(nom).trim() || otro; } catch (e) { return otro; } };
+  const png = (c, o = {}) => new Promise((ok, no) => {
+    if (typeof c === 'string') c = $(c);
+    if (!c || !c.width || !c.height) { no(new Error('la gráfica aún no está dibujada')); return; }
+    const k = c.width / (c.clientWidth || c.width), pad = Math.round(12 * k), tam = Math.round(14 * k);
+    const titulo = o.titulo || $('h1')?.textContent.trim() || '', pie = 'Ciencify · ' + (typeof location !== 'undefined' && /^https?:/.test(location.protocol) ? location.host + location.pathname : 'ciencias gratis y sin registro');
+    const alto = c.height + pad * 2 + tam * 2.4 + (titulo ? tam * 1.6 : 0), z = document.createElement('canvas');
+    z.width = c.width + pad * 2; z.height = Math.round(alto);
+    const g = z.getContext('2d'), fam = getComputedStyle(document.body).fontFamily || 'system-ui, sans-serif';
+    g.fillStyle = color('--panel', '#ffffff'); g.fillRect(0, 0, z.width, z.height);
+    g.textBaseline = 'top'; let y = pad;
+    if (titulo) { g.fillStyle = color('--ink', '#111'); g.font = `600 ${tam}px ${fam}`; g.fillText(titulo, pad, y); y += tam * 1.6; }
+    g.drawImage(c, pad, y); y += c.height + pad * 0.5;
+    g.fillStyle = color('--muted', '#555'); g.font = `${Math.round(tam * 0.85)}px ${fam}`; g.fillText(pie, pad, y);
+    z.toBlob((b) => (b ? ok(b) : no(new Error('el navegador no pudo crear la imagen'))), 'image/png');
+  });
+  const copiaTexto = async (t) => {
+    try { await navigator.clipboard.writeText(t); return true; } catch (e) { /* sin permiso o sin https: se prueba con el método antiguo */ }
+    const a = document.createElement('textarea'); a.value = t; a.setAttribute('readonly', ''); a.setAttribute('aria-hidden', 'true'); a.style.cssText = 'position:fixed;left:-9999px;top:0';
+    document.body.appendChild(a); a.select(); let r = false; try { r = document.execCommand('copy'); } catch (e) { r = false; } a.remove(); return r;
+  };
+  const exportar = (c, o = {}) => {
+    if (typeof c === 'string') c = $(c);
+    if (!c) return null;
+    if (c._exporta) { Object.assign(c._exporta.o, o); return c._exporta.barra; }
+    const barra = document.createElement('div'), aviso = document.createElement('span'), cual = o.etiqueta ? ` de ${o.etiqueta}` : '';
+    barra.className = 'exportar'; barra.setAttribute('role', 'group'); barra.setAttribute('aria-label', 'Exportar' + cual);
+    aviso.className = 'exportar-aviso'; aviso.setAttribute('role', 'status'); aviso.setAttribute('aria-live', 'polite');
+    const di = (t) => { aviso.textContent = t; clearTimeout(di.t); di.t = setTimeout(() => { aviso.textContent = ''; }, 3500); };
+    const boton = (txt, label, fn) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'btn'; b.textContent = txt; b.setAttribute('aria-label', label); b.addEventListener('click', fn); barra.appendChild(b); return b; };
+    boton('Descargar PNG', 'Descargar la gráfica' + cual + ' como imagen PNG', async () => {
+      try {
+        const b = await png(c, c._exporta.o), a = document.createElement('a');
+        a.href = URL.createObjectURL(b); a.download = nombreArchivo(c._exporta.o.nombre || c.id || 'grafica') + '.png'; document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 2000); di('Imagen descargada');
+      } catch (e) { di('No se pudo crear la imagen: ' + e.message); }
+    });
+    if (o.datos) boton('Copiar datos', 'Copiar los datos' + cual + ' al portapapeles', async () => {
+      let d; try { d = c._exporta.o.datos; d = typeof d === 'function' ? d() : d; } catch (e) { d = null; }
+      const t = typeof d === 'string' ? d : d && Array.isArray(d.filas) ? tabla(d.cab, d.filas) : '';
+      if (!t) { di('Todavía no hay datos que copiar'); return; }
+      di((await copiaTexto(t)) ? 'Datos copiados: pégalos en una hoja de cálculo' : 'No se pudo copiar: el navegador no lo permite');
+    });
+    barra.appendChild(aviso);
+    c._exporta = { o, barra };
+    const p = c.parentElement, ref = p && p.children.length === 1 && !p.matches('.card, .layout, .wrap, main, body') ? p : c;
+    ref.insertAdjacentElement('afterend', barra);
+    return barra;
+  };
   if (typeof location !== 'undefined' && typeof Pagina !== 'undefined' && Pagina.guarda) {
     const m = /[#&]d=([A-Za-z0-9_-]+)/.exec(location.hash);
     if (m) {
@@ -394,20 +435,10 @@ const Herramienta = (() => {
       try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* file:// */ }
     }
   }
-  return { $, esc, copia, vacio, leeSI, txt, marcas, lienzo, accesible };
+  const enlaceA = (carpeta, estado) => `../${carpeta}/#d=${btoa(unescape(encodeURIComponent(JSON.stringify(estado)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')}`;
+  return { $, esc, copia, vacio, leeSI, leeUn, txt, marcas, lienzo, accesible, exportar, png, tabla, nombreArchivo, enlaceA };
 })();
 
-/* =====================================================================
-   Fórmulas en MathML a partir de una sintaxis sencilla (sin DOM salvo
-   Mates.pinta). En los textos, lo que va entre $…$ es una fórmula:
-     a/b            fracción (los paréntesis de fuera se quitan)
-     x^2, e^{−bt/m} exponente; v_0x, E_{c,máx} subíndice
-     √(…), ∛(…)     raíz
-     "m/s"          texto tal cual (unidades, palabras); \{ \} llaves visibles
-     sen cos tg ln log exp máx mín   funciones; binom(n, k)
-   Una palabra que no es una función se lee letra a letra (mgh = m·g·h).
-   También acepta <sup>, <sub> y las etiquetas que devuelve f().
-   ===================================================================== */
 const Mates = (() => {
   const FUNC = new Set(['sen', 'cos', 'tg', 'tan', 'ln', 'log', 'exp', 'arcsen', 'arccos', 'arctg', 'máx', 'mín', 'lím', 'senh', 'cosh', 'tgh']);
   const OPS = '+-−=·×÷⇒⇔→←↔≈≠<>≤≥±∓,;:!∝∈∼≡∑∏∫∂∇⊥∥';
@@ -423,7 +454,6 @@ const Mates = (() => {
       const c = s[i], resto = s.slice(i);
       let m;
       if (/\s/.test(c)) { sp = true; i++; continue; }
-      // \{ y \} son llaves que se ven: ℒ\{f(t)\}
       if (c === '\\' && (s[i + 1] === '{' || s[i + 1] === '}')) { out.push({ t: 's', v: c + s[i + 1], sp }); i += 2; sp = false; continue; }
       if ((m = resto.match(/^\d+(?:[.,]\d+)?/))) out.push({ t: 'n', v: m[0].replace('.', ','), sp });
       else if (c === '"') { const j = s.indexOf('"', i + 1); m = [s.slice(i, j < 0 ? s.length : j + 1)]; out.push({ t: 'x', v: m[0].replace(/"/g, ''), sp }); }
@@ -434,7 +464,6 @@ const Mates = (() => {
     return out;
   }
 
-  // nodo: { m: MathML, dentro: MathML sin los paréntesis de fuera (o null) }
   const nodo = (m, dentro = null) => ({ m, dentro });
   const fila = (xs) => (xs.length === 1 ? xs[0] : `<mrow>${xs.join('')}</mrow>`);
   const letra = (v) => (/^\d+(,\d+)?$/.test(v) ? `<mn>${v}</mn>` : [...v].length === 1 ? `<mi>${escH(v)}</mi>` : `<mi mathvariant="normal">${escH(v)}</mi>`);
@@ -447,11 +476,9 @@ const Mates = (() => {
       let prevOp = true;
       while (p < tk.length && !(cierre && es(cierre))) {
         const k = ver();
-        // ∫ con límites lleva sus subíndices: ∫_a^b
         if (k.t === 's' && OPS.includes(k.v) && !(k.v === '∫' && tk[p + 1] && tk[p + 1].t === 's' && (tk[p + 1].v === '_' || tk[p + 1].v === '^'))) {
           p++;
           const v = k.v === '-' ? '−' : k.v;
-          // un signo detrás de otro operador (o al principio) es de número: = −19,28
           const signo = prevOp && (v === '−' || v === '+' || v === '±');
           xs.push(v === '!' ? '<mo lspace="0">!</mo>' : v === ',' || v === ';' ? `<mo separator="true">${v}</mo>` : signo ? `<mo form="prefix" lspace="0" rspace="0.05em">${v}</mo>` : `<mo>${escH(v)}</mo>`);
           prevOp = true; continue;
@@ -470,7 +497,6 @@ const Mates = (() => {
       if (es('{')) { p++; const xs = secuencia('}'); p++; return fila(xs); }
       if (es('-') || es('−')) { p++; const a = argumento(); return `<mrow><mo>−</mo>${a}</mrow>`; }
       if (es('(')) { const a = atomo(); return a.m; }
-      // una racha de letras y números pegados: 0x, máx, 12
       const k = ver();
       if (!k) return '<mrow></mrow>';
       if (k.t === 's') { p++; return `<mo>${escH(k.v)}</mo>`; }
@@ -495,15 +521,11 @@ const Mates = (() => {
       if (k.t === 'n') return nodo(`<mn>${k.v}</mn>`);
       if (k.t === 'x') return nodo(`${k.sp && p > 1 ? '<mspace width="0.3em"></mspace>' : ''}<mtext>${escH(k.v)}</mtext>`);
       if (k.t === 'w') {
-        // binom(n, k): número combinatorio
         if (k.v === 'binom' && es('(')) { p++; const a = secuencia(','); p++; const b = secuencia(')'); p++; return nodo(`<mrow><mo>(</mo><mfrac linethickness="0">${fila(a)}${fila(b)}</mfrac><mo>)</mo></mrow>`); }
         if (FUNC.has(k.v)) { let m = `<mi mathvariant="normal">${k.v}</mi>`; if (es('^')) { p++; m = `<msup>${m}${argumento()}</msup>`; } return nodo(`<mspace width="0.17em"></mspace>${m}<mo>&#x2061;</mo><mspace width="0.12em"></mspace>`); }
-        // diferencial suelto (dx, dt, dS, dθ…) detrás de algo: con un poco de aire, como en «f(x) dx»
         if (k.sp && p > 1 && /^d[a-zA-Zθφρ]$/.test(k.v)) return nodo(`<mspace width="0.17em"></mspace><mi>d</mi><mi>${escH(k.v[1])}</mi>`);
         const ls = [...k.v.replace(/[′″]+$/, '')], pr = (k.v.match(/[′″]+$/) || [''])[0];
-        // las marcas combinadas (î, ĵ con acento) van con su letra
         const grupos = []; for (const c of ls) { if (/\p{M}/u.test(c) && grupos.length) grupos[grupos.length - 1] += c; else grupos.push(c); }
-        // las mayúsculas griegas (Δ, Σ, Φ, Ω) van rectas, como en los libros
         return nodo(fila(grupos.map((c) => (c === '∞' ? '<mi>∞</mi>' : /^[Α-Ω]$/.test(c) ? `<mi mathvariant="normal">${c}</mi>` : `<mi>${escH(c)}</mi>`)).concat(pr ? [`<mo lspace="0" rspace="0">${pr}</mo>`] : [])));
       }
       const v = k.v;
@@ -519,9 +541,7 @@ const Mates = (() => {
     return fila(secuencia(null));
   }
 
-  // la fuente se queda en data-src para poder copiarla (como texto o LaTeX)
   const mathml = (src) => `<math data-src="${escH(src).replace(/"/g, '&quot;')}"><mstyle displaystyle="true">${analiza(tokens(src))}</mstyle></math>`;
-  // parte una fórmula antes de cada = o ⇒ que no esté dentro de paréntesis, llaves o comillas
   function trozos(src) {
     const out = [];
     let ini = 0, nivel = 0, comillas = false;
@@ -535,12 +555,9 @@ const Mates = (() => {
     }
     return out.concat(src.slice(ini)).map((x) => x.trim()).filter(Boolean);
   }
-  // sustituye cada $…$ de un texto HTML por su MathML; con partir, cada igualdad va en su propio
-  // <math> para que una cadena larga (a = b = c) baje de línea en el móvil en vez de salirse
   const html = (s, partir = false) => String(s ?? '').replace(/\$([^$]+)\$/g, (_, x) => (partir
     ? trozos(x).map((t, i) => (i ? mathml(t).replace(/^(<math[^>]*><mstyle[^>]*>(?:<mrow>)?)<mo>/, '$1<mo lspace="0">') : mathml(t))).join(' ')
     : mathml(x)));
-  // convierte en el documento los elementos con class="m" (fórmulas escritas en el HTML)
   function pinta(raiz) { if (typeof document === 'undefined') return; for (const el of (raiz || document).querySelectorAll('.m:not([data-m])')) { el.dataset.m = '1'; el.innerHTML = html(el.innerHTML.includes('$') ? el.innerHTML : `$${el.innerHTML}$`); } }
   if (typeof document !== 'undefined') {
     const st = document.createElement('style');
@@ -551,20 +568,6 @@ const Mates = (() => {
   return { html, mathml, pinta, tokens };
 })();
 
-/* =====================================================================
-   Método de las imágenes (sin DOM): una carga puntual q frente a un plano
-   conductor a tierra, frente a una esfera conductora (a tierra, aislada con
-   una carga Q o a un potencial V₀) o dentro de una cavidad esférica.
-   Da las cargas imagen y su posición, la fuerza sobre q, la carga inducida
-   y su densidad superficial σ, el trabajo para llevar q al infinito (plano y
-   esfera a tierra) y el potencial y el campo en un punto. Desarrollo en la
-   forma simbólica (q²/16πε₀d²) y con números. Unidades del SI.
-     resolver(sc)  → { modo, cargas, F, σ(…), campo(z, ρ), pasos, … }
-     ejemplos      [{ clave, nombre, sc }]
-   Eje z: el plano es z = 0 con la carga en z = d; la esfera (o la cavidad)
-   tiene el centro en z = 0 y la carga en z = a.
-   La interfaz está en app.js y la prueba en pruebas/herramientas/imagenes.js.
-   ===================================================================== */
 const Imagenes = (() => {
   const EPS0 = 8.854187817e-12, K = 1 / (4 * Math.PI * EPS0);
   const f = (x, d = 4) => {
@@ -574,44 +577,151 @@ const Imagenes = (() => {
     const s = a >= 1e5 || a < 1e-3 ? x.toExponential(d - 1).replace(/\.?0+e/, 'e').replace('e', '·10^').replace(/\^([+-]?)(\d+)/, (_, sg, e) => `<sup>${sg === '-' ? '−' : ''}${+e}</sup>`) : String(+x.toPrecision(d));
     return s.replace('.', ',').replace('-', '−');
   };
-  // con prefijo del SI: 3,33·10⁻⁹ C → 3,333 nC
   const PREF = [[1e9, 'G'], [1e6, 'M'], [1e3, 'k'], [1, ''], [1e-3, 'm'], [1e-6, 'μ'], [1e-9, 'n'], [1e-12, 'p']];
   const u = (x, unidad, d = 4) => {
     if (!isFinite(x) || Math.abs(x) < 1e-18) return `${f(x, d)} ${unidad}`;
     const a = Math.abs(x), p = PREF.find(([v]) => a >= v * 0.9999999) || PREF[PREF.length - 1];
     return `${String(+(x / p[0]).toPrecision(d)).replace('.', ',').replace('-', '−')} ${p[1]}${unidad}`;
   };
-  // para dentro de una fórmula: 3,333 nC → 3,333 "nC"
   const uq = (x, unidad, d = 4) => u(x, unidad, d).replace(/ (.+)$/, ' "$1"');
-  const leeNum = (s) => +String(s).trim().replace(/\s/g, '').replace(',', '.').replace(/[·x×*]10\^?([+\-−]?\d+)/i, 'e$1').replace('−', '-');
+  const leeNum0 = (s) => +String(s).trim().replace(/\s/g, '').replace(',', '.').replace(/[·x×*]10\^?([+\-−]?\d+)/i, 'e$1').replace('−', '-');
+  const leeNum = (s) => { const u = typeof Herramienta !== 'undefined' ? Herramienta.leeUn(s) : undefined; return u !== undefined ? u : leeNum0(s); }; // admite «4 mm», «2,4 GHz», «10 pF»
   const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
-  const lee = (sc, k, nom, { opcional = false, signo = false, cero = false, def = null } = {}) => {
+  const lee = (sc, k, nom, { opcional = false, signo = false, cero = false, def = null, entero = false } = {}) => {
     if (vacio(sc[k])) { if (opcional) return def; throw new Error(`Falta ${nom}`); }
     const v = leeNum(sc[k]);
     if (!isFinite(v)) throw new Error(`${nom[0].toUpperCase() + nom.slice(1)} debe ser un número`);
+    if (entero && !Number.isInteger(v)) throw new Error(`${nom[0].toUpperCase() + nom.slice(1)} debe ser un número entero`);
     if (!signo && (cero ? v < 0 : v <= 0)) throw new Error(`${nom[0].toUpperCase() + nom.slice(1)} debe ser ${cero ? 'positivo o cero' : 'mayor que 0'}`);
     if (signo && !cero && v === 0) throw new Error(`${nom[0].toUpperCase() + nom.slice(1)} no puede ser 0`);
     return v;
   };
 
-  // cada modo: campos [clave, nombre, unidad, factor al SI, opciones de lee] y qué se pide del punto
   const Q = ['q', 'Carga q', 'nC', 1e-9, { signo: true }];
   const MODOS = {
     plano: { nombre: 'Plano conductor a tierra', campos: [Q, ['d', 'Distancia de q al plano d', 'cm', 1e-2, {}]], punto: [['rho', 'ρ, distancia al eje', 'cm', 1e-2], ['z', 'z, altura sobre el plano', 'cm', 1e-2]] },
     'esfera-tierra': { nombre: 'Esfera conductora a tierra', campos: [Q, ['a', 'Distancia de q al centro a', 'cm', 1e-2, {}], ['R', 'Radio de la esfera R', 'cm', 1e-2, {}]], punto: [['r', 'r, distancia al centro', 'cm', 1e-2], ['th', 'θ, ángulo con el eje de q', '°', Math.PI / 180]] },
     'esfera-aislada': { nombre: 'Esfera aislada con carga Q', campos: [Q, ['a', 'Distancia de q al centro a', 'cm', 1e-2, {}], ['R', 'Radio de la esfera R', 'cm', 1e-2, {}], ['Q', 'Carga total de la esfera Q', 'nC', 1e-9, { opcional: true, signo: true, cero: true, def: 0 }]], punto: [['r', 'r, distancia al centro', 'cm', 1e-2], ['th', 'θ, ángulo con el eje de q', '°', Math.PI / 180]] },
     'esfera-potencial': { nombre: 'Esfera a un potencial V₀', campos: [Q, ['a', 'Distancia de q al centro a', 'cm', 1e-2, {}], ['R', 'Radio de la esfera R', 'cm', 1e-2, {}], ['V0', 'Potencial de la esfera V₀', 'V', 1, { opcional: true, signo: true, cero: true, def: 0 }]], punto: [['r', 'r, distancia al centro', 'cm', 1e-2], ['th', 'θ, ángulo con el eje de q', '°', Math.PI / 180]] },
+    cuna: { plana: true, nombre: 'Dos planos en ángulo (cuña π/n)', campos: [['n', 'Número n (el ángulo de la cuña es π/n)', '', 1, { entero: true }], Q, ['r0', 'Distancia de q a la arista r₀', 'cm', 1e-2, {}], ['ph', 'Ángulo de q con un plano φ₀', '°', Math.PI / 180, {}]], punto: [['rp', 'r, distancia a la arista', 'cm', 1e-2], ['php', 'φ, ángulo con el primer plano', '°', 1]] },
+    paralelos: { plana: true, nombre: 'Dos planos paralelos', campos: [Q, ['L', 'Distancia entre los planos L', 'cm', 1e-2, {}], ['d', 'Distancia de q al primer plano d', 'cm', 1e-2, {}]], punto: [['rho', 'ρ, distancia al eje', 'cm', 1e-2], ['z', 'z, altura sobre el primer plano', 'cm', 1e-2]] },
+    varias: { plana: true, nombre: 'Varias cargas frente a un plano', campos: [['q', 'Carga q₁', 'nC', 1e-9, { signo: true }], ['x1', 'x₁', 'cm', 1e-2, { signo: true, cero: true }], ['z1', 'z₁ (altura)', 'cm', 1e-2, {}], ['q2', 'Carga q₂ (opcional)', 'nC', 1e-9, { opcional: true, signo: true }], ['x2', 'x₂', 'cm', 1e-2, { opcional: true, signo: true, cero: true }], ['z2', 'z₂ (altura)', 'cm', 1e-2, { opcional: true }], ['q3', 'Carga q₃ (opcional)', 'nC', 1e-9, { opcional: true, signo: true }], ['x3', 'x₃', 'cm', 1e-2, { opcional: true, signo: true, cero: true }], ['z3', 'z₃ (altura)', 'cm', 1e-2, { opcional: true }]], punto: [] },
+    dipolo: { plana: true, nombre: 'Dipolo frente a un plano', campos: [['p', 'Momento dipolar p', 'nC·cm', 1e-11, {}], ['d', 'Distancia del dipolo al plano d', 'cm', 1e-2, {}], ['th', 'Ángulo de p con la normal θ', '°', Math.PI / 180, { signo: true, cero: true }]], punto: [] },
     cavidad: { nombre: 'Carga dentro de una cavidad esférica', campos: [Q, ['a', 'Distancia de q al centro a', 'cm', 1e-2, {}], ['R', 'Radio de la cavidad R', 'cm', 1e-2, {}]], punto: [['r', 'r, distancia al centro', 'cm', 1e-2], ['th', 'θ, ángulo con el eje de q', '°', Math.PI / 180]] },
   };
 
-  // potencial y campo de un conjunto de cargas puntuales sobre el eje z, en el punto (z, ρ); ρ puede ser negativo
   function campo(cargas, z, rho) {
     let V = 0, Ez = 0, Er = 0;
     for (const c of cargas) { const dz = z - c.z, r2 = dz * dz + rho * rho, r = Math.sqrt(r2); V += (K * c.q) / r; Ez += (K * c.q * dz) / (r2 * r); Er += (K * c.q * rho) / (r2 * r); }
     return { V, Ez, Er, E: Math.hypot(Ez, Er) };
   }
 
+  function trigamma(x) {
+    let t = 0; while (x < 12) { t += 1 / (x * x); x += 1; }
+    const y = 1 / (x * x);
+    return t + 1 / x + y / 2 + (y / x) * (1 / 6 - y * (1 / 30 - y * (1 / 42 - y / 30)));
+  }
+  function campoXZ(cargas, x, z) {
+    let V = 0, Ex = 0, Ez = 0;
+    for (const c of cargas) { const dx = x - c.x, dz = z - c.z, r2 = dx * dx + dz * dz, r = Math.sqrt(r2); if (r < 1e-15) continue; V += (K * c.q) / r; Ex += (K * c.q * dx) / (r2 * r); Ez += (K * c.q * dz) / (r2 * r); }
+    return { V, Ex, Ez, E: Math.hypot(Ex, Ez) };
+  }
+  const fuerzaDe = (i, lista) => { let Fx = 0, Fz = 0; const a = lista[i]; for (let j = 0; j < lista.length; j++) { if (j === i) continue; const b = lista[j], dx = a.x - b.x, dz = a.z - b.z, r = Math.hypot(dx, dz); Fx += (K * a.q * b.q * dx) / r ** 3; Fz += (K * a.q * b.q * dz) / r ** 3; } return [Fx, Fz]; };
+  const grados = (x) => (x * 180) / Math.PI;
+
+  function resolverPlana(sc, modo) {
+    const M = MODOS[modo], p = {}, cm = (x) => f(x * 100), pasos = [];
+    for (const [k, nom, , fac, op] of M.campos) { const v = lee(sc, k, nom.charAt(0).toLowerCase() + nom.slice(1), op || {}); p[k] = v === null ? null : v * fac; }
+    const cajas = [], R = { modo, plana: true, p, esfera: false, cav: false, V0: null, q2: 0, W: null, pt: null };
+    let cargas = [], reales = [], lim = 1;
+    if (modo === 'cuna') {
+      const n = p.n, alfa = Math.PI / n;
+      if (n < 1 || n > 12) throw new Error('n tiene que estar entre 1 y 12 (ángulo de la cuña π/n)');
+      if (!(p.ph > 1e-9 && p.ph < alfa - 1e-9)) throw new Error(`φ₀ tiene que estar dentro de la cuña: entre 0° y ${f(grados(alfa))}°`);
+      for (let k = 0; k < n; k++) for (const sg of [1, -1]) {
+        const ang = 2 * k * alfa + sg * p.ph;
+        if (k === 0 && sg === 1) cargas.push({ q: p.q, x: p.r0 * Math.cos(ang), z: p.r0 * Math.sin(ang), real: true, nom: 'q' });
+        else cargas.push({ q: sg * p.q, x: p.r0 * Math.cos(ang), z: p.r0 * Math.sin(ang), nom: `q′${cargas.length}`, ang: grados(ang) });
+      }
+      R.alfa = alfa; R.n = n; R.pos = p.r0; lim = p.r0;
+      pasos.push({ t: 'Planteamiento', html: `Dos planos a tierra que forman un ángulo $α = π/n = ${f(grados(alfa))}°$ ($n = ${n}$). Si $α = π/n$ con $n$ entero, las imágenes caen todas fuera de la cuña y bastan $2n − 1 = ${2 * n - 1}$ cargas imagen, alternando signo: $+q$ en $φ = 2kα + φ_0$ y $−q$ en $φ = 2kα − φ_0$, con $k = 0, …, n − 1$ y todas a la distancia $r_0$ de la arista.` });
+      pasos.push({ t: 'Cargas imagen', html: cargas.filter((c) => !c.real).map((c) => `$${c.q > 0 ? '+' : '−'}q$ en $φ = ${f(c.ang)}°$`).join('; ') + `. Con ${n} cargas positivas y ${n} negativas la suma de todas es cero, y la cuña queda a V = 0 en sus dos planos.` });
+    } else if (modo === 'paralelos') {
+      const { q, L, d } = p;
+      if (!(d < L)) throw new Error('La carga tiene que estar entre los planos (d < L)');
+      for (let k = -2; k <= 2; k++) { if (k) cargas.push({ q, x: 0, z: 2 * k * L + d, nom: `+q (k = ${k})` }); cargas.push({ q: -q, x: 0, z: 2 * k * L - d, nom: `−q (k = ${k})` }); }
+      cargas.unshift({ q, x: 0, z: d, real: true, nom: 'q' });
+      cargas = cargas.sort((a, b) => (b.real ? 1 : 0) - (a.real ? 1 : 0));
+      const t = d / L, Fz = ((K * q * q) / (4 * L * L)) * (trigamma(1 - t) - trigamma(t));
+      R.imagenes = cargas.filter((c) => !c.real); R.Fz = Fz; R.Qa = -q * (1 - t); R.Qb = -q * t; R.L = L; R.pos = d; lim = L;
+      const Vsuma = (rho, z, N) => { let V = 0; for (let k = -N; k <= N; k++) V += K * q * (1 / Math.hypot(rho, z - 2 * k * L - d) - 1 / Math.hypot(rho, z + d - 2 * k * L)); return V; };
+      R.Vsuma = Vsuma;
+      pasos.push({ t: 'Planteamiento', html: `Dos planos a tierra, $z = 0$ y $z = L = ${cm(L)} "cm"$, con $q$ a $d = ${cm(d)} "cm"$ del primero. Cada plano refleja las cargas del otro, así que hay imágenes infinitas: $−q$ en $z = 2kL − d$ y $+q$ en $z = 2kL + d$, con $k$ entero (la real es $k = 0$ con signo +).` });
+      pasos.push({ t: 'Fuerza sobre q', html: `Las imágenes $+q$ se anulan por parejas ($k$ y $−k$) y solo actúan las $−q$: $F = {q^2}/{16π ε_0} ∑_k {sg(kL − d)}/{(kL − d)^2} = {q^2}/{16π ε_0 L^2}[ψ_1(1 − d/L) − ψ_1(d/L)] = ${f(Fz)} "N"$ (con $ψ_1(x) = ∑_{k≥0} 1/(k + x)^2$). ` + (Math.abs(Fz) < 1e-15 * Math.abs(K * q * q / (L * L)) ? 'Está justo en el medio: las fuerzas se compensan y es nula.' : `Va hacia el plano ${Fz > 0 ? 'de arriba' : 'de abajo'}, el más cercano.`) });
+      pasos.push({ t: 'Carga inducida en cada plano', html: `Por la fórmula de Green: $Q_0 = −q(1 − d/L) = ${f(R.Qa)} "C"$ en el plano $z = 0$ y $Q_L = −q d/L = ${f(R.Qb)} "C"$ en el plano $z = L$. Suman $−q$.` });
+      cajas.push(['Fuerza sobre q', u(Math.abs(Fz), 'N'), Fz === 0 ? 'nula: está en el medio' : Fz > 0 ? 'hacia el plano de arriba' : 'hacia el plano de abajo'], ['Carga inducida en z = 0', u(R.Qa, 'C'), '−q (1 − d/L)'], ['Carga inducida en z = L', u(R.Qb, 'C'), '−q d/L'], ['Imágenes', 'infinitas', 'la suma converge como 1/k²']);
+      R.Fmod = Math.abs(Fz); R.atractiva = true; R.Qe = R.Qa + R.Qb;
+    } else if (modo === 'varias') {
+      for (const [i, [kq, kx, kz]] of [['q', 'x1', 'z1'], ['q2', 'x2', 'z2'], ['q3', 'x3', 'z3']].entries()) {
+        if (i && p[kq] === null) continue;
+        if (p[kx] === null || p[kz] === null) throw new Error(`Falta la posición de la carga ${i + 1}`);
+        cargas.push({ q: i ? p[kq] : p.q, x: p[kx], z: p[kz], real: true, nom: `q${i + 1}` });
+      }
+      reales = [...cargas];
+      for (const c of reales) cargas.push({ q: -c.q, x: c.x, z: -c.z, nom: `${c.nom}′` });
+      const n = reales.length, todas = cargas;
+      R.imagenes = todas.filter((c) => !c.real); R.pos = reales[0].z;
+      const F = reales.map((c, i) => fuerzaDe(i, todas)); R.F = F;
+      const Ftot = F.reduce((a, b) => [a[0] + b[0], a[1] + b[1]], [0, 0]);
+      let Ue = 0; for (let i = 0; i < n; i++) { for (let j = i + 1; j < n; j++) Ue += (K * reales[i].q * reales[j].q) / Math.hypot(reales[i].x - reales[j].x, reales[i].z - reales[j].z); for (let j = 0; j < n; j++) Ue -= (0.5 * K * reales[i].q * reales[j].q) / Math.hypot(reales[i].x - reales[j].x, reales[i].z + reales[j].z); }
+      R.W = Ue; R.Ftot = Ftot; R.Fz = F[0][1]; R.Fx = F[0][0]; R.Fmod = Math.hypot(...F[0]); R.atractiva = F[0][1] < 0; R.Qe = -reales.reduce((s2, c) => s2 + c.q, 0); R.n = n;
+      lim = Math.max(...reales.map((c) => Math.max(Math.abs(c.x), c.z)));
+      pasos.push({ t: 'Planteamiento', html: `El plano $z = 0$ está a tierra. Cada carga $q_i$ en $(x_i, z_i)$ tiene su imagen $−q_i$ en $(x_i, −z_i)$ y el campo en $z > 0$ es el de las ${2 * n} cargas.` });
+      pasos.push({ t: 'Fuerza sobre cada carga', html: reales.map((c, i) => `Sobre $q_${i + 1}$ actúan las otras cargas reales y todas las imágenes (también la suya): $F_${i + 1} = (${f(F[i][0])}, ${f(F[i][1])}) "N"$, de módulo $${f(Math.hypot(...F[i]))} "N"$`).join('; ') + '.' });
+      pasos.push({ t: 'Fuerza total y energía', html: `Fuerza sobre el conjunto de cargas reales: $(${f(Ftot[0])}, ${f(Ftot[1])}) "N"$. La energía del sistema es la mitad de la de las cargas con sus imágenes en la interacción con el plano: $U = ∑_{i<j} {q_i q_j}/{4π ε_0 r_{ij}} − ½ ∑_{i,j} {q_i q_j}/{4π ε_0 r_{ij′}} = ${f(Ue)} "J"$. Carga inducida en el plano: $Q = −∑ q_i = ${f(R.Qe)} "C"$.` });
+      cajas.push(...reales.map((c, i) => [`Fuerza sobre ${c.nom}`, u(Math.hypot(...F[i]), 'N'), `F = (${f(F[i][0])}; ${f(F[i][1])}) N`]), ['Fuerza total', u(Math.hypot(...Ftot), 'N'), `(${f(Ftot[0])}; ${f(Ftot[1])}) N`], ['Energía del sistema', u(Ue, 'J'), 'U con el plano a tierra'], ['Carga inducida total', u(R.Qe, 'C'), '−Σ qᵢ']);
+    } else {
+      const { p: pm, d, th } = p, c2 = Math.cos(th) ** 2, px = pm * Math.sin(th), pz = pm * Math.cos(th);
+      const Fz = (-3 * pm * pm * (1 + c2)) / (64 * Math.PI * EPS0 * d ** 4), tau = (-pm * pm * Math.sin(th) * Math.cos(th)) / (32 * Math.PI * EPS0 * d ** 3), U = (-pm * pm * (1 + c2)) / (64 * Math.PI * EPS0 * d ** 3);
+      const l = 0.5 * d, dx = (l / 2) * Math.sin(th), dz = (l / 2) * Math.cos(th);
+      cargas = [{ q: 1e-9, x: dx, z: d + dz, real: true, nom: '+' }, { q: -1e-9, x: -dx, z: d - dz, real: true, nom: '−' }, { q: -1e-9, x: dx, z: -d - dz, nom: '−′' }, { q: 1e-9, x: -dx, z: -d + dz, nom: '+′' }];
+      R.imagenes = cargas.filter((c) => !c.real); R.Fz = Fz; R.Fmod = Math.abs(Fz); R.atractiva = true; R.tau = tau; R.U = U; R.W = U; R.pos = d; R.px = px; R.pz = pz; R.Qe = 0; lim = d;
+      pasos.push({ t: 'Planteamiento', html: `Un dipolo $p = ${f(pm)} "C·m"$ a $d = ${cm(d)} "cm"$ del plano a tierra, con $p$ formando $θ = ${f(grados(th))}°$ con la normal. Su imagen es otro dipolo en $z = −d$ con la componente normal igual y la paralela invertida: $p′ = (−p_x, p_z) = (${f(-px)}, ${f(pz)}) "C·m"$.` });
+      pasos.push({ t: 'Energía', html: `La interacción dipolo-dipolo a la distancia $2d$ es $U_{int} = {p·p′ − 3(p·n)(p′·n)}/{4π ε_0 (2d)^3} = −{p^2 (1 + cos^2 θ)}/{32π ε_0 d^3}$, y la energía real es la mitad (la imagen no existe): $U = −{p^2 (1 + cos^2 θ)}/{64π ε_0 d^3} = ${f(U)} "J"$.` });
+      pasos.push({ t: 'Fuerza y par', html: `$F_z = −{∂U}/{∂d} = −{3 p^2 (1 + cos^2 θ)}/{64π ε_0 d^4} = ${f(Fz)} "N"$ (atractiva: el dipolo es atraído hacia el plano). El par sobre $p$ es $τ_y = −{∂U}/{∂θ} = −{p^2 sen θ cos θ}/{32π ε_0 d^3} = ${f(tau)} "N·m"$` + (Math.abs(tau) < 1e-30 ? ': nulo (θ = 0° o 90°).' : tau < 0 ? ': tiende a poner el dipolo perpendicular al plano (reduce θ).' : ': tiende a poner el dipolo perpendicular al plano (aumenta |θ| hacia 180°).') });
+      cajas.push(['Fuerza sobre el dipolo', u(Math.abs(Fz), 'N'), 'atractiva, hacia el plano'], ['Par sobre el dipolo', u(tau, 'N·m'), 'τ = −∂U/∂θ'], ['Energía', u(U, 'J'), 'interacción con el plano'], ['Dipolo imagen', `(${f(-px)}; ${f(pz)}) C·m`, 'paralela invertida, normal igual']);
+    }
+    if (modo === 'cuna') {
+      const real = cargas[0], F = fuerzaDe(0, cargas), ca = Math.cos(p.ph), sa = Math.sin(p.ph);
+      R.imagenes = cargas.filter((c) => !c.real); R.F = F; R.Fx = F[0]; R.Fz = F[1]; R.Fmod = Math.hypot(...F); R.Fr = F[0] * ca + F[1] * sa; R.Fphi = -F[0] * sa + F[1] * ca; R.Qe = -p.q; R.atractiva = R.Fr < 0 || R.Fmod > 0;
+      pasos.push({ t: 'Fuerza sobre q', html: `La fuerza es la suma de las de las ${2 * R.n - 1} imágenes: $F = ∑ {q q_i′}/{4π ε_0 r_i^2}$ (vector). Sale $F_r = ${f(R.Fr)} "N"$ (radial, desde la arista) y $F_φ = ${f(R.Fphi)} "N"$ (tangencial), de módulo $${f(R.Fmod)} "N"$.` });
+      cajas.push(['Cargas imagen', `${2 * R.n - 1}`, `n = ${R.n}, α = ${f(grados(R.alfa))}°`], ['Fuerza sobre q', u(R.Fmod, 'N'), `F<sub>r</sub> = ${u(R.Fr, 'N', 3)}, F<sub>φ</sub> = ${u(R.Fphi, 'N', 3)}`], ['Carga inducida total', u(-p.q, 'C'), 'igual y opuesta a q']);
+    }
+    const [k1, k2] = M.punto.map((x) => x[0]);
+    if (k1 && (!vacio(sc[k1]) || !vacio(sc[k2]))) {
+      if (vacio(sc[k1]) || vacio(sc[k2])) throw new Error('Rellena las dos coordenadas del punto, o déjalas vacías');
+      const a1 = leeNum(sc[k1]), a2 = leeNum(sc[k2]);
+      if (!isFinite(a1) || !isFinite(a2)) throw new Error('Las coordenadas del punto deben ser números');
+      if (modo === 'cuna') {
+        const r = a1 * 1e-2, ph = (a2 * Math.PI) / 180;
+        if (r < 0) throw new Error('La distancia r del punto no puede ser negativa');
+        if (!(ph >= 0 && ph <= R.alfa + 1e-9)) throw new Error(`El punto tiene que estar dentro de la cuña (φ entre 0° y ${f(grados(R.alfa))}°)`);
+        const c = campoXZ(cargas, r * Math.cos(ph), r * Math.sin(ph)); R.pt = { x: r * Math.cos(ph), z: r * Math.sin(ph), ...c, etiqueta: `r = ${cm(r)}, φ = ${f(a2)}°` };
+      } else {
+        const rho = a1 * 1e-2, z = a2 * 1e-2;
+        if (!(z >= 0 && z <= p.L + 1e-12)) throw new Error('El punto tiene que estar entre los planos (0 ≤ z ≤ L)');
+        const N = 20000, h = 1e-6 * p.L, V = R.Vsuma(rho, z, N), Ez = -(R.Vsuma(rho, z + h, N) - R.Vsuma(rho, z - h, N)) / (2 * h), Er = -(R.Vsuma(rho + h, z, N) - R.Vsuma(Math.max(rho - h, 0), z, N)) / (rho > h ? 2 * h : h + rho);
+        R.pt = { x: rho, z, V, Ex: Er, Ez, E: Math.hypot(Er, Ez), etiqueta: `ρ = ${cm(rho)}, z = ${cm(z)}` };
+      }
+      pasos.push({ t: 'Potencial y campo en el punto', html: `Sumando la carga y todas sus imágenes: $V = ${f(R.pt.V)} "V"$, $E_x = ${f(R.pt.Ex)} "V/m"$, $E_z = ${f(R.pt.Ez)} "V/m"$, $|E| = ${f(R.pt.E)} "V/m"$.` });
+      cajas.push(['V en el punto', u(R.pt.V, 'V'), R.pt.etiqueta], ['|E| en el punto', u(R.pt.E, 'V/m'), `E<sub>x</sub> = ${u(R.pt.Ex, 'V/m', 3)}, E<sub>z</sub> = ${u(R.pt.Ez, 'V/m', 3)}`]);
+    }
+    Object.assign(R, { cargas, cajas, pasos, lim, q: cargas[0]?.q ?? 0, Fz: R.Fz ?? 0 });
+    return R;
+  }
+
   function resolver(sc) {
+    if (MODOS[sc.modo] && MODOS[sc.modo].plana) return resolverPlana(sc, sc.modo);
     const modo = MODOS[sc.modo] ? sc.modo : 'plano', M = MODOS[modo], esfera = modo !== 'plano', cav = modo === 'cavidad';
     const p = {};
     for (const [k, nom, , fac, op] of M.campos) { const v = lee(sc, k, nom.charAt(0).toLowerCase() + nom.slice(1), op || {}); p[k] = v * fac; }
@@ -621,7 +731,6 @@ const Imagenes = (() => {
       if (!cav && !(p.a > p.R)) throw new Error('La carga tiene que estar fuera de la esfera (a > R)');
     }
     const pos = esfera ? p.a : p.d, R = p.R;
-    // cargas imagen
     let imagenes, Qe = null, V0 = null, q2 = 0;
     if (!esfera) imagenes = [{ q: -q, z: -p.d, nom: 'q′' }];
     else {
@@ -634,18 +743,14 @@ const Imagenes = (() => {
       if (q2 !== 0) imagenes.push({ q: q2, z: 0, nom: 'q″' });
     }
     const cargas = [{ q, z: pos, real: true }, ...imagenes];
-    // fuerza sobre q (componente z) y si atrae al conductor
     let Fz = 0;
     for (const c of imagenes) { const dz = pos - c.z; Fz += (K * q * c.q * dz) / Math.abs(dz) ** 3; }
     const haciaConductor = cav ? 1 : -1, atractiva = Fz * haciaConductor > 0;
-    // densidad de carga inducida: plano en ρ; esfera y cavidad en θ (ángulo con el eje de q)
     const sigma = !esfera ? (rho) => (-q * p.d) / (2 * Math.PI * (rho * rho + p.d * p.d) ** 1.5)
       : (th) => (-q * Math.abs(p.a * p.a - R * R)) / (4 * Math.PI * R * (R * R + p.a * p.a - 2 * p.a * R * Math.cos(th)) ** 1.5) + (cav ? 0 : q2 / (4 * Math.PI * R * R));
     const sigmaMax = sigma(0);
-    // trabajo para llevar q al infinito (solo si el conductor está a tierra y q puede salir)
     const W = modo === 'plano' ? (K * q * q) / (4 * p.d) : modo === 'esfera-tierra' ? (K * q * q * R) / (2 * (p.a * p.a - R * R)) : null;
 
-    // punto de observación (opcional)
     let pt = null;
     const [k1, k2] = M.punto.map((x) => x[0]), v1 = sc[k1], v2 = sc[k2];
     if (!vacio(v1) || !vacio(v2)) {
@@ -669,7 +774,6 @@ const Imagenes = (() => {
 
     const pasos = [];
     const cm = (x) => f(x * 100);
-    // 1. condición de contorno e imágenes
     if (!esfera) {
       pasos.push({ t: 'Planteamiento', html: `El plano está a tierra (V = 0 en z = 0). Se quita el conductor y se pone una carga imagen que dé V = 0 en el plano: la opuesta, en el punto simétrico. Vale para z > 0.` });
       pasos.push({ t: 'Carga imagen', html: `$q′ = −q = ${uq(-q, 'C')}$ en $z = −d = −${cm(p.d)} "cm"$.` });
@@ -687,18 +791,14 @@ const Imagenes = (() => {
       pasos.push({ t: 'Carga imagen', html: imagenes.length ? `$q′ = −{q R}/a = −{${f(q)} · ${f(R)}}/{${f(p.a)}} = ${f(imagenes[0].q)} "C"$, a una distancia $a′ = R^2/a = ${cm(imagenes[0].z)} "cm"$ del centro, fuera de la cavidad.` : 'Si la carga está en el centro no hace falta imagen: el campo dentro es el de q sola.' });
       pasos.push({ t: 'Carga inducida', html: `En la pared de la cavidad se induce exactamente $−q = ${f(-q)} "C"$ (Gauss): el campo dentro del conductor es nulo.` });
     }
-    // 2. fuerza
     const Fmod = Math.abs(Fz);
     if (modo === 'plano') pasos.push({ t: 'Fuerza sobre q', html: `La fuerza es la de q con su imagen, a una distancia 2d: $F = {q q′}/{4π ε_0 (2d)^2} = −{q^2}/{16π ε_0 d^2} = −{(${f(q)})^2}/{16π · ${f(EPS0)} · (${f(p.d)})^2} = ${f(Fz)} "N"$ (${atractiva ? 'atractiva, hacia el plano' : 'repulsiva'}).` });
     else if (modo === 'esfera-tierra') pasos.push({ t: 'Fuerza sobre q', html: `Entre q y su imagen hay $a − a′ = ${cm(p.a - imagenes[0].z)} "cm"$: $F = {q q′}/{4π ε_0 (a − a′)^2} = −{q^2 R a}/{4π ε_0 (a^2 − R^2)^2} = ${f(Fz)} "N"$ (${atractiva ? 'atractiva, hacia la esfera' : 'repulsiva'}).` });
     else if (!cav) pasos.push({ t: 'Fuerza sobre q', html: `Actúan las dos imágenes: $F = {q}/{4π ε_0}[{q′}/{(a − a′)^2} + {q″}/{a^2}] = ${f(K * q)} [{${f(imagenes[0].q)}}/{(${f(p.a - imagenes[0].z)})^2} + {${f(q2)}}/{(${f(p.a)})^2}] = ${f(Fz)} "N"$ (${atractiva ? 'atractiva' : 'repulsiva'}, ${atractiva ? 'hacia la esfera' : 'alejándose de la esfera'}).` });
     else pasos.push({ t: 'Fuerza sobre q', html: imagenes.length ? `Entre q y su imagen hay $a′ − a = ${cm(imagenes[0].z - p.a)} "cm"$: $F = {q q′}/{4π ε_0 (a′ − a)^2} = {q^2 R a}/{4π ε_0 (R^2 − a^2)^2} = ${f(Math.abs(Fz))} "N"$ (atractiva, hacia la pared más cercana).` : '$F = 0$ por simetría.' });
-    // 3. densidad inducida
     if (modo === 'plano') pasos.push({ t: 'Carga inducida', html: `Con $σ = ε_0 E_n$ en el plano: $σ(ρ) = −{q d}/{2π (ρ^2 + d^2)^{3/2}}$. En ρ = 0: $σ_{máx} = −{q}/{2π d^2} = ${f(sigmaMax)} "C/m²"$. Integrando en todo el plano sale $Q_{ind} = −q = ${f(-q)} "C"$.` });
     else pasos.push({ t: 'Densidad de carga inducida', html: `$σ(θ) = −{q (${cav ? 'R^2 − a^2' : 'a^2 − R^2'})}/{4π R (R^2 + a^2 − 2 a R cos θ)^{3/2}}${!cav && q2 !== 0 ? ' + {q″}/{4π R^2}' : ''}$. En el punto más cercano a q (θ = 0): $σ = ${f(sigmaMax)} "C/m²"$.` });
-    // 4. trabajo
     if (W !== null) pasos.push({ t: 'Trabajo para llevar q al infinito', html: modo === 'plano' ? `$W = ∫_d^∞ {q^2}/{16π ε_0 x^2} dx = {q^2}/{16π ε_0 d} = ${uq(W, 'J')}$ (es la energía del sistema, la mitad de la de las dos cargas reales).` : `$W = ∫_a^∞ F dx = {q^2 R}/{8π ε_0 (a^2 − R^2)} = ${uq(W, 'J')}$.` });
-    // 5. punto
     if (pt) {
       const lista = cargas.map((c, i) => `r<sub>${i}</sub> = ${cm(Math.hypot(pt.z - c.z, pt.rho))} cm`).join(', ');
       pasos.push({ t: 'Potencial en el punto', html: `Se suman las contribuciones de q y de ${imagenes.length > 1 ? 'las imágenes' : 'su imagen'}: $V = {1}/{4π ε_0} Σ {q_i}/{r_i}$, con ${lista}. Sale $V = ${f(pt.V)} "V"$.` });
@@ -714,35 +814,22 @@ const Imagenes = (() => {
     { clave: 'esfera-neutra', nombre: 'La misma carga frente a una esfera neutra aislada', sc: { modo: 'esfera-aislada', q: '10', a: '30', R: '10', Q: '0', r: '15', th: '0' } },
     { clave: 'esfera-potencial', nombre: 'Esfera a 500 V con una carga cerca', sc: { modo: 'esfera-potencial', q: '2', a: '20', R: '5', V0: '500', r: '10', th: '90' } },
     { clave: 'cavidad', nombre: 'Carga de 5 nC dentro de una cavidad esférica', sc: { modo: 'cavidad', q: '5', a: '6', R: '10', r: '3', th: '60' } },
+    { clave: 'cuna-90', nombre: 'Carga de 5 nC en una cuña de 90° (n = 2, IM-1)', sc: { modo: 'cuna', n: '2', q: '5', r0: '5', ph: '30', rp: '', php: '' } },
+    { clave: 'cuna-60', nombre: 'Carga de 5 nC en una cuña de 60° (n = 3, cinco imágenes)', sc: { modo: 'cuna', n: '3', q: '5', r0: '4', ph: '20', rp: '3', php: '40' } },
+    { clave: 'paralelos', nombre: 'Carga de 5 nC entre dos planos paralelos a 10 cm (IM-1)', sc: { modo: 'paralelos', q: '5', L: '10', d: '3', rho: '2', z: '5' } },
+    { clave: 'varias', nombre: 'Dos cargas de signos opuestos frente a un plano (IM-4)', sc: { modo: 'varias', q: '5', x1: '-3', z1: '4', q2: '-3', x2: '3', z2: '6', q3: '', x3: '', z3: '' } },
+    { clave: 'dipolo', nombre: 'Dipolo de 10 nC·cm a 4 cm del plano, a 30° de la normal (IM-4)', sc: { modo: 'dipolo', p: '10', d: '4', th: '30' } },
   ];
 
-  return { resolver, ejemplos, campo, MODOS, f, u, EPS0, K };
+  return { resolver, ejemplos, campo, campoXZ, trigamma, MODOS, f, u, EPS0, K };
 })();
 
-/* =====================================================================
-   Compartir, copiar e imprimir (Matemáticas y Electromagnetismo; se pone
-   con 'compartir.js' en los scripts de la herramienta en catalogo.js):
-   · un enlace con los datos del ejercicio en la dirección (#d=…): al
-     abrirlo, los datos se dejan donde la herramienta guarda los suyos
-     (localStorage, la clave guarda de la página, que herramientas.js deja
-     en Pagina.guarda) antes de que arranque, así que se
-     abre con ellos sin que la herramienta tenga que saber nada;
-   · copiar los resultados y el desarrollo como texto o como LaTeX (las
-     fórmulas salen de su fuente, que Mates deja en data-src);
-   · imprimir (o guardar en PDF) solo el ejercicio, sin menús ni teoría.
-   Lee los resultados de #resumen o #res y el desarrollo de #pasos; en
-   Magnetostática, cada pregunta con su resultado ([data-res]) y su
-   desarrollo ([data-steps]);
-   · un aviso de que log es el logaritmo decimal.
-   Tiene que ir antes que el app.js de la herramienta.
-   ===================================================================== */
 const Compartir = (() => {
   const partes = () => (typeof location === 'undefined' ? '/herramienta/' : location.pathname).split('/').filter((q) => q && !/\.html?$/.test(q));
   const CLAVE = (typeof Pagina !== 'undefined' && Pagina.guarda) || `${partes().pop()}-v1`;
   const b64 = (s) => btoa(unescape(encodeURIComponent(s))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
   const deB64 = (s) => decodeURIComponent(escape(atob(s.replace(/-/g, '+').replace(/_/g, '/'))));
 
-  // los datos de un enlace compartido pasan a donde la herramienta los lee al arrancar
   if (typeof location !== 'undefined') {
     const m = /[#&]d=([A-Za-z0-9_-]+)/.exec(location.hash);
     if (m) {
@@ -752,7 +839,6 @@ const Compartir = (() => {
   }
   const enlace = () => { let d = null; try { d = localStorage.getItem(CLAVE); } catch (e) { /* sin almacenamiento */ } return location.href.split('#')[0] + (d ? `#d=${b64(d)}` : ''); };
 
-  /* ---------- De la sintaxis de Mates a LaTeX y a texto ---------- */
   const FUNC = { sen: '\\operatorname{sen}', cos: '\\cos', tg: '\\operatorname{tg}', tan: '\\tan', ln: '\\ln', log: '\\log', exp: '\\exp', arcsen: '\\operatorname{arcsen}', arccos: '\\arccos', arctg: '\\operatorname{arctg}', 'máx': '\\max', 'mín': '\\min', 'lím': '\\lim', senh: '\\operatorname{senh}', cosh: '\\cosh', tgh: '\\operatorname{tgh}', cotg: '\\operatorname{cotg}', sec: '\\sec' };
   const SIM = { '·': '\\cdot', '×': '\\times', '÷': '\\div', '−': '-', '≤': '\\le', '≥': '\\ge', '≠': '\\ne', '≈': '\\approx', '±': '\\pm', '∓': '\\mp', '→': '\\to', '←': '\\leftarrow', '⇒': '\\Rightarrow', '⇔': '\\Leftrightarrow', '↔': '\\leftrightarrow', '∞': '\\infty', '∫': '\\int', '∬': '\\iint', '∭': '\\iiint', '∮': '\\oint', '∯': '\\oiint', '∑': '\\sum', '∏': '\\prod', '∂': '\\partial', '∇': '\\nabla', '∈': '\\in', '∝': '\\propto', '⊥': '\\perp', '∥': '\\parallel', '≡': '\\equiv', '∼': '\\sim', '°': '^{\\circ}', '%': '\\%', '′': "'", '″': "''", '|': '|', '\\{': '\\{', '\\}': '\\}', 'ℒ': '\\mathcal{L}', '∅': '\\emptyset', '∪': '\\cup', '∩': '\\cap' };
   const GRIEGO = { α: 'alpha', β: 'beta', γ: 'gamma', δ: 'delta', ε: 'varepsilon', ζ: 'zeta', η: 'eta', θ: 'theta', ι: 'iota', κ: 'kappa', λ: 'lambda', μ: 'mu', ν: 'nu', ξ: 'xi', π: 'pi', ρ: 'rho', σ: 'sigma', τ: 'tau', υ: 'upsilon', φ: 'varphi', χ: 'chi', ψ: 'psi', ω: 'omega', Γ: 'Gamma', Δ: 'Delta', Θ: 'Theta', Λ: 'Lambda', Ξ: 'Xi', Π: 'Pi', Σ: 'Sigma', Φ: 'Phi', Ψ: 'Psi', Ω: 'Omega' };
@@ -761,7 +847,6 @@ const Compartir = (() => {
     const tk = Mates.tokens(src);
     let p = 0;
     const es = (v) => tk[p] && tk[p].t === 's' && tk[p].v === v;
-    // quita los paréntesis o las llaves de fuera si envuelven todo
     const quita = (s) => {
       let m = /^\\left\((.*)\\right\)$/.exec(s);
       if (m) return m[1];
@@ -820,7 +905,6 @@ const Compartir = (() => {
     }
     return secuencia(null);
   }
-  // texto plano: la fuente sin las llaves de agrupar
   function texto(src) {
     let s = String(src).replace(/<sup>(.*?)<\/sup>/g, '^($1)').replace(/<sub>(.*?)<\/sub>/g, '_$1').replace(/<[^>]+>/g, '').replace(/"/g, '').replace(/\\\{/g, '\u0001').replace(/\\\}/g, '\u0002');
     const simple = (a) => /^[\w.,′α-ωπ∂^−-]+$/.test(a) || /^\([^()]*\)$/.test(a);
@@ -832,7 +916,6 @@ const Compartir = (() => {
     return s.replace(/[{}]/g, '').replace(/\u0001/g, '{').replace(/\u0002/g, '}');
   }
 
-  /* ---------- El ejercicio como texto o como LaTeX ---------- */
   const escTex = (s) => s.replace(/\\/g, '\\textbackslash{}').replace(/([%#&_$])/g, '\\$1').replace(/[{}]/g, (c) => `\\${c}`);
   function lee(nodo, tex) {
     let out = '';
@@ -861,20 +944,15 @@ const Compartir = (() => {
     return out;
   }
   const limpia = (s) => s.replace(/[ \t]+/g, ' ').replace(/ *\n */g, '\n').replace(/\n{3,}/g, '\n\n').trim();
-  // cada fila de resultados «<span>nombre</span> valor» sale como «nombre: valor»
   const fila = (d, tex) => { const sp = d.querySelector(':scope > span'); if (!sp) return limpia(lee(d, tex)); const c = d.cloneNode(true); c.querySelector(':scope > span').remove(); return `${limpia(lee(sp, tex))}: ${limpia(lee(c, tex))}`; };
   const filas = (res, tex) => { const ds = [...res.children].filter((d) => !d.hidden && d.tagName === 'DIV' && d.querySelector(':scope > span')); return ds.length ? ds.map((d) => fila(d, tex)) : [limpia(lee(res, tex))].filter(Boolean); };
-  // bloques { titulo, items, pasos }: uno en las herramientas normales y uno por pregunta en Magnetostática
   function bloques(tex) {
     const preguntas = [...document.querySelectorAll('[data-res]')];
     if (preguntas.length) return preguntas.map((r, i) => { const p = r.closest('.pieza'), nom = p && p.querySelector('.badge'), st = document.querySelector(`[data-steps="${r.dataset.res}"] ol`); return { titulo: nom ? nom.textContent : `Pregunta ${i + 1}`, items: [limpia(lee(r, tex))], pasos: st ? [...st.children] : [] }; });
     const res = document.querySelector('#resumen') || document.querySelector('#res');
     const vis = (e) => !e.hidden && e.offsetParent !== null;
-    // herramientas con varias pestañas o resultados repartidos: lo visible de .resumen, .valores y .resultado
     const grupos = res && !res.querySelector(':scope > div > span') ? [...res.querySelectorAll('.resumen')] : res ? [] : [...document.querySelectorAll('.resumen, .valores, .resultado')].filter(vis);
-    // resultados repartidos en varias capas (Configuración electrónica): cada «etiqueta valor» visible de lo más hondo
     const hojas = res && !grupos.length && filas(res, tex).length < 2 ? [...res.querySelectorAll('div')].filter((d) => d.querySelector(':scope > span') && vis(d) && !d.querySelector('div > span')) : [];
-    // listas de definición («dt» etiqueta, «dd» valor): una línea por pareja, con el título de la tarjeta delante
     const dl = res && res.querySelector('dl');
     const parejas = dl ? [...dl.querySelectorAll('dt')].filter((t) => t.nextElementSibling && t.nextElementSibling.tagName === 'DD' && vis(t.nextElementSibling)).map((t) => `${limpia(lee(t, tex))}: ${limpia(lee(t.nextElementSibling, tex))}`) : [];
     const cab = dl && res.querySelector('.cab'), tituloDl = cab ? limpia(lee(cab, tex)).replace(/\n+/g, ' · ') : '';
@@ -883,7 +961,6 @@ const Compartir = (() => {
     const tb = document.querySelector('#tabla table');
     return [{ titulo: '', items, pasos, tabla: tb && vis(tb) ? tb : null }];
   }
-  // la tabla para pegar en una hoja de cálculo: columnas con tabulador
   const tablaTSV = () => { const tb = document.querySelector('#tabla table'); return tb ? [...tb.querySelectorAll('tr')].map((tr) => [...tr.children].map((c) => limpia(lee(c, false)).replace(/\s*\n+\s*/g, ' ')).join('\t')).join('\n') : ''; };
   function ejercicio(tex) {
     const tit = (document.querySelector('h1') || {}).textContent || document.title;
@@ -894,7 +971,6 @@ const Compartir = (() => {
     return [`% ${tit} · Ciencify`, `% ${enlace()}`, ...bs.flatMap((b) => { const sec = b.titulo ? '\\subsection*' : '\\section*'; return [...(b.titulo ? [`\\section*{${escTex(b.titulo)}}`] : []), ...(b.items.length ? [`${sec}{Resultados}`, '\\begin{itemize}', ...b.items.map((q) => `  \\item ${q.replace(/\n+/g, '; ')}`), '\\end{itemize}'] : []), ...(b.pasos.length ? [`${sec}{Desarrollo}`, '\\begin{enumerate}', ...b.pasos.map((li) => { const q = paso(li); return `  \\item ${q.t ? `\\textbf{${q.t}.} ` : ''}${q.c}`; }), '\\end{enumerate}'] : []), ...(b.tabla ? ((f) => [`${sec}{Tabla}`, `\\begin{tabular}{l${'r'.repeat(Math.max(0, Math.max(...f.map((x) => x.length)) - 1))}}`, '\\hline', ...f.map((x) => `${x.join(' & ')} \\\\`), '\\hline', '\\end{tabular}'])(tabla(b)) : [])]; })].join('\n');
   }
 
-  /* ---------- Botones ---------- */
   async function copia(s) {
     try { await navigator.clipboard.writeText(s); return true; } catch (e) {
       const t = document.createElement('textarea'); t.value = s; t.style.position = 'fixed'; t.style.opacity = '0'; document.body.appendChild(t); t.select();
@@ -904,9 +980,7 @@ const Compartir = (() => {
   }
   function botones() {
     if (typeof document === 'undefined') return;
-    // en la tarjeta del desarrollo (en Magnetostática, en la de las preguntas)
     const card = document.querySelector('#pasos') ? document.querySelector('#pasos').closest('.card') : document.querySelector('#preguntas') && document.querySelector('#preguntas').closest('.panel');
-    // sin tarjeta de desarrollo única (varias pestañas o solo resultados): debajo de la frase de presentación
     const lead = !card && document.querySelector('.wrap > .lead');
     if ((!card && !lead) || document.querySelector('.compartir')) return;
     const caja = document.createElement('div');
@@ -921,15 +995,12 @@ const Compartir = (() => {
       const ok = await copia(a === 'enlace' ? enlace() : a === 'tabla' ? tablaTSV() : ejercicio(a === 'latex'));
       const antes = b.textContent; b.textContent = ok ? '¡Copiado!' : 'No se ha podido copiar'; setTimeout(() => { b.textContent = antes; }, 1600);
     });
-    // al imprimir: solo el ejercicio, en claro
     const css = document.createElement('style');
     css.textContent = '@media print { .top, .miga, .bib, .bib-scrim, footer, .teoria, .preguntas, .compartir, #ejemplos, .controles, .nota:empty, .error[hidden] { display: none !important } html, body { background: #fff !important } .wrap { max-width: none; padding: 0 } .layout { display: block !important } .card { break-inside: avoid; box-shadow: none !important } .pasos li { break-inside: avoid } canvas { max-height: 9cm; object-fit: contain } .chips, .stage-bar, .x, .tools { display: none !important } .cvwrap { height: 9cm !important; min-height: 0 !important } }';
     document.head.appendChild(css);
-    // en claro y con los desarrollos plegados abiertos
     let tema = null, cerrados = [];
     addEventListener('beforeprint', () => { tema = document.documentElement.getAttribute('data-theme'); document.documentElement.setAttribute('data-theme', 'light'); cerrados = [...document.querySelectorAll('details:not([open])')]; cerrados.forEach((d) => { d.open = true; }); dispatchEvent(new Event('resize')); });
     addEventListener('afterprint', () => { if (tema === null) document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', tema); cerrados.forEach((d) => { d.open = false; }); dispatchEvent(new Event('resize')); });
-    // log es el decimal
     const err = document.querySelector('#error');
     if (err && ['taylor', 'fourier', 'edos', 'laplace', 'derivadas', 'campos'].includes(CLAVE.slice(0, -3))) { const q = document.createElement('p'); q.className = 'nota'; q.id = 'nota-log'; q.textContent = 'ln es el logaritmo neperiano y log, el decimal (log₁₀).'; err.before(q); }
   }
@@ -937,15 +1008,6 @@ const Compartir = (() => {
   return { enlace, ejercicio, tablaTSV, latex, texto, CLAVE };
 })();
 
-/* =====================================================================
-   Método de las imágenes: interfaz (modo, datos de la carga y del conductor,
-   punto opcional, resultados, desarrollo y dibujo con las líneas de campo,
-   la carga inducida y las cargas imagen). El cálculo está en calculo.js
-   (Imagenes) y los ayudantes comunes ($, esc, copia, lienzo) en herramienta.js.
-   Guarda el estado entero (sc) en localStorage['imagenes-v1'] en cada cambio
-   (lo que copia Mis ejercicios). Expone window.ImagenesApp para el modo
-   práctica y las pruebas.
-   ===================================================================== */
 (() => {
   const { $, esc, copia, lienzo } = Herramienta;
   const P = Imagenes, f = P.f, u = P.u, CLAVE = 'imagenes-v1';
@@ -955,14 +1017,14 @@ const Compartir = (() => {
   const guarda = () => { try { localStorage.setItem(CLAVE, JSON.stringify(sc)); } catch (e) { /* sin almacenamiento */ } };
   let sol = null, col = {};
 
-  /* ---------- Formulario ---------- */
   const fila = (k, nom, un) => `<label for="f-${k}">${nom}${un ? ` <small>(${un})</small>` : ''}</label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc[k] ?? '')}" inputmode="decimal" autocomplete="off">`;
   function formulario() {
     const M = P.MODOS[sc.modo];
     $('#campos').innerHTML = `<label for="f-modo">Conductor</label><select id="f-modo" class="in" data-k="modo">${Object.entries(P.MODOS).map(([k, m]) => `<option value="${k}"${sc.modo === k ? ' selected' : ''}>${m.nombre}</option>`).join('')}</select>`
       + M.campos.map(([k, nom, un]) => fila(k, nom, un)).join('')
-      + '<div class="sep">Punto donde calcular V y E (opcional)</div>' + M.punto.map(([k, nom, un]) => fila(k, nom, un)).join('');
-    $('#nota').textContent = sc.modo === 'plano' ? 'El plano es z = 0 y q está en z = d. El punto se da por ρ (distancia al eje) y z (siempre mayor que 0).'
+      + (M.punto.length ? '<div class="sep">Punto donde calcular V y E (opcional)</div>' + M.punto.map(([k, nom, un]) => fila(k, nom, un)).join('') : '');
+    $('#nota').textContent = M.plana ? ({ cuna: 'Un plano es φ = 0 y el otro φ = π/n; q está a la distancia r₀ de la arista y a φ₀ del primero. Con n = 1 es un solo plano.', paralelos: 'Los planos son z = 0 y z = L; q está en el eje a la altura d. El punto se da por ρ (distancia al eje) y z.', varias: 'El plano es z = 0; cada carga se da por su posición (x, z) con z > 0. Deja vacías las cargas 2 y 3 si no las necesitas.', dipolo: 'El dipolo está a la altura d del plano z = 0; θ es el ángulo entre p y la normal al plano (θ = 0: perpendicular). Se admite coma decimal y unidades.' })[sc.modo]
+      : sc.modo === 'plano' ? 'El plano es z = 0 y q está en z = d. El punto se da por ρ (distancia al eje) y z (siempre mayor que 0).'
       : sc.modo === 'cavidad' ? 'El punto se da en polares desde el centro; θ se mide desde la recta del centro a q. El punto tiene que estar dentro de la cavidad.'
         : 'El punto se da en polares desde el centro; θ se mide desde la recta del centro a q. Tiene que estar fuera de la esfera. Se admite coma decimal y 3e8.';
   }
@@ -971,13 +1033,11 @@ const Compartir = (() => {
     const t = e.target;
     if (t.tagName !== 'SELECT') return;
     sc.modo = t.value;
-    // al cambiar de conductor, rellena lo que falte con los datos de su ejemplo
     const ej = P.ejemplos.find((x) => x.sc.modo === sc.modo);
     if (ej) for (const [k, v] of Object.entries(ej.sc)) if (k !== 'modo' && (sc[k] === undefined || sc[k] === '')) sc[k] = v;
     $('#ejemplos').value = ''; formulario(); calcula();
   });
 
-  /* ---------- Ejemplos ---------- */
   const sel = $('#ejemplos');
   sel.innerHTML = '<option value="">Ejemplos…</option>' + P.ejemplos.map((e) => `<option value="${e.clave}">${e.nombre}</option>`).join('');
   sel.addEventListener('change', () => { if (sel.value) abrirEjemplo(sel.value); });
@@ -987,7 +1047,6 @@ const Compartir = (() => {
     sc = copia(e.sc); formulario(); calcula(); sel.value = clave;
   }
 
-  /* ---------- Modo práctica: un ejercicio al azar y su enunciado ---------- */
   function azar() {
     const ent = (a, b) => a + Math.floor(Math.random() * (b - a + 1)), de = (l) => l[ent(0, l.length - 1)], c = (x) => String(x).replace('.', ',');
     const q = String(de([1, 2, 3, 5, 8, 10, -2, -5])), modo = de(Object.keys(P.MODOS));
@@ -1002,6 +1061,10 @@ const Compartir = (() => {
   }
   const enunciado = () => {
     const q = `${esc(sc.q)} nC`;
+    if (sc.modo === 'cuna') return `Una carga puntual q = ${q} está a ${esc(sc.r0)} cm de la arista de dos planos conductores a tierra que forman un ángulo de 180°/${esc(sc.n)}, y a ${esc(sc.ph)}° de uno de ellos. Calcula las cargas imagen y la fuerza sobre q.`;
+    if (sc.modo === 'paralelos') return `Una carga puntual q = ${q} está entre dos planos conductores paralelos a tierra separados ${esc(sc.L)} cm, a ${esc(sc.d)} cm del primero. Calcula la fuerza sobre q y la carga inducida en cada plano.`;
+    if (sc.modo === 'varias') return `Frente a un plano conductor a tierra z = 0 hay cargas puntuales: q₁ = ${q} en (${esc(sc.x1)}; ${esc(sc.z1)}) cm${sc.q2 ? `, q₂ = ${esc(sc.q2)} nC en (${esc(sc.x2)}; ${esc(sc.z2)}) cm` : ''}${sc.q3 ? `, q₃ = ${esc(sc.q3)} nC en (${esc(sc.x3)}; ${esc(sc.z3)}) cm` : ''}. Calcula la fuerza sobre cada carga y la energía del sistema.`;
+    if (sc.modo === 'dipolo') return `Un dipolo de momento p = ${esc(sc.p)} nC·cm está a ${esc(sc.d)} cm de un plano conductor a tierra, con p formando ${esc(sc.th)}° con la normal. Calcula la fuerza y el par sobre el dipolo.`;
     if (sc.modo === 'plano') return `Una carga puntual q = ${q} está a ${esc(sc.d)} cm de un plano conductor indefinido a tierra. Calcula la carga imagen, la fuerza sobre q, la densidad de carga inducida bajo ella y el trabajo para llevarla al infinito${sc.rho !== '' && sc.z !== '' ? `, y el potencial y el campo en el punto ρ = ${esc(sc.rho)} cm, z = ${esc(sc.z)} cm` : ''}.`;
     const pt = sc.r !== '' && sc.th !== '' ? `, y el potencial y el campo en el punto r = ${esc(sc.r)} cm, θ = ${esc(sc.th)}°` : '';
     if (sc.modo === 'cavidad') return `Una carga puntual q = ${q} está a ${esc(sc.a)} cm del centro de una cavidad esférica de ${esc(sc.R)} cm de radio en un conductor. Calcula la carga imagen y su posición, la fuerza sobre q y la densidad de carga inducida en el punto más cercano${pt}.`;
@@ -1009,7 +1072,6 @@ const Compartir = (() => {
     return `Una carga puntual q = ${q} está a ${esc(sc.a)} cm del centro de ${esfera} de radio ${esc(sc.R)} cm. Calcula las cargas imagen, la fuerza sobre q, la carga de la esfera y la densidad de carga inducida en el punto más cercano${sc.modo === 'esfera-tierra' ? ', el trabajo para llevar q al infinito' : ''}${pt}.`;
   };
 
-  /* ---------- Cálculo y resultados ---------- */
   const caja = (n, v, extra) => `<div><span>${n}</span><b>${v}</b>${extra ? `<small>${extra}</small>` : ''}</div>`;
   const cm = (x) => `${f(x * 100)} cm`;
   function calcula() {
@@ -1020,6 +1082,12 @@ const Compartir = (() => {
     }
     err.hidden = true; guarda();
     const s = sol, im = s.imagenes[0];
+    if (s.plana) {
+      $('#resumen').innerHTML = s.cajas.map(([n, v, e]) => caja(n, v, e)).join('');
+      $('#pasos').innerHTML = s.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
+      $('#leyenda').textContent = 'Líneas de campo de las cargas reales con sus imágenes (dibujadas con trazo discontinuo, dentro del conductor). El conductor es la zona sombreada.';
+      dibuja(); return;
+    }
     let h = '';
     if (im) h += caja('Carga imagen q′', u(im.q, 'C'), s.esfera ? `a a′ = ${cm(im.z)} del centro` : `en z = −${cm(s.p.d)}`);
     else h += caja('Carga imagen q′', '—', 'q está en el centro');
@@ -1042,24 +1110,21 @@ const Compartir = (() => {
     dibuja();
   }
 
-  /* ---------- Dibujo ---------- */
   function colores() { const cs = getComputedStyle(document.documentElement); for (const k of ['--ink', '--muted', '--line', '--bg', '--panel', '--accent', '--pos', '--neg', '--metal', '--campo']) col[k] = cs.getPropertyValue(k).trim(); }
   const texto = (g, t, x, y, c = col['--muted'], al = 'center') => { g.fillStyle = c; g.textAlign = al; g.fillText(t, x, y); };
   function dibuja() {
     const { g, w, h } = lienzo('#dibujo');
     if (!sol || !w || !h) return;
     colores();
+    if (sol.plana) { dibujaPlana(g, w, h); return; }
     const s = sol, pl = !s.esfera, R = s.R, big = s.imagenes.length && s.imagenes[0].z;
-    // caja del mundo: horizontal [H0, H1], vertical [V0, V1] con la vertical hacia arriba
     let H0, H1, V0, V1;
     if (pl) { const d = s.p.d, ext = Math.max(2.6 * d, s.pt ? Math.abs(s.pt.rho) * 1.25 : 0); H0 = -ext; H1 = ext; V0 = -1.1 * d; V1 = Math.max(2.4 * d, s.pt ? s.pt.z * 1.2 : 0); }
     else if (s.cav) { const e = 1.25 * R; H0 = -e; H1 = big && big < 2.2 * R ? Math.max(e, big * 1.2) : e; V0 = -e; V1 = e; }
     else { H0 = -1.5 * R; H1 = Math.max(1.25 * s.p.a, s.pt ? s.pt.z * 1.1 : 0); V1 = Math.max(1.5 * R, s.pt ? Math.abs(s.pt.rho) * 1.2 : 0, 0.28 * (H1 - H0)); V0 = -V1; }
     const m = 14, k = Math.min((w - 2 * m) / (H1 - H0), (h - 2 * m) / (V1 - V0)), ox = (w - k * (H1 - H0)) / 2, oy = (h - k * (V1 - V0)) / 2;
-    // (z, ρ) del problema → píxeles: en el plano z va hacia arriba; en la esfera, hacia la derecha
     const X = (z, r) => (pl ? ox + (r - H0) * k : ox + (z - H0) * k), Y = (z, r) => (pl ? h - oy - (z - V0) * k : h - oy - (r - V0) * k);
     g.font = '12px "IBM Plex Sans", system-ui, sans-serif'; g.textBaseline = 'middle';
-    // conductor
     g.fillStyle = col['--metal'];
     if (pl) g.fillRect(X(0, H0), Y(0, 0), (H1 - H0) * k, (0 - V0) * k);
     else {
@@ -1067,11 +1132,10 @@ const Compartir = (() => {
       if (s.cav) { g.rect(0, 0, w, h); g.arc(X(0, 0), Y(0, 0), R * k, 0, 2 * Math.PI, true); g.fill('evenodd'); }
       else { g.arc(X(0, 0), Y(0, 0), R * k, 0, 2 * Math.PI); g.fill(); }
     }
-    // carga inducida: trazo más grueso donde hay más
     const cabe = (x) => Math.abs(x) / Math.max(Math.abs(s.sigmaMax), 1e-300);
     g.lineCap = 'butt';
     if (pl) {
-      const n = Math.max(40, Math.floor(((H1 - H0) * k) / 4));
+      const n = Math.min(1200, Math.max(40, Math.floor(((H1 - H0) * k) / 4))); // tope: con datos extremos k puede ser infinito
       for (let i = 0; i < n; i++) { const r0 = H0 + ((H1 - H0) * i) / n, r1 = H0 + ((H1 - H0) * (i + 1)) / n, v = Math.min(1, cabe(s.sigma((r0 + r1) / 2))); g.strokeStyle = s.q > 0 ? col['--neg'] : col['--pos']; g.lineWidth = 1 + 9 * v; g.beginPath(); g.moveTo(X(0, r0), Y(0, 0) + 1 + g.lineWidth / 2); g.lineTo(X(0, r1) + 0.5, Y(0, 0) + 1 + g.lineWidth / 2); g.stroke(); }
     } else {
       const n = 120, ancho = Math.max(...Array.from({ length: 13 }, (_, i) => Math.abs(s.sigma((Math.PI * i) / 12))), 1e-300);
@@ -1085,7 +1149,6 @@ const Compartir = (() => {
     g.lineWidth = 1.4; g.strokeStyle = col['--ink'];
     if (pl) { g.beginPath(); g.moveTo(X(0, H0), Y(0, 0)); g.lineTo(X(0, H1), Y(0, 0)); g.stroke(); }
     else { g.beginPath(); g.arc(X(0, 0), Y(0, 0), R * k, 0, 2 * Math.PI); g.stroke(); }
-    // líneas de campo: salen de q en todas direcciones y se siguen con el campo de q y sus imágenes
     const L = pl ? s.p.d : s.cav ? R : s.p.a, ds = L / 70, sg = Math.sign(s.q) || 1;
     const dentro = (z, r) => (pl ? z <= 0 : s.cav ? Math.hypot(z, r) >= R : Math.hypot(z, r) <= R);
     const fuera = (z, r) => { const hx = pl ? r : z, vy = pl ? z : r; return hx < H0 - 0.05 * (H1 - H0) || hx > H1 + 0.05 * (H1 - H0) || vy < V0 - 0.05 * (V1 - V0) || vy > V1 + 0.05 * (V1 - V0); };
@@ -1101,14 +1164,12 @@ const Compartir = (() => {
         if (dentro(z, r) || fuera(z, r)) break;
       }
       g.beginPath(); pts.forEach(([zz, rr], j) => (j ? g.lineTo(X(zz, rr), Y(zz, rr)) : g.moveTo(X(zz, rr), Y(zz, rr)))); g.stroke();
-      // una flecha hacia donde apunta E, hacia la mitad de la línea
       const j = Math.floor(pts.length * 0.45);
       if (j > 1 && j < pts.length - 1) {
         const [z0, r0] = pts[j - 1], [z1, r1] = pts[j + 1], an = Math.atan2(Y(z1, r1) - Y(z0, r0), X(z1, r1) - X(z0, r0)) + (sg < 0 ? Math.PI : 0), [zc, rc] = pts[j], x = X(zc, rc), y = Y(zc, rc);
         g.beginPath(); g.moveTo(x + 5 * Math.cos(an), y + 5 * Math.sin(an)); g.lineTo(x - 4 * Math.cos(an - 0.55), y - 4 * Math.sin(an - 0.55)); g.lineTo(x - 4 * Math.cos(an + 0.55), y - 4 * Math.sin(an + 0.55)); g.closePath(); g.fill();
       }
     }
-    // cargas: la real, llena; las imágenes, con trazo discontinuo
     const disco = (z, r, c, real, nom, alto = false) => {
       const x = X(z, r), y = Y(z, r);
       g.beginPath(); g.arc(x, y, 8, 0, 2 * Math.PI);
@@ -1118,12 +1179,10 @@ const Compartir = (() => {
     };
     const signo = (q) => (q > 0 ? col['--pos'] : col['--neg']);
     for (const c of s.cargas) { if (!c.real && fuera(c.z, 0)) continue; disco(c.z, 0, signo(c.q), !!c.real, c.real ? 'q' : c.nom || '', c.nom === 'q″'); }
-    // cotas
     g.lineWidth = 1; g.strokeStyle = col['--muted']; g.setLineDash([2, 3]);
     if (pl) { const x = X(0, -0.6 * s.p.d - 0.001); g.beginPath(); g.moveTo(x, Y(0, 0)); g.lineTo(x, Y(s.p.d, 0)); g.stroke(); g.setLineDash([]); texto(g, `d = ${cm(s.p.d)}`, x - 6, (Y(0, 0) + Y(s.p.d, 0)) / 2, col['--muted'], 'right'); }
     else { g.beginPath(); g.moveTo(X(0, 0), Y(0, 0)); g.lineTo(X(s.pos, 0), Y(0, 0)); g.stroke(); g.setLineDash([]); texto(g, `a = ${cm(s.pos)}`, (X(0, 0) + X(s.pos, 0)) / 2, Y(0, 0) - 12 + (s.cav ? 24 : 0)); texto(g, `R = ${cm(R)}`, X(0, 0), Y(0, 0) + R * k * 0.6, col['--muted']); }
     g.setLineDash([]);
-    // punto de observación y su campo
     if (s.pt) {
       const x = X(s.pt.z, s.pt.rho), y = Y(s.pt.z, s.pt.rho);
       g.fillStyle = col['--accent']; g.strokeStyle = col['--accent']; g.lineWidth = 2;
@@ -1134,8 +1193,70 @@ const Compartir = (() => {
       texto(g, 'E', x2 + 8 * Math.cos(an) + 4, y2 + 8 * Math.sin(an), col['--accent'], 'left');
     }
   }
+
+  function dibujaPlana(g, w, h) {
+    const s = sol, cg = s.cargas, m = 14, M = s.modo, lim = s.lim;
+    let H0, H1, V0, V1;
+    if (M === 'cuna') { const xs = cg.map((c) => c.x).concat(0), zs = cg.map((c) => c.z).concat(0); H0 = Math.min(...xs); H1 = Math.max(...xs); V0 = Math.min(...zs); V1 = Math.max(...zs); const pd = 0.25 * Math.max(H1 - H0, V1 - V0); H0 -= pd; H1 += pd; V0 -= pd; V1 += pd; }
+    else if (M === 'paralelos') { H0 = -0.9 * lim; H1 = 0.9 * lim; V0 = -0.55 * lim; V1 = 1.55 * lim; }
+    else if (M === 'varias') { const xs = cg.map((c) => c.x); H0 = Math.min(...xs) - lim; H1 = Math.max(...xs) + lim; V0 = -1.3 * lim; V1 = 1.3 * lim; }
+    else { H0 = -1.8 * lim; H1 = 1.8 * lim; V0 = -1.5 * lim; V1 = 1.7 * lim; }
+    const k = Math.min((w - 2 * m) / (H1 - H0), (h - 2 * m) / (V1 - V0)), ox = (w - k * (H1 - H0)) / 2, oy = (h - k * (V1 - V0)) / 2;
+    const X = (x) => ox + (x - H0) * k, Y = (z) => h - oy - (z - V0) * k, big = 20 * Math.max(H1 - H0, V1 - V0);
+    g.font = '12px "IBM Plex Sans", system-ui, sans-serif'; g.textBaseline = 'middle';
+    g.fillStyle = col['--metal']; g.strokeStyle = col['--ink']; g.lineWidth = 1.4;
+    if (M === 'cuna') {
+      g.beginPath(); g.rect(0, 0, w, h); g.moveTo(X(0), Y(0)); g.lineTo(X(big), Y(0));
+      for (let i = 0; i <= 24; i++) { const an = (s.alfa * i) / 24; g.lineTo(X(big * Math.cos(an)), Y(big * Math.sin(an))); }
+      g.closePath(); g.fill('evenodd');
+      g.beginPath(); g.moveTo(X(big), Y(0)); g.lineTo(X(0), Y(0)); g.lineTo(X(big * Math.cos(s.alfa)), Y(big * Math.sin(s.alfa))); g.stroke();
+    } else {
+      const planos = M === 'paralelos' ? [0, s.L] : [0];
+      g.fillRect(0, Y(0), w, h - Y(0)); if (M === 'paralelos') g.fillRect(0, 0, w, Y(s.L));
+      for (const z of planos) { g.beginPath(); g.moveTo(0, Y(z)); g.lineTo(w, Y(z)); g.stroke(); }
+    }
+    const dentro = (x, z) => (M === 'cuna' ? Math.atan2(z, x) >= 0 && Math.atan2(z, x) <= s.alfa : M === 'paralelos' ? z > 0 && z < s.L : z > 0);
+    const fuera = (x, z) => x < H0 - 0.05 * (H1 - H0) || x > H1 + 0.05 * (H1 - H0) || z < V0 - 0.05 * (V1 - V0) || z > V1 + 0.05 * (V1 - V0);
+    const ds = lim / 60, N = 14; g.lineWidth = 1.2; g.strokeStyle = col['--campo']; g.fillStyle = col['--campo'];
+    for (const c of cg.filter((q) => q.real)) {
+      const sg = Math.sign(c.q) || 1, dir = (x, z) => { const e = P.campoXZ(cg, x, z); return [(sg * e.Ex) / (e.E || 1), (sg * e.Ez) / (e.E || 1)]; };
+      for (let i = 0; i < N; i++) {
+        const ang = (2 * Math.PI * (i + 0.5)) / N; let x = c.x + 0.04 * lim * Math.cos(ang), z = c.z + 0.04 * lim * Math.sin(ang);
+        if (!dentro(x, z)) continue;
+        const pts = [[x, z]];
+        for (let j = 0; j < 2500; j++) {
+          const [a1, b1] = dir(x, z), [a2, b2] = dir(x + (a1 * ds) / 2, z + (b1 * ds) / 2);
+          x += a2 * ds; z += b2 * ds; pts.push([x, z]);
+          if (!dentro(x, z) || fuera(x, z) || cg.some((o) => o.real && Math.sign(o.q) === -sg && Math.hypot(x - o.x, z - o.z) < 2.2 * ds)) break;
+        }
+        g.beginPath(); pts.forEach(([xx, zz], j) => (j ? g.lineTo(X(xx), Y(zz)) : g.moveTo(X(xx), Y(zz)))); g.stroke();
+        const j = Math.floor(pts.length * 0.45);
+        if (j > 1 && j < pts.length - 1) {
+          const [x0, z0] = pts[j - 1], [x1, z1] = pts[j + 1], an = Math.atan2(Y(z1) - Y(z0), X(x1) - X(x0)), [xc, zc] = pts[j], px = X(xc), py = Y(zc);
+          g.beginPath(); g.moveTo(px + 5 * Math.cos(an), py + 5 * Math.sin(an)); g.lineTo(px - 4 * Math.cos(an - 0.55), py - 4 * Math.sin(an - 0.55)); g.lineTo(px - 4 * Math.cos(an + 0.55), py - 4 * Math.sin(an + 0.55)); g.closePath(); g.fill();
+        }
+      }
+    }
+    for (const c of cg) {
+      const x = X(c.x), y = Y(c.z); if (x < 0 || x > w || y < 0 || y > h) continue;
+      const col1 = c.q > 0 ? col['--pos'] : col['--neg'];
+      g.beginPath(); g.arc(x, y, M === 'dipolo' ? 6 : 8, 0, 2 * Math.PI);
+      if (c.real) { g.fillStyle = col1; g.fill(); } else { g.fillStyle = col['--panel']; g.fill(); g.setLineDash([3, 3]); g.strokeStyle = col1; g.lineWidth = 1.8; g.stroke(); g.setLineDash([]); }
+      texto(g, c.q > 0 ? '+' : '−', x, y + 0.5, c.real ? '#fff' : col1);
+      if (cg.length <= 8 || c.real) texto(g, c.nom || '', x + 14, y - 12, col['--ink'], 'left');
+    }
+    if (s.pt) {
+      const x = X(s.pt.x), y = Y(s.pt.z), m0 = Math.hypot(s.pt.Ex, s.pt.Ez) || 1, x2 = x + (s.pt.Ex / m0) * 38, y2 = y - (s.pt.Ez / m0) * 38, an = Math.atan2(y2 - y, x2 - x);
+      g.fillStyle = col['--accent']; g.strokeStyle = col['--accent']; g.lineWidth = 2; g.beginPath(); g.arc(x, y, 4, 0, 2 * Math.PI); g.fill();
+      g.beginPath(); g.moveTo(x, y); g.lineTo(x2, y2); g.stroke();
+      g.beginPath(); g.moveTo(x2, y2); g.lineTo(x2 - 7 * Math.cos(an - 0.45), y2 - 7 * Math.sin(an - 0.45)); g.lineTo(x2 - 7 * Math.cos(an + 0.45), y2 - 7 * Math.sin(an + 0.45)); g.closePath(); g.fill();
+      texto(g, 'E', x2 + 8 * Math.cos(an) + 4, y2 + 8 * Math.sin(an), col['--accent'], 'left');
+    }
+    if (M === 'cuna') texto(g, `α = ${f((s.alfa * 180) / Math.PI)}°`, X(0) + 34, Y(0) - 12, col['--muted']);
+    if (M === 'paralelos') texto(g, `L = ${cm(s.L)}`, X(H1 - 0.12 * (H1 - H0)), (Y(0) + Y(s.L)) / 2, col['--muted']);
+  }
+  Herramienta.exportar('#dibujo', { nombre: 'imagenes', titulo: 'Cargas imagen y líneas de campo' });
   window.addEventListener('resize', dibuja);
-  // tema.js también avisa a este oyente al pulsar el botón claro/oscuro
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', dibuja);
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('imagenes').current;
@@ -1143,25 +1264,6 @@ const Compartir = (() => {
   window.ImagenesApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { modo: sol.modo, F: sol.Fz, qi: sol.imagenes[0]?.q, Q: sol.Qe, V0: sol.V0 }, estado: () => copia(sc) };
 })();
 
-/* =====================================================================
-   «Mis ejercicios»: barra lateral común a todas las herramientas, como la
-   del simulador de electrostática. Guarda en este navegador el estado de la
-   herramienta (lo que cada app ya deja en localStorage con su clave) con un
-   título, una carpeta y la marca de fijado; abre, renombra, borra, exporta e
-   importa ejercicios en archivos .simu.json. Abrir uno deja su estado en la
-   clave de la app y recarga la página, así sirve para cualquier herramienta.
-   La clave sale del catálogo («guarda»): herramientas.js la pone en la llamada
-   Biblioteca.monta(carpeta, clave) de cada página.
-   Copia de seguridad global: «Copia de seguridad de todo» junta en un solo archivo
-   (.copia.json) los ejercicios de todas las herramientas (y los problemas propios de
-   Electrostática); «Importar archivo» y «Restaurar copia» la reconocen y la suman a lo
-   que ya hay sin duplicar ni borrar nada. La lógica (Biblioteca.copia / restaura) no toca
-   el DOM y se prueba en Node con un almacén falso.
-   También: «Copiar enlace» (los datos de ahora en la dirección, #d=…; herramienta.js los recoge al
-   abrirlo) y «Hoja para imprimir» (elige varios ejercicios y se imprimen juntos con su solución:
-   cada uno se abre en un marco oculto de la misma página, se copian sus resultados y su desarrollo
-   y se devuelve el estado de antes).
-   ===================================================================== */
 const Biblioteca = (() => {
   const FORMATO = 'simulaciencia-ejercicios', ANCHO = 1280;
   const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -1169,7 +1271,6 @@ const Biblioteca = (() => {
   const escribe = (k, v) => { try { localStorage.setItem(k, typeof v === 'string' ? v : JSON.stringify(v)); return true; } catch (e) { return false; } };
   const norm = (s) => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 
-  // ---- copia de seguridad global (sin DOM: recibe el almacén, normalmente localStorage) ----
   const FORMATO_COPIA = 'simulaciencia-copia', PREF = 'simu-ejercicios:', K_ELECTRO = 'electro-sim-lib-v2';
   const idAzar = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
   const leeAlm = (alm, k) => { try { const v = JSON.parse(alm.getItem(k)); return v ?? null; } catch (e) { return null; } };
@@ -1185,7 +1286,6 @@ const Biblioteca = (() => {
     const el = leeAlm(alm, K_ELECTRO), electrostatica = Array.isArray(el?.items) && el.items.length ? el.items : undefined;
     return { formato: FORMATO_COPIA, version: 1, guardado: new Date().toISOString(), herramientas, electrostatica, total: total + (electrostatica?.length || 0) };
   }
-  // suma la copia a lo que hay: lo que ya está (mismo título y mismos datos, o mismo id en Electrostática) se salta
   function restaura(d, alm = localStorage) {
     if (d?.formato !== FORMATO_COPIA || typeof d.herramientas !== 'object' || !d.herramientas) throw new Error('no es una copia de seguridad de Ciencify');
     let nuevos = 0, repetidos = 0, herr = 0;
@@ -1275,11 +1375,11 @@ const Biblioteca = (() => {
     let busca = '', form = null, borrando = null, hoja = null;
     const guardaLib = () => escribe(K, lib) || aviso('No se pudo guardar: el navegador no deja usar el almacenamiento');
     const guardaUI = () => escribe(K_UI, ui);
+    const refresca = () => { const l = lee(K, null); if (l && Array.isArray(l.items)) lib = l; if (activo && !lib.items.some((x) => x.id === activo)) activo = null; };
+    window.addEventListener('storage', (e) => { if (e.key === K && !form) { refresca(); pinta(); } });
     const ponActivo = (id) => { activo = id; try { if (id) sessionStorage.setItem(K_ACT, id); else sessionStorage.removeItem(K_ACT); } catch (e) { /* sin almacenamiento */ } };
-    // las apps que guardan con retraso escuchan «simu-guardar» y guardan al momento
     const estado = () => { window.dispatchEvent(new Event('simu-guardar')); try { return localStorage.getItem(clave); } catch (e) { return null; } };
     const nuevoId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-    // «Ejercicios de ejemplo»: las opciones de los <select id="ejemplos…"> de la página, agrupadas
     const selsEj = () => [...document.querySelectorAll('select[id^="ejemplo"]')];
     function grupoDe(s) {
       const p = s.closest('[role="tabpanel"]'); if (!p) return '';
@@ -1307,7 +1407,6 @@ const Biblioteca = (() => {
     const btn = document.createElement('button');
     btn.className = 'bib-btn'; btn.type = 'button'; btn.setAttribute('aria-controls', 'bib'); btn.title = 'Guardar, abrir, exportar e importar tus ejercicios';
     btn.innerHTML = '<span aria-hidden="true">☰</span> Mis ejercicios';
-    // a la izquierda de la miga «Asignatura › Herramienta» (diseno.js), como la barra de electrostática
     const izq = document.querySelector('.miga-izq'), ini = cab.querySelector('.a-inicio');
     if (izq) izq.append(btn); else (ini ? ini.after(btn) : cab.prepend(btn));
     const panel = document.createElement('aside'); panel.className = 'bib'; panel.id = 'bib'; panel.setAttribute('aria-label', 'Mis ejercicios');
@@ -1357,6 +1456,7 @@ const Biblioteca = (() => {
       return n;
     }
     async function importaArchivos(files) {
+      refresca();
       let n = 0;
       for (const f of files) {
         try { n += importa(await f.text()); } catch (err) { aviso(`No se pudo importar ${f.name}: ${err.message}`); return; }
@@ -1366,13 +1466,17 @@ const Biblioteca = (() => {
     function carga(it) {
       if (!escribe(clave, it.datos)) { aviso('No se pudo abrir: el navegador no deja usar el almacenamiento'); return; }
       ponActivo(it.id);
-      // si se estaba practicando, lo que se abre sustituye a los datos de antes de la práctica
+      try {
+        const pon = Storage.prototype.setItem, quita = Storage.prototype.removeItem;
+        Storage.prototype.setItem = function (k, v) { if (this === localStorage && k === clave) return; return pon.call(this, k, v); };
+        Storage.prototype.removeItem = function (k) { if (this === localStorage && k === clave) return; return quita.call(this, k); };
+      } catch (e) { /* sin almacenamiento */ }
       try { sessionStorage.removeItem(`simu-practica:${herramienta}`); } catch (e) { /* sin almacenamiento */ }
-      // sin el #… de la dirección, que en algunas herramientas (configuración electrónica) manda sobre lo guardado
       history.replaceState(null, '', location.pathname + location.search);
       location.reload();
     }
     function guardaForm() {
+      refresca();
       const t = panel.querySelector('#bib-t').value.trim() || 'Ejercicio sin título', c = panel.querySelector('#bib-c').value.trim();
       if (form.id) { const it = lib.items.find((x) => x.id === form.id); if (it) Object.assign(it, { titulo: t, carpeta: c, actualizado: Date.now() }); }
       else {
@@ -1389,7 +1493,6 @@ const Biblioteca = (() => {
       it.datos = datos; it.actualizado = Date.now(); guardaLib(); pinta(); aviso(`Cambios guardados en «${it.titulo}»`);
     }
 
-    // ----- enlace con los datos de ahora -----
     const b64 = (t) => btoa(unescape(encodeURIComponent(t))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
     const enlace = () => { const d = estado(); return location.href.split('#')[0] + (d ? `#d=${b64(d)}` : ''); };
     async function copiaEnlace() {
@@ -1401,7 +1504,6 @@ const Biblioteca = (() => {
       aviso(!ok ? 'No se ha podido copiar el enlace' : !url.includes('#d=') ? 'Enlace copiado, pero todavía no hay datos que llevar' : url.length > 8000 ? 'Enlace copiado (es muy largo: algunos programas lo cortan)' : 'Enlace copiado: abre la herramienta con estos datos');
     }
 
-    // ----- hoja para imprimir: cada ejercicio se abre en un marco oculto y se copia su solución -----
     const valorDe = (el) => el.tagName === 'SELECT' ? [...el.selectedOptions].map((o) => o.textContent.trim()).join(', ') : el.type === 'checkbox' || el.type === 'radio' ? (el.checked ? '✓' : '—') : el.value;
     function extrae(d) {
       let nodos = [...d.querySelectorAll('.layout .card')].filter((c) => !c.closest('[hidden]') && c.textContent.trim());
@@ -1409,7 +1511,6 @@ const Biblioteca = (() => {
       const out = d.createElement('div');
       for (const n of nodos) {
         const c = n.cloneNode(true);
-        // los campos y las gráficas se copian como su valor y como imagen
         const o = [...n.querySelectorAll('input, select, textarea')], k = [...c.querySelectorAll('input, select, textarea')];
         k.forEach((e, i) => { if (e.type === 'hidden' || e.type === 'file' || /^ejemplo/.test(e.id)) { (e.closest('label') || e).remove(); return; } const sp = d.createElement('b'); sp.textContent = valorDe(o[i]); e.replaceWith(sp); });
         const lo = [...n.querySelectorAll('canvas')], lk = [...c.querySelectorAll('canvas')];
@@ -1518,6 +1619,7 @@ ${f ? `<div class="bib-form"><label>Título<input id="bib-t" value="${esc(f.titu
     }
 
     panel.addEventListener('click', (e) => {
+      refresca();
       const car = e.target.closest('.bib-carp');
       if (car) { const k = `${herramienta}/${car.dataset.carpeta}`; ui.cerradas[k] = !ui.cerradas[k]; guardaUI(); pinta(); return; }
       const b = e.target.closest('[data-acc]'); if (!b) return;
@@ -1566,184 +1668,105 @@ ${f ? `<div class="bib-form"><label>Título<input id="bib-t" value="${esc(f.titu
     scrim.addEventListener('click', () => abre(false));
     window.addEventListener('resize', () => abre(panel.classList.contains('abierta')));
 
-    // el ejemplo marcado sigue al <select>: las apps lo vacían al tocar un dato
     const sigue = (e) => { if (!panel.contains(e.target)) setTimeout(marcaEj); };
     document.addEventListener('change', sigue); document.addEventListener('input', sigue);
     pinta(); abre(!!ui.abierta);
-    // los ejemplos están en la barra: el desplegable de «Ejemplos…» de la página sobra (diseno.js lo oculta)
     if (selsEj().some((s) => s.options.length > 1)) document.body.classList.add('bib-ejemplos');
     return { get items() { return lib.items; }, abre, importa: (t) => { const n = importa(t); guardaLib(); pinta(); return n; }, archivoDe };
   }
   return { monta, FORMATO, FORMATO_COPIA, copia, restaura };
 })();
 
-/* =====================================================================
-   Modo práctica común a todas las herramientas. «Otro ejercicio» parte de
-   un ejemplo al azar y cambia sus datos numéricos (con la misma forma de
-   número: enteros pequeños, ángulos, probabilidades…), tapa los resultados
-   y el desarrollo, y pide al alumno los resultados principales, con un
-   hueco por cada número de lo que la herramienta escribiría. «Comprobar»
-   los corrige (1 % o la última cifra mostrada) y «Ver la solución» destapa
-   el desarrollo. Al salir se vuelve a los datos que había antes.
-   Lee de la página lo que ya calcula cada app: no repite ninguna física.
-   ===================================================================== */
 const Practica = (() => {
   const azar = (a, b) => a + Math.random() * (b - a), entero = (a, b) => Math.floor(azar(a, b + 1));
   const toma = (xs) => xs[Math.floor(Math.random() * xs.length)];
   const visible = (e) => !!e && !!(e.offsetWidth || e.offsetHeight || e.getClientRects().length) && !e.closest('[hidden]');
   const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
-  // lo que cambia de una herramienta a otra; lo demás sale de la estructura común de las páginas
   const CONF = {
-    // calorimetría: una mezcla, un problema al revés, un calentador o una dilatación
     calorimetria: { datos: null, items: '#te, #resumen-d > div', genera: () => window.CalorApp?.azar(), enunciado: () => window.CalorApp?.enunciado() },
-    // disoluciones: lo que se pide depende de la pestaña abierta (solo cuentan los que se ven)
     disoluciones: { items: '#valores > .valor:not(.dato), #valores-prep > .valor, #valores-col > .valor, #res-dil, #res-mez' },
-    // simulador de circuitos: un circuito de continua al azar; se pregunta la tensión de cada nudo
     simulador: { datos: null, tapa: '#modos, #panel > .tabla-scroll, #panel > h3, #panel > .nota', items: '#resumen > div.num', genera: () => window.SimuladorApp?.azar(), enunciado: () => window.SimuladorApp?.enunciado() },
     matrices: { items: '#res' },
-    // solo sistemas compatibles determinados: la solución paramétrica no se pregunta por huecos
-    // complejos: una operación al azar con números pequeños (los datos son textos como 3 − 2i)
-    // taylor: una función y un punto de los de clase; se preguntan los coeficientes, la aproximación y el error
     taylor: { datos: null, items: '#resumen > div.num', genera: () => window.TaylorApp?.azar(), enunciado: () => window.TaylorApp?.enunciado() },
-    // fourier: una función de las de clase; se preguntan a₀ y los primeros coeficientes
     fourier: { datos: null, items: '#resumen > div.num', genera: () => window.FourierApp?.azar(), enunciado: () => window.FourierApp?.enunciado() },
-    // edos: una ecuación de las de clase (Euler, segundo orden o sistema lineal); se preguntan los valores numéricos
     edos: { datos: null, items: '#resumen > div.num', genera: () => window.EDOsApp?.azar(), enunciado: () => window.EDOsApp?.enunciado() },
-    // cinetica: un ejercicio de los de clase (ley integrada, datos, velocidades iniciales o Arrhenius)
     cinetica: { datos: null, items: '#resumen > div.num', genera: () => window.CineticaApp?.azar(), enunciado: () => window.CineticaApp?.enunciado() },
-    // campos: gradiente, divergencia y rotacional, trabajo o Green con números enteros; se preguntan los valores decimales
-    // solubilidad: Kps, solubilidad, ion común o mezcla de dos disoluciones con una sal de tabla
     solubilidad: { datos: null, items: '#resumen > div.num', genera: () => window.SolubilidadApp?.azar(), enunciado: () => window.SolubilidadApp?.enunciado() },
     equilibrio: { datos: null, items: '#resumen > div.num', genera: () => window.EquilibrioApp?.azar(), enunciado: () => window.EquilibrioApp?.enunciado() },
-    // integrales-multiples: una integral doble o triple de las de clase (cartesianas, polares, cilíndricas o esféricas); se pregunta la integral, el área o volumen y el valor medio
     'integrales-multiples': { datos: null, items: '#resumen > div.num', genera: () => window.IntegralesMultiplesApp?.azar(), enunciado: () => window.IntegralesMultiplesApp?.enunciado() },
-    // series y lagrange: una serie con suma o un extremo condicionado con puntos racionales
     series: { datos: null, items: '#resumen > div.num', genera: () => window.SeriesApp?.azar(), enunciado: () => window.SeriesApp?.enunciado() },
     lagrange: { datos: null, items: '#resumen > div.num', genera: () => window.LagrangeApp?.azar(), enunciado: () => window.LagrangeApp?.enunciado() },
     campos: { datos: null, items: '#resumen > div.num', genera: () => window.CamposApp?.azar(), enunciado: () => window.CamposApp?.enunciado() },
-    // imagenes: una carga frente a un plano, una esfera (a tierra, aislada o a un potencial) o dentro de una cavidad
     imagenes: { datos: null, items: '#resumen > div', genera: () => window.ImagenesApp?.azar(), enunciado: () => window.ImagenesApp?.enunciado() },
-    // fuerza: una carga, unos vectores, un selector, un ciclotrón o unos hilos con números de clase
     fuerza: { datos: null, items: '#res > div', genera: () => window.FuerzaApp?.azar(), enunciado: () => window.FuerzaApp?.enunciado() },
-    // intervalos: una media, una proporción, una varianza, dos medias o un tamaño de muestra
     intervalos: { datos: null, items: '#res > div', genera: () => window.IntervalosApp?.azar(), enunciado: () => window.IntervalosApp?.enunciado() },
-    // laplace-numerica: una caja con los bordes a potenciales de clase (y a veces un electrodo central); se pregunta el potencial en la sonda, el campo y el potencial en el centro
     'laplace-numerica': { datos: null, items: '#resumen > div.num', genera: () => window.LaplaceNumericaApp?.azar(), enunciado: () => window.LaplaceNumericaApp?.enunciado() },
-    // ondasem: una onda plana, una intensidad o un medio con pérdidas
-    // guias-onda: una guía rectangular con un modo TE o TM; se preguntan fc, λc, β, λg, vf, vg y Z (o la atenuación)
     'guias-onda': { datos: null, items: '#resumen > div.num', genera: () => window.GuiasOndaApp?.azar(), enunciado: () => window.GuiasOndaApp?.enunciado() },
-    // líneas de transmisión: una carga y una línea al azar; se preguntan Γ, ROE, RL, λ, Zin y la posición del primer máximo
-    // cavidades: una cavidad rectangular, cilíndrica o esférica con uno de sus modos más bajos; se preguntan f0, λ, δ, Qc, Q y Δf
     cavidades: { datos: null, items: '#resumen > div.num', genera: () => window.CavidadesApp?.azar(), enunciado: () => window.CavidadesApp?.enunciado() },
     'lineas-transmision': { datos: null, items: '#resumen > div.num', genera: () => window.LineasTransmisionApp?.azar(), enunciado: () => window.LineasTransmisionApp?.enunciado() },
     'ondas-em': { datos: null, items: '#res > div', genera: () => window.OndasEMApp?.azar(), enunciado: () => window.OndasEMApp?.enunciado() },
-    // maxwell: una ecuación al azar (Gauss, Gauss para B, Faraday, Ampère–Maxwell u onda)
     maxwell: { datos: null, items: '#res > div', genera: () => window.MaxwellApp?.azar(), enunciado: () => window.MaxwellApp?.enunciado() },
-    // fresnel: una incidencia oblicua entre dos medios con índices de clase
     fresnel: { datos: null, items: '#res > div', genera: () => window.FresnelApp?.azar(), enunciado: () => window.FresnelApp?.enunciado() },
-    // trabajo y energía: una rampa con muelle, un rizo, un péndulo, una montaña rusa o una fuerza variable
     'trabajo-y-energia': { datos: null, items: '#resumen > div', genera: () => window.EnergiaApp?.azar(), enunciado: () => window.EnergiaApp?.enunciado() },
-    // tiro parabólico: un tiro, un blanco, una frenada, un encuentro o un giro (cuentan los resultados de la pestaña abierta)
     'tiro-parabolico': { datos: null, items: '#resumen > div, #resumen-r > div, #resumen-c > div', genera: () => window.TiroApp?.azar(), enunciado: () => window.TiroApp?.enunciado() },
-    // sólido rígido: un momento de inercia, una rodadura, una polea, una patinadora, un choque, un péndulo o una escalera
     'solido-rigido': { datos: null, items: '#res > div', genera: () => window.SolidoApp?.azar(), enunciado: () => window.SolidoApp?.enunciado() },
-    // ondas: una cuerda, un tubo, un Doppler, un nivel sonoro, unas pulsaciones, una potencia o una reflexión
     ondas: { datos: null, items: '#res > div', genera: () => window.OndasApp?.azar(), enunciado: () => window.OndasApp?.enunciado() },
-    // doppler: una fuente en línea o en ángulo, una que pasa, un eco, un cono de Mach o una luz que se corre al rojo
     doppler: { datos: null, items: '#resumen > div', genera: () => window.DopplerApp?.azar(), enunciado: () => window.DopplerApp?.enunciado() },
-    // ciclos: un Carnot, un Otto, un Diesel, un Brayton, un Stirling, un ciclo propio o una máquina
     ciclos: { datos: null, items: '#resumen > div', genera: () => window.CiclosApp?.azar(), enunciado: () => window.CiclosApp?.enunciado() },
-    // fluidos: una presión, un tubo en U, una prensa, un empuje, una tubería, un chorro, una viscosidad, un medidor, una presa o un capilar
-    // gases: un estado, una transformación, una mezcla, un gas real o una velocidad molecular
     gases: { datos: null, items: '#res > div', genera: () => window.GasesApp?.azar(), enunciado: () => window.GasesApp?.enunciado() },
     fluidos: { datos: null, items: '#resumen > div', genera: () => window.FluidosApp?.azar(), enunciado: () => window.FluidosApp?.enunciado() },
-    // dinamica: un bloque en un plano, dos bloques, Atwood, una curva, un péndulo cónico o un muelle
     dinamica: { datos: null, items: '#res > div', genera: () => window.DinamicaApp?.azar(), enunciado: () => window.DinamicaApp?.enunciado() },
-    // antena dipolo: un dipolo al azar; se pregunta λ, Rrad, Prad, D y el campo
     antena: { datos: null, items: '#resumen > div', genera: () => window.AntenaApp?.azar(), enunciado: () => window.AntenaApp?.enunciado() },
-    // choques: elástico, inelástico o pegados, en 1D o 2D
     choques: { datos: null, items: '#resumen > div', genera: () => window.ChoquesApp?.azar(), enunciado: () => window.ChoquesApp?.enunciado() },
-    // gravitación: una fuerza, un satélite, una velocidad de escape, una órbita por su periodo o una elipse de Kepler
     gravitacion: { datos: null, items: '#resumen > div', genera: () => window.GravitacionApp?.azar(), enunciado: () => window.GravitacionApp?.enunciado() },
-    // interferencia: Young, una rendija, una red o una lámina delgada
     interferencia: { datos: null, items: '#res > div', genera: () => window.InterferenciaApp?.azar(), enunciado: () => window.InterferenciaApp?.enunciado() },
-    // laplace: una transformada, una inversa por fracciones simples o una EDO; se preguntan los valores numéricos
     laplace: { datos: null, items: '#resumen > div.num', genera: () => window.LaplaceApp?.azar(), enunciado: () => window.LaplaceApp?.enunciado() },
-    // control: Routh, lugar de las raíces o Nyquist de una ganancia de lazo; se preguntan cambios de signo, K crítica, asíntotas, rupturas y márgenes
     control: { datos: null, items: '#resumen > div.num', genera: () => window.ControlApp?.azar(), enunciado: () => window.ControlApp?.enunciado() },
-    // convolución: dos señales de clase o un filtro RC; se preguntan el máximo, su instante, el área o la respuesta al escalón
     convolucion: { datos: null, items: '#resumen > div.num', genera: () => window.ConvolucionApp?.azar(), enunciado: () => window.ConvolucionApp?.enunciado() },
-    // superficies: una función de dos variables y un punto; se preguntan f, fₓ, f_y, |∇f| y la derivada direccional
     superficies: { datos: null, items: '#resumen > div.num', genera: () => window.SuperficiesApp?.azar(), enunciado: () => window.SuperficiesApp?.enunciado() },
-    // derivadas: una derivada en un punto o una integral definida de las de clase
     derivadas: { datos: null, items: '#resumen > div.num', genera: () => window.DerivadasApp?.azar(), enunciado: () => window.DerivadasApp?.enunciado() },
     complejos: { datos: null, genera: () => window.ComplejosApp?.azar(), enunciado: () => window.ComplejosApp?.enunciado() },
     sistemas: { items: '#res', valido: () => !/[λμ]|incompatible|no tiene/i.test(document.querySelector('#res')?.textContent + document.querySelector('#tipo')?.textContent) },
-    // distribuciones: un ejercicio con enunciado (normal, binomial, Poisson, valores críticos…)
     estadistica: { datos: null, items: '#res', genera: () => window.EstadisticaApp?.azar(), enunciado: () => window.EstadisticaApp?.enunciado() },
-    // regresión: una tabla de datos al azar alrededor de una recta (están en un textarea, no en campos numéricos)
     regresion: { datos: null, genera: () => window.RegresionApp?.azar(), enunciado: () => 'Con los datos de la tabla, calcula la recta de regresión de Y sobre X, la de X sobre Y, el coeficiente de correlación, las medias, la covarianza y la estimación de y que se pide.' },
-    // resistencias: unos colores al azar (no hay números que cambiar en los datos)
     resistencias: { datos: null, genera: () => window.ResistenciasApp?.azar(), enunciado: () => `¿Cuánto vale una resistencia con las bandas <b>${esc(window.ResistenciasApp?.colores() || '')}</b>? Escribe el valor y el margen en el que puede estar en las mismas unidades.` },
     magnetostatica: { items: '[data-res]', tapa: '[data-res], [data-steps], .cvwrap', datos: '#fuentes',
-      // el enunciado del ejemplo ya no vale con los datos nuevos
       despues: () => pon(document.querySelector('#enunciado'), 'Ejercicio de práctica: calcula el campo magnético en los puntos de las preguntas con las fuentes de la izquierda.'),
       antes: () => { const m = document.querySelector('#modo'); if (m && m.value !== 'si') { m.value = 'si'; m.dispatchEvent(new Event('change', { bubbles: true })); } } },
-    // masa-molar: según la pestaña, una masa molar, una estequiometría con su limitante o una fórmula empírica
     'masa-molar': {
       items: '#res-masa .grande, #resumen-este > div, #resumen-emp > div', quitar: '', datos: null,
       tapa: '#res-masa, #conv-card, #tabla-este td.n, #tabla-este td.m, #tabla-este td.s, #resumen-este, #este .pasos, #resumen-emp, #emp .pasos',
       genera: () => window.MasaApp?.azar(), enunciado: () => window.MasaApp?.enunciado(),
       get textos() { return document.querySelector('#tab-emp')?.getAttribute('aria-selected') === 'true' ? [{ et: 'Fórmula empírica', sel: '#resumen-emp .formula' }] : []; },
     },
-    // graficador: un polinomio o una racional sencilla para estudiar
     graficador: { datos: null, genera: () => window.GraficadorApp?.azar(), enunciado: () => window.GraficadorApp?.enunciado() },
-    // errores: un péndulo, una ley de Ohm o una densidad con medidas al azar
     errores: { datos: null, genera: () => window.ErroresApp?.azar(), enunciado: () => window.ErroresApp?.enunciado() },
-    // contrastes: una media o una proporción con enunciado
     contrastes: { datos: null, genera: () => window.ContrastesApp?.azar(), enunciado: () => window.ContrastesApp?.enunciado() },
-    // chi2-bondad: un dado o una tabla 2 × 3 con enunciado
     'chi2-bondad': { datos: null, genera: () => window.Chi2BondadApp?.azar(), enunciado: () => window.Chi2BondadApp?.enunciado() },
-    // probabilidad: un problema de probabilidad total y Bayes con tres máquinas
     probabilidad: { datos: null, items: '#resumen > div.pr', genera: () => window.ProbabilidadApp?.azar(), enunciado: () => window.ProbabilidadApp?.enunciado() },
-    // oferta-demanda: un mercado con equilibrio entero
-    // puertas-logicas: una tabla de verdad de 3 variables; se piden los minitérminos
     'puertas-logicas': { datos: null, items: '#resumen > div.pr', genera: () => window.PuertasLogicasApp?.azar(), enunciado: () => window.PuertasLogicasApp?.enunciado() },
-    // unidades: un valor con su conversión (solo el resultado, no el factor)
     unidades: { datos: null, items: '#resumen > div.pr', genera: () => window.UnidadesApp?.azar(), enunciado: () => window.UnidadesApp?.enunciado() },
     'sistemas-numericos': { datos: null, items: '#resumen > div.pr', genera: () => window.SistemasNumericosApp?.azar(), enunciado: () => window.SistemasNumericosApp?.enunciado() },
     'oferta-demanda': { datos: null, genera: () => window.OfertaDemandaApp?.azar(), enunciado: () => window.OfertaDemandaApp?.enunciado() },
-    // excedentes: un impuesto en un mercado con equilibrio entero
     excedentes: { datos: null, genera: () => window.ExcedentesApp?.azar(), enunciado: () => window.ExcedentesApp?.enunciado() },
-    // descriptiva: unas notas al azar (los datos están en un textarea)
     descriptiva: { datos: null, genera: () => window.DescriptivaApp?.azar(), enunciado: () => window.DescriptivaApp?.enunciado() },
-    // anova: tres grupos al azar
     'anova': { datos: null, genera: () => window.AnovaApp?.azar(), enunciado: () => window.AnovaApp?.enunciado() },
-    // no-parametricos: dos muestras o pares al azar
     'no-parametricos': { datos: null, genera: () => window.NoParametricosApp?.azar(), enunciado: () => window.NoParametricosApp?.enunciado() },
-    // regresion-multiple: un plano con ruido
     'regresion-multiple': { datos: null, genera: () => window.RegresionMultipleApp?.azar(), enunciado: () => window.RegresionMultipleApp?.enunciado() },
-    // regresión económica: una función de consumo al azar (los datos están en un textarea)
     'regresion-economia': { datos: null, genera: () => window.RegresionEconomiaApp?.azar(), enunciado: () => window.RegresionEconomiaApp?.enunciado() },
-    // ratios: un balance al azar que cuadre (si se cambian los datos sueltos, el activo y el pasivo no coinciden)
     ratios: { datos: null, genera: () => window.RatiosApp?.azar(), enunciado: () => window.RatiosApp?.enunciado() },
     balance: { datos: null, genera: () => window.BalanceApp?.azar(), enunciado: () => window.BalanceApp?.enunciado() },
-    // ajustador: una reacción de los ejemplos; se preguntan los coeficientes
     ajustador: { datos: null, items: '#coefs > div', genera: () => window.AjustadorApp?.azar(), enunciado: () => window.AjustadorApp?.enunciado() },
-    // formulacion: un compuesto habitual, de fórmula a nombre o de nombre a fórmula; las respuestas válidas están en #ac0, #ac1…
     formulacion: {
       datos: null, items: null, genera: () => window.FormulacionApp?.azar(), enunciado: () => window.FormulacionApp?.enunciado(),
       textos: [{ et: 'Tu respuesta', sel: '#ac0', otros: Array.from({ length: 59 }, (_, i) => `#ac${i + 1}`), ph: 'Escribe el nombre o la fórmula' }],
     },
-    // redox: una reacción de los ejemplos; se preguntan los coeficientes
     redox: { datos: null, items: '#coefs > div', genera: () => window.RedoxApp?.azar(), enunciado: () => window.RedoxApp?.enunciado() },
-    // vsepr: una molécula neutra de los ejemplos; se preguntan dominios, pares libres, geometría, hibridación y polaridad
     vsepr: {
       datos: null, items: '#resumen > div.num', genera: () => window.VseprApp?.azar(), enunciado: () => window.VseprApp?.enunciado(),
       textos: [{ et: 'Geometría molecular', sel: '#r-geo', ph: 'tetraédrica…' }, { et: 'Hibridación', sel: '#r-hib', ph: 'sp3…' }, { et: 'Polaridad', sel: '#r-pol', ph: 'polar o apolar' }],
     },
-    // organica: una molécula de los ejemplos; se pregunta su nombre IUPAC, los centros quirales y los estereoisómeros
     organica: {
       datos: null, items: null, genera: () => window.OrganicaApp?.azar(), enunciado: () => window.OrganicaApp?.enunciado(),
       textos: [{ et: 'Nombre IUPAC', sel: '#titulo-mol', ph: 'butan-2-ol…' }],
@@ -1769,7 +1792,6 @@ const Practica = (() => {
   const redondea = (x, cifras) => { if (x === 0) return 0; const e = Math.floor(Math.log10(Math.abs(x))) - cifras + 1; return Math.round(x / 10 ** e) * 10 ** e; };
   const limpio = (x) => parseFloat(x.toPrecision(12));
 
-  // un dato numérico nuevo, del mismo tipo que el que había
   function otroValor(v, etiqueta, texto) {
     if (v === 0) return 0;
     const ang = /°|ángulo|grados|α|θ|φ/i.test(etiqueta), s = Math.sign(v), a = Math.abs(v);
@@ -1781,15 +1803,12 @@ const Practica = (() => {
   }
   const etiquetaDe = (inp) => [inp.getAttribute('aria-label'), inp.id && document.querySelector(`label[for="${inp.id}"]`)?.textContent, inp.closest('label')?.textContent, inp.closest('.row, .fila')?.textContent].filter(Boolean).join(' ');
 
-  // los números de un resultado: la plantilla con un hueco por número y su valor (los de sub/sup, fórmulas y notas no cuentan)
-  // (también el número de la parte imaginaria, j31, y el decimal con punto de magnetostática)
   const RE = /(?:(?<![\p{L}\d,.])|(?<=(?:^|[^\p{L}\d])j))([−-]?\d+(?:[.,]\d+)?(?:\/\d+)?)(\s*[·×]\s*10)?/gu;
   const conEtiqueta = (el) => el.matches('div') && el.firstElementChild?.tagName === 'SPAN' && !el.firstElementChild.className && el.firstChild === el.firstElementChild;
   function numeros(el, quitar = 'small, .nota') {
     const c = el.cloneNode(true);
     if (conEtiqueta(c)) c.firstElementChild.remove();
     if (quitar) for (const x of c.querySelectorAll(quitar)) x.remove();
-    // las fracciones de matrices y sistemas (numerador y denominador apilados) pasan a a/b
     for (const fr of c.querySelectorAll('.fr')) if (fr.children.length === 2) fr.replaceWith(`${fr.children[0].textContent.trim()}/${fr.children[1].textContent.trim()}`);
     c.normalize();
     const vals = [], tw = document.createTreeWalker(c, NodeFilter.SHOW_TEXT), nodos = [];
@@ -1814,7 +1833,6 @@ const Practica = (() => {
     }
     return { plantilla: c.innerHTML, vals };
   }
-  // lo que escribe el alumno: 12,5 · 1.2e-3 · 1,2·10^-3 · −3/4
   function leeAlumno(s) {
     let t = String(s).trim().replace(/\s+/g, '').replace(/[−–]/g, '-').replace(/,/g, '.');
     if (!t) return null;
@@ -1860,7 +1878,6 @@ const Practica = (() => {
     const btn = document.createElement('button');
     btn.type = 'button'; btn.className = 'prac-btn'; btn.setAttribute('aria-pressed', 'false'); btn.title = 'Ejercicios con datos al azar: escribe tus resultados y compruébalos antes de ver el desarrollo';
     btn.innerHTML = '<span aria-hidden="true">✎</span> Modo práctica';
-    // a la derecha de la miga (diseno.js); en páginas sin miga, en la cabecera
     const der = document.querySelector('.miga-der'), tras = cab.querySelector('.bib-btn') || cab.querySelector('.a-inicio');
     if (der) der.append(btn); else (tras ? tras.after(btn) : cab.prepend(btn));
 
@@ -1879,7 +1896,6 @@ const Practica = (() => {
     }
     function ejemplo() {
       const d = datos(); if (!d) return;
-      // el desplegable de ejemplos está oculto cuando la barra «Mis ejercicios» los lista (body.bib-ejemplos)
       const usable = (x) => visible(x) || (document.body.classList.contains('bib-ejemplos') && /^ejemplo/.test(x.id) && !x.closest('[hidden]'));
       const s = [...d.querySelectorAll('select')].find((x) => usable(x) && x.options.length > 2 && /ejemplo/i.test(x.id + ' ' + x.options[0].textContent));
       if (s) { s.selectedIndex = entero(1, s.options.length - 1); s.dispatchEvent(new Event('change', { bubbles: true })); }
@@ -1891,7 +1907,6 @@ const Practica = (() => {
         pon(inp, escribe(otroValor(v, etiquetaDe(inp), inp.value), inp.value));
       }
     }
-    // escoge qué resultados se preguntan: todos si son pocos; si no, el primero y tres al azar
     function arma() {
       const its = items().map((el) => ({ el, et: conEtiqueta(el) ? el.firstElementChild.textContent.trim() : '', n: numeros(el, conf.quitar) })).filter((x) => x.n.vals.length && x.n.vals.length <= 9);
       let elegidos = its.length <= 4 ? its : [its[0], ...its.slice(1).sort(() => Math.random() - 0.5).slice(0, 3)].sort((a, b) => its.indexOf(a) - its.indexOf(b));
@@ -1935,7 +1950,6 @@ ${preguntas.length ? `<div class="prac-q">${filas}</div>` : '<p>Con estos datos 
 <div class="prac-acc"><button class="si" data-a="comprobar"${preguntas.length ? '' : ' disabled'}>Comprobar</button><button data-a="solucion">${resuelto ? 'Ocultar la solución' : 'Ver la solución'}</button><button data-a="otro">Otro ejercicio</button></div>
 <p class="prac-nota" role="status" hidden></p>`;
     }
-    // el valor correcto se lee al comprobar, por si el alumno ha tocado los datos
     function esperado(p) {
       if (p.tipo === 'texto') return [document.querySelector(p.sel), ...p.otros.map((s) => document.querySelector(s))].filter(Boolean).map((e) => e.textContent);
       const el = p.sel ? document.querySelector(p.sel) : items()[p.idx]; const n = el && numeros(el, conf.quitar);
@@ -1976,54 +1990,37 @@ ${preguntas.length ? `<div class="prac-q">${filas}</div>` : '<p>Con estos datos 
         nuevo(); card.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
       } else {
         tapa(false); card?.remove(); card = null;
-        // vuelve a los datos de antes de practicar
         let antes = null; try { antes = clave ? sessionStorage.getItem(K_ANTES) : null; sessionStorage.removeItem(K_ANTES); } catch (e) { /* sin almacenamiento */ }
         if (antes !== null) {
           const restaura = () => { try { if (antes) localStorage.setItem(clave, antes); else localStorage.removeItem(clave); } catch (e) { /* sin almacenamiento */ } };
-          // otra vez al irse la página, por si la herramienta guarda con retraso (un guardado pendiente pisaría los datos de antes)
           restaura(); window.addEventListener('pagehide', restaura, { once: true });
           history.replaceState(null, '', location.pathname + location.search); location.reload();
         }
       }
     }
-    // si se recargó en mitad de una práctica, deja los datos como estaban
     try { const antes = clave ? sessionStorage.getItem(K_ANTES) : null; if (antes !== null) { sessionStorage.removeItem(K_ANTES); if (antes) localStorage.setItem(clave, antes); else localStorage.removeItem(clave); history.replaceState(null, '', location.pathname + location.search); location.reload(); } } catch (e) { /* sin almacenamiento */ }
     btn.addEventListener('click', () => activa(!activo));
-    // lo que habría que escribir en cada hueco, en orden (para las pruebas)
     const respuestas = () => [...(card?.querySelectorAll('.prac-in') || [])].map((inp) => { const p = preguntas[+inp.dataset.p], e = esperado(p); return p.tipo === 'texto' ? e[0] : e[+inp.dataset.k].t; });
     return (window.PracticaApp = { activa, nuevo, respuestas, get activo() { return activo; }, get preguntas() { return preguntas; } });
   }
   return { monta, CONF, numeros, leeAlumno, otroValor };
 })();
 
-/* =====================================================================
-   Portada personal: lo que Ciencify recuerda de ti, solo en este navegador (localStorage, sin
-   cuentas ni envíos). herramientas.js lo pone en cada herramienta y fenómeno tras biblioteca.js; la
-   portada (portal.js) lo usa para pintar «Tu espacio». Claves:
-     simu-recientes   [{ r: 'asignatura/herramienta', t: ms }]   las últimas 8, la más nueva primero
-     simu-favoritos   ['asignatura/herramienta', …]
-   En cada herramienta apunta la visita y añade el botón ☆ «Favorita» junto a Mis ejercicios.
-   Personal.espacio(sitio) devuelve { continuar, favoritas, recientes } con rutas (portal.js las
-   convierte en tarjetas); Personal.borra() olvida todo.
-   ===================================================================== */
 const Personal = (() => {
   const K_REC = 'simu-recientes', K_FAV = 'simu-favoritos', MAX = 8;
   const lee = (k) => { try { const v = JSON.parse(localStorage.getItem(k)); return Array.isArray(v) ? v : []; } catch (e) { return []; } };
   const escribe = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } };
-  // «/fisica/gases/» → 'fisica/gases' (las dos últimas partes: también vale desde un archivo local)
   const rutaDe = (p) => { const q = String(p).split('/').filter((s) => s && !/\.html?$/.test(s)); return q.length >= 2 ? q.slice(-2).join('/') : null; };
   const recientes = () => lee(K_REC).filter((x) => x && typeof x.r === 'string');
   const favoritos = () => lee(K_FAV).filter((x) => typeof x === 'string');
   function visita(ruta, ahora = Date.now()) { escribe(K_REC, [{ r: ruta, t: ahora }, ...recientes().filter((x) => x.r !== ruta)].slice(0, MAX)); }
   const esFavorita = (ruta) => favoritos().includes(ruta);
   function alterna(ruta) { const f = favoritos(), i = f.indexOf(ruta); if (i >= 0) f.splice(i, 1); else f.push(ruta); escribe(K_FAV, f); return i < 0; }
-  // continuar = la última visitada; recientes = las demás
   function espacio() {
     const r = recientes();
     return { continuar: r[0] || null, favoritas: favoritos(), recientes: r.slice(1, 6) };
   }
   function borra() { try { localStorage.removeItem(K_REC); localStorage.removeItem(K_FAV); } catch (e) { /* sin almacenamiento */ } }
-  // «hace 5 min», «hace 3 h», «ayer», «hace 4 días»
   function hace(t, ahora = Date.now()) {
     const m = Math.max(0, Math.round((ahora - t) / 60000));
     if (m < 2) return 'justo ahora';
