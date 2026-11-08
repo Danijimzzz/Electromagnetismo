@@ -35,6 +35,18 @@ const EjemplosSim = (() => {
       [['E1.0', 'U1.0'], ['E2.0', 'U1.1'], ['E1.1', [0, 10]], ['E2.1', [4, 10]], ['R1.1', [12, 10]], [[0, 10], [12, 10]]]) },
     { clave: 'trifasica', ...monta('Trifásica en estrella con carga equilibrada', [['G1', 'FT', 4, 4, 2, { Vf: '230', f: '50' }, true], ['K1', 'CT', 8, 4, 0, { R: '10', L: '0' }], ['GND1', 'GND', 2, 7, 0]],
       [['G1.0', 'K1.0'], ['G1.1', 'K1.1'], ['G1.2', 'K1.2'], ['G1.3', 'K1.3']], { tfin: '60m' }) },
+    { clave: 'thevenin', ...monta('Equivalente de Thévenin de un divisor con carga', [['E1', 'V', 0, 2, 1, { forma: 'cc', v: '12' }], ['R1', 'R', 0, 2, 0, { R: '1k' }], ['R2', 'R', 4, 2, 1, { R: '2k' }], ['R3', 'R', 4, 2, 0, { R: '500' }], ['RL', 'R', 8, 2, 1, { R: '1k' }], ['GND1', 'GND', 0, 6, 0]],
+      [['R2.1', [0, 6]], ['RL.1', [0, 6]]], { th: { modo: 'c', comp: 'RL' } }) },
+    { clave: 'resonancia-paralelo', ...monta('Resonancia en paralelo (el Bode es la impedancia)', [['I1', 'I', 0, 2, 1, { forma: 'seno', A: '1m', f: '1,59k' }], ['R1', 'R', 4, 2, 1, { R: '1k' }], ['L1', 'L', 8, 2, 1, { L: '10' }], ['C1', 'C', 12, 2, 1, { C: '1' }], ['GND1', 'GND', 0, 6, 0]],
+      [['I1.0', 'R1.0'], ['R1.0', 'L1.0'], ['L1.0', 'C1.0'], ['I1.1', 'R1.1'], ['R1.1', 'L1.1'], ['L1.1', 'C1.1']], { bode: { fuente: 'I1', salida: 'n1', fmin: '100', fmax: '20k' } }) },
+    { clave: 'radio-q-alto', ...monta('Sintonía de radio: RLC serie de Q = 100 a 1 MHz', [['E1', 'V', 0, 2, 1, { forma: 'seno', A: '1', f: '1M' }], ['L1', 'L', 0, 2, 0, { L: '0,2' }], ['C1', 'C', 4, 2, 0, { C: '126,65p' }], ['R1', 'R', 8, 2, 1, { R: '12,57' }], ['GND1', 'GND', 0, 6, 0]],
+      [['R1.1', [0, 6]]], { bode: { fuente: 'E1', salida: 'n3', fmin: '900k', fmax: '1,1M' } }) },
+    { clave: 'no-inversor', ...monta('Amplificador operacional no inversor (ganancia 10)', [['E1', 'V', 0, 4, 1, { forma: 'cc', v: '0,5' }], ['R1', 'R', 4, 2, 0, { R: '1k' }], ['R2', 'R', 8, 0, 0, { R: '9k' }], ['A1', 'AO', 8, 3, 0], ['SONDA1', 'SONDA', 12, 3, 0, { canal: '1' }], ['GND1', 'GND', 0, 8, 0]],
+      [['E1.0', 'A1.0'], ['R2.0', 'A1.1'], ['R2.1', [12, 0]], [[12, 0], 'A1.2'], ['R1.0', [4, 8]], [[4, 8], [0, 8]]]) },
+    { clave: 'regulador-zener', ...monta('Regulador con diodo Zener de 5,1 V', [['E1', 'V', 0, 2, 1, { forma: 'cc', v: '12' }], ['R1', 'R', 0, 2, 0, { R: '470' }], ['Z1', 'Z', 4, 6, 3, { Vz: '5,1' }], ['RL', 'R', 8, 2, 1, { R: '1k' }], ['SONDA1', 'SONDA', 8, 2, 0, { canal: '1' }], ['GND1', 'GND', 0, 6, 0]],
+      [['Z1.1', 'RL.0'], ['Z1.0', [0, 6]], ['RL.1', [0, 6]]]) },
+    { clave: 'puente-rectificador', ...monta('Rectificador de onda completa en puente con filtro', [['E1', 'V', 4, 4, 0, { forma: 'seno', A: '10', f: '50' }], ['D1', 'D', 4, 4, 3], ['D2', 'D', 8, 4, 3], ['D3', 'D', 4, 8, 3], ['D4', 'D', 8, 8, 3], ['C1', 'C', 12, 2, 1, { C: '100' }], ['RL', 'R', 16, 2, 1, { R: '1k' }], ['SONDA1', 'SONDA', 12, 0, 0, { canal: '1' }], ['GND1', 'GND', 8, 8, 0]],
+      [['D1.1', 'D2.1'], ['D2.1', [12, 0]], [[12, 0], 'C1.0'], [[12, 0], [16, 0]], [[16, 0], 'RL.0'], ['D3.0', 'D4.0'], ['D4.0', [12, 8]], [[12, 8], 'C1.1'], [[12, 8], [16, 8]], [[16, 8], 'RL.1']], { tfin: '60m' }) },
   ];
   return { lista, monta };
 })();

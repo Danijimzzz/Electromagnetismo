@@ -323,6 +323,7 @@
   function dibujaOsc() {
     const c = $('#osc'); if (!c || !trR) return;
     const { g, w, h } = lienzo(c), col = colores(), se = series(); if (!w || !h || !se.length) return;
+    Herramienta.exportaGrafica(c, () => { const q = series(); return trR && q.length ? { filas: [['t (s)', ...q.map((s) => `${s.nom} (${s.un})`)], ...trR.t.map((t, i) => [t, ...q.map((s) => s.y[i])])], nombre: 'osciloscopio' } : null; });
     const t = trR.t, T = t[t.length - 1], ml = 62, mr = 14, mt = 14, mb = 30;
     const grupos = [...new Set(se.map((s) => s.un))];
     const ejes = grupos.map((un) => { const ys = se.filter((s) => s.un === un).flatMap((s) => s.y); let lo = Math.min(...ys), hi = Math.max(...ys); if (hi - lo < 1e-12) { lo -= 1; hi += 1; } const p = (hi - lo) * 0.08; return { un, lo: lo - p, hi: hi + p }; });
@@ -379,8 +380,9 @@
   function dibujaBode() {
     const c = $('#bode'); if (!c || !ext) return;
     const b = sc.analisis.bode, fmin = Herramienta.leeSI(b.fmin || '1', 1), fmax = Herramienta.leeSI(b.fmax || '1M', 1);
-    try { if (!(fmin > 0 && fmax > fmin)) throw new Error('El rango de frecuencias no es válido'); bodeR = S.barrido(ext.net, { fuente: b.fuente, a: b.salida, b: '0', fmin, fmax, puntos: 240 }); } catch (e) { bodeR = null; $('#bode-ley').textContent = e.message; lienzo(c); return; }
+    try { if (!(fmin > 0 && fmax > fmin)) throw new Error('El rango de frecuencias no es válido'); bodeR = S.barrido(ext.net, { fuente: b.fuente, a: b.salida, b: '0', fmin, fmax, puntos: 240, adaptativo: true }); } catch (e) { bodeR = null; $('#bode-ley').textContent = e.message; lienzo(c); return; }
     const { g, w, h } = lienzo(c), col = colores(); if (!w || !h) return;
+    Herramienta.exportaGrafica(c, () => bodeR && { filas: [['f (Hz)', '|H| (dB)', 'Fase (°)'], ...bodeR.f.map((x, i) => [x, bodeR.dB[i], bodeR.fase[i]])], nombre: `bode ${sc.analisis.bode.salida}` });
     const ml = 56, mr = 14, h2 = (h - 40) / 2, X = (f) => ml + (Math.log10(f / fmin) / Math.log10(fmax / fmin)) * (w - ml - mr);
     const dBs = bodeR.dB, lo = Math.min(...dBs), hi = Math.max(...dBs), pad = Math.max((hi - lo) * 0.1, 3);
     const trazo = (y, y0, alto, a, bb, color, fmt) => {
@@ -441,13 +443,16 @@
     const uni = SimBarrido.siUnidad(ps.f), ca = faR && faR.length;
     return `<div class="param"><label for="ba-p">Valor que se varía</label><select id="ba-p" class="in">${pars.map((q) => `<option value="${esc(clave(q))}"${clave(q) === clave(ps) ? ' selected' : ''}>${esc(q.id)} · ${esc(q.f.nom)}</option>`).join('')}</select><label for="ba-de">de</label><input id="ba-de" class="in" value="${esc(de)}"><label for="ba-a">a <small>(${esc(uni || 'unidades')})</small></label><input id="ba-a" class="in" value="${esc(a)}"><label for="ba-log">Escala</label><select id="ba-log" class="in"><option value="lin"${b.log ? '' : ' selected'}>Lineal</option><option value="log"${b.log ? ' selected' : ''}>Logarítmica</option></select></div><div class="param"><label for="ba-m">Lo que se mide</label><select id="ba-m" class="in">${ms.map(([v, n]) => `<option value="${esc(v)}"${v === m ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select><label for="ba-modo">Análisis</label><select id="ba-modo" class="in"><option value="cc"${b.modo === 'ca' && ca ? '' : ' selected'}>Continua</option>${ca ? `<option value="ca"${b.modo === 'ca' ? ' selected' : ''}>Alterna (valor eficaz)</option>` : ''}</select></div><canvas id="ba" aria-label="Gráfica de la medida al variar el valor elegido"></canvas><p class="leyenda" id="ba-ley"></p><div id="ba-tabla"></div>`;
   }
-  let baR = null;
+  let baR = null, baMeta = null;
+  const nombreMedida = (ms) => (ms[0] === 'V' ? `tensión del nudo ${ms.slice(2)}` : `${{ U: 'tensión', I: 'corriente', P: 'potencia' }[ms[0]]} de ${ms.slice(2)}`);
   function dibujaBa() {
     const c = $('#ba'); if (!c || !ext) return;
     const b = sc.analisis.barrido, ps = { id: b.p.split(':')[0], k: b.p.split(':')[1] }, comp = sc.componentes.find((q) => q.id === ps.id), f = CompSim.C[comp.t].campos.find((q) => q.k === ps.k), base = f.base ?? 1;
     const [mk, mid] = [b.m.slice(0, 1), b.m.slice(2)], un = unidadBa(mk), ux = SimBarrido.siUnidad(f);
     try { baR = SimBarrido.barre(sc, { comp: ps.id, campo: ps.k, desde: Herramienta.leeSI(b.de, base), hasta: Herramienta.leeSI(b.a, base), puntos: 80, log: !!b.log, medida: { k: mk, id: mid }, modo: b.modo }); } catch (e) { baR = null; $('#ba-ley').textContent = e.message; $('#ba-tabla').innerHTML = ''; lienzo(c); return; }
     const { g, w, h } = lienzo(c), col = colores(); if (!w || !h) return;
+    baMeta = { ps, ux, un, m: b.m };
+    Herramienta.exportaGrafica(c, () => baR && baMeta && { filas: [[`${baMeta.ps.id} (${baMeta.ux || 'unidades'})`, `${nombreMedida(baMeta.m)} (${baMeta.un})`], ...baR.x.map((x, i) => [x, baR.y[i]])], nombre: `barrido ${baMeta.ps.id} ${baMeta.ps.k} ${baMeta.m.replace(':', ' ')}` });
     const pts = baR.x.map((x, i) => [x, baR.y[i]]).filter((q) => isFinite(q[1]));
     if (!pts.length) { $('#ba-ley').textContent = 'No se pudo resolver el circuito en ningún punto del rango.'; $('#ba-tabla').innerHTML = ''; return; }
     const ml = 62, mr = 14, mt = 10, mb = 30, x0 = baR.x[0], x1 = baR.x[baR.x.length - 1], lg = !!b.log;
@@ -461,7 +466,7 @@
     g.strokeStyle = col['--canal-1']; g.lineWidth = 2; g.beginPath(); let ini = true; baR.x.forEach((x, i) => { const y = baR.y[i]; if (!isFinite(y)) { ini = true; return; } ini ? g.moveTo(X(x), Y(y)) : g.lineTo(X(x), Y(y)); ini = false; }); g.stroke();
     const iM = ys.indexOf(hi0), iN = ys.indexOf(lo0), pM = pts[iM], pN = pts[iN];
     g.fillStyle = col['--canal-2']; for (const q of [pM, pN]) { g.beginPath(); g.arc(X(q[0]), Y(q[1]), 4, 0, 7); g.fill(); }
-    const nom = (ms) => (ms[0] === 'V' ? `tensión del nudo ${ms.slice(2)}` : `${{ U: 'tensión', I: 'corriente', P: 'potencia' }[ms[0]]} de ${ms.slice(2)}`);
+    const nom = nombreMedida;
     $('#ba-ley').innerHTML = `<i class="c1"></i>${esc(nom(b.m))} · máximo ${u(pM[1], un)} con ${esc(ps.id)} = ${u(pM[0], ux)} · mínimo ${u(pN[1], un)} con ${u(pN[0], ux)}${b.modo === 'ca' ? ' · valores eficaces' : ''}`;
     const filas = []; for (let i = 0; i < 9; i++) { const j = Math.round((i * (baR.x.length - 1)) / 8); filas.push([u(baR.x[j], ux), u(baR.y[j], un)]); }
     $('#ba-tabla').innerHTML = tabla([`${esc(ps.id)} (${esc(f.nom.toLowerCase())})`, esc(nom(b.m))], filas);
