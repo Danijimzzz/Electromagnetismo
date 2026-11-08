@@ -24,8 +24,20 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     const E = (t) => { const [x1, x2] = g.x(t), [v1, v2] = g.v(t); return 0.5 * g.m1 * v1 * v1 + 0.5 * g.m2 * v2 * v2 + 0.5 * g.k1 * x1 * x1 + 0.5 * g.kc * (x2 - x1) ** 2 + 0.5 * g.k2 * x2 * x2; };
     cerca(E(0.37), 0.5, 1e-9, 'la energía se conserva');
     error({ m1: '1', m2: '1', k1: '0', kc: '10', k2: '0', x10: '0,1' }, 'sin muelles a la pared'); error({ m1: '0', m2: '1', k1: '1', kc: '10', k2: '1', x10: '0,1' }, 'masa cero');
-    error({ m1: '1', m2: '1', k1: '1', kc: '0', k2: '1', x10: '0,1' }, 'sin acoplo'); error({ m1: '1', m2: '1', k1: '1', kc: '1', k2: '1' }, 'todo en reposo');
+    error({ m1: '1', m2: '1', k1: '0', kc: '0', k2: '1', x10: '0,1' }, 'sin acoplo y una masa sin muelle'); error({ m1: '1', m2: '1', k1: '1', kc: '1', k2: '1' }, 'todo en reposo');
     if (fallos === antes) console.log(`  ✓ ${N}: ${C.ejemplos.length} ejemplos calculados a mano (modos, batido, modos puros, carros y energía) y errores`);
   }
+  {
+    // kc = 0: dos osciladores independientes, ω₁ = √(k₁/m₁) y ω₂ = √(k₂/m₂); con m₁ = m₂ y k₁ = k₂ los modos simétricos son exactos
+    const antes = fallos, ind = C.resolver({ m1: '1', m2: '2', k1: '100', kc: '0', k2: '150', x10: '0,1', x20: '0,05', v10: '0', v20: '0', t: '0,5' });
+    const cerca = (a, b, q) => { if (!(Math.abs(a - b) <= 1e-9 * Math.max(1, Math.abs(b)))) mal(`Oscilaciones acopladas · ${q}: ${a} en vez de ${b}`); };
+    cerca(ind.w1, Math.sqrt(75), 'ω de la masa 2 (la menor)'); cerca(ind.w2, 10, 'ω de la masa 1'); cerca(ind.xa, 0.1 * Math.cos(5), 'x₁(0,5) = 0,1·cos(10·0,5)'); cerca(ind.xb, 0.05 * Math.cos(Math.sqrt(75) * 0.5), 'x₂(0,5)'); cerca(ind.E, 0.5 * 100 * 0.01 + 0.5 * 150 * 0.0025, 'energía');
+    if (!ind.independiente || isFinite(ind.Tbat)) mal('Oscilaciones acopladas: con kc = 0 no hay batido');
+    const sim = C.resolver({ m1: '2', m2: '2', k1: '50', kc: '10', k2: '50', x10: '0,1', x20: '0', v10: '0', v20: '0', t: '0' });
+    cerca(sim.w1, 5, 'ω₁ simétrico = √(k/m)'); cerca(sim.w2, Math.sqrt((50 + 20) / 2), 'ω₂ simétrico = √((k + 2kc)/m)'); cerca(sim.r1, 1, 'modo en fase'); cerca(sim.r2, -1, 'modo en oposición');
+    if (!sim.pasos.some((q) => q.t === 'Caso simétrico') || C.resolver({ m1: '2', m2: '1', k1: '50', kc: '10', k2: '50', x10: '0,1', t: '0' }).pasos.some((q) => q.t === 'Caso simétrico')) mal('Oscilaciones acopladas: el aviso del caso simétrico sale cuando no toca (o no sale)');
+    if (fallos === antes) console.log('  ✓ Oscilaciones acopladas: kc = 0 y caso simétrico');
+  }
+
   return Com.navegador({ publico, asignatura: 'fisica', carpeta: 'osc-acopladas', nombre: N, app: 'OscAcopladasApp', C, pagina, mal, malo: { k: 'm1', v: '0' } });
 };

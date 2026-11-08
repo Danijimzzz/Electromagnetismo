@@ -23,11 +23,11 @@
       [`x₁ en t = ${f(s.t)} s`, `${f(s.xa, 4)} m`], [`x₂ en t = ${f(s.t)} s`, `${f(s.xb, 4)} m`],
     ],
     grafica: (s) => {
-      const tmax = Math.min(2 * s.Tbat, 40 * s.T2), N = 700, p1 = [], p2 = []; let amp = 0;
+      const tmax = Math.min(2 * (isFinite(s.Tbat) ? s.Tbat : 6 * Math.max(s.T1, s.T2)), 40 * s.T2), N = 700, p1 = [], p2 = []; let amp = 0;
       for (let j = 0; j <= N; j++) { const t = (tmax * j) / N, [a, b] = s.x(t); p1.push([t, a]); p2.push([t, b]); amp = Math.max(amp, Math.abs(a), Math.abs(b)); }
       const tt = Math.min(s.t, tmax), [a, b] = s.x(tt);
       return { x: [0, tmax], y: [-amp * 1.15, amp * 1.15], fx: (v) => f(v, 3), ejeX: 'Tiempo (s)', ejeY: 'Posición (m)', series: [{ pts: p1, color: '--serie-1' }, { pts: p2, color: '--serie-2' }, { tipo: 'puntos', pts: [[tt, a]], color: '--serie-1', radio: 6 }, { tipo: 'puntos', pts: [[tt, b]], color: '--serie-2', radio: 6 }], horizontales: [{ y: 0 }] };
     },
-    leyenda: () => '<b>Azul</b>: posición de m₁. <b>Rojo</b>: posición de m₂. Los puntos marcan el instante elegido. Cuando una se apaga, la otra se llena: la energía pasa de una masa a la otra.',
+    leyenda: (s) => '<b>Azul</b>: posición de m₁. <b>Rojo</b>: posición de m₂. Los puntos marcan el instante elegido. ' + (s && s.independiente ? 'Sin muelle de acoplo cada masa oscila por su cuenta y no hay intercambio de energía.' : 'Cuando una se apaga, la otra se llena: la energía pasa de una masa a la otra.'),
   });
 })();

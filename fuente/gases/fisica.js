@@ -25,10 +25,13 @@ const Gases = (() => {
     monoatomico: { nombre: 'Monoatómico (He, Ne, Ar…)', gamma: 5 / 3, cv: '3/2', cp: '5/2' },
     diatomico: { nombre: 'Diatómico (N₂, O₂, aire…)', gamma: 7 / 5, cv: '5/2', cp: '7/2' },
   };
-  // nombre, masa molar (g/mol) y diámetro cinético (pm) para el recorrido libre medio
+  // nombre, masa molar (g/mol) y diámetro cinético (pm) para el recorrido libre medio.
+  // Fuente de los diámetros: D. W. Breck, «Zeolite Molecular Sieves» (1974), contrastados en Fase 10 con la tabla de Wikipedia «Kinetic diameter»;
+  // el aire (365 pm) es una media de N₂ y O₂. Masas molares: IUPAC.
   const MOLECULAS = { He: ['Helio', 4.003, 260], Ne: ['Neón', 20.18, 275], Ar: ['Argón', 39.95, 340], H2: ['Hidrógeno, H₂', 2.016, 289], N2: ['Nitrógeno, N₂', 28.01, 364], O2: ['Oxígeno, O₂', 32.00, 346], aire: ['Aire', 28.96, 365], CO2: ['Dióxido de carbono, CO₂', 44.01, 330] };
-  // constantes de Van der Waals: a (Pa·m⁶/mol²), b (m³/mol)
-  const VDW = { He: ['Helio', 0.00346, 2.38e-5], H2: ['Hidrógeno, H₂', 0.02476, 2.661e-5], N2: ['Nitrógeno, N₂', 0.1370, 3.87e-5], O2: ['Oxígeno, O₂', 0.1382, 3.19e-5], Ar: ['Argón', 0.1355, 3.20e-5], CO2: ['Dióxido de carbono, CO₂', 0.3640, 4.267e-5], NH3: ['Amoniaco, NH₃', 0.4225, 3.707e-5], H2O: ['Vapor de agua', 0.5536, 3.049e-5] };
+  // constantes de Van der Waals: a (Pa·m⁶/mol²), b (m³/mol). Fuente: CRC Handbook of Chemistry and Physics (Weast, 53.ª ed.),
+  // contrastadas en Fase 10 con Wikipedia «Van der Waals constants (data page)» (a en L²·bar/mol² ÷ 10; b en L/mol ÷ 1000)
+  const VDW = { He: ['Helio', 0.00346, 2.38e-5], H2: ['Hidrógeno, H₂', 0.02476, 2.661e-5], N2: ['Nitrógeno, N₂', 0.1370, 3.87e-5], O2: ['Oxígeno, O₂', 0.1382, 3.186e-5], Ar: ['Argón', 0.1355, 3.20e-5], CO2: ['Dióxido de carbono, CO₂', 0.3640, 4.267e-5], NH3: ['Amoniaco, NH₃', 0.4225, 3.707e-5], H2O: ['Vapor de agua', 0.5536, 3.049e-5] };
 
   function num(sc, k, nom, { opcional = false, signo = false } = {}) {
     if (vacio(sc[k])) { if (opcional) return null; throw new Error(`Falta ${nom}`); }
@@ -212,7 +215,7 @@ const Gases = (() => {
       { t: 'Ecuación de Van der Waals', html: `${nombre}: $a = ${f(a)}$ Pa·m⁶/mol², $b = ${f(b)}$ m³/mol. La ecuación $(P + {a n^2}/{V^2})(V − nb) = nRT$ corrige el gas ideal: b es el volumen que ocupan las moléculas y a mide lo que se atraen.` },
       { t: 'Presión del gas real', html: `$P = {nRT}/{V − nb} − {a n^2}/{V^2} = {${f(n)} · ${Rs} · ${f(T)}}/{${f(V)} − ${f(n * b)}} − {${f(a)} · ${f(n)}^2}/{(${f(V)})^2} = ${f(rep)} − ${f(atr)}$ = <b>${f(P)} Pa</b> (${f(P / 101325)} atm)` },
       { t: 'Comparación con el gas ideal', html: `Ideal: $P = {nRT}/V$ = ${f(Pi)} Pa (${f(Pi / 101325)} atm). El real da un ${f((100 * (P - Pi)) / Pi, 3)} %. Factor de compresibilidad $Z = {PV}/{nRT}$ = <b>${f(Z)}</b>: ${Z < 1 ? 'menor que 1, mandan las atracciones' : 'mayor que 1, manda el volumen de las moléculas'}.` },
-      { t: 'Redlich-Kwong', html: `Con los mismos $T_c$ y $P_c$: $a' = {0,42748 R^2 T_c^{2,5}}/{P_c} = ${f(aR)}$ Pa·m⁶·K<sup>½</sup>/mol², $b' = {0,08664 R T_c}/{P_c} = ${f(bR)}$ m³/mol. La ecuación $P = {RT}/{V_m − b'} − {a'}/{√T V_m (V_m + b')}$ da <b>${f(PRK)} Pa</b> (${f(PRK / 101325)} atm), $Z = ${f(ZRK)}$. Suele ajustarse mejor que Van der Waals a presiones altas y a temperaturas por encima de la crítica.` },
+      { t: 'Redlich-Kwong', html: `Con los mismos $T_c$ y $P_c$: $a' = {0,42748 R^2 T_c^{2,5}}/{P_c} = ${f(aR)}$ Pa·m⁶·K<sup>½</sup>/mol², $b' = {0,08664 R T_c}/{P_c} = ${f(bR)}$ m³/mol. La ecuación $P = {RT}/{V_m − b'} − {a'}/{√T V_m (V_m + b')}$ da <b>${f(PRK)} Pa</b> (${f(PRK / 101325)} atm), $Z = ${f(ZRK)}$. Suele ajustarse mejor que Van der Waals a presiones altas y a temperaturas por encima de la crítica. <b>Aviso:</b> aquí $T_c$ y $P_c$ no son los valores medidos del gas, sino los que salen de $a$ y $b$ de Van der Waals, así que este Redlich-Kwong es una aproximación; con los valores críticos reales ($T_c$ y $P_c$ de tablas) saldría algo distinto.` },
       { t: 'Punto crítico', html: `$T_c = {8a}/{27Rb}$ = <b>${f(Tc)} K</b>, $P_c = {a}/{27 b^2}$ = ${f(Pc / 101325)} atm, $V_{m,c} = 3b$ = ${f(Vc * 1000)} L/mol. Por encima de $T_c$ el gas no se puede licuar por mucho que se comprima.` },
     ];
     return { modo: 'real', nombre, a, b, n, V, T, P, Pi, Z, Tc, Pc, Vc, aR, bR, PRK, ZRK, prk, pvdw, pasos };
