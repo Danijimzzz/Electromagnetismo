@@ -438,7 +438,7 @@ const Version = (() => {
       ] },
     ],
     control: [
-      { v: '0.2', fecha: '2026-11-08', cambios: ['Los errores de datos (ganancia 0, numerador de más grado que el denominador) se avisan igual en todos los modos, y las gráficas se pueden descargar en PNG o copiar sus datos.'] },
+      { v: '0.2', fecha: '2026-11-08', cambios: ['Dos pestañas nuevas: «Escalón», con la respuesta al escalón del lazo cerrado (valor final, error, tiempo de subida, sobreoscilación y establecimiento), y «Bode», con el diagrama de lazo abierto y los márgenes de fase y de ganancia.', 'Los errores de datos (ganancia 0, numerador de más grado que el denominador) se avisan igual en todas las pestañas, y las gráficas se pueden descargar en PNG o copiar sus datos.'] },
       { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: escribe la ganancia de lazo K·N(s)/D(s) (como expresión, s^2+3s+2, o con los coeficientes) y estudia la estabilidad de tres maneras: la tabla de Routh con el rango de K estable (con el cero en la primera columna y la fila de ceros), el lugar de las raíces con asíntotas, puntos de ruptura, ángulos de salida y cruces con el eje imaginario, y el diagrama de Nyquist con los márgenes de ganancia y de fase y el recuento de vueltas alrededor de −1. Con nueve ejemplos, desarrollo paso a paso y modo práctica.'] },
     ],
     'termo-estadistica': [

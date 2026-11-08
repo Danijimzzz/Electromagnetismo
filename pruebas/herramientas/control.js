@@ -82,6 +82,22 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       if (q({ den: 's^2' }).estable !== false) mal('Control · límite: s² + 1 → polos en ±j, no estable');
       const r4 = q({ den: '(s+1)^4', K: '1' }); if (!r4.estable) mal('Control · límite: (s+1)⁴ + 1 tiene los polos en el semiplano izquierdo? (K = 1)');
       const dd = C.rangoK([1], C.lee({ den: '(s+1)^3' }, 'den', 'D')); if (!dd.estables.length || Math.abs(dd.criticos[0].K - 8) > 1e-6) mal('Control · límite: K/(s+1)³ se vuelve inestable en K = 8'); }
+    // CO-1: respuesta al escalón de lazo cerrado y Bode de lazo abierto
+    { const near = (a2, b2, tol, q) => { if (!(Math.abs(a2 - b2) <= tol * Math.max(1, Math.abs(b2)))) mal(`Control · ${q}: ${a2} en vez de ${b2}`); };
+      const e1 = C.resolver({ modo: 'escalon', num: '1', den: 's(s+2)', K: '5' }).es;   // T = 5/(s² + 2s + 5): ωn² = 5, ζ = 1/√5
+      near(e1.yss, 1, 1e-12, 'escalón: valor final 1'); near(e1.sobre, 100 * Math.exp((-Math.PI * (1 / Math.sqrt(5))) / Math.sqrt(1 - 1 / 5)), 2e-3, 'escalón: sobreoscilación 20,79 %'); near(e1.tpico, Math.PI / 2, 1e-2, 'escalón: tiempo de pico π/ωd'); near(e1.ess, 0, 1e-12, 'escalón: error 0 con un integrador');
+      const e2 = C.resolver({ modo: 'escalon', num: '1', den: '(s+1)(s+3)', K: '6' }).es;   // T = 6/(s² + 4s + 9): valor final 2/3
+      near(e2.yss, 2 / 3, 1e-12, 'escalón: valor final 6/9'); near(e2.ess, 1 / 3, 1e-12, 'escalón: error 1/3'); near(e2.sobre, 100 * Math.exp((-Math.PI * (2 / 3)) / Math.sqrt(1 - 4 / 9)), 3e-3, 'escalón: sobreoscilación 6 %');
+      const e3 = C.resolver({ modo: 'escalon', num: '1', den: 's+1', K: '2' }).es;   // T = 2/(s+3): primer orden sin sobreoscilación, 10-90 % en ln9/3
+      near(e3.yss, 2 / 3, 1e-12, 'escalón de primer orden: valor final'); near(e3.sobre, 0, 1e-6, 'escalón de primer orden: sin sobreoscilación'); near(e3.subida, Math.log(9) / 3, 3e-3, 'escalón de primer orden: tiempo de subida ln9/3'); near(e3.ts, Math.log(50) / 3, 3e-3, 'escalón de primer orden: establecimiento ln50/3');
+      const e4 = C.resolver({ modo: 'escalon', num: '1', den: 's(s+1)(s+2)', K: '10' }).es; if (e4.estable || Math.abs(e4.y[e4.y.length - 1]) < 5) mal('Control · escalón: con K = 10 el lazo es inestable y la respuesta debe crecer');
+      const b1 = C.resolver({ modo: 'bode', num: '1', den: 's(s+1)(s+2)', K: '1' });   // M_G = 6 (15,56 dB) en √2 rad/s
+      near(b1.gm.GM, 6, 1e-6, 'Bode: margen de ganancia 6'); near(b1.gm.w, Math.SQRT2, 1e-6, 'Bode: ω180 = √2'); near(b1.pm.PM, 53.4108, 1e-4, 'Bode: margen de fase 53,4°');
+      near(b1.bd.fase[0], -90, 2, 'Bode: la fase empieza en −90° (integrador)'); near(b1.bd.mag[0], 20 * Math.log10(1 / (b1.bd.ws[0] * 2)), 1e-2, 'Bode: pendiente de −20 dB/déc a baja frecuencia');
+      const b2 = C.resolver({ modo: 'bode', num: '1', den: 's(s+1)(s+2)', K: '10' }); if (!(b2.pm.PM < 0) || !(b2.gm.GMdB < 0)) mal('Control · Bode con K = 10: los márgenes deben ser negativos');
+      const b3 = C.resolver({ modo: 'bode', num: '1', den: 's+1', K: '5' }); near(b3.pm.PM, 180 - (Math.atan(Math.sqrt(24)) * 180) / Math.PI, 1e-3, 'Bode de 5/(s+1): margen de fase 101,5°'); if (b3.gm) mal('Control · Bode de 5/(s+1): la ganancia puede crecer sin límite');
+      for (const modo of ['escalon', 'bode']) { let ok = false; try { C.resolver({ modo, num: '1', den: 's+1', K: '0' }); } catch (er) { ok = true; } if (!ok) mal(`Control · ${modo}: K = 0 no da error`); }
+    }
     if (fallos === antes) console.log(`  ✓ Control: Routh (ε y fila de ceros), lugar de las raíces y Nyquist, ${C.ejemplos.length} ejemplos y errores`);
   }
 
@@ -113,7 +129,7 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     await page.fill('#f-den', 's^2+(');
     if (await page.locator('#error').isHidden()) mal('Control: un polinomio mal escrito no muestra el error');
     { const Exp = require('./comun/exportar-grafica.js');
-      for (const c of ['tercer-orden', 'raices-tres', 'nyquist-tres']) { await page.evaluate((k) => ControlApp.abrirEjemplo(k), c); await Exp.pagina(page, '#grafica', mal, 'Control · ' + c); } }
+      for (const c of ['tercer-orden', 'raices-tres', 'nyquist-tres', 'escalon-segundo', 'bode-tres']) { await page.evaluate((k) => ControlApp.abrirEjemplo(k), c); await Exp.pagina(page, '#grafica', mal, 'Control · ' + c); } }
     await page.close();
     if (consola.length) mal('Control: consola del navegador:\n      ' + consola.join('\n      '));
     if (fallos === antes) console.log(`  ✓ Control: ${C.ejemplos.length} ejemplos en la página con MathML, gráfica y pestañas, sin errores de consola`);

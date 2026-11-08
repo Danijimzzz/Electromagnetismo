@@ -12,10 +12,10 @@
   const C = Control, f = C.f, CLAVE = 'control-v1';
 
   let sc = copia(C.ejemplos[0].sc);
-  try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && typeof g === 'object' && ['routh', 'raices', 'nyquist'].includes(g.modo)) sc = g; } catch (e) { /* sin almacenamiento */ }
+  try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && typeof g === 'object' && ['routh', 'raices', 'nyquist', 'escalon', 'bode'].includes(g.modo)) sc = g; } catch (e) { /* sin almacenamiento */ }
   const guarda = () => { try { localStorage.setItem(CLAVE, JSON.stringify(sc)); } catch (e) { /* sin almacenamiento */ } };
   let sol = null, col = {};
-  const TITULOS = { routh: 'Polos de lazo cerrado', raices: 'Lugar de las raíces', nyquist: 'Diagrama de Nyquist' };
+  const TITULOS = { routh: 'Polos de lazo cerrado', raices: 'Lugar de las raíces', nyquist: 'Diagrama de Nyquist', escalon: 'Respuesta al escalón de lazo cerrado', bode: 'Diagrama de Bode de lazo abierto' };
 
   /* ---------- Formulario ---------- */
   const fila = (k, nom, un, ph) => `<label for="f-${k}">${nom}${un ? ` <small>(${un})</small>` : ''}</label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc[k] ?? '')}" placeholder="${esc(ph || '')}" autocomplete="off" spellcheck="false">`;
@@ -50,6 +50,8 @@
     const L = `L(s) = K·(${sc.num || '1'}) / (${sc.den})`, K = `K = ${sc.K || '1'}`;
     return sc.modo === 'routh' ? `Con ${L} y ${K}, aplica el criterio de Routh a la ecuación característica: ¿cuántas raíces hay en el semiplano derecho y para qué valores de K es estable?`
       : sc.modo === 'raices' ? `Para ${L}, dibuja el lugar de las raíces: centroide y ángulos de las asíntotas, puntos de ruptura y valor de K con el que cruza el eje imaginario.`
+        : sc.modo === 'escalon' ? `Con ${L} y ${K} en lazo cerrado con realimentación unitaria, calcula la respuesta al escalón: valor final, error en régimen permanente, tiempo de subida, sobreoscilación y tiempo de establecimiento.`
+          : sc.modo === 'bode' ? `Con ${L} y ${K}, dibuja el diagrama de Bode de lazo abierto y halla el margen de fase y el de ganancia; ¿es estable el lazo cerrado?`
         : `Con ${L} y ${K}, dibuja el diagrama de Nyquist y halla los márgenes de ganancia y de fase y los polos de lazo cerrado en el semiplano derecho (Z = N + P).`;
   };
 
@@ -83,6 +85,18 @@
       h += dato(`Estabilidad con K = ${f(sol.K)}`, sol.estable ? 'estable' : 'no es estable');
       if (sol.din && sol.din.Mp !== undefined) h += dato('Par dominante', `ωₙ = ${f(sol.din.wn)} · ζ = ${f(sol.din.zeta)} · Mₚ = ${f(sol.din.Mp)} %`);
       $('#leyenda').textContent = 'Líneas: ramas del lugar (K de 0 a ∞). ×: polos. ○: ceros. Rombos: puntos de ruptura. Puntos rojos: cruces con el eje imaginario. Cuadrados: polos de lazo cerrado con el K escrito. Discontinuas: asíntotas.';
+    } else if (sol.modo === 'escalon') {
+      const e = sol.es;
+      h += dato('Estabilidad', e.estable ? 'estable' : 'inestable o marginal');
+      if (e.estable) h += dato('Valor final', `y(∞) = ${f(e.yss)}`, true) + (e.ess !== undefined ? dato('Error en régimen permanente', `e<sub>ss</sub> = ${f(e.ess)}`, true) : '');
+      if (e.subida !== undefined) h += dato('Tiempo de subida (10–90 %)', `${f(e.subida)} s`, true) + dato('Sobreoscilación', `${f(e.sobre)} %`, true) + dato('Tiempo de pico', `${f(e.tpico)} s`, true) + dato('Establecimiento (2 %)', `${f(e.ts)} s`, true);
+      $('#leyenda').textContent = 'Línea: salida y(t) ante un escalón unitario con realimentación unitaria. Discontinua: valor final. La banda marca el ±2 % del valor final.';
+    } else if (sol.modo === 'bode') {
+      h += sol.gm ? dato('Margen de ganancia', `${f(sol.gm.GM)} (${f(sol.gm.GMdB)} dB) en ${f(sol.gm.w)} rad/s`, true) : dato('Margen de ganancia', '∞');
+      h += sol.pm ? dato('Margen de fase', `${f(sol.pm.PM)}° en ${f(sol.pm.w)} rad/s`, true) : dato('Margen de fase', 'sin cruce de ganancia');
+      h += dato('Lazo cerrado', sol.ny.pasaPor ? 'marginalmente estable' : sol.ny.Z === 0 ? 'estable' : 'inestable');
+      if (sol.gm) h += dato('K crítica', f(sol.K * sol.gm.GM), true);
+      $('#leyenda').textContent = 'Arriba, magnitud de L(jω) en dB; abajo, su fase. Línea discontinua: 0 dB y −180°. Punto: frecuencia de cruce de ganancia (margen de fase) y de fase (margen de ganancia).';
     } else {
       const n = sol.ny;
       h += dato('Polos de L(s) con Re > 0 (P)', n.P, true) + dato('Vueltas horarias alrededor de −1 (N)', n.Ncw, true) + dato('Polos de lazo cerrado inestables (Z = N + P)', n.Z, true);
@@ -156,6 +170,48 @@
     for (const z of sol.polosCL) { g.fillStyle = col['--accent']; g.fillRect(p.X(z[0]) - 4.5, p.Y(z[1]) - 4.5, 9, 9); g.strokeStyle = col['--ink']; g.lineWidth = 1; g.strokeRect(p.X(z[0]) - 4.5, p.Y(z[1]) - 4.5, 9, 9); }
     p.fin();
   }
+  // ejes con escala lineal o logarítmica en x: devuelve X(v) e Y(v) para el recuadro [ml, ml + pw] × [mt, mt + ph]
+  function ejesXY(g, caja, x0, x1, y0, y1, { logx, etX, etY, nx = 6, ny = 5 }) {
+    const [ml, mt, pw, ph] = caja, lx = (v) => (logx ? Math.log10(v) : v);
+    const X = (v) => ml + ((lx(v) - lx(x0)) / (lx(x1) - lx(x0))) * pw, Y = (v) => mt + ph - ((v - y0) / (y1 - y0)) * ph;
+    g.font = '12px system-ui, sans-serif'; g.lineWidth = 1; g.strokeStyle = col['--line']; g.fillStyle = col['--muted'];
+    g.textAlign = 'center'; g.textBaseline = 'top';
+    const xs = logx ? Array.from({ length: Math.ceil(Math.log10(x1)) - Math.floor(Math.log10(x0)) + 1 }, (_, i) => 10 ** (Math.floor(Math.log10(x0)) + i)).filter((v) => v >= x0 * 0.999 && v <= x1 * 1.001) : marcas(x0, x1, nx);
+    for (const v of xs) { g.beginPath(); g.moveTo(X(v), mt); g.lineTo(X(v), mt + ph); g.stroke(); g.fillText(txt(f(v, 3)), X(v), mt + ph + 5); }
+    g.textAlign = 'right'; g.textBaseline = 'middle';
+    for (const v of marcas(y0, y1, ny)) { g.beginPath(); g.moveTo(ml, Y(v)); g.lineTo(ml + pw, Y(v)); g.stroke(); g.fillText(txt(f(v, 3)), ml - 6, Y(v)); }
+    g.textAlign = 'right'; g.textBaseline = 'bottom'; g.fillText(etX, ml + pw - 2, mt + ph - 2); g.textAlign = 'left'; g.textBaseline = 'top'; g.fillText(etY, ml + 4, mt + 2);
+    g.save(); g.beginPath(); g.rect(ml, mt, pw, ph); g.clip();
+    return { X, Y, fin: () => g.restore() };
+  }
+  function dibujaEscalon(g, w, h) {
+    const e = sol.es, ml = 52, mr = 12, mt = 12, mb = 28;
+    let lo = Math.min(0, ...e.y), hi = Math.max(1, ...e.y); if (!e.estable) { hi = Math.min(hi, 8); lo = Math.max(lo, -8); }
+    const pad = (hi - lo) * 0.08, p = ejesXY(g, [ml, mt, w - ml - mr, h - mt - mb], 0, e.tmax, lo - pad * (lo < 0 ? 1 : 0), hi + pad, { etX: 't (s)', etY: 'y(t)' });
+    if (e.estable && Number.isFinite(e.yss)) {
+      g.fillStyle = col['--zona']; g.fillRect(p.X(0), p.Y(e.yss * 1.02), p.X(e.tmax) - p.X(0), p.Y(e.yss * 0.98) - p.Y(e.yss * 1.02));
+      g.setLineDash([6, 5]); g.strokeStyle = col['--muted']; g.lineWidth = 1.4; g.beginPath(); g.moveTo(p.X(0), p.Y(e.yss)); g.lineTo(p.X(e.tmax), p.Y(e.yss)); g.stroke(); g.setLineDash([]);
+    }
+    g.strokeStyle = col['--serie-1']; g.lineWidth = 2.6; g.beginPath(); e.t.forEach((t, i) => (i ? g.lineTo(p.X(t), p.Y(e.y[i])) : g.moveTo(p.X(t), p.Y(e.y[i])))); g.stroke();
+    if (e.tpico !== undefined) { g.fillStyle = col['--serie-2']; g.beginPath(); g.arc(p.X(e.tpico), p.Y(e.pico), 4.5, 0, 2 * Math.PI); g.fill(); }
+    p.fin();
+  }
+  function dibujaBode(g, w, h) {
+    const b = sol.bd, ml = 52, mr = 12, gap = 30, ph = (h - 12 - 28 - gap) / 2, w0 = b.ws[0], w1 = b.ws[b.ws.length - 1];
+    const mmin = Math.floor(Math.min(...b.mag, 0) / 20) * 20, mmax = Math.ceil(Math.max(...b.mag, 0) / 20) * 20 || 20, fmin = Math.floor(Math.min(...b.fase, -180) / 45) * 45, fmax = Math.ceil(Math.max(...b.fase, 0) / 45) * 45;
+    const trazo = (p, ys, c) => { g.strokeStyle = c; g.lineWidth = 2.6; g.beginPath(); b.ws.forEach((x, i) => (i ? g.lineTo(p.X(x), p.Y(ys[i])) : g.moveTo(p.X(x), p.Y(ys[i])))); g.stroke(); };
+    const ref = (p, v, x0, x1) => { g.setLineDash([6, 5]); g.strokeStyle = col['--muted']; g.lineWidth = 1.4; g.beginPath(); g.moveTo(p.X(x0), p.Y(v)); g.lineTo(p.X(x1), p.Y(v)); g.stroke(); g.setLineDash([]); };
+    const pm = ejesXY(g, [ml, 12, w - ml - mr, ph], w0, w1, mmin, mmax, { logx: true, etX: 'ω (rad/s)', etY: '|L| (dB)' });
+    ref(pm, 0, w0, w1); trazo(pm, b.mag, col['--serie-1']);
+    if (sol.pm) circulo(g, pm.X(sol.pm.w), pm.Y(0), 5, col['--accent'], true);
+    if (sol.gm) circulo(g, pm.X(sol.gm.w), pm.Y(-sol.gm.GMdB), 5, col['--serie-3'], true);
+    pm.fin();
+    const pf = ejesXY(g, [ml, 12 + ph + gap, w - ml - mr, ph], w0, w1, fmin, fmax, { logx: true, etX: 'ω (rad/s)', etY: 'fase (°)', ny: 5 });
+    ref(pf, -180, w0, w1); trazo(pf, b.fase, col['--serie-2']);
+    if (sol.pm) circulo(g, pf.X(sol.pm.w), pf.Y(sol.pm.fase), 5, col['--accent'], true);
+    if (sol.gm) circulo(g, pf.X(sol.gm.w), pf.Y(-180), 5, col['--serie-3'], true);
+    pf.fin();
+  }
   function dibujaNyquist(g, w, h) {
     const n = sol.ny, zs = n.zs, Lpc = sol.gm ? sol.gm.mod : 0, Rv = Math.max(1.6, 1.6 * Lpc);
     const dentro = zs.filter((z) => Math.hypot(z[0], z[1]) <= Rv);
@@ -179,14 +235,16 @@
     if (!sol) return null;
     if (sol.modo === 'routh') return { cab: ['Polo', 'Re', 'Im'], filas: [...C.raices(sol.D).map((z, i) => [`lazo abierto ${i + 1}`, z[0], z[1]]), ...sol.polosCL.map((z, i) => [`lazo cerrado ${i + 1}`, z[0], z[1]])] };
     if (sol.modo === 'raices') return { cab: ['Rama', 'K', 'Re', 'Im'], filas: sol.lg.ramas.flatMap((r, i) => r.map((z) => [i + 1, z[2], z[0], z[1]])) };
+    if (sol.modo === 'escalon') return { cab: ['t (s)', 'y(t)'], filas: sol.es.t.map((t, i) => [t, sol.es.y[i]]) };
+    if (sol.modo === 'bode') return { cab: ['w (rad/s)', '|L| (dB)', 'Fase (°)'], filas: sol.bd.ws.map((x, i) => [x, sol.bd.mag[i], sol.bd.fase[i]]) };
     return { cab: ['w (rad/s)', 'Re L(jw)', 'Im L(jw)'], filas: sol.ny.zs.map((z, i) => [sol.ny.ws[i], z[0], z[1]]) };
   }
   function dibuja() {
-    Herramienta.exportar('#grafica', { nombre: `control-${sol ? sol.modo : 'grafica'}`, titulo: sol ? { routh: 'Polos de lazo abierto y cerrado', raices: 'Lugar de las raíces', nyquist: 'Diagrama de Nyquist' }[sol.modo] : undefined, datos: datosGrafica });
+    Herramienta.exportar('#grafica', { nombre: `control-${sol ? sol.modo : 'grafica'}`, titulo: sol ? { routh: 'Polos de lazo abierto y cerrado', raices: 'Lugar de las raíces', nyquist: 'Diagrama de Nyquist', escalon: 'Respuesta al escalón', bode: 'Bode de lazo abierto' }[sol.modo] : undefined, datos: datosGrafica });
     const { g, w, h } = lienzo('#grafica');
     if (!sol || !w || !h) return;
     colores();
-    ({ routh: dibujaRouth, raices: dibujaRaices, nyquist: dibujaNyquist })[sol.modo](g, w, h);
+    ({ routh: dibujaRouth, raices: dibujaRaices, nyquist: dibujaNyquist, escalon: dibujaEscalon, bode: dibujaBode })[sol.modo](g, w, h);
   }
   window.addEventListener('resize', dibuja);
   // tema.js también avisa a este oyente al pulsar el botón claro/oscuro
@@ -196,6 +254,6 @@
   colores(); formulario(); calcula();
   window.ControlApp = {
     abrirEjemplo, azar, enunciado, estado: () => copia(sc),
-    resultado: () => sol && (sol.modo === 'routh' ? { cambios: sol.R.cambios, estado: sol.R.estado, estables: sol.rk && sol.rk.estables } : sol.modo === 'raices' ? { ruptura: sol.lg.ruptura, cruces: sol.lg.cruces, asintotas: sol.lg.asint } : { P: sol.ny.P, N: sol.ny.Ncw, Z: sol.ny.Z, GM: sol.gm && sol.gm.GM, PM: sol.pm && sol.pm.PM }),
+    resultado: () => sol && (sol.modo === 'routh' ? { cambios: sol.R.cambios, estado: sol.R.estado, estables: sol.rk && sol.rk.estables } : sol.modo === 'raices' ? { ruptura: sol.lg.ruptura, cruces: sol.lg.cruces, asintotas: sol.lg.asint } : sol.modo === 'escalon' ? { estable: sol.es.estable, yss: sol.es.yss, sobre: sol.es.sobre, tpico: sol.es.tpico, ts: sol.es.ts, subida: sol.es.subida } : sol.modo === 'bode' ? { GM: sol.gm && sol.gm.GM, PM: sol.pm && sol.pm.PM, wc: sol.pm && sol.pm.w, w180: sol.gm && sol.gm.w } : { P: sol.ny.P, N: sol.ny.Ncw, Z: sol.ny.Z, GM: sol.gm && sol.gm.GM, PM: sol.pm && sol.pm.PM }),
   };
 })();
