@@ -132,8 +132,8 @@
     g.textAlign = 'right'; g.textBaseline = 'middle';
     for (const v of [0, 0.5, 1, 1.5, 2]) { g.beginPath(); g.moveTo(m.l, y(v)); g.lineTo(m.l + W, y(v)); g.stroke(); g.fillText(String(v).replace('.', ','), m.l - 5, y(v)); }
     g.textAlign = 'center'; g.textBaseline = 'top';
-    const paso = d1 > 3 ? 1 : d1 > 1.4 ? 0.5 : 0.25;
-    for (let d = 0; d <= d1 + 1e-9; d += paso) { g.beginPath(); g.moveTo(x(d), m.t); g.lineTo(x(d), m.t + H); g.stroke(); g.fillText(String(+d.toFixed(2)).replace('.', ','), x(d), m.t + H + 4); }
+    const paso = Math.max(d1 > 3 ? 1 : d1 > 1.4 ? 0.5 : 0.25, d1 / 12);
+    for (let k = 0, d = 0; k <= 40 && d <= d1 + 1e-9; d = ++k * paso) { g.beginPath(); g.moveTo(x(d), m.t); g.lineTo(x(d), m.t + H); g.stroke(); g.fillText(String(+d.toFixed(2)).replace('.', ','), x(d), m.t + H + 4); }
     g.fillText('distancia a la carga (en λ)', m.l + W / 2, m.t + H + 18);
     const serie = (k, c) => { g.strokeStyle = c; g.lineWidth = 2.2; g.beginPath(); sol.perfil.forEach((p, i) => { if (i) g.lineTo(x(p[0]), y(p[k])); else g.moveTo(x(p[0]), y(p[k])); }); g.stroke(); };
     serie(1, col['--serie-1']); serie(2, col['--serie-2']);

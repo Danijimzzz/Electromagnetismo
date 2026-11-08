@@ -119,10 +119,10 @@
     g.font = '11px "IBM Plex Mono", monospace'; g.fillStyle = col['--muted']; g.strokeStyle = col['--line']; g.lineWidth = 1;
     g.textAlign = 'right'; g.textBaseline = 'middle';
     const sT = paso(T1 - T0, 5);
-    for (let T = Math.ceil(T0 / sT) * sT; T <= T1; T += sT) { g.beginPath(); g.moveTo(l, Y(T)); g.lineTo(w - r, Y(T)); g.stroke(); g.fillText(txt(f(T, 3)), l - 4, Y(T)); }
+    for (let k = 0, T = Math.ceil(T0 / sT) * sT; k <= 40 && T <= T1; T = Math.ceil(T0 / sT) * sT + ++k * sT) { g.beginPath(); g.moveTo(l, Y(T)); g.lineTo(w - r, Y(T)); g.stroke(); g.fillText(txt(f(T, 3)), l - 4, Y(T)); }
     g.textAlign = 'center'; g.textBaseline = 'top';
     const sQ = paso(q1 - q0, 6);
-    for (let q = Math.ceil(q0 / sQ) * sQ; q <= q1 + 1e-9; q += sQ) g.fillText(txt(f(q, 3)), X(q), h - b + 5);
+    for (let k = 0, q = Math.ceil(q0 / sQ) * sQ; k <= 40 && q <= q1 + 1e-9; q = Math.ceil(q0 / sQ) * sQ + ++k * sQ) g.fillText(txt(f(q, 3)), X(q), h - b + 5);
     g.textAlign = 'left'; g.fillText('°C', 4, top - 4);
     g.strokeStyle = col['--muted']; g.beginPath(); g.moveTo(X(0), top); g.lineTo(X(0), h - b); g.stroke();
     // temperatura de equilibrio

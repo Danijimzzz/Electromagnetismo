@@ -53,6 +53,16 @@ if (Version) {
   let w = null; try { w = Version.de('web'); } catch (e) { /* abajo */ }
   if (!w || !w.current) mal('version.js: falta el registro «web»');
 }
+// «Límites de esta herramienta» (fuente/limites.js): cada clave es una herramienta disponible y su página lo muestra
+{
+  const L = require(path.join(raiz, 'fuente', 'limites.js')).LIMITES, disp = Catalogo.asignaturas.flatMap((a) => a.herramientas.filter((h) => h.disponible).map((h) => ({ a: a.clave, h: h.clave, c: h.carpeta || h.clave })));
+  for (const k of Object.keys(L)) {
+    const t = disp.find((x) => x.c === k || x.h === k);
+    if (!t) { mal(`limites.js: «${k}» no es una herramienta disponible`); continue; }
+    const f = path.join(raiz, 'publico', t.a, t.h, 'index.html');
+    if (!process.argv.includes('--sin-publico') && fs.existsSync(f) && !fs.readFileSync(f, 'utf8').includes('class="limites"')) mal(`${t.a}/${t.h}: tiene «Límites» en limites.js pero la página no los muestra (¿falta sh fuente/build.sh?)`);
+  }
+}
 // 5 · scripts en línea de cada página publicada, juntos
 let nPag = 0;
 if (!process.argv.includes('--sin-publico') && fs.existsSync(path.join(raiz, 'publico'))) {

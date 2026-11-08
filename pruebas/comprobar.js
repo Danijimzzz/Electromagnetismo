@@ -190,6 +190,14 @@ if (primera) {
     // peso de las páginas y cobertura del modo práctica (leyendo publico/, ya compilado)
     const antes = fallos, EXCEPCIONES = { electrostatica: 'tiene su propia práctica en el simulador', 'tabla-periodica': 'tiene sus propias preguntas' }, MAX_KB = 450;
     const pags = Catalogo.asignaturas.flatMap((a) => a.herramientas.filter((h) => h.disponible).map((h) => `${a.clave}/${h.clave}`));
+    // 10.16 · presupuesto del peso TOTAL de publico/ (pruebas/presupuesto.json, en KB): sube a propósito con --actualizar
+    {
+      const total = Math.round(listar(publico).reduce((n, f) => n + fs.statSync(path.join(publico, f)).size, 0) / 1024), pf = path.join(__dirname, 'presupuesto.json');
+      if (args.includes('--actualizar') || !fs.existsSync(pf)) fs.writeFileSync(pf, JSON.stringify({ totalKB: Math.ceil(total * 1.03 / 100) * 100 }, null, 1) + '\n');
+      const tope = JSON.parse(fs.readFileSync(pf, 'utf8')).totalKB;
+      if (total > tope) mal(`publico/ pesa ${(total / 1024).toFixed(1)} MB y el presupuesto son ${(tope / 1024).toFixed(1)} MB (pruebas/presupuesto.json): reduce peso o, si es a propósito, sube el tope con --actualizar`);
+      else console.log(`  ✓ Peso de publico/: ${(total / 1024).toFixed(1)} MB de ${(tope / 1024).toFixed(1)} MB de presupuesto`);
+    }
     let con = 0;
     for (const pag of pags) {
       const html = fs.readFileSync(path.join(publico, ...pag.split('/'), 'index.html'), 'utf8'), clave = pag.split('/')[1];

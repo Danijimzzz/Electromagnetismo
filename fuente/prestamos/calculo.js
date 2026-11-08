@@ -35,6 +35,7 @@ const Prestamos = (() => {
     const anos = lee(sc, 'anos', 'el plazo', { min: 0, minEx: true });
     const n = Math.round(anos * m);
     if (Math.abs(n - anos * m) > 1e-6) throw new Error(`El plazo tiene que ser un número entero de ${pers}: ${f(anos)} años no lo es con pagos ${per}es`);
+    if (n < 1) throw new Error(`El plazo tiene que ser al menos de una cuota (con pagos ${per}es, ${f(1 / m)} años)`);
     if (n > 600) throw new Error('Como mucho 600 cuotas');
     const com = lee(sc, 'comision', 'la comisión de apertura', { min: 0, max: 50, def: 0 }) / 100;
     const i = tin / m;
