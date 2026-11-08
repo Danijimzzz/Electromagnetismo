@@ -174,7 +174,7 @@ const Calculadora = (() => {
       // los desplegables empiezan en su primera opción si el estado no trae valor
       for (const c of cs) if (c.tipo === 'sel' && !c.ops.some(([val]) => val === sc[c.k])) sc[c.k] = c.ops[0][0];
       $('#campos').innerHTML = cs.map((c) => (c.sep ? `<div class="sep">${c.sep}</div>` : '') + campo(c)).join('');
-      if (o.nota) $('#nota').innerHTML = o.nota;
+      if (o.nota) $('#nota').innerHTML = typeof o.nota === 'function' ? o.nota(sc) : o.nota;
     }
     $('#campos').addEventListener('input', (e) => { const t = e.target; if (!t.dataset.k || t.tagName === 'SELECT') return; sc[t.dataset.k] = t.value; $('#ejemplos').value = ''; calcula(); });
     $('#campos').addEventListener('change', (e) => { const t = e.target; if (!t.dataset.k || t.tagName !== 'SELECT') return; sc[t.dataset.k] = t.value; $('#ejemplos').value = ''; formulario(); calcula(); });
