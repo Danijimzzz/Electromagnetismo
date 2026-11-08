@@ -4,6 +4,17 @@ on:
   push:
     branches: [main]
 jobs:
+  # Rápido y sin navegador: falla en segundos si al juntar ramas quedó un marcador de conflicto, un JSON o .js roto,
+  # una clave repetida en catalogo.js / version.js o scripts que no compilan juntos (pruebas/union.js)
+  union:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node pruebas/union.js
   comprobar:
     # Las herramientas se reparten en 4 trozos que corren a la vez (node pruebas/comprobar.js --parte N/4);
     # lo común (portada, asignaturas, Electrostática…) va en el trozo 1.

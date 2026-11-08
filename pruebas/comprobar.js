@@ -56,6 +56,8 @@ console.log(`  ✓ simulador ${(fs.statSync(juegos[0].pagina).size / 1024).toFix
 const hay = listar(publico), sobran = hay.filter((f) => !PUBLICABLES.includes(f)), faltan = PUBLICABLES.filter((f) => !hay.includes(f));
 if (sobran.length) mal(`publico/ contiene archivos que no deberían publicarse: ${sobran.join(', ')}`);
 if (faltan.length) mal(`publico/ no tiene: ${faltan.join(', ')}`);
+// errores de unión de ramas (marcadores de conflicto, JSON y .js rotos, claves repetidas, scripts que no compilan juntos): pruebas/union.js
+if (primera) { try { execFileSync('node', [path.join(__dirname, 'union.js')], { stdio: 'inherit' }); } catch (e) { mal('Unión de ramas: ver arriba'); } }
 const web = fs.readFileSync(juegos[0].pagina, 'utf8');
 
 // resultados de todos los ejercicios: { clave: { titulo, incognita, resultados: [html…] } }
@@ -413,7 +415,8 @@ async function navegador() {
       if (ej) await page.click('.bib .bib-ej >> nth=1');
       await page.click('.bib [data-acc=fijar]');
       if (!(await page.evaluate(() => /Fijados/.test(document.querySelector('.bib-lista').textContent)))) mal(`${pag}: fijar no lo pone en Fijados`);
-      await Promise.all([page.waitForEvent('load'), page.click('.bib .bib-abre')]);
+      // con una escritura pendiente de la app justo después del clic (10.1): tras recargar tiene que seguir lo guardado
+      await Promise.all([page.waitForEvent('load'), page.evaluate((c) => { setTimeout(() => localStorage.setItem(c, '{"pisado":true}'), 0); document.querySelector('.bib .bib-abre').click(); }, clave).catch(() => {})]);
       await page.waitForSelector('.bib .bib-it.activo');
       if ((await page.evaluate((k) => localStorage.getItem(k), clave)) !== guardado[0].datos) mal(`${pag}: abrir no recupera los datos guardados`);
       const [descarga] = await Promise.all([page.waitForEvent('download'), page.click('.bib [data-acc=exportar-todo]')]);

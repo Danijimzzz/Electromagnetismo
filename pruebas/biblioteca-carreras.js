@@ -34,12 +34,13 @@ const { chromium } = require('playwright');
       const r = await page.evaluate(([k, c]) => ({ it: (JSON.parse(localStorage.getItem(k) || '{"items":[]}').items || [])[0], ahora: localStorage.getItem(c) }), [`simu-ejercicios:${dir}`, clave]);
       if (!r.it) mal(`${pag}: no se guardó nada`);
       else if (r.it.datos !== r.ahora) mal(`${pag}: lo guardado no es lo último que escribió la app (carrera)`);
-      // abrir lo guardado con un cambio todavía sin asentar: tras recargar tiene que quedar lo guardado, no el cambio pendiente
-      if (r.it && campo) {
-        await Promise.all([page.waitForEvent('load'), page.evaluate(() => { const c = document.querySelector('.layout .card input[type=text]:not([hidden]), .layout .card input[type=number], .layout .card input:not([type])'); if (c) { c.value = '3'; c.dispatchEvent(new Event('input', { bubbles: true })); c.dispatchEvent(new Event('change', { bubbles: true })); } document.querySelector('.bib .bib-abre').click(); }).catch(() => {})]);
-        await page.waitForSelector('.bib .bib-it.activo'); await page.waitForTimeout(500);
+      // abrir lo guardado mientras la app tiene una escritura pendiente (espera, animación): la escritura simulada llega justo
+      // después del clic y, tras recargar, tiene que seguir lo guardado, no lo que la app iba a escribir
+      if (r.it) {
+        await Promise.all([page.waitForEvent('load'), page.evaluate((c) => { setTimeout(() => localStorage.setItem(c, '{"pisado":true}'), 0); document.querySelector('.bib .bib-abre').click(); }, clave).catch(() => {})]);
+        await page.waitForSelector('.bib .bib-it.activo'); await page.waitForTimeout(300);
         const tras = await page.evaluate((c) => localStorage.getItem(c), clave);
-        if (tras !== r.it.datos) mal(`${pag}: al abrir un ejercicio con un cambio pendiente, la app lo pisa con el estado de antes`);
+        if (tras !== r.it.datos) mal(`${pag}: al abrir un ejercicio, una escritura pendiente de la app lo pisa (${String(tras).slice(0, 40)})`);
       }
       if (consola.length) mal(`${pag}: consola: ${consola.slice(0, 2).join(' | ')}`);
       await page.close();
