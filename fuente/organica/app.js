@@ -26,10 +26,32 @@
   function abrirEjemplo(clave) {
     const e = P.ejemplos.find((x) => x.clave === clave);
     if (!e) return;
-    sc = copia(e.sc); $('#smiles').value = sc.smiles; calcula(); sel.value = clave;
+    sc = copia(e.sc); $('#smiles').value = sc.smiles; if (entrada === 'semi') $('#semi').value = semiDe(sc.smiles); calcula(); sel.value = clave;
   }
-  const pon = (smiles) => { sc = { smiles }; $('#smiles').value = smiles; sel.value = ''; calcula(); };
+  const pon = (smiles) => { sc = { smiles }; $('#smiles').value = smiles; if (entrada === 'semi') $('#semi').value = semiDe(smiles); sel.value = ''; calcula(); };
   $('#smiles').addEventListener('input', (e) => { sc = { smiles: e.target.value }; sel.value = ''; calcula(); });
+  // entrada semidesarrollada (OR-3): se convierte a SMILES y todo lo demás sigue igual
+  let entrada = 'smiles';
+  const semiDe = (smiles) => { try { return Semi.deSmiles(smiles); } catch (e) { return ''; } };
+  function modoEntrada(m) {
+    entrada = m;
+    $('#tab-smiles').setAttribute('aria-selected', String(m === 'smiles')); $('#tab-semi').setAttribute('aria-selected', String(m === 'semi'));
+    $('#p-smiles').hidden = m !== 'smiles'; $('#nota-smiles').hidden = m !== 'smiles'; $('#p-semi').hidden = m !== 'semi';
+    if (m === 'semi') $('#semi').value = semiDe(sc.smiles);
+  }
+  $('#tab-smiles').addEventListener('click', () => modoEntrada('smiles')); $('#tab-semi').addEventListener('click', () => modoEntrada('semi'));
+  $('#semi').addEventListener('input', (e) => {
+    sel.value = '';
+    try { const r = Semi.aSmiles(e.target.value); sc = { smiles: r.smiles }; $('#smiles').value = r.smiles; calcula(); }
+    catch (er) { sc = { smiles: '' }; $('#smiles').value = ''; calcula(); $('#error').textContent = er.message; $('#error').hidden = false; }
+  });
+  $('#grupos-semi').innerHTML = Semi.GRUPOS.map(([et, tx]) => `<button type="button" class="btn" data-t="${tx}" aria-label="Insertar ${et}">${et}</button>`).join('');
+  $('#grupos-semi').addEventListener('click', (ev) => {
+    const b = ev.target.closest('button[data-t]'); if (!b) return;
+    const inp = $('#semi'), t = b.dataset.t, a = inp.selectionStart ?? inp.value.length, z = inp.selectionEnd ?? a;
+    inp.value = inp.value.slice(0, a) + t + inp.value.slice(z);
+    const pos = a + (t === '()' ? 1 : t.length); inp.focus(); inp.setSelectionRange(pos, pos); inp.dispatchEvent(new Event('input', { bubbles: true }));
+  });
   $('#b-espejo').addEventListener('click', () => { if (sol) pon(P.enantiomero(sol.smiles)); });
   // una molécula con nombre fácil de comprobar, para el modo práctica
   const practicables = P.ejemplos.filter((e) => !/tartarico|dicloropentano/.test(e.clave));
@@ -53,7 +75,7 @@
     const quiral = !E.completo && nCentros ? 'Falta indicar @ o @@' : E.quiral ? 'Quiral' : nCentros ? 'Aquiral (forma meso)' : 'Aquiral';
     const nEst = E.lista ? E.lista.length : null;
     $('#resumen').innerHTML = (sol.nombre ? '' : dato('Nombre', esc(sol.errorNombre), ' class="ancho"'))
-      + dato('Fórmula molecular', sol.formula) + dato('Masa molar', `${sol.masa.toFixed(2).replace('.', ',')} g/mol`)
+      + dato('Fórmula semidesarrollada', esc(semiDe(sol.smiles)) || '—', ' class="ancho"', 'r-semi') + dato('Fórmula molecular', sol.formula) + dato('Masa molar', `${sol.masa.toFixed(2).replace('.', ',')} g/mol`)
       + dato('Grupos funcionales', sol.grupos.length ? sol.grupos.join(', ') : 'ninguno (alcano)', ' class="ancho"')
       + dato('Centros quirales', nCentros, ' class="num"', 'r-nc') + dato('Dobles enlaces E/Z', nDobles, ' class="num"')
       + dato('Configuración', desc.length ? desc.join(', ') : '—') + dato('Quiralidad', quiral)
