@@ -20,10 +20,10 @@
     enunciado: (sc) => `Con ${ec(sc)}, el Estado pone un impuesto de ${sc.v} € por unidad. Calcula el precio que pagan los compradores, el que cobran los vendedores, la cantidad, los excedentes del consumidor y del productor, la recaudación y la pérdida irrecuperable de eficiencia.`,
     nota: 'Demanda Qd = a − bP y oferta Qs = c + dP (c puede ser negativo). Si te las dan como P en función de Q, P = α − βQ, despeja: a = α/β y b = 1/β.',
     campos: (sc) => [
-      { k: 'a', nom: 'a', sep: 'Demanda', ayuda: 'cantidad con precio 0' }, { k: 'b', nom: 'b', ayuda: 'unidades menos por cada euro' },
-      { k: 'c', nom: 'c', sep: 'Oferta', ayuda: 'cantidad con precio 0' }, { k: 'd', nom: 'd', ayuda: 'unidades más por cada euro' },
+      { k: 'forma', nom: 'Forma de las curvas', tipo: 'sel', ops: Eco.FORMAS },
+      ...Eco.camposCurvas(sc),
       { k: 'interv', nom: 'Intervención', tipo: 'sel', ops: Object.entries(X.INTERV), sep: 'Intervención del Estado' },
-      ...(sc.interv && sc.interv !== 'ninguna' ? [{ k: 'v', nom: { impuesto: 'Impuesto por unidad', subvencion: 'Subvención por unidad', maximo: 'Precio máximo', minimo: 'Precio mínimo' }[sc.interv], un: '€' }] : []),
+      ...(sc.interv && sc.interv !== 'ninguna' ? [{ k: 'v', nom: { advalorem: 'Impuesto (%)', impuesto: 'Impuesto por unidad', subvencion: 'Subvención por unidad', maximo: 'Precio máximo', minimo: 'Precio mínimo' }[sc.interv], un: sc.interv === 'advalorem' ? '%' : '€' }] : []),
     ],
     resumen: (s) => {
       const r = [['Equilibrio', `P* = ${f(s.p, 5)} y Q* = ${f(s.q, 5)}`, true], ['Excedente del consumidor', f(s.ec, 6)], ['Excedente del productor', f(s.ep, 6)]];
