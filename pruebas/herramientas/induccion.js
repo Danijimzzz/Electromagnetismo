@@ -37,6 +37,18 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     const malas = [() => Induccion.autoinduccion({ geo: 'solenoide', N: '10.5', l: '10', r: '1', mur: '1' }), () => Induccion.autoinduccion({ geo: 'coaxial', l: '1', a: '4', b: '2' }),
       () => Induccion.autoinduccion({ geo: 'bifilar', l: '1', d: '1', a: '1' }), () => Induccion.mutua({ geo: 'acoplamiento', L1: '1', L2: '1', k: '1.2' }), () => Induccion.rl({ E: '1', R: '0', L: '1' })];
     for (const m of malas) { let ok = false; try { m(); } catch (e) { ok = true; } if (!ok) mal(`Inducción: ${m} debería dar un error`); }
+    // IN-3: fuerza entre espiras coaxiales: elípticas, M exacta, límites de espira pequeña y de dipolo
+    { const e = Induccion.elip(0.5); if (!cerca(e.K, 1.685750354812596, 1e-12) || !cerca(e.E, 1.467462209339427, 1e-12)) mal('Inducción: K(0,5) y E(0,5) no cuadran');
+      const dip = (R, r, z) => (m0 * Math.PI * R * R * r * r) / (2 * Math.pow(R * R + z * z, 1.5));
+      if (!cerca(Induccion.mutuaExacta(0.1, 0.05, 2), dip(0.1, 0.05, 2), 2e-3)) mal('Inducción: M exacta no tiende al dipolo lejos');
+      if (!cerca(Induccion.mutuaExacta(0.1, 0.001, 0.05), dip(0.1, 0.001, 0.05), 1e-4)) mal('Inducción: M exacta no coincide con la espira pequeña');
+      const R = 0.1, r = 0.001, z = 0.05, F = Induccion.fuerza({ N1: '1', R: '10', N2: '1', r: '0.1', z: '5', I1: '1', I2: '1' }).res;
+      if (!cerca(F.F, (-3 * m0 * Math.PI * R * R * r * r * z) / (2 * Math.pow(R * R + z * z, 2.5)), 2e-4)) mal('Inducción: F de una espira pequeña en el eje no cuadra con m·dB/dz');
+      const A = Induccion.fuerza(Induccion.ejemplos.F[0].sc).res, B = Induccion.fuerza({ ...Induccion.ejemplos.F[0].sc, I2: '-50' }).res;
+      if (!(A.F < 0) || A.sentido !== 'se atraen' || !cerca(B.F, -A.F, 1e-12) || B.sentido !== 'se repelen') mal('Inducción: corrientes paralelas se atraen y opuestas se repelen');
+      const c = Induccion.fuerza({ N1: '1', R: '10', N2: '1', r: '1', z: '5', I1: '1', I2: '1' }), c2 = Induccion.fuerza({ N1: '3', R: '10', N2: '4', r: '1', z: '5', I1: '2', I2: '5' }); if (!cerca(c2.res.F, c.res.F * 12 * 10, 1e-9)) mal('Inducción: F proporcional a N₁N₂I₁I₂');
+      if (!cerca(Induccion.fuerza({ N1: '1', R: '10', N2: '1', r: '1', z: '5', I1: '1', I2: '1' }).res.zmax, 0.05, 0.12)) mal('Inducción: la fuerza máxima de una espira pequeña debería estar cerca de z = R/2');
+      for (const mala of [{ R: '' }, { z: '0' }, { I1: 'x' }, { r: '-1' }, { N1: '1,5' }]) { let ok = false; try { Induccion.fuerza({ ...Induccion.ejemplos.F[0].sc, ...mala }); } catch (er) { ok = true; } if (!ok) mal(`Inducción: fuerza ${JSON.stringify(mala)} debería dar error`); } }
     if (fallos === antes) console.log(`  ✓ Inducción: ${Induccion.ejemplos.L.length} autoinducciones, ${Induccion.ejemplos.M.length} inducciones mutuas y ${Induccion.ejemplos.RL.length} circuitos RL con el valor esperado, serie y paralelo, energía disipada, pulsos y errores`);
   }
 
@@ -48,7 +60,7 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       const antes = fallos;
       const verI = (await page.locator('#ver').textContent()).trim();
       if (verI !== Version.de('induccion').current) mal(`Inducción: la página muestra la versión «${verI}», se esperaba ${Version.de('induccion').current}`);
-      for (const tab of ['L', 'M', 'RL']) for (const e of Induccion.ejemplos[tab]) {
+      for (const tab of ['L', 'M', 'F', 'RL']) for (const e of Induccion.ejemplos[tab]) {
         await page.evaluate(([t, c]) => InducApp.abrirEjemplo(t, c), [tab, e.clave]);
         if (!(await page.locator('#error').isHidden()) || (await page.locator('#pasos li').count()) < 1 || (await page.locator('#resumen > div').count()) < 3) mal(`Inducción · ${tab} ${e.clave}: falta el resumen o el desarrollo`);
       }
@@ -65,7 +77,7 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       if ((await page.locator('.compartir button').count()) !== 4 || !/Resultados[\s\S]*Desarrollo/.test(await page.evaluate(() => Compartir.ejercicio(false)))) mal('Inducción: faltan los botones para copiar o imprimir la solución');
       await page.close();
       if (consola.length) mal('Inducción: consola del navegador:\n      ' + consola.join('\n      '));
-      if (fallos === antes) console.log(`  ✓ Inducción: ${Induccion.ejemplos.L.length + Induccion.ejemplos.M.length + Induccion.ejemplos.RL.length} ejemplos, cambio de geometría y errores sin errores de consola`);
+      if (fallos === antes) console.log(`  ✓ Inducción: ${Induccion.ejemplos.L.length + Induccion.ejemplos.M.length + Induccion.ejemplos.F.length + Induccion.ejemplos.RL.length} ejemplos, cambio de geometría y errores sin errores de consola`);
     }
   };
 };
