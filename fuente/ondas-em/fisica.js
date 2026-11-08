@@ -10,6 +10,9 @@
    (conductividad σ): atenuación, profundidad de penetración e impedancia
    compleja; luz por polarizadores (ley de Malus); y el vector de Poynting
    con el balance de energía de un hilo, un condensador y un coaxial. Unidades del SI.
+   Fase 10: plasma e ionosfera con la relación de dispersión (OE-1), suma de dos ondas: batidos, ondas
+   estacionarias y polarización resultante (OE-2) y láminas de retardo λ/4 y λ/2 entre polarizadores con
+   el cálculo de Jones (OE-3).
    ===================================================================== */
 const OndasEM = (() => {
   const C0 = 299792458, MU0 = 1.25663706212e-6, EPS0 = 8.8541878128e-12;
@@ -311,7 +314,123 @@ const OndasEM = (() => {
     return { modo: 'poynting', sis, ...r, pasos };
   }
 
-  const MODOS = { onda, expresion, incidencia, intensidad, perdidas, polarizadores, poynting };
+  /* ---------- OE-1: plasma e ionosfera ---------- */
+  // sc: { ne (m⁻³), valor (Hz, opcional), ang (° de incidencia sobre la capa, opcional) }; ω² = ω_p² + c²k²
+  function plasma(sc) {
+    const QE = 1.602176634e-19, ME = 9.1093837015e-31, ne = lee(sc, 'ne', 'la densidad de electrones n_e'), fr = lee(sc, 'valor', 'la frecuencia f', { opcional: true }), pasos = [];
+    const ang = vacio(sc.ang) ? null : lee(sc, 'ang', 'el ángulo de incidencia', { cero: true });
+    if (ang !== null && ang >= 90) throw new Error('El ángulo de incidencia tiene que ser menor que 90°');
+    const wp = Math.sqrt((ne * QE * QE) / (EPS0 * ME)), fp = wp / (2 * Math.PI), lp = C0 / fp;
+    pasos.push({ t: 'Frecuencia de plasma', html: `Los electrones libres oscilan colectivamente con $ω_p = √({n_e e^2}/{ε_0 m_e}) = √({${f(ne)}·(${f(QE)})^2}/{${f(EPS0)}·${f(ME)}})$ = <b>${f(wp)} rad/s</b>, es decir $f_p = ω_p/2π$ = <b>${f(fp)} Hz</b> (≈ 8,98 √n_e Hz), y $λ_p = c/f_p$ = ${f(lp)} m.` });
+    pasos.push({ t: 'Relación de dispersión', html: `Las ecuaciones de Maxwell con la corriente de los electrones dan $k^2 c^2 = ω^2 − ω_p^2$, o sea un índice $n(ω) = √(1 − ω_p^2/ω^2)$: menor que 1 y real solo si $ω > ω_p$.` });
+    const r = { modo: 'plasma', ne, wp, fp, lp, fr, ang, fcrit: ang === null ? fp : fp / Math.cos((ang * Math.PI) / 180) };
+    if (fr !== null) {
+      const w = 2 * Math.PI * fr, x = w / wp;
+      if (x > 1) {
+        const n = Math.sqrt(1 - 1 / (x * x)), k = (w * n) / C0, vf = C0 / n, vg = C0 * n;
+        Object.assign(r, { w, x, n, k, vf, vg, lam: (2 * Math.PI) / k, propaga: true });
+        pasos.push({ t: 'La onda se propaga', html: `$ω/ω_p = ${f(x)} > 1$: $n = √(1 − 1/${f(x)}^2)$ = <b>${f(n)}</b>, $k = nω/c$ = ${f(k)} rad/m y $λ = 2π/k$ = <b>${f(r.lam)} m</b> (mayor que en el vacío).` });
+        pasos.push({ t: 'Velocidades de fase y de grupo', html: `$v_f = ω/k = c/n$ = <b>${f(vf)} m/s</b> (¡mayor que c!), pero la energía y la información viajan a $v_g = dω/dk = c n$ = <b>${f(vg)} m/s</b> (menor que c). Se cumple $v_f v_g = c^2$: ${f(vf * vg)} m²/s².` });
+      } else {
+        const kap = (wp / C0) * Math.sqrt(1 - x * x);
+        Object.assign(r, { w, x, kappa: kap, delta: 1 / kap, propaga: false });
+        pasos.push({ t: 'La onda no se propaga', html: `$ω/ω_p = ${f(x)} < 1$: $n$ es imaginario, $k = ±jκ$ con $κ = {ω_p}/c √(1 − ω^2/ω_p^2)$ = ${f(kap)} m<sup>-1</sup>. El campo decae como $e^{−κ z}$ con profundidad de penetración $δ = 1/κ$ = <b>${f(r.delta)} m</b> y la onda se <b>refleja</b> casi por completo (R = 1 sin pérdidas): por eso la ionosfera refleja las ondas cortas y los metales brillan.` });
+      }
+    }
+    if (ang !== null) pasos.push({ t: 'Reflexión oblicua en la ionosfera', html: `Con incidencia a $θ = ${f(ang)}°$ la onda se refleja si $n ≤ sen θ$, es decir si $f ≤ f_p/cos θ$ (ley de la secante): $f_{máx} = ${f(fp)}/cos ${f(ang)}°$ = <b>${f(r.fcrit)} Hz</b>.` + (fr !== null ? ` A ${f(fr)} Hz ${fr <= r.fcrit ? '<b>se refleja</b>' : '<b>atraviesa</b> la capa'}.` : '') });
+    else pasos.push({ t: 'Reflexión en la ionosfera', html: `Con incidencia vertical, la capa refleja todas las frecuencias por debajo de $f_p$ = ${f(fp)} Hz${fp > 1e6 ? ` (${f(fp / 1e6)} MHz)` : ''}; por encima, la onda la atraviesa.` });
+    r.reflejada = fr !== null && (r.fcrit >= fr);
+    r.pasos = pasos;
+    r.curva = (n) => Array.from({ length: n + 1 }, (_, i) => { const kk = (i / n) * 3; return [kk, Math.sqrt(1 + kk * kk)]; }); // κ = kc/ω_p → ω/ω_p
+    return r;
+  }
+
+  /* ---------- OE-2: suma de dos ondas ---------- */
+  // sc: { caso: 'batido'|'estacionaria'|'polarizacion', A1, A2, f1, f2, delta (°) }
+  const CARAS = { antihorario: 'antihorario (visto por quien la recibe: a izquierdas)', horario: 'horario (visto por quien la recibe: a derechas)' };
+  function elipse(Ex, Ey, dl) {
+    // E_x = Ex cos φ, E_y = Ey cos(φ + δ), φ = kz − ωt; devuelve estado de polarización
+    const c = Math.cos(dl), s = Math.sin(dl), sum = Ex * Ex + Ey * Ey, dif = Ex * Ex - Ey * Ey, raiz = Math.sqrt(dif * dif + 4 * Ex * Ex * Ey * Ey * c * c);
+    const a = Math.sqrt((sum + raiz) / 2), b = Math.sqrt(Math.max(0, (sum - raiz) / 2)), psi = 0.5 * Math.atan2(2 * Ex * Ey * c, dif), S3 = 2 * Ex * Ey * s;
+    const lineal = Math.abs(S3) < 1e-9 * sum, circular = !lineal && Math.abs(b / a - 1) < 1e-9;
+    return { a, b, psi: (psi * 180) / Math.PI, tipo: lineal ? 'lineal' : circular ? 'circular' : 'elíptica', giro: lineal ? null : S3 > 0 ? 'antihorario' : 'horario', razon: a ? b / a : 0 };
+  }
+  function suma(sc) {
+    const caso = ['batido', 'estacionaria', 'polarizacion'].includes(sc.caso) ? sc.caso : 'batido', A1 = lee(sc, 'A1', 'la amplitud A₁', { cero: true }), A2 = lee(sc, 'A2', 'la amplitud A₂', { cero: true }), pasos = [];
+    if (A1 === 0 && A2 === 0) throw new Error('Alguna de las amplitudes tiene que ser mayor que 0');
+    const dl = vacio(sc.delta) ? 0 : leeNum(sc.delta);
+    if (!isFinite(dl)) throw new Error('El desfase debe ser un número (en grados)');
+    const d = (dl * Math.PI) / 180, r = { modo: 'suma', caso, A1, A2, delta: dl };
+    if (caso === 'batido') {
+      const f1 = lee(sc, 'f1', 'la frecuencia f₁'), f2 = lee(sc, 'f2', 'la frecuencia f₂'), df = Math.abs(f1 - f2), fm = (f1 + f2) / 2, w1 = 2 * Math.PI * f1, w2 = 2 * Math.PI * f2;
+      const env = (t) => Math.sqrt(A1 * A1 + A2 * A2 + 2 * A1 * A2 * Math.cos((w1 - w2) * t - d));
+      Object.assign(r, { f1, f2, df, fm, Emax: A1 + A2, Emin: Math.abs(A1 - A2), env, Tb: df > 0 ? 1 / df : Infinity, E: (t) => A1 * Math.cos(w1 * t) + A2 * Math.cos(w2 * t + d) });
+      pasos.push({ t: 'Dos ondas con frecuencias distintas', html: `En un punto fijo, $E_1 = ${f(A1)} cos(2π ${f(f1)} t)$ y $E_2 = ${f(A2)} cos(2π ${f(f2)} t + ${f(dl)}°)$. Se suman porque las ecuaciones de Maxwell son lineales (principio de superposición).` });
+      if (df === 0) pasos.push({ t: 'Misma frecuencia: interferencia', html: `Con la misma frecuencia el resultado es otra onda de amplitud $√(A_1^2 + A_2^2 + 2A_1 A_2 cos δ)$ = <b>${f(env(0))} V/m</b> (δ = ${f(dl)}°): constructiva si δ = 0° (A₁ + A₂ = ${f(A1 + A2)}) y destructiva si δ = 180° (|A₁ − A₂| = ${f(Math.abs(A1 - A2))}).` });
+      else {
+        pasos.push({ t: 'Batidos', html: `Si $f_1 ≈ f_2$ la suma es una oscilación a la frecuencia media $\\bar f = (f_1 + f_2)/2$ = <b>${f(fm)} Hz</b> con una amplitud que varía lentamente entre $|A_1 − A_2|$ = ${f(r.Emin)} y $A_1 + A_2$ = ${f(r.Emax)} V/m: $A(t) = √(A_1^2 + A_2^2 + 2A_1 A_2 cos(Δω t − δ))$.` });
+        pasos.push({ t: 'Frecuencia de batido', html: `La envolvente se repite con $f_b = |f_1 − f_2|$ = <b>${f(df)} Hz</b>, o sea cada $T_b = 1/f_b$ = ${f(r.Tb)} s.` + (A1 === A2 ? ` Con amplitudes iguales, $E = 2A cos(π Δf t) cos(2π \\bar f t)$ y la envolvente llega a 0.` : '') });
+      }
+    } else if (caso === 'estacionaria') {
+      const fr = lee(sc, 'f1', 'la frecuencia f'), w = 2 * Math.PI * fr, k = w / C0, lam = C0 / fr, ROE = Math.abs(A1 - A2) < 1e-12 * Math.max(A1, A2) ? Infinity : (A1 + A2) / Math.abs(A1 - A2);
+      const env = (z) => Math.sqrt(A1 * A1 + A2 * A2 + 2 * A1 * A2 * Math.cos(2 * k * z + d));
+      Object.assign(r, { f1: fr, w, k, lam, ROE, env, Emax: A1 + A2, Emin: Math.abs(A1 - A2), E: (z, t) => A1 * Math.cos(k * z - w * t) + A2 * Math.cos(k * z + w * t + d), Pr: A1 > 0 ? (A2 / A1) ** 2 : null });
+      pasos.push({ t: 'Dos ondas en sentidos opuestos', html: `$E = ${f(A1)} cos(kz − ωt) + ${f(A2)} cos(kz + ωt + ${f(dl)}°)$ con $k = ω/c$ = ${f(k)} rad/m y $λ$ = ${f(lam)} m.` });
+      pasos.push({ t: 'Amplitud en cada punto', html: `Cada punto oscila con una amplitud que depende de $z$: $A(z) = √(A_1^2 + A_2^2 + 2A_1 A_2 cos(2kz + δ))$, entre $|A_1 − A_2|$ = <b>${f(r.Emin)} V/m</b> (nodos) y $A_1 + A_2$ = <b>${f(r.Emax)} V/m</b> (vientres). Se repiten cada $λ/2$ = ${f(lam / 2)} m.` });
+      pasos.push({ t: 'Relación de onda estacionaria', html: `$ROE = {A_1 + A_2}/{|A_1 − A_2|}$ = <b>${ROE === Infinity ? '∞ (onda estacionaria pura: los nodos son nulos)' : f(ROE)}</b>${A1 > 0 ? `; la potencia reflejada es $(A_2/A_1)^2$ = ${f(100 * r.Pr, 3)} % de la incidente` : ''}.` });
+    } else {
+      const A = lee(sc, 'A1', 'la amplitud A₁'), B2 = lee(sc, 'A2', 'la amplitud A₂'), S = elipse(A, B2, d);
+      Object.assign(r, { A1: A, A2: B2, E: S, estado: S });
+      pasos.push({ t: 'Dos ondas con polarizaciones perpendiculares', html: `$E_x = ${f(A)} cos(kz − ωt)$ y $E_y = ${f(B2)} cos(kz − ωt + ${f(dl)}°)$, con la misma frecuencia y sentido. El campo resultante recorre en cada punto la curva $(E_x/A_1)^2 + (E_y/A_2)^2 − 2 (E_x E_y)/(A_1 A_2) cos δ = sen^2 δ$.` });
+      pasos.push({ t: 'Estado de polarización', html: S.tipo === 'lineal' ? `Con δ = ${f(dl)}° (múltiplo de 180°) la elipse se aplasta en una recta: polarización <b>lineal</b>, a un ángulo $ψ$ = <b>${f(S.psi)}°</b> del eje x y con amplitud ${f(S.a)} V/m.` : S.tipo === 'circular' ? `Con $A_1 = A_2$ y $δ = ±90°$ el extremo de E describe una circunferencia de radio ${f(S.a)} V/m: polarización <b>circular</b>, ${CARAS[S.giro]}.` : `Polarización <b>elíptica</b>, ${CARAS[S.giro]}: semiejes $a$ = ${f(S.a)} V/m y $b$ = ${f(S.b)} V/m (b/a = ${f(S.razon)}), con el eje mayor a $ψ$ = <b>${f(S.psi)}°</b> del eje x.` });
+      pasos.push({ t: 'Semiejes', html: `$a^2, b^2 = {1}/{2}[A_1^2 + A_2^2 ± √((A_1^2 − A_2^2)^2 + 4 A_1^2 A_2^2 cos^2 δ)]$ y $tan 2ψ = {2 A_1 A_2 cos δ}/{A_1^2 − A_2^2}$. Se cumple $a^2 + b^2 = A_1^2 + A_2^2$ = ${f(A * A + B2 * B2)}.` });
+    }
+    r.pasos = pasos;
+    return r;
+  }
+
+  /* ---------- OE-3: láminas de retardo y cálculo de Jones ---------- */
+  // sc: { luz: 'lineal'|'circI'|'circD', alfa, e1..e4: ''|'pol'|'l4'|'l2', a1..a4 (° del eje) }
+  const cx = (re, im = 0) => [re, im], cmul = (a, b) => [a[0] * b[0] - a[1] * b[1], a[0] * b[1] + a[1] * b[0]], cadd = (a, b) => [a[0] + b[0], a[1] + b[1]];
+  const mv = (M, v) => [cadd(cmul(M[0][0], v[0]), cmul(M[0][1], v[1])), cadd(cmul(M[1][0], v[0]), cmul(M[1][1], v[1]))];
+  const mm = (A, B) => [[cadd(cmul(A[0][0], B[0][0]), cmul(A[0][1], B[1][0])), cadd(cmul(A[0][0], B[0][1]), cmul(A[0][1], B[1][1]))], [cadd(cmul(A[1][0], B[0][0]), cmul(A[1][1], B[1][0])), cadd(cmul(A[1][0], B[0][1]), cmul(A[1][1], B[1][1]))]];
+  const rot = (t) => [[cx(Math.cos(t)), cx(Math.sin(t))], [cx(-Math.sin(t)), cx(Math.cos(t))]];
+  // matriz de Jones de un elemento con el eje (rápido o de transmisión) a θ del eje x
+  const jonesElem = (tipo, th) => { const D = tipo === 'pol' ? [[cx(1), cx(0)], [cx(0), cx(0)]] : tipo === 'l4' ? [[cx(1), cx(0)], [cx(0), cx(0, 1)]] : [[cx(1), cx(0)], [cx(0), cx(-1)]]; return mm(rot(-th), mm(D, rot(th))); };
+  const cTxt = (z) => { const a = Math.abs(z[0]) < 1e-9 ? 0 : z[0], b = Math.abs(z[1]) < 1e-9 ? 0 : z[1]; return b === 0 ? f(a, 3) : a === 0 ? `${f(b, 3)}i` : `${f(a, 3)} ${b < 0 ? '−' : '+'} ${f(Math.abs(b), 3)}i`; };
+  const matTxt = (M) => `[[${cTxt(M[0][0])}, ${cTxt(M[0][1])}], [${cTxt(M[1][0])}, ${cTxt(M[1][1])}]]`;
+  function estadoJones(J) {
+    const I = J[0][0] ** 2 + J[0][1] ** 2 + J[1][0] ** 2 + J[1][1] ** 2;
+    if (I < 1e-18) return { I: 0, tipo: 'sin luz' };
+    const S1 = J[0][0] ** 2 + J[0][1] ** 2 - J[1][0] ** 2 - J[1][1] ** 2, S2 = 2 * (J[0][0] * J[1][0] + J[0][1] * J[1][1]), S3 = 2 * (J[0][0] * J[1][1] - J[0][1] * J[1][0]);
+    const psi = (0.5 * Math.atan2(S2, S1) * 180) / Math.PI, chi = 0.5 * Math.asin(Math.max(-1, Math.min(1, S3 / I))), lineal = Math.abs(S3 / I) < 1e-6, circ = Math.abs(S3 / I) > 1 - 1e-9;
+    return { I, tipo: lineal ? 'lineal' : circ ? 'circular' : 'elíptica', psi, razon: Math.abs(Math.tan(chi)), giro: lineal ? null : S3 > 0 ? 'antihorario' : 'horario', S: [S1 / I, S2 / I, S3 / I] };
+  }
+  const NOMEL = { pol: 'Polarizador', l4: 'Lámina λ/4', l2: 'Lámina λ/2' };
+  const txtEstado = (e) => (e.tipo === 'sin luz' ? 'no pasa luz' : e.tipo === 'lineal' ? `lineal a ${f(e.psi, 4)}° del eje x` : e.tipo === 'circular' ? `circular ${e.giro === 'antihorario' ? 'a izquierdas (antihoraria)' : 'a derechas (horaria)'}` : `elíptica ${e.giro === 'antihorario' ? 'a izquierdas (antihoraria)' : 'a derechas (horaria)'}, b/a = ${f(e.razon, 3)}, eje mayor a ${f(e.psi, 4)}°`);
+  function retardo(sc) {
+    const luz = ['lineal', 'circI', 'circD'].includes(sc.luz) ? sc.luz : 'lineal', alfa = luz === 'lineal' ? (vacio(sc.alfa) ? 0 : leeNum(sc.alfa)) : 0, pasos = [];
+    if (!isFinite(alfa)) throw new Error('El ángulo de la luz debe ser un número (en grados)');
+    const R2 = Math.SQRT1_2, ai = (alfa * Math.PI) / 180;
+    let J = luz === 'lineal' ? [[cx(Math.cos(ai)), cx(0)], [cx(Math.sin(ai)), cx(0)]].map((r) => r[0]) : luz === 'circI' ? [cx(R2), cx(0, R2)] : [cx(R2), cx(0, -R2)];
+    const elems = [];
+    for (let i = 1; i <= 4; i++) { const t = sc['e' + i]; if (!t) continue; if (!NOMEL[t]) throw new Error(`El elemento ${i} no es válido`); const a = vacio(sc['a' + i]) ? 0 : leeNum(sc['a' + i]); if (!isFinite(a)) throw new Error(`El ángulo del elemento ${i} debe ser un número`); elems.push({ t, a }); }
+    if (!elems.length) throw new Error('Elige al menos un elemento (polarizador o lámina)');
+    pasos.push({ t: 'Cálculo de Jones', html: `La luz polarizada se describe por el vector $E = (E_x, E_y)$ con componentes complejas y cada elemento por una matriz de 2×2: $E_{sal} = M · E_{ent}$. Polarizador a θ: $M = [[cos^2 θ, cos θ sen θ], [cos θ sen θ, sen^2 θ]]$. Lámina de retardo con eje rápido a θ: $M = R(−θ) · diag(1, e^{jΓ}) · R(θ)$, con $Γ = 90°$ ($λ/4$) o $180°$ ($λ/2$).` });
+    pasos.push({ t: 'Luz de entrada', html: `${luz === 'lineal' ? `Lineal a ${f(alfa)}°: $E = (cos α, sen α)$ = (${f(Math.cos(ai), 4)}; ${f(Math.sin(ai), 4)})` : luz === 'circI' ? 'Circular a izquierdas: $E = (1, j)/√2$' : 'Circular a derechas: $E = (1, −j)/√2$'}. Intensidad 1 (relativa).` });
+    const etapas = [{ nombre: 'Entrada', I: 1, estado: estadoJones([[J[0][0], J[0][1]], [J[1][0], J[1][1]]]), J: J.map((z) => z.slice()) }];
+    elems.forEach((e, i) => {
+      const M = jonesElem(e.t, (e.a * Math.PI) / 180); J = mv(M, J);
+      const est = estadoJones([[J[0][0], J[0][1]], [J[1][0], J[1][1]]]);
+      etapas.push({ nombre: `${NOMEL[e.t]} a ${f(e.a)}°`, I: est.I, estado: est, J: J.map((z) => z.slice()), M });
+      pasos.push({ t: `${i + 1}. ${NOMEL[e.t]} (eje a ${f(e.a)}°)`, html: `$M$ = ${matTxt(M)}<br>$E$ = (${cTxt(J[0])}; ${cTxt(J[1])}), $I$ = <b>${f(est.I, 4)}</b>: luz ${txtEstado(est)}.` });
+    });
+    const fin = etapas[etapas.length - 1];
+    pasos.push({ t: 'Resultado', html: `Sale luz ${txtEstado(fin.estado)} con una intensidad de <b>${f(100 * fin.I, 4)} %</b> de la de entrada.` + (fin.estado.tipo === 'lineal' && etapas.length > 1 ? '' : '') });
+    return { modo: 'retardo', luz, alfa, elems, etapas, I: fin.I, estado: fin.estado, texto: txtEstado(fin.estado), pasos };
+  }
+
+  const MODOS = { plasma, suma, retardo, onda, expresion, incidencia, intensidad, perdidas, polarizadores, poynting };
   function resolver(sc) { return MODOS[sc.modo] ? MODOS[sc.modo](sc) : onda(sc); }
 
   const ejemplos = [
@@ -337,11 +456,21 @@ const OndasEM = (() => {
     { clave: 'poy-hilo', nombre: 'Poynting en un hilo de cobre con corriente', sc: { modo: 'poynting', sis: 'hilo', a: '1e-3', L: '2', I: '10', sigma: '5,8e7' } },
     { clave: 'poy-condensador', nombre: 'Poynting en un condensador que se carga', sc: { modo: 'poynting', sis: 'condensador', a: '0,05', d: '0,002', V: '100', I: '0,5' } },
     { clave: 'poy-coaxial', nombre: 'Potencia por un cable coaxial', sc: { modo: 'poynting', sis: 'coaxial', a: '1e-3', b: '3,5e-3', V: '50', I: '2', r: '' } },
+    { clave: 'plasma-iono', nombre: 'Ionosfera (nₑ = 10¹² m⁻³): ¿rebota una onda de 5 MHz?', sc: { modo: 'plasma', ne: '1e12', valor: '5e6', ang: '' } },
+    { clave: 'plasma-obl', nombre: 'Ionosfera con incidencia oblicua de 60° (onda de 15 MHz)', sc: { modo: 'plasma', ne: '1e12', valor: '15e6', ang: '60' } },
+    { clave: 'plasma-metal', nombre: 'Electrones de un metal (sodio): transparente al ultravioleta', sc: { modo: 'plasma', ne: '2,5e28', valor: '2e15', ang: '' } },
+    { clave: 'suma-batido', nombre: 'Batidos: dos ondas de 100 y 110 Hz', sc: { modo: 'suma', caso: 'batido', A1: '1', A2: '1', f1: '100', f2: '110', delta: '' } },
+    { clave: 'suma-estacionaria', nombre: 'Onda estacionaria parcial: incidente y reflejada de 1 GHz', sc: { modo: 'suma', caso: 'estacionaria', A1: '10', A2: '4', f1: '1e9', f2: '', delta: '180' } },
+    { clave: 'suma-circular', nombre: 'Dos ondas ortogonales con δ = 90°: polarización circular', sc: { modo: 'suma', caso: 'polarizacion', A1: '10', A2: '10', f1: '', f2: '', delta: '90' } },
+    { clave: 'suma-eliptica', nombre: 'Dos ondas ortogonales con δ = 60°: polarización elíptica', sc: { modo: 'suma', caso: 'polarizacion', A1: '10', A2: '6', f1: '', f2: '', delta: '60' } },
+    { clave: 'ret-circular', nombre: 'Lámina λ/4 a 45°: de lineal a circular', sc: { modo: 'retardo', luz: 'lineal', alfa: '0', e1: 'l4', a1: '45', e2: '', a2: '', e3: '', a3: '', e4: '', a4: '' } },
+    { clave: 'ret-media', nombre: 'Lámina λ/2 entre polarizadores cruzados: gira la polarización', sc: { modo: 'retardo', luz: 'lineal', alfa: '0', e1: 'pol', a1: '0', e2: 'l2', a2: '45', e3: 'pol', a3: '90', e4: '', a4: '' } },
+    { clave: 'ret-analizador', nombre: 'Luz circular que se vuelve lineal con λ/4 y analizador', sc: { modo: 'retardo', luz: 'circI', alfa: '', e1: 'l4', a1: '0', e2: 'pol', a2: '135', e3: '', a3: '', e4: '', a4: '' } },
     { clave: 'cobre', nombre: 'Cobre a 1 MHz (buen conductor)', sc: { modo: 'perdidas', er: '1', mr: '1', sigma: '5,8e7', valor: '1e6', E0: '1', d: '0,0001' } },
     { clave: 'mar', nombre: 'Agua de mar a 1 kHz', sc: { modo: 'perdidas', er: '81', mr: '1', sigma: '4', valor: '1000', E0: '1', d: '10' } },
     { clave: 'tierra', nombre: 'Tierra húmeda a 1 MHz', sc: { modo: 'perdidas', er: '10', mr: '1', sigma: '0,01', valor: '1e6', E0: '10', d: '5' } },
     { clave: 'baquelita', nombre: 'Dieléctrico con pocas pérdidas', sc: { modo: 'perdidas', er: '4,9', mr: '1', sigma: '1e-6', valor: '1e8', E0: '5', d: '100' } },
   ];
-  return { resolver, onda, expresion, incidencia, intensidad, perdidas, polarizadores, poynting, leeExpresion, banda, ejemplos, f, C0, MU0, EPS0 };
+  return { resolver, plasma, suma, retardo, elipse, estadoJones, jonesElem, onda, expresion, incidencia, intensidad, perdidas, polarizadores, poynting, leeExpresion, banda, ejemplos, f, C0, MU0, EPS0 };
 })();
 if (typeof module !== 'undefined') module.exports = OndasEM;
