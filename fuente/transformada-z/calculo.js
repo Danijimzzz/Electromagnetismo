@@ -298,11 +298,15 @@ const TransformadaZ = (() => {
     }
     const N = x.length, w = x.map((_, n) => V.w(n, N)), xw = x.map((v, n) => v * w[n]);
     const cg = w.reduce((s, v) => s + v, 0) / N;
-    const X = fft(xw, Array(N).fill(0));
+    // relleno de ceros (TZ-3): más bins entre los mismos picos, pero la resolución real sigue siendo fs/N
+    const Mt = vacio(sc.pad) ? N : lee(sc, 'pad', 'el tamaño con relleno de ceros', { min: N, max: 16384, entero: true });
+    if (!esPot2(Mt)) throw new Error('El tamaño con relleno de ceros debe ser una potencia de 2 (64, 128, 256…)');
+    const X = fft(xw.concat(Array(Mt - N).fill(0)), Array(Mt).fill(0));
     const mod = X.re.map((r, k) => Math.hypot(r, X.im[k]));
-    const H = N / 2, amp = [], frec = [];
-    for (let k = 0; k <= H; k++) { amp.push((k === 0 || k === H ? 1 : 2) * mod[k] / (N * cg)); frec.push((k * fs) / N); }
+    const H = Mt / 2, amp = [], frec = [], fase = [];
+    for (let k = 0; k <= H; k++) { amp.push((k === 0 || k === H ? 1 : 2) * mod[k] / (N * cg)); frec.push((k * fs) / Mt); }
     const mx = Math.max(...amp);
+    for (let k = 0; k <= H; k++) fase.push(amp[k] > 1e-6 * mx ? (Math.atan2(X.im[k], X.re[k]) * 180) / Math.PI : 0);   // la fase de un bin casi nulo es ruido numérico: se pone 0
     // picos: máximos locales por encima del 1 % del mayor, con interpolación parabólica
     const picos = [];
     for (let k = 0; k <= H; k++) {
@@ -310,17 +314,18 @@ const TransformadaZ = (() => {
       const l = k > 0 ? amp[k - 1] : -1, r = k < H ? amp[k + 1] : -1;
       if (!(amp[k] >= l && amp[k] > r)) continue;
       const den = l - 2 * amp[k] + r, d = k > 0 && k < H && Math.abs(den) > 1e-12 ? (0.5 * (l - r)) / den : 0;
-      picos.push({ k, f: ((k + d) * fs) / N, fk: frec[k], amp: amp[k] - 0.25 * (l - r) * d, ampk: amp[k], d });
+      picos.push({ k, f: ((k + d) * fs) / Mt, fk: frec[k], amp: amp[k] - 0.25 * (l - r) * d, ampk: amp[k], d });
     }
     picos.sort((u, v) => v.ampk - u.ampk);
     const pk = picos.slice(0, 5);
     const alias = tonos.filter((t) => t.f > fs / 2 + 1e-9).map((t) => ({ f: t.f, alias: Math.abs(t.f - fs * Math.round(t.f / fs)) }));
-    const en = xw.reduce((s, v) => s + v * v, 0), enF = mod.reduce((s, v) => s + v * v, 0) / N;
-    const etapas = Math.log2(N), dftMul = N * N, fftMul = (N / 2) * etapas;
+    const en = xw.reduce((s, v) => s + v * v, 0), enF = mod.reduce((s, v) => s + v * v, 0) / Mt;
+    const etapas = Math.log2(Mt), dftMul = Mt * Mt, fftMul = (Mt / 2) * etapas;
     const pasos = [];
     pasos.push({ t: 'Definición (DFT)', html: `$X[k] = Σ_{n=0}^{N-1} x[n]·e^{-j2πkn/N}$, con $N = ${N}$ muestras a $f_s = ${f(fs)}$ Hz. El bin $k$ corresponde a la frecuencia $f_k = k·f_s/N$.` });
     pasos.push({ t: 'Resolución y rango', html: `Resolución en frecuencia: $Δf = f_s/N = ${f(fs)}/${N} = ${f(fs / N)}$ Hz. Duración observada: $T = N/f_s = ${f(N / fs)}$ s. Frecuencia máxima sin aliasing (Nyquist): $f_s/2 = ${f(fs / 2)}$ Hz.` });
     if (nota) pasos.push({ t: 'Relleno con ceros', html: nota });
+    if (Mt > N) pasos.push({ t: 'Relleno de ceros', html: `Se añaden ${Mt - N} ceros tras las ${N} muestras ventaneadas: la FFT pasa a $${Mt}$ puntos y los bins se separan $f_s/${Mt} = ${f(fs / Mt)}$ Hz. Es una interpolación del mismo espectro: dibuja los picos con más puntos, pero <b>no</b> separa dos tonos más cercanos que la resolución real $f_s/N = ${f(fs / N)}$ Hz (eso solo lo consigue observar más tiempo, con más muestras).` });
     if (tonos.length) pasos.push({ t: 'Señal', html: `$x[n] = ${(sc.dc && lee(sc, 'dc', '', { def: 0 }) ? f(lee(sc, 'dc', '', { def: 0 })) + ' + ' : '') + tonos.map((t) => `${f(t.a)}·cos(2π·${f(t.f)}·n/${f(fs)}${t.fase ? ' + ' + f(t.fase) : ''})`).join(' + ')}$` });
     pasos.push({ t: 'Ventana', html: `${V.nombre}${vent === 'rect' ? '' : `: $w[n]$ se multiplica por $x[n]$; ganancia coherente $${f(cg, 4)}$ (se divide entre ella para que la amplitud de un tono siga leyéndose bien)`}. ${mayus(V.lob)}.` });
     pasos.push({ t: 'FFT radix-2', html: `Con $N = 2^{${etapas}}$ la DFT se parte en pares/impares: $X[k] = E[k] + W_N^{k}·O[k]$ con $W_N = e^{-j2π/N}$. Son $log_2 N = ${etapas}$ etapas de $N/2 = ${H}$ mariposas: ${f(fftMul, 6)} multiplicaciones complejas en vez de $N^2 = ${f(dftMul, 6)}$ (${f(dftMul / fftMul, 4)} veces menos).` });
@@ -332,7 +337,7 @@ const TransformadaZ = (() => {
     if (alias.length) pasos.push({ t: 'Aliasing', html: alias.map((a) => `El tono de $${f(a.f)}$ Hz supera $f_s/2 = ${f(fs / 2)}$ Hz y aparece como $${f(a.alias)}$ Hz`).join('; ') + '.' });
     pasos.push({ t: 'Comprobación de Parseval', html: `$Σ|x_w[n]|^2 = ${f(en, 6)}$ y $(1/N)Σ|X[k]|^2 = ${f(enF, 6)}$: la energía es la misma en el tiempo y en la frecuencia.` });
     const fugas = vent === 'rect' && tonos.some((t) => Math.abs(t.f / (fs / N) - Math.round(t.f / (fs / N))) > 1e-6);
-    return { modo: 'fft', N, fs, x, xw, w, ventana: vent, cg, frec, amp, mod, X, pk, alias, tonos, df: fs / N, dftMul, fftMul, etapas, parseval: [en, enF], fugas, nota, pasos };
+    return { modo: 'fft', N, M: Mt, dfBin: fs / Mt, fase, fs, x, xw, w, ventana: vent, cg, frec, amp, mod, X, pk, alias, tonos, df: fs / N, dftMul, fftMul, etapas, parseval: [en, enF], fugas, nota, pasos };
   }
 
   /* ---------- Modo «inversa»: X(z) → x[n] (TZ-1) ---------- */
