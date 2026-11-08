@@ -26,9 +26,21 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     const va = r('val-acetico');
     cerca(va.pHv, pKa, 1e-12, 'pH = pKa a mitad'); cerca(va.ph(25), va.pHeq, 0.01, 'pH de equivalencia exacto y de clase'); cerca(va.ph(12.5), pKa, 0.01, 'curva exacta a mitad');
     // Henderson-Hasselbalch no vale con casi nada de valorante: el pH sale del equilibrio entero
-    const vi = PHC.valoracion({ ...PHC.ejemplos.find((e) => e.clave === 'val-acetico').sc, Vt: '0.05' });
+    const vi = PHC.resolver({ ...PHC.ejemplos.find((e) => e.clave === 'val-acetico').sc, Vt: '0.05' });
     cerca(vi.pHv, vi.ph(0.05), 1e-9, 'valoración débil con 0,05 mL'); if (!(vi.pHv > r('acetico').pH)) mal('pH: al empezar a valorar el acético el pH no puede bajar');
     // modos nuevos, calculados a mano
+    // PH-4 sales anfóteras: pH ≈ ½(pKa1 + pKa2); NaHCO3 → 8,34; NaH2PO4 → 4,68; la fórmula completa se aparta poco con C grande
+    cerca(r('sal-bicarbonato').pH0, (-lg(4.5e-7) - lg(4.7e-11)) / 2, 1e-12, 'pH anfótero del NaHCO3'); cerca(r('sal-bicarbonato').pH, 8.34, 0.02, 'pH del NaHCO3 con la fórmula completa');
+    cerca(r('sal-dihidrogenofosfato').pH0, (-lg(7.1e-3) - lg(6.3e-8)) / 2, 1e-12, 'pH anfótero del NaH2PO4');
+    // PH-1: 12 indicadores y los que sirven para cada valoración (viran dentro del salto de la equivalencia)
+    if (PHC.INDICADORES.length !== 12 || PHC.INDICADORES.some((q) => !(q[2] > q[1]))) mal('pH · los 12 indicadores deben tener un intervalo de viraje válido');
+    {
+      const nombres = (x) => x.adecuados.map((q) => q[0]);
+      const ac = PHC.resolver({ modo: 'valoracion', tipo: 'ad-bf', C: '0.1', V: '25', Ct: '0.1', Ka: '1.8e-5', K: '1.8e-5', pK: '', Vt: '' });
+      if (!nombres(ac).includes('fenolftaleína') || nombres(ac).includes('naranja de metilo')) mal('pH · en acético con NaOH sirve la fenolftaleína y no el naranja de metilo (' + nombres(ac) + ')');
+      const fuerte = PHC.resolver({ modo: 'valoracion', tipo: 'af-bf', C: '0.1', V: '25', Ct: '0.1', Vt: '' });
+      if (!nombres(fuerte).includes('azul de bromotimol') || !nombres(fuerte).includes('fenolftaleína')) mal('pH · en HCl con NaOH sirven el azul de bromotimol y la fenolftaleína (' + nombres(fuerte) + ')');
+    }
     cerca(r('sal-acetato').pH, 14 + lg((-(1e-14 / 1.8e-5) + Math.sqrt((1e-14 / 1.8e-5) ** 2 + 4 * (1e-14 / 1.8e-5) * 0.1)) / 2), 1e-12, 'hidrólisis del acetato');
     cerca(r('sal-amonio').pH, -lg((-(1e-14 / 1.8e-5) + Math.sqrt((1e-14 / 1.8e-5) ** 2 + 4 * (1e-14 / 1.8e-5) * 0.1)) / 2), 1e-12, 'hidrólisis del amonio');
     cerca(r('ka-ph').K, 10 ** -5.74 / (0.1 - 10 ** -2.87), 1e-15, 'Ka a partir del pH');

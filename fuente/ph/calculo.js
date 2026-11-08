@@ -56,8 +56,10 @@ const PH = (() => {
     return -(lo + hi) / 2;
   }
 
-  const INDICADORES = [['naranja de metilo', 3.1, 4.4, 'rojo', 'amarillo'], ['rojo de metilo', 4.2, 6.3, 'rojo', 'amarillo'], ['azul de bromotimol', 6.0, 7.6, 'amarillo', 'azul'], ['fenolftaleína', 8.2, 10.0, 'incoloro', 'rosa'], ['timolftaleína', 9.3, 10.5, 'incoloro', 'azul']];
-  const indicador = (pH) => INDICADORES.reduce((a, b) => (Math.abs((b[1] + b[2]) / 2 - pH) < Math.abs((a[1] + a[2]) / 2 - pH) ? b : a));
+  const D = typeof Datos !== 'undefined' ? Datos : require('../quimica/datos.js');
+  const INDICADORES = D.INDICADORES; // 12 indicadores con su intervalo de viraje (quimica/datos.js)
+  const CLASICOS = ['naranja de metilo', 'rojo de metilo', 'azul de bromotimol', 'fenolftaleína', 'timolftaleína']; // los de clase; el resto se muestra entre los que sirven
+  const indicador = (pH) => INDICADORES.filter((q) => CLASICOS.includes(q[0])).reduce((a, b) => (Math.abs((b[1] + b[2]) / 2 - pH) < Math.abs((a[1] + a[2]) / 2 - pH) ? b : a));
   const caracter = (pH) => (pH < PKW / 2 - 0.005 ? 'ácida' : pH > PKW / 2 + 0.005 ? 'básica' : 'neutra');
   const finPH = (pH) => `$pH = ${f2(pH)}$: disolución ${caracter(pH)}.`;
   // pH a partir de [H3O+] o de [OH−], escrito como en clase
@@ -209,7 +211,19 @@ const PH = (() => {
 
   /* ---------- Hidrólisis de una sal ---------- */
   // sc: { tipo: 'basica' (sal de ácido débil, A⁻: K = Ka del ácido) | 'acida' (sal de base débil, BH⁺: K = Kb de la base) | 'neutra', C, K o pK }
+  // sal anfótera (NaHCO3, NaH2PO4): el anión HA⁻ es ácido y base a la vez; pH = ½(pKa₁ + pKa₂) con la comprobación exacta
+  function anfotera(sc) {
+    const C = lee(sc, 'C', 'la concentración de la sal'), K1 = lee(sc, 'K1', 'Ka₁ (del ácido H₂A)'), K2 = lee(sc, 'K2', 'Ka₂ (de HA⁻)');
+    if (K2 >= K1) throw new Error('Ka₁ tiene que ser mayor que Ka₂');
+    const pH0 = (-lg(K1) - lg(K2)) / 2, h = Math.sqrt((K1 * (K2 * C + KW)) / (K1 + C)), pH = -lg(h), pasos = [];
+    pasos.push({ t: 'Anión anfótero', html: `El anión $HA^{−}$ se comporta como ácido ($HA^{−} + H_{2}O ⇌ A^{2−} + H_{3}O^{+}$, $K_{a2} = ${f(K2)}$) y como base ($HA^{−} + H_{2}O ⇌ H_{2}A + OH^{−}$, $K_b = K_w/K_{a1} = ${f(KW / K1)}$). El catión (Na⁺) no influye.` });
+    pasos.push({ t: 'Aproximación de clase', html: `Las dos reacciones se compensan y el pH no depende de la concentración: $pH ≈ {pK_{a1} + pK_{a2}}/2 = {${f2(-lg(K1))} + ${f2(-lg(K2))}}/2$ = <b>${f2(pH0)}</b>.` });
+    pasos.push({ t: 'Comprobación con la fórmula completa', html: `Con el balance de cargas sin aproximar, $[H_{3}O^{+}] = \sqrt{K_{a1}(K_{a2}C + K_w)/(K_{a1} + C)} = ${f(h)}$ M ⇒ <b>pH = ${f2(pH)}</b> (la aproximación se aparta ${f2(Math.abs(pH - pH0))} unidades).` });
+    pasos.push({ t: 'Cuándo vale', html: Math.abs(pH - pH0) < 0.05 ? 'La aproximación es buena: $C ≫ K_{a1}$... y $K_{a2}C ≫ K_w$.' : 'Aquí la aproximación empieza a fallar: la concentración es muy baja ($C$ no es mucho mayor que $K_{a1}$) o $K_{a2}C$ no supera a $K_w$. Usa el valor de la fórmula completa.' });
+    return { modo: 'sal', tipo: 'anfotera', C, K1, K2, pH, pH0, h, alfa: null, pasos };
+  }
   function sal(sc) {
+    if (sc.tipo === 'anfotera') return anfotera(sc);
     const tipo = ['basica', 'acida', 'neutra'].includes(sc.tipo) ? sc.tipo : 'basica', C = lee(sc, 'C', 'la concentración de la sal'), pasos = [];
     if (tipo === 'neutra') {
       pasos.push({ t: 'Sal de ácido fuerte y base fuerte', html: `Sus iones (como Na⁺ y Cl⁻) son conjugados de un ácido y una base fuertes: son tan débiles que no reaccionan con el agua. La disolución tiene el pH del agua: <b>pH = ${f2(PKW / 2)}</b>.` });
@@ -348,7 +362,10 @@ const PH = (() => {
       pasos.push({ t: 'pH en la equivalencia', html: `Todo el ${nomV} se ha convertido en su ${esBase ? 'ácido conjugado, $BH^{+}$' : 'base conjugada, $A^{−}$'}, con $c = ${f(n0)}/${f((V + Veq) / 1000)} = ${f(cs)}$ M, que se hidroliza con $${esBase ? 'K_a' : 'K_b'} = K_w/${esBase ? 'K_b' : 'K_a'} = ${f(Kh)}$: $x = ${f(x)}$ M de ${esBase ? 'H₃O⁺' : 'OH⁻'}, y <b>pH = ${f2(pHeq)}</b>, ${esBase ? 'ácido' : 'básico'}.` });
     }
     const ind = indicador(pHeq);
+    // PH-1: los indicadores que sirven son los que viran dentro del salto de pH alrededor de la equivalencia (de 99,9 % a 100,1 % del valorante)
+    const salto = [ph(Veq * 0.999), ph(Veq * 1.001)].sort((x, y) => x - y), adecuados = INDICADORES.filter((q) => Math.min(q[2], salto[1]) - Math.max(q[1], salto[0]) >= 0.5 * (q[2] - q[1]));
     pasos.push({ t: 'Indicador', html: `Hace falta uno que vire cerca de pH ${f2(pHeq)}: ${ind[0]}, que pasa de ${ind[3]} a ${ind[4]} entre ${f(ind[1])} y ${f(ind[2])}.` });
+    pasos.push({ t: '¿Qué indicadores sirven?', html: `El salto de pH al pasar del 99,9 % al 100,1 % del valorante va de ${f2(salto[0])} a ${f2(salto[1])}. Sirven los indicadores que viran dentro de ese salto: ${adecuados.length ? adecuados.map((q) => `${q[0]} (${f(q[1])}–${f(q[2])})`).join(', ') : 'ninguno de la lista (el salto es demasiado estrecho para un indicador visual: conviene un pH-metro)'}.` });
     if (debilV) pasos.push({ t: 'A mitad de la valoración', html: `Con $V = V_{eq}/2 = ${f(Veq / 2)}$ mL hay la misma cantidad de la forma ácida y de la básica: es una disolución reguladora con <b>pH = pK<sub>a</sub> = ${f2(pKa)}</b>${esBase ? ' (del ácido conjugado)' : ''}. Así se mide la constante de un ácido o una base.` });
     const v = lee(sc, 'Vt', 'el volumen añadido', { opcional: true, cero: true });
     let pHv = null;
@@ -379,7 +396,7 @@ const PH = (() => {
       }
       pasos.push({ t: `Con ${f(v)} mL añadidos`, html });
     }
-    return { modo: 'valoracion', tipo, nomV, nomT, debilV, esBase, C, V, Ct, K, pKa, Veq, pHeq, ind, v, pHv, curva, pH: pHv ?? curva[0][1], ph, pasos };
+    return { modo: 'valoracion', tipo, nomV, nomT, debilV, esBase, C, V, Ct, K, pKa, Veq, pHeq, ind, adecuados, salto, v, pHv, curva, pH: pHv ?? curva[0][1], ph, pasos };
   }
 
   function resolver(sc) {
@@ -416,6 +433,8 @@ const PH = (() => {
     { clave: 'mezcla', nombre: 'Mezcla de HCl y NaOH', sc: { modo: 'mezcla', tipo: 'ff', Ca: '0.1', Va: '50', Cb: '0.2', Vb: '30' } },
     { clave: 'mezcla-debil', nombre: 'Mezcla de ácido acético y NaOH', sc: { modo: 'mezcla', tipo: 'df', Ca: '0.2', Va: '50', Cb: '0.1', Vb: '50', K: '1.8e-5', pK: '' } },
     { clave: 'mezcla-amoniaco', nombre: 'Mezcla de amoniaco y HCl (todo sal)', sc: { modo: 'mezcla', tipo: 'fd', Ca: '0.1', Va: '50', Cb: '0.1', Vb: '50', K: '1.8e-5', pK: '' } },
+    { clave: 'sal-bicarbonato', nombre: 'Sal anfótera: NaHCO₃ 0,1 M', sc: { modo: 'sal', tipo: 'anfotera', C: '0.1', K1: '4.5e-7', K2: '4.7e-11', K: '', pK: '' } },
+    { clave: 'sal-dihidrogenofosfato', nombre: 'Sal anfótera: NaH₂PO₄ 0,05 M', sc: { modo: 'sal', tipo: 'anfotera', C: '0.05', K1: '7.1e-3', K2: '6.3e-8', K: '', pK: '' } },
     { clave: 'sal-acetato', nombre: 'Hidrólisis: acetato de sodio 0,1 M', sc: { modo: 'sal', tipo: 'basica', C: '0.1', K: '1.8e-5', pK: '' } },
     { clave: 'sal-amonio', nombre: 'Hidrólisis: cloruro de amonio 0,1 M', sc: { modo: 'sal', tipo: 'acida', C: '0.1', K: '1.8e-5', pK: '' } },
     { clave: 'ka-ph', nombre: 'Ka a partir del pH (ácido 0,1 M con pH 2,87)', sc: { modo: 'inverso', especie: 'acido', fuerza: 'debil', busca: 'K', pHm: '2.87', C: '0.1' } },
