@@ -30,12 +30,19 @@
        grafica(sol, col), configuración de grafica() o null
        despues(r, sol, col), dibujo extra sobre la gráfica (r = { X, Y, g, w, h })
        leyenda(sol), HTML bajo la gráfica
+       grafica2(sol, col), despues2, leyenda2(sol)   segunda gráfica (opcional: hace falta
+                     <canvas id="grafica2"> y <p id="leyenda2"> en una tarjeta de la página)
+       usar,         botones «Usar en…» (opcional): [{ a: 'carpeta-destino', nombre, datos(sol, sc) }]
+                     que abren esa herramienta con los datos que devuelve datos(), en el
+                     formato de estado de la otra (la dirección lleva #d=, como «Copiar enlace»)
        nota,         texto de ayuda bajo los datos
        azar(),       sc al azar para el modo práctica (opcional)
        enunciado(sc, sol), enunciado del modo práctica (opcional)
      })
    Un cambio en un desplegable vuelve a pintar el formulario (los campos pueden
-   depender del modo elegido). window.<app>.pon(cambios) cambia unos datos desde
+   depender del modo elegido). Cada gráfica lleva su botón «Guardar gráfica (PNG)» y se
+   describe con su leyenda (role="img" y aria-describedby) para lectores de pantalla.
+   window.<app>.pon(cambios) cambia unos datos desde
    fuera del formulario (por ejemplo, al mover o acercar la gráfica) y recalcula.
    ===================================================================== */
 const Calculadora = (() => {
@@ -204,9 +211,52 @@ const Calculadora = (() => {
     function dibuja() {
       const c = $('#grafica'); if (!c) return;
       const cfg = sol && o.grafica ? o.grafica(sol, col) : null;
-      if (!cfg) { Herramienta.lienzo(c); return; }
-      const r = grafica(c, cfg, col);
-      if (r && o.despues) o.despues(r, sol, col);
+      if (!cfg) Herramienta.lienzo(c);
+      else { const r = grafica(c, cfg, col); if (r && o.despues) o.despues(r, sol, col); }
+      const c2 = $('#grafica2');
+      if (c2) {
+        const cfg2 = sol && o.grafica2 ? o.grafica2(sol, col) : null, card = c2.closest('.card');
+        if (card) card.hidden = !cfg2;
+        if (!cfg2) Herramienta.lienzo(c2);
+        else { const r2 = grafica(c2, cfg2, col); if (r2 && o.despues2) o.despues2(r2, sol, col); }
+        const l2 = $('#leyenda2'); if (l2) l2.innerHTML = cfg2 && o.leyenda2 ? o.leyenda2(sol) : '';
+      }
+    }
+    // guardar la gráfica como imagen PNG (sobre el color de fondo de la tarjeta) y describirla para lectores de pantalla
+    function guardaPNG(c, nombre) {
+      const out = document.createElement('canvas'); out.width = c.width; out.height = c.height;
+      const g = out.getContext('2d'), fondo = getComputedStyle(document.documentElement).getPropertyValue('--panel').trim() || '#ffffff';
+      g.fillStyle = fondo; g.fillRect(0, 0, out.width, out.height); g.drawImage(c, 0, 0);
+      return new Promise((ok) => out.toBlob((b) => {
+        if (!b) return ok(false);
+        const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = nombre; document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 2000); ok(true);
+      }, 'image/png'));
+    }
+    function botonesGrafica() {
+      for (const [id, ley, sufijo] of [['#grafica', '#leyenda', ''], ['#grafica2', '#leyenda2', '-2']]) {
+        const c = $(id); if (!c) continue;
+        c.setAttribute('role', 'img'); const l = $(ley); if (l) c.setAttribute('aria-describedby', l.id);
+        if (c.parentElement.querySelector('.guardar-png')) continue;
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'btn guardar-png'; b.textContent = 'Guardar gráfica (PNG)'; b.style.marginTop = '8px';
+        const msg = document.createElement('span'); msg.className = 'leyenda'; msg.setAttribute('role', 'status'); msg.style.marginLeft = '8px';
+        b.addEventListener('click', async () => { const ok = await guardaPNG(c, `${o.carpeta}-grafica${sufijo}.png`); msg.textContent = ok ? 'Imagen guardada' : 'No se ha podido guardar la imagen'; setTimeout(() => { msg.textContent = ''; }, 2500); });
+        (l || c).before(b); b.after(msg);
+      }
+    }
+    /* ---------- «Usar en…» ---------- */
+    function botonesUsar() {
+      if (!o.usar || !o.usar.length) return;
+      const card = $('#resumen') && $('#resumen').closest('.card'); if (!card || card.querySelector('.usar-en')) return;
+      const caja = document.createElement('div'); caja.className = 'controles usar-en'; caja.setAttribute('role', 'group'); caja.setAttribute('aria-label', 'Usar estos datos en otra herramienta'); caja.style.marginTop = '10px';
+      caja.innerHTML = o.usar.map((u, i) => `<a class="btn" href="#" data-i="${i}">Usar en ${esc(u.nombre)} →</a>`).join('');
+      card.appendChild(caja);
+      caja.addEventListener('click', (e) => {
+        const a = e.target.closest('a[data-i]'); if (!a) return; e.preventDefault();
+        const u = o.usar[+a.dataset.i]; if (!sol) { const er = $('#error'); er.textContent = 'Corrige primero los datos para poder usarlos en otra herramienta'; er.hidden = false; return; }
+        const datos = JSON.stringify(u.datos(sol, sc)), b64 = btoa(unescape(encodeURIComponent(datos))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+        location.href = `../${u.a}/#d=${b64}`;
+      });
     }
     const leeColores = () => { col = colores(o.colores || []); };
     window.addEventListener('resize', dibuja);
@@ -214,7 +264,7 @@ const Calculadora = (() => {
     matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { leeColores(); dibuja(); });
 
     const ver = $('#ver'); if (ver) ver.textContent = Version.de(o.carpeta).current;
-    leeColores(); formulario(); calcula();
+    leeColores(); botonesGrafica(); botonesUsar(); formulario(); calcula();
     const enunciado = () => (o.enunciado ? o.enunciado(sc, sol) : undefined);
     return (window[o.app] = { abrirEjemplo, azar, pon, enunciado, resultado: () => sol, estado: () => copia(sc) });
   }
