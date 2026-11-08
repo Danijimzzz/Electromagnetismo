@@ -64,6 +64,49 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       let ok = false; try { C.resolver(sc); } catch (e) { ok = true; }
       if (!ok) mal(`TransformadaZ: ${q} no da error`);
     }
+    // TZ-4: polo doble, sistema nulo y cancelación polo-cero
+    {
+      const S = (b, a) => C.resolver({ modo: 'sistema', b, a, Nn: '8' });
+      const d = S('1', '1 -2 1'); if (d.polos.length !== 1 || d.polos[0].m !== 2 || d.estab !== 'inestable') mal('TransformadaZ · polo doble en z = 1: multiplicidad o estabilidad mal');
+      cerca(d.h[4], 5, 1e-9, 'polo doble: h[4] = n + 1');
+      if (!d.pasos.some((p) => /×2/.test(p.html))) mal('TransformadaZ · polo doble: los pasos no muestran la multiplicidad (×2)');
+      const z = S('0', '1 -0,5'); if (!z.nulo || !z.pasos.some((p) => p.t === 'Sistema nulo') || z.h.some((x) => x !== 0)) mal('TransformadaZ · b = 0: no avisa de que H(z) = 0');
+      const c = S('1 -0,5', '1 -0,5'); if (c.cancel.length !== 1 || !c.pasos.some((p) => p.t === 'Cancelación polo-cero') || c.polosEf.length !== 0) mal('TransformadaZ · cancelación polo-cero no detectada'); cerca(c.h[0], 1, 1e-12, 'cancelación: h[0] = 1'); cerca(c.h[3], 0, 1e-12, 'cancelación: h[3] = 0');
+      const q = S('1 -2', '1 -2'); if (q.estab !== 'estable') mal('TransformadaZ · polo inestable cancelado: debe juzgarse estable (h = δ) con el aviso');
+      const m = S('1 -1', '1 -2 1'); if (m.estab !== 'marginal') mal(`TransformadaZ · (1 − z⁻¹)/(1 − z⁻¹)²: queda un polo simple en 1, marginal, y sale ${m.estab}`); cerca(m.h[5], 1, 1e-9, 'cancelación parcial: h[5] = 1');
+    }
+    // TZ-1: transformada inversa. La suma Σ x[n] z⁻ⁿ en un punto de la RDC debe dar B(z)/A(z)
+    {
+      const compr = (b, a, roc, q) => {
+        const t = C.resolver({ modo: 'inversa', b, a, roc: String(roc), Nn: '10' }), [lo, hi] = t.rocRango, rad = hi === Infinity ? lo * 1.6 + 0.5 : lo === 0 ? hi * 0.6 : Math.sqrt(lo * hi), ang = 0.7;
+        let Sr = 0, Si = 0; for (let n = -300; n <= 300; n++) { const v = t.valor(n), m = Math.pow(rad, -n); if (v === 0) continue; Sr += v * m * Math.cos(n * ang); Si -= v * m * Math.sin(n * ang); }
+        const ev = (cs) => cs.reduce((s2, c, k) => [s2[0] + c * Math.pow(rad, -k) * Math.cos(k * ang), s2[1] - c * Math.pow(rad, -k) * Math.sin(k * ang)], [0, 0]), nb = ev(t.b), da = ev(t.a), dd = da[0] ** 2 + da[1] ** 2;
+        cerca(Sr, (nb[0] * da[0] + nb[1] * da[1]) / dd, 1e-6, `inversa ${q}: parte real de la serie`); cerca(Si, (nb[1] * da[0] - nb[0] * da[1]) / dd, 1e-6, `inversa ${q}: parte imaginaria`);
+        return t;
+      };
+      for (const [b, a, n, q] of [['1', '1 -0,75 0,125', 3, 'dos polos reales'], ['1', '1 -2,5 1', 3, 'polos 0,5 y 2'], ['1', '1 -1 0,25', 2, 'polo doble'], ['1', '1 -1,2 0,72', 2, 'polos complejos'], ['1 0,5 2', '1 -0,5', 2, 'numerador de más grado'], ['2', '1 -0,3 -0,1 0,03', 4, 'tres polos'], ['1 -2', '1 -1,5 0,5625', 2, 'polo doble 0,75']]) for (let roc = 0; roc < n; roc++) if (!(q === 'tres polos' && roc === 1)) compr(  /* en esa región los radios 0,3 y 0,316 casi coinciden y la serie converge muy despacio */ b, a, roc, `${q}, región ${roc}`);
+      const t = compr('1', '1 -0,75 0,125', 2, 'causal');
+      cerca(t.xs[0], 1, 1e-9, 'inversa causal: x[0] = 1'); cerca(t.xs[1], 0.75, 1e-9, 'inversa causal: x[1] = 0,75'); cerca(t.xs[2], 0.75 * 0.75 - 0.125, 1e-9, 'inversa causal: x[2]');
+      cerca(t.xs[4], 2 * 0.5 ** 4 - 0.25 ** 4, 1e-12, 'inversa causal: x[n] = 2(0,5)ⁿ − (0,25)ⁿ');
+      const bi = C.resolver({ modo: 'inversa', b: '1', a: '1 -2,5 1', roc: '1', Nn: '12' });   // 1/((1 − 0,5z⁻¹)(1 − 2z⁻¹)), 0,5 < |z| < 2: bilateral
+      if (bi.lado !== 'bilateral' || !bi.contieneCirc || bi.estab !== 'estable') mal('TransformadaZ · inversa bilateral: lado o circunferencia unidad mal');
+      cerca(bi.valor(2), -1 / 3 * 0.25, 1e-12, 'bilateral: x[2] = −(1/3)·0,5²'); cerca(bi.valor(-1), -4 / 3 * 0.5, 1e-12, 'bilateral: x[−1] = −(4/3)·2⁻¹');
+      const an = C.resolver({ modo: 'inversa', b: '1', a: '1 -0,5', roc: '0', Nn: '8' });   // |z| < 0,5: x[n] = −0,5ⁿ u[−n−1]
+      cerca(an.valor(-1), -2, 1e-12, 'anticausal: x[−1] = −2'); cerca(an.valor(0), 0, 1e-12, 'anticausal: x[0] = 0');
+      if (C.opcionesRoc({ a: '1 -2,5 1' }).length !== 3) mal('TransformadaZ · opciones de RDC: con dos polos debe haber 3 regiones');
+      for (const [sc, q] of [[{ modo: 'inversa', b: '', a: '1' }, 'sin numerador'], [{ modo: 'inversa', b: '0', a: '1 -0,5' }, 'numerador cero'], [{ modo: 'inversa', b: '1', a: '0 1' }, 'a₀ = 0']]) { let ok = false; try { C.resolver(sc); } catch (e) { ok = true; } if (!ok) mal(`TransformadaZ · inversa: ${q} no da error`); }
+    }
+    // TZ-3: relleno de ceros y fase en la FFT
+    {
+      const base = C.resolver({ ...C.ejemplos.find((e) => e.clave === 'dos-tonos').sc }), pad = C.resolver({ ...C.ejemplos.find((e) => e.clave === 'dos-tonos').sc, pad: '256' });
+      if (pad.frec.length !== 129 || base.frec.length !== 33) mal(`TransformadaZ · relleno: ${pad.frec.length} y ${base.frec.length} bins`);
+      cerca(pad.dfBin, 640 / 256, 1e-12, 'relleno: separación de bins'); cerca(pad.df, 640 / 64, 1e-12, 'relleno: la resolución real no cambia');
+      cerca(pad.pk[0].f, 50, 0.5, 'relleno: pico principal cerca de 50 Hz (la interpolación parabólica no es exacta con tanto relleno)'); cerca(pad.parseval[0], pad.parseval[1], 1e-6 * pad.parseval[0], 'relleno: Parseval');
+      cerca(base.fase[5], 0, 1e-9, 'fase de un coseno sin desfase: 0° en 50 Hz (bin 5)');
+      const dos = C.resolver({ modo: 'fft', senal: 'tonos', fs: '64', N: '64', a1: '1', f1: '8', p1: '90', ventana: 'rect' }); cerca(dos.fase[8], 90, 1e-6, 'fase de cos(ωn + 90°) en su bin: +90°');
+      let ok = false; try { C.resolver({ modo: 'fft', senal: 'tonos', fs: '640', N: '64', a1: '1', f1: '50', pad: '100' }); } catch (e) { ok = true; } if (!ok) mal('TransformadaZ · relleno que no es potencia de 2 no da error');
+      const csv = C.resolver({ modo: 'fft', senal: 'muestras', fs: '4', x: '1\n2\n3\n4', ventana: 'rect' }); cerca(csv.amp[0], 2.5, 1e-9, 'muestras pegadas una por línea: continua 2,5');
+    }
     if (fallos === antes) console.log(`  ✓ TransformadaZ: polos, h[n], estabilidad, DFT/FFT, picos, ventanas y aliasing (${C.ejemplos.length} ejemplos) a mano`);
   }
 
@@ -98,6 +141,18 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     await page.waitForSelector('#f-fs'); await page.fill('#f-fs', '640'); await page.fill('#f-N', '64'); await page.fill('#f-a1', '1'); await page.fill('#f-f1', '50');
     const pf = await page.evaluate(() => TransformadaZApp.resultado().pico);
     if (Math.abs(pf - 50) > 1e-6) mal(`TransformadaZ: pico en ${pf} Hz en vez de 50`);
+    { const Exp = require('./comun/exportar-grafica.js'); Exp.csv(mal);
+      await page.evaluate(() => TransformadaZApp.abrirEjemplo('inversa-bilateral'));
+      if ((await page.locator('#f-roc option').count()) !== 3) mal('TransformadaZ: el modo inversa no ofrece 3 regiones de convergencia');
+      await page.selectOption('#f-roc', '0');
+      { const r = await page.evaluate(() => TransformadaZApp.resultado()); if (!r) mal('TransformadaZ: la inversa anticausal no da resultado'); }
+      await page.selectOption('#f-roc', '1'); await Exp.pagina(page, '#grafica', mal, 'TransformadaZ · x[n]');
+      await page.fill('#f-a', '1 -0,5');
+      if ((await page.locator('#f-roc option').count()) !== 2) mal('TransformadaZ: al cambiar el denominador no se rehacen las regiones');
+      await page.evaluate(() => TransformadaZApp.abrirEjemplo('dos-tonos')); await Exp.pagina(page, '#grafica', mal, 'TransformadaZ · espectro');
+      await page.fill('#f-pad', '256'); if (!(await page.locator('#error').isHidden())) mal('TransformadaZ: relleno de ceros 256 da error');
+      await page.locator('#vistas button').nth(1).click(); if (!(await page.locator('#leyenda').textContent()).includes('Fase de cada bin')) mal('TransformadaZ: la pestaña Fase de la FFT no sale');
+    }
     await page.close();
     if (consola.length) mal('TransformadaZ: consola del navegador:\n      ' + consola.join('\n      '));
     if (fallos === antes) console.log(`  ✓ TransformadaZ: ${C.ejemplos.length} ejemplos con todas sus pestañas, MathML, edición y errores, sin errores de consola`);

@@ -4,6 +4,7 @@
    Cambia los valores de abajo por los de tus ejemplos, calculados a mano. */
 module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
   let fallos = 0;
+  const Exp = require('./comun/exportar-grafica.js');
   const mal = (m) => { fallos++; avisa(m); };
 
   const C = require(path.join(fuente, 'bode', 'calculo.js'));
@@ -34,6 +35,29 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
         b.f.forEach((fr, k) => { const h = C.Hde(P, fr); if (Math.abs(h.mod - b.mod[k]) > 1e-9 + 1e-6 * h.mod || (h.mod > 1e-2 && Math.abs(h.fase - b.fase[k]) > 1e-5)) mal(`Bode · ${tipo} a ${fr.toFixed(1)} Hz: distinto del motor del simulador`); });
       }
     }
+    // BO-1: con Q alto, el ancho de banda (f0/Q) cabe entre dos puntos de una rejilla logarítmica y el pico no llegaba a 0 dB
+    for (const Q of [10, 50, 200, 1000, 5000]) {
+      const L = 1e-3, Cap = 1e-6, f0 = 1 / (2 * Math.PI * Math.sqrt(L * Cap)), R = Math.sqrt(L / Cap) / Q, tx = (x) => String(x).replace('.', ',');
+      for (const tipo of ['rlc-banda', 'rlc-rechazo']) {
+        const s = C.resolver({ tipo, R: tx(R), L: '1', C: '1' }), c = s.curva(500);
+        if (s.cortes.length !== 2) { mal(`Bode · ${tipo} Q=${Q}: ${s.cortes.length} cortes en vez de 2`); continue; }
+        cerca(s.BW, f0 / Q, 1e-6, `${tipo} Q=${Q}: BW = f0/Q`);
+        cerca(s.cortes[0] * s.cortes[1], f0 * f0, 1e-9, `${tipo} Q=${Q}: f1·f2 = f0²`);
+        const a = 1 / (2 * Q), r = Math.sqrt(1 + a * a);
+        cerca(s.cortes[0], f0 * (r - a), 1e-9, `${tipo} Q=${Q}: f1 analítica`); cerca(s.cortes[1], f0 * (r + a), 1e-9, `${tipo} Q=${Q}: f2 analítica`);
+        if (tipo === 'rlc-banda') { cerca(Math.max(...c.dB), 0, 1e-9, `banda Q=${Q}: el máximo dibujado es 0 dB`); cerca(C.Hde(s.P, f0).dB, 0, 1e-9, `banda Q=${Q}: 0 dB en f0`); }
+        else if (Math.min(...c.dB) > -40) mal(`Bode · rechazo Q=${Q}: la muesca dibujada solo llega a ${Math.min(...c.dB)} dB`);
+        for (let k = 1; k < c.f.length; k++) if (!(c.f[k] > c.f[k - 1])) { mal(`Bode · ${tipo} Q=${Q}: frecuencias de la curva sin ordenar`); break; }
+      }
+      // paso bajo con pico: el máximo dibujado es el pico exacto Q/√(1 − 1/(4Q²))
+      const sb = C.resolver({ tipo: 'rlc-bajo', R: tx(R), L: '1', C: '1' }), cb = sb.curva(500);
+      cerca(Math.max(...cb.dB), 20 * Math.log10(Q / Math.sqrt(1 - 1 / (4 * Q * Q))), 1e-6, `bajo Q=${Q}: pico dibujado`);
+      // y el mismo resultado que el motor del Simulador
+      global.SimCircuitos = global.SimCircuitos || require(path.join(fuente, 'simulador', 'motor.js'));
+      const { net, sal } = C.circuitoSimulador('rlc-banda', R, L, Cap), b = SimCircuitos.barrido(net, { fuente: 'V1', a: sal[0], b: sal[1], fmin: f0 * 0.9, fmax: f0 * 1.1, puntos: 15 }), P = C.polinomios('rlc-banda', R, L, Cap);
+      b.f.forEach((fr, k) => { if (Math.abs(C.Hde(P, fr).mod - b.mod[k]) > 1e-9 + 1e-6 * b.mod[k]) mal(`Bode · Q=${Q} a ${fr.toFixed(1)} Hz: distinto del motor del simulador`); });
+    }
+    require('./comun/exportar-grafica.js').csv(mal);
     for (const [sc, q] of [[{ tipo: 'rc-bajo', R: '', C: '1' }, 'falta R'], [{ tipo: 'rc-bajo', R: '1k', C: '0' }, 'C cero'], [{ tipo: 'rlc-banda', R: '1', L: '1', C: '' }, 'falta C'], [{ tipo: 'xx', R: '1' }, 'tipo desconocido'], [{ tipo: 'rc-bajo', R: '1k', C: '1', fmin: '100', fmax: '10' }, 'rango al revés']]) {
       let ok = false; try { C.resolver(sc); } catch (e) { ok = true; }
       if (!ok) mal(`Bode: ${q} no da error`);
@@ -54,6 +78,7 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       if (r.err || !r.pasos || !r.res) mal(`Bode · ${e.clave}: falta el resultado o el desarrollo`);
       if (!r.mathml || r.dolar) mal(`Bode · ${e.clave}: el desarrollo no sale en MathML`);
     }
+    await Exp.pagina(page, '#grafica', mal, 'Bode · magnitud'); await Exp.pagina(page, '#grafica-fase', mal, 'Bode · fase');
     await page.fill('#f-R', '0');
     if (await page.locator('#error').isHidden()) mal('Bode: una resistencia cero no muestra el error');
     await page.selectOption('#f-tipo', 'rlc-banda');

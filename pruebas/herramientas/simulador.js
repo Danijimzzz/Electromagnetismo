@@ -25,6 +25,37 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     { const { x, fa } = get('transformador'); cerca(SimCircuitos.mod(fa[0].V[x.pinNet.R1[0]]) / Math.SQRT2, 23, 1e-9, 'transformador: 23 V en el secundario'); }
     { const e = Ejemplos.lista.find((q) => q.clave === 'rectificador'), x = Extraer.extraer(e.sc), tr = SimCircuitos.transitorio(x.net, { tfin: 0.06, puntos: 3000 }), v = tr.V[x.pinNet.C1[0]]; const n = v.length; const max = Math.max(...v), min = Math.min(...v.slice(Math.floor(n / 2)));
       if (!(max > 8.8 && max < 9.8)) mal(`Simulador · rectificador: la tensión máxima es ${max}`); if (!(min > 6 && min < max)) mal(`Simulador · rectificador: el rizado no cuadra (${min})`); }
+    // SI-4: los seis ejemplos nuevos (a mano) y SI-3: el Bode adaptativo no pierde el pico de un resonador de Q alto
+    {
+      const x = (c) => Extraer.extraer(Ejemplos.lista.find((e) => e.clave === c).sc);
+      { const q = x('thevenin'), op = SimCircuitos.operacion(q.net), Vth = 12 * 2 / 3, Rth = 1000 * 2000 / 3000 + 500; cerca(op.V[q.pinNet.RL[0]].re, Vth * 1000 / (Rth + 1000), 1e-7, 'Thévenin: tensión en la carga'); }
+      { const q = x('no-inversor'), op = SimCircuitos.operacion(q.net); cerca(op.V[q.pinNet.SONDA1[0]].re, 5, 1e-9, 'no inversor: 1 + 9k/1k = 10 → 5 V'); }
+      { const q = x('regulador-zener'), v = SimCircuitos.operacion(q.net).V[q.pinNet.RL[0]].re; if (!(v > 5.1 && v < 6.2)) mal(`Simulador · Zener: la carga queda a ${v} V, no regulada cerca de 5,1 V`); }
+      { const q = x('puente-rectificador'), tr = SimCircuitos.transitorio(q.net, { tfin: 0.06, puntos: 3000 }), v = tr.V[q.pinNet.C1[0]]; const t0 = v.filter((_, i) => tr.t[i] > 0.04), max = Math.max(...t0), min = Math.min(...t0);
+        if (!(max > 8.2 && max < 9.2)) mal(`Simulador · puente: la tensión máxima es ${max}`); if (!(min > 5 && min < max - 0.1)) mal(`Simulador · puente: el rizado no cuadra (${min})`); }
+      { // el puente rectifica las dos mitades: con 50 Hz el rizado es de 100 Hz, así que baja menos que en media onda con el mismo filtro
+        const q = x('puente-rectificador'), tr = SimCircuitos.transitorio(q.net, { tfin: 0.06, puntos: 3000 }), v = tr.V[q.pinNet.C1[0]].filter((_, i) => tr.t[i] > 0.04);
+        const m = x('rectificador'), tm = SimCircuitos.transitorio(m.net, { tfin: 0.06, puntos: 3000 }), vm = tm.V[m.pinNet.C1[0]].filter((_, i) => tm.t[i] > 0.04);
+        if (!(Math.max(...v) - Math.min(...v) < Math.max(...vm) - Math.min(...vm))) mal('Simulador · puente: el rizado no es menor que el de media onda'); }
+      { const q = x('resonancia-paralelo'), f0 = 1 / (2 * Math.PI * Math.sqrt(10e-3 * 1e-6)), b = SimCircuitos.barrido(q.net, { fuente: 'I1', a: 'n1', fmin: 100, fmax: 20000, puntos: 240, adaptativo: true }), mx = Math.max(...b.dB); cerca(mx, 60, 1e-4, 'paralelo: el pico de impedancia es R = 1 kΩ (60 dB)'); cerca(b.f[b.dB.indexOf(mx)], f0, 5e-3, 'paralelo: pico en f0'); }
+      {
+        const q = x('radio-q-alto'), L = 0.2e-3, C = 126.65e-12, f0 = 1 / (2 * Math.PI * Math.sqrt(L * C)), Q = Math.sqrt(L / C) / 12.57;
+        const base = SimCircuitos.barrido(q.net, { fuente: 'E1', a: 'n3', fmin: 9e5, fmax: 1.1e6, puntos: 240 }), ada = SimCircuitos.barrido(q.net, { fuente: 'E1', a: 'n3', fmin: 9e5, fmax: 1.1e6, puntos: 240, adaptativo: true });
+        const m0 = Math.max(...base.dB), m1 = Math.max(...ada.dB);
+        if (!(m1 > -0.02 && m1 < 0.02)) mal(`Simulador · Bode adaptativo: el pico de la sintonía (Q ≈ ${Q.toFixed(0)}) sale ${m1} dB en vez de 0 dB`);
+        if (!(ada.f.length > base.f.length && ada.f.length <= 3000)) mal(`Simulador · Bode adaptativo: ${ada.f.length} puntos (sin adaptar ${base.f.length})`);
+        for (let k = 1; k < ada.f.length; k++) if (!(ada.f[k] > ada.f[k - 1])) { mal('Simulador · Bode adaptativo: frecuencias sin ordenar'); break; }
+        // cortes a −3 dB por interpolación lineal entre los dos puntos vecinos
+        const cruza = (a, b) => ada.f[a] + (ada.f[b] - ada.f[a]) * (-3.0103 - ada.dB[a]) / (ada.dB[b] - ada.dB[a]), kM = ada.dB.indexOf(m1);
+        let a = kM; while (ada.dB[a] > -3.0103) a--; let b = kM; while (ada.dB[b] > -3.0103) b++;
+        cerca((cruza(b - 1, b) - cruza(a, a + 1)) / (f0 / Q), 1, 2e-2, 'Bode adaptativo: ancho de banda f0/Q'); void m0;
+        // en un rango ancho (1 Hz a 10 MHz, 240 puntos, paso del 7 %) la rejilla fija pierde el pico; la adaptativa, no
+        const an = SimCircuitos.barrido(q.net, { fuente: 'E1', a: 'n3', fmin: 1, fmax: 1e7, puntos: 240, adaptativo: true }), fi = SimCircuitos.barrido(q.net, { fuente: 'E1', a: 'n3', fmin: 1, fmax: 1e7, puntos: 240 });
+        if (!(Math.max(...an.dB) > -0.1 && Math.max(...fi.dB) < -0.3)) mal(`Simulador · Bode en rango ancho: el pico adaptativo es ${Math.max(...an.dB)} dB y el de rejilla fija ${Math.max(...fi.dB)} dB`);
+        // sin `adaptativo` el resultado es el mismo de siempre (puntos exactos)
+        if (base.f.length !== 240) mal('Simulador · barrido sin adaptativo: no da 240 puntos');
+      }
+    }
     // importar lo guardado con las herramientas antiguas: divisor de continua y RLC de alterna
     {
       const Imp = require(path.join(fuente, 'simulador', 'importar.js'));
@@ -117,6 +148,12 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     await page.selectOption('#ba-p', 'R2:R'); await page.fill('#ba-de', '100'); await page.dispatchEvent('#ba-de', 'change'); await page.fill('#ba-a', '100k'); await page.dispatchEvent('#ba-a', 'change');
     await page.selectOption('#ba-log', 'log'); await page.selectOption('#ba-m', 'P:R2');
     { const ley = await page.locator('#ba-ley').textContent(); if (!/máximo (36|35,9\d*) mW con R2 = (9\d\d(,\d+)?|1,0\d*) ?(Ω|kΩ)/.test(ley)) mal('Simulador: la leyenda del barrido no da 36 mW cerca de 1 kΩ: ' + ley); }
+    { const Exp = require('./comun/exportar-grafica.js'); await Exp.pagina(page, '#ba', mal, 'Simulador · Barrido');
+      await page.click('#tab-bo'); await Exp.pagina(page, '#bode', mal, 'Simulador · Bode');
+      await page.evaluate(() => SimuladorApp.abrirEjemplo('rc-escalon')); await page.click('#tab-tr'); await Exp.pagina(page, '#osc', mal, 'Simulador · Osciloscopio');
+      await page.evaluate(() => SimuladorApp.abrirEjemplo('radio-q-alto')); await page.click('#tab-bo');
+      { const ley = await page.locator('#bode-ley').textContent(); if (!/máximo (-0,0\d*|0|0,0\d*) dB/.test(ley.replace('−', '-'))) mal('Simulador: el Bode de la sintonía de radio (Q = 100) no llega a 0 dB: ' + ley); } }
+    await page.evaluate(() => SimuladorApp.abrirEjemplo('divisor'));
     await page.click('#tab-th');
     { const ley = await page.locator('#th-pot-ley').textContent().catch(() => ''); if (!/máximo/.test(ley)) mal('Simulador: Thévenin no dibuja la curva de potencia'); }
     // arrastrar de la paleta, cablear, girar, deshacer

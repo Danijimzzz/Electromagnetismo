@@ -433,4 +433,34 @@
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('puertas-logicas').current;
   colores(); formulario(); calcula();
   window.PuertasLogicasApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { f: sol.salidas.map((s) => s.minS.txt) }, estado: () => copia(sc) };
+
+  /* ---------- Lógica secuencial (PL-1): biestables y contador síncrono ---------- */
+  (() => {
+    const C = PuertasLogicas, sec = { ff: 'JK', bits: '3', sentido: 'sube' };
+    let r = null, paso = 0;
+    const tabla = (cab, filas, nombre) => `<div class="tabla-scroll"><table class="tv" aria-label="${nombre}"><thead><tr>${cab.map((c) => `<th scope="col">${c}</th>`).join('')}</tr></thead><tbody>${filas.map((f) => `<tr>${f.map((c) => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+    function campos() {
+      const op = (k, l) => l.map(([v, t]) => `<option value="${v}"${String(sec[k]) === v ? ' selected' : ''}>${t}</option>`).join('');
+      $('#sec-campos').innerHTML = `<label for="s-ff">Biestable</label><select id="s-ff" class="in" data-k="ff">${op('ff', Object.entries(C.FFS))}</select>`
+        + `<label for="s-bits">Bits del contador</label><select id="s-bits" class="in" data-k="bits">${op('bits', [1, 2, 3, 4].map((b) => [String(b), `${b} ${b === 1 ? 'bit' : 'bits'} (módulo ${2 ** b})`]))}</select>`
+        + `<label for="s-sentido">Sentido</label><select id="s-sentido" class="in" data-k="sentido">${op('sentido', [['sube', 'Ascendente'], ['baja', 'Descendente']])}</select>`;
+    }
+    function pinta() {
+      r = C.secuencial(sec); paso = 0;
+      const e = r.entradas, qcol = r.ff === 'D' ? [] : ['Q'];
+      const ent = r.caract.map((f) => [...f.ent, ...(f.q === null ? [] : [f.q]), f.sig]);
+      let h = `<h3>Tabla característica (${r.nombre})</h3>` + tabla([...e, ...qcol, 'Q⁺'], ent, 'Tabla característica');
+      h += `<h3>Tabla de excitación</h3><p class="nota" style="margin:0 0 6px">Qué entradas hacen falta para pasar de Q a Q⁺ (X = da igual).</p>` + tabla(['Q', 'Q⁺', ...e], r.trans.map((t) => [t.q, t.qn, ...t.ent]), 'Tabla de excitación');
+      const cab = ['Estado Q'.concat(r.nb > 1 ? ` (${[...Array(r.nb).keys()].map((i) => 'Q' + (r.nb - 1 - i)).join('')})` : ''), 'Estado siguiente', ...[...Array(r.nb).keys()].map((i) => e.map((n) => `${n}${r.nb - 1 - i}`)).flat()];
+      h += `<h3>Contador ${r.sube ? 'ascendente' : 'descendente'} de ${r.nb} ${r.nb === 1 ? 'bit' : 'bits'}</h3>` + tabla(cab, r.estados.map((x) => [x.q, x.sig, ...x.ex.flat()]), 'Tabla de estados y excitación');
+      h += `<h3>Ecuaciones de entrada</h3><p class="nota" style="margin:0 0 6px">Simplificadas con Karnaugh${r.nb > 1 ? ` (${r.vars.join(', ')})` : ''}:</p><ul>${r.ecuaciones.map((q) => `<li><b>${q.nombre}</b> = ${esc(q.txt)}</li>`).join('')}</ul>`;
+      $('#sec-res').innerHTML = h; estado();
+    }
+    const estado = () => { $('#sec-estado').textContent = `Estado ${r.secuencia[paso % r.secuencia.length]} · pulso ${paso}. Secuencia: ${r.secuencia.slice(0, Math.min(paso, 16) + 1).join(' → ')}`; };
+    $('#sec-campos').addEventListener('change', (ev) => { const t = ev.target; if (t.dataset.k) { sec[t.dataset.k] = t.value; pinta(); } });
+    $('#sec-pulso').addEventListener('click', () => { paso++; if (paso >= r.secuencia.length) paso = 1; estado(); });
+    $('#sec-reinicio').addEventListener('click', () => { paso = 0; estado(); });
+    campos(); pinta();
+    window.PuertasLogicasSec = { estado: (o) => { Object.assign(sec, o); campos(); pinta(); }, resultado: () => r, pulso: () => $('#sec-pulso').click() };
+  })();
 })();

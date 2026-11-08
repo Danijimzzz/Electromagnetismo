@@ -10,7 +10,7 @@
   const R = Resistencias, ohm = R.ohm, CLAVE = 'resistencias-v1';
   const COL = Object.fromEntries(R.COLORES.map((c) => [c.k, c]));
   const MODOS = [['colores', 'De los colores al valor'], ['valor', 'Del valor a los colores'], ['smd', 'Código SMD (resistencias de montaje superficial)'], ['condensador', 'Código de un condensador'], ['asociacion', 'Asociación en serie y en paralelo'], ['pareja', 'Un valor con dos normalizadas'], ['led', 'Resistencia para un LED'], ['divisor', 'Divisor de tensión']];
-  const SERIES = (lista) => lista.map((s) => [s, `${s} (±${{ E6: 20, E12: 10, E24: 5, E48: 2, E96: 1 }[s]} %)`]);
+  const SERIES = (lista) => lista.map((s) => [s, `${s} (±${String({ E3: 40, E6: 20, E12: 10, E24: 5, E48: 2, E96: 1, E192: 0.5 }[s]).replace('.', ',')} %)`]);
 
   let sc = copia(R.ejemplos[0].sc);
   try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && MODOS.some(([k]) => k === g.modo)) sc = g; } catch (e) { /* sin almacenamiento */ }
@@ -46,12 +46,12 @@
       }).join('');
     } else if (sc.modo === 'valor') {
       h += fila('valor', 'Valor de la resistencia', 'Ω', 'text') + elige('bandas', 'Número de bandas', [['4', '4 bandas (2 cifras)'], ['5', '5 bandas (3 cifras)']]);
-      h += elige('serie', 'Serie para el valor normalizado', SERIES(['E6', 'E12', 'E24', 'E48', 'E96']));
+      h += elige('serie', 'Serie para el valor normalizado', SERIES(['E3', 'E6', 'E12', 'E24', 'E48', 'E96', 'E192']));
       h += elige('tol', 'Tolerancia', LISTA.tol.map((c) => [c.k, `±${String(c.tol).replace('.', ',')} % (${c.n.toLowerCase()})`]));
     } else if (sc.modo === 'asociacion') h += `<label for="f-expr">Asociación</label><input id="f-expr" class="in" data-k="expr" value="${esc(sc.expr ?? '')}" autocomplete="off" spellcheck="false" style="font-family:var(--f-mono)">` + fila('V', 'Tensión aplicada (opcional)', 'V');
-    else if (sc.modo === 'pareja') h += fila('R', 'Valor que quieres', 'Ω', 'text') + elige('serie', 'Serie', SERIES(['E6', 'E12', 'E24', 'E96']));
-    else if (sc.modo === 'led') h += fila('Vs', 'Tensión de la fuente', 'V') + fila('Vled', 'Tensión del LED', 'V') + fila('I', 'Corriente del LED', 'mA') + elige('serie', 'Serie', SERIES(['E6', 'E12', 'E24']));
-    else if (sc.modo === 'divisor') h += fila('Vin', 'Tensión de entrada', 'V') + fila('Vout', 'Tensión de salida', 'V') + fila('Rt', 'R₁ + R₂ aproximada', 'Ω', 'text') + elige('serie', 'Serie', SERIES(['E6', 'E12', 'E24'])) + fila('RL', 'Carga a la salida (opcional)', 'Ω', 'text');
+    else if (sc.modo === 'pareja') h += fila('R', 'Valor que quieres', 'Ω', 'text') + elige('serie', 'Serie', SERIES(['E3', 'E6', 'E12', 'E24', 'E96', 'E192']));
+    else if (sc.modo === 'led') h += fila('Vs', 'Tensión de la fuente', 'V') + fila('Vled', 'Tensión del LED', 'V') + fila('I', 'Corriente del LED', 'mA') + elige('serie', 'Serie', SERIES(['E3', 'E6', 'E12', 'E24', 'E96', 'E192']));
+    else if (sc.modo === 'divisor') h += fila('Vin', 'Tensión de entrada', 'V') + fila('Vout', 'Tensión de salida', 'V') + fila('Rt', 'R₁ + R₂ aproximada', 'Ω', 'text') + elige('serie', 'Serie', SERIES(['E3', 'E6', 'E12', 'E24', 'E96', 'E192'])) + fila('tol', 'Tolerancia de las resistencias (opcional)', '%', 'text') + fila('RL', 'Carga a la salida (opcional)', 'Ω', 'text');
     else h += fila('codigo', 'Código impreso', '', 'text');
     $('#campos').innerHTML = h;
     $('#bandas').innerHTML = extra;
@@ -154,8 +154,10 @@
       h = dato(`Una sola (${sol.serie})`, `${ohm(sol.uno.x)} <small>${dif(sol.uno.err)}</small>`) + (sol.s ? dato('Dos en serie', `${ohm(sol.s.a)} + ${ohm(sol.s.b)} <small>${dif(sol.s.err)}</small>`) : '') + (sol.p ? dato('Dos en paralelo', `${ohm(sol.p.a)} ‖ ${ohm(sol.p.b)} <small>${dif(sol.p.err)}</small>`) : '');
     } else if (sol.modo === 'led') {
       h = dato('Resistencia exacta', `R = ${ohm(sol.R)}`) + dato(`Normalizada (${sol.serie})`, ohm(sol.Rn)) + dato('Corriente', `I = ${A(sol.I)}`) + dato('Potencia en R', `${W(sol.P)}${sol.Pn ? ` → de ${{ 0.125: '1/8', 0.25: '1/4', 0.5: '1/2' }[sol.Pn] || pc(sol.Pn)} W` : ''}`);
+      if (sol.aviso) cr = `<p class="aviso">${sol.aviso}</p>`;
     } else if (sol.modo === 'divisor') {
-      h = dato('R₁', ohm(sol.R1)) + dato('R₂', ohm(sol.R2)) + dato('Salida', `${pc(sol.V)} V <small>${dif(sol.err)}</small>`) + dato('Corriente', A(sol.I)) + (sol.Vc !== null ? dato('Salida con la carga', `${pc(sol.Vc)} V`) : '');
+      h = dato('R₁', ohm(sol.R1)) + dato('R₂', ohm(sol.R2)) + dato('Salida', `${pc(sol.V)} V <small>${dif(sol.err)}</small>`) + dato('Corriente', A(sol.I)) + dato('Salida en el peor caso', `${pc(sol.Vmin)} a ${pc(sol.Vmax)} V <small>±${pc(sol.tol)} %</small>`) + (sol.Vc !== null ? dato('Salida con la carga', `${pc(sol.Vc)} V`) : '');
+      if (sol.aviso) cr = `<p class="aviso">${sol.aviso}</p>`;
     } else if (sol.modo === 'valor') {
       h = dato('Resistencia', `R = ${ohm(sol.R)}`) + dato(`Normalizado más cercano (${sol.serie})`, `${ohm(sol.Rn)}`) + (Math.abs(sol.err) > 1e-9 ? dato('Diferencia', `${String(+Math.abs(sol.err).toPrecision(3)).replace('.', ',')} %`) : '');
       cr = `<p><b>Colores:</b> ${nombres(sol.bandas)}</p>` + (Math.abs(sol.err) > 1e-9 ? `<p><b>Del normalizado (${ohm(sol.Rn)}):</b> ${nombres(sol.bandasN)}</p>` : '');

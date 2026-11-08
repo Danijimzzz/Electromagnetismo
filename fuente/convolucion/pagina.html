@@ -23,7 +23,7 @@
   <div class="card">
     <h2>Datos</h2>
     <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
-    <div class="modos" role="tablist" aria-label="Qué se calcula"><button type="button" role="tab" data-modo="conv" aria-selected="true">Dos señales</button><button type="button" role="tab" data-modo="sistema" aria-selected="false">Señal y sistema</button></div>
+    <div class="modos" role="tablist" aria-label="Qué se calcula"><button type="button" role="tab" data-modo="conv" aria-selected="true">Dos señales</button><button type="button" role="tab" data-modo="sistema" aria-selected="false">Señal y sistema</button><button type="button" role="tab" data-modo="disc" aria-selected="false">Discreta</button></div>
     <div class="campos" id="campos"></div>
     <p class="nota" id="nota"></p>
     <p class="error" id="error" hidden></p>
@@ -52,6 +52,10 @@
   <p class="m">Si la entrada es el escalón $u(t)$, la salida es la integral de la respuesta al impulso: $s(t) = ∫_{0}^{t} h(τ) dτ$, y al revés, $h(t) = ds/dt$. De $s(t)$ salen los datos que se miden en el laboratorio: el <b>tiempo de subida</b> (de 10 % a 90 % del valor final), la <b>sobreoscilación</b> (cuánto se pasa) y el <b>tiempo de establecimiento</b> (cuándo se queda a menos de un 2 % del final).</p>
   <h2>Filtros RC y RLC</h2>
   <p class="m">Un filtro RC paso bajo tiene $τ = R C$, $h(t) = {1}/{τ} e^{−t/τ} u(t)$ y $s(t) = 1 − e^{−t/τ}$: no se pasa nunca y tarda $2{,}2 τ$ en subir del 10 % al 90 %. Un RLC serie (con la salida en el condensador) tiene $ω_0 = 1/√(L C)$ y $ζ = {R}/{2} √(C/L)$. Si $ζ < 1$ oscila al subir y se pasa un $e^{−πζ/√(1 − ζ^2)}$ del valor final; con $ζ = 1$ es la respuesta más rápida sin pasarse; con $ζ > 1$ es lenta pero sin oscilar.</p>
+  <h2>Filtros RL, paso alto y paso banda</h2>
+  <p class="m">Un RL con la salida en la resistencia es un paso bajo con $τ = L/R$. Si la salida se toma en la resistencia de un RC, el filtro es un <b>paso alto</b>: $H(s) = sτ/(1 + sτ)$ y $h(t) = δ(t) − {1}/{τ} e^{−t/τ} u(t)$, con área 0 porque bloquea la continua; la respuesta al escalón arranca en 1 y se apaga como $e^{−t/τ}$. El RLC con la salida en la resistencia es un <b>paso banda</b>: $H(s) = 2ζω_0 s/(s^2 + 2ζω_0 s + ω_0^2)$, también de área 0 (no pasa la continua) y con su respuesta máxima cerca de $ω_0$.</p>
+  <h2>Convolución discreta</h2>
+  <p class="m">Con señales muestreadas la integral pasa a ser una suma: $y[n] = ∑_k x[k]\,h[n − k]$. Si $x$ tiene $N$ valores y $h$ tiene $M$, $y$ tiene $N + M − 1$ y empieza en la suma de los índices iniciales; la suma de $y$ es el producto de las sumas. Es también la multiplicación de polinomios: los coeficientes de $(1 + 2z + 3z^2)(1 + z)$ son $\{1, 3, 5, 3\}$. La media móvil de tres muestras es la convolución con $\{1/3, 1/3, 1/3\}$.</p>
   <h2>Cómo escribir los datos</h2>
   <p class="m">Los tiempos van en segundos y admiten prefijos: <b>2m</b> o <b>2 ms</b> son dos milisegundos, <b>10µ</b> diez microsegundos. Los componentes también: <b>4k7</b> son 4,7 kΩ, <b>100n</b> son 100 nF. La coma decimal vale. En el modo de dos señales los números no tienen por qué ser segundos: sirve para cualquier unidad.</p>
 </section>

@@ -388,8 +388,50 @@ const Control = (() => {
     return { n, m, K, polos, ceros, P, Ncw, Z, vueltas, polosCL, zCL, ejeCL, pasaPor, ws, zs, wlo, whi, ganancia, fase, L: Lw, tipo: axis.filter((w) => Math.abs(w) <= tolEje).length };
   }
 
+  /* ---------- Respuesta al escalón del lazo cerrado (CO-1) ---------- */
+  // T(s) = K N(s) / (D(s) + K N(s)) con realimentación unitaria; se integra la forma canónica controlable con Runge-Kutta 4
+  function escalonCL(N, D, K, polosCL) {
+    const cl = polBase(N, D, K), Nc = pEsc(N, K), n = grado(cl);
+    const a0 = cl[0], a = cl.map((c) => c / a0), b = Array(cl.length - Nc.length).fill(0).concat(Nc).map((c) => c / a0);
+    const d = b[0], bp = b.map((c, i) => c - d * a[i]);   // parte estrictamente propia: bp[1..n]
+    const estable = polosCL.every((z) => z[0] < -1e-9 * Math.max(1, cAbs(z))), maxRe = Math.max(...polosCL.map((z) => z[0])), minSig = Math.min(...polosCL.map((z) => Math.abs(z[0])).filter((x) => x > 1e-9 * Math.max(1, ...polosCL.map(cAbs))), Infinity), vmax = Math.max(...polosCL.map(cAbs));
+    let tmax;
+    if (estable) tmax = 7 / minSig; else if (maxRe > 1e-7) tmax = 6 / maxRe; else tmax = 30 / Math.max(1e-9, Math.min(...polosCL.map(cAbs).filter((x) => x > 1e-9), Infinity));
+    if (!isFinite(tmax) || tmax <= 0) tmax = 10;
+    const pasosRK = Math.min(200000, Math.max(4000, Math.ceil(2 * vmax * tmax))), dt = tmax / pasosRK, M = 800, cada = Math.max(1, Math.floor(pasosRK / M));
+    const x = Array(n).fill(0), der = (v) => { const o = v.slice(1).concat([0]); let s2 = 1; for (let k = 0; k < n; k++) s2 -= a[n - k] * v[k]; o[n - 1] = s2; return o; };   // x' = A x + B (u = 1)
+    const y = (v) => { let s2 = d; for (let k = 0; k < n; k++) s2 += bp[n - k] * v[k]; return s2; };
+    const t = [0], ys = [y(x)];
+    for (let i = 1; i <= pasosRK; i++) {
+      const k1 = der(x), k2 = der(x.map((v, j) => v + 0.5 * dt * k1[j])), k3 = der(x.map((v, j) => v + 0.5 * dt * k2[j])), k4 = der(x.map((v, j) => v + dt * k3[j]));
+      for (let j = 0; j < n; j++) x[j] += (dt / 6) * (k1[j] + 2 * k2[j] + 2 * k3[j] + k4[j]);
+      if (i % cada === 0) { t.push(i * dt); ys.push(y(x)); }
+    }
+    const yss = a[n] !== 0 ? b[n] / a[n] : NaN, out = { t, y: ys, estable, tmax, yss, n };
+    if (estable && Math.abs(yss) > 1e-9) {
+      const cruce = (nivel) => { for (let i = 1; i < ys.length; i++) if ((ys[i - 1] - nivel) * (ys[i] - nivel) <= 0 && ys[i] !== ys[i - 1]) return t[i - 1] + ((nivel - ys[i - 1]) / (ys[i] - ys[i - 1])) * (t[i] - t[i - 1]); return NaN; };
+      let pico = ys[0], tp = 0; ys.forEach((v, i) => { if (Math.sign(yss) * v > Math.sign(yss) * pico) { pico = v; tp = t[i]; } });
+      let ult = 0; for (let i = ys.length - 1; i >= 0; i--) if (Math.abs(ys[i] - yss) > 0.02 * Math.abs(yss)) { ult = t[i]; break; }
+      Object.assign(out, { subida: cruce(0.9 * yss) - cruce(0.1 * yss), sobre: Math.max(0, ((pico - yss) / yss) * Math.sign(yss) * Math.sign(yss)) * 100, tpico: tp, pico, ts: ult, ess: 1 - yss });
+    }
+    return out;
+  }
+  // Bode de lazo abierto de L(jω) = K N(jω)/D(jω): magnitud en dB y fase desenrollada en grados
+  function bodeLazo(N, D, K) {
+    const pz = [...raices(D), ...raices(N)].map(cAbs).filter((x) => x > 1e-9), lo = pz.length ? Math.min(...pz) : 1, hi = pz.length ? Math.max(...pz) : 1;
+    const w0 = lo / 100, w1 = hi * 100, M = 500, ws = [], mag = [], fase = [];
+    let previa = null;
+    for (let i = 0; i <= M; i++) {
+      const w = w0 * (w1 / w0) ** (i / M), L = cMul([K, 0], cDiv(pEval(N, [0, w]), pEval(D, [0, w])));
+      let ph = (cArg(L) * 180) / PI; if (previa !== null) { while (ph - previa > 180) ph -= 360; while (ph - previa < -180) ph += 360; }
+      previa = ph; ws.push(w); mag.push(20 * Math.log10(cAbs(L))); fase.push(ph);
+    }
+    return { ws, mag, fase };
+  }
+
+  const sol_estable = (ny) => (ny.pasaPor ? 'marginalmente estable' : ny.Z === 0 ? 'estable' : 'inestable');
   /* ---------- Resolver ---------- */
-  const MODOS = ['routh', 'raices', 'nyquist'];
+  const MODOS = ['routh', 'raices', 'nyquist', 'escalon', 'bode'];
   function leeDatos(sc) {
     const modo = MODOS.includes(sc.modo) ? sc.modo : 'routh';
     const D = lee(sc, 'den', 'el denominador D(s)'), N = lee(sc, 'num', 'el numerador N(s)', modo === 'routh');
@@ -397,7 +439,9 @@ const Control = (() => {
     if (!isFinite(K)) throw new Error('La ganancia K debe ser un número');
     if (grado(D) < 1) throw new Error('El denominador tiene que ser al menos de primer grado');
     if (N && esCero(N)) throw new Error('El numerador no puede ser cero');
-    if (modo !== 'routh' && K <= 0 && modo === 'raices') { /* el lugar se dibuja para K > 0; K solo marca un punto */ }
+    // mismo criterio y mismo mensaje en las tres pestañas (CO-4): con numerador, K = 0 no es un lazo y el sistema tiene que ser propio
+    if (N && K === 0) throw new Error('Con K = 0 no hay lazo: escribe una K distinta de cero');
+    if (N && grado(N) > grado(D)) throw new Error('El numerador no puede tener más grado que el denominador (el sistema no sería propio)');
     return { modo, N, D, K };
   }
   const TABLA = (R) => {
@@ -442,6 +486,27 @@ const Control = (() => {
       return { ...base, lg, din, pasos };
     }
 
+    if (modo === 'escalon') {
+      const e = escalonCL(N, D, K, polosCL), T = `${f(K)}·(${polTxt(N)}) / (${polTxt(cl)})`;
+      pasos.push({ t: 'Función de transferencia de lazo cerrado', html: `Con realimentación unitaria, $T(s) = L(s)/(1 + L(s)) = K N(s)/(D(s) + K N(s))$. Aquí $T(s) = ${T}$. Su denominador es la ecuación característica: $p(s) = ${polTxt(cl)}$.` });
+      pasos.push({ t: 'Polos de lazo cerrado', html: `${polosCL.map((z) => `$${cTxt(z)}$`).join('; ')}. El sistema es <b>${e.estable ? 'estable' : 'inestable o marginal'}</b>${e.estable ? ': todos los polos tienen parte real negativa y la respuesta al escalón se estabiliza' : ': hay polos con parte real positiva o nula y la respuesta no se estabiliza (se dibuja solo un intervalo)'}.` });
+      if (e.estable && e.subida !== undefined) {
+        pasos.push({ t: 'Valor final y error', html: `Por el teorema del valor final, $y(∞) = T(0) = ${f(e.yss)}$. El error en régimen permanente ante un escalón unitario es $e_{ss} = 1 − T(0) = ${f(e.ess)}$${Math.abs(e.ess) < 1e-9 ? ' (un integrador en el lazo lo anula)' : ''}.` });
+        pasos.push({ t: 'Parámetros de la respuesta', html: `Tiempo de subida (del 10 % al 90 % del valor final): $${f(e.subida)}$ s. Sobreoscilación: $M_p = ${f(e.sobre)}$ %. Tiempo de pico: $t_p = ${f(e.tpico)}$ s. Tiempo de establecimiento (2 %): $t_s = ${f(e.ts)}$ s.` });
+      } else if (e.estable) pasos.push({ t: 'Valor final', html: `$T(0) = ${f(e.yss)}$: la salida tiende a 0, así que no tiene sentido medir tiempo de subida ni sobreoscilación.` });
+      pasos.push({ t: 'Cómo se ha calculado', html: `La respuesta se obtiene integrando numéricamente (Runge-Kutta de cuarto orden) la forma canónica de $T(s)$ de orden ${e.n} con entrada escalón, durante ${f(e.tmax)} s.` });
+      return { ...base, es: e, pasos };
+    }
+    if (modo === 'bode') {
+      if (K === 0) throw new Error('Con K = 0 no hay lazo: escribe una K distinta de cero');
+      const bd = bodeLazo(N, D, K), ny = nyquist(N, D, K), gm = ny.fase.slice().sort((a, b) => a.GM - b.GM)[0] || null, pm = ny.ganancia[0] || null, rk = rangoK(N, D);
+      pasos.push({ t: 'Lazo abierto', html: `$L(jω) = K N(jω)/D(jω) = ${f(K)} · (${polTxt(N, 'jω')})/(${polTxt(D, 'jω')})$. Se dibuja su módulo en decibelios, $20 \log_{10}|L|$, y su fase, con $ω$ en escala logarítmica.` });
+      pasos.push({ t: 'Margen de fase', html: pm ? `La magnitud cruza 0 dB (|L| = 1) en $ω_c = ${f(pm.w)}$ rad/s, donde la fase vale $${f(pm.fase)}°$. Margen de fase: $M_F = 180° + ∠L(jω_c) = ${f(pm.PM)}°$${pm.PM > 0 ? '' : ' (negativo: lazo cerrado inestable)'}.` : 'La magnitud no cruza 0 dB: no hay frecuencia de cruce de ganancia ni margen de fase.' });
+      pasos.push({ t: 'Margen de ganancia', html: gm ? `La fase cruza −180° en $ω_{180} = ${f(gm.w)}$ rad/s, donde $|L| = ${f(1 / gm.GM)}$ (${f(-gm.GMdB)} dB). Margen de ganancia: $M_G = ${f(gm.GM)}$ = ${f(gm.GMdB)} dB. Se puede subir K hasta $K_{crít} = ${f(K * gm.GM)}$ antes de llegar a la inestabilidad.` : 'La fase no llega a −180°: no hay margen de ganancia finito.' });
+      pasos.push({ t: 'Estabilidad', html: `Con K = ${f(K)} el lazo cerrado es <b>${sol_estable(ny)}</b> (comprobado con el criterio de Nyquist y con las raíces: Routh da estabilidad para ${textoRango(rk)}).` });
+      return { ...base, bd, ny, rk, gm, pm, pasos };
+    }
+
     // Nyquist
     if (K === 0) throw new Error('Con K = 0 no hay lazo: escribe una K distinta de cero');
     const ny = nyquist(N, D, K), rk = rangoK(N, D);
@@ -464,10 +529,14 @@ const Control = (() => {
     { clave: 'fila-ceros', nombre: 'Fila de ceros (polinomio auxiliar)', sc: { modo: 'routh', num: '1', den: 's^5+2s^4+24s^3+48s^2-25s-51', K: '1' } },
     { clave: 'raices-tres', nombre: 'Lugar de K/(s(s+1)(s+2))', sc: { modo: 'raices', num: '1', den: 's(s+1)(s+2)', K: '1' } },
     { clave: 'raices-complejos', nombre: 'Polos complejos y un cero: K(s+3)/(s(s²+2s+2))', sc: { modo: 'raices', num: 's+3', den: 's(s^2+2s+2)', K: '1' } },
+    { clave: 'escalon-segundo', nombre: 'Escalón de K/(s(s+2)) con K = 5', sc: { modo: 'escalon', num: '1', den: 's(s+2)', K: '5' } },
+    { clave: 'escalon-estable', nombre: 'Escalón de K/(s+1)(s+3), K = 6', sc: { modo: 'escalon', num: '1', den: '(s+1)(s+3)', K: '6' } },
+    { clave: 'bode-tres', nombre: 'Bode de lazo abierto de K/(s(s+1)(s+2)), K = 1', sc: { modo: 'bode', num: '1', den: 's(s+1)(s+2)', K: '1' } },
+    { clave: 'bode-inestable', nombre: 'Bode con K = 10: márgenes negativos', sc: { modo: 'bode', num: '1', den: 's(s+1)(s+2)', K: '10' } },
     { clave: 'nyquist-tres', nombre: 'Nyquist de K/(s(s+1)(s+2)), K = 1', sc: { modo: 'nyquist', num: '1', den: 's(s+1)(s+2)', K: '1' } },
     { clave: 'nyquist-inestable', nombre: 'Nyquist de un polo inestable: K/(s−1), K = 2', sc: { modo: 'nyquist', num: '1', den: 's-1', K: '2' } },
   ];
 
-  return { resolver, routh, rangoK, lugar, nyquist, raices, lee, polBase, polTxt, cTxt, ejemplos, f, grado };
+  return { resolver, escalonCL, bodeLazo, routh, rangoK, lugar, nyquist, raices, lee, polBase, polTxt, cTxt, ejemplos, f, grado };
 })();
 if (typeof module !== 'undefined') module.exports = Control;

@@ -73,13 +73,28 @@ const Bode = (() => {
     return { re, im, mod: m, dB: 20 * Math.log10(Math.max(m, 1e-300)), fase: Math.atan2(im, re) * 180 / Math.PI };
   }
 
-  // frecuencias en que |H| = 1/√2 (se busca por barrido en escala logarítmica y se afina por bisección)
-  function corte(P, fa, fb) {
-    const g = (fr) => Hde(P, fr).mod - Math.SQRT1_2, n = 1201, out = [];
-    let fp = fa, gp = g(fa);
-    for (let k = 1; k <= n; k++) {
-      const fk = fa * Math.pow(fb / fa, k / n), gk = g(fk);
-      if (gp * gk < 0) {
+  // Rejilla de frecuencias: n puntos logarítmicos entre fa y fb y, si el filtro es de Q alto (≥ 5), otros densos
+  // alrededor de f0 (la resonancia mide f0/Q de ancho: con Q = 200 cabe entre dos puntos de la rejilla logarítmica y se pierde)
+  function rejilla(fa, fb, n, f0, Q, extra = []) {
+    const out = [];
+    for (let k = 0; k < n; k++) out.push(fa * Math.pow(fb / fa, k / Math.max(1, n - 1)));
+    if (Q && Q >= 5) {
+      const h = Math.min(0.5, 8 / Q), m = 1500;
+      for (let k = 0; k <= m; k++) out.push(f0 * (1 - h + (2 * h * k) / m));
+      out.push(f0);
+    }
+    for (const x of extra) if (isFinite(x)) out.push(x);
+    return out.filter((x) => x >= fa * (1 - 1e-12) && x <= fb * (1 + 1e-12)).sort((a, b) => a - b).filter((x, k, v) => k === 0 || x > v[k - 1] * (1 + 1e-12));
+  }
+
+  // frecuencias en que |H| = 1/√2 (se busca por barrido en la rejilla y se afina por bisección)
+  function corte(P, fa, fb, f0, Q) {
+    const g = (fr) => Hde(P, fr).mod - Math.SQRT1_2, fs = rejilla(fa, fb, 1201, f0, Q), out = [];
+    let fp = fs[0], gp = g(fp);
+    for (let k = 1; k < fs.length; k++) {
+      const fk = fs[k], gk = g(fk);
+      if (gk === 0 && gp !== 0) out.push(fk);
+      else if (gp * gk < 0) {
         let lo = fp, hi = fk;
         for (let i = 0; i < 80; i++) { const m = Math.sqrt(lo * hi); if (g(m) * g(lo) > 0) lo = m; else hi = m; }
         out.push(Math.sqrt(lo * hi));
@@ -110,7 +125,7 @@ const Bode = (() => {
     let fref, Q = null, zeta = null, tau = null;
     if (t.orden === 1) { tau = sc.tipo.startsWith('rc') ? R * C : L / R; fref = 1 / (2 * Math.PI * tau); }
     else { fref = 1 / (2 * Math.PI * Math.sqrt(L * C)); Q = Math.sqrt(L / C) / R; zeta = 1 / (2 * Q); }
-    const cortes = corte(P, fref / 1e3, fref * 1e3);
+    const cortes = corte(P, fref / 1e3, fref * 1e3, fref, Q);
     const pendiente = clase === 'banda' ? 20 : clase === 'rechazo' ? 0 : 20 * t.orden;
     // resonancia (pico) de los de segundo orden bajo y alto
     let pico = null;
@@ -124,9 +139,10 @@ const Bode = (() => {
     if (!(fmax > fmin)) throw new Error('La frecuencia máxima debe ser mayor que la mínima');
     const fp = leeF(sc, 'f', 'la frecuencia de interés');
     const punto = fp === null ? null : { f: fp, ...Hde(P, fp) };
+    // la curva añade puntos densos en f0 si Q es alto, y f0, el pico y los cortes siempre: así el máximo y el ancho de banda se ven enteros
     const curva = (n = 400) => {
       const o = { f: [], dB: [], fase: [] };
-      for (let k = 0; k < n; k++) { const fr = fmin * Math.pow(fmax / fmin, k / (n - 1)), h = Hde(P, fr); o.f.push(fr); o.dB.push(h.dB); o.fase.push(h.fase); }
+      for (const fr of rejilla(fmin, fmax, n, fref, Q, [fref, pico && pico.f, ...cortes])) { const h = Hde(P, fr); o.f.push(fr); o.dB.push(h.dB); o.fase.push(h.fase); }
       return o;
     };
     const asintota = asintotaDe(clase, t.orden, fref);
@@ -179,6 +195,6 @@ const Bode = (() => {
     { clave: 'rlc-rechazo', nombre: 'RLC rechazo de banda: elimina los 50 Hz', sc: { tipo: 'rlc-rechazo', R: '100', L: '1000', C: '10', f: '50', fmin: '5', fmax: '5000' } },
   ];
 
-  return { resolver, ejemplos, TIPOS, UNIDAD, Hde, polinomios, circuitoSimulador, f };
+  return { resolver, ejemplos, TIPOS, UNIDAD, Hde, polinomios, circuitoSimulador, rejilla, f };
 })();
 if (typeof module !== 'undefined') module.exports = Bode;
