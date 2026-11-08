@@ -397,7 +397,9 @@ const Control = (() => {
     if (!isFinite(K)) throw new Error('La ganancia K debe ser un número');
     if (grado(D) < 1) throw new Error('El denominador tiene que ser al menos de primer grado');
     if (N && esCero(N)) throw new Error('El numerador no puede ser cero');
-    if (modo !== 'routh' && K <= 0 && modo === 'raices') { /* el lugar se dibuja para K > 0; K solo marca un punto */ }
+    // mismo criterio y mismo mensaje en las tres pestañas (CO-4): con numerador, K = 0 no es un lazo y el sistema tiene que ser propio
+    if (N && K === 0) throw new Error('Con K = 0 no hay lazo: escribe una K distinta de cero');
+    if (N && grado(N) > grado(D)) throw new Error('El numerador no puede tener más grado que el denominador (el sistema no sería propio)');
     return { modo, N, D, K };
   }
   const TABLA = (R) => {

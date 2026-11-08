@@ -62,10 +62,26 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     { const sist = [[[1], [1, 0, 0, 1]], [[1], [1, 0, 1, 0]], [[1, 1], [1, 0, 0, -1]], [[1, 2], [1, 1, 0, 0]], [[1], [1, 4, 5, 2]], [[1, 5], [1, 2, 3, 4, 0]], [[1], [1, 0, 1]], [[2, 1], [1, 1, 0, 0, 0]], [[1, 1], [1, -2, 5]], [[1, 0, 4], [1, 0, 1, 0, 0]]];
       for (const [N, D] of sist) for (const K of [0.3, 1, 3, 10]) { const y = C.nyquist(N, D, K); if (y.pasaPor) continue; if (y.Z !== y.zCL) mal(`Control · Nyquist N(s)=[${N}] D(s)=[${D}] K=${K}: Z por la curva = ${y.Z} y por las raíces = ${y.zCL}`); } }
     // errores
-    for (const [sc, q] of [[{ modo: 'routh', num: '1', den: '' }, 'falta el denominador'], [{ modo: 'routh', num: '1', den: 's^2+(' }, 'paréntesis sin cerrar'], [{ modo: 'raices', num: '', den: 's+1' }, 'falta el numerador en las raíces'], [{ modo: 'raices', num: 's^3', den: 's+1' }, 'sistema no propio'], [{ modo: 'nyquist', num: '1', den: 's+1', K: '0' }, 'K cero'], [{ modo: 'routh', num: '0', den: 's+1' }, 'numerador cero'], [{ modo: 'routh', num: '1', den: '5' }, 'denominador constante'], [{ modo: 'routh', num: '1', den: 's+1', K: 'x' }, 'K no numérica']]) {
+    for (const [sc, q] of [[{ modo: 'routh', num: '1', den: '' }, 'falta el denominador'], [{ modo: 'routh', num: '1', den: 's^2+(' }, 'paréntesis sin cerrar'], [{ modo: 'raices', num: '', den: 's+1' }, 'falta el numerador en las raíces'], [{ modo: 'raices', num: 's^3', den: 's+1' }, 'sistema no propio'], [{ modo: 'nyquist', num: '1', den: 's+1', K: '0' }, 'K cero'], [{ modo: 'routh', num: '1', den: 's+1', K: '0' }, 'Routh con K cero (CO-4)'], [{ modo: 'raices', num: '1', den: 's+1', K: '0' }, 'raíces con K cero (CO-4)'], [{ modo: 'routh', num: 's^3', den: 's+1', K: '1' }, 'Routh con sistema no propio (CO-4)'], [{ modo: 'nyquist', num: 's^2', den: 's+1', K: '1' }, 'Nyquist con sistema no propio (CO-4)'], [{ modo: 'routh', num: '0', den: 's+1' }, 'numerador cero'], [{ modo: 'routh', num: '1', den: '5' }, 'denominador constante'], [{ modo: 'routh', num: '1', den: 's+1', K: 'x' }, 'K no numérica']]) {
       let ok = false; try { C.resolver(sc); } catch (e) { ok = true; }
       if (!ok) mal(`Control: ${q} no da error`);
     }
+    // CO-4: el mismo mensaje en las tres pestañas
+    for (const modo of ['routh', 'raices', 'nyquist']) {
+      for (const [sc, re] of [[{ num: '1', den: 's+1', K: '0' }, /K = 0 no hay lazo/], [{ num: 's^2', den: 's+1', K: '1' }, /no sería propio/]]) {
+        let msg = ''; try { C.resolver({ modo, ...sc }); } catch (e) { msg = e.message; }
+        if (!re.test(msg)) mal(`Control · CO-4 (${modo}): el mensaje es «${msg}», se esperaba ${re}`);
+      }
+    }
+    // un polinomio suelto en Routh (sin numerador) sigue funcionando sin K
+    { let ok = true; try { C.resolver({ modo: 'routh', num: '', den: 's^3+2s^2+3s+1', K: '' }); } catch (e) { ok = false; } if (!ok) mal('Control: Routh de un polinomio suelto ya no funciona'); }
+    // casos límite probados a mano (CI-3): polos en el origen, K negativa, denominador de primer grado, polos repetidos
+    { const q = (sc) => C.resolver({ modo: 'routh', num: '1', K: '1', ...sc });
+      if (q({ den: 's+1' }).estable !== true) mal('Control · límite: 1/(s+1) con K = 1 debe ser estable');
+      if (q({ den: 's+1', K: '-2' }).estable !== false) mal('Control · límite: 1/(s+1) con K = −2 (polo en +1) debe ser inestable');
+      if (q({ den: 's^2' }).estable !== false) mal('Control · límite: s² + 1 → polos en ±j, no estable');
+      const r4 = q({ den: '(s+1)^4', K: '1' }); if (!r4.estable) mal('Control · límite: (s+1)⁴ + 1 tiene los polos en el semiplano izquierdo? (K = 1)');
+      const dd = C.rangoK([1], C.lee({ den: '(s+1)^3' }, 'den', 'D')); if (!dd.estables.length || Math.abs(dd.criticos[0].K - 8) > 1e-6) mal('Control · límite: K/(s+1)³ se vuelve inestable en K = 8'); }
     if (fallos === antes) console.log(`  ✓ Control: Routh (ε y fila de ceros), lugar de las raíces y Nyquist, ${C.ejemplos.length} ejemplos y errores`);
   }
 
@@ -96,6 +112,8 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     }
     await page.fill('#f-den', 's^2+(');
     if (await page.locator('#error').isHidden()) mal('Control: un polinomio mal escrito no muestra el error');
+    { const Exp = require('./comun/exportar-grafica.js');
+      for (const c of ['tercer-orden', 'raices-tres', 'nyquist-tres']) { await page.evaluate((k) => ControlApp.abrirEjemplo(k), c); await Exp.pagina(page, '#grafica', mal, 'Control · ' + c); } }
     await page.close();
     if (consola.length) mal('Control: consola del navegador:\n      ' + consola.join('\n      '));
     if (fallos === antes) console.log(`  ✓ Control: ${C.ejemplos.length} ejemplos en la página con MathML, gráfica y pestañas, sin errores de consola`);
