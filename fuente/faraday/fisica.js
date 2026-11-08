@@ -186,17 +186,20 @@ const Faraday = (() => {
   // sc: { caso: 'fuerza'|'cae'|'lanzada', B, L, R, m, F, v0, t }
   function dinamica(sc) {
     const caso = ['fuerza', 'cae', 'lanzada'].includes(sc.caso) ? sc.caso : 'fuerza', B = num(sc, 'B', 'el campo B'), L = num(sc, 'L', 'la longitud de la barra'), R = num(sc, 'R', 'la resistencia'), m = num(sc, 'm', 'la masa de la barra');
-    const g = 9.8, Fx = caso === 'fuerza' ? num(sc, 'F', 'la fuerza') : caso === 'cae' ? m * g : 0, v0 = caso === 'lanzada' ? num(sc, 'v0', 'la velocidad inicial') : 0;
+    const g = String(sc.g ?? '').replace(',', '.') === '9.80665' ? 9.80665 : 9.8, ang = caso === 'cae' && !vacio(sc.ang) ? num(sc, 'ang', 'el ángulo de los raíles', { signo: true }) : 90;
+    if (ang <= 0 || ang > 90) throw new Error('El ángulo de los raíles tiene que estar entre 0° (exclusive) y 90°');
+    const sn = ang === 90 ? 1 : Math.sin((ang * Math.PI) / 180), mg = m * g * sn, Fx = caso === 'fuerza' ? num(sc, 'F', 'la fuerza') : caso === 'cae' ? mg : 0, v0 = caso === 'lanzada' ? num(sc, 'v0', 'la velocidad inicial') : 0;
     const t = num(sc, 't', 'el instante t', { opcional: true, cero: true }), b = (B * B * L * L) / R, tau = m / b, vL = Fx / b;
-    const v = (x) => vL + (v0 - vL) * Math.exp(-x / tau), pasos = [];
-    pasos.push({ t: 'Fuerza magnética', html: `Con velocidad v la fem es $ε = B L v$, la corriente $I = {B L v}/R$ y el campo frena la barra con $F_m = I L B = {B^2 L^2 v}/R$ = ${f(b)}·v N.` });
+    const v = (x) => vL + (v0 - vL) * Math.exp(-x / tau), I = (x) => (B * L * v(x)) / R, pasos = [], mgT = ang === 90 ? 'm g' : 'm g sen θ';
+    pasos.push({ t: 'Fuerza magnética', html: `${caso === 'cae' && ang !== 90 ? `Los raíles forman ${f(ang)}° con la horizontal y B es perpendicular a su plano: el peso aporta a lo largo de los raíles $m g sen θ$ = ${f(mg)} N. ` : ''}Con velocidad v la fem es $ε = B L v$, la corriente $I = {B L v}/R$ y el campo frena la barra con $F_m = I L B = {B^2 L^2 v}/R$ = ${f(b)}·v N.` });
     if (caso === 'lanzada') pasos.push({ t: 'Ecuación del movimiento', html: `$m {dv}/{dt} = −{B^2 L^2 v}/R ⇒ v(t) = v_0 e^{−t/τ}$, con $τ = {m R}/{B^2 L^2}$ = <b>${f(tau)} s</b>.` });
-    else pasos.push({ t: 'Ecuación del movimiento', html: `$m {dv}/{dt} = ${caso === 'cae' ? 'm g' : 'F'} − {B^2 L^2 v}/R ⇒ v(t) = v_L (1 − e^{−t/τ})$, con $τ = {m R}/{B^2 L^2}$ = <b>${f(tau)} s</b>.` });
-    if (caso !== 'lanzada') pasos.push({ t: 'Velocidad límite', html: `Cuando la fuerza magnética iguala ${caso === 'cae' ? 'al peso' : 'a la fuerza aplicada'}: $ {B^2 L^2 v_L}/R = ${caso === 'cae' ? 'm g' : 'F'} ⇒ v_L = {${caso === 'cae' ? 'm g' : 'F'} R}/{B^2 L^2} = {${f(Fx)}·${f(R)}}/{${f(B)}^2·${f(L)}^2}$ = <b>${f(vL)} m/s</b>. Entonces toda la potencia ${caso === 'cae' ? 'del peso' : 'de la fuerza'} (${f(Fx * vL)} W) se disipa en la resistencia.` });
+    else pasos.push({ t: 'Ecuación del movimiento', html: `$m {dv}/{dt} = ${caso === 'cae' ? mgT : 'F'} − {B^2 L^2 v}/R ⇒ v(t) = v_L (1 − e^{−t/τ})$, con $τ = {m R}/{B^2 L^2}$ = <b>${f(tau)} s</b>.` });
+    if (caso !== 'lanzada') pasos.push({ t: 'Velocidad límite', html: `Cuando la fuerza magnética iguala ${caso === 'cae' ? 'al peso' : 'a la fuerza aplicada'}: $ {B^2 L^2 v_L}/R = ${caso === 'cae' ? mgT : 'F'} ⇒ v_L = {${caso === 'cae' ? mgT : 'F'} R}/{B^2 L^2} = {${f(Fx)}·${f(R)}}/{${f(B)}^2·${f(L)}^2}$ = <b>${f(vL)} m/s</b>. Entonces toda la potencia ${caso === 'cae' ? 'del peso' : 'de la fuerza'} (${f(Fx * vL)} W) se disipa en la resistencia.` });
     else pasos.push({ t: 'Distancia hasta pararse', html: `$x = ∫ v dt = v_0 τ = ${f(v0)}·${f(tau)}$ = <b>${f(v0 * tau)} m</b>; toda la energía cinética, $1/2 m v_0^2$ = ${f(0.5 * m * v0 * v0)} J, acaba como calor en la resistencia.` });
     let vt = null, It = null;
     if (t !== null) { vt = v(t); It = (B * L * vt) / R; pasos.push({ t: `En t = ${f(t)} s`, html: `$v = ${caso === 'lanzada' ? `${f(v0)} e^{−${f(t)}/${f(tau)}}` : `${f(vL)} (1 − e^{−${f(t)}/${f(tau)}})`}$ = <b>${f(vt)} m/s</b>; $ε = B L v$ = ${f(B * L * vt)} V e I = <b>${f(It)} A</b>` }); }
-    return { modo: 'dinamica', caso, B, L, R, m, Fx, v0, tau, vL, t, vt, It, vf: v, pasos };
+    const IL = (B * L * vL) / R;
+    return { modo: 'dinamica', caso, B, L, R, m, g, ang, Fx, v0, tau, vL, IL, PL: Fx * vL, t, vt, It, vf: v, If: I, pasos };
   }
 
   /* ---------- Varilla o disco que gira (disco de Faraday) ---------- */
@@ -213,7 +216,37 @@ const Faraday = (() => {
     return { modo: 'gira', cuerpo: disco ? 'disco' : 'varilla', B, L, w, eps, R, I, P, sentidoB: sc.sentidoB, pasos };
   }
 
+  /* ---------- Corrientes de Foucault (FA-2): modelo simple de campo uniforme B(t) = B₀ sen ωt ---------- */
+  // sc: { geo: 'disco'|'lamina', sigma (MS/m), B0 (T), fr (Hz), a (cm), d (mm) | D (mm), N, V (cm³) }
+  function foucault(sc) {
+    const pasos = [], lamina = sc.geo === 'lamina', sg = num(sc, 'sigma', 'la conductividad σ') * 1e6, B0 = num(sc, 'B0', 'la amplitud B₀'), fr = num(sc, 'fr', 'la frecuencia'), w = 2 * Math.PI * fr, MU0 = 4e-7 * Math.PI;
+    const delta = Math.sqrt(2 / (w * MU0 * sg)), Bdot = B0 * w;
+    pasos.push({ t: 'Campo y ley de Faraday', html: `$B(t) = B_0 sen ωt$ con $ω = 2π f = ${f(w)} "rad/s"$, así que $dB/dt = B_0 ω cos ωt$ y su amplitud es $B_0 ω = ${f(Bdot)} "T/s"$. Un campo que cambia crea un campo eléctrico que hace circular corrientes en el conductor.` });
+    let P, Pp, pv, geom, Jmax, Emax, aviso = null, comp = null, N = 1;
+    if (!lamina) {
+      const a = num(sc, 'a', 'el radio del disco') * 1e-2, d = num(sc, 'd', 'el espesor del disco') * 1e-3, Vol = Math.PI * a * a * d;
+      Emax = (a * Bdot) / 2; Jmax = sg * Emax; P = (Math.PI * sg * d * a ** 4 * Bdot * Bdot) / 16; Pp = 2 * P; pv = P / Vol;
+      geom = { a, d, Vol };
+      pasos.push({ t: 'Campo eléctrico inducido', html: `Por simetría el campo $E$ es tangente a circunferencias: $E · 2π r = −π r^2 dB/dt$, luego $E(r) = {r}/{2} |dB/dt|$ y en el borde $E = {a B_0 ω}/{2} = ${f(Emax)} "V/m"$. La densidad de corriente es $J = σ E$: crece linealmente con $r$ hasta $J_{máx} = ${f(Jmax)} "A/m"^2$.` });
+      pasos.push({ t: 'Potencia disipada', html: `La potencia por unidad de volumen es $σ E^2$; se integra en el disco: $P = ∫ σ E^2 dV = {π σ d a^4}/{8} (dB/dt)^2$. Su valor medio, con $⟨cos^2 ωt⟩ = 1/2$, es $⟨P⟩ = {π σ d a^4 B_0^2 ω^2}/{16} = ${f(P)} "W"$ (pico ${f(Pp)} W).` });
+      if (a > 0.5 * delta) aviso = `El radio (${f(a * 100)} cm) no es pequeño frente a la profundidad de penetración δ = ${f(delta * 100)} cm: el campo no entra por igual en todo el disco y este modelo sobrestima la potencia.`;
+    } else {
+      const D = num(sc, 'D', 'el espesor total del núcleo') * 1e-3, Vol = num(sc, 'V', 'el volumen del núcleo') * 1e-6; N = vacio(sc.N) ? 1 : num(sc, 'N', 'el número de láminas');
+      if (!Number.isInteger(N)) throw new Error('El número de láminas debe ser entero');
+      const dl = D / N; Emax = (dl / 2) * Bdot; Jmax = sg * Emax; pv = (sg * w * w * B0 * B0 * dl * dl) / 24; P = pv * Vol; Pp = 2 * P;
+      const pv1 = (sg * w * w * B0 * B0 * D * D) / 24; comp = { P1: pv1 * Vol, N, dl, reduccion: N * N };
+      geom = { D, dl, Vol };
+      pasos.push({ t: 'Campo eléctrico inducido', html: `Con $B$ en el plano de una lámina de espesor $d = ${f(dl * 1000)} "mm"$, las corrientes dan vueltas en el plano perpendicular a $B$: a una altura $z$ desde el centro, $E(z) = z |dB/dt|$. En la superficie $E = {d B_0 ω}/{2} = ${f(Emax)} "V/m"$ y $J_{máx} = σ E = ${f(Jmax)} "A/m"^2$.` });
+      pasos.push({ t: 'Potencia por unidad de volumen', html: `Media en el espesor: $⟨σ E^2⟩_z = σ (dB/dt)^2 d^2/12$ y media en el tiempo: $p = {σ B_0^2 ω^2 d^2}/{24} = ${f(pv)} "W/m"^3$. Con el volumen $${f(Vol * 1e6)} "cm"^3$: $⟨P⟩ = ${f(P)} "W"$.` });
+      pasos.push({ t: 'Efecto de laminar el núcleo', html: `Se parte el espesor total $D = ${f(D * 1000)} "mm"$ en $N = ${N}$ láminas aisladas de $d = D/N$: la potencia baja con $d^2$, o sea $N^2$ veces. Sin laminar sería $${f(comp.P1)} "W"$; laminado, ${f(P)} W: ${f(N * N)} veces menos.` });
+      if (dl > 0.5 * delta) aviso = `El espesor de cada lámina (${f(dl * 1000)} mm) no es pequeño frente a la profundidad de penetración δ = ${f(delta * 1000)} mm: el campo se atenúa dentro de la lámina (efecto pelicular) y este modelo sobrestima la potencia.`;
+    }
+    pasos.push({ t: 'Profundidad de penetración y límites del modelo', html: `$δ = √{2/{ω μ_0 σ}} = ${f(delta * 1000)} "mm"$. El modelo supone un campo uniforme en toda la pieza y no tiene en cuenta el campo que crean las propias corrientes (que lo debilita) ni la permeabilidad del material: vale cuando la pieza es pequeña frente a δ.${aviso ? ' <b>Aviso:</b> ' + aviso : ''}` });
+    return { modo: 'foucault', geo: lamina ? 'lamina' : 'disco', sigma: sg, B0, fr, w, delta, Bdot, Emax, Jmax, P, Pp, pv, geom, aviso, comp, N, pasos };
+  }
+
   function resolver(sc) {
+    if (sc.modo === 'foucault') return foucault(sc);
     if (sc.modo === 'giratoria') return giratoria(sc);
     if (sc.modo === 'flujo') return flujo(sc);
     if (sc.modo === 'cruza') return cruza(sc);
@@ -238,10 +271,12 @@ const Faraday = (() => {
     { clave: 'B-cuadratica', nombre: 'Campo que crece como t²', sc: { modo: 'funcion', N: '1', forma: 'rectangulo', a: '0.2', b: '0.3', tipoB: 'cuadratica', B0: '0', k: '0.4', th: '0', t: '2', sentidoB: 'saliente', R: '0.4' } },
     { clave: 'velocidad-limite', nombre: 'Barra que cae por raíles verticales', sc: { modo: 'dinamica', caso: 'cae', B: '0.5', L: '0.4', R: '0.2', m: '0.02', t: '0.1' } },
     { clave: 'barra-lanzada', nombre: 'Barra lanzada que frena sola', sc: { modo: 'dinamica', caso: 'lanzada', B: '1', L: '0.5', R: '2', m: '0.1', v0: '5', t: '1' } },
+    { clave: 'foucault-disco', nombre: 'Disco de cobre en un campo de 0,1 T a 50 Hz (Foucault)', sc: { modo: 'foucault', geo: 'disco', sigma: '58', B0: '0,1', fr: '50', a: '5', d: '2' } },
+    { clave: 'foucault-nucleo', nombre: 'Núcleo de transformador: 100 láminas en lugar de una sola', sc: { modo: 'foucault', geo: 'lamina', sigma: '2', B0: '1', fr: '50', D: '20', N: '100', V: '500' } },
     { clave: 'disco', nombre: 'Disco de Faraday', sc: { modo: 'gira', cuerpo: 'disco', B: '0.8', L: '0.1', w: '3000', uw: 'rpm', R: '0.05', sentidoB: 'entrante' } },
     { clave: 'varilla-gira', nombre: 'Varilla que gira por un extremo', sc: { modo: 'gira', cuerpo: 'varilla', B: '0.5', L: '1', w: '20', uw: 'rad/s', R: '2', sentidoB: 'entrante' } },
   ];
 
-  return { resolver, barra, giratoria, flujo, cruza, hilo, funcion, dinamica, gira, FUNCB, ejemplos, f };
+  return { resolver, foucault, barra, giratoria, flujo, cruza, hilo, funcion, dinamica, gira, FUNCB, ejemplos, f };
 })();
 if (typeof module !== 'undefined') module.exports = Faraday;
