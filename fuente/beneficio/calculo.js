@@ -5,19 +5,53 @@
    - competencia perfecta: toma el precio p del mercado, IMg = p;
    - monopolio: la demanda P = a − b·Q, IMg = a − 2b·Q, y se compara con lo
      que pasaría en competencia (P = CMg) para sacar la pérdida de eficiencia.
+   - competencia perfecta con el coste cúbico de Costes de producción,
+     CT = CF + a·Q + b·Q² + c·Q³ (modo 'competencia3'): IMg = CMg es una
+     ecuación de segundo grado y se elige la raíz con coste marginal creciente;
+     además avisa de si conviene cerrar (p por debajo del mínimo del CVMe).
    Formato en euros de economia/comun.js; interfaz en beneficio/app.js.
      resolver(sc)  { modo, cf, c, d, p | a, b } → { q, pr, it, ct, b, pasos, … }
    ===================================================================== */
 const Beneficio = (() => {
   const K = typeof Eco !== 'undefined' ? Eco : require('../economia/comun.js');
   const { f, lee } = K;
-  const MODOS = { competencia: 'Competencia perfecta', monopolio: 'Monopolio' };
+  const MODOS = { competencia: 'Competencia perfecta', competencia3: 'Competencia perfecta (coste cúbico)', monopolio: 'Monopolio' };
   // euros dentro de una fórmula: sin punto de miles (Mates lo leería como decimal)
   const e = (x) => x.toFixed(2).replace('.', ',').replace('-', '−');
   const u = (x) => f(x, 8).replace(/\./g, '');
   const signo = (x) => (x < 0 ? '−' : '+');
 
+  // competencia perfecta con CT = CF + a·Q + b·Q² + c·Q³
+  function cubico(sc) {
+    const cf = lee(sc, 'cf', 'los costes fijos', { min: 0 }), a = lee(sc, 'ca', 'el coeficiente a del coste', { min: 0 }), b = lee(sc, 'cb', 'el coeficiente b del coste'), c = lee(sc, 'cc', 'el coeficiente c del coste', { min: 0, minEx: true });
+    const p = lee(sc, 'p', 'el precio de mercado', { min: 0, minEx: true });
+    const ct = (q) => cf + a * q + b * q * q + c * q ** 3, cmg = (q) => a + 2 * b * q + 3 * c * q * q, cvme = (q) => a + b * q + c * q * q, cme = (q) => cf / q + cvme(q);
+    // el coste variable medio no puede ser negativo en ningún punto (sería un coste que da dinero)
+    const qv = b < 0 ? -b / (2 * c) : 0, minCv = cvme(qv);
+    if (minCv <= 0) throw new Error('Con esos coeficientes el coste variable medio sería cero o negativo: revisa a, b y c (el coste de producir no puede ser negativo)');
+    // mínimo del coste medio: donde CMg = CMe, es decir, Q·CMg(Q) − CT(Q) = 0 (a partir del punto en que Q·CMg' empieza a crecer)
+    const g = (q) => q * cmg(q) - ct(q);
+    let lo = Math.max(0, -b / (3 * c)), hi = Math.max(1, lo * 2 + 1);
+    while (g(hi) < 0 && hi < 1e12) hi *= 2;
+    for (let i = 0; i < 200; i++) { const mid = (lo + hi) / 2; if (g(mid) < 0) lo = mid; else hi = mid; }
+    const qm = (lo + hi) / 2, pmin = cme(qm);
+    const D = b * b - 3 * c * (a - p);
+    const qIgual = D >= 0 && -b + Math.sqrt(D) > 0 ? (-b + Math.sqrt(D)) / (3 * c) : 0;
+    const bIgual = p * qIgual - ct(qIgual), opera = qIgual > 0 && p >= cvme(qIgual) - 1e-12 && bIgual >= -cf - 1e-12;
+    const q = opera ? qIgual : 0, it = p * q, cost = q > 0 ? ct(q) : cf, ben = it - cost;
+    const pasos = [];
+    const poli = `${u(a)} ${b < 0 ? '−' : '+'} ${u(Math.abs(2 * b))} · Q + ${u(3 * c)} · Q^2`;
+    pasos.push({ t: 'Costes', html: `$CT = CF + a · Q + b · Q^2 + c · Q^3 = ${e(cf)} + ${u(a)} · Q ${b < 0 ? '−' : '+'} ${u(Math.abs(b))} · Q^2 + ${u(c)} · Q^3$ (la misma función que en Costes de producción). Derivando, $CMg = a + 2b · Q + 3c · Q^2 = ${poli}$.` });
+    pasos.push({ t: 'Ingreso marginal y ecuación', html: `En competencia perfecta $IMg = p = ${e(p)}$. La condición $IMg = CMg$ es una ecuación de segundo grado: $${u(3 * c)} · Q^2 ${b < 0 ? '−' : '+'} ${u(Math.abs(2 * b))} · Q + (${u(a)} − ${e(p)}) = 0$.` });
+    pasos.push({ t: 'Qué solución sirve', html: D < 0 ? `El discriminante $b^2 − 3c(a − p) = ${u(D)}$ es negativo: el coste marginal no llega nunca a $p$, así que no hay cantidad que lo iguale.` : `$Q = {−b ± √{b^2 − 3c(a − p)}}/{3c}$. Solo vale la raíz con el coste marginal <b>creciente</b> (la de signo +), porque en la otra el beneficio es un mínimo y no un máximo: $Q = {${u(-b)} + √{${u(D)}}}/{${u(3 * c)}} = ${u(qIgual)}$ unidades${qIgual <= 0 ? ' (no positiva: el precio no cubre ni el coste marginal de la primera unidad)' : ''}.` });
+    pasos.push({ t: 'Regla de cierre', html: `A corto plazo se produce solo si $p ≥ $ mínimo del coste variable medio. El $CVMe = a + b·Q + c·Q^2$ tiene su mínimo en $Q = −b/(2c) = ${u(qv)}$, donde vale <b>${e(minCv)} €</b> (precio de cierre). ${p < minCv - 1e-12 ? `Como $p = ${e(p)} &lt; ${e(minCv)}$, <b>conviene cerrar</b>: cada unidad cuesta más de variable de lo que se cobra.` : opera ? `Como $p = ${e(p)} ≥ ${e(minCv)}$, conviene producir.` : `Aunque $p ≥ ${e(minCv)}$, la cantidad que iguala IMg y CMg da un beneficio de ${e(bIgual)} € (peor que cerrar: −${e(cf)} €), así que conviene cerrar.`}` });
+    pasos.push({ t: 'Ingresos, costes y beneficio', html: opera ? `$IT = ${e(p)} · ${u(q)} = ${e(it)}$ €; $CT(${u(q)}) = ${e(cost)}$ €; $B = IT − CT = ${e(ben)}$ € ${ben > 0 ? '(beneficio extraordinario)' : ben < 0 ? '(pérdidas, menores que cerrando)' : '(beneficio nulo)'}.` : `No se produce y se pagan los costes fijos: $B = −CF = ${e(-cf)}$ €.` });
+    pasos.push({ t: 'Precio de beneficio nulo', html: `El mínimo del coste medio, donde $CMg = CMe$ (óptimo de explotación), está en $Q = ${u(qm)}$ y vale <b>${e(pmin)} €</b>: con un precio igual o mayor no hay pérdidas.` });
+    return { modo: 'competencia3', cf, ca: a, cb: b, cc: c, p, opera, q, pr: p, it, ct: cost, b: ben, cvme: q > 0 ? cvme(q) : minCv, cme: q > 0 ? cme(q) : null, cierre: minCv, pmin, qm, qv, cmgq: cmg(q), imgq: p, cierra: !opera, fn: { cmg, cme, cvme, ct }, pasos };
+  }
+
   function resolver(sc) {
+    if (sc.modo === 'competencia3') return cubico(sc);
     const modo = sc.modo === 'monopolio' ? 'monopolio' : 'competencia';
     const cf = lee(sc, 'cf', 'los costes fijos', { min: 0 });
     const c = lee(sc, 'c', 'el coste variable unitario c', { min: 0 });
@@ -63,6 +97,8 @@ const Beneficio = (() => {
     { clave: 'competencia', nombre: 'Competencia perfecta: precio de 20 €', sc: { modo: 'competencia', cf: '100', c: '2', d: '0,5', p: '20', a: '', b: '' } },
     { clave: 'perdidas', nombre: 'Competencia: precio bajo y pérdidas', sc: { modo: 'competencia', cf: '100', c: '2', d: '0,5', p: '6', a: '', b: '' } },
     { clave: 'cierre', nombre: 'Competencia: el precio no cubre el coste variable', sc: { modo: 'competencia', cf: '100', c: '8', d: '0,5', p: '5', a: '', b: '' } },
+    { clave: 'cubico', nombre: 'Coste cúbico (el de Costes de producción): precio de 40 €', sc: { modo: 'competencia3', cf: '100', ca: '20', cb: '-6', cc: '0,5', p: '40' } },
+    { clave: 'cubico-cierre', nombre: 'Coste cúbico: el precio no cubre el CVMe, conviene cerrar', sc: { modo: 'competencia3', cf: '100', ca: '20', cb: '-6', cc: '0,5', p: '1,5' } },
     { clave: 'monopolio', nombre: 'Monopolio: demanda P = 100 − 2Q', sc: { modo: 'monopolio', cf: '200', c: '10', d: '1', p: '', a: '100', b: '2' } },
     { clave: 'monopolio-lineal', nombre: 'Monopolio con coste marginal constante', sc: { modo: 'monopolio', cf: '50', c: '20', d: '0', p: '', a: '80', b: '1' } },
   ];
