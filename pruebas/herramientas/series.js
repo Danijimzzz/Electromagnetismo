@@ -24,6 +24,12 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       const x = C.resolver({ an, n0: '2' });
       if (x.veredicto !== v) mal(`Series · ${an}: sale «${x.veredicto}» en vez de «${v}»`);
     }
+    // SE-2: serie p con exponente muy cerca de 1 (potencia exacta) y casos que solo se estiman
+    for (const [an, v] of [['1/n^1.0001', 'converge'], ['1/n^1.01', 'converge'], ['1/n^0.9999', 'diverge'], ['1/(n+1)', 'diverge'], ['1/(n^1.01+1)', 'indeterminado'], ['1/(n^2+n)', 'converge']]) {
+      const x = C.resolver({ an, n0: '1' });
+      if (x.veredicto !== v) mal(`Series · ${an}: sale «${x.veredicto}» en vez de «${v}»`);
+    }
+    if (!(Math.abs(C.resolver({ an: '1/n^2', n0: '1' }).suma - Math.PI ** 2 / 6) < 1e-6)) mal('Series · Σ1/n² ya no suma π²/6');
     if (Math.abs(C.resolver({ an: 'n^2/2^n', n0: '2' }).suma - 5.5) > 1e-9) mal('Series · Σ n²/2ⁿ desde 2 debería sumar 5,5');
     for (const [sc, q] of [[{ an: '', n0: '1' }, 'falta aₙ'], [{ an: '1/(n-3)', n0: '1' }, 'aₙ no definido en n = 3'], [{ an: '1/n', n0: '1,5' }, 'n0 no entero'], [{ an: '1/z', n0: '1' }, 'variable desconocida']]) {
       let ok = false; try { C.resolver(sc); } catch (e) { ok = true; }
@@ -36,6 +42,7 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     const { page, consola } = await pagina(browser, 1200, 900);
     await page.goto('file://' + path.join(publico, 'matematicas', 'series', 'index.html'));
     await page.waitForFunction(() => window.SeriesApp);
+    await require('./comun/exportar.js')(page, mal, 'series', { lienzo: '#grafica', datos: true });
     const antes = fallos;
     const ver = (await page.locator('#ver').textContent()).trim();
     if (ver !== Version.de('series').current) mal(`Series: la página muestra la versión «${ver}», se esperaba ${Version.de('series').current}`);

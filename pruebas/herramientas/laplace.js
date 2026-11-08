@@ -83,6 +83,7 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       const { page, consola } = await pagina(browser, 1200, 900);
       await page.goto('file://' + path.join(publico, 'matematicas', 'laplace', 'index.html'));
       await page.waitForFunction(() => window.LaplaceApp);
+      await require('./comun/exportar.js')(page, mal, 'laplace', { lienzo: '#grafica', datos: false });
       const antes = fallos;
       const verL = (await page.locator('#ver').textContent()).trim();
       if (verL !== Version.de('laplace').current) mal(`Laplace: la página muestra la versión «${verL}», se esperaba ${Version.de('laplace').current}`);

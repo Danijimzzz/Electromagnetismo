@@ -379,5 +379,6 @@
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('derivadas').current;
   formulario(); colores(); calcula(); requestAnimationFrame(bucle);
+  Herramienta.exportar('#grafica', { nombre: 'derivadas-e-integrales', titulo: 'Derivadas e integrales', etiqueta: 'la función' });
   window.DerivadasApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { modo: sol.modo, txt: sol.txt ?? sol.Ftxt, val: sol.val, m: sol.m, crit: sol.crit?.map((q) => q.tipo) }, estado: () => copia(sc) };
 })();

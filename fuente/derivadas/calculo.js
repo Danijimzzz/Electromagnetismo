@@ -224,8 +224,10 @@ const Derivadas = (() => {
       if (n.t === 'fn' && n.f === 'sqrt') { const q = poli(n.a); if (q && q.length === 3 && q[1] === 0 && q[0] > 0 && q[2] < 0) return { k: 'asen', p: q[0], q: -q[2] }; return { k: 'pot', e: -0.5, u: n.a }; }
       if (n.t === 'fn' && n.f === 'cbrt') return { k: 'pot', e: -1 / 3, u: n.a };
       if (n.t === 'fn' && n.f === 'cos') return { k: 'sec', u: n.a };
+      if (n.t === 'fn' && n.f === 'sen') return { k: 'csc', u: n.a };
       return { k: 'pot', e: -1, u: n };
     }
+    if (n.t === 'fn' && n.f === 'cosec') return { k: 'csc', u: n.a };
     if (n.t === 'fn') { if (n.f === 'sqrt') return { k: 'pot', e: 0.5, u: n.a }; if (n.f === 'cbrt') return { k: 'pot', e: 1 / 3, u: n.a }; return { k: n.f, u: n.a }; }
     if (n.t === '^') {
       if (n.a.t === 'c' && n.a.v === 'e') return { k: 'exp', u: n.b };
@@ -249,6 +251,7 @@ const Derivadas = (() => {
       case 'tg': return neg(ln(abs(fn('cos', u))));
       case 'cotg': return ln(abs(fn('sen', u)));
       case 'sec': return ln(abs(op('+', fn('sec', u), fn('tg', u))));
+      case 'csc': case 'cosec': return ln(abs(fn('tg', prod(N(0.5), u))));
       case 'ln': return op('-', prod(u, ln(u)), u);
       case 'arctg': return op('-', prod(u, fn('arctg', u)), prod(N(0.5), ln(op('+', N(1), pot(u, 2)))));
       case 'arcsen': return op('+', prod(u, fn('arcsen', u)), fn('sqrt', op('-', N(1), pot(u, 2))));
@@ -259,7 +262,7 @@ const Derivadas = (() => {
     }
     return null;
   }
-  const NOMBRE_T = { sen: '∫ sen u du = −cos u', cos: '∫ cos u du = sen u', exp: '∫ e^{u} du = e^{u}', senh: '∫ senh u du = cosh u', cosh: '∫ cosh u du = senh u', sec2: '∫ {du}/{cos^{2} u} = tg u', csc2: '∫ {du}/{sen^{2} u} = −"cotg" u', tg: '∫ tg u du = −ln |cos u|', ln: '∫ ln u du = u ln u − u (por partes)', apot: '∫ a^{u} du = {a^{u}}/{ln a}', arctg: '∫ arctg u du = u arctg u − {1}/{2} ln(1 + u^{2}) (por partes)', arcsen: '∫ arcsen u du = u arcsen u + √(1 − u^{2}) (por partes)' };
+  const NOMBRE_T = { csc: '∫ {du}/{sen u} = ln |tg {u}/{2}|', sen: '∫ sen u du = −cos u', cos: '∫ cos u du = sen u', exp: '∫ e^{u} du = e^{u}', senh: '∫ senh u du = cosh u', cosh: '∫ cosh u du = senh u', sec2: '∫ {du}/{cos^{2} u} = tg u', csc2: '∫ {du}/{sen^{2} u} = −"cotg" u', tg: '∫ tg u du = −ln |cos u|', ln: '∫ ln u du = u ln u − u (por partes)', apot: '∫ a^{u} du = {a^{u}}/{ln a}', arctg: '∫ arctg u du = u arctg u − {1}/{2} ln(1 + u^{2}) (por partes)', arcsen: '∫ arcsen u du = u arcsen u + √(1 − u^{2}) (por partes)' };
   const nomT = (t) => (t.k === 'pot' ? (Math.abs(t.e + 1) < 1e-12 ? '∫ {du}/{u} = ln |u|' : '∫ u^{n} du = {u^{n + 1}}/{n + 1}') : NOMBRE_T[t.k] || '');
 
   // primitiva directa de c·h(ax + b) con h de la tabla (para el método de la tabla en partes)
@@ -271,7 +274,7 @@ const Derivadas = (() => {
   }
   // primitiva de n: { F, como } o null; ps recoge el desarrollo
   function prim(n0, ps, prof = 0) {
-    if (prof > 6) return null;
+    if (prof > 8) return null;
     const n = E.simp(n0);
     if (!tx(n)) return { F: prod(n, X), como: 'constante' };
     // linealidad
@@ -315,7 +318,8 @@ const Derivadas = (() => {
     for (let i = 0; i < vs.length; i++) {
       // u es el argumento de la función, o el factor entero (u · u′ = (u²/2)′)
       const q = vs[i].n, base = q.t === '^' && !tx(q.b) ? { k: 'pot', e: E.valor(q.b, 0) * vs[i].s, u: q.a } : null;
-      for (const t of [tipo(q, vs[i].s), { k: 'pot', e: vs[i].s, u: q }, base].filter(Boolean)) {
+      const radic = q.t === 'fn' && (q.f === 'sqrt' || q.f === 'cbrt') ? { k: 'pot', e: (q.f === 'sqrt' ? 0.5 : 1 / 3) * vs[i].s, u: q.a } : null;
+      for (const t of [tipo(q, vs[i].s), { k: 'pot', e: vs[i].s, u: q }, base, radic].filter(Boolean)) {
         if (!t.u || t.k === 'otra' || t.k === 'asen' || t.u.t === 'x' || !tx(t.u)) continue;
         const Ft = tabla(t); if (!Ft) continue;
         const resto = junta(vs.filter((_, j) => j !== i)), du = D(t.u);
@@ -434,8 +438,250 @@ const Derivadas = (() => {
     }
     // u′/u: logaritmo
     if (n.t === '/') { const c = cociente(n.a, D(n.b)); if (c !== null) return { F: nota('$∫ {u′}/{u} dx = ln |u|$', prod(N(c), ln(abs(n.b)))), como: 'logaritmo' }; }
+    return primExtra(n, vs, nota, prof);
+  }
+  /* ---------- Primitivas: más casos (sustituciones, potencias trigonométricas, radicales, Hermite) ---------- */
+  // recorre un árbol cambiando los nodos para los que g devuelve algo (y no entra en lo que cambia)
+  const mapa = (n, g) => { const r = g(n); if (r) return r; if (n.a === undefined && n.b === undefined) return n; return { ...n, ...(n.a ? { a: mapa(n.a, g) } : {}), ...(n.b ? { b: mapa(n.b, g) } : {}) }; };
+  const esXn = (m) => m.t === 'x' && !m.n;
+  // polinomios como listas de coeficientes (grado 0 primero)
+  const pMul = (a, b) => { const r = new Array(a.length + b.length - 1).fill(0); a.forEach((x, i) => b.forEach((y, j) => { r[i + j] += x * y; })); return r; };
+  const pPot = (a, k) => { let r = [1]; for (let i = 0; i < k; i++) r = pMul(r, a); return r; };
+  const pInt = (a) => [0, ...a.map((c, i) => c / (i + 1))];
+  const pDer = (a) => (a.length > 1 ? a.slice(1).map((c, i) => c * (i + 1)) : [0]);
+  const pSum = (a, b) => Array.from({ length: Math.max(a.length, b.length) }, (_, i) => (a[i] || 0) + (b[i] || 0));
+  const pQuita = (a) => { const r = a.map((c) => (Math.abs(c) < 1e-9 ? 0 : c)); while (r.length > 1 && r[r.length - 1] === 0) r.pop(); return r; };
+  function pDiv(n, d) {
+    n = pQuita(n); d = pQuita(d);
+    if (n.length < d.length) return [[0], n];
+    const q = new Array(n.length - d.length + 1).fill(0), r = n.slice();
+    for (let i = n.length - d.length; i >= 0; i--) { const c = r[i + d.length - 1] / d[d.length - 1]; q[i] = c; for (let j = 0; j < d.length; j++) r[i + j] -= c * d[j]; }
+    return [q, pQuita(r.slice(0, Math.max(1, d.length - 1)))];
+  }
+  function pMcd(a, b) {
+    a = pQuita(a); b = pQuita(b);
+    while (!(b.length === 1 && b[0] === 0)) { const r = pDiv(a, b)[1]; a = b; b = r; }
+    return a.map((c) => c / a[a.length - 1]);
+  }
+  // resuelve M·u = b (M cuadrada) por eliminación; null si es singular
+  function resuelve(M, b) {
+    const n = b.length, A = M.map((r, i) => [...r, b[i]]);
+    for (let c = 0; c < n; c++) {
+      let p = c; for (let r = c + 1; r < n; r++) if (Math.abs(A[r][c]) > Math.abs(A[p][c])) p = r;
+      if (Math.abs(A[p][c]) < 1e-10) return null;
+      [A[c], A[p]] = [A[p], A[c]];
+      for (let r = 0; r < n; r++) if (r !== c) { const k = A[r][c] / A[c][c]; for (let j = c; j <= n; j++) A[r][j] -= k * A[c][j]; }
+    }
+    return A.map((r, i) => r[n] / r[i]);
+  }
+  const redondeo = (c) => { const fr = E.fraccion(c, 2000); if (fr && Math.abs(fr[0] / fr[1] - c) < 1e-9 * Math.max(1, Math.abs(c))) return fr[0] / fr[1]; const r = Math.round(c * 1e9) / 1e9; return Math.abs(r) < 1e-12 ? 0 : r; };
+  const polX = (c) => poliAst(c.map(redondeo)); // polinomio como árbol en x
+  const sustX = (n, por) => mapa(n, (m) => (esXn(m) ? por : null));
+
+  // ∫ x^e·P(x) con e no entero: se reparte en potencias
+  function polPotencia(vs, prof) {
+    const ip = vs.findIndex((q) => { const t = tipo(q.n, q.s); return t.k === 'pot' && t.u.t === 'x' && !Number.isInteger(t.e); });
+    if (ip < 0) return null;
+    const e = tipo(vs[ip].n, vs[ip].s).e, P = poli(junta(vs.filter((_, j) => j !== ip)));
+    if (!P || P.length < 2) return null;
+    const trozos = P.map((c, i) => (Math.abs(c) < 1e-14 ? null : prod(N(c), op('^', X, N(i + e))))).filter(Boolean);
+    const suma = trozos.reduce((a, b) => op('+', a, b));
+    const r = prim(suma, [], prof + 1);
+    return r && { F: r.F, txt: `se reparte el polinomio entre las potencias de $x$: $${T(suma)}$` };
+  }
+
+  // u = ax + b dentro de una raíz o potencia no entera: x = (u − b)/a
+  function sustRadical(n, prof) {
+    const cand = [];
+    const busca = (m) => {
+      if (!m || typeof m !== 'object') return;
+      let arg = null;
+      if (m.t === 'fn' && (m.f === 'sqrt' || m.f === 'cbrt')) arg = m.a;
+      else if (m.t === '^' && !tx(m.b)) { const e = E.valor(m.b, 0); if (!Number.isInteger(e)) arg = m.a; }
+      if (arg) { const L = lineal(arg); if (L && !(Math.abs(L.a - 1) < 1e-12 && Math.abs(L.b) < 1e-12)) cand.push({ arg, L }); }
+      busca(m.a); busca(m.b);
+    };
+    busca(n);
+    for (const { arg, L } of cand) {
+      const txt = E.texto(arg), nuevo = mapa(n, (m) => (E.texto(m) === txt ? X : esXn(m) ? op('/', op('-', X, N(L.b)), N(L.a)) : null));
+      const g = E.simp(prod(N(1 / L.a), nuevo)), r = prim(g, [], prof + 1);
+      if (r) return { F: sustX(r.F, arg), txt: `sustitución $u = ${T(arg)}$, $x = ${T(op('/', op('-', X, N(L.b)), N(L.a)))}$ (en $u$) y $dx = ${E.numTxt(1 / L.a)} du$: queda $∫ ${T(g)} du$` };
+    }
     return null;
   }
+
+  // x aparece solo como x^{p/q}: x = u^k con k el mínimo común múltiplo de los denominadores
+  function sustRaizX(n, prof) {
+    const dens = []; let ok = true;
+    const busca = (m) => {
+      if (!m || typeof m !== 'object' || !ok) return;
+      if (m.t === 'fn' && (m.f === 'sqrt' || m.f === 'cbrt')) { if (esXn(m.a)) dens.push(m.f === 'sqrt' ? 2 : 3); else if (tx(m.a)) ok = false; return; }
+      if (m.t === '^' && !tx(m.b) && esXn(m.a)) { const e = E.valor(m.b, 0); if (!Number.isInteger(e)) { const fr = E.fraccion(e, 12); if (fr) dens.push(fr[1]); else ok = false; } return; }
+      if (m.t === '^' && !tx(m.b) && !Number.isInteger(E.valor(m.b, 0)) && tx(m.a)) { ok = false; return; }
+      busca(m.a); busca(m.b);
+    };
+    busca(n);
+    if (!ok || !dens.length) return null;
+    const k = dens.reduce((a, b) => (a * b) / mcd(a, b), 1);
+    if (k < 2 || k > 12) return null;
+    const por = (e) => op('^', X, N(e * k));
+    const sub = mapa(n, (m) => {
+      if (m.t === 'fn' && m.f === 'sqrt' && esXn(m.a)) return por(0.5);
+      if (m.t === 'fn' && m.f === 'cbrt' && esXn(m.a)) return por(1 / 3);
+      if (m.t === '^' && !tx(m.b) && esXn(m.a)) return por(E.valor(m.b, 0));
+      return esXn(m) ? por(1) : null;
+    });
+    const g = E.simp(prod(prod(N(k), op('^', X, N(k - 1))), sub)), r = prim(g, [], prof + 1);
+    if (!r) return null;
+    const raiz = k === 2 ? fn('sqrt', X) : k === 3 ? fn('cbrt', X) : op('^', X, N(1 / k));
+    return { F: sustX(r.F, raiz), txt: `sustitución $x = u^{${k}}$, $dx = ${k} u^{${k - 1}} du$: queda $∫ ${T(g)} du$, con $u = ${T(raiz)}$` };
+  }
+
+  // sen^m u cos^n u con el mismo u = ax + b
+  function trigPotencias(vs, prof) {
+    if (!vs.length || vs.length > 2 || vs.some((q) => q.s < 0)) return null;
+    let m = 0, nn = 0, arg = null;
+    for (const q of vs) {
+      const b = q.n.t === '^' ? q.n.a : q.n, e = q.n.t === '^' ? (tx(q.n.b) ? NaN : E.valor(q.n.b, 0)) : 1;
+      if (!(b.t === 'fn' && (b.f === 'sen' || b.f === 'cos')) || !Number.isInteger(e) || e < 1) return null;
+      if (arg && E.texto(b.a) !== E.texto(arg)) return null;
+      arg = b.a;
+      if (b.f === 'sen') m += e; else nn += e;
+    }
+    const L = lineal(arg);
+    if (!L || m + nn < 2) return null;
+    const u = T(arg);
+    if (nn % 2) {
+      const kk = (nn - 1) / 2, poly = pMul(pPot([0, 1], m), pPot([1, 0, -1], kk)), F = pInt(poly).map((c) => c / L.a);
+      return { F: sustX(polX(F), fn('sen', arg)), txt: `$cos^{${nn}} ${u} = cos ${u} (1 − sen^{2} ${u})^{${kk}}$ y se sustituye $t = sen ${u}$, $dt = ${E.numTxt(L.a)} cos ${u} dx$: queda $∫ ${T(polX(poly))} dt/${E.numTxt(L.a)}$` };
+    }
+    if (m % 2) {
+      const kk = (m - 1) / 2, poly = pMul(pPot([1, 0, -1], kk), pPot([0, 1], nn)), F = pInt(poly).map((c) => -c / L.a);
+      return { F: sustX(polX(F), fn('cos', arg)), txt: `$sen^{${m}} ${u} = sen ${u} (1 − cos^{2} ${u})^{${kk}}$ y se sustituye $t = cos ${u}$, $dt = −${E.numTxt(L.a)} sen ${u} dx$: queda $−∫ ${T(polX(poly))} dt/${E.numTxt(L.a)}$` };
+    }
+    // las dos pares: sen² = (1 − cos 2u)/2 y cos² = (1 + cos 2u)/2, y queda un polinomio en cos 2u
+    const poly = pMul(pPot([0.5, -0.5], m / 2), pPot([0.5, 0.5], nn / 2)), doble = fn('cos', prod(N(2), arg)), g = sustX(polX(poly), doble), r = prim(g, [], prof + 1);
+    return r && { F: r.F, txt: `ángulo doble: $sen^{2} ${u} = {1 − cos 2(${u})}/{2}$ y $cos^{2} ${u} = {1 + cos 2(${u})}/{2}$, de modo que el integrando es $${T(g)}$` };
+  }
+
+  // P(x)/√Q o P(x)·√Q con Q cuadrático: ∫ = Q₁(x)·√Q + K ∫ dx/√Q, con Q₁ de un grado menos
+  function radCuadratica(vs) {
+    const ir = vs.findIndex((q) => q.n.t === 'fn' && q.n.f === 'sqrt' && (() => { const P = poli(q.n.a); return P && P.length === 3; })());
+    if (ir < 0) return null;
+    const Q = poli(vs[ir].n.a), resto = vs.filter((_, j) => j !== ir), P0 = resto.length ? poli(junta(resto)) : [1];
+    if (!P0) return null;
+    const num = vs[ir].s < 0 ? P0 : pMul(P0, Q), d = num.length - 1, Qd = pDer(Q);
+    const cols = [];
+    for (let i = 0; i < d; i++) { const xi = new Array(i + 1).fill(0); xi[i] = 1; cols.push(pSum(pMul(pDer(xi), Q), pMul(xi, Qd).map((c) => c / 2))); }
+    cols.push([1]);
+    const M = Array.from({ length: d + 1 }, (_, i) => cols.map((c) => c[i] || 0)), sol = resuelve(M, Array.from({ length: d + 1 }, (_, i) => num[i] || 0));
+    if (!sol) return null;
+    const Q1 = sol.slice(0, d), K = sol[d], a = Q[2], b = Q[1], c = Q[0];
+    let I0 = null;
+    if (Math.abs(K) > 1e-12) {
+      if (a > 0) I0 = prod(N(1 / Math.sqrt(a)), ln(abs(op('+', op('+', prod(N(2 * a), X), N(b)), prod(N(2 * Math.sqrt(a)), vs[ir].n)))));
+      else { const Dd = b * b - 4 * a * c; if (!(Dd > 0)) return null; I0 = prod(N(-1 / Math.sqrt(-a)), fn('arcsen', div(op('+', prod(N(2 * a), X), N(b)), N(Math.sqrt(Dd))))); }
+    }
+    const parte1 = Q1.some((v) => Math.abs(v) > 1e-12) ? prod(polX(Q1), vs[ir].n) : null;
+    const F = parte1 && I0 ? op('+', parte1, prod(N(K), I0)) : parte1 || prod(N(K), I0);
+    return { F, txt: `integrando con $√(${T(polX(Q))})$: se busca $∫ = Q_1(x) √{${T(polX(Q))}} + K ∫ {dx}/{√{${T(polX(Q))}}}$ con $Q_1$ de un grado menos, derivando e igualando coeficientes${I0 ? ` ($K = ${E.numTxt(K)}$)` : ''}` };
+  }
+
+  // 1/(x √(c + d x²))
+  function xPorRaiz(vs) {
+    if (vs.length !== 2 || vs.some((q) => q.s > 0)) return null;
+    const ix = vs.findIndex((q) => esXn(q.n)), ir = 1 - ix;
+    if (ix < 0 || vs[ir].n.t !== 'fn' || vs[ir].n.f !== 'sqrt') return null;
+    const P = poli(vs[ir].n.a);
+    if (!P || P.length !== 3 || Math.abs(P[1]) > 1e-12) return null;
+    const c = P[0], d = P[2], R = vs[ir].n;
+    if (d > 0 && c < 0) return { F: prod(N(1 / Math.sqrt(-c)), fn('arccos', div(N(Math.sqrt(-c / d)), abs(X)))), txt: `con $x = a / cos t$ (o $u = 1/x$): $∫ {dx}/{x √(x^{2} − a^{2})} = {1}/{a} arccos {a}/{|x|}$` };
+    if (c > 0) return { F: prod(N(-1 / Math.sqrt(c)), ln(abs(div(op('+', N(Math.sqrt(c)), R), X)))), txt: `con $u = 1/x$: $∫ {dx}/{x √(a^{2} ± x^{2})} = −{1}/{a} ln |{a + √(a^{2} ± x^{2})}/{x}|$` };
+    return null;
+  }
+
+  // todo x dentro de e^{a x}: u = e^{a0 x}
+  function expRacional(n, prof) {
+    const as = []; let ok = true;
+    const busca = (m) => {
+      if (!m || typeof m !== 'object' || !ok) return;
+      if (m.t === '^' && m.a.t === 'c' && m.a.v === 'e') { const L = lineal(m.b); if (L && Math.abs(L.b) < 1e-12) as.push(L.a); else ok = false; return; }
+      if (esXn(m)) { ok = false; return; }
+      busca(m.a); busca(m.b);
+    };
+    busca(n);
+    if (!ok || !as.length) return null;
+    const a0 = Math.min(...as.map(Math.abs));
+    if (!as.every((a) => Math.abs(a / a0 - Math.round(a / a0)) < 1e-9)) return null;
+    const sub = mapa(n, (m) => (m.t === 'x' ? null : m.t === '^' && m.a.t === 'c' && m.a.v === 'e' ? op('^', X, N(Math.round(lineal(m.b).a / a0))) : null));
+    const g = E.simp(div(sub, prod(N(a0), X))), r = prim(g, [], prof + 1);
+    if (!r) return null;
+    return { F: sustX(r.F, op('^', C('e'), prod(N(a0), X))), txt: `sustitución $u = e^{${E.numTxt(a0)} x}$, $du = ${E.numTxt(a0)} u dx$: queda $∫ ${T(g)} du$` };
+  }
+
+  // fracciones con factores repetidos (cuadráticos): reducción de Hermite, ∫ P/Q = A/B + ∫ C/D con B = mcd(Q, Q′)
+  function hermite(n, prof) {
+    const cambia = (m) => (m.t === 'x' ? { t: 'x', n: 's' } : m.t === 'n' || m.t === 'c' ? m : { ...m, a: m.a && cambia(m.a), b: m.b && cambia(m.b) });
+    let Fr;
+    try { Fr = LapR.simplifica(LapR.racional(cambia(n))); } catch (e) { return null; }
+    const Qp = pQuita(Fr.d), dq = Qp.length - 1;
+    if (dq < 3) return null;
+    const [ent, r] = pDiv(pQuita(Fr.n), Qp), B = pMcd(Qp, pDer(Qp));
+    if (B.length < 2) return null;
+    const Dd = pDiv(Qp, B)[0], [H, resto] = pDiv(pMul(pDer(B), Dd), B);
+    if (resto.some((c) => Math.abs(c) > 1e-7)) return null;
+    const b = B.length - 1, dd = Dd.length - 1, cols = [];
+    for (let i = 0; i < b; i++) { const ai = new Array(i + 1).fill(0); ai[i] = 1; cols.push(pSum(pMul(pDer(ai), Dd), pMul(ai, H).map((c) => -c))); }
+    for (let i = 0; i < dd; i++) { const ci = new Array(i + 1).fill(0); ci[i] = 1; cols.push(pMul(ci, B)); }
+    const M = Array.from({ length: dq }, (_, i) => cols.map((c) => c[i] || 0)), sol = resuelve(M, Array.from({ length: dq }, (_, i) => r[i] || 0));
+    if (!sol) return null;
+    const A = sol.slice(0, b).map(redondeo), C2 = sol.slice(b).map(redondeo);
+    let F = prod(polX(A), op('^', polX(B), N(-1)));
+    F = div(polX(A), polX(B));
+    if (ent.some((c) => Math.abs(c) > 1e-12)) F = op('+', polX(pInt(ent)), F);
+    if (C2.some((c) => Math.abs(c) > 1e-12)) {
+      const rest = racional(div(polX(C2), polX(Dd)), () => {});
+      if (!rest) return null;
+      F = op('+', F, rest);
+    }
+    return { F, txt: `factores repetidos, reducción de Hermite: $Q = ${T(polX(Qp))}$, $B = \\text{mcd}(Q, Q′) = ${T(polX(B))}$ y $∫ {P}/{Q} dx = {A}/{B} + ∫ {C}/{D} dx$ con $A = ${T(polX(A))}$, $D = ${T(polX(Dd))}$ y $C = ${T(polX(C2))}$` };
+  }
+
+  // primitivas que no tienen forma elemental conocida: nombre de la función especial o null
+  function noElemental(ast) {
+    const pts = [0.35, 0.8, 1.3, 1.9, 2.6, 3.1], val = (x) => E.valor(ast, x);
+    const cte = (g) => { let k = null; for (const x of pts) { const a = val(x), b = g(x); if (!isFinite(a) || !isFinite(b) || Math.abs(b) < 1e-12) return false; const r = a / b; if (k === null) k = r; else if (Math.abs(r - k) > 1e-8 * Math.max(1, Math.abs(k))) return false; } return k !== null && Math.abs(k) > 1e-12; };
+    // e^{k x²}
+    const l = (x) => Math.log(Math.abs(val(x))), kq = (l(pts[2]) - l(pts[0])) / (pts[2] ** 2 - pts[0] ** 2);
+    if (pts.every((x) => isFinite(l(x))) && Math.abs(kq) > 1e-6 && pts.every((x) => Math.abs(l(x) - l(pts[0]) - kq * (x * x - pts[0] * pts[0])) < 1e-8 * Math.max(1, Math.abs(l(x))))) return kq < 0 ? { f: 'erf', desc: 'la función error, erf(x) = (2/√π) ∫₀ˣ e^{−t²} dt' } : { f: 'erfi', desc: 'la función error imaginaria, erfi(x)' };
+    for (const k of [1, 2, 3, 0.5, Math.PI]) {
+      if (cte((x) => Math.sin(k * x) / x)) return { f: 'Si', desc: 'el seno integral, Si(x) = ∫₀ˣ sen t / t dt' };
+      if (cte((x) => Math.cos(k * x) / x)) return { f: 'Ci', desc: 'el coseno integral, Ci(x) = −∫ₓ^∞ cos t / t dt' };
+    }
+    for (const k of [1, 2, 0.5, Math.PI / 2, Math.PI]) {
+      if (cte((x) => Math.sin(k * x * x))) return { f: 'S', desc: 'la integral de Fresnel, S(x) = ∫₀ˣ sen(π t²/2) dt' };
+      if (cte((x) => Math.cos(k * x * x))) return { f: 'C', desc: 'la integral de Fresnel, C(x) = ∫₀ˣ cos(π t²/2) dt' };
+    }
+    if (cte((x) => 1 / Math.log(x))) return { f: 'li', desc: 'el logaritmo integral, li(x) = ∫ dt / ln t' };
+    for (const k of [1, -1, 2, -2]) if (cte((x) => Math.exp(k * x) / x)) return { f: 'Ei', desc: 'la exponencial integral, Ei(x) = ∫ eᵗ / t dt' };
+    return null;
+  }
+
+  // todos los casos nuevos, por orden; devuelve { F, como } o null
+  function primExtra(n, vs, nota, prof) {
+    if (prof > 5) return null;
+    let r;
+    if ((r = polPotencia(vs, prof))) return { F: nota(r.txt, r.F), como: 'potencias' };
+    if ((r = trigPotencias(vs, prof))) return { F: nota(r.txt, r.F), como: 'trigonométrica' };
+    if ((r = radCuadratica(vs))) return { F: nota(r.txt, r.F), como: 'radical' };
+    if ((r = xPorRaiz(vs))) return { F: nota(r.txt, r.F), como: 'radical' };
+    if ((r = sustRadical(n, prof))) return { F: nota(r.txt, r.F), como: 'sustitución' };
+    if ((r = sustRaizX(n, prof))) return { F: nota(r.txt, r.F), como: 'sustitución' };
+    if ((r = expRacional(n, prof))) return { F: nota(r.txt, r.F), como: 'sustitución' };
+    if ((r = hermite(n, prof))) return { F: nota(r.txt, r.F), como: 'racional' };
+    return null;
+  }
+
   // fracciones simples con los polos de Laplace
   function racional(n, nota) {
     const cambia = (m) => (m.t === 'x' ? { t: 'x', n: 's' } : m.t === 'n' || m.t === 'c' ? m : { ...m, a: m.a && cambia(m.a), b: m.b && cambia(m.b) });
@@ -479,6 +725,25 @@ const Derivadas = (() => {
     nota(`fracciones simples: ${q.some((c) => Math.abs(c) > 1e-14) ? `parte entera $${T(poliAst(q))}$ y ` : ''}$${fr.join(' + ').replace(/\+ \{−/g, '− {')}$`, out);
     return out;
   }
+  // valor absoluto en una integral definida: se parte en los ceros de cada |u| y en cada trozo |u| es +u o −u
+  const sinAbsEn = (n, xm) => { if (!n || typeof n !== 'object') return n; if (n.t === 'fn' && n.f === 'abs') { const u = sinAbsEn(n.a, xm); return E.valor(u, xm) < 0 ? neg(u) : u; } return { ...n, a: n.a && sinAbsEn(n.a, xm), b: n.b && sinAbsEn(n.b, xm) }; };
+  function trozosAbs(ast, a, b) {
+    const args = [], busca = (m) => { if (!m || typeof m !== 'object') return; if (m.t === 'fn' && m.f === 'abs') args.push(m.a); busca(m.a); busca(m.b); };
+    busca(ast);
+    if (!args.length) return null;
+    const lo = Math.min(a, b), hi = Math.max(a, b);
+    if (!isFinite(lo) || !isFinite(hi)) return null;
+    const cortes = [...new Set(args.flatMap((u) => raicesNum((x) => E.valor(u, x), lo, hi, 2000)))].filter((c) => c > lo + 1e-9 && c < hi - 1e-9).sort((p, q) => p - q);
+    const pts = [lo, ...cortes, hi], partes = [];
+    for (let i = 0; i < pts.length - 1; i++) {
+      const br = E.simp(sinAbsEn(ast, (pts[i] + pts[i + 1]) / 2)), r = (() => { try { return prim(br, []); } catch (e) { return null; } })(), F = r && E.simp(r.F);
+      if (!F || !igualNum(D(F), br, 1e-6)) return null;
+      const v = E.valor(F, pts[i + 1]) - E.valor(F, pts[i]);
+      if (!isFinite(v)) return null;
+      partes.push({ p: pts[i], q: pts[i + 1], br, F, v });
+    }
+    return { cortes, partes, val: (a < b ? 1 : -1) * partes.reduce((t, q) => t + q.v, 0) };
+  }
   function integral(sc) {
     const ast = E.simp(E.lee(sc.f, 'f(x)', ['x']));
     const pasos = [{ t: 'Función', html: `$f(x) = ${T(ast)}$` }], ps = [];
@@ -492,7 +757,11 @@ const Derivadas = (() => {
       out.F = F; out.Ftxt = T(F); out.Ff = (x) => E.valor(F, x);
       if (ps.length) pasos.push({ t: ast.t === '+' || ast.t === '-' ? 'Término a término' : 'Método', html: ps.slice(-8).join('<br>') });
       pasos.push({ t: 'Primitiva', html: `$∫ f(x) dx = ${out.Ftxt} + C$<br>Comprobación: al derivar sale otra vez f(x).` });
-    } else pasos.push({ t: 'Primitiva', html: 'No encuentro una primitiva con funciones elementales (o no sé hacerla con la tabla, sustitución, partes y fracciones simples).' });
+    } else {
+      const ne = noElemental(ast);
+      pasos.push({ t: 'Primitiva', html: ne ? `<b>Esta integral no tiene primitiva elemental</b> (no se puede escribir con polinomios, exponenciales, logaritmos ni funciones trigonométricas): se expresa con ${ne.desc}. No se da ninguna fórmula; si pones límites, el valor se calcula numéricamente.` : 'No encuentro una primitiva con funciones elementales (o no sé hacerla con la tabla, sustitución, partes y fracciones simples).' });
+      out.noElemental = ne ? ne.f : null;
+    }
     if (!vacio(sc.a) || !vacio(sc.b)) {
       const a = limiteDe(sc.a, 'el límite inferior a'), b = limiteDe(sc.b, 'el límite superior b');
       if (a === b) throw new Error('Los dos límites son iguales: la integral vale 0');
@@ -514,7 +783,12 @@ const Derivadas = (() => {
       out.num = finita ? (s * h) / 3 : NaN;
       if (!finita) throw new Error(`f(x) no es finita en todo [${f(Math.min(a, b))}, ${f(Math.max(a, b))}]: la integral es impropia`);
       const nt = E.numTxt;
-      if (F && isFinite(E.valor(F, a)) && isFinite(E.valor(F, b)) && Math.abs(E.valor(F, b) - E.valor(F, a) - out.num) < 1e-5 * Math.max(1, Math.abs(out.num))) {
+      const tr = F ? null : trozosAbs(ast, a, b);
+      if (tr && Math.abs(tr.val - out.num) < 1e-5 * Math.max(1, Math.abs(out.num))) {
+        out.val = tr.val; out.trozos = tr.partes.length;
+        pasos.push({ t: 'Valor absoluto', html: `${tr.cortes.length ? `El argumento del valor absoluto cambia de signo en ${tr.cortes.map((c) => `$x = ${nt(c)}$`).join(', ')}, así que se parte la integral en ${tr.partes.length} trozos` : 'El argumento del valor absoluto no cambia de signo en el intervalo'} y en cada uno se quita el valor absoluto con su signo:<br>${tr.partes.map((q) => `En $[${nt(q.p)}, ${nt(q.q)}]$: $f(x) = ${T(q.br)}$, $F(x) = ${T(q.F)}$ y $F(${nt(q.q)}) − F(${nt(q.p)}) = ${nt(q.v)}$`).join('<br>')}` });
+        pasos.push({ t: 'Regla de Barrow', html: `$∫_{${nt(a)}}^{${nt(b)}} f(x) dx = ${tr.partes.map((q) => nt(q.v)).join(' + ')} = ${nt(tr.val)}$${a > b ? ' (con el signo cambiado por estar los límites al revés)' : ''}` });
+      } else if (F && isFinite(E.valor(F, a)) && isFinite(E.valor(F, b)) && Math.abs(E.valor(F, b) - E.valor(F, a) - out.num) < 1e-5 * Math.max(1, Math.abs(out.num))) {
         out.val = E.valor(F, b) - E.valor(F, a);
         pasos.push({ t: 'Regla de Barrow', html: `$∫_{${nt(a)}}^{${nt(b)}} f(x) dx = F(${nt(b)}) − F(${nt(a)}) = ${nt(E.valor(F, b))} − ${nt(E.valor(F, a))}`.replace('− −', '+ ') + ` = ${nt(out.val)}$${E.exacto(out.val) && !Number.isInteger(out.val) ? ` ≈ ${f(out.val, 6)}` : ''}` });
       } else {
@@ -945,14 +1219,25 @@ const Derivadas = (() => {
     const oTxt = asO.length === 2 && asO[0].m === asO[1].m && asO[0].n === asO[1].n ? [`$y = ${recta(asO[0].m, asO[0].n)}$ (por los dos lados)`] : asO.map((q) => `$y = ${recta(q.m, q.n)}$ (cuando $${lado(q.s)}$)`);
     pasos.push({ t: 'Asíntotas', html: `Verticales: ${vert.length ? vert.map((c) => `$x = ${nt(c)}$`).join(', ') : 'ninguna'}.<br>Horizontales: ${hTxt.length ? hTxt.join(', ') : 'ninguna'}.${oTxt.length ? `<br>Oblicuas ($m = lím f/x$, $n = lím (f − m x)$): ${oTxt.join(', ')}.` : ''}` });
     // monotonía y extremos, curvatura e inflexión
-    const v1 = (x) => E.valor(d1, x), v2 = (x) => E.valor(d2, x);
+    // valor absoluto: f se parte en ramas donde cada |u| es +u o −u; en los ceros de u no hay derivada (pico) y el signo de f′ se mira rama a rama
+    const argsAbs = [], buscaAbs = (n) => { if (!n || typeof n !== 'object') return; if (n.t === 'fn' && n.f === 'abs') argsAbs.push(n.a); buscaAbs(n.a); buscaAbs(n.b); };
+    buscaAbs(ast);
+    const quiebros = [...new Set(argsAbs.flatMap((u) => raicesNum((x) => E.valor(u, x), -A_, A_, 1500)))].sort((a, b) => a - b);
+    const sinAbs = (n, xm) => { if (!n || typeof n !== 'object') return n; if (n.t === 'fn' && n.f === 'abs') { const u = sinAbs(n.a, xm); return E.valor(u, xm) < 0 ? neg(u) : u; } return { ...n, a: n.a && sinAbs(n.a, xm), b: n.b && sinAbs(n.b, xm) }; };
+    const cotas = [-A_ - 1, ...quiebros, A_ + 1], ramas = quiebros.length ? cotas.slice(0, -1).map((a, i) => { const q = sinAbs(ast, (a + cotas[i + 1]) / 2), e1 = E.simp(D(q)); return { d1: e1, d2: E.simp(D(e1)) }; }) : null;
+    const rama = (x) => quiebros.filter((c) => c <= x).length;
+    const v1 = ramas ? (x) => E.valor(ramas[rama(x)].d1, x) : (x) => E.valor(d1, x), v2 = ramas ? (x) => E.valor(ramas[rama(x)].d2, x) : (x) => E.valor(d2, x);
+    const eps = 1e-6, picos = quiebros.filter((c) => Math.abs(v1(c - eps) - v1(c + eps)) > 1e-4);
     const signos = (dv) => {
       const out = [];
       for (const t of tramos) {
-        const [l, r] = clip(t), rs = raicesNum(dv, l + 1e-9, r - 1e-9, 1500), pts = [t.l, ...rs, t.r];
+        const [l, r] = clip(t), qs = quiebros.filter((c) => c > t.l && c < t.r), rs = raicesNum(dv, l + 1e-9, r - 1e-9, 1500).filter((x) => !qs.some((c) => Math.abs(c - x) < 1e-6)), pts = [t.l, ...[...rs, ...qs].sort((a, b) => a - b), t.r];
         for (let i = 0; i < pts.length - 1; i++) {
           const p = pts[i], q = pts[i + 1], m = !isFinite(p) && !isFinite(q) ? 0 : !isFinite(p) ? q - 1 : !isFinite(q) ? p + 1 : (p + q) / 2;
-          out.push({ p, q, s: Math.sign(dv(m)), cierra: i < pts.length - 2 ? q : null });
+          const s = Math.sign(dv(m)), ant = out[out.length - 1];
+          // el mismo signo a los dos lados de una raíz (x³ en 0, o f″ ≡ 0 con ruido) es un solo intervalo; no a los lados de un pico
+          if (ant && ant.cierra !== null && ant.s === s && !picos.includes(ant.cierra)) { ant.q = q; ant.cierra = i < pts.length - 2 ? q : null; continue; }
+          out.push({ p, q, s, cierra: i < pts.length - 2 ? q : null });
         }
       }
       return out;
@@ -962,9 +1247,10 @@ const Derivadas = (() => {
     const extremos = [];
     for (let i = 0; i < S1.length - 1; i++) if (S1[i].cierra !== null && S1[i].s && S1[i + 1].s && S1[i].s !== S1[i + 1].s) { const x = S1[i].cierra; extremos.push({ x, y: g(x), tipo: S1[i].s > 0 ? 'máximo' : 'mínimo' }); }
     const S2 = signos(v2), arriba = S2.filter((q) => q.s > 0).map((q) => iTxt(q.p, q.q)), abajo = S2.filter((q) => q.s < 0).map((q) => iTxt(q.p, q.q)), infl = [];
-    for (let i = 0; i < S2.length - 1; i++) if (S2[i].cierra !== null && S2[i].s && S2[i + 1].s && S2[i].s !== S2[i + 1].s) { const x = S2[i].cierra; infl.push({ x, y: g(x) }); }
-    pasos.push({ t: 'Monotonía y extremos', html: `Por el signo de $f′$: crece en $${crece.join(' ∪ ') || '∅'}$ y decrece en $${decrece.join(' ∪ ') || '∅'}$.<br>${extremos.length ? extremos.map((q) => `${q.tipo === 'máximo' ? 'Máximo' : 'Mínimo'} relativo en $(${nt(q.x)}, ${nt(q.y)})$`).join('<br>') : 'No tiene máximos ni mínimos relativos.'}` });
-    pasos.push({ t: 'Curvatura e inflexión', html: `Por el signo de $f″$: convexa ($∪$, $f″ > 0$) en $${arriba.join(' ∪ ') || '∅'}$ y cóncava ($∩$, $f″ < 0$) en $${abajo.join(' ∪ ') || '∅'}$.<br>${infl.length ? infl.map((q) => `Punto de inflexión en $(${nt(q.x)}, ${nt(q.y)})$`).join('<br>') : 'No tiene puntos de inflexión.'}` });
+    for (let i = 0; i < S2.length - 1; i++) if (S2[i].cierra !== null && S2[i].s && S2[i + 1].s && S2[i].s !== S2[i + 1].s && !picos.includes(S2[i].cierra)) { const x = S2[i].cierra; infl.push({ x, y: g(x) }); }
+    pasos.push({ t: 'Monotonía y extremos', html: `Por el signo de $f′$: crece en $${crece.join(' ∪ ') || '∅'}$ y decrece en $${decrece.join(' ∪ ') || '∅'}$.<br>${extremos.length ? extremos.map((q) => `${q.tipo === 'máximo' ? 'Máximo' : 'Mínimo'} relativo en $(${nt(q.x)}, ${nt(q.y)})$`).join('<br>') : 'No tiene máximos ni mínimos relativos.'}${picos.length ? `<br>Por el valor absoluto, $f$ no es derivable en ${picos.map((c) => `$x = ${nt(c)}$`).join(', ')} (hay un pico): ahí se compara el signo de $f′$ a cada lado.` : ''}` });
+    const rectas = S2.filter((q) => q.s === 0 && q.p !== q.q).map((q) => iTxt(q.p, q.q));
+    pasos.push({ t: 'Curvatura e inflexión', html: `Por el signo de $f″$: convexa ($∪$, $f″ > 0$) en $${arriba.join(' ∪ ') || '∅'}$ y cóncava ($∩$, $f″ < 0$) en $${abajo.join(' ∪ ') || '∅'}$.${rectas.length ? ` Es una recta ($f″ = 0$) en $${rectas.join(' ∪ ')}$.` : ''}<br>${infl.length ? infl.map((q) => `Punto de inflexión en $(${nt(q.x)}, ${nt(q.y)})$`).join('<br>') : 'No tiene puntos de inflexión.'}` });
     const asTxt = [...vert.map((c) => `x = ${nt(c)}`), ...(asH.length === 2 && asH[0].y === asH[1].y ? [`y = ${nt(asH[0].y)}`] : asH.map((q) => `y = ${nt(q.y)}`)), ...(asO.length === 2 && asO[0].m === asO[1].m && asO[0].n === asO[1].n ? [`y = ${recta(asO[0].m, asO[0].n)}`] : asO.map((q) => `y = ${recta(q.m, q.n)}`))];
     return { modo: 'estudio', ast, d1, d2, dom, tramos, asTxt, par: esPar, impar: esImpar, cortesX, y0, asV: vert, asH, asO, extremos, infl, crece, decrece, convexa: arriba, concava: abajo, f: (x) => g(x), d: (k) => (x) => E.valor(k === 1 ? d1 : d2, x), txt: dom, pasos };
   }

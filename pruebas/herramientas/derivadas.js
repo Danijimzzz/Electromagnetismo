@@ -33,6 +33,31 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     igual(DerC.integral({ f: '1/(x^2+x+1)' }).Ftxt, '{2 arctg ({2 x + 1}/{√3})}/{√3}', '∫ 1/(x² + x + 1)');
     igual(DerC.integral({ f: 'x (x^2+1)^3' }).Ftxt, '{(x^{2} + 1)^{4}}/{8}', '∫ x (x² + 1)³');
     igual(r('racional').Ftxt, 'ln |x + 3| + 2 ln |x − 1|', '∫ (3x + 5)/(x² + 2x − 3)');
+    // DE-1/DE-3: integrales de libro (las 9 que antes no salían y más); cada primitiva se comprueba con un cociente incremental propio
+    {
+      const libro = ['x sqrt(x+1)', 'sen(x)^2 cos(x)^3', '1/sen(x)', 'x/sqrt(1-x^2)', '1/(x sqrt(x^2-1))', '1/(1+e^x)', 'x arcsen(x)', 'e^sqrt(x)', 'x^2/(x^2+1)^2',
+        'cos(x)^4', 'sen(x)^2 cos(x)^2', 'x^2 sqrt(x^2+1)', 'sqrt(x)/(1+sqrt(x))', 'sqrt(1+3x)', 'x/(x^2+1)^3', '1/(x sqrt(4-x^2))', 'x^2/sqrt(4-x^2)', 'sqrt(9-x^2)', 'sen(x)^3 cos(x)^2',
+        'cos(2x)^3', 'x^2 sqrt(x+2)', '1/(e^x+e^(-x))', 'e^(2x)/(1+e^x)', '(x+1)/sqrt(x)', 'x^3/(x^2+1)^2', '1/(x^2+1)^2', 'cosec(x)', 'sen(x)^4', 'sqrt(x) ln(x)', '1/(x sqrt(x^2+4))', 'e^(cbrt(x))', 'x/(x^2+2x+2)^2'];
+      for (const fx of libro) {
+        const x = DerC.integral({ f: fx });
+        if (!x.F) { mal(`Derivadas · ∫ ${fx}: no encuentra la primitiva`); continue; }
+        let ok = 0;
+        for (const t of [0.35, 0.7, 1.4, 1.9, 2.6]) { const h = 1e-5, d = (x.Ff(t + h) - x.Ff(t - h)) / (2 * h), v = x.f(t); if (isFinite(d) && isFinite(v)) { ok++; if (Math.abs(d - v) > 1e-5 * Math.max(1, Math.abs(v))) mal(`Derivadas · ∫ ${fx}: F′(${t}) = ${d}, f(${t}) = ${v}`); } }
+        if (ok < 2) mal(`Derivadas · ∫ ${fx}: no hay puntos donde comprobar`);
+      }
+      // sin primitiva elemental: se dice y no se inventa nada, y con límites sale el valor numérico
+      for (const [fx, nom] of [['e^(-x^2)', 'erf'], ['sen(x)/x', 'Si'], ['cos(x)/x', 'Ci'], ['1/ln(x)', 'li'], ['e^x/x', 'Ei'], ['sen(x^2)', 'S'], ['e^(x^2)', 'erfi']]) {
+        const x = DerC.integral({ f: fx });
+        if (x.F || x.noElemental !== nom || !x.pasos.some((q) => /no tiene primitiva elemental/.test(q.html))) mal(`Derivadas · ∫ ${fx}: debería decir que no tiene primitiva elemental (${nom}): ${x.noElemental}`);
+      }
+      cerca(DerC.integral({ f: 'sen(x)/x', a: '1', b: '2' }).val, 0.6593299064, 1e-8, '∫₁² sen x / x numérica');
+      // DE-2: valor absoluto, partido en sus ceros, con Barrow exacto
+      for (const [fx, a, b, v, trozos] of [['abs(x)', '-1', '2', 2.5, 2], ['abs(x^2-1)', '-2', '2', 4, 3], ['abs(x-1)+x', '0', '3', 7, 2], ['abs(sen(x))', '0', '2pi', 4, 2], ['abs(x)', '2', '-1', -2.5, 2]]) {
+        const x = DerC.integral({ f: fx, a, b });
+        cerca(x.val, v, 1e-9, `∫ ${fx} de ${a} a ${b}`);
+        if (x.trozos !== trozos || !x.pasos.some((q) => q.t === 'Valor absoluto')) mal(`Derivadas · ∫ ${fx}: debería partirse en ${trozos} trozos (${x.trozos})`);
+      }
+    }
     // integrales definidas
     cerca(r('partes').val, Math.E - 2, 1e-12, '∫₀¹ x² eˣ'); cerca(r('sustitucion').val, (Math.E - 1) / 2, 1e-12, '∫₀¹ x e^(x²)');
     cerca(r('racional').val, Math.log(63 / 5), 1e-12, '∫₂⁴ racional'); cerca(r('arcotangente').val, Math.PI / 8, 1e-12, '∫₀² 1/(x² + 4)');
@@ -67,6 +92,7 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       const { page, consola } = await pagina(browser, 1200, 900);
       await page.goto('file://' + path.join(publico, 'matematicas', 'derivadas', 'index.html'));
       await page.waitForFunction(() => window.DerivadasApp);
+      await require('./comun/exportar.js')(page, mal, 'derivadas', { lienzo: '#grafica', datos: false });
       const antes = fallos;
       const verD = (await page.locator('#ver').textContent()).trim();
       if (verD !== Version.de('derivadas').current) mal(`Derivadas: la página muestra la versión «${verD}», se esperaba ${Version.de('derivadas').current}`);

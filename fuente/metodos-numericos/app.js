@@ -17,7 +17,7 @@
     const muchas = filas.length > 40, ver = muchas ? [...filas.slice(0, 20), null, ...filas.slice(-10)] : filas;
     return `<table class="tabla-eco"><thead><tr>${cab.map((c) => `<th>${c}</th>`).join('')}</tr></thead><tbody>${ver.map((q) => q ? `<tr>${fila(q).map((c) => `<td>${c}</td>`).join('')}</tr>` : `<tr><td colspan="${cab.length}">… ${filas.length - 30} filas más …</td></tr>`).join('')}</tbody></table>`;
   };
-  Calculadora.monta({
+  const app = Calculadora.monta({
     C: MN, carpeta: 'metodos-numericos', app: 'MetodosNumericosApp',
     nota: 'Escribe las funciones como en la calculadora: x^3 - 2x - 5, cos x - x, e^(-x^2), sen x, ln(1+x), sqrt(x). Los números admiten coma decimal, 1e-6 y pi.',
     campos: (sc) => {
@@ -77,4 +77,15 @@
       integral: '<b>Curva</b>: f(x). <b>Zona sombreada</b>: los trapecios, cuya área es la regla de los trapecios. <b>Puntos</b>: los nodos.',
     }[s.modo] || `<b>Rojo</b>: Euler. <b>Morado</b>: Heun. <b>Azul discontinua</b>: Runge-Kutta 4.${s.ex ? ' <b>Gris ancha</b>: la solución exacta.' : ''}`),
   });
+  // PNG y datos de la gráfica: las filas de la tabla del método elegido
+  Herramienta.exportar('#grafica', { nombre: 'metodos-numericos', titulo: 'Métodos numéricos', etiqueta: 'la gráfica', datos: () => {
+    const s = app.resultado();
+    if (!s || !s.filas) return null;
+    if (s.modo === 'biseccion') return { cab: ['n', 'a', 'b', 'c', 'f(c)', '(b − a)/2'], filas: s.filas.map((q) => [q.n, q.a, q.b, q.c, q.fc, q.err]) };
+    if (s.modo === 'newton') return { cab: ['n', 'xₙ', 'f(xₙ)', 'f′(xₙ)', 'xₙ₊₁', 'error'], filas: s.filas.map((q) => [q.n, q.x, q.fx, q.dx, q.x1, q.err]) };
+    if (s.modo === 'secante') return { cab: ['n', 'xₙ₋₁', 'xₙ', 'f(xₙ)', 'xₙ₊₁', 'error'], filas: s.filas.map((q) => [q.n, q.xa, q.x, q.fx, q.x1, q.err]) };
+    if (s.modo === 'puntofijo') return { cab: ['n', 'xₙ', 'xₙ₊₁', 'error'], filas: s.filas.map((q) => [q.n, q.x, q.x1, q.err]) };
+    if (s.modo === 'integral') return { cab: ['i', 'xᵢ', 'f(xᵢ)'], filas: s.filas.map((q) => [q.i, q.x, q.y]) };
+    return { cab: ['n', 'xₙ', 'Euler', 'Heun', 'RK4', ...(s.ex ? ['exacta'] : [])], filas: s.filas.map((q) => [q.i, q.x, q.euler, q.heun, q.rk4, ...(s.ex ? [q.ex] : [])]) };
+  } });
 })();

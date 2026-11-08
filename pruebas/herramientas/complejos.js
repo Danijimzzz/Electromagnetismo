@@ -36,6 +36,7 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       const { page, consola } = await pagina(browser, 1200, 900);
       await page.goto('file://' + path.join(publico, 'matematicas', 'complejos', 'index.html'));
       await page.waitForFunction(() => window.ComplejosApp);
+      await require('./comun/exportar.js')(page, mal, 'complejos', { lienzo: '#plano', datos: false });
       const antes = fallos;
       const verC = (await page.locator('#ver').textContent()).trim();
       if (verC !== Version.de('complejos').current) mal(`Complejos: la página muestra la versión «${verC}», se esperaba ${Version.de('complejos').current}`);
