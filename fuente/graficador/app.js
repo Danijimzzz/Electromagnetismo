@@ -95,10 +95,11 @@
     pon(w.x.map((v) => v - dx), w.y.map((v) => v - dy));
   });
   for (const ev of ['pointerup', 'pointercancel']) c.addEventListener(ev, () => { arrastre = null; });
+  Herramienta.exportar(c, { nombre: 'graficador', titulo: 'Graficador de funciones', etiqueta: 'la gráfica', datos: () => { const s = app.resultado(); return s && s.tabla ? { cab: ['x', ...s.fun.map((q) => q.k + '(x)')], filas: s.tabla.map((q) => [q.x, ...q.v]) } : null; } });
   const bot = document.createElement('div');
   bot.className = 'controles';
   bot.innerHTML = '<button class="btn" type="button" data-z="0.5">Acercar</button><button class="btn" type="button" data-z="2">Alejar</button><button class="btn" type="button" data-z="auto">Altura automática</button><button class="btn" type="button" data-z="ini">Ventana inicial</button>';
-  c.after(bot);
+  (c._exporta ? c._exporta.barra : c).before(bot);
   bot.addEventListener('click', (e) => {
     const z = e.target.dataset.z; if (!z) return;
     if (z === 'auto') app.pon({ ymin: '', ymax: '' });

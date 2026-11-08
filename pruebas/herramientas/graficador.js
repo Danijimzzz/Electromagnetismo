@@ -44,7 +44,7 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     error({ f: 'x +* 2' }, 'una expresión mal escrita');
     if (fallos === antes) console.log(`  ✓ ${N}: ${C.ejemplos.length} ejemplos, asíntotas, extremos, cortes entre curvas, ventana y errores`);
   }
-  return Com.navegador({ publico, asignatura: 'matematicas', carpeta: 'graficador', nombre: N, app: 'GraficadorApp', C, pagina, mal, malo: { k: 'f', v: 'x +* 2' },
+  return Com.navegador({ publico, asignatura: 'matematicas', carpeta: 'graficador', nombre: N, app: 'GraficadorApp', C, pagina, mal, exportar: { lienzo: '#grafica', datos: true }, malo: { k: 'f', v: 'x +* 2' },
     // la rueda acerca la gráfica y cambia la ventana
     extra: async (page, m) => {
       await page.evaluate(() => GraficadorApp.abrirEjemplo('cubica'));

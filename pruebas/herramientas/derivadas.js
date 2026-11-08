@@ -92,6 +92,7 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       const { page, consola } = await pagina(browser, 1200, 900);
       await page.goto('file://' + path.join(publico, 'matematicas', 'derivadas', 'index.html'));
       await page.waitForFunction(() => window.DerivadasApp);
+      await require('./comun/exportar.js')(page, mal, 'derivadas', { lienzo: '#grafica', datos: false });
       const antes = fallos;
       const verD = (await page.locator('#ver').textContent()).trim();
       if (verD !== Version.de('derivadas').current) mal(`Derivadas: la página muestra la versión «${verD}», se esperaba ${Version.de('derivadas').current}`);

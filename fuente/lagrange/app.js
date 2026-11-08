@@ -111,5 +111,6 @@
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('lagrange').current;
   colores(); formulario(); calcula();
+  Herramienta.exportar('#grafica', { nombre: 'lagrange', titulo: 'Multiplicadores de Lagrange', etiqueta: 'las curvas de nivel', datos: () => sol && sol.puntos && sol.puntos.length ? { cab: [...sol.V, 'λ', 'f', 'tipo'], filas: sol.puntos.map((q) => [...q.p, q.singular ? '—' : q.lambda, q.valor, q.tipo]) } : null });
   window.LagrangeApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { max: sol.max, min: sol.min, n: sol.puntos.length }, estado: () => copia(sc) };
 })();

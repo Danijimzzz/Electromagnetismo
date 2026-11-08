@@ -87,5 +87,6 @@
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('series').current;
   colores(); formulario(); calcula();
+  Herramienta.exportar('#grafica', { nombre: 'convergencia-de-series', titulo: 'Convergencia de series', etiqueta: 'las sumas parciales', datos: () => sol && sol.parciales ? { cab: ['n', 'suma parcial'], filas: sol.parciales.map((s, i) => [sol.n0 + i, s]) } : null });
   window.SeriesApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { veredicto: sol.veredicto, suma: sol.suma }, estado: () => copia(sc) };
 })();

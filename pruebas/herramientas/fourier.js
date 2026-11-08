@@ -39,6 +39,7 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       const { page, consola } = await pagina(browser, 1200, 900);
       await page.goto('file://' + path.join(publico, 'matematicas', 'fourier', 'index.html'));
       await page.waitForFunction(() => window.FourierApp);
+      await require('./comun/exportar.js')(page, mal, 'fourier', { lienzo: '#grafica', datos: true });
       const antes = fallos;
       const verF = (await page.locator('#ver').textContent()).trim();
       if (verF !== Version.de('fourier').current) mal(`Fourier: la página muestra la versión «${verF}», se esperaba ${Version.de('fourier').current}`);

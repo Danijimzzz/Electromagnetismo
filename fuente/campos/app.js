@@ -400,5 +400,6 @@
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('campos').current;
   formulario(); colores(); calcula(); requestAnimationFrame(bucle);
+  Herramienta.exportar('#grafica', { nombre: 'campos-vectoriales', titulo: 'Campos vectoriales', etiqueta: 'el campo' });
   window.CamposApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { modo: sol.modo, g0: sol.g0, du: sol.du, div: sol.div, rot0: sol.rot0, phi: sol.phi, phiTxt: sol.phiTxt, W: sol.W, I: sol.I, cm: sol.cm, circula: sol.circula, dobleR: sol.dobleR, flujo: sol.flujo, dobleD: sol.dobleD, rotFlujo: sol.rotFlujo, vol: sol.vol }, estado: () => copia(sc) };
 })();

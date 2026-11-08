@@ -257,5 +257,6 @@
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('edos').current;
   formulario(); colores(); calcula(); requestAnimationFrame(bucle);
+  Herramienta.exportar('#grafica', { nombre: 'ecuaciones-diferenciales', titulo: 'Ecuaciones diferenciales', etiqueta: 'la solución', datos: () => sol && sol.eul ? { cab: ['x', 'y (Euler)'], filas: sol.eul.map((q) => [q.x, q.y]) } : null });
   window.EDOsApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { modo: sol.modo, yEu: sol.yEu, yRK: sol.yRK, yEx: sol.yEx, txt: sol.exacta?.txt ?? sol.txt ?? sol.sol?.xTxt, puntos: sol.puntos?.map((q) => q.tp.nom) }, estado: () => copia(sc) };
 })();

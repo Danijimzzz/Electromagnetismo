@@ -41,5 +41,5 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     if (C.resolver({ modo: 'newton', fx: 'x^2 + 1', x0: '1', tol: '1e-10', nmax: '30' }).conv) mal(`${N}: x² + 1 no tiene raíz y Newton no debería converger`);
     if (fallos === antes) console.log(`  ✓ ${N}: ${C.ejemplos.length} ejemplos calculados a mano (bisección, Newton, secante, punto fijo, trapecios, Simpson, Euler, Heun y RK4) y errores`);
   }
-  return Com.navegador({ publico, asignatura: 'matematicas', carpeta: 'metodos-numericos', nombre: N, app: 'MetodosNumericosApp', C, pagina, mal, malo: { k: 'fx', v: 'x^2 +' } });
+  return Com.navegador({ publico, asignatura: 'matematicas', carpeta: 'metodos-numericos', nombre: N, app: 'MetodosNumericosApp', C, pagina, mal, exportar: { lienzo: '#grafica', datos: true }, malo: { k: 'fx', v: 'x^2 +' } });
 };

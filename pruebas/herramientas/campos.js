@@ -64,6 +64,7 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       const { page, consola } = await pagina(browser, 1200, 900);
       await page.goto('file://' + path.join(publico, 'matematicas', 'campos', 'index.html'));
       await page.waitForFunction(() => window.CamposApp);
+      await require('./comun/exportar.js')(page, mal, 'campos', { lienzo: '#grafica', datos: false });
       const antes = fallos;
       const verC = (await page.locator('#ver').textContent()).trim();
       if (verC !== Version.de('campos').current) mal(`Campos: la página muestra la versión «${verC}», se esperaba ${Version.de('campos').current}`);

@@ -48,6 +48,7 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       const { page, consola } = await pagina(browser, 1200, 900);
       await page.goto('file://' + path.join(publico, 'matematicas', 'taylor', 'index.html'));
       await page.waitForFunction(() => window.TaylorApp);
+      await require('./comun/exportar.js')(page, mal, 'taylor', { lienzo: '#grafica', datos: true });
       const antes = fallos;
       const verT = (await page.locator('#ver').textContent()).trim();
       if (verT !== Version.de('taylor').current) mal(`Taylor: la página muestra la versión «${verT}», se esperaba ${Version.de('taylor').current}`);

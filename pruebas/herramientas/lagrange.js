@@ -58,6 +58,7 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     const { page, consola } = await pagina(browser, 1200, 900);
     await page.goto('file://' + path.join(publico, 'matematicas', 'lagrange', 'index.html'));
     await page.waitForFunction(() => window.LagrangeApp);
+    await require('./comun/exportar.js')(page, mal, 'lagrange', { lienzo: '#grafica', datos: true });
     const antes = fallos;
     const ver = (await page.locator('#ver').textContent()).trim();
     if (ver !== Version.de('lagrange').current) mal(`Lagrange: la página muestra la versión «${ver}», se esperaba ${Version.de('lagrange').current}`);

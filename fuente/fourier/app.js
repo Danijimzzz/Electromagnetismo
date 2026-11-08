@@ -179,5 +179,7 @@
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('fourier').current;
   formulario(); colores(); calcula(); requestAnimationFrame(bucle);
+  Herramienta.exportar('#grafica', { nombre: 'fourier', titulo: 'Serie de Fourier', etiqueta: 'Fourier', datos: () => sol && sol.an ? { cab: ['n', 'aₙ', 'bₙ'], filas: sol.an.map((a, n) => [n, a, sol.bn[n]]) } : null });
+  Herramienta.exportar('#espectro', { nombre: 'fourier-espectro', titulo: 'Espectro de la serie', etiqueta: 'espectro', datos: () => sol && sol.an ? { cab: ['n', 'amplitud', 'aₙ', 'bₙ'], filas: sol.an.map((a, n) => [n, n ? Math.hypot(a, sol.bn[n]) : Math.abs(a / 2), a, sol.bn[n]]) } : null });
   window.FourierApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { an: sol.an, bn: sol.bn, sx0: sol.sx0, gA: sol.gA, gB: sol.gB }, estado: () => copia(sc), armonicos: (n) => { k = Math.max(1, Math.min(sol ? sol.N : 1, n)); $('#armonicos').value = k; pintaK(); dibuja(); } };
 })();

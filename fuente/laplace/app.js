@@ -262,5 +262,7 @@
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('laplace').current;
   formulario(); colores(); calcula(); requestAnimationFrame(bucle);
+  Herramienta.exportar('#grafica', { nombre: 'transformada-de-laplace', titulo: 'Transformada de Laplace', etiqueta: 'f(t)' });
+  Herramienta.exportar('#plano', { nombre: 'plano-s', titulo: 'Plano s: polos y ceros', etiqueta: 'el plano s' });
   window.LaplaceApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { modo: sol.modo, txt: sol.txt ?? sol.Ftxt, F: sol.Ffact, f1: sol.f(1), f2: sol.f(2), polos: sol.polos.map((q) => [q.p.re, q.p.im, q.m]) }, estado: () => copia(sc) };
 })();

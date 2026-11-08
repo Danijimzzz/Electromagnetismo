@@ -212,5 +212,6 @@
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('integrales-multiples').current;
   formulario(); colores(); calcula(); requestAnimationFrame(bucle);
+  Herramienta.exportar('#grafica', { nombre: 'integrales-multiples', titulo: 'Integrales múltiples', etiqueta: 'la región' });
   window.IntegralesMultiplesApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { modo: sol.modo, I: sol.I, exacto: sol.exacto, medida: sol.medida, media: sol.media, simb: sol.simb, completo: sol.completo }, estado: () => copia(sc) };
 })();
