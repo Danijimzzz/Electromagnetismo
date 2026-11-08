@@ -80,6 +80,13 @@
     <div class="card" id="c-tabla" hidden><h2>Tabla de verdad</h2><div class="tabla-scroll" id="tabla-res"></div></div>
     <div class="card" id="c-mapas"><h2>Mapa de Karnaugh</h2><div id="mapas"></div><p class="leyenda" id="ley-mapas"></p></div>
     <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
+    <div class="card" id="c-sec"><h2>Lógica secuencial: biestables y contadores</h2>
+      <p class="nota" style="margin:0 0 8px">Elige un biestable y un contador síncrono de 1 a 4 bits: salen sus tablas, las ecuaciones de entrada de cada biestable y la cuenta al dar pulsos de reloj.</p>
+      <div class="campos" id="sec-campos"></div>
+      <div id="sec-res" aria-live="polite"></div>
+      <div class="fila-btn"><button class="btn" id="sec-pulso" type="button">Pulso de reloj</button><button class="btn" id="sec-reinicio" type="button">Reiniciar a 0</button></div>
+      <p class="leyenda" id="sec-estado" role="status"></p>
+    </div>
   </div>
 </div>
 <section class="teoria">
@@ -92,6 +99,8 @@
   <p>Dos minitérminos que se diferencian en una sola variable se juntan (<i>A</i>·<i>B</i> + <i>A</i>·<i>B</i>′ = <i>A</i>). Es lo que hace un mapa de Karnaugh agrupando unos adyacentes y lo que automatiza el método de Quine-McCluskey. Las X (indiferentes) son combinaciones que no se dan o no importan: se usan como 1 si ayudan a agrupar. Para el producto de sumas se agrupan los ceros y se complementa el resultado.</p>
   <h2>Puertas lógicas</h2>
   <p>AND vale 1 si todas sus entradas valen 1; OR, si alguna vale 1; NOT invierte; NAND, NOR y XNOR son las negadas de AND, OR y XOR; XOR vale 1 si el número de entradas a 1 es impar. NAND y NOR son <b>universales</b>: con una sola de ellas se puede construir cualquier función.</p>
+  <h2>Solo NAND o solo NOR, riesgos y biestables</h2>
+  <p class="m">NAND y NOR son puertas universales: con dos capas de NAND se hace cualquier suma de productos y con dos de NOR cualquier producto de sumas (De Morgan). Un riesgo estático aparece cuando dos casillas vecinas con 1 las cubren grupos distintos del mapa: al cambiar la entrada puede saltar un pico a 0; se evita añadiendo el término de consenso. Un biestable guarda un bit: el D copia su entrada, el T la invierte si vale 1, el JK reúne a ambos y el SR no admite S = R = 1. Para un contador se escribe qué entradas necesita cada biestable en cada paso (tabla de excitación) y se simplifican con Karnaugh, con los estados no usados como indiferentes.</p>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Tablas de verdad y puertas lógicas <span id="ver"></span> (beta)</footer>
