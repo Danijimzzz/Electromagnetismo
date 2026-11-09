@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* ===== Iconos de la web instalable (PWA) =====
-   Rehace icono-192.png, icono-512.png y icono-maskable-512.png en esta carpeta a partir de ../icono.svg
+   Rehace icono-48.png, icono-96.png (iconos de Google), icono-192.png, icono-512.png y icono-maskable-512.png en esta carpeta a partir de ../icono.svg
    (portal.js los copia a publico/). Maskable = icono al 70 % sobre fondo liso, para que Android lo recorte a su gusto.
    Uso: node fuente/pwa/iconos.js   (necesita Playwright y Chromium) */
 const fs = require('fs'), path = require('path');
@@ -11,7 +11,7 @@ const maskable = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><r
 (async () => {
   const exe = process.env.CHROMIUM || (fs.existsSync('/opt/pw-browsers/chromium') ? '/opt/pw-browsers/chromium' : undefined);
   const b = await chromium.launch(exe ? { executablePath: exe } : {});
-  for (const [f, n, s] of [['icono-192.png', 192, svg], ['icono-512.png', 512, svg], ['icono-maskable-512.png', 512, maskable]]) {
+  for (const [f, n, s] of [['icono-48.png', 48, svg], ['icono-96.png', 96, svg], ['icono-192.png', 192, svg], ['icono-512.png', 512, svg], ['icono-maskable-512.png', 512, maskable]]) {
     const p = await b.newPage({ viewport: { width: n, height: n } });
     await p.setContent(`<style>html,body{margin:0;background:transparent}svg{display:block;width:${n}px;height:${n}px}</style>${s}`);
     fs.writeFileSync(path.join(__dirname, f), await p.screenshot({ omitBackground: true }));

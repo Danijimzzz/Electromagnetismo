@@ -25,6 +25,7 @@ html, body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.5 var
 a { color:inherit; text-decoration:none }
 .top { display:flex; align-items:center; gap:8px 20px; flex-wrap:wrap; padding:12px clamp(16px,3vw,28px); background:var(--panel); border-bottom:1px solid var(--line) }
 .logo { font:600 18px var(--f-math); white-space:nowrap } .logo i { color:var(--accent) }
+.secs { margin:32px 0 8px; padding:16px 20px; border:1px solid var(--line); border-radius:14px; background:var(--panel) } .secs h2 { margin:0 0 8px; font-size:16px } .secs ul { margin:0; padding:0; list-style:none; display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:6px 24px } .secs li { font-size:13.5px; color:var(--muted) } .secs a { color:var(--accent) } .secs a:hover { text-decoration:underline }
 .top nav { display:flex; gap:4px 14px; font-size:14px; color:var(--muted); overflow-x:auto; max-width:100%; scrollbar-width:none }
 .top nav a { white-space:nowrap; padding:2px 0 } .top nav a:hover, .top nav a[aria-current] { color:var(--ink) } .top nav a[aria-current] { font-weight:600 }
 .buscar { margin-left:auto; font:14px var(--f-ui); color:var(--ink); border:1px solid var(--line); border-radius:8px; padding:7px 12px; width:min(300px,100%); background:var(--bg) }
@@ -153,7 +154,10 @@ footer { text-align:center; font-size:12.5px; color:var(--muted); padding:0 16px
 // con anuncios.js activo, un hueco al final de las páginas de asignatura y del índice de fenómenos
 // (no en la portada, el foro ni las novedades)
 const CON_ANUNCIO = [...Catalogo.asignaturas.map((a) => a.clave), V.clave];
-function pagina({ titulo, desc, raiz, actual, cuerpo, buscar, script, pwa }) {
+// datos estructurados (schema.org) de una página: la miga Inicio › Página y, si se pasa, más cosas (portada: sitio, organización y secciones)
+const jsonld = (...cosas) => `<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@graph': cosas.flat() }).replace(/</g, '\\u003c')}</script>\n`;
+const miga = (...pasos) => ({ '@type': 'BreadcrumbList', itemListElement: [['Inicio', `${Catalogo.web}/`], ...pasos].map(([name, item], i) => ({ '@type': 'ListItem', position: i + 1, name, item })) });
+function pagina({ titulo, desc, raiz, actual, cuerpo, buscar, script, pwa, ld }) {
   const nav = [...Catalogo.asignaturas, V].map((a) => `<a href="${raiz}${a.clave}/"${a.clave === actual ? ' aria-current="page"' : ''}>${esc(a.corto || a.nombre)}</a>`).join('');
   return `<!doctype html>
 <html lang="es">
@@ -162,13 +166,15 @@ function pagina({ titulo, desc, raiz, actual, cuerpo, buscar, script, pwa }) {
 ${raiz === '' && Catalogo.google ? `<meta name="google-site-verification" content="${esc(Catalogo.google)}">\n` : ''}<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(titulo)}</title>
 <meta name="description" content="${esc(desc)}">
+<link rel="icon" href="${raiz}favicon.ico" sizes="48x48">
+<link rel="icon" type="image/png" href="${raiz}icono-96.png" sizes="96x96">
 <link rel="icon" type="image/svg+xml" href="${icono}">
 <link rel="apple-touch-icon" href="${raiz}apple-touch-icon.png">
 <meta property="og:title" content="${esc(titulo)}">
 <meta property="og:description" content="${esc(desc)}">
 <meta property="og:image" content="${Catalogo.web}/og.png">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="preconnect" href="https://fonts.googleapis.com">
+${ld || ''}<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
 ${Pwa.CABEZA(raiz)}
@@ -268,9 +274,18 @@ const ESPACIO = `(() => {
   if (q) q.addEventListener('input', () => { if (q.value.trim()) sec.setAttribute('data-q', ''); else sec.removeAttribute('data-q'); });
 })();`;
 
+const nTotal = Catalogo.asignaturas.reduce((n, a) => n + disponibles(a).length, 0);
+// secciones principales (portada: datos estructurados y bloque de enlaces con texto; los buscadores sacan de aquí los enlaces de sitio)
+const SECCIONES = [...Catalogo.asignaturas.map((a) => [a.nombre, `${a.clave}/`, a.resumen]),
+  [V.nombre, `${V.clave}/`, V.resumen], ['Foro', 'foro/', 'Pregunta dudas y comparte ejercicios con otros estudiantes (muy pronto).'], ['Novedades', 'novedades/', `Lo último que ha llegado a ${marca}, versión a versión.`]];
 const archivos = { 'index.html': pagina({
-  titulo: `${marca} · Simuladores y calculadoras por asignatura`,
-  desc: Catalogo.lema, raiz: '', buscar: true, script: BUSCAR + '\n' + ESPACIO, pwa: true,
+  titulo: `${marca} · Simuladores y calculadoras de ciencias gratis`,
+  desc: `${nTotal} simuladores y calculadoras en español, gratis y sin registro: ${Catalogo.asignaturas.map((a) => a.nombre).join(', ')}. Resuelve problemas paso a paso.`,
+  raiz: '', buscar: true, script: BUSCAR + '\n' + ESPACIO, pwa: true,
+  ld: jsonld(
+    { '@type': 'WebSite', '@id': `${Catalogo.web}/#sitio`, name: marca, alternateName: [`${marca} ciencias`, 'Simulaciencia'], url: `${Catalogo.web}/`, inLanguage: 'es', description: Catalogo.lema, publisher: { '@id': `${Catalogo.web}/#organizacion` } },
+    { '@type': 'Organization', '@id': `${Catalogo.web}/#organizacion`, name: marca, url: `${Catalogo.web}/`, logo: { '@type': 'ImageObject', url: `${Catalogo.web}/icono-512.png`, width: 512, height: 512 } },
+    SECCIONES.map(([name, url]) => ({ '@type': 'SiteNavigationElement', name, url: `${Catalogo.web}/${url}` }))),
   cuerpo: `<div class="lay">
 ${lado}
 <main>
@@ -280,6 +295,9 @@ ${lado}
 ${secciones}
 <p class="nada" id="nada" hidden>No hay ninguna herramienta con ese nombre todavía.</p>
 ${Pwa.BARRA}
+<nav class="secs" aria-label="Todas las secciones de ${marca}"><h2>Todas las secciones</h2><ul>
+${SECCIONES.map(([nombre, url, texto]) => `<li><a href="${url}"><b>${esc(nombre)}</b></a> <span>${esc(texto)}</span></li>`).join('\n')}
+</ul></nav>
 </main>
 </div>`,
 }) };
@@ -298,7 +316,8 @@ for (const a of Catalogo.asignaturas) {
 ${fen.map((f) => fichaFenomeno(f, '../')).join('\n')}
 </div></section>\n` : '';
   archivos[`${a.clave}/index.html`] = pagina({
-    titulo: `${a.nombre} · ${marca}`, desc: a.resumen, raiz: '../', actual: a.clave,
+    titulo: `Calculadoras y simuladores de ${a.nombre} · ${marca}`, desc: `${a.resumen} ${disponibles(a).length} herramientas gratis, en español y sin registro.`, raiz: '../', actual: a.clave,
+    ld: jsonld(miga([a.nombre, `${Catalogo.web}/${a.clave}/`]), { '@type': 'ItemList', name: `Herramientas de ${a.nombre}`, itemListElement: disponibles(a).map((h, i) => ({ '@type': 'ListItem', position: i + 1, name: h.nombre, url: `${Catalogo.web}/${a.clave}/${h.clave}/` })) }),
     cuerpo: `<main style="${estilo(a)}">
 <div class="crumb"><a href="../">Inicio</a> / ${esc(a.nombre)}</div>
 <h1>${esc(a.nombre)}</h1>
@@ -313,7 +332,8 @@ ${vida}<p class="otras">Otras asignaturas: ${otras}</p>
 
 // foro: de momento solo una página que avisa de que está en construcción
 archivos['foro/index.html'] = pagina({
-  titulo: `Foro · ${marca}`, desc: `El foro de ${marca} para preguntar dudas y compartir ejercicios llegará pronto.`, raiz: '../', actual: 'foro',
+  titulo: `Foro de ${marca} · Dudas y ejercicios entre estudiantes`, desc: `El foro de ${marca} para preguntar dudas de ciencias, ayudar a otros estudiantes y compartir ejercicios resueltos llegará pronto.`, raiz: '../', actual: 'foro',
+  ld: jsonld(miga(['Foro', `${Catalogo.web}/foro/`])),
   cuerpo: `<main style="--cl:#0d6b66;--co:#4dbcb0">
 <div class="crumb"><a href="../">Inicio</a> / Foro</div>
 <section class="obras"><span class="ico" aria-hidden="true">🚧</span>
@@ -342,7 +362,8 @@ archivos['foro/index.html'] = pagina({
   });
 })();`;
   archivos['fenomenos/index.html'] = pagina({
-    titulo: `${V.nombre} · ${marca}`, desc: V.resumen, raiz: '../', actual: V.clave, script: FILTRO,
+    titulo: `${V.nombre}: fenómenos explicados paso a paso · ${marca}`, desc: V.resumen, raiz: '../', actual: V.clave, script: FILTRO,
+    ld: jsonld(miga([V.nombre, `${Catalogo.web}/${V.clave}/`]), { '@type': 'ItemList', name: V.nombre, itemListElement: V.lista.filter((f) => f.disponible).map((f, i) => ({ '@type': 'ListItem', position: i + 1, name: f.nombre, url: `${Catalogo.web}/${V.clave}/${f.clave}/` })) }),
     cuerpo: `<main style="${estilo(V)}">
 <div class="crumb"><a href="../">Inicio</a> / ${esc(V.nombre)}</div>
 <h1>${esc(V.nombre)}</h1>
@@ -413,6 +434,7 @@ ${r.secciones.map((x) => `<section><h3><span>${x.icono}</span>${esc(x.titulo)}</
 ${rs.map(tarjeta).join('\n')}
 </div></div>`; }).join('\n');
   archivos['novedades/index.html'] = pagina({
+    ld: jsonld(miga(['Novedades', `${Catalogo.web}/novedades/`])),
     titulo: `Novedades · ${marca}`, desc: `Lo último que ha llegado a ${marca}: herramientas nuevas, mejoras y arreglos, versión a versión.`, raiz: '../', actual: 'novedades',
     cuerpo: `<main>
 <div class="crumb"><a href="../">Inicio</a> / Novedades</div>
@@ -460,7 +482,7 @@ fs.writeFileSync(vercel, JSON.stringify(conf, null, 2) + '\n');
 // para Google: la lista de páginas (sitemap.xml), dónde está (robots.txt) y, en cada página, su dirección principal
 // (canonical), para que la copia de Cloudflare no cuente como contenido duplicado. Las páginas de herramientas y
 // fenómenos las escribe herramientas.js, y Electrostática build.sh, con la misma etiqueta.
-const enlaces = ['', 'novedades/', ...Catalogo.asignaturas.flatMap((a) => [`${a.clave}/`, ...disponibles(a).map((h) => `${a.clave}/${h.clave}/`)]),
+const enlaces = ['', 'novedades/', 'foro/', ...Catalogo.asignaturas.flatMap((a) => [`${a.clave}/`, ...disponibles(a).map((h) => `${a.clave}/${h.clave}/`)]),
   'fenomenos/', ...V.lista.filter((f) => f.disponible).map((f) => `fenomenos/${f.clave}/`), 'aviso-legal.html', 'privacidad.html', 'cookies.html', 'contacto.html'];
 archivos['sitemap.xml'] = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${enlaces.map((e) => `  <url><loc>${Catalogo.web}/${e}</loc></url>`).join('\n')}\n</urlset>\n`;
 archivos['robots.txt'] = `User-agent: *\nAllow: /\n\nSitemap: ${Catalogo.web}/sitemap.xml\n`;
@@ -473,6 +495,11 @@ archivos['buscador.js'] = Buscador.archivo();
 archivos._headers = '/sw.js\n  Cache-Control: no-cache\n/manifest.webmanifest\n  Cache-Control: no-cache\n'; // Cloudflare (Vercel: vercel.json)
 archivos['manifest.webmanifest'] = Pwa.manifiesto(); archivos['sw.js'] = Pwa.sw(); archivos['pwa.js'] = Pwa.cliente(); archivos['offline.html'] = Pwa.offline();
 for (const [f] of Pwa.ICONOS) fs.copyFileSync(path.join(__dirname, 'pwa', f), path.join(publico, f));
+// icono de las búsquedas de Google: múltiplo de 48 px (48 y 96) y favicon.ico (un .ico con el PNG de 48 px dentro)
+fs.copyFileSync(path.join(__dirname, 'pwa', 'icono-96.png'), path.join(publico, 'icono-96.png'));
+{ const png = fs.readFileSync(path.join(__dirname, 'pwa', 'icono-48.png')), cab = Buffer.alloc(22);
+  cab.writeUInt16LE(1, 2); cab.writeUInt16LE(1, 4); cab[6] = 48; cab[7] = 48; cab.writeUInt16LE(1, 10); cab.writeUInt16LE(32, 12); cab.writeUInt32LE(png.length, 14); cab.writeUInt32LE(22, 18);
+  archivos['favicon.ico'] = Buffer.concat([cab, png]); }
 archivos['llama.js'] = Llama.archivo();
 // datos del contador de visitas (worker/contador.mjs): herramientas válidas y webs que pueden contar
 fs.mkdirSync(path.join(__dirname, '..', 'worker'), { recursive: true });
