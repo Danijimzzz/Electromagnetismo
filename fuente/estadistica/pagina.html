@@ -6,11 +6,11 @@
 <style>
 :root {
   --alto-grafica: clamp(220px, 34vw, 300px);
-  --area: rgba(107,63,160,.28); --curva: #1a2128 }
+  --area: rgba(107,63,160,.28); --curva: #1a2128; --curva2: #a8450f }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --area: rgba(184,146,236,.32); --curva: #e3e8ee } }
+  --area: rgba(184,146,236,.32); --curva: #e3e8ee; --curva2: #f2a56b } }
 :root[data-theme="dark"] {
-  --area: rgba(184,146,236,.32); --curva: #e3e8ee }
+  --area: rgba(184,146,236,.32); --curva: #e3e8ee; --curva2: #f2a56b }
 #grafica { cursor: ew-resize; touch-action: pan-y }
 #res { display: block; font: 26px var(--f-math); padding: 2px 0 } .res small { font: 14px var(--f-ui); color: var(--muted); margin-left: 10px }
 </style>
@@ -28,7 +28,7 @@
     <p class="error" id="error" hidden></p>
   </div>
   <div>
-    <div class="card"><h2>Resultado</h2><div class="res" id="res"></div><canvas id="grafica" aria-label="Gráfica de la distribución con el área sombreada"></canvas><p class="nota">Arrastra sobre la gráfica para mover a, b o c.</p></div>
+    <div class="card"><h2>Resultado</h2><div class="res" id="res"></div><canvas id="grafica" aria-label="Gráfica de la distribución con el área sombreada"></canvas><p class="nota" id="nota-grafica">Arrastra sobre la gráfica para mover a, b o c.</p><button type="button" class="btn" id="otra" hidden>Otra simulación</button></div>
     <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
   </div>
 </div>
@@ -48,6 +48,14 @@
   <p>La F de Snedecor con d₁ y d₂ grados de libertad es el cociente de dos χ² divididas por sus grados de libertad. Se usa para comparar dos varianzas y en el análisis de la varianza. Cumple F<sub>d₁, d₂; 1−α</sub> = 1/F<sub>d₂, d₁; α</sub>, que es como se sacan de las tablas los valores de la cola izquierda.</p>
   <h2>Uniforme y exponencial</h2>
   <p>En la uniforme U(a, b) todos los tramos de la misma longitud tienen la misma probabilidad: media (a + b)/2 y varianza (b − a)²/12. La exponencial de tasa λ mide el tiempo hasta un suceso; tiene media 1/λ y no tiene memoria.</p>
+  <h2>Aproximaciones y corrección de continuidad</h2>
+  <p>Una binomial con np ≥ 5 y nq ≥ 5 se parece a la normal N(np, √(npq)), y una Poisson con λ ≥ 10 a N(λ, √λ). Como la normal es continua y la otra va a saltos, cada entero k se cambia por el tramo de k − 0,5 a k + 0,5: es la corrección de continuidad. La herramienta pone juntas la probabilidad exacta, la aproximada con y sin corrección y el error de cada una. Con n ≥ 30 y p ≤ 0,1 la binomial se aproxima por una Poisson de λ = np, y una hipergeométrica en la que se saca menos del 10 % de la población, por una binomial.</p>
+  <p class="f m">$P(a ≤ X ≤ b) ≈ Φ({b + 0,5 − μ}/σ) − Φ({a − 0,5 − μ}/σ)$</p>
+  <h2>Teorema central del límite</h2>
+  <p>Si se toman muestras de n valores de cualquier distribución con media μ y desviación típica σ, la media de cada muestra tiene media μ y desviación típica σ/√n, y cuando n crece su distribución se acerca a una normal aunque la de partida no lo sea. Por eso la normal aparece en los intervalos de confianza y los contrastes. Elige «Teorema central del límite» en «Qué calcular» para ver el histograma de las medias de 2000 muestras simuladas junto a la campana que predice el teorema.</p>
+  <p class="f m">$X̄ ≈ N(μ, σ/√n)$</p>
+  <h2>Comparar dos distribuciones</h2>
+  <p>Con «Comparar con» se dibuja encima una segunda distribución, a trazos si es continua y con puntos si es discreta: sirve para ver cómo la t de Student se acerca a la normal al subir los grados de libertad, cómo cambia una normal con su σ o lo bien que una normal sigue a una binomial.</p>
   <h2>Valores críticos</h2>
   <p>Para un nivel de significación α, el valor crítico bilateral c deja α/2 en cada cola: P(−c ≤ Z ≤ c) = 1 − α. Con α = 0,05, z<sub>α/2</sub> = 1,96. El unilateral deja toda α en una cola: z<sub>α</sub> = 1,645 para α = 0,05. La χ² y la F no son simétricas, así que en el bilateral hacen falta dos valores distintos.</p>
   <h2>Hallar μ o σ</h2>
