@@ -29,9 +29,13 @@ const Iones = (() => {
 
   // «Al2(SO4)3» → { cat: 'Al', nCat: 2, an: 'SO4', nAn: 3, qCat: 3, qAn: -2 }; la carga del catión sale del equilibrio con el anión
   function ionizar(texto) {
-    const t = limpia(texto);
+    let t = limpia(texto);
+    // los acetatos se escriben también con el anión delante: CH3COONa, (CH3COO)2Ca → NaCH3COO, Ca(CH3COO)2
+    const ac = /^(?:CH3COO|\(CH3COO\)(\d+))([A-Z][a-z]?\d?|NH4)$/.exec(t);
+    if (ac && ac[2] !== 'H') t = ac[1] ? `${ac[2]}(CH3COO)${ac[1]}` : `${ac[2]}CH3COO`;
     for (const an of Object.keys(ANIONES).sort((a, b) => b.length - a.length)) for (const cat of CATIONES.sort((a, b) => b.length - a.length)) {
-      const re = new RegExp(`^${esc(cat)}(\\d*)\\(?${esc(an)}\\)?(\\d*)$`), m = re.exec(t);
+      // el catión también puede ir entre paréntesis: (NH4)2CO3, (NH4)2SO4
+      const re = new RegExp(`^(?:${esc(cat)}|\\(${esc(cat)}\\))(\\d*)\\(?${esc(an)}\\)?(\\d*)$`), m = re.exec(t);
       if (!m || (cat === 'H' && (an === 'O' || an === 'S' && false))) continue;
       const nCat = +(m[1] || 1), nAn = +(m[2] || 1), q = (-ANIONES[an] * nAn) / nCat;
       if (Number.isInteger(q) && q >= 1 && q <= 4 && (cat !== 'NH4' || q === 1) && (cat !== 'Hg2' || q === 2)) {

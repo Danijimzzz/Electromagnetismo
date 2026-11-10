@@ -75,7 +75,10 @@ const Ajustador = (() => {
       ionica = I.neta(conEstado);
       pasos.push({ t: 'Ecuación iónica completa', html: `Los electrolitos fuertes disueltos (sales solubles, ácidos y bases fuertes) se escriben como iones; los sólidos, líquidos, gases y electrolitos débiles, enteros:<br>${ionica.htmlCompleta}` });
       pasos.push({ t: 'Iones espectadores', html: ionica.espectadores.length ? `Aparecen igual a los dos lados y no reaccionan: ${ionica.htmlEspectadores}.` : 'No hay iones que aparezcan igual a los dos lados.' });
-      pasos.push({ t: 'Ecuación iónica neta', html: ionica.hayNeta ? `<b>${ionica.htmlNeta}</b>` : 'No queda nada: todos los iones son espectadores, así que <b>no hay reacción neta</b> (no se forma ningún sólido, gas ni electrolito débil).' });
+      // F12.2: el ácido carbónico y el sulfuroso no se quedan en disolución: se descomponen y desprenden el gas
+      const inestable = [['H2CO3', 'carbónico', 'CO2'], ['H2SO3', 'sulfuroso', 'SO2']].find(([a]) => ionica.neta.P.some(([k]) => k === `${a}(aq)`));
+      const nota = inestable ? `<br>El ácido ${inestable[1]} es inestable y se descompone: ${I.html(`${inestable[0]}(aq)`)} <span class="flecha">→</span> ${I.html(`${inestable[2]}(g)`)} + ${I.html('H2O(l)')}, por eso se ven burbujas.` : '';
+      pasos.push({ t: 'Ecuación iónica neta', html: ionica.hayNeta ? `<b>${ionica.htmlNeta}</b>${nota}` : 'No queda nada: todos los iones son espectadores, así que <b>no hay reacción neta</b> (no se forma ningún sólido, gas ni electrolito débil).' });
     }
     return { html: aj.html, especies: sp, elementos, tabla, cargas, pasos, tipo, ionica };
   }
@@ -93,6 +96,7 @@ const Ajustador = (() => {
     { clave: 'precipitacion', nombre: 'Precipitación: nitrato de plata y cloruro de sodio', sc: { ecuacion: 'AgNO3 + NaCl -> AgCl + NaNO3' } },
     { clave: 'neutralizacion', nombre: 'Neutralización: ácido sulfúrico e hidróxido de sodio', sc: { ecuacion: 'H2SO4 + NaOH -> Na2SO4 + H2O' } },
     { clave: 'carbonato-acido', nombre: 'Carbonato de calcio con ácido clorhídrico', sc: { ecuacion: 'CaCO3 + HCl -> CaCl2 + CO2 + H2O' } },
+    { clave: 'carbonato-soluble', nombre: 'Carbonato de sodio con ácido clorhídrico (iónica neta)', sc: { ecuacion: 'Na2CO3 + HCl -> NaCl + CO2 + H2O' } },
     { clave: 'redox-ionica', nombre: 'Redox iónica: permanganato y hierro(II)', sc: { ecuacion: 'MnO4^- + Fe^2+ + H^+ -> Mn^2+ + Fe^3+ + H2O' } },
   ];
 

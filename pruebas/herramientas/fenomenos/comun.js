@@ -51,6 +51,17 @@ module.exports = async ({ path, publico, pagina, browser, mal, nombre, clave, no
   if (m.ancho > 390) falla(`a 390 px la página se sale (${m.ancho} px)`);
   if (m.fondo === 'rgb(238, 241, 238)') falla('el modo oscuro no cambia el fondo');
   if (!(m.alto >= 200)) falla(`la animación mide ${m.alto} px de alto en el móvil`);
+  // F12.5: con «reducir movimiento» no hay fundido entre pasos ni animación: el dibujo del paso nuevo queda fijo desde el primer fotograma
+  await page.emulateMedia({ colorScheme: 'dark', reducedMotion: 'reduce' });
+  await page.goto(url);
+  await page.waitForTimeout(300);
+  if ((await page.getAttribute('#play', 'aria-pressed')) === 'true') await page.click('#play');
+  const foto = () => page.evaluate(() => { const cv = document.querySelector('#escena'), t = document.createElement('canvas'); t.width = cv.width; t.height = cv.height; const g = t.getContext('2d', { willReadFrequently: true }); g.drawImage(cv, 0, 0); const d = g.getImageData(0, 0, t.width, t.height).data; let h = 0; for (let k = 0; k < d.length; k += 53) h = (h * 31 + d[k]) | 0; return h; });
+  await page.click('#sig');
+  await page.waitForTimeout(150);
+  const f1 = await foto();
+  await page.waitForTimeout(350);
+  if ((await foto()) !== f1) falla('con «reducir movimiento» el dibujo sigue cambiando tras pasar de paso (fundido o animación)');
   await page.close();
   if (consola.length) falla('consola del navegador:\n      ' + consola.join('\n      '));
   return fallos;
