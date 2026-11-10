@@ -1,7 +1,8 @@
 /* =====================================================================
-   Probabilidad (sin DOM): combinatoria, sucesos y teorema de Bayes.
+   Probabilidad (sin DOM): combinatoria, sucesos, teorema de Bayes, variable
+   aleatoria discreta y tabla de contingencia 2 × 2 de dos sucesos.
    La interfaz está en app.js y la prueba en pruebas/herramientas/probabilidad.js.
-     resolver(sc)   sc.modo = 'comb' | 'suc' | 'bayes' → { modo, res, pasos, … }
+     resolver(sc)   sc.modo = 'comb' | 'suc' | 'bayes' | 'va' | 'tabla' → { modo, res, pasos, … }
                     (res: [{ t, v, pr }], el resultado principal lleva pr);
                     lanza un Error con un mensaje para el usuario si falta algo
      ejemplos       [{ clave, nombre, sc }] para el desplegable y Mis ejercicios
@@ -219,7 +220,114 @@ const Probabilidad = (() => {
     return { modo: 'bayes', nb, obs, filas, pB, pN, res, pasos, may };
   }
 
+  /* ---------- Variable aleatoria discreta (EST.PR-1) ---------- */
+  // listas separadas por punto y coma o espacios (la coma es decimal); cada dato admite fracción y porcentaje
+  const lista = (s) => String(s ?? '').replace(/[−–]/g, '-').split(/[;\s]+/).filter(Boolean);
+  const leeFrac = (s) => { if (/%$/.test(s)) return leeNum(s.slice(0, -1)) / 100; if (/^[^/]+\/[^/]+$/.test(s)) { const [a, b] = s.split('/'); return leeNum(a) / leeNum(b); } return leeNum(s); };
+  function variable(sc) {
+    const tx = lista(sc.vax), tp = lista(sc.vap);
+    if (tx.length < 2) throw new Error('Escribe al menos dos valores de X separados por punto y coma (por ejemplo 0; 1; 2; 3)');
+    if (tx.length > 40) throw new Error('Son demasiados valores: como mucho 40');
+    if (tp.length !== tx.length) throw new Error(`Hay ${tx.length} valores y ${tp.length} probabilidades: tiene que haber una probabilidad por cada valor`);
+    const xs = tx.map((t) => { const v = leeFrac(t); if (!isFinite(v)) throw new Error(`«${t}» no es un valor de X: escribe números separados por punto y coma`); return v; });
+    if (new Set(xs).size !== xs.length) throw new Error('Hay valores de X repetidos: cada valor va una sola vez, con su probabilidad');
+    const hueco = tp.map((t, i) => (t === '?' || /^[a-zA-Z]$/.test(t) ? i : -1)).filter((i) => i >= 0);
+    if (hueco.length > 1) throw new Error('Solo puede quedar una probabilidad sin dar (escrita como ?)');
+    const ps = tp.map((t, i) => {
+      if (i === hueco[0]) return 0;
+      const v = leeFrac(t);
+      if (!isFinite(v)) throw new Error(`«${t}» no es una probabilidad: escribe 0,3, 30 % o 3/10`);
+      if (v < 0 || v > 1) throw new Error(`Una probabilidad no puede valer ${p(v)}: todas están entre 0 y 1`);
+      return v;
+    });
+    const pasos = [];
+    let suma = ps.reduce((a, b) => a + b, 0);
+    if (hueco.length) {
+      const k = 1 - suma;
+      if (k < -1e-9) throw new Error(`Las probabilidades dadas ya suman ${p(suma)}, más que 1: no queda nada para la que falta`);
+      ps[hueco[0]] = Math.max(0, k);
+      pasos.push({ t: 'La probabilidad que falta', html: `Todas tienen que sumar 1: $P(X = ${f(xs[hueco[0]])}) = 1 − ${p(suma)} = ${p(ps[hueco[0]])}$` });
+      suma = 1;
+    } else if (Math.abs(suma - 1) > 1e-6) throw new Error(`Las probabilidades tienen que sumar 1 y suman ${p(suma)}`);
+    // ordenadas por x
+    const orden = xs.map((x, i) => ({ x, p: ps[i] })).sort((a, b) => a.x - b.x);
+    let ac = 0; for (const o of orden) { ac += o.p; o.F = Math.min(1, ac); } orden[orden.length - 1].F = 1;
+    const mu = orden.reduce((a, o) => a + o.x * o.p, 0), m2 = orden.reduce((a, o) => a + o.x * o.x * o.p, 0);
+    const v = Math.max(0, orden.reduce((a, o) => a + (o.x - mu) ** 2 * o.p, 0)), sd = Math.sqrt(v);
+    const pmax = Math.max(...orden.map((o) => o.p)), modas = orden.filter((o) => Math.abs(o.p - pmax) < 1e-12).map((o) => o.x);
+    // mediana: el primer valor con F ≥ 0,5; si F vale justo 0,5 ahí, el punto medio con el siguiente
+    const im = orden.findIndex((o) => o.F >= 0.5 - 1e-12), med = Math.abs(orden[im].F - 0.5) < 1e-12 && orden[im + 1] ? (orden[im].x + orden[im + 1].x) / 2 : orden[im].x;
+    const n = (x) => f(x, 5), par = (x) => (x < 0 ? `(${n(x)})` : n(x));
+    const corta = (ts) => (ts.length > 8 ? [...ts.slice(0, 4), '…', ...ts.slice(-2)] : ts).join(' + ');
+    pasos.unshift({ t: 'Función de probabilidad', html: `X toma ${orden.length} valores; sus probabilidades son todas positivas o cero y suman $${p(suma)}$, así que es una función de probabilidad válida.` });
+    pasos.push({ t: 'Esperanza', html: `$E[X] = μ = ∑ x_i·p_i = ${corta(orden.map((o) => `${par(o.x)}·${p(o.p)}`))} = ${n(mu)}$` });
+    pasos.push({ t: 'Varianza', html: `$E[X^2] = ∑ x_i^2·p_i = ${corta(orden.map((o) => `${par(o.x)}^2·${p(o.p)}`))} = ${n(m2)}$ y $"Var"(X) = E[X^2] − μ^2 = ${n(m2)} − ${par(mu)}^2 = ${n(v)}$` });
+    pasos.push({ t: 'Desviación típica', html: `$σ = √{"Var"(X)} = √{${n(v)}} = ${n(sd)}$` });
+    pasos.push({ t: 'Función de distribución', html: `$F(x) = P(X ≤ x)$ acumula las probabilidades y sube a saltos en cada valor: ${(orden.length > 8 ? [...orden.slice(0, 4), null, ...orden.slice(-2)] : orden).map((o) => (o ? `$F(${n(o.x)}) = ${p(o.F)}$` : '…')).join(', ')}. Vale 0 antes de $${n(orden[0].x)}$ y 1 desde $${n(orden[orden.length - 1].x)}$.` });
+    const res = [{ t: 'E[X] = μ', v: n(mu), pr: true }, { t: 'Var(X)', v: n(v), pr: true }, { t: 'σ', v: n(sd), pr: true }, { t: 'E[X²]', v: n(m2) }, { t: modas.length > 1 ? 'Modas' : 'Moda', v: modas.length === orden.length ? 'No hay: todos igual de probables' : modas.map((x) => n(x)).join('; ') }, { t: 'Mediana', v: n(med) }];
+    // probabilidades en un punto
+    let k = null, pk = null;
+    if (!vacio(sc.vak)) {
+      k = leeFrac(String(sc.vak).trim().replace(/[−–]/g, '-'));
+      if (!isFinite(k)) throw new Error('El valor de x en el que se calcula tiene que ser un número');
+      const men = orden.filter((o) => o.x < k - 1e-12).reduce((a, o) => a + o.p, 0), ig = orden.filter((o) => Math.abs(o.x - k) <= 1e-12).reduce((a, o) => a + o.p, 0);
+      pk = { menor: men, igual: ig, menorIgual: men + ig, mayor: Math.max(0, 1 - men - ig), mayorIgual: Math.max(0, 1 - men) };
+      res.push({ t: `P(X ≤ ${n(k)})`, v: p(pk.menorIgual), pr: true }, { t: `P(X = ${n(k)})`, v: p(pk.igual) }, { t: `P(X < ${n(k)})`, v: p(pk.menor) }, { t: `P(X > ${n(k)})`, v: p(pk.mayor) }, { t: `P(X ≥ ${n(k)})`, v: p(pk.mayorIgual) });
+      pasos.push({ t: `Probabilidades en x = ${n(k)}`, html: `$P(X ≤ ${n(k)}) = F(${n(k)}) = ${p(pk.menorIgual)}$, $P(X < ${n(k)}) = ${p(pk.menor)}$ (sin contar el propio valor), $P(X > ${n(k)}) = 1 − F(${n(k)}) = ${p(pk.mayor)}$ y $P(X ≥ ${n(k)}) = 1 − P(X < ${n(k)}) = ${p(pk.mayorIgual)}$` });
+    }
+    // Y = aX + b
+    const a = vacio(sc.vaa) ? 1 : leeFrac(String(sc.vaa).trim().replace(/[−–]/g, '-')), b = vacio(sc.vab) ? 0 : leeFrac(String(sc.vab).trim().replace(/[−–]/g, '-'));
+    if (!isFinite(a) || !isFinite(b)) throw new Error('En Y = aX + b, a y b tienen que ser números');
+    let Y = null;
+    if (a !== 1 || b !== 0) {
+      Y = { a, b, mu: a * mu + b, v: a * a * v, sd: Math.abs(a) * sd };
+      res.push({ t: 'E[Y]', v: n(Y.mu), pr: true }, { t: 'Var(Y)', v: n(Y.v), pr: true }, { t: 'σ de Y', v: n(Y.sd) });
+      pasos.push({ t: 'Cambio lineal Y = aX + b', html: `Con $a = ${n(a)}$ y $b = ${n(b)}$: $E[Y] = a·E[X] + b = ${par(a)}·${par(mu)} + ${par(b)} = ${n(Y.mu)}$. La varianza no nota el desplazamiento y se multiplica por $a^2$: $"Var"(Y) = a^2·"Var"(X) = ${par(a)}^2·${n(v)} = ${n(Y.v)}$, y $σ_Y = |a|·σ = ${n(Y.sd)}$.` });
+    }
+    const tabla = { cab: ['x', 'P(X = x)', 'F(x)', 'x·p', 'x²·p'], filas: orden.map((o) => [n(o.x), p(o.p), p(o.F), n(o.x * o.p), n(o.x * o.x * o.p)]), pie: ['Suma', p(suma), '', n(mu), n(m2)] };
+    return { modo: 'va', xs: orden.map((o) => o.x), ps: orden.map((o) => o.p), F: orden.map((o) => o.F), mu, m2, v, sd, modas, med, k, pk, Y, tabla, res, pasos };
+  }
+
+  /* ---------- Tabla de contingencia 2 × 2 de dos sucesos (EST.PR-3) ---------- */
+  function contingencia(sc) {
+    // nombres de los sucesos: una letra lleva la barra del contrario (Ā); una palabra, «no …» y va como texto en las fórmulas
+    const limpia = (v, d) => String(v ?? '').replace(/["$<>{}]/g, '').trim() || d, na = limpia(sc.ta, 'A'), nb = limpia(sc.tb, 'B');
+    const no = (x) => (x.length > 1 ? `no ${x}` : `${x}̄`), nan = no(na), nbn = no(nb), M = (x) => (x.length > 1 ? `"${x}"` : x), ma = M(na), mb = M(nb), man = M(nan), mbn = M(nbn);
+    const celda = (k, nom) => {
+      if (vacio(sc[k])) throw new Error(`Falta la casilla de ${nom}`);
+      const v = leeFrac(String(sc[k]).trim().replace(/\s/g, '').replace(/[−–]/g, '-'));
+      if (!isFinite(v)) throw new Error(`La casilla de ${nom} debe ser un número (casos o probabilidad)`);
+      if (v < 0) throw new Error(`La casilla de ${nom} no puede ser negativa`);
+      return v;
+    };
+    const c = [[celda('t11', `${na} y ${nb}`), celda('t12', `${na} y no ${nb}`)], [celda('t21', `no ${na} y ${nb}`), celda('t22', `ni ${na} ni ${nb}`)]];
+    const N = c[0][0] + c[0][1] + c[1][0] + c[1][1];
+    if (!(N > 0)) throw new Error('La tabla está vacía: al menos una casilla tiene que ser mayor que cero');
+    const fA = c[0][0] + c[0][1], fB = c[0][0] + c[1][0], pa = fA / N, pb = fB / N, pi = c[0][0] / N, pu = pa + pb - pi;
+    const n = (x) => f(x, 6), prob = Math.abs(N - 1) < 1e-9, sobre = (x) => (prob ? p(x) : `{${n(x)}}/{${n(N)}}`);
+    const pasos = [
+      { t: 'Totales', html: prob ? `Las casillas ya son probabilidades y suman 1. Sumando filas y columnas: $P(${ma}) = ${p(c[0][0])} + ${p(c[0][1])} = ${p(pa)}$ y $P(${mb}) = ${p(c[0][0])} + ${p(c[1][0])} = ${p(pb)}$`
+        : `En total hay $N = ${n(N)}$ casos. Sumando filas y columnas: ${n(fA)} son de ${na} y ${n(fB)} son de ${nb}.` },
+      { t: 'Probabilidades de cada suceso', html: prob ? `$P(${man}) = 1 − ${p(pa)} = ${p(1 - pa)}$, $P(${mbn}) = 1 − ${p(pb)} = ${p(1 - pb)}$` : `Regla de Laplace, casos favorables entre casos posibles: $P(${ma}) = {${n(fA)}}/{${n(N)}} = ${p(pa)}$, $P(${mb}) = {${n(fB)}}/{${n(N)}} = ${p(pb)}$` },
+      { t: 'Intersección y unión', html: `$P(${ma} ∩ ${mb}) = ${sobre(c[0][0])}${prob ? '' : ` = ${p(pi)}`}$ (la casilla donde se cruzan) y $P(${ma} ∪ ${mb}) = P(${ma}) + P(${mb}) − P(${ma} ∩ ${mb}) = ${p(pa)} + ${p(pb)} − ${p(pi)} = ${p(pu)}$` },
+    ];
+    const res = [{ t: `P(${na})`, v: p(pa) }, { t: `P(${nb})`, v: p(pb) }, { t: `P(${na} ∩ ${nb})`, v: p(pi), pr: true }, { t: `P(${na} ∪ ${nb})`, v: p(pu), pr: true }];
+    const cond = [];
+    if (fB > 0) { res.push({ t: `P(${na} | ${nb})`, v: p(c[0][0] / fB), pr: true }); cond.push(`$P(${ma} | ${mb}) = {${n(c[0][0])}}/{${n(fB)}} = ${p(c[0][0] / fB)}$`); }
+    if (fA > 0) { res.push({ t: `P(${nb} | ${na})`, v: p(c[0][0] / fA), pr: true }); cond.push(`$P(${mb} | ${ma}) = {${n(c[0][0])}}/{${n(fA)}} = ${p(c[0][0] / fA)}$`); }
+    if (N - fB > 0) { res.push({ t: `P(${na} | ${nbn})`, v: p(c[0][1] / (N - fB)) }); cond.push(`$P(${ma} | ${mbn}) = {${n(c[0][1])}}/{${n(N - fB)}} = ${p(c[0][1] / (N - fB))}$`); }
+    if (N - fA > 0) { res.push({ t: `P(${nb} | ${nan})`, v: p(c[1][0] / (N - fA)) }); cond.push(`$P(${mb} | ${man}) = {${n(c[1][0])}}/{${n(N - fA)}} = ${p(c[1][0] / (N - fA))}$`); }
+    pasos.push({ t: 'Condicionadas', html: `Condicionar es quedarse con una sola fila o columna y dividir por su total: ${cond.join(', ')}` });
+    const indep = Math.abs(pi - pa * pb) < 1e-9;
+    pasos.push({ t: '¿Independientes?', html: `$P(${ma})·P(${mb}) = ${p(pa)}·${p(pb)} = ${p(pa * pb)}$ ${indep ? '=' : '≠'} $P(${ma} ∩ ${mb}) = ${p(pi)}$ ⇒ ${indep ? 'sí son independientes: las filas de la tabla son proporcionales' : 'no son independientes'}` });
+    res.push({ t: `P(${nan} ∩ ${nbn})`, v: p(c[1][1] / N) }, { t: '¿Independientes?', v: indep ? 'Sí' : 'No' });
+    const tabla = { cab: ['', nb, `No ${nb}`, 'Total'], filas: [[na, n(c[0][0]), n(c[0][1]), n(fA)], [`No ${na}`, n(c[1][0]), n(c[1][1]), n(N - fA)]], pie: ['Total', n(fB), n(N - fB), n(N)] };
+    return { modo: 'tabla', na, nb, c, N, pa, pb, pi, pu, indep, tabla, res, pasos };
+  }
+
   function resolver(sc) {
+    if (sc.modo === 'va') return variable(sc);
+    if (sc.modo === 'tabla') return contingencia(sc);
     if (sc.modo === 'suc') return sucesos(sc);
     if (sc.modo === 'bayes') return bayes(sc);
     return combinatoria(sc);
@@ -231,6 +339,8 @@ const Probabilidad = (() => {
     pa: '0,6', pb: '0,5', rel: 'union', pc: '0,85',
     nb: 'D', obs: 'si',
     filas: [{ n: 'Máquina 1', p: '0,5', l: '0,01' }, { n: 'Máquina 2', p: '0,3', l: '0,02' }, { n: 'Máquina 3', p: '0,2', l: '0,03' }, { n: '', p: '', l: '' }],
+    vax: '0; 1; 2; 3', vap: '1/8; 3/8; 3/8; 1/8', vak: '', vaa: '', vab: '',
+    ta: 'A', tb: 'B', t11: '30', t12: '20', t21: '15', t22: '35',
   });
   const ej = (clave, nombre, extra) => ({ clave, nombre, sc: { ...base(), ...extra } });
   const ejemplos = [
@@ -243,6 +353,11 @@ const Probabilidad = (() => {
     ej('independientes', 'Sucesos · A y B independientes', { modo: 'suc', pa: '0,5', pb: '0,4', rel: 'indep', pc: '' }),
     ej('fabrica', 'Bayes · Tres máquinas y piezas defectuosas', { modo: 'bayes' }),
     ej('diagnostico', 'Bayes · Prueba médica (enfermo / sano)', { modo: 'bayes', nb: '+', filas: [{ n: 'Enfermo', p: '0,01', l: '0,95' }, { n: 'Sano', p: '0,99', l: '0,05' }, { n: '', p: '', l: '' }, { n: '', p: '', l: '' }] }),
+    ej('caras', 'Variable aleatoria · Caras al lanzar tres monedas', { modo: 'va', vax: '0; 1; 2; 3', vap: '1/8; 3/8; 3/8; 1/8', vak: '1' }),
+    ej('dado', 'Variable aleatoria · Un dado y la ganancia Y = 2X − 5', { modo: 'va', vax: '1; 2; 3; 4; 5; 6', vap: '1/6; 1/6; 1/6; 1/6; 1/6; 1/6', vaa: '2', vab: '−5' }),
+    ej('incognita', 'Variable aleatoria · Falta una probabilidad', { modo: 'va', vax: '−1; 0; 2; 5', vap: '0,2; 0,35; ?; 0,15' }),
+    ej('encuesta', 'Tabla 2 × 2 · Deporte y tabaco en 100 personas', { modo: 'tabla', ta: 'Deporte', tb: 'Fuma', t11: '10', t12: '50', t21: '20', t22: '20' }),
+    ej('tabla-indep', 'Tabla 2 × 2 · Dos sucesos independientes', { modo: 'tabla', ta: 'A', tb: 'B', t11: '0,12', t12: '0,28', t21: '0,18', t22: '0,42' }),
     ej('sin-defecto', 'Bayes · Pieza sin defecto (suceso contrario)', { modo: 'bayes', obs: 'no' }),
   ];
 

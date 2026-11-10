@@ -32,6 +32,22 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     cerca(val('fabrica', 'P(Máquina 2 | D)'), 0.006 / 0.017, 1e-4, 'Bayes máquina 2');
     cerca(val('diagnostico', 'P(Enfermo | +)'), 0.0095 / 0.059, 1e-3, 'Bayes diagnóstico');
     cerca(val('sin-defecto', 'P(Máquina 1 | D̄)'), 0.495 / 0.983, 1e-4, 'Bayes con el suceso contrario');
+    // variable aleatoria discreta, a mano: caras en tres monedas, E = 1,5 y Var = 3·½·½ = 0,75
+    const va = (c) => r(c);
+    cerca(va('caras').mu, 1.5, 1e-12, 'esperanza de las caras'); cerca(va('caras').v, 0.75, 1e-12, 'varianza de las caras');
+    cerca(va('caras').pk.menorIgual, 0.5, 1e-12, 'P(X ≤ 1) de las caras'); cerca(va('caras').pk.mayorIgual, 0.875, 1e-12, 'P(X ≥ 1) de las caras'); cerca(va('caras').med, 1.5, 1e-12, 'mediana de las caras');
+    // un dado: E = 3,5, Var = 35/12; Y = 2X − 5: E = 2, Var = 4·35/12 = 35/3
+    cerca(va('dado').mu, 3.5, 1e-12, 'esperanza del dado'); cerca(va('dado').v, 35 / 12, 1e-12, 'varianza del dado');
+    cerca(va('dado').Y.mu, 2, 1e-12, 'E[2X − 5]'); cerca(va('dado').Y.v, 35 / 3, 1e-12, 'Var(2X − 5)'); cerca(va('dado').Y.sd, 2 * Math.sqrt(35 / 12), 1e-12, 'σ de 2X − 5');
+    // falta una probabilidad: 1 − 0,2 − 0,35 − 0,15 = 0,3; E = −0,2 + 0,6 + 0,75 = 1,15; E[X²] = 0,2 + 1,2 + 3,75 = 5,15
+    cerca(va('incognita').ps[2], 0.3, 1e-12, 'la probabilidad que falta'); cerca(va('incognita').mu, 1.15, 1e-12, 'esperanza con incógnita'); cerca(va('incognita').v, 5.15 - 1.15 ** 2, 1e-12, 'varianza con incógnita');
+    if (JSON.stringify(va('caras').F) !== JSON.stringify([0.125, 0.5, 0.875, 1])) mal('Probabilidad · F(x) de las caras: ' + va('caras').F);
+    // los valores desordenados se ordenan
+    cerca(C.resolver({ modo: 'va', vax: '3; 1; 2', vap: '0,5; 0,2; 0,3' }).F[0], 0.2, 1e-12, 'F con valores desordenados');
+    // tabla 2 × 2: 100 personas, 10 deporte y fuma, 50 deporte y no, 20 no deporte y fuma, 20 ninguno
+    cerca(va('encuesta').pa, 0.6, 1e-12, 'P(Deporte)'); cerca(va('encuesta').pb, 0.3, 1e-12, 'P(Fuma)'); cerca(va('encuesta').pu, 0.8, 1e-12, 'unión de la tabla');
+    cerca(val('encuesta', 'P(Deporte | Fuma)'), 0.3333, 1e-4, 'P(Deporte | Fuma)'); cerca(val('encuesta', 'P(Deporte | no Fuma)'), 0.7143, 1e-4, 'P(Deporte | no Fuma)');
+    if (va('encuesta').indep || !va('tabla-indep').indep) mal('Probabilidad · independencia en la tabla 2 × 2 mal decidida');
     // errores
     const mala = C.ejemplos.find((e) => e.clave === 'fabrica').sc;
     for (const [sc, q] of [
@@ -41,6 +57,13 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       [{ modo: 'suc', pa: '1,3', pb: '0,3', rel: 'indep' }, 'probabilidad mayor que 1'],
       [{ ...mala, filas: [{ n: 'a', p: '0,5', l: '0,1' }, { n: 'b', p: '0,3', l: '0,1' }] }, 'causas que no suman 1'],
       [{ ...mala, filas: [{ n: 'a', p: '1', l: '0,1' }] }, 'una sola causa'],
+      [{ modo: 'va', vax: '0; 1; 2', vap: '0,5; 0,5' }, 'más valores que probabilidades'],
+      [{ modo: 'va', vax: '0; 1', vap: '0,5; 0,6' }, 'probabilidades que no suman 1'],
+      [{ modo: 'va', vax: '0; 1; 2', vap: '?; ?; 0,6' }, 'dos probabilidades sin dar'],
+      [{ modo: 'va', vax: '0; 1; 2', vap: '0,7; 0,6; ?' }, 'las dadas ya pasan de 1'],
+      [{ modo: 'va', vax: '0; 0', vap: '0,5; 0,5' }, 'valores repetidos'],
+      [{ modo: 'tabla', t11: '0', t12: '0', t21: '0', t22: '0' }, 'tabla vacía'],
+      [{ modo: 'tabla', t11: '3', t12: '−1', t21: '2', t22: '4' }, 'casilla negativa'],
       [{ ...mala, filas: [{ n: 'a', p: '0,5', l: '0' }, { n: 'b', p: '0,5', l: '0' }] }, 'suceso imposible'],
     ]) {
       let ok = false; try { C.resolver(sc); } catch (e) { ok = true; }
@@ -48,7 +71,7 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     }
     const az = C.azar(), ra = C.resolver(az);
     cerca(ra.filas.reduce((a, x) => a + x.post, 0), 1, 1e-9, 'el ejercicio al azar suma 1');
-    if (fallos === antes) console.log(`  ✓ Probabilidad: ${C.ejemplos.length} ejemplos (combinatoria, sucesos, Bayes) y errores`);
+    if (fallos === antes) console.log(`  ✓ Probabilidad: ${C.ejemplos.length} ejemplos (combinatoria, sucesos, Bayes, variable aleatoria y tabla 2 × 2) y errores`);
   }
 
   return async (browser) => {
@@ -79,6 +102,17 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     await page.evaluate(() => ProbabilidadApp.abrirEjemplo('fabrica'));
     const pintado = await page.evaluate(() => { const c = document.querySelector('#grafica'), d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data; let n = 0; for (let i = 3; i < d.length; i += 4) if (d[i]) n++; return n; });
     if (pintado < 500) mal('Probabilidad: el diagrama de árbol sale en blanco');
+    // variable aleatoria: tabla con una fila por valor, gráfica pintada y la probabilidad que falta
+    await page.evaluate(() => ProbabilidadApp.abrirEjemplo('incognita'));
+    const va = await page.evaluate(() => { const n = document.querySelector('#grafica').toDataURL().length; return { n, filas: document.querySelectorAll('#tabla tbody tr').length, visible: !document.querySelector('#tarjeta-tabla').hidden, mu: document.querySelector('#resumen .pr b').textContent }; });
+    if (va.n < 6000 || va.filas !== 4 || !va.visible || va.mu !== '1,15') mal('Probabilidad: la variable aleatoria no sale bien en la página: ' + JSON.stringify(va));
+    await page.fill('#f-vap', '0,2; 0,35; 0,5; 0,15');
+    if (await page.locator('#error').isHidden()) mal('Probabilidad: probabilidades que no suman 1 no muestran el error');
+    // tabla 2 × 2: al cambiar el nombre del suceso cambian las cabeceras y los resultados
+    await page.evaluate(() => ProbabilidadApp.abrirEjemplo('encuesta'));
+    await page.fill('#f-tb', 'Bebe');
+    const tb = await page.evaluate(() => ({ cab: document.querySelectorAll('#casillas span')[1].textContent, res: document.querySelector('#resumen').textContent, tabla: document.querySelectorAll('#tabla tr').length }));
+    if (tb.cab !== 'Bebe' || !/P\(Deporte \| Bebe\)/.test(tb.res) || tb.tabla !== 4) mal('Probabilidad: la tabla 2 × 2 no sigue el nombre del suceso: ' + JSON.stringify(tb));
     // el modo práctica genera un ejercicio con enunciado
     await page.evaluate(() => ProbabilidadApp.azar());
     if (!/máquinas/.test(await page.evaluate(() => ProbabilidadApp.enunciado()))) mal('Probabilidad: el enunciado de práctica está vacío');

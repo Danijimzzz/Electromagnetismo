@@ -1,5 +1,5 @@
 <title>Probabilidad · Ciencify</title>
-<meta name="description" content="Combinatoria, probabilidad condicionada, probabilidad total y teorema de Bayes con el diagrama de árbol.">
+<meta name="description" content="Combinatoria, probabilidad condicionada, teorema de Bayes con el diagrama de árbol, variable aleatoria discreta (esperanza y varianza) y tablas 2 × 2.">
 <style>
 :root {
   --alto-grafica: clamp(240px, 36vw, 340px);
@@ -12,16 +12,21 @@
 .causas span { font: 500 12px var(--f-ui); color: var(--muted) }
 .causas .in { width: 100% }
 #resumen b { font-family: var(--f-math); font-size: 19px }
+.tabla-caja { overflow-x: auto }
+.tabla-caja table { border-collapse: collapse; font: 13.5px var(--f-ui); width: 100%; font-variant-numeric: tabular-nums }
+.tabla-caja th, .tabla-caja td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap }
+.tabla-caja th { font-weight: 600; color: var(--muted) } .tabla-caja th:first-child, .tabla-caja td:first-child { text-align: left }
+.tabla-caja tfoot td, .tabla-caja tfoot th { font-weight: 600; background: var(--accent-soft); color: var(--ink) }
 </style>
 <body>
 <header class="top"><a class="logo" href="../../">Cienci<i>fy</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Estadística</a> / Probabilidad</span></header>
 <div class="wrap">
 <h1>Probabilidad: combinatoria, sucesos y Bayes</h1>
-<p class="lead">Cuenta casos con variaciones, permutaciones y combinaciones, calcula la probabilidad de la unión, la intersección y la condicionada de dos sucesos, y resuelve problemas de probabilidad total y teorema de Bayes con el diagrama de árbol.</p>
+<p class="lead">Cuenta casos con variaciones, permutaciones y combinaciones, calcula la probabilidad de la unión, la intersección y la condicionada de dos sucesos, resuelve problemas de probabilidad total y teorema de Bayes con el diagrama de árbol, halla la esperanza y la varianza de una variable aleatoria discreta y lee una tabla 2 × 2 de dos sucesos.</p>
 <div class="layout">
   <div class="card">
     <h2>Datos</h2>
-    <div class="modos" role="tablist" aria-label="Qué se calcula"><button type="button" role="tab" data-modo="comb" aria-selected="true">Combinatoria</button><button type="button" role="tab" data-modo="suc" aria-selected="false">Sucesos</button><button type="button" role="tab" data-modo="bayes" aria-selected="false">Total y Bayes</button></div>
+    <div class="modos" role="tablist" aria-label="Qué se calcula"><button type="button" role="tab" data-modo="comb" aria-selected="true">Combinatoria</button><button type="button" role="tab" data-modo="suc" aria-selected="false">Sucesos</button><button type="button" role="tab" data-modo="bayes" aria-selected="false">Total y Bayes</button><button type="button" role="tab" data-modo="va" aria-selected="false">Variable aleatoria</button><button type="button" role="tab" data-modo="tabla" aria-selected="false">Tabla 2 × 2</button></div>
     <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
     <div class="campos" id="campos"></div>
     <p class="nota" id="nota"></p>
@@ -33,6 +38,7 @@
       <canvas id="grafica" aria-label="Diagrama de árbol o de áreas con las probabilidades"></canvas>
       <p class="leyenda" id="leyenda"></p>
     </div>
+    <div class="card" id="tarjeta-tabla" hidden><h2 id="titulo-tabla">Tabla</h2><div class="tabla-caja" id="tabla"></div></div>
     <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
   </div>
 </div>
@@ -52,6 +58,14 @@
   <p>Si las causas A₁, …, Aₙ forman un sistema completo (son incompatibles dos a dos y suman 1), la probabilidad de un suceso B es la suma de lo que aporta cada rama del árbol. El teorema de Bayes da la probabilidad de cada causa sabiendo que B ha ocurrido.</p>
   <p class="f m">$P(B) = ∑ P(A_i)·P(B | A_i)$, &ensp; $P(A_i | B) = {P(A_i)·P(B | A_i)}/{P(B)}$</p>
   <p>Las probabilidades P(Aᵢ) son las <b>a priori</b> y las P(Aᵢ | B), las <b>a posteriori</b>. Por eso una prueba médica muy fiable puede dar muchos falsos positivos si la enfermedad es rara: la prevalencia pesa mucho en P(B).</p>
+  <h2>Variable aleatoria discreta</h2>
+  <p>Una variable aleatoria discreta X toma unos pocos valores, cada uno con su probabilidad. Esas probabilidades forman la función de probabilidad: ninguna es negativa y entre todas suman 1. La función de distribución F(x) acumula la probabilidad hasta x, así que sube a saltos desde 0 hasta 1.</p>
+  <p class="f m">$E[X] = μ = ∑ x_i·p_i$, &ensp; $"Var"(X) = E[X^2] − μ^2$, &ensp; $σ = √{"Var"(X)}$</p>
+  <p>La esperanza es el valor medio que saldría al repetir el experimento muchas veces, y la desviación típica mide cuánto se alejan los valores de esa media. Un cambio lineal Y = aX + b mueve la media igual que los valores, pero la varianza no nota el desplazamiento b y se multiplica por a².</p>
+  <p class="f m">$E[aX + b] = a·E[X] + b$, &ensp; $"Var"(aX + b) = a^2·"Var"(X)$</p>
+  <h2>Tabla de contingencia de dos sucesos</h2>
+  <p>Cuando un problema da los casos cruzados de dos características (los que hacen deporte y fuman, los que hacen deporte y no fuman…), lo más cómodo es una tabla 2 × 2 con sus totales. Las probabilidades de cada suceso salen de los totales de fila y de columna; la intersección, de la casilla donde se cruzan; y una condicionada, quedándose con una sola fila o columna y dividiendo por su total.</p>
+  <p class="f m">$P(A | B) = {"casos de " A " y " B}/{"casos de " B}$</p>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Probabilidad <span id="ver"></span> (beta)</footer>

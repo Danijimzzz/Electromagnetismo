@@ -751,6 +751,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: entalpía de una reacción a partir de las entalpías de formación (con una tabla de unas 60 sustancias y calor para una masa dada), ley de Hess que calcula por cuánto hay que multiplicar o dar la vuelta a cada reacción, y energía libre de Gibbs con la temperatura de equilibrio, con el diagrama de entalpías y el desarrollo paso a paso.'] },
     ],
     probabilidad: [
+      { v: '0.2', fecha: '2026-11-10', cambios: ['Variable aleatoria discreta: con la tabla de valores y probabilidades salen la esperanza, la varianza, la desviación típica, la función de distribución F(x), las probabilidades en un punto y el cambio Y = aX + b; si falta una probabilidad, se calcula para que sumen 1.', 'Tabla 2 × 2 de dos sucesos: con los casos (o las probabilidades) de cada casilla da los totales, la unión, la intersección, las condicionadas y si son independientes.'] },
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: combinatoria (variaciones, permutaciones y combinaciones, con o sin repetición), probabilidad de la unión, la intersección y la condicionada de dos sucesos, y probabilidad total con el teorema de Bayes y su diagrama de árbol.'] },
     ],
     unidades: [
