@@ -118,7 +118,7 @@
     $('#resumen').innerHTML = h; $('#leyenda').textContent = ley;
     exporta();
     // «Usar en…»: un hidróxido poco soluble es una base fuerte con [OH⁻] = b·s; el pH de su disolución saturada se calcula en la herramienta de pH
-    $('#usar-en').innerHTML = ['kps', 'solub'].includes(sol.modo) && /OH/.test(sc.formula || '') && sol.s > 0 && isFinite(sol.s) ? `<a class="btn" id="u-ph" href="${esc(Herramienta.enlaceA('ph', { modo: 'fuerte', especie: 'base', C: String(sol.s), n: String(sol.b) }))}">Calcular el pH de la disolución saturada</a>` : '';
+    $('#usar-en').innerHTML = ['kps', 'solub'].includes(sol.modo) && /OH/.test(sc.formula || '') && sol.s > 0 && isFinite(sol.s) ? `<a class="btn" id="u-ph" data-usar="ph" href="${esc(Herramienta.enlaceA('ph', { modo: 'fuerte', especie: 'base', C: String(sol.s), n: String(sol.b) }))}">Calcular el pH de la disolución saturada</a>` : '';
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
     dibuja();
   }

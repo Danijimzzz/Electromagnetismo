@@ -649,6 +649,12 @@ async function navegador() {
     if (fallos === antes) console.log(`  ✓ Humo: ${r.probadas} herramientas guardan un dato cambiado y lo recuperan al recargar, en modo oscuro y a 390 px, sin errores de consola`);
   }
   {
+    // «Usar en…» (pruebas/usar-en.js): cada enlace entre herramientas abre su destino con los datos llevados y un resultado
+    const antes = fallos, r = await require('./usar-en.js')(browser, { mal, solo, filtro: mia });
+    if (completo && r.enlaces.length < 8) mal(`Usar en: solo se han probado ${r.enlaces.length} enlaces`);
+    if (fallos === antes && r.enlaces.length) console.log(`  ✓ Usar en: ${r.enlaces.length} enlaces de ${r.origenes} herramientas abren la otra herramienta con los datos llevados y un resultado`);
+  }
+  {
     // accesibilidad (pruebas/accesibilidad.js): axe-core en todas las páginas de publico/, en claro, oscuro y a 390 px
     const antes = fallos, r = await require('./accesibilidad.js')(browser, { mal, solo });
     if (fallos === antes) console.log(`  ✓ Accesibilidad: axe-core sin infracciones en ${r.paginas} páginas, en modo claro, modo oscuro y a 390 px`);
