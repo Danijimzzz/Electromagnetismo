@@ -6,7 +6,9 @@
    de las moléculas, distribución de Maxwell y recorrido libre medio).
    Los pasos llevan fórmulas $…$ que la página pasa a MathML (mates.js).
    Por dentro todo en el SI; el trabajo W es el que hace el gas y
-   ΔU = Q − W.
+   ΔU = Q − W. R sigue el ajuste común de quimica/ajuste.js (F12.4): 8,314
+   «de clase» por defecto o la exacta, 8,314462618; se lee en cada cálculo
+   y el valor usado sale escrito en el desarrollo.
    ===================================================================== */
 const Gases = (() => {
   const f = (x, d = 4) => {
@@ -18,7 +20,12 @@ const Gases = (() => {
   };
   const leeNum = (s) => +String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace('−', '-').replace(/[·x×*]10\^?([+\-]?\d+)/i, 'e$1');
   const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
-  const R = 8.314, Rs = '8,314', kB = 1.380649e-23, NA = 6.02214076e23;
+  const Aj = typeof Ajuste !== 'undefined' ? Ajuste : require('../quimica/ajuste.js');
+  let R = 8.314, Rs = '8,314';
+  const kB = 1.380649e-23, NA = 6.02214076e23;
+  // lee R del ajuste común antes de cada cálculo (conR envuelve lo que se exporta)
+  const ponR = () => { R = Aj.valores().R; Rs = Aj.texto(R); };
+  const conR = (fn) => (...a) => { ponR(); return fn(...a); };
   const UP = { atm: [101325, 'atm'], kPa: [1000, 'kPa'], Pa: [1, 'Pa'], bar: [1e5, 'bar'], mmHg: [101325 / 760, 'mmHg'] };
   const UV = { L: [1e-3, 'L'], m3: [1, 'm<sup>3</sup>'], cm3: [1e-6, 'cm<sup>3</sup>'] };
   const GASES = {
@@ -224,6 +231,7 @@ const Gases = (() => {
   const maxwell = (M, T, v) => { const a = M / (2 * R * T); return 4 * Math.PI * (a / Math.PI) ** 1.5 * v * v * Math.exp(-a * v * v); };
 
   function resolver(sc) {
+    ponR();
     if (sc.modo === 'procesos') return procesos(sc);
     if (sc.modo === 'cinetica') return cinetica(sc);
     if (sc.modo === 'mezcla') return mezcla(sc);
@@ -249,6 +257,6 @@ const Gases = (() => {
   // en el Carnot, V_D = V_A·(T_A/T_C)^(1/(γ−1)) = 1·2^2,5 L
   ejemplos[5].sc.procesos[2].valor = String(+(2 ** 2.5).toFixed(6));
 
-  return { resolver, estado: resolverEstado, procesos, cinetica, mezcla, real, maxwell, GASES, MOLECULAS, VDW, UP, UV, NOMBRES, ejemplos, f, R, kB };
+  return { resolver, estado: conR(resolverEstado), procesos: conR(procesos), cinetica: conR(cinetica), mezcla: conR(mezcla), real: conR(real), maxwell: conR(maxwell), GASES, MOLECULAS, VDW, UP, UV, NOMBRES, ejemplos, f, get R() { ponR(); return R; }, kB };
 })();
 if (typeof module !== 'undefined') module.exports = Gases;

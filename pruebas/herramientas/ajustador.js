@@ -8,7 +8,7 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
   const C = require(path.join(fuente, 'ajustador', 'calculo.js'));
   {
     const antes = fallos;
-    const AJ = { precipitacion: '1,1,1,1', neutralizacion: '1,2,1,2', 'carbonato-acido': '1,2,1,1,1', propano: '1,5,3,4', glucosa: '1,6,6,6', 'oxido-hierro': '4,3,2', clorato: '2,2,3', amoniaco: '4,5,4,6', octano: '2,25,16,18', aluminio: '2,3,1,3', 'cobre-nitrico': '3,8,3,2,4', permanganato: '2,16,2,2,5,8', 'redox-ionica': '1,5,8,1,5,4' };
+    const AJ = { precipitacion: '1,1,1,1', neutralizacion: '1,2,1,2', 'carbonato-acido': '1,2,1,1,1', 'carbonato-soluble': '1,2,2,1,1', propano: '1,5,3,4', glucosa: '1,6,6,6', 'oxido-hierro': '4,3,2', clorato: '2,2,3', amoniaco: '4,5,4,6', octano: '2,25,16,18', aluminio: '2,3,1,3', 'cobre-nitrico': '3,8,3,2,4', permanganato: '2,16,2,2,5,8', 'redox-ionica': '1,5,8,1,5,4' };
     for (const e of C.ejemplos) {
       const r = C.resolver(e.sc), c = r.especies.map((s) => s.coef).join(',');
       if (c !== AJ[e.clave]) mal(`Ajustador · ${e.clave}: ${c}, se esperaba ${AJ[e.clave]}`);
@@ -38,6 +38,14 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       ['BaCl2 + Na2SO4 -> BaSO4 + NaCl', 'Ba2+ + SO42− → BaSO4(s)', 'precipitación', ['Cl−', 'Na+']],
       ['Pb(NO3)2 + KI -> PbI2 + KNO3', 'Pb2+ + 2 I− → PbI2(s)', 'precipitación', ['NO3−', 'K+']],
       ['Al + HCl -> AlCl3 + H2', '2 Al(s) + 6 H+ → 2 Al3+ + 3 H2(g)', 'desplazamiento simple', ['Cl−']],
+      // F12.2: carbonato o hidrogenocarbonato + ácido (desprende CO2), también con el carbonato soluble, el amonio entre paréntesis y un ácido débil
+      ['Na2CO3 + HCl -> NaCl + CO2 + H2O', 'CO32− + 2 H+ → CO2(g) + H2O(l)', 'carbonato', ['Na+', 'Cl−']],
+      ['NaHCO3 + HCl -> NaCl + CO2 + H2O', 'HCO3− + H+ → CO2(g) + H2O(l)', 'carbonato', ['Na+', 'Cl−']],
+      ['(NH4)2CO3 + HCl -> NH4Cl + CO2 + H2O', 'CO32− + 2 H+ → CO2(g) + H2O(l)', 'carbonato', ['NH4+', 'Cl−']],
+      ['Na2CO3 + CH3COOH -> CH3COONa + CO2 + H2O', 'CO32− + 2 CH3COOH(aq) → 2 CH3COO− + CO2(g) + H2O(l)', 'carbonato', ['Na+']],
+      ['MgCO3 + H2SO4 -> MgSO4 + CO2 + H2O', 'MgCO3(s) + 2 H+ → Mg2+ + CO2(g) + H2O(l)', 'carbonato', ['SO42−']],
+      ['(NH4)2SO4 + BaCl2 -> BaSO4 + NH4Cl', 'SO42− + Ba2+ → BaSO4(s)', 'precipitación', ['NH4+', 'Cl−']],
+      ['CH3COONa + HCl -> CH3COOH + NaCl', 'CH3COO− + H+ → CH3COOH(aq)', 'doble desplazamiento', ['Na+', 'Cl−']],
     ];
     for (const [ec, neta, tipo, esp] of IO) {
       const r = C.resolver({ ecuacion: ec });
@@ -45,6 +53,8 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       if (!r.tipo.includes(tipo)) mal(`Ajustador (AJ-2) · ${ec}: tipo «${r.tipo}», se esperaba «${tipo}»`);
       if (r.ionica && !esp.every((x) => t(r.ionica.htmlEspectadores).includes(x))) mal(`Ajustador (AJ-2) · ${ec}: espectadores «${t(r.ionica.htmlEspectadores)}», faltan ${esp}`);
     }
+    // F12.2: si se escribe H2CO3 como producto, se avisa de que se descompone en CO2 y agua
+    if (!C.resolver({ ecuacion: 'Na2CO3 + HCl -> NaCl + H2CO3' }).pasos.some((p) => /Ecuación iónica neta/.test(p.t) && /se descompone/.test(p.html) && t(p.html).includes('CO2(g) + H2O(l)'))) mal('Ajustador (F12.2): con H2CO3 de producto falta el aviso de que se descompone en CO2 y agua');
     if (C.resolver({ ecuacion: 'NaCl + KNO3 -> NaNO3 + KCl' }).ionica.hayNeta) mal('Ajustador (AJ-2): NaCl + KNO3 no tiene reacción neta');
     if (C.resolver({ ecuacion: 'C3H8 + O2 -> CO2 + H2O' }).tipo !== 'combustión' || C.resolver({ ecuacion: 'Fe + O2 -> Fe2O3' }).tipo.indexOf('síntesis') !== 0 || C.resolver({ ecuacion: 'KClO3 -> KCl + O2' }).tipo !== 'descomposición') mal('Ajustador (AJ-2): combustión, síntesis o descomposición mal clasificadas');
     if (C.resolver({ ecuacion: 'KClO3 -> KCl + O2' }).ionica) mal('Ajustador (AJ-2): una descomposición térmica no lleva ecuación iónica');
