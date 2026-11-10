@@ -48,12 +48,20 @@ const FrenadoMagnetico = (() => {
     const v = Dibujo.vista(g, w, h, c, cam);
     v.sigue(CAMS[paso], reloj, quieto);
     const { X, Y, rotulo, punto } = v, foto = window.FenomenoFoto, r = quieto ? 0.2 : reloj;
+    const M = Dibujo.mezcla;
+    // cielo, colinas y suelo de las dos vistas de lado (la montaña rusa y el tren)
+    const paisaje = (ys) => {
+      v.degradado(-1, ys, M(c.sala, c.onda, 0.3), M(c.sala, c.brillo, 0.35));
+      v.colinas(ys - 0.5, 1.5, ys, M(c.suelo, c.sala, 0.72), 2); v.colinas(ys - 0.1, 0.9, ys, M(c.suelo, c.sala, 0.5), 6);
+      v.degradado(ys, 10, M(c.suelo, c.sala, 0.15), M(c.suelo, '#000000', 0.35)); v.motas(-1, ys + 0.15, 17, 9.2, 50, c.rotulo, 0.14, 0.035, 5);
+    };
     if (paso === 0) vagon(); else if (paso < 5) planta(); else maglev();
 
     // paso 1: el vagón de la montaña rusa entra en la zona de imanes y frena sin tocar nada
     function vagon() {
-      g.fillStyle = c.sala; g.fillRect(0, 0, w, h);
-      g.fillStyle = c.suelo; g.fillRect(0, Y(6.4), w, h - Y(6.4));
+      paisaje(6.4);
+      // la vía, sobre pilares
+      for (let k = 0; k < 6; k++) { const px = 0.6 + k * 3.1; if (px > 5.6 && px < 10.2) continue; v.pieza(px, 4.78, 0.28, 1.66, c.riel, 0.03); }
       g.fillStyle = c.riel; g.fillRect(0, Y(4.66), w, 0.12 * v.K);
       // imanes de la vía: dos hileras de bloques a los lados de la aleta (en la vista de lado, delante y detrás de ella; se ven en transparencia)
       const zx0 = 6.4, zx1 = 9.6;
@@ -62,7 +70,14 @@ const FrenadoMagnetico = (() => {
       rotulo('N', zx0 + 0.3, 5.0, { tam: 13, peso: 700, color: c.imanN, fondo: false }); rotulo('S', zx1 - 0.3, 6.1, { al: 'right', tam: 13, peso: 700, color: c.imanS, fondo: false });
       // el vagón frena al pasar (cámara fija): sale de la izquierda y se detiene suave a la derecha
       const ciclo = quieto ? 0.55 : (r % 8) / 8, u = 1 - Math.pow(1 - Math.min(1, ciclo / 0.8), 2), x = -1.6 + u * 8.4;
-      g.fillStyle = c.vagon; g.beginPath(); g.roundRect(X(x), Y(3.1), 3.6 * v.K, 1.2 * v.K, 0.22 * v.K); g.fill();
+      v.sombra(x + 1.8, 6.45, 2.3, 0.16, 0.22);
+      // estela de velocidad, que se apaga a medida que frena
+      const prisa = quieto ? 0.4 : Math.max(0, 1 - Math.min(1, ciclo / 0.8)) * 1.4;
+      g.strokeStyle = rgba(c.rotulo, 0.22 * Math.min(1, prisa)); g.lineWidth = Math.max(1.5, 0.04 * v.K); g.lineCap = 'round'; g.beginPath();
+      for (let k = 0; k < 4; k++) { g.moveTo(X(x - 0.2), Y(3.3 + k * 0.28)); g.lineTo(X(x - 0.2 - (0.8 + 0.5 * azar(k + 3)) * prisa), Y(3.3 + k * 0.28)); }
+      g.stroke(); g.lineCap = 'butt';
+      v.brillo(8, 5.5, 2.4, c.campo, 0.25 * Math.min(1, prisa + 0.2));
+      v.pieza(x, 3.1, 3.6, 1.2, c.vagon, 0.22);
       g.fillStyle = rgba(c.brillo, 0.55); for (let k = 0; k < 3; k++) g.fillRect(X(x + 0.3 + k * 1.1), Y(3.35), 0.85 * v.K, 0.5 * v.K);
       g.fillStyle = c.placa; g.fillRect(X(x + 0.9), Y(4.3), 1.8 * v.K, 1.5 * v.K); g.strokeStyle = rgba(c.rotulo, 0.6); g.lineWidth = 1.2; g.strokeRect(X(x + 0.9), Y(4.3), 1.8 * v.K, 1.5 * v.K);
       g.fillStyle = c.placa; g.fillRect(X(x + 1.6), Y(4.25), 0.2 * v.K, 0.1 * v.K);
@@ -77,14 +92,18 @@ const FrenadoMagnetico = (() => {
       const vel = paso === 3 ? prueba.v : paso === 4 ? V0 * Math.exp(-(quieto ? 3 : (r % 14)) / TAU) : V0, esc = 0.045;
       // desplazamiento acumulado de la placa (para las rayas); en el paso 5 se integra la velocidad que decae
       const desp = paso === 4 ? V0 * TAU * (1 - Math.exp(-(quieto ? 3 : (r % 14)) / TAU)) * esc : (quieto ? 1 : r) * vel * esc;
-      g.fillStyle = c.sala; g.fillRect(0, 0, w, h);
+      g.fillStyle = c.sala; g.fillRect(0, 0, w, h); v.brillo(8, 4.5, 9, c.brillo, 0.35); v.vineta(0.12);
       const y0 = 3.0, y1 = 6.0, zx0 = 6.8, zx1 = 9.2, zy0 = 3.4, zy1 = 5.6;
-      g.fillStyle = c.placa; g.fillRect(0, Y(y0), w, (y1 - y0) * v.K);
+      // la aleta: metal con brillo a lo largo y su sombra debajo
+      g.fillStyle = rgba(c.rotulo, 0.12); g.fillRect(0, Y(y1), w, 0.22 * v.K);
+      { const gr = g.createLinearGradient(0, Y(y0), 0, Y(y1)); gr.addColorStop(0, M(c.placa, c.brillo, 0.3)); gr.addColorStop(0.35, c.placa); gr.addColorStop(0.75, M(c.placa, c.brillo, 0.12)); gr.addColorStop(1, M(c.placa, '#000000', 0.22)); g.fillStyle = gr; }
+      g.fillRect(0, Y(y0), w, (y1 - y0) * v.K);
       g.strokeStyle = rgba(c.rotulo, 0.35); g.lineWidth = Math.max(1, 0.025 * v.K); g.beginPath();
       for (let x = (desp % 0.9) - 0.9 + Math.floor(v.x0 / 0.9) * 0.9; x < v.x1 + 1; x += 0.9) { g.moveTo(X(x), Y(y0)); g.lineTo(X(x), Y(y1)); }
       g.stroke();
       // zona de campo B (sale de la pantalla): puntos ⊙
       const aB = paso === 1 ? 0.35 + 0.65 * suave(tramo(t, 0.05, 0.5)) : 0.8;
+      v.brillo((zx0 + zx1) / 2, (zy0 + zy1) / 2, 2.6, c.campo, 0.28 * aB);
       g.fillStyle = rgba(c.campo, 0.13 * aB); g.fillRect(X(zx0), Y(zy0), (zx1 - zx0) * v.K, (zy1 - zy0) * v.K);
       g.strokeStyle = rgba(c.campo, 0.75 * aB); g.lineWidth = Math.max(1.2, 0.03 * v.K); g.setLineDash([6, 5]); g.strokeRect(X(zx0), Y(zy0), (zx1 - zx0) * v.K, (zy1 - zy0) * v.K); g.setLineDash([]);
       for (let i = 0; i < 5; i++) for (let j = 0; j < 4; j++) {
@@ -108,6 +127,7 @@ const FrenadoMagnetico = (() => {
         const loops = [[6.6, 1], [9.4, -1]];
         for (const [cx, sg] of loops) {
           const rx = 1.6, ry = 1.4, cy = 4.5;
+          v.brillo(cx, cy, 2.2, c.corriente, 0.2 * a * (0.3 + 0.7 * ia));
           g.strokeStyle = rgba(c.corriente, 0.55 * a); g.lineWidth = Math.max(1.5, 0.05 * v.K); g.beginPath(); g.ellipse(X(cx), Y(cy), rx * v.K, ry * v.K, 0, 0, 2 * Math.PI); g.stroke();
           for (let j = 0; j < 8; j++) { const th = sg * (2 * Math.PI * ((j / 8) + (quieto ? 0.1 : r * 0.35 * (0.3 + 0.7 * ia)))) + (sg < 0 ? Math.PI : 0); punto(cx + rx * Math.cos(th), cy - ry * Math.sin(th), 0.075, c.corriente, a * (0.35 + 0.65 * ia)); }
         }
@@ -131,10 +151,10 @@ const FrenadoMagnetico = (() => {
         g.strokeStyle = c.onda; g.lineWidth = 2.5; g.beginPath();
         for (let s = 0; s <= 20.001; s += 0.25) { s ? g.lineTo(X(gx(s)), Y(gy(Math.exp(-s / TAU)))) : g.moveTo(X(gx(s)), Y(gy(1))); }
         g.stroke(); punto(gx(Math.min(tc, 20)), gy(Math.exp(-Math.min(tc, 20) / TAU)), 0.09, c.resalta);
-        rotulo('v(t) = v₀ e^(−t/τ)', x0 + 0.3, y0 + 0.3, { tam: 11.5, peso: 700, fondo: false, color: c.onda });
+        rotulo('v(t) = v₀ e^(−t/τ)', x0 + an - 0.3, y0 + 0.35, { al: 'right', tam: 11.5, peso: 700, fondo: false, color: c.onda });
         rotulo('τ = 4 s', gx(TAU) + 0.1, gy(Math.exp(-1)) - 0.3, { tam: 11, fondo: false });
         rotulo('t (s) →', x0 + an - 0.2, y0 + al - 0.22, { al: 'right', tam: 10.5, fondo: false });
-        rotulo(`ahora: ${n(V0 * Math.exp(-Math.min(tc, 20) / TAU), 1)} m/s · ${n(fuerza(V0 * Math.exp(-Math.min(tc, 20) / TAU)) / 1000, 1)} kN`, x0 + an / 2, y0 + al - 0.25, { al: 'center', tam: 11, fondo: false, color: c.resalta, peso: 700 });
+        rotulo(`ahora: ${n(V0 * Math.exp(-Math.min(tc, 20) / TAU), 1)} m/s · ${n(fuerza(V0 * Math.exp(-Math.min(tc, 20) / TAU)) / 1000, 1)} kN`, x0 + an - 0.3, y0 + 0.85, { al: 'right', tam: 11, fondo: false, color: c.resalta, peso: 700 });
         v.mundo();
       }
       if (paso === 4) rotulo('frena menos cuanto más despacio va', 8, 7.0, { al: 'center', tam: 12.5, peso: 700, escribe: tramo(t, 0.4, 0.8) });
@@ -142,10 +162,9 @@ const FrenadoMagnetico = (() => {
 
     // paso 6: levitación; vista de lado con el tren, las bobinas del carril y la fracción del peso que sostienen
     function maglev() {
-      g.fillStyle = c.sala; g.fillRect(0, 0, w, h);
       const ciclo = quieto ? 0.6 : (r % 12) / 12, vel = Math.min(1, ciclo / 0.8) * 140, fr = levita(vel), alz = 0.12 + 0.95 * fr;
       const yv = 6.2;
-      g.fillStyle = c.suelo; g.fillRect(0, Y(yv), w, h - Y(yv));
+      paisaje(yv);
       // bobinas del carril: se iluminan cuando pasa el imán
       const xt = 1.5 + 4.0 * Math.min(1, ciclo / 0.8) + 3.0 * Math.max(0, ciclo - 0.8) / 0.2;
       for (let k = 0; k < 14; k++) {
@@ -156,13 +175,16 @@ const FrenadoMagnetico = (() => {
       }
       // el tren, sostenido a una altura que sube con la velocidad
       const ty = yv - alz - 1.55;
-      g.fillStyle = c.vagon; g.beginPath(); g.roundRect(X(xt), Y(ty), 4.8 * v.K, 1.35 * v.K, 0.4 * v.K); g.fill();
+      v.sombra(xt + 2.4, yv + 0.5, 2.9 - 0.9 * fr, 0.14, 0.3 - 0.14 * fr);
+      v.brillo(xt + 2.4, yv - 0.1, 3.2, c.campo, 0.38 * fr);                                   // el colchón magnético bajo el tren
+      v.pieza(xt, ty, 4.8, 1.35, c.vagon, 0.4);
+      g.fillStyle = rgba(c.brillo, 0.3); g.beginPath(); g.roundRect(X(xt + 0.25), Y(ty + 0.1), 4.3 * v.K, 0.1 * v.K, 0.05 * v.K); g.fill();
       g.fillStyle = rgba(c.brillo, 0.55); for (let k = 0; k < 4; k++) g.fillRect(X(xt + 0.5 + k * 1.0), Y(ty + 0.3), 0.7 * v.K, 0.45 * v.K);
       for (const dx of [0.6, 3.4]) { g.fillStyle = c.imanN; g.fillRect(X(xt + dx), Y(ty + 1.35), 0.8 * v.K, 0.2 * v.K); g.fillStyle = c.imanS; g.fillRect(X(xt + dx + 0.8), Y(ty + 1.35), 0.8 * v.K, 0.2 * v.K); }
       // ruedas: salen del carril cuando despega
       if (fr < 0.3) { g.fillStyle = c.rotulo; for (const dx of [0.5, 4.0]) { g.beginPath(); g.arc(X(xt + dx + 0.3), Y(ty + 1.55 + 0.1), 0.17 * v.K, 0, 2 * Math.PI); g.fill(); } }
       rotulo(`${Math.round(vel * 3.6)} km/h`, xt + 2.4, ty - 0.35, { al: 'center', tam: 13, peso: 700, color: c.onda, fondo: false });
-      rotulo(fr < 0.3 ? 'parado o lento: se apoya en ruedas' : 'levita: las corrientes del carril lo repelen', 8, 1.5, { al: 'center', tam: 13, peso: 700, color: fr < 0.3 ? c.rotulo : c.resalta, escribe: tramo(t, 0.15, 0.55) });
+      rotulo(fr < 0.3 ? 'parado o lento: se apoya en ruedas' : 'levita: las corrientes del carril lo repelen', 5.2, 1.5, { al: 'center', tam: 13, peso: 700, color: fr < 0.3 ? c.rotulo : c.resalta, escribe: tramo(t, 0.15, 0.55) });
       rotulo('bobinas cerradas en el carril', 8, 7.6, { al: 'center', tam: 12, escribe: tramo(t, 0.4, 0.8) });
       if (!foto) {
         v.pantalla();

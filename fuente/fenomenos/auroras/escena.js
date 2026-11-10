@@ -239,7 +239,7 @@ const Auroras = (() => {
       rotulo(`rojo · oxígeno · 630 nm · ${f2(datos.fRojo)} eV`, 15.5, alt(240), { al: 'right', tam: 13, peso: 700, color: c.rojo, escribe: tramo(t, 0.35, 0.55) });
       rotulo(`verde · oxígeno · 557,7 nm · ${f2(datos.fVerde)} eV`, 15.5, alt(140), { al: 'right', tam: 13, peso: 700, color: c.verde, escribe: tramo(t, 0.5, 0.7) });
       rotulo(`violeta · nitrógeno · 427,8 nm · ${f2(datos.fAzul)} eV`, 15.5, alt(86), { al: 'right', tam: 13, peso: 700, color: c.violeta, escribe: tramo(t, 0.65, 0.85) });
-      rotulo('más energía → entra más hondo', 0.7, 1.0, { tam: 12.5, escribe: tramo(t, 0.8, 1), fondo: false });
+      rotulo('más energía → entra más hondo', 2.7, 1.0, { tam: 12.5, escribe: tramo(t, 0.8, 1), fondo: false });
     }
 
     // paso 6: la cuenta

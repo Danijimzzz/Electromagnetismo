@@ -53,10 +53,19 @@ const DetectorMetales = (() => {
     const ZCM = paso === 3 ? prof.cm : 10, BOB_Y = 2.4, SUELO = BOB_Y + 1.0, MON_Y = BOB_Y + ZCM / 5;   // 1 unidad = 5 cm
     const fase = quieto ? Math.PI / 2 : reloj * 3.2, s = Math.sin(fase);   // fase visual de la corriente (mucho más lenta que la real)
 
+    // ambiente: cielo con el sol bajo, dunas al fondo, y la tierra por capas con piedras, más oscura cuanto más honda
+    const M = Dibujo.mezcla;
     g.fillStyle = c.pared; g.fillRect(0, 0, w, h);
-    g.fillStyle = c.cielo; g.fillRect(0, 0, w, Y(SUELO));
-    g.fillStyle = c.tierra; g.fillRect(0, Y(SUELO), w, h - Y(SUELO));
+    v.degradado(-1, SUELO, M(c.cielo, c.campo, 0.22), M(c.cielo, c.pared, 0.35));
+    v.brillo(15.2, 0.5, 3.4, c.moneda, 0.4);
+    v.colinas(SUELO - 0.25, 0.9, SUELO, M(c.tierra, c.cielo, 0.62), 3); v.colinas(SUELO - 0.05, 0.5, SUELO, M(c.hierba, c.cielo, 0.45), 7);
+    v.degradado(SUELO, 10, M(c.tierra, c.pared, 0.12), M(c.tierra, '#000000', 0.4));
+    for (let k = 0; k < 3; k++) v.colinas(SUELO + 1.6 + 1.7 * k, 0.35, 10, M(c.tierra, '#000000', 0.5), 11 + k, 0.16);
+    v.motas(-1, SUELO + 0.25, 17, 9.2, 70, c.rotulo, 0.2, 0.035, 4); v.motas(-1, SUELO + 0.2, 17, 9.2, 40, c.pared, 0.22, 0.03, 9);
     g.fillStyle = c.hierba; g.fillRect(0, Y(SUELO) - 3, w, 6);
+    g.strokeStyle = c.hierba; g.lineWidth = Math.max(1.2, 0.03 * v.K); g.beginPath();
+    for (let k = 0; k < 90; k++) { const x = -1 + 18 * azar(k + 200), al = 0.1 + 0.16 * azar(k + 300), bal = quieto ? 0 : 0.04 * Math.sin(reloj * 1.3 + k); g.moveTo(X(x), Y(SUELO)); g.lineTo(X(x + 0.05 + bal), Y(SUELO - al)); }
+    g.stroke();
     const onda = (x0, y0, ancho, alto, fn, color) => {
       g.strokeStyle = color; g.lineWidth = Math.max(2.2, 0.07 * v.K); g.lineJoin = 'round'; g.beginPath();
       for (let k = 0; k <= 60; k++) { const u = k / 60, px = X(x0 + u * ancho), py = Y(y0 - fn(u) * alto); if (k) g.lineTo(px, py); else g.moveTo(px, py); }
@@ -79,8 +88,10 @@ const DetectorMetales = (() => {
     }
     // el cabezal con las dos bobinas, visto de lado, y el bastón que sube a la derecha
     function cabezal() {
+      v.sombra(8, SUELO + 0.02, 2.4, 0.16, 0.28); v.brillo(8, BOB_Y + 0.3, 2.6, c.campo, 0.1 + 0.16 * Math.abs(s));
       g.strokeStyle = c.baston; g.lineWidth = Math.max(5, 0.2 * v.K); g.lineCap = 'round'; g.beginPath(); g.moveTo(X(9.6), Y(BOB_Y - 0.2)); g.lineTo(X(13.2), Y(-0.6)); g.stroke(); g.lineCap = 'butt';
-      g.fillStyle = c.cabezal; g.beginPath(); g.ellipse(X(8), Y(BOB_Y), 2.2 * v.K, 0.38 * v.K, 0, 0, 2 * Math.PI); g.fill();
+      { const gr = g.createLinearGradient(0, Y(BOB_Y - 0.38), 0, Y(BOB_Y + 0.38)); gr.addColorStop(0, Dibujo.mezcla(c.cabezal, c.pared, 0.3)); gr.addColorStop(1, Dibujo.mezcla(c.cabezal, '#000000', 0.35)); g.fillStyle = gr; }
+      g.beginPath(); g.ellipse(X(8), Y(BOB_Y), 2.2 * v.K, 0.38 * v.K, 0, 0, 2 * Math.PI); g.fill();
       g.strokeStyle = c.bobina; g.lineWidth = Math.max(2, 0.06 * v.K);
       for (const lado of [-1, 1]) for (let k = 0; k < 3; k++) { const x = 8 + lado * (1.7 - k * 0.18); g.beginPath(); g.ellipse(X(x), Y(BOB_Y), 0.1 * v.K, 0.13 * v.K, 0, 0, 2 * Math.PI); g.stroke(); }
       g.strokeStyle = c.receptora; for (const lado of [-1, 1]) { const x = 8 + lado * 0.8; g.beginPath(); g.ellipse(X(x), Y(BOB_Y), 0.09 * v.K, 0.12 * v.K, 0, 0, 2 * Math.PI); g.stroke(); }
@@ -99,7 +110,9 @@ const DetectorMetales = (() => {
         for (let j = 0; j < 2; j++) { const an = 0.55 + 0.4 * j; g.beginPath(); g.ellipse(X(8), Y(MON_Y - an * 0.9), an * v.K * 1.1, an * v.K * 0.9, 0, Math.PI, 2 * Math.PI); g.stroke(); }
         g.setLineDash([]); g.lineDashOffset = 0;
       }
-      g.fillStyle = c.moneda; g.beginPath(); g.ellipse(X(8), Y(MON_Y), 0.5 * v.K, 0.14 * v.K, 0, 0, 2 * Math.PI); g.fill();
+      if (dentro) v.brillo(8, MON_Y, 1.5, c.foucault, a * (0.15 + 0.4 * Math.abs(s)));
+      { const gr = g.createLinearGradient(X(7.5), 0, X(8.5), 0); gr.addColorStop(0, Dibujo.mezcla(c.moneda, '#000000', 0.25)); gr.addColorStop(0.45, Dibujo.mezcla(c.moneda, c.pared, 0.45)); gr.addColorStop(1, c.moneda); g.fillStyle = gr; }
+      g.beginPath(); g.ellipse(X(8), Y(MON_Y), 0.5 * v.K, 0.14 * v.K, 0, 0, 2 * Math.PI); g.fill();
       g.strokeStyle = c.rotulo; g.lineWidth = 1.2; g.stroke();
     }
     function p0() {

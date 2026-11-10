@@ -122,7 +122,7 @@ const RadarSirena = (() => {
       g.globalAlpha = a; v.panel(x0, y0, an, al); g.globalAlpha = 1;
       if (a <= 0) return;
       const fo = vf === 0 ? F : oido(xa, vf), fmin = f2De(Math.max(vf, 25)) - 10, fmax = f1De(Math.max(vf, 25)) + 10;
-      rotulo('Lo que oye el peatón', x0 + 0.2, y0 + 0.3, { tam: 11.5, fondo: false, color: c.rotulo });
+      rotulo('El peatón oye', x0 + 0.2, y0 + 0.3, { tam: 11.5, fondo: false, color: c.rotulo });
       rotulo(`${f1(fo)} Hz`, x0 + an - 0.2, y0 + 0.3, { al: 'right', tam: 14, peso: 700, fondo: false, color: fo > F + 0.5 ? c.agudo : fo < F - 0.5 ? c.grave : c.rotulo });
       // la curva f′ según la posición de la ambulancia, con un punto donde está ahora
       const gx = (x) => x0 + 0.25 + ((x + 3) / VUELTA) * (an - 0.5), gy = (fq) => y0 + al - 0.2 - ((fq - fmin) / (fmax - fmin)) * (al - 0.75);

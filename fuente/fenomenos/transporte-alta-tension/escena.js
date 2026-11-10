@@ -149,7 +149,7 @@ const TransporteAltaTension = (() => {
       }
       if (paso === 5) {
         rotulo('20 kV → 400 kV', SUBE, SUELO + 0.45, { al: 'center', tam: 12, escribe: tramo(t, 0.05, 0.3) });
-        rotulo('transporte: 400 kV', 7.5, 2.45, { al: 'center', peso: 700, escribe: tramo(t, 0.3, 0.55) });
+        rotulo('transporte: 400 kV', 9.5, 2.3, { al: 'center', peso: 700, escribe: tramo(t, 0.3, 0.55) });
         rotulo('400 kV → 20 kV → 230 V', BAJA + 1.4, SUELO + 0.45, { al: 'center', tam: 12, escribe: tramo(t, 0.55, 0.85) });
       }
     }

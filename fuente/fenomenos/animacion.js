@@ -19,7 +19,7 @@
        sonido(ac) opcional: recibe un AudioContext y devuelve { cuadro(estado) }, al
                 que se llama en cada fotograma mientras el botón #sonido está activo
                 (apagado al abrir la página)
-   Avanza sola de un paso al siguiente; «Parar» detiene solo el avance (el paso
+   Avanza sola de un paso al siguiente, fundiendo el dibujo de uno con el del otro; «Parar» detiene solo el avance (el paso
    sigue animado), y Anterior, Siguiente, los números y las flechas del teclado
    funcionan siempre. La maqueta (#escena, #ant, #play, #sig, #puntos, #paso-t,
    #paso-x, #ver y, si hay sonido, #sonido) está en la pagina.html de cada fenómeno y los estilos en
@@ -30,7 +30,7 @@ const Animacion = (() => {
   function monta({ lienzo: sel, pasos, dibuja, colores = [], sonido = null }) {
     const cv = $(sel), puntos = $('#puntos'), play = $('#play'), n = pasos.length;
     const quieto = matchMedia('(prefers-reduced-motion: reduce)').matches, t0 = performance.now();
-    let i = 0, inicio = t0, avanza = true, c = {}, audio = null, ac = null, suena = false;
+    let i = 0, inicio = t0, avanza = true, c = {}, audio = null, ac = null, suena = false, foto = null, funde = 0;
     const leeColores = () => { const st = getComputedStyle(document.documentElement); c = {}; for (const k of colores) c[k] = st.getPropertyValue('--' + k).trim(); };
     const dura = (p) => p.dura || 9000, anim = (p) => p.anim || 2500;
     // línea de tiempo: un círculo por paso con su nombre corto; la línea se rellena con --avance (0 a 1)
@@ -54,7 +54,14 @@ const Animacion = (() => {
       q.cambia(q.valor);
       return `<div class="fen-prueba"><label for="prueba"><b>Pruébalo tú:</b> ${esc(q.etiqueta)}</label><input type="range" id="prueba" min="${q.min}" max="${q.max}" step="${q.paso}" value="${q.valor}"><output id="prueba-v" for="prueba">${q.muestra(q.valor)}</output></div>`;
     }
-    function ve(k) { i = Math.max(0, Math.min(n - 1, k)); inicio = performance.now(); texto(); }
+    // al cambiar de paso se guarda el último fotograma, que se funde con el dibujo del paso nuevo (FUNDE ms)
+    const FUNDE = 450;
+    function retrata() {
+      if (quieto || !cv.width) return;
+      foto = foto || document.createElement('canvas'); foto.width = cv.width; foto.height = cv.height;
+      foto.getContext('2d').drawImage(cv, 0, 0); funde = performance.now();
+    }
+    function ve(k) { k = Math.max(0, Math.min(n - 1, k)); if (k !== i) retrata(); i = k; inicio = performance.now(); texto(); }
     function ponPlay(on) { avanza = on; play.textContent = on ? '❚❚ Parar' : i === n - 1 && performance.now() - inicio >= dura(pasos[i]) ? '↻ Repetir' : '▶ Reproducir'; play.setAttribute('aria-pressed', String(on)); }
     play.addEventListener('click', () => {
       if (avanza) return ponPlay(false);
@@ -86,6 +93,10 @@ const Animacion = (() => {
       const { g, w, h } = lienzo(cv);
       const estado = { paso: i, t: quieto ? 1 : Math.min(1, Math.max(0, (ahora - inicio) / anim(pasos[i]))), reloj: quieto ? 0 : (ahora - t0) / 1000, w, h, c, quieto };
       dibuja(g, estado);
+      if (foto && ahora - funde < FUNDE && foto.width === cv.width && foto.height === cv.height) {
+        const q = 1 - (ahora - funde) / FUNDE;
+        g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = q * q * (3 - 2 * q); g.drawImage(foto, 0, 0); g.restore();
+      }
       if (suena && audio) audio.cuadro(estado);
       requestAnimationFrame(cuadro);
     }

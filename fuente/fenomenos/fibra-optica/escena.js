@@ -149,7 +149,7 @@ const FibraOptica = (() => {
       rotulo('aire  n = 1', 2.0, 1.5, { tam: 13, peso: 600, fondo: false, escribe: tramo(t, 0.05, 0.25) });
       rotulo(`θ₁ = ${f0(i)}°`, O[0] - 1.45, O[1] + 1.65, { al: 'right', tam: 14.5, peso: 700, color: c.resalta, escribe: tramo(t, 0.55, 0.75) });
       rotulo(`θ₂ = ${f1(r)}°`, O[0] + 1.75, O[1] - 1.2, { tam: 14.5, peso: 700, color: c.resalta, escribe: tramo(t, 0.65, 0.85) });
-      rotulo('se refleja un poco', O[0] + 2.4, O[1] + 2.9, { tam: 11.5, fondo: false, escribe: tramo(t, 0.75, 0.95) });
+      rotulo('se refleja un poco', O[0] + 0.75, O[1] + 0.75, { tam: 11.5, fondo: false, escribe: tramo(t, 0.75, 0.95) });
       rotulo('normal', O[0] + 0.2, O[1] - 3.2, { tam: 11.5, fondo: false, escribe: tramo(t, 0.1, 0.25) });
       if (foto) return;
       v.panel(10.8, 5.7, 4.8, 2.3);

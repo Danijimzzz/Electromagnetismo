@@ -131,7 +131,7 @@ const CocinaInduccion = (() => {
       if (foto) return;
       // vista desde arriba: anillos con puntos que giran
       v.pantalla();
-      const x0 = 0.3, y0 = 0.3, an = 4.1, al = 3.4, cx = x0 + an / 2, cy = y0 + al / 2 + 0.1;
+      const x0 = 0.3, y0 = 0.3, an = 4.1, al = 3.9, cx = x0 + an / 2, cy = y0 + 3.4 / 2 + 0.1;
       v.panel(x0, y0, an, al);
       g.strokeStyle = rgba(c.corriente, 0.5 * a); g.lineWidth = 2;
       for (const [rad, num] of [[0.45, 4], [0.85, 7], [1.25, 10]]) {
@@ -160,7 +160,7 @@ const CocinaInduccion = (() => {
       g.stroke(); punto(gx(prueba.fk), gy(potencia(prueba.fk) / pmax), 0.09, c.resalta);
       rotulo('potencia en la base', x0 + 0.3, y0 + 0.3, { tam: 11.5, peso: 700, fondo: false });
       rotulo('f (kHz) →', x0 + an - 0.2, y0 + al - 0.22, { al: 'right', tam: 10.5, fondo: false });
-      rotulo('P ∝ f²', gx(14), gy(0.5), { tam: 11, fondo: false, color: c.caliente });
+      rotulo('P ∝ f²', gx(5), gy(0.82), { tam: 11, fondo: false, color: c.caliente });
       rotulo(`${prueba.fk} kHz: ${pw(potencia(prueba.fk))} W`, gx(prueba.fk) - 0.1, gy(potencia(prueba.fk) / pmax) - 0.32, { al: prueba.fk > 30 ? 'right' : 'left', tam: 11, fondo: false, color: c.resalta, peso: 700 });
       v.mundo();
     }

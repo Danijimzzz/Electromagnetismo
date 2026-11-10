@@ -183,7 +183,7 @@ const GpsRelatividad = (() => {
       if (foto) return;
       // el error en la pantalla del móvil: un mapa con el punto verdadero y el que marca el GPS
       vi.pantalla();
-      const x0 = 10.1, y0 = 0.3, an = 5.5, al = 3.1, mx = x0 + 0.3, my = y0 + 0.62, mw = an - 0.6, mh = al - 0.95;
+      const x0 = 10.1, y0 = 0.3, an = 5.5, al = 3.1, mx = x0 + 0.3, my = y0 + 0.62, mw = an - 0.6, mh = al - 1.3;
       g.globalAlpha = a; vi.panel(x0, y0, an, al); g.globalAlpha = 1;
       if (a <= 0) return;
       g.globalAlpha = a; g.strokeStyle = rgba(c.rotulo, 0.2); g.lineWidth = 1;

@@ -59,7 +59,8 @@ const PantallaTactil = (() => {
   function dibuja(g, { paso, t, reloj, w, h, c, quieto }) {
     const v = Dibujo.vista(g, w, h, c);
     const { X, Y, rotulo, punto, flecha, signo } = v, foto = window.FenomenoFoto;
-    g.fillStyle = c.fondo; g.fillRect(0, 0, w, h);
+    // fondo con luz en el centro y las esquinas en sombra
+    g.fillStyle = c.fondo; g.fillRect(0, 0, w, h); v.brillo(8, 4.2, 9, c.panel, 0.6); v.vineta(0.13);
     // ---- ayudantes ----
     const lin = (pts, color, ancho = 0.07, a = 1, discont = false) => {
       g.strokeStyle = color; g.globalAlpha = a; g.lineWidth = Math.max(1.5, ancho * v.K); g.lineJoin = 'round'; g.lineCap = 'round'; g.setLineDash(discont ? [6, 5] : []);
@@ -69,7 +70,8 @@ const PantallaTactil = (() => {
     // vista lateral de cristal + electrodo + controlador; devuelve la cara superior del cristal
     function lateral(grosor, y0) {
       const yv = y0, ye = y0 + grosor;
-      rect(2.2, yv, 11.6, grosor, c.cristal, 0.85);
+      v.sombra(8, ye + 0.45, 6.6, 0.3, 0.16);
+      rect(2.2, yv, 11.6, grosor, c.cristal, 0.85); rect(2.2, yv, 11.6, Math.min(0.12, grosor * 0.3), c.panel, 0.55);   // cristal con su reflejo
       lin([[2.2, yv], [13.8, yv]], c.rotulo, 0.025, 0.7);
       rect(6.0, ye, 4.0, 0.3, c.electrodo, 1);                       // electrodo (ITO)
       rect(2.2, ye, 3.5, 0.3, c.electrodo, 0.35); rect(10.3, ye, 3.5, 0.3, c.electrodo, 0.35);
@@ -81,7 +83,10 @@ const PantallaTactil = (() => {
     // dedo apoyado con la yema en la cara y (si hay guante, encima); a = opacidad, tg = grosor dibujado del guante
     function dedo(y, a = 1, tg = 0) {
       if (tg > 0.01) { rect(6.0, y - tg, 4.0, tg, c.guante, 0.9 * a, 0.12); }
-      rect(6.1, y - tg - 4.6, 3.8, 4.6, c.dedo, a, 1.3); rect(6.1, y - tg - 4.6, 3.8, 3.0, c.dedo, a, 0.2);
+      // la yema, con volumen (más oscura en los bordes) y un halo donde toca el cristal
+      v.brillo(8, y, 2.8, c.resalta, 0.2 * a * (quieto ? 0.8 : 0.65 + 0.35 * Math.sin(reloj * 3)));
+      const piel = g.createLinearGradient(X(6.1), 0, X(9.9), 0); piel.addColorStop(0, Dibujo.mezcla(c.dedo, c.dedo2, 0.45)); piel.addColorStop(0.3, Dibujo.mezcla(c.dedo, c.panel, 0.18)); piel.addColorStop(0.7, c.dedo); piel.addColorStop(1, Dibujo.mezcla(c.dedo, c.dedo2, 0.55));
+      rect(6.1, y - tg - 4.6, 3.8, 4.6, piel, a, 1.3); rect(6.1, y - tg - 4.6, 3.8, 3.0, piel, a, 0.2);
       g.globalAlpha = a; lin([[8, y - tg - 4.6], [8, y - tg - 5.1], [11.7, y - tg - 5.1]], c.rotulo, 0.035, 0.9); g.globalAlpha = 1;
       // tierra
       lin([[11.7, y - tg - 5.1], [11.7, y - tg - 4.5]], c.rotulo, 0.035, 0.9 * a);
@@ -91,7 +96,8 @@ const PantallaTactil = (() => {
     // paso 1: la rejilla vista desde arriba
     function rejilla() {
       const FX = [3.7, 5.5, 7.3, 9.1, 10.9, 12.7], FY = [2.2, 3.7, 5.2, 6.7], on = suave(tramo(t, 0.02, 0.35));
-      rect(2.6, 0.9, 11.2, 7.2, c.cristal, 0.5 * on, 0.3); lin([[2.6, 0.9], [13.8, 0.9], [13.8, 8.1], [2.6, 8.1], [2.6, 0.9]], c.rotulo, 0.03, 0.7 * on);
+      v.sombra(8.2, 8.5, 6.4, 0.35, 0.2 * on); rect(2.35, 0.68, 11.7, 7.64, c.rotulo, 0.85 * on, 0.5);   // el móvil, visto desde arriba
+      rect(2.6, 0.9, 11.2, 7.2, c.fondo, on, 0.3); rect(2.6, 0.9, 11.2, 7.2, c.cristal, 0.5 * on, 0.3); lin([[2.6, 0.9], [13.8, 0.9], [13.8, 8.1], [2.6, 8.1], [2.6, 0.9]], c.rotulo, 0.03, 0.7 * on);
       const fila = Math.floor(reloj * 1.5) % 4, quedan = quieto ? -1 : fila;
       FY.forEach((y, k) => { rect(2.9, y - 0.17, 10.6, 0.34, c.fila, (k === quedan ? 1 : 0.75) * suave(tramo(t, 0.1 + k * 0.05, 0.4 + k * 0.05))); });
       FX.forEach((x, k) => { rect(x - 0.17, 1.15, 0.34, 6.7, c.columna, 0.85 * suave(tramo(t, 0.25 + k * 0.04, 0.5 + k * 0.04))); });
@@ -102,11 +108,11 @@ const PantallaTactil = (() => {
       // un cruce ampliado
       const cx = FX[3], cy = FY[1];
       const q = suave(tramo(t, 0.7, 1));
-      rotulo('filas: envían un pulso', 2.6, 0.5, { tam: 12.5, peso: 700, color: c.fila, fondo: false, escribe: tramo(t, 0.15, 0.4) });
-      rotulo('columnas: miden lo que llega', 13.8, 0.5, { al: 'right', tam: 12.5, peso: 700, color: c.columna, fondo: false, escribe: tramo(t, 0.3, 0.55) });
+      rotulo('filas: emiten', 2.6, 0.3, { tam: 12.5, peso: 700, color: c.fila, fondo: false, escribe: tramo(t, 0.15, 0.4) });
+      rotulo('columnas: miden', 13.8, 0.3, { al: 'right', tam: 12.5, peso: 700, color: c.columna, fondo: false, escribe: tramo(t, 0.3, 0.55) });
       rotulo('cada cruce es un condensador', cx + 0.5, cy - 0.65, { tam: 12.5, peso: 700, escribe: tramo(t, 0.7, 0.9) });
       if (q > 0) { punto(cx, cy, 0.3, c.resalta, 0.3 * q); lin([[cx - 0.3, cy], [cx + 0.3, cy]], c.resalta, 0.03, q); }
-      rotulo('vista desde arriba, bajo el cristal', 8.2, 8.55, { al: 'center', tam: 11.5, fondo: false, escribe: tramo(t, 0.8, 1) });
+      rotulo('vista desde arriba, bajo el cristal', 8.2, 8.68, { al: 'center', tam: 11.5, fondo: false, escribe: tramo(t, 0.8, 1) });
     }
     // paso 2: el dedo se acerca al cristal
     function elDedo() {
@@ -133,7 +139,7 @@ const PantallaTactil = (() => {
       rotulo('S = 5 × 5 mm', 8, ye + 0.8, { al: 'center', tam: 12.5, peso: 600, fondo: false, escribe: tramo(t, 0.5, 0.65) });
       rotulo(`εr = ${ER}`, 11.5, yv + gro / 2 + 0.05, { tam: 12.5, peso: 600, fondo: false, escribe: tramo(t, 0.5, 0.65) });
       if (foto) return;
-      v.panel(0.5, 0.6, 4.9, 2.2);
+      v.panel(0.5, 0.6, 3.9, 2.2);
       rotulo('C = ε₀ εr S / d', 0.8, 1.15, { tam: 15, peso: 700, fondo: false, escribe: tramo(t, 0.55, 0.7) });
       rotulo(`C = ${f2(cDedo(dm * 1e-3) * 1e12)} pF`, 0.8, 1.95, { tam: 16, peso: 700, color: c.resalta, fondo: false, escribe: tramo(t, 0.7, 0.9) });
     }
@@ -151,9 +157,9 @@ const PantallaTactil = (() => {
       rotulo('con dedo', x0 + 5.2, y0 + 0.5, { al: 'center', tam: 13, peso: 600, fondo: false });
       rotulo(`${pF(CS0)}  →  ${pC(datos.Q0)}`, x0 + 1.8, esc(datos.Q0) - 0.45, { al: 'center', tam: 13, peso: 700, escribe: tramo(t, 0.2, 0.45) });
       rotulo(`${pF(CS0 + datos.Cd)}  →  ${pC(datos.Q1)}`, x0 + 5.2, esc(datos.Q1) - 0.45, { al: 'center', tam: 13, peso: 700, color: c.resalta, escribe: tramo(t, 0.65, 0.9) });
-      rotulo('Q = C V', 12.2, 3.0, { al: 'center', tam: 18, peso: 700, fondo: false, escribe: tramo(t, 0.7, 0.85) });
-      rotulo(`con V = ${f1(V)} V`, 12.2, 3.8, { al: 'center', tam: 13, fondo: false, escribe: tramo(t, 0.8, 0.95) });
-      rotulo('¡toque detectado!', 12.2, 5.2, { al: 'center', tam: 15, peso: 700, color: c.resalta, escribe: tramo(t, 0.88, 1) });
+      rotulo('Q = C V', 12.2, 3.75, { al: 'center', tam: 18, peso: 700, fondo: false, escribe: tramo(t, 0.7, 0.85) });
+      rotulo(`con V = ${f1(V)} V`, 12.2, 4.45, { al: 'center', tam: 13, fondo: false, escribe: tramo(t, 0.8, 0.95) });
+      rotulo('¡toque detectado!', 12.2, 5.6, { al: 'center', tam: 15, peso: 700, color: c.resalta, escribe: tramo(t, 0.88, 1) });
     }
     // paso 5: electrodos cada 5 mm y centro de gravedad
     function lugar() {
