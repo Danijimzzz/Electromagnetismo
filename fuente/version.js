@@ -793,6 +793,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-28', cambios: ['Primera versión: contrastes de una media (z o t de Student), una proporción, una varianza, dos medias (también con Welch), dos proporciones y dos varianzas, bilaterales o unilaterales, con el estadístico, la región crítica sombreada en la gráfica, el p-valor y la conclusión paso a paso.'] },
     ],
     errores: [
+      { v: '0.2', fecha: '2026-11-10', cambios: ['Variables correlacionadas: con el coeficiente de correlación o la covarianza de cada par se añade el término cruzado, y se ve cuánto cambia el error respecto a suponerlas independientes.', 'Media ponderada de varias medidas de lo mismo, con pesos 1/σ², su incertidumbre y el χ² reducido, que dice si son compatibles entre sí.', 'Comparación con el valor aceptado: la discrepancia, cuántas σ son y si el resultado es compatible, dudoso o incompatible.'] },
       { v: '0.1', fecha: '2026-10-28', cambios: ['Primera versión: la incertidumbre de una magnitud calculada con las derivadas parciales (suma cuadrática o cota lineal), el error relativo, lo que pesa cada medida y el resultado redondeado como en el laboratorio; también el error de una serie de medidas repetidas.'] },
     ],
     graficador: [

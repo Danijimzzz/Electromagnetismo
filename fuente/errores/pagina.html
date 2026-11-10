@@ -27,11 +27,11 @@ textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 84px }
   </div>
   <div>
     <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
-    <div class="card"><h2>Peso de cada medida</h2>
+    <div class="card"><h2>Gráfica</h2>
       <canvas id="grafica" aria-label="Diagrama de barras con lo que aporta cada variable a la incertidumbre, o las medidas con su media y su banda de error"></canvas>
       <p class="leyenda" id="leyenda"></p>
     </div>
-    <div class="card"><h2>Derivadas parciales</h2><div class="tabla-scroll" id="tabla"></div></div>
+    <div class="card"><h2>Tabla</h2><div class="tabla-scroll" id="tabla"></div></div>
     <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
   </div>
 </div>
@@ -44,6 +44,14 @@ textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 84px }
 <p class="m">La incertidumbre se da con <b>una cifra significativa</b>, o con dos si la primera es un 1 (0,014 y no 0,01). El valor se redondea <b>hasta la misma cifra decimal</b> que la incertidumbre y se escriben juntos con la unidad: $g = (9,81 ± 0,05)$ m/s². Escribir $9,810652 ± 0,05$ es un error: las últimas cifras no significan nada.</p>
 <h2>Medidas repetidas</h2>
 <p class="m">Con n medidas de lo mismo se toma la media. La dispersión se mide con la desviación típica $s$ (entre $n − 1$), y la media se separa del valor verdadero en torno a $s/√n$, el error de la media. Se combina en cuadratura con la resolución del aparato: si manda el aparato, medir más veces no mejora nada.</p>
+<h2>Variables correlacionadas</h2>
+<p class="m">La suma en cuadratura solo vale si los errores son independientes. Si dos variables suben y bajan juntas (se han medido con el mismo aparato mal calibrado, o salen las dos de un mismo ajuste) hay que añadir un término cruzado con su covarianza, $"cov"(x, y) = r · Δx · Δy$, donde $r$ es el coeficiente de correlación, entre −1 y 1. El término lleva el signo de las derivadas, así que puede aumentar el error o reducirlo: en una suma con $r > 0$ los errores se refuerzan, y en una resta se compensan.</p>
+<p class="f m">$Δf^2 = ({∂f}/{∂x} Δx)^2 + ({∂f}/{∂y} Δy)^2 + 2 {∂f}/{∂x} {∂f}/{∂y} "cov"(x, y)$</p>
+<h2>Media ponderada</h2>
+<p class="m">Cuando hay varias medidas de la misma magnitud con incertidumbres distintas, no pesan todas igual: cada una entra con peso $w_i = 1/σ_i^2$. La incertidumbre de la media es menor que la de la mejor medida. El $χ^2$ reducido dice si las medidas son compatibles entre sí: cerca de 1, lo son; si es bastante mayor, se separan más de lo que dicen sus incertidumbres, y aquí la incertidumbre de la media se amplía multiplicándola por $√{χ^2_"red"}$.</p>
+<p class="f m">$x̄ = {∑ w_i x_i}/{∑ w_i}$, &ensp; $σ_{x̄} = 1/√{∑ w_i}$, &ensp; $χ^2_"red" = 1/{n − 1} ∑ ({x_i − x̄}/{σ_i})^2$</p>
+<h2>Comparar con el valor aceptado</h2>
+<p class="m">Para saber si un resultado concuerda con el valor de las tablas no basta con el tanto por ciento de diferencia: hay que medir la discrepancia en incertidumbres, $z = |x − x_"ac"|/√{Δx^2 + Δx_"ac"^2}$. Hasta 1 σ el resultado es compatible; hasta 2 σ, compatible a 2σ (pasa en una de cada tres medidas correctas); entre 2 y 3 σ es dudoso, y por encima de 3 σ es incompatible: hay un error sistemático o la incertidumbre está subestimada.</p>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Propagación de errores <span id="ver"></span> (beta)</footer>

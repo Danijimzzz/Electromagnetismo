@@ -261,7 +261,7 @@ const Calculadora = (() => {
         c.setAttribute('role', 'img'); const l = $(ley); if (l) c.setAttribute('aria-describedby', l.id);
         Herramienta.exportar(c, { nombre: `${o.carpeta}${sufijo}`, titulo: (c.closest('.card')?.querySelector('h2')?.textContent || '').trim(), datos: () => {
           const cfg = cfgs[id]; if (!cfg) return null;
-          if (id === '#grafica' && o.datosExporta) return o.datosExporta(sol);
+          if (id === '#grafica' && o.datosExporta) { const propios = o.datosExporta(sol); if (propios) return propios; }
           const filas = []; (cfg.series || []).forEach((sr, k) => { if (sr.tipo === 'barras' || sr.tipo === 'puntos' || !sr.tipo || sr.tipo === 'linea' || sr.tipo === 'area') for (const [x, y] of sr.pts) filas.push([`Serie ${k + 1}${sr.tipo === 'puntos' ? ' (puntos)' : ''}`, x, y]); });
           return { cab: ['Serie', cfg.ejeX || 'x', cfg.ejeY || 'y'], filas };
         } });

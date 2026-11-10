@@ -23,11 +23,33 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     for (const [v, e, txt] of [[1.23456, 0.0996, '1,23 ± 0,10'], [1.23456, 0.0149, '1,235 ± 0,015'], [1.23456, 0.0196, '1,23 ± 0,02'], [234.4, 17.2, '234 ± 17'], [5432, 260, '5400 ± 300']]) {
       const r = C.redondea(v, e).txt; if (r !== txt) mal(`${N}: redondear ${v} ± ${e} da ${r} y no ${txt}`);
     }
+    // correlación: P = 2(a + b), ∂P/∂a = ∂P/∂b = 2 ⇒ ΔP² = 2·(2·0,05)² + 2·2·2·0,9·0,05² = 0,02 + 0,018
+    const co = ej('correlacion'); cerca(co.d, Math.sqrt(0.038), 1e-12, 'ΔP con correlación'); cerca(co.dIndep, Math.sqrt(0.02), 1e-12, 'ΔP independiente'); if (co.R.txt !== '41,20 ± 0,19') mal(`${N}: el perímetro correlacionado da ${co.R.txt}`);
+    // una resta con r = 1 y errores iguales se compensa del todo; con r = −1 se suman: 0,1 + 0,1
+    cerca(C.resolver({ modo: 'formula', f: 'a - b', vars: 'a 10 0,1\nb 4 0,1', corr: 'a b 1' }).d, 0, 1e-12, 'resta con r = 1');
+    cerca(C.resolver({ modo: 'formula', f: 'a - b', vars: 'a 10 0,1\nb 4 0,1', corr: 'r(a, b) = −1' }).d, 0.2, 1e-12, 'resta con r = −1');
+    // la covarianza dada directamente: cov = 0,005 = 0,5·0,1·0,1 ⇒ Δ(a + b)² = 0,02 + 2·0,005
+    cerca(C.resolver({ modo: 'formula', f: 'a + b', vars: 'a 10 0,1\nb 4 0,1', corr: 'cov a b 0,005' }).d, Math.sqrt(0.03), 1e-12, 'suma con covarianza');
+    // comparación con el aceptado: z = (g − 9,80665)/Δg = 0,080 ⇒ compatible; con 9,60 ± 0,03: (9,8107 − 9,60)/√(0,0499² + 0,03²) = 3,6 ⇒ incompatible
+    const ac = ej('aceptado'); cerca(ac.comp.z, (g - 9.80665) / p.d, 1e-9, 'z con el valor aceptado'); if (ac.comp.nivel !== 'compatible') mal(`${N}: g del péndulo sale «${ac.comp.nivel}»`);
+    const inc = C.resolver({ ...C.ejemplos.find((e) => e.clave === 'aceptado').sc, acept: '9,60', dacept: '0,03' }); cerca(inc.comp.z, (g - 9.6) / Math.hypot(p.d, 0.03), 1e-9, 'z con incertidumbre del aceptado'); if (inc.comp.nivel !== 'incompatible') mal(`${N}: 3,6 σ sale «${inc.comp.nivel}»`);
+    // media ponderada: pesos 1/0,03², 1/0,02², 1/0,05² = 1111,1; 2500; 400 ⇒ x̄ = 39356,4/4011,1 = 9,8119; σ = 1/√4011,1 = 0,01579
+    const W = 1 / 0.0009 + 1 / 0.0004 + 1 / 0.0025, mp = (9.79 / 0.0009 + 9.83 / 0.0004 + 9.76 / 0.0025) / W, chi = ((9.79 - mp) / 0.03) ** 2 + ((9.83 - mp) / 0.02) ** 2 + ((9.76 - mp) / 0.05) ** 2;
+    const po = ej('ponderada'); cerca(po.m, mp, 1e-12, 'media ponderada'); cerca(po.dInt, 1 / Math.sqrt(W), 1e-12, 'σ de la media ponderada'); cerca(po.red, chi / 2, 1e-9, 'χ² reducido'); cerca(po.d, Math.sqrt(chi / 2 / W), 1e-12, 'σ ampliada');
+    if (po.R.txt !== '9,812 ± 0,017') mal(`${N}: la media ponderada da ${po.R.txt}`);
+    // medidas iguales en error: la ponderada es la media normal y, si concuerdan, no se amplía
+    const ig = C.resolver({ modo: 'ponderada', pond: '10,0 ± 0,2\n10,1 ± 0,2' }); cerca(ig.m, 10.05, 1e-12, 'ponderada con errores iguales'); cerca(ig.d, 0.2 / Math.SQRT2, 1e-12, 'σ sin ampliar'); if (ig.amplia) mal(`${N}: amplía el error con χ² reducido ${ig.red}`);
+    error({ modo: 'formula', f: 'a + b', vars: 'a 1 0,1\nb 1 0,1', corr: 'a b 1,5' }, 'correlación mayor que 1');
+    error({ modo: 'formula', f: 'a + b', vars: 'a 1 0,1\nb 1 0,1', corr: 'a c 0,5' }, 'correlación con una variable que no existe');
+    error({ modo: 'formula', f: 'a + b', vars: 'a 1 0,1\nb 1 0,1', corr: 'cov a b 0,5' }, 'covarianza imposible');
+    error({ modo: 'ponderada', pond: '9,8 0,1' }, 'una sola medida ponderada');
+    error({ modo: 'ponderada', pond: '9,8 0,1\n9,7 0' }, 'medida ponderada sin error');
+    error({ modo: 'medidas', datos: '3 4 5', acept: 'x' }, 'valor aceptado que no es un número');
     error({ modo: 'formula', f: 'x y', vars: 'x 1 0,1' }, 'una variable sin dar');
     error({ modo: 'formula', f: 'x', vars: 'x 1' }, 'una variable sin incertidumbre');
     error({ modo: 'formula', f: 'x', vars: 'x 1 0,1\nx 2 0,1' }, 'una variable repetida');
     error({ modo: 'medidas', datos: '3' }, 'una sola medida');
-    if (fallos === antes) console.log(`  ✓ ${N}: ${C.ejemplos.length} ejemplos, cuadrática y lineal, serie de medidas, redondeo y errores`);
+    if (fallos === antes) console.log(`  ✓ ${N}: ${C.ejemplos.length} ejemplos, cuadrática y lineal, correlaciones, media ponderada, valor aceptado, serie de medidas, redondeo y errores`);
   }
   return Com.navegador({ publico, asignatura: 'estadistica', carpeta: 'errores', nombre: N, app: 'ErroresApp', C, pagina, mal, malo: { k: 'vars', v: 'l 1' } });
 };
