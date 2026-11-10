@@ -87,6 +87,25 @@ const Descriptiva = (() => {
     const pasos = [];
     pasos.push({ t: 'Tabla de frecuencias', html: `${ag ? 'Con datos agrupados se usa la marca de clase $x_i = (L_i + L_s)/2$ de cada intervalo. ' : ''}En la tabla: $n_i$ frecuencia absoluta, $f_i = n_i/N$ relativa, y $N_i$ y $F_i$ las acumuladas. Hay <b>N = ${f(N, 6)}</b> datos.` });
     pasos.push({ t: 'Media', html: `$x̄ = {∑ ${X} n_i}/N = ${f(sx, 6)}/${f(N, 6)} = ${f(media)}$` });
+    // medias geométrica y armónica (EST.DE-1): solo con todos los valores positivos
+    let mg = null, mh = null;
+    if (fil.every((r) => r.x > 0)) {
+      mg = Math.exp(fil.reduce((t, r) => t + r.n * Math.log(r.x), 0) / N); mh = N / fil.reduce((t, r) => t + r.n / r.x, 0);
+      pasos.push({ t: 'Medias geométrica y armónica', html: `Geométrica, la raíz N-ésima del producto (la que toca con tasas de crecimiento o índices que se multiplican): $G = e^{{∑ n_i ln x_i}/N} = ${f(mg)}$<br>Armónica, el inverso de la media de los inversos (la que toca con velocidades o rendimientos en tramos iguales): $H = N/{∑ n_i/x_i} = ${f(N, 6)}/${f(fil.reduce((t, r) => t + r.n / r.x, 0))} = ${f(mh)}$<br>Siempre se cumple $H ≤ G ≤ x̄$: $${f(mh)} ≤ ${f(mg)} ≤ ${f(media)}$${mh === media ? ' (son iguales porque todos los datos coinciden)' : ''}.` });
+    } else pasos.push({ t: 'Medias geométrica y armónica', html: 'Solo tienen sentido con todos los datos positivos, y aquí hay ceros o negativos: no se calculan.' });
+    // media ponderada con los pesos dados (solo con la lista de datos)
+    let mp = null;
+    if (!vacio(sc.pesos)) {
+      if (fmt !== 'lista') throw new Error('Los pesos solo se usan con la lista de datos: en una tabla, las frecuencias ya hacen de pesos');
+      const xs = K.lista(sc.datos, 'los datos'), ws = K.lista(sc.pesos, 'los pesos');
+      if (ws.length !== xs.length) throw new Error(`Hay ${xs.length} datos y ${ws.length} pesos: tiene que haber un peso por cada dato, en el mismo orden`);
+      if (ws.some((w) => w < 0)) throw new Error('Los pesos no pueden ser negativos');
+      const sw = ws.reduce((a, b) => a + b, 0), swx = ws.reduce((a, w, i) => a + w * xs[i], 0);
+      if (!(sw > 0)) throw new Error('Los pesos no pueden ser todos cero');
+      mp = swx / sw;
+      const corta = (ts) => (ts.length > 8 ? [...ts.slice(0, 4), '…', ...ts.slice(-2)] : ts).join(' + ');
+      pasos.push({ t: 'Media ponderada', html: `Cada dato cuenta según su peso (créditos de una asignatura, porcentaje de un examen…): $x̄_p = {∑ p_i x_i}/{∑ p_i} = {${corta(xs.map((x, i) => `${f(ws[i])} · ${p(x)}`))}}/{${f(sw, 6)}} = {${f(swx, 6)}}/{${f(sw, 6)}} = ${f(mp)}$<br>La media sin pesos es $${f(media)}$. La mediana, los cuartiles y la dispersión de abajo son las de los datos sin pesos.` });
+    } else if (fmt === 'tabla') pasos.push({ t: 'Media ponderada', html: 'La media de una tabla ya es una media ponderada: cada valor pesa lo que dice su frecuencia $n_i$ (que puede llevar decimales, como unos créditos o un porcentaje).' });
     const cuTxt = (nom, q, c) => {
       if (ag) { const r = fil[c.i]; return `${nom}: $${f(q)} · N = ${f(c.pos)}$ cae en [${f(r.li)}, ${f(r.ls)}) ($N_{i−1} = ${f(c.Nant)}$, $n_i = ${f(r.n)}$): $${f(r.li)} + {${f(c.pos)} − ${f(c.Nant)}}/{${f(r.n)}} · ${f(r.a)} = ${f(c.v)}$`; }
       return `${nom}: $${f(q)} · N = ${f(c.pos)}$ ${c.justo ? `coincide con $N_i = ${f(c.pos)}$, así que es la media de ${f(fil[c.i].x)} y ${f(fil[c.i + 1].x)}` : `→ el primer valor con $N_i ≥ ${f(c.pos)}$ es ${f(fil[c.i].x)}`}: <b>${f(c.v)}</b>`;
@@ -96,13 +115,15 @@ const Descriptiva = (() => {
     pasos.push({ t: 'Dispersión', html: `Rango: $${f(max)} − ${p(min)} = ${f(max - min)}$; rango intercuartílico: $RIC = Q_3 − Q_1 = ${f(Q3.v)} − ${p(Q1.v)} = ${f(ric)}$<br>Varianza${div === 'n1' ? ' muestral (cuasivarianza)' : ''}: $${sim}^2 = {∑ (x_i − x̄)^2 n_i}/{${vs}} = ${f(m2 * N)}/${f(D, 6)} = ${f(varz)}$${div === 'n' ? ` (o también $${sim}^2 = {∑ x_i^2 n_i}/N − x̄^2 = ${f(sx2 / N)} − ${f(media)}^2$)` : ''}<br>Desviación típica: $${sim} = √(${f(varz)}) = ${f(sd)}$${isFinite(cv) ? `<br>Coeficiente de variación: $CV = {${sim}}/{|x̄|} = ${f(sd)}/${f(Math.abs(media))} = ${f(cv)}$ (${f(100 * cv, 3)} %)${cv < 0.3 ? ', la media es bastante representativa' : ', mucha dispersión: la media representa mal los datos'}` : ''}` });
     pasos.push({ t: 'Forma', html: `Asimetría de Fisher: $g_1 = m_3/σ^3 = ${f(g1)}$ ${Math.abs(g1) < 0.1 ? '(prácticamente simétrica)' : g1 > 0 ? '(asimétrica a la derecha: cola larga hacia los valores altos, media por encima de la mediana)' : '(asimétrica a la izquierda: cola larga hacia los valores bajos)'}.<br>Curtosis: $g_2 = m_4/σ^4 − 3 = ${f(g2)}$ ${Math.abs(g2) < 0.1 ? '(mesocúrtica, como la normal)' : g2 > 0 ? '(leptocúrtica: más apuntada que la normal)' : '(platicúrtica: más aplanada que la normal)'}.<br>Aquí $m_k = {∑ (x_i − x̄)^k n_i}/N$ son los momentos centrales (siempre entre N).` });
     if (!ag) pasos.push({ t: 'Datos atípicos y diagrama de caja', html: `Vallas: $Q_1 − 1,5 · RIC = ${f(bi)}$ y $Q_3 + 1,5 · RIC = ${f(bs)}$. ${atipicos.length ? `Quedan fuera, y son atípicos: <b>${atipicos.map((v) => f(v)).join(', ')}</b>.` : 'Ningún dato queda fuera: no hay atípicos.'}<br>La caja va de Q<sub>1</sub> a Q<sub>3</sub> con la mediana dentro, y los bigotes hasta el dato más pequeño y el más grande que no son atípicos (${f(bigoteI)} y ${f(bigoteS)}).` });
-    return { fmt, fil, N, div, media, varz, sd, cv, g1, g2, Q1: Q1.v, Me: Me.v, Q3: Q3.v, pk, P: P && P.v, moda, min, max, ric, atipicos, bigoteI, bigoteS, pasos };
+    return { fmt, fil, N, div, media, mg, mh, mp, varz, sd, cv, g1, g2, Q1: Q1.v, Me: Me.v, Q3: Q3.v, pk, P: P && P.v, moda, min, max, ric, atipicos, bigoteI, bigoteS, pasos };
   }
 
   const ejemplos = [
     { clave: 'notas', nombre: 'Notas de un examen (lista)', sc: { formato: 'lista', datos: '4 5 7 6 8 5 9 6 5 7\n3 6 7 8 5 6 10 6 7 4', div: 'n', pk: '90' } },
     { clave: 'hijos', nombre: 'Número de hijos por familia (tabla)', sc: { formato: 'tabla', datos: 'Hijos Familias\n0 6\n1 10\n2 14\n3 7\n4 3', div: 'n', pk: '' } },
     { clave: 'alturas', nombre: 'Estaturas agrupadas en intervalos', sc: { formato: 'intervalos', datos: 'Li Ls n\n150 155 3\n155 160 7\n160 165 12\n165 170 15\n170 175 9\n175 180 4', div: 'n', pk: '10' } },
+    { clave: 'expediente', nombre: 'Nota media ponderada por créditos', sc: { formato: 'lista', datos: '7,5 6 9 5,5 8', pesos: '6 6 4,5 9 3', div: 'n', pk: '' } },
+    { clave: 'crecimiento', nombre: 'Factores de crecimiento anual (media geométrica)', sc: { formato: 'lista', datos: '1,05 1,12 0,97 1,08', pesos: '', div: 'n', pk: '' } },
     { clave: 'salarios', nombre: 'Salarios con un dato atípico (muestra)', sc: { formato: 'lista', datos: '1350 1420 1380 1500 1460 1390 1410 1550 1440 4800', div: 'n1', pk: '' } },
     { clave: 'tiempos', nombre: 'Tiempos de espera en minutos (agrupados)', sc: { formato: 'intervalos', datos: '0 5 18\n5 10 25\n10 15 14\n15 20 8\n20 30 5', div: 'n', pk: '' } },
   ];

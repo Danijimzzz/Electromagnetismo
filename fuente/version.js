@@ -860,6 +860,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: capital final, capital inicial, tipo de interés y tiempo en capitalización simple y compuesta (anual, semestral, trimestral, mensual o diaria), el paso del TIN a la TAE y al revés, la comparación simple frente a compuesta año a año y su gráfica.'] },
     ],
     descriptiva: [
+      { v: '0.2', fecha: '2026-11-10', cambios: ['Medias geométrica y armónica, con la desigualdad H ≤ G ≤ x̄ y cuándo toca cada una.', 'Media ponderada: una lista de pesos (créditos, porcentajes) junto a los datos.'] },
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: con una lista de datos, una tabla de frecuencias o datos agrupados en intervalos, saca la tabla de frecuencias, la media, la mediana, la moda, los cuartiles y cualquier percentil, la varianza y la desviación típica (de la población o de una muestra), el coeficiente de variación, la asimetría, la curtosis y los atípicos, con el histograma y el diagrama de caja.'] },
     ],
     'regresion-economia': [
