@@ -48,6 +48,12 @@ textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 90px }
   <h2>Proporción</h2>
   <p class="f">IC<sub>1−α</sub>(p) = (p̂ − z<sub>α/2</sub>·√(p̂q̂/n), &ensp; p̂ + z<sub>α/2</sub>·√(p̂q̂/n)), &ensp; q̂ = 1 − p̂</p>
   <p>Vale cuando la muestra es grande (np̂ y nq̂ por encima de 5).</p>
+  <p>Ese intervalo normal (de Wald) es el de clase, pero falla con pocos éxitos o fracasos: puede salirse de [0, 1] o quedarse en un punto. Hay tres alternativas. El de <b>Wilson</b> despeja p de la desigualdad en vez de estimar el error con p̂ y funciona bien con cualquier n. El <b>exacto de Clopper-Pearson</b> sale de la propia binomial y garantiza al menos la confianza pedida, a cambio de ser algo más ancho. El de <b>Agresti-Coull</b> es el normal de siempre después de añadir z² observaciones, la mitad éxitos (con el 95 %, «sumar 2 éxitos y 2 fracasos»).</p>
+  <p class="f">Wilson: &ensp; (p̂ + z<sup>2</sup>/(2n) ± z·√(p̂q̂/n + z<sup>2</sup>/(4n<sup>2</sup>)))/(1 + z<sup>2</sup>/n)</p>
+  <h2>Predicción y tolerancia</h2>
+  <p>El intervalo de confianza habla de la media μ. Si lo que se quiere saber es dónde caerá <b>el próximo dato</b>, hace falta un intervalo de predicción, que suma la dispersión de un dato a la incertidumbre de la media:</p>
+  <p class="f">IP<sub>1−α</sub> = x̄ ± t<sub>n−1; α/2</sub>·s·√(1 + 1/n)</p>
+  <p>Y si se quiere un intervalo que contenga una proporción de toda la población (por ejemplo, el 90 % de las piezas), es un intervalo de tolerancia x̄ ± k·s, con un factor k que depende de n, de la proporción y de la confianza. Los dos suponen que la población es normal y, a diferencia del de la media, no se estrechan hasta cero al aumentar la muestra.</p>
   <h2>Varianza</h2>
   <p>(n − 1)s<sup>2</sup>/σ<sup>2</sup> sigue una χ<sup>2</sup> con n − 1 grados de libertad. Como no es simétrica, el intervalo usa dos valores críticos distintos:</p>
   <p class="f">IC<sub>1−α</sub>(σ<sup>2</sup>) = ((n − 1)s<sup>2</sup>/χ<sup>2</sup><sub>α/2</sub>, &ensp; (n − 1)s<sup>2</sup>/χ<sup>2</sup><sub>1−α/2</sub>)</p>
