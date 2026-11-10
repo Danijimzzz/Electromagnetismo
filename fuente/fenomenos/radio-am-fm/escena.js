@@ -67,16 +67,19 @@ const RadioAmFm = (() => {
     v.sigue(CAMS[paso], reloj, quieto);
     const { X, Y, rotulo, punto } = v, foto = window.FenomenoFoto, r = quieto ? 0.4 : reloj;
     const tau = quieto ? 0.13 : (r * 0.05) % 1;
+    const M = Dibujo.mezcla;
     g.fillStyle = c.sala; g.fillRect(0, 0, w, h);
+    if (paso > 0) { g.fillStyle = M(c.sala, c.portadora, 0.12); g.fillRect(0, 0, w, h); v.pantalla(); v.brillo(8, 4.5, 10, c.sala, 0.9); v.vineta(0.14); v.mundo(); }
 
     // una línea de datos a lo ancho de x0..x1 centrada en yc: fn(u) de −1 a 1
     function traza(fn, yc, amp, color, { x0 = 3.5, x1 = 15.3, ancho = 0.04, a = 1, n = 520, pasoU = 0 } = {}) {
-      g.strokeStyle = rgba(color, a); g.lineWidth = Math.max(1.4, ancho * v.K); g.lineJoin = 'round'; g.beginPath();
+      g.lineJoin = 'round'; g.beginPath();
       for (let j = 0; j <= n; j++) { const u = j / n, x = x0 + u * (x1 - x0), y = yc - amp * fn(u - tau * pasoU); j ? g.lineTo(X(x), Y(y)) : g.moveTo(X(x), Y(y)); }
-      g.stroke();
+      g.strokeStyle = rgba(color, 0.16 * a); g.lineWidth = Math.max(4, ancho * 3.6 * v.K); g.stroke();   // halo de la traza, como en un osciloscopio
+      g.strokeStyle = rgba(color, a); g.lineWidth = Math.max(1.4, ancho * v.K); g.stroke();
     }
     const ejeFila = (yc, a = 1) => { g.strokeStyle = rgba(c.rotulo, 0.25 * a); g.lineWidth = 1; g.beginPath(); g.moveTo(X(3.5), Y(yc)); g.lineTo(X(15.3), Y(yc)); g.stroke(); };
-    const fila = (yc, a = 1) => { v.panel(0.4, yc - 1.02, 15.2, 2.04, 0.5 * a); ejeFila(yc, a); };
+    const fila = (yc, a = 1) => { v.panel(0.4, yc - 1.02, 15.2, 2.04, 0.5 * a, true); ejeFila(yc, a); };
 
     // una antena (torre) con cruces; arriba una luz; base en y = suelo
     function torre(x, suelo, alto, color, a = 1) {
@@ -87,7 +90,10 @@ const RadioAmFm = (() => {
 
     if (paso === 0) {
       const suelo = 7.0;
-      g.fillStyle = c.suelo; g.fillRect(0, Y(suelo), w, h - Y(suelo));
+      // atardecer: cielo con degradado, colinas lejanas y el suelo
+      v.degradado(-1, suelo, M(c.sala, c.am, 0.32), M(c.sala, c.audio, 0.28)); v.brillo(12.5, suelo - 0.2, 6, c.audio, 0.3);
+      v.colinas(suelo - 0.4, 1.3, suelo, M(c.suelo, c.sala, 0.6), 4); v.colinas(suelo - 0.05, 0.7, suelo, M(c.suelo, c.sala, 0.3), 8);
+      v.degradado(suelo, 10, M(c.suelo, c.sala, 0.1), M(c.suelo, '#000000', 0.35));
       const antenas = [{ x: 2.0, col: c.am, rot: 'A · 855 kHz', fase: 0 }, { x: 5.0, col: c.audio, rot: 'B · 1000 kHz', fase: 0.3 }, { x: 8.0, col: c.fm, rot: 'C · FM 98,5 MHz', fase: 0.6 }];
       const sale = suave(tramo(t, 0.02, 0.2));
       for (const a of antenas) {
@@ -97,7 +103,7 @@ const RadioAmFm = (() => {
           g.beginPath(); g.arc(X(a.x), Y(suelo - 1.9), rad * v.K, -Math.PI * 0.42, Math.PI * 0.2); g.stroke();
         }
         torre(a.x, suelo, 1.9, c.torre);
-        punto(a.x, suelo - 1.95, 0.08, a.col);
+        v.brillo(a.x, suelo - 1.95, 0.7, a.col, 0.5 * sale); punto(a.x, suelo - 1.95, 0.08, a.col);
         rotulo(a.rot, a.x, suelo + 0.55, { al: 'center', tam: 11.5, peso: 700, color: a.col, escribe: tramo(t, 0.2 + a.fase * 0.3, 0.5 + a.fase * 0.3) });
       }
       // la radio: caja, altavoz, dial, antena y una frecuencia elegida
@@ -117,7 +123,7 @@ const RadioAmFm = (() => {
     if (paso === 1) {
       const a = suave(tramo(t, 0.03, 0.3));
       for (const [x0, ancho, titulo, col, ciclos, lam, ant] of [[0.5, 7.3, 'sonido: 1 kHz', c.audio, 1.2, 'λ = 300 km', 'antena de 75 km'], [8.2, 7.3, 'portadora: 1 MHz', c.am, 26, 'λ = 300 m', 'antena de 75 m']]) {
-        v.panel(x0, 0.5, ancho, 8.0, 0.75);
+        v.panel(x0, 0.5, ancho, 8.0, 0.75, true);
         rotulo(titulo, x0 + ancho / 2, 1.1, { al: 'center', tam: 14, peso: 700, color: col, escribe: tramo(t, 0.1, 0.35) });
         // onda
         const yc = 2.9, ini = x0 + 0.5, fin = x0 + ancho - 0.5;
@@ -179,7 +185,7 @@ const RadioAmFm = (() => {
       const a = suave(tramo(t, 0.03, 0.3));
       // circuito RLC en serie: antena, bobina, condensador variable y resistencia
       const x0 = 0.9, x1 = 5.6, y0 = 1.9, y1 = 5.4;
-      v.panel(0.4, 0.5, 5.8, 6.5, 0.7);
+      v.panel(0.4, 0.5, 5.8, 6.5, 0.7, true);
       g.strokeStyle = rgba(c.rotulo, a); g.lineWidth = Math.max(1.8, 0.045 * v.K); g.lineJoin = 'round';
       const lin = (xa, ya, xb, yb) => { g.beginPath(); g.moveTo(X(xa), Y(ya)); g.lineTo(X(xb), Y(yb)); g.stroke(); };
       lin(x0, y0, 1.7, y0); lin(4.3, y0, x1, y0); lin(x1, y0, x1, 3.0); lin(x1, 4.0, x1, y1); lin(x1, y1, x0, y1); lin(x0, y1, x0, 4.4); lin(x0, 3.0, x0, y0);
@@ -200,7 +206,7 @@ const RadioAmFm = (() => {
       // curva de respuesta en toda la banda
       const gx0 = 7.2, gx1 = 15.3, gy0 = 3.6, gy1 = 0.9, fa = 500, fb = 1700;
       const px = (f) => gx0 + ((f - fa) / (fb - fa)) * (gx1 - gx0), py = (q) => gy0 + (gy1 - gy0) * q;
-      v.panel(6.6, 0.4, 9.2, 4.6, 0.8);
+      v.panel(6.6, 0.4, 9.2, 4.6, 0.8, true);
       rotulo('toda la banda', 6.9, 0.8, { tam: 12, peso: 700, fondo: false });
       g.strokeStyle = rgba(c.rotulo, 0.5); g.lineWidth = 1; g.beginPath(); g.moveTo(X(gx0), Y(gy1 - 0.1)); g.lineTo(X(gx0), Y(gy0)); g.lineTo(X(gx1), Y(gy0)); g.stroke();
       for (const e2 of ESTACIONES) {
@@ -214,7 +220,7 @@ const RadioAmFm = (() => {
       rotulo('500 kHz', gx0, gy0 + 0.25, { tam: 10, fondo: false, al: 'left' }); rotulo('1700 kHz', gx1, gy0 + 0.25, { tam: 10, fondo: false, al: 'right' });
       // zoom ±25 kHz: el ancho de la curva comparado con los 9 kHz entre emisoras
       const zx0 = 7.2, zx1 = 15.3, zy0 = 7.5, zy1 = 5.6, zq = (f) => zx0 + ((f - f0k + 25) / 50) * (zx1 - zx0), zy = (q) => zy0 + (zy1 - zy0) * q;
-      v.panel(6.6, 5.2, 9.2, 3.7, 0.8);
+      v.panel(6.6, 5.2, 9.2, 3.7, 0.8, true);
       rotulo(`ampliado: ${entero(f0k)} kHz ± 25 kHz`, 6.9, 5.55, { tam: 12, peso: 700, fondo: false });
       g.strokeStyle = rgba(c.rotulo, 0.5); g.lineWidth = 1; g.beginPath(); g.moveTo(X(zx0), Y(zy1 - 0.1)); g.lineTo(X(zx0), Y(zy0)); g.lineTo(X(zx1), Y(zy0)); g.stroke();
       for (const s of [-1, 1]) { const q = gananciaDe(f0k + 9 * s, f0k); g.strokeStyle = rgba(c.portadora, 0.8); g.setLineDash([4, 4]); g.lineWidth = Math.max(1.2, 0.03 * v.K); g.beginPath(); g.moveTo(X(zq(f0k + 9 * s)), Y(zy0)); g.lineTo(X(zq(f0k + 9 * s)), Y(zy(q))); g.stroke(); g.setLineDash([]); punto(zq(f0k + 9 * s), zy(q), 0.08, c.ruido); }
@@ -226,7 +232,7 @@ const RadioAmFm = (() => {
     }
 
     if (paso === 5) {
-      const filas = [{ y: 2.1, fn: am, col: c.am, rot: 'señal sintonizada' }, { y: 4.6, fn: detectada, col: c.audio, rot: 'tras el diodo' }, { y: 7.1, fn: audio, col: c.fm, rot: 'tras el condensador' }];
+      const filas = [{ y: 2.1, fn: am, col: c.am, rot: 'sintonizada' }, { y: 4.6, fn: detectada, col: c.audio, rot: 'tras el diodo' }, { y: 7.1, fn: audio, col: c.fm, rot: 'tras el filtro' }];
       filas.forEach((f, k) => {
         const a = suave(tramo(t, 0.04 + k * 0.22, 0.2 + k * 0.22));
         fila(f.y, a);

@@ -49,16 +49,17 @@ const AltavozMotor = (() => {
     const v = Dibujo.vista(g, w, h, c, cam);
     v.sigue({ x: 8, y: 4.5, z: 1 }, reloj, quieto);
     const { X, Y, rotulo, punto, flecha } = v;
-    g.fillStyle = c.fondo; g.fillRect(0, 0, w, h);
+    // papel de cuaderno con luz en el centro y las esquinas en sombra
+    g.fillStyle = c.fondo; g.fillRect(0, 0, w, h); v.brillo(8, 4.5, 9, c.panel, 0.55);
     g.strokeStyle = rgba(c.rotulo, 0.06); g.lineWidth = 1; g.beginPath();
     for (let x = 0; x <= 16; x += 1) { g.moveTo(X(x), 0); g.lineTo(X(x), h); }
     for (let y = 0; y <= 9; y += 1) { g.moveTo(0, Y(y)); g.lineTo(w, Y(y)); }
-    g.stroke();
+    g.stroke(); v.vineta(0.12);
 
     // corriente que sale de la hoja (⊙) o entra (⊗)
     const saliente = (x, y, r, col, a = 1) => { g.globalAlpha = a; g.strokeStyle = col; g.fillStyle = col; g.lineWidth = Math.max(1.5, 0.05 * v.K); g.beginPath(); g.arc(X(x), Y(y), r * v.K, 0, 2 * Math.PI); g.stroke(); g.beginPath(); g.arc(X(x), Y(y), r * v.K * 0.3, 0, 2 * Math.PI); g.fill(); g.globalAlpha = 1; };
     const entrante = (x, y, r, col, a = 1) => { g.globalAlpha = a; g.strokeStyle = col; g.lineWidth = Math.max(1.5, 0.05 * v.K); g.beginPath(); g.arc(X(x), Y(y), r * v.K, 0, 2 * Math.PI); g.stroke(); const d = r * 0.65 * v.K; g.beginPath(); g.moveTo(X(x) - d, Y(y) - d); g.lineTo(X(x) + d, Y(y) + d); g.moveTo(X(x) + d, Y(y) - d); g.lineTo(X(x) - d, Y(y) + d); g.stroke(); g.globalAlpha = 1; };
-    const rect = (x, y, ancho, alto, col, r = 0.06) => { g.fillStyle = col; g.beginPath(); g.roundRect(X(x), Y(y), ancho * v.K, alto * v.K, r * v.K); g.fill(); };
+    const rect = (x, y, ancho, alto, col, r = 0.06) => { if (col[0] === '#') return v.pieza(x, y, ancho, alto, col, r); g.fillStyle = col; g.beginPath(); g.roundRect(X(x), Y(y), ancho * v.K, alto * v.K, r * v.K); g.fill(); };
 
     if (paso === 0) hilo(); else if (paso === 1 || paso === 2) altavoz(); else if (paso === 3) motor(); else if (paso === 4) conmutador(); else cuentas();
 
@@ -81,6 +82,7 @@ const AltavozMotor = (() => {
     function altavoz() {
       const I = paso === 2 ? cor.I : I_ALT, señal = quieto ? 0.6 : Math.sin(reloj * 7), amp = (paso === 1 ? suave(tramo(t, 0.05, 0.3)) : 1) * (paso === 2 ? I / I_ALT : 1);
       const dx = 0.45 * amp * señal, cx = 4.4, y0 = 4.5;
+      v.sombra(cx + 0.9, y0 + 4.05, 3.4, 0.22, 0.2); v.brillo(cx + 1.2, y0, 2.4, c.imanN, 0.1 + 0.1 * Math.abs(señal) * Math.min(1, amp));
       // imán: anillo (S) arriba y abajo, polo central (N) y culata
       rect(cx - 1.9, y0 - 2.5, 0.9, 5.0, c.marco, 0.1);
       rect(cx - 1.0, y0 - 2.5, 2.3, 0.9, c.imanS, 0.08); rect(cx - 1.0, y0 + 1.6, 2.3, 0.9, c.imanS, 0.08);
@@ -91,7 +93,7 @@ const AltavozMotor = (() => {
       rotulo('B radial', cx - 0.3, y0 - 2.95, { tam: 12, color: c.imanS, fondo: false, escribe: tramo(t, 0.1, 0.3) });
       // marco, cono y bobina móvil (con la corriente que sale o entra según el sentido)
       const bx = cx + 0.6 + dx;
-      g.strokeStyle = c.cono; g.fillStyle = rgba(c.cono, 0.55); g.lineWidth = Math.max(2, 0.07 * v.K); g.lineJoin = 'round';
+      g.strokeStyle = c.cono; { const gr = g.createLinearGradient(0, Y(y0 - 3.4), 0, Y(y0 + 3.4)); gr.addColorStop(0, rgba(Dibujo.mezcla(c.cono, c.panel, 0.4), 0.8)); gr.addColorStop(0.5, rgba(c.cono, 0.5)); gr.addColorStop(1, rgba(Dibujo.mezcla(c.cono, '#000000', 0.3), 0.75)); g.fillStyle = gr; } g.lineWidth = Math.max(2, 0.07 * v.K); g.lineJoin = 'round';
       const cx0 = bx + 0.55, cx1 = bx + 3.0 + dx * 0.3;
       g.beginPath(); g.moveTo(X(cx0), Y(y0 - 1.05)); g.lineTo(X(cx1), Y(y0 - 3.4)); g.lineTo(X(cx1), Y(y0 + 3.4)); g.lineTo(X(cx0), Y(y0 + 1.05)); g.closePath(); g.fill(); g.stroke();
       g.strokeStyle = c.marco; g.lineWidth = Math.max(2, 0.08 * v.K); g.beginPath(); g.moveTo(X(cx + 3.6), Y(y0 - 3.4)); g.lineTo(X(cx + 3.6), Y(y0 - 3.9)); g.moveTo(X(cx + 3.6), Y(y0 + 3.4)); g.lineTo(X(cx + 3.6), Y(y0 + 3.9)); g.stroke();
@@ -106,7 +108,7 @@ const AltavozMotor = (() => {
       // ondas de sonido hacia la derecha
       for (let k = 0; k < 4; k++) {
         const ph = quieto ? (k + 0.5) / 4 : (reloj * 0.45 + k / 4) % 1, r = 0.4 + ph * 4.2;
-        g.strokeStyle = rgba(c.rotulo, 0.5 * (1 - ph) * Math.max(0.25, amp)); g.lineWidth = Math.max(1.5, 0.05 * v.K); g.beginPath(); g.arc(X(bx + 3.2), Y(y0), r * v.K, -0.9, 0.9); g.stroke();
+        g.strokeStyle = rgba(c.imanS, 0.75 * (1 - ph) * Math.max(0.25, amp)); g.lineWidth = Math.max(1.5, (0.11 - 0.07 * ph) * v.K); g.beginPath(); g.arc(X(bx + 3.2), Y(y0), r * v.K, -0.9, 0.9); g.stroke();
       }
       rotulo('sonido', 14.2, y0, { al: 'right', tam: 13, peso: 600, fondo: false, escribe: tramo(t, 0.4, 0.7) });
       if (paso === 2) {
@@ -161,7 +163,7 @@ const AltavozMotor = (() => {
       for (const d of [90, 180, 270, 360]) rotulo(`${d}°`, tx(d), gy0 + amp + 0.55, { al: 'center', tam: 11.5, fondo: false });
       rotulo('τ / τ máx', gx0 + 0.15, gy0 - amp - 0.5, { tam: 12, fondo: false });
       rotulo('ángulo girado', gx1, gy0 + amp + 1.1, { al: 'right', tam: 12, fondo: false });
-      rotulo('sin conmutador: el par se invierte y frena', 5.1, 7.5, { tam: 12.5, color: c.marco, peso: 600, fondo: false, escribe: tramo(t, 0.3, 0.55) });
+      rotulo('sin conmutador: el par se invierte y frena', 4.3, 6.3, { tam: 12.5, color: c.marco, peso: 600, fondo: false, escribe: tramo(t, 0.3, 0.55) });
       rotulo('con conmutador: siempre empuja igual', 10.9, 1.5, { al: 'center', tam: 12.5, color: c.fuerza, peso: 700, fondo: false, escribe: tramo(t, 0.5, 0.8) });
     }
 

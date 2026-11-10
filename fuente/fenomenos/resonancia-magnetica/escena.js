@@ -52,14 +52,23 @@ const ResonanciaMagnetica = (() => {
     const giro = quieto ? 0.9 : reloj * 4.2;   // giro visual del protón (mucho más lento que los 64 millones de vueltas por segundo)
     const TY0 = 3.3, TY1 = 5.7;                 // el túnel: de y = 3,3 a 5,7
 
-    g.fillStyle = c.pared; g.fillRect(0, 0, w, h);
+    // la sala: pared con luz, zócalo y suelo que refleja la máquina
+    const M = Dibujo.mezcla;
+    v.degradado(-1, 7.56, M(c.pared, c.iman, 0.06), M(c.pared, c.iman, 0.26)); v.brillo(8, 0.2, 8, c.pared, 0.7);
+    v.degradado(7.56, 10, M(c.pared, c.iman, 0.42), M(c.pared, c.iman, 0.18));
+    g.fillStyle = rgba(c.rotulo, 0.12); g.fillRect(0, Y(7.56), w, Math.max(1.5, 0.05 * v.K));
+    v.sombra(8, 7.6, 8.2, 0.3, 0.25);
     iman(); paciente(); lineasB();
     if (paso === 0) p0(); else if (paso === 1) p1(); else if (paso === 2) p2(); else if (paso === 3) p3(); else if (paso === 4) p4(); else p5();
 
     // la carcasa del imán con las vueltas del hilo (⊙ y ⊗) arriba y abajo del túnel
     function iman() {
-      g.fillStyle = c.iman; g.beginPath(); g.roundRect(X(0.7), Y(1.5), 14.6 * v.K, 6.0 * v.K, 0.5 * v.K); g.fill();
-      g.fillStyle = c.pared; g.fillRect(X(0.7), Y(TY0), 14.6 * v.K, (TY1 - TY0) * v.K);
+      v.pieza(0.7, 1.5, 14.6, 6.0, c.iman, 0.5);
+      g.fillStyle = rgba(c.pared, 0.3); g.beginPath(); g.roundRect(X(1.0), Y(1.62), 14.0 * v.K, 0.16 * v.K, 0.08 * v.K); g.fill();   // reflejo de la carcasa
+      // el túnel, más oscuro hacia el techo, y la luz del campo en su interior
+      v.degradado(TY0, TY1, Dibujo.mezcla(c.pared, c.iman, 0.45), Dibujo.mezcla(c.pared, c.iman, 0.08), 0.7, 15.3);
+      v.brillo(8, (TY0 + TY1) / 2, 6.5, c.campo, 0.1);
+      g.fillStyle = rgba(c.rotulo, 0.18); g.fillRect(X(0.7), Y(TY0), 14.6 * v.K, Math.max(1.5, 0.04 * v.K));
       g.strokeStyle = c.bobina; g.lineWidth = Math.max(1.6, 0.05 * v.K);
       for (const y of [2.45, 6.55]) for (let k = 0; k < 21; k++) {
         const x = 1.5 + k * 0.66; g.beginPath(); g.arc(X(x), Y(y), 0.17 * v.K, 0, 2 * Math.PI); g.stroke();
@@ -69,9 +78,15 @@ const ResonanciaMagnetica = (() => {
     }
     // el paciente tumbado sobre la camilla (cabeza a la izquierda)
     function paciente() {
-      g.fillStyle = c.camilla; g.fillRect(X(2.2), Y(5.12), 11.8 * v.K, 0.16 * v.K);
-      g.fillStyle = c.cuerpo; g.beginPath(); g.roundRect(X(3.5), Y(4.15), 8.8 * v.K, 0.95 * v.K, 0.4 * v.K); g.fill();
-      g.beginPath(); g.arc(X(3.1), Y(4.62), 0.5 * v.K, 0, 2 * Math.PI); g.fill();
+      const M = Dibujo.mezcla, bata = M(c.pared, c.campo, 0.22);
+      v.pieza(2.2, 5.12, 11.8, 0.2, c.camilla, 0.06);
+      v.pieza(2.45, 4.72, 1.35, 0.4, M(c.pared, c.camilla, 0.15), 0.18);                       // almohada
+      v.pieza(3.5, 4.15, 6.2, 0.97, bata, 0.4);                                                // la bata, del cuello a las rodillas
+      v.pieza(9.3, 4.38, 2.7, 0.72, c.cuerpo, 0.3); v.pieza(11.75, 4.05, 0.5, 1.05, c.cuerpo, 0.2);   // piernas y pies
+      v.pieza(4.6, 4.5, 3.6, 0.36, c.cuerpo, 0.18);                                            // el brazo, a lo largo del cuerpo
+      g.fillStyle = c.cuerpo; g.beginPath(); g.arc(X(3.1), Y(4.6), 0.5 * v.K, 0, 2 * Math.PI); g.fill();
+      g.fillStyle = M(c.bobina, '#000000', 0.35); g.beginPath(); g.arc(X(3.1), Y(4.6), 0.5 * v.K, Math.PI * 0.62, Math.PI * 1.55); g.fill();   // el pelo
+      g.strokeStyle = rgba(c.rotulo, 0.55); g.lineWidth = Math.max(1.2, 0.03 * v.K); g.beginPath(); g.moveTo(X(3.28), Y(4.42)); g.lineTo(X(3.42), Y(4.42)); g.stroke();   // el ojo, cerrado
     }
     // el campo B₀ del túnel: flechas a lo largo del eje
     function lineasB() {
@@ -93,26 +108,26 @@ const ResonanciaMagnetica = (() => {
       rotulo('corriente en el hilo (⊙ sale, ⊗ entra)', 8, 2.95, { al: 'center', tam: 11.5, color: c.bobina, escribe: tramo(t, 0.55, 0.9), fondo: false });
     }
     function p1() {
-      v.panel(9.6, 0.3, 5.9, 3.0);
+      v.panel(9.6, 0.3, 5.9, 3.35);
       proton(11.3, 1.95, 1.05, 0.65);
       rotulo('B₀', 11.45, 0.65, { tam: 12.5, fondo: false, peso: 700, color: c.campo });
       rotulo('protón', 12.6, 1.35, { tam: 12.5, fondo: false, peso: 700, color: c.proton, escribe: tramo(t, 0.2, 0.45) });
       rotulo('precesión', 12.6, 1.85, { tam: 12.5, fondo: false, escribe: tramo(t, 0.35, 0.6) });
-      rotulo(`${f1(campoB.T)} T → ${f2(larmor(campoB.T) / 1e6)} MHz`, 12.55, 2.7, { al: 'center', tam: 13.5, fondo: false, peso: 700, color: c.resalta, escribe: tramo(t, 0.5, 0.8) });
+      rotulo(`${f1(campoB.T)} T → ${f2(larmor(campoB.T) / 1e6)} MHz`, 12.55, 3.2, { al: 'center', tam: 13.5, fondo: false, peso: 700, color: c.resalta, escribe: tramo(t, 0.5, 0.8) });
       rotulo('f = (γ/2π) B₀', 8, 7.95, { al: 'center', peso: 700, color: c.resalta, escribe: tramo(t, 0.55, 0.9) });
     }
     function p2() {
       const pulso = suave(tramo(t, 0.15, 0.75)), ang = 0.65 + (Math.PI / 2 - 0.65) * pulso;   // el espín se inclina de 37° a 90°
-      v.panel(9.6, 0.3, 5.9, 3.0);
+      v.panel(9.6, 0.3, 5.9, 3.35);
       proton(11.3, 1.95, 1.05, ang, pulso > 0.9 ? c.rf : c.proton);
       rotulo(`${Math.round(ang * 180 / Math.PI)}°`, 12.9, 1.5, { tam: 13.5, fondo: false, peso: 700, color: c.resalta });
-      rotulo(`pulso de ${f1(FL / 1e6)} MHz`, 12.55, 2.7, { al: 'center', tam: 13, fondo: false, peso: 700, color: c.rf, escribe: tramo(t, 0.1, 0.4) });
+      rotulo(`pulso de ${f1(FL / 1e6)} MHz`, 12.55, 3.2, { al: 'center', tam: 13, fondo: false, peso: 700, color: c.rf, escribe: tramo(t, 0.1, 0.4) });
       // la bobina de radio rodea el tórax y emite ondas hacia dentro
       g.strokeStyle = c.rf; g.lineWidth = Math.max(2.2, 0.07 * v.K);
       for (const x of [7.3, 8.9]) { g.beginPath(); g.moveTo(X(x), Y(3.75)); g.lineTo(X(x), Y(5.35)); g.stroke(); }
       const onda = quieto ? 0.5 : (reloj * 1.2) % 1;
       for (let k = 0; k < 3; k++) { const u = (onda + k / 3) % 1, a = 1 - u; g.strokeStyle = rgba(c.rf, 0.55 * a * pulso); g.lineWidth = Math.max(1.6, 0.05 * v.K); g.beginPath(); g.ellipse(X(8.1), Y(4.6), (0.4 + u * 1.6) * v.K, (0.5 + u * 0.6) * v.K, 0, 0, 2 * Math.PI); g.stroke(); }
-      rotulo('bobina de radiofrecuencia', 5.4, 2.95, { al: 'center', tam: 11.5, fondo: false, color: c.rf, peso: 700, escribe: tramo(t, 0.3, 0.6) });
+      rotulo('bobina de radiofrecuencia', 5.4, 2.95, { al: 'center', tam: 11.5, color: c.rf, peso: 700, escribe: tramo(t, 0.3, 0.6) });
       rotulo('solo si la frecuencia coincide', 8, 7.95, { al: 'center', peso: 700, color: c.resalta, escribe: tramo(t, 0.6, 0.95) });
     }
     function p3() {
@@ -141,7 +156,7 @@ const ResonanciaMagnetica = (() => {
       xs.forEach((x, i) => {
         const u = i - 1, f = larmor(B0 + G * X0 * u) / 1e6, a = tramo(t, 0.1 + 0.2 * i, 0.4 + 0.2 * i);
         g.strokeStyle = rgba(c.resalta, a); g.lineWidth = Math.max(1.6, 0.05 * v.K); g.beginPath(); g.moveTo(X(x), Y(TY0 - 0.3)); g.lineTo(X(x), Y(TY1 + 0.3)); g.stroke();
-        rotulo(`${f2(f)} MHz`, x, 2.95, { al: 'center', tam: 12.5, peso: 700, color: c.resalta, escribe: a, fondo: false });
+        rotulo(`${f2(f)} MHz`, x, 2.95, { al: 'center', tam: 12.5, peso: 700, color: c.resalta, escribe: a });
         rotulo(tags[i], x, 6.1, { al: 'center', tam: 11.5, escribe: a, fondo: false });
       });
       rotulo(`gradiente ${grad.mT} mT/m: ${f2(HZ_CM * grad.mT / 10 / 1e3)} kHz por cm`, 8, 7.95, { al: 'center', peso: 700, color: c.resalta, escribe: tramo(t, 0.55, 0.9) });

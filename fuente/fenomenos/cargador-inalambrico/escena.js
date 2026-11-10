@@ -53,8 +53,17 @@ const CargadorInalambrico = (() => {
     const PADY = 7.0, TX_Y = PADY - 0.25, MOV_Y = PADY - 0.55 - GAP, RX_Y = MOV_Y - 0.2;
     const fase = quieto ? Math.PI / 2 : reloj * 3.2, s = Math.sin(fase);   // fase visual de la corriente (mucho más lenta que la real)
 
-    g.fillStyle = c.pared; g.fillRect(0, 0, w, h);
-    g.fillStyle = c.mesa; g.fillRect(0, Y(PADY + 0.55), w, h - Y(PADY + 0.55));
+    // ambiente: la pared con la luz de una lámpara, la mesa de madera con sus vetas y una taza al lado
+    const M = Dibujo.mezcla, MESA = PADY + 0.55;
+    v.degradado(-1, MESA, M(c.pared, c.mesa, 0.1), M(c.pared, c.mesa, 0.32));
+    v.brillo(8, MESA - 0.4, 9, c.pared, 0.55);
+    v.degradado(MESA, 10, M(c.mesa, c.pared, 0.18), M(c.mesa, '#000000', 0.3));
+    g.strokeStyle = rgba(c.rotulo, 0.08); g.lineWidth = 1;
+    for (let k = 0; k < 7; k++) { const y = MESA + 0.18 + k * 0.22; g.beginPath(); g.moveTo(0, Y(y)); for (let px = 0; px <= w; px += 16) g.lineTo(px, Y(y) + 2.5 * Math.sin(px * 0.011 + k * 1.7)); g.stroke(); }
+    g.fillStyle = rgba(c.pared, 0.35); g.fillRect(0, Y(MESA), w, Math.max(1.5, 0.04 * v.K));
+    v.sombra(14.75, MESA + 0.05, 1.0, 0.14); v.pieza(14.2, MESA - 1.15, 1.1, 1.2, c.resalta, 0.1);
+    g.strokeStyle = M(c.resalta, '#000000', 0.2); g.lineWidth = Math.max(2.5, 0.09 * v.K); g.beginPath(); g.arc(X(15.3), Y(MESA - 0.58), 0.3 * v.K, -Math.PI / 2, Math.PI / 2); g.stroke();
+    if (!quieto) for (let k = 0; k < 3; k++) { const q = (reloj * 0.25 + k / 3) % 1; g.strokeStyle = rgba(c.rotulo, 0.16 * (1 - q)); g.lineWidth = Math.max(1.5, 0.05 * v.K); g.beginPath(); g.moveTo(X(14.75 + 0.12 * Math.sin(q * 7 + k)), Y(MESA - 1.2 - q * 0.9)); g.lineTo(X(14.75 + 0.12 * Math.sin(q * 7 + k + 0.8)), Y(MESA - 1.45 - q * 0.9)); g.stroke(); }
     const onda = (x0, y0, ancho, alto, fn, color, hasta = 1) => {
       g.strokeStyle = color; g.lineWidth = Math.max(2.2, 0.07 * v.K); g.lineJoin = 'round'; g.beginPath();
       for (let k = 0; k <= 60 * hasta; k++) { const u = k / 60, px = X(x0 + u * ancho), py = Y(y0 - fn(u) * alto); if (k) g.lineTo(px, py); else g.moveTo(px, py); }
@@ -77,7 +86,8 @@ const CargadorInalambrico = (() => {
     }
     // la base del cargador con la bobina emisora vista de lado (3 cm de radio: 6 unidades de semianchura)
     function cargador() {
-      g.fillStyle = c.base; g.beginPath(); g.roundRect(X(2.8), Y(PADY - 0.45), 10.4 * v.K, 1.0 * v.K, 0.2 * v.K); g.fill();
+      v.sombra(8, PADY + 0.58, 6.2, 0.22, 0.3); v.brillo(8, TX_Y - 0.6, 5.5, c.campo, 0.08 + 0.14 * Math.abs(s));
+      v.pieza(2.8, PADY - 0.45, 10.4, 1.0, c.base, 0.2);
       g.strokeStyle = c.bobina; g.lineWidth = Math.max(2, 0.06 * v.K);
       for (const lado of [-1, 1]) for (let k = 0; k < 4; k++) { const x = 8 + lado * (3.3 + k * 0.55); g.beginPath(); g.ellipse(X(x), Y(TX_Y), 0.2 * v.K, 0.16 * v.K, 0, 0, 2 * Math.PI); g.stroke(); }
       // un cable al enchufe y la corriente que oscila
@@ -85,8 +95,9 @@ const CargadorInalambrico = (() => {
     }
     // el móvil, tumbado sobre la base, con su bobina receptora
     function movil() {
-      g.fillStyle = c.movil; g.beginPath(); g.roundRect(X(3.2), Y(MOV_Y - 0.1), 9.6 * v.K, 0.7 * v.K, 0.18 * v.K); g.fill();
+      v.pieza(3.2, MOV_Y - 0.1, 9.6, 0.7, c.movil, 0.18);
       const luz = paso >= 2 ? Math.min(1, Math.abs(s) * fem(ZMM / 1000, paso === 2 ? frec.kHz * 1e3 : F0) / 2.5 + 0.1) : 0;
+      if (luz > 0) v.brillo(8, MOV_Y - 0.2, 5, c.pantalla, 0.12 + 0.2 * luz);
       if (luz > 0) { g.fillStyle = rgba(c.pantalla, 0.35 + 0.5 * luz); g.beginPath(); g.roundRect(X(3.5), Y(MOV_Y - 0.02), 9.0 * v.K, 0.12 * v.K, 0.06 * v.K); g.fill(); }
       g.strokeStyle = c.bobina; g.lineWidth = Math.max(2, 0.06 * v.K);
       for (const lado of [-1, 1]) for (let k = 0; k < 3; k++) { const x = 8 + lado * (1.0 + k * 0.4) * 0.8; g.beginPath(); g.ellipse(X(x), Y(RX_Y + 0.3), 0.14 * v.K, 0.12 * v.K, 0, 0, 2 * Math.PI); g.stroke(); }
@@ -111,13 +122,13 @@ const CargadorInalambrico = (() => {
       onda(9.9, 1.75, 5.4, 0.55, (u) => Math.sin(2 * Math.PI * ciclos * u - fase), c.corriente);
       onda(9.9, 3.05, 5.4, 0.55 * (0.25 + 0.75 * k), (u) => -Math.cos(2 * Math.PI * ciclos * u - fase), c.fem);
       rotulo('corriente I(t) de la emisora', 9.9, 0.75, { tam: 12, fondo: false, color: c.corriente, peso: 700 });
-      rotulo(`tensión ε(t) = −M dI/dt · ${f2(fem(ZREF, frec.kHz * 1e3))} V`, 9.9, 2.35, { tam: 12, fondo: false, color: c.fem, peso: 700, escribe: tramo(t, 0.2, 0.5) });
+      rotulo(`tensión ε(t): pico de ${f2(fem(ZREF, frec.kHz * 1e3))} V`, 9.9, 2.35, { tam: 12, fondo: false, color: c.fem, peso: 700, escribe: tramo(t, 0.2, 0.5) });
       rotulo(`${frec.kHz} kHz`, 15.3, 0.75, { al: 'right', tam: 12, fondo: false, peso: 700 });
       rotulo('ley de Faraday: ε = −dΦ/dt', 4.6, 1.0, { al: 'center', peso: 700, color: c.fem, escribe: tramo(t, 0.4, 0.8) });
       rotulo('el móvil recibe tensión', 8, MOV_Y - 0.85, { al: 'center', tam: 12.5, escribe: tramo(t, 0.55, 0.85) });
     }
     function p3() {
-      const y = 1.5, caja = (x, tx, ancho = 2.6) => { v.panel(x, y - 0.7, ancho, 1.4); rotulo(tx, x + ancho / 2, y, { al: 'center', tam: 12, fondo: false, peso: 700 }); };
+      const y = 1.5, caja = (x, tx, ancho = 2.6) => { v.panel(x, y - 0.7, ancho, 1.4, 0.94, true); rotulo(tx, x + ancho / 2, y, { al: 'center', tam: 12, fondo: false, peso: 700 }); };
       caja(0.9, 'bobina L'); caja(4.4, 'condensador C'); caja(8.1, 'rectificador'); caja(11.6, 'batería', 2.6);
       const a = (x) => flecha(x, y, x + 0.55, y, c.rotulo, suave(tramo(t, 0.1, 0.3)), 0.04);
       a(3.55); a(7.0); a(10.75);
@@ -136,7 +147,7 @@ const CargadorInalambrico = (() => {
       g.stroke();
       punto(tx(ZMM), ty(mutua(ZMM / 1000)), 0.16, c.resalta);
       rotulo('M (µH)', gx0 + 0.1, gy1 - 0.3, { tam: 11.5, fondo: false }); rotulo('z (mm)', gx1, gy0 + 0.35, { al: 'right', tam: 11.5, fondo: false });
-      rotulo(`z = ${ZMM} mm → M = ${f2(mutua(ZMM / 1000) * 1e6)} µH`, 12.4, 3.4, { al: 'center', tam: 12.5, fondo: false, peso: 700, color: c.resalta });
+      rotulo(`z = ${ZMM} mm → M = ${f2(mutua(ZMM / 1000) * 1e6)} µH`, gx0, gy0 + 0.35, { tam: 12.5, fondo: false, peso: 700, color: c.resalta });
       rotulo(`tensión de pico: ${f2(fem(ZMM / 1000, F0))} V`, 4.3, 1.0, { peso: 700, color: c.fem, escribe: tramo(t, 0.1, 0.4) });
       rotulo('separación entre bobinas', 8, MOV_Y + 1.3 + GAP * 0.1, { al: 'center', tam: 12.5, escribe: tramo(t, 0.3, 0.6) });
       flecha(1.9, TX_Y, 1.9, RX_Y + 0.1, c.resalta, 0, 0.04);

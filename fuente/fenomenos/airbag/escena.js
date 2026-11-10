@@ -132,7 +132,7 @@ const Airbag = (() => {
       rotulo('t (ms)', gx1, gy0 + 0.3, { al: 'right', tam: 11, fondo: false });
       rotulo('sin cinturón: 7 ms', tx(datos.tSin * 1000) + 0.15, fy(datos.Fsin) + 0.25, { tam: 11.5, fondo: false, peso: 600, color: c.resalta });
       rotulo('cinturón y airbag: 71 ms', tx(28), fy(datos.Fcon) - 0.3, { tam: 11.5, fondo: false, peso: 600, escribe: tramo(t, 0.7, 0.9) });
-      rotulo('las dos áreas valen 1050 N·s', tx(28), (gy0 + gy1) / 2, { tam: 11, fondo: false, escribe: tramo(t, 0.85, 1) });
+      rotulo('misma área: 1050 N·s', tx(28), (gy0 + gy1) / 2, { tam: 11, fondo: false, escribe: tramo(t, 0.85, 1) });
     }
     // paso 6: la cuenta del teorema de las fuerzas vivas
     function cuentas() {

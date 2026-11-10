@@ -175,8 +175,8 @@ const CieloAzul = (() => {
         rotulo(nom, 8.9, y + 0.2, { tam: 12, fondo: false, peso: 700, color: deLongitud(nm), escribe: p });
         g.fillStyle = deLongitud(nm, 0.4); g.fillRect(X(10.1), Y(y - 0.12), Math.max(1.5, tz * 3.2 * v.K * p), 0.26 * v.K);
         g.fillStyle = deLongitud(nm); g.fillRect(X(10.1), Y(y + 0.22), Math.max(1.5, th * 3.2 * v.K * suave(tramo(t, 0.55, 0.85))), 0.26 * v.K);
-        rotulo(`${pc(tz)} % con el Sol alto`, 13.4, y, { tam: 11, fondo: false, al: 'left', escribe: p });
-        rotulo(`${pc(th)} % en el horizonte`, 13.4, y + 0.45, { tam: 11, fondo: false, al: 'left', peso: 700, escribe: tramo(t, 0.6, 0.85) });
+        rotulo(`${pc(tz)} % Sol alto`, 13.4, y, { tam: 11, fondo: false, al: 'left', escribe: p });
+        rotulo(`${pc(th)} % horizonte`, 13.4, y + 0.45, { tam: 11, fondo: false, al: 'left', peso: 700, escribe: tramo(t, 0.6, 0.85) });
       };
       fila(1.5, 'azul', datos.azulCenit, datos.azulHorizonte, 450); fila(2.6, 'rojo', datos.rojoCenit, datos.rojoHorizonte, 700);
     }
