@@ -56,7 +56,7 @@ module.exports = async ({ path, publico, pagina, browser, mal, nombre, clave, no
   await page.goto(url);
   await page.waitForTimeout(300);
   if ((await page.getAttribute('#play', 'aria-pressed')) === 'true') await page.click('#play');
-  const foto = () => page.evaluate(() => { const cv = document.querySelector('#escena'), d = cv.getContext('2d').getImageData(0, 0, cv.width, cv.height).data; let h = 0; for (let k = 0; k < d.length; k += 53) h = (h * 31 + d[k]) | 0; return h; });
+  const foto = () => page.evaluate(() => { const cv = document.querySelector('#escena'), t = document.createElement('canvas'); t.width = cv.width; t.height = cv.height; const g = t.getContext('2d', { willReadFrequently: true }); g.drawImage(cv, 0, 0); const d = g.getImageData(0, 0, t.width, t.height).data; let h = 0; for (let k = 0; k < d.length; k += 53) h = (h * 31 + d[k]) | 0; return h; });
   await page.click('#sig');
   await page.waitForTimeout(150);
   const f1 = await foto();
