@@ -46,6 +46,11 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       cerca(m('cp').a, 0.0123485, 1e-5, 'Clopper-Pearson inferior'); cerca(m('cp').b, 0.3169827, 1e-5, 'Clopper-Pearson superior');
       cerca(m('wilson').a, 0.0278665, 1e-5, 'Wilson inferior'); cerca(m('wilson').b, 0.3010336, 1e-5, 'Wilson superior');
       cerca(m('ac').a, 0.0156562, 1e-5, 'Agresti-Coull inferior'); cerca(m('ac').b, 0.3132439, 1e-5, 'Agresti-Coull superior');
+      // contra statsmodels.stats.proportion.proportion_confint (pruebas/referencias/estadistica.py): exacto, Wilson y Agresti-Coull en cinco casos
+      for (const c of JSON.parse(fs.readFileSync(path.join(fuente, '..', 'pruebas', 'referencias', 'estadistica.json'), 'utf8')).proporcion_ic) for (const k of ['cp', 'wilson', 'ac']) {
+        const s = IcC.resolver({ modo: 'proporcion', tipoP: 'exitos', n: String(c.n), x: String(c.x), nivel: String(100 * c.nivel), metodoP: k }), q = `${k} con ${c.x}/${c.n} al ${c.nivel}`;
+        if (Math.abs(Math.max(0, s.a) - c[k][0]) > 1e-7 || Math.abs(Math.min(1, s.b) - c[k][1]) > 1e-7) mal(`Intervalos · ${q}: (${s.a}; ${s.b}) en vez de (${c[k]})`);
+      }
       // exacto con 0 éxitos de 10: (0; 1 − 0,025^(1/10)) = (0; 0,30850)
       const c0 = IcC.resolver({ modo: 'proporcion', tipoP: 'exitos', n: '10', x: '0', nivel: '95', metodoP: 'cp' }); cerca(c0.b, 1 - 0.025 ** 0.1, 1e-7, 'Clopper-Pearson con 0 éxitos'); if (c0.a !== 0) mal('Intervalos: el exacto con 0 éxitos no empieza en 0');
       // el exacto cubre al menos el 95 % (simulación con p̂ = 0,1 y n = 20, donde el normal se queda corto)

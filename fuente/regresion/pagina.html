@@ -81,6 +81,12 @@ textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 120px 
   <p>Con pocos datos puede salir un r alto por casualidad. Para contrastar si la correlación de la población ρ es distinta de cero se usa</p>
   <p class="f m">$t = r √(N − 2)/√(1 − r^2)$</p>
   <p>que, si ρ = 0, sigue una t de Student con N − 2 grados de libertad. Si el p-valor es menor que 0,05 la correlación es significativa al 5 %. Puedes calcular la t en <a href="../distribuciones/">Distribuciones de probabilidad</a>.</p>
+  <h2>Intervalo de confianza de ρ y comparación de dos correlaciones</h2>
+  <p class="m">El coeficiente r de una muestra estima la correlación ρ de la población. Como r está encerrado entre −1 y 1, su distribución es asimétrica; la transformación de Fisher $z = "artanh"(r)$ la convierte en casi normal, con desviación típica $1/√{N − 3}$. Se construye el intervalo en z y se deshace el cambio con la tangente hiperbólica. Para comparar las correlaciones de dos muestras independientes se restan sus z:</p>
+  <p class="f m">$z ± z_{α/2}/√{N − 3}$, &ensp; $ρ = "tanh"(z)$, &ensp; $Z = {z_1 − z_2}/{√(1/(N_1 − 3) + 1/(N_2 − 3))}$</p>
+  <h2>Ajuste ponderado: cuando cada y tiene su error</h2>
+  <p class="m">En el laboratorio no todos los puntos se miden igual de bien. Si cada $y_i$ tiene su incertidumbre $σ_i$, la recta se ajusta dando a cada punto el peso $w_i = 1/σ_i^2$, es decir, minimizando $χ^2 = ∑ ((y_i − a − b x_i)/σ_i)^2$. Los errores de a y b salen entonces de las incertidumbres de los datos, y el $χ^2$ reducido ($χ^2$ entre $N − 2$) dice si la recta es compatible con ellos: cerca de 1, lo es; si es mucho mayor, o el modelo no es una recta o las incertidumbres están subestimadas.</p>
+  <p class="f m">$b = {S S_{xy} − S_x S_y}/Δ$, &ensp; $a = {S_{xx} S_y − S_x S_{xy}}/Δ$, &ensp; $σ_b = √{S/Δ}$, &ensp; $σ_a = √{S_{xx}/Δ}$, &ensp; $Δ = S S_{xx} − S_x^2$</p>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Regresión y correlación <span id="ver"></span> (beta)</footer>

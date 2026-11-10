@@ -7,6 +7,7 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
   const RegresionC = require(path.join(fuente, 'regresion', 'calculo.js'));
   {
     const antes = fallos, cerca = (a, b, tol, q) => { if (!(Math.abs(a - b) <= tol)) mal(`Regresión · ${q}: ${a} en vez de ${b}`); };
+    const REFR = JSON.parse(fs.readFileSync(path.join(fuente, '..', 'pruebas', 'referencias', 'estadistica.json'), 'utf8')).regresion_ponderada;
     const r = (c) => RegresionC.resolver(RegresionC.ejemplos.find((e) => e.clave === c).sc);
     for (const e of RegresionC.ejemplos) { try { const s = RegresionC.resolver(e.sc); if (!s.pasos.length || !isFinite(s.R2)) mal(`Regresión · ${e.clave}: sin resultado`); } catch (err) { mal(`Regresión · ${e.clave}: ${err.message}`); } }
     const n = r('notas');
@@ -41,7 +42,23 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       let ok = false; try { RegresionC.resolver(sc); } catch (e) { ok = true; }
       if (!ok) mal(`Regresión: ${q} no da error`);
     }
-    if (fallos === antes) console.log(`  ✓ Regresión: ${RegresionC.ejemplos.length} ejemplos, medias, covarianza, r, las dos rectas, frecuencias, ajustes no lineales, parábola y errores`);
+    // z de Fisher: con r y N del ejemplo, tanh(artanh(r) ± 1,959964/√(N − 3)); y el caso de libro r = 0,5 con N = 28: (0,156; 0,736)
+    { const d = r('dos-correlaciones'), z = Math.atanh(d.r); cerca(d.fisher.a, Math.tanh(z - 1.959964 / Math.sqrt(5)), 1e-7, 'Fisher inferior'); cerca(d.fisher.b, Math.tanh(z + 1.959964 / Math.sqrt(5)), 1e-7, 'Fisher superior');
+      cerca(Math.tanh(Math.atanh(0.5) - 1.959964 / 5), 0.1565, 5e-4, 'Fisher de libro'); cerca(Math.tanh(Math.atanh(0.5) + 1.959964 / 5), 0.7360, 5e-4, 'Fisher de libro');
+      // comparación con r₂ = 0,62 y n₂ = 40: Z = (z₁ − artanh 0,62)/√(1/5 + 1/37)
+      cerca(d.comp.z, (z - Math.atanh(0.62)) / Math.sqrt(1 / 5 + 1 / 37), 1e-9, 'Z de dos correlaciones'); cerca(d.comp.p, 2 * (1 - require(path.join(fuente, 'estadistica', 'calculo.js')).Phi(Math.abs(d.comp.z))), 1e-12, 'p de dos correlaciones');
+      for (const [q, sc] of [['r₂ = 1', { r2c: '1', n2c: '20' }], ['n₂ = 3', { r2c: '0,5', n2c: '3' }], ['falta n₂', { r2c: '0,5', n2c: '' }]]) { let ok = false; try { RegresionC.resolver({ ...RegresionC.ejemplos.find((e) => e.clave === 'dos-correlaciones').sc, ...sc }); } catch (e) { ok = true; } if (!ok) mal(`Regresión: ${q} no da error`); } }
+    // ajuste ponderado, por otro camino: con las medias ponderadas, b = ∑w(x − x̄)(y − ȳ)/∑w(x − x̄)², a = ȳ − b x̄, σ_b = 1/√∑w(x − x̄)²
+    { const P = r('ponderado'), W = P.pond, pts = P.pts, w = pts.map((q) => 1 / q.s ** 2), S = w.reduce((a, b) => a + b), xm = pts.reduce((a, q, i) => a + w[i] * q.x, 0) / S, ym = pts.reduce((a, q, i) => a + w[i] * q.y, 0) / S;
+      const sxx = pts.reduce((a, q, i) => a + w[i] * (q.x - xm) ** 2, 0), b = pts.reduce((a, q, i) => a + w[i] * (q.x - xm) * (q.y - ym), 0) / sxx, a = ym - b * xm;
+      cerca(W.b, b, 1e-10, 'pendiente ponderada'); cerca(W.a, a, 1e-10, 'ordenada ponderada'); cerca(W.sb, 1 / Math.sqrt(sxx), 1e-12, 'σ_b ponderada'); cerca(W.sa, Math.sqrt(1 / S + xm * xm / sxx), 1e-12, 'σ_a ponderada');
+      cerca(W.chi2, pts.reduce((t, q) => t + ((q.y - a - b * q.x) / q.s) ** 2, 0), 1e-9, 'χ² del ajuste ponderado'); cerca(P.yx0, a + 7 * b, 1e-9, 'estimación con la recta ponderada'); cerca(P.syx0, Math.sqrt(1 / S + (7 - xm) ** 2 / sxx), 1e-10, 'σ de la estimación ponderada');
+      // contra numpy.polyfit(x, y, 1, w=1/σ, cov='unscaled') (pruebas/referencias/estadistica.py)
+      if (REFR) { cerca(W.b, REFR.b, 1e-9, 'pendiente ponderada (numpy)'); cerca(W.a, REFR.a, 1e-9, 'ordenada ponderada (numpy)'); cerca(W.sb, REFR.sb, 1e-9, 'σ_b (numpy)'); cerca(W.sa, REFR.sa, 1e-9, 'σ_a (numpy)'); cerca(W.chi2, REFR.chi2, 1e-8, 'χ² (numpy)'); cerca(W.p, REFR.p, 1e-8, 'p del χ² (scipy)'); }
+      // con todas las σ iguales, la recta ponderada es la de mínimos cuadrados de siempre
+      const ig = RegresionC.resolver({ modelo: 'lineal', formato: 'sigma', datosS: '1 2 0,5\n2 4,5 0,5\n3 5,5 0,5\n4 8,5 0,5' }); cerca(ig.pond.b, ig.sinPesos.b, 1e-12, 'ponderada con σ iguales'); cerca(ig.pond.a, ig.sinPesos.a, 1e-12, 'ponderada con σ iguales');
+      for (const [q, d] of [['σ = 0', '1 2 0\n2 3 0,1'], ['falta σ', '1 2\n2 3'], ['misma x', '1 2 0,1\n1 3 0,1']]) { let ok = false; try { RegresionC.resolver({ modelo: 'lineal', formato: 'sigma', datosS: d }); } catch (e) { ok = true; } if (!ok) mal(`Regresión ponderada: ${q} no da error`); } }
+    if (fallos === antes) console.log(`  ✓ Regresión: ${RegresionC.ejemplos.length} ejemplos, medias, covarianza, r, las dos rectas, frecuencias, ajustes no lineales, parábola, z de Fisher, comparación de correlaciones, ajuste ponderado y errores`);
   }
 
   return async (browser) => {
