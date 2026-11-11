@@ -21,6 +21,9 @@ const Rentas = (() => {
   const tp = (x) => `${f(100 * x, 6)} %`;
 
   function resolver(sc) {
+    const r = resolverBase(sc); r.pasos.push({ t: 'Convención', html: 'El tipo dado es efectivo anual; el de cada periodo es el equivalente, (1 + i)^{1/m} − 1, no el proporcional i/m. Los términos se pagan al final del periodo (pospagable) salvo que se elija anticipada; sin redondeo a céntimos.' }); return r;
+  }
+  function resolverBase(sc) {
     const modo = MODOS[sc.modo] ? sc.modo : 'va', pre = sc.pago === 'pre';
     const vari = (modo === 'va' || modo === 'vf') && VARIACIONES[sc.variacion] ? sc.variacion : 'cte', perpetua = vari === 'cte' && sc.duracion === 'perpetua' && (modo === 'va' || modo === 'termino');
     const m = PERIODOS[sc.m] ? +sc.m : 1, [per, pers] = PERIODOS[m];

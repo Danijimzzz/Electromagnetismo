@@ -649,12 +649,12 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: ANOVA de un factor para comparar las medias de dos o más grupos escritos uno por línea. Da la tabla ANOVA (entre y dentro de los grupos), F con su valor crítico y p-valor, el tamaño del efecto η², las medias y varianzas de cada grupo, las comparaciones por parejas con la corrección de Bonferroni, la gráfica de los datos y el desarrollo paso a paso. Con 3 ejemplos de clase, modo práctica y enlace para compartir.'] },
     ],
     'black-scholes': [
-      { v: '0.3', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.'] },
+      { v: '0.3', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.', 'El desarrollo termina con un paso «Convención» que dice qué base de días, qué tipo por periodo y qué redondeo se usan.'] },
       { v: '0.2', fecha: '2026-11-08', cambios: ['Casos límite (vencimiento o volatilidad cero) y volatilidad implícita a partir del precio de mercado de la opción.'] },
       { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: precio de una call y una put europeas con la fórmula de Black-Scholes (con dividendo), d₁ y d₂, comprobación de la paridad call-put y las griegas (delta, gamma, vega, theta y rho), con la gráfica del valor de la opción hoy y al vencimiento y el desarrollo paso a paso.'] },
     ],
     bonos: [
-      { v: '0.3', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.'] },
+      { v: '0.3', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.', 'El desarrollo termina con un paso «Convención» que dice qué base de días, qué tipo por periodo y qué redondeo se usan.'] },
       { v: '0.2', fecha: '2026-11-08', cambios: ['Más cálculos de bonos con su gráfica y mejor desarrollo paso a paso.'] },
       { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: precio de un bono con cupón anual, semestral, trimestral o mensual a partir de la TIR (o la TIR a partir del precio), rentabilidad corriente, duración de Macaulay y modificada, convexidad y variación del precio al cambiar los tipos, con la curva precio-TIR, la tabla de flujos y el desarrollo paso a paso.'] },
     ],
@@ -831,7 +831,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: la ley de Okun (el paro con un crecimiento o el crecimiento para bajar el paro), la brecha de producción con el paro natural, la curva de Phillips con expectativas y shocks de oferta (estanflación) y el ajuste de una curva de Phillips a datos de paro e inflación, con la gráfica y el desarrollo.'] },
     ],
     'tipos-cambio': [
-      { v: '0.3', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.'] },
+      { v: '0.3', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.', 'El desarrollo termina con un paso «Convención» que dice qué base de días, qué tipo por periodo y qué redondeo se usan.'] },
       { v: '0.2', fecha: '2026-11-08', cambios: ['Paridad de los tipos de interés: tipo a plazo, prima o descuento, paridad descubierta y arbitraje con el tipo a plazo de mercado.', 'Aviso de que los tipos de los ejemplos son ilustrativos.'] },
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: cambiar euros por dólares, libras, yenes y otras monedas (y al revés) con comisión, el tipo de cambio cruzado, la apreciación o depreciación del euro, la paridad del poder adquisitivo con el tipo de cambio real (como el índice Big Mac) y la PPA relativa con la inflación de los dos países, con su gráfica y el desarrollo.'] },
     ],
@@ -857,31 +857,31 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: punto muerto en unidades y en euros, margen de contribución, beneficio con las ventas previstas, margen de seguridad, apalancamiento operativo y ventas para un beneficio objetivo, con la gráfica de ingresos y costes.'] },
     ],
     ahorro: [
-      { v: '0.3', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.'] },
+      { v: '0.3', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.', 'El desarrollo termina con un paso «Convención» que dice qué base de días, qué tipo por periodo y qué redondeo se usan.'] },
       { v: '0.2', fecha: '2026-11-08', cambios: ['Fase de retirada: cuánto dura el dinero y la retirada máxima sostenible.'] },
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: plan de ahorro con capital inicial y aportaciones mensuales, trimestrales o anuales (también subiendo con la inflación), saldo final en euros de entonces y de hoy, tipo real de Fisher, aportación necesaria para un objetivo y pérdida de poder adquisitivo de un dinero parado, con la gráfica y la tabla año a año.'] },
     ],
     'van-tir': [
-      { v: '0.3', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.'] },
+      { v: '0.3', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.', 'El desarrollo termina con un paso «Convención» que dice qué base de días, qué tipo por periodo y qué redondeo se usan.'] },
       { v: '0.2', fecha: '2026-11-08', cambios: ['Varias TIR cuando los flujos cambian de signo, TIR modificada y comparación de dos proyectos con la tasa de Fisher.'] },
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: valor actual neto, tasa interna de rentabilidad, plazo de recuperación simple y descontado e índice de rentabilidad de una inversión, con la decisión, la tabla de flujos actualizados y la gráfica del VAN según la tasa.'] },
     ],
     'amortizacion-inmovilizado': [
-      { v: '0.2', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.'] },
+      { v: '0.2', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.', 'El desarrollo termina con un paso «Convención» que dice qué base de días, qué tipo por periodo y qué redondeo se usan.'] },
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: cuadro de amortización de un bien por el método lineal, la suma de dígitos, el degresivo de porcentaje constante y las unidades de producción, con la cuota de cada año, la amortización acumulada, el valor neto contable y su gráfica.'] },
     ],
     prestamos: [
-      { v: '0.3', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.'] },
+      { v: '0.3', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.', 'El desarrollo termina con un paso «Convención» que dice qué base de días, qué tipo por periodo y qué redondeo se usan.'] },
       { v: '0.2', fecha: '2026-11-08', cambios: ['Periodo de carencia de capital y amortización anticipada reduciendo la cuota o el plazo, con los intereses ahorrados.'] },
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: cuota y cuadro de amortización completo de un préstamo por el sistema francés, el de cuota de amortización constante y el americano, con pagos anuales, semestrales, trimestrales o mensuales, los intereses totales y la TAE, también con comisión de apertura.'] },
     ],
     rentas: [
-      { v: '0.3', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.'] },
+      { v: '0.3', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.', 'El desarrollo termina con un paso «Convención» que dice qué base de días, qué tipo por periodo y qué redondeo se usan.'] },
       { v: '0.2', fecha: '2026-11-08', cambios: ['Rentas variables: términos en progresión aritmética o geométrica, con valor actual y valor final.'] },
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: valor actual, valor final, término y número de términos de rentas constantes pospagables o prepagables, temporales o perpetuas, inmediatas o diferidas, con términos anuales, semestrales, trimestrales o mensuales, la tabla de términos y su gráfica.'] },
     ],
     interes: [
-      { v: '0.3', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.'] },
+      { v: '0.3', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.', 'El desarrollo termina con un paso «Convención» que dice qué base de días, qué tipo por periodo y qué redondeo se usan.'] },
       { v: '0.2', fecha: '2026-11-08', cambios: ['Tiempo en meses o días (año de 365 o 360 días) y capitalización continua.'] },
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: capital final, capital inicial, tipo de interés y tiempo en capitalización simple y compuesta (anual, semestral, trimestral, mensual o diaria), el paso del TIN a la TAE y al revés, la comparación simple frente a compuesta año a año y su gráfica.'] },
     ],

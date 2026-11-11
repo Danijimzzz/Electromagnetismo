@@ -31,6 +31,9 @@ const Ahorro = (() => {
   }
 
   function resolver(sc) {
+    const r = resolverBase(sc); r.pasos.push({ t: 'Convención', html: 'La rentabilidad y la inflación son efectivas anuales, y el tipo de cada periodo es el equivalente, (1 + r)^{1/m} − 1. Las aportaciones se hacen al final de cada periodo; no se descuentan impuestos ni comisiones, y no se redondea a céntimos.' }); return r;
+  }
+  function resolverBase(sc) {
     const modo = MODOS[sc.modo] ? sc.modo : 'final';
     const pi = lee(sc, 'pi', 'la inflación', { min: -50, max: 100 }) / 100;
     const n = lee(sc, 'n', 'el plazo', { min: 1, max: 80, entero: true });

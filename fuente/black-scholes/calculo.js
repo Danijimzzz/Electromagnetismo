@@ -63,6 +63,9 @@ const BlackScholes = (() => {
   }
 
   function resolver(sc) {
+    const r = resolverBase(sc); r.pasos.push({ t: 'Convención', html: 'Opción europea (solo se ejerce al vencimiento) sobre un activo con volatilidad constante. T se mide en años (días/365), r y el dividendo q son tipos continuos anuales, y la volatilidad es anualizada. Sin costes de transacción.' }); return r;
+  }
+  function resolverBase(sc) {
     const S = lee(sc, 'S', 'el precio de la acción S', { min: 0, minEx: true });
     const X = lee(sc, 'K', 'el precio de ejercicio K', { min: 0, minEx: true });
     const modo = sc.modo === 'iv' ? 'iv' : 'valor';

@@ -57,6 +57,9 @@ const VanTir = (() => {
   const anosMeses = (x) => { const a = Math.floor(x + 1e-9), m = (x - a) * 12; return `${a} año${a === 1 ? '' : 's'}${m > 0.05 ? ` y ${f(m, 3)} meses` : ''}`; };
 
   function resolver(sc) {
+    const r = resolverBase(sc); r.pasos.push({ t: 'Convención', html: 'Los flujos se sitúan al final de cada año (el desembolso, en el año 0) y la tasa k es efectiva anual. El plazo de recuperación simple no descuenta, y con fracciones de año se interpola linealmente dentro del año. Sin impuestos ni inflación.' }); return r;
+  }
+  function resolverBase(sc) {
     const A = lee(sc, 'a', 'el desembolso inicial', { min: 0, minEx: true });
     const Q = K.lista(sc.flujos, 'los flujos de caja');
     if (!Q.length) throw new Error('Escribe los flujos de caja de cada año, separados por espacios');

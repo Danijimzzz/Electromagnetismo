@@ -32,6 +32,9 @@ const Prestamos = (() => {
   }
 
   function resolver(sc) {
+    const r = resolverBase(sc); r.pasos.push({ t: 'Convención', html: 'Los intereses de cada periodo salen del tipo TIN/m sobre la deuda pendiente; cuotas, intereses y deuda no se redondean a céntimos. La TAE incluye la comisión de apertura, pero no seguros, tasación ni otras comisiones. Un banco que redondea la cuota a céntimos da diferencias de unos céntimos.' }); return r;
+  }
+  function resolverBase(sc) {
     const sis = SISTEMAS[sc.sistema] ? sc.sistema : 'frances';
     const m = PERIODOS[sc.m] ? +sc.m : 12, [per, pers, uno] = PERIODOS[m];
     const C = lee(sc, 'c', 'el capital prestado', { min: 0, minEx: true });

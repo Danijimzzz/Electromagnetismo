@@ -93,7 +93,7 @@ const TiposCambio = (() => {
   }
 
   const R = { convertir, cruzado, variacion, ppa, relativa, paridad };
-  const resolver = (sc) => (R[sc.modo] || convertir)(sc);
+  const resolver = (sc) => { const r = (R[sc.modo] || convertir)(sc); r.pasos.push({ t: 'Convención', html: 'Cotización «a lo cierto»: unidades de moneda extranjera por 1 €. Se usa un único tipo (sin diferencia entre compra y venta) y la comisión se aplica sobre el importe convertido. No se redondea a céntimos en los pasos.' }); return r; };
 
   const ejemplos = [
     { clave: 'viaje', nombre: 'Cambiar 500 € en dólares con un 2 % de comisión', sc: { modo: 'convertir', mon: 'USD', sentido: 'aOtra', E: '1,08', x: '500', c: '2' } },

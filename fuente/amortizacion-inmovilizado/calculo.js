@@ -16,6 +16,9 @@ const AmortizacionInmovilizado = (() => {
   const e = (x) => x.toFixed(2).replace('.', ',').replace('-', '−');
 
   function resolver(sc) {
+    const r = resolverBase(sc); r.pasos.push({ t: 'Convención', html: 'Se amortiza por años completos: la cuota es anual y no se prorratea por los meses o días desde la compra. Valor residual y base amortizable se conocen desde el principio; no se consideran deterioros ni revalorizaciones.' }); return r;
+  }
+  function resolverBase(sc) {
     const met = METODOS[sc.metodo] ? sc.metodo : 'lineal';
     const v0 = lee(sc, 'v0', 'el precio de adquisición', { min: 0, minEx: true });
     const vr = lee(sc, 'vr', 'el valor residual', { min: 0, def: 0 });

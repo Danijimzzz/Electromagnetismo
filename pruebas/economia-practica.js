@@ -12,6 +12,7 @@ global.Herramienta = require(path.join(fuente, 'herramienta.js'));
 const Catalogo = require(path.join(fuente, 'catalogo.js'));
 const args = process.argv.slice(2), solo = args.includes('--solo') ? args[args.indexOf('--solo') + 1] : null;
 const MAL = /NaN|undefined|\[object|Infinity/;
+const CONV = new Set(['interes', 'prestamos', 'rentas', 'ahorro', 'bonos', 'van-tir', 'amortizacion-inmovilizado', 'black-scholes', 'tipos-cambio']);
 let n = 0, herramientas = 0, fallos = 0; const mal = (m) => { fallos++; console.log('  ✗ ' + m); };
 for (const h of Catalogo.asignaturas.find((a) => a.clave === 'economia').herramientas.filter((x) => x.disponible)) {
   const carpeta = h.carpeta || h.clave; if (solo && solo !== carpeta && solo !== h.clave) continue;
@@ -24,6 +25,7 @@ for (const h of Catalogo.asignaturas.find((a) => a.clave === 'economia').herrami
     let r; try { r = C.resolver(sc); } catch (e) { errores++; if (errores <= 2) mal(`${carpeta}: el ejercicio ${JSON.stringify(sc).slice(0, 160)} no se resuelve: ${e.message}`); continue; }
     const t = (r && r.pasos ? r.pasos.map((p) => String(p.t) + ' ' + String(p.html)).join(' ') : '').replace(/<[^>]+>/g, ' ');
     if (MAL.test(t)) { errores++; if (errores <= 2) mal(`${carpeta}: el desarrollo de ${JSON.stringify(sc).slice(0, 120)} lleva «${(t.match(new RegExp('.{0,30}(' + MAL.source + ').{0,20}')) || [''])[0]}»`); }
+    if (CONV.has(carpeta) && !r.pasos.some((p) => p.t === 'Convención')) { errores++; if (errores <= 2) mal(`${carpeta}: el desarrollo no trae el paso «Convención» (ECO.EC-4)`); }
     const e = typeof C.enunciado === 'function' ? C.enunciado(sc) : '';
     if (!e || e.length < 60 || MAL.test(e)) { errores++; if (errores <= 2) mal(`${carpeta}: enunciado malo «${e}» para ${JSON.stringify(sc).slice(0, 100)}`); }
   }

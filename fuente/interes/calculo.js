@@ -21,6 +21,9 @@ const Interes = (() => {
   const tp = (x) => `${f(100 * x, 6)} %`;
 
   function resolver(sc) {
+    const r = resolverBase(sc); r.pasos.push({ t: 'Convención', html: r.modo === 'tae' ? 'El TIN es nominal anual y se reparte en m periodos (i = TIN/m); la TAE es el tipo efectivo anual, (1 + TIN/m)^m − 1, sin comisiones ni gastos. No se redondea a céntimos en los pasos intermedios.' : `El tipo es anual. ${r.tu === 'd' ? `Los días se pasan a años con el año de ${r.base} días (comercial 360 o natural 365, como se elija). ` : ''}Los intereses no se redondean a céntimos en los pasos intermedios; la TAE no incluye comisiones ni gastos.` }); return r;
+  }
+  function resolverBase(sc) {
     const modo = MODOS[sc.modo] ? sc.modo : 'final', simple = sc.regimen === 'simple' && modo !== 'tae';
     const m = PERIODOS[sc.m] ? +sc.m : 1, per = PERIODOS[m], cont = m === 0;
     const tu = UNIDADES[sc.tu] ? sc.tu : 'a', base = +sc.base === 360 ? 360 : 365, porAno = tu === 'm' ? 12 : tu === 'd' ? base : 1;

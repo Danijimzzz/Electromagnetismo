@@ -33,6 +33,9 @@ const Bonos = (() => {
   }
 
   function resolver(sc) {
+    const r = resolverBase(sc); r.pasos.push({ t: 'Convención', html: 'El cupón anual N·c se reparte en m pagos iguales y la TIR es nominal anual con m periodos (tipo por periodo y/m). El tiempo se mide en periodos de 1/m años; el cupón corrido se devenga de forma lineal. Sin impuestos ni comisiones.' }); return r;
+  }
+  function resolverBase(sc) {
     const N = lee(sc, 'nominal', 'el valor nominal', { min: 0, minEx: true });
     const c = lee(sc, 'cupon', 'el cupón', { min: 0 }) / 100;
     const m = lee(sc, 'm', 'los pagos al año', { min: 1, entero: true, def: 1 });
