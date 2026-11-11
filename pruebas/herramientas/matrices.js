@@ -42,6 +42,38 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     for (const [s, v] of [['-1/2', '−1/2'], ['0,25', '1/4'], ['(1+i)/2', '1/2 + 1/2·i'], ['3(1-i)', '3 − 3i'], ['1/(1+i)', '1/2 − 1/2·i']]) if (Al.txt(Al.leer(s)) !== v) mal(`Matrices: «${s}» se lee como ${Al.txt(Al.leer(s))}`);
     const malas = [{ op: 'det', A: [['1', '2', '3'], ['4', '5', '6']] }, { op: 'producto', A: [['1', '2']], B: [['1', '2']] }, { op: 'det', A: [['1', 'x y'], ['2', '3']] }, { op: 'suma', A: [['1']], B: [['1', '2']] }, { op: 'potencia', A: [['1', '2'], ['2', '4']], n: '-1' }];
     for (const m of malas) { let ok = false; try { Matrices.resolver(m); } catch (e) { ok = true; } if (!ok) mal(`Matrices: ${JSON.stringify(m)} debería dar un error`); }
+    // MX-3 · núcleo e imagen. A mano, con A = (1 2 −1 3; 2 4 1 0; 3 6 0 3): reducida (1 2 0 1; 0 0 1 −2; 0 0 0 0), rango 2,
+    // núcleo de dimensión 2 con base (2, −1, 0, 0) y (1, 0, −2, −1)·(−1), imagen = columnas 1 y 3, implícita y₁ + y₂ − y₃ = 0
+    {
+      const S = R.subespacios.valor, A = L('1 2 -1 3', '2 4 1 0', '3 6 0 3'), nulo = (v) => v.every((x) => Al.esCero(x));
+      if (S.rango !== 2 || S.dimNucleo !== 2 || S.imagen.length !== 2) mal(`Matrices · subespacios: rango ${S.rango}, núcleo de dimensión ${S.dimNucleo}`);
+      for (const b of S.nucleo) if (!nulo(Al.producto(A, b.map((x) => [x])).map((f) => f[0]))) mal('Matrices · subespacios: un vector de la base del núcleo no cumple A·x = 0');
+      if (Al.escalonar(S.nucleo).rango !== 2) mal('Matrices · subespacios: la base del núcleo no es independiente');
+      if (S.imagen.map((c) => c.map(Al.txt).join(' ')).join('|') !== '1 2 3|−1 1 0') mal(`Matrices · subespacios: la base de la imagen es ${S.imagen.map((c) => c.map(Al.txt).join(' ')).join('|')}`);
+      if (S.implicitasImagen.length !== 1 || S.implicitasImagen[0].map(Al.txt).join(' ') !== '1 1 −1') mal(`Matrices · subespacios: la ecuación implícita de la imagen es ${S.implicitasImagen.map((w) => w.map(Al.txt).join(' '))}`);
+      // cada columna de A cumple las implícitas de la imagen, y cada fila de la reducida es ortogonal al núcleo
+      for (const w of S.implicitasImagen) for (let j = 0; j < 4; j++) if (!Al.esCero(w.reduce((t, x, i) => Al.suma(t, Al.mul(x, A[i][j])), Al.c0))) mal('Matrices · subespacios: una columna de A no cumple la ecuación implícita de la imagen');
+      for (const f of S.filas) for (const b of S.nucleo) if (!Al.esCero(f.reduce((t, x, i) => Al.suma(t, Al.mul(x, b[i])), Al.c0))) mal('Matrices · subespacios: una fila no es ortogonal al núcleo');
+      const tx = R.subespacios.pasos.map((q) => q.html).join(' ').replace(/<sub>(\d)<\/sub>/g, '$1').replace(/<[^>]+>/g, '');
+      for (const q of ['x1 + 2x2 + x4 = 0', 'x3 − 2x4 = 0', 'y1 + y2 − y3 = 0', '2 + 2 = 4']) if (!tx.includes(q)) mal(`Matrices · subespacios: falta «${q}» en el desarrollo`);
+      // casos límite: inyectiva (3×2 de rango 2), sobreyectiva (2×3), nula e identidad
+      const cs = [[['1 0', '0 1', '1 1'], 2, 0, 1], [['1 2 3', '0 1 1'], 2, 1, 0], [['0 0', '0 0'], 0, 2, 2], [['1 0', '0 1'], 2, 0, 0], [['1 i', 'i -1'], 1, 1, 1]];
+      for (const [f, rg, dk, ni] of cs) { const q = Matrices.resolver({ op: 'subespacios', A: f.map((x) => x.split(' ')) }).valor; if (q.rango !== rg || q.dimNucleo !== dk || q.implicitasImagen.length !== ni) mal(`Matrices · subespacios de ${f.join('; ')}: rango ${q.rango}, núcleo ${q.dimNucleo}, ${q.implicitasImagen.length} implícitas`); }
+    }
+    // MX-1 · vectores propios no racionales: A v = λ v con 4 cifras; (1 1; 1 0) ⇒ λ = (1 ± √5)/2 y v = (1, −1/2 ± √5/2)
+    {
+      for (const c of ['propios-raiz', 'propios-num']) {
+        const r = R[c], A = r.A.map((f) => f.map((x) => Al.aFloat(x)));
+        const ne = r.valor.filter((v) => !v.exacto);
+        if (ne.length !== 2 || ne.some((v) => !v.vector)) { mal(`Matrices · ${c}: faltan los vectores propios numéricos`); continue; }
+        for (const v of ne) A.forEach((f, i) => { const s = f.reduce((t, x, j) => ({ re: t.re + x.re * v.vector[j].re - x.im * v.vector[j].im, im: t.im + x.re * v.vector[j].im + x.im * v.vector[j].re }), { re: 0, im: 0 }); const e = { re: v.valor.re * v.vector[i].re - v.valor.im * v.vector[i].im, im: v.valor.re * v.vector[i].im + v.valor.im * v.vector[i].re }; if (Math.hypot(s.re - e.re, s.im - e.im) > 1e-9) mal(`Matrices · ${c}: A v ≠ λ v en la fila ${i + 1}`); });
+      }
+      const tr = R['propios-raiz'].pasos.find((q) => q.t.startsWith('Vectores propios de los valores no racionales'))?.html.replace(/<[^>]+>/g, '') || '';
+      if (!tr.includes('1,618') || !tr.includes('√5') || R['propios-raiz'].valor.some((v) => !v.vectorRad)) mal(`Matrices · propios-raiz: falta el vector con radicales o el numérico (${tr.slice(0, 200)})`);
+      // complejos no racionales: (1 −3; 1 1) ⇒ λ = 1 ± √3 i, v = (−3, ±√3 i) (o un múltiplo)
+      const cx = Matrices.resolver({ op: 'propios', A: [['1', '-3'], ['1', '1']] }), vc = cx.valor.filter((v) => !v.exacto);
+      if (vc.length !== 2 || vc.some((v) => !v.vector || !v.vectorRad.includes('√3 i') || Math.abs(Math.abs(v.vector[0].im) - Math.sqrt(3)) > 1e-9)) mal(`Matrices: vectores propios complejos con radicales, ${JSON.stringify(vc.map((v) => [v.vector, v.vectorRad]))}`);
+    }
     if (fallos === antes) console.log(`  ✓ Matrices: ${Matrices.ejemplos.length} ejemplos con el resultado esperado, inversas y determinantes por los dos métodos, A v = λ v, lectura de números y errores`);
   }
 
