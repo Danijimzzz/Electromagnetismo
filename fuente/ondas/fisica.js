@@ -73,6 +73,16 @@ const Ondas = (() => {
 
   /* ---------- Ondas estacionarias ---------- */
   // sc: { medio: 'cuerda'|'abierto'|'cerrado', L, tension, mu (kg/m), vs (m/s, tubos), n }
+  // velocidad del sonido: la que se escribe (vs) o, si se da la temperatura del aire (Taire, en °C), v = 331,3·√(1 + T/273,15) m/s
+  // (aire seco; 331,3 m/s es la velocidad a 0 °C), que sustituye a vs; devuelve el paso del desarrollo para enseñar el valor usado
+  function vSonido(sc) {
+    const T = lee(sc, 'Taire', 'la temperatura del aire', { opcional: true, signo: true });
+    if (T === null || T === undefined) return { v: lee(sc, 'vs', 'la velocidad del sonido'), paso: null };
+    if (!(T > -273.15)) throw new Error('La temperatura del aire tiene que ser mayor que −273,15 °C');
+    const v = 331.3 * Math.sqrt(1 + T / 273.15);
+    return { v, paso: { t: 'Velocidad del sonido con la temperatura', html: `En el aire, $v = 331,3 √(1 + T/273,15) = 331,3 √(1 + ${T < 0 ? `(${f(T)})` : f(T)}/273,15)$ = <b>${f(v)} m/s</b> a ${f(T)} °C (a 0 °C son 331,3 m/s y sube unos 0,6 m/s por cada grado). Este es el valor que se usa, en lugar de la velocidad del sonido escrita.` } };
+  }
+
   function estacionaria(sc) {
     const medio = ['cuerda', 'abierto', 'cerrado'].includes(sc.medio) ? sc.medio : 'cuerda', L = lee(sc, 'L', 'la longitud');
     const n = Math.round(lee(sc, 'n', 'el número de armónico'));
@@ -83,7 +93,7 @@ const Ondas = (() => {
       const T = lee(sc, 'tension', 'la tensión'), mu = lee(sc, 'mu', 'la densidad lineal');
       v = Math.sqrt(T / mu);
       pasos.push({ t: 'Velocidad de las ondas en la cuerda', html: `$v = √(T/μ) = √(${f(T)}/${f(mu)})$ = <b>${f(v)} m/s</b>` });
-    } else v = lee(sc, 'vs', 'la velocidad del sonido');
+    } else { const vs = vSonido(sc); v = vs.v; if (vs.paso) pasos.push(vs.paso); }
     // modo n: cuerda y tubo abierto, λ = 2L/n; tubo cerrado, solo impares, λ = 4L/(2n − 1)
     const m = medio === 'cerrado' ? 2 * n - 1 : n, lam = medio === 'cerrado' ? (4 * L) / m : (2 * L) / m, fn = v / lam;
     const freq = (j) => (medio === 'cerrado' ? ((2 * j - 1) * v) / (4 * L) : (j * v) / (2 * L));
@@ -107,12 +117,13 @@ const Ondas = (() => {
   /* ---------- Efecto Doppler ---------- */
   // sc: { f, vs (sonido), vF (fuente, + hacia el observador), vO (observador, + hacia la fuente) }
   function doppler(sc) {
-    const fr = lee(sc, 'f', 'la frecuencia emitida'), v = lee(sc, 'vs', 'la velocidad del sonido');
+    const fr = lee(sc, 'f', 'la frecuencia emitida'), { v, paso: pasoV } = vSonido(sc);
     const vF = lee(sc, 'vF', 'la velocidad de la fuente', { opcional: true, signo: true }) ?? 0, vO = lee(sc, 'vO', 'la velocidad del observador', { opcional: true, signo: true }) ?? 0;
     if (vF >= v) throw new Error('La fuente va a la velocidad del sonido o más deprisa hacia el observador: se forma una onda de choque y la fórmula de Doppler no vale');
     if (-vO >= v) throw new Error('El observador se aleja a la velocidad del sonido o más: no le llega la onda');
     const fp = (fr * (v + vO)) / (v - vF);
     const pasos = [
+      ...(pasoV ? [pasoV] : []),
       { t: 'Convenio de signos', html: `Velocidades positivas cuando fuente y observador se acercan el uno al otro: fuente ${vF > 0 ? 'se acerca' : vF < 0 ? 'se aleja' : 'quieta'} (v<sub>F</sub> = ${f(vF)} m/s), observador ${vO > 0 ? 'se acerca' : vO < 0 ? 'se aleja' : 'quieto'} (v<sub>O</sub> = ${f(vO)} m/s).` },
       { t: 'Frecuencia que se percibe', html: `$f′ = f {v + v_O}/{v − v_F} = ${f(fr)} · {${f(v)} + ${vO < 0 ? `(${f(vO)})` : f(vO)}}/{${f(v)} − ${vF < 0 ? `(${f(vF)})` : f(vF)}}$ = <b>${f(fp)} Hz</b><br>${fp > fr ? 'Más aguda: se acercan.' : fp < fr ? 'Más grave: se alejan.' : 'Igual: no hay movimiento relativo a lo largo de la línea que los une.'}` },
       { t: 'Longitud de onda', html: `Delante de la fuente: $λ′ = {v − v_F}/f$ = <b>${f((v - vF) / fr)} m</b> (sin moverse sería ${f(v / fr)} m)` },
@@ -205,6 +216,7 @@ const Ondas = (() => {
     { clave: 'guitarra', nombre: 'Cuerda de guitarra (tercer armónico)', sc: { modo: 'estacionaria', medio: 'cuerda', L: '0,65', tension: '70', mu: '0,0011', n: '3' } },
     { clave: 'tubo-abierto', nombre: 'Tubo abierto por los dos extremos', sc: { modo: 'estacionaria', medio: 'abierto', L: '0,85', vs: '340', n: '2' } },
     { clave: 'tubo-cerrado', nombre: 'Tubo cerrado por un extremo', sc: { modo: 'estacionaria', medio: 'cerrado', L: '0,85', vs: '340', n: '2' } },
+    { clave: 'tubo-frio', nombre: 'Tubo abierto en una mañana de invierno (−5 °C)', sc: { modo: 'estacionaria', medio: 'abierto', L: '0,85', vs: '', Taire: '-5', n: '2' } },
     { clave: 'ambulancia', nombre: 'Ambulancia que se acerca', sc: { modo: 'doppler', f: '700', vs: '340', vF: '25', vO: '0' } },
     { clave: 'cruce', nombre: 'Coche que se aleja de un ciclista que va hacia él', sc: { modo: 'doppler', f: '500', vs: '340', vF: '-30', vO: '8' } },
     { clave: 'altavoz', nombre: 'Nivel sonoro de un altavoz', sc: { modo: 'sonido', P: '0,1', r1: '2', r2: '8', N: '' } },

@@ -14,6 +14,12 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     cerca(a.punto.y, 0.05, 1e-12, 'y en el punto (cresta)'); cerca(a.punto.vy, 0, 1e-12, 'v_y en la cresta');
     if (r('armonica-izq').ec !== 'y(x, t) = 0,02 sen(100πt + πx + π/2)') mal(`Ondas: la ecuación hacia la izquierda sale «${r('armonica-izq').ec}»`);
     cerca(r('guitarra').fn, (3 * Math.sqrt(70 / 0.0011)) / 1.3, 1e-9, 'tercer armónico de la cuerda');
+    // sonido con la temperatura: v = 331,3·√(1 + T/273,15): a 0 °C 331,3; a 20 °C 343,2 (343,2·...), a −5 °C 328,3; y con T vacía vale la vs escrita
+    const vt = (T) => 331.3 * Math.sqrt(1 + T / 273.15);
+    cerca(Ondas.resolver({ modo: 'estacionaria', medio: 'abierto', L: '1', Taire: '0', n: '1' }).v, 331.3, 1e-9, 'v a 0 °C'); cerca(Ondas.resolver({ modo: 'estacionaria', medio: 'abierto', L: '1', Taire: '20', n: '1' }).v, vt(20), 1e-9, 'v a 20 °C');
+    cerca(vt(20), 343.2, 0.1, '343 m/s a 20 °C'); cerca(r('tubo-frio').fn, vt(-5) * 2 / (2 * 0.85), 1e-9, 'tubo abierto a −5 °C (v/L)'); cerca(r('tubo-frio').fn, 328.3 / 0.85, 0.1, 'tubo a −5 °C ≈ 386 Hz');
+    cerca(Ondas.resolver({ modo: 'doppler', f: '500', vs: '999', Taire: '20', vF: '0', vO: '0' }).v, vt(20), 1e-9, 'la temperatura sustituye a vs en Doppler'); cerca(Ondas.resolver({ modo: 'doppler', f: '500', vs: '340', vF: '0', vO: '0' }).v, 340, 1e-12, 'sin temperatura vale vs');
+    let errT = false; try { Ondas.resolver({ modo: 'doppler', f: '500', Taire: '-300', vF: '0', vO: '0' }); } catch (e) { errT = true; } if (!errT) mal('Ondas: −300 °C debería dar error');
     cerca(r('tubo-abierto').fn, 400, 1e-9, 'tubo abierto n = 2'); cerca(r('tubo-cerrado').fn, 300, 1e-9, 'tubo cerrado modo 2 (3v/4L)');
     if (r('guitarra').nodos.length !== 4 || r('tubo-cerrado').nodos.length !== 2) mal('Ondas: número de nodos incorrecto');
     cerca(r('ambulancia').fp, (700 * 340) / 315, 1e-9, 'Doppler fuente que se acerca'); cerca(r('cruce').fp, (500 * 348) / 370, 1e-9, 'Doppler los dos moviéndose');
