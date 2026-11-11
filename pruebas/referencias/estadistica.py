@@ -177,5 +177,18 @@ R['regresion_ponderada'] = {'b': float(cw[0]), 'a': float(cw[1]), 'sb': float(ma
 from statsmodels.stats.proportion import proportion_confint
 R['proporcion_ic'] = [{'x': x, 'n': n, 'nivel': c, **{m: fl(proportion_confint(x, n, alpha=1 - c, method=k)) for m, k in [('cp', 'beta'), ('wilson', 'wilson'), ('ac', 'agresti_coull'), ('wald', 'normal')]}} for x, n, c in [(2, 20, 0.95), (0, 10, 0.95), (6, 50, 0.95), (210, 500, 0.99), (19, 20, 0.90)]]
 
+# --- regresión lineal múltiple (EST.RM-1): stackloss (Brownlee, 1965) como conjunto clásico y Longley (1967), casi colineal ---
+import statsmodels.api as sm
+from statsmodels.stats.outliers_influence import variance_inflation_factor
+def _rm(datos, x0):
+    X = sm.add_constant(np.asarray(datos.exog, dtype=float)); y = np.asarray(datos.endog, dtype=float)
+    m = sm.OLS(y, X).fit(); pr = m.get_prediction(np.array([[1.0] + list(x0)])).summary_frame(alpha=0.05)
+    return {'nombres': list(datos.exog_name) + [datos.endog_name], 'filas': [fl(list(X[i, 1:]) + [y[i]]) for i in range(len(y))],
+            'b': fl(m.params), 'se': fl(m.bse), 't': fl(m.tvalues), 'p': fl(m.pvalues), 'ic': [fl(r) for r in m.conf_int(0.05)],
+            'R2': float(m.rsquared), 'R2aj': float(m.rsquared_adj), 'F': float(m.fvalue), 'pF': float(m.f_pvalue), 's': float(math.sqrt(m.mse_resid)), 'SSE': float(m.ssr),
+            'vif': [float(variance_inflation_factor(X, j)) for j in range(1, X.shape[1])], 'x0': fl(x0),
+            'pred': {'yh': float(pr['mean'][0]), 'media': [float(pr['mean_ci_lower'][0]), float(pr['mean_ci_upper'][0])], 'individual': [float(pr['obs_ci_lower'][0]), float(pr['obs_ci_upper'][0])]}}
+R['regresion_multiple'] = {'stackloss': _rm(sm.datasets.stackloss.load(), [60, 20, 85]), 'longley': _rm(sm.datasets.longley.load(), [110, 400000, 3000, 2600, 120000, 1958])}
+
 json.dump(R, open(os.path.join(os.path.dirname(__file__), 'estadistica.json'), 'w'), ensure_ascii=False, indent=1)
 print('estadistica.json escrito')
