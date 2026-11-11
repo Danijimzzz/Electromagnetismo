@@ -13,7 +13,17 @@
     const datos = Array.from({ length: n }, (_, i) => { const x = 10 + 5 * i; return `${x} ${num(a + b * x + (Math.random() - 0.5) * 1.2, 1)}`; }).join('\n');
     return { modelo: 'lineal', nx: 'Renta disponible', ny: 'Consumo', datos, x0: String(10 + 5 * n), nivel: '95' };
   }
+  const nom = (t) => String(t || '').trim().replace(/\s+/g, '_') || 'x', c = (v) => String(+v.toFixed(8)).replace('.', ',');
+  // «Usar en…»: los mismos datos en Regresión múltiple, para añadir más variables explicativas (con Y como última columna)
+  const enlacesDe = (s) => [{ carpeta: 'estadistica/regresion-multiple', texto: 'Añadir más variables en Regresión múltiple →', estado: { alfa: '0,05', nivel: String(+(100 * s.nivel).toFixed(6)).replace('.', ','), x0: '', datos: `${nom(s.nx)} ${nom(s.ny)}\n${s.pts.map((q) => `${c(q.x)} ${c(q.y)}`).join('\n')}` } }];
   Eco.monta({
+    usarEn: enlacesDe,
+    grafica2: (s) => {
+      const xs = s.res.map((r) => r.x), x = Eco.rango(xs), m = Math.max(...s.res.map((r) => Math.abs(r.e)), 1e-12) * 1.2, pts = s.res.map((r) => [r.x, r.e]);
+      return { x, y: [-m, m], ejeX: s.nx[0].toUpperCase() + s.nx.slice(1), ejeY: 'Residuo' + s.esc, fx: (v) => Herramienta.txt(f(v)), fy: (v) => Herramienta.txt(f(v)),
+        series: [{ pts: [[x[0], 0], [x[1], 0]], color: '--muted', discontinua: true }, { pts, tipo: 'puntos', color: '--serie-1' }] };
+    },
+    leyenda2: (s) => `<b>Puntos</b>: el residuo de cada observación, lo que el modelo no explica${s.esc}. Si están repartidos al azar alrededor del 0 el modelo es razonable; si forman una curva (primero arriba, luego abajo, luego arriba), falta algo: prueba con otro modelo.`,
     C: R, carpeta: 'regresion-economia', app: 'RegresionEconomiaApp', azar,
     enunciado: (sc) => `Con los datos de renta y consumo de la tabla, estima la función de consumo por mínimos cuadrados: la propensión marginal a consumir, el consumo autónomo, el R², la elasticidad en la media y el consumo para una renta de ${sc.x0}.`,
     nota: 'Una observación por fila: el valor de X y el de Y separados por espacios, tabuladores o «;» (puedes pegarlos de una hoja de cálculo). La coma es decimal. Se salta una primera fila con nombres.',

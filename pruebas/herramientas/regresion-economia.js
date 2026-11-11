@@ -17,6 +17,12 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     const pib = ej('pib'); cerca(pib.crec, Math.exp(pib.b) - 1, 1e-12, 'crecimiento'); cerca(100 * pib.crec, 1.383, 1e-3, 'crecimiento anual del PIB en %');
     // t de la pendiente del consumo con 5 grados de libertad: p muy pequeño
     if (!(c.pval < 1e-6)) mal(`${N}: el p-valor del consumo debería ser casi 0 (${c.pval})`);
+    // residuos: suman 0 y, a mano, la recta y = x sobre (1, 2), (2, 2), (3, 5) tiene b = 1,5, a = 0 → e = (−0,5; −1; 0,5)... se comprueba con y = 2x + 1 y un punto desviado
+    const rs = C.resolver({ modelo: 'lineal', datos: '1 3\n2 5\n3 8\n4 9\n5 11' }); cerca(rs.res.reduce((s2, r) => s2 + r.e, 0), 0, 1e-9, 'los residuos suman 0');
+    cerca(rs.res[2].e, 8 - (rs.a + rs.b * 3), 1e-12, 'residuo = y − ŷ'); cerca(rs.res.reduce((s2, r) => s2 + r.e * r.x, 0), 0, 1e-9, 'los residuos son ortogonales a X');
+    // una curva ajustada con una recta deja los residuos con forma de U: casi sin cambios de signo
+    const cu = C.resolver({ modelo: 'lineal', datos: '1 1\n2 4\n3 9\n4 16\n5 25\n6 36\n7 49' }); if (cu.cambios > 2) mal(N + ': los residuos de una parábola ajustada con una recta cambian de signo ' + cu.cambios + ' veces');
+    if (!cu.pasos.some((p) => p.t === 'Residuos' && /otro modelo/.test(p.html))) mal(N + ': debería avisar de que la forma no es buena');
     error({ modelo: 'lineal', datos: '1 2\n2 3' }, 'con 2 observaciones');
     error({ modelo: 'loglog', datos: '1 2\n0 3\n3 4' }, 'un ln de 0');
     error({ modelo: 'lineal', datos: '1 2\n1 3\n1 4' }, 'una X constante');

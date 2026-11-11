@@ -890,6 +890,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: con una lista de datos, una tabla de frecuencias o datos agrupados en intervalos, saca la tabla de frecuencias, la media, la mediana, la moda, los cuartiles y cualquier percentil, la varianza y la desviación típica (de la población o de una muestra), el coeficiente de variación, la asimetría, la curtosis y los atípicos, con el histograma y el diagrama de caja.'] },
     ],
     'regresion-economia': [
+      { v: '0.2', fecha: '2026-11-11', cambios: ['Gráfica de residuos, con un aviso si tienen forma de curva, y botón «Usar en…» para añadir más variables en Regresión múltiple.'] },
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: regresión por mínimos cuadrados con datos económicos en forma lineal, doble logarítmica (elasticidad) o semilogarítmica (tasa de crecimiento), con R² y R² ajustado, errores típicos, t, p-valor, intervalo de la pendiente, la lectura económica de cada coeficiente y una predicción.'] },
     ],
     ajustador: [

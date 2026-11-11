@@ -63,7 +63,13 @@ const RegresionEconomia = (() => {
         : `En el modelo semilogarítmico, por cada unidad más de ${nx}, ${ny} se multiplica por $e^{β̂_1} = e^{${f(b)}} = ${f(Math.exp(b))}$: cambia un <b>${f(100 * crec)} %</b> (aproximadamente 100 · β̂₁ = ${f(100 * b)} % cuando β̂₁ es pequeño). Si ${nx} es el tiempo en años, es la tasa de crecimiento anual media.`;
     pasos.push({ t: 'Lectura económica', html: lectura });
     if (x0 !== null) pasos.push({ t: 'Predicción', html: `Para ${nx} = ${f(x0)}: ${modelo === 'lineal' ? `$Ŷ = ${f(a)} ${b < 0 ? '−' : '+'} ${f(Math.abs(b))} · ${p(x0)}$` : modelo === 'loglog' ? `$Ŷ = ${f(Math.exp(a))} · ${f(x0)}^{${f(b)}}$` : `$Ŷ = ${f(Math.exp(a))} · e^{${f(b)} · ${p(x0)}}$`} = <b>${f(pred(x0))}</b>${x0 < Math.min(...pts.map((q) => q.x)) || x0 > Math.max(...pts.map((q) => q.x)) ? '. Ojo: está fuera del rango de los datos (extrapolación), y la predicción es menos fiable.' : ''}` });
-    return { modelo, nx, ny, pts, n, a, b, sa, sb, t, pval, nu, tk, nivel, r2, r2aj, s, SCR, elast, crec, x0, y0: x0 === null ? null : pred(x0), pred, mx, my, pasos };
+    // residuos del ajuste, en la escala en la que se estima (en ln Y si el modelo lleva logaritmo de Y)
+    const res = pts.map((q, i) => ({ x: q.x, y: q.y, e: w[i] - a - b * u[i] }));
+    const mayor = res.reduce((m2, r) => (Math.abs(r.e) > Math.abs(m2.e) ? r : m2), res[0]), esc = modelo === 'lineal' ? '' : ' (en ln Y)';
+    // cuántas veces cambia de signo el residuo al ir ordenado por X: pocas rachas largas apuntan a una forma mal elegida (curvatura)
+    const ord = res.slice().sort((p1, p2) => p1.x - p2.x), cambios = ord.slice(1).filter((r, i) => (r.e > 0) !== (ord[i].e > 0)).length;
+    pasos.push({ t: 'Residuos', html: `El residuo de cada observación es lo que el modelo no explica, $e_i = ${ww}_i − ${ww}̂_i$${esc}; con una constante en el modelo suman 0 (aquí ${f(res.reduce((s2, r) => s2 + r.e, 0))}). El mayor es ${f(mayor.e)} para ${nx} = ${f(mayor.x)}. Ordenados por ${nx}, cambian de signo ${cambios} veces: ${cambios <= 1 && n >= 6 ? '<b>casi no cambian</b>, lo que suele indicar una forma que no es la buena (por ejemplo, una curva ajustada con una recta); prueba con otro modelo' : 'se reparten sin un patrón claro, que es lo que se espera de un buen ajuste'}.` });
+    return { modelo, res, esc, cambios, nx, ny, pts, n, a, b, sa, sb, t, pval, nu, tk, nivel, r2, r2aj, s, SCR, elast, crec, x0, y0: x0 === null ? null : pred(x0), pred, mx, my, pasos };
   }
 
   const ejemplos = [
