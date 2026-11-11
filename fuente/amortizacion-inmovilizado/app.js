@@ -15,10 +15,12 @@
       ...(sc.metodo === 'unidades'
         ? [{ k: 'total', nom: 'Producción total prevista', un: 'unidades, km, horas' }, { k: 'unidades', nom: 'Usado cada año', tipo: 'area', filas: 3, ayuda: 'separado por espacios' }]
         : [{ k: 'n', nom: 'Vida útil', un: 'años' }, ...(sc.metodo === 'degresivo' ? [{ k: 'coef', nom: 'Coeficiente', ayuda: '(1,5, 2 o 2,5)' }] : [])]),
+      { k: 'tventa', nom: 'Venta del bien en el año (opcional)', un: 'año', ayuda: 'se vende al final de ese año' }, { k: 'pventa', nom: 'Precio de venta', un: '€' },
     ],
     resumen: (s) => [
       ['Base amortizable', dinero(s.base)], ['Cuota del primer año', dinero(s.filas[0].c)], ['Cuota del último año', dinero(s.filas[s.filas.length - 1].c)],
       ['Valor neto contable al final', dinero(s.filas[s.filas.length - 1].vnc)],
+      ...(s.venta ? [[`Venta en el año ${s.venta.t}`, s.venta.tipo === 'sin resultado' ? 'Sin resultado' : `${s.venta.tipo === 'beneficio' ? 'Beneficio' : 'Pérdida'} de ${dinero(Math.abs(s.venta.res))}`, true]] : []),
     ],
     tabla: (s) => `<table class="tabla-eco"><thead><tr><th>Año</th><th>Cuota</th><th>Amortización acumulada</th><th>Valor neto contable</th></tr></thead><tbody><tr><td>0</td><td></td><td></td><td>${num(s.v0)}</td></tr>${s.filas.map((r) => `<tr><td>${r.k}</td><td>${num(r.c)}</td><td>${num(r.ac)}</td><td>${num(r.vnc)}</td></tr>`).join('')}</tbody><tfoot><tr><td>∑</td><td>${num(s.total)}</td><td></td><td></td></tr></tfoot></table>`,
     grafica: (s) => ({

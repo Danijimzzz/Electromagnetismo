@@ -867,7 +867,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: valor actual neto, tasa interna de rentabilidad, plazo de recuperación simple y descontado e índice de rentabilidad de una inversión, con la decisión, la tabla de flujos actualizados y la gráfica del VAN según la tasa.'] },
     ],
     'amortizacion-inmovilizado': [
-      { v: '0.2', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.', 'El desarrollo termina con un paso «Convención» que dice qué base de días, qué tipo por periodo y qué redondeo se usan.'] },
+      { v: '0.2', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.', 'El desarrollo termina con un paso «Convención» que dice qué base de días, qué tipo por periodo y qué redondeo se usan.', 'Venta del bien en un año: amortización acumulada, valor neto contable, beneficio o pérdida y el asiento con las cuentas del Plan General Contable (681, 281, 572, 671 y 771).'] },
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: cuadro de amortización de un bien por el método lineal, la suma de dígitos, el degresivo de porcentaje constante y las unidades de producción, con la cuota de cada año, la amortización acumulada, el valor neto contable y su gráfica.'] },
     ],
     prestamos: [
