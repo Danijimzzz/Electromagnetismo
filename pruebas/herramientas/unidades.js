@@ -42,6 +42,17 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     cerca(1 / (4 * Math.PI * cte('ε<sub>0</sub>').v) / 1e9, cte('k<sub>e</sub> = 1/(4πε<sub>0</sub>)').v / 1e9, 1e-8, 'k = 1/(4π ε₀)'); cerca(1 / Math.sqrt(cte('ε<sub>0</sub>').v * cte('μ<sub>0</sub>').v), cte('c').v, 100, 'c = 1/√(ε₀ μ₀)');
     cerca(cte('h').v / (2 * cte('e').v) / 1e-15, cte('Φ<sub>0</sub>').v / 1e-15, 1e-8, 'Φ₀ = h/2e');
     cerca(cte('al').v, C.convertir(1, 'longitud', 'al', 'm'), 1e-3, 'año luz en m');
+    // las dos ediciones (2022 por defecto y 2018) cumplen entre sí las relaciones de la física: es la comprobación de las cifras escritas de memoria
+    if (C.CONSTANTES !== C.EDICIONES[2022]) mal('Unidades: la edición por defecto debería ser CODATA 2022');
+    for (const ed of [2022, 2018]) {
+      const g = (q) => C.EDICIONES[ed].find((c) => c.s === q).v, rel = (a, b, nom, tol = 3e-9) => { if (Math.abs(a / b - 1) > tol) mal(`Unidades · CODATA ${ed}: ${nom} no cuadra (${a} frente a ${b})`); };
+      const c = g('c'), e = g('e'), h = g('h'), hb = g('ħ'), mu0 = g('μ<sub>0</sub>'), e0 = g('ε<sub>0</sub>'), al = g('α'), me = g('m<sub>e</sub>'), mp = g('m<sub>p</sub>');
+      rel(mu0 * c * e * e / (2 * h), al, 'α = μ₀ c e²/2h'); rel(c * c * e0 * mu0, 1, 'c² ε₀ μ₀ = 1'); rel(1 / (4 * Math.PI * e0), g('k<sub>e</sub> = 1/(4πε<sub>0</sub>)'), 'k = 1/4πε₀'); rel(mu0 * c, g('Z<sub>0</sub>'), 'Z₀ = μ₀ c');
+      rel(h / (me * c), g('λ<sub>C</sub>'), 'λ_C = h/m_e c'); rel(al * al * me * c / (2 * h), g('R<sub>∞</sub>'), 'R∞ = α² m_e c/2h'); rel(me * c * c * al * al, g('E<sub>h</sub>'), 'E_h = m_e c² α²');
+      rel(me * c * c / e / 1e6, g('m<sub>e</sub>c<sup>2</sup>'), 'm_e c² en MeV'); rel(mp * c * c / e / 1e6, g('m<sub>p</sub>c<sup>2</sup>'), 'm_p c² en MeV', 5e-9);
+      rel(hb / (me * c * al), g('a<sub>0</sub>'), 'a₀ = ħ/(m_e c α)', 2e-9); rel(al * hb / (me * c), g('r<sub>e</sub>'), 'r_e = α ħ/(m_e c)', 2e-9); rel(e * hb / (2 * me), g('μ<sub>B</sub>'), 'μ_B = eħ/2m_e', 2e-9); rel(e * hb / (2 * mp), g('μ<sub>N</sub>'), 'μ_N = eħ/2m_p', 2e-9);
+    }
+    if (C.busca('planck', 2018).length !== 2 || C.busca('', 2018).length !== C.EDICIONES[2018].length) mal('Unidades: el buscador no respeta la edición 2018');
     if (C.busca('electrón').length < 4 || C.busca('ε').length < 1 || C.busca('zzz').length !== 0 || C.busca('').length !== C.CONSTANTES.length) mal('Unidades: el buscador de constantes no encuentra lo esperado');
     for (const sc of [{ mag: 'longitud', valor: '', de: 'm', a: 'km' }, { mag: 'longitud', valor: 'abc', de: 'm', a: 'km' }, { mag: 'longitud', valor: '5m', de: 'm', a: 'km' }, { mag: 'temperatura', valor: '-300', de: '°C', a: 'K' },
       { mag: 'temperatura', valor: '-1', de: 'K', a: '°C' }, { mag: 'nada', valor: '1', de: 'm', a: 'km' }, { mag: 'longitud', valor: '1', de: 'kg', a: 'km' }]) {

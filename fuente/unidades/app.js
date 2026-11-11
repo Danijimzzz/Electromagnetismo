@@ -73,11 +73,14 @@
 
   /* ---------- Constantes ---------- */
   function constantes() {
-    const q = $('#busca').value, L = P.busca(q);
+    const q = $('#busca').value, L = P.busca(q, edicion());
     $('#ctes').innerHTML = L.map((c) => `<tr><td class="n">${esc(c.n)}</td><td class="s">${c.s}</td><td class="v">${esc(c.d)}${c.e ? `·10<sup>${String(c.e).replace('-', '−')}</sup>` : ''}</td><td class="u">${c.u}</td><td class="x">${esc(c.x)}</td></tr>`).join('')
       || '<tr><td colspan="5">Ninguna constante coincide con la búsqueda.</td></tr>';
     $('#ctes-n').textContent = `${L.length} de ${P.CONSTANTES.length}`;
   }
+  const edicion = () => ($('#edicion') && $('#edicion').value === '2018' ? 2018 : 2022);
+  try { if ($('#edicion') && localStorage.getItem('simu-codata') === '2018') $('#edicion').value = '2018'; } catch (e) {}
+  if ($('#edicion')) $('#edicion').addEventListener('change', () => { try { localStorage.setItem('simu-codata', $('#edicion').value); } catch (e) {} constantes(); });
   $('#busca').addEventListener('input', constantes);
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('unidades').current;

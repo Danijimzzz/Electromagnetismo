@@ -768,6 +768,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: combinatoria (variaciones, permutaciones y combinaciones, con o sin repetición), probabilidad de la unión, la intersección y la condicionada de dos sucesos, y probabilidad total con el teorema de Bayes y su diagrama de árbol.'] },
     ],
     unidades: [
+      { v: '0.2', fecha: '2026-11-11', cambios: ['Las constantes pasan a la edición CODATA 2022, con la de 2018 como opción para comparar con apuntes y solucionarios antiguos.'] },
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: convierte un valor entre las unidades de 24 magnitudes (longitud, masa, tiempo, velocidad, presión, energía, potencia, temperatura, carga, campo eléctrico y magnético…), con el desarrollo paso a paso por la unidad base del SI y el factor directo, el valor en todas las unidades a la vez y un botón para intercambiarlas. Incluye la tabla de constantes físicas CODATA 2018 con buscador.'] },
     ],
     equilibrio: [
