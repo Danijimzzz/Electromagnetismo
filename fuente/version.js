@@ -745,7 +745,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: dos modos. Desde la tabla de verdad (1 a 5 variables, hasta 4 salidas y casillas indiferentes X) da los minitérminos Σm, los maxitérminos ΠM, las formas canónicas y la forma simplificada por Quine-McCluskey en suma de productos y en producto de sumas, con el mapa de Karnaugh y el circuito de puertas dibujado. Desde las puertas (AND, OR, NOT, NAND, NOR, XOR y XNOR de 2 a 4 entradas) da la ecuación de cada puerta, la tabla de verdad con todas las puertas y las mismas ecuaciones. Con ejemplos (mayoría, semisumador, sumador completo, primos en BCD, multiplexor y XOR con NAND), desarrollo paso a paso y botón para copiar las ecuaciones.'] },
     ],
     multiplicador: [
-      { v: '0.3', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.'] },
+      { v: '0.3', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.', 'Botón «Usar en…» para llevar el modelo (sin impuestos proporcionales ni exterior) a IS-LM.'] },
       { v: '0.2', fecha: '2026-11-08', cambios: ['Más ejemplos.'] },
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: renta de equilibrio del modelo renta-gasto con impuestos e importaciones, multiplicador del gasto, de los impuestos fijos y del presupuesto equilibrado, efecto de un cambio de gasto o de impuestos con sus rondas, brecha con el pleno empleo y la cruz keynesiana, con el desarrollo paso a paso.'] },
     ],
@@ -841,7 +841,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: elasticidad precio de la demanda, renta y cruzada entre dos situaciones, sobre el valor inicial y de arco, con su clasificación y el efecto sobre el ingreso total, y la elasticidad en un punto de una demanda lineal con el precio que hace máximo el ingreso, con la gráfica.'] },
     ],
     'pib-ipc': [
-      { v: '0.2', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.'] },
+      { v: '0.2', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.', 'Botón «Usar en…» para ver el PIB real como número índice.'] },
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: PIB nominal y real de una economía con varios bienes y años, deflactor, crecimiento real e inflación; deflactar una serie con el IPC para tenerla en euros constantes; y los agregados de la contabilidad nacional del PIB a la renta nacional, con gráfica y tabla.'] },
     ],
     'numeros-indice': [
@@ -881,7 +881,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: valor actual, valor final, término y número de términos de rentas constantes pospagables o prepagables, temporales o perpetuas, inmediatas o diferidas, con términos anuales, semestrales, trimestrales o mensuales, la tabla de términos y su gráfica.'] },
     ],
     interes: [
-      { v: '0.3', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.', 'El desarrollo termina con un paso «Convención» que dice qué base de días, qué tipo por periodo y qué redondeo se usan.'] },
+      { v: '0.3', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.', 'El desarrollo termina con un paso «Convención» que dice qué base de días, qué tipo por periodo y qué redondeo se usan.', 'Botones «Usar en…» para llevar el capital, el plazo y la TAE a Ahorro e inflación y a Rentas.'] },
       { v: '0.2', fecha: '2026-11-08', cambios: ['Tiempo en meses o días (año de 365 o 360 días) y capitalización continua.'] },
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: capital final, capital inicial, tipo de interés y tiempo en capitalización simple y compuesta (anual, semestral, trimestral, mensual o diaria), el paso del TIN a la TAE y al revés, la comparación simple frente a compuesta año a año y su gráfica.'] },
     ],

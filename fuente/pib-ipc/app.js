@@ -8,7 +8,11 @@
 (() => {
   const P = PibIpc, { f, num } = Eco;
   const pc = (x) => (x === null || x === undefined ? '—' : `${f(100 * x, 4)} %`);
+  const num2 = (x) => String(+x.toFixed(2)).replace('.', ',');
+  // «Usar en…»: el PIB real (a precios del año base) como serie para Números índice, con el mismo año base
+  const enlacesDe = (s) => (s.modo === 'pib' && s.anos.length >= 2 ? [{ carpeta: 'numeros-indice', texto: 'Ver el PIB real como número índice →', estado: { modo: 'serie', datos: s.anos.map((x) => `${String(x.a).replace('.', ',')} ${num2(x.real)}`).join('\n'), base: String(s.base).replace('.', ',') } }] : []);
   Calculadora.monta({
+    usarEn: enlacesDe,
     C: P, carpeta: 'pib-ipc', app: 'PibIpcApp', azar: P.azar, enunciado: P.enunciado,
     nota: 'En las tablas, una fila por línea con los números separados por espacios, tabuladores o «;»; se salta una primera fila con nombres. La coma es decimal.',
     campos: (sc) => {

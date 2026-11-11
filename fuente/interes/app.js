@@ -8,7 +8,16 @@
   const I = Interes, { f, dinero, num } = Eco;
   const tp = (x) => `${f(100 * x, 6)} %`;
   const periodos = { k: 'm', nom: 'Capitalización', tipo: 'sel', ops: Object.entries(I.PERIODOS).map(([k, v]) => [k, v[0].toUpperCase() + v.slice(1)]) };
+  // «Usar en…»: el mismo capital y plazo (años enteros) con la TAE como rentabilidad efectiva anual, en Ahorro (sin aportaciones) y en Rentas
+  const pc = (x) => String(+(100 * x).toFixed(6)).replace('.', ',');
+  const enlacesDe = (s) => {
+    if (!s || s.simple || !isFinite(s.tae) || !isFinite(s.t) || !(s.t >= 1) || Math.abs(s.t - Math.round(s.t)) > 1e-9 || s.t > 80) return [];
+    const n = String(Math.round(s.t)), r = pc(s.tae);
+    return [{ carpeta: 'ahorro', texto: 'Ver el capital en Ahorro e inflación →', estado: { modo: 'final', c0: String(+s.c0.toFixed(2)).replace('.', ','), a: '0', m: '1', r, pi: '0', n, indexa: 'no' } },
+      { carpeta: 'rentas', texto: 'Usar el tipo en Rentas →', estado: { modo: 'va', pago: 'pos', duracion: 'temporal', c: '1000', n, i: r, m: '1', d: '0' } }];
+  };
   Calculadora.monta({
+    usarEn: enlacesDe,
     C: I, carpeta: 'interes', app: 'InteresApp', azar: I.azar, enunciado: I.enunciado,
     nota: 'Los tipos van en % anual (TIN). El tiempo puede ir en años, meses o días (con el año de 365 o 360 días). La capitalización continua es el límite de capitalizar infinitas veces al año. Se admite coma decimal.',
     campos: (sc) => {
