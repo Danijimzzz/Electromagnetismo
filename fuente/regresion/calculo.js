@@ -6,8 +6,11 @@
    origen, exponencial, potencial, logarítmico, hiperbólico y parabólico y
    su comparación, residuos con los puntos atípicos, Spearman, la
    incertidumbre de la pendiente y la ordenada y estimaciones con su
-   intervalo. Los datos pueden ser una lista o una tabla de doble entrada,
-   y las varianzas con N o con N − 1.
+   intervalo, el intervalo de ρ con la z de Fisher y la comparación con
+   otra correlación, y el ajuste ponderado de una recta cuando cada y tiene
+   su incertidumbre (χ² reducido y errores de a y b). Los datos pueden ser
+   una lista, una lista con σ_y o una tabla de doble entrada, y las
+   varianzas con N o con N − 1.
    La t de Student del contraste sale de estadistica/calculo.js.
    ===================================================================== */
 const Regresion = (() => {
@@ -55,6 +58,32 @@ const Regresion = (() => {
       pts.push({ x: v[0], y: v[1], n });
     });
     return pts;
+  }
+
+  // lista con la incertidumbre de cada y (EST.RE-3): una fila por punto, «x y σ»
+  function leeSigma(texto) {
+    const pts = [];
+    String(texto ?? '').split(/\r?\n/).forEach((lin, i) => {
+      const l = lin.trim().replace(/±|\+\/-|\+-/g, ' ');
+      if (!l || l.startsWith('#')) return;
+      const tk = (/[;\t]/.test(l) ? l.split(/\s*[;\t]\s*/) : l.split(/\s+/)).filter((t) => t !== ''), v = tk.map(leeNum);
+      if (!pts.length && v.some((x) => !isFinite(x)) && tk.some((t) => /^[^\d]*[a-zñáéíóúσ]/i.test(t))) return; // cabecera
+      if (tk.length !== 3) throw new Error(`Fila ${i + 1}: escribe x, y y la incertidumbre de y («2 4,1 0,2»)`);
+      if (v.some((x) => !isFinite(x))) throw new Error(`Fila ${i + 1}: «${l}» no son números`);
+      if (!(v[2] > 0)) throw new Error(`Fila ${i + 1}: la incertidumbre de y tiene que ser mayor que 0 (el peso es 1/σ²)`);
+      pts.push({ x: v[0], y: v[1], n: 1, s: v[2] });
+    });
+    return pts;
+  }
+  // recta ponderada y = a + bx con pesos 1/σ²: { a, b, sa, sb, chi2, gl, red, p, cov }
+  function ponderado(pts) {
+    let S = 0, Sx = 0, Sy = 0, Sxx = 0, Sxy = 0;
+    for (const q of pts) { const w = 1 / (q.s * q.s); S += w; Sx += w * q.x; Sy += w * q.y; Sxx += w * q.x * q.x; Sxy += w * q.x * q.y; }
+    const D = S * Sxx - Sx * Sx;
+    if (!(D > 0)) throw new Error('Todos los puntos tienen la misma x: no se puede ajustar una recta');
+    const a = (Sxx * Sy - Sx * Sxy) / D, b = (S * Sxy - Sx * Sy) / D, sa = Math.sqrt(Sxx / D), sb = Math.sqrt(S / D);
+    const chi2 = pts.reduce((t, q) => t + ((q.y - a - b * q.x) / q.s) ** 2, 0), gl = pts.length - 2, red = gl > 0 ? chi2 / gl : null;
+    return { a, b, sa, sb, S, Sx, Sy, Sxx, Sxy, D, chi2, gl, red, p: gl > 0 ? E.gammaQ(gl / 2, chi2 / 2) : null, cov: -Sx / D };
   }
 
   // tabla de doble entrada: la primera fila son los valores de y (con una esquina de texto opcional,
@@ -121,7 +150,7 @@ const Regresion = (() => {
   /* ---------- Cálculo ---------- */
   // sc: { datos (texto), modelo, x0 (estimar y), y0 (estimar x), opcionales }
   function resolver(sc) {
-    const doble = sc.formato === 'doble', pts = doble ? leeDoble(sc.doble) : leeDatos(sc.datos), modelo = MODELOS[sc.modelo] ? sc.modelo : 'lineal', M = MODELOS[modelo];
+    const doble = sc.formato === 'doble', sig = sc.formato === 'sigma', pts = doble ? leeDoble(sc.doble) : sig ? leeSigma(sc.datosS) : leeDatos(sc.datos), modelo = MODELOS[sc.modelo] ? sc.modelo : 'lineal', M = MODELOS[modelo];
     if (pts.length < 2) throw new Error('Hacen falta al menos dos puntos');
     const x0 = vacio(sc.x0) ? null : leeNum(sc.x0), y0 = vacio(sc.y0) ? null : leeNum(sc.y0);
     if (x0 !== null && !isFinite(x0)) throw new Error('El valor de x para estimar debe ser un número');
@@ -150,6 +179,7 @@ const Regresion = (() => {
     const r = m.vy === 0 ? 0 : m.cxy / (m.sdx * m.sdy);
     pasos.push({ t: 'Coeficiente de correlación de Pearson', html: m.vy === 0 ? 'Todos los puntos tienen la misma y: σ<sub>y</sub> = 0, la recta es horizontal y r no está definido (se toma 0).' : `$r = ${CXY}/{${L}_x ${L}_y} = {${f(Cxy)}}/{${f(Sx)} · ${f(Sy)}}$ = <b>${d4(r)}</b><br>${fuerza(r)} El coeficiente de determinación es $r^2 = ${d4(r * r)}$: la recta explica el ${f(100 * r * r, 3)} % de la variación de y.` });
 
+    const nivel = (() => { let c = vacio(sc.nivel) ? 95 : leeNum(sc.nivel); if (c >= 1) c /= 100; if (!(c > 0 && c < 1)) throw new Error('El nivel de confianza tiene que estar entre 0 y 100 %'); return c; })();
     // contraste de H₀: ρ = 0 con la t de Student de N − 2 grados de libertad
     let t = null, pval = null;
     const nu = m.N - 2;
@@ -157,6 +187,24 @@ const Regresion = (() => {
       if (Math.abs(r) >= 1 - 1e-12) { t = Infinity; pval = 0; }
       else { t = (r * Math.sqrt(nu)) / Math.sqrt(1 - r * r); pval = E.betaI(nu / (nu + t * t), nu / 2, 0.5); }
       pasos.push({ t: '¿Es significativa la correlación?', html: `Contraste de $H_0: ρ = 0$ con $t = r √(N − 2)/√(1 − r^2)$, que sigue una t de Student con ${f(nu, 6)} grados de libertad: ${isFinite(t) ? `$t = ${d4(r)} · √${f(nu, 6)}/√(1 − ${p(r)}^2) = ${f(t)}$, p-valor bilateral = <b>${E.prob(pval)}</b>` : 'los puntos están alineados del todo, t → ∞ y p-valor = 0'}<br>${pval < 0.05 ? 'Como p &lt; 0,05, se rechaza H₀: hay correlación significativa al 5 %.' : 'Como p ≥ 0,05, no se puede rechazar H₀: con estos datos la correlación no es significativa al 5 %.'}${m.N !== pts.length ? ' (N cuenta las frecuencias.)' : ''}` });
+    }
+
+    // intervalo de ρ con la transformación z de Fisher y comparación con otra correlación (EST.RE-1)
+    let fisher = null, comp = null;
+    const zq = (c) => E.cuantil(E.DIST.normal, { mu: 0, sigma: 1 }, 1 - (1 - c) / 2);
+    if (m.N >= 4 && m.vy > 0 && Math.abs(r) < 1 - 1e-12) {
+      const z = Math.atanh(r), se = 1 / Math.sqrt(m.N - 3), k = zq(nivel), za = z - k * se, zb = z + k * se;
+      fisher = { z, se, k, a: Math.tanh(za), b: Math.tanh(zb), nivel };
+      pasos.push({ t: `Intervalo de confianza de ρ al ${f(100 * nivel)} % (z de Fisher)`, html: `r no se reparte como una normal (está encerrado entre −1 y 1), pero $z = "artanh"(r) = 1/2 ln({1 + r}/{1 − r})$ sí, con desviación típica $1/√(N − 3)$:<br>$z = "artanh"(${d4(r)}) = ${f(z)}$, &ensp; $σ_z = 1/√{${f(m.N - 3, 6)}} = ${f(se)}$, &ensp; $z ± ${f(k)} · σ_z = (${f(za)}; ${f(zb)})$<br>Se deshace el cambio con $ρ = "tanh"(z)$: $ρ$ está entre <b>${d4(fisher.a)}</b> y <b>${d4(fisher.b)}</b>.${fisher.a * fisher.b > 0 ? '' : ' El intervalo contiene el 0: la correlación no es significativa a ese nivel.'}${m.N < 10 ? ' Con tan pocos puntos el intervalo es muy ancho.' : ''}` });
+    }
+    if (!vacio(sc.r2c) || !vacio(sc.n2c)) {
+      const r2 = leeNum(sc.r2c), n2 = leeNum(sc.n2c);
+      if (!isFinite(r2) || !(Math.abs(r2) < 1)) throw new Error('El otro coeficiente de correlación r₂ tiene que estar entre −1 y 1 (sin llegar)');
+      if (!Number.isInteger(n2) || n2 < 4) throw new Error('El tamaño n₂ de la otra muestra tiene que ser un entero de 4 o más');
+      if (!fisher) throw new Error('Para comparar dos correlaciones hacen falta al menos 4 puntos y que no estén todos alineados');
+      const z2 = Math.atanh(r2), sed = Math.sqrt(1 / (m.N - 3) + 1 / (n2 - 3)), zd = (fisher.z - z2) / sed, pd = 2 * (1 - E.Phi(Math.abs(zd)));
+      comp = { r2, n2, z2, se: sed, z: zd, p: pd };
+      pasos.push({ t: 'Comparación de dos correlaciones', html: `¿Es distinta esta correlación de la de otra muestra independiente con $r_2 = ${d4(r2)}$ y $n_2 = ${n2}$? Se comparan en la escala de Fisher: $z_1 = ${f(fisher.z)}$, $z_2 = "artanh"(${d4(r2)}) = ${f(z2)}$<br>$Z = {z_1 − z_2}/{√(1/(N_1 − 3) + 1/(n_2 − 3))} = {${f(fisher.z - z2)}}/{${f(sed)}} = ${f(zd)}$, p-valor bilateral = <b>${E.prob(pd)}</b><br>${pd < 0.05 ? 'Como p &lt; 0,05, las dos correlaciones son distintas al 5 %.' : 'Como p ≥ 0,05, la diferencia entre las dos correlaciones puede deberse al azar.'}` });
     }
 
     // Spearman: Pearson de los rangos (con empates, el rango medio; con frecuencias, cada punto ocupa n_i puestos)
@@ -172,7 +220,7 @@ const Regresion = (() => {
 
     // recta de Y sobre X (siempre) y de X sobre Y
     const b = m.cxy / m.vx, a = m.my - b * m.mx;
-    const res = { modelo, pts, m, r, r2: r * r, t, pval, nu, xmin, xmax, lineal: { a, b }, div: cu ? 'n1' : 'n', cov: Cxy, rs };
+    const res = { modelo, pts, m, r, r2: r * r, t, pval, nu, xmin, xmax, lineal: { a, b }, div: cu ? 'n1' : 'n', cov: Cxy, rs, fisher, comp };
     pasos.push({ t: 'Recta de regresión de Y sobre X', html: `$y − ȳ = ${CXY}/{${VX}} (x − x̄)$, con pendiente $b = ${CXY}/{${VX}} = {${f(Cxy)}}/{${f(Vx)}} = ${f(b)}$ y ordenada $a = ȳ − b x̄ = ${f(m.my)} − ${p(b)} · ${p(m.mx)} = ${f(a)}$<br>$y = ${f(a)} ${mas(b)} x$${modelo === 'lineal' ? '' : ' (la recta, para comparar con el ajuste elegido)'}` });
     if (m.vy > 0) {
       const b2 = m.cxy / m.vy, a2 = m.mx - b2 * m.my;
@@ -183,7 +231,6 @@ const Regresion = (() => {
     }
 
     // incertidumbre de la pendiente y la ordenada (mínimos cuadrados con N − 2 grados de libertad)
-    const nivel = (() => { let c = vacio(sc.nivel) ? 95 : leeNum(sc.nivel); if (c >= 1) c /= 100; if (!(c > 0 && c < 1)) throw new Error('El nivel de confianza tiene que estar entre 0 y 100 %'); return c; })();
     if (nu >= 1 && modelo === 'lineal') {
       const SSl = pts.reduce((s, q) => s + q.n * (q.y - a - b * q.x) ** 2, 0), Sxx = m.N * m.vx, se = Math.sqrt(SSl / nu);
       const sb = se / Math.sqrt(Sxx), sa = se * Math.sqrt(1 / m.N + (m.mx * m.mx) / Sxx), tk = E.cuantil(E.DIST.t, { nu }, 1 - (1 - nivel) / 2), pc = `${f(100 * nivel)} %`;
@@ -195,6 +242,16 @@ const Regresion = (() => {
     if (modelo === 'lineal') {
       res.pred = (x) => a + b * x; res.inv = res.xSobreY ? (y) => res.xSobreY.a + res.xSobreY.b * y : null;
       res.ecuacion = `y = ${f(a)} ${mas(b)}x`; res.R2 = r * r;
+      if (sig) {
+        // cada y con su incertidumbre: la recta ponderada sustituye a la de mínimos cuadrados sin pesos
+        const W = ponderado(pts); res.pond = W; res.sinPesos = { a, b }; delete res.inc;
+        res.pred = (x) => W.a + W.b * x; res.inv = W.b ? (y) => (y - W.a) / W.b : null; res.ecuacion = `y = ${f(W.a)} ${mas(W.b)}x`;
+        const g6 = (x) => f(x, 5);
+        pasos.push({ t: 'Ajuste ponderado: cada punto pesa $1/σ_i^2$', html: `Los puntos más precisos tienen que mandar más. Se minimiza $χ^2 = ∑ ({y_i − a − b x_i}/{σ_i})^2$ y, con $w_i = 1/σ_i^2$, salen las sumas $S = ∑ w_i = ${g6(W.S)}$, $S_x = ∑ w_i x_i = ${g6(W.Sx)}$, $S_y = ∑ w_i y_i = ${g6(W.Sy)}$, $S_{xx} = ∑ w_i x_i^2 = ${g6(W.Sxx)}$, $S_{xy} = ∑ w_i x_i y_i = ${g6(W.Sxy)}$ y $Δ = S S_{xx} − S_x^2 = ${g6(W.D)}$:<br>$b = {S S_{xy} − S_x S_y}/Δ = ${f(W.b)}$, &ensp; $a = {S_{xx} S_y − S_x S_{xy}}/Δ = ${f(W.a)}$<br><b>${res.ecuacion}</b> (sin pesos saldría $y = ${f(a)} ${mas(b)} x$).` });
+        pasos.push({ t: 'Errores de la pendiente y de la ordenada', html: `Salen de las incertidumbres de los datos, no de lo que se separan de la recta: $σ_b = √{S/Δ} = ${f(W.sb)}$, &ensp; $σ_a = √{S_{xx}/Δ} = ${f(W.sa)}$<br>Para el informe: <b>b = ${conError(W.b, W.sb)}</b> y <b>a = ${conError(W.a, W.sa)}</b>.` });
+        if (W.gl > 0) pasos.push({ t: 'χ² reducido: ¿se ajusta la recta a los datos?', html: `$χ^2 = ${f(W.chi2)}$ con $N − 2 = ${W.gl}$ grados de libertad: $χ^2_"red" = ${f(W.red)}$ y la probabilidad de un χ² así o mayor si la recta es correcta es <b>${E.prob(W.p)}</b>.<br>${W.red > 2 && W.p < 0.05 ? `Es bastante mayor que 1: los puntos se separan de la recta más de lo que permiten sus incertidumbres. O el modelo no es una recta o las incertidumbres están subestimadas; si se acepta la recta, los errores se amplían con $√{χ^2_"red"}$: $σ_b = ${f(W.sb * Math.sqrt(W.red))}$, $σ_a = ${f(W.sa * Math.sqrt(W.red))}$.` : W.red < 0.3 && W.gl > 2 ? 'Es mucho menor que 1: los puntos caen sobre la recta mejor de lo esperable; lo normal es que las incertidumbres estén sobreestimadas.' : 'Está cerca de 1: la recta es compatible con los datos y sus incertidumbres.'}` });
+        else pasos.push({ t: 'χ² reducido', html: 'Con dos puntos la recta pasa por los dos: no quedan grados de libertad para juzgar el ajuste.' });
+      }
     } else if (modelo === 'origen') {
       if (!(m.sxx > 0)) throw new Error('Para una recta por el origen hace falta alguna x distinta de 0');
       const B = m.sxy / m.sxx;
@@ -274,8 +331,9 @@ const Regresion = (() => {
         res.icMedia = [yp - h1, yp + h1]; res.icPred = [yp - h2, yp + h2];
         pasoIC = { t: `Intervalos de la estimación al ${f(100 * c)} %`, html: `Para la media de y cuando x = ${f(x0)}: $ŷ ± t s_e √(1/N + (x_0 − x̄)^2/S_{xx})$ = <b>${ic(...res.icMedia)}</b><br>Para un valor concreto de y (intervalo de predicción, más ancho): $ŷ ± t s_e √(1 + 1/N + (x_0 − x̄)^2/S_{xx})$ = <b>${ic(...res.icPred)}</b><br>Los dos se ensanchan al alejarse de x̄.` };
       }
-      pasos.push({ t: `Estimación de y para x = ${f(x0)}`, html: `${modelo === 'lineal' ? `Con la recta de Y sobre X: $ŷ = ${f(a)} ${mas(b)} · ${p(x0)}$` : `$ŷ(${f(x0)})$ con ${res.ecuacion}`} = <b>${f(yp)}</b><br>${fuera ? `Ojo: x = ${f(x0)} está fuera del intervalo de los datos [${f(xmin)}, ${f(xmax)}]. Es una extrapolación y puede no ser fiable aunque ${fiable()}.` : `Está dentro del intervalo de los datos y ${fiable()} ($R^2 = ${d4(res.R2)}$), así que la estimación ${res.R2 >= 0.81 ? 'es fiable' : 'hay que tomarla con cuidado'}.`}` });
+      pasos.push({ t: `Estimación de y para x = ${f(x0)}`, html: `${res.pond ? `Con la recta ponderada: $ŷ = ${f(res.pond.a)} ${mas(res.pond.b)} · ${p(x0)}$` : modelo === 'lineal' ? `Con la recta de Y sobre X: $ŷ = ${f(a)} ${mas(b)} · ${p(x0)}$` : `$ŷ(${f(x0)})$ con ${res.ecuacion}`} = <b>${f(yp)}</b><br>${fuera ? `Ojo: x = ${f(x0)} está fuera del intervalo de los datos [${f(xmin)}, ${f(xmax)}]. Es una extrapolación y puede no ser fiable aunque ${fiable()}.` : `Está dentro del intervalo de los datos y ${fiable()} ($R^2 = ${d4(res.R2)}$), así que la estimación ${res.R2 >= 0.81 ? 'es fiable' : 'hay que tomarla con cuidado'}.`}` });
       if (pasoIC) pasos.push(pasoIC);
+      if (res.pond) { const W = res.pond, sy = Math.sqrt(Math.max(0, W.sa ** 2 + x0 * x0 * W.sb ** 2 + 2 * x0 * W.cov)); res.syx0 = sy; pasos.push({ t: 'Incertidumbre de la estimación', html: `a y b salen del mismo ajuste y están correlacionadas, así que hace falta su covarianza $"cov"(a, b) = −S_x/Δ = ${f(W.cov)}$:<br>$σ_ŷ = √(σ_a^2 + x_0^2 σ_b^2 + 2 x_0 "cov"(a, b)) = ${f(sy)}$ ⇒ <b>ŷ = ${conError(yp, sy)}</b>` }); }
     }
     if (y0 !== null) {
       const xp = res.inv ? res.inv(y0) : NaN;
@@ -283,7 +341,7 @@ const Regresion = (() => {
       else if (!isFinite(xp)) throw new Error('No se puede despejar x para ese valor de y');
       else {
         res.y0 = y0; res.xy0 = xp;
-        pasos.push({ t: `Estimación de x para y = ${f(y0)}`, html: `${modelo === 'lineal' ? `Para estimar x se usa la recta de X sobre Y, no se despeja la de Y sobre X: $x̂ = ${f(res.xSobreY.a)} ${mas(res.xSobreY.b)} · ${p(y0)}$` : `Despejando x en ${res.ecuacion}`} = <b>${f(xp)}</b>${modelo === 'lineal' && Math.abs(r) < 0.999 ? ` (despejando en la otra recta saldría ${f((y0 - a) / b)}; solo coinciden si |r| = 1).` : '.'}` });
+        pasos.push({ t: `Estimación de x para y = ${f(y0)}`, html: `${res.pond ? 'Despejando x en la recta ponderada' : modelo === 'lineal' ? `Para estimar x se usa la recta de X sobre Y, no se despeja la de Y sobre X: $x̂ = ${f(res.xSobreY.a)} ${mas(res.xSobreY.b)} · ${p(y0)}$` : `Despejando x en ${res.ecuacion}`} = <b>${f(xp)}</b>${modelo === 'lineal' && !res.pond && Math.abs(r) < 0.999 ? ` (despejando en la otra recta saldría ${f((y0 - a) / b)}; solo coinciden si |r| = 1).` : '.'}` });
       }
     }
     return Object.assign(res, { pasos });
@@ -298,7 +356,6 @@ const Regresion = (() => {
   }
 
   const ejemplos = [
-    { clave: 'notas', nombre: 'Horas de estudio y nota del examen', sc: { modelo: 'lineal', datos: '1 3\n2 4\n3 5,5\n4 6\n5 7,5\n6 8\n7 9', x0: '4.5', y0: '' } },
     { clave: 'peso-altura', nombre: 'Estatura y peso de 8 alumnos', sc: { modelo: 'lineal', datos: '160 55\n165 58\n168 64\n170 63\n172 68\n175 70\n180 77\n185 80', x0: '178', y0: '60' } },
     { clave: 'inversa', nombre: 'Precio y unidades vendidas (correlación negativa)', sc: { modelo: 'lineal', datos: '10 120\n12 110\n14 98\n16 90\n18 85\n20 71', x0: '15', y0: '' } },
     { clave: 'frecuencias', nombre: 'Tabla con frecuencias (nº de hijos y de habitaciones)', sc: { modelo: 'lineal', datos: 'x y n\n1 2 4\n2 2 2\n2 3 6\n3 3 5\n3 4 3\n4 4 4', x0: '', y0: '' } },
@@ -313,8 +370,11 @@ const Regresion = (() => {
     { clave: 'sonido', nombre: 'Nivel sonoro y distancia (logarítmica)', sc: { modelo: 'logaritmica', datos: '1 90\n2 84\n4 78,2\n8 72\n16 66,1', x0: '10', y0: '' } },
     { clave: 'boyle', nombre: 'Ley de Boyle: presión y volumen (hiperbólica)', sc: { modelo: 'hiperbolica', datos: '# V (L); P (atm)\n1 24,5\n2 12,3\n3 8,1\n4 6,2\n5 4,9\n6 4,1', x0: '2.5', y0: '' } },
     { clave: 'frenada', nombre: 'Velocidad y distancia de frenado (parabólica)', sc: { modelo: 'parabolica', datos: '# km/h; m\n30 9\n50 21\n70 38\n90 58\n110 85\n130 115', x0: '100', y0: '' } },
+    { clave: 'ponderado', nombre: 'Ajuste ponderado: cada y con su incertidumbre', sc: { modelo: 'lineal', formato: 'sigma', datosS: '1 2,1 0,2\n2 3,9 0,2\n3 6,2 0,3\n4 7,8 0,3\n5 10,3 0,5\n6 11,7 0,5', x0: '7', y0: '' } },
+    { clave: 'dos-correlaciones', nombre: 'Intervalo de ρ y comparación con otra muestra', sc: { modelo: 'lineal', datos: '160 55\n165 58\n168 64\n170 63\n172 68\n175 70\n180 77\n185 80', x0: '', y0: '', r2c: '0,62', n2c: '40' } },
+    { clave: 'notas', nombre: 'Horas de estudio y nota del examen', sc: { modelo: 'lineal', datos: '1 3\n2 4\n3 5,5\n4 6\n5 7,5\n6 8\n7 9', x0: '4.5', y0: '' } },
   ];
 
-  return { resolver, leeDatos, leeDoble, momentos, MODELOS, ejemplos, f, d4, conError };
+  return { resolver, leeDatos, leeDoble, leeSigma, ponderado, momentos, MODELOS, ejemplos, f, d4, conError };
 })();
 if (typeof module !== 'undefined') module.exports = Regresion;

@@ -155,6 +155,10 @@
     if (r.blanco && r.blanco.v0nec) filas.push([`v<sub>0</sub> para el blanco a ${f(tray.p.ang)}°`, f(r.blanco.v0nec) + ' m/s']);
     $('#resumen').innerHTML = filas.map(([a, b]) => `<div><span>${a}</span><b>${b}</b></div>`).join('');
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html, true)}</li>`).join('');
+    // «Usar en…»: sin rozamiento, la energía se conserva: salida, cima y llegada son tres puntos de una montaña rusa en Trabajo y energía (la velocidad al caer sale por energía)
+    { const ue = $('#usar-en'), ok = st.sc.modelo === 'ninguno' && isFinite(r.hmax) && isFinite(r.xc) && r.xc > 0 && r.hmax >= 0 && +String(st.sc.yf).replace(',', '.') >= 0 && +String(st.sc.y0).replace(',', '.') >= 0;
+      const c6 = (x) => String(+x.toPrecision(8)).replace('.', ',');
+      if (ue) { ue.hidden = !ok; ue.innerHTML = ok ? `<a class="btn" data-usar="trabajo-y-energia" href="${Herramienta.esc(Herramienta.enlaceA('trabajo-y-energia', { modo: 'montana', m: '1', g: c6(+String(st.sc.g).replace(',', '.')), alturas: [st.sc.y0, c6(r.hmax), st.sc.yf].map((v) => String(v).replace('.', ',')).join('; '), sep: c6(r.xc), v0: c6(+String(st.sc.v0).replace(',', '.')) }))}">Comprobar la velocidad al caer por energía →</a>` : ''; } }
     dibujaT();
   }
 

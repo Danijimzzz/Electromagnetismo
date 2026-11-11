@@ -13,7 +13,7 @@
     return z > a ? [[a, o + p * a], [z, o + p * z]] : [];
   };
   Calculadora.monta({
-    C: L, carpeta: 'is-lm', app: 'IsLmApp',
+    C: L, carpeta: 'is-lm', app: 'IsLmApp', azar: L.azar, enunciado: L.enunciado,
     nota: 'El tipo de interés i va en %. Inversión I = I₀ − b·i; demanda de dinero L = k·Y − h·i. Precios fijos y economía cerrada. Deja vacías las variaciones si solo quieres el equilibrio.',
     campos: () => [
       { k: 'c0', nom: 'Consumo autónomo c₀', sep: 'Mercado de bienes (IS)' }, { k: 'c1', nom: 'Propensión a consumir c₁', ayuda: 'entre 0 y 1' }, { k: 'T', nom: 'Impuestos T' },

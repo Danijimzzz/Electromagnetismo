@@ -9,7 +9,7 @@
 (() => {
   const { $, esc, copia, txt } = Herramienta;
   const I = Intervalos, f = I.f, CLAVE = 'intervalos-v1', E = Estadistica;
-  const MODOS = [['media', 'Media μ'], ['proporcion', 'Proporción p'], ['varianza', 'Varianza σ² y desviación σ'], ['dif-medias', 'Diferencia de medias μ₁ − μ₂'], ['apareadas', 'Datos apareados μ_d'], ['dif-prop', 'Diferencia de proporciones p₁ − p₂'], ['cociente-var', 'Cociente de varianzas σ₁²/σ₂²'], ['tamano', 'Tamaño de la muestra']];
+  const MODOS = [['media', 'Media μ'], ['proporcion', 'Proporción p'], ['prediccion', 'Predicción y tolerancia'], ['varianza', 'Varianza σ² y desviación σ'], ['dif-medias', 'Diferencia de medias μ₁ − μ₂'], ['apareadas', 'Datos apareados μ_d'], ['dif-prop', 'Diferencia de proporciones p₁ − p₂'], ['cociente-var', 'Cociente de varianzas σ₁²/σ₂²'], ['tamano', 'Tamaño de la muestra']];
 
   let sc = copia(I.ejemplos[0].sc);
   try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && MODOS.some(([k]) => k === g.modo)) sc = g; } catch (e) { /* sin almacenamiento */ }
@@ -24,10 +24,11 @@
   const FUENTE = [['resumen', 'Un resumen (x̄, s, n)'], ['datos', 'La lista de valores']];
   const TIPO_S = [['cuasi', 'Cuasidesviación (con n − 1)'], ['muestral', 'Desviación de la muestra (con n)']];
   const nivelF = () => fila('nivel', 'Nivel de confianza', '%');
-  const PARAM = { media: 'μ', proporcion: 'p', varianza: 'σ²', 'dif-medias': 'μ₁ − μ₂', apareadas: 'μ<sub>d</sub>', 'dif-prop': 'p₁ − p₂', 'cociente-var': 'σ₁²/σ₂²' };
+  const PARAM = { prediccion: 'x', media: 'μ', proporcion: 'p', varianza: 'σ²', 'dif-medias': 'μ₁ − μ₂', apareadas: 'μ<sub>d</sub>', 'dif-prop': 'p₁ − p₂', 'cociente-var': 'σ₁²/σ₂²' };
   const NOTAS = {
     media: 'Si te dan la desviación de la población σ, elige «σ conocida» (se usa z). Si solo tienes la de la muestra, se usa la t de Student con n − 1 grados de libertad.',
-    proporcion: 'Puedes dar el número de éxitos x o directamente la proporción de la muestra p̂ (0,42 o 42 %… escribe 0,42).',
+    proporcion: 'Puedes dar el número de éxitos x o directamente la proporción de la muestra p̂ (0,42 o 42 %… escribe 0,42). El método normal (Wald) es el de clase; con pocos éxitos o fracasos son mejores Wilson o el exacto.',
+    prediccion: 'El intervalo de predicción dice dónde caerá el próximo dato; el de tolerancia, dónde está la mayor parte de la población. Los dos son más anchos que el de la media y suponen una población normal.',
     varianza: 'Se usa la χ² con n − 1 grados de libertad. Si tu libro da la desviación típica de la muestra dividiendo entre n, elígela abajo y se pasa a la cuasidesviación.',
     'dif-medias': 'Muestras independientes. Con σ desconocidas, si se suponen iguales se usa la cuasivarianza ponderada; si no, la aproximación de Welch.',
     'dif-prop': 'Muestras independientes y grandes. El intervalo de p₁ − p₂ dice si las dos proporciones son distintas.',
@@ -48,6 +49,12 @@
       }
     } else if (m === 'proporcion') {
       h += elige('tipoP', 'Datos', [['exitos', 'Número de éxitos x'], ['proporcion', 'Proporción p̂']]) + fila('n', 'Tamaño de la muestra n') + (sc.tipoP === 'proporcion' ? fila('ph', 'Proporción p̂') : fila('x', 'Éxitos x'));
+      h += elige('metodoP', 'Método', Object.entries(I.METODOS_P));
+    } else if (m === 'prediccion') {
+      h += elige('queP', 'Intervalo para', [['pred', 'Una observación futura (predicción)'], ['tol', 'Una proporción de la población (tolerancia)']]) + elige('fuente', 'Datos', FUENTE);
+      if (sc.fuente === 'datos') h += area('datos', 'Valores');
+      else h += fila('xm', 'Media de la muestra x̄') + fila('n', 'Tamaño de la muestra n') + fila('s', 'Desviación de la muestra s') + elige('tipoS', 'Esa desviación es la', TIPO_S);
+      if (sc.queP === 'tol') h += fila('cob', 'Proporción de la población', '%');
     } else if (m === 'dif-medias') {
       h += elige('caso', 'Desviaciones', [['conocidas', 'σ₁ y σ₂ conocidas (normal)'], ['iguales', 'Desconocidas pero iguales (t)'], ['distintas', 'Desconocidas y distintas (Welch)']]) + elige('fuente', 'Datos', FUENTE);
       for (const i of ['1', '2']) {
@@ -75,9 +82,9 @@
       h += sc.de === 'proporcion' ? fila('p0', 'Proporción esperada p', '(opcional)') : sc.de === 'dif-medias' ? fila('sigma1', 'σ₁ de la población 1') + fila('sigma2', 'σ₂ de la población 2') : sc.de === 'dif-prop' ? fila('p1', 'Proporción esperada p₁', '(opcional)') + fila('p2', 'Proporción esperada p₂', '(opcional)') : fila('sigma', 'Desviación típica σ');
     }
     h += nivelF();
-    if (m !== 'tamano') h += elige('lado', 'Tipo de intervalo', [['dos', 'Bilateral (a; b)'], ['inf', 'Cota inferior (a; +∞)'], ['sup', 'Cota superior (−∞; b)']]);
+    if (m !== 'tamano' && !(m === 'prediccion' && sc.queP === 'tol')) h += elige('lado', 'Tipo de intervalo', [['dos', 'Bilateral (a; b)'], ['inf', 'Cota inferior (a; +∞)'], ['sup', 'Cota superior (−∞; b)']]);
     if (m === 'media' || m === 'proporcion' || (m === 'tamano' && (sc.de === 'media' || sc.de === 'proporcion' || !sc.de))) h += fila('Npob', 'Tamaño de la población N', '(opcional, si es finita)');
-    if (m !== 'tamano') h += fila('h0', `Contrastar ${PARAM[m]} =`, '(opcional)');
+    if (m !== 'tamano' && m !== 'prediccion') h += fila('h0', `Contrastar ${PARAM[m]} =`, '(opcional)');
     $('#campos').innerHTML = h;
     $('#nota').textContent = NOTAS[m];
   }
@@ -87,6 +94,7 @@
     const t = e.target; if (t.tagName !== 'SELECT') return;
     const k = t.dataset.k;
     if (k === 'modo') sc = copia(I.ejemplos.find((x) => x.sc.modo === t.value).sc);
+    else if (k === 'queP') { sc.queP = t.value; if (t.value === 'tol') { sc.lado = 'dos'; if (!sc.cob) sc.cob = '90'; } }
     else {
       sc[k] = t.value;
       if (k === 'fuente') { sc.fuente1 = sc.fuente2 = t.value; if (t.value === 'datos') for (const d of ['dif-medias', 'apareadas', 'cociente-var'].includes(sc.modo) ? ['datos1', 'datos2'] : ['datos']) if (!sc[d]) sc[d] = d === 'datos2' ? '11,2 12,8 10,9 12,1 11,7 12,4' : '12,1 13,4 11,8 12,9 13,2 12,5'; }
@@ -141,29 +149,35 @@
     const al = s.lado === 'inf' || s.lado === 'sup' ? 'α' : 'α/2', X = s.crit === 'F' ? 'F' : 'χ<sup>2</sup>';
     if (s.crit === 'z') return `z<sub>${al}</sub> = <b>${f(s.k)}</b>`;
     if (s.crit === 't') return `t<sub>${s.gl}; ${al}</sub> = <b>${f(s.k)}</b>`;
+    if (s.crit === 'k') return `k = <b>${f(s.k)}</b>`;
     return s.lado === 'inf' ? `${X} = <b>${f(s.k)}</b>` : s.lado === 'sup' ? `${X} = <b>${f(s.k2)}</b>` : `${X} = ${f(s.k2)} y ${f(s.k)}`;
   };
   const extremo = (x) => (x === Infinity ? '+∞' : x === -Infinity ? '−∞' : f(x, 5));
   const iv = (a, b) => `(${extremo(a)}; ${extremo(b)})`;
   function calcula() {
     const err = $('#error');
-    try { sol = I.resolver({ ...sc, fuente1: sc.fuente ?? sc.fuente1, fuente2: sc.fuente ?? sc.fuente2 }); } catch (e) { sol = null; err.textContent = e.message; err.hidden = false; $('#res').innerHTML = ''; $('#pasos').innerHTML = ''; $('#cuenta').textContent = ''; sim = null; dibuja(); return; }
+    try { sol = I.resolver({ ...sc, fuente1: sc.fuente ?? sc.fuente1, fuente2: sc.fuente ?? sc.fuente2 }); } catch (e) { sol = null; err.textContent = e.message; err.hidden = false; $('#res').innerHTML = ''; $('#usar-en').hidden = true; $('#pasos').innerHTML = ''; $('#cuenta').textContent = ''; sim = null; dibuja(); return; }
     err.hidden = true; guarda();
     const nc = `${f(100 * sol.c)} %`;
     let h;
     if (sol.modo === 'tamano') h = dato(sol.de.startsWith('dif') ? 'Tamaño de cada muestra' : 'Tamaño de la muestra', `n = <b>${sol.n}</b>`) + dato('Sin redondear', `${f(sol.n0, 6)}`) + dato('Valor crítico', CRIT(sol));
     else {
       const tipo = sol.lado === 'inf' ? 'Cota inferior' : sol.lado === 'sup' ? 'Cota superior' : 'Intervalo';
-      h = dato(`${tipo} al ${nc} para ${PARAM[sol.modo]}`, `<b>${iv(sol.a, sol.b)}</b>`, 'ancho');
+      h = dato(`${tipo} al ${nc} para ${sol.paramTxt || PARAM[sol.modo]}`, `<b>${iv(sol.a, sol.b)}</b>`, 'ancho');
       if (sol.modo === 'varianza') h += dato(`Intervalo para σ`, `<b>${iv(sol.sa, sol.sb)}</b>`) + dato('Estimación', `s<sup>2</sup> = ${f(sol.est, 5)}`);
       else if (sol.modo === 'cociente-var') h += dato(`Intervalo para σ₁/σ₂`, `<b>${iv(sol.sa, sol.sb)}</b>`) + dato('Estimación', `s₁<sup>2</sup>/s₂<sup>2</sup> = ${f(sol.est, 5)}`);
-      else h += dato('Estimación', `${{ media: 'x̄', proporcion: 'p̂', 'dif-medias': 'x̄₁ − x̄₂', apareadas: 'd̄', 'dif-prop': 'p̂₁ − p̂₂' }[sol.modo]} = ${f(sol.est, 5)}`) + dato('Error máximo', `E = <b>${f(sol.err)}</b>`);
-      h += dato('Valor crítico', CRIT(sol));
+      else h += dato('Estimación', `${{ prediccion: 'x̄', media: 'x̄', proporcion: 'p̂', 'dif-medias': 'x̄₁ − x̄₂', apareadas: 'd̄', 'dif-prop': 'p̂₁ − p̂₂' }[sol.modo]} = ${f(sol.est, 5)}`) + dato('Error máximo', `E = <b>${f(sol.err)}</b>`);
+      h += dato(sol.crit === 'k' ? 'Factor de tolerancia' : 'Valor crítico', CRIT(sol));
+      if (sol.modo === 'proporcion') h += dato('Método', I.METODOS_P[sol.metodoP]);
       if (sol.h0 !== undefined) h += dato(`Contraste de ${PARAM[sol.modo]} = ${f(sol.h0)}`, sol.rechaza ? '<b>Se rechaza H₀</b>' : '<b>No se rechaza H₀</b>', 'ancho');
     }
     $('#res').innerHTML = h;
+    // «Usar en…»: la lista de datos de una media, en Descriptiva
+    const ue = $('#usar-en'), lleva = (sol.modo === 'media' || sol.modo === 'prediccion' || sol.modo === 'varianza') && sc.fuente === 'datos' && !Herramienta.vacio(sc.datos);
+    ue.hidden = !lleva;
+    ue.innerHTML = lleva ? `<a class="btn" data-usar="descriptiva" href="${esc(Herramienta.enlaceA('descriptiva', { formato: 'lista', datos: sc.datos, pesos: '', div: 'n1', pk: '' }))}">Descriptiva de estos datos →</a>` : '';
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('');
-    $('#simcard').hidden = sol.modo === 'tamano';
+    $('#simcard').hidden = sol.modo === 'tamano' || sol.modo === 'prediccion';
     nuevaSim();
     dibuja();
   }
@@ -188,13 +202,15 @@
   function campana() {
     const { g, w, h } = lienzo('#grafica');
     if (!sol) return;
+    // tolerancia: se dibuja la normal con la proporción de la población que se cubre entre ±z
+    const S = sol.sinGrafica ? { ...sol, k: sol.kz, c: sol.cob, crit: 'z', dist: { d: 'normal' } } : sol;
     if (!col['--ink']) colores();
-    const d = sol.dist, D = E.DIST[d.d], P = d.d === 'normal' ? { mu: 0, sigma: 1 } : d.d === 't' ? { nu: d.nu } : d.d === 'f' ? { d1: d.d1, d2: d.d2 } : { k: d.k };
-    const al = 1 - sol.c, asim = d.d === 'chi2' || d.d === 'f', inf = sol.lado === 'inf', sup = sol.lado === 'sup';
+    const d = S.dist, D = E.DIST[d.d], P = d.d === 'normal' ? { mu: 0, sigma: 1 } : d.d === 't' ? { nu: d.nu } : d.d === 'f' ? { d1: d.d1, d2: d.d2 } : { k: d.k };
+    const al = 1 - S.c, asim = d.d === 'chi2' || d.d === 'f', inf = S.lado === 'inf', sup = S.lado === 'sup';
     let x0, x1;
-    if (d.d === 'chi2') { x0 = 0; x1 = Math.max(sol.k * 1.25, d.k + 4 * Math.sqrt(2 * d.k)); } else if (d.d === 'f') { x0 = 0; x1 = Math.max(sol.k * 1.25, E.cuantil(D, P, 0.99)); } else { const r = Math.max(4, sol.k * 1.35); x0 = -r; x1 = r; }
+    if (d.d === 'chi2') { x0 = 0; x1 = Math.max(S.k * 1.25, d.k + 4 * Math.sqrt(2 * d.k)); } else if (d.d === 'f') { x0 = 0; x1 = Math.max(S.k * 1.25, E.cuantil(D, P, 0.99)); } else { const r = Math.max(4, S.k * 1.35); x0 = -r; x1 = r; }
     // bilateral: entre los dos críticos; cota inferior: toda α a la derecha; cota superior: a la izquierda
-    const lo = inf ? x0 : asim ? sol.k2 : -sol.k, hi = sup ? x1 : sol.k;
+    const lo = inf ? x0 : asim ? S.k2 : -S.k, hi = sup ? x1 : S.k;
     const mL = 16, mR = 16, mT = 26, mB = 30, M = 300, xs = Array.from({ length: M + 1 }, (_, i) => x0 + ((x1 - x0) * i) / M), ys = xs.map((x) => D.pdf(P, x));
     const ymax = Math.max(...ys.filter(isFinite)) * 1.1 || 1;
     const X = (x) => mL + ((x - x0) / (x1 - x0)) * (w - mL - mR), Y = (y) => h - mB - (Math.min(y, ymax) / ymax) * (h - mT - mB);
@@ -207,7 +223,7 @@
     for (const [x, t] of [[lo, f(lo)], [hi, f(hi)]].filter((_, i) => (i ? !sup : !inf))) { g.strokeStyle = col['--ink']; g.setLineDash([4, 3]); g.beginPath(); g.moveTo(X(x), Y(0)); g.lineTo(X(x), mT - 4); g.stroke(); g.setLineDash([]); g.fillStyle = col['--ink']; g.fillText(txt(t), X(x), h - mB + 6); }
     const nom = d.d === 'normal' ? 'Z ~ N(0, 1)' : d.d === 't' ? `T ~ t de Student con ${d.nu} g. l.` : d.d === 'f' ? `F de Snedecor con (${d.d1}, ${d.d2}) g. l.` : `χ² con ${d.k} g. l.`;
     g.fillStyle = col['--muted']; g.textAlign = 'left'; g.textBaseline = 'top'; g.fillText(nom, mL, 4);
-    g.fillStyle = col['--accent']; g.textAlign = 'center'; g.font = `600 13px ${FUENTE_UI}`; g.fillText(`1 − α = ${txt(f(sol.c))}`, X((lo + hi) / 2), Y(D.pdf(P, (lo + hi) / 2)) * 0.5 + Y(0) * 0.5);
+    g.fillStyle = col['--accent']; g.textAlign = 'center'; g.font = `600 13px ${FUENTE_UI}`; g.fillText(`1 − α = ${txt(f(S.c))}`, X((lo + hi) / 2), Y(D.pdf(P, (lo + hi) / 2)) * 0.5 + Y(0) * 0.5);
     g.font = `12px ${FUENTE_UI}`; g.fillStyle = col['--mal'];
     // α/2 (o α en una cota) fuera de las líneas de los valores críticos, a media altura
     const ya = mT + (h - mT - mB) * 0.6, et = inf || sup ? `α = ${txt(f(al))}` : `α/2 = ${txt(f(al / 2))}`, an = g.measureText(et).width;

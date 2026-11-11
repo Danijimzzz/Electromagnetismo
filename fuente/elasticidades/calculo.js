@@ -81,6 +81,21 @@ const Elasticidades = (() => {
     { clave: 'lineal', nombre: 'Demanda lineal Q = 100 − 2P a 30 €', sc: { tipo: 'lineal', a: '100', b: '2', p: '30' } },
   ];
 
-  return { resolver, ejemplos, TIPOS, X };
+  // modo práctica: datos redondos al azar
+  const AZ = K.az, azar = AZ.desde(ejemplos, (sc) => {
+    if (sc.tipo === 'isoelastica') return { A: AZ.t(AZ.toma([100, 500, 1000, 2000])), eps: AZ.t(AZ.toma([0.5, 1.5, 2, 3])), p: AZ.t(AZ.toma([2, 4, 5, 10])) };
+    if (sc.tipo === 'lineal') { const b = AZ.e(1, 5), p = AZ.e(5, 40); return { a: String(b * (p + AZ.e(5, 40))), b: String(b), p: String(p) }; }
+    const x0 = sc.tipo === 'renta' ? AZ.toma([1000, 1500, 2000, 20000]) : AZ.toma([10, 20, 40, 50, 100]), r = AZ.toma([0.1, 0.2, 0.25]), q0 = AZ.e(10, 100) * 10;
+    const el = sc.tipo === 'precio' ? -AZ.toma([0.5, 1, 1.5, 2]) : sc.tipo === 'cruzada' ? AZ.toma([-0.6, 0.8, 1.2]) : sc.tipo === 'renta' ? AZ.toma([-0.5, 0.5, 1.5, 2]) : AZ.toma([0.5, 1, 1.5, 2]);
+    return { x0: String(x0), q0: String(q0), x1: AZ.t(x0 * (1 + r)), q1: String(Math.round(q0 * (1 + el * r))) };
+  }, null, (sc) => resolver(sc));
+  const enunciado = (sc) => {
+    if (sc.tipo === 'isoelastica') return `La ${sc.lado === 'oferta' ? 'oferta' : 'demanda'} de un bien es Q = ${sc.A}·P^${sc.lado === 'oferta' ? sc.eps : `(−${sc.eps})`}. Calcula su elasticidad, clasifícala y halla la cantidad y el ingreso total cuando P = ${sc.p} €.`;
+    if (sc.tipo === 'lineal') return `La demanda de un bien es Q = ${sc.a} − ${sc.b}P. Calcula la elasticidad-precio cuando P = ${sc.p} €, clasifícala, la cantidad demandada y el precio que hace máximo el ingreso.`;
+    const que = { precio: 'el precio del bien', renta: 'la renta de los consumidores', cruzada: 'el precio de otro bien', oferta: 'el precio del bien' }[sc.tipo] || 'el precio';
+    return `Cuando ${que} pasa de ${sc.x0} a ${sc.x1}, la cantidad ${sc.tipo === 'oferta' ? 'ofrecida' : 'demandada'} pasa de ${sc.q0} a ${sc.q1} unidades. Calcula la elasticidad de arco y la elasticidad sobre el valor inicial y clasifícala${sc.tipo === 'precio' ? ', y halla el ingreso total antes y después' : ''}.`;
+  };
+
+  return { azar, enunciado, resolver, ejemplos, TIPOS, X };
 })();
 if (typeof module !== 'undefined') module.exports = Elasticidades;

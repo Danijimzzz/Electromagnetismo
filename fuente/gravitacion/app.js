@@ -16,7 +16,10 @@
   };
   const cuerpoCampos = (sc, radio) => [{ k: 'cuerpo', nom: 'Cuerpo central', tipo: 'sel', ops: P.NOMBRES },
     ...(sc.cuerpo === 'otro' ? [{ k: 'M', nom: 'Masa M', un: 'kg' }, ...(radio ? [{ k: 'R', nom: 'Radio R', un: 'km' }] : [])] : [])];
+  // «Usar en…»: la velocidad orbital (o de escape) en Física moderna, para ver lo que se atrasa un reloj a esa velocidad en un día
+  const enlacesDe = (s) => (s.modo !== 'fuerza' && isFinite(s.v) && s.v > 0 ? [{ carpeta: 'fisica-moderna', texto: 'Dilatación del tiempo a esta velocidad →', estado: { modo: 'dilatacion', uv: 'ms', v: String(+s.v.toPrecision(8)).replace('.', ','), t0: '86400' } }] : []);
   Calculadora.monta({
+    usarEn: enlacesDe,
     C: P, carpeta: 'gravitacion', app: 'GravitacionApp', azar: P.azar, enunciado,
     nota: 'Se admite 5,97e24 o 5,97·10^24. G = 6,6743·10⁻¹¹ N·m²/kg². Los datos de los planetas están redondeados.',
     campos: (sc) => {

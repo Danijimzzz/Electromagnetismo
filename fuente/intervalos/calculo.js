@@ -6,7 +6,10 @@
    de muestra para un error máximo (también para dos muestras y con
    población finita). Bilaterales o unilaterales (cotas), con la corrección
    por población finita y el contraste de un valor con el intervalo. Los
-   datos pueden ser un resumen (x̄, s, n) o la lista de valores.
+   datos pueden ser un resumen (x̄, s, n) o la lista de valores. La
+   proporción se puede hacer con cuatro métodos (Wald, Wilson, exacto de
+   Clopper-Pearson y Agresti-Coull) y hay intervalos de predicción de una
+   observación futura y de tolerancia (factor k de Howe).
    Los cuantiles de z, t y χ² salen de estadistica/calculo.js.
    ===================================================================== */
 const Intervalos = (() => {
@@ -113,24 +116,89 @@ const Intervalos = (() => {
     if (x > n) throw new Error(`Los éxitos x${i} no pueden ser más que n${i}`);
     return { n, x, ph: x / n };
   }
+  // los cuatro intervalos de una proporción con x éxitos en n (EST.IC-1); a2 es lo que queda en cada cola
+  const METODOS_P = { wald: 'Normal (Wald), el de clase', wilson: 'Wilson', cp: 'Exacto de Clopper-Pearson', ac: 'Agresti-Coull' };
+  function metodosP(n, ph, a2) {
+    const k = zc(a2), k2 = k * k, q = 1 - ph, x = n * ph, sd = Math.sqrt((ph * q) / n);
+    const cen = (ph + k2 / (2 * n)) / (1 + k2 / n), med = (k / (1 + k2 / n)) * Math.sqrt((ph * q) / n + k2 / (4 * n * n));
+    const nt = n + k2, pt = (x + k2 / 2) / nt, et = k * Math.sqrt((pt * (1 - pt)) / nt);
+    const entero = Math.abs(x - Math.round(x)) < 1e-6, xi = Math.round(x), bq = (al, be, pr) => E.cuantil(E.DIST.beta, { al, be }, pr);
+    return {
+      k, wald: { a: ph - k * sd, b: ph + k * sd, sd },
+      wilson: { a: cen - med, b: cen + med, cen, med },
+      ac: { a: pt - et, b: pt + et, nt, pt, et },
+      // exacto: los extremos son cuantiles de una beta; solo con un número entero de éxitos
+      cp: entero ? { a: xi === 0 ? 0 : bq(xi, n - xi + 1, a2), b: xi === n ? 1 : bq(xi + 1, n - xi, 1 - a2), x: xi } : null,
+    };
+  }
   function proporcion(sc) {
     const c = nivel(sc), al = 1 - c, a2 = mitad(sc, al), P = exitos(sc), q = 1 - P.ph, pasos = [];
+    let met = METODOS_P[sc.metodoP] ? sc.metodoP : 'wald';
     pasos.push({ t: 'Datos', html: `n = ${P.n}, ${P.x !== null ? `x = ${P.x} éxitos ⇒ p̂ = x/n = ${P.x}/${P.n} = ` : 'p̂ = '}<b>${f(P.ph)}</b>, q̂ = 1 − p̂ = ${f(q)}<br>${alfaTxt(c, sc)}` });
-    const k = zc(a2), fp = finita(sc, P.n, pasos), sd = Math.sqrt((P.ph * q) / P.n) * fp;
-    pasos.push({ t: 'Valor crítico', html: `Para n grande, p̂ ≈ N(p, √(pq/n)): z<sub>α/2</sub> = z<sub>${f(a2)}</sub> = <b>${f(k)}</b>` });
-    let err = k * sd, a = P.ph - err, b = P.ph + err;
-    pasos.push({ t: 'Error máximo', html: `E = z<sub>α/2</sub>·√(p̂q̂/n)${fp < 1 ? '·√((N − n)/(N − 1))' : ''} = ${f(k)}·√(${f(P.ph)}·${f(q)}/${P.n})${fp < 1 ? `·${f(fp, 5)}` : ''} = <b>${f(err)}</b>` });
-    pasos.push({ t: 'Intervalo', html: `IC<sub>${f(c)}</sub>(p) = (p̂ − E, p̂ + E) = <b>${ic(a, b)}</b>${a < 0 || b > 1 ? ` (se recorta a ${ic(Math.max(0, a), Math.min(1, b))}, porque p está entre 0 y 1)` : ''}` });
-    if (P.n * P.ph < 5 || P.n * q < 5) {
-      // intervalo de Wilson: no se sale de [0, 1] ni se queda en un punto con 0 éxitos o con todos
-      const k2 = k * k, cen = (P.ph + k2 / (2 * P.n)) / (1 + k2 / P.n), med = (k / (1 + k2 / P.n)) * Math.sqrt((P.ph * q) / P.n + k2 / (4 * P.n * P.n));
-      const wa = Math.max(0, cen - med), wb = Math.min(1, cen + med), extremo = P.ph === 0 || P.ph === 1;
-      pasos.push({ t: 'Cuidado', html: `np̂ = ${f(P.n * P.ph)} o nq̂ = ${f(P.n * q)} es menor que 5: la aproximación normal no es buena con tan pocos éxitos o fracasos.${extremo ? ` Con p̂ = ${f(P.ph)}, el error sale 0 y el intervalo se queda en un punto, lo que no tiene sentido.` : ''}` });
-      pasos.push({ t: 'Intervalo de Wilson', html: `Funciona bien aunque haya pocos éxitos o fracasos:<br>centro = (p̂ + z<sup>2</sup>/(2n))/(1 + z<sup>2</sup>/n) = ${f(cen)}, &ensp; semiamplitud = z/(1 + z<sup>2</sup>/n)·√(p̂q̂/n + z<sup>2</sup>/(4n<sup>2</sup>)) = ${f(med)}<br>IC<sub>${f(c)}</sub>(p) = <b>${ic(wa, wb)}</b>${extremo ? ' (es el que se da como resultado)' : ''}` });
-      if (extremo) { a = wa; b = wb; err = (wb - wa) / 2; }
+    const T = metodosP(P.n, P.ph, a2), k = T.k, recorta = (a, b) => (a < 0 || b > 1 ? ` (se recorta a ${ic(Math.max(0, a), Math.min(1, b))}, porque p está entre 0 y 1)` : '');
+    if (met === 'cp' && !T.cp) throw new Error(`El intervalo exacto necesita un número entero de éxitos, y n·p̂ = ${f(P.n * P.ph, 6)} no lo es: da los éxitos x o elige otro método`);
+    const fp = met === 'wald' ? finita(sc, P.n, pasos) : 1;
+    if (met !== 'wald' && !vacio(sc.Npob)) pasos.push({ t: 'Población finita', html: 'La corrección por población finita solo se aplica al intervalo normal (Wald): con este método se ha calculado como si la población fuera muy grande.' });
+    let a, b, err;
+    if (met === 'wald') {
+      const sd = T.wald.sd * fp;
+      pasos.push({ t: 'Valor crítico', html: `Para n grande, p̂ ≈ N(p, √(pq/n)): z<sub>α/2</sub> = z<sub>${f(a2)}</sub> = <b>${f(k)}</b>` });
+      err = k * sd; a = P.ph - err; b = P.ph + err;
+      pasos.push({ t: 'Error máximo', html: `E = z<sub>α/2</sub>·√(p̂q̂/n)${fp < 1 ? '·√((N − n)/(N − 1))' : ''} = ${f(k)}·√(${f(P.ph)}·${f(q)}/${P.n})${fp < 1 ? `·${f(fp, 5)}` : ''} = <b>${f(err)}</b>` });
+      pasos.push({ t: 'Intervalo', html: `IC<sub>${f(c)}</sub>(p) = (p̂ − E, p̂ + E) = <b>${ic(a, b)}</b>${recorta(a, b)}` });
+      if (P.n * P.ph < 5 || P.n * q < 5) {
+        // intervalo de Wilson: no se sale de [0, 1] ni se queda en un punto con 0 éxitos o con todos
+        const wa = Math.max(0, T.wilson.a), wb = Math.min(1, T.wilson.b), extremo = P.ph === 0 || P.ph === 1;
+        pasos.push({ t: 'Cuidado', html: `np̂ = ${f(P.n * P.ph)} o nq̂ = ${f(P.n * q)} es menor que 5: la aproximación normal no es buena con tan pocos éxitos o fracasos.${extremo ? ` Con p̂ = ${f(P.ph)}, el error sale 0 y el intervalo se queda en un punto, lo que no tiene sentido.` : ''}` });
+        pasos.push({ t: 'Intervalo de Wilson', html: `Funciona bien aunque haya pocos éxitos o fracasos:<br>centro = (p̂ + z<sup>2</sup>/(2n))/(1 + z<sup>2</sup>/n) = ${f(T.wilson.cen)}, &ensp; semiamplitud = z/(1 + z<sup>2</sup>/n)·√(p̂q̂/n + z<sup>2</sup>/(4n<sup>2</sup>)) = ${f(T.wilson.med)}<br>IC<sub>${f(c)}</sub>(p) = <b>${ic(wa, wb)}</b>${extremo ? ' (es el que se da como resultado)' : ''}` });
+        if (extremo) { a = wa; b = wb; err = (wb - wa) / 2; }
+      }
+    } else {
+      pasos.push({ t: 'Valor crítico', html: met === 'cp' ? `El intervalo exacto no usa la normal: sale de la propia binomial. Como referencia, z<sub>α/2</sub> = ${f(k)}.` : `z<sub>α/2</sub> = z<sub>${f(a2)}</sub> = <b>${f(k)}</b>` });
+      if (met === 'wilson') {
+        a = Math.max(0, T.wilson.a); b = Math.min(1, T.wilson.b);
+        pasos.push({ t: 'Intervalo de Wilson', html: `En vez de estimar el error con p̂, se despeja p de |p̂ − p| ≤ z·√(p(1 − p)/n). Sale un intervalo que no está centrado en p̂, sino algo desplazado hacia 0,5:<br>centro = (p̂ + z<sup>2</sup>/(2n))/(1 + z<sup>2</sup>/n) = ${f(T.wilson.cen)}, &ensp; semiamplitud = z/(1 + z<sup>2</sup>/n)·√(p̂q̂/n + z<sup>2</sup>/(4n<sup>2</sup>)) = ${f(T.wilson.med)}<br>IC<sub>${f(c)}</sub>(p) = <b>${ic(a, b)}</b>` });
+      } else if (met === 'ac') {
+        a = T.ac.a; b = T.ac.b;
+        pasos.push({ t: 'Intervalo de Agresti-Coull', html: `Es el intervalo normal de siempre, pero añadiendo z<sup>2</sup> observaciones, la mitad éxitos (con el 95 %, «sumar 2 éxitos y 2 fracasos»):<br>ñ = n + z<sup>2</sup> = ${f(T.ac.nt, 6)}, &ensp; p̃ = (x + z<sup>2</sup>/2)/ñ = ${f(T.ac.pt)}, &ensp; E = z·√(p̃(1 − p̃)/ñ) = ${f(T.ac.et)}<br>IC<sub>${f(c)}</sub>(p) = (p̃ − E, p̃ + E) = <b>${ic(a, b)}</b>${recorta(a, b)}` });
+      } else {
+        a = T.cp.a; b = T.cp.b; const x = T.cp.x;
+        pasos.push({ t: 'Intervalo exacto de Clopper-Pearson', html: `Se buscan las p para las que lo observado no sería raro: el extremo inferior es la p con P(X ≥ ${x}) = ${f(a2)} y el superior, la p con P(X ≤ ${x}) = ${f(a2)}, con X binomial de n = ${P.n}. Esas dos ecuaciones se resuelven con cuantiles de la distribución beta:<br>inferior = ${x === 0 ? '0 (no hay éxitos)' : `B<sub>${f(a2)}</sub>(${x}, ${P.n - x + 1}) = ${f(a, 5)}`}, &ensp; superior = ${x === P.n ? '1 (todos son éxitos)' : `B<sub>${f(1 - a2)}</sub>(${x + 1}, ${P.n - x}) = ${f(b, 5)}`}<br>IC<sub>${f(c)}</sub>(p) = <b>${ic(a, b)}</b>. Garantiza al menos la confianza pedida con cualquier n, a cambio de ser algo más ancho.` });
+      }
+      err = (b - a) / 2;
     }
+    // los cuatro métodos, uno al lado del otro
+    const fila = (m, I) => (I ? `${m === met ? '<b>' : ''}${METODOS_P[m]}: ${ic(Math.max(0, I.a), Math.min(1, I.b))}, anchura ${f(Math.min(1, I.b) - Math.max(0, I.a))}${m === met ? '</b>' : ''}` : `${METODOS_P[m]}: hace falta un número entero de éxitos`);
+    pasos.push({ t: 'Comparación de métodos', html: `${['wald', 'wilson', 'cp', 'ac'].map((m) => fila(m, T[m])).join('<br>')}<br>${P.n * P.ph >= 10 && P.n * q >= 10 ? 'Con tantos éxitos y fracasos los cuatro casi coinciden.' : 'Con pocos éxitos o fracasos el normal se queda corto: Wilson o el exacto son más fiables.'}` });
     pasos.push({ t: 'Interpretación', html: `Con una confianza del ${pc(c)}, la proporción de la población está entre ${f(100 * Math.max(0, a))} % y ${f(100 * Math.min(1, b))} %.` });
-    return { a, b, est: P.ph, err, k, crit: 'z', c, P, pasos, param: 'p', dist: { d: 'normal' } };
+    return { a, b, est: P.ph, err, k, crit: 'z', c, P, pasos, param: 'p', dist: { d: 'normal' }, metodoP: met, metodos: T };
+  }
+  /* ---------- Predicción de una observación futura y tolerancia (EST.IC-2) ---------- */
+  function prediccion(sc) {
+    const c = nivel(sc), al = 1 - c, a2 = mitad(sc, al), M = muestra(sc), pasos = [], que = sc.queP === 'tol' ? 'tol' : 'pred', nu = M.n - 1;
+    if (M.sc === null) throw new Error('Falta la desviación s de la muestra');
+    pasos.push({ t: 'Datos', html: `${datosTxt(M)}.${cuasiNota(sc, M)}<br>${alfaTxt(c, sc)}` });
+    if (que === 'pred') {
+      const k = tc(nu, a2), raiz = Math.sqrt(1 + 1 / M.n), err = k * M.sc * raiz, a = M.m - err, b = M.m + err, eMedia = (k * M.sc) / Math.sqrt(M.n);
+      pasos.push({ t: 'Qué se busca', html: 'No es un intervalo para la media μ, sino para <b>el próximo dato</b> que se mida. Ese dato se separa de x̄ por dos motivos: x̄ no es exactamente μ (varianza σ²/n) y el dato nuevo tiene su propia dispersión (varianza σ²). Por eso aparece 1 + 1/n.' });
+      pasos.push({ t: 'Valor crítico', html: `(X<sub>nuevo</sub> − x̄)/(s·√(1 + 1/n)) sigue una t de Student con n − 1 = ${nu} grados de libertad:<br>t<sub>${nu}; α/2</sub> = t<sub>${nu}; ${f(a2)}</sub> = <b>${f(k)}</b>` });
+      pasos.push({ t: 'Error máximo', html: `E = t<sub>n−1; α/2</sub>·s·√(1 + 1/n) = ${f(k)}·${f(M.sc, 5)}·√(1 + 1/${M.n}) = ${f(k)}·${f(M.sc, 5)}·${f(raiz, 5)} = <b>${f(err)}</b>` });
+      pasos.push({ t: 'Intervalo', html: `IP<sub>${f(c)}</sub> = (x̄ − E, x̄ + E) = (${f(M.m, 6)} − ${f(err)}, ${f(M.m, 6)} + ${f(err)}) = <b>${ic(a, b)}</b>` });
+      pasos.push({ t: 'Comparación con el de la media', html: `El intervalo de confianza de la media con estos datos tiene E = t·s/√n = ${f(eMedia)}: el de predicción es √(n + 1) = ${f(Math.sqrt(M.n + 1))} veces más ancho, y no se estrecha hasta cero por muchos datos que haya (como mínimo, z·σ).` });
+      pasos.push({ t: 'Interpretación', html: `Con una confianza del ${pc(c)}, la próxima observación estará entre ${f(a)} y ${f(b)}. Supone que la población es normal.` });
+      return { a, b, est: M.m, err, k, crit: 't', gl: nu, c, M, pasos, param: 'x', que, paramTxt: 'una observación nueva', dist: { d: 't', nu } };
+    }
+    if (lado(sc) !== 'dos') throw new Error('El intervalo de tolerancia solo se calcula bilateral: elige «Bilateral (a; b)»');
+    let cob = lee(sc, 'cob', 'la proporción de la población que se quiere cubrir', { min: 0, minEx: true });
+    if (cob >= 1) cob /= 100;
+    if (!(cob > 0 && cob < 1)) throw new Error('La proporción de la población que se cubre tiene que estar entre 0 y 100 %');
+    // factor k de Howe: z de la cobertura, corregido porque x̄ y s son estimaciones
+    const z = zc((1 - cob) / 2), chi = xc(nu, c), k = z * Math.sqrt((nu * (1 + 1 / M.n)) / chi), err = k * M.sc, a = M.m - err, b = M.m + err;
+    pasos.push({ t: 'Qué se busca', html: `Un intervalo que contenga al menos el <b>${pc(cob)} de la población</b> (no la media ni un solo dato), con una confianza del ${pc(c)}. Si se conocieran μ y σ sería μ ± z·σ con z<sub>${f((1 - cob) / 2)}</sub> = ${f(z)}; como solo hay x̄ y s, el factor tiene que ser mayor.` });
+    pasos.push({ t: 'Factor de tolerancia', html: `Con la aproximación de Howe: k = z·√(ν(1 + 1/n)/χ<sup>2</sup><sub>ν; ${f(c)}</sub>), con ν = n − 1 = ${nu} y χ<sup>2</sup><sub>${nu}; ${f(c)}</sub> = ${f(chi)} (el valor que deja ${f(c)} a su derecha):<br>k = ${f(z)}·√(${nu}·(1 + 1/${M.n})/${f(chi)}) = <b>${f(k)}</b>` });
+    pasos.push({ t: 'Intervalo', html: `(x̄ − k·s, x̄ + k·s) = (${f(M.m, 6)} − ${f(k)}·${f(M.sc, 5)}, ${f(M.m, 6)} + ${f(k)}·${f(M.sc, 5)}) = <b>${ic(a, b)}</b>` });
+    pasos.push({ t: 'Interpretación', html: `Con una confianza del ${pc(c)}, al menos el ${pc(cob)} de la población está entre ${f(a)} y ${f(b)}. Supone que la población es normal; el factor de Howe se separa del exacto de las tablas menos de un 1 % salvo con muestras muy pequeñas.` });
+    return { a, b, est: M.m, err, k, kz: z, crit: 'k', gl: nu, c, cob, M, pasos, param: 'x', que, paramTxt: `el ${pc(cob)} de la población`, dist: { d: 'chi2', k: nu }, k2: chi, sinGrafica: true };
   }
   function varianza(sc) {
     // para la varianza no hace falta la media
@@ -272,7 +340,7 @@ const Intervalos = (() => {
     r.pasos.push({ t: 'Contraste con el intervalo', html: `H₀: ${P} = ${f(h0)} frente a H₁: ${H1}, con nivel de significación α = ${al}.<br>${dentro ? `${f(h0)} está dentro del intervalo: <b>no se rechaza H₀</b>. Los datos son compatibles con ${P} = ${f(h0)}.` : `${f(h0)} queda fuera del intervalo: <b>se rechaza H₀</b> con α = ${al}.`}` });
     return r;
   }
-  const MODOS = { media, proporcion, varianza, 'dif-medias': difMedias, apareadas, 'dif-prop': difProp, 'cociente-var': cocienteVar, tamano };
+  const MODOS = { media, proporcion, prediccion, varianza, 'dif-medias': difMedias, apareadas, 'dif-prop': difProp, 'cociente-var': cocienteVar, tamano };
   function resolver(sc) {
     const m = MODOS[sc.modo] ? sc.modo : 'media';
     return Object.assign(contraste(sc, cola(sc, MODOS[m](sc))), { modo: m });
@@ -305,7 +373,7 @@ const Intervalos = (() => {
     }
     if (sol.modo === 'proporcion') {
       const pr = sol.P.ph, n = sol.P.n;
-      return { real: pr, una: () => { const k = binom(r, n, pr); const x = una(proporcion, { ...base, n: String(n), x: String(k) }); return [x.a, x.b, k / n]; } };
+      return { real: pr, una: () => { const k = binom(r, n, pr); const x = una(proporcion, { ...base, n: String(n), x: String(k), metodoP: sol.metodoP }); return [x.a, x.b, k / n]; } };
     }
     if (sol.modo === 'dif-medias') {
       const { M1, M2 } = sol, sa = sol.s1 ?? M1.sc, sb = sol.s2 ?? M2.sc;
@@ -334,6 +402,10 @@ const Intervalos = (() => {
     { clave: 'muestral', nombre: 'Media con la desviación de la muestra (con n)', sc: { modo: 'media', fuente: 'resumen', sigmaC: 'no', sigma: '', xm: '25,4', s: '3,2', n: '12', nivel: '90', tipoS: 'muestral' } },
     { clave: 'encuesta', nombre: 'Proporción (encuesta)', sc: { modo: 'proporcion', tipoP: 'exitos', n: '500', x: '210', ph: '', nivel: '95' } },
     { clave: 'defectuosas', nombre: 'Proporción de piezas defectuosas', sc: { modo: 'proporcion', tipoP: 'proporcion', n: '400', x: '', ph: '0,06', nivel: '99' } },
+    { clave: 'pocos-exitos', nombre: 'Proporción con pocos éxitos (exacto de Clopper-Pearson)', sc: { modo: 'proporcion', tipoP: 'exitos', n: '20', x: '2', ph: '', nivel: '95', metodoP: 'cp' } },
+    { clave: 'wilson', nombre: 'Proporción con el intervalo de Wilson', sc: { modo: 'proporcion', tipoP: 'exitos', n: '50', x: '6', ph: '', nivel: '95', metodoP: 'wilson' } },
+    { clave: 'prediccion', nombre: 'Predicción: duración de la próxima bombilla', sc: { modo: 'prediccion', queP: 'pred', fuente: 'resumen', xm: '1200', s: '90', n: '16', nivel: '95', tipoS: 'cuasi', cob: '90' } },
+    { clave: 'tolerancia', nombre: 'Tolerancia: el 90 % de las piezas', sc: { modo: 'prediccion', queP: 'tol', fuente: 'resumen', xm: '50', s: '2', n: '10', nivel: '95', tipoS: 'cuasi', cob: '90' } },
     { clave: 'varianza', nombre: 'Varianza y desviación típica', sc: { modo: 'varianza', fuente: 'resumen', xm: '50', s: '2,5', n: '20', nivel: '95', tipoS: 'cuasi' } },
     { clave: 'dif-conocidas', nombre: 'Diferencia de medias con σ conocidas', sc: { modo: 'dif-medias', caso: 'conocidas', fuente1: 'resumen', fuente2: 'resumen', xm1: '82', n1: '40', s1: '', sigma1: '6', xm2: '78', n2: '50', s2: '', sigma2: '7', nivel: '95', tipoS: 'cuasi' } },
     { clave: 'dif-iguales', nombre: 'Diferencia de medias (varianzas iguales)', sc: { modo: 'dif-medias', caso: 'iguales', fuente1: 'resumen', fuente2: 'resumen', xm1: '15,2', n1: '10', s1: '1,8', xm2: '13,9', n2: '12', s2: '2,1', nivel: '95', tipoS: 'cuasi' } },
@@ -351,6 +423,6 @@ const Intervalos = (() => {
     { clave: 'n-finita', nombre: 'Encuesta en un pueblo de 2000 habitantes', sc: { modo: 'tamano', de: 'proporcion', sigma: '', E: '0,05', p0: '', Npob: '2000', nivel: '95' } },
     { clave: 'n-prop', nombre: 'Tamaño de muestra para una encuesta', sc: { modo: 'tamano', de: 'proporcion', sigma: '', E: '0,03', p0: '', nivel: '95' } },
   ];
-  return { resolver, simula, ejemplos, f, zc, tc, xc };
+  return { resolver, simula, ejemplos, f, zc, tc, xc, METODOS_P };
 })();
 if (typeof module !== 'undefined') module.exports = Intervalos;

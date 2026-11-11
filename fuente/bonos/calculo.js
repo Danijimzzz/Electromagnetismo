@@ -33,6 +33,9 @@ const Bonos = (() => {
   }
 
   function resolver(sc) {
+    const r = resolverBase(sc); r.pasos.push({ t: 'Convención', html: 'El cupón anual N·c se reparte en m pagos iguales y la TIR es nominal anual con m periodos (tipo por periodo y/m). El tiempo se mide en periodos de 1/m años; el cupón corrido se devenga de forma lineal. Sin impuestos ni comisiones.' }); return r;
+  }
+  function resolverBase(sc) {
     const N = lee(sc, 'nominal', 'el valor nominal', { min: 0, minEx: true });
     const c = lee(sc, 'cupon', 'el cupón', { min: 0 }) / 100;
     const m = lee(sc, 'm', 'los pagos al año', { min: 1, entero: true, def: 1 });
@@ -80,6 +83,13 @@ const Bonos = (() => {
     { clave: 'cupon-cero', nombre: 'Cupón cero a 8 años', sc: { modo: 'tir', nominal: '1000', cupon: '0', m: '1', anos: '8', y: '3,5', precio: '', shock: '1' } },
   ];
 
-  return { resolver, ejemplos, precioDe, tirDe, flujos };
+  // modo práctica: datos redondos al azar
+  const AZ = K.az, azar = AZ.desde(ejemplos, (sc) => {
+    const nominal = AZ.toma([1000, 5000]), base = { nominal: String(nominal), cupon: String(AZ.toma([0, 3, 4, 5, 6])), m: String(AZ.toma([1, 2])), anos: String(AZ.toma([3, 5, 8, 10])) };
+    return sc.modo === 'precio' ? { ...base, precio: String(Math.round(nominal * AZ.toma([0.92, 0.95, 1.02, 1.05]))), y: '', shock: '' } : { ...base, y: String(AZ.toma([3, 4, 5, 6])), precio: '', shock: AZ.t(AZ.toma([1, -1, 0.5])) };
+  }, (sc) => !String(sc.anos).includes(','), (sc) => resolver(sc));
+  const enunciado = (sc) => `Un bono de nominal ${sc.nominal} € paga un cupón anual del ${sc.cupon} %${sc.m === '2' ? ' (en dos pagos semestrales)' : ''} y vence en ${sc.anos} años. ${sc.modo === 'precio' ? `Cotiza a ${sc.precio} €: calcula su TIR, ` : `Si su TIR es del ${sc.y} %, calcula su precio, `}la duración de Macaulay y la modificada y la convexidad${sc.shock && sc.shock !== '0' ? `, y su precio si la TIR varía ${sc.shock} punto${Math.abs(+String(sc.shock).replace(',', '.')) === 1 ? '' : 's'}` : ''}.`;
+
+  return { azar, enunciado, resolver, ejemplos, precioDe, tirDe, flujos };
 })();
 if (typeof module !== 'undefined') module.exports = Bonos;

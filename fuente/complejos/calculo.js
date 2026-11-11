@@ -7,6 +7,8 @@
    ===================================================================== */
 const Complejos = (() => {
   const A = typeof Algebra !== 'undefined' ? Algebra : require('../matematicas/algebra.js');
+  const EX = typeof Expresion !== 'undefined' ? Expresion : typeof require !== 'undefined' ? require('../matematicas/expresion.js') : null;
+  let LEIDOS = [];   // lo que se ha leído como expresión en esta resolución, para enseñar su valor
   const PI = Math.PI, GR = 180 / PI;
   const f = (x, d = 4) => A.decimal(x, d);
   const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
@@ -63,7 +65,23 @@ const Complejos = (() => {
     return a.grados || a.conPi || unidad === 'radianes' ? a.v : a.v / GR;
   }
   // un complejo en cualquier forma: { z (flotante), ex (exacto de Algebra o null), forma }
+  // entrada flexible (MA-4): lo que no tiene una de las formas de siempre se evalúa como expresión compleja
+  // («sqrt(−4)», «e^(iπ) + 1», «(1 + i)^2/(2 − i)») y se enseña el valor leído; si sale racional, se guarda exacto
   function leeZ(texto, unidad, nom) {
+    const orig = String(texto ?? '').trim();
+    if (!orig) throw new Error(`Falta ${nom}`);
+    let primero;
+    try { return leeZ0(orig.replace(/sqrt\s*\(?(\d+(?:[.,]\d+)?)\)?(?![\d(])/g, '√$1'), unidad, nom); } catch (e) { primero = e; }
+    if (!EX || /[∠°º|_]/.test(orig)) throw primero;
+    let w;
+    try { w = EX.complejo(orig.replace(/[−–]/g, '-').replace(/[·×]/g, '*'), nom); } catch (e) { throw primero; }
+    const q = (t) => { const fr = EX.fraccion(t, 10000); return fr && Math.abs(fr[0] / fr[1] - t) < 1e-12 ? fr : null; }, a = q(w.z.re), b = q(w.z.im);
+    const ex = a && b ? A.leer(`${a[0]}/${a[1]}${b[0] < 0 ? '-' : '+'}${Math.abs(b[0])}/${b[1]}i`) : null;
+    const r = { z: ex ? A.aFloat(ex) : Z(w.z.re, w.z.im), ex, forma: 'binómica', leido: orig };
+    LEIDOS.push({ nom, orig, w: r });
+    return r;
+  }
+  function leeZ0(texto, unidad, nom) {
     const orig = String(texto ?? '').trim();
     if (!orig) throw new Error(`Falta ${nom}`);
     const s = orig.replace(/[−–]/g, '-');
@@ -192,6 +210,12 @@ const Complejos = (() => {
 
   /* ---------- Cálculo ---------- */
   function resolver(sc) {
+    LEIDOS = [];
+    const r = resolver0(sc), escapa = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+    if (LEIDOS.length && r.pasos) { r.pasos.unshift({ t: 'Valor leído', html: `${LEIDOS.map((q) => `${q.nom} = «${escapa(q.orig)}» se calcula y vale <b>$${binHtml(q.w)}$</b>${q.w.ex ? '' : ' (redondeado)'}`).join('<br>')}<br>Las raíces y los logaritmos se toman en su valor principal.` }); r.leidos = LEIDOS.map((q) => ({ nom: q.nom, z: q.w.z, exacto: !!q.w.ex })); }
+    return r;
+  }
+  function resolver0(sc) {
     const op = OPS[sc.op] ? sc.op : 'formas', u = sc.unidad === 'radianes' ? 'radianes' : 'grados', pasos = [];
     const res = { op, unidad: u, pasos, puntos: [] };
     const aBin = (w, nom) => { if (w.forma !== 'binómica') { pasos.push({ t: `${nom} en forma binómica`, html: `$${nom} = r cos θ + i r sen θ$ = <b>$${bin(w.z)}$</b>` }); } };

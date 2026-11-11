@@ -36,6 +36,10 @@ const LIMITES = {
     'Trabaja con 2 a 6 activos y con las rentabilidades, volatilidades y correlaciones que tú escribes: no las estima a partir de cotizaciones históricas.',
     'Es el modelo de media y varianza de un solo periodo: no tiene en cuenta comisiones, impuestos ni límites de peso por activo (solo permitir o no las ventas en corto).'
   ],
+  'teoria-juegos': [
+    'Son juegos simultáneos de dos jugadores: no hay árbol de decisión secuencial (subjuego perfecto) ni más de tres estrategias por jugador.',
+    'En la matriz 3 × 3 se halla el equilibrio de Nash en estrategias puras y se eliminan las estrategias estrictamente dominadas por una estrategia pura; el equilibrio mixto solo se calcula en 2 × 2.'
+  ],
   'black-scholes': [
     'Valora solo opciones europeas (se ejercen al vencimiento): no vale para opciones americanas con ejercicio anticipado ni para opciones exóticas.',
     'Supone volatilidad y tipo de interés constantes y un dividendo continuo en porcentaje: no admite dividendos discretos en fechas concretas ni sonrisa de volatilidad.'

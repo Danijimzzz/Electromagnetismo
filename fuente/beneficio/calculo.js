@@ -103,6 +103,19 @@ const Beneficio = (() => {
     { clave: 'monopolio-lineal', nombre: 'Monopolio con coste marginal constante', sc: { modo: 'monopolio', cf: '50', c: '20', d: '0', p: '', a: '80', b: '1' } },
   ];
 
-  return { resolver, ejemplos, MODOS };
+  // modo práctica: datos redondos al azar
+  const AZ = K.az, azar = AZ.desde(ejemplos, (sc) => {
+    const cf = String(AZ.toma([50, 100, 200, 300]));
+    if (sc.modo === 'monopolio') return { cf, c: String(AZ.toma([10, 20, 30])), d: AZ.t(AZ.toma([0, 0.5, 1])), a: String(AZ.toma([80, 100, 120, 150])), b: String(AZ.toma([1, 2, 3])) };
+    if (sc.modo === 'competencia3') { const [ca, cb, cc] = AZ.toma([[20, -6, 0.5], [15, -6, 1], [30, -9, 1], [12, -4, 0.5]]); return { cf, ca: String(ca), cb: String(cb), cc: AZ.t(cc), p: String(AZ.toma([25, 40, 60, 90])) }; }
+    const c = AZ.toma([2, 4, 8]), d = AZ.toma([0.5, 1]); return { cf, c: String(c), d: AZ.t(d), p: String(c + 2 * d * AZ.e(2, 15)) };
+  }, null, (sc) => resolver(sc));
+  const enunciado = (sc) => sc.modo === 'monopolio'
+    ? `Un monopolista se enfrenta a la demanda P = ${sc.a} − ${sc.b}Q y tiene costes totales CT = ${AZ.poli([[sc.cf, 0], [sc.c, 1], [sc.d, 2]])}. Calcula la cantidad y el precio que maximizan su beneficio, el beneficio, el índice de Lerner y la pérdida de eficiencia respecto a la competencia.`
+    : sc.modo === 'competencia3'
+      ? `Una empresa en competencia perfecta tiene costes totales CT = ${AZ.poli([[sc.cf, 0], [sc.ca, 1], [sc.cb, 2], [sc.cc, 3]])} y el precio de mercado es ${sc.p} €. ¿Le conviene producir o cerrar? Calcula la cantidad óptima, los ingresos, los costes y el beneficio.`
+      : `Una empresa en competencia perfecta tiene costes totales CT = ${AZ.poli([[sc.cf, 0], [sc.c, 1], [sc.d, 2]])} y el precio de mercado es ${sc.p} €. Calcula la cantidad que maximiza el beneficio, los ingresos, los costes, el beneficio y los precios de cierre y de beneficio nulo.`;
+
+  return { azar, enunciado, resolver, ejemplos, MODOS };
 })();
 if (typeof module !== 'undefined') module.exports = Beneficio;

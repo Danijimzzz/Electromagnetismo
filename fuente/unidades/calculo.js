@@ -1,7 +1,7 @@
 /* =====================================================================
    Conversor de unidades y constantes (sin DOM): pasa un valor entre las
    unidades de una magnitud (longitud, energía, campo magnético…) con el
-   desarrollo paso a paso, y guarda la tabla de constantes CODATA 2018.
+   desarrollo paso a paso, y guarda la tabla de constantes CODATA (2022 y 2018).
    La interfaz está en app.js y la prueba en pruebas/herramientas/unidades.js.
      resolver(sc)   { mag, valor, de, a } (texto) → { v, res, base, filas, pasos, … };
                     lanza un Error con un mensaje para el usuario
@@ -101,9 +101,10 @@ const Unidades = (() => {
     return { mag: sc.mag, v, res, vb, ud, ua, base: M.base, filas, pasos, factor, resH: `${h(res)} ${ua.s}` };
   }
 
-  /* ---------- Constantes CODATA 2018 ---------- */
+  /* ---------- Constantes CODATA 2022 (por defecto) y 2018 ---------- */
+  // La tabla de abajo es la de 2018; las constantes que no son exactas cambiaron en 2022 y están en N22 (las exactas por definición del SI no cambian).
   // [nombre, símbolo en HTML, cifras, exponente, unidad en HTML, incertidumbre, palabras de búsqueda]
-  const T = [
+  const T18 = [
     ['Velocidad de la luz en el vacío', 'c', '299 792 458', 0, 'm/s', 'exacta', 'luz vacio light'],
     ['Constante de Planck', 'h', '6,626 070 15', -34, 'J·s', 'exacta', 'planck cuanto'],
     ['Constante de Planck reducida', 'ħ', '1,054 571 817', -34, 'J·s', '(exacta por definición de h)', 'planck reducida hbar dirac'],
@@ -143,11 +144,36 @@ const Unidades = (() => {
     ['Unidad astronómica', 'ua', '149 597 870 700', 0, 'm', 'exacta (UAI 2012)', 'distancia tierra sol'],
     ['Año luz', 'al', '9,460 730 472 5808', 15, 'm', 'exacta', 'ano luz'],
   ];
-  const CONSTANTES = T.map(([nombre, s, d, e, u, x, b]) => ({ n: nombre, s, d, e, u, x, b, v: +d.replace(/\s/g, '').replace(',', '.') * 10 ** e }));
+  // CODATA 2022 (Mohr, Newell, Taylor, Tiesinga, Rev. Mod. Phys. 2025; NIST SP 961): nombre → [cifras, exponente, incertidumbre en las últimas cifras]
+  const N22 = {
+    'Constante de gravitación universal': ['6,674 30', -11, '(15)'],
+    'Permitividad del vacío': ['8,854 187 8188', -12, '(14)'],
+    'Permeabilidad del vacío': ['1,256 637 061 27', -6, '(20)'],
+    'Constante de Coulomb': ['8,987 551 7862', 9, '(14)'],
+    'Impedancia característica del vacío': ['376,730 313 412', 0, '(59)'],
+    'Magnetón de Bohr': ['9,274 010 0657', -24, '(29)'],
+    'Magnetón nuclear': ['5,050 783 7393', -27, '(16)'],
+    'Masa del electrón': ['9,109 383 7139', -31, '(28)'],
+    'Masa del protón': ['1,672 621 925 95', -27, '(52)'],
+    'Masa del neutrón': ['1,674 927 500 56', -27, '(85)'],
+    'Unidad de masa atómica': ['1,660 539 068 92', -27, '(52)'],
+    'Energía en reposo del electrón': ['0,510 998 950 69', 0, '(16)'],
+    'Energía en reposo del protón': ['938,272 089 43', 0, '(29)'],
+    'Radio de Bohr': ['5,291 772 105 44', -11, '(82)'],
+    'Radio clásico del electrón': ['2,817 940 3205', -15, '(13)'],
+    'Longitud de onda Compton del electrón': ['2,426 310 235 38', -12, '(76)'],
+    'Constante de estructura fina': ['7,297 352 5643', -3, '(11)'],
+    'Constante de Rydberg': ['1,097 373 156 8157', 7, '(12)'],
+    'Energía de Hartree': ['4,359 744 722 2060', -18, '(48)'],
+  };
+  const T22 = T18.map(([nombre, s, d, e, u, x, b]) => (N22[nombre] ? [nombre, s, N22[nombre][0], N22[nombre][1], u, N22[nombre][2], b] : [nombre, s, d, e, u, x, b]));
+  const aObjeto = (T) => T.map(([nombre, s, d, e, u, x, b]) => ({ n: nombre, s, d, e, u, x, b, v: +d.replace(/\s/g, '').replace(',', '.') * 10 ** e }));
+  const EDICIONES = { 2022: aObjeto(T22), 2018: aObjeto(T18) };
+  const CONSTANTES = EDICIONES[2022];
   const plano = (t) => String(t).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/<[^>]+>/g, '');
-  const busca = (q) => {
-    const t = plano(q).trim();
-    return t ? CONSTANTES.filter((c) => plano(`${c.n} ${c.s} ${c.b}`).includes(t)) : CONSTANTES;
+  const busca = (q, ed = 2022) => {
+    const t = plano(q).trim(), L = EDICIONES[ed] || CONSTANTES;
+    return t ? L.filter((c) => plano(`${c.n} ${c.s} ${c.b}`).includes(t)) : L;
   };
 
   const ejemplos = [
@@ -170,6 +196,6 @@ const Unidades = (() => {
     return { mag, valor, de, a };
   };
 
-  return { resolver, convertir, MAGNITUDES, CONSTANTES, busca, ejemplos, azar, lee, n, h };
+  return { resolver, convertir, MAGNITUDES, CONSTANTES, EDICIONES, busca, ejemplos, azar, lee, n, h };
 })();
 if (typeof module !== 'undefined') module.exports = Unidades;

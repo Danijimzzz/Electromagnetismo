@@ -12,6 +12,7 @@
    ===================================================================== */
 const Series = (() => {
   const E = typeof Expresion !== 'undefined' ? Expresion : require('../matematicas/expresion.js');
+  const DV = typeof Derivadas !== 'undefined' ? Derivadas : require('../derivadas/calculo.js');
   const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
   const f = (x, d = 6) => {
     if (x === Infinity) return '∞';
@@ -27,6 +28,8 @@ const Series = (() => {
   // listas de n grandes donde aₙ y aₙ₊₁ son números distintos de cero (si se desborda, se baja)
   const LISTAS = [[1e3, 1e4, 1e5, 1e6], [20, 40, 80, 120], [10, 15, 20, 30, 40, 60], [5, 8, 12, 16, 20, 25]];
 
+  const FACT = [1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880];
+  const cTxt = (x) => String(+x.toFixed(12));
   function resolver(sc) {
     if (vacio(sc.an)) throw new Error('Falta el término general aₙ');
     const n0 = vacio(sc.n0) ? 1 : +String(sc.n0).trim().replace(',', '.');
@@ -41,6 +44,16 @@ const Series = (() => {
     const ns = LISTAS.find((L) => L.every((n) => isFinite(a(n)) && a(n) !== 0 && isFinite(a(n + 1)) && a(n + 1) !== 0));
     const pasos = [{ t: 'Serie', html: `$∑_{n=${n0}}^{∞} a_n = ∑_{n=${n0}}^{∞} ${T}$` }];
     const out = { an: sc.an, n0, T, pasos, pruebas: [] };
+    // «Usar en…»: si los términos son los de un desarrollo de Taylor conocido evaluado en un punto, el de la función (geométrica: C/(1 − x) en x = razón;
+    // exponencial, desde n = 0: C·e^x en x = a₁/a₀), para ver la suma como límite de los polinomios
+    {
+      const vs = []; for (let n = n0; n < n0 + 9; n++) vs.push(a(n));
+      const cerca = (u, v) => Math.abs(u - v) <= 1e-9 * Math.max(Math.abs(u), Math.abs(v), 1e-300);
+      const C = vs[0], fx = (c, t) => (cTxt(c) === '1' ? t : `${cTxt(c)}${t.startsWith('1/') ? t.slice(1) : ` ${t}`}`);
+      const r = vs[1] / vs[0];
+      if (C !== 0 && isFinite(r) && r !== 0 && vs.every((v, i) => cerca(v, C * r ** i))) out.desarrollo = { f: C === 1 ? '1/(1-x)' : `${cTxt(C)}/(1-x)`, x0: cTxt(r), n: 8, tipo: 'geométrica' };
+      else if (n0 === 0 && C !== 0 && isFinite(r) && r !== 0 && vs.every((v, i) => cerca(v, C * r ** i / FACT[i]))) out.desarrollo = { f: C === 1 ? 'e^x' : `${cTxt(C)} e^x`, x0: cTxt(r), n: 8, tipo: 'exponencial' };
+    }
     const nums = Array.from({ length: 8 }, (_, i) => a(n0 + i));
     pasos.push({ t: 'Primeros términos', html: `$${nums.map((v) => f(v, 5)).join(' ; ')} ; …$` });
     if (!ns) {
@@ -145,8 +158,18 @@ const Series = (() => {
       pasos.push({ t: 'Signos', html: 'Los términos cambian de signo sin alternarse: los criterios de arriba se aplican a $|a_n|$ (convergencia absoluta); si la absoluta falla, la serie podría converger condicionalmente y aquí no se decide.' });
     }
 
+    /* ---- Criterio de la integral (términos del mismo signo) ---- */
+    let integ = null;
+    // (un primer término nulo, como ln 1, no cuenta)
+    const sgn = Math.sign(a(ns[0])), mismoSigno = sgn !== 0 && sg.every((q) => q === 0 || q === sgn);
+    if (mismoSigno && !alterna && !geo) {
+      try { integ = criterioIntegral(ast, a, n0, ns, sgn); } catch (e) { integ = null; }
+      if (integ) { out.pruebas.push({ nombre: 'Criterio de la integral', veredicto: integ.v, ...(integ.I !== undefined ? { valor: integ.I } : {}) }); pasos.push({ t: 'Criterio de la integral', html: integ.html }); out.integral = { v: integ.v, I: integ.I, exacta: integ.exacta, m: integ.m }; }
+    }
+
     /* ---- Conclusión ---- */
-    const abs = geo ? (geoV === 'converge' ? 'converge' : 'diverge') : (vc !== 'no concluye' ? vc : vr !== 'no concluye' ? vr : pot ? out.pruebas.find((p) => p.nombre.startsWith('Comparación')).veredicto : 'no concluye');
+    const decideInt = integ && integ.v !== 'no concluye' && vc === 'no concluye' && vr === 'no concluye' && (integ.exacta || !pot || pot.v === 'no concluye');
+    const abs = decideInt ? integ.v : geo ? (geoV === 'converge' ? 'converge' : 'diverge') : (vc !== 'no concluye' ? vc : vr !== 'no concluye' ? vr : pot ? out.pruebas.find((p) => p.nombre.startsWith('Comparación')).veredicto : 'no concluye');
     // geométrica y criterios aplicados a |aₙ|: «diverge» de cociente/raíz con L>1 hace diverger la serie (aₙ no →0), el de comparación solo |aₙ|
     let veredicto, texto;
     const divAbsSolo = (vc === 'diverge' || vr === 'diverge') ? 'serie' : 'abs';
@@ -155,30 +178,105 @@ const Series = (() => {
     else if (abs === 'diverge' && geo) { veredicto = 'diverge'; out.absoluta = false; texto = 'Diverge.'; }
     else if (abs === 'diverge') {
       if (leib) { veredicto = 'converge'; out.absoluta = false; texto = 'Converge condicionalmente: Σ|aₙ| diverge pero Σaₙ converge por Leibniz.'; }
-      else if (positiva) { veredicto = 'diverge'; out.absoluta = false; texto = 'Diverge.'; }
+      else if (positiva || mismoSigno) { veredicto = 'diverge'; out.absoluta = false; texto = 'Diverge.'; }
       else { veredicto = 'indeterminado'; texto = 'Σ|aₙ| diverge y no puedo decidir si Σaₙ converge condicionalmente.'; }
     } else if (leib) { veredicto = 'converge'; out.absoluta = null; texto = 'Converge por Leibniz (no he podido decidir si también converge absolutamente).'; }
-    else { veredicto = 'indeterminado'; texto = 'Ningún criterio de los implementados decide: prueba el criterio de la integral, comparación con otra serie o Raabe.'; }
+    else { veredicto = 'indeterminado'; texto = 'Ningún criterio de los implementados decide: prueba a comparar con otra serie o el criterio de Raabe.'; }
     out.veredicto = veredicto; out.texto = texto;
     pasos.push({ t: 'Conclusión', html: `<b>${texto}</b>` });
 
     /* ---- Suma ---- */
     out.parciales = parciales(a, n0, 40);
     if (veredicto === 'converge') {
-      const S = estimaSuma(a, n0, { geo, S: out.sumaExacta, alterna, pot, L: Lc });
+      const S = estimaSuma(a, n0, { geo, S: out.sumaExacta, alterna, pot, L: Lc, cola: decideInt && integ.cola && !(pot && pot.pura) ? integ.cola : null, sg: sgn });
       out.suma = S.v; out.sumaError = S.err;
       pasos.push({ t: 'Suma', html: geo ? `$S = ${f(S.v, 8)}$ (exacta, de la fórmula geométrica).` : `$S ≈ ${f(S.v, 6)}$ ${S.nota}` });
     }
     return out;
   }
 
+  /* ---------- Criterio de la integral ---------- */
+  // aₙ con la n cambiada por x (para integrarla); null si lleva factoriales
+  const enX = (n) => (!n || typeof n !== 'object' ? n : n.t === 'x' ? { t: 'x' } : n.t === 'fn' && n.f === 'fact' ? null : Object.fromEntries(Object.entries(n).map(([k, v]) => [k, enX(v)])));
+  const entera = (n) => !n || typeof n !== 'object' || Object.values(n).every((v) => v !== null && entera(v));
+  // límite en +∞ por la estructura de la expresión: número, ±Infinity o null si es una indeterminación (∞ − ∞, 0·∞, ∞/∞…)
+  function limInf(n) {
+    const a = n.a ? limInf(n.a) : null, b = n.b ? limInf(n.b) : null;
+    switch (n.t) {
+      case 'n': return n.v;
+      case 'c': return E.valor(n, 0);
+      case 'x': return n.n ? null : Infinity;
+      case 'neg': return a === null ? null : -a;
+      case '+': case '-': { if (a === null || b === null) return null; const c = n.t === '-' ? -b : b; return !isFinite(a) && !isFinite(c) && a !== c ? null : a + c; }
+      case '*': return a === null || b === null || (a === 0 && !isFinite(b)) || (b === 0 && !isFinite(a)) ? null : a * b;
+      case '/': return a === null || b === null || b === 0 || (!isFinite(a) && !isFinite(b)) ? null : a / b;
+      case '^': return a === null || b === null || a < 0 || (a === 1 && !isFinite(b)) || (a === 0 && b <= 0) || (!isFinite(a) && b === 0) ? null : a ** b;
+      case 'fn': {
+        if (a === null) return null;
+        if (n.f === 'abs') return Math.abs(a);
+        if (n.f === 'ln' || n.f === 'log') return a === Infinity ? Infinity : a > 0 ? E.valor({ ...n, a: { t: 'n', v: a } }, 0) : null;
+        if (n.f === 'sqrt' || n.f === 'cbrt') return a === Infinity ? Infinity : a >= 0 ? E.valor({ ...n, a: { t: 'n', v: a } }, 0) : null;
+        if (n.f === 'arctg') return a === Infinity ? Math.PI / 2 : a === -Infinity ? -Math.PI / 2 : Math.atan(a);
+        if (!isFinite(a)) return null;
+        const v = E.valor({ ...n, a: { t: 'n', v: a } }, 0); return isFinite(v) ? v : null;
+      }
+    }
+    return null;
+  }
+  // límite de una función cuando x → ∞ mirando sus valores en 10⁵, 10¹⁰, 10²⁰… Solo decide si está muy claro:
+  // { L } si se estabiliza (las diferencias se reducen a menos del 60 % cada vez), { L: ±Infinity } si crece cada vez más, null si no se sabe
+  function limEscalera(g) {
+    // un valor no finito es un desbordamiento de la cuenta (∞ − ∞), no un límite: se usan solo los anteriores
+    const todos = [5, 10, 20, 40, 80, 160].map((k) => g(10 ** k)), corte = todos.findIndex((y) => !isFinite(y)), v = corte < 0 ? todos : todos.slice(0, corte);
+    if (v.length < 4) return null;
+    const d = v.slice(1).map((y, i) => y - v[i]), u = v[v.length - 1], esc = Math.max(1, Math.abs(u)), n = d.length;
+    if (d.slice(-2).every((q) => Math.abs(q) < 1e-10 * esc)) return { L: u };
+    const r1 = Math.abs(d[n - 1] / d[n - 2]), r2 = Math.abs(d[n - 2] / d[n - 3]);
+    if (r1 <= 0.6 && r2 <= 0.6) return { L: u + (d[n - 1] * r1) / (1 - r1) };
+    if (r1 >= 1 && r2 >= 1 && d.every((q) => Math.sign(q) === Math.sign(d[0]))) return { L: Math.sign(d[0]) * Infinity };
+    return null;
+  }
+  // ∫ g de p a q por Simpson con el cambio x = eᵘ (para llegar a x enormes)
+  function simpsonLog(g, p, q, m = 4000) {
+    const a = Math.log(p), b = Math.log(q), h = (b - a) / m, G = (u) => { const x = Math.exp(u); return g(x) * x; };
+    let t = G(a) + G(b); for (let i = 1; i < m; i++) t += (i % 2 ? 4 : 2) * G(a + i * h);
+    return (t * h) / 3;
+  }
+  function criterioIntegral(ast, a, n0, ns, sg) {
+    const fx = enX(ast);
+    if (!entera(fx) || !DV) return null;
+    const g = (x) => sg * E.valor(fx, x);
+    // desde qué m es positiva y decreciente (también entre los enteros)
+    let m = n0;
+    for (let k = n0; k < n0 + 300; k += 0.5) { if (g(k) === 0 && k > m + 2) break; if (!(g(k) > 0) || !(g(k + 0.5) <= g(k) * (1 + 1e-12))) m = Math.floor(k) + 1; }
+    if (m > n0 + 100 || !ns.every((n) => g(n) >= 0 && g(n + 0.5) <= g(n) && g(n + 1) <= g(n + 0.5))) return null;
+    const Tf = DV.T(fx), base = `$f(x) = ${Tf}$ es positiva y decreciente para $x ≥ ${m}$, así que la serie y la integral $∫_{${m}}^{∞} f(x) dx$ convergen o divergen a la vez.`;
+    let F = null; try { const r = DV.prim(E.simp(fx), []); F = r && E.simp(r.F); if (F && !DV.igualNum(E.deriva(F), fx, 1e-6)) F = null; } catch (e) { F = null; }
+    const Ff = F && ((x) => sg * E.valor(F, x));
+    if (F && isFinite(Ff(m))) {
+      const est = limInf(F), lim = est !== null ? { L: sg * est } : limEscalera(Ff), segura = est !== null, pr = `<br>Primitiva: $F(x) = ∫ f(x) dx = ${sg < 0 ? '−(' : ''}${DV.T(F)}${sg < 0 ? ')' : ''}$.`;
+      if (!lim) return { v: 'no concluye', html: `${base}${pr}<br>No consigo decidir con seguridad si $F(b)$ tiene límite finito cuando $b → ∞$ (crece o se estabiliza muy despacio): míralo a mano.` };
+      if (!isFinite(lim.L)) return { v: 'diverge', exacta: segura, html: `${base}${pr}<br>$∫_{${m}}^{∞} f(x) dx = lím_{b→∞} F(b) − F(${m}) = ∞$: la integral diverge y, por el criterio de la integral, <b>la serie diverge</b>.` };
+      const I = lim.L - Ff(m), cola = (N) => lim.L - Ff(N);
+      return { v: 'converge', exacta: segura, I, m, cola, html: `${base}${pr}<br>$∫_{${m}}^{∞} f(x) dx = lím_{b→∞} F(b) − F(${m}) = ${f(lim.L, 6)} − ${f(Ff(m), 6).replace(/^−(.*)$/, '(−$1)')} = ${f(I, 6)}$: la integral converge y, por el criterio de la integral, <b>la serie converge</b>.` };
+    }
+    // sin primitiva elemental: la integral se estima numéricamente y se avisa
+    const cotas = [5, 10, 20, 40, 80, 160]; let acc = 0, ant = m; const tabla = cotas.map((k) => { acc += simpsonLog(g, ant, 10 ** k); ant = 10 ** k; return acc; });
+    const lim = tabla.every(isFinite) ? limEscalera((x) => tabla[cotas.indexOf(Math.round(Math.log10(x)))]) : null, aviso = `<br>No encuentro una primitiva de $f$ con funciones elementales, así que la integral se <b>estima numéricamente</b> (hasta $x = 10^{5}$, $10^{10}$, $10^{20}$… con la regla de Simpson): es una estimación, no una demostración.`;
+    if (!lim) return { v: 'no concluye', html: `${base}${aviso}<br>La estimación no deja claro si la integral converge.` };
+    if (!isFinite(lim.L)) return { v: 'diverge', exacta: false, html: `${base}${aviso}<br>La integral crece sin parar ($≈ ${tabla.slice(0, 4).map((v) => f(v, 4)).join(' ; ')}$…): <b>la serie diverge</b>.` };
+    return { v: 'converge', exacta: false, I: lim.L, m, html: `${base}${aviso}<br>$∫_{${m}}^{∞} f(x) dx ≈ ${f(lim.L, 5)}$ (se estabiliza): <b>la serie converge</b>.` };
+  }
+
   function parciales(a, n0, k) { const s = []; let acc = 0; for (let i = 0; i < k; i++) { acc += a(n0 + i); s.push(acc); } return s; }
 
   // suma estimada: geométrica exacta; alternada con el promedio de dos parciales seguidas (Euler);
   // de cola potencial C/n^p con Richardson; si no, hasta que los términos sean despreciables
-  function estimaSuma(a, n0, { geo, S, alterna, pot, L }) {
+  function estimaSuma(a, n0, { geo, S, alterna, pot, L, cola, sg }) {
     if (geo && S !== undefined) return { v: S, err: 0, nota: '' };
     const suma = (N) => { let s = 0; for (let n = n0; n <= N; n++) s += a(n); return s; };
+    // con el criterio de la integral el resto queda entre dos integrales: ∫ de N + 1 a ∞ ≤ R_N ≤ ∫ de N a ∞
+    if (cola) { const N = 20000, c1 = cola(N + 1), c2 = cola(N); if (isFinite(c1) && isFinite(c2)) return { v: suma(N) + (sg * (c1 + c2)) / 2, err: Math.abs(c2 - c1) / 2 + 1e-12, nota: '(suma parcial hasta n = 20 000 más el resto, que el criterio de la integral encierra entre $∫_{N+1}^{∞} f$ y $∫_{N}^{∞} f$)' }; }
     if (alterna) {
       const N = 4000, s1 = suma(N), s2 = s1 + a(N + 1);
       return { v: (s1 + s2) / 2, err: Math.abs(a(N + 1)) / 2, nota: '(suma parcial hasta n = 4000 promediada con la siguiente; el error es menor que |aₙ₊₁|)' };
@@ -205,6 +303,9 @@ const Series = (() => {
     { clave: 'necesaria', nombre: 'No cumple lím aₙ = 0: Σ n/(2n + 1)', sc: { an: 'n/(2n+1)', n0: '1' } },
     { clave: 'factorial-potencia', nombre: 'Σ n!/nⁿ', sc: { an: 'n!/n^n', n0: '1' } },
     { clave: 'alterna-abs', nombre: 'Absolutamente convergente: Σ (−1)ⁿ/n²', sc: { an: '(-1)^n/n^2', n0: '1' } },
+    { clave: 'integral-diverge', nombre: 'Criterio de la integral: Σ 1/(n ln n) diverge', sc: { an: '1/(n ln(n))', n0: '2' } },
+    { clave: 'integral-converge', nombre: 'Criterio de la integral: Σ 1/(n ln² n) converge', sc: { an: '1/(n ln(n)^2)', n0: '2' } },
+    { clave: 'integral-exp', nombre: 'Criterio de la integral: Σ n·e^(−n²)', sc: { an: 'n e^(-n^2)', n0: '1' } },
   ];
 
   return { resolver, ejemplos, f, fh };

@@ -37,6 +37,23 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     // regresión simple como caso particular: Y = 2X exacta más una perturbación conocida
     const s1 = C.resolver({ alfa: '0,05', nivel: '95', datos: 'x y\n1 2,1\n2 3,9\n3 6,2\n4 7,8' });
     cerca(s1.b[1], 1.94, 1e-9, 'simple: pendiente = Sxy/Sxx = 9,7/5'); cerca(s1.b[0], 5 - 1.94 * 2.5, 1e-9, 'simple: constante');
+    // contraste con statsmodels (pruebas/referencias/estadistica.py): stack loss de Brownlee y los datos casi colineales de Longley
+    const REF = JSON.parse(fs.readFileSync(path.join(fuente, '..', 'pruebas', 'referencias', 'estadistica.json'), 'utf8')).regresion_multiple;
+    for (const [k, tol] of [['stackloss', 1e-11], ['longley', 1e-8]]) {
+      const r = REF[k], e = C.ejemplos.find((x) => x.clave === k), rel = (a, b, q) => { if (!(Math.abs(a - b) <= tol * Math.max(Math.abs(b), 1e-300))) mal(`${N} · ${k}: ${q} = ${a}, statsmodels ${b}`); };
+      if (JSON.stringify(C.tabla(e.sc.datos).filas) !== JSON.stringify(r.filas)) mal(`${N} · ${k}: los datos del ejemplo no son los de la referencia`);
+      const s = C.resolver({ ...e.sc, x0: r.x0.join(' ') });
+      s.coefs.forEach((q, j) => { rel(q.b, r.b[j], `coeficiente ${j}`); rel(q.se, r.se[j], `error típico ${j}`); rel(q.t, r.t[j], `t ${j}`); rel(q.p, r.p[j], `p-valor ${j}`); rel(q.lo, r.ic[j][0], `IC inferior ${j}`); rel(q.hi, r.ic[j][1], `IC superior ${j}`); if (j) rel(q.vif, r.vif[j - 1], `VIF ${j}`); });
+      rel(s.R2, r.R2, 'R²'); rel(s.R2aj, r.R2aj, 'R² ajustado'); rel(s.Fg, r.F, 'F'); rel(s.pF, r.pF, 'p de la F'); rel(s.s, r.s, 's'); rel(s.SSE, r.SSE, 'SC de los residuos');
+      rel(s.pred.yh, r.pred.yh, 'predicción'); rel(s.pred.yh - s.pred.eM, r.pred.media[0], 'IC de la media'); rel(s.pred.yh + s.pred.eI, r.pred.individual[1], 'IC individual');
+    }
+    // Longley: VIF por encima de 1000 y aviso de multicolinealidad fuerte; el stack loss, sin aviso
+    const lg = ej('longley'), sl = ej('stackloss'), aviso = (q) => q.pasos.find((x) => x.t.startsWith('Multicolinealidad'))?.html || '';
+    if (!(lg.vifMax > 1700) || !aviso(lg).includes('multicolinealidad fuerte') || aviso(sl).includes('fuerte') || !aviso(sl)) mal(`${N}: el aviso de multicolinealidad no sale donde toca (VIF máximo ${lg.vifMax} y ${sl.vifMax})`);
+    // casi colineal a propósito: x2 = 2·x1 más una milésima de ruido; tiene que calcularse y cumplir las ecuaciones normales
+    const cc = C.resolver({ alfa: '0,05', nivel: '95', datos: 'x1 x2 y\n1 2,001 3,1\n2 4,003 4,9\n3 5,998 7,2\n4 8,002 8,8\n5 9,999 11,1\n6 12,004 12,9' });
+    if (!(cc.vifMax > 1e5)) mal(`${N}: el caso casi colineal da VIF ${cc.vifMax}`);
+    for (let j = 0; j < 3; j++) { const fc = [[1, 2.001, 3.1], [2, 4.003, 4.9], [3, 5.998, 7.2], [4, 8.002, 8.8], [5, 9.999, 11.1], [6, 12.004, 12.9]]; cerca(fc.reduce((t, r) => t + (j ? r[j - 1] : 1) * (r[2] - cc.b[0] - cc.b[1] * r[0] - cc.b[2] * r[1]), 0), 0, 1e-5, `casi colineal: ecuación normal ${j}`); }
     error({ alfa: '0,05', nivel: '95', datos: 'x1 x2 y\n1 2 3\n2 4 5\n3 6 8\n4 8 9\n5 10 12' }, 'multicolinealidad perfecta');
     error({ alfa: '0,05', nivel: '95', datos: 'x1 x2 y\n1 2 3\n2 3 5\n3 5 8' }, 'pocas observaciones');
     error({ alfa: '0,05', nivel: '95', datos: 'x y\n1 2\n1 3\n1 4' }, 'variable constante');

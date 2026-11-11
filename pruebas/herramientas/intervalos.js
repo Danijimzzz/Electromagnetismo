@@ -41,6 +41,26 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       let ok = false; try { IcC.resolver(sc); } catch (e) { ok = true; }
       if (!ok) mal(`Intervalos: ${q} no da error`);
     }
+    // métodos de la proporción con 2 éxitos de 20 al 95 % (binom.test y binom::binom.confint de R): exacto (0,01235; 0,31698), Wilson (0,02787; 0,30103), Agresti-Coull (0,01566; 0,31324)
+    { const m = (k) => IcC.resolver({ modo: 'proporcion', tipoP: 'exitos', n: '20', x: '2', nivel: '95', metodoP: k });
+      cerca(m('cp').a, 0.0123485, 1e-5, 'Clopper-Pearson inferior'); cerca(m('cp').b, 0.3169827, 1e-5, 'Clopper-Pearson superior');
+      cerca(m('wilson').a, 0.0278665, 1e-5, 'Wilson inferior'); cerca(m('wilson').b, 0.3010336, 1e-5, 'Wilson superior');
+      cerca(m('ac').a, 0.0156562, 1e-5, 'Agresti-Coull inferior'); cerca(m('ac').b, 0.3132439, 1e-5, 'Agresti-Coull superior');
+      // contra statsmodels.stats.proportion.proportion_confint (pruebas/referencias/estadistica.py): exacto, Wilson y Agresti-Coull en cinco casos
+      for (const c of JSON.parse(fs.readFileSync(path.join(fuente, '..', 'pruebas', 'referencias', 'estadistica.json'), 'utf8')).proporcion_ic) for (const k of ['cp', 'wilson', 'ac']) {
+        const s = IcC.resolver({ modo: 'proporcion', tipoP: 'exitos', n: String(c.n), x: String(c.x), nivel: String(100 * c.nivel), metodoP: k }), q = `${k} con ${c.x}/${c.n} al ${c.nivel}`;
+        if (Math.abs(Math.max(0, s.a) - c[k][0]) > 1e-7 || Math.abs(Math.min(1, s.b) - c[k][1]) > 1e-7) mal(`Intervalos · ${q}: (${s.a}; ${s.b}) en vez de (${c[k]})`);
+      }
+      // exacto con 0 éxitos de 10: (0; 1 − 0,025^(1/10)) = (0; 0,30850)
+      const c0 = IcC.resolver({ modo: 'proporcion', tipoP: 'exitos', n: '10', x: '0', nivel: '95', metodoP: 'cp' }); cerca(c0.b, 1 - 0.025 ** 0.1, 1e-7, 'Clopper-Pearson con 0 éxitos'); if (c0.a !== 0) mal('Intervalos: el exacto con 0 éxitos no empieza en 0');
+      // el exacto cubre al menos el 95 % (simulación con p̂ = 0,1 y n = 20, donde el normal se queda corto)
+      const g = IcC.simula(m('cp'), rnd); let d = 0; for (let i = 0; i < 2000; i++) { const [a, b] = g.una(); if (a <= g.real && g.real <= b) d++; } if (d / 2000 < 0.95) mal(`Intervalos: el exacto de Clopper-Pearson cubre solo el ${d / 20} %`);
+      let ok = false; try { IcC.resolver({ modo: 'proporcion', tipoP: 'proporcion', n: '30', ph: '0,42', nivel: '95', metodoP: 'cp' }); } catch (e) { ok = true; } if (!ok) mal('Intervalos: el exacto con n·p̂ no entero no da error'); }
+    // predicción: 1200 ± t(15; 0,025)·90·√(1 + 1/16) = 1200 ± 2,13145·90·1,030776 = 1200 ± 197,734
+    { const pr = r('prediccion'); cerca(pr.err, 2.1314495 * 90 * Math.sqrt(17 / 16), 1e-6, 'error de predicción'); cerca(pr.a, 1200 - 197.7343, 1e-6, 'predicción inferior');
+      // tolerancia 90 % / 95 % con n = 10: k de Howe = 1,64485·√(9·1,1/3,32511) = 2,8382 (el exacto de las tablas es 2,839)
+      const to = r('tolerancia'); cerca(to.k, 1.6448536 * Math.sqrt(9 * 1.1 / 3.3251128), 1e-5, 'factor de tolerancia'); cerca(to.k, 2.839, 0.002, 'factor de tolerancia frente a las tablas'); cerca(to.b, 50 + 2 * to.k, 1e-9, 'tolerancia superior');
+      let ok = false; try { IcC.resolver({ ...IcC.ejemplos.find((e) => e.clave === 'tolerancia').sc, lado: 'inf' }); } catch (e) { ok = true; } if (!ok) mal('Intervalos: la tolerancia unilateral no da error'); }
     if (fallos === antes) console.log(`  ✓ Intervalos de confianza: ${IcC.ejemplos.length} ejemplos, z, t, χ² y F, media, proporción, varianza, diferencias, Welch, apareadas, cociente de varianzas, cotas, población finita, contraste, tamaños de muestra, simulación y errores`);
   }
 

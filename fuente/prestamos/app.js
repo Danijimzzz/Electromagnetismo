@@ -7,7 +7,7 @@
 (() => {
   const P = Prestamos, { f, dinero, num } = Eco;
   Calculadora.monta({
-    C: P, carpeta: 'prestamos', app: 'PrestamosApp',
+    C: P, carpeta: 'prestamos', app: 'PrestamosApp', azar: P.azar, enunciado: P.enunciado,
     nota: 'El plazo va en años (1,5 son 18 meses) y el TIN en % anual. La comisión de apertura es opcional y solo cambia la TAE.',
     campos: (sc) => [
       { k: 'sistema', nom: 'Sistema', tipo: 'sel', ops: Object.entries(P.SISTEMAS) },

@@ -57,6 +57,9 @@ const VanTir = (() => {
   const anosMeses = (x) => { const a = Math.floor(x + 1e-9), m = (x - a) * 12; return `${a} año${a === 1 ? '' : 's'}${m > 0.05 ? ` y ${f(m, 3)} meses` : ''}`; };
 
   function resolver(sc) {
+    const r = resolverBase(sc); r.pasos.push({ t: 'Convención', html: 'Los flujos se sitúan al final de cada año (el desembolso, en el año 0) y la tasa k es efectiva anual. El plazo de recuperación simple no descuenta, y con fracciones de año se interpola linealmente dentro del año. Sin impuestos ni inflación.' }); return r;
+  }
+  function resolverBase(sc) {
     const A = lee(sc, 'a', 'el desembolso inicial', { min: 0, minEx: true });
     const Q = K.lista(sc.flujos, 'los flujos de caja');
     if (!Q.length) throw new Error('Escribe los flujos de caja de cada año, separados por espacios');
@@ -104,6 +107,13 @@ const VanTir = (() => {
     { clave: 'tienda', nombre: 'Abrir una tienda: pérdidas el primer año', sc: { a: '30000', flujos: '-5000 10000 15000 15000 15000', k: '9' } },
   ];
 
-  return { resolver, ejemplos, vanDe, tirDe, raices, tirm, npv };
+  // modo práctica: datos redondos al azar
+  const AZ = K.az, azar = AZ.desde(ejemplos, () => {
+    const a = AZ.toma([10000, 20000, 50000, 100000]), n = AZ.toma([3, 4, 5]), fl = Array.from({ length: n }, () => Math.round((a * AZ.toma([0.3, 0.35, 0.4])) / 100) * 100);
+    return { a: String(a), flujos: fl.join(' '), k: String(AZ.toma([5, 8, 10, 12])) };
+  }, (sc) => !sc.a2 && !sc.kf && !/-/.test(sc.flujos), (sc) => resolver(sc));
+  const enunciado = (sc) => `Un proyecto exige invertir ${sc.a} € y genera los flujos de caja anuales ${sc.flujos.split(' ').join(', ')} €. Con una tasa de descuento del ${sc.k} %, calcula el VAN, la TIR, la TIR modificada, el payback simple y el descontado y el índice de rentabilidad.`;
+
+  return { azar, enunciado, resolver, ejemplos, vanDe, tirDe, raices, tirm, npv };
 })();
 if (typeof module !== 'undefined') module.exports = VanTir;

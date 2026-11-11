@@ -80,6 +80,10 @@ const Solow = (() => {
     { clave: 'baja-poblacion', nombre: 'Se frena la población: n pasa del 3 % al 0 %', sc: { alfa: '0,3333333333', s: '20', n: '3', g: '2', d: '5', A: '1', k0: '1', T: '80', cambio: 'n', tc: '25', nuevo: '0' } },
   ];
 
-  return { resolver, ejemplos, f };
+  // modo práctica: datos redondos al azar
+  const AZ = K.az, azar = AZ.desde(ejemplos, () => ({ alfa: AZ.t(AZ.toma([0.3, 0.35, 0.4])), s: String(AZ.toma([15, 20, 25, 30])), n: String(AZ.toma([0, 1, 2])), g: String(AZ.toma([1, 2])), d: String(AZ.toma([4, 5, 6])), A: String(AZ.toma([1, 2])), k0: String(AZ.toma([1, 2, 3])), T: '60' }), (sc) => !sc.cambio || sc.cambio === 'ninguno', (sc) => resolver(sc));
+  const enunciado = (sc) => `En el modelo de Solow, α = ${sc.alfa}, A = ${sc.A}, la tasa de ahorro es el ${sc.s} %, la población crece un ${sc.n} %, el progreso tecnológico un ${sc.g} % y la depreciación es del ${sc.d} %. Calcula el capital, el producto, el consumo y la inversión por trabajador efectivo en el estado estacionario, el ahorro de la regla de oro y la velocidad de convergencia.`;
+
+  return { azar, enunciado, resolver, ejemplos, f };
 })();
 if (typeof module !== 'undefined') module.exports = Solow;

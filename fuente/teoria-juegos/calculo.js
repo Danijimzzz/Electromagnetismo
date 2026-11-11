@@ -19,7 +19,7 @@ const TeoriaJuegos = (() => {
   const limpia = (s, def) => (String(s ?? '').replace(/[<>&"$\\{}]/g, '').trim().slice(0, 24) || def);
   const EPS = 1e-12;
 
-  function resolver(sc) {
+  function resolver2(sc) {
     const nom = { f: [limpia(sc.f1, 'Arriba'), limpia(sc.f2, 'Abajo')], c: [limpia(sc.c1, 'Izquierda'), limpia(sc.c2, 'Derecha')] };
     const A = [[0, 0], [0, 0]], B = [[0, 0], [0, 0]];
     for (const i of [0, 1]) for (const j of [0, 1]) {
@@ -83,6 +83,49 @@ const TeoriaJuegos = (() => {
     return { A, B, nom, mejorF, mejorC, nash, domF, domC, mixto, motivoMixto, pareto, tipo, pasos };
   }
 
+  /* ---------- matrices 3 × 3: mejores respuestas, Nash puros y eliminación iterativa de estrategias estrictamente dominadas ---------- */
+  function resolver3(sc) {
+    const nom = { f: [1, 2, 3].map((i) => limpia(sc['f' + i], ['Arriba', 'Medio', 'Abajo'][i - 1])), c: [1, 2, 3].map((j) => limpia(sc['c' + j], ['Izquierda', 'Centro', 'Derecha'][j - 1])) };
+    const matriz = (txt, quien) => {
+      const d = K.filas(txt, 3, `los pagos del jugador ${quien}`);
+      if (d.length !== 3) throw new Error(`Los pagos del jugador ${quien} necesitan 3 filas de 3 números: una fila por cada estrategia del jugador 1`);
+      return d;
+    };
+    const A = matriz(sc.p1, 1), B = matriz(sc.p2, 2), T = [0, 1, 2];
+    const mejorF = T.map((i) => T.map((j) => A[i][j] >= Math.max(...T.map((k) => A[k][j])) - EPS));
+    const mejorC = T.map((i) => T.map((j) => B[i][j] >= Math.max(...T.map((l) => B[i][l])) - EPS));
+    const nash = []; for (const i of T) for (const j of T) if (mejorF[i][j] && mejorC[i][j]) nash.push([i, j]);
+    // en cada ronda se quitan, a la vez, las estrategias estrictamente dominadas por otra estrategia pura que sigue en juego
+    let F = [...T], C = [...T]; const rondas = [];
+    for (let r = 0; r < 6; r++) {
+      const ef = F.map((i) => ({ i, por: F.find((k) => k !== i && C.every((j) => A[k][j] > A[i][j] + EPS)) })).filter((x) => x.por !== undefined);
+      const ec = C.map((j) => ({ j, por: C.find((l) => l !== j && F.every((i) => B[i][l] > B[i][j] + EPS)) })).filter((x) => x.por !== undefined);
+      if (!ef.length && !ec.length) break;
+      rondas.push({ f: ef, c: ec, F: F.filter((i) => !ef.some((x) => x.i === i)), C: C.filter((j) => !ec.some((x) => x.j === j)) });
+      F = rondas[rondas.length - 1].F; C = rondas[rondas.length - 1].C;
+    }
+    const resuelto = F.length === 1 && C.length === 1;
+    const pareto = T.map((i) => T.map((j) => !T.some((k) => T.some((l) => (k !== i || l !== j) && A[k][l] >= A[i][j] - EPS && B[k][l] >= B[i][j] - EPS && (A[k][l] > A[i][j] + EPS || B[k][l] > B[i][j] + EPS)))));
+    let tipo;
+    if (resuelto) tipo = `Resoluble por dominancia: tras eliminar estrategias dominadas solo queda ${nom.f[F[0]]} / ${nom.c[C[0]]}, que es el único equilibrio de Nash.`;
+    else if (!nash.length) tipo = 'Sin equilibrio de Nash en estrategias puras: solo habría equilibrio mezclando (esta herramienta no lo calcula en 3 × 3).';
+    else if (nash.length === 1) tipo = 'Un equilibrio de Nash en estrategias puras que no sale por dominancia.';
+    else tipo = `${nash.length} equilibrios de Nash en estrategias puras: hay que coordinarse para elegir uno.`;
+
+    /* ---------- desarrollo ---------- */
+    const pasos = [], N = (i, j) => `${nom.f[i]} / ${nom.c[j]}`, n3 = (x) => f(x, 5), cel = (i, j) => `(${n3(A[i][j])}, ${n3(B[i][j])})`;
+    pasos.push({ t: 'Matriz de pagos', html: `Cada casilla es (pago del jugador 1, pago del jugador 2). El 1 elige fila (${nom.f.map((x) => `<b>${x}</b>`).join(', ')}) y el 2 columna (${nom.c.map((x) => `<b>${x}</b>`).join(', ')}):<br>` + T.map((i) => `${nom.f[i]}: ${T.map((j) => cel(i, j)).join(' ')}`).join('<br>') });
+    pasos.push({ t: 'Mejores respuestas', html: `Una casilla $(s_1^*, s_2^*)$ es equilibrio de Nash si $u_1(s_1^*, s_2^*) ≥ u_1(s_1, s_2^*)$ para toda $s_1$ y $u_2(s_1^*, s_2^*) ≥ u_2(s_1^*, s_2)$ para toda $s_2$. Para verlo, el jugador 1 compara, en cada columna, sus tres pagos y se queda con el mayor; el 2 lo hace en cada fila. ${T.map((j) => `Si el 2 juega <b>${nom.c[j]}</b>, el 1 prefiere ${T.filter((i) => mejorF[i][j]).map((i) => `<b>${nom.f[i]}</b>`).join(' o ')}`).join('; ')}. ${T.map((i) => `Si el 1 juega <b>${nom.f[i]}</b>, el 2 prefiere ${T.filter((j) => mejorC[i][j]).map((j) => `<b>${nom.c[j]}</b>`).join(' o ')}`).join('; ')}.` });
+    pasos.push({ t: 'Equilibrios de Nash en estrategias puras', html: nash.length ? `Casillas donde las dos son mejores respuestas: ${nash.map(([i, j]) => `<b>${N(i, j)}</b> con pagos ${cel(i, j)}`).join('; ')}.` : 'Ninguna casilla es mejor respuesta de los dos a la vez: no hay equilibrio en estrategias puras.' });
+    if (!rondas.length) pasos.push({ t: 'Eliminación de estrategias dominadas', html: 'Ninguna estrategia está estrictamente dominada por otra (da menos que ella contra todas las del rival): no se puede eliminar nada y la dominancia no simplifica el juego.' });
+    rondas.forEach((r, k) => pasos.push({ t: `Eliminación, ronda ${k + 1}`, html: `${r.f.map((x) => `Al jugador 1 le conviene siempre <b>${nom.f[x.por]}</b> más que <b>${nom.f[x.i]}</b> (da más contra cada columna que sigue en juego): se elimina <b>${nom.f[x.i]}</b>.`).concat(r.c.map((x) => `Al jugador 2 le conviene siempre <b>${nom.c[x.por]}</b> más que <b>${nom.c[x.j]}</b> (da más contra cada fila que sigue en juego): se elimina <b>${nom.c[x.j]}</b>.`)).join('<br>')}<br>Quedan: filas ${r.F.map((i) => nom.f[i]).join(', ')}; columnas ${r.C.map((j) => nom.c[j]).join(', ')}.` }));
+    if (rondas.length) pasos.push({ t: 'Qué queda', html: resuelto ? `Solo queda <b>${N(F[0], C[0])}</b> con pagos ${cel(F[0], C[0])}: un jugador racional que sabe que el otro también lo es llega aquí. ${nash.length === 1 && nash[0][0] === F[0] && nash[0][1] === C[0] ? 'Coincide con el único equilibrio de Nash.' : ''}` : `Queda un juego de ${F.length} × ${C.length}: ${F.map((i) => nom.f[i]).join(', ')} frente a ${C.map((j) => nom.c[j]).join(', ')}. Los equilibrios de Nash siguen estando entre las estrategias que quedan, y no se elimina nada más con dominancia estricta.` });
+    pasos.push({ t: 'Eficiencia', html: `Casillas óptimas de Pareto: ${T.flatMap((i) => T.filter((j) => pareto[i][j]).map((j) => `<b>${N(i, j)}</b> ${cel(i, j)}`)).join('; ')}.${nash.length ? ` ${nash.map(([i, j]) => `${N(i, j)} ${pareto[i][j] ? 'es' : 'no es'} óptimo de Pareto`).join('; ')}.` : ''}` });
+    pasos.push({ t: 'Qué no hace', html: 'Se eliminan solo las estrategias <b>estrictamente</b> dominadas por una estrategia pura: con dominancia débil el resultado puede depender del orden de eliminación, y una estrategia puede estar dominada por una mezcla de otras dos aunque ninguna pura la domine; ninguna de las dos cosas se mira aquí.' });
+    return { tam: 3, A, B, nom, mejorF, mejorC, nash, rondas, F, C, resuelto, pareto, tipo, pasos };
+  }
+  const resolver = (sc) => (String(sc.tam) === '3' ? resolver3(sc) : resolver2(sc));
+
   const ej = (f1, f2, c1, c2, a, b) => ({ f1, f2, c1, c2, a11: a[0], a12: a[1], a21: a[2], a22: a[3], b11: b[0], b12: b[1], b21: b[2], b22: b[3] });
   const ejemplos = [
     { clave: 'prisionero', nombre: 'Dilema del prisionero', sc: ej('Callar', 'Confesar', 'Callar', 'Confesar', ['-1', '-10', '0', '-5'], ['-1', '0', '-10', '-5']) },
@@ -90,6 +133,9 @@ const TeoriaJuegos = (() => {
     { clave: 'gallina', nombre: 'Juego de la gallina', sc: ej('Seguir', 'Ceder', 'Seguir', 'Ceder', ['-10', '2', '0', '1'], ['-10', '0', '2', '1']) },
     { clave: 'pares', nombre: 'Cara o cruz (sin equilibrio puro)', sc: ej('Cara', 'Cruz', 'Cara', 'Cruz', ['1', '-1', '-1', '1'], ['-1', '1', '1', '-1']) },
     { clave: 'batalla', nombre: 'Batalla de los sexos', sc: ej('Ópera', 'Fútbol', 'Ópera', 'Fútbol', ['3', '0', '0', '2'], ['2', '0', '0', '3']) },
+    { clave: 'dominancia-3x3', nombre: 'Matriz 3 × 3 que se resuelve eliminando estrategias dominadas', sc: { tam: '3', f1: 'Arriba', f2: 'Medio', f3: 'Abajo', c1: 'Izquierda', c2: 'Centro', c3: 'Derecha', p1: '3 1 2\n2 2 1\n1 0 0', p2: '2 3 1\n1 2 0\n0 1 2' } },
+    { clave: 'coordinacion-3x3', nombre: 'Coordinación 3 × 3: tres equilibrios', sc: { tam: '3', f1: 'A', f2: 'B', f3: 'C', c1: 'A', c2: 'B', c3: 'C', p1: '2 0 0\n0 1 0\n0 0 3', p2: '2 0 0\n0 1 0\n0 0 3' } },
+    { clave: 'piedra-papel-tijera', nombre: 'Piedra, papel o tijera (sin equilibrio puro)', sc: { tam: '3', f1: 'Piedra', f2: 'Papel', f3: 'Tijera', c1: 'Piedra', c2: 'Papel', c3: 'Tijera', p1: '0 -1 1\n1 0 -1\n-1 1 0', p2: '0 1 -1\n-1 0 1\n1 -1 0' } },
     { clave: 'cuota', nombre: 'Dos empresas: bajar el precio o mantenerlo', sc: ej('Mantener', 'Bajar', 'Mantener', 'Bajar', ['10', '4', '14', '6'], ['10', '14', '4', '6']) },
   ];
 

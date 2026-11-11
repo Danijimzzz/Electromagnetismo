@@ -8,7 +8,7 @@
   const B = Bonos, { f, dinero, num } = Eco;
   const tp = (x) => `${f(100 * x, 5)} %`;
   Calculadora.monta({
-    C: B, carpeta: 'bonos', app: 'BonosApp',
+    C: B, carpeta: 'bonos', app: 'BonosApp', azar: B.azar, enunciado: B.enunciado,
     nota: 'Tasas en % nominales anuales, con tantos pagos al año como indiques. Si los años no dan un número entero de pagos, se compra entre cupones: el precio de «precio → TIR» es el limpio (el cotizado) y se añade el cupón corrido. Se reembolsa el nominal. La variación de la TIR (en puntos) sirve para ver cuánto cambia el precio; déjala vacía si no la necesitas.',
     campos: (sc) => [
       { k: 'nominal', nom: 'Valor nominal N', un: '€', sep: 'El bono' }, { k: 'cupon', nom: 'Cupón anual c', un: '%' },

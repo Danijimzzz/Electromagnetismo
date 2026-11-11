@@ -149,8 +149,9 @@ const Herramienta = (() => {
       try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* file:// */ }
     }
   }
-  // «Usar en…» (QU-2): dirección de otra herramienta de la misma asignatura con su estado entero en #d=…
-  const enlaceA = (carpeta, estado) => `../${carpeta}/#d=${btoa(unescape(encodeURIComponent(JSON.stringify(estado)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')}`;
+  // «Usar en…»: dirección de otra herramienta con su estado en #d=… («clave» si es de la misma asignatura,
+  // «asignatura/clave» si es de otra). El enlace lleva además data-usar="<lo mismo>": lo recorre pruebas/usar-en.js
+  const enlaceA = (carpeta, estado) => `${carpeta.includes('/') ? '../../' : '../'}${carpeta}/#d=${btoa(unescape(encodeURIComponent(JSON.stringify(estado)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')}`;
   return { $, esc, copia, vacio, leeSI, leeUn, txt, marcas, lienzo, accesible, exportar, png, tabla, nombreArchivo, enlaceA };
 })();
 if (typeof module !== 'undefined') module.exports = Herramienta;

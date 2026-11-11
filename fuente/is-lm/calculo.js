@@ -76,6 +76,14 @@ const IsLm = (() => {
     { clave: 'is-vertical', nombre: 'Inversión sin reacción al tipo (IS vertical)', sc: { ...base, b: '0,01', dG: '50', dM: '200' } },
   ];
 
-  return { resolver, ejemplos };
+  // modo práctica: datos redondos al azar (con renta y tipo de equilibrio positivos)
+  const AZ = K.az, azar = AZ.desde(ejemplos, () => {
+    const pol = AZ.toma(['dG', 'dM', 'dT', '']), sc = { c0: String(AZ.toma([100, 150, 200])), c1: AZ.t(AZ.toma([0.6, 0.75, 0.8])), T: String(AZ.toma([100, 200])), I0: String(AZ.toma([200, 300, 400])), b: String(AZ.toma([20, 30, 40])), G: String(AZ.toma([100, 150, 200])), M: String(AZ.toma([600, 800, 1000])), P: String(AZ.toma([1, 2])), k: AZ.t(AZ.toma([0.4, 0.5])), h: String(AZ.toma([10, 20, 40])), dG: '', dT: '', dM: '' };
+    if (pol) sc[pol] = String(pol === 'dG' ? AZ.toma([50, 100, -50]) : pol === 'dM' ? AZ.toma([100, 200]) : AZ.toma([-50, 50]));
+    return sc;
+  }, null, (sc) => { const s = resolver(sc); if (!(s.y > 0 && s.i > 0)) throw new Error('equilibrio sin sentido'); });
+  const enunciado = (sc) => `Economía cerrada con precios fijos: el consumo es C = ${sc.c0} + ${sc.c1}(Y − ${sc.T}), la inversión I = ${sc.I0} − ${sc.b}i (con i en %), el gasto público ${sc.G}, la oferta monetaria ${sc.M}, el nivel de precios ${sc.P} y la demanda de dinero L = ${sc.k}Y − ${sc.h}i. Calcula la renta y el tipo de interés de equilibrio y los multiplicadores${sc.dG ? `, y el efecto de variar el gasto público en ${sc.dG}` : sc.dT ? `, y el efecto de variar los impuestos en ${sc.dT}` : sc.dM ? `, y el efecto de variar la oferta monetaria en ${sc.dM}` : ''}.`;
+
+  return { azar, enunciado, resolver, ejemplos };
 })();
 if (typeof module !== 'undefined') module.exports = IsLm;

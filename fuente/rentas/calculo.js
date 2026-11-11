@@ -21,6 +21,9 @@ const Rentas = (() => {
   const tp = (x) => `${f(100 * x, 6)} %`;
 
   function resolver(sc) {
+    const r = resolverBase(sc); r.pasos.push({ t: 'Convención', html: 'El tipo dado es efectivo anual; el de cada periodo es el equivalente, (1 + i)^{1/m} − 1, no el proporcional i/m. Los términos se pagan al final del periodo (pospagable) salvo que se elija anticipada; sin redondeo a céntimos.' }); return r;
+  }
+  function resolverBase(sc) {
     const modo = MODOS[sc.modo] ? sc.modo : 'va', pre = sc.pago === 'pre';
     const vari = (modo === 'va' || modo === 'vf') && VARIACIONES[sc.variacion] ? sc.variacion : 'cte', perpetua = vari === 'cte' && sc.duracion === 'perpetua' && (modo === 'va' || modo === 'termino');
     const m = PERIODOS[sc.m] ? +sc.m : 1, [per, pers] = PERIODOS[m];
@@ -97,6 +100,13 @@ const Rentas = (() => {
     { clave: 'geometrica', nombre: 'Renta que crece un 3 % al año: 1.000 € el primero, 10 años al 5 %', sc: { modo: 'vf', pago: 'pos', duracion: 'temporal', variacion: 'geom', g: '3', c: '1000', n: '10', i: '5', m: '1', d: '0' } },
   ];
 
-  return { resolver, ejemplos, MODOS, VARIACIONES, PERIODOS };
+  // modo práctica: datos redondos al azar
+  const AZ = K.az, azar = AZ.desde(ejemplos, () => {
+    const m = AZ.toma([1, 12]);
+    return { modo: AZ.toma(['va', 'vf']), pago: AZ.toma(['pos', 'pre']), c: String(AZ.toma([200, 500, 1000, 2000])), n: String(m === 1 ? AZ.toma([5, 10, 15, 20]) : AZ.toma([24, 60, 120])), i: String(AZ.toma([3, 4, 5, 6])), m: String(m), d: '0' };
+  }, (sc) => !sc.variacion && sc.duracion === 'temporal' && sc.d === '0' && (sc.modo === 'va' || sc.modo === 'vf'), (sc) => resolver(sc));
+  const enunciado = (sc) => `Una renta de ${sc.c} € ${sc.m === '1' ? 'al año' : 'al mes'}, pagadera al ${sc.pago === 'pos' ? 'final' : 'principio'} de cada periodo durante ${sc.n} ${sc.m === '1' ? 'años' : 'meses'}, con un tipo de interés del ${sc.i} % anual. Calcula su valor actual y su valor final.`;
+
+  return { azar, enunciado, resolver, ejemplos, MODOS, VARIACIONES, PERIODOS };
 })();
 if (typeof module !== 'undefined') module.exports = Rentas;

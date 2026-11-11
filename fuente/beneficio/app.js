@@ -9,7 +9,7 @@
   const B = Beneficio, { f, dinero, num } = Eco;
   const ud = (x) => `${f(x, 6)} unidades`;
   Calculadora.monta({
-    C: B, carpeta: 'beneficio', app: 'BeneficioApp',
+    C: B, carpeta: 'beneficio', app: 'BeneficioApp', azar: B.azar, enunciado: B.enunciado,
     nota: 'Costes totales CT = CF + c·Q + d·Q², con coste marginal CMg = c + 2d·Q (o, en «coste cúbico», CT = CF + a·Q + b·Q² + c·Q³, la misma función que Costes de producción). En competencia perfecta la empresa toma el precio del mercado; en monopolio se enfrenta a la demanda P = a − b·Q (con b > 0).',
     campos: (sc) => [
       { k: 'modo', nom: 'Mercado', tipo: 'sel', ops: Object.entries(B.MODOS) },

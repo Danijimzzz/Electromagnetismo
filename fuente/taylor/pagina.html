@@ -30,7 +30,7 @@
     <p class="error" id="error" hidden></p>
   </div>
   <div>
-    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div><div class="controles" id="usar-en" role="group" aria-label="Usar el resultado en otra herramienta" style="margin-top:10px" hidden></div></div>
     <div class="card"><h2>Gráfica</h2>
       <canvas id="grafica" aria-label="Gráfica de la función y de sus polinomios de Taylor"></canvas>
       <div class="grado" id="control"><label for="grado">Grado mostrado: <b id="vgrado">0</b></label><input type="range" id="grado" min="0" max="4" step="1" value="4"><button class="btn" id="animar" type="button">▶ Ver cómo se acerca</button></div>
@@ -59,13 +59,15 @@
   </ul>
   <p class="m">Con ellos se sacan otros sin derivar: cambiando x por $−x^2$ en el de $e^x$ sale $e^{−x^2} = 1 − x^2 + {x^4}/{2} − …$, y multiplicando por x el de sen x sale el de x sen x.</p>
   <h2>Radio de convergencia</h2>
-  <p class="m">La serie de Taylor $Σ c_k (x − a)^k$ converge para $|x − a| &lt; R$ y no converge para $|x − a| &gt; R$. El radio se saca con el criterio del cociente, $R = lím_{k → ∞} {|c_k|}/{|c_{k+1}|}$, y suele ser la distancia de a al punto más cercano, también complejo, donde f deja de estar definida: para ${1}/{1 + x^2}$ en a = 0 es R = 1, por los puntos ±i, aunque en los reales la función no tiene problemas.</p>
+  <p class="m">La serie de Taylor $Σ c_k (x − a)^k$ converge para $|x − a| &lt; R$ y no converge para $|x − a| &gt; R$. El radio se saca con el criterio del cociente, $R = lím_{k → ∞} {|c_k|}/{|c_{k+1}|}$, o con el de la raíz, ${1}/{R} = lím sup |c_k|^{1/k}$, y es la distancia de a al punto más cercano, también complejo, donde f deja de estar definida: para ${1}/{1 + x^2}$ en a = 0 es R = 1, por los puntos ±i, aunque en los reales la función no tiene problemas.</p>
   <p class="m">Fuera de su intervalo de convergencia la serie no se acerca a la función por mucho que suba el grado: pruébalo con ln(1 + x) y x₀ = 1,5. Y sumando estas series con x = iθ sale la fórmula de Euler, $e^{iθ} = cos θ + i sen θ$, que se usa en <a href="../complejos/">Números complejos</a>.</p>
+  <p class="m">La calculadora estima R con 80 coeficientes, busca en el plano complejo la singularidad que lo fija y estudia los dos extremos, $x = a ± R$, donde cada serie va por su cuenta: la de ln(1 + x) converge en x = 1 (serie armónica alternada) y diverge en x = −1 (serie armónica), así que su intervalo de convergencia es $(−1, 1]$. Cuando en un extremo los signos no siguen un patrón, lo dice y lo deja para estudiarlo aparte.</p>
   <h2>Singularidades evitables</h2>
   <p class="m">${sen x}/{x}$ no está definida en 0 (sale 0/0), pero desarrollando el numerador, $sen x/x = (x − {x^3}/{6} + …)/x = 1 − {x^2}/{6} + …$, se ve que tiende a 1. Dándole ese valor en 0 la función queda derivable y tiene polinomio de Taylor.</p>
   <h2>Límites con Taylor</h2>
   <p>Para un límite 0/0 se cambian el numerador y el denominador por sus desarrollos y se compara el primer término que no se anula en cada uno: si empiezan con la misma potencia, el límite es el cociente de sus coeficientes; si el numerador empieza más alto, es 0; y si empieza más alto el denominador, va a ±∞ (o no existe si los laterales tienen distinto signo). Por ejemplo,</p>
   <p class="f m">$lím_{x → 0} {sen x − x}/{x^3} = lím_{x → 0} {−{x^3}/{6} + …}/{x^3} = −{1}/{6}$</p>
+  <p class="m">Un límite en el infinito se lleva a 0 con el cambio $t = {1}/{x}$ (escribe <code>inf</code> o <code>-inf</code> en el punto): $lím_{x → ∞} x sen({1}/{x}) = lím_{t → 0} {sen t}/{t} = 1$. Y una potencia con la x en el exponente se escribe como $f^g = e^{g · ln f}$ y se calcula el límite del exponente: $lím_{x → ∞} (1 + {1}/{x})^x = e^{lím x · ln(1 + 1/x)} = e^1 = e$.</p>
 </section>
 </div>
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Series de Taylor <span id="ver"></span> (beta)</footer>

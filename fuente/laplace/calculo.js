@@ -776,6 +776,20 @@ const Laplace = (() => {
     { clave: 'sis-oscila', nombre: 'Oscilador: x′ = y, y′ = −x', sc: { modo: 'sistema', a11: '0', a12: '1', a21: '-1', a22: '0', f: '0', g: '0', x0: '1', y0: '0' } },
     { clave: 'sis-forzado', nombre: 'Forzado: x′ = x + 2y + e^t, y′ = 2x + y', sc: { modo: 'sistema', a11: '1', a12: '2', a21: '2', a22: '1', f: 'e^(t)', g: '0', x0: '0', y0: '1' } },
   ];
-  return { resolver, directa, inversa, edo, convolucion, sistema, raices, residuos, racional, terminos, ejemplos, f, R, rTxt, factTxt, simplifica, pVal };
+  // estabilidad según los polos: todos con Re < 0 ⇒ estable; alguno con Re > 0 o un polo doble sobre el eje imaginario ⇒ inestable; polos simples sobre el eje ⇒ marginal
+  function estabilidad(polos) {
+    const tol = 1e-9, eje = polos.filter(({ p }) => Math.abs(p.re) <= tol), dere = polos.filter(({ p }) => p.re > tol);
+    if (dere.length) return { estado: 'inestable', txt: 'inestable: tiene polos con parte real positiva, y su respuesta crece' };
+    if (eje.some(({ m }) => m > 1)) return { estado: 'inestable', txt: 'inestable: tiene un polo múltiple sobre el eje imaginario, y su respuesta crece' };
+    if (eje.length) return { estado: 'marginal', txt: 'marginalmente estable: tiene polos simples sobre el eje imaginario, y su respuesta oscila o se mantiene sin amortiguarse' };
+    return { estado: 'estable', txt: 'estable: todos los polos tienen parte real negativa, y su respuesta se amortigua' };
+  }
+  // F(s) = N/D como los dos polinomios que pide Control (coeficientes de mayor a menor grado); null si no es un cociente de polinomios propio
+  function paraControl(F) {
+    if (!F || !F.n || !F.d || F.d.length < 2 || F.n.length > F.d.length) return null;
+    const t = (c) => [...c].reverse().map((x) => String(+Number(x).toFixed(12))).join(' ');
+    return [...F.n, ...F.d].every(isFinite) ? { num: t(F.n), den: t(F.d) } : null;
+  }
+  return { estabilidad, paraControl, resolver, directa, inversa, edo, convolucion, sistema, raices, residuos, racional, terminos, ejemplos, f, R, rTxt, factTxt, simplifica, pVal };
 })();
 if (typeof module !== 'undefined') module.exports = Laplace;

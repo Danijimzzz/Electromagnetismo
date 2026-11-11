@@ -54,6 +54,8 @@
     if (sol.suma !== undefined) h += dato('Suma de la serie', `S ${sol.sumaExacta !== undefined ? '=' : '≈'} ${f(sol.suma, 7)}`, 'num');
     h += dato('Límite de aₙ', sol.limite === undefined ? '—' : f(sol.limite, 5), 'num');
     $('#resumen').innerHTML = h;
+    // «Usar en…»: la serie como desarrollo de Taylor
+    { const ue = $('#usar-en'), d = sol.desarrollo; ue.hidden = !d; ue.innerHTML = d ? `<a class="btn" data-usar="taylor" href="${esc(Herramienta.enlaceA('taylor', { modo: 'polinomio', f: d.f, a: '0', n: String(d.n), x0: d.x0 }))}">Ver esta serie como desarrollo de Taylor →</a>` : ''; }
     $('#criterios').innerHTML = `<table class="criterios"><thead><tr><th>Criterio</th><th>Resultado</th></tr></thead><tbody>${sol.pruebas.map((p) => `<tr><td>${esc(p.nombre)}${p.valor !== undefined ? ` <small>(${f(p.valor, 4)})</small>` : ''}</td><td>${etiqueta[p.veredicto] || p.veredicto}</td></tr>`).join('')}</tbody></table>`;
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
     $('#leyenda').innerHTML = `${M(`S_N = ∑_{n=${sol.n0}}^{N} ${sol.T}`)} para los primeros ${sol.parciales.length} valores de N` + (sol.suma !== undefined ? '; la línea discontinua es la suma estimada.' : '.');

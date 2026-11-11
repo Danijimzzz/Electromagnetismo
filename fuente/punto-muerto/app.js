@@ -8,15 +8,19 @@
   const P = PuntoMuerto, { f, dinero, num } = Eco;
   const ud = (x) => `${f(x, 6)} unidades`;
   Calculadora.monta({
-    C: P, carpeta: 'punto-muerto', app: 'PuntoMuertoApp',
+    C: P, carpeta: 'punto-muerto', app: 'PuntoMuertoApp', azar: P.azar, enunciado: P.enunciado,
     nota: 'Los costes fijos son los del periodo que mires (un mes, un año); las ventas previstas y el beneficio objetivo, del mismo periodo. Los dos últimos se pueden dejar vacíos.',
-    campos: () => [
+    campos: (sc) => [
+      { k: 'modo', nom: 'Productos', tipo: 'sel', ops: Object.entries(P.MODOS) },
       { k: 'cf', nom: 'Costes fijos CF', un: '€' },
-      { k: 'p', nom: 'Precio de venta p', un: '€/unidad' },
-      { k: 'cv', nom: 'Coste variable unitario c<sub>v</sub>', un: '€/unidad' },
-      { k: 'q', nom: 'Ventas previstas Q', un: 'unidades' },
+      ...(sc.modo === 'varios'
+        ? [{ k: 'productos', nom: 'Productos', tipo: 'area', filas: 4, ayuda: 'Un producto por línea: precio, coste variable unitario y unidades previstas (que dan la mezcla de ventas). Las ventas totales son la suma de las unidades.' }]
+        : [{ k: 'p', nom: 'Precio de venta p', un: '€/unidad' },
+          { k: 'cv', nom: 'Coste variable unitario c<sub>v</sub>', un: '€/unidad' },
+          { k: 'q', nom: 'Ventas previstas Q', un: 'unidades' }]),
       { k: 'objetivo', nom: 'Beneficio objetivo', un: '€' },
     ],
+    tabla: (s) => `<table class="tabla-eco"><thead><tr><th>Dato que cambia</th><th>Variación</th><th>Punto muerto</th>${s.q === null ? '' : '<th>Beneficio con Q</th>'}</tr></thead><tbody>${s.sens.map((r) => `<tr${r.dl === 0 ? ' class="base"' : ''}><td>${r.nom}</td><td>${r.dl > 0 ? '+' : r.dl < 0 ? '−' : ''}${Math.abs(100 * r.dl)} %</td><td>${r.q0 === null ? 'no hay' : ud(r.q0)}</td>${s.q === null ? '' : `<td>${dinero(r.b)}</td>`}</tr>`).join('')}</tbody></table>`,
     resumen: (s) => [['Punto muerto', ud(s.q0)], ['Facturación en el punto muerto', dinero(s.i0)], ['Margen de contribución', `${dinero(s.m)} por unidad`],
       ...(s.q === null ? [] : [['Beneficio con Q', dinero(s.b)], ['Margen de seguridad', `${f(100 * s.ms, 4)} %`]]), ...(s.gao === null ? [] : [['Apalancamiento operativo', f(s.gao, 4)]]),
       ...(s.qObj === null ? [] : [['Ventas para el objetivo', ud(s.qObj), true]])],

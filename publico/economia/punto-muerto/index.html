@@ -277,6 +277,7 @@ textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 120px 
       <canvas id="grafica" aria-label="Rectas de ingresos y de costes totales, que se cortan en el punto muerto"></canvas>
       <p class="leyenda" id="leyenda"></p>
     </div>
+    <div class="card"><h2>Sensibilidad</h2><div class="tabla-scroll" id="tabla"></div></div>
     <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
   </div>
 </div>
@@ -313,7 +314,7 @@ textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 120px 
 </body>
 <script>
 const Pagina = { carpeta: 'punto-muerto', guarda: 'punto-muerto-v1' };
-const Version = (() => { const registros = {"web":[{"v":"1.14.1"}],"control":[{"v":"0.2"}],"termo-estadistica":[{"v":"0.2"}],"markowitz":[{"v":"0.2"}],"cavidades":[{"v":"0.2"}],"organica":[{"v":"0.2"}],"transformada-z":[{"v":"0.2"}],"semiconductores":[{"v":"0.2"}],"relatividad":[{"v":"0.2"}],"osc-acopladas":[{"v":"0.2"}],"solubilidad":[{"v":"0.2"}],"lagrange":[{"v":"0.2"}],"series":[{"v":"0.2"}],"no-parametricos":[{"v":"0.2"}],"regresion-multiple":[{"v":"0.1"}],"anova":[{"v":"0.2"}],"black-scholes":[{"v":"0.2"}],"bonos":[{"v":"0.2"}],"solow":[{"v":"0.2"}],"integrales-multiples":[{"v":"0.1"}],"formulacion":[{"v":"0.2"}],"balance":[{"v":"0.2"}],"redox":[{"v":"0.2"}],"lineas-transmision":[{"v":"0.2"}],"superficies":[{"v":"0.1"}],"vsepr":[{"v":"0.2"}],"maxwell":[{"v":"0.2"}],"fresnel":[{"v":"0.2"}],"gravitacion":[{"v":"0.1"}],"convolucion":[{"v":"0.2"}],"laplace-numerica":[{"v":"0.2"}],"imagenes":[{"v":"0.2"}],"guias-onda":[{"v":"0.2"}],"antena":[{"v":"0.2"}],"bode":[{"v":"0.2"}],"optica":[{"v":"0.2"}],"simulador":[{"v":"0.4"}],"teoria-juegos":[{"v":"0.1"}],"puertas-logicas":[{"v":"0.4"}],"multiplicador":[{"v":"0.2"}],"is-lm":[{"v":"0.2"}],"choques":[{"v":"0.1"}],"termoquimica":[{"v":"0.2"}],"probabilidad":[{"v":"0.1"}],"unidades":[{"v":"0.1"}],"equilibrio":[{"v":"0.2"}],"oscilaciones":[{"v":"0.1"}],"beneficio":[{"v":"0.2"}],"costes":[{"v":"0.2"}],"sistemas-numericos":[{"v":"0.2"}],"excedentes":[{"v":"0.2"}],"oferta-demanda":[{"v":"0.2"}],"chi2-bondad":[{"v":"0.2"}],"contrastes":[{"v":"0.2"}],"errores":[{"v":"0.1"}],"graficador":[{"v":"0.2"}],"metodos-numericos":[{"v":"0.2"}],"fisica-moderna":[{"v":"0.2"}],"lorenz-gini":[{"v":"0.1"}],"phillips-okun":[{"v":"0.2"}],"tipos-cambio":[{"v":"0.2"}],"elasticidades":[{"v":"0.2"}],"pib-ipc":[{"v":"0.1"}],"numeros-indice":[{"v":"0.1"}],"ratios":[{"v":"0.2"}],"punto-muerto":[{"v":"0.1"}],"ahorro":[{"v":"0.2"}],"van-tir":[{"v":"0.2"}],"amortizacion-inmovilizado":[{"v":"0.1"}],"prestamos":[{"v":"0.2"}],"rentas":[{"v":"0.2"}],"interes":[{"v":"0.2"}],"descriptiva":[{"v":"0.1"}],"regresion-economia":[{"v":"0.1"}],"ajustador":[{"v":"0.2.1"}],"electrostatica":[{"v":"0.7"}],"magnetostatica":[{"v":"0.3"}],"tabla-periodica":[{"v":"0.2"}],"trabajo-y-energia":[{"v":"0.2"}],"masa-molar":[{"v":"0.2"}],"configuracion-electronica":[{"v":"0.2"}],"condensadores":[{"v":"0.3"}],"tiro-parabolico":[{"v":"0.2"}],"disoluciones":[{"v":"0.2"}],"calorimetria":[{"v":"0.2"}],"induccion":[{"v":"0.3"}],"matrices":[{"v":"0.2"}],"derivadas":[{"v":"0.3"}],"laplace":[{"v":"0.2"}],"interferencia":[{"v":"0.2"}],"ondas-em":[{"v":"0.4"}],"intervalos":[{"v":"0.2"}],"fuerza":[{"v":"0.3"}],"campos":[{"v":"0.2.1"}],"cinetica":[{"v":"0.2"}],"edos":[{"v":"0.2"}],"fourier":[{"v":"0.2"}],"taylor":[{"v":"0.2.1"}],"complejos":[{"v":"0.2"}],"sistemas":[{"v":"0.3"}],"regresion":[{"v":"0.2"}],"estadistica":[{"v":"0.2"}],"dinamica":[{"v":"0.2"}],"solido-rigido":[{"v":"0.2"}],"ondas":[{"v":"0.2"}],"gases":[{"v":"0.4"}],"ciclos":[{"v":"0.2"}],"ph":[{"v":"0.3"}],"fluidos":[{"v":"0.2"}],"doppler":[{"v":"0.2"}],"resistencias":[{"v":"0.3"}],"faraday":[{"v":"0.3"}],"fenomenos":[{"v":"0.9"}]}; const de = (h) => ({ current: registros[h][0].v, log: registros[h] }); return { registros, de }; })();
+const Version = (() => { const registros = {"web":[{"v":"1.15"}],"control":[{"v":"0.2"}],"termo-estadistica":[{"v":"0.2"}],"markowitz":[{"v":"0.3"}],"cavidades":[{"v":"0.2"}],"organica":[{"v":"0.2"}],"transformada-z":[{"v":"0.2"}],"semiconductores":[{"v":"0.2"}],"relatividad":[{"v":"0.2"}],"osc-acopladas":[{"v":"0.2"}],"solubilidad":[{"v":"0.2"}],"lagrange":[{"v":"0.2"}],"series":[{"v":"0.3"}],"no-parametricos":[{"v":"0.3"}],"regresion-multiple":[{"v":"0.2"}],"anova":[{"v":"0.3"}],"black-scholes":[{"v":"0.3"}],"bonos":[{"v":"0.3"}],"solow":[{"v":"0.3"}],"integrales-multiples":[{"v":"0.1"}],"formulacion":[{"v":"0.2"}],"balance":[{"v":"0.2"}],"redox":[{"v":"0.2"}],"lineas-transmision":[{"v":"0.2"}],"superficies":[{"v":"0.2"}],"vsepr":[{"v":"0.2"}],"maxwell":[{"v":"0.2"}],"fresnel":[{"v":"0.2"}],"gravitacion":[{"v":"0.2"}],"convolucion":[{"v":"0.2"}],"laplace-numerica":[{"v":"0.2"}],"imagenes":[{"v":"0.2"}],"guias-onda":[{"v":"0.2"}],"antena":[{"v":"0.2"}],"bode":[{"v":"0.2"}],"optica":[{"v":"0.2"}],"simulador":[{"v":"0.4"}],"teoria-juegos":[{"v":"0.2"}],"puertas-logicas":[{"v":"0.4"}],"multiplicador":[{"v":"0.3"}],"is-lm":[{"v":"0.3"}],"choques":[{"v":"0.1"}],"termoquimica":[{"v":"0.2"}],"probabilidad":[{"v":"0.2"}],"unidades":[{"v":"0.2"}],"equilibrio":[{"v":"0.2"}],"oscilaciones":[{"v":"0.1"}],"beneficio":[{"v":"0.3"}],"costes":[{"v":"0.3"}],"sistemas-numericos":[{"v":"0.2"}],"excedentes":[{"v":"0.2"}],"oferta-demanda":[{"v":"0.2"}],"chi2-bondad":[{"v":"0.2"}],"contrastes":[{"v":"0.2"}],"errores":[{"v":"0.2"}],"graficador":[{"v":"0.2"}],"metodos-numericos":[{"v":"0.2"}],"fisica-moderna":[{"v":"0.2"}],"lorenz-gini":[{"v":"0.2"}],"phillips-okun":[{"v":"0.3"}],"tipos-cambio":[{"v":"0.3"}],"elasticidades":[{"v":"0.3"}],"pib-ipc":[{"v":"0.2"}],"numeros-indice":[{"v":"0.2"}],"ratios":[{"v":"0.2"}],"punto-muerto":[{"v":"0.2"}],"ahorro":[{"v":"0.3"}],"van-tir":[{"v":"0.3"}],"amortizacion-inmovilizado":[{"v":"0.2"}],"prestamos":[{"v":"0.3"}],"rentas":[{"v":"0.3"}],"interes":[{"v":"0.3"}],"descriptiva":[{"v":"0.2"}],"regresion-economia":[{"v":"0.2"}],"ajustador":[{"v":"0.2.1"}],"electrostatica":[{"v":"0.7"}],"magnetostatica":[{"v":"0.3"}],"tabla-periodica":[{"v":"0.2"}],"trabajo-y-energia":[{"v":"0.2"}],"masa-molar":[{"v":"0.2"}],"configuracion-electronica":[{"v":"0.2"}],"condensadores":[{"v":"0.3"}],"tiro-parabolico":[{"v":"0.3"}],"disoluciones":[{"v":"0.2"}],"calorimetria":[{"v":"0.2"}],"induccion":[{"v":"0.3"}],"matrices":[{"v":"0.3"}],"derivadas":[{"v":"0.3"}],"laplace":[{"v":"0.2"}],"interferencia":[{"v":"0.2"}],"ondas-em":[{"v":"0.4"}],"intervalos":[{"v":"0.3"}],"fuerza":[{"v":"0.3"}],"campos":[{"v":"0.2.1"}],"cinetica":[{"v":"0.2"}],"edos":[{"v":"0.2"}],"fourier":[{"v":"0.2"}],"taylor":[{"v":"0.3"}],"complejos":[{"v":"0.3"}],"sistemas":[{"v":"0.3"}],"regresion":[{"v":"0.3"}],"estadistica":[{"v":"0.3"}],"dinamica":[{"v":"0.2"}],"solido-rigido":[{"v":"0.2"}],"ondas":[{"v":"0.3"}],"gases":[{"v":"0.5"}],"ciclos":[{"v":"0.2"}],"ph":[{"v":"0.3"}],"fluidos":[{"v":"0.2"}],"doppler":[{"v":"0.2"}],"resistencias":[{"v":"0.3"}],"faraday":[{"v":"0.3"}],"fenomenos":[{"v":"0.9"}]}; const de = (h) => ({ current: registros[h][0].v, log: registros[h] }); return { registros, de }; })();
 
 const Herramienta = (() => {
   const $ = (q) => document.querySelector(q);
@@ -427,7 +428,7 @@ const Herramienta = (() => {
       try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* file:// */ }
     }
   }
-  const enlaceA = (carpeta, estado) => `../${carpeta}/#d=${btoa(unescape(encodeURIComponent(JSON.stringify(estado)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')}`;
+  const enlaceA = (carpeta, estado) => `${carpeta.includes('/') ? '../../' : '../'}${carpeta}/#d=${btoa(unescape(encodeURIComponent(JSON.stringify(estado)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')}`;
   return { $, esc, copia, vacio, leeSI, leeUn, txt, marcas, lienzo, accesible, exportar, png, tabla, nombreArchivo, enlaceA };
 })();
 
@@ -723,7 +724,7 @@ const Calculadora = (() => {
       if (o.usarEn) {
         let ue = $('#usar-en');
         if (!ue) { ue = document.createElement('div'); ue.id = 'usar-en'; ue.className = 'controles'; ue.setAttribute('role', 'group'); ue.setAttribute('aria-label', 'Usar el resultado en otra herramienta'); $('#resumen').insertAdjacentElement('afterend', ue); }
-        ue.innerHTML = (o.usarEn(sol, sc) || []).map((l) => `<a class="btn" href="${esc(Herramienta.enlaceA(l.carpeta, l.estado))}">${l.texto}</a>`).join('');
+        ue.innerHTML = (o.usarEn(sol, sc) || []).map((l) => `<a class="btn" data-usar="${esc(l.carpeta)}" href="${esc(Herramienta.enlaceA(l.carpeta, l.estado))}">${l.texto}</a>`).join('');
       }
       $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
       const tb = $('#tabla'); if (tb) { const h = o.tabla ? o.tabla(sol) : ''; tb.innerHTML = h; tb.closest('.card').hidden = !h; }
@@ -735,6 +736,7 @@ const Calculadora = (() => {
       const c = $('#grafica'); if (!c) return;
       const cfg = sol && o.grafica ? o.grafica(sol, col) : null;
       cfgs['#grafica'] = cfg;
+      if (sol && o.grafica) { const cd = c.closest('.card'); if (cd) cd.hidden = !cfg; }
       if (!cfg) Herramienta.lienzo(c);
       else { const r = grafica(c, cfg, col); if (r && o.despues) o.despues(r, sol, col); }
       const c2 = $('#grafica2');
@@ -754,32 +756,18 @@ const Calculadora = (() => {
         c.setAttribute('role', 'img'); const l = $(ley); if (l) c.setAttribute('aria-describedby', l.id);
         Herramienta.exportar(c, { nombre: `${o.carpeta}${sufijo}`, titulo: (c.closest('.card')?.querySelector('h2')?.textContent || '').trim(), datos: () => {
           const cfg = cfgs[id]; if (!cfg) return null;
-          if (id === '#grafica' && o.datosExporta) return o.datosExporta(sol);
+          if (id === '#grafica' && o.datosExporta) { const propios = o.datosExporta(sol); if (propios) return propios; }
           const filas = []; (cfg.series || []).forEach((sr, k) => { if (sr.tipo === 'barras' || sr.tipo === 'puntos' || !sr.tipo || sr.tipo === 'linea' || sr.tipo === 'area') for (const [x, y] of sr.pts) filas.push([`Serie ${k + 1}${sr.tipo === 'puntos' ? ' (puntos)' : ''}`, x, y]); });
           return { cab: ['Serie', cfg.ejeX || 'x', cfg.ejeY || 'y'], filas };
         } });
       }
-    }
-    function botonesUsar() {
-      if (!o.usar || !o.usar.length) return;
-      const card = $('#resumen') && $('#resumen').closest('.card'); if (!card || card.querySelector('.usar-en')) return;
-      const caja = document.createElement('div'); caja.className = 'controles usar-en'; caja.setAttribute('role', 'group'); caja.setAttribute('aria-label', 'Usar estos datos en otra herramienta'); caja.style.marginTop = '10px';
-      caja.innerHTML = o.usar.map((u, i) => `<a class="btn" href="#" data-i="${i}">Usar en ${esc(u.nombre)} →</a>`).join('');
-      card.appendChild(caja);
-      caja.addEventListener('click', (e) => {
-        const a = e.target.closest('a[data-i]'); if (!a) return; e.preventDefault();
-        const u = o.usar[+a.dataset.i]; if (!sol) { const er = $('#error'); er.textContent = 'Corrige primero los datos para poder usarlos en otra herramienta'; er.hidden = false; return; }
-        const datos = JSON.stringify(u.datos(sol, sc)), b64 = btoa(unescape(encodeURIComponent(datos))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-        const url = `../${u.a}/#d=${b64}`;
-        if (window.dispatchEvent(new CustomEvent('simu-usar', { cancelable: true, detail: { url } }))) location.href = url;
-      });
     }
     const leeColores = () => { col = colores(o.colores || []); };
     window.addEventListener('resize', dibuja);
     matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { leeColores(); dibuja(); });
 
     const ver = $('#ver'); if (ver) ver.textContent = Version.de(o.carpeta).current;
-    leeColores(); botonesGrafica(); botonesUsar(); formulario(); calcula();
+    leeColores(); botonesGrafica(); formulario(); calcula();
     const enunciado = () => (o.enunciado ? o.enunciado(sc, sol) : undefined);
     return (window[o.app] = { abrirEjemplo, azar, pon, enunciado, resultado: () => sol, estado: () => copia(sc) });
   }
@@ -791,6 +779,30 @@ const Eco = (() => {
   const dinero = (x, dec = 2) => `${K.num(x, dec)} €`;
   const pct = (x, dec = 2) => `${K.num(100 * x, dec)} %`;
   const n = (x) => K.f(x, 6);
+  const az = {
+    e: (a, b) => a + Math.floor(Math.random() * (b - a + 1)),
+    toma: (xs) => xs[Math.floor(Math.random() * xs.length)],
+    t: (x, d = 6) => String(+x.toFixed(d)).replace('.', ','),
+    poli: (ts, v = 'q') => {
+      let r = '';
+      for (const [c0, p] of ts) {
+        const c = +String(c0).replace(',', '.'); if (!c) continue;
+        const a = Math.abs(c), cs = a === 1 && p > 0 ? '' : String(+a.toFixed(6)).replace('.', ',');
+        r += (r ? (c < 0 ? ' − ' : ' + ') : (c < 0 ? '−' : '')) + cs + (p ? v + ['', '', '²', '³'][p] : '');
+      }
+      return r || '0';
+    },
+    desde: (ejemplos, cambia, donde, calcula) => () => {
+      const es = donde ? ejemplos.filter((e) => donde(e.sc, e)) : ejemplos;
+      let sc;
+      for (let k = 0; k < 60; k++) {
+        const b = JSON.parse(JSON.stringify(az.toma(es).sc)); sc = { ...b, ...cambia(b) };
+        if (!calcula) return sc;
+        try { calcula(sc); return sc; } catch (e) { /* otro intento */ }
+      }
+      return sc;
+    },
+  };
   function curvas(sc) {
     const { lee } = K, forma = sc.forma === 'p' || sc.forma === 'puntos' ? sc.forma : 'q';
     if (forma === 'q') return { a: lee(sc, 'a', 'el término a de la demanda', { min: 0, minEx: true }), b: lee(sc, 'b', 'la pendiente b de la demanda', { min: 0, minEx: true }), c: lee(sc, 'c', 'el término c de la oferta'), d: lee(sc, 'd', 'la pendiente d de la oferta', { min: 0, minEx: true }), conv: '', forma };
@@ -820,7 +832,7 @@ const Eco = (() => {
       { k: 'sp1', nom: 'Oferta: precio 1', un: '€', sep: 'Dos puntos de la oferta' }, { k: 'sq1', nom: 'Oferta: cantidad 1' }, { k: 'sp2', nom: 'Oferta: precio 2', un: '€' }, { k: 'sq2', nom: 'Oferta: cantidad 2' }];
     return [{ k: 'a', nom: 'a', sep: 'Demanda', ayuda: 'cantidad con precio 0' }, { k: 'b', nom: 'b', ayuda: 'unidades menos por cada euro' }, { k: 'c', nom: 'c', sep: 'Oferta', ayuda: 'cantidad con precio 0' }, { k: 'd', nom: 'd', ayuda: 'unidades más por cada euro' }];
   }
-  return { ...K, dinero, pct, curvas, FORMAS, camposCurvas };
+  return { ...K, dinero, pct, az, curvas, FORMAS, camposCurvas };
 })();
 
 const PuntoMuerto = (() => {
@@ -829,14 +841,40 @@ const PuntoMuerto = (() => {
   const e = (x) => x.toFixed(2).replace('.', ',').replace('-', '−');
   const u = (x) => f(x, 8).replace(/\./g, '');
 
+  const MODOS = { uno: 'Un producto', varios: 'Varios productos (mezcla de ventas)' };
+  function mezcla(sc) {
+    const d = K.filas(sc.productos, 3, 'los productos');
+    if (d.length < 2) throw new Error('Escribe al menos dos productos, uno por línea: precio, coste variable unitario y unidades previstas');
+    if (d.some((r) => r[0] <= 0 || r[1] < 0 || r[2] <= 0)) throw new Error('En cada producto, el precio y las unidades tienen que ser positivos y el coste variable no puede ser negativo');
+    const Q = d.reduce((s, r) => s + r[2], 0), w = d.map((r) => r[2] / Q);
+    return { d, Q, w, p: d.reduce((s, r, k) => s + w[k] * r[0], 0), cv: d.reduce((s, r, k) => s + w[k] * r[1], 0) };
+  }
+  function sensibilidad(cf, p, cv, q) {
+    const out = [];
+    for (const [v, nom] of [['p', 'Precio'], ['cv', 'Coste variable'], ['cf', 'Costes fijos']]) {
+      for (const dl of [-0.2, -0.1, 0, 0.1, 0.2]) {
+        const P = p * (v === 'p' ? 1 + dl : 1), V = cv * (v === 'cv' ? 1 + dl : 1), F = cf * (v === 'cf' ? 1 + dl : 1), m = P - V;
+        out.push({ v, nom, dl, q0: m > 0 ? F / m : null, b: q === null ? null : m * q - F });
+      }
+    }
+    return out;
+  }
+
   function resolver(sc) {
     const cf = lee(sc, 'cf', 'los costes fijos', { min: 0, minEx: true });
-    const p = lee(sc, 'p', 'el precio de venta', { min: 0, minEx: true });
-    const cv = lee(sc, 'cv', 'el coste variable unitario', { min: 0 });
-    if (cv >= p) throw new Error('El precio tiene que ser mayor que el coste variable unitario: si no, cada venta pierde dinero y no hay punto muerto');
-    const q = vacio(sc.q) ? null : lee(sc, 'q', 'las ventas previstas', { min: 0, minEx: true });
+    const modo = sc.modo === 'varios' ? 'varios' : 'uno', M = modo === 'varios' ? mezcla(sc) : null;
+    const p = M ? M.p : lee(sc, 'p', 'el precio de venta', { min: 0, minEx: true });
+    const cv = M ? M.cv : lee(sc, 'cv', 'el coste variable unitario', { min: 0 });
+    if (cv >= p) throw new Error(M ? 'Con esta mezcla de ventas el margen medio no es positivo: el coste variable medio supera al precio medio y no hay punto muerto' : 'El precio tiene que ser mayor que el coste variable unitario: si no, cada venta pierde dinero y no hay punto muerto');
+    const q = M ? M.Q : vacio(sc.q) ? null : lee(sc, 'q', 'las ventas previstas', { min: 0, minEx: true });
     const obj = vacio(sc.objetivo) ? null : lee(sc, 'objetivo', 'el beneficio objetivo', { min: 0 });
     const m = p - cv, rm = m / p, q0 = cf / m, i0 = p * q0, pasos = [];
+    if (M) {
+      pasos.push({ t: 'Mezcla de ventas', html: `Se venden ${M.d.length} productos en una proporción fija. Cada uno pesa lo que vende del total, $w_i = Q_i/∑Q$: ${M.d.map((r, k) => `producto ${k + 1}, ${u(r[2])}/${u(M.Q)} = ${f(100 * M.w[k], 4)} %`).join('; ')}.` });
+      pasos.push({ t: 'Producto medio', html: `Precio medio $\p_{med} = ∑ w_i p_i = ${e(p)}$ € y coste variable medio $\c_{v,med} = ∑ w_i c_{v,i} = ${e(cv)}$ €. Margen de contribución medio ponderado: $m = \p_{med} − \c_{v,med} = ${e(p)} − ${e(cv)} = ${e(p - cv)}$ € por unidad vendida, que es $∑ w_i m_i$ con $m_i = p_i − c_{v,i}$ (${M.d.map((r, k) => `${e(r[0] - r[1])}`).join('; ')}).` });
+      const flojos = M.d.map((r, k) => ({ k, mi: r[0] - r[1] })).filter((x) => x.mi <= 0);
+      if (flojos.length) pasos.push({ t: 'Aviso', html: `El producto ${flojos.map((x) => x.k + 1).join(', ')} no deja margen (precio igual o menor que su coste variable): la mezcla lo arrastra, pero cada unidad que se vende de él resta al margen medio.` });
+    }
     pasos.push({ t: 'Margen de contribución', html: `Lo que deja cada unidad vendida para pagar los costes fijos: $m = p − c_v = ${e(p)} − ${e(cv)} = ${e(m)}$ €, un ${f(100 * rm, 4)} % del precio.` });
     pasos.push({ t: 'Punto muerto en unidades', html: `En el punto muerto los ingresos igualan a los costes, $p · Q = CF + c_v · Q$, así que<br>$Q^* = {CF}/{p − c_v} = {${e(cf)}}/{${e(m)}} = ${u(q0)}$ unidades${Number.isInteger(+q0.toFixed(9)) ? '' : ` (hay que vender ${Math.ceil(q0 - 1e-9)} para no perder)`}.` });
     pasos.push({ t: 'Punto muerto en euros', html: `$p · Q^* = ${e(p)} · ${u(q0)} = ${e(i0)}$ €, o dividiendo los costes fijos entre el margen sobre ventas: $${e(cf)}/${f(rm, 6)} = ${e(i0)}$ € de facturación.` });
@@ -852,7 +890,10 @@ const PuntoMuerto = (() => {
       qObj = (cf + obj) / m;
       pasos.push({ t: 'Ventas para el beneficio objetivo', html: `Hay que cubrir los costes fijos y además el beneficio: $Q = {CF + B}/m = {${e(cf)} + ${e(obj)}}/{${e(m)}} = ${u(qObj)}$ unidades, que son ${e(p * qObj)} € de ventas.` });
     }
-    return { cf, p, cv, q, obj, m, rm, q0, i0, b, ms, gao, qObj, pasos };
+    if (M) pasos.push({ t: 'Punto muerto de cada producto', html: `Con la mezcla constante, ${u(q0)} unidades en total se reparten así: ${M.d.map((r, k) => `producto ${k + 1}, ${u(q0 * M.w[k])} unidades (${e(r[0] * q0 * M.w[k])} €)`).join('; ')}. Si cambia la mezcla, cambia el punto muerto.` });
+    const sens = sensibilidad(cf, p, cv, q);
+    pasos.push({ t: 'Sensibilidad', html: 'La tabla de sensibilidad cambia un dato cada vez (±10 % y ±20 %) y deja los demás: se ve que el punto muerto depende sobre todo de los datos que más pesan en el margen, p − c<sub>v</sub>.' });
+    return { modo, prod: M ? M.d.map((r, k) => ({ p: r[0], cv: r[1], q: r[2], w: M.w[k], q0: q0 * M.w[k] })) : null, cf, p, cv, q, obj, m, rm, q0, i0, b, ms, gao, qObj, sens, pasos };
   }
 
   const ejemplos = [
@@ -860,9 +901,17 @@ const PuntoMuerto = (() => {
     { clave: 'cafeteria', nombre: 'Cafetería: cuántos cafés al mes para no perder', sc: { cf: '4000', p: '2,5', cv: '0,9', q: '3000', objetivo: '' } },
     { clave: 'objetivo', nombre: 'Unidades para ganar 40.000 €', sc: { cf: '120000', p: '200', cv: '120', q: '1800', objetivo: '40000' } },
     { clave: 'perdidas', nombre: 'Una empresa que no llega al punto muerto', sc: { cf: '50000', p: '25', cv: '15', q: '4000', objetivo: '' } },
+    { clave: 'tres-productos', nombre: 'Tienda con tres productos y una mezcla de ventas', sc: { modo: 'varios', cf: '12000', productos: '10 6 1000\n25 15 600\n40 22 400', q: '', objetivo: '' } },
+    { clave: 'dos-productos-objetivo', nombre: 'Dos productos: unidades para ganar 8.000 €', sc: { modo: 'varios', cf: '20000', productos: '50 30 500\n80 60 250', q: '', objetivo: '8000' } },
   ];
 
-  return { resolver, ejemplos };
+  const AZ = K.az, azar = AZ.desde(ejemplos, () => {
+    const cf = AZ.toma([10000, 20000, 30000, 50000]), p = AZ.toma([20, 25, 50, 100]), cv = Math.round(p * AZ.toma([0.4, 0.5, 0.6]) * 100) / 100;
+    return { cf: String(cf), p: String(p), cv: AZ.t(cv, 2), q: String(Math.max(50, Math.round((cf / (p - cv)) * AZ.toma([0.8, 1.2, 1.5]) / 50) * 50)), objetivo: '' };
+  }, (sc) => sc.modo !== 'varios' && !sc.objetivo, (sc) => resolver(sc));
+  const enunciado = (sc) => `Una empresa tiene costes fijos de ${sc.cf} €, vende a ${sc.p} € la unidad y el coste variable unitario es de ${sc.cv} €. Calcula el punto muerto en unidades y en euros, el margen de contribución y, vendiendo ${sc.q} unidades, el beneficio, el margen de seguridad y el apalancamiento operativo.`;
+
+  return { azar, enunciado, resolver, ejemplos, MODOS };
 })();
 
 const Compartir = (() => {
@@ -1053,15 +1102,19 @@ const Compartir = (() => {
   const P = PuntoMuerto, { f, dinero, num } = Eco;
   const ud = (x) => `${f(x, 6)} unidades`;
   Calculadora.monta({
-    C: P, carpeta: 'punto-muerto', app: 'PuntoMuertoApp',
+    C: P, carpeta: 'punto-muerto', app: 'PuntoMuertoApp', azar: P.azar, enunciado: P.enunciado,
     nota: 'Los costes fijos son los del periodo que mires (un mes, un año); las ventas previstas y el beneficio objetivo, del mismo periodo. Los dos últimos se pueden dejar vacíos.',
-    campos: () => [
+    campos: (sc) => [
+      { k: 'modo', nom: 'Productos', tipo: 'sel', ops: Object.entries(P.MODOS) },
       { k: 'cf', nom: 'Costes fijos CF', un: '€' },
-      { k: 'p', nom: 'Precio de venta p', un: '€/unidad' },
-      { k: 'cv', nom: 'Coste variable unitario c<sub>v</sub>', un: '€/unidad' },
-      { k: 'q', nom: 'Ventas previstas Q', un: 'unidades' },
+      ...(sc.modo === 'varios'
+        ? [{ k: 'productos', nom: 'Productos', tipo: 'area', filas: 4, ayuda: 'Un producto por línea: precio, coste variable unitario y unidades previstas (que dan la mezcla de ventas). Las ventas totales son la suma de las unidades.' }]
+        : [{ k: 'p', nom: 'Precio de venta p', un: '€/unidad' },
+          { k: 'cv', nom: 'Coste variable unitario c<sub>v</sub>', un: '€/unidad' },
+          { k: 'q', nom: 'Ventas previstas Q', un: 'unidades' }]),
       { k: 'objetivo', nom: 'Beneficio objetivo', un: '€' },
     ],
+    tabla: (s) => `<table class="tabla-eco"><thead><tr><th>Dato que cambia</th><th>Variación</th><th>Punto muerto</th>${s.q === null ? '' : '<th>Beneficio con Q</th>'}</tr></thead><tbody>${s.sens.map((r) => `<tr${r.dl === 0 ? ' class="base"' : ''}><td>${r.nom}</td><td>${r.dl > 0 ? '+' : r.dl < 0 ? '−' : ''}${Math.abs(100 * r.dl)} %</td><td>${r.q0 === null ? 'no hay' : ud(r.q0)}</td>${s.q === null ? '' : `<td>${dinero(r.b)}</td>`}</tr>`).join('')}</tbody></table>`,
     resumen: (s) => [['Punto muerto', ud(s.q0)], ['Facturación en el punto muerto', dinero(s.i0)], ['Margen de contribución', `${dinero(s.m)} por unidad`],
       ...(s.q === null ? [] : [['Beneficio con Q', dinero(s.b)], ['Margen de seguridad', `${f(100 * s.ms, 4)} %`]]), ...(s.gao === null ? [] : [['Apalancamiento operativo', f(s.gao, 4)]]),
       ...(s.qObj === null ? [] : [['Ventas para el objetivo', ud(s.qObj), true]])],
@@ -1568,6 +1621,27 @@ const Practica = (() => {
     'no-parametricos': { datos: null, genera: () => window.NoParametricosApp?.azar(), enunciado: () => window.NoParametricosApp?.enunciado() },
     'regresion-multiple': { datos: null, genera: () => window.RegresionMultipleApp?.azar(), enunciado: () => window.RegresionMultipleApp?.enunciado() },
     'regresion-economia': { datos: null, genera: () => window.RegresionEconomiaApp?.azar(), enunciado: () => window.RegresionEconomiaApp?.enunciado() },
+    elasticidades: { datos: null, genera: () => window.ElasticidadesApp?.azar(), enunciado: () => window.ElasticidadesApp?.enunciado() },
+    costes: { datos: null, genera: () => window.CostesApp?.azar(), enunciado: () => window.CostesApp?.enunciado() },
+    beneficio: { datos: null, genera: () => window.BeneficioApp?.azar(), enunciado: () => window.BeneficioApp?.enunciado() },
+    'pib-ipc': { datos: null, genera: () => window.PibIpcApp?.azar(), enunciado: () => window.PibIpcApp?.enunciado() },
+    multiplicador: { datos: null, genera: () => window.MultiplicadorApp?.azar(), enunciado: () => window.MultiplicadorApp?.enunciado() },
+    'is-lm': { datos: null, genera: () => window.IsLmApp?.azar(), enunciado: () => window.IsLmApp?.enunciado() },
+    'phillips-okun': { datos: null, genera: () => window.PhillipsOkunApp?.azar(), enunciado: () => window.PhillipsOkunApp?.enunciado() },
+    'tipos-cambio': { datos: null, genera: () => window.TiposCambioApp?.azar(), enunciado: () => window.TiposCambioApp?.enunciado() },
+    interes: { datos: null, genera: () => window.InteresApp?.azar(), enunciado: () => window.InteresApp?.enunciado() },
+    prestamos: { datos: null, genera: () => window.PrestamosApp?.azar(), enunciado: () => window.PrestamosApp?.enunciado() },
+    'van-tir': { datos: null, genera: () => window.VanTirApp?.azar(), enunciado: () => window.VanTirApp?.enunciado() },
+    rentas: { datos: null, genera: () => window.RentasApp?.azar(), enunciado: () => window.RentasApp?.enunciado() },
+    ahorro: { datos: null, genera: () => window.AhorroApp?.azar(), enunciado: () => window.AhorroApp?.enunciado() },
+    'punto-muerto': { datos: null, genera: () => window.PuntoMuertoApp?.azar(), enunciado: () => window.PuntoMuertoApp?.enunciado() },
+    'amortizacion-inmovilizado': { datos: null, genera: () => window.AmortizacionApp?.azar(), enunciado: () => window.AmortizacionApp?.enunciado() },
+    'numeros-indice': { datos: null, genera: () => window.NumerosIndiceApp?.azar(), enunciado: () => window.NumerosIndiceApp?.enunciado() },
+    'lorenz-gini': { datos: null, genera: () => window.LorenzGiniApp?.azar(), enunciado: () => window.LorenzGiniApp?.enunciado() },
+    solow: { datos: null, genera: () => window.SolowApp?.azar(), enunciado: () => window.SolowApp?.enunciado() },
+    bonos: { datos: null, genera: () => window.BonosApp?.azar(), enunciado: () => window.BonosApp?.enunciado() },
+    'black-scholes': { datos: null, genera: () => window.BlackScholesApp?.azar(), enunciado: () => window.BlackScholesApp?.enunciado() },
+    markowitz: { datos: null, genera: () => window.MarkowitzApp?.azar(), enunciado: () => window.MarkowitzApp?.enunciado() },
     ratios: { datos: null, genera: () => window.RatiosApp?.azar(), enunciado: () => window.RatiosApp?.enunciado() },
     balance: { datos: null, genera: () => window.BalanceApp?.azar(), enunciado: () => window.BalanceApp?.enunciado() },
     ajustador: { datos: null, items: '#coefs > div', genera: () => window.AjustadorApp?.azar(), enunciado: () => window.AjustadorApp?.enunciado() },

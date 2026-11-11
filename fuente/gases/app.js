@@ -124,6 +124,10 @@
       ley = `Distribución de Maxwell de las velocidades a ${txt(f(sol.T, 5))} K; en gris, la del mismo gas al doble de temperatura. Abajo, moléculas que se mueven con esas velocidades (más claras las rápidas).`;
     }
     $('#res').innerHTML = h; $('#leyenda').textContent = ley;
+    // «Usar en…»: un ciclo de dos isotermas y dos adiabáticas es un ciclo de Carnot, que Ciclos termodinámicos analiza con su rendimiento y su entropía
+    { const ue = $('#usar-en'), tr = sol.tramos || [], carnot = sol.modo === 'procesos' && sol.ciclo && tr.length === 4 && tr.map((t) => t.tipo).join() === 'isoterma,adiabatica,isoterma,adiabatica' && tr[0].ini.T > tr[2].ini.T && ['monoatomico', 'diatomico'].includes(sc.gas);
+      const c6 = (x) => String(+x.toPrecision(8)).replace('.', ',');
+      if (ue) { ue.hidden = !carnot; ue.innerHTML = carnot ? `<a class="btn" data-usar="ciclos" href="${esc(Herramienta.enlaceA('ciclos', { modo: 'carnot', gas: sc.gas === 'monoatomico' ? 'mono' : 'di', Tc: c6(tr[0].ini.T), Tf: c6(tr[2].ini.T), n: c6(sol.n), V1: c6(1000 * tr[0].ini.V), V2: c6(1000 * tr[0].fin.V) }))}">Analizar este ciclo de Carnot en Ciclos termodinámicos →</a>` : ''; } }
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html, true)}</li>`).join('');
     $('#caja').hidden = !['estado', 'cinetica', 'mezcla'].includes(sol.modo); $('#zp').hidden = sol.modo !== 'real';
     particulas = null; dibuja();

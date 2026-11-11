@@ -8,7 +8,7 @@
   const S = Solow, { f, num } = Eco;
   const tp = (x) => `${f(100 * x, 5)} %`;
   Calculadora.monta({
-    C: S, carpeta: 'solow', app: 'SolowApp',
+    C: S, carpeta: 'solow', app: 'SolowApp', azar: S.azar, enunciado: S.enunciado,
     nota: 'Las tasas van en %. Todo está por trabajador efectivo: k (capital), y = A·kᵅ (producto), c (consumo). La simulación suma cada año Δk = s·y − (n + g + δ)·k.',
     campos: (sc) => [
       { k: 'alfa', nom: 'Participación del capital α', ayuda: 'entre 0 y 1', sep: 'Tecnología' }, { k: 'A', nom: 'Productividad A' },

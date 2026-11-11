@@ -8,7 +8,7 @@
   const A = Ahorro, { f, dinero, num } = Eco;
   const tp = (x) => `${f(100 * x, 5)} %`;
   Calculadora.monta({
-    C: A, carpeta: 'ahorro', app: 'AhorroApp',
+    C: A, carpeta: 'ahorro', app: 'AhorroApp', azar: A.azar, enunciado: A.enunciado,
     nota: 'La rentabilidad y la inflación van en % anual. Las aportaciones se hacen al final de cada periodo; si suben con la inflación, la que escribes es la del primer año.',
     campos: (sc) => {
       const cs = [{ k: 'modo', nom: 'Calcular', tipo: 'sel', ops: Object.entries(A.MODOS) }];

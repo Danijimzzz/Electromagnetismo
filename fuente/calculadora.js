@@ -34,11 +34,11 @@
                      <canvas id="grafica2"> y <p id="leyenda2"> en una tarjeta de la página)
        acciones(sol, sc), botones bajo los datos (opcional): [{ texto, cambios }]; al pulsar uno
                      se cambian esos datos (como pon) y se recalcula
-       usar,         botones «Usar en…» (opcional): [{ a: 'carpeta-destino', nombre, datos(sol, sc) }]
-                     que abren esa herramienta con los datos que devuelve datos(), en el
-                     formato de estado de la otra (la dirección lleva #d=, como «Copiar enlace»)
        exportar,     (ya no hace falta: todas las gráficas llevan «Descargar PNG» y «Copiar datos»)
-       usarEn(sol, sc), [{ texto, carpeta, estado }]: enlaces «Usar en…» a otra herramienta con su estado (opcional)
+       usarEn(sol, sc), enlaces «Usar en…» (opcional): [{ texto, carpeta, estado }] abre esa herramienta con
+                     ese estado, en el formato de la otra (la dirección lleva #d=, como «Copiar enlace»).
+                     Es la única forma de enlazar: cada enlace lleva data-usar="carpeta" y lo recorre
+                     pruebas/usar-en.js (abre el destino y exige los datos llevados y un resultado)
        nota,         texto de ayuda bajo los datos
        datosExporta(sol), tabla { cab, filas } para «Copiar datos» (opcional; si no, los puntos de las series)
        azar(),       sc al azar para el modo práctica (opcional)
@@ -228,7 +228,7 @@ const Calculadora = (() => {
       if (o.usarEn) {
         let ue = $('#usar-en');
         if (!ue) { ue = document.createElement('div'); ue.id = 'usar-en'; ue.className = 'controles'; ue.setAttribute('role', 'group'); ue.setAttribute('aria-label', 'Usar el resultado en otra herramienta'); $('#resumen').insertAdjacentElement('afterend', ue); }
-        ue.innerHTML = (o.usarEn(sol, sc) || []).map((l) => `<a class="btn" href="${esc(Herramienta.enlaceA(l.carpeta, l.estado))}">${l.texto}</a>`).join('');
+        ue.innerHTML = (o.usarEn(sol, sc) || []).map((l) => `<a class="btn" data-usar="${esc(l.carpeta)}" href="${esc(Herramienta.enlaceA(l.carpeta, l.estado))}">${l.texto}</a>`).join('');
       }
       $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
       const tb = $('#tabla'); if (tb) { const h = o.tabla ? o.tabla(sol) : ''; tb.innerHTML = h; tb.closest('.card').hidden = !h; }
@@ -241,6 +241,7 @@ const Calculadora = (() => {
       const c = $('#grafica'); if (!c) return;
       const cfg = sol && o.grafica ? o.grafica(sol, col) : null;
       cfgs['#grafica'] = cfg;
+      if (sol && o.grafica) { const cd = c.closest('.card'); if (cd) cd.hidden = !cfg; }
       if (!cfg) Herramienta.lienzo(c);
       else { const r = grafica(c, cfg, col); if (r && o.despues) o.despues(r, sol, col); }
       const c2 = $('#grafica2');
@@ -261,26 +262,11 @@ const Calculadora = (() => {
         c.setAttribute('role', 'img'); const l = $(ley); if (l) c.setAttribute('aria-describedby', l.id);
         Herramienta.exportar(c, { nombre: `${o.carpeta}${sufijo}`, titulo: (c.closest('.card')?.querySelector('h2')?.textContent || '').trim(), datos: () => {
           const cfg = cfgs[id]; if (!cfg) return null;
-          if (id === '#grafica' && o.datosExporta) return o.datosExporta(sol);
+          if (id === '#grafica' && o.datosExporta) { const propios = o.datosExporta(sol); if (propios) return propios; }
           const filas = []; (cfg.series || []).forEach((sr, k) => { if (sr.tipo === 'barras' || sr.tipo === 'puntos' || !sr.tipo || sr.tipo === 'linea' || sr.tipo === 'area') for (const [x, y] of sr.pts) filas.push([`Serie ${k + 1}${sr.tipo === 'puntos' ? ' (puntos)' : ''}`, x, y]); });
           return { cab: ['Serie', cfg.ejeX || 'x', cfg.ejeY || 'y'], filas };
         } });
       }
-    }
-    /* ---------- «Usar en…» ---------- */
-    function botonesUsar() {
-      if (!o.usar || !o.usar.length) return;
-      const card = $('#resumen') && $('#resumen').closest('.card'); if (!card || card.querySelector('.usar-en')) return;
-      const caja = document.createElement('div'); caja.className = 'controles usar-en'; caja.setAttribute('role', 'group'); caja.setAttribute('aria-label', 'Usar estos datos en otra herramienta'); caja.style.marginTop = '10px';
-      caja.innerHTML = o.usar.map((u, i) => `<a class="btn" href="#" data-i="${i}">Usar en ${esc(u.nombre)} →</a>`).join('');
-      card.appendChild(caja);
-      caja.addEventListener('click', (e) => {
-        const a = e.target.closest('a[data-i]'); if (!a) return; e.preventDefault();
-        const u = o.usar[+a.dataset.i]; if (!sol) { const er = $('#error'); er.textContent = 'Corrige primero los datos para poder usarlos en otra herramienta'; er.hidden = false; return; }
-        const datos = JSON.stringify(u.datos(sol, sc)), b64 = btoa(unescape(encodeURIComponent(datos))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-        const url = `../${u.a}/#d=${b64}`;
-        if (window.dispatchEvent(new CustomEvent('simu-usar', { cancelable: true, detail: { url } }))) location.href = url;
-      });
     }
     const leeColores = () => { col = colores(o.colores || []); };
     window.addEventListener('resize', dibuja);
@@ -288,7 +274,7 @@ const Calculadora = (() => {
     matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { leeColores(); dibuja(); });
 
     const ver = $('#ver'); if (ver) ver.textContent = Version.de(o.carpeta).current;
-    leeColores(); botonesGrafica(); botonesUsar(); formulario(); calcula();
+    leeColores(); botonesGrafica(); formulario(); calcula();
     const enunciado = () => (o.enunciado ? o.enunciado(sc, sol) : undefined);
     return (window[o.app] = { abrirEjemplo, azar, pon, enunciado, resultado: () => sol, estado: () => copia(sc) });
   }

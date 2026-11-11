@@ -60,6 +60,10 @@ if (sobran.length) mal(`publico/ contiene archivos que no deberían publicarse: 
 if (faltan.length) mal(`publico/ no tiene: ${faltan.join(', ')}`);
 // errores de unión de ramas (marcadores de conflicto, JSON y .js rotos, claves repetidas, scripts que no compilan juntos): pruebas/union.js
 if (primera) { try { execFileSync('node', [path.join(__dirname, 'union.js')], { stdio: 'inherit' }); } catch (e) { mal('Unión de ramas: ver arriba'); } }
+// banco de casos límite de Matemáticas (MAT.MA-2), sin navegador: pruebas/casos-limite-matematicas.js
+// ejercicios al azar de Economía (ECO.EC-1): pruebas/economia-practica.js
+if (primera) { try { execFileSync('node', [path.join(__dirname, 'economia-practica.js')], { stdio: 'inherit', timeout: 120000 }); } catch (e) { mal('Economía, ejercicios al azar: ver arriba'); } }
+if (primera && !solo) { try { execFileSync('node', [path.join(__dirname, 'casos-limite-matematicas.js')], { stdio: 'inherit', timeout: 120000 }); } catch (e) { mal('Casos límite de Matemáticas: ver arriba'); } }
 const web = fs.readFileSync(juegos[0].pagina, 'utf8');
 
 // resultados de todos los ejercicios: { clave: { titulo, incognita, resultados: [html…] } }
@@ -647,6 +651,12 @@ async function navegador() {
     const total = Catalogo.asignaturas.flatMap((a) => a.herramientas.filter((h) => h.disponible)).length;
     if (completo && r.probadas < total) mal(`Humo: solo se han probado ${r.probadas} de ${total} herramientas`);
     if (fallos === antes) console.log(`  ✓ Humo: ${r.probadas} herramientas guardan un dato cambiado y lo recuperan al recargar, en modo oscuro y a 390 px, sin errores de consola`);
+  }
+  {
+    // «Usar en…» (pruebas/usar-en.js): cada enlace entre herramientas abre su destino con los datos llevados y un resultado
+    const antes = fallos, r = await require('./usar-en.js')(browser, { mal, solo, filtro: mia });
+    if (completo && r.enlaces.length < 8) mal(`Usar en: solo se han probado ${r.enlaces.length} enlaces`);
+    if (fallos === antes && r.enlaces.length) console.log(`  ✓ Usar en: ${r.enlaces.length} enlaces de ${r.origenes} herramientas abren la otra herramienta con los datos llevados y un resultado`);
   }
   {
     // accesibilidad (pruebas/accesibilidad.js): axe-core en todas las páginas de publico/, en claro, oscuro y a 390 px

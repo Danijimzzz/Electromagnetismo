@@ -7,8 +7,12 @@
    ===================================================================== */
 (() => {
   const P = Multiplicador, { f, dinero, num } = Eco;
+  // «Usar en…»: el modelo renta-gasto sin impuestos proporcionales ni sector exterior es el de IS-LM con la inversión fija
+  const num2 = (x) => String(+x.toFixed(6)).replace('.', ',');
+  const enlacesDe = (s) => (s.t === 0 && s.x === 0 && s.m0 === 0 && s.m === 0 ? [{ carpeta: 'is-lm', texto: 'Añadir el mercado de dinero en IS-LM →', estado: { c0: num2(s.c0), c1: num2(s.c), T: num2(s.t0), I0: num2(s.i), b: '30', G: num2(s.g), M: '800', P: '2', k: '0,5', h: '20', dG: s.dg ? num2(s.dg) : '', dT: s.dt0 ? num2(s.dt0) : '', dM: '' } }] : []);
   Calculadora.monta({
-    C: P, carpeta: 'multiplicador', app: 'MultiplicadorApp',
+    usarEn: enlacesDe,
+    C: P, carpeta: 'multiplicador', app: 'MultiplicadorApp', azar: P.azar, enunciado: P.enunciado,
     nota: 'C = C0 + c·(Y − T), T = T0 + t·Y y M = M0 + m·Y. Dejar vacíos T0, t, X, M0, m, ΔG y ΔT0 equivale a 0. Con el pleno empleo se calcula la brecha y el gasto que la cierra (opcional).',
     campos: () => [
       { k: 'c0', nom: 'Consumo autónomo C<sub>0</sub>', un: '€', sep: 'Consumo' },

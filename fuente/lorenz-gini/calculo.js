@@ -47,7 +47,17 @@ const LorenzGini = (() => {
     pasos.push({ t: 'Índice de Gini por el área', html: `Es el doble del área entre la diagonal y la curva. Con trapecios: $G = 1 − Σ (p_i − p_{i−1})(q_i + q_{i−1}) = 1 − ${f(suma, 6)} = ${n4(G)}$.` });
     pasos.push({ t: 'Con la fórmula de clase', html: `$I_G = {Σ (p_i − q_i)}/{Σ p_i}$, sin el último punto: $${f(sin.reduce((s, r) => s + (r.p - r.q), 0), 6)}/${f(Sp, 6)} = ${n4(Gc)}$. ${Math.abs(G - Gc) > 0.005 ? `No coincide con el del área: con ${filas.length} ${que} es una aproximación, y se acercan cuando hay muchos.` : 'Coincide casi con el del área.'}` });
     pasos.push({ t: 'Los extremos', html: `El 20 % más pobre se lleva el ${pc(s20)} de la renta y el 20 % más rico, el ${pc(s80)}${isFinite(ratio) ? `: ${'$'}{"S80"}/{"S20"} = ${f(s80, 4)}/${f(s20, 4)} = ${f(ratio, 4)}$` : ''}. ${G < 0.005 ? 'Reparto igualitario: todos tienen lo mismo.' : G < 0.3 ? 'Es una desigualdad baja, como la de los países nórdicos.' : G < 0.4 ? 'Es una desigualdad media, como la de España (alrededor de 0,32).' : 'Es una desigualdad alta.'}` });
-    return { modo, filas, A, B, G, Gc, s20, s80, ratio, reordena, pasos };
+    // segunda distribución (opcional) para compararla con la primera: se calcula con los mismos datos de «modo»
+    let cmp = null;
+    if (!K.vacio(sc.datos2) && !sc.sinComparar) {
+      const r2 = resolver({ modo, datos: sc.datos2, sinComparar: true }), dif = Array.from({ length: 1001 }, (_, k) => L(k / 1000) - r2.L(k / 1000));
+      const arriba = dif.every((d) => d >= -1e-9), abajo = dif.every((d) => d <= 1e-9), iguales = arriba && abajo;
+      // Lorenz más alta = reparto más igualitario; si se cruzan, el Gini solo da una opinión
+      const cruce = !arriba && !abajo;
+      cmp = { G: r2.G, Gc: r2.Gc, s20: r2.s20, s80: r2.s80, ratio: r2.ratio, filas: r2.filas, cruce, iguales, masIgual: iguales ? 0 : arriba ? 1 : abajo ? 2 : G < r2.G ? 1 : r2.G < G ? 2 : 0 };
+      pasos.push({ t: 'Comparación de las dos distribuciones', html: `Índice de Gini: <b>A</b> ${n4(G)} y <b>B</b> ${n4(r2.G)}, una diferencia de ${f(Math.abs(G - r2.G), 4)}. El 20 % más pobre se lleva el ${pc(s20)} (A) y el ${pc(r2.s20)} (B); el 20 % más rico, el ${pc(s80)} (A) y el ${pc(r2.s80)} (B). ${iguales ? 'Las dos curvas coinciden: el reparto es el mismo.' : cruce ? `<b>Las curvas de Lorenz se cruzan</b>: ninguna reparte mejor en todos los tramos, y por eso el Gini (que resume la curva en un número) no da una respuesta clara; según el Gini, ${G < r2.G ? 'A' : r2.G < G ? 'B' : 'ninguna'} es más igualitaria.` : `La curva de ${arriba ? 'A' : 'B'} queda siempre por encima de la otra: <b>${arriba ? 'A' : 'B'} es más igualitaria en todos los tramos</b> (y también tiene menor Gini).`}` });
+    }
+    return { modo, filas, A, B, G, Gc, s20, s80, ratio, reordena, L, cmp, pasos };
   }
 
   const ejemplos = [
@@ -56,8 +66,14 @@ const LorenzGini = (() => {
     { clave: 'quintiles', nombre: 'Quintiles de un país (datos de ejemplo)', sc: { modo: 'grupos', datos: '% población  % renta\n20 7\n20 13\n20 17\n20 23\n20 40' } },
     { clave: 'tramos', nombre: 'Cuatro tramos de renta', sc: { modo: 'tramos', datos: 'personas  renta media\n40 10\n30 20\n20 35\n10 80' } },
     { clave: 'desordenado', nombre: 'Rentas sin ordenar de diez personas', sc: { modo: 'rentas', datos: '1500 900 2100 1200 3500 800 1800 6000 1100 1400' } },
+    { clave: 'comparar', nombre: 'Comparar dos países (quintiles)', sc: { modo: 'grupos', datos: '% población  % renta\n20 7\n20 13\n20 17\n20 23\n20 40', datos2: '20 9\n20 14\n20 18\n20 22\n20 37' } },
+    { clave: 'cruce', nombre: 'Dos distribuciones cuyas curvas se cruzan', sc: { modo: 'rentas', datos: '10 20 30 40 100', datos2: '5 40 40 40 75' } },
   ];
 
-  return { resolver, ejemplos, MODOS };
+  // modo práctica: datos redondos al azar
+  const AZ = K.az, azar = AZ.desde(ejemplos, () => ({ datos: Array.from({ length: AZ.e(5, 8) }, () => AZ.toma([10, 20, 30, 40, 60, 100, 200])).join(' ') }), (sc) => sc.modo === 'rentas' && !sc.datos2, (sc) => resolver(sc));
+  const enunciado = (sc) => `Las rentas de ${sc.datos.split(' ').length} personas son ${sc.datos.split(' ').join(', ')}. Calcula el índice de Gini, la parte de la renta del 20 % más pobre y la del 20 % más rico, y el cociente S80/S20.`;
+
+  return { azar, enunciado, resolver, ejemplos, MODOS };
 })();
 if (typeof module !== 'undefined') module.exports = LorenzGini;

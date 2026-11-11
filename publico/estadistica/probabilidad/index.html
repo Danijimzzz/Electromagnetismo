@@ -9,7 +9,7 @@
 <link rel="canonical" href="https://simulaciencia.vercel.app/estadistica/probabilidad/">
 <meta property="og:image" content="https://simulaciencia.vercel.app/og.png">
 <meta name="twitter:card" content="summary_large_image">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Probabilidad","description":"Combinatoria, probabilidad condicionada, probabilidad total y teorema de Bayes con el diagrama de árbol.","url":"https://simulaciencia.vercel.app/estadistica/probabilidad/","inLanguage":"es","isAccessibleForFree":true,"applicationCategory":"EducationalApplication","operatingSystem":"Navegador web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://simulaciencia.vercel.app/"},{"@type":"ListItem","position":2,"name":"Estadística","item":"https://simulaciencia.vercel.app/estadistica/"},{"@type":"ListItem","position":3,"name":"Probabilidad","item":"https://simulaciencia.vercel.app/estadistica/probabilidad/"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Cómo se aplica el teorema de Bayes?","acceptedAnswer":{"@type":"Answer","text":"P(A|B) = P(B|A)·P(A)/P(B). Si una enfermedad afecta al 1 %, el test detecta el 99 % de los enfermos y da falsos positivos al 5 %: P(enfermo | +) = 0,0099/(0,0099 + 0,0495) ≈ 16,7 %."}},{"@type":"Question","name":"¿Cuándo se usan permutaciones, variaciones y combinaciones?","acceptedAnswer":{"@type":"Answer","text":"Permutaciones, n!, si se ordenan todos; variaciones, n!/(n − k)!, si importa el orden al elegir k; combinaciones, C(n, k) = n!/(k!(n − k)!), si no importa. Hay C(5, 2) = 10 formas de elegir 2 de 5 elementos."}}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Probabilidad","description":"Combinatoria, probabilidad condicionada, teorema de Bayes con el diagrama de árbol, variable aleatoria discreta (esperanza y varianza) y tablas 2 × 2.","url":"https://simulaciencia.vercel.app/estadistica/probabilidad/","inLanguage":"es","isAccessibleForFree":true,"applicationCategory":"EducationalApplication","operatingSystem":"Navegador web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://simulaciencia.vercel.app/"},{"@type":"ListItem","position":2,"name":"Estadística","item":"https://simulaciencia.vercel.app/estadistica/"},{"@type":"ListItem","position":3,"name":"Probabilidad","item":"https://simulaciencia.vercel.app/estadistica/probabilidad/"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Cómo se aplica el teorema de Bayes?","acceptedAnswer":{"@type":"Answer","text":"P(A|B) = P(B|A)·P(A)/P(B). Si una enfermedad afecta al 1 %, el test detecta el 99 % de los enfermos y da falsos positivos al 5 %: P(enfermo | +) = 0,0099/(0,0099 + 0,0495) ≈ 16,7 %."}},{"@type":"Question","name":"¿Cuándo se usan permutaciones, variaciones y combinaciones?","acceptedAnswer":{"@type":"Answer","text":"Permutaciones, n!, si se ordenan todos; variaciones, n!/(n − k)!, si importa el orden al elegir k; combinaciones, C(n, k) = n!/(k!(n − k)!), si no importa. Hay C(5, 2) = 10 formas de elegir 2 de 5 elementos."}}]}]}</script>
 <link rel="manifest" href="../../manifest.webmanifest">
 <meta name="theme-color" content="#0d6b66">
 <script src="../../pwa.js" defer></script>
@@ -65,7 +65,7 @@ document.addEventListener('click', (e) => { if (!e.target.closest('.pref-cookies
 <script src="../../buscador.js" defer></script>
 <script src="../../llama.js" defer></script>
 <title>Probabilidad · Ciencify</title>
-<meta name="description" content="Combinatoria, probabilidad condicionada, probabilidad total y teorema de Bayes con el diagrama de árbol.">
+<meta name="description" content="Combinatoria, probabilidad condicionada, teorema de Bayes con el diagrama de árbol, variable aleatoria discreta (esperanza y varianza) y tablas 2 × 2.">
 <style>/* =====================================================================
    Hoja de estilos común de todas las herramientas (fuente/<herramienta>/pagina.html).
    diseno.js la mete en cada página, antes de su propio <style>, junto con el color
@@ -256,17 +256,22 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 .causas span { font: 500 12px var(--f-ui); color: var(--muted) }
 .causas .in { width: 100% }
 #resumen b { font-family: var(--f-math); font-size: 19px }
+.tabla-caja { overflow-x: auto }
+.tabla-caja table { border-collapse: collapse; font: 13.5px var(--f-ui); width: 100%; font-variant-numeric: tabular-nums }
+.tabla-caja th, .tabla-caja td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap }
+.tabla-caja th { font-weight: 600; color: var(--muted) } .tabla-caja th:first-child, .tabla-caja td:first-child { text-align: left }
+.tabla-caja tfoot td, .tabla-caja tfoot th { font-weight: 600; background: var(--accent-soft); color: var(--ink) }
 </style>
 <body>
 <header class="top"><a class="logo" href="../../">Cienci<i>fy</i></a><nav aria-label="Asignaturas"><a href="../../">Inicio</a><a href="../../electromagnetismo/">Electromagnetismo</a><a href="../../fisica/">Física general</a><a href="../../quimica/">Química</a><a href="../../matematicas/">Matemáticas</a><a href="../../estadistica/" aria-current="page">Estadística</a><a href="../../circuitos/">Circuitos</a><a href="../../economia/">Economía</a><a href="../../fenomenos/">Vida real</a></nav><a class="foro" href="../../foro/"><span aria-hidden="true">💬</span>Foro</a><form action="../../" role="search"><input class="buscar" type="search" name="q" placeholder="Buscar: Biot-Savart, molaridad…" aria-label="Buscar herramientas (atajo: barra /)" title="Atajo: / o Ctrl+K"></form><button class="tema" type="button" title="Cambiar de modo claro u oscuro" aria-label="Cambiar de modo claro u oscuro"><svg class="luna" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11z"/></svg><svg class="sol" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button></header>
 <main class="wrap">
 <nav class="miga" aria-label="Estás en"><span class="miga-izq"></span><span class="miga-ico" aria-hidden="true">σ</span><a href="../">Estadística</a><span aria-hidden="true">›</span><span>Probabilidad</span><span class="miga-der"></span></nav>
 <h1>Probabilidad: combinatoria, sucesos y Bayes</h1>
-<p class="lead">Cuenta casos con variaciones, permutaciones y combinaciones, calcula la probabilidad de la unión, la intersección y la condicionada de dos sucesos, y resuelve problemas de probabilidad total y teorema de Bayes con el diagrama de árbol.</p>
+<p class="lead">Cuenta casos con variaciones, permutaciones y combinaciones, calcula la probabilidad de la unión, la intersección y la condicionada de dos sucesos, resuelve problemas de probabilidad total y teorema de Bayes con el diagrama de árbol, halla la esperanza y la varianza de una variable aleatoria discreta y lee una tabla 2 × 2 de dos sucesos.</p>
 <div class="layout">
   <div class="card">
     <h2>Datos</h2>
-    <div class="modos" role="tablist" aria-label="Qué se calcula"><button type="button" role="tab" data-modo="comb" aria-selected="true">Combinatoria</button><button type="button" role="tab" data-modo="suc" aria-selected="false">Sucesos</button><button type="button" role="tab" data-modo="bayes" aria-selected="false">Total y Bayes</button></div>
+    <div class="modos" role="tablist" aria-label="Qué se calcula"><button type="button" role="tab" data-modo="comb" aria-selected="true">Combinatoria</button><button type="button" role="tab" data-modo="suc" aria-selected="false">Sucesos</button><button type="button" role="tab" data-modo="bayes" aria-selected="false">Total y Bayes</button><button type="button" role="tab" data-modo="va" aria-selected="false">Variable aleatoria</button><button type="button" role="tab" data-modo="tabla" aria-selected="false">Tabla 2 × 2</button></div>
     <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
     <div class="campos" id="campos"></div>
     <p class="nota" id="nota"></p>
@@ -278,6 +283,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
       <canvas id="grafica" aria-label="Diagrama de árbol o de áreas con las probabilidades"></canvas>
       <p class="leyenda" id="leyenda"></p>
     </div>
+    <div class="card" id="tarjeta-tabla" hidden><h2 id="titulo-tabla">Tabla</h2><div class="tabla-caja" id="tabla"></div></div>
     <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
   </div>
 </div>
@@ -299,6 +305,14 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
   <p>Si las causas A₁, …, Aₙ forman un sistema completo (son incompatibles dos a dos y suman 1), la probabilidad de un suceso B es la suma de lo que aporta cada rama del árbol. El teorema de Bayes da la probabilidad de cada causa sabiendo que B ha ocurrido.</p>
   <p class="f m">$P(B) = ∑ P(A_i)·P(B | A_i)$, &ensp; $P(A_i | B) = {P(A_i)·P(B | A_i)}/{P(B)}$</p>
   <p>Las probabilidades P(Aᵢ) son las <b>a priori</b> y las P(Aᵢ | B), las <b>a posteriori</b>. Por eso una prueba médica muy fiable puede dar muchos falsos positivos si la enfermedad es rara: la prevalencia pesa mucho en P(B).</p>
+  <h2>Variable aleatoria discreta</h2>
+  <p>Una variable aleatoria discreta X toma unos pocos valores, cada uno con su probabilidad. Esas probabilidades forman la función de probabilidad: ninguna es negativa y entre todas suman 1. La función de distribución F(x) acumula la probabilidad hasta x, así que sube a saltos desde 0 hasta 1.</p>
+  <p class="f m">$E[X] = μ = ∑ x_i·p_i$, &ensp; $"Var"(X) = E[X^2] − μ^2$, &ensp; $σ = √{"Var"(X)}$</p>
+  <p>La esperanza es el valor medio que saldría al repetir el experimento muchas veces, y la desviación típica mide cuánto se alejan los valores de esa media. Un cambio lineal Y = aX + b mueve la media igual que los valores, pero la varianza no nota el desplazamiento b y se multiplica por a².</p>
+  <p class="f m">$E[aX + b] = a·E[X] + b$, &ensp; $"Var"(aX + b) = a^2·"Var"(X)$</p>
+  <h2>Tabla de contingencia de dos sucesos</h2>
+  <p>Cuando un problema da los casos cruzados de dos características (los que hacen deporte y fuman, los que hacen deporte y no fuman…), lo más cómodo es una tabla 2 × 2 con sus totales. Las probabilidades de cada suceso salen de los totales de fila y de columna; la intersección, de la casilla donde se cruzan; y una condicionada, quedándose con una sola fila o columna y dividiendo por su total.</p>
+  <p class="f m">$P(A | B) = {"casos de " A " y " B}/{"casos de " B}$</p>
 </section>
 <section class="preguntas" aria-label="Preguntas frecuentes">
 <h2>Preguntas frecuentes</h2>
@@ -319,7 +333,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 </body>
 <script>
 const Pagina = { carpeta: 'probabilidad', guarda: 'probabilidad-v1' };
-const Version = (() => { const registros = {"web":[{"v":"1.14.1"}],"control":[{"v":"0.2"}],"termo-estadistica":[{"v":"0.2"}],"markowitz":[{"v":"0.2"}],"cavidades":[{"v":"0.2"}],"organica":[{"v":"0.2"}],"transformada-z":[{"v":"0.2"}],"semiconductores":[{"v":"0.2"}],"relatividad":[{"v":"0.2"}],"osc-acopladas":[{"v":"0.2"}],"solubilidad":[{"v":"0.2"}],"lagrange":[{"v":"0.2"}],"series":[{"v":"0.2"}],"no-parametricos":[{"v":"0.2"}],"regresion-multiple":[{"v":"0.1"}],"anova":[{"v":"0.2"}],"black-scholes":[{"v":"0.2"}],"bonos":[{"v":"0.2"}],"solow":[{"v":"0.2"}],"integrales-multiples":[{"v":"0.1"}],"formulacion":[{"v":"0.2"}],"balance":[{"v":"0.2"}],"redox":[{"v":"0.2"}],"lineas-transmision":[{"v":"0.2"}],"superficies":[{"v":"0.1"}],"vsepr":[{"v":"0.2"}],"maxwell":[{"v":"0.2"}],"fresnel":[{"v":"0.2"}],"gravitacion":[{"v":"0.1"}],"convolucion":[{"v":"0.2"}],"laplace-numerica":[{"v":"0.2"}],"imagenes":[{"v":"0.2"}],"guias-onda":[{"v":"0.2"}],"antena":[{"v":"0.2"}],"bode":[{"v":"0.2"}],"optica":[{"v":"0.2"}],"simulador":[{"v":"0.4"}],"teoria-juegos":[{"v":"0.1"}],"puertas-logicas":[{"v":"0.4"}],"multiplicador":[{"v":"0.2"}],"is-lm":[{"v":"0.2"}],"choques":[{"v":"0.1"}],"termoquimica":[{"v":"0.2"}],"probabilidad":[{"v":"0.1"}],"unidades":[{"v":"0.1"}],"equilibrio":[{"v":"0.2"}],"oscilaciones":[{"v":"0.1"}],"beneficio":[{"v":"0.2"}],"costes":[{"v":"0.2"}],"sistemas-numericos":[{"v":"0.2"}],"excedentes":[{"v":"0.2"}],"oferta-demanda":[{"v":"0.2"}],"chi2-bondad":[{"v":"0.2"}],"contrastes":[{"v":"0.2"}],"errores":[{"v":"0.1"}],"graficador":[{"v":"0.2"}],"metodos-numericos":[{"v":"0.2"}],"fisica-moderna":[{"v":"0.2"}],"lorenz-gini":[{"v":"0.1"}],"phillips-okun":[{"v":"0.2"}],"tipos-cambio":[{"v":"0.2"}],"elasticidades":[{"v":"0.2"}],"pib-ipc":[{"v":"0.1"}],"numeros-indice":[{"v":"0.1"}],"ratios":[{"v":"0.2"}],"punto-muerto":[{"v":"0.1"}],"ahorro":[{"v":"0.2"}],"van-tir":[{"v":"0.2"}],"amortizacion-inmovilizado":[{"v":"0.1"}],"prestamos":[{"v":"0.2"}],"rentas":[{"v":"0.2"}],"interes":[{"v":"0.2"}],"descriptiva":[{"v":"0.1"}],"regresion-economia":[{"v":"0.1"}],"ajustador":[{"v":"0.2.1"}],"electrostatica":[{"v":"0.7"}],"magnetostatica":[{"v":"0.3"}],"tabla-periodica":[{"v":"0.2"}],"trabajo-y-energia":[{"v":"0.2"}],"masa-molar":[{"v":"0.2"}],"configuracion-electronica":[{"v":"0.2"}],"condensadores":[{"v":"0.3"}],"tiro-parabolico":[{"v":"0.2"}],"disoluciones":[{"v":"0.2"}],"calorimetria":[{"v":"0.2"}],"induccion":[{"v":"0.3"}],"matrices":[{"v":"0.2"}],"derivadas":[{"v":"0.3"}],"laplace":[{"v":"0.2"}],"interferencia":[{"v":"0.2"}],"ondas-em":[{"v":"0.4"}],"intervalos":[{"v":"0.2"}],"fuerza":[{"v":"0.3"}],"campos":[{"v":"0.2.1"}],"cinetica":[{"v":"0.2"}],"edos":[{"v":"0.2"}],"fourier":[{"v":"0.2"}],"taylor":[{"v":"0.2.1"}],"complejos":[{"v":"0.2"}],"sistemas":[{"v":"0.3"}],"regresion":[{"v":"0.2"}],"estadistica":[{"v":"0.2"}],"dinamica":[{"v":"0.2"}],"solido-rigido":[{"v":"0.2"}],"ondas":[{"v":"0.2"}],"gases":[{"v":"0.4"}],"ciclos":[{"v":"0.2"}],"ph":[{"v":"0.3"}],"fluidos":[{"v":"0.2"}],"doppler":[{"v":"0.2"}],"resistencias":[{"v":"0.3"}],"faraday":[{"v":"0.3"}],"fenomenos":[{"v":"0.9"}]}; const de = (h) => ({ current: registros[h][0].v, log: registros[h] }); return { registros, de }; })();
+const Version = (() => { const registros = {"web":[{"v":"1.15"}],"control":[{"v":"0.2"}],"termo-estadistica":[{"v":"0.2"}],"markowitz":[{"v":"0.3"}],"cavidades":[{"v":"0.2"}],"organica":[{"v":"0.2"}],"transformada-z":[{"v":"0.2"}],"semiconductores":[{"v":"0.2"}],"relatividad":[{"v":"0.2"}],"osc-acopladas":[{"v":"0.2"}],"solubilidad":[{"v":"0.2"}],"lagrange":[{"v":"0.2"}],"series":[{"v":"0.3"}],"no-parametricos":[{"v":"0.3"}],"regresion-multiple":[{"v":"0.2"}],"anova":[{"v":"0.3"}],"black-scholes":[{"v":"0.3"}],"bonos":[{"v":"0.3"}],"solow":[{"v":"0.3"}],"integrales-multiples":[{"v":"0.1"}],"formulacion":[{"v":"0.2"}],"balance":[{"v":"0.2"}],"redox":[{"v":"0.2"}],"lineas-transmision":[{"v":"0.2"}],"superficies":[{"v":"0.2"}],"vsepr":[{"v":"0.2"}],"maxwell":[{"v":"0.2"}],"fresnel":[{"v":"0.2"}],"gravitacion":[{"v":"0.2"}],"convolucion":[{"v":"0.2"}],"laplace-numerica":[{"v":"0.2"}],"imagenes":[{"v":"0.2"}],"guias-onda":[{"v":"0.2"}],"antena":[{"v":"0.2"}],"bode":[{"v":"0.2"}],"optica":[{"v":"0.2"}],"simulador":[{"v":"0.4"}],"teoria-juegos":[{"v":"0.2"}],"puertas-logicas":[{"v":"0.4"}],"multiplicador":[{"v":"0.3"}],"is-lm":[{"v":"0.3"}],"choques":[{"v":"0.1"}],"termoquimica":[{"v":"0.2"}],"probabilidad":[{"v":"0.2"}],"unidades":[{"v":"0.2"}],"equilibrio":[{"v":"0.2"}],"oscilaciones":[{"v":"0.1"}],"beneficio":[{"v":"0.3"}],"costes":[{"v":"0.3"}],"sistemas-numericos":[{"v":"0.2"}],"excedentes":[{"v":"0.2"}],"oferta-demanda":[{"v":"0.2"}],"chi2-bondad":[{"v":"0.2"}],"contrastes":[{"v":"0.2"}],"errores":[{"v":"0.2"}],"graficador":[{"v":"0.2"}],"metodos-numericos":[{"v":"0.2"}],"fisica-moderna":[{"v":"0.2"}],"lorenz-gini":[{"v":"0.2"}],"phillips-okun":[{"v":"0.3"}],"tipos-cambio":[{"v":"0.3"}],"elasticidades":[{"v":"0.3"}],"pib-ipc":[{"v":"0.2"}],"numeros-indice":[{"v":"0.2"}],"ratios":[{"v":"0.2"}],"punto-muerto":[{"v":"0.2"}],"ahorro":[{"v":"0.3"}],"van-tir":[{"v":"0.3"}],"amortizacion-inmovilizado":[{"v":"0.2"}],"prestamos":[{"v":"0.3"}],"rentas":[{"v":"0.3"}],"interes":[{"v":"0.3"}],"descriptiva":[{"v":"0.2"}],"regresion-economia":[{"v":"0.2"}],"ajustador":[{"v":"0.2.1"}],"electrostatica":[{"v":"0.7"}],"magnetostatica":[{"v":"0.3"}],"tabla-periodica":[{"v":"0.2"}],"trabajo-y-energia":[{"v":"0.2"}],"masa-molar":[{"v":"0.2"}],"configuracion-electronica":[{"v":"0.2"}],"condensadores":[{"v":"0.3"}],"tiro-parabolico":[{"v":"0.3"}],"disoluciones":[{"v":"0.2"}],"calorimetria":[{"v":"0.2"}],"induccion":[{"v":"0.3"}],"matrices":[{"v":"0.3"}],"derivadas":[{"v":"0.3"}],"laplace":[{"v":"0.2"}],"interferencia":[{"v":"0.2"}],"ondas-em":[{"v":"0.4"}],"intervalos":[{"v":"0.3"}],"fuerza":[{"v":"0.3"}],"campos":[{"v":"0.2.1"}],"cinetica":[{"v":"0.2"}],"edos":[{"v":"0.2"}],"fourier":[{"v":"0.2"}],"taylor":[{"v":"0.3"}],"complejos":[{"v":"0.3"}],"sistemas":[{"v":"0.3"}],"regresion":[{"v":"0.3"}],"estadistica":[{"v":"0.3"}],"dinamica":[{"v":"0.2"}],"solido-rigido":[{"v":"0.2"}],"ondas":[{"v":"0.3"}],"gases":[{"v":"0.5"}],"ciclos":[{"v":"0.2"}],"ph":[{"v":"0.3"}],"fluidos":[{"v":"0.2"}],"doppler":[{"v":"0.2"}],"resistencias":[{"v":"0.3"}],"faraday":[{"v":"0.3"}],"fenomenos":[{"v":"0.9"}]}; const de = (h) => ({ current: registros[h][0].v, log: registros[h] }); return { registros, de }; })();
 
 const Herramienta = (() => {
   const $ = (q) => document.querySelector(q);
@@ -433,7 +447,7 @@ const Herramienta = (() => {
       try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* file:// */ }
     }
   }
-  const enlaceA = (carpeta, estado) => `../${carpeta}/#d=${btoa(unescape(encodeURIComponent(JSON.stringify(estado)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')}`;
+  const enlaceA = (carpeta, estado) => `${carpeta.includes('/') ? '../../' : '../'}${carpeta}/#d=${btoa(unescape(encodeURIComponent(JSON.stringify(estado)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')}`;
   return { $, esc, copia, vacio, leeSI, leeUn, txt, marcas, lienzo, accesible, exportar, png, tabla, nombreArchivo, enlaceA };
 })();
 
@@ -767,7 +781,106 @@ const Probabilidad = (() => {
     return { modo: 'bayes', nb, obs, filas, pB, pN, res, pasos, may };
   }
 
+  const lista = (s) => String(s ?? '').replace(/[−–]/g, '-').split(/[;\s]+/).filter(Boolean);
+  const leeFrac = (s) => { if (/%$/.test(s)) return leeNum(s.slice(0, -1)) / 100; if (/^[^/]+\/[^/]+$/.test(s)) { const [a, b] = s.split('/'); return leeNum(a) / leeNum(b); } return leeNum(s); };
+  function variable(sc) {
+    const tx = lista(sc.vax), tp = lista(sc.vap);
+    if (tx.length < 2) throw new Error('Escribe al menos dos valores de X separados por punto y coma (por ejemplo 0; 1; 2; 3)');
+    if (tx.length > 40) throw new Error('Son demasiados valores: como mucho 40');
+    if (tp.length !== tx.length) throw new Error(`Hay ${tx.length} valores y ${tp.length} probabilidades: tiene que haber una probabilidad por cada valor`);
+    const xs = tx.map((t) => { const v = leeFrac(t); if (!isFinite(v)) throw new Error(`«${t}» no es un valor de X: escribe números separados por punto y coma`); return v; });
+    if (new Set(xs).size !== xs.length) throw new Error('Hay valores de X repetidos: cada valor va una sola vez, con su probabilidad');
+    const hueco = tp.map((t, i) => (t === '?' || /^[a-zA-Z]$/.test(t) ? i : -1)).filter((i) => i >= 0);
+    if (hueco.length > 1) throw new Error('Solo puede quedar una probabilidad sin dar (escrita como ?)');
+    const ps = tp.map((t, i) => {
+      if (i === hueco[0]) return 0;
+      const v = leeFrac(t);
+      if (!isFinite(v)) throw new Error(`«${t}» no es una probabilidad: escribe 0,3, 30 % o 3/10`);
+      if (v < 0 || v > 1) throw new Error(`Una probabilidad no puede valer ${p(v)}: todas están entre 0 y 1`);
+      return v;
+    });
+    const pasos = [];
+    let suma = ps.reduce((a, b) => a + b, 0);
+    if (hueco.length) {
+      const k = 1 - suma;
+      if (k < -1e-9) throw new Error(`Las probabilidades dadas ya suman ${p(suma)}, más que 1: no queda nada para la que falta`);
+      ps[hueco[0]] = Math.max(0, k);
+      pasos.push({ t: 'La probabilidad que falta', html: `Todas tienen que sumar 1: $P(X = ${f(xs[hueco[0]])}) = 1 − ${p(suma)} = ${p(ps[hueco[0]])}$` });
+      suma = 1;
+    } else if (Math.abs(suma - 1) > 1e-6) throw new Error(`Las probabilidades tienen que sumar 1 y suman ${p(suma)}`);
+    const orden = xs.map((x, i) => ({ x, p: ps[i] })).sort((a, b) => a.x - b.x);
+    let ac = 0; for (const o of orden) { ac += o.p; o.F = Math.min(1, ac); } orden[orden.length - 1].F = 1;
+    const mu = orden.reduce((a, o) => a + o.x * o.p, 0), m2 = orden.reduce((a, o) => a + o.x * o.x * o.p, 0);
+    const v = Math.max(0, orden.reduce((a, o) => a + (o.x - mu) ** 2 * o.p, 0)), sd = Math.sqrt(v);
+    const pmax = Math.max(...orden.map((o) => o.p)), modas = orden.filter((o) => Math.abs(o.p - pmax) < 1e-12).map((o) => o.x);
+    const im = orden.findIndex((o) => o.F >= 0.5 - 1e-12), med = Math.abs(orden[im].F - 0.5) < 1e-12 && orden[im + 1] ? (orden[im].x + orden[im + 1].x) / 2 : orden[im].x;
+    const n = (x) => f(x, 5), par = (x) => (x < 0 ? `(${n(x)})` : n(x));
+    const corta = (ts) => (ts.length > 8 ? [...ts.slice(0, 4), '…', ...ts.slice(-2)] : ts).join(' + ');
+    pasos.unshift({ t: 'Función de probabilidad', html: `X toma ${orden.length} valores; sus probabilidades son todas positivas o cero y suman $${p(suma)}$, así que es una función de probabilidad válida.` });
+    pasos.push({ t: 'Esperanza', html: `$E[X] = μ = ∑ x_i·p_i = ${corta(orden.map((o) => `${par(o.x)}·${p(o.p)}`))} = ${n(mu)}$` });
+    pasos.push({ t: 'Varianza', html: `$E[X^2] = ∑ x_i^2·p_i = ${corta(orden.map((o) => `${par(o.x)}^2·${p(o.p)}`))} = ${n(m2)}$ y $"Var"(X) = E[X^2] − μ^2 = ${n(m2)} − ${par(mu)}^2 = ${n(v)}$` });
+    pasos.push({ t: 'Desviación típica', html: `$σ = √{"Var"(X)} = √{${n(v)}} = ${n(sd)}$` });
+    pasos.push({ t: 'Función de distribución', html: `$F(x) = P(X ≤ x)$ acumula las probabilidades y sube a saltos en cada valor: ${(orden.length > 8 ? [...orden.slice(0, 4), null, ...orden.slice(-2)] : orden).map((o) => (o ? `$F(${n(o.x)}) = ${p(o.F)}$` : '…')).join(', ')}. Vale 0 antes de $${n(orden[0].x)}$ y 1 desde $${n(orden[orden.length - 1].x)}$.` });
+    const res = [{ t: 'E[X] = μ', v: n(mu), pr: true }, { t: 'Var(X)', v: n(v), pr: true }, { t: 'σ', v: n(sd), pr: true }, { t: 'E[X²]', v: n(m2) }, { t: modas.length > 1 ? 'Modas' : 'Moda', v: modas.length === orden.length ? 'No hay: todos igual de probables' : modas.map((x) => n(x)).join('; ') }, { t: 'Mediana', v: n(med) }];
+    let k = null, pk = null;
+    if (!vacio(sc.vak)) {
+      k = leeFrac(String(sc.vak).trim().replace(/[−–]/g, '-'));
+      if (!isFinite(k)) throw new Error('El valor de x en el que se calcula tiene que ser un número');
+      const men = orden.filter((o) => o.x < k - 1e-12).reduce((a, o) => a + o.p, 0), ig = orden.filter((o) => Math.abs(o.x - k) <= 1e-12).reduce((a, o) => a + o.p, 0);
+      pk = { menor: men, igual: ig, menorIgual: men + ig, mayor: Math.max(0, 1 - men - ig), mayorIgual: Math.max(0, 1 - men) };
+      res.push({ t: `P(X ≤ ${n(k)})`, v: p(pk.menorIgual), pr: true }, { t: `P(X = ${n(k)})`, v: p(pk.igual) }, { t: `P(X < ${n(k)})`, v: p(pk.menor) }, { t: `P(X > ${n(k)})`, v: p(pk.mayor) }, { t: `P(X ≥ ${n(k)})`, v: p(pk.mayorIgual) });
+      pasos.push({ t: `Probabilidades en x = ${n(k)}`, html: `$P(X ≤ ${n(k)}) = F(${n(k)}) = ${p(pk.menorIgual)}$, $P(X < ${n(k)}) = ${p(pk.menor)}$ (sin contar el propio valor), $P(X > ${n(k)}) = 1 − F(${n(k)}) = ${p(pk.mayor)}$ y $P(X ≥ ${n(k)}) = 1 − P(X < ${n(k)}) = ${p(pk.mayorIgual)}$` });
+    }
+    const a = vacio(sc.vaa) ? 1 : leeFrac(String(sc.vaa).trim().replace(/[−–]/g, '-')), b = vacio(sc.vab) ? 0 : leeFrac(String(sc.vab).trim().replace(/[−–]/g, '-'));
+    if (!isFinite(a) || !isFinite(b)) throw new Error('En Y = aX + b, a y b tienen que ser números');
+    let Y = null;
+    if (a !== 1 || b !== 0) {
+      Y = { a, b, mu: a * mu + b, v: a * a * v, sd: Math.abs(a) * sd };
+      res.push({ t: 'E[Y]', v: n(Y.mu), pr: true }, { t: 'Var(Y)', v: n(Y.v), pr: true }, { t: 'σ de Y', v: n(Y.sd) });
+      pasos.push({ t: 'Cambio lineal Y = aX + b', html: `Con $a = ${n(a)}$ y $b = ${n(b)}$: $E[Y] = a·E[X] + b = ${par(a)}·${par(mu)} + ${par(b)} = ${n(Y.mu)}$. La varianza no nota el desplazamiento y se multiplica por $a^2$: $"Var"(Y) = a^2·"Var"(X) = ${par(a)}^2·${n(v)} = ${n(Y.v)}$, y $σ_Y = |a|·σ = ${n(Y.sd)}$.` });
+    }
+    const tabla = { cab: ['x', 'P(X = x)', 'F(x)', 'x·p', 'x²·p'], filas: orden.map((o) => [n(o.x), p(o.p), p(o.F), n(o.x * o.p), n(o.x * o.x * o.p)]), pie: ['Suma', p(suma), '', n(mu), n(m2)] };
+    return { modo: 'va', xs: orden.map((o) => o.x), ps: orden.map((o) => o.p), F: orden.map((o) => o.F), mu, m2, v, sd, modas, med, k, pk, Y, tabla, res, pasos };
+  }
+
+  function contingencia(sc) {
+    const limpia = (v, d) => String(v ?? '').replace(/["$<>{}]/g, '').trim() || d, na = limpia(sc.ta, 'A'), nb = limpia(sc.tb, 'B');
+    const no = (x) => (x.length > 1 ? `no ${x}` : `${x}̄`), nan = no(na), nbn = no(nb), M = (x) => (x.length > 1 ? `"${x}"` : x), ma = M(na), mb = M(nb), man = M(nan), mbn = M(nbn);
+    const celda = (k, nom) => {
+      if (vacio(sc[k])) throw new Error(`Falta la casilla de ${nom}`);
+      const v = leeFrac(String(sc[k]).trim().replace(/\s/g, '').replace(/[−–]/g, '-'));
+      if (!isFinite(v)) throw new Error(`La casilla de ${nom} debe ser un número (casos o probabilidad)`);
+      if (v < 0) throw new Error(`La casilla de ${nom} no puede ser negativa`);
+      return v;
+    };
+    const c = [[celda('t11', `${na} y ${nb}`), celda('t12', `${na} y no ${nb}`)], [celda('t21', `no ${na} y ${nb}`), celda('t22', `ni ${na} ni ${nb}`)]];
+    const N = c[0][0] + c[0][1] + c[1][0] + c[1][1];
+    if (!(N > 0)) throw new Error('La tabla está vacía: al menos una casilla tiene que ser mayor que cero');
+    const fA = c[0][0] + c[0][1], fB = c[0][0] + c[1][0], pa = fA / N, pb = fB / N, pi = c[0][0] / N, pu = pa + pb - pi;
+    const n = (x) => f(x, 6), prob = Math.abs(N - 1) < 1e-9, sobre = (x) => (prob ? p(x) : `{${n(x)}}/{${n(N)}}`);
+    const pasos = [
+      { t: 'Totales', html: prob ? `Las casillas ya son probabilidades y suman 1. Sumando filas y columnas: $P(${ma}) = ${p(c[0][0])} + ${p(c[0][1])} = ${p(pa)}$ y $P(${mb}) = ${p(c[0][0])} + ${p(c[1][0])} = ${p(pb)}$`
+        : `En total hay $N = ${n(N)}$ casos. Sumando filas y columnas: ${n(fA)} son de ${na} y ${n(fB)} son de ${nb}.` },
+      { t: 'Probabilidades de cada suceso', html: prob ? `$P(${man}) = 1 − ${p(pa)} = ${p(1 - pa)}$, $P(${mbn}) = 1 − ${p(pb)} = ${p(1 - pb)}$` : `Regla de Laplace, casos favorables entre casos posibles: $P(${ma}) = {${n(fA)}}/{${n(N)}} = ${p(pa)}$, $P(${mb}) = {${n(fB)}}/{${n(N)}} = ${p(pb)}$` },
+      { t: 'Intersección y unión', html: `$P(${ma} ∩ ${mb}) = ${sobre(c[0][0])}${prob ? '' : ` = ${p(pi)}`}$ (la casilla donde se cruzan) y $P(${ma} ∪ ${mb}) = P(${ma}) + P(${mb}) − P(${ma} ∩ ${mb}) = ${p(pa)} + ${p(pb)} − ${p(pi)} = ${p(pu)}$` },
+    ];
+    const res = [{ t: `P(${na})`, v: p(pa) }, { t: `P(${nb})`, v: p(pb) }, { t: `P(${na} ∩ ${nb})`, v: p(pi), pr: true }, { t: `P(${na} ∪ ${nb})`, v: p(pu), pr: true }];
+    const cond = [];
+    if (fB > 0) { res.push({ t: `P(${na} | ${nb})`, v: p(c[0][0] / fB), pr: true }); cond.push(`$P(${ma} | ${mb}) = {${n(c[0][0])}}/{${n(fB)}} = ${p(c[0][0] / fB)}$`); }
+    if (fA > 0) { res.push({ t: `P(${nb} | ${na})`, v: p(c[0][0] / fA), pr: true }); cond.push(`$P(${mb} | ${ma}) = {${n(c[0][0])}}/{${n(fA)}} = ${p(c[0][0] / fA)}$`); }
+    if (N - fB > 0) { res.push({ t: `P(${na} | ${nbn})`, v: p(c[0][1] / (N - fB)) }); cond.push(`$P(${ma} | ${mbn}) = {${n(c[0][1])}}/{${n(N - fB)}} = ${p(c[0][1] / (N - fB))}$`); }
+    if (N - fA > 0) { res.push({ t: `P(${nb} | ${nan})`, v: p(c[1][0] / (N - fA)) }); cond.push(`$P(${mb} | ${man}) = {${n(c[1][0])}}/{${n(N - fA)}} = ${p(c[1][0] / (N - fA))}$`); }
+    pasos.push({ t: 'Condicionadas', html: `Condicionar es quedarse con una sola fila o columna y dividir por su total: ${cond.join(', ')}` });
+    const indep = Math.abs(pi - pa * pb) < 1e-9;
+    pasos.push({ t: '¿Independientes?', html: `$P(${ma})·P(${mb}) = ${p(pa)}·${p(pb)} = ${p(pa * pb)}$ ${indep ? '=' : '≠'} $P(${ma} ∩ ${mb}) = ${p(pi)}$ ⇒ ${indep ? 'sí son independientes: las filas de la tabla son proporcionales' : 'no son independientes'}` });
+    res.push({ t: `P(${nan} ∩ ${nbn})`, v: p(c[1][1] / N) }, { t: '¿Independientes?', v: indep ? 'Sí' : 'No' });
+    const tabla = { cab: ['', nb, `No ${nb}`, 'Total'], filas: [[na, n(c[0][0]), n(c[0][1]), n(fA)], [`No ${na}`, n(c[1][0]), n(c[1][1]), n(N - fA)]], pie: ['Total', n(fB), n(N - fB), n(N)] };
+    return { modo: 'tabla', na, nb, c, N, pa, pb, pi, pu, indep, tabla, res, pasos };
+  }
+
   function resolver(sc) {
+    if (sc.modo === 'va') return variable(sc);
+    if (sc.modo === 'tabla') return contingencia(sc);
     if (sc.modo === 'suc') return sucesos(sc);
     if (sc.modo === 'bayes') return bayes(sc);
     return combinatoria(sc);
@@ -778,6 +891,8 @@ const Probabilidad = (() => {
     pa: '0,6', pb: '0,5', rel: 'union', pc: '0,85',
     nb: 'D', obs: 'si',
     filas: [{ n: 'Máquina 1', p: '0,5', l: '0,01' }, { n: 'Máquina 2', p: '0,3', l: '0,02' }, { n: 'Máquina 3', p: '0,2', l: '0,03' }, { n: '', p: '', l: '' }],
+    vax: '0; 1; 2; 3', vap: '1/8; 3/8; 3/8; 1/8', vak: '', vaa: '', vab: '',
+    ta: 'A', tb: 'B', t11: '30', t12: '20', t21: '15', t22: '35',
   });
   const ej = (clave, nombre, extra) => ({ clave, nombre, sc: { ...base(), ...extra } });
   const ejemplos = [
@@ -790,6 +905,11 @@ const Probabilidad = (() => {
     ej('independientes', 'Sucesos · A y B independientes', { modo: 'suc', pa: '0,5', pb: '0,4', rel: 'indep', pc: '' }),
     ej('fabrica', 'Bayes · Tres máquinas y piezas defectuosas', { modo: 'bayes' }),
     ej('diagnostico', 'Bayes · Prueba médica (enfermo / sano)', { modo: 'bayes', nb: '+', filas: [{ n: 'Enfermo', p: '0,01', l: '0,95' }, { n: 'Sano', p: '0,99', l: '0,05' }, { n: '', p: '', l: '' }, { n: '', p: '', l: '' }] }),
+    ej('caras', 'Variable aleatoria · Caras al lanzar tres monedas', { modo: 'va', vax: '0; 1; 2; 3', vap: '1/8; 3/8; 3/8; 1/8', vak: '1' }),
+    ej('dado', 'Variable aleatoria · Un dado y la ganancia Y = 2X − 5', { modo: 'va', vax: '1; 2; 3; 4; 5; 6', vap: '1/6; 1/6; 1/6; 1/6; 1/6; 1/6', vaa: '2', vab: '−5' }),
+    ej('incognita', 'Variable aleatoria · Falta una probabilidad', { modo: 'va', vax: '−1; 0; 2; 5', vap: '0,2; 0,35; ?; 0,15' }),
+    ej('encuesta', 'Tabla 2 × 2 · Deporte y tabaco en 100 personas', { modo: 'tabla', ta: 'Deporte', tb: 'Fuma', t11: '10', t12: '50', t21: '20', t22: '20' }),
+    ej('tabla-indep', 'Tabla 2 × 2 · Dos sucesos independientes', { modo: 'tabla', ta: 'A', tb: 'B', t11: '0,12', t12: '0,28', t21: '0,18', t22: '0,42' }),
     ej('sin-defecto', 'Bayes · Pieza sin defecto (suceso contrario)', { modo: 'bayes', obs: 'no' }),
   ];
 
@@ -1015,6 +1135,19 @@ const Compartir = (() => {
       h = fila('pa', 'Probabilidad de A', 'P(A)') + fila('pb', 'Probabilidad de B', 'P(B)') + `<label for="f-rel">Relación</label><select id="f-rel" class="in" data-k="rel">${opciones(P.RELACIONES, sc.rel)}</select>`;
       if (['inter', 'union', 'cond'].includes(sc.rel)) h += fila('pc', sc.rel === 'inter' ? 'Intersección' : sc.rel === 'union' ? 'Unión' : 'Condicionada', sc.rel === 'inter' ? 'P(A ∩ B)' : sc.rel === 'union' ? 'P(A ∪ B)' : 'P(A | B)');
       nota = 'Las probabilidades se escriben como 0,3, 30 % o 3/10.';
+    } else if (sc.modo === 'va') {
+      h = `<label for="f-vax">Valores de X</label><input id="f-vax" class="in" data-k="vax" value="${esc(sc.vax ?? '')}" autocomplete="off">` +
+        `<label for="f-vap">Probabilidades</label><input id="f-vap" class="in" data-k="vap" value="${esc(sc.vap ?? '')}" autocomplete="off">` +
+        fila('vak', 'Probabilidades en', 'x, opcional') + fila('vaa', 'Y = aX + b: a', 'opcional') + fila('vab', 'Y = aX + b: b', 'opcional');
+      nota = 'Separa los valores con punto y coma (la coma es decimal): 0; 1; 2; 3. Las probabilidades, en el mismo orden, como 0,3, 30 % o 3/10. Si falta una, escribe ? y se calcula para que sumen 1.';
+    } else if (sc.modo === 'tabla') {
+      const c = (k, t) => `<input class="in" aria-label="${t}" data-k="${k}" value="${esc(sc[k] ?? '')}" inputmode="decimal" autocomplete="off">`;
+      h = `<label for="f-ta">Suceso de las filas</label><input id="f-ta" class="in" data-k="ta" value="${esc(sc.ta ?? '')}" maxlength="14" autocomplete="off">` +
+        `<label for="f-tb">Suceso de las columnas</label><input id="f-tb" class="in" data-k="tb" value="${esc(sc.tb ?? '')}" maxlength="14" autocomplete="off">` +
+        `<div class="ancho"><div class="causas" id="casillas"><span></span><span>${esc(sc.tb || 'B')}</span><span>No ${esc(sc.tb || 'B')}</span>` +
+        `<span>${esc(sc.ta || 'A')}</span>${c('t11', `${sc.ta || 'A'} y ${sc.tb || 'B'}`)}${c('t12', `${sc.ta || 'A'} y no ${sc.tb || 'B'}`)}` +
+        `<span>No ${esc(sc.ta || 'A')}</span>${c('t21', `No ${sc.ta || 'A'} y ${sc.tb || 'B'}`)}${c('t22', `Ni ${sc.ta || 'A'} ni ${sc.tb || 'B'}`)}</div></div>`;
+      nota = 'En cada casilla, el número de casos (o la probabilidad) de que ocurran a la vez lo de su fila y lo de su columna.';
     } else {
       h = `<label for="f-nb">Suceso observado</label><input id="f-nb" class="in" data-k="nb" value="${esc(sc.nb)}" maxlength="12" autocomplete="off">` +
         `<div class="ancho"><div class="causas" id="causas"><span>Causa</span><span>P(Aᵢ)</span><span>P(suceso | Aᵢ)</span>` +
@@ -1031,6 +1164,7 @@ const Compartir = (() => {
     else if (t.dataset.k) {
       sc[t.dataset.k] = t.value;
       if (t.tagName === 'SELECT' && (t.dataset.k === 'ctipo' || t.dataset.k === 'rel')) formulario();
+      if (t.dataset.k === 'ta' || t.dataset.k === 'tb') { const cab = document.querySelectorAll('#casillas span'), a = sc.ta || 'A', b = sc.tb || 'B'; cab[1].textContent = b; cab[2].textContent = `No ${b}`; cab[3].textContent = a; cab[4].textContent = `No ${a}`; }
     } else return;
     $('#ejemplos').value = ''; calcula();
   });
@@ -1055,15 +1189,21 @@ const Compartir = (() => {
     const err = $('#error');
     try { sol = P.resolver(sc); } catch (e) {
       sol = null; err.textContent = e.message; err.hidden = false;
-      $('#resumen').innerHTML = ''; $('#pasos').innerHTML = ''; $('#leyenda').textContent = ''; $('#tarjeta-grafica').hidden = true; dibuja(); return;
+      $('#resumen').innerHTML = ''; $('#pasos').innerHTML = ''; $('#leyenda').textContent = ''; $('#tarjeta-grafica').hidden = true; $('#tarjeta-tabla').hidden = true; dibuja(); return;
     }
     err.hidden = true; guarda();
     $('#resumen').innerHTML = sol.res.map((r) => dato(r.t, r.v, r.pr)).join('');
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li>${p.t ? `<strong>${Mates.html(p.t)}</strong>` : ''}${Mates.html(p.html)}</li>`).join('');
     $('#tarjeta-grafica').hidden = sol.modo === 'comb';
-    $('#titulo-grafica').textContent = sol.modo === 'bayes' ? 'Diagrama de árbol' : 'Diagrama de áreas';
+    const tb = sol.tabla, celda = (v, e = 'td') => `<${e}>${e === 'th' ? esc(v) : v}</${e}>`;
+    $('#tarjeta-tabla').hidden = !tb;
+    $('#titulo-tabla').textContent = sol.modo === 'va' ? 'Tabla de la variable' : 'Tabla con los totales';
+    $('#tabla').innerHTML = tb ? `<table class="tabla"><thead><tr>${tb.cab.map((c) => `<th scope="col">${esc(c)}</th>`).join('')}</tr></thead><tbody>${tb.filas.map((r) => `<tr>${r.map((v, i) => (i === 0 && sol.modo === 'tabla' ? `<th scope="row">${esc(v)}</th>` : celda(v))).join('')}</tr>`).join('')}</tbody><tfoot><tr>${tb.pie.map((v, i) => (i === 0 ? `<th scope="row">${esc(v)}</th>` : celda(v))).join('')}</tr></tfoot></table>` : '';
+    $('#titulo-grafica').textContent = sol.modo === 'bayes' ? 'Diagrama de árbol' : sol.modo === 'va' ? 'Función de probabilidad y de distribución' : 'Diagrama de áreas';
     $('#leyenda').textContent = sol.modo === 'bayes'
       ? `Cada rama lleva su probabilidad; al final, la del camino completo. La causa más probable sabiendo que ${sol.obs === 'si' ? '' : 'no '}ha ocurrido ${sol.nb} es ${sol.may.n}.`
+      : sol.modo === 'va' ? 'Las barras son las probabilidades de cada valor; la línea escalonada es F(x), que acumula hasta 1; la línea discontinua marca la esperanza μ.'
+      : sol.modo === 'tabla' ? `El cuadrado vale 1: el ancho reparte ${sol.na} y su contrario, y el alto reparte ${sol.nb} dentro de cada uno. Las áreas son las probabilidades.`
       : 'El cuadrado vale 1: el ancho reparte A y su contrario, y el alto reparte B dentro de cada uno. Las áreas son las probabilidades.';
     dibuja();
   }
@@ -1092,26 +1232,48 @@ const Compartir = (() => {
   }
   function areas(g, w, h) {
     const m = 14, L = Math.min(w - 2 * m, h - 2 * m - 18), x0 = (w - L) / 2, y0 = m;
-    const pa = sol.pa, pb = sol.pb, pi = sol.pi;
+    const pa = sol.pa, pb = sol.pb, pi = sol.pi, A = sol.na || 'A', B = sol.nb || 'B', An = sol.na ? `no ${A}` : 'Ā', Bn = sol.nb ? `no ${B}` : 'B̄';
     const pbA = pa > 0 ? pi / pa : 0, pbN = pa < 1 ? (pb - pi) / (1 - pa) : 0;
     const trozos = [
-      [0, 0, pa, pbA, 'A ∩ B', pi, '--accent'], [0, pbA, pa, 1 - pbA, 'A ∩ B̄', pa - pi, '--rama'],
-      [pa, 0, 1 - pa, pbN, 'Ā ∩ B', pb - pi, '--rama2'], [pa, pbN, 1 - pa, 1 - pbN, 'Ā ∩ B̄', 1 - sol.pu, '--line'],
+      [0, 0, pa, pbA, `${A} ∩ ${B}`, pi, '--accent'], [0, pbA, pa, 1 - pbA, `${A} ∩ ${Bn}`, pa - pi, '--rama'],
+      [pa, 0, 1 - pa, pbN, `${An} ∩ ${B}`, pb - pi, '--rama2'], [pa, pbN, 1 - pa, 1 - pbN, `${An} ∩ ${Bn}`, 1 - sol.pu, '--line'],
     ];
     g.font = '12px system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
     for (const [x, y, ww, hh, et, v, c] of trozos) {
       const X = x0 + x * L, Y = y0 + y * L, W = ww * L, H = hh * L;
       g.globalAlpha = 0.32; g.fillStyle = col[c]; g.fillRect(X, Y, W, H); g.globalAlpha = 1;
       g.strokeStyle = col['--ink']; g.lineWidth = 1; g.strokeRect(X, Y, W, H);
-      if (W > 48 && H > 30) { g.fillStyle = col['--ink']; g.fillText(et, X + W / 2, Y + H / 2 - 8); g.fillText(num(v), X + W / 2, Y + H / 2 + 8); }
+      if (W > Math.max(48, g.measureText(et).width + 6) && H > 30) { g.fillStyle = col['--ink']; g.fillText(et, X + W / 2, Y + H / 2 - 8); g.fillText(num(v), X + W / 2, Y + H / 2 + 8); }
     }
     g.fillStyle = col['--muted']; g.textBaseline = 'top';
-    g.fillText(`A: ${num(pa)}`, x0 + pa * L / 2, y0 + L + 4); g.fillText(`Ā: ${num(1 - pa)}`, x0 + (pa + (1 - pa) / 2) * L, y0 + L + 4);
+    if (pa * L > 40) g.fillText(`${A}: ${num(pa)}`, x0 + pa * L / 2, y0 + L + 4);
+    if ((1 - pa) * L > 40) g.fillText(`${An}: ${num(1 - pa)}`, x0 + (pa + (1 - pa) / 2) * L, y0 + L + 4);
+  }
+  function barras(g, w, h) {
+    const xs = sol.xs, ps = sol.ps, n = xs.length, mi = 34, md = 34, ms = 12, mb = 26, W = w - mi - md, H = h - ms - mb;
+    const a = xs[0], b = xs[n - 1], paso = Math.min(...xs.slice(1).map((x, i) => x - xs[i])), x0 = a - paso * 0.7, x1 = b + paso * 0.7;
+    const X = (x) => mi + ((x - x0) / (x1 - x0)) * W, pm = Math.max(...ps), tope = pm > 0.5 ? 1 : Math.min(1, Math.ceil(pm * 10 + 0.5) / 10);
+    const Y = (v) => ms + H - (v / tope) * H, YF = (v) => ms + H - v * H, ancho = Math.max(3, Math.min(46, (paso / (x1 - x0)) * W * 0.55));
+    g.font = '12px system-ui, sans-serif'; g.lineWidth = 1; g.strokeStyle = col['--line']; g.fillStyle = col['--muted'];
+    g.textAlign = 'right'; g.textBaseline = 'middle';
+    for (const v of [0, tope / 2, tope]) { g.beginPath(); g.moveTo(mi, Y(v)); g.lineTo(mi + W, Y(v)); g.stroke(); g.fillText(num(v), mi - 5, Y(v)); }
+    g.textAlign = 'left'; g.fillStyle = col['--rama2']; for (const v of [0, 0.5, 1]) g.fillText(num(v), mi + W + 5, YF(v));
+    g.textAlign = 'center'; g.textBaseline = 'top';
+    const cada = Math.ceil(n / Math.max(2, Math.floor(W / 38)));
+    xs.forEach((x, i) => {
+      g.globalAlpha = 0.75; g.fillStyle = col['--rama']; g.fillRect(X(x) - ancho / 2, Y(ps[i]), ancho, ms + H - Y(ps[i])); g.globalAlpha = 1;
+      if (i % cada === 0) { g.fillStyle = col['--ink']; g.fillText(txt(P.f(x, 4)), X(x), ms + H + 5); }
+    });
+    g.strokeStyle = col['--rama2']; g.lineWidth = 2; g.beginPath(); g.moveTo(mi, YF(0));
+    xs.forEach((x, i) => { g.lineTo(X(x), YF(i ? sol.F[i - 1] : 0)); g.lineTo(X(x), YF(sol.F[i])); });
+    g.lineTo(mi + W, YF(1)); g.stroke();
+    g.strokeStyle = col['--ink']; g.lineWidth = 1.5; g.setLineDash([5, 4]); g.beginPath(); g.moveTo(X(sol.mu), ms); g.lineTo(X(sol.mu), ms + H); g.stroke(); g.setLineDash([]);
+    g.fillStyle = col['--ink']; g.textBaseline = 'top'; g.textAlign = X(sol.mu) > mi + W - 40 ? 'right' : 'left'; g.fillText('μ', X(sol.mu) + (g.textAlign === 'left' ? 5 : -5), ms + 1);
   }
   function dibuja() {
     const { g, w, h } = lienzo('#grafica');
     if (!sol || !w || !h || sol.modo === 'comb') return;
-    if (sol.modo === 'bayes') arbol(g, w, h); else areas(g, w, h);
+    if (sol.modo === 'bayes') arbol(g, w, h); else if (sol.modo === 'va') barras(g, w, h); else areas(g, w, h);
   }
   window.addEventListener('resize', dibuja);
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { colores(); dibuja(); });
@@ -1612,6 +1774,27 @@ const Practica = (() => {
     'no-parametricos': { datos: null, genera: () => window.NoParametricosApp?.azar(), enunciado: () => window.NoParametricosApp?.enunciado() },
     'regresion-multiple': { datos: null, genera: () => window.RegresionMultipleApp?.azar(), enunciado: () => window.RegresionMultipleApp?.enunciado() },
     'regresion-economia': { datos: null, genera: () => window.RegresionEconomiaApp?.azar(), enunciado: () => window.RegresionEconomiaApp?.enunciado() },
+    elasticidades: { datos: null, genera: () => window.ElasticidadesApp?.azar(), enunciado: () => window.ElasticidadesApp?.enunciado() },
+    costes: { datos: null, genera: () => window.CostesApp?.azar(), enunciado: () => window.CostesApp?.enunciado() },
+    beneficio: { datos: null, genera: () => window.BeneficioApp?.azar(), enunciado: () => window.BeneficioApp?.enunciado() },
+    'pib-ipc': { datos: null, genera: () => window.PibIpcApp?.azar(), enunciado: () => window.PibIpcApp?.enunciado() },
+    multiplicador: { datos: null, genera: () => window.MultiplicadorApp?.azar(), enunciado: () => window.MultiplicadorApp?.enunciado() },
+    'is-lm': { datos: null, genera: () => window.IsLmApp?.azar(), enunciado: () => window.IsLmApp?.enunciado() },
+    'phillips-okun': { datos: null, genera: () => window.PhillipsOkunApp?.azar(), enunciado: () => window.PhillipsOkunApp?.enunciado() },
+    'tipos-cambio': { datos: null, genera: () => window.TiposCambioApp?.azar(), enunciado: () => window.TiposCambioApp?.enunciado() },
+    interes: { datos: null, genera: () => window.InteresApp?.azar(), enunciado: () => window.InteresApp?.enunciado() },
+    prestamos: { datos: null, genera: () => window.PrestamosApp?.azar(), enunciado: () => window.PrestamosApp?.enunciado() },
+    'van-tir': { datos: null, genera: () => window.VanTirApp?.azar(), enunciado: () => window.VanTirApp?.enunciado() },
+    rentas: { datos: null, genera: () => window.RentasApp?.azar(), enunciado: () => window.RentasApp?.enunciado() },
+    ahorro: { datos: null, genera: () => window.AhorroApp?.azar(), enunciado: () => window.AhorroApp?.enunciado() },
+    'punto-muerto': { datos: null, genera: () => window.PuntoMuertoApp?.azar(), enunciado: () => window.PuntoMuertoApp?.enunciado() },
+    'amortizacion-inmovilizado': { datos: null, genera: () => window.AmortizacionApp?.azar(), enunciado: () => window.AmortizacionApp?.enunciado() },
+    'numeros-indice': { datos: null, genera: () => window.NumerosIndiceApp?.azar(), enunciado: () => window.NumerosIndiceApp?.enunciado() },
+    'lorenz-gini': { datos: null, genera: () => window.LorenzGiniApp?.azar(), enunciado: () => window.LorenzGiniApp?.enunciado() },
+    solow: { datos: null, genera: () => window.SolowApp?.azar(), enunciado: () => window.SolowApp?.enunciado() },
+    bonos: { datos: null, genera: () => window.BonosApp?.azar(), enunciado: () => window.BonosApp?.enunciado() },
+    'black-scholes': { datos: null, genera: () => window.BlackScholesApp?.azar(), enunciado: () => window.BlackScholesApp?.enunciado() },
+    markowitz: { datos: null, genera: () => window.MarkowitzApp?.azar(), enunciado: () => window.MarkowitzApp?.enunciado() },
     ratios: { datos: null, genera: () => window.RatiosApp?.azar(), enunciado: () => window.RatiosApp?.enunciado() },
     balance: { datos: null, genera: () => window.BalanceApp?.azar(), enunciado: () => window.BalanceApp?.enunciado() },
     ajustador: { datos: null, items: '#coefs > div', genera: () => window.AjustadorApp?.azar(), enunciado: () => window.AjustadorApp?.enunciado() },

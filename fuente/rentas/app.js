@@ -7,7 +7,7 @@
 (() => {
   const R = Rentas, { f, dinero, num } = Eco;
   Calculadora.monta({
-    C: R, carpeta: 'rentas', app: 'RentasApp',
+    C: R, carpeta: 'rentas', app: 'RentasApp', azar: R.azar, enunciado: R.enunciado,
     nota: 'El tipo es el efectivo anual (TAE): con términos mensuales, trimestrales o semestrales se pasa solo al tipo de cada periodo. El diferimiento se cuenta en periodos.',
     campos: (sc) => {
       const cs = [{ k: 'modo', nom: 'Calcular', tipo: 'sel', ops: Object.entries(R.MODOS) },

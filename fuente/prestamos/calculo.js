@@ -32,6 +32,9 @@ const Prestamos = (() => {
   }
 
   function resolver(sc) {
+    const r = resolverBase(sc); r.pasos.push({ t: 'Convención', html: 'Los intereses de cada periodo salen del tipo TIN/m sobre la deuda pendiente; cuotas, intereses y deuda no se redondean a céntimos. La TAE incluye la comisión de apertura, pero no seguros, tasación ni otras comisiones. Un banco que redondea la cuota a céntimos da diferencias de unos céntimos.' }); return r;
+  }
+  function resolverBase(sc) {
     const sis = SISTEMAS[sc.sistema] ? sc.sistema : 'frances';
     const m = PERIODOS[sc.m] ? +sc.m : 12, [per, pers, uno] = PERIODOS[m];
     const C = lee(sc, 'c', 'el capital prestado', { min: 0, minEx: true });
@@ -106,6 +109,13 @@ const Prestamos = (() => {
     { clave: 'americano', nombre: 'Americano: 10.000 € al 8 % en 4 años', sc: { sistema: 'americano', c: '10000', i: '8', anos: '4', m: '1', comision: '' } },
   ];
 
-  return { resolver, ejemplos, SISTEMAS, PERIODOS, tasa };
+  // modo práctica: datos redondos al azar
+  const AZ = K.az, azar = AZ.desde(ejemplos, () => {
+    const sis = AZ.toma(['frances', 'frances', 'lineal', 'americano']), m = sis === 'frances' ? AZ.toma([1, 12]) : 1;
+    return { sistema: sis, c: String(AZ.toma([10000, 15000, 50000, 100000, 150000])), i: String(AZ.toma([2, 3, 4, 6, 8])), anos: String(m === 12 ? AZ.toma([5, 10, 15, 25]) : AZ.toma([4, 5, 10])), m: String(m), comision: AZ.toma(['', '', '1']) };
+  }, (sc) => !sc.ext && !sc.car, (sc) => resolver(sc));
+  const enunciado = (sc) => `Un préstamo de ${sc.c} € al ${sc.i} % anual a ${sc.anos} años, con cuotas ${sc.m === '12' ? 'mensuales' : 'anuales'}, por el sistema ${{ frances: 'francés (cuota constante)', lineal: 'de amortización lineal', americano: 'americano (solo intereses y devolución final)' }[sc.sistema]}${sc.comision ? ` y una comisión de apertura del ${sc.comision} %` : ''}. Calcula la ${sc.sistema === 'frances' ? 'cuota' : 'primera y la última cuota'}, los intereses totales, el total pagado y la TAE.`;
+
+  return { azar, enunciado, resolver, ejemplos, SISTEMAS, PERIODOS, tasa };
 })();
 if (typeof module !== 'undefined') module.exports = Prestamos;

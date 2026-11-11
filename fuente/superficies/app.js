@@ -93,6 +93,8 @@
       if (P.aprox) h += dato('f aproximada (plano)', fH(P.aprox.zl, 6), 'num') + dato('f exacta', fH(P.aprox.ze, 6), 'num') + dato('Error', fH(Math.abs(P.aprox.err), 3));
     } else h += dato('Punto', 'Escribe x₀ e y₀ para ver el gradiente y el plano tangente', 'ancho');
     h += dato('Puntos críticos', sol.crit.length ? sol.crit.map((q) => `${M(`(${S.nt(q.x)}, ${S.nt(q.y)})`)}: ${q.tipo}`).join('<br>') : 'ninguno en el rango', 'ancho');
+    if (sol.sinDeriv) { const sd = sol.sinDeriv; h += dato('Puntos sin derivada', [...sd.puntos.map((q) => `${M(`(${S.nt(q.x)}, ${S.nt(q.y)})`)}: ${q.tipo}`), ...sd.curvas.map((c) => `${M(`${c.u} = 0`)}: ${c.tipo}`)].join('<br>') || 'ninguno es extremo', 'ancho'); }
+    if (sol.fuera.length) h += dato('Críticos fuera del dibujo', sol.fuera.map((q) => `${M(`(${S.nt(q.x)}, ${S.nt(q.y)})`)}: ${q.tipo}`).join('<br>') + (sol.fueraMas ? '<br>y más' : '') + '<br><small>Amplía el rango para verlos.</small>', 'ancho');
     $('#resumen').innerHTML = h;
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
     $('#leyenda-3d').textContent = `Arrastra para girar y usa la rueda para acercar. El color y las curvas del suelo marcan la altura, de ${txt(fH(zr.lo))} a ${txt(fH(zr.hi))}.`;

@@ -8,7 +8,7 @@
   const V = VanTir, { f, dinero, num } = Eco;
   const tp = (x) => `${f(100 * x, 5)} %`, anos = (x) => (x === null ? 'no se recupera' : `${f(x, 4)} años`);
   Calculadora.monta({
-    C: V, carpeta: 'van-tir', app: 'VanTirApp',
+    C: V, carpeta: 'van-tir', app: 'VanTirApp', azar: V.azar, enunciado: V.enunciado,
     nota: 'Los flujos de caja van al final de cada año (cobros menos pagos), separados por espacios; uno negativo es un año con pérdidas. Si el bien se vende al final, suma ese valor al último flujo.',
     campos: () => [
       { k: 'a', nom: 'Desembolso inicial A', un: '€' },

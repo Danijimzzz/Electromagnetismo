@@ -102,6 +102,8 @@
       h += dato(`x(${fH(fin.t, 4)})`, fH(fin.Y[0], 5), 'num') + dato(`y(${fH(fin.t, 4)})`, fH(fin.Y[1], 5), 'num');
     }
     $('#resumen').innerHTML = h;
+    // «Usar en…»: la ecuación de 2.º orden con sus condiciones iniciales, resuelta con Laplace (si parte de t = 0)
+    { const ue = $('#usar-en'), ok = sol.modo === 'segundo' && !sol.superior && sol.x0 === 0; ue.hidden = !ok; ue.innerHTML = ok ? `<a class="btn" data-usar="matematicas/laplace" href="${esc(Herramienta.enlaceA('laplace', { modo: 'edo', a: sc.a, b: sc.b, c: sc.c, g: sc.g, y0: sc.y0, v0: sc.v0 }))}">Resolver con Laplace →</a>` : ''; }
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
     $('#tiempo').hidden = sol.modo !== 'sistema';
     $('#leyenda').innerHTML = sol.modo === 'primer' ? `Campo de pendientes de y′ = f(x, y). En color, los pasos de Euler con h = ${fH(sol.h)}; en negro, ${sol.exacta ? 'la solución exacta' : 'la solución con RK4'}. Toca la gráfica para empezar en otro punto.`

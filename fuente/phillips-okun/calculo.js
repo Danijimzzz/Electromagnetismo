@@ -78,6 +78,21 @@ const PhillipsOkun = (() => {
     { clave: 'datos', nombre: 'Diez años de un país imaginario (datos inventados)', sc: { modo: 'datos', datos: 'paro inflación\n4 5,1\n5 4,2\n6,5 3,4\n8 2,3\n7 3,1\n5,5 3,9\n4,5 4,9\n6 3,2\n7,5 2,9\n9 1,8' } },
   ];
 
-  return { resolver, ejemplos, MODOS };
+  // modo práctica: datos redondos al azar
+  const AZ = K.az, azar = AZ.desde(ejemplos, (sc) => {
+    if (sc.modo === 'brecha') return { u: String(AZ.toma([7, 8, 9, 10])), un: String(AZ.toma([5, 6])), c: AZ.t(AZ.toma([2, 2.5])), Yp: String(AZ.toma([1000, 1400, 2000])) };
+    if (sc.modo === 'phillips') return { pe: String(AZ.toma([2, 3])), alfa: AZ.t(AZ.toma([0.4, 0.5, 0.6])), un: String(AZ.toma([5, 6])), u: String(AZ.toma([3, 4, 7])), s: String(AZ.toma([0, 2, 4])) };
+    const u0 = AZ.toma([8, 10, 12, 14]);
+    return sc.busca === 'crecimiento' ? { u0: String(u0), u1: String(u0 - AZ.toma([1, 2])), gp: AZ.t(AZ.toma([2, 2.5])), beta: AZ.t(AZ.toma([0.4, 0.5])) } : { u0: String(u0), g: AZ.t(AZ.toma([-2, -1, 0.5, 1, 4])), gp: AZ.t(AZ.toma([2, 2.5])), beta: AZ.t(AZ.toma([0.4, 0.5])) };
+  }, (sc) => sc.modo !== 'datos', (sc) => resolver(sc));
+  const enunciado = (sc) => sc.modo === 'brecha'
+    ? `Con una tasa de paro del ${sc.u} %, una tasa natural del ${sc.un} % y un coeficiente de Okun de ${sc.c}, calcula la brecha de producción, el paro cíclico y el PIB si el PIB potencial es de ${sc.Yp} mil millones de euros.`
+    : sc.modo === 'phillips'
+      ? `En la curva de Phillips con expectativas, la inflación esperada es del ${sc.pe} %, α = ${sc.alfa}, la tasa natural de paro del ${sc.un} %, el paro actual del ${sc.u} % y hay un shock de oferta de ${sc.s} puntos. Calcula la inflación y compárala con la esperada.`
+      : sc.busca === 'crecimiento'
+        ? `Con la ley de Okun (β = ${sc.beta}) y un crecimiento potencial del ${sc.gp} %, ¿cuánto tiene que crecer el PIB para que el paro baje del ${sc.u0} % al ${sc.u1} %?`
+        : `Con la ley de Okun (β = ${sc.beta}), un crecimiento potencial del ${sc.gp} % y un paro inicial del ${sc.u0} %, calcula el paro al final del año si el PIB crece un ${sc.g} %, y su variación.`;
+
+  return { azar, enunciado, resolver, ejemplos, MODOS };
 })();
 if (typeof module !== 'undefined') module.exports = PhillipsOkun;

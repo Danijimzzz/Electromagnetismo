@@ -1,13 +1,14 @@
 /* =====================================================================
    Distribuciones de probabilidad: interfaz (distribución, parámetros,
-   tipo de cálculo, gráfica con el área sombreada que se puede arrastrar,
+   tipo de cálculo, gráfica con el área sombreada que se puede arrastrar, una segunda
+   distribución superpuesta, el histograma del teorema central del límite,
    desarrollo con la tabla de valores y ejercicios para el modo práctica).
    El cálculo está en estadistica/calculo.js (Estadistica).
    ===================================================================== */
 (() => {
   const { $, esc, copia } = Herramienta;
   const E = Estadistica, num = E.num, CLAVE = 'estadistica-v1';
-  const DEF = { forma: '2', tasa: '1', al: '2', be: '3', escala: '1', r: '3', mu: '0', sigma: '1', nu: '10', k: '5', d1: '5', d2: '10', lambda: '2', lo: '0', hi: '10', n: '10', p: '0.5', N: '50', K: '10', q: '0.5', a: '1', b: '2', cc: '1', alfa: '0.05', incog: 'mu', cola: 'menor' };
+  const DEF = { forma: '2', tasa: '1', al: '2', be: '3', escala: '1', r: '3', mu: '0', sigma: '1', nu: '10', k: '5', d1: '5', d2: '10', lambda: '2', lo: '0', hi: '10', n: '10', p: '0.5', N: '50', K: '10', q: '0.5', a: '1', b: '2', cc: '1', alfa: '0.05', incog: 'mu', cola: 'menor', nm: '30' };
 
   let sc = copia(E.ejemplos[0].sc);
   try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && E.DIST[g.dist]) sc = g; } catch (e) {}
@@ -15,7 +16,8 @@
   let sol = null, col = {}, vista = null, arrastra = null, enun = '';
 
   /* ---------- Formulario ---------- */
-  const fila = (k, nom) => (sc[k] === undefined && DEF[k] !== undefined && (sc[k] = DEF[k]), `<label for="f-${k}">${nom}</label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc[k] ?? DEF[k] ?? '')}" inputmode="decimal" autocomplete="off">`);
+  const def = (k) => DEF[k] ?? DEF[k.replace(/^c_/, '')];
+  const fila = (k, nom) => (sc[k] === undefined && def(k) !== undefined && (sc[k] = def(k)), `<label for="f-${k}">${nom}</label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc[k] ?? def(k) ?? '')}" inputmode="decimal" autocomplete="off">`);
   const opciones = (k, nom, ops) => (sc[k] = ops.some(([v]) => v === sc[k]) ? sc[k] : ops[0][0], `<label for="f-${k}">${nom}</label><select id="f-${k}" class="in" data-k="${k}">${ops.map(([v, t]) => `<option value="${v}"${v === sc[k] ? ' selected' : ''}>${t}</option>`).join('')}</select>`);
   function formulario() {
     const D = E.DIST[sc.dist], tipos = E.tipos(sc.dist);
@@ -25,14 +27,24 @@
     h += D.params.filter(([k]) => k !== incog).map(([k, nom]) => fila(k, nom)).join('');
     h += `<label for="f-tipo">Qué calcular</label><select id="f-tipo" class="in" data-k="tipo">${tipos.map(([k, t]) => `<option value="${k}"${k === sc.tipo ? ' selected' : ''}>${t.replace('X', D.nombreX)}</option>`).join('')}</select>`;
     const t = sc.tipo;
-    if (t === 'cuantil') h += fila('q', 'Probabilidad p');
+    if (t === 'tcl') h += fila('nm', 'Tamaño de cada muestra n');
+    else if (t === 'cuantil') h += fila('q', 'Probabilidad p');
     else if (t === 'critico' || t === 'criticoU') h += fila('alfa', 'Nivel de significación α');
     else if (t === 'centro') h += fila('cc', 'Distancia c a la media');
     else if (t === 'inverso') h += opciones('incog', 'Incógnita', [['mu', 'La media μ'], ['sigma', 'La desviación típica σ']]) + opciones('cola', 'Se sabe que', [['menor', 'P(X ≤ a) = p'], ['mayor', 'P(X ≥ a) = p']]) + fila('a', 'Valor a') + fila('q', 'Probabilidad p');
     else if (t === 'entre') h += fila('a', 'Valor a') + fila('b', 'Valor b');
     else h += fila('a', D.continua ? 'Valor a' : 'Valor k');
+    // segunda distribución superpuesta
+    if (t !== 'tcl') {
+      if (!E.DIST[sc.comp]) sc.comp = '';
+      h += `<label for="f-comp">Comparar con</label><select id="f-comp" class="in" data-k="comp"><option value="">Ninguna</option>${Object.entries(E.DIST).map(([k, d]) => `<option value="${k}"${k === sc.comp ? ' selected' : ''}>${d.nombre}</option>`).join('')}</select>`;
+      if (sc.comp) h += E.DIST[sc.comp].params.map(([k, nom]) => fila(`c_${k}`, `${nom} (la segunda)`)).join('');
+    }
     $('#campos').innerHTML = h;
+    $('#otra').hidden = t !== 'tcl';
+    $('#nota-grafica').textContent = t === 'tcl' ? `Histograma de las medias de ${E.MUESTRAS} muestras y, encima, la normal que predice el teorema.` : 'Arrastra sobre la gráfica para mover a, b o c.';
   }
+  $('#otra').addEventListener('click', () => { sc.semilla = (Math.floor(+sc.semilla) || 1) + 1; $('#ejemplos').value = ''; calcula(); });
   $('#campos').addEventListener('input', (e) => { const t = e.target; if (t.tagName !== 'INPUT') return; sc[t.dataset.k] = t.value; $('#ejemplos').value = ''; calcula(); });
   $('#campos').addEventListener('change', (e) => {
     const t = e.target;
@@ -49,11 +61,11 @@
   function abrirEjemplo(clave) {
     const e = E.ejemplos.find((x) => x.clave === clave);
     if (!e) return;
-    sc = { ...sc, ...copia(e.sc) };
+    sc = { ...sc, comp: '', ...copia(e.sc) };
     formulario(); calcula(); sel.value = clave;
   }
   // un ejercicio con enunciado para el modo práctica
-  function azar() { const e = E.ejercicio(); sc = { ...sc, ...e.sc }; enun = e.enunciado; formulario(); calcula(); sel.value = ''; }
+  function azar() { const e = E.ejercicio(); sc = { ...sc, comp: '', ...e.sc }; enun = e.enunciado; formulario(); calcula(); sel.value = ''; }
   const enunciado = () => esc(enun);
 
   /* ---------- Cálculo ---------- */
@@ -75,7 +87,7 @@
   });
 
   /* ---------- Gráfica ---------- */
-  function colores() { const cs = getComputedStyle(document.documentElement); for (const k of ['--ink', '--muted', '--line', '--accent', '--area', '--curva']) col[k] = cs.getPropertyValue(k).trim(); }
+  function colores() { const cs = getComputedStyle(document.documentElement); for (const k of ['--ink', '--muted', '--line', '--accent', '--area', '--curva', '--curva2']) col[k] = cs.getPropertyValue(k).trim(); }
   function dibuja() {
     const c = $('#grafica'), dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
     if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
@@ -83,6 +95,7 @@
     vista = null;
     if (!sol) return;
     colores();
+    if (sol.tipo === 'tcl') return histograma(g, w, h);
     const D = E.DIST[sol.dist], P = sol.P, m = { l: 14, r: 14, t: 14, b: 30 };
     let [x0, x1] = D.rango(P);
     const [s0, s1] = sol.sombra;
@@ -93,20 +106,32 @@
     vista = { x0, x1, m, w, continua: D.continua };
     const dentro = (x) => x >= s0 - 1e-9 && x <= s1 + 1e-9, critico = sol.tipo === 'critico';
     let ymax = 0;
+    // la segunda distribución: curva a trazos (continua) o puntos (discreta), con la misma escala
+    const C = sol.comp && E.DIST[sol.comp.dist], NC = 400;
+    const cx = !C ? [] : C.continua ? Array.from({ length: NC + 1 }, (_, i) => x0 + ((x1 - x0) * i) / NC) : Array.from({ length: Math.max(0, Math.floor(x1) - Math.max(0, Math.ceil(x0)) + 1) }, (_, i) => Math.max(0, Math.ceil(x0)) + i);
+    const cy = cx.map((x) => (C.continua ? C.pdf(sol.comp.P, x) : C.pmf(sol.comp.P, x))).map((y) => (isFinite(y) ? y : 0)), cmax = Math.max(0, ...cy.filter((y) => y < 1e6));
+    const segunda = (Y) => {
+      if (!C) return;
+      g.save(); g.strokeStyle = g.fillStyle = col['--curva2']; g.lineWidth = 2;
+      if (C.continua) { g.setLineDash([6, 4]); g.beginPath(); cx.forEach((x, i) => (i ? g.lineTo(X(x), Y(cy[i])) : g.moveTo(X(x), Y(cy[i])))); g.stroke(); }
+      else cx.forEach((x, i) => { g.beginPath(); g.moveTo(X(x), Y(0)); g.lineTo(X(x), Y(cy[i])); g.stroke(); g.beginPath(); g.arc(X(x), Y(cy[i]), 3.5, 0, 2 * Math.PI); g.fill(); });
+      g.restore();
+    };
     g.font = '12px "IBM Plex Sans", system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'top';
     if (D.continua) {
       const N = 400, xs = Array.from({ length: N + 1 }, (_, i) => x0 + ((x1 - x0) * i) / N), ys = xs.map((x) => D.pdf(P, x)).map((y) => (isFinite(y) ? y : 0));
-      ymax = Math.max(...ys.filter((y) => y < 1e6)) * 1.08 || 1;
+      ymax = Math.max(cmax, ...ys.filter((y) => y < 1e6)) * 1.08 || 1;
       const Y = (y) => h - m.b - (Math.min(y, ymax) / ymax) * (h - m.t - m.b);
       // área sombreada (en el valor crítico, las dos colas)
       const zona = (a, b) => { g.beginPath(); g.moveTo(X(a), Y(0)); for (let i = 0; i <= N; i++) { if (xs[i] < a || xs[i] > b) continue; g.lineTo(X(xs[i]), Y(ys[i])); } g.lineTo(X(b), Y(0)); g.closePath(); g.fill(); };
       g.fillStyle = col['--area'];
       if (critico) { zona(x0, s0); zona(s1, x1); } else zona(Math.max(s0, x0), Math.min(s1, x1));
       g.strokeStyle = col['--curva']; g.lineWidth = 2; g.beginPath(); xs.forEach((x, i) => (i ? g.lineTo(X(x), Y(ys[i])) : g.moveTo(X(x), Y(ys[i])))); g.stroke(); g.lineWidth = 1;
+      segunda(Y);
     } else {
       const ks = []; for (let k = Math.ceil(x0); k <= x1; k++) if (k >= 0) ks.push(k);
       const ys = ks.map((k) => D.pmf(P, k));
-      ymax = Math.max(...ys) * 1.08 || 1;
+      ymax = Math.max(cmax, ...ys) * 1.08 || 1;
       const Y = (y) => h - m.b - (y / ymax) * (h - m.t - m.b), bw = Math.max(1, Math.min(28, ((w - m.l - m.r) / Math.max(1, x1 - x0)) * 0.7));
       ks.forEach((k, i) => { g.fillStyle = dentro(k) ? col['--accent'] : col['--line']; g.fillRect(X(k) - bw / 2, Y(ys[i]), bw, Y(0) - Y(ys[i])); });
       // números de k bajo las barras (cada 1, 2, 5 o 10 según cuántas haya)
@@ -114,6 +139,7 @@
       g.fillStyle = col['--muted']; g.font = '11px "IBM Plex Sans", system-ui, sans-serif';
       ks.forEach((k) => { if (k % paso === 0) g.fillText(String(k), X(k), h - m.b + 20); });
       g.font = '12px "IBM Plex Sans", system-ui, sans-serif';
+      segunda(Y);
     }
     // eje y marcas
     g.strokeStyle = col['--muted']; g.beginPath(); g.moveTo(m.l, h - m.b); g.lineTo(w - m.r, h - m.b); g.stroke();
@@ -123,6 +149,29 @@
     if (D.continua && isFinite(sol.media) && !marcas.some((v) => Math.abs(X(v) - X(sol.media)) < 40)) { g.fillStyle = col['--muted']; g.fillText(`media ${num(sol.media, 4).replace(/<[^>]+>/g, '')}`, X(sol.media), h - m.b + 8); }
     g.textAlign = 'left'; g.fillStyle = col['--accent']; g.font = '600 13px "IBM Plex Sans", system-ui, sans-serif';
     if (sol.tipo !== 'cuantil') g.fillText(critico ? `α = ${num(sol.alfa)} (α/2 en cada cola)` : sol.tipo === 'criticoU' ? `α = ${num(sol.alfa)} en la cola derecha` : `P = ${E.prob(sol.p)}`, m.l + 4, m.t);
+    if (C) { const lim = (t) => t.replace(/<[^>]+>/g, ''); g.textAlign = 'right'; g.font = '12px "IBM Plex Sans", system-ui, sans-serif'; g.fillStyle = col['--ink']; g.fillText(lim(D.etiqueta(P)), w - m.r - 4, m.t); g.fillStyle = col['--curva2']; g.fillText(`${C.continua ? '- - ' : '● '}${lim(C.etiqueta(sol.comp.P))}`, w - m.r - 4, m.t + 16); }
+  }
+  // teorema central del límite: histograma de las medias y la normal N(μ, σ/√n)
+  function histograma(g, w, h) {
+    const { medias, et, n } = sol.tcl, mu = sol.media, m = { l: 14, r: 14, t: 14, b: 30 }, D = E.DIST[sol.dist];
+    const x0 = mu - 4.2 * et, x1 = mu + 4.2 * et, X = (x) => m.l + ((x - x0) / (x1 - x0)) * (w - m.l - m.r);
+    // en las discretas las medias van de 1/n en 1/n: el ancho de las barras es un múltiplo de eso
+    let ancho = (x1 - x0) / 34; if (!D.continua) ancho = Math.max(1, Math.round(ancho * n)) / n;
+    const nb = Math.ceil((x1 - x0) / ancho), cu = new Array(nb).fill(0), b0 = D.continua ? x0 : Math.floor(x0 * n) / n - 0.5 / n;
+    for (const v of medias) { const i = Math.floor((v - b0) / ancho); if (i >= 0 && i < nb) cu[i]++; }
+    const dens = cu.map((c) => c / (medias.length * ancho)), pico = 1 / (et * Math.sqrt(2 * Math.PI)), ymax = Math.max(pico, ...dens) * 1.1;
+    const Y = (y) => h - m.b - (y / ymax) * (h - m.t - m.b);
+    g.fillStyle = col['--area']; g.strokeStyle = col['--accent']; g.lineWidth = 1;
+    dens.forEach((d, i) => { if (!d) return; const xa = X(b0 + i * ancho), xb = X(b0 + (i + 1) * ancho); g.fillRect(xa, Y(d), xb - xa, Y(0) - Y(d)); g.strokeRect(xa, Y(d), xb - xa, Y(0) - Y(d)); });
+    g.strokeStyle = col['--curva']; g.lineWidth = 2; g.beginPath();
+    for (let i = 0; i <= 300; i++) { const x = x0 + ((x1 - x0) * i) / 300, y = pico * Math.exp(-0.5 * ((x - mu) / et) ** 2); if (i) g.lineTo(X(x), Y(y)); else g.moveTo(X(x), Y(y)); }
+    g.stroke(); g.lineWidth = 1;
+    g.strokeStyle = col['--muted']; g.beginPath(); g.moveTo(m.l, h - m.b); g.lineTo(w - m.r, h - m.b); g.stroke();
+    g.font = '12px "IBM Plex Sans", system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'top'; g.fillStyle = col['--ink'];
+    const lim = (v) => num(v, 4).replace(/<[^>]+>/g, '');
+    for (const [v, t] of [[mu - 1.96 * et, lim(mu - 1.96 * et)], [mu, `μ = ${lim(mu)}`], [mu + 1.96 * et, lim(mu + 1.96 * et)]]) { g.beginPath(); g.moveTo(X(v), h - m.b); g.lineTo(X(v), h - m.b + 5); g.stroke(); g.fillText(t, X(v), h - m.b + 8); }
+    g.textAlign = 'left'; g.fillStyle = col['--accent']; g.font = '600 13px "IBM Plex Sans", system-ui, sans-serif';
+    g.fillText(`n = ${n}: σ/√n = ${lim(et)}`, m.l + 4, m.t);
   }
 
   /* ---------- Arrastrar a, b o c sobre la gráfica ---------- */
@@ -151,5 +200,5 @@
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('estadistica').current;
   formulario(); calcula();
-  window.EstadisticaApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { p: sol.p, res: sol.res, x: sol.x, c: sol.c }, estado: () => copia(sc) };
+  window.EstadisticaApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { p: sol.p, res: sol.res, x: sol.x, c: sol.c, aprox: sol.aprox, comp: sol.comp, tcl: sol.tcl && { n: sol.tcl.n, et: sol.tcl.et, mSim: sol.tcl.mSim, sSim: sol.tcl.sSim } }, estado: () => copia(sc) };
 })();

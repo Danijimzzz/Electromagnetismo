@@ -93,7 +93,7 @@ const TiposCambio = (() => {
   }
 
   const R = { convertir, cruzado, variacion, ppa, relativa, paridad };
-  const resolver = (sc) => (R[sc.modo] || convertir)(sc);
+  const resolver = (sc) => { const r = (R[sc.modo] || convertir)(sc); r.pasos.push({ t: 'Convención', html: 'Cotización «a lo cierto»: unidades de moneda extranjera por 1 €. Se usa un único tipo (sin diferencia entre compra y venta) y la comisión se aplica sobre el importe convertido. No se redondea a céntimos en los pasos.' }); return r; };
 
   const ejemplos = [
     { clave: 'viaje', nombre: 'Cambiar 500 € en dólares con un 2 % de comisión', sc: { modo: 'convertir', mon: 'USD', sentido: 'aOtra', E: '1,08', x: '500', c: '2' } },
@@ -106,6 +106,29 @@ const TiposCambio = (() => {
     { clave: 'inflacion', nombre: 'Inflación del 3 % aquí y del 2 % en EE. UU.', sc: { modo: 'relativa', mon: 'USD', E: '1,08', pi: '3', pe: '2', n: '5' } },
   ];
 
-  return { resolver, ejemplos, MODOS, MONEDAS };
+  // modo práctica: datos redondos al azar
+  const AZ = K.az, TC = { USD: [1.05, 1.08, 1.1], GBP: [0.84, 0.86], CHF: [0.93, 0.96], JPY: [150, 160, 165] };
+  const azar = AZ.desde(ejemplos, (sc) => {
+    const mon = AZ.toma(Object.keys(TC)), E = AZ.t(AZ.toma(TC[mon]));
+    if (sc.modo === 'convertir') return { mon, E, sentido: AZ.toma(['aOtra', 'aEuros']), x: String(mon === 'JPY' ? AZ.toma([10000, 20000, 50000]) : AZ.toma([200, 500, 1000])), c: String(AZ.toma([0, 1, 2])) };
+    if (sc.modo === 'cruzado') { const m2 = AZ.toma(['USD', 'GBP', 'CHF'].filter((m) => m !== mon)); return { mon, mon2: m2, E, E2: AZ.t(AZ.toma(TC[m2])) }; }
+    if (sc.modo === 'variacion') { const e1 = AZ.toma(TC[mon]); return { mon, E: AZ.t(e1), E2: AZ.t(e1 * (1 + AZ.toma([-0.05, -0.03, 0.03, 0.05])), 4) }; }
+    if (sc.modo === 'ppa') { const pe = { USD: 5.8, GBP: 4.2, JPY: 480, CHF: 6.5 }[mon]; return { mon, P: AZ.t(AZ.toma([4.5, 5.4])), Pe: AZ.t(pe), E }; }
+    if (sc.modo === 'paridad') return { mon, E, i: AZ.t(AZ.toma([2, 3, 4])), ie: AZ.t(AZ.toma([4, 5, 6])), n: AZ.t(AZ.toma([0.5, 1, 2])), Fm: '' };
+    return { mon, E, pi: AZ.t(AZ.toma([2, 3, 4])), pe: AZ.t(AZ.toma([1, 2, 3])), n: String(AZ.toma([3, 5, 10])) };
+  }, null, (sc) => resolver(sc));
+  const enunciado = (sc) => {
+    const m = sc.mon;
+    switch (sc.modo) {
+      case 'convertir': return sc.sentido === 'aEuros' ? `Tienes ${sc.x} ${m} y el tipo de cambio es 1 € = ${sc.E} ${m}${sc.c !== '0' ? `, con una comisión del ${sc.c} %` : ''}. ¿Cuántos euros recibes?` : `Cambias ${sc.x} € a ${m} con 1 € = ${sc.E} ${m}${sc.c !== '0' ? ` y una comisión del ${sc.c} %` : ''}. ¿Cuántos ${m} recibes?`;
+      case 'cruzado': return `Si 1 € = ${sc.E} ${m} y 1 € = ${sc.E2} ${sc.mon2}, calcula el tipo cruzado entre ${m} y ${sc.mon2} en los dos sentidos.`;
+      case 'variacion': return `El tipo de cambio pasa de 1 € = ${sc.E} ${m} a 1 € = ${sc.E2} ${m}. ¿Se aprecia o se deprecia el euro, y en qué porcentaje? ¿Y la otra moneda?`;
+      case 'ppa': return `Una hamburguesa cuesta ${sc.P} € en la zona euro y ${sc.Pe} ${m} en el otro país, y el tipo de cambio es 1 € = ${sc.E} ${m}. Calcula el tipo de cambio de la paridad del poder adquisitivo, el tipo de cambio real y si el euro está sobrevalorado o infravalorado.`;
+      case 'paridad': return `El tipo de cambio es 1 € = ${sc.E} ${m}, el tipo de interés en la zona euro es el ${sc.i} % y fuera el ${sc.ie} %. Calcula el tipo a plazo a ${sc.n} año${sc.n === '1' ? '' : 's'} por la paridad cubierta de intereses y la prima o descuento del euro.`;
+      default: return `El tipo de cambio es 1 € = ${sc.E} ${m}; la inflación anual es del ${sc.pi} % en la zona euro y del ${sc.pe} % fuera. Por la paridad relativa del poder adquisitivo, calcula el tipo de cambio dentro de ${sc.n} años y la variación del euro.`;
+    }
+  };
+
+  return { azar, enunciado, resolver, ejemplos, MODOS, MONEDAS };
 })();
 if (typeof module !== 'undefined') module.exports = TiposCambio;

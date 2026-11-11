@@ -11,6 +11,7 @@ const Matrices = (() => {
     det: { nombre: 'Determinante', cuadrada: true, metodos: [['gauss', 'Por Gauss (triangular)'], ['directo', 'Sarrus o Laplace']] },
     inversa: { nombre: 'Inversa', cuadrada: true, metodos: [['gauss', 'Por Gauss-Jordan'], ['adjuntos', 'Por adjuntos']] },
     rango: { nombre: 'Rango' },
+    subespacios: { nombre: 'Núcleo, imagen y subespacios' },
     gauss: { nombre: 'Escalonar (Gauss)' },
     reducida: { nombre: 'Escalonada reducida (Gauss-Jordan)' },
     propios: { nombre: 'Valores y vectores propios', cuadrada: true },
@@ -120,7 +121,7 @@ const Matrices = (() => {
         const p0 = (m.n * L) / m.d, q = (kp.n * L) / kp.d, im = D.n < 0n ? ' i' : '';
         const cuerpo = (sg) => `${p0 ? String(p0).replace('-', '−') + ` ${sg} ` : sg === '−' ? '−' : ''}${q === 1n ? '' : q}√${rq.dentro}${im}`;
         const forma = (sg) => (L === 1n ? cuerpo(sg) : `(${cuerpo(sg)})/${L}`);
-        radicales = { mas: forma('+'), menos: forma('−'), ambos: L === 1n ? cuerpo('±') : `(${cuerpo('±')})/${L}` };
+        radicales = { mas: forma('+'), menos: forma('−'), ambos: L === 1n ? cuerpo('±') : `(${cuerpo('±')})/${L}`, m, k: kp, dentro: rq.dentro, im };
         pasos.push({ t: 'El factor de segundo grado no tiene raíces racionales', html: `${A_.polHtml(r.resto)} = 0 ⇒ λ = (−b ± √(b<sup>2</sup> − 4ac)) / (2a) = <b>${radicales.ambos}</b>` });
         // la raíz «+» es la de mayor parte real (o imaginaria si son complejas)
         aprox.sort((x, y) => (D.n < 0n ? y.im - x.im : y.re - x.re));
@@ -140,6 +141,22 @@ const Matrices = (() => {
       const [s, vv] = A_.signo(A_.neg(v.valor));
       pasos.push({ t: `Vectores propios de λ = ${html(v.valor)}`, html: `(A ${s === '+' ? '+' : '−'} ${vv.replace(/^\((.*)\)$/, '($1)')}I) x = 0: ${matHtml(M)} → ${matHtml(N.R)}<br>dim = ${N.base.length}${v.mult > 1 ? ` (multiplicidad algebraica ${v.mult})` : ''}; base: ${N.base.map((b) => A_.vecHtml(b)).join(' ')}` });
     }
+    // vectores propios de los valores no racionales: numéricos con 4 cifras y, en 2 × 2, también con radicales
+    const noEx = vals.filter((x) => !x.exacto);
+    if (noEx.length) {
+      const Af = A.map((fl) => fl.map((x) => A_.aFloat(x)));
+      for (const v of noEx) { v.vector = vectorNum(Af, v.valor); }
+      let rad = '';
+      if (n === 2 && radicales && A_.esRealM(A)) {
+        // (A − λI) v = 0 con A = (a b; c d): v = (b, λ − a) si b ≠ 0, o (λ − d, c) si no
+        const [[a, b], [c, d]] = A, usaB = !A_.esCero(b), e = A_.resta(A_.C(radicales.m), usaB ? a : d), fijo = html(usaB ? b : c);
+        const kt = radicales.k.n === radicales.k.d ? '' : html(A_.C(radicales.k)), comp = (sg) => `${A_.esCero(e) ? (sg === '−' ? '−' : '') : `${html(e)} ${sg} `}${kt}√${radicales.dentro}${radicales.im}`;
+        const vec = (sg) => (usaB ? `(${fijo}, &nbsp;${comp(sg)})` : `(${comp(sg)}, &nbsp;${fijo})`);
+        noEx.forEach((v, i) => { v.vectorRad = vec(i ? '−' : '+'); });
+        rad = `<br>Con radicales, de la ${usaB ? 'primera' : 'segunda'} fila de (A − λI) v = 0 sale v = ${usaB ? '(b, λ − a)' : '(λ − d, c)'}: ${noEx.map((v) => `λ = ${v.etiqueta} ⇒ v = <b>${v.vectorRad}</b>`).join('; &nbsp;')}.`;
+      }
+      if (noEx.every((v) => v.vector)) pasos.push({ t: 'Vectores propios de los valores no racionales', html: `Se resuelve (A − λI) v = 0 con el valor numérico de cada λ; el vector se da con una componente igual a 1 (cualquier múltiplo vale):<br>${noEx.map((v) => `λ ≈ ${A_.decimalC(v.valor, 5)} ⇒ v ≈ <b>(${v.vector.map((z) => A_.decimalC(z, 4)).join('; &nbsp;')})</b>`).join('<br>')}${rad}` });
+    }
     const todos = vals.every((x) => x.exacto);
     let diag, PD = null;
     if (todos) {
@@ -151,9 +168,58 @@ const Matrices = (() => {
       } else pasos.push({ t: 'No es diagonalizable', html: `Algún valor propio tiene menos vectores propios independientes que su multiplicidad.` });
     } else {
       diag = vals.every((x) => x.mult === 1) ? true : null;
-      if (diag) pasos.push({ t: 'Es diagonalizable', html: `Los ${n} valores propios son distintos, así que es diagonalizable${A_.esRealM(A) && vals.some((x) => !x.exacto && Math.abs(x.valor.im) > 1e-9) ? ' (en los complejos)' : ''}. Los vectores propios de las raíces no racionales no se calculan de forma exacta aquí.` });
+      if (diag) pasos.push({ t: 'Es diagonalizable', html: `Los ${n} valores propios son distintos, así que es diagonalizable${A_.esRealM(A) && vals.some((x) => !x.exacto && Math.abs(x.valor.im) > 1e-9) ? ' (en los complejos)' : ''}. Los vectores propios de las raíces no racionales van arriba, con su valor numérico.` });
     }
     return { valor: vals, pasos, diag, polinomio: pc, PD, esp };
+  }
+
+  // vector propio numérico de λ (complejo { re, im }): núcleo de A − λI por Gauss con pivote parcial; null si no sale una sola dirección
+  function vectorNum(Af, lam) {
+    const n = Af.length, cm = (a, b) => ({ re: a.re * b.re - a.im * b.im, im: a.re * b.im + a.im * b.re }), cs = (a, b) => ({ re: a.re - b.re, im: a.im - b.im }), ab = (a) => Math.hypot(a.re, a.im);
+    const cd = (a, b) => { const q = b.re * b.re + b.im * b.im; return { re: (a.re * b.re + a.im * b.im) / q, im: (a.im * b.re - a.re * b.im) / q }; };
+    const M = Af.map((fl, i) => fl.map((x, j) => (i === j ? cs(x, lam) : { ...x }))), esc = Math.max(1e-300, ...Af.flat().map(ab), ab(lam)), piv = [];
+    let r = 0;
+    for (let c = 0; c < n && r < n; c++) {
+      let k = r; for (let i = r + 1; i < n; i++) if (ab(M[i][c]) > ab(M[k][c])) k = i;
+      if (ab(M[k][c]) < 1e-7 * esc) continue;
+      [M[r], M[k]] = [M[k], M[r]];
+      const p = M[r][c]; M[r] = M[r].map((x) => cd(x, p));
+      for (let i = 0; i < n; i++) if (i !== r) { const q = M[i][c]; if (ab(q)) M[i] = M[i].map((x, j) => cs(x, cm(q, M[r][j]))); }
+      piv.push(c); r++;
+    }
+    const libres = Array.from({ length: n }, (_, j) => j).filter((j) => !piv.includes(j));
+    if (libres.length !== 1) return null;
+    const v = Array.from({ length: n }, () => ({ re: 0, im: 0 })); v[libres[0]] = { re: 1, im: 0 };
+    piv.forEach((c, i) => { v[c] = { re: -M[i][libres[0]].re, im: -M[i][libres[0]].im }; });
+    return v.map((z) => ({ re: Math.abs(z.re) < 1e-12 ? 0 : z.re, im: Math.abs(z.im) < 1e-12 ? 0 : z.im }));
+  }
+
+  /* ---------- Núcleo, imagen y subespacios ---------- */
+  // «2x₁ − x₃» a partir de los coeficientes (se saltan los nulos)
+  const VAR = (i, l = 'x') => `${l}<sub>${i + 1}</sub>`;
+  function combinacion(cs, l = 'x') {
+    const ts = cs.map((c, i) => (A_.esCero(c) ? null : (() => { const [sg, v] = A_.signo(c); return [sg, `${v === '1' ? '' : v}${VAR(i, l)}`]; })())).filter(Boolean);
+    return ts.length ? ts.map(([sg, t], i) => (i ? `${sg} ${t}` : `${sg === '−' ? '−' : ''}${t}`)).join(' ') : '0';
+  }
+  function subespacios(A) {
+    const m = A.length, n = A[0].length, N = A_.nucleo(A), e = A_.escalonar(A, { reducida: true }), rg = e.rango, pasos = [{ t: 'Matriz', html: `${matHtml(A)}, de ${dims(A)}: como aplicación lineal va de ℝ<sup>${n}</sup> a ℝ<sup>${m}</sup> (o de ℂ a ℂ si tiene complejos).` }];
+    pasos.push(...pasosGauss(e.pasos));
+    const cp = e.pivotes.map(([, c]) => c), libres = Array.from({ length: n }, (_, j) => j).filter((j) => !cp.includes(j));
+    pasos.push({ t: 'Escalonada reducida', html: `${matHtml(e.R)}<br>Rango ${rg}: pivotes en ${cp.length ? `las columnas ${cp.map((c) => c + 1).join(', ')}` : 'ninguna columna'}${libres.length ? `; ${libres.map((j) => VAR(j)).join(', ')} ${libres.length > 1 ? 'quedan libres' : 'queda libre'}` : '; no queda ninguna incógnita libre'}.` });
+    // núcleo: implícitas = filas no nulas de la reducida; paramétricas = las libres como parámetros
+    const filasR = e.R.slice(0, rg), nuc = N.base, par = 'tsuvw';
+    const implN = filasR.map((fl) => `${combinacion(fl)} = 0`), paramN = Array.from({ length: n }, (_, i) => `${VAR(i)} = ${nuc.length ? combinacion(nuc.map((b) => b[i]), 't').replace(/t<sub>(\d)<\/sub>/g, (_, k) => (nuc.length === 1 ? 't' : par[k - 1])) : '0'}`);
+    pasos.push({ t: 'Núcleo (Ker A): soluciones de A·x = 0', html: nuc.length
+      ? `dim Ker A = n − rang(A) = ${n} − ${rg} = <b>${nuc.length}</b>.<br>Ecuaciones implícitas: ${implN.length ? implN.join('; &nbsp;') : 'ninguna (todo vector lo cumple)'}.<br>Ecuaciones paramétricas: ${paramN.join(', &nbsp;')}.<br>Base: ${nuc.map((b) => A_.vecHtml(b)).join(' ')}`
+      : `dim Ker A = n − rang(A) = ${n} − ${rg} = <b>0</b>: solo el vector nulo cumple A·x = 0 (la aplicación es inyectiva).` });
+    // imagen: columnas con pivote de A; implícitas con el núcleo de la traspuesta (w·b = 0 para cada w del núcleo de Aᵗ)
+    const im = cp.map((c) => A.map((fl) => fl[c])), NT = A_.nucleo(A_.traspuesta(A)).base;
+    const paramI = Array.from({ length: m }, (_, i) => `${VAR(i, 'y')} = ${combinacion(im.map((b) => b[i]), 't').replace(/t<sub>(\d)<\/sub>/g, (_, k) => (im.length === 1 ? 't' : par[k - 1]))}`);
+    pasos.push({ t: 'Imagen (Im A): el subespacio que generan las columnas', html: rg === 0 ? 'La matriz es nula: Im A = {0}, de dimensión <b>0</b>.'
+      : `dim Im A = rang(A) = <b>${rg}</b>. Las columnas de A con pivote (${cp.map((c) => c + 1).join(', ')}) forman una base: ${im.map((b) => A_.vecHtml(b)).join(' ')}<br>Ecuaciones paramétricas: ${paramI.join(', &nbsp;')}.<br>${NT.length ? `Ecuaciones implícitas (lo que tiene que cumplir y para que A·x = y tenga solución): ${NT.map((w) => `${combinacion(w, 'y')} = 0`).join('; &nbsp;')}.` : `Como el rango es ${m}, Im A es todo el espacio de llegada: no hay ecuaciones implícitas (la aplicación es sobreyectiva).`}` });
+    pasos.push({ t: 'Espacio de filas', html: rg ? `Las filas no nulas de la escalonada reducida son una base del subespacio que generan las filas de A (dimensión ${rg}): ${filasR.map((fl) => `(${fl.map((x) => html(x)).join(', ')})`).join(', &nbsp;')}. El núcleo es su complemento ortogonal.` : 'La matriz es nula: no hay filas independientes.' });
+    pasos.push({ t: 'Teorema del rango', html: `dim Ker A + dim Im A = ${nuc.length} + ${rg} = ${n}, el número de columnas.` });
+    return { valor: { nucleo: nuc, imagen: im, filas: filasR, implicitasImagen: NT, rango: rg, dimNucleo: nuc.length }, pasos, res: `dim Ker A = ${nuc.length}, &nbsp; dim Im A = ${rg}` };
   }
 
   /* ---------- Potencia por diagonalización ---------- */
@@ -351,6 +417,7 @@ const Matrices = (() => {
         R = A.map((f, i) => f.map((_, j) => P_.cte(i === j ? A_.c1 : A_.c0)));
         for (let k = 1; k <= n; k++) { R = prod(R, A); if (k > 1 && n <= 4) pasos.push({ t: `A<sup>${k}</sup>`, html: mh(R) }); }
       }
+      if (!R) throw new Error(`Con una letra (${letra}) en las casillas esta operación no se puede calcular: escribe números en todas`);
       pasos.push({ t: 'Resultado', html: mh(R) });
       res = mh(R); valor = R;
     }
@@ -358,7 +425,28 @@ const Matrices = (() => {
   }
 
   /* ---------- Resolución ---------- */
-  function resolver(sc) {
+  /* ---------- Entrada flexible (MA-4): «sqrt(4)», «e^(iπ)», «cos(π)»… en una casilla ---------- */
+  const EX = typeof Expresion !== 'undefined' ? Expresion : typeof require !== 'undefined' ? require('../matematicas/expresion.js') : null;
+  const FLEX = /sqrt|√|π|pi|ln\(|log\(|sen\(|cos\(|tg\(|exp\(|abs\(|e\^/i;
+  // una casilla con funciones o constantes se calcula; si sale una fracción exacta se cambia por ella y, si no, se avisa
+  function casilla(c, leidos) {
+    const t = String(c ?? '').trim();
+    if (!EX || !FLEX.test(t)) return c;
+    let z; try { z = EX.complejo(t.replace(/[−–]/g, '-').replace(/[·×]/g, '*'), 'La casilla').z; } catch (e) { return c; }
+    const q = (v) => { const fr = EX.fraccion(v, 10000); return fr && Math.abs(fr[0] / fr[1] - v) < 1e-12 ? fr : null; }, a = q(z.re), b = q(z.im);
+    const dec = A_.decimalC(z, 6);
+    if (!a || !b) throw new Error(`«${t}» vale ${dec.replace(/<[^>]+>/g, '')}, que no es una fracción exacta, y aquí se calcula con fracciones. Si te vale un valor aproximado, escríbelo con decimales`);
+    const fr = ([n, d]) => (d === 1 ? `${n}` : `${n}/${d}`), txt = b[0] === 0 ? fr(a) : `${a[0] === 0 ? '' : fr(a)}${b[0] < 0 ? '-' : a[0] === 0 ? '' : '+'}${fr([Math.abs(b[0]), b[1]])}i`;
+    leidos.push(`«${t.replace(/&/g, '&amp;').replace(/</g, '&lt;')}» = ${html(A_.leer(txt))}`);
+    return txt;
+  }
+  function resolver(sc0) {
+    const leidos = [], mat = (M) => (Array.isArray(M) ? M.map((f) => (Array.isArray(f) ? f.map((c) => casilla(c, leidos)) : f)) : M);
+    const r = resolver0({ ...sc0, A: mat(sc0.A), B: mat(sc0.B), k: sc0.k === undefined ? sc0.k : casilla(sc0.k, leidos) });
+    if (leidos.length && r.pasos) { r.pasos.unshift({ t: 'Valores leídos', html: `${leidos.join(', &nbsp;')}. Las raíces y los logaritmos se toman en su valor principal.` }); r.leidos = leidos.length; }
+    return r;
+  }
+  function resolver0(sc) {
     const op = OPS[sc.op] ? sc.op : 'det', O = OPS[op];
     const letra = P_ ? P_.letraDe([...(sc.A || []).flat(), ...(O.B ? (sc.B || []).flat() : []), ...(O.k ? [sc.k] : [])]) : null;
     if (letra) return resolverParam(sc, op, O, letra);
@@ -380,6 +468,7 @@ const Matrices = (() => {
         r.res = op === 'rango' ? `rang(A) = ${e.rango}` : matHtml(e.R);
         break;
       }
+      case 'subespacios': r = subespacios(A); break;
       case 'jordan': r = jordan(A); r.res = `J = ${matHtml(r.valor)}`; break;
       case 'ortogonal': r = ortogonal(A); r.res = `Q = ${r.Qh}, &nbsp; D = ${matHtml(r.valor)}`; break;
       case 'lu': r = lu(A); r.res = `L = ${matHtml(r.L)}, &nbsp; U = ${matHtml(r.U)}`; break;
@@ -441,6 +530,9 @@ const Matrices = (() => {
     { clave: 'inv-adj', nombre: 'Inversa por adjuntos', sc: { op: 'inversa', metodo: 'adjuntos', A: M('2 0 1', '1 1 0', '0 1 3') } },
     { clave: 'inv-complejos', nombre: 'Inversa de una matriz compleja', sc: { op: 'inversa', metodo: 'gauss', A: M('1 i', '-i 2') } },
     { clave: 'rango', nombre: 'Rango de una matriz 3×4', sc: { op: 'rango', A: M('1 2 -1 3', '2 4 1 0', '3 6 0 3') } },
+    { clave: 'subespacios', nombre: 'Núcleo e imagen de una matriz 3×4', sc: { op: 'subespacios', A: M('1 2 -1 3', '2 4 1 0', '3 6 0 3') } },
+    { clave: 'propios-raiz', nombre: 'Vectores propios con raíces (2×2)', sc: { op: 'propios', A: M('1 1', '1 0') } },
+    { clave: 'propios-num', nombre: 'Vectores propios numéricos (3×3)', sc: { op: 'propios', A: M('1 2 0', '2 1 1', '0 1 1') } },
     { clave: 'reducida', nombre: 'Escalonada reducida', sc: { op: 'reducida', A: M('2 4 6 8', '1 3 5 7', '1 1 1 2') } },
     { clave: 'propios2', nombre: 'Valores y vectores propios 2×2', sc: { op: 'propios', A: M('4 1', '2 3') } },
     { clave: 'diagonalizar', nombre: 'Diagonalizar una matriz 3×3', sc: { op: 'propios', A: M('2 0 0', '0 3 4', '0 4 -3') } },

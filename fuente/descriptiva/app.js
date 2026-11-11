@@ -20,13 +20,26 @@
     campos: (sc) => [
       { k: 'formato', nom: 'Forma de los datos', tipo: 'sel', ops: Object.entries(D.FORMATOS) },
       { k: 'datos', nom: 'Datos', tipo: 'area', ayuda: AYUDA[sc.formato] || AYUDA.lista, filas: 7 },
+      ...(sc.formato === 'lista' || !sc.formato ? [{ k: 'pesos', nom: 'Pesos', tipo: 'texto', ayuda: 'opcional: uno por dato, para la media ponderada' }] : []),
       { k: 'div', nom: 'Varianza', tipo: 'sel', ops: [['n', 'De la población (entre N)'], ['n1', 'De una muestra (entre N − 1)']] },
       { k: 'pk', nom: 'Percentil k', un: 'opcional' },
     ],
+    // «Usar en…»: con la media, la cuasidesviación y N se pasa al intervalo y al contraste de la media; con la lista, también a Wilcoxon
+    usarEn: (s, sc) => {
+      if (!Number.isInteger(s.N) || s.N < 2 || !(s.sd > 0)) return [];
+      const n = (v) => String(+v.toPrecision(10)).replace('.', ','), cuasi = s.div === 'n1' ? s.sd : s.sd * Math.sqrt(s.N / (s.N - 1)), lista = s.fmt === 'lista';
+      const media = lista ? { fuente: 'datos', datos: sc.datos } : { fuente: 'resumen', xm: n(s.media), s: n(cuasi), n: String(s.N) };
+      return [
+        { texto: 'Intervalo de confianza para la media →', carpeta: 'intervalos', estado: { modo: 'media', sigmaC: 'no', nivel: '95', tipoS: 'cuasi', ...media } },
+        { texto: 'Contraste de la media →', carpeta: 'contrastes', estado: { tipo: 'media', h1: 'distinto', alfa: '0,05', sigmaC: 'no', n: String(s.N), xm: n(s.media), s: n(cuasi), mu0: n(Math.round(s.media)) } },
+        ...(lista ? [{ texto: 'Wilcoxon para la mediana →', carpeta: 'no-parametricos', estado: { tipo: 'mediana', h1: 'dos', alfa: '0,05', exacto: 'si', cc: 'si', m0: n(Math.round(s.Me)), datos: sc.datos } }] : []),
+      ];
+    },
     resumen: (s) => [
-      ['Media x̄', f(s.media)], ['Mediana', f(s.Me)], ['Moda', s.moda.length ? s.moda.map((v) => f(v)).join(', ') : 'no hay'],
+      ['Media x̄', f(s.media)], ...(s.mp !== null ? [['Media ponderada', f(s.mp)]] : []), ['Mediana', f(s.Me)], ['Moda', s.moda.length ? s.moda.map((v) => f(v)).join(', ') : 'no hay'],
       ['Cuartiles Q₁ y Q₃', `${f(s.Q1)} y ${f(s.Q3)}`],
       [s.div === 'n1' ? 'Cuasivarianza s²' : 'Varianza σ²', f(s.varz)], [s.div === 'n1' ? 'Desviación típica s' : 'Desviación típica σ', f(s.sd)],
+      ...(s.mg !== null ? [['Media geométrica', f(s.mg)], ['Media armónica', f(s.mh)]] : []),
       ['Coeficiente de variación', isFinite(s.cv) ? `${f(100 * s.cv, 3)} %` : '—'], ['Rango intercuartílico', f(s.ric)],
       ...(s.P === null ? [] : [[`Percentil ${f(s.pk)}`, f(s.P)]]),
     ],

@@ -14,7 +14,7 @@
     series: [{ tipo: 'barras', pts: [[1, a]], ancho: 0.8, color: '--serie-1' }, { tipo: 'barras', pts: [[2, b]], ancho: 0.8, color: '--serie-2' }],
     etiquetas: [{ x: 1, y: a, texto: va(a), alinea: 'center' }, { x: 2, y: b, texto: va(b), alinea: 'center' }] });
   Calculadora.monta({
-    C: T, carpeta: 'tipos-cambio', app: 'TiposCambioApp',
+    C: T, carpeta: 'tipos-cambio', app: 'TiposCambioApp', azar: T.azar, enunciado: T.enunciado,
     nota: 'El tipo de cambio va como lo publica el Banco Central Europeo: unidades de la otra moneda por 1 €. La coma es decimal. <b>Los tipos de los ejemplos son ilustrativos</b> (1,08 dólares por euro, 160 yenes…), no cotizaciones de ningún día: escribe el del día que te interese.',
     campos: (sc) => {
       const cs = [{ k: 'modo', nom: 'Calcular', tipo: 'sel', ops: Object.entries(T.MODOS) }, { k: 'mon', nom: sc.modo === 'cruzado' ? 'Primera moneda' : 'Moneda', tipo: 'sel', ops }], s = sim(sc.mon);

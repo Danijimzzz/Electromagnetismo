@@ -25,7 +25,7 @@
       $('#nota').textContent = 'La fase admite π: por ejemplo π/2 o 3pi/4.';
     } else if (sc.modo === 'estacionaria') {
       h += `<label for="f-medio">Medio</label><select id="f-medio" class="in" data-k="medio">${opciones('medio', [['cuerda', 'Cuerda con los dos extremos fijos'], ['abierto', 'Tubo abierto por los dos extremos'], ['cerrado', 'Tubo cerrado por un extremo']])}</select>` + fila('L', 'Longitud L', 'm');
-      h += sc.medio === 'cuerda' ? fila('tension', 'Tensión T', 'N') + fila('mu', 'Densidad lineal μ', 'kg/m') : fila('vs', 'Velocidad del sonido', 'm/s');
+      h += sc.medio === 'cuerda' ? fila('tension', 'Tensión T', 'N') + fila('mu', 'Densidad lineal μ', 'kg/m') : fila('vs', 'Velocidad del sonido', 'm/s') + fila('Taire', 'o temperatura del aire', '°C');
       h += fila('n', sc.medio === 'cerrado' ? 'Modo n (armónico 2n − 1)' : 'Armónico n', '');
       $('#nota').textContent = sc.medio === 'cuerda' ? 'μ es la masa por unidad de longitud: 1,1 g/m = 0,0011 kg/m.' : 'En el dibujo se ve el desplazamiento del aire: nodos donde no se mueve.';
     } else if (sc.modo === 'superposicion') {
@@ -40,7 +40,7 @@
       h += fila('tension', 'Tensión T (la misma en las dos)', 'N') + fila('mu1', 'Densidad de la cuerda 1 μ<sub>1</sub>', 'kg/m') + fila('mu2', 'Densidad de la cuerda 2 μ<sub>2</sub>', 'kg/m') + fila('A', 'Amplitud incidente', 'm') + fila('f', 'Frecuencia (opcional)', 'Hz');
       $('#nota').textContent = 'La onda llega por la cuerda 1 (izquierda) a la unión con la 2. En el dibujo, la cuerda más gruesa es la más pesada.';
     } else if (sc.modo === 'doppler') {
-      h += fila('f', 'Frecuencia que emite la fuente', 'Hz') + fila('vs', 'Velocidad del sonido', 'm/s') + fila('vF', 'Velocidad de la fuente', 'm/s') + fila('vO', 'Velocidad del observador', 'm/s');
+      h += fila('f', 'Frecuencia que emite la fuente', 'Hz') + fila('vs', 'Velocidad del sonido', 'm/s') + fila('Taire', 'o temperatura del aire', '°C') + fila('vF', 'Velocidad de la fuente', 'm/s') + fila('vO', 'Velocidad del observador', 'm/s');
       $('#nota').innerHTML = 'Positivas si se acercan el uno al otro, negativas si se alejan. Para el viento, una fuente que pasa de largo, el ángulo o el cono de Mach, usa <a href="../doppler/">Efecto Doppler</a>.';
     } else {
       h += fila('P', 'Potencia de la fuente', 'W') + fila('r1', 'Distancia r₁', 'm') + fila('r2', 'Otra distancia r₂', 'm') + fila('N', 'Número de fuentes iguales', '');

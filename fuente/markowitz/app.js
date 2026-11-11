@@ -10,7 +10,7 @@
   const P = Markowitz, { f, pct } = Eco, esc = Herramienta.esc, num = Eco.num;
   const p2 = (x) => num(100 * x, 2);
   Calculadora.monta({
-    C: P, carpeta: 'markowitz', app: 'MarkowitzApp',
+    C: P, carpeta: 'markowitz', app: 'MarkowitzApp', azar: P.azar, enunciado: P.enunciado,
     acciones: (s) => (s.tg ? [{ texto: `Usar la rentabilidad de la cartera tangente (${f(100 * s.tg.mu, 4)} %) como objetivo`, cambios: { objetivo: (100 * s.tg.mu).toFixed(4).replace('.', ',') } }] : []),
     nota: 'Una línea por activo: «Nombre; rentabilidad esperada %; volatilidad %». Después, la matriz de correlaciones (una fila por línea, 1 en la diagonal). Sin pesos de mercado, el CAPM usa la cartera tangente como mercado.',
     campos: () => [
