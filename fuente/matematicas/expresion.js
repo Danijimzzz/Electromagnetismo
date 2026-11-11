@@ -128,7 +128,7 @@ const Expresion = (() => {
   const CTE = { 'π': Math.PI, e: Math.E };
   /* ---------- Evaluación compleja (entrada flexible: «1 + sqrt(3)i», «sqrt(−4)», «e^(iπ) + 1») ---------- */
   // valor complejo { re, im } de una expresión leída con la variable «i» (lee(texto, nombre, ['i'])); raíces y logaritmos, en su rama principal
-  function valorC(n) {
+  function valorC(n, x) {
     const Z = (re, im = 0) => ({ re: re || 0, im: im || 0 }), mul = (a, b) => Z(a.re * b.re - a.im * b.im, a.re * b.im + a.im * b.re);
     const div = (a, b) => { const q = b.re * b.re + b.im * b.im; if (q === 0) throw new Error('hay una división entre cero'); return Z((a.re * b.re + a.im * b.im) / q, (a.im * b.re - a.re * b.im) / q); };
     const exp = (a) => { const r = Math.exp(a.re); return Z(r * Math.cos(a.im), r * Math.sin(a.im)); };
@@ -142,13 +142,14 @@ const Expresion = (() => {
     const FC = {
       sqrt: (a) => (a.im === 0 ? (a.re >= 0 ? Z(Math.sqrt(a.re)) : Z(0, Math.sqrt(-a.re))) : pot(a, Z(0.5))), cbrt: (a) => (a.im === 0 ? Z(Math.cbrt(a.re)) : pot(a, Z(1 / 3))),
       abs: (a) => Z(Math.hypot(a.re, a.im)), exp, ln, log: (a) => div(ln(a), Z(Math.LN10)), sen, cos, tg: (a) => div(sen(a), cos(a)),
+      arctg: (a) => { const u = ln(Z(1 + a.im, -a.re)), w = ln(Z(1 - a.im, a.re)); return Z((u.im - w.im) / -2, (u.re - w.re) / 2); },
       senh: (a) => Z(Math.sinh(a.re) * Math.cos(a.im), Math.cosh(a.re) * Math.sin(a.im)), cosh: (a) => Z(Math.cosh(a.re) * Math.cos(a.im), Math.sinh(a.re) * Math.sin(a.im)),
     };
     const v = (q) => {
       switch (q.t) {
         case 'n': return Z(q.v);
         case 'c': return Z(CTE[q.v]);
-        case 'x': if (q.n === 'i') return Z(0, 1); throw new Error('solo puede llevar números, i, π y e');
+        case 'x': if (q.n === 'i') return Z(0, 1); if (!q.n && x) return Z(x.re, x.im); throw new Error('solo puede llevar números, i, π y e');
         case 'neg': { const a = v(q.a); return Z(-a.re, -a.im); }
         case '+': { const a = v(q.a), b = v(q.b); return Z(a.re + b.re, a.im + b.im); }
         case '-': { const a = v(q.a), b = v(q.b); return Z(a.re - b.re, a.im - b.im); }
@@ -165,6 +166,7 @@ const Expresion = (() => {
       throw new Error('no se entiende');
     };
     const z = v(n), limpio = (t) => (Math.abs(t) < 1e-14 ? 0 : t);
+    if (x) return z;
     if (!isFinite(z.re) || !isFinite(z.im)) throw new Error('no da un número');
     return Z(limpio(z.re), limpio(z.im));
   }

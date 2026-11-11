@@ -23,7 +23,7 @@
   function formulario() {
     const modo = `<label for="f-modo">Qué calcular</label><select id="f-modo" class="in" data-k="modo"><option value="polinomio">Polinomio de Taylor</option><option value="limite"${esLimite() ? ' selected' : ''}>Límite con Taylor</option></select>`;
     $('#campos').innerHTML = modo + (esLimite()
-      ? fila('f', 'Función <small>(un cociente)</small>') + fila('a', 'Punto a <small>(x → a)</small>')
+      ? fila('f', 'Función <small>(un cociente)</small>') + fila('a', 'Punto a <small>(x → a; vale inf o -inf)</small>')
       : fila('f', 'Función f(x)') + fila('a', 'Punto a <small>(centro)</small>') + fila('n', `Grado n <small>(hasta ${T.MAXN})</small>`, 'numeric') + '<div class="sep">Aproximación (opcional)</div>' + fila('x0', 'Valor x₀ <small>(para f(x₀))</small>'));
     $('#control').hidden = esLimite();
   }
@@ -74,7 +74,7 @@
       $('#resumen').innerHTML = dato(`Límite cuando x → ${esc(sol.aTxt)}`, sol.txt === 'no existe' ? 'No existe' : M(sol.txt), 'num ancho')
         + dato('Orden del numerador', sol.oN < 0 ? '—' : sol.oN) + dato('Orden del denominador', sol.oD);
       $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
-      $('#leyenda').innerHTML = `${Mates.html(`$f(x) = ${sol.f}$`)} cerca de a` + (isFinite(sol.val) ? '; el círculo hueco marca el límite, que la función alcanza sin estar definida en a.' : '.');
+      $('#leyenda').innerHTML = !isFinite(sol.a) ? `${Mates.html(`$f(x) = ${sol.f}$`)} lejos del origen` + (isFinite(sol.val) ? '; la línea de trazos es la asíntota horizontal, y = límite.' : '.') : `${Mates.html(`$f(x) = ${sol.f}$`)} cerca de a` + (isFinite(sol.val) ? '; el círculo hueco marca el límite, que la función alcanza sin estar definida en a.' : '.');
       if (anda) para();
       dibuja(); return;
     }
@@ -87,6 +87,7 @@
     }
     if (sol.conocido) h += dato('Converge', sol.conocido.conv.replace(/^para /, ''));
     else if (sol.R !== null) h += dato('Radio de convergencia', sol.R === Infinity ? '∞ (todo x)' : M(sol.Rtxt));
+    if (sol.intervalo) h += dato('Intervalo de convergencia', M(sol.intervalo.txt) + (sol.intervalo.izq === null || sol.intervalo.der === null ? ' <small>(algún extremo sin decidir)</small>' : ''));
     if (sol.evitable) h += dato('Singularidad evitable', `f(${esc(sol.aTxt)}) = ${fH(sol.coef[0], 6)} por continuidad`);
     $('#resumen').innerHTML = h;
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
@@ -110,7 +111,8 @@
   const marcas = Herramienta.marcas;
   let cacheVentana = null;
   function ventana() {
-    const a = sol.a, W = Math.max(3, sol.x0 != null ? 1.6 * Math.abs(sol.x0 - a) : 0), x1 = a - W, x2 = a + W;
+    // con a = ±∞ se mira lejos, hacia ese lado
+    const inf = !isFinite(sol.a), a = sol.a, W = Math.max(3, sol.x0 != null ? 1.6 * Math.abs(sol.x0 - a) : 0), x1 = inf ? (a > 0 ? 1 : -60) : a - W, x2 = inf ? (a > 0 ? 60 : -1) : a + W;
     const xs = [], ys = [];
     for (let i = 0; i <= 600; i++) { const x = x1 + ((x2 - x1) * i) / 600; let y; try { y = sol.fv(x); } catch (e) { y = NaN; } xs.push(x); ys.push(isFinite(y) ? y : NaN); }
     const ok = ys.filter(isFinite).sort((p, q) => p - q);
@@ -155,8 +157,10 @@
       g.strokeStyle = col['--ink']; g.lineWidth = 2.4;
       const ys = V.ys; let i = 0; curva(() => ys[i++]);
       g.restore();
-      g.strokeStyle = col['--muted']; g.setLineDash([4, 4]); g.lineWidth = 1; g.beginPath(); g.moveTo(X(sol.a), mT); g.lineTo(X(sol.a), h - mB); g.stroke(); g.setLineDash([]);
-      if (isFinite(sol.val)) { g.strokeStyle = col['--accent']; g.fillStyle = col['--panel']; g.lineWidth = 2; g.beginPath(); g.arc(X(sol.a), Y(sol.val), 5, 0, 2 * Math.PI); g.fill(); g.stroke(); }
+      g.strokeStyle = col['--muted']; g.setLineDash([4, 4]); g.lineWidth = 1; g.beginPath();
+      if (isFinite(sol.a)) { g.moveTo(X(sol.a), mT); g.lineTo(X(sol.a), h - mB); } else if (isFinite(sol.val)) { g.moveTo(mL, Y(sol.val)); g.lineTo(w - mR, Y(sol.val)); } // en el infinito, la asíntota horizontal
+      g.stroke(); g.setLineDash([]);
+      if (isFinite(sol.val) && isFinite(sol.a)) { g.strokeStyle = col['--accent']; g.fillStyle = col['--panel']; g.lineWidth = 2; g.beginPath(); g.arc(X(sol.a), Y(sol.val), 5, 0, 2 * Math.PI); g.fill(); g.stroke(); }
       g.fillStyle = col['--accent']; g.font = '600 13px "IBM Plex Sans", system-ui, sans-serif'; g.textAlign = 'right'; g.textBaseline = 'top';
       g.fillText(`límite = ${txt(sol.txt === 'no existe' ? 'no existe' : fH(sol.val, 4))}`, w - mR - 6, mT + 4);
       return;

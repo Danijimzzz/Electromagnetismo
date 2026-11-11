@@ -40,7 +40,42 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       let ok = false; try { TaylorC.resolver(sc); } catch (e) { ok = true; }
       if (!ok) mal(`Taylor: ${q} no da error`);
     }
-    if (fallos === antes) console.log(`  ✓ Series de Taylor: ${TaylorC.ejemplos.length} ejemplos, coeficientes exactos, error por debajo de la cota de Lagrange, desarrollos conocidos, derivadas simbólicas y numéricas y errores`);
+    // MAT.TA-2 · radio e intervalo de convergencia. A mano: el radio es la distancia de a a la singularidad más cercana (también compleja)
+    {
+      const S5 = Math.sqrt(5), S2 = Math.SQRT2, PI = Math.PI;
+      // [f, a, R, texto de R, intervalo, singularidad (re, |im|)]
+      const RAD = [['1/(1+x^2)', '0', 1, 'R = 1', '(−1, 1)', [0, 1]], ['1/(1+x^2)', '1', S2, 'R = √{2}', null, [0, 1]], ['1/(1+x^2)', '2', S5, 'R = √{5}', '(2 − √{5}, 2 + √{5})', [0, 1]], ['1/(1+x^2)', '3', Math.sqrt(10), 'R = √{10}', null, [0, 1]],
+        ['1/(x^2-2x+5)', '0', S5, 'R = √{5}', '(−√{5}, √{5})', [1, 2]], ['1/(x^2+2x+10)', '0', Math.sqrt(10), 'R = √{10}', null, [-1, 3]], ['1/(1+x+x^2)', '0', 1, 'R = 1', '(−1, 1)', [-0.5, Math.sqrt(3) / 2]],
+        ['ln(x)', '2', 2, 'R = 2', '(0, 4]', [0, 0]], ['ln(1+x)', '0', 1, 'R = 1', '(−1, 1]', [-1, 0]], ['ln(1-x)', '0', 1, 'R = 1', '[−1, 1)', [1, 0]], ['sqrt(x)', '4', 4, 'R = 4', '[0, 8]', [0, 0]], ['sqrt(1+x)', '0', 1, 'R = 1', '[−1, 1]', [-1, 0]],
+        ['arctg(x)', '0', 1, 'R = 1', '[−1, 1]', [0, 1]], ['arcsen(x)', '0', 1, 'R = 1', '[−1, 1]', null], ['1/(1-x)', '0', 1, 'R = 1', '(−1, 1)', [1, 0]], ['1/(2-x)', '0', 2, 'R = 2', '(−2, 2)', [2, 0]], ['1/(x-3)', '1', 2, 'R = 2', '(−1, 3)', [3, 0]],
+        ['1/(1-x)^3', '0', 1, 'R = 1', '(−1, 1)', [1, 0]], ['x/(1-x)^2', '0', 1, 'R = 1', '(−1, 1)', [1, 0]], ['tg(x)', '0', PI / 2, 'R = {π}/{2}', '(−{π}/{2}, {π}/{2})', null], ['1/cos(x)', '0', PI / 2, 'R = {π}/{2}', '(−{π}/{2}, {π}/{2})', null],
+        ['x/(e^x-1)', '0', 2 * PI, 'R = 2 π', '(−2 π, 2 π)', [0, 2 * PI]], ['1/(e^x+1)', '0', PI, 'R = π', '(−π, π)', [0, PI]], ['x/(x^2-x-1)', '0', (S5 - 1) / 2, 'R ≈ 0,618034', '(−0,618034, 0,618034)', [(1 - S5) / 2, 0]], ['ln(1+x^2)', '0', 1, 'R = 1', '[−1, 1]', [0, 1]]];
+      for (const [fx, a, R, Rt, itv, sg] of RAD) {
+        const r = TaylorC.resolver({ f: fx, a, n: '4' }), q = `Taylor · radio de ${fx} en ${a}`;
+        if (r.R === null || Math.abs(r.R - R) > 1e-9 * R) { mal(`${q}: sale ${r.R} y no ${R}`); continue; }
+        if (r.Rtxt !== Rt) mal(`${q}: se escribe «${r.Rtxt}» y no «${Rt}»`);
+        if (itv && r.intervalo.txt !== itv) mal(`${q}: intervalo ${r.intervalo.txt} y no ${itv}`);
+        if (sg && (!r.singularidad || Math.abs(r.singularidad.re - sg[0]) > 2e-6 || Math.abs(r.singularidad.im - sg[1]) > 2e-6)) mal(`${q}: singularidad en ${JSON.stringify(r.singularidad)} y no en ${sg}`);
+        if (!r.pasos.some((p) => p.t === 'Radio e intervalo de convergencia')) mal(`${q}: falta el paso`);
+      }
+      // radio infinito: enteras y polinomios; y con singularidad compleja y signos sin patrón los extremos no se deciden a ciegas
+      for (const [fx, a] of [['e^x', '1'], ['sen(x)/x', '0'], ['x^3-2x+1', '1'], ['e^(-x^2)', '0'], ['cos(x)', '1'], ['e^x sen(x)', '0']]) if (TaylorC.resolver({ f: fx, a, n: '4' }).R !== Infinity) mal(`Taylor: el radio de ${fx} en ${a} no sale infinito`);
+      const at = TaylorC.resolver({ f: 'arctg(x)', a: '1', n: '3' }).intervalo; if (at.izq !== null || at.der !== null) mal('Taylor: arctg x en a = 1 decide un extremo sin poder');
+    }
+    // MAT.TA-1 · límites en el infinito y potencias con exponente variable. A mano (con t = 1/x o e^(g ln f)):
+    {
+      const LIM = [['(1+1/x)^x', 'inf', Math.E, 'e'], ['(1+1/x)^x', '-inf', Math.E, 'e'], ['x sen(1/x)', 'inf', 1, '1'], ['x sen(1/x)', '∞', 1, '1'], ['x(e^(1/x)-1)', '+∞', 1, '1'], ['(1+x)^(1/x)', '0', Math.E, 'e'], ['(cos x)^(1/x^2)', '0', Math.exp(-0.5), null],
+        ['(x^2+1)/(2x^2-3)', 'inf', 0.5, '{1}/{2}'], ['x^2(1-cos(1/x))', 'inf', 0.5, '{1}/{2}'], ['(1+2/x)^(3x)', '-inf', Math.exp(6), null], ['x tg(1/x)', '−∞', 1, '1'], ['(1+3/x)^x', 'infinito', Math.exp(3), null], ['(2x^3-x)/(x^3+5)', '-inf', 2, '2'], ['(1+x^2)^(1/x^2)', '0', Math.E, 'e']];
+      for (const [fx, a, v, t] of LIM) {
+        let r; try { r = TaylorC.resolver({ modo: 'limite', f: fx, a }); } catch (e) { mal(`Taylor · límite de ${fx} en ${a}: ${e.message}`); continue; }
+        cerca(r.val, v, 1e-9 * Math.max(1, Math.abs(v)), `límite de ${fx} en ${a}`);
+        if (t && r.txt !== t) mal(`Taylor · límite de ${fx} en ${a}: se escribe «${r.txt}» y no «${t}»`);
+        if (/inf|∞/.test(a) && (isFinite(r.a) || !/∞/.test(r.aTxt))) mal(`Taylor · límite de ${fx}: a = ${a} no se lee como infinito`);
+      }
+      // lo que no sale por Taylor lo dice claro
+      for (const [fx, a] of [['x ln(x)', '0'], ['sqrt(x^2+x)-x', 'inf'], ['x^x', '0']]) { let m = ''; try { TaylorC.resolver({ modo: 'limite', f: fx, a }); } catch (e) { m = e.message; } if (!/no sale por Taylor/.test(m)) mal(`Taylor: el límite de ${fx} en ${a} debería avisar de que no sale por Taylor («${m}»)`); }
+    }
+    if (fallos === antes) console.log(`  ✓ Series de Taylor: ${TaylorC.ejemplos.length} ejemplos, coeficientes exactos, radio e intervalo de convergencia, límites en el infinito, error por debajo de la cota de Lagrange, desarrollos conocidos, derivadas simbólicas y numéricas y errores`);
   }
 
   return async (browser) => {
