@@ -853,7 +853,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: a partir del balance y la cuenta de resultados, el fondo de maniobra, los ratios de liquidez, tesorería, disponibilidad, garantía, endeudamiento, autonomía y calidad de la deuda con su valor recomendado y su valoración, la rentabilidad económica (margen por rotación), la financiera y el apalancamiento, con el balance dibujado.'] },
     ],
     'punto-muerto': [
-      { v: '0.2', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.'] },
+      { v: '0.2', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.', 'Varios productos con su mezcla de ventas (margen medio ponderado y punto muerto de cada uno) y una tabla de sensibilidad del punto muerto y el beneficio al cambiar precio, coste variable o costes fijos un 10 y un 20 %.'] },
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: punto muerto en unidades y en euros, margen de contribución, beneficio con las ventas previstas, margen de seguridad, apalancamiento operativo y ventas para un beneficio objetivo, con la gráfica de ingresos y costes.'] },
     ],
     ahorro: [

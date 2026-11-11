@@ -12,6 +12,16 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     cerca(ej('cafeteria').q0, 2500, 1e-9, 'cafés: 4.000/1,6');
     cerca(ej('objetivo').qObj, 2000, 1e-9, 'unidades para 40.000 € (160.000/80)');
     cerca(ej('perdidas').b, -10000, 1e-9, 'pérdidas');
+    // varios productos a mano: Q = 2.000, pesos 0,5 / 0,3 / 0,2, márgenes 4 / 10 / 18 → m = 2 + 3 + 3,6 = 8,6; Q* = 12.000/8,6; B = 8,6·2.000 − 12.000
+    const v = ej('tres-productos'); cerca(v.m, 8.6, 1e-12, 'margen medio ponderado'); cerca(v.q0, 12000 / 8.6, 1e-9, 'punto muerto de la mezcla'); cerca(v.b, 5200, 1e-9, 'beneficio de la mezcla');
+    cerca(v.prod[0].q0, 0.5 * 12000 / 8.6, 1e-9, 'parte del producto 1'); cerca(v.p, 0.5 * 10 + 0.3 * 25 + 0.2 * 40, 1e-12, 'precio medio');
+    const w = ej('dos-productos-objetivo'); cerca(w.m, 20, 1e-12, 'margen con dos productos'); cerca(w.q0, 1000, 1e-9, 'Q* con dos'); cerca(w.b, -5000, 1e-9, 'B con dos (750 u)'); cerca(w.qObj, 1400, 1e-9, 'Q para 8.000 €');
+    // sensibilidad: precio −10 % en «fábrica» → m = 45 − 30 = 15 → 30.000/15 = 2.000; B = 15·2.000 − 30.000 = 0
+    const sn = ej('fabrica').sens.find((r) => r.v === 'p' && r.dl === -0.1); cerca(sn.q0, 2000, 1e-9, 'precio −10 %'); cerca(sn.b, 0, 1e-9, 'beneficio con precio −10 %');
+    if (ej('fabrica').sens.find((r) => r.v === 'p' && r.dl === -0.2).q0 !== 30000 / 10) mal('precio −20 %: m = 10 → 3.000');
+    error({ modo: 'varios', cf: '1000', productos: '10 5 100' }, 'un solo producto en la mezcla');
+    error({ modo: 'varios', cf: '1000', productos: '10 12 100\n10 12 100' }, 'margen medio negativo');
+    error({ modo: 'varios', cf: '1000', productos: '10 5 0\n10 5 100' }, 'unidades 0');
     error({ cf: '1000', p: '10', cv: '10' }, 'precio igual al coste variable');
     error({ cf: '0', p: '10', cv: '5' }, 'sin costes fijos');
     error({ cf: '1000', p: '10', cv: '5', q: '-3' }, 'ventas negativas');
