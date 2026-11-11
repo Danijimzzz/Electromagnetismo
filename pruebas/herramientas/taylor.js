@@ -72,6 +72,12 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
         if (t && r.txt !== t) mal(`Taylor · límite de ${fx} en ${a}: se escribe «${r.txt}» y no «${t}»`);
         if (/inf|∞/.test(a) && (isFinite(r.a) || !/∞/.test(r.aTxt))) mal(`Taylor · límite de ${fx}: a = ${a} no se lee como infinito`);
       }
+      // DE-4 · más límites de examen 0/0 y ∞·0 por Taylor, con el valor a mano
+      for (const [fx, a, v] of [['(sen(x)-x)/x^3', '0', -1 / 6], ['(tg(x)-x)/x^3', '0', 1 / 3], ['(x-sen(x))/(x-tg(x))', '0', -0.5], ['(1-cos(2x))/(x sen(x))', '0', 2], ['(arctg(x)-x)/x^3', '0', -1 / 3], ['(e^x-cos(x)-x)/x^2', '0', 1], ['(sen(x)/x)^(1/x^2)', '0', Math.exp(-1 / 6)],
+        ['(1-cos(x))/(e^x-1-x)', '0', 1], ['(sen(x)-tg(x))/x^3', '0', -0.5], ['(e^(x^2)-1)/(1-cos(x))', '0', 2], ['(2^x-1)/x', '0', Math.log(2)], ['(1+2x)^(1/x)', '0', Math.exp(2)], ['1/x-1/sen(x)', '0', 0]]) {
+        let r; try { r = TaylorC.resolver({ modo: 'limite', f: fx, a }); } catch (e) { mal(`Taylor · límite de ${fx} en ${a}: ${e.message}`); continue; }
+        cerca(r.val, v, 1e-9 * Math.max(1, Math.abs(v)), `límite (examen) de ${fx} en ${a}`);
+      }
       // lo que no sale por Taylor lo dice claro
       for (const [fx, a] of [['x ln(x)', '0'], ['sqrt(x^2+x)-x', 'inf'], ['x^x', '0']]) { let m = ''; try { TaylorC.resolver({ modo: 'limite', f: fx, a }); } catch (e) { m = e.message; } if (!/no sale por Taylor/.test(m)) mal(`Taylor: el límite de ${fx} en ${a} debería avisar de que no sale por Taylor («${m}»)`); }
     }

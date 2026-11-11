@@ -33,6 +33,35 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     igual(DerC.integral({ f: '1/(x^2+x+1)' }).Ftxt, '{2 arctg ({2 x + 1}/{√3})}/{√3}', '∫ 1/(x² + x + 1)');
     igual(DerC.integral({ f: 'x (x^2+1)^3' }).Ftxt, '{(x^{2} + 1)^{4}}/{8}', '∫ x (x² + 1)³');
     igual(r('racional').Ftxt, 'ln |x + 3| + 2 ln |x − 1|', '∫ (3x + 5)/(x² + 2x − 3)');
+    // DE-4 · 30 límites de examen, con el valor hecho a mano (null = no existe). Derivadas los calcula con L'Hôpital, y los 0/0 también salen por Taylor (ver taylor.js);
+    // no hace falta orden de infinitésimos: lo que L'Hôpital no resuelve limpio se contrasta con f cerca de a
+    {
+      const LIM = [['(sen(x)-x)/x^3', '0', -1 / 6], ['(1-cos(x))/x^2', '0', 0.5], ['(e^x-1-x)/x^2', '0', 0.5], ['(tg(x)-x)/x^3', '0', 1 / 3], ['(x-sen(x))/(x-tg(x))', '0', -0.5], ['ln(1+x)/x', '0', 1], ['(e^x-e^(-x))/(2x)', '0', 1], ['(1-cos(2x))/(x sen(x))', '0', 2],
+        ['(sqrt(1+x)-1)/x', '0', 0.5], ['(1+1/x)^x', 'inf', Math.E], ['x sen(1/x)', 'inf', 1], ['x(e^(1/x)-1)', 'inf', 1], ['(x^2+3x)/(2x^2-1)', 'inf', 0.5], ['sqrt(x^2+x)-x', 'inf', 0.5], ['x ln(x)', '0', 0], ['x^x', '0', 1], ['(cos x)^(1/x^2)', '0', Math.exp(-0.5)],
+        ['(1+2x)^(1/x)', '0', Math.exp(2)], ['(sen(x)/x)^(1/x^2)', '0', Math.exp(-1 / 6)], ['ln(x)/(x-1)', '1', 1], ['(x^3-1)/(x-1)', '1', 3], ['(arctg(x)-x)/x^3', '0', -1 / 3], ['(e^x-cos(x)-x)/x^2', '0', 1], ['1/x-1/sen(x)', '0', 0], ['(2^x-1)/x', '0', Math.log(2)],
+        ['(x-1)/ln(x)', '1', 1], ['x^2 e^(-x)', 'inf', 0], ['1/x', '0', null], ['abs(x)/x', '0', null], ['e^x/x^3', 'inf', Infinity]];
+      for (const [f, a, v] of LIM) {
+        let r; try { r = DerC.limite({ f, a }); } catch (e) { mal(`Derivadas · límite de ${f} en ${a}: ${e.message}`); continue; }
+        if (v === null ? r.existe : v === Infinity ? r.val !== Infinity : !r.existe || Math.abs(r.val - v) > 1e-6) mal(`Derivadas · límite de ${f} en ${a}: sale ${r.txt} y no ${v}`);
+      }
+    }
+    // DE-3 · banco de 51 integrales más de libro (partes, racionales, trigonométricas, radicales, hiperbólicas…): cada primitiva F se comprueba derivándola
+    // numéricamente (cociente incremental centrado) en 5 puntos y comparándola con f
+    {
+      const banco = ['x e^(3x)', 'x^2 e^(-x)', 'x^2 sen(x)', 'x cos(2x)', 'e^(-x) sen(2x)', 'e^(3x) cos(x)', 'ln(x^2+1)', 'arcsen(x)', 'arccos(x)', 'x^2 arctg(x)', '1/(x^2+2x+5)', 'x/(x^2+4x+5)', '(3x+1)/(x^2-x-6)', '1/(x^3+x)', '(x^2+1)/(x^3-x)', '1/(x^2(x-1))', 'x^3/(x^2+1)', '1/cos(x)', 'cotg(x)', 'sen(x)^2', 'cos(x)^3', 'sen(2x)cos(x)', 'sen(x)^5', 'x senh(x)', 'e^x/(e^(2x)+1)', 'e^x sen(x)', 'sqrt(x)/(x+1)', '1/(sqrt(x)+1)', 'x/sqrt(x+1)', '1/(x sqrt(x+1))', 'x^2 e^(x^3)', 'sen(sqrt(x))', '1/(x^2+6x+13)', '1/sqrt(x^2+2x+5)', 'sqrt(x^2+2x+5)', '1/sqrt(3-2x-x^2)', 'sqrt(4x-x^2)', 'arctg(x)/x^2', 'ln(x)/x^2', 'ln(1+x)/sqrt(x)', '(x^2+x+1)/((x+1)^2(x+2))', '1/(x^4-1)', '1/(x^4+1)', 'x/(x^4+1)', 'x^2/(x^4+1)', 'e^(2x) cos(3x)', 'sen(x)cos(x)^2', 'tg(x)/cos(x)^2', '1/(x^2-4x+3)', '1/(e^x-1)', 'ln(sen(x)) cos(x)/sen(x)'];
+      for (const fx of banco) {
+        const x = DerC.integral({ f: fx });
+        if (!x.F) { mal(`Derivadas · banco ∫ ${fx}: no encuentra la primitiva`); continue; }
+        let ok = 0;
+        for (const t of [0.35, 0.7, 1.4, 1.9, 2.6]) { const h = 1e-5, d = (x.Ff(t + h) - x.Ff(t - h)) / (2 * h), v = x.f(t); if (isFinite(d) && isFinite(v)) { ok++; if (Math.abs(d - v) > 1e-5 * Math.max(1, Math.abs(v))) mal(`Derivadas · banco ∫ ${fx}: F′(${t}) = ${d}, f(${t}) = ${v}`); } }
+        if (ok < 2) mal(`Derivadas · banco ∫ ${fx}: no hay puntos donde comprobar`);
+      }
+      // lo que aún no sale (huecos conocidos de la herramienta) no debe dar una primitiva falsa ni romperse: o sale bien o no sale
+      for (const fx of ['x ln(x)^2', 'tg(x)^3', 'sec(x)^3', 'sec(x)tg(x)', 'cotg(x)^2', '1/(1+cos(x))', '1/(2+cos(x))', '1/(1+sen(x))', 'senh(x)^2', 'cosh(x)^2', 'x^3 e^(x^2)', 'x^2/(1-x^2)^(3/2)', '2^x e^x', 'x 2^x', 'abs(x)', 'x^5 e^(x^2)']) {
+        let x; try { x = DerC.integral({ f: fx }); } catch (e) { mal(`Derivadas · ∫ ${fx}: da error en vez de «no sale» (${e.message})`); continue; }
+        if (x.F) for (const t of [0.35, 1.4, 2.6]) { const hh = 1e-5, d = (x.Ff(t + hh) - x.Ff(t - hh)) / (2 * hh), v = x.f(t); if (isFinite(d) && isFinite(v) && Math.abs(d - v) > 1e-5 * Math.max(1, Math.abs(v))) mal(`Derivadas · ∫ ${fx}: primitiva falsa`); }
+      }
+    }
     // DE-1/DE-3: integrales de libro (las 9 que antes no salían y más); cada primitiva se comprueba con un cociente incremental propio
     {
       const libro = ['x sqrt(x+1)', 'sen(x)^2 cos(x)^3', '1/sen(x)', 'x/sqrt(1-x^2)', '1/(x sqrt(x^2-1))', '1/(1+e^x)', 'x arcsen(x)', 'e^sqrt(x)', 'x^2/(x^2+1)^2',

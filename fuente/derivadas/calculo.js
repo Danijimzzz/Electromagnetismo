@@ -817,7 +817,19 @@ const Derivadas = (() => {
   const INF = /^\s*([+\-−]?)\s*(∞|inf|infinito)\s*$/i;
   function limiteDe(s, nom) { const m = String(s ?? '').match(INF); if (m) return m[1] === '-' || m[1] === '−' ? -Infinity : Infinity; return num(s, nom); }
   // límite de g cuando x → c por un lado (lado = ±1) o cuando x → ±∞: número, ±Infinity o null si no tiene
-  function limNum(g, c, lado = 1, kmax = isFinite(c) ? 10 : 12) {
+  // Se mira con 4 tamaños de ventana: con h muy pequeño las restas se comen las cifras ((sen x/x)^(1/x²), x(e^(1/x) − 1)) y la última ventana engaña;
+  // vale la que coincide con otra más corta, y si la larga no concluye, la que concluyen dos cortas
+  function limNum(g, c, lado = 1, kmax) {
+    if (kmax !== undefined) return limNum0(g, c, lado, kmax);
+    const kd = isFinite(c) ? 10 : 12, rs = [kd, 8, 7, 6, 5].map((k) => limNum0(g, c, lado, k));
+    const eq = (p, q) => p !== null && q !== null && (p === q || (isFinite(p) && isFinite(q) && Math.abs(p - q) <= 1e-6 * Math.max(1, Math.abs(p))));
+    if (rs[0] !== null && (eq(rs[0], rs[1]) || eq(rs[0], rs[2]))) return rs[0];
+    for (const [i, j] of [[1, 2], [1, 3], [2, 3], [3, 4]]) if (eq(rs[i], rs[j])) return rs[i];
+    // ventanas que no se ponen de acuerdo (restas que se comen las cifras): no se da un valor dudoso
+    const dist = rs.filter((q) => q !== null).filter((q, i, a) => a.findIndex((o) => eq(o, q)) === i);
+    return dist.length > 1 ? null : rs[0];
+  }
+  function limNum0(g, c, lado = 1, kmax = isFinite(c) ? 10 : 12) {
     const vs = [];
     for (let k = 2; k <= kmax; k++) { const x = isFinite(c) ? c + lado * 10 ** -k : Math.sign(c) * 10 ** k, v = g(x); vs.push(v); }
     const fin = vs.filter((v) => !Number.isNaN(v));
@@ -1148,6 +1160,15 @@ const Derivadas = (() => {
     } else pasos.push({ t: L0 === null || Number.isNaN(L0) ? 'Sin límite' : 'Sustituyendo', html: L0 === null || Number.isNaN(L0) ? 'Los límites por la izquierda y por la derecha no coinciden (o f oscila): el límite no existe.' : `No es una indeterminación: $${lim(T(ast))} = ${nt(L0)}$` });
     // si L'Hôpital no llega, el valor numérico
     if (L === null || Number.isNaN(L)) L = L0;
+    // comprobación: si f ya está casi asentada a 10⁻², 10⁻³ y 10⁻⁴ de a (sin restas que se coman cifras) y el valor obtenido no cuadra con eso, manda lo asentado
+    if (L !== null && isFinite(L) && isFinite(a)) {
+      const ext = (s) => { const v = [2, 3, 4].map((k) => g0(a + s * 10 ** -k)); if (!v.every(isFinite)) return null; const d1 = v[1] - v[0], d2 = v[2] - v[1]; if (Math.abs(d2) > 0.05 * Math.abs(d1) + 1e-13 || Math.abs(d2) > 1e-6 * Math.max(1, Math.abs(v[2]))) return null; const r = d1 ? d2 / d1 : 0; return v[2] + (d2 * r) / (1 - r); };
+      const lados = lado ? [lado] : [1, -1], es = lados.map(ext);
+      if (es.every((q) => q !== null) && es.every((q) => Math.abs(q - es[0]) < 1e-6 * Math.max(1, Math.abs(q))) && Math.abs(L - es[0]) > 1e-4 * Math.max(1, Math.abs(es[0]))) {
+        L = es[0]; usado = usado || 0;
+        pasos.push({ t: 'Comprobación', html: `Con h pequeño las cuentas con las derivadas pierden cifras: mirando f en puntos cercanos a ${nt(a)} (a distancia 10⁻², 10⁻³ y 10⁻⁴), f se asienta en ${nt(L)}, que es el valor que se toma.` });
+      }
+    }
     if (L !== null && isFinite(L)) L = redondea(L, 1e-8);
     pasos.push({ t: 'Resultado', html: L === null || Number.isNaN(L) ? 'El límite no existe.' : `$${lim(T(ast))} = ${nt(L)}$` });
     return { modo: 'limite', ast, a, val: L, existe: !(L === null || Number.isNaN(L)), txt: L === null || Number.isNaN(L) ? 'no existe' : nt(L), lhopital: usado, f: (x) => E.valor(ast, x), pasos };
