@@ -109,7 +109,7 @@ async function usarEn(browser, { mal, solo, filtro } = {}) {
           let estado = null, resultado; try { estado = app ? app.estado() : null; resultado = app && app.resultado ? app.resultado() : undefined; } catch (err) { resultado = null; }
           const error = [...document.querySelectorAll('#error, .error, [role="alert"]')].filter((x) => (x.offsetWidth || x.offsetHeight) && !x.closest('.bib, .prac') && x.textContent.trim()).map((x) => x.textContent.trim())[0] || '';
           const texto = [...document.querySelectorAll('#resumen, #res, #resultados, #pasos, .res, .resultados')].map((x) => x.textContent.trim()).join('');
-          return { estado: estado || guardado, hayResultado: resultado === undefined ? texto.length > 0 : !!resultado, error, texto: texto.slice(0, 2000) };
+          return { estado: estado || guardado ? { ...(guardado && typeof guardado === 'object' ? guardado : {}), ...(estado && typeof estado === 'object' ? estado : {}) } : null, hayResultado: resultado === undefined ? texto.length > 0 : !!resultado, error, texto: texto.slice(0, 2000) };
         }, d.guarda);
         if (alli.error) mal(`Usar en: ${que} abre ${ruta} con un error: «${alli.error.slice(0, 160)}»`);
         else if (!alli.hayResultado) mal(`Usar en: ${que} abre ${ruta} sin ningún resultado`);
