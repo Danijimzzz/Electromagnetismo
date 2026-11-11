@@ -28,6 +28,22 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       let ok = false; try { ComplejosC.resolver(sc); } catch (e) { ok = true; }
       if (!ok) mal(`Complejos: ${q} no da error`);
     }
+    // MA-4 / CO-1 · entrada flexible: lo que no tiene una forma de siempre se calcula como expresión y se enseña el valor leído
+    {
+      const fz = (z1, extra = {}) => ComplejosC.resolver({ op: 'formas', z1, unidad: 'grados', ...extra });
+      // a mano: √(−4) = 2i; e^(iπ) + 1 = 0; i^i = e^(−π/2); ln(−1) = πi; (1 + i)⁸ = 16; √i = (1 + i)/√2; (2 + 3i)/(1 − i) = (−1 + 5i)/2
+      for (const [t, re, im, exacto] of [['sqrt(-4)', 0, 2, true], ['e^(iπ)+1', 0, 0, true], ['e^(i*pi)+1', 0, 0, true], ['i^i', Math.exp(-Math.PI / 2), 0, false], ['ln(-1)', 0, Math.PI, false], ['(1+i)^8', 16, 0, true], ['sqrt(i)', Math.SQRT1_2, Math.SQRT1_2, false], ['√(−9)', 0, 3, true], ['sen(i)', 0, Math.sinh(1), false], ['(2+3i)/(1-i)', -0.5, 2.5, true], ['abs(3+4i)', 5, 0, true]]) {
+        const x = fz(t); cz(x.z, re, im, `entrada «${t}»`);
+        if (t !== '(1+i)^8' && t !== '(2+3i)/(1-i)') { if (!x.leidos || x.pasos[0].t !== 'Valor leído' || x.leidos[0].exacto !== exacto) mal(`Complejos · «${t}»: falta el paso «Valor leído» o su exactitud (${JSON.stringify(x.leidos)})`); }
+      }
+      // lo que ya se leía sigue igual y sin el paso nuevo: binómica exacta, con raíces, polar, trigonométrica y exponencial
+      for (const [t, re, im] of [['3-2i', 3, -2], ['1+sqrt(3)i', 1, Math.sqrt(3)], ['1+√3i', 1, Math.sqrt(3)], ['sqrt(2)/2+sqrt(2)/2 i', Math.SQRT1_2, Math.SQRT1_2], ['2∠60°', 1, Math.sqrt(3)], ['2(cos 60° + i sen 60°)', 1, Math.sqrt(3)], ['2e^(iπ/3)', 1, Math.sqrt(3)]]) {
+        const x = fz(t); cz(x.z, re, im, `entrada «${t}»`); if (x.leidos) mal(`Complejos · «${t}» ya se leía y ahora pasa por la entrada flexible`);
+      }
+      if (!fz('3-2i').ex || !fz('sqrt(-4)').ex) mal('Complejos: 3 − 2i o √(−4) dejan de ser exactos');
+      const pr = ComplejosC.resolver({ op: 'producto', z1: 'sqrt(-4)', z2: 'e^(iπ/2)', unidad: 'grados' }); cz(pr.z, -2, 0, '√(−4) · e^(iπ/2)');
+      for (const t of ['hola', '1/0', 'ln(0)', 'x+1', '2+', 'sqrt()']) { let ok = false; try { fz(t); } catch (e) { ok = /no se entiende/.test(e.message); } if (!ok) mal(`Complejos: «${t}» debería dar el error de siempre`); }
+    }
     if (fallos === antes) console.log(`  ✓ Números complejos: ${ComplejosC.ejemplos.length} ejemplos, cuatro formas, cuadrantes, operaciones exactas, De Moivre, raíces, ecuaciones y errores`);
   }
 

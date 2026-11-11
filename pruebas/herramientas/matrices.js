@@ -42,6 +42,17 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     for (const [s, v] of [['-1/2', '−1/2'], ['0,25', '1/4'], ['(1+i)/2', '1/2 + 1/2·i'], ['3(1-i)', '3 − 3i'], ['1/(1+i)', '1/2 − 1/2·i']]) if (Al.txt(Al.leer(s)) !== v) mal(`Matrices: «${s}» se lee como ${Al.txt(Al.leer(s))}`);
     const malas = [{ op: 'det', A: [['1', '2', '3'], ['4', '5', '6']] }, { op: 'producto', A: [['1', '2']], B: [['1', '2']] }, { op: 'det', A: [['1', 'x y'], ['2', '3']] }, { op: 'suma', A: [['1']], B: [['1', '2']] }, { op: 'potencia', A: [['1', '2'], ['2', '4']], n: '-1' }];
     for (const m of malas) { let ok = false; try { Matrices.resolver(m); } catch (e) { ok = true; } if (!ok) mal(`Matrices: ${JSON.stringify(m)} debería dar un error`); }
+    // MA-4 · entrada flexible en las casillas: √4 = 2, e^(iπ) = −1, cos π = −1 ⇒ |2 1; −1 −1| = −1; √(−4) = 2i; √2 no es racional
+    {
+      const d1 = Matrices.resolver({ op: 'det', A: [['sqrt(4)', '1'], ['e^(iπ)', 'cos(π)']] });
+      if (Al.txt(d1.valor) !== '−1' || d1.leidos !== 3 || d1.pasos[0].t !== 'Valores leídos') mal(`Matrices: det con casillas calculadas da ${Al.txt(d1.valor)} (${d1.leidos} leídas)`);
+      if (Al.txt(Matrices.resolver({ op: 'det', A: [['sqrt(-4)', '1'], ['1', '(1+i)^2']] }).valor) !== '−5') mal('Matrices: √(−4)·(1 + i)² − 1 no da −5');
+      if (Al.txt(Matrices.resolver({ op: 'escalar', A: [['2']], k: 'sqrt(9)/2' }).valor[0][0]) !== '3') mal('Matrices: k = √9/2 no se lee como 3/2');
+      let aviso = ''; try { Matrices.resolver({ op: 'det', A: [['sqrt(2)', '1'], ['1', '2']] }); } catch (e) { aviso = e.message; }
+      if (!/1,41421/.test(aviso) || !/fracción exacta/.test(aviso)) mal(`Matrices: √2 en una casilla no avisa bien («${aviso}»)`);
+      // los parámetros y lo que ya se leía no pasan por aquí
+      for (const A of [[['k', '1'], ['1', 'k']], [['k^2', '1'], ['1', 'k']], [['2^3', '1/2+1/3'], ['0,5', '1']], [['1', 'i'], ['-i', '2']]]) if (Matrices.resolver({ op: 'det', A }).leidos) mal(`Matrices: ${JSON.stringify(A)} pasa por la entrada flexible`);
+    }
     // MX-3 · núcleo e imagen. A mano, con A = (1 2 −1 3; 2 4 1 0; 3 6 0 3): reducida (1 2 0 1; 0 0 1 −2; 0 0 0 0), rango 2,
     // núcleo de dimensión 2 con base (2, −1, 0, 0) y (1, 0, −2, −1)·(−1), imagen = columnas 1 y 3, implícita y₁ + y₂ − y₃ = 0
     {

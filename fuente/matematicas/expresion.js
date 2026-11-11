@@ -126,6 +126,53 @@ const Expresion = (() => {
     fact: (u) => { if (!(u >= 0) || u !== Math.floor(u) || u > 170) return NaN; let r = 1; for (let i = 2; i <= u; i++) r *= i; return r; },
   };
   const CTE = { 'π': Math.PI, e: Math.E };
+  /* ---------- Evaluación compleja (entrada flexible: «1 + sqrt(3)i», «sqrt(−4)», «e^(iπ) + 1») ---------- */
+  // valor complejo { re, im } de una expresión leída con la variable «i» (lee(texto, nombre, ['i'])); raíces y logaritmos, en su rama principal
+  function valorC(n) {
+    const Z = (re, im = 0) => ({ re: re || 0, im: im || 0 }), mul = (a, b) => Z(a.re * b.re - a.im * b.im, a.re * b.im + a.im * b.re);
+    const div = (a, b) => { const q = b.re * b.re + b.im * b.im; if (q === 0) throw new Error('hay una división entre cero'); return Z((a.re * b.re + a.im * b.im) / q, (a.im * b.re - a.re * b.im) / q); };
+    const exp = (a) => { const r = Math.exp(a.re); return Z(r * Math.cos(a.im), r * Math.sin(a.im)); };
+    const ln = (a) => { if (a.re === 0 && a.im === 0) throw new Error('el logaritmo de 0 no existe'); return Z(Math.log(Math.hypot(a.re, a.im)), Math.atan2(a.im, a.re)); };
+    const pot = (a, b) => {
+      if (b.im === 0 && Number.isInteger(b.re) && Math.abs(b.re) <= 64) { let r = Z(1); for (let k = 0; k < Math.abs(b.re); k++) r = mul(r, a); return b.re < 0 ? div(Z(1), r) : r; }
+      if (a.re === 0 && a.im === 0) { if (b.re > 0) return Z(0); throw new Error('0 elevado a un exponente que no es positivo no existe'); }
+      return exp(mul(b, ln(a)));
+    };
+    const sen = (a) => Z(Math.sin(a.re) * Math.cosh(a.im), Math.cos(a.re) * Math.sinh(a.im)), cos = (a) => Z(Math.cos(a.re) * Math.cosh(a.im), -Math.sin(a.re) * Math.sinh(a.im));
+    const FC = {
+      sqrt: (a) => (a.im === 0 ? (a.re >= 0 ? Z(Math.sqrt(a.re)) : Z(0, Math.sqrt(-a.re))) : pot(a, Z(0.5))), cbrt: (a) => (a.im === 0 ? Z(Math.cbrt(a.re)) : pot(a, Z(1 / 3))),
+      abs: (a) => Z(Math.hypot(a.re, a.im)), exp, ln, log: (a) => div(ln(a), Z(Math.LN10)), sen, cos, tg: (a) => div(sen(a), cos(a)),
+      senh: (a) => Z(Math.sinh(a.re) * Math.cos(a.im), Math.cosh(a.re) * Math.sin(a.im)), cosh: (a) => Z(Math.cosh(a.re) * Math.cos(a.im), Math.sinh(a.re) * Math.sin(a.im)),
+    };
+    const v = (q) => {
+      switch (q.t) {
+        case 'n': return Z(q.v);
+        case 'c': return Z(CTE[q.v]);
+        case 'x': if (q.n === 'i') return Z(0, 1); throw new Error('solo puede llevar números, i, π y e');
+        case 'neg': { const a = v(q.a); return Z(-a.re, -a.im); }
+        case '+': { const a = v(q.a), b = v(q.b); return Z(a.re + b.re, a.im + b.im); }
+        case '-': { const a = v(q.a), b = v(q.b); return Z(a.re - b.re, a.im - b.im); }
+        case '*': return mul(v(q.a), v(q.b));
+        case '/': return div(v(q.a), v(q.b));
+        case '^': return pot(v(q.a), v(q.b));
+        case 'fn': {
+          const a = v(q.a);
+          if (FC[q.f] && (a.im !== 0 || (q.f === 'sqrt' && a.re < 0) || ((q.f === 'ln' || q.f === 'log') && a.re < 0))) return FC[q.f](a);
+          if (a.im !== 0) throw new Error(`no sé calcular ${q.f} de un número complejo`);
+          const r = F1[q.f](a.re); if (!isFinite(r)) throw new Error(`${q.f}(${a.re}) no existe`); return Z(r);
+        }
+      }
+      throw new Error('no se entiende');
+    };
+    const z = v(n), limpio = (t) => (Math.abs(t) < 1e-14 ? 0 : t);
+    if (!isFinite(z.re) || !isFinite(z.im)) throw new Error('no da un número');
+    return Z(limpio(z.re), limpio(z.im));
+  }
+  // lee un número complejo escrito como expresión: { z, ast }; lanza un error con el motivo
+  function complejo(texto, nom = 'El número') {
+    const ast = lee(String(texto).replace(/j/g, 'i'), nom, ['i']);
+    try { return { z: valorC(ast), ast }; } catch (e) { throw new Error(`${nom}: ${e.message}`); }
+  }
   // env: valores de las otras variables, { y: 2 }
   function valor(n, x, env) {
     switch (n.t) {
@@ -499,6 +546,6 @@ const Expresion = (() => {
     return r;
   }
 
-  return { lee, valor, deriva, simp, texto, serie, exacto, fraccion, numTxt, dec4, tieneX, N, X };
+  return { lee, valor, valorC, complejo, deriva, simp, texto, serie, exacto, fraccion, numTxt, dec4, tieneX, N, X };
 })();
 if (typeof module !== 'undefined') module.exports = Expresion;

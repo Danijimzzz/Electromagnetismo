@@ -424,7 +424,28 @@ const Matrices = (() => {
   }
 
   /* ---------- Resolución ---------- */
-  function resolver(sc) {
+  /* ---------- Entrada flexible (MA-4): «sqrt(4)», «e^(iπ)», «cos(π)»… en una casilla ---------- */
+  const EX = typeof Expresion !== 'undefined' ? Expresion : typeof require !== 'undefined' ? require('../matematicas/expresion.js') : null;
+  const FLEX = /sqrt|√|π|pi|ln\(|log\(|sen\(|cos\(|tg\(|exp\(|abs\(|e\^/i;
+  // una casilla con funciones o constantes se calcula; si sale una fracción exacta se cambia por ella y, si no, se avisa
+  function casilla(c, leidos) {
+    const t = String(c ?? '').trim();
+    if (!EX || !FLEX.test(t)) return c;
+    let z; try { z = EX.complejo(t.replace(/[−–]/g, '-').replace(/[·×]/g, '*'), 'La casilla').z; } catch (e) { return c; }
+    const q = (v) => { const fr = EX.fraccion(v, 10000); return fr && Math.abs(fr[0] / fr[1] - v) < 1e-12 ? fr : null; }, a = q(z.re), b = q(z.im);
+    const dec = A_.decimalC(z, 6);
+    if (!a || !b) throw new Error(`«${t}» vale ${dec.replace(/<[^>]+>/g, '')}, que no es una fracción exacta, y aquí se calcula con fracciones. Si te vale un valor aproximado, escríbelo con decimales`);
+    const fr = ([n, d]) => (d === 1 ? `${n}` : `${n}/${d}`), txt = b[0] === 0 ? fr(a) : `${a[0] === 0 ? '' : fr(a)}${b[0] < 0 ? '-' : a[0] === 0 ? '' : '+'}${fr([Math.abs(b[0]), b[1]])}i`;
+    leidos.push(`«${t.replace(/&/g, '&amp;').replace(/</g, '&lt;')}» = ${html(A_.leer(txt))}`);
+    return txt;
+  }
+  function resolver(sc0) {
+    const leidos = [], mat = (M) => (Array.isArray(M) ? M.map((f) => (Array.isArray(f) ? f.map((c) => casilla(c, leidos)) : f)) : M);
+    const r = resolver0({ ...sc0, A: mat(sc0.A), B: mat(sc0.B), k: sc0.k === undefined ? sc0.k : casilla(sc0.k, leidos) });
+    if (leidos.length && r.pasos) { r.pasos.unshift({ t: 'Valores leídos', html: `${leidos.join(', &nbsp;')}. Las raíces y los logaritmos se toman en su valor principal.` }); r.leidos = leidos.length; }
+    return r;
+  }
+  function resolver0(sc) {
     const op = OPS[sc.op] ? sc.op : 'det', O = OPS[op];
     const letra = P_ ? P_.letraDe([...(sc.A || []).flat(), ...(O.B ? (sc.B || []).flat() : []), ...(O.k ? [sc.k] : [])]) : null;
     if (letra) return resolverParam(sc, op, O, letra);
