@@ -250,11 +250,11 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 <style>
 :root {
   --alto-grafica: clamp(220px, 34vw, 300px);
-  --area: rgba(107,63,160,.28); --curva: #1a2128 }
+  --area: rgba(107,63,160,.28); --curva: #1a2128; --curva2: #a8450f }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --area: rgba(184,146,236,.32); --curva: #e3e8ee } }
+  --area: rgba(184,146,236,.32); --curva: #e3e8ee; --curva2: #f2a56b } }
 :root[data-theme="dark"] {
-  --area: rgba(184,146,236,.32); --curva: #e3e8ee }
+  --area: rgba(184,146,236,.32); --curva: #e3e8ee; --curva2: #f2a56b }
 #grafica { cursor: ew-resize; touch-action: pan-y }
 #res { display: block; font: 26px var(--f-math); padding: 2px 0 } .res small { font: 14px var(--f-ui); color: var(--muted); margin-left: 10px }
 </style>
@@ -273,7 +273,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
     <p class="error" id="error" hidden></p>
   </div>
   <div>
-    <div class="card"><h2>Resultado</h2><div class="res" id="res"></div><canvas id="grafica" aria-label="Gráfica de la distribución con el área sombreada"></canvas><p class="nota">Arrastra sobre la gráfica para mover a, b o c.</p></div>
+    <div class="card"><h2>Resultado</h2><div class="res" id="res"></div><canvas id="grafica" aria-label="Gráfica de la distribución con el área sombreada"></canvas><p class="nota" id="nota-grafica">Arrastra sobre la gráfica para mover a, b o c.</p><button type="button" class="btn" id="otra" hidden>Otra simulación</button></div>
     <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
   </div>
 </div>
@@ -295,6 +295,14 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
   <p>La F de Snedecor con d₁ y d₂ grados de libertad es el cociente de dos χ² divididas por sus grados de libertad. Se usa para comparar dos varianzas y en el análisis de la varianza. Cumple F<sub>d₁, d₂; 1−α</sub> = 1/F<sub>d₂, d₁; α</sub>, que es como se sacan de las tablas los valores de la cola izquierda.</p>
   <h2>Uniforme y exponencial</h2>
   <p>En la uniforme U(a, b) todos los tramos de la misma longitud tienen la misma probabilidad: media (a + b)/2 y varianza (b − a)²/12. La exponencial de tasa λ mide el tiempo hasta un suceso; tiene media 1/λ y no tiene memoria.</p>
+  <h2>Aproximaciones y corrección de continuidad</h2>
+  <p>Una binomial con np ≥ 5 y nq ≥ 5 se parece a la normal N(np, √(npq)), y una Poisson con λ ≥ 10 a N(λ, √λ). Como la normal es continua y la otra va a saltos, cada entero k se cambia por el tramo de k − 0,5 a k + 0,5: es la corrección de continuidad. La herramienta pone juntas la probabilidad exacta, la aproximada con y sin corrección y el error de cada una. Con n ≥ 30 y p ≤ 0,1 la binomial se aproxima por una Poisson de λ = np, y una hipergeométrica en la que se saca menos del 10 % de la población, por una binomial.</p>
+  <p class="f m">$P(a ≤ X ≤ b) ≈ Φ({b + 0,5 − μ}/σ) − Φ({a − 0,5 − μ}/σ)$</p>
+  <h2>Teorema central del límite</h2>
+  <p>Si se toman muestras de n valores de cualquier distribución con media μ y desviación típica σ, la media de cada muestra tiene media μ y desviación típica σ/√n, y cuando n crece su distribución se acerca a una normal aunque la de partida no lo sea. Por eso la normal aparece en los intervalos de confianza y los contrastes. Elige «Teorema central del límite» en «Qué calcular» para ver el histograma de las medias de 2000 muestras simuladas junto a la campana que predice el teorema.</p>
+  <p class="f m">$X̄ ≈ N(μ, σ/√n)$</p>
+  <h2>Comparar dos distribuciones</h2>
+  <p>Con «Comparar con» se dibuja encima una segunda distribución, a trazos si es continua y con puntos si es discreta: sirve para ver cómo la t de Student se acerca a la normal al subir los grados de libertad, cómo cambia una normal con su σ o lo bien que una normal sigue a una binomial.</p>
   <h2>Valores críticos</h2>
   <p>Para un nivel de significación α, el valor crítico bilateral c deja α/2 en cada cola: P(−c ≤ Z ≤ c) = 1 − α. Con α = 0,05, z<sub>α/2</sub> = 1,96. El unilateral deja toda α en una cola: z<sub>α</sub> = 1,645 para α = 0,05. La χ² y la F no son simétricas, así que en el bilateral hacen falta dos valores distintos.</p>
   <h2>Hallar μ o σ</h2>
@@ -322,7 +330,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 </body>
 <script>
 const Pagina = { carpeta: 'estadistica', guarda: 'estadistica-v1' };
-const Version = (() => { const registros = {"web":[{"v":"1.14.1"}],"control":[{"v":"0.2"}],"termo-estadistica":[{"v":"0.2"}],"markowitz":[{"v":"0.2"}],"cavidades":[{"v":"0.2"}],"organica":[{"v":"0.2"}],"transformada-z":[{"v":"0.2"}],"semiconductores":[{"v":"0.2"}],"relatividad":[{"v":"0.2"}],"osc-acopladas":[{"v":"0.2"}],"solubilidad":[{"v":"0.2"}],"lagrange":[{"v":"0.2"}],"series":[{"v":"0.2"}],"no-parametricos":[{"v":"0.2"}],"regresion-multiple":[{"v":"0.1"}],"anova":[{"v":"0.2"}],"black-scholes":[{"v":"0.2"}],"bonos":[{"v":"0.2"}],"solow":[{"v":"0.2"}],"integrales-multiples":[{"v":"0.1"}],"formulacion":[{"v":"0.2"}],"balance":[{"v":"0.2"}],"redox":[{"v":"0.2"}],"lineas-transmision":[{"v":"0.2"}],"superficies":[{"v":"0.1"}],"vsepr":[{"v":"0.2"}],"maxwell":[{"v":"0.2"}],"fresnel":[{"v":"0.2"}],"gravitacion":[{"v":"0.1"}],"convolucion":[{"v":"0.2"}],"laplace-numerica":[{"v":"0.2"}],"imagenes":[{"v":"0.2"}],"guias-onda":[{"v":"0.2"}],"antena":[{"v":"0.2"}],"bode":[{"v":"0.2"}],"optica":[{"v":"0.2"}],"simulador":[{"v":"0.4"}],"teoria-juegos":[{"v":"0.1"}],"puertas-logicas":[{"v":"0.4"}],"multiplicador":[{"v":"0.2"}],"is-lm":[{"v":"0.2"}],"choques":[{"v":"0.1"}],"termoquimica":[{"v":"0.2"}],"probabilidad":[{"v":"0.1"}],"unidades":[{"v":"0.1"}],"equilibrio":[{"v":"0.2"}],"oscilaciones":[{"v":"0.1"}],"beneficio":[{"v":"0.2"}],"costes":[{"v":"0.2"}],"sistemas-numericos":[{"v":"0.2"}],"excedentes":[{"v":"0.2"}],"oferta-demanda":[{"v":"0.2"}],"chi2-bondad":[{"v":"0.2"}],"contrastes":[{"v":"0.2"}],"errores":[{"v":"0.1"}],"graficador":[{"v":"0.2"}],"metodos-numericos":[{"v":"0.2"}],"fisica-moderna":[{"v":"0.2"}],"lorenz-gini":[{"v":"0.1"}],"phillips-okun":[{"v":"0.2"}],"tipos-cambio":[{"v":"0.2"}],"elasticidades":[{"v":"0.2"}],"pib-ipc":[{"v":"0.1"}],"numeros-indice":[{"v":"0.1"}],"ratios":[{"v":"0.2"}],"punto-muerto":[{"v":"0.1"}],"ahorro":[{"v":"0.2"}],"van-tir":[{"v":"0.2"}],"amortizacion-inmovilizado":[{"v":"0.1"}],"prestamos":[{"v":"0.2"}],"rentas":[{"v":"0.2"}],"interes":[{"v":"0.2"}],"descriptiva":[{"v":"0.1"}],"regresion-economia":[{"v":"0.1"}],"ajustador":[{"v":"0.2.1"}],"electrostatica":[{"v":"0.7"}],"magnetostatica":[{"v":"0.3"}],"tabla-periodica":[{"v":"0.2"}],"trabajo-y-energia":[{"v":"0.2"}],"masa-molar":[{"v":"0.2"}],"configuracion-electronica":[{"v":"0.2"}],"condensadores":[{"v":"0.3"}],"tiro-parabolico":[{"v":"0.2"}],"disoluciones":[{"v":"0.2"}],"calorimetria":[{"v":"0.2"}],"induccion":[{"v":"0.3"}],"matrices":[{"v":"0.2"}],"derivadas":[{"v":"0.3"}],"laplace":[{"v":"0.2"}],"interferencia":[{"v":"0.2"}],"ondas-em":[{"v":"0.4"}],"intervalos":[{"v":"0.2"}],"fuerza":[{"v":"0.3"}],"campos":[{"v":"0.2.1"}],"cinetica":[{"v":"0.2"}],"edos":[{"v":"0.2"}],"fourier":[{"v":"0.2"}],"taylor":[{"v":"0.2.1"}],"complejos":[{"v":"0.2"}],"sistemas":[{"v":"0.3"}],"regresion":[{"v":"0.2"}],"estadistica":[{"v":"0.2"}],"dinamica":[{"v":"0.2"}],"solido-rigido":[{"v":"0.2"}],"ondas":[{"v":"0.2"}],"gases":[{"v":"0.4"}],"ciclos":[{"v":"0.2"}],"ph":[{"v":"0.3"}],"fluidos":[{"v":"0.2"}],"doppler":[{"v":"0.2"}],"resistencias":[{"v":"0.3"}],"faraday":[{"v":"0.3"}],"fenomenos":[{"v":"0.9"}]}; const de = (h) => ({ current: registros[h][0].v, log: registros[h] }); return { registros, de }; })();
+const Version = (() => { const registros = {"web":[{"v":"1.15"}],"control":[{"v":"0.2"}],"termo-estadistica":[{"v":"0.2"}],"markowitz":[{"v":"0.3"}],"cavidades":[{"v":"0.2"}],"organica":[{"v":"0.2"}],"transformada-z":[{"v":"0.2"}],"semiconductores":[{"v":"0.2"}],"relatividad":[{"v":"0.2"}],"osc-acopladas":[{"v":"0.2"}],"solubilidad":[{"v":"0.2"}],"lagrange":[{"v":"0.2"}],"series":[{"v":"0.3"}],"no-parametricos":[{"v":"0.3"}],"regresion-multiple":[{"v":"0.2"}],"anova":[{"v":"0.3"}],"black-scholes":[{"v":"0.3"}],"bonos":[{"v":"0.3"}],"solow":[{"v":"0.3"}],"integrales-multiples":[{"v":"0.1"}],"formulacion":[{"v":"0.2"}],"balance":[{"v":"0.2"}],"redox":[{"v":"0.2"}],"lineas-transmision":[{"v":"0.2"}],"superficies":[{"v":"0.2"}],"vsepr":[{"v":"0.2"}],"maxwell":[{"v":"0.2"}],"fresnel":[{"v":"0.2"}],"gravitacion":[{"v":"0.2"}],"convolucion":[{"v":"0.2"}],"laplace-numerica":[{"v":"0.2"}],"imagenes":[{"v":"0.2"}],"guias-onda":[{"v":"0.2"}],"antena":[{"v":"0.2"}],"bode":[{"v":"0.2"}],"optica":[{"v":"0.2"}],"simulador":[{"v":"0.4"}],"teoria-juegos":[{"v":"0.2"}],"puertas-logicas":[{"v":"0.4"}],"multiplicador":[{"v":"0.3"}],"is-lm":[{"v":"0.3"}],"choques":[{"v":"0.1"}],"termoquimica":[{"v":"0.2"}],"probabilidad":[{"v":"0.2"}],"unidades":[{"v":"0.2"}],"equilibrio":[{"v":"0.2"}],"oscilaciones":[{"v":"0.1"}],"beneficio":[{"v":"0.3"}],"costes":[{"v":"0.3"}],"sistemas-numericos":[{"v":"0.2"}],"excedentes":[{"v":"0.2"}],"oferta-demanda":[{"v":"0.2"}],"chi2-bondad":[{"v":"0.2"}],"contrastes":[{"v":"0.2"}],"errores":[{"v":"0.2"}],"graficador":[{"v":"0.2"}],"metodos-numericos":[{"v":"0.2"}],"fisica-moderna":[{"v":"0.2"}],"lorenz-gini":[{"v":"0.2"}],"phillips-okun":[{"v":"0.3"}],"tipos-cambio":[{"v":"0.3"}],"elasticidades":[{"v":"0.3"}],"pib-ipc":[{"v":"0.2"}],"numeros-indice":[{"v":"0.2"}],"ratios":[{"v":"0.2"}],"punto-muerto":[{"v":"0.2"}],"ahorro":[{"v":"0.3"}],"van-tir":[{"v":"0.3"}],"amortizacion-inmovilizado":[{"v":"0.2"}],"prestamos":[{"v":"0.3"}],"rentas":[{"v":"0.3"}],"interes":[{"v":"0.3"}],"descriptiva":[{"v":"0.2"}],"regresion-economia":[{"v":"0.2"}],"ajustador":[{"v":"0.2.1"}],"electrostatica":[{"v":"0.7"}],"magnetostatica":[{"v":"0.3"}],"tabla-periodica":[{"v":"0.2"}],"trabajo-y-energia":[{"v":"0.2"}],"masa-molar":[{"v":"0.2"}],"configuracion-electronica":[{"v":"0.2"}],"condensadores":[{"v":"0.3"}],"tiro-parabolico":[{"v":"0.3"}],"disoluciones":[{"v":"0.2"}],"calorimetria":[{"v":"0.2"}],"induccion":[{"v":"0.3"}],"matrices":[{"v":"0.3"}],"derivadas":[{"v":"0.3"}],"laplace":[{"v":"0.2"}],"interferencia":[{"v":"0.2"}],"ondas-em":[{"v":"0.4"}],"intervalos":[{"v":"0.3"}],"fuerza":[{"v":"0.3"}],"campos":[{"v":"0.2.1"}],"cinetica":[{"v":"0.2"}],"edos":[{"v":"0.2"}],"fourier":[{"v":"0.2"}],"taylor":[{"v":"0.3"}],"complejos":[{"v":"0.3"}],"sistemas":[{"v":"0.3"}],"regresion":[{"v":"0.3"}],"estadistica":[{"v":"0.3"}],"dinamica":[{"v":"0.2"}],"solido-rigido":[{"v":"0.2"}],"ondas":[{"v":"0.3"}],"gases":[{"v":"0.5"}],"ciclos":[{"v":"0.2"}],"ph":[{"v":"0.3"}],"fluidos":[{"v":"0.2"}],"doppler":[{"v":"0.2"}],"resistencias":[{"v":"0.3"}],"faraday":[{"v":"0.3"}],"fenomenos":[{"v":"0.9"}]}; const de = (h) => ({ current: registros[h][0].v, log: registros[h] }); return { registros, de }; })();
 
 const Herramienta = (() => {
   const $ = (q) => document.querySelector(q);
@@ -436,7 +444,7 @@ const Herramienta = (() => {
       try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* file:// */ }
     }
   }
-  const enlaceA = (carpeta, estado) => `../${carpeta}/#d=${btoa(unescape(encodeURIComponent(JSON.stringify(estado)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')}`;
+  const enlaceA = (carpeta, estado) => `${carpeta.includes('/') ? '../../' : '../'}${carpeta}/#d=${btoa(unescape(encodeURIComponent(JSON.stringify(estado)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')}`;
   return { $, esc, copia, vacio, leeSI, leeUn, txt, marcas, lienzo, accesible, exportar, png, tabla, nombreArchivo, enlaceA };
 })();
 
@@ -827,8 +835,8 @@ const Estadistica = (() => {
     },
   };
   const CRITICOS =['normal', 't', 'chi2', 'f'];
-  const TIPOS_C = [['menor', 'P(X ≤ a)'], ['mayor', 'P(X ≥ a)'], ['entre', 'P(a ≤ X ≤ b)'], ['centro', 'P(|X − μ| ≤ c): a una distancia c de la media'], ['cuantil', 'Cuantil: a con P(X ≤ a) = p'], ['critico', 'Valor crítico bilateral (α)'], ['criticoU', 'Valor crítico unilateral (α en la cola derecha)'], ['inverso', 'Hallar μ o σ a partir de una probabilidad']];
-  const TIPOS_D = [['igual', 'P(X = k)'], ['menor', 'P(X ≤ k)'], ['menorE', 'P(X < k)'], ['mayor', 'P(X ≥ k)'], ['mayorE', 'P(X > k)'], ['entre', 'P(a ≤ X ≤ b)'], ['centro', 'P(|X − μ| ≤ c): a una distancia c de la media'], ['cuantil', 'Cuantil: menor k con P(X ≤ k) ≥ p']];
+  const TIPOS_C = [['menor', 'P(X ≤ a)'], ['mayor', 'P(X ≥ a)'], ['entre', 'P(a ≤ X ≤ b)'], ['centro', 'P(|X − μ| ≤ c): a una distancia c de la media'], ['cuantil', 'Cuantil: a con P(X ≤ a) = p'], ['critico', 'Valor crítico bilateral (α)'], ['criticoU', 'Valor crítico unilateral (α en la cola derecha)'], ['inverso', 'Hallar μ o σ a partir de una probabilidad'], ['tcl', 'Teorema central del límite: medias de muestras']];
+  const TIPOS_D = [['igual', 'P(X = k)'], ['menor', 'P(X ≤ k)'], ['menorE', 'P(X < k)'], ['mayor', 'P(X ≥ k)'], ['mayorE', 'P(X > k)'], ['entre', 'P(a ≤ X ≤ b)'], ['centro', 'P(|X − μ| ≤ c): a una distancia c de la media'], ['cuantil', 'Cuantil: menor k con P(X ≤ k) ≥ p'], ['tcl', 'Teorema central del límite: medias de muestras']];
   const tipos = (d) => (DIST[d].continua ? TIPOS_C.filter(([k]) => (k !== 'critico' && k !== 'criticoU') || CRITICOS.includes(d)).filter(([k]) => k !== 'inverso' || d === 'normal') : TIPOS_D);
 
   function cuantil(D, P, p) {
@@ -869,6 +877,53 @@ const Estadistica = (() => {
   const porNormal = (m, s, a, b) => (isFinite(b) ? Phi((b + 0.5 - m) / s) : 1) - (isFinite(a) ? Phi((a - 0.5 - m) / s) : 0);
   const intervalo = (a, b) => `${isFinite(a) ? `${num(a)} ≤ X` : 'X'}${isFinite(b) ? ` ≤ ${num(b)}` : ''}`;
 
+  const sinCorreccion = (m, s, a, b) => (isFinite(b) ? Phi((b - m) / s) : 1) - (isFinite(a) ? Phi((a - m) / s) : 0);
+  function comparaAprox(r, exacta, filas) {
+    r.aprox = (r.aprox || []).concat(filas.map(([nombre, p]) => ({ nombre, p, error: p - exacta })));
+    return `<div class="tabla-scroll"><table class="tabla"><thead><tr><th></th><th>Probabilidad</th><th>Error</th><th>Error relativo</th></tr></thead><tbody><tr><td>Exacta</td><td><b>${prob(exacta)}</b></td><td>—</td><td>—</td></tr>${filas.map(([nombre, p]) => `<tr><td>${nombre}</td><td>${prob(p)}</td><td>${prob(p - exacta)}</td><td>${exacta > 0 ? `${num((100 * (p - exacta)) / exacta, 3)} %` : '—'}</td></tr>`).join('')}</tbody></table></div>`;
+  }
+
+  const azarCon = (semilla) => { let a = (semilla >>> 0) || 1; return () => { a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; };
+  function generador(D, P, r) {
+    if (D.continua) { const M = 1000, Q = Array.from({ length: M }, (_, i) => cuantil(D, P, (i + 0.5) / M)); return () => Q[Math.floor(r() * M)]; }
+    const [s0] = D.soporte ? D.soporte(P) : [0], ks = [], Fs = [];
+    for (let k = s0, F = 0; ks.length < 20000; k++) { F += D.pmf(P, k); ks.push(k); Fs.push(F); if (F > 1 - 1e-10) break; }
+    return () => { const u = r() * Fs[Fs.length - 1]; let lo = 0, hi = Fs.length - 1; while (lo < hi) { const m = (lo + hi) >> 1; if (Fs[m] < u) lo = m + 1; else hi = m; } return ks[lo]; };
+  }
+  const MUESTRAS = 2000;
+  function tcl(sc, D, P, r) {
+    const { media, varianza, pasos } = r, X = D.nombreX;
+    if (!isFinite(media) || !isFinite(varianza)) throw new Error('El teorema central del límite necesita que la distribución tenga media y varianza finitas, y esta no las tiene');
+    const n = lee(sc, 'nm', 'el tamaño de cada muestra n', { entero: true, min: 1, max: 500 }), sigma = Math.sqrt(varianza), et = sigma / Math.sqrt(n);
+    const semilla = Number.isFinite(+sc.semilla) ? Math.floor(+sc.semilla) : 1, una = generador(D, P, azarCon(semilla + 1));
+    const medias = Array.from({ length: MUESTRAS }, () => { let t = 0; for (let i = 0; i < n; i++) t += una(); return t / n; });
+    const mSim = medias.reduce((a, b) => a + b, 0) / MUESTRAS, sSim = Math.sqrt(medias.reduce((a, b) => a + (b - mSim) ** 2, 0) / (MUESTRAS - 1));
+    const dentro = medias.filter((m) => Math.abs(m - media) <= 1.96 * et).length / MUESTRAS;
+    pasos.push({ t: 'Media de una muestra', html: `Se toman muestras de ${n} valores de ${X} y de cada una se calcula su media X̄. La media de X̄ es la misma, μ = ${num(media)}, y su desviación típica (el error típico) es σ/√n = ${num(sigma)}/√${n} = <b>${num(et)}</b>: cuanto mayor es la muestra, menos se separa su media de μ.` });
+    pasos.push({ t: 'Teorema central del límite', html: D === DIST.normal
+      ? `Como ${X} ya es normal, la media de la muestra es exactamente normal para cualquier n: X̄ ~ N(${num(media)}, ${num(et)}).`
+      : `Sea cual sea la forma de ${X}, si n es grande la media de la muestra es aproximadamente normal: X̄ ≈ N(μ, σ/√n) = <b>N(${num(media)}, ${num(et)})</b>. ${n >= 30 ? 'Con n ≥ 30 la aproximación suele darse por buena en clase.' : 'Con n &lt; 30 la aproximación solo es buena si la distribución de partida no es muy asimétrica: prueba a subir n y mira cómo el histograma se acerca a la campana.'}` });
+    pasos.push({ t: `Simulación de ${MUESTRAS} muestras`, html: `Media de las ${MUESTRAS} medias: ${num(mSim)} (teoría: ${num(media)}).<br>Desviación típica de las medias: ${num(sSim)} (teoría: ${num(et)}).<br>Medias dentro de μ ± 1,96·σ/√n = [${num(media - 1.96 * et)}, ${num(media + 1.96 * et)}]: ${num(100 * dentro, 3)} % (con la normal, 95 %).` });
+    Object.assign(r, { tcl: { n, et, medias, mSim, sSim, dentro, semilla }, sombra: [media - 1.96 * et, media + 1.96 * et] });
+    return terminar(D, r);
+  }
+
+  function comparacion(sc, r, D) {
+    const d2 = sc.comp, D2 = DIST[d2], P2 = {}, lee2 = Object.fromEntries(D2.params.map(([k]) => [k, sc[`c_${k}`]]));
+    try { for (const [k, nom, op] of D2.params) P2[k] = lee(lee2, k, nom.toLowerCase(), op); const malo = D2.valida?.(P2); if (malo) throw new Error(malo); } catch (e) { throw new Error(`En la distribución con la que se compara: ${e.message[0].toLowerCase() + e.message.slice(1)}`); }
+    const m2 = D2.momentos(P2), dt = (v) => (isFinite(v) ? num(Math.sqrt(v)) : 'no definida'), mm = (v) => (isNaN(v) ? 'no definida' : num(v));
+    let h = `<div class="tabla-scroll"><table class="tabla"><thead><tr><th></th><th>${D.etiqueta(r.P)}</th><th>${D2.etiqueta(P2)}</th></tr></thead><tbody><tr><td>Media</td><td>${mm(r.media)}</td><td>${mm(m2.media)}</td></tr><tr><td>Varianza</td><td>${mm(r.varianza)}</td><td>${mm(m2.varianza)}</td></tr><tr><td>Desviación típica</td><td>${dt(r.varianza)}</td><td>${dt(m2.varianza)}</td></tr>`;
+    const c = { dist: d2, P: P2, media: m2.media, varianza: m2.varianza };
+    if (['igual', 'menor', 'menorE', 'mayor', 'mayorE', 'entre', 'centro'].includes(r.tipo)) {
+      const [a, b] = r.sombra;
+      if (D2.continua) c.p = (isFinite(b) ? D2.cdf(P2, b) : 1) - (isFinite(a) ? D2.cdf(P2, a) : 0);
+      else c.p = (isFinite(b) ? D2.cdf(P2, Math.floor(b + 1e-9)) : 1) - (isFinite(a) ? D2.cdf(P2, Math.ceil(a - 1e-9) - 1) : 0);
+      h += `<tr><td>P(${isFinite(a) ? `${num(a)} ≤ ` : ''}X${isFinite(b) ? ` ≤ ${num(b)}` : ''})</td><td><b>${prob(r.p)}</b></td><td>${prob(c.p)}</td></tr>`;
+    }
+    r.pasos.push({ t: `Comparación con ${D2.etiqueta(P2)}`, html: `${h}</tbody></table></div>${!D.continua && D2.continua && c.p !== undefined ? 'La segunda es continua y aquí va sin corrección de continuidad, entre los mismos valores.' : ''}` });
+    r.comp = c;
+  }
+
   function calcular(sc) {
     const d = DIST[sc.dist] ? sc.dist : 'normal', D = DIST[d];
     const lista = tipos(d), tipo = lista.some(([k]) => k === sc.tipo) ? sc.tipo : lista[0][0];
@@ -879,6 +934,7 @@ const Estadistica = (() => {
     const { media, varianza } = D.momentos(P), X = D.nombreX;
     pasos.push({ t: 'Distribución', html: `${X} ~ ${D.etiqueta(P)}: media ${isNaN(media) ? 'no definida' : num(media)}, varianza ${isNaN(varianza) ? 'no definida' : num(varianza)}${isFinite(varianza) ? `, desviación típica ${num(Math.sqrt(varianza))}` : ''}` });
     const r = { dist: d, tipo, P, media, varianza, pasos };
+    if (tipo === 'tcl') return tcl(sc, D, P, r);
     const leeC = () => { if (!isFinite(media)) throw new Error('Esta distribución no tiene media: no se puede medir la distancia a ella'); return lee(sc, 'cc', 'la distancia c', { min: 0 }); };
     const cheb = (c) => (isFinite(varianza) && c > Math.sqrt(varianza) ? `<br>Para comparar, la desigualdad de Chebyshev asegura al menos 1 − σ²/c² = 1 − ${num(varianza)}/${num(c)}<sup>2</sup> = ${prob(1 - varianza / (c * c))} para cualquier distribución.` : '');
     if (D.continua) {
@@ -956,7 +1012,7 @@ const Estadistica = (() => {
         pasos.push({ t: 'Cuantil', html: `P(X ≤ ${k - 1}) = ${prob(F(k - 1))} &lt; ${num(p)} y P(X ≤ ${k}) = ${prob(F(k))} ≥ ${num(p)} ⇒ k = <b>${k}</b>` });
         pasos.push({ t: 'Tabla de valores', html: tabla(D, P, (j) => j <= k, k) });
         Object.assign(r, { p, x: k, sombra: [-Infinity, k], discreta: true });
-        return terminar(D, r);
+        return terminar(D, r, sc);
       } else {
         a = entero('a', 'el valor k');
         const T = { menor: [-Infinity, a, `P(X ≤ ${a})`], menorE: [-Infinity, a - 1, `P(X < ${a}) = P(X ≤ ${a - 1})`], mayor: [a, Infinity, `P(X ≥ ${a}) = 1 − P(X ≤ ${a - 1})`], mayorE: [a + 1, Infinity, `P(X > ${a}) = 1 − P(X ≤ ${a})`] }[tipo];
@@ -965,27 +1021,33 @@ const Estadistica = (() => {
         const cuerpo = isFinite(b) ? `${b < 0 ? '' : `= Σ<sub>k=${s0}</sub><sup>${b}</sup> P(X = k) `}= <b>${prob(res)}</b>${b >= 0 ? detalle(0, b) : ''}` : `= 1 − ${prob(F(a - 1))} = <b>${prob(res)}</b>${a - 1 >= 0 ? detalle(0, a - 1) : ''}`;
         pasos.push({ t: desc, html: cuerpo });
       }
-      const ev = intervalo(a, b);
+      const ev = intervalo(a, b), conSin = (m, sg) => [['Normal con corrección de continuidad', porNormal(m, sg, a, b)], ['Normal sin corrección', sinCorreccion(m, sg, a, b)]];
+      const corr = `Con la corrección de continuidad (±0,5) cada entero k ocupa el tramo de k − 0,5 a k + 0,5: ${intervalo(a - 0.5, b + 0.5)}. Sin ella se pierde media barra en cada extremo.`;
       if (d === 'binomial' && P.n * P.p >= 5 && P.n * (1 - P.p) >= 5) {
-        const s = Math.sqrt(varianza);
-        pasos.push({ t: 'Aproximación por la normal (np ≥ 5 y nq ≥ 5)', html: `X ≈ N(np, √(npq)) = N(${num(media)}, ${num(s)}), con la corrección de continuidad (±0,5): ${intervalo(a - 0.5, b + 0.5)} ⇒ ≈ ${prob(porNormal(media, s, a, b))} (exacta: ${prob(res)})` });
+        const sg = Math.sqrt(varianza);
+        pasos.push({ t: 'Aproximación por la normal (np ≥ 5 y nq ≥ 5)', html: `X ≈ N(np, √(npq)) = N(${num(media)}, ${num(sg)}). ${corr}${comparaAprox(r, res, conSin(media, sg))}` });
       }
       if (d === 'binomial' && P.n >= 30 && P.p <= 0.1) {
         const L = { lambda: media }, Po = DIST.poisson, ap = (isFinite(b) ? Po.cdf(L, b) : 1) - (isFinite(a) ? Po.cdf(L, a - 1) : 0);
-        pasos.push({ t: 'Aproximación por la Poisson (n ≥ 30 y p ≤ 0,1)', html: `X ≈ P(λ = np = ${num(media)}): P(${ev}) ≈ ${prob(ap)} (exacta: ${prob(res)})` });
+        pasos.push({ t: 'Aproximación por la Poisson (n ≥ 30 y p ≤ 0,1)', html: `X ≈ P(λ = np = ${num(media)}), para P(${ev}):${comparaAprox(r, res, [['Poisson', ap]])}` });
       }
       if (d === 'poisson' && P.lambda >= 10) {
-        const s = Math.sqrt(P.lambda);
-        pasos.push({ t: 'Aproximación por la normal (λ ≥ 10)', html: `X ≈ N(λ, √λ) = N(${num(P.lambda)}, ${num(s)}), con la corrección de continuidad (±0,5): ${intervalo(a - 0.5, b + 0.5)} ⇒ ≈ ${prob(porNormal(P.lambda, s, a, b))} (exacta: ${prob(res)})` });
+        const sg = Math.sqrt(P.lambda);
+        pasos.push({ t: 'Aproximación por la normal (λ ≥ 10)', html: `X ≈ N(λ, √λ) = N(${num(P.lambda)}, ${num(sg)}). ${corr}${comparaAprox(r, res, conSin(P.lambda, sg))}` });
+      }
+      if (d === 'hipergeometrica' && P.n <= 0.1 * P.N) {
+        const B = { n: P.n, p: P.K / P.N }, Bi = DIST.binomial, ap = (isFinite(b) ? Bi.cdf(B, b) : 1) - (isFinite(a) ? Bi.cdf(B, a - 1) : 0);
+        pasos.push({ t: 'Aproximación por la binomial (n ≤ 0,1·N)', html: `Se saca tan poco de la población que casi da igual devolver o no: X ≈ B(n, K/N) = B(${num(P.n)}, ${num(B.p)}), para P(${ev}):${comparaAprox(r, res, [['Binomial', ap]])}` });
       }
       pasos.push({ t: 'Tabla de valores', html: tabla(D, P, (k) => k >= a && k <= b, isFinite(a) ? a : b) });
       Object.assign(r, { p: res, a, b, sombra: [a, b], discreta: true });
     }
-    return terminar(D, r);
+    return terminar(D, r, sc);
   }
-  function terminar(D, r) {
-    r.res = r.tipo === 'inverso' ? `${r.incog === 'mu' ? 'μ' : 'σ'} = ${num(r.valor)}` : r.tipo === 'cuantil' ? `${r.discreta ? 'k' : 'a'} = ${num(r.x)}` : r.tipo === 'critico' ? (r.c1 !== undefined ? `c₁ = ${num(r.c1)}, c₂ = ${num(r.c)}` : `c = ±${num(r.c)}`) : r.tipo === 'criticoU' ? `c = ${num(r.c)}` : `P = ${prob(r.p)}`;
-    r.pct = ['cuantil', 'critico', 'criticoU', 'inverso'].includes(r.tipo) ? '' : `${num(100 * r.p, 4, 0)} %`;
+  function terminar(D, r, sc) {
+    if (sc && sc.comp && DIST[sc.comp]) comparacion(sc, r, D);
+    r.res = r.tipo === 'tcl' ? `X̄ ≈ N(${num(r.media)}, ${num(r.tcl.et)})` : r.tipo === 'inverso' ? `${r.incog === 'mu' ? 'μ' : 'σ'} = ${num(r.valor)}` : r.tipo === 'cuantil' ? `${r.discreta ? 'k' : 'a'} = ${num(r.x)}` : r.tipo === 'critico' ? (r.c1 !== undefined ? `c₁ = ${num(r.c1)}, c₂ = ${num(r.c)}` : `c = ±${num(r.c)}`) : r.tipo === 'criticoU' ? `c = ${num(r.c)}` : `P = ${prob(r.p)}`;
+    r.pct = ['cuantil', 'critico', 'criticoU', 'inverso', 'tcl'].includes(r.tipo) ? '' : `${num(100 * r.p, 4, 0)} %`;
     return r;
   }
 
@@ -1016,6 +1078,12 @@ const Estadistica = (() => {
     { clave: 'poisson-normal', nombre: 'Poisson con λ grande y su aproximación normal', sc: { dist: 'poisson', lambda: '25', tipo: 'entre', a: '20', b: '30' } },
     { clave: 'geometrica', nombre: 'Geométrica: 3 fallos antes del primer acierto', sc: { dist: 'geometrica', p: '0.2', tipo: 'igual', a: '3' } },
     { clave: 'hipergeometrica', nombre: 'Hipergeométrica: 2 defectuosas al sacar 4 de 20', sc: { dist: 'hipergeometrica', N: '20', K: '5', n: '4', tipo: 'igual', a: '2' } },
+    { clave: 'hiper-binomial', nombre: 'Hipergeométrica con población grande y su aproximación binomial', sc: { dist: 'hipergeometrica', N: '500', K: '100', n: '20', tipo: 'menor', a: '3' } },
+    { clave: 'compara-t', nombre: 'Comparar: la t de Student con 5 g. l. frente a la normal', sc: { dist: 't', nu: '5', tipo: 'mayor', a: '2', comp: 'normal', c_mu: '0', c_sigma: '1' } },
+    { clave: 'compara-binomial', nombre: 'Comparar: B(30; 0,4) con la normal que la aproxima', sc: { dist: 'binomial', n: '30', p: '0.4', tipo: 'entre', a: '10', b: '14', comp: 'normal', c_mu: '12', c_sigma: '2.683' } },
+    { clave: 'tcl-exponencial', nombre: 'Teorema central del límite: medias de 30 exponenciales', sc: { dist: 'exponencial', lambda: '1', tipo: 'tcl', nm: '30', semilla: 1 } },
+    { clave: 'tcl-pocos', nombre: 'Teorema central del límite: con n = 2 aún no es una campana', sc: { dist: 'exponencial', lambda: '1', tipo: 'tcl', nm: '2', semilla: 1 } },
+    { clave: 'tcl-binomial', nombre: 'Teorema central del límite: medias de 40 tiradas de una binomial', sc: { dist: 'binomial', n: '5', p: '0.2', tipo: 'tcl', nm: '40', semilla: 1 } },
   ];
 
   function ejercicio(r = Math.random) {
@@ -1037,7 +1105,7 @@ const Estadistica = (() => {
     return de(T)();
   }
 
-  return { DIST, tipos, calcular, ejemplos, ejercicio, Phi, gammaP, gammaQ, betaI, lnGamma, num, prob, cuantil, fCdf };
+  return { DIST, tipos, calcular, ejemplos, MUESTRAS, ejercicio, Phi, gammaP, gammaQ, betaI, lnGamma, num, prob, cuantil, fCdf };
 })();
 
 const Compartir = (() => {
@@ -1227,14 +1295,15 @@ const Compartir = (() => {
 (() => {
   const { $, esc, copia } = Herramienta;
   const E = Estadistica, num = E.num, CLAVE = 'estadistica-v1';
-  const DEF = { forma: '2', tasa: '1', al: '2', be: '3', escala: '1', r: '3', mu: '0', sigma: '1', nu: '10', k: '5', d1: '5', d2: '10', lambda: '2', lo: '0', hi: '10', n: '10', p: '0.5', N: '50', K: '10', q: '0.5', a: '1', b: '2', cc: '1', alfa: '0.05', incog: 'mu', cola: 'menor' };
+  const DEF = { forma: '2', tasa: '1', al: '2', be: '3', escala: '1', r: '3', mu: '0', sigma: '1', nu: '10', k: '5', d1: '5', d2: '10', lambda: '2', lo: '0', hi: '10', n: '10', p: '0.5', N: '50', K: '10', q: '0.5', a: '1', b: '2', cc: '1', alfa: '0.05', incog: 'mu', cola: 'menor', nm: '30' };
 
   let sc = copia(E.ejemplos[0].sc);
   try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && E.DIST[g.dist]) sc = g; } catch (e) {}
   const guarda = () => { try { localStorage.setItem(CLAVE, JSON.stringify(sc)); } catch (e) {} };
   let sol = null, col = {}, vista = null, arrastra = null, enun = '';
 
-  const fila = (k, nom) => (sc[k] === undefined && DEF[k] !== undefined && (sc[k] = DEF[k]), `<label for="f-${k}">${nom}</label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc[k] ?? DEF[k] ?? '')}" inputmode="decimal" autocomplete="off">`);
+  const def = (k) => DEF[k] ?? DEF[k.replace(/^c_/, '')];
+  const fila = (k, nom) => (sc[k] === undefined && def(k) !== undefined && (sc[k] = def(k)), `<label for="f-${k}">${nom}</label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc[k] ?? def(k) ?? '')}" inputmode="decimal" autocomplete="off">`);
   const opciones = (k, nom, ops) => (sc[k] = ops.some(([v]) => v === sc[k]) ? sc[k] : ops[0][0], `<label for="f-${k}">${nom}</label><select id="f-${k}" class="in" data-k="${k}">${ops.map(([v, t]) => `<option value="${v}"${v === sc[k] ? ' selected' : ''}>${t}</option>`).join('')}</select>`);
   function formulario() {
     const D = E.DIST[sc.dist], tipos = E.tipos(sc.dist);
@@ -1244,14 +1313,23 @@ const Compartir = (() => {
     h += D.params.filter(([k]) => k !== incog).map(([k, nom]) => fila(k, nom)).join('');
     h += `<label for="f-tipo">Qué calcular</label><select id="f-tipo" class="in" data-k="tipo">${tipos.map(([k, t]) => `<option value="${k}"${k === sc.tipo ? ' selected' : ''}>${t.replace('X', D.nombreX)}</option>`).join('')}</select>`;
     const t = sc.tipo;
-    if (t === 'cuantil') h += fila('q', 'Probabilidad p');
+    if (t === 'tcl') h += fila('nm', 'Tamaño de cada muestra n');
+    else if (t === 'cuantil') h += fila('q', 'Probabilidad p');
     else if (t === 'critico' || t === 'criticoU') h += fila('alfa', 'Nivel de significación α');
     else if (t === 'centro') h += fila('cc', 'Distancia c a la media');
     else if (t === 'inverso') h += opciones('incog', 'Incógnita', [['mu', 'La media μ'], ['sigma', 'La desviación típica σ']]) + opciones('cola', 'Se sabe que', [['menor', 'P(X ≤ a) = p'], ['mayor', 'P(X ≥ a) = p']]) + fila('a', 'Valor a') + fila('q', 'Probabilidad p');
     else if (t === 'entre') h += fila('a', 'Valor a') + fila('b', 'Valor b');
     else h += fila('a', D.continua ? 'Valor a' : 'Valor k');
+    if (t !== 'tcl') {
+      if (!E.DIST[sc.comp]) sc.comp = '';
+      h += `<label for="f-comp">Comparar con</label><select id="f-comp" class="in" data-k="comp"><option value="">Ninguna</option>${Object.entries(E.DIST).map(([k, d]) => `<option value="${k}"${k === sc.comp ? ' selected' : ''}>${d.nombre}</option>`).join('')}</select>`;
+      if (sc.comp) h += E.DIST[sc.comp].params.map(([k, nom]) => fila(`c_${k}`, `${nom} (la segunda)`)).join('');
+    }
     $('#campos').innerHTML = h;
+    $('#otra').hidden = t !== 'tcl';
+    $('#nota-grafica').textContent = t === 'tcl' ? `Histograma de las medias de ${E.MUESTRAS} muestras y, encima, la normal que predice el teorema.` : 'Arrastra sobre la gráfica para mover a, b o c.';
   }
+  $('#otra').addEventListener('click', () => { sc.semilla = (Math.floor(+sc.semilla) || 1) + 1; $('#ejemplos').value = ''; calcula(); });
   $('#campos').addEventListener('input', (e) => { const t = e.target; if (t.tagName !== 'INPUT') return; sc[t.dataset.k] = t.value; $('#ejemplos').value = ''; calcula(); });
   $('#campos').addEventListener('change', (e) => {
     const t = e.target;
@@ -1267,10 +1345,10 @@ const Compartir = (() => {
   function abrirEjemplo(clave) {
     const e = E.ejemplos.find((x) => x.clave === clave);
     if (!e) return;
-    sc = { ...sc, ...copia(e.sc) };
+    sc = { ...sc, comp: '', ...copia(e.sc) };
     formulario(); calcula(); sel.value = clave;
   }
-  function azar() { const e = E.ejercicio(); sc = { ...sc, ...e.sc }; enun = e.enunciado; formulario(); calcula(); sel.value = ''; }
+  function azar() { const e = E.ejercicio(); sc = { ...sc, comp: '', ...e.sc }; enun = e.enunciado; formulario(); calcula(); sel.value = ''; }
   const enunciado = () => esc(enun);
 
   function calcula() {
@@ -1289,7 +1367,7 @@ const Compartir = (() => {
     try { navigator.clipboard.writeText(t).then(ok, () => { b.textContent = 'No se ha podido copiar'; }); } catch (err) { b.textContent = 'No se ha podido copiar'; }
   });
 
-  function colores() { const cs = getComputedStyle(document.documentElement); for (const k of ['--ink', '--muted', '--line', '--accent', '--area', '--curva']) col[k] = cs.getPropertyValue(k).trim(); }
+  function colores() { const cs = getComputedStyle(document.documentElement); for (const k of ['--ink', '--muted', '--line', '--accent', '--area', '--curva', '--curva2']) col[k] = cs.getPropertyValue(k).trim(); }
   function dibuja() {
     const c = $('#grafica'), dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
     if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
@@ -1297,6 +1375,7 @@ const Compartir = (() => {
     vista = null;
     if (!sol) return;
     colores();
+    if (sol.tipo === 'tcl') return histograma(g, w, h);
     const D = E.DIST[sol.dist], P = sol.P, m = { l: 14, r: 14, t: 14, b: 30 };
     let [x0, x1] = D.rango(P);
     const [s0, s1] = sol.sombra;
@@ -1306,25 +1385,37 @@ const Compartir = (() => {
     vista = { x0, x1, m, w, continua: D.continua };
     const dentro = (x) => x >= s0 - 1e-9 && x <= s1 + 1e-9, critico = sol.tipo === 'critico';
     let ymax = 0;
+    const C = sol.comp && E.DIST[sol.comp.dist], NC = 400;
+    const cx = !C ? [] : C.continua ? Array.from({ length: NC + 1 }, (_, i) => x0 + ((x1 - x0) * i) / NC) : Array.from({ length: Math.max(0, Math.floor(x1) - Math.max(0, Math.ceil(x0)) + 1) }, (_, i) => Math.max(0, Math.ceil(x0)) + i);
+    const cy = cx.map((x) => (C.continua ? C.pdf(sol.comp.P, x) : C.pmf(sol.comp.P, x))).map((y) => (isFinite(y) ? y : 0)), cmax = Math.max(0, ...cy.filter((y) => y < 1e6));
+    const segunda = (Y) => {
+      if (!C) return;
+      g.save(); g.strokeStyle = g.fillStyle = col['--curva2']; g.lineWidth = 2;
+      if (C.continua) { g.setLineDash([6, 4]); g.beginPath(); cx.forEach((x, i) => (i ? g.lineTo(X(x), Y(cy[i])) : g.moveTo(X(x), Y(cy[i])))); g.stroke(); }
+      else cx.forEach((x, i) => { g.beginPath(); g.moveTo(X(x), Y(0)); g.lineTo(X(x), Y(cy[i])); g.stroke(); g.beginPath(); g.arc(X(x), Y(cy[i]), 3.5, 0, 2 * Math.PI); g.fill(); });
+      g.restore();
+    };
     g.font = '12px "IBM Plex Sans", system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'top';
     if (D.continua) {
       const N = 400, xs = Array.from({ length: N + 1 }, (_, i) => x0 + ((x1 - x0) * i) / N), ys = xs.map((x) => D.pdf(P, x)).map((y) => (isFinite(y) ? y : 0));
-      ymax = Math.max(...ys.filter((y) => y < 1e6)) * 1.08 || 1;
+      ymax = Math.max(cmax, ...ys.filter((y) => y < 1e6)) * 1.08 || 1;
       const Y = (y) => h - m.b - (Math.min(y, ymax) / ymax) * (h - m.t - m.b);
       const zona = (a, b) => { g.beginPath(); g.moveTo(X(a), Y(0)); for (let i = 0; i <= N; i++) { if (xs[i] < a || xs[i] > b) continue; g.lineTo(X(xs[i]), Y(ys[i])); } g.lineTo(X(b), Y(0)); g.closePath(); g.fill(); };
       g.fillStyle = col['--area'];
       if (critico) { zona(x0, s0); zona(s1, x1); } else zona(Math.max(s0, x0), Math.min(s1, x1));
       g.strokeStyle = col['--curva']; g.lineWidth = 2; g.beginPath(); xs.forEach((x, i) => (i ? g.lineTo(X(x), Y(ys[i])) : g.moveTo(X(x), Y(ys[i])))); g.stroke(); g.lineWidth = 1;
+      segunda(Y);
     } else {
       const ks = []; for (let k = Math.ceil(x0); k <= x1; k++) if (k >= 0) ks.push(k);
       const ys = ks.map((k) => D.pmf(P, k));
-      ymax = Math.max(...ys) * 1.08 || 1;
+      ymax = Math.max(cmax, ...ys) * 1.08 || 1;
       const Y = (y) => h - m.b - (y / ymax) * (h - m.t - m.b), bw = Math.max(1, Math.min(28, ((w - m.l - m.r) / Math.max(1, x1 - x0)) * 0.7));
       ks.forEach((k, i) => { g.fillStyle = dentro(k) ? col['--accent'] : col['--line']; g.fillRect(X(k) - bw / 2, Y(ys[i]), bw, Y(0) - Y(ys[i])); });
       const paso = [1, 2, 5, 10, 20, 50, 100, 1000].find((q) => ks.length / q <= 16) || 1000;
       g.fillStyle = col['--muted']; g.font = '11px "IBM Plex Sans", system-ui, sans-serif';
       ks.forEach((k) => { if (k % paso === 0) g.fillText(String(k), X(k), h - m.b + 20); });
       g.font = '12px "IBM Plex Sans", system-ui, sans-serif';
+      segunda(Y);
     }
     g.strokeStyle = col['--muted']; g.beginPath(); g.moveTo(m.l, h - m.b); g.lineTo(w - m.r, h - m.b); g.stroke();
     g.fillStyle = col['--muted'];
@@ -1333,6 +1424,27 @@ const Compartir = (() => {
     if (D.continua && isFinite(sol.media) && !marcas.some((v) => Math.abs(X(v) - X(sol.media)) < 40)) { g.fillStyle = col['--muted']; g.fillText(`media ${num(sol.media, 4).replace(/<[^>]+>/g, '')}`, X(sol.media), h - m.b + 8); }
     g.textAlign = 'left'; g.fillStyle = col['--accent']; g.font = '600 13px "IBM Plex Sans", system-ui, sans-serif';
     if (sol.tipo !== 'cuantil') g.fillText(critico ? `α = ${num(sol.alfa)} (α/2 en cada cola)` : sol.tipo === 'criticoU' ? `α = ${num(sol.alfa)} en la cola derecha` : `P = ${E.prob(sol.p)}`, m.l + 4, m.t);
+    if (C) { const lim = (t) => t.replace(/<[^>]+>/g, ''); g.textAlign = 'right'; g.font = '12px "IBM Plex Sans", system-ui, sans-serif'; g.fillStyle = col['--ink']; g.fillText(lim(D.etiqueta(P)), w - m.r - 4, m.t); g.fillStyle = col['--curva2']; g.fillText(`${C.continua ? '- - ' : '● '}${lim(C.etiqueta(sol.comp.P))}`, w - m.r - 4, m.t + 16); }
+  }
+  function histograma(g, w, h) {
+    const { medias, et, n } = sol.tcl, mu = sol.media, m = { l: 14, r: 14, t: 14, b: 30 }, D = E.DIST[sol.dist];
+    const x0 = mu - 4.2 * et, x1 = mu + 4.2 * et, X = (x) => m.l + ((x - x0) / (x1 - x0)) * (w - m.l - m.r);
+    let ancho = (x1 - x0) / 34; if (!D.continua) ancho = Math.max(1, Math.round(ancho * n)) / n;
+    const nb = Math.ceil((x1 - x0) / ancho), cu = new Array(nb).fill(0), b0 = D.continua ? x0 : Math.floor(x0 * n) / n - 0.5 / n;
+    for (const v of medias) { const i = Math.floor((v - b0) / ancho); if (i >= 0 && i < nb) cu[i]++; }
+    const dens = cu.map((c) => c / (medias.length * ancho)), pico = 1 / (et * Math.sqrt(2 * Math.PI)), ymax = Math.max(pico, ...dens) * 1.1;
+    const Y = (y) => h - m.b - (y / ymax) * (h - m.t - m.b);
+    g.fillStyle = col['--area']; g.strokeStyle = col['--accent']; g.lineWidth = 1;
+    dens.forEach((d, i) => { if (!d) return; const xa = X(b0 + i * ancho), xb = X(b0 + (i + 1) * ancho); g.fillRect(xa, Y(d), xb - xa, Y(0) - Y(d)); g.strokeRect(xa, Y(d), xb - xa, Y(0) - Y(d)); });
+    g.strokeStyle = col['--curva']; g.lineWidth = 2; g.beginPath();
+    for (let i = 0; i <= 300; i++) { const x = x0 + ((x1 - x0) * i) / 300, y = pico * Math.exp(-0.5 * ((x - mu) / et) ** 2); if (i) g.lineTo(X(x), Y(y)); else g.moveTo(X(x), Y(y)); }
+    g.stroke(); g.lineWidth = 1;
+    g.strokeStyle = col['--muted']; g.beginPath(); g.moveTo(m.l, h - m.b); g.lineTo(w - m.r, h - m.b); g.stroke();
+    g.font = '12px "IBM Plex Sans", system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'top'; g.fillStyle = col['--ink'];
+    const lim = (v) => num(v, 4).replace(/<[^>]+>/g, '');
+    for (const [v, t] of [[mu - 1.96 * et, lim(mu - 1.96 * et)], [mu, `μ = ${lim(mu)}`], [mu + 1.96 * et, lim(mu + 1.96 * et)]]) { g.beginPath(); g.moveTo(X(v), h - m.b); g.lineTo(X(v), h - m.b + 5); g.stroke(); g.fillText(t, X(v), h - m.b + 8); }
+    g.textAlign = 'left'; g.fillStyle = col['--accent']; g.font = '600 13px "IBM Plex Sans", system-ui, sans-serif';
+    g.fillText(`n = ${n}: σ/√n = ${lim(et)}`, m.l + 4, m.t);
   }
 
   const lienzo = $('#grafica'), ARRASTRA = ['menor', 'mayor', 'menorE', 'mayorE', 'igual', 'entre', 'centro', 'inverso'];
@@ -1360,7 +1472,7 @@ const Compartir = (() => {
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('estadistica').current;
   formulario(); calcula();
-  window.EstadisticaApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { p: sol.p, res: sol.res, x: sol.x, c: sol.c }, estado: () => copia(sc) };
+  window.EstadisticaApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { p: sol.p, res: sol.res, x: sol.x, c: sol.c, aprox: sol.aprox, comp: sol.comp, tcl: sol.tcl && { n: sol.tcl.n, et: sol.tcl.et, mSim: sol.tcl.mSim, sSim: sol.tcl.sSim } }, estado: () => copia(sc) };
 })();
 
 const Biblioteca = (() => {
@@ -1854,6 +1966,27 @@ const Practica = (() => {
     'no-parametricos': { datos: null, genera: () => window.NoParametricosApp?.azar(), enunciado: () => window.NoParametricosApp?.enunciado() },
     'regresion-multiple': { datos: null, genera: () => window.RegresionMultipleApp?.azar(), enunciado: () => window.RegresionMultipleApp?.enunciado() },
     'regresion-economia': { datos: null, genera: () => window.RegresionEconomiaApp?.azar(), enunciado: () => window.RegresionEconomiaApp?.enunciado() },
+    elasticidades: { datos: null, genera: () => window.ElasticidadesApp?.azar(), enunciado: () => window.ElasticidadesApp?.enunciado() },
+    costes: { datos: null, genera: () => window.CostesApp?.azar(), enunciado: () => window.CostesApp?.enunciado() },
+    beneficio: { datos: null, genera: () => window.BeneficioApp?.azar(), enunciado: () => window.BeneficioApp?.enunciado() },
+    'pib-ipc': { datos: null, genera: () => window.PibIpcApp?.azar(), enunciado: () => window.PibIpcApp?.enunciado() },
+    multiplicador: { datos: null, genera: () => window.MultiplicadorApp?.azar(), enunciado: () => window.MultiplicadorApp?.enunciado() },
+    'is-lm': { datos: null, genera: () => window.IsLmApp?.azar(), enunciado: () => window.IsLmApp?.enunciado() },
+    'phillips-okun': { datos: null, genera: () => window.PhillipsOkunApp?.azar(), enunciado: () => window.PhillipsOkunApp?.enunciado() },
+    'tipos-cambio': { datos: null, genera: () => window.TiposCambioApp?.azar(), enunciado: () => window.TiposCambioApp?.enunciado() },
+    interes: { datos: null, genera: () => window.InteresApp?.azar(), enunciado: () => window.InteresApp?.enunciado() },
+    prestamos: { datos: null, genera: () => window.PrestamosApp?.azar(), enunciado: () => window.PrestamosApp?.enunciado() },
+    'van-tir': { datos: null, genera: () => window.VanTirApp?.azar(), enunciado: () => window.VanTirApp?.enunciado() },
+    rentas: { datos: null, genera: () => window.RentasApp?.azar(), enunciado: () => window.RentasApp?.enunciado() },
+    ahorro: { datos: null, genera: () => window.AhorroApp?.azar(), enunciado: () => window.AhorroApp?.enunciado() },
+    'punto-muerto': { datos: null, genera: () => window.PuntoMuertoApp?.azar(), enunciado: () => window.PuntoMuertoApp?.enunciado() },
+    'amortizacion-inmovilizado': { datos: null, genera: () => window.AmortizacionApp?.azar(), enunciado: () => window.AmortizacionApp?.enunciado() },
+    'numeros-indice': { datos: null, genera: () => window.NumerosIndiceApp?.azar(), enunciado: () => window.NumerosIndiceApp?.enunciado() },
+    'lorenz-gini': { datos: null, genera: () => window.LorenzGiniApp?.azar(), enunciado: () => window.LorenzGiniApp?.enunciado() },
+    solow: { datos: null, genera: () => window.SolowApp?.azar(), enunciado: () => window.SolowApp?.enunciado() },
+    bonos: { datos: null, genera: () => window.BonosApp?.azar(), enunciado: () => window.BonosApp?.enunciado() },
+    'black-scholes': { datos: null, genera: () => window.BlackScholesApp?.azar(), enunciado: () => window.BlackScholesApp?.enunciado() },
+    markowitz: { datos: null, genera: () => window.MarkowitzApp?.azar(), enunciado: () => window.MarkowitzApp?.enunciado() },
     ratios: { datos: null, genera: () => window.RatiosApp?.azar(), enunciado: () => window.RatiosApp?.enunciado() },
     balance: { datos: null, genera: () => window.BalanceApp?.azar(), enunciado: () => window.BalanceApp?.enunciado() },
     ajustador: { datos: null, items: '#coefs > div', genera: () => window.AjustadorApp?.azar(), enunciado: () => window.AjustadorApp?.enunciado() },

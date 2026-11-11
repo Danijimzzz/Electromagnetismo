@@ -274,7 +274,7 @@ textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 90px }
     <p class="error" id="error" hidden></p>
   </div>
   <div>
-    <div class="card"><h2>Resultado</h2><div class="res" id="res"></div>
+    <div class="card"><h2>Resultado</h2><div class="res" id="res"></div><div class="controles" id="usar-en" role="group" aria-label="Usar el resultado en otra herramienta" style="margin-top:10px" hidden></div>
       <canvas id="grafica" aria-label="Distribución del estadístico con el área de confianza sombreada"></canvas></div>
     <div class="card" id="simcard"><h2>100 muestras</h2>
       <p class="leyenda" style="margin:0">Se toma como población la que dan tus datos y se sacan 100 muestras del mismo tamaño. Cada línea es el intervalo de una muestra: en verde si contiene el valor real y en rojo si no.</p>
@@ -295,6 +295,12 @@ textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 90px }
 <h2>Proporción</h2>
   <p class="f">IC<sub>1−α</sub>(p) = (p̂ − z<sub>α/2</sub>·√(p̂q̂/n), &ensp; p̂ + z<sub>α/2</sub>·√(p̂q̂/n)), &ensp; q̂ = 1 − p̂</p>
   <p>Vale cuando la muestra es grande (np̂ y nq̂ por encima de 5).</p>
+  <p>Ese intervalo normal (de Wald) es el de clase, pero falla con pocos éxitos o fracasos: puede salirse de [0, 1] o quedarse en un punto. Hay tres alternativas. El de <b>Wilson</b> despeja p de la desigualdad en vez de estimar el error con p̂ y funciona bien con cualquier n. El <b>exacto de Clopper-Pearson</b> sale de la propia binomial y garantiza al menos la confianza pedida, a cambio de ser algo más ancho. El de <b>Agresti-Coull</b> es el normal de siempre después de añadir z² observaciones, la mitad éxitos (con el 95 %, «sumar 2 éxitos y 2 fracasos»).</p>
+  <p class="f">Wilson: &ensp; (p̂ + z<sup>2</sup>/(2n) ± z·√(p̂q̂/n + z<sup>2</sup>/(4n<sup>2</sup>)))/(1 + z<sup>2</sup>/n)</p>
+  <h2>Predicción y tolerancia</h2>
+  <p>El intervalo de confianza habla de la media μ. Si lo que se quiere saber es dónde caerá <b>el próximo dato</b>, hace falta un intervalo de predicción, que suma la dispersión de un dato a la incertidumbre de la media:</p>
+  <p class="f">IP<sub>1−α</sub> = x̄ ± t<sub>n−1; α/2</sub>·s·√(1 + 1/n)</p>
+  <p>Y si se quiere un intervalo que contenga una proporción de toda la población (por ejemplo, el 90 % de las piezas), es un intervalo de tolerancia x̄ ± k·s, con un factor k que depende de n, de la proporción y de la confianza. Los dos suponen que la población es normal y, a diferencia del de la media, no se estrechan hasta cero al aumentar la muestra.</p>
   <h2>Varianza</h2>
   <p>(n − 1)s<sup>2</sup>/σ<sup>2</sup> sigue una χ<sup>2</sup> con n − 1 grados de libertad. Como no es simétrica, el intervalo usa dos valores críticos distintos:</p>
   <p class="f">IC<sub>1−α</sub>(σ<sup>2</sup>) = ((n − 1)s<sup>2</sup>/χ<sup>2</sup><sub>α/2</sub>, &ensp; (n − 1)s<sup>2</sup>/χ<sup>2</sup><sub>1−α/2</sub>)</p>
@@ -333,7 +339,7 @@ textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 90px }
 <footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a> · <a href="#" class="pref-cookies">Preferencias de cookies</a>· Intervalos de confianza <span id="ver"></span> (beta)</footer>
 </body><script>
 const Pagina = { carpeta: 'intervalos', guarda: 'intervalos-v1' };
-const Version = (() => { const registros = {"web":[{"v":"1.14.1"}],"control":[{"v":"0.2"}],"termo-estadistica":[{"v":"0.2"}],"markowitz":[{"v":"0.2"}],"cavidades":[{"v":"0.2"}],"organica":[{"v":"0.2"}],"transformada-z":[{"v":"0.2"}],"semiconductores":[{"v":"0.2"}],"relatividad":[{"v":"0.2"}],"osc-acopladas":[{"v":"0.2"}],"solubilidad":[{"v":"0.2"}],"lagrange":[{"v":"0.2"}],"series":[{"v":"0.2"}],"no-parametricos":[{"v":"0.2"}],"regresion-multiple":[{"v":"0.1"}],"anova":[{"v":"0.2"}],"black-scholes":[{"v":"0.2"}],"bonos":[{"v":"0.2"}],"solow":[{"v":"0.2"}],"integrales-multiples":[{"v":"0.1"}],"formulacion":[{"v":"0.2"}],"balance":[{"v":"0.2"}],"redox":[{"v":"0.2"}],"lineas-transmision":[{"v":"0.2"}],"superficies":[{"v":"0.1"}],"vsepr":[{"v":"0.2"}],"maxwell":[{"v":"0.2"}],"fresnel":[{"v":"0.2"}],"gravitacion":[{"v":"0.1"}],"convolucion":[{"v":"0.2"}],"laplace-numerica":[{"v":"0.2"}],"imagenes":[{"v":"0.2"}],"guias-onda":[{"v":"0.2"}],"antena":[{"v":"0.2"}],"bode":[{"v":"0.2"}],"optica":[{"v":"0.2"}],"simulador":[{"v":"0.4"}],"teoria-juegos":[{"v":"0.1"}],"puertas-logicas":[{"v":"0.4"}],"multiplicador":[{"v":"0.2"}],"is-lm":[{"v":"0.2"}],"choques":[{"v":"0.1"}],"termoquimica":[{"v":"0.2"}],"probabilidad":[{"v":"0.1"}],"unidades":[{"v":"0.1"}],"equilibrio":[{"v":"0.2"}],"oscilaciones":[{"v":"0.1"}],"beneficio":[{"v":"0.2"}],"costes":[{"v":"0.2"}],"sistemas-numericos":[{"v":"0.2"}],"excedentes":[{"v":"0.2"}],"oferta-demanda":[{"v":"0.2"}],"chi2-bondad":[{"v":"0.2"}],"contrastes":[{"v":"0.2"}],"errores":[{"v":"0.1"}],"graficador":[{"v":"0.2"}],"metodos-numericos":[{"v":"0.2"}],"fisica-moderna":[{"v":"0.2"}],"lorenz-gini":[{"v":"0.1"}],"phillips-okun":[{"v":"0.2"}],"tipos-cambio":[{"v":"0.2"}],"elasticidades":[{"v":"0.2"}],"pib-ipc":[{"v":"0.1"}],"numeros-indice":[{"v":"0.1"}],"ratios":[{"v":"0.2"}],"punto-muerto":[{"v":"0.1"}],"ahorro":[{"v":"0.2"}],"van-tir":[{"v":"0.2"}],"amortizacion-inmovilizado":[{"v":"0.1"}],"prestamos":[{"v":"0.2"}],"rentas":[{"v":"0.2"}],"interes":[{"v":"0.2"}],"descriptiva":[{"v":"0.1"}],"regresion-economia":[{"v":"0.1"}],"ajustador":[{"v":"0.2.1"}],"electrostatica":[{"v":"0.7"}],"magnetostatica":[{"v":"0.3"}],"tabla-periodica":[{"v":"0.2"}],"trabajo-y-energia":[{"v":"0.2"}],"masa-molar":[{"v":"0.2"}],"configuracion-electronica":[{"v":"0.2"}],"condensadores":[{"v":"0.3"}],"tiro-parabolico":[{"v":"0.2"}],"disoluciones":[{"v":"0.2"}],"calorimetria":[{"v":"0.2"}],"induccion":[{"v":"0.3"}],"matrices":[{"v":"0.2"}],"derivadas":[{"v":"0.3"}],"laplace":[{"v":"0.2"}],"interferencia":[{"v":"0.2"}],"ondas-em":[{"v":"0.4"}],"intervalos":[{"v":"0.2"}],"fuerza":[{"v":"0.3"}],"campos":[{"v":"0.2.1"}],"cinetica":[{"v":"0.2"}],"edos":[{"v":"0.2"}],"fourier":[{"v":"0.2"}],"taylor":[{"v":"0.2.1"}],"complejos":[{"v":"0.2"}],"sistemas":[{"v":"0.3"}],"regresion":[{"v":"0.2"}],"estadistica":[{"v":"0.2"}],"dinamica":[{"v":"0.2"}],"solido-rigido":[{"v":"0.2"}],"ondas":[{"v":"0.2"}],"gases":[{"v":"0.4"}],"ciclos":[{"v":"0.2"}],"ph":[{"v":"0.3"}],"fluidos":[{"v":"0.2"}],"doppler":[{"v":"0.2"}],"resistencias":[{"v":"0.3"}],"faraday":[{"v":"0.3"}],"fenomenos":[{"v":"0.9"}]}; const de = (h) => ({ current: registros[h][0].v, log: registros[h] }); return { registros, de }; })();
+const Version = (() => { const registros = {"web":[{"v":"1.15"}],"control":[{"v":"0.2"}],"termo-estadistica":[{"v":"0.2"}],"markowitz":[{"v":"0.3"}],"cavidades":[{"v":"0.2"}],"organica":[{"v":"0.2"}],"transformada-z":[{"v":"0.2"}],"semiconductores":[{"v":"0.2"}],"relatividad":[{"v":"0.2"}],"osc-acopladas":[{"v":"0.2"}],"solubilidad":[{"v":"0.2"}],"lagrange":[{"v":"0.2"}],"series":[{"v":"0.3"}],"no-parametricos":[{"v":"0.3"}],"regresion-multiple":[{"v":"0.2"}],"anova":[{"v":"0.3"}],"black-scholes":[{"v":"0.3"}],"bonos":[{"v":"0.3"}],"solow":[{"v":"0.3"}],"integrales-multiples":[{"v":"0.1"}],"formulacion":[{"v":"0.2"}],"balance":[{"v":"0.2"}],"redox":[{"v":"0.2"}],"lineas-transmision":[{"v":"0.2"}],"superficies":[{"v":"0.2"}],"vsepr":[{"v":"0.2"}],"maxwell":[{"v":"0.2"}],"fresnel":[{"v":"0.2"}],"gravitacion":[{"v":"0.2"}],"convolucion":[{"v":"0.2"}],"laplace-numerica":[{"v":"0.2"}],"imagenes":[{"v":"0.2"}],"guias-onda":[{"v":"0.2"}],"antena":[{"v":"0.2"}],"bode":[{"v":"0.2"}],"optica":[{"v":"0.2"}],"simulador":[{"v":"0.4"}],"teoria-juegos":[{"v":"0.2"}],"puertas-logicas":[{"v":"0.4"}],"multiplicador":[{"v":"0.3"}],"is-lm":[{"v":"0.3"}],"choques":[{"v":"0.1"}],"termoquimica":[{"v":"0.2"}],"probabilidad":[{"v":"0.2"}],"unidades":[{"v":"0.2"}],"equilibrio":[{"v":"0.2"}],"oscilaciones":[{"v":"0.1"}],"beneficio":[{"v":"0.3"}],"costes":[{"v":"0.3"}],"sistemas-numericos":[{"v":"0.2"}],"excedentes":[{"v":"0.2"}],"oferta-demanda":[{"v":"0.2"}],"chi2-bondad":[{"v":"0.2"}],"contrastes":[{"v":"0.2"}],"errores":[{"v":"0.2"}],"graficador":[{"v":"0.2"}],"metodos-numericos":[{"v":"0.2"}],"fisica-moderna":[{"v":"0.2"}],"lorenz-gini":[{"v":"0.2"}],"phillips-okun":[{"v":"0.3"}],"tipos-cambio":[{"v":"0.3"}],"elasticidades":[{"v":"0.3"}],"pib-ipc":[{"v":"0.2"}],"numeros-indice":[{"v":"0.2"}],"ratios":[{"v":"0.2"}],"punto-muerto":[{"v":"0.2"}],"ahorro":[{"v":"0.3"}],"van-tir":[{"v":"0.3"}],"amortizacion-inmovilizado":[{"v":"0.2"}],"prestamos":[{"v":"0.3"}],"rentas":[{"v":"0.3"}],"interes":[{"v":"0.3"}],"descriptiva":[{"v":"0.2"}],"regresion-economia":[{"v":"0.2"}],"ajustador":[{"v":"0.2.1"}],"electrostatica":[{"v":"0.7"}],"magnetostatica":[{"v":"0.3"}],"tabla-periodica":[{"v":"0.2"}],"trabajo-y-energia":[{"v":"0.2"}],"masa-molar":[{"v":"0.2"}],"configuracion-electronica":[{"v":"0.2"}],"condensadores":[{"v":"0.3"}],"tiro-parabolico":[{"v":"0.3"}],"disoluciones":[{"v":"0.2"}],"calorimetria":[{"v":"0.2"}],"induccion":[{"v":"0.3"}],"matrices":[{"v":"0.3"}],"derivadas":[{"v":"0.3"}],"laplace":[{"v":"0.2"}],"interferencia":[{"v":"0.2"}],"ondas-em":[{"v":"0.4"}],"intervalos":[{"v":"0.3"}],"fuerza":[{"v":"0.3"}],"campos":[{"v":"0.2.1"}],"cinetica":[{"v":"0.2"}],"edos":[{"v":"0.2"}],"fourier":[{"v":"0.2"}],"taylor":[{"v":"0.3"}],"complejos":[{"v":"0.3"}],"sistemas":[{"v":"0.3"}],"regresion":[{"v":"0.3"}],"estadistica":[{"v":"0.3"}],"dinamica":[{"v":"0.2"}],"solido-rigido":[{"v":"0.2"}],"ondas":[{"v":"0.3"}],"gases":[{"v":"0.5"}],"ciclos":[{"v":"0.2"}],"ph":[{"v":"0.3"}],"fluidos":[{"v":"0.2"}],"doppler":[{"v":"0.2"}],"resistencias":[{"v":"0.3"}],"faraday":[{"v":"0.3"}],"fenomenos":[{"v":"0.9"}]}; const de = (h) => ({ current: registros[h][0].v, log: registros[h] }); return { registros, de }; })();
 
 const Herramienta = (() => {
   const $ = (q) => document.querySelector(q);
@@ -447,7 +453,7 @@ const Herramienta = (() => {
       try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* file:// */ }
     }
   }
-  const enlaceA = (carpeta, estado) => `../${carpeta}/#d=${btoa(unescape(encodeURIComponent(JSON.stringify(estado)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')}`;
+  const enlaceA = (carpeta, estado) => `${carpeta.includes('/') ? '../../' : '../'}${carpeta}/#d=${btoa(unescape(encodeURIComponent(JSON.stringify(estado)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')}`;
   return { $, esc, copia, vacio, leeSI, leeUn, txt, marcas, lienzo, accesible, exportar, png, tabla, nombreArchivo, enlaceA };
 })();
 
@@ -838,8 +844,8 @@ const Estadistica = (() => {
     },
   };
   const CRITICOS =['normal', 't', 'chi2', 'f'];
-  const TIPOS_C = [['menor', 'P(X ≤ a)'], ['mayor', 'P(X ≥ a)'], ['entre', 'P(a ≤ X ≤ b)'], ['centro', 'P(|X − μ| ≤ c): a una distancia c de la media'], ['cuantil', 'Cuantil: a con P(X ≤ a) = p'], ['critico', 'Valor crítico bilateral (α)'], ['criticoU', 'Valor crítico unilateral (α en la cola derecha)'], ['inverso', 'Hallar μ o σ a partir de una probabilidad']];
-  const TIPOS_D = [['igual', 'P(X = k)'], ['menor', 'P(X ≤ k)'], ['menorE', 'P(X < k)'], ['mayor', 'P(X ≥ k)'], ['mayorE', 'P(X > k)'], ['entre', 'P(a ≤ X ≤ b)'], ['centro', 'P(|X − μ| ≤ c): a una distancia c de la media'], ['cuantil', 'Cuantil: menor k con P(X ≤ k) ≥ p']];
+  const TIPOS_C = [['menor', 'P(X ≤ a)'], ['mayor', 'P(X ≥ a)'], ['entre', 'P(a ≤ X ≤ b)'], ['centro', 'P(|X − μ| ≤ c): a una distancia c de la media'], ['cuantil', 'Cuantil: a con P(X ≤ a) = p'], ['critico', 'Valor crítico bilateral (α)'], ['criticoU', 'Valor crítico unilateral (α en la cola derecha)'], ['inverso', 'Hallar μ o σ a partir de una probabilidad'], ['tcl', 'Teorema central del límite: medias de muestras']];
+  const TIPOS_D = [['igual', 'P(X = k)'], ['menor', 'P(X ≤ k)'], ['menorE', 'P(X < k)'], ['mayor', 'P(X ≥ k)'], ['mayorE', 'P(X > k)'], ['entre', 'P(a ≤ X ≤ b)'], ['centro', 'P(|X − μ| ≤ c): a una distancia c de la media'], ['cuantil', 'Cuantil: menor k con P(X ≤ k) ≥ p'], ['tcl', 'Teorema central del límite: medias de muestras']];
   const tipos = (d) => (DIST[d].continua ? TIPOS_C.filter(([k]) => (k !== 'critico' && k !== 'criticoU') || CRITICOS.includes(d)).filter(([k]) => k !== 'inverso' || d === 'normal') : TIPOS_D);
 
   function cuantil(D, P, p) {
@@ -880,6 +886,53 @@ const Estadistica = (() => {
   const porNormal = (m, s, a, b) => (isFinite(b) ? Phi((b + 0.5 - m) / s) : 1) - (isFinite(a) ? Phi((a - 0.5 - m) / s) : 0);
   const intervalo = (a, b) => `${isFinite(a) ? `${num(a)} ≤ X` : 'X'}${isFinite(b) ? ` ≤ ${num(b)}` : ''}`;
 
+  const sinCorreccion = (m, s, a, b) => (isFinite(b) ? Phi((b - m) / s) : 1) - (isFinite(a) ? Phi((a - m) / s) : 0);
+  function comparaAprox(r, exacta, filas) {
+    r.aprox = (r.aprox || []).concat(filas.map(([nombre, p]) => ({ nombre, p, error: p - exacta })));
+    return `<div class="tabla-scroll"><table class="tabla"><thead><tr><th></th><th>Probabilidad</th><th>Error</th><th>Error relativo</th></tr></thead><tbody><tr><td>Exacta</td><td><b>${prob(exacta)}</b></td><td>—</td><td>—</td></tr>${filas.map(([nombre, p]) => `<tr><td>${nombre}</td><td>${prob(p)}</td><td>${prob(p - exacta)}</td><td>${exacta > 0 ? `${num((100 * (p - exacta)) / exacta, 3)} %` : '—'}</td></tr>`).join('')}</tbody></table></div>`;
+  }
+
+  const azarCon = (semilla) => { let a = (semilla >>> 0) || 1; return () => { a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; };
+  function generador(D, P, r) {
+    if (D.continua) { const M = 1000, Q = Array.from({ length: M }, (_, i) => cuantil(D, P, (i + 0.5) / M)); return () => Q[Math.floor(r() * M)]; }
+    const [s0] = D.soporte ? D.soporte(P) : [0], ks = [], Fs = [];
+    for (let k = s0, F = 0; ks.length < 20000; k++) { F += D.pmf(P, k); ks.push(k); Fs.push(F); if (F > 1 - 1e-10) break; }
+    return () => { const u = r() * Fs[Fs.length - 1]; let lo = 0, hi = Fs.length - 1; while (lo < hi) { const m = (lo + hi) >> 1; if (Fs[m] < u) lo = m + 1; else hi = m; } return ks[lo]; };
+  }
+  const MUESTRAS = 2000;
+  function tcl(sc, D, P, r) {
+    const { media, varianza, pasos } = r, X = D.nombreX;
+    if (!isFinite(media) || !isFinite(varianza)) throw new Error('El teorema central del límite necesita que la distribución tenga media y varianza finitas, y esta no las tiene');
+    const n = lee(sc, 'nm', 'el tamaño de cada muestra n', { entero: true, min: 1, max: 500 }), sigma = Math.sqrt(varianza), et = sigma / Math.sqrt(n);
+    const semilla = Number.isFinite(+sc.semilla) ? Math.floor(+sc.semilla) : 1, una = generador(D, P, azarCon(semilla + 1));
+    const medias = Array.from({ length: MUESTRAS }, () => { let t = 0; for (let i = 0; i < n; i++) t += una(); return t / n; });
+    const mSim = medias.reduce((a, b) => a + b, 0) / MUESTRAS, sSim = Math.sqrt(medias.reduce((a, b) => a + (b - mSim) ** 2, 0) / (MUESTRAS - 1));
+    const dentro = medias.filter((m) => Math.abs(m - media) <= 1.96 * et).length / MUESTRAS;
+    pasos.push({ t: 'Media de una muestra', html: `Se toman muestras de ${n} valores de ${X} y de cada una se calcula su media X̄. La media de X̄ es la misma, μ = ${num(media)}, y su desviación típica (el error típico) es σ/√n = ${num(sigma)}/√${n} = <b>${num(et)}</b>: cuanto mayor es la muestra, menos se separa su media de μ.` });
+    pasos.push({ t: 'Teorema central del límite', html: D === DIST.normal
+      ? `Como ${X} ya es normal, la media de la muestra es exactamente normal para cualquier n: X̄ ~ N(${num(media)}, ${num(et)}).`
+      : `Sea cual sea la forma de ${X}, si n es grande la media de la muestra es aproximadamente normal: X̄ ≈ N(μ, σ/√n) = <b>N(${num(media)}, ${num(et)})</b>. ${n >= 30 ? 'Con n ≥ 30 la aproximación suele darse por buena en clase.' : 'Con n &lt; 30 la aproximación solo es buena si la distribución de partida no es muy asimétrica: prueba a subir n y mira cómo el histograma se acerca a la campana.'}` });
+    pasos.push({ t: `Simulación de ${MUESTRAS} muestras`, html: `Media de las ${MUESTRAS} medias: ${num(mSim)} (teoría: ${num(media)}).<br>Desviación típica de las medias: ${num(sSim)} (teoría: ${num(et)}).<br>Medias dentro de μ ± 1,96·σ/√n = [${num(media - 1.96 * et)}, ${num(media + 1.96 * et)}]: ${num(100 * dentro, 3)} % (con la normal, 95 %).` });
+    Object.assign(r, { tcl: { n, et, medias, mSim, sSim, dentro, semilla }, sombra: [media - 1.96 * et, media + 1.96 * et] });
+    return terminar(D, r);
+  }
+
+  function comparacion(sc, r, D) {
+    const d2 = sc.comp, D2 = DIST[d2], P2 = {}, lee2 = Object.fromEntries(D2.params.map(([k]) => [k, sc[`c_${k}`]]));
+    try { for (const [k, nom, op] of D2.params) P2[k] = lee(lee2, k, nom.toLowerCase(), op); const malo = D2.valida?.(P2); if (malo) throw new Error(malo); } catch (e) { throw new Error(`En la distribución con la que se compara: ${e.message[0].toLowerCase() + e.message.slice(1)}`); }
+    const m2 = D2.momentos(P2), dt = (v) => (isFinite(v) ? num(Math.sqrt(v)) : 'no definida'), mm = (v) => (isNaN(v) ? 'no definida' : num(v));
+    let h = `<div class="tabla-scroll"><table class="tabla"><thead><tr><th></th><th>${D.etiqueta(r.P)}</th><th>${D2.etiqueta(P2)}</th></tr></thead><tbody><tr><td>Media</td><td>${mm(r.media)}</td><td>${mm(m2.media)}</td></tr><tr><td>Varianza</td><td>${mm(r.varianza)}</td><td>${mm(m2.varianza)}</td></tr><tr><td>Desviación típica</td><td>${dt(r.varianza)}</td><td>${dt(m2.varianza)}</td></tr>`;
+    const c = { dist: d2, P: P2, media: m2.media, varianza: m2.varianza };
+    if (['igual', 'menor', 'menorE', 'mayor', 'mayorE', 'entre', 'centro'].includes(r.tipo)) {
+      const [a, b] = r.sombra;
+      if (D2.continua) c.p = (isFinite(b) ? D2.cdf(P2, b) : 1) - (isFinite(a) ? D2.cdf(P2, a) : 0);
+      else c.p = (isFinite(b) ? D2.cdf(P2, Math.floor(b + 1e-9)) : 1) - (isFinite(a) ? D2.cdf(P2, Math.ceil(a - 1e-9) - 1) : 0);
+      h += `<tr><td>P(${isFinite(a) ? `${num(a)} ≤ ` : ''}X${isFinite(b) ? ` ≤ ${num(b)}` : ''})</td><td><b>${prob(r.p)}</b></td><td>${prob(c.p)}</td></tr>`;
+    }
+    r.pasos.push({ t: `Comparación con ${D2.etiqueta(P2)}`, html: `${h}</tbody></table></div>${!D.continua && D2.continua && c.p !== undefined ? 'La segunda es continua y aquí va sin corrección de continuidad, entre los mismos valores.' : ''}` });
+    r.comp = c;
+  }
+
   function calcular(sc) {
     const d = DIST[sc.dist] ? sc.dist : 'normal', D = DIST[d];
     const lista = tipos(d), tipo = lista.some(([k]) => k === sc.tipo) ? sc.tipo : lista[0][0];
@@ -890,6 +943,7 @@ const Estadistica = (() => {
     const { media, varianza } = D.momentos(P), X = D.nombreX;
     pasos.push({ t: 'Distribución', html: `${X} ~ ${D.etiqueta(P)}: media ${isNaN(media) ? 'no definida' : num(media)}, varianza ${isNaN(varianza) ? 'no definida' : num(varianza)}${isFinite(varianza) ? `, desviación típica ${num(Math.sqrt(varianza))}` : ''}` });
     const r = { dist: d, tipo, P, media, varianza, pasos };
+    if (tipo === 'tcl') return tcl(sc, D, P, r);
     const leeC = () => { if (!isFinite(media)) throw new Error('Esta distribución no tiene media: no se puede medir la distancia a ella'); return lee(sc, 'cc', 'la distancia c', { min: 0 }); };
     const cheb = (c) => (isFinite(varianza) && c > Math.sqrt(varianza) ? `<br>Para comparar, la desigualdad de Chebyshev asegura al menos 1 − σ²/c² = 1 − ${num(varianza)}/${num(c)}<sup>2</sup> = ${prob(1 - varianza / (c * c))} para cualquier distribución.` : '');
     if (D.continua) {
@@ -967,7 +1021,7 @@ const Estadistica = (() => {
         pasos.push({ t: 'Cuantil', html: `P(X ≤ ${k - 1}) = ${prob(F(k - 1))} &lt; ${num(p)} y P(X ≤ ${k}) = ${prob(F(k))} ≥ ${num(p)} ⇒ k = <b>${k}</b>` });
         pasos.push({ t: 'Tabla de valores', html: tabla(D, P, (j) => j <= k, k) });
         Object.assign(r, { p, x: k, sombra: [-Infinity, k], discreta: true });
-        return terminar(D, r);
+        return terminar(D, r, sc);
       } else {
         a = entero('a', 'el valor k');
         const T = { menor: [-Infinity, a, `P(X ≤ ${a})`], menorE: [-Infinity, a - 1, `P(X < ${a}) = P(X ≤ ${a - 1})`], mayor: [a, Infinity, `P(X ≥ ${a}) = 1 − P(X ≤ ${a - 1})`], mayorE: [a + 1, Infinity, `P(X > ${a}) = 1 − P(X ≤ ${a})`] }[tipo];
@@ -976,27 +1030,33 @@ const Estadistica = (() => {
         const cuerpo = isFinite(b) ? `${b < 0 ? '' : `= Σ<sub>k=${s0}</sub><sup>${b}</sup> P(X = k) `}= <b>${prob(res)}</b>${b >= 0 ? detalle(0, b) : ''}` : `= 1 − ${prob(F(a - 1))} = <b>${prob(res)}</b>${a - 1 >= 0 ? detalle(0, a - 1) : ''}`;
         pasos.push({ t: desc, html: cuerpo });
       }
-      const ev = intervalo(a, b);
+      const ev = intervalo(a, b), conSin = (m, sg) => [['Normal con corrección de continuidad', porNormal(m, sg, a, b)], ['Normal sin corrección', sinCorreccion(m, sg, a, b)]];
+      const corr = `Con la corrección de continuidad (±0,5) cada entero k ocupa el tramo de k − 0,5 a k + 0,5: ${intervalo(a - 0.5, b + 0.5)}. Sin ella se pierde media barra en cada extremo.`;
       if (d === 'binomial' && P.n * P.p >= 5 && P.n * (1 - P.p) >= 5) {
-        const s = Math.sqrt(varianza);
-        pasos.push({ t: 'Aproximación por la normal (np ≥ 5 y nq ≥ 5)', html: `X ≈ N(np, √(npq)) = N(${num(media)}, ${num(s)}), con la corrección de continuidad (±0,5): ${intervalo(a - 0.5, b + 0.5)} ⇒ ≈ ${prob(porNormal(media, s, a, b))} (exacta: ${prob(res)})` });
+        const sg = Math.sqrt(varianza);
+        pasos.push({ t: 'Aproximación por la normal (np ≥ 5 y nq ≥ 5)', html: `X ≈ N(np, √(npq)) = N(${num(media)}, ${num(sg)}). ${corr}${comparaAprox(r, res, conSin(media, sg))}` });
       }
       if (d === 'binomial' && P.n >= 30 && P.p <= 0.1) {
         const L = { lambda: media }, Po = DIST.poisson, ap = (isFinite(b) ? Po.cdf(L, b) : 1) - (isFinite(a) ? Po.cdf(L, a - 1) : 0);
-        pasos.push({ t: 'Aproximación por la Poisson (n ≥ 30 y p ≤ 0,1)', html: `X ≈ P(λ = np = ${num(media)}): P(${ev}) ≈ ${prob(ap)} (exacta: ${prob(res)})` });
+        pasos.push({ t: 'Aproximación por la Poisson (n ≥ 30 y p ≤ 0,1)', html: `X ≈ P(λ = np = ${num(media)}), para P(${ev}):${comparaAprox(r, res, [['Poisson', ap]])}` });
       }
       if (d === 'poisson' && P.lambda >= 10) {
-        const s = Math.sqrt(P.lambda);
-        pasos.push({ t: 'Aproximación por la normal (λ ≥ 10)', html: `X ≈ N(λ, √λ) = N(${num(P.lambda)}, ${num(s)}), con la corrección de continuidad (±0,5): ${intervalo(a - 0.5, b + 0.5)} ⇒ ≈ ${prob(porNormal(P.lambda, s, a, b))} (exacta: ${prob(res)})` });
+        const sg = Math.sqrt(P.lambda);
+        pasos.push({ t: 'Aproximación por la normal (λ ≥ 10)', html: `X ≈ N(λ, √λ) = N(${num(P.lambda)}, ${num(sg)}). ${corr}${comparaAprox(r, res, conSin(P.lambda, sg))}` });
+      }
+      if (d === 'hipergeometrica' && P.n <= 0.1 * P.N) {
+        const B = { n: P.n, p: P.K / P.N }, Bi = DIST.binomial, ap = (isFinite(b) ? Bi.cdf(B, b) : 1) - (isFinite(a) ? Bi.cdf(B, a - 1) : 0);
+        pasos.push({ t: 'Aproximación por la binomial (n ≤ 0,1·N)', html: `Se saca tan poco de la población que casi da igual devolver o no: X ≈ B(n, K/N) = B(${num(P.n)}, ${num(B.p)}), para P(${ev}):${comparaAprox(r, res, [['Binomial', ap]])}` });
       }
       pasos.push({ t: 'Tabla de valores', html: tabla(D, P, (k) => k >= a && k <= b, isFinite(a) ? a : b) });
       Object.assign(r, { p: res, a, b, sombra: [a, b], discreta: true });
     }
-    return terminar(D, r);
+    return terminar(D, r, sc);
   }
-  function terminar(D, r) {
-    r.res = r.tipo === 'inverso' ? `${r.incog === 'mu' ? 'μ' : 'σ'} = ${num(r.valor)}` : r.tipo === 'cuantil' ? `${r.discreta ? 'k' : 'a'} = ${num(r.x)}` : r.tipo === 'critico' ? (r.c1 !== undefined ? `c₁ = ${num(r.c1)}, c₂ = ${num(r.c)}` : `c = ±${num(r.c)}`) : r.tipo === 'criticoU' ? `c = ${num(r.c)}` : `P = ${prob(r.p)}`;
-    r.pct = ['cuantil', 'critico', 'criticoU', 'inverso'].includes(r.tipo) ? '' : `${num(100 * r.p, 4, 0)} %`;
+  function terminar(D, r, sc) {
+    if (sc && sc.comp && DIST[sc.comp]) comparacion(sc, r, D);
+    r.res = r.tipo === 'tcl' ? `X̄ ≈ N(${num(r.media)}, ${num(r.tcl.et)})` : r.tipo === 'inverso' ? `${r.incog === 'mu' ? 'μ' : 'σ'} = ${num(r.valor)}` : r.tipo === 'cuantil' ? `${r.discreta ? 'k' : 'a'} = ${num(r.x)}` : r.tipo === 'critico' ? (r.c1 !== undefined ? `c₁ = ${num(r.c1)}, c₂ = ${num(r.c)}` : `c = ±${num(r.c)}`) : r.tipo === 'criticoU' ? `c = ${num(r.c)}` : `P = ${prob(r.p)}`;
+    r.pct = ['cuantil', 'critico', 'criticoU', 'inverso', 'tcl'].includes(r.tipo) ? '' : `${num(100 * r.p, 4, 0)} %`;
     return r;
   }
 
@@ -1027,6 +1087,12 @@ const Estadistica = (() => {
     { clave: 'poisson-normal', nombre: 'Poisson con λ grande y su aproximación normal', sc: { dist: 'poisson', lambda: '25', tipo: 'entre', a: '20', b: '30' } },
     { clave: 'geometrica', nombre: 'Geométrica: 3 fallos antes del primer acierto', sc: { dist: 'geometrica', p: '0.2', tipo: 'igual', a: '3' } },
     { clave: 'hipergeometrica', nombre: 'Hipergeométrica: 2 defectuosas al sacar 4 de 20', sc: { dist: 'hipergeometrica', N: '20', K: '5', n: '4', tipo: 'igual', a: '2' } },
+    { clave: 'hiper-binomial', nombre: 'Hipergeométrica con población grande y su aproximación binomial', sc: { dist: 'hipergeometrica', N: '500', K: '100', n: '20', tipo: 'menor', a: '3' } },
+    { clave: 'compara-t', nombre: 'Comparar: la t de Student con 5 g. l. frente a la normal', sc: { dist: 't', nu: '5', tipo: 'mayor', a: '2', comp: 'normal', c_mu: '0', c_sigma: '1' } },
+    { clave: 'compara-binomial', nombre: 'Comparar: B(30; 0,4) con la normal que la aproxima', sc: { dist: 'binomial', n: '30', p: '0.4', tipo: 'entre', a: '10', b: '14', comp: 'normal', c_mu: '12', c_sigma: '2.683' } },
+    { clave: 'tcl-exponencial', nombre: 'Teorema central del límite: medias de 30 exponenciales', sc: { dist: 'exponencial', lambda: '1', tipo: 'tcl', nm: '30', semilla: 1 } },
+    { clave: 'tcl-pocos', nombre: 'Teorema central del límite: con n = 2 aún no es una campana', sc: { dist: 'exponencial', lambda: '1', tipo: 'tcl', nm: '2', semilla: 1 } },
+    { clave: 'tcl-binomial', nombre: 'Teorema central del límite: medias de 40 tiradas de una binomial', sc: { dist: 'binomial', n: '5', p: '0.2', tipo: 'tcl', nm: '40', semilla: 1 } },
   ];
 
   function ejercicio(r = Math.random) {
@@ -1048,7 +1114,7 @@ const Estadistica = (() => {
     return de(T)();
   }
 
-  return { DIST, tipos, calcular, ejemplos, ejercicio, Phi, gammaP, gammaQ, betaI, lnGamma, num, prob, cuantil, fCdf };
+  return { DIST, tipos, calcular, ejemplos, MUESTRAS, ejercicio, Phi, gammaP, gammaQ, betaI, lnGamma, num, prob, cuantil, fCdf };
 })();
 
 const Intervalos = (() => {
@@ -1147,23 +1213,83 @@ const Intervalos = (() => {
     if (x > n) throw new Error(`Los éxitos x${i} no pueden ser más que n${i}`);
     return { n, x, ph: x / n };
   }
+  const METODOS_P = { wald: 'Normal (Wald), el de clase', wilson: 'Wilson', cp: 'Exacto de Clopper-Pearson', ac: 'Agresti-Coull' };
+  function metodosP(n, ph, a2) {
+    const k = zc(a2), k2 = k * k, q = 1 - ph, x = n * ph, sd = Math.sqrt((ph * q) / n);
+    const cen = (ph + k2 / (2 * n)) / (1 + k2 / n), med = (k / (1 + k2 / n)) * Math.sqrt((ph * q) / n + k2 / (4 * n * n));
+    const nt = n + k2, pt = (x + k2 / 2) / nt, et = k * Math.sqrt((pt * (1 - pt)) / nt);
+    const entero = Math.abs(x - Math.round(x)) < 1e-6, xi = Math.round(x), bq = (al, be, pr) => E.cuantil(E.DIST.beta, { al, be }, pr);
+    return {
+      k, wald: { a: ph - k * sd, b: ph + k * sd, sd },
+      wilson: { a: cen - med, b: cen + med, cen, med },
+      ac: { a: pt - et, b: pt + et, nt, pt, et },
+      cp: entero ? { a: xi === 0 ? 0 : bq(xi, n - xi + 1, a2), b: xi === n ? 1 : bq(xi + 1, n - xi, 1 - a2), x: xi } : null,
+    };
+  }
   function proporcion(sc) {
     const c = nivel(sc), al = 1 - c, a2 = mitad(sc, al), P = exitos(sc), q = 1 - P.ph, pasos = [];
+    let met = METODOS_P[sc.metodoP] ? sc.metodoP : 'wald';
     pasos.push({ t: 'Datos', html: `n = ${P.n}, ${P.x !== null ? `x = ${P.x} éxitos ⇒ p̂ = x/n = ${P.x}/${P.n} = ` : 'p̂ = '}<b>${f(P.ph)}</b>, q̂ = 1 − p̂ = ${f(q)}<br>${alfaTxt(c, sc)}` });
-    const k = zc(a2), fp = finita(sc, P.n, pasos), sd = Math.sqrt((P.ph * q) / P.n) * fp;
-    pasos.push({ t: 'Valor crítico', html: `Para n grande, p̂ ≈ N(p, √(pq/n)): z<sub>α/2</sub> = z<sub>${f(a2)}</sub> = <b>${f(k)}</b>` });
-    let err = k * sd, a = P.ph - err, b = P.ph + err;
-    pasos.push({ t: 'Error máximo', html: `E = z<sub>α/2</sub>·√(p̂q̂/n)${fp < 1 ? '·√((N − n)/(N − 1))' : ''} = ${f(k)}·√(${f(P.ph)}·${f(q)}/${P.n})${fp < 1 ? `·${f(fp, 5)}` : ''} = <b>${f(err)}</b>` });
-    pasos.push({ t: 'Intervalo', html: `IC<sub>${f(c)}</sub>(p) = (p̂ − E, p̂ + E) = <b>${ic(a, b)}</b>${a < 0 || b > 1 ? ` (se recorta a ${ic(Math.max(0, a), Math.min(1, b))}, porque p está entre 0 y 1)` : ''}` });
-    if (P.n * P.ph < 5 || P.n * q < 5) {
-      const k2 = k * k, cen = (P.ph + k2 / (2 * P.n)) / (1 + k2 / P.n), med = (k / (1 + k2 / P.n)) * Math.sqrt((P.ph * q) / P.n + k2 / (4 * P.n * P.n));
-      const wa = Math.max(0, cen - med), wb = Math.min(1, cen + med), extremo = P.ph === 0 || P.ph === 1;
-      pasos.push({ t: 'Cuidado', html: `np̂ = ${f(P.n * P.ph)} o nq̂ = ${f(P.n * q)} es menor que 5: la aproximación normal no es buena con tan pocos éxitos o fracasos.${extremo ? ` Con p̂ = ${f(P.ph)}, el error sale 0 y el intervalo se queda en un punto, lo que no tiene sentido.` : ''}` });
-      pasos.push({ t: 'Intervalo de Wilson', html: `Funciona bien aunque haya pocos éxitos o fracasos:<br>centro = (p̂ + z<sup>2</sup>/(2n))/(1 + z<sup>2</sup>/n) = ${f(cen)}, &ensp; semiamplitud = z/(1 + z<sup>2</sup>/n)·√(p̂q̂/n + z<sup>2</sup>/(4n<sup>2</sup>)) = ${f(med)}<br>IC<sub>${f(c)}</sub>(p) = <b>${ic(wa, wb)}</b>${extremo ? ' (es el que se da como resultado)' : ''}` });
-      if (extremo) { a = wa; b = wb; err = (wb - wa) / 2; }
+    const T = metodosP(P.n, P.ph, a2), k = T.k, recorta = (a, b) => (a < 0 || b > 1 ? ` (se recorta a ${ic(Math.max(0, a), Math.min(1, b))}, porque p está entre 0 y 1)` : '');
+    if (met === 'cp' && !T.cp) throw new Error(`El intervalo exacto necesita un número entero de éxitos, y n·p̂ = ${f(P.n * P.ph, 6)} no lo es: da los éxitos x o elige otro método`);
+    const fp = met === 'wald' ? finita(sc, P.n, pasos) : 1;
+    if (met !== 'wald' && !vacio(sc.Npob)) pasos.push({ t: 'Población finita', html: 'La corrección por población finita solo se aplica al intervalo normal (Wald): con este método se ha calculado como si la población fuera muy grande.' });
+    let a, b, err;
+    if (met === 'wald') {
+      const sd = T.wald.sd * fp;
+      pasos.push({ t: 'Valor crítico', html: `Para n grande, p̂ ≈ N(p, √(pq/n)): z<sub>α/2</sub> = z<sub>${f(a2)}</sub> = <b>${f(k)}</b>` });
+      err = k * sd; a = P.ph - err; b = P.ph + err;
+      pasos.push({ t: 'Error máximo', html: `E = z<sub>α/2</sub>·√(p̂q̂/n)${fp < 1 ? '·√((N − n)/(N − 1))' : ''} = ${f(k)}·√(${f(P.ph)}·${f(q)}/${P.n})${fp < 1 ? `·${f(fp, 5)}` : ''} = <b>${f(err)}</b>` });
+      pasos.push({ t: 'Intervalo', html: `IC<sub>${f(c)}</sub>(p) = (p̂ − E, p̂ + E) = <b>${ic(a, b)}</b>${recorta(a, b)}` });
+      if (P.n * P.ph < 5 || P.n * q < 5) {
+        const wa = Math.max(0, T.wilson.a), wb = Math.min(1, T.wilson.b), extremo = P.ph === 0 || P.ph === 1;
+        pasos.push({ t: 'Cuidado', html: `np̂ = ${f(P.n * P.ph)} o nq̂ = ${f(P.n * q)} es menor que 5: la aproximación normal no es buena con tan pocos éxitos o fracasos.${extremo ? ` Con p̂ = ${f(P.ph)}, el error sale 0 y el intervalo se queda en un punto, lo que no tiene sentido.` : ''}` });
+        pasos.push({ t: 'Intervalo de Wilson', html: `Funciona bien aunque haya pocos éxitos o fracasos:<br>centro = (p̂ + z<sup>2</sup>/(2n))/(1 + z<sup>2</sup>/n) = ${f(T.wilson.cen)}, &ensp; semiamplitud = z/(1 + z<sup>2</sup>/n)·√(p̂q̂/n + z<sup>2</sup>/(4n<sup>2</sup>)) = ${f(T.wilson.med)}<br>IC<sub>${f(c)}</sub>(p) = <b>${ic(wa, wb)}</b>${extremo ? ' (es el que se da como resultado)' : ''}` });
+        if (extremo) { a = wa; b = wb; err = (wb - wa) / 2; }
+      }
+    } else {
+      pasos.push({ t: 'Valor crítico', html: met === 'cp' ? `El intervalo exacto no usa la normal: sale de la propia binomial. Como referencia, z<sub>α/2</sub> = ${f(k)}.` : `z<sub>α/2</sub> = z<sub>${f(a2)}</sub> = <b>${f(k)}</b>` });
+      if (met === 'wilson') {
+        a = Math.max(0, T.wilson.a); b = Math.min(1, T.wilson.b);
+        pasos.push({ t: 'Intervalo de Wilson', html: `En vez de estimar el error con p̂, se despeja p de |p̂ − p| ≤ z·√(p(1 − p)/n). Sale un intervalo que no está centrado en p̂, sino algo desplazado hacia 0,5:<br>centro = (p̂ + z<sup>2</sup>/(2n))/(1 + z<sup>2</sup>/n) = ${f(T.wilson.cen)}, &ensp; semiamplitud = z/(1 + z<sup>2</sup>/n)·√(p̂q̂/n + z<sup>2</sup>/(4n<sup>2</sup>)) = ${f(T.wilson.med)}<br>IC<sub>${f(c)}</sub>(p) = <b>${ic(a, b)}</b>` });
+      } else if (met === 'ac') {
+        a = T.ac.a; b = T.ac.b;
+        pasos.push({ t: 'Intervalo de Agresti-Coull', html: `Es el intervalo normal de siempre, pero añadiendo z<sup>2</sup> observaciones, la mitad éxitos (con el 95 %, «sumar 2 éxitos y 2 fracasos»):<br>ñ = n + z<sup>2</sup> = ${f(T.ac.nt, 6)}, &ensp; p̃ = (x + z<sup>2</sup>/2)/ñ = ${f(T.ac.pt)}, &ensp; E = z·√(p̃(1 − p̃)/ñ) = ${f(T.ac.et)}<br>IC<sub>${f(c)}</sub>(p) = (p̃ − E, p̃ + E) = <b>${ic(a, b)}</b>${recorta(a, b)}` });
+      } else {
+        a = T.cp.a; b = T.cp.b; const x = T.cp.x;
+        pasos.push({ t: 'Intervalo exacto de Clopper-Pearson', html: `Se buscan las p para las que lo observado no sería raro: el extremo inferior es la p con P(X ≥ ${x}) = ${f(a2)} y el superior, la p con P(X ≤ ${x}) = ${f(a2)}, con X binomial de n = ${P.n}. Esas dos ecuaciones se resuelven con cuantiles de la distribución beta:<br>inferior = ${x === 0 ? '0 (no hay éxitos)' : `B<sub>${f(a2)}</sub>(${x}, ${P.n - x + 1}) = ${f(a, 5)}`}, &ensp; superior = ${x === P.n ? '1 (todos son éxitos)' : `B<sub>${f(1 - a2)}</sub>(${x + 1}, ${P.n - x}) = ${f(b, 5)}`}<br>IC<sub>${f(c)}</sub>(p) = <b>${ic(a, b)}</b>. Garantiza al menos la confianza pedida con cualquier n, a cambio de ser algo más ancho.` });
+      }
+      err = (b - a) / 2;
     }
+    const fila = (m, I) => (I ? `${m === met ? '<b>' : ''}${METODOS_P[m]}: ${ic(Math.max(0, I.a), Math.min(1, I.b))}, anchura ${f(Math.min(1, I.b) - Math.max(0, I.a))}${m === met ? '</b>' : ''}` : `${METODOS_P[m]}: hace falta un número entero de éxitos`);
+    pasos.push({ t: 'Comparación de métodos', html: `${['wald', 'wilson', 'cp', 'ac'].map((m) => fila(m, T[m])).join('<br>')}<br>${P.n * P.ph >= 10 && P.n * q >= 10 ? 'Con tantos éxitos y fracasos los cuatro casi coinciden.' : 'Con pocos éxitos o fracasos el normal se queda corto: Wilson o el exacto son más fiables.'}` });
     pasos.push({ t: 'Interpretación', html: `Con una confianza del ${pc(c)}, la proporción de la población está entre ${f(100 * Math.max(0, a))} % y ${f(100 * Math.min(1, b))} %.` });
-    return { a, b, est: P.ph, err, k, crit: 'z', c, P, pasos, param: 'p', dist: { d: 'normal' } };
+    return { a, b, est: P.ph, err, k, crit: 'z', c, P, pasos, param: 'p', dist: { d: 'normal' }, metodoP: met, metodos: T };
+  }
+  function prediccion(sc) {
+    const c = nivel(sc), al = 1 - c, a2 = mitad(sc, al), M = muestra(sc), pasos = [], que = sc.queP === 'tol' ? 'tol' : 'pred', nu = M.n - 1;
+    if (M.sc === null) throw new Error('Falta la desviación s de la muestra');
+    pasos.push({ t: 'Datos', html: `${datosTxt(M)}.${cuasiNota(sc, M)}<br>${alfaTxt(c, sc)}` });
+    if (que === 'pred') {
+      const k = tc(nu, a2), raiz = Math.sqrt(1 + 1 / M.n), err = k * M.sc * raiz, a = M.m - err, b = M.m + err, eMedia = (k * M.sc) / Math.sqrt(M.n);
+      pasos.push({ t: 'Qué se busca', html: 'No es un intervalo para la media μ, sino para <b>el próximo dato</b> que se mida. Ese dato se separa de x̄ por dos motivos: x̄ no es exactamente μ (varianza σ²/n) y el dato nuevo tiene su propia dispersión (varianza σ²). Por eso aparece 1 + 1/n.' });
+      pasos.push({ t: 'Valor crítico', html: `(X<sub>nuevo</sub> − x̄)/(s·√(1 + 1/n)) sigue una t de Student con n − 1 = ${nu} grados de libertad:<br>t<sub>${nu}; α/2</sub> = t<sub>${nu}; ${f(a2)}</sub> = <b>${f(k)}</b>` });
+      pasos.push({ t: 'Error máximo', html: `E = t<sub>n−1; α/2</sub>·s·√(1 + 1/n) = ${f(k)}·${f(M.sc, 5)}·√(1 + 1/${M.n}) = ${f(k)}·${f(M.sc, 5)}·${f(raiz, 5)} = <b>${f(err)}</b>` });
+      pasos.push({ t: 'Intervalo', html: `IP<sub>${f(c)}</sub> = (x̄ − E, x̄ + E) = (${f(M.m, 6)} − ${f(err)}, ${f(M.m, 6)} + ${f(err)}) = <b>${ic(a, b)}</b>` });
+      pasos.push({ t: 'Comparación con el de la media', html: `El intervalo de confianza de la media con estos datos tiene E = t·s/√n = ${f(eMedia)}: el de predicción es √(n + 1) = ${f(Math.sqrt(M.n + 1))} veces más ancho, y no se estrecha hasta cero por muchos datos que haya (como mínimo, z·σ).` });
+      pasos.push({ t: 'Interpretación', html: `Con una confianza del ${pc(c)}, la próxima observación estará entre ${f(a)} y ${f(b)}. Supone que la población es normal.` });
+      return { a, b, est: M.m, err, k, crit: 't', gl: nu, c, M, pasos, param: 'x', que, paramTxt: 'una observación nueva', dist: { d: 't', nu } };
+    }
+    if (lado(sc) !== 'dos') throw new Error('El intervalo de tolerancia solo se calcula bilateral: elige «Bilateral (a; b)»');
+    let cob = lee(sc, 'cob', 'la proporción de la población que se quiere cubrir', { min: 0, minEx: true });
+    if (cob >= 1) cob /= 100;
+    if (!(cob > 0 && cob < 1)) throw new Error('La proporción de la población que se cubre tiene que estar entre 0 y 100 %');
+    const z = zc((1 - cob) / 2), chi = xc(nu, c), k = z * Math.sqrt((nu * (1 + 1 / M.n)) / chi), err = k * M.sc, a = M.m - err, b = M.m + err;
+    pasos.push({ t: 'Qué se busca', html: `Un intervalo que contenga al menos el <b>${pc(cob)} de la población</b> (no la media ni un solo dato), con una confianza del ${pc(c)}. Si se conocieran μ y σ sería μ ± z·σ con z<sub>${f((1 - cob) / 2)}</sub> = ${f(z)}; como solo hay x̄ y s, el factor tiene que ser mayor.` });
+    pasos.push({ t: 'Factor de tolerancia', html: `Con la aproximación de Howe: k = z·√(ν(1 + 1/n)/χ<sup>2</sup><sub>ν; ${f(c)}</sub>), con ν = n − 1 = ${nu} y χ<sup>2</sup><sub>${nu}; ${f(c)}</sub> = ${f(chi)} (el valor que deja ${f(c)} a su derecha):<br>k = ${f(z)}·√(${nu}·(1 + 1/${M.n})/${f(chi)}) = <b>${f(k)}</b>` });
+    pasos.push({ t: 'Intervalo', html: `(x̄ − k·s, x̄ + k·s) = (${f(M.m, 6)} − ${f(k)}·${f(M.sc, 5)}, ${f(M.m, 6)} + ${f(k)}·${f(M.sc, 5)}) = <b>${ic(a, b)}</b>` });
+    pasos.push({ t: 'Interpretación', html: `Con una confianza del ${pc(c)}, al menos el ${pc(cob)} de la población está entre ${f(a)} y ${f(b)}. Supone que la población es normal; el factor de Howe se separa del exacto de las tablas menos de un 1 % salvo con muestras muy pequeñas.` });
+    return { a, b, est: M.m, err, k, kz: z, crit: 'k', gl: nu, c, cob, M, pasos, param: 'x', que, paramTxt: `el ${pc(cob)} de la población`, dist: { d: 'chi2', k: nu }, k2: chi, sinGrafica: true };
   }
   function varianza(sc) {
     const c = nivel(sc), al = 1 - c, a2 = mitad(sc, al), M = muestra(vacio(sc.xm) ? { ...sc, xm: '0' } : sc), pasos = [];
@@ -1300,7 +1426,7 @@ const Intervalos = (() => {
     r.pasos.push({ t: 'Contraste con el intervalo', html: `H₀: ${P} = ${f(h0)} frente a H₁: ${H1}, con nivel de significación α = ${al}.<br>${dentro ? `${f(h0)} está dentro del intervalo: <b>no se rechaza H₀</b>. Los datos son compatibles con ${P} = ${f(h0)}.` : `${f(h0)} queda fuera del intervalo: <b>se rechaza H₀</b> con α = ${al}.`}` });
     return r;
   }
-  const MODOS = { media, proporcion, varianza, 'dif-medias': difMedias, apareadas, 'dif-prop': difProp, 'cociente-var': cocienteVar, tamano };
+  const MODOS = { media, proporcion, prediccion, varianza, 'dif-medias': difMedias, apareadas, 'dif-prop': difProp, 'cociente-var': cocienteVar, tamano };
   function resolver(sc) {
     const m = MODOS[sc.modo] ? sc.modo : 'media';
     return Object.assign(contraste(sc, cola(sc, MODOS[m](sc))), { modo: m });
@@ -1328,7 +1454,7 @@ const Intervalos = (() => {
     }
     if (sol.modo === 'proporcion') {
       const pr = sol.P.ph, n = sol.P.n;
-      return { real: pr, una: () => { const k = binom(r, n, pr); const x = una(proporcion, { ...base, n: String(n), x: String(k) }); return [x.a, x.b, k / n]; } };
+      return { real: pr, una: () => { const k = binom(r, n, pr); const x = una(proporcion, { ...base, n: String(n), x: String(k), metodoP: sol.metodoP }); return [x.a, x.b, k / n]; } };
     }
     if (sol.modo === 'dif-medias') {
       const { M1, M2 } = sol, sa = sol.s1 ?? M1.sc, sb = sol.s2 ?? M2.sc;
@@ -1356,6 +1482,10 @@ const Intervalos = (() => {
     { clave: 'muestral', nombre: 'Media con la desviación de la muestra (con n)', sc: { modo: 'media', fuente: 'resumen', sigmaC: 'no', sigma: '', xm: '25,4', s: '3,2', n: '12', nivel: '90', tipoS: 'muestral' } },
     { clave: 'encuesta', nombre: 'Proporción (encuesta)', sc: { modo: 'proporcion', tipoP: 'exitos', n: '500', x: '210', ph: '', nivel: '95' } },
     { clave: 'defectuosas', nombre: 'Proporción de piezas defectuosas', sc: { modo: 'proporcion', tipoP: 'proporcion', n: '400', x: '', ph: '0,06', nivel: '99' } },
+    { clave: 'pocos-exitos', nombre: 'Proporción con pocos éxitos (exacto de Clopper-Pearson)', sc: { modo: 'proporcion', tipoP: 'exitos', n: '20', x: '2', ph: '', nivel: '95', metodoP: 'cp' } },
+    { clave: 'wilson', nombre: 'Proporción con el intervalo de Wilson', sc: { modo: 'proporcion', tipoP: 'exitos', n: '50', x: '6', ph: '', nivel: '95', metodoP: 'wilson' } },
+    { clave: 'prediccion', nombre: 'Predicción: duración de la próxima bombilla', sc: { modo: 'prediccion', queP: 'pred', fuente: 'resumen', xm: '1200', s: '90', n: '16', nivel: '95', tipoS: 'cuasi', cob: '90' } },
+    { clave: 'tolerancia', nombre: 'Tolerancia: el 90 % de las piezas', sc: { modo: 'prediccion', queP: 'tol', fuente: 'resumen', xm: '50', s: '2', n: '10', nivel: '95', tipoS: 'cuasi', cob: '90' } },
     { clave: 'varianza', nombre: 'Varianza y desviación típica', sc: { modo: 'varianza', fuente: 'resumen', xm: '50', s: '2,5', n: '20', nivel: '95', tipoS: 'cuasi' } },
     { clave: 'dif-conocidas', nombre: 'Diferencia de medias con σ conocidas', sc: { modo: 'dif-medias', caso: 'conocidas', fuente1: 'resumen', fuente2: 'resumen', xm1: '82', n1: '40', s1: '', sigma1: '6', xm2: '78', n2: '50', s2: '', sigma2: '7', nivel: '95', tipoS: 'cuasi' } },
     { clave: 'dif-iguales', nombre: 'Diferencia de medias (varianzas iguales)', sc: { modo: 'dif-medias', caso: 'iguales', fuente1: 'resumen', fuente2: 'resumen', xm1: '15,2', n1: '10', s1: '1,8', xm2: '13,9', n2: '12', s2: '2,1', nivel: '95', tipoS: 'cuasi' } },
@@ -1373,7 +1503,7 @@ const Intervalos = (() => {
     { clave: 'n-finita', nombre: 'Encuesta en un pueblo de 2000 habitantes', sc: { modo: 'tamano', de: 'proporcion', sigma: '', E: '0,05', p0: '', Npob: '2000', nivel: '95' } },
     { clave: 'n-prop', nombre: 'Tamaño de muestra para una encuesta', sc: { modo: 'tamano', de: 'proporcion', sigma: '', E: '0,03', p0: '', nivel: '95' } },
   ];
-  return { resolver, simula, ejemplos, f, zc, tc, xc };
+  return { resolver, simula, ejemplos, f, zc, tc, xc, METODOS_P };
 })();
 
 const Compartir = (() => {
@@ -1563,7 +1693,7 @@ const Compartir = (() => {
 (() => {
   const { $, esc, copia, txt } = Herramienta;
   const I = Intervalos, f = I.f, CLAVE = 'intervalos-v1', E = Estadistica;
-  const MODOS = [['media', 'Media μ'], ['proporcion', 'Proporción p'], ['varianza', 'Varianza σ² y desviación σ'], ['dif-medias', 'Diferencia de medias μ₁ − μ₂'], ['apareadas', 'Datos apareados μ_d'], ['dif-prop', 'Diferencia de proporciones p₁ − p₂'], ['cociente-var', 'Cociente de varianzas σ₁²/σ₂²'], ['tamano', 'Tamaño de la muestra']];
+  const MODOS = [['media', 'Media μ'], ['proporcion', 'Proporción p'], ['prediccion', 'Predicción y tolerancia'], ['varianza', 'Varianza σ² y desviación σ'], ['dif-medias', 'Diferencia de medias μ₁ − μ₂'], ['apareadas', 'Datos apareados μ_d'], ['dif-prop', 'Diferencia de proporciones p₁ − p₂'], ['cociente-var', 'Cociente de varianzas σ₁²/σ₂²'], ['tamano', 'Tamaño de la muestra']];
 
   let sc = copia(I.ejemplos[0].sc);
   try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && MODOS.some(([k]) => k === g.modo)) sc = g; } catch (e) { /* sin almacenamiento */ }
@@ -1577,10 +1707,11 @@ const Compartir = (() => {
   const FUENTE = [['resumen', 'Un resumen (x̄, s, n)'], ['datos', 'La lista de valores']];
   const TIPO_S = [['cuasi', 'Cuasidesviación (con n − 1)'], ['muestral', 'Desviación de la muestra (con n)']];
   const nivelF = () => fila('nivel', 'Nivel de confianza', '%');
-  const PARAM = { media: 'μ', proporcion: 'p', varianza: 'σ²', 'dif-medias': 'μ₁ − μ₂', apareadas: 'μ<sub>d</sub>', 'dif-prop': 'p₁ − p₂', 'cociente-var': 'σ₁²/σ₂²' };
+  const PARAM = { prediccion: 'x', media: 'μ', proporcion: 'p', varianza: 'σ²', 'dif-medias': 'μ₁ − μ₂', apareadas: 'μ<sub>d</sub>', 'dif-prop': 'p₁ − p₂', 'cociente-var': 'σ₁²/σ₂²' };
   const NOTAS = {
     media: 'Si te dan la desviación de la población σ, elige «σ conocida» (se usa z). Si solo tienes la de la muestra, se usa la t de Student con n − 1 grados de libertad.',
-    proporcion: 'Puedes dar el número de éxitos x o directamente la proporción de la muestra p̂ (0,42 o 42 %… escribe 0,42).',
+    proporcion: 'Puedes dar el número de éxitos x o directamente la proporción de la muestra p̂ (0,42 o 42 %… escribe 0,42). El método normal (Wald) es el de clase; con pocos éxitos o fracasos son mejores Wilson o el exacto.',
+    prediccion: 'El intervalo de predicción dice dónde caerá el próximo dato; el de tolerancia, dónde está la mayor parte de la población. Los dos son más anchos que el de la media y suponen una población normal.',
     varianza: 'Se usa la χ² con n − 1 grados de libertad. Si tu libro da la desviación típica de la muestra dividiendo entre n, elígela abajo y se pasa a la cuasidesviación.',
     'dif-medias': 'Muestras independientes. Con σ desconocidas, si se suponen iguales se usa la cuasivarianza ponderada; si no, la aproximación de Welch.',
     'dif-prop': 'Muestras independientes y grandes. El intervalo de p₁ − p₂ dice si las dos proporciones son distintas.',
@@ -1601,6 +1732,12 @@ const Compartir = (() => {
       }
     } else if (m === 'proporcion') {
       h += elige('tipoP', 'Datos', [['exitos', 'Número de éxitos x'], ['proporcion', 'Proporción p̂']]) + fila('n', 'Tamaño de la muestra n') + (sc.tipoP === 'proporcion' ? fila('ph', 'Proporción p̂') : fila('x', 'Éxitos x'));
+      h += elige('metodoP', 'Método', Object.entries(I.METODOS_P));
+    } else if (m === 'prediccion') {
+      h += elige('queP', 'Intervalo para', [['pred', 'Una observación futura (predicción)'], ['tol', 'Una proporción de la población (tolerancia)']]) + elige('fuente', 'Datos', FUENTE);
+      if (sc.fuente === 'datos') h += area('datos', 'Valores');
+      else h += fila('xm', 'Media de la muestra x̄') + fila('n', 'Tamaño de la muestra n') + fila('s', 'Desviación de la muestra s') + elige('tipoS', 'Esa desviación es la', TIPO_S);
+      if (sc.queP === 'tol') h += fila('cob', 'Proporción de la población', '%');
     } else if (m === 'dif-medias') {
       h += elige('caso', 'Desviaciones', [['conocidas', 'σ₁ y σ₂ conocidas (normal)'], ['iguales', 'Desconocidas pero iguales (t)'], ['distintas', 'Desconocidas y distintas (Welch)']]) + elige('fuente', 'Datos', FUENTE);
       for (const i of ['1', '2']) {
@@ -1628,9 +1765,9 @@ const Compartir = (() => {
       h += sc.de === 'proporcion' ? fila('p0', 'Proporción esperada p', '(opcional)') : sc.de === 'dif-medias' ? fila('sigma1', 'σ₁ de la población 1') + fila('sigma2', 'σ₂ de la población 2') : sc.de === 'dif-prop' ? fila('p1', 'Proporción esperada p₁', '(opcional)') + fila('p2', 'Proporción esperada p₂', '(opcional)') : fila('sigma', 'Desviación típica σ');
     }
     h += nivelF();
-    if (m !== 'tamano') h += elige('lado', 'Tipo de intervalo', [['dos', 'Bilateral (a; b)'], ['inf', 'Cota inferior (a; +∞)'], ['sup', 'Cota superior (−∞; b)']]);
+    if (m !== 'tamano' && !(m === 'prediccion' && sc.queP === 'tol')) h += elige('lado', 'Tipo de intervalo', [['dos', 'Bilateral (a; b)'], ['inf', 'Cota inferior (a; +∞)'], ['sup', 'Cota superior (−∞; b)']]);
     if (m === 'media' || m === 'proporcion' || (m === 'tamano' && (sc.de === 'media' || sc.de === 'proporcion' || !sc.de))) h += fila('Npob', 'Tamaño de la población N', '(opcional, si es finita)');
-    if (m !== 'tamano') h += fila('h0', `Contrastar ${PARAM[m]} =`, '(opcional)');
+    if (m !== 'tamano' && m !== 'prediccion') h += fila('h0', `Contrastar ${PARAM[m]} =`, '(opcional)');
     $('#campos').innerHTML = h;
     $('#nota').textContent = NOTAS[m];
   }
@@ -1640,6 +1777,7 @@ const Compartir = (() => {
     const t = e.target; if (t.tagName !== 'SELECT') return;
     const k = t.dataset.k;
     if (k === 'modo') sc = copia(I.ejemplos.find((x) => x.sc.modo === t.value).sc);
+    else if (k === 'queP') { sc.queP = t.value; if (t.value === 'tol') { sc.lado = 'dos'; if (!sc.cob) sc.cob = '90'; } }
     else {
       sc[k] = t.value;
       if (k === 'fuente') { sc.fuente1 = sc.fuente2 = t.value; if (t.value === 'datos') for (const d of ['dif-medias', 'apareadas', 'cociente-var'].includes(sc.modo) ? ['datos1', 'datos2'] : ['datos']) if (!sc[d]) sc[d] = d === 'datos2' ? '11,2 12,8 10,9 12,1 11,7 12,4' : '12,1 13,4 11,8 12,9 13,2 12,5'; }
@@ -1691,29 +1829,34 @@ const Compartir = (() => {
     const al = s.lado === 'inf' || s.lado === 'sup' ? 'α' : 'α/2', X = s.crit === 'F' ? 'F' : 'χ<sup>2</sup>';
     if (s.crit === 'z') return `z<sub>${al}</sub> = <b>${f(s.k)}</b>`;
     if (s.crit === 't') return `t<sub>${s.gl}; ${al}</sub> = <b>${f(s.k)}</b>`;
+    if (s.crit === 'k') return `k = <b>${f(s.k)}</b>`;
     return s.lado === 'inf' ? `${X} = <b>${f(s.k)}</b>` : s.lado === 'sup' ? `${X} = <b>${f(s.k2)}</b>` : `${X} = ${f(s.k2)} y ${f(s.k)}`;
   };
   const extremo = (x) => (x === Infinity ? '+∞' : x === -Infinity ? '−∞' : f(x, 5));
   const iv = (a, b) => `(${extremo(a)}; ${extremo(b)})`;
   function calcula() {
     const err = $('#error');
-    try { sol = I.resolver({ ...sc, fuente1: sc.fuente ?? sc.fuente1, fuente2: sc.fuente ?? sc.fuente2 }); } catch (e) { sol = null; err.textContent = e.message; err.hidden = false; $('#res').innerHTML = ''; $('#pasos').innerHTML = ''; $('#cuenta').textContent = ''; sim = null; dibuja(); return; }
+    try { sol = I.resolver({ ...sc, fuente1: sc.fuente ?? sc.fuente1, fuente2: sc.fuente ?? sc.fuente2 }); } catch (e) { sol = null; err.textContent = e.message; err.hidden = false; $('#res').innerHTML = ''; $('#usar-en').hidden = true; $('#pasos').innerHTML = ''; $('#cuenta').textContent = ''; sim = null; dibuja(); return; }
     err.hidden = true; guarda();
     const nc = `${f(100 * sol.c)} %`;
     let h;
     if (sol.modo === 'tamano') h = dato(sol.de.startsWith('dif') ? 'Tamaño de cada muestra' : 'Tamaño de la muestra', `n = <b>${sol.n}</b>`) + dato('Sin redondear', `${f(sol.n0, 6)}`) + dato('Valor crítico', CRIT(sol));
     else {
       const tipo = sol.lado === 'inf' ? 'Cota inferior' : sol.lado === 'sup' ? 'Cota superior' : 'Intervalo';
-      h = dato(`${tipo} al ${nc} para ${PARAM[sol.modo]}`, `<b>${iv(sol.a, sol.b)}</b>`, 'ancho');
+      h = dato(`${tipo} al ${nc} para ${sol.paramTxt || PARAM[sol.modo]}`, `<b>${iv(sol.a, sol.b)}</b>`, 'ancho');
       if (sol.modo === 'varianza') h += dato(`Intervalo para σ`, `<b>${iv(sol.sa, sol.sb)}</b>`) + dato('Estimación', `s<sup>2</sup> = ${f(sol.est, 5)}`);
       else if (sol.modo === 'cociente-var') h += dato(`Intervalo para σ₁/σ₂`, `<b>${iv(sol.sa, sol.sb)}</b>`) + dato('Estimación', `s₁<sup>2</sup>/s₂<sup>2</sup> = ${f(sol.est, 5)}`);
-      else h += dato('Estimación', `${{ media: 'x̄', proporcion: 'p̂', 'dif-medias': 'x̄₁ − x̄₂', apareadas: 'd̄', 'dif-prop': 'p̂₁ − p̂₂' }[sol.modo]} = ${f(sol.est, 5)}`) + dato('Error máximo', `E = <b>${f(sol.err)}</b>`);
-      h += dato('Valor crítico', CRIT(sol));
+      else h += dato('Estimación', `${{ prediccion: 'x̄', media: 'x̄', proporcion: 'p̂', 'dif-medias': 'x̄₁ − x̄₂', apareadas: 'd̄', 'dif-prop': 'p̂₁ − p̂₂' }[sol.modo]} = ${f(sol.est, 5)}`) + dato('Error máximo', `E = <b>${f(sol.err)}</b>`);
+      h += dato(sol.crit === 'k' ? 'Factor de tolerancia' : 'Valor crítico', CRIT(sol));
+      if (sol.modo === 'proporcion') h += dato('Método', I.METODOS_P[sol.metodoP]);
       if (sol.h0 !== undefined) h += dato(`Contraste de ${PARAM[sol.modo]} = ${f(sol.h0)}`, sol.rechaza ? '<b>Se rechaza H₀</b>' : '<b>No se rechaza H₀</b>', 'ancho');
     }
     $('#res').innerHTML = h;
+    const ue = $('#usar-en'), lleva = (sol.modo === 'media' || sol.modo === 'prediccion' || sol.modo === 'varianza') && sc.fuente === 'datos' && !Herramienta.vacio(sc.datos);
+    ue.hidden = !lleva;
+    ue.innerHTML = lleva ? `<a class="btn" data-usar="descriptiva" href="${esc(Herramienta.enlaceA('descriptiva', { formato: 'lista', datos: sc.datos, pesos: '', div: 'n1', pk: '' }))}">Descriptiva de estos datos →</a>` : '';
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('');
-    $('#simcard').hidden = sol.modo === 'tamano';
+    $('#simcard').hidden = sol.modo === 'tamano' || sol.modo === 'prediccion';
     nuevaSim();
     dibuja();
   }
@@ -1735,12 +1878,13 @@ const Compartir = (() => {
   function campana() {
     const { g, w, h } = lienzo('#grafica');
     if (!sol) return;
+    const S = sol.sinGrafica ? { ...sol, k: sol.kz, c: sol.cob, crit: 'z', dist: { d: 'normal' } } : sol;
     if (!col['--ink']) colores();
-    const d = sol.dist, D = E.DIST[d.d], P = d.d === 'normal' ? { mu: 0, sigma: 1 } : d.d === 't' ? { nu: d.nu } : d.d === 'f' ? { d1: d.d1, d2: d.d2 } : { k: d.k };
-    const al = 1 - sol.c, asim = d.d === 'chi2' || d.d === 'f', inf = sol.lado === 'inf', sup = sol.lado === 'sup';
+    const d = S.dist, D = E.DIST[d.d], P = d.d === 'normal' ? { mu: 0, sigma: 1 } : d.d === 't' ? { nu: d.nu } : d.d === 'f' ? { d1: d.d1, d2: d.d2 } : { k: d.k };
+    const al = 1 - S.c, asim = d.d === 'chi2' || d.d === 'f', inf = S.lado === 'inf', sup = S.lado === 'sup';
     let x0, x1;
-    if (d.d === 'chi2') { x0 = 0; x1 = Math.max(sol.k * 1.25, d.k + 4 * Math.sqrt(2 * d.k)); } else if (d.d === 'f') { x0 = 0; x1 = Math.max(sol.k * 1.25, E.cuantil(D, P, 0.99)); } else { const r = Math.max(4, sol.k * 1.35); x0 = -r; x1 = r; }
-    const lo = inf ? x0 : asim ? sol.k2 : -sol.k, hi = sup ? x1 : sol.k;
+    if (d.d === 'chi2') { x0 = 0; x1 = Math.max(S.k * 1.25, d.k + 4 * Math.sqrt(2 * d.k)); } else if (d.d === 'f') { x0 = 0; x1 = Math.max(S.k * 1.25, E.cuantil(D, P, 0.99)); } else { const r = Math.max(4, S.k * 1.35); x0 = -r; x1 = r; }
+    const lo = inf ? x0 : asim ? S.k2 : -S.k, hi = sup ? x1 : S.k;
     const mL = 16, mR = 16, mT = 26, mB = 30, M = 300, xs = Array.from({ length: M + 1 }, (_, i) => x0 + ((x1 - x0) * i) / M), ys = xs.map((x) => D.pdf(P, x));
     const ymax = Math.max(...ys.filter(isFinite)) * 1.1 || 1;
     const X = (x) => mL + ((x - x0) / (x1 - x0)) * (w - mL - mR), Y = (y) => h - mB - (Math.min(y, ymax) / ymax) * (h - mT - mB);
@@ -1753,7 +1897,7 @@ const Compartir = (() => {
     for (const [x, t] of [[lo, f(lo)], [hi, f(hi)]].filter((_, i) => (i ? !sup : !inf))) { g.strokeStyle = col['--ink']; g.setLineDash([4, 3]); g.beginPath(); g.moveTo(X(x), Y(0)); g.lineTo(X(x), mT - 4); g.stroke(); g.setLineDash([]); g.fillStyle = col['--ink']; g.fillText(txt(t), X(x), h - mB + 6); }
     const nom = d.d === 'normal' ? 'Z ~ N(0, 1)' : d.d === 't' ? `T ~ t de Student con ${d.nu} g. l.` : d.d === 'f' ? `F de Snedecor con (${d.d1}, ${d.d2}) g. l.` : `χ² con ${d.k} g. l.`;
     g.fillStyle = col['--muted']; g.textAlign = 'left'; g.textBaseline = 'top'; g.fillText(nom, mL, 4);
-    g.fillStyle = col['--accent']; g.textAlign = 'center'; g.font = `600 13px ${FUENTE_UI}`; g.fillText(`1 − α = ${txt(f(sol.c))}`, X((lo + hi) / 2), Y(D.pdf(P, (lo + hi) / 2)) * 0.5 + Y(0) * 0.5);
+    g.fillStyle = col['--accent']; g.textAlign = 'center'; g.font = `600 13px ${FUENTE_UI}`; g.fillText(`1 − α = ${txt(f(S.c))}`, X((lo + hi) / 2), Y(D.pdf(P, (lo + hi) / 2)) * 0.5 + Y(0) * 0.5);
     g.font = `12px ${FUENTE_UI}`; g.fillStyle = col['--mal'];
     const ya = mT + (h - mT - mB) * 0.6, et = inf || sup ? `α = ${txt(f(al))}` : `α/2 = ${txt(f(al / 2))}`, an = g.measureText(et).width;
     if (!inf) { if (X(lo) - 8 - an >= mL) { g.textAlign = 'right'; g.fillText(et, X(lo) - 8, ya); } else { g.textAlign = 'left'; g.fillText(et, mL, ya - 18); } }
@@ -2289,6 +2433,27 @@ const Practica = (() => {
     'no-parametricos': { datos: null, genera: () => window.NoParametricosApp?.azar(), enunciado: () => window.NoParametricosApp?.enunciado() },
     'regresion-multiple': { datos: null, genera: () => window.RegresionMultipleApp?.azar(), enunciado: () => window.RegresionMultipleApp?.enunciado() },
     'regresion-economia': { datos: null, genera: () => window.RegresionEconomiaApp?.azar(), enunciado: () => window.RegresionEconomiaApp?.enunciado() },
+    elasticidades: { datos: null, genera: () => window.ElasticidadesApp?.azar(), enunciado: () => window.ElasticidadesApp?.enunciado() },
+    costes: { datos: null, genera: () => window.CostesApp?.azar(), enunciado: () => window.CostesApp?.enunciado() },
+    beneficio: { datos: null, genera: () => window.BeneficioApp?.azar(), enunciado: () => window.BeneficioApp?.enunciado() },
+    'pib-ipc': { datos: null, genera: () => window.PibIpcApp?.azar(), enunciado: () => window.PibIpcApp?.enunciado() },
+    multiplicador: { datos: null, genera: () => window.MultiplicadorApp?.azar(), enunciado: () => window.MultiplicadorApp?.enunciado() },
+    'is-lm': { datos: null, genera: () => window.IsLmApp?.azar(), enunciado: () => window.IsLmApp?.enunciado() },
+    'phillips-okun': { datos: null, genera: () => window.PhillipsOkunApp?.azar(), enunciado: () => window.PhillipsOkunApp?.enunciado() },
+    'tipos-cambio': { datos: null, genera: () => window.TiposCambioApp?.azar(), enunciado: () => window.TiposCambioApp?.enunciado() },
+    interes: { datos: null, genera: () => window.InteresApp?.azar(), enunciado: () => window.InteresApp?.enunciado() },
+    prestamos: { datos: null, genera: () => window.PrestamosApp?.azar(), enunciado: () => window.PrestamosApp?.enunciado() },
+    'van-tir': { datos: null, genera: () => window.VanTirApp?.azar(), enunciado: () => window.VanTirApp?.enunciado() },
+    rentas: { datos: null, genera: () => window.RentasApp?.azar(), enunciado: () => window.RentasApp?.enunciado() },
+    ahorro: { datos: null, genera: () => window.AhorroApp?.azar(), enunciado: () => window.AhorroApp?.enunciado() },
+    'punto-muerto': { datos: null, genera: () => window.PuntoMuertoApp?.azar(), enunciado: () => window.PuntoMuertoApp?.enunciado() },
+    'amortizacion-inmovilizado': { datos: null, genera: () => window.AmortizacionApp?.azar(), enunciado: () => window.AmortizacionApp?.enunciado() },
+    'numeros-indice': { datos: null, genera: () => window.NumerosIndiceApp?.azar(), enunciado: () => window.NumerosIndiceApp?.enunciado() },
+    'lorenz-gini': { datos: null, genera: () => window.LorenzGiniApp?.azar(), enunciado: () => window.LorenzGiniApp?.enunciado() },
+    solow: { datos: null, genera: () => window.SolowApp?.azar(), enunciado: () => window.SolowApp?.enunciado() },
+    bonos: { datos: null, genera: () => window.BonosApp?.azar(), enunciado: () => window.BonosApp?.enunciado() },
+    'black-scholes': { datos: null, genera: () => window.BlackScholesApp?.azar(), enunciado: () => window.BlackScholesApp?.enunciado() },
+    markowitz: { datos: null, genera: () => window.MarkowitzApp?.azar(), enunciado: () => window.MarkowitzApp?.enunciado() },
     ratios: { datos: null, genera: () => window.RatiosApp?.azar(), enunciado: () => window.RatiosApp?.enunciado() },
     balance: { datos: null, genera: () => window.BalanceApp?.azar(), enunciado: () => window.BalanceApp?.enunciado() },
     ajustador: { datos: null, items: '#coefs > div', genera: () => window.AjustadorApp?.azar(), enunciado: () => window.AjustadorApp?.enunciado() },

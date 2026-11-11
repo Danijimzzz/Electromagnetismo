@@ -272,11 +272,11 @@ textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 84px }
   </div>
   <div>
     <div class="card destacado"><h2>Resultados</h2><div class="resumen" id="resumen"></div></div>
-    <div class="card"><h2>Peso de cada medida</h2>
+    <div class="card"><h2>Gráfica</h2>
       <canvas id="grafica" aria-label="Diagrama de barras con lo que aporta cada variable a la incertidumbre, o las medidas con su media y su banda de error"></canvas>
       <p class="leyenda" id="leyenda"></p>
     </div>
-    <div class="card"><h2>Derivadas parciales</h2><div class="tabla-scroll" id="tabla"></div></div>
+    <div class="card"><h2>Tabla</h2><div class="tabla-scroll" id="tabla"></div></div>
     <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
   </div>
 </div>
@@ -291,6 +291,14 @@ textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 84px }
 <div class="anuncio"><span>Publicidad</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="4415753033" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script></div>
 <h2>Medidas repetidas</h2>
 <p class="m">Con n medidas de lo mismo se toma la media. La dispersión se mide con la desviación típica $s$ (entre $n − 1$), y la media se separa del valor verdadero en torno a $s/√n$, el error de la media. Se combina en cuadratura con la resolución del aparato: si manda el aparato, medir más veces no mejora nada.</p>
+<h2>Variables correlacionadas</h2>
+<p class="m">La suma en cuadratura solo vale si los errores son independientes. Si dos variables suben y bajan juntas (se han medido con el mismo aparato mal calibrado, o salen las dos de un mismo ajuste) hay que añadir un término cruzado con su covarianza, $"cov"(x, y) = r · Δx · Δy$, donde $r$ es el coeficiente de correlación, entre −1 y 1. El término lleva el signo de las derivadas, así que puede aumentar el error o reducirlo: en una suma con $r > 0$ los errores se refuerzan, y en una resta se compensan.</p>
+<p class="f m">$Δf^2 = ({∂f}/{∂x} Δx)^2 + ({∂f}/{∂y} Δy)^2 + 2 {∂f}/{∂x} {∂f}/{∂y} "cov"(x, y)$</p>
+<h2>Media ponderada</h2>
+<p class="m">Cuando hay varias medidas de la misma magnitud con incertidumbres distintas, no pesan todas igual: cada una entra con peso $w_i = 1/σ_i^2$. La incertidumbre de la media es menor que la de la mejor medida. El $χ^2$ reducido dice si las medidas son compatibles entre sí: cerca de 1, lo son; si es bastante mayor, se separan más de lo que dicen sus incertidumbres, y aquí la incertidumbre de la media se amplía multiplicándola por $√{χ^2_"red"}$.</p>
+<p class="f m">$x̄ = {∑ w_i x_i}/{∑ w_i}$, &ensp; $σ_{x̄} = 1/√{∑ w_i}$, &ensp; $χ^2_"red" = 1/{n − 1} ∑ ({x_i − x̄}/{σ_i})^2$</p>
+<h2>Comparar con el valor aceptado</h2>
+<p class="m">Para saber si un resultado concuerda con el valor de las tablas no basta con el tanto por ciento de diferencia: hay que medir la discrepancia en incertidumbres, $z = |x − x_"ac"|/√{Δx^2 + Δx_"ac"^2}$. Hasta 1 σ el resultado es compatible; hasta 2 σ, compatible a 2σ (pasa en una de cada tres medidas correctas); entre 2 y 3 σ es dudoso, y por encima de 3 σ es incompatible: hay un error sistemático o la incertidumbre está subestimada.</p>
 </section>
 <section class="preguntas" aria-label="Preguntas frecuentes">
 <h2>Preguntas frecuentes</h2>
@@ -311,7 +319,7 @@ textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 84px }
 </body>
 <script>
 const Pagina = { carpeta: 'errores', guarda: 'errores-v1' };
-const Version = (() => { const registros = {"web":[{"v":"1.14.1"}],"control":[{"v":"0.2"}],"termo-estadistica":[{"v":"0.2"}],"markowitz":[{"v":"0.2"}],"cavidades":[{"v":"0.2"}],"organica":[{"v":"0.2"}],"transformada-z":[{"v":"0.2"}],"semiconductores":[{"v":"0.2"}],"relatividad":[{"v":"0.2"}],"osc-acopladas":[{"v":"0.2"}],"solubilidad":[{"v":"0.2"}],"lagrange":[{"v":"0.2"}],"series":[{"v":"0.2"}],"no-parametricos":[{"v":"0.2"}],"regresion-multiple":[{"v":"0.1"}],"anova":[{"v":"0.2"}],"black-scholes":[{"v":"0.2"}],"bonos":[{"v":"0.2"}],"solow":[{"v":"0.2"}],"integrales-multiples":[{"v":"0.1"}],"formulacion":[{"v":"0.2"}],"balance":[{"v":"0.2"}],"redox":[{"v":"0.2"}],"lineas-transmision":[{"v":"0.2"}],"superficies":[{"v":"0.1"}],"vsepr":[{"v":"0.2"}],"maxwell":[{"v":"0.2"}],"fresnel":[{"v":"0.2"}],"gravitacion":[{"v":"0.1"}],"convolucion":[{"v":"0.2"}],"laplace-numerica":[{"v":"0.2"}],"imagenes":[{"v":"0.2"}],"guias-onda":[{"v":"0.2"}],"antena":[{"v":"0.2"}],"bode":[{"v":"0.2"}],"optica":[{"v":"0.2"}],"simulador":[{"v":"0.4"}],"teoria-juegos":[{"v":"0.1"}],"puertas-logicas":[{"v":"0.4"}],"multiplicador":[{"v":"0.2"}],"is-lm":[{"v":"0.2"}],"choques":[{"v":"0.1"}],"termoquimica":[{"v":"0.2"}],"probabilidad":[{"v":"0.1"}],"unidades":[{"v":"0.1"}],"equilibrio":[{"v":"0.2"}],"oscilaciones":[{"v":"0.1"}],"beneficio":[{"v":"0.2"}],"costes":[{"v":"0.2"}],"sistemas-numericos":[{"v":"0.2"}],"excedentes":[{"v":"0.2"}],"oferta-demanda":[{"v":"0.2"}],"chi2-bondad":[{"v":"0.2"}],"contrastes":[{"v":"0.2"}],"errores":[{"v":"0.1"}],"graficador":[{"v":"0.2"}],"metodos-numericos":[{"v":"0.2"}],"fisica-moderna":[{"v":"0.2"}],"lorenz-gini":[{"v":"0.1"}],"phillips-okun":[{"v":"0.2"}],"tipos-cambio":[{"v":"0.2"}],"elasticidades":[{"v":"0.2"}],"pib-ipc":[{"v":"0.1"}],"numeros-indice":[{"v":"0.1"}],"ratios":[{"v":"0.2"}],"punto-muerto":[{"v":"0.1"}],"ahorro":[{"v":"0.2"}],"van-tir":[{"v":"0.2"}],"amortizacion-inmovilizado":[{"v":"0.1"}],"prestamos":[{"v":"0.2"}],"rentas":[{"v":"0.2"}],"interes":[{"v":"0.2"}],"descriptiva":[{"v":"0.1"}],"regresion-economia":[{"v":"0.1"}],"ajustador":[{"v":"0.2.1"}],"electrostatica":[{"v":"0.7"}],"magnetostatica":[{"v":"0.3"}],"tabla-periodica":[{"v":"0.2"}],"trabajo-y-energia":[{"v":"0.2"}],"masa-molar":[{"v":"0.2"}],"configuracion-electronica":[{"v":"0.2"}],"condensadores":[{"v":"0.3"}],"tiro-parabolico":[{"v":"0.2"}],"disoluciones":[{"v":"0.2"}],"calorimetria":[{"v":"0.2"}],"induccion":[{"v":"0.3"}],"matrices":[{"v":"0.2"}],"derivadas":[{"v":"0.3"}],"laplace":[{"v":"0.2"}],"interferencia":[{"v":"0.2"}],"ondas-em":[{"v":"0.4"}],"intervalos":[{"v":"0.2"}],"fuerza":[{"v":"0.3"}],"campos":[{"v":"0.2.1"}],"cinetica":[{"v":"0.2"}],"edos":[{"v":"0.2"}],"fourier":[{"v":"0.2"}],"taylor":[{"v":"0.2.1"}],"complejos":[{"v":"0.2"}],"sistemas":[{"v":"0.3"}],"regresion":[{"v":"0.2"}],"estadistica":[{"v":"0.2"}],"dinamica":[{"v":"0.2"}],"solido-rigido":[{"v":"0.2"}],"ondas":[{"v":"0.2"}],"gases":[{"v":"0.4"}],"ciclos":[{"v":"0.2"}],"ph":[{"v":"0.3"}],"fluidos":[{"v":"0.2"}],"doppler":[{"v":"0.2"}],"resistencias":[{"v":"0.3"}],"faraday":[{"v":"0.3"}],"fenomenos":[{"v":"0.9"}]}; const de = (h) => ({ current: registros[h][0].v, log: registros[h] }); return { registros, de }; })();
+const Version = (() => { const registros = {"web":[{"v":"1.15"}],"control":[{"v":"0.2"}],"termo-estadistica":[{"v":"0.2"}],"markowitz":[{"v":"0.3"}],"cavidades":[{"v":"0.2"}],"organica":[{"v":"0.2"}],"transformada-z":[{"v":"0.2"}],"semiconductores":[{"v":"0.2"}],"relatividad":[{"v":"0.2"}],"osc-acopladas":[{"v":"0.2"}],"solubilidad":[{"v":"0.2"}],"lagrange":[{"v":"0.2"}],"series":[{"v":"0.3"}],"no-parametricos":[{"v":"0.3"}],"regresion-multiple":[{"v":"0.2"}],"anova":[{"v":"0.3"}],"black-scholes":[{"v":"0.3"}],"bonos":[{"v":"0.3"}],"solow":[{"v":"0.3"}],"integrales-multiples":[{"v":"0.1"}],"formulacion":[{"v":"0.2"}],"balance":[{"v":"0.2"}],"redox":[{"v":"0.2"}],"lineas-transmision":[{"v":"0.2"}],"superficies":[{"v":"0.2"}],"vsepr":[{"v":"0.2"}],"maxwell":[{"v":"0.2"}],"fresnel":[{"v":"0.2"}],"gravitacion":[{"v":"0.2"}],"convolucion":[{"v":"0.2"}],"laplace-numerica":[{"v":"0.2"}],"imagenes":[{"v":"0.2"}],"guias-onda":[{"v":"0.2"}],"antena":[{"v":"0.2"}],"bode":[{"v":"0.2"}],"optica":[{"v":"0.2"}],"simulador":[{"v":"0.4"}],"teoria-juegos":[{"v":"0.2"}],"puertas-logicas":[{"v":"0.4"}],"multiplicador":[{"v":"0.3"}],"is-lm":[{"v":"0.3"}],"choques":[{"v":"0.1"}],"termoquimica":[{"v":"0.2"}],"probabilidad":[{"v":"0.2"}],"unidades":[{"v":"0.2"}],"equilibrio":[{"v":"0.2"}],"oscilaciones":[{"v":"0.1"}],"beneficio":[{"v":"0.3"}],"costes":[{"v":"0.3"}],"sistemas-numericos":[{"v":"0.2"}],"excedentes":[{"v":"0.2"}],"oferta-demanda":[{"v":"0.2"}],"chi2-bondad":[{"v":"0.2"}],"contrastes":[{"v":"0.2"}],"errores":[{"v":"0.2"}],"graficador":[{"v":"0.2"}],"metodos-numericos":[{"v":"0.2"}],"fisica-moderna":[{"v":"0.2"}],"lorenz-gini":[{"v":"0.2"}],"phillips-okun":[{"v":"0.3"}],"tipos-cambio":[{"v":"0.3"}],"elasticidades":[{"v":"0.3"}],"pib-ipc":[{"v":"0.2"}],"numeros-indice":[{"v":"0.2"}],"ratios":[{"v":"0.2"}],"punto-muerto":[{"v":"0.2"}],"ahorro":[{"v":"0.3"}],"van-tir":[{"v":"0.3"}],"amortizacion-inmovilizado":[{"v":"0.2"}],"prestamos":[{"v":"0.3"}],"rentas":[{"v":"0.3"}],"interes":[{"v":"0.3"}],"descriptiva":[{"v":"0.2"}],"regresion-economia":[{"v":"0.2"}],"ajustador":[{"v":"0.2.1"}],"electrostatica":[{"v":"0.7"}],"magnetostatica":[{"v":"0.3"}],"tabla-periodica":[{"v":"0.2"}],"trabajo-y-energia":[{"v":"0.2"}],"masa-molar":[{"v":"0.2"}],"configuracion-electronica":[{"v":"0.2"}],"condensadores":[{"v":"0.3"}],"tiro-parabolico":[{"v":"0.3"}],"disoluciones":[{"v":"0.2"}],"calorimetria":[{"v":"0.2"}],"induccion":[{"v":"0.3"}],"matrices":[{"v":"0.3"}],"derivadas":[{"v":"0.3"}],"laplace":[{"v":"0.2"}],"interferencia":[{"v":"0.2"}],"ondas-em":[{"v":"0.4"}],"intervalos":[{"v":"0.3"}],"fuerza":[{"v":"0.3"}],"campos":[{"v":"0.2.1"}],"cinetica":[{"v":"0.2"}],"edos":[{"v":"0.2"}],"fourier":[{"v":"0.2"}],"taylor":[{"v":"0.3"}],"complejos":[{"v":"0.3"}],"sistemas":[{"v":"0.3"}],"regresion":[{"v":"0.3"}],"estadistica":[{"v":"0.3"}],"dinamica":[{"v":"0.2"}],"solido-rigido":[{"v":"0.2"}],"ondas":[{"v":"0.3"}],"gases":[{"v":"0.5"}],"ciclos":[{"v":"0.2"}],"ph":[{"v":"0.3"}],"fluidos":[{"v":"0.2"}],"doppler":[{"v":"0.2"}],"resistencias":[{"v":"0.3"}],"faraday":[{"v":"0.3"}],"fenomenos":[{"v":"0.9"}]}; const de = (h) => ({ current: registros[h][0].v, log: registros[h] }); return { registros, de }; })();
 
 const Herramienta = (() => {
   const $ = (q) => document.querySelector(q);
@@ -425,7 +433,7 @@ const Herramienta = (() => {
       try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* file:// */ }
     }
   }
-  const enlaceA = (carpeta, estado) => `../${carpeta}/#d=${btoa(unescape(encodeURIComponent(JSON.stringify(estado)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')}`;
+  const enlaceA = (carpeta, estado) => `${carpeta.includes('/') ? '../../' : '../'}${carpeta}/#d=${btoa(unescape(encodeURIComponent(JSON.stringify(estado)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')}`;
   return { $, esc, copia, vacio, leeSI, leeUn, txt, marcas, lienzo, accesible, exportar, png, tabla, nombreArchivo, enlaceA };
 })();
 
@@ -669,6 +677,52 @@ const Expresion = (() => {
     fact: (u) => { if (!(u >= 0) || u !== Math.floor(u) || u > 170) return NaN; let r = 1; for (let i = 2; i <= u; i++) r *= i; return r; },
   };
   const CTE = { 'π': Math.PI, e: Math.E };
+  function valorC(n, x) {
+    const Z = (re, im = 0) => ({ re: re || 0, im: im || 0 }), mul = (a, b) => Z(a.re * b.re - a.im * b.im, a.re * b.im + a.im * b.re);
+    const div = (a, b) => { const q = b.re * b.re + b.im * b.im; if (q === 0) throw new Error('hay una división entre cero'); return Z((a.re * b.re + a.im * b.im) / q, (a.im * b.re - a.re * b.im) / q); };
+    const exp = (a) => { const r = Math.exp(a.re); return Z(r * Math.cos(a.im), r * Math.sin(a.im)); };
+    const ln = (a) => { if (a.re === 0 && a.im === 0) throw new Error('el logaritmo de 0 no existe'); return Z(Math.log(Math.hypot(a.re, a.im)), Math.atan2(a.im, a.re)); };
+    const pot = (a, b) => {
+      if (b.im === 0 && Number.isInteger(b.re) && Math.abs(b.re) <= 64) { let r = Z(1); for (let k = 0; k < Math.abs(b.re); k++) r = mul(r, a); return b.re < 0 ? div(Z(1), r) : r; }
+      if (a.re === 0 && a.im === 0) { if (b.re > 0) return Z(0); throw new Error('0 elevado a un exponente que no es positivo no existe'); }
+      return exp(mul(b, ln(a)));
+    };
+    const sen = (a) => Z(Math.sin(a.re) * Math.cosh(a.im), Math.cos(a.re) * Math.sinh(a.im)), cos = (a) => Z(Math.cos(a.re) * Math.cosh(a.im), -Math.sin(a.re) * Math.sinh(a.im));
+    const FC = {
+      sqrt: (a) => (a.im === 0 ? (a.re >= 0 ? Z(Math.sqrt(a.re)) : Z(0, Math.sqrt(-a.re))) : pot(a, Z(0.5))), cbrt: (a) => (a.im === 0 ? Z(Math.cbrt(a.re)) : pot(a, Z(1 / 3))),
+      abs: (a) => Z(Math.hypot(a.re, a.im)), exp, ln, log: (a) => div(ln(a), Z(Math.LN10)), sen, cos, tg: (a) => div(sen(a), cos(a)),
+      arctg: (a) => { const u = ln(Z(1 + a.im, -a.re)), w = ln(Z(1 - a.im, a.re)); return Z((u.im - w.im) / -2, (u.re - w.re) / 2); },
+      senh: (a) => Z(Math.sinh(a.re) * Math.cos(a.im), Math.cosh(a.re) * Math.sin(a.im)), cosh: (a) => Z(Math.cosh(a.re) * Math.cos(a.im), Math.sinh(a.re) * Math.sin(a.im)),
+    };
+    const v = (q) => {
+      switch (q.t) {
+        case 'n': return Z(q.v);
+        case 'c': return Z(CTE[q.v]);
+        case 'x': if (q.n === 'i') return Z(0, 1); if (!q.n && x) return Z(x.re, x.im); throw new Error('solo puede llevar números, i, π y e');
+        case 'neg': { const a = v(q.a); return Z(-a.re, -a.im); }
+        case '+': { const a = v(q.a), b = v(q.b); return Z(a.re + b.re, a.im + b.im); }
+        case '-': { const a = v(q.a), b = v(q.b); return Z(a.re - b.re, a.im - b.im); }
+        case '*': return mul(v(q.a), v(q.b));
+        case '/': return div(v(q.a), v(q.b));
+        case '^': return pot(v(q.a), v(q.b));
+        case 'fn': {
+          const a = v(q.a);
+          if (FC[q.f] && (a.im !== 0 || (q.f === 'sqrt' && a.re < 0) || ((q.f === 'ln' || q.f === 'log') && a.re < 0))) return FC[q.f](a);
+          if (a.im !== 0) throw new Error(`no sé calcular ${q.f} de un número complejo`);
+          const r = F1[q.f](a.re); if (!isFinite(r)) throw new Error(`${q.f}(${a.re}) no existe`); return Z(r);
+        }
+      }
+      throw new Error('no se entiende');
+    };
+    const z = v(n), limpio = (t) => (Math.abs(t) < 1e-14 ? 0 : t);
+    if (x) return z;
+    if (!isFinite(z.re) || !isFinite(z.im)) throw new Error('no da un número');
+    return Z(limpio(z.re), limpio(z.im));
+  }
+  function complejo(texto, nom = 'El número') {
+    const ast = lee(String(texto).replace(/j/g, 'i'), nom, ['i']);
+    try { return { z: valorC(ast), ast }; } catch (e) { throw new Error(`${nom}: ${e.message}`); }
+  }
   function valor(n, x, env) {
     switch (n.t) {
       case 'n': return n.v;
@@ -1013,7 +1067,7 @@ const Expresion = (() => {
     return r;
   }
 
-  return { lee, valor, deriva, simp, texto, serie, exacto, fraccion, numTxt, dec4, tieneX, N, X };
+  return { lee, valor, valorC, complejo, deriva, simp, texto, serie, exacto, fraccion, numTxt, dec4, tieneX, N, X };
 })();
 
 const Calculadora = (() => {
@@ -1179,7 +1233,7 @@ const Calculadora = (() => {
       if (o.usarEn) {
         let ue = $('#usar-en');
         if (!ue) { ue = document.createElement('div'); ue.id = 'usar-en'; ue.className = 'controles'; ue.setAttribute('role', 'group'); ue.setAttribute('aria-label', 'Usar el resultado en otra herramienta'); $('#resumen').insertAdjacentElement('afterend', ue); }
-        ue.innerHTML = (o.usarEn(sol, sc) || []).map((l) => `<a class="btn" href="${esc(Herramienta.enlaceA(l.carpeta, l.estado))}">${l.texto}</a>`).join('');
+        ue.innerHTML = (o.usarEn(sol, sc) || []).map((l) => `<a class="btn" data-usar="${esc(l.carpeta)}" href="${esc(Herramienta.enlaceA(l.carpeta, l.estado))}">${l.texto}</a>`).join('');
       }
       $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
       const tb = $('#tabla'); if (tb) { const h = o.tabla ? o.tabla(sol) : ''; tb.innerHTML = h; tb.closest('.card').hidden = !h; }
@@ -1191,6 +1245,7 @@ const Calculadora = (() => {
       const c = $('#grafica'); if (!c) return;
       const cfg = sol && o.grafica ? o.grafica(sol, col) : null;
       cfgs['#grafica'] = cfg;
+      if (sol && o.grafica) { const cd = c.closest('.card'); if (cd) cd.hidden = !cfg; }
       if (!cfg) Herramienta.lienzo(c);
       else { const r = grafica(c, cfg, col); if (r && o.despues) o.despues(r, sol, col); }
       const c2 = $('#grafica2');
@@ -1210,32 +1265,18 @@ const Calculadora = (() => {
         c.setAttribute('role', 'img'); const l = $(ley); if (l) c.setAttribute('aria-describedby', l.id);
         Herramienta.exportar(c, { nombre: `${o.carpeta}${sufijo}`, titulo: (c.closest('.card')?.querySelector('h2')?.textContent || '').trim(), datos: () => {
           const cfg = cfgs[id]; if (!cfg) return null;
-          if (id === '#grafica' && o.datosExporta) return o.datosExporta(sol);
+          if (id === '#grafica' && o.datosExporta) { const propios = o.datosExporta(sol); if (propios) return propios; }
           const filas = []; (cfg.series || []).forEach((sr, k) => { if (sr.tipo === 'barras' || sr.tipo === 'puntos' || !sr.tipo || sr.tipo === 'linea' || sr.tipo === 'area') for (const [x, y] of sr.pts) filas.push([`Serie ${k + 1}${sr.tipo === 'puntos' ? ' (puntos)' : ''}`, x, y]); });
           return { cab: ['Serie', cfg.ejeX || 'x', cfg.ejeY || 'y'], filas };
         } });
       }
-    }
-    function botonesUsar() {
-      if (!o.usar || !o.usar.length) return;
-      const card = $('#resumen') && $('#resumen').closest('.card'); if (!card || card.querySelector('.usar-en')) return;
-      const caja = document.createElement('div'); caja.className = 'controles usar-en'; caja.setAttribute('role', 'group'); caja.setAttribute('aria-label', 'Usar estos datos en otra herramienta'); caja.style.marginTop = '10px';
-      caja.innerHTML = o.usar.map((u, i) => `<a class="btn" href="#" data-i="${i}">Usar en ${esc(u.nombre)} →</a>`).join('');
-      card.appendChild(caja);
-      caja.addEventListener('click', (e) => {
-        const a = e.target.closest('a[data-i]'); if (!a) return; e.preventDefault();
-        const u = o.usar[+a.dataset.i]; if (!sol) { const er = $('#error'); er.textContent = 'Corrige primero los datos para poder usarlos en otra herramienta'; er.hidden = false; return; }
-        const datos = JSON.stringify(u.datos(sol, sc)), b64 = btoa(unescape(encodeURIComponent(datos))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-        const url = `../${u.a}/#d=${b64}`;
-        if (window.dispatchEvent(new CustomEvent('simu-usar', { cancelable: true, detail: { url } }))) location.href = url;
-      });
     }
     const leeColores = () => { col = colores(o.colores || []); };
     window.addEventListener('resize', dibuja);
     matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { leeColores(); dibuja(); });
 
     const ver = $('#ver'); if (ver) ver.textContent = Version.de(o.carpeta).current;
-    leeColores(); botonesGrafica(); botonesUsar(); formulario(); calcula();
+    leeColores(); botonesGrafica(); formulario(); calcula();
     const enunciado = () => (o.enunciado ? o.enunciado(sc, sol) : undefined);
     return (window[o.app] = { abrirEjemplo, azar, pon, enunciado, resultado: () => sol, estado: () => copia(sc) });
   }
@@ -1246,7 +1287,7 @@ const Errores = (() => {
   const E = typeof Expresion !== 'undefined' ? Expresion : require('../matematicas/expresion.js');
   const K = typeof Calculadora !== 'undefined' ? Calculadora : require('../calculadora.js');
   const { f, lee, leeNum, vacio } = K;
-  const MODOS = { formula: 'Una magnitud calculada f(x, y, …)', medidas: 'Una serie de medidas repetidas' };
+  const MODOS = { formula: 'Una magnitud calculada f(x, y, …)', medidas: 'Una serie de medidas repetidas', ponderada: 'Varias medidas de lo mismo (media ponderada)' };
   const METODOS = { cuadratica: 'Suma cuadrática (errores independientes)', lineal: 'Cota lineal (suma de valores absolutos)' };
 
   function redondea(v, d) {
@@ -1282,6 +1323,38 @@ const Errores = (() => {
     return { ...n, ...(n.a ? { a: nombres(n.a, vs) } : {}), ...(n.b ? { b: nombres(n.b, vs) } : {}) };
   };
 
+  function correlaciones(texto, vs) {
+    const out = [];
+    String(texto ?? '').split(/\r?\n/).forEach((lin, i) => {
+      const l = lin.trim().replace(/[=;()]/g, ' ').replace(/,\s*(?=[a-zA-Zα-ωΑ-Ω])/g, ' ').replace(/[−–]/g, '-').trim();
+      if (!l || l.startsWith('#')) return;
+      let tk = l.split(/\s+/), cov = false;
+      if (tk.length === 4 && /^cov$/i.test(tk[0])) { cov = true; tk = tk.slice(1); } else if (tk.length === 4 && /^(r|ρ|corr)$/i.test(tk[0])) tk = tk.slice(1);
+      if (tk.length !== 3) throw new Error(`Correlaciones, fila ${i + 1}: escribe las dos variables y su coeficiente de correlación («l T 0,8») o su covarianza («cov l T 0,00002»)`);
+      const a = vs.find((q) => q.k === tk[0].toLowerCase()), b = vs.find((q) => q.k === tk[1].toLowerCase()), x = leeNum(tk[2]);
+      if (!a || !b) throw new Error(`Correlaciones, fila ${i + 1}: la variable ${!a ? tk[0] : tk[1]} no está en la lista de variables`);
+      if (a === b) throw new Error(`Correlaciones, fila ${i + 1}: hacen falta dos variables distintas`);
+      if (!isFinite(x)) throw new Error(`Correlaciones, fila ${i + 1}: «${tk[2]}» no es un número`);
+      if (out.some((c) => (c.a === a && c.b === b) || (c.a === b && c.b === a))) throw new Error(`La correlación entre ${a.n} y ${b.n} está repetida`);
+      let r = x, c = x;
+      if (cov) { if (!(a.d > 0 && b.d > 0)) throw new Error(`Correlaciones, fila ${i + 1}: con una incertidumbre nula no puede haber covarianza`); r = x / (a.d * b.d); } else c = x * a.d * b.d;
+      if (Math.abs(r) > 1 + 1e-9) throw new Error(cov ? `Correlaciones, fila ${i + 1}: esa covarianza da un coeficiente de correlación de ${f(r, 4)}, y tiene que estar entre −1 y 1 (|cov| ≤ Δ${a.n}·Δ${b.n} = ${f(a.d * b.d, 3)})` : `Correlaciones, fila ${i + 1}: el coeficiente de correlación tiene que estar entre −1 y 1`);
+      out.push({ a, b, r: Math.max(-1, Math.min(1, r)), cov: c, dada: cov ? 'cov' : 'r' });
+    });
+    return out;
+  }
+  function compara(sc, nom, v, d, un, pasos) {
+    if (vacio(sc.acept)) return null;
+    const v0 = leeNum(sc.acept), d0 = vacio(sc.dacept) ? 0 : leeNum(sc.dacept);
+    if (!isFinite(v0)) throw new Error('El valor aceptado tiene que ser un número');
+    if (!isFinite(d0) || d0 < 0) throw new Error('La incertidumbre del valor aceptado tiene que ser un número positivo o cero');
+    const dif = v - v0, sig = Math.hypot(d, d0), z = sig > 0 ? Math.abs(dif) / sig : (dif === 0 ? 0 : Infinity);
+    const nivel = z <= 1 ? 'compatible' : z <= 2 ? 'compatible a 2σ' : z <= 3 ? 'dudoso' : 'incompatible';
+    const frase = z <= 1 ? 'la diferencia es menor que una σ: el resultado es <b>compatible</b> con el valor aceptado' : z <= 2 ? 'la diferencia está entre 1 y 2 σ: el resultado es <b>compatible a 2σ</b>, lo normal en una de cada tres medidas correctas' : z <= 3 ? 'la diferencia está entre 2 y 3 σ: el resultado es <b>dudoso</b>; por puro azar solo pasa en un 5 % de las medidas, así que conviene buscar un error sistemático' : 'la diferencia pasa de 3 σ: el resultado es <b>incompatible</b> con el valor aceptado; hay un error sistemático o la incertidumbre está subestimada';
+    pasos.push({ t: 'Comparación con el valor aceptado', html: `Discrepancia: $${nom} − ${nom}_{"ac"} = ${f(v, 6)} − ${f(v0, 6)} = ${f(dif, 3)}$${un} (${f(100 * Math.abs(dif) / Math.abs(v0), 3)} % del valor aceptado). Se mide en incertidumbres: $z = {|${nom} − ${nom}_{"ac"}|}/{${d0 > 0 ? `√(Δ${nom}^2 + Δ${nom}_{"ac"}^2)` : `Δ${nom}`}} = {${f(Math.abs(dif), 3)}}/{${f(sig, 3)}} = ${f(z, 3)}$. Como ${frase}.` });
+    return { v0, d0, dif, sig, z, nivel, relPct: 100 * Math.abs(dif) / Math.abs(v0) };
+  }
+
   function formula(sc) {
     const vs = variables(sc.vars), met = METODOS[sc.metodo] ? sc.metodo : 'cuadratica';
     const nom = vacio(sc.nombre) ? 'f' : String(sc.nombre).trim();
@@ -1292,7 +1365,11 @@ const Errores = (() => {
     const usadas = vs.filter((q) => E.tieneX(ast, q.n));
     if (!usadas.length) throw new Error('La fórmula no usa ninguna de las variables');
     for (const q of usadas) { q.der = E.simp(E.deriva(ast, q.n)); q.dv = val(q.der); q.c = Math.abs(q.dv) * q.d; if (!isFinite(q.dv)) throw new Error(`La derivada respecto de ${q.n} no se puede evaluar ahí`); }
-    const d = met === 'lineal' ? usadas.reduce((s, q) => s + q.c, 0) : Math.sqrt(usadas.reduce((s, q) => s + q.c * q.c, 0));
+    const cors = met === 'lineal' ? [] : correlaciones(sc.corr, vs).filter((c) => usadas.includes(c.a) && usadas.includes(c.b));
+    for (const c of cors) c.t = 2 * c.a.dv * c.b.dv * c.cov;
+    const cruz = cors.reduce((s, c) => s + c.t, 0), indep2 = usadas.reduce((s, q) => s + q.c * q.c, 0), var2 = indep2 + cruz;
+    if (var2 < -1e-12 * indep2) throw new Error('Esas correlaciones no pueden darse a la vez: la incertidumbre al cuadrado sale negativa');
+    const d = met === 'lineal' ? usadas.reduce((s, q) => s + q.c, 0) : (var2 < 1e-12 * indep2 ? 0 : Math.sqrt(var2)), dIndep = Math.sqrt(indep2);
     const tot = usadas.reduce((s, q) => s + (met === 'lineal' ? q.c : q.c * q.c), 0);
     for (const q of usadas) q.peso = tot ? (met === 'lineal' ? q.c : q.c * q.c) / tot : 0;
     const R = redondea(v, d), un = vacio(sc.unidad) ? '' : ` ${String(sc.unidad).trim()}`;
@@ -1303,9 +1380,12 @@ const Errores = (() => {
     pasos.push({ t: 'Incertidumbre', html: met === 'lineal'
       ? `Cota lineal (el peor caso): $Δ${nom} = ${usadas.map((q) => `|${D(q.n)}| Δ${q.n}`).join(' + ')}$<br>$Δ${nom} = ${usadas.map((q) => f(q.c, 4)).join(' + ')} = ${f(d, 4)}$`
       : `Con errores independientes se suman en cuadratura: $Δ${nom} = √(${usadas.map((q) => `(${D(q.n)} Δ${q.n})^2`).join(' + ')})$<br>$Δ${nom} = √(${usadas.map((q) => `${f(q.c, 4)}^2`).join(' + ')}) = ${f(d, 4)}$` });
+    if (cors.length) pasos.push({ t: 'Variables correlacionadas', html: `Si dos variables no son independientes hay que añadir el término cruzado $2 · {∂${nom}}/{∂a} · {∂${nom}}/{∂b} · "cov"(a, b)$, con $"cov"(a, b) = r · Δa · Δb$:<br>${cors.map((c) => `$${c.a.n}$ y $${c.b.n}$: $r = ${f(c.r, 4)}$, $"cov" = ${f(c.cov, 4)}$ ⇒ $2 · ${f(c.a.dv, 5)} · ${c.b.dv < 0 ? `(${f(c.b.dv, 5)})` : f(c.b.dv, 5)} · ${c.cov < 0 ? `(${f(c.cov, 4)})` : f(c.cov, 4)} = ${f(c.t, 4)}$`).join('<br>')}<br>$Δ${nom} = √(${f(indep2, 4)} ${cruz < 0 ? '−' : '+'} ${f(Math.abs(cruz), 4)}) = ${f(d, 4)}$, frente a $${f(dIndep, 4)}$ si fueran independientes: la correlación ${Math.abs(d - dIndep) < 1e-12 * dIndep ? 'no cambia' : d > dIndep ? 'aumenta' : 'reduce'} el error.` });
+    if (met === 'lineal' && !vacio(sc.corr)) pasos.push({ t: 'Correlaciones', html: 'La cota lineal ya es el peor caso posible (como si todo estuviera correlacionado en contra): las correlaciones solo se usan con la suma cuadrática.' });
     pasos.push({ t: 'Error relativo', html: `$ε = {Δ${nom}}/{|${nom}|} = ${f(d, 4)}/${f(Math.abs(v), 6)} = ${f(d / Math.abs(v), 3)}$ (${f((100 * d) / Math.abs(v), 3)} %). Pesa más ${usadas.slice().sort((a, b) => b.peso - a.peso)[0].n} (${f(100 * usadas.slice().sort((a, b) => b.peso - a.peso)[0].peso, 3)} % de ${met === 'lineal' ? 'la cota' : '$Δ' + nom + '^2$'}): es la medida que conviene mejorar.` });
     pasos.push({ t: 'Resultado redondeado', html: redTxt(nom, v, d, R, un) });
-    return { modo: 'formula', met, nom, ast, sv, vs: usadas, v, d, rel: d / Math.abs(v), R, un, pasos };
+    const comp = compara(sc, nom, v, d, un, pasos);
+    return { modo: 'formula', met, nom, ast, sv, vs: usadas, v, d, dIndep, cors, cruz, comp, rel: d / Math.abs(v), R, un, pasos };
   }
   const redTxt = (nom, v, d, R, un) => R.dec === null ? `$${nom} = ${f(v, 6)}$${un} (sin incertidumbre)` : `La incertidumbre se deja con ${/^1/.test(String(R.d / 10 ** R.pos)) ? 'dos cifras significativas (empieza por 1)' : 'una cifra significativa'}: $Δ${nom} = ${f(d, 4)} → ${R.txt.split(' ± ')[1]}$, y el valor se redondea hasta esa misma cifra: $${f(v, 8)} → ${R.txt.split(' ± ')[0]}$.<br><b>${nom} = (${R.txt})${un}</b>`;
 
@@ -1321,16 +1401,50 @@ const Errores = (() => {
     pasos.push({ t: 'Desviación típica y error de la media', html: `$s = √({∑ (x_i − x̄)^2}/{n − 1}) = ${f(s, 4)}$, y el error de la media (lo que se separa la media de las medidas del valor verdadero) es $s/√n = ${f(s, 4)}/√${n} = ${f(sm, 4)}$${k !== 1 ? `, que con el factor de cobertura $k = ${f(k)}$ da $${f(ale, 4)}$` : ''}.` });
     pasos.push({ t: 'Error total', html: `Se suma en cuadratura con el error del aparato (su resolución): $Δ${nom} = √(${f(ale, 4)}^2 + ${f(ins, 4)}^2) = ${f(d, 4)}$. ${ins > ale ? 'Manda el aparato: repetir más medidas casi no mejora el resultado.' : 'Manda la dispersión de las medidas: con más medidas el error bajaría como $1/√n$.'}` });
     pasos.push({ t: 'Resultado redondeado', html: redTxt(nom, m, d, R, un) });
-    return { modo: 'medidas', nom, xs, n, m, s, sm, ins, k, ale, d, v: m, rel: d / Math.abs(m), R, un, pasos };
+    const comp = compara(sc, nom, m, d, un, pasos);
+    return { modo: 'medidas', nom, xs, n, m, s, sm, ins, k, ale, d, v: m, comp, rel: d / Math.abs(m), R, un, pasos };
   }
 
-  const resolver = (sc) => (sc.modo === 'medidas' ? medidas : formula)(sc);
+  function ponderada(sc) {
+    const ms = [];
+    String(sc.pond ?? '').split(/\r?\n/).forEach((lin, i) => {
+      const l = lin.trim().replace(/±|\+\/-|\+-/g, ' ').replace(/;/g, ' ');
+      if (!l || l.startsWith('#')) return;
+      const tk = l.split(/\s+/);
+      if (tk.length !== 2) throw new Error(`Medidas, fila ${i + 1}: escribe el valor y su incertidumbre («9,79 0,03»)`);
+      const x = leeNum(tk[0]), d = leeNum(tk[1]);
+      if (!isFinite(x) || !isFinite(d)) throw new Error(`Medidas, fila ${i + 1}: «${tk[0]}» o «${tk[1]}» no es un número`);
+      if (!(d > 0)) throw new Error(`Medidas, fila ${i + 1}: la incertidumbre tiene que ser mayor que cero (el peso es 1/σ²)`);
+      ms.push({ x, d, w: 1 / (d * d) });
+    });
+    if (ms.length < 2) throw new Error('Hacen falta al menos 2 medidas, cada una con su incertidumbre');
+    const n = ms.length, W = ms.reduce((a, q) => a + q.w, 0), m = ms.reduce((a, q) => a + q.w * q.x, 0) / W, dInt = 1 / Math.sqrt(W);
+    const chi2 = ms.reduce((a, q) => a + ((q.x - m) / q.d) ** 2, 0), gl = n - 1, red = chi2 / gl, dExt = dInt * Math.sqrt(red);
+    for (const q of ms) { q.peso = q.w / W; q.z = (q.x - m) / q.d; }
+    const simple = ms.reduce((a, q) => a + q.x, 0) / n;
+    const amplia = red > 1, d = amplia ? dExt : dInt;
+    const nom = vacio(sc.nombre) ? 'x' : String(sc.nombre).trim(), un = vacio(sc.unidad) ? '' : ` ${String(sc.unidad).trim()}`, R = redondea(m, d);
+    const corta = (ts) => (ts.length > 6 ? [...ts.slice(0, 3), '…', ...ts.slice(-1)] : ts).join(' + ');
+    const pasos = [];
+    pasos.push({ t: 'Pesos', html: `Cada medida pesa $w_i = 1/σ_i^2$, así que la más precisa manda: ${(n > 6 ? [...ms.slice(0, 3), null, ...ms.slice(-1)] : ms).map((q) => (q ? `$1/${f(q.d, 3)}^2 = ${f(q.w, 4)}$` : '…')).join(', ')}; suman $∑ w_i = ${f(W, 5)}$.` });
+    pasos.push({ t: 'Media ponderada', html: `$x̄ = {∑ w_i x_i}/{∑ w_i} = {${corta(ms.map((q) => `${f(q.w, 4)}·${f(q.x, 6)}`))}}/{${f(W, 5)}} = ${f(m, 8)}$${un} (la media sin pesos sería $${f(simple, 6)}$).` });
+    pasos.push({ t: 'Incertidumbre de la media', html: `$σ_{x̄} = 1/√{∑ w_i} = 1/√{${f(W, 5)}} = ${f(dInt, 4)}$${un}: es menor que la de la mejor medida ($${f(Math.min(...ms.map((q) => q.d)), 3)}$).` });
+    pasos.push({ t: 'χ² reducido: ¿son compatibles entre sí?', html: `$χ^2 = ∑ ({x_i − x̄}/{σ_i})^2 = ${f(chi2, 4)}$ con $n − 1 = ${gl}$ grados de libertad: $χ^2_"red" = ${f(red, 4)}$. ${red > 2 ? `Es bastante mayor que 1: las medidas se separan más de lo que dicen sus incertidumbres (alguna está subestimada o hay un error sistemático). La incertidumbre se amplía con $√{χ^2_"red"}$: $${f(dInt, 4)} · ${f(Math.sqrt(red), 4)} = ${f(dExt, 4)}$.` : red > 1 ? `Es algo mayor que 1: las medidas son compatibles, pero por prudencia la incertidumbre se amplía con $√{χ^2_"red"}$: $${f(dInt, 4)} · ${f(Math.sqrt(red), 4)} = ${f(dExt, 4)}$.` : `No pasa de 1: las medidas son compatibles entre sí y se deja la incertidumbre $${f(dInt, 4)}$${red < 0.3 && n > 2 ? ' (es muy pequeño: puede que las incertidumbres estén sobreestimadas)' : ''}.`}` });
+    pasos.push({ t: 'Resultado redondeado', html: redTxt(nom, m, d, R, un) });
+    const comp = compara(sc, nom, m, d, un, pasos);
+    return { modo: 'ponderada', nom, ms, n, m, W, dInt, dExt, chi2, gl, red, amplia, simple, d, v: m, comp, rel: d / Math.abs(m), R, un, pasos };
+  }
+
+  const resolver = (sc) => (sc.modo === 'medidas' ? medidas : sc.modo === 'ponderada' ? ponderada : formula)(sc);
 
   const ejemplos = [
     { clave: 'pendulo', nombre: 'g con un péndulo: g = 4π² l / T²', sc: { modo: 'formula', nombre: 'g', f: '4 pi^2 l / T^2', vars: 'l 1,000 0,001\nT 2,006 0,005', metodo: 'cuadratica', unidad: 'm/s²' } },
     { clave: 'densidad', nombre: 'Densidad de un cilindro: ρ = 4m / (π d² h)', sc: { modo: 'formula', nombre: 'ρ', f: '4 m / (pi d^2 h)', vars: 'm 45,32 0,01\nd 1,250 0,005\nh 4,30 0,05', metodo: 'cuadratica', unidad: 'g/cm³' } },
     { clave: 'ohm', nombre: 'Resistencia por la ley de Ohm, cota lineal', sc: { modo: 'formula', nombre: 'R', f: 'V / I', vars: 'V 12,0 0,1\nI 0,250 0,005', metodo: 'lineal', unidad: 'Ω' } },
     { clave: 'potencia', nombre: 'Energía cinética: E = m v² / 2', sc: { modo: 'formula', nombre: 'K', f: 'm v^2 / 2', vars: 'm 0,500 0,001\nv 3,20 0,05', metodo: 'cuadratica', unidad: 'J' } },
+    { clave: 'correlacion', nombre: 'Variables correlacionadas: perímetro P = 2(a + b)', sc: { modo: 'formula', nombre: 'P', f: '2 (a + b)', vars: 'a 12,40 0,05\nb 8,20 0,05', corr: 'a b 0,9', metodo: 'cuadratica', unidad: 'cm' } },
+    { clave: 'aceptado', nombre: 'g con un péndulo, comparada con 9,80665 m/s²', sc: { modo: 'formula', nombre: 'g', f: '4 pi^2 l / T^2', vars: 'l 1,000 0,001\nT 2,006 0,005', metodo: 'cuadratica', unidad: 'm/s²', acept: '9,80665', dacept: '' } },
+    { clave: 'ponderada', nombre: 'Media ponderada de tres medidas de g', sc: { modo: 'ponderada', nombre: 'g', pond: '9,79 0,03\n9,83 0,02\n9,76 0,05', unidad: 'm/s²', acept: '', dacept: '' } },
     { clave: 'tiempos', nombre: 'Serie de medidas del periodo con cronómetro', sc: { modo: 'medidas', nombre: 'T', datos: '2,01 1,98 2,03 2,00 1,97 2,02 1,99 2,04 2,00 1,99', inst: '0,01', k: '1', unidad: 's' } },
   ];
 
@@ -1533,27 +1647,42 @@ const Compartir = (() => {
     C, carpeta: 'errores', app: 'ErroresApp', azar,
     enunciado: (sc, s) => s && s.modo === 'formula' ? Mates.html(`Se calcula $${s.nom} = ${Expresion.texto(s.ast)}$ con ${s.vs.map((q) => `$${q.n} = ${f(q.v, 6)} ± ${f(q.d, 3)}$`).join(', ')}. Halla ${s.nom}, su incertidumbre (errores independientes) y el error relativo, y escribe el resultado bien redondeado.`) : 'Con las medidas de la izquierda, halla la media, el error y el resultado redondeado.',
     nota: 'En las variables, una fila por variable con su nombre (una letra), su valor y su incertidumbre: «l 1,250 0,002» o «T = 2,006 ± 0,005». En la fórmula, pi es π y e es el número e; escribe los productos con espacios o *: 4 pi^2 l / T^2.',
-    campos: (sc) => sc.modo === 'medidas' ? [
+    campos: (sc) => sc.modo === 'ponderada' ? [
+      { k: 'modo', nom: 'Calcular el error de', tipo: 'sel', ops: Object.entries(C.MODOS) },
+      { k: 'nombre', nom: 'Magnitud', tipo: 'texto', ayuda: 'su símbolo' },
+      { k: 'pond', nom: 'Medidas', tipo: 'area', ayuda: 'una por fila: valor e incertidumbre', filas: 5 },
+      { k: 'unidad', nom: 'Unidad', tipo: 'texto', ayuda: 'opcional' },
+      { sep: 'Comparar con el valor aceptado (opcional)' },
+      { k: 'acept', nom: 'Valor aceptado' }, { k: 'dacept', nom: 'Su incertidumbre', ayuda: 'si la tiene' },
+    ] : sc.modo === 'medidas' ? [
       { k: 'modo', nom: 'Calcular el error de', tipo: 'sel', ops: Object.entries(C.MODOS) },
       { k: 'nombre', nom: 'Magnitud', tipo: 'texto', ayuda: 'su símbolo' },
       { k: 'datos', nom: 'Medidas', tipo: 'area', ayuda: 'separadas por espacios', filas: 4 },
       { k: 'inst', nom: 'Error del aparato', ayuda: 'su resolución' },
       { k: 'k', nom: 'Factor de cobertura k', ayuda: '1 por defecto' },
       { k: 'unidad', nom: 'Unidad', tipo: 'texto', ayuda: 'opcional' },
+      { sep: 'Comparar con el valor aceptado (opcional)' },
+      { k: 'acept', nom: 'Valor aceptado' }, { k: 'dacept', nom: 'Su incertidumbre', ayuda: 'si la tiene' },
     ] : [
       { k: 'modo', nom: 'Calcular el error de', tipo: 'sel', ops: Object.entries(C.MODOS) },
       { k: 'nombre', nom: 'Magnitud', tipo: 'texto', ayuda: 'su símbolo' },
       { k: 'f', nom: 'Fórmula', tipo: 'texto' },
       { k: 'vars', nom: 'Variables', tipo: 'area', ayuda: 'nombre, valor e incertidumbre', filas: 4 },
       { k: 'metodo', nom: 'Cómo se combinan', tipo: 'sel', ops: Object.entries(C.METODOS) },
+      ...(sc.metodo === 'lineal' ? [] : [{ k: 'corr', nom: 'Correlaciones', tipo: 'area', ayuda: 'opcional: «l T 0,8» o «cov l T 0,00002»', filas: 2 }]),
       { k: 'unidad', nom: 'Unidad', tipo: 'texto', ayuda: 'opcional' },
+      { sep: 'Comparar con el valor aceptado (opcional)' },
+      { k: 'acept', nom: 'Valor aceptado' }, { k: 'dacept', nom: 'Su incertidumbre', ayuda: 'si la tiene' },
     ],
     resumen: (s) => [
       ['Resultado', `${s.nom} = (${s.R.txt})${s.un}`, true],
-      [s.modo === 'medidas' ? 'Media' : `Valor de ${s.nom}`, f(s.v, 6)], [`Incertidumbre Δ${s.nom}`, f(s.d, 3)], ['Error relativo', `${f(100 * s.rel, 3)} %`],
+      [s.modo === 'medidas' ? 'Media' : s.modo === 'ponderada' ? 'Media ponderada' : `Valor de ${s.nom}`, f(s.v, 6)], [`Incertidumbre Δ${s.nom}`, f(s.d, 3)], ['Error relativo', `${f(100 * s.rel, 3)} %`],
       ...(s.modo === 'medidas' ? [['Desviación típica s', f(s.s, 3)], ['Error de la media s/√n', f(s.sm, 3)]] : []),
+      ...(s.modo === 'ponderada' ? [['χ² reducido', f(s.red, 4)], ['σ de la media (1/√∑w)', f(s.dInt, 3)], ['Media sin pesos', f(s.simple, 6)]] : []),
+      ...(s.modo === 'formula' && s.cors.length ? [['Si fueran independientes', `Δ${s.nom} = ${f(s.dIndep, 3)}`]] : []),
+      ...(s.comp ? [['Discrepancia con el aceptado', `${f(s.comp.dif, 3)}${s.un} (${f(s.comp.relPct, 3)} %)`], ['En incertidumbres', `${f(s.comp.z, 3)} σ: ${s.comp.nivel}`]] : []),
     ],
-    tabla: (s) => s.modo === 'medidas' ? '' : `<table class="tabla-eco"><thead><tr><th>Variable</th><th>Valor</th><th>Δ</th><th>∂${s.nom}/∂x</th><th>|∂${s.nom}/∂x|·Δx</th><th>Peso</th></tr></thead><tbody>${s.vs.map((q) => `<tr><td>${q.n}</td><td>${f(q.v, 6)}</td><td>${f(q.d, 3)}</td><td>${f(q.dv, 5)}</td><td>${f(q.c, 4)}</td><td>${f(100 * q.peso, 3)} %</td></tr>`).join('')}</tbody></table>`,
+    tabla: (s) => s.modo === 'medidas' ? '' : s.modo === 'ponderada' ? `<table class="tabla-eco"><thead><tr><th>Medida</th><th>Valor</th><th>σ</th><th>Peso 1/σ²</th><th>Peso</th><th>(x − x̄)/σ</th></tr></thead><tbody>${s.ms.map((q, i) => `<tr><td>${i + 1}</td><td>${f(q.x, 6)}</td><td>${f(q.d, 3)}</td><td>${f(q.w, 4)}</td><td>${f(100 * q.peso, 3)} %</td><td>${f(q.z, 3)}</td></tr>`).join('')}</tbody></table>` : `<table class="tabla-eco"><thead><tr><th>Variable</th><th>Valor</th><th>Δ</th><th>∂${s.nom}/∂x</th><th>|∂${s.nom}/∂x|·Δx</th><th>Peso</th></tr></thead><tbody>${s.vs.map((q) => `<tr><td>${q.n}</td><td>${f(q.v, 6)}</td><td>${f(q.d, 3)}</td><td>${f(q.dv, 5)}</td><td>${f(q.c, 4)}</td><td>${f(100 * q.peso, 3)} %</td></tr>`).join('')}</tbody></table>`,
     grafica: (s) => {
       if (s.modo === 'medidas') {
         const ys = [...s.xs, s.m - s.d, s.m + s.d], y = Calculadora.rango(ys, { aire: 0.2 });
@@ -1561,11 +1690,23 @@ const Compartir = (() => {
           series: [{ tipo: 'area', pts: [[0.5, s.m + s.d], [s.n + 0.5, s.m + s.d]], base: s.m - s.d, color: '--serie-1', alfa: 0.15 }, { tipo: 'puntos', pts: s.xs.map((x, i) => [i + 1, x]), color: '--serie-2' }],
           horizontales: [{ y: s.m, color: '--serie-1', texto: `x̄ = ${f(s.m, 5)}` }, { y: s.m + s.d, color: '--muted' }, { y: s.m - s.d, color: '--muted' }] };
       }
+      if (s.modo === 'ponderada') {
+        const ys = [...s.ms.flatMap((q) => [q.x - q.d, q.x + q.d]), s.m - s.d, s.m + s.d, ...(s.comp ? [s.comp.v0] : [])], y = Calculadora.rango(ys, { aire: 0.15 });
+        return { x: [0.5, s.n + 0.5], y, ejeX: 'número de medida', ejeY: s.nom, fx: (v) => (Number.isInteger(v) ? String(v) : ''),
+          series: [{ tipo: 'area', pts: [[0.5, s.m + s.d], [s.n + 0.5, s.m + s.d]], base: s.m - s.d, color: '--serie-1', alfa: 0.15 }, { tipo: 'puntos', pts: s.ms.map((q, i) => [i + 1, q.x]), color: '--serie-2' }],
+          horizontales: [{ y: s.m, color: '--serie-1', texto: `x̄ = ${f(s.m, 5)}` }, ...(s.comp ? [{ y: s.comp.v0, color: '--serie-3', texto: 'aceptado' }] : [])] };
+      }
       const nombres = s.vs.map((q) => q.n);
       return { x: [0.4, s.vs.length + 0.6], y: [0, 100], ejeY: `% de ${s.met === 'lineal' ? 'la cota' : 'Δ' + s.nom + '²'}`, fx: (v) => (Number.isInteger(v) ? nombres[v - 1] || '' : ''), fy: (v) => `${f(v)} %`,
         series: [{ tipo: 'barras', ancho: 0.6, pts: s.vs.map((q, i) => [i + 1, 100 * q.peso]), color: '--serie-1' }] };
     },
-    leyenda: (s) => s.modo === 'medidas' ? 'Cada <b>punto</b> es una medida; la <b>franja</b> va de x̄ − Δ a x̄ + Δ.' : `Lo que aporta cada variable a ${s.met === 'lineal' ? 'la cota lineal' : 'la incertidumbre al cuadrado'}: la barra más alta es la medida que más conviene mejorar.`,
+    despues: (r, s, col) => {
+      if (s.modo !== 'ponderada') return;
+      const { g, X, Y } = r; g.strokeStyle = col['--serie-2'] || col['--ink']; g.lineWidth = 1.6;
+      s.ms.forEach((q, i) => { const x = X(i + 1); g.beginPath(); g.moveTo(x, Y(q.x - q.d)); g.lineTo(x, Y(q.x + q.d)); g.moveTo(x - 5, Y(q.x - q.d)); g.lineTo(x + 5, Y(q.x - q.d)); g.moveTo(x - 5, Y(q.x + q.d)); g.lineTo(x + 5, Y(q.x + q.d)); g.stroke(); });
+    },
+    datosExporta: (s) => (s.modo === 'ponderada' ? { cab: ['Medida', 'Valor', 'Incertidumbre', 'Peso (%)'], filas: s.ms.map((q, i) => [i + 1, q.x, q.d, 100 * q.peso]) } : null),
+    leyenda: (s) => s.modo === 'ponderada' ? `Cada <b>punto</b> es una medida con su barra de error; la <b>franja</b> es la media ponderada con su incertidumbre${s.comp ? ' y la línea discontinua, el valor aceptado' : ''}.` : s.modo === 'medidas' ? 'Cada <b>punto</b> es una medida; la <b>franja</b> va de x̄ − Δ a x̄ + Δ.' : `Lo que aporta cada variable a ${s.met === 'lineal' ? 'la cota lineal' : 'la incertidumbre al cuadrado'}: la barra más alta es la medida que más conviene mejorar.`,
   });
 })();
 
@@ -2060,6 +2201,27 @@ const Practica = (() => {
     'no-parametricos': { datos: null, genera: () => window.NoParametricosApp?.azar(), enunciado: () => window.NoParametricosApp?.enunciado() },
     'regresion-multiple': { datos: null, genera: () => window.RegresionMultipleApp?.azar(), enunciado: () => window.RegresionMultipleApp?.enunciado() },
     'regresion-economia': { datos: null, genera: () => window.RegresionEconomiaApp?.azar(), enunciado: () => window.RegresionEconomiaApp?.enunciado() },
+    elasticidades: { datos: null, genera: () => window.ElasticidadesApp?.azar(), enunciado: () => window.ElasticidadesApp?.enunciado() },
+    costes: { datos: null, genera: () => window.CostesApp?.azar(), enunciado: () => window.CostesApp?.enunciado() },
+    beneficio: { datos: null, genera: () => window.BeneficioApp?.azar(), enunciado: () => window.BeneficioApp?.enunciado() },
+    'pib-ipc': { datos: null, genera: () => window.PibIpcApp?.azar(), enunciado: () => window.PibIpcApp?.enunciado() },
+    multiplicador: { datos: null, genera: () => window.MultiplicadorApp?.azar(), enunciado: () => window.MultiplicadorApp?.enunciado() },
+    'is-lm': { datos: null, genera: () => window.IsLmApp?.azar(), enunciado: () => window.IsLmApp?.enunciado() },
+    'phillips-okun': { datos: null, genera: () => window.PhillipsOkunApp?.azar(), enunciado: () => window.PhillipsOkunApp?.enunciado() },
+    'tipos-cambio': { datos: null, genera: () => window.TiposCambioApp?.azar(), enunciado: () => window.TiposCambioApp?.enunciado() },
+    interes: { datos: null, genera: () => window.InteresApp?.azar(), enunciado: () => window.InteresApp?.enunciado() },
+    prestamos: { datos: null, genera: () => window.PrestamosApp?.azar(), enunciado: () => window.PrestamosApp?.enunciado() },
+    'van-tir': { datos: null, genera: () => window.VanTirApp?.azar(), enunciado: () => window.VanTirApp?.enunciado() },
+    rentas: { datos: null, genera: () => window.RentasApp?.azar(), enunciado: () => window.RentasApp?.enunciado() },
+    ahorro: { datos: null, genera: () => window.AhorroApp?.azar(), enunciado: () => window.AhorroApp?.enunciado() },
+    'punto-muerto': { datos: null, genera: () => window.PuntoMuertoApp?.azar(), enunciado: () => window.PuntoMuertoApp?.enunciado() },
+    'amortizacion-inmovilizado': { datos: null, genera: () => window.AmortizacionApp?.azar(), enunciado: () => window.AmortizacionApp?.enunciado() },
+    'numeros-indice': { datos: null, genera: () => window.NumerosIndiceApp?.azar(), enunciado: () => window.NumerosIndiceApp?.enunciado() },
+    'lorenz-gini': { datos: null, genera: () => window.LorenzGiniApp?.azar(), enunciado: () => window.LorenzGiniApp?.enunciado() },
+    solow: { datos: null, genera: () => window.SolowApp?.azar(), enunciado: () => window.SolowApp?.enunciado() },
+    bonos: { datos: null, genera: () => window.BonosApp?.azar(), enunciado: () => window.BonosApp?.enunciado() },
+    'black-scholes': { datos: null, genera: () => window.BlackScholesApp?.azar(), enunciado: () => window.BlackScholesApp?.enunciado() },
+    markowitz: { datos: null, genera: () => window.MarkowitzApp?.azar(), enunciado: () => window.MarkowitzApp?.enunciado() },
     ratios: { datos: null, genera: () => window.RatiosApp?.azar(), enunciado: () => window.RatiosApp?.enunciado() },
     balance: { datos: null, genera: () => window.BalanceApp?.azar(), enunciado: () => window.BalanceApp?.enunciado() },
     ajustador: { datos: null, items: '#coefs > div', genera: () => window.AjustadorApp?.azar(), enunciado: () => window.AjustadorApp?.enunciado() },

@@ -12,6 +12,43 @@
 const Version = (() => {
   const registros = {
     web: [
+      { v: '1.15', fecha: '2026-11-11', titulo: 'Fase 10, terminada: más herramientas con más recursos', subtitulo: 'Sin herramientas nuevas, pero Matemáticas, Estadística, Economía y Física general aprenden cosas nuevas, y las herramientas se hablan más entre sí.', secciones: [
+        { icono: '🛠️', titulo: 'En todas las herramientas', puntos: [
+          '**Más botones «Usar en…»:** llevan un resultado a otra herramienta con los datos ya puestos (de Series a Taylor, de Laplace a Control, de Interés a Ahorro y Rentas, de Gases a Ciclos termodinámicos y de Tiro parabólico a Trabajo y energía, entre otros).',
+          '**Casos límite en Matemáticas:** se han probado más de 7.000 datos incómodos (vacíos, ceros, enormes, con paréntesis sin cerrar…) y las herramientas dan un mensaje claro en vez de un resultado raro o una página colgada.',
+        ] },
+        { icono: '📐', titulo: 'Matemáticas', puntos: [
+          '**Taylor:** radio e intervalo de convergencia de cualquier función, límites en el infinito y botón para dibujar la función con su polinomio en el Graficador.',
+          '**Series:** criterio de la integral con primitiva, suma de las que convergen muy despacio con el resto acotado y botón para ver la serie como desarrollo de Taylor.',
+          '**Derivadas:** más integrales y límites resueltos y comprobados; los límites numéricos se contrastan cerca del punto.',
+          '**Matrices y Complejos:** núcleo, imagen y subespacios, vectores propios no racionales y casillas que aceptan cuentas.',
+          '**Superficies:** puntos sin derivada (picos y aristas) y puntos críticos fuera del rango dibujado.',
+          '**Laplace:** estabilidad de F(s) por sus polos y botón para usarla como lazo abierto en Control. **EDO:** botón para resolver con Laplace.',
+        ] },
+        { icono: '📊', titulo: 'Estadística', puntos: [
+          '**Distribuciones:** teorema central del límite, exacto frente a aproximado y dos curvas a la vez.',
+          '**Intervalos:** cuatro métodos para la proporción, de predicción y de tolerancia.',
+          '**Regresión y Regresión múltiple:** z de Fisher, comparación de correlaciones, ajuste ponderado, datos casi colineales y aviso de VIF.',
+          '**Probabilidad, Descriptiva y Errores:** variable aleatoria discreta, tabla 2 × 2, medias geométrica, armónica y ponderada, y propagación con variables correlacionadas.',
+          '**Botones «Usar en…»** entre Descriptiva, Intervalos, Contrastes, ANOVA y No paramétricos.',
+        ] },
+        { icono: '💶', titulo: 'Economía', puntos: [
+          '**Modo práctica propio** en 21 herramientas: ejercicios al azar de cada una, con su enunciado y la corrección de lo que escribes.',
+          '**Convención visible:** el desarrollo de Interés, Préstamos, Rentas, Ahorro, Bonos, VAN y TIR, Amortización, Black-Scholes y Tipos de cambio termina diciendo qué base de días, qué tipo por periodo y qué redondeo usa.',
+          '**Punto muerto:** varios productos con su mezcla de ventas y una tabla de sensibilidad.',
+          '**Lorenz y Gini:** compara dos distribuciones en la misma gráfica.',
+          '**Amortización del inmovilizado:** venta del bien en un año, con su beneficio o pérdida y los asientos del Plan General Contable.',
+          '**Números índice:** empalma dos series con bases distintas.',
+          '**Regresión sobre datos económicos:** gráfica de residuos y botón para añadir más variables en Regresión múltiple.',
+          '**Teoría de juegos:** matrices 3 × 3 con eliminación de estrategias dominadas ronda a ronda.',
+          '**Más «Usar en…»:** de Interés a Ahorro y Rentas, de Multiplicador a IS-LM y del PIB a Números índice.',
+        ] },
+        { icono: '🔭', titulo: 'Física general', puntos: [
+          '**Unidades:** las constantes pasan a CODATA 2022, con la edición de 2018 como opción.',
+          '**Ondas:** la velocidad del sonido se puede dar con la temperatura del aire.',
+          '**Botones «Usar en…»:** de Tiro parabólico a Trabajo y energía, de Gases a Ciclos termodinámicos (cuando es un ciclo de Carnot) y de Gravitación a Física moderna.',
+        ] },
+      ] },
       { v: '1.14.1', fecha: '2026-11-10', cambios: [
         'Ajustador de reacciones: la ecuación iónica neta sale también con las sales de amonio escritas con paréntesis, como (NH₄)₂CO₃, y con los acetatos escritos como CH₃COONa; con un carbonato y un ácido explica que el H₂CO₃ se descompone en CO₂ y agua.',
         'Gases: la constante R se puede cambiar entre la «de clase» (8,314) y la exacta, con el mismo ajuste que las herramientas de Química.',
