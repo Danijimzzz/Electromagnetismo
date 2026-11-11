@@ -64,6 +64,22 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       let ok = false; try { C.resolver(sc); } catch (e) { ok = true; }
       if (!ok) mal(`Superficies: ${q} no da error`);
     }
+    // MAT.SU-1/SU-2 · puntos sin derivada y críticos fuera del rango. A mano: el vértice del cono √(x²+y²) es mínimo; 2 − √(x²+y²), máximo (z = 2);
+    // |x| + |y| mínimo en el origen; |x| + y no tiene extremos; |x − 1| − |y| en (1, 0) ni máximo ni mínimo (f = 0 y toma ± alrededor); |xy| vale 0 en los ejes (mínimo no estricto)
+    {
+      const R = (f, r = 2, x0 = -r, x1 = r) => C.resolver({ f, xmin: x0, xmax: x1, ymin: -r, ymax: r });
+      const un = (o, x, y, tipo, q) => { const w = o.sinDeriv && o.sinDeriv.puntos.find((u) => Math.abs(u.x - x) < 1e-6 && Math.abs(u.y - y) < 1e-6); if (!w || w.tipo !== tipo) mal(`Superficies · ${q}: se esperaba «${tipo}» en (${x}, ${y}) y sale ${JSON.stringify(o.sinDeriv)}`); };
+      un(R('sqrt(x^2 + y^2)'), 0, 0, 'mínimo', 'cono'); un(R('2 - sqrt(x^2 + y^2)'), 0, 0, 'máximo', 'pico'); un(R('|x| + |y|'), 0, 0, 'mínimo', '|x|+|y|');
+      un(R('|x - 1| - |y|', 3), 1, 0, 'ni máximo ni mínimo', '|x−1|−|y|');
+      let o = R('|x| + y'); if (!o.sinDeriv || o.sinDeriv.puntos.length || o.sinDeriv.curvas.length) mal('Superficies: |x| + y no debería tener extremos sin derivada');
+      o = R('|x y|'); if (!o.sinDeriv || !o.sinDeriv.curvas.some((c) => /no estricto/.test(c.tipo))) mal('Superficies: |xy| vale 0 en los ejes: mínimo no estricto');
+      if (R('x^2 + y^2').sinDeriv || R('sen(x) sen(y)').sinDeriv) mal('Superficies: una función derivable no tiene puntos sin derivada');
+      // críticos fuera del dibujo: x³ − 3x + y² tiene silla en (−1, 0) y mínimo en (1, 0); (x − 5)² + y² tiene su mínimo en (5, 0)
+      o = R('x^3 - 3x + y^2', 0.5); if (o.crit.length || o.fuera.length !== 2 || o.fuera[0].tipo === o.fuera[1].tipo) mal('Superficies: x³ − 3x + y² con rango pequeño no avisa de la silla y el mínimo');
+      o = R('(x - 5)^2 + y^2'); if (o.fuera.length !== 1 || o.fuera[0].x !== 5 || o.fuera[0].tipo !== 'mínimo') mal('Superficies: no avisa del mínimo fuera del rango');
+      if (R('x^2 + y^2').fuera.length || R('x^2 + y^2', 2).crit.length !== 1) mal('Superficies: x² + y² avisa de más');
+      if (!o.pasos.some((p) => p.t === 'Puntos críticos fuera del dibujo')) mal('Superficies: falta el paso de críticos fuera del dibujo');
+    }
     if (fallos === antes) console.log(`  ✓ Superficies: ${C.ejemplos.length} ejemplos a mano, derivadas contra cociente incremental, malla y curvas de nivel`);
   }
 

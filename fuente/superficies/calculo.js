@@ -54,6 +54,76 @@ const Superficies = (() => {
   // «x − 3» o «x + 2» para (x − x0)
   const resta = (v, k) => (Math.abs(k) < 1e-12 ? v : k > 0 ? `(${v} − ${nt(k)})` : `(${v} + ${nt(-k)})`);
 
+  /* ---------- Puntos sin derivada ---------- */
+  // f deja de ser derivable donde se anula lo de dentro de un valor absoluto o de una raíz. Se buscan ahí los candidatos a extremo
+  // (ceros aislados, cruces de dos aristas y extremos de f a lo largo de una arista) y se clasifican comparando f alrededor.
+  function sinDerivada(ast, fv, R) {
+    const nodos = []; const rec = (n) => { if (!n || typeof n !== 'object') return; if (n.t === 'fn' && ['abs', 'sqrt', 'cbrt'].includes(n.f)) nodos.push({ n, u: n.a }); else if (n.t === '^' && n.b.t === 'n' && n.b.v > 0 && n.b.v < 1) nodos.push({ n, u: n.a }); rec(n.a); rec(n.b); };
+    rec(ast);
+    const us = nodos.filter((q, i) => !/^[\d,.−\s]*$/.test(T(q.u)) && nodos.findIndex((o) => T(o.u) === T(q.u)) === i);
+    if (!us.length) return null;
+    const L = Math.min(R.xmax - R.xmin, R.ymax - R.ymin), e = 1e-7 * Math.max(1, R.xmax - R.xmin, R.ymax - R.ymin), dentro = (x, y) => x >= R.xmin - e && x <= R.xmax + e && y >= R.ymin - e && y <= R.ymax + e;
+    const sust = (n, viejo) => (n === viejo ? { t: 'n', v: 0 } : !n || typeof n !== 'object' ? n : { ...n, ...(n.a ? { a: sust(n.a, viejo) } : {}), ...(n.b ? { b: sust(n.b, viejo) } : {}) });
+    // Newton en dos ecuaciones con jacobiano numérico
+    const newton = (F, x, y) => {
+      for (let k = 0; k < 80; k++) {
+        const F0 = F(x, y); if (!F0.every(isFinite)) return null;
+        const h = 1e-6, Fx = F(x + h, y), Fy = F(x, y + h); if (!Fx.every(isFinite) || !Fy.every(isFinite)) return null;
+        const a = (Fx[0] - F0[0]) / h, b = (Fy[0] - F0[0]) / h, c = (Fx[1] - F0[1]) / h, d = (Fy[1] - F0[1]) / h, det = a * d - b * c;
+        if (Math.abs(det) < 1e-14) break;
+        const dx = (d * F0[0] - b * F0[1]) / det, dy = (a * F0[1] - c * F0[0]) / det; x -= dx; y -= dy;
+        if (Math.abs(dx) + Math.abs(dy) < 1e-12) break;
+      }
+      const Ff = F(x, y); return Ff.every(isFinite) && Math.hypot(...Ff) < 1e-8 ? [x, y] : null;
+    };
+    const semillas = []; for (let i = 0; i <= 6; i++) for (let j = 0; j <= 6; j++) semillas.push([R.xmin + (R.xmax - R.xmin) * (i + 0.37) / 7, R.ymin + (R.ymax - R.ymin) * (j + 0.41) / 7]);
+    // ¿de verdad no es derivable ahí? Las derivadas por un lado y por el contrario no casan en alguna dirección
+    const quiebra = (x, y) => { const z = fv(x, y), h = 1e-6 * Math.max(1, L); for (let k = 0; k < 8; k++) { const t = (Math.PI * k) / 8, p1 = (fv(x + h * Math.cos(t), y + h * Math.sin(t)) - z) / h, p2 = (fv(x - h * Math.cos(t), y - h * Math.sin(t)) - z) / h; if (!isFinite(p1) || !isFinite(p2) || Math.abs(p1 + p2) > 1e-4 * Math.max(1, Math.abs(p1))) return true; } return false; };
+    const clasifica = (x, y) => {
+      const z = fv(x, y), r = 1e-4 * L, tol = 1e-12 * Math.max(1, Math.abs(z)); let mas = 0, menos = 0, igual = 0, borde = 0;
+      for (let k = 0; k < 24; k++) { const t = (2 * Math.PI * k) / 24, d = fv(x + r * Math.cos(t), y + r * Math.sin(t)) - z; if (!isFinite(d)) borde++; else if (d > tol) mas++; else if (d < -tol) menos++; else igual++; }
+      const b = borde ? ' (en el borde del dominio)' : '';
+      if (borde === 24) return null;
+      return (mas && menos ? 'ni máximo ni mínimo' : mas ? (igual ? 'mínimo no estricto' : 'mínimo') : menos ? (igual ? 'máximo no estricto' : 'máximo') : 'f es constante alrededor') + b;
+    };
+    const puntos = [], curvas = [], donde = [];
+    const mete = (lista, q) => { if (!q) return; const x = limpia(+q[0].toFixed(7)), y = limpia(+q[1].toFixed(7)); if (!dentro(x, y) || !isFinite(fv(x, y)) || lista.some((o) => Math.abs(o.x - x) < 1e-5 && Math.abs(o.y - y) < 1e-5)) return; lista.push({ x, y }); };
+    const U = us.map(({ n, u }) => ({ u, uv: (x, y) => val2(u, x, y), ux: dX(u), uy: dY(u), g: E.simp(sust(ast, n)) }));
+    U.forEach((q, i) => {
+      // puntos de la curva u = 0 dentro del rango: cambios de signo de u en 9 rectas horizontales y 9 verticales, afinados por bisección
+      const muestras = [], sgn = (v) => (!isFinite(v) ? -1 : Math.abs(v) < 1e-13 ? 0 : Math.sign(v));
+      for (let m = 0; m < 18; m++) {
+        const hor = m < 9, fijo = hor ? R.ymin + (R.ymax - R.ymin) * ((m % 9) + 0.5) / 9 : R.xmin + (R.xmax - R.xmin) * ((m % 9) + 0.5) / 9, a0 = hor ? R.xmin : R.ymin, a1 = hor ? R.xmax : R.ymax, w = (t) => (hor ? q.uv(t, fijo) : q.uv(fijo, t));
+        for (let k = 0; k < 40; k++) {
+          let t1 = a0 + (a1 - a0) * k / 40, t2 = a0 + (a1 - a0) * (k + 1) / 40; const s1 = sgn(w(t1)), s2 = sgn(w(t2));
+          if (s1 === 0) { muestras.push(hor ? [t1, fijo] : [fijo, t1]); continue; }
+          if (s2 === 0 || s1 === s2) continue;
+          for (let it = 0; it < 60; it++) { const tm = (t1 + t2) / 2; if (sgn(w(tm)) === s1) t1 = tm; else t2 = tm; }
+          const tc = sgn(w(t1)) >= 0 && isFinite(w(t1)) ? t1 : t2; muestras.push(hor ? [tc, fijo] : [fijo, tc]);
+        }
+      }
+      const enCurva = muestras.filter(([x, y]) => isFinite(fv(x, y)) && quiebra(x, y)), toca = enCurva.length > 0;
+      const mios = [], gx = dX(q.g), gy = dY(q.g);
+      // ceros aislados de u (como x² + y² en el origen) y extremos de f a lo largo de u = 0 (multiplicadores de Lagrange)
+      for (const [x, y] of semillas) {
+        const p1 = newton((a, b) => [val2(q.ux, a, b), val2(q.uy, a, b)], x, y); if (p1 && Math.abs(q.uv(p1[0], p1[1])) < 1e-9) mete(mios, p1);
+        mete(mios, newton((a, b) => [q.uv(a, b), val2(gx, a, b) * val2(q.uy, a, b) - val2(gy, a, b) * val2(q.ux, a, b)], x, y));
+      }
+      // cruces con otra arista
+      for (let j = i + 1; j < U.length; j++) for (const [x, y] of semillas) mete(mios, newton((a, b) => [q.uv(a, b), U[j].uv(a, b)], x, y));
+      const buenos = mios.filter((o) => quiebra(o.x, o.y));
+      if (toca || buenos.length) donde.push(T(q.u));
+      // si en toda la curva f vale lo mismo y pasa lo mismo, se resume
+      const ts = enCurva.map(([x, y]) => clasifica(x, y)).filter(Boolean), zs = enCurva.map(([x, y]) => fv(x, y));
+      if (enCurva.length >= 4 && ts.length === enCurva.length && ts.every((t) => t === ts[0]) && !/^ni /.test(ts[0]) && Math.max(...zs) - Math.min(...zs) < 1e-9 * Math.max(1, Math.abs(zs[0]))) {
+        curvas.push({ u: T(q.u), tipo: `f vale ${nt(zs[0])} en toda la curva: ${ts[0]}`, z: zs[0] });
+      } else for (const o of buenos) if (!puntos.some((w) => Math.abs(w.x - o.x) < 1e-5 && Math.abs(w.y - o.y) < 1e-5)) { const tipo = clasifica(o.x, o.y); if (tipo) puntos.push({ ...o, z: fv(o.x, o.y), tipo }); }
+    });
+    if (!donde.length) return null;
+    puntos.sort((p, q) => p.x - q.x || p.y - q.y);
+    return { donde, puntos: puntos.slice(0, 8), curvas };
+  }
+
   function resolver(sc) {
     const ast = E.simp(E.lee(sc.f, 'f(x, y)', ['x', 'y']));
     const fx = dX(ast), fy = dY(ast), fxx = dX(fx), fxy = dY(fx), fyy = dY(fy);
@@ -115,31 +185,47 @@ const Superficies = (() => {
       }
     }
 
-    // puntos críticos de f_x = f_y = 0 en el rango, por Newton desde una rejilla
-    const crit = [];
-    for (let i = 0; i <= 8; i++) for (let j = 0; j <= 8; j++) {
-      let x = xmin + (xmax - xmin) * i / 8, y = ymin + (ymax - ymin) * j / 8;
-      for (let k = 0; k < 60; k++) {
-        const g1 = val2(fx, x, y), g2 = val2(fy, x, y), a = val2(fxx, x, y), b = val2(fxy, x, y), c = val2(fyy, x, y), d = a * c - b * b;
-        if (![g1, g2, a, b, c].every(isFinite) || Math.abs(d) < 1e-14) break;
-        const dx = (c * g1 - b * g2) / d, dy = (a * g2 - b * g1) / d; x -= dx; y -= dy;
-        if (Math.abs(dx) + Math.abs(dy) < 1e-13) break;
+    // puntos críticos de f_x = f_y = 0 en un rectángulo, por Newton desde una rejilla
+    const criticos = (x1, x2, y1, y2) => {
+      const lista = [];
+      for (let i = 0; i <= 8; i++) for (let j = 0; j <= 8; j++) {
+        let x = x1 + (x2 - x1) * i / 8, y = y1 + (y2 - y1) * j / 8;
+        for (let k = 0; k < 60; k++) {
+          const g1 = val2(fx, x, y), g2 = val2(fy, x, y), a = val2(fxx, x, y), b = val2(fxy, x, y), c = val2(fyy, x, y), d = a * c - b * b;
+          if (![g1, g2, a, b, c].every(isFinite) || Math.abs(d) < 1e-14) break;
+          const dx = (c * g1 - b * g2) / d, dy = (a * g2 - b * g1) / d; x -= dx; y -= dy;
+          if (Math.abs(dx) + Math.abs(dy) < 1e-13) break;
+        }
+        const e = 1e-7 * Math.max(1, x2 - x1, y2 - y1);
+        if (!isFinite(x) || !isFinite(y) || x < x1 - e || x > x2 + e || y < y1 - e || y > y2 + e) continue;
+        const gc = Math.hypot(val2(fx, x, y), val2(fy, x, y));
+        if (!isFinite(gc) || gc > 1e-8) continue;
+        x = limpia(+x.toFixed(7)); y = limpia(+y.toFixed(7));
+        if (lista.some((q) => Math.abs(q.x - x) < 1e-6 && Math.abs(q.y - y) < 1e-6)) continue;
+        const a = val2(fxx, x, y), b = val2(fxy, x, y), c = val2(fyy, x, y), D = a * c - b * b;
+        lista.push({ x, y, z: fv(x, y), a, b, c, D, tipo: Math.abs(D) < 1e-9 ? 'dudoso (D = 0)' : D < 0 ? 'punto de silla' : a > 0 ? 'mínimo' : 'máximo' });
       }
-      const e = 1e-7 * Math.max(1, xmax - xmin, ymax - ymin);
-      if (!isFinite(x) || !isFinite(y) || x < xmin - e || x > xmax + e || y < ymin - e || y > ymax + e) continue;
-      const gc = Math.hypot(val2(fx, x, y), val2(fy, x, y));
-      if (!isFinite(gc) || gc > 1e-8) continue;
-      x = limpia(+x.toFixed(7)); y = limpia(+y.toFixed(7));
-      if (crit.some((q) => Math.abs(q.x - x) < 1e-6 && Math.abs(q.y - y) < 1e-6)) continue;
-      const a = val2(fxx, x, y), b = val2(fxy, x, y), c = val2(fyy, x, y), D = a * c - b * b;
-      crit.push({ x, y, z: fv(x, y), a, b, c, D, tipo: Math.abs(D) < 1e-9 ? 'dudoso (D = 0)' : D < 0 ? 'punto de silla' : a > 0 ? 'mínimo' : 'máximo' });
-    }
+      return lista;
+    };
+    const crit = criticos(xmin, xmax, ymin, ymax);
+    // los que quedan fuera del rango dibujado (hasta un ancho más por cada lado): se avisa de los más cercanos
+    const ax = xmax - xmin, ay = ymax - ymin, eF = 1e-6 * Math.max(1, ax, ay), cx = (xmin + xmax) / 2, cy = (ymin + ymax) / 2;
+    const fuera = criticos(xmin - ax, xmax + ax, ymin - ay, ymax + ay).filter((q) => q.x < xmin - eF || q.x > xmax + eF || q.y < ymin - eF || q.y > ymax + eF)
+      .sort((p, q) => Math.hypot(p.x - cx, p.y - cy) - Math.hypot(q.x - cx, q.y - cy));
+    out.fuera = fuera.slice(0, 4); out.fueraMas = fuera.length > 4;
     crit.sort((p, q) => p.x - q.x || p.y - q.y);
     out.crit = crit.slice(0, 12);
     out.criticosCortados = crit.length > 12;
     pasos.push({ t: 'Puntos críticos', html: out.crit.length
       ? `Donde $f_{x} = f_{y} = 0$ (dentro del rango dibujado). Con el hessiano $D = f_{xx} f_{yy} − f_{xy}^{2}$: si $D > 0$ es extremo (mínimo si $f_{xx} > 0$, máximo si $f_{xx} < 0$) y si $D < 0$, punto de silla.<br>${out.crit.map((q) => `$(${nt(q.x)}, ${nt(q.y)})$: $f = ${nt(q.z)}$, $D = ${nt(q.D)}$ &ensp;⇒&ensp; ${q.tipo}`).join('<br>')}${out.criticosCortados ? '<br>Hay más; se muestran los primeros.' : ''}`
       : 'No hay puntos donde ambas derivadas parciales se anulen dentro del rango dibujado.' });
+    if (out.fuera.length) pasos.push({ t: 'Puntos críticos fuera del dibujo', html: `Ojo: cerca del rango dibujado, pero fuera, ${out.fuera.length > 1 || out.fueraMas ? 'hay más puntos críticos' : 'hay otro punto crítico'}: ${out.fuera.map((q) => `$(${nt(q.x)}, ${nt(q.y)})$, ${q.tipo}`).join('; ')}${out.fueraMas ? '; y alguno más' : ''}. Amplía el rango de x o de y para verlos.` });
+    // puntos sin derivada (el vértice de un cono, la arista de |x|): no salen de f_x = f_y = 0 y se clasifican mirando f alrededor
+    out.sinDeriv = sinDerivada(ast, fv, { xmin, xmax, ymin, ymax });
+    if (out.sinDeriv) {
+      const sd = out.sinDeriv, donde = sd.donde.map((u) => `$${u} = 0$`).join(', ');
+      pasos.push({ t: 'Puntos sin derivada', html: `f no es derivable donde ${donde} (ahí hay un pico o una arista), así que esos puntos no salen de $f_{x} = f_{y} = 0$ y el hessiano no sirve: se comparan los valores de f alrededor.<br>${[...sd.puntos.map((q) => `$(${nt(q.x)}, ${nt(q.y)})$: $f = ${nt(q.z)}$ &ensp;⇒&ensp; ${q.tipo}`), ...sd.curvas.map((c) => `A lo largo de $${c.u} = 0$: ${c.tipo}`)].join('<br>') || 'No hay ningún extremo entre ellos dentro del rango dibujado.'}` });
+    }
     out.rango = { xmin, xmax, ymin, ymax };
     return out;
   }
@@ -190,6 +276,8 @@ const Superficies = (() => {
     { clave: 'onda', nombre: 'Huevera sen x · cos y en (1, 1)', sc: { f: 'sen(x) cos(y)', x0: '1', y0: '1', ux: '1', uy: '-1', x1: '', y1: '', xmin: '-3,14', xmax: '3,14', ymin: '-3,14', ymax: '3,14' } },
     { clave: 'cubica', nombre: 'Mínimo y silla: x³ − 3x + y²', sc: { f: 'x^3 - 3x + y^2', x0: '1', y0: '0', ux: '', uy: '', x1: '', y1: '', xmin: '-2,5', xmax: '2,5', ymin: '-2', ymax: '2' } },
     { clave: 'mono', nombre: 'Silla del mono x³ − 3xy²', sc: { f: 'x^3 - 3 x y^2', x0: '', y0: '', ux: '', uy: '', x1: '', y1: '', xmin: '-1,5', xmax: '1,5', ymin: '-1,5', ymax: '1,5' } },
+    { clave: 'pico', nombre: 'Pico sin derivada: 2 − √(x² + y²)', sc: { f: '2 - sqrt(x^2 + y^2)', x0: '', y0: '', ux: '', uy: '', x1: '', y1: '', xmin: '-2', xmax: '2', ymin: '-2', ymax: '2' } },
+    { clave: 'arista', nombre: 'Arista sin extremo: |x| + y', sc: { f: '|x| + y', x0: '', y0: '', ux: '', uy: '', x1: '', y1: '', xmin: '-2', xmax: '2', ymin: '-2', ymax: '2' } },
     { clave: 'plano', nombre: 'Plano inclinado 2x − y + 1 en (0, 0)', sc: { f: '2x - y + 1', x0: '0', y0: '0', ux: '1', uy: '0', x1: '', y1: '', xmin: '-2', xmax: '2', ymin: '-2', ymax: '2' } },
   ];
 
