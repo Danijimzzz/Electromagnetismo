@@ -156,7 +156,7 @@
   const iv = (a, b) => `(${extremo(a)}; ${extremo(b)})`;
   function calcula() {
     const err = $('#error');
-    try { sol = I.resolver({ ...sc, fuente1: sc.fuente ?? sc.fuente1, fuente2: sc.fuente ?? sc.fuente2 }); } catch (e) { sol = null; err.textContent = e.message; err.hidden = false; $('#res').innerHTML = ''; $('#pasos').innerHTML = ''; $('#cuenta').textContent = ''; sim = null; dibuja(); return; }
+    try { sol = I.resolver({ ...sc, fuente1: sc.fuente ?? sc.fuente1, fuente2: sc.fuente ?? sc.fuente2 }); } catch (e) { sol = null; err.textContent = e.message; err.hidden = false; $('#res').innerHTML = ''; $('#usar-en').hidden = true; $('#pasos').innerHTML = ''; $('#cuenta').textContent = ''; sim = null; dibuja(); return; }
     err.hidden = true; guarda();
     const nc = `${f(100 * sol.c)} %`;
     let h;
@@ -172,6 +172,10 @@
       if (sol.h0 !== undefined) h += dato(`Contraste de ${PARAM[sol.modo]} = ${f(sol.h0)}`, sol.rechaza ? '<b>Se rechaza H₀</b>' : '<b>No se rechaza H₀</b>', 'ancho');
     }
     $('#res').innerHTML = h;
+    // «Usar en…»: la lista de datos de una media, en Descriptiva
+    const ue = $('#usar-en'), lleva = (sol.modo === 'media' || sol.modo === 'prediccion' || sol.modo === 'varianza') && sc.fuente === 'datos' && !Herramienta.vacio(sc.datos);
+    ue.hidden = !lleva;
+    ue.innerHTML = lleva ? `<a class="btn" data-usar="descriptiva" href="${esc(Herramienta.enlaceA('descriptiva', { formato: 'lista', datos: sc.datos, pesos: '', div: 'n1', pk: '' }))}">Descriptiva de estos datos →</a>` : '';
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${p.t}</strong>${p.html}</li>`).join('');
     $('#simcard').hidden = sol.modo === 'tamano' || sol.modo === 'prediccion';
     nuevaSim();

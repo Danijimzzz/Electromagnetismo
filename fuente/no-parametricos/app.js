@@ -35,6 +35,9 @@
   const H1T = { dos: 'las medianas son distintas', mayor: 'la primera es mayor', menor: 'la primera es menor' };
   Calculadora.monta({
     C, carpeta: 'no-parametricos', app: 'NoParametricosApp', campos, azar,
+    // «Usar en…»: los grupos de Kruskal-Wallis en el ANOVA y la muestra de Wilcoxon en Descriptiva
+    usarEn: (s, sc) => (s.tipo === 'kw' ? [{ texto: 'ANOVA con estos grupos →', carpeta: 'anova', estado: { modo: 'uno', alfa: sc.alfa, prueba: 'f', post: 'tukey', contrastes: '', datos: sc.datos } }]
+      : s.tipo === 'mediana' || s.tipo === 'signosmed' ? [{ texto: 'Descriptiva de estos datos →', carpeta: 'descriptiva', estado: { formato: 'lista', datos: sc.datos, pesos: '', div: 'n1', pk: '' } }] : []),
     enunciado: (sc, s) => s && (s.tipo === 'kw' ? `Se han medido varios grupos (cada grupo separado por «;»): ${String(sc.datos).trim().split(/\r?\n/).map((l) => l.trim()).filter(Boolean).join('; ')}. Con α = ${sc.alfa}, contrasta con Kruskal-Wallis si los grupos difieren: calcula las sumas de rangos, H y el p-valor.`
       : s.tipo === 'signos' || s.tipo === 'signosmed' || s.tipo === 'correlacion' ? `Resuelve el contraste con los datos de la herramienta (α = ${sc.alfa}): calcula el estadístico y el p-valor.`
       : s.tipo === 'mw'

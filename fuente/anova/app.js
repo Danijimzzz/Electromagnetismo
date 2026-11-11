@@ -41,6 +41,11 @@
         ]),
       ];
     }, azar,
+    // «Usar en…»: los mismos grupos en Kruskal-Wallis (sin suponer normalidad) y todos los datos juntos en Descriptiva
+    usarEn: (s, sc) => (s.modo !== 'uno' ? [] : [
+      { texto: 'Kruskal-Wallis con estos grupos →', carpeta: 'no-parametricos', estado: { tipo: 'kw', alfa: sc.alfa, post: 'holm', datos: sc.datos } },
+      { texto: 'Descriptiva de todos los datos →', carpeta: 'descriptiva', estado: { formato: 'lista', datos: s.g.flatMap((q) => q.x).map((v) => String(v).replace('.', ',')).join(' '), pesos: '', div: 'n1', pk: '' } },
+    ]),
     enunciado: (sc, s) => s && (s.modo === 'dos'
       ? `Se ha medido una variable en un diseño con dos factores (cada casilla separada por «;»): ${lineas(sc)}. Con α = ${sc.alfa}, haz un ANOVA de dos factores y calcula, para el factor A, F y su p-valor.`
       : `Se han medido tres o más grupos (cada grupo separado por «;»): ${lineas(sc)}. Con α = ${sc.alfa}, contrasta con un ANOVA de un factor si las medias son iguales: calcula la tabla ANOVA, F, el valor crítico y el p-valor.`),
