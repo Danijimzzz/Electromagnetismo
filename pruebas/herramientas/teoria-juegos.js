@@ -30,6 +30,15 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     // dominancia débil: A = [[1,1],[1,0]] ⇒ la fila 0 domina débilmente
     r = C.resolver({ ...C.ejemplos[0].sc, a11: '1', a12: '1', a21: '1', a22: '0' });
     if (!r.domF || r.domF.i !== 0 || r.domF.fuerte) mal(`${N}: no detecta la dominancia débil`);
+    // 3 × 3 a mano: ronda 1 quita Abajo (Arriba da más en las tres columnas) e Izquierda (Centro da más en las tres filas); ronda 2 quita Derecha (Centro da más en Arriba y Medio); ronda 3 quita Arriba (Medio gana 2 > 1 en Centro)
+    r = ej('dominancia-3x3'); igual(nash(r), '11', '3×3: Nash único Medio/Centro'); igual(r.rondas.length, 3, '3×3: tres rondas'); igual(r.F.join() + '|' + r.C.join(), '1|1', '3×3: lo que queda');
+    igual(r.rondas[0].f.map((x) => x.i + 'por' + x.por).join() + '/' + r.rondas[0].c.map((x) => x.j + 'por' + x.por).join(), '2por0/0por1', '3×3: ronda 1'); igual(r.rondas[1].c.map((x) => x.j).join(), '2', '3×3: ronda 2'); igual(r.rondas[2].f.map((x) => x.i).join(), '0', '3×3: ronda 3');
+    if (r.resuelto !== true || r.pareto[1][1] !== false) mal(N + ': el equilibrio por dominancia del 3×3 es ineficiente (Arriba/Izquierda da (3, 2))');
+    // todo equilibrio de Nash sobrevive a la eliminación de dominadas
+    for (const k of ['dominancia-3x3', 'coordinacion-3x3', 'piedra-papel-tijera']) { const q = ej(k); if (!q.nash.every(([i, j]) => q.F.includes(i) && q.C.includes(j))) mal(`${N} · ${k}: un Nash fue eliminado por dominancia`); }
+    r = ej('coordinacion-3x3'); igual(nash(r), '00,11,22', '3×3 coordinación: tres Nash'); igual(r.rondas.length, 0, '3×3 coordinación: sin dominadas');
+    r = ej('piedra-papel-tijera'); igual(nash(r), '', 'piedra, papel o tijera: sin Nash puro'); igual(r.rondas.length, 0, 'piedra, papel o tijera: sin dominadas');
+    error({ tam: '3', p1: '1 2 3\n4 5 6', p2: '1 2 3\n4 5 6\n7 8 9' }, 'matriz 3×3 con solo 2 filas'); error({ tam: '3', p1: '1 2\n4 5 6\n7 8 9', p2: '1 2 3\n4 5 6\n7 8 9' }, 'fila de 2 números');
     error({ ...C.ejemplos[0].sc, a12: '' }, 'un pago vacío');
     error({ ...C.ejemplos[0].sc, b22: 'x' }, 'un pago que no es número');
     if (fallos === antes) console.log(`  ✓ ${N}: ${C.ejemplos.length} ejemplos calculados a mano (Nash puro y mixto, dominancia, Pareto y tipo de juego) y errores`);

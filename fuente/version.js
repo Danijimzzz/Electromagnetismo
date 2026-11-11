@@ -736,6 +736,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: dibuja el circuito arrastrando componentes (resistencias, condensadores, bobinas, fuentes de continua y de alterna, diodos, transistores, operacionales, transformadores, trifásica y puertas lógicas), únelos con cables y mira tensiones, corrientes, fasores, osciloscopio y diagrama de Bode.'] },
     ],
     'teoria-juegos': [
+      { v: '0.2', fecha: '2026-11-11', cambios: ['Matrices 3 × 3: equilibrios de Nash en estrategias puras y eliminación iterativa de estrategias dominadas, ronda a ronda, con ejemplos (incluido piedra, papel o tijera).'] },
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: escribe la matriz de pagos de un juego de dos jugadores con dos estrategias y obtén las mejores respuestas, las estrategias dominantes, los equilibrios de Nash puros y mixtos, la eficiencia de Pareto y el tipo de juego (dilema del prisionero, coordinación, gallina…), con la gráfica de las curvas de mejor respuesta y el desarrollo paso a paso.'] },
     ],
     'puertas-logicas': [

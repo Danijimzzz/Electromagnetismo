@@ -241,6 +241,7 @@ const Calculadora = (() => {
       const c = $('#grafica'); if (!c) return;
       const cfg = sol && o.grafica ? o.grafica(sol, col) : null;
       cfgs['#grafica'] = cfg;
+      if (sol && o.grafica) { const cd = c.closest('.card'); if (cd) cd.hidden = !cfg; }
       if (!cfg) Herramienta.lienzo(c);
       else { const r = grafica(c, cfg, col); if (r && o.despues) o.despues(r, sol, col); }
       const c2 = $('#grafica2');
