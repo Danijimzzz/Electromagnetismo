@@ -301,7 +301,8 @@ const Algebra = (() => {
   function raizHtml(q) {
     const N = q.n * q.d, D = q.d;
     let fuera = 1n, dentro = N;
-    for (let k = 2n; k * k <= dentro; k++) while (dentro % (k * k) === 0n) { dentro /= k * k; fuera *= k; }
+    // división de prueba hasta 10⁵ (con números enormes factorizar entero se cuelga; lo que quede sin sacar sigue siendo correcto, solo menos simplificado)
+    for (let k = 2n; k * k <= dentro && k <= 100000n; k++) while (dentro % (k * k) === 0n) { dentro /= k * k; fuera *= k; }
     const g = mcd(fuera, D), a = fuera / g, b = D / g;
     if (dentro === 1n) return null;
     return { a, b, dentro };

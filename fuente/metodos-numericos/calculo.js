@@ -32,7 +32,7 @@ const MetodosNumericos = (() => {
     return { ex, tx: E.texto(ex), ev };
   }
   const definida = (v, donde) => { if (!isFinite(v)) throw new Error(`La función no está definida en ${donde}`); return v; };
-  const comun = (sc) => ({ tol: K.lee(sc, 'tol', 'la tolerancia', { min: 0, minEx: true, def: 1e-6 }), nmax: K.lee(sc, 'nmax', 'el máximo de iteraciones', { min: 1, max: 500, entero: true, def: 50 }) });
+  const comun = (sc) => ({ tol: K.lee(sc, 'tol', 'la tolerancia', { min: 1e-300, def: 1e-6 }), nmax: K.lee(sc, 'nmax', 'el máximo de iteraciones', { min: 1, max: 500, entero: true, def: 50 }) });
   const parada = (tol) => `Se para cuando $|x_{n+1} − x_n| < ${f(tol)}$ (la tolerancia).`;
 
   /* ---------- Raíces ---------- */

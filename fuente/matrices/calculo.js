@@ -417,6 +417,7 @@ const Matrices = (() => {
         R = A.map((f, i) => f.map((_, j) => P_.cte(i === j ? A_.c1 : A_.c0)));
         for (let k = 1; k <= n; k++) { R = prod(R, A); if (k > 1 && n <= 4) pasos.push({ t: `A<sup>${k}</sup>`, html: mh(R) }); }
       }
+      if (!R) throw new Error(`Con una letra (${letra}) en las casillas esta operación no se puede calcular: escribe números en todas`);
       pasos.push({ t: 'Resultado', html: mh(R) });
       res = mh(R); valor = R;
     }
