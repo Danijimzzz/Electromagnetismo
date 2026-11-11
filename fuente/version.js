@@ -629,6 +629,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: extremos de f(x, y) o f(x, y, z) con una restricción g = c. Plantea ∇f = λ∇g, halla los puntos críticos con su λ, dice si cada uno es máximo, mínimo o de silla y dibuja las curvas de nivel con la restricción.'] },
     ],
     series: [
+      { v: '0.3', fecha: '2026-11-10', cambios: ['Criterio de la integral: busca la primitiva, calcula la integral impropia y decide series como Σ 1/(n ln n) o Σ 1/(n ln² n), que antes quedaban sin decidir.', 'Si no hay primitiva elemental, la integral se estima numéricamente y se avisa de que es una estimación.', 'La suma de las series que convergen muy despacio se da con el resto encerrado entre dos integrales.'] },
       { v: '0.2', fecha: '2026-11-08', cambios: ['Conclusiones más cuidadas en los casos dudosos, como las series p con exponente muy cercano a 1.'] },
       { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: dice si una serie numérica converge o diverge con la condición necesaria, la serie geométrica y la serie p, los criterios del cociente, de la raíz, de comparación y de Leibniz, la convergencia absoluta o condicional, la suma y las sumas parciales dibujadas.'] },
     ],
