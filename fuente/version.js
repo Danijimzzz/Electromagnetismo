@@ -822,7 +822,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: efecto fotoeléctrico (energía del fotón, trabajo de extracción de varios metales, energía cinética y velocidad máximas, potencial de frenado y umbral), longitud de onda de De Broglie, dilatación del tiempo, contracción de longitudes y energía y momento relativistas, con su gráfica y el desarrollo.'] },
     ],
     'lorenz-gini': [
-      { v: '0.2', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.'] },
+      { v: '0.2', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.', 'Se puede comparar con una segunda distribución en la misma gráfica: el Gini de cada una, los extremos y si una curva de Lorenz queda siempre por encima o se cruzan.'] },
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: la curva de Lorenz y el índice de Gini a partir de las rentas de cada persona, de tramos de renta o de quintiles, por el área y con la fórmula de clase, con lo que se lleva el 20 % más pobre y el más rico (S80/S20), la tabla y el desarrollo.'] },
     ],
     'phillips-okun': [
