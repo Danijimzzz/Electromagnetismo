@@ -12,7 +12,7 @@
 const NumerosIndice = (() => {
   const K = typeof Eco !== 'undefined' ? Eco : require('../economia/comun.js');
   const { f, lee, vacio } = K;
-  const MODOS = { serie: 'Serie: índices y tasas', cesta: 'Cesta: Laspeyres…' };
+  const MODOS = { serie: 'Serie: índices y tasas', cesta: 'Cesta: Laspeyres…', empalme: 'Empalmar dos series con bases distintas' };
   const n4 = (x) => f(x, 6), pc = (x) => `${f(100 * x, 4)} %`;
   // número sin punto de miles dentro de una fórmula
   const m = (x) => f(x, 8).replace(/\./g, '');
@@ -53,11 +53,49 @@ const NumerosIndice = (() => {
     return { modo: 'cesta', productos, p0q0, p1q0, p1q1, p0q1, L, P, F, V, Lq, Pq, pasos };
   }
 
-  const resolver = (sc) => (sc.modo === 'cesta' ? cesta(sc) : serie(sc));
+  // empalme de dos series de índices con bases distintas (la antigua A y la nueva B, que se solapan en algún periodo):
+  // el coeficiente k = A_t / B_t en el periodo de empalme t lleva una a la base de la otra
+  function empalme(sc) {
+    const leeS = (txt, nom) => {
+      const d = K.filas(txt, 2, nom);
+      if (d.length < 2) throw new Error(`Escribe al menos dos periodos en ${nom}, uno por línea: «año índice»`);
+      if (d.some(([, x]) => x <= 0)) throw new Error(`Los índices de ${nom} tienen que ser positivos`);
+      if (new Set(d.map(([p]) => p)).size !== d.length) throw new Error(`Hay dos filas con el mismo periodo en ${nom}`);
+      return d.slice().sort((u, w) => u[0] - w[0]);
+    };
+    const A = leeS(sc.datos, 'la serie antigua (A)'), B = leeS(sc.datos2, 'la serie nueva (B)');
+    const comunes = A.map(([p]) => p).filter((p) => B.some(([q]) => q === p));
+    if (!comunes.length) throw new Error('Las dos series tienen que tener algún periodo en común para poder empalmarlas');
+    const t = vacio(sc.empalme) ? comunes[comunes.length - 1] : lee(sc, 'empalme', 'el periodo de empalme');
+    if (!comunes.includes(t)) throw new Error(`El periodo de empalme (${f(t)}) tiene que estar en las dos series (en común: ${comunes.map((p) => f(p)).join(', ')})`);
+    const at = A.find(([p]) => p === t)[1], bt = B.find(([p]) => p === t)[1], k = at / bt, enB = sc.expresar === 'b';
+    // hasta el periodo de empalme (incluido) valen los de A y después los de B, en la base elegida
+    const per = [...new Set([...A.map(([p]) => p), ...B.map(([p]) => p)])].sort((u, w) => u - w);
+    const filas = per.map((p, j) => {
+      const a = A.find(([q]) => q === p), b = B.find(([q]) => q === p), usaA = p <= t && a, x = usaA ? (enB ? a[1] / k : a[1]) : b ? (enB ? b[1] : b[1] * k) : null;
+      return { p, x, origen: usaA ? 'A' : 'B' };
+    }).filter((r) => r.x !== null);
+    if (!filas.length || filas[0].p > t) throw new Error('No hay datos de la serie antigua hasta el periodo de empalme');
+    const hueco = per.filter((p) => !filas.some((r) => r.p === p));
+    filas.forEach((r, j) => { r.tv = j ? r.x / filas[j - 1].x - 1 : null; });
+    const n = filas.length - 1, ta = filas[n].x / filas[0].x - 1, tm = n ? (1 + ta) ** (1 / n) - 1 : 0, pasos = [];
+    pasos.push({ t: 'Qué es empalmar', html: `Cuando se cambia de base, la serie antigua (A) y la nueva (B) no se pueden juntar tal cual: cada una vale 100 en su propio año base. Se empalman con un periodo que está en las dos, ${f(t)}.` });
+    pasos.push({ t: 'Coeficiente de empalme', html: `$k = {A_{${f(t)}}}/{B_{${f(t)}}} = ${m(at)}/${m(bt)} = ${n4(k)}$: cuántas veces mayor es el valor de A que el de B en el periodo común.` });
+    pasos.push({ t: `Serie en la base de ${enB ? 'B' : 'A'}`, html: enB
+      ? `Se divide la serie antigua entre $k$ para llevarla a la base nueva, $B_t = A_t/k$ hasta ${f(t)}; desde ${f(t)} valen los de B.`
+      : `Se multiplica la serie nueva por $k$ para llevarla a la base antigua, $A_t = k · B_t$ desde ${f(t)}; hasta ${f(t)} valen los de A.` });
+    pasos.push({ t: 'Serie empalmada', html: `${filas.map((r) => `${f(r.p)}: ${f(r.x, 6)}`).join('; ')}.${hueco.length ? ` Sin dato en ${hueco.map((p) => f(p)).join(', ')}: ninguna de las dos series lo trae.` : ''}` });
+    pasos.push({ t: 'Tasas', html: `De ${f(filas[0].p)} a ${f(filas[n].p)}: tasa acumulada $${m(filas[n].x)}/${m(filas[0].x)} − 1 = ${n4(ta)}$, un <b>${pc(ta)}</b>; media acumulativa por periodo, <b>${pc(tm)}</b>. El empalme solo cambia la escala de una de las series: las tasas de variación dentro de cada una son las mismas.` });
+    return { modo: 'empalme', t, k, enB, filas, ta, tm, n, hueco, pasos };
+  }
+
+  const resolver = (sc) => (sc.modo === 'cesta' ? cesta(sc) : sc.modo === 'empalme' ? empalme(sc) : serie(sc));
 
   const ejemplos = [
     { clave: 'ventas', nombre: 'Ventas de una empresa en seis años', sc: { modo: 'serie', datos: '2018 250\n2019 270\n2020 240\n2021 290\n2022 320\n2023 350', base: '2018' } },
     { clave: 'cambio-base', nombre: 'Un índice de precios: cambio a base 2021', sc: { modo: 'serie', datos: '2019 100\n2020 99,7\n2021 102,8\n2022 111,4\n2023 115,0\n2024 118,4', base: '2021' } },
+    { clave: 'empalme-ipc', nombre: 'Empalmar dos índices de precios de bases distintas (datos de ejemplo)', sc: { modo: 'empalme', datos: '2018 104,5\n2019 105,3\n2020 104,9\n2021 108,2', datos2: '2021 100\n2022 108,3\n2023 112,9\n2024 116,0', empalme: '2021', expresar: 'b' } },
+    { clave: 'empalme-base-antigua', nombre: 'La misma unión, pero en la base de la serie antigua', sc: { modo: 'empalme', datos: '2018 104,5\n2019 105,3\n2020 104,9\n2021 108,2', datos2: '2021 100\n2022 108,3\n2023 112,9\n2024 116,0', empalme: '2021', expresar: 'a' } },
     { clave: 'cesta', nombre: 'Cesta de la compra: Laspeyres, Paasche y Fisher', sc: { modo: 'cesta', cesta: 'p0 q0 p1 q1\n1 100 1,2 90\n0,8 200 0,9 210\n5 20 8 15' } },
     { clave: 'estudiante', nombre: 'Lo que gasta un estudiante en un mes', sc: { modo: 'cesta', cesta: 'p0 q0 p1 q1\n2,5 20 3 18\n1,5 40 1,6 44\n12 2 15 1\n40 1 45 1' } },
   ];
@@ -71,7 +109,7 @@ const NumerosIndice = (() => {
     }
     const a0 = AZ.toma([2016, 2018, 2020]); let v = AZ.toma([100, 250, 500]);
     return { datos: Array.from({ length: 6 }, (_, k) => { if (k) v = Math.round(v * (1 + AZ.toma([-0.05, 0.03, 0.05, 0.08]))); return `${a0 + k} ${v}`; }).join('\n'), base: String(a0 + AZ.toma([0, 0, 2])) };
-  }, null, (sc) => resolver(sc));
+  }, (sc) => sc.modo !== 'empalme', (sc) => resolver(sc));
   const enunciado = (sc) => sc.modo === 'cesta'
     ? `Con los precios y las cantidades de ${sc.cesta.split('\n').length - 1} bienes en el periodo 0 y en el periodo 1 (tabla de datos), calcula los índices de precios de Laspeyres, Paasche y Fisher, el índice de valor y la subida de precios según Laspeyres.`
     : `Con la serie de valores por año de la tabla de datos, cámbiala a base ${sc.base} = 100 y calcula el índice del último periodo, la tasa de la última variación, la tasa acumulada y la tasa media por periodo.`;

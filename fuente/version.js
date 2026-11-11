@@ -845,7 +845,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: PIB nominal y real de una economía con varios bienes y años, deflactor, crecimiento real e inflación; deflactar una serie con el IPC para tenerla en euros constantes; y los agregados de la contabilidad nacional del PIB a la renta nacional, con gráfica y tabla.'] },
     ],
     'numeros-indice': [
-      { v: '0.2', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.'] },
+      { v: '0.2', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.', 'Nuevo modo «Empalmar dos series con bases distintas»: el coeficiente de empalme, la serie unida en la base que elijas y su gráfica.'] },
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: índices simples de una serie con la base que elijas (cambio de base), tasas de variación, tasa acumulada y tasa media acumulativa, e índices de precios de Laspeyres, Paasche y Fisher, de cantidades y de valor de una cesta de productos, con la gráfica y la tabla.'] },
     ],
     ratios: [
