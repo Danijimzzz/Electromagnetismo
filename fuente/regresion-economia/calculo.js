@@ -68,8 +68,11 @@ const RegresionEconomia = (() => {
     const mayor = res.reduce((m2, r) => (Math.abs(r.e) > Math.abs(m2.e) ? r : m2), res[0]), esc = modelo === 'lineal' ? '' : ' (en ln Y)';
     // cuántas veces cambia de signo el residuo al ir ordenado por X: pocas rachas largas apuntan a una forma mal elegida (curvatura)
     const ord = res.slice().sort((p1, p2) => p1.x - p2.x), cambios = ord.slice(1).filter((r, i) => (r.e > 0) !== (ord[i].e > 0)).length;
-    pasos.push({ t: 'Residuos', html: `El residuo de cada observación es lo que el modelo no explica, $e_i = ${ww}_i − ${ww}̂_i$${esc}; con una constante en el modelo suman 0 (aquí ${f(res.reduce((s2, r) => s2 + r.e, 0))}). El mayor es ${f(mayor.e)} para ${nx} = ${f(mayor.x)}. Ordenados por ${nx}, cambian de signo ${cambios} veces: ${cambios <= 1 && n >= 6 ? '<b>casi no cambian</b>, lo que suele indicar una forma que no es la buena (por ejemplo, una curva ajustada con una recta); prueba con otro modelo' : 'se reparten sin un patrón claro, que es lo que se espera de un buen ajuste'}.` });
-    return { modelo, res, esc, cambios, nx, ny, pts, n, a, b, sa, sb, t, pval, nu, tk, nivel, r2, r2aj, s, SCR, elast, crec, x0, y0: x0 === null ? null : pred(x0), pred, mx, my, pasos };
+    // forma de U: pocos cambios de signo y residuos muy correlacionados con (u − ū)²
+    const cu = u.map((v) => (v - mu) ** 2), mc = cu.reduce((s2, v) => s2 + v, 0) / n, Scc = cu.reduce((s2, v) => s2 + (v - mc) ** 2, 0), See = res.reduce((s2, r) => s2 + r.e * r.e, 0);
+    const rce = Scc > 0 && See > 0 ? res.reduce((s2, r, i) => s2 + (cu[i] - mc) * r.e, 0) / Math.sqrt(Scc * See) : 0, curva = cambios <= 2 && n >= 7 && Math.abs(rce) > 0.7 && r2 < 0.99;
+    pasos.push({ t: 'Residuos', html: `El residuo de cada observación es lo que el modelo no explica, $e_i = ${ww}_i − ${ww}̂_i$${esc}; con una constante en el modelo suman 0 (aquí ${f(res.reduce((s2, r) => s2 + r.e, 0))}). El mayor es ${f(mayor.e)} para ${nx} = ${f(mayor.x)}. Ordenados por ${nx}, cambian de signo ${cambios} ${cambios === 1 ? 'vez' : 'veces'}: ${curva ? '<b>forman una sola racha de cada signo</b> (positivos, negativos y de nuevo positivos, o al revés), lo que suele indicar una forma que no es la buena (por ejemplo, una curva ajustada con una recta); prueba con otro modelo' : 'se reparten sin un patrón claro, que es lo que se espera de un buen ajuste'}.` });
+    return { modelo, res, esc, cambios, curva, nx, ny, pts, n, a, b, sa, sb, t, pval, nu, tk, nivel, r2, r2aj, s, SCR, elast, crec, x0, y0: x0 === null ? null : pred(x0), pred, mx, my, pasos };
   }
 
   const ejemplos = [

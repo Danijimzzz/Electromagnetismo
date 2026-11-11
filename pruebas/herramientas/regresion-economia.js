@@ -22,6 +22,8 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     cerca(rs.res[2].e, 8 - (rs.a + rs.b * 3), 1e-12, 'residuo = y − ŷ'); cerca(rs.res.reduce((s2, r) => s2 + r.e * r.x, 0), 0, 1e-9, 'los residuos son ortogonales a X');
     // una curva ajustada con una recta deja los residuos con forma de U: casi sin cambios de signo
     const cu = C.resolver({ modelo: 'lineal', datos: '1 1\n2 4\n3 9\n4 16\n5 25\n6 36\n7 49' }); if (cu.cambios > 2) mal(N + ': los residuos de una parábola ajustada con una recta cambian de signo ' + cu.cambios + ' veces');
+    if (!cu.curva) mal(N + ': la parábola ajustada con una recta debe marcar curva');
+    for (const k of ['consumo', 'publicidad', 'demanda', 'engel']) if (ej(k).curva) mal(N + ': ' + k + ' no debería avisar de forma mala');
     if (!cu.pasos.some((p) => p.t === 'Residuos' && /otro modelo/.test(p.html))) mal(N + ': debería avisar de que la forma no es buena');
     error({ modelo: 'lineal', datos: '1 2\n2 3' }, 'con 2 observaciones');
     error({ modelo: 'loglog', datos: '1 2\n0 3\n3 4' }, 'un ln de 0');
