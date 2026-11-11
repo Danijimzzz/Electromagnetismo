@@ -127,7 +127,11 @@
       if (sol.lim) h += dato(`${y}(0⁺)`, isFinite(sol.lim.ini) ? fH(sol.lim.ini) : '∞') + dato('Cuando t → ∞', sol.lim.fin === null ? 'no tiende a un valor' : fH(sol.lim.fin));
       if (sol.modo === 'edo') h += dato('Función de transferencia', M(`H(s) = ${sol.Htxt}`), 'ancho') + dato('Respuesta al impulso', M(`h(t) = ${sol.htxt}`), 'ancho');
     }
+    // estabilidad de F(s) por sus polos, y «Usar en…» Control con F(s) como lazo abierto
+    const ctl = !sol.saltos && (sol.modo === 'directa' || sol.modo === 'inversa') && sol.polos && sol.polos.length ? L.paraControl(sol.F) : null;
+    if (ctl) { sol.estab = L.estabilidad(sol.polos); h += dato('Estabilidad de F(s)', `<b>${sol.estab.estado === 'estable' ? 'Estable' : sol.estab.estado === 'marginal' ? 'Marginalmente estable' : 'Inestable'}</b> <small>${esc(sol.estab.txt.replace(/^[^:]*: /, ''))}</small>`, 'ancho'); }
     $('#resumen').innerHTML = h;
+    { const ue = $('#usar-en'); ue.hidden = !ctl; ue.innerHTML = ctl ? `<a class="btn" data-usar="circuitos/control" href="${esc(Herramienta.enlaceA('circuitos/control', { modo: 'raices', num: ctl.num, den: ctl.den, K: '1' }))}">Usar F(s) como lazo abierto en Control →</a>` : ''; }
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
     const gris = ventanaComp().length > 1 || sol.modo === 'convolucion';
     const quien = sol.modo === 'edo' ? 'y(t)' : sol.modo === 'sistema' ? 'x(t) y, en el segundo color, y(t)' : sol.modo === 'convolucion' ? '(f * g)(t)' : 'f(t)';

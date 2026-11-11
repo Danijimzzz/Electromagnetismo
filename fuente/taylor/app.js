@@ -73,6 +73,7 @@
     if (sol.modo === 'limite') {
       $('#resumen').innerHTML = dato(`Límite cuando x → ${esc(sol.aTxt)}`, sol.txt === 'no existe' ? 'No existe' : M(sol.txt), 'num ancho')
         + dato('Orden del numerador', sol.oN < 0 ? '—' : sol.oN) + dato('Orden del denominador', sol.oD);
+      $('#usar-en').hidden = true;
       $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
       $('#leyenda').innerHTML = !isFinite(sol.a) ? `${Mates.html(`$f(x) = ${sol.f}$`)} lejos del origen` + (isFinite(sol.val) ? '; la línea de trazos es la asíntota horizontal, y = límite.' : '.') : `${Mates.html(`$f(x) = ${sol.f}$`)} cerca de a` + (isFinite(sol.val) ? '; el círculo hueco marca el límite, que la función alcanza sin estar definida en a.' : '.');
       if (anda) para();
@@ -90,6 +91,13 @@
     if (sol.intervalo) h += dato('Intervalo de convergencia', M(sol.intervalo.txt) + (sol.intervalo.izq === null || sol.intervalo.der === null ? ' <small>(algún extremo sin decidir)</small>' : ''));
     if (sol.evitable) h += dato('Singularidad evitable', `f(${esc(sol.aTxt)}) = ${fH(sol.coef[0], 6)} por continuidad`);
     $('#resumen').innerHTML = h;
+    // «Usar en…»: f y su polinomio de Taylor en el Graficador (el polinomio como suma de c_k (x − a)^k con decimales)
+    {
+      const ue = $('#usar-en'), d = (x) => { const t = (+x.toFixed(14)).toFixed(14).replace(/0+$/, '').replace(/\.$/, ''); return t === '-0' ? '0' : t; };
+      const pol = sol.coef.map((c, k) => (c === 0 ? null : `(${d(c)})${k ? `*(x${sol.a === 0 ? '' : sol.a < 0 ? `+${d(-sol.a)}` : `-${d(sol.a)}`})^${k}` : ''}`)).filter(Boolean).join('+') || '0', W = Math.max(3, sol.x0 != null ? 1.6 * Math.abs(sol.x0 - sol.a) : 0);
+      ue.hidden = false;
+      ue.innerHTML = `<a class="btn" data-usar="graficador" href="${esc(Herramienta.enlaceA('graficador', { f: sc.f, g: pol, h: '', xmin: d(sol.a - W), xmax: d(sol.a + W), ymin: '', ymax: '' }))}">Dibujar f y su polinomio en el Graficador →</a>`;
+    }
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
     const rg = $('#grado'); rg.max = n; grado = Math.min(n, anda ? grado : n); rg.value = grado;
     pintaGrado();

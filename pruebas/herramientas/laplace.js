@@ -75,6 +75,13 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       let ok = false; try { LapC.resolver(sc); } catch (e) { ok = true; }
       if (!ok) mal(`Laplace: ${q} no da error`);
     }
+    // MAT.MA-3 · estabilidad por los polos y F(s) para Control. A mano: (s+1)/(s²+3s+2) tiene polos −1 y −2 (estable); 1/(s²+4), ±2i (marginal);
+    // 1/(s²(s+1)), polo doble en 0 (inestable); 1/(s−2), polo 2 (inestable); 1/(s²+2s+5), −1 ± 2i (estable)
+    for (const [F, e] of [['(s+1)/(s^2+3s+2)', 'estable'], ['1/(s^2+4)', 'marginal'], ['1/(s^2(s+1))', 'inestable'], ['1/(s-2)', 'inestable'], ['1/(s^2+2s+5)', 'estable'], ['1/(s(s+1))', 'marginal']]) {
+      const r = LapC.resolver({ modo: 'inversa', F }); igual(LapC.estabilidad(r.polos).estado, e, `estabilidad de ${F}`);
+    }
+    { const c = LapC.paraControl(LapC.resolver({ modo: 'inversa', F: '(s+3)/(s^2+3s+2)' }).F); if (!c || c.num !== '1 3' || c.den !== '1 3 2') mal(`Laplace: F(s) para Control sale ${JSON.stringify(c)}`); }
+    if (LapC.paraControl(LapC.resolver({ modo: 'directa', f: 't^2' }).F) !== null && LapC.paraControl(LapC.resolver({ modo: 'directa', f: 't^2' }).F).den !== '1 0 0 0') mal('Laplace: 2/s³ para Control');
     if (fallos === antes) console.log(`  ✓ Transformada de Laplace: ${LapC.ejemplos.length} ejemplos, resultados como en clase, directa frente a la integral, inversa de ida y vuelta (polos dobles y complejos), EDOs que cumplen la ecuación, escalones, deltas y trozos, convolución frente a la integral, sistemas que cumplen sus ecuaciones y errores`);
   }
 

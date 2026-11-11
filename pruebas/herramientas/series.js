@@ -55,6 +55,11 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     // sin primitiva elemental: estimación numérica con aviso, y no se presenta como exacta
     const ne = ig('sen(1/n)^2', 1);
     if (!ne.integral || ne.integral.exacta || !ne.pasos.some((ps) => ps.html.includes('estima numéricamente'))) mal('Series · sen²(1/n): la integral sin primitiva no avisa de que es una estimación');
+    // MAT.MA-3 · series que son un desarrollo de Taylor conocido: Σ (1/2)ⁿ = 1/(1 − x) en x = 1/2; Σ 3·(−0,5)ⁿ desde 0; Σ 1/n! = eˣ en x = 1; Σ 2ⁿ/n! en x = 2
+    for (const [an, n0, f, x0] of [['1/2^n', '0', '1/(1-x)', '0.5'], ['3(-0,5)^n', '0', '3/(1-x)', '-0.5'], ['1/n!', '0', 'e^x', '1'], ['2^n/n!', '0', 'e^x', '2'], ['1/2^n', '1', '0.5/(1-x)', '0.5']]) {
+      const d = C.resolver({ an, n0 }).desarrollo; if (!d || d.f !== f || d.x0 !== x0) mal(`Series · desarrollo de ${an}: sale ${JSON.stringify(d)} y no ${f} en ${x0}`);
+    }
+    for (const [an, n0] of [['1/n', '1'], ['1/n^2', '1'], ['n/(n+1)', '1'], ['1/n!', '1']]) if (C.resolver({ an, n0 }).desarrollo) mal(`Series: ${an} desde ${n0} no es un desarrollo conocido`);
     if (fallos === antes) console.log(`  ✓ Series: ${C.ejemplos.length} ejemplos, criterio de la integral y errores`);
   }
 

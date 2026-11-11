@@ -28,6 +28,8 @@ const Series = (() => {
   // listas de n grandes donde aₙ y aₙ₊₁ son números distintos de cero (si se desborda, se baja)
   const LISTAS = [[1e3, 1e4, 1e5, 1e6], [20, 40, 80, 120], [10, 15, 20, 30, 40, 60], [5, 8, 12, 16, 20, 25]];
 
+  const FACT = [1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880];
+  const cTxt = (x) => String(+x.toFixed(12));
   function resolver(sc) {
     if (vacio(sc.an)) throw new Error('Falta el término general aₙ');
     const n0 = vacio(sc.n0) ? 1 : +String(sc.n0).trim().replace(',', '.');
@@ -42,6 +44,16 @@ const Series = (() => {
     const ns = LISTAS.find((L) => L.every((n) => isFinite(a(n)) && a(n) !== 0 && isFinite(a(n + 1)) && a(n + 1) !== 0));
     const pasos = [{ t: 'Serie', html: `$∑_{n=${n0}}^{∞} a_n = ∑_{n=${n0}}^{∞} ${T}$` }];
     const out = { an: sc.an, n0, T, pasos, pruebas: [] };
+    // «Usar en…»: si los términos son los de un desarrollo de Taylor conocido evaluado en un punto, el de la función (geométrica: C/(1 − x) en x = razón;
+    // exponencial, desde n = 0: C·e^x en x = a₁/a₀), para ver la suma como límite de los polinomios
+    {
+      const vs = []; for (let n = n0; n < n0 + 9; n++) vs.push(a(n));
+      const cerca = (u, v) => Math.abs(u - v) <= 1e-9 * Math.max(Math.abs(u), Math.abs(v), 1e-300);
+      const C = vs[0], fx = (c, t) => (cTxt(c) === '1' ? t : `${cTxt(c)}${t.startsWith('1/') ? t.slice(1) : ` ${t}`}`);
+      const r = vs[1] / vs[0];
+      if (C !== 0 && isFinite(r) && r !== 0 && vs.every((v, i) => cerca(v, C * r ** i))) out.desarrollo = { f: C === 1 ? '1/(1-x)' : `${cTxt(C)}/(1-x)`, x0: cTxt(r), n: 8, tipo: 'geométrica' };
+      else if (n0 === 0 && C !== 0 && isFinite(r) && r !== 0 && vs.every((v, i) => cerca(v, C * r ** i / FACT[i]))) out.desarrollo = { f: C === 1 ? 'e^x' : `${cTxt(C)} e^x`, x0: cTxt(r), n: 8, tipo: 'exponencial' };
+    }
     const nums = Array.from({ length: 8 }, (_, i) => a(n0 + i));
     pasos.push({ t: 'Primeros términos', html: `$${nums.map((v) => f(v, 5)).join(' ; ')} ; …$` });
     if (!ns) {
