@@ -9,7 +9,7 @@
   const PO = PhillipsOkun, { f, num } = Eco;
   const pc = (v) => `${f(v)} %`;
   Calculadora.monta({
-    C: PO, carpeta: 'phillips-okun', app: 'PhillipsOkunApp',
+    C: PO, carpeta: 'phillips-okun', app: 'PhillipsOkunApp', azar: PO.azar, enunciado: PO.enunciado,
     nota: (sc) => 'Paro, crecimiento e inflación en %. Para un valor negativo, escribe el signo menos (−1).' + (sc.modo === 'datos' ? ' <b>Los datos del ejemplo están inventados</b> (no son de ningún país real): sustitúyelos por los tuyos.' : ''),
     campos: (sc) => {
       const cs = [{ k: 'modo', nom: 'Calcular', tipo: 'sel', ops: Object.entries(PO.MODOS) }];

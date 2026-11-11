@@ -9,7 +9,7 @@
   const E = Elasticidades, { f, num } = Eco;
   const NOM = { precio: ['Precio', 'P'], renta: ['Renta', 'R'], cruzada: ['Precio del otro bien', 'P_y'], oferta: ['Precio', 'P'] };
   Calculadora.monta({
-    C: E, carpeta: 'elasticidades', app: 'ElasticidadesApp',
+    C: E, carpeta: 'elasticidades', app: 'ElasticidadesApp', azar: E.azar, enunciado: E.enunciado,
     nota: 'La cantidad es la demandada del bien que estudias. En la cruzada, el precio es el del otro bien. La coma es decimal.',
     campos: (sc) => {
       const cs = [{ k: 'tipo', nom: 'Elasticidad', tipo: 'sel', ops: Object.entries(E.TIPOS) }];

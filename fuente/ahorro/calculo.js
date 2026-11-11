@@ -101,6 +101,15 @@ const Ahorro = (() => {
     { clave: 'poder', nombre: 'Lo que valdrán 1.000 € dentro de 20 años', sc: { modo: 'poder', x: '1000', pi: '2,5', n: '20' } },
   ];
 
-  return { resolver, ejemplos, MODOS, PERIODOS };
+  // modo práctica: datos redondos al azar
+  const AZ = K.az, azar = AZ.desde(ejemplos, () => ({
+    modo: AZ.toma(['final', 'objetivo']), c0: String(AZ.toma([0, 1000, 5000])), m: String(AZ.toma([1, 12])), r: String(AZ.toma([3, 4, 5, 6])), pi: String(AZ.toma([1, 2, 3])), n: String(AZ.toma([10, 20, 30])), indexa: 'no',
+    a: String(AZ.toma([50, 100, 200, 300])), objetivo: String(AZ.toma([50000, 100000, 200000])),
+  }), (sc) => !sc.ret && sc.modo !== 'poder', (sc) => resolver(sc));
+  const enunciado = (sc) => sc.modo === 'objetivo'
+    ? `Quieres reunir ${sc.objetivo} € en ${sc.n} años partiendo de ${sc.c0} €, con una rentabilidad del ${sc.r} % anual y una inflación del ${sc.pi} %. ¿Cuánto tienes que ahorrar ${sc.m === '1' ? 'cada año' : 'cada mes'}? Calcula también el saldo final, lo aportado y el tipo real.`
+    : `Ahorras ${sc.a} € ${sc.m === '1' ? 'al año' : 'al mes'} durante ${sc.n} años partiendo de ${sc.c0} €, con una rentabilidad del ${sc.r} % anual y una inflación del ${sc.pi} %. Calcula el saldo final, su valor en euros de hoy, lo aportado, la rentabilidad ganada y el tipo real.`;
+
+  return { azar, enunciado, resolver, ejemplos, MODOS, PERIODOS };
 })();
 if (typeof module !== 'undefined') module.exports = Ahorro;

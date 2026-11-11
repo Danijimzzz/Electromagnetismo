@@ -7,7 +7,7 @@
 (() => {
   const A = AmortizacionInmovilizado, { dinero, num } = Eco;
   Calculadora.monta({
-    C: A, carpeta: 'amortizacion-inmovilizado', app: 'AmortizacionApp',
+    C: A, carpeta: 'amortizacion-inmovilizado', app: 'AmortizacionApp', azar: A.azar, enunciado: A.enunciado,
     nota: 'El valor residual es lo que se espera sacar del bien al final (0 si no vale nada). En el método por unidades, escribe lo usado cada año separado por espacios.',
     campos: (sc) => [
       { k: 'metodo', nom: 'Método', tipo: 'sel', ops: Object.entries(A.METODOS) },

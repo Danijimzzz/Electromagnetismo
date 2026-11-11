@@ -71,6 +71,13 @@ const Multiplicador = (() => {
     { clave: 'presupuesto-equilibrado', nombre: 'Presupuesto equilibrado: ΔG = ΔT = 100 (multiplicador 1)', sc: { c0: '100', c: '0,8', t0: '0', t: '0', i: '200', g: '300', x: '0', m0: '0', m: '0', dg: '100', dt0: '100', yp: '' } },
   ];
 
-  return { resolver, ejemplos };
+  // modo práctica: datos redondos al azar
+  const AZ = K.az, azar = AZ.desde(ejemplos, () => ({
+    c0: String(AZ.toma([100, 150, 200])), c: AZ.t(AZ.toma([0.6, 0.75, 0.8, 0.9])), t0: String(AZ.toma([0, 100])), t: AZ.t(AZ.toma([0, 0.2, 0.25])), i: String(AZ.toma([150, 200, 250, 300])), g: String(AZ.toma([200, 300, 400])),
+    x: String(AZ.toma([0, 100, 200])), m0: String(AZ.toma([0, 50])), m: AZ.t(AZ.toma([0, 0.1, 0.2])), dg: String(AZ.toma([50, 100])), dt0: '0', yp: '',
+  }), null, (sc) => resolver(sc));
+  const enunciado = (sc) => `En una economía el consumo es C = ${sc.c0} + ${sc.c}(Y − T), la inversión ${sc.i} y el gasto público ${sc.g}${sc.x !== '0' ? `, las exportaciones ${sc.x}` : ''}; los impuestos son T = ${AZ.poli([[sc.t0, 0], [sc.t, 1]], 'Y')}${sc.m !== '0' || sc.m0 !== '0' ? ` y las importaciones M = ${AZ.poli([[sc.m0, 0], [sc.m, 1]], 'Y')}` : ''}. Calcula la renta de equilibrio, los multiplicadores, el consumo, el ahorro y los saldos público y exterior, y cuánto cambia la renta si el gasto público sube ${sc.dg}.`;
+
+  return { azar, enunciado, resolver, ejemplos };
 })();
 if (typeof module !== 'undefined') module.exports = Multiplicador;

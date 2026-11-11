@@ -58,6 +58,10 @@ const LorenzGini = (() => {
     { clave: 'desordenado', nombre: 'Rentas sin ordenar de diez personas', sc: { modo: 'rentas', datos: '1500 900 2100 1200 3500 800 1800 6000 1100 1400' } },
   ];
 
-  return { resolver, ejemplos, MODOS };
+  // modo práctica: datos redondos al azar
+  const AZ = K.az, azar = AZ.desde(ejemplos, () => ({ datos: Array.from({ length: AZ.e(5, 8) }, () => AZ.toma([10, 20, 30, 40, 60, 100, 200])).join(' ') }), (sc) => sc.modo === 'rentas', (sc) => resolver(sc));
+  const enunciado = (sc) => `Las rentas de ${sc.datos.split(' ').length} personas son ${sc.datos.split(' ').join(', ')}. Calcula el índice de Gini, la parte de la renta del 20 % más pobre y la del 20 % más rico, y el cociente S80/S20.`;
+
+  return { azar, enunciado, resolver, ejemplos, MODOS };
 })();
 if (typeof module !== 'undefined') module.exports = LorenzGini;

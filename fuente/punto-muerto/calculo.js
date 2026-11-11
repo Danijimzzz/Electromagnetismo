@@ -47,6 +47,13 @@ const PuntoMuerto = (() => {
     { clave: 'perdidas', nombre: 'Una empresa que no llega al punto muerto', sc: { cf: '50000', p: '25', cv: '15', q: '4000', objetivo: '' } },
   ];
 
-  return { resolver, ejemplos };
+  // modo práctica: datos redondos al azar
+  const AZ = K.az, azar = AZ.desde(ejemplos, () => {
+    const cf = AZ.toma([10000, 20000, 30000, 50000]), p = AZ.toma([20, 25, 50, 100]), cv = Math.round(p * AZ.toma([0.4, 0.5, 0.6]) * 100) / 100;
+    return { cf: String(cf), p: String(p), cv: AZ.t(cv, 2), q: String(Math.max(50, Math.round((cf / (p - cv)) * AZ.toma([0.8, 1.2, 1.5]) / 50) * 50)), objetivo: '' };
+  }, (sc) => !sc.objetivo, (sc) => resolver(sc));
+  const enunciado = (sc) => `Una empresa tiene costes fijos de ${sc.cf} €, vende a ${sc.p} € la unidad y el coste variable unitario es de ${sc.cv} €. Calcula el punto muerto en unidades y en euros, el margen de contribución y, vendiendo ${sc.q} unidades, el beneficio, el margen de seguridad y el apalancamiento operativo.`;
+
+  return { azar, enunciado, resolver, ejemplos };
 })();
 if (typeof module !== 'undefined') module.exports = PuntoMuerto;

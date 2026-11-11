@@ -97,6 +97,13 @@ const Rentas = (() => {
     { clave: 'geometrica', nombre: 'Renta que crece un 3 % al año: 1.000 € el primero, 10 años al 5 %', sc: { modo: 'vf', pago: 'pos', duracion: 'temporal', variacion: 'geom', g: '3', c: '1000', n: '10', i: '5', m: '1', d: '0' } },
   ];
 
-  return { resolver, ejemplos, MODOS, VARIACIONES, PERIODOS };
+  // modo práctica: datos redondos al azar
+  const AZ = K.az, azar = AZ.desde(ejemplos, () => {
+    const m = AZ.toma([1, 12]);
+    return { modo: AZ.toma(['va', 'vf']), pago: AZ.toma(['pos', 'pre']), c: String(AZ.toma([200, 500, 1000, 2000])), n: String(m === 1 ? AZ.toma([5, 10, 15, 20]) : AZ.toma([24, 60, 120])), i: String(AZ.toma([3, 4, 5, 6])), m: String(m), d: '0' };
+  }, (sc) => !sc.variacion && sc.duracion === 'temporal' && sc.d === '0' && (sc.modo === 'va' || sc.modo === 'vf'), (sc) => resolver(sc));
+  const enunciado = (sc) => `Una renta de ${sc.c} € ${sc.m === '1' ? 'al año' : 'al mes'}, pagadera al ${sc.pago === 'pos' ? 'final' : 'principio'} de cada periodo durante ${sc.n} ${sc.m === '1' ? 'años' : 'meses'}, con un tipo de interés del ${sc.i} % anual. Calcula su valor actual y su valor final.`;
+
+  return { azar, enunciado, resolver, ejemplos, MODOS, VARIACIONES, PERIODOS };
 })();
 if (typeof module !== 'undefined') module.exports = Rentas;

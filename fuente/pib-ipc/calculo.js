@@ -77,6 +77,24 @@ const PibIpc = (() => {
     { clave: 'agregados', nombre: 'Del PIB a la renta nacional', sc: { modo: 'agregados', c: '600', i: '150', g: '200', x: '250', m: '230', rfn: '-15', amort: '120', tin: '90' } },
   ];
 
-  return { resolver, ejemplos, MODOS };
+  // modo práctica: datos redondos al azar
+  const AZ = K.az, azar = AZ.desde(ejemplos, (sc) => {
+    if (sc.modo === 'agregados') return { c: String(AZ.toma([400, 600, 800])), i: String(AZ.toma([100, 150, 200, 250])), g: String(AZ.toma([150, 200, 300])), x: String(AZ.toma([200, 250, 300])), m: String(AZ.toma([180, 230, 280])), rfn: String(AZ.toma([-30, -15, 0, 20])), amort: String(AZ.toma([80, 100, 120])), tin: String(AZ.toma([60, 90, 120])) };
+    const n = AZ.toma([2, 3]), a0 = AZ.toma([2020, 2022, 2023]), anos = Array.from({ length: sc.modo === 'pib' ? n : 5 }, (_, k) => a0 + k);
+    if (sc.modo === 'deflactar') {
+      let ipc = 100, sue = AZ.toma([18000, 20000, 25000]); const filas = ['año sueldo IPC'];
+      anos.forEach((a, k) => { if (k) { ipc *= 1 + AZ.toma([0.01, 0.02, 0.03, 0.05]); sue += 50 * AZ.e(4, 16); } filas.push(`${a} ${sue} ${AZ.t(ipc, 1)}`); });
+      return { ref: String(a0), serie: filas.join('\n') };
+    }
+    const bienes = Array.from({ length: AZ.toma([2, 3]) }, () => { let p = AZ.toma([5, 8, 10, 20]), q = AZ.toma([50, 100, 200]); return anos.map(() => { const t = `${AZ.t(p, 2)} ${q}`; p *= 1 + AZ.toma([0.05, 0.1]); q = Math.round(q * (1 + AZ.toma([-0.05, 0, 0.05, 0.1]))); return t; }).join(' '); });
+    return { anos: anos.join(' '), base: String(a0), bienes: bienes.join('\n') };
+  }, null, (sc) => resolver(sc));
+  const enunciado = (sc) => sc.modo === 'agregados'
+    ? `En una economía el consumo es ${sc.c}, la inversión ${sc.i}, el gasto público ${sc.g}, las exportaciones ${sc.x} y las importaciones ${sc.m}; la renta neta de factores del exterior es ${sc.rfn}, la amortización ${sc.amort} y los impuestos indirectos netos ${sc.tin}. Calcula el PIB a precios de mercado, el PNB, el PNN y la renta nacional.`
+    : sc.modo === 'deflactar'
+      ? `Con la serie de sueldos y del IPC de la tabla, expresa el último sueldo en euros de ${sc.ref} y calcula la variación nominal y la real del sueldo y la inflación del último año.`
+      : `Con los precios y las cantidades de ${sc.bienes.split('\n').length} bienes en ${sc.anos.split(' ').join(', ')}, calcula el PIB nominal y el real (a precios de ${sc.base}), el deflactor, el crecimiento real y la inflación del último año.`;
+
+  return { azar, enunciado, resolver, ejemplos, MODOS };
 })();
 if (typeof module !== 'undefined') module.exports = PibIpc;

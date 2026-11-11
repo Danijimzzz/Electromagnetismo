@@ -62,6 +62,20 @@ const NumerosIndice = (() => {
     { clave: 'estudiante', nombre: 'Lo que gasta un estudiante en un mes', sc: { modo: 'cesta', cesta: 'p0 q0 p1 q1\n2,5 20 3 18\n1,5 40 1,6 44\n12 2 15 1\n40 1 45 1' } },
   ];
 
-  return { resolver, ejemplos, MODOS };
+  // modo práctica: datos redondos al azar
+  const AZ = K.az, azar = AZ.desde(ejemplos, (sc) => {
+    if (sc.modo === 'cesta') {
+      const filas = ['p0 q0 p1 q1'];
+      for (let k = AZ.toma([3, 4]); k > 0; k--) { const p0 = AZ.toma([1, 2, 5, 12, 40]), q0 = AZ.toma([10, 20, 50, 100, 200]); filas.push(`${AZ.t(p0)} ${q0} ${AZ.t(Math.round(p0 * AZ.toma([1.05, 1.1, 1.2, 1.5]) * 100) / 100, 2)} ${Math.round(q0 * AZ.toma([0.8, 0.9, 1, 1.1]))}`); }
+      return { cesta: filas.join('\n') };
+    }
+    const a0 = AZ.toma([2016, 2018, 2020]); let v = AZ.toma([100, 250, 500]);
+    return { datos: Array.from({ length: 6 }, (_, k) => { if (k) v = Math.round(v * (1 + AZ.toma([-0.05, 0.03, 0.05, 0.08]))); return `${a0 + k} ${v}`; }).join('\n'), base: String(a0 + AZ.toma([0, 0, 2])) };
+  }, null, (sc) => resolver(sc));
+  const enunciado = (sc) => sc.modo === 'cesta'
+    ? `Con los precios y las cantidades de ${sc.cesta.split('\n').length - 1} bienes en el periodo 0 y en el periodo 1 (tabla de datos), calcula los índices de precios de Laspeyres, Paasche y Fisher, el índice de valor y la subida de precios según Laspeyres.`
+    : `Con la serie de valores por año de la tabla de datos, cámbiala a base ${sc.base} = 100 y calcula el índice del último periodo, la tasa de la última variación, la tasa acumulada y la tasa media por periodo.`;
+
+  return { azar, enunciado, resolver, ejemplos, MODOS };
 })();
 if (typeof module !== 'undefined') module.exports = NumerosIndice;

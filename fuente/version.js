@@ -593,6 +593,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: cinco modos. Dos niveles (con degeneraciones), oscilador de Einstein, niveles propios (un rotor, un átomo…) con su función de partición, poblaciones de Boltzmann, energía, entropía, energía libre y capacidad calorífica, y la entropía S = k ln Ω de un sólido de Einstein y de dos sólidos que se reparten la energía, con su desarrollo paso a paso.'] },
     ],
     markowitz: [
+      { v: '0.3', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.'] },
       { v: '0.2', fecha: '2026-11-08', cambios: ['Dos activos con correlación +1 o −1 (con cartera sin riesgo y aviso de arbitraje); modo sin ventas en corto por defecto, indicado en los resultados; botón para usar la rentabilidad de la cartera tangente como objetivo.'] },
       { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: frontera eficiente de Markowitz con de 2 a 6 activos y su matriz de correlaciones (con o sin ventas en corto), cartera de mínima varianza, cartera tangente con ratio de Sharpe y línea del mercado de capitales, cartera para una rentabilidad objetivo, y CAPM con beta, rentabilidad exigida, alfa y línea del mercado de valores. Con tabla de pesos y desarrollo paso a paso.'] },
     ],
@@ -648,14 +649,17 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: ANOVA de un factor para comparar las medias de dos o más grupos escritos uno por línea. Da la tabla ANOVA (entre y dentro de los grupos), F con su valor crítico y p-valor, el tamaño del efecto η², las medias y varianzas de cada grupo, las comparaciones por parejas con la corrección de Bonferroni, la gráfica de los datos y el desarrollo paso a paso. Con 3 ejemplos de clase, modo práctica y enlace para compartir.'] },
     ],
     'black-scholes': [
+      { v: '0.3', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.'] },
       { v: '0.2', fecha: '2026-11-08', cambios: ['Casos límite (vencimiento o volatilidad cero) y volatilidad implícita a partir del precio de mercado de la opción.'] },
       { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: precio de una call y una put europeas con la fórmula de Black-Scholes (con dividendo), d₁ y d₂, comprobación de la paridad call-put y las griegas (delta, gamma, vega, theta y rho), con la gráfica del valor de la opción hoy y al vencimiento y el desarrollo paso a paso.'] },
     ],
     bonos: [
+      { v: '0.3', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.'] },
       { v: '0.2', fecha: '2026-11-08', cambios: ['Más cálculos de bonos con su gráfica y mejor desarrollo paso a paso.'] },
       { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: precio de un bono con cupón anual, semestral, trimestral o mensual a partir de la TIR (o la TIR a partir del precio), rentabilidad corriente, duración de Macaulay y modificada, convexidad y variación del precio al cambiar los tipos, con la curva precio-TIR, la tabla de flujos y el desarrollo paso a paso.'] },
     ],
     solow: [
+      { v: '0.3', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.'] },
       { v: '0.2', fecha: '2026-11-08', cambios: ['Gráfica del modelo con la senda del capital y el estado estacionario, y más ejemplos.'] },
       { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: estado estacionario, regla de oro, velocidad de convergencia y semivida, y trayectoria del capital desde el valor inicial en el modelo de Solow con función Cobb-Douglas, con el diagrama de Solow, la tabla año a año y el desarrollo paso a paso.'] },
     ],
@@ -741,10 +745,12 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: dos modos. Desde la tabla de verdad (1 a 5 variables, hasta 4 salidas y casillas indiferentes X) da los minitérminos Σm, los maxitérminos ΠM, las formas canónicas y la forma simplificada por Quine-McCluskey en suma de productos y en producto de sumas, con el mapa de Karnaugh y el circuito de puertas dibujado. Desde las puertas (AND, OR, NOT, NAND, NOR, XOR y XNOR de 2 a 4 entradas) da la ecuación de cada puerta, la tabla de verdad con todas las puertas y las mismas ecuaciones. Con ejemplos (mayoría, semisumador, sumador completo, primos en BCD, multiplexor y XOR con NAND), desarrollo paso a paso y botón para copiar las ecuaciones.'] },
     ],
     multiplicador: [
+      { v: '0.3', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.'] },
       { v: '0.2', fecha: '2026-11-08', cambios: ['Más ejemplos.'] },
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: renta de equilibrio del modelo renta-gasto con impuestos e importaciones, multiplicador del gasto, de los impuestos fijos y del presupuesto equilibrado, efecto de un cambio de gasto o de impuestos con sus rondas, brecha con el pleno empleo y la cruz keynesiana, con el desarrollo paso a paso.'] },
     ],
     'is-lm': [
+      { v: '0.3', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.'] },
       { v: '0.2', fecha: '2026-11-08', cambios: ['Casos clásico y keynesiano con aviso de la eficacia de cada política.'] },
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: curvas IS y LM, renta y tipo de interés de equilibrio, y el efecto de subir el gasto, bajar impuestos o aumentar el dinero (multiplicadores y efecto expulsión), con la gráfica y el desarrollo paso a paso.'] },
     ],
@@ -770,10 +776,12 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: movimiento armónico simple de una masa en un muelle o un péndulo (periodo, velocidad y aceleración máximas, energía, posición en un instante y periodo exacto del péndulo), oscilador amortiguado (subamortiguado, crítico y sobreamortiguado, con factor de calidad y decremento logarítmico) y oscilador forzado con su amplitud, desfase y resonancia, con la gráfica y el desarrollo.'] },
     ],
     beneficio: [
+      { v: '0.3', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.'] },
       { v: '0.2', fecha: '2026-11-08', cambios: ['Competencia perfecta con el coste cúbico de Costes de producción: cantidad óptima, regla de cierre y precio de beneficio nulo.'] },
       { v: '0.1', fecha: '2026-10-31', cambios: ['Primera versión: cantidad y precio que maximizan el beneficio en competencia perfecta (precio de cierre y de beneficio nulo) y en monopolio (índice de Lerner, comparación con la competencia y pérdida de eficiencia), con la gráfica de ingreso marginal, coste marginal y coste medio.'] },
     ],
     costes: [
+      { v: '0.3', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.'] },
       { v: '0.2', fecha: '2026-11-08', cambios: ['Se puede partir del coste marginal, y hay más ejemplos.'] },
       { v: '0.1', fecha: '2026-10-31', cambios: ['Primera versión: a partir de la función de costes con costes fijos y términos de primer, segundo y tercer grado, el coste variable, total, medio (fijo, variable y total) y marginal de una producción, el mínimo de explotación (precio de cierre) y el óptimo de explotación (umbral de rentabilidad), con la gráfica de las curvas.'] },
     ],
@@ -814,24 +822,30 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: efecto fotoeléctrico (energía del fotón, trabajo de extracción de varios metales, energía cinética y velocidad máximas, potencial de frenado y umbral), longitud de onda de De Broglie, dilatación del tiempo, contracción de longitudes y energía y momento relativistas, con su gráfica y el desarrollo.'] },
     ],
     'lorenz-gini': [
+      { v: '0.2', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.'] },
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: la curva de Lorenz y el índice de Gini a partir de las rentas de cada persona, de tramos de renta o de quintiles, por el área y con la fórmula de clase, con lo que se lleva el 20 % más pobre y el más rico (S80/S20), la tabla y el desarrollo.'] },
     ],
     'phillips-okun': [
+      { v: '0.3', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.'] },
       { v: '0.2', fecha: '2026-11-08', cambios: ['Las curvas de Phillips y de Okun llevan ahora su rótulo y su explicación.'] },
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: la ley de Okun (el paro con un crecimiento o el crecimiento para bajar el paro), la brecha de producción con el paro natural, la curva de Phillips con expectativas y shocks de oferta (estanflación) y el ajuste de una curva de Phillips a datos de paro e inflación, con la gráfica y el desarrollo.'] },
     ],
     'tipos-cambio': [
+      { v: '0.3', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.'] },
       { v: '0.2', fecha: '2026-11-08', cambios: ['Paridad de los tipos de interés: tipo a plazo, prima o descuento, paridad descubierta y arbitraje con el tipo a plazo de mercado.', 'Aviso de que los tipos de los ejemplos son ilustrativos.'] },
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: cambiar euros por dólares, libras, yenes y otras monedas (y al revés) con comisión, el tipo de cambio cruzado, la apreciación o depreciación del euro, la paridad del poder adquisitivo con el tipo de cambio real (como el índice Big Mac) y la PPA relativa con la inflación de los dos países, con su gráfica y el desarrollo.'] },
     ],
     elasticidades: [
+      { v: '0.3', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.'] },
       { v: '0.2', fecha: '2026-11-08', cambios: ['Elasticidad de la oferta y curva isoelástica.'] },
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: elasticidad precio de la demanda, renta y cruzada entre dos situaciones, sobre el valor inicial y de arco, con su clasificación y el efecto sobre el ingreso total, y la elasticidad en un punto de una demanda lineal con el precio que hace máximo el ingreso, con la gráfica.'] },
     ],
     'pib-ipc': [
+      { v: '0.2', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.'] },
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: PIB nominal y real de una economía con varios bienes y años, deflactor, crecimiento real e inflación; deflactar una serie con el IPC para tenerla en euros constantes; y los agregados de la contabilidad nacional del PIB a la renta nacional, con gráfica y tabla.'] },
     ],
     'numeros-indice': [
+      { v: '0.2', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.'] },
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: índices simples de una serie con la base que elijas (cambio de base), tasas de variación, tasa acumulada y tasa media acumulativa, e índices de precios de Laspeyres, Paasche y Fisher, de cantidades y de valor de una cesta de productos, con la gráfica y la tabla.'] },
     ],
     ratios: [
@@ -839,28 +853,35 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: a partir del balance y la cuenta de resultados, el fondo de maniobra, los ratios de liquidez, tesorería, disponibilidad, garantía, endeudamiento, autonomía y calidad de la deuda con su valor recomendado y su valoración, la rentabilidad económica (margen por rotación), la financiera y el apalancamiento, con el balance dibujado.'] },
     ],
     'punto-muerto': [
+      { v: '0.2', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.'] },
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: punto muerto en unidades y en euros, margen de contribución, beneficio con las ventas previstas, margen de seguridad, apalancamiento operativo y ventas para un beneficio objetivo, con la gráfica de ingresos y costes.'] },
     ],
     ahorro: [
+      { v: '0.3', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.'] },
       { v: '0.2', fecha: '2026-11-08', cambios: ['Fase de retirada: cuánto dura el dinero y la retirada máxima sostenible.'] },
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: plan de ahorro con capital inicial y aportaciones mensuales, trimestrales o anuales (también subiendo con la inflación), saldo final en euros de entonces y de hoy, tipo real de Fisher, aportación necesaria para un objetivo y pérdida de poder adquisitivo de un dinero parado, con la gráfica y la tabla año a año.'] },
     ],
     'van-tir': [
+      { v: '0.3', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.'] },
       { v: '0.2', fecha: '2026-11-08', cambios: ['Varias TIR cuando los flujos cambian de signo, TIR modificada y comparación de dos proyectos con la tasa de Fisher.'] },
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: valor actual neto, tasa interna de rentabilidad, plazo de recuperación simple y descontado e índice de rentabilidad de una inversión, con la decisión, la tabla de flujos actualizados y la gráfica del VAN según la tasa.'] },
     ],
     'amortizacion-inmovilizado': [
+      { v: '0.2', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.'] },
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: cuadro de amortización de un bien por el método lineal, la suma de dígitos, el degresivo de porcentaje constante y las unidades de producción, con la cuota de cada año, la amortización acumulada, el valor neto contable y su gráfica.'] },
     ],
     prestamos: [
+      { v: '0.3', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.'] },
       { v: '0.2', fecha: '2026-11-08', cambios: ['Periodo de carencia de capital y amortización anticipada reduciendo la cuota o el plazo, con los intereses ahorrados.'] },
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: cuota y cuadro de amortización completo de un préstamo por el sistema francés, el de cuota de amortización constante y el americano, con pagos anuales, semestrales, trimestrales o mensuales, los intereses totales y la TAE, también con comisión de apertura.'] },
     ],
     rentas: [
+      { v: '0.3', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.'] },
       { v: '0.2', fecha: '2026-11-08', cambios: ['Rentas variables: términos en progresión aritmética o geométrica, con valor actual y valor final.'] },
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: valor actual, valor final, término y número de términos de rentas constantes pospagables o prepagables, temporales o perpetuas, inmediatas o diferidas, con términos anuales, semestrales, trimestrales o mensuales, la tabla de términos y su gráfica.'] },
     ],
     interes: [
+      { v: '0.3', fecha: '2026-11-11', cambios: ['Modo práctica propio: ejercicios al azar de esta herramienta, con su enunciado y la corrección de lo que escribes.'] },
       { v: '0.2', fecha: '2026-11-08', cambios: ['Tiempo en meses o días (año de 365 o 360 días) y capitalización continua.'] },
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: capital final, capital inicial, tipo de interés y tiempo en capitalización simple y compuesta (anual, semestral, trimestral, mensual o diaria), el paso del TIN a la TAE y al revés, la comparación simple frente a compuesta año a año y su gráfica.'] },
     ],

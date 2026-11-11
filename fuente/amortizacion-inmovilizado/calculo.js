@@ -71,6 +71,13 @@ const AmortizacionInmovilizado = (() => {
     { clave: 'ordenador', nombre: 'Ordenador de 1.200 € a 3 años sin valor residual', sc: { metodo: 'lineal', v0: '1200', vr: '0', n: '3' } },
   ];
 
-  return { resolver, ejemplos, METODOS };
+  // modo práctica: datos redondos al azar
+  const AZ = K.az, azar = AZ.desde(ejemplos, (sc) => {
+    const v0 = AZ.toma([10000, 30000, 50000, 80000]), cambia = { v0: String(v0), vr: String(Math.round(v0 * AZ.toma([0, 0.1]))), n: String(AZ.toma([3, 4, 5, 6])) };
+    return sc.coef ? { ...cambia, coef: AZ.t(AZ.toma([1.5, 2])) } : cambia;
+  }, (sc) => sc.metodo !== 'unidades', (sc) => resolver(sc));
+  const enunciado = (sc) => `Un activo cuesta ${sc.v0} € y se espera usarlo durante ${sc.n} años, con un valor residual de ${sc.vr} €. Con el método ${{ lineal: 'lineal', digitos: 'de los números dígitos decrecientes', degresivo: `degresivo (coeficiente ${sc.coef})` }[sc.metodo]}, calcula la base amortizable, la cuota del primer y del último año y el valor neto contable al final.`;
+
+  return { azar, enunciado, resolver, ejemplos, METODOS };
 })();
 if (typeof module !== 'undefined') module.exports = AmortizacionInmovilizado;

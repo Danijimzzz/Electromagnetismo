@@ -72,6 +72,16 @@ const Costes = (() => {
     return { ...r, entrada: 'cmg', a, b, c, m0, m1, m2 };
   }
 
-  return { resolver, ejemplos, funciones };
+  // modo práctica: datos redondos al azar
+  const AZ = K.az, azar = AZ.desde(ejemplos, (sc) => {
+    const cf = AZ.toma([20, 32, 50, 100, 200]);
+    if (sc.entrada === 'cmg') { const [a, b] = AZ.toma([[15, -6], [12, -4], [20, -6], [10, -4]]); return { cf: String(cf), m0: String(a), m1: String(2 * b), m2: '3', q: String(AZ.e(2, 8)) }; }
+    if (sc.c === '0') return { cf: String(AZ.toma([100, 200, 300, 450])), a: String(AZ.toma([5, 10, 20])), b: AZ.t(AZ.toma([0.25, 0.5, 1])), c: '0', q: String(AZ.toma([10, 20, 30])) };
+    const [a, b] = AZ.toma([[15, -6], [12, -4], [20, -6], [30, -9], [10, -4]]);
+    return { cf: String(cf), a: String(a), b: String(b), c: '1', q: String(AZ.e(2, 9)) };
+  }, null, (sc) => resolver(sc));
+  const enunciado = (sc) => `${sc.entrada === 'cmg' ? `El coste marginal de una empresa es CMg = ${AZ.poli([[sc.m0, 0], [sc.m1, 1], [sc.m2, 2]])} y sus costes fijos son ${sc.cf} €.` : `Una empresa tiene costes fijos de ${sc.cf} € y costes variables CV = ${AZ.poli([[sc.a, 1], [sc.b, 2], [sc.c, 3]])}.`} Calcula, para Q = ${sc.q}, los costes variable, total, medio, variable medio, fijo medio y marginal, y el mínimo y el óptimo de explotación.`;
+
+  return { azar, enunciado, resolver, ejemplos, funciones };
 })();
 if (typeof module !== 'undefined') module.exports = Costes;

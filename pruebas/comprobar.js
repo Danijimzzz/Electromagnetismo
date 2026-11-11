@@ -61,6 +61,8 @@ if (faltan.length) mal(`publico/ no tiene: ${faltan.join(', ')}`);
 // errores de unión de ramas (marcadores de conflicto, JSON y .js rotos, claves repetidas, scripts que no compilan juntos): pruebas/union.js
 if (primera) { try { execFileSync('node', [path.join(__dirname, 'union.js')], { stdio: 'inherit' }); } catch (e) { mal('Unión de ramas: ver arriba'); } }
 // banco de casos límite de Matemáticas (MAT.MA-2), sin navegador: pruebas/casos-limite-matematicas.js
+// ejercicios al azar de Economía (ECO.EC-1): pruebas/economia-practica.js
+if (primera) { try { execFileSync('node', [path.join(__dirname, 'economia-practica.js')], { stdio: 'inherit', timeout: 120000 }); } catch (e) { mal('Economía, ejercicios al azar: ver arriba'); } }
 if (primera && !solo) { try { execFileSync('node', [path.join(__dirname, 'casos-limite-matematicas.js')], { stdio: 'inherit', timeout: 120000 }); } catch (e) { mal('Casos límite de Matemáticas: ver arriba'); } }
 const web = fs.readFileSync(juegos[0].pagina, 'utf8');
 

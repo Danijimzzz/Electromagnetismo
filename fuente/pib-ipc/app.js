@@ -9,7 +9,7 @@
   const P = PibIpc, { f, num } = Eco;
   const pc = (x) => (x === null || x === undefined ? '—' : `${f(100 * x, 4)} %`);
   Calculadora.monta({
-    C: P, carpeta: 'pib-ipc', app: 'PibIpcApp',
+    C: P, carpeta: 'pib-ipc', app: 'PibIpcApp', azar: P.azar, enunciado: P.enunciado,
     nota: 'En las tablas, una fila por línea con los números separados por espacios, tabuladores o «;»; se salta una primera fila con nombres. La coma es decimal.',
     campos: (sc) => {
       const cs = [{ k: 'modo', nom: 'Calcular', tipo: 'sel', ops: Object.entries(P.MODOS) }];

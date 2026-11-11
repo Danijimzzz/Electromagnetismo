@@ -8,7 +8,7 @@
 (() => {
   const P = Multiplicador, { f, dinero, num } = Eco;
   Calculadora.monta({
-    C: P, carpeta: 'multiplicador', app: 'MultiplicadorApp',
+    C: P, carpeta: 'multiplicador', app: 'MultiplicadorApp', azar: P.azar, enunciado: P.enunciado,
     nota: 'C = C0 + c·(Y − T), T = T0 + t·Y y M = M0 + m·Y. Dejar vacíos T0, t, X, M0, m, ΔG y ΔT0 equivale a 0. Con el pleno empleo se calcula la brecha y el gasto que la cierra (opcional).',
     campos: () => [
       { k: 'c0', nom: 'Consumo autónomo C<sub>0</sub>', un: '€', sep: 'Consumo' },

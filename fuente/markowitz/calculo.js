@@ -216,6 +216,14 @@ const Markowitz = (() => {
     { clave: 'capm', nombre: 'CAPM con pesos de mercado y la SML', sc: { activos: 'Alfa SA; 11; 22\nBeta SA; 8; 14\nGamma SA; 6; 9', corr: '1 0,6 0,3\n0,6 1 0,4\n0,3 0,4 1', rf: '2,5', ventas: 'si', objetivo: '', mercado: '50 30 20', grafico: 'sml' } },
   ];
 
-  return { resolver, ejemplos, f, modelo };
+  // modo práctica: datos redondos al azar
+  const AZ = K.az, azar = AZ.desde(ejemplos, () => {
+    const nom = ['Acciones', 'Bonos', 'Oro', 'Inmuebles'], mu = [AZ.toma([10, 12, 14]), AZ.toma([4, 5, 6]), AZ.toma([6, 7, 8])], sg = [AZ.toma([20, 25]), AZ.toma([6, 8, 10]), AZ.toma([12, 15])], n = AZ.toma([2, 3]);
+    const R = Array.from({ length: n }, () => Array(n).fill('1')); for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) R[i][j] = R[j][i] = AZ.t([0.2, 0.3, 0.4, -0.2, 0, 0.5][AZ.e(0, 5)]);
+    return { activos: Array.from({ length: n }, (_, k) => `${nom[k]}; ${mu[k]}; ${sg[k]}`).join('\n'), corr: R.map((f) => f.join(' ')).join('\n'), rf: String(AZ.toma([1, 2, 3])), ventas: 'no', objetivo: String(Math.round((mu[0] + mu[1]) / 2)), mercado: '', grafico: 'frontera' };
+  }, (sc) => sc.grafico === 'frontera' && !sc.mercado && sc.ventas === 'no' && !sc.activos.includes('-1'), (sc) => resolver(sc));
+  const enunciado = (sc) => `Tienes ${sc.activos.split('\n').length} activos (nombre; rentabilidad esperada en %; volatilidad en %): ${sc.activos.split('\n').join(' · ')}, con la matriz de correlaciones de la tabla y un tipo sin riesgo del ${sc.rf} %. Sin ventas en corto, calcula la cartera de mínima varianza, la cartera tangente, su ratio de Sharpe y el riesgo mínimo para una rentabilidad del ${sc.objetivo} %.`;
+
+  return { azar, enunciado, resolver, ejemplos, f, modelo };
 })();
 if (typeof module !== 'undefined') module.exports = Markowitz;

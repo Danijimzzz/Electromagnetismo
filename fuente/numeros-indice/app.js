@@ -10,7 +10,7 @@
   const N = NumerosIndice, { f, num } = Eco;
   const pc = (x) => (x === null ? '—' : `${f(100 * x, 4)} %`), i2 = (x) => num(x, 2);
   Calculadora.monta({
-    C: N, carpeta: 'numeros-indice', app: 'NumerosIndiceApp',
+    C: N, carpeta: 'numeros-indice', app: 'NumerosIndiceApp', azar: N.azar, enunciado: N.enunciado,
     nota: 'Una fila por línea, con los números separados por espacios, tabuladores o «;» (puedes pegarlos de una hoja de cálculo); se salta una primera fila con nombres. La coma es decimal.',
     campos: (sc) => [{ k: 'modo', nom: 'Calcular', tipo: 'sel', ops: Object.entries(N.MODOS) },
       ...(sc.modo === 'cesta'

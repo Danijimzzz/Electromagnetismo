@@ -104,6 +104,13 @@ const VanTir = (() => {
     { clave: 'tienda', nombre: 'Abrir una tienda: pérdidas el primer año', sc: { a: '30000', flujos: '-5000 10000 15000 15000 15000', k: '9' } },
   ];
 
-  return { resolver, ejemplos, vanDe, tirDe, raices, tirm, npv };
+  // modo práctica: datos redondos al azar
+  const AZ = K.az, azar = AZ.desde(ejemplos, () => {
+    const a = AZ.toma([10000, 20000, 50000, 100000]), n = AZ.toma([3, 4, 5]), fl = Array.from({ length: n }, () => Math.round((a * AZ.toma([0.3, 0.35, 0.4])) / 100) * 100);
+    return { a: String(a), flujos: fl.join(' '), k: String(AZ.toma([5, 8, 10, 12])) };
+  }, (sc) => !sc.a2 && !sc.kf && !/-/.test(sc.flujos), (sc) => resolver(sc));
+  const enunciado = (sc) => `Un proyecto exige invertir ${sc.a} € y genera los flujos de caja anuales ${sc.flujos.split(' ').join(', ')} €. Con una tasa de descuento del ${sc.k} %, calcula el VAN, la TIR, la TIR modificada, el payback simple y el descontado y el índice de rentabilidad.`;
+
+  return { azar, enunciado, resolver, ejemplos, vanDe, tirDe, raices, tirm, npv };
 })();
 if (typeof module !== 'undefined') module.exports = VanTir;

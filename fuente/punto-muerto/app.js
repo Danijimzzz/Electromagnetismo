@@ -8,7 +8,7 @@
   const P = PuntoMuerto, { f, dinero, num } = Eco;
   const ud = (x) => `${f(x, 6)} unidades`;
   Calculadora.monta({
-    C: P, carpeta: 'punto-muerto', app: 'PuntoMuertoApp',
+    C: P, carpeta: 'punto-muerto', app: 'PuntoMuertoApp', azar: P.azar, enunciado: P.enunciado,
     nota: 'Los costes fijos son los del periodo que mires (un mes, un año); las ventas previstas y el beneficio objetivo, del mismo periodo. Los dos últimos se pueden dejar vacíos.',
     campos: () => [
       { k: 'cf', nom: 'Costes fijos CF', un: '€' },

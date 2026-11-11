@@ -96,6 +96,24 @@ const Interes = (() => {
     { clave: 'tae', nombre: 'TAE de un TIN del 6 % con pagos mensuales', sc: { modo: 'tae', conocido: 'tin', i: '6', m: '12' } },
   ];
 
-  return { resolver, ejemplos, MODOS, PERIODOS, UNIDADES };
+  // modo práctica: datos redondos al azar
+  const AZ = K.az, azar = AZ.desde(ejemplos, (sc) => {
+    const c0 = AZ.toma([1000, 5000, 10000, 20000]), i = AZ.toma([2, 3, 4, 5, 6]), t = AZ.toma([2, 3, 5, 10]), m = AZ.toma([1, 2, 4, 12]);
+    if (sc.modo === 'inicial') return { regimen: 'compuesto', cn: String(c0), i: String(i), t: String(t), m: String(m) };
+    if (sc.modo === 'tiempo') return { regimen: 'compuesto', c0: String(c0), cn: String(c0 * AZ.toma([1.5, 2])), i: String(AZ.toma([4, 5, 6, 8])), m: String(AZ.toma([1, 12])) };
+    if (sc.modo === 'tipo') { const c = AZ.toma([5000, 8000]); return { regimen: 'compuesto', c0: String(c), cn: String(Math.round(c * AZ.toma([1.2, 1.25, 1.5]))), t: String(AZ.toma([3, 4, 5])), m: '1' }; }
+    if (sc.modo === 'tae') return { conocido: 'tin', i: String(AZ.toma([3, 5, 6, 8])), m: String(AZ.toma([2, 4, 12])) };
+    return { regimen: 'compuesto', c0: String(c0), i: String(i), t: String(t), m: String(m) };
+  }, (sc) => !sc.tu && sc.m !== '0', (sc) => resolver(sc));
+  const enunciado = (sc) => {
+    const per = sc.m === '1' ? 'anualmente' : `${{ 2: 'semestralmente', 4: 'trimestralmente', 12: 'mensualmente' }[sc.m] || `${sc.m} veces al año`}`;
+    if (sc.modo === 'tae') return `Un préstamo tiene un TIN del ${sc.i} % con capitalización ${per}. Calcula su TAE y el tipo de cada periodo.`;
+    if (sc.modo === 'inicial') return `¿Qué capital hay que depositar hoy para tener ${sc.cn} € dentro de ${sc.t} años con un interés compuesto del ${sc.i} % anual capitalizado ${per}? Calcula también los intereses y la TAE.`;
+    if (sc.modo === 'tiempo') return `Se depositan ${sc.c0} € al ${sc.i} % anual compuesto (capitalización ${per}). ¿Cuántos años tardan en convertirse en ${sc.cn} €? Calcula también los intereses y la TAE.`;
+    if (sc.modo === 'tipo') return `Un depósito de ${sc.c0} € se convierte en ${sc.cn} € en ${sc.t} años con interés compuesto anual. ¿Qué tipo de interés anual ha ganado? Calcula también los intereses.`;
+    return `Se depositan ${sc.c0} € durante ${sc.t} años al ${sc.i} % anual con interés compuesto (capitalización ${per}). Calcula el capital final, los intereses ganados y la TAE.`;
+  };
+
+  return { azar, enunciado, resolver, ejemplos, MODOS, PERIODOS, UNIDADES };
 })();
 if (typeof module !== 'undefined') module.exports = Interes;

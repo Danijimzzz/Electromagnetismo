@@ -10,7 +10,7 @@
   const pc = (x) => `${f(100 * x, 4)} %`;
   const AYUDA = { rentas: 'las rentas separadas por espacios', tramos: 'una fila «personas renta media» por tramo', grupos: 'una fila «% población % renta» por grupo' };
   Calculadora.monta({
-    C: LG, carpeta: 'lorenz-gini', app: 'LorenzGiniApp',
+    C: LG, carpeta: 'lorenz-gini', app: 'LorenzGiniApp', azar: LG.azar, enunciado: LG.enunciado,
     nota: 'El orden da igual: se ordenan de menos a más renta. La coma es decimal; en una fila, separa los números con espacios o «;».',
     campos: (sc) => [{ k: 'modo', nom: 'Tipo de datos', tipo: 'sel', ops: Object.entries(LG.MODOS) }, { k: 'datos', nom: 'Datos', tipo: 'area', ayuda: AYUDA[sc.modo] || AYUDA.rentas, filas: 8 }],
     resumen: (s) => [['Índice de Gini', f(s.G, 4), true], ['Con Σ(p − q)/Σp', f(s.Gc, 4)], ['20 % más pobre', pc(s.s20)], ['20 % más rico', pc(s.s80)], ['S80/S20', isFinite(s.ratio) ? f(s.ratio, 4) : '—']],

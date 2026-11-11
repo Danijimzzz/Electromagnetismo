@@ -5,6 +5,10 @@
    calculadora.js; en Node, cada calculo.js lo pide con require.
      dinero(x, dec)   «1.234,56 €»
      pct(x, dec)      fracción → «3,25 %»
+     az               ayudantes del modo práctica: e(a, b) entero al azar, toma(lista), t(x) número con coma,
+                      poli([[coef, potencia]…], 'q') polinomio escrito y desde(ejemplos, cambia, donde, calcula): una
+                      función azar() que parte de un ejemplo al azar (de los que cumplan donde) y cambia lo que devuelva
+                      cambia(sc); se queda con un ejercicio que calcula(sc) resuelve sin error (hasta 60 intentos)
      curvas(sc)       demanda Qd = a − b·P y oferta Qs = c + d·P a partir de sc.forma:
                       'q' (a, b, c, d), 'p' (P = α − β·Q y P = γ + δ·Q: pa, pb, pc, pd) o
                       'puntos' (dos puntos (P, Q) de cada curva: dp1 dq1 dp2 dq2, sp1 sq1 sp2 sq2).
@@ -15,6 +19,30 @@ const Eco = (() => {
   const dinero = (x, dec = 2) => `${K.num(x, dec)} €`;
   const pct = (x, dec = 2) => `${K.num(100 * x, dec)} %`;
   const n = (x) => K.f(x, 6);
+  const az = {
+    e: (a, b) => a + Math.floor(Math.random() * (b - a + 1)),
+    toma: (xs) => xs[Math.floor(Math.random() * xs.length)],
+    t: (x, d = 6) => String(+x.toFixed(d)).replace('.', ','),
+    poli: (ts, v = 'q') => {
+      let r = '';
+      for (const [c0, p] of ts) {
+        const c = +String(c0).replace(',', '.'); if (!c) continue;
+        const a = Math.abs(c), cs = a === 1 && p > 0 ? '' : String(+a.toFixed(6)).replace('.', ',');
+        r += (r ? (c < 0 ? ' − ' : ' + ') : (c < 0 ? '−' : '')) + cs + (p ? v + ['', '', '²', '³'][p] : '');
+      }
+      return r || '0';
+    },
+    desde: (ejemplos, cambia, donde, calcula) => () => {
+      const es = donde ? ejemplos.filter((e) => donde(e.sc, e)) : ejemplos;
+      let sc;
+      for (let k = 0; k < 60; k++) {
+        const b = JSON.parse(JSON.stringify(az.toma(es).sc)); sc = { ...b, ...cambia(b) };
+        if (!calcula) return sc;
+        try { calcula(sc); return sc; } catch (e) { /* otro intento */ }
+      }
+      return sc;
+    },
+  };
   function curvas(sc) {
     const { lee } = K, forma = sc.forma === 'p' || sc.forma === 'puntos' ? sc.forma : 'q';
     if (forma === 'q') return { a: lee(sc, 'a', 'el término a de la demanda', { min: 0, minEx: true }), b: lee(sc, 'b', 'la pendiente b de la demanda', { min: 0, minEx: true }), c: lee(sc, 'c', 'el término c de la oferta'), d: lee(sc, 'd', 'la pendiente d de la oferta', { min: 0, minEx: true }), conv: '', forma };
@@ -45,6 +73,6 @@ const Eco = (() => {
       { k: 'sp1', nom: 'Oferta: precio 1', un: '€', sep: 'Dos puntos de la oferta' }, { k: 'sq1', nom: 'Oferta: cantidad 1' }, { k: 'sp2', nom: 'Oferta: precio 2', un: '€' }, { k: 'sq2', nom: 'Oferta: cantidad 2' }];
     return [{ k: 'a', nom: 'a', sep: 'Demanda', ayuda: 'cantidad con precio 0' }, { k: 'b', nom: 'b', ayuda: 'unidades menos por cada euro' }, { k: 'c', nom: 'c', sep: 'Oferta', ayuda: 'cantidad con precio 0' }, { k: 'd', nom: 'd', ayuda: 'unidades más por cada euro' }];
   }
-  return { ...K, dinero, pct, curvas, FORMAS, camposCurvas };
+  return { ...K, dinero, pct, az, curvas, FORMAS, camposCurvas };
 })();
 if (typeof module !== 'undefined') module.exports = Eco;

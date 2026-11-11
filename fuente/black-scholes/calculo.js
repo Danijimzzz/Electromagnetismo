@@ -113,6 +113,10 @@ const BlackScholes = (() => {
     { clave: 'volatil', nombre: 'Muy volátil: σ = 60 %', sc: { S: '30', K: '30', T: '0,75', r: '2', sigma: '60', q: '0', tipo: 'put' } },
   ];
 
-  return { resolver, ejemplos, calcula, sigmaImplicita };
+  // modo práctica: datos redondos al azar
+  const AZ = K.az, azar = AZ.desde(ejemplos, () => { const S = AZ.toma([40, 50, 80, 100, 120]); return { S: String(S), K: String(Math.round(S * AZ.toma([0.9, 1, 1.1]))), T: AZ.t(AZ.toma([0.25, 0.5, 1, 2])), r: String(AZ.toma([2, 3, 4, 5])), sigma: String(AZ.toma([20, 25, 30, 40])), q: String(AZ.toma([0, 0, 2, 3])), tipo: AZ.toma(['call', 'put']) }; }, (sc) => !sc.modo && sc.T !== '0' && sc.sigma !== '0', (sc) => resolver(sc));
+  const enunciado = (sc) => `Una opción europea sobre una acción que cotiza a ${sc.S} € tiene un precio de ejercicio de ${sc.K} € y vence en ${sc.T} años; el tipo sin riesgo es el ${sc.r} %, la volatilidad el ${sc.sigma} %${sc.q !== '0' ? ` y el dividendo continuo el ${sc.q} %` : ''}. Calcula el precio de la call y el de la put, d₁ y d₂, las griegas (delta, gamma, vega, theta y rho) y comprueba la paridad call-put.`;
+
+  return { azar, enunciado, resolver, ejemplos, calcula, sigmaImplicita };
 })();
 if (typeof module !== 'undefined') module.exports = BlackScholes;

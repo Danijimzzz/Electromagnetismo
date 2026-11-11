@@ -9,7 +9,7 @@
   const tp = (x) => `${f(100 * x, 6)} %`;
   const periodos = { k: 'm', nom: 'Capitalización', tipo: 'sel', ops: Object.entries(I.PERIODOS).map(([k, v]) => [k, v[0].toUpperCase() + v.slice(1)]) };
   Calculadora.monta({
-    C: I, carpeta: 'interes', app: 'InteresApp',
+    C: I, carpeta: 'interes', app: 'InteresApp', azar: I.azar, enunciado: I.enunciado,
     nota: 'Los tipos van en % anual (TIN). El tiempo puede ir en años, meses o días (con el año de 365 o 360 días). La capitalización continua es el límite de capitalizar infinitas veces al año. Se admite coma decimal.',
     campos: (sc) => {
       const cs = [{ k: 'modo', nom: 'Calcular', tipo: 'sel', ops: Object.entries(I.MODOS) }];
