@@ -54,7 +54,7 @@
     const er = de(['1', '1', '2,25', '2,1', '4']), tipo = de(['TE', 'TE', 'TM']);
     const m = tipo === 'TM' ? de(['1', '1', '2']) : de(['1', '1', '2', '0']), n = tipo === 'TM' ? de(['1', '1', '2']) : (m === '0' ? '1' : de(['0', '0', '1']));
     const w = Math.sqrt(+m * +m / (+c(g[0]).replace(',', '.')) ** 2 + (+n) ** 2 / (+c(g[1]).replace(',', '.')) ** 2);
-    const fc = 299792458 / Math.sqrt(+c(er).replace(',', '.')) / 2 * w * 1000 / 1e9;
+    const fc = Constantes.SI.c / Math.sqrt(+c(er).replace(',', '.')) / 2 * w * 1000 / 1e9;
     const fr = Math.round(fc * de([1.15, 1.3, 1.6, 2]) * 10) / 10;
     sc = { forma: 'rect', a: g[0], b: g[1], er, f: c(fr), tipo, m, n, lc: '' };
     formulario(); calcula(); sel.value = '';

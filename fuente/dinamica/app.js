@@ -417,5 +417,7 @@
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('dinamica').current;
   formulario(); calcula(); requestAnimationFrame(bucle);
+  // FIS.FG-1: gravedad común a las herramientas de Física (fisica/constantes.js)
+  Constantes.monta(document.querySelector('.layout .card'));
   window.DinamicaApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { tipo: sol.tipo, a: sol.a, N: sol.N, T: sol.T ?? sol.T1, estado: sol.estado, Fi: sol.Fi, v: sol.v }, estado: () => copia(sc) };
 })();

@@ -378,5 +378,7 @@
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('trabajo-y-energia').current;
   colores(); rellena(); calcula(true);
+  // FIS.FG-1: gravedad común a las herramientas de Física (fisica/constantes.js)
+  Constantes.monta(document.querySelector('.layout .card'));
   window.EnergiaApp = { escena: () => ({ ...esc }), abrirEjemplo, azar, enunciado, ir: (tt) => { para(); t = Math.max(0, Math.min(tFin(), tt)); dibuja(); }, estado: () => (sim ? enT(t) : null), fin: tFin };
 })();

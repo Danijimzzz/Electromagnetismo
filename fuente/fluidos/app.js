@@ -420,5 +420,7 @@
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('fluidos').current;
   formulario(); colores(); calcula(); requestAnimationFrame(bucle);
+  // FIS.FG-1: gravedad común a las herramientas de Física (fisica/constantes.js)
+  Constantes.monta(document.querySelector('.layout .card'));
   window.FluidosApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && Object.fromEntries(Object.entries(sol).filter(([, v]) => typeof v === 'number' || typeof v === 'boolean' || v === null)), estado: () => copia(sc), pausa: () => { anda = false; } };
 })();

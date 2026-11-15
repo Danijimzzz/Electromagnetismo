@@ -383,5 +383,7 @@
   };
 
   formulario(); calcula(); requestAnimationFrame(bucle);
+  // FIS.FG-1: gravedad común a las herramientas de Física (fisica/constantes.js)
+  Constantes.monta(document.querySelector('.layout .card'));
   window.SolidoApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { modo: sol.modo, I: sol.I, a: sol.a, v: sol.v, T: sol.T, w2: sol.w2, rueda: sol.rueda }, estado: () => copia(sc) };
 })();

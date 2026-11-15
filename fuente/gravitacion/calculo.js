@@ -9,7 +9,8 @@
    ===================================================================== */
 const Gravitacion = (() => {
   const K = typeof Calculadora !== 'undefined' ? Calculadora : require('../calculadora.js');
-  const { lee, f } = K, n = f, G = 6.6743e-11, TAU = 2 * Math.PI, RAD = Math.PI / 180;
+  const SI = typeof Constantes !== 'undefined' ? Constantes.SI : require('../fisica/constantes.js').SI;
+  const { lee, f } = K, n = f, G = SI.G, TAU = 2 * Math.PI, RAD = Math.PI / 180;
   const MODOS = { fuerza: 'Fuerza y campo gravitatorio', satelite: 'Satélite en órbita circular', escape: 'Velocidad de escape', periodo: 'Órbita a partir del periodo', kepler: 'Órbita elíptica (Kepler)' };
   // masa (kg) y radio medio (m) de algunos cuerpos
   const CUERPOS = {

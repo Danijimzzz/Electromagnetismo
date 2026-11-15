@@ -16,7 +16,7 @@
    La interfaz está en app.js y la prueba en pruebas/herramientas/imagenes.js.
    ===================================================================== */
 const Imagenes = (() => {
-  const EPS0 = 8.854187817e-12, K = 1 / (4 * Math.PI * EPS0);
+  const EPS0 = 8.8541878128e-12, K = 1 / (4 * Math.PI * EPS0);
   const f = (x, d = 4) => {
     if (!isFinite(x)) return '—';
     if (Math.abs(x) < 1e-15) return '0';

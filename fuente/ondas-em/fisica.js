@@ -15,7 +15,8 @@
    el cálculo de Jones (OE-3).
    ===================================================================== */
 const OndasEM = (() => {
-  const C0 = 299792458, MU0 = 1.25663706212e-6, EPS0 = 8.8541878128e-12;
+  const SI = typeof Constantes !== 'undefined' ? Constantes.SI : require('../fisica/constantes.js').SI;
+  const C0 = SI.c, MU0 = 1.25663706212e-6, EPS0 = 8.8541878128e-12;
   const f = (x, d = 4) => {
     if (!isFinite(x)) return x > 0 ? '∞' : '—';
     if (Math.abs(x) < 1e-300) return '0';
@@ -317,7 +318,7 @@ const OndasEM = (() => {
   /* ---------- OE-1: plasma e ionosfera ---------- */
   // sc: { ne (m⁻³), valor (Hz, opcional), ang (° de incidencia sobre la capa, opcional) }; ω² = ω_p² + c²k²
   function plasma(sc) {
-    const QE = 1.602176634e-19, ME = 9.1093837015e-31, ne = lee(sc, 'ne', 'la densidad de electrones n_e'), fr = lee(sc, 'valor', 'la frecuencia f', { opcional: true }), pasos = [];
+    const QE = SI.e, ME = 9.1093837015e-31, ne = lee(sc, 'ne', 'la densidad de electrones n_e'), fr = lee(sc, 'valor', 'la frecuencia f', { opcional: true }), pasos = [];
     const ang = vacio(sc.ang) ? null : lee(sc, 'ang', 'el ángulo de incidencia', { cero: true });
     if (ang !== null && ang >= 90) throw new Error('El ángulo de incidencia tiene que ser menor que 90°');
     const wp = Math.sqrt((ne * QE * QE) / (EPS0 * ME)), fp = wp / (2 * Math.PI), lp = C0 / fp;

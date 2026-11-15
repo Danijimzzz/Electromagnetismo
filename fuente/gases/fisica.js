@@ -22,7 +22,8 @@ const Gases = (() => {
   const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
   const Aj = typeof Ajuste !== 'undefined' ? Ajuste : require('../quimica/ajuste.js');
   let R = 8.314, Rs = '8,314';
-  const kB = 1.380649e-23, NA = 6.02214076e23;
+  const SI = typeof Constantes !== 'undefined' ? Constantes.SI : require('../fisica/constantes.js').SI;
+  const kB = SI.kB, NA = SI.NA;
   // lee R del ajuste común antes de cada cálculo (conR envuelve lo que se exporta)
   const ponR = () => { R = Aj.valores().R; Rs = Aj.texto(R); };
   const conR = (fn) => (...a) => { ponR(); return fn(...a); };
@@ -39,6 +40,8 @@ const Gases = (() => {
   // constantes de Van der Waals: a (Pa·m⁶/mol²), b (m³/mol). Fuente: CRC Handbook of Chemistry and Physics (Weast, 53.ª ed.),
   // contrastadas en Fase 10 con Wikipedia «Van der Waals constants (data page)» (a en L²·bar/mol² ÷ 10; b en L/mol ÷ 1000)
   const VDW = { He: ['Helio', 0.00346, 2.38e-5], H2: ['Hidrógeno, H₂', 0.02476, 2.661e-5], N2: ['Nitrógeno, N₂', 0.1370, 3.87e-5], O2: ['Oxígeno, O₂', 0.1382, 3.186e-5], Ar: ['Argón', 0.1355, 3.20e-5], CO2: ['Dióxido de carbono, CO₂', 0.3640, 4.267e-5], NH3: ['Amoniaco, NH₃', 0.4225, 3.707e-5], H2O: ['Vapor de agua', 0.5536, 3.049e-5] };
+  // Constantes críticas reales [T_c (K), P_c (atm)] de los mismos gases (CRC Handbook, «Critical Constants»; contrastadas con `chemicals` salvo el P_c del argón, que ese paquete trae mal)
+  const CRIT = { He: [5.19, 2.24], H2: [33.2, 12.8], N2: [126.2, 33.5], O2: [154.6, 49.8], Ar: [150.9, 48.3], CO2: [304.1, 72.8], NH3: [405.5, 111.3], H2O: [647.1, 217.7] };
 
   function num(sc, k, nom, { opcional = false, signo = false } = {}) {
     if (vacio(sc[k])) { if (opcional) return null; throw new Error(`Falta ${nom}`); }
@@ -213,8 +216,9 @@ const Gases = (() => {
     if (V <= n * b) throw new Error(`El volumen tiene que ser mayor que el que ocupan las propias moléculas, nb = ${f(n * b * 1000).replace(/<[^>]+>/g, '')} L`);
     const Pi = (n * R * T) / V, rep = (n * R * T) / (V - n * b), atr = (a * n * n) / (V * V), P = rep - atr, Z = (P * V) / (n * R * T);
     const Tc = (8 * a) / (27 * R * b), Pc = a / (27 * b * b), Vc = 3 * b;
+    const usaReal = sc.crit === 'real' && !!CRIT[sc.gasR], TcR = usaReal ? CRIT[sc.gasR][0] : Tc, PcR = usaReal ? CRIT[sc.gasR][1] * 101325 : Pc;
     // Redlich-Kwong con los mismos Tc y Pc: a' = 0,42748 R²Tc^2,5/Pc, b' = 0,08664 R Tc/Pc; P = nRT/(V − nb') − a'n²/(√T V (V + nb'))
-    const aR = (0.42748 * R * R * Tc ** 2.5) / Pc, bR = (0.08664 * R * Tc) / Pc;
+    const aR = (0.42748 * R * R * TcR ** 2.5) / PcR, bR = (0.08664 * R * TcR) / PcR;
     const prk = (Vm, TT) => (R * TT) / (Vm - bR) - aR / (Math.sqrt(TT) * Vm * (Vm + bR)), pvdw = (Vm, TT) => (R * TT) / (Vm - b) - a / (Vm * Vm);
     if (V / n <= bR) throw new Error(`El volumen molar tiene que ser mayor que b de Redlich-Kwong, ${f(bR * 1000)} L/mol`);
     const PRK = prk(V / n, T), ZRK = (PRK * V) / (n * R * T);
@@ -222,10 +226,10 @@ const Gases = (() => {
       { t: 'Ecuación de Van der Waals', html: `${nombre}: $a = ${f(a)}$ Pa·m⁶/mol², $b = ${f(b)}$ m³/mol. La ecuación $(P + {a n^2}/{V^2})(V − nb) = nRT$ corrige el gas ideal: b es el volumen que ocupan las moléculas y a mide lo que se atraen.` },
       { t: 'Presión del gas real', html: `$P = {nRT}/{V − nb} − {a n^2}/{V^2} = {${f(n)} · ${Rs} · ${f(T)}}/{${f(V)} − ${f(n * b)}} − {${f(a)} · ${f(n)}^2}/{(${f(V)})^2} = ${f(rep)} − ${f(atr)}$ = <b>${f(P)} Pa</b> (${f(P / 101325)} atm)` },
       { t: 'Comparación con el gas ideal', html: `Ideal: $P = {nRT}/V$ = ${f(Pi)} Pa (${f(Pi / 101325)} atm). El real da un ${f((100 * (P - Pi)) / Pi, 3)} %. Factor de compresibilidad $Z = {PV}/{nRT}$ = <b>${f(Z)}</b>: ${Z < 1 ? 'menor que 1, mandan las atracciones' : 'mayor que 1, manda el volumen de las moléculas'}.` },
-      { t: 'Redlich-Kwong', html: `Con los mismos $T_c$ y $P_c$: $a' = {0,42748 R^2 T_c^{2,5}}/{P_c} = ${f(aR)}$ Pa·m⁶·K<sup>½</sup>/mol², $b' = {0,08664 R T_c}/{P_c} = ${f(bR)}$ m³/mol. La ecuación $P = {RT}/{V_m − b'} − {a'}/{√T V_m (V_m + b')}$ da <b>${f(PRK)} Pa</b> (${f(PRK / 101325)} atm), $Z = ${f(ZRK)}$. Suele ajustarse mejor que Van der Waals a presiones altas y a temperaturas por encima de la crítica. <b>Aviso:</b> aquí $T_c$ y $P_c$ no son los valores medidos del gas, sino los que salen de $a$ y $b$ de Van der Waals, así que este Redlich-Kwong es una aproximación; con los valores críticos reales ($T_c$ y $P_c$ de tablas) saldría algo distinto.` },
+      { t: 'Redlich-Kwong', html: `${usaReal ? `Con los datos críticos reales del gas, $T_c$ = ${f(TcR)} K y $P_c$ = ${f(PcR / 101325)} atm (los de Van der Waals dan ${f(Tc)} K y ${f(Pc / 101325)} atm): ` : 'Con los mismos $T_c$ y $P_c$: '}$a' = {0,42748 R^2 T_c^{2,5}}/{P_c} = ${f(aR)}$ Pa·m⁶·K<sup>½</sup>/mol², $b' = {0,08664 R T_c}/{P_c} = ${f(bR)}$ m³/mol. La ecuación $P = {RT}/{V_m − b'} − {a'}/{√T V_m (V_m + b')}$ da <b>${f(PRK)} Pa</b> (${f(PRK / 101325)} atm), $Z = ${f(ZRK)}$. Suele ajustarse mejor que Van der Waals a presiones altas y a temperaturas por encima de la crítica. <b>Aviso:</b> aquí $T_c$ y $P_c$ no son los valores medidos del gas, sino los que salen de $a$ y $b$ de Van der Waals, así que este Redlich-Kwong es una aproximación; con los valores críticos reales ($T_c$ y $P_c$ de tablas) saldría algo distinto.` },
       { t: 'Punto crítico', html: `$T_c = {8a}/{27Rb}$ = <b>${f(Tc)} K</b>, $P_c = {a}/{27 b^2}$ = ${f(Pc / 101325)} atm, $V_{m,c} = 3b$ = ${f(Vc * 1000)} L/mol. Por encima de $T_c$ el gas no se puede licuar por mucho que se comprima.` },
     ];
-    return { modo: 'real', nombre, a, b, n, V, T, P, Pi, Z, Tc, Pc, Vc, aR, bR, PRK, ZRK, prk, pvdw, pasos };
+    return { modo: 'real', nombre, a, b, n, V, T, P, Pi, Z, Tc, Pc, Vc, aR, bR, usaReal, TcR, PcR, PRK, ZRK, prk, pvdw, pasos };
   }
   // densidad de Maxwell para la gráfica
   const maxwell = (M, T, v) => { const a = M / (2 * R * T); return 4 * Math.PI * (a / Math.PI) ** 1.5 * v * v * Math.exp(-a * v * v); };
@@ -257,6 +261,6 @@ const Gases = (() => {
   // en el Carnot, V_D = V_A·(T_A/T_C)^(1/(γ−1)) = 1·2^2,5 L
   ejemplos[5].sc.procesos[2].valor = String(+(2 ** 2.5).toFixed(6));
 
-  return { resolver, estado: conR(resolverEstado), procesos: conR(procesos), cinetica: conR(cinetica), mezcla: conR(mezcla), real: conR(real), maxwell: conR(maxwell), GASES, MOLECULAS, VDW, UP, UV, NOMBRES, ejemplos, f, get R() { ponR(); return R; }, kB };
+  return { resolver, estado: conR(resolverEstado), procesos: conR(procesos), cinetica: conR(cinetica), mezcla: conR(mezcla), real: conR(real), maxwell: conR(maxwell), GASES, MOLECULAS, VDW, CRIT, UP, UV, NOMBRES, ejemplos, f, get R() { ponR(); return R; }, kB };
 })();
 if (typeof module !== 'undefined') module.exports = Gases;

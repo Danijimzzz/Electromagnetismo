@@ -7,6 +7,7 @@
    Unidades del SI; la fase en radianes.
    ===================================================================== */
 const Ondas = (() => {
+  const Dop = typeof Doppler !== 'undefined' ? Doppler : require('../doppler/fisica.js');
   const f = (x, d = 4) => {
     if (!isFinite(x)) return '—';
     if (Math.abs(x) < 1e-12) return '0';
@@ -116,19 +117,12 @@ const Ondas = (() => {
 
   /* ---------- Efecto Doppler ---------- */
   // sc: { f, vs (sonido), vF (fuente, + hacia el observador), vO (observador, + hacia la fuente) }
+  // FIS.FG-3: el cálculo es el de la herramienta Efecto Doppler (Doppler.recta); aquí solo se añade la velocidad del sonido
+  // con la temperatura del aire (vSonido) y se devuelve con la forma de siempre.
   function doppler(sc) {
-    const fr = lee(sc, 'f', 'la frecuencia emitida'), { v, paso: pasoV } = vSonido(sc);
-    const vF = lee(sc, 'vF', 'la velocidad de la fuente', { opcional: true, signo: true }) ?? 0, vO = lee(sc, 'vO', 'la velocidad del observador', { opcional: true, signo: true }) ?? 0;
-    if (vF >= v) throw new Error('La fuente va a la velocidad del sonido o más deprisa hacia el observador: se forma una onda de choque y la fórmula de Doppler no vale');
-    if (-vO >= v) throw new Error('El observador se aleja a la velocidad del sonido o más: no le llega la onda');
-    const fp = (fr * (v + vO)) / (v - vF);
-    const pasos = [
-      ...(pasoV ? [pasoV] : []),
-      { t: 'Convenio de signos', html: `Velocidades positivas cuando fuente y observador se acercan el uno al otro: fuente ${vF > 0 ? 'se acerca' : vF < 0 ? 'se aleja' : 'quieta'} (v<sub>F</sub> = ${f(vF)} m/s), observador ${vO > 0 ? 'se acerca' : vO < 0 ? 'se aleja' : 'quieto'} (v<sub>O</sub> = ${f(vO)} m/s).` },
-      { t: 'Frecuencia que se percibe', html: `$f′ = f {v + v_O}/{v − v_F} = ${f(fr)} · {${f(v)} + ${vO < 0 ? `(${f(vO)})` : f(vO)}}/{${f(v)} − ${vF < 0 ? `(${f(vF)})` : f(vF)}}$ = <b>${f(fp)} Hz</b><br>${fp > fr ? 'Más aguda: se acercan.' : fp < fr ? 'Más grave: se alejan.' : 'Igual: no hay movimiento relativo a lo largo de la línea que los une.'}` },
-      { t: 'Longitud de onda', html: `Delante de la fuente: $λ′ = {v − v_F}/f$ = <b>${f((v - vF) / fr)} m</b> (sin moverse sería ${f(v / fr)} m)` },
-    ];
-    return { modo: 'doppler', fr, v, vF, vO, fp, pasos };
+    const { v, paso: pasoV } = vSonido(sc);
+    const r = Dop.recta({ f: sc.f, v, vF: sc.vF, vO: sc.vO });
+    return { modo: 'doppler', fr: r.fr, v, vF: r.vF, vO: r.vO, fp: r.fp, pasos: [...(pasoV ? [pasoV] : []), ...r.pasos] };
   }
 
   /* ---------- Intensidad y nivel sonoro ---------- */
