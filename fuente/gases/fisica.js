@@ -22,7 +22,8 @@ const Gases = (() => {
   const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
   const Aj = typeof Ajuste !== 'undefined' ? Ajuste : require('../quimica/ajuste.js');
   let R = 8.314, Rs = '8,314';
-  const kB = 1.380649e-23, NA = 6.02214076e23;
+  const SI = typeof Constantes !== 'undefined' ? Constantes.SI : require('../fisica/constantes.js').SI;
+  const kB = SI.kB, NA = SI.NA;
   // lee R del ajuste común antes de cada cálculo (conR envuelve lo que se exporta)
   const ponR = () => { R = Aj.valores().R; Rs = Aj.texto(R); };
   const conR = (fn) => (...a) => { ponR(); return fn(...a); };

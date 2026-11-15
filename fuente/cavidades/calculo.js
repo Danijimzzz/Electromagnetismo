@@ -16,7 +16,8 @@
    Constantes: c = 299 792 458 m/s, μ₀ = 4π·10⁻⁷ H/m y η₀ = 376,730313 Ω.
    ===================================================================== */
 const Cavidades = (() => {
-  const C0 = 299792458, MU0 = 4e-7 * Math.PI, ETA0 = 376.730313, PI = Math.PI;
+  const SI = typeof Constantes !== 'undefined' ? Constantes.SI : require('../fisica/constantes.js').SI;
+  const C0 = SI.c, MU0 = 4e-7 * Math.PI, ETA0 = 376.730313, PI = Math.PI;
   const f = (x, d = 4) => {
     if (x === Infinity) return '∞';
     if (!isFinite(x)) return '—';

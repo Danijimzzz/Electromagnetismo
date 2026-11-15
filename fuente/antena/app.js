@@ -49,7 +49,7 @@
   // un ejercicio al azar, para el modo práctica
   function azar() {
     const de = (l) => l[Math.floor(Math.random() * l.length)], c = (x) => String(x).replace('.', ',');
-    const tipo = de(['media', 'media', 'corto', 'general']), fr = de(['50e6', '100e6', '300e6', '900e6']), lam = 299792458 / +fr;
+    const tipo = de(['media', 'media', 'corto', 'general']), fr = de(['50e6', '100e6', '300e6', '900e6']), lam = Constantes.SI.c / +fr;
     const L = tipo === 'corto' ? c(+(lam / de([20, 25, 50])).toPrecision(2)) : tipo === 'general' ? c(+(lam * de([0.75, 1, 1.25, 1.5])).toPrecision(3)) : '';
     sc = { N: '1', d: '', modo: 'broadside', beta: '0', Pt: '', Gr: '', dist: '', sens: '', tipo, f: fr, L, I: c(de([0.5, 1, 2, 5])), r: String(de([100, 500, 1000, 5000])), th: String(de([30, 45, 60, 90])) };
     formulario(); calcula(); sel.value = '';

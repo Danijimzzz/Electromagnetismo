@@ -79,5 +79,21 @@ intenta('Formulación', () => { const F = require(path.join(fuente, 'formulacion
   igual('H₂SO₄ en sistemática', R('f2n', 'H2SO4').lineas[0].nombre, 'tetraoxidosulfato de dihidrógeno'); igual('CuSO₄·5H₂O es un hidrato', R('f2n', 'CuSO4·5H2O').tipo, 'Hidrato');
   let m = null; try { R('f2n', 'Xx9'); } catch (e) { m = e.message; } igual('Fórmula sin sentido: error', m !== null, true);
 });
+// Solapes entre herramientas de Física (FIS.FG-3): lo que sale de dos sitios tiene que coincidir
+global.Constantes = require(path.join(fuente, 'fisica', 'constantes.js'));
+intenta('Solapes de Física', () => {
+  const Dop = require(path.join(fuente, 'doppler', 'fisica.js')), On = require(path.join(fuente, 'ondas', 'fisica.js')), Ga = require(path.join(fuente, 'gases', 'fisica.js')), Ci = require(path.join(fuente, 'ciclos', 'fisica.js'));
+  const FM = require(path.join(fuente, 'fisica-moderna', 'calculo.js')), Re = require(path.join(fuente, 'relatividad', 'calculo.js'));
+  // Doppler: Ondas llama al módulo de Efecto Doppler, así que dan lo mismo (con y sin temperatura del aire)
+  for (const [f, v, vF, vO] of [['700', '340', '25', '0'], ['500', '340', '-30', '8'], ['1000', '343', '0', '-10']]) igual(`Doppler ${f} Hz: Ondas = Efecto Doppler`, On.resolver({ modo: 'doppler', f, vs: v, vF, vO }).fp, Dop.recta({ f, v, vF, vO }).fp, 1e-12);
+  igual('Doppler con T = 20 °C usa v = 331,3·√(1 + T/273,15)', On.resolver({ modo: 'doppler', f: '700', Taire: '20', vF: '25', vO: '0' }).fp, Dop.recta({ f: '700', v: String(331.3 * Math.sqrt(1 + 20 / 273.15)), vF: '25', vO: '0' }).fp, 1e-12);
+  // Carnot: el rendimiento del ejemplo de Gases es el de Ciclos (1 − Tf/Tc)
+  const eg = Ga.resolver(Ga.ejemplos.find((x) => x.clave === 'carnot').sc), ec = Ci.resolver({ modo: 'carnot', gas: 'di', Tc: '600', Tf: '300', n: '1', V1: '10', V2: '20' });
+  igual('Carnot: η de Gases = η de Ciclos', eg.rend, ec.eta, 1e-6); igual('Carnot: η = 1 − 300/600', ec.eta, 0.5, 1e-12);
+  // Relatividad y Física moderna: mismo γ, dilatación y contracción
+  const d = FM.resolver({ modo: 'dilatacion', uv: 'c', v: '0,6', t0: '5' }), l = Re.resolver({ modo: 'lorentz', unidades: 'al', v: '0,6', x: '0', t: '5' });
+  igual('γ(0,6) = 1,25 en las dos', `${d.g},${l.g}`, '1.25,1.25'); igual('Dilatación: Δt = γΔt₀ = el t′ de Relatividad', d.t, l.tp, 1e-12);
+  igual('Contracción: 100 m a 0,6c miden 80 m', FM.resolver({ modo: 'contraccion', uv: 'c', v: '0,6', L0: '100' }).L, 80, 1e-12);
+});
 console.log(`Casos de las herramientas con menos pruebas: ${hechos} comprobaciones; ${fallos} fallos.`);
 process.exit(fallos ? 1 : 0);

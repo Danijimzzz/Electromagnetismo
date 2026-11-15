@@ -16,7 +16,8 @@
 const TermoEstadistica = (() => {
   const K = typeof Calculadora !== 'undefined' ? Calculadora : require('../calculadora.js');
   const { f, lee, filas } = K;
-  const kB = 1.380649e-23, h = 6.62607015e-34, eV = 1.602176634e-19, NA = 6.02214076e23, R = kB * NA;
+  const SI = typeof Constantes !== 'undefined' ? Constantes.SI : require('../fisica/constantes.js').SI;
+  const kB = SI.kB, h = SI.h, eV = SI.e, NA = SI.NA, R = kB * NA;
   const meV = eV * 1e-3, KpormeV = meV / kB; // 1 meV equivale a 11,6045 K
 
   /* ---------- Funciones matemáticas ---------- */

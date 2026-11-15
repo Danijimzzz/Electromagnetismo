@@ -141,7 +141,8 @@ const Doppler = (() => {
 
   /* ---------- Doppler de la luz (relativista) ---------- */
   // sc: { dato: 'fuente' | 'observado', geo: 'radial' | 'transversal', lam (nm emitida), beta (v/c, + si se aleja), lamO (nm observada) }
-  const C = 299792458;
+  const SI = typeof Constantes !== 'undefined' ? Constantes.SI : require('../fisica/constantes.js').SI;
+  const C = SI.c;
   function luz(sc) {
     const lam = lee(sc, 'lam', 'la longitud de onda emitida');
     const pasos = [];

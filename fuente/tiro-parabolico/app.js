@@ -462,6 +462,8 @@
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('tiro-parabolico').current;
   colores(); rellena(); rellenaR(); rellenaC(); calculaT(false); calculaR(false); calculaC(false); pestana(st.tab);
+  // FIS.FG-1: gravedad común a las herramientas de Física (fisica/constantes.js)
+  Constantes.monta(document.querySelector('.layout .card'));
   window.TiroApp = {
     abrirEjemplo, abrirEjemploR, abrirEjemploC, pestana, azar, enunciado, sol: () => sol, rec: () => rec, cir: () => cir,
     ir: (tt) => { paraT(); if (tray) t = Math.max(0, Math.min(tray.tv, tt)); dibujaT(); }, fin: () => (tray ? tray.tv : 0),

@@ -17,7 +17,8 @@
      patron(tipo, lam, L, th)  F(θ) para dibujar el diagrama
    ===================================================================== */
 const Antena = (() => {
-  const C0 = 299792458, ETA = 376.730313668;
+  const SI = typeof Constantes !== 'undefined' ? Constantes.SI : require('../fisica/constantes.js').SI;
+  const C0 = SI.c, ETA = 376.730313668;
   const f = (x, d = 4) => {
     if (!isFinite(x)) return '—';
     if (Math.abs(x) < 1e-12) return '0';
