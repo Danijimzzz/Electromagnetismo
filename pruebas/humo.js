@@ -20,12 +20,14 @@ function otroNumero(v) {
 }
 
 // páginas sin ejercicio que copiar: la tabla periódica, el editor de circuitos y Electrostática (que tiene su propia exportación)
+const SIN_TECLADO = ['circuitos/simulador', 'electromagnetismo/electrostatica']; // editores con lienzo: su teclado va aparte
+const css0 = (id) => '#' + id.replace(/([^\w-])/g, '\\$1');
 const SIN_COMPARTIR = ['quimica/tabla-periodica', 'circuitos/simulador', 'electromagnetismo/electrostatica'];
 
 async function humo(browser, { mal, solo, filtro } = {}) {
   mal = mal || ((m) => { console.log('  ✗ ' + m); process.exitCode = 1; });
   const pags = Catalogo.asignaturas.flatMap((a) => a.herramientas.filter((h) => h.disponible).map((h) => `${a.clave}/${h.clave}`));
-  let probadas = 0, sinDato = [];
+  let probadas = 0, sinDato = [], tecladoSinCambio = [];
   for (const pag of pags) {
     const archivo = path.join(publico, ...pag.split('/'), 'index.html');
     // la carpeta y la clave de localStorage, de la llamada que monta Mis ejercicios en la página
@@ -94,6 +96,36 @@ async function humo(browser, { mal, solo, filtro } = {}) {
         }
       }
     }
+    // F14.4 · teclado: con solo Tab se llega a todos los controles visibles de la herramienta y se puede cambiar un dato escribiendo, sin ratón
+    if (!SIN_TECLADO.includes(pag)) {
+      const total = await page.evaluate(() => {
+        const vis = (e) => !!(e.offsetWidth || e.offsetHeight) && !e.disabled && !e.closest('[hidden], [inert], canvas, svg') && !(e.parentElement && e.parentElement.closest('details:not([open])') && e.tagName !== 'SUMMARY') && !(e.tagName !== 'SUMMARY' && e.closest('details:not([open])')) && e.tabIndex >= 0 && getComputedStyle(e).visibility !== 'hidden';
+        window.__cand = [...document.querySelectorAll('.wrap button, .wrap input:not([type=hidden]):not([type=radio]):not([type=file]), .wrap select, .wrap textarea, .wrap a[href], .wrap summary, .wrap [tabindex="0"]')].filter(vis);
+        if (window.__cand[0]) window.__cand[0].focus(); return window.__cand.length;
+      });
+      if (total > 0 && total <= 220) {
+        const vistos = new Set(); let sinSalir = 0;
+        for (let k = 0; k < total + 120 && sinSalir < 60; k++) {
+          const i = await page.evaluate(() => window.__cand.indexOf(document.activeElement));
+          if (i < 0 && (await page.evaluate(() => document.activeElement.id === 'bq-campo' || !!document.activeElement.closest('header.top')))) break; // se pasó de la herramienta a la cabecera
+          if (i >= 0) { vistos.add(i); sinSalir = 0; } else sinSalir++;
+          await page.keyboard.press('Tab');
+        }
+        const faltan = await page.evaluate((v) => window.__cand.map((e, i) => [e, i]).filter(([, i]) => !v.includes(i)).map(([e]) => `${e.tagName.toLowerCase()}${e.id ? '#' + e.id : ''}${e.textContent && e.tagName === 'BUTTON' ? ' «' + e.textContent.trim().slice(0, 24) + '»' : ''}`), [...vistos]);
+        if (faltan.length) mal(`${pag}: con Tab no se llega a ${faltan.length} de ${total} controles: ${faltan.slice(0, 6).join(', ')}`);
+        // escribir un dato con el teclado y ver que cambia algo
+        const num = await page.evaluate(() => { const e = window.__cand.find((x) => x.tagName === 'INPUT' && /^[−-]?\d+([.,]\d+)?$/.test(x.value.trim()) && x.id && !x.closest('.bib, .prac, header')); return e ? { id: e.id, valor: e.value } : null; });
+        if (num) {
+          const antes = await page.evaluate(() => document.body.innerText + '|' + JSON.stringify(Object.keys(localStorage).sort().map((k) => localStorage.getItem(k))));
+          await page.focus(css0(num.id)); await page.keyboard.press('Control+A'); await page.keyboard.type(otroNumero(num.valor) || '7'); await page.keyboard.press('Tab');
+          await page.waitForTimeout(60);
+          await page.keyboard.press('Escape');
+          const ahora = await page.evaluate(() => document.body.innerText + '|' + JSON.stringify(Object.keys(localStorage).sort().map((k) => localStorage.getItem(k))));
+          if (ahora === antes) tecladoSinCambio.push(dir);
+        }
+      }
+    }
+    await page.keyboard.press('Escape'); await page.evaluate(() => { const o = document.querySelector('.bq-fondo'); if (o) o.hidden = true; });
     // modo oscuro con el botón de la cabecera y móvil sin desbordar
     if (await page.$('header.top .tema')) await page.click('header.top .tema');
     await page.setViewportSize({ width: 390, height: 800 });
@@ -104,7 +136,7 @@ async function humo(browser, { mal, solo, filtro } = {}) {
     if (consola.length) mal(`${pag}: consola del navegador:\n      ` + consola.join('\n      '));
     probadas++;
   }
-  return { probadas, sinDato };
+  return { probadas, sinDato, tecladoSinCambio };
 }
 
 module.exports = humo;
@@ -117,6 +149,6 @@ if (require.main === module) {
     const browser = require('./sin-anuncios.js')(await chromium.launch(exe ? { executablePath: exe } : {}));
     const r = await humo(browser, { solo });
     await browser.close();
-    console.log(`${process.exitCode ? '✗' : '✓'} Humo: ${r.probadas} herramientas${r.sinDato.length ? ` (sin dato que cambiar: ${r.sinDato.join(', ')})` : ''}`);
+    console.log(`${process.exitCode ? '✗' : '✓'} Humo: ${r.probadas} herramientas${r.sinDato.length ? ` (sin dato que cambiar: ${r.sinDato.join(', ')})` : ''}${r.tecladoSinCambio.length ? ` · escribir con el teclado no cambió nada en: ${r.tecladoSinCambio.join(', ')}` : ''}`);
   })().catch((e) => { console.error(e); process.exit(1); });
 }
