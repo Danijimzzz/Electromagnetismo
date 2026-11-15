@@ -9,6 +9,7 @@ const Catalogo = {
   // dirección principal: la que Google debe mostrar (canonical, sitemap.xml y robots.txt); Cloudflare sirve una copia.
   // ÚNICO sitio donde cambiar el dominio: cuando exista ciencify.<dominio>, poner aquí su dirección (og:image, canonical y sitemap salen de esta constante)
   web: 'https://simulaciencia.vercel.app',
+  correo: 'danijimzzz30@gmail.com', // el de las páginas legales; lo usa «Informar de un error» (diseno.js)
   // dirección que sirve la herramienta más usada de cada asignatura (la llama 🔥, llama.js); vacía = sin llama
   conteo: 'https://electromagnetismo.aceropuro30.workers.dev/api/populares',
   // código de verificación de Google Search Console (el content de su <meta name="google-site-verification">); vacío = sin la etiqueta

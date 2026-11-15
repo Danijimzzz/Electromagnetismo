@@ -21,6 +21,9 @@ const Version = (() => {
         { icono: '🧪', titulo: 'Gases', puntos: [
           '**Gas real:** Redlich-Kwong puede usar la temperatura y la presión críticas reales del gas (He, H₂, N₂, O₂, Ar, CO₂, NH₃ y H₂O) en vez de las que salen de las constantes de Van der Waals.',
         ] },
+        { icono: '🐞', titulo: 'Informar de un error', puntos: [
+          '**En el pie de cada herramienta:** si ves un resultado raro o un fallo, «Informar de un error» abre un correo ya con el nombre de la herramienta, para que solo tengas que contar qué esperabas y qué pasó.',
+        ] },
         { icono: '⌨️', titulo: 'Teclado', puntos: [
           '**Se puede usar solo con el teclado:** con la tecla Tab se llega a todos los controles de cada herramienta, incluido el cuadro de texto de Sistemas de ecuaciones, y se puede cambiar un dato escribiendo.',
         ] },
