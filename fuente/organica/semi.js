@@ -6,7 +6,7 @@
      aSmiles(texto)  → { smiles }  (lanza Error si el grupo no cuadra)
      deSmiles(smiles)→ texto semidesarrollado con Organica.leer
      GRUPOS          botones de la interfaz: [etiqueta, texto que inserta]
-   No admite anillos: los cierres de anillo se escriben en SMILES.
+   No admite anillos: los anillos y el benceno se escriben en SMILES.
    ===================================================================== */
 const Semi = (() => {
   const VAL = { C: 4, N: 3, O: 2, S: 2, F: 1, Cl: 1, Br: 1, I: 1 };
@@ -52,6 +52,7 @@ const Semi = (() => {
 
   function deSmiles(smiles) {
     const M = (typeof Organica !== 'undefined' ? Organica : require('./calculo.js')).leer(smiles);
+    if (M.anillo) throw new Error('La fórmula semidesarrollada no recoge anillos: se escriben en SMILES');
     const rec = (i) => {
       const a = M.at[i]; let t = a.el + (a.h ? 'H' + (a.h > 1 ? a.h : '') : '');
       a.hijos.forEach((c, n) => {

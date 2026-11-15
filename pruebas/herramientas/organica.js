@@ -107,17 +107,143 @@ CC(=O)C=C|but-3-en-2-ona`.split('\n').map((l) => l.split('|'));
       }
     }
     // errores con mensaje
-    for (const [s, q] of [['', 'vacío'], ['CC(', 'paréntesis'], ['C1CCCCC1', 'anillo'], ['c1ccccc1', 'aromático'], ['CC=', 'enlace colgando'], ['C(C)(C)(C)(C)C', 'valencia'], ['CX', 'elemento'], ['[Na+]', 'carga'], ['C=C=C', 'aleno']]) {
+    for (const [s, q] of [['', 'vacío'], ['CC(', 'paréntesis'], ['C1CCCCC', 'anillo sin cerrar'], ['c1cccc1', 'aromático de cinco'], ['c1ccncc1', 'heteroaromático'], ['c', 'aromático suelto'], ['C12CC1C2', 'bicíclico'], ['c1ccc2ccccc2c1', 'naftaleno'], ['C1CC1C1CC1', 'dos anillos'], ['C11', 'anillo sobre sí mismo'], ['C1C1', 'anillo sobre un vecino'], ['CC=', 'enlace colgando'], ['C(C)(C)(C)(C)C', 'valencia'], ['CX', 'elemento'], ['[Na+]', 'carga'], ['C=C=C', 'aleno']]) {
       let ok = false; try { C.leer(s); } catch (e) { ok = !!e.message; }
       if (!ok) mal(`Orgánica: «${s}» (${q}) no da error`);
     }
-    for (const [s, q] of [['CNC', 'amina secundaria'], ['CC(=O)NC', 'amida N-sustituida'], ['O', 'sin carbono']]) {
+    for (const [s, q] of [['CNC', 'amina secundaria'], ['CC(=O)NC', 'amida N-sustituida'], ['O', 'sin carbono'], ['C1CCOC1', 'heterociclo'], ['C=C1CCCCC1', 'doble enlace anillo-cadena (ilideno)'], ['C#1CCCCC1', 'cicloalquino'], ['N1CCCCC1', 'piperidina'], ['CNc1ccccc1', 'anilina N-sustituida'], ['C1CCCCCCCCCCCC1', 'anillo de 13']]) {
       const r = C.resolver({ smiles: s });
       if (r.nombre || !r.errorNombre) mal(`Orgánica: «${s}» (${q}) debería avisar de que no sabe nombrarla`);
     }
     // isómeros constitucionales: cada SMILES de la lista tiene la fórmula de su clave
     for (const [fo, lista] of Object.entries(C.ISOMEROS)) for (const s of lista) { const x = C.formulaDe(C.leer(s)).plano; if (x !== fo) mal(`Orgánica: ${s} no es ${fo} sino ${x}`); }
     if (fallos === antes) console.log(`  ✓ Orgánica: ${nombres.length + est.length} nombres, fórmulas, estereoisómeros, 3D coherente con R/S y E/Z y errores`);
+  }
+
+  {
+    // QUI.OR-1 · anillos y benceno: nombres hechos a mano (IUPAC en español), cis/trans, R/S, recuentos y 3D
+    const antes = fallos;
+    const nombres = `C1CCCCC1|ciclohexano
+C1CC1|ciclopropano
+C1CCC1|ciclobutano
+C1CCCC1|ciclopentano
+CC1CCCCC1|metilciclohexano
+CCC1CCCCC1|etilciclohexano
+CC1CCCCC1C|1,2-dimetilciclohexano
+CC1CCCC(C)C1|1,3-dimetilciclohexano
+CC1CCC(C)CC1|1,4-dimetilciclohexano
+CC1CC(C)CC(C)C1|1,3,5-trimetilciclohexano
+CCC1CCCCC1C|1-etil-2-metilciclohexano
+CC1CCCCC1Cl|1-cloro-2-metilciclohexano
+C1(C)(C)CCCCC1|1,1-dimetilciclohexano
+OC1CCCCC1|ciclohexanol
+OC1CCCCC1C|2-metilciclohexan-1-ol
+O=C1CCCCC1|ciclohexanona
+NC1CCCCC1|ciclohexanamina
+SC1CCCCC1|ciclohexanotiol
+ClC1CCCCC1|clorociclohexano
+OC1CCCCC1O|ciclohexano-1,2-diol
+OC1CC(O)CCC1|ciclohexano-1,3-diol
+C1=CCCCC1|ciclohexeno
+CC1=CCCCC1|1-metilciclohexeno
+C1CC=CC1|ciclopenteno
+OC1C=CCCC1|ciclohex-2-en-1-ol
+C1=CCC=CC1|ciclohexa-1,4-dieno
+OC(=O)C1CCCCC1|ácido ciclohexanocarboxílico
+O=CC1CCCCC1|ciclohexanocarbaldehído
+NC(=O)C1CCCCC1|ciclohexanocarboxamida
+N#CC1CCCCC1|ciclohexanocarbonitrilo
+CCOC(=O)C1CCCCC1|ciclohexanocarboxilato de etilo
+OC(=O)C1CCCCC1C(=O)O|ácido ciclohexano-1,2-dicarboxílico
+OCC1CCCCC1|ciclohexilmetanol
+CC(=O)OC1CCCCC1|etanoato de ciclohexilo
+CCCCCCCC1CC1|1-ciclopropilheptano
+CCCCC1CC1|1-ciclopropilbutano
+CCC1CC1|etilciclopropano
+c1ccccc1|benceno
+C1=CC=CC=C1|benceno
+Cc1ccccc1|tolueno
+CCc1ccccc1|etilbenceno
+Clc1ccccc1|clorobenceno
+Oc1ccccc1|fenol
+Nc1ccccc1|anilina
+OC(=O)c1ccccc1|ácido benzoico
+O=Cc1ccccc1|benzaldehído
+NC(=O)c1ccccc1|benzamida
+N#Cc1ccccc1|benzonitrilo
+COC(=O)c1ccccc1|benzoato de metilo
+Cc1ccccc1C|1,2-dimetilbenceno
+Cc1cccc(C)c1|1,3-dimetilbenceno
+Cc1ccc(C)cc1|1,4-dimetilbenceno
+Cc1ccccc1O|2-metilfenol
+Cc1ccc(O)cc1|4-metilfenol
+Nc1ccc(Cl)cc1|4-cloroanilina
+OC(=O)c1ccccc1O|ácido 2-hidroxibenzoico
+OC(=O)c1cccc(O)c1|ácido 3-hidroxibenzoico
+Oc1ccccc1O|benceno-1,2-diol
+Clc1ccc(Cl)c(Cl)c1|1,2,4-triclorobenceno
+CCCCCCc1ccccc1|hexilbenceno
+CCCCCCCc1ccccc1|1-fenilheptano
+OCc1ccccc1|fenilmetanol
+CC(=O)c1ccccc1|1-feniletan-1-ona
+OC(C)c1ccccc1|1-feniletan-1-ol
+OC(=O)CCc1ccccc1|ácido 3-fenilpropanoico
+Sc1ccccc1|bencenotiol`.split('\n').map((l) => l.split('|'));
+    for (const [smi, esperado] of nombres) {
+      let n; try { n = nombre(smi); } catch (e) { n = 'ERROR ' + e.message; }
+      if (n !== esperado) mal(`Orgánica · ${smi}: «${n}» en vez de «${esperado}»`);
+    }
+    // con estereoquímica: (1R,2S) es el cis (meso) y (1R,2R) o (1S,2S) el trans
+    const est = [['C[C@H]1CCCC[C@H]1C', '(1R,2S)-1,2-dimetilciclohexano'], ['C[C@@H]1CCCC[C@@H]1C', '(1R,2S)-1,2-dimetilciclohexano'], ['C[C@H]1CCCC[C@@H]1C', '(1S,2S)-1,2-dimetilciclohexano'],
+      ['C[C@@H]1CCCC[C@H]1C', '(1R,2R)-1,2-dimetilciclohexano'], ['C[C@H]1CC[C@@H](C)CC1', 'cis-1,4-dimetilciclohexano'], ['C[C@H]1CC[C@H](C)CC1', 'trans-1,4-dimetilciclohexano'],
+      ['C[C@H]1CCC[C@@H](C)C1', '(1R,3S)-1,3-dimetilciclohexano'], ['C[C@H](O)c1ccccc1', '(1S)-1-feniletan-1-ol'], ['C[C@@H](O)c1ccccc1', '(1R)-1-feniletan-1-ol']];
+    for (const [smi, esperado] of est) { const n = nombre(smi); if (n !== esperado) mal(`Orgánica · ${smi}: «${n}» en vez de «${esperado}»`); }
+    // nombres aceptados y su forma sistemática
+    for (const [smi, alias] of [['Cc1ccccc1', 'metilbenceno'], ['Nc1ccccc1', 'bencenamina'], ['OC(=O)c1ccccc1', 'ácido bencenocarboxílico'], ['Cc1ccc(N)cc1', '4-metilbencen-1-amina']]) {
+      const r = C.resolver({ smiles: smi }); if (r.alias !== alias) mal(`Orgánica · ${smi}: forma sistemática «${r.alias}» en vez de «${alias}»`);
+    }
+    if (C.resolver({ smiles: 'Cc1ccc(C)cc1' }).anillo.posicion.tipo !== 'para' || C.resolver({ smiles: 'Cc1cccc(C)c1' }).anillo.posicion.tipo !== 'meta' || C.resolver({ smiles: 'Cc1ccccc1C' }).anillo.posicion.tipo !== 'orto') mal('Orgánica: orto, meta o para mal detectado');
+    if (C.resolver({ smiles: 'Cc1ccccc1' }).anillo.posicion || C.resolver({ smiles: 'Cc1cc(C)cc(C)c1' }).anillo.posicion) mal('Orgánica: orto, meta o para solo con dos sustituyentes');
+    // fórmula y masa: benceno C6H6 78,11 g/mol; ciclohexano C6H12 84,16
+    { const b = C.resolver({ smiles: 'c1ccccc1' }), h = C.resolver({ smiles: 'C1CCCCC1' });
+      if (b.formulaPlano !== 'C6H6' || Math.abs(b.masa - 78.114) > 0.01 || h.formulaPlano !== 'C6H12' || Math.abs(h.masa - 84.162) > 0.01) mal('Orgánica: fórmula o masa del benceno y el ciclohexano'); }
+    // estereoisómeros de un anillo: [SMILES, n.º, quiral]
+    for (const [smi, n, quiral] of [['C[C@H]1CCCC[C@H]1C', 3, false], ['C[C@H]1CCCC[C@@H]1C', 3, true], ['C[C@H]1CCC[C@@H](C)C1', 3, false], ['C[C@H]1CCC[C@H](C)C1', 3, true], ['C[C@H]1CC[C@@H](C)CC1', 2, false],
+      ['C[C@H]1C[C@@H](C)C1', 2, false], ['C[C@H]1CC[C@@H]1C', 3, true], ['C[C@H]1CC[C@H]1C', 3, false], ['C[C@@H]1CCCC[C@H]1O', 4, true], ['CC1CCCCC1', 0, false], ['CC1(C)CCCCC1', 0, false], ['Cc1ccccc1C', 0, false]]) {
+      const r = C.resolver({ smiles: smi }), l = r.estereo.lista;
+      if (!l || l.length !== n) mal(`Orgánica · ${smi}: ${l ? l.length : 'sin lista'} estereoisómeros en vez de ${n}`);
+      if (r.estereo.quiral !== quiral) mal(`Orgánica · ${smi}: quiral=${r.estereo.quiral} en vez de ${quiral}`);
+    }
+    // el enantiómero del trans invierte los dos centros; el cis (meso) es su propia imagen
+    { const t = C.resolver({ smiles: C.enantiomero('C[C@H]1CCCC[C@@H]1C') }); if (t.nombre !== '(1R,2R)-1,2-dimetilciclohexano') mal('Orgánica: el enantiómero del (1S,2S)-1,2-dimetilciclohexano: ' + t.nombre);
+      const c = C.resolver({ smiles: C.enantiomero('C[C@H]1CCCC[C@H]1C') }); if (c.nombre !== '(1R,2S)-1,2-dimetilciclohexano' || c.estereo.quiral) mal('Orgánica: la forma meso cis debería ser su propia imagen'); }
+    // sin @ ni @@ en un anillo con dos sustituyentes: falta la configuración y no se inventa cis/trans
+    { const r = C.resolver({ smiles: 'CC1CCC(C)CC1' }); if (r.estereo.completo || r.nombre !== '1,4-dimetilciclohexano' || r.estereo.nTeorico !== 4) mal('Orgánica: 1,4-dimetilciclohexano sin @ debería quedar incompleto'); }
+    // la geometría 3D: cis y trans medidos en las coordenadas (lado del plano del anillo), R/S y distancias
+    for (const smi of ['C[C@H]1CCCC[C@H]1C', 'C[C@H]1CCCC[C@@H]1C', 'C[C@H]1CCC[C@@H](C)C1', 'C[C@H]1CCC[C@H](C)C1', 'C[C@H]1CC[C@@H](C)CC1', 'C[C@H]1CC[C@H](C)CC1', 'C[C@H]1C[C@@H](C)C1', 'C[C@H]1C[C@H](C)C1', 'C[C@H]1CCC[C@@H]1C', 'C[C@H]1CCCC[C@H]1Cl']) {
+      const M = C.leer(smi), g = C.coordenadas(M), e = C.estereo(M);
+      const lado = e.anillo.caras.map((x) => Math.sign(g.atomos[x.sub].p[2] - g.atomos[x.i].p[2])), geo = lado[0] === lado[1] ? 'cis' : 'trans';
+      if (geo !== e.anillo.relacion) mal(`Orgánica · ${smi}: el SMILES dice ${e.anillo.relacion} y las coordenadas ${geo}`);
+    }
+    for (const smi of ['C1CCCCC1', 'c1ccccc1', 'Cc1ccccc1', 'C[C@H]1CCCC[C@@H]1C', 'C[C@@H]1CCCC[C@H]1O', 'CC[C@H](C)c1ccccc1', 'CC[C@@H](C)C1CCCCC1', 'C1CC1', 'C1CCC1', 'C1CCCC1', 'C1CCCCCCC1', 'CC(C)C1CCCCC1', 'OC(=O)c1ccccc1O', 'C1=CCCCC1', 'C/C=C/C1CC1', 'CC1CC(C)C1', 'C(C)(C)C1CCCCC1', 'Clc1ccc(Br)cc1', 'C[C@H](O)c1ccccc1']) {
+      const M = C.leer(smi), g = C.coordenadas(M), e = C.estereo(M);
+      let dmin = 9, dmax = 0;
+      for (let a = 0; a < g.atomos.length; a++) for (let b = a + 1; b < g.atomos.length; b++) dmin = Math.min(dmin, C.v3.norm(C.v3.sub(g.atomos[a].p, g.atomos[b].p)));
+      for (const en of g.enlaces) dmax = Math.max(dmax, C.v3.norm(C.v3.sub(g.atomos[en.a].p, g.atomos[en.b].p)));
+      if (!(dmin > 0.85)) mal(`Orgánica · ${smi}: dos átomos casi en el mismo sitio (${dmin.toFixed(2)} Å)`);
+      if (!(dmax < 2.2)) mal(`Orgánica · ${smi}: un enlace mide ${dmax.toFixed(2)} Å`);
+      if (g.enlaces.length !== g.atomos.length - 1 + (M.anillo ? 1 : 0)) mal(`Orgánica · ${smi}: ${g.enlaces.length} enlaces para ${g.atomos.length} átomos`);
+      for (const c of e.centros) if (c.label && C.etiquetaGeometrica(M, g, c.i, c.rg) !== c.label) mal(`Orgánica · ${smi}: el centro ${c.i} es ${c.label} pero en 3D sale al revés`);
+    }
+    // el benceno es plano: todos sus carbonos en un plano
+    { const g = C.coordenadas(C.leer('c1ccccc1')), cs = g.atomos.filter((a) => a.sim === 'C'); if (cs.some((a) => Math.abs(a.p[2] - cs[0].p[2]) > 0.05)) mal('Orgánica: el benceno debería ser plano'); }
+    // fuera de alcance: se avisa y nunca se da un nombre (casos de la batería)
+    for (const smi of ['C1CCOC1', 'C=C1CCCCC1', 'C#1CCCCC1', 'N1CCCCC1', 'CNc1ccccc1', 'CC(=O)Nc1ccccc1', 'C1CCCCCCCCCCCC1']) { const r = C.resolver({ smiles: smi }); if (r.nombre || !r.errorNombre) mal(`Orgánica · ${smi} no se sabe nombrar y da «${r.nombre}»`); }
+    // la fórmula semidesarrollada no recoge anillos
+    { let ok = false; try { require(path.join(fuente, 'organica', 'semi.js')).deSmiles('C1CCCCC1'); } catch (e) { ok = true; } if (!ok) mal('Orgánica: la semidesarrollada de un anillo debería avisar'); }
+    // isómeros constitucionales con anillos
+    { const l = C.isomerosDe('C5H10'); if (!l || l.length !== 9 || !l.some((x) => x.nombre === 'ciclopentano')) mal('Orgánica: isómeros de C5H10'); }
+    if (fallos === antes) console.log(`  ✓ Orgánica · anillos y benceno: ${nombres.length + est.length} nombres, cis/trans, estereoisómeros, 3D coherente y avisos fuera de alcance`);
   }
 
   {
@@ -155,6 +281,18 @@ CC(=O)C=C|but-3-en-2-ona`.split('\n').map((l) => l.split('|'));
     if ((await page.locator('#t-estereo tbody tr').count()) !== 2) mal('Orgánica: la tabla de estereoisómeros del butan-2-ol debería tener 2 filas');
     await page.click('#t-estereo tbody tr:not(.activa) button');
     if (!/\(2S\)/.test(await page.locator('#titulo-mol').textContent())) mal('Orgánica: «Ver en 3D» de la tabla no cambia de estereoisómero');
+    // anillo: trans-1,2-dimetilciclohexano, sus tres estereoisómeros, benceno con su nombre sistemático
+    { const a0 = fallos;
+      await page.fill('#smiles', 'C[C@H]1CCCC[C@@H]1C');
+      const r1 = await page.evaluate(() => ({ n: document.querySelector('#titulo-mol').textContent, res: document.querySelector('#resumen').textContent, filas: document.querySelectorAll('#t-estereo tbody tr').length, err: !document.querySelector('#error').hidden }));
+      if (r1.n !== '(1S,2S)-1,2-dimetilciclohexano' || !/trans/.test(r1.res) || r1.filas !== 3 || r1.err) mal('Orgánica · trans-1,2-dimetilciclohexano en la página: ' + JSON.stringify(r1));
+      await page.fill('#smiles', 'Cc1ccccc1');
+      const r2 = await page.evaluate(() => ({ n: document.querySelector('#titulo-mol').textContent, res: document.querySelector('#resumen').textContent, err: !document.querySelector('#error').hidden, semi: document.querySelector('#r-semi').textContent }));
+      if (r2.n !== 'tolueno' || !/metilbenceno/.test(r2.res) || !/benceno/.test(r2.res) || r2.err || r2.semi !== '—') mal('Orgánica · tolueno en la página: ' + JSON.stringify(r2));
+      await page.fill('#smiles', 'C12CC1C2');
+      if (await page.locator('#error').isHidden()) mal('Orgánica: un bicíclico no muestra el error');
+      if (fallos === a0) console.log('  ✓ Orgánica · anillos en la página: nombre, cis/trans, tabla de estereoisómeros, nombre sistemático y aviso de bicíclicos');
+    }
     await page.fill('#smiles', 'CC(');
     if (await page.locator('#error').isHidden()) mal('Orgánica: un SMILES mal escrito no muestra el error');
     // entrada semidesarrollada y botones de grupos
