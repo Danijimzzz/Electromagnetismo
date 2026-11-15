@@ -69,6 +69,8 @@ if (primera && !solo) { try { execFileSync('node', [path.join(__dirname, 'invari
 if (primera && !solo) { try { execFileSync('node', [path.join(__dirname, 'casos-analiticos.js')], { stdio: 'inherit', timeout: 120000 }); } catch (e) { mal('Casos analíticos: ver arriba'); } }
 // cifras de las preguntas frecuentes (TRV.10.7): pruebas/faq-cifras.js
 if (primera && !solo) { try { execFileSync('node', [path.join(__dirname, 'faq-cifras.js')], { stdio: 'inherit', timeout: 120000 }); } catch (e) { mal('Cifras de las FAQ: ver arriba'); } }
+// casos a mano de las herramientas con menos pruebas (TRV.10.18b): pruebas/casos-flojas.js
+if (primera && !solo) { try { execFileSync('node', [path.join(__dirname, 'casos-flojas.js')], { stdio: 'inherit', timeout: 120000 }); } catch (e) { mal('Casos de herramientas flojas: ver arriba'); } }
 // referencias externas (F14.1 Química, F14.2 Matemáticas): pruebas/referencias.js, sin navegador ni Python
 if (primera && !solo) { try { execFileSync('node', [path.join(__dirname, 'referencias.js')], { stdio: 'inherit', timeout: 120000 }); } catch (e) { mal('Referencias externas (Química y Matemáticas): ver arriba'); } }
 if (primera && !solo) { try { execFileSync('node', [path.join(__dirname, 'casos-limite-matematicas.js')], { stdio: 'inherit', timeout: 120000 }); } catch (e) { mal('Casos límite de Matemáticas: ver arriba'); } }
