@@ -8,7 +8,7 @@ Sacado de `fuente/*/` buscando los valores escritos (sin contar `app.js`, fenóm
 | c | choques, equilibrio, física moderna, fresnel, óptica, laplace-numerica, transformada-z, solubilidad | `3e8` | Aparece en rutas de ejemplos o de clase; no cambia resultados de los ejercicios del Tema 3. |
 | c | fuerza | 299 792 458 y `3e5` (km/s) | Dos unidades, mismo valor. |
 | ε₀ | condensadores, ondas EM, maxwell, laplace-numerica | 8,8541878128·10⁻¹² (CODATA 2018) | Igual. |
-| ε₀ | **imágenes** | **8,854187817·10⁻¹² (CODATA 2010)** | Difiere en la 10.ª cifra: sin efecto visible, pero conviene igualarlo. |
+| ε₀ | imágenes | 8,8541878128·10⁻¹² (corregido en la 1.16, antes CODATA 2010) | Igualado con el resto. |
 | ε₀ | unidades | CODATA 2022 por defecto y 2018 como opción (F13) | Es lo previsto. |
 | μ₀ | cavidades, faraday, inducción, fuerza | 4π·10⁻⁷ | Igual a la exacta antigua. |
 | μ₀ | ondas EM, maxwell | 1,25663706212·10⁻⁶ (CODATA 2018) | Difiere de 4π·10⁻⁷ en la 10.ª cifra; sin efecto visible. |

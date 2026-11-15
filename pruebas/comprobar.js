@@ -65,6 +65,8 @@ if (primera) { try { execFileSync('node', [path.join(__dirname, 'union.js')], { 
 if (primera) { try { execFileSync('node', [path.join(__dirname, 'economia-practica.js')], { stdio: 'inherit', timeout: 120000 }); } catch (e) { mal('Economía, ejercicios al azar: ver arriba'); } }
 // invariantes al azar con semilla fija (F14.3): pruebas/invariantes.js
 if (primera && !solo) { try { execFileSync('node', [path.join(__dirname, 'invariantes.js')], { stdio: 'inherit', timeout: 120000 }); } catch (e) { mal('Invariantes: ver arriba'); } }
+// casos analíticos cerrados de Electromagnetismo, Control y z (EM.EM-1, CIR.CI-3): pruebas/casos-analiticos.js
+if (primera && !solo) { try { execFileSync('node', [path.join(__dirname, 'casos-analiticos.js')], { stdio: 'inherit', timeout: 120000 }); } catch (e) { mal('Casos analíticos: ver arriba'); } }
 // referencias externas (F14.1 Química, F14.2 Matemáticas): pruebas/referencias.js, sin navegador ni Python
 if (primera && !solo) { try { execFileSync('node', [path.join(__dirname, 'referencias.js')], { stdio: 'inherit', timeout: 120000 }); } catch (e) { mal('Referencias externas (Química y Matemáticas): ver arriba'); } }
 if (primera && !solo) { try { execFileSync('node', [path.join(__dirname, 'casos-limite-matematicas.js')], { stdio: 'inherit', timeout: 120000 }); } catch (e) { mal('Casos límite de Matemáticas: ver arriba'); } }
