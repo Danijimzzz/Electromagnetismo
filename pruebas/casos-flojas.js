@@ -1,5 +1,5 @@
 /* ===== Casos hechos a mano para las herramientas con menos pruebas (TRV.10.18b · Fase 14) =====
-   Elegidas con `node pruebas/cobertura.js`: tabla periódica, configuración electrónica, ajustador, masa molar, solubilidad, sistemas y choques.
+   Elegidas con `node pruebas/cobertura.js`: tabla periódica, configuración electrónica, ajustador, masa molar, solubilidad, sistemas y choques, y de Economía amortización del inmovilizado, Phillips-Okun, ahorro y formulación.
    Cada resultado sale de una cuenta que cualquier libro da. Sin navegador. node pruebas/casos-flojas.js (lo llama comprobar.js) */
 const path = require('path'), fuente = path.join(__dirname, '..', 'fuente');
 global.Expr = require(path.join(fuente, 'matematicas', 'expresion.js')); global.Algebra = require(path.join(fuente, 'matematicas', 'algebra.js')); global.Herramienta = require(path.join(fuente, 'herramienta.js'));
@@ -38,6 +38,46 @@ intenta('Sistemas', () => { const S = require(path.join(fuente, 'sistemas', 'cal
   igual('x + y = 3, x − y = 1: compatible determinado', t([['1', '1', '3'], ['1', '-1', '1']]), 'SCD'); igual('x + y = 2, x + y = 3: incompatible', t([['1', '1', '2'], ['1', '1', '3']]), 'SI'); igual('x + y = 2, 2x + 2y = 4: indeterminado', t([['1', '1', '2'], ['2', '2', '4']]), 'SCI');
   igual('Solución de x + y = 3, x − y = 1', S.resolver({ metodo: 'gauss', M: [['1', '1', '3'], ['1', '-1', '1']] }).res.replace(/&nbsp;/g, ' ').replace(/\s+/g, ' '), 'x = 2, y = 1');
   for (const m of ['gauss', 'cramer', 'inversa']) igual(`3×3 por ${m}: tipo`, S.resolver({ metodo: m, M: [['2', '1', '-1', '8'], ['-3', '-1', '2', '-11'], ['-2', '1', '2', '-3']] }).tipo, 'SCD');
+});
+
+// Economía: amortización del inmovilizado, Phillips y Okun, ahorro (cuentas a mano)
+global.Eco = require(path.join(fuente, 'economia', 'comun.js'));
+intenta('Amortización del inmovilizado', () => { const A = require(path.join(fuente, 'amortizacion-inmovilizado', 'calculo.js'));
+  const cu = (sc) => A.resolver(sc).filas.map((x) => Math.round(x.c * 100) / 100).join();
+  igual('Lineal 50 000 − 5 000 en 5 años', cu({ metodo: 'lineal', v0: '50000', vr: '5000', n: '5' }), '9000,9000,9000,9000,9000');
+  igual('Suma de dígitos (15)', cu({ metodo: 'digitos', v0: '50000', vr: '5000', n: '5' }), '15000,12000,9000,6000,3000');
+  igual('Degresivo coef. 2: t = 0,4 y el último año llega al residual', cu({ metodo: 'degresivo', v0: '50000', vr: '5000', n: '5', coef: '2' }), '20000,12000,7200,4320,1480');
+  igual('Unidades: 28 000/200 000 = 0,14 € por km', cu({ metodo: 'unidades', v0: '30000', vr: '2000', total: '200000', unidades: '50000 60000 40000 30000 20000' }), '7000,8400,5600,4200,2800');
+  for (const m of ['lineal', 'digitos', 'degresivo']) { const r = A.resolver({ metodo: m, v0: '12345', vr: '345', n: '7', coef: '2' }); igual(`${m}: amortiza justo la base`, r.total, 12000, 1e-9); igual(`${m}: el valor neto final es el residual`, r.filas[6].vnc, 345, 1e-9); }
+  const v = A.resolver({ metodo: 'lineal', v0: '50000', vr: '5000', n: '5', tventa: '3', pventa: '20000' }).venta;
+  igual('Venta en el año 3: amortización acumulada 27 000', v.ac, 27000); igual('Venta: valor neto 23 000', v.vnc, 23000); igual('Venta: pérdida de 3 000', v.res, -3000); igual('Venta: tipo pérdida', v.tipo, 'pérdida');
+  for (const mal of [{ metodo: 'lineal', v0: '1000', vr: '1000', n: '3' }, { metodo: 'degresivo', v0: '1000', vr: '0', n: '2', coef: '2' }, { metodo: 'unidades', v0: '1000', vr: '0', total: '10', unidades: '6 6' }]) { let m = null; try { A.resolver(mal); } catch (e) { m = e.message; } igual(`Error esperado: ${mal.metodo}`, m !== null, true); }
+});
+intenta('Phillips y Okun', () => { const P = require(path.join(fuente, 'phillips-okun', 'calculo.js'));
+  let r = P.resolver({ modo: 'okun', busca: 'paro', u0: '8', gp: '3', beta: '0.5', g: '5' }); igual('Okun: Δu = −0,5·(5 − 3) = −1', r.du, -1); igual('Okun: paro final 7 %', r.u1, 7);
+  r = P.resolver({ modo: 'okun', busca: 'crecimiento', u0: '8', u1: '6', gp: '3', beta: '0.5' }); igual('Okun: para bajar 2 puntos hay que crecer 7 %', r.g, 7);
+  r = P.resolver({ modo: 'brecha', u: '8', un: '5', c: '2', Yp: '1000' }); igual('Brecha: −2·(8 − 5) = −6 %', r.br, -6); igual('Brecha: PIB 940', r.Y, 940);
+  r = P.resolver({ modo: 'phillips', pe: '2', alfa: '0.5', un: '5', u: '3', s: '0' }); igual('Phillips: 2 − 0,5·(3 − 5) = 3 %', r.pi, 3);
+  r = P.resolver({ modo: 'phillips', pe: '2', alfa: '0.5', un: '5', u: '5', s: '1.5' }); igual('Phillips con shock: paro natural → π = πᵉ + s', r.pi, 3.5);
+  r = P.resolver({ modo: 'datos', datos: '4 6\n5 4\n6 2' }); igual('Ajuste exacto: pendiente −2', r.b, -2); igual('Ajuste exacto: ordenada 14', r.a, 14); igual('Ajuste exacto: r = −1', r.r, -1);
+  let m = null; try { P.resolver({ modo: 'datos', datos: '4 6\n4 5\n4 3' }); } catch (e) { m = e.message; } igual('Paro constante: no se puede ajustar', m !== null, true);
+});
+intenta('Ahorro e inflación', () => { const A = require(path.join(fuente, 'ahorro', 'calculo.js'));
+  let r = A.resolver({ modo: 'final', c0: '0', a: '1000', m: '1', r: '5', pi: '0', n: '10', indexa: 'no' }); igual('Renta pospagable: 1000·s(10; 5 %)', r.final, 1000 * (1.05 ** 10 - 1) / 0.05, 1e-9);
+  r = A.resolver({ modo: 'final', c0: '1000', a: '0', m: '1', r: '5', pi: '0', n: '10', indexa: 'no' }); igual('Solo capital inicial: 1000·1,05¹⁰', r.final, 1000 * 1.05 ** 10, 1e-9);
+  r = A.resolver({ modo: 'poder', x: '1000', pi: '2', n: '10' }); igual('Poder adquisitivo: 1000/1,02¹⁰', r.real, 1000 / 1.02 ** 10, 1e-9);
+  r = A.resolver({ modo: 'final', c0: '0', a: '100', m: '12', r: '6', pi: '2', n: '5', indexa: 'no' }); igual('Euros de hoy: final/(1+π)ⁿ', r.real, r.final / 1.02 ** 5, 1e-9); igual('Fisher: (1+r)/(1+π) − 1', r.rr, 1.06 / 1.02 - 1, 1e-12);
+  const o = A.resolver({ modo: 'objetivo', c0: '5000', objetivo: '100000', m: '12', r: '6', pi: '2', n: '25', indexa: 'no' });
+  igual('Objetivo: con esa aportación se llega a 100 000 € de hoy', A.resolver({ modo: 'final', c0: '5000', a: String(o.a), m: '12', r: '6', pi: '2', n: '25', indexa: 'no' }).real, 100000, 1e-6);
+  const z = A.resolver({ modo: 'final', c0: '0', a: '1000', m: '1', r: '0', pi: '0', n: '10', indexa: 'no' }); igual('Sin rentabilidad: se suma lo aportado', z.final, 10000, 1e-9);
+});
+intenta('Formulación', () => { const F = require(path.join(fuente, 'formulacion', 'calculo.js')), R = (modo, texto) => F.resolver({ modo, texto });
+  for (const [n, f, t] of [['ácido nítrico', 'HNO3', 'Oxoácido'], ['hidróxido de calcio', 'Ca(OH)2', 'Hidróxido'], ['óxido de hierro(III)', 'Fe2O3', 'Óxido'], ['cloruro de sodio', 'NaCl', 'Sal binaria'], ['carbonato de calcio', 'CaCO3', 'Oxisal']]) {
+    const r = R('n2f', n); igual(`${n} → fórmula`, r.formula, f); igual(`${n} → tipo`, r.tipo, t);
+    const b = R('f2n', f); igual(`${f} → tipo`, b.tipo, t); igual(`${f} → ida y vuelta`, R('n2f', b.lineas[0].nombre).formula, f);
+  }
+  igual('H₂SO₄ en sistemática', R('f2n', 'H2SO4').lineas[0].nombre, 'tetraoxidosulfato de dihidrógeno'); igual('CuSO₄·5H₂O es un hidrato', R('f2n', 'CuSO4·5H2O').tipo, 'Hidrato');
+  let m = null; try { R('f2n', 'Xx9'); } catch (e) { m = e.message; } igual('Fórmula sin sentido: error', m !== null, true);
 });
 console.log(`Casos de las herramientas con menos pruebas: ${hechos} comprobaciones; ${fallos} fallos.`);
 process.exit(fallos ? 1 : 0);
