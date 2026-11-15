@@ -67,6 +67,8 @@ if (primera) { try { execFileSync('node', [path.join(__dirname, 'economia-practi
 if (primera && !solo) { try { execFileSync('node', [path.join(__dirname, 'invariantes.js')], { stdio: 'inherit', timeout: 120000 }); } catch (e) { mal('Invariantes: ver arriba'); } }
 // casos analíticos cerrados de Electromagnetismo, Control y z (EM.EM-1, CIR.CI-3): pruebas/casos-analiticos.js
 if (primera && !solo) { try { execFileSync('node', [path.join(__dirname, 'casos-analiticos.js')], { stdio: 'inherit', timeout: 120000 }); } catch (e) { mal('Casos analíticos: ver arriba'); } }
+// cifras de las preguntas frecuentes (TRV.10.7): pruebas/faq-cifras.js
+if (primera && !solo) { try { execFileSync('node', [path.join(__dirname, 'faq-cifras.js')], { stdio: 'inherit', timeout: 120000 }); } catch (e) { mal('Cifras de las FAQ: ver arriba'); } }
 // referencias externas (F14.1 Química, F14.2 Matemáticas): pruebas/referencias.js, sin navegador ni Python
 if (primera && !solo) { try { execFileSync('node', [path.join(__dirname, 'referencias.js')], { stdio: 'inherit', timeout: 120000 }); } catch (e) { mal('Referencias externas (Química y Matemáticas): ver arriba'); } }
 if (primera && !solo) { try { execFileSync('node', [path.join(__dirname, 'casos-limite-matematicas.js')], { stdio: 'inherit', timeout: 120000 }); } catch (e) { mal('Casos límite de Matemáticas: ver arriba'); } }
