@@ -63,6 +63,8 @@ if (primera) { try { execFileSync('node', [path.join(__dirname, 'union.js')], { 
 // banco de casos límite de Matemáticas (MAT.MA-2), sin navegador: pruebas/casos-limite-matematicas.js
 // ejercicios al azar de Economía (ECO.EC-1): pruebas/economia-practica.js
 if (primera) { try { execFileSync('node', [path.join(__dirname, 'economia-practica.js')], { stdio: 'inherit', timeout: 120000 }); } catch (e) { mal('Economía, ejercicios al azar: ver arriba'); } }
+// invariantes al azar con semilla fija (F14.3): pruebas/invariantes.js
+if (primera && !solo) { try { execFileSync('node', [path.join(__dirname, 'invariantes.js')], { stdio: 'inherit', timeout: 120000 }); } catch (e) { mal('Invariantes: ver arriba'); } }
 // referencias externas (F14.1 Química, F14.2 Matemáticas): pruebas/referencias.js, sin navegador ni Python
 if (primera && !solo) { try { execFileSync('node', [path.join(__dirname, 'referencias.js')], { stdio: 'inherit', timeout: 120000 }); } catch (e) { mal('Referencias externas (Química y Matemáticas): ver arriba'); } }
 if (primera && !solo) { try { execFileSync('node', [path.join(__dirname, 'casos-limite-matematicas.js')], { stdio: 'inherit', timeout: 120000 }); } catch (e) { mal('Casos límite de Matemáticas: ver arriba'); } }
