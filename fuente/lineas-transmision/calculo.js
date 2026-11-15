@@ -10,7 +10,8 @@
    Línea sin pérdidas, v = c/√εr, c = 299 792 458 m/s.
    ===================================================================== */
 const LineasTransmision = (() => {
-  const C0 = 299792458, PI = Math.PI;
+  const SI = typeof Constantes !== 'undefined' ? Constantes.SI : require('../fisica/constantes.js').SI;
+  const C0 = SI.c, PI = Math.PI;
   const f = (x, d = 4) => {
     if (x === Infinity) return '∞';
     if (!isFinite(x)) return '—';

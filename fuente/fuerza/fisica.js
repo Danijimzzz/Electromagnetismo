@@ -29,7 +29,8 @@ const Fuerza = (() => {
     if (!signo && (cero ? v < 0 : v <= 0)) throw new Error(`${may(nom)} debe ser ${cero ? 'positivo o 0' : 'mayor que 0'}`);
     return v;
   }
-  const E0 = 1.602176634e-19, U = 1.66053907e-27, C = 299792458, MU0 = 4 * Math.PI * 1e-7, G = 9.8;
+  const SI = typeof Constantes !== 'undefined' ? Constantes.SI : require('../fisica/constantes.js').SI;
+  const E0 = SI.e, U = 1.66053907e-27, C = SI.c, MU0 = 4 * Math.PI * 1e-7, G = 9.8;
   const PART = {
     proton: { nom: 'protón', art: 'el', q: E0, m: 1.67262192e-27 },
     electron: { nom: 'electrón', art: 'el', q: -E0, m: 9.1093837e-31 },

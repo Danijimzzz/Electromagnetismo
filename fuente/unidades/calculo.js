@@ -16,7 +16,8 @@
    1 cal = 4,184 J, 1 atm = 101 325 Pa = 760 mmHg…); el año es el juliano (365,25 días).
    ===================================================================== */
 const Unidades = (() => {
-  const PI = Math.PI, E = 1.602176634e-19, C = 299792458;
+  const SI = typeof Constantes !== 'undefined' ? Constantes.SI : require('../fisica/constantes.js').SI;
+  const PI = Math.PI, E = SI.e, C = SI.c;
   // [símbolo, factor a la unidad base del SI, nombre]
   const U = (l) => l.map(([s, f, n]) => ({ s, f, n }));
   const MAGNITUDES = {

@@ -46,6 +46,7 @@
     } else if (sc.modo === 'real') {
       h += elige('gasR', 'Gas', [...Object.entries(G.VDW).map(([k, [t]]) => [k, t]), ['otra', 'Otro (escribe a y b)']]);
       if (sc.gasR === 'otra') h += fila('a', 'Constante a', 'Pa·m⁶/mol²') + fila('b', 'Constante b', 'm³/mol');
+      if (G.CRIT[sc.gasR]) h += elige('crit', 'Redlich-Kwong con T_c y P_c', [['vdw', 'los de Van der Waals (de a y b)'], ['real', 'los datos críticos reales (CRC)']]);
       h += fila('n', 'Moles n', 'mol') + fila('V', 'Volumen V', 'L') + fila('T', 'Temperatura T', 'K');
       $('#nota').textContent = 'Las constantes a y b de los gases de la lista están en el SI. Compara con el gas ideal: a volúmenes pequeños la diferencia es grande.';
     } else {

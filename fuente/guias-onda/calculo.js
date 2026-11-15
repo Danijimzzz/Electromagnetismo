@@ -15,7 +15,8 @@
    ===================================================================== */
 const GuiasOnda = (() => {
   const Cav = typeof Cavidades !== 'undefined' ? Cavidades : require('../cavidades/calculo.js');
-  const C0 = 299792458, ETA0 = 376.730313;
+  const SI = typeof Constantes !== 'undefined' ? Constantes.SI : require('../fisica/constantes.js').SI;
+  const C0 = SI.c, ETA0 = 376.730313;
   const f = (x, d = 4) => {
     if (!isFinite(x)) return '—';
     if (Math.abs(x) < 1e-12) return '0';

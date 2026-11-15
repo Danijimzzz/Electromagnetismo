@@ -63,6 +63,18 @@ if (primera) { try { execFileSync('node', [path.join(__dirname, 'union.js')], { 
 // banco de casos límite de Matemáticas (MAT.MA-2), sin navegador: pruebas/casos-limite-matematicas.js
 // ejercicios al azar de Economía (ECO.EC-1): pruebas/economia-practica.js
 if (primera) { try { execFileSync('node', [path.join(__dirname, 'economia-practica.js')], { stdio: 'inherit', timeout: 120000 }); } catch (e) { mal('Economía, ejercicios al azar: ver arriba'); } }
+// invariantes al azar con semilla fija (F14.3): pruebas/invariantes.js
+if (primera && !solo) { try { execFileSync('node', [path.join(__dirname, 'invariantes.js')], { stdio: 'inherit', timeout: 120000 }); } catch (e) { mal('Invariantes: ver arriba'); } }
+// casos analíticos cerrados de Electromagnetismo, Control y z (EM.EM-1, CIR.CI-3): pruebas/casos-analiticos.js
+if (primera && !solo) { try { execFileSync('node', [path.join(__dirname, 'casos-analiticos.js')], { stdio: 'inherit', timeout: 120000 }); } catch (e) { mal('Casos analíticos: ver arriba'); } }
+// cifras de las preguntas frecuentes (TRV.10.7): pruebas/faq-cifras.js
+if (primera && !solo) { try { execFileSync('node', [path.join(__dirname, 'faq-cifras.js')], { stdio: 'inherit', timeout: 120000 }); } catch (e) { mal('Cifras de las FAQ: ver arriba'); } }
+// casos a mano de las herramientas con menos pruebas (TRV.10.18b): pruebas/casos-flojas.js
+if (primera && !solo) { try { execFileSync('node', [path.join(__dirname, 'casos-flojas.js')], { stdio: 'inherit', timeout: 120000 }); } catch (e) { mal('Casos de herramientas flojas: ver arriba'); } }
+// constantes comunes de Física e interruptor de g (FIS.FG-1, FIS.UN-2): pruebas/constantes.js
+if (primera && !solo) { try { execFileSync('node', [path.join(__dirname, 'constantes.js'), ...(process.argv.includes('--sin-navegador') ? ['--sin-navegador'] : [])], { stdio: 'inherit', timeout: 180000 }); } catch (e) { mal('Constantes de Física: ver arriba'); } }
+// referencias externas (F14.1 Química, F14.2 Matemáticas): pruebas/referencias.js, sin navegador ni Python
+if (primera && !solo) { try { execFileSync('node', [path.join(__dirname, 'referencias.js')], { stdio: 'inherit', timeout: 120000 }); } catch (e) { mal('Referencias externas (Química y Matemáticas): ver arriba'); } }
 if (primera && !solo) { try { execFileSync('node', [path.join(__dirname, 'casos-limite-matematicas.js')], { stdio: 'inherit', timeout: 120000 }); } catch (e) { mal('Casos límite de Matemáticas: ver arriba'); } }
 const web = fs.readFileSync(juegos[0].pagina, 'utf8');
 
@@ -318,9 +330,10 @@ if (primera) {
       if (!html.includes('<header class="top"><a class="logo" href="../../">') || !html.includes('<a href="../../">Inicio</a>')) mal(`${f}: falta la cabecera común con «Inicio»`);
       if (!html.includes(`<a href="../../${a.clave}/" aria-current="page">`)) mal(`${f}: la cabecera no marca ${a.nombre}`);
       if (!html.includes(`<a href="../">${a.nombre}</a>`) || !html.includes('class="miga-izq"')) mal(`${f}: falta la miga «${a.nombre} › …»`);
-      if (!html.includes(`--accent:${a.color}`)) mal(`${f}: no usa el color de ${a.nombre}`);    if (!html.includes('<a class="foro" href="../../foro/">')) mal(`${f}: la cabecera no tiene el enlace al Foro`);
+      if (!html.includes(`--accent:${a.color}`)) mal(`${f}: no usa el color de ${a.nombre}`);
+      if (!html.includes(`mailto:${Catalogo.correo}?subject=`) || !html.includes('Informar de un error</a>')) mal(`${f}: falta «Informar de un error» en el pie`);    if (!html.includes('<a class="foro" href="../../foro/">')) mal(`${f}: la cabecera no tiene el enlace al Foro`);
     }
-    if (fallos === antes) console.log(`  ✓ Cabecera común, miga y color de la asignatura en las ${pags.length} herramientas`);
+    if (fallos === antes) console.log(`  ✓ Cabecera común, miga, color e «Informar de un error» en las ${pags.length} herramientas`);
   }
 
 }

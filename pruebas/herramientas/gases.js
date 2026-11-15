@@ -37,6 +37,15 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     const Tcv = (8 * 0.364) / (27 * 8.314 * 4.267e-5), Pcv = 0.364 / (27 * 4.267e-5 ** 2), aK = (0.42748 * 8.314 ** 2 * Tcv ** 2.5) / Pcv, bK = (0.08664 * 8.314 * Tcv) / Pcv;
     const Pk = (8.314 * 300) / (5e-4 - bK) - aK / (Math.sqrt(300) * 5e-4 * (5e-4 + bK));
     cerca(vd.PRK, Pk, 1e-9, 'presión de Redlich-Kwong'); cerca(vd.ZRK, (Pk * 5e-4) / (8.314 * 300), 1e-9, 'Z de Redlich-Kwong');
+    // TRV.10.10 · Redlich-Kwong con los datos críticos reales (CO₂: 304,1 K y 72,8 atm) y N₂: Tc y Pc reales difieren de los de Van der Waals
+    {
+      const rr = Gases.resolver({ modo: 'real', gasR: 'CO2', a: '', b: '', n: '1', V: '0,5', T: '300', crit: 'real' }), Tr = 304.1, Pr = 72.8 * 101325, aR = (0.42748 * 8.314 ** 2 * Tr ** 2.5) / Pr, bR = (0.08664 * 8.314 * Tr) / Pr;
+      cerca(rr.PRK, (8.314 * 300) / (5e-4 - bR) - aR / (Math.sqrt(300) * 5e-4 * (5e-4 + bR)), 1e-9, 'Redlich-Kwong con datos críticos reales del CO₂'); if (!rr.usaReal || vd.usaReal) mal('Gases: el interruptor de datos críticos reales no distingue');
+      cerca(rr.Tc, vd.Tc, 1e-9, 'la temperatura crítica de Van der Waals no cambia con el interruptor (solo Redlich-Kwong)');
+      const nn = Gases.resolver({ modo: 'real', gasR: 'N2', a: '', b: '', n: '1', V: '0,5', T: '200', crit: 'real' }), n0 = Gases.resolver({ modo: 'real', gasR: 'N2', a: '', b: '', n: '1', V: '0,5', T: '200' });
+      if (Math.abs(nn.PRK - n0.PRK) < 1e-6 * n0.PRK) mal('Gases: con datos críticos reales del N₂ la presión de Redlich-Kwong tendría que cambiar');
+      for (const [k, [T, P]] of Object.entries(Gases.CRIT)) if (!(T > 0 && P > 0)) mal(`Gases: datos críticos de ${k} mal`);
+    }
     // a temperatura alta y volumen grande, Redlich-Kwong, Van der Waals y gas ideal coinciden
     const gd = Gases.resolver({ modo: 'real', gasR: 'N2', a: '', b: '', n: '1', V: '1000', T: '400' });
     cerca(gd.PRK / gd.Pi, 1, 1e-3, 'Redlich-Kwong → ideal a baja densidad');
