@@ -7,7 +7,8 @@
    ===================================================================== */
 const LIMITES = {
   organica: [
-    'Solo moléculas sin anillos (cadenas y ramas) hechas de C, H, N, O, F, S, Cl, Br e I, escritas en SMILES o en fórmula semidesarrollada: los ciclos, los aromáticos y los átomos de otros elementos se rechazan con un aviso.',
+    'Moléculas de C, H, N, O, F, S, Cl, Br e I con cadenas y, como mucho, un anillo (cicloalcanos, cicloalquenos o benceno), escritas en SMILES; la fórmula semidesarrollada es solo para cadenas. Dos o más anillos (bicíclicos, naftaleno, bifenilo), los heterociclos y otros elementos se rechazan o no se nombran, con un aviso.',
+    'En un anillo con dos o más sustituyentes el cis/trans se saca de @ y @@ del SMILES (con centros en los dos), no de un dibujo; los grupos «-ilideno» (doble enlace entre el anillo y una cadena) todavía no se nombran.',
     'El nombre IUPAC cubre los casos habituales de cadenas y sustituyentes; si la molécula se sale de lo que sabe nombrar, lo dice en vez de inventar un nombre.',
     'La forma 3D es una geometría aproximada para ver la disposición de los átomos, no una optimización de energía.'
   ],

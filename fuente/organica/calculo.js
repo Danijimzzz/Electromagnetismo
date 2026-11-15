@@ -1,9 +1,14 @@
 /* =====================================================================
    Química orgánica e isomería en 3D (sin DOM). De una molécula escrita en
-   SMILES (cadenas y ramas, sin anillos) saca la fórmula, los grupos funcionales,
-   el nombre IUPAC (cadena principal, numeración y sustituyentes), los centros
-   quirales R/S y los dobles enlaces E/Z por las reglas de Cahn-Ingold-Prelog,
-   todos los estereoisómeros y las posiciones 3D de los átomos (con hidrógenos).
+   SMILES (cadenas y ramas, y un solo anillo: cicloalcanos, cicloalquenos y
+   benceno) saca la fórmula, los grupos funcionales, el nombre IUPAC (cadena o
+   anillo principal, numeración y sustituyentes), los centros quirales R/S, los
+   dobles enlaces E/Z y el cis/trans de los anillos por las reglas de
+   Cahn-Ingold-Prelog, todos los estereoisómeros y las posiciones 3D de los
+   átomos (con hidrógenos).
+   La molécula es un árbol (primer átomo = raíz) más, como mucho, un cierre de
+   anillo: M.at[i].cierres = [{ n, j, ord }] y M.anillo = átomos del anillo en
+   orden (null si no hay), M.enAnillo = Set, M.aromatico = true si es benceno.
    Usa Elementos (masas) de quimica/ y Mates para las fórmulas del desarrollo.
      resolver(sc)  { smiles } → { smiles, formula, masa, grupos, nombre, errorNombre,
                    estereo: { centros, dobles, quiral, lista }, atomos, enlaces,
@@ -31,23 +36,38 @@ const Organica = (() => {
   function leer(txt) {
     const s = String(txt ?? '').replace(/\s+/g, '');
     if (!s) throw new Error('Escribe la molécula en notación SMILES, por ejemplo CC(O)C');
-    const at = [], pila = [];
-    let k = 0, actual = -1, ord = 1, marca = null, pendiente = false;
-    const nuevo = (el, h, chir) => {
+    const at = [], pila = [], abiertos = {};
+    let k = 0, actual = -1, ord = 1, marca = null, pendiente = false, nCierres = 0;
+    const nuevo = (el, h, chir, aro = false) => {
       if (!(el in VAL)) throw new Error(`No sé tratar el elemento ${el}: solo C, H, N, O, S, F, Cl, Br e I`);
-      at.push({ el, h, chir, auto: h === null, padre: actual, ord: actual < 0 ? 0 : ord, marca: actual < 0 ? null : marca, hijos: [] });
+      // un enlace entre dos aromáticos sin símbolo es «aromático» y se completa al final (benceno)
+      const arom = aro && actual >= 0 && at[actual].aro && !pendiente;
+      at.push({ el, h, chir, auto: h === null, aro, arom, padre: actual, ord: actual < 0 ? 0 : ord, marca: actual < 0 ? null : marca, hijos: [], cierres: [] });
       if (actual >= 0) at[actual].hijos.push(at.length - 1);
       actual = at.length - 1; ord = 1; marca = null; pendiente = false;
+    };
+    const cierre = (n) => {
+      if (actual < 0) throw new Error('Un número de anillo tiene que ir después de un átomo');
+      const o = pendiente ? ord : null; ord = 1; marca = null; pendiente = false;
+      if (!(n in abiertos)) { abiertos[n] = { i: actual, o, pos: at[actual].cierres.length }; at[actual].cierres.push({ n, j: -1, ord: 1 }); return; }
+      const ab = abiertos[n]; delete abiertos[n];
+      if (ab.i === actual) throw new Error(`El anillo ${n} se cierra sobre el mismo átomo`);
+      if (at[actual].padre === ab.i || at[ab.i].padre === actual || at[actual].cierres.some((c) => c.j === ab.i)) throw new Error('Un anillo no puede cerrarse sobre un átomo al que ya está unido');
+      const orden2 = o ?? ab.o ?? 1, arom = at[ab.i].aro && at[actual].aro && o === null && ab.o === null;
+      at[ab.i].cierres[ab.pos] = { n, j: actual, ord: orden2, arom };
+      at[actual].cierres.push({ n, j: ab.i, ord: orden2, arom });
+      if (++nCierres > 1) throw new Error('De momento solo un anillo por molécula: sin bicíclicos, espiro ni dos anillos');
     };
     while (k < s.length) {
       const c = s[k];
       if (c === '(') { if (actual < 0) throw new Error('Un paréntesis no puede ir al principio'); pila.push(actual); k++; }
-      else if (c === ')') { if (!pila.length) throw new Error('Hay un paréntesis de cierre de más'); actual = pila.pop(); ord = 1; marca = null; k++; }
+      else if (c === ')') { if (!pila.length) throw new Error('Hay un paréntesis de cierre de más'); actual = pila.pop(); ord = 1; marca = null; pendiente = false; k++; }
       else if (c === '=') { ord = 2; pendiente = true; k++; }
       else if (c === '#') { ord = 3; pendiente = true; k++; }
       else if (c === '-') { ord = 1; pendiente = true; k++; }
       else if (c === '/' || c === '\\') { marca = c; pendiente = true; k++; }
-      else if (/[0-9%]/.test(c)) throw new Error('Los anillos (números en el SMILES) todavía no están: de momento solo cadenas con ramas');
+      else if (/[0-9]/.test(c)) { cierre(+c); k++; }
+      else if (c === '%') { const m = /^%(\d\d)/.exec(s.slice(k)); if (!m) throw new Error('Un número de anillo grande se escribe con dos cifras: %10'); cierre(+m[1]); k += 3; }
       else if (c === '.') throw new Error('Una sola molécula cada vez: quita el punto');
       else if (c === '[') {
         const f = s.indexOf(']', k); if (f < 0) throw new Error('Falta cerrar un corchete ]');
@@ -56,7 +76,8 @@ const Organica = (() => {
         if (m[5]) throw new Error('Los átomos con carga o con otros datos entre corchetes todavía no están');
         nuevo(m[2], m[4] === undefined ? 0 : (m[4] === '' ? 1 : +m[4]), m[3] || null);
         k = f + 1;
-      } else if (/[a-z]/.test(c)) throw new Error('Los átomos aromáticos (en minúscula) todavía no están');
+      } else if (c === 'c') nuevo('C', null, null, true), k++;
+      else if (/[a-z]/.test(c)) throw new Error('De los átomos aromáticos solo está el carbono del benceno (c): los heterociclos aromáticos (piridina, furano…) todavía no están');
       else if (/[A-Z]/.test(c)) {
         const dos = s.slice(k, k + 2);
         if (dos === 'Cl' || dos === 'Br') { nuevo(dos, null, null); k += 2; } else { nuevo(c, null, null); k++; }
@@ -65,25 +86,53 @@ const Organica = (() => {
     if (pila.length) throw new Error('Falta cerrar un paréntesis');
     if (pendiente) throw new Error('El SMILES acaba en un enlace sin átomo');
     if (!at.length) throw new Error('No hay ningún átomo');
+    const sinCerrar = Object.keys(abiertos);
+    if (sinCerrar.length) throw new Error(`Falta cerrar el anillo ${sinCerrar[0]}: el número tiene que repetirse en el átomo que lo cierra`);
+    if (!nCierres && at.some((a) => a.aro)) throw new Error('Un átomo aromático (c) tiene que estar en el anillo del benceno: c1ccccc1');
+    const M = { at, anillo: null, enAnillo: new Set(), aromatico: false };
+    if (nCierres) anilloDe(M);
     for (const [i, a] of at.entries()) {
-      const suma = (a.padre >= 0 ? a.ord : 0) + a.hijos.reduce((t, h) => t + at[h].ord, 0);
+      const suma = (a.padre >= 0 ? a.ord : 0) + a.hijos.reduce((t, h) => t + at[h].ord, 0) + a.cierres.reduce((t, c) => t + c.ord, 0);
       if (a.auto) a.h = VAL[a.el] - suma;
       if (a.h < 0 || suma + a.h > VAL[a.el]) throw new Error(`El átomo ${a.el} (n.º ${i + 1}) tiene demasiados enlaces: su valencia es ${VAL[a.el]}`);
       if (a.chir && a.h > 1) a.chir = null;
     }
-    if (at.some((a, i) => (a.padre >= 0 && a.ord === 2 ? 1 : 0) + a.hijos.filter((h) => at[h].ord === 2).length >= 2)) throw new Error('Los dienos acumulados (alenos) todavía no están');
-    return { at };
+    if (at.some((a, i) => vec(M, i).filter((v) => v.o === 2).length >= 2)) throw new Error('Los dienos acumulados (alenos) todavía no están');
+    return M;
   }
-  const vec = (M, i) => { const a = M.at[i]; return [...(a.padre >= 0 ? [{ j: a.padre, o: a.ord }] : []), ...a.hijos.map((c) => ({ j: c, o: M.at[c].ord }))]; };
-  // vecinos en el orden del SMILES: padre, hidrógeno(s), hijos
-  const fichas = (M, i) => { const a = M.at[i]; return [...(a.padre >= 0 ? [a.padre] : []), ...Array(a.h).fill('H'), ...a.hijos]; };
-  const orden = (M, a, b) => (M.at[b].padre === a ? M.at[b].ord : M.at[a].ord);
+  // el anillo en orden (camino por el árbol entre los dos átomos del cierre) y el benceno aromático
+  function anilloDe(M) {
+    const at = M.at;
+    let p = -1, q = -1;
+    at.forEach((a, i) => a.cierres.forEach((c) => { if (c.j > i) { p = i; q = c.j; } }));
+    const arriba = (x) => { const r = [x]; while (at[r[r.length - 1]].padre >= 0) r.push(at[r[r.length - 1]].padre); return r; };
+    const ap = arriba(p), aq = arriba(q), comun = ap.find((x) => aq.includes(x));
+    const anillo = [...ap.slice(0, ap.indexOf(comun) + 1), ...aq.slice(0, aq.indexOf(comun)).reverse()];
+    if (anillo.length < 3) throw new Error('Un anillo necesita al menos tres átomos');
+    M.anillo = anillo; M.enAnillo = new Set(anillo);
+    const aro = at.map((a, i) => (a.aro ? i : -1)).filter((i) => i >= 0);
+    if (aro.length) {
+      if (aro.length !== 6 || anillo.length !== 6 || !aro.every((i) => M.enAnillo.has(i))) throw new Error('De los anillos aromáticos solo está el benceno: seis carbonos «c» formando un anillo, sin otros anillos unidos');
+      const ponOrd = (a, b, o) => { if (at[b].padre === a) at[b].ord = o; else if (at[a].padre === b) at[a].ord = o; else { at[a].cierres.find((c) => c.j === b).ord = o; at[b].cierres.find((c) => c.j === a).ord = o; } };
+      anillo.forEach((x, k) => ponOrd(x, anillo[(k + 1) % 6], k % 2 ? 1 : 2));
+      M.aromatico = true;
+    } else {
+      // seis carbonos con tres dobles enlaces alternados también son benceno (Kekulé)
+      const bs = anillo.map((x, k) => orden(M, x, anillo[(k + 1) % anillo.length]));
+      M.aromatico = anillo.length === 6 && anillo.every((x) => at[x].el === 'C') && (bs.every((o, k) => (o === 2) === (k % 2 === 0)) || bs.every((o, k) => (o === 2) === (k % 2 === 1)));
+    }
+  }
+  const vec = (M, i) => { const a = M.at[i]; return [...(a.padre >= 0 ? [{ j: a.padre, o: a.ord }] : []), ...a.hijos.map((c) => ({ j: c, o: M.at[c].ord })), ...a.cierres.map((c) => ({ j: c.j, o: c.ord, cierre: true }))]; };
+  // vecinos en el orden del SMILES: padre, hidrógeno(s), cierres de anillo, hijos
+  const fichas = (M, i) => { const a = M.at[i]; return [...(a.padre >= 0 ? [a.padre] : []), ...Array(a.h).fill('H'), ...a.cierres.map((c) => c.j), ...a.hijos]; };
+  const orden = (M, a, b) => { if (M.at[b].padre === a) return M.at[b].ord; if (M.at[a].padre === b) return M.at[a].ord; return M.at[a].cierres.find((c) => c.j === b).ord; };
 
   function escribe(M, opc = {}) {
     const chir = opc.chir || {}, marcas = opc.marcas || {};
     const rec = (i) => {
       const a = M.at[i], ch = i in chir ? chir[i] : a.chir;
       let t = ch ? `[${a.el}${ch}${a.h ? 'H' + (a.h > 1 ? a.h : '') : ''}]` : a.el;
+      for (const c of a.cierres) t += (c.j > i ? (c.ord === 2 ? '=' : c.ord === 3 ? '#' : '') : '') + '1';
       a.hijos.forEach((c, n) => {
         const m = c in marcas ? marcas[c] : (opc.sinMarcas ? null : M.at[c].marca);
         const e = (M.at[c].ord === 2 ? '=' : M.at[c].ord === 3 ? '#' : '') + (M.at[c].ord === 1 && m ? m : '');
@@ -119,7 +168,9 @@ const Organica = (() => {
     const a = M.at[n.a], res = [];
     for (const { j, o } of vec(M, n.a)) {
       if (j === n.desde) continue;
-      res.push({ z: ZA[M.at[j].el], a: j, desde: n.a, dup: Array(o - 1).fill(ZA[a.el]) });
+      // en un anillo, al volver a un átomo del camino se pone un duplicado sin sustituyentes
+      if (n.ruta && n.ruta.includes(j)) { res.push({ z: ZA[M.at[j].el], a: -1, desde: -1, dup: [] }); continue; }
+      res.push({ z: ZA[M.at[j].el], a: j, desde: n.a, dup: Array(o - 1).fill(ZA[a.el]), ruta: n.ruta && [...n.ruta, j] });
       for (let q = 1; q < o; q++) res.push({ z: ZA[M.at[j].el], a: -1, desde: -1, dup: [] });
     }
     for (let q = 0; q < a.h; q++) res.push({ z: 1, a: -1, desde: -1, dup: [] });
@@ -127,7 +178,7 @@ const Organica = (() => {
     return res;
   }
   function ordenados(M, n) {
-    const llave = n.a < 0 ? null : `${n.a},${n.desde}`;
+    const llave = n.a < 0 ? null : `${n.a},${n.desde}${n.ruta ? ',' + n.ruta.join('.') : ''}`;
     M.cache = M.cache || new Map();
     if (llave && M.cache.has(llave)) return M.cache.get(llave);
     const r = hijosCIP(M, n).sort((p, q) => cmpNodo(M, q, p));
@@ -152,7 +203,7 @@ const Organica = (() => {
   const nodoDe = (M, centro, ficha) => {
     if (ficha === 'H') return { z: 1, a: -1, desde: -1, dup: [], ficha };
     const o = orden(M, centro, ficha);
-    return { z: ZA[M.at[ficha].el], a: ficha, desde: centro, dup: Array(o - 1).fill(ZA[M.at[centro].el]), ficha };
+    return { z: ZA[M.at[ficha].el], a: ficha, desde: centro, dup: Array(o - 1).fill(ZA[M.at[centro].el]), ficha, ruta: M.anillo ? [centro, ficha] : undefined };
   };
   // fichas ordenadas de mayor a menor prioridad; null si hay empate
   function rangos(M, centro, lista) {
@@ -180,7 +231,7 @@ const Organica = (() => {
 
   // lado (+1 arriba, −1 abajo) de un vecino s respecto al átomo d por las marcas / y \ del SMILES
   function lado(M, d, s) {
-    if (s === 'H') return 0;
+    if (s === 'H' || M.at[d].cierres.some((c) => c.j === s)) return 0;
     if (M.at[s].padre === d) { const m = M.at[s].marca; return m === '/' ? 1 : m === '\\' ? -1 : 0; }
     const m = M.at[d].marca; return m === '/' ? -1 : m === '\\' ? 1 : 0;
   }
@@ -188,7 +239,7 @@ const Organica = (() => {
     const r = [];
     for (let b = 1; b < M.at.length; b++) {
       const a = M.at[b].padre;
-      if (M.at[b].ord === 2 && M.at[a].el === 'C' && M.at[b].el === 'C') {
+      if (M.at[b].ord === 2 && M.at[a].el === 'C' && M.at[b].el === 'C' && !(M.enAnillo.has(a) && M.enAnillo.has(b))) {
         const extremo = (x, otro) => { const f = fichas(M, x).filter((t) => t !== otro); return f.length === 2 && f.every((t) => t !== undefined) ? f : null; };
         const fa = extremo(a, b), fb = extremo(b, a);
         if (!fa || !fb) continue;
@@ -211,16 +262,50 @@ const Organica = (() => {
     return A[0] === B[0] ? 'Z' : 'E';
   }
 
+  // átomos del anillo con un sustituyente y un H (cis/trans) y la cara de cada uno: +1 / −1 según el
+  // sentido en que se recorre el anillo (0 si falta @ o @@). Hace falta al menos dos para hablar de cis/trans.
+  function carasAnillo(M) {
+    if (!M.anillo || M.aromatico) return null;
+    const R = M.anillo, n = R.length, S = [];
+    R.forEach((i, k) => {
+      const a = M.at[i];
+      if (a.el !== 'C' || a.h !== 1 || vec(M, i).some((v) => v.o !== 1)) return;
+      const T = fichas(M, i), ext = T.filter((t) => t !== 'H' && !M.enAnillo.has(t));
+      if (ext.length !== 1) return;
+      const ref = [R[(k + n - 1) % n], R[(k + 1) % n], ext[0], 'H'];
+      let cara = 0;
+      if (a.chir) cara = (paridad(T.map((t) => ref.indexOf(t))) === 0) === (a.chir === '@') ? 1 : -1;
+      S.push({ i, k, cara, sub: ext[0] });
+    });
+    return S.length >= 2 ? S : null;
+  }
+
   function estereo(M) {
-    const cl = clases(M), centros = [], ds = dobles(M);
+    const cl = clases(M), centros = [], ds = dobles(M), S = carasAnillo(M), enS = new Set(S ? S.map((x) => x.i) : []);
     for (let i = 0; i < M.at.length; i++) { const rg = centroEstereo(M, i); if (rg) centros.push({ i, rg, label: etiquetaCentro(M, i, rg) }); }
     const dd = ds.map((d) => ({ ...d, label: etiquetaDoble(M, d) }));
+    // anillo: la forma canónica entre todos los giros y vueltas del anillo (dar la vuelta cambia el signo de las caras)
+    const claveAnillo = (inv) => {
+      if (!S) return '';
+      const n = M.anillo.length, porPos = new Map(S.map((x) => [x.k, x]));
+      let mejor = null;
+      for (let k = 0; k < n; k++) for (const d of [1, -1]) {
+        const t = [];
+        for (let p = 0; p < n; p++) { const pos = (((k + d * p) % n) + n) % n, x = porPos.get(pos); t.push(`${cl[M.anillo[pos]]}:${x ? (x.cara ? x.cara * d * (inv ? -1 : 1) : '?') : 0}`); }
+        const c = t.join(','); if (mejor === null || c < mejor) mejor = c;
+      }
+      return 'anillo ' + mejor;
+    };
     const clave = (invierte) => [
-      ...centros.map((c) => `${cl[c.i]}:${c.label ? (invierte ? (c.label === 'R' ? 'S' : 'R') : c.label) : '?'}`),
+      ...centros.filter((c) => !enS.has(c.i)).map((c) => `${cl[c.i]}:${c.label ? (invierte ? (c.label === 'R' ? 'S' : 'R') : c.label) : '?'}`),
       ...dd.map((d) => `${[cl[d.a], cl[d.b]].sort().join('=')}:${d.label || '?'}`),
+      ...(S ? [claveAnillo(invierte)] : []),
     ].sort().join('|');
-    const completo = centros.every((c) => c.label) && dd.every((d) => d.label);
-    return { centros, dobles: dd, clave: clave(false), claveEspejo: clave(true), completo, quiral: completo && centros.length > 0 && clave(false) !== clave(true) };
+    const completo = centros.every((c) => c.label) && dd.every((d) => d.label) && (!S || S.every((x) => x.cara));
+    // cis/trans entre los dos sustituyentes (solo con dos): misma cara = cis
+    const relacion = S && S.length === 2 && S.every((x) => x.cara) ? (S[0].cara === S[1].cara ? 'cis' : 'trans') : null;
+    const nTog = new Set([...centros.map((c) => c.i), ...(S ? S.map((x) => x.i) : [])]).size;
+    return { centros, dobles: dd, clave: clave(false), claveEspejo: clave(true), completo, quiral: completo && clave(false) !== clave(true), anillo: S ? { caras: S, relacion } : null, nTog };
   }
 
   /* ---------- Nombre IUPAC (cadenas acíclicas) ---------- */
@@ -253,6 +338,12 @@ const Organica = (() => {
     }
     if (M.at.some((a, i) => V[i].filter((v) => v.o === 2).length >= 2)) throw new Error('Los dienos acumulados (alenos) todavía no se nombran');
     if (!M.at.some((a) => a.el === 'C')) throw new Error('Esta herramienta nombra compuestos orgánicos (con carbono)');
+    if (M.anillo) {
+      if (M.anillo.some((i) => el(i) !== 'C')) throw new Error('Los heterociclos (anillos con O, N o S, como el oxirano o el tetrahidrofurano) todavía no se nombran');
+      for (const i of M.anillo) for (const { j, o } of V[i]) if (!M.enAnillo.has(j) && o >= 2 && el(j) === 'C') throw new Error('Los dobles enlaces entre un anillo y una cadena (grupos «-ilideno») todavía no se nombran');
+      if (M.anillo.some((x, k) => orden(M, x, M.anillo[(k + 1) % M.anillo.length]) === 3)) throw new Error('Los cicloalquinos todavía no se nombran');
+      if (!M.aromatico && M.anillo.length > 12) throw new Error('Los anillos de más de 12 carbonos todavía no se nombran');
+    }
     for (let i = 0; i < n; i++) {
       if (el(i) !== 'C') continue;
       const nb = V[i], oD = nb.find((v) => v.o === 2 && el(v.j) === 'O'), nT = nb.find((v) => v.o === 3 && el(v.j) === 'N');
@@ -276,7 +367,7 @@ const Organica = (() => {
     }
     const principal = PRIO.find((t) => presentes.has(t)) || null;
     if (principal === 'coor' && tipoC.filter((t) => t === 'coor').length > 1) throw new Error('Los diésteres todavía no se nombran');
-    const elegible = (i) => el(i) === 'C' && (!tipoC[i] || tipoC[i] === 'ceto' || tipoC[i] === principal);
+    const elegible = (i) => el(i) === 'C' && !M.enAnillo.has(i) && (!tipoC[i] || tipoC[i] === 'ceto' || tipoC[i] === principal);
 
     const memo = new Map();
     // ---- nombre de lo que cuelga de la cadena
@@ -300,6 +391,7 @@ const Organica = (() => {
         const q = nombreSub(nb[0].j, raiz);
         return { txt: q.txt + 'tio', complejo: true };
       }
+      if (M.enAnillo.has(raiz)) return nombreAnillo(true, desde);
       const t = tipoC[raiz];
       if (t === 'cooh') return { txt: 'carboxi', complejo: false };
       if (t === 'cho') return { txt: 'formil', complejo: false };
@@ -425,7 +517,102 @@ const Organica = (() => {
       return res;
     }
 
-    const R = cadena(true, null, -1);
+
+    // ---- anillo: como padre (ciclohexanol, benceno, fenol…) o como sustituyente (ciclohexil, fenil…)
+    const POS_PRINC = { cooh: 'carboxílico', coor: 'carboxilato', conh2: 'carboxamida', cn: 'carbonitrilo', cho: 'carbaldehído' };
+    const BENCENO = { oh: 'fenol', nh2: 'anilina', cooh: 'benzoico', cho: 'benzaldehído', conh2: 'benzamida', cn: 'benzonitrilo', coor: 'benzoato' };
+    // los grupos principales que cuelgan de un átomo del anillo
+    const gruposAnillo = (x) => {
+      const r = [];
+      if (!principal) return r;
+      if (principal === 'ceto') { if (tipoC[x] === 'ceto') r.push(V[x].find((v) => v.o === 2 && el(v.j) === 'O').j); return r; }
+      for (const { j } of V[x]) {
+        if (M.enAnillo.has(j)) continue;
+        if (TERMINAL.includes(principal) ? tipoC[j] === principal : gk(j) === principal) r.push(j);
+      }
+      return r;
+    };
+    function nombreAnillo(esSub, desde) {
+      const R = M.anillo, nR = R.length, aro = M.aromatico;
+      const usados = new Set(), princ = [], subs = [], dob = [];
+      const enlaceDesde = esSub ? R.findIndex((x) => V[x].some((v) => v.j === desde && !M.enAnillo.has(v.j))) : -1;
+      R.forEach((x, k) => {
+        if (!esSub) for (const j of gruposAnillo(x)) { princ.push(k); usados.add(j); if (TERMINAL.includes(principal)) for (const w of V[j]) if (el(w.j) === 'O' || el(w.j) === 'N') usados.add(w.j); }
+        for (const { j } of V[x]) if (!M.enAnillo.has(j) && !usados.has(j) && j !== desde) subs.push({ k, j });
+        if (!aro && orden(M, x, R[(k + 1) % nR]) === 2) dob.push(k);
+      });
+      const candidatos = [];
+      for (const d of [1, -1]) for (let s0 = 0; s0 < nR; s0++) {
+        if (esSub && s0 !== enlaceDesde) continue;
+        const pos = (k) => ((((k - s0) * d) % nR) + nR) % nR + 1;
+        const locB = (k) => { const a = pos(k), b = pos((k + 1) % nR); return a === 1 && b === nR || a === nR && b === 1 ? nR : Math.min(a, b); };
+        const L = { princ: princ.map(pos).sort((a, b) => a - b), dob: dob.map(locB).sort((a, b) => a - b), subs: subs.map((q) => ({ loc: pos(q.k), j: q.j, desde: R[q.k] })), pos };
+        const sl = L.subs.map((q) => q.loc).sort((a, b) => a - b);
+        const alfa = [...L.subs].sort((p, q) => soloLetras(nombreSub(p.j, p.desde).txt).localeCompare(soloLetras(nombreSub(q.j, q.desde).txt)) || p.loc - q.loc)[0];
+        L.clave = [L.princ, L.dob, sl, alfa ? alfa.loc : 0];
+        // si siguen empatados, la R va con el localizador más bajo (así la forma meso sale como 1R,2S)
+        L.desc = est.centros.filter((c) => c.label && M.enAnillo.has(c.i)).map((c) => ({ l: pos(R.indexOf(c.i)), t: c.label })).sort((p, q) => p.l - q.l).map((x) => x.t).join('');
+        candidatos.push(L);
+      }
+      const L = candidatos.reduce((m, c) => { const q = cmpClave(c.clave, m.clave); return q < 0 || (q === 0 && c.desc < m.desc) ? c : m; });
+      const nPrinc = princ.length, tipoSuf = !esSub && nPrinc ? principal : null, nDob = dob.length, nSub = subs.length;
+      const stem = aro ? 'benc' : 'ciclo' + NUM[nR];
+      const grupos = new Map();
+      for (const q of L.subs) { const nm = nombreSub(q.j, q.desde); if (!grupos.has(nm.txt)) grupos.set(nm.txt, { nm, locs: [] }); grupos.get(nm.txt).locs.push(q.loc); }
+      const lista = [...grupos.values()].sort((p, q) => soloLetras(p.nm.txt).localeCompare(soloLetras(q.nm.txt)));
+      const omiteSubs = !esSub && nSub === 1 && !nPrinc && !nDob;
+      const prefijoDe = (omite) => lista.map(({ nm, locs }) => {
+        locs.sort((a, b) => a - b);
+        const m = locs.length, ls = omite ? '' : locs.join(',') + '-';
+        return ls + (nm.complejo ? (m > 1 ? BIS[m] : '') + `(${nm.txt})` : (m > 1 ? MULT[m] : '') + nm.txt);
+      }).join('-');
+      const items = nSub + nPrinc + nDob;
+      // el nombre, con los nombres aceptados (fenol, anilina, tolueno, ácido benzoico…) o con la forma sistemática
+      const compon = (sistematico) => {
+        const especial = aro && !esSub && !sistematico;
+        let prefijo = prefijoDe(omiteSubs), cuerpo;
+        if (esSub) {
+          cuerpo = aro ? 'fenil' : !nDob ? stem + 'il' : stem + (nDob > 1 ? 'a-' + L.dob.join(',') + '-' + MULT[nDob] + 'en' : '-' + L.dob[0] + '-en') + '-1-il';
+          return { prefijo, cuerpo };
+        }
+        let base;
+        if (aro) base = 'bencen';
+        else if (!nDob) base = stem + 'an';
+        else if (nDob === 1) base = stem + (tipoSuf ? '-' + L.dob[0] + '-' : '') + 'en';
+        else base = stem + 'a-' + L.dob.join(',') + '-' + MULT[nDob] + 'en';
+        if (!tipoSuf) {
+          if (especial && !nSub) return { prefijo: '', cuerpo: 'benceno' };
+          if (especial && nSub === 1 && lista[0].nm.txt === 'metil') return { prefijo: '', cuerpo: 'tolueno' };
+          return { prefijo, cuerpo: base + 'o' };
+        }
+        if (especial && nPrinc === 1 && BENCENO[tipoSuf]) {
+          const b = BENCENO[tipoSuf];
+          return { prefijo, cuerpo: b };
+        }
+        const m = L.princ.length, locs = L.princ.join(','), mu = m > 1 ? MULT[m] : '', ponLoc = m > 1 || items > 1;
+        if (TERMINAL.includes(tipoSuf)) return { prefijo, cuerpo: base + 'o' + (ponLoc ? `-${locs}-` : '') + mu + POS_PRINC[tipoSuf] };
+        const suf = SUFIJO[tipoSuf], vocal = /^[aeiou]/.test(suf);
+        if (m === 1 && vocal) return { prefijo, cuerpo: base + (ponLoc ? `-${locs}-` : '') + suf };
+        return { prefijo, cuerpo: base + 'o' + (ponLoc ? `-${locs}-` : '') + mu + suf };
+      };
+      const A = compon(false), B = compon(true);
+      const txt = A.prefijo + A.cuerpo, sist = B.prefijo + B.cuerpo;
+      const E = { P: R, L: { loc: (k) => L.pos(k), princ: L.princ }, aro };
+      return { txt, alias: sist !== txt ? sist : '', complejo: /[\d,(]/.test(txt) || nSub > 0 || nDob > 0, E, prefijo: A.prefijo, cuerpo: A.cuerpo, tipoSuf, anillo: true };
+    }
+    // ¿el anillo es el padre o lo es una cadena? más grupos principales; si empatan, el anillo con tantos carbonos como la cadena
+    function anilloEsPadre() {
+      const nR = M.anillo.length, cand = rutas({ lista: [...Array(n).keys()] }, -1);
+      if (!cand.length) return true;
+      const cuentaC = (P) => P.reduce((t, c) => t + (TERMINAL.includes(principal) || principal === 'ceto' ? (tipoC[c] === principal ? 1 : 0) : V[c].filter((v) => !P.includes(v.j) && gk(v.j) === principal).length), 0);
+      const cA = principal ? M.anillo.reduce((t, x) => t + gruposAnillo(x).length, 0) : 0;
+      const cC = principal ? Math.max(...cand.map(cuentaC)) : 0;
+      if (cA !== cC) return cA > cC;
+      const largoC = Math.max(...cand.filter((P) => !principal || cuentaC(P) === cC).map((P) => P.length));
+      return nR >= largoC;
+    }
+
+    const R = M.anillo && anilloEsPadre() ? nombreAnillo(false, -1) : cadena(true, null, -1);
     // descriptores estereoquímicos de lo que está en la cadena
     const { P, L } = R.E;
     const locAt = (a) => { const k = P.indexOf(a); return k < 0 ? null : L.loc(k); };
@@ -437,25 +624,36 @@ const Organica = (() => {
     }
     desc.sort((p, q) => p.l - q.l || p.t.localeCompare(q.t));
     const omiteLoc = P.length === 1;
-    const pre = desc.length ? `(${desc.map((x) => (omiteLoc ? '' : x.l) + x.t).join(',')})-` : '';
-    let txt;
-    if (R.tipoSuf === 'cooh') txt = `ácido ${pre}${R.txt}`;
-    else if (R.tipoSuf === 'coor') {
-      const c = P.find((a) => tipoC[a] === 'coor'), oo = V[c].find((v) => el(v.j) === 'O' && v.o === 1), alq = nombreSub(V[oo.j].find((v) => v.j !== c).j, oo.j);
-      txt = `${pre}${R.txt} de ${alq.txt}o`;
-    } else txt = pre + R.txt;
-    return { txt, principal: R.tipoSuf, cadena: P, locAt, tipoC, pre, base: R.txt, E: R.E };
+    let pre = desc.length ? `(${desc.map((x) => (omiteLoc ? '' : x.l) + x.t).join(',')})-` : '';
+    if (R.anillo && !desc.length && est.anillo && est.anillo.relacion) pre = `${est.anillo.relacion}-`;
+    const monta = (cuerpo) => {
+      if (R.tipoSuf === 'cooh') return `ácido ${pre}${cuerpo}`;
+      if (R.tipoSuf === 'coor') {
+        const c = R.anillo ? M.at.findIndex((_, a) => tipoC[a] === 'coor') : P.find((a) => tipoC[a] === 'coor'), oo = V[c].find((v) => el(v.j) === 'O' && v.o === 1), alq = nombreSub(V[oo.j].find((v) => v.j !== c).j, oo.j);
+        return `${pre}${cuerpo} de ${alq.txt}o`;
+      }
+      return pre + cuerpo;
+    };
+    const txt = monta(R.txt), alias = R.alias ? monta(R.alias) : '';
+    // configuraciones de centros y dobles enlaces que están en un sustituyente y no entran en el nombre
+    const fuera = [...est.centros.filter((c) => c.label && locAt(c.i) === null).map((c) => `${c.label} (centro)`), ...est.dobles.filter((d) => d.label && (P.indexOf(d.a) < 0 || P.indexOf(d.b) < 0)).map((d) => `${d.label} (doble enlace)`)];
+    return { txt, alias, fuera, principal: R.tipoSuf, cadena: P, locAt, tipoC, pre, base: R.txt, E: R.E, anillo: !!R.anillo, aromatico: !!(R.anillo && M.aromatico) };
   }
 
   /* ---------- Grupos funcionales ---------- */
   function grupos(M) {
     const V = M.at.map((_, i) => vec(M, i)), el = (i) => M.at[i].el, r = new Set();
+    const enA = (i) => M.enAnillo.has(i), arom = (i) => M.aromatico && enA(i);
+    if (M.anillo) {
+      const nR = M.anillo.length, dob = M.anillo.some((x, k) => orden(M, x, M.anillo[(k + 1) % nR]) === 2);
+      r.add(M.anillo.some((x) => el(x) !== 'C') ? 'heterociclo' : M.aromatico ? 'anillo aromático (benceno)' : dob ? 'cicloalqueno' : 'cicloalcano');
+    }
     for (let i = 0; i < M.at.length; i++) {
       const a = M.at[i];
       for (const { j, o } of V[i]) if (j > i || M.at[j].padre === i) { /* cada enlace una vez */ }
       if (a.el === 'C') {
         for (const v of V[i]) {
-          if (v.o === 2 && el(v.j) === 'C' && v.j > i) r.add('alqueno');
+          if (v.o === 2 && el(v.j) === 'C' && v.j > i && !(enA(i) && enA(v.j))) r.add('alqueno');
           if (v.o === 3 && el(v.j) === 'C' && v.j > i) r.add('alquino');
         }
         const oD = V[i].find((v) => v.o === 2 && el(v.j) === 'O');
@@ -471,11 +669,11 @@ const Organica = (() => {
         const esEster = V[i].some((v) => M.at[v.j].el === 'C' && V[v.j].some((w) => w.o === 2 && el(w.j) === 'O'));
         if (!esEster) r.add('éter');
       } else if (a.el === 'O' && a.h === 1 && V[i].length === 1 && el(V[i][0].j) === 'C') {
-        const c = V[i][0].j; if (!V[c].some((w) => w.o === 2 && el(w.j) === 'O')) r.add('alcohol');
+        const c = V[i][0].j; if (!V[c].some((w) => w.o === 2 && el(w.j) === 'O')) r.add(arom(c) ? 'fenol' : 'alcohol');
       } else if (a.el === 'N' && V[i].length === 1 && V[i][0].o === 1 && a.h === 2) {
-        const c = V[i][0].j; if (!V[c].some((w) => w.o === 2 && el(w.j) === 'O')) r.add('amina');
+        const c = V[i][0].j; if (!V[c].some((w) => w.o === 2 && el(w.j) === 'O')) r.add(arom(c) ? 'amina aromática (anilina)' : 'amina');
       } else if (a.el === 'S') r.add(a.h ? 'tiol' : 'tioéter');
-      else if (HAL[a.el]) r.add(`haluro de alquilo (${HAL[a.el]})`);
+      else if (HAL[a.el]) r.add(`haluro de ${arom(V[i][0].j) ? 'arilo' : 'alquilo'} (${HAL[a.el]})`);
     }
     return [...r];
   }
@@ -492,12 +690,24 @@ const Organica = (() => {
   const largo = (a, b, o) => (LARGOS[[a, b].sort().join('-')] || [0, 1.5])[o] || 1.5;
   const rad = (g) => (g * Math.PI) / 180;
 
+  // quiralidad medida en coordenadas: «@» si, mirando desde el primero, los otros tres van en sentido antihorario
+  const tagGeo = (c, a, b, d, e) => (v3.dot(v3.cross(v3.sub(b, c), v3.sub(d, c)), v3.sub(e, c)) < 0 ? '@' : '@@');
+
   function coordenadas(M) {
     const n = M.at.length, V = M.at.map((_, i) => vec(M, i)), pos = new Array(n).fill(null), fp = new Array(n), Hs = [];
     const hib = (i) => { const v = V[i]; if (v.some((x) => x.o === 3) || v.filter((x) => x.o === 2).length >= 2) return 'sp'; if (v.some((x) => x.o === 2)) return 'sp2'; return 'sp3'; };
     const baseAz = (e1, u) => ({ e1, e2: v3.cross(u, e1) });
-    function situa(i, u, eref, modoB) {
-      const a = M.at[i], T = fichas(M, i), tipo = hib(i), p0 = pos[i], R = T.slice(1), pt = new Array(T.length);
+    // pt va en el orden de fichas(M, i) (con los H repetidos en orden)
+    const aFichas = (T, Tfull, pt) => {
+      const usado = new Array(T.length).fill(false);
+      return Tfull.map((t) => { const q = T.findIndex((x, k) => x === t && !usado[k]); usado[q] = true; return pt[q]; });
+    };
+    // situa(i, desde, u, eref): coloca los vecinos de i; «desde» es el vecino ya colocado (en el árbol, su padre)
+    function situa(i, desde, u, eref, modoB) {
+      const a = M.at[i], Tfull = fichas(M, i), tipo = hib(i), p0 = pos[i];
+      let T = Tfull, flip = 1;
+      if (desde >= 0) { const k = Tfull.indexOf(desde); T = [desde, ...Tfull.filter((_, q) => q !== k)]; flip = k % 2 ? -1 : 1; }
+      const R = T.slice(1), pt = new Array(T.length);
       const { e1, e2 } = baseAz(eref, u);
       const dir = (polar, az) => v3.add(v3.mul(u, Math.cos(polar)), v3.mul(v3.add(v3.mul(e1, Math.cos(az)), v3.mul(e2, Math.sin(az))), Math.sin(polar)));
       const poner = (idx, d) => {
@@ -506,11 +716,11 @@ const Organica = (() => {
         pt[idx] = p;
         if (t === 'H') Hs.push({ de: i, p }); else if (pos[t] === null) pos[t] = p;
       };
-      // la ficha 0 es el padre (ya colocado) o, en la raíz, un vecino que se coloca en la dirección u
-      if (a.padre >= 0) pt[0] = pos[a.padre]; else poner(0, u);
+      // la ficha 0 es el vecino ya colocado o, en la raíz, uno que se coloca en la dirección u
+      if (desde >= 0) pt[0] = pos[desde]; else poner(0, u);
       const pesado = (t) => t !== 'H';
       if (modoB) {
-        const A = a.padre, TA = fichas(M, A), ptA = fp[A], axis = v3.unit(v3.sub(pos[i], pos[A]));
+        const A = desde, TA = fichas(M, A), ptA = fp[A], axis = v3.unit(v3.sub(pos[i], pos[A]));
         const iB = TA.indexOf(i), otros = TA.map((t, k) => k).filter((k) => k !== iB);
         const lA = otros.map((k) => (TA[k] === 'H' ? 0 : lado(M, A, TA[k])));
         let w = null, sA0 = 1;
@@ -528,9 +738,9 @@ const Organica = (() => {
         R.forEach((t, q) => poner(q + 1, dir(rad(120), q === anc ? 0 : Math.PI)));
       } else {
         let anc = R.findIndex(pesado); if (anc < 0) anc = 0;
-        const s = a.chir && T.length === 4 && a.chir === '@@' ? -1 : 1;
+        const s = a.chir && T.length === 4 && a.chir === '@@' ? -flip : flip;
         // de las tres posiciones escalonadas (giro de 120° que no cambia la quiralidad) se toma la que menos choca
-        const colocados = [...pos.filter((p, j) => p && j !== i && j !== a.padre), ...Hs.filter((h) => h.de !== a.padre).map((h) => h.p)];
+        const colocados = [...pos.filter((p, j) => p && j !== i && j !== desde), ...Hs.filter((h) => h.de !== desde).map((h) => h.p)];
         let mejorK = 0, mejorPen = Infinity;
         for (const kk of [0, 1, 2]) {
           let pen = 0;
@@ -542,18 +752,57 @@ const Organica = (() => {
         }
         R.forEach((t, q) => poner(q + 1, dir(rad(109.47), s * rad(120) * (q - anc + mejorK))));
       }
-      fp[i] = pt;
-      for (let q = a.padre >= 0 ? 1 : 0; q < T.length; q++) {
-        const c = T[q]; if (c === 'H') continue;
+      fp[i] = aFichas(T, Tfull, pt);
+      bajan(i, T, pt, desde >= 0 ? 1 : 0);
+    }
+    // sigue con los vecinos pesados de i que faltan por colocar
+    function bajan(i, T, pt, desdeQ) {
+      const a = M.at[i], p0 = pos[i];
+      for (let q = desdeQ; q < T.length; q++) {
+        const c = T[q]; if (c === 'H' || colocado.has(c)) continue;
         const axis = v3.unit(v3.sub(pos[c], p0)), g = pt.find((p, k) => k !== q && p);
         let e = g ? perp(v3.sub(g, p0), axis) : [0, 0, 0];
         if (v3.norm(e) < 1e-6) e = perp(Math.abs(axis[0]) < 0.9 ? [1, 0, 0] : [0, 1, 0], axis);
-        const dB = M.at[c].ord === 2 && a.el === 'C' && M.at[c].el === 'C' && M.at[c].hijos.length + M.at[c].h === 2;
-        situa(c, v3.mul(axis, -1), v3.mul(v3.unit(e), -1), dB);
+        const dB = orden(M, i, c) === 2 && a.el === 'C' && M.at[c].el === 'C' && fichas(M, c).length === 3 && !M.enAnillo.has(c);
+        colocado.add(c);
+        situa(c, i, v3.mul(axis, -1), v3.mul(v3.unit(e), -1), dB);
       }
     }
-    pos[0] = [0, 0, 0];
-    situa(0, [0, 0, 1], [1, 0, 0], false);
+    const colocado = new Set();
+    // el anillo: polígono (plano si es de 5 o menos o aromático; en zigzag si es mayor) y, en cada átomo, sus sustituyentes y H
+    function anillo3D() {
+      const Rg = M.anillo, nR = Rg.length, aro = M.aromatico, bl = aro ? 1.4 : 1.53;
+      const amp = aro || nR <= 5 ? 0 : nR === 6 ? 0.25 : 0.35;
+      const zs = Rg.map((_, k) => (nR % 2 && k === nR - 1 ? 0 : k % 2 ? -amp : amp));
+      const lat = Math.sqrt(bl * bl - (2 * amp) ** 2), rad0 = lat / (2 * Math.sin(Math.PI / nR));
+      Rg.forEach((x, k) => { pos[x] = [rad0 * Math.cos((2 * Math.PI * k) / nR), rad0 * Math.sin((2 * Math.PI * k) / nR), zs[k]]; colocado.add(x); });
+      const pendientes = [];
+      Rg.forEach((x, k) => {
+        const a = M.at[x], T = fichas(M, x), p0 = pos[x], ext = T.map((t, q) => q).filter((q) => !(typeof T[q] === 'number' && M.enAnillo.has(T[q])));
+        const fuera = v3.unit([p0[0], p0[1], 0]), pt = new Array(T.length);
+        T.forEach((t, q) => { if (!ext.includes(q)) pt[q] = pos[t]; });
+        const coloca = (q, d) => {
+          const t = T[q], p = v3.add(p0, v3.mul(d, largo(a.el, t === 'H' ? 'H' : M.at[t].el, t === 'H' ? 1 : orden(M, x, t))));
+          pt[q] = p; if (t === 'H') Hs.push({ de: x, p }); else pos[t] = p;
+        };
+        if (hib(x) !== 'sp3' || ext.length !== 2) ext.forEach((q) => coloca(q, fuera));
+        else {
+          const c = Math.cos(rad(54.75)), sn = Math.sin(rad(54.75)), arriba = v3.add(v3.mul(fuera, c), [0, 0, sn]), abajo = v3.add(v3.mul(fuera, c), [0, 0, -sn]);
+          let [qa, qb] = ext;
+          if (a.chir && T.length === 4) {
+            // la asignación arriba/abajo que reproduce @ o @@
+            const prueba = (u1, u2) => { const P = T.map((t, q) => (ext.includes(q) ? v3.add(p0, q === qa ? u1 : u2) : pos[t])); return tagGeo(p0, P[0], P[1], P[2], P[3]); };
+            if (prueba(arriba, abajo) !== a.chir) [qa, qb] = [qb, qa];
+          }
+          coloca(qa, arriba); coloca(qb, abajo);
+        }
+        fp[x] = pt;
+        pendientes.push({ x, T, pt });
+      });
+      for (const { x, T, pt } of pendientes) bajan(x, T, pt, 0);
+    }
+    if (M.anillo) anillo3D();
+    else { pos[0] = [0, 0, 0]; colocado.add(0); situa(0, -1, [0, 0, 1], [1, 0, 0], false); }
     // relajar: se giran las ramas alrededor de enlaces sencillos para quitar choques entre átomos lejanos
     {
       const D = M.at.map(() => new Array(n).fill(99));
@@ -570,6 +819,7 @@ const Organica = (() => {
         let cambio = false;
         for (let c = 1; c < n; c++) {
           const pd = M.at[c].padre; if (M.at[c].ord !== 1 || (M.at[c].hijos.length === 0)) continue;
+          if (M.enAnillo.has(c) && M.enAnillo.has(pd)) continue;
           const hs = rama(c), ids = [...hs, ...Hs.map((h, q) => (hs.includes(h.de) ? n + q : -1)).filter((k) => k >= 0)].filter((k) => k !== c);
           const ax = v3.unit(v3.sub(P[c], P[pd])), base = P.map((p) => p), p0 = pen();
           let mejor = p0, mejorAng = 0;
@@ -590,7 +840,7 @@ const Organica = (() => {
     const todos = [...pos, ...Hs.map((h) => h.p)], c = todos.reduce((t, p) => v3.add(t, p), [0, 0, 0]).map((x) => x / todos.length);
     const atomos = [...M.at.map((a, i) => ({ sim: a.el, p: v3.sub(pos[i], c), i })), ...Hs.map((h) => ({ sim: 'H', p: v3.sub(h.p, c), de: h.de }))];
     const enlaces = [];
-    M.at.forEach((a, i) => { if (a.padre >= 0) enlaces.push({ a: a.padre, b: i, o: a.ord }); });
+    M.at.forEach((a, i) => { if (a.padre >= 0) enlaces.push({ a: a.padre, b: i, o: a.ord }); a.cierres.forEach((x) => { if (x.j > i) enlaces.push({ a: i, b: x.j, o: x.ord }); }); });
     Hs.forEach((h, q) => enlaces.push({ a: h.de, b: n + q, o: 1 }));
     const radio = Math.max(...atomos.map((x) => v3.norm(x.p))) + 1;
     return { atomos, enlaces, radio };
@@ -611,20 +861,20 @@ const Organica = (() => {
 
   /* ---------- Estereoisómeros ---------- */
   function variantes(M, est) {
-    const cs = est.centros, ds = est.dobles;
-    if (!cs.length && !ds.length) return [];
+    const cs = est.centros, ds = est.dobles, tog = [...new Set([...cs.map((c) => c.i), ...(est.anillo ? est.anillo.caras.map((x) => x.i) : [])])];
+    if (!tog.length && !ds.length) return [];
     // en cada extremo de un doble enlace se marca un enlace; si dos dobles enlaces conjugados comparten uno, se marca una sola vez
     const aristas = [];
     for (const d of ds) {
       const hijoA = M.at[d.a].hijos.find((h) => h !== d.b), hijoB = M.at[d.b].hijos[0];
       for (const k of [hijoA !== undefined ? hijoA : d.a, hijoB]) if (k !== undefined && !aristas.includes(k)) aristas.push(k);
     }
-    if (cs.length + aristas.length > 8) return null;
-    const total = 2 ** (cs.length + aristas.length), res = [], vistas = new Set();
+    if (tog.length + aristas.length > 8) return null;
+    const total = 2 ** (tog.length + aristas.length), res = [], vistas = new Set();
     for (let mask = 0; mask < total; mask++) {
       const chir = {}, marcas = {};
-      cs.forEach((c, q) => { chir[c.i] = mask & (1 << q) ? '@' : '@@'; });
-      aristas.forEach((k, q) => { marcas[k] = mask & (1 << (cs.length + q)) ? '/' : '\\'; });
+      tog.forEach((i, q) => { chir[i] = mask & (1 << q) ? '@' : '@@'; });
+      aristas.forEach((k, q) => { marcas[k] = mask & (1 << (tog.length + q)) ? '/' : '\\'; });
       const s = escribe(M, { chir, marcas, sinMarcas: true });
       const N = leer(s), e2 = estereo(N);
       if (vistas.has(e2.clave)) continue;
@@ -637,15 +887,26 @@ const Organica = (() => {
   /* ---------- Resolución completa ---------- */
   const ISOMEROS = {
     C4H10: ['CCCC', 'CC(C)C'], C5H12: ['CCCCC', 'CCC(C)C', 'CC(C)(C)C'], C2H6O: ['CCO', 'COC'], C3H8O: ['CCCO', 'CC(O)C', 'CCOC'],
-    C3H6O: ['CCC=O', 'CC(C)=O', 'C=CCO', 'C=COC'], C4H8: ['C=CCC', 'CC=CC', 'CC(C)=C'], C2H4O2: ['CC(=O)O', 'COC=O'],
+    C3H6O: ['CCC=O', 'CC(C)=O', 'C=CCO', 'C=COC'], C3H6: ['C=CC', 'C1CC1'], C4H8: ['C=CCC', 'CC=CC', 'CC(C)=C', 'C1CCC1', 'CC1CC1'], C2H4O2: ['CC(=O)O', 'COC=O'],
     C3H6O2: ['CCC(=O)O', 'CC(=O)OC', 'COCC=O'.replace('COCC=O', 'CCOC=O')],
     C4H10O: ['CCCCO', 'CCC(C)O', 'CC(C)CO', 'CC(C)(C)O', 'CCCOC', 'CC(C)OC', 'CCOCC'],
     C4H8O: ['CCCC=O', 'CCC(C)=O', 'CC(C)C=O'], C3H7N: ['C=CCN'],
+    C7H8O: ['Cc1ccccc1O', 'Cc1cccc(O)c1', 'Cc1ccc(O)cc1', 'OCc1ccccc1', 'COc1ccccc1'], C8H10: ['CCc1ccccc1', 'Cc1ccccc1C', 'Cc1cccc(C)c1', 'Cc1ccc(C)cc1'],
+    C5H10: ['C=CCCC', 'CC=CCC', 'CC(C)=CC', 'C=C(C)CC', 'C=CC(C)C', 'C1CCCC1', 'CC1CCC1', 'CCC1CC1', 'CC1CC1C'],
   };
   function isomerosDe(formulaPlano) {
     const lista = ISOMEROS[formulaPlano];
     if (!lista) return null;
     return lista.map((s) => { const M = leer(s); let nombre = ''; try { nombre = nombrar(M, estereo(M)).txt; } catch (e) { nombre = ''; } return { smiles: s, nombre }; });
+  }
+  const esc2 = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  // benceno con dos sustituyentes: orto, meta o para y sus posiciones
+  function posicionAreno(M) {
+    if (!M.aromatico) return null;
+    const R = M.anillo, ks = R.map((x, k) => k).filter((k) => fichas(M, R[k]).some((t) => t !== 'H' && !M.enAnillo.has(t)));
+    if (ks.length !== 2) return null;
+    const d = Math.min((ks[1] - ks[0]) % 6, 6 - ((ks[1] - ks[0]) % 6));
+    return { tipo: ['', 'orto', 'meta', 'para'][d], locs: [1, d + 1] };
   }
   const ALCANOS = [1, 1, 1, 2, 3, 5, 9, 18, 35, 75];   // C1…C10
 
@@ -662,7 +923,7 @@ const Organica = (() => {
         let nombre = ''; try { nombre = nombrar(v.M, v.est).txt; } catch (e) { nombre = ''; }
         const desc = v.est.centros.map((c) => c.label || '?').join('');
         const rel = !est.completo ? '' : v.est.clave === est.clave ? 'este' : (v.est.clave === est.claveEspejo ? 'enantiómero' : 'diastereoisómero');
-        return { smiles: v.smiles, nombre, quiral: v.est.quiral, rel, desc };
+        return { smiles: v.smiles, nombre, quiral: v.est.quiral, rel, desc, anillo: (v.est.anillo && v.est.anillo.relacion) || '' };
       });
     }
     // pasos
@@ -671,20 +932,36 @@ const Organica = (() => {
     pasos.push({ t: 'Grupos funcionales', html: gr.length ? `Encuentro: ${gr.join(', ')}.` : 'Solo hay enlaces sencillos entre carbonos y hidrógenos: es un alcano.' });
     if (nom) {
       const P = nom.cadena, tc = nom.tipoC;
+      if (nom.anillo) pasos.push({ t: 'Anillo o cadena', html: `Hay un anillo de ${M.anillo.length} carbonos. Es el compuesto padre si tiene más grupos principales que la cadena y, si empatan, si tiene tantos carbonos como la cadena más larga o más: aquí el padre es <b>${nom.aromatico ? 'el benceno' : 'el ciclo'}</b>.` });
+      else if (M.anillo) pasos.push({ t: 'Anillo o cadena', html: `Hay un anillo de ${M.anillo.length} carbonos, pero manda la cadena (más grupos principales o más carbonos que el anillo): el anillo pasa a sustituyente (<b>${nom.aromatico || M.aromatico ? 'fenil' : 'ciclo…il'}</b>).` });
       pasos.push({ t: 'Grupo principal', html: nom.principal ? `El grupo con más prioridad es <b>${GRUPO[nom.principal]}</b>: pasa a ser el sufijo del nombre (orden: ácido > éster > amida > nitrilo > aldehído > cetona > alcohol > tiol > amina).` : 'No hay ningún grupo con sufijo: se nombra como hidrocarburo y todo lo demás son prefijos.' });
+      if (nom.anillo) {
+        pasos.push({ t: 'Numeración del anillo', html: `Se numera dando el 1 al átomo con el grupo principal; si no hay, a un carbono del doble enlace (cicloalquenos) o al que da los localizadores más bajos al conjunto de sustituyentes; si empatan, al que va primero por orden alfabético.` });
+        const pos = posicionAreno(M);
+        if (pos) pasos.push({ t: 'Orto, meta o para', html: `Los dos sustituyentes del benceno están en las posiciones ${pos.locs.join(' y ')}: se llama <b>${pos.tipo}</b> (orto = posiciones 1,2; meta = 1,3; para = 1,4). En el nombre IUPAC se usan los números.` });
+        pasos.push({ t: 'Nombre', html: `Los sustituyentes se ordenan alfabéticamente (sin contar di-, tri-…) y van delante: <b>${nom.txt}</b>${nom.alias ? ` (forma sistemática: ${esc2(nom.alias)})` : ''}.` });
+        if (nom.fuera.length) pasos.push({ t: 'Configuración en un sustituyente', html: `Hay ${nom.fuera.join(' y ')} dentro de un sustituyente: su configuración no aparece en el nombre de arriba, pero se calcula en los pasos siguientes.` });
+      } else {
       pasos.push({ t: 'Cadena principal', html: `La cadena principal es la que contiene más grupos principales, luego más enlaces múltiples y después más carbonos: <b>${P.length} carbono${P.length > 1 ? 's' : ''}</b> (${NUM[P.length]}an…).` });
       pasos.push({ t: 'Numeración', html: `Se numera por el extremo que da los localizadores más bajos, por este orden: grupo principal, enlaces múltiples y sustituyentes.` });
       pasos.push({ t: 'Nombre', html: `Los sustituyentes se ordenan alfabéticamente (sin contar di-, tri-…) y van delante: <b>${nom.txt}</b>.` });
+      if (nom.fuera.length) pasos.push({ t: 'Configuración en un sustituyente', html: `Hay ${nom.fuera.join(' y ')} dentro de un sustituyente: su configuración no aparece en el nombre de arriba, pero se calcula en los pasos siguientes.` });
+      }
     } else pasos.push({ t: 'Nombre', html: `No puedo nombrarla: ${errorNombre}.` });
     for (const c of est.centros) {
       const loc = nom ? nom.locAt(c.i) : null;
       const prio = c.rg.map((t, q) => `${q + 1}. ${t === 'H' ? 'H' : M.at[t].el + (M.at[t].h ? `(${M.at[t].h}H)` : '')}`).join(' &gt; ');
       pasos.push({ t: `Centro quiral${loc ? ' C' + loc : ''}`, html: `Tiene cuatro sustituyentes distintos. Prioridades CIP: ${prio}. ${c.label ? `Con el de menor prioridad detrás, los otros tres giran ${c.label === 'R' ? 'en sentido horario: <b>R</b>' : 'en sentido antihorario: <b>S</b>'}.` : 'Falta la configuración: escribe @ o @@ en el SMILES (por ejemplo [C@H]).'}` });
     }
+    if (est.anillo) {
+      const an = est.anillo, locs = an.caras.map((x) => (nom && nom.locAt(x.i)) || '?');
+      pasos.push({ t: 'Isomería cis/trans del anillo', html: an.relacion ? `Los sustituyentes de ${locs.join(' y ')} están en la ${an.relacion === 'cis' ? '<b>misma cara</b> del anillo: <b>cis</b>' : '<b>cara opuesta</b> del anillo: <b>trans</b>'}.` : `El anillo tiene ${an.caras.length} sustituyentes que pueden ir por encima o por debajo del plano (cis o trans). Marca cada uno con @ o @@ en el SMILES (por ejemplo C[C@H]1CCCC[C@H]1C).` });
+    }
     for (const d of est.dobles) pasos.push({ t: 'Doble enlace con isomería geométrica', html: d.label ? `Los sustituyentes de mayor prioridad de cada carbono están ${d.label === 'Z' ? 'del mismo lado: <b>Z</b>' : 'en lados opuestos: <b>E</b>'}.` : 'Cada carbono tiene dos sustituyentes distintos, así que hay isómeros E y Z. Marca el lado con / y \\ en el SMILES (por ejemplo C/C=C\\C).' });
     return {
       smiles: sc.smiles.replace(/\s+/g, ''), M, formula: f.txt, formulaPlano: f.plano, masa, grupos: gr, nombre: nom ? nom.txt : '', errorNombre, nom,
-      estereo: { centros: est.centros, dobles: est.dobles, quiral: est.quiral, completo: est.completo, lista: vars, nTeorico: 2 ** (est.centros.length + est.dobles.length) },
+      estereo: { centros: est.centros, dobles: est.dobles, anillo: est.anillo, quiral: est.quiral, completo: est.completo, lista: vars, nTeorico: 2 ** (est.nTog + est.dobles.length) },
+      anillo: M.anillo ? { n: M.anillo.length, aromatico: M.aromatico, relacion: est.anillo ? est.anillo.relacion : null, posicion: posicionAreno(M) } : null, alias: nom ? nom.alias : '',
       atomos: geo.atomos, enlaces: geo.enlaces, radio: geo.radio, geo,
       isomeros: isomerosDe(f.plano), pasos,
     };
@@ -723,6 +1000,27 @@ const Organica = (() => {
     { clave: 'tartarico-meso', nombre: 'Ácido tartárico meso', sc: { smiles: 'O=C(O)[C@H](O)[C@@H](O)C(=O)O' } },
     { clave: 'tartarico-l', nombre: 'Ácido L-(+)-tartárico', sc: { smiles: 'O=C(O)[C@H](O)[C@H](O)C(=O)O' } },
     { clave: 'dicloropentano', nombre: '2,3-Diclorobutano (2 centros)', sc: { smiles: 'C[C@H](Cl)[C@@H](Cl)C' } },
+    { clave: 'ciclopropano', nombre: 'Ciclopropano', sc: { smiles: 'C1CC1' } },
+    { clave: 'ciclohexano', nombre: 'Ciclohexano', sc: { smiles: 'C1CCCCC1' } },
+    { clave: 'metilciclohexano', nombre: 'Metilciclohexano', sc: { smiles: 'CC1CCCCC1' } },
+    { clave: 'ciclohexanol', nombre: 'Ciclohexanol', sc: { smiles: 'OC1CCCCC1' } },
+    { clave: 'ciclohexeno', nombre: 'Ciclohexeno', sc: { smiles: 'C1=CCCCC1' } },
+    { clave: 'ciclohexilmetanol', nombre: 'Ciclohexilmetanol (el anillo es sustituyente)', sc: { smiles: 'OCC1CCCCC1' } },
+    { clave: 'cis12', nombre: 'cis-1,2-Dimetilciclohexano (meso)', sc: { smiles: 'C[C@H]1CCCC[C@H]1C' } },
+    { clave: 'trans12', nombre: 'trans-1,2-Dimetilciclohexano (quiral)', sc: { smiles: 'C[C@H]1CCCC[C@@H]1C' } },
+    { clave: 'cis14', nombre: 'cis-1,4-Dimetilciclohexano', sc: { smiles: 'C[C@H]1CC[C@@H](C)CC1' } },
+    { clave: 'benceno', nombre: 'Benceno', sc: { smiles: 'c1ccccc1' } },
+    { clave: 'tolueno', nombre: 'Tolueno (metilbenceno)', sc: { smiles: 'Cc1ccccc1' } },
+    { clave: 'fenol', nombre: 'Fenol', sc: { smiles: 'Oc1ccccc1' } },
+    { clave: 'anilina', nombre: 'Anilina', sc: { smiles: 'Nc1ccccc1' } },
+    { clave: 'benzoico', nombre: 'Ácido benzoico', sc: { smiles: 'OC(=O)c1ccccc1' } },
+    { clave: 'benzaldehido', nombre: 'Benzaldehído', sc: { smiles: 'O=Cc1ccccc1' } },
+    { clave: 'xileno-o', nombre: '1,2-Dimetilbenceno (orto)', sc: { smiles: 'Cc1ccccc1C' } },
+    { clave: 'xileno-m', nombre: '1,3-Dimetilbenceno (meta)', sc: { smiles: 'Cc1cccc(C)c1' } },
+    { clave: 'xileno-p', nombre: '1,4-Dimetilbenceno (para)', sc: { smiles: 'Cc1ccc(C)cc1' } },
+    { clave: 'cresol', nombre: '4-Metilfenol (p-cresol)', sc: { smiles: 'Cc1ccc(O)cc1' } },
+    { clave: 'salicilico', nombre: 'Ácido 2-hidroxibenzoico (salicílico)', sc: { smiles: 'OC(=O)c1ccccc1O' } },
+    { clave: 'fenilbutano', nombre: 'sec-Butilbenceno (centro S en el sustituyente)', sc: { smiles: 'CC[C@H](C)c1ccccc1' } },
   ];
 
   return { resolver, leer, escribe, nombrar, estereo, coordenadas, etiquetaGeometrica, diedro, centroEstereo, enantiomero, isomerosDe, variantes, formulaDe, ejemplos, ISOMEROS, ALCANOS, NUM, v3 };

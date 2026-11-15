@@ -12,6 +12,14 @@
 const Version = (() => {
   const registros = {
     web: [
+      { v: '1.17', fecha: '2026-11-15', titulo: 'Química orgánica con anillos y benceno', subtitulo: 'La herramienta de Nomenclatura orgánica ya nombra ciclos y derivados del benceno, y los enseña en 3D.', secciones: [
+        { icono: '⚗️', titulo: 'Química', puntos: [
+          '#quimica/organica',
+          '**Anillos y benceno:** escribe un ciclohexano, un ciclopentano o un derivado del benceno y obtén su nombre IUPAC (ciclohexanol, 1,2-dimetilciclohexano, tolueno, fenol, anilina, ácido benzoico…), con el anillo como padre o como sustituyente según las reglas.',
+          '**Cis y trans, y orto, meta y para:** los estereoisómeros de un anillo (cis-1,2-dimetilciclohexano como forma meso, la pareja trans) con su nombre y R/S, y la posición de dos sustituyentes del benceno.',
+          '**En 3D:** el anillo en silla o plano con los sustituyentes por encima o por debajo del plano, y 22 ejemplos nuevos.',
+        ] },
+      ] },
       { v: '1.16', fecha: '2026-11-15', titulo: 'Cada número, contrastado', subtitulo: 'Sin herramientas nuevas: esta versión comprueba con programas externos los datos, las fórmulas y los ejemplos de la web, y estrena un detalle de Gases reales.', secciones: [
         { icono: '🔎', titulo: 'Datos y resultados comprobados', puntos: [
           '**Química:** más de 200 datos (entalpías y entropías de formación, energías de ionización y de sublimación, productos de solubilidad y constantes de Henry) se han contrastado con fuentes abiertas; las diferencias entre tablas distintas están explicadas.',
@@ -658,6 +666,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: cavidades rectangulares, cilíndricas y esféricas de paredes conductoras. Frecuencia de resonancia de cualquier modo TE o TM, factor de calidad de las paredes y del dieléctrico, ancho de banda, tabla de los modos más bajos y mapa del campo eléctrico o magnético en el plano de corte que elijas. Con desarrollo paso a paso.'] },
     ],
     organica: [
+      { v: '0.3', fecha: '2026-11-15', cambios: ['Anillos y benceno: la herramienta lee ciclos (ciclopropano a ciclododecano, con dobles enlaces) y el benceno con sus derivados, los nombra (ciclo o benceno como padre o como sustituyente, tolueno, fenol, anilina, ácido benzoico, orto, meta y para), saca el cis/trans y los estereoisómeros de un anillo, el R/S de sus centros, y los dibuja en 3D. Quedan fuera los heterociclos y las moléculas con más de un anillo.'] },
       { v: '0.2', fecha: '2026-11-08', cambios: ['Entrada con la fórmula semidesarrollada como se escribe en clase (CH₃-CH(OH)-CH₃), con botones para los grupos, además de SMILES; el resultado enseña también la fórmula semidesarrollada.'] },
       { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: escribe una molécula (cadenas con ramas, dobles y triples enlaces, alcoholes, aldehídos, cetonas, ácidos, ésteres, amidas, nitrilos, aminas, éteres y halógenos) y obtén su nombre IUPAC, los grupos funcionales, la fórmula y la masa molar. Marca los centros quirales (R/S) y los dobles enlaces E/Z con las reglas de Cahn-Ingold-Prelog, lista todos los estereoisómeros (enantiómeros, diastereoisómeros y formas meso) y las isomerías de cadena, posición y función. La molécula se ve en 3D con los hidrógenos y se gira con el ratón o el dedo. Con desarrollo paso a paso.'] },
     ],

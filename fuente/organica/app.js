@@ -71,24 +71,26 @@
     err.hidden = true; guarda();
     const E = sol.estereo, nCentros = E.centros.length, nDobles = E.dobles.length;
     $('#titulo-mol').textContent = sol.nombre || '(sin nombre)';
-    const desc = [...E.centros.map((c) => c.label || '?'), ...E.dobles.map((d) => d.label || '?')];
-    const quiral = !E.completo && nCentros ? 'Falta indicar @ o @@' : E.quiral ? 'Quiral' : nCentros ? 'Aquiral (forma meso)' : 'Aquiral';
+    const desc = [...E.centros.map((c) => c.label || '?'), ...E.dobles.map((d) => d.label || '?'), ...(E.anillo && E.anillo.relacion ? [E.anillo.relacion] : [])];
+    const quiral = !E.completo && (nCentros || E.anillo) ? 'Falta indicar @ o @@' : E.quiral ? 'Quiral' : nCentros ? 'Aquiral (forma meso)' : 'Aquiral';
     const nEst = E.lista ? E.lista.length : null;
     $('#resumen').innerHTML = (sol.nombre ? '' : dato('Nombre', esc(sol.errorNombre), ' class="ancho"'))
       + dato('Fórmula semidesarrollada', esc(semiDe(sol.smiles)) || '—', ' class="ancho"', 'r-semi') + dato('Fórmula molecular', sol.formula) + dato('Masa molar', `${sol.masa.toFixed(2).replace('.', ',')} g/mol`)
+      + (sol.alias ? dato('Nombre sistemático', esc(sol.alias), ' class="ancho"') : '')
       + dato('Grupos funcionales', sol.grupos.length ? sol.grupos.join(', ') : 'ninguno (alcano)', ' class="ancho"')
+      + (sol.anillo ? dato('Anillo', `${sol.anillo.aromatico ? 'benceno (aromático)' : `de ${sol.anillo.n} carbonos`}${sol.anillo.posicion ? ' · ' + sol.anillo.posicion.tipo : ''}${sol.anillo.relacion ? ' · ' + sol.anillo.relacion : ''}`) : '')
       + dato('Centros quirales', nCentros, ' class="num"', 'r-nc') + dato('Dobles enlaces E/Z', nDobles, ' class="num"')
       + dato('Configuración', desc.length ? desc.join(', ') : '—') + dato('Quiralidad', quiral)
       + dato('Estereoisómeros', nEst === null ? `hasta ${E.nTeorico}` : nEst, ' class="num"', 'r-ne');
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${esc(p.t)}</strong>${p.html}</li>`).join('');
     $('#b-espejo').hidden = !E.quiral;
-    $('#leyenda').textContent = `Arrastra para girar. Gris: carbono; rojo: oxígeno; azul: nitrógeno; verde: halógeno; claro: hidrógeno. ${nCentros ? 'El anillo morado marca los centros quirales' + (vista.rs ? ' con su letra R o S' : '') + '.' : ''}`;
+    $('#leyenda').textContent = `Arrastra para girar. Gris: carbono; rojo: oxígeno; azul: nitrógeno; verde: halógeno; claro: hidrógeno. ${nCentros ? 'El anillo morado marca los centros quirales' + (vista.rs ? ' con su letra R o S' : '') + '.' : ''}${sol.anillo ? ' En el anillo, los sustituyentes que salen hacia el mismo lado del plano son cis y los de lados opuestos, trans.' : ''}`;
     estereoisomeros(); isomeros(); dibuja();
   }
 
   function estereoisomeros() {
     const E = sol.estereo, c = $('#c-estereo');
-    if (!E.centros.length && !E.dobles.length) { c.hidden = true; return; }
+    if (!E.centros.length && !E.dobles.length && !E.anillo) { c.hidden = true; return; }
     c.hidden = false;
     if (!E.lista) { $('#n-estereo').textContent = `Hay hasta ${E.nTeorico} estereoisómeros; con tantos centros no hago el listado.`; $('#t-estereo').innerHTML = ''; return; }
     const n = E.lista.length;
@@ -96,18 +98,18 @@
       + (E.completo ? '' : ' Indica @ o @@ en tu SMILES para ver cuál eres.');
     const sig = (r) => ({ este: '← el que ves', enantiómero: 'enantiómero del que ves', diastereoisómero: 'diastereoisómero del que ves' }[r] || '');
     $('#t-estereo').innerHTML = '<thead><tr><th>Nombre</th><th>Quiral</th><th>Relación</th><th><span class="solo-lector">Ver en 3D</span></th></tr></thead><tbody>'
-      + E.lista.map((v) => `<tr${v.rel === 'este' ? ' class="activa"' : ''}><td>${esc(v.nombre || v.smiles)}<br><code>${esc(v.smiles)}</code></td><td>${v.quiral ? 'sí' : 'no'}</td><td>${sig(v.rel)}</td><td><button class="btn" data-s="${esc(v.smiles)}" aria-label="Ver ${esc(v.nombre || v.smiles)} en 3D">Ver en 3D</button></td></tr>`).join('') + '</tbody>';
+      + E.lista.map((v) => `<tr${v.rel === 'este' ? ' class="activa"' : ''}><td>${esc(v.nombre || v.smiles)}${v.anillo ? ` <b>(${v.anillo})</b>` : ''}<br><code>${esc(v.smiles)}</code></td><td>${v.quiral ? 'sí' : 'no'}</td><td>${sig(v.rel)}</td><td><button class="btn" data-s="${esc(v.smiles)}" aria-label="Ver ${esc(v.nombre || v.smiles)} en 3D">Ver en 3D</button></td></tr>`).join('') + '</tbody>';
   }
   function isomeros() {
     const c = $('#c-iso'), L = sol.isomeros;
     if (!L) {
       c.hidden = false;
       const m = /^C(\d+)H(\d+)$/.exec(sol.formulaPlano), n = m && +m[1], alc = m && +m[2] === 2 * n + 2 && P.ALCANOS[n - 1];
-      $('#n-iso').textContent = alc ? `El ${P.NUM[n]}ano, C${n}H${2 * n + 2}, tiene ${alc} isómeros constitucionales (de cadena).` : `No tengo la lista de los isómeros de ${sol.formulaPlano}. Prueba con C4H10, C5H12, C2H6O, C3H8O, C3H6O, C4H8, C4H10O o C3H6O2.`;
+      $('#n-iso').textContent = alc ? `El ${P.NUM[n]}ano, C${n}H${2 * n + 2}, tiene ${alc} isómeros constitucionales (de cadena).` : `No tengo la lista de los isómeros de ${sol.formulaPlano}. Prueba con C4H10, C5H12, C5H10, C3H6, C4H8, C2H6O, C3H8O, C3H6O, C4H10O, C3H6O2, C7H8O o C8H10.`;
       $('#t-iso').innerHTML = ''; return;
     }
     c.hidden = false;
-    $('#n-iso').textContent = `Compuestos acíclicos de fórmula ${sol.formula} (misma fórmula, distinta unión de átomos): ${L.length}.`;
+    $('#n-iso').textContent = `Compuestos de fórmula ${sol.formula} (misma fórmula, distinta unión de átomos; en cadena o con anillo): ${L.length}.`;
     $('#t-iso').innerHTML = '<thead><tr><th>Nombre</th><th>SMILES</th><th><span class="solo-lector">Ver en 3D</span></th></tr></thead><tbody>'
       + L.map((v) => `<tr${v.smiles === sol.smiles ? ' class="activa"' : ''}><td>${esc(v.nombre || '—')}</td><td><code>${esc(v.smiles)}</code></td><td><button class="btn" data-s="${esc(v.smiles)}" aria-label="Ver ${esc(v.nombre || v.smiles)} en 3D">Ver en 3D</button></td></tr>`).join('') + '</tbody>';
   }
@@ -209,7 +211,7 @@
   colores(); $('#smiles').value = sc.smiles; calcula(); arranca();
   window.OrganicaApp = {
     abrirEjemplo, azar, enunciado, pon,
-    resultado: () => sol && { nombre: sol.nombre, formula: sol.formulaPlano, centros: sol.estereo.centros.map((c) => c.label), dobles: sol.estereo.dobles.map((d) => d.label), estereoisomeros: sol.estereo.lista ? sol.estereo.lista.length : null },
+    resultado: () => sol && { nombre: sol.nombre, alias: sol.alias, anillo: sol.anillo, formula: sol.formulaPlano, centros: sol.estereo.centros.map((c) => c.label), dobles: sol.estereo.dobles.map((d) => d.label), estereoisomeros: sol.estereo.lista ? sol.estereo.lista.length : null },
     estado: () => copia(sc), vista: () => ({ ...vista }),
   };
 })();
