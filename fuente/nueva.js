@@ -8,6 +8,7 @@
    3. catalogo.js: la entrada con disponible: true y scripts, titulo y
       descripcion (si ya estaba como «Próximamente», la completa).
    4. version.js: el registro '<clave>' en 0.1.
+   5. practica.js: la entrada de CONF con azar() y enunciado() (ejercicios inventados).
    Luego: cambiar el cálculo, la página y la prueba por lo de verdad, añadir
    la novedad en la web de version.js, sh fuente/build.sh y
    node pruebas/comprobar.js --solo <clave>.
@@ -65,6 +66,14 @@ const hoy = new Date().toISOString().slice(0, 10), nom = /-/.test(clave) ? `'${c
 ver = ver.slice(0, k) + `\n    ${nom}: [\n      { v: '0.1', fecha: '${hoy}', cambios: ['Primera versión: [qué hace, para los usuarios].'] },\n    ],` + ver.slice(k);
 fs.writeFileSync(fv, ver);
 
-console.log(`Creada ${asig}/${clave}: fuente/${clave}/, pruebas/herramientas/${clave}.js, catalogo.js y version.js.
+// 5: practica.js, entrada en CONF: «Inventar ejercicio» ya sale con azar() y enunciado() de app.js (la plantilla trae los dos)
+const fp = path.join(__dirname, 'practica.js');
+let prac = fs.readFileSync(fp, 'utf8');
+if (!prac.includes(`'${clave}': { datos: null`) && !new RegExp(`\\n    ${clave}: \\{ datos: null`).test(prac)) {
+  prac = prac.replace('\n  const CONF = {\n', (m) => `${m}    // ${clave}: ejercicio inventado con azar() y enunciado() de app.js\n    '${clave}': { datos: null, items: '#resumen > div', genera: () => window.${Id}App?.azar(), enunciado: () => window.${Id}App?.enunciado() },\n`);
+  fs.writeFileSync(fp, prac);
+}
+
+console.log(`Creada ${asig}/${clave}: fuente/${clave}/, pruebas/herramientas/${clave}.js, catalogo.js, version.js y practica.js.
 Ahora: cambia el cálculo, la página y la prueba; escribe la novedad en version.js (y en web: «Nueva herramienta: ${nombre}, en ${a.nombre}.»);
 sh fuente/build.sh && node pruebas/comprobar.js --solo ${clave}`);

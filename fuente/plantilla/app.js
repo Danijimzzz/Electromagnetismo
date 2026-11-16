@@ -70,5 +70,16 @@
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('plantilla').current;
   colores(); formulario(); calcula();
-  window.PlantillaApp = { abrirEjemplo, resultado: () => sol && { v: sol.v }, estado: () => copia(sc) };
+  /* ---------- Ejercicio inventado (modo práctica) ----------
+     azar() INVENTA un ejercicio nuevo: datos que no salen de ningún ejemplo, redondos (que se puedan hacer a mano) y que dan un
+     resultado con sentido. Usa Math.random (el modo práctica lo sustituye por un generador con semilla: el mismo código da el mismo
+     ejercicio) y Practica.nivel ('facil' | 'medio' | 'dificil'): fácil, números enteros pequeños; difícil, más cifras. enunciado() lo cuenta. */
+  const entre = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+  function azar() {
+    const n = typeof Practica !== 'undefined' ? Practica.nivel : 'medio', t = entre(2, n === 'facil' ? 10 : 40);
+    const v = n === 'dificil' ? entre(11, 99) / 10 : entre(2, 20);
+    sc = { s: String(Math.round(v * t * 10) / 10).replace('.', ','), t: String(t) }; $('#ejemplos').value = ''; formulario(); calcula();
+  }
+  const enunciado = () => `Un móvil recorre ${esc(sc.s)} m en ${esc(sc.t)} s con velocidad constante. Calcula su velocidad media en m/s y en km/h.`;
+  window.PlantillaApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { v: sol.v }, estado: () => copia(sc) };
 })();

@@ -27,7 +27,7 @@ Web estática de simuladores y calculadoras de ciencias para la carrera, en espa
 | `fuente/personal.js` | «Tu espacio» de la portada y la ☆ Favorita: recientes y favoritas en `simu-recientes` / `simu-favoritos`, solo en el navegador. |
 | `fuente/llama.js` y `worker/` | La llama 🔥 de la herramienta más usada: `worker/contador.mjs` (Cloudflare Worker + D1, sin cookies ni IP) cuenta visitas por página; `worker/rutas.mjs` lo escribe `portal.js` desde el catálogo. `fuente/og.js` rehace `publico/og.png`. |
 | `interno/revision-datos.md` | Datos escritos de memoria contrastados con su fuente (dato, referencia, resultado). Ampliar al añadir datos de tablas. |
-| `fuente/practica.js` | Modo práctica común (datos al azar, corrige respuestas). |
+| `fuente/practica.js` | Modo práctica común: ejercicios inventados con semilla y nivel (código `M-4F7K2` que los repite), tapa los resultados y corrige respuestas. |
 | `fuente/buscador.js` | Buscador global (`/` o Ctrl+K en cualquier página): `portal.js` escribe `publico/buscador.js` (índice sacado de `catalogo.js` + código + CSS) y `portal.js`/`diseno.js` enganchan su `<script defer>`. En la portada enfoca `#buscar`; en Electrostática Ctrl+K sigue siendo de sus problemas. Las herramientas y fenómenos nuevos entran solos. |
 | `fuente/pwa.js` | Web instalable y sin conexión: `portal.js` escribe `manifest.webmanifest`, `sw.js` (service worker: páginas «primero la red», copia sin conexión, `offline.html`, «Guardar todo» en la portada y rehacerlo solo en cada versión), `pwa.js` (registro, aviso «Hay una versión nueva» y botones) y `_headers`; iconos de `fuente/pwa/` (`node fuente/pwa/iconos.js` los rehace desde `icono.svg`). Prueba: `pruebas/pwa.js` (servidor local). |
 | `fuente/tema.js` | Botón claro/oscuro (`simu-tema`). |
@@ -71,7 +71,7 @@ Excepciones: `electrostatica` (shell.html + scripts raíz, su propia biblioteca)
 1. `node fuente/nueva.js <asignatura> <clave> "<Nombre>"`: crea `fuente/<clave>/` y `pruebas/herramientas/<clave>.js` desde `fuente/plantilla/` (un ejemplo que ya funciona y pasa las pruebas), y da de alta la herramienta en `catalogo.js` (o completa su «Próximamente») y en `version.js` (0.1).
 2. Cambiar el ejemplo por lo de verdad: `calculo.js` con `resolver` y `ejemplos`, `app.js`, `pagina.html` siguiendo `DISENO.md`, y en la prueba los resultados de los ejemplos calculados a mano.
 3. `catalogo.js`: revisar `desc`, `buscar`, `icono`, `titulo` y `descripcion`. Si la carpeta no es la clave, `carpeta: '…'`; si el estado no va en `localStorage['<carpeta>-v1']`, `guarda: '…'`.
-4. `practica.js`: entrada en `CONF` si la página no sigue la estructura estándar o la herramienta genera sus propios ejercicios (`genera: () => window.XApp?.azar()`).
+4. **Ejercicios inventados (estándar, ver DISENO.md):** `app.js` lleva `azar()` (inventa datos redondos y con sentido, leyendo `Practica.nivel` y usando `Math.random`, que el modo práctica sustituye por una semilla: código tipo `M-4F7K2`) y `enunciado()`; `nueva.js` ya deja la entrada en `CONF` de `practica.js` (`genera: () => window.XApp?.azar()`). Sin resultado numérico, no entra y se anota por qué.
 5. `version.js`: las novedades de la 0.1 y una entrada en `web` con «Nueva herramienta: …, en <Asignatura>.».
 6. `sh fuente/build.sh && node pruebas/comprobar.js --solo <clave>` mientras se trabaja y `node pruebas/comprobar.js` entero al final.
 
