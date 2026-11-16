@@ -213,7 +213,7 @@
   };
 
   Ajuste.monta(document.querySelector('.layout .card'), { masas: false });
-  addEventListener('quimica-ajuste', () => calcula());
+  addEventListener(Herramienta.ajuste.EVENTO, () => calcula());
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('equilibrio').current;
   colores(); formulario(); calcula();
   window.EquilibrioApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { modo: sol.modo, K: sol.K, K2: sol.K2, Kp: sol.Kp, x: sol.x, ceq: sol.ceq, alfa: sol.alfa, s0: sol.s0 }, estado: () => copia(sc) };

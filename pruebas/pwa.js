@@ -74,6 +74,8 @@ async function pwa(browser, { mal } = {}) {
     await sinRed(true);
     await p.reload(); await p.waitForSelector('h1');
     if (!/Tiro/i.test(await p.locator('h1').innerText())) mal('sin conexión: la herramienta ya visitada no carga desde la caché');
+    // y sus scripts de publico/js/ (con huella en el nombre) también salen de la copia: Herramienta y Biblioteca están definidos
+    if (!(await p.evaluate(() => typeof Herramienta === 'object' && typeof Biblioteca === 'object' && typeof Pagina === 'object'))) mal('sin conexión: los scripts compartidos (js/) de la herramienta no cargan');
     await p.goto(base + '/'); if (!(await p.locator('#buscar').count())) mal('sin conexión: la portada no carga');
     await p.goto(base + '/?q=hola'); if (!(await p.locator('#buscar').count())) mal('sin conexión: la portada con ?q= no carga');
     // una herramienta nunca visitada y sin «guardar todo»: página sin conexión
@@ -97,6 +99,7 @@ async function pwa(browser, { mal } = {}) {
     for (const u of ['/quimica/ph/', '/fenomenos/rayo/', '/electromagnetismo/electrostatica/']) {
       await p.goto(base + u); const t = await p.locator('h1').first().innerText().catch(() => '');
       if (/Sin conexión/.test(t) || !t) mal(`sin conexión tras «Guardar todo»: ${u} no carga`);
+      else if (u !== '/electromagnetismo/electrostatica/' && !(await p.evaluate(() => typeof Herramienta === 'object'))) mal(`sin conexión tras «Guardar todo»: ${u} no tiene sus scripts`);
     }
     await sinRed(false);
     // 4) versión nueva del service worker: avisa, se aplica al pulsar, borra la caché vieja y rehace «guardar todo»

@@ -25,6 +25,7 @@
                    datos puede ser una función que da { cab, filas } (o un texto ya hecho) y se llama al pulsar, así copia lo de ahora;
                    sin datos solo sale el PNG. Los números salen con coma decimal y tabuladores (se pegan en una hoja de cálculo).
                    Devuelve la barra. Volver a llamarla sobre la misma gráfica solo cambia sus datos. Aviso con aria-live
+     ajuste        { leer(), escribe(parte), CLAVE, EVENTO }: el ajuste «de clase» (masas, constantes y g) con una sola clave y un solo evento, «simu-ajuste»
      tabla(cab, filas)  texto con tabuladores (coma decimal, 10 cifras) de una tabla; nombreArchivo(s) texto → nombre-seguro
      png(c, o)     Promise<Blob> con la gráfica sobre el fondo de la página, con título y «Ciencify» abajo (la usa exportar)
      accesible()   (ya se llama al cargar) aria-live en los resultados, role=alert en los
@@ -152,6 +153,28 @@ const Herramienta = (() => {
   // «Usar en…»: dirección de otra herramienta con su estado en #d=… («clave» si es de la misma asignatura,
   // «asignatura/clave» si es de otra). El enlace lleva además data-usar="<lo mismo>": lo recorre pruebas/usar-en.js
   const enlaceA = (carpeta, estado) => `${carpeta.includes('/') ? '../../' : '../'}${carpeta}/#d=${btoa(unescape(encodeURIComponent(JSON.stringify(estado)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')}`;
-  return { $, esc, copia, vacio, leeSI, leeUn, txt, marcas, lienzo, accesible, exportar, png, tabla, nombreArchivo, enlaceA };
+  // Ajuste «de clase» común (F15.4): lo que antes guardaban por separado quimica/ajuste.js (masas y constantes de Química,
+  // clave «quimica-ajuste») y fisica/constantes.js (gravedad, clave «fisica-constantes»). Ahora, una sola clave y un solo
+  // evento: localStorage['simu-ajuste'] = { masas?, constantes?, g? } y el evento «simu-ajuste» de window.
+  // Cada parte solo la escribe quien la usa (escribe({ g }) no toca masas ni constantes), así «no tocado» se distingue de «elegido».
+  // Lo viejo se migra solo la primera vez que se lee. Ajuste (Química) y Constantes (Física) siguen siendo su interfaz.
+  const ajuste = (() => {
+    const CLAVE = 'simu-ajuste', ANTIGUAS = ['quimica-ajuste', 'fisica-constantes'];
+    const lee = (k) => { try { const g = JSON.parse(localStorage.getItem(k)); return g && typeof g === 'object' ? g : null; } catch (e) { return null; } };
+    const leer = () => {
+      const a = lee(CLAVE); if (a) return a;
+      const q = lee(ANTIGUAS[0]), f = lee(ANTIGUAS[1]);
+      if (!q && !f) return {};
+      const m = { ...(q ? { masas: !!q.masas, constantes: q.constantes !== false } : {}), ...(f && f.g ? { g: f.g } : {}) };
+      try { localStorage.setItem(CLAVE, JSON.stringify(m)); for (const k of ANTIGUAS) localStorage.removeItem(k); } catch (e) { /* sin almacenamiento */ }
+      return m;
+    };
+    const escribe = (parte) => {
+      try { localStorage.setItem(CLAVE, JSON.stringify({ ...leer(), ...parte })); } catch (e) { /* sin almacenamiento */ }
+      try { dispatchEvent(new Event(CLAVE)); } catch (e) { /* sin ventana */ }
+    };
+    return { CLAVE, EVENTO: CLAVE, leer, escribe };
+  })();
+  return { $, esc, copia, vacio, leeSI, leeUn, txt, marcas, lienzo, accesible, exportar, png, tabla, nombreArchivo, enlaceA, ajuste };
 })();
 if (typeof module !== 'undefined') module.exports = Herramienta;

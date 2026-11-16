@@ -14,7 +14,7 @@
    Los fenómenos disponibles de «Física en la vida real» salen igual, en
    publico/fenomenos/<clave>/ desde fuente/fenomenos/<clave>/pagina.html.
    ===================================================================== */
-const fs = require('fs'), path = require('path'), { execFileSync } = require('child_process');
+const fs = require('fs'), path = require('path'), crypto = require('crypto'), { execFileSync } = require('child_process');
 const Catalogo = require('./catalogo.js'), Seo = require('./seo.js');
 const publico = path.join(__dirname, '..', 'publico');
 const icono = fs.readFileSync(path.join(__dirname, 'icono.svg')).toString('base64');
@@ -50,6 +50,28 @@ const lista = () => [...Catalogo.asignaturas.flatMap((a) => a.herramientas.filte
   // los fenómenos de «Física en la vida real» (publico/fenomenos/<clave>/), sin estado que guardar
   ...Catalogo.fenomenos.lista.filter((f) => f.disponible).map((f) => ({ asignatura: 'fenomenos', ...f, carpeta: `fenomenos/${f.clave}`, guarda: null }))];
 
+// F15 / TRV.10.15: los scripts que usan dos o más páginas (o pesan 20 KB o más) no se incrustan: van a publico/js/<nombre>.<hash>.js
+// (el nombre lleva la huella del contenido, así que se puede cachear para siempre) y la página los llama con <script src>.
+// El orden de ejecución no cambia: son scripts clásicos sin defer, intercalados con los trozos en línea.
+const ficherosDe = (h) => ['herramienta.js', ...h.scripts, ...(h.asignatura === 'fenomenos' ? [] : ['biblioteca.js', 'practica.js']), 'personal.js'];
+let _externos = null;
+const externos = () => {
+  if (_externos) return _externos;
+  const usos = {};
+  for (const h of lista()) for (const f of new Set(ficherosDe(h))) usos[f] = (usos[f] || 0) + 1;
+  _externos = {};
+  for (const [f, n] of Object.entries(usos)) {
+    const codigo = script(f);
+    // los de una sola página solo salen si pesan (≥ 20 KB): el HTML se recarga siempre, el fichero con huella no
+    if (n < 2 && Buffer.byteLength(codigo) < 20 * 1024) continue;
+    const hash = crypto.createHash('sha1').update(codigo).digest('hex').slice(0, 8);
+    _externos[f] = { nombre: `${f.replace(/\.js$/, '').replace(/\//g, '-')}.${hash}.js`, codigo };
+  }
+  // el simulador de Electrostática (build.sh lo enlaza; su página no sale de aquí): también con huella y en caché (EM.ES-4)
+  const E = require('./electrostatica-js.js').generar(); _externos['@electrostatica'] = { nombre: E.nombre, codigo: E.codigo };
+  return _externos;
+};
+
 function pagina(h) {
   let html = '<!doctype html>\n<html lang="es">\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n'
     + `<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,${icono}">\n`
@@ -62,21 +84,28 @@ function pagina(h) {
   html += Seo.datos(h.asignatura, h.clave, Seo.descripcion(fuente.toString()));
   // diseño común (diseno.js): cabecera de la portada, color de la asignatura, miga con los botones y herramientas relacionadas
   html += execFileSync('node', [path.join(__dirname, 'diseno.js'), h.asignatura, h.clave], { input: fuente }).toString();
-  html += '<script>\n';
+  // trozos en línea y scripts externos, en el orden de ejecución
+  let enLinea = '';
+  const suelta = () => { if (enLinea) html += `<script>\n${enLinea}</script>\n`; enLinea = ''; };
   // datos de la página para los scripts comunes que arrancan antes que la app (compartir.js)
-  html += `const Pagina = { carpeta: '${h.carpeta}', guarda: ${h.guarda === null ? 'null' : `'${h.guarda}'`} };\n`;
-  // los fenómenos no tienen Mis ejercicios ni modo práctica
-  const fenomeno = h.asignatura === 'fenomenos';
-  html += versionReducida();
-  for (const f of ['herramienta.js', ...h.scripts, ...(fenomeno ? [] : ['biblioteca.js', 'practica.js']), 'personal.js']) html += script(f);
+  enLinea += `const Pagina = { carpeta: '${h.carpeta}', guarda: ${h.guarda === null ? 'null' : `'${h.guarda}'`} };\n`;
+  const fenomeno = h.asignatura === 'fenomenos', ext = externos();
+  enLinea += versionReducida();
+  for (const f of ficherosDe(h)) {
+    if (ext[f]) { suelta(); html += `<script src="../../js/${ext[f].nombre}"></script>\n`; } else enLinea += script(f);
+  }
   // barra lateral «Mis ejercicios» y modo práctica (no hacen nada en las herramientas sin datos que guardar o preguntar)
   const guarda = h.guarda === null ? 'null' : `'${h.guarda}'`;
-  if (!fenomeno) html += `Biblioteca.monta('${h.carpeta}', ${guarda});\nPractica.monta('${h.carpeta}', ${guarda});\n`;
-  return html + '</script>\n</html>\n';
+  if (!fenomeno) enLinea += `Biblioteca.monta('${h.carpeta}', ${guarda});\nPractica.monta('${h.carpeta}', ${guarda});\n`;
+  suelta();
+  return html + '</html>\n';
 }
 
-module.exports = { lista };
+module.exports = { lista, script, versionReducida, externos, ficherosDe };
 if (require.main === module) {
+  // publico/js/: los scripts compartidos con huella en el nombre (se vacía antes, para que no queden versiones viejas)
+  fs.rmSync(path.join(publico, 'js'), { recursive: true, force: true }); fs.mkdirSync(path.join(publico, 'js'), { recursive: true });
+  for (const e of Object.values(externos())) fs.writeFileSync(path.join(publico, 'js', e.nombre), e.codigo);
   for (const h of lista()) {
     const out = path.join(publico, h.asignatura, h.clave, 'index.html');
     fs.mkdirSync(path.dirname(out), { recursive: true });
