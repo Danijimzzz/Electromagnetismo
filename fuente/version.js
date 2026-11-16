@@ -12,9 +12,20 @@
 const Version = (() => {
   const registros = {
     web: [
-      { v: '1.19.2', fecha: '2026-11-16', titulo: 'Hoja para imprimir en Electrostática', subtitulo: 'Elige varios ejercicios y imprímelos juntos, cada uno con su solución.', secciones: [
-        { icono: '🖨', titulo: 'Electromagnetismo', puntos: [
-          '**Hoja para imprimir en @electromagnetismo/electrostatica:** marca varios ejercicios, tuyos o de ejemplo, y se imprimen juntos con su enunciado, resultados y desarrollo paso a paso, como en las demás herramientas.',
+      { v: '1.20', fecha: '2026-11-16', titulo: 'Mis ejercicios renovado y enunciados', subtitulo: 'Una barra lateral nueva en todas las herramientas, enunciados que salen al imprimir y la Hoja para imprimir también en Electrostática.', secciones: [
+        { icono: '🗂', titulo: 'Mis ejercicios, de cristal y más clara', puntos: [
+          '**Pestañas Guardados y Ejemplos** arriba: lo tuyo por un lado y los ejercicios de ejemplo por otro.',
+          '**Menú ⋮ en cada ejercicio:** abrir, seleccionar, cambiar título y carpeta, mover a carpeta, fijar, copiar su enlace, exportar o borrar. Las carpetas también tienen su menú (renombrar, quitar).',
+          '**Modo selección:** marca varios ejercicios para imprimirlos juntos en una hoja, copiar todos sus enlaces, exportarlos, moverlos a una carpeta o borrarlos de golpe.',
+          '**Copia de seguridad, restaurar, importar y «Copiar enlace con estos datos»** están ahora en el menú ⋮ de la cabecera, ordenados por grupos.',
+          'Es la misma barra en todas las herramientas, incluida @electromagnetismo/electrostatica.',
+        ] },
+        { icono: '✍️', titulo: 'Enunciados', puntos: [
+          '**Enunciado del ejercicio en todas las herramientas:** escribe el enunciado (con fórmulas entre $…$) bajo el título; se guarda con el ejercicio en Mis ejercicios, en los archivos y en el enlace, y sale al imprimir y al copiar como texto o LaTeX.',
+        ] },
+        { icono: '🖨', titulo: 'Imprimir', puntos: [
+          '**Hoja para imprimir en @electromagnetismo/electrostatica:** marca varios ejercicios, tuyos o de ejemplo, y se imprimen juntos con su enunciado, resultados y desarrollo paso a paso.',
+          '**Arreglo:** al imprimir, la barra lateral ya no sale con colores raros ni encima del esquema (pasaba sobre todo en el Simulador de circuitos).',
         ] },
       ] },
       { v: '1.19.1', fecha: '2026-11-16', titulo: 'Electrostática, como las demás', subtitulo: 'La barra lateral de Electrostática ya es la de Mis ejercicios de todas las herramientas.', secciones: [

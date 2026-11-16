@@ -124,7 +124,7 @@ const Biblioteca = (() => {
 .bib-pop { position: absolute; right: 12px; z-index: 5; width: 240px; max-width: calc(100% - 24px); max-height: calc(100% - 20px); overflow-y: auto; padding: 8px; border-radius: 20px; background: var(--vidrio-fuerte, var(--panel)); border: 1px solid var(--vidrio-borde, var(--line)); box-shadow: var(--vidrio-brillo, none), 0 14px 40px rgba(0,0,0,.28); -webkit-backdrop-filter: var(--blur, none); backdrop-filter: var(--blur, none) }
 #hoja-imp { display: none }
 @media print { .bib, .bib-scrim, .bib-aviso, .bib-btn { display: none !important } body.bib-fija { padding-left: 0 !important } }
-@media print { body.hoja-imprimiendo > *:not(#hoja-imp) { display: none !important } body.hoja-imprimiendo #hoja-imp { display: block !important } body.hoja-imprimiendo { padding: 0 !important; background: #fff !important } #hoja-imp { color: #000; font: 11pt/1.4 var(--f-ui, system-ui) } #hoja-imp h1 { font-size: 17pt; margin: 0 0 4px } #hoja-imp .hoja-sub { color: #555; margin: 0 0 14px } #hoja-imp section.hoja-ej { margin: 0 0 18px; padding-top: 10px; border-top: 1px solid #999 } #hoja-imp h2 { font-size: 13pt; margin: 0 0 8px; break-after: avoid } #hoja-imp .card { box-shadow: none !important; border: 0 !important; padding: 0 0 6px !important; background: none !important; break-inside: avoid } #hoja-imp img { max-width: 100%; max-height: 9cm; object-fit: contain } #hoja-imp .pasos li { break-inside: avoid } }
+@media print { body.hoja-imprimiendo > *:not(#hoja-imp) { display: none !important } body.hoja-imprimiendo #hoja-imp { display: block !important } body.hoja-imprimiendo { padding: 0 !important; background: #fff !important } #hoja-imp { color: #000; font: 11pt/1.4 var(--f-ui, system-ui) } #hoja-imp h1 { font-size: 17pt; margin: 0 0 4px } #hoja-imp .hoja-sub { color: #555; margin: 0 0 14px } #hoja-imp section.hoja-ej { margin: 0 0 18px; padding-top: 10px; border-top: 1px solid #999 } #hoja-imp h2 { font-size: 13pt; margin: 0 0 8px; break-after: avoid } #hoja-imp .card { box-shadow: none !important; border: 0 !important; padding: 0 0 6px !important; background: none !important; break-inside: avoid } #hoja-imp img { max-width: 100%; max-height: 9cm; object-fit: contain } #hoja-imp .pasos li { break-inside: avoid } #hoja-imp .hoja-enun h3 { font-size: 11pt; margin: 0 0 4px } #hoja-imp .enun-imp { white-space: pre-wrap } }
 `;
 
   function monta(herramienta, clave) {
@@ -284,6 +284,8 @@ const Biblioteca = (() => {
       let nodos = [...d.querySelectorAll('.layout .card')].filter((c) => !c.closest('[hidden]') && c.textContent.trim());
       if (!nodos.length) { const w = d.querySelector('.wrap') || d.body; nodos = [w]; }
       const out = d.createElement('div');
+      const enun = d.querySelector('.enun-bloque .enun-imp');
+      if (enun && enun.textContent.trim()) { const c = d.createElement('div'); c.className = 'card hoja-enun'; const t = d.createElement('h3'); t.textContent = 'Enunciado'; c.append(t, enun.cloneNode(true)); out.appendChild(c); }
       for (const n of nodos) {
         const c = n.cloneNode(true);
         const o = [...n.querySelectorAll('input, select, textarea')], k = [...c.querySelectorAll('input, select, textarea')];
