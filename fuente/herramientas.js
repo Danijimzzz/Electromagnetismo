@@ -11,6 +11,8 @@
      carpeta      solo si no se llama como la clave (estadistica → distribuciones)
      guarda       clave de localStorage del estado: por defecto '<carpeta>-v1';
                   null si no hay estado que guardar (sin Mis ejercicios)
+     enunciado    false para quitar el apartado «Enunciado del ejercicio» (enunciado.js, en todas las
+                  herramientas con estado por defecto); solo si no hay ejercicio que enunciar
    Los fenómenos disponibles de «Física en la vida real» salen igual, en
    publico/fenomenos/<clave>/ desde fuente/fenomenos/<clave>/pagina.html.
    ===================================================================== */
@@ -53,7 +55,10 @@ const lista = () => [...Catalogo.asignaturas.flatMap((a) => a.herramientas.filte
 // F15 / TRV.10.15: los scripts que usan dos o más páginas (o pesan 20 KB o más) no se incrustan: van a publico/js/<nombre>.<hash>.js
 // (el nombre lleva la huella del contenido, así que se puede cachear para siempre) y la página los llama con <script src>.
 // El orden de ejecución no cambia: son scripts clásicos sin defer, intercalados con los trozos en línea.
-const ficherosDe = (h) => ['herramienta.js', ...h.scripts, ...(h.asignatura === 'fenomenos' ? [] : ['biblioteca.js', 'practica.js']), 'personal.js'];
+// Enunciado (enunciado.js): en toda herramienta con estado que guardar, salvo las del catálogo con `enunciado: false`
+const conEnunciado = (h) => h.asignatura !== 'fenomenos' && h.guarda !== null && h.enunciado !== false;
+// (enunciado.js va el primero tras herramienta.js: lee el enunciado guardado antes de que arranquen las apps)
+const ficherosDe = (h) => ['herramienta.js', ...(conEnunciado(h) ? ['enunciado.js'] : []), ...h.scripts, ...(h.asignatura === 'fenomenos' ? [] : ['biblioteca.js', 'practica.js']), 'personal.js'];
 let _externos = null;
 const externos = () => {
   if (_externos) return _externos;
@@ -96,7 +101,7 @@ function pagina(h) {
   }
   // barra lateral «Mis ejercicios» y modo práctica (no hacen nada en las herramientas sin datos que guardar o preguntar)
   const guarda = h.guarda === null ? 'null' : `'${h.guarda}'`;
-  if (!fenomeno) enLinea += `Biblioteca.monta('${h.carpeta}', ${guarda});\nPractica.monta('${h.carpeta}', ${guarda});\n`;
+  if (!fenomeno) enLinea += `Biblioteca.monta('${h.carpeta}', ${guarda});\nPractica.monta('${h.carpeta}', ${guarda});\n${conEnunciado(h) ? `Enunciado.monta('${h.carpeta}', ${guarda});\n` : ''}`;
   suelta();
   return html + '</html>\n';
 }

@@ -112,6 +112,15 @@ select.in { font-family: var(--f-ui); padding-right: 4px }
 .result sub, .steps-b sub { font-size: .7em }
 #flash { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--bg); padding: 7px 14px; border-radius: 8px; font-size: 13px; z-index: 20 }
 @container main (max-width: 520px) { .row { grid-template-columns: minmax(0, 1fr) } }
+#hoja-dlg { width: min(520px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); padding: 16px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); color: var(--ink); font: 14px/1.5 var(--f-ui) }
+#hoja-dlg::backdrop { background: rgba(0,0,0,.35) }
+.hoja-h { display: flex; align-items: center; justify-content: space-between } .hoja-h h2 { margin: 0; font: 600 16px var(--f-ui) }
+.hoja-l { max-height: min(50dvh, 420px); overflow-y: auto; margin: 8px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 4px 0 }
+.hoja-g { font: 600 11px var(--f-ui); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 10px 4px 2px }
+.hoja-f { display: flex; align-items: center; gap: 8px; padding: 4px; border-radius: 6px; cursor: pointer } .hoja-f:hover { background: var(--bg) } .hoja-f input { accent-color: var(--accent); width: 16px; height: 16px }
+.hoja-p { display: flex; gap: 8px; justify-content: flex-end } .hoja-p button:disabled { opacity: .5; cursor: default }
+#hoja-imp { display: none }
+@media print { body.hoja-imprimiendo > *:not(#hoja-imp) { display: none !important } body.hoja-imprimiendo #hoja-imp { display: block !important } body.hoja-imprimiendo { padding: 0 !important; background: #fff !important } #hoja-imp { color: #000; font: 11pt/1.4 var(--f-ui) } #hoja-imp h1 { font-size: 17pt; margin: 0 0 4px } #hoja-imp .hoja-sub { color: #555; margin: 0 0 14px } #hoja-imp section.hoja-ej { margin: 0 0 18px; padding-top: 10px; border-top: 1px solid #999 } #hoja-imp section.hoja-ej h2 { font: 600 10pt var(--f-ui); text-transform: uppercase; letter-spacing: .06em; color: #555; margin: 10px 0 4px; break-after: avoid } #hoja-imp section.hoja-ej > h2:first-child { font: 600 13pt var(--f-ui); text-transform: none; letter-spacing: 0; color: #000; margin: 0 0 8px } #hoja-imp .card { box-shadow: none !important; border: 0 !important; padding: 0 0 6px !important; background: none !important; break-inside: avoid } #hoja-imp .stmt { white-space: pre-wrap; font: 11pt/1.4 var(--f-math); background: none; border: 1px solid #bbb; padding: 6px 8px } #hoja-imp img { max-width: 100%; max-height: 9cm; object-fit: contain } }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important } }
 
 body { font: 14px/1.45 var(--f-ui); margin: 0 }
@@ -299,23 +308,71 @@ body { display: flow-root }
 .side { background: var(--vidrio-fuerte); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur); border-right-color: var(--vidrio-borde) }
 .in { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 10px }
 .btn { background: var(--vidrio-fuerte); border-color: var(--vidrio-borde); border-radius: 99px }
+/* Barra lateral como «Mis ejercicios» de las demás herramientas (Web 1.20): panel de cristal flotante, pestañas Guardados | Ejemplos y menú ⋮ */
+.side { --ic-azul: #0a84ff; --ic-naranja: #ff9f0a; --ic-verde: #30b25a; --ic-violeta: #8e5cf0; --ic-cielo: #3aa8e0; --ic-rosa: #ff5c7a; --ic-oro: #e0a000 }
+@media (min-width: 901px) { .app { grid-template-columns: 296px minmax(0, 1fr) } }
+.side { top: 10px; height: calc(100vh - 20px); height: calc(100dvh - 20px); margin: 10px 0 10px 10px; border: 1px solid var(--vidrio-borde); border-radius: 24px; box-shadow: var(--vidrio-brillo), var(--vidrio-sombra); position: sticky }
+.app.closed .side { margin: 0; border: 0; box-shadow: none }
+.side-h { padding: 16px 10px 8px 16px }
+.iconbtn { border-radius: 50% }
+.side-tabs { display: grid; grid-template-columns: 1fr 1fr; margin: 4px 14px 10px; padding: 3px; border-radius: 99px; background: color-mix(in srgb, var(--ink) 8%, transparent) }
+.side-tabs button { border: 0; background: none; color: var(--muted); font: 500 13px var(--f-ui); padding: 6px; border-radius: 99px; cursor: pointer }
+.side-tabs button[aria-selected=true] { background: var(--vidrio-fuerte); color: var(--ink); box-shadow: 0 1px 4px rgba(0,0,0,.15), var(--vidrio-brillo) }
+.side-act { padding: 0 14px 6px; gap: 8px }
+.side-prim { display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%; border: 0; border-radius: 99px; padding: 9px; background: var(--accent); color: var(--panel); font: 600 14px var(--f-ui); cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,.3) }
+.side-prim .ic { width: 16px; height: 16px; display: grid } .side-prim .ic svg { width: 16px; height: 16px }
+.search { border-radius: 99px }
+.side-dim { position: absolute; inset: 0; z-index: 4; background: rgba(0,0,0,.18); -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px) }
+.side-pop { position: absolute; top: 54px; right: 12px; z-index: 5; width: 250px; max-width: calc(100% - 24px); max-height: calc(100% - 70px); overflow-y: auto; padding: 8px; border-radius: 20px; background: var(--vidrio-fuerte); border: 1px solid var(--vidrio-borde); box-shadow: var(--vidrio-brillo), 0 14px 40px rgba(0,0,0,.28); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur) }
+.side-pop[hidden], .side-dim[hidden] { display: none }
+.side-pop .grp { border-radius: 14px; background: var(--vidrio-fuerte); border: 1px solid var(--vidrio-borde); box-shadow: var(--vidrio-brillo); overflow: hidden } .side-pop .grp + .grp { margin-top: 8px }
+.side-mi { display: flex; align-items: center; gap: 10px; width: 100%; border: 0; background: none; color: var(--ink); text-align: left; font: 500 13.5px var(--f-ui); padding: 8px 10px; cursor: pointer }
+.side-mi + .side-mi { border-top: 1px solid var(--line) } .side-mi:hover:not(:disabled) { background: var(--side-hover) } .side-mi:disabled { opacity: .45; cursor: default }
+.side-mi small { display: block; color: var(--muted); font: 400 11.5px var(--f-ui) }
+.side-mi .ic { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; background: var(--c, var(--accent)); color: #fff; flex: 0 0 auto } .side-mi .ic svg { width: 16px; height: 16px }
+.side-list { padding: 0 10px 8px }
+.item { border-radius: 12px } .item.active { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent) } .item.active .it { font-weight: 600 }
+.item .it { padding: 8px 4px 8px 10px }
+.item .more { opacity: 1; border-radius: 50%; display: grid; place-items: center; padding: 0 } .item .more svg { width: 17px; height: 17px }
+.item .more:hover { background: color-mix(in srgb, var(--ink) 9%, transparent); color: var(--accent) }
+.menu { border-radius: 16px; padding: 6px; background: var(--vidrio-fuerte); border-color: var(--vidrio-borde); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur) }
+.menu button { border-radius: 10px; padding: 8px 10px }
+.sec-h { padding: 5px 6px }
+.side-f { border-top: 0; padding: 6px 8px 10px }
+@media (max-width: 900px) {
+  .side, .app.closed .side { top: 10px; left: 10px; bottom: 10px; margin: 0; width: min(86vw, 310px); border: 1px solid var(--vidrio-borde); border-radius: 24px; transform: translateX(-115%) }
+  .app.mobile-open .side { transform: none }
+}
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) { .panel, .stage, .side { background: var(--panel); -webkit-backdrop-filter: none; backdrop-filter: none } }
 </style>
 
 <div class="app" id="app">
   <aside class="side" id="side" aria-label="Problemas">
-    <div class="side-h"><span class="logo">Simulador de <i>Electrostática</i></span><button id="side-close" class="iconbtn" aria-label="Cerrar barra lateral" title="Cerrar barra lateral"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/></svg></button></div>
+    <div class="side-h"><span class="logo">Simulador de <i>Electrostática</i></span><button id="side-menu" class="iconbtn" aria-haspopup="menu" aria-expanded="false" aria-controls="side-pop" aria-label="Más opciones" title="Más opciones: copia de seguridad, importar, imprimir varios…"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="5.5" r="1.4" fill="currentColor"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><circle cx="12" cy="18.5" r="1.4" fill="currentColor"/></svg></button><button id="side-close" class="iconbtn" aria-label="Cerrar barra lateral" title="Cerrar barra lateral"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/></svg></button></div>
+    <div class="side-tabs" role="tablist"><button id="tab-guardados" role="tab" aria-selected="false">Guardados</button><button id="tab-ejemplos" role="tab" aria-selected="false">Ejemplos</button></div>
     <div class="side-act">
-      <button id="new" class="side-btn"><span class="ic">+</span>Nuevo ejercicio</button>
-      <button id="open" class="side-btn"><span class="ic">↥</span>Importar archivo…</button>
-      <button id="save-lib" class="side-btn"><span class="ic">↧</span>Exportar todos</button>
-      <button id="copia" class="side-btn" data-solo-web title="Un solo archivo con los ejercicios de todas las herramientas"><span class="ic">⛁</span>Copia de seguridad de todo</button>
-      <button id="restaura" class="side-btn" data-solo-web><span class="ic">⟲</span>Restaurar copia…</button>
-      <button id="enlace" class="side-btn" data-solo-web title="Copia un enlace que abre el simulador con el ejercicio de ahora"><span class="ic">🔗</span>Copiar enlace con estos datos</button>
-      <button id="guide-open" class="side-btn"><span class="ic">?</span>Guía de uso</button>
+      <button id="new" class="side-prim"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span>Nuevo ejercicio</button>
       <input type="file" id="file" accept=".json,.emsim,application/json" multiple hidden>
       <input type="file" id="file-copia" accept=".json,application/json" hidden>
       <input type="search" id="search" class="search" placeholder="Buscar ejercicios, carpetas, #etiquetas…" aria-label="Buscar ejercicios" autocomplete="off">
+    </div>
+    <div class="side-dim" id="side-dim" hidden></div>
+    <div class="side-pop" id="side-pop" role="menu" aria-label="Más opciones" hidden>
+      <div class="grp">
+        <button id="enlace" class="side-mi" role="menuitem" data-solo-web title="Copia un enlace que abre el simulador con el ejercicio de ahora"><span class="ic" style="--c:var(--ic-azul)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg></span><span>Copiar enlace con estos datos<small>abre el simulador con el ejercicio de ahora</small></span></button>
+        <button id="hoja" class="side-mi" role="menuitem" title="Elige varios ejercicios y imprímelos juntos con su solución"><span class="ic" style="--c:var(--ic-naranja)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 9V4h10v5M7 17H5a1 1 0 0 1-1-1v-5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v5a1 1 0 0 1-1 1h-2"/><rect x="7" y="14" width="10" height="6" rx="1"/></svg></span><span>Hoja para imprimir…<small>elige varios y se imprimen con su solución</small></span></button>
+      </div>
+      <div class="grp">
+        <button id="copia" class="side-mi" role="menuitem" data-solo-web title="Un solo archivo con los ejercicios de todas las herramientas"><span class="ic" style="--c:var(--ic-verde)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg></span><span>Copia de seguridad de todo<small>un archivo con todas tus herramientas</small></span></button>
+        <button id="restaura" class="side-mi" role="menuitem" data-solo-web><span class="ic" style="--c:var(--ic-violeta)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 1 1 2.5 5.8M4 18v-5h5"/></svg></span><span>Restaurar copia…</span></button>
+      </div>
+      <div class="grp">
+        <button id="open" class="side-mi" role="menuitem"><span class="ic" style="--c:var(--ic-cielo)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19h14"/></svg></span><span>Importar archivo…</span></button>
+        <button id="save-lib" class="side-mi" role="menuitem"><span class="ic" style="--c:var(--ic-rosa)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V4M7.5 8.5L12 4l4.5 4.5M5 19h14"/></svg></span><span>Exportar todos</span></button>
+      </div>
+      <div class="grp">
+        <button id="guide-open" class="side-mi" role="menuitem"><span class="ic" style="--c:var(--ic-oro)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M9.7 9.6a2.4 2.4 0 1 1 3.4 2.2c-.7.4-1.1.9-1.1 1.7M12 16.6v.1"/></svg></span><span>Guía de uso</span></button>
+      </div>
     </div>
     <div class="side-list" id="side-list"></div>
     <div class="side-f">
@@ -395,6 +452,7 @@ body { display: flow-root }
   </main>
 </div>
 <div id="flash" hidden></div>
+<dialog id="hoja-dlg" aria-label="Hoja para imprimir"></dialog>
 <dialog id="guide" class="guide" aria-labelledby="guide-t">
   <div class="g-h"><h2 id="guide-t">Guía de uso del <i>simulador</i></h2><span class="g-ver">versión <span class="ver-n"></span></span><button id="guide-x" class="icon" aria-label="Cerrar la guía" title="Cerrar (Esc)">×</button></div>
   <div class="g-b">
@@ -502,6 +560,7 @@ body { display: flow-root }
           <li><b>Guardar archivo</b> (<kbd>Ctrl</kbd>+<kbd>S</kbd>) descarga el problema abierto como <code>.emsim.json</code>; <b>Guardar todos mis problemas</b>, al pie de la barra lateral, los descarga todos en un solo archivo.</li>
           <li>Para pasarlos a otro ordenador o compartirlos, abre ese archivo allí con <b>Abrir archivo…</b> (<kbd>Ctrl</kbd>+<kbd>O</kbd>) o arrástralo sobre la página. Aparecerán en <b>Importados</b>.</li>
           <li><b>Exportar solución</b> genera la solución completa, con enunciado, resultados y desarrollo: como <b>página para imprimir</b> (.html; ábrela y usa Imprimir → Guardar como PDF) o como texto <b>Markdown</b> (.md).</li>
+          <li><b>Hoja para imprimir…</b>, en la barra lateral, junta varios ejercicios (tuyos o de ejemplo) en una sola hoja, cada uno con su enunciado, resultados y desarrollo.</li>
         </ul>
         <figure><img data-img="exportar" alt="Menú Exportar solución abierto con sus dos opciones" width="1100" height="283"><figcaption>El menú de exportación.</figcaption></figure>
         <p class="tip">Lo que guarda el navegador solo está en ese navegador. Si borras los datos de navegación o cambias de dispositivo, usa los archivos <code>.emsim.json</code> como copia.</p>

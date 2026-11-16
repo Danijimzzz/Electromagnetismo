@@ -12,6 +12,22 @@
 const Version = (() => {
   const registros = {
     web: [
+      { v: '1.20', fecha: '2026-11-16', titulo: 'Mis ejercicios renovado y enunciados', subtitulo: 'Una barra lateral nueva en todas las herramientas, enunciados que salen al imprimir y la Hoja para imprimir también en Electrostática.', secciones: [
+        { icono: '🗂', titulo: 'Mis ejercicios, de cristal y más clara', puntos: [
+          '**Pestañas Guardados y Ejemplos** arriba: lo tuyo por un lado y los ejercicios de ejemplo por otro.',
+          '**Menú ⋮ en cada ejercicio:** abrir, seleccionar, cambiar título y carpeta, mover a carpeta, fijar, copiar su enlace, exportar o borrar. Las carpetas también tienen su menú (renombrar, quitar).',
+          '**Modo selección:** marca varios ejercicios para imprimirlos juntos en una hoja, copiar todos sus enlaces, exportarlos, moverlos a una carpeta o borrarlos de golpe.',
+          '**Copia de seguridad, restaurar, importar y «Copiar enlace con estos datos»** están ahora en el menú ⋮ de la cabecera, ordenados por grupos.',
+          'Es la misma barra en todas las herramientas, incluida @electromagnetismo/electrostatica.',
+        ] },
+        { icono: '✍️', titulo: 'Enunciados', puntos: [
+          '**Enunciado del ejercicio en todas las herramientas:** escribe el enunciado (con fórmulas entre $…$) bajo el título; se guarda con el ejercicio en Mis ejercicios, en los archivos y en el enlace, y sale al imprimir y al copiar como texto o LaTeX.',
+        ] },
+        { icono: '🖨', titulo: 'Imprimir', puntos: [
+          '**Hoja para imprimir en @electromagnetismo/electrostatica:** marca varios ejercicios, tuyos o de ejemplo, y se imprimen juntos con su enunciado, resultados y desarrollo paso a paso.',
+          '**Arreglo:** al imprimir, la barra lateral ya no sale con colores raros ni encima del esquema (pasaba sobre todo en el Simulador de circuitos).',
+        ] },
+      ] },
       { v: '1.19.1', fecha: '2026-11-16', titulo: 'Electrostática, como las demás', subtitulo: 'La barra lateral de Electrostática ya es la de Mis ejercicios de todas las herramientas.', secciones: [
         { icono: '🧲', titulo: 'Electromagnetismo', puntos: [
           '**Barra lateral de @electromagnetismo/electrostatica:** mismas acciones y nombres que Mis ejercicios de las demás, con aspecto de cristal. Nuevas: «Copia de seguridad de todo», «Restaurar copia…» y «Copiar enlace con estos datos».',
@@ -1014,6 +1030,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: ajusta reacciones moleculares e iónicas por el método algebraico, con una incógnita por especie, el balance de cada elemento y de la carga, los coeficientes enteros y la comprobación átomo a átomo, con una gráfica de los átomos a cada lado y diez reacciones de ejemplo.'] },
     ],
     electrostatica: [
+      { v: '0.10', fecha: '2026-11-16', cambios: ['«Hoja para imprimir…» en la barra lateral: elige varios ejercicios, tuyos o de ejemplo, y se imprimen juntos con su enunciado, resultados y desarrollo.'] },
       { v: '0.9', fecha: '2026-11-16', cambios: ['La barra lateral es la de Mis ejercicios de las demás herramientas: mismas acciones y nombres y aspecto de cristal, con «Copia de seguridad de todo», «Restaurar copia…» y «Copiar enlace con estos datos».'] },
       { v: '0.8', fecha: '2026-11-16', cambios: ['La página tiene ya pie con Contacto, Aviso legal, Privacidad y Cookies (antes solo estaban en la barra lateral, que en el móvil no se veía) y «Informar de un error» abre un correo con la herramienta ya escrita.', 'Aparece en «Tu espacio» de la portada (últimas visitadas) y tiene el botón ☆ Favorita.', 'Con el teclado, Tab empieza por la cabecera y el contenido, y la barra de Mis ejercicios queda después.', 'Si tu sistema pide reducir el movimiento, las cargas de prueba dibujan su trayectoria de golpe en vez de animarla.', 'La descripción y la teoría incluyen ya todas las fuentes (láminas, cascarones, anillos, discos, conductores, dipolos…).'] },
       { v: '0.7', fecha: '2026-11-08', cambios: ['El modo práctica comprueba las dimensiones: si tu respuesta no sale en N/C, V, N, J… te lo dice, y si sumas términos con unidades distintas señala cuál falla.'] },

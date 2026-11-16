@@ -42,6 +42,7 @@ header.top .buscar:focus-visible, header.top a:focus-visible { outline:2px solid
 .miga-der { margin-left:auto; display:flex; gap:8px } .miga-izq:empty, .miga-der:empty { display:none }
 .bib-btn, .prac-btn { border-radius:8px !important; padding:6px 12px !important }
 body.bib-ejemplos select[id^="ejemplo"] { display:none }
+@media print { header.top, .miga, .prac-btn { display:none !important } }
 :root { --vida:${V.color} }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --vida:${V.colorOscuro} } }
 :root[data-theme="dark"] { --vida:${V.colorOscuro} }

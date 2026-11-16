@@ -476,33 +476,37 @@ async function navegador() {
       if (!clave) { if (await page.$('.bib')) mal(`${pag}: tiene «Mis ejercicios» sin estado que guardar`); await page.close(); continue; }
       await page.waitForSelector('.bib .bib-acc');
       // los ejemplos se abren desde la barra («Ejercicios de ejemplo»); el desplegable de la página está oculto
+      if (await page.$('.bib [data-acc=pestana-ejemplos]')) await page.click('.bib [data-acc=pestana-ejemplos]');
       const ej = (await page.$$('.bib .bib-ej')).length >= 2;
       if (ej) await page.click('.bib .bib-ej >> nth=0');
+      if (ej) await page.click('.bib [data-acc=pestana-guardados]');
       await page.click('.bib [data-acc=nuevo]'); await page.fill('#bib-t', 'Prueba'); await page.fill('#bib-c', 'Tema 1'); await page.click('.bib [data-acc=guardar]');
       const guardado = await page.evaluate((k) => JSON.parse(localStorage.getItem(k)).items, `simu-ejercicios:${dir}`);
       if (guardado.length !== 1 || typeof guardado[0].datos !== 'string' || guardado[0].carpeta !== 'Tema 1') { mal(`${pag}: «Guardar el actual» no guarda el ejercicio`); await page.close(); continue; }
       if (!(await page.$('.bib-carp'))) mal(`${pag}: no aparece la carpeta`);
-      if (ej) await page.click('.bib .bib-ej >> nth=1');
-      await page.click('.bib [data-acc=fijar]');
+      if (ej) { await page.click('.bib [data-acc=pestana-ejemplos]'); await page.click('.bib .bib-ej >> nth=1'); await page.click('.bib [data-acc=pestana-guardados]'); }
+      await page.click('.bib .bib-it .bib-dots'); await page.click('.bib [data-acc=fijar]');
       if (!(await page.evaluate(() => /Fijados/.test(document.querySelector('.bib-lista').textContent)))) mal(`${pag}: fijar no lo pone en Fijados`);
       // con una escritura pendiente de la app justo después del clic (10.1): tras recargar tiene que seguir lo guardado
       await Promise.all([page.waitForEvent('load'), page.evaluate((c) => { setTimeout(() => localStorage.setItem(c, '{"pisado":true}'), 0); document.querySelector('.bib .bib-abre').click(); }, clave).catch(() => {})]);
-      await page.waitForSelector('.bib .bib-it.activo');
+      try { await page.waitForSelector('.bib .bib-it.activo'); } catch (e) { mal(`${pag}: al abrir lo guardado no se marca como abierto (${e.message.split('\n')[0]})`); await page.close(); continue; }
       if ((await page.evaluate((k) => localStorage.getItem(k), clave)) !== guardado[0].datos) mal(`${pag}: abrir no recupera los datos guardados`);
+      await page.click('.bib [data-acc=menu-general]');
       const [descarga] = await Promise.all([page.waitForEvent('download'), page.click('.bib [data-acc=exportar-todo]')]);
       const arch = path.join(tmp, `bib-${dir}.simu.json`); await descarga.saveAs(arch);
       const d = JSON.parse(fs.readFileSync(arch, 'utf8'));
       if (d.formato !== Biblioteca.FORMATO || d.herramienta !== dir || d.ejercicios[0].datos !== guardado[0].datos) mal(`${pag}: el archivo exportado no es correcto`);
       // copia de seguridad global: se descarga con esta herramienta dentro y se restaura tras borrarlo
+      await page.click('.bib [data-acc=menu-general]');
       const [dc] = await Promise.all([page.waitForEvent('download'), page.click('.bib [data-acc=copia]')]);
       const archC = path.join(tmp, `copia-${dir}.copia.json`); await dc.saveAs(archC);
       const cp = JSON.parse(fs.readFileSync(archC, 'utf8'));
       if (cp.formato !== Biblioteca.FORMATO_COPIA || cp.herramientas[dir]?.[0]?.datos !== guardado[0].datos) mal(`${pag}: la copia de seguridad no es correcta`);
-      await page.click('.bib [data-acc=borrar]'); await page.click('.bib [data-acc=si-borrar]');
+      await page.click('.bib .bib-it .bib-dots'); await page.click('.bib [data-acc=borrar]'); await page.click('.bib [data-acc=si-borrar]');
       if (await page.$('.bib-it')) mal(`${pag}: borrar no quita el ejercicio`);
       await page.setInputFiles('.bib ~ input[type=file]', archC);
       await page.waitForSelector('.bib .bib-it');
-      await page.click('.bib [data-acc=borrar]'); await page.click('.bib [data-acc=si-borrar]');
+      await page.click('.bib .bib-it .bib-dots'); await page.click('.bib [data-acc=borrar]'); await page.click('.bib [data-acc=si-borrar]');
       await page.setInputFiles('.bib ~ input[type=file]', arch);
       await page.waitForSelector('.bib .bib-it');
       const imp = await page.evaluate((k) => JSON.parse(localStorage.getItem(k)).items, `simu-ejercicios:${dir}`);
@@ -574,10 +578,10 @@ async function navegador() {
     await page.click('.fav-btn');
     if ((await page.getAttribute('.fav-btn', 'aria-pressed')) !== 'true') mal('Favorita: el botón no se marca');
     // dos ejercicios guardados
-    for (const [i, t] of [[0, 'Uno'], [1, 'Dos']]) { await page.click(`.bib .bib-ej >> nth=${i}`); await page.click('.bib [data-acc=nuevo]'); await page.fill('#bib-t', t); await page.click('.bib [data-acc=guardar]'); }
+    for (const [i, t] of [[0, 'Uno'], [1, 'Dos']]) { await page.click('.bib [data-acc=pestana-ejemplos]'); await page.click(`.bib .bib-ej >> nth=${i}`); await page.click('.bib [data-acc=pestana-guardados]'); await page.click('.bib [data-acc=nuevo]'); await page.fill('#bib-t', t); await page.click('.bib [data-acc=guardar]'); }
     const datos = await page.evaluate((k) => localStorage.getItem(k), K);
     // enlace con el estado: copiado, y abierto en otra página lleva los mismos datos
-    await page.click('.bib [data-acc=enlace]');
+    await page.click('.bib [data-acc=menu-general]'); await page.click('.bib [data-acc=enlace]');
     const enlace = await page.evaluate(() => navigator.clipboard.readText());
     if (!/#d=[\w-]+$/.test(enlace)) mal('Copiar enlace: no lleva los datos (#d=…)');
     else {
@@ -587,9 +591,9 @@ async function navegador() {
       await p2.close();
     }
     // hoja para imprimir: dos ejercicios con su desarrollo y el estado de antes intacto
-    await page.click('.bib [data-acc=hoja]'); await page.click('.bib [data-acc=hoja-todos]');
+    await page.click('.bib [data-acc=menu-general]'); await page.click('.bib [data-acc=sel-modo]'); await page.click('.bib [data-acc=sel-todos]');
     await page.evaluate(() => { window.print = () => { window.__hoja = document.getElementById('hoja-imp').innerHTML; }; });
-    await page.click('.bib [data-acc=hoja-imprimir]');
+    await page.click('.bib [data-acc=sel-imprimir]');
     await page.waitForFunction(() => window.__hoja, null, { timeout: 30000 });
     const hoja = await page.evaluate(() => window.__hoja);
     if ((hoja.match(/<section class="hoja-ej">/g) || []).length !== 2 || !/1\. Uno/.test(hoja) || !/2\. Dos/.test(hoja)) mal('Hoja: no salen los dos ejercicios');
@@ -701,6 +705,12 @@ async function navegador() {
     const total = Catalogo.asignaturas.flatMap((a) => a.herramientas.filter((h) => h.disponible)).length;
     if (completo && r.probadas < total) mal(`Humo: solo se han probado ${r.probadas} de ${total} herramientas`);
     if (fallos === antes) console.log(`  ✓ Humo: ${r.probadas} herramientas guardan un dato cambiado y lo recuperan al recargar, en modo oscuro y a 390 px, sin errores de consola`);
+  }
+  {
+    // enunciado del ejercicio (pruebas/enunciado.js): se escribe, viaja con el estado y con Mis ejercicios, y sale al imprimir
+    const antes = fallos, r = await require('./enunciado.js')(browser, { mal, solo, filtro: mia });
+    if (completo && r.probadas < 100) mal(`Enunciado: solo se ha probado en ${r.probadas} herramientas`);
+    if (fallos === antes) console.log(`  ✓ Enunciado: ${r.probadas} herramientas guardan el enunciado con el ejercicio (Mis ejercicios, recarga), lo sacan al imprimir y abren sin él los estados de antes`);
   }
   {
     // «Usar en…» (pruebas/usar-en.js): cada enlace entre herramientas abre su destino con los datos llevados y un resultado

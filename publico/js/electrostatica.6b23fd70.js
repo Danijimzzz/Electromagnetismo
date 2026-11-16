@@ -1,4 +1,4 @@
-const Version = (() => { const log = [{"v":"0.9","fecha":"2026-11-16","cambios":["La barra lateral es la de Mis ejercicios de las demás herramientas: mismas acciones y nombres y aspecto de cristal, con «Copia de seguridad de todo», «Restaurar copia…» y «Copiar enlace con estos datos»."]},{"v":"0.8","fecha":"2026-11-16","cambios":["La página tiene ya pie con Contacto, Aviso legal, Privacidad y Cookies (antes solo estaban en la barra lateral, que en el móvil no se veía) y «Informar de un error» abre un correo con la herramienta ya escrita.","Aparece en «Tu espacio» de la portada (últimas visitadas) y tiene el botón ☆ Favorita.","Con el teclado, Tab empieza por la cabecera y el contenido, y la barra de Mis ejercicios queda después.","Si tu sistema pide reducir el movimiento, las cargas de prueba dibujan su trayectoria de golpe en vez de animarla.","La descripción y la teoría incluyen ya todas las fuentes (láminas, cascarones, anillos, discos, conductores, dipolos…)."]},{"v":"0.7","fecha":"2026-11-08","cambios":["El modo práctica comprueba las dimensiones: si tu respuesta no sale en N/C, V, N, J… te lo dice, y si sumas términos con unidades distintas señala cuál falla."]},{"v":"0.6","fecha":"2026-10-26","cambios":["Tubo cilíndrico con carga superficial σ y cilindros huecos (con radio interior), para resolver cables coaxiales.","Densidades que no son uniformes en esferas y cilindros (ρ₀·r/R, ρ₀·R/r, ρ₀(1 − r/R) y ρ₀(1 − r²/R²)) y en varillas (λ que crece o decrece a lo largo), con Gauss y la carga encerrada.","Arcos cargados: semicircunferencias, cuartos de anillo o cualquier ángulo, con el campo y el potencial en el centro.","Corteza esférica conductora con radio interior y exterior: si dentro hay una carga centrada, se induce −q en la cara interior y +q en la exterior.","Seis ejercicios de ejemplo nuevos con todo esto.","La guía enlaza con la herramienta de Condensadores."]},{"v":"0.5.1","fecha":"2026-10-23","cambios":["El simulador tiene ahora su propia dirección, /electromagnetismo/electrostatica/. Tus problemas guardados siguen ahí. El botón «Todas las herramientas» de la barra lateral vuelve a la portada."]},{"v":"0.5","fecha":"2026-10-23","cambios":["Doce ejercicios de ejemplo con enunciados propios: los mismos tipos de pregunta que en clase, con otras figuras y otros números. La guía de uso tiene capturas nuevas hechas con ellos.","La web tiene icono propio: un dipolo con sus líneas de campo, en la pestaña del navegador, en la pantalla de inicio del móvil y en la vista previa al compartir el enlace.","Páginas de aviso legal, privacidad, cookies y contacto, enlazadas al pie de la barra lateral."]},{"v":"0.4","fecha":"2026-10-22","cambios":["Número de versión visible y este apartado de novedades.","Arreglo: en la vista 3D los cilindros se dibujan con su radio real, aparecen las superficies de Gauss, y las esferas, cascarones y conductores tienen volumen en lugar de parecer círculos planos."]},{"v":"0.3","fecha":"2026-10-22","cambios":["Guía de uso con capturas (botón ?, barra lateral o F1).","Los resultados se escriben con la misma forma que el solucionario oficial: perfiles por tramos, factor común en logaritmos y radicales, y la pregunta V_A − V_B."]},{"v":"0.2","fecha":"2026-10-22","cambios":["Anillos, discos, cortezas y conductores.","Varias incógnitas, modo numérico SI, flujo de Gauss y gráficas E(z) y V(z).","Modo práctica, exportar la solución, deshacer y rehacer, mapa de color y vista 3D.","Búsqueda, carpetas y etiquetas en la barra lateral."]},{"v":"0.1","fecha":"2026-10-22","cambios":["Primera versión: cargas, hilos, planos y esferas con el desarrollo paso a paso y 12 ejercicios resueltos.","Barra lateral con tus problemas, los importados y los ejercicios; título y enunciado editables; archivos .emsim.json."]}]; return { current: log[0].v, log }; })();
+const Version = (() => { const log = [{"v":"0.10","fecha":"2026-11-16","cambios":["«Hoja para imprimir…» en la barra lateral: elige varios ejercicios, tuyos o de ejemplo, y se imprimen juntos con su enunciado, resultados y desarrollo."]},{"v":"0.9","fecha":"2026-11-16","cambios":["La barra lateral es la de Mis ejercicios de las demás herramientas: mismas acciones y nombres y aspecto de cristal, con «Copia de seguridad de todo», «Restaurar copia…» y «Copiar enlace con estos datos»."]},{"v":"0.8","fecha":"2026-11-16","cambios":["La página tiene ya pie con Contacto, Aviso legal, Privacidad y Cookies (antes solo estaban en la barra lateral, que en el móvil no se veía) y «Informar de un error» abre un correo con la herramienta ya escrita.","Aparece en «Tu espacio» de la portada (últimas visitadas) y tiene el botón ☆ Favorita.","Con el teclado, Tab empieza por la cabecera y el contenido, y la barra de Mis ejercicios queda después.","Si tu sistema pide reducir el movimiento, las cargas de prueba dibujan su trayectoria de golpe en vez de animarla.","La descripción y la teoría incluyen ya todas las fuentes (láminas, cascarones, anillos, discos, conductores, dipolos…)."]},{"v":"0.7","fecha":"2026-11-08","cambios":["El modo práctica comprueba las dimensiones: si tu respuesta no sale en N/C, V, N, J… te lo dice, y si sumas términos con unidades distintas señala cuál falla."]},{"v":"0.6","fecha":"2026-10-26","cambios":["Tubo cilíndrico con carga superficial σ y cilindros huecos (con radio interior), para resolver cables coaxiales.","Densidades que no son uniformes en esferas y cilindros (ρ₀·r/R, ρ₀·R/r, ρ₀(1 − r/R) y ρ₀(1 − r²/R²)) y en varillas (λ que crece o decrece a lo largo), con Gauss y la carga encerrada.","Arcos cargados: semicircunferencias, cuartos de anillo o cualquier ángulo, con el campo y el potencial en el centro.","Corteza esférica conductora con radio interior y exterior: si dentro hay una carga centrada, se induce −q en la cara interior y +q en la exterior.","Seis ejercicios de ejemplo nuevos con todo esto.","La guía enlaza con la herramienta de Condensadores."]},{"v":"0.5.1","fecha":"2026-10-23","cambios":["El simulador tiene ahora su propia dirección, /electromagnetismo/electrostatica/. Tus problemas guardados siguen ahí. El botón «Todas las herramientas» de la barra lateral vuelve a la portada."]},{"v":"0.5","fecha":"2026-10-23","cambios":["Doce ejercicios de ejemplo con enunciados propios: los mismos tipos de pregunta que en clase, con otras figuras y otros números. La guía de uso tiene capturas nuevas hechas con ellos.","La web tiene icono propio: un dipolo con sus líneas de campo, en la pestaña del navegador, en la pantalla de inicio del móvil y en la vista previa al compartir el enlace.","Páginas de aviso legal, privacidad, cookies y contacto, enlazadas al pie de la barra lateral."]},{"v":"0.4","fecha":"2026-10-22","cambios":["Número de versión visible y este apartado de novedades.","Arreglo: en la vista 3D los cilindros se dibujan con su radio real, aparecen las superficies de Gauss, y las esferas, cascarones y conductores tienen volumen en lugar de parecer círculos planos."]},{"v":"0.3","fecha":"2026-10-22","cambios":["Guía de uso con capturas (botón ?, barra lateral o F1).","Los resultados se escriben con la misma forma que el solucionario oficial: perfiles por tramos, factor común en logaritmos y radicales, y la pregunta V_A − V_B."]},{"v":"0.2","fecha":"2026-10-22","cambios":["Anillos, discos, cortezas y conductores.","Varias incógnitas, modo numérico SI, flujo de Gauss y gráficas E(z) y V(z).","Modo práctica, exportar la solución, deshacer y rehacer, mapa de color y vista 3D.","Búsqueda, carpetas y etiquetas en la barra lateral."]},{"v":"0.1","fecha":"2026-10-22","cambios":["Primera versión: cargas, hilos, planos y esferas con el desarrollo paso a paso y 12 ejercicios resueltos.","Barra lateral con tus problemas, los importados y los ejercicios; título y enunciado editables; archivos .emsim.json."]}]; return { current: log[0].v, log }; })();
 
 /* =====================================================================
    Motor de cálculo (sin DOM). Unidades: longitud en unidades de "a",
@@ -3095,7 +3095,9 @@ const Canvas = (() => {
     store.set(K_LIB, lib);
   }
 
+  let tabSel = null; // pestaña de la barra: 'guardados' | 'ejemplos' (sin elegir: Guardados si ya hay ejercicios, si no Ejemplos)
   function addToLib({ title, statement, scene, origin = 'mio', file, folder = '', tags = [] }) {
+    tabSel = 'guardados';
     const it = { id: newId(), title: title || 'Problema sin título', statement: statement || '', scene: clone(scene), origin, file, folder, tags, updated: Date.now() };
     lib.items.unshift(it);
     store.set(K_LIB, lib);
@@ -3129,7 +3131,8 @@ const Canvas = (() => {
     const active = cur && cur.ref.kind === ref.kind && cur.ref.id === ref.id;
     const row = h('div', { class: 'item' + (active ? ' active' : ''), role: 'listitem' },
       h('button', { class: 'it', title, onclick: () => openRef(ref) }, h('span', { class: 'it-t' }, title), sub ? h('span', { class: 'it-s' }, sub) : null));
-    row.append(h('button', { class: 'more', 'aria-label': 'Opciones de ' + title, title: 'Opciones', onclick: (e) => { e.stopPropagation(); openMenu(row, ref.kind + ref.id, actions); } }, '⋯'));
+    row.append(h('button', { class: 'more', 'aria-label': 'Opciones de ' + title, title: 'Opciones', 'aria-haspopup': 'menu', onclick: (e) => { e.stopPropagation(); openMenu(row, ref.kind + ref.id, actions); } }));
+    row.lastChild.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="12" cy="18.5" r="1.4"/></svg>';
     return row;
   }
   function libActions(it) {
@@ -3175,13 +3178,15 @@ const Canvas = (() => {
       const list = h('div', open && items.length ? { class: 'sec-l', role: 'list' } : { class: 'sec-l' }, open ? (items.length ? items : empty ? h('p', { class: 'side-empty' }, empty) : null) : null);
       box.append(h('section', { class: 'sec' }, head, list));
     };
-    if (!query || mine.length) section('Mis ejercicios', null, grouped(mine), query ? '' : 'Aún no tienes ejercicios propios. Crea uno nuevo o guarda un ejercicio de ejemplo.');
-    if (imp.length) section('Importados', null, grouped(imp), '');
-    if (!query || pres.length) section(Presets.section, 'presetsOpen', pres.map((p) => itemRow({ ref: { kind: 'preset', id: p.key }, title: p.title, actions: [
+    const tab = tabSel || (lib.items.length ? 'guardados' : 'ejemplos');
+    for (const [k, sel] of [['guardados', '#tab-guardados'], ['ejemplos', '#tab-ejemplos']]) $(sel).setAttribute('aria-selected', String(tab === k));
+    if (tab === 'guardados' && (!query || mine.length)) section('Mis ejercicios', null, grouped(mine), query ? '' : 'Aún no tienes ejercicios propios. Crea uno nuevo o guarda un ejercicio de ejemplo.');
+    if (tab === 'guardados' && imp.length) section('Importados', null, grouped(imp), '');
+    if (tab === 'ejemplos' && (!query || pres.length)) section(Presets.section, null, pres.map((p) => itemRow({ ref: { kind: 'preset', id: p.key }, title: p.title, actions: [
       { label: 'Duplicar en Mis ejercicios', run: () => { const c = addToLib({ title: p.title, statement: p.statement, scene: p.make() }); openRef({ kind: 'lib', id: c.id }); } },
       { label: 'Guardar en archivo', run: () => saveJSON(slug(p.title) + '.emsim.json', pack([{ title: p.title, statement: p.statement, scene: p.make() }])) },
     ] })), '');
-    if (query && !mine.length && !imp.length && !pres.length) box.append(h('p', { class: 'side-empty' }, `Nada coincide con «${$('#search').value}».`));
+    if (query && !(tab === 'guardados' ? mine.length + imp.length : pres.length)) box.append(h('p', { class: 'side-empty' }, `Nada coincide con «${$('#search').value}».`));
     $('#save-lib').disabled = !lib.items.length;
     const dl = $('#folders-dl');
     dl.replaceChildren(...[...new Set(lib.items.map((x) => x.folder).filter(Boolean))].map((f) => h('option', { value: f })));
@@ -3690,12 +3695,10 @@ const Canvas = (() => {
     L.push('', '---', `*Generado con el Simulador de Electrostática · ${new Date().toLocaleString('es-ES')}*`, '');
     saveFile(slug(cur.title) + '-solucion.md', L.join('\n'), 'text/markdown');
   }
-  function exportHTML() {
+  // la solución de un ejercicio como HTML (datos, incógnitas y preguntas con su desarrollo): la usan «Exportar solución» y la hoja para imprimir.
+  // Usa la escena y los resultados de ahora (scen, out); la hoja los cambia un momento con conEscena.
+  function fichaHTML(titulo, enunciado, { img = '', charts = {}, h1 = 'h1' } = {}) {
     const esc = Fmt.esc;
-    const styles = [...document.querySelectorAll('style')].map((s) => s.textContent).join('\n');
-    const img = Canvas.snapshot();
-    const charts = {};
-    scen.analyses.forEach((an, i) => { const c = $(`#res-${i} canvas.chart`); if (c) charts[i] = c.toDataURL('image/png'); });
     const srcRows = scen.sources.map((s) => { const def = SOURCES[s.type]; return `<li><b>${esc(s.name)}</b> (${esc(def.label)}): ${isUnk(s.id) ? '<i>valor desconocido</i>' : `valor = ${esc(s.s.c)}${s.s.sym ? '·' + esc(s.s.sym) : ''}`}; ${esc(describe(def, s))}</li>`; }).join('');
     let unk = '';
     if (out?.unknown) {
@@ -3707,6 +3710,18 @@ const Canvas = (() => {
       const body = res.error ? `<div class="warn">No se pudo calcular: ${esc(res.error)}</div>` : String(res.res || '').replace(/<canvas class="chart"[^>]*><\/canvas><div class="chart-l"><\/div>/, charts[i] ? `<img class="chart-img" alt="Gráfica" src="${charts[i]}">` : '');
       return `<section class="card"><h3>${i + 1}. ${esc(def.label)}</h3><p class="hint">${esc(describe(def, an))}</p><div class="result math">${body}</div>${res.steps ? `<h4>Desarrollo</h4><div class="steps-b math">${res.steps}</div>` : ''}</section>`;
     }).join('');
+    return `<${h1}>${esc(titulo)}</${h1}>${enunciado.trim() ? `<div class="stmt">${esc(enunciado.trim())}</div>` : ''}
+<p class="hint">Unidad de longitud: ${scen.mode === 'si' ? 'm (modo numérico SI)' : esc(scen.unit || 'a')}</p>
+${img ? `<img class="snap" alt="Esquema del problema" src="${img}">` : ''}
+<section class="card"><h2>Datos</h2><ul>${srcRows}</ul></section>${unk}<h2>Preguntas</h2>${qs}`;
+  }
+  function conEscena(sc, o, fn) { const [s0, o0] = [scen, out]; scen = sc; out = o; try { return fn(); } finally { scen = s0; out = o0; } }
+  function exportHTML() {
+    const esc = Fmt.esc;
+    const styles = [...document.querySelectorAll('style')].map((s) => s.textContent).join('\n');
+    const img = Canvas.snapshot();
+    const charts = {};
+    scen.analyses.forEach((an, i) => { const c = $(`#res-${i} canvas.chart`); if (c) charts[i] = c.toDataURL('image/png'); });
     const doc = `<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${esc(cur.title)} · solución</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap">
 <style>${styles}
@@ -3717,12 +3732,57 @@ h1 { font: 600 26px var(--f-math); margin: 0 0 8px } h2 { font: 600 13px var(--f
 @media print { .printbar { display: none } body { padding: 0 } :root { --bg: #fff } }
 </style></head><body>
 <div class="printbar"><button class="btn ghost" onclick="print()">Imprimir o guardar como PDF</button></div>
-<h1>${esc(cur.title)}</h1>${cur.statement.trim() ? `<div class="stmt">${esc(cur.statement.trim())}</div>` : ''}
-<p class="hint">Unidad de longitud: ${scen.mode === 'si' ? 'm (modo numérico SI)' : esc(scen.unit || 'a')}</p>
-${img ? `<img class="snap" alt="Esquema del problema" src="${img}">` : ''}
-<section class="card"><h2>Datos</h2><ul>${srcRows}</ul></section>${unk}<h2>Preguntas</h2>${qs}
+${fichaHTML(cur.title, cur.statement, { img, charts })}
 <p class="hint">Generado con el Simulador de Electrostática · ${esc(new Date().toLocaleString('es-ES'))}</p></body></html>`;
     saveFile(slug(cur.title) + '-solucion.html', doc, 'text/html');
+  }
+
+  /* ---------------- hoja para imprimir (elige varios ejercicios y se imprimen juntos con su solución) ---------------- */
+  function abreHoja() {
+    const esc = Fmt.esc, dlg = $('#hoja-dlg');
+    const grupos = [
+      ['Mis ejercicios', lib.items.map((it) => ({ titulo: it.title, enunciado: it.statement || '', escena: () => it.scene }))],
+      [Presets.section, Presets.list.map((p) => ({ titulo: p.title, enunciado: p.statement || '', escena: () => p.make() }))],
+    ].filter(([, l]) => l.length);
+    const todos = grupos.flatMap(([, l]) => l), marcados = new Set();
+    const pinta = () => {
+      let n = 0;
+      dlg.querySelector('.hoja-l').innerHTML = grupos.map(([g, l]) => `<p class="hoja-g">${esc(g)}</p>` + l.map((x) => `<label class="hoja-f"><input type="checkbox" data-i="${todos.indexOf(x)}"${marcados.has(x) ? ' checked' : ''}><span>${esc(x.titulo)}</span></label>`).join('')).join('');
+      dlg.querySelector('.hoja-todos').textContent = marcados.size === todos.length ? 'Quitar todos' : 'Marcar todos';
+      const b = dlg.querySelector('.hoja-imp'); b.disabled = !marcados.size; b.textContent = `Imprimir ${marcados.size} ejercicio${marcados.size === 1 ? '' : 's'}`;
+    };
+    dlg.innerHTML = `<div class="hoja-h"><h2>Hoja para imprimir</h2><button type="button" class="iconbtn hoja-x" aria-label="Cerrar">×</button></div>
+<p class="hint">Marca los ejercicios que quieres en la hoja. Se imprimen con sus resultados y su desarrollo (sin las gráficas).</p>
+<div class="hoja-l"></div>
+<div class="hoja-p"><button type="button" class="btn hoja-todos"></button><button type="button" class="btn ghost hoja-imp"></button></div>`;
+    dlg.querySelector('.hoja-x').addEventListener('click', () => dlg.close());
+    dlg.querySelector('.hoja-l').addEventListener('change', (e) => { const x = todos[+e.target.dataset.i]; if (!x) return; if (e.target.checked) marcados.add(x); else marcados.delete(x); pinta(); });
+    dlg.querySelector('.hoja-todos').addEventListener('click', () => { if (marcados.size === todos.length) marcados.clear(); else todos.forEach((x) => marcados.add(x)); pinta(); });
+    dlg.querySelector('.hoja-imp').addEventListener('click', () => { const sel = todos.filter((x) => marcados.has(x)); dlg.close(); imprimeHoja(sel); });
+    pinta(); dlg.showModal();
+  }
+  function imprimeHoja(sel) {
+    const esc = Fmt.esc;
+    document.getElementById('hoja-imp')?.remove();
+    const cont = document.createElement('div'); cont.id = 'hoja-imp';
+    const trozos = sel.map((x, i) => {
+      let sc = null, o = null;
+      try { sc = validScene(clone(x.escena())); o = Physics.run(sc); } catch (e) { /* se imprime con el aviso de la pregunta */ }
+      return `<section class="hoja-ej">${conEscena(sc || blankScene(), o, () => fichaHTML(`${i + 1}. ${x.titulo.replace(/^\d+ · /, '')}`, x.enunciado, { h1: 'h2' }))}</section>`;
+    });
+    const fecha = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+    cont.innerHTML = `<h1>Hoja de ejercicios de Electrostática</h1><p class="hoja-sub">${sel.length} ejercicio${sel.length === 1 ? '' : 's'} · ${esc(fecha)} · Ciencify</p>` + trozos.join('');
+    document.body.appendChild(cont);
+    const tema = document.documentElement.getAttribute('data-theme');
+    const fin = () => {
+      removeEventListener('afterprint', fin);
+      document.body.classList.remove('hoja-imprimiendo'); cont.remove();
+      if (tema === null) document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', tema);
+    };
+    addEventListener('afterprint', fin);
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.body.classList.add('hoja-imprimiendo');
+    window.print();
   }
 
   /* ---------------- controles fijos ---------------- */
@@ -3766,6 +3826,14 @@ ${img ? `<img class="snap" alt="Esquema del problema" src="${img}">` : ''}
       for (const s of c.querySelectorAll('section')) if (s.getBoundingClientRect().top <= top) id = s.id;
       markGuide(id || 'g-vista');
     }, { passive: true });
+    for (const [k, sel] of [['guardados', '#tab-guardados'], ['ejemplos', '#tab-ejemplos']]) $(sel).addEventListener('click', () => { tabSel = k; renderSidebar(); });
+    // menú ⋮ de la barra: copia de seguridad, importar, imprimir varios… (las mismas acciones de siempre, ahora agrupadas)
+    const pop = $('#side-pop'), dim = $('#side-dim'), mbtn = $('#side-menu');
+    const popA = (v) => { pop.hidden = !v; dim.hidden = !v; mbtn.setAttribute('aria-expanded', String(v)); if (v) pop.querySelector('button:not(:disabled)')?.focus(); };
+    mbtn.addEventListener('click', () => popA(pop.hidden));
+    dim.addEventListener('click', () => { popA(false); mbtn.focus(); });
+    pop.addEventListener('click', (e) => { if (e.target.closest('button')) popA(false); });
+    pop.addEventListener('keydown', (e) => { if (e.key === 'Escape') { e.stopPropagation(); popA(false); mbtn.focus(); } });
     $('#new').addEventListener('click', () => { const it = addToLib({ title: 'Ejercicio sin título', statement: '', scene: blankScene() }); openRef({ kind: 'lib', id: it.id }, { focus: '#title' }); });
     $('#open').addEventListener('click', () => $('#file').click());
     $('#file').addEventListener('change', (e) => { importFiles([...e.target.files]); e.target.value = ''; });
@@ -3788,6 +3856,7 @@ ${img ? `<img class="snap" alt="Esquema del problema" src="${img}">` : ''}
         try { await navigator.clipboard.writeText(url); flash(url.length > 8000 ? 'Enlace copiado (es muy largo: algunos programas lo cortan)' : 'Enlace copiado: abre el simulador con este ejercicio'); } catch (err) { flash('No se ha podido copiar el enlace'); }
       });
     }
+    $('#hoja').addEventListener('click', abreHoja);
     $('#save-cur').addEventListener('click', () => saveJSON(slug(cur.title) + '.emsim.json', pack([cur])));
     $('#export').addEventListener('click', (e) => { e.stopPropagation(); openMenu($('#export-w'), 'export', [
       { label: 'Página para imprimir o PDF (.html)', run: exportHTML },
