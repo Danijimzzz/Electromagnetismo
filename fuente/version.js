@@ -12,7 +12,7 @@
 const Version = (() => {
   const registros = {
     web: [
-      { v: '1.19', fecha: '2026-11-16', titulo: 'Más profundidad en Electromagnetismo, Química y Circuitos', subtitulo: 'Sin herramientas nuevas: las que ya tenías hacen más cosas, con sus fuerzas, geometrías, gráficas y modos nuevos.', secciones: [
+      { v: '1.19', fecha: '2026-11-16', titulo: 'Más profundidad y ejercicios inventados', subtitulo: 'Sin herramientas nuevas: las que ya tenías hacen más cosas, el modo práctica inventa ejercicios con código y Electrostática se ha pulido por dentro y por fuera.', secciones: [
         { icono: '🧲', titulo: 'Electromagnetismo', puntos: [
           '**Condensadores e Inducción:** fuerza sobre la lámina dieléctrica y tensión máxima de la asociación en Condensadores; pestaña Transformador en Inducción.',
           '**Ampère guiado:** en Magnetostática eliges el caso (cilindro, coaxial, lámina, solenoide) y ves la curva amperiana con su simetría.',
@@ -24,6 +24,16 @@ const Version = (() => {
         ] },
         { icono: '🔌', titulo: 'Circuitos', puntos: [
           '**Bode:** gráfica de retardo de grupo e interruptor Hz / rad/s.',
+        ] },
+        { icono: '🎲', titulo: 'Ejercicios inventados', puntos: [
+          '**Fácil, medio o difícil:** en el modo práctica eliges el nivel y la herramienta inventa un ejercicio con datos más redondos o más largos.',
+          '**Un código por ejercicio:** cada ejercicio lleva un código tipo **M-4F7K2**. Escríbelo y sale exactamente el mismo, para compartirlo con un compañero o repetirlo otro día.',
+        ] },
+        { icono: '⚡', titulo: 'Electrostática, pulida', puntos: [
+          '**Más ligera:** el simulador de @electromagnetismo/electrostatica carga con casi la mitad de código (de 437 a 244 KB).',
+          '**Pie y errores:** tiene ya pie con Contacto, Aviso legal, Privacidad y Cookies, y «Informar de un error» abre un correo con la herramienta ya escrita.',
+          '**Tu espacio y favoritas:** aparece en las últimas visitadas de la portada y tiene el botón ☆ Favorita.',
+          '**Mejor con teclado y movimiento reducido:** Tab empieza por el contenido y, si tu sistema pide reducir el movimiento, las trayectorias se dibujan de golpe.',
         ] },
       ] },
       { v: '1.18', fecha: '2026-11-16', titulo: 'Más ligera y más rápida', subtitulo: 'Sin herramientas nuevas: la web pesa menos de la mitad, abre antes la segunda vez que entras y las constantes de clase se eligen una sola vez.', secciones: [

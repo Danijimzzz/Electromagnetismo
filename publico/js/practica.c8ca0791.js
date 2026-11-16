@@ -1,4 +1,10 @@
 const Practica = (() => {
+  const NIVELES = { F: 'facil', M: 'medio', D: 'dificil' };
+  const rngDe = (sem) => { let a = sem >>> 0; return () => { a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; };
+  const codigoDe = (nivel, sem) => `${nivel[0].toUpperCase()}-${(sem >>> 0).toString(36).toUpperCase()}`;
+  const leeCodigo = (c) => { const m = /^\s*([FMD])\s*-?\s*([0-9A-Z]{1,7})\s*$/i.exec(String(c)); return m ? { nivel: NIVELES[m[1].toUpperCase()], sem: parseInt(m[2], 36) >>> 0 } : null; };
+  let nivelAhora = 'medio';
+  const conSemilla = (sem, f) => { const orig = Math.random, r = rngDe(sem); Math.random = r; try { return f(r); } finally { Math.random = orig; } };
   const azar = (a, b) => a + Math.random() * (b - a), entero = (a, b) => Math.floor(azar(a, b + 1));
   const toma = (xs) => xs[Math.floor(Math.random() * xs.length)];
   const visible = (e) => !!e && !!(e.offsetWidth || e.offsetHeight || e.getClientRects().length) && !e.closest('[hidden]');
@@ -141,7 +147,7 @@ const Practica = (() => {
     if (ang && a > 0 && a < 90) return s * Math.round(azar(Math.max(5, a * 0.6), Math.min(85, a * 1.4)));
     if (a > 0 && a < 1) return limpio(s * Math.min(0.98, Math.max(0.02, redondea(a * azar(0.6, 1.5), 2))));
     const dec = (texto.split(',')[1] || '').length, cifras = Math.max(2, String(Math.round(a * 10 ** dec)).replace(/^0+/, '').length);
-    return limpio(s * redondea(a * azar(0.6, 1.5), Math.min(3, cifras)));
+    return limpio(s * redondea(a * azar(0.6, 1.5), nivelAhora === 'facil' ? 2 : Math.min(3, cifras)));
   }
   const etiquetaDe = (inp) => [inp.getAttribute('aria-label'), inp.id && document.querySelector(`label[for="${inp.id}"]`)?.textContent, inp.closest('label')?.textContent, inp.closest('.row, .fila')?.textContent].filter(Boolean).join(' ');
 
@@ -206,6 +212,10 @@ const Practica = (() => {
 .prac-acc { display: flex; flex-wrap: wrap; gap: 8px }
 .prac-acc button { font: 500 13px var(--f-ui, system-ui); border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 6px; padding: 6px 12px; cursor: pointer }
 .prac-acc button.si { background: var(--accent); border-color: var(--accent); color: var(--panel) }
+.prac-cod { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin: 10px 0 0; font-size: 13px; color: var(--muted) }
+.prac-cod select { font: 13px var(--f-ui, system-ui); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 3px 6px }
+.prac-codigo { font: 13.5px var(--f-mono, ui-monospace, monospace); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 3px 6px; width: 6.5em; text-transform: uppercase }
+.prac-codigo.mal { border-color: #c0392b }
 .prac-nota { margin: 10px 0 0; font-weight: 600 } .prac-nota.bien { color: #1d8a5b } .prac-nota.mal { color: #c0392b }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .prac-nota.bien { color: #4cc48e } :root:not([data-theme="light"]) .prac-nota.mal { color: #ef6a5a } }
 :root[data-theme="dark"] .prac-nota.bien { color: #4cc48e } :root[data-theme="dark"] .prac-nota.mal { color: #ef6a5a }
@@ -258,17 +268,26 @@ const Practica = (() => {
       for (const t of conf.numeros || []) { const el = document.querySelector(t.sel), n = el && numeros(el); if (n && n.vals.length) q.push({ tipo: 'num', et: t.et, sel: t.sel, plantilla: '', vals: n.vals.slice(0, 1) }); }
       return q;
     }
-    function nuevo() {
-      resuelto = false;
+    let nivel = 'medio', semilla = 0;
+    try { const g = localStorage.getItem('simu-practica-nivel'); if (['facil', 'medio', 'dificil'].includes(g)) nivel = g; } catch (e) { /* sin almacenamiento */ }
+    function nuevo(sem) {
+      resuelto = false; nivelAhora = nivel;
+      semilla = sem === undefined ? Math.floor(Math.random() * 36 ** 5) + 1 : sem;
       let q = [];
-      for (let intento = 0; intento < 15 && !q.length; intento++) {
-        conf.antes?.();
-        if (conf.genera) conf.genera(); else { ejemplo(); cambiaDatos(); }
-        conf.despues?.();
-        if (!hayError() && (!conf.valido || conf.valido())) q = arma();
-      }
-      if (!q.length) { conf.genera ? conf.genera() : ejemplo(); q = arma(); }
+      conSemilla(semilla, () => {
+        for (let intento = 0; intento < 15 && !q.length; intento++) {
+          conf.antes?.();
+          if (conf.genera) conf.genera(); else { ejemplo(); cambiaDatos(); }
+          conf.despues?.();
+          if (!hayError() && (!conf.valido || conf.valido())) q = arma();
+        }
+        if (!q.length) { conf.genera ? conf.genera() : ejemplo(); q = arma(); }
+      });
       preguntas = q; pinta();
+    }
+    function abreCodigo(c) {
+      const k = leeCodigo(c); if (!k) return false;
+      nivel = k.nivel; nuevo(k.sem); return true;
     }
     function tapa(v) {
       for (const e of tapados) { e.classList.remove('prac-tapa'); e.removeAttribute('aria-hidden'); }
@@ -276,7 +295,7 @@ const Practica = (() => {
       for (const e of tapados) { e.classList.add('prac-tapa'); e.setAttribute('aria-hidden', 'true'); }
     }
     function pinta() {
-      if (!card) { card = document.createElement('section'); card.className = 'prac'; card.setAttribute('aria-label', 'Modo práctica'); card.addEventListener('click', clic); card.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.classList.contains('prac-in')) { e.preventDefault(); comprueba(); } }); }
+      if (!card) { card = document.createElement('section'); card.className = 'prac'; card.setAttribute('aria-label', 'Modo práctica'); card.addEventListener('click', clic); card.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.classList.contains('prac-codigo')) { e.preventDefault(); if (!abreCodigo(e.target.value)) e.target.classList.add('mal'); } else if (e.key === 'Enter' && e.target.classList.contains('prac-in')) { e.preventDefault(); comprueba(); } }); card.addEventListener('change', (e) => { if (e.target.dataset.a === 'nivel') { nivel = e.target.value; try { localStorage.setItem('simu-practica-nivel', nivel); } catch (x) { /* sin almacenamiento */ } nuevo(); } }); }
       tapa(!resuelto);
       const z = zonaTapa()[0] || tapados[0]; if (z && card.nextElementSibling !== z) z.before(card);
       let n = 0;
@@ -289,7 +308,8 @@ const Practica = (() => {
       card.innerHTML = `<h2>Modo práctica</h2>
 <p class="enun">${conf.enunciado ? conf.enunciado() : 'Resuelve el ejercicio con estos datos y escribe tus resultados en las mismas unidades. Puedes usar coma o punto, 1,2·10^-3 y fracciones como 3/4.'}</p>
 ${preguntas.length ? `<div class="prac-q">${filas}</div>` : '<p>Con estos datos no hay resultados numéricos que preguntar: prueba con otro ejercicio.</p>'}
-<div class="prac-acc"><button class="si" data-a="comprobar"${preguntas.length ? '' : ' disabled'}>Comprobar</button><button data-a="solucion">${resuelto ? 'Ocultar la solución' : 'Ver la solución'}</button><button data-a="otro">Otro ejercicio</button></div>
+<div class="prac-acc"><button class="si" data-a="comprobar"${preguntas.length ? '' : ' disabled'}>Comprobar</button><button data-a="solucion">${resuelto ? 'Ocultar la solución' : 'Ver la solución'}</button><button data-a="otro">Inventar otro ejercicio</button></div>
+<div class="prac-cod"><label>Nivel <select data-a="nivel">${[['facil', 'Fácil'], ['medio', 'Medio'], ['dificil', 'Difícil']].map(([v, t]) => `<option value="${v}"${v === nivel ? ' selected' : ''}>${t}</option>`).join('')}</select></label><label>Código <input class="prac-codigo" data-a="codigo" value="${codigoDe(nivel, semilla)}" aria-label="Código del ejercicio" autocomplete="off" spellcheck="false"></label><span class="prac-pista">Escribe un código y pulsa Intro para repetir un ejercicio.</span></div>
 <p class="prac-nota" role="status" hidden></p>`;
     }
     function esperado(p) {
@@ -299,7 +319,7 @@ ${preguntas.length ? `<div class="prac-q">${filas}</div>` : '<p>Con estos datos 
     }
     function comprueba(mostrar) {
       let bien = 0, total = 0, vacios = 0;
-      for (const inp of card.querySelectorAll('.prac-in')) {
+      for (const inp of card.querySelectorAll('.prac-in:not(.prac-codigo)')) {
         const p = preguntas[+inp.dataset.p], e = esperado(p); total++;
         inp.classList.remove('bien', 'mal'); inp.nextElementSibling?.classList.contains('prac-sol') && inp.nextElementSibling.remove();
         let ok, sol;
@@ -314,13 +334,13 @@ ${preguntas.length ? `<div class="prac-q">${filas}</div>` : '<p>Con estos datos 
       nota.textContent = mostrar ? (vacios === total ? 'Aquí tienes la solución, con el desarrollo debajo.' : `${bien} de ${total} bien. La solución y el desarrollo están debajo.`) : bien === total ? '¡Todo bien! Mira el desarrollo con «Ver la solución» o prueba con otro.' : vacios === total ? 'Escribe primero tus resultados.' : `${bien} de ${total} bien${vacios ? ` (${vacios} sin contestar)` : ''}. Revisa los que están en rojo.`;
     }
     function clic(e) {
-      const a = e.target.closest('[data-a]')?.dataset.a;
+      const a = e.target.closest('button[data-a]')?.dataset.a;
       if (a === 'comprobar') comprueba(false);
       else if (a === 'otro') nuevo();
       else if (a === 'solucion') {
-        const valores = [...card.querySelectorAll('.prac-in')].map((i) => i.value);
+        const valores = [...card.querySelectorAll('.prac-in:not(.prac-codigo)')].map((i) => i.value);
         resuelto = !resuelto; pinta();
-        card.querySelectorAll('.prac-in').forEach((inp, k) => { inp.value = valores[k] ?? ''; });
+        card.querySelectorAll('.prac-in:not(.prac-codigo)').forEach((inp, k) => { inp.value = valores[k] ?? ''; });
         if (resuelto) comprueba(true);
       }
     }
@@ -343,8 +363,8 @@ ${preguntas.length ? `<div class="prac-q">${filas}</div>` : '<p>Con estos datos 
     try { const antes = clave ? sessionStorage.getItem(K_ANTES) : null; if (antes !== null) { sessionStorage.removeItem(K_ANTES); if (antes) localStorage.setItem(clave, antes); else localStorage.removeItem(clave); history.replaceState(null, '', location.pathname + location.search); location.reload(); } } catch (e) { /* sin almacenamiento */ }
     btn.addEventListener('click', () => activa(!activo));
     const respuestas = () => [...(card?.querySelectorAll('.prac-in') || [])].map((inp) => { const p = preguntas[+inp.dataset.p], e = esperado(p); return p.tipo === 'texto' ? e[0] : e[+inp.dataset.k].t; });
-    return (window.PracticaApp = { activa, nuevo, respuestas, get activo() { return activo; }, get preguntas() { return preguntas; } });
+    return (window.PracticaApp = { activa, nuevo, abreCodigo, respuestas, get codigo() { return codigoDe(nivel, semilla); }, get nivel() { return nivel; }, get activo() { return activo; }, get preguntas() { return preguntas; } });
   }
-  return { monta, CONF, numeros, leeAlumno, otroValor };
+  return { monta, CONF, numeros, leeAlumno, otroValor, rngDe, codigoDe, leeCodigo, get nivel() { return nivelAhora; } };
 })();
 

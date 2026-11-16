@@ -21,6 +21,20 @@
   $('#campos').addEventListener('input', (e) => { const t = e.target; if (!t.dataset.k) return; sc[t.dataset.k] = t.value; $('#ejemplos').value = ''; calcula(); });
   $('#campos').addEventListener('change', (e) => { const t = e.target; if (t.tagName === 'SELECT' && t.dataset.k) { sc[t.dataset.k] = t.value; $('#ejemplos').value = ''; calcula(); } });
 
+  const GEOS = { coaxial: [['a', 'Radio del interior a', 'mm', '0.45'], ['b', 'Radio interior de la malla b', 'mm', '1.47'], ['er', 'Dieléctrico εr', '', '2.25']], bifilar: [['a', 'Radio de los hilos a', 'mm', '1'], ['D', 'Distancia entre ejes D', 'mm', '10'], ['er', 'Dieléctrico εr', '', '1']], microstrip: [['w', 'Ancho de la pista w', 'mm', '3'], ['h', 'Altura del sustrato h', 'mm', '1.6'], ['er', 'Sustrato εr', '', '4.4']] };
+  const gz = {}; let gres = null;
+  function geoZ0() {
+    const geo = $('#g-geo').value;
+    if (!gz[geo]) gz[geo] = Object.fromEntries(GEOS[geo].map(([k, , , v]) => [k, v]));
+    if ($('#g-campos').dataset.geo !== geo) { $('#g-campos').dataset.geo = geo; $('#g-campos').innerHTML = GEOS[geo].map(([k, n, u]) => `<label for="g-${k}">${n}${u ? ` <small>(${u})</small>` : ''}</label><input id="g-${k}" class="in" data-gk="${k}" value="${esc(gz[geo][k])}" inputmode="decimal" autocomplete="off">`).join(''); }
+    try { gres = P.z0Geometria({ geo, ...gz[geo] }); $('#g-res').innerHTML = `Z₀ = <b>${f(gres.Z0)} Ω</b>${gres.erEf !== gres.er ? ` · ε<sub>ef</sub> = <b>${f(gres.erEf)}</b>` : ''}`; $('#g-usar').disabled = false; }
+    catch (e) { gres = null; $('#g-res').textContent = e.message; $('#g-usar').disabled = true; }
+  }
+  $('#g-geo').addEventListener('change', geoZ0);
+  $('#g-campos').addEventListener('input', (e) => { const t = e.target; if (t.dataset.gk) { gz[$('#g-geo').value][t.dataset.gk] = t.value; geoZ0(); } });
+  $('#g-usar').addEventListener('click', () => { if (!gres) return; sc.Z0 = String(+gres.Z0.toPrecision(5)).replace('.', ','); sc.er = String(+gres.erEf.toPrecision(5)).replace('.', ','); $('#ejemplos').value = ''; formulario(); calcula(); });
+  geoZ0();
+
   const sel = $('#ejemplos');
   sel.innerHTML = '<option value="">Ejemplos…</option>' + P.ejemplos.map((e) => `<option value="${e.clave}">${esc(e.nombre)}</option>`).join('');
   sel.addEventListener('change', () => { if (sel.value) abrirEjemplo(sel.value); });

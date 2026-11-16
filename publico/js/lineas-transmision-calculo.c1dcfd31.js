@@ -236,6 +236,33 @@ const LineasTransmision = (() => {
     { clave: 'pulso', nombre: 'Pulso de 50 ns de 5 V en una línea de 100 ns, carga de 150 Ω', sc: { Z0: '50', R: '150', X: '0', f: '100', er: '1', l: '20', lu: 'm', Vg: '5', Rg: '50', tp: '50', xp: '100' } },
   ];
 
-  return { resolver, ejemplos, zEn, zEnK, f, gamma, conPerdidas, transitorio, stubSerie, dobleStub, redes, anchoBanda };
+
+  const ETA0 = 376.730313668;
+  function z0Geometria(g) {
+    const num = (k, nom) => { const v = leeNum(g[k]); if (!(v > 0) || !isFinite(v)) throw new Error(`${nom} debe ser un número mayor que 0`); return v; };
+    const er = vacio(g.er) ? 1 : num('er', 'El dieléctrico εr');
+    if (er < 1) throw new Error('El dieléctrico εr debe ser al menos 1');
+    if (g.geo === 'coaxial') {
+      const a = num('a', 'El radio del conductor interior a'), b = num('b', 'El radio interior de la malla b');
+      if (!(b > a)) throw new Error('El radio b debe ser mayor que a');
+      const Z0 = (ETA0 / (2 * PI * Math.sqrt(er))) * Math.log(b / a);
+      return { Z0, er, erEf: er, f: `Z_0 = {η_0}/{2π √ε_r} ln(b/a) = {60 ln(b/a)}/{√ε_r}`, pasos: `Coaxial: $Z_0 = {η_0}/{2π √ε_r} ln(b/a) = ${f(ETA0 / (2 * PI))}/${f(Math.sqrt(er))} · ln(${f(b / a)})$ = <b>${f(Z0)} Ω</b>` };
+    }
+    if (g.geo === 'bifilar') {
+      const a = num('a', 'El radio de los hilos a'), D = num('D', 'La distancia entre ejes D');
+      if (!(D > 2 * a)) throw new Error('La distancia entre ejes D debe ser mayor que 2a');
+      const Z0 = (ETA0 / (PI * Math.sqrt(er))) * Math.acosh(D / (2 * a));
+      return { Z0, er, erEf: er, f: `Z_0 = {η_0}/{π √ε_r} arccosh(D/(2a))`, pasos: `Bifilar: $Z_0 = {η_0}/{π √ε_r} arccosh({D}/{2a}) = ${f(ETA0 / PI)}/${f(Math.sqrt(er))} · arccosh(${f(D / (2 * a))})$ = <b>${f(Z0)} Ω</b> (con D ≫ a, ≈ 120 ln(D/a)/√ε_r)` };
+    }
+    if (g.geo === 'microstrip') {
+      const w = num('w', 'El ancho de la pista w'), h = num('h', 'La altura del sustrato h'), u = w / h;
+      const erEf = (er + 1) / 2 + ((er - 1) / 2) / Math.sqrt(1 + 12 / u);
+      const Z0 = u <= 1 ? (60 / Math.sqrt(erEf)) * Math.log(8 / u + u / 4) : (ETA0 / Math.sqrt(erEf)) / (u + 1.393 + 0.667 * Math.log(u + 1.444));
+      return { Z0, er, erEf, f: `ε_ef = {ε_r + 1}/2 + {ε_r − 1}/2 · 1/√{1 + 12h/w}`, pasos: `Microstrip (Hammerstad), w/h = ${f(u)}: $ε_{ef} = {ε_r + 1}/2 + {ε_r − 1}/2 · 1/√{1 + 12 h/w}$ = ${f(erEf)}; ${u <= 1 ? '$Z_0 = {60}/{√ε_{ef}} ln(8h/w + w/(4h))$' : '$Z_0 = {η_0}/{√ε_{ef} (w/h + 1,393 + 0,667 ln(w/h + 1,444))}$'} = <b>${f(Z0)} Ω</b>. La velocidad de fase usa ε<sub>ef</sub>, no ε<sub>r</sub>.` };
+    }
+    throw new Error('Elige coaxial, bifilar o microstrip');
+  }
+
+  return { z0Geometria, resolver, ejemplos, zEn, zEnK, f, gamma, conPerdidas, transitorio, stubSerie, dobleStub, redes, anchoBanda };
 })();
 

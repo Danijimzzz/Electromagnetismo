@@ -479,6 +479,7 @@
   new ResizeObserver(() => { tam(); encuadra(); dibuja(); }).observe(cv.parentElement);
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', dibuja);
   editor(); tam(); recalcula(false); encuadra(); dibuja(); actualiza3d();
+  if (typeof Ampere !== 'undefined' && $('#ampere-ui')) window.AmpApp = Ampere.monta($('#ampere-ui'));
   window.MagApp = { get escena() { return esc; }, get salida() { return out; }, abrirEjemplo: (c) => { esc = deEjemplo(MagEjemplos.lista.find((x) => x.clave === c)); editor(); encuadra(); recalcula(); } };
 })();
 

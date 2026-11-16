@@ -115,13 +115,14 @@
     $('#resumen').innerHTML = h; $('#leyenda').textContent = ley;
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
     $('#grafica').hidden = sol.modo !== 'valoracion';
-    $('#especies').hidden = !(sol.modo === 'poliprotico' || (sol.modo === 'valoracion' && sol.poli));
+    $('#especies').hidden = !(sol.modo === 'poliprotico' || sol.modo === 'tampon' || (sol.modo === 'valoracion' && sol.poli));
+    $('#especies').setAttribute('aria-label', sol.modo === 'tampon' ? 'Capacidad tampón β frente al pH' : 'Diagrama de especies: fracción de cada forma del ácido frente al pH');
     tA = 0; particulas(); dibuja(); grafica(); especies(); exporta();
   }
   function exporta() {
     const n6 = (v) => String(+Number(v).toPrecision(6)).replace('.', ',');
     const b1 = Herramienta.exportar('#grafica', { nombre: 'ph-valoracion', titulo: 'Curva de valoración: pH frente al volumen', etiqueta: 'la curva de valoración', datos: () => (sol && sol.curva ? { cab: ['V (mL)', 'pH'], filas: sol.curva.map(([v, p]) => [n6(v), n6(p)]) } : null) });
-    const b2 = Herramienta.exportar('#especies', { nombre: 'ph-especies', titulo: 'Diagrama de especies: fracción frente al pH', etiqueta: 'el diagrama de especies', datos: () => { if (!sol || !sol.Kas) return null; const nm = sol.Kas.length === 2 ? ['H₂A', 'HA⁻', 'A²⁻'] : ['H₃A', 'H₂A⁻', 'HA²⁻', 'A³⁻']; return { cab: ['pH', ...nm.map((x) => 'α(' + x + ')')], filas: Array.from({ length: 141 }, (_, i) => { const p = i / 10; return [n6(p), ...P.fracciones(sol.Kas, p).map(n6)]; }) }; } });
+    const b2 = Herramienta.exportar('#especies', { nombre: 'ph-especies', titulo: 'Diagrama de especies: fracción frente al pH', etiqueta: 'el diagrama de especies', datos: () => { if (sol && sol.modo === 'tampon') return { cab: ['pH', 'β (mol/(L·pH))'], filas: sol.curvaBeta.map(([p, b]) => [String(p).replace('.', ','), String(+b.toPrecision(6)).replace('.', ',')]) }; if (!sol || !sol.Kas) return null; const nm = sol.Kas.length === 2 ? ['H₂A', 'HA⁻', 'A²⁻'] : ['H₃A', 'H₂A⁻', 'HA²⁻', 'A³⁻']; return { cab: ['pH', ...nm.map((x) => 'α(' + x + ')')], filas: Array.from({ length: 141 }, (_, i) => { const p = i / 10; return [n6(p), ...P.fracciones(sol.Kas, p).map(n6)]; }) }; } });
     if (b1) b1.hidden = $('#grafica').hidden; if (b2) b2.hidden = $('#especies').hidden;
   }
 
@@ -228,10 +229,22 @@
 
   function especies() {
     const c = $('#especies');
-    if (c.hidden || !sol || !sol.Kas) return;
+    if (c.hidden || !sol || !(sol.Kas || sol.modo === 'tampon')) return;
     const L = lienzo(c); if (!L) return;
     const { g, w, h } = L;
     if (!col['--ink']) colores();
+    if (sol.modo === 'tampon') {
+      const ml = 52, mr = 14, mt = 18, mb = 38, bm = Math.max(...sol.curvaBeta.map((q) => q[1])) * 1.1, X = (p) => ml + (p / 14) * (w - ml - mr), Y = (b) => mt + (1 - b / bm) * (h - mt - mb);
+      g.strokeStyle = col['--line']; g.lineWidth = 1;
+      for (let k = 0; k <= 4; k++) { const b = (bm * k) / 4; g.beginPath(); g.moveTo(ml, Y(b)); g.lineTo(w - mr, Y(b)); g.stroke(); texto(g, ml - 6, Y(b), txt(f(b, 2)), col['--muted'], 'right'); }
+      for (let p = 0; p <= 14; p += 2) texto(g, X(p), h - mb + 12, String(p), col['--muted']);
+      texto(g, ml + (w - ml - mr) / 2, h - 7, 'pH', col['--muted']); texto(g, ml + 4, 6, 'β (mol/(L·pH))', col['--muted'], 'left');
+      g.setLineDash([3, 4]); g.strokeStyle = col['--muted']; g.beginPath(); g.moveTo(X(sol.pKa), mt); g.lineTo(X(sol.pKa), h - mb); g.stroke(); g.setLineDash([]);
+      texto(g, X(sol.pKa), mt - 8, `pKa = ${txt(f2(sol.pKa))}`, col['--muted']);
+      g.strokeStyle = col['--accent']; g.lineWidth = 2.4; g.beginPath(); sol.curvaBeta.forEach(([p, b], i) => (i ? g.lineTo(X(p), Y(b)) : g.moveTo(X(p), Y(b)))); g.stroke();
+      punto(g, X(sol.pH0), Y(sol.beta), 5, col['--roz']); texto(g, X(sol.pH0), Y(sol.beta) - 12, `β = ${txt(f(sol.beta, 3))}`, col['--ink']);
+      return;
+    }
     const ml = 40, mr = 14, mt = 18, mb = 38, X = (p) => ml + (p / 14) * (w - ml - mr), Y = (a) => mt + (1 - a) * (h - mt - mb), n = sol.Kas.length;
     g.strokeStyle = col['--line']; g.lineWidth = 1;
     for (let a = 0; a <= 1; a += 0.25) { g.beginPath(); g.moveTo(ml, Y(a)); g.lineTo(w - mr, Y(a)); g.stroke(); texto(g, ml - 6, Y(a), txt(f2(a)), col['--muted'], 'right'); }

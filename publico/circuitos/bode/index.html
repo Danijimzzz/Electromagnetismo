@@ -274,6 +274,8 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
       <canvas id="grafica" aria-label="Diagrama de Bode: magnitud en decibelios"></canvas>
       <h2 style="margin-top:14px">Fase <small>(grados)</small></h2>
       <canvas id="grafica-fase" aria-label="Diagrama de Bode: fase en grados"></canvas>
+      <h2 style="margin-top:14px">Retardo de grupo <small>(τg = −dφ/dω)</small></h2>
+      <canvas id="grafica-retardo" aria-label="Retardo de grupo del filtro frente a la frecuencia"></canvas>
       <p class="leyenda" id="leyenda"></p>
     </div>
     <div class="card pasos"><h2>Desarrollo</h2><ol id="pasos"></ol></div>
@@ -292,6 +294,10 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
   <p class="m">El RLC en serie tiene una frecuencia propia y un factor de calidad que fija cómo es la respuesta cerca de ella:</p>
   <p class="f m">$f_0 = 1/(2π√(LC))$, $Q = (1/R)√(L/C)$, $"BW" = f_0/Q$</p>
   <p class="m">Con $Q > 1/√2$ los pasos bajo y alto presentan un pico de resonancia; en el paso banda (se mide en la resistencia) $Q$ da lo estrecha que es la banda, y en el rechazo de banda, lo estrecha que es la muesca. Las asíntotas cambian 40 dB por década en los pasos bajo y alto, y ±20 dB por década en el paso banda.</p>
+  <h2>Retardo de grupo</h2>
+  <p class="m">La fase mide cuánto se retrasa cada frecuencia; el retardo de grupo, cuánto se retrasa una señal formada por frecuencias próximas, como la envolvente de un pulso. Es la derivada de la fase:</p>
+  <p class="f m">$τ_g = −dφ/dω$</p>
+  <p class="m">En un RC paso bajo vale $τ_g = RC/(1 + (ωRC)²)$: $RC$ en continua y la mitad en la frecuencia de corte. Un filtro de segundo orden con $Q$ alto retrasa mucho las frecuencias cerca de $f_0$ ($τ_g = 2Q/ω_0$ en el RLC paso bajo), lo que deforma los pulsos.</p>
   <h2>Y el circuito completo</h2>
   <p class="m">Para probar el filtro con una fuente, un osciloscopio y más componentes, monta el mismo circuito en el <a href="../simulador/">Simulador de circuitos</a>: su análisis en frecuencia dibuja este mismo diagrama.</p>
 </section>
@@ -317,7 +323,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 </body>
 <script>
 const Pagina = { carpeta: 'bode', guarda: 'bode-v1' };
-const Version = (() => { const registros = {"web":[{"v":"1.18"}],"control":[{"v":"0.2"}],"termo-estadistica":[{"v":"0.2"}],"markowitz":[{"v":"0.3"}],"cavidades":[{"v":"0.2"}],"organica":[{"v":"0.3"}],"transformada-z":[{"v":"0.2"}],"semiconductores":[{"v":"0.2"}],"relatividad":[{"v":"0.2"}],"osc-acopladas":[{"v":"0.2"}],"solubilidad":[{"v":"0.2"}],"lagrange":[{"v":"0.2"}],"series":[{"v":"0.3"}],"no-parametricos":[{"v":"0.3"}],"regresion-multiple":[{"v":"0.2"}],"anova":[{"v":"0.3"}],"black-scholes":[{"v":"0.3"}],"bonos":[{"v":"0.3"}],"solow":[{"v":"0.3"}],"integrales-multiples":[{"v":"0.1"}],"formulacion":[{"v":"0.2"}],"balance":[{"v":"0.2"}],"redox":[{"v":"0.2"}],"lineas-transmision":[{"v":"0.2"}],"superficies":[{"v":"0.2"}],"vsepr":[{"v":"0.2"}],"maxwell":[{"v":"0.2"}],"fresnel":[{"v":"0.2"}],"gravitacion":[{"v":"0.2"}],"convolucion":[{"v":"0.2"}],"laplace-numerica":[{"v":"0.2"}],"imagenes":[{"v":"0.2.1"}],"guias-onda":[{"v":"0.2"}],"antena":[{"v":"0.2"}],"bode":[{"v":"0.2"}],"optica":[{"v":"0.2"}],"simulador":[{"v":"0.4"}],"teoria-juegos":[{"v":"0.2"}],"puertas-logicas":[{"v":"0.4"}],"multiplicador":[{"v":"0.3"}],"is-lm":[{"v":"0.3"}],"choques":[{"v":"0.1"}],"termoquimica":[{"v":"0.2"}],"probabilidad":[{"v":"0.2"}],"unidades":[{"v":"0.2"}],"equilibrio":[{"v":"0.2"}],"oscilaciones":[{"v":"0.1"}],"beneficio":[{"v":"0.3"}],"costes":[{"v":"0.3"}],"sistemas-numericos":[{"v":"0.2"}],"excedentes":[{"v":"0.2"}],"oferta-demanda":[{"v":"0.2"}],"chi2-bondad":[{"v":"0.2"}],"contrastes":[{"v":"0.2"}],"errores":[{"v":"0.2"}],"graficador":[{"v":"0.2"}],"metodos-numericos":[{"v":"0.2"}],"fisica-moderna":[{"v":"0.2"}],"lorenz-gini":[{"v":"0.2"}],"phillips-okun":[{"v":"0.3"}],"tipos-cambio":[{"v":"0.3"}],"elasticidades":[{"v":"0.3"}],"pib-ipc":[{"v":"0.2"}],"numeros-indice":[{"v":"0.2"}],"ratios":[{"v":"0.2"}],"punto-muerto":[{"v":"0.2"}],"ahorro":[{"v":"0.3"}],"van-tir":[{"v":"0.3"}],"amortizacion-inmovilizado":[{"v":"0.2"}],"prestamos":[{"v":"0.3"}],"rentas":[{"v":"0.3"}],"interes":[{"v":"0.3"}],"descriptiva":[{"v":"0.2"}],"regresion-economia":[{"v":"0.2"}],"ajustador":[{"v":"0.2.1"}],"electrostatica":[{"v":"0.7"}],"magnetostatica":[{"v":"0.3"}],"tabla-periodica":[{"v":"0.2"}],"trabajo-y-energia":[{"v":"0.3"}],"masa-molar":[{"v":"0.2"}],"configuracion-electronica":[{"v":"0.2"}],"condensadores":[{"v":"0.3"}],"tiro-parabolico":[{"v":"0.4"}],"disoluciones":[{"v":"0.2"}],"calorimetria":[{"v":"0.2"}],"induccion":[{"v":"0.3"}],"matrices":[{"v":"0.3"}],"derivadas":[{"v":"0.3"}],"laplace":[{"v":"0.2"}],"interferencia":[{"v":"0.2"}],"ondas-em":[{"v":"0.4"}],"intervalos":[{"v":"0.3"}],"fuerza":[{"v":"0.3"}],"campos":[{"v":"0.2.1"}],"cinetica":[{"v":"0.2"}],"edos":[{"v":"0.2"}],"fourier":[{"v":"0.2"}],"taylor":[{"v":"0.3"}],"complejos":[{"v":"0.3"}],"sistemas":[{"v":"0.3"}],"regresion":[{"v":"0.3"}],"estadistica":[{"v":"0.3"}],"dinamica":[{"v":"0.3"}],"solido-rigido":[{"v":"0.3"}],"ondas":[{"v":"0.3"}],"gases":[{"v":"0.6"}],"ciclos":[{"v":"0.2"}],"ph":[{"v":"0.3"}],"fluidos":[{"v":"0.3"}],"doppler":[{"v":"0.2"}],"resistencias":[{"v":"0.3"}],"faraday":[{"v":"0.3"}],"fenomenos":[{"v":"0.9"}]}; const de = (h) => ({ current: registros[h][0].v, log: registros[h] }); return { registros, de }; })();
+const Version = (() => { const registros = {"web":[{"v":"1.19"}],"control":[{"v":"0.2"}],"termo-estadistica":[{"v":"0.2"}],"markowitz":[{"v":"0.3"}],"cavidades":[{"v":"0.2"}],"organica":[{"v":"0.3"}],"transformada-z":[{"v":"0.2"}],"semiconductores":[{"v":"0.2"}],"relatividad":[{"v":"0.2"}],"osc-acopladas":[{"v":"0.2"}],"solubilidad":[{"v":"0.2"}],"lagrange":[{"v":"0.2"}],"series":[{"v":"0.3"}],"no-parametricos":[{"v":"0.3"}],"regresion-multiple":[{"v":"0.2"}],"anova":[{"v":"0.3"}],"black-scholes":[{"v":"0.3"}],"bonos":[{"v":"0.3"}],"solow":[{"v":"0.3"}],"integrales-multiples":[{"v":"0.1"}],"formulacion":[{"v":"0.2"}],"balance":[{"v":"0.2"}],"redox":[{"v":"0.2"}],"lineas-transmision":[{"v":"0.3"}],"superficies":[{"v":"0.2"}],"vsepr":[{"v":"0.2"}],"maxwell":[{"v":"0.3"}],"fresnel":[{"v":"0.2"}],"gravitacion":[{"v":"0.2"}],"convolucion":[{"v":"0.2"}],"laplace-numerica":[{"v":"0.2"}],"imagenes":[{"v":"0.2.1"}],"guias-onda":[{"v":"0.2"}],"antena":[{"v":"0.2"}],"bode":[{"v":"0.3"}],"optica":[{"v":"0.2"}],"simulador":[{"v":"0.4"}],"teoria-juegos":[{"v":"0.2"}],"puertas-logicas":[{"v":"0.4"}],"multiplicador":[{"v":"0.3"}],"is-lm":[{"v":"0.3"}],"choques":[{"v":"0.1"}],"termoquimica":[{"v":"0.3"}],"probabilidad":[{"v":"0.2"}],"unidades":[{"v":"0.2"}],"equilibrio":[{"v":"0.2"}],"oscilaciones":[{"v":"0.1"}],"beneficio":[{"v":"0.3"}],"costes":[{"v":"0.3"}],"sistemas-numericos":[{"v":"0.2"}],"excedentes":[{"v":"0.2"}],"oferta-demanda":[{"v":"0.2"}],"chi2-bondad":[{"v":"0.2"}],"contrastes":[{"v":"0.2"}],"errores":[{"v":"0.2"}],"graficador":[{"v":"0.2"}],"metodos-numericos":[{"v":"0.2"}],"fisica-moderna":[{"v":"0.2"}],"lorenz-gini":[{"v":"0.2"}],"phillips-okun":[{"v":"0.3"}],"tipos-cambio":[{"v":"0.3"}],"elasticidades":[{"v":"0.3"}],"pib-ipc":[{"v":"0.2"}],"numeros-indice":[{"v":"0.2"}],"ratios":[{"v":"0.2"}],"punto-muerto":[{"v":"0.2"}],"ahorro":[{"v":"0.3"}],"van-tir":[{"v":"0.3"}],"amortizacion-inmovilizado":[{"v":"0.2"}],"prestamos":[{"v":"0.3"}],"rentas":[{"v":"0.3"}],"interes":[{"v":"0.3"}],"descriptiva":[{"v":"0.2"}],"regresion-economia":[{"v":"0.2"}],"ajustador":[{"v":"0.2.1"}],"electrostatica":[{"v":"0.8"}],"magnetostatica":[{"v":"0.4"}],"tabla-periodica":[{"v":"0.2"}],"trabajo-y-energia":[{"v":"0.3"}],"masa-molar":[{"v":"0.2"}],"configuracion-electronica":[{"v":"0.2"}],"condensadores":[{"v":"0.4"}],"tiro-parabolico":[{"v":"0.4"}],"disoluciones":[{"v":"0.2"}],"calorimetria":[{"v":"0.2"}],"induccion":[{"v":"0.4"}],"matrices":[{"v":"0.3"}],"derivadas":[{"v":"0.3"}],"laplace":[{"v":"0.2"}],"interferencia":[{"v":"0.2"}],"ondas-em":[{"v":"0.4"}],"intervalos":[{"v":"0.3"}],"fuerza":[{"v":"0.3"}],"campos":[{"v":"0.2.1"}],"cinetica":[{"v":"0.2"}],"edos":[{"v":"0.2"}],"fourier":[{"v":"0.2"}],"taylor":[{"v":"0.3"}],"complejos":[{"v":"0.3"}],"sistemas":[{"v":"0.3"}],"regresion":[{"v":"0.3"}],"estadistica":[{"v":"0.3"}],"dinamica":[{"v":"0.3"}],"solido-rigido":[{"v":"0.3"}],"ondas":[{"v":"0.3"}],"gases":[{"v":"0.6"}],"ciclos":[{"v":"0.2"}],"ph":[{"v":"0.4"}],"fluidos":[{"v":"0.3"}],"doppler":[{"v":"0.2"}],"resistencias":[{"v":"0.3"}],"faraday":[{"v":"0.4"}],"fenomenos":[{"v":"0.9"}]}; const de = (h) => ({ current: registros[h][0].v, log: registros[h] }); return { registros, de }; })();
 
 </script>
 <script src="../../js/herramienta.c70d9bc0.js"></script>
@@ -411,6 +417,12 @@ const Bode = (() => {
     return out;
   }
 
+  function retardo(P, fr) {
+    const e = 1e-5, a = Hde(P, fr * (1 - e)), b = Hde(P, fr * (1 + e));
+    const dfi = Math.atan2(b.im * a.re - b.re * a.im, b.re * a.re + b.im * a.im);
+    return -dfi / (2 * Math.PI * fr * 2 * e);
+  }
+
   function asintotaDe(clase, orden, fref) {
     const l = (fr) => Math.log10(fr / fref);
     return (fr) => {
@@ -441,10 +453,10 @@ const Bode = (() => {
     const fmin = leeF(sc, 'fmin', 'la frecuencia mínima') ?? fref / 100, fmax = leeF(sc, 'fmax', 'la frecuencia máxima') ?? fref * 100;
     if (!(fmax > fmin)) throw new Error('La frecuencia máxima debe ser mayor que la mínima');
     const fp = leeF(sc, 'f', 'la frecuencia de interés');
-    const punto = fp === null ? null : { f: fp, ...Hde(P, fp) };
+    const punto = fp === null ? null : { f: fp, ...Hde(P, fp), tg: retardo(P, fp) };
     const curva = (n = 400) => {
-      const o = { f: [], dB: [], fase: [] };
-      for (const fr of rejilla(fmin, fmax, n, fref, Q, [fref, pico && pico.f, ...cortes])) { const h = Hde(P, fr); o.f.push(fr); o.dB.push(h.dB); o.fase.push(h.fase); }
+      const o = { f: [], dB: [], fase: [], tg: [] };
+      for (const fr of rejilla(fmin, fmax, n, fref, Q, [fref, pico && pico.f, ...cortes])) { const h = Hde(P, fr); o.f.push(fr); o.dB.push(h.dB); o.fase.push(h.fase); o.tg.push(retardo(P, fr)); }
       return o;
     };
     const asintota = asintotaDe(clase, t.orden, fref);
@@ -495,7 +507,7 @@ const Bode = (() => {
     { clave: 'rlc-rechazo', nombre: 'RLC rechazo de banda: elimina los 50 Hz', sc: { tipo: 'rlc-rechazo', R: '100', L: '1000', C: '10', f: '50', fmin: '5', fmax: '5000' } },
   ];
 
-  return { resolver, ejemplos, TIPOS, UNIDAD, Hde, polinomios, circuitoSimulador, rejilla, f };
+  return { resolver, ejemplos, TIPOS, UNIDAD, Hde, retardo, polinomios, circuitoSimulador, rejilla, f };
 })();
 
 </script>
@@ -516,9 +528,9 @@ const Bode = (() => {
     const t = B.TIPOS[sc.tipo];
     let h = `<label for="f-tipo">Filtro</label><select id="f-tipo" class="in" data-k="tipo">${GRUPOS.map(([g, l]) => `<optgroup label="${g}">${l.map((k) => `<option value="${k}"${sc.tipo === k ? ' selected' : ''}>${B.TIPOS[k].nombre}</option>`).join('')}</optgroup>`).join('')}</select>`;
     h += t.comp.map((k) => fila(k, { R: 'Resistencia R', L: 'Inductancia L', C: 'Capacidad C' }[k], B.UNIDAD[k][2])).join('');
-    h += '<div class="sep">Diagrama</div>' + fila('f', 'Frecuencia de interés', 'Hz, opcional') + fila('fmin', 'Frecuencia mínima', 'Hz, opcional') + fila('fmax', 'Frecuencia máxima', 'Hz, opcional');
+    h += '<div class="sep">Diagrama</div><label for="f-unid">Frecuencia en el diagrama y los resultados</label><select id="f-unid" class="in" data-k="unid"><option value="hz"' + (sc.unid === 'rad' ? '' : ' selected') + '>Hz</option><option value="rad"' + (sc.unid === 'rad' ? ' selected' : '') + '>rad/s (ω = 2πf)</option></select>' + fila('f', 'Frecuencia de interés', 'Hz, opcional') + fila('fmin', 'Frecuencia mínima', 'Hz, opcional') + fila('fmax', 'Frecuencia máxima', 'Hz, opcional');
     $('#campos').innerHTML = h;
-    $('#nota').textContent = 'R en Ω, L en mH y C en µF, o con prefijo y unidad (4k7, 100n, 10 µF). Sin rango, el diagrama abarca dos décadas a cada lado.';
+    $('#nota').textContent = 'R en Ω, L en mH y C en µF, o con prefijo y unidad (4k7, 100n, 10 µF). Sin rango, el diagrama abarca dos décadas a cada lado. Los campos de frecuencia se escriben siempre en Hz.';
   }
   $('#campos').addEventListener('input', (e) => { const t = e.target; if (!t.dataset.k) return; sc[t.dataset.k] = t.value; $('#ejemplos').value = ''; if (t.dataset.k === 'tipo') formulario(); calcula(); });
 
@@ -531,6 +543,7 @@ const Bode = (() => {
     sc = copia(e.sc); formulario(); calcula(); sel.value = clave;
   }
 
+  const seg = (x) => (Math.abs(x) >= 1 ? `${f(x)} s` : Math.abs(x) >= 1e-3 ? `${f(x * 1e3)} ms` : Math.abs(x) >= 1e-6 ? `${f(x * 1e6)} µs` : `${f(x * 1e9)} ns`);
   const dato = (t, v) => `<div><span>${t}</span><b>${v}</b></div>`;
   function calcula() {
     const err = $('#error');
@@ -539,14 +552,15 @@ const Bode = (() => {
       $('#resumen').innerHTML = ''; $('#pasos').innerHTML = ''; $('#leyenda').textContent = ''; dibuja(); return;
     }
     err.hidden = true; guarda();
-    const o2 = sol.def.orden === 2, c = sol.cortes, hz = (x) => `${f(x)} Hz`;
-    let h = dato(o2 ? 'Frecuencia propia f₀' : 'Frecuencia de corte f꜀', hz(sol.f0));
+    const o2 = sol.def.orden === 2, c = sol.cortes, rad = sc.unid === 'rad', hz = (x) => rad ? `${f(2 * Math.PI * x)} rad/s` : `${f(x)} Hz`;
+    let h = dato(o2 ? `Frecuencia propia ${rad ? 'ω₀' : 'f₀'}` : `Frecuencia de corte ${rad ? 'ω꜀' : 'f꜀'}`, hz(sol.f0));
     if (o2) h += dato('Factor de calidad Q', f(sol.Q)) + dato('Amortiguamiento ζ', f(sol.zeta));
     if (sol.BW !== null) h += dato('−3 dB en', `${hz(c[0])} y ${hz(c[1])}`) + dato('Ancho de banda', hz(sol.BW));
     else if (c.length) h += dato('−3 dB en', c.map(hz).join(' y '));
     if (sol.pico) h += dato('Pico de resonancia', `${f(sol.pico.dB)} dB en ${hz(sol.pico.f)}`);
     h += dato('Pendiente', sol.def.clase === 'rechazo' ? 'muesca en f₀' : sol.def.clase === 'banda' ? '±20 dB/dec' : `${sol.def.clase === 'bajo' ? '−' : '+'}${sol.pendiente} dB/dec`);
-    if (sol.punto) h += dato(`En ${hz(sol.punto.f)}`, `${f(sol.punto.dB)} dB · ${f(sol.punto.fase)}°`);
+    h += dato('Retardo de grupo en 0 Hz', seg(sol.curva(2).tg[0]));
+    if (sol.punto) h += dato(`En ${hz(sol.punto.f)}`, `${f(sol.punto.dB)} dB · ${f(sol.punto.fase)}° · τg ${seg(sol.punto.tg)}`);
     $('#resumen').innerHTML = h;
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
     $('#leyenda').textContent = 'Línea continua: respuesta exacta. Línea discontinua: asíntotas. Punto: frecuencia de interés.';
@@ -554,7 +568,7 @@ const Bode = (() => {
   }
 
   function colores() { const cs = getComputedStyle(document.documentElement); for (const k of ['--ink', '--muted', '--line', '--accent', '--serie-1', '--serie-2']) col[k] = cs.getPropertyValue(k).trim(); }
-  const fmtF = (x) => txt(f(x, 3));
+  const fmtF = (x) => txt(f(sc.unid === 'rad' ? 2 * Math.PI * x : x, 3));
   function diagrama(sel, fs, curva, asi, ymin, ymax, unidad, refs, punto) {
     const { g, w, h } = lienzo(sel);
     if (!w || !h) return;
@@ -580,12 +594,15 @@ const Bode = (() => {
     g.restore();
   }
   function dibuja() {
-    if (!sol) { for (const s of ['#grafica', '#grafica-fase']) lienzo(s); return; }
+    if (!sol) { for (const s of ['#grafica', '#grafica-fase', '#grafica-retardo']) lienzo(s); return; }
     const c = sol.curva(500), asi = c.f.map(sol.asintota);
     const dmax = Math.max(...c.dB, 0), dmin = Math.min(...c.dB, -10);
     const ymax = Math.ceil((dmax + 3) / 10) * 10, ymin = Math.max(Math.floor((dmin - 3) / 10) * 10, ymax - 80, -120);
     const p = sol.punto && sol.punto.f >= sol.fmin && sol.punto.f <= sol.fmax ? sol.punto : null;
     diagrama('#grafica', c.f, c.dB, asi, ymin, ymax, ' dB', [[0, col['--line'], []], [-3, col['--muted'], [2, 4]]], p && { x: p.f, y: p.dB });
+    const ud = (() => { const m = Math.max(...c.tg.map(Math.abs), 1e-12); return m >= 1 ? [1, ' s'] : m >= 1e-3 ? [1e3, ' ms'] : m >= 1e-6 ? [1e6, ' µs'] : [1e9, ' ns']; })();
+    const tt = c.tg.map((x) => x * ud[0]), top = Math.max(...tt, 0), bot = Math.min(...tt, 0), paso = 10 ** Math.floor(Math.log10(Math.max(top - bot, 1e-12))), a0 = Math.floor(bot / paso) * paso, a1 = Math.max(Math.ceil(top / paso) * paso, a0 + paso);
+    diagrama('#grafica-retardo', c.f, tt, null, a0, a1, ud[1], [[0, col['--line'], []]], p && { x: p.f, y: p.tg * ud[0] });
     diagrama('#grafica-fase', c.f, c.fase, null, -180, 180, '°', [[0, col['--line'], []]], p && { x: p.f, y: p.fase });
   }
   const tabla = () => () => {
@@ -593,6 +610,7 @@ const Bode = (() => {
     const c = sol.curva(500);
     return { cab: ['f (Hz)', '|H| (dB)', 'Fase (°)'], filas: c.f.map((x, k) => [x, c.dB[k], c.fase[k]]) };
   };
+  Herramienta.exportar('#grafica-retardo', { nombre: 'bode-retardo', titulo: 'Retardo de grupo', datos: () => { if (!sol) return null; const c = sol.curva(500); return { cab: ['f (Hz)', 'τg (s)'], filas: c.f.map((x, k) => [x, c.tg[k]]) }; } });
   Herramienta.exportar('#grafica', { nombre: 'bode-magnitud', titulo: 'Diagrama de Bode: magnitud', datos: tabla() });
   Herramienta.exportar('#grafica-fase', { nombre: 'bode-fase', titulo: 'Diagrama de Bode: fase', datos: tabla() });
   window.addEventListener('resize', dibuja);
@@ -600,12 +618,12 @@ const Bode = (() => {
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('bode').current;
   colores(); formulario(); calcula();
-  window.BodeApp = { abrirEjemplo, resultado: () => sol && { f0: sol.f0, Q: sol.Q, cortes: sol.cortes, BW: sol.BW }, estado: () => copia(sc) };
+  window.BodeApp = { abrirEjemplo, resultado: () => sol && { f0: sol.f0, Q: sol.Q, cortes: sol.cortes, BW: sol.BW, tg0: sol.curva(2).tg[0] }, estado: () => copia(sc) };
 })();
 
 </script>
 <script src="../../js/biblioteca.884d13cb.js"></script>
-<script src="../../js/practica.6707fdd4.js"></script>
+<script src="../../js/practica.c8ca0791.js"></script>
 <script src="../../js/personal.cde61015.js"></script>
 <script>
 Biblioteca.monta('bode', 'bode-v1');

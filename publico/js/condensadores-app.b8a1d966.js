@@ -10,15 +10,19 @@
   let sol = null, col = {};
 
   const campos = $('#campos');
-  const TIPOS = [['condensador', 'Un condensador con dieléctricos'], ['asociacion', 'Asociación de condensadores'], ['conectar', 'Dos condensadores cargados que se conectan']];
+  const TIPOS = [['condensador', 'Un condensador con dieléctricos'], ['asociacion', 'Asociación de condensadores'], ['conectar', 'Dos condensadores cargados que se conectan'], ['fuerza', 'Fuerza sobre el dieléctrico y las placas']];
   const opc = (lista, v) => lista.map(([k, t]) => `<option value="${k}"${k === v ? ' selected' : ''}>${t}</option>`).join('');
   function formulario() {
     const tipo = sc.tipo || 'condensador';
     let h = `<label for="f-tipo">Qué calculas</label><select id="f-tipo" class="in" data-k="tipo">${opc(TIPOS, tipo)}</select>`;
     if (tipo === 'asociacion') {
       h += `<label for="f-red">Cómo están</label><select id="f-red" class="in" data-k="red">${opc(Object.entries(K.REDES), sc.red)}</select>`;
-      h += (sc.cs || []).map((c, i) => `<label for="f-c${i}">C<sub>${i + 1}</sub> <small>(µF)</small></label><div class="capa-c"><input id="f-c${i}" class="in" data-cs="${i}" value="${esc(c)}" inputmode="decimal" autocomplete="off">${sc.cs.length > 2 ? `<button class="btn mini" type="button" data-quitac="${i}" aria-label="Quitar C${i + 1}">✕</button>` : ''}</div>`).join('');
+      h += (sc.cs || []).map((c, i) => `<label for="f-c${i}">C<sub>${i + 1}</sub> <small>(µF)</small></label><div class="capa-c"><input id="f-c${i}" class="in" data-cs="${i}" value="${esc(c)}" inputmode="decimal" autocomplete="off"><input class="in" data-vm="${i}" value="${esc((sc.vm || [])[i] ?? '')}" placeholder="V rotura" aria-label="Tensión de rotura de C${i + 1} en voltios (opcional)" inputmode="decimal" autocomplete="off">${sc.cs.length > 2 ? `<button class="btn mini" type="button" data-quitac="${i}" aria-label="Quitar C${i + 1}">✕</button>` : ''}</div>`).join('');
       h += `<div style="grid-column:1/-1">${(sc.cs || []).length < 6 ? '<button class="btn" type="button" id="anadec">+ Añadir condensador</button>' : ''}</div>` + fila('V', 'Tensión aplicada', 'V');
+      campos.innerHTML = h; return;
+    }
+    if (tipo === 'fuerza') {
+      h += fila('a', 'Largo de las armaduras (por donde entra)', 'cm') + fila('w', 'Ancho de las armaduras', 'cm') + fila('d', 'Separación', 'mm') + fila('er', 'ε<sub>r</sub> de la lámina', '') + fila('x', 'Lo que ha entrado, x', 'cm') + circuito();
       campos.innerHTML = h; return;
     }
     if (tipo === 'conectar') {
@@ -46,12 +50,13 @@
     let h = `<div class="sep">Circuito</div><div class="radios"><label><input type="radio" name="fuente" value="V"${sc.fuente !== 'Q' ? ' checked' : ''}> Conectado a una batería</label><label><input type="radio" name="fuente" value="Q"${sc.fuente === 'Q' ? ' checked' : ''}> Aislado con carga</label></div>`;
     return h + (sc.fuente === 'Q' ? fila('Q', 'Carga', 'nC') : fila('V', 'Tensión de la batería', 'V'));
   }
-  const fila = (k, nom, u) => `<label for="f-${k}">${nom} <small>(${u})</small></label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc[k] ?? '')}" inputmode="decimal" autocomplete="off">`;
+  const fila = (k, nom, u) => `<label for="f-${k}">${nom}${u ? ` <small>(${u})</small>` : ''}</label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc[k] ?? '')}" inputmode="decimal" autocomplete="off">`;
 
   campos.addEventListener('input', (e) => {
     const t = e.target;
     if (t.dataset.k && t.tagName === 'INPUT') sc[t.dataset.k] = t.value;
     else if (t.dataset.cs !== undefined) sc.cs[+t.dataset.cs] = t.value;
+    else if (t.dataset.vm !== undefined) { sc.vm = sc.vm || []; sc.vm[+t.dataset.vm] = t.value; }
     else if (t.dataset.c) sc.capas[+t.closest('.capa').dataset.i][t.dataset.c] = t.value;
     else if (t.name === 'fuente') { sc.fuente = t.value; if (sc.fuente === 'Q' && !sc.Q) sc.Q = '10'; if (sc.fuente === 'V' && !sc.V) sc.V = '100'; formulario(); }
     $('#ejemplos').value = '';
@@ -74,7 +79,7 @@
   });
   campos.addEventListener('click', (e) => {
     if (e.target.id === 'anadec') { sc.cs.push('1'); formulario(); calcula(); }
-    if (e.target.dataset.quitac !== undefined) { sc.cs.splice(+e.target.dataset.quitac, 1); formulario(); calcula(); }
+    if (e.target.dataset.quitac !== undefined) { sc.cs.splice(+e.target.dataset.quitac, 1); if (sc.vm) sc.vm.splice(+e.target.dataset.quitac, 1); formulario(); calcula(); }
     if (e.target.id === 'anade') { (sc.capas = sc.capas || []).push({ t: '', er: '2' }); formulario(); calcula(); }
     const q = e.target.dataset.quita;
     if (q !== undefined) { sc.capas.splice(+q, 1); formulario(); calcula(); }
@@ -94,10 +99,14 @@
     err.hidden = true;
     try { localStorage.setItem(CLAVE, JSON.stringify(sc)); } catch (e) {}
     const caja = (n, v, extra) => `<div><span>${n}</span><b>${v}</b>${extra ? `<small>${extra}</small>` : ''}</div>`;
-    $('#grafica').hidden = sol.tipo !== 'condensador';
+    $('#grafica').hidden = sol.tipo !== 'condensador' && sol.tipo !== 'fuerza';
     if (sol.tipo === 'asociacion') {
       $('#resumen').innerHTML = caja('Capacidad equivalente', cu(sol.Ceq, 'F')) + caja('Carga total', cu(sol.Q, 'C')) + caja('Tensión', cu(sol.V, 'V')) + caja('Energía', cu(sol.U, 'J'));
-      $('#regiones').innerHTML = `<thead><tr><th>Condensador</th><th>C</th><th>Q</th><th>V</th><th>U</th></tr></thead><tbody>${sol.cs.map((c, i) => `<tr><td>C<sub>${i + 1}</sub></td><td>${cu(c, 'F')}</td><td>${cu(sol.q[i], 'C')}</td><td>${cu(sol.v[i], 'V')}</td><td>${cu(sol.u[i], 'J')}</td></tr>`).join('')}</tbody>`;
+      $('#regiones').innerHTML = `<thead><tr><th>Condensador</th><th>C</th><th>Q</th><th>V</th><th>U</th>${sol.ruptura ? '<th>V rotura</th><th>V máx. de la red</th>' : ''}</tr></thead><tbody>${sol.cs.map((c, i) => { const r = sol.ruptura && sol.ruptura.lista.find((x) => x.i === i); return `<tr><td>C<sub>${i + 1}</sub>${sol.ruptura && sol.ruptura.primero === i ? ' ⚠' : ''}</td><td>${cu(c, 'F')}</td><td>${cu(sol.q[i], 'C')}</td><td>${cu(sol.v[i], 'V')}</td><td>${cu(sol.u[i], 'J')}</td>${sol.ruptura ? `<td>${r ? cu(r.vm, 'V') : '—'}</td><td>${r ? cu(r.Vred, 'V') : '—'}</td>` : ''}</tr>`; }).join('')}</tbody>`;
+      if (sol.ruptura) $('#resumen').innerHTML += caja('Tensión máxima de la red', cu(sol.ruptura.Vmax, 'V'), `se rompe antes C${sol.ruptura.primero + 1}`);
+    } else if (sol.tipo === 'fuerza') {
+      $('#resumen').innerHTML = caja('Fuerza sobre la lámina', cu(sol.Fd, 'N'), 'hacia dentro') + caja('Fuerza entre placas', cu(sol.Fp, 'N'), 'atracción') + caja('Capacidad', cu(sol.C, 'F'), `vacío ${cu(sol.C0, 'F')}`) + caja(sol.aislado ? 'Tensión' : 'Carga', sol.aislado ? cu(sol.V, 'V') : cu(sol.Q, 'C')) + caja('Energía', cu(sol.U, 'J')) + caja('ΔU al meterla entera', cu(sol.dU, 'J')) + caja('Trabajo del campo', cu(sol.Wcampo, 'J')) + caja('Trabajo de la batería', sol.aislado ? '0' : cu(sol.Wbat, 'J'));
+      $('#regiones').innerHTML = `<thead><tr><th>Posición</th><th>C</th><th>U</th><th>F sobre la lámina</th></tr></thead><tbody>${[['x = 0 (vacío)', 0], ['x ahora', sol.x], ['x = a (entera)', sol.a]].map(([n, t]) => { const C = sol.Cx(t), U = sol.aislado ? (sol.Q * sol.Q) / (2 * C) : 0.5 * C * sol.V * sol.V; return `<tr><td>${n}</td><td>${cu(C, 'F')}</td><td>${cu(U, 'J')}</td><td>${cu(sol.F(t), 'N')}</td></tr>`; }).join('')}</tbody>`;
     } else if (sol.tipo === 'conectar') {
       $('#resumen').innerHTML = caja('Tensión final', cu(sol.Vf, 'V')) + caja('Carga total', cu(Math.abs(sol.Qt), 'C')) + caja('Energía antes', cu(sol.U0, 'J')) + caja('Energía perdida', cu(sol.perdida, 'J'), `queda ${cu(sol.Uf, 'J')}`);
       $('#regiones').innerHTML = `<thead><tr><th></th><th>C</th><th>Q antes</th><th>V antes</th><th>Q después</th><th>V después</th></tr></thead><tbody>${[[sol.C1, sol.Q1, sol.V1], [sol.C2, sol.Q2, sol.V2]].map(([c, q, v], i) => `<tr><td>C<sub>${i + 1}</sub></td><td>${cu(c, 'F')}</td><td>${cu(q, 'C')}</td><td>${cu(v, 'V')}</td><td>${cu(c * sol.Vf, 'C')}</td><td>${cu(sol.Vf, 'V')}</td></tr>`).join('')}</tbody>`;
@@ -135,6 +144,18 @@
   }
   function esquema(g, w, h) {
     const lin = (pts) => { g.strokeStyle = col['--ink']; g.lineWidth = 1.6; g.beginPath(); pts.forEach(([x, y], i) => (i ? g.lineTo(x, y) : g.moveTo(x, y))); g.stroke(); }, t = (x) => texto(cu(x, 'V'));
+    if (sol.tipo === 'fuerza') {
+      const x0 = w * 0.18, x1 = w * 0.72, yc = h / 2, sep = Math.min(40, h * 0.18), f = Math.min(1, sol.x / sol.a);
+      g.fillStyle = col['--capa']; g.fillRect(x1 - f * (x1 - x0) , yc - sep / 2, f * (x1 - x0) + w * 0.12, sep);
+      g.fillStyle = col['--pos']; g.fillRect(x0, yc - sep / 2 - 8, x1 - x0, 8); g.fillStyle = col['--neg']; g.fillRect(x0, yc + sep / 2, x1 - x0, 8);
+      g.strokeStyle = col['--campo']; g.fillStyle = col['--campo']; g.lineWidth = 1.2;
+      for (let k = 0; k < 9; k++) { const xx = x0 + 10 + (k / 8) * (x1 - x0 - 20); flecha(g, xx, yc - sep / 2 + 3, xx, yc + sep / 2 - 3, 4); }
+      g.strokeStyle = col['--accent']; g.fillStyle = col['--accent']; g.lineWidth = 2.4; flecha(g, x1 + w * 0.16, yc, x1 + w * 0.02 , yc, 8);
+      g.fillStyle = col['--ink']; g.fillText('F sobre la lámina: ' + texto(cu(sol.Fd, 'N')), x1 + w * 0.09, yc + sep / 2 + 34);
+      g.fillStyle = col['--muted']; g.fillText(`${texto(K.num(sol.x * 100))} de ${texto(K.num(sol.a * 100))} cm dentro · εr = ${texto(K.num(sol.er))}`, w / 2, h - 14);
+      g.fillStyle = col['--pos']; g.fillText('+', x0 - 12, yc - sep / 2 - 4); g.fillStyle = col['--neg']; g.fillText('−', x0 - 12, yc + sep / 2 + 4);
+      return;
+    }
     if (sol.tipo === 'conectar') {
       const y = h / 2, x1 = w * 0.35, x2 = w * 0.65;
       lin([[x1, y - 40], [x2, y - 40]]); lin([[x1, y + 40], [x2, y + 40]]); lin([[x1, y - 40], [x1, y - 16]]); lin([[x1, y + 16], [x1, y + 40]]); lin([[x2, y - 40], [x2, y - 16]]); lin([[x2, y + 16], [x2, y + 40]]);
@@ -157,7 +178,7 @@
   function dibuja() {
     if (!sol) return;
     const { g, w, h } = lienzo($('#dibujo'));
-    if (sol.tipo !== 'condensador') { g.font = '12px "IBM Plex Sans", system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; esquema(g, w, h); return; }
+    if (sol.tipo !== 'condensador') { g.font = '12px "IBM Plex Sans", system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; esquema(g, w, h); if (sol.tipo === 'fuerza') graficaFuerza(); return; }
     const G = sol.g, Emax = Math.max(...sol.regiones.map((o) => Math.max(o.E1, o.E2)));
     g.font = '12px "IBM Plex Sans", system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
     if (G.geo === 'plano') {
@@ -223,7 +244,20 @@
     grafica();
   }
 
+  function graficaFuerza() {
+    const { g, w, h } = lienzo($('#grafica')), l = 84, r = 26, top = 14, b = 26, n = 100, ys = [];
+    for (let i = 0; i <= n; i++) ys.push(sol.F((sol.a * i) / n));
+    const Fm = Math.max(...ys) * 1.15 || 1, X = (x) => l + (x / sol.a) * (w - l - r), Y = (f) => h - b - (f / Fm) * (h - top - b);
+    g.strokeStyle = col['--line']; g.lineWidth = 1; g.fillStyle = col['--muted']; g.font = '11px "IBM Plex Mono", monospace'; g.textAlign = 'right'; g.textBaseline = 'middle';
+    for (const u of [0, 0.5, 1]) { const f = (u * Fm) / 1.15; g.beginPath(); g.moveTo(l, Y(f)); g.lineTo(w - r, Y(f)); g.stroke(); g.fillText(texto(cu(f, 'N')), l - 4, Y(f)); }
+    g.textAlign = 'center'; g.textBaseline = 'top';
+    for (let i = 0; i <= 4; i++) g.fillText(`${texto(K.num(((sol.a * i) / 4) * 100, 3))} cm`, X((sol.a * i) / 4), h - b + 6);
+    g.strokeStyle = col['--accent']; g.lineWidth = 2; g.beginPath(); ys.forEach((f, i) => (i ? g.lineTo(X((sol.a * i) / n), Y(f)) : g.moveTo(X(0), Y(f)))); g.stroke();
+    g.fillStyle = col['--accent']; g.beginPath(); g.arc(X(sol.x), Y(sol.Fd), 4, 0, 2 * Math.PI); g.fill();
+    g.fillStyle = col['--muted']; g.textAlign = 'left'; g.fillText('F(x) sobre la lámina', l + 6, top - 2);
+  }
   function grafica() {
+    if (sol.tipo === 'fuerza') return graficaFuerza();
     if (sol.tipo !== 'condensador') return;
     const { g, w, h } = lienzo($('#grafica'));
     const G = sol.g, ini = G.geo === 'plano' ? 0 : G.a, fin = G.geo === 'plano' ? G.d : G.b;
