@@ -170,6 +170,15 @@ select.in { font-family: var(--f-ui); padding-right: 4px }
 .result sub, .steps-b sub { font-size: .7em }
 #flash { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--bg); padding: 7px 14px; border-radius: 8px; font-size: 13px; z-index: 20 }
 @container main (max-width: 520px) { .row { grid-template-columns: minmax(0, 1fr) } }
+#hoja-dlg { width: min(520px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); padding: 16px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); color: var(--ink); font: 14px/1.5 var(--f-ui) }
+#hoja-dlg::backdrop { background: rgba(0,0,0,.35) }
+.hoja-h { display: flex; align-items: center; justify-content: space-between } .hoja-h h2 { margin: 0; font: 600 16px var(--f-ui) }
+.hoja-l { max-height: min(50dvh, 420px); overflow-y: auto; margin: 8px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 4px 0 }
+.hoja-g { font: 600 11px var(--f-ui); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 10px 4px 2px }
+.hoja-f { display: flex; align-items: center; gap: 8px; padding: 4px; border-radius: 6px; cursor: pointer } .hoja-f:hover { background: var(--bg) } .hoja-f input { accent-color: var(--accent); width: 16px; height: 16px }
+.hoja-p { display: flex; gap: 8px; justify-content: flex-end } .hoja-p button:disabled { opacity: .5; cursor: default }
+#hoja-imp { display: none }
+@media print { body.hoja-imprimiendo > *:not(#hoja-imp) { display: none !important } body.hoja-imprimiendo #hoja-imp { display: block !important } body.hoja-imprimiendo { padding: 0 !important; background: #fff !important } #hoja-imp { color: #000; font: 11pt/1.4 var(--f-ui) } #hoja-imp h1 { font-size: 17pt; margin: 0 0 4px } #hoja-imp .hoja-sub { color: #555; margin: 0 0 14px } #hoja-imp section.hoja-ej { margin: 0 0 18px; padding-top: 10px; border-top: 1px solid #999 } #hoja-imp section.hoja-ej h2 { font: 600 10pt var(--f-ui); text-transform: uppercase; letter-spacing: .06em; color: #555; margin: 10px 0 4px; break-after: avoid } #hoja-imp section.hoja-ej > h2:first-child { font: 600 13pt var(--f-ui); text-transform: none; letter-spacing: 0; color: #000; margin: 0 0 8px } #hoja-imp .card { box-shadow: none !important; border: 0 !important; padding: 0 0 6px !important; background: none !important; break-inside: avoid } #hoja-imp .stmt { white-space: pre-wrap; font: 11pt/1.4 var(--f-math); background: none; border: 1px solid #bbb; padding: 6px 8px } #hoja-imp img { max-width: 100%; max-height: 9cm; object-fit: contain } }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important } }
 
 body { font: 14px/1.45 var(--f-ui); margin: 0 }
@@ -563,6 +572,7 @@ footer { text-align:center; font-size:12.5px; color:var(--muted); padding:20px 1
       <button id="copia" class="side-btn" data-solo-web title="Un solo archivo con los ejercicios de todas las herramientas"><span class="ic">⛁</span>Copia de seguridad de todo</button>
       <button id="restaura" class="side-btn" data-solo-web><span class="ic">⟲</span>Restaurar copia…</button>
       <button id="enlace" class="side-btn" data-solo-web title="Copia un enlace que abre el simulador con el ejercicio de ahora"><span class="ic">🔗</span>Copiar enlace con estos datos</button>
+      <button id="hoja" class="side-btn" title="Elige varios ejercicios y imprímelos juntos con su solución"><span class="ic">🖨</span>Hoja para imprimir…</button>
       <button id="guide-open" class="side-btn"><span class="ic">?</span>Guía de uso</button>
       <input type="file" id="file" accept=".json,.emsim,application/json" multiple hidden>
       <input type="file" id="file-copia" accept=".json,application/json" hidden>
@@ -577,6 +587,7 @@ footer { text-align:center; font-size:12.5px; color:var(--muted); padding:20px 1
 
 </div>
 <div id="flash" hidden></div>
+<dialog id="hoja-dlg" aria-label="Hoja para imprimir"></dialog>
 <dialog id="guide" class="guide" aria-labelledby="guide-t">
   <div class="g-h"><h2 id="guide-t">Guía de uso del <i>simulador</i></h2><span class="g-ver">versión <span class="ver-n"></span></span><button id="guide-x" class="icon" aria-label="Cerrar la guía" title="Cerrar (Esc)">×</button></div>
   <div class="g-b">
@@ -684,6 +695,7 @@ footer { text-align:center; font-size:12.5px; color:var(--muted); padding:20px 1
           <li><b>Guardar archivo</b> (<kbd>Ctrl</kbd>+<kbd>S</kbd>) descarga el problema abierto como <code>.emsim.json</code>; <b>Guardar todos mis problemas</b>, al pie de la barra lateral, los descarga todos en un solo archivo.</li>
           <li>Para pasarlos a otro ordenador o compartirlos, abre ese archivo allí con <b>Abrir archivo…</b> (<kbd>Ctrl</kbd>+<kbd>O</kbd>) o arrástralo sobre la página. Aparecerán en <b>Importados</b>.</li>
           <li><b>Exportar solución</b> genera la solución completa, con enunciado, resultados y desarrollo: como <b>página para imprimir</b> (.html; ábrela y usa Imprimir → Guardar como PDF) o como texto <b>Markdown</b> (.md).</li>
+          <li><b>Hoja para imprimir…</b>, en la barra lateral, junta varios ejercicios (tuyos o de ejemplo) en una sola hoja, cada uno con su enunciado, resultados y desarrollo.</li>
         </ul>
         <figure><img data-img="exportar" alt="Menú Exportar solución abierto con sus dos opciones" width="1100" height="283"><figcaption>El menú de exportación.</figcaption></figure>
         <p class="tip">Lo que guarda el navegador solo está en ese navegador. Si borras los datos de navegación o cambias de dispositivo, usa los archivos <code>.emsim.json</code> como copia.</p>
@@ -727,5 +739,5 @@ window.GUIA_IMG = {
 };
 </script>
 <script src="../../js/biblioteca.56be0c11.js"></script>
-<script src="../../js/electrostatica.88e0ed70.js"></script>
+<script src="../../js/electrostatica.3e52158c.js"></script>
 </html>
