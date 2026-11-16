@@ -12,6 +12,7 @@
   --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #5fcf8a } }
 :root[data-theme="dark"] {
   --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #5fcf8a }
+details.geo-z0 { margin-top: 12px; font-size: 13.5px } details.geo-z0 summary { cursor: pointer; font-weight: 600; color: var(--accent) } .resultado-z0 { margin: 8px 0 } .resultado-z0 b { font-family: var(--f-mono) }
 </style>
 <body>
 <header class="top"><a class="logo" href="../../">Cienci<i>fy</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Electromagnetismo</a> / Líneas de transmisión y carta de Smith</span></header>
@@ -24,6 +25,14 @@
     <select id="ejemplos" class="in" aria-label="Ejemplos" style="margin-bottom:12px"></select>
     <div class="campos" id="campos"></div>
     <p class="nota" id="nota"></p>
+    <details class="geo-z0" id="geo-z0"><summary>Calcular Z₀ desde la geometría</summary>
+      <div class="campos" style="margin-top:8px">
+        <label for="g-geo">Línea</label><select id="g-geo" class="in"><option value="coaxial">Coaxial</option><option value="bifilar">Bifilar (dos hilos)</option><option value="microstrip">Microstrip</option></select>
+        <div class="campos" id="g-campos" style="display:contents"></div>
+      </div>
+      <p class="resultado-z0" id="g-res" role="status" aria-live="polite"></p>
+      <button type="button" class="btn" id="g-usar">Usar este Z₀ y εr</button>
+    </details>
     <p class="error" id="error" hidden></p>
   </div>
   <div>
@@ -56,6 +65,8 @@
   <p class="m">Cuando la longitud de la línea no es pequeña frente a $λ$, la tensión y la corriente dependen de la posición. Una línea de impedancia característica $Z_0$ con $v = c/√(ε_r)$ tiene constante de fase $β = {2π}/λ$, con $λ = v/f$. Si termina en una carga $Z_L$, parte de la onda se refleja con el coeficiente</p>
   <p class="f m">$Γ_L = {Z_L − Z_0}/{Z_L + Z_0}$, &ensp; $"ROE" = {1 + |Γ|}/{1 − |Γ|}$, &ensp; $"RL" = −20 log |Γ|$</p>
   <p class="m">La onda incidente y la reflejada forman una <em>onda estacionaria</em>: $|V|$ oscila entre $(1 + |Γ|)|V^+|$ y $(1 − |Γ|)|V^+|$, con un máximo cada $λ/2$ y un mínimo $λ/4$ después. La ROE es el cociente entre ambos; vale 1 si la carga está adaptada y crece sin límite al acercarse a un cortocircuito o a un circuito abierto.</p>
+  <h2>De qué depende Z₀</h2>
+  <p class="m">Z₀ sale de la geometría y del dieléctrico: coaxial $Z_0 = {η_0}/{2π √ε_r} ln(b/a)$ (≈ 60 ln(b/a)/√ε_r Ω); dos hilos $Z_0 = {η_0}/{π √ε_r} arccosh(D/2a)$; y en una microstrip $ε_{ef}$ queda entre 1 y ε_r porque parte del campo viaja por el aire. Despliega «Calcular Z₀ desde la geometría» en los datos y pulsa «Usar este Z₀ y εr» para llevar los valores a la línea.</p>
   <h2>Impedancia de entrada</h2>
   <p class="f m">$Z_"in" = Z_0 {Z_L + j Z_0 tg(β l)}/{Z_0 + j Z_L tg(β l)}$, &ensp; $Γ_"in" = Γ_L e^{−j 2 β l}$</p>
   <p class="m">Una línea de $λ/2$ repite la impedancia de la carga y una de $λ/4$ la invierte, $Z_"in" = Z_0^2/Z_L$. En un máximo de tensión la impedancia es real y vale $Z_0 "ROE"$; en un mínimo vale $Z_0/"ROE"$.</p>

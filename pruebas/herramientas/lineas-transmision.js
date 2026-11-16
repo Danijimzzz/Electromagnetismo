@@ -6,6 +6,20 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
 
   const C = require(path.join(fuente, 'lineas-transmision', 'calculo.js'));
   {
+    // EM.LT-4: Z₀ desde la geometría, con las fórmulas escritas a mano (η₀/2π = 59,9585 Ω)
+    const antes = fallos, cerca = (x, y, tol, q) => { if (!(Math.abs(x - y) <= tol * Math.abs(y))) mal(`Líneas de transmisión · Z₀ ${q}: ${x} en vez de ${y}`); };
+    cerca(C.z0Geometria({ geo: 'coaxial', a: '0.45', b: '1.47', er: '2.25' }).Z0, (59.9585 / 1.5) * Math.log(1.47 / 0.45), 1e-5, 'coaxial');
+    cerca(C.z0Geometria({ geo: 'coaxial', a: '1', b: Math.E, er: '1' }).Z0, 59.9585, 1e-5, 'coaxial con b/a = e');
+    cerca(C.z0Geometria({ geo: 'bifilar', a: '1', D: '10', er: '1' }).Z0, 119.917 * Math.acosh(5), 1e-5, 'bifilar'); cerca(C.z0Geometria({ geo: 'bifilar', a: '1', D: '1000', er: '1' }).Z0, 120 * Math.log(1000), 2e-3, 'bifilar con D ≫ a ≈ 120 ln(D/a)');
+    { const u = 3 / 1.6, ee = 5.4 / 2 + (3.4 / 2) / Math.sqrt(1 + 12 / u), m = C.z0Geometria({ geo: 'microstrip', w: '3', h: '1.6', er: '4.4' });
+      cerca(m.erEf, ee, 1e-9, 'microstrip: ε efectivo'); cerca(m.Z0, 376.7303 / (Math.sqrt(ee) * (u + 1.393 + 0.667 * Math.log(u + 1.444))), 1e-6, 'microstrip ancha'); if (!(m.Z0 > 47 && m.Z0 < 53)) mal(`Líneas de transmisión: 3 mm sobre 1,6 mm de FR4 debería rondar 50 Ω, da ${m.Z0}`); }
+    { const u = 0.5, ee = 2.5 + 1.5 / Math.sqrt(1 + 12 / u), m = C.z0Geometria({ geo: 'microstrip', w: '0.8', h: '1.6', er: '4' }); cerca(m.Z0, (60 / Math.sqrt(ee)) * Math.log(8 / u + u / 4), 1e-9, 'microstrip estrecha'); }
+    // Z₀ crece al alejar los conductores y baja con εr
+    if (!(C.z0Geometria({ geo: 'coaxial', a: '1', b: '4', er: '1' }).Z0 > C.z0Geometria({ geo: 'coaxial', a: '1', b: '3', er: '1' }).Z0 && C.z0Geometria({ geo: 'coaxial', a: '1', b: '4', er: '4' }).Z0 < C.z0Geometria({ geo: 'coaxial', a: '1', b: '4', er: '1' }).Z0)) mal('Líneas de transmisión: Z₀ del coaxial debería crecer con b/a y bajar con εr');
+    for (const mala of [{ geo: 'coaxial', a: '2', b: '1' }, { geo: 'bifilar', a: '1', D: '2' }, { geo: 'microstrip', w: '0', h: '1' }, { geo: 'microstrip', w: '1', h: '1', er: '0.5' }, { geo: 'otra' }, { geo: 'coaxial', a: 'x', b: '2' }]) { let ok = false; try { C.z0Geometria(mala); } catch (e) { ok = true; } if (!ok) mal(`Líneas de transmisión: ${JSON.stringify(mala)} debería dar error`); }
+    if (fallos === antes) console.log('  ✓ Líneas de transmisión: Z₀ desde la geometría (coaxial, bifilar y microstrip estrecha y ancha)');
+  }
+  {
     const antes = fallos, cerca = (a, b, tol, q) => { if (!(Math.abs(a - b) <= tol * Math.max(1e-300, Math.abs(b)) + 1e-12)) mal(`Líneas de transmisión · ${q}: ${a} en vez de ${b}`); };
     const r = (c) => C.resolver(C.ejemplos.find((e) => e.clave === c).sc);
     // 100 Ω sobre 50 Ω: Γ = 1/3, ROE = 2, RL = 20 log 3, máximo en la carga, mínimo a λ/4 y Zin(λ/4) = Z0²/ZL = 25 Ω
@@ -117,6 +131,11 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     await page.evaluate(() => LineasTransmisionApp.abrirEjemplo('escalon'));
     const tr = await page.evaluate(() => ({ visible: !document.querySelector('#bloque-trans').hidden, ley: document.querySelector('#leyenda-trans').textContent.length, bot: document.querySelectorAll('.exportar button').length, bw: !document.querySelector('#bloque-bw').hidden }));
     if (!tr.visible || tr.ley < 40 || tr.bot < 6 || !tr.bw) mal('Líneas de transmisión: faltan el transitorio, su descripción, el ancho de banda o los botones de exportar');
+    // EM.LT-4: el bloque de Z₀ desde la geometría rellena Z₀ y εr
+    await page.locator('#geo-z0 summary').click(); await page.selectOption('#g-geo', 'microstrip'); await page.click('#g-usar');
+    { const z = +(await page.inputValue('#f-Z0')).replace(',', '.'), e = +(await page.inputValue('#f-er')).replace(',', '.'); if (!(z > 47 && z < 53) || !(e > 3 && e < 3.5)) mal(`Líneas de transmisión: «Usar este Z₀» deja Z₀ = ${z} y εr = ${e}`); }
+    await page.selectOption('#g-geo', 'coaxial'); await page.fill('#g-b', '0.1');
+    if (!(await page.locator('#g-usar').isDisabled())) mal('Líneas de transmisión: un coaxial con b < a debería desactivar «Usar este Z₀»');
     await page.close();
     if (consola.length) mal('Líneas de transmisión: consola del navegador:\n      ' + consola.join('\n      '));
     if (fallos === antes) console.log(`  ✓ Líneas de transmisión: ${C.ejemplos.length} ejemplos en la página con MathML, dos lienzos, cambio de datos, ejercicio al azar y errores, sin errores de consola`);
