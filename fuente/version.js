@@ -12,6 +12,20 @@
 const Version = (() => {
   const registros = {
     web: [
+      { v: '1.19', fecha: '2026-11-16', titulo: 'Más profundidad en Electromagnetismo, Química y Circuitos', subtitulo: 'Sin herramientas nuevas: las que ya tenías hacen más cosas, con sus fuerzas, geometrías, gráficas y modos nuevos.', secciones: [
+        { icono: '🧲', titulo: 'Electromagnetismo', puntos: [
+          '**Condensadores e Inducción:** fuerza sobre la lámina dieléctrica y tensión máxima de la asociación en Condensadores; pestaña Transformador en Inducción.',
+          '**Ampère guiado:** en Magnetostática eliges el caso (cilindro, coaxial, lámina, solenoide) y ves la curva amperiana con su simetría.',
+          '**Líneas y campos:** Z₀ desde la geometría (coaxial, bifilar, microstrip) en Líneas de transmisión, ecuación de continuidad y relajación de carga en Maxwell, y tu propia B(t) con ley de Lenz por tramos en Faraday.',
+        ] },
+        { icono: '⚗️', titulo: 'Química', puntos: [
+          '**pH:** capacidad tampón β con su gráfica, e indicador adecuado para cada equivalencia de un ácido poliprótico.',
+          '**Termoquímica:** ΔG frente a la temperatura con la temperatura de equilibrio marcada.',
+        ] },
+        { icono: '🔌', titulo: 'Circuitos', puntos: [
+          '**Bode:** gráfica de retardo de grupo e interruptor Hz / rad/s.',
+        ] },
+      ] },
       { v: '1.18', fecha: '2026-11-16', titulo: 'Más ligera y más rápida', subtitulo: 'Sin herramientas nuevas: la web pesa menos de la mitad, abre antes la segunda vez que entras y las constantes de clase se eligen una sola vez.', secciones: [
         { icono: '⚡', titulo: 'Carga más rápida', puntos: [
           '**La mitad de peso:** lo que compartían todas las herramientas (Mis ejercicios, el modo práctica, las fórmulas…) se baja una sola vez y se guarda en el navegador, en vez de repetirse en cada página. De unos 28 MB a unos 13 MB en total.',
@@ -757,6 +771,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: ajusta reacciones redox por el método del ion-electrón en medio ácido o básico, con los números de oxidación, las dos semirreacciones (elemento, oxígeno con H₂O, hidrógeno con H⁺ y carga con electrones), la igualación de electrones, la suma, el paso a medio básico con OH⁻ y la comprobación átomo a átomo, con una gráfica del cambio de número de oxidación y diez reacciones de ejemplo.'] },
     ],
     'lineas-transmision': [
+      { v: '0.3', fecha: '2026-11-16', cambios: ['Impedancia característica desde la geometría: coaxial, línea bifilar y microstrip (con la permitividad efectiva), con botón para llevar el Z₀ a la línea.'] },
       { v: '0.2', fecha: '2026-11-08', cambios: ['Líneas con pérdidas, transitorios con reflexiones, adaptación con stub en serie y con doble stub, anchos de banda y lectura de la carta de Smith.'] },
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: línea de transmisión sin pérdidas con una carga R + jX: coeficiente de reflexión, ROE, pérdida de retorno, impedancia de entrada, máximos y mínimos de tensión y adaptación con un stub en paralelo (en cortocircuito o en abierto) o con un transformador λ/4. Con la carta de Smith dibujada (círculo de ROE y recorrido hacia el generador), el perfil de la onda estacionaria, el desarrollo paso a paso, ejemplos y modo práctica.'] },
     ],
@@ -769,6 +784,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: escribe una molécula o un ion (H2O, SF4, NH4+, SO4 2-…) o elige un tipo AXₙEₘ y mira sus dominios de electrones, geometría electrónica y molecular, ángulos de enlace, hibridación y polaridad, paso a paso, con la molécula en 3D que se gira con el ratón, el dedo o el teclado (pares libres y momento dipolar incluidos), 22 ejemplos, la tabla de las 14 geometrías y modo práctica.'] },
     ],
     maxwell: [
+      { v: '0.3', fecha: '2026-11-16', cambios: ['Nuevo modo «Ecuación de continuidad»: corriente y densidad de carga, y la relajación de la carga en un conductor con τ = ε/σ.'] },
       { v: '0.2', fecha: '2026-11-08', cambios: ['Nuevo modo «¿Este campo cumple las ecuaciones?»: escribe E y B como expresiones y comprueba divergencias y rotacionales exactos.'] },
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: las cuatro ecuaciones de Maxwell en forma integral y diferencial con su significado y enlaces a los simuladores de Electromagnetismo, y una calculadora paso a paso para cada una: ley de Gauss (flujo y campo de una esfera cargada, dentro y fuera), Gauss para B (flujo por un cubo), Faraday (fem de una bobina), Ampère–Maxwell (corriente de desplazamiento y campo B en un condensador) y la velocidad de la luz con la onda plana, con gráfica, modo práctica y enlace para compartir.'] },
     ],
@@ -802,6 +818,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: dipolo corto, de media onda o de longitud cualquiera, con diagrama de radiación polar, resistencia de radiación, potencia radiada, directividad, ancho de haz y campo lejano, paso a paso.'] },
     ],
     bode: [
+      { v: '0.3', fecha: '2026-11-16', cambios: ['Nueva gráfica de retardo de grupo (τg = −dφ/dω) y un interruptor para ver las frecuencias en Hz o en rad/s.'] },
       { v: '0.2', fecha: '2026-11-08', cambios: ['Los filtros de factor de calidad alto (Q grande) ya no pierden el pico de resonancia ni la frecuencia de corte: la rejilla se afina sola alrededor de ella. Las dos gráficas llevan «Descargar PNG» y «Copiar datos».'] },
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: elige un filtro RC, RL o RLC (paso bajo, paso alto, paso banda o rechazo de banda), escribe R, L y C (admite 4k7, 100n, 10 µF) y obtén su diagrama de Bode de magnitud y fase con las asíntotas, la frecuencia de corte, el factor de calidad Q, el ancho de banda, el pico de resonancia y el desarrollo paso a paso.'] },
     ],
@@ -839,6 +856,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: choques elásticos, inelásticos (con coeficiente de restitución) y perfectamente inelásticos de dos cuerpos, en una dimensión o en dos con la normal del choque.', 'Velocidades finales, momento lineal total y energía cinética perdida, con el desarrollo paso a paso.', 'Dibujo de los dos cuerpos antes y después, con sus velocidades.', 'Ejemplos de choque elástico, coches pegados, inelástico y billar, y modo práctica con enunciado escrito.'] },
     ],
     termoquimica: [
+      { v: '0.3', fecha: '2026-11-16', cambios: ['Nueva gráfica de ΔG frente a la temperatura: ΔH, −TΔS y ΔG, con la temperatura de equilibrio marcada donde ΔG cruza el cero.'] },
       { v: '0.2', fecha: '2026-11-08', cambios: ['Entropías S° y energías de Gibbs de formación: ΔS°, ΔG° y temperatura de equilibrio; ciclo de Born-Haber; y botón «Calcular K en Equilibrio» que lleva la reacción y su ΔG°.'] },
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: entalpía de una reacción a partir de las entalpías de formación (con una tabla de unas 60 sustancias y calor para una masa dada), ley de Hess que calcula por cuánto hay que multiplicar o dar la vuelta a cada reacción, y energía libre de Gibbs con la temperatura de equilibrio, con el diagrama de entalpías y el desarrollo paso a paso.'] },
     ],
@@ -991,6 +1009,7 @@ const Version = (() => {
     { v: '0.1', fecha: '2026-10-22', cambios: ['Primera versión: cargas, hilos, planos y esferas con el desarrollo paso a paso y 12 ejercicios resueltos.', 'Barra lateral con tus problemas, los importados y los ejercicios; título y enunciado editables; archivos .emsim.json.'] },
     ],
     magnetostatica: [
+      { v: '0.4', fecha: '2026-11-16', cambios: ['Modo guiado de la ley de Ampère: elige el cilindro, el coaxial, la lámina o el solenoide, ves la curva amperiana con su simetría y el campo se despeja paso a paso.'] },
       { v: '0.3', fecha: '2026-11-08', cambios: ['Nueva pregunta «Dipolo magnético»: momento dipolar de espiras, solenoides y discos, campo del dipolo comparado con el exacto de Biot-Savart.', 'Nueva pregunta «Potencial vector A» para espiras, espiras rectangulares y solenoides (también el ideal).', 'Vista 3D de las líneas de campo, que se gira con el ratón o con el teclado, con una descripción en texto y la vista plana como alternativa.'] },
       { v: '0.2', fecha: '2026-10-26', cambios: ['Nuevas fuentes: cilindro con corriente (macizo, hueco o con J proporcional a r, para cables coaxiales), lámina de corriente K, espira rectangular de una pieza y disco cargado que gira.', 'Nueva pregunta «Perfil de |B|»: la gráfica del módulo del campo a lo largo de una recta entre dos puntos.', 'Mapa de color de |B| y líneas de campo continuas en el dibujo.', 'Seis ejercicios de ejemplo nuevos con todo esto.', 'Los números decimales se escriben con coma.', 'Botones para copiar el enlace del ejercicio, copiar la solución de cada pregunta como texto o en LaTeX e imprimirla o guardarla en PDF.'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['Arreglo: el ejemplo resuelto de la teoría explica dónde abrirlo ahora, en «Ejercicios de ejemplo» de la barra Mis ejercicios.'] },
@@ -1018,6 +1037,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: configuración electrónica de cualquier elemento o ion por orden de llenado, abreviada y por capas, con el diagrama de Moeller, el diagrama de orbitales con la regla de Hund, los electrones desapareados y los números cuánticos del electrón diferenciador.', 'Avisa de las excepciones como el cromo o el cobre, y en los cationes quita primero los electrones de la capa más externa.'] },
     ],
     condensadores: [
+      { v: '0.4', fecha: '2026-11-16', cambios: ['Fuerza sobre la lámina dieléctrica que entra entre las placas y sobre las placas, con la gráfica frente a la posición, y tensión máxima de una asociación de condensadores según la ruptura de cada uno.'] },
       { v: '0.3', fecha: '2026-11-08', cambios: ['Al conectar dos condensadores cargados, las capacidades admiten unidades y prefijos (2200 nF, 4,7 µF…).'] },
       { v: '0.2', fecha: '2026-10-26', cambios: ['Cilíndricos y esféricos con el dieléctrico por sectores, en paralelo: por ejemplo, media esfera con un material y la otra media con otro.', 'Permitividad que cambia con la posición, de ε₁ en una armadura a ε₂ en la otra, con las cargas de polarización de las caras y del volumen.', 'Fuerza entre las armaduras y fuerza que mete un dieléctrico a medio introducir.', 'Rigidez dieléctrica: escribe la de cada capa y sale la tensión máxima antes de la ruptura.', 'Asociaciones de condensadores en serie, en paralelo y mixtas, con la carga, la tensión y la energía de cada uno, y dos condensadores cargados que se conectan, con la energía que se pierde.', 'La carga libre de cada armadura en el desarrollo.', 'Botones para copiar el enlace del ejercicio, copiar la solución como texto o en LaTeX e imprimirla o guardarla en PDF.', 'El desarrollo paso a paso escribe las fórmulas como en los libros: fracciones, raíces, exponentes y subíndices de verdad.', 'La capacidad sale también en letras, como en los apuntes (por ejemplo C = 4πε₀εᵣab/(b − a), o la suma de cada capa en serie).', 'Enlace al simulador de Electrostática desde la teoría.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
@@ -1043,6 +1063,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-23', cambios: ['Primera versión: temperatura de equilibrio al mezclar hasta cinco cuerpos de agua, hielo, vapor, metales, etanol, vidrio, un calorímetro o una sustancia con tus datos, con los cambios de fase que hagan falta.', 'Si la energía no llega para fundir todo el hielo o condensar todo el vapor, dice cuántos gramos quedan de cada fase.', 'Tabla con el calor de cada cuerpo, el desarrollo etapa por etapa (m c ΔT y m L) y la curva de calentamiento de cada uno.'] },
     ],
     induccion: [
+      { v: '0.4', fecha: '2026-11-16', cambios: ['Nueva pestaña «Transformador»: relación de transformación real con acoplamiento k, tensión y corriente en el secundario con carga, y la gráfica frente a la frecuencia.'] },
       { v: '0.3', fecha: '2026-11-08', cambios: ['Nueva pestaña «Fuerza entre espiras»: fuerza y sentido entre dos espiras coaxiales con la inducción mutua exacta, la gráfica frente a la distancia y la comparación con el límite de dipolo.'] },
       { v: '0.2', fecha: '2026-10-26', cambios: ['Toroide con entrehierro: reluctancia del núcleo y del hueco de aire y la autoinducción que queda.', 'Inducción mutua de dos espiras coaxiales a una distancia y de una bobina girada dentro de un solenoide.', 'Bobinas acopladas en serie y en paralelo, con los flujos que se suman o que se oponen.', 'Circuito RL: balance de energía (lo que da la fuente, lo que guarda la bobina y lo que se disipa en la resistencia) y una fuente que se conecta y desconecta una y otra vez, con la corriente máxima, mínima y media.', 'Los dibujos usan azul para el campo y el segundo circuito, y la gráfica del RL distingue corriente y tensión.', 'Botones para copiar el enlace del ejercicio, copiar la solución como texto o en LaTeX e imprimirla o guardarla en PDF.', 'El desarrollo paso a paso escribe las fórmulas como en los libros: fracciones, raíces, exponentes y subíndices de verdad.', 'El resultado sale también en letras, como en los apuntes (por ejemplo L = μ₀N²h ln(b/a)/(2π) o la corriente del circuito RL).', 'Enlace a Faraday y Lenz desde la teoría.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
@@ -1167,6 +1188,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: ciclos de Carnot, Otto y Diesel con un gas ideal, con la tabla de estados, el trabajo, el calor y la energía interna de cada tramo y el rendimiento comparado con su fórmula y con Carnot.', 'Máquinas térmicas, frigoríficos y bombas de calor: el dato que falta, el rendimiento o la eficiencia, el límite de Carnot y si la máquina es posible, con la entropía del universo.', 'Diagrama p-V con un punto que recorre el ciclo y el cilindro con el émbolo, y el esquema de flujos de energía de las máquinas.'] },
     ],
     ph: [
+      { v: '0.4', fecha: '2026-11-16', cambios: ['Capacidad tampón β de una mezcla, con su gráfica frente al pH, y en la valoración de ácidos polipróticos el indicador adecuado para cada equivalencia.'] },
       { v: '0.3', fecha: '2026-11-02', cambios: ['Diagrama de especies de los ácidos polipróticos: la fracción de cada forma (H₃A, H₂A⁻, HA²⁻, A³⁻) frente al pH, con los pK marcados y el pH de tu cálculo o del punto de la valoración.'] },
       { v: '0.2', fecha: '2026-10-26', cambios: ['Hidrólisis de sales: pH del acetato de sodio, del cloruro de amonio o de una sal neutra, con la constante de hidrólisis.', 'Al revés: Ka o Kb a partir del pH medido, y la concentración que hace falta para un pH.', 'Preparar un tampón: el cociente sal/ácido y los gramos de sal para un pH dado.', 'Ácidos polipróticos (carbónico, fosfórico, sulfúrico con su segunda constante) y su valoración con una equivalencia por protón.', 'Mezclas de un ácido débil con una base fuerte, o al revés, como modo propio.', 'Agua a otra temperatura: Kw y el pH neutro cambian (6,63 a 50 °C).'] },
       { v: '0.1.1', fecha: '2026-10-25', cambios: ['Valoraciones de un ácido o una base débil: con muy poco valorante añadido, o muy cerca del punto de equivalencia, el pH ya sale bien. Antes se usaba Henderson-Hasselbalch también ahí y daba un pH equivocado (por ejemplo 2,05 en vez de 2,91 al empezar a valorar el ácido acético).'] },
@@ -1191,6 +1213,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-24', cambios: ['Primera versión: elige los colores de una resistencia de 3, 4, 5 o 6 bandas y obtén el valor, la tolerancia, el margen del valor real y el coeficiente de temperatura, con el dibujo de la resistencia.', 'Del valor a los colores: escribe 4k7, 2M2 o 470R y te da las bandas y el valor normalizado más cercano de las series E6 a E96.', 'Códigos SMD de 3 y 4 cifras, con R y EIA-96.'] },
     ],
     faraday: [
+      { v: '0.4', fecha: '2026-11-16', cambios: ['Escribe tú B(t) como una expresión y la herramienta calcula la fem y marca por tramos el sentido de la corriente según la ley de Lenz.'] },
       { v: '0.3', fecha: '2026-11-08', cambios: ['Barra en raíles inclinados con g, corriente y potencia en el límite, y corrientes de Foucault en discos y núcleos laminados.'] },
       { v: '0.2', fecha: '2026-10-26', cambios: ['Hilo recto y espira rectangular: la espira se aleja o se acerca, o la corriente del hilo cambia, con el flujo integrado, la fem, el sentido y la fuerza sobre la espira.', 'Campo que cambia con una función del tiempo (B₀ + kt, B₀ + kt², B₀ sen ωt o B₀ e^(−t/τ)): fem en cualquier instante y gráficas de B(t) y ε(t).', 'Barra con masa: velocidad límite al tirar de ella o al caer por raíles verticales, y la distancia que recorre una barra lanzada hasta pararse, con v(t).', 'Varilla que gira por un extremo y disco de Faraday: ε = ½BωL².', 'Alternador: el par que hay que hacer para mantener el giro y la energía de cada vuelta.', 'Botones para copiar el enlace del ejercicio, copiar la solución como texto o en LaTeX e imprimirla o guardarla en PDF.', 'El desarrollo paso a paso escribe las fórmulas como en los libros: fracciones, raíces, exponentes y subíndices de verdad.', 'Enlace a Autoinducción e inducción mutua desde la teoría.'] },
       { v: '0.1.1', fecha: '2026-10-24', cambios: ['Las fórmulas de la teoría se ven como en los libros: fracciones, raíces, exponentes y subíndices de verdad.'] },
