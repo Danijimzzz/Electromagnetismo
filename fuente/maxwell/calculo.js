@@ -44,9 +44,10 @@ const Maxwell = (() => {
     faraday: [['B0', 'Amplitud del campo B₀', 'mT'], ['fr', 'Frecuencia f', 'Hz'], ['A', 'Área de cada espira A', 'cm²'], ['N', 'Número de espiras N', '']],
     ampere: [['I', 'Corriente I que carga el condensador', 'A'], ['R', 'Radio de las placas R', 'cm'], ['r', 'Distancia al eje r', 'cm']],
     onda: [['E0', 'Amplitud del campo eléctrico E₀', 'V/m'], ['fr', 'Frecuencia f', 'Hz']],
+    continuidad: [['sigma', 'Conductividad σ', 'S/m'], ['er', 'Permitividad relativa ε<sub>r</sub>', ''], ['rho0', 'Densidad de carga inicial ρ₀', 'µC/m³'], ['t', 'Instante t (vacío = solo τ)', 's'], ['fr', 'Frecuencia f para σ/ωε (vacío = no)', 'Hz']],
     campo: [['Ex', 'Campo E, componente x', 'V/m'], ['Ey', 'Campo E, componente y', 'V/m'], ['Ez', 'Campo E, componente z', 'V/m'], ['Bx', 'Campo B, componente x (vacío = no se conoce)', 'T'], ['By', 'Campo B, componente y', 'T'], ['Bz', 'Campo B, componente z', 'T'], ['rho', 'Densidad de carga ρ (vacío = 0)', 'C/m³'], ['Jx', 'Corriente J, componente x (vacío = 0)', 'A/m²'], ['Jy', 'Corriente J, componente y', 'A/m²'], ['Jz', 'Corriente J, componente z', 'A/m²']],
   };
-  const nombres = { gauss: 'Gauss para E', gaussmag: 'Gauss para B', faraday: 'Faraday', ampere: 'Ampère–Maxwell', onda: 'La onda electromagnética', campo: '¿Cumple este campo las ecuaciones?' };
+  const nombres = { gauss: 'Gauss para E', gaussmag: 'Gauss para B', faraday: 'Faraday', ampere: 'Ampère–Maxwell', onda: 'La onda electromagnética', continuidad: 'Continuidad: relajación de carga', campo: '¿Cumple este campo las ecuaciones?' };
 
   const lineas = (a, b, g, n = 120) => Array.from({ length: n + 1 }, (_, i) => { const x = a + ((b - a) * i) / n; return [x, g(x)]; });
 
@@ -164,6 +165,23 @@ const Maxwell = (() => {
         { t: 'Forma diferencial', html: `Por Stokes: $∇ × B = μ_0 J + μ_0 ε_0 {∂E}/{∂t}$. Maxwell añadió el último término; con él las ecuaciones predicen ondas.` },
       ];
       r = { I, R, r: rr, dEdt, dentro, Id, B, pasos, grafica: { xl: 'r (m)', yl: 'B (T)', series: [{ n: 'B(r)', c: '--b', pts: lineas(0, 3 * Math.max(R, rr), Bf) }], marca: rr } };
+    } else if (modo === 'continuidad') {
+      const sigma = lee(sc, 'sigma', 'la conductividad'), er = lee(sc, 'er', 'la permitividad relativa'), rho0 = lee(sc, 'rho0', 'la densidad de carga inicial', 'cualquiera') * 1e-6;
+      if (er < 1) throw new Error('La permitividad relativa debe ser al menos 1');
+      if (rho0 === 0) throw new Error('La densidad de carga inicial no puede ser 0');
+      const t = vacio(sc.t) ? null : lee(sc, 't', 'el instante', 'no0'), fr = vacio(sc.fr) ? null : lee(sc, 'fr', 'la frecuencia');
+      const eps = er * E0V, tau = eps / sigma, rho = (x) => rho0 * Math.exp(-x / tau), Q = (x) => rho(x) / rho0;
+      const t1 = tau * Math.log(100), th = tau * Math.LN2, rt = t === null ? null : rho(t), ratio = fr === null ? null : sigma / (2 * Math.PI * fr * eps);
+      const pasos = [
+        { t: 'Ecuación de continuidad', html: `La carga no se crea ni se destruye: $∇·J + {∂ρ}/{∂t} = 0$. Sale de tomar la divergencia de Ampère–Maxwell, $∇·(∇ × B) = 0 = μ_0 ∇·J + μ_0 ε_0 {∂(∇·E)}/{∂t}$, y usar Gauss, $∇·E = ρ/ε_0$.` },
+        { t: 'Ley de Ohm y Gauss', html: `En un medio óhmico $J = σ E$, y con Gauss en el material, $∇·E = ρ/ε$, con $ε = ε_r ε_0 = ${fm(er)} · 8,854·10^{−12} = ${fm(eps)} "F/m"$. Entonces $∇·J = σ ρ/ε$.` },
+        { t: 'Ecuación de relajación', html: `$σ/ε ρ + {∂ρ}/{∂t} = 0$ ⇒ $ρ(t) = ρ_0 e^{−t/τ}$, con la constante de relajación $τ = ε/σ = {${fm(eps)}}/{${fm(sigma)}} = ${fm(tau)} "s"$.` },
+        { t: 'Tiempos característicos', html: `A $t = τ$ queda el 36,8 % de la carga; la mitad a $τ ln 2 = ${fm(th)} "s"$; y el 1 % a $τ ln 100 = ${fm(t1)} "s"$. ${tau < 1e-12 ? 'En un buen conductor es tan corto que la carga libre se va a la superficie de forma prácticamente instantánea.' : tau > 1e-3 ? 'En un buen aislante la carga tarda mucho en irse.' : ''}` },
+      ];
+      if (t !== null) pasos.push({ t: `En t = ${f(t)} s`, html: `$ρ = ρ_0 e^{−t/τ}$ = ${fm(rho0)} · e^{−${fm(t / tau)}} = <b>${fm(rt)} "C/m"^3</b>, o sea el ${fm(100 * Math.exp(-t / tau))} % de la inicial. La carga que se ha ido, ${fm(100 * (1 - Math.exp(-t / tau)))} %, ha salido por la superficie como corriente de conducción.` });
+      if (ratio !== null) pasos.push({ t: '¿Conductor o dieléctrico a esa frecuencia?', html: `$σ/(ω ε) = ${fm(sigma)}/(2π · ${fm(fr)} · ${fm(eps)}) = ${fm(ratio)}$ ($= 1/(ω τ)$): ${ratio > 10 ? 'la corriente de conducción domina sobre la de desplazamiento: se comporta como un buen conductor' : ratio < 0.1 ? 'domina la corriente de desplazamiento: se comporta como un dieléctrico' : 'ambas corrientes son comparables'}.` });
+      const T = 5 * tau;
+      r = { sigma, er, eps, rho0, tau, t, rt, th, t1, ratio, pasos, grafica: { xl: 't (s)', yl: 'ρ/ρ₀', series: [{ n: 'ρ(t)/ρ₀', c: '--e', pts: lineas(0, T, Q, 200) }], ...(t !== null && t <= T ? { marca: t } : {}) } };
     } else {
       const E0 = lee(sc, 'E0', 'la amplitud de E'), fr = lee(sc, 'fr', 'la frecuencia');
       const B0 = E0 / C, lam = C / fr, I = (E0 * E0) / (2 * MU0 * C), u = (E0V * E0 * E0) / 2, eta = MU0 * C;
@@ -188,6 +206,8 @@ const Maxwell = (() => {
     { clave: 'condensador-dentro', nombre: 'Ampère–Maxwell: dentro de un condensador', sc: { modo: 'ampere', I: '2', R: '5', r: '2' } },
     { clave: 'condensador-fuera', nombre: 'Ampère–Maxwell: fuera de un condensador', sc: { modo: 'ampere', I: '2', R: '5', r: '10' } },
     { clave: 'fm', nombre: 'Onda: emisora de FM a 100 MHz', sc: { modo: 'onda', E0: '1', fr: '1e8' } },
+    { clave: 'relajacion-agua', nombre: 'Continuidad: relajación de carga en agua destilada', sc: { modo: 'continuidad', sigma: '5,5e-6', er: '80', rho0: '10', t: '2e-4', fr: '1e3' } },
+    { clave: 'relajacion-cobre', nombre: 'Continuidad: relajación de carga en cobre', sc: { modo: 'continuidad', sigma: '5,96e7', er: '1', rho0: '1', t: '', fr: '1e9' } },
     { clave: 'campo-onda', nombre: 'Campo: onda plana en el vacío (cumple todo)', sc: { modo: 'campo', Ex: '0', Ey: '100 cos(299792458 t - z)', Ez: '0', Bx: '-100 cos(299792458 t - z)/299792458', By: '0', Bz: '0', rho: '', Jx: '', Jy: '', Jz: '' } },
     { clave: 'campo-mal', nombre: 'Campo: onda con B demasiado grande (falla Faraday)', sc: { modo: 'campo', Ex: '0', Ey: '100 cos(299792458 t - z)', Ez: '0', Bx: '-100 cos(299792458 t - z)/100000000', By: '0', Bz: '0', rho: '', Jx: '', Jy: '', Jz: '' } },
     { clave: 'campo-coulomb', nombre: 'Campo: carga puntual (∇·E = 0 fuera del origen)', sc: { modo: 'campo', Ex: '9 x/(x^2+y^2+z^2)^(3/2)', Ey: '9 y/(x^2+y^2+z^2)^(3/2)', Ez: '9 z/(x^2+y^2+z^2)^(3/2)', Bx: '0', By: '0', Bz: '0', rho: '', Jx: '', Jy: '', Jz: '' } },

@@ -14,6 +14,10 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     s = r('esfera-dentro'); cerca(s.Qint, 2e-9 / 8, 1e-12, 'carga encerrada dentro'); cerca(s.Phi, 2e-9 / 8 / e0, 1e-12, 'flujo dentro'); cerca(s.E, (2e-9 * 0.05) / (4 * Math.PI * e0 * 0.001), 1e-12, 'E dentro');
     // Gauss para B: el total es 0 y las caras opuestas tienen signo contrario
     s = r('cubo'); cerca(s.caras[0].v, 0.2 * 0.25, 1e-12, 'flujo cara +x'); cerca(s.caras[3].v, 0.1 * 0.25, 1e-12, 'flujo cara −y (B_y < 0 sale positivo)'); if (Math.abs(s.total) > 1e-15) mal(`Maxwell: el flujo total de B no es 0 (${s.total})`);
+    // Continuidad: τ = ε/σ y ρ(t) = ρ₀ e^(−t/τ)
+    s = r('relajacion-agua'); { const tau = (80 * e0) / 5.5e-6; cerca(s.tau, tau, 1e-12, 'τ del agua destilada'); cerca(s.rt, 10e-6 * Math.exp(-2e-4 / tau), 1e-12, 'ρ(t) del agua'); cerca(s.th, tau * Math.LN2, 1e-12, 'tiempo para la mitad'); cerca(s.ratio, 5.5e-6 / (2 * Math.PI * 1e3 * 80 * e0), 1e-12, 'σ/ωε del agua a 1 kHz'); }
+    s = r('relajacion-cobre'); cerca(s.tau, e0 / 5.96e7, 1e-12, 'τ del cobre'); if (!(s.tau < 1e-18) || !(s.ratio > 1e6)) mal('Maxwell: el cobre debería relajarse en menos de 10⁻¹⁸ s y ser buen conductor a 1 GHz');
+    for (const mala of [{ sigma: '0' }, { sigma: '' }, { er: '0.5' }, { rho0: '0' }, { t: '-1' }]) { let ok = false; try { C.resolver({ ...C.ejemplos.find((e) => e.clave === 'relajacion-agua').sc, ...mala }); } catch (e) { ok = true; } if (!ok) mal(`Maxwell: ${JSON.stringify(mala)} en continuidad debería dar error`); }
     // Faraday: ε_máx = N·B₀·A·ω = 200·0,1·0,002·2π·50
     s = r('bobina'); cerca(s.emax, 200 * 0.1 * 0.002 * 2 * Math.PI * 50, 1e-12, 'fem máxima'); cerca(s.Phi0, 0.04, 1e-12, 'amplitud del flujo');
     // Ampère–Maxwell: B = μ₀ I r /(2πR²) dentro y μ₀ I/(2π r) fuera; I_d = I fuera
@@ -58,11 +62,11 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       if (!r.mathml || r.dolar) mal(`Maxwell · ${e.clave}: el desarrollo no sale en MathML`);
       if (r.modo !== e.sc.modo) mal(`Maxwell · ${e.clave}: el selector de ecuación no sigue al ejemplo`);
     }
-    // cambiar de ecuación con el selector, y la teoría: cuatro ecuaciones con sus enlaces a los simuladores
+    // cambiar de ecuación con el selector, y la teoría: cuatro ecuaciones, la continuidad y la onda con sus enlaces a los simuladores
     await page.selectOption('#modo', 'faraday');
     if (!(await page.locator('#f-N').count())) mal('Maxwell: al elegir Faraday no salen sus datos');
     const teoria = await page.evaluate(() => ({ eq: document.querySelectorAll('.eq').length, math: document.querySelectorAll('.eq math').length, enlaces: [...document.querySelectorAll('.eq .enl a')].map((a) => a.getAttribute('href')) }));
-    if (teoria.eq !== 5 || teoria.math < 10) mal('Maxwell: la teoría no muestra las ecuaciones en MathML');
+    if (teoria.eq !== 6 || teoria.math < 11) mal('Maxwell: la teoría no muestra las ecuaciones en MathML');
     for (const h of ['../electrostatica/', '../magnetostatica/', '../faraday/', '../ondas-em/']) if (!teoria.enlaces.includes(h)) mal(`Maxwell: falta el enlace a ${h}`);
     await page.click('.eq[data-modo="ampere"]');
     if ((await page.locator('#modo').inputValue()) !== 'ampere') mal('Maxwell: pulsar una ecuación no abre su calculadora');

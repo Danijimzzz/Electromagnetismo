@@ -54,6 +54,7 @@
     else if (modo === 'gaussmag') sc = { modo, Bx: c(de([0.1, 0.2, -0.3])), By: c(de([0.5, -0.4, 0.2])), Bz: c(de([0.3, -0.1, 0.6])), L: c(de([0.2, 0.5, 1])) };
     else if (modo === 'faraday') sc = { modo, B0: String(de([50, 100, 200])), fr: String(de([50, 60, 100])), A: String(de([10, 20, 50])), N: String(de([50, 100, 200, 500])) };
     else if (modo === 'ampere') { const R = de([2, 4, 5]); sc = { modo, I: String(de([1, 2, 5])), R: String(R), r: String(de([R / 2, 2 * R, 3 * R])) }; }
+    else if (modo === 'continuidad') sc = { modo, sigma: de(['5,5e-6', '0,05', '5,96e7', '3,5e7']), er: de(['1', '4', '80']), rho0: String(de([1, 5, 10])), t: '', fr: '' };
     else sc = { modo, E0: String(de([1, 10, 50, 100])), fr: de(['1e6', '1e8', '9e8', '5e14']) };
     formulario(); calcula(); sel.value = '';
   }
@@ -64,6 +65,7 @@
     if (sc.modo === 'gaussmag') return `Un cubo de lado ${v('L')} m está en un campo magnético uniforme B = (${v('Bx')}, ${v('By')}, ${v('Bz')}) T. Calcula el flujo por cada cara y el flujo total.`;
     if (sc.modo === 'faraday') return `Una bobina de ${v('N')} espiras de ${v('A')} cm² está en un campo B(t) = ${v('B0')}·sen(2π·${v('fr')}·t) mT perpendicular a ella. Calcula la amplitud del flujo, la fem máxima y la fem eficaz.`;
     if (sc.modo === 'ampere') return `Un condensador de placas circulares de radio ${v('R')} cm se carga con una corriente de ${v('I')} A. Calcula dE/dt entre las placas, la corriente de desplazamiento encerrada y el campo magnético a ${v('r')} cm del eje.`;
+    if (sc.modo === 'continuidad') return `Un material de conductividad σ = ${v('sigma')} S/m y εr = ${v('er')} tiene una densidad de carga libre inicial ρ₀ = ${v('rho0')} µC/m³. Con la ecuación de continuidad y la ley de Ohm calcula la constante de relajación τ y cómo decae la carga.`;
     return `Una onda plana en el vacío tiene E₀ = ${v('E0')} V/m y frecuencia ${v('fr')} Hz. Calcula c a partir de μ₀ y ε₀, B₀, la longitud de onda y la intensidad.`;
   };
 
@@ -76,6 +78,7 @@
     ampere: (s) => dato('Variación del campo E', `dE/dt = <b>${f(s.dEdt)} V/(m·s)</b>`) + dato('Corriente de desplazamiento', `I<sub>d</sub> = <b>${f(s.Id)} A</b>`) + dato('Campo magnético', `B = <b>${f(s.B)} T</b>`) + dato('Punto', s.dentro ? 'entre las placas' : 'fuera de las placas'),
     onda: (s) => dato('Velocidad de la luz', `c = <b>${f(s.c)} m/s</b>`) + dato('Amplitud de B', `B<sub>0</sub> = <b>${f(s.B0)} T</b>`) + dato('Longitud de onda', `λ = <b>${f(s.lam)} m</b>`) + dato('Intensidad', `I = <b>${f(s.I)} W/m<sup>2</sup></b>`) + dato('Impedancia del vacío', `η = ${f(s.eta)} Ω`),
   };
+  RES.continuidad = (s) => dato('Constante de relajación', `τ = ε/σ = <b>${f(s.tau)} s</b>`) + dato('Tiempo para la mitad', `τ ln 2 = <b>${f(s.th)} s</b>`) + dato('Tiempo para el 1 %', `τ ln 100 = ${f(s.t1)} s`) + dato('Carga en el instante t', s.rt === null ? 'falta t' : `ρ(t) = <b>${f(s.rt)} C/m<sup>3</sup></b>`) + dato('σ/(ωε)', s.ratio === null ? 'falta f' : `<b>${f(s.ratio)}</b>`);
   const SINO = (b) => (b ? '<b>sí</b>' : '<b>no</b>');
   RES.campo = (s) => s.eqs.map((q) => dato(q.n, `${q.f}: ${q.ok ? '✓ se cumple' : '✗ falla'} <small>(diferencia relativa ${f(q.rel)})</small>`)).join('') + dato('Campo electromagnético posible', s.conB ? SINO(s.ok) : 'falta B para decidirlo') + (s.eqs[0].ok ? '' : dato('ρ que haría falta', `ε₀∇·E = ${esc(s.eqs[0].extra.replace('ρ necesaria = ε₀∇·E = ', ''))} C/m³`));
   const LEYENDA = {
@@ -84,6 +87,7 @@
     gaussmag: 'Flujo de B por cada cara del cubo: cada una tiene su opuesta con el signo contrario, así que suman cero.',
     faraday: 'Dos periodos: el flujo Φ y la fem ε = −dΦ/dt, desfasados 90°.',
     ampere: 'Módulo de B según la distancia al eje: crece dentro de las placas y baja como 1/r fuera. La línea marca el punto elegido.',
+    continuidad: 'La densidad de carga libre decae exponencialmente con la constante τ = ε/σ: ρ(t) = ρ₀ e^(−t/τ). Se dibujan cinco constantes.',
     onda: 'E y B de la onda a lo largo de z: oscilan en fase y E₀ = c·B₀. Se dibujan relativos a su amplitud.',
   };
   function calcula() {
