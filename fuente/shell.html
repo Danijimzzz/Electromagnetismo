@@ -117,7 +117,7 @@ select.in { font-family: var(--f-ui); padding-right: 4px }
 body { font: 14px/1.45 var(--f-ui); margin: 0 }
 .app { display: grid; grid-template-columns: 276px minmax(0, 1fr); min-height: 100vh; min-height: 100dvh }
 .app.closed { grid-template-columns: 0 minmax(0, 1fr) }
-.side { position: sticky; top: 0; height: 100vh; height: 100dvh; background: var(--side); border-right: 1px solid var(--line); display: flex; flex-direction: column; overflow: hidden; padding-left: env(safe-area-inset-left, 0px); min-width: 0 }
+.side { position: sticky; top: 0; height: 100vh; height: 100dvh; background: var(--vidrio-fuerte); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur); border-right: 1px solid var(--vidrio-borde); display: flex; flex-direction: column; overflow: hidden; padding-left: env(safe-area-inset-left, 0px); min-width: 0 }
 .app.closed .side { visibility: hidden; border: 0 }
 .side-h { display: flex; align-items: center; gap: 8px; padding: 14px 10px 8px 16px }
 .logo { font: 600 18px/1.1 var(--f-math); margin-right: auto; white-space: nowrap }
@@ -132,7 +132,7 @@ body { font: 14px/1.45 var(--f-ui); margin: 0 }
 .side-btn .ic { width: 22px; height: 22px; border-radius: 6px; display: inline-grid; place-items: center; background: var(--panel); border: 1px solid var(--line); color: var(--accent); font-size: 14px; line-height: 1; flex: 0 0 auto }
 .side-list { flex: 1; overflow-y: auto; padding: 4px 8px 16px }
 .sec { margin-top: 10px }
-.sec-h { display: flex; justify-content: space-between; align-items: center; width: 100%; border: 0; background: none; font: 600 11.5px var(--f-ui); letter-spacing: .04em; color: var(--muted); padding: 5px 9px; text-align: left; border-radius: 6px }
+.sec-h { display: flex; justify-content: space-between; align-items: center; width: 100%; border: 0; background: none; font: 600 11px var(--f-ui); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); padding: 5px 9px; text-align: left; border-radius: 6px }
 button.sec-h[aria-expanded] { cursor: pointer }
 button.sec-h[aria-expanded]:hover { color: var(--ink) }
 .sec-l { display: flex; flex-direction: column; gap: 1px }
@@ -306,17 +306,20 @@ body { display: flow-root }
   <aside class="side" id="side" aria-label="Problemas">
     <div class="side-h"><span class="logo">Simulador de <i>Electrostática</i></span><button id="side-close" class="iconbtn" aria-label="Cerrar barra lateral" title="Cerrar barra lateral"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/></svg></button></div>
     <div class="side-act">
-      <a href="../../" class="side-btn" data-solo-web><span class="ic">←</span>Todas las herramientas</a>
-      <button id="new" class="side-btn"><span class="ic">+</span>Nuevo problema</button>
-      <button id="open" class="side-btn"><span class="ic">↥</span>Abrir archivo…</button>
+      <button id="new" class="side-btn"><span class="ic">+</span>Nuevo ejercicio</button>
+      <button id="open" class="side-btn"><span class="ic">↥</span>Importar archivo…</button>
+      <button id="save-lib" class="side-btn"><span class="ic">↧</span>Exportar todos</button>
+      <button id="copia" class="side-btn" data-solo-web title="Un solo archivo con los ejercicios de todas las herramientas"><span class="ic">⛁</span>Copia de seguridad de todo</button>
+      <button id="restaura" class="side-btn" data-solo-web><span class="ic">⟲</span>Restaurar copia…</button>
+      <button id="enlace" class="side-btn" data-solo-web title="Copia un enlace que abre el simulador con el ejercicio de ahora"><span class="ic">🔗</span>Copiar enlace con estos datos</button>
       <button id="guide-open" class="side-btn"><span class="ic">?</span>Guía de uso</button>
       <input type="file" id="file" accept=".json,.emsim,application/json" multiple hidden>
-      <input type="search" id="search" class="search" placeholder="Buscar problemas, carpetas, #etiquetas…" aria-label="Buscar problemas" autocomplete="off">
+      <input type="file" id="file-copia" accept=".json,application/json" hidden>
+      <input type="search" id="search" class="search" placeholder="Buscar ejercicios, carpetas, #etiquetas…" aria-label="Buscar ejercicios" autocomplete="off">
     </div>
     <div class="side-list" id="side-list"></div>
     <div class="side-f">
-      <button id="save-lib" class="side-btn"><span class="ic">↧</span>Guardar todos mis problemas</button>
-      <p>Archivos <code>.emsim.json</code>. También puedes arrastrarlos a la página.</p>
+      <p>Se guardan en este navegador. Exporta un archivo <code>.emsim.json</code> para llevarlos a otro equipo; también puedes arrastrarlo aquí. Haz de vez en cuando una copia de seguridad de todo: si borras los datos del navegador, se pierden.</p>
       <p class="ver"><button id="ver" class="linkbtn" title="Ver las novedades">Versión <span class="ver-n"></span></button></p>
       <p class="legal" data-solo-web><a href="../../contacto.html">Contacto</a> · <a href="mailto:danijimzzz30@gmail.com?subject=Error%20en%20Electrost%C3%A1tica">Informar de un error</a> · <a href="../../aviso-legal.html">Aviso legal</a> · <a href="../../privacidad.html">Privacidad</a> · <a href="../../cookies.html">Cookies</a></p>
     </div>
@@ -341,7 +344,7 @@ body { display: flow-root }
       </div>
     </div>
     <div class="meta" id="meta" hidden><label>Carpeta <input id="folder" class="in" list="folders-dl" placeholder="sin carpeta" autocomplete="off"></label><label>Etiquetas <input id="tags" class="in" placeholder="examen, dipolos" autocomplete="off"></label><datalist id="folders-dl"></datalist></div>
-    <div class="banner" id="banner" hidden><span>Es un ejercicio de ejemplo: puedes tocarlo, pero para conservar los cambios guárdalo como tuyo.</span><button id="keep" class="btn ghost">Guardar en Mis problemas</button></div>
+    <div class="banner" id="banner" hidden><span>Es un ejercicio de ejemplo: puedes tocarlo, pero para conservar los cambios guárdalo como tuyo.</span><button id="keep" class="btn ghost">Guardar en Mis ejercicios</button></div>
     <section class="panel stmt"><header><h2>Enunciado</h2></header><textarea id="statement" aria-label="Enunciado" placeholder="Escribe o pega aquí el enunciado del problema (opcional)."></textarea></section>
     <div id="note" hidden></div>
     <div id="errors" hidden></div>
@@ -424,15 +427,15 @@ body { display: flow-root }
 
       <section id="g-elegir">
         <h3>2 · Elegir un problema</h3>
-        <figure style="max-width:320px"><img data-img="lateral" alt="Barra lateral con las secciones Mis problemas y ejercicios de ejemplo" width="414" height="840"></figure>
+        <figure style="max-width:320px"><img data-img="lateral" alt="Barra lateral con las secciones Mis ejercicios y ejercicios de ejemplo" width="414" height="840"></figure>
         <ul>
           <li><b class="sec-name">Ejercicios de ejemplo</b> trae 12 ejercicios ya montados y resueltos. Haz clic en uno para abrirlo.</li>
-          <li><b>Mis problemas</b> son los que creas o guardas tú. <b>Importados</b> son los que abres desde un archivo.</li>
+          <li><b>Mis ejercicios</b> son los que creas o guardas tú. <b>Importados</b> son los que abres desde un archivo.</li>
           <li>El <b>buscador</b> (<kbd>Ctrl</kbd>+<kbd>K</kbd>) busca en el título, el enunciado, la carpeta y las etiquetas. Escribe <code>#examen</code> para filtrar por etiqueta.</li>
           <li>El botón <b>⋯</b> de cada problema abre sus opciones: renombrar, mover a una carpeta, duplicar, guardar en archivo o eliminar.</li>
           <li>Las <b>carpetas</b> se pliegan y despliegan con un clic. El icono de arriba a la derecha oculta la barra para tener más espacio.</li>
         </ul>
-        <p class="tip">Los ejercicios precargados son de ejemplo: puedes tocarlos, pero para conservar los cambios pulsa <b>Guardar en Mis problemas</b> en el aviso verde de arriba.</p>
+        <p class="tip">Los ejercicios precargados son de ejemplo: puedes tocarlos, pero para conservar los cambios pulsa <b>Guardar en Mis ejercicios</b> en el aviso verde de arriba.</p>
       </section>
 
       <section id="g-sol">
@@ -464,7 +467,7 @@ body { display: flow-root }
       <section id="g-editar">
         <h3>5 · Crear y editar un problema</h3>
         <ol>
-          <li>Pulsa <b>Nuevo problema</b> en la barra lateral (o duplica un ejercicio desde su menú <b>⋯</b>).</li>
+          <li>Pulsa <b>Nuevo ejercicio</b> en la barra lateral (o duplica un ejercicio desde su menú <b>⋯</b>).</li>
           <li>Escribe el <b>título</b> arriba y pega el <b>enunciado</b> si quieres tenerlo a mano.</li>
           <li>Añade las <b>fuentes</b> con los botones verdes (<b>+ Carga</b>, <b>+ Hilo</b>, <b>+ Plano</b>, <b>+ Anillo</b>, <b>+ Disco</b>, <b>+ Conductor</b>…). El botón queda marcado: haz clic en el lienzo para colocar la fuente donde quieras, o pulsa otra vez el botón para ponerla en su sitio por defecto.</li>
           <li>Rellena cada tarjeta: el <b>valor</b> es un coeficiente por un símbolo (por ejemplo <code>-1</code> × <code>q0</code>) y las posiciones van en unidades de <code>a</code>. Se admiten <code>5/2</code>, <code>2*sqrt(3)</code>, <code>√7</code> y <code>pi</code>.</li>
@@ -495,7 +498,7 @@ body { display: flow-root }
       <section id="g-guardar">
         <h3>7 · Guardar, compartir y exportar</h3>
         <ul>
-          <li><b>Mis problemas se guardan solos</b> en este navegador. Debajo del título puedes ponerles <b>carpeta</b> y <b>etiquetas</b> para ordenarlos.</li>
+          <li><b>Mis ejercicios se guardan solos</b> en este navegador. Debajo del título puedes ponerles <b>carpeta</b> y <b>etiquetas</b> para ordenarlos.</li>
           <li><b>Guardar archivo</b> (<kbd>Ctrl</kbd>+<kbd>S</kbd>) descarga el problema abierto como <code>.emsim.json</code>; <b>Guardar todos mis problemas</b>, al pie de la barra lateral, los descarga todos en un solo archivo.</li>
           <li>Para pasarlos a otro ordenador o compartirlos, abre ese archivo allí con <b>Abrir archivo…</b> (<kbd>Ctrl</kbd>+<kbd>O</kbd>) o arrástralo sobre la página. Aparecerán en <b>Importados</b>.</li>
           <li><b>Exportar solución</b> genera la solución completa, con enunciado, resultados y desarrollo: como <b>página para imprimir</b> (.html; ábrela y usa Imprimir → Guardar como PDF) o como texto <b>Markdown</b> (.md).</li>
