@@ -9,6 +9,7 @@
       descripcion (si ya estaba como «Próximamente», la completa).
    4. version.js: el registro '<clave>' en 0.1.
    5. practica.js: la entrada de CONF con azar() y enunciado() (ejercicios inventados).
+   (El apartado «Enunciado del ejercicio» —fuente/enunciado.js— sale solo en toda herramienta con estado: no hay que hacer nada.)
    Luego: cambiar el cálculo, la página y la prueba por lo de verdad, añadir
    la novedad en la web de version.js, sh fuente/build.sh y
    node pruebas/comprobar.js --solo <clave>.
@@ -75,5 +76,6 @@ if (!prac.includes(`'${clave}': { datos: null`) && !new RegExp(`\\n    ${clave}:
 }
 
 console.log(`Creada ${asig}/${clave}: fuente/${clave}/, pruebas/herramientas/${clave}.js, catalogo.js, version.js y practica.js.
+El apartado «Enunciado del ejercicio» sale solo (enunciado.js; se quita con «enunciado: false» en catalogo.js si no hay ejercicio que enunciar).
 Ahora: cambia el cálculo, la página y la prueba; escribe la novedad en version.js (y en web: «Nueva herramienta: ${nombre}, en ${a.nombre}.»);
 sh fuente/build.sh && node pruebas/comprobar.js --solo ${clave}`);

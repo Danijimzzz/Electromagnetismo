@@ -29,6 +29,14 @@ Toda herramienta con resultado numérico lleva en su `app.js` `azar()` y `enunci
 - **Prueba:** `comprobar.js` comprueba que el mismo código repite el ejercicio y que las respuestas correctas salen bien; si el generador tiene reglas propias, la prueba de la herramienta fija una semilla y comprueba a mano el resultado.
 - Sin resultado numérico (Electrostática, Tabla periódica, fenómenos) no entra: se anota el motivo en `CONF`.
 
+## Enunciado del ejercicio (estándar en toda herramienta con estado)
+
+Toda herramienta con estado que guardar (`guarda` distinto de `null` en `catalogo.js`) lleva sola, bajo el título, un apartado plegable «Enunciado del ejercicio» (`fuente/enunciado.js`, como el de Electrostática): sin hacer nada en la herramienta nueva.
+- **Dónde se guarda:** dentro del estado de la app, en el campo `_enunciado` del JSON de `localStorage[guarda]`. Así viaja con el ejercicio sin tocar `biblioteca.js`: Mis ejercicios, `.simu.json`, copia de seguridad, enlace `#d=…` y Hoja para imprimir. Los ejercicios y archivos de antes (sin el campo) se abren con el enunciado vacío. **La app no tiene que saber nada del campo:** no lo valida ni lo borra a propósito; si su estado no es un objeto JSON, el enunciado no se guarda (la prueba lo avisa).
+- **Al imprimir:** sale con el título «Enunciado» (y las fórmulas entre `$…$` en MathML) antes de la herramienta; vacío, no sale nada. «Copiar como texto» y «Copiar en LaTeX» (`compartir.js`) también lo llevan. La Hoja para imprimir copia `.enun-bloque .enun-imp` delante de cada ejercicio.
+- **Quitarlo:** solo si no hay ejercicio que enunciar, con `enunciado: false` en la entrada del catálogo y el motivo en un comentario. Hoy lo tienen todas menos la Tabla periódica (sin estado, es una consulta) y los fenómenos de «Física en la vida real» (animaciones); Electrostática tiene el suyo propio.
+- **Qué no hay que hacer:** no pintar un cuadro de enunciado propio en `pagina.html`, no leer ni escribir `_enunciado` desde `app.js` y no guardar el texto en otra clave. Prueba común: `pruebas/enunciado.js`.
+
 ## Colores
 
 Nunca se escribe un color fijo en una regla. Los colores salen de variables:
