@@ -21,6 +21,27 @@ for (const f of recorre(fuente)) {
   fs.readFileSync(f, 'utf8').split('\n').forEach((l, i) => { if (LITERAL.test(l) && !/^\s*(\/\/|\*)/.test(l) && !/nombre:|clave:|sc:/.test(l)) ok(false, `${path.relative(RAIZ, f)}:${i + 1} repite una constante del SI: ${l.trim().slice(0, 80)}`); });
 }
 console.log(`  ✓ Constantes.SI = tabla de Unidades y ninguna herramienta repite el número`);
+// F15.4 · un solo ajuste «de clase»: Herramienta.ajuste guarda masas, constantes y g con una clave y un evento, y migra lo antiguo
+{
+  const Herr = require(path.join(fuente, 'herramienta.js')), memoria = {}; global.Herramienta = Herr;
+  global.localStorage = { getItem: (k) => (k in memoria ? memoria[k] : null), setItem: (k, v) => { memoria[k] = String(v); }, removeItem: (k) => { delete memoria[k]; } };
+  const eventos = []; const EventoReal = global.Event; global.dispatchEvent = (e) => eventos.push(e.type);
+  const A = Herr.ajuste, Aj = require(path.join(fuente, 'quimica', 'ajuste.js')), K = require(path.join(fuente, 'fisica', 'constantes.js'));
+  ok(A.CLAVE === 'simu-ajuste' && A.EVENTO === 'simu-ajuste', 'ajuste: una sola clave y un solo evento');
+  ok(JSON.stringify(A.leer()) === '{}' && !Aj.guardado() && K.leer().g === null, 'ajuste: sin nada guardado, todo en su valor de partida');
+  ok(Aj.leer({ masas: true }).masas === true && Aj.leer().masas === false, 'ajuste: el valor de partida de cada herramienta se respeta');
+  // lo guardado con las claves antiguas se migra y se borran
+  memoria['quimica-ajuste'] = JSON.stringify({ masas: true, constantes: false }); memoria['fisica-constantes'] = JSON.stringify({ g: '9,81' });
+  ok(Aj.leer().masas === true && Aj.leer().constantes === false && Aj.guardado() && K.leer().g === '9,81', 'ajuste: no migra lo guardado con las claves antiguas');
+  ok(!('quimica-ajuste' in memoria) && !('fisica-constantes' in memoria) && !!memoria['simu-ajuste'], 'ajuste: tras migrar quedan las claves antiguas o falta la nueva');
+  // cada parte escribe la suya sin pisar la otra, y avisa con el mismo evento
+  Aj.escribe({ masas: false, constantes: true }); ok(K.leer().g === '9,81', 'ajuste: escribir Química borró la gravedad');
+  eventos.length = 0; Herr.ajuste.escribe({ g: '9,8' }); ok(Aj.leer().masas === false && Aj.leer().constantes === true && K.leer().g === '9,8' && eventos.join() === 'simu-ajuste', 'ajuste: escribir g pisó Química o no avisó con simu-ajuste');
+  Herr.ajuste.escribe({ g: null }); ok(K.leer().g === null, 'ajuste: g null no vuelve a «como en cada herramienta»');
+  memoria['simu-ajuste'] = 'no es json'; ok(JSON.stringify(A.leer()) === '{}' && K.leer().g === null, 'ajuste: un valor roto debe leerse como vacío');
+  delete global.localStorage; delete global.dispatchEvent; delete global.Herramienta; global.Event = EventoReal;
+}
+console.log('  ✓ Ajuste común (F15.4): una clave, un evento, migración de lo antiguo y partes independientes');
 const HERR = [['fisica', 'dinamica'], ['fisica', 'fluidos'], ['fisica', 'solido-rigido'], ['fisica', 'trabajo-y-energia'], ['fisica', 'tiro-parabolico']];
 async function navegador() {
   const { chromium } = require('playwright');

@@ -48,7 +48,7 @@
   // el mismo ajuste que Equilibrio, Cinética y Redox («masas de clase»): si alguien lo ha fijado, manda; si cambia, se sigue
   const sincroniza = () => { const m = Ajuste.leer().masas ? 'redondeadas' : 'iupac'; if (m !== st.modo) { st.modo = m; $('#modo').value = m; guarda(); masa(); este(); emp(); } };
   if (Ajuste.guardado()) { const m = Ajuste.leer().masas ? 'redondeadas' : 'iupac'; st.modo = m; $('#modo').value = m; }
-  addEventListener('quimica-ajuste', sincroniza);
+  addEventListener(Herramienta.ajuste.EVENTO, sincroniza);
 
   /* ---------- Masa molar ---------- */
   let M = NaN;

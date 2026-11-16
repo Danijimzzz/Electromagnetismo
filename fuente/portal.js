@@ -470,7 +470,7 @@ for (const f of Object.keys(archivos)) if (f.endsWith('.html') && !archivos[f].i
 
 archivos['buscador.js'] = Buscador.archivo();
 // web instalable y sin conexión (pwa.js): manifiesto, service worker, su registro, la página sin conexión y los iconos
-archivos._headers = '/sw.js\n  Cache-Control: no-cache\n/manifest.webmanifest\n  Cache-Control: no-cache\n'; // Cloudflare (Vercel: vercel.json)
+archivos._headers = '/sw.js\n  Cache-Control: no-cache\n/manifest.webmanifest\n  Cache-Control: no-cache\n/js/*\n  Cache-Control: public, max-age=31536000, immutable\n'; // Cloudflare (Vercel: vercel.json)
 archivos['manifest.webmanifest'] = Pwa.manifiesto(); archivos['sw.js'] = Pwa.sw(); archivos['pwa.js'] = Pwa.cliente(); archivos['offline.html'] = Pwa.offline();
 for (const [f] of Pwa.ICONOS) fs.copyFileSync(path.join(__dirname, 'pwa', f), path.join(publico, f));
 archivos['llama.js'] = Llama.archivo();

@@ -12,6 +12,19 @@
 const Version = (() => {
   const registros = {
     web: [
+      { v: '1.18', fecha: '2026-11-16', titulo: 'Más ligera y más rápida', subtitulo: 'Sin herramientas nuevas: la web pesa menos de la mitad, abre antes la segunda vez que entras y las constantes de clase se eligen una sola vez.', secciones: [
+        { icono: '⚡', titulo: 'Carga más rápida', puntos: [
+          '**La mitad de peso:** lo que compartían todas las herramientas (Mis ejercicios, el modo práctica, las fórmulas…) se baja una sola vez y se guarda en el navegador, en vez de repetirse en cada página. De unos 28 MB a unos 13 MB en total.',
+          '**Abre antes la segunda vez:** si ya entraste a una herramienta, las siguientes cargan casi solo con lo que es suyo. Y sin conexión funcionan igual que antes.',
+          '**Electrostática, mucho más ligera:** la página pasa de 1,2 MB a unos 70 KB; el código del simulador se guarda en el navegador y las capturas de la guía solo se bajan cuando abres la guía.',
+        ] },
+        { icono: '🧪', titulo: 'Constantes y masas «de clase»', puntos: [
+          '**Una sola elección:** el interruptor de constantes «de clase» o exactas (R, F, masas molares) de Química y el de la gravedad g de Física se guardan juntos. Lo que ya habías elegido se conserva.',
+        ] },
+        { icono: '🛟', titulo: 'Tus ejercicios, a salvo', puntos: [
+          '**Copias de seguridad de siempre:** una copia de seguridad o un archivo .simu.json guardados con versiones anteriores se siguen abriendo en esta, con todos sus datos.',
+        ] },
+      ] },
       { v: '1.17', fecha: '2026-11-15', titulo: 'Química orgánica con anillos y benceno', subtitulo: 'La herramienta de Nomenclatura orgánica ya nombra ciclos y derivados del benceno, y los enseña en 3D.', secciones: [
         { icono: '⚗️', titulo: 'Química', puntos: [
           '#quimica/organica',

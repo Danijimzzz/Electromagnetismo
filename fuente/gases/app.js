@@ -339,7 +339,7 @@
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('gases').current;
   // F12.4: R «de clase» o exacta, con el mismo ajuste que Química (quimica/ajuste.js)
   Ajuste.monta(document.querySelector('.layout .card'), { masas: false, F: false });
-  addEventListener('quimica-ajuste', () => calcula());
+  addEventListener(Herramienta.ajuste.EVENTO, () => calcula());
   formulario(); colores(); calcula(); requestAnimationFrame(bucle);
   window.GasesApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { modo: sol.modo, P: sol.P, V: sol.V, T: sol.T, n: sol.n, Wt: sol.Wt, Qt: sol.Qt, Ut: sol.Ut, rend: sol.rend, ciclo: sol.ciclo, vrms: sol.vrms, Pt: sol.Pt, Z: sol.Z, lam: sol.lam }, estado: () => copia(sc) };
 })();

@@ -26,9 +26,11 @@ const CABEZA = (raiz) => `<link rel="manifest" href="${raiz}manifest.webmanifest
 const basicas = () => ['', 'novedades/', 'fenomenos/', ...Catalogo.asignaturas.map((a) => `${a.clave}/`), 'aviso-legal.html', 'privacidad.html', 'cookies.html', 'contacto.html'];
 const paginas = () => [...basicas(), ...Catalogo.asignaturas.flatMap((a) => a.herramientas.filter((h) => h.disponible).map((h) => `${a.clave}/${h.clave}/`)),
   ...V.lista.filter((f) => f.disponible).map((f) => `fenomenos/${f.clave}/`)];
-const imagenes = () => V.lista.filter((f) => f.disponible).map((f) => `fenomenos/${f.clave}/imagen.webp`);
+const imagenes = () => [...V.lista.filter((f) => f.disponible).map((f) => `fenomenos/${f.clave}/imagen.webp`), ...require('./electrostatica-js.js').IMAGENES().map((f) => `electromagnetismo/electrostatica/guia/${f}`)];
 const ICONOS = [['icono-192.png', 192, 'any'], ['icono-512.png', 512, 'any'], ['icono-maskable-512.png', 512, 'maskable']];
-const nucleo = () => [...basicas(), 'offline.html', 'buscador.js', 'pwa.js', 'legal.css', 'fuentes/stix-two-math.woff2', 'apple-touch-icon.png', 'manifest.webmanifest', ...ICONOS.map((i) => i[0])];
+// TRV.10.15: los scripts compartidos (publico/js/, con huella en el nombre) se guardan al instalar: así una página guardada siempre tiene sus scripts
+const scriptsComunes = () => Object.values(require('./herramientas.js').externos()).map((e) => `js/${e.nombre}`);
+const nucleo = () => [...basicas(), ...scriptsComunes(), 'offline.html', 'buscador.js', 'pwa.js', 'legal.css', 'fuentes/stix-two-math.woff2', 'apple-touch-icon.png', 'manifest.webmanifest', ...ICONOS.map((i) => i[0])];
 
 function manifiesto() {
   const nombre = Catalogo.marca.join('');
@@ -125,6 +127,8 @@ self.addEventListener('fetch', (e) => {
   const externa = url.origin !== location.origin;
   if (externa && !FUENTES_EXTERNAS.includes(url.hostname)) return; // anuncios y demás: sin tocar
   if (url.pathname === new URL(ABS('sw.js')).pathname) return; // el navegador revisa sw.js por su cuenta
+  // js/<nombre>.<huella>.js nunca cambia (la huella es su contenido): con copia, se sirve sin preguntar a la red
+  if (!externa && /\\/js\\/[^/]+\\.[0-9a-f]{8}\\.js$/.test(url.pathname)) { e.respondWith(copiaYActualiza(e, req, clave(url), true)); return; }
   const primeroRed = !externa && (req.mode === 'navigate' || /(\\/|\\.(js|css|json|html|webmanifest|xml|txt))$/.test(url.pathname));
   e.respondWith(primeroRed ? delaRed(e, req, clave(url)) : copiaYActualiza(e, req, externa ? req.url : clave(url)));
 });
@@ -140,8 +144,9 @@ async function delaRed(e, req, k) {
   return Promise.race([red.catch(() => copia), new Promise((ok) => setTimeout(() => ok(copia), 4000))]);
 }
 
-async function copiaYActualiza(e, req, k) {
+async function copiaYActualiza(e, req, k, inmutable) {
   const c = await caches.open(CACHE), copia = await c.match(k);
+  if (copia && inmutable) return copia;
   const red = fetch(req).then((r) => { if (r.ok || r.type === 'opaque') e.waitUntil(c.put(k, r.clone())); return r; });
   e.waitUntil(red.catch(() => {}));
   if (copia) return copia;

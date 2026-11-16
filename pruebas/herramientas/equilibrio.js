@@ -112,7 +112,7 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     }
     // QU-3 · ajuste común «de clase / exactas»: R cambia en el desarrollo y en K, y Masa molar lo sigue
     { const a0 = fallos;
-      await page.evaluate(() => { localStorage.removeItem('quimica-ajuste'); });
+      await page.evaluate(() => { localStorage.removeItem('simu-ajuste'); });
       await page.reload(); await page.waitForFunction(() => window.EquilibrioApp);
       await page.evaluate(() => EquilibrioApp.abrirEjemplo('dg-amoniaco'));
       if (!(await page.isChecked('#aj-const')) || !/R = 8,314 J/.test(await page.textContent('#aj-valor'))) mal('Equilibrio · por defecto debería usar las constantes de clase: ' + await page.textContent('#aj-valor'));
@@ -124,13 +124,13 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       if (!/8\.314462618|8,314462618/.test(pasos)) mal('Equilibrio · el desarrollo no muestra la R exacta');
       // Masa molar sigue el ajuste de masas
       await page.check('#aj-const');
-      const guard = await page.evaluate(() => localStorage.getItem('quimica-ajuste'));
+      const guard = await page.evaluate(() => localStorage.getItem('simu-ajuste'));
       if (JSON.parse(guard).constantes !== true) mal('Equilibrio · el ajuste no se guarda: ' + guard);
-      await page.evaluate(() => localStorage.setItem('quimica-ajuste', JSON.stringify({ masas: true, constantes: true })));
+      await page.evaluate(() => localStorage.setItem('simu-ajuste', JSON.stringify({ masas: true, constantes: true })));
       await page.goto('file://' + path.join(publico, 'quimica', 'masa-molar', 'index.html'));
       await page.waitForFunction(() => window.MasaApp);
       if ((await page.inputValue('#modo')) !== 'redondeadas') mal('Equilibrio · Masa molar no sigue el ajuste «masas de clase»');
-      await page.evaluate(() => localStorage.removeItem('quimica-ajuste'));
+      await page.evaluate(() => localStorage.removeItem('simu-ajuste'));
       if (fallos === a0) console.log('  ✓ Equilibrio · ajuste común de Química: R de clase por defecto, R exacta al desmarcar (K = e^(−ΔG°/RT) con cada una) y Masa molar sigue las masas de clase');
     }
     await page.close();

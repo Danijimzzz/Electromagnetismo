@@ -26,12 +26,22 @@ if [ "$1" = privado ]; then presets=../privado/tema3-pdf.js; out=${2:?falta el a
   fi
   # Las líneas data-solo-web (enlaces a las páginas legales de publico/) no van en la versión privada.
   # en la web, el diseño común de las herramientas (diseno.js); en la versión privada, sin enlaces a la web
-  if [ "$1" = privado ]; then grep -v 'data-solo-web' shell.html; else node diseno.js electrostatica < shell.html || exit 1; fi; echo '<script>'
-  for f in version engine fmt physics $presets canvas app; do case $f in *.js) src=$f ;; *) src=$f.js ;; esac; grep -v "^if (typeof module" "$src"; echo; done
-  printf 'window.GUIA_IMG = {\n'
-  for img in guia/*.webp; do [ -e "$img" ] || continue; printf '  "%s": "data:image/webp;base64,' "$(basename "$img" .webp)"; base64 < "$img" | tr -d '\n'; printf '",\n'; done
-  printf '};\n'
-  echo '</script>'
+  if [ "$1" = privado ]; then grep -v 'data-solo-web' shell.html; else node diseno.js electrostatica < shell.html || exit 1; fi
+  # Versión privada: todo incrustado (un solo archivo). Web (EM.ES-4): los scripts, en publico/js/ con huella en el nombre
+  # (electrostatica-js.js; los escribe herramientas.js) y las capturas de la guía, en guia/*.webp, que solo se bajan al abrirla.
+  if [ "$1" = privado ]; then
+    echo '<script>'
+    for f in version engine fmt physics $presets canvas app; do case $f in *.js) src=$f ;; *) src=$f.js ;; esac; grep -v "^if (typeof module" "$src"; echo; done
+    printf 'window.GUIA_IMG = {\n'
+    for img in guia/*.webp; do [ -e "$img" ] || continue; printf '  "%s": "data:image/webp;base64,' "$(basename "$img" .webp)"; base64 < "$img" | tr -d '\n'; printf '",\n'; done
+    printf '};\n'
+    echo '</script>'
+  else
+    mkdir -p "$(dirname "$out")/guia"; cp guia/*.webp "$(dirname "$out")/guia/"
+    printf '<script>\nwindow.GUIA_IMG = {\n'
+    for img in guia/*.webp; do printf '  "%s": "guia/%s",\n' "$(basename "$img" .webp)" "$(basename "$img")"; done
+    printf '};\n</script>\n<script src="../../js/%s"></script>\n' "$(node electrostatica-js.js nombre)"
+  fi
   if [ "$1" != privado ]; then printf '</html>\n'; fi
 } > "$out"
 

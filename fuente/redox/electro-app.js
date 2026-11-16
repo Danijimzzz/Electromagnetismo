@@ -194,7 +194,7 @@
   pestana(h === 'pilas' ? 'pila' : h === 'electrolisis' ? 'electro' : 'ajuste');
   // ajuste común (QU-3): constantes de clase o exactas, que arranca en exactas
   Ajuste.monta(document.querySelector('.layout .card'), { masas: false, def: { constantes: false } });
-  addEventListener('quimica-ajuste', () => { try { calculaPila(); calculaE(); } catch (e) { /* una pestaña sin datos */ } });
+  addEventListener(Herramienta.ajuste.EVENTO, () => { try { calculaPila(); calculaE(); } catch (e) { /* una pestaña sin datos */ } });
   window.ElectroApp = {
     pestana, abrirPila, abrirE, estado: () => copia(el), pestanaActual: () => pest,
     resultado: () => (pest === 'pila' ? sp && { modo: 'pila', E0: sp.E0, E: sp.E, n: sp.n, dG0: sp.dG0, K: sp.K } : se && { modo: se.modo, m: se.m, t: se.t, I: se.I, V: se.V }),

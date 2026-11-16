@@ -11,9 +11,10 @@
       desde la barra lateral y la guía, y falla si hay errores en la consola; abre también la portada
       y las páginas de asignatura y comprueba sus enlaces.
    Cada herramienta tiene lo suyo en pruebas/herramientas/<carpeta>.js; aquí queda lo común.
-   Uso: node pruebas/comprobar.js [--actualizar] [--sin-navegador] [--solo CARPETA] [--parte N/M]
+   Uso: node pruebas/comprobar.js [--actualizar] [--sin-navegador] [--solo CARPETA] [--parte N/M] [--tiempos]
    --solo CARPETA compila todo pero solo comprueba esa herramienta (sus cálculos, su página, su humo,
    Mis ejercicios y práctica); con --solo electrostatica, solo el simulador de electrostática.
+   --tiempos mide lo que tarda la prueba de cada herramienta y lo guarda en pruebas/tiempos.json (con él se reparten los trozos).
    --parte N/M reparte las herramientas en M trozos y comprueba solo el N (de 1 a M): así CI las corre en paralelo.
    Lo común (simulador de Electrostática, portada, asignaturas, MathML…) va solo en el trozo 1.
    --actualizar reescribe los esperados con los resultados actuales (solo si el cambio de forma es intencionado). */
@@ -36,6 +37,10 @@ const PUBLICABLES = ['index.html', 'novedades/index.html', 'foro/index.html', 'o
   ...Catalogo.asignaturas.flatMap((a) => [`${a.clave}/index.html`, ...a.herramientas.filter((h) => h.disponible).map((h) => `${a.clave}/${h.clave}/index.html`)]),
   // «Física en la vida real»: el índice y una página por fenómeno disponible
   'fenomenos/index.html', ...Catalogo.fenomenos.lista.filter((f) => f.disponible).flatMap((f) => [`fenomenos/${f.clave}/index.html`, `fenomenos/${f.clave}/imagen.webp`]),
+  // capturas de la guía de Electrostática (EM.ES-4): ficheros que solo se bajan al abrir la guía
+  ...require(path.join(fuente, 'electrostatica-js.js')).IMAGENES().map((f) => `electromagnetismo/electrostatica/guia/${f}`),
+  // scripts compartidos con huella en el nombre (herramientas.js, TRV.10.15)
+  ...Object.values(require(path.join(fuente, 'herramientas.js')).externos()).map((e) => `js/${e.nombre}`),
   // direcciones antiguas: una página que redirige a la nueva y las reglas 301 de Cloudflare
   ...Object.keys(Catalogo.redirecciones).map((v) => `${v}index.html`), '_redirects',
   // archivo de verificación de Google Search Console (catalogo.js → googleArchivo)
@@ -208,14 +213,31 @@ const pagina = async (browser, width, height) => {
   return { page, consola };
 };
 if (solo && !HERRAMIENTAS.includes(solo) && solo !== 'electrostatica') { console.log(`✗ --solo ${solo}: no hay ninguna herramienta con esa carpeta`); process.exit(1); }
-const enParte = (k) => !parte || Math.max(HERRAMIENTAS.indexOf(k), 0) % parte[1] === parte[0] - 1;
+// TRV.10.17 · el reparto en trozos va por TIEMPO, no por posición: pruebas/tiempos.json guarda lo que tarda la prueba de cada
+// herramienta (segundos; se rehace con --tiempos) y cada trozo recibe, de mayor a menor, la que más tarda hasta
+// igualar. Sin ese fichero (o con una herramienta nueva sin medir) se usa la mediana. Cada herramienta suma además ~8 s fijos
+// de las pruebas comunes (humo, accesibilidad, usar-en).
+const ficheroTiempos = path.join(__dirname, 'tiempos.json');
+const TIEMPOS = fs.existsSync(ficheroTiempos) ? JSON.parse(fs.readFileSync(ficheroTiempos, 'utf8')) : {};
+const reparto = (() => {
+  if (!parte) return null;
+  const medidos = Object.values(TIEMPOS).sort((a, b) => a - b), mediana = medidos.length ? medidos[medidos.length >> 1] : 0;
+  if (!medidos.length) return Object.fromEntries(HERRAMIENTAS.map((k, i) => [k, i % parte[1]]));
+  const carga = Array(parte[1]).fill(0), asigna = {};
+  [...HERRAMIENTAS].sort((a, b) => (TIEMPOS[b] ?? mediana) - (TIEMPOS[a] ?? mediana) || a.localeCompare(b)).forEach((k) => {
+    const i = carga.indexOf(Math.min(...carga)); asigna[k] = i; carga[i] += (TIEMPOS[k] ?? mediana) + 8;
+  });
+  return asigna;
+})();
+const enParte = (k) => !parte || (reparto[k] ?? 0) === parte[0] - 1;
 const mia = (k) => (!solo || solo === k) && enParte(k);
-const enNavegador = HERRAMIENTAS.filter((k) => mia(k) && fs.existsSync(path.join(__dirname, 'herramientas', k + '.js'))).map((k) => require(path.join(__dirname, 'herramientas', k + '.js'))({ fs, path, fuente, publico, args, mal, pagina }));
+const nombresNavegador = HERRAMIENTAS.filter((k) => mia(k) && fs.existsSync(path.join(__dirname, 'herramientas', k + '.js')));
+const enNavegador = nombresNavegador.map((k) => require(path.join(__dirname, 'herramientas', k + '.js'))({ fs, path, fuente, publico, args, mal, pagina }));
 
 if (primera) {
   {
     // peso de las páginas y cobertura del modo práctica (leyendo publico/, ya compilado)
-    const antes = fallos, EXCEPCIONES = { electrostatica: 'tiene su propia práctica en el simulador', 'tabla-periodica': 'tiene sus propias preguntas' }, MAX_KB = 450;
+    const antes = fallos, EXCEPCIONES = { electrostatica: 'tiene su propia práctica en el simulador', 'tabla-periodica': 'tiene sus propias preguntas' }, MAX_KB = 250;
     const pags = Catalogo.asignaturas.flatMap((a) => a.herramientas.filter((h) => h.disponible).map((h) => `${a.clave}/${h.clave}`));
     // 10.16 · presupuesto del peso TOTAL de publico/ (pruebas/presupuesto.json, en KB): sube a propósito con --actualizar
     {
@@ -379,7 +401,10 @@ async function navegador() {
     if (consola.length) mal(`${j.nombre}: consola del navegador:\n      ` + consola.join('\n      '));
     if (fallos === antes) console.log(`  ✓ ${j.nombre}: mismos resultados, ${Object.keys(j.esp).length} ejercicios abiertos, guía y novedades sin errores de consola`);
   }
-  for (const f of enNavegador) await f(browser);
+  const medidos = {};
+  for (const [i, f] of enNavegador.entries()) { const t0 = Date.now(); await f(browser); medidos[nombresNavegador[i]] = Math.round((Date.now() - t0) / 100) / 10; }
+  if (args.includes('--tiempos')) { fs.writeFileSync(ficheroTiempos, JSON.stringify(Object.fromEntries(Object.entries({ ...TIEMPOS, ...medidos }).sort(([a], [b]) => a.localeCompare(b))), null, 1) + '\n'); console.log(`  · pruebas/tiempos.json: ${Object.keys(medidos).length} herramientas medidas`); }
+  { const lentas = Object.entries(medidos).sort((a, b) => b[1] - a[1]).slice(0, 5); if (lentas.length > 1) console.log('  · las más lentas: ' + lentas.map(([k, t]) => `${k} ${t} s`).join(', ')); }
   if (primera) {
     {
       // arreglo 1: resultados destacados arriba y lectura de ancho fijo mientras corre el tiempo
@@ -675,6 +700,11 @@ async function navegador() {
     // accesibilidad (pruebas/accesibilidad.js): axe-core en todas las páginas de publico/, en claro, oscuro y a 390 px
     const antes = fallos, r = await require('./accesibilidad.js')(browser, { mal, solo });
     if (fallos === antes) console.log(`  ✓ Accesibilidad: axe-core sin infracciones en ${r.paginas} páginas, en modo claro, modo oscuro y a 390 px`);
+  }
+  if (primera) {
+    // F15.5 · estados, copia de seguridad y .simu.json guardados con una versión antigua (pruebas/muestras/): se abren en la actual
+    const antes = fallos, r = await require('./muestras.js')(browser, { mal });
+    if (fallos === antes) console.log(`  ✓ Muestras de versiones antiguas: ${r.probados} estados, copia de seguridad y archivo .simu.json restaurados sin pérdidas`);
   }
   if (primera) {
     // web instalable y sin conexión (pruebas/pwa.js): manifiesto, instalación, sin red, «Guardar todo» y versión nueva

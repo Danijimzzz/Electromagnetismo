@@ -95,7 +95,7 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       await page.evaluate(() => GasesApp.abrirEjemplo('vdw'));
       if (!(await page.locator('#res').textContent()).includes('0,801')) mal('Gases: Z = 0,801 del CO₂ no sale en la página');
       // F12.4: R sigue el ajuste común de Química: «de clase» (8,314) por defecto y la exacta al desmarcar; el valor usado sale en el desarrollo
-      await page.evaluate(() => { localStorage.removeItem('quimica-ajuste'); dispatchEvent(new Event('quimica-ajuste')); GasesApp.abrirEjemplo('normales'); });
+      await page.evaluate(() => { localStorage.removeItem('simu-ajuste'); dispatchEvent(new Event('simu-ajuste')); GasesApp.abrirEjemplo('normales'); });
       if (!(await page.isChecked('#aj-const')) || !/R = 8,314 J/.test(await page.textContent('#aj-valor')) || /96/.test(await page.textContent('.ajuste-clase'))) mal('Gases (F12.4): por defecto R debería ser 8,314 y el ajuste no nombrar la constante de Faraday: ' + await page.textContent('.ajuste-clase'));
       const Vclase = await page.evaluate(() => GasesApp.resultado().V);
       await page.uncheck('#aj-const');
@@ -104,7 +104,7 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       if (!(await page.locator('#pasos').textContent()).includes('8,314462618')) mal('Gases (F12.4): con la R exacta el desarrollo no enseña 8,314462618');
       await page.check('#aj-const');
       if (Math.abs((await page.evaluate(() => GasesApp.resultado().V)) - Vclase) > 1e-15 || !(await page.locator('#pasos').textContent()).includes('R = 8,314 J')) mal('Gases (F12.4): al volver a marcar las constantes de clase no vuelve a 8,314');
-      await page.evaluate(() => localStorage.removeItem('quimica-ajuste'));
+      await page.evaluate(() => localStorage.removeItem('simu-ajuste'));
       await page.evaluate(() => GasesApp.abrirEjemplo('isoterma'));
       if (!(await page.locator('#caja').isHidden())) mal('Gases: la caja de partículas sale en las transformaciones');
       for (let i = 0; i < 15; i++) { await page.evaluate(() => GasesApp.azar()); if (!(await page.locator('#error').isHidden()) || !(await page.evaluate(() => GasesApp.enunciado()))) mal(`Gases: un ejercicio al azar da error o no tiene enunciado: ${JSON.stringify(await page.evaluate(() => GasesApp.estado()))}`); }

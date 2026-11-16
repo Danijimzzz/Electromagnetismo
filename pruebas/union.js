@@ -69,7 +69,9 @@ if (!process.argv.includes('--sin-publico') && fs.existsSync(path.join(raiz, 'pu
   const paginas = git('ls-files', 'publico').filter((f) => /\/index\.html$|^publico\/[^/]+\.html$/.test(f) && fs.existsSync(path.join(raiz, f)));
   for (const f of paginas) {
     const html = fs.readFileSync(path.join(raiz, f), 'utf8');
-    const src = [...html.matchAll(/<script(?![^>]*\bsrc=)(?![^>]*type="(?:application\/ld\+json|module|importmap)")[^>]*>([\s\S]*?)<\/script>/g)].map((m) => m[1]).join('\n;\n');
+    // en línea y, en su sitio, los scripts propios de publico/js/ (TRV.10.15): se compilan juntos igual que los ejecuta la página
+    const src = [...html.matchAll(/<script(?![^>]*\bsrc=)(?![^>]*type="(?:application\/ld\+json|module|importmap)")[^>]*>([\s\S]*?)<\/script>|<script src="((?:\.\.\/)+js\/[^"]+)"><\/script>/g)]
+      .map((m) => m[1] !== undefined ? m[1] : fs.readFileSync(path.join(raiz, 'publico', m[2].replace(/^(\.\.\/)+/, '')), 'utf8')).join('\n;\n');
     if (!src.trim()) continue;
     try { new vm.Script(src, { filename: f }); nPag++; } catch (e) { mal(`${f}: sus scripts juntos no compilan (${String(e.message).slice(0, 140)})`); }
   }
