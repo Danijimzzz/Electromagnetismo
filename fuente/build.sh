@@ -41,7 +41,8 @@ if [ "$1" = privado ]; then presets=../privado/tema3-pdf.js; out=${2:?falta el a
     mkdir -p "$(dirname "$out")/guia"; cp guia/*.webp "$(dirname "$out")/guia/"
     printf '<script>\nwindow.GUIA_IMG = {\n'
     for img in guia/*.webp; do printf '  "%s": "guia/%s",\n' "$(basename "$img" .webp)" "$(basename "$img")"; done
-    printf '};\n</script>\n<script src="../../js/%s"></script>\n' "$(node electrostatica-js.js nombre)"
+    # biblioteca.js (el de las demás herramientas, con huella y en caché): la copia de seguridad de todo y su restauración
+    printf '};\n</script>\n<script src="../../js/%s"></script>\n<script src="../../js/%s"></script>\n' "$(node -p "require('./herramientas.js').externos()['biblioteca.js'].nombre")" "$(node electrostatica-js.js nombre)"
   fi
   if [ "$1" != privado ]; then printf '</html>\n'; fi
 } > "$out"

@@ -170,10 +170,10 @@
       const list = h('div', open && items.length ? { class: 'sec-l', role: 'list' } : { class: 'sec-l' }, open ? (items.length ? items : empty ? h('p', { class: 'side-empty' }, empty) : null) : null);
       box.append(h('section', { class: 'sec' }, head, list));
     };
-    if (!query || mine.length) section('Mis problemas', null, grouped(mine), query ? '' : 'Aún no tienes problemas propios. Crea uno nuevo o guarda un ejercicio de ejemplo.');
+    if (!query || mine.length) section('Mis ejercicios', null, grouped(mine), query ? '' : 'Aún no tienes ejercicios propios. Crea uno nuevo o guarda un ejercicio de ejemplo.');
     if (imp.length) section('Importados', null, grouped(imp), '');
     if (!query || pres.length) section(Presets.section, 'presetsOpen', pres.map((p) => itemRow({ ref: { kind: 'preset', id: p.key }, title: p.title, actions: [
-      { label: 'Duplicar en Mis problemas', run: () => { const c = addToLib({ title: p.title, statement: p.statement, scene: p.make() }); openRef({ kind: 'lib', id: c.id }); } },
+      { label: 'Duplicar en Mis ejercicios', run: () => { const c = addToLib({ title: p.title, statement: p.statement, scene: p.make() }); openRef({ kind: 'lib', id: c.id }); } },
       { label: 'Guardar en archivo', run: () => saveJSON(slug(p.title) + '.emsim.json', pack([{ title: p.title, statement: p.statement, scene: p.make() }])) },
     ] })), '');
     if (query && !mine.length && !imp.length && !pres.length) box.append(h('p', { class: 'side-empty' }, `Nada coincide con «${$('#search').value}».`));
@@ -761,16 +761,34 @@ ${img ? `<img class="snap" alt="Esquema del problema" src="${img}">` : ''}
       for (const s of c.querySelectorAll('section')) if (s.getBoundingClientRect().top <= top) id = s.id;
       markGuide(id || 'g-vista');
     }, { passive: true });
-    $('#new').addEventListener('click', () => { const it = addToLib({ title: 'Problema sin título', statement: '', scene: blankScene() }); openRef({ kind: 'lib', id: it.id }, { focus: '#title' }); });
+    $('#new').addEventListener('click', () => { const it = addToLib({ title: 'Ejercicio sin título', statement: '', scene: blankScene() }); openRef({ kind: 'lib', id: it.id }, { focus: '#title' }); });
     $('#open').addEventListener('click', () => $('#file').click());
     $('#file').addEventListener('change', (e) => { importFiles([...e.target.files]); e.target.value = ''; });
     $('#save-lib').addEventListener('click', () => saveJSON('mis-problemas.emsim.json', pack(lib.items)));
+    // copia de seguridad de todas las herramientas, restaurarla y enlace con los datos de ahora (las mismas acciones que Mis ejercicios de las demás; solo en la web, donde está biblioteca.js)
+    if ($('#copia') && typeof Biblioteca !== 'undefined') {
+      $('#copia').addEventListener('click', () => {
+        const c = Biblioteca.copia(); if (!c.total) return flash('Todavía no tienes ejercicios guardados en ninguna herramienta');
+        delete c.total; saveJSON(`ciencify-copia-${c.guardado.slice(0, 10)}.copia.json`, c);
+      });
+      $('#restaura').addEventListener('click', () => $('#file-copia').click());
+      $('#file-copia').addEventListener('change', async (e) => {
+        const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+        try { const r = Biblioteca.restaura(JSON.parse(await f.text())); lib = store.get(K_LIB, { items: [] }); renderSidebar(); flash(r.nuevos ? `Copia restaurada: ${r.nuevos} ejercicio${r.nuevos > 1 ? 's' : ''} nuevo${r.nuevos > 1 ? 's' : ''}` : 'La copia no traía nada nuevo'); }
+        catch (err) { flash('No se pudo restaurar: ' + err.message); }
+      });
+      $('#enlace').addEventListener('click', async () => {
+        const d = JSON.stringify({ title: cur.title, statement: cur.statement, folder: cur.folder, tags: cur.tags, scene: scen });
+        const url = location.href.split('#')[0] + '#d=' + btoa(unescape(encodeURIComponent(d))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+        try { await navigator.clipboard.writeText(url); flash(url.length > 8000 ? 'Enlace copiado (es muy largo: algunos programas lo cortan)' : 'Enlace copiado: abre el simulador con este ejercicio'); } catch (err) { flash('No se ha podido copiar el enlace'); }
+      });
+    }
     $('#save-cur').addEventListener('click', () => saveJSON(slug(cur.title) + '.emsim.json', pack([cur])));
     $('#export').addEventListener('click', (e) => { e.stopPropagation(); openMenu($('#export-w'), 'export', [
       { label: 'Página para imprimir o PDF (.html)', run: exportHTML },
       { label: 'Texto Markdown (.md)', run: exportMD },
     ]); });
-    $('#keep').addEventListener('click', () => { const it = addToLib({ title: cur.title, statement: cur.statement, scene: scen }); openRef({ kind: 'lib', id: it.id }); flash('Guardado en Mis problemas'); });
+    $('#keep').addEventListener('click', () => { const it = addToLib({ title: cur.title, statement: cur.statement, scene: scen }); openRef({ kind: 'lib', id: it.id }); flash('Guardado en Mis ejercicios'); });
     $('#title').addEventListener('input', (e) => { cur.title = e.target.value; persist(); renderSidebar(); });
     $('#statement').addEventListener('input', (e) => { cur.statement = e.target.value; autosize(e.target); persist(); });
     $('#folder').addEventListener('change', (e) => { cur.folder = e.target.value.trim(); persist(); renderSidebar(); });
@@ -833,6 +851,12 @@ ${img ? `<img class="snap" alt="Esquema del problema" src="${img}">` : ''}
   window.App = { onDrag, endDrag: () => setTimeout(commit, 30), get scen() { return scen; } };
   initControls();
   Canvas.init();
+  // enlace con los datos (#d=…): se abre como un ejercicio de ejemplo que se puede guardar en Mis ejercicios
+  const dEnlace = /[#&]d=([A-Za-z0-9_-]+)/.exec(location.hash);
+  if (dEnlace) {
+    try { const d = JSON.parse(decodeURIComponent(escape(atob(dEnlace[1].replace(/-/g, '+').replace(/_/g, '/'))))); if (d?.scene) store.set(K_CUR, { ref: { kind: 'preset', id: 'enlace' }, title: String(d.title || 'Ejercicio compartido'), statement: String(d.statement || ''), folder: '', tags: [], note: '', scene: d.scene }); } catch (e) { /* enlace roto */ }
+    try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* file:// */ }
+  }
   const saved = store.get(K_CUR, null);
   if (saved?.scene && saved.ref) {
     try { cur = { ...saved, scene: validScene(saved.scene) }; scen = cur.scene; resetHistory(); Canvas.fit(); renderSidebar(); renderAll(); }
