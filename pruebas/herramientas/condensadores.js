@@ -33,6 +33,16 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     const as = x('asoc-serie'); cerca(as.Ceq, 1e-6, 'C en serie'); cerca(as.v[0], 6, 'tensión del de 2 µF en serie');
     const am = x('asoc-mixta'); cerca(am.Ceq, 3e-6, 'C mixta'); cerca(am.v[0], 12, 'tensión de C₁ en la mixta');
     const co = x('conectar'); cerca(co.Vf, 40, 'tensión al conectar'); cerca(co.perdida, 0.012, 'energía perdida al conectar');
+    // EM.CO-1: fuerza sobre la lámina y sobre las placas, calculadas a mano
+    { const fb = x('fuerza-bateria'), fa = x('fuerza-aislado'), dC = e0 * 0.1 * 3 / 0.001, C = e0 * 0.1 * (4 * 0.05 + 0.05) / 0.001;
+      cerca(fb.Fd, 0.5 * 100 * 100 * dC, 'fuerza sobre la lámina con la batería'); cerca(fb.Fp, 0.5 * C * 100 * 100 / 0.001, 'fuerza entre placas con la batería (U/d)');
+      cerca(fa.Fd, (1e-8) ** 2 * dC / (2 * C * C), 'fuerza sobre la lámina con la carga fija');
+      cerca(fb.Wbat, 2 * fb.dU, 'trabajo de la batería = 2 ΔU'); cerca(fb.Wcampo, fb.dU, 'trabajo del campo con la batería');
+      cerca(fa.Wcampo, -fa.dU, 'trabajo del campo con la carga fija');
+      // F = −dU/dx con Q fija, derivada numérica
+      const U = (t) => (1e-8) ** 2 / (2 * fa.Cx(t)), h = 1e-7; cerca(fa.Fd, -(U(0.05 + h) - U(0.05 - h)) / (2 * h), 'F = −dU/dx por derivada numérica'); }
+    { // EM.CO-4: en serie 2, 3 y 6 µF a 600 V las tensiones son 300, 200 y 100 V; con 400, 300 y 150 V de rotura se rompe antes C₁, a 800 V
+      const ar = x('asoc-ruptura'); cerca(ar.ruptura.Vmax, 800, 'tensión máxima de la asociación'); if (ar.ruptura.primero !== 0) mal('Condensadores: debería romperse antes C₁'); }
     const pv = x('eps-variable'); if (Math.abs(pv.regiones[0].E1 / pv.regiones[0].E2 - 3) > 1e-9) mal('Condensadores: con ε de 2 a 6 el campo debería bajar a un tercio');
     const l = Condensador.resolver(Condensador.ejemplos[0].sc);
     if (Math.abs(l.regiones[0].E1 - 5e4) > 1e-6 || Math.abs(l.regiones[0].Qp - 0.8 * l.Q) > 1e-18) mal('Condensadores · plano lleno: E debería ser 50 kV/m y Q_p = 0,8 Q');

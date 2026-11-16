@@ -151,6 +151,7 @@ const Condensador = (() => {
   function resolver(sc) {
     if (sc.tipo === 'asociacion') return asociacion(sc);
     if (sc.tipo === 'conectar') return conectar(sc);
+    if (sc.tipo === 'fuerza') return fuerzaLamina(sc);
     const g = geometria(sc);
     const { C, cs } = capacidad(g);
     const vacioG = { ...g, disposicion: g.disposicion === 'variable' ? 'serie' : g.disposicion, regiones: g.disposicion === 'paralelo' ? [{ fraccion: 1, er: 1, vacio: true }] : [{ desde: g.geo === 'plano' ? 0 : g.a, hasta: g.geo === 'plano' ? g.d : g.b, er: 1, vacio: true }] };
@@ -255,6 +256,38 @@ const Condensador = (() => {
     return { tipo: 'condensador', g, C, letras: letras(g), letrasNota: nota, C0, Q, V, U, sigma, fuerza, Vmax, regiones, pasos, comp, fuente: sc.fuente === 'Q' ? 'Q' : 'V' };
   }
 
+  /* ---------- Fuerza sobre el dieléctrico y sobre las placas ---------- */
+  // sc: { tipo: 'fuerza', a (cm, largo en la dirección en que entra), w (cm, ancho), d (mm), er, x (cm metidos), fuente: 'V' | 'Q', V, Q (nC) }
+  // La lámina llena todo el hueco entre las armaduras; C(x) = ε0 w (εr x + (a − x))/d.
+  function fuerzaLamina(sc) {
+    const a = leer(sc.a, 'cm', 'El largo'), w = leer(sc.w, 'cm', 'El ancho'), d = leer(sc.d, 'mm', 'La separación'), er = +String(sc.er ?? '').replace(',', '.'), x = leer(sc.x, 'cm', 'Lo que ha entrado');
+    if (!(a > 0) || !(w > 0) || !(d > 0)) throw new Error('El largo, el ancho y la separación deben ser positivos');
+    if (!(er >= 1)) throw new Error('La permitividad relativa εr debe ser al menos 1');
+    if (x < 0 || x > a * (1 + 1e-9)) throw new Error('Lo que ha entrado debe estar entre 0 y el largo de las armaduras');
+    const Cx = (t) => (E0 * w * (er * t + (a - t))) / d, dC = (E0 * w * (er - 1)) / d, aislado = sc.fuente === 'Q';
+    const C = Cx(x), C0 = Cx(0), C1 = Cx(a);
+    let V, Q;
+    if (aislado) { Q = leer(sc.Q, 'nC', 'La carga'); V = Q / C; } else { V = leer(sc.V, 'V', 'La tensión'); Q = C * V; }
+    const U = 0.5 * C * V * V;
+    // F(x): con V fija es constante; con Q fija, F = Q²/(2C²) · dC/dx y baja al entrar
+    const F = (t) => (aislado ? (Q * Q * dC) / (2 * Cx(t) * Cx(t)) : 0.5 * V * V * dC);
+    const Fd = F(x), Fp = U / d;
+    const Ua = aislado ? (Q * Q) / (2 * C0) : 0.5 * C0 * V * V, Ub = aislado ? (Q * Q) / (2 * C1) : 0.5 * C1 * V * V;
+    const dU = Ub - Ua, Wcampo = aislado ? -dU : dU, Wbat = aislado ? 0 : V * (C1 - C0) * V;
+    const pasos = [];
+    pasos.push({ t: 'Capacidad con la lámina a medio meter', html: `Es un condensador con una parte llena (ε<sub>r</sub>, longitud x) y otra vacía (a − x), las dos a la misma tensión: $C(x) = {ε_0 w (ε_r x + a − x)}/d$ = <b>${conUnidad(C, 'F')}</b> (vacío ${conUnidad(C0, 'F')}, toda llena ${conUnidad(C1, 'F')}). Crece de forma lineal con x: $dC/dx = {ε_0 w (ε_r − 1)}/d$ = ${num(dC)} F/m.` });
+    pasos.push({ t: aislado ? 'Tensión (condensador aislado)' : 'Carga (con la batería)', html: aislado ? `$V = Q/C$ = ${conUnidad(Q, 'C')} / ${conUnidad(C, 'F')} = <b>${conUnidad(V, 'V')}</b>` : `$Q = C V$ = <b>${conUnidad(Q, 'C')}</b>` });
+    pasos.push({ t: 'Energía', html: `$U = 1/2 C V^2$ = <b>${conUnidad(U, 'J')}</b>` });
+    pasos.push({ t: 'Fuerza sobre el dieléctrico', html: aislado
+      ? `Con la carga fija, $U = Q^2/(2C)$ y $F = −{dU}/{dx} = {Q^2}/{2 C^2} {dC}/{dx}$ = <b>${conUnidad(Fd, 'N')}</b>, hacia dentro. Equivale a $1/2 V^2 dC/dx$ con la V de ahora; como al entrar C sube y V baja, la fuerza decrece (entera vale ${conUnidad(F(a), 'N')}, recién entrando ${conUnidad(F(0), 'N')}).`
+      : `Con la batería, V fija: la energía del sistema incluye la de la batería, y la fuerza es $F = +{dU}/{dx}|_V = 1/2 V^2 {dC}/{dx}$ = <b>${conUnidad(Fd, 'N')}</b>, hacia dentro y la misma en cualquier posición. (No es $−dU/dx$ del condensador solo: así saldría con signo contrario, porque la batería aporta la mitad del trabajo.)` });
+    pasos.push({ t: 'Fuerza entre las placas', html: `Si acercamos o alejamos las armaduras con la lámina llenando el hueco, C ∝ 1/d y la energía va como $U ∝ ${aislado ? 'd' : '1/d'}$: $F = |dU/dd|$ = <b>${conUnidad(Fp, 'N')}</b> = U/d, de atracción. ${aislado ? 'Con la carga fija, U crece al separarlas: el trabajo exterior es el aumento de U.' : 'Con la batería, la batería pierde el doble de lo que baja U al separarlas.'}` });
+    pasos.push({ t: 'Energía antes y después de meterla entera', html: `Antes (x = 0): $U_i$ = ${conUnidad(Ua, 'J')}; después (x = a): $U_f$ = ${conUnidad(Ub, 'J')}; ΔU = <b>${conUnidad(dU, 'J')}</b>. ` + (aislado
+      ? `Sin batería, el campo hace el trabajo $W = −ΔU$ = ${conUnidad(Wcampo, 'J')} sobre la lámina, que es lo que baja la energía almacenada.`
+      : `La batería aporta $W_{bat} = V ΔQ = V^2 (C_f − C_i)$ = ${conUnidad(Wbat, 'J')}, el doble de ΔU. La mitad sube la energía del condensador y la otra mitad, $W = ΔU$ = ${conUnidad(Wcampo, 'J')}, es el trabajo del campo sobre la lámina.`) });
+    return { tipo: 'fuerza', a, w, d, er, x, C, C0, C1, Q, V, U, Fd, Fp, Ua, Ub, dU, Wcampo, Wbat, aislado, F, Cx, pasos };
+  }
+
   /* ---------- Asociaciones de condensadores ---------- */
   // sc: { tipo: 'asociacion', red: 'serie'|'paralelo'|'serie-par'|'par-serie', cs: ['2', '3', '6'] (µF), V }
   // serie-par: C1 en serie con (C2 ∥ C3 ∥ …); par-serie: C1 en paralelo con (C2, C3… en serie)
@@ -290,7 +323,15 @@ const Condensador = (() => {
     }
     const u = cs.map((c, i) => 0.5 * c * v[i] * v[i]), U = 0.5 * Ceq * V * V;
     pasos.push({ t: 'Energía', html: `$U = 1/2 C_eq V^2$ = <b>${conUnidad(U, 'J')}</b>, que es la suma de la de cada uno ($1/2 C_i V_i^2$).` });
-    return { tipo: 'asociacion', red, cs, V, Ceq, Q: Ceq * V, q, v, u, U, pasos };
+    // tensión de ruptura de cada condensador (opcional): todas las tensiones son proporcionales a V
+    const vm = (sc.vm || []).slice(0, cs.length).map((x, i) => { const t = String(x ?? '').trim(); if (!t) return null; const k = +t.replace(',', '.'); if (!(k > 0)) throw new Error(`${sub(i).replace(/<[^>]+>/g, '')}: la tensión máxima debe ser un número positivo (en V)`); return k; });
+    let ruptura = null;
+    if (vm.some((k) => k)) {
+      const lista = cs.map((_, i) => (vm[i] ? { i, vm: vm[i], Vred: (V * vm[i]) / v[i] } : null)).filter(Boolean), peor = lista.reduce((a, b) => (b.Vred < a.Vred ? b : a));
+      ruptura = { primero: peor.i, Vmax: peor.Vred, lista, sin: cs.map((_, i) => i).filter((i) => !vm[i]) };
+      pasos.push({ t: 'Qué condensador se rompe primero', html: `Las tensiones de todos son proporcionales a V (cada ${'$V_i = k_i V$'} se mantiene al subir la tensión), así que cada uno aguanta hasta $V_{máx,i} = V · V_{rotura,i}/V_i$:<br>` + lista.map((x) => `${sub(x.i)}: aguanta ${conUnidad(x.vm, 'V')} y ahora lleva ${conUnidad(v[x.i], 'V')} ⇒ ${conUnidad(x.Vred, 'V')} en la asociación`).join('<br>') + `<br>El primero en romperse es ${sub(peor.i)}: <b>V<sub>máx</sub> = ${conUnidad(peor.Vred, 'V')}</b>${V > peor.Vred ? ' (¡la tensión aplicada ya lo supera!)' : ''}.${ruptura.sin.length ? ` (No cuento ${ruptura.sin.map((i) => sub(i)).join(', ')}: sin tensión máxima.)` : ''}` });
+    }
+    return { tipo: 'asociacion', red, cs, V, Ceq, Q: Ceq * V, q, v, u, U, pasos, vm, ruptura };
   }
 
   /* ---------- Dos condensadores cargados que se conectan ---------- */
@@ -331,6 +372,9 @@ const Condensador = (() => {
     { clave: 'meter-lamina', nombre: 'Dieléctrico metido hasta la mitad', sc: { geo: 'plano', S: '100', d: '1', disposicion: 'paralelo', capas: [{ t: '50', er: '4' }], fuente: 'V', V: '200' } },
     { clave: 'asoc-serie', nombre: 'Tres condensadores en serie', sc: { tipo: 'asociacion', red: 'serie', cs: ['2', '3', '6'], V: '12' } },
     { clave: 'asoc-mixta', nombre: 'Uno en serie con dos en paralelo', sc: { tipo: 'asociacion', red: 'serie-par', cs: ['6', '2', '4'], V: '24' } },
+    { clave: 'fuerza-bateria', nombre: 'Lámina que entra con la batería', sc: { tipo: 'fuerza', a: '10', w: '10', d: '1', er: '4', x: '5', fuente: 'V', V: '100' } },
+    { clave: 'fuerza-aislado', nombre: 'Lámina que entra con la carga fija', sc: { tipo: 'fuerza', a: '10', w: '10', d: '1', er: '4', x: '5', fuente: 'Q', Q: '10' } },
+    { clave: 'asoc-ruptura', nombre: 'Qué condensador se rompe primero', sc: { tipo: 'asociacion', red: 'serie', cs: ['2', '3', '6'], vm: ['400', '300', '150'], V: '600' } },
     { clave: 'conectar', nombre: 'Dos condensadores cargados que se conectan', sc: { tipo: 'conectar', C1: '4', V1: '100', C2: '6', V2: '0', union: 'igual' } },
   ];
 
