@@ -15,7 +15,8 @@ if [ "$1" = privado ]; then presets=../privado/tema3-pdf.js; out=${2:?falta el a
     # Icono de la pestaña (fuente/icono.svg, incrustado) y lo que se ve al instalar o compartir el enlace.
     printf '<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,'; base64 < icono.svg | tr -d '\n'; printf '">\n'
     printf '<link rel="apple-touch-icon" href="../../apple-touch-icon.png">\n'
-    printf '<meta property="og:title" content="Simulador de Electrostática">\n<meta property="og:description" content="Campo, potencial y energía de cargas, hilos, planos y esferas, con el desarrollo paso a paso">\n'
+    ficha() { node -p "require('./catalogo.js').asignaturas.flatMap((a) => a.herramientas).find((h) => h.clave === 'electrostatica').$1"; }
+    printf '<meta property="og:title" content="%s">\n<meta property="og:description" content="%s">\n' "$(ficha titulo)" "$(ficha descripcion)"
     web=$(node -p "require('./catalogo.js').web")
     printf '<link rel="canonical" href="%s/electromagnetismo/electrostatica/">\n' "$web"
     printf '<meta property="og:image" content="%s/og.png">\n<meta name="twitter:card" content="summary_large_image">\n' "$web"

@@ -535,6 +535,8 @@ const Canvas = (() => {
     if (!E) return;
     const k = 220 / (view.s * Math.max(V3.norm(E), 1e-12)); // aceleración inicial ≈ 220 px/s²
     probes.push({ x: X.slice(), v: [0, 0, 0], k: k * sign, sign, trail: [X.slice()], alive: true, t: 0 });
+    // con «reducir movimiento» no se anima: la trayectoria sale entera de golpe
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { for (let i = 0; i < 500 && probes.some((p) => p.alive); i++) stepProbes(0.05); redraw(); return; }
     if (!anim) { let last = performance.now(); const step = (now) => { const dt = Math.min(0.05, (now - last) / 1000); last = now; stepProbes(dt); redraw(); anim = probes.some((p) => p.alive) ? requestAnimationFrame(step) : 0; }; anim = requestAnimationFrame(step); }
   }
   function stepProbes(dt) {

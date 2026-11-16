@@ -71,6 +71,9 @@ h1 { font:600 24px/1.25 var(--f-ui) }
 .resumen div { background:var(--accent-soft) }
 .sep { color:var(--accent) }${cabecera}`;
 
+// «Informar de un error»: enlace de correo con la herramienta en el asunto y su ruta en el cuerpo (el pie de todas las herramientas)
+const enlaceError = (nombre, clave, herramienta) => `<a href="mailto:${Catalogo.correo}?subject=${encodeURIComponent('Error en ' + nombre)}&amp;body=${encodeURIComponent('Herramienta: ' + nombre + ' (' + clave + '/' + herramienta + ')\n\nQué esperaba y qué ha pasado:\n')}">Informar de un error</a>`;
+
 function piezas(a, nombre) {
   const [m1, m2] = Catalogo.marca;
   const nav = [...Catalogo.asignaturas, V].map((x) => `<a href="../../${x.clave}/"${x === a ? ' aria-current="page"' : ''}>${esc(x.corto || x.nombre)}</a>`).join('');
@@ -116,7 +119,8 @@ function aplicaElectrostatica(html) {
   const { cab, miga } = piezas(a, 'Electrostática');
   const extra = `
 .main, .app:not(.closed) .main { padding:0 }
-@media (min-width:901px) { .app:not(.closed) { grid-template-columns:290px minmax(0,1fr) } }
+@media (min-width:901px) { .app:not(.closed) { grid-template-columns:290px minmax(0,1fr) } .side { grid-column:1; grid-row:1 } .main { grid-column:2; grid-row:1 } }
+footer { text-align:center; font-size:12.5px; color:var(--muted); padding:20px 16px 8px } footer a { color:var(--muted); margin:0 6px; white-space:nowrap; display:inline-block }
 .main > .wrap { max-width:1300px; margin:0 auto; padding:16px clamp(16px,3vw,24px) 32px }
 #side-open, .app.closed #side-open { display:inline-flex; align-items:center; gap:6px; width:auto; height:auto; font:600 13.5px var(--f-ui); color:var(--ink); background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:6px 12px; cursor:pointer; white-space:nowrap }
 #side-open:hover, .app:not(.closed) #side-open { border-color:var(--accent); color:var(--accent) }
@@ -150,9 +154,15 @@ function aplicaElectrostatica(html) {
   const app = document.getElementById('app'), side = document.getElementById('side');
   if (app.classList.contains('mobile-open') || (!app.classList.contains('closed') && getComputedStyle(side).position !== 'fixed')) { e.stopImmediatePropagation(); document.getElementById('side-close').click(); }
 }, true);</script>`;
-  return html.replace(/[ \t]*<a [^>]*a-inicio[^>]*>.*<\/a>\n?/, '').replace(btnLado, '').replace(practica, '')
+  // el pie de las demás herramientas (enlaces legales y «Informar de un error»): antes solo estaba en la barra lateral, que en móvil queda fuera de pantalla
+  const pie = `<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·${enlaceError('Electrostática', 'electromagnetismo', 'electrostatica')}·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Electrostática <span class="ver-n"></span></footer>\n`;
+  const lateral = /<aside class="side"[\s\S]*?<\/aside>\n?/;
+  if (!lateral.test(html) || !/<p class="legal" data-solo-web>.*<\/p>\n?/.test(html)) throw new Error('diseno.js: shell.html no tiene la barra lateral esperada');
+  const barra = html.match(lateral)[0].replace(/[ \t]*<p class="legal" data-solo-web>.*<\/p>\n?/, '').replace(cierra, '$1×</button>').replace(/<span class="logo">.*?<\/span>/, '<span class="logo">Mis ejercicios</span>');
+  // el orden del teclado: primero la cabecera y el contenido, y la barra lateral después (la rejilla la deja a la izquierda en escritorio)
+  return html.replace(lateral, '').replace(/[ \t]*<a [^>]*a-inicio[^>]*>.*<\/a>\n?/, '').replace(btnLado, '').replace(practica, '')
     .replace(cierra, '$1×</button>').replace(/<span class="logo">.*?<\/span>/, '<span class="logo">Mis ejercicios</span>')
-    .replace('<main class="main">', `<main class="main">\n${cab}\n<div class="wrap">\n<h1 class="solo-lector">Simulador de electrostática</h1>\n${migaE}`).replace('</main>', `${TEORIA_ELECTRO}${Preguntas.html('electrostatica')}${Anuncios.hueco()}${vidaReal('electromagnetismo/electrostatica')}${relacionadas('electromagnetismo', 'electrostatica')}</div>\n</main>`)
+    .replace('<main class="main">', `<main class="main">\n${cab}\n<div class="wrap">\n<h1 class="solo-lector">Simulador de electrostática</h1>\n${migaE}`).replace('</main>', `${TEORIA_ELECTRO}${Preguntas.html('electrostatica')}${Anuncios.hueco()}${vidaReal('electromagnetismo/electrostatica')}${relacionadas('electromagnetismo', 'electrostatica')}</div>\n${pie}</main>\n${barra}`)
     .replace('<div class="app"', `<style>${css(a)}${extra}</style>\n${alterna}\n<div class="app"`);
 }
 
@@ -182,7 +192,7 @@ function aplicaHerramienta(html, clave, herramienta) {
   if (!/<div class="wrap[^"]*"[^>]*>/.test(html) || !/<\/div>\s*<footer/.test(html)) throw new Error('diseno.js: la página no tiene <div class="wrap"> cerrado justo antes del <footer>');
   const main = (x) => x.replace(/<div class="(wrap[^"]*)"([^>]*)>/, '<main class="$1"$2>').replace(/<\/div>(\s*)<footer/, '</main>$1<footer');
   // «Informar de un error»: enlace de correo en el pie, con la herramienta en el asunto y su ruta en el cuerpo
-  const error = (x) => x.replace(/(>Contacto<\/a>)/, `$1·<a href="mailto:${Catalogo.correo}?subject=${encodeURIComponent('Error en ' + nombre)}&amp;body=${encodeURIComponent('Herramienta: ' + nombre + ' (' + clave + '/' + herramienta + ')\n\nQué esperaba y qué ha pasado:\n')}">Informar de un error</a>`);
+  const error = (x) => x.replace(/(>Contacto<\/a>)/, `$1·${enlaceError(nombre, clave, herramienta)}`);
   return error(main(html.replace(m[0], cab).replace(/<div class="fen-etiquetas"|<h1/, (x) => miga + '\n' + x).replace(/^<style>/m, `<style>${ESTILOS}${acento(a)}${cabecera}${propios}</style>\n<style>`)
     .replace(/(<\/div>\s*)?<footer/, (x) => (vida ? vida + x : x)).replace(TEORIA.test(html) ? TEORIA : /(<\/div>\s*)?<section class="(preguntas|vida-real|relacionadas)"|(<\/div>\s*)?<footer/, (x) => Anuncios.hueco() + x)
     // en las herramientas con teoría, otros dos huecos: en mitad de la teoría (antes de su tercer apartado) y
