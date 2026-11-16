@@ -112,7 +112,7 @@ node pruebas/rendimiento.js             # presupuesto de rendimiento en móvil
 node pruebas/comprobar.js --actualizar  # reescribe esperados*.json si el cambio de forma es intencionado
 sh fuente/build.sh privado SALIDA.html  # versión privada con el Tema 3 (artifact de claude.ai)
 ```
-Playwright: en este contenedor ya está; en otro, `npm install --no-save playwright@1.56.1`. Usa `CHROMIUM` o `/opt/pw-browsers/chromium` si existe. GitHub Actions (`.github/workflows/comprobar.yml`) corre lo mismo en 4 trozos paralelos (`--parte N/4`, repartidos por tiempo), `limites.js` y `rendimiento.js` en trabajos aparte, y además falla si `publico/` no está al día con `fuente/`. Publicar = fusionar en `main`.
+Playwright: en este contenedor ya está; en otro, `npm install --no-save playwright@1.56.1`. Usa `CHROMIUM` o `/opt/pw-browsers/chromium` si existe. GitHub Actions (`.github/workflows/comprobar.yml`) corre lo mismo en 4 trozos paralelos (`--parte N/4`, repartidos por tiempo), `limites.js` y `rendimiento.js` en trabajos aparte, y además falla si `publico/` no está al día con `fuente/`. Publicar = fusionar en `main`. Si tras fusionar Vercel o Cloudflare no despliegan (pasó con la 1.18: los 502 de GitHub al fusionar perdieron el aviso), un «Redeploy» sirve de poco, porque reconstruye el commit viejo: hace falta un commit nuevo en `main`.
 
 ## Flujo de trabajo
 
