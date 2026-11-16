@@ -25,6 +25,10 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       cerca(C.Hde(s.P, s.f0).dB, 20 * Math.log10(Q), 1e-9, 'bajo RLC: |H(f0)| = Q'); cerca(C.Hde(s.P, s.f0).fase, -90, 1e-6, 'bajo RLC: −90° en f0'); cerca(C.Hde(s.P, 100 * s.f0).dB, -80, 2e-3, 'bajo RLC: −40 dB/dec'); }
     // rechazo de banda: muesca en f0
     { const s = r('rlc-rechazo'); if (C.Hde(s.P, s.f0).dB > -200) mal('Bode · rechazo: no hay muesca en f0'); cerca(s.cortes[1] - s.cortes[0], s.f0 / s.Q, 1e-3, 'rechazo: BW = f0/Q'); }
+    // retardo de grupo: RC bajo τg = RC/(1+(ωRC)²) (RC en continua, RC/2 en f_c); RLC bajo en f0: 2Q/ω0
+    { const s = r('rc-bajo'), tau = 1000 * 0.159e-6; cerca(C.retardo(s.P, s.f0 / 1e4) / tau, 1, 1e-6, 'RC: τg en continua = RC'); cerca(C.retardo(s.P, s.f0) / tau, 0.5, 1e-6, 'RC: τg(f_c) = RC/2');
+      const w = 2 * Math.PI * 3 * s.f0; cerca(C.retardo(s.P, 3 * s.f0) / tau, 1 / (1 + (w * tau) ** 2), 1e-6, 'RC: τg a 3 f_c'); }
+    { const s = r('rlc-bajo'); cerca(C.retardo(s.P, s.f0) * 2 * Math.PI * s.f0, 2 * s.Q, 1e-5, 'RLC bajo: τg(f0) = 2Q/ω0'); }
     // el punto de interés
     { const s = r('rlc-rechazo'); cerca(s.punto.mod, C.Hde(s.P, 50).mod, 1e-12, 'rechazo: valor en 50 Hz'); }
     // mismo resultado que el motor del Simulador de circuitos
@@ -78,7 +82,12 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       if (r.err || !r.pasos || !r.res) mal(`Bode · ${e.clave}: falta el resultado o el desarrollo`);
       if (!r.mathml || r.dolar) mal(`Bode · ${e.clave}: el desarrollo no sale en MathML`);
     }
-    await Exp.pagina(page, '#grafica', mal, 'Bode · magnitud'); await Exp.pagina(page, '#grafica-fase', mal, 'Bode · fase');
+    await Exp.pagina(page, '#grafica', mal, 'Bode · magnitud'); await Exp.pagina(page, '#grafica-fase', mal, 'Bode · fase'); await Exp.pagina(page, '#grafica-retardo', mal, 'Bode · retardo de grupo');
+    await page.evaluate(() => BodeApp.abrirEjemplo('rc-bajo')); await page.selectOption('#f-unid', 'rad');
+    { const t = await page.textContent('#resumen'); if (!/rad\/s/.test(t) || !/Retardo de grupo/.test(t)) mal('Bode: el interruptor rad/s o el retardo de grupo no salen en los resultados: ' + t.slice(0, 120));
+      const w = 1 / (1000 * 0.159e-6), tg = await page.evaluate(() => BodeApp.resultado().tg0); if (Math.abs(tg / 0.159e-3 - 1) > 1e-4) mal('Bode: retardo en continua ≠ RC: ' + tg);
+      if (!t.includes(String(Math.round(w)).slice(0, 4))) mal('Bode: ω de corte en rad/s no coincide con 1/RC'); }
+    await page.selectOption('#f-unid', 'hz');
     await page.fill('#f-R', '0');
     if (await page.locator('#error').isHidden()) mal('Bode: una resistencia cero no muestra el error');
     await page.selectOption('#f-tipo', 'rlc-banda');

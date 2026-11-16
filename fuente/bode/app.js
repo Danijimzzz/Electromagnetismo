@@ -22,9 +22,9 @@
     const t = B.TIPOS[sc.tipo];
     let h = `<label for="f-tipo">Filtro</label><select id="f-tipo" class="in" data-k="tipo">${GRUPOS.map(([g, l]) => `<optgroup label="${g}">${l.map((k) => `<option value="${k}"${sc.tipo === k ? ' selected' : ''}>${B.TIPOS[k].nombre}</option>`).join('')}</optgroup>`).join('')}</select>`;
     h += t.comp.map((k) => fila(k, { R: 'Resistencia R', L: 'Inductancia L', C: 'Capacidad C' }[k], B.UNIDAD[k][2])).join('');
-    h += '<div class="sep">Diagrama</div>' + fila('f', 'Frecuencia de interés', 'Hz, opcional') + fila('fmin', 'Frecuencia mínima', 'Hz, opcional') + fila('fmax', 'Frecuencia máxima', 'Hz, opcional');
+    h += '<div class="sep">Diagrama</div><label for="f-unid">Frecuencia en el diagrama y los resultados</label><select id="f-unid" class="in" data-k="unid"><option value="hz"' + (sc.unid === 'rad' ? '' : ' selected') + '>Hz</option><option value="rad"' + (sc.unid === 'rad' ? ' selected' : '') + '>rad/s (ω = 2πf)</option></select>' + fila('f', 'Frecuencia de interés', 'Hz, opcional') + fila('fmin', 'Frecuencia mínima', 'Hz, opcional') + fila('fmax', 'Frecuencia máxima', 'Hz, opcional');
     $('#campos').innerHTML = h;
-    $('#nota').textContent = 'R en Ω, L en mH y C en µF, o con prefijo y unidad (4k7, 100n, 10 µF). Sin rango, el diagrama abarca dos décadas a cada lado.';
+    $('#nota').textContent = 'R en Ω, L en mH y C en µF, o con prefijo y unidad (4k7, 100n, 10 µF). Sin rango, el diagrama abarca dos décadas a cada lado. Los campos de frecuencia se escriben siempre en Hz.';
   }
   $('#campos').addEventListener('input', (e) => { const t = e.target; if (!t.dataset.k) return; sc[t.dataset.k] = t.value; $('#ejemplos').value = ''; if (t.dataset.k === 'tipo') formulario(); calcula(); });
 
@@ -39,6 +39,7 @@
   }
 
   /* ---------- Cálculo ---------- */
+  const seg = (x) => (Math.abs(x) >= 1 ? `${f(x)} s` : Math.abs(x) >= 1e-3 ? `${f(x * 1e3)} ms` : Math.abs(x) >= 1e-6 ? `${f(x * 1e6)} µs` : `${f(x * 1e9)} ns`);
   const dato = (t, v) => `<div><span>${t}</span><b>${v}</b></div>`;
   function calcula() {
     const err = $('#error');
@@ -47,14 +48,15 @@
       $('#resumen').innerHTML = ''; $('#pasos').innerHTML = ''; $('#leyenda').textContent = ''; dibuja(); return;
     }
     err.hidden = true; guarda();
-    const o2 = sol.def.orden === 2, c = sol.cortes, hz = (x) => `${f(x)} Hz`;
-    let h = dato(o2 ? 'Frecuencia propia f₀' : 'Frecuencia de corte f꜀', hz(sol.f0));
+    const o2 = sol.def.orden === 2, c = sol.cortes, rad = sc.unid === 'rad', hz = (x) => rad ? `${f(2 * Math.PI * x)} rad/s` : `${f(x)} Hz`;
+    let h = dato(o2 ? `Frecuencia propia ${rad ? 'ω₀' : 'f₀'}` : `Frecuencia de corte ${rad ? 'ω꜀' : 'f꜀'}`, hz(sol.f0));
     if (o2) h += dato('Factor de calidad Q', f(sol.Q)) + dato('Amortiguamiento ζ', f(sol.zeta));
     if (sol.BW !== null) h += dato('−3 dB en', `${hz(c[0])} y ${hz(c[1])}`) + dato('Ancho de banda', hz(sol.BW));
     else if (c.length) h += dato('−3 dB en', c.map(hz).join(' y '));
     if (sol.pico) h += dato('Pico de resonancia', `${f(sol.pico.dB)} dB en ${hz(sol.pico.f)}`);
     h += dato('Pendiente', sol.def.clase === 'rechazo' ? 'muesca en f₀' : sol.def.clase === 'banda' ? '±20 dB/dec' : `${sol.def.clase === 'bajo' ? '−' : '+'}${sol.pendiente} dB/dec`);
-    if (sol.punto) h += dato(`En ${hz(sol.punto.f)}`, `${f(sol.punto.dB)} dB · ${f(sol.punto.fase)}°`);
+    h += dato('Retardo de grupo en 0 Hz', seg(sol.curva(2).tg[0]));
+    if (sol.punto) h += dato(`En ${hz(sol.punto.f)}`, `${f(sol.punto.dB)} dB · ${f(sol.punto.fase)}° · τg ${seg(sol.punto.tg)}`);
     $('#resumen').innerHTML = h;
     $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
     $('#leyenda').textContent = 'Línea continua: respuesta exacta. Línea discontinua: asíntotas. Punto: frecuencia de interés.';
@@ -63,7 +65,7 @@
 
   /* ---------- Gráficas ---------- */
   function colores() { const cs = getComputedStyle(document.documentElement); for (const k of ['--ink', '--muted', '--line', '--accent', '--serie-1', '--serie-2']) col[k] = cs.getPropertyValue(k).trim(); }
-  const fmtF = (x) => txt(f(x, 3));
+  const fmtF = (x) => txt(f(sc.unid === 'rad' ? 2 * Math.PI * x : x, 3));
   // Un diagrama: eje de frecuencias logarítmico, eje y lineal en `ymin`..`ymax`; `curva` y `asi` son listas de y
   function diagrama(sel, fs, curva, asi, ymin, ymax, unidad, refs, punto) {
     const { g, w, h } = lienzo(sel);
@@ -90,12 +92,15 @@
     g.restore();
   }
   function dibuja() {
-    if (!sol) { for (const s of ['#grafica', '#grafica-fase']) lienzo(s); return; }
+    if (!sol) { for (const s of ['#grafica', '#grafica-fase', '#grafica-retardo']) lienzo(s); return; }
     const c = sol.curva(500), asi = c.f.map(sol.asintota);
     const dmax = Math.max(...c.dB, 0), dmin = Math.min(...c.dB, -10);
     const ymax = Math.ceil((dmax + 3) / 10) * 10, ymin = Math.max(Math.floor((dmin - 3) / 10) * 10, ymax - 80, -120);
     const p = sol.punto && sol.punto.f >= sol.fmin && sol.punto.f <= sol.fmax ? sol.punto : null;
     diagrama('#grafica', c.f, c.dB, asi, ymin, ymax, ' dB', [[0, col['--line'], []], [-3, col['--muted'], [2, 4]]], p && { x: p.f, y: p.dB });
+    const ud = (() => { const m = Math.max(...c.tg.map(Math.abs), 1e-12); return m >= 1 ? [1, ' s'] : m >= 1e-3 ? [1e3, ' ms'] : m >= 1e-6 ? [1e6, ' µs'] : [1e9, ' ns']; })();
+    const tt = c.tg.map((x) => x * ud[0]), top = Math.max(...tt, 0), bot = Math.min(...tt, 0), paso = 10 ** Math.floor(Math.log10(Math.max(top - bot, 1e-12))), a0 = Math.floor(bot / paso) * paso, a1 = Math.max(Math.ceil(top / paso) * paso, a0 + paso);
+    diagrama('#grafica-retardo', c.f, tt, null, a0, a1, ud[1], [[0, col['--line'], []]], p && { x: p.f, y: p.tg * ud[0] });
     diagrama('#grafica-fase', c.f, c.fase, null, -180, 180, '°', [[0, col['--line'], []]], p && { x: p.f, y: p.fase });
   }
   // Exportar: cada diagrama se guarda como imagen y la tabla de la curva (f, dB, fase) se copia
@@ -104,6 +109,7 @@
     const c = sol.curva(500);
     return { cab: ['f (Hz)', '|H| (dB)', 'Fase (°)'], filas: c.f.map((x, k) => [x, c.dB[k], c.fase[k]]) };
   };
+  Herramienta.exportar('#grafica-retardo', { nombre: 'bode-retardo', titulo: 'Retardo de grupo', datos: () => { if (!sol) return null; const c = sol.curva(500); return { cab: ['f (Hz)', 'τg (s)'], filas: c.f.map((x, k) => [x, c.tg[k]]) }; } });
   Herramienta.exportar('#grafica', { nombre: 'bode-magnitud', titulo: 'Diagrama de Bode: magnitud', datos: tabla() });
   Herramienta.exportar('#grafica-fase', { nombre: 'bode-fase', titulo: 'Diagrama de Bode: fase', datos: tabla() });
   window.addEventListener('resize', dibuja);
@@ -112,5 +118,5 @@
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('bode').current;
   colores(); formulario(); calcula();
-  window.BodeApp = { abrirEjemplo, resultado: () => sol && { f0: sol.f0, Q: sol.Q, cortes: sol.cortes, BW: sol.BW }, estado: () => copia(sc) };
+  window.BodeApp = { abrirEjemplo, resultado: () => sol && { f0: sol.f0, Q: sol.Q, cortes: sol.cortes, BW: sol.BW, tg0: sol.curva(2).tg[0] }, estado: () => copia(sc) };
 })();

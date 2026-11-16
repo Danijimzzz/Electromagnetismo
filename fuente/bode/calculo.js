@@ -104,6 +104,13 @@ const Bode = (() => {
     return out;
   }
 
+  // Retardo de grupo τg = −dφ/dω (s): derivada centrada de la fase con el cociente H(f·(1+e))/H(f·(1−e)), que evita saltos de ±180°
+  function retardo(P, fr) {
+    const e = 1e-5, a = Hde(P, fr * (1 - e)), b = Hde(P, fr * (1 + e));
+    const dfi = Math.atan2(b.im * a.re - b.re * a.im, b.re * a.re + b.im * a.im);
+    return -dfi / (2 * Math.PI * fr * 2 * e);
+  }
+
   // Aproximación asintótica (en dB) de cada clase de filtro
   function asintotaDe(clase, orden, fref) {
     const l = (fr) => Math.log10(fr / fref);
@@ -138,11 +145,11 @@ const Bode = (() => {
     const fmin = leeF(sc, 'fmin', 'la frecuencia mínima') ?? fref / 100, fmax = leeF(sc, 'fmax', 'la frecuencia máxima') ?? fref * 100;
     if (!(fmax > fmin)) throw new Error('La frecuencia máxima debe ser mayor que la mínima');
     const fp = leeF(sc, 'f', 'la frecuencia de interés');
-    const punto = fp === null ? null : { f: fp, ...Hde(P, fp) };
+    const punto = fp === null ? null : { f: fp, ...Hde(P, fp), tg: retardo(P, fp) };
     // la curva añade puntos densos en f0 si Q es alto, y f0, el pico y los cortes siempre: así el máximo y el ancho de banda se ven enteros
     const curva = (n = 400) => {
-      const o = { f: [], dB: [], fase: [] };
-      for (const fr of rejilla(fmin, fmax, n, fref, Q, [fref, pico && pico.f, ...cortes])) { const h = Hde(P, fr); o.f.push(fr); o.dB.push(h.dB); o.fase.push(h.fase); }
+      const o = { f: [], dB: [], fase: [], tg: [] };
+      for (const fr of rejilla(fmin, fmax, n, fref, Q, [fref, pico && pico.f, ...cortes])) { const h = Hde(P, fr); o.f.push(fr); o.dB.push(h.dB); o.fase.push(h.fase); o.tg.push(retardo(P, fr)); }
       return o;
     };
     const asintota = asintotaDe(clase, t.orden, fref);
@@ -195,6 +202,6 @@ const Bode = (() => {
     { clave: 'rlc-rechazo', nombre: 'RLC rechazo de banda: elimina los 50 Hz', sc: { tipo: 'rlc-rechazo', R: '100', L: '1000', C: '10', f: '50', fmin: '5', fmax: '5000' } },
   ];
 
-  return { resolver, ejemplos, TIPOS, UNIDAD, Hde, polinomios, circuitoSimulador, rejilla, f };
+  return { resolver, ejemplos, TIPOS, UNIDAD, Hde, retardo, polinomios, circuitoSimulador, rejilla, f };
 })();
 if (typeof module !== 'undefined') module.exports = Bode;
