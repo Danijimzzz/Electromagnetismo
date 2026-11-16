@@ -25,6 +25,14 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     const cr = r('cruza');
     cerca(cr.eps, 0.1, 1e-12, 'ε = Bav'); cerca(cr.tramos[0].t1, 0.05, 1e-12, 'tiempo en entrar'); cerca(cr.Q, 0.01, 1e-12, 'calor total');
     if (cr.tramos[0].sentido !== 'antihorario' || cr.tramos[2].sentido !== 'horario') mal('Faraday: sentidos al entrar y al salir');
+    // EM.FA-3: B(t) = 0,2 sen(2πt) T en 100 espiras de 5 cm de radio, entrante; ε(t) = −N S 0,2·2π cos(2πt) y Lenz por tramos
+    { const l = r('B-libre'), S = Math.PI * 0.05 ** 2, t = 0.3;
+      cerca(l.eps, -100 * S * 0.4 * Math.PI * Math.cos(2 * Math.PI * t), 1e-9, 'ε(t) de B escrita a mano'); cerca(l.Bt, 0.2 * Math.sin(2 * Math.PI * t), 1e-9, 'B(t) escrita a mano'); cerca(l.I, l.eps / 4, 1e-12, 'I = ε/R con B(t) libre');
+      const tr = l.tramos.map((q) => [q.t0, q.t1, q.sentido]);
+      if (tr.length !== 3 || tr[0][2] !== 'antihorario' || tr[1][2] !== 'horario' || tr[2][2] !== 'antihorario') mal(`Faraday: la ley de Lenz por tramos de B = 0,2 sen(2πt) no sale (${JSON.stringify(tr)})`);
+      else { cerca(tr[0][1], 0.25, 1e-6, 'primer cambio de sentido'); cerca(tr[1][1], 0.75, 1e-6, 'segundo cambio de sentido'); }
+      for (const mala of [{ expr: '' }, { expr: '5' }, { expr: 'sen(' }, { tf: '-1' }]) { let ok = false; try { Faraday.resolver({ ...Faraday.ejemplos.find((e) => e.clave === 'B-libre').sc, ...mala }); } catch (e) { ok = true; } if (!ok) mal(`Faraday: ${JSON.stringify(mala)} en B(t) libre debería dar error`); }
+      const dos = Faraday.resolver({ ...Faraday.ejemplos.find((e) => e.clave === 'B-libre').sc, expr: '0.5 t', tf: '2' }).tramos; if (dos.length !== 1 || dos[0].sentido !== 'antihorario') mal('Faraday: un campo entrante que crece de forma lineal debería dar un solo tramo antihorario'); }
     const ha = r('hilo-aleja');
     cerca(ha.eps, (4e-7 * Math.PI * 10 * 0.2 * 0.1 * 2) / (2 * Math.PI * 0.05 * 0.15), 1e-9, 'ε = μ₀Ihwv/(2πd(d+w))');
     if (ha.sentido !== 'horario') mal('Faraday: la espira que se aleja de un hilo con I hacia arriba debería tener corriente horaria');

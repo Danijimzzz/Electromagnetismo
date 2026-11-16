@@ -15,7 +15,7 @@
   let sol = null, col = {}, anda = true;
 
   /* ---------- Formulario ---------- */
-  const fila = (k, nom, un) => `<label for="f-${k}">${nom}${un ? ` <small>${un}</small>` : ''}</label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc[k] ?? '')}" inputmode="decimal" autocomplete="off">`;
+  const fila = (k, nom, un) => `<label for="f-${k}">${nom}${un ? ` <small>${un}</small>` : ''}</label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc[k] ?? '')}" inputmode="${k === 'expr' ? 'text' : 'decimal'}" autocomplete="off">`;
   const opciones = (k, lista) => lista.map(([v, t]) => `<option value="${v}"${sc[k] === v ? ' selected' : ''}>${t}</option>`).join('');
   const elige = (k, nom, lista) => `<label for="f-${k}">${nom}</label><select id="f-${k}" class="in" data-k="${k}">${opciones(k, lista)}</select>`;
   const sep = (t) => `<div class="sep">${t}</div>`;
@@ -37,7 +37,7 @@
       $('#nota').textContent = 'El hilo es vertical, a la izquierda de la espira y en su mismo plano. v positiva si la espira se aleja del hilo; puedes dar v, dI/dt o los dos.';
     } else if (sc.modo === 'funcion') {
       const t = sc.tipoB || 'lineal';
-      h += fila('N', 'Número de espiras N', '') + forma() + sentidoB() + elige('tipoB', 'Cómo cambia B', Object.entries(F.FUNCB).map(([k, v]) => [k, v.nombre])) + fila('B0', 'B₀', 'T') + (t === 'lineal' || t === 'cuadratica' ? fila('k', 'Constante k', t === 'lineal' ? 'T/s' : 'T/s²') : '') + (t === 'seno' ? fila('w', 'Frecuencia angular ω', 'rad/s') : '') + (t === 'exp' ? fila('tau', 'Constante de tiempo τ', 's') : '') + fila('th', 'Ángulo entre B y la normal θ', '°') + fila('t', 'Instante t', 's') + fila('R', 'Resistencia R (opcional)', 'Ω');
+      h += fila('N', 'Número de espiras N', '') + forma() + sentidoB() + elige('tipoB', 'Cómo cambia B', Object.entries(F.FUNCB).map(([k, v]) => [k, v.nombre])) + (t === 'libre' ? fila('expr', 'B(t) en T (t en s)', '') + fila('tf', 'Ventana: de 0 a', 's') : fila('B0', 'B₀', 'T')) + (t === 'lineal' || t === 'cuadratica' ? fila('k', 'Constante k', t === 'lineal' ? 'T/s' : 'T/s²') : '') + (t === 'seno' ? fila('w', 'Frecuencia angular ω', 'rad/s') : '') + (t === 'exp' ? fila('tau', 'Constante de tiempo τ', 's') : '') + fila('th', 'Ángulo entre B y la normal θ', '°') + fila('t', 'Instante t', 's') + fila('R', 'Resistencia R (opcional)', 'Ω');
       $('#nota').textContent = 'El sentido de B es el de los valores positivos de B(t). Se calcula la fem en el instante t y se dibujan B(t) y ε(t).';
     } else if (sc.modo === 'dinamica') {
       h += elige('caso', 'Situación', [['fuerza', 'Se tira con una fuerza constante F'], ['cae', 'Cae por raíles verticales'], ['lanzada', 'Se lanza con v₀ y se suelta']]) + fila('B', 'Campo B', 'T') + fila('L', 'Longitud de la barra L', 'm') + fila('R', 'Resistencia R', 'Ω') + fila('m', 'Masa de la barra m', 'kg') + (sc.caso === 'fuerza' ? fila('F', 'Fuerza F', 'N') : sc.caso === 'lanzada' ? fila('v0', 'Velocidad inicial v₀', 'm/s') : fila('ang', 'Ángulo de los raíles con la horizontal', '°, vacío = 90°') + elige('g', 'Gravedad g', [['9.8', '9,8 m/s²'], ['9.80665', '9,80665 m/s²']])) + sep('Opcional') + fila('t', 'Instante t', 's');
@@ -62,7 +62,7 @@
     if (t.tagName !== 'SELECT') return;
     sc[t.dataset.k] = t.value;
     if (t.dataset.k === 'modo') sc = copia(F.ejemplos.find((x) => x.sc.modo === t.value).sc);
-    if (t.dataset.k === 'tipoB') { const d = { lineal: { k: '0.5' }, cuadratica: { k: '0.4' }, seno: { w: '314', B0: '0.05' }, exp: { tau: '0.5', B0: '1' } }[t.value]; for (const [k, v] of Object.entries(d)) if (vacioC(sc[k])) sc[k] = v; }
+    if (t.dataset.k === 'tipoB') { const d = { lineal: { k: '0.5' }, cuadratica: { k: '0.4' }, seno: { w: '314', B0: '0.05' }, exp: { tau: '0.5', B0: '1' }, libre: { expr: '0.2 sen(2 pi t)', tf: '1' } }[t.value]; for (const [k, v] of Object.entries(d)) if (vacioC(sc[k])) sc[k] = v; }
     if (t.dataset.k === 'geo') { const d = { disco: { a: '5', d: '2' }, lamina: { D: '20', N: '100', V: '500' } }[t.value]; for (const [k, v] of Object.entries(d)) if (vacioC(sc[k])) sc[k] = v; }
     if (t.dataset.k === 'caso') { const d = { fuerza: { F: '0.5' }, lanzada: { v0: '5' }, cae: {} }[t.value]; for (const [k, v] of Object.entries(d)) if (vacioC(sc[k])) sc[k] = v; }
     if (t.dataset.k === 'forma') { const d = { circulo: { r: '0.05' }, rectangulo: { a: '0.1', b: '0.2' }, area: { S: '0.01' } }[t.value]; for (const [k, v] of Object.entries(d)) if (vacioC(sc[k])) sc[k] = v; }
@@ -230,7 +230,7 @@
       texto(g, (xh + x0) / 2, y1 + 14, 'd', col['--muted']); texto(g, (x0 + x1) / 2, y0 - 10, 'w', col['--muted']); texto(g, x1 + 10, y1 - 10, 'h', col['--muted'], 'left');
       texto(g, w / 2, h - 12, `|ε| = ${txt(f(sol.eps))} V · sentido ${sol.sentido}`, col['--ink'], 'center', '600 ');
     } else if (sol.modo === 'funcion') {
-      const hs = h * 0.5, tf = Math.max(sol.t * 1.6, sol.tipo === 'seno' ? (4 * Math.PI) / sol.p.w : sol.tipo === 'exp' ? 4 * sol.p.tau : 1), T = 5, tc = ((tAnim % T) / T) * tf, B = sol.Bf(tc);
+      const hs = h * 0.5, tf = sol.tipo === 'libre' ? sol.tf : Math.max(sol.t * 1.6, sol.tipo === 'seno' ? (4 * Math.PI) / sol.p.w : sol.tipo === 'exp' ? 4 * sol.p.tau : 1), T = 5, tc = ((tAnim % T) / T) * tf, B = sol.Bf(tc);
       const Bmax = Math.max(...Array.from({ length: 81 }, (_, i) => Math.abs(sol.Bf((tf * i) / 80)))) || 1, cx = w / 2, cy = hs / 2, R = hs * 0.36;
       campo(g, 0, 0, w, hs, (B >= 0) === (sol.sentidoB === 'entrante'), Math.abs(B) / Bmax);
       g.strokeStyle = col['--roz']; g.lineWidth = 3.5;

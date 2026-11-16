@@ -7,6 +7,7 @@
    entrante (⊗, hacia dentro de la pantalla) o saliente (⊙).
    ===================================================================== */
 const Faraday = (() => {
+  const Ex = typeof Expresion !== 'undefined' ? Expresion : require('../matematicas/expresion.js');
   const f = (x, d = 4) => {
     if (!isFinite(x)) return '—';
     if (Math.abs(x) < 1e-60) return '0';
@@ -159,9 +160,30 @@ const Faraday = (() => {
     seno: { nombre: 'B = B₀ sen(ωt)', B: (p, t) => p.B0 * Math.sin(p.w * t), dB: (p, t) => p.B0 * p.w * Math.cos(p.w * t), tex: (p) => `B(t) = ${f(p.B0)} sen(${f(p.w)} t)`, dtex: (p) => `{dB}/{dt} = B_0 ω cos(ω t) = ${f(p.B0 * p.w)} cos(${f(p.w)} t)` },
     exp: { nombre: 'B = B₀ e^(−t/τ)', B: (p, t) => p.B0 * Math.exp(-t / p.tau), dB: (p, t) => (-p.B0 / p.tau) * Math.exp(-t / p.tau), tex: (p) => `B(t) = ${f(p.B0)} e^{−t/${f(p.tau)}}`, dtex: (p) => `{dB}/{dt} = −{B_0}/τ e^{−t/τ} = ${f(-p.B0 / p.tau)} e^{−t/${f(p.tau)}}` },
   };
+  FUNCB.libre = { nombre: 'B(t) la escribes tú', B: (p, t) => Ex.valor(p.ast, 0, { t }), dB: (p, t) => Ex.valor(p.dast, 0, { t }), tex: (p) => `B(t) = ${Ex.texto(p.ast)}`, dtex: (p) => `{dB}/{dt} = ${Ex.texto(p.dast)}` };
+  // EM.FA-3: tramos de [0, tf] con el mismo sentido de la corriente inducida (o sin corriente)
+  function tramosLenz(Bf, dBf, tf, sentidoB) {
+    const escala = Math.max(...Array.from({ length: 401 }, (_, i) => Math.abs(dBf((tf * i) / 400))), 1e-300);
+    const est = (t) => { const B = Bf(t), dB = dBf(t); if (Math.abs(dB) <= 1e-9 * escala) return 'sin corriente'; const Bpos = (B >= 0) === (sentidoB !== 'saliente') ? 'entrante' : 'saliente'; return sentido(Bpos, B >= 0 ? dB > 0 : dB < 0); };
+    const n = 4000, out = []; let t0 = 0, e0 = est(0);
+    for (let i = 1; i <= n; i++) {
+      const t = (tf * i) / n, e = est(t);
+      if (e !== e0) { let a = (tf * (i - 1)) / n, b = t; for (let k = 0; k < 45; k++) { const m = (a + b) / 2; if (est(m) === e0) a = m; else b = m; } const tc = (a + b) / 2; out.push({ t0, t1: tc, sentido: e0 }); t0 = tc; e0 = e; }
+    }
+    out.push({ t0, t1: tf, sentido: e0 });
+    // los cruces por cero de dB/dt dejan «sin corriente» instantes: se quitan y se juntan los vecinos iguales
+    const lim = tf * 1e-6, fin = [];
+    for (const q of out.filter((x) => x.t1 - x.t0 > lim || out.length === 1)) {
+      const u = fin[fin.length - 1];
+      if (u && u.sentido === q.sentido) u.t1 = q.t1; else fin.push({ ...q });
+    }
+    if (fin.length) { fin[0].t0 = 0; for (let i = 1; i < fin.length; i++) fin[i].t0 = fin[i - 1].t1 = (fin[i - 1].t1 + fin[i].t0) / 2; fin[fin.length - 1].t1 = tf; }
+    return fin.length ? fin : out;
+  }
   function funcion(sc) {
     const pasos = [], N = entero(sc, 'N', 'el número de espiras'), sup = superficie(sc, pasos), S = sup.S, tipo = FUNCB[sc.tipoB] ? sc.tipoB : 'lineal', Fb = FUNCB[tipo];
-    const p = { B0: num(sc, 'B0', 'B₀', { signo: true, cero: true }) };
+    const p = tipo === 'libre' ? {} : { B0: num(sc, 'B0', 'B₀', { signo: true, cero: true }) };
+    if (tipo === 'libre') { p.ast = Ex.lee(sc.expr, 'B(t)', ['t']); p.dast = Ex.deriva(p.ast, 't'); if (!Ex.tieneX(p.ast, 't')) throw new Error('B(t) tiene que depender de t: si no, el campo no cambia'); }
     if (tipo === 'lineal' || tipo === 'cuadratica') p.k = num(sc, 'k', 'la constante k', { signo: true });
     if (tipo === 'seno') p.w = num(sc, 'w', 'la frecuencia angular ω');
     if (tipo === 'exp') p.tau = num(sc, 'tau', 'la constante de tiempo τ');
@@ -179,7 +201,13 @@ const Faraday = (() => {
     else pasos.push({ t: 'Ley de Lenz', html: 'En ese instante el flujo no cambia: no hay corriente inducida.' });
     let I = null;
     if (R) { I = eps / R; pasos.push({ t: 'Corriente', html: `$I = ε/R$ = <b>${f(I)} A</b>` }); }
-    return { modo: 'funcion', tipo, p, N, S, c, th, t, Bt, Phi, eps, R, I, sentido: sen, sentidoB: Bpos, forma: sc.forma, Bf: (x) => Fb.B(p, x), Ef: (x) => -N * S * c * Fb.dB(p, x), pasos };
+    let tramos = null, tf = null;
+    if (tipo === 'libre') {
+      tf = vacio(sc.tf) ? Math.max(t * 1.6, 1) : num(sc, 'tf', 'el final de la ventana de tiempo');
+      tramos = tramosLenz((x) => Fb.B(p, x), (x) => Fb.dB(p, x), tf, sc.sentidoB);
+      pasos.push({ t: 'Ley de Lenz por tramos', html: `El sentido de la corriente cambia cuando $dB/dt$ cambia de signo o cuando B pasa por 0 (el campo cambia de sentido). Entre 0 y ${f(tf)} s:<br>` + tramos.map((q) => `de ${f(q.t0)} a ${f(q.t1)} s: <b>${q.sentido === 'sin corriente' ? 'sin corriente (el flujo no cambia)' : 'corriente en sentido ' + q.sentido}</b>`).join('<br>') });
+    }
+    return { modo: 'funcion', tramos, tf, tipo, p, N, S, c, th, t, Bt, Phi, eps, R, I, sentido: sen, sentidoB: Bpos, forma: sc.forma, Bf: (x) => Fb.B(p, x), Ef: (x) => -N * S * c * Fb.dB(p, x), pasos };
   }
 
   /* ---------- Barra con masa: frenado magnético y velocidad límite ---------- */
@@ -268,6 +296,7 @@ const Faraday = (() => {
     { clave: 'hilo-aleja', nombre: 'Espira que se aleja de un hilo', sc: { modo: 'hilo', I: '10', sentidoI: 'arriba', d: '0.05', w: '0.1', h: '0.2', N: '1', v: '2', dIdt: '', R: '0.5' } },
     { clave: 'hilo-dIdt', nombre: 'Hilo con corriente que crece y espira quieta', sc: { modo: 'hilo', I: '5', sentidoI: 'arriba', d: '0.02', w: '0.08', h: '0.1', N: '100', v: '', dIdt: '200', R: '10' } },
     { clave: 'B-seno', nombre: 'Campo B₀ sen(ωt) en una bobina', sc: { modo: 'funcion', N: '200', forma: 'circulo', r: '0.03', tipoB: 'seno', B0: '0.05', w: '314', th: '0', t: '0.002', sentidoB: 'entrante', R: '20' } },
+    { clave: 'B-libre', nombre: 'Campo B(t) escrito a mano, con cambio de sentido', sc: { modo: 'funcion', N: '100', forma: 'circulo', r: '0.05', tipoB: 'libre', expr: '0.2 sen(2 pi t)', tf: '1', th: '0', t: '0.3', sentidoB: 'entrante', R: '4' } },
     { clave: 'B-cuadratica', nombre: 'Campo que crece como t²', sc: { modo: 'funcion', N: '1', forma: 'rectangulo', a: '0.2', b: '0.3', tipoB: 'cuadratica', B0: '0', k: '0.4', th: '0', t: '2', sentidoB: 'saliente', R: '0.4' } },
     { clave: 'velocidad-limite', nombre: 'Barra que cae por raíles verticales', sc: { modo: 'dinamica', caso: 'cae', B: '0.5', L: '0.4', R: '0.2', m: '0.02', t: '0.1' } },
     { clave: 'barra-lanzada', nombre: 'Barra lanzada que frena sola', sc: { modo: 'dinamica', caso: 'lanzada', B: '1', L: '0.5', R: '2', m: '0.1', v0: '5', t: '1' } },
