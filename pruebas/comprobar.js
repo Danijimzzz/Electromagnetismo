@@ -669,6 +669,14 @@ async function navegador() {
         if (!(await page.$('.prac-nota.bien'))) { mal(`${pag}: las respuestas correctas no salen bien: ${r.resp.join(' · ')}`); break; }
         ejercicios++;
       }
+      // ejercicios inventados (F18): el mismo código da el mismo ejercicio, y cada nivel tiene el suyo
+      { const cod = await page.evaluate(() => window.PracticaApp.codigo), r1 = await page.evaluate(() => window.PracticaApp.respuestas().join('|'));
+        await page.click('.prac [data-a=otro]');
+        const otro = await page.evaluate(() => window.PracticaApp.codigo);
+        const r2 = await page.evaluate((c) => { window.PracticaApp.abreCodigo(c); return window.PracticaApp.respuestas().join('|'); }, cod);
+        if (otro === cod) mal(`${pag}: «Inventar otro ejercicio» repite el código ${cod}`);
+        if (r1 !== r2) mal(`${pag}: el código ${cod} no da el mismo ejercicio (${r1} ≠ ${r2})`);
+        if (!/^[FMD]-[0-9A-Z]+$/.test(cod)) mal(`${pag}: código de ejercicio raro: ${cod}`); }
       await (await page.$('.prac-in')).fill('123456789');
       await page.click('.prac [data-a=comprobar]');
       if (!(await page.$('.prac-nota.mal'))) mal(`${pag}: una respuesta equivocada sale bien`);

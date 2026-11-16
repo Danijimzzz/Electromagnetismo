@@ -20,6 +20,15 @@ Después `biblioteca.js` monta la barra lateral de Mis ejercicios (con los ejemp
 3. Escribe solo el CSS que sea de esta herramienta. Si lo que necesitas está en esta guía, usa la clase común tal cual.
 4. Pasa `node pruebas/comprobar.js`. Falla si la página vuelve a definir una regla común o pone un color fijo.
 
+## Ejercicios inventados (estándar en toda herramienta)
+
+Toda herramienta con resultado numérico lleva en su `app.js` `azar()` y `enunciado()` (la plantilla ya los trae) y los expone en `window.<Nombre>App`; `practica.js` los usa en el «Modo práctica» con el botón «Inventar otro ejercicio».
+- **Inventa, no escoge:** los datos no salen de un ejemplo guardado; se sortean con sentido físico (valores redondos, resultado posible) y el enunciado los cuenta con frases completas.
+- **Semilla y nivel:** usa `Math.random` (el modo práctica lo cambia por un generador con semilla: cada ejercicio tiene un código como `M-4F7K2` que lo repite) y `Practica.nivel` (`'facil'`, `'medio'`, `'dificil'`): fácil, números enteros pequeños y un solo paso; difícil, más cifras y pasos.
+- **Se corrige con la propia herramienta:** el resultado correcto es el que la página calcula; los resultados siguen la forma del solucionario oficial donde lo hay.
+- **Prueba:** `comprobar.js` comprueba que el mismo código repite el ejercicio y que las respuestas correctas salen bien; si el generador tiene reglas propias, la prueba de la herramienta fija una semilla y comprueba a mano el resultado.
+- Sin resultado numérico (Electrostática, Tabla periódica, fenómenos) no entra: se anota el motivo en `CONF`.
+
 ## Colores
 
 Nunca se escribe un color fijo en una regla. Los colores salen de variables:
