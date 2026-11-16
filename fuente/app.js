@@ -90,7 +90,9 @@
     store.set(K_LIB, lib);
   }
 
+  let tabSel = null; // pestaña de la barra: 'guardados' | 'ejemplos' (sin elegir: Guardados si ya hay ejercicios, si no Ejemplos)
   function addToLib({ title, statement, scene, origin = 'mio', file, folder = '', tags = [] }) {
+    tabSel = 'guardados';
     const it = { id: newId(), title: title || 'Problema sin título', statement: statement || '', scene: clone(scene), origin, file, folder, tags, updated: Date.now() };
     lib.items.unshift(it);
     store.set(K_LIB, lib);
@@ -124,7 +126,8 @@
     const active = cur && cur.ref.kind === ref.kind && cur.ref.id === ref.id;
     const row = h('div', { class: 'item' + (active ? ' active' : ''), role: 'listitem' },
       h('button', { class: 'it', title, onclick: () => openRef(ref) }, h('span', { class: 'it-t' }, title), sub ? h('span', { class: 'it-s' }, sub) : null));
-    row.append(h('button', { class: 'more', 'aria-label': 'Opciones de ' + title, title: 'Opciones', onclick: (e) => { e.stopPropagation(); openMenu(row, ref.kind + ref.id, actions); } }, '⋯'));
+    row.append(h('button', { class: 'more', 'aria-label': 'Opciones de ' + title, title: 'Opciones', 'aria-haspopup': 'menu', onclick: (e) => { e.stopPropagation(); openMenu(row, ref.kind + ref.id, actions); } }));
+    row.lastChild.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="12" cy="18.5" r="1.4"/></svg>';
     return row;
   }
   function libActions(it) {
@@ -170,13 +173,15 @@
       const list = h('div', open && items.length ? { class: 'sec-l', role: 'list' } : { class: 'sec-l' }, open ? (items.length ? items : empty ? h('p', { class: 'side-empty' }, empty) : null) : null);
       box.append(h('section', { class: 'sec' }, head, list));
     };
-    if (!query || mine.length) section('Mis ejercicios', null, grouped(mine), query ? '' : 'Aún no tienes ejercicios propios. Crea uno nuevo o guarda un ejercicio de ejemplo.');
-    if (imp.length) section('Importados', null, grouped(imp), '');
-    if (!query || pres.length) section(Presets.section, 'presetsOpen', pres.map((p) => itemRow({ ref: { kind: 'preset', id: p.key }, title: p.title, actions: [
+    const tab = tabSel || (lib.items.length ? 'guardados' : 'ejemplos');
+    for (const [k, sel] of [['guardados', '#tab-guardados'], ['ejemplos', '#tab-ejemplos']]) $(sel).setAttribute('aria-selected', String(tab === k));
+    if (tab === 'guardados' && (!query || mine.length)) section('Mis ejercicios', null, grouped(mine), query ? '' : 'Aún no tienes ejercicios propios. Crea uno nuevo o guarda un ejercicio de ejemplo.');
+    if (tab === 'guardados' && imp.length) section('Importados', null, grouped(imp), '');
+    if (tab === 'ejemplos' && (!query || pres.length)) section(Presets.section, null, pres.map((p) => itemRow({ ref: { kind: 'preset', id: p.key }, title: p.title, actions: [
       { label: 'Duplicar en Mis ejercicios', run: () => { const c = addToLib({ title: p.title, statement: p.statement, scene: p.make() }); openRef({ kind: 'lib', id: c.id }); } },
       { label: 'Guardar en archivo', run: () => saveJSON(slug(p.title) + '.emsim.json', pack([{ title: p.title, statement: p.statement, scene: p.make() }])) },
     ] })), '');
-    if (query && !mine.length && !imp.length && !pres.length) box.append(h('p', { class: 'side-empty' }, `Nada coincide con «${$('#search').value}».`));
+    if (query && !(tab === 'guardados' ? mine.length + imp.length : pres.length)) box.append(h('p', { class: 'side-empty' }, `Nada coincide con «${$('#search').value}».`));
     $('#save-lib').disabled = !lib.items.length;
     const dl = $('#folders-dl');
     dl.replaceChildren(...[...new Set(lib.items.map((x) => x.folder).filter(Boolean))].map((f) => h('option', { value: f })));
@@ -816,6 +821,14 @@ ${fichaHTML(cur.title, cur.statement, { img, charts })}
       for (const s of c.querySelectorAll('section')) if (s.getBoundingClientRect().top <= top) id = s.id;
       markGuide(id || 'g-vista');
     }, { passive: true });
+    for (const [k, sel] of [['guardados', '#tab-guardados'], ['ejemplos', '#tab-ejemplos']]) $(sel).addEventListener('click', () => { tabSel = k; renderSidebar(); });
+    // menú ⋮ de la barra: copia de seguridad, importar, imprimir varios… (las mismas acciones de siempre, ahora agrupadas)
+    const pop = $('#side-pop'), dim = $('#side-dim'), mbtn = $('#side-menu');
+    const popA = (v) => { pop.hidden = !v; dim.hidden = !v; mbtn.setAttribute('aria-expanded', String(v)); if (v) pop.querySelector('button:not(:disabled)')?.focus(); };
+    mbtn.addEventListener('click', () => popA(pop.hidden));
+    dim.addEventListener('click', () => { popA(false); mbtn.focus(); });
+    pop.addEventListener('click', (e) => { if (e.target.closest('button')) popA(false); });
+    pop.addEventListener('keydown', (e) => { if (e.key === 'Escape') { e.stopPropagation(); popA(false); mbtn.focus(); } });
     $('#new').addEventListener('click', () => { const it = addToLib({ title: 'Ejercicio sin título', statement: '', scene: blankScene() }); openRef({ kind: 'lib', id: it.id }, { focus: '#title' }); });
     $('#open').addEventListener('click', () => $('#file').click());
     $('#file').addEventListener('change', (e) => { importFiles([...e.target.files]); e.target.value = ''; });
