@@ -332,6 +332,38 @@ const Induccion = (() => {
     return { p: { E, R, L, carga: true, pulsos: true, ton, toff, t }, res, I, VL, tau, pasos, letras: 'I_media = {ε t_on}/{R T}' };
   }
 
+  /* ---------- EM.IN-1: transformador con acoplamiento real (fasores) ---------- */
+  // sc: { N1, N2, L1 (mH), k, V1 (V eficaces), fr (Hz), R1, R2 (Ω), RL (Ω, carga resistiva) }
+  // L₂ = L₁ (N₂/N₁)², M = k √(L₁L₂). Primario: V₁ = (R₁ + jωL₁) I₁ − jωM I₂; secundario: jωM I₁ = (R₂ + R_L + jωL₂) I₂.
+  const cx = { s: (a, b) => [a[0] + b[0], a[1] + b[1]], m: (a, b) => [a[0] * b[0] - a[1] * b[1], a[0] * b[1] + a[1] * b[0]], d: (a, b) => { const q = b[0] * b[0] + b[1] * b[1]; return [(a[0] * b[0] + a[1] * b[1]) / q, (a[1] * b[0] - a[0] * b[1]) / q]; }, abs: (a) => Math.hypot(a[0], a[1]), fase: (a) => (Math.atan2(a[1], a[0]) * 180) / Math.PI };
+  function trafoPunto(p, RL) {
+    const w = 2 * Math.PI * p.fr, Z1 = [p.R1, w * p.L1], Z2 = [p.R2 + RL, w * p.L2], X = w * p.M;
+    const Zin = cx.s(Z1, cx.d([X * X, 0], Z2)), I1 = cx.d([p.V1, 0], Zin), I2 = cx.d(cx.m([0, X], I1), Z2), V2 = [RL * I2[0], RL * I2[1]];
+    const Pin = p.V1 * I1[0], Pout = RL * (I2[0] ** 2 + I2[1] ** 2);
+    return { Zin, I1, I2, V2, Pin, Pout, eta: Pin > 0 ? Pout / Pin : 0 };
+  }
+  function transformador(sc) {
+    const N1 = lee(sc, 'N1', 'las espiras del primario'), N2 = lee(sc, 'N2', 'las espiras del secundario'), L1 = lee(sc, 'L1', 'la autoinducción del primario') * 1e-3;
+    const k = lee(sc, 'k', 'el coeficiente de acoplamiento'), V1 = lee(sc, 'V1', 'la tensión del primario'), fr = lee(sc, 'fr', 'la frecuencia');
+    const R1 = lee(sc, 'R1', 'la resistencia del primario', { cero: true }), R2 = lee(sc, 'R2', 'la resistencia del secundario', { cero: true }), RL = lee(sc, 'RL', 'la resistencia de carga');
+    if (k > 1) throw new Error('El coeficiente de acoplamiento k no puede ser mayor que 1');
+    const n = N2 / N1, L2 = L1 * n * n, M = k * Math.sqrt(L1 * L2), w = 2 * Math.PI * fr;
+    const p = { N1, N2, L1, L2, M, k, V1, fr, R1, R2, RL }, r = trafoPunto(p, RL);
+    const V1c = [V1, 0], vacio0 = cx.abs(cx.d([w * M * V1, 0], [R1, w * L1])), Vid = V1 * n, V2m = cx.abs(r.V2);
+    const reg = (vacio0 - V2m) / vacio0, Pcu1 = R1 * cx.abs(r.I1) ** 2, Pcu2 = R2 * cx.abs(r.I2) ** 2, fp = r.Pin / (V1 * cx.abs(r.I1));
+    const pasos = [
+      { t: 'Inductancias y acoplamiento', html: `Con la misma geometría $L ∝ N^2$, así que $L_2 = L_1 (N_2/N_1)^2$ = ${u(L2, 'H')} y $M = k √(L_1 L_2)$ = <b>${u(M, 'H')}</b>. Flujo de dispersión: el ${f(100 * (1 - k), 3)} % del flujo de cada bobina no llega a la otra (L<sub>σ1</sub> = (1 − k) L<sub>1</sub> = ${u((1 - k) * L1, 'H')}).` },
+      { t: 'Ecuaciones con fasores (ω = 2πf = ' + f(w) + ' rad/s)', html: `Primario: $V_1 = (R_1 + jωL_1) I_1 − jωM I_2$. Secundario, con la carga: $jωM I_1 = (R_2 + R_L + jωL_2) I_2$ y $V_2 = R_L I_2$.` },
+      { t: 'Impedancia vista desde el primario', html: `$Z_e = R_1 + jωL_1 + {ω^2 M^2}/{R_2 + R_L + jωL_2}$ = ${f(r.Zin[0])} ${r.Zin[1] < 0 ? '−' : '+'} j ${f(Math.abs(r.Zin[1]))} Ω (|Z<sub>e</sub>| = ${f(cx.abs(r.Zin))} Ω, ${f(cx.fase(r.Zin), 3)}°). $I_1 = V_1/Z_e$ = <b>${u(cx.abs(r.I1), 'A')}</b>.` },
+      { t: 'Secundario', html: `$I_2 = {jωM I_1}/{R_2 + R_L + jωL_2}$ = <b>${u(cx.abs(r.I2), 'A')}</b> y $V_2 = R_L I_2$ = <b>${u(V2m, 'V')}</b>, con la fase ${f(cx.fase(r.V2) - 0, 4)}° respecto a V<sub>1</sub>. Relación real $V_2/V_1$ = ${f(V2m / V1)} frente a la ideal $N_2/N_1$ = ${f(n)} (V<sub>2</sub> ideal = ${u(Vid, 'V')}).` },
+      { t: 'Regulación', html: `En vacío ($R_L → ∞$) el secundario da $V_{20} = {ωM V_1}/{|R_1 + jωL_1|}$ = ${u(vacio0, 'V')}. Regulación $= (V_{20} − V_2)/V_{20}$ = <b>${f(100 * reg, 3)} %</b>: cuánto cae la tensión al conectar la carga.` },
+      { t: 'Potencias y rendimiento', html: `$P_1 = V_1 |I_1| cos φ$ = ${u(r.Pin, 'W')} (cos φ = ${f(fp)}); $P_2 = R_L |I_2|^2$ = ${u(r.Pout, 'W')}. Pérdidas en el cobre: ${u(Pcu1, 'W')} en el primario y ${u(Pcu2, 'W')} en el secundario. Rendimiento $η = P_2/P_1$ = <b>${f(100 * r.eta, 4)} %</b>.` },
+    ];
+    const curva = () => { const pts = []; for (let i = 0; i <= 120; i++) { const RLx = RL * Math.pow(10, -1.5 + (3 * i) / 120), q = trafoPunto(p, RLx); pts.push([RLx, cx.abs(q.V2) / vacio0, q.eta]); } return pts; };
+    const res = { M, L2, n, I1: cx.abs(r.I1), I2: cx.abs(r.I2), V2: V2m, Vid, relacion: V2m / V1, V20: vacio0, reg, eta: r.eta, Pin: r.Pin, Pout: r.Pout, Pcu1, Pcu2, fp, Zin: cx.abs(r.Zin) };
+    return { p, res, pasos, curva, letras: 'η = {R_L |I_2|^2}/{V_1 |I_1| cos φ}' };
+  }
+
   const ejemplos = {
     L: [
       { clave: 'solenoide', nombre: 'Solenoide de 500 espiras', sc: { geo: 'solenoide', N: '500', l: '20', r: '1', mur: '1', I: '2', dIdt: '100' } },
@@ -356,6 +388,11 @@ const Induccion = (() => {
       { clave: 'f-repelen', nombre: 'Corrientes opuestas: se repelen (anillo que levita)', sc: { N1: '200', R: '10', N2: '1', r: '5', z: '3', I1: '10', I2: '-300' } },
       { clave: 'f-lejos', nombre: 'Espira pequeña lejos: límite de dipolo', sc: { N1: '100', R: '10', N2: '20', r: '1', z: '40', I1: '2', I2: '1' } },
     ],
+    T: [
+      { clave: 't-red', nombre: 'Transformador de red 230 V → 23 V', sc: { N1: '1000', N2: '100', L1: '10000', k: '0.98', V1: '230', fr: '50', R1: '2', R2: '0.02', RL: '5' } },
+      { clave: 't-flojo', nombre: 'Acoplamiento flojo (k = 0,6), como un cargador inalámbrico', sc: { N1: '20', N2: '20', L1: '0.024', k: '0.6', V1: '5', fr: '100000', R1: '0.5', R2: '0.5', RL: '10' } },
+      { clave: 't-vacio', nombre: 'Casi en vacío: regulación y rendimiento', sc: { N1: '500', N2: '1500', L1: '4000', k: '0.99', V1: '100', fr: '50', R1: '1', R2: '9', RL: '5000' } },
+    ],
     RL: [
       { clave: 'carga', nombre: 'Se cierra el interruptor', sc: { E: '12', R: '6', L: '300', modo: 'carga', t: '50' } },
       { clave: 'descarga', nombre: 'La bobina se descarga por la resistencia', sc: { E: '10', R: '100', L: '500', modo: 'descarga', t: '2' } },
@@ -363,6 +400,6 @@ const Induccion = (() => {
     ],
   };
 
-  return { autoinduccion, mutua, rl, fuerza, mutuaExacta, elip, GEO_L, GEO_M, ejemplos, f, u, MU0 };
+  return { autoinduccion, mutua, rl, fuerza, transformador, mutuaExacta, elip, GEO_L, GEO_M, ejemplos, f, u, MU0 };
 })();
 if (typeof module !== 'undefined') module.exports = Induccion;

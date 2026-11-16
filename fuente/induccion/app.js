@@ -9,8 +9,8 @@
   const I = Induccion, f = I.f, u = I.u;
   const CLAVE = 'induccion-v1';
 
-  let st = { tab: 'L', L: copia(I.ejemplos.L[0].sc), M: copia(I.ejemplos.M[0].sc), RL: copia(I.ejemplos.RL[0].sc), F: copia(I.ejemplos.F[0].sc) };
-  try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && g.L && g.M && g.RL) st = { ...st, ...g, F: { ...st.F, ...(g.F || {}) } }; } catch (e) {}
+  let st = { tab: 'L', L: copia(I.ejemplos.L[0].sc), M: copia(I.ejemplos.M[0].sc), RL: copia(I.ejemplos.RL[0].sc), F: copia(I.ejemplos.F[0].sc), T: copia(I.ejemplos.T[0].sc) };
+  try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && g.L && g.M && g.RL) st = { ...st, ...g, F: { ...st.F, ...(g.F || {}) }, T: { ...st.T, ...(g.T || {}) } }; } catch (e) {}
   const guarda = () => { try { localStorage.setItem(CLAVE, JSON.stringify(st)); } catch (e) {} };
   let sol = null, col = {};
   const sc = () => st[st.tab];
@@ -22,7 +22,12 @@
   function formulario() {
     const s = sc();
     let h = '', nota = '';
-    if (st.tab === 'F') {
+    if (st.tab === 'T') {
+      h = fila('N1', 'Espiras del primario N<sub>1</sub>') + fila('N2', 'Espiras del secundario N<sub>2</sub>') + fila('L1', 'Autoinducción del primario L<sub>1</sub>', 'mH') + fila('k', 'Coeficiente de acoplamiento k') +
+        '<div class="sep">Alimentación y carga</div>' + fila('V1', 'Tensión del primario (eficaz)', 'V') + fila('fr', 'Frecuencia', 'Hz') + fila('RL', 'Resistencia de carga R<sub>L</sub>', 'Ω') +
+        '<div class="sep">Resistencia de los devanados</div>' + fila('R1', 'Primario R<sub>1</sub>', 'Ω') + fila('R2', 'Secundario R<sub>2</sub>', 'Ω');
+      nota = 'L₂ sale de L₁ y de la relación de espiras. Con k = 1 y sin resistencias es el transformador ideal; baja k y verás cómo cae la tensión, cómo sube la regulación y el rendimiento cae.';
+    } else if (st.tab === 'F') {
       h = fila('N1', 'Espiras de la grande N<sub>1</sub>') + fila('R', 'Radio de la grande R', 'cm') + fila('N2', 'Espiras de la pequeña N<sub>2</sub>') + fila('r', 'Radio de la pequeña r', 'cm') + fila('z', 'Distancia z entre los planos', 'cm') + '<div class="sep">Corrientes</div>' + fila('I1', 'Intensidad I<sub>1</sub>', 'A') + fila('I2', 'Intensidad I<sub>2</sub>', 'A');
       nota = 'Los ejes coinciden. Con corrientes del mismo signo (mismo sentido de giro) las espiras se atraen; con signos opuestos, se repelen. Vale cualquier cociente r/R.';
     } else if (st.tab === 'RL') {
@@ -72,11 +77,11 @@
   function ejemplos() { sel.innerHTML = '<option value="">Ejemplos…</option>' + I.ejemplos[st.tab].map((e) => `<option value="${e.clave}">${e.nombre}</option>`).join(''); }
   function pestana(t) {
     st.tab = t; guarda();
-    for (const k of ['L', 'M', 'F', 'RL']) $('#tab-' + k).setAttribute('aria-selected', k === t);
-    $('#dibujo').setAttribute('aria-label', t === 'RL' ? 'Gráfica de la corriente y la tensión en la bobina frente al tiempo' : t === 'F' ? 'Gráfica de la fuerza entre las dos espiras frente a la distancia' : 'Esquema del circuito');
+    for (const k of ['L', 'M', 'F', 'RL', 'T']) $('#tab-' + k).setAttribute('aria-selected', k === t);
+    $('#dibujo').setAttribute('aria-label', t === 'RL' ? 'Gráfica de la corriente y la tensión en la bobina frente al tiempo' : t === 'T' ? 'Gráfica de la tensión del secundario y del rendimiento frente a la resistencia de carga' : t === 'F' ? 'Gráfica de la fuerza entre las dos espiras frente a la distancia' : 'Esquema del circuito');
     ejemplos(); formulario(); calcula();
   }
-  for (const k of ['L', 'M', 'F', 'RL']) $('#tab-' + k).addEventListener('click', () => pestana(k));
+  for (const k of ['L', 'M', 'F', 'RL', 'T']) $('#tab-' + k).addEventListener('click', () => pestana(k));
   sel.addEventListener('change', () => { if (sel.value) abrirEjemplo(st.tab, sel.value); });
   function abrirEjemplo(tab, clave) {
     const e = I.ejemplos[tab].find((x) => x.clave === clave);
@@ -90,11 +95,13 @@
   const caja = (n, v, extra) => `<div><span>${n}</span><b>${v}</b>${extra ? `<small>${extra}</small>` : ''}</div>`;
   function calcula() {
     const err = $('#error');
-    try { sol = st.tab === 'L' ? I.autoinduccion(sc()) : st.tab === 'M' ? I.mutua(sc()) : st.tab === 'F' ? I.fuerza(sc()) : I.rl(sc()); } catch (e) { err.textContent = e.message; err.hidden = false; return; }
+    try { sol = st.tab === 'L' ? I.autoinduccion(sc()) : st.tab === 'M' ? I.mutua(sc()) : st.tab === 'F' ? I.fuerza(sc()) : st.tab === 'T' ? I.transformador(sc()) : I.rl(sc()); } catch (e) { err.textContent = e.message; err.hidden = false; return; }
     err.hidden = true; guarda();
     const r = sol.res;
     let h = '';
-    if (st.tab === 'L') {
+    if (st.tab === 'T') {
+      h = caja('Tensión del secundario', u(r.V2, 'V'), `ideal ${u(r.Vid, 'V')} · relación ${f(r.relacion)}`) + caja('Regulación', `${f(100 * r.reg, 3)} %`, `en vacío ${u(r.V20, 'V')}`) + caja('Rendimiento', `${f(100 * r.eta, 4)} %`, `P₂ = ${u(r.Pout, 'W')}`) + caja('Corriente primaria I₁', u(r.I1, 'A'), `cos φ = ${f(r.fp)}`) + caja('Corriente secundaria I₂', u(r.I2, 'A')) + caja('Inducción mutua M', u(r.M, 'H'), `L₂ = ${u(r.L2, 'H')}`) + caja('Pérdidas en el cobre', u(r.Pcu1 + r.Pcu2, 'W'), `primario ${u(r.Pcu1, 'W')} · secundario ${u(r.Pcu2, 'W')}`);
+    } else if (st.tab === 'L') {
       h = caja('Autoinducción L', u(r.L, 'H'), sol.p.l && (sc().geo === 'coaxial' || sc().geo === 'bifilar') ? `por metro: ${u(r.L / sol.p.l, 'H/m')}` : '');
       h += caja('Flujo propio Φ', r.flujo !== undefined ? u(r.flujo, 'Wb') : '—', r.flujo === undefined ? 'falta I' : '');
       h += caja('Energía U', r.U !== undefined ? u(r.U, 'J') : '—', r.U === undefined ? 'falta I' : '');
@@ -159,6 +166,7 @@
     const { g, w, h } = lienzo($('#dibujo'));
     g.font = '12px "IBM Plex Sans", system-ui, sans-serif'; g.textBaseline = 'middle';
     if (st.tab === 'RL') return grafica(g, w, h);
+    if (st.tab === 'T') return graficaT(g, w, h);
     if (st.tab === 'F') return graficaF(g, w, h);
     const p = sol.p, geo = sc().geo, cx = w / 2, cy = h / 2, H = h - 50;
     g.strokeStyle = col['--line'];
@@ -245,6 +253,19 @@
       texto(g, `k = ${f(p.k)}`, cx, cy - 58, col['--ink']);
     }
   }
+  // transformador: V₂/V₂₀ y rendimiento frente a la resistencia de carga (escala logarítmica), con el punto de los datos
+  function graficaT(g, w, h) {
+    const pts = sol.curva(), { p, res } = sol, m = { l: 52, r: 20, t: 22, b: 40 }, a = Math.log10(pts[0][0]), z = Math.log10(pts[pts.length - 1][0]);
+    const X = (R) => m.l + ((Math.log10(R) - a) / (z - a)) * (w - m.l - m.r), Y = (v) => h - m.b - v * (h - m.t - m.b);
+    g.strokeStyle = col['--line']; g.beginPath(); g.moveTo(m.l, m.t); g.lineTo(m.l, h - m.b); g.lineTo(w - m.r, h - m.b); g.stroke();
+    for (const v of [0, 0.5, 1]) { g.setLineDash([3, 4]); g.beginPath(); g.moveTo(m.l, Y(v)); g.lineTo(w - m.r, Y(v)); g.stroke(); g.setLineDash([]); texto(g, `${v * 100} %`, m.l - 6, Y(v), col['--muted'], 'right'); }
+    for (let e = Math.ceil(a); e <= Math.floor(z); e++) texto(g, u(Math.pow(10, e), 'Ω', 3), X(Math.pow(10, e)), h - m.b + 14, col['--muted']);
+    texto(g, 'resistencia de carga R_L (escala logarítmica; a la derecha, hacia el vacío)', (m.l + w - m.r) / 2, h - 8);
+    const linea = (i, c) => { g.strokeStyle = c; g.lineWidth = 2; g.beginPath(); pts.forEach((q, j) => (j ? g.lineTo(X(q[0]), Y(q[i])) : g.moveTo(X(q[0]), Y(q[i])))); g.stroke(); g.lineWidth = 1; };
+    linea(1, col['--pos']); linea(2, col['--neg']);
+    circulo(g, X(p.RL), Y(res.V2 / res.V20), 4, col['--pos']); circulo(g, X(p.RL), Y(res.eta), 4, col['--neg']);
+    texto(g, 'V₂ / V₂₀ (cuánto cae la tensión)', m.l + 8, m.t + 2, col['--pos'], 'left'); texto(g, 'rendimiento η', m.l + 8, m.t + 16, col['--neg'], 'left');
+  }
   // fuerza entre espiras: F(z) con el punto de los datos y la aproximación de dipolo discontinua
   function graficaF(g, w, h) {
     const { p, res } = sol, pts = sol.curva(), m = { l: 62, r: 20, t: 22, b: 36 }, zm = pts[pts.length - 1][0], Fm = Math.max(...pts.map((q) => Math.abs(q[1])), Math.abs(res.F)) * 1.1 || 1;
@@ -283,6 +304,6 @@
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', dibuja);
 
   const ver = $('#ver'); if (ver) ver.textContent = Version.de('induccion').current;
-  pestana(['L', 'M', 'F', 'RL'].includes(st.tab) ? st.tab : 'L');
+  pestana(['L', 'M', 'F', 'RL', 'T'].includes(st.tab) ? st.tab : 'L');
   window.InducApp = { abrirEjemplo, pestana, resultado: () => sol && sol.res, estado: () => copia(st) };
 })();

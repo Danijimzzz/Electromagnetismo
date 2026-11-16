@@ -49,6 +49,19 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       const c = Induccion.fuerza({ N1: '1', R: '10', N2: '1', r: '1', z: '5', I1: '1', I2: '1' }), c2 = Induccion.fuerza({ N1: '3', R: '10', N2: '4', r: '1', z: '5', I1: '2', I2: '5' }); if (!cerca(c2.res.F, c.res.F * 12 * 10, 1e-9)) mal('Inducción: F proporcional a N₁N₂I₁I₂');
       if (!cerca(Induccion.fuerza({ N1: '1', R: '10', N2: '1', r: '1', z: '5', I1: '1', I2: '1' }).res.zmax, 0.05, 0.12)) mal('Inducción: la fuerza máxima de una espira pequeña debería estar cerca de z = R/2');
       for (const mala of [{ R: '' }, { z: '0' }, { I1: 'x' }, { r: '-1' }, { N1: '1,5' }]) { let ok = false; try { Induccion.fuerza({ ...Induccion.ejemplos.F[0].sc, ...mala }); } catch (er) { ok = true; } if (!ok) mal(`Inducción: fuerza ${JSON.stringify(mala)} debería dar error`); } }
+    { // EM.IN-1: transformador resuelto por otro camino (sistema 2×2 complejo por eliminación) y límite ideal
+      const C = { s: (a, b) => [a[0] + b[0], a[1] + b[1]], m: (a, b) => [a[0] * b[0] - a[1] * b[1], a[0] * b[1] + a[1] * b[0]], d: (a, b) => { const q = b[0] ** 2 + b[1] ** 2; return [(a[0] * b[0] + a[1] * b[1]) / q, (a[1] * b[0] - a[0] * b[1]) / q]; } };
+      const aparte = (sc) => { const w = 2 * Math.PI * +sc.fr, L1 = +sc.L1 * 1e-3, n = +sc.N2 / +sc.N1, L2 = L1 * n * n, M = +sc.k * Math.sqrt(L1 * L2), R1 = +sc.R1, R2 = +sc.R2 + +sc.RL;
+        // [R1 + jwL1, −jwM; jwM, −(R2 + jwL2)]·[I1, I2] = [V1, 0]
+        const a11 = [R1, w * L1], a12 = [0, -w * M], a21 = [0, w * M], a22 = [-R2, -w * L2], det = C.s(C.m(a11, a22), C.m([-1, 0], C.m(a12, a21)));
+        const I1 = C.d(C.m([+sc.V1, 0], a22), det), I2 = C.d(C.m([-1, 0], C.m(a21, [+sc.V1, 0])), det); return { I1: Math.hypot(...I1), I2: Math.hypot(...I2), V2: +sc.RL * Math.hypot(...I2) }; };
+      for (const e of Induccion.ejemplos.T) { const r = Induccion.transformador(e.sc).res, o = aparte(e.sc); for (const q of ['I1', 'I2', 'V2']) if (!cerca(r[q], o[q], 1e-9)) mal(`Inducción · transformador ${e.clave}: ${q} = ${r[q]}, por otro camino ${o[q]}`); }
+      const id = Induccion.transformador({ N1: '100', N2: '300', L1: '1e9', k: '1', V1: '10', fr: '50', R1: '0', R2: '0', RL: '10' }).res;
+      if (!cerca(id.relacion, 3, 1e-6) || !cerca(id.eta, 1, 1e-9) || Math.abs(id.reg) > 1e-9) mal('Inducción: con k = 1 y sin resistencias el transformador debería ser ideal (relación 3, η = 1, regulación 0)');
+      const fl = Induccion.transformador(Induccion.ejemplos.T[0].sc).res, fl2 = Induccion.transformador({ ...Induccion.ejemplos.T[0].sc, k: '0.7' }).res;
+      if (!(fl2.reg > fl.reg && fl2.V2 < fl.V2)) mal('Inducción: al bajar k debería subir la regulación y bajar la tensión del secundario');
+      for (const mala of [{ k: '1.2' }, { N1: '' }, { RL: '0' }, { fr: '-5' }]) { let ok = false; try { Induccion.transformador({ ...Induccion.ejemplos.T[0].sc, ...mala }); } catch (er) { ok = true; } if (!ok) mal(`Inducción: ${JSON.stringify(mala)} en el transformador debería dar error`); }
+    }
     if (fallos === antes) console.log(`  ✓ Inducción: ${Induccion.ejemplos.L.length} autoinducciones, ${Induccion.ejemplos.M.length} inducciones mutuas y ${Induccion.ejemplos.RL.length} circuitos RL con el valor esperado, serie y paralelo, energía disipada, pulsos y errores`);
   }
 
@@ -60,7 +73,7 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       const antes = fallos;
       const verI = (await page.locator('#ver').textContent()).trim();
       if (verI !== Version.de('induccion').current) mal(`Inducción: la página muestra la versión «${verI}», se esperaba ${Version.de('induccion').current}`);
-      for (const tab of ['L', 'M', 'F', 'RL']) for (const e of Induccion.ejemplos[tab]) {
+      for (const tab of ['L', 'M', 'F', 'RL', 'T']) for (const e of Induccion.ejemplos[tab]) {
         await page.evaluate(([t, c]) => InducApp.abrirEjemplo(t, c), [tab, e.clave]);
         if (!(await page.locator('#error').isHidden()) || (await page.locator('#pasos li').count()) < 1 || (await page.locator('#resumen > div').count()) < 3) mal(`Inducción · ${tab} ${e.clave}: falta el resumen o el desarrollo`);
       }

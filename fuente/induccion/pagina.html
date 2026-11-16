@@ -28,7 +28,7 @@ th { color: var(--muted); font-weight: 500 }
 <div class="wrap">
 <h1>Autoinducción e inducción mutua</h1>
 <p class="lead">Calcula el coeficiente de autoinducción L de solenoides, toroides, cables coaxiales y líneas bifilares, toroides con entrehierro, el de inducción mutua M entre dos circuitos y de bobinas acopladas en serie o en paralelo, la energía magnética y la fem inducida, y sigue el transitorio de un circuito RL, también con la fuente que se conecta y desconecta.</p>
-<div class="modos" role="tablist"><button role="tab" id="tab-L" aria-selected="true">Autoinducción L</button><button role="tab" id="tab-M" aria-selected="false">Inducción mutua M</button><button role="tab" id="tab-F" aria-selected="false">Fuerza entre espiras</button><button role="tab" id="tab-RL" aria-selected="false">Circuito RL</button></div>
+<div class="modos" role="tablist"><button role="tab" id="tab-L" aria-selected="true">Autoinducción L</button><button role="tab" id="tab-M" aria-selected="false">Inducción mutua M</button><button role="tab" id="tab-F" aria-selected="false">Fuerza entre espiras</button><button role="tab" id="tab-RL" aria-selected="false">Circuito RL</button><button role="tab" id="tab-T" aria-selected="false">Transformador</button></div>
 <div class="layout">
   <div class="card">
     <h2>Datos</h2>
@@ -59,6 +59,8 @@ th { color: var(--muted); font-weight: 500 }
   <p>El signo de arriba vale cuando los flujos de las dos bobinas se suman, y el de abajo cuando se oponen. Para dos espiras coaxiales separadas una distancia z, si la pequeña es pequeña, M = μ<sub>0</sub>π N<sub>1</sub>N<sub>2</sub> R<sup>2</sup> r<sup>2</sup> / (2(R<sup>2</sup> + z<sup>2</sup>)<sup>3/2</sup>); para una bobina dentro de un solenoide, M = μ<sub>0</sub> N<sub>1</sub> N<sub>2</sub> π r<sup>2</sup> cos θ / l.</p>
   <h2>Fuerza entre espiras</h2>
   <p class="m">La energía de interacción de dos circuitos con corrientes fijas es $U = M I_1 I_2$ y la fuerza entre ellos $F = I_1 I_2 {dM}/{dz}$. Corrientes en el mismo sentido se atraen y opuestas se repelen. Para dos espiras coaxiales M se calcula exactamente con integrales elípticas; si la pequeña es mucho menor que la distancia, se comporta como un dipolo y $F ≈ −{3 μ_0 π N_1 N_2 I_1 I_2 R^2 r^2 z}/{2(R^2 + z^2)^{5/2}}$, que a gran distancia cae como $1/z^4$.</p>
+  <h2>Transformador con acoplamiento real</h2>
+  <p class="m">Dos bobinas con $L_2 = L_1 (N_2/N_1)^2$ y $M = k √(L_1 L_2)$. En régimen senoidal, con fasores: $V_1 = (R_1 + jωL_1) I_1 − jωM I_2$ y $jωM I_1 = (R_2 + R_L + jωL_2) I_2$. Con $k = 1$, resistencias nulas y $L_1$ grande sale el transformador ideal, $V_2/V_1 = N_2/N_1$. Con $k &lt; 1$ la tensión del secundario baja bajo carga (regulación $= (V_{20} − V_2)/V_{20}$) y el rendimiento $η = P_2/P_1$ cae por el cobre y por el flujo que se dispersa. Para ver el transformador de un poste de la calle paso a paso, mira <a href="../../fenomenos/transformador-poste/">El transformador del poste</a>.</p>
   <h2>Circuito RL</h2>
   <p>La bobina se opone a los cambios de corriente: al cerrar el circuito la corriente no salta a ε/R, sino que crece con la constante de tiempo τ = L/R, y al quitar la fuente decae con esa misma τ mientras la bobina devuelve su energía, que se disipa en la resistencia.</p>
   <p class="f m">$I(t) = ε/R (1 − e^{−t/τ})$, &ensp; $I(t) = I_0 e^{−t/τ}$, &ensp; $τ = L/R$</p>
