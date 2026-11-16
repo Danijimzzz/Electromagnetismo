@@ -489,7 +489,7 @@ async function navegador() {
       if (!(await page.evaluate(() => /Fijados/.test(document.querySelector('.bib-lista').textContent)))) mal(`${pag}: fijar no lo pone en Fijados`);
       // con una escritura pendiente de la app justo después del clic (10.1): tras recargar tiene que seguir lo guardado
       await Promise.all([page.waitForEvent('load'), page.evaluate((c) => { setTimeout(() => localStorage.setItem(c, '{"pisado":true}'), 0); document.querySelector('.bib .bib-abre').click(); }, clave).catch(() => {})]);
-      await page.waitForSelector('.bib .bib-it.activo');
+      try { await page.waitForSelector('.bib .bib-it.activo'); } catch (e) { mal(`${pag}: al abrir lo guardado no se marca como abierto (${e.message.split('\n')[0]})`); await page.close(); continue; }
       if ((await page.evaluate((k) => localStorage.getItem(k), clave)) !== guardado[0].datos) mal(`${pag}: abrir no recupera los datos guardados`);
       await page.click('.bib [data-acc=menu-general]');
       const [descarga] = await Promise.all([page.waitForEvent('download'), page.click('.bib [data-acc=exportar-todo]')]);
@@ -705,6 +705,12 @@ async function navegador() {
     const total = Catalogo.asignaturas.flatMap((a) => a.herramientas.filter((h) => h.disponible)).length;
     if (completo && r.probadas < total) mal(`Humo: solo se han probado ${r.probadas} de ${total} herramientas`);
     if (fallos === antes) console.log(`  ✓ Humo: ${r.probadas} herramientas guardan un dato cambiado y lo recuperan al recargar, en modo oscuro y a 390 px, sin errores de consola`);
+  }
+  {
+    // enunciado del ejercicio (pruebas/enunciado.js): se escribe, viaja con el estado y con Mis ejercicios, y sale al imprimir
+    const antes = fallos, r = await require('./enunciado.js')(browser, { mal, solo, filtro: mia });
+    if (completo && r.probadas < 100) mal(`Enunciado: solo se ha probado en ${r.probadas} herramientas`);
+    if (fallos === antes) console.log(`  ✓ Enunciado: ${r.probadas} herramientas guardan el enunciado con el ejercicio (Mis ejercicios, recarga), lo sacan al imprimir y abren sin él los estados de antes`);
   }
   {
     // «Usar en…» (pruebas/usar-en.js): cada enlace entre herramientas abre su destino con los datos llevados y un resultado
