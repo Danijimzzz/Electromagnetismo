@@ -7,13 +7,13 @@
 :root {
   --letra-campo: 13px var(--f-mono);
   --col-datos: minmax(300px, 400px);
-  --pos: #c2412a; --neg: #2a5db5; --mark: #6b3fa0;
+  --pos: #c2412a; --neg: #2a5db5; --mark: #6b3fa0; --ok: #2f7d4a; --cobre: #b87333; --nucleo: #d8d4c8;
   --canvas: #fbfcfa; --grid: #e7ebe6; --field: #7d8c86; --warn: #8a5a00; --warn-bg: #fff4dc; --bad: #b3261e }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --pos: #ef7a62; --neg: #74a2f2; --mark: #b892ec;
+  --pos: #ef7a62; --neg: #74a2f2; --mark: #b892ec; --ok: #6cc58a; --cobre: #d9955a; --nucleo: #3a3f40;
   --canvas: #141b1f; --grid: #1e282d; --field: #6e8380; --warn: #f0c060; --warn-bg: #2d2412; --bad: #f08a80 } }
 :root[data-theme="dark"] {
-  --pos: #ef7a62; --neg: #74a2f2; --mark: #b892ec;
+  --pos: #ef7a62; --neg: #74a2f2; --mark: #b892ec; --ok: #6cc58a; --cobre: #d9955a; --nucleo: #3a3f40;
   --canvas: #141b1f; --grid: #1e282d; --field: #6e8380; --warn: #f0c060; --warn-bg: #2d2412; --bad: #f08a80 }
 #principal { container: main / inline-size }
 #vista3d { height: clamp(260px, 46vw, 420px); margin-top: 0 }
@@ -64,6 +64,13 @@ textarea.in { font: 15px/1.5 var(--f-math); resize: vertical; min-height: 54px }
 .teoria .eq { font-family: var(--f-math); font-size: 17px; margin: 6px 0 6px 12px; overflow-x: auto }
 svg.perfil { display: block; width: 100%; max-width: 440px; height: auto; margin: 4px 0; font-family: var(--f-ui) }
 #flash { position: fixed; left: 50%; transform: translateX(-50%); bottom: 18px; background: var(--ink); color: var(--bg); padding: 7px 14px; border-radius: 8px; font-size: 13px; z-index: 20 }
+#ampere .am-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px } @media (max-width: 760px) { #ampere .am-grid { grid-template-columns: minmax(0, 1fr) } }
+#ampere .am-sep { margin: 12px 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--accent) }
+#ampere .am-campos { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 6px 10px; align-items: center; font-size: 13px }
+#ampere .am-radios { display: grid; gap: 6px } #ampere .am-op { display: flex; gap: 8px; align-items: flex-start; font-size: 13.5px }
+#ampere .am-m { margin: 6px 0; padding: 7px 10px; border-radius: 8px; background: var(--accent-soft); font-size: 13.5px } #ampere .am-m.ok { border-left: 3px solid var(--ok) } #ampere .am-m.mal { border-left: 3px solid var(--bad) }
+#ampere .am-resumen { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 10px 0 } #ampere .am-resumen div { background: var(--accent-soft); border-radius: 8px; padding: 6px 9px } #ampere .am-resumen span { display: block; font-size: 12px; color: var(--muted) } #ampere .am-resumen b { font: 500 15px var(--f-mono) }
+#ampere .am-pasos { padding-left: 20px; font-size: 14px } #ampere .am-pasos li { margin: 6px 0 }
 </style>
 <body>
 <header class="top"><a class="logo" href="../../">Simula<i>Ciencia</i></a><span class="crumb"><a href="../../">Inicio</a> / <a href="../">Electromagnetismo</a> / Magnetostática</span></header>
@@ -103,6 +110,9 @@ svg.perfil { display: block; width: 100%; max-width: 440px; height: auto; margin
     <section class="panel"><h2>Preguntas</h2><div class="chips" id="add-pregunta"></div><div id="preguntas" class="col"></div></section>
   </div>
 </div>
+<section class="panel" id="ampere" style="margin-top:18px"><h2>Modo guiado: ley de Ampère</h2>
+  <p class="hint">Elige un problema, di qué simetría tiene, escoge la curva amperiana y ponle tamaño: la calculadora te dice si con esa curva se puede sacar B de la integral y, si sí, te da el campo con el desarrollo.</p>
+  <div id="ampere-ui"></div></section>
 <section class="teoria">
   <h2>Cómo se calcula el campo magnético</h2>
   <p>La ley de Biot-Savart da el campo que crea un elemento de corriente <i>I</i> d<span class="vv">l</span> en un punto situado a una distancia <i>r</i>:</p>

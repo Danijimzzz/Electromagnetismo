@@ -53,6 +53,24 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     if (fallos === antes) console.log('  ✓ Magnetostática: momento dipolar, campo del dipolo frente a Biot-Savart, rot A = B en espira, rectángulo y solenoide, A del solenoide ideal y errores');
   }
 
+  // MG-3: modo guiado de Ampère, con B calculado a mano (μ₀/2π = 2·10⁻⁷)
+  {
+    const antes = fallos, Ampere = require(path.join(fuente, 'magnetostatica', 'ampere.js')), cerca = (x, y, q) => { if (!(Math.abs(x - y) <= 1e-9 * Math.max(1e-300, Math.abs(y)) + (y === 0 ? 1e-300 : 0))) mal(`Magnetostática · Ampère ${q}: ${x} en vez de ${y}`); };
+    const ev = (caso, sim, curva, q, d) => { const C = Ampere.CASOS[caso], st = { caso, sim, curva, d: Object.fromEntries(C.datos.map(([k, , , v]) => [k, v])), q: Object.fromEntries(C.curvaCampos.map(([k, , , v]) => [k, v])) }; Object.assign(st.q, q || {}); Object.assign(st.d, d || {}); return Ampere.evalua(st); };
+    const bien = (caso, q, d) => ev(caso, Ampere.CASOS[caso].sim, Ampere.CASOS[caso].curva, q, d).res;
+    cerca(bien('cilindro', { r: '1' }).B, 2e-7 * 2.5 / 0.01, 'cilindro dentro'); cerca(bien('cilindro', { r: '4' }).B, 2e-7 * 10 / 0.04, 'cilindro fuera');
+    cerca(bien('coaxial', { r: '2' }).B, 2e-7 * 10 / 0.02, 'coaxial entre conductores'); cerca(bien('coaxial', { r: '3.5' }).B, 2e-7 * 10 * (1 - 3.25 / 7) / 0.035, 'coaxial en la malla'); cerca(bien('coaxial', { r: '5' }).B, 0, 'coaxial fuera');
+    cerca(bien('lamina').B, 4e-7 * Math.PI * 25, 'lámina'); cerca(bien('lamina', { L: '30', h: '1' }).B, 4e-7 * Math.PI * 25, 'lámina: B no depende de L ni de h');
+    cerca(bien('solenoide').B, 4e-7 * Math.PI * 4000, 'solenoide'); cerca(bien('solenoide').Ienc, 400, 'solenoide: corriente enlazada');
+    cerca(bien('toroide').B, 2e-7 * 500 / 0.065, 'toroide dentro'); cerca(bien('toroide', { r: '3' }).B, 0, 'toroide hueco'); cerca(bien('toroide', { r: '10' }).B, 0, 'toroide fuera');
+    for (const c of Object.keys(Ampere.CASOS)) { const r = bien(c); if (Math.abs(r.circ / (4e-7 * Math.PI * r.Ienc) - 1) > 1e-9) mal(`Magnetostática · Ampère ${c}: la circulación no es μ₀ I_enc`); }
+    // elecciones equivocadas: no hay resultado y se explica por qué
+    for (const [caso, sim, curva] of [['cilindro', 'esferica', 'circulo'], ['cilindro', 'cilindrica', 'cualquiera'], ['cilindro', 'cilindrica', 'desc'], ['lamina', 'plana', 'circulo'], ['solenoide', 'cilindrica', 'circulo'], ['toroide', 'cilindrica', 'rect']]) { const e = ev(caso, sim, curva); if (e.res || e.mensajes.length < 2 || !e.mensajes.some((m) => /no|Sí hay|hace falta|no se puede|no sirve|no encaja/i.test(m))) mal(`Magnetostática · Ampère ${caso}/${sim}/${curva}: debería rechazarse con una explicación`); }
+    for (const mala of [{ r: '' }, { r: '-1' }, { r: 'x' }]) { let ok = false; try { ev('cilindro', 'cilindrica', 'circulo', mala); } catch (er) { ok = true; } if (!ok) mal(`Magnetostática · Ampère: ${JSON.stringify(mala)} debería dar error`); }
+    { let ok = false; try { ev('coaxial', 'cilindrica', 'circulo', {}, { b: '0.5' }); } catch (er) { ok = true; } if (!ok) mal('Magnetostática · Ampère: coaxial con a > b debería dar error'); }
+    if (fallos === antes) console.log('  ✓ Magnetostática: modo guiado de Ampère con 5 casos (B a mano, elecciones equivocadas explicadas y errores)');
+  }
+
   return async (browser) => {
     // magnetostática: mismos resultados en la página, cada ejemplo abierto sin errores de consola
     {
@@ -83,6 +101,16 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
       if (ver !== Version.de('magnetostatica').current) mal(`Magnetostática: la página muestra la versión «${ver}», se esperaba ${Version.de('magnetostatica').current}`);
       // copiar la solución como texto o LaTeX e imprimirla (compartir.js)
       if ((await page.locator('.compartir button').count()) !== 4 || !/Resultados[\s\S]*Desarrollo/.test(await page.evaluate(() => Compartir.ejercicio(false)))) mal('Magnetostática: faltan los botones para copiar o imprimir la solución');
+      // MG-3: el modo guiado de Ampère en la página
+      await page.evaluate(() => document.querySelector('#ampere').scrollIntoView());
+      if ((await page.locator('#ampere #am-caso').count()) !== 1) mal('Magnetostática: no sale el modo guiado de Ampère');
+      else {
+        await page.check('input[name="am-sim"][value="cilindrica"]'); await page.check('input[name="am-curva"][value="cualquiera"]');
+        if ((await page.locator('#am-res .am-resumen').count()) !== 0 || !(await page.locator('#am-msg .am-m.mal').count())) mal('Magnetostática: una curva amperiana cualquiera debería rechazarse con explicación');
+        await page.check('input[name="am-curva"][value="circulo"]');
+        if (!(await page.locator('#am-res').textContent()).includes('5·10') && !(await page.locator('#am-res').textContent()).includes('50')) mal('Magnetostática: el cilindro de Ampère no da B = 50 μT');
+        for (const c of ['coaxial', 'lamina', 'solenoide', 'toroide']) { await page.selectOption('#am-caso', c); const C = await page.evaluate((k) => Ampere.CASOS[k], c).catch(() => null); await page.evaluate((k) => AmpApp.poner({ sim: Ampere.CASOS[k].sim, curva: Ampere.CASOS[k].curva }), c); if ((await page.locator('#am-res .am-pasos li').count()) < 3 || (await page.locator('#am-dib svg').count()) !== 1) mal(`Magnetostática · Ampère ${c}: faltan el desarrollo o el dibujo`); }
+      }
       await page.close();
       if (consola.length) mal('Magnetostática: consola del navegador:\n      ' + consola.join('\n      '));
     }
