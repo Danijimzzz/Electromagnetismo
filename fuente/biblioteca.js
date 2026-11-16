@@ -68,54 +68,84 @@ const Biblioteca = (() => {
     return { nuevos, repetidos, herramientas: herr };
   }
 
+  // iconos de trazo (estilo SF), con el color del texto
+  const IC = {
+    plus: '<path d="M12 5v14M5 12h14"/>', ok: '<path d="M5 12.5l4.5 4.5L19 7.5"/>', refresh: '<path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v6h-6"/>',
+    imp: '<path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19h14"/>', exp: '<path d="M12 15V4M7.5 8.5L12 4l4.5 4.5M5 19h14"/>',
+    shield: '<path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/>', rest: '<path d="M4 12a8 8 0 1 1 2.5 5.8M4 18v-5h5"/>',
+    link: '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
+    print: '<path d="M7 9V4h10v5M7 17H5a1 1 0 0 1-1-1v-5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v5a1 1 0 0 1-1 1h-2"/><rect x="7" y="14" width="10" height="6" rx="1"/>',
+    star: '<path d="M12 4l2.4 5 5.5.7-4 3.8 1 5.5L12 16.5 7.1 19l1-5.5-4-3.8 5.5-.7z"/>', folder: '<path d="M4 7a2 2 0 0 1 2-2h3.5l2 2H18a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/>',
+    dots: '<circle cx="12" cy="5.5" r="1.4" fill="currentColor"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><circle cx="12" cy="18.5" r="1.4" fill="currentColor"/>',
+    x: '<path d="M6 6l12 12M18 6L6 18"/>', chev: '<path d="M9 6l6 6-6 6"/>', trash: '<path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/>',
+    pencil: '<path d="M5 19l1-4L16.5 4.5a1.5 1.5 0 0 1 2 0l1 1a1.5 1.5 0 0 1 0 2L9 18z"/>', pin: '<path d="M9 4h6l-1 6 3 3H7l3-3zM12 13v7"/>',
+    sel: '<circle cx="12" cy="12" r="8"/><path d="M8.5 12.2l2.4 2.4 4.6-4.8"/>', open: '<path d="M5 12h14M13 6l6 6-6 6"/>', move: '<path d="M4 7a2 2 0 0 1 2-2h3.5l2 2H18a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M12 11v5M9.5 13.5L12 11l2.5 2.5"/>'
+  };
+  const ico = (n) => `<svg class="bib-i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[n]}</svg>`;
   const CSS = `
 .bib-btn { display: inline-flex; align-items: center; gap: 6px; font: 600 13.5px var(--f-ui, system-ui); color: var(--ink); background: var(--vidrio, var(--panel)); -webkit-backdrop-filter: var(--blur, none); backdrop-filter: var(--blur, none); border: 1px solid var(--vidrio-borde, var(--line)); border-radius: 999px; padding: 5px 12px; cursor: pointer; white-space: nowrap }
 .bib-btn:hover, .bib-btn[aria-expanded=true] { border-color: var(--accent); color: var(--accent) }
-.bib { position: fixed; top: 0; left: 0; bottom: 0; width: 290px; max-width: 88vw; z-index: 60; background: var(--vidrio-fuerte, var(--panel)); -webkit-backdrop-filter: var(--blur, none); backdrop-filter: var(--blur, none); border-right: 1px solid var(--vidrio-borde, var(--line)); display: flex; flex-direction: column; transform: translateX(-102%); transition: transform .18s ease; font: 13.5px/1.4 var(--f-ui, system-ui); color: var(--ink) }
-.bib.abierta { transform: none; box-shadow: 4px 0 24px rgba(0,0,0,.12) }
+.bib { --ic-azul: #0a84ff; --ic-naranja: #ff9f0a; --ic-verde: #30b25a; --ic-violeta: #8e5cf0; --ic-cielo: #3aa8e0; --ic-rosa: #ff5c7a; --ic-rojo: #ff453a; --ic-oro: #e0a000;
+  position: fixed; top: 10px; left: 10px; bottom: 10px; width: 310px; max-width: calc(88vw - 10px); z-index: 60; overflow: hidden; background: var(--vidrio-fuerte, var(--panel)); -webkit-backdrop-filter: var(--blur, none); backdrop-filter: var(--blur, none); border: 1px solid var(--vidrio-borde, var(--line)); border-radius: 24px; box-shadow: var(--vidrio-brillo, none), var(--vidrio-sombra, none); display: flex; flex-direction: column; transform: translateX(-115%); transition: transform .2s ease; font: 13.5px/1.4 var(--f-ui, system-ui); color: var(--ink) }
+.bib.abierta { transform: none }
 .bib-scrim { position: fixed; inset: 0; z-index: 59; background: rgba(0,0,0,.3) }
-@media (min-width: ${ANCHO}px) { body.bib-fija { padding-left: 290px } body.bib-fija .bib.abierta { box-shadow: none } body.bib-fija .bib-scrim { display: none } }
+@media (min-width: ${ANCHO}px) { body.bib-fija { padding-left: 332px } body.bib-fija .bib-scrim { display: none } }
 @media (prefers-reduced-motion: reduce) { .bib { transition: none } }
-.bib-h { display: flex; align-items: center; justify-content: space-between; padding: 12px 12px 8px 14px }
-.bib-h b { font: 600 15px var(--f-ui, system-ui) }
-.bib-x { border: 0; background: none; color: var(--muted); font-size: 20px; line-height: 1; cursor: pointer; padding: 2px 6px; border-radius: 6px }
-.bib-x:hover { background: var(--bg) }
-.bib-acc { display: grid; gap: 2px; padding: 0 8px 8px }
-.bib-acc button, .bib-acc label { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; border: 0; background: none; color: var(--ink); font: 500 13.5px var(--f-ui, system-ui); padding: 6px 8px; border-radius: 8px; cursor: pointer }
-.bib-acc button:hover, .bib-acc label:hover { background: var(--bg) }
-.bib-acc button:disabled { opacity: .45; cursor: default; background: none }
-.bib-ic { width: 22px; height: 22px; border-radius: 6px; display: inline-grid; place-items: center; border: 1px solid var(--line); color: var(--accent); font-size: 13px; flex: 0 0 auto }
-.bib-busca { margin: 4px 2px 0; font: 13px var(--f-ui, system-ui); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 6px 9px; width: calc(100% - 4px) }
-.bib-form { margin: 0 10px 8px; padding: 10px; border: 1px solid var(--accent); border-radius: 10px; display: grid; gap: 6px }
+.bib button { font-family: inherit } .bib-i { width: 16px; height: 16px; flex: 0 0 auto }
+.bib-h { display: flex; align-items: center; gap: 8px; padding: 16px 12px 10px 16px }
+.bib-h b { font: 700 18px var(--f-ui, system-ui); letter-spacing: -.01em } .bib-n { color: var(--muted); font-size: 12px; margin-right: auto }
+.bib-hsel { justify-content: space-between } .bib-hsel b { font-size: 15px }
+.bib-lnk { border: 0; background: none; color: var(--accent); font: 600 13.5px var(--f-ui, system-ui); padding: 4px 6px; border-radius: 8px; cursor: pointer } .bib-lnk:hover { background: var(--accent-soft, var(--bg)) }
+.bib-x, .bib-dots { border: 0; background: none; color: var(--muted); cursor: pointer; display: grid; place-items: center; border-radius: 50% }
+.bib-x { width: 28px; height: 28px; background: color-mix(in srgb, var(--ink) 9%, transparent) } .bib-x .bib-i { width: 13px; height: 13px }
+.bib-dots { width: 30px; height: 30px; flex: 0 0 auto } .bib-dots:hover, .bib-dots[aria-expanded=true] { background: color-mix(in srgb, var(--ink) 9%, transparent); color: var(--accent) } .bib-dots .bib-i { width: 17px; height: 17px }
+.bib-h .bib-dots { background: var(--vidrio, var(--bg)); border: 1px solid var(--vidrio-borde, var(--line)) }
+.bib-seg { display: grid; grid-template-columns: 1fr 1fr; margin: 0 14px 10px; padding: 3px; border-radius: 99px; background: color-mix(in srgb, var(--ink) 8%, transparent) }
+.bib-seg button { border: 0; background: none; color: var(--muted); font: 500 13px var(--f-ui, system-ui); padding: 6px; border-radius: 99px; cursor: pointer }
+.bib-seg button[aria-selected=true] { background: var(--vidrio-fuerte, var(--panel)); color: var(--ink); box-shadow: 0 1px 4px rgba(0,0,0,.15), var(--vidrio-brillo, none) }
+.bib-cta { display: flex; gap: 8px; padding: 0 14px 8px }
+.bib-prim { flex: 1; display: flex; justify-content: center; align-items: center; gap: 8px; border: 0; border-radius: 99px; padding: 9px; background: var(--accent); color: var(--panel); font: 600 14px var(--f-ui, system-ui); cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,.3) }
+.bib-circ { width: 40px; flex: 0 0 auto; border-radius: 99px; border: 1px solid var(--vidrio-borde, var(--line)); background: var(--vidrio-fuerte, var(--panel)); color: var(--accent); display: grid; place-items: center; cursor: pointer; box-shadow: var(--vidrio-brillo, none) }
+.bib-circ:disabled { opacity: .45; cursor: default; color: var(--muted) }
+.bib-busca { margin: 0 14px 6px; font: 13px var(--f-ui, system-ui); color: var(--ink); background: color-mix(in srgb, var(--ink) 7%, transparent); border: 1px solid transparent; border-radius: 99px; padding: 7px 13px; width: calc(100% - 28px) }
+.bib-busca:focus { outline: 2px solid var(--accent); outline-offset: 0 }
+.bib-form { margin: 0 14px 8px; padding: 10px; border: 1px solid var(--accent); border-radius: 14px; display: grid; gap: 6px; background: var(--vidrio, var(--panel)) }
 .bib-form label { font-size: 12px; color: var(--muted); display: grid; gap: 2px }
-.bib-form input { font: 13px var(--f-ui, system-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px }
+.bib-form input { font: 13px var(--f-ui, system-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 6px 9px }
 .bib-form .fila { display: flex; gap: 6px; justify-content: flex-end }
-.bib-form button { font: 500 13px var(--f-ui, system-ui); border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 6px; padding: 5px 10px; cursor: pointer }
+.bib-form button { font: 500 13px var(--f-ui, system-ui); border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 99px; padding: 5px 12px; cursor: pointer }
 .bib-form button.si { background: var(--accent); border-color: var(--accent); color: var(--panel) }
-.bib-lista { flex: 1; overflow-y: auto; padding: 0 8px 8px; border-top: 1px solid var(--line) }
-.bib-sec { font: 600 11px var(--f-ui, system-ui); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 12px 6px 4px }
-.bib-carp { display: flex; align-items: center; gap: 6px; width: 100%; border: 0; background: none; color: var(--ink); font: 600 13px var(--f-ui, system-ui); padding: 5px 6px; border-radius: 6px; cursor: pointer; text-align: left }
-.bib-carp:hover { background: var(--bg) } .bib-carp .n { margin-left: auto; color: var(--muted); font-weight: 400; font-size: 12px }
-.bib-it { display: flex; align-items: center; gap: 2px; border-radius: 8px; padding-left: 2px }
-.bib-it:hover, .bib-it:focus-within { background: var(--bg) }
-.bib-it.activo { background: var(--accent-soft, var(--bg)); box-shadow: inset 3px 0 0 var(--accent) }
-.bib-carpd .bib-it { margin-left: 14px }
-.bib-abre { flex: 1; min-width: 0; border: 0; background: none; color: var(--ink); text-align: left; font: 13.5px var(--f-ui, system-ui); padding: 6px; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
-.bib-mini { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 13px; width: 26px; height: 26px; border-radius: 6px; flex: 0 0 auto; opacity: .55 }
-.bib-it:hover .bib-mini, .bib-it:focus-within .bib-mini, .bib-mini.on { opacity: 1 } .bib-mini:hover { background: var(--panel); color: var(--accent) } .bib-mini.on { color: var(--accent) }
-@media (hover: none) { .bib-mini { opacity: 1 } }
+.bib-chips { display: flex; flex-wrap: wrap; gap: 5px }
+.bib-form .bib-chip { padding: 3px 10px; font-size: 12px } .bib-form .bib-chip.on { border-color: var(--accent); color: var(--accent); background: var(--accent-soft, var(--bg)) }
+.bib-lista { flex: 1; overflow-y: auto; padding: 0 10px 8px }
+.bib-sec { display: flex; align-items: center; gap: 6px; font: 600 11px var(--f-ui, system-ui); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 12px 6px 4px }
+.bib-carpfila { display: flex; align-items: center; margin-top: 8px } .bib-carpfila .bib-dots { width: 26px; height: 26px }
+.bib-carp { flex: 1; display: flex; align-items: center; gap: 6px; border: 0; background: none; color: var(--muted); font: 600 11px var(--f-ui, system-ui); letter-spacing: .06em; text-transform: uppercase; padding: 5px 6px; border-radius: 8px; cursor: pointer; text-align: left }
+.bib-carp:hover { background: color-mix(in srgb, var(--ink) 6%, transparent) } .bib-carp .n { margin-left: auto; font-weight: 400; font-size: 12px } .bib-carp .bib-i { width: 13px; height: 13px }
+.bib-it { display: flex; align-items: center; border-radius: 12px; padding-right: 2px }
+.bib-it:hover, .bib-it:focus-within { background: color-mix(in srgb, var(--ink) 6%, transparent) }
+.bib-it.activo { background: var(--accent-soft, var(--bg)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent); color: var(--accent); font-weight: 600 } .bib-it.activo .bib-abre { color: var(--accent) }
+.bib-it.marc { background: color-mix(in srgb, var(--accent) 10%, transparent) }
+.bib-abre { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; border: 0; background: none; color: var(--ink); text-align: left; font: inherit; font-weight: inherit; padding: 8px 6px 8px 10px; cursor: pointer }
+.bib-tt { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap } .bib-fv { color: var(--ic-oro); display: grid } .bib-fv .bib-i { width: 13px; height: 13px; fill: currentColor }
+.bib-chk { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--muted); display: grid; place-items: center; flex: 0 0 auto } .bib-chk.on { background: var(--accent); border-color: var(--accent); color: var(--panel) } .bib-chk .bib-i { width: 14px; height: 14px; stroke-width: 2.6 }
 .bib-vacio { color: var(--muted); padding: 4px 6px 10px; margin: 0 }
-.bib-sec-ej { margin-top: 10px; font: 600 11px var(--f-ui, system-ui); letter-spacing: .06em; text-transform: uppercase; color: var(--muted) }
-.bib-sub { font: 600 12px var(--f-ui, system-ui); color: var(--muted); margin: 8px 6px 2px }
-.bib-ej { display: block; width: 100%; border: 0; background: none; color: var(--ink); text-align: left; font: 13.5px var(--f-ui, system-ui); padding: 6px; border-radius: 8px; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
-.bib-ej:hover { background: var(--bg) } .bib-ej.activo { background: var(--accent-soft, var(--bg)); box-shadow: inset 3px 0 0 var(--accent) }
-.bib-pie { border-top: 1px solid var(--line); padding: 8px 14px 12px; color: var(--muted); font-size: 12px }
-.bib-pie p { margin: 0 }
-.bib-aviso { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 70; background: var(--ink); color: var(--panel); padding: 8px 14px; border-radius: 8px; font: 13px var(--f-ui, system-ui); box-shadow: 0 4px 16px rgba(0,0,0,.2) }
+.bib-sub { font: 600 12px var(--f-ui, system-ui); color: var(--muted); margin: 10px 6px 2px }
+.bib-ej { display: block; width: 100%; border: 0; background: none; color: var(--ink); text-align: left; font: 13.5px var(--f-ui, system-ui); padding: 8px 10px; border-radius: 12px; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+.bib-ej:hover { background: color-mix(in srgb, var(--ink) 6%, transparent) } .bib-ej.activo { background: var(--accent-soft, var(--bg)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent); color: var(--accent); font-weight: 600 }
+.bib-pie { padding: 8px 16px 14px; color: var(--muted); font-size: 11.5px } .bib-pie p { margin: 0 }
+.bib-aviso { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 70; background: var(--ink); color: var(--panel); padding: 8px 14px; border-radius: 99px; font: 13px var(--f-ui, system-ui); box-shadow: 0 4px 16px rgba(0,0,0,.2) }
 .bib.arrastre { outline: 2px dashed var(--accent); outline-offset: -6px }
-.bib-chk { flex: 0 0 auto; margin: 0 4px 0 6px; accent-color: var(--accent); width: 16px; height: 16px }
-.bib-hoja-barra { display: grid; gap: 4px; padding: 0 8px 8px }
-.bib-hoja-barra p { margin: 0 6px 4px; color: var(--muted); font-size: 12.5px }
+.bib-grp { display: grid; border-radius: 14px; background: var(--vidrio-fuerte, var(--panel)); border: 1px solid var(--vidrio-borde, var(--line)); box-shadow: var(--vidrio-brillo, none); overflow: hidden }
+.bib-grp + .bib-grp { margin-top: 8px }
+.bib-mi { display: flex; align-items: center; gap: 10px; width: 100%; border: 0; background: none; color: var(--ink); text-align: left; font: 500 13.5px var(--f-ui, system-ui); padding: 8px 10px; cursor: pointer }
+.bib-mi + .bib-mi { border-top: 1px solid var(--line) } .bib-mi:hover:not(:disabled) { background: color-mix(in srgb, var(--ink) 6%, transparent) } .bib-mi:disabled { opacity: .45; cursor: default }
+.bib-mi small { display: block; color: var(--muted); font: 400 11.5px var(--f-ui, system-ui) } .bib-mi .bib-ch { margin-left: auto; color: var(--muted) } .bib-ch .bib-i { width: 13px; height: 13px }
+.bib-sq { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; background: var(--c, var(--accent)); color: #fff; flex: 0 0 auto } .bib-sq .bib-i { width: 16px; height: 16px }
+.bib-mi.peligro { color: var(--error, #c0392b) }
+.bib-selbar { padding: 8px 12px 12px; border-top: 1px solid var(--vidrio-borde, var(--line)) }
+.bib-dim { position: absolute; inset: 0; z-index: 4; background: rgba(0,0,0,.18); -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px) }
+.bib-pop { position: absolute; right: 12px; z-index: 5; width: 240px; max-width: calc(100% - 24px); max-height: calc(100% - 20px); overflow-y: auto; padding: 8px; border-radius: 20px; background: var(--vidrio-fuerte, var(--panel)); border: 1px solid var(--vidrio-borde, var(--line)); box-shadow: var(--vidrio-brillo, none), 0 14px 40px rgba(0,0,0,.28); -webkit-backdrop-filter: var(--blur, none); backdrop-filter: var(--blur, none) }
 #hoja-imp { display: none }
 /* al imprimir la barra, su fondo de cristal, el aviso y el hueco que deja a la izquierda sobran (en Circuitos salía encima del esquema) */
 @media print { .bib, .bib-scrim, .bib-aviso, .bib-btn { display: none !important } body.bib-fija { padding-left: 0 !important } }
@@ -131,7 +161,8 @@ const Biblioteca = (() => {
     let ui = { abierta: window.innerWidth >= ANCHO, cerradas: {}, ...lee(K_UI, {}) };
     let activo = null; try { activo = sessionStorage.getItem(K_ACT); } catch (e) { /* sin almacenamiento */ }
     if (activo && !lib.items.some((x) => x.id === activo)) activo = null;
-    let busca = '', form = null, borrando = null, hoja = null;
+    // pestana: 'guardados' | 'ejemplos'; menu: {tipo:'fila'|'carpeta'|'general', id|carpeta}; sel: Set de ids en modo selección
+    let busca = '', form = null, borrando = null, sel = null, pestana = 'guardados', menu = null;
     const guardaLib = () => escribe(K, lib) || aviso('No se pudo guardar: el navegador no deja usar el almacenamiento');
     const guardaUI = () => escribe(K_UI, ui);
     // Dos pestañas a la vez (10.6): antes de cambiar la lista se vuelve a leer la guardada, y si otra pestaña la cambia se repinta
@@ -244,8 +275,12 @@ const Biblioteca = (() => {
     }
     function guardaForm() {
       refresca();
-      const t = panel.querySelector('#bib-t').value.trim() || 'Ejercicio sin título', c = panel.querySelector('#bib-c').value.trim();
-      if (form.id) { const it = lib.items.find((x) => x.id === form.id); if (it) Object.assign(it, { titulo: t, carpeta: c, actualizado: Date.now() }); }
+      const c = panel.querySelector('#bib-c')?.value.trim() ?? '', tEl = panel.querySelector('#bib-t'), t = tEl ? tEl.value.trim() || 'Ejercicio sin título' : '';
+      if (form.renombra !== undefined) {
+        if (!c) { aviso('Pon un nombre a la carpeta'); return; }
+        for (const x of lib.items) if (x.carpeta === form.renombra) x.carpeta = c;
+      } else if (form.ids) { for (const x of lib.items) if (form.ids.includes(x.id)) x.carpeta = c; sel = null; }
+      else if (form.id) { const it = lib.items.find((x) => x.id === form.id); if (it) Object.assign(it, { titulo: t, carpeta: c, actualizado: Date.now() }); }
       else {
         const datos = estado();
         if (datos == null) { aviso('Todavía no hay nada que guardar: cambia algún dato primero'); return; }
@@ -263,13 +298,20 @@ const Biblioteca = (() => {
     // ----- enlace con los datos de ahora -----
     const b64 = (t) => btoa(unescape(encodeURIComponent(t))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
     const enlace = () => { const d = estado(); return location.href.split('#')[0] + (d ? `#d=${b64(d)}` : ''); };
-    async function copiaEnlace() {
-      const url = enlace(); let ok = false;
-      try { await navigator.clipboard.writeText(url); ok = true; } catch (e) {
-        const t = document.createElement('textarea'); t.value = url; t.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(t); t.select();
-        try { ok = document.execCommand('copy'); } catch (e2) { /* sin portapapeles */ } t.remove();
+    async function copiaTexto(t) {
+      try { await navigator.clipboard.writeText(t); return true; } catch (e) {
+        const x = document.createElement('textarea'); x.value = t; x.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(x); x.select();
+        let ok = false; try { ok = document.execCommand('copy'); } catch (e2) { /* sin portapapeles */ } x.remove(); return ok;
       }
+    }
+    const enlaceDe = (datos) => location.href.split('#')[0] + (datos ? `#d=${b64(datos)}` : '');
+    async function copiaEnlace(datos) {
+      const url = datos === undefined ? enlace() : enlaceDe(datos), ok = await copiaTexto(url);
       aviso(!ok ? 'No se ha podido copiar el enlace' : !url.includes('#d=') ? 'Enlace copiado, pero todavía no hay datos que llevar' : url.length > 8000 ? 'Enlace copiado (es muy largo: algunos programas lo cortan)' : 'Enlace copiado: abre la herramienta con estos datos');
+    }
+    async function copiaEnlaces(its) {
+      const ok = await copiaTexto(its.map((i) => `${i.titulo}\n${enlaceDe(i.datos)}`).join('\n\n'));
+      aviso(ok ? `${its.length} enlace${its.length === 1 ? '' : 's'} copiado${its.length === 1 ? '' : 's'}: cada uno abre la herramienta con su ejercicio` : 'No se han podido copiar los enlaces');
     }
 
     // ----- hoja para imprimir: cada ejercicio se abre en un marco oculto y se copia su solución -----
@@ -328,64 +370,86 @@ const Biblioteca = (() => {
       addEventListener('afterprint', fin);
       document.documentElement.setAttribute('data-theme', 'light');
       document.body.classList.add('hoja-imprimiendo');
-      hoja = null; pinta(); abre(false);
+      sel = null; menu = null; pinta(); abre(false);
       window.print();
     }
 
     function fila(it) {
-      const b = borrando === it.id;
-      if (hoja) return `<label class="bib-it" data-id="${it.id}"><input type="checkbox" class="bib-chk" data-id="${it.id}"${hoja.has(it.id) ? ' checked' : ''}><span class="bib-abre">${esc(it.titulo)}</span></label>`;
-      return `<div class="bib-it${it.id === activo ? ' activo' : ''}" data-id="${it.id}">
-<button class="bib-abre" data-acc="abrir" title="Abrir «${esc(it.titulo)}»">${esc(it.titulo)}</button>${b
-        ? '<button class="bib-mini on" data-acc="si-borrar" title="Borrar de verdad" aria-label="Confirmar borrar">✓</button><button class="bib-mini" data-acc="no-borrar" title="No borrar" aria-label="Cancelar">✕</button>'
-        : `<button class="bib-mini${it.fijado ? ' on' : ''}" data-acc="fijar" title="${it.fijado ? 'Quitar de fijados' : 'Fijar arriba'}" aria-label="${it.fijado ? 'Quitar de fijados' : 'Fijar'}" aria-pressed="${!!it.fijado}">${it.fijado ? '★' : '☆'}</button><button class="bib-mini" data-acc="editar" title="Cambiar el título o la carpeta" aria-label="Editar">✎</button><button class="bib-mini" data-acc="exportar" title="Exportar este ejercicio" aria-label="Exportar">⤓</button><button class="bib-mini" data-acc="borrar" title="Borrar" aria-label="Borrar">🗑</button>`}
-</div>`;
+      if (sel) { const m = sel.has(it.id); return `<div class="bib-it${m ? ' marc' : ''}" data-id="${it.id}"><button class="bib-abre" data-acc="marcar" role="checkbox" aria-checked="${m}"><span class="bib-chk${m ? ' on' : ''}" aria-hidden="true">${m ? ico('ok') : ''}</span><span class="bib-tt">${esc(it.titulo)}</span></button></div>`; }
+      return `<div class="bib-it${it.id === activo ? ' activo' : ''}" data-id="${it.id}"><button class="bib-abre" data-acc="abrir" title="Abrir «${esc(it.titulo)}»"><span class="bib-tt">${esc(it.titulo)}</span>${it.fijado ? `<span class="bib-fv" title="Fijado">${ico('star')}</span>` : ''}</button><button class="bib-dots" data-acc="menu-fila" aria-haspopup="menu" aria-expanded="${menu?.id === it.id}" aria-label="Opciones de «${esc(it.titulo)}»" title="Opciones">${ico('dots')}</button></div>`;
     }
+    const mi = (acc, ic, col, txt, sub = '', extra = '') => `<button class="bib-mi${extra}" role="menuitem" data-acc="${acc}"><span class="bib-sq" style="--c:var(--ic-${col})">${ico(ic)}</span><span>${txt}${sub ? `<small>${sub}</small>` : ''}</span><span class="bib-ch" aria-hidden="true">${ico('chev')}</span></button>`;
+    function menuHTML() {
+      if (!menu) return '';
+      let g = '';
+      if (menu.tipo === 'fila') {
+        const it = lib.items.find((x) => x.id === menu.id); if (!it) return '';
+        g = borrando === it.id
+          ? `<div class="bib-grp"><button class="bib-mi peligro" role="menuitem" data-acc="si-borrar"><span class="bib-sq" style="--c:var(--ic-rojo)">${ico('trash')}</span><span>Sí, borrar «${esc(it.titulo.length > 20 ? it.titulo.slice(0, 19) + '…' : it.titulo)}»</span></button>${mi('no-borrar', 'x', 'cielo', 'No borrar')}</div>`
+          : `<div class="bib-grp">${mi('abrir', 'open', 'azul', 'Abrir')}${mi('seleccionar', 'sel', 'violeta', 'Seleccionar', 'para imprimir o compartir varios')}${mi('editar', 'pencil', 'naranja', 'Título y carpeta')}${mi('mover', 'move', 'cielo', 'Mover a carpeta')}${mi('fijar', 'pin', 'oro', it.fijado ? 'Quitar de fijados' : 'Fijar arriba')}</div><div class="bib-grp">${mi('enlace-fila', 'link', 'verde', 'Copiar enlace')}${mi('exportar', 'exp', 'cielo', 'Exportar')}${mi('borrar', 'trash', 'rojo', 'Borrar', '', ' peligro')}</div>`;
+      } else if (menu.tipo === 'carpeta') {
+        g = `<div class="bib-grp">${mi('sel-carpeta', 'sel', 'violeta', 'Seleccionar la carpeta')}${mi('carp-renombrar', 'pencil', 'naranja', 'Renombrar carpeta')}${mi('carp-quitar', 'folder', 'cielo', 'Quitar carpeta', 'los ejercicios se quedan sin carpeta')}</div>`;
+      } else {
+        const n = lib.items.length;
+        g = `<div class="bib-grp">${mi('enlace', 'link', 'azul', 'Copiar enlace con estos datos')}<button class="bib-mi" role="menuitem" data-acc="sel-modo"${n ? '' : ' disabled'}><span class="bib-sq" style="--c:var(--ic-violeta)">${ico('sel')}</span><span>Seleccionar varios<small>imprimir, compartir, exportar…</small></span><span class="bib-ch" aria-hidden="true">${ico('chev')}</span></button></div>`
+          + `<div class="bib-grp">${mi('copia', 'shield', 'verde', 'Copia de seguridad de todo', 'un archivo con todas tus herramientas')}${mi('restaurar', 'rest', 'violeta', 'Restaurar copia…')}</div>`
+          + `<div class="bib-grp">${mi('importar', 'imp', 'cielo', 'Importar archivo…')}<button class="bib-mi" role="menuitem" data-acc="exportar-todo"${n ? '' : ' disabled'}><span class="bib-sq" style="--c:var(--ic-rosa)">${ico('exp')}</span><span>Exportar todos</span><span class="bib-ch" aria-hidden="true">${ico('chev')}</span></button></div>`;
+      }
+      return `<div class="bib-dim" data-acc="cierra-menu"></div><div class="bib-pop" role="menu" data-tipo="${menu.tipo}">${g}</div>`;
+    }
+    function posicionaMenu() {
+      const pop = panel.querySelector('.bib-pop'); if (!pop) return;
+      const pr = panel.getBoundingClientRect();
+      let ref = null;
+      if (menu.tipo === 'general') ref = panel.querySelector('.bib-h .bib-dots');
+      else if (menu.tipo === 'fila') ref = [...panel.querySelectorAll('.bib-it')].find((x) => x.dataset.id === menu.id)?.querySelector('.bib-dots');
+      else ref = [...panel.querySelectorAll('.bib-carpfila')].find((x) => x.dataset.carpeta === menu.carpeta)?.querySelector('.bib-dots');
+      let top = ref ? ref.getBoundingClientRect().bottom - pr.top + 4 : 56; const h = pop.offsetHeight;
+      if (top + h > pr.height - 10) top = Math.max(10, (ref ? ref.getBoundingClientRect().top - pr.top : pr.height) - h - 4);
+      pop.style.top = top + 'px';
+    }
+    const itemsSel = () => lib.items.filter((x) => sel && sel.has(x.id));
     function pinta() {
-      const q = norm(busca), vis = lib.items.filter((i) => !q || norm(i.titulo + ' ' + (i.carpeta || '')).includes(q));
+      const q = norm(busca), n = lib.items.length, vis = lib.items.filter((i) => !q || norm(i.titulo + ' ' + (i.carpeta || '')).includes(q));
+      const hayEj = selsEj().some((s) => s.options.length > 1);
+      if (sel) pestana = 'guardados';
+      if (!hayEj) pestana = 'guardados';
       const orden = (a, b) => a.titulo.localeCompare(b.titulo, 'es', { numeric: true });
-      const fij = vis.filter((i) => i.fijado).sort(orden), resto = vis.filter((i) => !i.fijado);
-      const sueltos = resto.filter((i) => !i.carpeta).sort(orden), carpetas = {};
-      for (const i of resto) if (i.carpeta) (carpetas[i.carpeta] ||= []).push(i);
       let lista = '';
-      if (fij.length) lista += `<p class="bib-sec">Fijados</p>${fij.map(fila).join('')}`;
-      const nombres = Object.keys(carpetas).sort((a, b) => a.localeCompare(b, 'es'));
-      if (nombres.length || sueltos.length) lista += `<p class="bib-sec">Mis ejercicios</p>`;
-      for (const n of nombres) {
-        const ab = q || !ui.cerradas[`${herramienta}/${n}`];
-        lista += `<button class="bib-carp" data-carpeta="${esc(n)}" aria-expanded="${!!ab}"><span aria-hidden="true">${ab ? '▾' : '▸'}</span>${esc(n)}<span class="n">${carpetas[n].length}</span></button>${ab ? `<div class="bib-carpd">${carpetas[n].sort(orden).map(fila).join('')}</div>` : ''}`;
+      if (pestana === 'ejemplos') {
+        lista = ejemplosHTML(q) || '<p class="bib-vacio">Ningún ejemplo coincide con la búsqueda.</p>';
+      } else {
+        const fij = vis.filter((i) => i.fijado).sort(orden), resto = vis.filter((i) => !i.fijado), sueltos = resto.filter((i) => !i.carpeta).sort(orden), carpetas = {};
+        for (const i of resto) if (i.carpeta) (carpetas[i.carpeta] ||= []).push(i);
+        if (fij.length) lista += `<p class="bib-sec">Fijados</p>${fij.map(fila).join('')}`;
+        for (const c of Object.keys(carpetas).sort((a, b) => a.localeCompare(b, 'es'))) {
+          const ab = q || !ui.cerradas[`${herramienta}/${c}`];
+          lista += `<div class="bib-carpfila" data-carpeta="${esc(c)}"><button class="bib-carp" data-carpeta="${esc(c)}" aria-expanded="${!!ab}">${ico('folder')}${esc(c)}<span class="n">${carpetas[c].length}</span></button>${sel ? '' : `<button class="bib-dots" data-acc="menu-carpeta" aria-haspopup="menu" aria-expanded="${menu?.carpeta === c}" aria-label="Opciones de la carpeta ${esc(c)}" title="Opciones de la carpeta">${ico('dots')}</button>`}</div>${ab ? `<div class="bib-carpd">${carpetas[c].sort(orden).map(fila).join('')}</div>` : ''}`;
+        }
+        if (sueltos.length) lista += `${fij.length || Object.keys(carpetas).length ? '<p class="bib-sec">Sin carpeta</p>' : ''}${sueltos.map(fila).join('')}`;
+        if (!vis.length) lista = `<p class="bib-vacio">${n ? 'Ningún ejercicio coincide con la búsqueda.' : 'Aún no has guardado ningún ejercicio. Prepara los datos y pulsa «Guardar el actual».'}</p>`;
       }
-      lista += sueltos.map(fila).join('');
-      if (!vis.length) lista = `<p class="bib-sec">Mis ejercicios</p><p class="bib-vacio">${lib.items.length ? 'Ningún ejercicio coincide con la búsqueda.' : 'Aún no has guardado ningún ejercicio. Prepara los datos y pulsa «Guardar el actual».'}</p>`;
-      const ejs = hoja ? '' : ejemplosHTML(q), abEj = q || !ui.cerradas[`${herramienta}/#ejemplos`];
-      if (ejs) lista += `<button class="bib-carp bib-sec-ej" data-carpeta="#ejemplos" aria-expanded="${!!abEj}">Ejercicios de ejemplo<span class="n" aria-hidden="true">${abEj ? '▾' : '▸'}</span></button>${abEj ? `<div class="bib-ejs">${ejs}</div>` : ''}`;
-      const it = lib.items.find((x) => x.id === activo), carps = [...new Set(lib.items.map((x) => x.carpeta).filter(Boolean))];
-      const f = form && (form.id ? lib.items.find((x) => x.id === form.id) : { titulo: ejemplo() || `Ejercicio ${lib.items.length + 1}`, carpeta: it?.carpeta || '' });
-      if (hoja) {
-        panel.innerHTML = `<div class="bib-h"><b>Hoja para imprimir</b><button class="bib-x" data-acc="cerrar" title="Cerrar" aria-label="Cerrar Mis ejercicios">×</button></div>
-<div class="bib-hoja-barra"><p>Marca los ejercicios que quieres en la hoja. Se imprimen con sus resultados y su desarrollo.</p>
-<button data-acc="hoja-todos"><span class="bib-ic">☑</span>${vis.every((i) => hoja.has(i.id)) && vis.length ? 'Quitar todos' : 'Marcar todos'}</button>
-<button data-acc="hoja-imprimir"${hoja.size ? '' : ' disabled'}><span class="bib-ic">🖨</span>Imprimir ${hoja.size} ejercicio${hoja.size === 1 ? '' : 's'}</button>
-<button data-acc="hoja-cancelar"><span class="bib-ic">✕</span>Volver a Mis ejercicios</button></div>
-<div class="bib-lista">${lista}</div>`;
-        return;
+      const it = lib.items.find((x) => x.id === activo), carps = [...new Set(lib.items.map((x) => x.carpeta).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'es'));
+      let f = null;
+      if (form) {
+        const valor = form.renombra !== undefined ? form.renombra : form.ids ? '' : form.id ? lib.items.find((x) => x.id === form.id)?.carpeta || '' : it?.carpeta || '';
+        const tit = form.id ? lib.items.find((x) => x.id === form.id)?.titulo : ejemplo() || `Ejercicio ${n + 1}`;
+        const chips = form.renombra !== undefined || !carps.length ? '' : `<div class="bib-chips" role="group" aria-label="Carpetas que ya tienes">${['', ...carps].map((c) => `<button type="button" class="bib-chip${c === valor ? ' on' : ''}" data-acc="carpeta-elige" data-c="${esc(c)}">${c ? esc(c) : 'Sin carpeta'}</button>`).join('')}</div>`;
+        const campoT = form.renombra !== undefined || form.ids ? '' : `<label>Título<input id="bib-t" value="${esc(tit)}" maxlength="120" autocomplete="off"></label>`;
+        f = `<div class="bib-form">${campoT}<label>${form.renombra !== undefined ? 'Nombre de la carpeta' : form.ids ? `Mover ${form.ids.length} ejercicio${form.ids.length === 1 ? '' : 's'} a la carpeta` : 'Carpeta (opcional)'}<input id="bib-c" value="${esc(valor)}" maxlength="60" placeholder="${form.renombra !== undefined ? '' : 'sin carpeta: o escribe un nombre para crear una nueva'}" autocomplete="off"></label>${chips}<div class="fila"><button data-acc="cancelar">Cancelar</button><button class="si" data-acc="guardar">Guardar</button></div></div>`;
       }
-      panel.innerHTML = `<div class="bib-h"><b>Mis ejercicios</b><button class="bib-x" data-acc="cerrar" title="Cerrar" aria-label="Cerrar Mis ejercicios">×</button></div>
-<div class="bib-acc">
-<button data-acc="nuevo"><span class="bib-ic">+</span>Guardar el actual como nuevo</button>
-<button data-acc="actualizar"${it ? '' : ' disabled'} title="${it ? `Guarda los datos de ahora en «${esc(it.titulo)}»` : 'Abre o guarda antes un ejercicio'}"><span class="bib-ic">↻</span>${it ? `Guardar cambios en «${esc(it.titulo.length > 22 ? it.titulo.slice(0, 21) + '…' : it.titulo)}»` : 'Guardar cambios'}</button>
-<button data-acc="importar"><span class="bib-ic">↥</span>Importar archivo…</button>
-<button data-acc="exportar-todo"${lib.items.length ? '' : ' disabled'}><span class="bib-ic">↧</span>Exportar todos</button>
-<button data-acc="copia" title="Un solo archivo con los ejercicios de todas las herramientas"><span class="bib-ic">⛁</span>Copia de seguridad de todo</button>
-<button data-acc="restaurar" title="Suma a lo que tienes los ejercicios de una copia de seguridad"><span class="bib-ic">⟲</span>Restaurar copia…</button>
-<button data-acc="enlace" title="Copia un enlace que abre la herramienta con los datos de ahora"><span class="bib-ic">🔗</span>Copiar enlace con estos datos</button>
-<button data-acc="hoja"${lib.items.length ? '' : ' disabled'} title="Elige varios ejercicios y imprímelos juntos con su solución"><span class="bib-ic">🖨</span>Hoja para imprimir…</button>
-${lib.items.length > 5 ? `<input type="search" class="bib-busca" placeholder="Buscar por título o carpeta…" aria-label="Buscar ejercicios" value="${esc(busca)}">` : ''}
-</div>
-${f ? `<div class="bib-form"><label>Título<input id="bib-t" value="${esc(f.titulo)}" maxlength="120" autocomplete="off"></label><label>Carpeta (opcional)<input id="bib-c" value="${esc(f.carpeta || '')}" maxlength="60" list="bib-dl" placeholder="sin carpeta" autocomplete="off"></label><datalist id="bib-dl">${carps.map((c) => `<option value="${esc(c)}">`).join('')}</datalist><div class="fila"><button data-acc="cancelar">Cancelar</button><button class="si" data-acc="guardar">Guardar</button></div></div>` : ''}
-<div class="bib-lista">${lista}</div>
-<div class="bib-pie"><p>Se guardan en este navegador. Exporta un archivo <code>.simu.json</code> para llevarlos a otro equipo o compartirlos; también puedes arrastrarlo aquí. Haz de vez en cuando una copia de seguridad de todo: si borras los datos del navegador, se pierden.</p></div>`;
-      if (f) { const t = panel.querySelector('#bib-t'); t.focus(); t.select(); }
+      const cab = sel
+        ? `<div class="bib-h bib-hsel"><button class="bib-lnk" data-acc="sel-cancelar">Cancelar</button><b>${sel.size ? `${sel.size} seleccionado${sel.size === 1 ? '' : 's'}` : 'Elige ejercicios'}</b><button class="bib-lnk" data-acc="sel-todos">${vis.length && vis.every((i) => sel.has(i.id)) ? 'Ninguno' : 'Todos'}</button></div>`
+        : `<div class="bib-h"><b>Mis ejercicios</b><span class="bib-n">${n}</span><button class="bib-dots" data-acc="menu-general" aria-haspopup="menu" aria-expanded="${menu?.tipo === 'general'}" aria-label="Más opciones" title="Más opciones: copia de seguridad, importar, seleccionar varios…">${ico('dots')}</button><button class="bib-x" data-acc="cerrar" title="Cerrar" aria-label="Cerrar Mis ejercicios">${ico('x')}</button></div>`;
+      const tabs = sel || !hayEj ? '' : `<div class="bib-seg" role="tablist"><button role="tab" data-acc="pestana-guardados" aria-selected="${pestana === 'guardados'}">Guardados</button><button role="tab" data-acc="pestana-ejemplos" aria-selected="${pestana === 'ejemplos'}">Ejemplos</button></div>`;
+      const cta = sel || pestana !== 'guardados' ? '' : `<div class="bib-cta"><button class="bib-prim" data-acc="nuevo">${ico('plus')} Guardar el actual</button><button class="bib-circ" data-acc="actualizar"${it ? '' : ' disabled'} aria-label="${it ? `Guardar cambios en «${esc(it.titulo)}»` : 'Guardar cambios'}" title="${it ? `Guardar los datos de ahora en «${esc(it.titulo)}»` : 'Abre o guarda antes un ejercicio'}">${ico('refresh')}</button></div>`;
+      const buscar = (pestana === 'ejemplos' ? selsEj().some((s) => s.options.length > 5) : n > 3) ? `<input type="search" class="bib-busca" placeholder="${pestana === 'ejemplos' ? 'Buscar ejemplo…' : 'Buscar por título o carpeta…'}" aria-label="Buscar" value="${esc(busca)}">` : '';
+      const nSel = sel ? sel.size : 0, conf = borrando === '#sel';
+      const barra = sel ? `<div class="bib-selbar"><div class="bib-grp">${mi('sel-imprimir', 'print', 'naranja', `Imprimir hoja${nSel ? ` (${nSel})` : ''}`).replace('<button', nSel ? '<button' : '<button disabled')}${mi('sel-enlaces', 'link', 'azul', 'Copiar enlaces').replace('<button', nSel ? '<button' : '<button disabled')}${mi('sel-exportar', 'exp', 'cielo', 'Exportar selección').replace('<button', nSel ? '<button' : '<button disabled')}${mi('sel-mover', 'move', 'verde', 'Mover a carpeta…').replace('<button', nSel ? '<button' : '<button disabled')}${conf ? `<button class="bib-mi peligro" data-acc="sel-si-borrar"><span class="bib-sq" style="--c:var(--ic-rojo)">${ico('trash')}</span><span>Sí, borrar ${nSel}</span></button>${mi('no-borrar', 'x', 'cielo', 'No borrar')}` : mi('sel-borrar', 'trash', 'rojo', 'Borrar', '', ' peligro').replace('<button', nSel ? '<button' : '<button disabled')}</div></div>` : '';
+      const pie = sel || pestana !== 'guardados' ? '' : '<div class="bib-pie"><p>Se guardan en este navegador. Haz de vez en cuando una copia de seguridad (⋮ de arriba): si borras los datos del navegador, se pierden. También puedes arrastrar aquí un archivo <code>.simu.json</code>.</p></div>';
+      panel.innerHTML = `${cab}${tabs}<div class="bib-acc">${cta}${f || ''}${buscar}</div><div class="bib-lista">${lista}</div>${pie}${barra}${menuHTML()}`;
+      if (f) { const t = panel.querySelector('#bib-t') || panel.querySelector('#bib-c'); t.focus(); t.select(); }
+      if (menu) posicionaMenu();
     }
 
     panel.addEventListener('click', (e) => {
@@ -393,42 +457,62 @@ ${f ? `<div class="bib-form"><label>Título<input id="bib-t" value="${esc(f.titu
       const car = e.target.closest('.bib-carp');
       if (car) { const k = `${herramienta}/${car.dataset.carpeta}`; ui.cerradas[k] = !ui.cerradas[k]; guardaUI(); pinta(); return; }
       const b = e.target.closest('[data-acc]'); if (!b) return;
-      const id = b.closest('.bib-it')?.dataset.id, it = id && lib.items.find((x) => x.id === id);
-      switch (b.dataset.acc) {
+      const dentro = !!b.closest('.bib-pop'), acc = b.dataset.acc;
+      const id = b.closest('.bib-it')?.dataset.id || (dentro && menu?.id) || null, it = id && lib.items.find((x) => x.id === id);
+      const carpeta = b.closest('.bib-carpfila')?.dataset.carpeta ?? menu?.carpeta;
+      if (dentro && acc !== 'borrar') menu = null;
+      switch (acc) {
         case 'cerrar': abre(false); btn.focus(); break;
+        case 'pestana-guardados': case 'pestana-ejemplos': pestana = acc.slice(8); menu = null; pinta(); break;
+        case 'menu-fila': menu = menu?.id === id ? null : { tipo: 'fila', id }; borrando = null; pinta(); break;
+        case 'menu-carpeta': menu = menu?.carpeta === carpeta ? null : { tipo: 'carpeta', carpeta }; pinta(); break;
+        case 'menu-general': menu = menu?.tipo === 'general' ? null : { tipo: 'general' }; pinta(); break;
+        case 'cierra-menu': menu = null; borrando = null; pinta(); break;
         case 'nuevo': form = {}; pinta(); break;
         case 'actualizar': actualiza(); break;
-        case 'importar': archivo.click(); break;
+        case 'importar': case 'restaurar': archivo.click(); break;
         case 'copia': descargaCopia(); break;
-        case 'restaurar': archivo.click(); break;
         case 'exportar-todo': descarga(nombreArchivo(nombre + ' ejercicios'), archivoDe(lib.items)); break;
         case 'enlace': copiaEnlace(); break;
-        case 'hoja': hoja = new Set(); form = null; pinta(); break;
-        case 'hoja-cancelar': hoja = null; pinta(); break;
-        case 'hoja-todos': { const q = norm(busca), vis = lib.items.filter((i) => !q || norm(i.titulo + ' ' + (i.carpeta || '')).includes(q)); if (vis.every((i) => hoja.has(i.id))) hoja.clear(); else vis.forEach((i) => hoja.add(i.id)); pinta(); break; }
-        case 'hoja-imprimir': imprimeHoja(lib.items.filter((i) => hoja.has(i.id))); break;
+        case 'enlace-fila': if (it) copiaEnlace(it.datos); break;
+        case 'sel-modo': sel = new Set(); form = null; pestana = 'guardados'; break;
+        case 'seleccionar': if (it) { sel = new Set([it.id]); form = null; } break;
+        case 'sel-carpeta': sel = new Set(lib.items.filter((x) => x.carpeta === carpeta).map((x) => x.id)); form = null; break;
+        case 'sel-cancelar': sel = null; borrando = null; break;
+        case 'sel-todos': { const q = norm(busca), vis = lib.items.filter((i) => !q || norm(i.titulo + ' ' + (i.carpeta || '')).includes(q)); if (vis.every((i) => sel.has(i.id))) vis.forEach((i) => sel.delete(i.id)); else vis.forEach((i) => sel.add(i.id)); break; }
+        case 'marcar': if (it) { if (sel.has(it.id)) sel.delete(it.id); else sel.add(it.id); pinta(); [...panel.querySelectorAll('.bib-it')].find((x) => x.dataset.id === it.id)?.querySelector('.bib-abre')?.focus(); } return;
+        case 'sel-imprimir': { const its = itemsSel(); if (its.length) imprimeHoja(its); break; }
+        case 'sel-enlaces': { const its = itemsSel(); if (its.length) copiaEnlaces(its); break; }
+        case 'sel-exportar': { const its = itemsSel(); if (its.length) descarga(nombreArchivo(nombre + ' seleccion'), archivoDe(its)); break; }
+        case 'sel-mover': if (sel.size) form = { ids: [...sel] }; break;
+        case 'sel-borrar': borrando = '#sel'; break;
+        case 'sel-si-borrar': { const ids = sel; lib.items = lib.items.filter((x) => !ids.has(x.id)); if (ids.has(activo)) ponActivo(null); sel = null; borrando = null; guardaLib(); aviso(`${ids.size} ejercicio${ids.size === 1 ? '' : 's'} borrado${ids.size === 1 ? '' : 's'}`); break; }
         case 'guardar': guardaForm(); break;
-        case 'cancelar': form = null; pinta(); break;
+        case 'cancelar': form = null; break;
+        case 'carpeta-elige': { const inp = panel.querySelector('#bib-c'); if (inp) { inp.value = b.dataset.c; inp.focus(); } for (const c of panel.querySelectorAll('.bib-chip')) c.classList.toggle('on', c === b); return; }
+        case 'carp-renombrar': form = { renombra: carpeta }; break;
+        case 'carp-quitar': for (const x of lib.items) if (x.carpeta === carpeta) x.carpeta = ''; guardaLib(); aviso(`Carpeta «${carpeta}» quitada: sus ejercicios siguen en la lista`); break;
         case 'abrir': if (it) carga(it); break;
         case 'ejemplo': {
           const s = selsEj()[+b.dataset.sel]; if (!s) break;
           s.value = b.dataset.v; s.dispatchEvent(new Event('change', { bubbles: true }));
           ponActivo(null); pinta(); if (window.innerWidth < ANCHO) abre(false);
-          break;
+          return;
         }
-        case 'fijar': if (it) { it.fijado = !it.fijado; guardaLib(); pinta(); } break;
-        case 'editar': if (it) { form = { id }; pinta(); } break;
+        case 'fijar': if (it) { it.fijado = !it.fijado; guardaLib(); } break;
+        case 'editar': if (it) form = { id }; break;
+        case 'mover': if (it) form = { ids: [it.id] }; break;
         case 'exportar': if (it) descarga(nombreArchivo(it.titulo), archivoDe([it])); break;
-        case 'borrar': borrando = id; pinta(); break;
-        case 'no-borrar': borrando = null; pinta(); break;
-        case 'si-borrar': lib.items = lib.items.filter((x) => x.id !== id); if (activo === id) ponActivo(null); borrando = null; guardaLib(); pinta(); aviso('Ejercicio borrado'); break;
+        case 'borrar': borrando = id; pinta(); return;
+        case 'no-borrar': borrando = null; break;
+        case 'si-borrar': if (it) { lib.items = lib.items.filter((x) => x.id !== id); if (activo === id) ponActivo(null); borrando = null; guardaLib(); aviso('Ejercicio borrado'); } break;
       }
+      pinta();
     });
     panel.addEventListener('keydown', (e) => {
       if (e.target.closest('.bib-form') && e.key === 'Enter') { e.preventDefault(); guardaForm(); }
-      else if (e.key === 'Escape') { if (form) { form = null; pinta(); } else { abre(false); btn.focus(); } }
+      else if (e.key === 'Escape') { if (menu) { menu = null; borrando = null; pinta(); } else if (form) { form = null; pinta(); } else if (sel) { sel = null; pinta(); } else { abre(false); btn.focus(); } }
     });
-    panel.addEventListener('change', (e) => { if (hoja && e.target.classList.contains('bib-chk')) { if (e.target.checked) hoja.add(e.target.dataset.id); else hoja.delete(e.target.dataset.id); const f = e.target.dataset.id; pinta(); panel.querySelector(`.bib-chk[data-id="${f}"]`)?.focus(); } });
     panel.addEventListener('input', (e) => { if (e.target.classList.contains('bib-busca')) { busca = e.target.value; const pos = e.target.selectionStart; pinta(); const s = panel.querySelector('.bib-busca'); s.focus(); s.setSelectionRange(pos, pos); } });
     panel.addEventListener('dragover', (e) => { e.preventDefault(); panel.classList.add('arrastre'); });
     panel.addEventListener('dragleave', () => panel.classList.remove('arrastre'));
