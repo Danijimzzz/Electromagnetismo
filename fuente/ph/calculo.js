@@ -140,8 +140,12 @@ const PH = (() => {
       pasos.push({ t: 'Comparado con agua pura', html: `El pH cambia en ${f2(Math.abs(pH - pH0))} unidades. Si lo mismo se echara en ${f(V)} mL de agua pura, el pH pasaría de ${f2(PKW / 2)} a ${f2(pHagua)}.` });
     }
     pasos.push({ t: 'Concentración de H₃O⁺', html: `$[H_{3}O^{+}] = 10^{−pH} = ${f(10 ** -pH)}$ M` });
+    // QUI.PH-3: capacidad tampón β = dC_base/dpH = 2,303 ([H⁺] + [OH⁻] + C Ka [H⁺]/(Ka + [H⁺])²), con C = [HA] + [A⁻]
+    const Ka = 10 ** -pKa, Ct = cAc + cBa, betaDe = (pHx) => { const hx = 10 ** -pHx; return Math.LN10 * (hx + KW / hx + (Ct * Ka * hx) / ((Ka + hx) ** 2)); };
+    const beta = betaDe(pH0), betaMax = (Math.LN10 / 4) * Ct, curvaBeta = Array.from({ length: 141 }, (_, i) => [i / 10, betaDe(i / 10)]);
     pasos.push({ t: 'Capacidad reguladora', html: `Amortiguan bien entre $pH = pK_a ± 1$, de ${f2(pKa - 1)} a ${f2(pKa + 1)}, y mejor cuanto más concentradas estén las dos formas.` });
-    return { modo: 'tampon', base, K, pKa, cAc, cBa, pH0, pH, anade, pHagua, nAc, nBa, h: 10 ** -pH, pasos };
+    pasos.push({ t: 'Capacidad tampón β', html: `$β = {d C_b}/{d pH} = 2,303 ([H_{3}O^{+}] + [OH^{−}] + {C K_a [H_{3}O^{+}]}/{(K_a + [H_{3}O^{+}])^2})$, con $C = [HA] + [A^{−}] = ${f(Ct)}$ M. A pH = ${f2(pH0)} vale <b>β = ${f(beta)} mol/(L·pH)</b>: hace falta ${f(beta)} mol de base fuerte por litro para subir el pH una unidad. Es máxima en $pH = pK_a$, con $β_{máx} = 2,303 C/4 = ${f(betaMax)}$ mol/(L·pH), y cae a la mitad hacia $pK_a ± 0,76$.` });
+    return { modo: 'tampon', base, K, pKa, cAc, cBa, pH0, pH, anade, pHagua, nAc, nBa, Ct, beta, betaMax, curvaBeta, betaDe, h: 10 ** -pH, pasos };
   }
 
   /* ---------- Mezcla de ácido fuerte y base fuerte ---------- */
@@ -325,7 +329,9 @@ const PH = (() => {
     pasos.push({ t: 'Puntos de equivalencia', html: `Cada protón da una equivalencia: $V_{eq,1} = {C V}/{C_t} = {${f(C)} · ${f(V)}}/{${f(Ct)}}$ = <b>${f(Veq)} mL</b>${Kas.slice(1).map((_, i) => `, $V_{eq,${i + 2}} = ${i + 2} V_{eq,1}$ = <b>${f((i + 2) * Veq)} mL</b>`).join('')}` });
     pasos.push({ t: 'A mitad de cada tramo', html: pK.map((p, i) => `con ${f((i + 0.5) * Veq)} mL, $pH ≈ pK_{a${i + 1}} = ${f2(p)}$ (exacto: ${f2(ph((i + 0.5) * Veq))})`).join('; ') + '. Cuanto más pequeña es la constante, peor funciona la aproximación.' });
     const eqs = Kas.slice(0, -1).map((_, i) => (pK[i] + pK[i + 1]) / 2);
-    if (eqs.length) pasos.push({ t: 'Equivalencias intermedias', html: eqs.map((p, i) => `en la ${i + 1}.ª queda el anfótero y $pH ≈ (pK_{a${i + 1}} + pK_{a${i + 2}})/2 = ${f2(p)}$ (exacto: ${f2(ph((i + 1) * Veq))})`).join('; ') + '.' });
+    if (eqs.length) pasos.push({ t: 'Equivalencias intermedias', html: eqs.map((p, i) => { const e = ph((i + 1) * Veq), ii = indicador(e); return `en la ${i + 1}.ª queda el anfótero y $pH ≈ (pK_{a${i + 1}} + pK_{a${i + 2}})/2 = ${f2(p)}$ (exacto: ${f2(e)}; indicador: ${ii[0]}, de ${ii[3]} a ${ii[4]} entre ${f(ii[1])} y ${f(ii[2])})`; }).join('; ') + '.' });
+    const nitidos = pK.slice(0, -1).map((p, i) => pK[i + 1] - p >= 4);
+    pasos.push({ t: '¿Se distinguen los saltos?', html: pK.slice(0, -1).map((p, i) => `Entre ${i + 1}.ª y ${i + 2}.ª, $Δ pK_a = ${f2(pK[i + 1] - p)}$: ${nitidos[i] ? 'el salto es nítido y se puede valorar por separado' : 'las dos constantes están demasiado cerca (hace falta una diferencia de unas 4 unidades) y el salto se solapa con el siguiente'}`).join('; ') + '.' });
     const pHeq = ph(np * Veq), ind = indicador(pHeq);
     pasos.push({ t: 'Última equivalencia', html: `Queda el anión $A^{${np}−}$, que se hidroliza: <b>pH = ${f2(pHeq)}</b>. Indicador: ${ind[0]}, de ${ind[3]} a ${ind[4]} entre ${f(ind[1])} y ${f(ind[2])}.` });
     const v = lee(sc, 'Vt', 'el volumen añadido', { opcional: true, cero: true });

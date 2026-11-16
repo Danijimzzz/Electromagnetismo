@@ -28,6 +28,14 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     // Henderson-Hasselbalch no vale con casi nada de valorante: el pH sale del equilibrio entero
     const vi = PHC.resolver({ ...PHC.ejemplos.find((e) => e.clave === 'val-acetico').sc, Vt: '0.05' });
     cerca(vi.pHv, vi.ph(0.05), 1e-9, 'valoración débil con 0,05 mL'); if (!(vi.pHv > r('acetico').pH)) mal('pH: al empezar a valorar el acético el pH no puede bajar');
+    // PH-3: capacidad tampón β = dC_b/dpH (derivada numérica del balance de cargas) y máximo C ln10/4 en pH = pKa
+    { const tp = r('tampon-acetato'), C = tp.Ct, Ka = 1.8e-5, Cb = (pH) => { const h = 10 ** -pH; return (C * Ka) / (Ka + h) + 1e-14 / h - h; }, d = 1e-5;
+      cerca(tp.beta / ((Cb(tp.pH0 + d) - Cb(tp.pH0 - d)) / (2 * d)), 1, 1e-6, 'β del tampón acetato frente a la derivada numérica del balance de cargas');
+      cerca(tp.betaMax / (Math.LN10 * C / 4), 1, 1e-12, 'β máxima = C ln10/4'); cerca(tp.betaDe(pKa) / tp.betaMax, 1, 1e-3, 'β en pH = pKa es la máxima');
+      cerca(Math.max(...tp.curvaBeta.map((q) => q[1])) >= tp.betaMax ? 1 : 0, 1, 0, 'ningún punto de la curva por debajo del máximo teórico');
+      if (!(tp.betaDe(pKa) > tp.betaDe(pKa + 2) && tp.betaDe(pKa) > tp.betaDe(pKa - 2))) mal('pH: β debería ser máxima en pH = pKa'); }
+    // PH-2: indicador de cada equivalencia y aviso de saltos que se solapan
+    { const vp = PHC.ejemplos.find((e) => e.sc.modo === 'valoracion' && PHC.resolver(e.sc).poli); if (vp) { const txtp = PHC.resolver(vp.sc).pasos.map((q) => q.t + q.html).join(' '); if (!/indicador/.test(txtp) || !/Se distinguen/.test(txtp)) mal('pH: la valoración poliprótica debería dar el indicador de cada equivalencia y avisar de saltos solapados'); } }
     // modos nuevos, calculados a mano
     // PH-4 sales anfóteras: pH ≈ ½(pKa1 + pKa2); NaHCO3 → 8,34; NaH2PO4 → 4,68; la fórmula completa se aparta poco con C grande
     cerca(r('sal-bicarbonato').pH0, (-lg(4.5e-7) - lg(4.7e-11)) / 2, 1e-12, 'pH anfótero del NaHCO3'); cerca(r('sal-bicarbonato').pH, 8.34, 0.02, 'pH del NaHCO3 con la fórmula completa');
