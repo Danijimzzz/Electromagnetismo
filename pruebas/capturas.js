@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* Regenera las capturas de la guía de uso (fuente/guia/*.webp) a partir de publico/index.html,
+/* Regenera las capturas de la guía de uso (fuente/guia/*.webp) a partir de publico/electromagnetismo/electrostatica/index.html,
    con los ejercicios de ejemplo. editar.webp se hace a mano y no se toca.
    Uso: node pruebas/capturas.js && sh fuente/build.sh   (necesita playwright y python3 con Pillow) */
 const fs = require('fs'), os = require('os'), path = require('path'), { execFileSync } = require('child_process');
@@ -24,7 +24,7 @@ im.save(sys.argv[2], 'WEBP', quality=82, method=6)`, png, path.join(guia, nombre
   execFileSync('sh', [path.join(raiz, 'fuente', 'build.sh')]);
   const browser = require('./sin-anuncios.js')(await chromium.launch(exe ? { executablePath: exe } : {}));
   const page = await browser.newPage({ viewport: { width: 1300, height: 836 }, deviceScaleFactor: 2 });
-  await page.goto('file://' + path.join(raiz, 'publico', 'index.html'));
+  await page.goto('file://' + path.join(raiz, 'publico', 'electromagnetismo', 'electrostatica', 'index.html'));
   // biblioteca de ejemplo para la barra lateral: tres problemas propios, dos en una carpeta
   await page.evaluate(() => {
     const it = (key, folder, tags) => { const p = Presets.list.find((x) => x.key === key); return { id: 'g' + key, title: p.title, statement: p.statement, scene: p.make(), origin: 'mio', folder, tags, updated: Date.now() }; };

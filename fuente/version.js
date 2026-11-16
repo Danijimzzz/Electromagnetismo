@@ -12,6 +12,11 @@
 const Version = (() => {
   const registros = {
     web: [
+      { v: '1.19.1', fecha: '2026-11-16', titulo: 'Electrostática, como las demás', subtitulo: 'La barra lateral de Electrostática ya es la de Mis ejercicios de todas las herramientas.', secciones: [
+        { icono: '🧲', titulo: 'Electromagnetismo', puntos: [
+          '**Barra lateral de @electromagnetismo/electrostatica:** mismas acciones y nombres que Mis ejercicios de las demás, con aspecto de cristal. Nuevas: «Copia de seguridad de todo», «Restaurar copia…» y «Copiar enlace con estos datos».',
+        ] },
+      ] },
       { v: '1.19', fecha: '2026-11-16', titulo: 'Más profundidad y ejercicios inventados', subtitulo: 'Sin herramientas nuevas: las que ya tenías hacen más cosas, el modo práctica inventa ejercicios con código y Electrostática se ha pulido por dentro y por fuera.', secciones: [
         { icono: '🧲', titulo: 'Electromagnetismo', puntos: [
           '**Condensadores e Inducción:** fuerza sobre la lámina dieléctrica y tensión máxima de la asociación en Condensadores; pestaña Transformador en Inducción.',
@@ -1009,6 +1014,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: ajusta reacciones moleculares e iónicas por el método algebraico, con una incógnita por especie, el balance de cada elemento y de la carga, los coeficientes enteros y la comprobación átomo a átomo, con una gráfica de los átomos a cada lado y diez reacciones de ejemplo.'] },
     ],
     electrostatica: [
+      { v: '0.9', fecha: '2026-11-16', cambios: ['La barra lateral es la de Mis ejercicios de las demás herramientas: mismas acciones y nombres y aspecto de cristal, con «Copia de seguridad de todo», «Restaurar copia…» y «Copiar enlace con estos datos».'] },
       { v: '0.8', fecha: '2026-11-16', cambios: ['La página tiene ya pie con Contacto, Aviso legal, Privacidad y Cookies (antes solo estaban en la barra lateral, que en el móvil no se veía) y «Informar de un error» abre un correo con la herramienta ya escrita.', 'Aparece en «Tu espacio» de la portada (últimas visitadas) y tiene el botón ☆ Favorita.', 'Con el teclado, Tab empieza por la cabecera y el contenido, y la barra de Mis ejercicios queda después.', 'Si tu sistema pide reducir el movimiento, las cargas de prueba dibujan su trayectoria de golpe en vez de animarla.', 'La descripción y la teoría incluyen ya todas las fuentes (láminas, cascarones, anillos, discos, conductores, dipolos…).'] },
       { v: '0.7', fecha: '2026-11-08', cambios: ['El modo práctica comprueba las dimensiones: si tu respuesta no sale en N/C, V, N, J… te lo dice, y si sumas términos con unidades distintas señala cuál falla.'] },
       { v: '0.6', fecha: '2026-10-26', cambios: ['Tubo cilíndrico con carga superficial σ y cilindros huecos (con radio interior), para resolver cables coaxiales.', 'Densidades que no son uniformes en esferas y cilindros (ρ₀·r/R, ρ₀·R/r, ρ₀(1 − r/R) y ρ₀(1 − r²/R²)) y en varillas (λ que crece o decrece a lo largo), con Gauss y la carga encerrada.', 'Arcos cargados: semicircunferencias, cuartos de anillo o cualquier ángulo, con el campo y el potencial en el centro.', 'Corteza esférica conductora con radio interior y exterior: si dentro hay una carga centrada, se induce −q en la cara interior y +q en la exterior.', 'Seis ejercicios de ejemplo nuevos con todo esto.', 'La guía enlaza con la herramienta de Condensadores.'] },
