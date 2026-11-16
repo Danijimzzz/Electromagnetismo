@@ -78,6 +78,11 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     }
     { const n = await page.evaluate(() => document.querySelectorAll('.exportar button').length);
       if (n < 2) mal('Termoquímica · faltan los botones de exportar la gráfica: ' + n); }
+    { await page.goto('file://' + path.join(publico, 'quimica', 'termoquimica', 'index.html'));
+      await page.waitForFunction(() => window.TermoquimicaApp);
+      await page.evaluate(() => TermoquimicaApp.abrirEjemplo('gibbs-caco3'));
+      const v = await page.evaluate(() => { const c = document.querySelector('#grafica2'); return !!c && c.offsetWidth > 0; });
+      if (!v) mal('Termoquímica · en modo ΔG no se ve la gráfica de ΔG frente a T'); }
     await page.close();
     if (fallos === antes) console.log('  ✓ Termoquímica · «Calcular K en Equilibrio»: el enlace lleva reactivos, productos y ΔG° y Equilibrio da Kp = e^(−ΔG°/RT); botones de exportar de la gráfica');
   };

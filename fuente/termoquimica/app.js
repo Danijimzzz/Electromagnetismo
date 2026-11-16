@@ -39,6 +39,18 @@
         series: b.map(([, v], i) => ({ tipo: 'barras', pts: [[i, v]], ancho: 0.6, color: i === b.length - 1 || s.modo === 'gibbs' && i === 0 ? '--serie-2' : '--serie-1' })),
         etiquetas: b.map(([t, v], i) => ({ x: i - 0.3, y: Math.max(v, 0), texto: `${t}  ${f(v, 4).replace(/<[^>]+>/g, '')}`, color: '--ink' })) };
     },
+    // QUI.TQ-4: ΔH, −TΔS y ΔG frente a T, con el cruce (ΔG = 0) marcado
+    grafica2: (s) => {
+      if (s.dS === undefined || !isFinite(s.dH) || !isFinite(s.dS)) return null;
+      const Te = s.Te, Tmax = Math.max(600, 2 * (s.T || 298), isFinite(Te) && Te > 0 ? 1.6 * Te : 0), G = (T) => s.dH - (T * s.dS) / 1000, tds = (T) => -(T * s.dS) / 1000;
+      const [y0, y1] = Calculadora.rango([s.dH, G(0), G(Tmax), tds(Tmax)], { cero: true }), N = 60, tab = (fn) => Array.from({ length: N + 1 }, (_, i) => [(Tmax * i) / N, fn((Tmax * i) / N)]);
+      const cruce = isFinite(Te) && Te > 0 && Te < Tmax;
+      return { x: [0, Tmax], y: [y0, y1], ejeX: 'T (K)', ejeY: 'kJ', fx: (v) => Herramienta.txt(f(v, 3)), fy: (v) => Herramienta.txt(f(v, 4)),
+        series: [{ pts: [[0, 0], [Tmax, 0]], color: '--muted', discontinua: true }, { pts: [[0, s.dH], [Tmax, s.dH]], color: '--serie-1', discontinua: true }, { pts: tab(tds), color: '--muted' }, { pts: tab(G), color: '--serie-2', grosor: 3 },
+          ...(cruce ? [{ pts: [[Te, 0]], tipo: 'puntos', color: '--ink', radio: 5 }] : []), { pts: [[s.T, G(s.T)]], tipo: 'puntos', color: '--serie-2', radio: 4 }],
+        etiquetas: [{ x: Tmax * 0.02, y: s.dH, texto: 'ΔH', color: '--serie-1' }, { x: Tmax * 0.7, y: tds(Tmax * 0.7), texto: '−TΔS', color: '--muted' }, { x: Tmax * 0.02, y: G(0), texto: 'ΔG', color: '--serie-2' }, ...(cruce ? [{ x: Te, y: 0, texto: `T = ${Herramienta.txt(f(Te, 4))} K`, color: '--ink' }] : [])] };
+    },
+    leyenda2: (s) => `ΔG = ΔH − T·ΔS frente a la temperatura: la recta de ΔG corta el eje (ΔG = 0) en la temperatura de equilibrio${isFinite(s.Te) && s.Te > 0 ? `, ${Herramienta.txt(f(s.Te, 4))} K` : ' (aquí no hay cruce con T > 0: la reacción es siempre o nunca espontánea)'}. Por debajo del eje, espontánea; por encima, no. El punto es la temperatura de los datos.`,
     // ΔG° de la reacción → K en Equilibrio (K = e^(−ΔG°/RT)), si cabe en dos reactivos y dos productos
     usarEn: (s) => {
       const dG = s.dGT !== undefined ? s.dGT : s.dG298, T = s.dGT !== undefined ? s.T : 298.15;
