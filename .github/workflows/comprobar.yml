@@ -29,11 +29,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      # TRV.10.17: las dependencias se guardan entre ejecuciones (la clave cambia solo si cambian las versiones)
-      - uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: dependencias-playwright-1.56.1-axe-4.10.2
       - run: npm install --no-save playwright@1.56.1 axe-core@4.10.2
       # El runner ya trae Google Chrome; descargar Chromium con --with-deps se quedaba colgado.
       - name: Build, ejercicios (ejemplo y Tema 3) y consola del navegador (trozo ${{ matrix.parte }} de 4)
@@ -52,10 +47,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: dependencias-playwright-1.56.1-axe-4.10.2
       - run: npm install --no-save playwright@1.56.1 axe-core@4.10.2
       - name: Casos límite en los campos de todas las herramientas (sin NaN, Infinity ni errores)
         run: node pruebas/limites.js
@@ -70,10 +61,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: dependencias-playwright-1.56.1-axe-4.10.2
       - run: npm install --no-save playwright@1.56.1 axe-core@4.10.2
       - run: node pruebas/rendimiento.js
         env:
