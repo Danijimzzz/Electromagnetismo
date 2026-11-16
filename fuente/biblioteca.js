@@ -20,7 +20,7 @@
    abrir un ejercicio, bloquea las escrituras de la clave hasta recargar. Prueba: pruebas/biblioteca-carreras.js.
    ===================================================================== */
 const Biblioteca = (() => {
-  const FORMATO = 'simulaciencia-ejercicios', ANCHO = 1280;
+  const FORMATO = 'simulaciencia-ejercicios', ANCHO = 1360;
   const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   const lee = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); return v ?? d; } catch (e) { return d; } };
   const escribe = (k, v) => { try { localStorage.setItem(k, typeof v === 'string' ? v : JSON.stringify(v)); return true; } catch (e) { return false; } };
