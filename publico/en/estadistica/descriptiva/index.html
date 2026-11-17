@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMwZDZiNjYiLz48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlNmE2NDAiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtZGFzaGFycmF5PSI0IDYuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48cGF0aCBkPSJNMjAgMzJINDQiLz48cGF0aCBkPSJNMjEgMjdDMjcgMTQgMzcgMTQgNDMgMjciLz48cGF0aCBkPSJNMjEgMzdDMjcgNTAgMzcgNTAgNDMgMzciLz48cGF0aCBkPSJNMTcgMjRDMjIgNCA0MiA0IDQ3IDI0Ii8+PHBhdGggZD0iTTE3IDQwQzIyIDYwIDQyIDYwIDQ3IDQwIi8+PC9nPjxjaXJjbGUgY3g9IjE3IiBjeT0iMzIiIHI9IjgiIGZpbGw9IiNlZjdhNjIiLz48Y2lyY2xlIGN4PSI0NyIgY3k9IjMyIiByPSI4IiBmaWxsPSIjNzRhMmYyIi8+PHBhdGggZD0iTTEzIDMyaDhNMTcgMjh2OE00MyAzMmg4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K">
+<link rel="apple-touch-icon" href="../../../apple-touch-icon.png">
+<meta property="og:title" content="Descriptive statistics: mean, median, quartiles and standard deviation">
+<meta property="og:description" content="Frequency table, mean, median, mode, quartiles, variance, skewness, outliers, histogram and box plot, step by step">
+<link rel="canonical" href="https://simulaciencia.vercel.app/en/estadistica/descriptiva/">
+<meta name="robots" content="noindex, follow">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://simulaciencia.vercel.app/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Descriptive statistics","description":"Descriptive statistics calculator: frequency table, mean, median, mode, quartiles, percentiles, variance, standard deviation, coefficient of variation, skewness, kurtosis, outliers, histogram and box plot, step by step, with raw data, in a table or grouped.","url":"https://simulaciencia.vercel.app/estadistica/descriptiva/","inLanguage":"es","isAccessibleForFree":true,"applicationCategory":"EducationalApplication","operatingSystem":"Web browser","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://simulaciencia.vercel.app/"},{"@type":"ListItem","position":2,"name":"Statistics","item":"https://simulaciencia.vercel.app/estadistica/"},{"@type":"ListItem","position":3,"name":"Descriptive statistics","item":"https://simulaciencia.vercel.app/estadistica/descriptiva/"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How are the mean, the median and the standard deviation calculated?","acceptedAnswer":{"@type":"Answer","text":"With the data 2, 3, 3, 5, 7: mean 4, median 3 and mode 3. The sample variance is s² = Σ(x − x̄)²/(n − 1) = 16/4 = 4, so s = 2."}},{"@type":"Question","name":"How are outliers detected?","acceptedAnswer":{"@type":"Answer","text":"With the quartiles: IQR = Q₃ − Q₁, and outliers are the values outside [Q₁ − 1.5·IQR, Q₃ + 1.5·IQR], which are also the ends of the whiskers of the box plot."}}]}]}</script>
+<link rel="manifest" href="../../manifest.webmanifest">
+<meta name="theme-color" content="#0d6b66">
+<script src="../../pwa.js" defer></script>
+<meta name="google-adsense-account" content="ca-pub-6407501780492688">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6407501780492688" crossorigin="anonymous"></script>
+<script>window.googlefc = window.googlefc || {}; googlefc.callbackQueue = googlefc.callbackQueue || [];
+document.addEventListener('click', (e) => { if (!e.target.closest('.pref-cookies')) return; e.preventDefault(); googlefc.callbackQueue.push(() => googlefc.showRevocationMessage()); });</script>
+<style>.anuncio { max-width:860px; margin:28px 0 0; text-align:center; min-height:120px } .anuncio > span { display:block; font:11px/1.6 system-ui, sans-serif; letter-spacing:.06em; text-transform:uppercase; color:var(--muted, #5b6670) } .anuncio ins { display:block }</style>
+<style>.anuncio-lado { display:none } @media (min-width: 901px) { .anuncio-lado { display:block; grid-column:1; grid-row:2; position:sticky; top:96px; margin:8px 0 0; max-width:none; min-height:250px; min-width:0; overflow:hidden } main .layout.con-lado > :nth-child(2) { grid-row:1 / span 2 } }</style>
+<script>document.addEventListener('DOMContentLoaded', () => {
+  const l = document.querySelector('main .layout');
+  if (!l || l.classList.contains('invertido') || l.children.length !== 2 || !l.offsetParent || !matchMedia('(min-width: 901px)').matches) return;
+  l.classList.add('con-lado');
+  const a = document.createElement('div'); a.className = 'anuncio anuncio-lado';
+  a.innerHTML = '<span>Publicidad</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="9800921596" data-ad-format="auto" data-full-width-responsive="true"></ins>';
+  l.appendChild(a); (window.adsbygoogle = window.adsbygoogle || []).push({});
+});</script>
+<script>(() => {
+  const raiz = document.documentElement, mq = matchMedia('(prefers-color-scheme: dark)'), oyentes = [];
+  try { const t = localStorage.getItem('simu-tema'); if (t === 'dark' || t === 'light') raiz.dataset.theme = t; } catch (e) { /* sin almacenamiento */ }
+  const orig = MediaQueryList.prototype.addEventListener;
+  MediaQueryList.prototype.addEventListener = function (tipo, f, ...r) { if (tipo === 'change' && /prefers-color-scheme/.test(this.media)) oyentes.push(f); return orig.call(this, tipo, f, ...r); };
+  const oscuro = () => (raiz.dataset.theme ? raiz.dataset.theme === 'dark' : mq.matches);
+  const rotula = () => document.querySelectorAll('.tema').forEach((b) => { const t = oscuro() ? 'Switch to light mode' : 'Switch to dark mode'; b.title = t; b.setAttribute('aria-label', t); });
+  document.addEventListener('DOMContentLoaded', rotula);
+  mq.addEventListener('change', rotula);
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.tema')) return;
+    raiz.dataset.theme = oscuro() ? 'light' : 'dark';
+    try { localStorage.setItem('simu-tema', raiz.dataset.theme); } catch (e) { /* sin almacenamiento */ }
+    rotula();
+    for (const f of oyentes) { try { f.call(mq, { matches: oscuro(), media: mq.media }); } catch (err) { console.error(err); } }
+  });
+})();</script>
+<script>(() => {
+  const ENFOCABLE = 'a[href],button,input,select,textarea,summary,[tabindex]';
+  let espera = 0;
+  const revisa = () => {
+    espera = 0;
+    for (const e of document.querySelectorAll('main *')) {
+      const desborda = e.scrollWidth > e.clientWidth || e.scrollHeight > e.clientHeight;
+      if (e.dataset.sf) { if (!desborda || e.querySelector(ENFOCABLE)) { e.removeAttribute('tabindex'); delete e.dataset.sf; } continue; }
+      if (!desborda || e.hasAttribute('tabindex') || e.matches('svg,svg *,canvas') || e.querySelector(ENFOCABLE)) continue;
+      const o = getComputedStyle(e);
+      if (/auto|scroll/.test(o.overflowX + o.overflowY)) { e.tabIndex = 0; e.dataset.sf = '1'; }
+    }
+  };
+  window.revisaScroll = revisa; // también lo llama pruebas/accesibilidad.js antes de pasar axe
+  const pide = () => { if (!espera) espera = setTimeout(revisa, 400); };
+  addEventListener('load', () => { revisa(); const m = document.querySelector('main'); if (m) new MutationObserver(pide).observe(m, { childList: true, subtree: true, characterData: true }); });
+  addEventListener('resize', pide);
+})();</script>
+<script src="../../buscador.js" defer></script>
+<script src="../../llama.js" defer></script>
+<title>Mean, median and standard deviation calculator · Ciencify</title>
+<meta name="description" content="Descriptive statistics calculator: frequency table, mean, median, mode, quartiles, percentiles, variance, standard deviation, coefficient of variation, skewness, kurtosis, outliers, histogram and box plot, step by step, with raw data, in a table or grouped.">
+<style>/* =====================================================================
+   Hoja de estilos común de todas las herramientas (fuente/<herramienta>/pagina.html).
+   diseno.js la mete en cada página, antes de su propio <style>, junto con el color
+   de la asignatura (--accent, --accent-soft) y la cabecera del portal. La guía de uso
+   de cada componente, con su HTML, está en DISENO.md.
+   Una herramienta no vuelve a definir estas reglas: ajusta las variables de medida
+   (--col-datos, --ancho-valor, --alto-grafica) o añade una clase propia.
+   ===================================================================== */
+
+/* ---------- Colores y letras (claro y oscuro) ---------- */
+:root {
+  --bg: #eef1ee; --panel: #fff; --ink: #1a2128; --muted: #5b6670; --line: #d5dbd5; --error: #c0392b;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --vidrio: rgba(255,255,255,.55); --vidrio-fuerte: rgba(255,255,255,.72); --vidrio-borde: rgba(255,255,255,.7); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.8);
+  --vidrio-sombra: 0 1px 2px rgba(20,40,60,.06), 0 8px 28px rgba(20,40,60,.10); --blur: blur(22px) saturate(1.7); --halo1: rgba(13,107,102,.22); --halo2: rgba(42,93,181,.20); --halo3: rgba(107,63,160,.14);
+  /* medidas que cada herramienta puede ajustar */
+  --col-datos: 360px; --ancho-etiqueta: minmax(0, 1fr); --ancho-valor: 150px; --letra-campo: 13px var(--f-ui); --ancho-dato: 190px; --alto-grafica: clamp(260px, 36vw, 380px); --margen-grafica: 10px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #a3aeb5; --line: #2a343b; --error: #f08a80; --vidrio: rgba(34,46,54,.50); --vidrio-fuerte: rgba(26,36,42,.70); --vidrio-borde: rgba(255,255,255,.12); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.10); --vidrio-sombra: 0 1px 2px rgba(0,0,0,.3), 0 10px 32px rgba(0,0,0,.35); --halo1: rgba(77,188,176,.20); --halo2: rgba(116,162,242,.18); --halo3: rgba(170,120,230,.14); color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #a3aeb5; --line: #2a343b; --error: #f08a80; --vidrio: rgba(34,46,54,.50); --vidrio-fuerte: rgba(26,36,42,.70); --vidrio-borde: rgba(255,255,255,.12); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.10); --vidrio-sombra: 0 1px 2px rgba(0,0,0,.3), 0 10px 32px rgba(0,0,0,.35); --halo1: rgba(77,188,176,.20); --halo2: rgba(116,162,242,.18); --halo3: rgba(170,120,230,.14); color-scheme: dark }
+/* fin de los colores */
+
+/* ---------- Base ---------- */
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 24px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+/* texto solo para lectores de pantalla; sin position:absolute para que no ensanche las tablas con scroll */
+.solo-lector { display: inline-block; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; vertical-align: top }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px }
+footer a { color: var(--muted); margin: 0 6px; white-space: nowrap; display: inline-block }
+
+/* ---------- Diseño A: datos a la izquierda, resultados a la derecha ---------- */
+.layout { display: grid; grid-template-columns: var(--col-datos) minmax(0, 1fr); gap: 16px; align-items: start }
+.layout.invertido { grid-template-columns: minmax(0, 1fr) var(--col-datos) }
+@media (max-width: 900px) { .layout, .layout.invertido { grid-template-columns: minmax(0, 1fr) } }
+
+/* ---------- Tarjetas ---------- */
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 12px/1.4 var(--f-ui); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 10px }
+.destacado { border-color: var(--line); border-top: 3px solid var(--accent) }
+.destacado h2 { color: var(--accent) }
+
+/* ---------- Datos: campos, separadores, botones y pestañas ---------- */
+.campos { display: grid; grid-template-columns: var(--ancho-etiqueta) var(--ancho-valor); gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px }
+.campos label small { color: var(--muted) }
+.campos .ancho { grid-column: 1 / -1 }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--accent); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.in { font: var(--letra-campo); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer; white-space: nowrap }
+.btn:hover { border-color: var(--accent) }
+/* foco del teclado en todo lo que se pulsa o se escribe (sin especificidad: una herramienta puede ajustarlo) */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.controles { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px }
+.controles > .nota, .controles > .leyenda { flex: 1 1 220px; margin: 0 }
+.exportar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0 }
+.exportar-aviso { color: var(--muted); font-size: 12.5px }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px }
+.tools label { color: var(--muted); font-size: 13px; display: inline-flex; gap: 6px; align-items: center }
+.modos { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-bottom: 14px }
+.modos button { font: 500 13.5px var(--f-ui); border: 0; background: var(--panel); color: var(--muted); padding: 7px 14px; cursor: pointer }
+.modos button[aria-selected=true] { background: var(--accent); color: var(--panel) }
+.error { color: var(--error); font-size: 13px; margin: 10px 0 0 }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+
+/* ---------- Resultados ---------- */
+.res { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--ancho-dato), 1fr)); gap: 6px 14px; font: 16px var(--f-math) }
+.res div { overflow-x: auto; overflow-y: hidden }
+.res span { display: block; font: 12px var(--f-ui); color: var(--muted) }
+.res div.ancho { grid-column: 1 / -1 }
+.resumen { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--ancho-dato), 1fr)); gap: 8px; margin: 0 }
+.resumen div { background: var(--accent-soft); border-radius: 8px; padding: 8px 10px; overflow-x: auto; overflow-y: hidden }
+.resumen div span { display: block; font-size: 12px; color: var(--muted) }
+.resumen div b { font: 600 17px var(--f-math) }
+.resumen div.ancho { grid-column: 1 / -1 }
+
+/* ---------- Gráficas ---------- */
+canvas { display: block; width: 100%; height: var(--alto-grafica); border-radius: 8px; background: var(--bg); margin-top: var(--margen-grafica) }
+.leyenda { font-size: 12.5px; color: var(--muted); margin: 6px 0 0 }
+.leyenda b { font-weight: 600 }
+
+/* ---------- Desarrollo paso a paso ---------- */
+/* el número va dentro del paso para que no lo corte el desplazamiento de las fórmulas largas */
+.pasos ol { margin: 0; padding: 0; list-style: none; counter-reset: paso }
+.pasos li { position: relative; margin: 0 0 12px; padding-left: 22px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto; counter-increment: paso; overflow-y: hidden }
+.pasos li::before { content: counter(paso) "."; position: absolute; left: 0; top: 0; font: 13.5px/1.45 var(--f-ui); color: var(--muted) }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.pasos table.tabla { border-collapse: collapse; margin: 6px 0; font: 13px var(--f-ui); font-variant-numeric: tabular-nums }
+.pasos table.tabla th, .pasos table.tabla td { border: 1px solid var(--line); padding: 3px 9px; text-align: right }
+.pasos table.tabla th { background: var(--accent-soft); font-weight: 600 }
+.tabla-scroll { overflow-x: auto }
+
+/* matrices con corchetes, dentro de una fórmula */
+.mat { position: relative; display: inline-block; vertical-align: middle; padding: 0 7px; margin: 2px 2px }
+.mat::before, .mat::after { content: ""; position: absolute; top: 0; bottom: 0; width: 5px; border: 1.4px solid currentColor }
+.mat::before { left: 0; border-right: 0 }
+.mat::after { right: 0; border-left: 0 }
+.mat table { border-collapse: collapse }
+.mat td { padding: 2px 7px; text-align: center; white-space: nowrap; font-variant-numeric: tabular-nums }
+
+/* ---------- Teoría ---------- */
+.teoria, .preguntas { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.preguntas h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.preguntas h3 { font: 600 15px var(--f-ui); margin: 14px 0 2px }
+.preguntas p { margin: 0 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; overflow-x: auto; overflow-y: hidden; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+.teoria ul { padding-left: 20px }
+.teoria li { margin-bottom: 4px }
+.teoria li, .teoria p { overflow-x: auto; overflow-y: hidden }
+
+/* ---------- Liquid Glass ---------- */
+/* Vidrio solo en el marco (tarjetas, controles, barras); el lienzo de las gráficas y las fórmulas no se tocan. */
+body { display: flow-root; background: radial-gradient(60% 50% at 8% 0%, var(--halo1), transparent 70%), radial-gradient(50% 45% at 95% 10%, var(--halo2), transparent 70%), radial-gradient(55% 50% at 60% 100%, var(--halo3), transparent 70%), var(--bg); background-attachment: fixed }
+.card { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 18px; box-shadow: var(--vidrio-brillo), var(--vidrio-sombra); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur) }
+.destacado { border-top: 3px solid var(--accent) }
+.in { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 10px; box-shadow: var(--vidrio-brillo) }
+.btn { background: var(--vidrio-fuerte); border-color: var(--vidrio-borde); border-radius: 99px; padding: 5px 14px; box-shadow: var(--vidrio-brillo) }
+.modos { border-color: var(--vidrio-borde); border-radius: 99px; background: var(--vidrio); box-shadow: var(--vidrio-brillo); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur) }
+.modos button { background: transparent; border-radius: 99px }
+.modos button[aria-selected=true] { box-shadow: 0 1px 6px rgba(0,0,0,.18) }
+.resumen div { border-radius: 14px }
+.teoria .f { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 12px }
+canvas { border-radius: 14px }
+@media (max-width: 900px) { .card, .modos { -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px) } }
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) { .card, .modos, header.top { background: var(--panel); -webkit-backdrop-filter: none; backdrop-filter: none } .in, .btn, .teoria .f { background: var(--panel) } }
+
+:root { --accent:#a3367a; --accent-soft:color-mix(in srgb, #a3367a 12%, #fff); --marca:#0d6b66 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --accent:#e07ab8; --accent-soft:color-mix(in srgb, #e07ab8 16%, #182025); --marca:#4dbcb0 } }
+:root[data-theme="dark"] { --accent:#e07ab8; --accent-soft:color-mix(in srgb, #e07ab8 16%, #182025); --marca:#4dbcb0 }
+header.top { display:flex; align-items:center; gap:8px 20px; flex-wrap:wrap; padding:12px clamp(16px,3vw,28px); position:sticky; top:10px; z-index:10; margin:10px clamp(10px,2vw,20px) 0; border:1px solid var(--vidrio-borde); border-radius:22px; background:var(--vidrio-fuerte); box-shadow:var(--vidrio-brillo),var(--vidrio-sombra); -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur) }
+header.top .logo { font:600 18px var(--f-math); margin:0; white-space:nowrap; color:var(--ink); text-decoration:none } header.top .logo i { color:var(--marca) }
+header.top nav { display:flex; gap:4px 14px; font-size:14px; overflow-x:auto; max-width:100%; scrollbar-width:none }
+header.top nav a { white-space:nowrap; padding:2px 0; color:var(--muted); text-decoration:none } header.top nav a:hover { color:var(--ink) }
+header.top nav a[aria-current] { color:var(--ink); font-weight:600; box-shadow:inset 0 -2px 0 var(--accent) }
+header.top form { margin-left:auto; flex:0 1 170px; min-width:130px }
+header.top .foro { margin-left:auto; display:inline-flex; align-items:center; gap:6px; white-space:nowrap; font:600 14px var(--f-ui); color:var(--ink); text-decoration:none; border:1px solid var(--vidrio-borde); background:var(--vidrio); border-radius:99px; padding:6px 12px } header.top .foro:hover, header.top .foro[aria-current] { border-color:var(--accent); color:var(--accent) } header.top .foro + form { margin-left:0 } header.top > .foro ~ .tema { margin-left:0 }
+@media (min-width:701px) { header.top { flex-wrap:nowrap } header.top nav { min-width:0 } }
+header.top .buscar { font:14px var(--f-ui); color:var(--ink); border:1px solid var(--vidrio-borde); border-radius:99px; padding:7px 14px; width:100%; background:var(--vidrio) }
+header.top .buscar:focus-visible, header.top a:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.miga { display:flex; align-items:center; flex-wrap:wrap; gap:8px; font-size:13.5px; color:var(--muted); margin:0 0 10px }
+.miga a { color:var(--accent); font-weight:600; text-decoration:none } .miga a:hover { text-decoration:underline }
+.miga-ico { display:inline-grid; place-items:center; width:22px; height:22px; border-radius:6px; background:var(--accent-soft); color:var(--accent); font:italic 600 13px var(--f-math) }
+.miga-der { margin-left:auto; display:flex; gap:8px } .miga-izq:empty, .miga-der:empty { display:none }
+.bib-btn, .prac-btn { border-radius:8px !important; padding:6px 12px !important }
+body.bib-ejemplos select[id^="ejemplo"] { display:none }
+@media print { header.top, .miga, .prac-btn { display:none !important } }
+:root { --vida:#6a4fc2 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --vida:#b39ff7 } }
+:root[data-theme="dark"] { --vida:#b39ff7 }
+.relacionadas { max-width:860px; margin:16px 0 0; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:4px 12px 12px 4px; padding:12px 16px }
+.relacionadas h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--accent); margin:0 0 4px }
+.relacionadas a { display:flex; gap:10px; align-items:baseline; padding:5px 0; color:var(--ink); text-decoration:none; font-size:14px }
+.relacionadas a b { font-weight:600; white-space:nowrap } .relacionadas a span { color:var(--muted) } .relacionadas a:hover b { color:var(--accent); text-decoration:underline }
+.vida-real { max-width:860px; margin:28px 0 0; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--vida); border-radius:4px 12px 12px 4px; padding:12px 16px }
+.vida-real h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--vida); margin:0 0 4px }
+.vida-real a { display:flex; gap:10px; align-items:baseline; padding:5px 0; color:var(--ink); text-decoration:none; font-size:14px }
+.vida-real a b { font-weight:600; white-space:nowrap } .vida-real a span { color:var(--muted) } .vida-real a:hover b { color:var(--vida); text-decoration:underline }
+@media (max-width:600px) { .vida-real a, .relacionadas a { display:block } .vida-real a b, .relacionadas a b { display:block; white-space:normal } }
+@media (max-width:700px) { header.top form { display:none } h1 { font-size:21px }
+  .miga-izq, .miga-der, .miga::after { order:-1 } .miga::after { content:''; flex-basis:100%; height:0 } }
+
+.tema { flex:0 0 auto; margin-left:auto; width:36px; height:36px; display:grid; place-items:center; padding:0; border:1px solid var(--vidrio-borde, var(--line)); border-radius:99px; background:var(--vidrio, var(--bg)); color:var(--ink); cursor:pointer }
+.buscar ~ .tema, form ~ .tema { margin-left:0 }
+.tema:hover { border-color:var(--accent); color:var(--accent) }
+.tema:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.tema .sol { display:none }
+:root[data-theme="dark"] .tema .sol { display:block } :root[data-theme="dark"] .tema .luna { display:none }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tema .sol { display:block } :root:not([data-theme="light"]) .tema .luna { display:none } }
+@media (max-width:700px) { .top > .tema { margin-left:auto } .top > nav { order:1 } }
+</style>
+<style>
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a; --serie-3: #6b3fa0 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 }
+textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 120px }
+.tabla-eco { border-collapse: collapse; font: 13.5px var(--f-ui); width: 100%; font-variant-numeric: tabular-nums }
+.tabla-eco th, .tabla-eco td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap }
+.tabla-eco th { font-weight: 600; color: var(--muted) } .tabla-eco th:first-child, .tabla-eco td:first-child { text-align: left }
+.tabla-eco tfoot td { font-weight: 600; background: var(--accent-soft) }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../../">Cienci<i>fy</i></a><nav aria-label="Subjects"><a href="../../../">Home</a><a href="../../electromagnetismo/">Electromagnetism</a><a href="../../fisica/">General physics</a><a href="../../quimica/">Chemistry</a><a href="../../matematicas/">Mathematics</a><a href="../" aria-current="page">Statistics</a><a href="../../circuitos/">Circuits</a><a href="../../economia/">Economics</a><a href="../../fenomenos/">Real life</a></nav><a class="foro" href="../../foro/"><span aria-hidden="true">💬</span>Forum</a><form action="../../../" role="search"><input class="buscar" type="search" name="q" placeholder="Search: Biot-Savart, molarity…" aria-label="Search tools (shortcut: / key)" title="Shortcut: / or Ctrl+K"></form><style>
+.lg { position:relative; flex:0 0 auto }
+.lg-btn { display:inline-flex; align-items:center; gap:6px; height:36px; padding:0 12px; border:1px solid var(--vidrio-borde, var(--line)); border-radius:99px; background:var(--vidrio, var(--bg)); color:var(--ink); font:600 13px var(--f-ui, system-ui, sans-serif); cursor:pointer }
+.lg-btn:hover { border-color:var(--accent); color:var(--accent) }
+.lg-btn:focus-visible, .lg-pop a:focus-visible, .lg-ban button:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.lg-pop { position:absolute; top:44px; right:0; z-index:50; min-width:210px; margin:0; padding:6px; list-style:none; border:1px solid var(--vidrio-borde, var(--line)); border-radius:16px; background:rgba(255,255,255,.98); color:var(--ink); box-shadow:0 12px 36px rgba(0,0,0,.22) }
+.lg-pop[hidden] { display:none }
+:root[data-theme="dark"] .lg-pop, :root[data-theme="dark"] .lg-ban { background:rgba(28,34,38,.98) }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lg-pop, :root:not([data-theme="light"]) .lg-ban { background:rgba(28,34,38,.98) } }
+.lg-t { font:600 11px var(--f-ui, system-ui, sans-serif); text-transform:uppercase; letter-spacing:.06em; color:var(--muted); padding:6px 10px 4px }
+.lg-pop a { display:flex; justify-content:space-between; align-items:center; gap:14px; padding:8px 10px; border-radius:10px; color:var(--ink); text-decoration:none; font:500 14px var(--f-ui, system-ui, sans-serif) }
+.lg-pop a:hover { background:var(--accent-soft) }
+.lg-pop a > span { display:flex; align-items:center; gap:10px }
+.lg-pop a small { color:var(--muted); font-size:12px }
+.lg-pop a[aria-current="true"] { background:var(--accent-soft); font-weight:700 }
+.lg-pop a[aria-current="true"] small::after { content:' ✓'; color:var(--accent) }
+.lg-fl { flex:none; border-radius:50%; box-shadow:0 0 0 1px rgba(0,0,0,.18) }
+.lg-ban { position:fixed; left:50%; bottom:18px; z-index:60; transform:translateX(-50%); width:min(560px, calc(100vw - 24px)); box-sizing:border-box; display:flex; flex-wrap:wrap; align-items:center; gap:10px 12px; padding:12px 16px; border:1px solid var(--vidrio-borde, var(--line)); border-radius:18px; background:rgba(255,255,255,.98); color:var(--ink); box-shadow:0 12px 36px rgba(0,0,0,.25); font:14px var(--f-ui, system-ui, sans-serif) }
+.lg-ban p { flex:1 1 220px; margin:0 }
+.lg-ban button { font:600 13px var(--f-ui, system-ui, sans-serif); padding:7px 14px; border-radius:99px; border:1px solid var(--vidrio-borde, var(--line)); background:var(--vidrio, var(--bg)); color:var(--ink); cursor:pointer }
+.lg-ban button.lg-si { background:var(--accent); border-color:var(--accent); color:#fff }
+:root[data-theme="dark"] .lg-ban button.lg-si { color:#0d141a }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lg-ban button.lg-si { color:#0d141a } }
+@media (max-width:700px) { .top > .lg { margin-left:auto } .top > .lg + .tema { margin-left:0 } }
+@media print { .lg, .lg-ban { display:none !important } }
+</style><div class="lg"><button class="lg-btn" type="button" aria-expanded="false" aria-controls="lg-lista" aria-label="Language: English" title="Language"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.8 3 2.8 15 0 18M12 3c-2.8 3-2.8 15 0 18"/></svg><span>EN</span><span aria-hidden="true">▾</span></button><ul class="lg-pop" id="lg-lista" hidden><li class="lg-t" aria-hidden="true">Language · Idioma</li><li><a href="../../../" hreflang="es" lang="es"><span><svg class="lg-fl" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><rect width="24" height="24" fill="#c60b1e"/><rect y="6" width="24" height="12" fill="#ffc400"/></svg>Español</span><small>ES</small></a></li><li><a href="../../../en/" hreflang="en" lang="en" aria-current="true"><span><svg class="lg-fl" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><rect width="24" height="24" fill="#012169"/><path d="M0 0L24 24M24 0L0 24" stroke="#fff" stroke-width="5"/><path d="M0 0L24 24M24 0L0 24" stroke="#c8102e" stroke-width="2"/><path d="M12 0V24M0 12H24" stroke="#fff" stroke-width="8"/><path d="M12 0V24M0 12H24" stroke="#c8102e" stroke-width="4.5"/></svg>English</span><small>EN</small></a></li></ul></div><script>(() => {
+  const L = [{"c":"es","d":"","n":"Español","a":["Esta página está disponible en español.","Cambiar a español","Seguir aquí"]},{"c":"en","d":"en/","n":"English","a":["This page is available in English.","Switch to English","Stay here"]}], ACTUAL = "en", K = 'simu-idioma';
+  const guarda = (c) => { try { localStorage.setItem(K, c); } catch (e) { /* sin almacenamiento */ } };
+  const lee = () => { try { return localStorage.getItem(K); } catch (e) { return null; } };
+  const resto = () => { let p = location.pathname; for (const i of L) if (i.d && p.startsWith('/' + i.d)) { p = '/' + p.slice(i.d.length + 1); break; } return p + location.search + location.hash; };
+  const destino = (i) => '/' + i.d + resto().replace(/^\//, '');
+  const btn = document.querySelector('.lg-btn'), pop = document.querySelector('.lg-pop');
+  if (!btn || !pop) return;
+  pop.querySelectorAll('a[hreflang]').forEach((a) => { const i = L.find((x) => x.c === a.hreflang); if (i && /^https?:$/.test(location.protocol)) a.href = destino(i); a.addEventListener('click', () => guarda(a.hreflang)); });
+  const abre = (v) => { pop.hidden = !v; btn.setAttribute('aria-expanded', String(v)); };
+  btn.addEventListener('click', (e) => { e.stopPropagation(); abre(pop.hidden); });
+  document.addEventListener('click', (e) => { if (!pop.hidden && !e.target.closest('.lg')) abre(false); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !pop.hidden) { abre(false); btn.focus(); } });
+  pop.addEventListener('focusout', (e) => { if (!pop.hidden && !e.relatedTarget?.closest?.('.lg')) abre(false); });
+  // aviso: una vez, sin elección guardada, con el idioma del navegador publicado y distinto del de la página
+  if (lee() || window.__sinAviso) return;
+  const pref = (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || '']).map((s) => String(s).toLowerCase().slice(0, 2));
+  const i = pref.map((c) => L.find((x) => x.c === c)).find(Boolean);
+  if (!i || i.c === ACTUAL) { return; }
+  const b = document.createElement('div'); b.className = 'lg-ban'; b.setAttribute('role', 'region'); b.setAttribute('aria-label', "Language"); b.lang = i.c;
+  const t = document.createElement('p'); t.textContent = i.a[0];
+  const si = document.createElement('button'); si.type = 'button'; si.className = 'lg-si'; si.textContent = i.a[1];
+  const no = document.createElement('button'); no.type = 'button'; no.textContent = i.a[2];
+  si.addEventListener('click', () => { guarda(i.c); const a = [...pop.querySelectorAll('a[hreflang]')].find((x) => x.hreflang === i.c); location.href = a ? a.href : destino(i); });
+  no.addEventListener('click', () => { guarda(ACTUAL); b.remove(); });
+  b.append(t, si, no); document.body.append(b);
+})();</script><button class="tema" type="button" title="Switch between light and dark mode" aria-label="Switch between light and dark mode"><svg class="luna" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11z"/></svg><svg class="sol" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button></header>
+<main class="wrap">
+<nav class="miga" aria-label="You are here"><span class="miga-izq"></span><span class="miga-ico" aria-hidden="true">σ</span><a href="../">Statistics</a><span aria-hidden="true">›</span><span>Descriptive statistics</span><span class="miga-der"></span></nav>
+<h1>Descriptive statistics</h1>
+<p class="lead">Enter your raw data, in a frequency table or grouped in intervals, and get the frequency table, the measures of central tendency, position, dispersion and shape, the histogram and the box plot.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Data</h2>
+    <select id="ejemplos" class="in" aria-label="Examples" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Results</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Histogram and box plot</h2>
+      <canvas id="grafica" aria-label="Histogram or bar chart of the frequencies with the box plot on top"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card"><h2>Frequency table</h2><div class="tabla-scroll" id="tabla"></div></div>
+    <div class="card pasos"><h2>Working</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<div class="anuncio"><span>Advertising</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="4415753033" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+<section class="teoria">
+<h2>Measures of central tendency</h2>
+<p class="m">The mean is the centre of gravity of the data, $x̄ = {∑ x_i n_i}/N$. The median leaves half the data on each side and is not affected by extreme values, and the mode is the value that appears most often. With grouped data the class mark of each interval is used and the median is interpolated:</p>
+<p class="f m">$Me = L_i + {N/2 − N_{i−1}}/{n_i} · a_i$</p>
+<h2>Measures of position</h2>
+<p class="m">The quartiles $Q_1$, $Q_2 = Me$ and $Q_3$ leave 25 %, 50 % and 75 % of the data below, and the percentile $P_k$, k %. With ungrouped data the position $k·N/4$ is looked up in the cumulative frequencies; if it coincides exactly with one of them, the mean of that value and the next is taken. There are other conventions (calculators and spreadsheets interpolate), and they may give slightly different values.</p>
+<div class="anuncio"><span>Advertising</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="4415753033" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+<h2>Measures of dispersion</h2>
+<p class="m">The variance is the mean of the squared deviations from the mean, and the standard deviation its root, in the same units as the data. With a sample, to estimate that of the population we divide by $N − 1$ (sample variance):</p>
+<p class="f m">$σ^2 = {∑ (x_i − x̄)^2 n_i}/N$,   $s^2 = {∑ (x_i − x̄)^2 n_i}/{N − 1}$</p>
+<p class="m">The coefficient of variation, $CV = {σ}/{|x̄|}$, compares the dispersion of variables with different units or means.</p>
+<h2>Box plot and outliers</h2>
+<p class="m">The box runs from the first to the third quartile, with the median inside. A data point is an outlier if it is below $Q_1 − 1.5 · IQR$ or above $Q_3 + 1.5 · IQR$, with $IQR = Q_3 − Q_1$; the whiskers reach the most extreme data point that is not one.</p>
+<h2>Other means: geometric, harmonic and weighted</h2>
+<p class="m">The arithmetic mean is not always the right one. When the data are multiplied together (growth rates, indices, interest over several years) the <b>geometric mean</b> is used; when they are ratios with the same numerator (speeds over legs of equal length, yields) the <b>harmonic</b>. They only make sense with positive data and always come in this order: harmonic ≤ geometric ≤ arithmetic. In the <b>weighted mean</b> each data point counts according to its weight, like marks weighted by the credits of each subject.</p>
+<p class="f m">$G = (x_1 · x_2 ⋯ x_N)^{1/N}$, &ensp; $H = N/{∑ 1/x_i}$, &ensp; $x̄_p = {∑ p_i x_i}/{∑ p_i}$</p>
+</section>
+<section class="preguntas" aria-label="Frequently asked questions">
+<h2>Frequently asked questions</h2>
+<h3>How are the mean, the median and the standard deviation calculated?</h3>
+<p>With the data 2, 3, 3, 5, 7: mean 4, median 3 and mode 3. The sample variance is s² = Σ(x − x̄)²/(n − 1) = 16/4 = 4, so s = 2.</p>
+<h3>How are outliers detected?</h3>
+<p>With the quartiles: IQR = Q₃ − Q₁, and outliers are the values outside [Q₁ − 1.5·IQR, Q₃ + 1.5·IQR], which are also the ends of the whiskers of the box plot.</p>
+</section>
+<div class="anuncio"><span>Advertising</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="4415753033" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+<section class="relacionadas" aria-label="Related tools"><h2>Related tools</h2>
+<a href="../probabilidad/"><b>Probability →</b><span>Combinatorics, conditional probability, total probability and Bayes' theorem with the tree diagram.</span></a>
+<a href="../chi2-bondad/"><b>χ² goodness of fit and independence →</b><span>Goodness of fit, contingency tables with standardized residuals, Fisher's exact test for 2 × 2 and McNemar for paired data.</span></a>
+<a href="../contrastes/"><b>Hypothesis tests →</b><span>Tests of means, proportions and variances with the statistic, the critical region and the p-value, plus power, effect size, normality and several variances.</span></a>
+<a href="../errores/"><b>Error propagation →</b><span>Uncertainty of a calculated quantity with partial derivatives, weight of each measurement and a properly rounded result.</span></a>
+</section>
+</main>
+<footer><a href="../../../">Home</a>·<a href="../../contacto.html">Contact</a>·<a href="mailto:danijimzzz30@gmail.com?subject=Error%20en%20Estad%C3%ADstica%20descriptiva&amp;body=Herramienta%3A%20Estad%C3%ADstica%20descriptiva%20(estadistica%2Fdescriptiva)%0A%0AQu%C3%A9%20esperaba%20y%20qu%C3%A9%20ha%20pasado%3A%0A">Report an error</a>·<a href="../../aviso-legal.html">Legal notice</a>·<a href="../../privacidad.html">Privacy</a>·<a href="../../cookies.html">Cookies</a> · <a href="#" class="pref-cookies">Cookie preferences</a>· Descriptive statistics <span id="ver"></span> (beta)</footer>
+</body>
+<script>
+const Pagina = { carpeta: 'descriptiva', guarda: 'descriptiva-v1' };
+const Version = (() => { const registros = {"web":[{"v":"1.21"}],"control":[{"v":"0.2"}],"termo-estadistica":[{"v":"0.2"}],"markowitz":[{"v":"0.3"}],"cavidades":[{"v":"0.2"}],"organica":[{"v":"0.3"}],"transformada-z":[{"v":"0.2"}],"semiconductores":[{"v":"0.2"}],"relatividad":[{"v":"0.2"}],"osc-acopladas":[{"v":"0.2"}],"solubilidad":[{"v":"0.2"}],"lagrange":[{"v":"0.2"}],"series":[{"v":"0.3"}],"no-parametricos":[{"v":"0.3"}],"regresion-multiple":[{"v":"0.2"}],"anova":[{"v":"0.3"}],"black-scholes":[{"v":"0.3"}],"bonos":[{"v":"0.3"}],"solow":[{"v":"0.3"}],"integrales-multiples":[{"v":"0.1"}],"formulacion":[{"v":"0.2"}],"balance":[{"v":"0.2"}],"redox":[{"v":"0.2"}],"lineas-transmision":[{"v":"0.3"}],"superficies":[{"v":"0.2"}],"vsepr":[{"v":"0.2"}],"maxwell":[{"v":"0.3"}],"fresnel":[{"v":"0.2"}],"gravitacion":[{"v":"0.2"}],"convolucion":[{"v":"0.2"}],"laplace-numerica":[{"v":"0.2"}],"imagenes":[{"v":"0.2.1"}],"guias-onda":[{"v":"0.2"}],"antena":[{"v":"0.2"}],"bode":[{"v":"0.3"}],"optica":[{"v":"0.2"}],"simulador":[{"v":"0.4"}],"teoria-juegos":[{"v":"0.2"}],"puertas-logicas":[{"v":"0.4"}],"multiplicador":[{"v":"0.3"}],"is-lm":[{"v":"0.3"}],"choques":[{"v":"0.1"}],"termoquimica":[{"v":"0.3"}],"probabilidad":[{"v":"0.2"}],"unidades":[{"v":"0.2"}],"equilibrio":[{"v":"0.2"}],"oscilaciones":[{"v":"0.1"}],"beneficio":[{"v":"0.3"}],"costes":[{"v":"0.3"}],"sistemas-numericos":[{"v":"0.2"}],"excedentes":[{"v":"0.2"}],"oferta-demanda":[{"v":"0.2"}],"chi2-bondad":[{"v":"0.2"}],"contrastes":[{"v":"0.2"}],"errores":[{"v":"0.2"}],"graficador":[{"v":"0.2"}],"metodos-numericos":[{"v":"0.2"}],"fisica-moderna":[{"v":"0.2"}],"lorenz-gini":[{"v":"0.2"}],"phillips-okun":[{"v":"0.3"}],"tipos-cambio":[{"v":"0.3"}],"elasticidades":[{"v":"0.3"}],"pib-ipc":[{"v":"0.2"}],"numeros-indice":[{"v":"0.2"}],"ratios":[{"v":"0.2"}],"punto-muerto":[{"v":"0.2"}],"ahorro":[{"v":"0.3"}],"van-tir":[{"v":"0.3"}],"amortizacion-inmovilizado":[{"v":"0.2"}],"prestamos":[{"v":"0.3"}],"rentas":[{"v":"0.3"}],"interes":[{"v":"0.3"}],"descriptiva":[{"v":"0.2"}],"regresion-economia":[{"v":"0.2"}],"ajustador":[{"v":"0.2.1"}],"electrostatica":[{"v":"0.11"}],"magnetostatica":[{"v":"0.4"}],"tabla-periodica":[{"v":"0.2"}],"trabajo-y-energia":[{"v":"0.3"}],"masa-molar":[{"v":"0.2"}],"configuracion-electronica":[{"v":"0.2"}],"condensadores":[{"v":"0.4"}],"tiro-parabolico":[{"v":"0.4"}],"disoluciones":[{"v":"0.2"}],"calorimetria":[{"v":"0.2"}],"induccion":[{"v":"0.4"}],"matrices":[{"v":"0.3"}],"derivadas":[{"v":"0.3"}],"laplace":[{"v":"0.2"}],"interferencia":[{"v":"0.2"}],"ondas-em":[{"v":"0.4"}],"intervalos":[{"v":"0.3"}],"fuerza":[{"v":"0.3"}],"campos":[{"v":"0.2.1"}],"cinetica":[{"v":"0.2"}],"edos":[{"v":"0.2"}],"fourier":[{"v":"0.2"}],"taylor":[{"v":"0.3"}],"complejos":[{"v":"0.3"}],"sistemas":[{"v":"0.3"}],"regresion":[{"v":"0.3"}],"estadistica":[{"v":"0.3"}],"dinamica":[{"v":"0.3"}],"solido-rigido":[{"v":"0.3"}],"ondas":[{"v":"0.3"}],"gases":[{"v":"0.6"}],"ciclos":[{"v":"0.2"}],"ph":[{"v":"0.4"}],"fluidos":[{"v":"0.3"}],"doppler":[{"v":"0.2"}],"resistencias":[{"v":"0.3"}],"faraday":[{"v":"0.4"}],"fenomenos":[{"v":"0.9"}]}; const de = (h) => ({ current: registros[h][0].v, log: registros[h] }); return { registros, de }; })();
+
+</script>
+<script src="../../../js/en/herramienta.en.e2425303.js"></script>
+<script src="../../../js/en/enunciado.en.73e3a542.js"></script>
+<script src="../../../js/en/mates.en.fbd66204.js"></script>
+<script src="../../../js/en/calculadora.en.98ec18c2.js"></script>
+<script>
+const Descriptiva = (() => {
+  const K = typeof Calculadora !== 'undefined' ? Calculadora : require('../calculadora.js');
+  const { f, lee, vacio } = K;
+  const p = (x) => (x < 0 ? `(${f(x)})` : f(x));
+  const FORMATOS = { lista: 'List of data', tabla: 'Values and frequencies (x n)', intervalos: 'Data grouped in intervals (Lᵢ Lₛ n)' };
+
+  function lee_(sc) {
+    const fmt = FORMATOS[sc.formato] ? sc.formato : 'lista';
+    let fil;
+    if (fmt === 'lista') {
+      const v = K.lista(sc.datos, 'los datos');
+      const m = new Map(); for (const x of v) m.set(x, (m.get(x) || 0) + 1);
+      fil = [...m].map(([x, n]) => ({ x, n }));
+    } else if (fmt === 'tabla') {
+      fil = K.filas(sc.datos, 2, 'la tabla').map(([x, n]) => ({ x, n }));
+      if (new Set(fil.map((r) => r.x)).size !== fil.length) throw new Error('There are repeated values in the table: combine their frequencies in one row');
+    } else {
+      fil = K.filas(sc.datos, 3, 'la tabla').map(([li, ls, n]) => ({ li, ls, x: (li + ls) / 2, n, a: ls - li }));
+      if (fil.some((r) => !(r.ls > r.li))) throw new Error('In each interval, the upper end must be greater than the lower');
+      fil.sort((a, b) => a.li - b.li);
+      for (let i = 1; i < fil.length; i++) if (fil[i].li < fil[i - 1].ls - 1e-12) throw new Error('The intervals overlap: each must start where the previous one ends (or later)');
+    }
+    if (fil.some((r) => !(r.n >= 0) || !Number.isFinite(r.n))) throw new Error('The frequencies must be positive numbers');
+    fil = fil.filter((r) => r.n > 0);
+    if (fmt !== 'intervalos') fil.sort((a, b) => a.x - b.x);
+    const N = fil.reduce((s, r) => s + r.n, 0);
+    if (N < 2) throw new Error('At least 2 data points are needed');
+    let ac = 0; for (const r of fil) { ac += r.n; r.N = ac; r.fr = r.n / N; r.F = ac / N; }
+    return { fmt, fil, N };
+  }
+
+  function cuantil(fil, N, q, agrupados) {
+    const pos = q * N;
+    if (agrupados) {
+      const i = fil.findIndex((r) => r.N >= pos - 1e-9), r = fil[i], Nant = i ? fil[i - 1].N : 0;
+      return { v: r.li + ((pos - Nant) / r.n) * r.a, pos, i, Nant };
+    }
+    const i = fil.findIndex((r) => r.N >= pos - 1e-9), r = fil[i];
+    if (Math.abs(r.N - pos) < 1e-9 && i < fil.length - 1 && Number.isInteger(pos)) return { v: (r.x + fil[i + 1].x) / 2, pos, i, justo: true };
+    return { v: r.x, pos, i };
+  }
+
+  function resolver(sc) {
+    const { fmt, fil, N } = lee_(sc), ag = fmt === 'intervalos';
+    const div = sc.div === 'n1' ? 'n1' : 'n', D = div === 'n1' ? N - 1 : N;
+    const sx = fil.reduce((s, r) => s + r.x * r.n, 0), sx2 = fil.reduce((s, r) => s + r.x * r.x * r.n, 0);
+    const media = sx / N;
+    const m2 = fil.reduce((s, r) => s + r.n * (r.x - media) ** 2, 0) / N, m3 = fil.reduce((s, r) => s + r.n * (r.x - media) ** 3, 0) / N, m4 = fil.reduce((s, r) => s + r.n * (r.x - media) ** 4, 0) / N;
+    const varz = (m2 * N) / D, sd = Math.sqrt(varz), cv = media !== 0 ? sd / Math.abs(media) : NaN;
+    const g1 = m2 > 0 ? m3 / m2 ** 1.5 : 0, g2 = m2 > 0 ? m4 / (m2 * m2) - 3 : 0;
+    const Q1 = cuantil(fil, N, 0.25, ag), Me = cuantil(fil, N, 0.5, ag), Q3 = cuantil(fil, N, 0.75, ag);
+    const pk = vacio(sc.pk) ? null : lee(sc, 'pk', 'el percentil', { min: 0, minEx: true, max: 100, maxEx: true });
+    const P = pk === null ? null : cuantil(fil, N, pk / 100, ag);
+    const nmax = Math.max(...fil.map((r) => r.n));
+    let moda, modaTxt;
+    if (ag) {
+      const i = fil.findIndex((r) => r.n === nmax), r = fil[i], d1 = r.n - (i ? fil[i - 1].n : 0), d2 = r.n - (i < fil.length - 1 ? fil[i + 1].n : 0);
+      moda = [d1 + d2 > 0 ? r.li + (d1 / (d1 + d2)) * r.a : r.x];
+      modaTxt = `Modal interval [${f(r.li)}, ${f(r.ls)}), the one with the highest frequency (n = ${f(r.n)}). With Czuber's formula: $Mo = L_i + {Δ_1}/{Δ_1 + Δ_2} · a = ${f(r.li)} + ${f(d1)}/(${f(d1)} + ${f(d2)}) · ${f(r.a)} = ${f(moda[0])}$, where $Δ_1$ and $Δ_2$ are how much its frequency exceeds that of the previous and the next interval.`;
+    } else {
+      moda = fil.filter((r) => r.n === nmax).map((r) => r.x);
+      modaTxt = moda.length === fil.length ? 'All the values repeat the same number of times: there is no mode.' : `The value${moda.length > 1 ? 's' : ''} with the highest frequency (n = ${f(nmax)}): <b>${moda.map((v) => f(v)).join(', ')}</b>${moda.length > 1 ? ` (${moda.length === 2 ? 'bimodal' : 'multimodal'} distribution)` : ''}.`;
+      if (moda.length === fil.length) moda = [];
+    }
+    const min = ag ? fil[0].li : fil[0].x, max = ag ? fil[fil.length - 1].ls : fil[fil.length - 1].x;
+    const ric = Q3.v - Q1.v, bi = Q1.v - 1.5 * ric, bs = Q3.v + 1.5 * ric;
+    const atipicos = ag ? [] : fil.filter((r) => r.x < bi - 1e-12 || r.x > bs + 1e-12).map((r) => r.x);
+    const dentro = fil.filter((r) => !atipicos.includes(r.x)), bigoteI = ag ? min : Math.min(...dentro.map((r) => r.x)), bigoteS = ag ? max : Math.max(...dentro.map((r) => r.x));
+
+    const X = ag ? 'x_i' : 'x_i', vs = div === 'n1' ? 'N − 1' : 'N', sim = div === 'n1' ? 's' : 'σ';
+    const pasos = [];
+    pasos.push({ t: 'Frequency table', html: `${ag ? 'With grouped data the class mark $x_i = (L_i + L_s)/2$ of each interval is used. ' : ''}In the table: $n_i$ absolute frequency, $f_i = n_i/N$ relative, and $N_i$ and $F_i$ the cumulative ones. There are <b>N = ${f(N, 6)}</b> data points.` });
+    pasos.push({ t: 'Mean', html: `$x̄ = {∑ ${X} n_i}/N = ${f(sx, 6)}/${f(N, 6)} = ${f(media)}$` });
+    let mg = null, mh = null;
+    if (fil.every((r) => r.x > 0)) {
+      mg = Math.exp(fil.reduce((t, r) => t + r.n * Math.log(r.x), 0) / N); mh = N / fil.reduce((t, r) => t + r.n / r.x, 0);
+      pasos.push({ t: 'Geometric and harmonic means', html: `Geometric, the N-th root of the product (the one for growth rates or indices that multiply): $G = e^{{∑ n_i ln x_i}/N} = ${f(mg)}$<br>Harmonic, the inverse of the mean of the inverses (the one for speeds or yields over equal legs): $H = N/{∑ n_i/x_i} = ${f(N, 6)}/${f(fil.reduce((t, r) => t + r.n / r.x, 0))} = ${f(mh)}$<br>It always holds that $H ≤ G ≤ x̄$: $${f(mh)} ≤ ${f(mg)} ≤ ${f(media)}$${mh === media ? ' (they are equal because all the data coincide)' : ''}.` });
+    } else pasos.push({ t: 'Geometric and harmonic means', html: 'They only make sense with all data positive, and here there are zeros or negatives: they are not calculated.' });
+    let mp = null;
+    if (!vacio(sc.pesos)) {
+      if (fmt !== 'lista') throw new Error('Weights are only used with the list of data: in a table, the frequencies already act as weights');
+      const xs = K.lista(sc.datos, 'los datos'), ws = K.lista(sc.pesos, 'los pesos');
+      if (ws.length !== xs.length) throw new Error(`There are ${xs.length} data points and ${ws.length} weights: there must be one weight per data point, in the same order`);
+      if (ws.some((w) => w < 0)) throw new Error('Weights cannot be negative');
+      const sw = ws.reduce((a, b) => a + b, 0), swx = ws.reduce((a, w, i) => a + w * xs[i], 0);
+      if (!(sw > 0)) throw new Error('Weights cannot all be zero');
+      mp = swx / sw;
+      const corta = (ts) => (ts.length > 8 ? [...ts.slice(0, 4), '…', ...ts.slice(-2)] : ts).join(' + ');
+      pasos.push({ t: 'Weighted mean', html: `Each data point counts according to its weight (credits of a subject, percentage of an exam…): $x̄_p = {∑ p_i x_i}/{∑ p_i} = {${corta(xs.map((x, i) => `${f(ws[i])} · ${p(x)}`))}}/{${f(sw, 6)}} = {${f(swx, 6)}}/{${f(sw, 6)}} = ${f(mp)}$<br>The unweighted mean is $${f(media)}$. The median, the quartiles and the dispersion below are those of the data without weights.` });
+    } else if (fmt === 'tabla') pasos.push({ t: 'Weighted mean', html: 'The mean of a table is already a weighted mean: each value weighs what its frequency $n_i$ says (which can have decimals, like credits or a percentage).' });
+    const cuTxt = (nom, q, c) => {
+      if (ag) { const r = fil[c.i]; return `${nom}: $${f(q)} · N = ${f(c.pos)}$ falls in [${f(r.li)}, ${f(r.ls)}) ($N_{i−1} = ${f(c.Nant)}$, $n_i = ${f(r.n)}$): $${f(r.li)} + {${f(c.pos)} − ${f(c.Nant)}}/{${f(r.n)}} · ${f(r.a)} = ${f(c.v)}$`; }
+      return `${nom}: $${f(q)} · N = ${f(c.pos)}$ ${c.justo ? `it coincides with $N_i = ${f(c.pos)}$, so it is the mean of ${f(fil[c.i].x)} and ${f(fil[c.i + 1].x)}` : `→ the first value with $N_i ≥ ${f(c.pos)}$ is ${f(fil[c.i].x)}`}: <b>${f(c.v)}</b>`;
+    };
+    pasos.push({ t: 'Median and quartiles', html: `${ag ? 'We interpolate in the interval where $k·N/4$ falls: $L_i + {k·N/4 − N_{i−1}}/{n_i} · a_i$.<br>' : 'The position $k·N/4$ is looked up in the cumulative frequencies $N_i$.<br>'}` + [cuTxt('Q<sub>1</sub>', 0.25, Q1), cuTxt('Median (Q<sub>2</sub>)', 0.5, Me), cuTxt('Q<sub>3</sub>', 0.75, Q3), ...(P ? [cuTxt(`P<sub>${f(pk)}</sub>`, pk / 100, P)] : [])].join('<br>') });
+    pasos.push({ t: 'Mode', html: modaTxt });
+    pasos.push({ t: 'Dispersion', html: `Range: $${f(max)} − ${p(min)} = ${f(max - min)}$; interquartile range: $IQR = Q_3 − Q_1 = ${f(Q3.v)} − ${p(Q1.v)} = ${f(ric)}$<br>${div === 'n1' ? 'Sample variance' : 'Variance'}: $${sim}^2 = {∑ (x_i − x̄)^2 n_i}/{${vs}} = ${f(m2 * N)}/${f(D, 6)} = ${f(varz)}$${div === 'n' ? ` (or also $${sim}^2 = {∑ x_i^2 n_i}/N − x̄^2 = ${f(sx2 / N)} − ${f(media)}^2$)` : ''}<br>Standard deviation: $${sim} = √(${f(varz)}) = ${f(sd)}$${isFinite(cv) ? `<br>Coefficient of variation: $CV = {${sim}}/{|x̄|} = ${f(sd)}/${f(Math.abs(media))} = ${f(cv)}$ (${f(100 * cv, 3)} %)${cv < 0.3 ? ', the mean is quite representative' : ', a lot of dispersion: the mean represents the data poorly'}` : ''}` });
+    pasos.push({ t: 'Shape', html: `Fisher's skewness: $g_1 = m_3/σ^3 = ${f(g1)}$ ${Math.abs(g1) < 0.1 ? '(practically symmetric)' : g1 > 0 ? '(right-skewed: long tail towards the high values, mean above the median)' : '(left-skewed: long tail towards the low values)'}.<br>Kurtosis: $g_2 = m_4/σ^4 − 3 = ${f(g2)}$ ${Math.abs(g2) < 0.1 ? '(mesokurtic, like the normal)' : g2 > 0 ? '(leptokurtic: more peaked than the normal)' : '(platykurtic: flatter than the normal)'}.<br>Here $m_k = {∑ (x_i − x̄)^k n_i}/N$ are the central moments (always divided by N).` });
+    if (!ag) pasos.push({ t: 'Outliers and box plot', html: `Fences: $Q_1 − 1.5 · IQR = ${f(bi)}$ and $Q_3 + 1.5 · IQR = ${f(bs)}$. ${atipicos.length ? `These fall outside and are outliers: <b>${atipicos.map((v) => f(v)).join(', ')}</b>.` : 'No data point falls outside: there are no outliers.'}<br>The box runs from Q<sub>1</sub> to Q<sub>3</sub> with the median inside, and the whiskers reach the smallest and largest data points that are not outliers (${f(bigoteI)} and ${f(bigoteS)}).` });
+    return { fmt, fil, N, div, media, mg, mh, mp, varz, sd, cv, g1, g2, Q1: Q1.v, Me: Me.v, Q3: Q3.v, pk, P: P && P.v, moda, min, max, ric, atipicos, bigoteI, bigoteS, pasos };
+  }
+
+  const ejemplos = [
+    { clave: 'notas', nombre: 'Marks in an exam (list)', sc: { formato: 'lista', datos: '4 5 7 6 8 5 9 6 5 7\n3 6 7 8 5 6 10 6 7 4', div: 'n', pk: '90' } },
+    { clave: 'hijos', nombre: 'Number of children per family (table)', sc: { formato: 'tabla', datos: 'Children Families\n0 6\n1 10\n2 14\n3 7\n4 3', div: 'n', pk: '' } },
+    { clave: 'alturas', nombre: 'Heights grouped in intervals', sc: { formato: 'intervalos', datos: 'Li Ls n\n150 155 3\n155 160 7\n160 165 12\n165 170 15\n170 175 9\n175 180 4', div: 'n', pk: '10' } },
+    { clave: 'expediente', nombre: 'Mean mark weighted by credits', sc: { formato: 'lista', datos: '7,5 6 9 5,5 8', pesos: '6 6 4,5 9 3', div: 'n', pk: '' } },
+    { clave: 'crecimiento', nombre: 'Annual growth factors (geometric mean)', sc: { formato: 'lista', datos: '1,05 1,12 0,97 1,08', pesos: '', div: 'n', pk: '' } },
+    { clave: 'salarios', nombre: 'Salaries with one outlier (sample)', sc: { formato: 'lista', datos: '1350 1420 1380 1500 1460 1390 1410 1550 1440 4800', div: 'n1', pk: '' } },
+    { clave: 'tiempos', nombre: 'Waiting times in minutes (grouped)', sc: { formato: 'intervalos', datos: '0 5 18\n5 10 25\n10 15 14\n15 20 8\n20 30 5', div: 'n', pk: '' } },
+  ];
+
+  return { resolver, ejemplos, FORMATOS, cuantil };
+})();
+
+</script>
+<script src="../../../js/en/compartir.en.08e9415d.js"></script>
+<script>
+(() => {
+  const D = Descriptiva, { f } = Calculadora;
+  const AYUDA = { lista: 'the data separated by spaces, “;” or line breaks', tabla: 'one “x n” row per value', intervalos: 'one “Lᵢ Lₛ n” row per interval' };
+  function azar() {
+    const n = 12 + Math.floor(Math.random() * 9), v = Array.from({ length: n }, () => Math.max(0, Math.min(10, Math.round(6 + 2 * (Math.random() + Math.random() + Math.random() - 1.5)))));
+    return { formato: 'lista', datos: v.join(' '), div: 'n', pk: '' };
+  }
+  Calculadora.monta({
+    C: D, carpeta: 'descriptiva', app: 'DescriptivaApp', azar,
+    enunciado: (sc) => `These are the marks of ${sc.datos.split(/\s+/).length} students: <b>${sc.datos}</b>. Calculate the mean, the median, the quartiles, the variance and the standard deviation (dividing by N) and the coefficient of variation.`,
+    nota: 'The comma is the decimal separator. In tables, one row per line with the numbers separated by spaces, tabs or “;” (you can paste them from a spreadsheet); a first row with names is skipped.',
+    campos: (sc) => [
+      { k: 'formato', nom: 'Shape of the data', tipo: 'sel', ops: Object.entries(D.FORMATOS) },
+      { k: 'datos', nom: 'Data', tipo: 'area', ayuda: AYUDA[sc.formato] || AYUDA.lista, filas: 7 },
+      ...(sc.formato === 'lista' || !sc.formato ? [{ k: 'pesos', nom: 'Weights', tipo: 'texto', ayuda: 'optional: one per data point, for the weighted mean' }] : []),
+      { k: 'div', nom: 'Variance', tipo: 'sel', ops: [['n', 'Of the population (divide by N)'], ['n1', 'Of a sample (divide by N − 1)']] },
+      { k: 'pk', nom: 'Percentile k', un: 'optional' },
+    ],
+    usarEn: (s, sc) => {
+      if (!Number.isInteger(s.N) || s.N < 2 || !(s.sd > 0)) return [];
+      const n = (v) => String(+v.toPrecision(10)).replace('.', '.'), cuasi = s.div === 'n1' ? s.sd : s.sd * Math.sqrt(s.N / (s.N - 1)), lista = s.fmt === 'lista';
+      const media = lista ? { fuente: 'datos', datos: sc.datos } : { fuente: 'resumen', xm: n(s.media), s: n(cuasi), n: String(s.N) };
+      return [
+        { texto: 'Confidence interval for the mean →', carpeta: 'intervalos', estado: { modo: 'media', sigmaC: 'no', nivel: '95', tipoS: 'cuasi', ...media } },
+        { texto: 'Test of the mean →', carpeta: 'contrastes', estado: { tipo: 'media', h1: 'distinto', alfa: '0,05', sigmaC: 'no', n: String(s.N), xm: n(s.media), s: n(cuasi), mu0: n(Math.round(s.media)) } },
+        ...(lista ? [{ texto: 'Wilcoxon for the median →', carpeta: 'no-parametricos', estado: { tipo: 'mediana', h1: 'dos', alfa: '0,05', exacto: 'si', cc: 'si', m0: n(Math.round(s.Me)), datos: sc.datos } }] : []),
+      ];
+    },
+    resumen: (s) => [
+      ['Mean x̄', f(s.media)], ...(s.mp !== null ? [['Weighted mean', f(s.mp)]] : []), ['Median', f(s.Me)], ['Mode', s.moda.length ? s.moda.map((v) => f(v)).join(', ') : 'no hay'],
+      ['Quartiles Q₁ and Q₃', `${f(s.Q1)} y ${f(s.Q3)}`],
+      [s.div === 'n1' ? 'Sample variance s²' : 'Variance σ²', f(s.varz)], [s.div === 'n1' ? 'Standard deviation s' : 'Standard deviation σ', f(s.sd)],
+      ...(s.mg !== null ? [['Geometric mean', f(s.mg)], ['Harmonic mean', f(s.mh)]] : []),
+      ['Coefficient of variation', isFinite(s.cv) ? `${f(100 * s.cv, 3)} %` : '—'], ['Interquartile range', f(s.ric)],
+      ...(s.P === null ? [] : [[`Percentile ${f(s.pk)}`, f(s.P)]]),
+    ],
+    tabla: (s) => {
+      const ag = s.fmt === 'intervalos', g = (v) => f(v, 5);
+      const cab = [...(ag ? ['Interval', 'xᵢ'] : ['xᵢ']), 'nᵢ', 'fᵢ', 'Nᵢ', 'Fᵢ', 'xᵢ·nᵢ', 'xᵢ²·nᵢ'];
+      const fil = s.fil.map((r) => [...(ag ? [`[${g(r.li)}, ${g(r.ls)})`] : []), g(r.x), g(r.n), r.fr.toFixed(4).replace('.', '.'), g(r.N), r.F.toFixed(4).replace('.', '.'), g(r.x * r.n), g(r.x * r.x * r.n)]);
+      const tot = [...(ag ? ['∑', ''] : ['∑']), g(s.N), '1', '', '', g(s.fil.reduce((a, r) => a + r.x * r.n, 0)), g(s.fil.reduce((a, r) => a + r.x * r.x * r.n, 0))];
+      return `<table class="tabla-eco"><thead><tr>${cab.map((c) => `<th>${c}</th>`).join('')}</tr></thead><tbody>${fil.map((r) => `<tr>${r.map((c) => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody><tfoot><tr>${tot.map((c) => `<td>${c}</td>`).join('')}</tr></tfoot></table>`;
+    },
+    grafica: (s) => {
+      const ag = s.fmt === 'intervalos';
+      const paso = ag ? 0 : s.fil.length > 1 ? Math.min(...s.fil.slice(1).map((r, i) => r.x - s.fil[i].x)) : 1;
+      const sturges = !ag && (s.fil.length > 12 || (s.max - s.min) / paso > 25);
+      let barras;
+      if (ag) barras = s.fil.map((r) => ({ c: r.x, a: r.a, n: r.n }));
+      else if (sturges) {
+        const k = Math.ceil(1 + Math.log2(s.N)), a = (s.max - s.min) / k || 1;
+        barras = Array.from({ length: k }, (_, i) => ({ c: s.min + (i + 0.5) * a, a, n: 0 }));
+        for (const r of s.fil) barras[Math.min(k - 1, Math.floor((r.x - s.min) / a))].n += r.n;
+      } else barras = s.fil.map((r) => ({ c: r.x, a: paso * 0.6, n: r.n, fina: true }));
+      const iguales = barras.every((b) => b.fina || Math.abs(b.a - barras[0].a) < 1e-9), alto = (b) => (iguales ? b.n : b.n / b.a);
+      const x = barras[0].fina ? [s.min - paso, s.max + paso] : [s.min - 0.04 * (s.max - s.min), s.max + 0.04 * (s.max - s.min)];
+      const series = barras.map((b) => ({ tipo: 'barras', ancho: b.fina ? b.a : b.a * 0.98, pts: [[b.c, alto(b)]], color: '--serie-1' }));
+      return { x, y: [0, Math.max(...barras.map(alto)) * 1.45], series, ejeY: iguales ? 'nᵢ' : 'nᵢ / aᵢ (densidad)', verticales: [{ x: s.media, color: '--serie-2', texto: 'x̄' }], sturges };
+    },
+    despues: ({ X, g, h }, s, col) => {
+      const y = 30, a = 9;
+      g.strokeStyle = col['--ink']; g.lineWidth = 1.5; g.fillStyle = col['--serie-3']; g.globalAlpha = 0.35; g.fillRect(X(s.Q1), y - a, X(s.Q3) - X(s.Q1), 2 * a); g.globalAlpha = 1;
+      g.strokeRect(X(s.Q1), y - a, X(s.Q3) - X(s.Q1), 2 * a);
+      g.beginPath(); g.moveTo(X(s.Me), y - a); g.lineTo(X(s.Me), y + a); g.moveTo(X(s.bigoteI), y); g.lineTo(X(s.Q1), y); g.moveTo(X(s.Q3), y); g.lineTo(X(s.bigoteS), y);
+      g.moveTo(X(s.bigoteI), y - a / 2); g.lineTo(X(s.bigoteI), y + a / 2); g.moveTo(X(s.bigoteS), y - a / 2); g.lineTo(X(s.bigoteS), y + a / 2); g.stroke();
+      g.fillStyle = col['--serie-2']; for (const v of s.atipicos) { g.beginPath(); g.arc(X(v), y, 4, 0, 2 * Math.PI); g.fill(); }
+    },
+    leyenda: (s) => `${s.fmt === 'intervalos' ? '<b>Histogram</b> of the intervals' : s.fil.length > 12 || (s.max - s.min) / Math.min(...s.fil.slice(1).map((r, i) => r.x - s.fil[i].x)) > 25 ? `<b>Histogram</b> with ${Math.ceil(1 + Math.log2(s.N))} equal intervals (Sturges' rule)` : '<b>Bar chart</b> of the frequencies'}, the <b>mean</b> as a dashed line and, on top, the <b>box plot</b>: from Q₁ to Q₃ with the median inside${s.atipicos.length ? ' and the outliers as points' : ''}.`,
+  });
+})();
+
+</script>
+<script src="../../../js/en/biblioteca.en.5cb97548.js"></script>
+<script src="../../../js/en/practica.en.192a5c1e.js"></script>
+<script src="../../../js/en/personal.en.00676b87.js"></script>
+<script>
+Biblioteca.monta('descriptiva', 'descriptiva-v1');
+Practica.monta('descriptiva', 'descriptiva-v1');
+Enunciado.monta('descriptiva', 'descriptiva-v1');
+</script>
+</html>

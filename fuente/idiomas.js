@@ -134,7 +134,7 @@ const SCRIPT = (lista, actual, etiqueta) => `(() => {
   const t = document.createElement('p'); t.textContent = i.a[0];
   const si = document.createElement('button'); si.type = 'button'; si.className = 'lg-si'; si.textContent = i.a[1];
   const no = document.createElement('button'); no.type = 'button'; no.textContent = i.a[2];
-  si.addEventListener('click', () => { guarda(i.c); const a = pop.querySelector('a[hreflang="' + i.c + '"]'); location.href = a ? a.href : destino(i); });
+  si.addEventListener('click', () => { guarda(i.c); const a = [...pop.querySelectorAll('a[hreflang]')].find((x) => x.hreflang === i.c); location.href = a ? a.href : destino(i); });
   no.addEventListener('click', () => { guarda(ACTUAL); b.remove(); });
   b.append(t, si, no); document.body.append(b);
 })();`;

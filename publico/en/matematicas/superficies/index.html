@@ -1,0 +1,663 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMwZDZiNjYiLz48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlNmE2NDAiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtZGFzaGFycmF5PSI0IDYuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48cGF0aCBkPSJNMjAgMzJINDQiLz48cGF0aCBkPSJNMjEgMjdDMjcgMTQgMzcgMTQgNDMgMjciLz48cGF0aCBkPSJNMjEgMzdDMjcgNTAgMzcgNTAgNDMgMzciLz48cGF0aCBkPSJNMTcgMjRDMjIgNCA0MiA0IDQ3IDI0Ii8+PHBhdGggZD0iTTE3IDQwQzIyIDYwIDQyIDYwIDQ3IDQwIi8+PC9nPjxjaXJjbGUgY3g9IjE3IiBjeT0iMzIiIHI9IjgiIGZpbGw9IiNlZjdhNjIiLz48Y2lyY2xlIGN4PSI0NyIgY3k9IjMyIiByPSI4IiBmaWxsPSIjNzRhMmYyIi8+PHBhdGggZD0iTTEzIDMyaDhNMTcgMjh2OE00MyAzMmg4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K">
+<link rel="apple-touch-icon" href="../../../apple-touch-icon.png">
+<meta property="og:title" content="3D surface and level curve simulator">
+<meta property="og:description" content="Plot z = f(x, y) as a rotatable 3D surface and as a level-curve map, with partial derivatives, gradient, tangent plane, directional derivative and critical points step by step.">
+<link rel="canonical" href="https://simulaciencia.vercel.app/en/matematicas/superficies/">
+<meta name="robots" content="noindex, follow">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://simulaciencia.vercel.app/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Surfaces and level curves in 3D","description":"Plot a function of two variables z = f(x, y) as a 3D surface that rotates with the mouse and as a level-curve map, with the partial derivatives, the gradient, the tangent plane, the directional derivative and the critical points, step by step.","url":"https://simulaciencia.vercel.app/matematicas/superficies/","inLanguage":"es","isAccessibleForFree":true,"applicationCategory":"EducationalApplication","operatingSystem":"Web browser","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://simulaciencia.vercel.app/"},{"@type":"ListItem","position":2,"name":"Mathematics","item":"https://simulaciencia.vercel.app/matematicas/"},{"@type":"ListItem","position":3,"name":"Surfaces and level curves in 3D","item":"https://simulaciencia.vercel.app/matematicas/superficies/"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What are the level curves of a surface?","acceptedAnswer":{"@type":"Answer","text":"They are the points with f(x, y) = c for different values of c, and the gradient is perpendicular to them. For z = x² + y² they are circles of radius √c."}},{"@type":"Question","name":"How are critical points classified?","acceptedAnswer":{"@type":"Answer","text":"Where ∇f = 0, the Hessian D = fₓₓ·f_yy − fₓ_y² decides: D > 0 and fₓₓ > 0, minimum; D > 0 and fₓₓ < 0, maximum; D < 0, saddle point. For z = x² − y², D = −4 at the origin: saddle."}}]}]}</script>
+<link rel="manifest" href="../../manifest.webmanifest">
+<meta name="theme-color" content="#0d6b66">
+<script src="../../pwa.js" defer></script>
+<meta name="google-adsense-account" content="ca-pub-6407501780492688">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6407501780492688" crossorigin="anonymous"></script>
+<script>window.googlefc = window.googlefc || {}; googlefc.callbackQueue = googlefc.callbackQueue || [];
+document.addEventListener('click', (e) => { if (!e.target.closest('.pref-cookies')) return; e.preventDefault(); googlefc.callbackQueue.push(() => googlefc.showRevocationMessage()); });</script>
+<style>.anuncio { max-width:860px; margin:28px 0 0; text-align:center; min-height:120px } .anuncio > span { display:block; font:11px/1.6 system-ui, sans-serif; letter-spacing:.06em; text-transform:uppercase; color:var(--muted, #5b6670) } .anuncio ins { display:block }</style>
+<style>.anuncio-lado { display:none } @media (min-width: 901px) { .anuncio-lado { display:block; grid-column:1; grid-row:2; position:sticky; top:96px; margin:8px 0 0; max-width:none; min-height:250px; min-width:0; overflow:hidden } main .layout.con-lado > :nth-child(2) { grid-row:1 / span 2 } }</style>
+<script>document.addEventListener('DOMContentLoaded', () => {
+  const l = document.querySelector('main .layout');
+  if (!l || l.classList.contains('invertido') || l.children.length !== 2 || !l.offsetParent || !matchMedia('(min-width: 901px)').matches) return;
+  l.classList.add('con-lado');
+  const a = document.createElement('div'); a.className = 'anuncio anuncio-lado';
+  a.innerHTML = '<span>Publicidad</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="9800921596" data-ad-format="auto" data-full-width-responsive="true"></ins>';
+  l.appendChild(a); (window.adsbygoogle = window.adsbygoogle || []).push({});
+});</script>
+<script>(() => {
+  const raiz = document.documentElement, mq = matchMedia('(prefers-color-scheme: dark)'), oyentes = [];
+  try { const t = localStorage.getItem('simu-tema'); if (t === 'dark' || t === 'light') raiz.dataset.theme = t; } catch (e) { /* sin almacenamiento */ }
+  const orig = MediaQueryList.prototype.addEventListener;
+  MediaQueryList.prototype.addEventListener = function (tipo, f, ...r) { if (tipo === 'change' && /prefers-color-scheme/.test(this.media)) oyentes.push(f); return orig.call(this, tipo, f, ...r); };
+  const oscuro = () => (raiz.dataset.theme ? raiz.dataset.theme === 'dark' : mq.matches);
+  const rotula = () => document.querySelectorAll('.tema').forEach((b) => { const t = oscuro() ? 'Switch to light mode' : 'Switch to dark mode'; b.title = t; b.setAttribute('aria-label', t); });
+  document.addEventListener('DOMContentLoaded', rotula);
+  mq.addEventListener('change', rotula);
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.tema')) return;
+    raiz.dataset.theme = oscuro() ? 'light' : 'dark';
+    try { localStorage.setItem('simu-tema', raiz.dataset.theme); } catch (e) { /* sin almacenamiento */ }
+    rotula();
+    for (const f of oyentes) { try { f.call(mq, { matches: oscuro(), media: mq.media }); } catch (err) { console.error(err); } }
+  });
+})();</script>
+<script>(() => {
+  const ENFOCABLE = 'a[href],button,input,select,textarea,summary,[tabindex]';
+  let espera = 0;
+  const revisa = () => {
+    espera = 0;
+    for (const e of document.querySelectorAll('main *')) {
+      const desborda = e.scrollWidth > e.clientWidth || e.scrollHeight > e.clientHeight;
+      if (e.dataset.sf) { if (!desborda || e.querySelector(ENFOCABLE)) { e.removeAttribute('tabindex'); delete e.dataset.sf; } continue; }
+      if (!desborda || e.hasAttribute('tabindex') || e.matches('svg,svg *,canvas') || e.querySelector(ENFOCABLE)) continue;
+      const o = getComputedStyle(e);
+      if (/auto|scroll/.test(o.overflowX + o.overflowY)) { e.tabIndex = 0; e.dataset.sf = '1'; }
+    }
+  };
+  window.revisaScroll = revisa; // también lo llama pruebas/accesibilidad.js antes de pasar axe
+  const pide = () => { if (!espera) espera = setTimeout(revisa, 400); };
+  addEventListener('load', () => { revisa(); const m = document.querySelector('main'); if (m) new MutationObserver(pide).observe(m, { childList: true, subtree: true, characterData: true }); });
+  addEventListener('resize', pide);
+})();</script>
+<script src="../../buscador.js" defer></script>
+<script src="../../llama.js" defer></script>
+<title>3D surface and level curve simulator · Ciencify</title>
+<meta name="description" content="Plot a function of two variables z = f(x, y) as a 3D surface that rotates with the mouse and as a level-curve map, with the partial derivatives, the gradient, the tangent plane, the directional derivative and the critical points, step by step.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>/* =====================================================================
+   Hoja de estilos común de todas las herramientas (fuente/<herramienta>/pagina.html).
+   diseno.js la mete en cada página, antes de su propio <style>, junto con el color
+   de la asignatura (--accent, --accent-soft) y la cabecera del portal. La guía de uso
+   de cada componente, con su HTML, está en DISENO.md.
+   Una herramienta no vuelve a definir estas reglas: ajusta las variables de medida
+   (--col-datos, --ancho-valor, --alto-grafica) o añade una clase propia.
+   ===================================================================== */
+
+/* ---------- Colores y letras (claro y oscuro) ---------- */
+:root {
+  --bg: #eef1ee; --panel: #fff; --ink: #1a2128; --muted: #5b6670; --line: #d5dbd5; --error: #c0392b;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --vidrio: rgba(255,255,255,.55); --vidrio-fuerte: rgba(255,255,255,.72); --vidrio-borde: rgba(255,255,255,.7); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.8);
+  --vidrio-sombra: 0 1px 2px rgba(20,40,60,.06), 0 8px 28px rgba(20,40,60,.10); --blur: blur(22px) saturate(1.7); --halo1: rgba(13,107,102,.22); --halo2: rgba(42,93,181,.20); --halo3: rgba(107,63,160,.14);
+  /* medidas que cada herramienta puede ajustar */
+  --col-datos: 360px; --ancho-etiqueta: minmax(0, 1fr); --ancho-valor: 150px; --letra-campo: 13px var(--f-ui); --ancho-dato: 190px; --alto-grafica: clamp(260px, 36vw, 380px); --margen-grafica: 10px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #a3aeb5; --line: #2a343b; --error: #f08a80; --vidrio: rgba(34,46,54,.50); --vidrio-fuerte: rgba(26,36,42,.70); --vidrio-borde: rgba(255,255,255,.12); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.10); --vidrio-sombra: 0 1px 2px rgba(0,0,0,.3), 0 10px 32px rgba(0,0,0,.35); --halo1: rgba(77,188,176,.20); --halo2: rgba(116,162,242,.18); --halo3: rgba(170,120,230,.14); color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #a3aeb5; --line: #2a343b; --error: #f08a80; --vidrio: rgba(34,46,54,.50); --vidrio-fuerte: rgba(26,36,42,.70); --vidrio-borde: rgba(255,255,255,.12); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.10); --vidrio-sombra: 0 1px 2px rgba(0,0,0,.3), 0 10px 32px rgba(0,0,0,.35); --halo1: rgba(77,188,176,.20); --halo2: rgba(116,162,242,.18); --halo3: rgba(170,120,230,.14); color-scheme: dark }
+/* fin de los colores */
+
+/* ---------- Base ---------- */
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 24px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+/* texto solo para lectores de pantalla; sin position:absolute para que no ensanche las tablas con scroll */
+.solo-lector { display: inline-block; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; vertical-align: top }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px }
+footer a { color: var(--muted); margin: 0 6px; white-space: nowrap; display: inline-block }
+
+/* ---------- Diseño A: datos a la izquierda, resultados a la derecha ---------- */
+.layout { display: grid; grid-template-columns: var(--col-datos) minmax(0, 1fr); gap: 16px; align-items: start }
+.layout.invertido { grid-template-columns: minmax(0, 1fr) var(--col-datos) }
+@media (max-width: 900px) { .layout, .layout.invertido { grid-template-columns: minmax(0, 1fr) } }
+
+/* ---------- Tarjetas ---------- */
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 12px/1.4 var(--f-ui); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 10px }
+.destacado { border-color: var(--line); border-top: 3px solid var(--accent) }
+.destacado h2 { color: var(--accent) }
+
+/* ---------- Datos: campos, separadores, botones y pestañas ---------- */
+.campos { display: grid; grid-template-columns: var(--ancho-etiqueta) var(--ancho-valor); gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px }
+.campos label small { color: var(--muted) }
+.campos .ancho { grid-column: 1 / -1 }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--accent); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.in { font: var(--letra-campo); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer; white-space: nowrap }
+.btn:hover { border-color: var(--accent) }
+/* foco del teclado en todo lo que se pulsa o se escribe (sin especificidad: una herramienta puede ajustarlo) */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.controles { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px }
+.controles > .nota, .controles > .leyenda { flex: 1 1 220px; margin: 0 }
+.exportar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0 }
+.exportar-aviso { color: var(--muted); font-size: 12.5px }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px }
+.tools label { color: var(--muted); font-size: 13px; display: inline-flex; gap: 6px; align-items: center }
+.modos { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-bottom: 14px }
+.modos button { font: 500 13.5px var(--f-ui); border: 0; background: var(--panel); color: var(--muted); padding: 7px 14px; cursor: pointer }
+.modos button[aria-selected=true] { background: var(--accent); color: var(--panel) }
+.error { color: var(--error); font-size: 13px; margin: 10px 0 0 }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+
+/* ---------- Resultados ---------- */
+.res { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--ancho-dato), 1fr)); gap: 6px 14px; font: 16px var(--f-math) }
+.res div { overflow-x: auto; overflow-y: hidden }
+.res span { display: block; font: 12px var(--f-ui); color: var(--muted) }
+.res div.ancho { grid-column: 1 / -1 }
+.resumen { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--ancho-dato), 1fr)); gap: 8px; margin: 0 }
+.resumen div { background: var(--accent-soft); border-radius: 8px; padding: 8px 10px; overflow-x: auto; overflow-y: hidden }
+.resumen div span { display: block; font-size: 12px; color: var(--muted) }
+.resumen div b { font: 600 17px var(--f-math) }
+.resumen div.ancho { grid-column: 1 / -1 }
+
+/* ---------- Gráficas ---------- */
+canvas { display: block; width: 100%; height: var(--alto-grafica); border-radius: 8px; background: var(--bg); margin-top: var(--margen-grafica) }
+.leyenda { font-size: 12.5px; color: var(--muted); margin: 6px 0 0 }
+.leyenda b { font-weight: 600 }
+
+/* ---------- Desarrollo paso a paso ---------- */
+/* el número va dentro del paso para que no lo corte el desplazamiento de las fórmulas largas */
+.pasos ol { margin: 0; padding: 0; list-style: none; counter-reset: paso }
+.pasos li { position: relative; margin: 0 0 12px; padding-left: 22px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto; counter-increment: paso; overflow-y: hidden }
+.pasos li::before { content: counter(paso) "."; position: absolute; left: 0; top: 0; font: 13.5px/1.45 var(--f-ui); color: var(--muted) }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.pasos table.tabla { border-collapse: collapse; margin: 6px 0; font: 13px var(--f-ui); font-variant-numeric: tabular-nums }
+.pasos table.tabla th, .pasos table.tabla td { border: 1px solid var(--line); padding: 3px 9px; text-align: right }
+.pasos table.tabla th { background: var(--accent-soft); font-weight: 600 }
+.tabla-scroll { overflow-x: auto }
+
+/* matrices con corchetes, dentro de una fórmula */
+.mat { position: relative; display: inline-block; vertical-align: middle; padding: 0 7px; margin: 2px 2px }
+.mat::before, .mat::after { content: ""; position: absolute; top: 0; bottom: 0; width: 5px; border: 1.4px solid currentColor }
+.mat::before { left: 0; border-right: 0 }
+.mat::after { right: 0; border-left: 0 }
+.mat table { border-collapse: collapse }
+.mat td { padding: 2px 7px; text-align: center; white-space: nowrap; font-variant-numeric: tabular-nums }
+
+/* ---------- Teoría ---------- */
+.teoria, .preguntas { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.preguntas h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.preguntas h3 { font: 600 15px var(--f-ui); margin: 14px 0 2px }
+.preguntas p { margin: 0 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; overflow-x: auto; overflow-y: hidden; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+.teoria ul { padding-left: 20px }
+.teoria li { margin-bottom: 4px }
+.teoria li, .teoria p { overflow-x: auto; overflow-y: hidden }
+
+/* ---------- Liquid Glass ---------- */
+/* Vidrio solo en el marco (tarjetas, controles, barras); el lienzo de las gráficas y las fórmulas no se tocan. */
+body { display: flow-root; background: radial-gradient(60% 50% at 8% 0%, var(--halo1), transparent 70%), radial-gradient(50% 45% at 95% 10%, var(--halo2), transparent 70%), radial-gradient(55% 50% at 60% 100%, var(--halo3), transparent 70%), var(--bg); background-attachment: fixed }
+.card { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 18px; box-shadow: var(--vidrio-brillo), var(--vidrio-sombra); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur) }
+.destacado { border-top: 3px solid var(--accent) }
+.in { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 10px; box-shadow: var(--vidrio-brillo) }
+.btn { background: var(--vidrio-fuerte); border-color: var(--vidrio-borde); border-radius: 99px; padding: 5px 14px; box-shadow: var(--vidrio-brillo) }
+.modos { border-color: var(--vidrio-borde); border-radius: 99px; background: var(--vidrio); box-shadow: var(--vidrio-brillo); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur) }
+.modos button { background: transparent; border-radius: 99px }
+.modos button[aria-selected=true] { box-shadow: 0 1px 6px rgba(0,0,0,.18) }
+.resumen div { border-radius: 14px }
+.teoria .f { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 12px }
+canvas { border-radius: 14px }
+@media (max-width: 900px) { .card, .modos { -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px) } }
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) { .card, .modos, header.top { background: var(--panel); -webkit-backdrop-filter: none; backdrop-filter: none } .in, .btn, .teoria .f { background: var(--panel) } }
+
+:root { --accent:#6b3fa0; --accent-soft:color-mix(in srgb, #6b3fa0 12%, #fff); --marca:#0d6b66 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --accent:#b892ec; --accent-soft:color-mix(in srgb, #b892ec 16%, #182025); --marca:#4dbcb0 } }
+:root[data-theme="dark"] { --accent:#b892ec; --accent-soft:color-mix(in srgb, #b892ec 16%, #182025); --marca:#4dbcb0 }
+header.top { display:flex; align-items:center; gap:8px 20px; flex-wrap:wrap; padding:12px clamp(16px,3vw,28px); position:sticky; top:10px; z-index:10; margin:10px clamp(10px,2vw,20px) 0; border:1px solid var(--vidrio-borde); border-radius:22px; background:var(--vidrio-fuerte); box-shadow:var(--vidrio-brillo),var(--vidrio-sombra); -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur) }
+header.top .logo { font:600 18px var(--f-math); margin:0; white-space:nowrap; color:var(--ink); text-decoration:none } header.top .logo i { color:var(--marca) }
+header.top nav { display:flex; gap:4px 14px; font-size:14px; overflow-x:auto; max-width:100%; scrollbar-width:none }
+header.top nav a { white-space:nowrap; padding:2px 0; color:var(--muted); text-decoration:none } header.top nav a:hover { color:var(--ink) }
+header.top nav a[aria-current] { color:var(--ink); font-weight:600; box-shadow:inset 0 -2px 0 var(--accent) }
+header.top form { margin-left:auto; flex:0 1 170px; min-width:130px }
+header.top .foro { margin-left:auto; display:inline-flex; align-items:center; gap:6px; white-space:nowrap; font:600 14px var(--f-ui); color:var(--ink); text-decoration:none; border:1px solid var(--vidrio-borde); background:var(--vidrio); border-radius:99px; padding:6px 12px } header.top .foro:hover, header.top .foro[aria-current] { border-color:var(--accent); color:var(--accent) } header.top .foro + form { margin-left:0 } header.top > .foro ~ .tema { margin-left:0 }
+@media (min-width:701px) { header.top { flex-wrap:nowrap } header.top nav { min-width:0 } }
+header.top .buscar { font:14px var(--f-ui); color:var(--ink); border:1px solid var(--vidrio-borde); border-radius:99px; padding:7px 14px; width:100%; background:var(--vidrio) }
+header.top .buscar:focus-visible, header.top a:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.miga { display:flex; align-items:center; flex-wrap:wrap; gap:8px; font-size:13.5px; color:var(--muted); margin:0 0 10px }
+.miga a { color:var(--accent); font-weight:600; text-decoration:none } .miga a:hover { text-decoration:underline }
+.miga-ico { display:inline-grid; place-items:center; width:22px; height:22px; border-radius:6px; background:var(--accent-soft); color:var(--accent); font:italic 600 13px var(--f-math) }
+.miga-der { margin-left:auto; display:flex; gap:8px } .miga-izq:empty, .miga-der:empty { display:none }
+.bib-btn, .prac-btn { border-radius:8px !important; padding:6px 12px !important }
+body.bib-ejemplos select[id^="ejemplo"] { display:none }
+@media print { header.top, .miga, .prac-btn { display:none !important } }
+:root { --vida:#6a4fc2 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --vida:#b39ff7 } }
+:root[data-theme="dark"] { --vida:#b39ff7 }
+.relacionadas { max-width:860px; margin:16px 0 0; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:4px 12px 12px 4px; padding:12px 16px }
+.relacionadas h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--accent); margin:0 0 4px }
+.relacionadas a { display:flex; gap:10px; align-items:baseline; padding:5px 0; color:var(--ink); text-decoration:none; font-size:14px }
+.relacionadas a b { font-weight:600; white-space:nowrap } .relacionadas a span { color:var(--muted) } .relacionadas a:hover b { color:var(--accent); text-decoration:underline }
+.vida-real { max-width:860px; margin:28px 0 0; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--vida); border-radius:4px 12px 12px 4px; padding:12px 16px }
+.vida-real h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--vida); margin:0 0 4px }
+.vida-real a { display:flex; gap:10px; align-items:baseline; padding:5px 0; color:var(--ink); text-decoration:none; font-size:14px }
+.vida-real a b { font-weight:600; white-space:nowrap } .vida-real a span { color:var(--muted) } .vida-real a:hover b { color:var(--vida); text-decoration:underline }
+@media (max-width:600px) { .vida-real a, .relacionadas a { display:block } .vida-real a b, .relacionadas a b { display:block; white-space:normal } }
+@media (max-width:700px) { header.top form { display:none } h1 { font-size:21px }
+  .miga-izq, .miga-der, .miga::after { order:-1 } .miga::after { content:''; flex-basis:100%; height:0 } }
+
+.tema { flex:0 0 auto; margin-left:auto; width:36px; height:36px; display:grid; place-items:center; padding:0; border:1px solid var(--vidrio-borde, var(--line)); border-radius:99px; background:var(--vidrio, var(--bg)); color:var(--ink); cursor:pointer }
+.buscar ~ .tema, form ~ .tema { margin-left:0 }
+.tema:hover { border-color:var(--accent); color:var(--accent) }
+.tema:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.tema .sol { display:none }
+:root[data-theme="dark"] .tema .sol { display:block } :root[data-theme="dark"] .tema .luna { display:none }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tema .sol { display:block } :root:not([data-theme="light"]) .tema .luna { display:none } }
+@media (max-width:700px) { .top > .tema { margin-left:auto } .top > nav { order:1 } }
+</style>
+<style>
+:root {
+  --z1: #2a5db5; --z2: #c2410c; --z3: #6b3fa0; --plano: #1d7a3e; --grad: #c2412a }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --z1: #74a2f2; --z2: #f0915a; --z3: #b892ec; --plano: #5fcf8a; --grad: #ef7a62 } }
+:root[data-theme="dark"] {
+  --z1: #74a2f2; --z2: #f0915a; --z3: #b892ec; --plano: #5fcf8a; --grad: #ef7a62 }
+.campos .larga { grid-column: 1 / -1 }
+#superficie { height: clamp(300px, 46vw, 460px); cursor: grab; touch-action: none }
+#superficie:active { cursor: grabbing }
+#niveles { height: clamp(280px, 40vw, 420px); cursor: crosshair }
+.controles label { display: inline-flex; align-items: center; gap: 6px; font-size: 13px }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../../">Cienci<i>fy</i></a><nav aria-label="Subjects"><a href="../../../">Home</a><a href="../../electromagnetismo/">Electromagnetism</a><a href="../../fisica/">General physics</a><a href="../../quimica/">Chemistry</a><a href="../" aria-current="page">Mathematics</a><a href="../../estadistica/">Statistics</a><a href="../../circuitos/">Circuits</a><a href="../../economia/">Economics</a><a href="../../fenomenos/">Real life</a></nav><a class="foro" href="../../foro/"><span aria-hidden="true">💬</span>Forum</a><form action="../../../" role="search"><input class="buscar" type="search" name="q" placeholder="Search: Biot-Savart, molarity…" aria-label="Search tools (shortcut: / key)" title="Shortcut: / or Ctrl+K"></form><style>
+.lg { position:relative; flex:0 0 auto }
+.lg-btn { display:inline-flex; align-items:center; gap:6px; height:36px; padding:0 12px; border:1px solid var(--vidrio-borde, var(--line)); border-radius:99px; background:var(--vidrio, var(--bg)); color:var(--ink); font:600 13px var(--f-ui, system-ui, sans-serif); cursor:pointer }
+.lg-btn:hover { border-color:var(--accent); color:var(--accent) }
+.lg-btn:focus-visible, .lg-pop a:focus-visible, .lg-ban button:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.lg-pop { position:absolute; top:44px; right:0; z-index:50; min-width:210px; margin:0; padding:6px; list-style:none; border:1px solid var(--vidrio-borde, var(--line)); border-radius:16px; background:rgba(255,255,255,.98); color:var(--ink); box-shadow:0 12px 36px rgba(0,0,0,.22) }
+.lg-pop[hidden] { display:none }
+:root[data-theme="dark"] .lg-pop, :root[data-theme="dark"] .lg-ban { background:rgba(28,34,38,.98) }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lg-pop, :root:not([data-theme="light"]) .lg-ban { background:rgba(28,34,38,.98) } }
+.lg-t { font:600 11px var(--f-ui, system-ui, sans-serif); text-transform:uppercase; letter-spacing:.06em; color:var(--muted); padding:6px 10px 4px }
+.lg-pop a { display:flex; justify-content:space-between; align-items:center; gap:14px; padding:8px 10px; border-radius:10px; color:var(--ink); text-decoration:none; font:500 14px var(--f-ui, system-ui, sans-serif) }
+.lg-pop a:hover { background:var(--accent-soft) }
+.lg-pop a > span { display:flex; align-items:center; gap:10px }
+.lg-pop a small { color:var(--muted); font-size:12px }
+.lg-pop a[aria-current="true"] { background:var(--accent-soft); font-weight:700 }
+.lg-pop a[aria-current="true"] small::after { content:' ✓'; color:var(--accent) }
+.lg-fl { flex:none; border-radius:50%; box-shadow:0 0 0 1px rgba(0,0,0,.18) }
+.lg-ban { position:fixed; left:50%; bottom:18px; z-index:60; transform:translateX(-50%); width:min(560px, calc(100vw - 24px)); box-sizing:border-box; display:flex; flex-wrap:wrap; align-items:center; gap:10px 12px; padding:12px 16px; border:1px solid var(--vidrio-borde, var(--line)); border-radius:18px; background:rgba(255,255,255,.98); color:var(--ink); box-shadow:0 12px 36px rgba(0,0,0,.25); font:14px var(--f-ui, system-ui, sans-serif) }
+.lg-ban p { flex:1 1 220px; margin:0 }
+.lg-ban button { font:600 13px var(--f-ui, system-ui, sans-serif); padding:7px 14px; border-radius:99px; border:1px solid var(--vidrio-borde, var(--line)); background:var(--vidrio, var(--bg)); color:var(--ink); cursor:pointer }
+.lg-ban button.lg-si { background:var(--accent); border-color:var(--accent); color:#fff }
+:root[data-theme="dark"] .lg-ban button.lg-si { color:#0d141a }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lg-ban button.lg-si { color:#0d141a } }
+@media (max-width:700px) { .top > .lg { margin-left:auto } .top > .lg + .tema { margin-left:0 } }
+@media print { .lg, .lg-ban { display:none !important } }
+</style><div class="lg"><button class="lg-btn" type="button" aria-expanded="false" aria-controls="lg-lista" aria-label="Language: English" title="Language"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.8 3 2.8 15 0 18M12 3c-2.8 3-2.8 15 0 18"/></svg><span>EN</span><span aria-hidden="true">▾</span></button><ul class="lg-pop" id="lg-lista" hidden><li class="lg-t" aria-hidden="true">Language · Idioma</li><li><a href="../../../" hreflang="es" lang="es"><span><svg class="lg-fl" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><rect width="24" height="24" fill="#c60b1e"/><rect y="6" width="24" height="12" fill="#ffc400"/></svg>Español</span><small>ES</small></a></li><li><a href="../../../en/" hreflang="en" lang="en" aria-current="true"><span><svg class="lg-fl" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><rect width="24" height="24" fill="#012169"/><path d="M0 0L24 24M24 0L0 24" stroke="#fff" stroke-width="5"/><path d="M0 0L24 24M24 0L0 24" stroke="#c8102e" stroke-width="2"/><path d="M12 0V24M0 12H24" stroke="#fff" stroke-width="8"/><path d="M12 0V24M0 12H24" stroke="#c8102e" stroke-width="4.5"/></svg>English</span><small>EN</small></a></li></ul></div><script>(() => {
+  const L = [{"c":"es","d":"","n":"Español","a":["Esta página está disponible en español.","Cambiar a español","Seguir aquí"]},{"c":"en","d":"en/","n":"English","a":["This page is available in English.","Switch to English","Stay here"]}], ACTUAL = "en", K = 'simu-idioma';
+  const guarda = (c) => { try { localStorage.setItem(K, c); } catch (e) { /* sin almacenamiento */ } };
+  const lee = () => { try { return localStorage.getItem(K); } catch (e) { return null; } };
+  const resto = () => { let p = location.pathname; for (const i of L) if (i.d && p.startsWith('/' + i.d)) { p = '/' + p.slice(i.d.length + 1); break; } return p + location.search + location.hash; };
+  const destino = (i) => '/' + i.d + resto().replace(/^\//, '');
+  const btn = document.querySelector('.lg-btn'), pop = document.querySelector('.lg-pop');
+  if (!btn || !pop) return;
+  pop.querySelectorAll('a[hreflang]').forEach((a) => { const i = L.find((x) => x.c === a.hreflang); if (i && /^https?:$/.test(location.protocol)) a.href = destino(i); a.addEventListener('click', () => guarda(a.hreflang)); });
+  const abre = (v) => { pop.hidden = !v; btn.setAttribute('aria-expanded', String(v)); };
+  btn.addEventListener('click', (e) => { e.stopPropagation(); abre(pop.hidden); });
+  document.addEventListener('click', (e) => { if (!pop.hidden && !e.target.closest('.lg')) abre(false); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !pop.hidden) { abre(false); btn.focus(); } });
+  pop.addEventListener('focusout', (e) => { if (!pop.hidden && !e.relatedTarget?.closest?.('.lg')) abre(false); });
+  // aviso: una vez, sin elección guardada, con el idioma del navegador publicado y distinto del de la página
+  if (lee() || window.__sinAviso) return;
+  const pref = (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || '']).map((s) => String(s).toLowerCase().slice(0, 2));
+  const i = pref.map((c) => L.find((x) => x.c === c)).find(Boolean);
+  if (!i || i.c === ACTUAL) { return; }
+  const b = document.createElement('div'); b.className = 'lg-ban'; b.setAttribute('role', 'region'); b.setAttribute('aria-label', "Language"); b.lang = i.c;
+  const t = document.createElement('p'); t.textContent = i.a[0];
+  const si = document.createElement('button'); si.type = 'button'; si.className = 'lg-si'; si.textContent = i.a[1];
+  const no = document.createElement('button'); no.type = 'button'; no.textContent = i.a[2];
+  si.addEventListener('click', () => { guarda(i.c); const a = [...pop.querySelectorAll('a[hreflang]')].find((x) => x.hreflang === i.c); location.href = a ? a.href : destino(i); });
+  no.addEventListener('click', () => { guarda(ACTUAL); b.remove(); });
+  b.append(t, si, no); document.body.append(b);
+})();</script><button class="tema" type="button" title="Switch between light and dark mode" aria-label="Switch between light and dark mode"><svg class="luna" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11z"/></svg><svg class="sol" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button></header>
+<main class="wrap">
+<nav class="miga" aria-label="You are here"><span class="miga-izq"></span><span class="miga-ico" aria-hidden="true">∑</span><a href="../">Mathematics</a><span aria-hidden="true">›</span><span>Surfaces and level curves in 3D</span><span class="miga-der"></span></nav>
+<h1>Surfaces and level curves in 3D</h1>
+<p class="lead">Write a function of two variables and view it as a surface you rotate by dragging and as a level-curve map. Choose a point and you get the gradient, the tangent plane, the tangent to the level curve, the directional derivative, the linear approximation and the critical points, step by step.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Data</h2>
+    <select id="ejemplos" class="in" aria-label="Examples" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Results</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Surface z = f(x, y)</h2>
+      <canvas id="superficie" tabindex="0" aria-label="3D surface of the function, with the tangent plane at the point. Rotate by dragging or with the keyboard arrows"></canvas>
+      <div class="controles">
+        <button class="btn" id="girar" type="button">▶ Rotate automatically</button>
+        <button class="btn" id="vista" type="button">Initial view</button>
+        <label><input type="checkbox" id="ver-plano" checked> Tangent plane</label>
+      </div>
+      <p class="nota" id="leyenda-3d"></p>
+    </div>
+    <div class="card"><h2>Level curves</h2>
+      <canvas id="niveles" aria-label="Level-curve map of the function, with the point, the gradient and the tangent to the level curve. Click to change the point"></canvas>
+      <p class="nota" id="leyenda"></p>
+    </div>
+    <div class="card pasos"><h2>Working</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<div class="anuncio"><span>Advertising</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="4415753033" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+<section class="teoria">
+  <h2>Function of two variables</h2>
+  <p class="m">A function $z = f(x, y)$ gives a height $z$ to each point $(x, y)$ of the plane; the set of points $(x, y, f(x, y))$ is a <b>surface</b>. A <b>level curve</b> is the set of points of the plane where $f(x, y) = k$: it is what a topographic map draws (curves very close together mean a steep slope).</p>
+  <h2>Partial derivatives and gradient</h2>
+  <p class="m">$f_{x}$ is the derivative with respect to x with y constant, and $f_{y}$ the other way round. The <b>gradient</b> $∇f = (f_{x}, f_{y})$ points where $f$ grows fastest, its magnitude $|∇f|$ is that maximum slope and it is always perpendicular to the level curve through the point.</p>
+  <div class="anuncio"><span>Advertising</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="4415753033" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+<h2>Tangent plane and linear approximation</h2>
+  <p class="f m">$z = f(x_0, y_0) + f_{x}(x_0, y_0)(x − x_0) + f_{y}(x_0, y_0)(y − y_0)$</p>
+  <p class="m">Its normal is $n = (f_{x}, f_{y}, −1)$. Near the point the surface almost coincides with the plane, so $f(x, y) ≈ $ the height of the plane: it is the linear approximation, and the error grows as you move away.</p>
+  <h2>Directional derivative</h2>
+  <p class="f m">$D_{u} f = ∇f · u = f_{x} u_{x} + f_{y} u_{y}$, &ensp; with $|u| = 1$</p>
+  <p class="m">It is the slope of the surface when moving in the direction $u$. It takes its maximum value, $|∇f|$, if $u$ goes with the gradient, its minimum, $−|∇f|$, in the opposite direction, and zero along the level curve.</p>
+  <h2>Points without a derivative</h2>
+  <p class="m">Extrema do not always satisfy $f_{x} = f_{y} = 0$: the cone $z = √{x^2 + y^2}$ has its minimum at the vertex, where there are no derivatives, and so does $z = |x| + |y|$ at the origin. Where what is inside an absolute value or a root vanishes, the calculator compares the value of f around it: if all are greater it is a minimum, if all are smaller a maximum, and if there are both, neither (like $|x| + y$, which has no extrema). It also warns about critical points that lie just outside the plotted range.</p>
+  <h2>Critical points</h2>
+  <p class="m">Where $f_{x} = f_{y} = 0$ the tangent plane is horizontal. With the Hessian $D = f_{xx} f_{yy} − f_{xy}^{2}$: if $D > 0$ and $f_{xx} > 0$ there is a minimum, if $D > 0$ and $f_{xx} < 0$ a maximum, if $D < 0$ a saddle point, and if $D = 0$ it cannot be decided this way.</p>
+</section>
+<section class="preguntas" aria-label="Frequently asked questions">
+<h2>Frequently asked questions</h2>
+<h3>What are the level curves of a surface?</h3>
+<p>They are the points with f(x, y) = c for different values of c, and the gradient is perpendicular to them. For z = x² + y² they are circles of radius √c.</p>
+<h3>How are critical points classified?</h3>
+<p>Where ∇f = 0, the Hessian D = fₓₓ·f_yy − fₓ_y² decides: D &gt; 0 and fₓₓ &gt; 0, minimum; D &gt; 0 and fₓₓ &lt; 0, maximum; D &lt; 0, saddle point. For z = x² − y², D = −4 at the origin: saddle.</p>
+</section>
+<div class="anuncio"><span>Advertising</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="4415753033" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+<section class="relacionadas" aria-label="Related tools"><h2>Related tools</h2>
+<a href="../metodos-numericos/"><b>Numerical methods →</b><span>Bisection, Newton-Raphson, secant and fixed point; trapezoid and Simpson; Euler, Heun and Runge-Kutta 4, with the iteration table.</span></a>
+<a href="../graficador/"><b>Function grapher →</b><span>Plot up to three functions, move and zoom the graph and get the domain, intercepts, asymptotes and extrema.</span></a>
+<a href="../integrales-multiples/"><b>Multiple integrals →</b><span>Double and triple integrals in Cartesian, polar, cylindrical and spherical coordinates, with the region, the Jacobian and each iterated integral step by step.</span></a>
+<a href="../complejos/"><b>Complex numbers →</b><span>Rectangular, polar and exponential forms, operations, De Moivre, nth roots and equations, with the Argand plane.</span></a>
+</section>
+</main>
+<footer><a href="../../../">Home</a>·<a href="../../contacto.html">Contact</a>·<a href="mailto:danijimzzz30@gmail.com?subject=Error%20en%20Superficies%20y%20curvas%20de%20nivel%20en%203D&amp;body=Herramienta%3A%20Superficies%20y%20curvas%20de%20nivel%20en%203D%20(matematicas%2Fsuperficies)%0A%0AQu%C3%A9%20esperaba%20y%20qu%C3%A9%20ha%20pasado%3A%0A">Report an error</a>·<a href="../../aviso-legal.html">Legal notice</a>·<a href="../../privacidad.html">Privacy</a>·<a href="../../cookies.html">Cookies</a> · <a href="#" class="pref-cookies">Cookie preferences</a>· Surfaces and level curves <span id="ver"></span> (beta)</footer>
+</body>
+<script>
+const Pagina = { carpeta: 'superficies', guarda: 'superficies-v1' };
+const Version = (() => { const registros = {"web":[{"v":"1.21"}],"control":[{"v":"0.2"}],"termo-estadistica":[{"v":"0.2"}],"markowitz":[{"v":"0.3"}],"cavidades":[{"v":"0.2"}],"organica":[{"v":"0.3"}],"transformada-z":[{"v":"0.2"}],"semiconductores":[{"v":"0.2"}],"relatividad":[{"v":"0.2"}],"osc-acopladas":[{"v":"0.2"}],"solubilidad":[{"v":"0.2"}],"lagrange":[{"v":"0.2"}],"series":[{"v":"0.3"}],"no-parametricos":[{"v":"0.3"}],"regresion-multiple":[{"v":"0.2"}],"anova":[{"v":"0.3"}],"black-scholes":[{"v":"0.3"}],"bonos":[{"v":"0.3"}],"solow":[{"v":"0.3"}],"integrales-multiples":[{"v":"0.1"}],"formulacion":[{"v":"0.2"}],"balance":[{"v":"0.2"}],"redox":[{"v":"0.2"}],"lineas-transmision":[{"v":"0.3"}],"superficies":[{"v":"0.2"}],"vsepr":[{"v":"0.2"}],"maxwell":[{"v":"0.3"}],"fresnel":[{"v":"0.2"}],"gravitacion":[{"v":"0.2"}],"convolucion":[{"v":"0.2"}],"laplace-numerica":[{"v":"0.2"}],"imagenes":[{"v":"0.2.1"}],"guias-onda":[{"v":"0.2"}],"antena":[{"v":"0.2"}],"bode":[{"v":"0.3"}],"optica":[{"v":"0.2"}],"simulador":[{"v":"0.4"}],"teoria-juegos":[{"v":"0.2"}],"puertas-logicas":[{"v":"0.4"}],"multiplicador":[{"v":"0.3"}],"is-lm":[{"v":"0.3"}],"choques":[{"v":"0.1"}],"termoquimica":[{"v":"0.3"}],"probabilidad":[{"v":"0.2"}],"unidades":[{"v":"0.2"}],"equilibrio":[{"v":"0.2"}],"oscilaciones":[{"v":"0.1"}],"beneficio":[{"v":"0.3"}],"costes":[{"v":"0.3"}],"sistemas-numericos":[{"v":"0.2"}],"excedentes":[{"v":"0.2"}],"oferta-demanda":[{"v":"0.2"}],"chi2-bondad":[{"v":"0.2"}],"contrastes":[{"v":"0.2"}],"errores":[{"v":"0.2"}],"graficador":[{"v":"0.2"}],"metodos-numericos":[{"v":"0.2"}],"fisica-moderna":[{"v":"0.2"}],"lorenz-gini":[{"v":"0.2"}],"phillips-okun":[{"v":"0.3"}],"tipos-cambio":[{"v":"0.3"}],"elasticidades":[{"v":"0.3"}],"pib-ipc":[{"v":"0.2"}],"numeros-indice":[{"v":"0.2"}],"ratios":[{"v":"0.2"}],"punto-muerto":[{"v":"0.2"}],"ahorro":[{"v":"0.3"}],"van-tir":[{"v":"0.3"}],"amortizacion-inmovilizado":[{"v":"0.2"}],"prestamos":[{"v":"0.3"}],"rentas":[{"v":"0.3"}],"interes":[{"v":"0.3"}],"descriptiva":[{"v":"0.2"}],"regresion-economia":[{"v":"0.2"}],"ajustador":[{"v":"0.2.1"}],"electrostatica":[{"v":"0.11"}],"magnetostatica":[{"v":"0.4"}],"tabla-periodica":[{"v":"0.2"}],"trabajo-y-energia":[{"v":"0.3"}],"masa-molar":[{"v":"0.2"}],"configuracion-electronica":[{"v":"0.2"}],"condensadores":[{"v":"0.4"}],"tiro-parabolico":[{"v":"0.4"}],"disoluciones":[{"v":"0.2"}],"calorimetria":[{"v":"0.2"}],"induccion":[{"v":"0.4"}],"matrices":[{"v":"0.3"}],"derivadas":[{"v":"0.3"}],"laplace":[{"v":"0.2"}],"interferencia":[{"v":"0.2"}],"ondas-em":[{"v":"0.4"}],"intervalos":[{"v":"0.3"}],"fuerza":[{"v":"0.3"}],"campos":[{"v":"0.2.1"}],"cinetica":[{"v":"0.2"}],"edos":[{"v":"0.2"}],"fourier":[{"v":"0.2"}],"taylor":[{"v":"0.3"}],"complejos":[{"v":"0.3"}],"sistemas":[{"v":"0.3"}],"regresion":[{"v":"0.3"}],"estadistica":[{"v":"0.3"}],"dinamica":[{"v":"0.3"}],"solido-rigido":[{"v":"0.3"}],"ondas":[{"v":"0.3"}],"gases":[{"v":"0.6"}],"ciclos":[{"v":"0.2"}],"ph":[{"v":"0.4"}],"fluidos":[{"v":"0.3"}],"doppler":[{"v":"0.2"}],"resistencias":[{"v":"0.3"}],"faraday":[{"v":"0.4"}],"fenomenos":[{"v":"0.9"}]}; const de = (h) => ({ current: registros[h][0].v, log: registros[h] }); return { registros, de }; })();
+
+</script>
+<script src="../../../js/en/herramienta.en.e2425303.js"></script>
+<script src="../../../js/en/enunciado.en.73e3a542.js"></script>
+<script src="../../../js/en/mates.en.fbd66204.js"></script>
+<script src="../../../js/en/compartir.en.08e9415d.js"></script>
+<script src="../../../js/en/matematicas-expresion.en.87712a4c.js"></script>
+<script src="../../../js/en/superficies-calculo.en.c4b28686.js"></script>
+<script>
+(() => {
+  const { $, esc, copia, txt, marcas, lienzo } = Herramienta;
+  const S = Superficies, CLAVE = 'superficies-v1';
+  const fH = (x, d = 4) => S.f(x, d).replace(/\^\{([^}]*)\}/, '<sup>$1</sup>');
+  const coma = (v) => String(v).replace('.', '.');
+  const M = (s) => Mates.html(`$${s}$`);
+
+  let sc = copia(S.ejemplos[0].sc);
+  try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && typeof g === 'object' && typeof g.f === 'string') sc = g; } catch (e) { /* sin almacenamiento */ }
+  const guarda = () => { try { localStorage.setItem(CLAVE, JSON.stringify(sc)); } catch (e) { /* sin almacenamiento */ } };
+  let sol = null, m31 = null, m81 = null, zr = { lo: 0, hi: 1 }, niv = [], cont = [], contPto = null, col = {}, anda = false, T2 = null;
+  const V0 = { az: -0.8, el: 0.55, zoom: 1 };
+  const V = { ...V0 };
+
+  const CAMPOS = [
+    ['f', 'f(x, y) =', ''], ['x0', 'Point x₀', ''], ['y0', 'y₀', ''],
+    ['ux', 'Direction uₓ', 'optional'], ['uy', 'u<sub>y</sub>', ''], ['x1', 'Approximate at x', 'optional'], ['y1', 'y', ''],
+    ['xmin', 'x from', ''], ['xmax', 'hasta', ''], ['ymin', 'y from', ''], ['ymax', 'hasta', ''], ['niveles', 'Level curves', 'how many'],
+  ];
+  function formulario() {
+    $('#campos').innerHTML = CAMPOS.map(([k, et, ay]) => `<label for="f-${k}">${et}${ay ? ` <small>(${ay})</small>` : ''}</label><input id="f-${k}" class="in${k === 'f' ? ' larga' : ''}" data-k="${k}" value="${esc(sc[k] ?? '')}" autocomplete="off" spellcheck="false"${k === 'f' ? '' : ' inputmode="decimal"'}${k === 'niveles' ? ' placeholder="10"' : ''}>`).join('');
+    $('#nota').textContent = 'Write f with x and y: x^2 + y^2, sin(x) cos(y), e^(−(x^2 + y^2)), sqrt(x^2 + y^2), x^3 − 3x y^2… Numbers accept a decimal point and π (pi/2). Without a point only the critical points appear; the range is widened if the point falls outside.';
+  }
+  $('#campos').addEventListener('input', (e) => { const t = e.target; if (!t.dataset.k) return; sc[t.dataset.k] = t.value; $('#ejemplos').value = ''; calcula(); });
+
+  const sel = $('#ejemplos');
+  sel.innerHTML = '<option value="">Examples…</option>' + S.ejemplos.map((e) => `<option value="${e.clave}">${e.nombre}</option>`).join('');
+  sel.addEventListener('change', () => { if (sel.value) abrirEjemplo(sel.value); });
+  function abrirEjemplo(clave) {
+    const e = S.ejemplos.find((x) => x.clave === clave);
+    if (!e) return;
+    sc = copia(e.sc); formulario(); calcula(); sel.value = clave;
+  }
+
+  function azar() {
+    const ent = (a, b) => a + Math.floor(Math.random() * (b - a + 1)), nz = (a, b) => { let v; do v = ent(a, b); while (!v); return v; }, de = (xs) => xs[ent(0, xs.length - 1)];
+    const k = (c) => (c === 1 ? '' : c === -1 ? '-' : String(c));
+    const fs = [
+      () => `${nz(1, 3)}x^2 ${de(['+', '-'])} ${nz(1, 3)}y^2`,
+      () => `x^2 y ${de(['+', '-'])} ${nz(1, 3)}y`,
+      () => `${k(nz(-2, 3))}x y + ${ent(1, 4)}x - y^2`,
+      () => `x^3 - ${nz(1, 3)}x y + y^2`,
+      () => `e^(${k(nz(-2, 2))}x y)`,
+      () => `sin(x) + ${nz(1, 3)}cos(y)`,
+      () => `ln(x^2 + y^2 + ${ent(1, 3)})`,
+      () => `sqrt(${ent(1, 3)}x^2 + y^2 + ${ent(1, 4)})`,
+    ];
+    for (let i = 0; i < 40; i++) {
+      const c = { f: de(fs)(), x0: String(ent(-2, 2)), y0: String(ent(-2, 2)), ux: '', uy: '', x1: '', y1: '', xmin: '-3', xmax: '3', ymin: '-3', ymax: '3', niveles: '10' };
+      if (Math.random() < 0.6) { const [a, b] = de([[1, 1], [3, 4], [1, -1], [2, 1], [-1, 2], [0, 1], [1, 0]]); c.ux = String(a); c.uy = String(b); }
+      try { const r = S.resolver(c); if (!r.punto || !isFinite(r.punto.z0) || r.punto.plano) continue; sc = c; break; } catch (e) { /* otra */ }
+    }
+    formulario(); calcula(); sel.value = '';
+  }
+  const enunciado = () => `For <b>f(x, y) = ${esc(sc.f)}</b> at the point (${esc(sc.x0)}, ${esc(sc.y0)}): compute f and the partial derivatives, the magnitude of the gradient${sc.ux !== '' && sc.uy !== '' ? ` and the directional derivative in the direction (${esc(sc.ux)}, ${esc(sc.uy)})` : ''}. Then write the tangent plane.`;
+
+  const dato = (t, v, cl = '') => `<div${cl ? ` class="${cl}"` : ''}><span>${t}</span><b>${v}</b></div>`;
+  function calcula() {
+    const err = $('#error');
+    try { sol = S.resolver(sc); } catch (e) {
+      sol = null; err.textContent = e.message; err.hidden = false;
+      $('#resumen').innerHTML = ''; $('#pasos').innerHTML = ''; $('#leyenda').textContent = ''; $('#leyenda-3d').textContent = ''; dibujaTodo(); return;
+    }
+    err.hidden = true; guarda();
+    m31 = S.malla(sol, 31); m81 = S.malla(sol, 81);
+    zr = { lo: m81.zlo, hi: m81.zhi };
+    const n = Math.max(2, Math.min(30, Math.round(Number(String(sc.niveles || '10').replace(',', '.')) || 10)));
+    niv = marcas(zr.lo, zr.hi, n).filter((L) => L > zr.lo && L < zr.hi);
+    cont = niv.map((L) => ({ L, seg: S.contorno(m81, L) }));
+    contPto = sol.punto ? S.contorno(m81, sol.punto.z0) : null;
+    const P = sol.punto;
+    let h = '';
+    if (P) {
+      h += dato('f(x₀, y₀)', fH(P.z0, 6), 'num') + dato('f<sub>x</sub>(x₀, y₀)', fH(P.gx, 6), 'num') + dato('f<sub>y</sub>(x₀, y₀)', fH(P.gy, 6), 'num') + dato('|∇f|', fH(P.g, 6), 'num');
+      if (P.dir) h += dato('Directional derivative', fH(P.dir.Du, 6), 'num');
+      h += dato('Tangent plane', M(P.tangente), 'ancho') + dato('Normal', M(`n = (${S.nt(P.gx)}, ${S.nt(P.gy)}, −1)`), 'ancho');
+      if (P.rectaNivel) h += dato('Tangent to the level curve', M(P.rectaNivel), 'ancho');
+      if (P.aprox) h += dato('f approximate (plane)', fH(P.aprox.zl, 6), 'num') + dato('f exact', fH(P.aprox.ze, 6), 'num') + dato('Error', fH(Math.abs(P.aprox.err), 3));
+    } else h += dato('Point', 'Write x₀ and y₀ to see the gradient and the tangent plane', 'ancho');
+    h += dato('Critical points', sol.crit.length ? sol.crit.map((q) => `${M(`(${S.nt(q.x)}, ${S.nt(q.y)})`)}: ${q.tipo}`).join('<br>') : 'none in the range', 'ancho');
+    if (sol.sinDeriv) { const sd = sol.sinDeriv; h += dato('Points without a derivative', [...sd.puntos.map((q) => `${M(`(${S.nt(q.x)}, ${S.nt(q.y)})`)}: ${q.tipo}`), ...sd.curvas.map((c) => `${M(`${c.u} = 0`)}: ${c.tipo}`)].join('<br>') || 'none is an extremum', 'ancho'); }
+    if (sol.fuera.length) h += dato('Critical points outside the plot', sol.fuera.map((q) => `${M(`(${S.nt(q.x)}, ${S.nt(q.y)})`)}: ${q.tipo}`).join('<br>') + (sol.fueraMas ? '<br>and more' : '') + '<br><small>Widen the range to see them.</small>', 'ancho');
+    $('#resumen').innerHTML = h;
+    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
+    $('#leyenda-3d').textContent = `Drag to rotate and use the wheel to zoom. The colour and the curves on the floor mark the height, from ${txt(fH(zr.lo))} to ${txt(fH(zr.hi))}.`;
+    $('#leyenda').textContent = `Each curve joins the points of the same height (${niv.length} heights, from ${txt(fH(niv[0] ?? zr.lo))} to ${txt(fH(niv[niv.length - 1] ?? zr.hi))}).${P ? ' The thick curve passes through the point; the red arrow is the gradient, perpendicular to it, and the dashed line its tangent.' : ''} Click on the map to move the point.`;
+    dibujaTodo();
+  }
+
+  function colores() { const cs = getComputedStyle(document.documentElement); for (const k of ['--ink', '--muted', '--line', '--accent', '--z1', '--z2', '--z3', '--plano', '--grad']) col[k] = cs.getPropertyValue(k).trim(); }
+  const rgb = (c) => { const m = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(c); if (!m) return [128, 128, 128]; let s = m[1]; if (s.length === 3) s = [...s].map((q) => q + q).join(''); return [0, 2, 4].map((i) => parseInt(s.slice(i, i + 2), 16)); };
+  const mezcla = (a, b, t) => a.map((v, i) => v + (b[i] - v) * t);
+  const mapa = (t) => { t = Math.max(0, Math.min(1, t)); const [a, b, c] = [rgb(col['--z1']), rgb(col['--z3']), rgb(col['--z2'])]; return t < 0.5 ? mezcla(a, b, t * 2) : mezcla(b, c, (t - 0.5) * 2); };
+  const css = (c, a = 1) => `rgba(${c.map(Math.round).join(',')},${a})`;
+  const norm = (z) => (z - zr.lo) / (zr.hi - zr.lo);
+  function flecha(g, x1, y1, x2, y2, color, ancho = 2) {
+    const L = Math.hypot(x2 - x1, y2 - y1); if (L < 2) return;
+    const a = Math.atan2(y2 - y1, x2 - x1), c = Math.min(9, L * 0.5);
+    g.strokeStyle = color; g.fillStyle = color; g.lineWidth = ancho;
+    g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2 - Math.cos(a) * c * 0.6, y2 - Math.sin(a) * c * 0.6); g.stroke();
+    g.beginPath(); g.moveTo(x2, y2); g.lineTo(x2 - c * Math.cos(a - 0.4), y2 - c * Math.sin(a - 0.4)); g.lineTo(x2 - c * Math.cos(a + 0.4), y2 - c * Math.sin(a + 0.4)); g.closePath(); g.fill();
+  }
+
+  function dibuja3d() {
+    const { g, w, h } = lienzo('#superficie');
+    if (!sol || !m31 || !w || !h) return;
+    const { xmin, xmax, ymin, ymax } = sol.rango, R = zr.hi - zr.lo, zlo = zr.lo, zhi = zr.hi;
+    const cx = (xmin + xmax) / 2, cy = (ymin + ymax) / 2, cz = (zlo + zhi) / 2;
+    const kx = 2 / (xmax - xmin), ky = 2 / (ymax - ymin), kz = 1.2 / R;
+    const ca = Math.cos(V.az), sa = Math.sin(V.az), ce = Math.cos(V.el), se = Math.sin(V.el), E = Math.min(w / 3, h / 2.8) * V.zoom;
+    const lim = (z, m) => Math.max(zlo - m * R, Math.min(zhi + m * R, z));
+    const norm3 = (x, y, z) => { const X = (x - cx) * kx, Y = (y - cy) * ky, Z = (z - cz) * kz, a = X * ca - Y * sa, b = X * sa + Y * ca; return [a, b, Z]; };
+    const pant = (p) => [w / 2 + p[0] * E, h / 2 + 0.04 * h - (p[2] * ce + p[1] * se) * E, p[1] * ce - p[2] * se];
+    const P3 = (x, y, z, m = 0) => pant(norm3(x, y, lim(z, m)));
+    const suelo = zlo - 0.02 * R;
+    g.lineWidth = 1; g.strokeStyle = col['--line'];
+    const esq = [[xmin, ymin], [xmax, ymin], [xmax, ymax], [xmin, ymax]].map(([x, y]) => P3(x, y, suelo - 0.1 * R));
+    g.beginPath(); esq.forEach((p, i) => (i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1]))); g.closePath(); g.stroke();
+    for (const { L, seg } of cont) {
+      g.strokeStyle = css(mapa(norm(L)), 0.85); g.lineWidth = 1.1; g.beginPath();
+      for (const [x1, y1, x2, y2] of seg) { const a = P3(x1, y1, suelo - 0.1 * R), b = P3(x2, y2, suelo - 0.1 * R); g.moveTo(a[0], a[1]); g.lineTo(b[0], b[1]); }
+      g.stroke();
+    }
+    const el = [], n = m31.n;
+    const pts = m31.z.map((fila, j) => fila.map((z, i) => (isNaN(z) ? null : { p: norm3(m31.xs[i], m31.ys[j], lim(z, 0)), z })));
+    for (let j = 0; j < n - 1; j++) for (let i = 0; i < n - 1; i++) {
+      const q = [pts[j][i], pts[j][i + 1], pts[j + 1][i + 1], pts[j + 1][i]];
+      if (q.some((p) => !p)) continue;
+      const e1 = q[1].p.map((v, k) => v - q[0].p[k]), e2 = q[3].p.map((v, k) => v - q[0].p[k]);
+      const nr = [e1[1] * e2[2] - e1[2] * e2[1], e1[2] * e2[0] - e1[0] * e2[2], e1[0] * e2[1] - e1[1] * e2[0]], ln = Math.hypot(...nr) || 1;
+      const luz = Math.abs((nr[1] * -ce + nr[2] * se) / ln), zm = (q[0].z + q[1].z + q[2].z + q[3].z) / 4;
+      const c = mapa(norm(zm)).map((v) => v * (0.6 + 0.4 * luz) + 255 * 0.08 * (1 - luz));
+      const ps = q.map((p) => pant(p.p));
+      el.push({ ps, d: (ps[0][2] + ps[1][2] + ps[2][2] + ps[3][2]) / 4, fill: css(c, 0.97), line: css(c.map((v) => v * 0.55), 0.55) });
+    }
+    const P = sol.punto;
+    if (P && $('#ver-plano').checked) {
+      const hx = (xmax - xmin) * 0.2, hy = (ymax - ymin) * 0.2, N = 6, zp = (x, y) => P.z0 + P.gx * (x - P.x0) + P.gy * (y - P.y0), pc = rgb(col['--plano']);
+      for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
+        const xa = P.x0 - hx + (2 * hx * i) / N, xb = P.x0 - hx + (2 * hx * (i + 1)) / N, ya = P.y0 - hy + (2 * hy * j) / N, yb = P.y0 - hy + (2 * hy * (j + 1)) / N;
+        const ps = [[xa, ya], [xb, ya], [xb, yb], [xa, yb]].map(([x, y]) => P3(x, y, zp(x, y), 0.35));
+        el.push({ ps, d: (ps[0][2] + ps[1][2] + ps[2][2] + ps[3][2]) / 4 - 0.01, fill: css(pc, 0.5), line: css(pc, 0.75) });
+      }
+    }
+    el.sort((a, b) => b.d - a.d);
+    g.lineWidth = 0.6; g.lineJoin = 'round';
+    for (const e of el) {
+      g.beginPath(); e.ps.forEach((p, i) => (i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1]))); g.closePath();
+      g.fillStyle = e.fill; g.fill(); g.strokeStyle = e.line; g.stroke();
+    }
+    g.font = '600 13px system-ui, sans-serif'; g.fillStyle = col['--muted']; g.textAlign = 'center'; g.textBaseline = 'middle';
+    const et = (t, x, y, z) => { const p = P3(x, y, z); g.fillText(t, p[0], p[1]); };
+    et('x', xmax + (xmax - xmin) * 0.07, ymin, suelo - 0.1 * R); et('y', xmin, ymax + (ymax - ymin) * 0.07, suelo - 0.1 * R); et('z', xmin, ymin, zhi + 0.1 * R);
+    if (P) {
+      const s0 = P3(P.x0, P.y0, suelo - 0.1 * R), p0 = P3(P.x0, P.y0, P.z0, 0.35);
+      g.setLineDash([4, 4]); g.strokeStyle = col['--muted']; g.lineWidth = 1; g.beginPath(); g.moveTo(p0[0], p0[1]); g.lineTo(s0[0], s0[1]); g.stroke(); g.setLineDash([]);
+      const paso = 0.22 * Math.min(xmax - xmin, ymax - ymin);
+      if (!P.plano) { const q = P3(P.x0 + (P.gx / P.g) * paso, P.y0 + (P.gy / P.g) * paso, suelo - 0.1 * R); flecha(g, s0[0], s0[1], q[0], q[1], col['--grad'], 2.2); }
+      if (P.dir) { const q = P3(P.x0 + P.dir.ex * paso, P.y0 + P.dir.ey * paso, suelo - 0.1 * R); flecha(g, s0[0], s0[1], q[0], q[1], col['--z3'], 2); }
+      g.fillStyle = col['--grad']; g.strokeStyle = col['--ink']; g.lineWidth = 1.5;
+      g.beginPath(); g.arc(p0[0], p0[1], 5, 0, 2 * Math.PI); g.fill(); g.stroke();
+      g.beginPath(); g.arc(s0[0], s0[1], 3, 0, 2 * Math.PI); g.fill();
+    }
+  }
+
+  function dibujaNiv() {
+    const { g, w, h } = lienzo('#niveles');
+    T2 = null;
+    if (!sol || !w || !h) return;
+    const { xmin, xmax, ymin, ymax } = sol.rango, ml = 44, mr = 14, mt = 12, mb = 26, pw = w - ml - mr, ph = h - mt - mb;
+    const k = Math.min(pw / (xmax - xmin), ph / (ymax - ymin)), ox = ml + (pw - k * (xmax - xmin)) / 2, oy = mt + (ph - k * (ymax - ymin)) / 2;
+    const X = (x) => ox + (x - xmin) * k, Y = (y) => oy + (ymax - y) * k;
+    T2 = { ox, oy, k, xmin, ymax, xmax, ymin };
+    g.font = '12px system-ui, sans-serif';
+    g.fillStyle = col['--muted']; g.strokeStyle = col['--line']; g.lineWidth = 1;
+    g.textAlign = 'right'; g.textBaseline = 'middle';
+    for (const y of marcas(ymin, ymax, 5)) { g.beginPath(); g.moveTo(X(xmin), Y(y)); g.lineTo(X(xmax), Y(y)); g.stroke(); g.fillText(txt(fH(y)), X(xmin) - 6, Y(y)); }
+    g.textAlign = 'center'; g.textBaseline = 'top';
+    for (const x of marcas(xmin, xmax, 6)) { g.beginPath(); g.moveTo(X(x), Y(ymin)); g.lineTo(X(x), Y(ymax)); g.stroke(); g.fillText(txt(fH(x)), X(x), Y(ymin) + 6); }
+    g.strokeStyle = col['--muted']; g.strokeRect(X(xmin), Y(ymax), X(xmax) - X(xmin), Y(ymin) - Y(ymax));
+    g.save(); g.beginPath(); g.rect(X(xmin), Y(ymax), X(xmax) - X(xmin), Y(ymin) - Y(ymax)); g.clip();
+    const n = m81.n, dx = (xmax - xmin) / (n - 1), dy = (ymax - ymin) / (n - 1);
+    g.fillStyle = col['--line'];
+    for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) if (isNaN(m81.z[j][i])) g.fillRect(X(m81.xs[i] - dx / 2), Y(m81.ys[j] + dy / 2), dx * k + 1, dy * k + 1);
+    for (const { L, seg } of cont) {
+      g.strokeStyle = css(mapa(norm(L)), 1); g.lineWidth = 1.5; g.beginPath();
+      for (const [x1, y1, x2, y2] of seg) { g.moveTo(X(x1), Y(y1)); g.lineTo(X(x2), Y(y2)); }
+      g.stroke();
+    }
+    const P = sol.punto;
+    if (P) {
+      if (contPto) { g.strokeStyle = col['--ink']; g.lineWidth = 2.6; g.beginPath(); for (const [x1, y1, x2, y2] of contPto) { g.moveTo(X(x1), Y(y1)); g.lineTo(X(x2), Y(y2)); } g.stroke(); }
+      if (!P.plano) {
+        const tx = -P.gy / P.g, ty = P.gx / P.g, big = (xmax - xmin) + (ymax - ymin);
+        g.setLineDash([6, 5]); g.strokeStyle = col['--plano']; g.lineWidth = 2; g.beginPath(); g.moveTo(X(P.x0 - tx * big), Y(P.y0 - ty * big)); g.lineTo(X(P.x0 + tx * big), Y(P.y0 + ty * big)); g.stroke(); g.setLineDash([]);
+      }
+    }
+    g.restore();
+    for (const q of sol.crit) {
+      g.fillStyle = q.tipo === 'minimum' ? col['--z1'] : q.tipo === 'maximum' ? col['--z2'] : col['--z3']; g.strokeStyle = col['--ink']; g.lineWidth = 1.2;
+      g.beginPath(); g.rect(X(q.x) - 4, Y(q.y) - 4, 8, 8); g.fill(); g.stroke();
+    }
+    if (P) {
+      const paso = 0.18 * Math.min(xmax - xmin, ymax - ymin);
+      if (!P.plano) flecha(g, X(P.x0), Y(P.y0), X(P.x0 + (P.gx / P.g) * paso), Y(P.y0 + (P.gy / P.g) * paso), col['--grad'], 2.6);
+      if (P.dir) flecha(g, X(P.x0), Y(P.y0), X(P.x0 + P.dir.ex * paso), Y(P.y0 + P.dir.ey * paso), col['--z3'], 2.2);
+      g.fillStyle = col['--grad']; g.strokeStyle = col['--ink']; g.lineWidth = 1.5; g.beginPath(); g.arc(X(P.x0), Y(P.y0), 5, 0, 2 * Math.PI); g.fill(); g.stroke();
+      if (P.aprox) { const a = X(P.aprox.x1), b = Y(P.aprox.y1); g.strokeStyle = col['--ink']; g.lineWidth = 1.6; g.beginPath(); g.moveTo(a - 4, b - 4); g.lineTo(a + 4, b + 4); g.moveTo(a + 4, b - 4); g.lineTo(a - 4, b + 4); g.stroke(); }
+    }
+    const bw = Math.min(110, pw * 0.4), bx = X(xmax) - bw - 8, by = Y(ymax) + 10;
+    for (let i = 0; i < bw; i++) { g.fillStyle = css(mapa(i / (bw - 1))); g.fillRect(bx + i, by, 1.5, 8); }
+    g.fillStyle = col['--ink']; g.font = '11px system-ui, sans-serif'; g.textAlign = 'left'; g.textBaseline = 'top'; g.fillText(txt(fH(zr.lo, 3)), bx, by + 11);
+    g.textAlign = 'right'; g.fillText(txt(fH(zr.hi, 3)), bx + bw, by + 11);
+  }
+  $('#niveles').addEventListener('click', (e) => {
+    if (!T2) return;
+    const r = e.currentTarget.getBoundingClientRect(), px = e.clientX - r.left, py = e.clientY - r.top;
+    const x = T2.xmin + (px - T2.ox) / T2.k, y = T2.ymax - (py - T2.oy) / T2.k;
+    if (x < T2.xmin || x > T2.xmax || y < T2.ymin || y > T2.ymax) return;
+    sc.x0 = coma(+x.toFixed(2)); sc.y0 = coma(+y.toFixed(2));
+    $('#f-x0').value = sc.x0; $('#f-y0').value = sc.y0; sel.value = ''; calcula();
+  });
+
+  const dibujaTodo = () => { dibuja3d(); dibujaNiv(); };
+  const cv = $('#superficie');
+  let arrastra = null;
+  cv.addEventListener('pointerdown', (e) => { arrastra = { x: e.clientX, y: e.clientY }; cv.setPointerCapture(e.pointerId); });
+  cv.addEventListener('pointermove', (e) => {
+    if (!arrastra) return;
+    V.az += (e.clientX - arrastra.x) * 0.008; V.el = Math.max(0.05, Math.min(1.5, V.el + (e.clientY - arrastra.y) * 0.008));
+    arrastra = { x: e.clientX, y: e.clientY }; dibuja3d();
+  });
+  const suelta = () => { arrastra = null; };
+  cv.addEventListener('pointerup', suelta); cv.addEventListener('pointercancel', suelta);
+  cv.addEventListener('wheel', (e) => { e.preventDefault(); V.zoom = Math.max(0.5, Math.min(2.5, V.zoom * (e.deltaY < 0 ? 1.1 : 1 / 1.1))); dibuja3d(); }, { passive: false });
+  cv.addEventListener('keydown', (e) => {
+    const m = { ArrowLeft: () => (V.az -= 0.1), ArrowRight: () => (V.az += 0.1), ArrowUp: () => (V.el = Math.min(1.5, V.el + 0.08)), ArrowDown: () => (V.el = Math.max(0.05, V.el - 0.08)), '+': () => (V.zoom = Math.min(2.5, V.zoom * 1.1)), '-': () => (V.zoom = Math.max(0.5, V.zoom / 1.1)) }[e.key];
+    if (m) { e.preventDefault(); m(); dibuja3d(); }
+  });
+  const gira = () => { if (!anda) return; V.az += 0.012; dibuja3d(); requestAnimationFrame(gira); };
+  $('#girar').addEventListener('click', () => { anda = !anda; $('#girar').textContent = anda ? '⏸ Stop' : '▶ Rotate automatically'; if (anda) requestAnimationFrame(gira); });
+  $('#vista').addEventListener('click', () => { Object.assign(V, V0); dibuja3d(); });
+  $('#ver-plano').addEventListener('change', dibuja3d);
+
+  window.addEventListener('resize', dibujaTodo);
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { colores(); dibujaTodo(); });
+
+  const ver = $('#ver'); if (ver) ver.textContent = Version.de('superficies').current;
+  colores(); formulario(); calcula();
+  Herramienta.exportar('#superficie', { nombre: 'superficie-3d', titulo: '3D surface', etiqueta: 'the surface' });
+  Herramienta.exportar('#niveles', { nombre: 'curvas-de-nivel', titulo: 'Level curves', etiqueta: 'the level curves' });
+  window.SuperficiesApp = {
+    abrirEjemplo, azar, enunciado,
+    resultado: () => sol && { f: sol.txt.f, z0: sol.punto?.z0, gx: sol.punto?.gx, gy: sol.punto?.gy, g: sol.punto?.g, Du: sol.punto?.dir?.Du, plano: sol.punto?.tangente, crit: sol.crit.map((q) => q.tipo) },
+    estado: () => copia(sc),
+  };
+})();
+
+</script>
+<script src="../../../js/en/biblioteca.en.5cb97548.js"></script>
+<script src="../../../js/en/practica.en.192a5c1e.js"></script>
+<script src="../../../js/en/personal.en.00676b87.js"></script>
+<script>
+Biblioteca.monta('superficies', 'superficies-v1');
+Practica.monta('superficies', 'superficies-v1');
+Enunciado.monta('superficies', 'superficies-v1');
+</script>
+</html>

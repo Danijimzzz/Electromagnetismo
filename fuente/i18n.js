@@ -78,7 +78,7 @@ const ATRIBUTOS = ['title', 'aria-label', 'placeholder', 'alt', 'aria-descriptio
 function unidadesHTML(html, fino) {
   const out = []; const re = /<!--[\s\S]*?-->|<![^>]*>|<(script|style)\b[\s\S]*?<\/\1>|<\/?([A-Za-z][\w:-]*)((?:\s+[^\s=>\/]+(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+))?)*)\s*\/?>|[^<]+|</g;
   let m, ini = -1, fin = -1;
-  const cierra = () => { if (ini >= 0) { const t = html.slice(ini, fin); if (/[A-Za-zÁÉÍÓÚáéíóúñÑ]{2}/.test(t.replace(/<[^>]*>/g, '').replace(/\$[^$]*\$/g, ''))) { const l = t.length - t.trimStart().length; out.push({ ini: ini + l, fin: ini + l + t.trim().length, texto: t.trim(), clase: 'html' }); } else if (/\$[^$]*"[^"$]*[A-Za-zÁÉÍÓÚáéíóúñÑ]{3}[^"$]*"[^$]*\$/.test(t)) { const l = t.length - t.trimStart().length, e = t.slice(t.lastIndexOf('$')).includes('\u0001') ? t.lastIndexOf('$') + 1 : t.length; out.push({ ini: ini + l, fin: ini + e, texto: t.slice(l, e), clase: 'html', opt: true }); } } ini = fin = -1; }; // fórmula con texto entre comillas y nada más: se traduce solo si el diccionario lo pide
+  const cierra = () => { if (ini >= 0) { const t = html.slice(ini, fin); if (/[A-Za-zÁÉÍÓÚáéíóúñÑ]{2}/.test(t.replace(/<[^>]*>/g, '').replace(/\$[^$]*\$/g, ''))) { const l = t.length - t.trimStart().length; out.push({ ini: ini + l, fin: ini + l + t.trim().length, texto: t.trim(), clase: 'html' }); } else if (/\$[^$]*"[^"$]*[A-Za-zÁÉÍÓÚáéíóúñÑ]{3}[^"$]*"[^$]*\$/.test(t)) { const l = t.length - t.trimStart().length, e = t.length; out.push({ ini: ini + l, fin: ini + e, texto: t.slice(l, e), clase: 'html', opt: true }); } } ini = fin = -1; }; // fórmula con texto entre comillas y nada más: se traduce solo si el diccionario lo pide
   let pre = 0, ctx = 0;
   while ((m = re.exec(html))) {
     const [t, scr, tag, attrs] = m;
@@ -145,7 +145,7 @@ function edicionesJS(src) {
     if (m.includes('<') && /<\/?[a-zA-Z]/.test(m)) { for (const u of unidadesHTML(m)) eds.push({ ini: l.ini + u.ini, fin: l.ini + u.fin, texto: l.texto.slice(u.ini, u.fin), tipo: l.tipo, clase: u.clase, opt: u.opt }); }
     else if (conLetras(m) || /^-?\d+,\d+$/.test(m)) eds.push({ ini: l.ini, fin: l.fin, texto: l.texto, tipo: l.tipo, clase: 'js', opt: !esTexto(l.texto) });
   }
-  const dentro = (e) => eds.some((x) => e.ini >= x.ini && e.fin <= x.fin);
+  const dentro = (e) => eds.some((x) => !x.opt && e.ini >= x.ini && e.fin <= x.fin); // un texto opcional (fórmula con comillas) que no está en el diccionario no tapa lo de dentro; aplica() se salta lo solapado
   for (const l of ls.filter((x) => x.nivel > 0)) {
     const m = mascara(l.texto);
     const parte = (ini, fin, texto, clase, opt) => { const e = { ini, fin, texto, tipo: l.tipo, clase, opt }; if (!dentro(e)) eds.push(e); };
