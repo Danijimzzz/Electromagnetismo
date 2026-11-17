@@ -414,6 +414,7 @@ async function navegador() {
     if (fallos === antes) console.log(`  ✓ ${j.nombre}: mismos resultados, ${Object.keys(j.esp).length} ejercicios abiertos, guía y novedades sin errores de consola`);
   }
   // Electrostática con la barra común «Mis ejercicios» (Web 1.20.1): migración de lo de antes, guardar, abrir, imprimir varios y que sea igual que la de otra herramienta
+  if (!solo && primera) { const antes = fallos; await require('./idiomas.js')(browser, { mal }); if (fallos === antes) console.log('  ✓ Selector de idioma: botón con globo y código, lista con banderas, enlaces a la misma página, hreflang, noindex y aviso'); }
   if (!((solo && solo !== 'electrostatica') || !primera)) { const antes = fallos; await require('./electrostatica-barra.js')(browser, { publico, path, mal }); if (fallos === antes) console.log('  ✓ Electrostática: usa la barra común (mismos botones y menús que Tiro parabólico), migra lo de antes, guarda, abre, imprime varios, enlaces y móvil'); }
   const medidos = {};
   for (const [i, f] of enNavegador.entries()) { const t0 = Date.now(); await f(browser); medidos[nombresNavegador[i]] = Math.round((Date.now() - t0) / 100) / 10; }

@@ -3,7 +3,7 @@
    las novedades y el índice de «Física en la vida real» (publico/fenomenos/index.html) a partir de catalogo.js.
    Lo llama build.sh; no hace falta ejecutarlo a mano. Las páginas de cada fenómeno las hace herramientas.js. */
 const fs = require('fs'), path = require('path');
-const Catalogo = require('./catalogo.js'), Version = require('./version.js'), Tema = require('./tema.js'), Buscador = require('./buscador.js'), Llama = require('./llama.js'), Anuncios = require('./anuncios.js'), Pwa = require('./pwa.js');
+const Catalogo = require('./catalogo.js'), Version = require('./version.js'), Tema = require('./tema.js'), Idiomas = require('./idiomas.js'), Buscador = require('./buscador.js'), Llama = require('./llama.js'), Anuncios = require('./anuncios.js'), Pwa = require('./pwa.js');
 const publico = path.join(__dirname, '..', 'publico');
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -173,13 +173,13 @@ ${raiz === '' && Catalogo.google ? `<meta name="google-site-verification" conten
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
 ${Pwa.CABEZA(raiz)}
 ${Anuncios.cabeza()}<script>${Tema.SCRIPT}</script>
-<style>${CSS}${Tema.CSS}${pwa ? Pwa.CSS : ''}</style>
+<style>${CSS}${Tema.CSS}${Idiomas.CSS()}${pwa ? Pwa.CSS : ''}</style>
 </head>
 <body>
 <header class="top"><a class="logo" href="${raiz}">${esc(m1)}<i>${esc(m2)}</i></a>
 <nav aria-label="Asignaturas"><a href="${raiz}"${actual ? '' : ' aria-current="page"'}>Inicio</a>${nav}</nav>
 <a class="foro" href="${raiz}foro/"${actual === 'foro' ? ' aria-current="page"' : ''}><span aria-hidden="true">💬</span>Foro</a>
-${buscar ? '<input type="search" id="buscar" class="buscar" placeholder="Buscar: Biot-Savart, molaridad…" aria-label="Buscar herramientas (atajo: barra /)" title="Atajo: / o Ctrl+K" autocomplete="off">' : ''}${Tema.BOTON}</header>
+${buscar ? '<input type="search" id="buscar" class="buscar" placeholder="Buscar: Biot-Savart, molaridad…" aria-label="Buscar herramientas (atajo: barra /)" title="Atajo: / o Ctrl+K" autocomplete="off">' : ''}${Idiomas.BOTON({ raiz })}${Tema.BOTON}</header>
 ${cuerpo}
 ${CON_ANUNCIO.includes(actual) && Anuncios.hueco() ? `<div role="region" aria-label="Publicidad">${Anuncios.hueco()}</div>` : ''}${Anuncios.pie(`<footer><a href="${raiz}contacto.html">Contacto</a>·<a href="${raiz}aviso-legal.html">Aviso legal</a>·<a href="${raiz}privacidad.html">Privacidad</a>·<a href="${raiz}cookies.html">Cookies</a>· <a href="${raiz}novedades/">Versión ${esc(Version.de('web').current)}</a></footer>`)}
 ${Buscador.ETIQUETA(raiz)}\n${Llama.ETIQUETA(raiz)}\n${script ? `<script>${script}</script>\n` : ''}</body>
@@ -462,11 +462,11 @@ fs.writeFileSync(vercel, JSON.stringify(conf, null, 2) + '\n');
 // fenómenos las escribe herramientas.js, y Electrostática build.sh, con la misma etiqueta.
 const enlaces = ['', 'novedades/', ...Catalogo.asignaturas.flatMap((a) => [`${a.clave}/`, ...disponibles(a).map((h) => `${a.clave}/${h.clave}/`)]),
   'fenomenos/', ...V.lista.filter((f) => f.disponible).map((f) => `fenomenos/${f.clave}/`), 'aviso-legal.html', 'privacidad.html', 'cookies.html', 'contacto.html'];
-archivos['sitemap.xml'] = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${enlaces.map((e) => `  <url><loc>${Catalogo.web}/${e}</loc></url>`).join('\n')}\n</urlset>\n`;
+archivos['sitemap.xml'] = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"${Idiomas.activos().length > 1 ? ' xmlns:xhtml="http://www.w3.org/1999/xhtml"' : ''}>\n${enlaces.map((e) => `  <url><loc>${Catalogo.web}/${e}</loc>${Idiomas.SITEMAP(e, Catalogo.web) ? '\n    ' + Idiomas.SITEMAP(e, Catalogo.web).split('\n').join('\n    ') : ''}</url>`).join('\n')}\n</urlset>\n`;
 archivos['robots.txt'] = `User-agent: *\nAllow: /\n\nSitemap: ${Catalogo.web}/sitemap.xml\n`;
 const canonica = (f) => `${Catalogo.web}/${f.replace(/index\.html$/, '')}`;
 for (const f of Object.keys(archivos)) if (f.endsWith('.html') && !archivos[f].includes('rel="canonical"'))
-  archivos[f] = archivos[f].replace('<meta charset="utf-8">', `<meta charset="utf-8">\n<link rel="canonical" href="${canonica(f)}">`);
+  archivos[f] = archivos[f].replace('<meta charset="utf-8">', `<meta charset="utf-8">\n<link rel="canonical" href="${canonica(f)}">${Idiomas.HREFLANG(f.replace(/index\.html$/, ''), Catalogo.web) ? '\n' + Idiomas.HREFLANG(f.replace(/index\.html$/, ''), Catalogo.web) : ''}`);
 
 archivos['buscador.js'] = Buscador.archivo();
 // web instalable y sin conexión (pwa.js): manifiesto, service worker, su registro, la página sin conexión y los iconos

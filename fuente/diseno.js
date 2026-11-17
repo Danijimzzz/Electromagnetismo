@@ -13,7 +13,7 @@
    (fenómenos también) el de «Herramientas relacionadas» (o «Más fenómenos»):
      node diseno.js ASIGNATURA HERRAMIENTA < pagina.html
    ===================================================================== */
-const Limites = require('./limites.js'), Catalogo = require('./catalogo.js'), Tema = require('./tema.js'), Accesibilidad = require('./accesibilidad.js'), Buscador = require('./buscador.js'), Llama = require('./llama.js'), Anuncios = require('./anuncios.js'), Pwa = require('./pwa.js'), Preguntas = require('./preguntas.js');
+const Limites = require('./limites.js'), Catalogo = require('./catalogo.js'), Tema = require('./tema.js'), Idiomas = require('./idiomas.js'), Accesibilidad = require('./accesibilidad.js'), Buscador = require('./buscador.js'), Llama = require('./llama.js'), Anuncios = require('./anuncios.js'), Pwa = require('./pwa.js'), Preguntas = require('./preguntas.js');
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 // Hoja común de las herramientas (estilos.css) y la cabecera del portal, que comparten con el simulador de
@@ -57,7 +57,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 @media (max-width:600px) { .vida-real a, .relacionadas a { display:block } .vida-real a b, .relacionadas a b { display:block; white-space:normal } }
 @media (max-width:700px) { header.top form { display:none } h1 { font-size:21px }
   .miga-izq, .miga-der, .miga::after { order:-1 } .miga::after { content:''; flex-basis:100%; height:0 } }
-${Tema.CSS}`;
+${Tema.CSS}${Idiomas.CSS()}`;
 // el simulador de electrostática no usa estilos.css: solo los colores, la cabecera y el aspecto de sus tarjetas
 const css = (a) => `
 :root { --bg:#eef1ee; --panel:#fff; --ink:#1a2128; --muted:#5b6670; --line:#d5dbd5 }
@@ -79,7 +79,7 @@ function piezas(a, nombre) {
   const [m1, m2] = Catalogo.marca;
   const nav = [...Catalogo.asignaturas, V].map((x) => `<a href="../../${x.clave}/"${x === a ? ' aria-current="page"' : ''}>${esc(x.corto || x.nombre)}</a>`).join('');
   const cab = `<header class="top"><a class="logo" href="../../">${m1}<i>${m2}</i></a><nav aria-label="Asignaturas"><a href="../../">Inicio</a>${nav}</nav>`
-    + `<a class="foro" href="../../foro/"><span aria-hidden="true">💬</span>Foro</a><form action="../../" role="search"><input class="buscar" type="search" name="q" placeholder="Buscar: Biot-Savart, molaridad…" aria-label="Buscar herramientas (atajo: barra /)" title="Atajo: / o Ctrl+K"></form>${Tema.BOTON}</header>`;
+    + `<a class="foro" href="../../foro/"><span aria-hidden="true">💬</span>Foro</a><form action="../../" role="search"><input class="buscar" type="search" name="q" placeholder="Buscar: Biot-Savart, molaridad…" aria-label="Buscar herramientas (atajo: barra /)" title="Atajo: / o Ctrl+K"></form>${Idiomas.BOTON({ raiz: '../../' })}${Tema.BOTON}</header>`;
   const miga = `<nav class="miga" aria-label="Estás en"><span class="miga-izq"></span><span class="miga-ico" aria-hidden="true">${esc(a.icono)}</span><a href="../">${esc(a.nombre)}</a><span aria-hidden="true">›</span><span>${esc(nombre)}</span><span class="miga-der"></span></nav>`;
   return { cab, miga };
 }
