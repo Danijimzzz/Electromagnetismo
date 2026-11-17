@@ -36,7 +36,7 @@ function literales(src) {
   };
   // recorre código; con enLlave termina en la } que cierra la expresión ${…}
   function codigo(enLlave) {
-    let prof = 0;
+    let prof = 0; if (enLlave) ult = '{'; // tras ${ puede venir una expresión regular
     while (i < n) {
       const c = src[i];
       if (c === '/' && src[i + 1] === '/') { while (i < n && src[i] !== '\n') i++; continue; }
@@ -175,7 +175,8 @@ function aplica(src, eds, dics, faltan, usadas) {
 }
 const traduceJS = (src, dics, faltan, usadas) => aplica(src, edicionesJS(src), dics, faltan, usadas);
 const traduceHTML = (html, dics, faltan, usadas) => aplica(html, unidadesHTML(html).map((u) => ({ ...u, tipo: u.clase === 'json' ? 'json' : '' })), dics, faltan, usadas);
-const candidatosHTML = (html) => [...new Set(unidadesHTML(html).map((u) => u.texto))];
+const sinSelector = (html) => html.replace(/<style>[^<]*<\/style><div class="lg">[\s\S]*?<\/script>/, '');
+const candidatosHTML = (html) => [...new Set(unidadesHTML(sinSelector(html)).map((u) => u.texto))];
 const candidatosJS = (src) => [...new Set(edicionesJS(src).filter((u) => !u.opt).map((u) => u.texto))];
 
 /* ---------- Generar publico/<idioma>/ ---------- */
@@ -258,6 +259,12 @@ if (require.main === module) {
   const [, , cmd, idioma, carpeta] = process.argv;
   if (cmd === 'todos') { for (const c of fs.existsSync(DIR) ? fs.readdirSync(DIR).filter((f) => fs.statSync(path.join(DIR, f)).isDirectory()) : []) { const r = generar(c); console.log(`i18n ${c}: ${r.paginas} páginas${r.faltan.length ? `, ${r.faltan.length} textos sin traducir` : ''}`); } }
   else if (cmd === 'generar') { const r = generar(idioma || 'en'); console.log(`i18n ${idioma || 'en'}: ${r.paginas} páginas${r.faltan.length ? `, ${r.faltan.length} textos sin traducir` : ''}`); }
+  else if (cmd === 'volcar' || cmd === 'cargar') {
+    // volcar: escribe en <archivo> la lista de claves sin traducir; cargar: lee una lista de traducciones (mismo orden) y las guarda
+    const nombre = carpeta.replace(/\//g, '__'), d = leeDic(idioma, nombre), archivo = process.argv[5];
+    if (cmd === 'volcar') { const falta = Object.keys(d).filter((k) => d[k] === ''); fs.writeFileSync(archivo, JSON.stringify(falta, null, 1)); console.log(falta.length + ' claves en ' + archivo); }
+    else { const falta = Object.keys(d).filter((k) => d[k] === ''), t = JSON.parse(fs.readFileSync(archivo, 'utf8')); if (t.length !== falta.length) throw new Error(`hay ${falta.length} claves y ${t.length} traducciones`); falta.forEach((k, i) => { d[k] = t[i]; }); guardaDic(idioma, nombre, d); console.log(t.length + ' traducciones cargadas'); }
+  }
   else if (cmd === 'candidatos' || cmd === 'rellenar') {
     // textos de una herramienta (o 'comun') que faltan en su diccionario
     const { lista, ficherosDe, script } = Herramientas;
