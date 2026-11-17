@@ -22,6 +22,7 @@ const Expresion = (() => {
     // escalón de Heaviside y delta de Dirac (los usa Laplace)
     escalon: 'u', 'escalón': 'u', heaviside: 'u', delta: 'δ', dirac: 'δ',
   };
+  const vf = (f) => (typeof Mates !== 'undefined' && Mates.nombreFn ? Mates.nombreFn(f) : f); // nombre de la función como se ve en pantalla (sen → sin en inglés)
   const PALABRAS = [...Object.keys(FUN), 'pi'].sort((a, b) => b.length - a.length);
 
   function tokens(src, nom, vars = ['x']) {
@@ -159,8 +160,8 @@ const Expresion = (() => {
         case 'fn': {
           const a = v(q.a);
           if (FC[q.f] && (a.im !== 0 || (q.f === 'sqrt' && a.re < 0) || ((q.f === 'ln' || q.f === 'log') && a.re < 0))) return FC[q.f](a);
-          if (a.im !== 0) throw new Error(`no sé calcular ${q.f} de un número complejo`);
-          const r = F1[q.f](a.re); if (!isFinite(r)) throw new Error(`${q.f}(${a.re}) no existe`); return Z(r);
+          if (a.im !== 0) throw new Error(`no sé calcular ${vf(q.f)} de un número complejo`);
+          const r = F1[q.f](a.re); if (!isFinite(r)) throw new Error(`${vf(q.f)}(${a.re}) no existe`); return Z(r);
         }
       }
       throw new Error('no se entiende');
@@ -458,7 +459,7 @@ const Expresion = (() => {
   function serie(n, a, Nn, { evitable = false } = {}) {
     const L = Nn + 1, cero = () => new Float64Array(L);
     const cte = (v) => { const s = cero(); s[0] = v; return s; };
-    const noDer = (q) => { throw new Error(`La función no es derivable en x = a (${q}): prueba con otro punto`); };
+    const noDer = (q) => { const e = new Error(`La función no es derivable en x = a (${q}): prueba con otro punto`); e.detalle = q; throw e; };
     const mul = (p, q) => { const r = cero(); for (let i = 0; i < L; i++) if (p[i]) for (let j = 0; i + j < L; j++) r[i + j] += p[i] * q[j]; return r; };
     const corre = (p, m) => { const r = cero(); for (let k = 0; k + m < L; k++) r[k] = p[k + m]; return r; };
     const div = (p, q) => {
@@ -534,7 +535,7 @@ const Expresion = (() => {
             case 'abs': if (u[0] === 0) noDer('el valor absoluto en 0'); return u[0] < 0 ? u.map((v) => -v) : u;
             case 'arctg': return integra(div(der(u), mul(u, u).map((v, i) => v + (i ? 0 : 1))), Math.atan(u[0]));
             case 'arcsen': case 'arccos': {
-              if (!(Math.abs(u[0]) < 1)) noDer(Math.abs(u[0]) === 1 ? `${m.f} en ±1` : `${m.f} fuera de [−1, 1]`);
+              if (!(Math.abs(u[0]) < 1)) noDer(Math.abs(u[0]) === 1 ? `${vf(m.f)} en ±1` : `${vf(m.f)} fuera de [−1, 1]`);
               const r = integra(div(der(u), pot(mul(u, u).map((v, i) => (i ? -v : 1 - v)), 0.5)), Math.asin(u[0]));
               return m.f === 'arcsen' ? r : r.map((v, i) => (i ? -v : Math.PI / 2 - v));
             }

@@ -41,7 +41,7 @@
 
   /* ---------- Cálculo ---------- */
   const dato = (t, v, c = '') => `<div${c ? ` class="${c}"` : ''}><span>${t}</span><b>${v}</b></div>`;
-  const etiqueta = { converge: 'converge', diverge: 'diverge', 'no concluye': 'no decide', 'no aplica': 'no se aplica' };
+  const etiqueta = { converge: 'Converge', diverge: 'Diverge', 'no concluye': 'No decide', 'no aplica': 'No se aplica' };
   function calcula() {
     const err = $('#error');
     try { sol = P.resolver(sc); } catch (e) {
