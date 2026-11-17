@@ -15,7 +15,13 @@ const I18n = require('../fuente/i18n.js'), Idiomas = require('../fuente/idiomas.
 
 const expresiones = (t) => { const m = []; const re = /\$\{/g; let q; while ((q = re.exec(t))) { let prof = 1, j = q.index + 2; while (j < t.length && prof) { if (t[j] === '{') prof++; else if (t[j] === '}') prof--; j++; } m.push(t.slice(q.index, j)); re.lastIndex = j; } return m; };
 // esqueleto de una expresión: sin el texto de sus cadenas (que sí se traduce), con las expresiones anidadas
-const esqueleto = (x) => x.replace(/`([^`]*)`/g, (m, c) => '`' + (c.match(/\$\{[^}]*\}/g) || []).join('') + '`').replace(/'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"/g, "''");
+const esqueleto = (x) => {
+  // recorre la expresión: las cadenas '…' y "…" quedan vacías; en las plantillas `…` solo se conservan sus ${…} (también anidadas)
+  let o = '', i = 0; const n = x.length;
+  const plantilla = () => { o += '`'; i++; while (i < n && x[i] !== '`') { if (x[i] === '\\') { i += 2; continue; } if (x[i] === '$' && x[i + 1] === '{') { o += '${'; i += 2; codigo(true); o += '}'; continue; } i++; } o += '`'; i++; };
+  const codigo = (llave) => { let prof = 0; while (i < n) { const c = x[i]; if (c === "'" || c === '"') { i++; while (i < n && x[i] !== c) { if (x[i] === '\\') i++; i++; } i++; o += "''"; continue; } if (c === '`') { plantilla(); continue; } if (c === '{') prof++; if (c === '}') { if (llave && prof === 0) { i++; return; } prof--; } o += c; i++; } };
+  codigo(false); return o;
+};
 const etiquetas = (t) => (t.match(/<\/?[a-zA-Z][^>]*>/g) || []).map((x) => x.replace(/\s+/g, ' ').replace(/\s*\/?>$/, '>')).sort().join('|');
 const formulas = (t) => (t.replace(/\$\{[^}]*\}/g, '').match(/\$[^$]+\$/g) || []).length;
 // Español visible: letras con tilde o palabras muy españolas (en un texto en inglés no deberían salir)
