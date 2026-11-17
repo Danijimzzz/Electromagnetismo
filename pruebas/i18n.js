@@ -23,6 +23,8 @@ const etiquetas = (t) => (t.match(/<\/?[a-zA-Z][^>]*>/g) || []).map((x) => x.rep
 const formulas = (t) => (t.replace(/\$\{[^}]*\}/g, '').match(/\$[^$]+\$/g) || []).length;
 // Español visible: letras con tilde o palabras muy españolas (en un texto en inglés no deberían salir)
 // Nombres propios con tilde que no son español (Thévenin, Scheffé…)
+// nombres propios y palabras extranjeras con tilde (André, Józef, élektron…) no cuentan como español
+const sinNombres = (l) => l.replace(/\p{Lu}[\p{L}'-]*/gu, (w) => (/[áéíóúñ]/i.test(w) ? ' ' : w)).replace(/élektron|El Alamein|olla exprés/g, ' ');
 const ESPANOL = /[áéíóúñ¿¡]|\b(el|los|las|una|del|para|con|que|por|desde|sobre|cuando|como|más)\b/i;
 
 function nodo(mal) {
@@ -45,9 +47,9 @@ function nodo(mal) {
       }
     }
     for (const h of I18n.paginasTraducidas(I.c)) {
-      const out = path.join(publico, I.c, h.asignatura, h.clave, 'index.html'), html = fs.readFileSync(out, 'utf8'), n = `${I.c}/${h.asignatura}/${h.clave}`;
+      const out = path.join(publico, I.c, I18n.rutaDe(h), 'index.html'), html = fs.readFileSync(out, 'utf8'), n = `${I.c}/${I18n.rutaDe(h)}`;
       e(`${n}: lang="${I.html}"`, html.includes(`<html lang="${I.html}">`));
-      e(`${n}: canonical propio`, html.includes(`<link rel="canonical" href="${require('../fuente/catalogo.js').web}/${I.c}/${h.asignatura}/${h.clave}/">`));
+      e(`${n}: canonical propio`, html.includes(`<link rel="canonical" href="${require('../fuente/catalogo.js').web}/${I.c}/${I18n.rutaDe(h)}/">`));
       e(`${n}: noindex mientras el idioma no es indexable`, I.indexar || html.includes('name="robots" content="noindex'));
       for (const m of html.matchAll(/<script(\s[^>]*)?>([\s\S]*?)<\/script>/g)) {
         if (/src=|ld\+json|adsbygoogle/.test(m[1] || '')) continue;
@@ -78,12 +80,12 @@ async function navegador(browser, { mal }) {
   try {
     for (const I of Idiomas.IDIOMAS.filter((x) => x.c !== 'es')) {
       for (const h of I18n.paginasTraducidas(I.c)) {
-        const n = `${I.c}/${h.asignatura}/${h.clave}`, ctx = await browser.newContext({ viewport: { width: 1280, height: 900 }, locale: I.c });
+        const n = `${I.c}/${I18n.rutaDe(h)}`, ctx = await browser.newContext({ viewport: { width: 1280, height: 900 }, locale: I.c });
         const p = await ctx.newPage(), errores = [];
         await ctx.route(/googlesyndication|googletagmanager|google-analytics|workers\.dev/, (r) => r.abort());
         p.on('pageerror', (er) => errores.push(er.message)); p.on('response', (r) => { if (r.status() >= 400) errores.push(`${r.status()} ${r.url()}`); });
-        await p.goto(`${base}/${I.c}/${h.asignatura}/${h.clave}/`); await p.waitForTimeout(600);
-        const espanol = async (donde) => { const t = await p.evaluate(() => [...document.querySelectorAll('body *')].filter((x) => !x.closest('.lg-pop, script, style, template, [hidden]') && x.offsetParent !== null).flatMap((x) => [...x.childNodes].filter((c) => c.nodeType === 3).map((c) => c.textContent.trim())).filter(Boolean)); const mal2 = t.filter((l) => ESPANOL.test(l.replace(NOMBRES, ""))); e(`${n}: español visible ${donde}: ${mal2.slice(0, 3).join(' | ').slice(0, 160)}`, mal2.length === 0); };
+        await p.goto(`${base}/${I.c}/${I18n.rutaDe(h)}/`); await p.waitForTimeout(600);
+        const espanol = async (donde) => { const t = await p.evaluate(() => [...document.querySelectorAll('body *')].filter((x) => !x.closest('.lg-pop, script, style, template, [hidden]') && x.offsetParent !== null).flatMap((x) => [...x.childNodes].filter((c) => c.nodeType === 3).map((c) => c.textContent.trim())).filter(Boolean)); const mal2 = t.filter((l) => ESPANOL.test(sinNombres(l.replace(NOMBRES, "")))); e(`${n}: español visible ${donde}: ${mal2.slice(0, 3).join(' | ').slice(0, 160)}`, mal2.length === 0); };
         await espanol('al abrir');
         // la barra Mis ejercicios: pestaña Ejemplos y menú ⋮
         await p.evaluate(() => document.querySelector('.bib-btn')?.click()); await p.waitForTimeout(300);

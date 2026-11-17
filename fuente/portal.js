@@ -153,7 +153,7 @@ footer { text-align:center; font-size:12.5px; color:var(--muted); padding:0 16px
 // con anuncios.js activo, un hueco al final de las páginas de asignatura y del índice de fenómenos
 // (no en la portada, el foro ni las novedades)
 const CON_ANUNCIO = [...Catalogo.asignaturas.map((a) => a.clave), V.clave];
-function pagina({ titulo, desc, raiz, actual, cuerpo, buscar, script, pwa }) {
+function pagina({ titulo, desc, raiz, actual, cuerpo, buscar, script, pwa, ruta }) {
   const nav = [...Catalogo.asignaturas, V].map((a) => `<a href="${raiz}${a.clave}/"${a.clave === actual ? ' aria-current="page"' : ''}>${esc(a.corto || a.nombre)}</a>`).join('');
   return `<!doctype html>
 <html lang="es">
@@ -342,7 +342,7 @@ archivos['foro/index.html'] = pagina({
   });
 })();`;
   archivos['fenomenos/index.html'] = pagina({
-    titulo: `${V.nombre} · ${marca}`, desc: V.resumen, raiz: '../', actual: V.clave, script: FILTRO,
+    titulo: `${V.nombre} · ${marca}`, desc: V.resumen, raiz: '../', actual: V.clave, script: FILTRO, ruta: 'fenomenos/',
     cuerpo: `<main style="${estilo(V)}">
 <div class="crumb"><a href="../">Inicio</a> / ${esc(V.nombre)}</div>
 <h1>${esc(V.nombre)}</h1>
