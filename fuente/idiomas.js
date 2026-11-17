@@ -35,7 +35,7 @@ const bandera = (c, t) => `<svg class="lg-fl" viewBox="0 0 24 24" width="${t}" h
 // carpeta '' = raíz. num: decimal y miles (lo usará Num en la etapa de traducción). aviso: [frase, cambiar, quedarse]
 const IDIOMAS = [
   { c: 'es', etiqueta: 'Idioma', nombre: 'Español', carpeta: '', html: 'es', publicado: true, indexar: true, num: { dec: ',', miles: '' }, aviso: ['Esta página está disponible en español.', 'Cambiar a español', 'Seguir aquí'] },
-  { c: 'en', etiqueta: 'Language', nombre: 'English', carpeta: 'en/', html: 'en', publicado: true, indexar: false, num: { dec: '.', miles: ',' }, aviso: ['This page is available in English.', 'Switch to English', 'Stay here'] },
+  { c: 'en', etiqueta: 'Language', nombre: 'English', carpeta: 'en/', html: 'en', publicado: true, indexar: true, num: { dec: '.', miles: ',' }, aviso: ['This page is available in English.', 'Switch to English', 'Stay here'] },
   { c: 'de', nombre: 'Deutsch', carpeta: 'de/', html: 'de', publicado: false, indexar: false, num: { dec: ',', miles: '.' }, aviso: ['Diese Seite ist auf Deutsch verfügbar.', 'Auf Deutsch ansehen', 'Hier bleiben'] },
   { c: 'fr', nombre: 'Français', carpeta: 'fr/', html: 'fr', publicado: false, indexar: false, num: { dec: ',', miles: ' ' }, aviso: ['Cette page est disponible en français.', 'Passer en français', 'Rester ici'] },
   { c: 'pt', nombre: 'Português', carpeta: 'pt/', html: 'pt', publicado: false, indexar: false, num: { dec: ',', miles: '.' }, aviso: ['Esta página está disponível em português.', 'Mudar para português', 'Ficar aqui'] },

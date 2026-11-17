@@ -21,7 +21,7 @@ function nodo(mal) {
   e('nombres en su idioma', ['Español', 'English', 'Deutsch', 'Français', 'Português', 'Italiano', '简体中文', '日本語'].every((n) => b.includes(n)));
   const h = Idiomas.HREFLANG('fisica/choques/', 'https://x', true);
   e('hreflang con x-default hacia el español', h.includes('hreflang="x-default" href="https://x/fisica/choques/"') && h.includes('hreflang="zh-Hans" href="https://x/zh/fisica/choques/"'));
-  e('noindex en un idioma no indexable y nada en español', Idiomas.ROBOTS('en').includes('noindex') && Idiomas.ROBOTS('es') === '');
+  e('noindex en un idioma no indexable y nada en español', Idiomas.ROBOTS('de').includes('noindex') && Idiomas.ROBOTS('en') === '' && Idiomas.ROBOTS('es') === '');
   e('sitemap con xhtml:link', Idiomas.SITEMAP('a/', 'https://x', true).includes('<xhtml:link rel="alternate" hreflang="de" href="https://x/de/a/"/>'));
   e('banderas: cada idioma tiene la suya y su frase de aviso', Idiomas.IDIOMAS.every((i) => Idiomas.BANDERAS[i.c] && i.aviso.length === 3));
 }
