@@ -11,7 +11,8 @@ const Idiomas = require('../fuente/idiomas.js');
 
 function nodo(mal) {
   const e = (c, ok) => { if (!ok) mal(`idiomas.js (Node): ${c}`); };
-  e('con solo el español publicado no hay botón, ni CSS, ni hreflang', Idiomas.BOTON() === '' && Idiomas.CSS() === '' && Idiomas.HREFLANG('a/', 'https://x') === '');
+  e('sin una página traducida no hay botón ni hreflang (aunque haya idiomas publicados)', Idiomas.BOTON() === '' && Idiomas.BOTON({ ruta: 'x/y/' }) === '' && Idiomas.HREFLANG('x/y/', 'https://x') === '');
+  e('con la página traducida (Choques) el botón sale con español e inglés', Idiomas.BOTON({ ruta: 'fisica/choques/' }).includes('hreflang="en"') && !Idiomas.BOTON({ ruta: 'fisica/choques/' }).includes('hreflang="de"'));
   const b = Idiomas.BOTON({ idioma: 'ja', raiz: '../', todos: true });
   e('con todos salen 8 enlaces con hreflang', (b.match(/hreflang="/g) || []).length === 8);
   e('con 8 banderas y 8 códigos', (b.match(/class="lg-fl"/g) || []).length === 8 && ['ES', 'EN', 'DE', 'FR', 'PT', 'IT', 'ZH', 'JA'].every((c) => b.includes(`<small>${c}</small>`)));

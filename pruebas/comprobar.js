@@ -60,7 +60,11 @@ execFileSync('sh', [path.join(fuente, 'build.sh'), 'privado', path.join(tmp, 'cu
 // el artifact añade el esqueleto; aquí se añade el mínimo para abrirla en el navegador
 fs.writeFileSync(juegos[1].pagina, '<!doctype html>\n<meta charset="utf-8">\n' + fs.readFileSync(path.join(tmp, 'cuerpo.html'), 'utf8'));
 console.log(`  ✓ simulador ${(fs.statSync(juegos[0].pagina).size / 1024).toFixed(0)} KB · privada ${(fs.statSync(juegos[1].pagina).size / 1024).toFixed(0)} KB`);
-const hay = listar(publico), sobran = hay.filter((f) => !PUBLICABLES.includes(f)), faltan = PUBLICABLES.filter((f) => !hay.includes(f));
+// idiomas traducidos (fuente/i18n.js): sus páginas y los scripts comunes con huella de cada idioma
+const I18nTraducido = require(path.join(fuente, 'i18n.js')), Idiomas = require(path.join(fuente, 'idiomas.js'));
+const delIdioma = new Set(Idiomas.IDIOMAS.filter((i) => i.c !== 'es').flatMap((i) => I18nTraducido.paginasTraducidas(i.c).map((h) => `${i.c}/${h.asignatura}/${h.clave}/index.html`)));
+const esDeIdioma = (f) => delIdioma.has(f) || /^js\/(?:en|de|fr|pt|it|zh|ja)\/[\w.-]+\.js$/.test(f);
+const hay = listar(publico), sobran = hay.filter((f) => !PUBLICABLES.includes(f) && !esDeIdioma(f)), faltan = PUBLICABLES.filter((f) => !hay.includes(f));
 if (sobran.length) mal(`publico/ contiene archivos que no deberían publicarse: ${sobran.join(', ')}`);
 if (faltan.length) mal(`publico/ no tiene: ${faltan.join(', ')}`);
 // errores de unión de ramas (marcadores de conflicto, JSON y .js rotos, claves repetidas, scripts que no compilan juntos): pruebas/union.js
@@ -414,6 +418,7 @@ async function navegador() {
     if (fallos === antes) console.log(`  ✓ ${j.nombre}: mismos resultados, ${Object.keys(j.esp).length} ejercicios abiertos, guía y novedades sin errores de consola`);
   }
   // Electrostática con la barra común «Mis ejercicios» (Web 1.20.1): migración de lo de antes, guardar, abrir, imprimir varios y que sea igual que la de otra herramienta
+  if (!solo && primera) { const antes = fallos; await require('./i18n.js')(browser, { mal }); if (fallos === antes) console.log('  ✓ Traducciones: sin textos sin traducir ni caducados, expresiones y etiquetas intactas, lo generado compila y sus enlaces existen, sin español visible'); }
   if (!solo && primera) { const antes = fallos; await require('./idiomas.js')(browser, { mal }); if (fallos === antes) console.log('  ✓ Selector de idioma: botón con globo y código, lista con banderas, enlaces a la misma página, hreflang, noindex y aviso'); }
   if (!((solo && solo !== 'electrostatica') || !primera)) { const antes = fallos; await require('./electrostatica-barra.js')(browser, { publico, path, mal }); if (fallos === antes) console.log('  ✓ Electrostática: usa la barra común (mismos botones y menús que Tiro parabólico), migra lo de antes, guarda, abre, imprime varios, enlaces y móvil'); }
   const medidos = {};

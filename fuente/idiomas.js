@@ -34,8 +34,8 @@ const bandera = (c, t) => `<svg class="lg-fl" viewBox="0 0 24 24" width="${t}" h
 
 // carpeta '' = raíz. num: decimal y miles (lo usará Num en la etapa de traducción). aviso: [frase, cambiar, quedarse]
 const IDIOMAS = [
-  { c: 'es', nombre: 'Español', carpeta: '', html: 'es', publicado: true, indexar: true, num: { dec: ',', miles: '' }, aviso: ['Esta página está disponible en español.', 'Cambiar a español', 'Seguir aquí'] },
-  { c: 'en', nombre: 'English', carpeta: 'en/', html: 'en', publicado: false, indexar: false, num: { dec: '.', miles: ',' }, aviso: ['This page is available in English.', 'Switch to English', 'Stay here'] },
+  { c: 'es', etiqueta: 'Idioma', nombre: 'Español', carpeta: '', html: 'es', publicado: true, indexar: true, num: { dec: ',', miles: '' }, aviso: ['Esta página está disponible en español.', 'Cambiar a español', 'Seguir aquí'] },
+  { c: 'en', etiqueta: 'Language', nombre: 'English', carpeta: 'en/', html: 'en', publicado: true, indexar: false, num: { dec: '.', miles: ',' }, aviso: ['This page is available in English.', 'Switch to English', 'Stay here'] },
   { c: 'de', nombre: 'Deutsch', carpeta: 'de/', html: 'de', publicado: false, indexar: false, num: { dec: ',', miles: '.' }, aviso: ['Diese Seite ist auf Deutsch verfügbar.', 'Auf Deutsch ansehen', 'Hier bleiben'] },
   { c: 'fr', nombre: 'Français', carpeta: 'fr/', html: 'fr', publicado: false, indexar: false, num: { dec: ',', miles: ' ' }, aviso: ['Cette page est disponible en français.', 'Passer en français', 'Rester ici'] },
   { c: 'pt', nombre: 'Português', carpeta: 'pt/', html: 'pt', publicado: false, indexar: false, num: { dec: ',', miles: '.' }, aviso: ['Esta página está disponível em português.', 'Mudar para português', 'Ficar aqui'] },
@@ -49,6 +49,22 @@ const globo = '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" strok
 
 // idiomas que salen en el selector (los publicados, o todos con IDIOMAS_TODOS=1 / todos = true)
 const activos = (todos = !!process.env.IDIOMAS_TODOS) => IDIOMAS.filter((i) => todos || i.publicado);
+
+// Páginas traducidas de un idioma ('asignatura/clave/'): las que tienen diccionario en fuente/i18n/<idioma>/<carpeta>.json.
+// El español las tiene todas. Un idioma solo aparece en el selector (y en hreflang) de las páginas que existen en él.
+const _paginas = {};
+function paginas(c) {
+  if (c === 'es') return null;
+  if (_paginas[c]) return _paginas[c];
+  const dir = require('path').join(__dirname, 'i18n', c), fs = require('fs'), set = new Set();
+  if (fs.existsSync(dir)) {
+    const Catalogo = require('./catalogo.js'), carpetas = fs.readdirSync(dir).filter((f) => f.endsWith('.json') && f[0] !== '_').map((f) => f.slice(0, -5).replace(/__/g, '/'));
+    for (const a of Catalogo.asignaturas) for (const h of a.herramientas) if (carpetas.includes(h.carpeta || h.clave)) set.add(`${a.clave}/${h.clave}/`);
+    for (const f of Catalogo.fenomenos.lista) if (carpetas.includes(`fenomenos/${f.clave}`)) set.add(`fenomenos/${f.clave}/`);
+  }
+  return (_paginas[c] = set);
+}
+const existe = (c, ruta, todos) => todos || c === 'es' || paginas(c).has(ruta);
 
 const CSS = (todos) => activos(todos).length < 2 ? '' : `
 .lg { position:relative; flex:0 0 auto }
@@ -71,6 +87,8 @@ const CSS = (todos) => activos(todos).length < 2 ? '' : `
 .lg-ban p { flex:1 1 220px; margin:0 }
 .lg-ban button { font:600 13px var(--f-ui, system-ui, sans-serif); padding:7px 14px; border-radius:99px; border:1px solid var(--vidrio-borde, var(--line)); background:var(--vidrio, var(--bg)); color:var(--ink); cursor:pointer }
 .lg-ban button.lg-si { background:var(--accent); border-color:var(--accent); color:#fff }
+:root[data-theme="dark"] .lg-ban button.lg-si { color:#0d141a }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lg-ban button.lg-si { color:#0d141a } }
 @media (max-width:700px) { .top > .lg { margin-left:auto } .top > .lg + .tema { margin-left:0 } }
 @media print { .lg, .lg-ban { display:none !important } }
 `;
@@ -106,23 +124,23 @@ const SCRIPT = (lista, actual, etiqueta) => `(() => {
 
 // Marca del botón + lista + script. Vacío si hay menos de dos idiomas publicados.
 // idioma: el de esta página; etiqueta: textos de la interfaz (en español hasta que haya diccionarios).
-function BOTON({ idioma = 'es', raiz = './', todos, etiqueta = 'Idioma' } = {}) {
-  const lista = activos(todos);
+function BOTON({ idioma = 'es', raiz = './', todos, ruta } = {}) {
+  const lista = ruta === undefined && !todos ? [] : activos(todos).filter((i) => existe(i.c, ruta, todos));
   if (lista.length < 2) return '';
-  const act = lista.find((i) => i.c === idioma) || lista[0];
+  const act = lista.find((i) => i.c === idioma) || lista[0], etiqueta = act.etiqueta;
   const filas = lista.map((i) => `<li><a href="${esc(raiz + i.carpeta)}" hreflang="${i.c}" lang="${i.html}"${i.c === act.c ? ' aria-current="true"' : ''}><span>${bandera(i.c, 22)}${esc(i.nombre)}</span><small>${i.c.toUpperCase()}</small></a></li>`).join('');
-  return `<div class="lg"><button class="lg-btn" type="button" aria-expanded="false" aria-controls="lg-lista" aria-label="${esc(etiqueta)}: ${esc(act.nombre)}" title="${esc(etiqueta)}">${globo}<span>${act.c.toUpperCase()}</span><span aria-hidden="true">▾</span></button>`
-    + `<ul class="lg-pop" id="lg-lista" hidden><li class="lg-t" aria-hidden="true">${esc(etiqueta)} · Language</li>${filas}</ul></div><script>${SCRIPT(lista, act.c, etiqueta)}</script>`;
+  return `<style>${CSS(true)}</style><div class="lg"><button class="lg-btn" type="button" aria-expanded="false" aria-controls="lg-lista" aria-label="${esc(etiqueta)}: ${esc(act.nombre)}" title="${esc(etiqueta)}">${globo}<span>${act.c.toUpperCase()}</span><span aria-hidden="true">▾</span></button>`
+    + `<ul class="lg-pop" id="lg-lista" hidden><li class="lg-t" aria-hidden="true">${act.c === 'es' ? 'Idioma · Language' : 'Language · Idioma'}</li>${filas}</ul></div><script>${SCRIPT(lista, act.c, etiqueta)}</script>`;
 }
 
 // ruta: ruta de la página en español sin barra inicial ('fisica/choques/'). Solo idiomas publicados e indexables.
 const url = (base, i, ruta) => `${base}/${i.carpeta}${ruta}`;
 function HREFLANG(ruta, base, todos) {
-  const l = activos(todos).filter((i) => i.indexar || todos);
+  const l = activos(todos).filter((i) => (i.indexar || todos) && existe(i.c, ruta, todos));
   if (l.length < 2) return '';
   return l.map((i) => `<link rel="alternate" hreflang="${i.html}" href="${url(base, i, ruta)}">`).join('\n') + `\n<link rel="alternate" hreflang="x-default" href="${url(base, IDIOMAS[0], ruta)}">`;
 }
 const ROBOTS = (idioma) => (IDIOMAS.find((i) => i.c === idioma) || IDIOMAS[0]).indexar ? '' : '<meta name="robots" content="noindex, follow">';
 const SITEMAP = (ruta, base, todos) => HREFLANG(ruta, base, todos).replace(/<link rel="alternate" hreflang="([^"]+)" href="([^"]+)">/g, '<xhtml:link rel="alternate" hreflang="$1" href="$2"/>');
 
-if (typeof module !== 'undefined') module.exports = { HREFLANG, ROBOTS, SITEMAP, IDIOMAS, BANDERAS, CLAVE, CSS, BOTON, SCRIPT, activos, bandera };
+if (typeof module !== 'undefined') module.exports = { paginas, existe, HREFLANG, ROBOTS, SITEMAP, IDIOMAS, BANDERAS, CLAVE, CSS, BOTON, SCRIPT, activos, bandera };

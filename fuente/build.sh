@@ -49,3 +49,6 @@ if [ "$1" = privado ]; then presets=../privado/tema3-pdf.js; out=${2:?falta el a
 
 # Las demás herramientas: una página cada una, con lo que dice catalogo.js (herramientas.js)
 if [ "$1" != privado ]; then node herramientas.js || exit 1; fi
+
+# Los idiomas traducidos (fuente/i18n/<idioma>/): publico/<idioma>/… a partir de las páginas en español ya generadas (i18n.js)
+if [ "$1" != privado ]; then node i18n.js todos || exit 1; fi

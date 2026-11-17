@@ -173,7 +173,7 @@ ${raiz === '' && Catalogo.google ? `<meta name="google-site-verification" conten
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
 ${Pwa.CABEZA(raiz)}
 ${Anuncios.cabeza()}<script>${Tema.SCRIPT}</script>
-<style>${CSS}${Tema.CSS}${Idiomas.CSS()}${pwa ? Pwa.CSS : ''}</style>
+<style>${CSS}${Tema.CSS}${pwa ? Pwa.CSS : ''}</style>
 </head>
 <body>
 <header class="top"><a class="logo" href="${raiz}">${esc(m1)}<i>${esc(m2)}</i></a>
@@ -462,7 +462,7 @@ fs.writeFileSync(vercel, JSON.stringify(conf, null, 2) + '\n');
 // fenómenos las escribe herramientas.js, y Electrostática build.sh, con la misma etiqueta.
 const enlaces = ['', 'novedades/', ...Catalogo.asignaturas.flatMap((a) => [`${a.clave}/`, ...disponibles(a).map((h) => `${a.clave}/${h.clave}/`)]),
   'fenomenos/', ...V.lista.filter((f) => f.disponible).map((f) => `fenomenos/${f.clave}/`), 'aviso-legal.html', 'privacidad.html', 'cookies.html', 'contacto.html'];
-archivos['sitemap.xml'] = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"${Idiomas.activos().length > 1 ? ' xmlns:xhtml="http://www.w3.org/1999/xhtml"' : ''}>\n${enlaces.map((e) => `  <url><loc>${Catalogo.web}/${e}</loc>${Idiomas.SITEMAP(e, Catalogo.web) ? '\n    ' + Idiomas.SITEMAP(e, Catalogo.web).split('\n').join('\n    ') : ''}</url>`).join('\n')}\n</urlset>\n`;
+archivos['sitemap.xml'] = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"${enlaces.some((e) => Idiomas.SITEMAP(e, Catalogo.web)) ? ' xmlns:xhtml="http://www.w3.org/1999/xhtml"' : ''}>\n${enlaces.map((e) => `  <url><loc>${Catalogo.web}/${e}</loc>${Idiomas.SITEMAP(e, Catalogo.web) ? '\n    ' + Idiomas.SITEMAP(e, Catalogo.web).split('\n').join('\n    ') : ''}</url>`).join('\n')}\n</urlset>\n`;
 archivos['robots.txt'] = `User-agent: *\nAllow: /\n\nSitemap: ${Catalogo.web}/sitemap.xml\n`;
 const canonica = (f) => `${Catalogo.web}/${f.replace(/index\.html$/, '')}`;
 for (const f of Object.keys(archivos)) if (f.endsWith('.html') && !archivos[f].includes('rel="canonical"'))
