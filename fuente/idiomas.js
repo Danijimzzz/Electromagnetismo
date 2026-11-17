@@ -61,10 +61,26 @@ function paginas(c) {
     const Catalogo = require('./catalogo.js'), carpetas = fs.readdirSync(dir).filter((f) => f.endsWith('.json') && f[0] !== '_').map((f) => f.slice(0, -5).replace(/__/g, '/'));
     for (const a of Catalogo.asignaturas) for (const h of a.herramientas) if (carpetas.includes(h.carpeta || h.clave)) set.add(`${a.clave}/${h.clave}/`);
     for (const f of Catalogo.fenomenos.lista) if (carpetas.includes(`fenomenos/${f.clave}`)) set.add(`fenomenos/${f.clave}/`);
+    for (const g of generales()) if (fs.existsSync(require('path').join(dir, g.dic + '.json'))) set.add(g.ruta);
   }
   return (_paginas[c] = set);
 }
 const existe = (c, ruta, todos) => todos || c === 'es' || paginas(c).has(ruta);
+
+// Páginas generales (no son herramientas): ruta (desde la raíz, '' = portada), archivo generado en español y diccionario
+// fuente/i18n/<idioma>/<dic>.json (con _g- delante: no se confunden con los de herramientas). Existen en un idioma si tienen diccionario.
+function generales() {
+  const Catalogo = require('./catalogo.js');
+  return [
+    { ruta: '', archivo: 'index.html', dic: '_g-portada' },
+    ...Catalogo.asignaturas.map((a) => ({ ruta: `${a.clave}/`, archivo: `${a.clave}/index.html`, dic: '_g-asignaturas' })),
+    { ruta: 'novedades/', archivo: 'novedades/index.html', dic: '_g-novedades' },
+    { ruta: 'foro/', archivo: 'foro/index.html', dic: '_g-foro' },
+    { ruta: 'fenomenos/', archivo: 'fenomenos/index.html', dic: '_g-fenomenos' },
+    ...['aviso-legal', 'privacidad', 'cookies', 'contacto'].map((f) => ({ ruta: `${f}.html`, archivo: `${f}.html`, dic: '_g-legal' })),
+    { ruta: 'offline.html', archivo: 'offline.html', dic: '_g-offline', sinSelector: true }
+  ];
+}
 
 const CSS = (todos) => activos(todos).length < 2 ? '' : `
 .lg { position:relative; flex:0 0 auto }
@@ -143,4 +159,4 @@ function HREFLANG(ruta, base, todos) {
 const ROBOTS = (idioma) => (IDIOMAS.find((i) => i.c === idioma) || IDIOMAS[0]).indexar ? '' : '<meta name="robots" content="noindex, follow">';
 const SITEMAP = (ruta, base, todos) => HREFLANG(ruta, base, todos).replace(/<link rel="alternate" hreflang="([^"]+)" href="([^"]+)">/g, '<xhtml:link rel="alternate" hreflang="$1" href="$2"/>');
 
-if (typeof module !== 'undefined') module.exports = { paginas, existe, HREFLANG, ROBOTS, SITEMAP, IDIOMAS, BANDERAS, CLAVE, CSS, BOTON, SCRIPT, activos, bandera };
+if (typeof module !== 'undefined') module.exports = { paginas, existe, generales, HREFLANG, ROBOTS, SITEMAP, IDIOMAS, BANDERAS, CLAVE, CSS, BOTON, SCRIPT, activos, bandera };

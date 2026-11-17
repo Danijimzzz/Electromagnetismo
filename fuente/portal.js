@@ -179,7 +179,7 @@ ${Anuncios.cabeza()}<script>${Tema.SCRIPT}</script>
 <header class="top"><a class="logo" href="${raiz}">${esc(m1)}<i>${esc(m2)}</i></a>
 <nav aria-label="Asignaturas"><a href="${raiz}"${actual ? '' : ' aria-current="page"'}>Inicio</a>${nav}</nav>
 <a class="foro" href="${raiz}foro/"${actual === 'foro' ? ' aria-current="page"' : ''}><span aria-hidden="true">💬</span>Foro</a>
-${buscar ? '<input type="search" id="buscar" class="buscar" placeholder="Buscar: Biot-Savart, molaridad…" aria-label="Buscar herramientas (atajo: barra /)" title="Atajo: / o Ctrl+K" autocomplete="off">' : ''}${Idiomas.BOTON({ raiz })}${Tema.BOTON}</header>
+${buscar ? '<input type="search" id="buscar" class="buscar" placeholder="Buscar: Biot-Savart, molaridad…" aria-label="Buscar herramientas (atajo: barra /)" title="Atajo: / o Ctrl+K" autocomplete="off">' : ''}<!--LG-->${Tema.BOTON}</header>
 ${cuerpo}
 ${CON_ANUNCIO.includes(actual) && Anuncios.hueco() ? `<div role="region" aria-label="Publicidad">${Anuncios.hueco()}</div>` : ''}${Anuncios.pie(`<footer><a href="${raiz}contacto.html">Contacto</a>·<a href="${raiz}aviso-legal.html">Aviso legal</a>·<a href="${raiz}privacidad.html">Privacidad</a>·<a href="${raiz}cookies.html">Cookies</a>· <a href="${raiz}novedades/">Versión ${esc(Version.de('web').current)}</a></footer>`)}
 ${Buscador.ETIQUETA(raiz)}\n${Llama.ETIQUETA(raiz)}\n${script ? `<script>${script}</script>\n` : ''}</body>
@@ -468,6 +468,9 @@ const canonica = (f) => `${Catalogo.web}/${f.replace(/index\.html$/, '')}`;
 for (const f of Object.keys(archivos)) if (f.endsWith('.html') && !archivos[f].includes('rel="canonical"'))
   archivos[f] = archivos[f].replace('<meta charset="utf-8">', `<meta charset="utf-8">\n<link rel="canonical" href="${canonica(f)}">${Idiomas.HREFLANG(f.replace(/index\.html$/, ''), Catalogo.web) ? '\n' + Idiomas.HREFLANG(f.replace(/index\.html$/, ''), Catalogo.web) : ''}`);
 
+// selector de idioma de las páginas del portal: cada una enlaza con su versión en los idiomas que la tienen
+for (const f of Object.keys(archivos)) if (archivos[f].includes('<!--LG-->'))
+  archivos[f] = archivos[f].replace('<!--LG-->', Idiomas.BOTON({ raiz: '../'.repeat(f.split('/').length - 1) || './', ruta: f.replace(/index\.html$/, '') }));
 archivos['buscador.js'] = Buscador.archivo();
 // web instalable y sin conexión (pwa.js): manifiesto, service worker, su registro, la página sin conexión y los iconos
 archivos._headers = '/sw.js\n  Cache-Control: no-cache\n/manifest.webmanifest\n  Cache-Control: no-cache\n/js/*\n  Cache-Control: public, max-age=31536000, immutable\n'; // Cloudflare (Vercel: vercel.json)

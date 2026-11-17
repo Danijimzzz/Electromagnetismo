@@ -16,9 +16,11 @@ const I18n = require('../fuente/i18n.js'), Idiomas = require('../fuente/idiomas.
 const expresiones = (t) => { const m = []; const re = /\$\{/g; let q; while ((q = re.exec(t))) { let prof = 1, j = q.index + 2; while (j < t.length && prof) { if (t[j] === '{') prof++; else if (t[j] === '}') prof--; j++; } m.push(t.slice(q.index, j)); re.lastIndex = j; } return m; };
 // esqueleto de una expresión: sin el texto de sus cadenas (que sí se traduce), con las expresiones anidadas
 const esqueleto = (x) => x.replace(/`([^`]*)`/g, (m, c) => '`' + (c.match(/\$\{[^}]*\}/g) || []).join('') + '`').replace(/'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"/g, "''");
-const etiquetas = (t) => (t.match(/<\/?[a-zA-Z][^>]*>/g) || []).map((x) => x.replace(/\s+/g, ' ').replace(/\s*\/?>$/, '>')).sort().join('|');
+const etiquetas = (t) => (t.match(/<\/?[a-zA-Z][^>]*>/g) || []).map((x) => x.replace(/\s(?:title|aria-label|placeholder|alt|data-buscar)="[^"]*"/g, '').replace(/([?&]hl=)\w+/g, '$1').replace(/\s+/g, ' ').replace(/\s*\/?>$/, '>')).sort().join('|'); // los textos de esos atributos se traducen
 const formulas = (t) => (t.replace(/\$\{[^}]*\}/g, '').match(/\$[^$]+\$/g) || []).length;
 // Español visible: letras con tilde o palabras muy españolas (en un texto en inglés no deberían salir)
+// En las páginas generales salen nombres propios con tilde (Rouché, Scheffé, García…): se quitan y se mira solo lo claramente español
+const NOMBRES = /Rouché|Scheffé|Thévenin|Ampère|García|Jiménez|Poincaré|Fresnel|Kutta/g, ESPANOL_G = /[¿¡ñáíóú]|\b(los|las|una|del|desde|sobre|cuando|más)\b/i;
 const ESPANOL = /[áéíóúñ¿¡]|\b(el|los|las|una|del|para|con|que|por|desde|sobre|cuando|como|más)\b/i;
 
 function nodo(mal) {
@@ -94,6 +96,26 @@ async function navegador(browser, { mal }) {
           await p.waitForTimeout(400);
           const campo = await p.inputValue('#f-e').catch(() => '');
           e(`${n}: el ejemplo con e = 0.5 escribe el decimal con punto en el campo (sale «${campo}»)`, I.num.dec === '.' ? campo.includes('.') || campo === '0.5' : campo.includes(','));
+        }
+        e(`${n}: errores en la consola o recursos que faltan: ${errores.join(' | ').slice(0, 200)}`, errores.length === 0);
+        await ctx.close();
+      }
+    }
+    // páginas generales (portada, asignaturas, novedades, foro, fenómenos, legales, sin conexión): abren sin errores y sin español visible
+    for (const I of Idiomas.IDIOMAS.filter((x) => x.c !== 'es')) {
+      for (const g of Idiomas.generales().filter((x) => fs.existsSync(path.join(I18n.DIR, I.c, x.dic + '.json')))) {
+        const n = `${I.c}/${g.ruta || 'portada'}`, ctx = await browser.newContext({ viewport: { width: 1280, height: 900 }, locale: I.c });
+        const p = await ctx.newPage(), errores = [];
+        await ctx.route(/googlesyndication|googletagmanager|google-analytics|workers\.dev|fonts\.g/, (r) => r.abort());
+        p.on('pageerror', (er) => errores.push(er.message)); p.on('response', (r) => { if (r.status() >= 400) errores.push(`${r.status()} ${r.url()}`); });
+        await p.goto(`${base}/${I.c}/${g.ruta}`); await p.waitForTimeout(500);
+        const t = await p.evaluate(() => [...document.querySelectorAll('body *')].filter((x) => !x.closest('.lg-pop, script, style, template, [hidden]') && x.offsetParent !== null).flatMap((x) => [...x.childNodes].filter((c) => c.nodeType === 3).map((c) => c.textContent.trim())).filter(Boolean));
+        // los nombres propios en español de las herramientas (p. ej. «Electrostática») sí pueden quedar en lo que aún no traduce otro hilo: solo se mira el texto de la propia página general
+        const mal2 = t.filter((l) => ESPANOL_G.test(l.replace(NOMBRES, ''))); e(`${n}: español visible: ${mal2.slice(0, 3).join(' | ').slice(0, 160)}`, mal2.length === 0);
+        if (g.ruta === '') { // buscador: se abre con «/» y no muestra español; Tu espacio con datos
+          await p.keyboard.press('Escape'); await p.evaluate(() => { localStorage.setItem('simu-favoritos', JSON.stringify(['fisica/choques'])); localStorage.setItem('simu-recientes', JSON.stringify([{ r: 'fisica/choques', t: Date.now() - 600000 }])); }); await p.reload(); await p.waitForTimeout(400);
+          const espacio = await p.evaluate(() => document.getElementById('tu-espacio')?.innerText || '');
+          e(`${n}: «Tu espacio» en el idioma (sale «${espacio.replace(/\s+/g, ' ').slice(0, 120)}»)`, /Your space/.test(espacio) && !ESPANOL.test(espacio));
         }
         e(`${n}: errores en la consola o recursos que faltan: ${errores.join(' | ').slice(0, 200)}`, errores.length === 0);
         await ctx.close();

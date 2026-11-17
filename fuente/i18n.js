@@ -75,7 +75,7 @@ const BLOQUE = new Set('address article aside blockquote body button caption dd 
 const ATRIBUTOS = ['title', 'aria-label', 'placeholder', 'alt', 'aria-description'];
 
 // Recorre el HTML y devuelve las unidades [{ ini, fin, texto, clase }] (clase 'html' o 'attr'), sin entrar en <script> ni <style>.
-function unidadesHTML(html) {
+function unidadesHTML(html, fino) {
   const out = []; const re = /<!--[\s\S]*?-->|<![^>]*>|<(script|style)\b[\s\S]*?<\/\1>|<\/?([A-Za-z][\w:-]*)((?:\s+[^\s=>\/]+(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+))?)*)\s*\/?>|[^<]+|</g;
   let m, ini = -1, fin = -1;
   const cierra = () => { if (ini >= 0) { const t = html.slice(ini, fin); if (/[A-Za-zÁÉÍÓÚáéíóúñÑ]{2}/.test(t.replace(/<[^>]*>/g, '').replace(/\$[^$]*\$/g, ''))) { const l = t.length - t.trimStart().length; out.push({ ini: ini + l, fin: ini + l + t.trim().length, texto: t.trim(), clase: 'html' }); } } ini = fin = -1; };
@@ -104,6 +104,8 @@ function unidadesHTML(html) {
           if ((ATRIBUTOS.includes(nom) || esMeta) && /[A-Za-zÁÉÍÓÚáéíóúñÑ]{2}/.test(val)) out.push({ ini: base + a.index + a[0].indexOf(a[2]) + 1, fin: base + a.index + a[0].indexOf(a[2]) + 1 + val.length, texto: val, clase: 'attr' });
         }
       }
+      // fino (páginas generales): una fila de enlaces seguidos (menús, listas de tarjetas) se parte en un texto por enlace
+      if (fino && nombre === 'a' && !esCierre && ini >= 0 && !/[A-Za-zÁÉÍÓÚáéíóúñÑ]{2}/.test(html.slice(ini, fin).replace(/<a\b[^>]*>[\s\S]*?<\/a>/g, '').replace(/<[^>]*>/g, ''))) cierra();
       if (BLOQUE.has(nombre)) { cierra(); if (nombre === 'pre') pre += esCierre ? -1 : 1; }
       else if (ini >= 0 || (!esCierre && !/^\/?(?:svg|path|g|circle|rect|line|polyline|polygon|defs)$/.test(nombre))) { if (ini < 0) ini = m.index; fin = m.index + t.length; }
       continue;
@@ -114,6 +116,12 @@ function unidadesHTML(html) {
     // las etiquetas en línea quedan dentro: el trozo continúa; se amplía en el siguiente texto (ver abajo)
   }
   cierra();
+  if (fino) { // páginas generales: manda el texto más externo (un enlace con title o aria-label dentro cuenta como una sola unidad)
+    out.sort((a, b) => a.ini - b.ini || b.fin - a.fin);
+    const res = []; let fin = -1;
+    for (const u of out) { if (u.ini < fin && u.fin <= fin) continue; res.push(u); fin = Math.max(fin, u.fin); }
+    return res;
+  }
   return out;
 }
 
@@ -174,9 +182,9 @@ function aplica(src, eds, dics, faltan, usadas) {
   return out + src.slice(pos);
 }
 const traduceJS = (src, dics, faltan, usadas) => aplica(src, edicionesJS(src), dics, faltan, usadas);
-const traduceHTML = (html, dics, faltan, usadas) => aplica(html, unidadesHTML(html).map((u) => ({ ...u, tipo: u.clase === 'json' ? 'json' : '' })), dics, faltan, usadas);
+const traduceHTML = (html, dics, faltan, usadas, fino) => aplica(html, unidadesHTML(html, fino).map((u) => ({ ...u, tipo: u.clase === 'json' ? 'json' : '' })), dics, faltan, usadas);
 const sinSelector = (html) => html.replace(/<style>[^<]*<\/style><div class="lg">[\s\S]*?<\/script>/, '');
-const candidatosHTML = (html) => [...new Set(unidadesHTML(sinSelector(html)).map((u) => u.texto))];
+const candidatosHTML = (html, fino) => [...new Set(unidadesHTML(sinSelector(html), fino).map((u) => u.texto))];
 const candidatosJS = (src) => [...new Set(edicionesJS(src).filter((u) => !u.opt).map((u) => u.texto))];
 
 /* ---------- Generar publico/<idioma>/ ---------- */
@@ -235,7 +243,7 @@ function generarPagina(h, idioma, existentes, faltan, usadas) {
     const abs = path.posix.normalize(path.posix.join(ruta, u)); // ruta absoluta sin barra inicial, desde la raíz del sitio
     const dest = abs === '.' ? '' : abs;
     const sitio = dest.replace(/\/$/, '');
-    const enIdioma = a === 'href' && (dest === '' || existentes.has(sitio + '/') || /^(?:[^/]+\/)?$/.test(dest) && false);
+    const enIdioma = existentes.has(dest) || (a === 'href' && (dest === '' || existentes.has(sitio + '/')));
     return `${a}="${enIdioma ? rel(aqui, `${idioma}/${dest}`) : rel(aqui, dest)}${hash}"`;
   });
   // 5. selector de idioma apuntando a esta página (idiomas publicados que la tienen)
@@ -245,11 +253,16 @@ function generarPagina(h, idioma, existentes, faltan, usadas) {
   return out;
 }
 
+// páginas generales y archivos comunes del portal (fuente/i18n-general.js)
+const general = () => require('./i18n-general.js')({ fs, path, publico, Idiomas, Catalogo, traduceJS, traduceHTML, numeros, leeDic, dicComun, DIR, candidatosHTML, candidatosJS });
+
 function generar(idioma) {
   const paginas = paginasTraducidas(idioma), faltan = new Set(), usadas = new Set();
   fs.rmSync(path.join(publico, idioma), { recursive: true, force: true }); fs.rmSync(path.join(publico, 'js', idioma), { recursive: true, force: true });
-  const existentes = new Set(paginas.map((h) => `${h.asignatura}/${h.clave}/`));
+  const G = general(), existentes = new Set([...paginas.map((h) => `${h.asignatura}/${h.clave}/`), '', ...G.rutasGenerales(idioma)]);
   for (const h of paginas) generarPagina(h, idioma, existentes, faltan, usadas);
+  for (const g of G.generalesDe(idioma)) G.generarGeneral(g, idioma, existentes, faltan, usadas); // portada, asignaturas, novedades, legales…
+  for (const r of G.recursosDe(idioma)) G.generarRecurso(r, idioma, faltan, usadas); // buscador.js, llama.js, pwa.js y manifest
   return { paginas: paginas.length, faltan: [...faltan], usadas };
 }
 
@@ -257,7 +270,8 @@ if (typeof module !== 'undefined') module.exports = { generar, generarPagina, pa
 
 if (require.main === module) {
   const [, , cmd, idioma, carpeta] = process.argv;
-  if (cmd === 'todos') { for (const c of fs.existsSync(DIR) ? fs.readdirSync(DIR).filter((f) => fs.statSync(path.join(DIR, f)).isDirectory()) : []) { const r = generar(c); console.log(`i18n ${c}: ${r.paginas} páginas${r.faltan.length ? `, ${r.faltan.length} textos sin traducir` : ''}`); } }
+  if (cmd === 'todos') { for (const c of fs.existsSync(DIR) ? fs.readdirSync(DIR).filter((f) => fs.statSync(path.join(DIR, f)).isDirectory()) : []) { const r = generar(c); console.log(`i18n ${c}: ${r.paginas} páginas${r.faltan.length ? `, ${r.faltan.length} textos sin traducir` : ''}`); }
+    fs.writeFileSync(path.join(publico, 'sw.js'), require('./pwa.js').sw()); } // el service worker lleva también las páginas traducidas (ya generadas)
   else if (cmd === 'generar') { const r = generar(idioma || 'en'); console.log(`i18n ${idioma || 'en'}: ${r.paginas} páginas${r.faltan.length ? `, ${r.faltan.length} textos sin traducir` : ''}`); }
   else if (cmd === 'reusar') {
     // reusar <idioma> [carpeta|todas]: rellena los "" con la traducción que ya tiene la misma clave en otro diccionario del idioma
@@ -277,7 +291,8 @@ if (require.main === module) {
     // textos de una herramienta (o 'comun') que faltan en su diccionario
     const { lista, ficherosDe, script } = Herramientas;
     let textos = [];
-    if (carpeta === '_comun') {
+    if (/^_g-/.test(carpeta)) textos = general().candidatos(carpeta).filter((t) => busca([dicComun(idioma)], t) === undefined);
+    else if (carpeta === '_comun') {
       const h0 = lista().find((h) => h.carpeta === 'choques');
       const h1 = lista().find((h) => h.carpeta !== 'choques' && h.asignatura === 'fisica');
       const leer = (h) => candidatosHTML(fs.readFileSync(path.join(publico, h.asignatura, h.clave, 'index.html'), 'utf8'));
