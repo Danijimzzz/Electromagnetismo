@@ -13,20 +13,16 @@ const fs = require('fs'), path = require('path'), http = require('http'), vm = r
 const publico = path.join(__dirname, '..', 'publico');
 const I18n = require('../fuente/i18n.js'), Idiomas = require('../fuente/idiomas.js');
 
-const expresiones = (t) => { const m = []; const re = /\$\{/g; let q; while ((q = re.exec(t))) { let prof = 1, j = q.index + 2; while (j < t.length && prof) { if (t[j] === '{') prof++; else if (t[j] === '}') prof--; j++; } m.push(t.slice(q.index, j)); re.lastIndex = j; } return m; };
-// esqueleto de una expresión: sin el texto de sus cadenas (que sí se traduce), con las expresiones anidadas
-const esqueleto = (x) => { // recorre la expresión: descarta el texto de las cadenas y de las plantillas, conserva el código y las ${…} anidadas
-  let i = 0;
-  const codigo = (fin) => { let o = ''; while (i < x.length) { const c = x[i]; if (fin && c === '}') return o; if (c === "'" || c === '"') { i++; while (i < x.length && x[i] !== c) i += x[i] === '\\' ? 2 : 1; i++; o += "''"; } else if (c === '`') { i++; o += plantilla(); } else { o += c; i++; } } return o; };
-  const plantilla = () => { let o = '`'; while (i < x.length && x[i] !== '`') { if (x[i] === '\\') i += 2; else if (x[i] === '$' && x[i + 1] === '{') { i += 2; o += '${' + codigo(true) + '}'; i++; } else i++; } i++; return o + '`'; };
-  return codigo(false);
-};
-
+// Fin de una expresión ${…} que empieza en i (en el «$»): cuenta llaves sin dejarse engañar por las que van dentro de cadenas y plantillas.
+const finExpr = (t, i) => { let prof = 1, j = i + 2; while (j < t.length && prof) { const c = t[j]; if (c === "'" || c === '"') { j++; while (j < t.length && t[j] !== c) { if (t[j] === '\\') j++; j++; } } else if (c === '`') { j = finPlantilla(t, j); continue; } else if (c === '{') prof++; else if (c === '}') prof--; j++; } return j; };
+const finPlantilla = (t, j) => { j++; while (j < t.length && t[j] !== '`') { if (t[j] === '\\') { j += 2; continue; } if (t[j] === '$' && t[j + 1] === '{') { j = finExpr(t, j); continue; } j++; } return j + 1; };
+const expresiones = (t) => { const m = []; const re = /\$\{/g; let q; while ((q = re.exec(t))) { const j = finExpr(t, q.index); m.push(t.slice(q.index, j)); re.lastIndex = j; } return m; };
+// esqueleto de una expresión: sin el texto de sus cadenas y plantillas (que sí se traduce), con las expresiones anidadas
+const esqueleto = (x) => { let i = 0; const cod = (fin) => { let o = '', prof = 0; while (i < x.length) { const c = x[i]; if (c === "'" || c === '"') { i++; while (i < x.length && x[i] !== c) { if (x[i] === '\\') i++; i++; } i++; o += "''"; } else if (c === '`') { i++; let t = ''; while (i < x.length && x[i] !== '`') { if (x[i] === '\\') { i += 2; continue; } if (x[i] === '$' && x[i + 1] === '{') { i += 2; t += '${' + cod(true) + '}'; i++; } else i++; } i++; o += '`' + t + '`'; } else if (c === '{') { prof++; o += c; i++; } else if (c === '}') { if (fin && !prof) return o; prof--; o += c; i++; } else { o += c; i++; } } return o; }; return cod(false); };
 const etiquetas = (t) => (t.match(/<\/?[a-zA-Z][^>]*>/g) || []).map((x) => x.replace(/\s(?:title|aria-label|placeholder|alt|data-buscar)="[^"]*"/g, '').replace(/([?&]hl=)\w+/g, '$1').replace(/\s+/g, ' ').replace(/\s*\/?>$/, '>')).sort().join('|'); // los textos de esos atributos se traducen
 const formulas = (t) => (t.replace(/\$\{[^}]*\}/g, '').match(/\$[^$]+\$/g) || []).length;
 // Español visible: letras con tilde o palabras muy españolas (en un texto en inglés no deberían salir)
-// En las páginas generales salen nombres propios con tilde (Rouché, Scheffé, García…): se quitan y se mira solo lo claramente español
-const NOMBRES = /Rouché|Scheffé|Thévenin|Ampère|García|Jiménez|Poincaré|Fresnel|Kutta/g, ESPANOL_G = /[¿¡ñáíóú]|\b(los|las|una|del|desde|sobre|cuando|más)\b/i;
+// Nombres propios con tilde que no son español (Thévenin, Scheffé…)
 const ESPANOL = /[áéíóúñ¿¡]|\b(el|los|las|una|del|para|con|que|por|desde|sobre|cuando|como|más)\b/i;
 
 function nodo(mal) {
@@ -87,7 +83,7 @@ async function navegador(browser, { mal }) {
         await ctx.route(/googlesyndication|googletagmanager|google-analytics|workers\.dev/, (r) => r.abort());
         p.on('pageerror', (er) => errores.push(er.message)); p.on('response', (r) => { if (r.status() >= 400) errores.push(`${r.status()} ${r.url()}`); });
         await p.goto(`${base}/${I.c}/${h.asignatura}/${h.clave}/`); await p.waitForTimeout(600);
-        const espanol = async (donde) => { const t = await p.evaluate(() => [...document.querySelectorAll('body *')].filter((x) => !x.closest('.lg-pop, script, style, template, [hidden]') && x.offsetParent !== null).flatMap((x) => [...x.childNodes].filter((c) => c.nodeType === 3).map((c) => c.textContent.trim())).filter(Boolean)); const mal2 = t.filter((l) => ESPANOL.test(l)); e(`${n}: español visible ${donde}: ${mal2.slice(0, 3).join(' | ').slice(0, 160)}`, mal2.length === 0); };
+        const espanol = async (donde) => { const t = await p.evaluate(() => [...document.querySelectorAll('body *')].filter((x) => !x.closest('.lg-pop, script, style, template, [hidden]') && x.offsetParent !== null).flatMap((x) => [...x.childNodes].filter((c) => c.nodeType === 3).map((c) => c.textContent.trim())).filter(Boolean)); const mal2 = t.filter((l) => ESPANOL.test(l.replace(NOMBRES, ""))); e(`${n}: español visible ${donde}: ${mal2.slice(0, 3).join(' | ').slice(0, 160)}`, mal2.length === 0); };
         await espanol('al abrir');
         // la barra Mis ejercicios: pestaña Ejemplos y menú ⋮
         await p.evaluate(() => document.querySelector('.bib-btn')?.click()); await p.waitForTimeout(300);

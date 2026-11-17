@@ -182,7 +182,7 @@ function aplica(src, eds, dics, faltan, usadas) {
   return out + src.slice(pos);
 }
 const traduceJS = (src, dics, faltan, usadas) => aplica(src, edicionesJS(src), dics, faltan, usadas);
-const traduceHTML = (html, dics, faltan, usadas, fino) => aplica(html, unidadesHTML(html, fino).map((u) => ({ ...u, tipo: u.clase === 'json' ? 'json' : '' })), dics, faltan, usadas);
+const traduceHTML = (html, dics, faltan, usadas, fino) => aplica(html, unidadesHTML(html, fino).sort((a, b) => a.ini - b.ini).map((u) => ({ ...u, tipo: u.clase === 'json' ? 'json' : '' })), dics, faltan, usadas);
 const sinSelector = (html) => html.replace(/<style>[^<]*<\/style><div class="lg">[\s\S]*?<\/script>/, '');
 const candidatosHTML = (html, fino) => [...new Set(unidadesHTML(sinSelector(html), fino).filter((u) => !u.opt).map((u) => u.texto))];
 const candidatosJS = (src) => [...new Set(edicionesJS(src).filter((u) => !u.opt).map((u) => u.texto))];
