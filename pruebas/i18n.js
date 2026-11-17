@@ -25,6 +25,8 @@ const formulas = (t) => (t.replace(/\$\{[^}]*\}/g, '').match(/\$[^$]+\$/g) || []
 // Nombres propios con tilde que no son español (Thévenin, Scheffé…)
 // nombres propios y palabras extranjeras con tilde (André, Józef, élektron…) no cuentan como español
 const sinNombres = (l) => l.replace(/\p{Lu}[\p{L}'-]*/gu, (w) => (/[áéíóúñ]/i.test(w) ? ' ' : w)).replace(/élektron|El Alamein|olla exprés/g, ' ');
+// Nombres propios con tilde que no son español (Thévenin, Scheffé…); en las páginas generales también García, Jiménez…
+const NOMBRES = /Th[ée]venin|Scheff[ée]|Cram[ée]r|Kolmog[oó]rov|Fr[ée]chet|Poincar[ée]|Gram-Schmidt|Rouché|Ampère|García|Jiménez|Fresnel|Kutta/g, ESPANOL_G = /[¿¡ñáíóú]|\b(los|las|una|del|desde|sobre|cuando|más)\b/i;
 const ESPANOL = /[áéíóúñ¿¡]|\b(el|los|las|una|del|para|con|que|por|desde|sobre|cuando|como|más)\b/i;
 
 function nodo(mal) {
