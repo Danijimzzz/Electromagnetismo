@@ -1,7 +1,11 @@
 /* =====================================================================
-   Interfaz: barra lateral (biblioteca, buscador, carpetas), editor del
-   problema, resultados, modo práctica, exportar, deshacer/rehacer,
-   colocar con clic, gráficas y archivos .emsim.json.
+   Interfaz: editor del problema, resultados, modo práctica, exportar,
+   deshacer/rehacer, colocar con clic y gráficas. «Mis ejercicios» es la barra
+   común de todas las herramientas (biblioteca.js; desde la 1.20.1 Electrostática
+   ya no tiene la suya): su estado va entero en localStorage['electrostatica-v1'] como
+   {title, statement, scene} y los ejemplos son un <select id="ejemplos"> oculto con los
+   problemas de presets.js. La versión privada (artifact, sin biblioteca.js) solo lleva
+   una lista de esos ejemplos.
    ===================================================================== */
 (() => {
   const { SOURCES, ANALYSES, CONDS } = Physics;
@@ -19,7 +23,8 @@
     for (const c of kids.flat()) if (c != null) el.append(c.nodeType ? c : document.createTextNode(c));
     return el;
   };
-  const K_LIB = 'electro-sim-lib-v2', K_CUR = 'electro-sim-cur-v2', K_UI = 'electro-sim-ui-v2';
+  const CLAVE = 'electrostatica-v1', K_CUR = 'electro-sim-cur-v2', K_UI = 'electro-sim-ui-v2';
+  const WEB = typeof Biblioteca !== 'undefined'; // en la versión privada no hay biblioteca.js
   const FORMAT = 'simulador-electrostatica';
   let uid = 0;
   const newId = () => 'u' + Date.now().toString(36) + (uid++).toString(36);
@@ -33,9 +38,8 @@
   const arrows = (s) => String(s).replace(/(.)⃗/g, '<span class="vv">$1</span>');
 
   /* ---------------- estado ---------------- */
-  let lib = store.get(K_LIB, { items: [] });
   let ui = { side: true, presetsOpen: true, folders: {}, practice: false, ...store.get(K_UI, {}) };
-  let cur = null; // { ref: {kind: 'preset'|'lib', id}, title, statement, folder, tags, scene }
+  let cur = null; // { key (ejemplo de presets.js que se está viendo, si no se ha tocado), title, statement, note, scene, base }
   let scen = null; // atajo a cur.scene
   let out = null;
   let query = '';
@@ -58,50 +62,38 @@
     return sc;
   }
 
-  function openRef(ref, { focus = null } = {}) {
+  const estadoCur = () => ({ title: cur.title, statement: cur.statement, scene: scen });
+  const firma = () => cur.title + '\n' + cur.statement + '\n' + JSON.stringify(scen);
+  const guardaCur = () => store.set(CLAVE, estadoCur());
+  let ejSel = null; // <select id="ejemplos"> oculto: los ejemplos de la barra «Mis ejercicios»
+  function ponCur(o, key = null) {
     cancelPlace();
-    if (ref.kind === 'preset') {
-      const p = Presets.list.find((x) => x.key === ref.id);
-      if (!p) return openRef({ kind: 'preset', id: Presets.list[0].key });
-      cur = { ref, title: p.title, statement: p.statement || '', note: p.note || '', scene: validScene(p.make()) };
-    } else {
-      const it = lib.items.find((x) => x.id === ref.id);
-      if (!it) return openRef({ kind: 'preset', id: Presets.list[0].key });
-      cur = { ref, title: it.title, statement: it.statement || '', folder: it.folder || '', tags: it.tags || [], note: '', scene: validScene(clone(it.scene)) };
-    }
-    scen = cur.scene;
-    store.set(K_CUR, cur);
+    cur = { key, title: o.title || 'Problema sin título', statement: o.statement || '', note: o.note || '', scene: validScene(o.scene) };
+    scen = cur.scene; cur.base = firma();
+    guardaCur();
     resetHistory();
     Canvas.clearProbes();
-    if (isMobile()) setSide(false);
+    if (!WEB && isMobile()) setSide(false);
     Canvas.fit();
+    if (ejSel) ejSel.value = key || '';
     renderSidebar();
     renderAll();
-    if (focus) { const t = $(focus); t.focus(); t.select?.(); }
+  }
+  function openPreset(key) {
+    const p = Presets.list.find((x) => x.key === key) || Presets.list[0];
+    ponCur({ title: p.title, statement: p.statement, note: p.note, scene: p.make() }, p.key);
   }
 
-  // guarda el trabajo en curso y, si es un problema propio, lo actualiza en la biblioteca
+  // guarda el trabajo en curso; en cuanto se toca un ejemplo deja de figurar como «el ejemplo» elegido
   function persist() {
-    store.set(K_CUR, cur);
-    if (cur.ref.kind !== 'lib') return;
-    const it = lib.items.find((x) => x.id === cur.ref.id);
-    if (!it) return;
-    Object.assign(it, { scene: clone(scen), title: cur.title, statement: cur.statement, folder: cur.folder || '', tags: cur.tags || [], updated: Date.now() });
-    store.set(K_LIB, lib);
-  }
-
-  let tabSel = null; // pestaña de la barra: 'guardados' | 'ejemplos' (sin elegir: Guardados si ya hay ejercicios, si no Ejemplos)
-  function addToLib({ title, statement, scene, origin = 'mio', file, folder = '', tags = [] }) {
-    tabSel = 'guardados';
-    const it = { id: newId(), title: title || 'Problema sin título', statement: statement || '', scene: clone(scene), origin, file, folder, tags, updated: Date.now() };
-    lib.items.unshift(it);
-    store.set(K_LIB, lib);
-    return it;
+    guardaCur();
+    if (ejSel && cur.key && cur.base !== firma()) { cur.key = null; ejSel.value = ''; ejSel.dispatchEvent(new Event('input', { bubbles: true })); }
   }
 
   /* ---------------- barra lateral ---------------- */
   function setSide(open) {
     const app = $('#app');
+    if (!$('#side')) return;
     if (isMobile()) app.classList.toggle('mobile-open', open);
     else { ui.side = open; saveUI(); app.classList.toggle('closed', !open); }
     setTimeout(() => Canvas.draw(out, scen), 220);
@@ -122,81 +114,19 @@
     }));
     anchor.append(m);
   }
-  function itemRow({ ref, title, sub, actions }) {
-    const active = cur && cur.ref.kind === ref.kind && cur.ref.id === ref.id;
-    const row = h('div', { class: 'item' + (active ? ' active' : ''), role: 'listitem' },
-      h('button', { class: 'it', title, onclick: () => openRef(ref) }, h('span', { class: 'it-t' }, title), sub ? h('span', { class: 'it-s' }, sub) : null));
-    row.append(h('button', { class: 'more', 'aria-label': 'Opciones de ' + title, title: 'Opciones', 'aria-haspopup': 'menu', onclick: (e) => { e.stopPropagation(); openMenu(row, ref.kind + ref.id, actions); } }));
-    row.lastChild.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="12" cy="18.5" r="1.4"/></svg>';
-    return row;
-  }
-  function libActions(it) {
-    return [
-      { label: 'Renombrar', run: () => openRef({ kind: 'lib', id: it.id }, { focus: '#title' }) },
-      { label: 'Mover a carpeta / etiquetas', run: () => openRef({ kind: 'lib', id: it.id }, { focus: '#folder' }) },
-      { label: 'Duplicar', run: () => { const c = addToLib({ ...it, title: it.title + ' (copia)', origin: 'mio' }); openRef({ kind: 'lib', id: c.id }); } },
-      { label: 'Guardar en archivo', run: () => saveJSON(slug(it.title) + '.emsim.json', pack([it])) },
-      { label: 'Eliminar', confirm: 'Pulsa otra vez para eliminar', danger: true, run: () => {
-        lib.items = lib.items.filter((x) => x.id !== it.id); store.set(K_LIB, lib);
-        if (cur.ref.kind === 'lib' && cur.ref.id === it.id) openRef({ kind: 'preset', id: Presets.list[0].key }); else renderSidebar();
-        flash('Problema eliminado');
-      } },
-    ];
-  }
-  const matches = (it) => !query || norm([it.title, it.statement, it.folder, ...(it.tags || [])].join(' ')).includes(query);
-  const subOf = (it) => [it.origin === 'importado' ? it.file : '', ...(it.tags || []).map((t) => '#' + t)].filter(Boolean).join(' ');
-  // agrupa por carpeta: primero los sueltos, luego cada carpeta plegable
-  function grouped(items) {
-    const loose = items.filter((x) => !x.folder), folders = {};
-    for (const it of items) if (it.folder) (folders[it.folder] ||= []).push(it);
-    const row = (it) => itemRow({ ref: { kind: 'lib', id: it.id }, title: it.title, sub: subOf(it), actions: libActions(it) });
-    const outEls = loose.map(row);
-    for (const name of Object.keys(folders).sort((a, b) => a.localeCompare(b, 'es'))) {
-      const open = query || !ui.folders[name];
-      outEls.push(h('div', { class: 'fold' },
-        h('button', { class: 'fold-h', 'aria-expanded': String(!!open), onclick: () => { ui.folders[name] = !ui.folders[name]; saveUI(); renderSidebar(); } },
-          h('span', { class: 'chev' }, open ? '▾' : '▸'), h('span', { class: 'fold-n' }, name), h('span', { class: 'count' }, String(folders[name].length))),
-        open ? h('div', { class: 'fold-l' }, folders[name].map(row)) : null));
-    }
-    return outEls;
-  }
+  // Solo la versión privada: una lista con los ejemplos. En la web «Mis ejercicios» es la barra común (biblioteca.js)
   function renderSidebar() {
-    const box = $('#side-list');
-    box.replaceChildren();
-    const byDate = (a, b) => b.updated - a.updated;
-    const mine = lib.items.filter((x) => x.origin !== 'importado' && matches(x)).sort(byDate);
-    const imp = lib.items.filter((x) => x.origin === 'importado' && matches(x)).sort(byDate);
-    const pres = Presets.list.filter((p) => matches({ title: p.title, statement: p.statement }));
-    const section = (title, key, items, empty) => {
-      const open = query || !key || ui[key] !== false;
-      const head = h('button', { class: 'sec-h', 'aria-expanded': key ? String(!!open) : null, onclick: key && !query ? () => { ui[key] = !open; saveUI(); renderSidebar(); } : null }, h('span', {}, title), key && !query ? h('span', { class: 'chev' }, open ? '▾' : '▸') : h('span', { class: 'count' }, items.length ? String(items.length) : ''));
-      const list = h('div', open && items.length ? { class: 'sec-l', role: 'list' } : { class: 'sec-l' }, open ? (items.length ? items : empty ? h('p', { class: 'side-empty' }, empty) : null) : null);
-      box.append(h('section', { class: 'sec' }, head, list));
-    };
-    const tab = tabSel || (lib.items.length ? 'guardados' : 'ejemplos');
-    for (const [k, sel] of [['guardados', '#tab-guardados'], ['ejemplos', '#tab-ejemplos']]) $(sel).setAttribute('aria-selected', String(tab === k));
-    if (tab === 'guardados' && (!query || mine.length)) section('Mis ejercicios', null, grouped(mine), query ? '' : 'Aún no tienes ejercicios propios. Crea uno nuevo o guarda un ejercicio de ejemplo.');
-    if (tab === 'guardados' && imp.length) section('Importados', null, grouped(imp), '');
-    if (tab === 'ejemplos' && (!query || pres.length)) section(Presets.section, null, pres.map((p) => itemRow({ ref: { kind: 'preset', id: p.key }, title: p.title, actions: [
-      { label: 'Duplicar en Mis ejercicios', run: () => { const c = addToLib({ title: p.title, statement: p.statement, scene: p.make() }); openRef({ kind: 'lib', id: c.id }); } },
-      { label: 'Guardar en archivo', run: () => saveJSON(slug(p.title) + '.emsim.json', pack([{ title: p.title, statement: p.statement, scene: p.make() }])) },
-    ] })), '');
-    if (query && !(tab === 'guardados' ? mine.length + imp.length : pres.length)) box.append(h('p', { class: 'side-empty' }, `Nada coincide con «${$('#search').value}».`));
-    $('#save-lib').disabled = !lib.items.length;
-    const dl = $('#folders-dl');
-    dl.replaceChildren(...[...new Set(lib.items.map((x) => x.folder).filter(Boolean))].map((f) => h('option', { value: f })));
+    const box = $('#side-list'); if (!box) return;
+    const pres = Presets.list.filter((p) => !query || norm(p.title + ' ' + (p.statement || '')).includes(query));
+    box.replaceChildren(h('section', { class: 'sec' },
+      h('button', { class: 'sec-h' }, h('span', {}, Presets.section), h('span', { class: 'count' }, String(pres.length))),
+      h('div', { class: 'sec-l', role: 'list' }, pres.map((p) => h('div', { class: 'item' + (cur && cur.key === p.key ? ' active' : ''), role: 'listitem' },
+        h('button', { class: 'it', title: p.title, onclick: () => openPreset(p.key) }, h('span', { class: 'it-t' }, p.title)))))),
+      query && !pres.length ? h('p', { class: 'side-empty' }, `Nada coincide con «${$('#search').value}».`) : null);
   }
 
   /* ---------------- archivos ---------------- */
   const slug = (t) => (norm(t).replace(/[^\w]+/g, '-').replace(/^-|-$/g, '').slice(0, 60) || 'problema');
-  function pack(items) {
-    return { formato: FORMAT, version: 3, guardado: new Date().toISOString(), problemas: items.map((i) => ({ titulo: i.title, enunciado: i.statement || '', carpeta: i.folder || undefined, etiquetas: i.tags?.length ? i.tags : undefined, escena: i.scene })) };
-  }
-  function unpack(obj) {
-    if (obj?.formato === FORMAT && Array.isArray(obj.problemas)) return obj.problemas.map((p) => ({ title: p.titulo || 'Problema sin título', statement: p.enunciado || '', folder: p.carpeta || '', tags: Array.isArray(p.etiquetas) ? p.etiquetas : [], scene: validScene(p.escena) }));
-    if (obj?.sources) return [{ title: 'Escena importada', statement: '', scene: validScene(obj) }];
-    throw new Error('no es un archivo del simulador');
-  }
   const dlPromise = window.claude?.use ? window.claude.use('downloads').catch(() => null) : Promise.resolve(null);
   async function saveFile(filename, text, mime) {
     const dl = await Promise.race([dlPromise, new Promise((r) => setTimeout(() => r(null), 1500))]);
@@ -209,19 +139,6 @@
     const a = h('a', { href: URL.createObjectURL(new Blob([text], { type: mime })), download: filename });
     document.body.append(a); a.click(); a.remove();
     flash('Archivo guardado: ' + filename);
-  }
-  const saveJSON = (filename, obj) => saveFile(filename, JSON.stringify(obj, null, 2), 'application/json');
-  async function importFiles(files) {
-    let n = 0, first = null;
-    const bad = [];
-    for (const f of files) {
-      try {
-        const probs = unpack(JSON.parse(await f.text()));
-        for (const p of probs) { const it = addToLib({ ...p, origin: 'importado', file: f.name }); first ||= it; n++; }
-      } catch (e) { bad.push(`${f.name}: ${e.message}`); }
-    }
-    if (first) openRef({ kind: 'lib', id: first.id }); else renderSidebar();
-    flash(n ? `${n} problema${n > 1 ? 's' : ''} importado${n > 1 ? 's' : ''}` + (bad.length ? `; no se pudo leer ${bad.join(', ')}` : '') : 'No se pudo leer: ' + bad.join(', '));
   }
 
   /* ---------------- campos de formulario ---------------- */
@@ -576,12 +493,6 @@
     const st = $('#statement');
     st.value = cur.statement;
     autosize(st);
-    const isPreset = cur.ref.kind === 'preset';
-    const it = !isPreset && lib.items.find((x) => x.id === cur.ref.id);
-    $('#origin').textContent = isPreset ? 'Ejemplo' : it?.origin === 'importado' ? 'Importado' : 'Mi problema';
-    $('#banner').hidden = !isPreset;
-    $('#meta').hidden = isPreset;
-    if (!isPreset) { $('#folder').value = cur.folder || ''; $('#tags').value = (cur.tags || []).join(', '); }
     $('#note').textContent = cur.note || '';
     $('#note').hidden = !cur.note;
   }
@@ -705,12 +616,11 @@
       const body = res.error ? `<div class="warn">No se pudo calcular: ${esc(res.error)}</div>` : String(res.res || '').replace(/<canvas class="chart"[^>]*><\/canvas><div class="chart-l"><\/div>/, charts[i] ? `<img class="chart-img" alt="Gráfica" src="${charts[i]}">` : '');
       return `<section class="card"><h3>${i + 1}. ${esc(def.label)}</h3><p class="hint">${esc(describe(def, an))}</p><div class="result math">${body}</div>${res.steps ? `<h4>Desarrollo</h4><div class="steps-b math">${res.steps}</div>` : ''}</section>`;
     }).join('');
-    return `<${h1}>${esc(titulo)}</${h1}>${enunciado.trim() ? `<div class="stmt">${esc(enunciado.trim())}</div>` : ''}
+    return `${h1 ? `<${h1}>${esc(titulo)}</${h1}>` : ''}${enunciado.trim() ? `<div class="stmt">${esc(enunciado.trim())}</div>` : ''}
 <p class="hint">Unidad de longitud: ${scen.mode === 'si' ? 'm (modo numérico SI)' : esc(scen.unit || 'a')}</p>
 ${img ? `<img class="snap" alt="Esquema del problema" src="${img}">` : ''}
 <section class="card"><h2>Datos</h2><ul>${srcRows}</ul></section>${unk}<h2>Preguntas</h2>${qs}`;
   }
-  function conEscena(sc, o, fn) { const [s0, o0] = [scen, out]; scen = sc; out = o; try { return fn(); } finally { scen = s0; out = o0; } }
   function exportHTML() {
     const esc = Fmt.esc;
     const styles = [...document.querySelectorAll('style')].map((s) => s.textContent).join('\n');
@@ -732,72 +642,25 @@ ${fichaHTML(cur.title, cur.statement, { img, charts })}
     saveFile(slug(cur.title) + '-solucion.html', doc, 'text/html');
   }
 
-  /* ---------------- hoja para imprimir (elige varios ejercicios y se imprimen juntos con su solución) ---------------- */
-  function abreHoja() {
-    const esc = Fmt.esc, dlg = $('#hoja-dlg');
-    const grupos = [
-      ['Mis ejercicios', lib.items.map((it) => ({ titulo: it.title, enunciado: it.statement || '', escena: () => it.scene }))],
-      [Presets.section, Presets.list.map((p) => ({ titulo: p.title, enunciado: p.statement || '', escena: () => p.make() }))],
-    ].filter(([, l]) => l.length);
-    const todos = grupos.flatMap(([, l]) => l), marcados = new Set();
-    const pinta = () => {
-      let n = 0;
-      dlg.querySelector('.hoja-l').innerHTML = grupos.map(([g, l]) => `<p class="hoja-g">${esc(g)}</p>` + l.map((x) => `<label class="hoja-f"><input type="checkbox" data-i="${todos.indexOf(x)}"${marcados.has(x) ? ' checked' : ''}><span>${esc(x.titulo)}</span></label>`).join('')).join('');
-      dlg.querySelector('.hoja-todos').textContent = marcados.size === todos.length ? 'Quitar todos' : 'Marcar todos';
-      const b = dlg.querySelector('.hoja-imp'); b.disabled = !marcados.size; b.textContent = `Imprimir ${marcados.size} ejercicio${marcados.size === 1 ? '' : 's'}`;
-    };
-    dlg.innerHTML = `<div class="hoja-h"><h2>Hoja para imprimir</h2><button type="button" class="iconbtn hoja-x" aria-label="Cerrar">×</button></div>
-<p class="hint">Marca los ejercicios que quieres en la hoja. Se imprimen con sus resultados y su desarrollo (sin las gráficas).</p>
-<div class="hoja-l"></div>
-<div class="hoja-p"><button type="button" class="btn hoja-todos"></button><button type="button" class="btn ghost hoja-imp"></button></div>`;
-    dlg.querySelector('.hoja-x').addEventListener('click', () => dlg.close());
-    dlg.querySelector('.hoja-l').addEventListener('change', (e) => { const x = todos[+e.target.dataset.i]; if (!x) return; if (e.target.checked) marcados.add(x); else marcados.delete(x); pinta(); });
-    dlg.querySelector('.hoja-todos').addEventListener('click', () => { if (marcados.size === todos.length) marcados.clear(); else todos.forEach((x) => marcados.add(x)); pinta(); });
-    dlg.querySelector('.hoja-imp').addEventListener('click', () => { const sel = todos.filter((x) => marcados.has(x)); dlg.close(); imprimeHoja(sel); });
-    pinta(); dlg.showModal();
-  }
-  function imprimeHoja(sel) {
-    const esc = Fmt.esc;
-    document.getElementById('hoja-imp')?.remove();
-    const cont = document.createElement('div'); cont.id = 'hoja-imp';
-    const trozos = sel.map((x, i) => {
-      let sc = null, o = null;
-      try { sc = validScene(clone(x.escena())); o = Physics.run(sc); } catch (e) { /* se imprime con el aviso de la pregunta */ }
-      return `<section class="hoja-ej">${conEscena(sc || blankScene(), o, () => fichaHTML(`${i + 1}. ${x.titulo.replace(/^\d+ · /, '')}`, x.enunciado, { h1: 'h2' }))}</section>`;
-    });
-    const fecha = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
-    cont.innerHTML = `<h1>Hoja de ejercicios de Electrostática</h1><p class="hoja-sub">${sel.length} ejercicio${sel.length === 1 ? '' : 's'} · ${esc(fecha)} · Ciencify</p>` + trozos.join('');
-    document.body.appendChild(cont);
-    const tema = document.documentElement.getAttribute('data-theme');
-    const fin = () => {
-      removeEventListener('afterprint', fin);
-      document.body.classList.remove('hoja-imprimiendo'); cont.remove();
-      if (tema === null) document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', tema);
-    };
-    addEventListener('afterprint', fin);
-    document.documentElement.setAttribute('data-theme', 'light');
-    document.body.classList.add('hoja-imprimiendo');
-    window.print();
-  }
+  // La hoja para imprimir varios ejercicios es la de «Mis ejercicios» (biblioteca.js): abre cada ejercicio en un marco oculto
+  // de esta misma página y pide su ficha con window.simuFicha (el título y el número los pone la hoja).
+  window.simuFicha = () => (out ? fichaHTML(cur.title, cur.statement, { h1: null }) : '');
 
   /* ---------------- controles fijos ---------------- */
-  const typing = (t) => !!t && (t.id === 'title' || t.id === 'statement' || t.id === 'search' || t.id === 'folder' || t.id === 'tags' || !!t.closest?.('.prac'));
+  const typing = (t) => !!t && (t.id === 'title' || t.id === 'statement' || t.id === 'search' || !!t.closest?.('.prac'));
   function initControls() {
-    $('#side-close').addEventListener('click', () => setSide(false));
-    $('#side-open').addEventListener('click', () => setSide(true));
-    $('#scrim').addEventListener('click', () => setSide(false));
+    $('#side-close')?.addEventListener('click', () => setSide(false));
+    $('#side-open')?.addEventListener('click', () => setSide(true));
+    $('#scrim')?.addEventListener('click', () => setSide(false));
     document.addEventListener('click', (e) => { if (!e.target.closest('.menu')) closeMenu(); });
     document.addEventListener('keydown', (e) => {
       const mod = (e.ctrlKey || e.metaKey) && !e.altKey, k = e.key.toLowerCase();
       if (mod && k === 'z' && !typing(e.target)) { e.preventDefault(); e.shiftKey ? redo() : undo(); }
       else if (mod && k === 'y' && !typing(e.target)) { e.preventDefault(); redo(); }
-      else if (mod && k === 's') { e.preventDefault(); $('#save-cur').click(); }
-      else if (mod && k === 'o') { e.preventDefault(); $('#file').click(); }
-      else if (mod && k === 'k') { e.preventDefault(); if (isMobile()) setSide(true); else if (!ui.side) setSide(true); $('#search').focus(); }
+      else if (mod && k === 'k' && $('#search')) { e.preventDefault(); if (isMobile()) setSide(true); else if (!ui.side) setSide(true); $('#search').focus(); }
       else if ((e.key === 'F1' || (e.key === '?' && !typing(e.target) && !/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName))) && !$('#guide').open) { e.preventDefault(); openGuide(); }
       else if (e.key === 'Escape') { if (placing) cancelPlace(); closeMenu(); if (isMobile()) setSide(false); }
     });
-    $('#guide-open').addEventListener('click', () => openGuide());
     $('#help').addEventListener('click', () => openGuide());
     $('#ver').addEventListener('click', () => openGuide('g-novedades'));
     for (const el of document.querySelectorAll('.ver-n')) el.textContent = Version.current;
@@ -821,48 +684,13 @@ ${fichaHTML(cur.title, cur.statement, { img, charts })}
       for (const s of c.querySelectorAll('section')) if (s.getBoundingClientRect().top <= top) id = s.id;
       markGuide(id || 'g-vista');
     }, { passive: true });
-    for (const [k, sel] of [['guardados', '#tab-guardados'], ['ejemplos', '#tab-ejemplos']]) $(sel).addEventListener('click', () => { tabSel = k; renderSidebar(); });
-    // menú ⋮ de la barra: copia de seguridad, importar, imprimir varios… (las mismas acciones de siempre, ahora agrupadas)
-    const pop = $('#side-pop'), dim = $('#side-dim'), mbtn = $('#side-menu');
-    const popA = (v) => { pop.hidden = !v; dim.hidden = !v; mbtn.setAttribute('aria-expanded', String(v)); if (v) pop.querySelector('button:not(:disabled)')?.focus(); };
-    mbtn.addEventListener('click', () => popA(pop.hidden));
-    dim.addEventListener('click', () => { popA(false); mbtn.focus(); });
-    pop.addEventListener('click', (e) => { if (e.target.closest('button')) popA(false); });
-    pop.addEventListener('keydown', (e) => { if (e.key === 'Escape') { e.stopPropagation(); popA(false); mbtn.focus(); } });
-    $('#new').addEventListener('click', () => { const it = addToLib({ title: 'Ejercicio sin título', statement: '', scene: blankScene() }); openRef({ kind: 'lib', id: it.id }, { focus: '#title' }); });
-    $('#open').addEventListener('click', () => $('#file').click());
-    $('#file').addEventListener('change', (e) => { importFiles([...e.target.files]); e.target.value = ''; });
-    $('#save-lib').addEventListener('click', () => saveJSON('mis-problemas.emsim.json', pack(lib.items)));
-    // copia de seguridad de todas las herramientas, restaurarla y enlace con los datos de ahora (las mismas acciones que Mis ejercicios de las demás; solo en la web, donde está biblioteca.js)
-    if ($('#copia') && typeof Biblioteca !== 'undefined') {
-      $('#copia').addEventListener('click', () => {
-        const c = Biblioteca.copia(); if (!c.total) return flash('Todavía no tienes ejercicios guardados en ninguna herramienta');
-        delete c.total; saveJSON(`ciencify-copia-${c.guardado.slice(0, 10)}.copia.json`, c);
-      });
-      $('#restaura').addEventListener('click', () => $('#file-copia').click());
-      $('#file-copia').addEventListener('change', async (e) => {
-        const f = e.target.files[0]; e.target.value = ''; if (!f) return;
-        try { const r = Biblioteca.restaura(JSON.parse(await f.text())); lib = store.get(K_LIB, { items: [] }); renderSidebar(); flash(r.nuevos ? `Copia restaurada: ${r.nuevos} ejercicio${r.nuevos > 1 ? 's' : ''} nuevo${r.nuevos > 1 ? 's' : ''}` : 'La copia no traía nada nuevo'); }
-        catch (err) { flash('No se pudo restaurar: ' + err.message); }
-      });
-      $('#enlace').addEventListener('click', async () => {
-        const d = JSON.stringify({ title: cur.title, statement: cur.statement, folder: cur.folder, tags: cur.tags, scene: scen });
-        const url = location.href.split('#')[0] + '#d=' + btoa(unescape(encodeURIComponent(d))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-        try { await navigator.clipboard.writeText(url); flash(url.length > 8000 ? 'Enlace copiado (es muy largo: algunos programas lo cortan)' : 'Enlace copiado: abre el simulador con este ejercicio'); } catch (err) { flash('No se ha podido copiar el enlace'); }
-      });
-    }
-    $('#hoja').addEventListener('click', abreHoja);
-    $('#save-cur').addEventListener('click', () => saveJSON(slug(cur.title) + '.emsim.json', pack([cur])));
     $('#export').addEventListener('click', (e) => { e.stopPropagation(); openMenu($('#export-w'), 'export', [
       { label: 'Página para imprimir o PDF (.html)', run: exportHTML },
       { label: 'Texto Markdown (.md)', run: exportMD },
     ]); });
-    $('#keep').addEventListener('click', () => { const it = addToLib({ title: cur.title, statement: cur.statement, scene: scen }); openRef({ kind: 'lib', id: it.id }); flash('Guardado en Mis ejercicios'); });
-    $('#title').addEventListener('input', (e) => { cur.title = e.target.value; persist(); renderSidebar(); });
+    $('#title').addEventListener('input', (e) => { cur.title = e.target.value; persist(); });
     $('#statement').addEventListener('input', (e) => { cur.statement = e.target.value; autosize(e.target); persist(); });
-    $('#folder').addEventListener('change', (e) => { cur.folder = e.target.value.trim(); persist(); renderSidebar(); });
-    $('#tags').addEventListener('change', (e) => { cur.tags = e.target.value.split(',').map((t) => t.trim().replace(/^#/, '')).filter(Boolean); persist(); renderSidebar(); });
-    $('#search').addEventListener('input', (e) => { query = norm(e.target.value.trim()); renderSidebar(); });
+    $('#search')?.addEventListener('input', (e) => { query = norm(e.target.value.trim()); renderSidebar(); });
     $('#unit').addEventListener('input', (e) => { scen.unit = e.target.value.trim() || 'a'; schedule(); });
     $('#mode').addEventListener('change', (e) => { scen.mode = e.target.value; renderAll(); flash(scen.mode === 'si' ? 'Modo numérico SI: usa valores en unidades SI y longitudes en metros' : 'Modo simbólico'); });
     $('#practice').addEventListener('change', (e) => { ui.practice = e.target.checked; saveUI(); document.querySelectorAll('.card.reveal').forEach((c) => c.classList.remove('reveal')); renderAll(); });
@@ -883,17 +711,15 @@ ${fichaHTML(cur.title, cur.statement, { img, charts })}
     $('#zin').addEventListener('click', () => Canvas.zoom(1.25));
     $('#zout').addEventListener('click', () => Canvas.zoom(0.8));
     $('#zfit').addEventListener('click', () => { Canvas.fit(); Canvas.draw(out, scen); });
-    // arrastrar archivos sobre la página
-    window.addEventListener('dragover', (e) => { if ([...(e.dataTransfer?.types || [])].includes('Files')) { e.preventDefault(); document.body.classList.add('dropping'); } });
-    window.addEventListener('dragleave', (e) => { if (!e.relatedTarget) document.body.classList.remove('dropping'); });
-    window.addEventListener('drop', (e) => { document.body.classList.remove('dropping'); if (e.dataTransfer?.files?.length) { e.preventDefault(); importFiles([...e.dataTransfer.files]); } });
     let rt = 0;
     window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => out && out.results.forEach((res, i) => res.chart && mountChart($('#res-' + i), res.chart, scen.analyses[i].id)), 150); });
-    if (!ui.side) $('#app').classList.add('closed');
+    if (!WEB && !ui.side) $('#app').classList.add('closed');
+    // al guardar desde «Mis ejercicios» (o al irse de la página) lo último queda escrito
+    window.addEventListener('simu-guardar', () => { if (cur) persist(); });
   }
   // guía de uso: las capturas van incrustadas en GUIA_IMG (las añade build.sh) y se cargan al abrirla
   function openGuide(id) {
-    if (isMobile()) setSide(false);
+    if (!WEB && isMobile()) setSide(false);
     for (const el of document.querySelectorAll('#guide .sec-name')) el.textContent = Presets.section;
     for (const img of document.querySelectorAll('#guide img[data-img]')) if (!img.src && window.GUIA_IMG?.[img.dataset.img]) img.src = GUIA_IMG[img.dataset.img];
     $('#guide').showModal();
@@ -918,17 +744,36 @@ ${fichaHTML(cur.title, cur.statement, { img, charts })}
   }
 
   window.App = { onDrag, endDrag: () => setTimeout(commit, 30), get scen() { return scen; } };
+  // Ejemplos de la barra «Mis ejercicios»: un <select id="ejemplos"> oculto con los problemas de presets.js (biblioteca.js lee sus opciones)
+  if (WEB) {
+    ejSel = h('select', { id: 'ejemplos', hidden: true, tabindex: '-1', 'aria-hidden': 'true' }, h('option', { value: '' }, 'Ejemplos…'), Presets.list.map((p) => h('option', { value: p.key }, p.title)));
+    document.body.append(ejSel);
+    ejSel.addEventListener('change', () => { if (ejSel.value) openPreset(ejSel.value); });
+  }
   initControls();
   Canvas.init();
-  // enlace con los datos (#d=…): se abre como un ejercicio de ejemplo que se puede guardar en Mis ejercicios
+  const claveActivo = 'simu-ejercicios-activo:electrostatica';
+  if (WEB) Biblioteca.migraElectro(); // los problemas de la barra antigua pasan a «Mis ejercicios»
+  // enlace con los datos (#d=…): lo mismo que el de las demás herramientas; puede ser de la barra antigua ({title, statement, scene, folder, tags})
   const dEnlace = /[#&]d=([A-Za-z0-9_-]+)/.exec(location.hash);
   if (dEnlace) {
-    try { const d = JSON.parse(decodeURIComponent(escape(atob(dEnlace[1].replace(/-/g, '+').replace(/_/g, '/'))))); if (d?.scene) store.set(K_CUR, { ref: { kind: 'preset', id: 'enlace' }, title: String(d.title || 'Ejercicio compartido'), statement: String(d.statement || ''), folder: '', tags: [], note: '', scene: d.scene }); } catch (e) { /* enlace roto */ }
+    try {
+      const d = JSON.parse(decodeURIComponent(escape(atob(dEnlace[1].replace(/-/g, '+').replace(/_/g, '/')))));
+      if (d?.scene) { store.set(CLAVE, { title: String(d.title || 'Ejercicio compartido'), statement: String(d.statement || ''), scene: d.scene }); try { sessionStorage.removeItem(claveActivo); } catch (e) { /* sin almacenamiento */ } }
+    } catch (e) { /* enlace roto: se ignora */ }
     try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* file:// */ }
   }
-  const saved = store.get(K_CUR, null);
-  if (saved?.scene && saved.ref) {
-    try { cur = { ...saved, scene: validScene(saved.scene) }; scen = cur.scene; resetHistory(); Canvas.fit(); renderSidebar(); renderAll(); }
-    catch (e) { openRef({ kind: 'preset', id: Presets.list[0].key }); }
-  } else openRef({ kind: 'preset', id: Presets.list[0].key });
+  // electro-sim-cur-v2: lo que deja la barra antigua o lo que escriben los fenómenos de «En la vida real» al abrir Electrostática con su ejercicio; manda sobre lo guardado
+  let saved = store.get(CLAVE, null);
+  const viejo = store.get(K_CUR, null);
+  if (viejo?.scene) {
+    saved = { title: viejo.title, statement: viejo.statement, scene: viejo.scene };
+    try { if (viejo.ref?.kind === 'lib') sessionStorage.setItem(claveActivo, viejo.ref.id); else sessionStorage.removeItem(claveActivo); } catch (e) { /* sin almacenamiento */ }
+  }
+  try { localStorage.removeItem(K_CUR); } catch (e) { /* sin almacenamiento */ }
+  if (saved?.scene) {
+    try { ponCur(saved); } catch (e) { openPreset(Presets.list[0].key); }
+  } else openPreset(Presets.list[0].key);
+  // la barra común de todas las herramientas, con sus mismas pestañas, ⋮, selección, carpetas, copia y enlace
+  if (WEB) Biblioteca.monta('electrostatica', CLAVE, { titulo: () => cur.title });
 })();

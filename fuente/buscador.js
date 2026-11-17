@@ -5,7 +5,7 @@
    y buscar) y no distingue mayúsculas ni tildes.
    portal.js escribe publico/buscador.js (el índice + el código + su CSS) con archivo(); diseno.js y
    portal.js enganchan la etiqueta ETIQUETA(raiz) en cada página. En la portada, «/» y Ctrl+K llevan al
-   campo de la propia página (#buscar); en Electrostática, Ctrl+K sigue buscando entre sus problemas.
+   campo de la propia página (#buscar); en las herramientas (Electrostática incluida) abren la ventana.
    ===================================================================== */
 const Catalogo = require('./catalogo.js'), Version = require('./version.js');
 
@@ -174,7 +174,6 @@ const CLIENTE = `(() => {
     const ctrlK = (ev.ctrlKey || ev.metaKey) && !ev.altKey && !ev.shiftKey && ev.key.toLowerCase() === 'k';
     const barra = ev.key === '/' && !ev.ctrlKey && !ev.metaKey && !ev.altKey && !escribiendo(ev.target);
     if (!ctrlK && !barra) return;
-    if (ctrlK && document.getElementById('side') && document.getElementById('search')) return; // Electrostática: Ctrl+K busca en sus problemas
     ev.preventDefault();
     if (propio()) { propio().focus(); propio().select(); } else abre();
   });

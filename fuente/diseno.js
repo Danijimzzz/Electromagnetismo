@@ -112,19 +112,17 @@ function relacionadas(clave, herramienta) {
 const TEORIA_ELECTRO = require('fs').readFileSync(require('path').join(__dirname, 'electrostatica-teoria.html'), 'utf8').replace(/^<!--.*-->\n/, '');
 
 // El simulador de electrostática (shell.html) tiene su propia maqueta. En la web se le da la de las demás
-// herramientas: cabecera a lo ancho a la derecha de la barra lateral, contenido centrado con márgenes,
-// la miga con «Mis ejercicios» (abre y cierra su barra) a la izquierda y «Modo práctica» a la derecha,
-// y el título encima de los botones. La versión privada (artifact) no pasa por aquí.
+// herramientas: cabecera a lo ancho, contenido centrado con márgenes, la miga con «Mis ejercicios» a la
+// izquierda (biblioteca.js la rellena: es la misma barra que en las demás, sin barra propia desde la 1.20.1)
+// y «Modo práctica» a la derecha, y el título encima de los botones. La versión privada (artifact) no pasa por aquí.
 function aplicaElectrostatica(html) {
   const a = Catalogo.asignaturas.find((x) => x.clave === 'electromagnetismo');
   const { cab, miga } = piezas(a, 'Electrostática');
   const extra = `
 .main, .app:not(.closed) .main { padding:0 }
-@media (min-width:901px) { .app:not(.closed) { grid-template-columns:290px minmax(0,1fr) } .side { grid-column:1; grid-row:1 } .main { grid-column:2; grid-row:1 } }
+.app, .app.closed { display:block !important }
 footer { text-align:center; font-size:12.5px; color:var(--muted); padding:20px 16px 8px } footer a { color:var(--muted); margin:0 6px; white-space:nowrap; display:inline-block }
 .main > .wrap { max-width:1300px; margin:0 auto; padding:16px clamp(16px,3vw,24px) 32px }
-#side-open, .app.closed #side-open { display:inline-flex; align-items:center; gap:6px; width:auto; height:auto; font:600 13.5px var(--f-ui); color:var(--ink); background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:6px 12px; cursor:pointer; white-space:nowrap }
-#side-open:hover, .app:not(.closed) #side-open { border-color:var(--accent); color:var(--accent) }
 .miga-der .toggle { font:600 13.5px var(--f-ui); border-radius:8px; padding:6px 12px; gap:6px }
 .miga-der .toggle input { position:absolute; opacity:0; width:1px; height:1px; pointer-events:none }
 .miga-der .toggle:has(input:checked) { background:var(--accent); border-color:var(--accent); color:var(--panel) }
@@ -132,8 +130,6 @@ footer { text-align:center; font-size:12.5px; color:var(--muted); padding:20px 1
 .main .top { margin-bottom:12px }
 .main .top .title-in { font:600 24px/1.25 var(--f-ui); flex:1 1 300px; margin-left:-8px }
 .main .top .tools { flex-basis:100% }
-.side-h .logo { font:600 15px var(--f-ui) }
-#side-close { font-size:20px; line-height:1; color:var(--muted) }
 @media (max-width:700px) { .main .top .title-in { font-size:21px } }
 .solo-lector { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap }
 .teoria, .preguntas { margin-top:28px; max-width:860px; font-size:15px; line-height:1.6; color:var(--ink) }
@@ -141,30 +137,19 @@ footer { text-align:center; font-size:12.5px; color:var(--muted); padding:20px 1
 .limites { margin-top:28px; max-width:860px; font-size:15px; line-height:1.6; padding:12px 18px 14px; background:var(--panel); border:1px solid var(--line); border-left:4px solid var(--accent); border-radius:8px } .limites h2 { font:600 17px var(--f-ui); margin:0 0 6px } .limites ul { margin:0; padding-left:20px } .limites li + li { margin-top:4px }
 .teoria .f { font-size:16px; background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:8px 12px; display:inline-block; max-width:100%; overflow-x:auto }`;
   const btnLado = /[ \t]*<button id="side-open"[^>]*>.*<\/button>\n?/, practica = /<label class="toggle"[^>]*><input type="checkbox" id="practice"> Modo práctica<\/label>/;
-  const cierra = /(<button id="side-close"[^>]*>).*?<\/button>/;
-  for (const r of [/[ \t]*<a [^>]*a-inicio[^>]*>.*<\/a>\n?/, btnLado, practica, cierra, /<span class="logo">.*?<\/span>/])
+  const lateral = /<aside class="side"[\s\S]*?<\/aside>\n?/, scrim = /[ \t]*<div class="scrim" id="scrim"><\/div>\n?/, inicio = /[ \t]*<a [^>]*a-inicio[^>]*>.*<\/a>\n?/;
+  for (const r of [inicio, btnLado, practica, lateral, scrim])
     if (!r.test(html)) throw new Error(`diseno.js: shell.html no tiene la forma esperada (${r})`);
   if (!html.includes('<main class="main">') || !html.includes('</main>')) throw new Error('diseno.js: shell.html no tiene <main class="main">');
   const prac = html.match(practica)[0].replace('> Modo práctica<', '><span aria-hidden="true">✎</span> Modo práctica<');
   const migaE = miga
-    .replace('<span class="miga-izq"></span>', '<span class="miga-izq"><button id="side-open" type="button" aria-controls="side" title="Tus problemas y los ejercicios de ejemplo"><span aria-hidden="true">☰</span> Mis ejercicios</button></span>')
+    .replace('<span class="miga-izq"></span>', '<span class="miga-izq"></span>')
     .replace('<span class="miga-der"></span>', `<span class="miga-der">${prac}</span>`);
-  // «Mis ejercicios» abre la barra; si ya está abierta, la cierra (app.js solo sabe abrirla con este botón)
-  const alterna = `<script>document.addEventListener('click', (e) => {
-  if (!e.target.closest('#side-open')) return;
-  const app = document.getElementById('app'), side = document.getElementById('side');
-  if (app.classList.contains('mobile-open') || (!app.classList.contains('closed') && getComputedStyle(side).position !== 'fixed')) { e.stopImmediatePropagation(); document.getElementById('side-close').click(); }
-}, true);</script>`;
   // el pie de las demás herramientas (enlaces legales y «Informar de un error»): antes solo estaba en la barra lateral, que en móvil queda fuera de pantalla
-  const pie = `<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·${enlaceError('Electrostática', 'electromagnetismo', 'electrostatica')}·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· Electrostática <span class="ver-n"></span></footer>\n`;
-  const lateral = /<aside class="side"[\s\S]*?<\/aside>\n?/;
-  if (!lateral.test(html) || !/<p class="legal" data-solo-web>.*<\/p>\n?/.test(html)) throw new Error('diseno.js: shell.html no tiene la barra lateral esperada');
-  const barra = html.match(lateral)[0].replace(/[ \t]*<p class="legal" data-solo-web>.*<\/p>\n?/, '').replace(cierra, '$1×</button>').replace(/<span class="logo">.*?<\/span>/, '<span class="logo">Mis ejercicios</span>');
-  // el orden del teclado: primero la cabecera y el contenido, y la barra lateral después (la rejilla la deja a la izquierda en escritorio)
-  return html.replace(lateral, '').replace(/[ \t]*<a [^>]*a-inicio[^>]*>.*<\/a>\n?/, '').replace(btnLado, '').replace(practica, '')
-    .replace(cierra, '$1×</button>').replace(/<span class="logo">.*?<\/span>/, '<span class="logo">Mis ejercicios</span>')
-    .replace('<main class="main">', `<main class="main">\n${cab}\n<div class="wrap">\n<h1 class="solo-lector">Simulador de electrostática</h1>\n${migaE}`).replace('</main>', `${TEORIA_ELECTRO}${Preguntas.html('electrostatica')}${Anuncios.hueco()}${vidaReal('electromagnetismo/electrostatica')}${relacionadas('electromagnetismo', 'electrostatica')}</div>\n${pie}</main>\n${barra}`)
-    .replace('<div class="app"', `<style>${css(a)}${extra}</style>\n${alterna}\n<div class="app"`);
+  const pie = `<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·${enlaceError('Electrostática', 'electromagnetismo', 'electrostatica')}·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· <button id="ver" class="linkbtn" title="Ver las novedades">Electrostática <span class="ver-n"></span></button></footer>\n`;
+  return html.replace(lateral, '').replace(scrim, '').replace(inicio, '').replace(btnLado, '').replace(practica, '')
+    .replace('<main class="main">', `<main class="main">\n${cab}\n<div class="wrap">\n<h1 class="solo-lector">Simulador de electrostática</h1>\n${migaE}`).replace('</main>', `${TEORIA_ELECTRO}${Preguntas.html('electrostatica')}${Anuncios.hueco()}${vidaReal('electromagnetismo/electrostatica')}${relacionadas('electromagnetismo', 'electrostatica')}</div>\n${pie}</main>\n`)
+    .replace('<div class="app"', `<style>${css(a)}${extra}</style>\n<div class="app"`);
 }
 
 // con anuncios.js activo: su código en la cabeza, «Preferencias de cookies» en el pie y los huecos (en las

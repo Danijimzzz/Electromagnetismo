@@ -279,15 +279,19 @@ if (primera) {
     a.setItem('simu-ejercicios:otra', JSON.stringify({ items: [{ id: 'o1', titulo: 'Otro', datos: 'x' }] }));
     a.setItem('simu-ejercicios:vacia', JSON.stringify({ items: [] }));
     a.setItem('simu-ejercicios-ui', '{}'); a.setItem('fisica-x-v1', 'estado');
-    a.setItem('electro-sim-lib-v2', JSON.stringify({ items: [{ id: 'e1', title: 'Problema', scene: { cargas: [] } }] }));
+    // Electrostática con la barra antigua (hasta la 1.20): su biblioteca pasa a Mis ejercicios al hacer la copia
+    a.setItem('electro-sim-lib-v2', JSON.stringify({ items: [{ id: 'e1', title: 'Problema', statement: 'Enunciado', folder: 'Parcial', scene: { sources: [] }, updated: 7 }] }));
     const c = Biblioteca.copia(a), json = JSON.parse(JSON.stringify(c));
-    if (c.formato !== Biblioteca.FORMATO_COPIA || c.total !== 4 || Object.keys(c.herramientas).sort().join() !== 'fisica-x,otra' || c.electrostatica.length !== 1) mal(`Copia de seguridad: contenido inesperado ${JSON.stringify(c).slice(0, 200)}`);
+    if (c.formato !== Biblioteca.FORMATO_COPIA || c.total !== 4 || Object.keys(c.herramientas).sort().join() !== 'electrostatica,fisica-x,otra' || c.electrostatica) mal(`Copia de seguridad: contenido inesperado ${JSON.stringify(c).slice(0, 200)}`);
     if (JSON.stringify(c).includes('fisica-x-v1') || JSON.stringify(c).includes('simu-ejercicios-ui')) mal('Copia de seguridad: se cuelan claves que no son de Mis ejercicios');
     b.setItem('simu-ejercicios:fisica-x', JSON.stringify({ items: [{ id: 'z', titulo: 'Uno', datos: '{"a":1}' }, { id: 'u2', titulo: 'Propio', datos: 'otro' }] }));
     const r = Biblioteca.restaura(json, b), lx = JSON.parse(b.getItem('simu-ejercicios:fisica-x')).items;
     if (r.nuevos !== 3 || r.repetidos !== 1 || r.herramientas !== 3) mal(`Copia de seguridad: restaurar da ${JSON.stringify(r)} en vez de 3 nuevos, 1 repetido y 3 herramientas`);
     if (lx.length !== 3 || new Set(lx.map((x) => x.id)).size !== 3 || !lx.some((x) => x.titulo === 'Propio') || !lx.some((x) => x.titulo === 'Dos' && x.datos === '{"a":2}')) mal('Copia de seguridad: restaurar pierde o duplica ejercicios');
-    if (JSON.parse(b.getItem('simu-ejercicios:otra')).items[0].datos !== 'x' || JSON.parse(b.getItem('electro-sim-lib-v2')).items[0].id !== 'e1') mal('Copia de seguridad: no restaura las demás herramientas ni Electrostática');
+    const ee = JSON.parse(b.getItem('simu-ejercicios:electrostatica')).items[0];
+    if (JSON.parse(b.getItem('simu-ejercicios:otra')).items[0].datos !== 'x' || ee.id !== 'e1' || ee.carpeta !== 'Parcial' || JSON.parse(ee.datos).statement !== 'Enunciado' || !JSON.parse(ee.datos).scene) mal('Copia de seguridad: no restaura las demás herramientas ni Electrostática');
+    if (a.getItem('electro-sim-lib-v2') !== null || !a.getItem('electro-sim-lib-v2-migrada') || Biblioteca.migraElectro(a) !== 0 || JSON.parse(a.getItem('simu-ejercicios:electrostatica')).items.length !== 1) mal('Electrostática: la biblioteca antigua no se migra una sola vez a Mis ejercicios (y se guarda una copia)');
+    { const r2 = Biblioteca.restaura({ formato: Biblioteca.FORMATO_COPIA, herramientas: {}, electrostatica: [{ id: 'e9', title: 'De la copia antigua', scene: { sources: [] } }] }, b); if (r2.nuevos !== 1 || !JSON.parse(b.getItem('simu-ejercicios:electrostatica')).items.some((x) => x.titulo === 'De la copia antigua')) mal('Copia de seguridad: no abre las copias hechas con la barra antigua de Electrostática'); }
     if (Biblioteca.restaura(json, b).nuevos !== 0) mal('Copia de seguridad: restaurar dos veces duplica');
     let err = ''; try { Biblioteca.restaura({ formato: 'otro', herramientas: {} }, b); } catch (e) { err = e.message; }
     if (!err) mal('Copia de seguridad: acepta un archivo que no es una copia');
@@ -374,16 +378,24 @@ async function navegador() {
     page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') consola.push(m.type() + ': ' + m.text()); });
     page.on('pageerror', (e) => consola.push('excepción: ' + e.message));
     await page.goto('file://' + j.pagina);
-    await page.waitForSelector('#side-list .item');
+    // la web usa «Mis ejercicios» (la barra común: ejemplos en su pestaña Ejemplos); la privada, una lista propia de ejemplos
+    const web = j.pagina.startsWith(publico);
+    await page.waitForSelector(web ? '.bib [data-acc=pestana-ejemplos]' : '#side-list .item');
     const enPagina = await page.evaluate(`(${resolver})(Physics, Presets)`);
     const antes = fallos;
     comparar(enPagina, j.esp, `Chromium · ${j.nombre}`);
     const ver = await page.locator('#ver .ver-n').textContent();
     if (ver !== Version.current) mal(`${j.nombre}: la página muestra la versión «${ver}», se esperaba ${Version.current}`);
-    const sec = await page.locator('#side-list .sec-h span').allTextContents();
-    if (!sec.includes(j.Presets.section)) mal(`${j.nombre}: la barra lateral no muestra la sección «${j.Presets.section}»`);
+    if (web) {
+      if (await page.locator('#side, #side-list, #tab-guardados, #hoja-dlg').count()) mal(`${j.nombre}: Electrostática conserva restos de su barra lateral propia`);
+      if (!(await page.locator('.bib .bib-seg [data-acc=pestana-guardados]').count()) || !(await page.locator('.bib .bib-h [data-acc=menu-general]').count())) mal(`${j.nombre}: la barra de Electrostática no es la común (faltan sus pestañas o su ⋮)`);
+    } else {
+      const sec = await page.locator('#side-list .sec-h span').allTextContents();
+      if (!sec.includes(j.Presets.section)) mal(`${j.nombre}: la barra lateral no muestra la sección «${j.Presets.section}»`);
+    }
     for (const e of Object.values(j.esp)) {
-      await page.locator('#side-list .item .it', { hasText: e.titulo }).first().click();
+      if (web) { await page.click('.bib [data-acc=pestana-ejemplos]'); await page.locator('.bib .bib-ej', { hasText: e.titulo }).first().click(); }
+      else await page.locator('#side-list .item .it', { hasText: e.titulo }).first().click();
       await asienta(page);
       const err = await page.evaluate(() => { const x = document.querySelector('#errors'); return x && !x.hidden ? x.textContent : ''; });
       if (err) mal(`${j.nombre} · ${e.titulo}: ${err}`);
@@ -401,6 +413,8 @@ async function navegador() {
     if (consola.length) mal(`${j.nombre}: consola del navegador:\n      ` + consola.join('\n      '));
     if (fallos === antes) console.log(`  ✓ ${j.nombre}: mismos resultados, ${Object.keys(j.esp).length} ejercicios abiertos, guía y novedades sin errores de consola`);
   }
+  // Electrostática con la barra común «Mis ejercicios» (Web 1.20.1): migración de lo de antes, guardar, abrir, imprimir varios y que sea igual que la de otra herramienta
+  if (!((solo && solo !== 'electrostatica') || !primera)) { const antes = fallos; await require('./electrostatica-barra.js')(browser, { publico, path, mal }); if (fallos === antes) console.log('  ✓ Electrostática: usa la barra común (mismos botones y menús que Tiro parabólico), migra lo de antes, guarda, abre, imprime varios, enlaces y móvil'); }
   const medidos = {};
   for (const [i, f] of enNavegador.entries()) { const t0 = Date.now(); await f(browser); medidos[nombresNavegador[i]] = Math.round((Date.now() - t0) / 100) / 10; }
   if (args.includes('--tiempos')) { fs.writeFileSync(ficheroTiempos, JSON.stringify(Object.fromEntries(Object.entries({ ...TIEMPOS, ...medidos }).sort(([a], [b]) => a.localeCompare(b))), null, 1) + '\n'); console.log(`  · pruebas/tiempos.json: ${Object.keys(medidos).length} herramientas medidas`); }
@@ -772,10 +786,11 @@ async function navegador() {
     await b.goto('file://' + path.join(publico, 'index.html'));
     await b.keyboard.press('/');
     if (!(await b.evaluate(() => document.activeElement.id === 'buscar')) || (await b.locator('.bq-fondo:visible').count())) mal('buscador: en la portada «/» debe enfocar #buscar');
-    // en Electrostática Ctrl+K sigue buscando entre sus problemas y «/» abre el buscador global
+    // en Electrostática, como en las demás herramientas, Ctrl+K y «/» abren el buscador global (ya no tiene buscador propio)
     await b.goto('file://' + path.join(publico, 'electromagnetismo/electrostatica/index.html'));
     await b.keyboard.press('Control+k');
-    if (await b.locator('.bq-fondo:visible').count()) mal('buscador: Ctrl+K en Electrostática debe seguir siendo de sus problemas');
+    if (!(await b.locator('.bq-fondo:visible').count())) mal('buscador: Ctrl+K no abre la ventana en Electrostática');
+    await b.keyboard.press('Escape');
     await b.locator('body').click({ position: { x: 5, y: 5 } });
     await b.keyboard.press('/');
     if (!(await b.locator('.bq-fondo:visible').count())) mal('buscador: «/» no abre la ventana en Electrostática');

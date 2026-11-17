@@ -8,8 +8,8 @@
    La clave sale del catálogo («guarda»): herramientas.js la pone en la llamada
    Biblioteca.monta(carpeta, clave) de cada página.
    Copia de seguridad global: «Copia de seguridad de todo» junta en un solo archivo
-   (.copia.json) los ejercicios de todas las herramientas (y los problemas propios de
-   Electrostática); «Importar archivo» y «Restaurar copia» la reconocen y la suman a lo
+   (.copia.json) los ejercicios de todas las herramientas (Electrostática incluida, que desde la 1.20.1
+   usa esta misma barra; los problemas que tenía guardados con la barra antigua se pasan solos: migraElectro); «Importar archivo» y «Restaurar copia» la reconocen y la suman a lo
    que ya hay sin duplicar ni borrar nada. La lógica (Biblioteca.copia / restaura) no toca
    el DOM y se prueba en Node con un almacén falso.
    También: «Copiar enlace» (los datos de ahora en la dirección, #d=…; herramienta.js los recoge al
@@ -30,7 +30,25 @@ const Biblioteca = (() => {
   const FORMATO_COPIA = 'simulaciencia-copia', PREF = 'simu-ejercicios:', K_ELECTRO = 'electro-sim-lib-v2';
   const idAzar = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
   const leeAlm = (alm, k) => { try { const v = JSON.parse(alm.getItem(k)); return v ?? null; } catch (e) { return null; } };
+  // Electrostática tenía su propia biblioteca (electro-sim-lib-v2); desde la 1.20.1 usa esta barra. Sus problemas pasan a
+  // simu-ejercicios:electrostatica con el estado que lee la app ({title, statement, scene}) y se guarda una copia por si acaso.
+  const deElectro = (e) => ({ id: typeof e.id === 'string' && e.id ? e.id : idAzar(), titulo: String(e.title || e.titulo || 'Problema sin título').slice(0, 120), carpeta: String(e.folder || e.carpeta || '').slice(0, 60), fijado: false, datos: JSON.stringify({ title: e.title || e.titulo || 'Problema sin título', statement: e.statement || e.enunciado || '', scene: e.scene || e.escena }), actualizado: Number(e.updated || e.actualizado) || Date.now() });
+  function migraElectro(alm = localStorage) {
+    let el = null; try { el = JSON.parse(alm.getItem(K_ELECTRO)); } catch (e) { return 0; }
+    if (!Array.isArray(el?.items) || !el.items.length) return 0;
+    const lib = leeAlm(alm, PREF + 'electrostatica') || { items: [] }; if (!Array.isArray(lib.items)) lib.items = [];
+    let n = 0;
+    for (const e of el.items) {
+      if (!e?.scene) continue;
+      const it = deElectro(e);
+      if (lib.items.some((x) => x.id === it.id || (x.titulo === it.titulo && x.datos === it.datos))) continue;
+      lib.items.push(it); n++;
+    }
+    try { alm.setItem(PREF + 'electrostatica', JSON.stringify(lib)); alm.setItem(K_ELECTRO + '-migrada', alm.getItem(K_ELECTRO)); alm.removeItem(K_ELECTRO); } catch (e) { return 0; }
+    return n;
+  }
   function copia(alm = localStorage) {
+    migraElectro(alm);
     const herramientas = {}; let total = 0;
     for (let i = 0; i < alm.length; i++) {
       const k = alm.key(i); if (!k || !k.startsWith(PREF)) continue;
@@ -39,14 +57,16 @@ const Biblioteca = (() => {
       herramientas[k.slice(PREF.length)] = its.map((x) => ({ id: x.id, titulo: x.titulo, carpeta: x.carpeta || undefined, fijado: x.fijado || undefined, actualizado: x.actualizado, datos: x.datos }));
       total += its.length;
     }
-    const el = leeAlm(alm, K_ELECTRO), electrostatica = Array.isArray(el?.items) && el.items.length ? el.items : undefined;
-    return { formato: FORMATO_COPIA, version: 1, guardado: new Date().toISOString(), herramientas, electrostatica, total: total + (electrostatica?.length || 0) };
+    return { formato: FORMATO_COPIA, version: 1, guardado: new Date().toISOString(), herramientas, total };
   }
   // suma la copia a lo que hay: lo que ya está (mismo título y mismos datos, o mismo id en Electrostática) se salta
   function restaura(d, alm = localStorage) {
     if (d?.formato !== FORMATO_COPIA || typeof d.herramientas !== 'object' || !d.herramientas) throw new Error('no es una copia de seguridad de Ciencify');
     let nuevos = 0, repetidos = 0, herr = 0;
-    for (const [carpeta, its] of Object.entries(d.herramientas)) {
+    // las copias hechas con la barra antigua de Electrostática traían sus problemas aparte: se suman a las demás
+    const hs = { ...d.herramientas };
+    if (Array.isArray(d.electrostatica)) hs.electrostatica = [...(Array.isArray(hs.electrostatica) ? hs.electrostatica : []), ...d.electrostatica.filter((e) => e?.scene).map(deElectro)];
+    for (const [carpeta, its] of Object.entries(hs)) {
       if (!/^[a-z0-9-]{1,60}$/.test(carpeta) || !Array.isArray(its)) continue;
       const lib = leeAlm(alm, PREF + carpeta) || { items: [] }; if (!Array.isArray(lib.items)) lib.items = [];
       let suma = 0;
@@ -58,12 +78,6 @@ const Biblioteca = (() => {
         lib.items.push({ id, titulo, carpeta: String(e.carpeta || '').slice(0, 60), fijado: !!e.fijado, datos: e.datos, actualizado: Number(e.actualizado) || Date.now() }); suma++;
       }
       if (suma) { alm.setItem(PREF + carpeta, JSON.stringify(lib)); herr++; nuevos += suma; }
-    }
-    if (Array.isArray(d.electrostatica)) {
-      const lib = leeAlm(alm, K_ELECTRO) || { items: [] }; if (!Array.isArray(lib.items)) lib.items = [];
-      let suma = 0;
-      for (const e of d.electrostatica) { if (!e || typeof e.id !== 'string' || !e.scene) continue; if (lib.items.some((x) => x.id === e.id)) repetidos++; else { lib.items.push(e); suma++; } }
-      if (suma) { alm.setItem(K_ELECTRO, JSON.stringify(lib)); herr++; nuevos += suma; }
     }
     return { nuevos, repetidos, herramientas: herr };
   }
@@ -152,7 +166,9 @@ const Biblioteca = (() => {
 @media print { body.hoja-imprimiendo > *:not(#hoja-imp) { display: none !important } body.hoja-imprimiendo #hoja-imp { display: block !important } body.hoja-imprimiendo { padding: 0 !important; background: #fff !important } #hoja-imp { color: #000; font: 11pt/1.4 var(--f-ui, system-ui) } #hoja-imp h1 { font-size: 17pt; margin: 0 0 4px } #hoja-imp .hoja-sub { color: #555; margin: 0 0 14px } #hoja-imp section.hoja-ej { margin: 0 0 18px; padding-top: 10px; border-top: 1px solid #999 } #hoja-imp h2 { font-size: 13pt; margin: 0 0 8px; break-after: avoid } #hoja-imp .card { box-shadow: none !important; border: 0 !important; padding: 0 0 6px !important; background: none !important; break-inside: avoid } #hoja-imp img { max-width: 100%; max-height: 9cm; object-fit: contain } #hoja-imp .pasos li { break-inside: avoid } #hoja-imp .hoja-enun h3 { font-size: 11pt; margin: 0 0 4px } #hoja-imp .enun-imp { white-space: pre-wrap } }
 `;
 
-  function monta(herramienta, clave) {
+  // opts.titulo(): título que propone «Guardar el actual» (por defecto, el del ejemplo elegido o «Ejercicio N»)
+  // Una página puede definir window.simuFicha() (HTML): es lo que va a la hoja para imprimir en vez de copiar sus tarjetas (Electrostática)
+  function monta(herramienta, clave, opts = {}) {
     const cab = document.querySelector('header.top');
     if (!clave || !cab || document.querySelector('.bib')) return null;
     const K = `simu-ejercicios:${herramienta}`, K_UI = 'simu-ejercicios-ui', K_ACT = `simu-ejercicios-activo:${herramienta}`;
@@ -194,7 +210,7 @@ const Biblioteca = (() => {
       return h;
     }
     const marcaEj = () => { const sels = selsEj(); for (const b of panel.querySelectorAll('.bib-ej')) b.classList.toggle('activo', sels[+b.dataset.sel]?.value === b.dataset.v); };
-    const ejemplo = () => { const s = document.querySelector('select#ejemplo, select[id^="ejemplo"]'); return s && s.value && s.selectedOptions[0] ? s.selectedOptions[0].textContent.trim() : ''; };
+    const ejemplo = () => { if (opts.titulo) return opts.titulo(); const s = document.querySelector('select#ejemplo, select[id^="ejemplo"]'); return s && s.value && s.selectedOptions[0] ? s.selectedOptions[0].textContent.trim() : ''; };
 
     const st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
     const btn = document.createElement('button');
@@ -240,6 +256,15 @@ const Biblioteca = (() => {
         return r.nuevos;
       }
       importa.aviso = '';
+      // .emsim.json de Electrostática (la versión de antes de la 1.20.1 los guardaba así)
+      if (herramienta === 'electrostatica' && ((d?.formato === 'simulador-electrostatica' && Array.isArray(d.problemas)) || Array.isArray(d?.sources))) {
+        let m = 0;
+        for (const p of Array.isArray(d.sources) ? [{ titulo: 'Escena importada', escena: d }] : d.problemas) {
+          if (!p?.escena) continue;
+          const it = deElectro(p); it.id = nuevoId(); it.etiquetas = undefined; lib.items.push(it); m++;
+        }
+        return m;
+      }
       if (d?.formato !== FORMATO || !Array.isArray(d.ejercicios)) throw new Error('no es un archivo de ejercicios de Ciencify');
       if (d.herramienta !== herramienta) throw new Error(`es de otra herramienta (${d.herramienta})`);
       let n = 0;
@@ -317,6 +342,8 @@ const Biblioteca = (() => {
     // ----- hoja para imprimir: cada ejercicio se abre en un marco oculto y se copia su solución -----
     const valorDe = (el) => el.tagName === 'SELECT' ? [...el.selectedOptions].map((o) => o.textContent.trim()).join(', ') : el.type === 'checkbox' || el.type === 'radio' ? (el.checked ? '✓' : '—') : el.value;
     function extrae(d) {
+      const w = d.defaultView;
+      if (w && typeof w.simuFicha === 'function') { try { const f = w.simuFicha(); if (f) return f; } catch (e) { /* se copian las tarjetas */ } }
       let nodos = [...d.querySelectorAll('.layout .card')].filter((c) => !c.closest('[hidden]') && c.textContent.trim());
       if (!nodos.length) { const w = d.querySelector('.wrap') || d.body; nodos = [w]; }
       const out = d.createElement('div');
@@ -533,6 +560,6 @@ const Biblioteca = (() => {
     if (selsEj().some((s) => s.options.length > 1)) document.body.classList.add('bib-ejemplos');
     return { get items() { return lib.items; }, abre, importa: (t) => { const n = importa(t); guardaLib(); pinta(); return n; }, archivoDe };
   }
-  return { monta, FORMATO, FORMATO_COPIA, copia, restaura };
+  return { monta, FORMATO, FORMATO_COPIA, copia, restaura, migraElectro };
 })();
 if (typeof module !== 'undefined') module.exports = Biblioteca;
