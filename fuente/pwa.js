@@ -32,6 +32,24 @@ const ICONOS = [['icono-192.png', 192, 'any'], ['icono-512.png', 512, 'any'], ['
 const scriptsComunes = () => Object.values(require('./herramientas.js').externos()).map((e) => `js/${e.nombre}`);
 const nucleo = () => [...basicas(), ...scriptsComunes(), 'offline.html', 'buscador.js', 'pwa.js', 'legal.css', 'fuentes/stix-two-math.woff2', 'apple-touch-icon.png', 'manifest.webmanifest', ...ICONOS.map((i) => i[0])];
 
+// Idiomas traducidos (i18n.js): carpetas de publico/ con sus páginas, scripts propios y archivos comunes. Se leen del disco
+// (la primera vez que portal.js escribe sw.js puede estar vacío o viejo; i18n.js lo vuelve a escribir al terminar).
+function traducido() {
+  const fs = require('fs'), path = require('path'), publico = path.join(__dirname, '..', 'publico'), out = { dirs: [], paginas: [], recursos: [], scripts: [] };
+  for (const I of require('./idiomas.js').IDIOMAS.filter((x) => x.carpeta)) {
+    const raiz = path.join(publico, I.carpeta); if (!fs.existsSync(raiz)) continue;
+    out.dirs.push(I.carpeta);
+    const anda = (d, rel) => { for (const f of fs.readdirSync(d, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
+      if (f.isDirectory()) anda(path.join(d, f.name), `${rel}${f.name}/`);
+      else if (f.name === 'index.html') out.paginas.push(`${I.carpeta}${rel}`);
+      else if (f.name === 'offline.html' || (rel === '' && /\.(js|webmanifest|html)$/.test(f.name))) out.recursos.push(`${I.carpeta}${rel}${f.name}`);
+    } };
+    anda(raiz, '');
+    const js = path.join(publico, 'js', I.carpeta.replace(/\/$/, '')); if (fs.existsSync(js)) for (const f of fs.readdirSync(js).sort()) out.scripts.push(`js/${I.carpeta}${f}`);
+  }
+  return out;
+}
+
 function manifiesto() {
   const nombre = Catalogo.marca.join('');
   return JSON.stringify({
@@ -73,11 +91,12 @@ h1 { font-size:26px; margin:0 0 10px } p { color:var(--muted); margin:0 0 14px }
 
 // sw.js: la lista de páginas y la versión van dentro; si cambian, el archivo cambia y el navegador lo instala de nuevo
 function sw() {
-  const datos = { version: ver(), nucleo: nucleo(), todas: [...paginas(), ...imagenes()] };
+  const tr = traducido(), datos = { version: ver(), nucleo: [...nucleo(), ...tr.recursos, ...tr.paginas.filter((x) => x.split('/').length <= 3)], todas: [...paginas(), ...tr.paginas, ...tr.scripts, ...imagenes()], idiomas: tr.dirs };
   const hash = crypto.createHash('sha1').update(JSON.stringify(datos)).digest('hex').slice(0, 8);
   return `/* ${Catalogo.marca.join('')}: service worker (fuente/pwa.js). Generado: no se edita a mano. */
 const CACHE = 'ciencify-${datos.version}-${hash}', PREFIJO = 'ciencify-', MARCA = 'guardado-todo';
 const NUCLEO = ${JSON.stringify(datos.nucleo)};
+const IDIOMAS = ${JSON.stringify(datos.idiomas)}; // carpetas de los idiomas traducidos: cada uno tiene su offline.html
 const TODAS = ${JSON.stringify(datos.todas)};
 const FUENTES_EXTERNAS = ['fonts.googleapis.com', 'fonts.gstatic.com'];
 const ABS = (u) => new URL(u, self.registration.scope).href;
@@ -133,12 +152,15 @@ self.addEventListener('fetch', (e) => {
   e.respondWith(primeroRed ? delaRed(e, req, clave(url)) : copiaYActualiza(e, req, externa ? req.url : clave(url)));
 });
 
+// la página sin conexión del idioma de la página pedida (/en/… → en/offline.html), o la española
+const offlineDe = (req) => { const p = new URL(req.url).pathname; const d = IDIOMAS.find((x) => p.startsWith(new URL(ABS(x)).pathname)); return (d || '') + 'offline.html'; };
+
 async function delaRed(e, req, k) {
   const c = await caches.open(CACHE), copia = await c.match(k);
   const red = fetch(req).then((r) => { if (r.ok && !r.redirected && r.type === 'basic') e.waitUntil(c.put(k, r.clone())); return r; });
   e.waitUntil(red.catch(() => {}));
   if (!copia) {
-    try { return await red; } catch (err) { return (req.mode === 'navigate' && (await c.match(ABS('offline.html')))) || Response.error(); }
+    try { return await red; } catch (err) { return (req.mode === 'navigate' && (await c.match(ABS(offlineDe(req))))) || Response.error(); }
   }
   // con copia: manda la red, salvo que falle o tarde más de 4 s
   return Promise.race([red.catch(() => copia), new Promise((ok) => setTimeout(() => ok(copia), 4000))]);
@@ -237,4 +259,4 @@ const CSS = `
 .pwa-barra button:disabled { opacity:.6; cursor:progress }
 .pwa-barra button:focus-visible { outline:2px solid var(--accent); outline-offset:1px }`;
 
-if (typeof module !== 'undefined') module.exports = { CABEZA, BARRA, CSS, manifiesto, offline, sw, cliente, paginas, nucleo, ICONOS, COLOR, PESO_MB };
+if (typeof module !== 'undefined') module.exports = { traducido, CABEZA, BARRA, CSS, manifiesto, offline, sw, cliente, paginas, nucleo, ICONOS, COLOR, PESO_MB };

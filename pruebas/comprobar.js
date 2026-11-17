@@ -63,7 +63,7 @@ console.log(`  ✓ simulador ${(fs.statSync(juegos[0].pagina).size / 1024).toFix
 // idiomas traducidos (fuente/i18n.js): sus páginas y los scripts comunes con huella de cada idioma
 const I18nTraducido = require(path.join(fuente, 'i18n.js')), Idiomas = require(path.join(fuente, 'idiomas.js'));
 const delIdioma = new Set(Idiomas.IDIOMAS.filter((i) => i.c !== 'es').flatMap((i) => I18nTraducido.paginasTraducidas(i.c).map((h) => `${i.c}/${h.asignatura}/${h.clave}/index.html`)));
-const esDeIdioma = (f) => delIdioma.has(f) || /^js\/(?:en|de|fr|pt|it|zh|ja)\/[\w.-]+\.js$/.test(f);
+const esDeIdioma = (f) => delIdioma.has(f) || /^(?:en|de|fr|pt|it|zh|ja)\/(?:[\w-]+\/)?(?:index\.html|[\w-]+\.html|buscador\.js|llama\.js|pwa\.js|manifest\.webmanifest)$/.test(f) || /^js\/(?:en|de|fr|pt|it|zh|ja)\/[\w.-]+\.js$/.test(f);
 const hay = listar(publico), sobran = hay.filter((f) => !PUBLICABLES.includes(f) && !esDeIdioma(f)), faltan = PUBLICABLES.filter((f) => !hay.includes(f));
 if (sobran.length) mal(`publico/ contiene archivos que no deberían publicarse: ${sobran.join(', ')}`);
 if (faltan.length) mal(`publico/ no tiene: ${faltan.join(', ')}`);
