@@ -259,6 +259,14 @@ if (require.main === module) {
   const [, , cmd, idioma, carpeta] = process.argv;
   if (cmd === 'todos') { for (const c of fs.existsSync(DIR) ? fs.readdirSync(DIR).filter((f) => fs.statSync(path.join(DIR, f)).isDirectory()) : []) { const r = generar(c); console.log(`i18n ${c}: ${r.paginas} páginas${r.faltan.length ? `, ${r.faltan.length} textos sin traducir` : ''}`); } }
   else if (cmd === 'generar') { const r = generar(idioma || 'en'); console.log(`i18n ${idioma || 'en'}: ${r.paginas} páginas${r.faltan.length ? `, ${r.faltan.length} textos sin traducir` : ''}`); }
+  else if (cmd === 'reusar') {
+    // reusar <idioma> [carpeta|todas]: rellena los "" con la traducción que ya tiene la misma clave en otro diccionario del idioma
+    const dir = path.join(DIR, idioma), nombres = fs.readdirSync(dir).filter((f) => f.endsWith('.json')).map((f) => f.slice(0, -5)), conocidas = new Map();
+    for (const n of nombres) for (const [k, v] of Object.entries(leeDic(idioma, n))) if (v !== '' && v !== null && !conocidas.has(k)) conocidas.set(k, v);
+    let total = 0;
+    for (const n of nombres) if (!carpeta || carpeta === 'todas' || n === carpeta.replace(/\//g, '__')) { const d = leeDic(idioma, n); let c = 0; for (const k of Object.keys(d)) if (d[k] === '' && conocidas.has(k)) { d[k] = conocidas.get(k); c++; } if (c) { guardaDic(idioma, n, d); total += c; } }
+    console.log(total + ' claves rellenadas con traducciones de otros diccionarios');
+  }
   else if (cmd === 'volcar' || cmd === 'cargar') {
     // volcar: escribe en <archivo> la lista de claves sin traducir; cargar: lee una lista de traducciones (mismo orden) y las guarda
     const nombre = carpeta.replace(/\//g, '__'), d = leeDic(idioma, nombre), archivo = process.argv[5];
